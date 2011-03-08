@@ -43,6 +43,10 @@
 #include <map>
 #include <dirent.h>
 
+#ifndef __WOE32__
+#include <sys/wait.h>
+#endif
+
 #include "gettext.h"
 #include "fl_digi.h"
 

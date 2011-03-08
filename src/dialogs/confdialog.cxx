@@ -19,6 +19,7 @@
 #include "notify.h"
 #include "debug.h"
 #include "status.h"
+#include "rx_extract.h"
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
@@ -427,6 +428,21 @@ progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
+}
+
+Fl_Check_Button *btnUseLastMacro=(Fl_Check_Button *)0;
+
+static void cb_btnUseLastMacro(Fl_Check_Button* o, void*) {
+  progdefaults.UseLastMacro = o->value();
+update_main_title();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDisplayMacroFilename=(Fl_Check_Button *)0;
+
+static void cb_btnDisplayMacroFilename(Fl_Check_Button* o, void*) {
+  progdefaults.DisplayMacroFilename = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabContest=(Fl_Group *)0;
@@ -2557,34 +2573,110 @@ Fl_Group *tabMisc=(Fl_Group *)0;
 
 Fl_Tabs *tabsMisc=(Fl_Tabs *)0;
 
-Fl_Group *tabSweetSpot=(Fl_Group *)0;
+Fl_Group *tabCPUspeed=(Fl_Group *)0;
 
-Fl_Value_Input2 *valCWsweetspot=(Fl_Value_Input2 *)0;
+Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
 
-static void cb_valCWsweetspot(Fl_Value_Input2* o, void*) {
-  progdefaults.CWsweetspot=o->value();
+static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
+  progdefaults.slowcpu = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Value_Input2 *valRTTYsweetspot=(Fl_Value_Input2 *)0;
+Fl_Group *tabNBEMS=(Fl_Group *)0;
 
-static void cb_valRTTYsweetspot(Fl_Value_Input2* o, void*) {
-  progdefaults.RTTYsweetspot=o->value();
+Fl_Check_Button *chkAutoExtract=(Fl_Check_Button *)0;
+
+static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
+  progdefaults.autoextract = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Value_Input2 *valPSKsweetspot=(Fl_Value_Input2 *)0;
+Fl_Check_Button *chk_open_wrap_folder=(Fl_Check_Button *)0;
 
-static void cb_valPSKsweetspot(Fl_Value_Input2* o, void*) {
-  progdefaults.PSKsweetspot=o->value();
+static void cb_chk_open_wrap_folder(Fl_Check_Button* o, void*) {
+  progdefaults.open_nbems_folder = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnStartAtSweetSpot=(Fl_Check_Button *)0;
+Fl_Check_Button *chk_open_flmsg=(Fl_Check_Button *)0;
 
-static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
-  progdefaults.StartAtSweetSpot = o->value();
+static void cb_chk_open_flmsg(Fl_Check_Button* o, void*) {
+  progdefaults.open_flmsg = o->value();
+if (o->value()) {
+  chk_open_flmsg_print->value(0);
+  progdefaults.open_flmsg_print = false;
+}
 progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_flmsg_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_flmsg_pathname(Fl_Input2* o, void*) {
+  progdefaults.flmsg_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_flmsg=(Fl_Button *)0;
+
+static void cb_btn_select_flmsg(Fl_Button*, void*) {
+  select_flmsg_pathname();
+}
+
+Fl_Check_Button *chk_open_flmsg_print=(Fl_Check_Button *)0;
+
+static void cb_chk_open_flmsg_print(Fl_Check_Button* o, void*) {
+  progdefaults.open_flmsg_print = o->value();
+if (o->value()) {
+  chk_open_flmsg->value(0);
+  progdefaults.open_flmsg = false;
+}
+progdefaults.changed = true;
+}
+
+Fl_Group *tabPskmail=(Fl_Group *)0;
+
+Fl_Counter2 *cntServerCarrier=(Fl_Counter2 *)0;
+
+static void cb_cntServerCarrier(Fl_Counter2* o, void*) {
+  progdefaults.ServerCarrier = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntServerOffset=(Fl_Counter2 *)0;
+
+static void cb_cntServerOffset(Fl_Counter2* o, void*) {
+  progdefaults.ServerOffset = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntServerACQsn=(Fl_Counter2 *)0;
+
+static void cb_cntServerACQsn(Fl_Counter2* o, void*) {
+  progdefaults.ServerACQsn = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntServerAFCrange=(Fl_Counter2 *)0;
+
+static void cb_cntServerAFCrange(Fl_Counter2* o, void*) {
+  progdefaults.ServerAFCrange = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
+
+static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
+  progdefaults.PSKmailSweetSpot = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_arq_s2n_report=(Fl_Check_Button *)0;
+
+static void cb_btn_arq_s2n_report(Fl_Check_Button* o, void*) {
+  progdefaults.Pskmails2nreport=o->value();
 }
 
 Fl_Group *tabSpot=(Fl_Group *)0;
@@ -2649,54 +2741,37 @@ progdefaults.changed = true;
 
 Fl_Box *boxPSKRepMsg=(Fl_Box *)0;
 
-Fl_Group *tabMacros=(Fl_Group *)0;
+Fl_Group *tabSweetSpot=(Fl_Group *)0;
 
-Fl_Check_Button *btnUseLastMacro=(Fl_Check_Button *)0;
+Fl_Value_Input2 *valCWsweetspot=(Fl_Value_Input2 *)0;
 
-static void cb_btnUseLastMacro(Fl_Check_Button* o, void*) {
-  progdefaults.UseLastMacro = o->value();
-update_main_title();
+static void cb_valCWsweetspot(Fl_Value_Input2* o, void*) {
+  progdefaults.CWsweetspot=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnDisplayMacroFilename=(Fl_Check_Button *)0;
+Fl_Value_Input2 *valRTTYsweetspot=(Fl_Value_Input2 *)0;
 
-static void cb_btnDisplayMacroFilename(Fl_Check_Button* o, void*) {
-  progdefaults.DisplayMacroFilename = o->value();
+static void cb_valRTTYsweetspot(Fl_Value_Input2* o, void*) {
+  progdefaults.RTTYsweetspot=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Group *tabCPUspeed=(Fl_Group *)0;
+Fl_Value_Input2 *valPSKsweetspot=(Fl_Value_Input2 *)0;
 
-Fl_Check_Button *chkSlowCpu=(Fl_Check_Button *)0;
-
-static void cb_chkSlowCpu(Fl_Check_Button* o, void*) {
-  progdefaults.slowcpu = o->value();
+static void cb_valPSKsweetspot(Fl_Value_Input2* o, void*) {
+  progdefaults.PSKsweetspot=o->value();
 progdefaults.changed = true;
 }
 
-Fl_Group *tabFileExtraction=(Fl_Group *)0;
+Fl_Check_Button *btnStartAtSweetSpot=(Fl_Check_Button *)0;
 
-Fl_Check_Button *chkAutoExtract=(Fl_Check_Button *)0;
-
-static void cb_chkAutoExtract(Fl_Check_Button* o, void*) {
-  progdefaults.autoextract = o->value();
+static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
+  progdefaults.StartAtSweetSpot = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkStartFlmsg=(Fl_Check_Button *)0;
-
-static void cb_chkStartFlmsg(Fl_Check_Button* o, void*) {
-  progdefaults.open_flmsg = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkRxStream=(Fl_Check_Button *)0;
-
-static void cb_chkRxStream(Fl_Check_Button* o, void*) {
-  progdefaults.speak = o->value();
-progdefaults.changed = true;
-}
+Fl_Group *tabText_IO=(Fl_Group *)0;
 
 Fl_Group *grpTalker=(Fl_Group *)0;
 
@@ -2713,50 +2788,11 @@ static void cb_btn_auto_talk(Fl_Check_Button* o, void*) {
   progdefaults.auto_talk = o->value();
 }
 
-Fl_Group *tabPskmail=(Fl_Group *)0;
+Fl_Check_Button *chkRxStream=(Fl_Check_Button *)0;
 
-Fl_Counter2 *cntServerCarrier=(Fl_Counter2 *)0;
-
-static void cb_cntServerCarrier(Fl_Counter2* o, void*) {
-  progdefaults.ServerCarrier = (int)o->value();
-wf->redraw_marker();
+static void cb_chkRxStream(Fl_Check_Button* o, void*) {
+  progdefaults.speak = o->value();
 progdefaults.changed = true;
-}
-
-Fl_Counter2 *cntServerOffset=(Fl_Counter2 *)0;
-
-static void cb_cntServerOffset(Fl_Counter2* o, void*) {
-  progdefaults.ServerOffset = (int)o->value();
-wf->redraw_marker();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *cntServerACQsn=(Fl_Counter2 *)0;
-
-static void cb_cntServerACQsn(Fl_Counter2* o, void*) {
-  progdefaults.ServerACQsn = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *cntServerAFCrange=(Fl_Counter2 *)0;
-
-static void cb_cntServerAFCrange(Fl_Counter2* o, void*) {
-  progdefaults.ServerAFCrange = (int)o->value();
-wf->redraw_marker();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPSKmailSweetSpot=(Fl_Check_Button *)0;
-
-static void cb_btnPSKmailSweetSpot(Fl_Check_Button* o, void*) {
-  progdefaults.PSKmailSweetSpot = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_arq_s2n_report=(Fl_Check_Button *)0;
-
-static void cb_btn_arq_s2n_report(Fl_Check_Button* o, void*) {
-  progdefaults.Pskmails2nreport=o->value();
 }
 
 Fl_Group *tabQRZ=(Fl_Group *)0;
@@ -3237,7 +3273,6 @@ ab and newline are automatically included."));
             tabBrowser->end();
           } // Fl_Group* tabBrowser
           { tabMBars = new Fl_Group(0, 50, 500, 320, _("Macros"));
-            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(2, 250, 496, 40);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(12, 259, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -3291,6 +3326,22 @@ ab and newline are automatically included."));
                 btn_twoF->down_box(FL_ROUND_DOWN_BOX);
                 btn_twoF->callback((Fl_Callback*)cb_btn_twoF);
               } // Fl_Round_Button* btn_twoF
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 292, 496, 76);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(12, 302, 277, 20, _("Load last used macro file on startup"));
+                btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
+                btnUseLastMacro->down_box(FL_DOWN_BOX);
+                btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
+                o->value(progdefaults.UseLastMacro);
+              } // Fl_Check_Button* btnUseLastMacro
+              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(12, 331, 277, 20, _("Display macro filename on startup"));
+                btnDisplayMacroFilename->tooltip(_("The filename is written to the RX text area"));
+                btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
+                btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);
+                o->value(progdefaults.DisplayMacroFilename);
+              } // Fl_Check_Button* btnDisplayMacroFilename
               o->end();
             } // Fl_Group* o
             tabMBars->end();
@@ -3449,6 +3500,7 @@ ab and newline are automatically included."));
             tabContest->end();
           } // Fl_Group* tabContest
           { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Controls"));
+            tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(2, 58, 496, 253);
               o->box(FL_ENGRAVED_BOX);
               { Fl_Box* o = new Fl_Box(31, 65, 446, 25, _("Enable check box to show each respective operator control"));
@@ -5021,6 +5073,7 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5083,7 +5136,6 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -5922,163 +5974,6 @@ d frequency"));
         tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
-          { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Value_Input2* o = valCWsweetspot = new Fl_Value_Input2(42, 71, 65, 20, _("CW"));
-                valCWsweetspot->tooltip(_("Default CW tracking point"));
-                valCWsweetspot->box(FL_DOWN_BOX);
-                valCWsweetspot->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                valCWsweetspot->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                valCWsweetspot->labeltype(FL_NORMAL_LABEL);
-                valCWsweetspot->labelfont(0);
-                valCWsweetspot->labelsize(14);
-                valCWsweetspot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valCWsweetspot->minimum(200);
-                valCWsweetspot->maximum(4000);
-                valCWsweetspot->step(1);
-                valCWsweetspot->value(1000);
-                valCWsweetspot->callback((Fl_Callback*)cb_valCWsweetspot);
-                valCWsweetspot->align(FL_ALIGN_LEFT);
-                valCWsweetspot->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.CWsweetspot);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Input2* valCWsweetspot
-              { Fl_Value_Input2* o = valRTTYsweetspot = new Fl_Value_Input2(220, 71, 65, 20, _("RTTY"));
-                valRTTYsweetspot->tooltip(_("Default RTTY tracking point"));
-                valRTTYsweetspot->box(FL_DOWN_BOX);
-                valRTTYsweetspot->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                valRTTYsweetspot->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                valRTTYsweetspot->labeltype(FL_NORMAL_LABEL);
-                valRTTYsweetspot->labelfont(0);
-                valRTTYsweetspot->labelsize(14);
-                valRTTYsweetspot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valRTTYsweetspot->minimum(200);
-                valRTTYsweetspot->maximum(4000);
-                valRTTYsweetspot->step(1);
-                valRTTYsweetspot->value(1000);
-                valRTTYsweetspot->callback((Fl_Callback*)cb_valRTTYsweetspot);
-                valRTTYsweetspot->align(FL_ALIGN_LEFT);
-                valRTTYsweetspot->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.RTTYsweetspot);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Input2* valRTTYsweetspot
-              { Fl_Value_Input2* o = valPSKsweetspot = new Fl_Value_Input2(420, 71, 65, 20, _("PSK et al."));
-                valPSKsweetspot->tooltip(_("Default for all other modems"));
-                valPSKsweetspot->box(FL_DOWN_BOX);
-                valPSKsweetspot->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                valPSKsweetspot->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                valPSKsweetspot->labeltype(FL_NORMAL_LABEL);
-                valPSKsweetspot->labelfont(0);
-                valPSKsweetspot->labelsize(14);
-                valPSKsweetspot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valPSKsweetspot->minimum(200);
-                valPSKsweetspot->maximum(4000);
-                valPSKsweetspot->step(1);
-                valPSKsweetspot->value(1000);
-                valPSKsweetspot->callback((Fl_Callback*)cb_valPSKsweetspot);
-                valPSKsweetspot->align(FL_ALIGN_LEFT);
-                valPSKsweetspot->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PSKsweetspot);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Input2* valPSKsweetspot
-              { Fl_Check_Button* o = btnStartAtSweetSpot = new Fl_Check_Button(15, 101, 348, 20, _("Always start new modems at these frequencies"));
-                btnStartAtSweetSpot->tooltip(_("ON - start at default\nOFF - keep current wf cursor position"));
-                btnStartAtSweetSpot->down_box(FL_DOWN_BOX);
-                btnStartAtSweetSpot->value(1);
-                btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
-                o->value(progdefaults.StartAtSweetSpot);
-              } // Fl_Check_Button* btnStartAtSweetSpot
-              o->end();
-            } // Fl_Group* o
-            tabSweetSpot->end();
-          } // Fl_Group* tabSweetSpot
-          { tabSpot = new Fl_Group(0, 50, 500, 320, _("Spotting"));
-            tabSpot->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 215, _("PSK Reporter"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { btnPSKRepAuto = new Fl_Check_Button(15, 91, 324, 20, _("Automatically spot callsigns in decoded text"));
-                btnPSKRepAuto->tooltip(_("Parse all incoming text"));
-                btnPSKRepAuto->down_box(FL_DOWN_BOX);
-                btnPSKRepAuto->callback((Fl_Callback*)cb_btnPSKRepAuto);
-                btnPSKRepAuto->value(progdefaults.pskrep_auto);
-              } // Fl_Check_Button* btnPSKRepAuto
-              { btnPSKRepLog = new Fl_Check_Button(15, 121, 327, 20, _("Send reception report when logging a QSO"));
-                btnPSKRepLog->tooltip(_("Send report only when QSO is logged"));
-                btnPSKRepLog->down_box(FL_DOWN_BOX);
-                btnPSKRepLog->callback((Fl_Callback*)cb_btnPSKRepLog);
-                btnPSKRepLog->value(progdefaults.pskrep_log);
-              } // Fl_Check_Button* btnPSKRepLog
-              { btnPSKRepQRG = new Fl_Check_Button(15, 151, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
-                btnPSKRepQRG->tooltip(_("Include the transmit frequency"));
-                btnPSKRepQRG->down_box(FL_DOWN_BOX);
-                btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
-                btnPSKRepQRG->value(progdefaults.pskrep_qrg);
-              } // Fl_Check_Button* btnPSKRepQRG
-              { inpPSKRepHost = new Fl_Input2(56, 191, 220, 24, _("Host:"));
-                inpPSKRepHost->tooltip(_("To whom the connection is made"));
-                inpPSKRepHost->box(FL_DOWN_BOX);
-                inpPSKRepHost->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                inpPSKRepHost->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                inpPSKRepHost->labeltype(FL_NORMAL_LABEL);
-                inpPSKRepHost->labelfont(0);
-                inpPSKRepHost->labelsize(14);
-                inpPSKRepHost->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                inpPSKRepHost->callback((Fl_Callback*)cb_inpPSKRepHost);
-                inpPSKRepHost->align(FL_ALIGN_LEFT);
-                inpPSKRepHost->when(FL_WHEN_CHANGED);
-                inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
-                inpPSKRepHost->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inpPSKRepHost
-              { inpPSKRepPort = new Fl_Input2(425, 191, 60, 24, _("Port:"));
-                inpPSKRepPort->tooltip(_("Using UDP port #"));
-                inpPSKRepPort->box(FL_DOWN_BOX);
-                inpPSKRepPort->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                inpPSKRepPort->selection_color((Fl_Color)FL_SELECTION_COLOR);
-                inpPSKRepPort->labeltype(FL_NORMAL_LABEL);
-                inpPSKRepPort->labelfont(0);
-                inpPSKRepPort->labelsize(14);
-                inpPSKRepPort->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                inpPSKRepPort->callback((Fl_Callback*)cb_inpPSKRepPort);
-                inpPSKRepPort->align(FL_ALIGN_LEFT);
-                inpPSKRepPort->when(FL_WHEN_CHANGED);
-                inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
-                inpPSKRepPort->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inpPSKRepPort
-              { btnPSKRepInit = new Fl_Button(405, 236, 80, 24, _("Initialize"));
-                btnPSKRepInit->tooltip(_("Initialize the socket client"));
-                btnPSKRepInit->callback((Fl_Callback*)cb_btnPSKRepInit);
-              } // Fl_Button* btnPSKRepInit
-              { boxPSKRepMsg = new Fl_Box(15, 220, 300, 48, _("<PSK Reporter error message>"));
-                boxPSKRepMsg->labelfont(2);
-                boxPSKRepMsg->label(0);
-              } // Fl_Box* boxPSKRepMsg
-              o->end();
-            } // Fl_Group* o
-            tabSpot->end();
-          } // Fl_Group* tabSpot
-          { tabMacros = new Fl_Group(0, 50, 500, 320, _("Macros"));
-            tabMacros->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 76);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(15, 70, 274, 20, _("Load last used macro file on startup"));
-                btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
-                btnUseLastMacro->down_box(FL_DOWN_BOX);
-                btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
-                o->value(progdefaults.UseLastMacro);
-              } // Fl_Check_Button* btnUseLastMacro
-              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(15, 99, 274, 20, _("Display macro filename on startup"));
-                btnDisplayMacroFilename->tooltip(_("The filename is written to the RX text area"));
-                btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
-                btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);
-                o->value(progdefaults.DisplayMacroFilename);
-              } // Fl_Check_Button* btnDisplayMacroFilename
-              o->end();
-            } // Fl_Group* o
-            tabMacros->end();
-          } // Fl_Group* tabMacros
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
             tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 51);
@@ -6094,63 +5989,61 @@ d frequency"));
             } // Fl_Group* o
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
-          { tabFileExtraction = new Fl_Group(0, 50, 500, 320, _("Text Capture"));
-            tabFileExtraction->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 119, _("Auto Extract files from rx stream"));
+          { tabNBEMS = new Fl_Group(0, 50, 500, 320, _("NBEMS"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 75, _("NBEMS data file interface"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Box* o = new Fl_Box(13, 80, 467, 60, _("0\n1\n2"));
-                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                o->label(txtWrapInfo);
-              } // Fl_Box* o
-              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(19, 145, 227, 20, _("Enable detection && extraction"));
-                chkAutoExtract->tooltip(_("Extract files for use with external \"wrap\" program"));
+              { Fl_Check_Button* o = chkAutoExtract = new Fl_Check_Button(25, 95, 75, 20, _("Enable"));
+                chkAutoExtract->tooltip(_("Extract files for use with external \"wrap / flmsg\" program"));
                 chkAutoExtract->down_box(FL_DOWN_BOX);
                 chkAutoExtract->callback((Fl_Callback*)cb_chkAutoExtract);
                 o->value(progdefaults.autoextract);
               } // Fl_Check_Button* chkAutoExtract
-              { Fl_Check_Button* o = chkStartFlmsg = new Fl_Check_Button(261, 145, 227, 20, _("Auto open wrap folder"));
-                chkStartFlmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
-                chkStartFlmsg->down_box(FL_DOWN_BOX);
-                chkStartFlmsg->callback((Fl_Callback*)cb_chkStartFlmsg);
-                o->value(progdefaults.open_flmsg);
-              } // Fl_Check_Button* chkStartFlmsg
+              { Fl_Check_Button* o = chk_open_wrap_folder = new Fl_Check_Button(259, 95, 146, 20, _("Open message folder"));
+                chk_open_wrap_folder->tooltip(_("Opens NBEMS file folder upon successful capture"));
+                chk_open_wrap_folder->down_box(FL_DOWN_BOX);
+                chk_open_wrap_folder->callback((Fl_Callback*)cb_chk_open_wrap_folder);
+                o->value(progdefaults.open_nbems_folder);
+              } // Fl_Check_Button* chk_open_wrap_folder
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 180, 490, 109, _("Capture rx text to external file"));
+            { Fl_Group* o = new Fl_Group(5, 136, 490, 95, _("flmsg specific"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(136, 260, 175, 20, _("Enable rx text stream"));
-                chkRxStream->tooltip(_("Send rx text to file: textout.txt"));
-                chkRxStream->down_box(FL_DOWN_BOX);
-                chkRxStream->callback((Fl_Callback*)cb_chkRxStream);
-                o->value(progdefaults.speak);
-              } // Fl_Check_Button* chkRxStream
-              { Fl_Box* o = new Fl_Box(20, 203, 465, 60, _("0\n1\n2"));
-                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                o->label(txtTalkInfo);
-              } // Fl_Box* o
+              { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(25, 163, 136, 20, _("Open with flmsg"));
+                chk_open_flmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
+                chk_open_flmsg->down_box(FL_DOWN_BOX);
+                chk_open_flmsg->callback((Fl_Callback*)cb_chk_open_flmsg);
+                o->value(progdefaults.open_flmsg);
+              } // Fl_Check_Button* chk_open_flmsg
+              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(57, 194, 330, 24, _("flmsg:"));
+                txt_flmsg_pathname->tooltip(_("Enter full path-filename for flmsg"));
+                txt_flmsg_pathname->box(FL_DOWN_BOX);
+                txt_flmsg_pathname->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                txt_flmsg_pathname->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                txt_flmsg_pathname->labeltype(FL_NORMAL_LABEL);
+                txt_flmsg_pathname->labelfont(0);
+                txt_flmsg_pathname->labelsize(14);
+                txt_flmsg_pathname->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                txt_flmsg_pathname->callback((Fl_Callback*)cb_txt_flmsg_pathname);
+                txt_flmsg_pathname->align(FL_ALIGN_LEFT);
+                txt_flmsg_pathname->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.flmsg_pathname.c_str());
+              } // Fl_Input2* txt_flmsg_pathname
+              { btn_select_flmsg = new Fl_Button(390, 194, 100, 24, _("Locate flmsg"));
+                btn_select_flmsg->tooltip(_("Locate flmsg executable"));
+                btn_select_flmsg->callback((Fl_Callback*)cb_btn_select_flmsg);
+              } // Fl_Button* btn_select_flmsg
+              { Fl_Check_Button* o = chk_open_flmsg_print = new Fl_Check_Button(259, 163, 136, 20, _("Open in browser"));
+                chk_open_flmsg_print->tooltip(_("Autostart flmsg / browser upon detection of compatible file"));
+                chk_open_flmsg_print->down_box(FL_DOWN_BOX);
+                chk_open_flmsg_print->callback((Fl_Callback*)cb_chk_open_flmsg_print);
+                o->value(progdefaults.open_flmsg_print);
+              } // Fl_Check_Button* chk_open_flmsg_print
               o->end();
             } // Fl_Group* o
-            { grpTalker = new Fl_Group(5, 291, 490, 73, _("Talker Socket (MS only)"));
-              grpTalker->box(FL_ENGRAVED_FRAME);
-              grpTalker->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { btnConnectTalker = new Fl_Light_Button(31, 311, 74, 20, _("Talker"));
-                btnConnectTalker->selection_color((Fl_Color)FL_DARK_GREEN);
-                btnConnectTalker->callback((Fl_Callback*)cb_btnConnectTalker);
-              } // Fl_Light_Button* btnConnectTalker
-              { Fl_Box* o = new Fl_Box(110, 311, 345, 20, _("Connect/disconnect to Talker socket server"));
-                o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
-              } // Fl_Box* o
-              { Fl_Check_Button* o = btn_auto_talk = new Fl_Check_Button(30, 339, 391, 15, _("Auto connect when fldigi opens (server must be up)"));
-                btn_auto_talk->down_box(FL_DOWN_BOX);
-                btn_auto_talk->callback((Fl_Callback*)cb_btn_auto_talk);
-                o->value(progdefaults.auto_talk);
-              } // Fl_Check_Button* btn_auto_talk
-              grpTalker->end();
-            } // Fl_Group* grpTalker
-            tabFileExtraction->end();
-          } // Fl_Group* tabFileExtraction
+            tabNBEMS->end();
+          } // Fl_Group* tabNBEMS
           { tabPskmail = new Fl_Group(0, 50, 500, 320, _("Pskmail"));
             tabPskmail->align(FL_ALIGN_TOP_LEFT);
             tabPskmail->hide();
@@ -6258,6 +6151,176 @@ d frequency"));
             } // Fl_Group* o
             tabPskmail->end();
           } // Fl_Group* tabPskmail
+          { tabSpot = new Fl_Group(0, 50, 500, 320, _("Spotting"));
+            tabSpot->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 215, _("PSK Reporter"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { btnPSKRepAuto = new Fl_Check_Button(15, 91, 324, 20, _("Automatically spot callsigns in decoded text"));
+                btnPSKRepAuto->tooltip(_("Parse all incoming text"));
+                btnPSKRepAuto->down_box(FL_DOWN_BOX);
+                btnPSKRepAuto->callback((Fl_Callback*)cb_btnPSKRepAuto);
+                btnPSKRepAuto->value(progdefaults.pskrep_auto);
+              } // Fl_Check_Button* btnPSKRepAuto
+              { btnPSKRepLog = new Fl_Check_Button(15, 121, 327, 20, _("Send reception report when logging a QSO"));
+                btnPSKRepLog->tooltip(_("Send report only when QSO is logged"));
+                btnPSKRepLog->down_box(FL_DOWN_BOX);
+                btnPSKRepLog->callback((Fl_Callback*)cb_btnPSKRepLog);
+                btnPSKRepLog->value(progdefaults.pskrep_log);
+              } // Fl_Check_Button* btnPSKRepLog
+              { btnPSKRepQRG = new Fl_Check_Button(15, 151, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
+                btnPSKRepQRG->tooltip(_("Include the transmit frequency"));
+                btnPSKRepQRG->down_box(FL_DOWN_BOX);
+                btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
+                btnPSKRepQRG->value(progdefaults.pskrep_qrg);
+              } // Fl_Check_Button* btnPSKRepQRG
+              { inpPSKRepHost = new Fl_Input2(56, 191, 220, 24, _("Host:"));
+                inpPSKRepHost->tooltip(_("To whom the connection is made"));
+                inpPSKRepHost->box(FL_DOWN_BOX);
+                inpPSKRepHost->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                inpPSKRepHost->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                inpPSKRepHost->labeltype(FL_NORMAL_LABEL);
+                inpPSKRepHost->labelfont(0);
+                inpPSKRepHost->labelsize(14);
+                inpPSKRepHost->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                inpPSKRepHost->callback((Fl_Callback*)cb_inpPSKRepHost);
+                inpPSKRepHost->align(FL_ALIGN_LEFT);
+                inpPSKRepHost->when(FL_WHEN_CHANGED);
+                inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
+                inpPSKRepHost->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Input2* inpPSKRepHost
+              { inpPSKRepPort = new Fl_Input2(425, 191, 60, 24, _("Port:"));
+                inpPSKRepPort->tooltip(_("Using UDP port #"));
+                inpPSKRepPort->box(FL_DOWN_BOX);
+                inpPSKRepPort->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                inpPSKRepPort->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                inpPSKRepPort->labeltype(FL_NORMAL_LABEL);
+                inpPSKRepPort->labelfont(0);
+                inpPSKRepPort->labelsize(14);
+                inpPSKRepPort->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                inpPSKRepPort->callback((Fl_Callback*)cb_inpPSKRepPort);
+                inpPSKRepPort->align(FL_ALIGN_LEFT);
+                inpPSKRepPort->when(FL_WHEN_CHANGED);
+                inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
+                inpPSKRepPort->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Input2* inpPSKRepPort
+              { btnPSKRepInit = new Fl_Button(405, 236, 80, 24, _("Initialize"));
+                btnPSKRepInit->tooltip(_("Initialize the socket client"));
+                btnPSKRepInit->callback((Fl_Callback*)cb_btnPSKRepInit);
+              } // Fl_Button* btnPSKRepInit
+              { boxPSKRepMsg = new Fl_Box(15, 220, 300, 48, _("<PSK Reporter error message>"));
+                boxPSKRepMsg->labelfont(2);
+                boxPSKRepMsg->label(0);
+              } // Fl_Box* boxPSKRepMsg
+              o->end();
+            } // Fl_Group* o
+            tabSpot->end();
+          } // Fl_Group* tabSpot
+          { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Value_Input2* o = valCWsweetspot = new Fl_Value_Input2(42, 71, 65, 20, _("CW"));
+                valCWsweetspot->tooltip(_("Default CW tracking point"));
+                valCWsweetspot->box(FL_DOWN_BOX);
+                valCWsweetspot->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                valCWsweetspot->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                valCWsweetspot->labeltype(FL_NORMAL_LABEL);
+                valCWsweetspot->labelfont(0);
+                valCWsweetspot->labelsize(14);
+                valCWsweetspot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valCWsweetspot->minimum(200);
+                valCWsweetspot->maximum(4000);
+                valCWsweetspot->step(1);
+                valCWsweetspot->value(1000);
+                valCWsweetspot->callback((Fl_Callback*)cb_valCWsweetspot);
+                valCWsweetspot->align(FL_ALIGN_LEFT);
+                valCWsweetspot->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.CWsweetspot);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Value_Input2* valCWsweetspot
+              { Fl_Value_Input2* o = valRTTYsweetspot = new Fl_Value_Input2(220, 71, 65, 20, _("RTTY"));
+                valRTTYsweetspot->tooltip(_("Default RTTY tracking point"));
+                valRTTYsweetspot->box(FL_DOWN_BOX);
+                valRTTYsweetspot->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                valRTTYsweetspot->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                valRTTYsweetspot->labeltype(FL_NORMAL_LABEL);
+                valRTTYsweetspot->labelfont(0);
+                valRTTYsweetspot->labelsize(14);
+                valRTTYsweetspot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valRTTYsweetspot->minimum(200);
+                valRTTYsweetspot->maximum(4000);
+                valRTTYsweetspot->step(1);
+                valRTTYsweetspot->value(1000);
+                valRTTYsweetspot->callback((Fl_Callback*)cb_valRTTYsweetspot);
+                valRTTYsweetspot->align(FL_ALIGN_LEFT);
+                valRTTYsweetspot->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.RTTYsweetspot);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Value_Input2* valRTTYsweetspot
+              { Fl_Value_Input2* o = valPSKsweetspot = new Fl_Value_Input2(420, 71, 65, 20, _("PSK et al."));
+                valPSKsweetspot->tooltip(_("Default for all other modems"));
+                valPSKsweetspot->box(FL_DOWN_BOX);
+                valPSKsweetspot->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                valPSKsweetspot->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                valPSKsweetspot->labeltype(FL_NORMAL_LABEL);
+                valPSKsweetspot->labelfont(0);
+                valPSKsweetspot->labelsize(14);
+                valPSKsweetspot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPSKsweetspot->minimum(200);
+                valPSKsweetspot->maximum(4000);
+                valPSKsweetspot->step(1);
+                valPSKsweetspot->value(1000);
+                valPSKsweetspot->callback((Fl_Callback*)cb_valPSKsweetspot);
+                valPSKsweetspot->align(FL_ALIGN_LEFT);
+                valPSKsweetspot->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PSKsweetspot);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Value_Input2* valPSKsweetspot
+              { Fl_Check_Button* o = btnStartAtSweetSpot = new Fl_Check_Button(15, 101, 348, 20, _("Always start new modems at these frequencies"));
+                btnStartAtSweetSpot->tooltip(_("ON - start at default\nOFF - keep current wf cursor position"));
+                btnStartAtSweetSpot->down_box(FL_DOWN_BOX);
+                btnStartAtSweetSpot->value(1);
+                btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
+                o->value(progdefaults.StartAtSweetSpot);
+              } // Fl_Check_Button* btnStartAtSweetSpot
+              o->end();
+            } // Fl_Group* o
+            tabSweetSpot->end();
+          } // Fl_Group* tabSweetSpot
+          { tabText_IO = new Fl_Group(0, 50, 500, 320, _("Text i/o"));
+            tabText_IO->hide();
+            { grpTalker = new Fl_Group(5, 117, 490, 73, _("Talker Socket (MS only)"));
+              grpTalker->box(FL_ENGRAVED_FRAME);
+              grpTalker->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { btnConnectTalker = new Fl_Light_Button(31, 137, 74, 20, _("Talker"));
+                btnConnectTalker->selection_color((Fl_Color)FL_DARK_GREEN);
+                btnConnectTalker->callback((Fl_Callback*)cb_btnConnectTalker);
+              } // Fl_Light_Button* btnConnectTalker
+              { Fl_Box* o = new Fl_Box(110, 137, 345, 20, _("Connect/disconnect to Talker socket server"));
+                o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+              } // Fl_Box* o
+              { Fl_Check_Button* o = btn_auto_talk = new Fl_Check_Button(31, 165, 391, 15, _("Auto connect when fldigi opens (server must be up)"));
+                btn_auto_talk->down_box(FL_DOWN_BOX);
+                btn_auto_talk->callback((Fl_Callback*)cb_btn_auto_talk);
+                o->value(progdefaults.auto_talk);
+              } // Fl_Check_Button* btn_auto_talk
+              grpTalker->end();
+            } // Fl_Group* grpTalker
+            { Fl_Group* o = new Fl_Group(5, 57, 490, 56, _("Capture rx text to external file"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = chkRxStream = new Fl_Check_Button(31, 84, 175, 20, _("Enable rx text stream"));
+                chkRxStream->tooltip(_("Send rx text to file: textout.txt"));
+                chkRxStream->down_box(FL_DOWN_BOX);
+                chkRxStream->callback((Fl_Callback*)cb_chkRxStream);
+                o->value(progdefaults.speak);
+              } // Fl_Check_Button* chkRxStream
+              o->end();
+            } // Fl_Group* o
+            tabText_IO->end();
+          } // Fl_Group* tabText_IO
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();

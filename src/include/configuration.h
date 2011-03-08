@@ -607,8 +607,17 @@
               "Enable detection and extraction of \"wrapped\" text",                    \
               true)                                                                     \
         ELEM_(bool, open_flmsg, "OPEN_FLMSG",                                           \
-              "Open flmsg upon receipt of an autoextract file",                         \
+              "Open flmsg with the autoextract file",                                   \
               true)                                                                     \
+        ELEM_(bool, open_flmsg_print, "OPEN_FLMSG_PRINT",                               \
+              "Open flmsg with the autoextract file\nprint to browser\nclose flmsg",    \
+              false)                                                                    \
+        ELEM_(bool, open_nbems_folder, "OPEN_NBEMS_FOLDER",                             \
+              "Open NBEMS folder upon receipt of an autoextract file",                  \
+              true)                                                                     \
+        ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
+              "Full pathname to the flmsg executable",                                  \
+              "")                                                                       \
         ELEM_(bool, speak, "SPEAK",                                                     \
               "Capture text to file 'talk/textout.txt'",                                \
               false)                                                                    \
