@@ -24,5 +24,6 @@
 
 extern const char *txtWrapInfo;
 extern void rx_extract_add(int c);
+extern void select_flmsg_pathname();
 
 #endif
