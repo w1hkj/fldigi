@@ -1,6 +1,15 @@
+2011-03-07  David Freese  <w1hkj@w1hkj.com>
+
+	e7a403a: Wrap File reception
+	29c6fc0: EXEC win32 macro tag
+
+2011-03-06  Stelios Bounanos  <vcs@enotty.net>
+
+	3114075: Fix socket/getaddrinfo support
 
 
 =Version 3.21.4=
+
 
 2011-03-01  David Freese  <w1hkj@w1hkj.com>
 
