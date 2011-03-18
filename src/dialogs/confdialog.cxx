@@ -2602,10 +2602,6 @@ Fl_Check_Button *chk_open_flmsg=(Fl_Check_Button *)0;
 
 static void cb_chk_open_flmsg(Fl_Check_Button* o, void*) {
   progdefaults.open_flmsg = o->value();
-if (o->value()) {
-  chk_open_flmsg_print->value(0);
-  progdefaults.open_flmsg_print = false;
-}
 progdefaults.changed = true;
 }
 
@@ -2626,10 +2622,6 @@ Fl_Check_Button *chk_open_flmsg_print=(Fl_Check_Button *)0;
 
 static void cb_chk_open_flmsg_print(Fl_Check_Button* o, void*) {
   progdefaults.open_flmsg_print = o->value();
-if (o->value()) {
-  chk_open_flmsg->value(0);
-  progdefaults.open_flmsg = false;
-}
 progdefaults.changed = true;
 }
 
@@ -3273,6 +3265,7 @@ ab and newline are automatically included."));
             tabBrowser->end();
           } // Fl_Group* tabBrowser
           { tabMBars = new Fl_Group(0, 50, 500, 320, _("Macros"));
+            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(2, 250, 496, 40);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(12, 259, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -3584,7 +3577,6 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabRxText = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
-            tabRxText->hide();
             { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(27, 75, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
               btn_rx_lowercase->down_box(FL_DOWN_BOX);
               btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
@@ -5975,7 +5967,6 @@ d frequency"));
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5990,6 +5981,7 @@ d frequency"));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabNBEMS = new Fl_Group(0, 50, 500, 320, _("NBEMS"));
+            tabNBEMS->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75, _("NBEMS data file interface"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6007,11 +5999,11 @@ d frequency"));
               } // Fl_Check_Button* chk_open_wrap_folder
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 136, 490, 95, _("flmsg specific"));
+            { Fl_Group* o = new Fl_Group(5, 136, 490, 95, _("Reception of flmsg file"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
               { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(25, 163, 136, 20, _("Open with flmsg"));
-                chk_open_flmsg->tooltip(_("Autostart flmsg upon detection of compatible file"));
+                chk_open_flmsg->tooltip(_("Open message with flmsg"));
                 chk_open_flmsg->down_box(FL_DOWN_BOX);
                 chk_open_flmsg->callback((Fl_Callback*)cb_chk_open_flmsg);
                 o->value(progdefaults.open_flmsg);
@@ -6035,7 +6027,7 @@ d frequency"));
                 btn_select_flmsg->callback((Fl_Callback*)cb_btn_select_flmsg);
               } // Fl_Button* btn_select_flmsg
               { Fl_Check_Button* o = chk_open_flmsg_print = new Fl_Check_Button(259, 163, 136, 20, _("Open in browser"));
-                chk_open_flmsg_print->tooltip(_("Autostart flmsg / browser upon detection of compatible file"));
+                chk_open_flmsg_print->tooltip(_("Open file with default browser"));
                 chk_open_flmsg_print->down_box(FL_DOWN_BOX);
                 chk_open_flmsg_print->callback((Fl_Callback*)cb_chk_open_flmsg_print);
                 o->value(progdefaults.open_flmsg_print);
