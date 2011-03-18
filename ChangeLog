@@ -1,4 +1,17 @@
-2011-03-07  David Freese  <w1hkj@w1hkj.com>
+
+
+=Version 3.21.6=
+
+2011-03-18  Pavel Milanes Costa  <co7wt@frcuba.co.cu>
+
+	a4ba568: es.po update
+
+2011-03-18  David Freese  <w1hkj@w1hkj.com>
+
+	3d4ea9c: flmsg auto start
+
+
+=Version 3.21.5=
 
 	e7a403a: Wrap File reception
 	29c6fc0: EXEC win32 macro tag
