@@ -470,7 +470,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMBars {
             label Macros open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {2 250 496 40} box ENGRAVED_FRAME
@@ -862,7 +862,7 @@ WF_UI();}
           }
           Fl_Group tabRxText {
             label {Rx Text} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Check_Button btn_rx_lowercase {
               label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
@@ -3238,7 +3238,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 51} box ENGRAVED_FRAME align 21
@@ -3254,7 +3254,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNBEMS {
             label NBEMS open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
@@ -3276,18 +3276,14 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {
-              label {flmsg specific} open
+              label {Reception of flmsg file} open
               xywh {5 136 490 95} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chk_open_flmsg {
                 label {Open with flmsg}
                 callback {progdefaults.open_flmsg = o->value();
-if (o->value()) {
-  chk_open_flmsg_print->value(0);
-  progdefaults.open_flmsg_print = false;
-}
 progdefaults.changed = true;}
-                tooltip {Autostart flmsg upon detection of compatible file} xywh {25 163 136 20} down_box DOWN_BOX
+                tooltip {Open message with flmsg} xywh {25 163 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg);}
               }
               Fl_Input txt_flmsg_pathname {
@@ -3306,12 +3302,8 @@ progdefaults.changed = true;}
               Fl_Check_Button chk_open_flmsg_print {
                 label {Open in browser}
                 callback {progdefaults.open_flmsg_print = o->value();
-if (o->value()) {
-  chk_open_flmsg->value(0);
-  progdefaults.open_flmsg = false;
-}
 progdefaults.changed = true;}
-                tooltip {Autostart flmsg / browser upon detection of compatible file} xywh {259 163 136 20} down_box DOWN_BOX
+                tooltip {Open file with default browser} xywh {259 163 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg_print);}
               }
             }

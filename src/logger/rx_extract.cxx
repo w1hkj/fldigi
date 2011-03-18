@@ -125,7 +125,9 @@ void rx_extract_add(int c)
 				!progdefaults.flmsg_pathname.empty()) {
 				string cmd = progdefaults.flmsg_pathname;
 #ifdef __MINGW32__
-				if (progdefaults.open_flmsg_print)
+				if (progdefaults.open_flmsg_print && progdefaults.open_flmsg)
+					cmd.append(" --b");
+				else if (progdefaults.open_flmsg_print)
 					cmd.append(" --p");
 				cmd.append(" \"").append(outfilename).append("\"");
 				char *cmdstr = strdup(cmd.c_str());
@@ -143,8 +145,10 @@ void rx_extract_add(int c)
 				free (cmdstr);
 #else
 				string params = "";
-				if (progdefaults.open_flmsg_print)
-					params = "--p";
+				if (progdefaults.open_flmsg_print && progdefaults.open_flmsg)
+					params = " --b";
+				else if (progdefaults.open_flmsg_print)
+					params = " --p";
 				switch (fork()) {
 				case 0:
 #  ifndef NDEBUG
