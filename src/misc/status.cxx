@@ -190,7 +190,6 @@ void status::saveLastState()
     }
 	mainW = fl_digi_main->w();
 	mainH = fl_digi_main->h();
-	RxTextHeight = (ReceiveText->h() * 100) / text_panel->h();//VTgroup->h();
 
 	carrier = wf->Carrier();
 	mag = wf->Mag();
@@ -211,10 +210,20 @@ void status::saveLastState()
 	logbook_col_4 = wBrowser->columnWidth(4);
 	logbook_col_5 = wBrowser->columnWidth(5);
 
-	quick_entry = ReceiveText->get_quick_entry();
-	rx_scroll_hints = ReceiveText->get_scroll_hints();
-	rx_word_wrap = ReceiveText->get_word_wrap();
-	tx_word_wrap = TransmitText->get_word_wrap();
+
+	if (!bWF_only) {
+		RxTextHeight = (ReceiveText->h() * 100) / text_panel->h();//VTgroup->h();
+		quick_entry = ReceiveText->get_quick_entry();
+		rx_scroll_hints = ReceiveText->get_scroll_hints();
+		rx_word_wrap = ReceiveText->get_word_wrap();
+		tx_word_wrap = TransmitText->get_word_wrap();
+
+		tile_w = text_panel->w();
+		tile_y = ReceiveText->h();
+		tile_h = text_panel->h();
+		if (text_panel->w() != ReceiveText->w())
+			tile_x = mvgroup->w();
+	}
 
 	VIEWERvisible = dlgViewer->visible();
 	VIEWERnchars = brwsViewer->numchars();
@@ -233,14 +242,6 @@ void status::saveLastState()
 		scopeW = scopeview->w();
 		scopeH = scopeview->h();
 	}
-
-
-	tile_w = text_panel->w();
-	tile_y = ReceiveText->h();
-	tile_h = text_panel->h();
-	if (text_panel->w() != ReceiveText->w())
-		tile_x = mvgroup->w();
-
 
 	contestiatones = progdefaults.contestiatones;
 	contestiabw = progdefaults.contestiabw;
