@@ -325,10 +325,8 @@ int cb_qso_opMODE()
 #endif
 	if (progdefaults.chkUSEMEMMAPis)
 		rigMEM_setmode(qso_opMODE->value());
-	if (progdefaults.chkUSERIGCATis)
+	else
 		rigCAT_setmode(qso_opMODE->value());
-//	if (progdefaults.chkUSEXMLRPCis)
-//		MilliSleep(100);
 	return 0;
 }
 
