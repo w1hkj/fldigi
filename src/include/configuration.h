@@ -70,7 +70,7 @@
               +20.0)                                                                    \
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
               "RSID detector searches the entire passband",                             \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(int, rsid_squelch, "RSIDSQUELCH",                                         \
               "RSID detection opens squelch for nn seconds",                            \
               5)                                                                        \
@@ -489,7 +489,7 @@
               4)                                                                        \
         ELEM_(bool, mt63_at500, "MT63AT500",                                            \
               "Always transmit lowest tone at 500 Hz",                                  \
-              true)                                                                     \
+              false)                                                                    \
         /* Waterfall & UI */                                                            \
         ELEM_(uchar, red, "", "",  0)                                                   \
         ELEM_(uchar, green, "", "",  255)                                               \
@@ -611,10 +611,10 @@
               true)                                                                     \
         ELEM_(bool, open_flmsg_print, "OPEN_FLMSG_PRINT",                               \
               "Open flmsg with the autoextract file\nprint to browser\nclose flmsg",    \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, open_nbems_folder, "OPEN_NBEMS_FOLDER",                             \
               "Open NBEMS folder upon receipt of an autoextract file",                  \
-              true)                                                                     \
+              false)                                                                    \
         ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
               "Full pathname to the flmsg executable",                                  \
               "")                                                                       \
@@ -1089,13 +1089,13 @@
               FL_BACKGROUND2_COLOR)                                                     \
         /* Signal Viewer */                                                             \
         ELEM_(bool, VIEWERascend, "VIEWERASCEND",                                       \
-              "Low frequency on bottm of viewer",                                       \
+              "Low frequency on bottom of viewer",                                      \
               true)                                                                     \
         ELEM_(bool, VIEWERmarquee, "VIEWERMARQUEE",                                     \
               "Signal Viewer text continuous scrolling",                                \
               true)                                                                     \
         ELEM_(bool, VIEWERsort, "VIEWERSORT",                                           \
-              "Signal Viewer sort after channel changes",                               \
+              "Signal Viewer sort after channel changes- unused",                       \
               false)                                                                    \
         ELEM_(bool, VIEWERhistory, "VIEWERHISTORY",                                     \
               "Signal Viewer playback history on select",                               \
