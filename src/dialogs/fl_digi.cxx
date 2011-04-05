@@ -412,6 +412,8 @@ void cb_oliviaB(Fl_Widget *w, void *arg);
 void cb_oliviaC(Fl_Widget *w, void *arg);
 void cb_oliviaD(Fl_Widget *w, void *arg);
 void cb_oliviaE(Fl_Widget *w, void *arg);
+void cb_oliviaF(Fl_Widget *w, void *arg);
+void cb_oliviaG(Fl_Widget *w, void *arg);
 void cb_oliviaCustom(Fl_Widget *w, void *arg);
 
 void cb_contestiaA(Fl_Widget *w, void *arg);
@@ -528,10 +530,12 @@ Fl_Menu_Item quick_change_throb[] = {
 
 Fl_Menu_Item quick_change_olivia[] = {
 	{ "8/250", 0, cb_oliviaA, (void *)MODE_OLIVIA },
+	{ "4/500", 0, cb_oliviaF, (void *)MODE_OLIVIA },
 	{ "8/500", 0, cb_oliviaB, (void *)MODE_OLIVIA },
 	{ "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA },
 	{ "8/1000", 0, cb_oliviaD, (void *)MODE_OLIVIA },
 	{ "32/1000", 0, cb_oliviaE, (void *)MODE_OLIVIA },
+	{ "64/2000", 0, cb_oliviaG, (void *)MODE_OLIVIA },
 	{ _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA },
 	{ 0 }
 };
@@ -621,6 +625,22 @@ void cb_oliviaE(Fl_Widget *w, void *arg)
 {
 	progdefaults.oliviatones = 4;
 	progdefaults.oliviabw = 3;
+	set_olivia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_oliviaF(Fl_Widget *w, void *arg)
+{
+	progdefaults.oliviatones = 1;
+	progdefaults.oliviabw = 2;
+	set_olivia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_oliviaG(Fl_Widget *w, void *arg)
+{
+	progdefaults.oliviatones = 5;
+	progdefaults.oliviabw = 4;
 	set_olivia_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -2928,11 +2948,13 @@ Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { OLIVIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "8/250", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "8/250", 0, cb_oliviaA, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/500", 0, cb_oliviaF, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/1000", 0, cb_oliviaD, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "32/1000", 0, cb_oliviaE, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "64/2000", 0, cb_oliviaG, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -4711,10 +4733,12 @@ Fl_Menu_Item alt_menu_[] = {
 
 {"Olivia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/250", 0, cb_oliviaA, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "4/500", 0, cb_oliviaF, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/500", 0, cb_oliviaB, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "16/500", 0, cb_oliviaC, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/1000", 0, cb_oliviaD, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "32/1000", 0, cb_oliviaE, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "64/2000", 0, cb_oliviaG, (void *)MODE_OLIVIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_oliviaCustom, (void *)MODE_OLIVIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
