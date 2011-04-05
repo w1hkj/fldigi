@@ -1,8 +1,14 @@
 
 
-=Version 3.21.7=
+=Version 3.21.8=
 
-2011-03-20  David Freese  <w1hkj@w1hkj.com>
+2011-03-23  David Freese  <w1hkj@w1hkj.com>
+
+	c3aacd3: Config defaults
+	3fb1a42: No rig mode selection
+
+
+=Version 3.21.7=
 
 	c200173: wo save status
 
