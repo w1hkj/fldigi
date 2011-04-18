@@ -1,8 +1,10 @@
+2011-04-17  David Freese  <w1hkj@w1hkj.com>
+
+	625c8f9: Spot-notifier
+	fd48d9a: Olivia tone/bw choices
 
 
 =Version 3.21.8=
-
-2011-03-23  David Freese  <w1hkj@w1hkj.com>
 
 	c3aacd3: Config defaults
 	3fb1a42: No rig mode selection
