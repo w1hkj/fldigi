@@ -6415,13 +6415,13 @@ d frequency"));
             o->value(progdefaults.QRZ == QRZHTML);
           } // Fl_Round_Button* btnQRZonline
           { Fl_Round_Button* o = btnHAMCALLonline = new Fl_Round_Button(25, 106, 337, 20, _("HamCall online via default Internet Browser"));
-            btnHAMCALLonline->tooltip(_("Vist Hamcall web site"));
+            btnHAMCALLonline->tooltip(_("Visit Hamcall web site"));
             btnHAMCALLonline->down_box(FL_DOWN_BOX);
             btnHAMCALLonline->callback((Fl_Callback*)cb_btnHAMCALLonline);
             o->value(progdefaults.QRZ == HAMCALLHTML);
           } // Fl_Round_Button* btnHAMCALLonline
           { Fl_Round_Button* o = btnCALLOOK = new Fl_Round_Button(25, 137, 337, 20, _("Callook.info lookup (US callsigns only)"));
-            btnCALLOOK->tooltip(_("Vist Hamcall web site"));
+            btnCALLOOK->tooltip(_("Visit Hamcall web site"));
             btnCALLOOK->down_box(FL_DOWN_BOX);
             btnCALLOOK->callback((Fl_Callback*)cb_btnCALLOOK);
             o->value(progdefaults.QRZ == CALLOOK);

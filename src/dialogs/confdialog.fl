@@ -3638,7 +3638,7 @@ progdefaults.changed = true;}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = HAMCALLHTML;
 progdefaults.changed = true;}
-            tooltip {Vist Hamcall web site} xywh {25 106 337 20} down_box DOWN_BOX
+            tooltip {Visit Hamcall web site} xywh {25 106 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == HAMCALLHTML);}
           }
           Fl_Round_Button btnCALLOOK {
@@ -3646,7 +3646,7 @@ progdefaults.changed = true;}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = CALLOOK;
 progdefaults.changed = true;}
-            tooltip {Vist Hamcall web site} xywh {25 137 337 20} down_box DOWN_BOX
+            tooltip {Visit Hamcall web site} xywh {25 137 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == CALLOOK);}
           }
         }
