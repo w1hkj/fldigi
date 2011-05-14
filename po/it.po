@@ -4400,7 +4400,7 @@ msgid "HamCall online via default Internet Browser"
 msgstr "Accesso online a Hamcall tramite browser predefinito"
 
 #: src/dialogs/confdialog.cxx:6363 src/dialogs/confdialog.cxx:6369
-msgid "Vist Hamcall web site"
+msgid "Visit Hamcall web site"
 msgstr "Visita il sito web Hamcall"
 
 #: src/dialogs/confdialog.cxx:6368

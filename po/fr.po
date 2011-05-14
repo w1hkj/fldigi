@@ -1412,7 +1412,7 @@ msgstr ""
 
 #: src/waterfall/waterfall.cxx:1524
 msgid "Waterfall drop speed"
-msgstr "Vistesse chute d'eau"
+msgstr "Visitesse chute d'eau"
 
 #: src/waterfall/waterfall.cxx:1534
 msgid "Adjust cursor frequency"
@@ -4325,7 +4325,7 @@ msgid "HamCall online via default Internet Browser"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:6363 src/dialogs/confdialog.cxx:6369
-msgid "Vist Hamcall web site"
+msgid "Visit Hamcall web site"
 msgstr ""
 
 #: src/dialogs/confdialog.cxx:6368
