@@ -39,6 +39,11 @@
 #define	THOR_POLY1	0x6d
 #define	THOR_POLY2	0x4f
 
+// NASA Galileo coefficients for viterbi encode/decode algorithms
+#define	GALILEO_K	15
+#define	GALILEO_POLY1	046321
+#define	GALILEO_POLY2	051271
+
 //#include "mfskvaricode.h"
 #include "interleave.h"
 #include "viterbi.h"
@@ -46,8 +51,10 @@
 
 #define THORNUMTONES 18
 #define THORMAXFFTS  8
-#define THORBASEFREQ 500.0
-#define THORFIRSTIF 1000.0
+//#define THORBASEFREQ 500.0
+//#define THORFIRSTIF 1000.0
+#define THORBASEFREQ 1000.0
+#define THORFIRSTIF  1500.0
 
 #define THORSCOPESIZE 64
 

@@ -513,8 +513,9 @@ FL_UNLOCK_D();
 			dispcnt = wfspeed;
 		else if (srate == 11025)
 			dispcnt = wfspeed * 4 / 3;
+		//kl4yfd
 		else
-			dispcnt = wfspeed * 2;
+			dispcnt = wfspeed * 8 / 3;
 	}
 	--dispcnt;
 }

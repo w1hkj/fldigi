@@ -84,8 +84,9 @@ void thor::rx_init()
 void thor::reset_filters()
 {
 // fft filter at first IF frequency
-	fft->create_filter( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
-	                    (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
+	fft->create_filter( 
+		(THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
+		(THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
 
 	for (int i = 0; i < THORMAXFFTS; i++)
 		if (binsfft[i]) {
@@ -93,7 +94,7 @@ void thor::reset_filters()
 			binsfft[i] = 0;
 		}
 		
-	if (slowcpu) {
+	if (slowcpu || samplerate == 22050) {
 		extones = 4;
 		paths = THORSLOWPATHS;
 	} else {
@@ -102,12 +103,17 @@ void thor::reset_filters()
 	}
 	
 	lotone = basetone - extones * doublespaced;
+	if (lotone < 1) lotone = 1;
 	hitone = basetone + THORNUMTONES * doublespaced + extones * doublespaced;
-
 	numbins = hitone - lotone;
 
-	for (int i = 0; i < paths; i++)
+	for (int i = 0; i < paths; i++) {
 		binsfft[i] = new sfft (symlen, lotone, hitone);
+		if (!binsfft[i]) {
+			printf("Thor Arrgh %d\n", i);
+			exit(0);
+		}
+	}
 
 	filter_reset = false;               
 }
@@ -178,6 +184,17 @@ thor::thor(trx_mode md)
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
+// 22.050kHz modes
+	case MODE_THOR85:
+		symlen = 260;
+		doublespaced = 1;
+		samplerate = 22050;
+		break;
+	case MODE_THOR125:
+		symlen = 176;
+		doublespaced = 1;
+		samplerate = 22050;
+		break;
 // 8kHz modes
 	case MODE_THOR4:
 		symlen = 2048;
@@ -205,10 +222,10 @@ thor::thor(trx_mode md)
 	hilbert->init_hilbert(37, 1);
 
 // fft filter at first if frequency
-	fft = new fftfilt( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
-	                   (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate,
-	                   1024 );
-	
+	fft = new fftfilt(
+			(THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
+			(THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate,
+			1024 );
 	basetone = (int)floor(THORBASEFREQ * symlen / samplerate + 0.5);
 
 	slowcpu = progdefaults.slowcpu;
@@ -240,8 +257,14 @@ thor::thor(trx_mode md)
 
 	prev1symbol = prev2symbol = 0;
 
-	Enc	= new encoder (THOR_K, THOR_POLY1, THOR_POLY2);
-	Dec	= new viterbi (THOR_K, THOR_POLY1, THOR_POLY2);
+	if ( mode == MODE_THOR125 || mode == MODE_THOR85) {
+		Enc = new encoder (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
+		Dec = new viterbi (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
+	} else {
+		Enc = new encoder (THOR_K, THOR_POLY1, THOR_POLY2);
+		Dec = new viterbi (THOR_K, THOR_POLY1, THOR_POLY2);
+	}
+
 	Dec->settraceback (45);
 	Dec->setchunksize (1);
 	Txinlv = new interleave (4, INTERLEAVE_FWD); // 4x4x10
@@ -267,6 +290,7 @@ complex thor::mixer(int n, const complex& in)
 		f = frequency - THORFIRSTIF;
 	else
 		f = THORFIRSTIF - THORBASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / paths);
+
 	z.re = cos(phase[n]);
 	z.im = sin(phase[n]);
 	z *= in;

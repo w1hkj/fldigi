@@ -94,13 +94,16 @@ void dominoex::rx_init()
 void dominoex::reset_filters()
 {
 // fft filter at first IF frequency
-	fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
-						(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
+	fft->create_filter( 
+		(FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+		(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
 
-	for (int i = 0; i < MAXFFTS; i++)
+	for (int i = 0; i < MAXFFTS; i++) {
 		if (binsfft[i]) delete binsfft[i];
+		binsfft[i] = 0;
+	}
 
-	if (slowcpu) {
+	if (slowcpu || samplerate == 22050) {
 		extones = 4;
 		paths = 3;
 	} else {
@@ -113,8 +116,13 @@ void dominoex::reset_filters()
 
 	numbins = hitone - lotone;
 
-	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
+	for (int i = 0; i < paths; i++) { //MAXFFTS; i++)
 		binsfft[i] = new sfft (symlen, lotone, hitone);
+		if (!binsfft[i]) {
+			printf("Domino Arrgh %d\n", i);
+			exit(0);
+		}
+	}
 
 	filter_reset = false;
 }
@@ -130,7 +138,6 @@ void dominoex::init()
 		MuPsk_sec2pri_init();
 
 	modem::init();
-//	reset_filters();
 	rx_init();
 
 	set_scope_mode(Digiscope::DOMDATA);
@@ -183,8 +190,11 @@ dominoex::~dominoex()
 {
 	if (hilbert) delete hilbert;
 
-	for (int i = 0; i < paths; i++) {//MAXFFTS; i++) {
-		if (binsfft[i]) delete binsfft[i];
+	for (int i = 0; i < MAXFFTS; i++) { //paths; i++) {//MAXFFTS; i++) {
+		if (binsfft[i]) {
+			delete binsfft[i];
+			binsfft[i] = 0;
+		}
 	}
 
 	for (int i = 0; i < SCOPESIZE; i++) {
@@ -227,6 +237,17 @@ dominoex::dominoex(trx_mode md)
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
+// 22.050 kHz modes
+	case MODE_DOMINOEX85:
+		symlen = 260;
+		doublespaced = 1;
+		samplerate = 22050;
+		break;
+	case MODE_DOMINOEX125:
+		symlen = 176;
+		doublespaced = 1;
+		samplerate = 22050;
+		break;
 // 8kHz modes
 	case MODE_DOMINOEX4:
 		symlen = 2048;
@@ -257,10 +278,10 @@ dominoex::dominoex(trx_mode md)
 	hilbert->init_hilbert(37, 1);
 
 // fft filter at first if frequency
-	fft = new fftfilt( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
-					   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
-					   1024 );
-
+	fft = new fftfilt( 
+			(FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+			(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
+			1024 );
 	basetone = (int)floor(BASEFREQ * symlen / samplerate + 0.5);
 
 	slowcpu = progdefaults.slowcpu;
