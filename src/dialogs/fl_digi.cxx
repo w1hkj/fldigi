@@ -2424,28 +2424,6 @@ bool clean_exit(void) {
 	return true;
 }
 
-#define LOG_TO_FILE_MLABEL _("Log all RX/TX text")
-#define RIGCONTROL_MLABEL _("Rig control")
-#define OPMODES_MLABEL _("Op &Mode")
-#define OPMODES_FEWER _("Show fewer modes")
-#define OPMODES_ALL _("Show all modes")
-#define OLIVIA_MLABEL "Olivia"
-#define CONTESTIA_MLABEL "Contestia"
-#define RTTY_MLABEL "RTTY"
-#define VIEW_MLABEL _("&View")
-#define MFSK_IMAGE_MLABEL _("&MFSK Image")
-#define WEFAX_IMAGE_MLABEL _("&Weather Fax Image")
-#define CONTEST_MLABEL _("Contest")
-#define CONTEST_FIELDS_MLABEL _("&Contest fields")
-#define COUNTRIES_MLABEL _("C&ountries")
-#define UI_MLABEL _("&UI")
-#define RIGLOG_FULL_MLABEL _("Full")
-#define RIGLOG_NONE_MLABEL _("None")
-#define RIGLOG_MLABEL      _("Rig control and logging")
-#define RIGCONTEST_MLABEL  _("Rig control and contest")
-#define DOCKEDSCOPE_MLABEL _("Docked scope")
-#define WF_MLABEL _("Minimal controls")
-
 bool restore_minimize = false;
 
 void UI_select()
