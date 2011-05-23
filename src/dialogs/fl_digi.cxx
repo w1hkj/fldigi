@@ -5463,9 +5463,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		s = ascii2[data & 0x7F];
 	else {
 		s += data;
-//		bool viewer = (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && dlgViewer && dlgViewer->visible());
-//		if (progStatus.spot_recv && !viewer)
-		if (mode >= MODE_PSK_FIRST && mode <= MODE_PSK_LAST && progStatus.spot_recv)
+		if (progStatus.spot_recv)
 			spot_recv(data);
 	}
 	if (Maillogfile)
