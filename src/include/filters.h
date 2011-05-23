@@ -140,9 +140,6 @@ public:
 
 class goertzel {
 private:
-	double SR;
-	double FREQ;
-	double K;
 	int N;
 	int count;
 	double Q0;

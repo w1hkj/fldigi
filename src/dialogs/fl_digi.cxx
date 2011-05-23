@@ -90,6 +90,7 @@
 #include "dominoex.h"
 #include "feld.h"
 #include "throb.h"
+#include "pkt.h"
 #include "wwv.h"
 #include "analysis.h"
 #include "ssb.h"
@@ -431,6 +432,10 @@ void cb_rtty75N(Fl_Widget *w, void *arg);
 void cb_rtty75W(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
+void cb_pkt1200(Fl_Widget *w, void *arg);
+void cb_pkt300(Fl_Widget *w, void *arg);
+void cb_pkt2400(Fl_Widget *w, void *arg);
+
 Fl_Widget *modem_config_tab;
 Fl_Menu_Item *quick_change;
 
@@ -557,6 +562,13 @@ Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY },
 	{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY },
 	{ 0 }
+};
+
+Fl_Menu_Item quick_change_pkt[] = {
+    { "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET },
+    { " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET },
+    { "2400 baud", 0, cb_pkt2400, (void *)MODE_PACKET },
+    { 0 }
 };
 
 inline int minmax(int val, int min, int max)
@@ -812,6 +824,31 @@ void set_dominoex_tab_widgets()
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
 }
 
+//
+
+void cb_pkt1200(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 0;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
+
+void cb_pkt300(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 1;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
+
+void cb_pkt2400(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 2;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
+
+//
+
 static void busy_cursor(void*)
 {
 	Fl::first_window()->cursor(FL_CURSOR_WAIT);
@@ -1062,6 +1099,13 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_throb;
 		break;
 
+	case MODE_PACKET:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new pkt(mode), freq);
+		modem_config_tab = tabPacket;
+		quick_change = quick_change_pkt;
+		break;
+
 	case MODE_WWV:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new wwv, freq);
@@ -1079,7 +1123,12 @@ void init_modem(trx_mode mode, int freq)
 
 	default:
 		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
-		return init_modem(MODE_PSK31, freq);
+		mode = MODE_PSK31;
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode), freq);
+		quick_change = quick_change_psk;
+		modem_config_tab = tabPSK;
+		break;
 	}
 
 #if BENCHMARK_MODE
@@ -2984,6 +3033,10 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_THROBX2].name, 0, cb_init_mode, (void *)MODE_THROBX2, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
+//{ "Packet", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Packet", 0, cb_init_mode, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
+//{0,0,0,0,0,0,0,0,0},
 
 {"WEFAX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_WEFAX_576].name, 0,  cb_init_mode, (void *)MODE_WEFAX_576, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5715,6 +5768,11 @@ void resetOLIVIA() {
 void resetCONTESTIA() {
 	if (active_modem->get_mode() == MODE_CONTESTIA)
 		trx_start_modem(active_modem);
+}
+
+void updatePACKET() {
+    if (active_modem->get_mode() == MODE_PACKET)
+	trx_start_modem(active_modem);
 }
 
 void resetTHOR() {

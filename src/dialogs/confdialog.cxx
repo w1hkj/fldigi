@@ -955,6 +955,49 @@ Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
 
+Fl_Group *tabContestia=(Fl_Group *)0;
+
+Fl_Choice *mnuContestia_Bandwidth=(Fl_Choice *)0;
+
+static void cb_mnuContestia_Bandwidth(Fl_Choice* o, void*) {
+  progdefaults.contestiabw = o->value();
+set_contestia_default_integ();
+resetOLIVIA();
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnuContestia_Tones=(Fl_Choice *)0;
+
+static void cb_mnuContestia_Tones(Fl_Choice* o, void*) {
+  progdefaults.contestiatones = o->value();
+set_contestia_default_integ();
+resetCONTESTIA();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntContestia_smargin=(Fl_Counter2 *)0;
+
+static void cb_cntContestia_smargin(Fl_Counter2* o, void*) {
+  progdefaults.contestiasmargin = (int)(o->value());
+resetCONTESTIA();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntContestia_sinteg=(Fl_Counter2 *)0;
+
+static void cb_cntContestia_sinteg(Fl_Counter2* o, void*) {
+  progdefaults.contestiasinteg = (int)(o->value());
+resetCONTESTIA();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnContestia_8bit=(Fl_Check_Button *)0;
+
+static void cb_btnContestia_8bit(Fl_Check_Button* o, void*) {
+  progdefaults.contestia8bit = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabCW=(Fl_Group *)0;
 
 Fl_Tabs *tabsCW=(Fl_Tabs *)0;
@@ -1450,49 +1493,6 @@ static void cb_btnOlivia_8bit(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabContestia=(Fl_Group *)0;
-
-Fl_Choice *mnuContestia_Bandwidth=(Fl_Choice *)0;
-
-static void cb_mnuContestia_Bandwidth(Fl_Choice* o, void*) {
-  progdefaults.contestiabw = o->value();
-set_contestia_default_integ();
-resetOLIVIA();
-progdefaults.changed = true;
-}
-
-Fl_Choice *mnuContestia_Tones=(Fl_Choice *)0;
-
-static void cb_mnuContestia_Tones(Fl_Choice* o, void*) {
-  progdefaults.contestiatones = o->value();
-set_contestia_default_integ();
-resetCONTESTIA();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *cntContestia_smargin=(Fl_Counter2 *)0;
-
-static void cb_cntContestia_smargin(Fl_Counter2* o, void*) {
-  progdefaults.contestiasmargin = (int)(o->value());
-resetCONTESTIA();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *cntContestia_sinteg=(Fl_Counter2 *)0;
-
-static void cb_cntContestia_sinteg(Fl_Counter2* o, void*) {
-  progdefaults.contestiasinteg = (int)(o->value());
-resetCONTESTIA();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnContestia_8bit=(Fl_Check_Button *)0;
-
-static void cb_btnContestia_8bit(Fl_Check_Button* o, void*) {
-  progdefaults.contestia8bit = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabPSK=(Fl_Group *)0;
 
 Fl_Tabs *tabsPSK=(Fl_Tabs *)0;
@@ -1698,6 +1698,105 @@ Fl_Counter2 *valTHOR_PATHS=(Fl_Counter2 *)0;
 
 static void cb_valTHOR_PATHS(Fl_Counter2* o, void*) {
   progdefaults.THOR_PATHS = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabPacket=(Fl_Group *)0;
+
+Fl_Choice *selPacket_Baud=(Fl_Choice *)0;
+
+static void cb_selPacket_Baud(Fl_Choice* o, void*) {
+  progdefaults.PKT_BAUD_SELECT = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_LoSig_RXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_LoSig_RXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_LOSIG_RXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_HiSig_RXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_HiSig_RXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_HISIG_RXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_LoSig_TXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_LoSig_TXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_LOSIG_TXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_HiSig_TXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_HiSig_TXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_HISIG_TXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktRXTimestamp=(Fl_Check_Button *)0;
+
+static void cb_btnPktRXTimestamp(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_RXTimestamp=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktexpandCmp=(Fl_Check_Button *)0;
+
+static void cb_btnPktexpandCmp(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_expandCmp=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktexpandMicE=(Fl_Check_Button *)0;
+
+static void cb_btnPktexpandMicE(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_expandMicE=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktexpandPHG=(Fl_Check_Button *)0;
+
+static void cb_btnPktexpandPHG(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_expandPHG=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktunitsSI=(Fl_Check_Button *)0;
+
+static void cb_btnPktunitsSI(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_unitsSI=o->value();
+if (progdefaults.PKT_unitsSI) {
+ progdefaults.PKT_unitsEnglish=false;
+ btnPktunitsEnglish->value(false);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktunitsEnglish=(Fl_Check_Button *)0;
+
+static void cb_btnPktunitsEnglish(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_unitsEnglish=o->value();
+if (progdefaults.PKT_unitsSI) {
+ progdefaults.PKT_unitsSI=false;
+ btnPktunitsSI->value(false);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktPreferXhairScope=(Fl_Check_Button *)0;
+
+static void cb_btnPktPreferXhairScope(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_PreferXhairScope=o->value();
 progdefaults.changed = true;
 }
 
@@ -2905,6 +3004,7 @@ static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
+static const char szPktBauds[]  = "1200|300|2400";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
   { Fl_Double_Window* o = new Fl_Double_Window(500, 400, _("Fldigi configuration"));
@@ -2913,7 +3013,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
-    { tabsConfigure = new Fl_Tabs(-4, 0, 521, 372);
+    { tabsConfigure = new Fl_Tabs(-4, 0, 544, 372);
       tabsConfigure->color((Fl_Color)FL_LIGHT1);
       tabsConfigure->selection_color((Fl_Color)FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
@@ -3340,7 +3440,6 @@ ab and newline are automatically included."));
             tabMBars->end();
           } // Fl_Group* tabMBars
           { tabContest = new Fl_Group(0, 50, 500, 320, _("Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3577,6 +3676,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabRxText = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
+            tabRxText->hide();
             { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(27, 75, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
               btn_rx_lowercase->down_box(FL_DOWN_BOX);
               btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
@@ -3903,11 +4003,83 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-4, 25, 521, 347, _("Modems"));
+      { tabModems = new Fl_Group(-4, 25, 544, 347, _("Modems"));
         tabModems->hide();
-        { tabsModems = new Fl_Tabs(-4, 25, 521, 347);
+        { tabsModems = new Fl_Tabs(-4, 25, 544, 347);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
+          { tabContestia = new Fl_Group(0, 50, 500, 320, _("Contestia"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Choice* o = mnuContestia_Bandwidth = new Fl_Choice(60, 80, 85, 20, _("Bandwidth"));
+                mnuContestia_Bandwidth->tooltip(_("Select bandwidth"));
+                mnuContestia_Bandwidth->down_box(FL_BORDER_BOX);
+                mnuContestia_Bandwidth->callback((Fl_Callback*)cb_mnuContestia_Bandwidth);
+                mnuContestia_Bandwidth->align(FL_ALIGN_RIGHT);
+                o->add(szContestiaBandwidth);
+                o->value(2);
+              } // Fl_Choice* mnuContestia_Bandwidth
+              { Fl_Choice* o = mnuContestia_Tones = new Fl_Choice(321, 80, 70, 20, _("Tones"));
+                mnuContestia_Tones->tooltip(_("Select number of tones"));
+                mnuContestia_Tones->down_box(FL_BORDER_BOX);
+                mnuContestia_Tones->callback((Fl_Callback*)cb_mnuContestia_Tones);
+                mnuContestia_Tones->align(FL_ALIGN_RIGHT);
+                o->add(szContestiaTones);
+                o->value(2);
+              } // Fl_Choice* mnuContestia_Tones
+              { Fl_Group* o = new Fl_Group(60, 119, 379, 100, _("Receive synchronizer"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Counter2* o = cntContestia_smargin = new Fl_Counter2(80, 150, 70, 20, _("Tune margin (tone frequency spacing)"));
+                cntContestia_smargin->tooltip(_("Change ONLY to experiment"));
+                cntContestia_smargin->type(1);
+                cntContestia_smargin->box(FL_UP_BOX);
+                cntContestia_smargin->color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntContestia_smargin->selection_color((Fl_Color)FL_INACTIVE_COLOR);
+                cntContestia_smargin->labeltype(FL_NORMAL_LABEL);
+                cntContestia_smargin->labelfont(0);
+                cntContestia_smargin->labelsize(14);
+                cntContestia_smargin->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntContestia_smargin->minimum(2);
+                cntContestia_smargin->maximum(128);
+                cntContestia_smargin->step(1);
+                cntContestia_smargin->value(8);
+                cntContestia_smargin->callback((Fl_Callback*)cb_cntContestia_smargin);
+                cntContestia_smargin->align(FL_ALIGN_RIGHT);
+                cntContestia_smargin->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Counter2* cntContestia_smargin
+                { Fl_Counter2* o = cntContestia_sinteg = new Fl_Counter2(80, 180, 70, 20, _("Integration period (FEC blocks)"));
+                cntContestia_sinteg->tooltip(_("Change ONLY to experiment"));
+                cntContestia_sinteg->type(1);
+                cntContestia_sinteg->box(FL_UP_BOX);
+                cntContestia_sinteg->color((Fl_Color)FL_BACKGROUND_COLOR);
+                cntContestia_sinteg->selection_color((Fl_Color)FL_INACTIVE_COLOR);
+                cntContestia_sinteg->labeltype(FL_NORMAL_LABEL);
+                cntContestia_sinteg->labelfont(0);
+                cntContestia_sinteg->labelsize(14);
+                cntContestia_sinteg->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                cntContestia_sinteg->minimum(2);
+                cntContestia_sinteg->maximum(128);
+                cntContestia_sinteg->step(1);
+                cntContestia_sinteg->value(4);
+                cntContestia_sinteg->callback((Fl_Callback*)cb_cntContestia_sinteg);
+                cntContestia_sinteg->align(FL_ALIGN_RIGHT);
+                cntContestia_sinteg->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Counter2* cntContestia_sinteg
+                o->end();
+              } // Fl_Group* o
+              { btnContestia_8bit = new Fl_Check_Button(60, 229, 200, 20, _("8-bit extended characters"));
+                btnContestia_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
+                btnContestia_8bit->down_box(FL_DOWN_BOX);
+                btnContestia_8bit->callback((Fl_Callback*)cb_btnContestia_8bit);
+                btnContestia_8bit->hide();
+              } // Fl_Check_Button* btnContestia_8bit
+              o->end();
+            } // Fl_Group* o
+            tabContestia->end();
+          } // Fl_Group* tabContestia
           { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
             tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 504, 320);
@@ -4307,7 +4479,7 @@ an merging"));
             } // Fl_Tabs* tabsCW
             tabCW->end();
           } // Fl_Group* tabCW
-          { tabDomEX = new Fl_Group(0, 50, 500, 320, _("DomEX"));
+          { tabDomEX = new Fl_Group(0, 50, 500, 320, _("Dom"));
             tabDomEX->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 180);
               o->box(FL_ENGRAVED_FRAME);
@@ -4401,7 +4573,7 @@ an merging"));
             } // Fl_Group* o
             tabDomEX->end();
           } // Fl_Group* tabDomEX
-          { tabFeld = new Fl_Group(0, 50, 500, 320, _("Feldhell"));
+          { tabFeld = new Fl_Group(0, 50, 500, 320, _("FH"));
             tabFeld->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 145);
               o->box(FL_ENGRAVED_FRAME);
@@ -4623,80 +4795,8 @@ an merging"));
             } // Fl_Group* o
             tabOlivia->end();
           } // Fl_Group* tabOlivia
-          { tabContestia = new Fl_Group(0, 50, 500, 320, _("Contestia"));
-            tabContestia->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Choice* o = mnuContestia_Bandwidth = new Fl_Choice(60, 80, 85, 20, _("Bandwidth"));
-                mnuContestia_Bandwidth->tooltip(_("Select bandwidth"));
-                mnuContestia_Bandwidth->down_box(FL_BORDER_BOX);
-                mnuContestia_Bandwidth->callback((Fl_Callback*)cb_mnuContestia_Bandwidth);
-                mnuContestia_Bandwidth->align(FL_ALIGN_RIGHT);
-                o->add(szContestiaBandwidth);
-                o->value(2);
-              } // Fl_Choice* mnuContestia_Bandwidth
-              { Fl_Choice* o = mnuContestia_Tones = new Fl_Choice(321, 80, 70, 20, _("Tones"));
-                mnuContestia_Tones->tooltip(_("Select number of tones"));
-                mnuContestia_Tones->down_box(FL_BORDER_BOX);
-                mnuContestia_Tones->callback((Fl_Callback*)cb_mnuContestia_Tones);
-                mnuContestia_Tones->align(FL_ALIGN_RIGHT);
-                o->add(szContestiaTones);
-                o->value(2);
-              } // Fl_Choice* mnuContestia_Tones
-              { Fl_Group* o = new Fl_Group(60, 119, 379, 100, _("Receive synchronizer"));
-                o->box(FL_ENGRAVED_FRAME);
-                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Counter2* o = cntContestia_smargin = new Fl_Counter2(80, 150, 70, 20, _("Tune margin (tone frequency spacing)"));
-                cntContestia_smargin->tooltip(_("Change ONLY to experiment"));
-                cntContestia_smargin->type(1);
-                cntContestia_smargin->box(FL_UP_BOX);
-                cntContestia_smargin->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntContestia_smargin->selection_color((Fl_Color)FL_INACTIVE_COLOR);
-                cntContestia_smargin->labeltype(FL_NORMAL_LABEL);
-                cntContestia_smargin->labelfont(0);
-                cntContestia_smargin->labelsize(14);
-                cntContestia_smargin->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntContestia_smargin->minimum(2);
-                cntContestia_smargin->maximum(128);
-                cntContestia_smargin->step(1);
-                cntContestia_smargin->value(8);
-                cntContestia_smargin->callback((Fl_Callback*)cb_cntContestia_smargin);
-                cntContestia_smargin->align(FL_ALIGN_RIGHT);
-                cntContestia_smargin->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Counter2* cntContestia_smargin
-                { Fl_Counter2* o = cntContestia_sinteg = new Fl_Counter2(80, 180, 70, 20, _("Integration period (FEC blocks)"));
-                cntContestia_sinteg->tooltip(_("Change ONLY to experiment"));
-                cntContestia_sinteg->type(1);
-                cntContestia_sinteg->box(FL_UP_BOX);
-                cntContestia_sinteg->color((Fl_Color)FL_BACKGROUND_COLOR);
-                cntContestia_sinteg->selection_color((Fl_Color)FL_INACTIVE_COLOR);
-                cntContestia_sinteg->labeltype(FL_NORMAL_LABEL);
-                cntContestia_sinteg->labelfont(0);
-                cntContestia_sinteg->labelsize(14);
-                cntContestia_sinteg->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                cntContestia_sinteg->minimum(2);
-                cntContestia_sinteg->maximum(128);
-                cntContestia_sinteg->step(1);
-                cntContestia_sinteg->value(4);
-                cntContestia_sinteg->callback((Fl_Callback*)cb_cntContestia_sinteg);
-                cntContestia_sinteg->align(FL_ALIGN_RIGHT);
-                cntContestia_sinteg->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Counter2* cntContestia_sinteg
-                o->end();
-              } // Fl_Group* o
-              { btnContestia_8bit = new Fl_Check_Button(60, 229, 200, 20, _("8-bit extended characters"));
-                btnContestia_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
-                btnContestia_8bit->down_box(FL_DOWN_BOX);
-                btnContestia_8bit->callback((Fl_Callback*)cb_btnContestia_8bit);
-                btnContestia_8bit->hide();
-              } // Fl_Check_Button* btnContestia_8bit
-              o->end();
-            } // Fl_Group* o
-            tabContestia->end();
-          } // Fl_Group* tabContestia
           { tabPSK = new Fl_Group(-4, 50, 521, 322, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(-4, 50, 521, 322);
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -5055,6 +5155,141 @@ an merging"));
             } // Fl_Group* o
             tabTHOR->end();
           } // Fl_Group* tabTHOR
+          { tabPacket = new Fl_Group(0, 50, 540, 320, _("Packet"));
+            tabPacket->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 296);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Choice* o = selPacket_Baud = new Fl_Choice(44, 85, 100, 20, _("Baud rate"));
+                selPacket_Baud->tooltip(_("Select packet baudrate"));
+                selPacket_Baud->down_box(FL_BORDER_BOX);
+                selPacket_Baud->callback((Fl_Callback*)cb_selPacket_Baud);
+                selPacket_Baud->align(FL_ALIGN_RIGHT);
+                selPacket_Baud->when(FL_WHEN_CHANGED);
+                o->add(szPktBauds);
+                o->value(progdefaults.PKT_BAUD_SELECT);
+              } // Fl_Choice* selPacket_Baud
+              { Fl_Counter2* o = valPacket_LoSig_RXGain = new Fl_Counter2(42, 120, 63, 20, _("RX Low Freq Gain"));
+                valPacket_LoSig_RXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
+                valPacket_LoSig_RXGain->type(1);
+                valPacket_LoSig_RXGain->box(FL_UP_BOX);
+                valPacket_LoSig_RXGain->color((Fl_Color)FL_BACKGROUND_COLOR);
+                valPacket_LoSig_RXGain->selection_color((Fl_Color)FL_INACTIVE_COLOR);
+                valPacket_LoSig_RXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_LoSig_RXGain->labelfont(0);
+                valPacket_LoSig_RXGain->labelsize(14);
+                valPacket_LoSig_RXGain->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPacket_LoSig_RXGain->minimum(-6);
+                valPacket_LoSig_RXGain->maximum(6);
+                valPacket_LoSig_RXGain->step(0.5);
+                valPacket_LoSig_RXGain->callback((Fl_Callback*)cb_valPacket_LoSig_RXGain);
+                valPacket_LoSig_RXGain->align(FL_ALIGN_RIGHT);
+                valPacket_LoSig_RXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_LOSIG_RXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_LoSig_RXGain
+              { Fl_Counter2* o = valPacket_HiSig_RXGain = new Fl_Counter2(42, 145, 63, 20, _("RX High Freq Gain"));
+                valPacket_HiSig_RXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
+                valPacket_HiSig_RXGain->type(1);
+                valPacket_HiSig_RXGain->box(FL_UP_BOX);
+                valPacket_HiSig_RXGain->color((Fl_Color)FL_BACKGROUND_COLOR);
+                valPacket_HiSig_RXGain->selection_color((Fl_Color)FL_INACTIVE_COLOR);
+                valPacket_HiSig_RXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_HiSig_RXGain->labelfont(0);
+                valPacket_HiSig_RXGain->labelsize(14);
+                valPacket_HiSig_RXGain->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPacket_HiSig_RXGain->minimum(-6);
+                valPacket_HiSig_RXGain->maximum(6);
+                valPacket_HiSig_RXGain->step(0.5);
+                valPacket_HiSig_RXGain->callback((Fl_Callback*)cb_valPacket_HiSig_RXGain);
+                valPacket_HiSig_RXGain->align(FL_ALIGN_RIGHT);
+                valPacket_HiSig_RXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_HISIG_RXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_HiSig_RXGain
+              { Fl_Counter2* o = valPacket_LoSig_TXGain = new Fl_Counter2(268, 120, 63, 20, _("TX Low Freq Gain"));
+                valPacket_LoSig_TXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
+                valPacket_LoSig_TXGain->type(1);
+                valPacket_LoSig_TXGain->box(FL_UP_BOX);
+                valPacket_LoSig_TXGain->color((Fl_Color)FL_BACKGROUND_COLOR);
+                valPacket_LoSig_TXGain->selection_color((Fl_Color)FL_INACTIVE_COLOR);
+                valPacket_LoSig_TXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_LoSig_TXGain->labelfont(0);
+                valPacket_LoSig_TXGain->labelsize(14);
+                valPacket_LoSig_TXGain->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPacket_LoSig_TXGain->minimum(-6);
+                valPacket_LoSig_TXGain->maximum(6);
+                valPacket_LoSig_TXGain->step(0.5);
+                valPacket_LoSig_TXGain->callback((Fl_Callback*)cb_valPacket_LoSig_TXGain);
+                valPacket_LoSig_TXGain->align(FL_ALIGN_RIGHT);
+                valPacket_LoSig_TXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_LOSIG_TXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_LoSig_TXGain
+              { Fl_Counter2* o = valPacket_HiSig_TXGain = new Fl_Counter2(268, 145, 63, 20, _("TX High Freq Gain"));
+                valPacket_HiSig_TXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
+                valPacket_HiSig_TXGain->type(1);
+                valPacket_HiSig_TXGain->box(FL_UP_BOX);
+                valPacket_HiSig_TXGain->color((Fl_Color)FL_BACKGROUND_COLOR);
+                valPacket_HiSig_TXGain->selection_color((Fl_Color)FL_INACTIVE_COLOR);
+                valPacket_HiSig_TXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_HiSig_TXGain->labelfont(0);
+                valPacket_HiSig_TXGain->labelsize(14);
+                valPacket_HiSig_TXGain->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPacket_HiSig_TXGain->minimum(-6);
+                valPacket_HiSig_TXGain->maximum(6);
+                valPacket_HiSig_TXGain->step(0.5);
+                valPacket_HiSig_TXGain->callback((Fl_Callback*)cb_valPacket_HiSig_TXGain);
+                valPacket_HiSig_TXGain->align(FL_ALIGN_RIGHT);
+                valPacket_HiSig_TXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_HISIG_TXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_HiSig_TXGain
+              { Fl_Check_Button* o = btnPktRXTimestamp = new Fl_Check_Button(39, 180, 165, 20, _("add RX timestamps"));
+                btnPktRXTimestamp->tooltip(_("Prepend timestamp to each RX packet"));
+                btnPktRXTimestamp->down_box(FL_DOWN_BOX);
+                btnPktRXTimestamp->callback((Fl_Callback*)cb_btnPktRXTimestamp);
+                o->value(progdefaults.PKT_RXTimestamp);
+              } // Fl_Check_Button* btnPktRXTimestamp
+              { Fl_Check_Button* o = btnPktexpandCmp = new Fl_Check_Button(268, 180, 190, 20, _("decode Compressed data"));
+                btnPktexpandCmp->tooltip(_("Decode received Compressed Position data"));
+                btnPktexpandCmp->down_box(FL_DOWN_BOX);
+                btnPktexpandCmp->callback((Fl_Callback*)cb_btnPktexpandCmp);
+                o->value(progdefaults.PKT_expandCmp);
+              } // Fl_Check_Button* btnPktexpandCmp
+              { Fl_Check_Button* o = btnPktexpandMicE = new Fl_Check_Button(39, 206, 165, 20, _("decode Mic-E data"));
+                btnPktexpandMicE->tooltip(_("Decode received Mic-E data"));
+                btnPktexpandMicE->down_box(FL_DOWN_BOX);
+                btnPktexpandMicE->callback((Fl_Callback*)cb_btnPktexpandMicE);
+                o->value(progdefaults.PKT_expandMicE);
+              } // Fl_Check_Button* btnPktexpandMicE
+              { Fl_Check_Button* o = btnPktexpandPHG = new Fl_Check_Button(39, 233, 165, 20, _("decode PHG data"));
+                btnPktexpandPHG->tooltip(_("Decode received PHG data"));
+                btnPktexpandPHG->down_box(FL_DOWN_BOX);
+                btnPktexpandPHG->callback((Fl_Callback*)cb_btnPktexpandPHG);
+                o->value(progdefaults.PKT_expandPHG);
+              } // Fl_Check_Button* btnPktexpandPHG
+              { Fl_Check_Button* o = btnPktunitsSI = new Fl_Check_Button(39, 260, 165, 20, _("use SI units"));
+                btnPktunitsSI->tooltip(_("Display decoded data values in SI units"));
+                btnPktunitsSI->down_box(FL_DOWN_BOX);
+                btnPktunitsSI->callback((Fl_Callback*)cb_btnPktunitsSI);
+                o->value(progdefaults.PKT_unitsSI);
+              } // Fl_Check_Button* btnPktunitsSI
+              { Fl_Check_Button* o = btnPktunitsEnglish = new Fl_Check_Button(39, 287, 165, 20, _("use English units"));
+                btnPktunitsEnglish->tooltip(_("Display decoded data in English units"));
+                btnPktunitsEnglish->down_box(FL_DOWN_BOX);
+                btnPktunitsEnglish->callback((Fl_Callback*)cb_btnPktunitsEnglish);
+                o->value(progdefaults.PKT_unitsEnglish);
+              } // Fl_Check_Button* btnPktunitsEnglish
+              { Fl_Check_Button* o = btnPktPreferXhairScope = new Fl_Check_Button(268, 206, 165, 20, _("Use cross-hair scope"));
+                btnPktPreferXhairScope->tooltip(_("Defaults to syncscope instead of phase (cross-hair) scope"));
+                btnPktPreferXhairScope->down_box(FL_DOWN_BOX);
+                btnPktPreferXhairScope->callback((Fl_Callback*)cb_btnPktPreferXhairScope);
+                o->value(progdefaults.PKT_PreferXhairScope);
+              } // Fl_Check_Button* btnPktPreferXhairScope
+              o->end();
+            } // Fl_Group* o
+            tabPacket->end();
+          } // Fl_Group* tabPacket
           tabsModems->end();
         } // Fl_Tabs* tabsModems
         tabModems->end();

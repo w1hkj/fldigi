@@ -448,6 +448,44 @@
         ELEM_(double, ThorCWI, "THORCWI",                                               \
               "CWI threshold (CWI detection and suppression)",                          \
               0.0)                                                                      \
+        /* PACKET */                                                                    \
+        ELEM_(int, PKT_BAUD_SELECT, "PKTBAUDSELECT",                                                 \
+              "Packet baud rate. Values are as follows:\n"                              \
+              "  0: 1200 (V/UHF); 1: 300 (HF); 2: 2400 (V/UHF)",                        \
+              0)   /* 1200 baud (V/UHF) default. */                                     \
+        ELEM_(double, PKT_LOSIG_RXGAIN, "LOSIGRXGAIN",                                  \
+              "Signal gain for lower frequency (Mark) tone (in dB)",                    \
+              0.0)                                                                      \
+        ELEM_(double, PKT_HISIG_RXGAIN, "HISIGRXGAIN",                                  \
+              "Signal gain for higher frequency (Space) tone (in dB)",                  \
+              0.0)                                                                      \
+        ELEM_(double, PKT_LOSIG_TXGAIN, "LOSIGTXGAIN",                                  \
+              "Signal gain for Mark (lower frequency) tone (in dB)",                    \
+              0.0)                                                                      \
+        ELEM_(double, PKT_HISIG_TXGAIN, "HISIGTXGAIN",                                  \
+              "Signal gain for Space (higher frequency) tone (in dB)",                  \
+              0.0)                                                                      \
+        ELEM_(bool, PKT_PreferXhairScope, "PKTPREFERXHAIRSCOPE",                        \
+              "Default to syncscope (detected symbol scope)",                           \
+              false)                                                                    ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
+              "No timestamps on RX packets by default",                                 \
+              false)                                                                    \
+        \
+        ELEM_(bool, PKT_expandMicE, "PKTEXPANDMICE",                                    \
+              "decode received Mic-E data",                                             \
+              false)                                                                    \
+        ELEM_(bool, PKT_expandPHG, "PKTEXPANDPHG",                                      \
+              "decode received PHG data",                                               \
+              false)                                                                    \
+        ELEM_(bool, PKT_expandCmp, "PKTEXPANDCMP",                                      \
+              "decode received Compressed Position data",                               \
+              false)                                                                    \
+        ELEM_(bool, PKT_unitsSI, "PKTUNITSSI",                                          \
+              "display decoded data in SI units",                                       \
+              false)                                                                    \
+        ELEM_(bool, PKT_unitsEnglish, "PKTUNITSENGLISH",                                \
+              "display decoded data in English units",                                  \
+              false)                                                                    \
         /* DOMINOEX */                                                                  \
         ELEM_(double, DOMINOEX_BW, "DOMINOEXBW",                                        \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \

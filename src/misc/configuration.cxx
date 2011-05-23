@@ -909,7 +909,7 @@ void configuration::testCommPorts()
 			snprintf(ttyname, sizeof(ttyname), "/dev/%s", dp->d_name);
 			if (stat(ttyname, &st) == -1 || !S_ISCHR(st.st_mode))
 				continue;
-			LOG_INFO("Found serial port %s", ttyname);
+			LOG_VERBOSE("Found serial port %s", ttyname);
 			inpTTYdev->add(ttyname);
 #if USE_HAMLIB
 			inpRIGdev->add(ttyname);
@@ -971,7 +971,7 @@ out:
 #    endif
 #  endif // __WOE32__
 
-			LOG_INFO("Found serial port %s", ttyname);
+			LOG_VERBOSE("Found serial port %s", ttyname);
 			inpTTYdev->add(ttyname);
 #  if USE_HAMLIB
 			inpRIGdev->add(ttyname);
@@ -984,7 +984,7 @@ out:
 			if ( !(stat(gbuf.gl_pathv[j], &st) == 0 && S_ISCHR(st.st_mode)) ||
 			     strstr(gbuf.gl_pathv[j], "modem") )
 				continue;
-			LOG_INFO("Found serial port %s", gbuf.gl_pathv[j]);
+			LOG_VERBOSE("Found serial port %s", gbuf.gl_pathv[j]);
 			inpTTYdev->add(gbuf.gl_pathv[j]);
 #  if USE_HAMLIB
 			inpRIGdev->add(gbuf.gl_pathv[j]);

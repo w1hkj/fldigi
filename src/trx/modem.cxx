@@ -91,12 +91,12 @@ modem *olivia_modem = 0;
 modem *contestia_modem = 0;
 
 modem *rtty_modem = 0;
+modem *pkt_modem = 0;
 
 modem *thor4_modem = 0;
 modem *thor5_modem = 0;
 modem *thor8_modem = 0;
 modem *thor11_modem = 0;
-//modem *tsor11_modem = 0;
 modem *thor16_modem = 0;
 modem *thor22_modem = 0;
 

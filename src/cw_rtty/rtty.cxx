@@ -170,7 +170,7 @@ void rtty::restart()
 			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
 			default : rtty_parity = RTTY_PARITY_NONE; break;
 		}
-	rtty_stop = progdefaults.rtty_stop;
+	// (exists below already)  rtty_stop = progdefaults.rtty_stop;
 
 	txmode = LETTERS;
 	rxmode = LETTERS;

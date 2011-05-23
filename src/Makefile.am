@@ -366,6 +366,8 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/view_rtty.h \
+	include/pkt.h \
+	include/nco.h \
 	include/rx_extract.h \
 	include/speak.h \
 	include/serial.h \
@@ -477,6 +479,7 @@ fldigi_SOURCES += \
 	spot/spot.cxx \
 	ssb/ssb.cxx \
 	throb/throb.cxx \
+	packet/pkt.cxx \
 	trx/modem.cxx \
 	trx/trx.cxx \
 	waterfall/colorbox.cxx \

@@ -233,6 +233,7 @@ extern modem *psk250r_modem;
 extern modem *psk500r_modem;
 
 extern modem *rtty_modem;
+extern modem *pkt_modem;
 
 extern modem *olivia_modem;
 extern modem *contestia_modem;
@@ -241,7 +242,6 @@ extern modem *thor4_modem;
 extern modem *thor5_modem;
 extern modem *thor8_modem;
 extern modem *thor11_modem;
-//extern modem *tsor11_modem;
 extern modem *thor16_modem;
 extern modem *thor22_modem;
 
