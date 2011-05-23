@@ -36,11 +36,11 @@
 
 using namespace std;
 
-#ifdef __WOE32__
-#  ifndef PATH_MAX
-#    define PATH_MAX 4096
-#  endif
+#ifndef PATH_MAX
+#  define PATH_MAX 4096
+#endif
 
+#ifdef __WOE32__
 #  include <string>
 #  include <fstream>
 
