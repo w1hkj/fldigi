@@ -94,8 +94,9 @@ void submit_ADIF(cQsoRec &rec)
 {
 	adif.erase();
 	
-	putadif(QSO_DATE, rec.getField(QSO_DATE_OFF));
+	putadif(QSO_DATE, rec.getField(QSO_DATE));
 	putadif(TIME_ON, rec.getField(TIME_ON));
+	putadif(QSO_DATE_OFF, rec.getField(QSO_DATE_OFF));
 	putadif(TIME_OFF, rec.getField(TIME_OFF));
 	putadif(CALL, rec.getField(CALL));
 	putadif(FREQ, rec.getField(FREQ));
