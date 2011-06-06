@@ -96,8 +96,7 @@ static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
 static const char szPktBauds[]  = "1200|300|2400";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
-static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {selected
-  }
+static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
     xywh {616 61 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
@@ -107,7 +106,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {selected
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
+        callback {progdefaults.changed = true;} selected
         tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
@@ -190,7 +189,7 @@ progdefaults.changed = true;}
         label UI open
         xywh {0 25 502 346} hide
       } {
-        Fl_Tabs tabsUI {open
+        Fl_Tabs tabsUI {
           xywh {0 25 502 346} selection_color 50
         } {
           Fl_Group tabUserInterface {
@@ -1190,7 +1189,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
+        label Modems
         xywh {-4 25 544 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -2909,7 +2908,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3096,14 +3095,14 @@ progdefaults.changed = true;}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
-              label {OSS mixer} open
-              xywh {5 60 490 145} box ENGRAVED_FRAME align 21
+              label {OSS mixer}
+              xywh {5 57 490 145} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnMixer {
-                label {Manage mixer}
+                label {Manage mixers}
                 callback {enableMixer(o->value());
 progdefaults.changed = true;}
-                tooltip {Add mixer controls to main dialog} xywh {15 89 125 25} down_box DOWN_BOX
+                tooltip {Add mixer controls to main dialog} xywh {15 86 125 25} down_box DOWN_BOX
                 code0 {extern void resetMixerControls();}
                 code1 {o->value(progdefaults.EnableMixer);}
               }
@@ -3113,7 +3112,7 @@ progdefaults.changed = true;}
 enableMixer(false);
 enableMixer(true);
 progdefaults.changed = true;} open
-                tooltip {Select Mixer device} xywh {161 132 110 25}
+                tooltip {Select Mixer device} xywh {161 129 110 25}
                 code0 {o->value(progdefaults.MXdevice.c_str());}
               } {}
               Fl_Light_Button btnMicIn {
@@ -3128,7 +3127,7 @@ progdefaults.changed = true;} open
     progdefaults.MicIn = false;
 }
 progdefaults.changed = true;}
-                tooltip {Use microphone input} xywh {281 93 74 25}
+                tooltip {Use microphone input} xywh {281 90 74 25}
               }
               Fl_Light_Button btnLineIn {
                 label {Line In}
@@ -3142,17 +3141,35 @@ progdefaults.changed = true;}
     progdefaults.LineIn = false;
 }
 progdefaults.changed = true;}
-                tooltip {Use Line-In device} xywh {281 132 74 25} selection_color 3
+                tooltip {Use Line-In device} xywh {281 129 74 25} selection_color 3
                 code0 {extern void setMixerInput(int);}
               }
               Fl_Value_Slider valPCMvolume {
                 label PCM
                 callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-                tooltip {Set the sound card PCM level} xywh {15 167 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
+                tooltip {Set the sound card PCM level} xywh {15 164 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
+              }
+            }
+          }
+          Fl_Group tabTxLevel {
+            label {Tx Level} open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Group {} {
+              label {TX Level Control} open
+              xywh {5 64 490 82} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Counter valTxLevel {
+                label {Tx Attenuator (dB)}
+                callback {progdefaults.txlevel = o->value();}
+                xywh {188 88 132 21} minimum -30 maximum 0 value -6
+                code0 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                code1 {o->value(progdefaults.txlevel);}
+                code2 {o->lstep(1.0);}
               }
             }
           }
@@ -3347,7 +3364,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open

@@ -2516,6 +2516,14 @@ static void cb_valPCMvolume(Fl_Value_Slider2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabTxLevel=(Fl_Group *)0;
+
+Fl_Counter *valTxLevel=(Fl_Counter *)0;
+
+static void cb_valTxLevel(Fl_Counter* o, void*) {
+  progdefaults.txlevel = o->value();
+}
+
 Fl_Group *tabID=(Fl_Group *)0;
 
 Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
@@ -4288,7 +4296,6 @@ an merging"));
                 cntCWdash2dot->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
-                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(FL_ALIGN_RIGHT);
@@ -4308,7 +4315,6 @@ an merging"));
                 cntCWrisetime->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
-                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(FL_ALIGN_RIGHT);
@@ -4517,7 +4523,6 @@ an merging"));
                 valDominoEX_BW->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
-                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(FL_ALIGN_RIGHT);
@@ -4541,7 +4546,6 @@ an merging"));
                 valDomCWI->labelfont(0);
                 valDomCWI->labelsize(14);
                 valDomCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(FL_ALIGN_TOP);
@@ -5105,7 +5109,6 @@ an merging"));
                 valTHOR_BW->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
-                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(FL_ALIGN_RIGHT);
@@ -5123,7 +5126,6 @@ an merging"));
                 valThorCWI->labelfont(0);
                 valThorCWI->labelsize(14);
                 valThorCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(FL_ALIGN_TOP);
@@ -5962,30 +5964,30 @@ ll with your audio device."));
           } // Fl_Group* tabAudioOpt
           { tabMixer = new Fl_Group(0, 50, 500, 320, _("Mixer"));
             tabMixer->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 145, _("OSS mixer"));
+            { Fl_Group* o = new Fl_Group(5, 57, 490, 145, _("OSS mixer"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(15, 89, 125, 25, _("Manage mixer"));
+              { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(15, 86, 125, 25, _("Manage mixers"));
                 btnMixer->tooltip(_("Add mixer controls to main dialog"));
                 btnMixer->down_box(FL_DOWN_BOX);
                 btnMixer->callback((Fl_Callback*)cb_btnMixer);
                 o->value(progdefaults.EnableMixer);
               } // Fl_Check_Button* btnMixer
-              { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(161, 132, 110, 25, _("Device:"));
+              { Fl_Input_Choice* o = menuMix = new Fl_Input_Choice(161, 129, 110, 25, _("Device:"));
                 menuMix->tooltip(_("Select Mixer device"));
                 menuMix->callback((Fl_Callback*)cb_menuMix);
                 o->value(progdefaults.MXdevice.c_str());
               } // Fl_Input_Choice* menuMix
-              { btnMicIn = new Fl_Light_Button(281, 93, 74, 25, _("Mic In"));
+              { btnMicIn = new Fl_Light_Button(281, 90, 74, 25, _("Mic In"));
                 btnMicIn->tooltip(_("Use microphone input"));
                 btnMicIn->callback((Fl_Callback*)cb_btnMicIn);
               } // Fl_Light_Button* btnMicIn
-              { btnLineIn = new Fl_Light_Button(281, 132, 74, 25, _("Line In"));
+              { btnLineIn = new Fl_Light_Button(281, 129, 74, 25, _("Line In"));
                 btnLineIn->tooltip(_("Use Line-In device"));
                 btnLineIn->selection_color((Fl_Color)3);
                 btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
               } // Fl_Light_Button* btnLineIn
-              { Fl_Value_Slider2* o = valPCMvolume = new Fl_Value_Slider2(15, 167, 340, 20, _("PCM"));
+              { Fl_Value_Slider2* o = valPCMvolume = new Fl_Value_Slider2(15, 164, 340, 20, _("PCM"));
                 valPCMvolume->tooltip(_("Set the sound card PCM level"));
                 valPCMvolume->type(1);
                 valPCMvolume->box(FL_DOWN_BOX);
@@ -5995,7 +5997,6 @@ ll with your audio device."));
                 valPCMvolume->labelfont(0);
                 valPCMvolume->labelsize(14);
                 valPCMvolume->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
@@ -6007,6 +6008,24 @@ ll with your audio device."));
             } // Fl_Group* o
             tabMixer->end();
           } // Fl_Group* tabMixer
+          { tabTxLevel = new Fl_Group(0, 50, 500, 320, _("Tx Level"));
+            tabTxLevel->hide();
+            { Fl_Group* o = new Fl_Group(5, 64, 490, 82, _("TX Level Control"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Counter* o = valTxLevel = new Fl_Counter(188, 88, 132, 21, _("Tx Attenuator (dB)"));
+                valTxLevel->minimum(-30);
+                valTxLevel->maximum(0);
+                valTxLevel->value(-6);
+                valTxLevel->callback((Fl_Callback*)cb_valTxLevel);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.txlevel);
+                o->lstep(1.0);
+              } // Fl_Counter* valTxLevel
+              o->end();
+            } // Fl_Group* o
+            tabTxLevel->end();
+          } // Fl_Group* tabTxLevel
           tabsSoundCard->end();
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
@@ -6189,7 +6208,6 @@ d frequency"));
             val_pretone->tooltip(_("Use for triggering amplifier carrier detect"));
             val_pretone->minimum(0);
             val_pretone->maximum(10);
-            val_pretone->step(0.1);
             val_pretone->callback((Fl_Callback*)cb_val_pretone);
             o->value(progdefaults.pretone);
           } // Fl_Counter* val_pretone

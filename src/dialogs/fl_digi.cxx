@@ -2333,6 +2333,24 @@ int default_handler(int event)
 			w->take_focus(); // remove this to leave tx text focused
 			return 1;
 		}
+#ifdef __APPLE__
+		if ((key == '=') && (Fl::event_state() == FL_COMMAND)) {
+#else
+		if (key == '=' && Fl::event_alt()) {
+#endif
+			progdefaults.txlevel += 0.1;
+			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
+			valTxLevel->value(progdefaults.txlevel);
+		}
+#ifdef __APPLE__
+		if ((key == '-') && (Fl::event_state() == FL_COMMAND)) {
+#else
+		if (key == '-' && Fl::event_alt()) {
+#endif
+			progdefaults.txlevel -= 0.1;
+			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
+			valTxLevel->value(progdefaults.txlevel);
+		}
 	}
 	else if (w == dlgLogbook || w->window() == dlgLogbook)
 		return log_search_handler(event);
