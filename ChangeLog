@@ -1,3 +1,48 @@
+2011-06-11  Kamal Mostafa  <kamal@whence.com>
+
+	4e192b5: Mode_info table restrictions
+
+2011-06-08  David Freese  <w1hkj@w1hkj.com>
+
+	24ce84e: TX Attenuator
+	d634026: View-Hide menu item
+
+
+=Version 3.21.11=
+
+
+2011-06-06  Pierfrancesco Caci  <ik5pvx@gmail.com>
+
+	97bbddf: K3 CW-QSY
+
+2011-05-29  David Freese  <w1hkj@w1hkj.com>
+
+	4633907: LOG.ADIF export
+
+
+=Version 3.21.10=
+
+
+2011-05-14  Pavel Milanes Costa  <co7wt@frcuba.co.cu>
+
+	bc7c0cf: PO files update
+
+2011-05-14  Kamal Mostafa  <kamal@whence.com>
+
+	e000ac1: Conf dialog cosmetics
+
+2011-05-04  David Freese  <w1hkj@w1hkj.com>
+
+	dca7182: Duplicate defines
+
+2011-04-19  Kamal Mostafa  <kamal@whence.com>
+
+	50febcc: GNU/Hurd build fix
+
+
+=Version 3.21.9=
+
+
 2011-04-17  David Freese  <w1hkj@w1hkj.com>
 
 	625c8f9: Spot-notifier

@@ -3,7 +3,7 @@ const char* szBeginner = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n\
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
 <head>\n\
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\
-<meta name=\"generator\" content=\"AsciiDoc 8.4.4\" />\n\
+<meta name=\"generator\" content=\"AsciiDoc 8.5.2\" />\n\
 <title>Beginners' Guide to Fldigi</title>\n\
 <style type=\"text/css\">\n\
 /* Debug borders */\n\
@@ -91,7 +91,7 @@ span#author {\n\
 }\n\
 span#email {\n\
 }\n\
-span#revision {\n\
+span#revnumber, span#revdate, span#revremark {\n\
   font-family: sans-serif;\n\
 }\n\
 \n\
@@ -118,12 +118,14 @@ div#preamble {\n\
 div.tableblock, div.imageblock, div.exampleblock, div.verseblock,\n\
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,\n\
 div.admonitionblock {\n\
-  margin-top: 1.5em;\n\
+  margin-top: 1.0em;\n\
   margin-bottom: 1.5em;\n\
 }\n\
 div.admonitionblock {\n\
-  margin-top: 2.5em;\n\
-  margin-bottom: 2.5em;\n\
+  margin-top: 2.0em;\n\
+  margin-bottom: 2.0em;\n\
+  margin-right: 10%;\n\
+  color: #606060;\n\
 }\n\
 \n\
 div.content { /* Block element content. */\n\
@@ -165,19 +167,19 @@ div.listingblock > div.content {\n\
   padding: 0.5em;\n\
 }\n\
 \n\
-div.quoteblock {\n\
-  padding-left: 2.0em;\n\
+div.quoteblock, div.verseblock {\n\
+  padding-left: 1.0em;\n\
+  margin-left: 1.0em;\n\
   margin-right: 10%;\n\
+  border-left: 5px solid #dddddd;\n\
+  color: #777777;\n\
 }\n\
+\n\
 div.quoteblock > div.attribution {\n\
   padding-top: 0.5em;\n\
   text-align: right;\n\
 }\n\
 \n\
-div.verseblock {\n\
-  padding-left: 2.0em;\n\
-  margin-right: 10%;\n\
-}\n\
 div.verseblock > div.content {\n\
   white-space: pre;\n\
 }\n\
@@ -200,17 +202,17 @@ div.admonitionblock .icon {\n\
 }\n\
 div.admonitionblock td.content {\n\
   padding-left: 0.5em;\n\
-  border-left: 2px solid silver;\n\
+  border-left: 3px solid #dddddd;\n\
 }\n\
 \n\
 div.exampleblock > div.content {\n\
-  border-left: 2px solid silver;\n\
-  padding: 0.5em;\n\
+  border-left: 3px solid #dddddd;\n\
+  padding-left: 0.5em;\n\
 }\n\
 \n\
 div.imageblock div.content { padding-left: 0; }\n\
-div.imageblock img { border: 1px solid silver; }\n\
 span.image img { border-style: none; }\n\
+a.image:visited { color: white; }\n\
 \n\
 dl {\n\
   margin-top: 0.8em;\n\
@@ -255,7 +257,7 @@ div.compact div, div.compact div {\n\
 div.tableblock > table {\n\
   border: 3px solid #527bbd;\n\
 }\n\
-thead {\n\
+thead, p.table.header {\n\
   font-family: sans-serif;\n\
   font-weight: bold;\n\
 }\n\
@@ -310,8 +312,40 @@ div.hdlist.compact tr {\n\
   background: yellow;\n\
 }\n\
 \n\
+.footnote, .footnoteref {\n\
+  font-size: 0.8em;\n\
+}\n\
+\n\
+span.footnote, span.footnoteref {\n\
+  vertical-align: super;\n\
+}\n\
+\n\
+#footnotes {\n\
+  margin: 20px 0 20px 0;\n\
+  padding: 7px 0 0 0;\n\
+}\n\
+\n\
+#footnotes div.footnote {\n\
+  margin: 0 0 5px 0;\n\
+}\n\
+\n\
+#footnotes hr {\n\
+  border: none;\n\
+  border-top: 1px solid silver;\n\
+  height: 1px;\n\
+  text-align: left;\n\
+  margin-left: 0;\n\
+  width: 20%;\n\
+  min-width: 100px;\n\
+}\n\
+\n\
+\n\
 @media print {\n\
   div#footer-badges { display: none; }\n\
+}\n\
+\n\
+div#toc {\n\
+  margin-bottom: 2.5em;\n\
 }\n\
 \n\
 div#toctitle {\n\
@@ -374,7 +408,7 @@ div.verseblock-attribution {\n\
 }\n\
 \n\
 div.exampleblock-content {\n\
-  border-left: 2px solid silver;\n\
+  border-left: 3px solid #dddddd;\n\
   padding-left: 0.5em;\n\
 }\n\
 \n\
@@ -383,7 +417,13 @@ div#toc a:visited { color: blue; }\n\
 </style>\n\
 <script type=\"text/javascript\">\n\
 /*<![CDATA[*/\n\
-window.onload = function(){generateToc(1)}\n\
+window.onload = function(){asciidoc.footnotes(); asciidoc.toc(1);}\n\
+var asciidoc = {  // Namespace.\n\
+\n\
+/////////////////////////////////////////////////////////////////////\n\
+// Table Of Contents generator\n\
+/////////////////////////////////////////////////////////////////////\n\
+\n\
 /* Author: Mihai Bazon, September 2002\n\
  * http://students.infoiasi.ro/~mishoo\n\
  *\n\
@@ -395,53 +435,55 @@ window.onload = function(){generateToc(1)}\n\
  */\n\
 \n\
  /* modified by Troy D. Hanson, September 2006. License: GPL */\n\
- /* modified by Stuart Rackham, October 2006. License: GPL */\n\
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */\n\
 \n\
-function getText(el) {\n\
-  var text = \"\";\n\
-  for (var i = el.firstChild; i != null; i = i.nextSibling) {\n\
-    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.\n\
-      text += i.data;\n\
-    else if (i.firstChild != null)\n\
-      text += getText(i);\n\
-  }\n\
-  return text;\n\
-}\n\
+// toclevels = 1..4.\n\
+toc: function (toclevels) {\n\
 \n\
-function TocEntry(el, text, toclevel) {\n\
-  this.element = el;\n\
-  this.text = text;\n\
-  this.toclevel = toclevel;\n\
-}\n\
-\n\
-function tocEntries(el, toclevels) {\n\
-  var result = new Array;\n\
-  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');\n\
-  // Function that scans the DOM tree for header elements (the DOM2\n\
-  // nodeIterator API would be a better technique but not supported by all\n\
-  // browsers).\n\
-  var iterate = function (el) {\n\
+  function getText(el) {\n\
+    var text = \"\";\n\
     for (var i = el.firstChild; i != null; i = i.nextSibling) {\n\
-      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {\n\
-        var mo = re.exec(i.tagName)\n\
-        if (mo)\n\
-          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);\n\
-        iterate(i);\n\
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.\n\
+        text += i.data;\n\
+      else if (i.firstChild != null)\n\
+        text += getText(i);\n\
+    }\n\
+    return text;\n\
+  }\n\
+\n\
+  function TocEntry(el, text, toclevel) {\n\
+    this.element = el;\n\
+    this.text = text;\n\
+    this.toclevel = toclevel;\n\
+  }\n\
+\n\
+  function tocEntries(el, toclevels) {\n\
+    var result = new Array;\n\
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');\n\
+    // Function that scans the DOM tree for header elements (the DOM2\n\
+    // nodeIterator API would be a better technique but not supported by all\n\
+    // browsers).\n\
+    var iterate = function (el) {\n\
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {\n\
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {\n\
+          var mo = re.exec(i.tagName);\n\
+          if (mo && (i.getAttribute(\"class\") || i.getAttribute(\"className\")) != \"float\") {\n\
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);\n\
+          }\n\
+          iterate(i);\n\
+        }\n\
       }\n\
     }\n\
+    iterate(el);\n\
+    return result;\n\
   }\n\
-  iterate(el);\n\
-  return result;\n\
-}\n\
 \n\
-// This function does the work. toclevels = 1..4.\n\
-function generateToc(toclevels) {\n\
   var toc = document.getElementById(\"toc\");\n\
-  var entries = tocEntries(document.getElementsByTagName(\"body\")[0], toclevels);\n\
+  var entries = tocEntries(document.getElementById(\"content\"), toclevels);\n\
   for (var i = 0; i < entries.length; ++i) {\n\
     var entry = entries[i];\n\
     if (entry.element.id == \"\")\n\
-      entry.element.id = \"toc\" + i;\n\
+      entry.element.id = \"_toc_\" + i;\n\
     var a = document.createElement(\"a\");\n\
     a.href = \"#\" + entry.element.id;\n\
     a.appendChild(document.createTextNode(entry.text));\n\
@@ -451,7 +493,58 @@ function generateToc(toclevels) {\n\
     toc.appendChild(div);\n\
   }\n\
   if (entries.length == 0)\n\
-    document.getElementById(\"header\").removeChild(toc);\n\
+    toc.parentNode.removeChild(toc);\n\
+},\n\
+\n\
+\n\
+/////////////////////////////////////////////////////////////////////\n\
+// Footnotes generator\n\
+/////////////////////////////////////////////////////////////////////\n\
+\n\
+/* Based on footnote generation code from:\n\
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html\n\
+ */\n\
+\n\
+footnotes: function () {\n\
+  var cont = document.getElementById(\"content\");\n\
+  var noteholder = document.getElementById(\"footnotes\");\n\
+  var spans = cont.getElementsByTagName(\"span\");\n\
+  var refs = {};\n\
+  var n = 0;\n\
+  for (i=0; i<spans.length; i++) {\n\
+    if (spans[i].className == \"footnote\") {\n\
+      n++;\n\
+      // Use [\\s\\S] in place of . so multi-line matches work.\n\
+      // Because JavaScript has no s (dotall) regex flag.\n\
+      note = spans[i].innerHTML.match(/\\s*\\[([\\s\\S]*)]\\s*/)[1];\n\
+      noteholder.innerHTML +=\n\
+        \"<div class='footnote' id='_footnote_\" + n + \"'>\" +\n\
+        \"<a href='#_footnoteref_\" + n + \"' title='Return to text'>\" +\n\
+        n + \"</a>. \" + note + \"</div>\";\n\
+      spans[i].innerHTML =\n\
+        \"[<a id='_footnoteref_\" + n + \"' href='#_footnote_\" + n +\n\
+        \"' title='View footnote' class='footnote'>\" + n + \"</a>]\";\n\
+      var id =spans[i].getAttribute(\"id\");\n\
+      if (id != null) refs[\"#\"+id] = n;\n\
+    }\n\
+  }\n\
+  if (n == 0)\n\
+    noteholder.parentNode.removeChild(noteholder);\n\
+  else {\n\
+    // Process footnoterefs.\n\
+    for (i=0; i<spans.length; i++) {\n\
+      if (spans[i].className == \"footnoteref\") {\n\
+        var href = spans[i].getElementsByTagName(\"a\")[0].getAttribute(\"href\");\n\
+        href = href.match(/#.*/)[0];  // Because IE return full URL.\n\
+        n = refs[href];\n\
+        spans[i].innerHTML =\n\
+          \"[<a href='#_footnote_\" + n +\n\
+          \"' title='View footnote' class='footnote'>\" + n + \"</a>]\";\n\
+      }\n\
+    }\n\
+  }\n\
+}\n\
+\n\
 }\n\
 /*]]>*/\n\
 </script>\n\
@@ -464,6 +557,7 @@ function generateToc(toclevels) {\n\
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>\n\
 </div>\n\
 </div>\n\
+<div id=\"content\">\n\
 <div id=\"preamble\">\n\
 <div class=\"sectionbody\">\n\
 <div class=\"sidebarblock\">\n\
@@ -520,11 +614,11 @@ noise level, signal level and available power also affect the choice of\n\
 mode. While in many cases several different modes might be suitable, having a\n\
 choice adds to the operating pleasure. It is difficult to advise which mode is\n\
 best for each particular occasion, and experience plays an important role.\n\
-<br />[To gain a good insight into each mode and its capabilities, you might\n\
+<span class=\"footnote\"><br />[To gain a good insight into each mode and its capabilities, you might\n\
 consider purchasing <em>Digital Modes for All Occasions</em> (ISBN 1-872309-82-8) by\n\
 Murray Greenman ZL1BPU, published by the RSGB and also available from\n\
 FUNKAMATEUR and CQ Communications; or the ARRL&#8217;s <em>HF Digital Handbook</em> (ISBN\n\
-0-87259-103-4) by Steve Ford, WB8IMY.]<br /></p></div>\n\
+0-87259-103-4) by Steve Ford, WB8IMY.]<br /></span></p></div>\n\
 <h3 id=\"_how_do_i_recognise_and_tune_in_the_signals\">1.4. How do I recognise and tune in the signals?</h3><div style=\"clear:left\"></div>\n\
 <div class=\"paragraph\"><p>Recognising the different modes comes with experience. It is a matter of\n\
 listening to the signal, and observing the appearance of the signal on the\n\
@@ -657,10 +751,10 @@ When you start Fldigi for the very first time, it makes a series of\n\
 Each of the modems can be individually set up from the <tt>Configure&#8594;Modems</tt>\n\
   multi-tabbed dialog. You need not change anything here to start with, although\n\
   it might be a good idea to set the <em>secondary text</em> for DominoEX and THOR to\n\
-  something useful, such as your call and locator. <br />[Secondary text is\n\
+  something useful, such as your call and locator. <span class=\"footnote\"><br />[Secondary text is\n\
   transmitted when the text you type does not keep up with the typing speed of\n\
   the mode — this handy text appears in a small window at the very bottom of the\n\
-  screen.]<br /> Note that this set of tabs is also where you set the RTTY modem speed\n\
+  screen.]<br /></span> Note that this set of tabs is also where you set the RTTY modem speed\n\
   and shift, although the default values should be fine for normal operation.\n\
 </p>\n\
 </li>\n\
@@ -1726,16 +1820,17 @@ keypad or the normal numeric keys) to insert the ASCII character designated by\n
 that entry value into the transmit buffer. For example, <tt>Ctrl 177</tt> is &#8220;±&#8221;\n\
 (plus/minus) and <tt>Ctrl 176</tt> is &#8220;°&#8221; (degree). If you press a key other than the\n\
 numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
-<h2 id=\"ref-credits\">Credits</h2>\n\
+<h2 id=\"ref-credits\" class=\"float\">Credits</h2>\n\
 <div class=\"paragraph\"><p>Copyright &#169; 2008 Murray Greenman, <tt>ZL1BPU</tt>.</p></div>\n\
 <div class=\"paragraph\"><p>Copyright &#169; 2008-2009 David Freese, <tt>W1HKJ</tt>.</p></div>\n\
 <div class=\"paragraph\"><p>Copyright &#169; 2009 Stelios Bounanos, <tt>M0GLD</tt>.</p></div>\n\
 <div class=\"paragraph\"><p>License GPLv3+: <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU GPL version 3 or later</a>.</p></div>\n\
 </div>\n\
+</div>\n\
+<div id=\"footnotes\"><hr /></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
-Version 3.11<br />\n\
-Last updated 2011-05-28 13:08:32 CDT\n\
+Last updated 2011-06-11 15:11:57 CDT\n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\
