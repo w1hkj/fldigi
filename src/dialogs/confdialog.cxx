@@ -2870,6 +2870,13 @@ static void cb_btnStartAtSweetSpot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnCWIsLSB=(Fl_Check_Button *)0;
+
+static void cb_btnCWIsLSB(Fl_Check_Button* o, void*) {
+  progdefaults.CWIsLSB=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabText_IO=(Fl_Group *)0;
 
 Fl_Group *grpTalker=(Fl_Group *)0;
@@ -6530,6 +6537,17 @@ d frequency"));
                 btnStartAtSweetSpot->callback((Fl_Callback*)cb_btnStartAtSweetSpot);
                 o->value(progdefaults.StartAtSweetSpot);
               } // Fl_Check_Button* btnStartAtSweetSpot
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 140, 490, 60, _("K3 A1A configuation"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btnCWIsLSB = new Fl_Check_Button(220, 161, 70, 15, _("CW is LSB"));
+                btnCWIsLSB->tooltip(_("Select this for Elecraft K3\nOther radios should not need it."));
+                btnCWIsLSB->down_box(FL_DOWN_BOX);
+                btnCWIsLSB->callback((Fl_Callback*)cb_btnCWIsLSB);
+                o->value(progdefaults.CWIsLSB);
+              } // Fl_Check_Button* btnCWIsLSB
               o->end();
             } // Fl_Group* o
             tabSweetSpot->end();

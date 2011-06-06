@@ -594,10 +594,16 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 update_freq:
 	static char szFrequency[14];
 	if (rfc != 0) { // use a boolean for the waterfall
+	    int cwoffset = 0;
+	    string testmode = qso_opMODE->value();
+	    if (testmode == "CW" or testmode == "CWR") {
+		cwoffset = progdefaults.CWsweetspot;
+		usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
+	    }
 		if (usb)
-			dfreq = rfc + active_modem->get_txfreq();
+			dfreq = rfc + active_modem->get_txfreq() -cwoffset;
 		else
-			dfreq = rfc - active_modem->get_txfreq();
+			dfreq = rfc - active_modem->get_txfreq() +cwoffset;
 		snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
 	} else {
 		dfreq = active_modem->get_txfreq();
@@ -728,10 +734,16 @@ void WFdisp::drawScale() {
 		if (progdefaults.wf_audioscale)
 			fr = 500.0 * i;
 		else {
+		    int cwoffset = 0;
+		    string testmode = qso_opMODE->value();
+		    if (testmode == "CW" or testmode == "CWR") {
+			cwoffset = progdefaults.CWsweetspot;
+			usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR")); 
+		    }
 			if (usb)
-				fr = (rfc - (rfc%500))/1000.0 + 0.5*i;
+				fr = (rfc - (rfc%500))/1000.0 + 0.5*i - cwoffset/1000.0;
 			else
-				fr = (rfc - (rfc %500))/1000.0 + 0.5 - 0.5*i;
+				fr = (rfc - (rfc %500))/1000.0 + 0.5 - 0.5*i + cwoffset/1000.0;
 		}
 		if (progdefaults.wf_audioscale)
 			snprintf(szFreq, sizeof(szFreq), "%7.0f", fr);
