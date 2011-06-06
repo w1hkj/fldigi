@@ -98,7 +98,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {616 61 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {644 190 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-4 0 521 372} color 50 selection_color 50
@@ -3247,7 +3247,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -3469,7 +3469,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabSweetSpot {
-            label {Sweet Spot}
+            label {Sweet Spot} open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -3509,6 +3509,19 @@ progdefaults.changed = true;}
                 tooltip {ON - start at default
 OFF - keep current wf cursor position} xywh {15 101 348 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.StartAtSweetSpot);}
+              }
+            }
+            Fl_Group {} {
+              label {K3 A1A configuation} open
+              xywh {5 140 490 60} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnCWIsLSB {
+                label {CW is LSB}
+                callback {progdefaults.CWIsLSB=o->value();
+progdefaults.changed=true;}
+                tooltip {Select this for Elecraft K3
+Other radios should not need it.} xywh {220 161 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.CWIsLSB);}
               }
             }
           }
