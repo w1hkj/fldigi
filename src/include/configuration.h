@@ -947,6 +947,9 @@
         ELEM_(double, PCMvolume, "PCMVOLUME",                                           \
               "PCM channel level",                                                      \
               0.8)                                                                      \
+        ELEM_(double, txlevel, "TXATTEN",                                               \
+              "TX attenuator (db) -30 .. 0",                                            \
+              -3.0)                                                                     \
         ELEM_(bool, MuteInput, "MUTEINPUT",                                             \
               "This setting is currently unused",                                       \
               true)                                                                     \

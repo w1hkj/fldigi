@@ -376,7 +376,15 @@ void modem::ModulateXmtr(double *buffer, int len)
             ModulateStereo( buffer, PTTchannel, len);
         return;
     }
+
+	if (progdefaults.viewXmtSignal)
+		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
+
 	if (withnoise && progdefaults.noise) add_noise(buffer, len);
+
+	double mult = pow(10, progdefaults.txlevel / 20.0);
+	for (int i = 0; i < len; i++) buffer[i] *= mult;
+
 	try {
 		unsigned n = 4;
 		while (scard->Write(buffer, len) == 0 && --n);
@@ -388,15 +396,20 @@ void modem::ModulateXmtr(double *buffer, int len)
 		return;
 	}
 
-	if (progdefaults.viewXmtSignal)
-		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 }
 
 #include <iostream>
 using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len)
 {
+	if (progdefaults.viewXmtSignal)
+		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
+
 	if (withnoise && progdefaults.noise) add_noise(left, len);
+
+	double mult = pow(10, progdefaults.txlevel / 20.0);
+	for (int i = 0; i < len; i++) left[i] *= mult;
+
 	try {
 		unsigned n = 4;
 		while (scard->Write_stereo(left, right, len) == 0 && --n);
@@ -408,8 +421,6 @@ void modem::ModulateStereo(double *left, double *right, int len)
 		return;
 	}
 
-	if (progdefaults.viewXmtSignal)
-		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 }
 
 

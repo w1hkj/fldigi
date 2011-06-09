@@ -188,7 +188,7 @@ progdefaults.changed = true;}
         label UI open
         xywh {0 25 502 346} hide
       } {
-        Fl_Tabs tabsUI {open
+        Fl_Tabs tabsUI {
           xywh {0 25 502 346} selection_color 50
         } {
           Fl_Group tabUserInterface {
@@ -1188,7 +1188,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
+        label Modems
         xywh {-4 25 521 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -2792,7 +2792,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3039,6 +3039,23 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabTxLevel {
+            label TxLevel open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Group {} {
+              label {Tx Attenuator} open
+              xywh {5 60 490 86} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Counter valTxLevel {
+                label {Tx Atten (dB)}
+                callback {progdefaults.txlevel=o->value();}
+                xywh {196 85 120 21} minimum -30 maximum 0 value -6
+                code0 {o->value(progdefaults.txlevel);}
+                code1 {o->lstep(1.0);}
+              }
+            }
+          }
         }
       }
       Fl_Group tabID {
@@ -3230,7 +3247,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
