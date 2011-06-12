@@ -39,6 +39,8 @@
 using namespace std;
 
 // Elements are in enum trx_mode order.
+// N.B. it is not valid to use an _("NLS") string in this table!!
+// ... doing so will break the Fl_menu_item table 'menu_'.  -Kamal
 
 const struct mode_info_t mode_info[NUM_MODES] = {
     { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW", "CW" },
@@ -118,7 +120,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_SSB, &ssb_modem, "SSB", "SSB", "", "SSB", "" },
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "", "", "" },
-        { MODE_ANALYSIS, &anal_modem, "ANALYSIS", _("Freq Analysis"), "", "", "" }
+	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "" }
 };
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
