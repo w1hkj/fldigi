@@ -3130,21 +3130,22 @@ static void cb_opmode_show(Fl_Widget* w, void*)
 	Fl_Menu_* m = (Fl_Menu_*)w;
 	const char* label = m->mvalue()->label();
 
-	Fl_Menu_Item *item, *opmodes = getMenuItem(OPMODES_MLABEL);
+	Fl_Menu_Item *item = 0, *first = 0, *last = 0;
+	item = first = getMenuItem(OPMODES_MLABEL) + 1;
+
 	if (!strcmp(label, OPMODES_ALL)) {
-		int n = opmodes->size();
-		for (int i = 0; i < n; i++) {
-			item = opmodes + i;
+		last = getMenuItem(OPMODES_ALL);
+		while (item != last) {
 			if (item->label())
 				item->show();
+			item++;
 		}
 		menu_[m->value()].label(OPMODES_FEWER);
 		modes_hidden = false;
 	}
 	else {
-		int n = opmodes->size() - 1;
-		for (int i = 0; i < n; i++) {
-			item = opmodes + i;
+		last = getMenuItem(OPMODES_FEWER);
+		while (item != last) {
 			if (item->label() && item->callback() == cb_init_mode) {
 				intptr_t mode = (intptr_t)item->user_data();
 				if (mode < NUM_RXTX_MODES) {
@@ -3154,15 +3155,17 @@ static void cb_opmode_show(Fl_Widget* w, void*)
 						item->hide();
 				}
 			}
+			item++;
 		}
-		for (int i = 0; i < n; i++) {
-			item = opmodes + i;
+		item = first;
+		while (item != last) {
 			if (item->flags & FL_SUBMENU) {
 				if (count_visible_items(item))
 					item->show();
 				else
 					item->hide();
 			}
+			item++;
 		}
 		if (progdefaults.visible_modes.test(MODE_OLIVIA))
 			getMenuItem("Olivia")->show();
@@ -3203,8 +3206,13 @@ void toggle_visible_modes(Fl_Widget*, void*)
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 {
-	if (submenu == 0 || !(submenu->flags & FL_SUBMENU))
-		submenu = menu_;
+	if (submenu == 0 || !(submenu->flags & FL_SUBMENU)) {
+		if ( menu_->size() != sizeof(menu_)/sizeof(*menu_) ) {
+			LOG_ERROR("FIXME: the menu_ table is corrupt!");
+			abort();
+		}
+ 		submenu = menu_;
+	}
 
 	int size = submenu->size() - 1;
 	Fl_Menu_Item *item = 0;
@@ -3217,8 +3225,10 @@ Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 			break;
 		}
 	}
-	if (!item)
-		LOG_ERROR("FIXME: could not find menu \"%s\"", caption);
+	if (!item) {
+		LOG_ERROR("FIXME: could not find menu item \"%s\"", caption);
+		abort();
+	}
 	return item;
 }
 
