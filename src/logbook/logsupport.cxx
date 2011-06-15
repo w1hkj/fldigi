@@ -569,6 +569,7 @@ void clearRecord() {
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
 	inpCONT_log->value("");
+	inpCNTY_log->value("");
 	inpCQZ_log->value("");
 	inpITUZ_log->value("");
 	inpTX_pwr_log->value("");
@@ -611,6 +612,7 @@ void saveRecord() {
 	} else {
 		rec.putField(MYXCHG, inpMyXchg_log->value());
 	}
+	rec.putField(CNTY, inpCNTY_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(CONT, inpCONT_log->value());
@@ -657,6 +659,7 @@ cQsoRec rec;
 	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(XCHG1, inpXchgIn_log->value());
 	rec.putField(MYXCHG, inpMyXchg_log->value());
+	rec.putField(CNTY, inpCNTY_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
 	rec.putField(CONT, inpCONT_log->value());
@@ -729,6 +732,7 @@ void EditRecord( int i )
 	inpSerNoOut_log->value(editQSO->getField(STX));
 	inpXchgIn_log->value(editQSO->getField(XCHG1));
 	inpMyXchg_log->value(editQSO->getField(MYXCHG));
+	inpCNTY_log->value(editQSO->getField(CNTY));
 	inpIOTA_log->value(editQSO->getField(IOTA));
 	inpDXCC_log->value(editQSO->getField(DXCC));
 	inpCONT_log->value(editQSO->getField(CONT));
@@ -779,6 +783,7 @@ void AddRecord ()
 	inpNotes_log->value (inpNotes->value());
 
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
+	inpCNTY_log->value("");
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
 	inpCONT_log->value("");

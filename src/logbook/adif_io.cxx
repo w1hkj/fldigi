@@ -46,7 +46,7 @@ FIELD fields[] = {
 	{ARRL_SECT,      0,  NULL},                // contacted stations ARRL section
 	{BAND,           0,  &btnSelectBand},      // QSO band
 	{CALL,           0,  &btnSelectCall},      // contacted stations CALLSIGN
-	{CNTY,           0,  NULL},                // secondary political subdivision, ie: county
+	{CNTY,           0,  &btnSelectCNTY},      // secondary political subdivision, ie: county
 	{COMMENT,        0,  NULL},                // comment field for QSO
 	{CONT,           0,  &btnSelectCONT},      // contacted stations continent
 	{CONTEST_ID,     0,  NULL},                // QSO contest identifier
