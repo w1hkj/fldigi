@@ -459,6 +459,13 @@ void generate_option_help(void) {
 	     << "    Set the ARQ TCP server port\n"
 	     << "    The default is: " << progdefaults.arq_port << "\n\n"
 
+	     << "  --xmllog-server-address HOSTNAME\n"
+	     << "    Set the XMLLOG server address\n"
+	     << "    The default is: " << progdefaults.xmllog_address << "\n\n"
+	     << "  --xmllog-server-port PORT\n"
+	     << "    Set the XMLLOG server port\n"
+	     << "    The default is: " << progdefaults.xmllog_port << "\n\n"
+
 #if USE_XMLRPC
 	     << "  --xmlrpc-server-address HOSTNAME\n"
 	     << "    Set the XML-RPC server address\n"
@@ -607,6 +614,9 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_CONFIG_DIR,
 	       OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 	       OPT_SHOW_CPU_CHECK,
+
+	       OPT_XMLLOG_ADDRESS, OPT_XMLLOG_PORT,
+
 #if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
@@ -639,6 +649,9 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
 
 		{ "cpu-speed-test", 0, 0, OPT_SHOW_CPU_CHECK },
+
+		{ "xmllog-server-address", 1, 0, OPT_XMLLOG_ADDRESS },
+		{ "xmllog-server-port",    1, 0, OPT_XMLLOG_PORT },
 
 #if USE_XMLRPC
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
@@ -723,6 +736,13 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 		case OPT_ARQ_PORT:
 			progdefaults.arq_port = optarg;
+			break;
+
+		case OPT_XMLLOG_ADDRESS:
+			progdefaults.xmllog_address = optarg;
+			break;
+		case OPT_XMLLOG_PORT:
+			progdefaults.xmllog_port = optarg;
 			break;
 
 #if USE_XMLRPC

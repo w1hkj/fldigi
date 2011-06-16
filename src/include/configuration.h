@@ -1201,6 +1201,13 @@
               "UI Tune select color",                                                   \
               FL_RED)                                                                   \
                                                                                         \
+        /* XMLRPC LOGBOOK server */                                                     \
+        ELEM_(bool, xml_logbook, "XML_LOGBOOK",                                         \
+              "Try to open remote xml logbook",                                         \
+              false)                                                                    \
+        ELEM_(std::string, xmllog_address, "", "",  "127.0.0.1")                        \
+        ELEM_(std::string, xmllog_port, "", "",  "8421")                                \
+                                                                                        \
         /* XML-RPC/ARQ servers */                                                       \
         ELEM_(std::string, xmlrpc_address, "", "",  "127.0.0.1")                        \
         ELEM_(std::string, xmlrpc_port, "", "",  "7362")                                \

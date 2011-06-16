@@ -36,13 +36,12 @@
 
 using namespace XmlRpc;
 
-/*
-XmlRpcClient log_client("localhost", 8421);
+XmlRpcClient *log_client = (XmlRpcClient *)0;
 
 bool test_connection(bool info = false)
 {
 	XmlRpcValue query, result;
-	if (log_client.execute("system.listMethods", query, result)) {
+	if (log_client->execute("system.listMethods", query, result)) {
 		if (info) {
 			string res;
 			int asize = result.size();
@@ -52,7 +51,7 @@ bool test_connection(bool info = false)
 				oneArg[0] = result[i];
 				try {
 					if (std::string(result[i]).find("system") == string::npos) {
-						log_client.execute("system.methodHelp", oneArg, help);
+						log_client->execute("system.methodHelp", oneArg, help);
 						res.append("\n\t").append(help);
 					}
 				} catch ( XmlRpcException err) {
@@ -68,15 +67,13 @@ bool test_connection(bool info = false)
 
 void activate_log_menus(bool val)
 {
+	set_server_label(!val);
 	activate_menu_item(_("View"), val);
 	activate_menu_item(_("New"), val);
 	activate_menu_item(_("Open..."), val);
 	activate_menu_item(_("Save"), val);
-	activate_menu_item(_("Merge..."), val);
-	activate_menu_item(_("Export..."), val);
-	activate_menu_item(_("Text..."), val);
-	activate_menu_item(_("CSV..."), val);
-	activate_menu_item(_("Cabrillo..."), val);
+	activate_menu_item(_("ADIF"), val);
+	activate_menu_item(_("Reports"), val);
 }
 
 string get_field(string &adifline, int field)
@@ -98,14 +95,13 @@ bool xml_get_record(const char *callsign)
 	XmlRpcValue oneArg, result;
 	if (!test_connection()) {
 		LOG_INFO("%s","Logbook server down!");
-		progStatus.xml_logbook = false;
-		set_server_label(false);
+		progdefaults.xml_logbook = false;
 		activate_log_menus(true);
 		start_logbook();
 		return false;
 	}
 	oneArg[0] = callsign;
-	if (log_client.execute("log.get_record", oneArg, result)) {
+	if (log_client->execute("log.get_record", oneArg, result)) {
 		string adifline = std::string(result);
 		inpName->value(get_field(adifline, NAME).c_str());
 		inpQth->value(get_field(adifline, QTH).c_str());
@@ -138,8 +134,7 @@ void xml_add_record()
 {
 	if (!test_connection()) {
 		LOG_INFO("%s","Logbook server down!");
-		progStatus.xml_logbook = false;
-		set_server_label(false);
+		progdefaults.xml_logbook = false;
 		activate_log_menus(true);
 		start_logbook();
 		AddRecord();
@@ -178,6 +173,7 @@ void xml_add_record()
 	adif_str(NOTES, inpNotes->value());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
+// need to add the remaining fields
 	adif_str(IOTA, "");
 	adif_str(DXCC, "");
 	adif_str(QSLRDATE, "");
@@ -187,15 +183,14 @@ void xml_add_record()
 // send it to the server
 	XmlRpcValue oneArg, result;
 	oneArg[0] = adif.c_str();
-	std::cout << "result: " << log_client.execute("log.add_record", oneArg, result) << std::endl;
+	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
 }
 
 bool xml_check_dup()
 {
 	if (!test_connection()) {
 		LOG_INFO("%s","Logbook server down!");
-		progStatus.xml_logbook = false;
-		set_server_label(false);
+		progdefaults.xml_logbook = false;
 		activate_log_menus(true);
 		start_logbook();
 		return false;
@@ -209,33 +204,36 @@ bool xml_check_dup()
 	six_args[3] = progdefaults.dupband ? inpFreq->value() : "0";
 	six_args[4] = (progdefaults.dupstate && inpState->value()[0]) ? inpState->value() : "0";
 	six_args[5] = (progdefaults.dupxchg1 && inpXchgIn->value()[0]) ? inpXchgIn->value() : "0";
-	if (log_client.execute("log.check_dup", six_args, result)) {
+	if (log_client->execute("log.check_dup", six_args, result)) {
 		string res = std::string(result);
 		if (res == "true")
 			return true;
 	}
 	return false;
 }
-*/
+
 
 void connect_to_log_server()
 {
-//	if (progStatus.xml_logbook) {
-//		if (test_connection(true)) {
-//			close_logbook();
-//			if (dlgLogbook) dlgLogbook->hide();
-//			activate_log_menus(false);
-//		} else {
-//			progStatus.xml_logbook = false;
-//			set_server_label(false);
-//			activate_log_menus(true);
+	if (!log_client) {
+		int xmllog_port = atoi(progdefaults.xmllog_port.c_str());
+		log_client = new XmlRpcClient(progdefaults.xmllog_address.c_str(), xmllog_port);
+	}
+
+	if (progdefaults.xml_logbook) {
+		if (test_connection(true)) {
+			close_logbook();
+			if (dlgLogbook) dlgLogbook->hide();
+			activate_log_menus(false);
+		} else {
+			progdefaults.xml_logbook = false;
+			activate_log_menus(true);
 			start_logbook();
-//		}
-//	} else {
-//		close_logbook();
-//		set_server_label(false);
-//		activate_log_menus(true);
-//		start_logbook();
-//	}
+		}
+	} else {
+		close_logbook();
+		activate_log_menus(true);
+		start_logbook();
+	}
 }
 

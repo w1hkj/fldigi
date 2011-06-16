@@ -174,8 +174,6 @@ status progStatus = {
 	progdefaults.UOStx,
 
 	"CQ",				// string browser_search;
-	
-//	false, // xml_logbook
 
 	false				// bool bLastStateRead;
 };
