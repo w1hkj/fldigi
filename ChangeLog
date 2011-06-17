@@ -1,6 +1,46 @@
-2011-03-06  David Freese  <w1hkj@w1hkj.com>
+2011-06-17  David Freese  <w1hkj@w1hkj.com>
 
-	f326d93: Wrap File reception
+	37f74b7: Logbook server
+	360eedb: Logbook client
+	27b16f2: Logbook County
+
+2011-06-11  Kamal Mostafa  <kamal@whence.com>
+
+	6e0cd5f: Mode_info table restrictions
+
+2011-06-06  Pierfrancesco Caci  <ik5pvx@gmail.com>
+
+	af057a4: K3 CW-QSY
+
+2011-06-06  David Freese  <w1hkj@w1hkj.com>
+
+	6440654: TX attenuator
+	2b89e69: LOG.ADIF export
+	ec6104e: Duplicate #defines
+
+2011-05-23  Kamal Mostafa  <kamal@whence.com>
+
+	8c066af: GNU/Hurd build fix
+
+2011-05-23  David Freese  <w1hkj@w1hkj.com>
+
+	ff3e162: Spot-notifier
+
+2011-05-23  John Phelps, KL4YFD  <phjo1001@stcloudstate.edu>
+
+	ab1602b: High baud rate Dom/Thor
+
+2011-05-23  Chris Sylvain  <kb3cs@arrl.net>
+
+	4931d1d: Packet Modem
+
+2011-03-23  David Freese  <w1hkj@w1hkj.com>
+
+	b74102f: Config defaults
+	485a633: No rig mode selection
+	f6bb403: wo save status
+	e04d5f6: flmsg auto start
+	91d9385: Wrap File reception
 	c054ee6: EXEC win32 macro tag
 
 2011-03-06  Stelios Bounanos  <vcs@enotty.net>
