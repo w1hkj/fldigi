@@ -189,12 +189,12 @@ progdefaults.changed = true;}
         label UI open
         xywh {0 25 502 346} hide
       } {
-        Fl_Tabs tabsUI {
+        Fl_Tabs tabsUI {open
           xywh {0 25 502 346} selection_color 50
         } {
           Fl_Group tabUserInterface {
-            label General open
-            xywh {0 50 500 320} hide
+            label {Gen'} open
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {2 55 496 59} box ENGRAVED_FRAME
@@ -584,7 +584,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label Exchanges open
@@ -723,7 +723,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWF_UI {
-            label {WF Controls}
+            label {WF Ctrls}
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
@@ -862,7 +862,7 @@ WF_UI();}
             }
           }
           Fl_Group tabRxText {
-            label {Rx Text} open
+            label {Rx Text}
             xywh {0 50 500 320} hide
           } {
             Fl_Check_Button btn_rx_lowercase {
@@ -871,6 +871,34 @@ WF_UI();}
 progdefaults.changed = true;}
               xywh {27 75 389 20} down_box DOWN_BOX
               code0 {o->value(progdefaults.rx_lowercase);}
+            }
+          }
+          Fl_Group tabLogServer {
+            label {Log server} open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Group {} {
+              label {Client/Server Logbook} open
+              xywh {5 60 490 147} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Input xmllogServerAddress {
+                label {Server Address:}
+                callback {progdefaults.xmllog_address = o->value();}
+                tooltip {Enter URL address of server} xywh {139 85 180 25}
+                code0 {o->value(progdefaults.xmllog_address.c_str());}
+              }
+              Fl_Input xmllogServerPort {
+                label {Server Port:}
+                callback {progdefaults.xmllog_port = o->value();}
+                tooltip {Enter Port \# assigned to server} xywh {139 121 98 25}
+                code0 {o->value(progdefaults.xmllog_port.c_str());}
+              }
+              Fl_Button btn_reconnect_log_server {
+                label Reconnect
+                callback {progdefaults.xml_logbook = true;
+connect_to_log_server();}
+                xywh {194 156 115 26}
+              }
             }
           }
         }
@@ -2908,7 +2936,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio open
+        label Audio
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open

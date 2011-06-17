@@ -218,6 +218,10 @@ void connect_to_log_server()
 	if (!log_client) {
 		int xmllog_port = atoi(progdefaults.xmllog_port.c_str());
 		log_client = new XmlRpcClient(progdefaults.xmllog_address.c_str(), xmllog_port);
+	} else {
+		delete log_client;
+		int xmllog_port = atoi(progdefaults.xmllog_port.c_str());
+		log_client = new XmlRpcClient(progdefaults.xmllog_address.c_str(), xmllog_port);
 	}
 
 	if (progdefaults.xml_logbook) {
