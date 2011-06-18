@@ -26,6 +26,7 @@
 #include "util.h"
 #include "date.h"
 #include "logbook.h"
+#include "logger.h"
 #include "fl_digi.h"
 #include "adif_io.h"
 #include "modem.h"
@@ -142,6 +143,7 @@ void xml_add_record()
 	}
 
 // create the ADIF record
+	char Mhz[30];
 	adif.erase();
 
 	adif_str(QSO_DATE, sDate_on.c_str()); 
@@ -150,7 +152,6 @@ void xml_add_record()
 	adif_str(TIME_OFF, ztime());
 	adif_str(CALL, inpCall->value());
 	{
-		char Mhz[30];
 		snprintf(Mhz, sizeof(Mhz), "%-f", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
 		adif_str(FREQ, Mhz);
@@ -184,6 +185,41 @@ void xml_add_record()
 	XmlRpcValue oneArg, result;
 	oneArg[0] = adif.c_str();
 	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
+
+// submit it foreign log programs
+	cQsoRec rec;
+	rec.putField(CALL, inpCall->value());
+	rec.putField(NAME, inpName->value());
+	rec.putField(QSO_DATE, sDate_on.c_str());
+	rec.putField(QSO_DATE_OFF, sDate_off.c_str());
+	rec.putField(TIME_ON, inpTimeOn->value());
+	rec.putField(TIME_OFF, ztime());
+	rec.putField(FREQ, Mhz);
+	rec.putField(MODE, mode_info[active_modem->get_mode()].adif_name);
+	rec.putField(QTH, inpQth->value());
+	rec.putField(STATE, inpState->value());
+	rec.putField(VE_PROV, inpVEprov->value());
+	rec.putField(COUNTRY, inpCountry->value());
+	rec.putField(GRIDSQUARE, inpLoc->value());
+	rec.putField(NOTES, inpNotes->value());
+	rec.putField(QSLRDATE, "");
+	rec.putField(QSLSDATE, "");
+	rec.putField(RST_RCVD, inpRstIn->value ());
+	rec.putField(RST_SENT, inpRstOut->value ());
+	rec.putField(SRX, inpSerNo->value());
+	rec.putField(STX, outSerNo->value());
+	rec.putField(XCHG1, inpXchgIn->value());
+	rec.putField(MYXCHG, progdefaults.myXchg.c_str());
+	rec.putField(CNTY, "");
+	rec.putField(IOTA, "");
+	rec.putField(DXCC, "");
+	rec.putField(CONT, "");
+	rec.putField(CQZ, "");
+	rec.putField(ITUZ, "");
+	rec.putField(TX_PWR, "");
+
+	submit_record(rec);
+
 }
 
 bool xml_check_dup()
