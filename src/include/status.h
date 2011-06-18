@@ -120,10 +120,6 @@ struct status {
 
 	std::string	browser_search;
 
-// external logbook server
-// commented out pending completion of fllog development
-//	bool	xml_logbook;
-
 	bool	bLastStateRead;
 
 	void initLastState();

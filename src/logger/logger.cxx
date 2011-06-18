@@ -43,6 +43,7 @@
 #include "spot.h"
 #include "adif_io.h"
 #include "date.h"
+#include "configuration.h"
 
 #include "logsupport.h"
 
@@ -205,7 +206,7 @@ void submit_record(cQsoRec &rec)
 
 //---------------------------------------------------------------------
 
-//extern void xml_add_record();
+extern void xml_add_record();
 
 void submit_log(void)
 {
@@ -214,9 +215,9 @@ void submit_log(void)
 
 	logmode = mode_info[active_modem->get_mode()].adif_name;
 
-//	if (progStatus.xml_logbook)
-//		xml_add_record();
-//	else
+	if (progdefaults.xml_logbook)
+		xml_add_record();
+	else
 		AddRecord();
 
 }

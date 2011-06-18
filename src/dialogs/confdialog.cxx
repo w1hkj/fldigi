@@ -701,6 +701,27 @@ static void cb_btn_rx_lowercase(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabLogServer=(Fl_Group *)0;
+
+Fl_Input *xmllogServerAddress=(Fl_Input *)0;
+
+static void cb_xmllogServerAddress(Fl_Input* o, void*) {
+  progdefaults.xmllog_address = o->value();
+}
+
+Fl_Input *xmllogServerPort=(Fl_Input *)0;
+
+static void cb_xmllogServerPort(Fl_Input* o, void*) {
+  progdefaults.xmllog_port = o->value();
+}
+
+Fl_Button *btn_reconnect_log_server=(Fl_Button *)0;
+
+static void cb_btn_reconnect_log_server(Fl_Button*, void*) {
+  progdefaults.xml_logbook = true;
+connect_to_log_server();
+}
+
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
 Fl_Tabs *tabsWaterfall=(Fl_Tabs *)0;
@@ -3045,8 +3066,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 502, 346);
           tabsUI->selection_color((Fl_Color)FL_LIGHT1);
-          { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("General"));
-            tabUserInterface->hide();
+          { tabUserInterface = new Fl_Group(0, 50, 500, 320, _("Gen\'"));
             { Fl_Group* o = new Fl_Group(2, 55, 496, 59);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 61, 120, 20, _("Show tooltips"));
@@ -3507,7 +3527,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Controls"));
+          { tabWF_UI = new Fl_Group(0, 50, 500, 320, _("WF Ctrls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(2, 58, 496, 253);
               o->box(FL_ENGRAVED_BOX);
@@ -3592,6 +3612,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabRxText = new Fl_Group(0, 50, 500, 320, _("Rx Text"));
+            tabRxText->hide();
             { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(27, 75, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
               btn_rx_lowercase->down_box(FL_DOWN_BOX);
               btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
@@ -3599,6 +3620,28 @@ ab and newline are automatically included."));
             } // Fl_Check_Button* btn_rx_lowercase
             tabRxText->end();
           } // Fl_Group* tabRxText
+          { tabLogServer = new Fl_Group(0, 50, 500, 320, _("Log server"));
+            tabLogServer->hide();
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 147, _("Client/Server Logbook"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Input* o = xmllogServerAddress = new Fl_Input(139, 85, 180, 25, _("Server Address:"));
+                xmllogServerAddress->tooltip(_("Enter URL address of server"));
+                xmllogServerAddress->callback((Fl_Callback*)cb_xmllogServerAddress);
+                o->value(progdefaults.xmllog_address.c_str());
+              } // Fl_Input* xmllogServerAddress
+              { Fl_Input* o = xmllogServerPort = new Fl_Input(139, 121, 98, 25, _("Server Port:"));
+                xmllogServerPort->tooltip(_("Enter Port # assigned to server"));
+                xmllogServerPort->callback((Fl_Callback*)cb_xmllogServerPort);
+                o->value(progdefaults.xmllog_port.c_str());
+              } // Fl_Input* xmllogServerPort
+              { btn_reconnect_log_server = new Fl_Button(194, 156, 115, 26, _("Reconnect"));
+                btn_reconnect_log_server->callback((Fl_Callback*)cb_btn_reconnect_log_server);
+              } // Fl_Button* btn_reconnect_log_server
+              o->end();
+            } // Fl_Group* o
+            tabLogServer->end();
+          } // Fl_Group* tabLogServer
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();

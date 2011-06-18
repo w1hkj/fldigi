@@ -108,6 +108,11 @@ extern Fl_Button *btn_wf_enable_all;
 extern Fl_Button *btn_wf_disable_all;
 extern Fl_Group *tabRxText;
 extern Fl_Check_Button *btn_rx_lowercase;
+extern Fl_Group *tabLogServer;
+#include <FL/Fl_Input.H>
+extern Fl_Input *xmllogServerAddress;
+extern Fl_Input *xmllogServerPort;
+extern Fl_Button *btn_reconnect_log_server;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
