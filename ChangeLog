@@ -1,6 +1,7 @@
-2011-06-17  David Freese  <w1hkj@w1hkj.com>
+2011-06-18  David Freese  <w1hkj@w1hkj.com>
 
-	37f74b7: Logbook server
+	b0c6941: XLOG save with xmllog
+	13819f5: Logbook server
 	360eedb: Logbook client
 	27b16f2: Logbook County
 
