@@ -377,17 +377,17 @@ void qso_selectFreq()
 	if (!n) return;
 
 	n -= 1;
-// transceiver mode
-	if (freqlist[n].rmode != "NONE") {
-		qso_opMODE->value(freqlist[n].rmode.c_str());
-		cb_qso_opMODE();
-	}
 // transceiver frequency
 	if (freqlist[n].rfcarrier > 0) {
 		qsoFreqDisp1->value(freqlist[n].rfcarrier);
 		qsoFreqDisp2->value(freqlist[n].rfcarrier);
 		qsoFreqDisp3->value(freqlist[n].rfcarrier);
 		sendFreq(freqlist[n].rfcarrier);
+	}
+// transceiver mode
+	if (freqlist[n].rmode != "NONE") {
+		qso_opMODE->value(freqlist[n].rmode.c_str());
+		cb_qso_opMODE();
 	}
 // modem type & audio sub carrier
 	if (freqlist[n].mode != NUM_MODES) {
