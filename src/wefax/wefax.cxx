@@ -702,6 +702,7 @@ private:
 	syncobj m_sync_rx ;
 	std::queue< std::string > m_received_files ;
 public:
+	/// Called by the engine each time a file is saved.
 	void put_received_file( const std::string &filnam )
 	{
 		guard_lock g( m_sync_rx.mtxp() );
@@ -1872,15 +1873,14 @@ void wefax::set_lpm( int the_lpm )
 	return m_impl->lpm_set( the_lpm );
 }
 
-/// Transmission time in seconds.
+/// Transmission time in seconds. Factor 3 if b/w image.
 int wefax::tx_time( int nb_bytes ) const
 {
-	return (double)nb_bytes / modem::samplerate ;
+	return (double)nb_bytes / ( modem::samplerate * 3.0 );
 }
 
 /// This prints a message about the progress of image sending,
 /// then tells whether the user has requested the end.
-/// FIXME: Error, evaluated time much too long.
 bool wefax::is_tx_finished( int ix_sample, int nb_sample, const char * msg ) const
 {
 	static char wefaxmsg[256];

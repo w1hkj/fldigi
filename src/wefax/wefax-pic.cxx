@@ -91,6 +91,7 @@ static Fl_Choice *wefax_choice_tx_lpm           = (Fl_Choice *)0;
 static Fl_Round_Button *wefax_round_tx_adif_log = (Fl_Round_Button *)0;
 static Fl_Button *wefax_btn_tx_send_color       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_send_grey        = (Fl_Button *)0;
+static Fl_Output *wefax_out_tx_row_num          = (Fl_Output *)0;
 static Fl_Button *wefax_btn_tx_send_abort       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_load             = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_clear            = (Fl_Button *)0;
@@ -149,6 +150,7 @@ static const int mini_max_fax_lines = 1000 ;
 /// However, when the printing resumes, the position is not altered.
 static volatile bool reception_paused = false ;
 
+/// Sets the label of the received or sent image.
 static void set_win_label( Fl_Double_Window * wefax_pic, const std::string & lab)
 {
 	char* label = strdup(lab.c_str());
@@ -157,6 +159,7 @@ static void set_win_label( Fl_Double_Window * wefax_pic, const std::string & lab
 	wefax_pic->redraw();
 }
 
+/// Called when clearing the image to send.
 static void clear_image(void)
 {
 	if (wefax_xmtimg)
@@ -426,8 +429,7 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 	/// Prints the row number sometimes only, to save CPU.
 	if( ( pix_pos % 1000 ) == 0 ) {
 		char row_num_buffer[20];
-		snprintf( row_num_buffer, sizeof(row_num_buffer),
-			"%d", row_number );
+		snprintf( row_num_buffer, sizeof(row_num_buffer), "%d", row_number );
 		wefax_out_rx_row_num->value( row_num_buffer );
 	}
 
@@ -515,7 +517,14 @@ static void add_to_files_list( const std::string & the_fil_nam )
 		wefax_browse_rx_events->redraw();
 		LocalSleep(1);
 	}
-	wefax_serviceme->put_received_file( the_fil_nam );
+
+	/// If there is not directory specification, adds the default dir.
+	if( the_fil_nam.empty() )
+		LOG_WARN("Empty file name");
+	else if( the_fil_nam[0] != '/' )
+		wefax_serviceme->put_received_file( progdefaults.wefax_save_dir + '/' + the_fil_nam );
+	else
+		wefax_serviceme->put_received_file( the_fil_nam );
 };
 
 static void wefax_cb_pic_rx_abort( Fl_Widget *, void *)
@@ -1241,6 +1250,15 @@ void wefax_pic::set_tx_pic(unsigned char data, int col, int row, int tx_img_col,
 		wefax_pic_tx_picture->pixel( data, tripleOffset + 1 );
 		wefax_pic_tx_picture->pixel( data, tripleOffset + 2 );
 	}
+
+	static int previous_row = -1 ;
+	if( row != previous_row )
+	{
+		previous_row = row ;
+		char row_num_buffer[20];
+		snprintf( row_num_buffer, sizeof(row_num_buffer), "%d", row );
+		wefax_out_tx_row_num->value( row_num_buffer );
+	}
 }
 
 static void wefax_cb_pic_tx_load(Fl_Widget *, void *)
@@ -1269,13 +1287,17 @@ static void wefax_pic_tx_send_common(
 	FL_LOCK_D();
 
 	wefax_choice_tx_lpm->hide();
+	wefax_round_tx_adif_log->hide();
 	wefax_btn_tx_send_color->hide();
 	wefax_btn_tx_send_grey->hide();
 	wefax_btn_tx_load->hide();
 	wefax_btn_tx_clear->hide();
 	wefax_btn_tx_close->hide();
+	wefax_out_tx_row_num->show();
 	wefax_btn_tx_send_abort->show();
 	wefax_pic_tx_picture->clear();
+
+	wefax_out_tx_row_num->value( "Init" );
 
 	wefax_serviceme->set_tx_parameters(
 			get_choice_lpm_value( wefax_choice_tx_lpm ),
@@ -1358,7 +1380,9 @@ static void wefax_cb_pic_tx_adif_log( Fl_Widget *, void *)
 
 void wefax_pic::restart_tx_viewer(void)
 {
+	wefax_out_tx_row_num->hide();
 	wefax_btn_tx_send_abort->hide();
+	wefax_round_tx_adif_log->show();
 	wefax_btn_tx_load->show();
 	wefax_btn_tx_close->show();
 	if( wefax_image_loaded_in_gui )
@@ -1456,10 +1480,17 @@ void wefax_pic::create_tx_viewer(void)
 	wefax_btn_tx_close = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Close"));
 	wefax_btn_tx_close->callback(wefax_cb_pic_tx_close, 0);
 
-	wefax_btn_tx_send_abort = new Fl_Button(84, y_btn, 122, hei_tx_btn, "Abort Xmt");
+	static const char * title_row_num = "" ;
+	width_offset += fl_width( title_row_num );
+	wefax_out_tx_row_num = new Fl_Output(20, y_btn, 100, hei_tx_btn, _(title_row_num));
+	wefax_out_tx_row_num->align(FL_ALIGN_LEFT);
+	wefax_out_tx_row_num->tooltip("Fax line number being sent.");
+
+	wefax_btn_tx_send_abort = new Fl_Button(180, y_btn, 122, hei_tx_btn, "Abort Xmt");
 	wefax_btn_tx_send_abort->callback(wefax_cb_pic_tx_send_abort, 0);
 	wefax_btn_tx_send_abort->tooltip("Abort transmission");
 
+	wefax_out_tx_row_num->hide();
 	wefax_btn_tx_send_abort->hide();
 	wefax_btn_tx_send_color->deactivate();
 	wefax_btn_tx_send_grey->deactivate();
