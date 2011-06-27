@@ -21,7 +21,9 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
-
+#include <stdexcept>
+#include <string.h>
+#include <errno.h>
 #include "threads.h"
 
 THREAD_ID_TYPE thread_id_;
@@ -99,3 +101,50 @@ void linux_log_tid(void)
 	LOG_DEBUG(PACKAGE_TARNAME " thread %" PRIdPTR " is LWP %ld", GET_THREAD_ID(), syscall(SYS_gettid));
 }
 #endif
+
+// Synchronization objects.
+
+guard_lock::guard_lock(pthread_mutex_t* m) : mutex(m)
+{
+	pthread_mutex_lock(mutex);
+}
+
+guard_lock::~guard_lock(void)
+{
+	pthread_mutex_unlock(mutex);
+}
+
+syncobj::syncobj()
+{
+	pthread_mutex_init( & m_mutex, NULL );
+	pthread_cond_init( & m_cond, NULL );
+}
+
+syncobj::~syncobj()
+{
+	pthread_mutex_init( & m_mutex, NULL );
+	pthread_cond_init( & m_cond, NULL );
+}
+
+void syncobj::signal()
+{
+	int rc = pthread_cond_signal( &m_cond );
+	if( rc )
+	{
+		throw std::runtime_error(strerror(rc));
+	}
+}
+
+bool syncobj::wait( double seconds )
+{
+	int rc = pthread_cond_timedwait_rel( &m_cond, &m_mutex, seconds );
+	switch( rc )
+	{
+	case 0 : return true ;
+	default : throw std::runtime_error(strerror(rc));
+	case ETIMEDOUT: return false ;
+	}
+}
+
+
+

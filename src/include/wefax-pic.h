@@ -35,6 +35,8 @@ public:
 	static void setpicture_link(wefax *me);
 	static void save_image(const std::string & fil_name, const std::string & extra_comments);
 	static void power( double start, double phase, double image, double black, double stop );
+	static void send_image( const std::string & fil_name );
+	static void restore_max_lines(void);
 };
 
 #endif // _WEFAX_PIC_H

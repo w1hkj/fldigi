@@ -93,11 +93,16 @@ static Fl_Button *wefax_btn_tx_send_color       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_send_grey        = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_send_abort       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_load             = (Fl_Button *)0;
+static Fl_Button *wefax_btn_tx_clear            = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_close            = (Fl_Button *)0;
 
 static Fl_Shared_Image *wefax_shared_tx_img = (Fl_Shared_Image *)0;
 static unsigned char *wefax_xmtimg = (unsigned char *)0;
 static unsigned char *wefax_xmtpicbuff = (unsigned char *)0;
+
+/// This indicates whether an image to send is loaded in the GUI.
+/// It allows to acquire twice when re-loading an image without sending.
+static bool wefax_image_loaded_in_gui = false ;
 
 /// Used for shifting the received image left and right.
 static volatile int center_val_prev = 0 ;
@@ -143,6 +148,41 @@ static const int mini_max_fax_lines = 1000 ;
 /// When set by the user, no new pixel is added or printed.
 /// However, when the printing resumes, the position is not altered.
 static volatile bool reception_paused = false ;
+
+static void set_win_label( Fl_Double_Window * wefax_pic, const std::string & lab)
+{
+	char* label = strdup(lab.c_str());
+	wefax_pic->copy_label(label);
+	free(label);
+	wefax_pic->redraw();
+}
+
+static void clear_image(void)
+{
+	if (wefax_xmtimg)
+	{
+		delete [] wefax_xmtimg;
+		wefax_xmtimg = NULL ;
+	}
+	if (wefax_shared_tx_img) {
+		wefax_shared_tx_img->release();
+		wefax_shared_tx_img = 0;
+	}
+	set_win_label(wefax_pic_tx_win,"");
+}
+
+/// Clears the loaded image. It allows XML-RPC clients to send an image.
+static void wefax_cb_pic_tx_clear( Fl_Widget *, void *)
+{
+	FL_LOCK_D();
+	wefax_image_loaded_in_gui = false ;
+	clear_image();
+	wefax_pic_tx_picture->clear();
+	wefax_pic::restart_tx_viewer();
+	/// Now the lock can be acquired by XML-RPC.
+	wefax_serviceme->transmit_lock_release( "Cleared" );
+	FL_UNLOCK_D();
+}
 
 static void wefax_cb_pic_tx_close( Fl_Widget *, void *)
 {
@@ -439,6 +479,15 @@ static void wefax_cb_pic_rx_resume( Fl_Widget *, void *)
 	wefax_serviceme->update_rx_label();
 }
 
+static void LocalSleep( int seconds )
+{
+#ifdef __MINGW32__
+		MilliSleep(seconds);
+#else
+		usleep(100000*seconds);
+#endif
+}
+
 /// Displays the latest image file saved.
 static void add_to_files_list( const std::string & the_fil_nam )
 {
@@ -459,22 +508,14 @@ static void add_to_files_list( const std::string & the_fil_nam )
 	/// This window is hidden/shown to signal that a file was added.
 	static const int nb_blink = 5 ;
 	for( int ix_blink = 0 ; ix_blink < nb_blink ; ++ix_blink ) {
-#ifdef __MINGW32__
 		wefax_browse_rx_events->hide();
 		wefax_browse_rx_events->redraw();
-		MilliSleep(1);
+		LocalSleep(1);
 		wefax_browse_rx_events->show();
 		wefax_browse_rx_events->redraw();
-		MilliSleep(1);
-#else
-		wefax_browse_rx_events->hide();
-		wefax_browse_rx_events->redraw();
-		usleep(100000);
-		wefax_browse_rx_events->show();
-		wefax_browse_rx_events->redraw();
-		usleep(100000);
-#endif
+		LocalSleep(1);
 	}
+	wefax_serviceme->put_received_file( the_fil_nam );
 };
 
 static void wefax_cb_pic_rx_abort( Fl_Widget *, void *)
@@ -628,7 +669,7 @@ static void wefax_cb_rx_set_filter( Fl_Widget *, void * )
 	wefax_serviceme->set_rx_filter(ix_filter);
 }
 
-static void restore_max_lines(void)
+void wefax_pic::restore_max_lines(void)
 {
 	char buf_max_lines[20];
 	snprintf( buf_max_lines, sizeof(buf_max_lines), "%d", wefax_serviceme->get_max_lines() );
@@ -644,14 +685,14 @@ static void wefax_cb_pic_max_lines( Fl_Widget *, void * )
 	/// The value given by FLTK should be an integer, but better to be sure.
 	if( 1 != sscanf( ptr_val_gui, "%d", &max_val_gui ) ) {
 		LOG_ERROR( "Cannot parse: %s", ptr_val_gui ) ;
-		restore_max_lines();
+		wefax_pic::restore_max_lines();
 		return ;
 	}
 
 	/// Faxes should not be too small otherwise we will spend all our time
 	/// saving automatic image files.
 	if( max_val_gui < mini_max_fax_lines ) {
-		restore_max_lines();
+		wefax_pic::restore_max_lines();
 		return ;
 	}
 
@@ -952,7 +993,7 @@ void wefax_pic::create_rx_viewer(void)
 	/// This buffer will never change so it does not matter if it is static.
 	static char tooltip_max_lines[256];
 	snprintf(tooltip_max_lines, sizeof(tooltip_max_lines),
-			"Maximum number of lines per image. Must be bigger than %d",
+			"Maximum number of lines per image. Minimum value is %d",
 			mini_max_fax_lines );
 	wefax_int_rx_max->tooltip(tooltip_max_lines);
 
@@ -1068,11 +1109,7 @@ void wefax_pic::set_rx_label(const std::string & win_label)
 	}
 
 	/// This copy seems strange, but otherwise the label is not updated.
-	char* label = strdup(tmp_label.c_str());
-	wefax_pic_rx_win->copy_label(label);
-	free(label);
-
-	wefax_pic_rx_win->redraw_label();
+	set_win_label(wefax_pic_rx_win, tmp_label);
 	FL_UNLOCK_D();
 }
 
@@ -1090,33 +1127,31 @@ void wefax_pic::save_image(const std::string & fil_name, const std::string & ext
 	wefax_serviceme->qso_rec_save();
 }
 
-static void wefax_load_image(const char *fil_name)
+/// Protected by an exclusive mutex.
+static std::string wefax_load_image_after_acquire(const char * fil_name)
 {
-	if (wefax_serviceme != active_modem) return;
+	if (wefax_serviceme != active_modem) return "Not in WEFAX mode";
 
 	wefax_serviceme->qso_rec_init();
 	qso_notes( "TX:", fil_name );
 
-	if (wefax_shared_tx_img) {
-		wefax_shared_tx_img->release();
-		wefax_shared_tx_img = 0;
-	}
+	clear_image();
 	wefax_shared_tx_img = Fl_Shared_Image::get(fil_name);
 	if (!wefax_shared_tx_img) {
-		LOG_ERROR("Could not Fl_Shared_Image::get %s", fil_name);
-		return;
+		std::string err_msg("Cannot call Fl_Shared_Image::get on file:" + std::string(fil_name) );
+		LOG_ERROR(err_msg.c_str());
+		return err_msg;
 	}
 	if (wefax_shared_tx_img->count() > 1) { // we only handle rgb images
-		LOG_ERROR("Handle only RGB images: %s", fil_name );
-		wefax_shared_tx_img->release();
-		wefax_shared_tx_img = 0;
-		return;
+		std::string err_msg("Handle only RGB images: " + std::string(fil_name)  );
+		LOG_ERROR(err_msg.c_str());
+		clear_image();
+		return err_msg;
 	}
 	unsigned char * img_data = (unsigned char *)wefax_shared_tx_img->data()[0];
 	int img_wid = wefax_shared_tx_img->w();
 	int img_hei = wefax_shared_tx_img->h();
 	int img_depth = wefax_shared_tx_img->d();
-	if (wefax_xmtimg) delete [] wefax_xmtimg;
 	wefax_xmtimg = new unsigned char [img_wid * img_hei * bytes_per_pix];
 	if (img_depth == bytes_per_pix)
 		memcpy(wefax_xmtimg, img_data, img_wid*img_hei*bytes_per_pix);
@@ -1135,22 +1170,23 @@ static void wefax_load_image(const char *fil_name)
 			wefax_xmtimg[j] = wefax_xmtimg[j+1] = wefax_xmtimg[j+2] = img_data[i];
 		}
 	} else {
-		LOG_ERROR( "Inconsistent img_depth=%d\n", img_depth );
-		exit(EXIT_FAILURE);
+		std::stringstream err_strm ;
+		err_strm << "Inconsistent img_depth=" << img_depth << " for " << fil_name ;
+		std::string err_msg = err_strm.str();
+		LOG_ERROR( err_msg.c_str() );
+		return err_msg ;
 	};
 
 	wefax_pic::tx_viewer_resize(img_wid, img_hei);
 
-	char* label = strdup(fil_name);
-	wefax_pic_tx_win->copy_label(basename(label));
-	free(label);
+	set_win_label(wefax_pic_tx_win, fil_name);
+
 	wefax_pic_tx_box->label(0);
 
 	// load the picture widget with the rgb image
 	FL_LOCK_D();
 	wefax_pic_tx_picture->show();
 	wefax_pic_tx_picture->clear();
-	wefax_pic_tx_win->redraw();
 	wefax_pic_tx_picture->video(wefax_xmtimg, img_wid * img_hei * bytes_per_pix);
 
 	int tim_color = wefax_serviceme->tx_time( img_wid * img_hei * bytes_per_pix );
@@ -1167,7 +1203,22 @@ static void wefax_load_image(const char *fil_name)
 	wefax_btn_tx_send_grey->tooltip(wefax_txgry_tooltip);
 	wefax_btn_tx_send_grey->activate();
 
+	wefax_btn_tx_clear->activate();
+
 	FL_UNLOCK_D();
+	return std::string();
+}
+
+static void wefax_load_image(const char * fil_name)
+{
+	if (wefax_serviceme != active_modem) return;
+	if( false == wefax_image_loaded_in_gui )
+	{
+		/// So we do not re-acquire the exclusive access to wefax transmission.
+		wefax_serviceme->transmit_lock_acquire(fil_name);
+		wefax_image_loaded_in_gui = true ;
+	}
+	wefax_load_image_after_acquire(fil_name);
 }
 
 void wefax_pic::set_tx_pic(unsigned char data, int col, int row, int tx_img_col, bool is_color )
@@ -1221,6 +1272,7 @@ static void wefax_pic_tx_send_common(
 	wefax_btn_tx_send_color->hide();
 	wefax_btn_tx_send_grey->hide();
 	wefax_btn_tx_load->hide();
+	wefax_btn_tx_clear->hide();
 	wefax_btn_tx_close->hide();
 	wefax_btn_tx_send_abort->show();
 	wefax_pic_tx_picture->clear();
@@ -1307,11 +1359,24 @@ static void wefax_cb_pic_tx_adif_log( Fl_Widget *, void *)
 void wefax_pic::restart_tx_viewer(void)
 {
 	wefax_btn_tx_send_abort->hide();
-	wefax_choice_tx_lpm->show();
-	wefax_btn_tx_send_color->show();
-	wefax_btn_tx_send_grey->show();
 	wefax_btn_tx_load->show();
 	wefax_btn_tx_close->show();
+	if( wefax_image_loaded_in_gui )
+	{
+		// If the image was loaded from the GUI.
+		wefax_choice_tx_lpm->show();
+		wefax_btn_tx_send_color->show();
+		wefax_btn_tx_send_grey->show();
+		wefax_btn_tx_clear->show();
+	}
+	else
+	{
+		/// If the image was loaded and sent from XML-RPC, or no image present.
+		wefax_choice_tx_lpm->deactivate();
+		wefax_btn_tx_send_color->deactivate();
+		wefax_btn_tx_send_grey->deactivate();
+		wefax_btn_tx_clear->deactivate();
+	}
 }
 
 void wefax_pic::create_tx_viewer(void)
@@ -1351,7 +1416,7 @@ void wefax_pic::create_tx_viewer(void)
 	static const int hei_tx_btn = 24 ;
 
 	int width_btn = 0;
-	int width_offset = 35;
+	int width_offset = 30;
 
 	width_btn = 70 ;
 	wefax_choice_tx_lpm = make_lpm_choice( width_offset, y_btn, width_btn, hei_tx_btn );
@@ -1366,23 +1431,28 @@ void wefax_pic::create_tx_viewer(void)
 	wefax_round_tx_adif_log->align(FL_ALIGN_LEFT);
 
 	width_offset += width_btn ;
-	width_btn = 60 ;
-	wefax_btn_tx_send_color = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Xmt Color");
+	width_btn = 50 ;
+	wefax_btn_tx_send_color = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Tx Color");
 	wefax_btn_tx_send_color->callback(wefax_cb_pic_tx_send_color, 0);
 
 	width_offset += width_btn ;
-	width_btn = 60 ;
-	wefax_btn_tx_send_grey = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Xmt Grey");
+	width_btn = 50 ;
+	wefax_btn_tx_send_grey = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Tx B/W");
 	wefax_btn_tx_send_grey->callback( wefax_cb_pic_tx_send_grey, 0);
 
 	width_offset += width_btn ;
-	width_btn = 40 ;
+	width_btn = 35 ;
 	wefax_btn_tx_load = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Load"));
 	wefax_btn_tx_load->callback(wefax_cb_pic_tx_load, 0);
 	wefax_btn_tx_load->tooltip("Load image to send");
 
 	width_offset += width_btn ;
-	width_btn = 40 ;
+	width_btn = 35 ;
+	wefax_btn_tx_clear = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Clear"));
+	wefax_btn_tx_clear->callback(wefax_cb_pic_tx_clear, 0);
+
+	width_offset += width_btn ;
+	width_btn = 35 ;
 	wefax_btn_tx_close = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Close"));
 	wefax_btn_tx_close->callback(wefax_cb_pic_tx_close, 0);
 
@@ -1393,6 +1463,7 @@ void wefax_pic::create_tx_viewer(void)
 	wefax_btn_tx_send_abort->hide();
 	wefax_btn_tx_send_color->deactivate();
 	wefax_btn_tx_send_grey->deactivate();
+	wefax_btn_tx_clear->deactivate();
 
 	wefax_pic_tx_win->end();
 	FL_UNLOCK_D();
@@ -1511,4 +1582,21 @@ void wefax_pic::cb_mnu_pic_viewer(Fl_Menu_ *, void *) {
 	}
 }
 
+/// Called from XML-RPC thread.
+void wefax_pic::send_image( const std::string & fil_nam )
+{
+	LOG_INFO("%s", fil_nam.c_str() );
+	/// Here, transmit_lock_acquire is called by the XML-RPC client.
+	std::string err_msg = wefax_load_image_after_acquire( fil_nam.c_str() );
+	if( ! err_msg.empty() )
+	{
+		if (wefax_serviceme == active_modem)
+		{
+			/// Allows another XML-RPC client or the GUI to send an image.
+			wefax_serviceme->transmit_lock_release( err_msg );
+		}
+		return ;
+	}
+	wefax_cb_pic_tx_send_grey( NULL, NULL );
+}
 
