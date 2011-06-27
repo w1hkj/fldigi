@@ -1,3 +1,20 @@
+
+
+=Version 3.21.12=
+
+2011-06-27  David Freese  <w1hkj@w1hkj.com>
+
+	f92dbf5: XMLRPC linking error
+
+2011-06-26  Pierfrancesco Caci  <pf@tippete.net>
+
+	df89c3c: Swap mode/frequency change from frequency list
+
+2011-06-17  David Freese  <w1hkj@w1hkj.com>
+
+	a741be8: Logbook client for fllog server
+	3c14dc7: Logbook County
+
 2011-06-11  Kamal Mostafa  <kamal@whence.com>
 
 	4e192b5: Mode_info table restrictions
