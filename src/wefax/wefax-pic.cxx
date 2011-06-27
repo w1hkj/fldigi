@@ -693,7 +693,7 @@ static void wefax_cb_pic_max_lines( Fl_Widget *, void * )
 
 	/// The value given by FLTK should be an integer, but better to be sure.
 	if( 1 != sscanf( ptr_val_gui, "%d", &max_val_gui ) ) {
-		LOG_ERROR( "Cannot parse: %s", ptr_val_gui ) ;
+		LOG_ERROR( _("Cannot parse: %s"), ptr_val_gui ) ;
 		wefax_pic::restore_max_lines();
 		return ;
 	}

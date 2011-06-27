@@ -2427,6 +2427,7 @@ public:
 
 // =============================================================================
 
+// Returns the current wefax modem pointer.
 static wefax * get_wefax(void)
 {
 	if( ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
@@ -2443,7 +2444,7 @@ struct Wefax_state_string : public xmlrpc_c::method
 {
 	Wefax_state_string() {
 		_signature = "s:n";
-		_help = "Returns Wefax engine state"; }
+		_help = "Returns Wefax engine state (tx and rx) for information."; }
 
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
@@ -2534,7 +2535,7 @@ struct Wefax_start_manual_reception : public xmlrpc_c::method
 {
 	Wefax_start_manual_reception() {
 		_signature = "s:n";
-		_help = "Starts image reception in manual mode"; }
+		_help = "Starts fax image reception in manual mode"; }
 
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
@@ -2572,7 +2573,7 @@ struct Wefax_set_max_lines : public xmlrpc_c::method
 {
 	Wefax_set_max_lines() {
 		_signature = "s:i";
-		_help = "Set maximum lines for image reception"; }
+		_help = "Set maximum lines for fax image reception"; }
 
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
@@ -2592,7 +2593,7 @@ struct Wefax_get_received_file : public xmlrpc_c::method
 {
 	Wefax_get_received_file() {
 		_signature = "s:i";
-		_help = "Waits for next received file name"; }
+		_help = "Waits for next received fax file, returns its name with a delay. Empty string if timeout."; }
 
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
