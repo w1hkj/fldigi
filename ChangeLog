@@ -1,3 +1,17 @@
+2011-06-27  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	406a5ea: Wefax improvements
+	732f12d: Wefax fixes
+	cfbfe22: Added XML-RPC functions for Wefax
+
+2011-06-27  David Freese  <w1hkj@w1hkj.com>
+
+	f77b48a: XMLRPC linking error
+
+2011-06-26  Pierfrancesco Caci  <pf@tippete.net>
+
+	eda79c4: Swap mode/frequency change from frequency list
+
 2011-06-18  David Freese  <w1hkj@w1hkj.com>
 
 	b0c6941: XLOG save with xmllog
