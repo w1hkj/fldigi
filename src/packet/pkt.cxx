@@ -1073,7 +1073,7 @@ void pkt::expand_MicE(unsigned char *cpI, unsigned char *cpE)
     unsigned char MicEbuf[64], *bp = &MicEbuf[0];
     unsigned char *tbp = bp;
     unsigned int msgABC = 0;
-    PKT_MicE_field Lat, LonOffset, Lon;
+    PKT_MicE_field Lat = North, LonOffset = Zero, Lon = West;
 
     for (int i = 0; i < 3; i++) {
 	// remember: AX.25 dest addr chars are shifted left by one
