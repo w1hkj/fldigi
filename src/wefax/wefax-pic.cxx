@@ -1148,12 +1148,12 @@ static std::string wefax_load_image_after_acquire(const char * fil_name)
 	wefax_shared_tx_img = Fl_Shared_Image::get(fil_name);
 	if (!wefax_shared_tx_img) {
 		std::string err_msg("Cannot call Fl_Shared_Image::get on file:" + std::string(fil_name) );
-		LOG_ERROR(err_msg.c_str());
+		LOG_ERROR("%s",err_msg.c_str());
 		return err_msg;
 	}
 	if (wefax_shared_tx_img->count() > 1) { // we only handle rgb images
 		std::string err_msg("Handle only RGB images: " + std::string(fil_name)  );
-		LOG_ERROR(err_msg.c_str());
+		LOG_ERROR("%s",err_msg.c_str());
 		clear_image();
 		return err_msg;
 	}
@@ -1182,7 +1182,7 @@ static std::string wefax_load_image_after_acquire(const char * fil_name)
 		std::stringstream err_strm ;
 		err_strm << "Inconsistent img_depth=" << img_depth << " for " << fil_name ;
 		std::string err_msg = err_strm.str();
-		LOG_ERROR( err_msg.c_str() );
+		LOG_ERROR("%s",err_msg.c_str());
 		return err_msg ;
 	};
 
