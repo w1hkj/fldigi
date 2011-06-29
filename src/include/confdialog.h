@@ -402,6 +402,7 @@ extern Fl_Value_Input2 *valRTTYsweetspot;
 extern Fl_Value_Input2 *valPSKsweetspot;
 extern Fl_Check_Button *btnStartAtSweetSpot;
 extern Fl_Check_Button *btnCWIsLSB;
+extern Fl_Check_Button *btnCWOffset;
 extern Fl_Group *tabText_IO;
 extern Fl_Group *grpTalker;
 extern void open_talker();

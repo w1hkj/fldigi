@@ -597,8 +597,8 @@ update_freq:
 	    int cwoffset = 0;
 	    string testmode = qso_opMODE->value();
 	    if (testmode == "CW" or testmode == "CWR") {
-		cwoffset = progdefaults.CWsweetspot;
-		usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
+			cwoffset = (progdefaults.CWOffset ? progdefaults.CWsweetspot : 0 );
+			usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
 	    }
 		if (usb)
 			dfreq = rfc + active_modem->get_txfreq() -cwoffset;
@@ -737,8 +737,8 @@ void WFdisp::drawScale() {
 		    int cwoffset = 0;
 		    string testmode = qso_opMODE->value();
 		    if (testmode == "CW" or testmode == "CWR") {
-			cwoffset = progdefaults.CWsweetspot;
-			usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR")); 
+				cwoffset = ( progdefaults.CWOffset ? progdefaults.CWsweetspot : 0 );
+				usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR")); 
 		    }
 			if (usb)
 				fr = (rfc - (rfc%500))/1000.0 + 0.5*i - cwoffset/1000.0;

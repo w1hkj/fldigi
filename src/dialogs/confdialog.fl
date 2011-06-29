@@ -106,8 +106,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -3393,14 +3393,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 500 345} hide
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 51} box ENGRAVED_FRAME align 21
@@ -3615,7 +3615,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -3657,7 +3657,7 @@ OFF - keep current wf cursor position} xywh {15 101 348 20} down_box DOWN_BOX va
               }
             }
             Fl_Group {} {
-              label {K3 A1A configuation} open
+              label {A1A offset configuration} open selected
               xywh {5 140 490 60} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnCWIsLSB {
@@ -3665,8 +3665,15 @@ OFF - keep current wf cursor position} xywh {15 101 348 20} down_box DOWN_BOX va
                 callback {progdefaults.CWIsLSB=o->value();
 progdefaults.changed=true;}
                 tooltip {Select this for Elecraft K3
-Other radios should not need it.} xywh {220 161 70 15} down_box DOWN_BOX
+Other radios should not need it.} xywh {355 165 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.CWIsLSB);}
+              }
+              Fl_Check_Button btnCWOffset {
+                label {Display true frequency in the waterfall}
+                callback {progdefaults.CWOffset=o->value();
+progdefaults.changed=true;}
+                tooltip {Enable to show the true transmit frequency on the waterfall when the radio is in CW (A1A) mode} xywh {30 165 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.CWOffset);}
               }
             }
           }

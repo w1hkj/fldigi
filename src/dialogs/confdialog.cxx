@@ -2898,6 +2898,13 @@ static void cb_btnCWIsLSB(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Check_Button *btnCWOffset=(Fl_Check_Button *)0;
+
+static void cb_btnCWOffset(Fl_Check_Button* o, void*) {
+  progdefaults.CWOffset=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabText_IO=(Fl_Group *)0;
 
 Fl_Group *grpTalker=(Fl_Group *)0;
@@ -3056,6 +3063,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6266,10 +6274,10 @@ d frequency"));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 500, 345, _("Misc"));
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6512,7 +6520,6 @@ d frequency"));
             tabSpot->end();
           } // Fl_Group* tabSpot
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
-            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6582,15 +6589,22 @@ d frequency"));
               } // Fl_Check_Button* btnStartAtSweetSpot
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 140, 490, 60, _("K3 A1A configuation"));
+            { Fl_Group* o = new Fl_Group(5, 140, 490, 60, _("A1A offset configuration"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Check_Button* o = btnCWIsLSB = new Fl_Check_Button(220, 161, 70, 15, _("CW is LSB"));
+              { Fl_Check_Button* o = btnCWIsLSB = new Fl_Check_Button(355, 165, 70, 15, _("CW is LSB"));
                 btnCWIsLSB->tooltip(_("Select this for Elecraft K3\nOther radios should not need it."));
                 btnCWIsLSB->down_box(FL_DOWN_BOX);
                 btnCWIsLSB->callback((Fl_Callback*)cb_btnCWIsLSB);
                 o->value(progdefaults.CWIsLSB);
               } // Fl_Check_Button* btnCWIsLSB
+              { Fl_Check_Button* o = btnCWOffset = new Fl_Check_Button(30, 165, 70, 15, _("Display true frequency in the waterfall"));
+                btnCWOffset->tooltip(_("Enable to show the true transmit frequency on the waterfall when the radio is\
+ in CW (A1A) mode"));
+                btnCWOffset->down_box(FL_DOWN_BOX);
+                btnCWOffset->callback((Fl_Callback*)cb_btnCWOffset);
+                o->value(progdefaults.CWOffset);
+              } // Fl_Check_Button* btnCWOffset
               o->end();
             } // Fl_Group* o
             tabSweetSpot->end();

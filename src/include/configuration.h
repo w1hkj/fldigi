@@ -163,6 +163,9 @@
         ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT",                               \
               "Always start new modems at sweet spot frequencies",                      \
               false)                                                                    \
+        ELEM_(bool, CWOffset, "CWOFFSET",                                                 \
+              "Select if waterfall should compensate for BFO offset in CW",                        \
+              false)                                                                    \
         ELEM_(bool, CWIsLSB, "CWISLSB",                                                 \
               "Select if BFO is injected as LSB instead of USB",                        \
               false)                                                                    \
