@@ -89,25 +89,26 @@ void olivia::tx_init(SoundBase *sc)
 
 void olivia::send_tones()
 {
-	if (tone_midfreq != txbasefreq || tone_bw != bandwidth) {
-		double freqa, freqb;
-		tone_bw = bandwidth;
-		tone_midfreq = txbasefreq;
-		if (reverse) { 
-			freqa = tone_midfreq + (tone_bw / 2.0); 
-			freqb = tone_midfreq - (tone_bw / 2.0); 
-		} else { 
-			freqa = tone_midfreq - (tone_bw / 2.0); 
-			freqb = tone_midfreq + (tone_bw / 2.0); 
-		}
-		preamblephase = 0;
-		for (int i = 0; i < SR4; i++)
-			tonebuff[2*SR4 + i] = tonebuff[i] = nco(freqa) * ampshape[i];
+	double freqa, freqb;
+	tone_bw = bandwidth;
+	tone_midfreq = txbasefreq;
 
-		preamblephase = 0;
-		for (int i = 0; i < SR4; i++)
-			tonebuff[3*SR4 + i] = tonebuff[SR4 + i] = nco(freqb) * ampshape[i];
+	if (reverse) { 
+		freqa = tone_midfreq + (tone_bw / 2.0); 
+		freqb = tone_midfreq - (tone_bw / 2.0); 
+	} else { 
+		freqa = tone_midfreq - (tone_bw / 2.0); 
+		freqb = tone_midfreq + (tone_bw / 2.0); 
 	}
+
+	preamblephase = 0;
+	for (int i = 0; i < SR4; i++)
+		tonebuff[2*SR4 + i] = tonebuff[i] = nco(freqa) * ampshape[i];
+
+	preamblephase = 0;
+	for (int i = 0; i < SR4; i++)
+		tonebuff[3*SR4 + i] = tonebuff[SR4 + i] = nco(freqb) * ampshape[i];
+
 	for (int j = 0; j < TONE_DURATION; j += SCBLOCKSIZE)
 		ModulateXmtr(&tonebuff[j], SCBLOCKSIZE);
 

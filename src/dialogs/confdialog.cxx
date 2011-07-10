@@ -2542,7 +2542,7 @@ Fl_Group *tabTxLevel=(Fl_Group *)0;
 Fl_Counter *valTxLevel=(Fl_Counter *)0;
 
 static void cb_valTxLevel(Fl_Counter* o, void*) {
-  progdefaults.txlevel = o->value();
+  progdefaults.txlevel=o->value();
 }
 
 Fl_Group *tabID=(Fl_Group *)0;
@@ -3063,7 +3063,6 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4069,7 +4068,7 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-4, 25, 544, 347, _("Modems"));
+      { tabModems = new Fl_Group(-4, 25, 521, 347, _("Modems"));
         tabModems->hide();
         { tabsModems = new Fl_Tabs(-4, 25, 544, 347);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
@@ -5360,7 +5359,6 @@ an merging"));
         { tabsRig = new Fl_Tabs(0, 25, 500, 345);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
-            o->hide();
             { grpHWPTT = new Fl_Group(5, 100, 490, 265, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -5423,6 +5421,7 @@ an merging"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -6066,17 +6065,16 @@ ll with your audio device."));
             } // Fl_Group* o
             tabMixer->end();
           } // Fl_Group* tabMixer
-          { tabTxLevel = new Fl_Group(0, 50, 500, 320, _("Tx Level"));
+          { tabTxLevel = new Fl_Group(0, 50, 500, 320, _("TxLevel"));
             tabTxLevel->hide();
-            { Fl_Group* o = new Fl_Group(5, 64, 490, 82, _("TX Level Control"));
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 86, _("Tx Attenuator"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Counter* o = valTxLevel = new Fl_Counter(188, 88, 132, 21, _("Tx Attenuator (dB)"));
+              { Fl_Counter* o = valTxLevel = new Fl_Counter(196, 85, 120, 21, _("Tx Atten (dB)"));
                 valTxLevel->minimum(-30);
                 valTxLevel->maximum(0);
                 valTxLevel->value(-6);
                 valTxLevel->callback((Fl_Callback*)cb_valTxLevel);
-                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 o->value(progdefaults.txlevel);
                 o->lstep(1.0);
               } // Fl_Counter* valTxLevel
@@ -6274,10 +6272,10 @@ d frequency"));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 500, 345, _("Misc"));
+        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 500, 345);
           tabsMisc->selection_color((Fl_Color)FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 500, 320, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6520,6 +6518,7 @@ d frequency"));
             tabSpot->end();
           } // Fl_Group* tabSpot
           { tabSweetSpot = new Fl_Group(0, 50, 500, 320, _("Sweet Spot"));
+            tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
               o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);

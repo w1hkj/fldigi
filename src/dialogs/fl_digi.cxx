@@ -2339,6 +2339,7 @@ int default_handler(int event)
 			progdefaults.txlevel += 0.1;
 			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
 			valTxLevel->value(progdefaults.txlevel);
+			return 1;
 		}
 #ifdef __APPLE__
 		if ((key == '-') && (Fl::event_state() == FL_COMMAND)) {
@@ -2348,6 +2349,7 @@ int default_handler(int event)
 			progdefaults.txlevel -= 0.1;
 			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
 			valTxLevel->value(progdefaults.txlevel);
+			return 1;
 		}
 	}
 	else if (w == dlgLogbook || w->window() == dlgLogbook)

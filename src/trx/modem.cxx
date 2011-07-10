@@ -380,6 +380,10 @@ void modem::ModulateXmtr(double *buffer, int len)
             ModulateStereo( buffer, PTTchannel, len);
         return;
     }
+
+	if (progdefaults.viewXmtSignal)
+		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
+
 	if (withnoise && progdefaults.noise) add_noise(buffer, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
@@ -396,14 +400,15 @@ void modem::ModulateXmtr(double *buffer, int len)
 		return;
 	}
 
-	if (progdefaults.viewXmtSignal)
-		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 }
 
 #include <iostream>
 using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len)
 {
+	if (progdefaults.viewXmtSignal)
+		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
+
 	if (withnoise && progdefaults.noise) add_noise(left, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
@@ -420,8 +425,6 @@ void modem::ModulateStereo(double *left, double *right, int len)
 		return;
 	}
 
-	if (progdefaults.viewXmtSignal)
-		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 }
 
 

@@ -106,8 +106,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -189,7 +189,7 @@ progdefaults.changed = true;}
         label UI open
         xywh {0 25 502 346} hide
       } {
-        Fl_Tabs tabsUI {open
+        Fl_Tabs tabsUI {
           xywh {0 25 502 346} selection_color 50
         } {
           Fl_Group tabUserInterface {
@@ -1218,7 +1218,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems
-        xywh {-4 25 544 347} hide
+        xywh {-4 25 521 347} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {-4 25 544 347} selection_color 50 align 9
@@ -2357,7 +2357,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group grpHWPTT {
               label {h/w ptt device-pin} open
@@ -2463,7 +2463,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -2936,7 +2936,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3184,20 +3184,19 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabTxLevel {
-            label {Tx Level} open
+            label TxLevel open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
-              label {TX Level Control} open
-              xywh {5 64 490 82} box ENGRAVED_FRAME align 21
+              label {Tx Attenuator} open
+              xywh {5 60 490 86} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter valTxLevel {
-                label {Tx Attenuator (dB)}
-                callback {progdefaults.txlevel = o->value();}
-                xywh {188 88 132 21} minimum -30 maximum 0 value -6
-                code0 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                code1 {o->value(progdefaults.txlevel);}
-                code2 {o->lstep(1.0);}
+                label {Tx Atten (dB)}
+                callback {progdefaults.txlevel=o->value();}
+                xywh {196 85 120 21} minimum -30 maximum 0 value -6
+                code0 {o->value(progdefaults.txlevel);}
+                code1 {o->lstep(1.0);}
               }
             }
           }
@@ -3392,15 +3391,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
-        xywh {0 25 500 345}
+        label Misc
+        xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 500 345} selection_color 50
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {5 60 490 51} box ENGRAVED_FRAME align 21
@@ -3615,7 +3614,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 75} box ENGRAVED_FRAME align 21
@@ -3657,7 +3656,7 @@ OFF - keep current wf cursor position} xywh {15 101 348 20} down_box DOWN_BOX va
               }
             }
             Fl_Group {} {
-              label {A1A offset configuration} open selected
+              label {A1A offset configuration} open
               xywh {5 140 490 60} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnCWIsLSB {
