@@ -1,5 +1,18 @@
-2011-06-27  Remi Chateauneu  <remi.chateauneu@gmail.com>
+2011-07-10  David Freese  <w1hkj@w1hkj.com>
 
+	07c12e0: TX Attenuator
+
+2011-06-29  Pierfrancesco Caci  <pf@tippete.net>
+
+	12714eb: CW Offset optional
+
+2011-06-29  David Freese  <w1hkj@w1hkj.com>
+
+	c2d0b93: Pkt compile warnings
+
+2011-06-29  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	dc9edc1: WEFAX compiler warnings
 	406a5ea: Wefax improvements
 	732f12d: Wefax fixes
 	cfbfe22: Added XML-RPC functions for Wefax
