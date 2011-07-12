@@ -227,6 +227,12 @@ void modem::set_metric(double m)
 	metric = m;
 }
 
+void modem::display_metric(double m)
+{
+	set_metric(m);
+	::global_display_metric(m);
+}
+
 double modem::get_metric(void)
 {
 	return metric;

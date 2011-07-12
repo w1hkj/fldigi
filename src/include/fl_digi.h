@@ -166,7 +166,7 @@ extern void cb_mnuVisitURL(Fl_Widget*, void* arg);
 
 extern void put_freq(double frequency);
 extern void put_Bandwidth(int bandwidth);
-extern void display_metric(double metric);
+extern void global_display_metric(double metric);
 extern void put_cwRcvWPM(double wpm);
 
 extern void set_scope_mode(Digiscope::scope_mode md);
