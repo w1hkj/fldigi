@@ -134,6 +134,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<SRCHDN>\tsearch DOWN for signal"));
 	w->add(_("<GOHOME>\treturn to sweet spot"));
 	w->add(_("<GOFREQ:NNNN>\tmove to freq NNNN Hz"));
+	w->add(_("<QSYTO>\tleft-clk QSY button"));
+	w->add(_("<QSYFM>\tright-clk QSY button"));
 
 	w->add(LINE_SEP);
 	w->add(_("<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"));
