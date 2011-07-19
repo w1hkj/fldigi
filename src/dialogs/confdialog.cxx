@@ -1637,6 +1637,13 @@ static void cb_chkUOStx(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chk_useMARKfreq=(Fl_Check_Button *)0;
+
+static void cb_chk_useMARKfreq(Fl_Check_Button* o, void*) {
+  progdefaults.useMARKfreq=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnPreferXhairScope=(Fl_Check_Button *)0;
 
 static void cb_btnPreferXhairScope(Fl_Check_Button* o, void*) {
@@ -2956,6 +2963,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3962,7 +3970,6 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(-4, 25, 521, 347, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(-4, 25, 521, 347);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
@@ -4751,6 +4758,7 @@ an merging"));
             tabContestia->end();
           } // Fl_Group* tabContestia
           { tabPSK = new Fl_Group(-4, 50, 521, 322, _("PSK"));
+            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(-4, 50, 521, 322);
               tabsPSK->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -4852,7 +4860,6 @@ an merging"));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 500, 320, _("RTTY"));
-            tabRTTY->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selShift = new Fl_Choice(15, 70, 100, 20, _("Carrier shift"));
@@ -4895,22 +4902,22 @@ an merging"));
                 selStopBits->when(FL_WHEN_CHANGED);
                 o->add(szStopBits);
               } // Fl_Choice* selStopBits
-              { Fl_Group* o = new Fl_Group(255, 68, 230, 80);
+              { Fl_Group* o = new Fl_Group(259, 66, 230, 70);
                 o->box(FL_ENGRAVED_FRAME);
-                { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(265, 79, 90, 22, _("AutoCRLF"));
+                { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(269, 77, 90, 22, _("AutoCRLF"));
                 btnAUTOCRLF->tooltip(_("Add CRLF after page width characters"));
                 btnAUTOCRLF->down_box(FL_DOWN_BOX);
                 btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
                 o->value(progdefaults.rtty_autocrlf);
                 } // Fl_Check_Button* btnAUTOCRLF
-                { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(385, 79, 90, 22, _("CR-CR-LF"));
+                { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(389, 77, 90, 22, _("CR-CR-LF"));
                 btnCRCRLF->tooltip(_("Use \"cr cr lf\" for \"cr lf\""));
                 btnCRCRLF->down_box(FL_DOWN_BOX);
                 btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
                 btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
                 o->value(progdefaults.rtty_crcrlf);
                 } // Fl_Check_Button* btnCRCRLF
-                { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(335, 118, 65, 20, _("characters"));
+                { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(339, 107, 65, 20, _("characters"));
                 cntrAUTOCRLF->tooltip(_("Set page width"));
                 cntrAUTOCRLF->type(1);
                 cntrAUTOCRLF->box(FL_UP_BOX);
@@ -4929,26 +4936,37 @@ an merging"));
                 cntrAUTOCRLF->when(FL_WHEN_CHANGED);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntrAUTOCRLF
-                { Fl_Box* o = new Fl_Box(265, 118, 60, 20, _("after:"));
+                { Fl_Box* o = new Fl_Box(269, 107, 60, 20, _("after:"));
                 o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(320, 158, 165, 62, _("Unshift On Space"));
+              { Fl_Group* o = new Fl_Group(259, 135, 231, 52, _("Unshift On Space"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(355, 185, 45, 20, _("RX"));
+                { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(308, 153, 63, 26, _("RX"));
                 chkUOSrx->tooltip(_("Revert to Unsifted char\'s on a space"));
                 chkUOSrx->down_box(FL_DOWN_BOX);
                 chkUOSrx->callback((Fl_Callback*)cb_chkUOSrx);
                 o->value(progdefaults.UOSrx);
                 } // Fl_Check_Button* chkUOSrx
-                { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(420, 185, 45, 20, _("TX"));
+                { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(398, 153, 63, 26, _("TX"));
                 chkUOStx->tooltip(_("Revert to Unsifted char\'s on a space"));
                 chkUOStx->down_box(FL_DOWN_BOX);
                 chkUOStx->callback((Fl_Callback*)cb_chkUOStx);
                 o->value(progdefaults.UOStx);
                 } // Fl_Check_Button* chkUOStx
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(259, 187, 231, 52, _("Log RTTY frequency"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(308, 205, 63, 26, _("Use MARK freq\'"));
+                chk_useMARKfreq->tooltip(_("Revert to Unsifted char\'s on a space"));
+                chk_useMARKfreq->down_box(FL_DOWN_BOX);
+                chk_useMARKfreq->callback((Fl_Callback*)cb_chk_useMARKfreq);
+                o->value(progdefaults.useMARKfreq);
+                } // Fl_Check_Button* chk_useMARKfreq
                 o->end();
               } // Fl_Group* o
               { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(15, 254, 165, 20, _("Use cross hair scope"));
@@ -4963,7 +4981,7 @@ an merging"));
                 chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
                 o->value(progdefaults.PseudoFSK);
               } // Fl_Check_Button* chkPseudoFSK
-              { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(320, 254, 80, 20, _("AFC speed"));
+              { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(308, 254, 80, 20, _("AFC speed"));
                 mnuRTTYAFCSpeed->tooltip(_("AFC tracking speed"));
                 mnuRTTYAFCSpeed->down_box(FL_BORDER_BOX);
                 mnuRTTYAFCSpeed->callback((Fl_Callback*)cb_mnuRTTYAFCSpeed);
@@ -4971,7 +4989,7 @@ an merging"));
                 o->add("Slow"); o->add("Normal"); o->add("Fast");
                 o->value(progdefaults.rtty_afcspeed);
               } // Fl_Choice* mnuRTTYAFCSpeed
-              { Fl_Check_Button* o = chkXagc = new Fl_Check_Button(320, 223, 62, 22, _("X-agc (hidden)"));
+              { Fl_Check_Button* o = chkXagc = new Fl_Check_Button(308, 284, 62, 22, _("X-agc (hidden)"));
                 chkXagc->down_box(FL_DOWN_BOX);
                 chkXagc->callback((Fl_Callback*)cb_chkXagc);
                 o->value(progdefaults.Xagc);

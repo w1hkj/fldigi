@@ -226,6 +226,7 @@ extern Fl_Check_Button *btnCRCRLF;
 extern Fl_Counter2 *cntrAUTOCRLF;
 extern Fl_Check_Button *chkUOSrx;
 extern Fl_Check_Button *chkUOStx;
+extern Fl_Check_Button *chk_useMARKfreq;
 extern Fl_Check_Button *btnPreferXhairScope;
 extern Fl_Check_Button *chkPseudoFSK;
 extern Fl_Choice *mnuRTTYAFCSpeed;

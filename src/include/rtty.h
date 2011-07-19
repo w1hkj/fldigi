@@ -113,6 +113,8 @@ private:
 	int counter;
 	int bitcntr;
 	int rxdata;
+	double cfreq; // center frequency between MARK/SPACE tones
+	double shift_offset; // 1/2 rtty_shift
 	double posfreq, negfreq;
 	double freqerrhi, freqerrlo;
 	double poserr, negerr;

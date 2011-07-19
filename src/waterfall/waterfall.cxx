@@ -593,16 +593,24 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 update_freq:
 	static char szFrequency[14];
 	if (rfc != 0) { // use a boolean for the waterfall
-	    int cwoffset = 0;
-	    string testmode = qso_opMODE->value();
-	    if (testmode == "CW" or testmode == "CWR") {
-		cwoffset = progdefaults.CWsweetspot;
-		usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
-	    }
+		int cwoffset = 0;
+		int rttyoffset = 0;
+		trx_mode mode = active_modem->get_mode();
+		if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
+			rttyoffset = (progdefaults.rtty_shift >= 0 ?
+				rtty::SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
+			rttyoffset /= 2;
+			if (active_modem->get_reverse()) rttyoffset *= -1;
+		}
+		string testmode = qso_opMODE->value();
+		if (testmode == "CW" or testmode == "CWR") {
+			cwoffset = progdefaults.CWsweetspot;
+			usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
+		}
 		if (usb)
-			dfreq = rfc + active_modem->get_txfreq() -cwoffset;
+			dfreq = rfc + active_modem->get_txfreq() - cwoffset + rttyoffset;
 		else
-			dfreq = rfc - active_modem->get_txfreq() +cwoffset;
+			dfreq = rfc - active_modem->get_txfreq() + cwoffset - rttyoffset;
 		snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
 	} else {
 		dfreq = active_modem->get_txfreq();

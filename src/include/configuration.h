@@ -291,6 +291,9 @@
         ELEM_(bool, UOStx, "UOSTX",                                                     \
               "Revert to unshifted chars on a space (TX)",                              \
               true)                                                                     \
+        ELEM_(bool, useMARKfreq, "USEMARKFREQ",                                         \
+              "Use MARK frequency for logging",                                         \
+              true)                                                                    \
         ELEM_(bool, Xagc, "XAGC",                                                       \
               "This setting is currently unused",                                       \
               false)                                                                    \
