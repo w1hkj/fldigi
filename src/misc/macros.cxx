@@ -151,6 +151,8 @@ void pGOHOME(string&, size_t&);
 
 void pGOFREQ(string&, size_t&);
 void pQSY(string&, size_t&);
+void pQSYTO(string &, size_t&);
+void pQSYFM(string &, size_t&);
 void pRIGMODE(string&, size_t&);
 void pFILWID(string&, size_t&);
 
@@ -226,6 +228,8 @@ MTAGS mtags[] = {
 {"<GOHOME>",	pGOHOME},
 {"<GOFREQ:",	pGOFREQ},
 {"<QSY:",		pQSY},
+{"<QSYTO>",		pQSYTO},
+{"<QSYFM>",		pQSYFM},
 {"<RIGMODE:",	pRIGMODE},
 {"<FILWID:",	pFILWID},
 {"<MAPIT:",		pMAPIT},
@@ -947,6 +951,18 @@ void pGOFREQ(string &s, size_t &i)
 		active_modem->set_freq(number);
 	}
 	s.replace(i, endbracket - i + 1, "");
+}
+
+void pQSYTO(string &s, size_t &i)
+{
+	s.replace( i, 7, "");
+	do_qsy(true);
+}
+
+void pQSYFM(string &s, size_t &i)
+{
+	s.replace( i, 7, "");
+	do_qsy(false);
 }
 
 void pQSY(string &s, size_t &i)

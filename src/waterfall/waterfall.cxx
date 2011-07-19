@@ -1066,7 +1066,7 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	restoreFocus();
 }
 
-void qsy_cb(Fl_Widget *w, void *v)
+void do_qsy(bool dir)
 {
 	static vector<qrg_mode_t> qsy_stack;
 	qrg_mode_t m;
@@ -1074,7 +1074,7 @@ void qsy_cb(Fl_Widget *w, void *v)
 	wf->xmtlock->value(0);
 	wf->xmtlock->do_callback();
 
-	if (Fl::event_button() != FL_RIGHT_MOUSE) {
+	if (dir) {
 // store
 		m.rfcarrier = wf->rfcarrier();
 		m.carrier = active_modem->get_freq();
@@ -1106,6 +1106,14 @@ void qsy_cb(Fl_Widget *w, void *v)
 
 	if (m.carrier > 0)
 		qsy(m.rfcarrier, m.carrier);
+}
+
+void qsy_cb(Fl_Widget *w, void *v)
+{
+	if (Fl::event_button() != FL_RIGHT_MOUSE)
+		do_qsy(true);
+	else
+		do_qsy(false);
 	restoreFocus();
 }
 
