@@ -1644,6 +1644,20 @@ static void cb_chk_useMARKfreq(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *btnRTTY_mark_color=(Fl_Button *)0;
+
+static void cb_btnRTTY_mark_color(Fl_Button* o, void*) {
+  if (fl_color_chooser("MARK freq track",
+  progdefaults.rttymarkRGBI.R, 
+  progdefaults.rttymarkRGBI.G, 
+  progdefaults.rttymarkRGBI.B) ) {
+o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
+o->redraw();
+wf->redraw_marker();
+progdefaults.changed = true;
+};
+}
+
 Fl_Check_Button *btnPreferXhairScope=(Fl_Check_Button *)0;
 
 static void cb_btnPreferXhairScope(Fl_Check_Button* o, void*) {
@@ -4076,11 +4090,12 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-4, 25, 521, 347, _("Modems"));
+      { tabModems = new Fl_Group(-4, 25, 544, 347, _("Modems"));
         { tabsModems = new Fl_Tabs(-4, 25, 544, 347);
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabContestia = new Fl_Group(0, 50, 500, 320, _("Contestia"));
+            tabContestia->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = mnuContestia_Bandwidth = new Fl_Choice(60, 80, 85, 20, _("Bandwidth"));
@@ -5067,12 +5082,19 @@ an merging"));
               { Fl_Group* o = new Fl_Group(259, 187, 231, 52, _("Log RTTY frequency"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-                { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(308, 205, 63, 26, _("Use MARK freq\'"));
+                { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(269, 205, 63, 26, _("Use MARK freq\'"));
                 chk_useMARKfreq->tooltip(_("Revert to Unsifted char\'s on a space"));
                 chk_useMARKfreq->down_box(FL_DOWN_BOX);
                 chk_useMARKfreq->callback((Fl_Callback*)cb_chk_useMARKfreq);
                 o->value(progdefaults.useMARKfreq);
                 } // Fl_Check_Button* chk_useMARKfreq
+                { Fl_Button* o = btnRTTY_mark_color = new Fl_Button(403, 208, 18, 18, _("track clr"));
+                btnRTTY_mark_color->tooltip(_("Change color"));
+                btnRTTY_mark_color->color((Fl_Color)2);
+                btnRTTY_mark_color->callback((Fl_Callback*)cb_btnRTTY_mark_color);
+                btnRTTY_mark_color->align(FL_ALIGN_RIGHT);
+                o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
+                } // Fl_Button* btnRTTY_mark_color
                 o->end();
               } // Fl_Group* o
               { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(15, 254, 165, 20, _("Use cross hair scope"));
