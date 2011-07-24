@@ -2129,9 +2129,23 @@ progdefaults.changed = true;}
                 Fl_Check_Button chk_useMARKfreq {
                   label {Use MARK freq'}
                   callback {progdefaults.useMARKfreq=o->value();
-progdefaults.changed = true;} selected
-                  tooltip {Revert to Unsifted char's on a space} xywh {308 205 63 26} down_box DOWN_BOX
+progdefaults.changed = true;}
+                  tooltip {Revert to Unsifted char's on a space} xywh {269 205 63 26} down_box DOWN_BOX
                   code0 {o->value(progdefaults.useMARKfreq);}
+                }
+                Fl_Button btnRTTY_mark_color {
+                  label {track clr}
+                  callback {if (fl_color_chooser("MARK freq track",
+  progdefaults.rttymarkRGBI.R, 
+  progdefaults.rttymarkRGBI.G, 
+  progdefaults.rttymarkRGBI.B) ) {
+o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
+o->redraw();
+wf->redraw_marker();
+progdefaults.changed = true;
+}} selected
+                  tooltip {Change color} xywh {403 208 18 18} color 2 align 8
+                  code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
                 }
               }
               Fl_Check_Button btnPreferXhairScope {

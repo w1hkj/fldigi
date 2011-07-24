@@ -529,6 +529,9 @@
         ELEM_(RGBI, bwTrackRGBI, "BWTCOLORS",                                           \
               "Color of bandwidth marker (RGBI)",                                       \
               {255, 0, 0, 255})                                                         \
+        ELEM_(RGBI, rttymarkRGBI, "RTTYMARKRGBI",                                       \
+              "Color of RTTY MARK freq marker (RGBI)",                                  \
+              {255, 128, 0, 255})                                                       \
         ELEM_(int, feldfontnbr, "FELDFONTNBR",                                          \
               "Index of raster font used for transmission",                             \
               4)                                                                        \

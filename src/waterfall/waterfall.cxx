@@ -851,7 +851,18 @@ void WFdisp::update_waterfall() {
 			pos2--;
 		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
 			for (int y = 0; y < image_height; y ++) {
-				*pos1 = *pos2 = progdefaults.bwTrackRGBI;
+				if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
+					if (active_modem->get_reverse()) {
+						*pos1 = progdefaults.rttymarkRGBI;
+						*pos2 = progdefaults.bwTrackRGBI;
+					} else {
+						*pos1 = progdefaults.bwTrackRGBI;
+						*pos2 = progdefaults.rttymarkRGBI;
+					}
+				} else {
+					*pos1 = progdefaults.bwTrackRGBI;
+					*pos2 = progdefaults.bwTrackRGBI;
+				}
 				pos1 += disp_width;
 				pos2 += disp_width;
 			}
