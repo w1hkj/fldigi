@@ -1,8 +1,20 @@
 
 
-=Version 3.21.12=
+=Version 3.21.13=
 
-2011-06-27  David Freese  <w1hkj@w1hkj.com>
+2011-08-07  Pavel Milanes Costa  <co7wt@frcuba.co.cu>
+
+	5f3c3da: Update to Spanish translation
+
+2011-08-07  David Freese  <w1hkj@w1hkj.com>
+
+	75de2ce: New Macro Tags
+	5e50597: RTTY MARK coloring
+	836c082: RTTY MARK frequency
+	ab822e7: QSY macros
+
+
+=Version 3.21.12=
 
 	f92dbf5: XMLRPC linking error
 
