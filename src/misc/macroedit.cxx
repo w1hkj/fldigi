@@ -92,6 +92,7 @@ void loadBrowser(Fl_Widget *widget) {
  
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
+	w->add(_("<CLRTX>\tclear TX pane"));
 
 	w->add(LINE_SEP);
 	w->add(_("<GET>\ttext to NAME/QTH"));
@@ -121,6 +122,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<CNTR>\tcontest counter"));
 	w->add(_("<DECR>\tdecrement counter"));
 	w->add(_("<INCR>\tincrement counter"));
+	w->add(_("<XIN>\texchange in"));
 	w->add(_("<XOUT>\texchange out"));
 	w->add(_("<XBEG>\texchange begin"));
 	w->add(_("<XEND>\texchange end"));
