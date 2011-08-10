@@ -1,5 +1,10 @@
-2011-07-10  David Freese  <w1hkj@w1hkj.com>
+2011-08-10  David Freese  <w1hkj@w1hkj.com>
 
+	4f0acd0: Log resort add record
+	fd8d86f: New Macro Tags
+	4478165: RTTY MARK coloring
+	60947aa: RTTY MARK frequency
+	381b809: QSY macros
 	07c12e0: TX Attenuator
 
 2011-06-29  Pierfrancesco Caci  <pf@tippete.net>
