@@ -520,6 +520,15 @@
         ELEM_(bool, UseBWTracks, "USEBWTRACKS",                                         \
               "Draw bandwidth marker with vertical lines",                              \
               true)                                                                     \
+        ELEM_(bool, UseWideTracks, "USEWIDETRACKS",                                     \
+              "Draw bandwidth marker with 3x vertical lines",                           \
+              false)                                                                    \
+        ELEM_(bool, UseWideCursor, "USEWIDECURSOR",                                     \
+              "Draw cursor with 3x vertical lines",                                     \
+              false)                                                                    \
+        ELEM_(bool, UseWideCenter, "USEWIDECENTER",                                     \
+              "Draw center line marker with 3x vertical lines",                         \
+              false)                                                                    \
         ELEM_(RGBI, cursorLineRGBI, "CLCOLORS",                                         \
               "Color of cursor lines (RGBI)",                                           \
               {255, 255, 0, 255})                                                       \
