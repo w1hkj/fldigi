@@ -856,13 +856,25 @@ void WFdisp::update_waterfall() {
 					if (active_modem->get_reverse()) {
 						*pos1 = progdefaults.rttymarkRGBI;
 						*pos2 = progdefaults.bwTrackRGBI;
+						if (progdefaults.UseWideTracks) {
+							*(pos1 + 1) = *pos1;
+							*(pos2 - 1) = *pos2;
+						}
 					} else {
 						*pos1 = progdefaults.bwTrackRGBI;
 						*pos2 = progdefaults.rttymarkRGBI;
+						if (progdefaults.UseWideTracks) {
+							*(pos1 + 1) = *pos1;
+							*(pos2 - 1) = *pos2;
+						}
 					}
 				} else {
 					*pos1 = progdefaults.bwTrackRGBI;
 					*pos2 = progdefaults.bwTrackRGBI;
+					if (progdefaults.UseWideTracks) {
+						*(pos1 + 1) = *pos1;
+						*(pos2 - 1) = *pos2;
+					}
 				}
 				pos1 += disp_width;
 				pos2 += disp_width;
@@ -887,10 +899,16 @@ void WFdisp::drawcolorWF() {
 		RGBI  *pos2 = (fft_img + cursorpos + bw_hi/step);
 		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
 			for (int y = 0; y < image_height; y ++) {
-				if (progdefaults.UseCursorLines)
+				if (progdefaults.UseCursorLines) {
 					*pos1 = *pos2 = progdefaults.cursorLineRGBI;
-				if (progdefaults.UseCursorCenterLine)
+					if (progdefaults.UseWideCursor)
+						*(pos1 + 1) = *(pos2 - 1) = *pos1;
+				}
+				if (progdefaults.UseCursorCenterLine) {
 					*pos0 = progdefaults.cursorCenterRGBI;
+					if (progdefaults.UseWideCenter)
+						*(pos0 - 1) = *(pos0 + 1) = *pos0;
+				}
 				pos0 += disp_width;
 				pos1 += disp_width;
 				pos2 += disp_width;
@@ -975,9 +993,14 @@ void WFdisp::drawspectrum() {
 	if (progdefaults.UseBWTracks) {
 		uchar  *pos1 = pixmap + (carrierfreq - offset - bandwidth/2) / step;
 		uchar  *pos2 = pixmap + (carrierfreq - offset + bandwidth/2) / step;
-		if (pos1 >= pixmap && pos2 < pixmap + disp_width)
+		if (pos1 >= pixmap && 
+			pos2 < pixmap + disp_width)
 			for (int y = 0; y < image_height; y ++) {
 				*pos1 = *pos2 = 255;
+				if (progdefaults.UseWideTracks) {
+					*(pos1 + 1) = 255;
+					*(pos2 - 1) = 255;
+				}
 				pos1 += IMAGE_WIDTH/step;
 				pos2 += IMAGE_WIDTH/step;
 			}
@@ -992,10 +1015,15 @@ void WFdisp::drawspectrum() {
 		uchar  *pos1 = (pixmap + cursorpos - bw_lo/step);
 		uchar  *pos2 = (pixmap + cursorpos + bw_hi/step);
 		for (int y = 0; y < h1; y ++) {
-			if (progdefaults.UseCursorLines)
+			if (progdefaults.UseCursorLines) {
 				*pos1 = *pos2 = 255;
-			if (progdefaults.UseCursorCenterLine)
+				if (progdefaults.UseWideCursor)
+					*(pos1 + 1) = *(pos2 - 1) = *pos1;
+			}
+			if (progdefaults.UseCursorCenterLine) {
 				*pos0 = 255;
+				if (progdefaults.UseWideCenter) *(pos0-1) = *(pos0+1) = *(pos0);
+			}
 			pos0 += IMAGE_WIDTH/step;
 			pos1 += IMAGE_WIDTH/step;
 			pos2 += IMAGE_WIDTH/step;
