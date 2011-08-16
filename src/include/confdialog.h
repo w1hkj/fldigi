@@ -256,6 +256,7 @@ extern Fl_Check_Button *btnPktexpandPHG;
 extern Fl_Check_Button *btnPktunitsSI;
 extern Fl_Check_Button *btnPktunitsEnglish;
 extern Fl_Check_Button *btnPktPreferXhairScope;
+extern Fl_Check_Button *btnPktAudioBoost;
 extern Fl_Group *tabRig;
 extern Fl_Tabs *tabsRig;
 extern Fl_Group *grpHWPTT;

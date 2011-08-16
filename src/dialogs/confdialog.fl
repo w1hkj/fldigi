@@ -2300,7 +2300,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.PKT_LOSIG_RXGAIN = o->value();
 updatePACKET();
 progdefaults.changed = true;}
-                tooltip {Processing gain to apply to lower tone (in dB)} xywh {42 120 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                tooltip {Processing gain to apply to lower tone (in dB)} xywh {42 148 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
                 code0 {o->value(progdefaults.PKT_LOSIG_RXGAIN);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2310,7 +2310,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.PKT_HISIG_RXGAIN = o->value();
 updatePACKET();
 progdefaults.changed = true;}
-                tooltip {Processing gain to apply to higher tone (in dB)} xywh {42 145 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                tooltip {Processing gain to apply to higher tone (in dB)} xywh {42 173 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
                 code0 {o->value(progdefaults.PKT_HISIG_RXGAIN);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2320,7 +2320,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.PKT_LOSIG_TXGAIN = o->value();
 updatePACKET();
 progdefaults.changed = true;}
-                tooltip {Processing gain to apply to lower tone (in dB)} xywh {268 120 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                tooltip {Processing gain to apply to lower tone (in dB)} xywh {268 148 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
                 code0 {o->value(progdefaults.PKT_LOSIG_TXGAIN);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2330,7 +2330,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.PKT_HISIG_TXGAIN = o->value();
 updatePACKET();
 progdefaults.changed = true;}
-                tooltip {Processing gain to apply to higher tone (in dB)} xywh {268 145 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                tooltip {Processing gain to apply to higher tone (in dB)} xywh {268 173 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
                 code0 {o->value(progdefaults.PKT_HISIG_TXGAIN);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2339,28 +2339,28 @@ progdefaults.changed = true;}
                 label {add RX timestamps}
                 callback {progdefaults.PKT_RXTimestamp=o->value();
 progdefaults.changed = true;}
-                tooltip {Prepend timestamp to each RX packet} xywh {39 180 165 20} down_box DOWN_BOX
+                tooltip {Prepend timestamp to each RX packet} xywh {39 208 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_RXTimestamp);}
               }
               Fl_Check_Button btnPktexpandCmp {
                 label {decode Compressed data}
                 callback {progdefaults.PKT_expandCmp=o->value();
 progdefaults.changed = true;}
-                tooltip {Decode received Compressed Position data} xywh {268 180 190 20} down_box DOWN_BOX
+                tooltip {Decode received Compressed Position data} xywh {268 208 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_expandCmp);}
               }
               Fl_Check_Button btnPktexpandMicE {
                 label {decode Mic-E data}
                 callback {progdefaults.PKT_expandMicE=o->value();
 progdefaults.changed = true;}
-                tooltip {Decode received Mic-E data} xywh {39 206 165 20} down_box DOWN_BOX
+                tooltip {Decode received Mic-E data} xywh {39 234 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_expandMicE);}
               }
               Fl_Check_Button btnPktexpandPHG {
                 label {decode PHG data}
                 callback {progdefaults.PKT_expandPHG=o->value();
 progdefaults.changed = true;}
-                tooltip {Decode received PHG data} xywh {39 233 165 20} down_box DOWN_BOX
+                tooltip {Decode received PHG data} xywh {39 261 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_expandPHG);}
               }
               Fl_Check_Button btnPktunitsSI {
@@ -2371,7 +2371,7 @@ if (progdefaults.PKT_unitsSI) {
  btnPktunitsEnglish->value(false);
 }
 progdefaults.changed = true;}
-                tooltip {Display decoded data values in SI units} xywh {39 260 165 20} down_box DOWN_BOX
+                tooltip {Display decoded data values in SI units} xywh {39 288 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_unitsSI);}
               }
               Fl_Check_Button btnPktunitsEnglish {
@@ -2382,15 +2382,22 @@ if (progdefaults.PKT_unitsSI) {
  btnPktunitsSI->value(false);
 }
 progdefaults.changed = true;}
-                tooltip {Display decoded data in English units} xywh {39 287 165 20} down_box DOWN_BOX
+                tooltip {Display decoded data in English units} xywh {39 315 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_unitsEnglish);}
               }
               Fl_Check_Button btnPktPreferXhairScope {
                 label {Use cross-hair scope}
                 callback {progdefaults.PKT_PreferXhairScope=o->value();
 progdefaults.changed = true;}
-                tooltip {Defaults to syncscope instead of phase (cross-hair) scope} xywh {268 206 165 20} down_box DOWN_BOX
+                tooltip {Defaults to syncscope instead of phase (cross-hair) scope} xywh {268 234 165 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_PreferXhairScope);}
+              }
+              Fl_Check_Button btnPktAudioBoost {
+                label {boost Audio input}
+                callback {progdefaults.PKT_AudioBoost=o->value();
+progdefaults.changed = true;}
+                tooltip {add additional gain to audio input for low-output interfaces} xywh {45 115 165 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.PKT_AudioBoost);}
               }
             }
           }

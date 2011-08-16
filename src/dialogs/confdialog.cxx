@@ -1863,6 +1863,13 @@ static void cb_btnPktPreferXhairScope(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnPktAudioBoost=(Fl_Check_Button *)0;
+
+static void cb_btnPktAudioBoost(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_AudioBoost=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
@@ -5305,7 +5312,7 @@ an merging"));
                 o->add(szPktBauds);
                 o->value(progdefaults.PKT_BAUD_SELECT);
               } // Fl_Choice* selPacket_Baud
-              { Fl_Counter2* o = valPacket_LoSig_RXGain = new Fl_Counter2(42, 120, 63, 20, _("RX Low Freq Gain"));
+              { Fl_Counter2* o = valPacket_LoSig_RXGain = new Fl_Counter2(42, 148, 63, 20, _("RX Low Freq Gain"));
                 valPacket_LoSig_RXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
                 valPacket_LoSig_RXGain->type(1);
                 valPacket_LoSig_RXGain->box(FL_UP_BOX);
@@ -5324,7 +5331,7 @@ an merging"));
                 o->value(progdefaults.PKT_LOSIG_RXGAIN);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valPacket_LoSig_RXGain
-              { Fl_Counter2* o = valPacket_HiSig_RXGain = new Fl_Counter2(42, 145, 63, 20, _("RX High Freq Gain"));
+              { Fl_Counter2* o = valPacket_HiSig_RXGain = new Fl_Counter2(42, 173, 63, 20, _("RX High Freq Gain"));
                 valPacket_HiSig_RXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
                 valPacket_HiSig_RXGain->type(1);
                 valPacket_HiSig_RXGain->box(FL_UP_BOX);
@@ -5343,7 +5350,7 @@ an merging"));
                 o->value(progdefaults.PKT_HISIG_RXGAIN);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valPacket_HiSig_RXGain
-              { Fl_Counter2* o = valPacket_LoSig_TXGain = new Fl_Counter2(268, 120, 63, 20, _("TX Low Freq Gain"));
+              { Fl_Counter2* o = valPacket_LoSig_TXGain = new Fl_Counter2(268, 148, 63, 20, _("TX Low Freq Gain"));
                 valPacket_LoSig_TXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
                 valPacket_LoSig_TXGain->type(1);
                 valPacket_LoSig_TXGain->box(FL_UP_BOX);
@@ -5362,7 +5369,7 @@ an merging"));
                 o->value(progdefaults.PKT_LOSIG_TXGAIN);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valPacket_LoSig_TXGain
-              { Fl_Counter2* o = valPacket_HiSig_TXGain = new Fl_Counter2(268, 145, 63, 20, _("TX High Freq Gain"));
+              { Fl_Counter2* o = valPacket_HiSig_TXGain = new Fl_Counter2(268, 173, 63, 20, _("TX High Freq Gain"));
                 valPacket_HiSig_TXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
                 valPacket_HiSig_TXGain->type(1);
                 valPacket_HiSig_TXGain->box(FL_UP_BOX);
@@ -5381,48 +5388,54 @@ an merging"));
                 o->value(progdefaults.PKT_HISIG_TXGAIN);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valPacket_HiSig_TXGain
-              { Fl_Check_Button* o = btnPktRXTimestamp = new Fl_Check_Button(39, 180, 165, 20, _("add RX timestamps"));
+              { Fl_Check_Button* o = btnPktRXTimestamp = new Fl_Check_Button(39, 208, 165, 20, _("add RX timestamps"));
                 btnPktRXTimestamp->tooltip(_("Prepend timestamp to each RX packet"));
                 btnPktRXTimestamp->down_box(FL_DOWN_BOX);
                 btnPktRXTimestamp->callback((Fl_Callback*)cb_btnPktRXTimestamp);
                 o->value(progdefaults.PKT_RXTimestamp);
               } // Fl_Check_Button* btnPktRXTimestamp
-              { Fl_Check_Button* o = btnPktexpandCmp = new Fl_Check_Button(268, 180, 190, 20, _("decode Compressed data"));
+              { Fl_Check_Button* o = btnPktexpandCmp = new Fl_Check_Button(268, 208, 190, 20, _("decode Compressed data"));
                 btnPktexpandCmp->tooltip(_("Decode received Compressed Position data"));
                 btnPktexpandCmp->down_box(FL_DOWN_BOX);
                 btnPktexpandCmp->callback((Fl_Callback*)cb_btnPktexpandCmp);
                 o->value(progdefaults.PKT_expandCmp);
               } // Fl_Check_Button* btnPktexpandCmp
-              { Fl_Check_Button* o = btnPktexpandMicE = new Fl_Check_Button(39, 206, 165, 20, _("decode Mic-E data"));
+              { Fl_Check_Button* o = btnPktexpandMicE = new Fl_Check_Button(39, 234, 165, 20, _("decode Mic-E data"));
                 btnPktexpandMicE->tooltip(_("Decode received Mic-E data"));
                 btnPktexpandMicE->down_box(FL_DOWN_BOX);
                 btnPktexpandMicE->callback((Fl_Callback*)cb_btnPktexpandMicE);
                 o->value(progdefaults.PKT_expandMicE);
               } // Fl_Check_Button* btnPktexpandMicE
-              { Fl_Check_Button* o = btnPktexpandPHG = new Fl_Check_Button(39, 233, 165, 20, _("decode PHG data"));
+              { Fl_Check_Button* o = btnPktexpandPHG = new Fl_Check_Button(39, 261, 165, 20, _("decode PHG data"));
                 btnPktexpandPHG->tooltip(_("Decode received PHG data"));
                 btnPktexpandPHG->down_box(FL_DOWN_BOX);
                 btnPktexpandPHG->callback((Fl_Callback*)cb_btnPktexpandPHG);
                 o->value(progdefaults.PKT_expandPHG);
               } // Fl_Check_Button* btnPktexpandPHG
-              { Fl_Check_Button* o = btnPktunitsSI = new Fl_Check_Button(39, 260, 165, 20, _("use SI units"));
+              { Fl_Check_Button* o = btnPktunitsSI = new Fl_Check_Button(39, 288, 165, 20, _("use SI units"));
                 btnPktunitsSI->tooltip(_("Display decoded data values in SI units"));
                 btnPktunitsSI->down_box(FL_DOWN_BOX);
                 btnPktunitsSI->callback((Fl_Callback*)cb_btnPktunitsSI);
                 o->value(progdefaults.PKT_unitsSI);
               } // Fl_Check_Button* btnPktunitsSI
-              { Fl_Check_Button* o = btnPktunitsEnglish = new Fl_Check_Button(39, 287, 165, 20, _("use English units"));
+              { Fl_Check_Button* o = btnPktunitsEnglish = new Fl_Check_Button(39, 315, 165, 20, _("use English units"));
                 btnPktunitsEnglish->tooltip(_("Display decoded data in English units"));
                 btnPktunitsEnglish->down_box(FL_DOWN_BOX);
                 btnPktunitsEnglish->callback((Fl_Callback*)cb_btnPktunitsEnglish);
                 o->value(progdefaults.PKT_unitsEnglish);
               } // Fl_Check_Button* btnPktunitsEnglish
-              { Fl_Check_Button* o = btnPktPreferXhairScope = new Fl_Check_Button(268, 206, 165, 20, _("Use cross-hair scope"));
+              { Fl_Check_Button* o = btnPktPreferXhairScope = new Fl_Check_Button(268, 234, 165, 20, _("Use cross-hair scope"));
                 btnPktPreferXhairScope->tooltip(_("Defaults to syncscope instead of phase (cross-hair) scope"));
                 btnPktPreferXhairScope->down_box(FL_DOWN_BOX);
                 btnPktPreferXhairScope->callback((Fl_Callback*)cb_btnPktPreferXhairScope);
                 o->value(progdefaults.PKT_PreferXhairScope);
               } // Fl_Check_Button* btnPktPreferXhairScope
+              { Fl_Check_Button* o = btnPktAudioBoost = new Fl_Check_Button(45, 115, 165, 20, _("boost Audio input"));
+                btnPktAudioBoost->tooltip(_("add additional gain to audio input for low-output interfaces"));
+                btnPktAudioBoost->down_box(FL_DOWN_BOX);
+                btnPktAudioBoost->callback((Fl_Callback*)cb_btnPktAudioBoost);
+                o->value(progdefaults.PKT_AudioBoost);
+              } // Fl_Check_Button* btnPktAudioBoost
               o->end();
             } // Fl_Group* o
             tabPacket->end();

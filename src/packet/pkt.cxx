@@ -181,6 +181,8 @@ void pkt::set_freq(double f)
 void pkt::init()
 {
     modem::init();
+    set_freq(pkt_ctrfreq); // use pkt default center freq. don't use PSKsweetspot.
+
     rx_init();
 
     snprintf(msg1, sizeof(msg1), "%4i / %-4.0f", pkt_baud, pkt_shift);

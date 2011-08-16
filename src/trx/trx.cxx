@@ -186,46 +186,46 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 
 void trx_trx_receive_loop()
 {
-	size_t  numread;
-	int  current_samplerate;
-	assert(powerof2(SCBLOCKSIZE));
+    size_t  numread;
+    int  current_samplerate;
+    assert(powerof2(SCBLOCKSIZE));
 
-	if (unlikely(!active_modem)) {
-		MilliSleep(10);
-		return;
-	}
+    if (unlikely(!active_modem)) {
+	MilliSleep(10);
+	return;
+    }
 
 #if BENCHMARK_MODE
-	do_benchmark();
-	trx_state = STATE_ENDED;
-	return;
+    do_benchmark();
+    trx_state = STATE_ENDED;
+    return;
 #endif
 
-	if (unlikely(!scard)) {
-		MilliSleep(10);
-		return;
-	}
+    if (unlikely(!scard)) {
+	MilliSleep(10);
+	return;
+    }
 
-	try {
-		current_samplerate = active_modem->get_samplerate();
-		if (scard->Open(O_RDONLY, current_samplerate))
-			REQ(sound_update, progdefaults.btnAudioIOis);
+    try {
+	current_samplerate = active_modem->get_samplerate();
+	if (scard->Open(O_RDONLY, current_samplerate))
+	    REQ(sound_update, progdefaults.btnAudioIOis);
+    }
+    catch (const SndException& e) {
+	LOG_ERROR("%s. line: %i", e.what(), __LINE__);
+	put_status(e.what(), 5);
+	scard->Close();
+	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+	    sound_close();
+	    sound_init();
 	}
-	catch (const SndException& e) {
-		LOG_ERROR("%s", e.what());
-		put_status(e.what(), 5);
-		scard->Close();
-		if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-			sound_close();
-			sound_init();
-		}
-		MilliSleep(1000);
-		return;
-	}
-	active_modem->rx_init();
+	MilliSleep(1000);
+	return;
+    }
+    active_modem->rx_init();
 
-	ringbuffer<double>::vector_type rbvec[2];
-	rbvec[0].buf = rbvec[1].buf = 0;
+    ringbuffer<double>::vector_type rbvec[2];
+    rbvec[0].buf = rbvec[1].buf = 0;
 
 	while (1) {
 		try {
@@ -235,13 +235,20 @@ void trx_trx_receive_loop()
 			if (trxrb.write_space() == 0) // discard some old data
 				trxrb.read_advance(SCBLOCKSIZE);
 			trxrb.get_wv(rbvec);
-			// convert to double and write to rb
-			for (size_t i = 0; i < numread; i++)
+			if (active_modem == pkt_modem && progdefaults.PKT_AudioBoost) {
+			    // convert to double and write to rb with added gain
+			    for (size_t i = 0; i < numread; i++)
+				rbvec[0].buf[i] = 60.0 * fbuf[i];
+			}
+			else {
+			    // convert to double and write to rb
+			    for (size_t i = 0; i < numread; i++)
 				rbvec[0].buf[i] = fbuf[i];
+			}
 		}
 		catch (const SndException& e) {
 			scard->Close();
-			LOG_ERROR("%s", e.what());
+			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
 			MilliSleep(10);
 			return;
@@ -289,14 +296,14 @@ void trx_trx_transmit_loop()
 
 	if (active_modem) {
 		try {
-			current_samplerate = active_modem->get_samplerate();
-			scard->Open(O_WRONLY, current_samplerate);
+		    current_samplerate = active_modem->get_samplerate();
+		    scard->Open(O_WRONLY, current_samplerate);
 		}
 		catch (const SndException& e) {
-			LOG_ERROR("%s", e.what());
-			put_status(e.what(), 1);
-			MilliSleep(10);
-			return;
+		    LOG_ERROR("%s. line: %i", e.what(), __LINE__);
+		    put_status(e.what(), 1);
+		    MilliSleep(10);
+		    return;
 		}
 
 		push2talk->set(true);
@@ -312,7 +319,7 @@ void trx_trx_transmit_loop()
 			}
 			catch (const SndException& e) {
 				scard->Close();
-				LOG_ERROR("%s", e.what());
+				LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 				put_status(e.what(), 5);
 				MilliSleep(10);
 				return;
@@ -345,14 +352,14 @@ void trx_tune_loop()
 	}
 	if (active_modem) {
 		try {
-			current_samplerate = active_modem->get_samplerate();
-			scard->Open(O_WRONLY, current_samplerate);
+		    current_samplerate = active_modem->get_samplerate();
+		    scard->Open(O_WRONLY, current_samplerate);
 		}
 		catch (const SndException& e) {
-			LOG_ERROR("%s", e.what());
-			put_status(e.what(), 1);
-			MilliSleep(10);
-			return;
+		    LOG_ERROR("%s. line: %i", e.what(), __LINE__);
+		    put_status(e.what(), 1);
+		    MilliSleep(10);
+		    return;
 		}
 
 		push2talk->set(true);
@@ -371,7 +378,7 @@ void trx_tune_loop()
 		}
 		catch (const SndException& e) {
 			scard->Close();
-			LOG_ERROR("%s", e.what());
+			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
 			MilliSleep(10);
 			return;

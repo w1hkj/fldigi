@@ -476,7 +476,11 @@
               0.0)                                                                      \
         ELEM_(bool, PKT_PreferXhairScope, "PKTPREFERXHAIRSCOPE",                        \
               "Default to syncscope (detected symbol scope)",                           \
-              false)                                                                    ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
+              false)                                                                    ELEM_(bool, PKT_AudioBoost, "PKTAUDIOBOOST",                                    \
+              "No extra input gain (similar to Mic Boost) by default",                  \
+              false)                                                                    \
+        \
+        ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
               "No timestamps on RX packets by default",                                 \
               false)                                                                    \
         \
