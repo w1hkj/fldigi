@@ -37,6 +37,7 @@
 #include "misc.h"
 #include "configuration.h"
 #include "status.h"
+#include "dtmf.h"
 
 #include "soundconf.h"
 #include "ringbuffer.h"
@@ -68,6 +69,7 @@ state_t 	trx_state;
 
 modem		*active_modem = 0;
 cRsId		*ReedSolomon = 0;
+cDTMF		*dtmf = 0;
 SoundBase 	*scard;
 static int	_trx_tune;
 
@@ -263,6 +265,7 @@ void trx_trx_receive_loop()
 			active_modem->rx_process(rbvec[0].buf, numread);
 			if (progdefaults.rsid)
 				ReedSolomon->receive(fbuf, numread);
+//			dtmf->receive(fbuf, numread);
 		}
 		else {
 			bool afc = progStatus.afconoff;
@@ -312,7 +315,7 @@ void trx_trx_transmit_loop()
 		if (progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
 
-		active_modem->DTMF_send();
+		dtmf->send();
 
 		while (trx_state == STATE_TX) {
 			try {
@@ -533,6 +536,7 @@ void trx_start(void)
 	
 	if (scard) delete scard;
 	if (ReedSolomon) delete ReedSolomon;
+	if (dtmf) delete dtmf;
 
 
 	switch (progdefaults.btnAudioIOis) {
@@ -559,6 +563,8 @@ void trx_start(void)
 	}
 
 	ReedSolomon = new cRsId;
+	dtmf = new cDTMF;
+
 #endif // !BENCHMARK_MODE
 
 #if USE_NAMED_SEMAPHORES
