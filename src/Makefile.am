@@ -252,6 +252,7 @@ fldigi_SOURCES += \
 	dialogs/Viewer.cxx \
 	dialogs/htmlstrings.cxx \
 	dialogs/notifydialog.cxx \
+	dtmf/dtmf.cxx \
 	thor/thor.cxx \
 	thor/thorvaricode.cxx \
 	dominoex/dominoex.cxx \
@@ -269,6 +270,7 @@ fldigi_SOURCES += \
 	include/htmlstrings.h \
 	include/arq_io.h \
 	include/confdialog.h \
+	include/dtmf.h \
 	include/FTextView.h \
 	include/FTextRXTX.h \
 	include/fileselect.h \
