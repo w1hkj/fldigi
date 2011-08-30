@@ -66,186 +66,18 @@ MACROTEXT macros;
 CONTESTCNTR contest_count;
 static bool TransmitON = false;
 static bool ToggleTXRX = false;
-int mNbr;
+static int mNbr;
 
 std::string qso_time = "";
 std::string qso_exchange = "";
-bool save_xchg;
-size_t  xbeg = 0, xend = 0;
+static bool save_xchg;
+static size_t  xbeg = 0, xend = 0;
 
 string text2send = "";
 string text2repeat = "";
 string text2save = "";
+
 size_t repeatchar = 0;
-
-struct MTAGS { const char *mTAG; void (*fp)(string &, size_t &);};
-
-void pCALL(string &, size_t &);
-void pFREQ(string &, size_t &);
-void pLOC(string &, size_t &);
-void pMODE(string &, size_t &);
-void pNAME(string &, size_t &);
-void pQTH(string &, size_t &);
-void pRST(string &, size_t &);
-void pMYCALL(string &, size_t &);
-void pMYLOC(string &, size_t &);
-void pMYNAME(string &, size_t &);
-void pMYQTH(string &, size_t &);
-void pMYRST(string &, size_t &);
-void pQSOTIME(string &, size_t &);
-void pLDT(string &, size_t &);
-void pILDT(string &, size_t &);
-void pZDT(string &, size_t &);
-void pIZDT(string &, size_t &);
-void pZT(string &, size_t &);
-void pLT(string &, size_t &);
-void pLD(string &, size_t &);
-void pZD(string &, size_t &);
-void pID(string &, size_t &);
-void pTEXT(string &, size_t &);
-void pCWID(string &, size_t &);
-void pRX(string &, size_t &);
-void pTX(string &, size_t &);
-void pTXRX(string &, size_t &);
-void pVER(string &, size_t &);
-void pCNTR(string &, size_t &);
-void pDECR(string &, size_t &);
-void pINCR(string &, size_t &);
-void pXIN(string &, size_t &);
-void pXOUT(string &, size_t &);
-void pSAVEXCHG(string &, size_t &);
-void pXBEG(string &, size_t &);
-void pXEND(string &, size_t &);
-void pLOG(string &, size_t &);
-void pLNW(string &, size_t &);
-void pCLRLOG(string &, size_t &);
-void pTIMER(string &, size_t &);
-void pIDLE(string &, size_t &);
-void pTUNE(string &, size_t &);
-void pMODEM_compat(string &, size_t &);
-void pMODEM(string &, size_t &);
-void pEXEC(string &, size_t &);
-void pSTOP(string &, size_t &);
-void pCONT(string &, size_t &);
-void pGET(string &, size_t &);
-void pINFO1(string &, size_t &);
-void pINFO2(string &, size_t &);
-void pCLRRX(string &, size_t &);
-void pCLRTX(string &, size_t &);
-void pFILE(string &, size_t &);
-void pWPM(string &, size_t &);
-void pRISETIME(string &, size_t &);
-void pPRE(string &, size_t &);
-void pPOST(string &, size_t &);
-void pAFC(string &, size_t &);
-void pLOCK(string &, size_t &);
-void pRX_RSID(string &, size_t &);
-void pTX_RSID(string &, size_t &);
-void pDTMF(string &, size_t &);
-
-#ifdef __WIN32__
-void pTALK(string &, size_t &);
-#endif
-
-void pWAIT(string&, size_t &);
-void pSRCHUP(string&, size_t&);
-void pSRCHDN(string&, size_t&);
-void pGOHOME(string&, size_t&);
-
-void pGOFREQ(string&, size_t&);
-void pQSY(string&, size_t&);
-void pQSYTO(string &, size_t&);
-void pQSYFM(string &, size_t&);
-void pRIGMODE(string&, size_t&);
-void pFILWID(string&, size_t&);
-
-void pMAPIT(string&, size_t&);
-void pREPEAT(string&, size_t&);
-
-//void pMACROS(string &, size_t &);
-
-MTAGS mtags[] = {
-{"<CALL>",		pCALL},
-{"<FREQ>",		pFREQ},
-{"<LOC>",		pLOC},
-{"<MODE>",		pMODE},
-{"<NAME>",		pNAME},
-{"<QTH>",		pQTH},
-{"<RST>",		pRST},
-{"<MYCALL>",	pMYCALL},
-{"<MYLOC>",		pMYLOC},
-{"<MYNAME>",	pMYNAME},
-{"<MYQTH>",		pMYQTH},
-{"<MYRST>",		pMYRST},
-{"<QSOTIME>",	pQSOTIME},
-{"<INFO1>",		pINFO1},
-{"<INFO2>",		pINFO2},
-{"<LDT>",		pLDT},
-{"<ILDT>",		pILDT},
-{"<ZDT>",		pZDT},
-{"<IZDT>",		pIZDT},
-{"<LT>",		pLT},
-{"<ZT>",		pZT},
-{"<LD>",		pLD},
-{"<ZD>",		pZD},
-{"<ID>",		pID},
-{"<TEXT>",		pTEXT},
-{"<CWID>",		pCWID},
-{"<RX>",		pRX},
-{"<TX>",		pTX},
-{"<TX/RX>",		pTXRX},
-{"<VER>",		pVER},
-{"<CNTR>",		pCNTR},
-{"<DECR>",		pDECR},
-{"<INCR>",		pINCR},
-{"<X1>",		pXOUT},
-{"<XIN>",		pXIN},
-{"<XOUT>",		pXOUT},
-{"<XBEG>",		pXBEG},
-{"<XEND>",		pXEND},
-{"<SAVEXCHG>",	pSAVEXCHG},
-{"<LOG>",		pLOG},
-{"<LNW>",		pLNW},
-{"<CLRLOG>",	pCLRLOG},
-{"<TIMER:",		pTIMER},
-{"<IDLE:",		pIDLE},
-{"<TUNE:",		pTUNE},
-{"<WAIT:",		pWAIT},
-{"<MODEM>",		pMODEM_compat},
-{"<MODEM:",		pMODEM},
-{"<EXEC>",		pEXEC},
-{"<STOP>",		pSTOP},
-{"<CONT>",		pCONT},
-{"<GET>",		pGET},
-{"<CLRRX>",		pCLRRX},
-{"<CLRTX>",		pCLRTX},
-{"<FILE:",		pFILE},
-{"<WPM:",		pWPM},
-{"<RISE:",		pRISETIME},
-{"<PRE:",		pPRE},
-{"<POST:",		pPOST},
-{"<AFC:",		pAFC},
-{"<LOCK:",		pLOCK},
-{"<RXRSID:",	pRX_RSID},
-{"<TXRSID:",	pTX_RSID},
-{"<DTMF:",		pDTMF},
-{"<SRCHUP>",	pSRCHUP},
-{"<SRCHDN>",	pSRCHDN},
-{"<GOHOME>",	pGOHOME},
-{"<GOFREQ:",	pGOFREQ},
-{"<QSY:",		pQSY},
-{"<QSYTO>",		pQSYTO},
-{"<QSYFM>",		pQSYFM},
-{"<RIGMODE:",	pRIGMODE},
-{"<FILWID:",	pFILWID},
-{"<MAPIT:",		pMAPIT},
-{"<MAPIT>",		pMAPIT},
-{"<REPEAT>",	pREPEAT},
-#ifdef __WIN32__
-{"<TALK:",		pTALK},
-#endif
-{0, 0}
-};
 
 static bool expand;
 static bool GET = false;
@@ -256,7 +88,7 @@ string info2msg = "";
 static char cutnumbers[] = "T12345678N";
 static string cutstr;
 
-string cutstring(const char *s)
+static string cutstring(const char *s)
 {
 	cutstr = s;
 	if (!progdefaults.cutnbrs || active_modem != cw_modem)
@@ -269,13 +101,12 @@ string cutstring(const char *s)
 
 }
 
-size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
+static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
 }
 
-void pFILE(string &s, size_t &i)
+static void pFILE(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	string fname = s.substr(i+6, endbracket - i - 6);
 	if (fname.length() > 0) {
 		FILE *toadd = fopen(fname.c_str(), "r");
@@ -296,9 +127,8 @@ void pFILE(string &s, size_t &i)
 		s.replace(i, endbracket - i + 1, "");
 }
 
-void pTIMER(string &s, size_t &i)
+static void pTIMER(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	int number;
 	string sTime = s.substr(i+7, endbracket - i - 7);
 	if (sTime.length() > 0) {
@@ -309,9 +139,8 @@ void pTIMER(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pREPEAT(string &s, size_t &i)
+static void pREPEAT(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	progStatus.repeatMacro = mNbr;
 	s.replace(i, endbracket - i + 1, "");
 	text2repeat = s;
@@ -319,9 +148,8 @@ void pREPEAT(string &s, size_t &i)
 	s.insert(i, "[REPEAT]");
 }
 
-void pWPM(string &s, size_t &i)
+static void pWPM(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	int number;
 	string sTime = s.substr(i+5, endbracket - i - 5);
 	if (sTime.length() > 0) {
@@ -334,9 +162,8 @@ void pWPM(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pRISETIME(string &s, size_t &i)
+static void pRISETIME(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	float number;
 	string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
@@ -349,9 +176,8 @@ void pRISETIME(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pPRE(string &s, size_t &i)
+static void pPRE(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	float number;
 	string sVal = s.substr(i+5, endbracket - i - 5);
 	if (sVal.length() > 0) {
@@ -364,9 +190,8 @@ void pPRE(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pPOST(string &s, size_t &i)
+static void pPOST(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	float number;
 	string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
@@ -380,11 +205,10 @@ void pPOST(string &s, size_t &i)
 }
 
 bool macro_idle_on = false;
-float  idleTime = 0;
+static float  idleTime = 0;
 
-void pIDLE(string &s, size_t &i)
+static void pIDLE(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	float number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
@@ -395,12 +219,11 @@ void pIDLE(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-bool useTune = false;
-int  tuneTime = 0;
+static bool useTune = false;
+static int  tuneTime = 0;
 
-void pTUNE(string &s, size_t &i)
+static void pTUNE(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	int number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
@@ -411,12 +234,11 @@ void pTUNE(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-bool useWait = false;
-int  waitTime = 0;
+static bool useWait = false;
+static int  waitTime = 0;
 
-void pWAIT(string &s, size_t &i)
+static void pWAIT(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	int number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
@@ -427,102 +249,101 @@ void pWAIT(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pINFO1(string &s, size_t &i)
+static void pINFO1(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, info1msg );
 }
 
-void pINFO2(string &s, size_t &i)
+static void pINFO2(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, info2msg );
 }
 
-void pCLRRX(string &s, size_t &i)
+static void pCLRRX(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, "" );
 	ReceiveText->clear();
 }
 
-void pCLRTX(string &s, size_t &i)
+static void pCLRTX(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, "" );
 	TransmitText->clear();
 }
 
-void pCALL(string &s, size_t &i)
+static void pCALL(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpCall->value() );
 }
 
-void pGET(string &s, size_t &i)
+static void pGET(string &s, size_t &i, size_t endbracket)
 {
 	s.erase( i, 9 );
 	GET = true;
 }
 
-void pFREQ(string &s, size_t &i)
+static void pFREQ(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpFreq->value() );
 }
 
-void pLOC(string &s, size_t &i)
+static void pLOC(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, inpLoc->value() );
 }
 
-void pMODE(string &s, size_t &i)
+static void pMODE(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, active_modem->get_mode_name());
 }
 
-void pNAME(string &s, size_t &i)
+static void pNAME(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpName->value() );
 }
 
-void pQTH(string &s, size_t &i)
+static void pQTH(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i,5, inpQth->value() );
 }
 
-void pQSOTIME(string &s, size_t &i)
+static void pQSOTIME(string &s, size_t &i, size_t endbracket)
 {
 	qso_time = inpTimeOff->value();
 	s.replace( i, 9, qso_time.c_str() );
 }
 
-void pRST(string &s, size_t &i)
+static void pRST(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, cutstring(inpRstOut->value()));
 }
 
-
-void pMYCALL(string &s, size_t &i)
+static void pMYCALL(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, inpMyCallsign->value() );
 }
 
-void pMYLOC(string &s, size_t &i)
+static void pMYLOC(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpMyLocator->value() );
 }
 
-void pMYNAME(string &s, size_t &i)
+static void pMYNAME(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, inpMyName->value() );
 }
 
-void pMYQTH(string &s, size_t &i)
+static void pMYQTH(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpMyQth->value() );
 }
 
-void pMYRST(string &s, size_t &i)
+static void pMYRST(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpRstIn->value() );
 }
 
-void pLDT(string &s, size_t &i)
+static void pLDT(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -533,7 +354,7 @@ void pLDT(string &s, size_t &i)
 	s.replace( i, 5, szDt);
 }
 
-void pILDT(string &s, size_t &i)
+static void pILDT(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -544,7 +365,7 @@ void pILDT(string &s, size_t &i)
 	s.replace( i, 6, szDt);
 }
 
-void pZDT(string &s, size_t &i)
+static void pZDT(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -555,7 +376,7 @@ void pZDT(string &s, size_t &i)
 	s.replace( i, 5, szDt);
 }
 
-void pIZDT(string &s, size_t &i)
+static void pIZDT(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -566,7 +387,7 @@ void pIZDT(string &s, size_t &i)
 	s.replace( i, 6, szDt);
 }
 
-void pLT(string &s, size_t &i)
+static void pLT(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -577,7 +398,7 @@ void pLT(string &s, size_t &i)
 	s.replace( i, 4, szDt);
 }
 
-void pZT(string &s, size_t &i)
+static void pZT(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -588,7 +409,7 @@ void pZT(string &s, size_t &i)
 	s.replace( i, 4, szDt);
 }
 
-void pLD(string &s, size_t &i)
+static void pLD(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -599,7 +420,7 @@ void pLD(string &s, size_t &i)
 	s.replace( i, 4, szDt);
 }
 
-void pZD(string &s, size_t &i)
+static void pZD(string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -610,51 +431,50 @@ void pZD(string &s, size_t &i)
 	s.replace( i, 4, szDt);
 }
 
-void pID(string &s, size_t &i)
+static void pID(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macroid = true;
 	s.replace( i, 4, "");
 }
 
-void pTEXT(string &s, size_t &i)
+static void pTEXT(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macrotextid = true;
 
 	s.replace( i, 6, "");
 }
 
-void pCWID(string &s, size_t &i)
+static void pCWID(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macroCWid = true;
 	s.replace( i, 6, "");
 }
 
-void pDTMF(string &s, size_t &i)
+static void pDTMF(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	progdefaults.DTMFstr = s.substr(i + 6, endbracket - i - 6);
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pRX(string &s, size_t &i)
+static void pRX(string &s, size_t &i, size_t endbracket)
 {
 	s.replace (i, 4, "^r");
 }
 
-void pTX(string &s, size_t &i)
+static void pTX(string &s, size_t &i, size_t endbracket)
 {
 	s.erase(i, 4);
 	TransmitON = true;
 }
 
-void pTXRX(string &s, size_t &i)
+static void pTXRX(string &s, size_t &i, size_t endbracket)
 {
 	s.erase(i, 7);
 	ToggleTXRX = true;
 }
 
 
-void pVER(string &s, size_t &i)
+static void pVER(string &s, size_t &i, size_t endbracket)
 {
 	string progname;
 	progname = "Fldigi ";
@@ -662,7 +482,7 @@ void pVER(string &s, size_t &i)
 	s.replace( i, 5, progname );
 }
 
-void pCNTR(string &s, size_t &i)
+static void pCNTR(string &s, size_t &i, size_t endbracket)
 {
 	int  contestval;
 	contestval = contest_count.count;
@@ -674,7 +494,7 @@ void pCNTR(string &s, size_t &i)
 		s.replace (i, 6, "");
 }
 
-void pDECR(string &s, size_t &i)
+static void pDECR(string &s, size_t &i, size_t endbracket)
 {
 	int  contestval;
 	contest_count.count--;
@@ -684,7 +504,7 @@ void pDECR(string &s, size_t &i)
 	updateOutSerNo();
 }
 
-void pINCR(string &s, size_t &i)
+static void pINCR(string &s, size_t &i, size_t endbracket)
 {
 	int  contestval;
 	contest_count.count++;
@@ -693,51 +513,51 @@ void pINCR(string &s, size_t &i)
 	updateOutSerNo();
 }
 
-void pXIN(string &s, size_t &i)
+static void pXIN(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, inpXchgIn->value() );
 }
 
-void pXOUT(string &s, size_t &i)
+static void pXOUT(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, cutstring(progdefaults.myXchg.c_str()));
 }
 
-void pXBEG(string &s, size_t &i)
+static void pXBEG(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, "");
 	xbeg = i;
 }
 
-void pXEND(string &s, size_t &i)
+static void pXEND(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, "");
 	xend = i;
 }
 
-void pSAVEXCHG(string &s, size_t &i)
+static void pSAVEXCHG(string &s, size_t &i, size_t endbracket)
 {
 	save_xchg = true;
 	s.replace( i, 10, "");
 }
 
-void pLOG(string &s, size_t &i)
+static void pLOG(string &s, size_t &i, size_t endbracket)
 {
 	qsoSave_cb(0, 0);
 	s.replace(i, 5, "");
 }
 
-void pLNW(string &s, size_t &i)
+static void pLNW(string &s, size_t &i, size_t endbracket)
 {
 	s.replace(i, 5, "^L");
 }
 
-void pCLRLOG(string &s, size_t &i)
+static void pCLRLOG(string &s, size_t &i, size_t endbracket)
 {
 	s.replace(i, 10, "^C");
 }
 
-void pMODEM_compat(string &s, size_t &i)
+static void pMODEM_compat(string &s, size_t &i, size_t endbracket)
 {
 	size_t	j, k,
 			len = s.length();
@@ -764,7 +584,7 @@ void pMODEM_compat(string &s, size_t &i)
 #include <float.h>
 #include "re.h"
 
-void pMODEM(string &s, size_t &i)
+static void pMODEM(string &s, size_t &i, size_t endbracket)
 {
 	static fre_t re("<MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
 
@@ -843,9 +663,8 @@ void pMODEM(string &s, size_t &i)
 	s.erase(i, o[0].rm_eo - i);
 }
 
-void pAFC(string &s, size_t &i)
+static void pAFC(string &s, size_t &i, size_t endbracket)
 {
-  size_t endbracket = s.find('>',i);
   string sVal = s.substr(i+5, endbracket - i - 5);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -861,9 +680,8 @@ void pAFC(string &s, size_t &i)
   s.replace(i, endbracket - i + 1, "");
 }
 
-void pLOCK(string &s, size_t &i)
+static void pLOCK(string &s, size_t &i, size_t endbracket)
 {
-  size_t endbracket = s.find('>',i);
   string sVal = s.substr(i+6, endbracket - i - 6);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -880,9 +698,8 @@ void pLOCK(string &s, size_t &i)
   s.replace(i, endbracket - i + 1, "");
 }
 
-void pTX_RSID(string &s, size_t &i)
+static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 {
-  size_t endbracket = s.find('>',i);
   string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -898,9 +715,8 @@ void pTX_RSID(string &s, size_t &i)
   s.replace(i, endbracket - i + 1, "");
 }
 
-void pRX_RSID(string &s, size_t &i)
+static void pRX_RSID(string &s, size_t &i, size_t endbracket)
 {
-  size_t endbracket = s.find('>',i);
   string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -917,9 +733,8 @@ void pRX_RSID(string &s, size_t &i)
 }
 
 #ifdef __WIN32__
-void pTALK(string &s, size_t &i)
+static void pTALK(string &s, size_t &i, size_t endbracket)
 {
-  size_t endbracket = s.find('>',i);
   string sVal = s.substr(i+6, endbracket - i - 6);
   if (sVal.length() > 0) {
     // sVal = on|off   [ON, OFF]
@@ -934,7 +749,7 @@ void pTALK(string &s, size_t &i)
 }
 #endif
 
-void pSRCHUP(string &s, size_t &i)
+static void pSRCHUP(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, "");
 	active_modem->searchUp();
@@ -942,7 +757,7 @@ void pSRCHUP(string &s, size_t &i)
 	        wf->insert_text(true);
 }
 
-void pSRCHDN(string &s, size_t &i)
+static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, "");
 	active_modem->searchDown();
@@ -950,7 +765,7 @@ void pSRCHDN(string &s, size_t &i)
 	         wf->insert_text(true);
 }
 
-void pGOHOME(string &s, size_t &i)
+static void pGOHOME(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, "");
 	if (active_modem == cw_modem)
@@ -961,9 +776,8 @@ void pGOHOME(string &s, size_t &i)
 		active_modem->set_freq(progdefaults.PSKsweetspot);
 }
 
-void pGOFREQ(string &s, size_t &i)
+static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	int number;
 	string sGoFreq = s.substr(i+8, endbracket - i - 8);
 	if (sGoFreq.length() > 0) {
@@ -977,21 +791,20 @@ void pGOFREQ(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pQSYTO(string &s, size_t &i)
+static void pQSYTO(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, "");
 	do_qsy(true);
 }
 
-void pQSYFM(string &s, size_t &i)
+static void pQSYFM(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, "");
 	do_qsy(false);
 }
 
-void pQSY(string &s, size_t &i)
+static void pQSY(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	int rf = 0;
 	int audio = 0;
 	float rfd = 0;
@@ -1026,18 +839,16 @@ void pQSY(string &s, size_t &i)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pRIGMODE(string& s, size_t& i)
+static void pRIGMODE(string& s, size_t& i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	string sMode = s.substr(i+9, endbracket - i - 9);
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
 	s.replace(i, endbracket - i + 1, "");
 }
 
-void pFILWID(string& s, size_t& i)
+static void pFILWID(string& s, size_t& i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	string sWidth = s.substr(i+8, endbracket - i - 8);
 	qso_opBW->value(sWidth.c_str());
 	cb_qso_opBW();
@@ -1154,7 +965,7 @@ void set_macro_env(void)
 }
 
 #ifndef __MINGW32__
-void pEXEC(string &s, size_t &i)
+static void pEXEC(string &s, size_t &i, size_t endbracket)
 {
 	size_t start, end;
 	if ((start = s.find('>', i)) == string::npos ||
@@ -1218,7 +1029,8 @@ void pEXEC(string &s, size_t &i)
 	// option 2: do nothing and allow it to be parsed for more macros
 }
 #else // !__MINGW32__
-void pEXEC(string& s, size_t& i)
+
+static void pEXEC(string& s, size_t& i, size_t endbracket)
 {
 	size_t start, end;
 	if ((start = s.find('>', i)) == string::npos ||
@@ -1244,7 +1056,7 @@ void pEXEC(string& s, size_t& i)
 }
 #endif // !__MINGW32__
 
-void MAPIT(int how)
+static void MAPIT(int how)
 {
 	float lat = 0, lon = 0;
 	string sCALL = inpCall->value();
@@ -1290,9 +1102,8 @@ void MAPIT(int how)
 	cb_mnuVisitURL(NULL, (void*)url.c_str());
 }
 
-void pMAPIT(string &s, size_t &i)
+static void pMAPIT(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	string sVal = s.substr(i + 7, endbracket - i - 7);
 	if (sVal.length() > 0) {
 		if (sVal.compare(0,3,"adr") == 0)
@@ -1309,17 +1120,102 @@ void pMAPIT(string &s, size_t &i)
 	expand = false;
 }
 
-void pSTOP(string &s, size_t &i)
+static void pSTOP(string &s, size_t &i, size_t endbracket)
 {
 	s.erase(i, s.find('>', i) + 1 - i);
 	expand = false;
 }
 
-void pCONT(string &s, size_t &i)
+static void pCONT(string &s, size_t &i, size_t endbracket)
 {
 	s.erase(i, s.find('>', i) + 1 - i);
 	expand = true;
 }
+
+struct MTAGS { const char *mTAG; void (*fp)(string &, size_t&, size_t );};
+
+MTAGS mtags[] = {
+{"<CALL>",		pCALL},
+{"<FREQ>",		pFREQ},
+{"<LOC>",		pLOC},
+{"<MODE>",		pMODE},
+{"<NAME>",		pNAME},
+{"<QTH>",		pQTH},
+{"<RST>",		pRST},
+{"<MYCALL>",	pMYCALL},
+{"<MYLOC>",		pMYLOC},
+{"<MYNAME>",	pMYNAME},
+{"<MYQTH>",		pMYQTH},
+{"<MYRST>",		pMYRST},
+{"<QSOTIME>",	pQSOTIME},
+{"<INFO1>",		pINFO1},
+{"<INFO2>",		pINFO2},
+{"<LDT>",		pLDT},
+{"<ILDT>",		pILDT},
+{"<ZDT>",		pZDT},
+{"<IZDT>",		pIZDT},
+{"<LT>",		pLT},
+{"<ZT>",		pZT},
+{"<LD>",		pLD},
+{"<ZD>",		pZD},
+{"<ID>",		pID},
+{"<TEXT>",		pTEXT},
+{"<CWID>",		pCWID},
+{"<RX>",		pRX},
+{"<TX>",		pTX},
+{"<TX/RX>",		pTXRX},
+{"<VER>",		pVER},
+{"<CNTR>",		pCNTR},
+{"<DECR>",		pDECR},
+{"<INCR>",		pINCR},
+{"<X1>",		pXOUT},
+{"<XIN>",		pXIN},
+{"<XOUT>",		pXOUT},
+{"<XBEG>",		pXBEG},
+{"<XEND>",		pXEND},
+{"<SAVEXCHG>",	pSAVEXCHG},
+{"<LOG>",		pLOG},
+{"<LNW>",		pLNW},
+{"<CLRLOG>",	pCLRLOG},
+{"<TIMER:",		pTIMER},
+{"<IDLE:",		pIDLE},
+{"<TUNE:",		pTUNE},
+{"<WAIT:",		pWAIT},
+{"<MODEM>",		pMODEM_compat},
+{"<MODEM:",		pMODEM},
+{"<EXEC>",		pEXEC},
+{"<STOP>",		pSTOP},
+{"<CONT>",		pCONT},
+{"<GET>",		pGET},
+{"<CLRRX>",		pCLRRX},
+{"<CLRTX>",		pCLRTX},
+{"<FILE:",		pFILE},
+{"<WPM:",		pWPM},
+{"<RISE:",		pRISETIME},
+{"<PRE:",		pPRE},
+{"<POST:",		pPOST},
+{"<AFC:",		pAFC},
+{"<LOCK:",		pLOCK},
+{"<RXRSID:",	pRX_RSID},
+{"<TXRSID:",	pTX_RSID},
+{"<DTMF:",		pDTMF},
+{"<SRCHUP>",	pSRCHUP},
+{"<SRCHDN>",	pSRCHDN},
+{"<GOHOME>",	pGOHOME},
+{"<GOFREQ:",	pGOFREQ},
+{"<QSY:",		pQSY},
+{"<QSYTO>",		pQSYTO},
+{"<QSYFM>",		pQSYFM},
+{"<RIGMODE:",	pRIGMODE},
+{"<FILWID:",	pFILWID},
+{"<MAPIT:",		pMAPIT},
+{"<MAPIT>",		pMAPIT},
+{"<REPEAT>",	pREPEAT},
+#ifdef __WIN32__
+{"<TALK:",		pTALK},
+#endif
+{0, 0}
+};
 
 int MACROTEXT::loadMacros(const string& filename)
 {
@@ -1336,11 +1232,6 @@ int MACROTEXT::loadMacros(const string& filename)
 
 	if (!mFile) {
 		create_new_macros();
-//		for (int i = 0; i < 12; i++) {
-//			btnMacro[i]->label( name[i].c_str());
-//			btnMacro[i]->redraw_label();
-//		}
-//		return 0;
 	} else {
 
 	mFile.getline(szLine, 4095);
@@ -1426,9 +1317,8 @@ void MACROTEXT::saveMacroFile()
 	}
 }
 
-void MACROTEXT::loadnewMACROS(string &s, size_t &i)
+void MACROTEXT::loadnewMACROS(string &s, size_t &i, size_t endbracket)
 {
-	size_t endbracket = s.find('>',i);
 	string fname = s.substr(i+8, endbracket - i - 8);
 	if (fname.length() > 0) {
 		loadMacros(fname);
@@ -1457,14 +1347,15 @@ string MACROTEXT::expandMacro(int n)
 	tuneTime = 0;
 
 	while ((idx = expanded.find('<', idx)) != string::npos) {
-		if (expanded.find("<MACROS:",idx) == idx) {
-			loadnewMACROS(expanded, idx);
+		size_t endbracket = expanded.find('>',idx);
+ 		if (expanded.find("<MACROS:",idx) == idx) {
+			loadnewMACROS(expanded, idx, endbracket);
 			idx++;
 			continue;
 		}
 		// we must handle this specially
 		if (expanded.find("<CONT>", idx) == idx)
-			pCONT(expanded, idx);
+			pCONT(expanded, idx, endbracket);
 		if (!expand) {
 			idx++;
 			continue;
@@ -1473,7 +1364,7 @@ string MACROTEXT::expandMacro(int n)
 		pMtags = mtags;
 		while (pMtags->mTAG != 0) {
 			if (expanded.find(pMtags->mTAG,idx) == idx) {
-				pMtags->fp(expanded,idx);
+				pMtags->fp(expanded,idx, endbracket);
 				break;
 			}
 			pMtags++;
@@ -1615,7 +1506,7 @@ void MACROTEXT::execute(int n)
 void MACROTEXT::repeat(int n)
 {
 	expandMacro(n);
-printf("%s\n",text2repeat.c_str());
+	LOG_INFO("%s",text2repeat.c_str());
 	macro_idle_on = false;
 	if (idleTime) progStatus.repeatIdleTime = idleTime;
 }
@@ -1632,9 +1523,9 @@ MACROTEXT::MACROTEXT()
 }
 
 
-string mtext =
+static string mtext =
 "//fldigi macro definition file extended\n\
-// This file defines the macro structe(s) for the digital modem program, fldigi\n\
+// This file defines the macro structure(s) for the digital modem program, fldigi\n\
 // It also serves as a basis for any macros that are written by the user\n\
 //\n\
 // The top line of this file should always be the first line in every macro \n\
@@ -1662,3 +1553,4 @@ void MACROTEXT::saveMacros(const string& fname) {
 	mfile.close();
 	changed = false;
 }
+
