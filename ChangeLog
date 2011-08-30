@@ -1,5 +1,14 @@
-2011-08-10  David Freese  <w1hkj@w1hkj.com>
+2011-08-29  David Freese  <w1hkj@w1hkj.com>
 
+	564c420: DTMF encoder
+
+2011-08-16  Chris Sylvain  <kb3cs@arrl.net>
+
+	4942a0b: Packet audio boost
+
+2011-08-14  David Freese  <w1hkj@w1hkj.com>
+
+	8826d4f: Wide Cursor Tracks
 	4f0acd0: Log resort add record
 	fd8d86f: New Macro Tags
 	4478165: RTTY MARK coloring
