@@ -971,3 +971,89 @@ mfntchr idch2[] = {
 };
 
 
+//======================================================================
+// DTMF tone transmit
+//======================================================================
+int modem::DTMF_row[] = {
+941, 697, 697, 697, 770, 770, 770, 852, 852, 852, 941, 941, 697, 770, 852, 941};
+//0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   *,   #,   A,   B,   C,   D
+
+int modem::DTMF_col[] = { 
+1336, 1209, 1336, 1477, 1209, 1336, 1477, 1209, 1336, 1477, 1209, 1477, 1633, 1633, 1633, 1633};
+// 0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    *,    #,    A,    B,    C,    D
+
+//----------------------------------------------------------------------
+// transmit silence for specified time duration
+//----------------------------------------------------------------------
+
+void modem::DTMF_silence(int duration)
+{
+	double sr = active_modem->get_samplerate();
+	int length = duration * sr / 1000;
+	memset(outbuf, 0, length * sizeof(*outbuf));
+	active_modem->ModulateXmtr(outbuf, length);
+}
+
+//----------------------------------------------------------------------
+// transmit DTMF tones for specific time interval
+//----------------------------------------------------------------------
+
+void modem::DTMF_two_tones(int rc)
+{
+	if (rc < 0 || rc > 15) return;
+	double sr = active_modem->get_samplerate();
+	double phaseincr = 2.0 * M_PI * DTMF_row[rc] / sr;
+	double phase = 0;
+printf("%d %d\n", DTMF_row[rc], DTMF_col[rc]);
+	int length = 50 * sr / 1000;
+
+	for (int i = 0; i < length; i++) {
+		outbuf[i] = 0.5 * sin(phase);
+		phase += phaseincr;
+	}
+
+	phaseincr = 2.0 * M_PI * DTMF_col[rc] / sr;
+	phase = 0;
+	for (int i = 0; i < length; i++) {
+		outbuf[i] += 0.5 * sin(phase);
+		phase += phaseincr;
+	}
+	for (int i = 0; i < RT; i++) {
+		outbuf[i] *= cwid_keyshape[i];
+		outbuf[length - 1 - i] *= cwid_keyshape[i];
+	}
+
+	active_modem->ModulateXmtr(outbuf, length);
+
+}
+
+//----------------------------------------------------------------------
+// transmit the string contained in progdefaults.DTMFstr and output as 
+// dtmf valid characters, 0-9, *, #, A-D
+// each pair of tones is separated by 50ms silence
+// 500 msec silence for ' ', ',' or '-'
+// 50 msec silence for invalid characters
+//----------------------------------------------------------------------
+
+void modem::DTMF_send()
+{
+	if (progdefaults.DTMFstr.empty()) return;
+
+	int c = 0;
+
+	RT = (int) (samplerate * 4 / 1000.0); // 4 msec rise/fall time
+	cwid_makeshape();
+
+	for(size_t i = 0; i < progdefaults.DTMFstr.length(); i++) {
+		c = progdefaults.DTMFstr[i];
+		if (c == ' ' || c == ',' || c == '-') DTMF_silence(50);
+		else if (c >= '0' && c <= '9')        DTMF_two_tones(c - '0');
+		else if (c == '*')                    DTMF_two_tones(10);
+		else if (c == '#')                    DTMF_two_tones(11);
+		else if (c >= 'A' && c <= 'D')        DTMF_two_tones(12 + c - 'A');
+		else if (c >= 'a' && c <= 'd')        DTMF_two_tones(12 + c - 'a');
+		DTMF_silence(50);
+	}
+	progdefaults.DTMFstr.clear();
+}
+

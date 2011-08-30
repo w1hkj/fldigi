@@ -65,6 +65,9 @@ protected:
 	bool s2n_valid;
 
 	unsigned cap;
+	static int DTMF_row[];
+	static int DTMF_col[];
+
 public:
 	modem();
 	virtual ~modem(){};
@@ -176,6 +179,11 @@ public:
 	void	cwid_send_ch(int ch);
 	void	cwid_sendtext (const std::string& s);
 	void	cwid();
+
+// for DTMF transmission
+	void DTMF_silence(int);
+	void DTMF_two_tones(int);
+	void DTMF_send();
 
 // for noise tests
 private:

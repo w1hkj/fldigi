@@ -158,6 +158,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<TEXT>\tvideo text"));
 	w->add(_("<TXRSID:on|off|t>\tTx RSID on,off,toggle"));
 	w->add(_("<RXRSID:on|off|t>\tRx RSID on,off,toggle"));
+	w->add(_("<DTMF:digits>\tTx digits string"));
 
 	w->add(LINE_SEP);
 	w->add(_("<POST:+/-nn.n>\tCW QSK post-timing"));

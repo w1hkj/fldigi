@@ -141,6 +141,7 @@ void pAFC(string &, size_t &);
 void pLOCK(string &, size_t &);
 void pRX_RSID(string &, size_t &);
 void pTX_RSID(string &, size_t &);
+void pDTMF(string &, size_t &);
 
 #ifdef __WIN32__
 void pTALK(string &, size_t &);
@@ -227,6 +228,7 @@ MTAGS mtags[] = {
 {"<LOCK:",		pLOCK},
 {"<RXRSID:",	pRX_RSID},
 {"<TXRSID:",	pTX_RSID},
+{"<DTMF:",		pDTMF},
 {"<SRCHUP>",	pSRCHUP},
 {"<SRCHDN>",	pSRCHDN},
 {"<GOHOME>",	pGOHOME},
@@ -625,6 +627,13 @@ void pCWID(string &s, size_t &i)
 {
 	progdefaults.macroCWid = true;
 	s.replace( i, 6, "");
+}
+
+void pDTMF(string &s, size_t &i)
+{
+	size_t endbracket = s.find('>',i);
+	progdefaults.DTMFstr = s.substr(i + 6, endbracket - i - 6);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 void pRX(string &s, size_t &i)

@@ -608,6 +608,7 @@
               "Single tone at center of modem BW, carrier detect for amplifiers",       \
               0.0)                                                                      \
         ELEM_(bool, macroCWid, "", "",  false)                                          \
+        ELEM_(std::string, DTMFstr, "", "", "")                                         \
         ELEM_(int, videowidth, "VIDEOWIDTH",                                            \
               "Video ID text width (characters per row)",                               \
               1)                                                                        \
