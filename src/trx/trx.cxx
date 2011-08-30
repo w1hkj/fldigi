@@ -305,6 +305,8 @@ void trx_trx_transmit_loop()
 		if (progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
 
+		active_modem->DTMF_send();
+
 		while (trx_state == STATE_TX) {
 			try {
 				if (active_modem->tx_process() < 0)
