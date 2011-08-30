@@ -42,7 +42,7 @@ struct MACROTEXT {
 	MACROTEXT();
 private:
 	std::string expanded;
-	void loadnewMACROS(std::string& s, size_t &i);
+	void loadnewMACROS(std::string& s, size_t &i, size_t endbracket);
 };
 
 extern MACROTEXT macros;
