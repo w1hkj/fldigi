@@ -1,6 +1,11 @@
-2011-08-29  David Freese  <w1hkj@w1hkj.com>
+2011-08-30  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
-	564c420: DTMF encoder
+	3f08ee9: Macros code cleanup
+
+2011-08-30  David Freese  <w1hkj@w1hkj.com>
+
+	ff3b0b2: DTMF class
+	3113c68: DTMF encoder
 
 2011-08-16  Chris Sylvain  <kb3cs@arrl.net>
 
