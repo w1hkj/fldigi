@@ -3577,6 +3577,12 @@ void showMacroSet() {
 	set_macroLabels();
 }
 
+void showDTMF(const string s) {
+	string dtmfstr = "\n<DTMF> ";
+	dtmfstr.append(s);
+	ReceiveText->add(dtmfstr.c_str());
+}
+
 void setwfrange() {
 	wf->opmode();
 }

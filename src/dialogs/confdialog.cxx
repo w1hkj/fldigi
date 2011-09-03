@@ -2978,6 +2978,14 @@ static void cb_chkRxStream(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabDTMFdecode=(Fl_Group *)0;
+
+Fl_Check_Button *chkDTMFdecode=(Fl_Check_Button *)0;
+
+static void cb_chkDTMFdecode(Fl_Check_Button* o, void*) {
+  progdefaults.DTMFdecode = o->value();
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZcdrom=(Fl_Round_Button *)0;
@@ -3112,7 +3120,6 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -3804,6 +3811,7 @@ ab and newline are automatically included."));
         tabUI->end();
       } // Fl_Group* tabUI
       { tabWaterfall = new Fl_Group(0, 25, 501, 347, _("Waterfall"));
+        tabWaterfall->hide();
         { tabsWaterfall = new Fl_Tabs(0, 25, 501, 347);
           tabsWaterfall->color((Fl_Color)FL_LIGHT1);
           tabsWaterfall->selection_color((Fl_Color)FL_LIGHT1);
@@ -6731,6 +6739,16 @@ d frequency"));
             } // Fl_Group* o
             tabText_IO->end();
           } // Fl_Group* tabText_IO
+          { tabDTMFdecode = new Fl_Group(0, 50, 500, 320, _("DTMF"));
+            tabDTMFdecode->hide();
+            { Fl_Check_Button* o = chkDTMFdecode = new Fl_Check_Button(165, 85, 175, 20, _("Decode DTMF tones"));
+              chkDTMFdecode->tooltip(_("Send rx text to file: textout.txt"));
+              chkDTMFdecode->down_box(FL_DOWN_BOX);
+              chkDTMFdecode->callback((Fl_Callback*)cb_chkDTMFdecode);
+              o->value(progdefaults.DTMFdecode);
+            } // Fl_Check_Button* chkDTMFdecode
+            tabDTMFdecode->end();
+          } // Fl_Group* tabDTMFdecode
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();

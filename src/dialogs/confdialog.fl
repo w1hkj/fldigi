@@ -73,7 +73,7 @@ decl {Fl_Double_Window *dlgConfig;} {public
 decl {Mode_Browser* mode_browser;} {public
 } 
 
-Function {set_qrz_buttons(Fl_Button* b)} {open return_type void
+Function {set_qrz_buttons(Fl_Button* b)} {return_type void
 } {
   code {Fl_Button* qrzb[] = { btnQRZnotavailable, btnQRZcdrom, btnQRZonline,
                               btnQRZsub, btnHamcall, btnHAMCALLonline,
@@ -106,11 +106,11 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
-          label Station open
+          label Station
           xywh {5 35 490 165} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
@@ -186,7 +186,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
+        label UI
         xywh {0 25 502 346} hide
       } {
         Fl_Tabs tabsUI {
@@ -904,8 +904,8 @@ connect_to_log_server();}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall open
-        xywh {0 25 501 347}
+        label Waterfall
+        xywh {0 25 501 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {0 25 501 347} color 50 selection_color 50
@@ -1068,7 +1068,7 @@ progdefaults.changed = true;}
               Fl_Check_Button btnUseWideCursor {
                 label {Wide cursor}
                 callback {progdefaults.UseWideCursor = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {Show bandwidth tracks on waterfall} xywh {15 195 145 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseWideCursor);}
               }
@@ -1239,7 +1239,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
+        label Modems
         xywh {-4 25 544 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -2042,7 +2042,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label RTTY open
+            label RTTY
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
@@ -2226,7 +2226,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabTHOR {
-            label Thor open
+            label Thor
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
@@ -2280,7 +2280,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabPacket {
-            label Packet open
+            label Packet
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2991,7 +2991,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio open
+        label Audio
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3446,7 +3446,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -3771,6 +3771,17 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabDTMFdecode {
+            label DTMF open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Check_Button chkDTMFdecode {
+              label {Decode DTMF tones}
+              callback {progdefaults.DTMFdecode = o->value();}
+              tooltip {Send rx text to file: textout.txt} xywh {165 85 175 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.DTMFdecode);}
+            }
+          }
         }
       }
       Fl_Group tabQRZ {
@@ -3907,18 +3918,18 @@ progdefaults.changed = false;}
   }
 } 
 
-Function {openConfig()} {open return_type void
+Function {openConfig()} {return_type void
 } {
   code {if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();} {}
 } 
 
-Function {closeDialog()} {open return_type void
+Function {closeDialog()} {return_type void
 } {
   code {if (dlgConfig) dlgConfig->hide();} {}
 } 
 
-Function {createConfig()} {open return_type void
+Function {createConfig()} {return_type void
 } {
   code {if (!dlgConfig) {
     dlgConfig = ConfigureDialog();

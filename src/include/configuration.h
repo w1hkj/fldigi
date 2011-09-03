@@ -609,6 +609,9 @@
               0.0)                                                                      \
         ELEM_(bool, macroCWid, "", "",  false)                                          \
         ELEM_(std::string, DTMFstr, "", "", "")                                         \
+        ELEM_(bool, DTMFdecode, "DTMFDECODE",                                           \
+              "Decode received DTMF tones",                                             \
+              false)                                                                    \
         ELEM_(int, videowidth, "VIDEOWIDTH",                                            \
               "Video ID text width (characters per row)",                               \
               1)                                                                        \
