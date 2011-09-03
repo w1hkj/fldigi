@@ -28,19 +28,16 @@
 #include <float.h>
 #include <samplerate.h>
 
-#include "dtmf.h"
-#include "filters.h"
-#include "fft.h"
-#include "misc.h"
 #include "trx.h"
-#include "waterfall.h"
+
+#include "dtmf.h"
+#include "misc.h"
 
 #include "fl_digi.h"
 #include "configuration.h"
-#include "confdialog.h"
 #include "qrunner.h"
-#include "notify.h"
 #include "debug.h"
+#include "status.h"
 
 #include "main.h"
 
@@ -49,21 +46,129 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
 // tones in 4x4 array
 // 697  770  842  941  1209  1336  1447  1633
 
-int cDTMF::tones[] = {697, 770, 842, 941, 1209, 1336, 1477, 1633};
+int cDTMF::row[] = {697, 770, 852, 941};
 
-int cDTMF::row[] = {
-941, 697, 697, 697, 770, 770, 770, 852, 852, 852, 941, 941, 697, 770, 852, 941};
-//0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   *,   #,   A,   B,   C,   D
+int cDTMF::col[] = {1209, 1336, 1477, 1633}; 
 
-int cDTMF::col[] = { 
-1336, 1209, 1336, 1477, 1209, 1336, 1477, 1209, 1336, 1477, 1209, 1477, 1633, 1633, 1633, 1633};
-// 0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    *,    #,    A,    B,    C,    D
+const char cDTMF::rc[] = "123A456B789C*0#D";
 
-cDTMF::PAIRS cDTMF::pairs[] = {
-{0, 0, '1'}, {0, 1, '2'}, {0, 2, '3'}, {0, 3, 'A'},
-{1, 0, '4'}, {1, 1, '5'}, {1, 2, '6'}, {1, 3, 'B'},
-{2, 0, '7'}, {2, 1, '8'}, {2, 2, '9'}, {2, 3, 'C'},
-{3, 0, '*'}, {3, 1, '0'}, {3, 2, '#'}, {3, 3, 'D'} };
+//======================================================================
+// DTMF tone receive
+//======================================================================
+// tone #s and coefficients
+// 8000 Hz sampling N == 240
+// 11025 Hz sampling N == 331
+
+/*
+ * calculate the power of each tone using Goertzel filters
+ */
+void cDTMF::calc_power()
+{
+	double sr = active_modem->get_samplerate();
+// reset row freq filters
+	for (int i = 0; i < 4; i++) filt[i]->reset(240, row[i], sr);
+// reset col freq filters
+	for (int i = 0; i < 4; i++) filt[i+4]->reset(240, col[i], sr);
+
+	for (int i = 0; i < framesize; i++)
+		for (int j = 0; j < NUMTONES; j++)
+			filt[j]->run(data[i]);
+
+	for (int i = 0; i < NUMTONES; i++)
+		power[i] = filt[i]->mag();
+
+	maxpower = 0;
+	minpower = 1e6;
+	for (int i = 0; i < NUMTONES;i++) {
+		if (power[i] > maxpower)
+			maxpower = power[i];
+		if (power[i] < minpower)
+			minpower = power[i];
+	}
+	if ( minpower == 0 ) minpower = 1e-3;
+}
+
+
+/*
+ * detect which signals are present.
+ *
+ */
+
+int cDTMF::decode()
+{ 
+	calc_power();
+
+	if (maxpower < (10 * progStatus.sldrSquelchValue))
+		return ' ';
+
+	int r = -1, c = -1;
+	double pwr = 0;
+	for (int i = 0; i < 4; i++)
+		if (power[i] > pwr) {
+			pwr = power[i];
+			r = i;
+		}
+	pwr = 0;
+	for (int i = 0; i < 4; i++)
+		if (power[i+4] > pwr) {
+			pwr = power[i+4];
+			c = i;
+		}
+	if (r == -1 || c == -1) 
+		return ' ';
+	return rc[r*4 + c];
+}
+
+/*
+ * read in frames, output the decoded
+ * results
+ */
+void cDTMF::receive(const float* buf, size_t len)
+{
+	int x;
+	static size_t dptr = 0;
+	size_t bufptr = 0;
+
+	if (!progdefaults.DTMFdecode) return;
+
+	framesize = (active_modem->get_samplerate() == 8000) ? 240 : 331;
+
+	while (1) {
+		int i;
+		for ( i = dptr; i < framesize; i++) {
+			data[i] = buf[bufptr];
+			bufptr++;
+			if (bufptr == len) break;
+		}
+		if (i < framesize) {
+			dptr = i + 1;
+			return;
+		}
+		dptr = 0;
+
+		x = decode(); 
+		if (x == ' ') {
+			silence_time++;
+			if (silence_time == 4 && !dtmfchars.empty()) dtmfchars += ' ';
+			if (silence_time == FLUSH_TIME) {
+				if (!dtmfchars.empty()) {
+					REQ(showDTMF, dtmfchars);
+					dtmfchars.clear();
+				}
+				silence_time = 0;
+			}
+		} else {
+			silence_time = 0;
+			if (x != last && last == ' ')
+				dtmfchars += x;
+		}
+		last = x;
+	}
+}
+
+//======================================================================
+// DTMF tone transmit
+//======================================================================
 
 void cDTMF::makeshape()
 {
@@ -71,41 +176,6 @@ void cDTMF::makeshape()
 	for (int i = 0; i < RT; i++)
 		shape[i] = 0.5 * (1.0 - cos (M_PI * i / RT));
 }
-
-
-cDTMF::cDTMF()
-{
-}
-
-//rx is a work in progress :>)
-
-void cDTMF::receive(const float* buf, size_t len)
-{
-	int binlo = 0, binhi = 0;
-	double val1 = 0, val2 = 0, avg = 1e-6;
-//this doesn't work!
-	for (int i = 0; i < 8; i++) {
-		bins[i] = wf->powerDensity(tones[i], 4);
-		avg += bins[i] / 8;
-	}
-	for (int i = 0; i < 4; i++) {
-		if (bins[i] > val1) { val1 = bins[i]; binlo = i; }
-		if (bins[i+4] > val2) { val2 = bins[i+4]; binhi = i;}
-	}
-	if ((val1 / avg > 0.5) && (val2 / avg > 0.5)) {
-		for (int i = 0; i < 16; i++) {
-			if (pairs[i].lo == binlo && pairs[i].hi == binhi) {
-				printf("DTMF %c\n", pairs[i].ch);
-				break;
-			}
-		}
-	}
-}
-
-
-//======================================================================
-// DTMF tone transmit
-//======================================================================
 
 //----------------------------------------------------------------------
 // transmit silence for specified time duration in milliseconds
@@ -124,11 +194,14 @@ void cDTMF::silence(int len)
 // transmit DTMF tones for specific time interval
 //----------------------------------------------------------------------
 
-void cDTMF::two_tones(int rc)
+void cDTMF::two_tones(int ch)
 {
-	if (rc < 0 || rc > 15) return;
+	if (!strchr(rc, ch)) return;
+	int pos = strchr(rc, ch) - rc;
+	int r = pos / 4;
+	int c = pos % 4;
 	double sr = active_modem->get_samplerate();
-	double phaseincr = 2.0 * M_PI * row[rc] / sr;
+	double phaseincr = 2.0 * M_PI * row[r] / sr;
 	double phase = 0;
 	int length = duration * sr / 1000;
 	if (length > 16384) length = 16384;
@@ -138,7 +211,7 @@ void cDTMF::two_tones(int rc)
 		phase += phaseincr;
 	}
 
-	phaseincr = 2.0 * M_PI * col[rc] / sr;
+	phaseincr = 2.0 * M_PI * col[c] / sr;
 	phase = 0;
 	for (int i = 0; i < length; i++) {
 		outbuf[i] += 0.5 * sin(phase);
@@ -170,7 +243,7 @@ void cDTMF::send()
 	makeshape();
 	size_t colon = std::string::npos;
 
-	size_t modifier = progdefaults.DTMFstr.find('D');
+	size_t modifier = progdefaults.DTMFstr.find("W");
 	if (modifier != std::string::npos) {
 		delay = atoi(&progdefaults.DTMFstr[modifier + 1]);
 		colon = progdefaults.DTMFstr.find(':', modifier);
@@ -191,11 +264,11 @@ void cDTMF::send()
 		c = progdefaults.DTMFstr[i];
 		if (c == ' ' || c == ',' || c == '-') 
 			silence(duration);
-		else if (c >= '0' && c <= '9')        two_tones(c - '0');
-		else if (c == '*')                    two_tones(10);
-		else if (c == '#')                    two_tones(11);
-		else if (c >= 'A' && c <= 'D')        two_tones(12 + c - 'A');
-		else if (c >= 'a' && c <= 'd')        two_tones(12 + c - 'a');
+		else if ( (c >= '0' && c <= '9') || 
+					c == '*' ||
+					c == '#' ||
+					(c >= 'A' && c <= 'D') )
+			two_tones(c);
 		silence(duration);
 	}
 	progdefaults.DTMFstr.clear();

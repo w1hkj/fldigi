@@ -198,6 +198,7 @@ extern void show_bw(const std::string& sWidth);
 extern void show_spot(bool v);
 extern void showMacroSet();
 extern void setwfrange();
+extern void showDTMF(const std::string s);
 
 extern void xmtrcv_selection_color();
 extern void rev_selection_color();

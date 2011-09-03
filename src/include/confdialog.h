@@ -401,6 +401,8 @@ extern void close_talker();
 extern Fl_Light_Button *btnConnectTalker;
 extern Fl_Check_Button *btn_auto_talk;
 extern Fl_Check_Button *chkRxStream;
+extern Fl_Group *tabDTMF;
+extern Fl_Check_Button *chkDTMFdecode;
 extern Fl_Group *tabQRZ;
 extern Fl_Round_Button *btnQRZcdrom;
 extern Fl_Input2 *txtQRZpathname;

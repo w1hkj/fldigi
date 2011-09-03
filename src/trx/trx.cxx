@@ -258,7 +258,7 @@ void trx_trx_receive_loop()
 			active_modem->rx_process(rbvec[0].buf, numread);
 			if (progdefaults.rsid)
 				ReedSolomon->receive(fbuf, numread);
-//			dtmf->receive(fbuf, numread);
+			dtmf->receive(fbuf, numread);
 		}
 		else {
 			bool afc = progStatus.afconoff;

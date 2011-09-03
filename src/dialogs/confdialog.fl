@@ -105,8 +105,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -904,7 +904,7 @@ connect_to_log_server();}
       }
       Fl_Group tabWaterfall {
         label Waterfall open
-        xywh {0 25 501 347}
+        xywh {0 25 501 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {0 25 501 347} color 50 selection_color 50
@@ -1067,7 +1067,7 @@ progdefaults.changed = true;}
               Fl_Check_Button btnUseWideCursor {
                 label {Wide cursor}
                 callback {progdefaults.UseWideCursor = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {Show bandwidth tracks on waterfall} xywh {15 195 145 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseWideCursor);}
               }
@@ -1239,7 +1239,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {-4 25 521 347}
+        xywh {-4 25 521 347} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {-4 25 521 347} selection_color 50 align 9
@@ -3639,6 +3639,17 @@ progdefaults.changed = true;}
                 tooltip {Send rx text to file: textout.txt} xywh {31 84 175 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.speak);}
               }
+            }
+          }
+          Fl_Group tabDTMF {
+            label DTMF open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Check_Button chkDTMFdecode {
+              label {Decode DTMF tones}
+              callback {progdefaults.DTMFdecode = o->value();}
+              tooltip {Send rx text to file: textout.txt} xywh {175 71 175 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.DTMFdecode);}
             }
           }
         }
