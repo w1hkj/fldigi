@@ -1,6 +1,25 @@
 
 
+=Version 3.21.14=
+
+2011-09-03  David Freese  <w1hkj@w1hkj.com>
+
+	166fe59: DTMF decoder
+	49e2dd2: CW Prosign defaults
+
+2011-08-30  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	ff18562: Macros code cleanup
+
+2011-08-30  David Freese  <w1hkj@w1hkj.com>
+
+	74364ee: DTMF class
+	5af9f3a: DTMF encoder
+	39fe31b: Wide Cursor Tracks
+
+
 =Version 3.21.13=
+
 
 2011-08-07  Pavel Milanes Costa  <co7wt@frcuba.co.cu>
 
