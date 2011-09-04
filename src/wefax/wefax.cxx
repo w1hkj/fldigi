@@ -681,6 +681,7 @@ private:
 
 	void save_automatic(const char * extra_msg);
 
+	void adjust_metric(double snr);
 	void decode_apt(int x, const fax_signal & the_signal );
 	void decode_phasing(int x, const fax_signal & the_signal );
 	bool decode_image(int x);
@@ -808,6 +809,25 @@ void fax_implementation::decode(const int* buf, int nb_samples)
 	}
 }
 
+// Estimate a rough metric which must be between 0 and 1.
+// 20 = 20.0 * log10(snr) is a reasonable value, i.e. snr=10
+void fax_implementation::adjust_metric(double snr)
+{
+	// Computes on the fly the max and min of snr, so we can clamp.
+   	static double max_snr = 0.0, min_snr = 0.0 ;
+	if( snr > max_snr )
+		max_snr = snr ;
+	else
+		if( snr < min_snr )
+			min_snr = snr ;
+	
+	if( min_snr == max_snr ) return ;
+	
+	double metric = 100 * (snr - min_snr) / (max_snr - min_snr);
+	
+	m_ptr_wefax->display_metric(metric);
+}
+
 // The number of transitions between black and white is counted. After 1/2 
 // second, the frequency is calculated. If it matches the APT start frequency,
 // the state skips to the detection of phasing lines, if it matches the apt
@@ -828,6 +848,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 		char snr_buffer[128];
 	        snprintf(snr_buffer, sizeof(snr_buffer), "s/n %3.0f dB", 20.0 * log10(tmp_snr));
        		put_Status1(snr_buffer);
+		adjust_metric(tmp_snr);
 
 		m_apt_count=m_apt_trans=0;
 
