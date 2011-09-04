@@ -1,3 +1,8 @@
+2011-09-03  David Freese  <w1hkj@w1hkj.com>
+
+	8f10d4f: DTMF decoder
+	d6eae02: CW Prosign defaults
+
 2011-08-30  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
 	3f08ee9: Macros code cleanup
