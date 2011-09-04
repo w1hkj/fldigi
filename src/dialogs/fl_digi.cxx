@@ -5224,7 +5224,7 @@ void put_Bandwidth(int bandwidth)
 	wf->Bandwidth ((int)bandwidth);
 }
 
-static void set_metric(double metric)
+static void callback_set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
 	if (!progStatus.sqlonoff)
@@ -5236,10 +5236,10 @@ static void set_metric(double metric)
 	btnSQL->redraw_label();
 }
 
-void display_metric(double metric)
+void global_display_metric(double metric)
 {
 	FL_LOCK_D();
-	REQ_DROP(set_metric, metric);
+	REQ_DROP(callback_set_metric, metric);
 	FL_UNLOCK_D();
 	FL_AWAKE_D();
 }

@@ -85,17 +85,11 @@ public:
 	virtual void	searchDown() {};
 	virtual void	searchUp() {};
 
-//	void update_syncscope();
-
 	void		HistoryON(bool val) {historyON = val;}
 	bool		HistoryON() { return historyON;}
 
-//	void 		set_mode(trx_mode);
 	trx_mode	get_mode();
 	const char	*get_mode_name() { return mode_info[get_mode()].sname;}
-//	void		set_state(state_t);
-//	void		set_state_wait(state_t);
-//	state_t		get_state();
 	virtual void	set_freq(double);
 	int		get_freq();
 	void		init_freqlock();
@@ -105,6 +99,7 @@ public:
 	double		get_txfreq();
 	double		get_txfreq_woffset();
 	void		set_metric(double);
+	void		display_metric(double);
 	double		get_metric();
 	void		set_reverse(bool on);
 	bool		get_reverse() { return reverse; }
@@ -153,8 +148,6 @@ private:
 
 	void	wfid_make_tones(int numchars);
 	void	wfid_send(int numchars);
-//	double	peakval(int symbol, int mask);
-//	int 	findmask(int symbol);
 
 	void	wfid_sendchars(std::string s);
 
