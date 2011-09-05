@@ -5647,6 +5647,26 @@ void get_tx_char_idle(void *)
 	progStatus.repeatIdleTime = 0;
 }
 
+void qexec(void*)
+{
+	int count = 1500; // 15 second timeout
+	if (queued_modem()) {
+		while (trx_state != STATE_RX && count--) MilliSleep(10);
+		if (count) {
+			queue_execute();
+			count = 1500;
+			while (trx_state != STATE_RX && count--) MilliSleep(10);
+				start_tx();
+		} else
+			LOG_ERROR("%s","macro que timed out");
+	} else {
+		while (trx_state != STATE_RX && count--) MilliSleep(10);
+		queue_execute();
+		start_tx();
+		return;
+	}
+}
+
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 int get_tx_char(void)
 {
@@ -5726,6 +5746,13 @@ int get_tx_char(void)
 		state = STATE_CHAR;
 		c = -1;
 		REQ(clearQSO);
+		break;
+	case '!':
+		if (state != STATE_CTRL)
+			break;
+		state = STATE_CHAR;
+		c = 3;
+		Fl::add_timeout(0.01, qexec);
 		break;
 	case '^':
 		state = STATE_CHAR;
@@ -5916,7 +5943,6 @@ void start_tx()
 	if (!(active_modem->get_cap() & modem::CAP_TX))
 		return;
 	trx_transmit();
-	REQ(&waterfall::set_XmtRcvBtn, wf, true);
 }
 
 void abort_tx()

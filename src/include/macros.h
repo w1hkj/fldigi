@@ -55,4 +55,7 @@ extern std::string qso_exchange;
 
 void set_macro_env(void);
 
+void queue_execute();
+bool queued_modem();
+
 #endif

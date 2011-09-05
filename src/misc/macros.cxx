@@ -55,12 +55,16 @@
 #include <unistd.h>
 #include <string>
 #include <fstream>
+#include <queue>
 
 #ifdef __WIN32__
 #include "speak.h"
 #endif
 
 using namespace std;
+
+struct CMDS { string cmd; void (*fp)(string); };
+queue<CMDS> cmds;
 
 MACROTEXT macros;
 CONTESTCNTR contest_count;
@@ -204,6 +208,107 @@ static void pPOST(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void setwpm(int d)
+{
+	sldrCWxmtWPM->value(d);
+	cntCW_WPM->value(d);
+}
+
+static void doWPM(string s)
+{
+	int number;
+	string sTime = s.substr(6);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		if (number < 5) number = 5;
+		if (number > 200) number = 200;
+		progdefaults.CWspeed = number;
+		REQ(setwpm, number);
+	}
+}
+
+static void pQueWPM(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setRISETIME(int d)
+{
+	cntCWrisetime->value(d);
+}
+
+static void doRISETIME(string s)
+{
+	float number;
+	string sVal = s.substr(7, s.length() - 8);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < 0) number = 0;
+		if (number > 20) number = 20;
+		progdefaults.CWrisetime = number;
+		REQ(setRISETIME, number);
+	}
+}
+
+static void pQueRISETIME(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRISETIME };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setPRE(int d)
+{
+	cntPreTiming->value(d);
+}
+
+static void doPRE(string s)
+{
+	float number;
+	string sVal = s.substr(6, s.length() - 7);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < 0) number = 0;
+		if (number > 20) number = 20;
+		progdefaults.CWpre = number;
+		REQ(setPRE, number);
+	}
+}
+
+static void pQuePRE(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPRE };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setPOST(int d)
+{
+	cntPostTiming->value(d);
+}
+
+static void doPOST(string s)
+{
+	float number;
+	string sVal = s.substr(7, s.length() - 8);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < -20) number = -20;
+		if (number > 20) number = 20;
+		progdefaults.CWpost = number;
+		REQ(setPOST, number);
+	}
+}
+
+static void pQuePOST(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 bool macro_idle_on = false;
 static float  idleTime = 0;
 
@@ -216,6 +321,8 @@ static void pIDLE(string &s, size_t &i, size_t endbracket)
 		macro_idle_on = true;
 		idleTime = number;
 	}
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -434,6 +541,8 @@ static void pZD(string &s, size_t &i, size_t endbracket)
 static void pID(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macroid = true;
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 4, "");
 }
 
@@ -441,34 +550,50 @@ static void pTEXT(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macrotextid = true;
 
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 6, "");
 }
 
 static void pCWID(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macroCWid = true;
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 6, "");
+}
+
+static void doDTMF(string s)
+{
+	progdefaults.DTMFstr = s.substr(6, s.length() - 7);
 }
 
 static void pDTMF(string &s, size_t &i, size_t endbracket)
 {
-	progdefaults.DTMFstr = s.substr(i + 6, endbracket - i - 6);
-	s.replace(i, endbracket - i + 1, "");
+	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pRX(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace (i, 4, "^r");
 }
 
 static void pTX(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.erase(i, 4);
 	TransmitON = true;
 }
 
 static void pTXRX(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.erase(i, 7);
 	ToggleTXRX = true;
 }
@@ -584,6 +709,81 @@ static void pMODEM_compat(string &s, size_t &i, size_t endbracket)
 #include <float.h>
 #include "re.h"
 
+static void doMODEM(string s)
+{
+	static fre_t re("<!MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
+	string tomatch = s;
+
+	if (!re.match(tomatch.c_str())) {
+		return;
+	}
+
+	const std::vector<regmatch_t>& o = re.suboff();
+	string name = tomatch.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	trx_mode m;
+	for (m = 0; m < NUM_MODES; m++)
+		if (name == mode_info[m].sname)
+			break;
+	// do we have arguments and a valid modem?
+	if (o.size() == 2 || m == NUM_MODES) {
+		return;
+	}
+
+	// parse arguments
+	vector<double> args;
+	args.reserve(8);
+	char* end;
+	double d;
+	for (const char* p = s.c_str() + o[2].rm_so + 1; *p; p++) {
+		errno = 0;
+		d = strtod(p, &end);
+		if (!errno && p != end) {
+			args.push_back(d);
+			p = end;
+		}
+		else // push an invalid value
+			args.push_back(DBL_MIN);
+	}
+
+	try {
+		switch (m) {
+		case MODE_RTTY: // carrier shift, baud rate, bits per char
+			if (args.at(0) != DBL_MIN)
+				set_rtty_shift((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_rtty_baud((int)args[1]);
+			if (args.at(2) != DBL_MIN)
+				set_rtty_bits((int)args[2]);
+			break;
+		case MODE_CONTESTIA: // bandwidth, tones
+			if (args.at(0) != DBL_MIN)
+				set_contestia_bw((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_contestia_tones((int)args[1]);
+			break;
+		case MODE_OLIVIA: // bandwidth, tones
+			if (args.at(0) != DBL_MIN)
+				set_olivia_bw((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_olivia_tones((int)args[1]);
+			break;
+		default:
+			break;
+		}
+	}
+	catch (const exception& e) { }
+
+	if (active_modem->get_mode() != mode_info[m].mode)
+		init_modem_sync(mode_info[m].mode);
+}
+
+static void pQueMODEM(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doMODEM };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 static void pMODEM(string &s, size_t &i, size_t endbracket)
 {
 	static fre_t re("<MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
@@ -677,6 +877,8 @@ static void pAFC(string &s, size_t &i, size_t endbracket)
 
     btnAFC->do_callback();
   }
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -695,6 +897,8 @@ static void pLOCK(string &s, size_t &i, size_t endbracket)
     wf->xmtlock->damage();
     wf->xmtlock->do_callback();
   }
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -712,6 +916,8 @@ static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 
     btnTxRSID->do_callback();
   }
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -729,6 +935,8 @@ static void pRX_RSID(string &s, size_t &i, size_t endbracket)
 
     btnRSID->do_callback();
   }
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -745,6 +953,8 @@ static void pTALK(string &s, size_t &i, size_t endbracket)
     else if (sVal.compare(0,1,"t") == 0)
 		toggle_talker();
   }
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 #endif
@@ -759,6 +969,8 @@ static void pSRCHUP(string &s, size_t &i, size_t endbracket)
 
 static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 8, "");
 	active_modem->searchDown();
 	if (progdefaults.WaterfallClickInsert)
@@ -767,6 +979,8 @@ static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 
 static void pGOHOME(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 8, "");
 	if (active_modem == cw_modem)
 		active_modem->set_freq(progdefaults.CWsweetspot);
@@ -788,17 +1002,23 @@ static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 			number = progdefaults.HighFreqCutoff;
 		active_modem->set_freq(number);
 	}
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pQSYTO(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 7, "");
 	do_qsy(true);
 }
 
 static void pQSYFM(string &s, size_t &i, size_t endbracket)
 {
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 7, "");
 	do_qsy(false);
 }
@@ -836,6 +1056,8 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 	else
 		active_modem->set_freq(audio);
 
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -844,6 +1066,8 @@ static void pRIGMODE(string& s, size_t& i, size_t endbracket)
 	string sMode = s.substr(i+9, endbracket - i - 9);
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -852,6 +1076,8 @@ static void pFILWID(string& s, size_t& i, size_t endbracket)
 	string sWidth = s.substr(i+8, endbracket - i - 8);
 	qso_opBW->value(sWidth.c_str());
 	cb_qso_opBW();
+//cmds.push(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -1132,6 +1358,23 @@ static void pCONT(string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
+void queue_execute()
+{
+	if (cmds.empty()) return;
+	CMDS cmd = cmds.front();
+	cmds.pop();
+	LOG_INFO("%s", cmd.cmd.c_str());
+	cmd.fp(cmd.cmd);
+	return;
+}
+
+bool queued_modem()
+{
+	CMDS cmd = cmds.front();
+	if (cmd.cmd.find("<MODEM:") != string::npos) return true;
+	return false;
+}
+
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t&, size_t );};
 
 MTAGS mtags[] = {
@@ -1183,6 +1426,7 @@ MTAGS mtags[] = {
 {"<WAIT:",		pWAIT},
 {"<MODEM>",		pMODEM_compat},
 {"<MODEM:",		pMODEM},
+{"<!MODEM:",	pQueMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
@@ -1194,6 +1438,10 @@ MTAGS mtags[] = {
 {"<RISE:",		pRISETIME},
 {"<PRE:",		pPRE},
 {"<POST:",		pPOST},
+{"<!WPM:",		pQueWPM},
+{"<!RISE:",		pQueRISETIME},
+{"<!PRE:",		pQuePRE},
+{"<!POST:",		pQuePOST},
 {"<AFC:",		pAFC},
 {"<LOCK:",		pLOCK},
 {"<RXRSID:",	pRX_RSID},
@@ -1345,6 +1593,9 @@ string MACROTEXT::expandMacro(int n)
 	idleTime = 0;
 	waitTime = 0;
 	tuneTime = 0;
+
+// clear the command FIFO
+	while(!cmds.empty()) cmds.pop();
 
 	while ((idx = expanded.find('<', idx)) != string::npos) {
 		size_t endbracket = expanded.find('>',idx);
@@ -1506,7 +1757,7 @@ void MACROTEXT::execute(int n)
 void MACROTEXT::repeat(int n)
 {
 	expandMacro(n);
-	LOG_INFO("%s",text2repeat.c_str());
+	LOG_WARN("%s",text2repeat.c_str());
 	macro_idle_on = false;
 	if (idleTime) progStatus.repeatIdleTime = idleTime;
 }

@@ -311,13 +311,14 @@ void trx_trx_transmit_loop()
 
 		push2talk->set(true);
 		active_modem->tx_init(scard);
+		REQ(&waterfall::set_XmtRcvBtn, wf, true);
 
 		if (progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
 
-		dtmf->send();
-
 		while (trx_state == STATE_TX) {
+			if (!progdefaults.DTMFstr.empty())
+				dtmf->send();
 			try {
 				if (active_modem->tx_process() < 0)
 					trx_state = STATE_RX;
@@ -332,9 +333,6 @@ void trx_trx_transmit_loop()
 		}
 
 		trx_xmit_wfall_end(current_samplerate);
-
-//		if (progdefaults.TransmitRSid)
-//			ReedSolomon->send(false);
 
 		scard->flush();
 		if (scard->must_close(O_WRONLY))
