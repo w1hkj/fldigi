@@ -197,8 +197,26 @@ void pkt::init()
     lo_signal_gain = pow(10, progdefaults.PKT_LOSIG_RXGAIN / 10);
     hi_signal_gain = pow(10, progdefaults.PKT_HISIG_RXGAIN / 10);
 
-    lo_txgain = 0.9 * pow(10, progdefaults.PKT_LOSIG_TXGAIN / 10);
-    hi_txgain = 0.9 * pow(10, progdefaults.PKT_HISIG_TXGAIN / 10);
+    lo_txgain = pow(10, progdefaults.PKT_LOSIG_TXGAIN / 10);
+    hi_txgain = pow(10, progdefaults.PKT_HISIG_TXGAIN / 10);
+
+    if (hi_txgain > 1.0 || lo_txgain > 1.0) {
+	// renormalize output levels
+	// [ modem output recording depends on gain =< 1.0 ]
+	double inv;
+
+	if (hi_txgain > lo_txgain)
+	    inv = 1.0 / hi_txgain;
+	else
+	    inv = 1.0 / lo_txgain;
+
+	lo_txgain *= inv;
+	hi_txgain *= inv;
+    }
+
+    // leave 10% headroom
+    lo_txgain *= 0.9;
+    hi_txgain *= 0.9;
 
 #ifndef NDEBUG
     static bool do_once = true;
