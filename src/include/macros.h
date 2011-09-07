@@ -56,6 +56,7 @@ extern std::string qso_exchange;
 void set_macro_env(void);
 
 void queue_execute();
-bool queued_modem();
+bool queue_must_rx();
+void idleTimer(void *);
 
 #endif

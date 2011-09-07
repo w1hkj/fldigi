@@ -148,6 +148,9 @@ extern Digiscope		*digiscope;
 
 extern std::string		main_window_title;
 
+extern int Qwait_time;
+extern int Qidle_time;
+
 extern void toggleRSID();
 
 extern void set_menus();

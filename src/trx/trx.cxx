@@ -412,6 +412,17 @@ void *trx_loop(void *args)
 				trxrb.reset();
 			trx_signal_state();
 		}
+/*
+printf("trx state %s\n",
+trx_state == STATE_ABORT ? "abort" :
+trx_state == STATE_ENDED ? "ended" :
+trx_state == STATE_RESTART ? "restart" :
+trx_state == STATE_NEW_MODEM ? "new modem" :
+trx_state == STATE_TX ? "tx" :
+trx_state == STATE_TUNE ? "tune" :
+trx_state == STATE_RX ? "rx" :
+"unknown");
+*/
 		switch (trx_state) {
 		case STATE_ABORT:
 			delete scard;

@@ -5647,29 +5647,35 @@ void get_tx_char_idle(void *)
 	progStatus.repeatIdleTime = 0;
 }
 
-void qexec(void*)
+int Qwait_time = 0;
+int Qidle_time = 0;
+
+void queue_execute_after_rx(void*)
 {
 	int count = 1500; // 15 second timeout
-	if (queued_modem()) {
-		while (trx_state != STATE_RX && count--) MilliSleep(10);
-		if (count) {
-			queue_execute();
-			count = 1500;
-			while (trx_state != STATE_RX && count--) MilliSleep(10);
-				start_tx();
-		} else
-			LOG_ERROR("%s","macro que timed out");
-	} else {
-		while (trx_state != STATE_RX && count--) MilliSleep(10);
-		queue_execute();
-		start_tx();
+	while (trx_state != STATE_RX && count--) {
+		Fl::awake();
+		MilliSleep(10);
+	}
+	if (!count) {
+		LOG_ERROR("%s","macro que timed out");
 		return;
 	}
+	queue_execute();
+	count = 1500;
+	MilliSleep(20);
+	while (trx_state != STATE_RX && count--) {
+			Fl::awake();
+			MilliSleep(10);
+		}
+	start_tx();
 }
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 int get_tx_char(void)
 {
+	if (Qwait_time) return -1;
+	if (Qidle_time) return -1;
 	if (macro_idle_on) return -1;
 
 	if (arq_text_available)
@@ -5751,8 +5757,13 @@ int get_tx_char(void)
 		if (state != STATE_CTRL)
 			break;
 		state = STATE_CHAR;
-		c = 3;
-		Fl::add_timeout(0.01, qexec);
+		if (queue_must_rx()) {
+			c = 3;
+			Fl::add_timeout(0.01, queue_execute_after_rx);
+		} else {
+			c = -1;
+			queue_execute();
+		}
 		break;
 	case '^':
 		state = STATE_CHAR;

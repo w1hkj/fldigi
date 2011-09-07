@@ -321,9 +321,31 @@ static void pIDLE(string &s, size_t &i, size_t endbracket)
 		macro_idle_on = true;
 		idleTime = number;
 	}
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doneIDLE(void *)
+{
+	Qidle_time = 0;
+}
+
+static void doIDLE(string s)
+{
+	float number;
+	string sTime = s.substr(7, s.length() - 8);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%f", &number);
+		Qidle_time = number * 100;
+		Fl::add_timeout(number, doneIDLE);
+	} else
+		Qidle_time = 0;
+}
+
+static void pQueIDLE(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doIDLE };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static bool useTune = false;
@@ -355,6 +377,32 @@ static void pWAIT(string &s, size_t &i, size_t endbracket)
 	}
 	s.replace(i, endbracket - i + 1, "");
 }
+
+static void doneWAIT(void *)
+{
+	Qwait_time = 0;
+	start_tx();
+}
+
+static void doWAIT(string s)
+{
+	int number;
+	string sTime = s.substr(7, s.length() - 8);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		Qwait_time = number;
+		Fl::add_timeout (number * 1.0, doneWAIT);
+	} else
+		Qwait_time = 0;
+}
+
+static void pQueWAIT(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWAIT };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 
 static void pINFO1(string &s, size_t &i, size_t endbracket)
 {
@@ -541,25 +589,18 @@ static void pZD(string &s, size_t &i, size_t endbracket)
 static void pID(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macroid = true;
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 4, "");
 }
 
 static void pTEXT(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macrotextid = true;
-
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 6, "");
 }
 
 static void pCWID(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macroCWid = true;
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 6, "");
 }
 
@@ -577,23 +618,17 @@ static void pDTMF(string &s, size_t &i, size_t endbracket)
 
 static void pRX(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace (i, 4, "^r");
 }
 
 static void pTX(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.erase(i, 4);
 	TransmitON = true;
 }
 
 static void pTXRX(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.erase(i, 7);
 	ToggleTXRX = true;
 }
@@ -935,8 +970,6 @@ static void pRX_RSID(string &s, size_t &i, size_t endbracket)
 
     btnRSID->do_callback();
   }
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -953,8 +986,6 @@ static void pTALK(string &s, size_t &i, size_t endbracket)
     else if (sVal.compare(0,1,"t") == 0)
 		toggle_talker();
   }
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 #endif
@@ -969,8 +1000,6 @@ static void pSRCHUP(string &s, size_t &i, size_t endbracket)
 
 static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 8, "");
 	active_modem->searchDown();
 	if (progdefaults.WaterfallClickInsert)
@@ -979,8 +1008,6 @@ static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 
 static void pGOHOME(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 8, "");
 	if (active_modem == cw_modem)
 		active_modem->set_freq(progdefaults.CWsweetspot);
@@ -988,6 +1015,23 @@ static void pGOHOME(string &s, size_t &i, size_t endbracket)
 		active_modem->set_freq(progdefaults.RTTYsweetspot);
 	else
 		active_modem->set_freq(progdefaults.PSKsweetspot);
+}
+
+static void doGOHOME(string s)
+{
+	if (active_modem == cw_modem)
+		active_modem->set_freq(progdefaults.CWsweetspot);
+	else if (active_modem == rtty_modem)
+		active_modem->set_freq(progdefaults.RTTYsweetspot);
+	else
+		active_modem->set_freq(progdefaults.PSKsweetspot);
+}
+
+static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pGOFREQ(string &s, size_t &i, size_t endbracket)
@@ -1002,23 +1046,38 @@ static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 			number = progdefaults.HighFreqCutoff;
 		active_modem->set_freq(number);
 	}
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doGOFREQ(string s)
+{
+	int number;
+	string sGoFreq = s.substr(9, s.length() - 10);
+	if (sGoFreq.length() > 0) {
+		sscanf(sGoFreq.c_str(), "%d", &number);
+		if (number < progdefaults.LowFreqCutoff)
+			number = progdefaults.LowFreqCutoff;
+		if (number > progdefaults.HighFreqCutoff)
+			number = progdefaults.HighFreqCutoff;
+		active_modem->set_freq(number);
+	}
+}
+
+static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pQSYTO(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 7, "");
 	do_qsy(true);
 }
 
 static void pQSYFM(string &s, size_t &i, size_t endbracket)
 {
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace( i, 7, "");
 	do_qsy(false);
 }
@@ -1056,8 +1115,6 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 	else
 		active_modem->set_freq(audio);
 
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -1066,8 +1123,6 @@ static void pRIGMODE(string& s, size_t& i, size_t endbracket)
 	string sMode = s.substr(i+9, endbracket - i - 9);
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -1076,8 +1131,6 @@ static void pFILWID(string& s, size_t& i, size_t endbracket)
 	string sWidth = s.substr(i+8, endbracket - i - 8);
 	qso_opBW->value(sWidth.c_str());
 	cb_qso_opBW();
-//cmds.push(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -1358,20 +1411,31 @@ static void pCONT(string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
+void postQueue(string s)
+{
+	ReceiveText->add(s.c_str(), FTextBase::CTRL);
+}
+
 void queue_execute()
 {
+	static string sprnt;
 	if (cmds.empty()) return;
 	CMDS cmd = cmds.front();
 	cmds.pop();
-	LOG_INFO("%s", cmd.cmd.c_str());
+	sprnt = cmd.cmd;
+	LOG_INFO("%s", sprnt.c_str());
+	REQ(postQueue, sprnt);
 	cmd.fp(cmd.cmd);
 	return;
 }
 
-bool queued_modem()
+bool queue_must_rx()
 {
 	CMDS cmd = cmds.front();
-	if (cmd.cmd.find("<MODEM:") != string::npos) return true;
+	if ((cmd.cmd.find("<!MODEM:") != string::npos) ||
+		(cmd.cmd.find("<!WAIT:") != string::npos) ||
+		(cmd.cmd.find("<!GOHOME") != string::npos) ||
+		(cmd.cmd.find("<!GOFREQ") != string::npos)) return true;
 	return false;
 }
 
@@ -1426,7 +1490,6 @@ MTAGS mtags[] = {
 {"<WAIT:",		pWAIT},
 {"<MODEM>",		pMODEM_compat},
 {"<MODEM:",		pMODEM},
-{"<!MODEM:",	pQueMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
@@ -1438,10 +1501,6 @@ MTAGS mtags[] = {
 {"<RISE:",		pRISETIME},
 {"<PRE:",		pPRE},
 {"<POST:",		pPOST},
-{"<!WPM:",		pQueWPM},
-{"<!RISE:",		pQueRISETIME},
-{"<!PRE:",		pQuePRE},
-{"<!POST:",		pQuePOST},
 {"<AFC:",		pAFC},
 {"<LOCK:",		pLOCK},
 {"<RXRSID:",	pRX_RSID},
@@ -1462,6 +1521,15 @@ MTAGS mtags[] = {
 #ifdef __WIN32__
 {"<TALK:",		pTALK},
 #endif
+{"<!WPM:",		pQueWPM},
+{"<!RISE:",		pQueRISETIME},
+{"<!PRE:",		pQuePRE},
+{"<!POST:",		pQuePOST},
+{"<!GOHOME>",	pQueGOHOME},
+{"<!GOFREQ:",	pQueGOFREQ},
+{"<!IDLE:",		pQueIDLE},
+{"<!WAIT:",		pQueWAIT},
+{"<!MODEM:",	pQueMODEM},
 {0, 0}
 };
 
