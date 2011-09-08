@@ -1,5 +1,7 @@
-2011-09-05  David Freese  <w1hkj@w1hkj.com>
+2011-09-08  David Freese  <w1hkj@w1hkj.com>
 
+	9a26985: Log Server lookup
+	6a03241: Delayed Tags
 	563d667: Inline macro tags
 	7184fb8: DTMF decoder
 	d6eae02: CW Prosign defaults
