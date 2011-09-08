@@ -27,6 +27,7 @@
 #include "date.h"
 #include "logbook.h"
 #include "logger.h"
+#include "locator.h"
 #include "fl_digi.h"
 #include "adif_io.h"
 #include "modem.h"
@@ -120,6 +121,19 @@ bool xml_get_record(const char *callsign)
 		inpLoc->value("");
 		inpNotes->value("");
 	}
+	if (inpLoc->value()[0]) {
+		double lon1, lat1, lon2, lat2;
+		double azimuth, distance;
+		char szAZ[4];
+		if ( locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
+			 locator2longlat(&lon2, &lat2, inpLoc->value()) == RIG_OK &&
+			 qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK ) {
+			snprintf(szAZ,sizeof(szAZ),"%0.f", azimuth);
+			inpAZ->value(szAZ);
+		} else
+			inpAZ->value("");
+	} else
+		inpAZ->value("");
 	return true;
 }
 
