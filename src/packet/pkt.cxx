@@ -1814,7 +1814,9 @@ void pkt::rx(bool bit)
 	    if (debug::level == debug::DEBUG_LEVEL)
 		fprintf(stderr,"%02x ",c);
 	}
-	// else { complain? cbuf is at MAXOCTETS }
+	else
+	    // else complain: cbuf is at MAXOCTETS
+	    LOG_WARN("Long input packet, %d octets!",(int)(cbuf - &rxbuf[0]));
     }
 
     /*
@@ -2264,8 +2266,10 @@ void pkt::send_msg(unsigned char c)
 
 	unsigned char *tc = &txbuf[0];
 
-	while (tc < tx_cbuf)
+	while (tc < tx_cbuf) {
 	    send_char(*tc++);
+	    tx_char_count--;  // must count header chars in pkt length
+	}
 
 	did_pkt_head = true;
     }
@@ -2289,9 +2293,12 @@ int pkt::tx_process()
 	    send_char(PKT_Flag);
 	}
 	nostuff = 0;  // send_char() is 8-bit clean
+	tx_char_count--; // count only last flag char
     }
 
-    int c = get_tx_char();
+    static int c = 0;
+    if (tx_char_count >  0)
+	c = get_tx_char();
 
     // TX buffer empty
     //    if (c == 0x03 || stopflag) {
@@ -2332,8 +2339,12 @@ int pkt::tx_process()
 
     if (tx_char_count-- > 0)
 	send_msg((unsigned char)c);
-    // else complain?  maybe auto-segment?
+    else {
+	// else complain:  maybe auto-segment?
+	LOG_WARN("Long output packet, %d octets!",(int)(tx_cbuf - &txbuf[0]));
+
+	return -1;
+    }
 
     return 0;
 }
-

@@ -184,7 +184,7 @@ class pkt : public modem {
 
     unsigned char bitreverse(unsigned char in, int n);
 
-    unsigned char rxbuf[MAXOCTETS], *cbuf;
+    unsigned char rxbuf[MAXOCTETS+4], *cbuf;
 
     unsigned int computeFCS(unsigned char *h, unsigned char *t);
     bool	checkFCS(unsigned char *cp);
@@ -221,7 +221,7 @@ class pkt : public modem {
     bool	currbit, nostuff, did_pkt_head;
     void	send_char(unsigned char c);
 
-    unsigned char txbuf[MAXOCTETS], *tx_cbuf;
+    unsigned char txbuf[MAXOCTETS+4], *tx_cbuf;
     void	send_msg(unsigned char c);
 
  public:
