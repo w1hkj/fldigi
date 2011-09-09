@@ -158,7 +158,6 @@ static void trx_xmit_wfall_end(int samplerate)
 void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 {
 	ENSURE_THREAD(TRX_TID);
-
 	ringbuffer<double>::vector_type wv[2];
 	wv[0].buf = wv[1].buf = 0;
 
