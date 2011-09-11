@@ -1,5 +1,7 @@
-2011-09-08  David Freese  <w1hkj@w1hkj.com>
+2011-09-10  David Freese  <w1hkj@w1hkj.com>
 
+	def0e07: MT63 eot mod
+	1f6398e: Delayed macro timing
 	9a26985: Log Server lookup
 	6a03241: Delayed Tags
 	563d667: Inline macro tags
