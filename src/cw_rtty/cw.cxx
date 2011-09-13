@@ -661,18 +661,23 @@ void cw::send_symbol(int bits, int len)
 	keydown = symlen + delta ;
 	keyup = symlen - delta;
 
-	kpre = (int)(progdefaults.CWpre * 8);
-	if (kpre > symlen) kpre = symlen;
+	if (progdefaults.QSK) {
+		kpre = (int)(progdefaults.CWpre * 8);
+		if (kpre > symlen) kpre = symlen;
 
-    if (progdefaults.CWnarrow) {
-        if (keydown - 2*knum < 0)
-            kpost = knum + (int)(progdefaults.CWpost * 8);
-        else
-	        kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
-    } else
-        kpost = keydown + (int)(progdefaults.CWpost * 8);
+		if (progdefaults.CWnarrow) {
+			if (keydown - 2*knum < 0)
+				kpost = knum + (int)(progdefaults.CWpost * 8);
+			else
+				kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
+		} else
+			kpost = keydown + (int)(progdefaults.CWpost * 8);
 
-	if (kpost < 0) kpost = 0;
+		if (kpost < 0) kpost = 0;
+	} else {
+		kpre = 0;
+		kpost = 0;
+	}
 
 	if (firstelement) {
 	    firstelement = false;
