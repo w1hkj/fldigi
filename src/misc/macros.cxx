@@ -394,6 +394,7 @@ static void doWAIT(string s)
 		Fl::add_timeout (number * 1.0, doneWAIT);
 	} else
 		Qwait_time = 0;
+	que_ok = true;
 }
 
 static void pQueWAIT(string &s, size_t &i, size_t endbracket)
@@ -750,6 +751,7 @@ static void doMODEM(string s)
 	string tomatch = s;
 
 	if (!re.match(tomatch.c_str())) {
+		que_ok = true;
 		return;
 	}
 
@@ -761,6 +763,7 @@ static void doMODEM(string s)
 			break;
 	// do we have arguments and a valid modem?
 	if (o.size() == 2 || m == NUM_MODES) {
+		que_ok = true;
 		return;
 	}
 
@@ -810,6 +813,7 @@ static void doMODEM(string s)
 
 	if (active_modem->get_mode() != mode_info[m].mode)
 		init_modem_sync(mode_info[m].mode);
+	que_ok = true;
 }
 
 static void pQueMODEM(string &s, size_t &i, size_t endbracket)
@@ -1025,6 +1029,7 @@ static void doGOHOME(string s)
 		active_modem->set_freq(progdefaults.RTTYsweetspot);
 	else
 		active_modem->set_freq(progdefaults.PSKsweetspot);
+	que_ok = true;
 }
 
 static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
@@ -1061,6 +1066,7 @@ static void doGOFREQ(string s)
 			number = progdefaults.HighFreqCutoff;
 		active_modem->set_freq(number);
 	}
+	que_ok = true;
 }
 
 static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
@@ -1109,13 +1115,55 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 		if (audio > progdefaults.HighFreqCutoff)
 			audio = progdefaults.HighFreqCutoff;
 	}
-
 	if (rf && rf != wf->rfcarrier())
 		qsy(rf, audio);
 	else
 		active_modem->set_freq(audio);
 
 	s.replace(i, endbracket - i + 1, "");
+}
+
+
+static void doQSY(string s)
+{
+	int rf = 0;
+	int audio = 0;
+	float rfd = 0;
+	string sGoFreq;
+	sGoFreq = s.substr(6, s.length() - 7);
+	// no frequency(s) specified
+	if (sGoFreq.length() == 0) {
+		que_ok = true;
+		return;
+	}
+	// rf first value
+	sscanf(sGoFreq.c_str(), "%f", &rfd);
+	if (rfd > 0)
+		rf = (int)(1000*rfd);
+	size_t pos;
+	if ((pos = sGoFreq.find(":")) != string::npos) {
+		// af second value
+		sGoFreq.erase(0, pos+1);
+		if (sGoFreq.length())
+			sscanf(sGoFreq.c_str(), "%d", &audio);
+		if (audio < 0) audio = 0;
+		if (audio < progdefaults.LowFreqCutoff)
+			audio = progdefaults.LowFreqCutoff;
+		if (audio > progdefaults.HighFreqCutoff)
+			audio = progdefaults.HighFreqCutoff;
+	}
+	if (rf && rf != wf->rfcarrier())
+		qsy(rf, audio);
+	else
+		active_modem->set_freq(audio);
+	que_ok = true;
+}
+
+static void pQueQSY(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doQSY };
+	cmds.push(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pRIGMODE(string& s, size_t& i, size_t endbracket)
@@ -1431,12 +1479,16 @@ void queue_execute()
 
 bool queue_must_rx()
 {
+static string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
 	CMDS cmd = cmds.front();
-	if ((cmd.cmd.find("<!MODEM:") != string::npos) ||
-		(cmd.cmd.find("<!WAIT:") != string::npos) ||
-		(cmd.cmd.find("<!GOHOME") != string::npos) ||
-		(cmd.cmd.find("<!GOFREQ") != string::npos)) return true;
-	return false;
+	return (rxcmds.find(cmd.cmd.substr(0,5)) != string::npos);
+//	if (rxcmds.find(cmd.cmd) != string::npos) return true;
+//	if ((cmd.cmd.find("<!MODEM:") != string::npos) ||
+//		(cmd.cmd.find("<!WAIT:") != string::npos) |
+//		(cmd.cmd.find("<!GOHOME") != string::npos) ||
+//		(cmd.cmd.find("<!QSY") != string::npos) ||
+//		(cmd.cmd.find("<!GOFREQ") != string::npos)) return true;
+//	return false;
 }
 
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t&, size_t );};
@@ -1527,6 +1579,7 @@ MTAGS mtags[] = {
 {"<!POST:",		pQuePOST},
 {"<!GOHOME>",	pQueGOHOME},
 {"<!GOFREQ:",	pQueGOFREQ},
+{"<!QSY:",		pQueQSY},
 {"<!IDLE:",		pQueIDLE},
 {"<!WAIT:",		pQueWAIT},
 {"<!MODEM:",	pQueMODEM},

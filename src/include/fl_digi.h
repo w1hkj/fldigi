@@ -217,6 +217,8 @@ extern void put_WARNstatus(double);
 
 extern void qsoSave_cb(Fl_Widget *b, void *);
 
+extern bool que_ok;
+
 extern void put_rx_data(int *data, int len);
 extern int get_tx_char();
 extern int  get_secondary_char();

@@ -5651,13 +5651,15 @@ int Qwait_time = 0;
 int Qidle_time = 0;
 
 static int que_timeout = 0;
+bool que_ok = false;
+
 void post_queue_execute(void*)
 {
 	if (!que_timeout) {
 		LOG_ERROR("%s", "timed out");
 		return;
 	}
-	while (trx_state != STATE_RX) {
+	while (!que_ok && trx_state != STATE_RX) {
 		que_timeout--;
 		Fl::repeat_timeout(0.05, post_queue_execute);
 	}
@@ -5676,6 +5678,7 @@ void queue_execute_after_rx(void*)
 		return;
 	}
 	queue_execute();
+	que_ok = false;
 	que_timeout = 100; // 5 seconds
 	Fl::add_timeout(0.05, post_queue_execute);
 }
