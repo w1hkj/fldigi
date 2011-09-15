@@ -370,6 +370,7 @@ fldigi_SOURCES += \
 	include/view_rtty.h \
 	include/pkt.h \
 	include/nco.h \
+	include/nullmodem.h \
 	include/rx_extract.h \
 	include/speak.h \
 	include/serial.h \
@@ -483,6 +484,7 @@ fldigi_SOURCES += \
 	throb/throb.cxx \
 	packet/pkt.cxx \
 	trx/modem.cxx \
+	trx/nullmodem.cxx \
 	trx/trx.cxx \
 	waterfall/colorbox.cxx \
 	waterfall/digiscope.cxx \

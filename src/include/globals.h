@@ -49,6 +49,8 @@ enum {
 	MODE_PREV = -2,
 	MODE_NEXT,
 
+	MODE_NULL,
+
 	MODE_CW,
 
 	MODE_CONTESTIA,

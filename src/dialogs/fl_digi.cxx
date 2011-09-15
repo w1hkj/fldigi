@@ -77,6 +77,7 @@
 #endif
 #include "rigio.h"
 #include "rigMEM.h"
+#include "nullmodem.h"
 #include "psk.h"
 #include "cw.h"
 #include "mfsk.h"
@@ -990,6 +991,11 @@ void init_modem(trx_mode mode, int freq)
 		if ((mode = active_modem->get_mode() - 1) < 0)
 			mode = NUM_MODES - 1;
 		return init_modem(mode, freq);
+
+	case MODE_NULL:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new NULLMODEM, freq);
+		break;
 
 	case MODE_CW:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -3058,6 +3064,7 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{ mode_info[MODE_NULL].name, 0, cb_init_mode, (void *)MODE_NULL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_SSB].name, 0, cb_init_mode, (void *)MODE_SSB, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3672,7 +3679,7 @@ void create_fl_digi_main_primary() {
 	int Hmacrobtn;
 	int xpos;
 	int ypos;
-	int wblank;
+	int wBLANK;
 
 	int fnt = fl_font();
 	int fsize = fl_size();
@@ -4314,14 +4321,14 @@ void create_fl_digi_main_primary() {
 			Fl_Group *btngroup2 = new Fl_Group(0, Y + 1, progStatus.mainW - Hmacros, Hmacros - 1);
 			Wmacrobtn = (btngroup2->w()) / NUMMACKEYS;
 			Hmacrobtn = btngroup2->h() - 1;
-			wblank = (btngroup2->w() - NUMMACKEYS * Wmacrobtn) / 2;
+			wBLANK = (btngroup2->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = btngroup2->y();
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
-					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
+					bx = new Fl_Box(xpos, ypos, wBLANK, Hmacrobtn);
 					bx->box(FL_FLAT_BOX);
-					xpos += wblank;
+					xpos += wBLANK;
 				}
 				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
 					macros.name[NUMMACKEYS + i].c_str());
@@ -4493,14 +4500,14 @@ void create_fl_digi_main_primary() {
 			Fl_Group *btngroup1 = new Fl_Group(0, Y+1, progStatus.mainW - Hmacros, Hmacros-1);
 			Wmacrobtn = (btngroup1->w()) / NUMMACKEYS;
 			Hmacrobtn = btngroup1->h() - 1;
-			wblank = (btngroup1->w() - NUMMACKEYS * Wmacrobtn) / 2;
+			wBLANK = (btngroup1->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = btngroup1->y();
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
-					bx = new Fl_Box(xpos, ypos, wblank, Hmacrobtn);
+					bx = new Fl_Box(xpos, ypos, wBLANK, Hmacrobtn);
 					bx->box(FL_FLAT_BOX);
-					xpos += wblank;
+					xpos += wBLANK;
 				}
 				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
 					macros.name[i].c_str());
@@ -4856,6 +4863,7 @@ Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_PSK250].name, 0, cb_init_mode, (void *)MODE_PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{ mode_info[MODE_NULL].name, 0, cb_init_mode, (void *)MODE_NULL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_SSB].name, 0, cb_init_mode, (void *)MODE_SSB, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},

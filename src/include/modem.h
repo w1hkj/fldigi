@@ -181,6 +181,8 @@ protected:
 	virtual void s2nreport(void);
 };
 
+extern modem *null_modem;
+
 extern modem *cw_modem;
 
 extern modem *mfsk8_modem;

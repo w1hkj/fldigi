@@ -308,15 +308,18 @@ void trx_trx_transmit_loop()
 		    return;
 		}
 
-		push2talk->set(true);
+		if (active_modem != ssb_modem) {
+			push2talk->set(true);
+			REQ(&waterfall::set_XmtRcvBtn, wf, true);
+		}
 		active_modem->tx_init(scard);
-		REQ(&waterfall::set_XmtRcvBtn, wf, true);
 
-		if (progdefaults.TransmitRSid)
+		if ((active_modem != null_modem && active_modem != ssb_modem) && 
+			progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
 
 		while (trx_state == STATE_TX) {
-			if (!progdefaults.DTMFstr.empty())
+			if (active_modem != ssb_modem && !progdefaults.DTMFstr.empty())
 				dtmf->send();
 			try {
 				if (active_modem->tx_process() < 0)
