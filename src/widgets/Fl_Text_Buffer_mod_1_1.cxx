@@ -273,6 +273,7 @@ void Fl_Text_Buffer_mod::replace( int start, int end, const char *s ) {
   // Range check...
   if (!s) return;
   if (start < 0) start = 0;
+  if (end < 0) end = 0;
   if (end > mLength) end = mLength;
 
   call_predelete_callbacks( start, end-start );
