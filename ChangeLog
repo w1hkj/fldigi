@@ -1,5 +1,7 @@
-2011-09-15  David Freese  <w1hkj@w1hkj.com>
+2011-09-16  David Freese  <w1hkj@w1hkj.com>
 
+	d1a574c: Timing race
+	95cc04a: Control-Z bug fix
 	c62a395: NULL modem
 	41a9daa: Queued QSY
 	b88931e: CW QSK
