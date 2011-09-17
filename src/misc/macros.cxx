@@ -324,11 +324,9 @@ static void pIDLE(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-extern bool idling;
 static void doneIDLE(void *)
 {
 	Qidle_time = 0;
-	idling = false;
 }
 
 static void doIDLE(string s)
@@ -338,10 +336,8 @@ static void doIDLE(string s)
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%f", &number);
 		Qidle_time = number * 100;
-		idling = true;
 		Fl::add_timeout(number, doneIDLE);
 	} else {
-		idling = false;
 		Qidle_time = 0;
 	}
 }
@@ -396,6 +392,7 @@ static void doWAIT(string s)
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		Qwait_time = number;
+printf("wait for %d\n", number);
 		Fl::add_timeout (number * 1.0, doneWAIT);
 	} else
 		Qwait_time = 0;

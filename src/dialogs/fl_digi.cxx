@@ -5685,10 +5685,10 @@ void queue_execute_after_rx(void*)
 		Fl::repeat_timeout(0.05, queue_execute_after_rx);
 		return;
 	}
-	queue_execute();
 	que_ok = false;
 	que_timeout = 100; // 5 seconds
 	Fl::add_timeout(0.05, post_queue_execute);
+	queue_execute();
 }
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
@@ -5720,7 +5720,9 @@ int get_tx_char(void)
 		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
 		idling = true;
 	}
-	if (idling) return -1;
+	if (idling) {
+	return -1;
+}
 
 	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
 		c = text2repeat[repeatchar];
@@ -5733,6 +5735,7 @@ int get_tx_char(void)
 	}
 
 	c = TransmitText->nextChar();
+
 	if (c == '^' && state == STATE_CHAR) {
 		state = STATE_CTRL;
 		c = TransmitText->nextChar();
@@ -5780,7 +5783,7 @@ int get_tx_char(void)
 		if (queue_must_rx()) {
 			c = 3;
 			que_timeout = 400; // 20 seconds
-			Fl::add_timeout(0.01, queue_execute_after_rx);
+			Fl::add_timeout(0.05, queue_execute_after_rx);
 		} else {
 			c = -1;
 			queue_execute();
