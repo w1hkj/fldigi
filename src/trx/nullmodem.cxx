@@ -33,6 +33,7 @@
 #include "ascii.h"
 
 #define null_bw 1
+#define null_symbol_len 256
 
 NULLMODEM:: NULLMODEM() : modem() 
 {
@@ -57,6 +58,8 @@ void NULLMODEM::init()
 {
 	modem::init();
 	rx_init();
+	for (int i = 0; i < null_symbol_len; i++)
+		outbuf[i] = 0.0;
 	digiscope->mode(Digiscope::SCOPE);
 }
 
@@ -82,10 +85,10 @@ int NULLMODEM::rx_process(const double *buf, int len)
 
 int NULLMODEM::tx_process()
 {
-	MilliSleep(10);
 	if ( get_tx_char() == 0x03 || stopflag) {
 		stopflag = false;
 		return -1;
 	}
+	ModulateXmtr(outbuf, null_symbol_len);
 	return 0;
 }
