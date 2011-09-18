@@ -52,8 +52,8 @@ using namespace std;
 
 Fl_Double_Window *MacroEditDialog = (Fl_Double_Window *)0;
 
-Fl_Button	*btnMacroEditOK = (Fl_Button *)0;
-Fl_Button	*btnMacroEditCancel = (Fl_Button *)0;
+Fl_Button	*btnMacroEditApply = (Fl_Button *)0;
+Fl_Button	*btnMacroEditClose = (Fl_Button *)0;
 Fl_Button	*btnInsertMacro = (Fl_Button *)0;
 Fl_Input2	*macrotext = (Fl_Input2 *)0;
 Fl_Input2	*labeltext = (Fl_Input2 *)0;
@@ -240,8 +240,10 @@ void loadBrowser(Fl_Widget *widget) {
 
 void cbMacroEditOK(Fl_Widget *w, void *)
 {
-	if (w == btnMacroEditCancel)
-		goto ret;
+	if (w == btnMacroEditClose) {
+		MacroEditDialog->hide();
+		return;
+	}
 
 	if (iType == MACRO_EDIT_BUTTON) {
 		macros.text[iMacro] = macrotext->value();
@@ -264,8 +266,6 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 	}
 	else if (iType == MACRO_EDIT_INPUT)
 		iInput->value(macrotext->value());
-ret:
-	MacroEditDialog->hide();
 }
 
 void cbInsertMacro(Fl_Widget *, void *)
@@ -334,11 +334,11 @@ Fl_Double_Window* make_macroeditor(void)
 	labeltext = new Fl_Input2(2 + 450 - 115, 164, 115, 24, _("Macro Button Label:"));
 	labeltext->textfont(FL_COURIER);
 
-	btnMacroEditOK = new Fl_Button(476 + 145 - 80 - 1, 164, 80, 24, _("OK"));
-	btnMacroEditOK->callback(cbMacroEditOK);
+	btnMacroEditApply = new Fl_Button(476 + 145 - 80 - 1, 164, 80, 24, _("Apply"));
+	btnMacroEditApply->callback(cbMacroEditOK);
 
-	btnMacroEditCancel = new Fl_Button(476 + 145 + 1 , 164, 80, 24, _("Cancel"));
-	btnMacroEditCancel->callback(cbMacroEditOK);
+	btnMacroEditClose = new Fl_Button(476 + 145 + 1 , 164, 80, 24, _("Close"));
+	btnMacroEditClose->callback(cbMacroEditOK);
 
 	w->end();
 	w->xclass(PACKAGE_NAME);

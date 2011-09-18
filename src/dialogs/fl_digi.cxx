@@ -5659,7 +5659,7 @@ int Qwait_time = 0;
 int Qidle_time = 0;
 
 static int que_timeout = 0;
-bool que_ok = false;
+bool que_ok = true;
 
 void post_queue_execute(void*)
 {
@@ -5694,9 +5694,16 @@ void queue_execute_after_rx(void*)
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 int get_tx_char(void)
 {
-	if (Qwait_time) return -1;
-	if (Qidle_time) return -1;
-	if (macro_idle_on) return -1;
+	int c;
+	static int pending = -1;
+	enum { STATE_CHAR, STATE_CTRL };
+	static int state = STATE_CHAR;
+
+	if (!que_ok) { return -1; }
+	if (Qwait_time) { return -1; }
+	if (Qidle_time) { return -1; }
+	if (macro_idle_on) { return -1; }
+	if (idling) { return -1; }
 
 	if (arq_text_available)
 		return arq_get_char();
@@ -5704,25 +5711,18 @@ int get_tx_char(void)
     if (active_modem == cw_modem && progdefaults.QSKadjust)
         return szTestChar[2 * progdefaults.TestChar];
 
-	int c;
-	static int pending = -1;
+	if ( progStatus.repeatMacro && progStatus.repeatIdleTime > 0 &&
+		 !idling ) {
+		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
+		idling = true;
+		return -1;
+	}
+
 	if (pending >= 0) {
 		c = pending;
 		pending = -1;
 		return c;
 	}
-
-	enum { STATE_CHAR, STATE_CTRL };
-	static int state = STATE_CHAR;
-
-	if ( progStatus.repeatMacro && progStatus.repeatIdleTime > 0 &&
-		 !idling ) {
-		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
-		idling = true;
-	}
-	if (idling) {
-	return -1;
-}
 
 	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
 		c = text2repeat[repeatchar];
@@ -5741,7 +5741,9 @@ int get_tx_char(void)
 		c = TransmitText->nextChar();
 	}
 	switch (c) {
-	case -1: break; // no character available
+	case -1: // no character available
+		queue_reset();
+		break;
 	case '\n':
 		pending = '\n';
 		return '\r';
@@ -5751,6 +5753,8 @@ int get_tx_char(void)
 		REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 		state = STATE_CHAR;
 		c = 3; // ETX
+		if (progStatus.timer)
+			REQ(startMacroTimer);
 		break;
 	case 'R':
 		if (state != STATE_CTRL)
@@ -5759,6 +5763,8 @@ int get_tx_char(void)
 		if (TransmitText->eot()) {
 			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 			c = 3; // ETX
+			if (progStatus.timer)
+				REQ(startMacroTimer);
 		} else
 			c = -1;
 		break;
@@ -5783,7 +5789,7 @@ int get_tx_char(void)
 		if (queue_must_rx()) {
 			c = 3;
 			que_timeout = 400; // 20 seconds
-			Fl::add_timeout(0.05, queue_execute_after_rx);
+			Fl::add_timeout(0.0, queue_execute_after_rx);
 		} else {
 			c = -1;
 			queue_execute();
@@ -5988,6 +5994,7 @@ void abort_tx()
 		return;
 	}
 	if (trx_state == STATE_TX) {
+		queue_reset();
 		trx_start_modem(active_modem);
 	}
 }

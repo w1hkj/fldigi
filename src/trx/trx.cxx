@@ -441,8 +441,8 @@ trx_state == STATE_RX ? "rx" :
 			break;
 		case STATE_TX:
 			trx_trx_transmit_loop();
-			if (progStatus.timer)
-				REQ(startMacroTimer);
+//			if (progStatus.timer)
+//				REQ(startMacroTimer);
 			break;
 		case STATE_TUNE:
 			trx_tune_loop();

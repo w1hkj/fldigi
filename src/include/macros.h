@@ -55,6 +55,7 @@ extern std::string qso_exchange;
 
 void set_macro_env(void);
 
+void queue_reset();
 void queue_execute();
 bool queue_must_rx();
 void idleTimer(void *);

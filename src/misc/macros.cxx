@@ -66,6 +66,14 @@ using namespace std;
 struct CMDS { string cmd; void (*fp)(string); };
 queue<CMDS> cmds;
 
+// following used for debugging and development
+//void pushcmd(CMDS cmd)
+//{
+//	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)cmds.size());
+//	cmds.push(cmd);
+//}
+#define pushcmd(a) cmds.push((a))
+
 MACROTEXT macros;
 CONTESTCNTR contest_count;
 static bool TransmitON = false;
@@ -230,7 +238,7 @@ static void doWPM(string s)
 static void pQueWPM(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -255,7 +263,7 @@ static void doRISETIME(string s)
 static void pQueRISETIME(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRISETIME };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -280,7 +288,7 @@ static void doPRE(string s)
 static void pQuePRE(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPRE };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -305,7 +313,7 @@ static void doPOST(string s)
 static void pQuePOST(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -335,7 +343,7 @@ static void doIDLE(string s)
 	string sTime = s.substr(7, s.length() - 8);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%f", &number);
-		Qidle_time = number * 100;
+		Qidle_time = 1;
 		Fl::add_timeout(number, doneIDLE);
 	} else {
 		Qidle_time = 0;
@@ -345,7 +353,7 @@ static void doIDLE(string s)
 static void pQueIDLE(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doIDLE };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -392,7 +400,6 @@ static void doWAIT(string s)
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		Qwait_time = number;
-printf("wait for %d\n", number);
 		Fl::add_timeout (number * 1.0, doneWAIT);
 	} else
 		Qwait_time = 0;
@@ -402,7 +409,7 @@ printf("wait for %d\n", number);
 static void pQueWAIT(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWAIT };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -615,7 +622,7 @@ static void doDTMF(string s)
 static void pDTMF(string &s, size_t &i, size_t endbracket)
 {
 	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -821,7 +828,7 @@ static void doMODEM(string s)
 static void pQueMODEM(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doMODEM };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -918,7 +925,7 @@ static void pAFC(string &s, size_t &i, size_t endbracket)
 
     btnAFC->do_callback();
   }
-//cmds.push(s.substr(i, endbracket - i + 1));
+//pushcmd(s.substr(i, endbracket - i + 1));
 //s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
@@ -938,7 +945,7 @@ static void pLOCK(string &s, size_t &i, size_t endbracket)
     wf->xmtlock->damage();
     wf->xmtlock->do_callback();
   }
-//cmds.push(s.substr(i, endbracket - i + 1));
+//pushcmd(s.substr(i, endbracket - i + 1));
 //s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
@@ -957,7 +964,7 @@ static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 
     btnTxRSID->do_callback();
   }
-//cmds.push(s.substr(i, endbracket - i + 1));
+//pushcmd(s.substr(i, endbracket - i + 1));
 //s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
@@ -1037,7 +1044,7 @@ static void doGOHOME(string s)
 static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1074,7 +1081,7 @@ static void doGOFREQ(string s)
 static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1164,7 +1171,7 @@ static void doQSY(string s)
 static void pQueQSY(string &s, size_t &i, size_t endbracket)
 {
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doQSY };
-	cmds.push(cmd);
+	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1461,6 +1468,20 @@ static void pCONT(string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
+void queue_reset()
+{
+	if (!cmds.empty()) {
+		Fl::remove_timeout(post_queue_execute);
+		Fl::remove_timeout(queue_execute_after_rx);
+		Fl::remove_timeout(doneIDLE);
+		Fl::remove_timeout(doneWAIT);
+		while (!cmds.empty()) cmds.pop();
+	}
+	Qwait_time = 0;
+	Qidle_time = 0;
+	que_ok = true;
+}
+
 void postQueue(string s)
 {
 	ReceiveText->add(s.c_str(), FTextBase::CTRL);
@@ -1468,29 +1489,26 @@ void postQueue(string s)
 
 void queue_execute()
 {
-	static string sprnt;
-	if (cmds.empty()) return;
+	if (cmds.empty()) {
+		Qwait_time = 0;
+		Qidle_time = 0;
+		que_ok = true;
+		return;
+	}
 	CMDS cmd = cmds.front();
 	cmds.pop();
-	sprnt = cmd.cmd;
-	LOG_INFO("%s", sprnt.c_str());
-	REQ(postQueue, sprnt);
 	cmd.fp(cmd.cmd);
+	LOG_INFO("%s", cmd.cmd.c_str());
+	REQ(postQueue, cmd.cmd.append("\n"));
 	return;
 }
 
 bool queue_must_rx()
 {
 static string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
+	if (cmds.empty()) return false;
 	CMDS cmd = cmds.front();
 	return (rxcmds.find(cmd.cmd.substr(0,5)) != string::npos);
-//	if (rxcmds.find(cmd.cmd) != string::npos) return true;
-//	if ((cmd.cmd.find("<!MODEM:") != string::npos) ||
-//		(cmd.cmd.find("<!WAIT:") != string::npos) |
-//		(cmd.cmd.find("<!GOHOME") != string::npos) ||
-//		(cmd.cmd.find("<!QSY") != string::npos) ||
-//		(cmd.cmd.find("<!GOFREQ") != string::npos)) return true;
-//	return false;
 }
 
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t&, size_t );};
@@ -1716,9 +1734,6 @@ string MACROTEXT::expandMacro(int n)
 	idleTime = 0;
 	waitTime = 0;
 	tuneTime = 0;
-
-// clear the command FIFO
-	while(!cmds.empty()) cmds.pop();
 
 	while ((idx = expanded.find('<', idx)) != string::npos) {
 		size_t endbracket = expanded.find('>',idx);
