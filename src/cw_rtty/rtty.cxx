@@ -121,6 +121,7 @@ void rtty::init()
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
+	stopflag = false;
 
 	if (progdefaults.StartAtSweetSpot)
 		set_freq(progdefaults.RTTYsweetspot);
@@ -730,9 +731,10 @@ void rtty::send_char(int c)
 void rtty::send_idle()
 {
 
-	if (nbits == 5)
+	if (nbits == 5) {
 		send_char(LETTERS);
-	else
+		txmode = LETTERS;
+	} else
 		send_char(0);
 }
 
@@ -743,13 +745,13 @@ int rtty::tx_process()
 	int c;
 
 	if (preamble > 0) {
-		preamble--;
-		send_symbol(1);
-		if (preamble == 0 && nbits == 5) {
+		for (int i = 0; i < preamble; i++)
+			send_symbol(1);
+		if (nbits == 5) {
 			send_char(LETTERS);
 			txmode = LETTERS;
 		}
-		return 0;
+		preamble = 0;
 	}
 
 	c = get_tx_char();
@@ -772,16 +774,15 @@ int rtty::tx_process()
 		return -1;
 	}
 
-// if NOT Baudot
-	if (nbits != 5) {
-		send_char(c);
-		return 0;
-	}
-
 // send idle character if c == -1
 	if (c == -1) {
 		send_idle();
-		txmode = LETTERS;
+		return 0;
+	}
+
+// if NOT Baudot
+	if (nbits != 5) {
+		send_char(c);
 		return 0;
 	}
 

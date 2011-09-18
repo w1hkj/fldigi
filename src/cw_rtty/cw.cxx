@@ -95,6 +95,7 @@ void cw::init()
 	rx_init();
 	use_paren = progdefaults.CW_use_paren;
 	prosigns = progdefaults.CW_prosigns;
+	stopflag = false;
 }
 
 cw::~cw() {
