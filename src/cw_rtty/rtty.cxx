@@ -135,7 +135,10 @@ void rtty::init()
 
 	rx_init();
 	put_MODEstatus(mode);
-	snprintf(msg1, sizeof(msg1), "%-4.1f / %-4.0f", rtty_baud, rtty_shift);
+	if ((rtty_baud - (int)rtty_baud) == 0)
+		snprintf(msg1, sizeof(msg1), "%-3.0f / %-4.0f", rtty_baud, rtty_shift);
+	else
+		snprintf(msg1, sizeof(msg1), "%-4.2f / %-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
 	if (progdefaults.PreferXhairScope)
 		set_scope_mode(Digiscope::XHAIRS);
@@ -213,7 +216,10 @@ void rtty::restart()
 
 	metric = 0.0;
 
-	snprintf(msg1, sizeof(msg1), "%-4.1f / %-4.0f", rtty_baud, rtty_shift);
+	if ((rtty_baud - (int)rtty_baud) == 0)
+		snprintf(msg1, sizeof(msg1), "%-3.0f / %-4.0f", rtty_baud, rtty_shift);
+	else
+		snprintf(msg1, sizeof(msg1), "%-4.2f / %-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
 	put_MODEstatus(mode);
 	for (int i = 0; i < 1024; i++) QI[i].re = QI[i].im = 0.0;
