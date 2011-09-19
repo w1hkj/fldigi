@@ -631,7 +631,7 @@ static void pMODEM(string &s, size_t &i, size_t endbracket)
 			if (args.at(0) != DBL_MIN)
 				set_rtty_shift((int)args[0]);
 			if (args.at(1) != DBL_MIN)
-				set_rtty_baud((int)args[1]);
+				set_rtty_baud((float)args[1]);
 			if (args.at(2) != DBL_MIN)
 				set_rtty_bits((int)args[2]);
 			break;
