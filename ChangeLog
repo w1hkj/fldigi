@@ -1,5 +1,8 @@
-2011-09-16  David Freese  <w1hkj@w1hkj.com>
+2011-09-18  David Freese  <w1hkj@w1hkj.com>
 
+	bf7ff41: CW/RTTY init fault
+	75aa9a8: NULL modem
+	e000cce: <!IDLE
 	d1a574c: Timing race
 	95cc04a: Control-Z bug fix
 	c62a395: NULL modem
