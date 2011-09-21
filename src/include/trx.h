@@ -43,11 +43,8 @@ extern	void	trx_tune();
 extern	void	trx_receive();
 
 extern	void	trx_reset(void);
-extern	void	trx_start_macro_timer();
 
-extern void	trx_wait_state(void);
-
-extern	void	macro_timer(void *);
+extern	void	trx_wait_state(void);
 
 extern state_t		trx_state;
 extern modem		*active_modem;

@@ -267,6 +267,10 @@ extern void set_contestia_default_integ();
 
 extern void startMacroTimer();
 extern void stopMacroTimer();
+extern void macro_timer(void *);
+extern void macro_timed_execute(void *);
+extern void startTimedExecute(std::string &);
+
 extern void cb_ResetSerNbr();
 extern void updateOutSerNo();
 

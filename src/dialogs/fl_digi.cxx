@@ -2261,6 +2261,7 @@ void stopMacroTimer()
 	progStatus.timer = 0;
 	progStatus.repeatMacro = -1;
 	Fl::remove_timeout(macro_timer);
+	Fl::remove_timeout(macro_timed_execute);
 
 	btnMacroTimer->label(0);
 	btnMacroTimer->color(FL_BACKGROUND_COLOR);
@@ -2279,6 +2280,32 @@ void macro_timer(void*)
 	}
 	else
 		Fl::repeat_timeout(1.0, macro_timer);
+}
+
+void macro_timed_execute(void *)
+{
+	if (exec_date == zdate() && exec_time == ztime()) {
+		macros.timed_execute();
+		btnMacroTimer->label(0);
+		btnMacroTimer->color(FL_BACKGROUND_COLOR);
+		btnMacroTimer->set_output();
+	} else {
+		Fl::repeat_timeout(1.0, macro_timed_execute);
+	}
+}
+
+void startTimedExecute(std::string &title)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+	Fl::add_timeout(0.0, macro_timed_execute);
+	string txt = "Macro '";
+	txt.append(title).append("' scheduled at ");
+	txt.append(exec_time).append(", on ").append(exec_date).append("\n");
+	btnMacroTimer->label("SKED");
+	btnMacroTimer->color(fl_rgb_color(240, 240, 0));
+	btnMacroTimer->redraw_label();
+	ReceiveText->clear();
+	ReceiveText->add(txt.c_str(), FTextBase::CTRL);
 }
 
 void cbMacroTimerButton(Fl_Widget*, void*)

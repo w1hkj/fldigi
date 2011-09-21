@@ -82,20 +82,24 @@ static int mNbr;
 
 std::string qso_time = "";
 std::string qso_exchange = "";
-static bool save_xchg;
-static size_t  xbeg = 0, xend = 0;
 
-string text2send = "";
-string text2repeat = "";
-string text2save = "";
+std::string exec_date = "";
+std::string exec_time = "";
+std::string exec_string = "";
+
+std::string text2send = "";
+std::string text2repeat = "";
+//std::string text2save = "";
+std::string info1msg = "";
+std::string info2msg = "";
 
 size_t repeatchar = 0;
+static size_t  xbeg = 0, xend = 0;
 
+static bool save_xchg;
 static bool expand;
 static bool GET = false;
-
-string info1msg = "";
-string info2msg = "";
+static bool timed_exec = false;
 
 static char cutnumbers[] = "T12345678N";
 static string cutstr;
@@ -727,7 +731,7 @@ static void pCLRLOG(string &s, size_t &i, size_t endbracket)
 	s.replace(i, 10, "^C");
 }
 
-static void pMODEM_compat(string &s, size_t &i, size_t endbracket)
+static void pMODEM_compSKED(string &s, size_t &i, size_t endbracket)
 {
 	size_t	j, k,
 			len = s.length();
@@ -1195,7 +1199,7 @@ void set_macro_env(void)
 {
 	enum {
 #ifndef __WOE32__
-	       PATH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
+	       pSKEDH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
 #endif
 	       FLDIGI_XMLRPC_ADDRESS, FLDIGI_XMLRPC_PORT,
 	       FLDIGI_ARQ_ADDRESS, FLDIGI_ARQ_PORT,
@@ -1217,7 +1221,7 @@ void set_macro_env(void)
 		const char* val;
 	} env[] = {
 #ifndef __WOE32__
-		{ "PATH", "" },
+		{ "pSKEDH", "" },
 		{ "FLDIGI_RX_IPC_KEY", "" },
 		{ "FLDIGI_TX_IPC_KEY", "" },
 #endif
@@ -1255,13 +1259,13 @@ void set_macro_env(void)
 	};
 
 #ifndef __WOE32__
-	// PATH
-	static string path = ScriptsDir;
-	path.erase(path.length()-1,1);
+	// pSKEDH
+	static string pSKEDh = ScriptsDir;
+	pSKEDh.erase(pSKEDh.length()-1,1);
 	const char* p;
-	if ((p = getenv("PATH")))
-		path.append(":").append(p);
-	env[PATH].val = path.c_str();
+	if ((p = getenv("pSKEDH")))
+		pSKEDh.append(":").append(p);
+	env[pSKEDH].val = pSKEDh.c_str();
 
 	// IPC keys
         char key[2][8];
@@ -1468,6 +1472,22 @@ static void pCONT(string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
+static void pSKED(string &s, size_t &i, size_t endbracket)
+{
+	string data = s.substr(i+6, endbracket - i - 6);
+	size_t p = data.find(":");
+	if (p == std::string::npos) {
+		exec_date = zdate();
+		exec_time = data;
+		if (exec_time.empty()) exec_time = ztime();
+	} else {
+		exec_time = data.substr(0, p);
+		exec_date = data.substr(p+1);
+	}
+	timed_exec = true;
+	s.replace(i, endbracket - i + 1, "");
+}
+
 void queue_reset()
 {
 	if (!cmds.empty()) {
@@ -1560,7 +1580,7 @@ MTAGS mtags[] = {
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
 {"<WAIT:",		pWAIT},
-{"<MODEM>",		pMODEM_compat},
+{"<MODEM>",		pMODEM_compSKED},
 {"<MODEM:",		pMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
@@ -1590,6 +1610,7 @@ MTAGS mtags[] = {
 {"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
 {"<REPEAT>",	pREPEAT},
+{"<SKED:",		pSKED},
 #ifdef __WIN32__
 {"<TALK:",		pTALK},
 #endif
@@ -1717,14 +1738,14 @@ void MACROTEXT::loadnewMACROS(string &s, size_t &i, size_t endbracket)
 	showMacroSet();
 }
 
-string MACROTEXT::expandMacro(int n)
+string MACROTEXT::expandMacro(std::string &s)
 {
 	size_t idx = 0;
 	expand = true;
 	TransmitON = false;
 	ToggleTXRX = false;
-	mNbr = n;
-	expanded = text[n];
+//	mNbr = n;
+	expanded = s;//text[n];
 	MTAGS *pMtags;
 
 	xbeg = xend = -1;
@@ -1844,9 +1865,30 @@ static void set_button(Fl_Button* button, bool value)
 	button->do_callback();
 }
 
+void MACROTEXT::timed_execute()
+{
+	queue_reset();
+	TransmitText->clear();
+	text2send = expandMacro(exec_string);
+	TransmitText->add(text2send.c_str());
+	exec_string.clear();
+	active_modem->set_stopflag(false);
+	start_tx();
+}
+
 void MACROTEXT::execute(int n)
 {
-	text2save = text2send = expandMacro(n);
+	mNbr = n;
+//	text2save = 
+	text2send = expandMacro(text[n]);
+
+	if (timed_exec) {
+		progStatus.repeatMacro = -1;
+		exec_string = text[n];
+		timed_exec = false;
+		startTimedExecute(name[n]);
+		return;
+	}
 
 	if (progStatus.repeatMacro == -1)
 		TransmitText->add( text2send.c_str() );
@@ -1894,7 +1936,7 @@ void MACROTEXT::execute(int n)
 
 void MACROTEXT::repeat(int n)
 {
-	expandMacro(n);
+	expandMacro(text[n]);
 	LOG_WARN("%s",text2repeat.c_str());
 	macro_idle_on = false;
 	if (idleTime) progStatus.repeatIdleTime = idleTime;

@@ -57,7 +57,7 @@ Fl_Button	*btnMacroEditClose = (Fl_Button *)0;
 Fl_Button	*btnInsertMacro = (Fl_Button *)0;
 Fl_Input2	*macrotext = (Fl_Input2 *)0;
 Fl_Input2	*labeltext = (Fl_Input2 *)0;
-static int widths[] = {130, 0};
+static int widths[] = {150, 0};
 
 Fl_Hold_Browser *macroDefs=(Fl_Hold_Browser *)0;
 
@@ -151,6 +151,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
 	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
 	w->add(_("<REPEAT>\trepeat macro continuously"));
+	w->add(_("<SKED:hhmm[:YYYYDDMM]>\tschedule execution"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CWID>\tCW identifier"));
@@ -315,29 +316,29 @@ void cbInsertMacro(Fl_Widget *, void *)
 
 Fl_Double_Window* make_macroeditor(void)
 {
-	Fl_Double_Window* w = new Fl_Double_Window(768, 190, "");
+	Fl_Double_Window* w = new Fl_Double_Window(800, 190, "");
 
-	macrotext = new Fl_Input2(2, 22, 450, 140, _("Text:"));
+	macrotext = new Fl_Input2(2, 22, 450, 140, _("Macro Text"));
 	macrotext->type(FL_MULTILINE_INPUT);
 	macrotext->textfont(FL_COURIER);
-	macrotext->align(FL_ALIGN_TOP_LEFT);
+	macrotext->align(FL_ALIGN_TOP);
 
-	btnInsertMacro = new Fl_Button(454, 86, 20, 20);
+	btnInsertMacro = new Fl_Button(434, 2, 40, 20);
 	btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
 	btnInsertMacro->callback(cbInsertMacro);
 
-	macroDefs = new Fl_Hold_Browser(476, 22, 290, 140, _("Select Tags:"));
+	macroDefs = new Fl_Hold_Browser(452, 22, 346, 140, _("Select Tag"));
 	macroDefs->column_widths(widths);
-	macroDefs->align(FL_ALIGN_TOP_LEFT);
+	macroDefs->align(FL_ALIGN_TOP);
 	loadBrowser(macroDefs);
 
 	labeltext = new Fl_Input2(2 + 450 - 115, 164, 115, 24, _("Macro Button Label:"));
 	labeltext->textfont(FL_COURIER);
 
-	btnMacroEditApply = new Fl_Button(476 + 145 - 80 - 1, 164, 80, 24, _("Apply"));
+	btnMacroEditApply = new Fl_Button(452 + macroDefs->w()/2 - 80 - 1, 164, 80, 24, _("Apply"));
 	btnMacroEditApply->callback(cbMacroEditOK);
 
-	btnMacroEditClose = new Fl_Button(476 + 145 + 1 , 164, 80, 24, _("Close"));
+	btnMacroEditClose = new Fl_Button(452 + macroDefs->w()/2 + 1 , 164, 80, 24, _("Close"));
 	btnMacroEditClose->callback(cbMacroEditOK);
 
 	w->end();

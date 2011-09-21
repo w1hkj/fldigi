@@ -36,9 +36,10 @@ struct MACROTEXT {
 	void openMacroFile();
 	void saveMacroFile();
 	void saveMacros(const std::string& fname);
-	std::string expandMacro(int n);
+	std::string expandMacro(std::string &s);
 	void execute(int n);
 	void repeat(int n);
+	void timed_execute();
 	MACROTEXT();
 private:
 	std::string expanded;
@@ -52,6 +53,10 @@ extern std::string info1msg;
 extern std::string info2msg;
 extern std::string qso_time;
 extern std::string qso_exchange;
+
+extern std::string exec_date;
+extern std::string exec_time;
+extern std::string exec_string;
 
 void set_macro_env(void);
 
