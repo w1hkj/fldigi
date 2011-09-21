@@ -46,8 +46,6 @@ void wwv::rx_init()
 	phaseacc = 0.0;
 	smpl_ctr = 0;		// sample counter for timing wwv rx 
 	agc = 0.0;			// threshold for tick detection 
-//	sync = 0;
-//	sync0 = 0;
 	ticks = 0;
 	calc = false;
 	zoom = false;
@@ -87,8 +85,8 @@ wwv::wwv() : modem()
 	lpfilter->init_lowpass (FIRLEN_1, DEC_1, lp);
 	
 	vidfilter = new Cmovavg(16);
-	
-	cap &= ~CAP_TX;
+
+	makeaudio();
 }
 
 
@@ -165,3 +163,58 @@ void wwv::set2(int x, int y)
 	zoom = !zoom;
 }
 
+//======================================================================
+// transmit time tick
+//======================================================================
+
+void wwv::makeshape()
+{
+	for (int i = 0; i < 32; i++)
+		keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / 32));
+}
+
+double wwv::nco(double freq)
+{
+	phaseacc += 2.0 * M_PI * freq / samplerate;
+
+	if (phaseacc > M_PI)
+		phaseacc -= 2.0 * M_PI;
+
+	return sin(phaseacc);
+}
+
+void wwv::makeaudio()
+{
+	phaseacc = 0.0;
+	makeshape();
+	for (int i = 0; i < 400; i++) {
+		audio[i] = (i < 200 ? nco(1000) : 0);
+		quiet[i] = 0;
+	}
+	for (int i = 0; i < 32; i++) {
+		audio[i] *= keyshape[i];
+		audio[199 - i] *= keyshape[i];
+	}
+}
+
+int wwv::tx_process() 
+{
+	static int cycle = 4;
+	int c = get_tx_char();
+
+	if (c == 0x03 || stopflag) {
+		stopflag = false;
+		return -1;
+	}
+	if (--cycle == 0) {
+		memcpy(play, audio, 400 * sizeof(double));
+		ModulateXmtr(play, 400);
+		cycle = 4;
+	} else
+		ModulateXmtr(quiet, 400);
+	ModulateXmtr(quiet, 400);
+	ModulateXmtr(quiet, 400);
+	ModulateXmtr(quiet, 400);
+	ModulateXmtr(quiet, 400);
+	return 0;
+}
