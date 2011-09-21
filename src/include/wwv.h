@@ -69,6 +69,15 @@ protected:
 	bool			calc;
 	bool			zoom;
 
+	double	keyshape[32]; // 4 msec rise and fall time for pulse
+	double	audio[400];
+	double	quiet[400];
+	double	play[400];
+
+	double nco(double freq);
+	void makeshape();
+	void makeaudio();
+
 public:
 	wwv();
 	~wwv();
@@ -77,7 +86,7 @@ public:
 	void	tx_init(SoundBase *sc);
 	void 	restart() {};
 	int		rx_process(const double *buf, int len);
-	int		tx_process() {return -1;}
+	int		tx_process();
 	void	update_syncscope();
 	void	set1(int x, int y);
 	void	set2(int x, int y);

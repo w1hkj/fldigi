@@ -295,7 +295,6 @@ void trx_trx_transmit_loop()
 		MilliSleep(10);
 		return;
 	}
-
 	if (active_modem) {
 		try {
 		    current_samplerate = active_modem->get_samplerate();
@@ -314,7 +313,9 @@ void trx_trx_transmit_loop()
 		}
 		active_modem->tx_init(scard);
 
-		if ((active_modem != null_modem && active_modem != ssb_modem) && 
+		if ((active_modem != null_modem && 
+			active_modem != ssb_modem &&
+			active_modem != wwv_modem ) && 
 			progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
 
