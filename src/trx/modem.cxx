@@ -42,6 +42,7 @@
 
 using namespace std;
 
+modem *null_modem = 0;
 modem *cw_modem = 0;
 
 modem *mfsk8_modem = 0;

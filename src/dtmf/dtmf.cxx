@@ -235,8 +235,6 @@ void cDTMF::two_tones(int ch)
 
 void cDTMF::send()
 {
-	if (progdefaults.DTMFstr.empty()) return;
-
 	int c = 0, delay = 0;
 	duration = 50;
 	RT = (int)(active_modem->get_samplerate() * 4 / 1000.0); // 4 msec edge

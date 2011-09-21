@@ -55,12 +55,24 @@
 #include <unistd.h>
 #include <string>
 #include <fstream>
+#include <queue>
 
 #ifdef __WIN32__
 #include "speak.h"
 #endif
 
 using namespace std;
+
+struct CMDS { string cmd; void (*fp)(string); };
+queue<CMDS> cmds;
+
+// following used for debugging and development
+//void pushcmd(CMDS cmd)
+//{
+//	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)cmds.size());
+//	cmds.push(cmd);
+//}
+#define pushcmd(a) cmds.push((a))
 
 MACROTEXT macros;
 CONTESTCNTR contest_count;
@@ -70,20 +82,24 @@ static int mNbr;
 
 std::string qso_time = "";
 std::string qso_exchange = "";
-static bool save_xchg;
-static size_t  xbeg = 0, xend = 0;
 
-string text2send = "";
-string text2repeat = "";
-string text2save = "";
+std::string exec_date = "";
+std::string exec_time = "";
+std::string exec_string = "";
+
+std::string text2send = "";
+std::string text2repeat = "";
+//std::string text2save = "";
+std::string info1msg = "";
+std::string info2msg = "";
 
 size_t repeatchar = 0;
+static size_t  xbeg = 0, xend = 0;
 
+static bool save_xchg;
 static bool expand;
 static bool GET = false;
-
-string info1msg = "";
-string info2msg = "";
+static bool timed_exec = false;
 
 static char cutnumbers[] = "T12345678N";
 static string cutstr;
@@ -204,6 +220,107 @@ static void pPOST(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void setwpm(int d)
+{
+	sldrCWxmtWPM->value(d);
+	cntCW_WPM->value(d);
+}
+
+static void doWPM(string s)
+{
+	int number;
+	string sTime = s.substr(6);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		if (number < 5) number = 5;
+		if (number > 200) number = 200;
+		progdefaults.CWspeed = number;
+		REQ(setwpm, number);
+	}
+}
+
+static void pQueWPM(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setRISETIME(int d)
+{
+	cntCWrisetime->value(d);
+}
+
+static void doRISETIME(string s)
+{
+	float number;
+	string sVal = s.substr(7, s.length() - 8);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < 0) number = 0;
+		if (number > 20) number = 20;
+		progdefaults.CWrisetime = number;
+		REQ(setRISETIME, number);
+	}
+}
+
+static void pQueRISETIME(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRISETIME };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setPRE(int d)
+{
+	cntPreTiming->value(d);
+}
+
+static void doPRE(string s)
+{
+	float number;
+	string sVal = s.substr(6, s.length() - 7);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < 0) number = 0;
+		if (number > 20) number = 20;
+		progdefaults.CWpre = number;
+		REQ(setPRE, number);
+	}
+}
+
+static void pQuePRE(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPRE };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setPOST(int d)
+{
+	cntPostTiming->value(d);
+}
+
+static void doPOST(string s)
+{
+	float number;
+	string sVal = s.substr(7, s.length() - 8);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		if (number < -20) number = -20;
+		if (number > 20) number = 20;
+		progdefaults.CWpost = number;
+		REQ(setPOST, number);
+	}
+}
+
+static void pQuePOST(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 bool macro_idle_on = false;
 static float  idleTime = 0;
 
@@ -217,6 +334,31 @@ static void pIDLE(string &s, size_t &i, size_t endbracket)
 		idleTime = number;
 	}
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doneIDLE(void *)
+{
+	Qidle_time = 0;
+}
+
+static void doIDLE(string s)
+{
+	float number;
+	string sTime = s.substr(7, s.length() - 8);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%f", &number);
+		Qidle_time = 1;
+		Fl::add_timeout(number, doneIDLE);
+	} else {
+		Qidle_time = 0;
+	}
+}
+
+static void pQueIDLE(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doIDLE };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static bool useTune = false;
@@ -248,6 +390,33 @@ static void pWAIT(string &s, size_t &i, size_t endbracket)
 	}
 	s.replace(i, endbracket - i + 1, "");
 }
+
+static void doneWAIT(void *)
+{
+	Qwait_time = 0;
+	start_tx();
+}
+
+static void doWAIT(string s)
+{
+	int number;
+	string sTime = s.substr(7, s.length() - 8);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%d", &number);
+		Qwait_time = number;
+		Fl::add_timeout (number * 1.0, doneWAIT);
+	} else
+		Qwait_time = 0;
+	que_ok = true;
+}
+
+static void pQueWAIT(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWAIT };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 
 static void pINFO1(string &s, size_t &i, size_t endbracket)
 {
@@ -440,7 +609,6 @@ static void pID(string &s, size_t &i, size_t endbracket)
 static void pTEXT(string &s, size_t &i, size_t endbracket)
 {
 	progdefaults.macrotextid = true;
-
 	s.replace( i, 6, "");
 }
 
@@ -450,10 +618,16 @@ static void pCWID(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, "");
 }
 
+static void doDTMF(string s)
+{
+	progdefaults.DTMFstr = s.substr(6, s.length() - 7);
+}
+
 static void pDTMF(string &s, size_t &i, size_t endbracket)
 {
-	progdefaults.DTMFstr = s.substr(i + 6, endbracket - i - 6);
-	s.replace(i, endbracket - i + 1, "");
+	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pRX(string &s, size_t &i, size_t endbracket)
@@ -557,7 +731,7 @@ static void pCLRLOG(string &s, size_t &i, size_t endbracket)
 	s.replace(i, 10, "^C");
 }
 
-static void pMODEM_compat(string &s, size_t &i, size_t endbracket)
+static void pMODEM_compSKED(string &s, size_t &i, size_t endbracket)
 {
 	size_t	j, k,
 			len = s.length();
@@ -583,6 +757,84 @@ static void pMODEM_compat(string &s, size_t &i, size_t endbracket)
 
 #include <float.h>
 #include "re.h"
+
+static void doMODEM(string s)
+{
+	static fre_t re("<!MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
+	string tomatch = s;
+
+	if (!re.match(tomatch.c_str())) {
+		que_ok = true;
+		return;
+	}
+
+	const std::vector<regmatch_t>& o = re.suboff();
+	string name = tomatch.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	trx_mode m;
+	for (m = 0; m < NUM_MODES; m++)
+		if (name == mode_info[m].sname)
+			break;
+	// do we have arguments and a valid modem?
+	if (o.size() == 2 || m == NUM_MODES) {
+		que_ok = true;
+		return;
+	}
+
+	// parse arguments
+	vector<double> args;
+	args.reserve(8);
+	char* end;
+	double d;
+	for (const char* p = s.c_str() + o[2].rm_so + 1; *p; p++) {
+		errno = 0;
+		d = strtod(p, &end);
+		if (!errno && p != end) {
+			args.push_back(d);
+			p = end;
+		}
+		else // push an invalid value
+			args.push_back(DBL_MIN);
+	}
+
+	try {
+		switch (m) {
+		case MODE_RTTY: // carrier shift, baud rate, bits per char
+			if (args.at(0) != DBL_MIN)
+				set_rtty_shift((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_rtty_baud((float)args[1]);
+			if (args.at(2) != DBL_MIN)
+				set_rtty_bits((int)args[2]);
+			break;
+		case MODE_CONTESTIA: // bandwidth, tones
+			if (args.at(0) != DBL_MIN)
+				set_contestia_bw((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_contestia_tones((int)args[1]);
+			break;
+		case MODE_OLIVIA: // bandwidth, tones
+			if (args.at(0) != DBL_MIN)
+				set_olivia_bw((int)args[0]);
+			if (args.at(1) != DBL_MIN)
+				set_olivia_tones((int)args[1]);
+			break;
+		default:
+			break;
+		}
+	}
+	catch (const exception& e) { }
+
+	if (active_modem->get_mode() != mode_info[m].mode)
+		init_modem_sync(mode_info[m].mode);
+	que_ok = true;
+}
+
+static void pQueMODEM(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doMODEM };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
 
 static void pMODEM(string &s, size_t &i, size_t endbracket)
 {
@@ -677,6 +929,8 @@ static void pAFC(string &s, size_t &i, size_t endbracket)
 
     btnAFC->do_callback();
   }
+//pushcmd(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -695,6 +949,8 @@ static void pLOCK(string &s, size_t &i, size_t endbracket)
     wf->xmtlock->damage();
     wf->xmtlock->do_callback();
   }
+//pushcmd(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -712,6 +968,8 @@ static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 
     btnTxRSID->do_callback();
   }
+//pushcmd(s.substr(i, endbracket - i + 1));
+//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
@@ -776,6 +1034,24 @@ static void pGOHOME(string &s, size_t &i, size_t endbracket)
 		active_modem->set_freq(progdefaults.PSKsweetspot);
 }
 
+static void doGOHOME(string s)
+{
+	if (active_modem == cw_modem)
+		active_modem->set_freq(progdefaults.CWsweetspot);
+	else if (active_modem == rtty_modem)
+		active_modem->set_freq(progdefaults.RTTYsweetspot);
+	else
+		active_modem->set_freq(progdefaults.PSKsweetspot);
+	que_ok = true;
+}
+
+static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 {
 	int number;
@@ -789,6 +1065,28 @@ static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 		active_modem->set_freq(number);
 	}
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doGOFREQ(string s)
+{
+	int number;
+	string sGoFreq = s.substr(9, s.length() - 10);
+	if (sGoFreq.length() > 0) {
+		sscanf(sGoFreq.c_str(), "%d", &number);
+		if (number < progdefaults.LowFreqCutoff)
+			number = progdefaults.LowFreqCutoff;
+		if (number > progdefaults.HighFreqCutoff)
+			number = progdefaults.HighFreqCutoff;
+		active_modem->set_freq(number);
+	}
+	que_ok = true;
+}
+
+static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pQSYTO(string &s, size_t &i, size_t endbracket)
@@ -830,13 +1128,54 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 		if (audio > progdefaults.HighFreqCutoff)
 			audio = progdefaults.HighFreqCutoff;
 	}
-
 	if (rf && rf != wf->rfcarrier())
 		qsy(rf, audio);
 	else
 		active_modem->set_freq(audio);
 
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doQSY(string s)
+{
+	int rf = 0;
+	int audio = 0;
+	float rfd = 0;
+	string sGoFreq;
+	sGoFreq = s.substr(6, s.length() - 7);
+	// no frequency(s) specified
+	if (sGoFreq.length() == 0) {
+		que_ok = true;
+		return;
+	}
+	// rf first value
+	sscanf(sGoFreq.c_str(), "%f", &rfd);
+	if (rfd > 0)
+		rf = (int)(1000*rfd);
+	size_t pos;
+	if ((pos = sGoFreq.find(":")) != string::npos) {
+		// af second value
+		sGoFreq.erase(0, pos+1);
+		if (sGoFreq.length())
+			sscanf(sGoFreq.c_str(), "%d", &audio);
+		if (audio < 0) audio = 0;
+		if (audio < progdefaults.LowFreqCutoff)
+			audio = progdefaults.LowFreqCutoff;
+		if (audio > progdefaults.HighFreqCutoff)
+			audio = progdefaults.HighFreqCutoff;
+	}
+	if (rf && rf != wf->rfcarrier())
+		qsy(rf, audio);
+	else
+		active_modem->set_freq(audio);
+	que_ok = true;
+}
+
+static void pQueQSY(string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doQSY };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pRIGMODE(string& s, size_t& i, size_t endbracket)
@@ -859,7 +1198,7 @@ void set_macro_env(void)
 {
 	enum {
 #ifndef __WOE32__
-	       PATH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
+	       pSKEDH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
 #endif
 	       FLDIGI_XMLRPC_ADDRESS, FLDIGI_XMLRPC_PORT,
 	       FLDIGI_ARQ_ADDRESS, FLDIGI_ARQ_PORT,
@@ -881,7 +1220,7 @@ void set_macro_env(void)
 		const char* val;
 	} env[] = {
 #ifndef __WOE32__
-		{ "PATH", "" },
+		{ "pSKEDH", "" },
 		{ "FLDIGI_RX_IPC_KEY", "" },
 		{ "FLDIGI_TX_IPC_KEY", "" },
 #endif
@@ -919,13 +1258,13 @@ void set_macro_env(void)
 	};
 
 #ifndef __WOE32__
-	// PATH
-	static string path = ScriptsDir;
-	path.erase(path.length()-1,1);
+	// pSKEDH
+	static string pSKEDh = ScriptsDir;
+	pSKEDh.erase(pSKEDh.length()-1,1);
 	const char* p;
-	if ((p = getenv("PATH")))
-		path.append(":").append(p);
-	env[PATH].val = path.c_str();
+	if ((p = getenv("pSKEDH")))
+		pSKEDh.append(":").append(p);
+	env[pSKEDH].val = pSKEDh.c_str();
 
 	// IPC keys
         char key[2][8];
@@ -1132,6 +1471,65 @@ static void pCONT(string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
+static void pSKED(string &s, size_t &i, size_t endbracket)
+{
+	string data = s.substr(i+6, endbracket - i - 6);
+	size_t p = data.find(":");
+	if (p == std::string::npos) {
+		exec_date = zdate();
+		exec_time = data;
+		if (exec_time.empty()) exec_time = ztime();
+	} else {
+		exec_time = data.substr(0, p);
+		exec_date = data.substr(p+1);
+	}
+	timed_exec = true;
+	s.replace(i, endbracket - i + 1, "");
+}
+
+void queue_reset()
+{
+	if (!cmds.empty()) {
+		Fl::remove_timeout(post_queue_execute);
+		Fl::remove_timeout(queue_execute_after_rx);
+		Fl::remove_timeout(doneIDLE);
+		Fl::remove_timeout(doneWAIT);
+		while (!cmds.empty()) cmds.pop();
+	}
+	Qwait_time = 0;
+	Qidle_time = 0;
+	que_ok = true;
+}
+
+void postQueue(string s)
+{
+	ReceiveText->add(s.c_str(), FTextBase::CTRL);
+}
+
+void queue_execute()
+{
+	if (cmds.empty()) {
+		Qwait_time = 0;
+		Qidle_time = 0;
+		que_ok = true;
+		return;
+	}
+	CMDS cmd = cmds.front();
+	cmds.pop();
+	cmd.fp(cmd.cmd);
+	LOG_INFO("%s", cmd.cmd.c_str());
+	REQ(postQueue, cmd.cmd.append("\n"));
+	return;
+}
+
+bool queue_must_rx()
+{
+static string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
+	if (cmds.empty()) return false;
+	CMDS cmd = cmds.front();
+	return (rxcmds.find(cmd.cmd.substr(0,5)) != string::npos);
+}
+
 struct MTAGS { const char *mTAG; void (*fp)(string &, size_t&, size_t );};
 
 MTAGS mtags[] = {
@@ -1181,7 +1579,7 @@ MTAGS mtags[] = {
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
 {"<WAIT:",		pWAIT},
-{"<MODEM>",		pMODEM_compat},
+{"<MODEM>",		pMODEM_compSKED},
 {"<MODEM:",		pMODEM},
 {"<EXEC>",		pEXEC},
 {"<STOP>",		pSTOP},
@@ -1211,9 +1609,20 @@ MTAGS mtags[] = {
 {"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
 {"<REPEAT>",	pREPEAT},
+{"<SKED:",		pSKED},
 #ifdef __WIN32__
 {"<TALK:",		pTALK},
 #endif
+{"<!WPM:",		pQueWPM},
+{"<!RISE:",		pQueRISETIME},
+{"<!PRE:",		pQuePRE},
+{"<!POST:",		pQuePOST},
+{"<!GOHOME>",	pQueGOHOME},
+{"<!GOFREQ:",	pQueGOFREQ},
+{"<!QSY:",		pQueQSY},
+{"<!IDLE:",		pQueIDLE},
+{"<!WAIT:",		pQueWAIT},
+{"<!MODEM:",	pQueMODEM},
 {0, 0}
 };
 
@@ -1328,14 +1737,14 @@ void MACROTEXT::loadnewMACROS(string &s, size_t &i, size_t endbracket)
 	showMacroSet();
 }
 
-string MACROTEXT::expandMacro(int n)
+string MACROTEXT::expandMacro(std::string &s)
 {
 	size_t idx = 0;
 	expand = true;
 	TransmitON = false;
 	ToggleTXRX = false;
-	mNbr = n;
-	expanded = text[n];
+//	mNbr = n;
+	expanded = s;//text[n];
 	MTAGS *pMtags;
 
 	xbeg = xend = -1;
@@ -1455,9 +1864,30 @@ static void set_button(Fl_Button* button, bool value)
 	button->do_callback();
 }
 
+void MACROTEXT::timed_execute()
+{
+	queue_reset();
+	TransmitText->clear();
+	text2send = expandMacro(exec_string);
+	TransmitText->add(text2send.c_str());
+	exec_string.clear();
+	active_modem->set_stopflag(false);
+	start_tx();
+}
+
 void MACROTEXT::execute(int n)
 {
-	text2save = text2send = expandMacro(n);
+	mNbr = n;
+//	text2save = 
+	text2send = expandMacro(text[n]);
+
+	if (timed_exec) {
+		progStatus.repeatMacro = -1;
+		exec_string = text[n];
+		timed_exec = false;
+		startTimedExecute(name[n]);
+		return;
+	}
 
 	if (progStatus.repeatMacro == -1)
 		TransmitText->add( text2send.c_str() );
@@ -1505,8 +1935,8 @@ void MACROTEXT::execute(int n)
 
 void MACROTEXT::repeat(int n)
 {
-	expandMacro(n);
-	LOG_INFO("%s",text2repeat.c_str());
+	expandMacro(text[n]);
+	LOG_WARN("%s",text2repeat.c_str());
 	macro_idle_on = false;
 	if (idleTime) progStatus.repeatIdleTime = idleTime;
 }

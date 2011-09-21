@@ -368,6 +368,7 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/view_rtty.h \
+	include/nullmodem.h \
 	include/rx_extract.h \
 	include/speak.h \
 	include/serial.h \
@@ -480,6 +481,7 @@ fldigi_SOURCES += \
 	ssb/ssb.cxx \
 	throb/throb.cxx \
 	trx/modem.cxx \
+	trx/nullmodem.cxx \
 	trx/trx.cxx \
 	waterfall/colorbox.cxx \
 	waterfall/digiscope.cxx \

@@ -148,6 +148,9 @@ extern Digiscope		*digiscope;
 
 extern std::string		main_window_title;
 
+extern int Qwait_time;
+extern int Qidle_time;
+
 extern void toggleRSID();
 
 extern void set_menus();
@@ -214,6 +217,10 @@ extern void put_WARNstatus(double);
 
 extern void qsoSave_cb(Fl_Widget *b, void *);
 
+extern bool que_ok;
+extern void post_queue_execute(void*);
+extern void queue_execute_after_rx(void*);
+
 extern void put_rx_data(int *data, int len);
 extern int get_tx_char();
 extern int  get_secondary_char();
@@ -259,6 +266,10 @@ extern void set_contestia_default_integ();
 
 extern void startMacroTimer();
 extern void stopMacroTimer();
+extern void macro_timer(void *);
+extern void macro_timed_execute(void *);
+extern void startTimedExecute(std::string &);
+
 extern void cb_ResetSerNbr();
 extern void updateOutSerNo();
 

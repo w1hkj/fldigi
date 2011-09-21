@@ -43,6 +43,8 @@ using namespace std;
 // ... doing so will break the Fl_menu_item table 'menu_'.  -Kamal
 
 const struct mode_info_t mode_info[NUM_MODES] = {
+	{ MODE_NULL, &null_modem, "NULL", "NULL", "", "NULL", "" },
+
     { MODE_CW, &cw_modem, "CW", "CW", "CW", "CW", "CW" },
 
 	{ MODE_CONTESTIA, &contestia_modem, "CTSTIA", "Contestia", "", "CONTESTI", "CT" },

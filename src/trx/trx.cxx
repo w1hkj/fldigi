@@ -158,7 +158,6 @@ static void trx_xmit_wfall_end(int samplerate)
 void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 {
 	ENSURE_THREAD(TRX_TID);
-
 	ringbuffer<double>::vector_type wv[2];
 	wv[0].buf = wv[1].buf = 0;
 
@@ -302,15 +301,19 @@ void trx_trx_transmit_loop()
 			return;
 		}
 
-		push2talk->set(true);
+		if (active_modem != ssb_modem) {
+			push2talk->set(true);
+			REQ(&waterfall::set_XmtRcvBtn, wf, true);
+		}
 		active_modem->tx_init(scard);
 
-		if (progdefaults.TransmitRSid)
+		if ((active_modem != null_modem && active_modem != ssb_modem) && 
+			progdefaults.TransmitRSid)
 			ReedSolomon->send(true);
 
-		dtmf->send();
-
 		while (trx_state == STATE_TX) {
+			if (active_modem != ssb_modem && !progdefaults.DTMFstr.empty())
+				dtmf->send();
 			try {
 				if (active_modem->tx_process() < 0)
 					trx_state = STATE_RX;
@@ -325,9 +328,6 @@ void trx_trx_transmit_loop()
 		}
 
 		trx_xmit_wfall_end(current_samplerate);
-
-//		if (progdefaults.TransmitRSid)
-//			ReedSolomon->send(false);
 
 		scard->flush();
 		if (scard->must_close(O_WRONLY))
@@ -407,6 +407,17 @@ void *trx_loop(void *args)
 				trxrb.reset();
 			trx_signal_state();
 		}
+/*
+printf("trx state %s\n",
+trx_state == STATE_ABORT ? "abort" :
+trx_state == STATE_ENDED ? "ended" :
+trx_state == STATE_RESTART ? "restart" :
+trx_state == STATE_NEW_MODEM ? "new modem" :
+trx_state == STATE_TX ? "tx" :
+trx_state == STATE_TUNE ? "tune" :
+trx_state == STATE_RX ? "rx" :
+"unknown");
+*/
 		switch (trx_state) {
 		case STATE_ABORT:
 			delete scard;
@@ -423,8 +434,6 @@ void *trx_loop(void *args)
 			break;
 		case STATE_TX:
 			trx_trx_transmit_loop();
-			if (progStatus.timer)
-				REQ(startMacroTimer);
 			break;
 		case STATE_TUNE:
 			trx_tune_loop();

@@ -79,13 +79,22 @@ int mt63::tx_process()
 	if (c == 0x03)  {
 		stopflag = true;
 		flush = Tx->DataInterleave;
-		c = 0;
 	}
 
 	if (c == -1 || stopflag == true) c = 0;
 
-	if (stopflag && flush-- == 0) {
+	if (stopflag) {
 		stopflag = false;
+		while (--flush) {
+			Tx->SendChar(0);
+			for (int i = 0; i < Tx->Comb.Output.Len; i++)
+				if (fabs(Tx->Comb.Output.Data[i]) > maxval)
+					maxval = fabs(Tx->Comb.Output.Data[i]);
+			for (int i = 0; i < Tx->Comb.Output.Len; i++) {
+				Tx->Comb.Output.Data[i] /= maxval;
+			}
+			ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
+		}
 		Tx->SendJam();
 		for (int i = 0; i < Tx->Comb.Output.Len; i++)
 			if (fabs(Tx->Comb.Output.Data[i]) > maxval)
