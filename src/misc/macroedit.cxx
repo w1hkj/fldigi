@@ -318,31 +318,55 @@ Fl_Double_Window* make_macroeditor(void)
 {
 	Fl_Double_Window* w = new Fl_Double_Window(800, 190, "");
 
+//	Fl_Group *grp1 = new Fl_Group(0,0, 800, 22, "");
+	Fl_Group *grp1a = new Fl_Group(452,0,348, 22, "");
+	btnInsertMacro = new Fl_Button(452, 2, 40, 20);
+	btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
+	btnInsertMacro->callback(cbInsertMacro);
+	Fl_Box *box1a = new Fl_Box(492, 2, 308, 22, "");
+	grp1a->end();
+	grp1a->resizable(box1a);
+//	grp1->end();
+
+	Fl_Group *grp2 = new Fl_Group(0,22, 800, 140, "");
 	macrotext = new Fl_Input2(2, 22, 450, 140, _("Macro Text"));
 	macrotext->type(FL_MULTILINE_INPUT);
 	macrotext->textfont(FL_COURIER);
 	macrotext->align(FL_ALIGN_TOP);
 
-	btnInsertMacro = new Fl_Button(434, 2, 40, 20);
-	btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
-	btnInsertMacro->callback(cbInsertMacro);
-
 	macroDefs = new Fl_Hold_Browser(452, 22, 346, 140, _("Select Tag"));
 	macroDefs->column_widths(widths);
 	macroDefs->align(FL_ALIGN_TOP);
-	loadBrowser(macroDefs);
+	grp2->end();
 
-	labeltext = new Fl_Input2(2 + 450 - 115, 164, 115, 24, _("Macro Button Label:"));
+	Fl_Group *grp3a = new Fl_Group(0, 164, 452, 24, "");
+	Fl_Box *box3a = new Fl_Box(0, 164, 327, 24, "");
+	labeltext = new Fl_Input2(337, 164, 115, 24, _("Macro Button Label"));
 	labeltext->textfont(FL_COURIER);
+	grp3a->end();
+	grp3a->resizable(box3a);
 
-	btnMacroEditApply = new Fl_Button(452 + macroDefs->w()/2 - 80 - 1, 164, 80, 24, _("Apply"));
+	Fl_Group *grp4 = new Fl_Group(452, 164, 348, 24, "");
+	Fl_Box *box4a = new Fl_Box(452, 164, 92, 24, "");
+
+	btnMacroEditApply = new Fl_Button(544, 164, 80, 24, _("Apply"));
 	btnMacroEditApply->callback(cbMacroEditOK);
 
-	btnMacroEditClose = new Fl_Button(452 + macroDefs->w()/2 + 1 , 164, 80, 24, _("Close"));
+	btnMacroEditClose = new Fl_Button(626 , 164, 80, 24, _("Close"));
 	btnMacroEditClose->callback(cbMacroEditOK);
+	grp4->end();
+	grp4->resizable(box4a);
 
 	w->end();
+
+	w->resizable(grp2);
+
+	w->size_range( 600, 120);
+
 	w->xclass(PACKAGE_NAME);
+
+	loadBrowser(macroDefs);
+
 	return w;
 }
 
