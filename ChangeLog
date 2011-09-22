@@ -1,5 +1,6 @@
-2011-09-21  David Freese  <w1hkj@w1hkj.com>
+2011-09-22  David Freese  <w1hkj@w1hkj.com>
 
+	9910046: Macro Editor
 	6b39f52: WWV xmt mode
 	1c8cfca: Scheduled Macro
 	ca4c595: RTTY baud
@@ -12,9 +13,23 @@
 	41a9daa: Queued QSY
 	b88931e: CW QSK
 	def0e07: MT63 eot mod
+
+2011-09-09  Chris Sylvain  <kb3cs@arrl.net>
+
+	7b2ecb6: PACKET long blobs
+
+2011-09-09  David Freese  <w1hkj@w1hkj.com>
+
 	1f6398e: Delayed macro timing
 	9a26985: Log Server lookup
 	6a03241: Delayed Tags
+
+2011-09-06  Chris Sylvain  <kb3cs@arrl.net>
+
+	31bfb98: PACKET max level
+
+2011-09-05  David Freese  <w1hkj@w1hkj.com>
+
 	563d667: Inline macro tags
 	7184fb8: DTMF decoder
 	d6eae02: CW Prosign defaults
