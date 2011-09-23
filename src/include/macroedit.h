@@ -5,6 +5,10 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
+#include <FL/Fl_Pixmap.H>
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Box.H>
+
 #include "flinput2.h"
 
 extern void loadBrowser(Fl_Widget *widget);
