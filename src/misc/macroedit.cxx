@@ -312,27 +312,35 @@ void cbInsertMacro(Fl_Widget *, void *)
 	macrotext->take_focus();
 }
 
+#include <FL/Fl_Tile.H>
+
 Fl_Double_Window* make_macroeditor(void)
 {
 	Fl_Double_Window* w = new Fl_Double_Window(800, 190, "");
 
 	Fl_Group *grpA = new Fl_Group(0, 0, 800, 22);
-	Fl_Group *grpB = new Fl_Group(452, 0, 348, 22);
-	btnInsertMacro = new Fl_Button(452, 2, 40, 20);
+	Fl_Group *grpB = new Fl_Group(450, 0, 350, 22);
+	btnInsertMacro = new Fl_Button(450, 2, 40, 20);
 	btnInsertMacro->image(new Fl_Pixmap(left_arrow_icon));
 	btnInsertMacro->callback(cbInsertMacro);
 	grpB->end();
 	grpA->end();
 
 	Fl_Group *grpC = new Fl_Group(0, 22, 800, 140);
-	macrotext = new Fl_Input2(2, 22, 450, 140, _("Macro Text"));
+	Fl_Tile *tile = new Fl_Tile(0,22,800,140);
+	macrotext = new Fl_Input2(0, 22, 450, 140, _("Macro Text"));
 	macrotext->type(FL_MULTILINE_INPUT);
 	macrotext->textfont(FL_COURIER);
 	macrotext->align(FL_ALIGN_TOP);
 
-	macroDefs = new Fl_Hold_Browser(452, 22, 346, 140, _("Select Tag"));
+	macroDefs = new Fl_Hold_Browser(450, 22, 350, 140, _("Select Tag"));
 	macroDefs->column_widths(widths);
 	macroDefs->align(FL_ALIGN_TOP);
+
+	Fl_Box *minbox = new Fl_Box(200, 22, 400, 140);
+	minbox->hide();
+	tile->end();
+	tile->resizable(minbox);
 	grpC->end();
 
 	Fl_Group *grpD = new Fl_Group(0, 164, 452, 24);
