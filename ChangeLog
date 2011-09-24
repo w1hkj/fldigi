@@ -1,6 +1,8 @@
-2011-09-22  David Freese  <w1hkj@w1hkj.com>
+2011-09-24  David Freese  <w1hkj@w1hkj.com>
 
-	9910046: Macro Editor
+	3df6c3a: Olivia tone/bw choices
+	e3e2703: Macro Edit
+	58c1bd8: Macro Editor
 	6b39f52: WWV xmt mode
 	1c8cfca: Scheduled Macro
 	ca4c595: RTTY baud
