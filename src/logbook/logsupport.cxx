@@ -165,6 +165,9 @@ static void dxcc_entity_cache_rm(cQsoRec* r);
 static void dxcc_entity_cache_add(cQsoDb& db);
 
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
+	if (!fl_choice2(_("Create New Logbook?"), _("No"), _("Yes"), NULL))
+		return;
+
 	saveLogbook();
 
 	logbook_filename = LogsDir;
