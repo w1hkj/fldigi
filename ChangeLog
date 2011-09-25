@@ -1,6 +1,27 @@
 
 
+=Version 3.21.15=
+
+2011-09-25  David Freese  <w1hkj@w1hkj.com>
+
+	d0e1c5f: Log Menu Items
+	cebc292: Macro Editor
+	960e580: WWV xmt mode
+	bb258cd: Inline macro tags
+	d2c33e4: RTTY baud
+	ab472e0: CW/RTTY init fault
+	5a9607a: Control-Z bug fix
+	c565815: CW QSK
+	405816e: Log Server lookup
+
+2011-09-04  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	e0ee3a9: Added wefax::adjust_metric method.
+	261275e: modem::display_metric now sets the member modem::m
+
+
 =Version 3.21.14=
+
 
 2011-09-03  David Freese  <w1hkj@w1hkj.com>
 
