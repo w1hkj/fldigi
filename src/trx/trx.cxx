@@ -339,6 +339,8 @@ void trx_trx_transmit_loop()
 
 	push2talk->set(false);
 	REQ(&waterfall::set_XmtRcvBtn, wf, false);
+	if (progStatus.timer)
+		REQ(startMacroTimer);
 }
 
 //=============================================================================

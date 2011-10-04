@@ -5742,8 +5742,8 @@ int get_tx_char(void)
 		REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 		state = STATE_CHAR;
 		c = 3; // ETX
-		if (progStatus.timer)
-			REQ(startMacroTimer);
+//		if (progStatus.timer)
+//			REQ(startMacroTimer);
 		break;
 	case 'R':
 		if (state != STATE_CTRL)
@@ -5752,8 +5752,8 @@ int get_tx_char(void)
 		if (TransmitText->eot()) {
 			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 			c = 3; // ETX
-			if (progStatus.timer)
-				REQ(startMacroTimer);
+//			if (progStatus.timer)
+//				REQ(startMacroTimer);
 		} else
 			c = -1;
 		break;
