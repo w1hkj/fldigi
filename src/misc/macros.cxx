@@ -437,6 +437,7 @@ static void pCLRRX(string &s, size_t &i, size_t endbracket)
 static void pCLRTX(string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, "" );
+	queue_reset();
 	TransmitText->clear();
 }
 
