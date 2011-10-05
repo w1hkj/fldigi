@@ -1,5 +1,8 @@
-2011-09-24  David Freese  <w1hkj@w1hkj.com>
+2011-10-05  David Freese  <w1hkj@w1hkj.com>
 
+	f09928f: <EXEC>...</EXEC>
+	0388d6a: !Queue reset
+	fdf5fe0: Timer delay
 	3df6c3a: Olivia tone/bw choices
 	e3e2703: Macro Edit
 	58c1bd8: Macro Editor
