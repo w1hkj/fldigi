@@ -100,6 +100,7 @@ static bool save_xchg;
 static bool expand;
 static bool GET = false;
 static bool timed_exec = false;
+static bool within_exec = false;
 
 static char cutnumbers[] = "T12345678N";
 static string cutstr;
@@ -124,7 +125,7 @@ static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm 
 static void pFILE(string &s, size_t &i, size_t endbracket)
 {
 	string fname = s.substr(i+6, endbracket - i - 6);
-	if (fname.length() > 0) {
+	if (fname.length() > 0 && !within_exec) {
 		FILE *toadd = fopen(fname.c_str(), "r");
 		if (toadd) {
 			string buffer;
@@ -147,7 +148,7 @@ static void pTIMER(string &s, size_t &i, size_t endbracket)
 {
 	int number;
 	string sTime = s.substr(i+7, endbracket - i - 7);
-	if (sTime.length() > 0) {
+	if (sTime.length() > 0 && !within_exec) {
 		sscanf(sTime.c_str(), "%d", &number);
 		progStatus.timer = number;
 		progStatus.timerMacro = mNbr;
@@ -157,6 +158,10 @@ static void pTIMER(string &s, size_t &i, size_t endbracket)
 
 static void pREPEAT(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	progStatus.repeatMacro = mNbr;
 	s.replace(i, endbracket - i + 1, "");
 	text2repeat = s;
@@ -166,6 +171,10 @@ static void pREPEAT(string &s, size_t &i, size_t endbracket)
 
 static void pWPM(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int number;
 	string sTime = s.substr(i+5, endbracket - i - 5);
 	if (sTime.length() > 0) {
@@ -180,6 +189,10 @@ static void pWPM(string &s, size_t &i, size_t endbracket)
 
 static void pRISETIME(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	float number;
 	string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
@@ -194,6 +207,10 @@ static void pRISETIME(string &s, size_t &i, size_t endbracket)
 
 static void pPRE(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	float number;
 	string sVal = s.substr(i+5, endbracket - i - 5);
 	if (sVal.length() > 0) {
@@ -208,6 +225,10 @@ static void pPRE(string &s, size_t &i, size_t endbracket)
 
 static void pPOST(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	float number;
 	string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
@@ -241,6 +262,10 @@ static void doWPM(string s)
 
 static void pQueWPM(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -266,6 +291,10 @@ static void doRISETIME(string s)
 
 static void pQueRISETIME(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRISETIME };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -291,6 +320,10 @@ static void doPRE(string s)
 
 static void pQuePRE(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPRE };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -316,6 +349,10 @@ static void doPOST(string s)
 
 static void pQuePOST(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -326,6 +363,10 @@ static float  idleTime = 0;
 
 static void pIDLE(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	float number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
@@ -356,6 +397,10 @@ static void doIDLE(string s)
 
 static void pQueIDLE(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doIDLE };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -366,6 +411,10 @@ static int  tuneTime = 0;
 
 static void pTUNE(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
@@ -381,6 +430,10 @@ static int  waitTime = 0;
 
 static void pWAIT(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int number;
 	string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
@@ -412,6 +465,10 @@ static void doWAIT(string s)
 
 static void pQueWAIT(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWAIT };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -430,12 +487,20 @@ static void pINFO2(string &s, size_t &i, size_t endbracket)
 
 static void pCLRRX(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 7, "" );
 	ReceiveText->clear();
 }
 
 static void pCLRTX(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 7, "" );
 	queue_reset();
 	TransmitText->clear();
@@ -603,18 +668,30 @@ static void pZD(string &s, size_t &i, size_t endbracket)
 
 static void pID(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	progdefaults.macroid = true;
 	s.replace( i, 4, "");
 }
 
 static void pTEXT(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	progdefaults.macrotextid = true;
 	s.replace( i, 6, "");
 }
 
 static void pCWID(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	progdefaults.macroCWid = true;
 	s.replace( i, 6, "");
 }
@@ -626,6 +703,10 @@ static void doDTMF(string s)
 
 static void pDTMF(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -633,17 +714,29 @@ static void pDTMF(string &s, size_t &i, size_t endbracket)
 
 static void pRX(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace (i, 4, "^r");
 }
 
 static void pTX(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.erase(i, 4);
 	TransmitON = true;
 }
 
 static void pTXRX(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.erase(i, 7);
 	ToggleTXRX = true;
 }
@@ -659,6 +752,10 @@ static void pVER(string &s, size_t &i, size_t endbracket)
 
 static void pCNTR(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int  contestval;
 	contestval = contest_count.count;
 	if (contestval) {
@@ -671,6 +768,10 @@ static void pCNTR(string &s, size_t &i, size_t endbracket)
 
 static void pDECR(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int  contestval;
 	contest_count.count--;
 	if (contest_count.count < 0) contest_count.count = 0;
@@ -681,6 +782,10 @@ static void pDECR(string &s, size_t &i, size_t endbracket)
 
 static void pINCR(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int  contestval;
 	contest_count.count++;
 	contestval = contest_count.count;
@@ -700,40 +805,68 @@ static void pXOUT(string &s, size_t &i, size_t endbracket)
 
 static void pXBEG(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 6, "");
 	xbeg = i;
 }
 
 static void pXEND(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 6, "");
 	xend = i;
 }
 
 static void pSAVEXCHG(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	save_xchg = true;
 	s.replace( i, 10, "");
 }
 
 static void pLOG(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	qsoSave_cb(0, 0);
 	s.replace(i, 5, "");
 }
 
 static void pLNW(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace(i, 5, "^L");
 }
 
 static void pCLRLOG(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace(i, 10, "^C");
 }
 
 static void pMODEM_compSKED(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	size_t	j, k,
 			len = s.length();
 	string name;
@@ -832,6 +965,10 @@ static void doMODEM(string s)
 
 static void pQueMODEM(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doMODEM };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -839,6 +976,10 @@ static void pQueMODEM(string &s, size_t &i, size_t endbracket)
 
 static void pMODEM(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	static fre_t re("<MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
 
 	if (!re.match(s.c_str() + i)) {
@@ -918,6 +1059,10 @@ static void pMODEM(string &s, size_t &i, size_t endbracket)
 
 static void pAFC(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
   string sVal = s.substr(i+5, endbracket - i - 5);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -937,6 +1082,10 @@ static void pAFC(string &s, size_t &i, size_t endbracket)
 
 static void pLOCK(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
   string sVal = s.substr(i+6, endbracket - i - 6);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -957,6 +1106,10 @@ static void pLOCK(string &s, size_t &i, size_t endbracket)
 
 static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
   string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -976,6 +1129,10 @@ static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 
 static void pRX_RSID(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
   string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
@@ -994,6 +1151,10 @@ static void pRX_RSID(string &s, size_t &i, size_t endbracket)
 #ifdef __WIN32__
 static void pTALK(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
   string sVal = s.substr(i+6, endbracket - i - 6);
   if (sVal.length() > 0) {
     // sVal = on|off   [ON, OFF]
@@ -1010,6 +1171,10 @@ static void pTALK(string &s, size_t &i, size_t endbracket)
 
 static void pSRCHUP(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 8, "");
 	active_modem->searchUp();
 	if (progdefaults.WaterfallClickInsert)
@@ -1018,6 +1183,10 @@ static void pSRCHUP(string &s, size_t &i, size_t endbracket)
 
 static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 8, "");
 	active_modem->searchDown();
 	if (progdefaults.WaterfallClickInsert)
@@ -1026,6 +1195,10 @@ static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 
 static void pGOHOME(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 8, "");
 	if (active_modem == cw_modem)
 		active_modem->set_freq(progdefaults.CWsweetspot);
@@ -1048,6 +1221,10 @@ static void doGOHOME(string s)
 
 static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -1055,6 +1232,10 @@ static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
 
 static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int number;
 	string sGoFreq = s.substr(i+8, endbracket - i - 8);
 	if (sGoFreq.length() > 0) {
@@ -1085,6 +1266,10 @@ static void doGOFREQ(string s)
 
 static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -1092,18 +1277,30 @@ static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
 
 static void pQSYTO(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 7, "");
 	do_qsy(true);
 }
 
 static void pQSYFM(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.replace( i, 7, "");
 	do_qsy(false);
 }
 
 static void pQSY(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	int rf = 0;
 	int audio = 0;
 	float rfd = 0;
@@ -1174,6 +1371,10 @@ static void doQSY(string s)
 
 static void pQueQSY(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doQSY };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
@@ -1181,6 +1382,10 @@ static void pQueQSY(string &s, size_t &i, size_t endbracket)
 
 static void pRIGMODE(string& s, size_t& i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	string sMode = s.substr(i+9, endbracket - i - 9);
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
@@ -1189,6 +1394,10 @@ static void pRIGMODE(string& s, size_t& i, size_t endbracket)
 
 static void pFILWID(string& s, size_t& i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	string sWidth = s.substr(i+8, endbracket - i - 8);
 	qso_opBW->value(sWidth.c_str());
 	cb_qso_opBW();
@@ -1304,17 +1513,38 @@ void set_macro_env(void)
 		setenv(env[j].var, env[j].val, 1);
 }
 
+// this is only for the case where the user tries to nest <EXEC>...
+// as in
+// <EXEC> ... <EXEC> ... </EXEC></EXEC>
+// which is not permitted
+static void pEND_EXEC(string &s, size_t &i, size_t endbracket)
+{
+	s.replace(i, endbracket - i + 1, "");
+	return;
+}
+
 #ifndef __MINGW32__
 static void pEXEC(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+
 	size_t start, end;
 	if ((start = s.find('>', i)) == string::npos ||
-	    (end = s.find("</EXEC>", start)) == string::npos) {
+		(end = s.rfind("</EXEC>")) == string::npos) {
 		i++;
 		return;
 	}
 	start++;
 	i++;
+
+	string execstr = s.substr(start, end-start);
+	within_exec = true;
+	MACROTEXT m;
+	execstr = m.expandMacro(execstr);
+	within_exec = false;
 
 	int pfd[2];
 	if (pipe(pfd) == -1) {
@@ -1334,7 +1564,7 @@ static void pEXEC(string &s, size_t &i, size_t endbracket)
 		}
 		close(pfd[1]);
 		set_macro_env();
-		execl("/bin/sh", "sh", "-c", s.substr(start, end-start).c_str(), (char *)NULL);
+		execl("/bin/sh", "sh", "-c", execstr.c_str(), (char *)NULL);
 		perror("execl");
 		exit(EXIT_FAILURE);
 	}
@@ -1372,15 +1602,26 @@ static void pEXEC(string &s, size_t &i, size_t endbracket)
 
 static void pEXEC(string& s, size_t& i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	size_t start, end;
 	if ((start = s.find('>', i)) == string::npos ||
-	    (end = s.find("</EXEC>", start)) == string::npos) {
+		(end = s.rfind("</EXEC>")) == string::npos) {
 		i++;
 		return;
 	}
 	start++;
 
-	char* cmd = strdup(s.substr(start, end-start).c_str());
+	string execstr = s.substr(start, end-start);
+	within_exec = true;
+	MACROTEXT m;
+	execstr = m.expandMacro(execstr);
+	within_exec = false;
+
+	char* cmd = strdup(execstr.c_str());
+
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	memset(&si, 0, sizeof(si));
@@ -1444,6 +1685,10 @@ static void MAPIT(int how)
 
 static void pMAPIT(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	string sVal = s.substr(i + 7, endbracket - i - 7);
 	if (sVal.length() > 0) {
 		if (sVal.compare(0,3,"adr") == 0)
@@ -1462,18 +1707,30 @@ static void pMAPIT(string &s, size_t &i, size_t endbracket)
 
 static void pSTOP(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.erase(i, s.find('>', i) + 1 - i);
 	expand = false;
 }
 
 static void pCONT(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	s.erase(i, s.find('>', i) + 1 - i);
 	expand = true;
 }
 
 static void pSKED(string &s, size_t &i, size_t endbracket)
 {
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
 	string data = s.substr(i+6, endbracket - i - 6);
 	size_t p = data.find(":");
 	if (p == std::string::npos) {
@@ -1583,6 +1840,7 @@ MTAGS mtags[] = {
 {"<MODEM>",		pMODEM_compSKED},
 {"<MODEM:",		pMODEM},
 {"<EXEC>",		pEXEC},
+{"</EXEC>",		pEND_EXEC},
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
 {"<GET>",		pGET},
