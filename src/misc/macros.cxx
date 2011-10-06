@@ -7,6 +7,8 @@
 //		Stelios Bounanos, M0GLD
 // Copyright (C) 2009
 //		Chris Sylvain, KB3CS
+// Copyright (C) 2011
+//		Remi Chateauneu, F4ECW
 //
 // This file is part of fldigi.
 //
@@ -1315,78 +1317,108 @@ static void pQSYFM(std::string &s, size_t &i, size_t endbracket)
 	do_qsy(false);
 }
 
-static void pQSY(std::string &s, size_t &i, size_t endbracket)
+static void commonQSY( string sGoFreq )
+{
+	int rf = 0;
+	int audio = 0;
+	float rfd = 0;
+// no frequency(s) specified
+	if (sGoFreq.length() == 0) {
+		return;
+	}
+// rf first value
+	size_t pos = sGoFreq.find(":");
+	std::vector<char> frqVec( sGoFreq.begin(), pos != string::npos ? sGoFreq.begin() + pos : sGoFreq.end() );
+	frqVec.push_back('\0');
+
+	double predFreq = 0.0, predIncr = 0.0, firstFreq = 0.0 ;
+	double rigFreq = (double)wf->rfcarrier() / 1000.0;
+
+	for ( char * ptrNxt = & frqVec[0], *ptrCurr;
+			NULL != ( ptrCurr = strtok( ptrNxt, ";") );
+			ptrNxt = NULL ) {
+		double currFreq, currIncr = 0.0;
+		switch( sscanf( ptrCurr, "%lf+%lf", &currFreq, &currIncr )) {
+			case 0: LOG_WARN("Invalid frequency range:%s",ptrCurr);
+					return;
+			case 2: if( currIncr <= 0.0 ) {
+						LOG_WARN("Frequency increment negative or null:%lf",currFreq);
+						return;
+					}
+			case 1: if( currFreq <= 0.0 ) {
+						LOG_WARN("Frequency negative or null:%lf",currFreq);
+						return;
+					}
+		}
+		if( firstFreq == 0.0 ) firstFreq = currFreq ;
+
+// Maybe the frequencies are listed out of order.
+		if(currFreq < predFreq) {
+			LOG_WARN("Frequencies should be ordered: %lf > %lf", predFreq, currFreq );
+			continue;
+		}
+
+// For this to work, frequencies must be sorted.
+		if( rigFreq < firstFreq ) {
+			rfd = firstFreq ;
+			break;
+		}
+		if( rigFreq < currFreq ) {
+			if(predIncr == 0.0) {
+				rfd = currFreq;
+				break;
+			}
+			double nbIncr = 1 + floor( (rigFreq - predFreq)/predIncr);
+			
+			rfd = std::min( predFreq + nbIncr * predIncr, currFreq );
+			break;
+		}
+		predFreq = currFreq;
+		predIncr = currIncr;
+	}
+	if( predIncr != 0.0 ) {
+		LOG_WARN("Last increment should be zero:%lf",predIncr);
+		return;
+	}
+	if( rfd == 0.0 ) {
+		rfd = firstFreq ;
+	}
+	
+	if (rfd > 0)
+		rf = (int)(1000*rfd);
+
+	if (pos != string::npos) {
+// af second value
+		sGoFreq.erase(0, pos+1);
+		if (sGoFreq.length())
+			sscanf(sGoFreq.c_str(), "%d", &audio);
+		if (audio < 0) audio = 0;
+		if (audio < progdefaults.LowFreqCutoff)
+			audio = progdefaults.LowFreqCutoff;
+		if (audio > progdefaults.HighFreqCutoff)
+			audio = progdefaults.HighFreqCutoff;
+	}
+	if (rf && rf != wf->rfcarrier())
+		qsy(rf, audio);
+	else
+		active_modem->set_freq(audio);
+	return;
+}
+
+static void pQSY(string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int rf = 0;
-	int audio = 0;
-	float rfd = 0;
-	std::string sGoFreq = s.substr(i+5, endbracket - i - 5);
-	// no frequency(s) specified
-	if (sGoFreq.length() == 0) {
-		s.replace(i, endbracket-i+1, "");
-		return;
-	}
-	// rf first value
-	sscanf(sGoFreq.c_str(), "%f", &rfd);
-	if (rfd > 0)
-		rf = (int)(1000*rfd);
-	size_t pos;
-	if ((pos = sGoFreq.find(":")) != std::string::npos) {
-		// af second value
-		sGoFreq.erase(0, pos+1);
-		if (sGoFreq.length())
-			sscanf(sGoFreq.c_str(), "%d", &audio);
-		if (audio < 0) audio = 0;
-		if (audio < progdefaults.LowFreqCutoff)
-			audio = progdefaults.LowFreqCutoff;
-		if (audio > progdefaults.HighFreqCutoff)
-			audio = progdefaults.HighFreqCutoff;
-	}
-	if (rf && rf != wf->rfcarrier())
-		qsy(rf, audio);
-	else
-		active_modem->set_freq(audio);
-
-	s.replace(i, endbracket - i + 1, "");
+	string sGoFreq = s.substr(i+5, endbracket - i - 5);
+	commonQSY( sGoFreq );
 }
 
-
-static void doQSY(std::string s)
+static void doQSY(string s)
 {
-	int rf = 0;
-	int audio = 0;
-	float rfd = 0;
-	std::string sGoFreq;
-	sGoFreq = s.substr(6, s.length() - 7);
-	// no frequency(s) specified
-	if (sGoFreq.length() == 0) {
-		que_ok = true;
-		return;
-	}
-	// rf first value
-	sscanf(sGoFreq.c_str(), "%f", &rfd);
-	if (rfd > 0)
-		rf = (int)(1000*rfd);
-	size_t pos;
-	if ((pos = sGoFreq.find(":")) != std::string::npos) {
-		// af second value
-		sGoFreq.erase(0, pos+1);
-		if (sGoFreq.length())
-			sscanf(sGoFreq.c_str(), "%d", &audio);
-		if (audio < 0) audio = 0;
-		if (audio < progdefaults.LowFreqCutoff)
-			audio = progdefaults.LowFreqCutoff;
-		if (audio > progdefaults.HighFreqCutoff)
-			audio = progdefaults.HighFreqCutoff;
-	}
-	if (rf && rf != wf->rfcarrier())
-		qsy(rf, audio);
-	else
-		active_modem->set_freq(audio);
+	string sGoFreq = s.substr(6, s.length() - 7);
+	commonQSY( sGoFreq );
 	que_ok = true;
 }
 
