@@ -1534,7 +1534,7 @@ static void pEXEC(string &s, size_t &i, size_t endbracket)
 
 	size_t start, end;
 	if ((start = s.find('>', i)) == string::npos ||
-	    (end = s.find("</EXEC>", start)) == string::npos) {
+		(end = s.rfind("</EXEC>")) == string::npos) {
 		i++;
 		return;
 	}
@@ -1609,7 +1609,7 @@ static void pEXEC(string& s, size_t& i, size_t endbracket)
 	}
 	size_t start, end;
 	if ((start = s.find('>', i)) == string::npos ||
-	    (end = s.find("</EXEC>", start)) == string::npos) {
+		(end = s.rfind("</EXEC>")) == string::npos) {
 		i++;
 		return;
 	}
