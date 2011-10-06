@@ -61,10 +61,10 @@
 #include "speak.h"
 #endif
 
-using namespace std;
+//using namespace std;
 
-struct CMDS { string cmd; void (*fp)(string); };
-queue<CMDS> cmds;
+struct CMDS { std::string cmd; void (*fp)(std::string); };
+static queue<CMDS> cmds;
 
 // following used for debugging and development
 //void pushcmd(CMDS cmd)
@@ -74,26 +74,30 @@ queue<CMDS> cmds;
 //}
 #define pushcmd(a) cmds.push((a))
 
+// these variables are referenced outside of this file
 MACROTEXT macros;
 CONTESTCNTR contest_count;
+
+std::string qso_time = "";
+std::string qso_exchange = "";
+std::string exec_date = "";
+std::string exec_time = "";
+std::string exec_string = "";
+std::string info1msg = "";
+std::string info2msg = "";
+std::string text2repeat = "";
+
+size_t repeatchar = 0;
+
+bool macro_idle_on = false;
+
+static float  idleTime = 0;
 static bool TransmitON = false;
 static bool ToggleTXRX = false;
 static int mNbr;
 
-std::string qso_time = "";
-std::string qso_exchange = "";
+static std::string text2send = "";
 
-std::string exec_date = "";
-std::string exec_time = "";
-std::string exec_string = "";
-
-std::string text2send = "";
-std::string text2repeat = "";
-//std::string text2save = "";
-std::string info1msg = "";
-std::string info2msg = "";
-
-size_t repeatchar = 0;
 static size_t  xbeg = 0, xend = 0;
 
 static bool save_xchg;
@@ -102,10 +106,10 @@ static bool GET = false;
 static bool timed_exec = false;
 static bool within_exec = false;
 
-static char cutnumbers[] = "T12345678N";
-static string cutstr;
+static const char cutnumbers[] = "T12345678N";
+static std::string cutstr;
 
-static string cutstring(const char *s)
+static std::string cut_string(const char *s)
 {
 	cutstr = s;
 	if (!progdefaults.cutnbrs || active_modem != cw_modem)
@@ -122,13 +126,13 @@ static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm 
 	return strftime(s, max, fmt, tm);
 }
 
-static void pFILE(string &s, size_t &i, size_t endbracket)
+static void pFILE(std::string &s, size_t &i, size_t endbracket)
 {
-	string fname = s.substr(i+6, endbracket - i - 6);
+	std::string fname = s.substr(i+6, endbracket - i - 6);
 	if (fname.length() > 0 && !within_exec) {
 		FILE *toadd = fopen(fname.c_str(), "r");
 		if (toadd) {
-			string buffer;
+			std::string buffer;
 			char c = getc(toadd);
 			while (c && !feof(toadd)) {
 				if (c != '\r') buffer += c; // damn MSDOS txt files
@@ -144,10 +148,10 @@ static void pFILE(string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 }
 
-static void pTIMER(string &s, size_t &i, size_t endbracket)
+static void pTIMER(std::string &s, size_t &i, size_t endbracket)
 {
 	int number;
-	string sTime = s.substr(i+7, endbracket - i - 7);
+	std::string sTime = s.substr(i+7, endbracket - i - 7);
 	if (sTime.length() > 0 && !within_exec) {
 		sscanf(sTime.c_str(), "%d", &number);
 		progStatus.timer = number;
@@ -156,7 +160,7 @@ static void pTIMER(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pREPEAT(string &s, size_t &i, size_t endbracket)
+static void pREPEAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -169,14 +173,14 @@ static void pREPEAT(string &s, size_t &i, size_t endbracket)
 	s.insert(i, "[REPEAT]");
 }
 
-static void pWPM(string &s, size_t &i, size_t endbracket)
+static void pWPM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	int number;
-	string sTime = s.substr(i+5, endbracket - i - 5);
+	std::string sTime = s.substr(i+5, endbracket - i - 5);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		if (number < 5) number = 5;
@@ -187,14 +191,14 @@ static void pWPM(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pRISETIME(string &s, size_t &i, size_t endbracket)
+static void pRISETIME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	float number;
-	string sVal = s.substr(i+6, endbracket - i - 6);
+	std::string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < 0) number = 0;
@@ -205,14 +209,14 @@ static void pRISETIME(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pPRE(string &s, size_t &i, size_t endbracket)
+static void pPRE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	float number;
-	string sVal = s.substr(i+5, endbracket - i - 5);
+	std::string sVal = s.substr(i+5, endbracket - i - 5);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < 0) number = 0;
@@ -223,14 +227,14 @@ static void pPRE(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pPOST(string &s, size_t &i, size_t endbracket)
+static void pPOST(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	float number;
-	string sVal = s.substr(i+6, endbracket - i - 6);
+	std::string sVal = s.substr(i+6, endbracket - i - 6);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < -20) number = -20;
@@ -247,10 +251,10 @@ static void setwpm(int d)
 	cntCW_WPM->value(d);
 }
 
-static void doWPM(string s)
+static void doWPM(std::string s)
 {
 	int number;
-	string sTime = s.substr(6);
+	std::string sTime = s.substr(6);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		if (number < 5) number = 5;
@@ -260,7 +264,7 @@ static void doWPM(string s)
 	}
 }
 
-static void pQueWPM(string &s, size_t &i, size_t endbracket)
+static void pQueWPM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -276,10 +280,10 @@ static void setRISETIME(int d)
 	cntCWrisetime->value(d);
 }
 
-static void doRISETIME(string s)
+static void doRISETIME(std::string s)
 {
 	float number;
-	string sVal = s.substr(7, s.length() - 8);
+	std::string sVal = s.substr(7, s.length() - 8);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < 0) number = 0;
@@ -289,7 +293,7 @@ static void doRISETIME(string s)
 	}
 }
 
-static void pQueRISETIME(string &s, size_t &i, size_t endbracket)
+static void pQueRISETIME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -305,10 +309,10 @@ static void setPRE(int d)
 	cntPreTiming->value(d);
 }
 
-static void doPRE(string s)
+static void doPRE(std::string s)
 {
 	float number;
-	string sVal = s.substr(6, s.length() - 7);
+	std::string sVal = s.substr(6, s.length() - 7);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < 0) number = 0;
@@ -318,7 +322,7 @@ static void doPRE(string s)
 	}
 }
 
-static void pQuePRE(string &s, size_t &i, size_t endbracket)
+static void pQuePRE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -334,10 +338,10 @@ static void setPOST(int d)
 	cntPostTiming->value(d);
 }
 
-static void doPOST(string s)
+static void doPOST(std::string s)
 {
 	float number;
-	string sVal = s.substr(7, s.length() - 8);
+	std::string sVal = s.substr(7, s.length() - 8);
 	if (sVal.length() > 0) {
 		sscanf(sVal.c_str(), "%f", &number);
 		if (number < -20) number = -20;
@@ -347,7 +351,7 @@ static void doPOST(string s)
 	}
 }
 
-static void pQuePOST(string &s, size_t &i, size_t endbracket)
+static void pQuePOST(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -358,17 +362,14 @@ static void pQuePOST(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-bool macro_idle_on = false;
-static float  idleTime = 0;
-
-static void pIDLE(string &s, size_t &i, size_t endbracket)
+static void pIDLE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	float number;
-	string sTime = s.substr(i+6, endbracket - i - 6);
+	std::string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%f", &number);
 		macro_idle_on = true;
@@ -382,10 +383,10 @@ static void doneIDLE(void *)
 	Qidle_time = 0;
 }
 
-static void doIDLE(string s)
+static void doIDLE(std::string s)
 {
 	float number;
-	string sTime = s.substr(7, s.length() - 8);
+	std::string sTime = s.substr(7, s.length() - 8);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%f", &number);
 		Qidle_time = 1;
@@ -395,7 +396,7 @@ static void doIDLE(string s)
 	}
 }
 
-static void pQueIDLE(string &s, size_t &i, size_t endbracket)
+static void pQueIDLE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -409,14 +410,14 @@ static void pQueIDLE(string &s, size_t &i, size_t endbracket)
 static bool useTune = false;
 static int  tuneTime = 0;
 
-static void pTUNE(string &s, size_t &i, size_t endbracket)
+static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	int number;
-	string sTime = s.substr(i+6, endbracket - i - 6);
+	std::string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		useTune = true;
@@ -428,14 +429,14 @@ static void pTUNE(string &s, size_t &i, size_t endbracket)
 static bool useWait = false;
 static int  waitTime = 0;
 
-static void pWAIT(string &s, size_t &i, size_t endbracket)
+static void pWAIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	int number;
-	string sTime = s.substr(i+6, endbracket - i - 6);
+	std::string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		useWait = true;
@@ -450,10 +451,10 @@ static void doneWAIT(void *)
 	start_tx();
 }
 
-static void doWAIT(string s)
+static void doWAIT(std::string s)
 {
 	int number;
-	string sTime = s.substr(7, s.length() - 8);
+	std::string sTime = s.substr(7, s.length() - 8);
 	if (sTime.length() > 0) {
 		sscanf(sTime.c_str(), "%d", &number);
 		Qwait_time = number;
@@ -463,7 +464,7 @@ static void doWAIT(string s)
 	que_ok = true;
 }
 
-static void pQueWAIT(string &s, size_t &i, size_t endbracket)
+static void pQueWAIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -475,17 +476,17 @@ static void pQueWAIT(string &s, size_t &i, size_t endbracket)
 }
 
 
-static void pINFO1(string &s, size_t &i, size_t endbracket)
+static void pINFO1(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, info1msg );
 }
 
-static void pINFO2(string &s, size_t &i, size_t endbracket)
+static void pINFO2(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, info2msg );
 }
 
-static void pCLRRX(string &s, size_t &i, size_t endbracket)
+static void pCLRRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -495,7 +496,7 @@ static void pCLRRX(string &s, size_t &i, size_t endbracket)
 	ReceiveText->clear();
 }
 
-static void pCLRTX(string &s, size_t &i, size_t endbracket)
+static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -506,79 +507,79 @@ static void pCLRTX(string &s, size_t &i, size_t endbracket)
 	TransmitText->clear();
 }
 
-static void pCALL(string &s, size_t &i, size_t endbracket)
+static void pCALL(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpCall->value() );
 }
 
-static void pGET(string &s, size_t &i, size_t endbracket)
+static void pGET(std::string &s, size_t &i, size_t endbracket)
 {
 	s.erase( i, 9 );
 	GET = true;
 }
 
-static void pFREQ(string &s, size_t &i, size_t endbracket)
+static void pFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpFreq->value() );
 }
 
-static void pLOC(string &s, size_t &i, size_t endbracket)
+static void pLOC(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, inpLoc->value() );
 }
 
-static void pMODE(string &s, size_t &i, size_t endbracket)
+static void pMODE(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, active_modem->get_mode_name());
 }
 
-static void pNAME(string &s, size_t &i, size_t endbracket)
+static void pNAME(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpName->value() );
 }
 
-static void pQTH(string &s, size_t &i, size_t endbracket)
+static void pQTH(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i,5, inpQth->value() );
 }
 
-static void pQSOTIME(string &s, size_t &i, size_t endbracket)
+static void pQSOTIME(std::string &s, size_t &i, size_t endbracket)
 {
 	qso_time = inpTimeOff->value();
 	s.replace( i, 9, qso_time.c_str() );
 }
 
-static void pRST(string &s, size_t &i, size_t endbracket)
+static void pRST(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 5, cutstring(inpRstOut->value()));
+	s.replace( i, 5, cut_string(inpRstOut->value()));
 }
 
-static void pMYCALL(string &s, size_t &i, size_t endbracket)
+static void pMYCALL(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, inpMyCallsign->value() );
 }
 
-static void pMYLOC(string &s, size_t &i, size_t endbracket)
+static void pMYLOC(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpMyLocator->value() );
 }
 
-static void pMYNAME(string &s, size_t &i, size_t endbracket)
+static void pMYNAME(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 8, inpMyName->value() );
 }
 
-static void pMYQTH(string &s, size_t &i, size_t endbracket)
+static void pMYQTH(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpMyQth->value() );
 }
 
-static void pMYRST(string &s, size_t &i, size_t endbracket)
+static void pMYRST(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpRstIn->value() );
 }
 
-static void pLDT(string &s, size_t &i, size_t endbracket)
+static void pLDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -589,7 +590,7 @@ static void pLDT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 5, szDt);
 }
 
-static void pILDT(string &s, size_t &i, size_t endbracket)
+static void pILDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -600,7 +601,7 @@ static void pILDT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, szDt);
 }
 
-static void pZDT(string &s, size_t &i, size_t endbracket)
+static void pZDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -611,7 +612,7 @@ static void pZDT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 5, szDt);
 }
 
-static void pIZDT(string &s, size_t &i, size_t endbracket)
+static void pIZDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -622,7 +623,7 @@ static void pIZDT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, szDt);
 }
 
-static void pLT(string &s, size_t &i, size_t endbracket)
+static void pLT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -633,7 +634,7 @@ static void pLT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 4, szDt);
 }
 
-static void pZT(string &s, size_t &i, size_t endbracket)
+static void pZT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -644,7 +645,7 @@ static void pZT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 4, szDt);
 }
 
-static void pLD(string &s, size_t &i, size_t endbracket)
+static void pLD(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -655,7 +656,7 @@ static void pLD(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 4, szDt);
 }
 
-static void pZD(string &s, size_t &i, size_t endbracket)
+static void pZD(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 	time_t tmptr;
@@ -666,7 +667,7 @@ static void pZD(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 4, szDt);
 }
 
-static void pID(string &s, size_t &i, size_t endbracket)
+static void pID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -676,7 +677,7 @@ static void pID(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 4, "");
 }
 
-static void pTEXT(string &s, size_t &i, size_t endbracket)
+static void pTEXT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -686,7 +687,7 @@ static void pTEXT(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, "");
 }
 
-static void pCWID(string &s, size_t &i, size_t endbracket)
+static void pCWID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -696,12 +697,12 @@ static void pCWID(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, "");
 }
 
-static void doDTMF(string s)
+static void doDTMF(std::string s)
 {
 	progdefaults.DTMFstr = s.substr(6, s.length() - 7);
 }
 
-static void pDTMF(string &s, size_t &i, size_t endbracket)
+static void pDTMF(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -712,7 +713,7 @@ static void pDTMF(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static void pRX(string &s, size_t &i, size_t endbracket)
+static void pRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -721,7 +722,7 @@ static void pRX(string &s, size_t &i, size_t endbracket)
 	s.replace (i, 4, "^r");
 }
 
-static void pTX(string &s, size_t &i, size_t endbracket)
+static void pTX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -731,7 +732,7 @@ static void pTX(string &s, size_t &i, size_t endbracket)
 	TransmitON = true;
 }
 
-static void pTXRX(string &s, size_t &i, size_t endbracket)
+static void pTXRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -742,15 +743,15 @@ static void pTXRX(string &s, size_t &i, size_t endbracket)
 }
 
 
-static void pVER(string &s, size_t &i, size_t endbracket)
+static void pVER(std::string &s, size_t &i, size_t endbracket)
 {
-	string progname;
+	std::string progname;
 	progname = "Fldigi ";
 	progname.append(PACKAGE_VERSION);
 	s.replace( i, 5, progname );
 }
 
-static void pCNTR(string &s, size_t &i, size_t endbracket)
+static void pCNTR(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -761,12 +762,12 @@ static void pCNTR(string &s, size_t &i, size_t endbracket)
 	if (contestval) {
 		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
 		snprintf(contest_count.szCount, sizeof(contest_count.szCount), contest_count.fmt.c_str(), contestval);
-		s.replace (i, 6, cutstring(contest_count.szCount));
+		s.replace (i, 6, cut_string(contest_count.szCount));
 	} else
 		s.replace (i, 6, "");
 }
 
-static void pDECR(string &s, size_t &i, size_t endbracket)
+static void pDECR(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -780,7 +781,7 @@ static void pDECR(string &s, size_t &i, size_t endbracket)
 	updateOutSerNo();
 }
 
-static void pINCR(string &s, size_t &i, size_t endbracket)
+static void pINCR(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -793,17 +794,17 @@ static void pINCR(string &s, size_t &i, size_t endbracket)
 	updateOutSerNo();
 }
 
-static void pXIN(string &s, size_t &i, size_t endbracket)
+static void pXIN(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, inpXchgIn->value() );
 }
 
-static void pXOUT(string &s, size_t &i, size_t endbracket)
+static void pXOUT(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 6, cutstring(progdefaults.myXchg.c_str()));
+	s.replace( i, 6, cut_string(progdefaults.myXchg.c_str()));
 }
 
-static void pXBEG(string &s, size_t &i, size_t endbracket)
+static void pXBEG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -813,7 +814,7 @@ static void pXBEG(string &s, size_t &i, size_t endbracket)
 	xbeg = i;
 }
 
-static void pXEND(string &s, size_t &i, size_t endbracket)
+static void pXEND(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -823,7 +824,7 @@ static void pXEND(string &s, size_t &i, size_t endbracket)
 	xend = i;
 }
 
-static void pSAVEXCHG(string &s, size_t &i, size_t endbracket)
+static void pSAVEXCHG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -833,7 +834,7 @@ static void pSAVEXCHG(string &s, size_t &i, size_t endbracket)
 	s.replace( i, 10, "");
 }
 
-static void pLOG(string &s, size_t &i, size_t endbracket)
+static void pLOG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -843,7 +844,7 @@ static void pLOG(string &s, size_t &i, size_t endbracket)
 	s.replace(i, 5, "");
 }
 
-static void pLNW(string &s, size_t &i, size_t endbracket)
+static void pLNW(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -852,7 +853,7 @@ static void pLNW(string &s, size_t &i, size_t endbracket)
 	s.replace(i, 5, "^L");
 }
 
-static void pCLRLOG(string &s, size_t &i, size_t endbracket)
+static void pCLRLOG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -861,7 +862,7 @@ static void pCLRLOG(string &s, size_t &i, size_t endbracket)
 	s.replace(i, 10, "^C");
 }
 
-static void pMODEM_compSKED(string &s, size_t &i, size_t endbracket)
+static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -869,9 +870,9 @@ static void pMODEM_compSKED(string &s, size_t &i, size_t endbracket)
 	}
 	size_t	j, k,
 			len = s.length();
-	string name;
+	std::string name;
 
-	if ((j = s.find('>', i)) == string::npos)
+	if ((j = s.find('>', i)) == std::string::npos)
 		return;
 	while (++j < len)
 	    if (!isspace(s[j])) break;
@@ -892,10 +893,10 @@ static void pMODEM_compSKED(string &s, size_t &i, size_t endbracket)
 #include <float.h>
 #include "re.h"
 
-static void doMODEM(string s)
+static void doMODEM(std::string s)
 {
 	static fre_t re("<!MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
-	string tomatch = s;
+	std::string tomatch = s;
 
 	if (!re.match(tomatch.c_str())) {
 		que_ok = true;
@@ -903,7 +904,7 @@ static void doMODEM(string s)
 	}
 
 	const std::vector<regmatch_t>& o = re.suboff();
-	string name = tomatch.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	std::string name = tomatch.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
 	trx_mode m;
 	for (m = 0; m < NUM_MODES; m++)
 		if (name == mode_info[m].sname)
@@ -963,7 +964,7 @@ static void doMODEM(string s)
 	que_ok = true;
 }
 
-static void pQueMODEM(string &s, size_t &i, size_t endbracket)
+static void pQueMODEM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -974,7 +975,7 @@ static void pQueMODEM(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static void pMODEM(string &s, size_t &i, size_t endbracket)
+static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -984,13 +985,13 @@ static void pMODEM(string &s, size_t &i, size_t endbracket)
 
 	if (!re.match(s.c_str() + i)) {
 		size_t end = s.find('>', i);
-		if (end != string::npos)
+		if (end != std::string::npos)
 			s.erase(i, end - i);
 		return;
 	}
 
 	const std::vector<regmatch_t>& o = re.suboff();
-	string name = s.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	std::string name = s.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
 	trx_mode m;
 	for (m = 0; m < NUM_MODES; m++)
 		if (name == mode_info[m].sname)
@@ -1054,18 +1055,18 @@ static void pMODEM(string &s, size_t &i, size_t endbracket)
 			MilliSleep(10);
 	}
 
-	s.erase(i, o[0].rm_eo - i);
+	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pAFC(string &s, size_t &i, size_t endbracket)
+static void pAFC(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  string sVal = s.substr(i+5, endbracket - i - 5);
+  std::string sVal = s.substr(i+5, endbracket - i - 5);
   if (sVal.length() > 0) {
-    // sVal = on|off|t   [ON, OFF or Toggle]
+// sVal = on|off|t   [ON, OFF or Toggle]
     if (sVal.compare(0,2,"on") == 0)
       btnAFC->value(1);
     else if (sVal.compare(0,3,"off") == 0)
@@ -1075,20 +1076,18 @@ static void pAFC(string &s, size_t &i, size_t endbracket)
 
     btnAFC->do_callback();
   }
-//pushcmd(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
-static void pLOCK(string &s, size_t &i, size_t endbracket)
+static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  string sVal = s.substr(i+6, endbracket - i - 6);
+  std::string sVal = s.substr(i+6, endbracket - i - 6);
   if (sVal.length() > 0) {
-    // sVal = on|off|t   [ON, OFF or Toggle]
+// sVal = on|off|t   [ON, OFF or Toggle]
     if (sVal.compare(0,2,"on") == 0)
       wf->xmtlock->value(1);
     else if (sVal.compare(0,3,"off") == 0)
@@ -1099,18 +1098,16 @@ static void pLOCK(string &s, size_t &i, size_t endbracket)
     wf->xmtlock->damage();
     wf->xmtlock->do_callback();
   }
-//pushcmd(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
-static void pTX_RSID(string &s, size_t &i, size_t endbracket)
+static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  string sVal = s.substr(i+8, endbracket - i - 8);
+  std::string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
     if (sVal.compare(0,2,"on") == 0)
@@ -1122,18 +1119,16 @@ static void pTX_RSID(string &s, size_t &i, size_t endbracket)
 
     btnTxRSID->do_callback();
   }
-//pushcmd(s.substr(i, endbracket - i + 1));
-//s.replace(i, endbracket - i + 1, "^!");
   s.replace(i, endbracket - i + 1, "");
 }
 
-static void pRX_RSID(string &s, size_t &i, size_t endbracket)
+static void pRX_RSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  string sVal = s.substr(i+8, endbracket - i - 8);
+  std::string sVal = s.substr(i+8, endbracket - i - 8);
   if (sVal.length() > 0) {
     // sVal = on|off|t   [ON, OFF or Toggle]
     if (sVal.compare(0,2,"on") == 0)
@@ -1149,13 +1144,13 @@ static void pRX_RSID(string &s, size_t &i, size_t endbracket)
 }
 
 #ifdef __WIN32__
-static void pTALK(string &s, size_t &i, size_t endbracket)
+static void pTALK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  string sVal = s.substr(i+6, endbracket - i - 6);
+  std::string sVal = s.substr(i+6, endbracket - i - 6);
   if (sVal.length() > 0) {
     // sVal = on|off   [ON, OFF]
     if (sVal.compare(0,2,"on") == 0)
@@ -1169,7 +1164,7 @@ static void pTALK(string &s, size_t &i, size_t endbracket)
 }
 #endif
 
-static void pSRCHUP(string &s, size_t &i, size_t endbracket)
+static void pSRCHUP(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1181,7 +1176,7 @@ static void pSRCHUP(string &s, size_t &i, size_t endbracket)
 	        wf->insert_text(true);
 }
 
-static void pSRCHDN(string &s, size_t &i, size_t endbracket)
+static void pSRCHDN(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1193,7 +1188,7 @@ static void pSRCHDN(string &s, size_t &i, size_t endbracket)
 	         wf->insert_text(true);
 }
 
-static void pGOHOME(string &s, size_t &i, size_t endbracket)
+static void pGOHOME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1208,7 +1203,7 @@ static void pGOHOME(string &s, size_t &i, size_t endbracket)
 		active_modem->set_freq(progdefaults.PSKsweetspot);
 }
 
-static void doGOHOME(string s)
+static void doGOHOME(std::string s)
 {
 	if (active_modem == cw_modem)
 		active_modem->set_freq(progdefaults.CWsweetspot);
@@ -1219,7 +1214,7 @@ static void doGOHOME(string s)
 	que_ok = true;
 }
 
-static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
+static void pQueGOHOME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1230,14 +1225,14 @@ static void pQueGOHOME(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static void pGOFREQ(string &s, size_t &i, size_t endbracket)
+static void pGOFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	int number;
-	string sGoFreq = s.substr(i+8, endbracket - i - 8);
+	std::string sGoFreq = s.substr(i+8, endbracket - i - 8);
 	if (sGoFreq.length() > 0) {
 		sscanf(sGoFreq.c_str(), "%d", &number);
 		if (number < progdefaults.LowFreqCutoff)
@@ -1249,10 +1244,10 @@ static void pGOFREQ(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void doGOFREQ(string s)
+static void doGOFREQ(std::string s)
 {
 	int number;
-	string sGoFreq = s.substr(9, s.length() - 10);
+	std::string sGoFreq = s.substr(9, s.length() - 10);
 	if (sGoFreq.length() > 0) {
 		sscanf(sGoFreq.c_str(), "%d", &number);
 		if (number < progdefaults.LowFreqCutoff)
@@ -1264,7 +1259,7 @@ static void doGOFREQ(string s)
 	que_ok = true;
 }
 
-static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
+static void pQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1275,7 +1270,7 @@ static void pQueGOFREQ(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static void pQSYTO(string &s, size_t &i, size_t endbracket)
+static void pQSYTO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1285,7 +1280,7 @@ static void pQSYTO(string &s, size_t &i, size_t endbracket)
 	do_qsy(true);
 }
 
-static void pQSYFM(string &s, size_t &i, size_t endbracket)
+static void pQSYFM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1295,7 +1290,7 @@ static void pQSYFM(string &s, size_t &i, size_t endbracket)
 	do_qsy(false);
 }
 
-static void pQSY(string &s, size_t &i, size_t endbracket)
+static void pQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1304,7 +1299,7 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 	int rf = 0;
 	int audio = 0;
 	float rfd = 0;
-	string sGoFreq = s.substr(i+5, endbracket - i - 5);
+	std::string sGoFreq = s.substr(i+5, endbracket - i - 5);
 	// no frequency(s) specified
 	if (sGoFreq.length() == 0) {
 		s.replace(i, endbracket-i+1, "");
@@ -1315,7 +1310,7 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 	if (rfd > 0)
 		rf = (int)(1000*rfd);
 	size_t pos;
-	if ((pos = sGoFreq.find(":")) != string::npos) {
+	if ((pos = sGoFreq.find(":")) != std::string::npos) {
 		// af second value
 		sGoFreq.erase(0, pos+1);
 		if (sGoFreq.length())
@@ -1334,12 +1329,12 @@ static void pQSY(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void doQSY(string s)
+static void doQSY(std::string s)
 {
 	int rf = 0;
 	int audio = 0;
 	float rfd = 0;
-	string sGoFreq;
+	std::string sGoFreq;
 	sGoFreq = s.substr(6, s.length() - 7);
 	// no frequency(s) specified
 	if (sGoFreq.length() == 0) {
@@ -1351,7 +1346,7 @@ static void doQSY(string s)
 	if (rfd > 0)
 		rf = (int)(1000*rfd);
 	size_t pos;
-	if ((pos = sGoFreq.find(":")) != string::npos) {
+	if ((pos = sGoFreq.find(":")) != std::string::npos) {
 		// af second value
 		sGoFreq.erase(0, pos+1);
 		if (sGoFreq.length())
@@ -1369,7 +1364,7 @@ static void doQSY(string s)
 	que_ok = true;
 }
 
-static void pQueQSY(string &s, size_t &i, size_t endbracket)
+static void pQueQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1380,25 +1375,25 @@ static void pQueQSY(string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static void pRIGMODE(string& s, size_t& i, size_t endbracket)
+static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	string sMode = s.substr(i+9, endbracket - i - 9);
+	std::string sMode = s.substr(i+9, endbracket - i - 9);
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pFILWID(string& s, size_t& i, size_t endbracket)
+static void pFILWID(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	string sWidth = s.substr(i+8, endbracket - i - 8);
+	std::string sWidth = s.substr(i+8, endbracket - i - 8);
 	qso_opBW->value(sWidth.c_str());
 	cb_qso_opBW();
 	s.replace(i, endbracket - i + 1, "");
@@ -1469,7 +1464,7 @@ void set_macro_env(void)
 
 #ifndef __WOE32__
 	// pSKEDH
-	static string pSKEDh = ScriptsDir;
+	static std::string pSKEDh = ScriptsDir;
 	pSKEDh.erase(pSKEDh.length()-1,1);
 	const char* p;
 	if ((p = getenv("pSKEDH")))
@@ -1517,14 +1512,14 @@ void set_macro_env(void)
 // as in
 // <EXEC> ... <EXEC> ... </EXEC></EXEC>
 // which is not permitted
-static void pEND_EXEC(string &s, size_t &i, size_t endbracket)
+static void pEND_EXEC(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace(i, endbracket - i + 1, "");
 	return;
 }
 
 #ifndef __MINGW32__
-static void pEXEC(string &s, size_t &i, size_t endbracket)
+static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1532,15 +1527,15 @@ static void pEXEC(string &s, size_t &i, size_t endbracket)
 	}
 
 	size_t start, end;
-	if ((start = s.find('>', i)) == string::npos ||
-		(end = s.rfind("</EXEC>")) == string::npos) {
+	if ((start = s.find('>', i)) == std::string::npos ||
+		(end = s.rfind("</EXEC>")) == std::string::npos) {
 		i++;
 		return;
 	}
 	start++;
 	i++;
 
-	string execstr = s.substr(start, end-start);
+	std::string execstr = s.substr(start, end-start);
 	within_exec = true;
 	MACROTEXT m;
 	execstr = m.expandMacro(execstr);
@@ -1600,21 +1595,21 @@ static void pEXEC(string &s, size_t &i, size_t endbracket)
 }
 #else // !__MINGW32__
 
-static void pEXEC(string& s, size_t& i, size_t endbracket)
+static void pEXEC(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	size_t start, end;
-	if ((start = s.find('>', i)) == string::npos ||
-		(end = s.rfind("</EXEC>")) == string::npos) {
+	if ((start = s.find('>', i)) == std::string::npos ||
+		(end = s.rfind("</EXEC>")) == std::string::npos) {
 		i++;
 		return;
 	}
 	start++;
 
-	string execstr = s.substr(start, end-start);
+	std::string execstr = s.substr(start, end-start);
 	within_exec = true;
 	MACROTEXT m;
 	execstr = m.expandMacro(execstr);
@@ -1640,13 +1635,11 @@ static void pEXEC(string& s, size_t& i, size_t endbracket)
 static void MAPIT(int how)
 {
 	float lat = 0, lon = 0;
-	string sCALL = inpCall->value();
-	string sLOC = inpLoc->value();
+	std::string sCALL = inpCall->value();
+	std::string sLOC = inpLoc->value();
 
-	string url = "http://maps.google.com/maps?q=";
+	std::string url = "http://maps.google.com/maps?q=";
 
-//	if (lookup_addr1.empty() && lookup_addr2.empty() &&
-//		lookup_state.empty() && lookup_country.empty()) {
 	if (how > 1 && !lookup_country.empty()) {
 		url.append(lookup_addr1).append(",").append(lookup_addr2).append(",");
 		url.append(lookup_state).append(",").append(lookup_country);
@@ -1683,13 +1676,13 @@ static void MAPIT(int how)
 	cb_mnuVisitURL(NULL, (void*)url.c_str());
 }
 
-static void pMAPIT(string &s, size_t &i, size_t endbracket)
+static void pMAPIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	string sVal = s.substr(i + 7, endbracket - i - 7);
+	std::string sVal = s.substr(i + 7, endbracket - i - 7);
 	if (sVal.length() > 0) {
 		if (sVal.compare(0,3,"adr") == 0)
 			REQ(MAPIT,2);
@@ -1705,7 +1698,7 @@ static void pMAPIT(string &s, size_t &i, size_t endbracket)
 	expand = false;
 }
 
-static void pSTOP(string &s, size_t &i, size_t endbracket)
+static void pSTOP(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1715,7 +1708,7 @@ static void pSTOP(string &s, size_t &i, size_t endbracket)
 	expand = false;
 }
 
-static void pCONT(string &s, size_t &i, size_t endbracket)
+static void pCONT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1725,13 +1718,13 @@ static void pCONT(string &s, size_t &i, size_t endbracket)
 	expand = true;
 }
 
-static void pSKED(string &s, size_t &i, size_t endbracket)
+static void pSKED(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	string data = s.substr(i+6, endbracket - i - 6);
+	std::string data = s.substr(i+6, endbracket - i - 6);
 	size_t p = data.find(":");
 	if (p == std::string::npos) {
 		exec_date = zdate();
@@ -1759,7 +1752,7 @@ void queue_reset()
 	que_ok = true;
 }
 
-void postQueue(string s)
+static void postQueue(std::string s)
 {
 	ReceiveText->add(s.c_str(), FTextBase::CTRL);
 }
@@ -1782,15 +1775,15 @@ void queue_execute()
 
 bool queue_must_rx()
 {
-static string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
+static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
 	if (cmds.empty()) return false;
 	CMDS cmd = cmds.front();
-	return (rxcmds.find(cmd.cmd.substr(0,5)) != string::npos);
+	return (rxcmds.find(cmd.cmd.substr(0,5)) != std::string::npos);
 }
 
-struct MTAGS { const char *mTAG; void (*fp)(string &, size_t&, size_t );};
+struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
 
-MTAGS mtags[] = {
+static const MTAGS mtags[] = {
 {"<CALL>",		pCALL},
 {"<FREQ>",		pFREQ},
 {"<LOC>",		pLOC},
@@ -1885,11 +1878,11 @@ MTAGS mtags[] = {
 {0, 0}
 };
 
-int MACROTEXT::loadMacros(const string& filename)
+int MACROTEXT::loadMacros(const std::string& filename)
 {
-	string mLine;
-	string mName;
-	string mDef;
+	std::string mLine;
+	std::string mName;
+	std::string mDef;
 	bool   inMacro = false;
 	int    mNumber = 0;
 	unsigned long int	   crlf; // 64 bit cpu's
@@ -1908,7 +1901,7 @@ int MACROTEXT::loadMacros(const string& filename)
 		mFile.close();
 		return -2;
 	}
-	if (mLine.find("extended") == string::npos) {
+	if (mLine.find("extended") == std::string::npos) {
 		convert = true;
 		changed = true;
 	}
@@ -1932,7 +1925,7 @@ int MACROTEXT::loadMacros(const string& filename)
             name[mNumber] = mLine.substr(idx+1);
 			continue;
 		}
-		while ((crlf = mLine.find("\\n")) != string::npos) {
+		while ((crlf = mLine.find("\\n")) != std::string::npos) {
 			mLine.erase(crlf, 2);
 			mLine.append("\n");
 		}
@@ -1947,7 +1940,7 @@ int MACROTEXT::loadMacros(const string& filename)
 void MACROTEXT::loadDefault()
 {
 	int erc;
-	string Filename = MacrosDir;
+	std::string Filename = MacrosDir;
 	if (progdefaults.UseLastMacro == true)
 		Filename.append(progStatus.LastMacroFile);
 	else {
@@ -1964,7 +1957,7 @@ void MACROTEXT::loadDefault()
 
 void MACROTEXT::openMacroFile()
 {
-	string deffilename = MacrosDir;
+	std::string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
     const char *p = FSEL::select(_("Open macro file"), _("Fldigi macro definition file\t*.mdf"), deffilename.c_str());
     if (p) {
@@ -1976,7 +1969,7 @@ void MACROTEXT::openMacroFile()
 
 void MACROTEXT::saveMacroFile()
 {
-	string deffilename = MacrosDir;
+	std::string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
     const char *p = FSEL::saveas(_("Save macro file"), _("Fldigi macro definition file\t*.mdf"), deffilename.c_str());
     if (p) {
@@ -1985,9 +1978,9 @@ void MACROTEXT::saveMacroFile()
 	}
 }
 
-void MACROTEXT::loadnewMACROS(string &s, size_t &i, size_t endbracket)
+void MACROTEXT::loadnewMACROS(std::string &s, size_t &i, size_t endbracket)
 {
-	string fname = s.substr(i+8, endbracket - i - 8);
+	std::string fname = s.substr(i+8, endbracket - i - 8);
 	if (fname.length() > 0) {
 		loadMacros(fname);
 		progStatus.LastMacroFile = fl_filename_name(fname.c_str());
@@ -1996,7 +1989,7 @@ void MACROTEXT::loadnewMACROS(string &s, size_t &i, size_t endbracket)
 	showMacroSet();
 }
 
-string MACROTEXT::expandMacro(std::string &s)
+std::string MACROTEXT::expandMacro(std::string &s)
 {
 	size_t idx = 0;
 	expand = true;
@@ -2004,7 +1997,7 @@ string MACROTEXT::expandMacro(std::string &s)
 	ToggleTXRX = false;
 //	mNbr = n;
 	expanded = s;//text[n];
-	MTAGS *pMtags;
+	const MTAGS *pMtags;
 
 	xbeg = xend = -1;
 	save_xchg = false;
@@ -2014,7 +2007,7 @@ string MACROTEXT::expandMacro(std::string &s)
 	waitTime = 0;
 	tuneTime = 0;
 
-	while ((idx = expanded.find('<', idx)) != string::npos) {
+	while ((idx = expanded.find('<', idx)) != std::string::npos) {
 		size_t endbracket = expanded.find('>',idx);
  		if (expanded.find("<MACROS:",idx) == idx) {
 			loadnewMACROS(expanded, idx, endbracket);
@@ -2044,15 +2037,15 @@ string MACROTEXT::expandMacro(std::string &s)
 		size_t pos1 = expanded.find("$NAME");
 		size_t pos2 = expanded.find("$QTH");
 		size_t pos3 = expanded.find("$LOC");
-		if (pos1 != string::npos && pos2 != string::npos) {
+		if (pos1 != std::string::npos && pos2 != std::string::npos) {
 			pos1 += 5;
 			inpName->value(expanded.substr(pos1, pos2 - pos1).c_str());
 		}
-		if (pos2 != string::npos) {
+		if (pos2 != std::string::npos) {
 			pos2 += 4;
 			inpQth->value(expanded.substr(pos2, pos3 - pos2).c_str());
 		}
-		if (pos3 != string::npos) {
+		if (pos3 != std::string::npos) {
 			pos3 += 4;
 			inpLoc->value(expanded.substr(pos3).c_str());
 		}
@@ -2060,15 +2053,15 @@ string MACROTEXT::expandMacro(std::string &s)
 		return "";
 	}
 
-	if (xbeg != string::npos && xend != string::npos && xend > xbeg) {
+	if (xbeg != std::string::npos && xend != std::string::npos && xend > xbeg) {
 		qso_exchange = expanded.substr(xbeg, xend - xbeg);
 	} else if (save_xchg) {
 		qso_exchange = expanded;
 		save_xchg = false;
 	}
 
-// force "^r" to be last tag in the expanded string
-	if ((idx = expanded.find("^r")) != string::npos) {
+// force "^r" to be last tag in the expanded std::string
+	if ((idx = expanded.find("^r")) != std::string::npos) {
 		expanded.erase(idx, 2);
 		expanded.append("^r");
 	}
@@ -2081,7 +2074,7 @@ void idleTimer(void *)
 	macro_idle_on = false;
 }
 
-void continueMacro(void *)
+static void continueMacro(void *)
 {
 	if ( TransmitON ) {
 		active_modem->set_stopflag(false);
@@ -2093,14 +2086,14 @@ void continueMacro(void *)
 	text2send.clear();
 }
 
-void finishTune(void *)
+static void finishTune(void *)
 {
 	trx_receive();
 // delay to allow tx/rx loop to change state
 	Fl::add_timeout(0.5, continueMacro);
 }
 
-void finishWait(void *)
+static void finishWait(void *)
 {
 	if (useTune && tuneTime > 0) {
 		trx_tune();
@@ -2137,7 +2130,6 @@ void MACROTEXT::timed_execute()
 void MACROTEXT::execute(int n)
 {
 	mNbr = n;
-//	text2save = 
 	text2send = expandMacro(text[n]);
 
 	if (timed_exec) {
@@ -2151,11 +2143,11 @@ void MACROTEXT::execute(int n)
 	if (progStatus.repeatMacro == -1)
 		TransmitText->add( text2send.c_str() );
 	else {
-		size_t p = string::npos;
+		size_t p = std::string::npos;
 		text2send = text[n];
-		while ((p = text2send.find('<')) != string::npos)
+		while ((p = text2send.find('<')) != std::string::npos)
 			text2send[p] = '[';
-		while ((p = text2send.find('>')) != string::npos)
+		while ((p = text2send.find('>')) != std::string::npos)
 			text2send[p] = ']';
 		TransmitText->add( text2send.c_str() );
 	}
@@ -2212,7 +2204,7 @@ MACROTEXT::MACROTEXT()
 }
 
 
-static string mtext =
+static std::string mtext =
 "//fldigi macro definition file extended\n\
 // This file defines the macro structure(s) for the digital modem program, fldigi\n\
 // It also serves as a basis for any macros that are written by the user\n\
@@ -2222,8 +2214,8 @@ static string mtext =
 //\n\
 ";
 
-void MACROTEXT::saveMacros(const string& fname) {
-	string work;
+void MACROTEXT::saveMacros(const std::string& fname) {
+	std::string work;
 	ofstream mfile(fname.c_str());
 	mfile << mtext;
 	for (int i = 0; i < MAXMACROS; i++) {
@@ -2232,7 +2224,7 @@ void MACROTEXT::saveMacros(const string& fname) {
 		work = macros.text[i];
 		size_t pos;
 		pos = work.find('\n');
-		while (pos != string::npos) {
+		while (pos != std::string::npos) {
 			work.insert(pos, "\\n");
 			pos = work.find('\n', pos + 3);
 		}
