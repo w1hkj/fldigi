@@ -5694,10 +5694,6 @@ void put_rx_data(int *data, int len)
  	FHdisp->data(data, len);
 }
 
-extern bool macro_idle_on;
-extern string text2repeat;
-extern size_t repeatchar;
-
 bool idling = false;
 
 void get_tx_char_idle(void *)

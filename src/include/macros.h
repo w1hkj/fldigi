@@ -53,10 +53,14 @@ extern std::string info1msg;
 extern std::string info2msg;
 extern std::string qso_time;
 extern std::string qso_exchange;
-
 extern std::string exec_date;
 extern std::string exec_time;
 extern std::string exec_string;
+extern std::string text2repeat;
+
+extern bool macro_idle_on;
+extern size_t repeatchar;
+
 
 void set_macro_env(void);
 
