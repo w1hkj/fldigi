@@ -517,7 +517,7 @@ void mfsk::softdecode(complex *bins)
 // shift to range 0...255
 	for (i = 0; i < symbits; i++)
 		if (staticburst)
-			symbols[i] = 0;  // puncturing
+			symbols[i] = 128;  // puncturing 128 is neither 0 nor a 1
 		else
 			symbols[i] = (unsigned char)clamp(128.0 + (b[i] / sum * 128.0), 0, 255);
 
