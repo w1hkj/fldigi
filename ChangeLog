@@ -1,8 +1,11 @@
+2011-10-10  David Freese  <w1hkj@w1hkj.com>
+
+	4ac5f6b: MFSK soft decode
+	07baee2: MACRO code cleanup
+	4d13cb4: <EXEC>...</EXEC>
 
 
 =Version 3.21.16=
-
-2011-10-04  David Freese  <w1hkj@w1hkj.com>
 
 	3e554f8: !Queue reset
 	8ac0558: Timer delay
