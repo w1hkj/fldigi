@@ -300,6 +300,7 @@ void set_contestia_tones(int tones);
 void set_rtty_shift(int shift);
 void set_rtty_baud(float baud);
 void set_rtty_bits(int bits);
+void set_rtty_bw(float bw);
 
 void sync_cw_parameters();
 

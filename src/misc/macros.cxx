@@ -940,6 +940,8 @@ static void doMODEM(std::string s)
 				set_rtty_baud((float)args[1]);
 			if (args.at(2) != DBL_MIN)
 				set_rtty_bits((int)args[2]);
+			if (args.at(3) != DBL_MIN)
+				set_rtty_bw((float)args[3]);
 			break;
 		case MODE_CONTESTIA: // bandwidth, tones
 			if (args.at(0) != DBL_MIN)
@@ -1029,6 +1031,8 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 				set_rtty_baud((float)args[1]);
 			if (args.at(2) != DBL_MIN)
 				set_rtty_bits((int)args[2]);
+			if (args.at(3) != DBL_MIN)
+				set_rtty_bw((float)args[3]);
 			break;
 		case MODE_CONTESTIA: // bandwidth, tones
 			if (args.at(0) != DBL_MIN)

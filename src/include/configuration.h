@@ -239,9 +239,12 @@
         ELEM_(int, rtty_custom_shift, "RTTYCUSTOMSHIFT",                                \
               "Custom shift (Hz)",                                                      \
               450)                                                                      \
+        ELEM_(double, RTTY_BW, "RTTYBW",                                                \
+              "Receive filter bandwidth (Hz)",                                          \
+              68.0)                                                                     \
         ELEM_(int, rtty_baud, "RTTYBAUD",                                               \
               "Carrier baud rate. Values are as follows:\n"                             \
-              "  0: 45; 1: 45.45; 2: 50; 3: 56; 4: 75; 5: 100; 6: 110; 7: 150; \n"      \
+              "  1: 45; 1: 45.45; 2: 50; 3: 56; 4: 75; 5: 100; 6: 110; 7: 150; \n"      \
               "  8: 200; 9: 300",                                                       \
               0)   /* 45 */                                                             \
         ELEM_(int, rtty_bits, "RTTYBITS",                                               \
@@ -293,13 +296,10 @@
               true)                                                                     \
         ELEM_(bool, useMARKfreq, "USEMARKFREQ",                                         \
               "Use MARK frequency for logging",                                         \
-              true)                                                                    \
+              true)                                                                     \
         ELEM_(bool, Xagc, "XAGC",                                                       \
               "This setting is currently unused",                                       \
               false)                                                                    \
-        ELEM_(double, RTTY_BW, "RTTYBW",                                                \
-              "Receive filter bandwidth (Hz)",                                          \
-              400.0)                                                                    \
         /* CW */                                                                        \
         ELEM_(bool, useCWkeylineRTS, "", "",  false)                                    \
         ELEM_(bool, useCWkeylineDTR, "", "",  false)                                    \
