@@ -1083,6 +1083,27 @@ static void pAFC(std::string &s, size_t &i, size_t endbracket)
   s.replace(i, endbracket - i + 1, "");
 }
 
+static void pREV(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+  std::string sVal = s.substr(i+5, endbracket - i - 5);
+  if (sVal.length() > 0) {
+// sVal = on|off|t   [ON, OFF or Toggle]
+    if (sVal.compare(0,2,"on") == 0)
+      wf->btnRev->value(1);
+    else if (sVal.compare(0,3,"off") == 0)
+      wf->btnRev->value(0);
+    else if (sVal.compare(0,1,"t") == 0)
+      wf->btnRev->value(!wf->btnRev->value());
+
+    wf->btnRev->do_callback();
+  }
+  s.replace(i, endbracket - i + 1, "");
+}
+
 static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -1850,6 +1871,7 @@ static const MTAGS mtags[] = {
 {"<POST:",		pPOST},
 {"<AFC:",		pAFC},
 {"<LOCK:",		pLOCK},
+{"<REV:",		pREV},
 {"<RXRSID:",	pRX_RSID},
 {"<TXRSID:",	pTX_RSID},
 {"<DTMF:",		pDTMF},

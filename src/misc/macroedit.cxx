@@ -168,6 +168,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
 	w->add(_("<LOCK:on|off|t>\tLOCK on,off,toggle"));
+	w->add(_("<REV:on|off|t>\tRev on,off,toggle"));
 
 	w->add(LINE_SEP);
 	w->add(_("<MACROS:>\tchange macro defs file"));
