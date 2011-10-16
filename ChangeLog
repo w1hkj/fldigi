@@ -1,4 +1,9 @@
-2011-10-10  David Freese  <w1hkj@w1hkj.com>
+2011-10-16  David Freese  <w1hkj@w1hkj.com>
+
+	9c13f6f: RTTY bandwidth
+
+
+=Version 3.21.17=
 
 	4ac5f6b: MFSK soft decode
 	07baee2: MACRO code cleanup
