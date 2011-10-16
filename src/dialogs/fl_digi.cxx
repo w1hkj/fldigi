@@ -6283,4 +6283,10 @@ void set_rtty_bits(int bits)
 	}
 }
 
+void set_rtty_bw(float bw)
+{
+	sldrRTTYbandwidth->value(bw);
+	sldrRTTYbandwidth->do_callback();
+}
+
 
