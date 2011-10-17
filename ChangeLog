@@ -1,6 +1,19 @@
-2011-10-05  David Freese  <w1hkj@w1hkj.com>
+2011-10-19  David Freese  <w1hkj@w1hkj.com>
 
-	f09928f: <EXEC>...</EXEC>
+	f96fb25: Packet debug
+	cf3bed3: REV macro tag
+	39ebd8b: RTTY bandwidth
+	5c0da52: MFSK soft decode
+
+2011-10-06  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	7542ae9: Multi-QSY
+
+2011-10-06  David Freese  <w1hkj@w1hkj.com>
+
+	ee1747d: MACRO code cleanup
+	153e1e8: </EXEC>
+	ddab268: <EXEC>...</EXEC>
 	0388d6a: !Queue reset
 	fdf5fe0: Timer delay
 	3df6c3a: Olivia tone/bw choices
