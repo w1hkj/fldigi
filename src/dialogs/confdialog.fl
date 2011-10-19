@@ -77,7 +77,7 @@ Function {set_qrz_buttons(Fl_Button* b)} {return_type void
 } {
   code {Fl_Button* qrzb[] = { btnQRZnotavailable, btnQRZcdrom, btnQRZonline,
                               btnQRZsub, btnHamcall, btnHAMCALLonline,
-                              btnCALLOOK};
+                              btnCALLOOK, btnHamQTH};
 
 for (size_t i = 0; i < sizeof(qrzb)/sizeof(*qrzb); i++)
 	qrzb[i]->value(b == qrzb[i]);} {}
@@ -3446,7 +3446,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -3785,19 +3785,19 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label {Callsign DB}
+        label {Callsign DB} open
         tooltip {Callsign database} xywh {0 25 500 345} hide
       } {
         Fl_Group {} {
           label CDROM open
-          xywh {5 180 490 75} box ENGRAVED_FRAME align 21
+          xywh {5 176 490 55} box ENGRAVED_FRAME align 21
         } {
           Fl_Round_Button btnQRZcdrom {
             label QRZ
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = QRZCD;
 progdefaults.changed = true;}
-            tooltip {Use CD or hard drive CD image} xywh {25 215 70 20} down_box DOWN_BOX
+            tooltip {Use CD or hard drive CD image} xywh {25 196 70 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == QRZCD);}
           }
           Fl_Input txtQRZpathname {
@@ -3806,15 +3806,15 @@ progdefaults.changed = true;}
 progdefaults.QRZchanged = true;
 progdefaults.changed = true;}
             tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/
-Leave blank to search for database} xywh {104 215 300 20}
+Leave blank to search for database} xywh {104 196 300 20}
             code0 {o->value(progdefaults.QRZpathname.c_str());}
             code1 {txtQRZpathname->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
         }
         Fl_Group {} {
-          label {Paid online subscription} open
-          xywh {5 260 490 95} box ENGRAVED_FRAME align 21
+          label {Subscriber data} open
+          xywh {5 232 490 134} box ENGRAVED_FRAME align 21
         } {
           Fl_Round_Button btnQRZsub {
             label {QRZ.com}
@@ -3822,7 +3822,7 @@ Leave blank to search for database} xywh {104 215 300 20}
 progdefaults.QRZ = QRZNET;
 progdefaults.changed = true;}
             tooltip {You need a paid QRZ online
-subscription to access} xywh {25 291 90 20} down_box DOWN_BOX
+subscription to access} xywh {25 263 90 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == QRZNET);}
           }
           Fl_Round_Button btnHamcall {
@@ -3831,14 +3831,14 @@ subscription to access} xywh {25 291 90 20} down_box DOWN_BOX
 progdefaults.QRZ = HAMCALLNET;
 progdefaults.changed = true;}
             tooltip {You need a paid Hamcall online
-subscription to access} xywh {25 321 105 20} down_box DOWN_BOX
+subscription to access} xywh {25 297 105 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == HAMCALLNET);}
           }
           Fl_Input inpQRZusername {
             label {User name}
             callback {progdefaults.QRZusername = o->value();
 progdefaults.changed = true;}
-            tooltip {Your login name} xywh {235 291 90 20}
+            tooltip {Your login name} xywh {235 263 150 20}
             code0 {o->value(progdefaults.QRZusername.c_str());}
             code1 {inpQRZusername->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
@@ -3847,7 +3847,7 @@ progdefaults.changed = true;}
             label Password
             callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
-            tooltip {Your login password} xywh {236 321 90 20}
+            tooltip {Your login password} xywh {235 297 150 20}
             code0 {o->value(progdefaults.QRZuserpassword.c_str());}
             code1 {o->type(FL_SECRET_INPUT);}
             code2 {inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);}
@@ -3858,7 +3858,16 @@ progdefaults.changed = true;}
             callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-            tooltip {Show password in plain text} xywh {336 321 70 20}
+            tooltip {Show password in plain text} xywh {395 297 70 20}
+          }
+          Fl_Round_Button btnHamQTH {
+            label {HamQTH.com}
+            callback {set_qrz_buttons(o);
+progdefaults.QRZ = HAMQTH;
+progdefaults.changed = true;}
+            tooltip {You need a paid Hamcall online
+subscription to access} xywh {26 332 121 20} down_box DOWN_BOX
+            code0 {o->value(progdefaults.QRZ == HAMQTH);}
           }
         }
         Fl_Group {} {open
@@ -3877,7 +3886,7 @@ progdefaults.changed = true;}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = QRZHTML;
 progdefaults.changed = true;}
-            tooltip {Visit QRZ web site} xywh {25 75 337 20} down_box DOWN_BOX
+            tooltip {Visit QRZ web site} xywh {25 76 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == QRZHTML);}
           }
           Fl_Round_Button btnHAMCALLonline {
@@ -3885,7 +3894,7 @@ progdefaults.changed = true;}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = HAMCALLHTML;
 progdefaults.changed = true;}
-            tooltip {Vist Hamcall web site} xywh {25 106 337 20} down_box DOWN_BOX
+            tooltip {Visit Hamcall web site} xywh {25 106 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == HAMCALLHTML);}
           }
           Fl_Round_Button btnCALLOOK {
@@ -3893,7 +3902,7 @@ progdefaults.changed = true;}
             callback {set_qrz_buttons(o);
 progdefaults.QRZ = CALLOOK;
 progdefaults.changed = true;}
-            tooltip {Vist Hamcall web site} xywh {25 137 337 20} down_box DOWN_BOX
+            tooltip {Visit Hamcall web site} xywh {25 137 337 20} down_box DOWN_BOX
             code0 {o->value(progdefaults.QRZ == CALLOOK);}
           }
         }

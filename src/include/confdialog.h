@@ -426,6 +426,7 @@ extern Fl_Round_Button *btnHamcall;
 extern Fl_Input2 *inpQRZusername;
 extern Fl_Input2 *inpQRZuserpassword;
 extern Fl_Button *btnQRZpasswordShow;
+extern Fl_Round_Button *btnHamQTH;
 extern Fl_Round_Button *btnQRZnotavailable;
 extern Fl_Round_Button *btnQRZonline;
 extern Fl_Round_Button *btnHAMCALLonline;
