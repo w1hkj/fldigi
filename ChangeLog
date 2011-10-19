@@ -1,5 +1,15 @@
-2011-10-16  David Freese  <w1hkj@w1hkj.com>
 
+
+=Version 3.21.19=
+
+2011-10-19  David Freese  <w1hkj@w1hkj.com>
+
+	7046d49: HamQTH lookup
+
+
+=Version 3.21.18=
+
+	1247488: REV macro tag
 	9c13f6f: RTTY bandwidth
 
 
