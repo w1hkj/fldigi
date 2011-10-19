@@ -150,7 +150,7 @@ bool parseSessionKey(const string& sessionpage)
 		{
 		case EXN_TEXT:
 		case EXN_CDATA:
-			switch (tag) 
+			switch (tag)
 			{
 			default:
 				break;
@@ -188,7 +188,7 @@ bool parseSessionKey(const string& sessionpage)
 	}
 	delete xml;
 	return true;
-} 
+}
 
 
 bool parse_xml(const string& xmlpage)
@@ -196,7 +196,7 @@ bool parse_xml(const string& xmlpage)
 //printf("%s\n", xmlpage.c_str());
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
-// If we got any result back, clear the session key so that it will be 
+// If we got any result back, clear the session key so that it will be
 // refreshed by this response, or if not present, will be removed and we'll
 // know to log in next time.
 	if (xml) {
@@ -207,7 +207,7 @@ bool parse_xml(const string& xmlpage)
 	}
 
 	TAG tag = QRZ_IGNORE;
-	
+
 // parse the file until end reached
 	while(xml && xml->read()) {
 		switch(xml->getNodeType()) {
@@ -269,12 +269,12 @@ bool parse_xml(const string& xmlpage)
 						break;
 				}
 				break;
-				
+
 			case EXN_ELEMENT_END:
 				tag=QRZ_IGNORE;
 				break;
 
-			case EXN_ELEMENT: 
+			case EXN_ELEMENT:
 				{
 				const char *nodeName = xml->getNodeName();
 				if (!strcmp("call", nodeName)) 			tag = QRZ_CALL;
@@ -390,11 +390,11 @@ void QRZ_disp_result()
 	}
 
 	inpQth->value(lookup_qth.c_str());
-	
+
 	inpState->value(lookup_state.c_str());
 
 	inpVEprov->value(lookup_province.c_str());
-		
+
 	inpLoc->value(lookup_grid.c_str());
 
 	if (!lookup_country.empty())
@@ -419,7 +419,7 @@ void QRZ_CD_query()
 
 	char srch[20];
 	size_t snip;
-	
+
 	memset( srch, 0, sizeof(srch) );
 	strncpy( srch, callsign.c_str(), 6 );
 	for (size_t i = 0; i < strlen(srch); i ++ )
@@ -652,36 +652,36 @@ void CALLOOKquery()
 void parse_html(const string& htmlpage)
 {
 	size_t p;
-	
+
 	clear_Lookup();
-	
+
 	if ((p = htmlpage.find(HAMCALL_FIRST)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length() )
 			lookup_fname += htmlpage[p++];
 			camel_case(lookup_fname);
 	}
-	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) { 
+	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_qth += htmlpage[p++];
 	}
-	if ((p = htmlpage.find(HAMCALL_STATE)) != string::npos) { 
+	if ((p = htmlpage.find(HAMCALL_STATE)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_state += htmlpage[p++];
 	}
-	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) { 
+	if ((p = htmlpage.find(HAMCALL_GRID)) != string::npos) {
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_grid += htmlpage[p++];
 	}
-	if ((p = htmlpage.find(HAMCALL_DOB)) != string::npos) { 
+	if ((p = htmlpage.find(HAMCALL_DOB)) != string::npos) {
 		p++;
 		lookup_notes = "DOB: ";
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length())
 			lookup_notes += htmlpage[p++];
-	}	
+	}
 }
 
 bool HAMCALLget(string& htmlpage)
@@ -713,11 +713,156 @@ void HAMCALLquery()
 	REQ(QRZ_disp_result);
 }
 
+// ---------------------------------------------------------------------
+// Hamcall specific functions
+// ---------------------------------------------------------------------
+
+static string HAMQTH_session_id = "";
+static string HAMQTH_reply = "";
+
+bool HAMQTH_get_session_id()
+{
+	string url = "";
+	string retstr = "";
+	size_t p1 = string::npos;
+	size_t p2 = string::npos;
+
+	url.append("http://www.hamqth.com/xml.php?u=").append(progdefaults.QRZusername);
+	url.append("&p=").append(progdefaults.QRZuserpassword);
+
+	HAMQTH_session_id.clear();
+	if (!fetch_http(url, retstr, 5.0)) {
+		return false;
+	}
+	if ((p1 = retstr.find("<error>")) != string::npos) {
+		p2 = retstr.find("</error>");
+		lookup_notes = retstr.substr(p1 + 7, p2 - p1 - 7);
+		return false;
+	}
+	if ((p1 = retstr.find("<session_id>")) == string::npos) {
+		lookup_notes = "HamQTH not available";
+		return false;
+	}
+	p2 = retstr.find("</session_id>");
+	HAMQTH_session_id = retstr.substr(p1 + 12, p2 - p1 - 12);
+//printf("session id = %s\n", HAMQTH_session_id.c_str());
+	return true;
+}
+
+void parse_HAMQTH_html(const string& htmlpage)
+{
+	size_t p = string::npos;
+	size_t p1 = string::npos;
+
+	clear_Lookup();
+
+	if ((p = htmlpage.find("<nick>")) != string::npos) {
+		p += 6;
+		p1 = htmlpage.find("</nick>", p);
+		if (p1 != string::npos) {
+			lookup_fname = htmlpage.substr(p, p1 - p);
+			camel_case(lookup_fname);
+		}
+	}
+	if ((p = htmlpage.find("<adr_city>")) != string::npos) {
+		p += 10;
+		p1 = htmlpage.find("</adr_city>", p);
+		if (p1 != string::npos)
+			lookup_qth = htmlpage.substr(p, p1 - p);
+	}
+	if ((p = htmlpage.find("<us_state>")) != string::npos) {
+		p += 10;
+		p1 = htmlpage.find("</us_state>");
+		if (p1 != string::npos)
+			lookup_state = htmlpage.substr(p, p1 - p);
+	}
+	if ((p = htmlpage.find("<grid>")) != string::npos) {
+		p += 6;
+		p1 = htmlpage.find("</grid>");
+		if (p1 != string::npos)
+			lookup_grid = htmlpage.substr(p, p1 - p);
+	}
+	if ((p = htmlpage.find("<adr_name>")) != string::npos) {
+		p += 10;
+		p1 = htmlpage.find("</adr_name>");
+		if (p1 != string::npos)
+			lookup_notes = htmlpage.substr(p, p1 - p).append("\n");
+	}
+	if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
+		p += 13;
+		p1 = htmlpage.find("</adr_street1>");
+		if (p1 != string::npos)
+			lookup_notes.append(htmlpage.substr(p, p1 - p)).append("\n");
+	}
+	if ((p = htmlpage.find("<adr_city>")) != string::npos) {
+		p += 10;
+		p1 = htmlpage.find("</adr_city>");
+		if (p1 != string::npos)
+			lookup_notes.append(htmlpage.substr(p, p1 - p)).append(", ").append(lookup_state);
+	}
+	if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
+		p += 9;
+		p1 = htmlpage.find("</adr_zip>");
+		if (p1 != string::npos)
+			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
+	}
+	if ((p = htmlpage.find("<adr_country>")) != string::npos) {
+		p += 13;
+		p1 = htmlpage.find("</adr_country>");
+		if (p1 != string::npos)
+			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
+	}
+	if ((p == htmlpage.find("<qsl_via>")) != string::npos) {
+		p += 9;
+		p1 = htmlpage.find("</qsl_via>");
+		if (p1 != string::npos)
+			lookup_notes.append("\nQSL via: ").append(htmlpage.substr(p, p1 - p));
+	}
+}
+
+bool HAMQTHget(string& htmlpage)
+{
+	string url = "";
+	bool ret;
+	if (HAMQTH_session_id.empty()) {
+		if (!HAMQTH_get_session_id()) return false;
+	}
+	url.append("http://www.hamqth.com/xml.php?id=").append(HAMQTH_session_id);
+	url.append("&callsign=").append(callsign);
+	url.append("&prg=fldigi-").append(VERSION);
+
+	ret = fetch_http(url, htmlpage, 5.0);
+//printf("%s\n", htmlpage.c_str());
+	if (htmlpage.find("<error>") != string::npos) {
+		htmlpage.clear();
+		if (!HAMQTH_get_session_id())
+			return false;
+		ret = fetch_http(url, htmlpage, 5.0);
+//printf("%s\n", htmlpage.c_str());
+	}
+	return ret;
+}
+
+void HAMQTHquery()
+{
+	ENSURE_THREAD(QRZ_TID);
+
+	string htmlpage;
+
+	if (!HAMQTHget(htmlpage)) return;
+
+	parse_HAMQTH_html(htmlpage);
+	REQ(QRZ_disp_result);
+
+}
+
+// ----------------------------------------------------------------------------
+
 void QRZ_DETAILS_query()
 {
 	string qrzurl = "http://www.qrz.com/callsign.html?callsign=";
 	qrzurl.append(callsign);
-	
+
 	cb_mnuVisitURL(0, (void*)qrzurl.c_str());
 }
 
@@ -725,7 +870,7 @@ void HAMCALL_DETAILS_query()
 {
 	string hamcallurl = "http://www.hamcall.net/call?callsign=";
 	hamcallurl.append(callsign);
-	
+
 	cb_mnuVisitURL(0, (void*)hamcallurl.c_str());
 }
 
@@ -761,6 +906,9 @@ static void *LOOKUP_loop(void *args)
 			break;
 		case CALLOOK:
 			CALLOOKquery();
+			break;
+		case HAMQTH:
+			HAMQTHquery();
 			break;
 		case QRZ_EXIT:
 			return NULL;
@@ -814,6 +962,9 @@ void CALLSIGNquery()
 		break;
 	case CALLOOK:
 		inpNotes->value("Request sent to\nhttp://callook.info...");
+		break;
+	case HAMQTH:
+		inpNotes->value("Request sent to \nhttp://hamqth.com...");
 		break;
 	default:
 		LOG_ERROR("Bad query type %d", DB_query);

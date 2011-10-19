@@ -21,6 +21,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <stdio.h>
 
 #include <sys/time.h>
 #include <cmath>

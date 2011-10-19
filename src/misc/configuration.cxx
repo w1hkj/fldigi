@@ -654,6 +654,9 @@ int configuration::setDefaults()
 	case CALLOOK:
 		qrzb = btnCALLOOK;
 		break;
+	case HAMQTH:
+		qrzb = btnHamQTH;
+		break;
 	default :
 		break;
 	}
