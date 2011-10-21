@@ -1315,78 +1315,53 @@ static void pQSYFM(std::string &s, size_t &i, size_t endbracket)
 	do_qsy(false);
 }
 
+static void pQSYcommon(std::string &sGoFreq)
+{
+	int rf = 0;
+	int audio = 0;
+	float rfd = 0;
+// no frequency(s) specified
+	if (sGoFreq.empty())
+		return;
+
+	// rf first value
+	sscanf(sGoFreq.c_str(), "%f", &rfd);
+	if (rfd > 0)
+		rf = (int)(1000*rfd);
+	size_t pos;
+	if ((pos = sGoFreq.find(":")) != std::string::npos) {
+		// af second value
+		sGoFreq.erase(0, pos+1);
+		if (sGoFreq.length())
+			sscanf(sGoFreq.c_str(), "%d", &audio);
+		if (audio < 0) audio = 0;
+		if (audio < progdefaults.LowFreqCutoff)
+			audio = progdefaults.LowFreqCutoff;
+		if (audio > progdefaults.HighFreqCutoff)
+			audio = progdefaults.HighFreqCutoff;
+	}
+	if (rf && rf != wf->rfcarrier())
+		qsy(rf, audio);
+	else
+		active_modem->set_freq(audio);
+}
+
 static void pQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int rf = 0;
-	int audio = 0;
-	float rfd = 0;
 	std::string sGoFreq = s.substr(i+5, endbracket - i - 5);
-	// no frequency(s) specified
-	if (sGoFreq.length() == 0) {
-		s.replace(i, endbracket-i+1, "");
-		return;
-	}
-	// rf first value
-	sscanf(sGoFreq.c_str(), "%f", &rfd);
-	if (rfd > 0)
-		rf = (int)(1000*rfd);
-	size_t pos;
-	if ((pos = sGoFreq.find(":")) != std::string::npos) {
-		// af second value
-		sGoFreq.erase(0, pos+1);
-		if (sGoFreq.length())
-			sscanf(sGoFreq.c_str(), "%d", &audio);
-		if (audio < 0) audio = 0;
-		if (audio < progdefaults.LowFreqCutoff)
-			audio = progdefaults.LowFreqCutoff;
-		if (audio > progdefaults.HighFreqCutoff)
-			audio = progdefaults.HighFreqCutoff;
-	}
-	if (rf && rf != wf->rfcarrier())
-		qsy(rf, audio);
-	else
-		active_modem->set_freq(audio);
-
+	pQSYcommon(sGoFreq);
 	s.replace(i, endbracket - i + 1, "");
 }
 
 
 static void doQSY(std::string s)
 {
-	int rf = 0;
-	int audio = 0;
-	float rfd = 0;
-	std::string sGoFreq;
-	sGoFreq = s.substr(6, s.length() - 7);
-	// no frequency(s) specified
-	if (sGoFreq.length() == 0) {
-		que_ok = true;
-		return;
-	}
-	// rf first value
-	sscanf(sGoFreq.c_str(), "%f", &rfd);
-	if (rfd > 0)
-		rf = (int)(1000*rfd);
-	size_t pos;
-	if ((pos = sGoFreq.find(":")) != std::string::npos) {
-		// af second value
-		sGoFreq.erase(0, pos+1);
-		if (sGoFreq.length())
-			sscanf(sGoFreq.c_str(), "%d", &audio);
-		if (audio < 0) audio = 0;
-		if (audio < progdefaults.LowFreqCutoff)
-			audio = progdefaults.LowFreqCutoff;
-		if (audio > progdefaults.HighFreqCutoff)
-			audio = progdefaults.HighFreqCutoff;
-	}
-	if (rf && rf != wf->rfcarrier())
-		qsy(rf, audio);
-	else
-		active_modem->set_freq(audio);
+	std::string sGoFreq = s.substr(6, s.length() - 7);
+	pQSYcommon(sGoFreq);
 	que_ok = true;
 }
 
