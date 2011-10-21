@@ -1,5 +1,9 @@
-2011-10-19  David Freese  <w1hkj@w1hkj.com>
+2011-10-21  David Freese  <w1hkj@w1hkj.com>
 
+	cb5ddcd: Multi QSY
+	f63a77a: Common QSY
+	8630feb: Revert qsy patch
+	6bc6fc8: HamQTH lookup
 	f96fb25: Packet debug
 	cf3bed3: REV macro tag
 	39ebd8b: RTTY bandwidth
