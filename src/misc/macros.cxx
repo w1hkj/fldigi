@@ -1435,7 +1435,7 @@ static void pMQSY(string &s, size_t &i, size_t endbracket)
 			rf = startf;
 			int rfcarrier = wf->rfcarrier();
 			if (rfcarrier < endf) rfcarrier = endf;
-			while (rf >+ rfcarrier) {
+			while (rf >= rfcarrier) {
 				rf -= incr;
 				if (rf < endf) {
 					rf = startf;
