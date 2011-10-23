@@ -264,21 +264,11 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 
 sf_count_t SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
 {
-	FILE *dfile = fopen("dtmfdata.txt", "a");
-	for (size_t i = 0; i < count; i++)
-		fprintf(dfile, "%f\n", buf[i]);
-	fclose(dfile);
-
 	WRITE_FILE(float, file, buf, count);
 }
 
 sf_count_t SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
 {
-	FILE *dfile = fopen("dtmfdata.txt", "a");
-	for (size_t i = 0; i < count; i++)
-		fprintf(dfile, "%f\n", (float)buf[i]);
-	fclose(dfile);
-
 	WRITE_FILE(double, file, buf, count);
 }
 
