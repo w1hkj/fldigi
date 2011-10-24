@@ -435,7 +435,9 @@ void cRsId::search(void)
 	else {
 		double centerfreq = active_modem->get_freq();
 		nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
+		if (nBinLow < RSID_RESOL + 1) nBinLow = RSID_RESOL + 1;
 		nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
+		if (nBinHigh > RSID_FFT_SIZE -32) nBinHigh = RSID_FFT_SIZE;
 	}
 
 	bool bReverse = !(wf->Reverse() ^ wf->USB());
