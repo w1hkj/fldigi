@@ -1,8 +1,14 @@
 
 
-=Version 3.21.19=
+=Version 3.21.20=
 
-2011-10-19  David Freese  <w1hkj@w1hkj.com>
+2011-10-24  David Freese  <w1hkj@w1hkj.com>
+
+	fba599c: RSID limit fault
+	c32fa63: DTMF debug
+
+
+=Version 3.21.19=
 
 	7046d49: HamQTH lookup
 
