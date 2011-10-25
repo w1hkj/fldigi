@@ -1,8 +1,13 @@
 
 
-=Version 3.21.20=
+=Version 3.21.21=
 
-2011-10-24  David Freese  <w1hkj@w1hkj.com>
+2011-10-25  David Freese  <w1hkj@w1hkj.com>
+
+	3163fd2: Resize fault
+
+
+=Version 3.21.20=
 
 	fba599c: RSID limit fault
 	c32fa63: DTMF debug
