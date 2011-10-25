@@ -4393,6 +4393,7 @@ void create_fl_digi_main_primary() {
 			btnAltMacros2->tooltip(_("Shift-key macro set"));
 			macroFrame2->resizable(btngroup2);
 		macroFrame2->end();
+
 		Y += Hmacros;
 		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
 		int Hrcvtxt = Htext / 2;
@@ -4431,7 +4432,6 @@ void create_fl_digi_main_primary() {
 				text_panel->x(), text_panel->y(),
 				text_panel->w()/2, Htext, "");
 
-//				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-22, "");
 				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-42, "");
 				mainViewer->box(FL_DOWN_BOX);
 				mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);
@@ -4443,9 +4443,6 @@ void create_fl_digi_main_primary() {
 
 				Fl_Group* gseek = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 42, mvgroup->w(), 20);
 // search field
-//					const char* label = _("Find: ");
-//					fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-//					int label_w = static_cast<int>(fl_width(label));
 					int seek_x = mvgroup->x() + 2;
 					int seek_y = mvgroup->y() + Htext - 42;
 					int seek_w = mvgroup->w() - 4;
@@ -4533,8 +4530,8 @@ void create_fl_digi_main_primary() {
 			TransmitText->align(FL_ALIGN_CLIP);
 
 			Fl_Box *minbox = new Fl_Box(
-				text_panel->x(), text_panel->y() + 66, 
-				text_panel->w() - 100, text_panel->h() - 66 - 80);
+				text_panel->x(), text_panel->y() + 66, // fixed by Raster min height
+				text_panel->w() - 100, text_panel->h() - 66 - 60); // fixed by HMIN & Hwfall max
 			minbox->hide();
 
 			text_panel->resizable(minbox);
