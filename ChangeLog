@@ -1,5 +1,8 @@
-2011-10-21  David Freese  <w1hkj@w1hkj.com>
+2011-10-24  David Freese  <w1hkj@w1hkj.com>
 
+	bcdc9cf: RSID limit fault
+	ece4fb7: DTMF debug
+	0b041f6: Multi QSY bug fix
 	cb5ddcd: Multi QSY
 	f63a77a: Common QSY
 	8630feb: Revert qsy patch
