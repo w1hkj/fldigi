@@ -38,6 +38,15 @@ extern std::string		ICS_dir;
 extern std::string		ICS_msg_dir;
 extern std::string		ICS_tmp_dir;
 
+extern std::string		FLMSG_dir;
+extern std::string		FLMSG_WRAP_dir;
+extern std::string		FLMSG_WRAP_recv_dir;
+extern std::string		FLMSG_WRAP_send_dir;
+extern std::string		FLMSG_WRAP_auto_dir;
+extern std::string		FLMSG_ICS_dir;
+extern std::string		FLMSG_ICS_msg_dir;
+extern std::string		FLMSG_ICS_tmp_dir;
+
 extern std::string		xmlfname;
 
 extern std::string	 	scDevice[2];

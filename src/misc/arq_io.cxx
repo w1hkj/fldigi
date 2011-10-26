@@ -380,7 +380,7 @@ bool WRAP_auto_arqRx()
 {
 	time_t start_time, prog_time;
 	static char mailline[1000];
-	string sAutoFile = WRAP_auto_dir;
+	string sAutoFile = FLMSG_WRAP_auto_dir;
 	sAutoFile += "wrap_auto_file";
 
 	ifstream autofile(sAutoFile.c_str());
