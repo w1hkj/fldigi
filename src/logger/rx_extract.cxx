@@ -104,7 +104,7 @@ void rx_extract_add(int c)
 	        gmtime_r(&t, &tim);
 			strftime(dttm, sizeof(dttm), "%Y%m%d-%H%M%S", &tim);
 
-			string outfilename = WRAP_recv_dir;
+			string outfilename = FLMSG_WRAP_recv_dir;
 			outfilename.append("extract-");
 			outfilename.append(dttm);
 			outfilename.append(".wrap");
@@ -114,11 +114,11 @@ void rx_extract_add(int c)
 				extractstream.close();
 			}
 			rx_extract_msg = "File saved in ";
-			rx_extract_msg.append(WRAP_recv_dir);
+			rx_extract_msg.append(FLMSG_WRAP_recv_dir);
 			put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
 
 			if (progdefaults.open_nbems_folder)
-				open_recv_folder(WRAP_recv_dir.c_str());
+				open_recv_folder(FLMSG_WRAP_recv_dir.c_str());
 
 			if ((progdefaults.open_flmsg || progdefaults.open_flmsg_print) && 
 				(rx_buff.find(flmsg) != string::npos) &&

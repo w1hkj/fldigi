@@ -1804,6 +1804,19 @@ void cb_ShowNBEMS(Fl_Widget*, void*)
 	cb_mnuVisitURL(0, (void*)NBEMS_dir.c_str());
 }
 
+void cb_ShowFLMSG(Fl_Widget*, void*)
+{
+	DIR *flmsg_dir;
+	flmsg_dir = opendir(FLMSG_dir.c_str());
+	if (!flmsg_dir) {
+		int ans = fl_choice2(_("Do not exist, create?"), _("No"), _("Yes"), 0);
+		if (!ans) return;
+		check_nbems_dirs();
+	}
+	closedir(flmsg_dir);
+	cb_mnuVisitURL(0, (void*)FLMSG_dir.c_str());
+}
+
 void cbTune(Fl_Widget *w, void *) {
 	Fl_Button *b = (Fl_Button *)w;
 	if (!(active_modem->get_cap() & modem::CAP_TX)) {
@@ -2956,6 +2969,7 @@ Fl_Menu_Item menu_[] = {
 
 { make_icon_label(_("Folders")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Fldigi config..."), folder_open_icon), 0, cb_ShowConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("FLMSG files..."), folder_open_icon), 0, cb_ShowFLMSG, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("NBEMS files..."), folder_open_icon), 0, cb_ShowNBEMS, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
