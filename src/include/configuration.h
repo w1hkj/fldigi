@@ -70,7 +70,7 @@
               +20.0)                                                                    \
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
               "RSID detector searches the entire passband",                             \
-              true)                                                                     \
+              false)                                                                    \
         ELEM_(int, rsid_squelch, "RSIDSQUELCH",                                         \
               "RSID detection opens squelch for nn seconds",                            \
               5)                                                                        \
@@ -88,8 +88,8 @@
               "Trigger RSID notifications but do not change modem and frequency",       \
               false)                                                                    \
         ELEM_(bool, rsid_auto_disable, "RSIDAUTODISABLE",                               \
-              "Disable RSID detection when changing modem and/or frequency",            \
-              true)                                                                     \
+              "Disable RSID detection when RsID signal is detected",                    \
+              false)                                                                      \
         ELEM_(bool, rsid_post, "RSIDPOST",                                              \
               "Transmit an RSID signal when modem data is concluded",                   \
               false)                                                                    \
