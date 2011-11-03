@@ -1,5 +1,10 @@
-2011-10-24  David Freese  <w1hkj@w1hkj.com>
+2011-11-03  David Freese  <w1hkj@w1hkj.com>
 
+	15ff024: HamQTH
+	b5e788e: Auto-send
+	2d1d484: RSID defaults
+	db2803d: NBEMS-FLMSG Directories
+	9fd70bc: Resize fault
 	bcdc9cf: RSID limit fault
 	ece4fb7: DTMF debug
 	0b041f6: Multi QSY bug fix
