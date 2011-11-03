@@ -766,6 +766,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 	lookup_state.clear();
 	lookup_grid.clear();
 	lookup_notes.clear();
+	lookup_country.clear();
 
 	if ((p = htmlpage.find("<error>")) != string::npos) {
 		p += 7;
@@ -787,6 +788,12 @@ void parse_HAMQTH_html(const string& htmlpage)
 		p1 = htmlpage.find("</qth>", p);
 		if (p1 != string::npos)
 			lookup_qth = htmlpage.substr(p, p1 - p);
+	}
+	if ((p = htmlpage.find("<country>")) != string::npos) {
+		p += 9;
+		p1 = htmlpage.find("</country>", p);
+		if (p1 != string::npos)
+			lookup_country = htmlpage.substr(p, p1 - p);
 	}
 	if ((p = htmlpage.find("<us_state>")) != string::npos) {
 		p += 10;
