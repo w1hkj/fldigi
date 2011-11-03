@@ -720,6 +720,9 @@ void HAMCALLquery()
 static string HAMQTH_session_id = "";
 static string HAMQTH_reply = "";
 
+#define HAMQTH_DEBUG 1
+#undef HAMQTH_DEBUG
+
 bool HAMQTH_get_session_id()
 {
 	string url = "";
@@ -745,7 +748,9 @@ bool HAMQTH_get_session_id()
 	}
 	p2 = retstr.find("</session_id>");
 	HAMQTH_session_id = retstr.substr(p1 + 12, p2 - p1 - 12);
-//printf("session id = %s\n", HAMQTH_session_id.c_str());
+//#ifdef HAMQTH_DEBUG
+//	printf("session id = %s\n", HAMQTH_session_id.c_str());
+//#endif
 	return true;
 }
 
@@ -756,6 +761,20 @@ void parse_HAMQTH_html(const string& htmlpage)
 
 	clear_Lookup();
 
+	lookup_fname.clear();
+	lookup_qth.clear();
+	lookup_state.clear();
+	lookup_grid.clear();
+	lookup_notes.clear();
+	lookup_country.clear();
+
+	if ((p = htmlpage.find("<error>")) != string::npos) {
+		p += 7;
+		p1 = htmlpage.find("</error>");
+		if (p1 != string::npos) 
+			lookup_notes.append(htmlpage.substr(p, p1 - p));
+		return;
+	}
 	if ((p = htmlpage.find("<nick>")) != string::npos) {
 		p += 6;
 		p1 = htmlpage.find("</nick>", p);
@@ -764,11 +783,17 @@ void parse_HAMQTH_html(const string& htmlpage)
 			camel_case(lookup_fname);
 		}
 	}
-	if ((p = htmlpage.find("<adr_city>")) != string::npos) {
-		p += 10;
-		p1 = htmlpage.find("</adr_city>", p);
+	if ((p = htmlpage.find("<qth>")) != string::npos) {
+		p += 5;
+		p1 = htmlpage.find("</qth>", p);
 		if (p1 != string::npos)
 			lookup_qth = htmlpage.substr(p, p1 - p);
+	}
+	if ((p = htmlpage.find("<country>")) != string::npos) {
+		p += 9;
+		p1 = htmlpage.find("</country>", p);
+		if (p1 != string::npos)
+			lookup_country = htmlpage.substr(p, p1 - p);
 	}
 	if ((p = htmlpage.find("<us_state>")) != string::npos) {
 		p += 10;
@@ -782,11 +807,17 @@ void parse_HAMQTH_html(const string& htmlpage)
 		if (p1 != string::npos)
 			lookup_grid = htmlpage.substr(p, p1 - p);
 	}
+	if ((p = htmlpage.find("<qsl_via>")) != string::npos) {
+		p += 9;
+		p1 = htmlpage.find("</qsl_via>");
+		if (p1 != string::npos)
+			lookup_notes.append("QSL via: ").append(htmlpage.substr(p, p1 - p)).append("\n");
+	}
 	if ((p = htmlpage.find("<adr_name>")) != string::npos) {
 		p += 10;
 		p1 = htmlpage.find("</adr_name>");
 		if (p1 != string::npos)
-			lookup_notes = htmlpage.substr(p, p1 - p).append("\n");
+			lookup_notes.append(htmlpage.substr(p, p1 - p)).append("\n");
 	}
 	if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
 		p += 13;
@@ -812,12 +843,6 @@ void parse_HAMQTH_html(const string& htmlpage)
 		if (p1 != string::npos)
 			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
 	}
-	if ((p == htmlpage.find("<qsl_via>")) != string::npos) {
-		p += 9;
-		p1 = htmlpage.find("</qsl_via>");
-		if (p1 != string::npos)
-			lookup_notes.append("\nQSL via: ").append(htmlpage.substr(p, p1 - p));
-	}
 }
 
 bool HAMQTHget(string& htmlpage)
@@ -832,14 +857,19 @@ bool HAMQTHget(string& htmlpage)
 	url.append("&prg=fldigi-").append(VERSION);
 
 	ret = fetch_http(url, htmlpage, 5.0);
-//printf("%s\n", htmlpage.c_str());
 	if (htmlpage.find("<error>") != string::npos) {
 		htmlpage.clear();
-		if (!HAMQTH_get_session_id())
+		if (!HAMQTH_get_session_id()) {
+			lookup_notes = "Get session id failed!\n";
 			return false;
+		}
 		ret = fetch_http(url, htmlpage, 5.0);
-//printf("%s\n", htmlpage.c_str());
 	}
+#ifdef HAMQTH_DEBUG
+	FILE *fetchit = fopen("fetchit.txt", "a");
+	fprintf(fetchit, "%s\n", htmlpage.c_str());
+	fclose(fetchit);
+#endif
 	return ret;
 }
 
