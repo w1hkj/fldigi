@@ -1,8 +1,23 @@
+2011-11-03  David Freese  <w1hkj@w1hkj.com>
+
+	36a64e5: HamQTH
+	2ffb4a5: Auto-send
+
+
+=Version 3.21.22=
+
+
+2011-10-28  Pavel Milanes Costa  <pavel@conas.co.cu>
+
+	b66a4d7: es.po update
+
+2011-10-28  David Freese  <w1hkj@w1hkj.com>
+
+	269ae3a: RSID defaults
+	1b3e852: NBEMS-FLMSG Directories
 
 
 =Version 3.21.21=
-
-2011-10-25  David Freese  <w1hkj@w1hkj.com>
 
 	3163fd2: Resize fault
 
