@@ -890,7 +890,7 @@ void HAMQTHquery()
 
 void QRZ_DETAILS_query()
 {
-	string qrzurl = "http://www.qrz.com/callsign.html?callsign=";
+	string qrzurl = "http://www.qrz.com/db/";
 	qrzurl.append(callsign);
 
 	cb_mnuVisitURL(0, (void*)qrzurl.c_str());
