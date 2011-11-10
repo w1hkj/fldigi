@@ -1620,6 +1620,14 @@ void set_macro_env(void)
 
 	for (size_t j = 0; j < ENV_SIZE; j++)
 		setenv(env[j].var, env[j].val, 1);
+
+	string path = getenv("PATH");
+	string mypath = ScriptsDir;
+	if (mypath[mypath.length()-1] == '/')
+		mypath.erase(mypath.length()-1, 1);
+	mypath.append(":");
+	path.insert(0,mypath);
+	setenv("PATH", path.c_str(), 1);
 }
 
 // this is only for the case where the user tries to nest <EXEC>...
@@ -1653,6 +1661,7 @@ static void pEXEC(string &s, size_t &i, size_t endbracket)
 	within_exec = true;
 	MACROTEXT m;
 	execstr = m.expandMacro(execstr);
+//	execstr.insert(0,ScriptsDir);
 	within_exec = false;
 
 	int pfd[2];
