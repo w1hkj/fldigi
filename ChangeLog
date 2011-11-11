@@ -1,6 +1,12 @@
-2011-11-03  David Freese  <w1hkj@w1hkj.com>
+2011-11-10  David Freese  <w1hkj@w1hkj.com>
 
-	36a64e5: HamQTH
+	16fc289: Exec macro
+	0859928: QRZ on-line lookup
+
+
+=Version 3.21.23=
+
+	047543a: HamQTH
 	2ffb4a5: Auto-send
 
 
