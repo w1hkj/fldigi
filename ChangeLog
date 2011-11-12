@@ -1,5 +1,9 @@
-2011-11-03  David Freese  <w1hkj@w1hkj.com>
+2011-11-12  David Freese  <w1hkj@w1hkj.com>
 
+	2dae98d: eQSL
+	b0e37af: Exec macro
+	3288d8d: QRZ on-line lookup
+	bf88127: HamQTH update
 	15ff024: HamQTH
 	b5e788e: Auto-send
 	2d1d484: RSID defaults
