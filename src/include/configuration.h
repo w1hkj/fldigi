@@ -662,6 +662,16 @@
               "QRZ or HamCall subscriber password",                                     \
               "")                                                                       \
         ELEM_(bool, QRZchanged, "", "",  false)                                         \
+        /* eQSL */                                                                      \
+        ELEM_(std::string, eqsl_id, "EQSL_ID",                                          \
+              "eQSL login id",                                                          \
+              "")                                                                       \
+        ELEM_(std::string, eqsl_pwd, "EQSL_PASSWORD",                                   \
+              "eQSL login password",                                                    \
+              "")                                                                       \
+        ELEM_(std::string, eqsl_nick, "EQSL_NICKNAME",                                  \
+              "eQSL nickname",                                                          \
+              "")                                                                       \
         /* Rig control */                                                               \
         ELEM_(bool, btnusb, "BTNUSB",                                                   \
               "This setting is currently unused",                                       \
