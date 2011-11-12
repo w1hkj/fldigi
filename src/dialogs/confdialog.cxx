@@ -6948,7 +6948,7 @@ d frequency"));
               btnEQSL_pwd_show->tooltip(_("Show password in plain text"));
               btnEQSL_pwd_show->callback((Fl_Callback*)cb_btnEQSL_pwd_show);
             } // Fl_Button* btnEQSL_pwd_show
-            { Fl_Input2* o = inpEQSL_nick = new Fl_Input2(176, 137, 150, 20, _("User Nickname"));
+            { Fl_Input2* o = inpEQSL_nick = new Fl_Input2(176, 137, 150, 20, _("QTH Nickname"));
               inpEQSL_nick->tooltip(_("Your login name"));
               inpEQSL_nick->box(FL_DOWN_BOX);
               inpEQSL_nick->color((Fl_Color)FL_BACKGROUND2_COLOR);

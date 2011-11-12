@@ -3945,7 +3945,7 @@ o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
               tooltip {Show password in plain text} xywh {344 106 70 20}
             }
             Fl_Input inpEQSL_nick {
-              label {User Nickname}
+              label {QTH Nickname}
               callback {progdefaults.eqsl_nick = o->value();
 progdefaults.changed = true;}
               tooltip {Your login name} xywh {176 137 150 20}
