@@ -45,6 +45,9 @@
 #include "waterfall.h"
 #include "rigsupport.h"
 #include "strutil.h"
+#include "network.h"
+#include "logsupport.h"
+#include "icons.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -1755,6 +1758,107 @@ static void pEXEC(string& s, size_t& i, size_t endbracket)
 }
 #endif // !__MINGW32__
 
+static void pEQSL(std::string& s, size_t& i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	size_t start = s.find(':', i);
+
+	std::string msg = "";
+	if (start != std::string::npos)
+		msg = s.substr(start + 1, endbracket-start-1);
+
+	char sztemp[100];
+	std::string tempstr;
+// eqsl url header
+	std::string url = "http://www.eqsl.cc/qslcard/importADIF.cfm?ADIFdata=upload <adIF_ver:5>2.1.9";
+	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s", 
+		progdefaults.eqsl_id.length(), progdefaults.eqsl_id.c_str(),
+		progdefaults.eqsl_pwd.length(), progdefaults.eqsl_pwd.c_str());
+	url.append(sztemp);
+// eqsl nickname
+	if (!progdefaults.eqsl_nick.empty()) {
+		snprintf(sztemp, sizeof(sztemp), "<APP_EQSL_QTH_NICKNAME:%d>%s",
+		progdefaults.eqsl_nick.length(), progdefaults.eqsl_nick.c_str());
+		url.append(sztemp);
+	}
+	url.append("<PROGRAMID:6>FLDIGI<EOH>");
+// band
+	tempstr = band_name(band(wf->rfcarrier()));
+	snprintf(sztemp, sizeof(sztemp), "<BAND:%d>%s", tempstr.length(), tempstr.c_str());
+	url.append(sztemp);
+// call
+	tempstr = inpCall->value();
+	snprintf(sztemp, sizeof(sztemp), "<CALL:%d>%s", tempstr.length(), tempstr.c_str());
+	url.append(sztemp);
+// mode
+	tempstr = mode_info[active_modem->get_mode()].adif_name;
+// test for modes not supported by eQSL
+	if ((tempstr.find("MFSK4") != std::string::npos) ||
+		(tempstr.find("MFSK11") != std::string::npos) ||
+		(tempstr.find("MFSK22") != std::string::npos) ||
+		(tempstr.find("MFSK31") != std::string::npos) ||
+		(tempstr.find("MFSK32") != std::string::npos) ||
+		(tempstr.find("MFSK64") != std::string::npos) )
+		tempstr = "MFSK16";
+	if ((tempstr.find("PSK250") != std::string::npos) ||
+		(tempstr.find("PSK500") != std::string::npos) ||
+		(tempstr.find("PSK125R") != std::string::npos) ||
+		(tempstr.find("PSK250R") != std::string::npos) ||
+		(tempstr.find("PSK500R") != std::string::npos))
+		tempstr = "PSK125";
+	if ((tempstr.find("QPSK250") != std::string::npos) ||
+		(tempstr.find("QPSK500") != std::string::npos) ||
+		(tempstr.find("QPSK125R") != std::string::npos) ||
+		(tempstr.find("QPSK250R") != std::string::npos) ||
+		(tempstr.find("QPSK500R") != std::string::npos))
+		tempstr = "QPSK125";
+
+	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s", tempstr.length(), tempstr.c_str());
+	url.append(sztemp);
+// qso date
+	snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s", sDate_on.length(), sDate_on.c_str());
+	url.append(sztemp);
+// qso time
+	tempstr = inpTimeOn->value();
+	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s", tempstr.length(), tempstr.c_str());
+	url.append(sztemp);
+// rst sent
+	tempstr = inpRstOut->value();
+	snprintf(sztemp, sizeof(sztemp), "<RST_SENT:%d>%s", tempstr.length(), tempstr.c_str());
+	url.append(sztemp);
+// message
+	if (!msg.empty()) {
+		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s", msg.length(), msg.c_str());
+		url.append(sztemp);
+	}
+	url.append("<EOR>");
+
+	tempstr.clear();
+	for (size_t n = 0; n < url.length(); n++) {
+		if (url[n] == ' ') tempstr.append("%20");
+		else if (url[n] == '<') tempstr.append("%3c");
+		else if (url[n] == '>') tempstr.append("%3e");
+		else tempstr += url[n];
+	}
+	url = tempstr;
+
+	string xmlpage;
+	size_t p;
+	if (fetch_http(url, xmlpage, 5.0) == -1)
+		fl_message2("eQSL not available\n%s\n", xmlpage.c_str());
+
+	if ((p = xmlpage.find("Error:")) != std::string::npos) {
+		size_t p2 = xmlpage.find('\n', p);
+		fl_message2("%s", xmlpage.substr(p, p2 - p - 1).c_str());
+	}
+
+	s.replace(i, endbracket - i + 1, "");
+	return;
+}
+
 static void MAPIT(int how)
 {
 	float lat = 0, lon = 0;
@@ -1949,6 +2053,7 @@ static const MTAGS mtags[] = {
 {"<LOG>",		pLOG},
 {"<LNW>",		pLNW},
 {"<CLRLOG>",	pCLRLOG},
+{"<EQSL:",		pEQSL},
 {"<TIMER:",		pTIMER},
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
