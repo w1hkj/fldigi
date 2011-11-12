@@ -106,7 +106,7 @@ void cQsoRec::trimFields () {
 	}
 }
 
-const char * cQsoRec::getField (int n) {
+const char * cQsoRec::getField (int n) const {
 	if (n < 0 || n >= NUMFIELDS) return 0;
 	return (qsofield[n].c_str());
 }

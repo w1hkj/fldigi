@@ -20,7 +20,7 @@ Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
     label {Export Setup} open
-    xywh {588 534 655 385} type Double modal visible
+    xywh {588 534 655 385} type Double hide modal
   } {
     Fl_Group {} {
       label {Select Records to Export} open
@@ -283,7 +283,7 @@ btnSelectNotes->value(0);}
     label Logbook open
     xywh {574 55 585 410} type Double color 47 resizable visible
   } {
-    Fl_Group editGroup {open selected
+    Fl_Group editGroup {open
       xywh {2 2 602 290} box ENGRAVED_FRAME color 52
     } {
       Fl_Input inpDate_log {
@@ -420,17 +420,22 @@ btnSelectNotes->value(0);}
       Fl_Button bNewSave {
         label New
         callback cb_btnNewSave
-        xywh {163 263 55 22} shortcut 0x8004e color 50 selection_color 48
+        tooltip {New record / Save record} xywh {163 263 55 22} shortcut 0x8004e color 50 selection_color 48
       }
       Fl_Button bUpdateCancel {
         label Update
         callback cb_btnUpdateCancel
-        xywh {235 263 55 22} shortcut 0x80055 color 50 selection_color 48
+        tooltip {Update the current record} xywh {235 263 55 22} shortcut 0x80055 color 50 selection_color 48
       }
       Fl_Button bDelete {
         label Delete
         callback cb_btnDelete
-        xywh {307 263 55 22} shortcut 0x80044 color 50 selection_color 48
+        tooltip {Delete the current record} xywh {307 263 55 22} shortcut 0x80044 color 50 selection_color 48
+      }
+      Fl_Button bDialFreq {
+        label Dial
+        callback cb_btnDialFreq
+        tooltip {Retrieve for active modem use} xywh {380 263 55 22} shortcut 0x50066 color 50 selection_color 48
       }
       Fl_Input txtNbrRecs_log {
         label Recs
@@ -475,7 +480,7 @@ btnSelectNotes->value(0);}
           code0 {bSearchPrev->image(new Fl_Pixmap(left_arrow_icon));}
         }
         Fl_Button bSearchNext {
-          callback cb_search
+          callback cb_search selected
           tooltip {Find next} xywh {550 263 24 22} color 50 selection_color 48 align 16
           code0 {bSearchNext->image(new Fl_Pixmap(right_arrow_icon));}
         }
