@@ -90,13 +90,13 @@ FIELD fields[] = {
 	{XCHG1,          0,  &btnSelectXchgIn}     // contest exchange #1 / free1 in xlog
 };
 
-void initfields()
+static void initfields()
 {
 	for (int i = 0; i < NUMFIELDS; i++)
 		fields[i].name = new string(fieldnames[i]);
 }
 
-int findfield( char *p )
+static int findfield( const char *p )
 {
 	int m;
 	int test;

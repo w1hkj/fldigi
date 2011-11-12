@@ -42,6 +42,7 @@
 #include "adif_io.h"
 #include "textio.h"
 #include "logbook.h"
+#include "rigsupport.h"
 
 #include "logger.h"
 #include "fl_digi.h"
@@ -547,7 +548,51 @@ int log_search_handler(int)
 	return 1;
 }
 
-int editNbr = 0;
+static int editNbr = 0;
+
+void cb_btnDialFreq(Fl_Button* b, void* d) 
+{
+	double drf  = atof(inpFreq_log->value());
+	if (!drf) return;
+
+	int rf1, rf, audio;
+	rf1 = drf * 1e6;
+	rf = rf1 / 10000;
+	rf *= 10000;
+	audio = rf1 - rf;
+// try to keep within normal xcvr bw, 500 - 3000 Hz
+	while (audio > 3000) {
+		audio -= 3000;
+		rf += 3000;
+	}
+	if (audio < 500) {
+		audio += 500;
+		rf -= 500;
+	}
+	qsy(rf, audio);
+
+	std::string mode_name = inpMode_log->value();
+	trx_mode m;
+	for (m = 0; m < NUM_MODES; m++)
+		if (mode_name == mode_info[m].adif_name)
+			break;
+	// do we have a valid modem?
+	if (m < NUM_MODES && active_modem->get_mode() != mode_info[m].mode)
+			init_modem(mode_info[m].mode);
+
+	const cQsoRec *qsoPtr = qsodb.getRec(editNbr);
+	inpCall->value(qsoPtr->getField(CALL));
+	inpName->value (qsoPtr->getField(NAME));
+	inpTimeOn->value (inpTimeOff->value());
+	inpState->value (qsoPtr->getField(STATE));
+	inpCountry->value (qsoPtr->getField(COUNTRY));
+	inpXchgIn->value(qsoPtr->getField(XCHG1));
+	inpQth->value (qsoPtr->getField(QTH));
+	inpLoc->value (qsoPtr->getField(GRIDSQUARE));
+	inpNotes->value (qsoPtr->getField(NOTES));
+
+	wBrowser->take_focus();
+}
 
 void clearRecord() {
 	Date tdy;

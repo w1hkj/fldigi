@@ -52,6 +52,7 @@ extern void clearRecord ();
 extern void updateRecord ();
 extern void deleteRecord ();
 extern void AddRecord ();
+extern void DisplayRecord (int idxRec);
 extern void SearchLastQSO (const char *);
 extern cQsoRec* SearchLog(const char *callsign);
 extern void DupCheck();

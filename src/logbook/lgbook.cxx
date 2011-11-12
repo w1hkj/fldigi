@@ -261,6 +261,8 @@ Fl_Button *bUpdateCancel=(Fl_Button *)0;
 
 Fl_Button *bDelete=(Fl_Button *)0;
 
+Fl_Button *bDialFreq=(Fl_Button *)0;
+
 Fl_Input2 *txtNbrRecs_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpSerNoOut_log=(Fl_Input2 *)0;
@@ -818,23 +820,33 @@ void create_logbook_dialogs() {
         inpNotes_log->when(FL_WHEN_RELEASE);
       } // Fl_Input2* inpNotes_log
       { bNewSave = new Fl_Button(163, 263, 55, 22, _("New"));
+        bNewSave->tooltip(_("New record / Save record"));
         bNewSave->shortcut(0x8004e);
         bNewSave->color((Fl_Color)FL_LIGHT1);
         bNewSave->selection_color((Fl_Color)48);
         bNewSave->callback((Fl_Callback*)cb_btnNewSave);
       } // Fl_Button* bNewSave
       { bUpdateCancel = new Fl_Button(235, 263, 55, 22, _("Update"));
+        bUpdateCancel->tooltip(_("Update the current record"));
         bUpdateCancel->shortcut(0x80055);
         bUpdateCancel->color((Fl_Color)FL_LIGHT1);
         bUpdateCancel->selection_color((Fl_Color)48);
         bUpdateCancel->callback((Fl_Callback*)cb_btnUpdateCancel);
       } // Fl_Button* bUpdateCancel
       { bDelete = new Fl_Button(307, 263, 55, 22, _("Delete"));
+        bDelete->tooltip(_("Delete the current record"));
         bDelete->shortcut(0x80044);
         bDelete->color((Fl_Color)FL_LIGHT1);
         bDelete->selection_color((Fl_Color)48);
         bDelete->callback((Fl_Callback*)cb_btnDelete);
       } // Fl_Button* bDelete
+      { bDialFreq = new Fl_Button(380, 263, 55, 22, _("Dial"));
+        bDialFreq->tooltip(_("Retrieve for active modem use"));
+        bDialFreq->shortcut(0x50066);
+        bDialFreq->color((Fl_Color)FL_LIGHT1);
+        bDialFreq->selection_color((Fl_Color)48);
+        bDialFreq->callback((Fl_Callback*)cb_btnDialFreq);
+      } // Fl_Button* bDialFreq
       { txtNbrRecs_log = new Fl_Input2(41, 263, 65, 22, _("Recs"));
         txtNbrRecs_log->tooltip(_("# Records in logbook"));
         txtNbrRecs_log->box(FL_DOWN_BOX);

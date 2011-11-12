@@ -83,6 +83,8 @@ extern void cb_btnUpdateCancel(Fl_Button*, void*);
 extern Fl_Button *bUpdateCancel;
 extern void cb_btnDelete(Fl_Button*, void*);
 extern Fl_Button *bDelete;
+extern void cb_btnDialFreq(Fl_Button*, void*);
+extern Fl_Button *bDialFreq;
 extern Fl_Input2 *txtNbrRecs_log;
 extern Fl_Input2 *inpSerNoOut_log;
 extern Fl_Input2 *inpMyXchg_log;

@@ -30,7 +30,7 @@ public:
 	void putField (int, const char *);
 	void putField (int, const char *, int);
 	void addtoField (int, const char *);
-	const char *getField (int);
+	const char *getField (int) const;
 	void trimFields();
 	void clearRec ();
 	int  validRec();
