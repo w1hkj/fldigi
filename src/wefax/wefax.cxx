@@ -33,6 +33,8 @@
 #include <valarray>
 #include <cmath>
 #include <cstddef>
+#include <queue>
+#include <map>
 #include <libgen.h>
 
 #include "debug.h"
@@ -277,7 +279,7 @@ static const char * state_to_str(fax_state a_state)
 		case TXIMAGE    : return "Sending image" ;
 		case IDLE       : return "Idle" ;
 	}
-	return "UNKOWN" ;
+	return "UNKNOWN" ;
 };
 
 /// TODO: This should be hidden to this class.
@@ -351,12 +353,6 @@ class fax_implementation {
 	double m_i_fir_old;
 	double m_q_fir_old;
 
-	/// Returns a string telling the RX state. Mostly for debugging.
-	const char * state_rx_str(void) const
-	{
-		return state_to_str(m_rx_state);
-	};
-
 	void decode(const int* buf, int nb_samples);
 
 	/// Used for transmission.
@@ -378,6 +374,7 @@ class fax_implementation {
 		m_img_sample     = 0;
 		m_pix_samples_nb = 0;
 	}
+
 public:
 	fax_implementation(int fax_mode, wefax * ptr_wefax );
 	void init_rx(int the_smpl_rate);
@@ -395,7 +392,7 @@ public:
 		int img_w,
 		int img_h,
 		int xmt_bytes );
-	void trx_do_next(void);
+	bool trx_do_next(void);
 	void tx_apt_stop(void);
 
 	double carrier(void) const
@@ -445,6 +442,21 @@ public:
 
 	/// This generates a filename based on the frequency, current time, internal state etc...
 	std::string generate_filename( const char *extra_msg ) const ;
+
+	std::string state_rx_str(void) const
+	{
+		return state_to_str(m_rx_state);
+	}
+
+	/// Returns a string telling the state. Informational purpose.
+	std::string state_string(void) const
+	{
+		std::stringstream result ;
+		result	<< "tx:" << state_to_str(m_tx_state)
+			<< " "
+			<< "rx:" << state_to_str(m_rx_state);
+		return result.str();
+	};
 
 private:
 	/// Centered around the frequency.
@@ -685,9 +697,107 @@ private:
 	void decode_apt(int x, const fax_signal & the_signal );
 	void decode_phasing(int x, const fax_signal & the_signal );
 	bool decode_image(int x);
+
+private:
+	/// Each received file has its name pushed in this queue.
+	syncobj m_sync_rx ;
+	std::queue< std::string > m_received_files ;
+public:
+	/// Called by the engine each time a file is saved.
+	void put_received_file( const std::string &filnam )
+	{
+		guard_lock g( m_sync_rx.mtxp() );
+		LOG_INFO("%s", filnam.c_str() );
+		m_received_files.push( filnam );
+		m_sync_rx.signal();
+	}
+
+	/// Returns a received file name, by chronological order.
+	std::string get_received_file( double max_seconds )
+	{
+		guard_lock g( m_sync_rx.mtxp() );
+
+		LOG_INFO("delay=%f", max_seconds );
+		if( m_received_files.empty() )
+		{
+			if( ! m_sync_rx.wait(max_seconds) ) return std::string();
+		}
+		std::string filnam = m_received_files.front();
+		m_received_files.pop();
+		return filnam ;
+	}
+private:
+	/// No unicity if the same filename is sent by several clients at the same time.
+	/// This does not really matter because the error codes should be the same.
+	syncobj m_sync_tx_fil ;
+	std::string m_tx_fil ; // Filename being transmitted.
+
+	syncobj m_sync_tx_msg ;
+	typedef std::map< std::string, std::string > sent_files_type ;
+	sent_files_type m_sent_files ;
+public:
+	/// If the delay is exceeded, returns with an error message.
+	std::string send_file( const std::string & filnam, double max_seconds )
+	{
+		LOG_INFO("%s", filnam.c_str() );
+		bool is_acquired = transmit_lock_acquire(filnam, max_seconds);
+		if( ! is_acquired ) return "Timeout sending " + filnam ;
+
+		REQ( wefax_pic::send_image, filnam );
+		
+		guard_lock g( m_sync_tx_fil.mtxp() );
+
+		sent_files_type::iterator itFi ;
+		while(true)
+		{
+			itFi = m_sent_files.find( filnam );
+			if( itFi != m_sent_files.end() )
+			{
+				break ;
+			}
+			if( ! m_sync_tx_msg.wait( max_seconds ) )
+			{
+				return "Timeout";
+			}
+		}
+		std::string err_msg = itFi->second ;
+		m_sent_files.erase( itFi );
+		return err_msg ;
+	}
+
+	/// Called when loading a file from the GUI, or indirectly from XML-RPC.
+	bool transmit_lock_acquire(const std::string & filnam, double delay = wefax::max_delay )
+	{
+		LOG_INFO("%s", filnam.c_str() );
+		guard_lock g( m_sync_tx_fil.mtxp() );
+		if ( ! m_tx_fil.empty() )
+		{
+			if( ! m_sync_tx_fil.wait( delay ) ) return false ;
+		}
+		m_tx_fil = filnam ;
+		return true ;
+	}
+
+	/// Allows to send another file. Called by XML-RPC and the GUI.
+	void transmit_lock_release( const std::string & err_msg )
+	{
+		guard_lock g( m_sync_tx_msg.mtxp() );
+		LOG_INFO("%s %s", m_tx_fil.c_str(), err_msg.c_str() );
+		if( m_tx_fil.empty() )
+		{
+			LOG_WARN("%s File name should not be empty", err_msg.c_str() );
+		}
+		else
+		{
+			m_sent_files[ m_tx_fil ] = err_msg ;
+			m_tx_fil.clear();
+		}
+		m_sync_tx_msg.signal();
+	}
+
 }; // class fax_implementation
 
-/// Narrow, middle etc... input filters. Constructed at program startup.
+/// Narrow, middle etc... input filters. Constructed at program startup. Readonly.
 fir_filter_pair_set fax_implementation::m_rx_filters ;
 
 fax_implementation::fax_implementation( int fax_mode, wefax * ptr_wefax  )
@@ -704,6 +814,8 @@ fax_implementation::fax_implementation( int fax_mode, wefax * ptr_wefax  )
 	m_start_duration = 5 ;
 	m_stop_duration  = 5 ;
 	m_manual_mode    = false ;
+	m_rx_state       = IDLE ;
+	m_tx_state       = IDLE ;
 
 	int index_of_correlation ;
 	/// http://en.wikipedia.org/wiki/Radiofax
@@ -1124,7 +1236,7 @@ void fax_implementation::skip_apt_rx(void)
 {
 	wefax_pic::skip_rx_apt();
 	if(m_rx_state!=RXAPTSTART) {
-		LOG_ERROR("Should be in APT state. State=%s. Manual=%d", state_rx_str(), m_manual_mode );
+		LOG_ERROR("Should be in APT state. State=%s. Manual=%d", state_rx_str().c_str(), m_manual_mode );
 	}
 	m_lpm_img=m_lpm_sum_rx=0;
 	m_rx_state=RXPHASING;
@@ -1143,7 +1255,7 @@ void fax_implementation::skip_phasing_to_image(bool auto_center)
 
 	REQ( wefax_pic::skip_rx_phasing, auto_center );
 	if(m_rx_state!=RXPHASING) {
-		LOG_ERROR("Should be in phasing state. State=%s", state_rx_str() );
+		LOG_ERROR("Should be in phasing state. State=%s", state_rx_str().c_str() );
 	}
 	m_rx_state=RXIMAGE;
 
@@ -1167,7 +1279,7 @@ void fax_implementation::skip_phasing_to_image(bool auto_center)
 void fax_implementation::skip_phasing_rx(bool auto_center)
 {
 	if(m_rx_state!=RXPHASING) {
-		LOG_ERROR("Should be in phasing state. State=%s", state_rx_str() );
+		LOG_ERROR("Should be in phasing state. State=%s", state_rx_str().c_str() );
 	}
 	skip_phasing_to_image(auto_center);
 
@@ -1307,10 +1419,9 @@ void fax_implementation::modulate(const double* buffer, int number)
 	m_ptr_wefax->ModulateXmtr( stack_xmt_buf, number );
 }
 
-/// Returns the number of pixels written from the image.
-void fax_implementation::trx_do_next(void)
+/// Returns true if succesful
+bool fax_implementation::trx_do_next(void)
 {
-
 	LOG_DEBUG("m_xmt_bytes=%d m_lpm_img=%f", m_xmt_bytes, m_lpm_img );
 
 	/// The number of samples sent for one line. The LPM is given by the GUI.
@@ -1321,8 +1432,8 @@ void fax_implementation::trx_do_next(void)
 	double buf[block_len];
 
 	bool end_of_loop = false ;
+	bool tx_completed = true ;
 	int curr_sample_idx = 0 , nb_samples_to_send  = 0 ;
-	const char * curr_status_msg = "APT start" ;
 
 	for(int num_bytes_to_write=0; ; ++num_bytes_to_write ) {
 		bool disp_msg = ( ( num_bytes_to_write % block_len ) == 0 ) && ( num_bytes_to_write > 0 );
@@ -1330,9 +1441,11 @@ void fax_implementation::trx_do_next(void)
 		if( disp_msg ) {
 			modulate( buf, num_bytes_to_write);
 
+			const char * curr_status_msg = state_to_str( m_tx_state );
 			/// TODO: Should be multiplied by 3 when sending in BW ?
 			if( m_ptr_wefax->is_tx_finished(curr_sample_idx, nb_samples_to_send, curr_status_msg ) ) {
 				end_of_loop = true ;
+				tx_completed = false;
 				continue ;
 			};
 			num_bytes_to_write = 0 ;
@@ -1347,7 +1460,6 @@ void fax_implementation::trx_do_next(void)
 				curr_sample_idx++;
 			} else {
 				m_tx_state=TXPHASING;
-				curr_status_msg = "Phasing" ;
 				curr_sample_idx=0;
 			}
 		}
@@ -1361,7 +1473,6 @@ void fax_implementation::trx_do_next(void)
 				curr_sample_idx++;
 			} else {
 				m_tx_state=ENDPHASING;
-				curr_status_msg = "End phasing" ;
 				curr_sample_idx=0;
 			}
 		}
@@ -1372,7 +1483,6 @@ void fax_implementation::trx_do_next(void)
 				curr_sample_idx++;
 			} else {
 				m_tx_state=TXIMAGE;
-				curr_status_msg = "Sending image" ;
 				curr_sample_idx=0;
 			}
 		}
@@ -1447,7 +1557,6 @@ void fax_implementation::trx_do_next(void)
 				}
 			} else {
 				m_tx_state=TXAPTSTOP;
-				curr_status_msg = "APT stop" ;
 				curr_sample_idx=0;
 			}
 		}
@@ -1458,12 +1567,12 @@ void fax_implementation::trx_do_next(void)
 				curr_sample_idx++;
 			} else {
 				m_tx_state=IDLE;
-				curr_status_msg = "Finished" ;
 				end_of_loop = true ;
 				continue ;
 			}
 		}
 	} // loop
+	return tx_completed ;
 }
 
 void fax_implementation::tx_params_set(
@@ -1724,14 +1833,20 @@ void wefax::set_tx_parameters(
 /// Callback continuously called by fldigi modem class.
 int wefax::tx_process()
 {
-	m_impl->trx_do_next();
-
+	bool tx_was_completed = m_impl->trx_do_next();
+	std::string status ;
+	if( false == tx_was_completed ) {
+		status = "Transmission cancelled";
+		LOG_INFO("Sending cancelled" );
+		m_qso_rec.putField(NOTES, status.c_str() );
+	}
 	qso_rec_save();
 
 	REQ_FLUSH(GET_THREAD_ID());
 
 	FL_LOCK_E();
 	wefax_pic::restart_tx_viewer();
+	transmit_lock_release(status);
 	m_abortxmt = false;
 	FL_UNLOCK_E();
 	m_impl->tx_apt_stop();
@@ -1779,10 +1894,10 @@ void wefax::set_lpm( int the_lpm )
 	return m_impl->lpm_set( the_lpm );
 }
 
-/// Transmission time in seconds.
+/// Transmission time in seconds. Factor 3 if b/w image.
 int wefax::tx_time( int nb_bytes ) const
 {
-	return (double)nb_bytes / modem::samplerate ;
+	return (double)nb_bytes / ( modem::samplerate * 3.0 );
 }
 
 /// This prints a message about the progress of image sending,
@@ -1825,6 +1940,7 @@ std::string wefax::suggested_filename(void) const
 	return m_impl->generate_filename( "gui" );
 };
 
+/// This creates a QSO record to be written to an adif file.
 void wefax::qso_rec_init(void)
 {
 	if( m_adif_log == false ) {
@@ -1884,6 +2000,7 @@ void wefax::qso_rec_init(void)
 	// m_qso_rec.putField(TX_PWR, inpTX_pwr_log->value());
 }
 
+/// Called once a QSO rec has been filled with information. Saved to adif file.
 void wefax::qso_rec_save(void)
 {
 	if( m_adif_log == false ) {
@@ -1912,5 +2029,41 @@ void wefax::qso_rec_save(void)
 void wefax::set_freq(double)
 {
 	modem::set_freq(m_impl->carrier());
+}
+
+// String telling the tx and rx internal state.
+std::string wefax::state_string(void) const
+{
+	return m_impl->state_string();
+}
+
+/// Called when a file is saved, so XML-RPC calls can get the filename.
+void wefax::put_received_file( const std::string &filnam )
+{
+	m_impl->put_received_file( filnam );
+}
+
+/// Returns a received file name, by chronological order.
+std::string wefax::get_received_file( double max_seconds )
+{
+	return m_impl->get_received_file( max_seconds );
+}
+
+/// This is not thread-safe, at all.
+std::string wefax::send_file( const std::string & filnam, double max_seconds )
+{
+	return m_impl->send_file( filnam, max_seconds );
+}
+
+/// Transmitting files is done in exclusive mode.
+bool wefax::transmit_lock_acquire(const std::string & filnam, double max_seconds )
+{
+	return m_impl->transmit_lock_acquire( filnam, max_seconds );
+}
+
+/// Called after a file is sent.
+void wefax::transmit_lock_release( const std::string & err_msg )
+{
+	m_impl->transmit_lock_release( err_msg );
 }
 

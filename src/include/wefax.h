@@ -28,6 +28,11 @@ class wefax : public modem {
 
 	/// For updating the logbook when loading/saving an image file.
 	cQsoRec m_qso_rec ;
+
+	/// Non-copiable object.
+	wefax ();
+	wefax ( const wefax & );
+	wefax & operator=( const wefax & );
 public:
 	wefax (trx_mode md);
 	virtual ~wefax ();
@@ -103,6 +108,27 @@ public:
 	{
 		m_adif_log = the_flag ;
 	}
+
+	/// Helper string indicating the internal state of the wefax engine.
+	std::string state_string(void) const;
+
+	/// Maximum wait time when getting information about received and sent files.
+	static const int max_delay = 3600 * 24 * 365 ;
+
+	/// Called by the engine when a file is received.
+	void put_received_file(const std::string & filnam);
+
+	/// Used by XML-RPC to get the list of received files.
+	std::string get_received_file(double max_seconds=max_delay);
+
+	/// Called by XML-RPC to send a file which resides on the machine where fldigi runs.
+	std::string send_file( const std::string & filnam, double max_seconds=max_delay);
+
+	/// Called before sending a file. Transmitting is an exclusive process.
+	bool transmit_lock_acquire( const std::string & filnam, double max_seconds=max_delay);
+
+	/// Called after sending a file so another sending can take place.
+	void transmit_lock_release( const std::string & err_msg );
 };
 
 #endif

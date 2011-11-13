@@ -57,6 +57,8 @@
 #include "waterfall.h"
 #include "macros.h"
 #include "qrunner.h"
+#include "wefax.h"
+#include "wefax-pic.h"
 
 #if USE_HAMLIB
         #include "hamlib.h"
@@ -189,16 +191,8 @@ ostream& XML_RPC_Server::list_methods(ostream& out)
 
 // =============================================================================
 // Methods that change the server state must call XMLRPC_LOCK
-
-class xmlrpc_lock
-{
-public:
-	xmlrpc_lock(pthread_mutex_t* m) : mutex(m) { pthread_mutex_lock(mutex); }
-	~xmlrpc_lock(void) { pthread_mutex_unlock(mutex); }
-private:
-	pthread_mutex_t* mutex;
-};
-#define XMLRPC_LOCK SET_THREAD_ID(XMLRPC_TID); xmlrpc_lock autolock_(server_mutex)
+// guard_lock (include/threads.h) ensures that mutex are always unlocked.
+#define XMLRPC_LOCK SET_THREAD_ID(XMLRPC_TID); guard_lock autolock_(server_mutex)
 
 // =============================================================================
 
@@ -2433,6 +2427,206 @@ public:
 
 // =============================================================================
 
+// Returns the current wefax modem pointer.
+static wefax * get_wefax(void)
+{
+	if( ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
+ 	 && ( active_modem->get_mode() <= MODE_WEFAX_LAST ) )
+	{
+		wefax * ptr = dynamic_cast<wefax *>( active_modem );
+		if( ptr == NULL ) throw runtime_error("Inconsistent wefax object");
+		return ptr ;
+	}
+	throw runtime_error("Not in wefax mode");
+}
+
+struct Wefax_state_string : public xmlrpc_c::method
+{
+	Wefax_state_string() {
+		_signature = "s:n";
+		_help = "Returns Wefax engine state (tx and rx) for information."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		*retval = xmlrpc_c::value_string( get_wefax()->state_string() );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what());
+	}
+};
+
+struct Wefax_skip_apt : public xmlrpc_c::method
+{
+	Wefax_skip_apt() {
+		_signature = "s:n";
+		_help = "Skip APT during Wefax reception"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->skip_apt();
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+/// TODO: Refresh the screen with the new value.
+struct Wefax_skip_phasing : public xmlrpc_c::method
+{
+	Wefax_skip_phasing() {
+		_signature = "s:n";
+		_help = "Skip phasing during Wefax reception"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->skip_phasing(true);
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+// TODO: The image should be reloaded just like cancelling from the GUI.
+struct Wefax_set_tx_abort_flag : public xmlrpc_c::method
+{
+	Wefax_set_tx_abort_flag() {
+		_signature = "s:n";
+		_help = "Cancels Wefax image transmission"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->set_tx_abort_flag();
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Wefax_end_reception : public xmlrpc_c::method
+{
+	Wefax_end_reception() {
+		_signature = "s:n";
+		_help = "End Wefax image reception"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->end_reception();
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Wefax_start_manual_reception : public xmlrpc_c::method
+{
+	Wefax_start_manual_reception() {
+		_signature = "s:n";
+		_help = "Starts fax image reception in manual mode"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->set_rx_manual_mode(true);
+		get_wefax()->skip_apt();
+		get_wefax()->skip_phasing(true);
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Wefax_set_adif_log : public xmlrpc_c::method
+{
+	Wefax_set_adif_log() {
+		_signature = "s:b";
+		_help = "Set/reset logging to received/transmit images to ADIF log file"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->set_adif_log( params.getBoolean(0));
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Wefax_set_max_lines : public xmlrpc_c::method
+{
+	Wefax_set_max_lines() {
+		_signature = "s:i";
+		_help = "Set maximum lines for fax image reception"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		get_wefax()->set_max_lines( params.getInt(0));
+		/// This updates the GUI.
+		REQ( wefax_pic::restore_max_lines );
+		*retval = xmlrpc_c::value_string( "" );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Wefax_get_received_file : public xmlrpc_c::method
+{
+	Wefax_get_received_file() {
+		_signature = "s:i";
+		_help = "Waits for next received fax file, returns its name with a delay. Empty string if timeout."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		std::string filename = get_wefax()->get_received_file( params.getInt(0));
+		*retval = xmlrpc_c::value_string( filename );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Wefax_send_file : public xmlrpc_c::method
+{
+	Wefax_send_file() {
+		_signature = "s:si";
+		_help = "Send file. returns an empty string if OK otherwise an error message."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		std::string status = get_wefax()->send_file( params.getString(0), params.getInt(1) );
+		*retval = xmlrpc_c::value_string( status );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+// =============================================================================
+
 // End XML-RPC interface
 
 // method list: ELEM_(class_name, "method_name")
@@ -2586,7 +2780,18 @@ public:
 	ELEM_(Spot_get_auto, "spot.get_auto")							\
 	ELEM_(Spot_set_auto, "spot.set_auto")							\
 	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
-	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")
+	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")	                                \
+	\
+	ELEM_(Wefax_state_string, "wefax.state_string")	                    \
+	ELEM_(Wefax_skip_apt, "wefax.skip_apt")                             \
+	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")                     \
+	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")           \
+	ELEM_(Wefax_end_reception, "wefax.end_reception")                   \
+	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception") \
+	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")                     \
+	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")                   \
+	ELEM_(Wefax_get_received_file, "wefax.get_received_file")           \
+	ELEM_(Wefax_send_file, "wefax.send_file")                           \
 
 
 struct rm_pred
