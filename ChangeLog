@@ -1,4 +1,14 @@
-2011-11-10  David Freese  <w1hkj@w1hkj.com>
+
+
+=Version 3.21.25=
+
+2011-11-13  David Freese  <w1hkj@w1hkj.com>
+
+	50fa414: guard lock
+	c2ba559: eQSL
+
+
+=Version 3.21.24=
 
 	16fc289: Exec macro
 	0859928: QRZ on-line lookup
