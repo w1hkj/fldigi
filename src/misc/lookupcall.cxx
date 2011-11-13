@@ -1005,3 +1005,98 @@ void CALLSIGNquery()
 	pthread_cond_signal(&qrz_cond);
 	pthread_mutex_unlock(&qrz_mutex);
 }
+
+//======================================================================
+// thread to support sending log entry to eQSL
+//======================================================================
+
+pthread_t* EQSLthread = 0;
+pthread_mutex_t EQSLmutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t EQSLcond = PTHREAD_COND_INITIALIZER;
+
+static void *EQSL_loop(void *args);
+static void EQSL_init(void);
+
+void EQSL_close(void);
+void EQSL_send();
+
+static std::string EQSL_url = "";
+static std::string EQSL_xmlpage = "";
+
+static bool EQSLEXIT = false;
+
+static void *EQSL_loop(void *args)
+{
+	SET_THREAD_ID(EQSL_TID);
+
+	SET_THREAD_CANCEL();
+
+	for (;;) {
+		TEST_THREAD_CANCEL();
+		pthread_mutex_lock(&EQSLmutex);
+		pthread_cond_wait(&EQSLcond, &EQSLmutex);
+		pthread_mutex_unlock(&EQSLmutex);
+
+		if (EQSLEXIT)
+			return NULL;
+
+		size_t p;
+		if (fetch_http(EQSL_url, EQSL_xmlpage, 5.0) == -1)
+			LOG_ERROR("%s", "eQSL not available");
+
+		else if ((p = EQSL_xmlpage.find("Error:")) != std::string::npos) {
+			size_t p2 = EQSL_xmlpage.find('\n', p);
+			LOG_ERROR("%s", EQSL_xmlpage.substr(p, p2 - p - 1).c_str());
+		} else
+			LOG_INFO("eQSL logged %s", EQSL_url.c_str()); 
+
+	}
+	return NULL;
+}
+
+void EQSL_close(void)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!EQSLthread)
+		return;
+
+	CANCEL_THREAD(*EQSLthread);
+
+	pthread_mutex_lock(&qrz_mutex);
+	EQSLEXIT = true;
+	pthread_cond_signal(&qrz_cond);
+	pthread_mutex_unlock(&qrz_mutex);
+
+	pthread_join(*QRZ_thread, NULL);
+	delete QRZ_thread;
+	QRZ_thread = 0;
+}
+
+static void EQSL_init(void)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (EQSLthread)
+		return;
+	EQSLthread = new pthread_t;
+	EQSLEXIT = false;
+	if (pthread_create(EQSLthread, NULL, EQSL_loop, NULL) != 0) {
+		LOG_PERROR("pthread_create");
+		return;
+	}
+	MilliSleep(10);
+}
+
+void sendEQSL(const char *url)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!EQSLthread)
+		EQSL_init();
+
+	pthread_mutex_lock(&EQSLmutex);
+	EQSL_url = url;
+	pthread_cond_signal(&EQSLcond);
+	pthread_mutex_unlock(&EQSLmutex);
+}
