@@ -1,5 +1,16 @@
+2011-11-14  David Freese  <w1hkj@w1hkj.com>
+
+	4aca1f1: eQSL update
+	389ce71: eQSL thread
+
+2011-11-12  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	dab85dc: Wefax enhancements.
+	21bcc18: Use Logbook record
+
 2011-11-12  David Freese  <w1hkj@w1hkj.com>
 
+	7f30f29: eQSL
 	2dae98d: eQSL
 	b0e37af: Exec macro
 	3288d8d: QRZ on-line lookup
