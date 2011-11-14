@@ -46,6 +46,7 @@
 #include "configuration.h"
 
 #include "logsupport.h"
+#include "lookupcall.h"
 
 #include <FL/fl_ask.H>
 
@@ -214,6 +215,9 @@ void submit_log(void)
 		spot_log(inpCall->value(), inpLoc->value());
 
 	logmode = mode_info[active_modem->get_mode()].adif_name;
+
+	if (progdefaults.eqsl_when_logged)
+		makeEQSL("");
 
 	if (progdefaults.xml_logbook)
 		xml_add_record();

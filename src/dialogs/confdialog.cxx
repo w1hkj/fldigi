@@ -4,6 +4,7 @@
 #include "confdialog.h"
 #include <config.h>
 #include <FL/Fl_Tooltip.H>
+#include <FL/Fl_Box.H>
 #include <FL/filename.H>
 #include "main.h"
 #include "fl_digi.h"
@@ -3110,6 +3111,26 @@ static void cb_inpEQSL_nick(Fl_Input2* o, void*) {
   progdefaults.eqsl_nick = o->value();
 progdefaults.changed = true;
 }
+
+Fl_Check_Button *btn_send_when_logged=(Fl_Check_Button *)0;
+
+static void cb_btn_send_when_logged(Fl_Check_Button* o, void*) {
+  progdefaults.eqsl_when_logged = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_eqsl_default_message=(Fl_Input2 *)0;
+
+static void cb_txt_eqsl_default_message(Fl_Input2* o, void*) {
+  progdefaults.eqsl_default_message = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Box *eqsl_txt1=(Fl_Box *)0;
+
+Fl_Box *eqsl_txt2=(Fl_Box *)0;
+
+Fl_Box *eqsl_txt3=(Fl_Box *)0;
 
 Fl_Button *btnSaveConfig=(Fl_Button *)0;
 
@@ -6963,6 +6984,46 @@ d frequency"));
               o->value(progdefaults.eqsl_nick.c_str());
               inpEQSL_nick->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_nick
+            { Fl_Group* o = new Fl_Group(4, 170, 492, 194, _("Options"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+              { Fl_Check_Button* o = btn_send_when_logged = new Fl_Check_Button(29, 191, 70, 15, _("send when logged (log button, <LOG>, <LNW>)"));
+                btn_send_when_logged->down_box(FL_DOWN_BOX);
+                btn_send_when_logged->callback((Fl_Callback*)cb_btn_send_when_logged);
+                o->value(progdefaults.eqsl_when_logged);
+              } // Fl_Check_Button* btn_send_when_logged
+              { Fl_Input2* o = txt_eqsl_default_message = new Fl_Input2(33, 226, 451, 40, _("Default message"));
+                txt_eqsl_default_message->type(4);
+                txt_eqsl_default_message->box(FL_DOWN_BOX);
+                txt_eqsl_default_message->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                txt_eqsl_default_message->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                txt_eqsl_default_message->labeltype(FL_NORMAL_LABEL);
+                txt_eqsl_default_message->labelfont(0);
+                txt_eqsl_default_message->labelsize(14);
+                txt_eqsl_default_message->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                txt_eqsl_default_message->callback((Fl_Callback*)cb_txt_eqsl_default_message);
+                txt_eqsl_default_message->align(FL_ALIGN_TOP_LEFT);
+                txt_eqsl_default_message->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.eqsl_default_message.c_str());
+              } // Fl_Input2* txt_eqsl_default_message
+              { Fl_Group* o = new Fl_Group(8, 270, 484, 90, _("Text Tags (tags use {} delimiters)"));
+                o->box(FL_THIN_DOWN_BOX);
+                o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
+                { eqsl_txt1 = new Fl_Box(14, 317, 220, 17, _("{CALL} other ops call sign"));
+                eqsl_txt1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                } // Fl_Box* eqsl_txt1
+                { eqsl_txt2 = new Fl_Box(12, 336, 220, 17, _("{MODE} full mode / submode"));
+                eqsl_txt2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                } // Fl_Box* eqsl_txt2
+                { eqsl_txt3 = new Fl_Box(260, 317, 220, 17, _("{NAME} other ops name"));
+                eqsl_txt3->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+                } // Fl_Box* eqsl_txt3
+                { new Fl_Box(28, 293, 440, 17, _("These tags can also be used in <EQSL:[message]>"));
+                } // Fl_Box* o
+                o->end();
+              } // Fl_Group* o
+              o->end();
+            } // Fl_Group* o
             o->end();
           } // Fl_Group* o
           o->end();

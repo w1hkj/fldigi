@@ -435,6 +435,11 @@ extern Fl_Input2 *inpEQSL_id;
 extern Fl_Input2 *inpEQSL_pwd;
 extern Fl_Button *btnEQSL_pwd_show;
 extern Fl_Input2 *inpEQSL_nick;
+extern Fl_Check_Button *btn_send_when_logged;
+extern Fl_Input2 *txt_eqsl_default_message;
+extern Fl_Box *eqsl_txt1;
+extern Fl_Box *eqsl_txt2;
+extern Fl_Box *eqsl_txt3;
 extern Fl_Button *btnSaveConfig;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnCloseConfig;
