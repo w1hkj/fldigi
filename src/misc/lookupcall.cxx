@@ -44,10 +44,12 @@
 #include "configuration.h"
 
 #include "lookupcall.h"
+#include "logsupport.h"
 #include "main.h"
 #include "confdialog.h"
 #include "fl_digi.h"
 #include "qrzlib.h"
+#include "trx.h"
 
 #include "xmlreader.h"
 
@@ -1046,7 +1048,7 @@ static void *EQSL_loop(void *args)
 
 		else if ((p = EQSL_xmlpage.find("Error:")) != std::string::npos) {
 			size_t p2 = EQSL_xmlpage.find('\n', p);
-			LOG_ERROR("%s", EQSL_xmlpage.substr(p, p2 - p - 1).c_str());
+			LOG_ERROR("%s\n%s", EQSL_xmlpage.substr(p, p2 - p - 1).c_str(), EQSL_url.c_str());
 		} else
 			LOG_INFO("eQSL logged %s", EQSL_url.c_str()); 
 
@@ -1100,3 +1102,106 @@ void sendEQSL(const char *url)
 	pthread_cond_signal(&EQSLcond);
 	pthread_mutex_unlock(&EQSLmutex);
 }
+
+// this function may be called from several places including macro
+// expansion and execution
+
+void makeEQSL(const char *message)
+{
+	char sztemp[100];
+	std::string tempstr;
+	std::string eQSL_url;
+	std::string msg;
+	size_t p = 0;
+
+	msg = message;
+
+	if (msg.empty()) msg = progdefaults.eqsl_default_message;
+
+// replace message tags {CALL}, {NAME}, {MODE}
+	while ((p = msg.find("{CALL}")) != std::string::npos)
+		msg.replace(p, 6, inpCall->value());
+	while ((p = msg.find("{NAME}")) != std::string::npos)
+		msg.replace(p, 6, inpName->value());
+	while ((p = msg.find("{MODE}")) != std::string::npos)
+		msg.replace(p, 6, mode_info[active_modem->get_mode()].adif_name);
+
+
+// eqsl url header
+	eQSL_url = "http://www.eqsl.cc/qslcard/importADIF.cfm?ADIFdata=upload <adIF_ver:5>2.1.9";
+	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s", 
+		progdefaults.eqsl_id.length(), progdefaults.eqsl_id.c_str(),
+		progdefaults.eqsl_pwd.length(), progdefaults.eqsl_pwd.c_str());
+	eQSL_url.append(sztemp);
+// eqsl nickname
+	if (!progdefaults.eqsl_nick.empty()) {
+		snprintf(sztemp, sizeof(sztemp), "<APP_EQSL_QTH_NICKNAME:%d>%s",
+		progdefaults.eqsl_nick.length(), progdefaults.eqsl_nick.c_str());
+		eQSL_url.append(sztemp);
+	}
+	eQSL_url.append("<PROGRAMID:6>FLDIGI<EOH>");
+
+// eqsl record
+// band
+	tempstr = band_name(band(wf->rfcarrier()));
+	snprintf(sztemp, sizeof(sztemp), "<BAND:%d>%s", tempstr.length(), tempstr.c_str());
+	eQSL_url.append(sztemp);
+// call
+	tempstr = inpCall->value();
+	snprintf(sztemp, sizeof(sztemp), "<CALL:%d>%s", tempstr.length(), tempstr.c_str());
+	eQSL_url.append(sztemp);
+// mode
+	tempstr = mode_info[active_modem->get_mode()].adif_name;
+// test for modes not supported by eQSL
+	if ((tempstr.find("MFSK4") != std::string::npos) ||
+		(tempstr.find("MFSK11") != std::string::npos) ||
+		(tempstr.find("MFSK22") != std::string::npos) ||
+		(tempstr.find("MFSK31") != std::string::npos) ||
+		(tempstr.find("MFSK32") != std::string::npos) ||
+		(tempstr.find("MFSK64") != std::string::npos) )
+		tempstr = "MFSK16";
+	if ((tempstr.find("PSK250") != std::string::npos) ||
+		(tempstr.find("PSK500") != std::string::npos) ||
+		(tempstr.find("PSK125R") != std::string::npos) ||
+		(tempstr.find("PSK250R") != std::string::npos) ||
+		(tempstr.find("PSK500R") != std::string::npos))
+		tempstr = "PSK125";
+	if ((tempstr.find("QPSK250") != std::string::npos) ||
+		(tempstr.find("QPSK500") != std::string::npos) ||
+		(tempstr.find("QPSK125R") != std::string::npos) ||
+		(tempstr.find("QPSK250R") != std::string::npos) ||
+		(tempstr.find("QPSK500R") != std::string::npos))
+		tempstr = "QPSK125";
+
+	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s", tempstr.length(), tempstr.c_str());
+	eQSL_url.append(sztemp);
+// qso date
+	snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s", sDate_on.length(), sDate_on.c_str());
+	eQSL_url.append(sztemp);
+// qso time
+	tempstr = inpTimeOn->value();
+	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s", tempstr.length(), tempstr.c_str());
+	eQSL_url.append(sztemp);
+// rst sent
+	tempstr = inpRstOut->value();
+	snprintf(sztemp, sizeof(sztemp), "<RST_SENT:%d>%s", tempstr.length(), tempstr.c_str());
+	eQSL_url.append(sztemp);
+// message
+	if (!msg.empty()) {
+		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s", msg.length(), msg.c_str());
+		eQSL_url.append(sztemp);
+	}
+	eQSL_url.append("<EOR>");
+
+	tempstr.clear();
+	for (size_t n = 0; n < eQSL_url.length(); n++) {
+		if (eQSL_url[n] == ' ') tempstr.append("%20");
+		else if (eQSL_url[n] == '<') tempstr.append("%3c");
+		else if (eQSL_url[n] == '>') tempstr.append("%3e");
+		else tempstr += eQSL_url[n];
+	}
+
+	sendEQSL(tempstr.c_str());
+
+}
+

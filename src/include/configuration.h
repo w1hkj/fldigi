@@ -672,6 +672,12 @@
         ELEM_(std::string, eqsl_nick, "EQSL_NICKNAME",                                  \
               "eQSL nickname",                                                          \
               "")                                                                       \
+        ELEM_(std::string, eqsl_default_message, "EQSL_DEF_MSG",                        \
+              "eQSl default message",                                                   \
+              "")                                                                       \
+        ELEM_(bool, eqsl_when_logged, "EQSL_WHEN_LOGGED",                               \
+              "Send eQSL when other log action invoked",                                \
+              false)                                                                    \
         /* Rig control */                                                               \
         ELEM_(bool, btnusb, "BTNUSB",                                                   \
               "This setting is currently unused",                                       \
