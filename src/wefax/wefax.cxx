@@ -851,8 +851,8 @@ public:
 	mutable std::vector<unsigned char> m_correlation_buffer ;
 	mutable double m_current_corr ;
 	mutable double m_curr_corr_avg ;
-	mutable size_t m_corr_calls_nb;
-	static const size_t m_min_corr_lines = 20 ;
+	mutable int m_corr_calls_nb;
+	static const int m_min_corr_lines = 20 ;
 
 	/// Absolute value of statistical correlation between the current line and the previous one.
 	/// Called once per maximum sample line.
@@ -1148,7 +1148,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 			switch( m_rx_state ) {
 				case RXAPTSTART :
 					skip_apt_rx();
-					LOG_INFO( the_signal.signal_text() );
+					LOG_INFO( "%s", the_signal.signal_text() );
 					break ;
 				default : break ;
 			}
@@ -1157,7 +1157,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 			switch( m_rx_state ) {
 				case RXAPTSTART :
 					skip_apt_rx();
-					LOG_INFO( the_signal.signal_text() );
+					LOG_INFO( "%s", the_signal.signal_text() );
 					break ;
 				default : break ;
 			}
@@ -1168,7 +1168,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 					skip_apt_rx();
 					/// The phasing step will start receiving the image later. First we try
 					/// to phase the image correctly.
-					LOG_INFO( the_signal.signal_text() );
+					LOG_INFO( "%s", the_signal.signal_text() );
 					break ;
 				default : break ;
 			}
@@ -1176,7 +1176,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 		case RXAPTSTOP :
 			switch( m_rx_state ) {
 				case RXIMAGE    :
-					LOG_INFO( the_signal.signal_text() );
+					LOG_INFO( "%s", the_signal.signal_text() );
 					save_automatic("stop");
 					end_rx();
 					break;
