@@ -841,8 +841,6 @@ void AddRecord ()
 
 	saveRecord();
 
-//	qsodb.SortByDate(progdefaults.sort_date_time_off);
-
 	restore_sort();
 	loadBrowser();
 
