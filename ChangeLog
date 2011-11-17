@@ -1,5 +1,10 @@
-2011-11-14  David Freese  <w1hkj@w1hkj.com>
+2011-11-15  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
+	4103a07: WEFAX error logging fix
+
+2011-11-15  David Freese  <w1hkj@w1hkj.com>
+
+	ff34b3c: Restore Log Sort
 	4aca1f1: eQSL update
 	389ce71: eQSL thread
 
