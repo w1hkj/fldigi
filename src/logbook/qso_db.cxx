@@ -270,6 +270,16 @@ cQsoDb::cQsoDb() {
   dirty = 0;
 }
 
+cQsoDb::cQsoDb(cQsoDb *db) {
+  nbrrecs = 0;
+  maxrecs = db->nbrRecs();
+  qsorec = new cQsoRec[maxrecs];
+  for (int i = 0; i < maxrecs; i++)
+	qsorec[i] = db->qsorec[i];
+  compby = COMPDATE;
+  dirty = 0;
+}
+
 cQsoDb::~cQsoDb() {
   delete [] qsorec;
 } 

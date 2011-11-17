@@ -7,6 +7,10 @@
 #include <cstdlib>
 #include <string>
 
+#include "fl_digi.h"
+
+#include "signal.h"
+#include "threads.h"
 #include "adif_io.h"
 #include "config.h"
 #include "configuration.h"
@@ -16,6 +20,9 @@
 #include "debug.h"
 #include "util.h"
 #include "date.h"
+#include "logsupport.h"
+#include "qrunner.h"
+#include "timeops.h"
 
 #ifdef __WOE32__
 static const char *szEOL = "\r\n";
@@ -128,7 +135,8 @@ cAdifIO::cAdifIO ()
 	initfields();
 }
 
-void cAdifIO::fillfield (int fieldnum, char *buff){
+void cAdifIO::fillfield (int fieldnum, char *buff)
+{
 const char *p = buff;
 int fldsize;
 	while (*p != ':' && *p != '>') p++;
@@ -147,22 +155,29 @@ int fldsize;
 	adifqso.putField (fieldnum, p2+1, fldsize);
 }
 
-void cAdifIO::readFile (const char *fname, cQsoDb *db) {
+static void write_rxtext(const char *s)
+{
+	ReceiveText->add(s);
+}
+
+void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
+{
 	long filesize = 0;
 	char *buff;
 	int found;
 	int retval;
 
 // open the adif file
-	adiFile = fopen (fname, "r");
-	if (!adiFile)
+	FILE *adiFile = fopen (fname, "r");
+
+	if (adiFile == NULL)
 		return;
 // determine its size for buffer creation
 	fseek (adiFile, 0, SEEK_END);
 	filesize = ftell (adiFile);
 
 	if (filesize == 0) {
-		fl_alert2(_("Empty ADIF logbook file"));
+		LOG_INFO("%s", _("Empty ADIF logbook file"));
 		return;
 	}
 
@@ -175,14 +190,27 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 // relaxed file integrity test to all importing from non conforming log programs
 	if ((strcasestr(buff, "<ADIF_VER:") != 0) &&
 		(strcasestr(buff, "<CALL:") == 0)) {
+		LOG_ERROR("%s", _("Not an ADIF file"));
 		delete [] buff;
 		return;
 	}
 	if (strcasestr(buff, "<CALL:") == 0) {
-		fl_alert2(_("Not an ADIF file"));
+		LOG_ERROR("%s", _("Not an ADIF file"));
 		delete [] buff;
 		return;
 	}
+
+	struct timespec t0, t1;
+#ifdef _POSIX_MONOTONIC_CLOCK
+	clock_gettime(CLOCK_MONOTONIC, &t0);
+#else
+	clock_gettime(CLOCK_REALTIME, &t0);
+#endif
+
+	static string msg;
+	msg.clear();
+	msg.append("\n<===== Reading ").append(fl_filename_name(fname)).append(" =====>");
+	REQ(write_rxtext, msg.c_str());
 
 	char *p1 = buff, *p2;
 	if (*p1 != '<') { // yes, skip over header to start of records
@@ -192,6 +220,7 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 		}
 		if (!p1) {
 			delete [] buff;
+			LOG_ERROR("%s", _("Not an ADIF file"));
 			return;	 // must not be an ADIF compliant file
 		}
 		p1 += 1;
@@ -232,9 +261,23 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db) {
 		p1 = p2 + 1;
 		p2 = strchr(p1,'<');
 	}
-
 	db->SortByDate(progdefaults.sort_date_time_off);
 	delete [] buff;
+
+#ifdef _POSIX_MONOTONIC_CLOCK
+	clock_gettime(CLOCK_MONOTONIC, &t1);
+#else
+	clock_gettime(CLOCK_REALTIME, &t1);
+#endif
+
+	t0 = t1 - t0;
+	float t = (t0.tv_sec + t0.tv_nsec/1e9);
+
+	static char szmsg[50];
+	snprintf(szmsg, sizeof(szmsg), "\n<=== read %d records in %4.2f seconds===>\n", db->nbrRecs(), t);
+	REQ(write_rxtext, szmsg);
+
+	REQ(adif_read_OK);
 }
 
 static const char *adifmt = "<%s:%d>";
@@ -260,6 +303,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 	adiFile = fopen (fname, "w");
 	if (!adiFile)
 		return 1;
+
 	fprintf (adiFile, ADIFHEADER.c_str(),
 			 fl_filename_name(fname),
 			 strlen(ADIF_VERS), ADIF_VERS,
@@ -287,13 +331,82 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 		}
 	}
 	fclose (adiFile);
+
 	return 0;
 }
 
 // write ALL records to the common log
 
-int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
+//======================================================================
+// thread support writing database
+//======================================================================
 
+pthread_t* ADIF_RW_thread = 0;
+pthread_mutex_t ADIF_RW_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t ADIF_RW_cond = PTHREAD_COND_INITIALIZER;
+static void ADIF_RW_init();
+
+static string adif_file_image;
+static string adif_file_name;
+static string records;
+static string record;
+static char recfield[200];
+static int nrecs;
+
+static bool ADIF_READ = false;
+static bool ADIF_WRITE = false;
+
+static cQsoDb *adif_db;
+
+static cAdifIO *adifIO = 0;
+
+void cAdifIO::readFile (const char *fname, cQsoDb *db) 
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!ADIF_RW_thread)
+		ADIF_RW_init();
+
+	pthread_mutex_lock(&ADIF_RW_mutex);
+
+	adif_file_name = fname;
+	adif_db = db;
+	adifIO = this;
+	ADIF_READ = true;
+
+	pthread_cond_signal(&ADIF_RW_cond);
+	pthread_mutex_unlock(&ADIF_RW_mutex);
+}
+
+static cQsoDb *adifdb = 0;
+static cQsoDb *wrdb = 0;
+
+int cAdifIO::writeLog (const char *fname, cQsoDb *db, bool immediate) {
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!ADIF_RW_thread)
+		ADIF_RW_init();
+
+	if (!immediate) {
+		pthread_mutex_lock(&ADIF_RW_mutex);
+		adif_file_name = fname;
+		adifIO = this;
+		ADIF_WRITE = true;
+		if (wrdb) delete wrdb;
+		wrdb = new cQsoDb(db);
+		adifdb = wrdb;
+		pthread_cond_signal(&ADIF_RW_cond);
+		pthread_mutex_unlock(&ADIF_RW_mutex);
+	} else {
+		adifdb = db;
+		do_writelog();
+	}
+
+	return 1;
+}
+
+void cAdifIO::do_writelog()
+{
 	string ADIFHEADER;
 	ADIFHEADER = "File: %s";
 	ADIFHEADER.append(szEOL);
@@ -308,25 +421,21 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
 	ADIFHEADER.append("<EOH>");
 	ADIFHEADER.append(szEOL);
 
-// open the adif file
-	string sFld;
-	cQsoRec *rec;
 	Ccrc16 checksum;
 	string s_checksum;
 
-	adiFile = fopen (fname, "w");
+	adiFile = fopen (adif_file_name.c_str(), "w");
 	if (!adiFile) {
-		LOG_ERROR("Cannot write to %s", fname);
-		return 1;
+		LOG_ERROR("Cannot write to %s", adif_file_name.c_str());
+		return;
 	}
 
-	string records;
-	string record;
-	char recfield[200];
+	string sFld;
+	cQsoRec *rec;
 
 	records.clear();
-	for (int i = 0; i < db->nbrRecs(); i++) {
-		rec = db->getRec(i);
+	for (int i = 0; i < adifdb->nbrRecs(); i++) {
+		rec = adifdb->getRec(i);
 		record.clear();
 		for (int j = 0; j < NUMFIELDS; j++) {
 			sFld = rec->getField(j);
@@ -339,13 +448,14 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
 		record.append(szEOR);
 		record.append(szEOL);
 		records.append(record);
-		db->qsoUpdRec(i, rec);
+		adifdb->qsoUpdRec(i, rec);
 	}
+	nrecs = adifdb->nbrRecs();
 
 	s_checksum = checksum.scrc16(records);
 
 	fprintf (adiFile, ADIFHEADER.c_str(),
-		 fl_filename_name(fname),
+		 fl_filename_name(adif_file_name.c_str()),
 		 strlen(ADIF_VERS), ADIF_VERS,
 		 strlen(PACKAGE_NAME), PACKAGE_NAME,
 		 strlen(PACKAGE_VERSION), PACKAGE_VERSION,
@@ -354,7 +464,74 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db) {
 	fprintf (adiFile, "%s", records.c_str());
 
 	fclose (adiFile);
+	LOG_INFO("%d records written to %s", nrecs, adif_file_name.c_str());
 
-	return 0;
+	return;
 }
 
+//======================================================================
+// thread to support writing database in a separate thread
+//======================================================================
+
+static void *ADIF_RW_loop(void *args);
+static bool ADIF_RW_EXIT = false;
+
+static void *ADIF_RW_loop(void *args)
+{
+	SET_THREAD_ID(ADIF_RW_TID);
+
+	SET_THREAD_CANCEL();
+
+	for (;;) {
+		TEST_THREAD_CANCEL();
+		pthread_mutex_lock(&ADIF_RW_mutex);
+		pthread_cond_wait(&ADIF_RW_cond, &ADIF_RW_mutex);
+		pthread_mutex_unlock(&ADIF_RW_mutex);
+
+		if (ADIF_RW_EXIT)
+			return NULL;
+		if (ADIF_WRITE && adifIO) {
+			adifIO->do_writelog();
+			ADIF_WRITE = false;
+		} else if (ADIF_READ && adifIO) {
+			adifIO->do_readfile(adif_file_name.c_str(), adif_db);
+			ADIF_READ = false;
+		}
+	}
+	return NULL;
+}
+
+void ADIF_RW_close(void)
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (!ADIF_RW_thread)
+		return;
+
+	CANCEL_THREAD(*ADIF_RW_thread);
+
+	pthread_mutex_lock(&ADIF_RW_mutex);
+	ADIF_RW_EXIT = true;
+	pthread_cond_signal(&ADIF_RW_cond);
+	pthread_mutex_unlock(&ADIF_RW_mutex);
+
+	pthread_join(*ADIF_RW_thread, NULL);
+	delete ADIF_RW_thread;
+	ADIF_RW_thread = 0;
+	if (wrdb) delete wrdb;
+}
+
+static void ADIF_RW_init()
+{
+	ENSURE_THREAD(FLMAIN_TID);
+
+	if (ADIF_RW_thread)
+		return;
+	ADIF_RW_thread = new pthread_t;
+	ADIF_RW_EXIT = false;
+	if (pthread_create(ADIF_RW_thread, NULL, ADIF_RW_loop, NULL) != 0) {
+		LOG_PERROR("pthread_create");
+		return;
+	}
+	MilliSleep(10);
+}

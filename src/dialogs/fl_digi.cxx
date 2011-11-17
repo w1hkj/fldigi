@@ -2479,6 +2479,7 @@ bool clean_exit(void) {
 	rigCAT_close();
 	rigMEM_close();
 
+
 	if (mixer)
 		mixer->closeMixer();
 
@@ -2504,6 +2505,10 @@ bool clean_exit(void) {
 #endif
 
 	close_logbook();
+	MilliSleep(50);
+
+	ADIF_RW_close();
+//	EQSL_close();
 
 	return true;
 }
