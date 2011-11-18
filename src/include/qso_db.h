@@ -76,6 +76,7 @@ public:
 	void isdirty(int n) {dirty = n;}
 	int  isdirty() {return dirty;}
 	void qsoNewRec (cQsoRec *);
+	cQsoRec *newrec();
 	void qsoDelRec (int);
 	void qsoUpdRec (int, cQsoRec *);
 	int qsoFindRec (cQsoRec *);
