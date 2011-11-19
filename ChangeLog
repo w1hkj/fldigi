@@ -1,10 +1,23 @@
 
 
+=Version 3.21.27=
+
+2011-11-18  David Freese  <w1hkj@w1hkj.com>
+
+	5712573: Log r/w improvements
+
+2011-11-15  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	b3a89c7: WEFAX error logging fix
+
+2011-11-15  David Freese  <w1hkj@w1hkj.com>
+
+	9269c9a: Restore Log Sort
+
+
 =Version 3.21.26=
 
-2011-11-14  David Freese  <w1hkj@w1hkj.com>
-
-	77551e8: eQSL update
+	ee27d64: eQSL update
 
 
 =Version 3.21.25=
@@ -13,8 +26,8 @@
 
 2011-11-12  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
-	dae542e: Wefax enhancements.
-	e75cc0e: Use Logbook record
+	8baf07b: Wefax enhancements.
+	11d699e: Use Logbook record
 
 2011-11-12  David Freese  <w1hkj@w1hkj.com>
 
