@@ -260,12 +260,23 @@ istream &operator>> (istream &input, cQsoRec &rec ) {
 //======================================================================
 // class cQsoDb
 
-#define MAXRECS 8192
+#define MAXRECS 32768
+#define INCRRECS 8192
 
 cQsoDb::cQsoDb() {
   nbrrecs = 0;
   maxrecs = MAXRECS;
   qsorec = new cQsoRec[maxrecs];
+  compby = COMPDATE;
+  dirty = 0;
+}
+
+cQsoDb::cQsoDb(cQsoDb *db) {
+  nbrrecs = 0;
+  maxrecs = db->nbrRecs();
+  qsorec = new cQsoRec[maxrecs];
+  for (int i = 0; i < maxrecs; i++)
+	qsorec[i] = db->qsorec[i];
   compby = COMPDATE;
   dirty = 0;
 }
@@ -295,7 +306,7 @@ int cQsoDb::qsoFindRec(cQsoRec *rec) {
 
 void cQsoDb::qsoNewRec (cQsoRec *nurec) {
   if (nbrrecs == maxrecs) {
-    maxrecs *= 2;
+    maxrecs += INCRRECS;
     cQsoRec *atemp = new cQsoRec[maxrecs];
     for (int i = 0; i < nbrrecs; i++)
         atemp[i] = qsorec[i];
@@ -306,6 +317,20 @@ void cQsoDb::qsoNewRec (cQsoRec *nurec) {
   qsorec[nbrrecs].checkBand();
   nbrrecs++;
   dirty = 1;
+}
+
+cQsoRec* cQsoDb::newrec() {
+  if (nbrrecs == maxrecs) {
+    maxrecs += INCRRECS;
+    cQsoRec *atemp = new cQsoRec[maxrecs];
+    for (int i = 0; i < nbrrecs; i++)
+        atemp[i] = qsorec[i];
+    delete [] qsorec;
+    qsorec = atemp;
+  }
+  nbrrecs++;
+  dirty = 1;
+  return &qsorec[nbrrecs - 1];
 }
 
 void cQsoDb::qsoDelRec (int rnbr) {

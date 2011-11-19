@@ -279,31 +279,35 @@ extern void activate_menu_item(const char *caption, bool val);
 extern bool xml_check_dup();
 extern bool xml_get_record(const char *);
 
-const char* zdate(void);
-const char* ztime(void);
+extern const char* zdate(void);
+extern const char* ztime(void);
 
 extern void setTabColors();
 
 extern void toggle_visible_modes(Fl_Widget*, void*);
 
-void qsy(long long rfc, int fmid = -1);
+extern void qsy(long long rfc, int fmid = -1);
 
-void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",
+extern void note_qrg(bool no_dup = true, const char* prefix = " ", const char* suffix = " ",
 	      trx_mode mode = NUM_MODES, long long rfc = 0LL, int afreq = 0);
 
-void set_olivia_bw(int bw);
-void set_olivia_tones(int tones);
+extern void set_olivia_bw(int bw);
+extern void set_olivia_tones(int tones);
 
-void set_contestia_bw(int bw);
-void set_contestia_tones(int tones);
+extern void set_contestia_bw(int bw);
+extern void set_contestia_tones(int tones);
 
-void set_rtty_shift(int shift);
-void set_rtty_baud(float baud);
-void set_rtty_bits(int bits);
-void set_rtty_bw(float bw);
+extern void set_rtty_shift(int shift);
+extern void set_rtty_baud(float baud);
+extern void set_rtty_bits(int bits);
+extern void set_rtty_bw(float bw);
 
-void sync_cw_parameters();
+extern void sync_cw_parameters();
 
-void open_recv_folder(const char *fname);
+extern void open_recv_folder(const char *fname);
+
+// thread terminators
+extern void ADIF_RW_close(void);
+extern void EQSL_close(void);
 
 #endif

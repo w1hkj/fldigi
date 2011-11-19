@@ -37,19 +37,9 @@ int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout);
 int sem_timedwait_rel(sem_t* sem, double rel_timeout);
 int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, double rel_timeout);
 
-//enum {
-//	INVALID_TID = -1,
-//	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID, LOGBOOK_TID,
-//#if USE_XMLRPC
-//	XMLRPC_TID,
-//#endif
-//	ARQ_TID, ARQSOCKET_TID,
-//	FLMAIN_TID,
-//	NUM_THREADS, NUM_QRUNNER_THREADS = NUM_THREADS - 1
-//};
 enum {
 	INVALID_TID = -1,
-	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID, EQSL_TID,
+	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID, EQSL_TID, ADIF_RW_TID,
 #if USE_XMLRPC
 	XMLRPC_TID,
 #endif

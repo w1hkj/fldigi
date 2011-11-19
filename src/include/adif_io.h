@@ -16,7 +16,7 @@ const int FieldLabelMaxLen = 16;
 class cAdifIO {
 private:
 	bool write_all;
-	cQsoRec adifqso;
+	cQsoRec *adifqso;
 	FILE *adiFile;
 	void fillfield(int, char *);
 //	std::string log_checksum;
@@ -27,8 +27,10 @@ public:
 	int readAdifRec () {return 0;};
 	int writeAdifRec () {return 0;};
 	void readFile (const char *, cQsoDb *);
+	void do_readfile(const char *, cQsoDb *);
+	void do_writelog();
 	int writeFile (const char *, cQsoDb *);
-	int writeLog (const char *, cQsoDb *);
+	int writeLog (const char *, cQsoDb *, bool b = true);
 	bool log_changed(const char *fname);
 //	std::string get_checksum() { return log_checksum; }
 //	void set_checksum( std::string s ) { log_checksum = s; }
