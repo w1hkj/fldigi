@@ -129,7 +129,6 @@ void Export_ADIF()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-printf("write export\n");
 	adifFile.writeFile (p, &qsodb);
 }
 
@@ -232,6 +231,25 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	}
 }
 
+void cb_export_date_select() {
+	if (qsodb.nbrRecs() == 0) return;
+	int start = atoi(inp_export_start_date->value());
+	int stop = atoi(inp_export_stop_date->value());
+	if (!start || !stop) return;
+	int chkdate;
+	chkExportBrowser->check_none();
+	if (!btn_export_by_date->value()) return;
+
+	cQsoRec *rec;
+	for (int i = 0; i < qsodb.nbrRecs(); i++) {
+		rec = qsodb.getRec (i);
+		chkdate = atoi(rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE));
+		if (chkdate >= start && chkdate <= stop)
+			chkExportBrowser->checked(i+1, 1);
+	}
+	chkExportBrowser->redraw();
+}
+
 void cb_Export_log() {
 	if (qsodb.nbrRecs() == 0) return;
 	cQsoRec *rec;
@@ -250,6 +268,7 @@ void cb_Export_log() {
 			rec->getField(MODE) );
         chkExportBrowser->add(line);
 	}
+	cb_export_date_select();
 	wExport->show();
 }
 
