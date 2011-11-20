@@ -12,12 +12,16 @@ extern Fl_Check_Browser *chkExportBrowser;
 #include <FL/Fl_Button.H>
 extern Fl_Button *btnClearAll;
 extern Fl_Button *btnCheckAll;
+#include "calendar.h"
+extern Fl_DateInput *inp_export_start_date;
+extern Fl_DateInput *inp_export_stop_date;
+#include <FL/Fl_Check_Button.H>
+extern Fl_Check_Button *btn_export_by_date;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnOK;
 extern Fl_Button *btnCancel;
 extern Fl_Button *btnClearAllFields;
 extern Fl_Button *btnCheckAllFields;
-#include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnSelectCall;
 extern Fl_Check_Button *btnSelectName;
 extern Fl_Check_Button *btnSelectFreq;
@@ -51,7 +55,6 @@ extern Fl_Check_Button *btnSelectITUZ;
 extern Fl_Button *btnSetFieldDefaults;
 extern Fl_Double_Window *dlgLogbook;
 extern Fl_Group *editGroup;
-#include "calendar.h"
 extern Fl_DateInput *inpDate_log;
 extern Fl_Input2 *inpTimeOn_log;
 extern Fl_DateInput *inpDateOff_log;
