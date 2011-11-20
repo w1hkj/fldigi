@@ -1,5 +1,6 @@
-2011-11-18  David Freese  <w1hkj@w1hkj.com>
+2011-11-20  David Freese  <w1hkj@w1hkj.com>
 
+	48f71f1: ADIF integrity check
 	d35ed7d: Logbook menu
 	c297198: Log r/w
 	3e970b9: ADIF write_log
