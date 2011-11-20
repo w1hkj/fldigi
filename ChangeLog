@@ -1,3 +1,9 @@
+2011-11-18  David Freese  <w1hkj@w1hkj.com>
+
+	d35ed7d: Logbook menu
+	c297198: Log r/w
+	3e970b9: ADIF write_log
+
 2011-11-15  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
 	4103a07: WEFAX error logging fix
