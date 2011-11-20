@@ -1,10 +1,11 @@
+2011-11-20  David Freese  <w1hkj@w1hkj.com>
+
+	f6888ee: ADIF file integrity test
 
 
 =Version 3.21.27=
 
-2011-11-18  David Freese  <w1hkj@w1hkj.com>
-
-	5712573: Log r/w improvements
+	a2184aa: Log r/w improvements
 
 2011-11-15  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
