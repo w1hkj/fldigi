@@ -245,7 +245,7 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	fclose (adiFile);
 
 // relaxed file integrity test to all importing from non conforming log programs
-	if (strcasestr(buff, "<ADIF_VER:") != 0) {
+	if (strcasestr(buff, "<ADIF_VER:") == 0) {
 		REQ(write_rxtext, "\n*** NOT AN ADIF FILE ***\n");
 		delete [] buff;
 		return;
