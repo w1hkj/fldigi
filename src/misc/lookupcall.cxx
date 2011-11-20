@@ -970,6 +970,10 @@ void CALLSIGNquery()
 	if (callsign != inpCall->value())
 		inpCall->value(callsign.c_str());
 
+	size_t slash;
+	if ((slash = callsign.find('/')) != string::npos)
+		callsign.erase(slash);
+
 	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
 	case QRZNET:
 		inpNotes->value("Request sent to\nqrz.com...");
