@@ -468,6 +468,10 @@ void cAdifIO::do_writelog()
 	adiFile = fopen (adif_file_name.c_str(), "w");
 	if (!adiFile) {
 		LOG_ERROR("Cannot write to %s", adif_file_name.c_str());
+		if (wrdb) {
+			delete wrdb;
+			wrdb = 0;
+		}
 		return;
 	}
 
@@ -506,6 +510,11 @@ void cAdifIO::do_writelog()
 
 	fclose (adiFile);
 
+	if (wrdb) {
+		delete wrdb;
+		wrdb = 0;
+	}
+
 #ifdef _POSIX_MONOTONIC_CLOCK
 	clock_gettime(CLOCK_MONOTONIC, &t1);
 #else
@@ -533,10 +542,7 @@ static void *ADIF_RW_loop(void *args)
 {
 	SET_THREAD_ID(ADIF_RW_TID);
 
-	SET_THREAD_CANCEL();
-
 	for (;;) {
-		TEST_THREAD_CANCEL();
 		pthread_mutex_lock(&ADIF_RW_mutex);
 		pthread_cond_wait(&ADIF_RW_cond, &ADIF_RW_mutex);
 		pthread_mutex_unlock(&ADIF_RW_mutex);
@@ -561,8 +567,6 @@ void ADIF_RW_close(void)
 	if (!ADIF_RW_thread)
 		return;
 
-	CANCEL_THREAD(*ADIF_RW_thread);
-
 	pthread_mutex_lock(&ADIF_RW_mutex);
 	ADIF_RW_EXIT = true;
 	pthread_cond_signal(&ADIF_RW_cond);
@@ -571,7 +575,6 @@ void ADIF_RW_close(void)
 	pthread_join(*ADIF_RW_thread, NULL);
 	delete ADIF_RW_thread;
 	ADIF_RW_thread = 0;
-	if (wrdb) delete wrdb;
 }
 
 static void ADIF_RW_init()
