@@ -1,5 +1,8 @@
 2011-11-20  David Freese  <w1hkj@w1hkj.com>
 
+	9eca86a: ADIF/EQSL thread shutdown
+	7b04a17: Ignore slash postamble
+	f50c79f: Log Export by date
 	48f71f1: ADIF integrity check
 	d35ed7d: Logbook menu
 	c297198: Log r/w
