@@ -1,5 +1,12 @@
+
+
+=Version 3.21.28=
+
 2011-11-20  David Freese  <w1hkj@w1hkj.com>
 
+	6ffd331: ADIF/EQSL thread shutdown
+	d3e47a3: Ignore slash postamble
+	9100837: Log Export by date
 	f6888ee: ADIF file integrity test
 
 
