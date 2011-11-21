@@ -2507,9 +2507,6 @@ bool clean_exit(void) {
 	close_logbook();
 	MilliSleep(50);
 
-	ADIF_RW_close();
-//	EQSL_close();
-
 	return true;
 }
 
