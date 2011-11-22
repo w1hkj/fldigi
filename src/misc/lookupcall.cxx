@@ -971,8 +971,12 @@ void CALLSIGNquery()
 		inpCall->value(callsign.c_str());
 
 	size_t slash;
-	if ((slash = callsign.find('/')) != string::npos)
-		callsign.erase(slash);
+	while ((slash = callsign.rfind('/')) != string::npos) {
+		if (((slash+1) * 2) < callsign.length())
+			callsign.erase(0, slash + 1);
+		else
+			callsign.erase(slash);
+	}
 
 	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
 	case QRZNET:
