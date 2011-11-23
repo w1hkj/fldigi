@@ -71,8 +71,7 @@ void cQsoRec::putField (int n, const char *s){
 
 void cQsoRec::putField (int n, const char *s, int len) {
 	if (n < 0 || n >= NUMFIELDS) return;
-	qsofield[n].clear();
-	qsofield[n].append(s, len);
+	qsofield[n].assign(s, len);
 }
 
 void cQsoRec::addtoField (int n, const char *s){
@@ -151,13 +150,13 @@ int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
 
 int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 	int cmp = 0;
-	char *s1 = new char[r1.qsofield[CALL].length() + 1];
-	char *s2 = new char[r2.qsofield[CALL].length() + 1];
+	char s1[r1.qsofield[CALL].length() + 1];
+	char s2[r2.qsofield[CALL].length() + 1];
 	char *p1, *p2;
 	strcpy(s1, r1.qsofield[CALL].c_str());
 	strcpy(s2, r2.qsofield[CALL].c_str());
-	p1 = strpbrk (&s1[1], "0123456789");
-	p2 = strpbrk (&s2[1], "0123456789");
+	p1 = strpbrk (s1+1, "0123456789");
+	p2 = strpbrk (s2+1, "0123456789");
 	if (p1 && p2) {
 		cmp = (*p1 < *p2) ? -1 :(*p1 > *p2) ? 1 : 0;
 		if (cmp == 0) {
@@ -168,8 +167,6 @@ int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 		}
 	} else
 		cmp = (r1.qsofield[CALL] == r2.qsofield[CALL]);
-	delete [] s1;
-	delete [] s2;
 	if (cmp == 0)
 		return compareDates (r1,r2);
 	return cmp;

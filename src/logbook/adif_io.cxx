@@ -2,7 +2,6 @@
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
 
-#include <string>
 #include <cstring>
 #include <cstdlib>
 #include <string>
@@ -24,6 +23,8 @@
 #include "qrunner.h"
 #include "timeops.h"
 
+using namespace std;
+
 #ifdef __WOE32__
 static const char *szEOL = "\r\n";
 #else
@@ -31,177 +32,142 @@ static const char *szEOL = "\n";
 #endif
 static const char *szEOR = "<EOR>";
 
-// These ADIF fields define the QSO database
-
-const char *fieldnames[] = {
-	"ADDRESS", "AGE", "ARRL_SECT", "BAND", "CALL", "CNTY", "COMMENT",
-	"CONT", "CONTEST_ID", "COUNTRY", "CQZ", "DXCC", "EXPORT", "FREQ",
-	"GRIDSQUARE", "IOTA", "ITUZ", "MODE", "STX_STRING",
-	"NAME", "NOTES", "OPERATOR", "PFX", "PROP_MODE",
-	"QSLRDATE", "QSLSDATE", "QSL_MSG", "QSL_RCVD", "QSL_SENT", "QSL_VIA", "QSO_DATE", "QSO_DATE_OFF",
-	"QTH",
-	"RST_RCVD", "RST_SENT", "RX_PWR",
-	"SAT_MODE", "SAT_NAME", "SRX",
-	"STATE", "STX", "TEN_TEN",
-	"TIME_OFF", "TIME_ON", "TX_PWR", "VE_PROV", "SRX_STRING"
-};
-
-// 16 chars per  position in string div 16 gives index to field name
-// this string and the fieldname[] must have a 1:1 correspondence.
-
-static const char fastlookup[] = "\
-ADDRESS:        \
-AGE:            \
-ARRL_SECT:      \
-BAND:           \
-CALL:           \
-CNTY:           \
-COMMENT:        \
-CONT:           \
-CONTEST_ID:     \
-COUNTRY:        \
-CQZ:            \
-DXCC:           \
-EXPORT:         \
-FREQ:           \
-GRIDSQUARE:     \
-IOTA:           \
-ITUZ:           \
-MODE:           \
-STX_STRING:     \
-NAME:           \
-NOTES:          \
-OPERATOR:       \
-PFX:            \
-PROP_MODE:      \
-QSLRDATE:       \
-QSLSDATE:       \
-QSL_MSG:        \
-QSL_RCVD:       \
-QSL_SENT:       \
-QSL_VIA:        \
-QSO_DATE:       \
-QSO_DATE_OFF:   \
-QTH:            \
-RST_RCVD:       \
-RST_SENT:       \
-RX_PWR:         \
-SAT_MODE:       \
-SAT_NAME:       \
-SRX:            \
-STATE:          \
-STX:            \
-TEN_TEN:        \
-TIME_OFF:       \
-TIME_ON:        \
-TX_PWR:         \
-VE_PROV:        \
-SRX_STRING:     ";
-
+// These ADIF fields define the ADIF database
 FIELD fields[] = {
-//  TYPE, NAME, WIDGET
-	{ADDRESS,        0,  NULL},                // contacted stations mailing address
-	{AGE,            0,  NULL},                // contacted operators age in years
-	{ARRL_SECT,      0,  NULL},                // contacted stations ARRL section
-	{BAND,           0,  &btnSelectBand},      // QSO band
-	{CALL,           0,  &btnSelectCall},      // contacted stations CALLSIGN
-	{CNTY,           0,  &btnSelectCNTY},      // secondary political subdivision, ie: county
-	{COMMENT,        0,  NULL},                // comment field for QSO
-	{CONT,           0,  &btnSelectCONT},      // contacted stations continent
-	{CONTEST_ID,     0,  NULL},                // QSO contest identifier
-	{COUNTRY,        0,  &btnSelectCountry},   // contacted stations DXCC entity name
-	{CQZ,            0,  &btnSelectCQZ},       // contacted stations CQ Zone
-	{DXCC,           0,  &btnSelectDXCC},      // contacted stations Country Code
-	{EXPORT,         0,  NULL},                // used to indicate record is to be exported
-	{FREQ,           0,  &btnSelectFreq},      // QSO frequency in Mhz
-	{GRIDSQUARE,     0,  &btnSelectLOC},       // contacted stations Maidenhead Grid Square
-	{IOTA,           0,  &btnSelectIOTA},      // Islands on the air
-	{ITUZ,           0,  &btnSelectITUZ},      // ITU zone
-	{MODE,           0,  &btnSelectMode},      // QSO mode
-	{MYXCHG,         0,  &btnSelectMyXchg},    // contest exchange sent
-	{NAME,           0,  &btnSelectName},      // contacted operators NAME
-	{NOTES,          0,  &btnSelectNotes},     // QSO notes
-	{OPERATOR,       0,  NULL},                // Callsign of person logging the QSO
-	{PFX,            0,  NULL},                // WPA prefix
-	{PROP_MODE,      0,  NULL},                // propogation mode
-	{QSLRDATE,       0,  &btnSelectQSLrcvd},   // QSL received date
-	{QSLSDATE,       0,  &btnSelectQSLsent},   // QSL sent date
-	{QSL_MSG,        0,  NULL},                // personal message to appear on qsl card
-	{QSL_RCVD,       0,  NULL},                // QSL received status
-	{QSL_SENT,       0,  NULL},                // QSL sent status
-	{QSL_VIA,        0,  NULL},
-	{QSO_DATE,       0,  &btnSelectQSOdateOn}, // QSO data
-	{QSO_DATE_OFF,   0,  &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
-	{QTH,            0,  &btnSelectQth},       // contacted stations city
-	{RST_RCVD,       0,  &btnSelectRSTrcvd},   // received signal report
-	{RST_SENT,       0,  &btnSelectRSTsent},   // sent signal report
-	{RX_PWR,         0,  NULL},                // power of other station in watts
-	{SAT_MODE,       0,  NULL},                // satellite mode
-	{SAT_NAME,       0,  NULL},                // satellite name
-	{SRX,            0,  &btnSelectSerialIN},  // received serial number for a contest QSO
-	{STATE,          0,  &btnSelectState},     // contacted stations STATE
-	{STX,            0,  &btnSelectSerialOUT}, // QSO transmitted serial number
-	{TEN_TEN,        0,  NULL},                // ten ten # of other station
-	{TIME_OFF,       0,  &btnSelectTimeOFF},   // HHMM or HHMMSS in UTC
-	{TIME_ON,        0,  &btnSelectTimeON},    // HHMM or HHMMSS in UTC
-	{TX_PWR,         0,  &btnSelectTX_pwr},    // power transmitted by this station
-	{VE_PROV,        0,  &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
-	{XCHG1,          0,  &btnSelectXchgIn}     // contest exchange #1 / free1 in xlog
+//  TYPE,            NAME,           WIDGET
+	{FREQ,           "FREQ",         &btnSelectFreq},      // QSO frequency in Mhz
+	{CALL,           "CALL",         &btnSelectCall},      // contacted stations CALLSIGN
+	{MODE,           "MODE",         &btnSelectMode},      // QSO mode
+	{NAME,           "NAME",         &btnSelectName},      // contacted operators NAME
+	{QSO_DATE,       "QSO_DATE",     &btnSelectQSOdateOn}, // QSO data
+	{QSO_DATE_OFF,   "QSO_DATE_OFF", &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
+	{TIME_OFF,       "TIME_OFF",     &btnSelectTimeOFF},   // HHMM or HHMMSS in UTC
+	{TIME_ON,        "TIME_ON",      &btnSelectTimeON},    // HHMM or HHMMSS in UTC
+	{QTH,            "QTH",          &btnSelectQth},       // contacted stations city
+	{RST_RCVD,       "RST_RCVD",     &btnSelectRSTrcvd},   // received signal report
+	{RST_SENT,       "RST_SENT",     &btnSelectRSTsent},   // sent signal report
+	{STATE,          "STATE",        &btnSelectState},     // contacted stations STATE
+	{VE_PROV,        "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
+	{NOTES,          "NOTES",        &btnSelectNotes},     // QSO notes
+	{QSLRDATE,       "QSLRDATE",     &btnSelectQSLrcvd},   // QSL received date
+	{QSLSDATE,       "QSLSDATE",     &btnSelectQSLsent},   // QSL sent date
+	{GRIDSQUARE,     "GRIDSQUARE",   &btnSelectLOC},       // contacted stations Maidenhead Grid Square
+	{BAND,           "BAND",         &btnSelectBand},      // QSO band
+	{CNTY,           "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county
+	{COUNTRY,        "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
+	{CQZ,            "CQZ",          &btnSelectCQZ},       // contacted stations CQ Zone
+	{DXCC,           "DXCC",         &btnSelectDXCC},      // contacted stations Country Code
+	{IOTA,           "IOTA",         &btnSelectIOTA},      // Islands on the air
+	{ITUZ,           "ITUZ",         &btnSelectITUZ},      // ITU zone
+	{CONT,           "CONT",         &btnSelectCONT},      // contacted stations continent
+	{MYXCHG,         "MYXCHG",       &btnSelectMyXchg},    // contest exchange sent
+	{XCHG1,          "XCHG1",        &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+	{SRX,            "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
+	{STX,            "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
+	{TX_PWR,         "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
+	{NUMFIELDS,      "",             NULL}
 };
+
+// This ADIF fields is in the fldigi QSO database, but not saved in the ADIF file
+/*
+	{EXPORT,         "EXPORT",       NULL},                // used to indicate record is to be exported
+*/
+
+// These ADIF fields are not in the fldigi QSO database
+/*
+	{COMMENT,        "COMMENT",      NULL},                // comment field for QSO
+	{ADDRESS,        "ADDRESS",      NULL},                // contacted stations mailing address
+	{AGE,            "AGE",          NULL},                // contacted operators age in years
+	{ARRL_SECT,      "ARRL_SECT",    NULL},                // contacted stations ARRL section
+	{CONTEST_ID,     "CONTEST_ID",   NULL},                // QSO contest identifier
+	{OPERATOR,       "OPERATOR",     NULL},                // Callsign of person logging the QSO
+	{PFX,            "PFX",          NULL},                // WPA prefix
+	{PROP_MODE,      "PROP_MODE",    NULL},                // propogation mode
+	{QSL_MSG,        "QSL_MSG",      NULL},                // personal message to appear on qsl card
+	{QSL_RCVD,       "QSL_RCVD",     NULL},                // QSL received status
+	{QSL_SENT,       "QSL_SENT",     NULL},                // QSL sent status
+	{QSL_VIA,        "QSL_VIA",      NULL},                // QSL via this person
+	{RX_PWR,         "RX_PWR",       NULL},                // power of other station in watts
+	{SAT_MODE,       "SAT_MODE",     NULL},                // satellite mode
+	{SAT_NAME,       "SAT_NAME",     NULL},                // satellite name
+	{TEN_TEN,        "TEN_TEN",      NULL}                 // ten ten # of other station
+};
+*/
+
+static char *fastlookup = 0;
+
+static unsigned int maxlen = 0;
 
 static void initfields()
 {
-	for (int i = 0; i < NUMFIELDS; i++)
-		fields[i].name = new string(fieldnames[i]);
+	if (fastlookup) return; // may have multiple instances using common code
+	int i = 0;
+	while (fields[i].type != NUMFIELDS) {
+		if (strlen(fields[i].name) > maxlen) maxlen = strlen(fields[i].name);
+		i++;
+	}
+	maxlen++;
+	fastlookup = new char[maxlen * i + 1];
+	fastlookup[0] = 0;
+	i = 0;
+	while (fields[i].type != NUMFIELDS) {
+		strcat(fastlookup, fields[i].name);
+		unsigned int n = maxlen - strlen(fastlookup) % maxlen;
+		if (n > 0 && n < maxlen) for (unsigned int j = 0; j < n; j++) strcat(fastlookup, " ");
+		i++;
+	}
 }
 
-static int findfield( char *p )
+static inline int findfield( char *p )
 {
-	if (strncasecmp (p, "EOR>", 4) == 0)
+	if (strncasecmp (p, "EOR>", 4) == 0 || !maxlen)
 		return -1;
 
-	char *p1, *p2;
 	char *pos;
-	char *fl = (char *)fastlookup;
-	int n;
-	p1 = strchr(p, ':');
-	p2 = strchr(p, '>');
+	char *p1 = strchr(p, ':');
+	char *p2 = strchr(p, '>');
 	if (p1 && p2) {
 		if (p1 < p2) {
+			pos = p;
+			do { *pos = toupper(*pos); } while (++pos < p1);
 			*p1 = 0;
-			pos = strstr(fl, p);
+			pos = strstr(fastlookup, p);
 			*p1 = ':';
-			if (pos) {
-				n = (pos - fastlookup) / 16;
-				if (n > 0 && n < NUMFIELDS)
-					return fields[n].type;
-			}
+			if (pos) return fields[(pos - fastlookup) / maxlen].type;
 		}
 	}
 	return -2;		//search key not found
 }
 
+int cAdifIO::instances = 0;
+
 cAdifIO::cAdifIO ()
 {
 	initfields();
+	instances++;
+}
+
+cAdifIO::~cAdifIO()
+{
+	if (--instances == 0) {
+		delete [] fastlookup;
+		fastlookup = 0;
+	}
 }
 
 void cAdifIO::fillfield (int fieldnum, char *buff)
 {
-char *p = buff;
-int fldsize;
-	while (*p != ':' && *p != '>') p++;
-	if (*p == '>') return; // bad ADIF specifier ---> no ':' after field name
-// found first ':'
-	p++;
-	fldsize = 0;
-	char *p2 = strchr(buff,'>');
-	if (!p2) return;
-	while (p != p2) {
-		if (*p >= '0' && *p <= '9') {
-			fldsize = fldsize * 10 + *p - '0';
+	char *p1 = strchr(buff, ':');
+	char *p2 = strchr(buff, '>');
+	if (!p1 || !p2 || p2 < p1) return; // bad ADIF specifier ---> no ':' after field name
+
+	p1++;
+	int fldsize = 0;
+	while (p1 != p2) {
+		if (*p1 >= '0' && *p1 <= '9') {
+			fldsize = fldsize * 10 + *p1 - '0';
 		}
-		p++;
+		p1++;
 	}
 	adifqso->putField (fieldnum, p2+1, fldsize);
 }
@@ -228,16 +194,19 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	filesize = ftell (adiFile);
 
 	if (filesize == 0) {
-		LOG_INFO("%s", _("Empty ADIF logbook file"));
+		LOG_INFO(_("Empty ADIF logbook file %s"), fl_filename_name(fname));
 		return;
 	}
 
 	buff = new char[filesize + 1];
 
-	static string msg;
-	msg.clear();
-	msg.append("\n<===== Reading ").append(fl_filename_name(fname)).append(" =====>");
-	REQ(write_rxtext, msg.c_str());
+	static char szmsg[100];
+	static char szmsg2[100];
+	snprintf(szmsg, sizeof(szmsg), "Reading %ld bytes from %s",
+		filesize, fl_filename_name(fname));
+	REQ(write_rxtext, "\n*** ");
+	REQ(write_rxtext, szmsg);
+	LOG_INFO("%s", szmsg);
 // read the entire file into the buffer
 
 	fseek (adiFile, 0, SEEK_SET);
@@ -245,13 +214,12 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	fclose (adiFile);
 
 // relaxed file integrity test to all importing from non conforming log programs
-	if (strcasestr(buff, "<ADIF_VER:") == 0) {
-		REQ(write_rxtext, "\n*** NOT AN ADIF FILE ***\n");
-		delete [] buff;
-		return;
-	}
 	if (strcasestr(buff, "<CALL:") == 0) {
-		REQ(write_rxtext, "\n*** NO RECORDS IN FILE ***\n");
+		strcpy(szmsg2, "NO RECORDS IN FILE");
+		REQ(write_rxtext, "\n*** ");
+		REQ(write_rxtext, szmsg2);
+		REQ(write_rxtext, "\n");
+		LOG_INFO("%s", szmsg2);
 		delete [] buff;
 		db->clearDatabase();
 		return;
@@ -272,8 +240,11 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		}
 		if (!p1) {
 			delete [] buff;
-			REQ(write_rxtext, "\n*** Corrupt ADIF file ***\n");
-			LOG_ERROR("%s", _("Corrupt ADIF file"));
+			strcpy(szmsg2, "Corrupt ADIF file ***");
+			REQ(write_rxtext, "\n*** ");
+			REQ(write_rxtext, szmsg2);
+			REQ(write_rxtext, "\n");
+			LOG_ERROR("%s", szmsg2);
 			return;	 // must not be an ADIF compliant file
 		}
 		p1 += 1;
@@ -293,7 +264,6 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		p1 = p2 + 1;
 		p2 = strchr(p1,'<');
 	}
-	db->SortByDate(progdefaults.sort_date_time_off);
 	delete [] buff;
 
 #ifdef _POSIX_MONOTONIC_CLOCK
@@ -305,11 +275,11 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	t0 = t1 - t0;
 	float t = (t0.tv_sec + t0.tv_nsec/1e9);
 
-	static char szmsg[50];
-	snprintf(szmsg, sizeof(szmsg), "%d records in %4.2f seconds", db->nbrRecs(), t);
-	LOG_INFO("%s", szmsg);
-	snprintf(szmsg, sizeof(szmsg), "\n< read %d records in %4.2f seconds >\n", db->nbrRecs(), t);
-	REQ(write_rxtext, szmsg);
+	snprintf(szmsg2, sizeof(szmsg2), "Read %d records in %4.2f seconds", db->nbrRecs(), t);
+	REQ(write_rxtext, "\n*** ");
+	REQ(write_rxtext, szmsg2);
+	REQ(write_rxtext, "\n");
+	LOG_INFO("%s", szmsg2);
 
 	REQ(adif_read_OK);
 }
@@ -347,16 +317,18 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 	for (int i = 0; i < db->nbrRecs(); i++) {
 		rec = db->getRec(i);
 		if (rec->getField(EXPORT)[0] == 'E') {
-			for (int j = 0; j < NUMFIELDS; j++) {
+			int j = 0;
+			while (fields[j].type != NUMFIELDS) {
 				if (fields[j].btn != NULL)
 					if ((*fields[j].btn)->value()) {
 					sFld = rec->getField(fields[j].type);
 						if (!sFld.empty())
 							fprintf(adiFile, adifmt,
-								fields[j].name->c_str(),
+								fields[j].name,//->c_str(),
 								sFld.length());
 							fprintf(adiFile, "%s", sFld.c_str());
 				}
+				j++;
 			}
 			rec->putField(EXPORT,"");
 			db->qsoUpdRec(i, rec);
@@ -467,11 +439,13 @@ void cAdifIO::do_writelog()
 	string s_checksum;
 
 	adiFile = fopen (adif_file_name.c_str(), "w");
+
 	if (!adiFile) {
 		LOG_ERROR("Cannot write to %s", adif_file_name.c_str());
 		if (wrdb) delete wrdb;
 		return;
 	}
+	LOG_INFO("Writing %s", adif_file_name.c_str());
 
 	string sFld;
 	cQsoRec *rec;
@@ -480,13 +454,16 @@ void cAdifIO::do_writelog()
 	for (int i = 0; i < adifdb->nbrRecs(); i++) {
 		rec = adifdb->getRec(i);
 		record.clear();
-		for (int j = 0; j < NUMFIELDS; j++) {
-			sFld = rec->getField(j);
+		int j = 0;
+		while (fields[j].type != NUMFIELDS) {
+			sFld = rec->getField(fields[j].type);
 			if (!sFld.empty()) {
 				snprintf(recfield, sizeof(recfield), adifmt,
-					fields[j].name->c_str(), sFld.length());
+					fields[j].name,
+					sFld.length());
 				record.append(recfield).append(sFld);
 			}
+			j++;
 		}
 		record.append(szEOR);
 		record.append(szEOL);

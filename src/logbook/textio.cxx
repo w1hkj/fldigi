@@ -147,9 +147,9 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 				if (btnSelectLOC->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(GRIDSQUARE));
 				if (btnSelectQSLrcvd->value())
-					fprintf (txtFile, ",\"%s\"", pRec->getField(QSL_RCVD));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(QSLRDATE));
 				if (btnSelectQSLsent->value())
-					fprintf (txtFile, ",\"%s\"", pRec->getField(QSL_SENT));
+					fprintf (txtFile, ",\"%s\"", pRec->getField(QSLSDATE));
 				if (btnSelectNotes->value()) {
 					string temp = pRec->getField(NOTES);
 					for (size_t n = 0; n < temp.length(); n++)
@@ -266,9 +266,9 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 				if (btnSelectLOC->value())
 					fprintf (txtFile, "%-15s", pRec->getField(GRIDSQUARE));
 				if (btnSelectQSLrcvd->value())
-					fprintf (txtFile, "%-10s", pRec->getField(QSL_RCVD));
+					fprintf (txtFile, "%-10s", pRec->getField(QSLRDATE));
 				if (btnSelectQSLsent->value())
-					fprintf (txtFile, "%-10s", pRec->getField(QSL_SENT));
+					fprintf (txtFile, "%-10s", pRec->getField(QSLSDATE));
 				if (btnSelectNotes->value()) {
 					string temp = pRec->getField(NOTES);
 				for (size_t n = 0; n < temp.length(); n++)
