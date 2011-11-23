@@ -8,22 +8,16 @@
 
 #define ADIF_VERS "2.2.3"
 
-/* STATION_CALLSIGN & CREDIT_SUBMITTED are the longest field names 
- * in ADIF v2.2.6 spec 
- */
-const int FieldLabelMaxLen = 16; 
-
 class cAdifIO {
 private:
 	bool write_all;
 	cQsoRec *adifqso;
 	FILE *adiFile;
 	void fillfield(int, char *);
-//	std::string log_checksum;
-//	std::string file_checksum;
+	static int instances;
 public:
 	cAdifIO ();
-	~cAdifIO () {};
+	~cAdifIO ();
 	int readAdifRec () {return 0;};
 	int writeAdifRec () {return 0;};
 	void readFile (const char *, cQsoDb *);
@@ -32,10 +26,6 @@ public:
 	int writeFile (const char *, cQsoDb *);
 	int writeLog (const char *, cQsoDb *, bool b = true);
 	bool log_changed(const char *fname);
-//	std::string get_checksum() { return log_checksum; }
-//	void set_checksum( std::string s ) { log_checksum = s; }
-//	std::string get_file_checksum() { return file_checksum; }
-//	void do_checksum(cQsoDb &);
 };
 
 // crc 16 cycle redundancy check sum
