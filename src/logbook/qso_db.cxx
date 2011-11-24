@@ -58,10 +58,26 @@ int cQsoRec::validRec() {
 
 void cQsoRec::checkBand() {
 	size_t flen = qsofield[FREQ].length(), blen = qsofield[BAND].length();
-	if (flen == 0 && blen != 0)
+	if (flen == 0 && blen != 0) {
+		for (size_t n = 0; n < blen; n++)
+			qsofield[BAND][n] = tolower(qsofield[BAND][n]);
 		qsofield[FREQ] =  band_freq(qsofield[BAND].c_str());
-	else if (blen == 0 && flen != 0)
+	} else if (blen == 0 && flen != 0)
 		qsofield[BAND] =  band_name(qsofield[FREQ].c_str());
+}
+
+void cQsoRec::checkDateTimes() {
+	size_t len1 = qsofield[TIME_ON].length(), len2 = qsofield[TIME_OFF].length();
+	if (len1 == 0 && len2 != 0)
+		qsofield[TIME_ON] = qsofield[TIME_OFF];
+	else if (len1 != 0 && len2 == 0)
+		qsofield[TIME_OFF] = qsofield[TIME_ON];
+	len1 = qsofield[QSO_DATE].length();
+	len2 = qsofield[QSO_DATE_OFF].length();
+	if (len1 == 0 && len2 != 0)
+		qsofield[QSO_DATE] = qsofield[QSO_DATE_OFF];
+	else if (len1 != 0 && len2 == 0)
+		qsofield[QSO_DATE_OFF] = qsofield[QSO_DATE];
 }
 
 void cQsoRec::putField (int n, const char *s){
@@ -312,6 +328,7 @@ void cQsoDb::qsoNewRec (cQsoRec *nurec) {
   }
   qsorec[nbrrecs] = *nurec;
   qsorec[nbrrecs].checkBand();
+  qsorec[nbrrecs].checkDateTimes();
   nbrrecs++;
   dirty = 1;
 }
