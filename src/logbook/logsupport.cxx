@@ -269,18 +269,20 @@ int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
 	} // matched with +/- 2 minutes
 
 // compare by mode
-	if (strstr(r1->getField(MODE), "DOM"))
-		cmp = strncasecmp(r1->getField(MODE), "DOM", 3);
-	else if (strstr(r2->getField(MODE), r1->getField(MODE))) // eQSL, LoTW use sparse MODE designators
+	const char *m1 = r1->getField(MODE); // needle
+	const char *m2 = r2->getField(MODE); // haystack
+	if (strcasestr(m1, "DOM"))
+		cmp = strncasecmp("DOM", m2, 3);
+	else if (strcasestr(m2, m1)) // eQSL, LoTW use sparse MODE designators
 		cmp = 0;
 	else
-		cmp = strcasecmp( r1->getField(MODE), r2->getField(MODE));
+		cmp = strcasecmp(m1, m2);
 	if (cmp != 0) return cmp;
 
 // compare by band
 	cmp = strcasecmp( r1->getField(BAND), r2->getField(BAND));
-	return cmp;
 
+	return cmp;
 }
 
 static void rxtext(const char *s)
@@ -288,66 +290,104 @@ static void rxtext(const char *s)
 	ReceiveText->add(s);
 }
 
-void merge_recs( cQsoDb *db, cQsoDb *mrgdb )
+void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 {
 	static char msg1[100];
 	static char msg2[100];
 	static char msg3[100];
 	sorttype origsort = lastsort;
 	cQsoDb::reverse = false;
-	db->SortByCall();
 	cQsoDb *reject = new cQsoDb;
+	cQsoDb *copy = new cQsoDb(db);
 	cQsoDb *merged = new cQsoDb;
-	cQsoRec *rec = 0;
+//	cQsoRec *rec = 0;
 
-	for (int i = 0; i < mrgdb->nbrRecs(); i++) {
-		rec = mrgdb->getRec(i);
-		rec->checkBand(); // all necessary for sparse adif files aka LoTW a pure PIA
-		rec->checkDateTimes(); // ditto
+	snprintf(msg1, sizeof(msg1), "Read %d records", mrgdb->nbrRecs());
+	LOG_INFO("%s", msg1);
+	REQ(rxtext, "\n*** ");
+	REQ(rxtext, msg1);
 
-		if (bsearch(rec, db->recarray(), db->nbrRecs(), sizeof(cQsoRec), comparerecs) == NULL) {
-			db->qsoNewRec (rec);
-			merged->qsoNewRec (rec);
-		} else
-			reject->qsoNewRec (rec);
+	db->clearDatabase();
+
+	copy->SortByCall();
+	mrgdb->SortByCall();
+
+	int n = 0; // copy
+	int m = 0; // merge
+	int N = copy->nbrRecs();
+	int M = mrgdb->nbrRecs();
+
+	int cmp;
+	for (;;) {
+		if (n == N && m == M) break;
+		if (n < N && m < M) {
+			if ((cmp = comparerecs(copy->getRec(n), mrgdb->getRec(m))) <= 0) {
+				db->qsoNewRec(copy->getRec(n));
+				n++;
+				if (cmp == 0) {
+					reject->qsoNewRec(mrgdb->getRec(m));
+					m++;
+				}
+			} else {
+				if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) > 0) {
+					db->qsoNewRec(mrgdb->getRec(m));
+					merged->qsoNewRec(mrgdb->getRec(m));
+				} else
+					reject->qsoNewRec(mrgdb->getRec(m));
+				m++;
+			}
+		} else if (n == N) {
+			if (N == 0) {
+				db->qsoNewRec(mrgdb->getRec(m));
+				merged->qsoNewRec(mrgdb->getRec(m));
+			} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) > 0) {
+				db->qsoNewRec(mrgdb->getRec(m));
+				merged->qsoNewRec(mrgdb->getRec(m));
+			} else
+				reject->qsoNewRec(mrgdb->getRec(m));
+			m++;
+		} else {
+			db->qsoNewRec(copy->getRec(n));
+			n++;
+		}
 	}
+
+	if (merged->nbrRecs()) {
+		string mergedname = LogsDir;
+		mergedname.append("merged_recs");
+#ifdef __WIN32__
+		mergedname.append(".adi");
+#else
+		mergedname.append(".adif");
+#endif
+		adifFile.writeLog (mergedname.c_str(), merged, true);
+		snprintf(msg2, sizeof(msg2), "%d merged records saved in\n*** %s",
+			merged->nbrRecs(), mergedname.c_str());
+		REQ(rxtext, "\n*** ");
+		REQ(rxtext, msg2);
+		LOG_INFO("%s", msg2);
+	}
+
 	if (reject->nbrRecs()) {
 		string rejname = LogsDir;
-		rejname.append("merge_dups");
+		rejname.append("duplicate_recs");
 #ifdef __WIN32__
 		rejname.append(".adi");
 #else
 		rejname.append(".adif");
 #endif
-		snprintf(msg1, sizeof(msg1), "%d dup's saved to %s", 
-			reject->nbrRecs(), rejname.c_str());
-		REQ(rxtext, "\n*** ");
-		REQ(rxtext, msg1);
 		adifFile.writeLog (rejname.c_str(), reject, true);
-		LOG_INFO("%s", msg1);
-	}
-	if (merged->nbrRecs()) {
-		snprintf(msg2, sizeof(msg2), "Merged %d records", merged->nbrRecs());
-		REQ(rxtext, "\n*** ");
-		REQ(rxtext, msg2);
-		LOG_INFO("%s", msg2);
-		string mrgname = LogsDir;
-		mrgname.append("merged_recs");
-#ifdef __WIN32__
-		mrgname.append(".adi");
-#else
-		mrgname.append(".adif");
-#endif
-		snprintf(msg3, sizeof(msg3), "%d merged recs saved to %s", 
-			merged->nbrRecs(), mrgname.c_str());
+		snprintf(msg3, sizeof(msg3), "%d duplicates's saved in\n    %s", 
+			reject->nbrRecs(), rejname.c_str());
 		REQ(rxtext, "\n*** ");
 		REQ(rxtext, msg3);
 		LOG_INFO("%s", msg3);
-		adifFile.writeLog (mrgname.c_str(), merged, true);
-
 	}
+
 	delete reject;
+	delete copy;
 	delete merged;
+
 	lastsort = origsort;
 	restore_sort();
 	loadBrowser();
@@ -355,13 +395,15 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb )
 
 void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*." ADIF_SUFFIX);
+	Fl::wait();
+	fl_digi_main->redraw();
+	Fl::flush();
 	if (p) {
 		cQsoDb *mrgdb = new cQsoDb;
 		adifFile.do_readfile (p, mrgdb);
 		merge_recs(&qsodb, mrgdb);
 		qsodb.isdirty(1);
 		delete mrgdb;
-//		saveLogbook();
 	}
 }
 
