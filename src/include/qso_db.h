@@ -38,6 +38,7 @@ public:
 	void clearRec ();
 	int  validRec();
 	void checkBand();
+	void checkDateTimes();
 // operator overloads
 	const cQsoRec &operator=(const cQsoRec &);
 	bool operator==(const cQsoRec &) const;
@@ -90,6 +91,7 @@ public:
 	void SortByMode ();
 	void SortByFreq ();
 	void sort_reverse(bool rev) { reverse = rev;}
+	const cQsoRec *recarray() { return qsorec; }
   
 	bool duplicate(
 		const char *callsign, 

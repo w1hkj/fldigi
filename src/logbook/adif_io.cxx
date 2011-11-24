@@ -169,6 +169,8 @@ void cAdifIO::fillfield (int fieldnum, char *buff)
 		}
 		p1++;
 	}
+	if (fieldnum == TIME_ON || fieldnum == TIME_OFF)
+		fldsize = 4; // lotw sends time in 6 digits ... RIGHT !!
 	adifqso->putField (fieldnum, p2+1, fldsize);
 }
 
@@ -258,8 +260,9 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		if (found > -1) {
 			if (!adifqso) adifqso = db->newrec(); // need new record in db
 			fillfield (found, p2+1);
-		} else if (found == -1) // <eor> reached;
+		} else if (found == -1) { // <eor> reached;
 			adifqso = 0;
+		}
 		p1 = p2 + 1;
 		p2 = strchr(p1,'<');
 	}
@@ -280,7 +283,8 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	REQ(write_rxtext, "\n");
 	LOG_INFO("%s", szmsg2);
 
-	REQ(adif_read_OK);
+	if (db == &qsodb)
+		REQ(adif_read_OK);
 }
 
 static const char *adifmt = "<%s:%d>";
@@ -411,6 +415,7 @@ int cAdifIO::writeLog (const char *fname, cQsoDb *db, bool immediate) {
 		pthread_cond_signal(&ADIF_RW_cond);
 		pthread_mutex_unlock(&ADIF_RW_mutex);
 	} else {
+		adif_file_name = fname;
 		adifdb = db;
 		do_writelog();
 	}

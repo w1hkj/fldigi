@@ -58,10 +58,26 @@ int cQsoRec::validRec() {
 
 void cQsoRec::checkBand() {
 	size_t flen = qsofield[FREQ].length(), blen = qsofield[BAND].length();
-	if (flen == 0 && blen != 0)
+	if (flen == 0 && blen != 0) {
+		for (size_t n = 0; n < blen; n++)
+			qsofield[BAND][n] = tolower(qsofield[BAND][n]);
 		qsofield[FREQ] =  band_freq(qsofield[BAND].c_str());
-	else if (blen == 0 && flen != 0)
+	} else if (blen == 0 && flen != 0)
 		qsofield[BAND] =  band_name(qsofield[FREQ].c_str());
+}
+
+void cQsoRec::checkDateTimes() {
+	size_t len1 = qsofield[TIME_ON].length(), len2 = qsofield[TIME_OFF].length();
+	if (len1 == 0 && len2 != 0)
+		qsofield[TIME_ON] = qsofield[TIME_OFF];
+	else if (len1 != 0 && len2 == 0)
+		qsofield[TIME_OFF] = qsofield[TIME_ON];
+	len1 = qsofield[QSO_DATE].length();
+	len2 = qsofield[QSO_DATE_OFF].length();
+	if (len1 == 0 && len2 != 0)
+		qsofield[QSO_DATE] = qsofield[QSO_DATE_OFF];
+	else if (len1 != 0 && len2 == 0)
+		qsofield[QSO_DATE_OFF] = qsofield[QSO_DATE];
 }
 
 void cQsoRec::putField (int n, const char *s){
@@ -145,7 +161,7 @@ int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
 		if (r1.qsofield[QSO_DATE] > r2.qsofield[QSO_DATE])
 			return 1;
 	}
-	return compareTimes (r1,r2);
+	return 0;
 }
 
 int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
@@ -167,8 +183,6 @@ int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 		}
 	} else
 		cmp = (r1.qsofield[CALL] == r2.qsofield[CALL]);
-	if (cmp == 0)
-		return compareDates (r1,r2);
 	return cmp;
 }
 
@@ -177,7 +191,7 @@ int compareModes (const cQsoRec &r1, const cQsoRec &r2) {
 		return -1;
 	if (r1.qsofield[MODE] > r2.qsofield[MODE])
 		return 1;
-	return compareDates (r1,r2);
+	return 0;
 }
 
 int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
@@ -188,7 +202,7 @@ int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
 	if (f1 == f2) cmp = 0;
 	else if (f1 < f2) return -1;
 	else if (f1 > f2) return 1;
-	return compareDates (r1,r2);
+	return 0;
 }
 
 int compareqsos (const void *p1, const void *p2) {
@@ -201,16 +215,33 @@ int compareqsos (const void *p1, const void *p2) {
 		r2 = (cQsoRec *)p2;
 	}
 
+	int cmp;
 	switch (compby) {
 		case COMPCALL :
-			return compareCalls (*r1, *r2);
+			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareModes(*r1, *r2)) != 0) return cmp;
+			return compareFreqs(*r1, *r2);
 		case COMPMODE :
-			return compareModes (*r1, *r2);
+			if ((cmp = compareModes (*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+			return compareFreqs(*r1, *r2);
 		case COMPFREQ :
-			return compareFreqs (*r1, *r2);
+			if ((cmp = compareFreqs (*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+			return compareModes(*r1, *r2);
 		case COMPDATE :
 		default :
-			return compareDates (*r1, *r2);
+			if ((cmp = compareDates (*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+			if ((cmp = compareModes (*r1, *r2)) != 0) return cmp;
+			return compareFreqs (*r1, *r2);
 	}
 }
 
@@ -275,6 +306,7 @@ cQsoDb::cQsoDb(cQsoDb *db) {
   for (int i = 0; i < maxrecs; i++)
 	qsorec[i] = db->qsorec[i];
   compby = COMPDATE;
+  nbrrecs = maxrecs;
   dirty = 0;
 }
 
@@ -312,6 +344,7 @@ void cQsoDb::qsoNewRec (cQsoRec *nurec) {
   }
   qsorec[nbrrecs] = *nurec;
   qsorec[nbrrecs].checkBand();
+  qsorec[nbrrecs].checkDateTimes();
   nbrrecs++;
   dirty = 1;
 }

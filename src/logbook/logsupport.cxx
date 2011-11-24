@@ -52,6 +52,7 @@
 #include "locator.h"
 #include "icons.h"
 #include "gettext.h"
+#include "qrunner.h"
 
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
@@ -63,6 +64,12 @@ cAdifIO		adifFile;
 cTextFile	txtFile;
 
 string		logbook_filename;
+
+enum sorttype {NONE, SORTCALL, SORTDATE, SORTFREQ, SORTMODE};
+sorttype lastsort = SORTDATE;
+bool callfwd = true;
+bool modefwd = true;
+bool freqfwd = true;
 
 void restore_sort();
 
@@ -225,12 +232,195 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	}
 }
 
+int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
+	cQsoRec *r1 = (cQsoRec *)rp1;
+	cQsoRec *r2 = (cQsoRec *)rp2;
+	int cmp = 0;
+// compare by call
+	char s1[strlen(r1->getField(CALL)) + 1];
+	char s2[strlen(r2->getField(CALL)) + 1];
+	char *p1, *p2;
+	strcpy(s1, r1->getField(CALL));
+	strcpy(s2, r2->getField(CALL));
+	p1 = strpbrk (s1+1, "0123456789");
+	p2 = strpbrk (s2+1, "0123456789");
+	if (p1 && p2) {
+		cmp = (*p1 < *p2) ? -1 :(*p1 > *p2) ? 1 : 0;
+		if (cmp == 0) {
+			*p1 = 0; *p2 = 0;
+			cmp = strcmp (s1, s2);
+			if (cmp == 0)
+				cmp = strcmp(p1+1, p2+1);
+		}
+	} else // not a normal call, do a simple string comparison
+		cmp = strcmp(r1->getField(CALL), r2->getField(CALL));
+	if (cmp != 0)
+		return cmp;
+
+// compare by date
+	cmp = strcmp( r1->getField(QSO_DATE), r2->getField(QSO_DATE));
+	if (cmp != 0) return cmp;
+
+// compare by time
+	int t1 = atoi(r1->getField(TIME_ON));
+	int t2 = atoi(r2->getField(TIME_ON));
+	if (abs(t1 - t2) > 2) {
+		if (t1 < t2)
+			return -1;
+		if (t1 > t2)
+			return 1;
+	} // matched with +/- 2 minutes
+
+// compare by mode
+	const char *m1 = r1->getField(MODE); // needle
+	const char *m2 = r2->getField(MODE); // haystack
+	if (strcasestr(m1, "DOM"))
+		cmp = strncasecmp("DOM", m2, 3);
+	else if (strcasestr(m2, m1)) // eQSL, LoTW use sparse MODE designators
+		cmp = 0;
+	else
+		cmp = strcasecmp(m1, m2);
+	if (cmp != 0) return cmp;
+
+// compare by band
+	cmp = strcasecmp( r1->getField(BAND), r2->getField(BAND));
+
+	return cmp;
+}
+
+static void rxtext(const char *s)
+{
+	ReceiveText->add(s);
+}
+
+void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
+{
+	static char msg1[100];
+	static char msg2[100];
+	static char msg3[100];
+	sorttype origsort = lastsort;
+	cQsoDb::reverse = false;
+	cQsoDb *reject = new cQsoDb;
+	cQsoDb *copy = new cQsoDb(db);
+	cQsoDb *merged = new cQsoDb;
+//	cQsoRec *rec = 0;
+
+	snprintf(msg1, sizeof(msg1), "Read %d records", mrgdb->nbrRecs());
+	LOG_INFO("%s", msg1);
+	REQ(rxtext, "\n*** ");
+	REQ(rxtext, msg1);
+
+	db->clearDatabase();
+
+	copy->SortByCall();
+	mrgdb->SortByCall();
+
+	int n = 0; // copy
+	int m = 0; // merge
+	int N = copy->nbrRecs();
+	int M = mrgdb->nbrRecs();
+
+	int cmp;
+	for (;;) {
+		if (n == N && m == M) break;
+		if (n < N && m < M) {
+			if ((cmp = comparerecs(copy->getRec(n), mrgdb->getRec(m))) <= 0) {
+				db->qsoNewRec(copy->getRec(n));
+				n++;
+				if (cmp == 0) {
+					reject->qsoNewRec(mrgdb->getRec(m));
+					m++;
+				}
+			} else {
+				if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) > 0) {
+					db->qsoNewRec(mrgdb->getRec(m));
+					merged->qsoNewRec(mrgdb->getRec(m));
+				} else
+					reject->qsoNewRec(mrgdb->getRec(m));
+				m++;
+			}
+		} else if (n == N) {
+			if (N == 0) {
+				db->qsoNewRec(mrgdb->getRec(m));
+				merged->qsoNewRec(mrgdb->getRec(m));
+			} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) > 0) {
+				db->qsoNewRec(mrgdb->getRec(m));
+				merged->qsoNewRec(mrgdb->getRec(m));
+			} else
+				reject->qsoNewRec(mrgdb->getRec(m));
+			m++;
+		} else {
+			db->qsoNewRec(copy->getRec(n));
+			n++;
+		}
+	}
+
+//	for (int i = 0; i < mrgdb->nbrRecs(); i++) {
+//		rec = mrgdb->getRec(i);
+//		db->qsoNewRec ( rec );
+//	}
+//	db->SortByCall();
+//	int i = 0;
+//	while (i < db->nbrRecs() - 2) {
+//		if (comparerecs(db->getRec(i), db->getRec(i+1)) == 0) {
+//			reject->qsoNewRec(db->getRec(i+1));
+//			db->qsoDelRec(i+1);
+//		} else
+//			i++;
+//	}
+
+	if (merged->nbrRecs()) {
+		string mergedname = LogsDir;
+		mergedname.append("merged_recs");
+#ifdef __WIN32__
+		mergedname.append(".adi");
+#else
+		mergedname.append(".adif");
+#endif
+		adifFile.writeLog (mergedname.c_str(), merged, true);
+		snprintf(msg2, sizeof(msg2), "%d merged records saved in\n*** %s",
+			merged->nbrRecs(), mergedname.c_str());
+		REQ(rxtext, "\n*** ");
+		REQ(rxtext, msg2);
+		LOG_INFO("%s", msg2);
+	}
+
+	if (reject->nbrRecs()) {
+		string rejname = LogsDir;
+		rejname.append("duplicate_recs");
+#ifdef __WIN32__
+		rejname.append(".adi");
+#else
+		rejname.append(".adif");
+#endif
+		adifFile.writeLog (rejname.c_str(), reject, true);
+		snprintf(msg3, sizeof(msg3), "%d duplicates's saved in\n    %s", 
+			reject->nbrRecs(), rejname.c_str());
+		REQ(rxtext, "\n*** ");
+		REQ(rxtext, msg3);
+		LOG_INFO("%s", msg3);
+	}
+
+	delete reject;
+	delete copy;
+	delete merged;
+
+	lastsort = origsort;
+	restore_sort();
+	loadBrowser();
+}
+
 void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*." ADIF_SUFFIX);
+	Fl::wait();
+	fl_digi_main->redraw();
+	Fl::flush();
 	if (p) {
-		adifFile.readFile (p, &qsodb);
+		cQsoDb *mrgdb = new cQsoDb;
+		adifFile.do_readfile (p, mrgdb);
+		merge_recs(&qsodb, mrgdb);
 		qsodb.isdirty(1);
-//		saveLogbook();
+		delete mrgdb;
 	}
 }
 
@@ -355,12 +545,6 @@ void cb_btnDelete(Fl_Button* b, void* d) {
 	deleteRecord();
 	wBrowser->take_focus();
 }
-
-enum sorttype {NONE, SORTCALL, SORTDATE, SORTFREQ, SORTMODE};
-sorttype lastsort = SORTDATE;
-bool callfwd = true;
-bool modefwd = true;
-bool freqfwd = true;
 
 void restore_sort()
 {

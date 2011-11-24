@@ -208,7 +208,7 @@ struct band_freq_t {
 
 static struct band_freq_t band_names[NUM_BANDS] = {
 	{ "160m", "1.8" },
-	{ "80m", "3.4" },
+	{ "80m", "3.5" },
 	{ "75m", "4.0" },
 	{ "60m", "5.3" },
 	{ "40m", "7.0" },
