@@ -1141,13 +1141,13 @@ void makeEQSL(const char *message)
 		progdefaults.eqsl_id.length(), progdefaults.eqsl_id.c_str(),
 		progdefaults.eqsl_pwd.length(), progdefaults.eqsl_pwd.c_str());
 	eQSL_url.append(sztemp);
+	eQSL_url.append("<PROGRAMID:6>FLDIGI<EOH>");
 // eqsl nickname
 	if (!progdefaults.eqsl_nick.empty()) {
 		snprintf(sztemp, sizeof(sztemp), "<APP_EQSL_QTH_NICKNAME:%d>%s",
 		progdefaults.eqsl_nick.length(), progdefaults.eqsl_nick.c_str());
 		eQSL_url.append(sztemp);
 	}
-	eQSL_url.append("<PROGRAMID:6>FLDIGI<EOH>");
 
 // eqsl record
 // band
