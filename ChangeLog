@@ -1,7 +1,9 @@
-2011-11-24  David Freese  <w1hkj@w1hkj.com>
+2011-11-25  David Freese  <w1hkj@w1hkj.com>
 
-	7bdfd61: Merge Logs
-	0ed18d2: ADIF i/o tweaks
+	6d4326d: eQSL QTH nickname
+	972cba1: Merge Logs update
+	7d95b7b: Merge Logs
+	fe62681: ADIF i/o tweaks
 	e0bf128: Call lookup
 	9eca86a: ADIF/EQSL thread shutdown
 	7b04a17: Ignore slash postamble
