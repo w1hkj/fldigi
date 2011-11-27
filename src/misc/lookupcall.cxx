@@ -856,7 +856,7 @@ bool HAMQTHget(string& htmlpage)
 	}
 	url.append("http://www.hamqth.com/xml.php?id=").append(HAMQTH_session_id);
 	url.append("&callsign=").append(callsign);
-	url.append("&prg=fldigi-").append(VERSION);
+	url.append("&prg=FLDIGI");
 
 	ret = fetch_http(url, htmlpage, 5.0);
 	if (htmlpage.find("<error>") != string::npos) {
