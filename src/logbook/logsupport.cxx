@@ -366,6 +366,7 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 		REQ(rxtext, "\n*** ");
 		REQ(rxtext, msg2);
 		LOG_INFO("%s", msg2);
+		db->isdirty(1);
 	}
 
 	if (reject->nbrRecs()) {
@@ -402,7 +403,6 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 		cQsoDb *mrgdb = new cQsoDb;
 		adifFile.do_readfile (p, mrgdb);
 		merge_recs(&qsodb, mrgdb);
-		qsodb.isdirty(1);
 		delete mrgdb;
 	}
 }

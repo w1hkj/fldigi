@@ -350,8 +350,6 @@ int main(int argc, char ** argv)
 	make_colorsfonts();
 	setTabColors();
 
-//	start_logbook();
-
 	progdefaults.testCommPorts();
 
 	macros.loadDefault();
@@ -382,7 +380,6 @@ int main(int argc, char ** argv)
 	dlgViewer = createViewer();
 	create_logbook_dialogs();
 	connect_to_log_server();
-
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
@@ -424,7 +421,6 @@ int main(int argc, char ** argv)
 	if (!have_config)
 		show_wizard();
 #endif
-//	connect_to_log_server();
 
 	int ret = Fl::run();
 
