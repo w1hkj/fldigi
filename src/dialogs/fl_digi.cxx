@@ -216,6 +216,7 @@ Fl_Input2			*txtInpSeek = (Fl_Input2 *)0;
 Fl_Box				*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
+Fl_Counter2			*cntTxLevel = (Fl_Counter2 *)0;
 Fl_Counter2			*cntCW_WPM=(Fl_Counter2 *)0;
 Fl_Button			*btnCW_Default=(Fl_Button *)0;
 Fl_Box				*WARNstatus = (Fl_Box *)0;
@@ -2349,7 +2350,7 @@ int default_handler(int event)
 #endif
 			progdefaults.txlevel += 0.1;
 			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
-			valTxLevel->value(progdefaults.txlevel);
+			cntTxLevel->value(progdefaults.txlevel);
 			return 1;
 		}
 #ifdef __APPLE__
@@ -2359,7 +2360,7 @@ int default_handler(int event)
 #endif
 			progdefaults.txlevel -= 0.1;
 			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
-			valTxLevel->value(progdefaults.txlevel);
+			cntTxLevel->value(progdefaults.txlevel);
 			return 1;
 		}
 	}
@@ -3636,6 +3637,10 @@ static void cb_mainViewer_Seek(Fl_Input *, void *)
 		viewer_inp_seek->value(progStatus.browser_search.c_str());
 }
 
+static void cb_cntTxLevel(Fl_Counter2* o, void*) {
+  progdefaults.txlevel = o->value();
+}
+
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 	if (!pskviewer && !rttyviewer) return;
 	int sel = mainViewer->value();
@@ -4599,11 +4604,23 @@ void create_fl_digi_main_primary() {
 
 			StatusBar = new Fl_Box(
                 rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-                progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60,
+                progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel - rightof(Status2) - 2 * pad,// - 60,
                 Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
+			cntTxLevel = new Fl_Counter2(
+				rightof(StatusBar) + 2 * pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				bwTxLevel - 4 * pad,
+				Hstatus, "");
+			cntTxLevel->minimum(-30);
+			cntTxLevel->maximum(0);
+			cntTxLevel->value(-6);
+			cntTxLevel->callback((Fl_Callback*)cb_cntTxLevel);
+			cntTxLevel->value(progdefaults.txlevel);
+			cntTxLevel->lstep(1.0);
+			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 
 			WARNstatus = new Fl_Box(
 				rightof(StatusBar) + pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
@@ -5156,12 +5173,24 @@ void create_fl_digi_main_WF_only() {
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			StatusBar = new Fl_Box(
-				rightof(Status2), Y,
-				progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - rightof(Status2) - 2 * pad,// - 60,
-				Hstatus, "");
+                rightof(Status2), Y,
+                progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel - rightof(Status2) - 2 * pad,// - 60,
+                Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
+
+			cntTxLevel = new Fl_Counter2(
+				rightof(StatusBar) + 2 * pad, Y,
+				bwTxLevel - 4 * pad,
+				Hstatus, "");
+			cntTxLevel->minimum(-30);
+			cntTxLevel->maximum(0);
+			cntTxLevel->value(-6);
+			cntTxLevel->callback((Fl_Callback*)cb_cntTxLevel);
+			cntTxLevel->value(progdefaults.txlevel);
+			cntTxLevel->lstep(1.0);
+			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 
 			WARNstatus = new Fl_Box(
 				rightof(StatusBar) + pad, Y,
