@@ -355,20 +355,6 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 		}
 	}
 
-//	for (int i = 0; i < mrgdb->nbrRecs(); i++) {
-//		rec = mrgdb->getRec(i);
-//		db->qsoNewRec ( rec );
-//	}
-//	db->SortByCall();
-//	int i = 0;
-//	while (i < db->nbrRecs() - 2) {
-//		if (comparerecs(db->getRec(i), db->getRec(i+1)) == 0) {
-//			reject->qsoNewRec(db->getRec(i+1));
-//			db->qsoDelRec(i+1);
-//		} else
-//			i++;
-//	}
-
 	if (merged->nbrRecs()) {
 		string mergedname = LogsDir;
 		mergedname.append("merged_recs");
@@ -383,6 +369,7 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 		REQ(rxtext, "\n*** ");
 		REQ(rxtext, msg2);
 		LOG_INFO("%s", msg2);
+		db->isdirty(1);
 	}
 
 	if (reject->nbrRecs()) {
@@ -419,7 +406,6 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 		cQsoDb *mrgdb = new cQsoDb;
 		adifFile.do_readfile (p, mrgdb);
 		merge_recs(&qsodb, mrgdb);
-		qsodb.isdirty(1);
 		delete mrgdb;
 	}
 }

@@ -346,7 +346,6 @@ void cQsoDb::qsoNewRec (cQsoRec *nurec) {
   qsorec[nbrrecs].checkBand();
   qsorec[nbrrecs].checkDateTimes();
   nbrrecs++;
-  dirty = 1;
 }
 
 cQsoRec* cQsoDb::newrec() {
@@ -359,7 +358,6 @@ cQsoRec* cQsoDb::newrec() {
     qsorec = atemp;
   }
   nbrrecs++;
-  dirty = 1;
   return &qsorec[nbrrecs - 1];
 }
 
