@@ -2993,7 +2993,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3237,23 +3237,6 @@ progdefaults.changed = true;}
                 code0 {extern void setPCMvolume(double);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
-              }
-            }
-          }
-          Fl_Group tabTxLevel {
-            label TxLevel open
-            xywh {0 50 500 320} hide
-          } {
-            Fl_Group {} {
-              label {Tx Attenuator} open
-              xywh {5 60 490 86} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Counter valTxLevel {
-                label {Tx Atten (dB)}
-                callback {progdefaults.txlevel=o->value();}
-                xywh {196 85 120 21} minimum -30 maximum 0 value -6
-                code0 {o->value(progdefaults.txlevel);}
-                code1 {o->lstep(1.0);}
               }
             }
           }
@@ -3787,7 +3770,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label Web open
+        label Web
         tooltip {Callsign database} xywh {0 25 500 345} hide
       } {
         Fl_Tabs {} {open

@@ -2587,14 +2587,6 @@ static void cb_valPCMvolume(Fl_Value_Slider2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabTxLevel=(Fl_Group *)0;
-
-Fl_Counter *valTxLevel=(Fl_Counter *)0;
-
-static void cb_valTxLevel(Fl_Counter* o, void*) {
-  progdefaults.txlevel=o->value();
-}
-
 Fl_Group *tabID=(Fl_Group *)0;
 
 Fl_Check_Button *btnsendid=(Fl_Check_Button *)0;
@@ -6222,23 +6214,6 @@ ll with your audio device."));
             } // Fl_Group* o
             tabMixer->end();
           } // Fl_Group* tabMixer
-          { tabTxLevel = new Fl_Group(0, 50, 500, 320, _("TxLevel"));
-            tabTxLevel->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 86, _("Tx Attenuator"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
-              { Fl_Counter* o = valTxLevel = new Fl_Counter(196, 85, 120, 21, _("Tx Atten (dB)"));
-                valTxLevel->minimum(-30);
-                valTxLevel->maximum(0);
-                valTxLevel->value(-6);
-                valTxLevel->callback((Fl_Callback*)cb_valTxLevel);
-                o->value(progdefaults.txlevel);
-                o->lstep(1.0);
-              } // Fl_Counter* valTxLevel
-              o->end();
-            } // Fl_Group* o
-            tabTxLevel->end();
-          } // Fl_Group* tabTxLevel
           tabsSoundCard->end();
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();

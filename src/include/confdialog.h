@@ -353,8 +353,6 @@ extern void setMixerInput(int);
 extern Fl_Light_Button *btnLineIn;
 extern void setPCMvolume(double);
 extern Fl_Value_Slider2 *valPCMvolume;
-extern Fl_Group *tabTxLevel;
-extern Fl_Counter *valTxLevel;
 extern Fl_Group *tabID;
 extern Fl_Check_Button *btnsendid;
 extern Fl_Check_Button *btnsendvideotext;
