@@ -1,10 +1,26 @@
 
 
+=Version 3.21.30=
+
+2011-11-28  David Freese  <w1hkj@w1hkj.com>
+
+	30951fb: Merge dups
+	ee4c5b4: Logbook dirty boolean
+	2335f76: Tx Attenuator Control
+	dfe3a7b: HamQTH app ident
+
+
+=Version 3.21.29=
+
+	b97bbde: eQSL QTH nickname
+	2edfc77: Merge Logs
+	9de5095: ADIF i/o tweaks
+	77e1eb1: Call lookup
+
+
 =Version 3.21.28=
 
-2011-11-20  David Freese  <w1hkj@w1hkj.com>
-
-	6ffd331: ADIF/EQSL thread shutdown
+	ed74b9b: ADIF/EQSL thread shutdown
 	d3e47a3: Ignore slash postamble
 	9100837: Log Export by date
 	f6888ee: ADIF file integrity test
