@@ -329,7 +329,7 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 					m++;
 				}
 			} else {
-				if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) > 0) {
+				if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) < 0) {
 					db->qsoNewRec(mrgdb->getRec(m));
 					merged->qsoNewRec(mrgdb->getRec(m));
 				} else
@@ -337,10 +337,10 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 				m++;
 			}
 		} else if (n == N) {
-			if (N == 0) {
+			if (db->nbrRecs() == 0) {
 				db->qsoNewRec(mrgdb->getRec(m));
 				merged->qsoNewRec(mrgdb->getRec(m));
-			} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) > 0) {
+			} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) < 0) {
 				db->qsoNewRec(mrgdb->getRec(m));
 				merged->qsoNewRec(mrgdb->getRec(m));
 			} else
