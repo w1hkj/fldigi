@@ -187,7 +187,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
+        label UI open
         xywh {0 25 502 346} hide
       } {
         Fl_Tabs tabsUI {open
@@ -305,6 +305,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Clear log controls sets RST out to 599} xywh {19 228 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTdefault);}
+              }
+              Fl_Check_Button btnRSTindefault {
+                label {Default RST in to 599}
+                callback {progdefaults.RSTin_default = o->value();
+progdefaults.changed = true;}
+                tooltip {Clear log controls sets RST out to 599} xywh {272 228 186 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.RSTin_default);}
               }
             }
             Fl_Group {} {
@@ -1248,7 +1255,7 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 504 320} hide
+            xywh {0 50 504 320}
           } {
             Fl_Tabs tabsCW {
               xywh {0 50 504 320} selection_color 50
@@ -2044,7 +2051,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 300} box ENGRAVED_FRAME
@@ -2291,7 +2298,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group grpHWPTT {
               label {h/w ptt device-pin} open
@@ -2397,7 +2404,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}

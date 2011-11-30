@@ -1934,8 +1934,12 @@ if (bWF_only) return;
 	if (progdefaults.fixed599 && progStatus.contest) {
 		inpRstIn1->value("599"); inpRstIn2->value("599");
 		inpRstOut1->value("599"); inpRstOut2->value("599");
-	} else if (progdefaults.RSTdefault)
-		inpRstOut1->value("599");
+	} else {
+		if (progdefaults.RSTdefault)
+			inpRstOut1->value("599");
+		if (progdefaults.RSTin_default)
+			inpRstIn1->value("599");
+	}
 	inpCall1->color(FL_BACKGROUND2_COLOR);
 	inpCall2->color(FL_BACKGROUND2_COLOR);
 	inpCall3->color(FL_BACKGROUND2_COLOR);

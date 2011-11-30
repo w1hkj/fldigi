@@ -625,6 +625,9 @@
         ELEM_(bool, RSTdefault, "RSTDEFAULT",                                           \
               "Default outgoing RST to 599",                                            \
               false)                                                                    \
+        ELEM_(bool, RSTin_default, "RSTINDEFAULT",                                      \
+              "Default incoming RST to 599",                                            \
+              false)                                                                    \
         ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
               "Enable detection and extraction of \"wrapped\" text",                    \
               true)                                                                     \
