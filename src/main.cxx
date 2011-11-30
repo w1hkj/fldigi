@@ -201,6 +201,31 @@ static void arg_error(const char* name, const char* arg, bool missing) noreturn_
 #  define SHOW_WIZARD_BEFORE_MAIN_WINDOW 0
 #endif
 
+// these functions are all started after Fl::run() is executing
+void delayed_startup(void *)
+{
+
+	connect_to_log_server();
+
+	arq_init();
+
+#ifdef __WIN32__
+	if (progdefaults.auto_talk) open_talker();
+#else
+	grpTalker->hide();
+#endif
+
+#if USE_XMLRPC
+	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
+#endif
+
+	notify_start();
+
+	if (progdefaults.usepskrep)
+		if (!pskrep_start())
+			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+}
+
 int main(int argc, char ** argv)
 {
 	appname = argv[0];
@@ -379,7 +404,6 @@ int main(int argc, char ** argv)
 
 	dlgViewer = createViewer();
 	create_logbook_dialogs();
-	connect_to_log_server();
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
@@ -398,29 +422,32 @@ int main(int argc, char ** argv)
 			w->iconize();
 	update_main_title();
 
-	arq_init();
+//	arq_init();
 
-#ifdef __WIN32__
-	if (progdefaults.auto_talk) open_talker();
-#else
-	grpTalker->hide();
-#endif
+//#ifdef __WIN32__
+//	if (progdefaults.auto_talk) open_talker();
+//#else
+//	grpTalker->hide();
+//#endif
 
-#if USE_XMLRPC
-	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
-#endif
+//#if USE_XMLRPC
+//	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
+//#endif
 
-	if (progdefaults.usepskrep)
-		if (!pskrep_start())
-			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+//	if (progdefaults.usepskrep)
+//		if (!pskrep_start())
+//			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
 
-	notify_start();
+//	notify_start();
 	mode_browser = new Mode_Browser;
 
 #if !SHOW_WIZARD_BEFORE_MAIN_WINDOW
 	if (!have_config)
 		show_wizard();
 #endif
+
+//	Fl::add_timeout(0.01, connect_to_log_server);
+	Fl::add_timeout(.05, delayed_startup);
 
 	int ret = Fl::run();
 
@@ -442,7 +469,6 @@ int main(int argc, char ** argv)
 
 	return ret;
 }
-
 
 void generate_option_help(void) {
 	ostringstream help;

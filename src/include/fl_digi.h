@@ -273,7 +273,7 @@ extern void startTimedExecute(std::string &);
 extern void cb_ResetSerNbr();
 extern void updateOutSerNo();
 
-extern void connect_to_log_server();
+extern void connect_to_log_server(void *p = NULL);
 extern void set_server_label(bool);
 extern void activate_menu_item(const char *caption, bool val);
 extern bool xml_check_dup();
