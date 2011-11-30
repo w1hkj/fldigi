@@ -45,6 +45,7 @@ extern Fl_Check_Button *btnDateTimeSort;
 extern Fl_Check_Button *btndate_time_force;
 extern Fl_Input2 *inpMyPower;
 extern Fl_Check_Button *btnRSTdefault;
+extern Fl_Check_Button *btnRSTindefault;
 extern Fl_Check_Button *btnRXClicks;
 extern Fl_Check_Button *btnRXTooltips;
 extern Fl_Input2 *inpNonword;

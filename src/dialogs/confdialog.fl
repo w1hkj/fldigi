@@ -188,7 +188,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
+        label UI open
         xywh {0 25 502 346} hide
       } {
         Fl_Tabs tabsUI {
@@ -306,6 +306,13 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Clear log controls sets RST out to 599} xywh {19 228 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTdefault);}
+              }
+              Fl_Check_Button btnRSTindefault {
+                label {Default RST in to 599}
+                callback {progdefaults.RSTin_default = o->value();
+progdefaults.changed = true;}
+                tooltip {Clear log controls sets RST out to 599} xywh {272 228 186 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.RSTin_default);}
               }
             }
             Fl_Group {} {
@@ -1307,7 +1314,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabCW {
             label CW
-            xywh {0 50 504 320} hide
+            xywh {0 50 504 320}
           } {
             Fl_Tabs tabsCW {
               xywh {0 50 504 320} selection_color 50
@@ -2044,8 +2051,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label RTTY
-            xywh {0 50 500 320}
+            label RTTY open
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 300} box ENGRAVED_FRAME

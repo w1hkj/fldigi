@@ -209,6 +209,13 @@ static void cb_btnRSTdefault(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnRSTindefault=(Fl_Check_Button *)0;
+
+static void cb_btnRSTindefault(Fl_Check_Button* o, void*) {
+  progdefaults.RSTin_default = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
 
 static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
@@ -3378,6 +3385,12 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
               } // Fl_Check_Button* btnRSTdefault
+              { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(272, 228, 186, 20, _("Default RST in to 599"));
+                btnRSTindefault->tooltip(_("Clear log controls sets RST out to 599"));
+                btnRSTindefault->down_box(FL_DOWN_BOX);
+                btnRSTindefault->callback((Fl_Callback*)cb_btnRSTindefault);
+                o->value(progdefaults.RSTin_default);
+              } // Fl_Check_Button* btnRSTindefault
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(2, 265, 496, 100, _("Text Capture"));
@@ -4272,7 +4285,6 @@ an merging"));
             tabContestia->end();
           } // Fl_Group* tabContestia
           { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 504, 320);
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
@@ -5085,6 +5097,7 @@ an merging"));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 500, 320, _("RTTY"));
+            tabRTTY->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = selShift = new Fl_Choice(15, 70, 100, 20, _("Carrier shift"));
