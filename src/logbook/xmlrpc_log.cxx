@@ -263,7 +263,7 @@ bool xml_check_dup()
 }
 
 
-void connect_to_log_server()
+void connect_to_log_server(void *)
 {
 	if (!log_client) {
 		int xmllog_port = atoi(progdefaults.xmllog_port.c_str());
