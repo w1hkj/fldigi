@@ -39,6 +39,10 @@ namespace XmlRpc {
   //! An interface allowing custom handling of error message reporting.
   class XmlRpcErrorHandler {
   public:
+  
+    XmlRpcErrorHandler() {}
+    ~XmlRpcErrorHandler() {}
+    
     //! Returns a pointer to the currently installed error handling object.
     static XmlRpcErrorHandler* getErrorHandler() 
     { return _errorHandler; }

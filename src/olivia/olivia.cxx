@@ -140,7 +140,7 @@ int olivia::unescape(int c)
 
 int olivia::tx_process()
 {
-	int c, len;//, i;
+	int c = 0, len = 0;
 	unsigned char ch;
 
 	if (tones	!= progdefaults.oliviatones ||

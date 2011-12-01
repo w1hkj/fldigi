@@ -1138,25 +1138,32 @@ void makeEQSL(const char *message)
 // eqsl url header
 	eQSL_url = "http://www.eqsl.cc/qslcard/importADIF.cfm?ADIFdata=upload <adIF_ver:5>2.1.9";
 	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s", 
-		progdefaults.eqsl_id.length(), progdefaults.eqsl_id.c_str(),
-		progdefaults.eqsl_pwd.length(), progdefaults.eqsl_pwd.c_str());
+		static_cast<int>(progdefaults.eqsl_id.length()),
+		progdefaults.eqsl_id.c_str(),
+		static_cast<int>(progdefaults.eqsl_pwd.length()),
+		progdefaults.eqsl_pwd.c_str());
 	eQSL_url.append(sztemp);
 	eQSL_url.append("<PROGRAMID:6>FLDIGI<EOH>");
 // eqsl nickname
 	if (!progdefaults.eqsl_nick.empty()) {
 		snprintf(sztemp, sizeof(sztemp), "<APP_EQSL_QTH_NICKNAME:%d>%s",
-		progdefaults.eqsl_nick.length(), progdefaults.eqsl_nick.c_str());
+			static_cast<int>(progdefaults.eqsl_nick.length()),
+			progdefaults.eqsl_nick.c_str());
 		eQSL_url.append(sztemp);
 	}
 
 // eqsl record
 // band
 	tempstr = band_name(band(wf->rfcarrier()));
-	snprintf(sztemp, sizeof(sztemp), "<BAND:%d>%s", tempstr.length(), tempstr.c_str());
+	snprintf(sztemp, sizeof(sztemp), "<BAND:%d>%s",
+		static_cast<int>(tempstr.length()),
+		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // call
 	tempstr = inpCall->value();
-	snprintf(sztemp, sizeof(sztemp), "<CALL:%d>%s", tempstr.length(), tempstr.c_str());
+	snprintf(sztemp, sizeof(sztemp), "<CALL:%d>%s",
+		static_cast<int>(tempstr.length()),
+		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // mode
 	tempstr = mode_info[active_modem->get_mode()].adif_name;
@@ -1181,22 +1188,32 @@ void makeEQSL(const char *message)
 		(tempstr.find("QPSK500R") != std::string::npos))
 		tempstr = "QPSK125";
 
-	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s", tempstr.length(), tempstr.c_str());
+	snprintf(sztemp, sizeof(sztemp), "<MODE:%d>%s",
+		static_cast<int>(tempstr.length()),
+		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // qso date
-	snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s", sDate_on.length(), sDate_on.c_str());
+	snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
+		static_cast<int>(sDate_on.length()),
+		sDate_on.c_str());
 	eQSL_url.append(sztemp);
 // qso time
 	tempstr = inpTimeOn->value();
-	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s", tempstr.length(), tempstr.c_str());
+	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s",
+		static_cast<int>(tempstr.length()),
+		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // rst sent
 	tempstr = inpRstOut->value();
-	snprintf(sztemp, sizeof(sztemp), "<RST_SENT:%d>%s", tempstr.length(), tempstr.c_str());
+	snprintf(sztemp, sizeof(sztemp), "<RST_SENT:%d>%s",
+		static_cast<int>(tempstr.length()),
+		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // message
 	if (!msg.empty()) {
-		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s", msg.length(), msg.c_str());
+		snprintf(sztemp, sizeof(sztemp), "<QSLMSG:%d>%s",
+			static_cast<int>(msg.length()),
+			msg.c_str());
 		eQSL_url.append(sztemp);
 	}
 	eQSL_url.append("<EOR>");
