@@ -139,7 +139,7 @@ int contestia::unescape(int c)
 
 int contestia::tx_process()
 {
-	int c, len;//, i;
+	int c = 0, len = 0;
 	unsigned char ch;
 
 	if (tones	!= progdefaults.contestiatones ||
