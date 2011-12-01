@@ -25,6 +25,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <ctype.h>
 #include "util.h"
 #ifdef __MINGW32__
 #  include "compat.h"
@@ -58,12 +59,12 @@ uint32_t floor2(uint32_t n)
 #include <stdlib.h>
 unsigned long ver2int(const char* version)
 {
-	unsigned long v;
-	char* p;
-
-	v = (unsigned long)(strtod(version, &p) * 1e7 + 0.5);
-	while (*p)
-		v += *p++;
+	unsigned long v = 0L;
+	const char* p = version;
+	while (*p) {
+		if (isdigit(*p)) v = v*10 + *p - '0';
+		p++;
+	}
 
 	return v;
 }
