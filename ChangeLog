@@ -1,8 +1,17 @@
 
 
-=Version 3.21.30=
+=Version 3.21.31=
 
-2011-11-28  David Freese  <w1hkj@w1hkj.com>
+2011-12-01  David Freese  <w1hkj@w1hkj.com>
+
+	dcbae1e: Spanish translation file
+	136bcc2: Compile warnings
+	7beb7c1: ver2int
+	8a7c4bf: Main thread hang
+	2f2fe0a: UI changes
+
+
+=Version 3.21.30=
 
 	30951fb: Merge dups
 	ee4c5b4: Logbook dirty boolean
