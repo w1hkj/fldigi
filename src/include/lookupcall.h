@@ -16,7 +16,19 @@ extern std::string lookup_country;
 extern void clear_Lookup();
 
 extern void CALLSIGNquery();
-enum qrz_query_t { QRZ_EXIT = -1, QRZNONE, QRZNET, QRZCD, HAMCALLNET, QRZHTML, HAMCALLHTML, CALLOOK, HAMQTH };
+
+enum qrz_xmlquery_t { 
+QRZXML_EXIT = -1, 
+QRZXMLNONE, 
+QRZNET, QRZCD, 
+HAMCALLNET,
+CALLOOK, 
+HAMQTH };
+
+enum qrz_webquery_t { 
+QRZWEB_EXIT = -1, 
+QRZWEBNONE, 
+QRZHTML, HAMCALLHTML, HAMQTHHTML };
 
 extern void sendEQSL(const char *url);
 extern void makeEQSL(const char *msg);

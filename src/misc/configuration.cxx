@@ -630,17 +630,12 @@ int configuration::setDefaults()
 	btnRSID->value(rsid);
 	chkRSidWideSearch->value(rsidWideSearch);
 	chkSlowCpu->value(slowcpu);
-	
-	Fl_Button* qrzb = btnQRZnotavailable;
-	switch (QRZ) {
-	case QRZNONE:
-		qrzb = btnQRZnotavailable;
-		break;
+
+	Fl_Button* qrzb = btnQRZXMLnotavailable;
+	Fl_Button* qrzb2 = btnQRZWEBnotavailable;
+	switch (QRZXML) {
 	case QRZCD:
 		qrzb = btnQRZcdrom;
-		break;
-	case QRZHTML:
-		qrzb = btnQRZonline;
 		break;
 	case QRZNET:
 		qrzb = btnQRZsub;
@@ -648,19 +643,34 @@ int configuration::setDefaults()
 	case HAMCALLNET:
 		qrzb = btnHamcall;
 		break;
-	case HAMCALLHTML:
-		qrzb = btnHAMCALLonline;
-		break;
 	case CALLOOK:
 		qrzb = btnCALLOOK;
 		break;
 	case HAMQTH:
 		qrzb = btnHamQTH;
 		break;
+	case QRZXMLNONE:
 	default :
 		break;
 	}
-	set_qrz_buttons(qrzb);
+	switch (QRZWEB) {
+	case QRZHTML:
+		qrzb2 = btnQRZonline;
+		break;
+	case HAMCALLHTML:
+		qrzb2 = btnHAMCALLonline;
+		break;
+	case HAMQTHHTML:
+		qrzb2 = btnHamQTHonline;
+		break;
+	case QRZWEBNONE:
+	default :
+		break;
+	}
+
+	set_qrzxml_buttons(qrzb);
+	set_qrzweb_buttons(qrzb2);
+
 	txtQRZpathname->value(QRZpathname.c_str());
 
 	btnsendid->value(sendid);

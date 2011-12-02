@@ -83,7 +83,8 @@ string lookup_latd;
 string lookup_lond;
 string lookup_notes;
 
-qrz_query_t DB_query = QRZNONE;
+qrz_xmlquery_t DB_XML_query = QRZXMLNONE;
+qrz_webquery_t DB_WEB_query = QRZWEBNONE;
 
 enum TAG {
 	QRZ_IGNORE,	QRZ_KEY,	QRZ_ALERT,	QRZ_ERROR,	QRZ_CALL,
@@ -470,7 +471,9 @@ void QRZclose(void)
 
 	CANCEL_THREAD(*QRZ_thread);
 
-	DB_query = QRZ_EXIT;
+	DB_XML_query = QRZXML_EXIT;
+	DB_WEB_query = QRZWEB_EXIT;
+
 	pthread_mutex_lock(&qrz_mutex);
 	pthread_cond_signal(&qrz_cond);
 	pthread_mutex_unlock(&qrz_mutex);
@@ -839,12 +842,12 @@ void parse_HAMQTH_html(const string& htmlpage)
 		if (p1 != string::npos)
 			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
 	}
-	if ((p = htmlpage.find("<adr_country>")) != string::npos) {
-		p += 13;
-		p1 = htmlpage.find("</adr_country>");
-		if (p1 != string::npos)
-			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
-	}
+//	if ((p = htmlpage.find("<adr_country>")) != string::npos) {
+//		p += 13;
+//		p1 = htmlpage.find("</adr_country>");
+//		if (p1 != string::npos)
+//			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
+//	}
 }
 
 bool HAMQTHget(string& htmlpage)
@@ -906,6 +909,15 @@ void HAMCALL_DETAILS_query()
 	cb_mnuVisitURL(0, (void*)hamcallurl.c_str());
 }
 
+void HAMQTH_DETAILS_query()
+{
+	string hamqthurl = "http://www.hamQTH.com/";
+	hamqthurl.append(callsign);
+
+	cb_mnuVisitURL(0, (void*)hamqthurl.c_str());
+}
+
+
 // ----------------------------------------------------------------------------
 
 static void *LOOKUP_loop(void *args)
@@ -920,7 +932,7 @@ static void *LOOKUP_loop(void *args)
 		pthread_cond_wait(&qrz_cond, &qrz_mutex);
 		pthread_mutex_unlock(&qrz_mutex);
 
-		switch (DB_query) {
+		switch (DB_XML_query) {
 		case QRZCD :
 			QRZ_CD_query();
 			break;
@@ -930,22 +942,31 @@ static void *LOOKUP_loop(void *args)
 		case HAMCALLNET :
 			HAMCALLquery();
 			break;
-		case QRZHTML :
-			QRZ_DETAILS_query();
-			break;
-		case HAMCALLHTML :
-			HAMCALL_DETAILS_query();
-			break;
 		case CALLOOK:
 			CALLOOKquery();
 			break;
 		case HAMQTH:
 			HAMQTHquery();
 			break;
-		case QRZ_EXIT:
+		case QRZXML_EXIT:
 			return NULL;
 		default:
-			LOG_ERROR("Bad query type %d", DB_query);
+			break;
+		}
+
+		switch (DB_WEB_query) {
+		case QRZHTML :
+			QRZ_DETAILS_query();
+			break;
+		case HAMCALLHTML :
+			HAMCALL_DETAILS_query();
+			break;
+		case HAMQTHHTML :
+			HAMQTH_DETAILS_query();
+			break;
+		case QRZWEB_EXIT:
+			return NULL;
+		default:
 			break;
 		}
 	}
@@ -978,11 +999,9 @@ void CALLSIGNquery()
 			callsign.erase(slash);
 	}
 
-	switch (DB_query = static_cast<qrz_query_t>(progdefaults.QRZ)) {
+	switch (DB_XML_query = static_cast<qrz_xmlquery_t>(progdefaults.QRZXML)) {
 	case QRZNET:
 		inpNotes->value("Request sent to\nqrz.com...");
-		break;
-	case QRZHTML: case HAMCALLHTML:
 		break;
 	case HAMCALLNET:
 		inpNotes->value("Request sent to\nwww.hamcall.net...");
@@ -996,7 +1015,7 @@ void CALLSIGNquery()
 		}
 		if (!qCall->getQRZvalid()) {
 			inpNotes->value("QRZ DB error");
-			DB_query = QRZNONE;
+			DB_XML_query = QRZXMLNONE;
 			return;
 		}
 		break;
@@ -1006,10 +1025,14 @@ void CALLSIGNquery()
 	case HAMQTH:
 		inpNotes->value("Request sent to \nhttp://hamqth.com...");
 		break;
+	case QRZXMLNONE:
+		break;
 	default:
-		LOG_ERROR("Bad query type %d", DB_query);
+		LOG_ERROR("Bad query type %d", DB_XML_query);
 		return;
 	}
+
+	DB_WEB_query = static_cast<qrz_webquery_t>(progdefaults.QRZWEB);
 
 	pthread_mutex_lock(&qrz_mutex);
 	pthread_cond_signal(&qrz_cond);

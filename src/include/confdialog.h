@@ -12,7 +12,8 @@
 #include "flmisc.h"
 extern Fl_Double_Window *dlgConfig; 
 extern Mode_Browser* mode_browser; 
-void set_qrz_buttons(Fl_Button* b);
+void set_qrzxml_buttons(Fl_Button* b);
+void set_qrzweb_buttons(Fl_Button* b);
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Tabs.H>
 extern Fl_Tabs *tabsConfigure;
@@ -403,18 +404,20 @@ extern Fl_Check_Button *chkRxStream;
 extern Fl_Group *tabDTMF;
 extern Fl_Check_Button *chkDTMFdecode;
 extern Fl_Group *tabQRZ;
-extern Fl_Round_Button *btnQRZnotavailable;
+extern Fl_Round_Button *btnQRZWEBnotavailable;
 extern Fl_Round_Button *btnQRZonline;
 extern Fl_Round_Button *btnHAMCALLonline;
-extern Fl_Round_Button *btnCALLOOK;
+extern Fl_Round_Button *btnHamQTHonline;
+extern Fl_Round_Button *btnQRZXMLnotavailable;
 extern Fl_Round_Button *btnQRZcdrom;
-extern Fl_Input2 *txtQRZpathname;
 extern Fl_Round_Button *btnQRZsub;
 extern Fl_Round_Button *btnHamcall;
+extern Fl_Round_Button *btnHamQTH;
+extern Fl_Round_Button *btnCALLOOK;
+extern Fl_Input2 *txtQRZpathname;
 extern Fl_Input2 *inpQRZusername;
 extern Fl_Input2 *inpQRZuserpassword;
 extern Fl_Button *btnQRZpasswordShow;
-extern Fl_Round_Button *btnHamQTH;
 extern Fl_Input2 *inpEQSL_id;
 extern Fl_Input2 *inpEQSL_pwd;
 extern Fl_Button *btnEQSL_pwd_show;
