@@ -1,5 +1,15 @@
-2011-11-25  David Freese  <w1hkj@w1hkj.com>
+2011-12-02  David Freese  <w1hkj@w1hkj.com>
 
+	0c2b4fc: Contestia 64/1000
+	3dd38d1: Call lookups
+	0263d0a: Compile warnings
+	ce6c399: ver2int
+	14fb480: UI changes
+	b968647: Main thread hang
+	f575215: Merge dups
+	4dd27c2: Logbook dirty boolean
+	ac9c15b: Tx Attenuator Control
+	25036db: HamQTH app ident
 	6d4326d: eQSL QTH nickname
 	972cba1: Merge Logs update
 	7d95b7b: Merge Logs
