@@ -695,11 +695,17 @@
               "Connect to Digitalk socket server during program initialization",        \
               false)                                                                    \
         /* QRZ */                                                                       \
-        ELEM_(int, QRZ, "QRZTYPE",                                                      \
-              "Callsign query type.  Values are as follows:\n"                          \
+        ELEM_(int, QRZXML, "QRZXMLTYPE",                                                \
+              "Callsign xml query type.  Values are as follows:\n"                      \
               "  0: none; 1: QRZ (paid sub.); 2: QRZ cdrom; 3: HamCall (paid sub.);\n"  \
-              "  4: QRZ (web browser); 5: HamCall (web browser). The default is 0.",    \
-              QRZNONE)                                                                  \
+              "  4: callook free US calls xml service; 5: hamQTH free xml service.\n"   \
+              "  The default is none.",                                                 \
+              QRZXMLNONE)                                                               \
+        ELEM_(int, QRZWEB, "QRZWEBTYPE",                                                \
+              "Callsign browser query type.  Values are as follows:\n"                  \
+              "  0: none; 1: QRZ web browser; 2: HamCall web browser\n"                 \
+              "  3: hamQTH web browser.\n  The default is none.",                       \
+              QRZWEBNONE)                                                               \
         ELEM_(std::string, QRZpathname, "QRZPATHNAME",                                  \
               "QRZ cdrom path",                                                         \
               "")                                                                       \

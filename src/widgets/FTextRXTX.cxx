@@ -422,7 +422,8 @@ void FTextRX::handle_context_menu(void)
 		show_item(RX_MENU_SERIAL);
 		show_item(RX_MENU_XCHG);
 	}
-	else if (progdefaults.QRZ != QRZNONE) // "Look up call" shown only in non-contest mode
+// "Look up call" shown only in non-contest mode
+	else if (progdefaults.QRZWEB != QRZWEBNONE || progdefaults.QRZXML != QRZXMLNONE)
 		show_item(RX_MENU_QRZ_THIS);
 
 	if (menu[RX_MENU_QUICK_ENTRY].value()) {
