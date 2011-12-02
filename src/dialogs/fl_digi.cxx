@@ -425,6 +425,7 @@ void cb_contestiaF(Fl_Widget *w, void *arg);
 void cb_contestiaG(Fl_Widget *w, void *arg);
 void cb_contestiaH(Fl_Widget *w, void *arg);
 void cb_contestiaI(Fl_Widget *w, void *arg);
+void cb_contestiaJ(Fl_Widget *w, void *arg);
 void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
 void cb_rtty45(Fl_Widget *w, void *arg);
@@ -550,6 +551,7 @@ Fl_Menu_Item quick_change_contestia[] = {
 	{ "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA },
 	{ "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA },
 	{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA },
+	{ "64/1000", 0, cb_contestiaJ, (void *)MODE_CONTESTIA },
 	{ _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA },
 	{ 0 }
 };
@@ -746,6 +748,14 @@ void cb_contestiaI(Fl_Widget *w, void *arg)
 {
 	progdefaults.contestiatones = 1;
 	progdefaults.contestiabw = 0;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaJ(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 5;
+	progdefaults.contestiabw = 3;
 	set_contestia_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -2957,7 +2967,8 @@ Fl_Menu_Item menu_[] = {
 { "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "64/1000", 0, cb_contestiaJ, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -4782,7 +4793,8 @@ Fl_Menu_Item alt_menu_[] = {
 { "16/500", 0, cb_contestiaE, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/1000", 0, cb_contestiaF, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "16/1000", 0, cb_contestiaG, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "32/1000", 0, cb_contestiaH, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "64/1000", 0, cb_contestiaJ, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_contestiaCustom, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
