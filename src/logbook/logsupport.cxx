@@ -234,23 +234,20 @@ int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
 	cQsoRec *r2 = (cQsoRec *)rp2;
 	int cmp = 0;
 // compare by call
-	char s1[strlen(r1->getField(CALL)) + 1];
-	char s2[strlen(r2->getField(CALL)) + 1];
-	char *p1, *p2;
-	strcpy(s1, r1->getField(CALL));
-	strcpy(s2, r2->getField(CALL));
-	p1 = strpbrk (s1+1, "0123456789");
-	p2 = strpbrk (s2+1, "0123456789");
+	const char * s1 = r1->getField(CALL);
+	const char * s2 = r2->getField(CALL);
+
+	const char *p1 = strpbrk (s1+1, "0123456789");
+	const char *p2 = strpbrk (s2+1, "0123456789");
 	if (p1 && p2) {
-		cmp = (*p1 < *p2) ? -1 :(*p1 > *p2) ? 1 : 0;
+		cmp = (*p1 < *p2) ? -1 : (*p1 > *p2) ? 1 : 0;
 		if (cmp == 0) {
-			*p1 = 0; *p2 = 0;
-			cmp = strcmp (s1, s2);
+			cmp = strncmp (s1, s2, max(p1 - s1, p2 - s2));
 			if (cmp == 0)
 				cmp = strcmp(p1+1, p2+1);
 		}
 	} else // not a normal call, do a simple string comparison
-		cmp = strcmp(r1->getField(CALL), r2->getField(CALL));
+		cmp = strcmp(s1, s2);
 	if (cmp != 0)
 		return cmp;
 
@@ -300,7 +297,6 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 	cQsoDb *reject = new cQsoDb;
 	cQsoDb *copy = new cQsoDb(db);
 	cQsoDb *merged = new cQsoDb;
-//	cQsoRec *rec = 0;
 
 	snprintf(msg1, sizeof(msg1), "Read %d records", mrgdb->nbrRecs());
 	LOG_INFO("%s", msg1);

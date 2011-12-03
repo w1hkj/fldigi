@@ -3,6 +3,7 @@
 //
 // Copyright (C) 2006-2009
 //		Dave Freese, W1HKJ
+//		Remi Chateaunaeu, 2011
 //
 // This file is part of fldigi.
 //
@@ -29,6 +30,8 @@
 #include "qso_db.h"
 #include "field_def.h"
 #include "globals.h"
+
+#include "pthread.h"
 
 using namespace std;
 
@@ -78,6 +81,42 @@ void cQsoRec::checkDateTimes() {
 		qsofield[QSO_DATE] = qsofield[QSO_DATE_OFF];
 	else if (len1 != 0 && len2 == 0)
 		qsofield[QSO_DATE_OFF] = qsofield[QSO_DATE];
+}
+
+// Sets the current time, with the right format.
+void cQsoRec::setDateTime(bool dtOn) {
+	time_t tmp_time = time(NULL);
+	struct tm tmp_tm ;
+	localtime_r( &tmp_time, &tmp_tm );
+
+	char buf_date[64] ;
+	snprintf( buf_date, sizeof(buf_date),
+		"%04d%02d%02d",
+		1900 + tmp_tm.tm_year,
+		1 + tmp_tm.tm_mon,
+		tmp_tm.tm_mday );
+
+	char buf_time[64] ;
+	snprintf( buf_time, sizeof(buf_time),
+		"%02d%02d",
+		tmp_tm.tm_hour,
+		tmp_tm.tm_min );
+
+	if(dtOn) {
+		putField(QSO_DATE, buf_date);
+		putField(TIME_ON, buf_time);
+	} else {
+		putField(QSO_DATE_OFF, buf_date);
+		putField(TIME_OFF, buf_time);
+	}
+}
+
+/// It must match a specific format. Input in Hertz.
+void cQsoRec::setFrequency(long long freq) {
+	double freq_dbl = freq / 1000000.0 ;
+	char buf_freq[64];
+	snprintf( buf_freq, sizeof(buf_freq), "%lf", freq_dbl );
+	putField(FREQ, buf_freq );
 }
 
 void cQsoRec::putField (int n, const char *s){
@@ -135,74 +174,45 @@ const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
-	if (date_off) {
-		if (r1.qsofield[TIME_OFF] < r2.qsofield[TIME_OFF])
-			return -1;
-		if (r1.qsofield[TIME_OFF] > r2.qsofield[TIME_OFF])
-			return 1;
-	} else {
-		if (r1.qsofield[TIME_ON] < r2.qsofield[TIME_ON])
-			return -1;
-		if (r1.qsofield[TIME_ON] > r2.qsofield[TIME_ON])
-			return 1;
-	}
-	return 0;
+	if (date_off)
+		return r1.qsofield[TIME_OFF].compare( r2.qsofield[TIME_OFF] );
+	return r1.qsofield[TIME_ON].compare( r2.qsofield[TIME_ON] );
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
-	if (date_off) {
-		if (r1.qsofield[QSO_DATE_OFF] < r2.qsofield[QSO_DATE_OFF])
-			return -1;
-		if (r1.qsofield[QSO_DATE_OFF] > r2.qsofield[QSO_DATE_OFF])
-			return 1;
-	} else {
-		if (r1.qsofield[QSO_DATE] < r2.qsofield[QSO_DATE])
-			return -1;
-		if (r1.qsofield[QSO_DATE] > r2.qsofield[QSO_DATE])
-			return 1;
-	}
-	return 0;
+	if (date_off)
+		return r1.qsofield[QSO_DATE_OFF].compare( r2.qsofield[QSO_DATE_OFF] );
+	return r1.qsofield[QSO_DATE].compare( r2.qsofield[QSO_DATE] );
 }
 
 int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 	int cmp = 0;
-	char s1[r1.qsofield[CALL].length() + 1];
-	char s2[r2.qsofield[CALL].length() + 1];
-	char *p1, *p2;
-	strcpy(s1, r1.qsofield[CALL].c_str());
-	strcpy(s2, r2.qsofield[CALL].c_str());
-	p1 = strpbrk (s1+1, "0123456789");
-	p2 = strpbrk (s2+1, "0123456789");
+	const char * s1 = r1.qsofield[CALL].c_str();
+	const char * s2 = r2.qsofield[CALL].c_str();
+	const char * p1 = strpbrk (s1+1, "0123456789");
+	const char * p2 = strpbrk (s2+1, "0123456789");
+
 	if (p1 && p2) {
-		cmp = (*p1 < *p2) ? -1 :(*p1 > *p2) ? 1 : 0;
+		cmp = (*p1 < *p2) ? -1 : (*p1 > *p2) ? 1 : 0;
 		if (cmp == 0) {
-			*p1 = 0; *p2 = 0;
-			cmp = strcmp (s1, s2);
+			cmp = strncmp (s1, s2, max(p1 - s1, p2 - s2));
 			if (cmp == 0)
 				cmp = strcmp(p1+1, p2+1);
 		}
 	} else
-		cmp = (r1.qsofield[CALL] == r2.qsofield[CALL]);
+		cmp = strcmp(s1, s2);
 	return cmp;
 }
 
 int compareModes (const cQsoRec &r1, const cQsoRec &r2) {
-	if (r1.qsofield[MODE] < r2.qsofield[MODE])
-		return -1;
-	if (r1.qsofield[MODE] > r2.qsofield[MODE])
-		return 1;
-	return 0;
+	return r1.qsofield[MODE].compare( r2.qsofield[MODE] );
 }
 
 int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
-	int cmp = 0;
 	double f1, f2;
 	f1 = atof(r1.qsofield[FREQ].c_str());
 	f2 = atof(r2.qsofield[FREQ].c_str());
-	if (f1 == f2) cmp = 0;
-	else if (f1 < f2) return -1;
-	else if (f1 > f2) return 1;
-	return 0;
+	return (f1 == f2 ? 0 : f1 < f2 ? -1 : 1);
 }
 
 int compareqsos (const void *p1, const void *p2) {
@@ -272,15 +282,10 @@ ostream &operator<< (ostream &output, const cQsoRec &rec) {
 }
 
 istream &operator>> (istream &input, cQsoRec &rec ) {
-	char c;
-	int i;
-	for (i = 0; i < NUMFIELDS; i++) {
-		rec.qsofield[i].clear();
-		c = input.get();
-		while (c != delim_in && c != EOF) {
-			rec.qsofield[i] += c;
-			c = input.get();
-		}
+	static char buf[1024]; // Must be big enough for a field.
+	for (int i = 0; i < NUMFIELDS; i++) {
+		input.getline( buf, sizeof(buf), delim_in );
+		rec.qsofield[i] = buf ;
 	}
 	return input;
 }
@@ -304,7 +309,7 @@ cQsoDb::cQsoDb(cQsoDb *db) {
   maxrecs = db->nbrRecs();
   qsorec = new cQsoRec[maxrecs];
   for (int i = 0; i < maxrecs; i++)
-	qsorec[i] = db->qsorec[i];
+    qsorec[i] = db->qsorec[i];
   compby = COMPDATE;
   nbrrecs = maxrecs;
   dirty = 0;
@@ -429,10 +434,9 @@ char buff[256];
 	isVer3 = true;    
   
   cQsoRec inprec;
-  while (inQsoFile >> inprec) {
+  while (inQsoFile >> inprec)
     qsoNewRec (&inprec);
-    inprec.clearRec();
-  }
+
   inQsoFile.close();
   SortByDate(date_off);
   return 0;
@@ -456,7 +460,7 @@ const int cQsoDb::jdays[2][13] = {
   { 0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 }
 };
 
-bool cQsoDb::isleapyear( int y )
+bool cQsoDb::isleapyear( int y ) const
 {
   if( y % 400 == 0 || ( y % 100 != 0 && y % 4 == 0 ) )
     return true;
