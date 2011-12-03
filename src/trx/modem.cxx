@@ -123,11 +123,6 @@ modem *wwv_modem = 0;
 modem *anal_modem = 0;
 modem *ssb_modem = 0;
 
-trx_mode modem::get_mode()
-{
-	return mode;
-}
-
 modem::modem()
 {
 	scptr = 0;
@@ -181,12 +176,7 @@ void modem::set_freqlock(bool on)
 }
 
 
-bool modem::freqlocked()
-{
-	return freqlock;
-}
-
-double modem::get_txfreq(void)
+double modem::get_txfreq(void) const
 {
 	if (unlikely(!(cap & CAP_TX)))
 		return 0;
@@ -195,21 +185,11 @@ double modem::get_txfreq(void)
 	return tx_frequency;
 }
 
-double modem::get_txfreq_woffset(void)
+double modem::get_txfreq_woffset(void) const
 {
 	if (mailserver && progdefaults.PSKmailSweetSpot)
 		return (progdefaults.PSKsweetspot - progdefaults.TxOffset);
 	return (tx_frequency - progdefaults.TxOffset);
-}
-
-int modem::get_freq()
-{
-	return (int)(frequency + 0.5);
-}
-
-double modem::get_bandwidth(void)
-{
-	return bandwidth;
 }
 
 void modem::set_bandwidth(double bw)
@@ -233,12 +213,6 @@ void modem::display_metric(double m)
 	set_metric(m);
 	::global_display_metric(m);
 }
-
-double modem::get_metric(void)
-{
-	return metric;
-}
-
 
 bool modem::get_cwTrack()
 {
@@ -273,11 +247,6 @@ double modem::get_cwXmtWPM()
 void modem::set_cwXmtWPM(double wpm)
 {
 	cwXmtWPM = wpm;
-}
-
-int modem::get_samplerate(void)
-{
-	return samplerate;
 }
 
 void modem::set_samplerate(int smprate)
