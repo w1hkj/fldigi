@@ -86,29 +86,31 @@ public:
 	virtual void	searchUp() {};
 
 	void		HistoryON(bool val) {historyON = val;}
-	bool		HistoryON() { return historyON;}
+	bool		HistoryON() const { return historyON;}
 
-	trx_mode	get_mode();
-	const char	*get_mode_name() { return mode_info[get_mode()].sname;}
+	/// Inlined const getters are faster and smaller.
+	trx_mode	get_mode() const { return mode; };
+	const char	*get_mode_name() const { return mode_info[get_mode()].sname;}
 	virtual void	set_freq(double);
-	int		get_freq();
+	/// Inlining small formulas is still faster and shorter.
+	int		get_freq() const { return (int)( frequency + 0.5 ); }
 	void		init_freqlock();
 	void		set_freqlock(bool);
 	void		set_sigsearch(int n) { sigsearch = n; freqerr = 0.0;};
-	bool		freqlocked();
-	double		get_txfreq();
-	double		get_txfreq_woffset();
+	bool		freqlocked() const { return freqlock;}
+	/// Getters are semantically const.
+	double		get_txfreq() const;
+	double		get_txfreq_woffset() const;
 	void		set_metric(double);
 	void		display_metric(double);
-	double		get_metric();
+	double		get_metric() const { return metric;}
 	void		set_reverse(bool on);
-	bool		get_reverse() { return reverse; }
-	double		get_bandwidth();
+	bool		get_reverse() const { return reverse;}
+	double		get_bandwidth() const { return bandwidth;}
 	void		set_bandwidth(double);
-	int			get_samplerate();
+	int		get_samplerate() const { return samplerate;}
 	void		set_samplerate(int);
 	void		init_queues();
-	int			get_echo_char();
 
 	void		ModulateXmtr(double *, int);
 	void		ModulateStereo(double *, double *, int);
@@ -117,9 +119,9 @@ public:
 	void		pretone();
 
 	void		set_stopflag(bool b) { stopflag = b;};
-	bool		get_stopflag() { return stopflag; };
+	bool		get_stopflag() const { return stopflag; };
 
-	unsigned	get_cap(void) { return cap; }
+	unsigned	get_cap(void) const { return cap; }
 	enum { CAP_AFC = 1 << 0, CAP_AFC_SR = 1 << 1, CAP_REV = 1 << 2,
 	       CAP_IMG = 1 << 3, CAP_BW = 1 << 4, CAP_RX = 1 << 5,
 	       CAP_TX = 1 << 6
