@@ -688,6 +688,9 @@
         ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
               "Full pathname to the flmsg executable",                                  \
               "")                                                                       \
+        ELEM_(std::string, cty_dat_pathname, "CTYDAT_PATHNAME",                         \
+              "Full pathname to the cty.dat data file",                                 \
+              "")                                                                       \
         ELEM_(bool, speak, "SPEAK",                                                     \
               "Capture text to file 'talk/textout.txt'",                                \
               false)                                                                    \

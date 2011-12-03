@@ -33,8 +33,15 @@
 #include <tr1/unordered_map>
 #include <algorithm>
 
+#include <FL/filename.H>
+#include "fileselect.h"
+
+#include "gettext.h"
 #include "dxcc.h"
 #include "debug.h"
+#include "configuration.h"
+#include "confdialog.h"
+#include "main.h"
 
 using namespace std;
 using tr1::unordered_map;
@@ -295,3 +302,36 @@ unsigned char qsl_lookup(const char* callsign)
 	qsl_map_t::const_iterator i = qsl_calls->find(str);
 	return i == qsl_calls->end() ? 0 : i->second;
 }
+
+void reload_cty_dat()
+{
+	dxcc_close();
+	dxcc_open(string(progdefaults.cty_dat_pathname).append("cty.dat").c_str());
+	qsl_close();
+	qsl_open(string(progdefaults.cty_dat_pathname).append("lotw1.txt").c_str(), QSL_LOTW);
+	if (!qsl_open(string(progdefaults.cty_dat_pathname).append("eqsl.txt").c_str(), QSL_EQSL))
+		qsl_open(string(progdefaults.cty_dat_pathname).append("AGMemberList.txt").c_str(), QSL_EQSL);
+}
+
+void default_cty_dat_pathname()
+{
+	progdefaults.cty_dat_pathname = HomeDir;
+	txt_cty_dat_pathname->value(progdefaults.cty_dat_pathname.c_str());
+}
+
+void select_cty_dat_pathname()
+{
+	string deffilename = progdefaults.cty_dat_pathname;
+	const char *p = FSEL::select(_("Locate cty.dat"), _("cty.dat\t*"), deffilename.c_str());
+	if (p) {
+printf("%s\n", p);
+		string nupath = p;
+		size_t endslash = nupath.rfind("/");
+		if ((endslash != string::npos) && (endslash != (nupath.length()-1)))
+			nupath.erase(endslash + 1);
+		progdefaults.cty_dat_pathname = nupath;
+		progdefaults.changed = true;
+		txt_cty_dat_pathname->value(nupath.c_str());
+	}
+}
+

@@ -30,30 +30,12 @@ extern Fl_Check_Button *btnNoiseOn;
 extern Fl_Counter2 *noiseDB;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
-extern Fl_Group *tabUserInterface;
-extern Fl_Check_Button *btnShowTooltips;
-extern Fl_Check_Button *chkMenuIcons;
-#include <FL/Fl_Choice.H>
-extern Fl_Choice *mnuScheme;
-#include <FL/Fl_Button.H>
-extern Fl_Button *bVisibleModes;
-extern Fl_Choice *mnuLang;
-extern Fl_Check_Button *btnNagMe;
-extern Fl_Check_Button *btnClearOnSave;
-extern Fl_Check_Button *btnAutoFillQSO;
-extern Fl_Check_Button *btnCallUpperCase;
-extern Fl_Check_Button *btnDateTimeSort;
-extern Fl_Check_Button *btndate_time_force;
-extern Fl_Input2 *inpMyPower;
-extern Fl_Check_Button *btnRSTdefault;
-extern Fl_Check_Button *btnRSTindefault;
-extern Fl_Check_Button *btnRXClicks;
-extern Fl_Check_Button *btnRXTooltips;
-extern Fl_Input2 *inpNonword;
 extern Fl_Group *tabBrowser;
 extern Fl_Spinner2 *cntChannels;
 extern Fl_Spinner2 *cntTimeout;
+#include <FL/Fl_Choice.H>
 extern Fl_Choice *mnuViewerLabel;
+#include <FL/Fl_Button.H>
 extern Fl_Button *btnViewerFont;
 extern Fl_Check_Button *btnFixedIntervals;
 extern Fl_Check_Button *btnMarquee;
@@ -61,19 +43,6 @@ extern Fl_Check_Button *btnAscend;
 extern Fl_Check_Button *btnBrowserHistory;
 extern Fl_Button *bwsrSliderColor;
 extern Fl_Button *bwsrSldrSelColor;
-extern Fl_Group *tabMBars;
-extern Fl_Check_Button *btnMacroMouseWheel;
-#include <FL/Fl_Round_Button.H>
-extern Fl_Round_Button *btn_oneA;
-extern Fl_Round_Button *btn_oneB;
-extern Fl_Round_Button *btn_twoA;
-extern Fl_Round_Button *btn_twoB;
-extern Fl_Round_Button *btn_twoC;
-extern Fl_Round_Button *btn_twoD;
-extern Fl_Round_Button *btn_twoE;
-extern Fl_Round_Button *btn_twoF;
-extern Fl_Check_Button *btnUseLastMacro;
-extern Fl_Check_Button *btnDisplayMacroFilename;
 extern Fl_Group *tabContest;
 #include <FL/Fl_Box.H>
 extern Fl_Box *lblSend;
@@ -94,6 +63,48 @@ extern Fl_Check_Button *btnDupTimeSpan;
 extern Fl_Value_Input2 *nbrTimeSpan;
 #include <FL/Fl_Color_Chooser.H>
 extern Fl_Button *btnDupColor;
+extern Fl_Group *tabUserInterface;
+extern Fl_Check_Button *btnShowTooltips;
+extern Fl_Check_Button *chkMenuIcons;
+extern Fl_Choice *mnuScheme;
+extern Fl_Button *bVisibleModes;
+extern Fl_Choice *mnuLang;
+extern Fl_Check_Button *btn_rx_lowercase;
+extern Fl_Group *tabLogServer;
+#include <FL/Fl_Input.H>
+extern Fl_Input *xmllogServerAddress;
+extern Fl_Input *xmllogServerPort;
+extern Fl_Button *btn_reconnect_log_server;
+extern Fl_Check_Button *btnNagMe;
+extern Fl_Check_Button *btnClearOnSave;
+extern Fl_Check_Button *btnCallUpperCase;
+extern Fl_Check_Button *btnAutoFillQSO;
+extern Fl_Check_Button *btnDateTimeSort;
+extern Fl_Check_Button *btndate_time_force;
+extern Fl_Check_Button *btnRSTindefault;
+extern Fl_Check_Button *btnRSTdefault;
+#include "dxcc.h"
+extern Fl_Input2 *txt_cty_dat_pathname;
+extern Fl_Button *btn_select_cty_dat;
+extern Fl_Button *btn_default_cty_dat;
+extern Fl_Button *btn_reload_cty_dat;
+extern Fl_Input2 *inpMyPower;
+extern Fl_Check_Button *btnRXClicks;
+extern Fl_Check_Button *btnRXTooltips;
+extern Fl_Input2 *inpNonword;
+extern Fl_Group *tabMBars;
+extern Fl_Check_Button *btnMacroMouseWheel;
+#include <FL/Fl_Round_Button.H>
+extern Fl_Round_Button *btn_oneA;
+extern Fl_Round_Button *btn_oneB;
+extern Fl_Round_Button *btn_twoA;
+extern Fl_Round_Button *btn_twoB;
+extern Fl_Round_Button *btn_twoC;
+extern Fl_Round_Button *btn_twoD;
+extern Fl_Round_Button *btn_twoE;
+extern Fl_Round_Button *btn_twoF;
+extern Fl_Check_Button *btnUseLastMacro;
+extern Fl_Check_Button *btnDisplayMacroFilename;
 extern Fl_Group *tabWF_UI;
 extern Fl_Check_Button *btnWF_UIrev;
 extern Fl_Check_Button *btnWF_UIx1;
@@ -108,13 +119,6 @@ extern Fl_Check_Button *btnWF_UIqsy;
 extern Fl_Check_Button *btnWF_UIxmtlock;
 extern Fl_Button *btn_wf_enable_all;
 extern Fl_Button *btn_wf_disable_all;
-extern Fl_Group *tabRxText;
-extern Fl_Check_Button *btn_rx_lowercase;
-extern Fl_Group *tabLogServer;
-#include <FL/Fl_Input.H>
-extern Fl_Input *xmllogServerAddress;
-extern Fl_Input *xmllogServerPort;
-extern Fl_Button *btn_reconnect_log_server;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"

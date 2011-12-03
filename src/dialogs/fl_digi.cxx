@@ -5124,7 +5124,6 @@ void altTabs()
 	tabsUI->remove(tabUserInterface);
 	tabsUI->remove(tabContest);
 	tabsUI->remove(tabWF_UI);
-	tabsUI->remove(tabRxText);
 	tabsUI->remove(tabMBars);
 	tabsModems->remove(tabFeld);
 }

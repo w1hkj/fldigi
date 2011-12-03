@@ -51,4 +51,8 @@ unsigned char qsl_is_open(void);
 void qsl_close(void);
 unsigned char qsl_lookup(const char* callsign);
 
+extern void reload_cty_dat();
+extern void default_cty_dat_pathname();
+extern void select_cty_dat_pathname();
+
 #endif // DXCC_H_
