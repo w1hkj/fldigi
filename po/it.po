@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: fldigi 3.21.0BG\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
 "POT-Creation-Date: 2011-06-11 20:15-0500\n"
-"PO-Revision-Date: 2011-02-18 21:57+0100\n"
+"PO-Revision-Date: 2011-12-03 13:04+0100\n"
 "Last-Translator: Pierfrancesco Caci <pf@tippete.net>\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -407,7 +407,7 @@ msgstr "Salva Configurazione"
 
 #: src/dialogs/fl_digi.cxx:3049
 msgid "View/Hide Channels"
-msgstr ""
+msgstr "Mostra/nascondi Canali"
 
 #: src/dialogs/fl_digi.cxx:3051
 msgid "Floating scope"
@@ -912,7 +912,6 @@ msgid "Create cabrillo report"
 msgstr "Crea il log in formato cabrillo"
 
 #: src/logger/rx_extract.cxx:48
-#, fuzzy
 msgid ""
 "Detect the occurance of [WRAP:beg] and [WRAP:end]\n"
 "Save tags and all enclosed text to date-time stamped file, ie:\n"
@@ -924,7 +923,6 @@ msgstr ""
 "     NBEMS.files\\WRAP\\recv\\extract-20090127-092515.wrap"
 
 #: src/logger/rx_extract.cxx:53
-#, fuzzy
 msgid ""
 "Detect the occurance of [WRAP:beg] and [WRAP:end]\n"
 "Save tags and all enclosed text to date-time stamped file, ie:\n"
@@ -937,20 +935,20 @@ msgstr ""
 
 #: src/logger/rx_extract.cxx:166
 msgid "Could not start flmsg"
-msgstr ""
+msgstr "Impossibile avviare flmsg"
 
 #: src/logger/rx_extract.cxx:189 src/logger/rx_extract.cxx:192
 #: src/dialogs/confdialog.cxx:6050
 msgid "Locate flmsg executable"
-msgstr ""
+msgstr "Trova l'eseguibile di flmsg"
 
 #: src/logger/rx_extract.cxx:189
 msgid "flmsg.exe\t*.exe"
-msgstr ""
+msgstr "flmsg.exe\t*.exe"
 
 #: src/logger/rx_extract.cxx:192
 msgid "flmsg\t*"
-msgstr ""
+msgstr "flmsg\t*"
 
 #: src/logger/speak.cxx:42
 msgid ""
@@ -1329,9 +1327,8 @@ msgid "Change to Macro file"
 msgstr "Modifica al file delle macro"
 
 #: src/misc/macroedit.cxx:297
-#, fuzzy
 msgid "Executable file to insert"
-msgstr "File di testo da inserire"
+msgstr "File eseguibile da inserire"
 
 #: src/misc/macroedit.cxx:315
 msgid "Text:"
@@ -3937,15 +3934,15 @@ msgstr "Imposta il livello PCM della scheda audio"
 
 #: src/dialogs/confdialog.cxx:5783
 msgid "TxLevel"
-msgstr ""
+msgstr "Liv.Tx"
 
 #: src/dialogs/confdialog.cxx:5785
 msgid "Tx Attenuator"
-msgstr ""
+msgstr "Attenuatore Tx"
 
 #: src/dialogs/confdialog.cxx:5788
 msgid "Tx Atten (dB)"
-msgstr ""
+msgstr "Atten. Tx (dB)"
 
 #: src/dialogs/confdialog.cxx:5804
 msgid "ID"
@@ -4135,64 +4132,59 @@ msgstr "Abilita se il tuo computer non decodifica correttamente"
 
 #: src/dialogs/confdialog.cxx:6007
 msgid "NBEMS"
-msgstr ""
+msgstr "NBEMS"
 
 #: src/dialogs/confdialog.cxx:6009
 msgid "NBEMS data file interface"
-msgstr ""
+msgstr "interfaccia per file di dati NBEMS"
 
 #: src/dialogs/confdialog.cxx:6012
-#, fuzzy
 msgid "Enable"
-msgstr "Abilitato"
+msgstr "Abilita"
 
 #: src/dialogs/confdialog.cxx:6013
-#, fuzzy
 msgid "Extract files for use with external \"wrap / flmsg\" program"
-msgstr "Estrai i file per l'uso con il programma esterno \"wrap\""
+msgstr "Estrai i file per l'uso con il programma esterno \"wrap / flmsg\""
 
 #: src/dialogs/confdialog.cxx:6018
-#, fuzzy
 msgid "Open message folder"
-msgstr "Apri file delle macro"
+msgstr "Apri file dei messaggi"
 
 #: src/dialogs/confdialog.cxx:6019
 msgid "Opens NBEMS file folder upon successful capture"
-msgstr ""
+msgstr "Apri la cartella dei file NBEMS dopo una cattura riuscita"
 
 #: src/dialogs/confdialog.cxx:6026
 msgid "Reception of flmsg file"
-msgstr ""
+msgstr "Ricezione file flmsg"
 
 #: src/dialogs/confdialog.cxx:6029
 msgid "Open with flmsg"
-msgstr ""
+msgstr "Apri con flmsg"
 
 #: src/dialogs/confdialog.cxx:6030
-#, fuzzy
 msgid "Open message with flmsg"
-msgstr "Un messaggio e` stato loggato"
+msgstr "Apri il messaggio con flmsg"
 
 #: src/dialogs/confdialog.cxx:6035
 msgid "flmsg:"
-msgstr ""
+msgstr "flmsg:"
 
 #: src/dialogs/confdialog.cxx:6036
 msgid "Enter full path-filename for flmsg"
-msgstr ""
+msgstr "Inserisci il percorso completo a flmsg"
 
 #: src/dialogs/confdialog.cxx:6049
 msgid "Locate flmsg"
-msgstr ""
+msgstr "Trova flmsg"
 
 #: src/dialogs/confdialog.cxx:6053
-#, fuzzy
 msgid "Open in browser"
-msgstr "Navigatore segnali"
+msgstr "Apri col browser"
 
 #: src/dialogs/confdialog.cxx:6054
 msgid "Open file with default browser"
-msgstr ""
+msgstr "Apri il file con il browser di sistema"
 
 #: src/dialogs/confdialog.cxx:6063
 msgid "Pskmail"
@@ -4329,24 +4321,24 @@ msgstr ""
 "OFF - mantieni la posizione attuale del cursore sul waterfall"
 
 #: src/dialogs/confdialog.cxx:6306
-#, fuzzy
 msgid "K3 A1A configuation"
-msgstr "Configurazione di Fldigi"
+msgstr "Configurazione A1A per K3"
 
 #: src/dialogs/confdialog.cxx:6309
 msgid "CW is LSB"
-msgstr ""
+msgstr "CW è LSB"
 
 #: src/dialogs/confdialog.cxx:6310
 msgid ""
 "Select this for Elecraft K3\n"
 "Other radios should not need it."
 msgstr ""
+"Attiva la selezione per Elecraft K3\n"
+"Altre radio non dovrebbero averne bisogno."
 
 #: src/dialogs/confdialog.cxx:6319
-#, fuzzy
 msgid "Text i/o"
-msgstr "Testo:"
+msgstr "Testo"
 
 #: src/dialogs/confdialog.cxx:6321
 msgid "Talker Socket (MS only)"
