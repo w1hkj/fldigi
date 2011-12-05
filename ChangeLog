@@ -1,8 +1,15 @@
 
 
-=Version 3.21.31=
+=Version 3.21.32=
 
-2011-12-01  David Freese  <w1hkj@w1hkj.com>
+2011-12-02  David Freese  <w1hkj@w1hkj.com>
+
+	e707094: Cty.dat
+	6821e78: Contestia 64/1000
+	ff596a0: Call lookups
+
+
+=Version 3.21.31=
 
 	dcbae1e: Spanish translation file
 	136bcc2: Compile warnings
