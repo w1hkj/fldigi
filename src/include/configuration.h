@@ -1105,6 +1105,18 @@
         ELEM_(Fl_Color, ALTRcolor, "ALTRCOLOR",                                         \
               "Color for Alternate text style",                                         \
               FL_DARK_MAGENTA)                                                          \
+        ELEM_(Fl_Color, LowSignal, "LOWSIGNAL",                                         \
+              "Color for low signal level",                                             \
+              FL_BLACK)                                                                 \
+        ELEM_(Fl_Color, NormSignal, "NORMSIGNAL",                                       \
+              "Color for normal signal level",                                          \
+              FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, HighSignal, "HIGHSIGNAL",                                       \
+              "Color for high signal level",                                            \
+              FL_YELLOW)                                                                \
+        ELEM_(Fl_Color, OverSignal, "OVERSIGNAL",                                       \
+              "Color for over driven signal",                                           \
+              FL_RED)                                                                   \
         ELEM_(std::string, WaterfallFontName, "WATERFALLFONTNAME",                      \
               "Waterfall font name",                                                    \
               "")                                                                       \

@@ -149,8 +149,8 @@ Function {make_colorsfonts()} {open
       xywh {0 5 375 185}
     } {
       Fl_Group {} {
-        label {Freq Disp} open
-        xywh {5 30 365 150} hide
+        label FreqDisp open selected
+        xywh {5 30 365 156}
       } {
         Fl_Box FDdisplay {
           label {14070.150}
@@ -271,15 +271,15 @@ font_browser->show();}
         }
       }
       Fl_Group {} {
-        label {Func keys} open
-        xywh {5 30 365 150} hide
+        label F_keys open
+        xywh {5 30 365 156} hide
       } {
         Fl_Check_Button btnUseGroupColors {
           label {Use colored buttons}
           callback {progdefaults.useGroupColors = o->value();
     colorize_macros();
     progdefaults.changed = true;}
-          xywh {10 40 165 20} down_box DOWN_BOX
+          xywh {10 40 165 21} down_box DOWN_BOX
           code0 {btnUseGroupColors->value(progdefaults.useGroupColors);}
         }
         Fl_Button btnGroup1 {
@@ -298,7 +298,7 @@ font_browser->show();}
     colorize_macros();
     
     progdefaults.changed = true;}
-          tooltip {Background color for Function key group 1} xywh {10 70 75 20}
+          tooltip {Background color for Function key group 1} xywh {10 72 75 20}
           code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
           code1 {btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
         }
@@ -318,7 +318,7 @@ font_browser->show();}
     colorize_macros();
 
     progdefaults.changed = true;}
-          tooltip {Background color for Function key group 2} xywh {101 70 75 20}
+          tooltip {Background color for Function key group 2} xywh {101 72 75 20}
           code0 {btnGroup2->color(fl_rgb_color(progdefaults.btnGroup2.R, progdefaults.btnGroup2.G,progdefaults.btnGroup2.B));}
           code1 {btnGroup2->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
         }
@@ -338,7 +338,7 @@ font_browser->show();}
 
     colorize_macros();
     progdefaults.changed = true;}
-          tooltip {Background color for Function key group 3} xywh {193 70 75 20}
+          tooltip {Background color for Function key group 3} xywh {193 72 75 20}
           code0 {btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));}
           code1 {btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
         }
@@ -365,7 +365,7 @@ font_browser->show();}
     btnGroup3->redraw_label();
     progdefaults.changed = true;
     colorize_macros();}
-          xywh {193 40 75 20}
+          xywh {193 40 75 21}
           code0 {btnFkeyTextColor->color(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.G, progdefaults.btnFkeyTextColor.B));}
           code1 {adjust_label(btnFkeyTextColor);}
         }
@@ -415,15 +415,15 @@ font_browser->show();}
     colorize_macros();
 
 progdefaults.changed = true;}
-          xywh {285 70 75 20}
+          xywh {285 72 75 20}
         }
       }
       Fl_Group {} {
-        label {Rx/Tx txt} open
-        xywh {5 30 366 150}
+        label {Rx/Tx} open
+        xywh {5 30 365 156} hide
       } {
         Fl_Input RxText {
-          xywh {15 43 165 35}
+          xywh {15 44 165 36}
           code0 {RxText->value("Receive Text");}
           code1 {RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));}
           code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);}
@@ -448,7 +448,7 @@ progdefaults.changed = true;}
     ReceiveText->redraw();
 
     progdefaults.changed = true;}
-          xywh {190 50 75 20}
+          xywh {189 51 75 21}
         }
         Fl_Button btnTxColor {
           label {Tx bkgnd}
@@ -469,10 +469,10 @@ progdefaults.changed = true;}
     TransmitText->redraw();
 
 progdefaults.changed = true;}
-          xywh {190 90 75 20}
+          xywh {189 92 75 21}
         }
         Fl_Input TxText {
-          xywh {15 85 165 35}
+          xywh {15 87 165 37}
           code0 {TxText->value("Transmit Text");}
           code1 {TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));}
           code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);}
@@ -486,7 +486,7 @@ progdefaults.changed = true;}
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbRxFontBrowser);
 font_browser->show();}
-          xywh {275 50 75 20}
+          xywh {274 51 75 21}
         }
         Fl_Button btnTxFont {
           label {Tx font}
@@ -496,7 +496,7 @@ font_browser->show();}
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbTxFontBrowser);
     font_browser->show();}
-          xywh {275 90 75 20}
+          xywh {274 92 75 21}
         }
         Fl_Button btnXMIT {
           label XMIT
@@ -506,8 +506,8 @@ font_browser->show();}
     TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
     ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
 
-    progdefaults.changed = true;} selected
-          tooltip {Sent chars in Rx/Tx pane} xywh {5 130 40 20} align 2
+    progdefaults.changed = true;}
+          tooltip {Sent chars in Rx/Tx pane} xywh {5 134 40 21} align 2
           code0 {btnXMIT->color(progdefaults.XMITcolor);}
         }
         Fl_Button btnCTRL {
@@ -519,7 +519,7 @@ font_browser->show();}
     ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 
     progdefaults.changed = true;}
-          tooltip {Control chars in Rx/Tx pane} xywh {48 130 40 20} align 2
+          tooltip {Control chars in Rx/Tx pane} xywh {48 134 40 21} align 2
           code0 {btnCTRL->color(progdefaults.CTRLcolor);}
         }
         Fl_Button btnSKIP {
@@ -532,7 +532,7 @@ font_browser->show();}
 
     progdefaults.changed = true;}
           tooltip {Skipped chars in Tx pane
-(Tx on/off in CW)} xywh {92 130 40 20} align 2
+(Tx on/off in CW)} xywh {92 134 40 21} align 2
           code0 {btnSKIP->color(progdefaults.SKIPcolor);}
         }
         Fl_Button btnALTR {
@@ -544,7 +544,7 @@ font_browser->show();}
     ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
     progdefaults.changed = true;}
-          tooltip {Alternate character color in Rx panelr} xywh {135 130 40 20} align 2
+          tooltip {Alternate character color in Rx panelr} xywh {135 134 40 21} align 2
           code0 {btnALTR->color(progdefaults.ALTRcolor);}
         }
         Fl_Button btnSEL {
@@ -566,7 +566,7 @@ TransmitText->color(
     progdefaults.RxTxSelectcolor);
     
 progdefaults.changed = true;}
-          tooltip {Selection background color in Rx Tx panels} xywh {179 130 40 20} align 2
+          tooltip {Selection background color in Rx Tx panels} xywh {179 134 39 21} align 2
           code0 {btnSEL->color(progdefaults.RxTxSelectcolor);}
         }
         Fl_Button btnNoTextColor {
@@ -625,7 +625,7 @@ progdefaults.changed = true;}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-          xywh {227 130 70 20}
+          xywh {226 134 70 21}
         }
         Fl_Button btnTextDefaults {
           label Defaults
@@ -684,31 +684,31 @@ progdefaults.changed = true;}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-          xywh {301 130 70 20}
+          xywh {300 134 70 21}
         }
       }
       Fl_Group {} {
         label Tabs open
-        xywh {0 30 365 150} hide
+        xywh {5 30 365 156} hide
       } {
         Fl_Button btnTabColor {
           label {Tab Color}
           callback {progdefaults.TabsColor = fl_show_colormap(progdefaults.TabsColor);
 setTabColors();
 progdefaults.changed = true;}
-          xywh {85 75 75 20}
+          xywh {90 77 75 21}
         }
         Fl_Button btnTabDefaultColor {
           label System
           callback {progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
 setTabColors();    
 progdefaults.changed = true;}
-          xywh {215 75 75 20}
+          xywh {220 77 75 21}
         }
       }
       Fl_Group {} {
         label Buttons open
-        xywh {0 30 365 150} hide
+        xywh {5 30 365 156} hide
       } {
         Fl_Button btnSpotColor {
           label Spot
@@ -717,7 +717,7 @@ spotcolor->color(progdefaults.SpotColor);
 spotcolor->redraw();
 spot_selection_color();
 progdefaults.changed = true;}
-          xywh {46 50 70 20}
+          xywh {51 51 70 21}
         }
         Fl_Button btnRxIDColor {
           label RxID
@@ -726,7 +726,7 @@ rxidcolor->color(progdefaults.RxIDColor);
 rxidcolor->redraw();
 rxid_selection_color();
 progdefaults.changed = true;}
-          xywh {46 84 70 20}
+          xywh {51 86 70 21}
         }
         Fl_Button btnTxIDColor {
           label TxID
@@ -735,7 +735,7 @@ txidcolor->color(progdefaults.TxIDColor);
 txidcolor->redraw();
 txid_selection_color();
 progdefaults.changed = true;}
-          xywh {46 119 70 20}
+          xywh {51 123 70 20}
         }
         Fl_Button btnTuneColor {
           label Tune
@@ -744,7 +744,7 @@ tunecolor->color(progdefaults.TuneColor);
 tunecolor->redraw();
 tune_selection_color();
 progdefaults.changed = true;}
-          xywh {46 154 70 20}
+          xywh {51 159 70 21}
         }
         Fl_Button btnLkColor {
           label Lk
@@ -753,7 +753,7 @@ lockcolor->color(progdefaults.LkColor);
 lockcolor->redraw();
 xmtlock_selection_color();
 progdefaults.changed = true;}
-          xywh {157 50 70 20}
+          xywh {162 51 70 21}
         }
         Fl_Button btnRevColor {
           label Rev
@@ -762,7 +762,7 @@ revcolor->color(progdefaults.RevColor);
 revcolor->redraw();
 rev_selection_color();
 progdefaults.changed = true;}
-          xywh {157 84 70 20}
+          xywh {162 86 70 21}
         }
         Fl_Button btnXmtColor {
           label {T/R}
@@ -771,7 +771,7 @@ xmtcolor->color(progdefaults.XmtColor);
 xmtcolor->redraw();
 xmtrcv_selection_color();
 progdefaults.changed = true;}
-          xywh {157 118 70 20}
+          xywh {162 122 70 20}
         }
         Fl_Button btnAfcColor {
           label AFC
@@ -780,7 +780,7 @@ afccolor->color(progdefaults.AfcColor);
 afccolor->redraw();
 afc_selection_color();
 progdefaults.changed = true;}
-          xywh {272 49 70 20}
+          xywh {277 50 70 21}
         }
         Fl_Button btnSql1Color {
           label {SQL-1}
@@ -789,7 +789,7 @@ sql1color->color(progdefaults.Sql1Color);
 sql1color->redraw();
 sql_selection_color();
 progdefaults.changed = true;}
-          xywh {272 85 70 20}
+          xywh {277 87 70 21}
         }
         Fl_Button btnSql2Color {
           label {SQL-2}
@@ -798,51 +798,108 @@ sql2color->color(progdefaults.Sql2Color);
 sql2color->redraw();
 sql_selection_color();
 progdefaults.changed = true;}
-          xywh {272 119 70 20}
+          xywh {277 123 70 20}
         }
         Fl_Box spotcolor {
-          xywh {27 51 18 18} box THIN_DOWN_BOX color 3
+          xywh {32 52 18 19} box THIN_DOWN_BOX color 3
           code0 {o->color(progdefaults.SpotColor);}
         }
         Fl_Box rxidcolor {
-          xywh {27 85 18 18} box THIN_DOWN_BOX
+          xywh {32 87 18 19} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.RxIDColor);}
         }
         Fl_Box txidcolor {
-          xywh {27 120 18 18} box THIN_DOWN_BOX
+          xywh {32 124 18 18} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.TxIDColor);}
         }
         Fl_Box tunecolor {
-          xywh {27 155 18 18} box THIN_DOWN_BOX
+          xywh {32 160 18 19} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.TuneColor);}
         }
         Fl_Box lockcolor {
-          xywh {137 50 18 18} box THIN_DOWN_BOX color 3
+          xywh {142 51 18 19} box THIN_DOWN_BOX color 3
           code0 {o->color(progdefaults.LkColor);}
         }
         Fl_Box revcolor {
-          xywh {137 85 18 18} box THIN_DOWN_BOX
+          xywh {142 87 18 19} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.RevColor);}
         }
         Fl_Box xmtcolor {
-          xywh {137 119 18 18} box THIN_DOWN_BOX
+          xywh {142 123 18 18} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.XmtColor);}
         }
         Fl_Box afccolor {
-          xywh {252 51 18 18} box THIN_DOWN_BOX color 3
+          xywh {257 52 18 19} box THIN_DOWN_BOX color 3
           code0 {o->color(progdefaults.AfcColor);}
         }
         Fl_Box sql1color {
-          xywh {252 86 18 18} box THIN_DOWN_BOX
+          xywh {257 88 18 19} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.Sql1Color);}
         }
         Fl_Box sql2color {
-          xywh {252 120 18 18} box THIN_DOWN_BOX
+          xywh {257 124 18 18} box THIN_DOWN_BOX
           code0 {o->color(progdefaults.Sql2Color);}
         }
         Fl_Box {} {
           label {Lighted button enabled colors}
-          xywh {135 154 220 19} align 21
+          xywh {140 159 220 20} align 21
+        }
+      }
+      Fl_Group {} {
+        label SigLvl open
+        xywh {5 28 365 156} hide
+      } {
+        Fl_Button btnLowSignal {
+          label Low
+          callback {progdefaults.LowSignal = fl_show_colormap(progdefaults.LowSignal);
+lowcolor->color(progdefaults.LowSignal);
+lowcolor->redraw();
+progdefaults.changed = true;}
+          xywh {102 73 70 21}
+        }
+        Fl_Box lowcolor {
+          xywh {81 73 21 21} box DIAMOND_DOWN_BOX color 0
+          code0 {o->color(progdefaults.LowSignal);}
+        }
+        Fl_Button btnHighSignal {
+          label High
+          callback {progdefaults.HighSignal = fl_show_colormap(progdefaults.HighSignal);
+highcolor->color(progdefaults.HighSignal);
+highcolor->redraw();
+progdefaults.changed = true;}
+          xywh {102 111 70 21}
+        }
+        Fl_Box highcolor {
+          xywh {81 111 21 21} box DIAMOND_DOWN_BOX color 3
+          code0 {o->color(progdefaults.HighSignal);}
+        }
+        Fl_Button btnNormalSignal {
+          label Normal
+          callback {progdefaults.NormSignal = fl_show_colormap(progdefaults.NormSignal);
+normalcolor->color(progdefaults.NormSignal);
+normalcolor->redraw();
+progdefaults.changed = true;}
+          xywh {225 73 70 21}
+        }
+        Fl_Box normalcolor {
+          xywh {204 72 21 21} box DIAMOND_DOWN_BOX color 2
+          code0 {o->color(progdefaults.NormSignal);}
+        }
+        Fl_Button btnOverSignal {
+          label Over
+          callback {progdefaults.OverSignal = fl_show_colormap(progdefaults.OverSignal);
+overcolor->color(progdefaults.OverSignal);
+overcolor->redraw();
+progdefaults.changed = true;}
+          xywh {225 111 70 21}
+        }
+        Fl_Box overcolor {
+          xywh {204 111 21 21} box DIAMOND_DOWN_BOX color 1
+          code0 {o->color(progdefaults.OverSignal);}
+        }
+        Fl_Box {} {
+          label {Signal Level Colors}
+          xywh {27 41 316 21}
         }
       }
     }

@@ -64,5 +64,13 @@ extern Fl_Box *xmtcolor;
 extern Fl_Box *afccolor;
 extern Fl_Box *sql1color;
 extern Fl_Box *sql2color;
+extern Fl_Button *btnLowSignal;
+extern Fl_Box *lowcolor;
+extern Fl_Button *btnHighSignal;
+extern Fl_Box *highcolor;
+extern Fl_Button *btnNormalSignal;
+extern Fl_Box *normalcolor;
+extern Fl_Button *btnOverSignal;
+extern Fl_Box *overcolor;
 Fl_Double_Window* make_colorsfonts();
 #endif
