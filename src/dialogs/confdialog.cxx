@@ -1910,6 +1910,15 @@ static void cb_btnPktAudioBoost(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabNavtex=(Fl_Group *)0;
+
+Fl_Check_Button *btnNvtxAdifLog=(Fl_Check_Button *)0;
+
+static void cb_btnNvtxAdifLog(Fl_Check_Button* o, void*) {
+  progdefaults.NVTX_AdifLog=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
@@ -5586,6 +5595,17 @@ an merging"));
             } // Fl_Group* o
             tabPacket->end();
           } // Fl_Group* tabPacket
+          { tabNavtex = new Fl_Group(-5, 50, 545, 320, _("Navtex"));
+            { Fl_Group* o = new Fl_Group(-5, 50, 545, 320);
+              { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(10, 65, 235, 30, _("Log Navtex messages to Adif file"));
+                btnNvtxAdifLog->down_box(FL_DOWN_BOX);
+                btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
+                o->value(progdefaults.NVTX_AdifLog);
+              } // Fl_Check_Button* btnNvtxAdifLog
+              o->end();
+            } // Fl_Group* o
+            tabNavtex->end();
+          } // Fl_Group* tabNavtex
           tabsModems->end();
         } // Fl_Tabs* tabsModems
         tabModems->end();

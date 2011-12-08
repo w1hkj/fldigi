@@ -2443,6 +2443,22 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabNavtex {
+            label Navtex open
+            xywh {-5 50 545 320}
+          } {
+            Fl_Group {} {open
+              xywh {-5 50 545 320}
+            } {
+              Fl_Check_Button btnNvtxAdifLog {
+                label {Log Navtex messages to Adif file}
+                callback {progdefaults.NVTX_AdifLog=o->value();
+progdefaults.changed = true;} selected
+                xywh {10 65 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.NVTX_AdifLog);}
+              }
+            }
+          }
         }
       }
       Fl_Group tabRig {

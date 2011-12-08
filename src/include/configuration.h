@@ -1318,7 +1318,11 @@
              "")                                                                        \
        ELEM_(int, wefax_filter, "WEFAXFILTER",                                          \
              "Input filter for image reception",                                        \
-             0)
+             0)                                                                         \
+       /* NAVTEX configuration items */                                                 \
+       ELEM_(bool, NVTX_AdifLog, "NAVTEXADIFLOG",                                       \
+             "Logs Navtex messages in Adig log file",                                   \
+             false)                                                                     \
 
 
 // declare the struct

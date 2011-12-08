@@ -331,6 +331,7 @@ fldigi_SOURCES += \
 	include/mfskvaricode.h \
 	include/wefax.h \
 	include/wefax-pic.h \
+	include/navtex.h \
 	include/misc.h \
 	include/mixer.h \
 	include/modem.h \
@@ -431,6 +432,7 @@ fldigi_SOURCES += \
 	mfsk/mfskvaricode.cxx \
 	wefax/wefax.cxx \
 	wefax/wefax-pic.cxx \
+	navtex/navtex.cxx \
 	misc/ascii.cxx \
 	misc/configuration.cxx \
 	misc/debug.cxx \

@@ -59,6 +59,7 @@
 #include "qrunner.h"
 #include "wefax.h"
 #include "wefax-pic.h"
+#include "navtex.h"
 
 #if USE_HAMLIB
         #include "hamlib.h"
@@ -2627,6 +2628,37 @@ struct Wefax_send_file : public xmlrpc_c::method
 
 // =============================================================================
 
+// Returns the current navtex modem pointer.
+static navtex * get_navtex(void)
+{
+	if( active_modem->get_mode() != MODE_NAVTEX )
+	{
+		navtex * ptr = dynamic_cast<navtex *>( active_modem );
+		if( ptr == NULL ) throw runtime_error("Inconsistent navtex object");
+		return ptr ;
+	}
+	throw runtime_error("Not in navtex mode");
+}
+
+struct Navtex_get_message : public xmlrpc_c::method
+{
+	Navtex_get_message() {
+		_signature = "s:i";
+		_help = "Returns next Navtex message with a max delay in seconds.. Empty string if timeout."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		*retval = xmlrpc_c::value_string( get_navtex()->get_message( params.getInt(0)) );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what());
+	}
+};
+
+// =============================================================================
+
 // End XML-RPC interface
 
 // method list: ELEM_(class_name, "method_name")
@@ -2792,6 +2824,8 @@ struct Wefax_send_file : public xmlrpc_c::method
 	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")                   \
 	ELEM_(Wefax_get_received_file, "wefax.get_received_file")           \
 	ELEM_(Wefax_send_file, "wefax.send_file")                           \
+	\
+	ELEM_(Navtex_get_message, "navtex.get_message")	                    \
 
 
 struct rm_pred

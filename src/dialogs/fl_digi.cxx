@@ -83,6 +83,7 @@
 #include "mfsk.h"
 #include "wefax.h"
 #include "wefax-pic.h"
+#include "navtex.h"
 #include "mt63.h"
 #include "view_rtty.h"
 #include "olivia.h"
@@ -483,6 +484,11 @@ Fl_Menu_Item quick_change_mfsk[] = {
 Fl_Menu_Item quick_change_wefax[] = {
 	{ mode_info[MODE_WEFAX_576].name, 0, cb_init_mode, (void *)MODE_WEFAX_576 },
 	{ mode_info[MODE_WEFAX_288].name, 0, cb_init_mode, (void *)MODE_WEFAX_288 },
+	{ 0 }
+};
+
+Fl_Menu_Item quick_change_navtex[] = {
+	{ mode_info[MODE_NAVTEX].name, 0, cb_init_mode, (void *)MODE_NAVTEX },
 	{ 0 }
 };
 
@@ -1083,6 +1089,12 @@ void init_modem(trx_mode mode, int freq)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new wefax(mode), freq);
 		quick_change = quick_change_wefax;
+		break;
+
+	case MODE_NAVTEX:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new navtex(mode), freq);
+		quick_change = quick_change_navtex;
 		break;
 
 	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
@@ -3136,6 +3148,8 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_WEFAX_288].name, 0,  cb_init_mode, (void *)MODE_WEFAX_288, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{ "Navtex", 0, cb_init_mode, (void *)MODE_NAVTEX, 0, FL_NORMAL_LABEL, 0, 14, 0},
+
 {"NBEMS modes", 0, 0, 0, FL_SUBMENU | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
@@ -4952,6 +4966,8 @@ Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_WEFAX_576].name, 0,  cb_init_mode, (void *)MODE_WEFAX_576, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_WEFAX_288].name, 0,  cb_init_mode, (void *)MODE_WEFAX_288, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
+{ "Navtex", 0, cb_init_mode, (void *)MODE_NAVTEX, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"NBEMS modes", 0, 0, 0, FL_SUBMENU | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
