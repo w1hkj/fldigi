@@ -55,8 +55,8 @@ modem *mfsk22_modem = 0;
 modem *mfsk31_modem = 0;
 modem *mfsk64_modem = 0;
 
-modem *wefax576 = 0;
-modem *wefax288 = 0;
+modem *wefax576_modem = 0;
+modem *wefax288_modem = 0;
 
 modem *mt63_500_modem = 0;
 modem *mt63_1000_modem = 0;

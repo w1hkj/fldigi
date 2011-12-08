@@ -10,10 +10,6 @@
 #include "mbuffer.h"
 #include "logbook.h"
 
-#define WEFAXSampleRate 11025
-// #define WEFAXSampleRate 8000
-
-
 /// Forward definition.
 class fax_implementation ;
 
@@ -119,7 +115,7 @@ public:
 	void put_received_file(const std::string & filnam);
 
 	/// Used by XML-RPC to get the list of received files.
-	std::string get_received_file(double max_seconds=max_delay);
+	std::string get_received_file(int max_seconds=max_delay);
 
 	/// Called by XML-RPC to send a file which resides on the machine where fldigi runs.
 	std::string send_file( const std::string & filnam, double max_seconds=max_delay);

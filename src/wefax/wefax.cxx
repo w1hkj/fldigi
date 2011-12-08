@@ -764,11 +764,11 @@ public:
 	}
 
 	/// Returns a received file name, by chronological order.
-	std::string get_received_file( double max_seconds )
+	std::string get_received_file( int max_seconds )
 	{
 		guard_lock g( m_sync_rx.mtxp() );
 
-		LOG_INFO(_("delay=%f"), max_seconds );
+		LOG_INFO(_("delay=%d"), max_seconds );
 		if( m_received_files.empty() )
 		{
 			if( ! m_sync_rx.wait(max_seconds) ) return std::string();
@@ -946,13 +946,10 @@ public:
 
 		static size_t cnt_upd = 0 ;
 
-		if( cnt_upd == 0 ) {
- 			if( m_correlation_buffer.size() != corr_buff_sz ) {
-				m_correlation_buffer.resize( corr_buff_sz, 0 );
-				m_current_corr = 0.0 ;
-				m_curr_corr_avg = 0.0 ;
-				return ;
-			}
+		if( m_correlation_buffer.size() != corr_buff_sz ) {
+			m_correlation_buffer.resize( corr_buff_sz, 0 );
+			m_current_corr = 0.0 ;
+			m_curr_corr_avg = 0.0 ;
 		}
 
 		if( ( cnt_upd % corr_samples_line ) == 0 ) {
@@ -1839,7 +1836,7 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 
 	wefax::mode = wefax_mode;
 
-	modem::samplerate = WEFAXSampleRate ;
+	modem::samplerate = 11025;
 
 	m_impl = new fax_implementation(wefax_mode, this);
 
@@ -2104,34 +2101,10 @@ void wefax::qso_rec_init(void)
 	/// Ideally we should find out the name of the fax station.
 	m_qso_rec.putField(CALL, "Wefax");
 	m_qso_rec.putField(NAME, "Weather fax");
+	m_qso_rec.setDateTime(true);
+	m_qso_rec.setFrequency( wf->rfcarrier() );
 
-	time_t tmp_time = time(NULL);
-	struct tm tmp_tm ;
-	localtime_r( &tmp_time, &tmp_tm );
-
-	char buf_date[64] ;
-	snprintf( buf_date, sizeof(buf_date),
-		"%04d%02d%02d",
-		1900 + tmp_tm.tm_year,
-		1 + tmp_tm.tm_mon,
-		tmp_tm.tm_mday );
-	m_qso_rec.putField(QSO_DATE, buf_date);
-
-	char buf_timeon[64] ;
-	snprintf( buf_timeon, sizeof(buf_timeon),
-		"%02d%02d",
-		tmp_tm.tm_hour,
-		tmp_tm.tm_min );
-	m_qso_rec.putField(TIME_ON, buf_timeon);
-
-	long long tmp_fl = wf->rfcarrier() ;
-	double freq_dbl = tmp_fl / 1000000.0 ;
-	char buf_freq[64];
-	snprintf( buf_freq, sizeof(buf_freq), "%lf", freq_dbl );
-	m_qso_rec.putField(FREQ, buf_freq );
-
-	/// The method get_mode should be const.
-	m_qso_rec.putField(MODE, mode_info[ const_cast<wefax*>(this)->get_mode()].adif_name );
+	m_qso_rec.putField(MODE, mode_info[get_mode()].adif_name );
 
 	// m_qso_rec.putField(QTH, inpQth_log->value());
 	// m_qso_rec.putField(STATE, inpState_log->value());
@@ -2161,21 +2134,13 @@ void wefax::qso_rec_save(void)
 		return ;
 	}
 
-	time_t tmp_time = time(NULL);
-	struct tm tmp_tm ;
-	localtime_r( &tmp_time, &tmp_tm );
-
-	char buf_timeoff[64] ;
-	snprintf( buf_timeoff, sizeof(buf_timeoff),
-		"%02d%02d",
-		tmp_tm.tm_hour,
-		tmp_tm.tm_min );
-	m_qso_rec.putField(TIME_OFF, buf_timeoff);
-
-	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	qsodb.isdirty(0);
+	m_qso_rec.setDateTime(false);
 
 	qsodb.qsoNewRec (&m_qso_rec);
+	qsodb.isdirty(0);
+	loadBrowser(true);
+
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 	// dxcc_entity_cache_add(&rec);
 	LOG_INFO( _("Updating log book %s"), logbook_filename.c_str() );
 }
@@ -2201,7 +2166,7 @@ void wefax::put_received_file( const std::string &filnam )
 }
 
 /// Returns a received file name, by chronological order.
-std::string wefax::get_received_file( double max_seconds )
+std::string wefax::get_received_file( int max_seconds )
 {
 	return m_impl->get_received_file( max_seconds );
 }

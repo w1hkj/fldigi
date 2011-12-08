@@ -726,6 +726,9 @@ static void wefax_cb_pic_ratio( Fl_Widget *, void * )
 
 	/// And we update the configuration structure.
 	progdefaults.wefax_slant = rx_slant_ratio ;
+
+	/// Will prompt for saving configuration when exiting.
+	progdefaults.changed = true;
 }
 
 /// Possible zooms. The value is processed by class picture.
@@ -1041,7 +1044,7 @@ void wefax_pic::create_rx_viewer(void)
 	wefax_cnt_rx_ratio->align(FL_ALIGN_LEFT);
 	wefax_cnt_rx_ratio->type(FL_SIMPLE_COUNTER);
 	wefax_cnt_rx_ratio->callback(wefax_cb_pic_ratio, 0);
-	wefax_cnt_rx_ratio->tooltip("Adjust imge slant to correct soundcard clock error.");
+	wefax_cnt_rx_ratio->tooltip("Adjust image slant to correct soundcard clock error.");
 
 	static const char * title_center = "Center" ;
 	wid_off_low += wid_btn_curr + fl_width( title_center );
