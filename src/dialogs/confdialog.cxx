@@ -1208,12 +1208,15 @@ progdefaults.changed = true;
 Fl_Check_Button *btnQSK=(Fl_Check_Button *)0;
 
 static void cb_btnQSK(Fl_Check_Button* o, void*) {
-  if (o->value() && !sound_check_right_channel()) {
-  o->value(0);
-  return;
-}
-progdefaults.QSK = o->value();
+  progdefaults.QSK = o->value();
 progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+}
+btnQSK2->value(o->value());
 }
 
 Fl_Counter2 *cntPreTiming=(Fl_Counter2 *)0;
@@ -1729,12 +1732,15 @@ progdefaults.changed = true;
 Fl_Check_Button *chkPseudoFSK=(Fl_Check_Button *)0;
 
 static void cb_chkPseudoFSK(Fl_Check_Button* o, void*) {
-  if (o->value() && !sound_check_right_channel()) {
-  o->value(0);
-  return;
-}
-progdefaults.PseudoFSK = o->value();
+  progdefaults.PseudoFSK = o->value();
 progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+}
+chkPseudoFSK2->value(o->value());
 }
 
 Fl_Choice *mnuRTTYAFCSpeed=(Fl_Choice *)0;
@@ -2018,12 +2024,17 @@ progdefaults.changed = true;
 Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
 
 static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
-  if (o->value() && !sound_check_right_channel()) {
-  o->value(0);
-  return;
+  progdefaults.PTTrightchannel = o->value();
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);  
 }
-progdefaults.PTTrightchannel = o->value();
 progdefaults.changed = true;
+btnPTTrightchannel2->value(o->value());
 }
 
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
@@ -2569,17 +2580,6 @@ static void cb_cntTxOffset(Fl_Spinner2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkAudioStereoOut=(Fl_Check_Button *)0;
-
-static void cb_chkAudioStereoOut(Fl_Check_Button* o, void*) {
-  if (!o->value() && (progdefaults.PseudoFSK || progdefaults.QSK || progdefaults.PTTrightchannel))
-    LOG_WARN("Disabling right audio channel while in use by the QSK, pseudo-FSK or audio PTT options");
-
-progdefaults.out_channels = o->value() + 1;
-resetSoundCard();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabMixer=(Fl_Group *)0;
 
 Fl_Check_Button *btnMixer=(Fl_Check_Button *)0;
@@ -2632,6 +2632,81 @@ Fl_Value_Slider2 *valPCMvolume=(Fl_Value_Slider2 *)0;
 
 static void cb_valPCMvolume(Fl_Value_Slider2* o, void*) {
   setPCMvolume(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Group *tabAudioRightChannel=(Fl_Group *)0;
+
+Fl_Check_Button *chkAudioStereoOut=(Fl_Check_Button *)0;
+
+static void cb_chkAudioStereoOut(Fl_Check_Button* o, void*) {
+  progdefaults.sig_on_right_channel = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  btnQSK2->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  chkPseudoFSK2->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);  
+};
+}
+
+Fl_Check_Button *btnPTTrightchannel2=(Fl_Check_Button *)0;
+
+static void cb_btnPTTrightchannel2(Fl_Check_Button* o, void*) {
+  progdefaults.PTTrightchannel = o->value();
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  btnQSK2->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  chkPseudoFSK2->value(0);
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);  
+}
+btnPTTrightchannel->value(o->value());
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnQSK2=(Fl_Check_Button *)0;
+
+static void cb_btnQSK2(Fl_Check_Button* o, void*) {
+  progdefaults.QSK = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);
+}
+btnQSK->value(o->value());
+}
+
+Fl_Check_Button *chkPseudoFSK2=(Fl_Check_Button *)0;
+
+static void cb_chkPseudoFSK2(Fl_Check_Button* o, void*) {
+  progdefaults.PseudoFSK = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);
+}
+chkPseudoFSK->value(o->value());
+}
+
+Fl_Check_Button *chkReverseAudio=(Fl_Check_Button *)0;
+
+static void cb_chkReverseAudio(Fl_Check_Button* o, void*) {
+  progdefaults.ReverseAudio = o->value();
 progdefaults.changed = true;
 }
 
@@ -4373,6 +4448,7 @@ an merging"));
               tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(FL_ALIGN_TOP_LEFT);
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -4539,7 +4615,6 @@ an merging"));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
                 o->align(FL_ALIGN_TOP_LEFT);
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE);
@@ -6109,6 +6184,7 @@ an merging"));
         { tabsSoundCard = new Fl_Tabs(0, 25, 500, 345);
           tabsSoundCard->selection_color((Fl_Color)FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 500, 320, _("Devices"));
+            tabAudio->hide();
             { AudioOSS = new Fl_Group(5, 60, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
@@ -6269,11 +6345,6 @@ ll with your audio device."));
               } // Fl_Spinner2* cntTxOffset
               o->end();
             } // Fl_Group* o
-            { chkAudioStereoOut = new Fl_Check_Button(15, 222, 220, 20, _("Enable right audio channel"));
-              chkAudioStereoOut->down_box(FL_DOWN_BOX);
-              chkAudioStereoOut->callback((Fl_Callback*)cb_chkAudioStereoOut);
-              chkAudioStereoOut->value(progdefaults.out_channels == 2);
-            } // Fl_Check_Button* chkAudioStereoOut
             tabAudioOpt->end();
           } // Fl_Group* tabAudioOpt
           { tabMixer = new Fl_Group(0, 50, 500, 320, _("Mixer"));
@@ -6322,6 +6393,40 @@ ll with your audio device."));
             } // Fl_Group* o
             tabMixer->end();
           } // Fl_Group* tabMixer
+          { tabAudioRightChannel = new Fl_Group(0, 50, 500, 320, _("Right channel"));
+            { chkAudioStereoOut = new Fl_Check_Button(98, 103, 280, 20, _("Modem signal on left and right channels"));
+              chkAudioStereoOut->tooltip(_("Left and right channels both contain modem audio"));
+              chkAudioStereoOut->down_box(FL_DOWN_BOX);
+              chkAudioStereoOut->callback((Fl_Callback*)cb_chkAudioStereoOut);
+              chkAudioStereoOut->value(progdefaults.sig_on_right_channel);
+            } // Fl_Check_Button* chkAudioStereoOut
+            { Fl_Check_Button* o = btnPTTrightchannel2 = new Fl_Check_Button(98, 140, 250, 20, _("PTT tone on right audio channel "));
+              btnPTTrightchannel2->tooltip(_("1000 Hz tone when PTT enabled\nCan be used in lieu of or in addition to other\
+ PTT types"));
+              btnPTTrightchannel2->down_box(FL_DOWN_BOX);
+              btnPTTrightchannel2->callback((Fl_Callback*)cb_btnPTTrightchannel2);
+              o->value(progdefaults.PTTrightchannel);
+            } // Fl_Check_Button* btnPTTrightchannel2
+            { Fl_Check_Button* o = btnQSK2 = new Fl_Check_Button(98, 178, 211, 20, _("CW QSK signal on right channel"));
+              btnQSK2->tooltip(_("Generate 1000 Hz square wave signal on right channel"));
+              btnQSK2->down_box(FL_DOWN_BOX);
+              btnQSK2->callback((Fl_Callback*)cb_btnQSK2);
+              o->value(progdefaults.QSK);
+            } // Fl_Check_Button* btnQSK2
+            { Fl_Check_Button* o = chkPseudoFSK2 = new Fl_Check_Button(98, 216, 270, 20, _("Pseudo-FSK on right audio channel"));
+              chkPseudoFSK2->tooltip(_("Create 1000 Hz square wave on right channel"));
+              chkPseudoFSK2->down_box(FL_DOWN_BOX);
+              chkPseudoFSK2->callback((Fl_Callback*)cb_chkPseudoFSK2);
+              o->value(progdefaults.PseudoFSK);
+            } // Fl_Check_Button* chkPseudoFSK2
+            { Fl_Check_Button* o = chkReverseAudio = new Fl_Check_Button(98, 254, 270, 20, _("Reverse Left/Right channels"));
+              chkReverseAudio->tooltip(_("Software reversal of left-right audio channels"));
+              chkReverseAudio->down_box(FL_DOWN_BOX);
+              chkReverseAudio->callback((Fl_Callback*)cb_chkReverseAudio);
+              o->value(progdefaults.ReverseAudio);
+            } // Fl_Check_Button* chkReverseAudio
+            tabAudioRightChannel->end();
+          } // Fl_Group* tabAudioRightChannel
           tabsSoundCard->end();
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();

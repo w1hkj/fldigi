@@ -926,9 +926,12 @@
         ELEM_(int, in_channels, "INCHANNELS",                                           \
               "Number of audio input channels",                                         \
               1)                                                                        \
-        ELEM_(int, out_channels, "OUTCHANNELS",                                         \
-              "Number of audio output channels",                                        \
-              2)                                                                        \
+        ELEM_(bool, sig_on_right_channel, "SIGONRIGHTCHANNEL",                          \
+              "Duplicate modem signal on left & right",                                 \
+              false)                                                                    \
+        ELEM_(bool, ReverseAudio, "REVERSEAUDIO",                                       \
+              "Reverse left-right audio channels",                                      \
+              false)                                                                    \
         ELEM_(int, sample_rate, "SAMPLERATE",                                           \
               "For compatibility with older versions",                                  \
               SAMPLE_RATE_UNSET)                                                        \
