@@ -1280,22 +1280,22 @@ behaves inside the waterfall} xywh {15 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
+        label Modems open
         xywh {-4 25 521 347} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {-4 25 521 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW
+            label CW open
             xywh {0 50 504 320}
           } {
-            Fl_Tabs tabsCW {
+            Fl_Tabs tabsCW {open
               xywh {0 50 504 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 500 295} align 5
+                xywh {0 75 500 295} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -1411,7 +1411,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 500 295} align 5
               } {
                 Fl_Group {} {
                   label Timing open
@@ -1467,12 +1467,15 @@ progdefaults.changed = true;}
                 } {
                   Fl_Check_Button btnQSK {
                     label {QSK on right audio channel}
-                    callback {if (o->value() && !sound_check_right_channel()) {
-  o->value(0);
-  return;
+                    callback {progdefaults.QSK = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
 }
-progdefaults.QSK = o->value();
-progdefaults.changed = true;}
+btnQSK2->value(o->value());}
                     tooltip {Generate square wave signal on right channel} xywh {15 245 211 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.QSK);}
                   }
@@ -2221,12 +2224,15 @@ progdefaults.changed = true;}
               }
               Fl_Check_Button chkPseudoFSK {
                 label {Pseudo-FSK on right audio channel}
-                callback {if (o->value() && !sound_check_right_channel()) {
-  o->value(0);
-  return;
+                callback {progdefaults.PseudoFSK = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
 }
-progdefaults.PseudoFSK = o->value();
-progdefaults.changed = true;}
+chkPseudoFSK2->value(o->value());}
                 tooltip {Create square wave on right channel} xywh {15 284 270 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PseudoFSK);}
               }
@@ -2323,7 +2329,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
+        label Rig open
         tooltip {Transceiver control} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsRig {open
@@ -2424,12 +2430,17 @@ progdefaults.changed = true;}
             } {
               Fl_Check_Button btnPTTrightchannel {
                 label {PTT tone on right audio channel }
-                callback {if (o->value() && !sound_check_right_channel()) {
-  o->value(0);
-  return;
+                callback {progdefaults.PTTrightchannel = o->value();
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);  
 }
-progdefaults.PTTrightchannel = o->value();
-progdefaults.changed = true;}
+progdefaults.changed = true;
+btnPTTrightchannel2->value(o->value());}
                 tooltip {Can be used in lieu of or in addition to other PTT types} xywh {130 69 250 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PTTrightchannel);}
               }
@@ -2910,7 +2921,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3080,17 +3091,6 @@ progdefaults.changed = true;}
                 class Fl_Spinner2
               }
             }
-            Fl_Check_Button chkAudioStereoOut {
-              label {Enable right audio channel}
-              callback {if (!o->value() && (progdefaults.PseudoFSK || progdefaults.QSK || progdefaults.PTTrightchannel))
-    LOG_WARN("Disabling right audio channel while in use by the QSK, pseudo-FSK or audio PTT options");
-
-progdefaults.out_channels = o->value() + 1;
-resetSoundCard();
-progdefaults.changed = true;}
-              xywh {15 222 220 20} down_box DOWN_BOX
-              code0 {chkAudioStereoOut->value(progdefaults.out_channels == 2);}
-            }
           }
           Fl_Group tabMixer {
             label Mixer open
@@ -3156,6 +3156,93 @@ progdefaults.changed = true;}
                 class Fl_Value_Slider2
               }
             }
+          }
+          Fl_Group tabAudioRightChannel {
+            label {Right channel} open
+            xywh {0 50 500 320} hide
+          } {
+            Fl_Check_Button chkAudioStereoOut {
+              label {Modem signal on left and right channels}
+              callback {progdefaults.sig_on_right_channel = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  btnQSK2->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  chkPseudoFSK2->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);  
+}}
+              tooltip {Left and right channels both contain modem audio} xywh {98 93 280 20} down_box DOWN_BOX
+              code0 {chkAudioStereoOut->value(progdefaults.sig_on_right_channel);}
+            }
+            Fl_Check_Button chkReverseAudio {
+              label {Reverse Left/Right channels}
+              callback {progdefaults.ReverseAudio = o->value();
+progdefaults.changed = true;}
+              tooltip {Software reversal of left-right audio channels} xywh {98 130 270 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.ReverseAudio);}
+            }
+            Fl_Check_Button btnPTTrightchannel2 {
+              label {PTT tone on right audio channel }
+              callback {progdefaults.PTTrightchannel = o->value();
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  btnQSK2->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  chkPseudoFSK2->value(0);
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);  
+}
+btnPTTrightchannel->value(o->value());
+progdefaults.changed = true;}
+              tooltip {1000 Hz tone when PTT enabled
+Can be used in lieu of or in addition to other PTT types} xywh {98 178 250 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.PTTrightchannel);}
+            }
+            Fl_Check_Button btnQSK2 {
+              label {CW QSK signal on right channel}
+              callback {progdefaults.QSK = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);
+}
+btnQSK->value(o->value());}
+              tooltip {Generate 1000 Hz square wave signal on right channel} xywh {98 216 211 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.QSK);}
+            }
+            Fl_Check_Button chkPseudoFSK2 {
+              label {Pseudo-FSK on right audio channel}
+              callback {progdefaults.PseudoFSK = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);
+}
+chkPseudoFSK->value(o->value());}
+              tooltip {Create 1000 Hz square wave on right channel} xywh {98 254 270 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.PseudoFSK);}
+            }
+            Fl_Group {} {
+              label {...
+These controls are on other tabs.
+They are replicated here for convenience.
+You may change the state from either location.
+...} open
+              xywh {25 168 454 187} box ENGRAVED_FRAME align 18
+            } {}
           }
         }
       }

@@ -663,8 +663,13 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 		wbuff = new short int[2*count];
 		p = (unsigned char *)wbuff;
 		for (size_t i = 0; i < count; i++) {
-			wbuff[2*i] = (short int)(bufleft[i] * maxsc);
-			wbuff[2*i + 1] = (short int)(bufright[i] * maxsc);
+			if (progdefaults.ReverseAudio) {
+				wbuff[2*i+1] = (short int)(bufleft[i] * maxsc);
+				wbuff[2*i] = (short int)(bufright[i] * maxsc);
+			} else {
+				wbuff[2*i] = (short int)(bufleft[i] * maxsc);
+				wbuff[2*i+1] = (short int)(bufright[i] * maxsc);
+			}
 		}
 		count *= sizeof(short int);
 		retval = write(device_fd, p, 2*count);
@@ -677,8 +682,13 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 		inbuf = new float[2*count];
 		size_t bufsize;
 		for (size_t i = 0; i < count; i++) {
-			inbuf[2*i] = bufleft[i];
-			inbuf[2*i+1] = bufright[i];
+			if (progdefaults.ReverseAudio) {
+				inbuf[2*i+1] = bufleft[i];
+				inbuf[2*i] = bufright[i];
+			} else {
+				inbuf[2*i] = bufleft[i];
+				inbuf[2*i+1] = bufright[i];
+			}
 		}
 		tx_src_data->data_in = inbuf;
 		tx_src_data->input_frames = count;
@@ -771,7 +781,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         sd[0].device = in_dev;
         sd[1].device = out_dev;
 	sd[0].params.channelCount = progdefaults.in_channels;
-	sd[1].params.channelCount = progdefaults.out_channels;
+	sd[1].params.channelCount = 2;//progdefaults.out_channels;
         sd[0].stream = sd[1].stream = 0;
         sd[0].frames_per_buffer = sd[1].frames_per_buffer = paFramesPerBufferUnspecified;
         sd[0].dev_sample_rate = sd[1].dev_sample_rate = 0;
@@ -1070,11 +1080,21 @@ size_t SoundPort::Write(double *buf, size_t count)
 		write_file(ofGenerate, buf, count);
 #endif
 
-        // copy input to both channels
-        for (size_t i = 0; i < count; i++)
-                fbuf[sd[1].params.channelCount * i] = fbuf[sd[1].params.channelCount * i + 1] = buf[i];
+// copy input to both channels if right channel enabled
+	for (size_t i = 0; i < count; i++)
+		if (progdefaults.sig_on_right_channel)
+			fbuf[sd[1].params.channelCount * i] = fbuf[sd[1].params.channelCount * i + 1] = buf[i];
+		else {
+			if (progdefaults.ReverseAudio) {
+				fbuf[sd[1].params.channelCount *i + 1] = buf[i];
+				fbuf[sd[1].params.channelCount * i] = 0;
+			} else {
+				fbuf[sd[1].params.channelCount *i] = buf[i];
+				fbuf[sd[1].params.channelCount * i + 1] = 0;
+			}
+		}
 
-        return resample_write(fbuf, count);
+	return resample_write(fbuf, count);
 }
 
 size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
@@ -1087,13 +1107,18 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 		write_file(ofCapture, bufleft, count);
 #endif
 
-        // interleave into fbuf
-        for (size_t i = 0; i < count; i++) {
-                fbuf[sd[1].params.channelCount * i] = bufleft[i];
-                fbuf[sd[1].params.channelCount * i + 1] = bufright[i];
-        }
+// interleave into fbuf
+	for (size_t i = 0; i < count; i++) {
+		if (progdefaults.ReverseAudio) {
+			fbuf[sd[1].params.channelCount * i + 1] = bufleft[i];
+			fbuf[sd[1].params.channelCount * i] = bufright[i];
+		} else {
+			fbuf[sd[1].params.channelCount * i] = bufleft[i];
+			fbuf[sd[1].params.channelCount * i + 1] = bufright[i];
+		}
+	}
 
-        return resample_write(fbuf, count);
+	return resample_write(fbuf, count);
 }
 
 
@@ -1500,7 +1525,7 @@ void SoundPort::probe_supported_rates(const device_iterator& idev)
 	PaStreamParameters params[2];
 	params[0].device = params[1].device = idev - devs.begin();
 	params[0].channelCount = progdefaults.in_channels;
-	params[1].channelCount = progdefaults.out_channels;
+	params[1].channelCount = 2;//progdefaults.out_channels;
 	params[0].sampleFormat = params[1].sampleFormat = paFloat32;
 	params[0].suggestedLatency = (*idev)->defaultHighInputLatency;
 	params[1].suggestedLatency = (*idev)->defaultHighOutputLatency;
@@ -1571,7 +1596,7 @@ SoundPulse::SoundPulse(const char *dev)
 	sd[0].dir = PA_STREAM_RECORD; sd[1].dir = PA_STREAM_PLAYBACK;
 	sd[0].stream_params.format = sd[1].stream_params.format = PA_SAMPLE_FLOAT32LE;
 	sd[0].stream_params.channels = progdefaults.in_channels;
-	sd[1].stream_params.channels = progdefaults.out_channels;
+	sd[1].stream_params.channels = 2;//progdefaults.out_channels;
 
 	sd[0].buffer_attrs.maxlength = sd[0].buffer_attrs.minreq = sd[0].buffer_attrs.prebuf =
 		sd[0].buffer_attrs.tlength = (uint32_t)-1;
@@ -1700,8 +1725,19 @@ size_t SoundPulse::Write(double* buf, size_t count)
 		write_file(ofGenerate, buf, count);
 #endif
 
-        for (size_t i = 0; i < count; i++)
-                fbuf[sd[1].stream_params.channels * i] = fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
+// copy input to both channels
+	for (size_t i = 0; i < count; i++)
+		if (progdefaults.sig_on_right_channel)
+			fbuf[sd[1].stream_params.channels * i] = fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
+		else {
+			if (progdefaults.ReverseAudio) {
+				fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
+				fbuf[sd[1].stream_params.channels * i] = 0;
+			} else {
+				fbuf[sd[1].stream_params.channels * i] = buf[i];
+				fbuf[sd[1].stream_params.channels * i + 1] = 0;
+			}
+		}
 
 	return resample_write(fbuf, count);
 }
@@ -1717,8 +1753,13 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 #endif
 
 	for (size_t i = 0; i < count; i++) {
-		fbuf[sd[1].stream_params.channels * i] = bufleft[i];
-		fbuf[sd[1].stream_params.channels * i + 1] = bufright[i];
+		if (progdefaults.ReverseAudio) {
+			fbuf[sd[1].stream_params.channels * i + 1] = bufleft[i];
+			fbuf[sd[1].stream_params.channels * i] = bufright[i];
+		} else {
+			fbuf[sd[1].stream_params.channels * i] = bufleft[i];
+			fbuf[sd[1].stream_params.channels * i + 1] = bufright[i];
+		}
 	}
 
 	return resample_write(fbuf, count);
