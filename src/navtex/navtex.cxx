@@ -431,7 +431,6 @@ public:
 
 			adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 
-			// dxcc_entity_cache_add(&rec);
 			LOG_INFO( _("Updating log book %s"), logbook_filename.c_str() );
 		}
 	} // display
@@ -609,7 +608,6 @@ private:
 	// then for data: rep phase character is sent first,
 	// then, three chars later, same char is sent in alpha phase
 	bool process_char(int code) {
-		//printf("process_char %d\n", code );
 		bool success = CCIR476::check_bits(code);
 		int chr = -1;
 		// force phasing with the two phasing characters
@@ -667,7 +665,6 @@ private:
 				} // switch
 
 			} // if test != -1
-			// printf("compare: %x = %x, %s\n", code, m_c1, (code == m_c1) ? "YES" : "NO");
 		} // alpha channel
 
 		// alpha/rep phasing
@@ -685,11 +682,7 @@ private:
 			put_rx_char(c);
 		}
 	}
-/*
-	void filter_print( const std::string & str ) {
-		printf("%s",str.c_str());
-	}
-*/
+
 	/* A NAVTEX message is built on SITOR collective B-mode and consists of:
 	* a phasing signal of at least ten seconds
 	* the four characters "ZCZC" that identify the end of phasing
@@ -733,17 +726,6 @@ public:
 			// now low-pass the resulting difference
 			double logic_level = m_biquad_lowpass.filter(diffabs);
 
-		/*
-		{
-				static int nb = 0 ;
-				++nb ;
-				if( nb % 1000 ) {
-					printf("v=%d mark=%lf space=%lf diffabs=%lf logic_level=%lf\n",
-						(int)v, mark_level, space_level, diffabs, logic_level );
-				}
-		}
-		*/
-
 			bool mark_state = (logic_level > 0);
 			m_signal_accumulator += (mark_state) ? 1 : -1;
 			m_bit_duration++;
@@ -760,7 +742,7 @@ public:
 					// Size = m_bit_sample_count / m_zero_crossings_divisor
 					if( index / m_zero_crossings_divisor >= m_zero_crossings.size() ) {
 						LOG_ERROR("index=%d m_zero_crossings_divisor=%d m_zero_crossings.size()=%d\n",
-								index, m_zero_crossings_divisor, m_zero_crossings.size() );
+								(int)index, m_zero_crossings_divisor, (int)m_zero_crossings.size() );
 						LOG_ERROR("m_sample_count=%d m_next_event_count=%d m_bit_sample_count=%d\n",
 						m_sample_count, m_next_event_count, m_bit_sample_count );
 						exit(EXIT_FAILURE);
@@ -854,7 +836,6 @@ public:
 								m_code_bits = 0;
 								m_bit_count = 0;
 								m_valid_count++;
-								//printf("m_valid_count=%d\n", m_valid_count);
 								// successfully read 4 characters?
 								if (m_valid_count == 4) {
 									for( sync_chrs_type::const_iterator it = m_sync_chrs.begin(), en = m_sync_chrs.end(); it != en; ++it ) {
@@ -865,7 +846,7 @@ public:
 							} else { // failed subsequent bit test
 								m_code_bits = 0;
 								m_bit_count = 0;
-								//printf("restarting sync\n");
+								LOG_INFO("restarting sync");
 								set_state(SYNC_SETUP);
 							}
 						}
@@ -1016,5 +997,4 @@ std::string navtex::get_message(int max_seconds)
 {
 	return m_impl->get_received_message(max_seconds);
 }
-
 
