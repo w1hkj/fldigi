@@ -437,6 +437,7 @@ public:
 	} // display
 }; // ccir_message
 
+static const double deviation_f = 90.0;
 
 class navtex_implementation {
 
@@ -545,7 +546,6 @@ private:
 		// Q must change with frequency
 		// try to maintain a zero mixer output at the carrier frequency
 		double qv = m_center_frequency_f + (4.0 * 1000 / m_center_frequency_f);
-		static const double deviation_f = 90.0;
 		m_mark_f = qv + deviation_f;
 		m_space_f = qv - deviation_f;
 	}
@@ -974,6 +974,7 @@ navtex::navtex (trx_mode md)
 {
 	navtex::mode = md;
 	modem::samplerate = 11025;
+    modem::bandwidth = 2 * deviation_f ;
 	m_impl = new navtex_implementation( modem::samplerate );
 	cap &= ~CAP_TX;
 }
