@@ -1,5 +1,19 @@
+2011-12-11  David Freese  <w1hkj@w1hkj.com>
+
+	e3b2913: Italian translation
+	773c413: Right Channel audio
+	8d54e28: NAVTEX modem
+	0c064c6: WEFAX update
+	87cc9d4: WARN status colors
+
+2011-12-03  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	ee1ab43: Modem class update
+	8d647fc: QsoRec comparisons
+
 2011-12-02  David Freese  <w1hkj@w1hkj.com>
 
+	6ac3b34: Cty.dat
 	0c2b4fc: Contestia 64/1000
 	3dd38d1: Call lookups
 	0263d0a: Compile warnings
