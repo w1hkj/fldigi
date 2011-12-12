@@ -35,6 +35,8 @@
 #include <string>
 #include <queue>
 
+#include "config.h"
+
 #include "configuration.h"
 #include "fl_digi.h"
 #include "debug.h"
