@@ -978,6 +978,7 @@ void rigCAT_defaults()
 	cntRigCatWait->value(xmlrig.write_delay);
 	btnRigCatEcho->value(xmlrig.echo);
 	btnRigCatCMDptt->value(xmlrig.cmdptt);
+	chkRigCatVSP->value(xmlrig.vsp);
 }
 
 void rigCAT_restore_defaults()
