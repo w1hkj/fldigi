@@ -1,6 +1,7 @@
-2011-12-11  David Freese  <w1hkj@w1hkj.com>
+2011-12-20  David Freese  <w1hkj@w1hkj.com>
 
-	e3b2913: Italian translation
+	ca82dac: Mono audio
+	9409d6c: NAVTEX check-TESTS
 	773c413: Right Channel audio
 	8d54e28: NAVTEX modem
 	0c064c6: WEFAX update
