@@ -881,6 +881,9 @@
         ELEM_(int, in_channels, "INCHANNELS",                                           \
               "Number of audio input channels",                                         \
               1)                                                                        \
+        ELEM_(bool, mono_audio, "MONOAUDIO",                                            \
+              "Force use of mono audio output",                                         \
+              false)                                                                    \
         ELEM_(bool, sig_on_right_channel, "SIGONRIGHTCHANNEL",                          \
               "Duplicate modem signal on left & right",                                 \
               false)                                                                    \

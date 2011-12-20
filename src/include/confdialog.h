@@ -345,6 +345,7 @@ extern Fl_Light_Button *btnLineIn;
 extern void setPCMvolume(double);
 extern Fl_Value_Slider2 *valPCMvolume;
 extern Fl_Group *tabAudioRightChannel;
+extern Fl_Check_Button *chkForceMono;
 extern Fl_Check_Button *chkAudioStereoOut;
 extern Fl_Check_Button *chkReverseAudio;
 extern Fl_Check_Button *btnPTTrightchannel2;
