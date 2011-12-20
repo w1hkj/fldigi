@@ -778,16 +778,17 @@ const vector<double>& SoundPort::get_supported_rates(const string& name, unsigne
 SoundPort::SoundPort(const char *in_dev, const char *out_dev)
         : req_sample_rate(0)
 {
-        sd[0].device = in_dev;
-        sd[1].device = out_dev;
+	sd[0].device = in_dev;
+	sd[1].device = out_dev;
 	sd[0].params.channelCount = progdefaults.in_channels;
-	sd[1].params.channelCount = 2;//progdefaults.out_channels;
-        sd[0].stream = sd[1].stream = 0;
-        sd[0].frames_per_buffer = sd[1].frames_per_buffer = paFramesPerBufferUnspecified;
-        sd[0].dev_sample_rate = sd[1].dev_sample_rate = 0;
-        sd[0].state = sd[1].state = spa_continue;
-        sd[0].rb = sd[1].rb = 0;
-        sd[0].advance = sd[1].advance = 0;
+// # write channels always 2 unless mono output is selected
+	sd[1].params.channelCount = progdefaults.mono_audio ? 1 : 2;
+	sd[0].stream = sd[1].stream = 0;
+	sd[0].frames_per_buffer = sd[1].frames_per_buffer = paFramesPerBufferUnspecified;
+	sd[0].dev_sample_rate = sd[1].dev_sample_rate = 0;
+	sd[0].state = sd[1].state = spa_continue;
+	sd[0].rb = sd[1].rb = 0;
+	sd[0].advance = sd[1].advance = 0;
 
 	sem_t** sems[] = { &sd[0].rwsem, &sd[1].rwsem };
 #if USE_NAMED_SEMAPHORES
@@ -1082,14 +1083,16 @@ size_t SoundPort::Write(double *buf, size_t count)
 
 // copy input to both channels if right channel enabled
 	for (size_t i = 0; i < count; i++)
-		if (progdefaults.sig_on_right_channel)
+		if (progdefaults.mono_audio)
+			fbuf[i] = buf[i];
+		else if (progdefaults.sig_on_right_channel)
 			fbuf[sd[1].params.channelCount * i] = fbuf[sd[1].params.channelCount * i + 1] = buf[i];
 		else {
 			if (progdefaults.ReverseAudio) {
-				fbuf[sd[1].params.channelCount *i + 1] = buf[i];
+				fbuf[sd[1].params.channelCount * i + 1] = buf[i];
 				fbuf[sd[1].params.channelCount * i] = 0;
 			} else {
-				fbuf[sd[1].params.channelCount *i] = buf[i];
+				fbuf[sd[1].params.channelCount * i] = buf[i];
 				fbuf[sd[1].params.channelCount * i + 1] = 0;
 			}
 		}
@@ -1525,7 +1528,8 @@ void SoundPort::probe_supported_rates(const device_iterator& idev)
 	PaStreamParameters params[2];
 	params[0].device = params[1].device = idev - devs.begin();
 	params[0].channelCount = progdefaults.in_channels;
-	params[1].channelCount = 2;//progdefaults.out_channels;
+// # output channels always 2 unless mono audio is selected
+	params[1].channelCount = progdefaults.mono_audio ? 1 : 2;
 	params[0].sampleFormat = params[1].sampleFormat = paFloat32;
 	params[0].suggestedLatency = (*idev)->defaultHighInputLatency;
 	params[1].suggestedLatency = (*idev)->defaultHighOutputLatency;
@@ -1596,8 +1600,8 @@ SoundPulse::SoundPulse(const char *dev)
 	sd[0].dir = PA_STREAM_RECORD; sd[1].dir = PA_STREAM_PLAYBACK;
 	sd[0].stream_params.format = sd[1].stream_params.format = PA_SAMPLE_FLOAT32LE;
 	sd[0].stream_params.channels = progdefaults.in_channels;
-	sd[1].stream_params.channels = 2;//progdefaults.out_channels;
-
+// # output channels always 2 unless mono audio is selected
+	sd[1].stream_params.channels = progdefaults.mono_audio ? 1 : 2;
 	sd[0].buffer_attrs.maxlength = sd[0].buffer_attrs.minreq = sd[0].buffer_attrs.prebuf =
 		sd[0].buffer_attrs.tlength = (uint32_t)-1;
 	sd[1].buffer_attrs.fragsize = sd[1].buffer_attrs.maxlength = sd[1].buffer_attrs.minreq =
@@ -1727,7 +1731,9 @@ size_t SoundPulse::Write(double* buf, size_t count)
 
 // copy input to both channels
 	for (size_t i = 0; i < count; i++)
-		if (progdefaults.sig_on_right_channel)
+		if (progdefaults.mono_audio)
+			fbuf[i] = buf[i];
+		else if (progdefaults.sig_on_right_channel)
 			fbuf[sd[1].stream_params.channels * i] = fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
 		else {
 			if (progdefaults.ReverseAudio) {
