@@ -1,8 +1,15 @@
 
 
-=Version 3.21.33=
+=Version 3.21.34=
 
-2011-12-09  David Freese  <w1hkj@w1hkj.com>
+2011-12-24  David Freese  <w1hkj@w1hkj.com>
+
+	ba3a926: VAC PTT delay
+	62532af: Mono audio
+	a7f741b: VSP boolean
+
+
+=Version 3.21.33=
 
 	a68d917: Right Channel audio
 	00d4308: WEFAX update
