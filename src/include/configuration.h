@@ -958,6 +958,12 @@
         ELEM_(int, TxOffset, "TXOFFSET",                                                \
               "Difference between RX and TX freq (rig offset)",                         \
               0)                                                                        \
+        ELEM_(int, PTT_on_delay, "PTTONDELAY",                                          \
+              "Start of transmit delay before sending audio",                           \
+              0)                                                                        \
+        ELEM_(int, PTT_off_delay, "PTTOFFDELAY",                                        \
+              "End of transmit delay before disabling PTT",                             \
+              0)                                                                        \
         /* Contest controls and Logbook */                                              \
         ELEM_(std::string, logbookfilename, "LOGBOOKFILENAME",                          \
               "Logbook file name",                                                      \

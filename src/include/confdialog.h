@@ -267,6 +267,7 @@ extern Fl_Group *tabNavtex;
 extern Fl_Check_Button *btnNvtxAdifLog;
 extern Fl_Group *tabRig;
 extern Fl_Tabs *tabsRig;
+extern Fl_Check_Button *btnPTTrightchannel;
 extern Fl_Group *grpHWPTT;
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *inpTTYdev;
@@ -278,7 +279,9 @@ extern Fl_Button *btnInitHWPTT;
 extern Fl_Round_Button *btnTTYptt;
 extern Fl_Round_Button *btnUsePPortPTT;
 extern Fl_Round_Button *btnUseUHrouterPTT;
-extern Fl_Check_Button *btnPTTrightchannel;
+extern Fl_Group *grpPTTdelays;
+extern Fl_Counter *cntPTT_on_delay;
+extern Fl_Counter *cntPTT_off_delay;
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Group *grpRigCAT;
 #include <FL/Fl_Output.H>
