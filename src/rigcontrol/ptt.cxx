@@ -117,6 +117,9 @@ void PTT::set(bool ptt)
 	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
 		return;
 
+	if (!ptt && progdefaults.PTT_off_delay)
+		MilliSleep(progdefaults.PTT_off_delay);
+
 	switch (pttdev) {
 	case PTT_NONE: default:
 		break;
@@ -145,6 +148,9 @@ void PTT::set(bool ptt)
 		break;
 #endif
 	}
+
+	if (ptt && progdefaults.PTT_on_delay)
+		MilliSleep(progdefaults.PTT_on_delay);
 }
 
 void PTT::close_all(void)
