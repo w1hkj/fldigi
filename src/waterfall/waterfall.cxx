@@ -1233,6 +1233,10 @@ void waterfall::set_XmtRcvBtn(bool val)
 {
 	FL_LOCK_D();
 	xmtrcv->value(val);
+	if (!val && btnTune->value()) {
+		btnTune->value(0);
+		btnTune->labelcolor(FL_FOREGROUND_COLOR);
+	}
 	FL_UNLOCK_D();
 }
 
