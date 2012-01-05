@@ -3962,7 +3962,7 @@ void create_fl_digi_main_primary() {
 
 		RigControlFrame->end();
 
-		int opB_w = 280;
+		int opB_w = 380;
 		int qFV_w = opB_w + 2 * (Wbtn + pad) + pad;
 
 		RigViewerFrame = new Fl_Group(rightof(RigControlFrame), Hmenu, qFV_w, Hqsoframe);
@@ -4018,7 +4018,13 @@ void create_fl_digi_main_primary() {
 			qso_opBrowser->box(FL_DOWN_BOX);
 			qso_opBrowser->labelfont(4);
 			qso_opBrowser->labelsize(12);
-			qso_opBrowser->textfont(4);
+#ifdef __APPLE__
+			qso_opBrowser->textfont(FL_COURIER_BOLD);
+			qso_opBrowser->textsize(16);
+#else
+			qso_opBrowser->textfont(FL_COURIER);
+			qso_opBrowser->textsize(14);
+#endif
 			RigViewerFrame->resizable(NULL);
 
 		RigViewerFrame->end();
