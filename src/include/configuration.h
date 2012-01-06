@@ -1334,6 +1334,21 @@
        ELEM_(int, wefax_filter, "WEFAXFILTER",                                          \
              "Input filter for image reception",                                        \
              0)                                                                         \
+       ELEM_(bool, WEFAX_EmbeddedGui, "WEFAXEMBEDDEDGUI",                               \
+             "Embedded GUI",                                                            \
+             true)                                                                      \
+       ELEM_(bool, WEFAX_HideTx, "WEFAXHIDETX",                                         \
+             "Hide transmission window",                                                \
+             true)                                                                      \
+       ELEM_(int, WEFAX_Shift, "WEFAXSHIFT",                                            \
+             "Shift (Standard 800Hz)",                                                  \
+             800 )                                                                      \
+       ELEM_(int, WEFAX_MaxRows, "WEFAXMAXROWS",                                        \
+             "Received fax maximum number of rows",                                     \
+             5000 )                                                                     \
+       ELEM_(bool, WEFAX_AdifLog, "WEFAXADIFLOG",                                       \
+             "Logs wefax file names in Adif log file",                                  \
+             false)                                                                     \
        /* NAVTEX configuration items */                                                 \
        ELEM_(bool, NVTX_AdifLog, "NAVTEXADIFLOG",                                       \
              "Logs Navtex messages in Adig log file",                                   \

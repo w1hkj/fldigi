@@ -14,8 +14,9 @@ decl {\#include <FL/Fl_Tooltip.H>} {private local
 decl {\#include <FL/Fl_Box.H>} {private local
 } 
 
-decl {\#include <FL/filename.H>} {private local
-} 
+decl {\#include <FL/Fl_File_Chooser.H>} {} 
+
+decl {\#include <FL/filename.H>} {} 
 
 decl {\#include "main.h"} {private local
 } 
@@ -130,10 +131,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {729 57 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {606 178 595 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {-5 0 545 372} color 50 selection_color 50
+      xywh {-5 0 590 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -1300,11 +1301,11 @@ behaves inside the waterfall} xywh {13 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
-        xywh {-5 25 545 347} hide
+        label Modems open
+        xywh {-5 25 590 347}
       } {
-        Fl_Tabs tabsModems {
-          xywh {-5 25 545 347} selection_color 50 align 9
+        Fl_Tabs tabsModems {open
+          xywh {-5 25 590 347} selection_color 50 align 9
         } {
           Fl_Group tabContestia {
             label Contestia open
@@ -1366,10 +1367,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 504 320} hide
+            xywh {0 50 575 320} hide
           } {
             Fl_Tabs tabsCW {open
-              xywh {0 50 504 320} selection_color 50
+              xywh {0 50 575 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
@@ -1489,11 +1490,11 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 500 295} align 5 hide
+                xywh {0 75 575 295} align 5
               } {
                 Fl_Group {} {
                   label Timing open
-                  xywh {5 85 490 120} box ENGRAVED_FRAME align 21
+                  xywh {5 85 555 120} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Counter cntCWweight {
                     label {Weight (%)}
@@ -1508,7 +1509,7 @@ progdefaults.changed = true;}
                     label {Dash to dot ratio}
                     callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                    tooltip {Dash to dot ratio} xywh {240 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
+                    tooltip {Dash to dot ratio} xywh {240 114 64 20} type Simple align 8 minimum 2.5 maximum 4 step 0.1 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -1517,7 +1518,7 @@ progdefaults.changed = true;}
                     label {Edge timing}
                     callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                    tooltip {Leading and Trailing edge risetimes (msec)} xywh {240 145 65 20} type Simple align 8 minimum 0 maximum 15 value 4
+                    tooltip {Leading and Trailing edge risetimes (msec)} xywh {240 145 65 20} type Simple align 8 minimum 0 maximum 15 step 0.1 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -1541,7 +1542,7 @@ progdefaults.changed = true;}
                 }
                 Fl_Group {} {
                   label QSK open
-                  xywh {5 217 490 118} box ENGRAVED_FRAME align 21
+                  xywh {5 217 555 118} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnQSK {
                     label {QSK on right audio channel}
@@ -1795,7 +1796,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.DOMINOEX_BW = o->value();
 resetDOMEX();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
                 code0 {o->value(progdefaults.DOMINOEX_BW);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -1811,7 +1812,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.DomCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 207 260 20} type Horizontal align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.DomCWI);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
@@ -2330,7 +2331,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {156 141 63 20} type Simple align 8 minimum 1 maximum 2 step 0.1 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2339,7 +2340,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {15 194 260 20} type Horizontal align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {15 194 260 20} type Horizontal align 1 step 0.01 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
@@ -2358,7 +2359,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPacket {
             label Packet
-            xywh {0 50 540 320} hide
+            xywh {0 50 585 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 296} box ENGRAVED_FRAME
@@ -2478,12 +2479,76 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tabNavtex {
-            label Navtex open
-            xywh {-5 50 545 320} hide
+          Fl_Group tabWefax {
+            label Wefax open
+            xywh {-5 50 590 320}
           } {
             Fl_Group {} {open
-              xywh {-5 50 545 320}
+              xywh {-5 50 590 320}
+            } {
+              Fl_Check_Button btnWefaxAdifLog {
+                label {Log Wefax messages to Adif file}
+                callback {progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;}
+                tooltip {Sent and received faxes are logged to Adif file.} xywh {10 130 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_AdifLog);}
+              }
+              Fl_Check_Button btnWefaxEmbeddedGui {
+                label {Embedded Wefax Gui}
+                callback {progdefaults.WEFAX_EmbeddedGui=o->value();
+progdefaults.changed = true;}
+                tooltip {Display tx and rx in mail fldigi window.} xywh {10 65 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
+              }
+              Fl_Input btnWefaxShift {
+                label {Frequency shift (800 Hz)}
+                callback {if( o->value() > 900 ) { o->value(900); return; }
+if( o->value() < 750 ) { o->value(750); return; }
+progdefaults.WEFAX_Shift=o->value();
+progdefaults.changed = true;}
+                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {10 170 80 20} type Int align 8
+                code0 {o->value(progdefaults.WEFAX_Shift);}
+                class Fl_Value_Input2
+              }
+              Fl_Input btnWefaxMaxRows {
+                label {Received fax maximum rows number (5000)}
+                callback {if(o->value() > 10000 ) { o->value(10000); return ; }
+if(o->value() < 1000 ) { o->value(1000); return ; }
+progdefaults.WEFAX_MaxRows=o->value();
+progdefaults.changed = true;}
+                tooltip {Maximum row number for a received fax image.} xywh {10 210 85 20} type Int align 8
+                code0 {o->value(progdefaults.WEFAX_MaxRows);}
+                class Fl_Value_Input2
+              }
+              Fl_Input btnWefaxSaveDir {
+                label {Fax images destination directory}
+                callback {progdefaults.wefax_save_dir=o->value();
+progdefaults.changed = true;}
+                xywh {10 260 310 20} align 5
+                code0 {o->value(progdefaults.wefax_save_dir.c_str());}
+              }
+              Fl_Button btnSelectFaxDestDir {
+                label {Directory...}
+                callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+fc->callback(WefaxDestDirSet);
+fc->show();}
+                xywh {340 260 80 20}
+              }
+              Fl_Check_Button btnWefaxHideTx {
+                label {Hide Transmission window}
+                callback {progdefaults.WEFAX_HideTx=o->value();
+progdefaults.changed = true;} selected
+                tooltip {Hide transmission window by default.} xywh {10 100 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_HideTx);}
+              }
+            }
+          }
+          Fl_Group tabNavtex {
+            label Navtex open
+            xywh {-5 50 590 320} hide
+          } {
+            Fl_Group {} {open
+              xywh {-5 50 590 320}
             } {
               Fl_Check_Button btnNvtxAdifLog {
                 label {Log Navtex messages to Adif file}
@@ -2505,7 +2570,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 48 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 57 490 38} box ENGRAVED_FRAME
@@ -2642,7 +2707,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 48 500 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 50 500 320}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -3344,7 +3409,7 @@ progdefaults.changed = true;}
                 label PCM
                 callback {setPCMvolume(o->value());
 progdefaults.changed = true;}
-                tooltip {Set the sound card PCM level} xywh {15 164 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
+                tooltip {Set the sound card PCM level} xywh {15 164 340 20} type Horizontal selection_color 15 align 8 step 0.01 value 0.8 textsize 14
                 code0 {extern void setPCMvolume(double);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
@@ -3672,7 +3737,7 @@ progdefaults.changed = true;}
             label Seconds
             callback {progdefaults.pretone = o->value();
 progdefaults.changed = true;}
-            tooltip {Use for triggering amplifier carrier detect} xywh {323 310 140 21} minimum 0 maximum 10
+            tooltip {Use for triggering amplifier carrier detect} xywh {323 310 140 21} minimum 0 maximum 10 step 0.1
             code0 {o->value(progdefaults.pretone);}
           }
         }
@@ -4372,15 +4437,28 @@ Function {openConfig()} {return_type void
 progdefaults.loadDefaults();} {}
 } 
 
-Function {closeDialog()} {return_type void
+Function {closeDialog()} {open return_type void
 } {
   code {if (dlgConfig) dlgConfig->hide();} {}
 } 
 
-Function {createConfig()} {return_type void
+Function {createConfig()} {open return_type void
 } {
   code {if (!dlgConfig) {
     dlgConfig = ConfigureDialog();
     dlgConfig->xclass(PACKAGE_NAME);
   }} {}
+} 
+
+decl {class Fl_File_Chooser ;} {public global
+} 
+
+Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+} {
+  code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
+if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+	btnWefaxSaveDir->value( w->value() );
+	btnWefaxSaveDir->redraw();
+	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
+}} {}
 } 

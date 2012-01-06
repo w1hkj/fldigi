@@ -173,7 +173,8 @@
 #define RTTY_MLABEL              "RTTY"
 #define VIEW_MLABEL            _("&View")
 #define MFSK_IMAGE_MLABEL      _("&MFSK Image")
-#define WEFAX_IMAGE_MLABEL     _("&Weather Fax Image")
+#define WEFAX_RX_IMAGE_MLABEL  _("&Weather Fax Image RX")
+#define WEFAX_TX_IMAGE_MLABEL  _("&Weather Fax Image TX")
 #define CONTEST_MLABEL         _("Contest")
 #define CONTEST_FIELDS_MLABEL  _("&Contest fields")
 #define COUNTRIES_MLABEL       _("C&ountries")
@@ -201,11 +202,6 @@ Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
-
-int rightof(Fl_Widget* w);
-int leftof(Fl_Widget* w);
-int above(Fl_Widget* w);
-int below(Fl_Widget* w);
 
 Fl_Group			*mnuFrame;
 Fl_Menu_Bar 		*mnu;
@@ -937,12 +933,22 @@ void startup_modem(modem* m, int f)
 
 	if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 		ReceiveText->hide();
+		TransmitText->show();
 		FHdisp->show();
+		wefax_pic::hide_both();
 		sldrHellBW->value(progdefaults.HELL_BW);
+	}
+	if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
+		ReceiveText->hide();
+		TransmitText->hide();
+		FHdisp->hide();
+		wefax_pic::show_both();
 	}
 	else if (!bWF_only) {
 		ReceiveText->show();
+		TransmitText->show();
 		FHdisp->hide();
+		wefax_pic::hide_both();
 	}
 
 	if (id == MODE_RTTY)
@@ -3207,7 +3213,8 @@ Fl_Menu_Item menu_[] = {
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 't', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
@@ -3391,6 +3398,29 @@ Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 	return item;
 }
 
+void activate_wefax_image_item(bool b)
+{
+	/// Maybe do not do anything if the new modem has activated this menu item.
+	/// This is necessary because of trx_start_modem_loop which deletes
+	/// the current modem after the new one is created..
+	if( ( b == false )
+	 && ( active_modem->get_cap() & modem::CAP_IMG )
+	 && ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
+	 && ( active_modem->get_mode() <= MODE_WEFAX_LAST )
+	 )
+	{
+		return ;
+	}
+
+	Fl_Menu_Item *wefax_rx_item = getMenuItem(WEFAX_RX_IMAGE_MLABEL);
+	if (wefax_rx_item)
+		set_active(wefax_rx_item, b);
+	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_TX_IMAGE_MLABEL);
+	if (wefax_tx_item)
+		set_active(wefax_tx_item, b);
+}
+
+
 void activate_menu_item(const char *caption, bool val)
 {
 	Fl_Menu_Item *m = getMenuItem(caption);
@@ -3402,25 +3432,6 @@ void activate_mfsk_image_item(bool b)
 	Fl_Menu_Item *mfsk_item = getMenuItem(MFSK_IMAGE_MLABEL);
 	if (mfsk_item)
 		set_active(mfsk_item, b);
-}
-
-void activate_wefax_image_item(bool b)
-{
-	/// Maybe do not do anything if the new modem has activated this menu item.
-	/// This is necessary because of trx_start_modem_loop which deletes 
-	/// the current modem after the new one is created..
-	if( ( b == false )
-	 && ( active_modem->get_cap() & modem::CAP_IMG )
-	 && ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
-	 && ( active_modem->get_mode() <= MODE_WEFAX_LAST )
-	 )
-	{
-		return ;
-	}
-
-	Fl_Menu_Item *wefax_item = getMenuItem(WEFAX_IMAGE_MLABEL);
-	if (wefax_item)
-		set_active(wefax_item, b);
 }
 
 int rightof(Fl_Widget* w)
@@ -4591,6 +4602,8 @@ void create_fl_digi_main_primary() {
 			FHdisp->align(FL_ALIGN_CLIP);
 			FHdisp->hide();
 
+			wefax_pic::create_both( true );
+
 			TransmitText = new FTextTX(
 				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(), 
 				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
@@ -5025,7 +5038,8 @@ Fl_Menu_Item alt_menu_[] = {
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 //{ make_icon_label(_("Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Signal Browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 

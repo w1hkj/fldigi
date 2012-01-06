@@ -5,6 +5,7 @@
 #include <config.h>
 #include <FL/Fl_Tooltip.H>
 #include <FL/Fl_Box.H>
+#include <FL/Fl_File_Chooser.H>
 #include <FL/filename.H>
 #include "main.h"
 #include "fl_digi.h"
@@ -1926,6 +1927,62 @@ static void cb_btnPktAudioBoost(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabWefax=(Fl_Group *)0;
+
+Fl_Check_Button *btnWefaxAdifLog=(Fl_Check_Button *)0;
+
+static void cb_btnWefaxAdifLog(Fl_Check_Button* o, void*) {
+  progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnWefaxEmbeddedGui=(Fl_Check_Button *)0;
+
+static void cb_btnWefaxEmbeddedGui(Fl_Check_Button* o, void*) {
+  progdefaults.WEFAX_EmbeddedGui=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Input2 *btnWefaxShift=(Fl_Value_Input2 *)0;
+
+static void cb_btnWefaxShift(Fl_Value_Input2* o, void*) {
+  if( o->value() > 900 ) { o->value(900); return; }
+if( o->value() < 750 ) { o->value(750); return; }
+progdefaults.WEFAX_Shift=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Input2 *btnWefaxMaxRows=(Fl_Value_Input2 *)0;
+
+static void cb_btnWefaxMaxRows(Fl_Value_Input2* o, void*) {
+  if(o->value() > 10000 ) { o->value(10000); return ; }
+if(o->value() < 1000 ) { o->value(1000); return ; }
+progdefaults.WEFAX_MaxRows=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input *btnWefaxSaveDir=(Fl_Input *)0;
+
+static void cb_btnWefaxSaveDir(Fl_Input* o, void*) {
+  progdefaults.wefax_save_dir=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnSelectFaxDestDir=(Fl_Button *)0;
+
+static void cb_btnSelectFaxDestDir(Fl_Button*, void*) {
+  Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+fc->callback(WefaxDestDirSet);
+fc->show();
+}
+
+Fl_Check_Button *btnWefaxHideTx=(Fl_Check_Button *)0;
+
+static void cb_btnWefaxHideTx(Fl_Check_Button* o, void*) {
+  progdefaults.WEFAX_HideTx=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabNavtex=(Fl_Group *)0;
 
 Fl_Check_Button *btnNvtxAdifLog=(Fl_Check_Button *)0;
@@ -3465,14 +3522,15 @@ Fl_Double_Window* ConfigureDialog() {
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
-    o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(-5, 0, 545, 372);
-      tabsConfigure->color(FL_LIGHT1);
-      tabsConfigure->selection_color(FL_LIGHT1);
+    o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
+    { tabsConfigure = new Fl_Tabs(-5, 0, 590, 372);
+      tabsConfigure->color((Fl_Color)FL_LIGHT1);
+      tabsConfigure->selection_color((Fl_Color)FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4529,11 +4587,10 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-5, 25, 545, 347, _("Modems"));
-        tabModems->hide();
-        { tabsModems = new Fl_Tabs(-5, 25, 545, 347);
-          tabsModems->selection_color(FL_LIGHT1);
-          tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
+      { tabModems = new Fl_Group(-5, 25, 590, 347, _("Modems"));
+        { tabsModems = new Fl_Tabs(-5, 25, 590, 347);
+          tabsModems->selection_color((Fl_Color)FL_LIGHT1);
+          tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabContestia = new Fl_Group(0, 50, 500, 320, _("Contestia"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
               o->box(FL_ENGRAVED_FRAME);
@@ -4606,10 +4663,10 @@ an merging"));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
-          { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
+          { tabCW = new Fl_Group(0, 50, 575, 320, _("CW"));
             tabCW->hide();
-            { tabsCW = new Fl_Tabs(0, 50, 504, 320);
-              tabsCW->selection_color(FL_LIGHT1);
+            { tabsCW = new Fl_Tabs(0, 50, 575, 320);
+              tabsCW->selection_color((Fl_Color)FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
@@ -4776,10 +4833,9 @@ an merging"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("Timing and QSK"));
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->hide();
-                { Fl_Group* o = new Fl_Group(5, 85, 490, 120, _("Timing"));
+              { Fl_Group* o = new Fl_Group(0, 75, 575, 295, _("Timing and QSK"));
+                o->align(FL_ALIGN_TOP_LEFT);
+                { Fl_Group* o = new Fl_Group(5, 85, 555, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 { Fl_Counter2* o = cntCWweight = new Fl_Counter2(15, 114, 65, 20, _("Weight (%)"));
@@ -4814,6 +4870,7 @@ an merging"));
                 cntCWdash2dot->labelcolor(FL_FOREGROUND_COLOR);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
+                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -4833,6 +4890,7 @@ an merging"));
                 cntCWrisetime->labelcolor(FL_FOREGROUND_COLOR);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
+                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -4857,7 +4915,7 @@ an merging"));
                 } // Fl_Check_Button* btnCWnarrow
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(5, 217, 490, 118, _("QSK"));
+                { Fl_Group* o = new Fl_Group(5, 217, 555, 118, _("QSK"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(15, 245, 211, 20, _("QSK on right audio channel"));
@@ -5041,6 +5099,7 @@ an merging"));
                 valDominoEX_BW->labelcolor(FL_FOREGROUND_COLOR);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
+                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -5063,7 +5122,8 @@ an merging"));
                 valDomCWI->labeltype(FL_NORMAL_LABEL);
                 valDomCWI->labelfont(0);
                 valDomCWI->labelsize(14);
-                valDomCWI->labelcolor(FL_FOREGROUND_COLOR);
+                valDomCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valDomCWI->step(0.01);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(Fl_Align(FL_ALIGN_TOP));
@@ -5645,6 +5705,7 @@ an merging"));
                 valTHOR_BW->labelcolor(FL_FOREGROUND_COLOR);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
+                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -5661,7 +5722,8 @@ an merging"));
                 valThorCWI->labeltype(FL_NORMAL_LABEL);
                 valThorCWI->labelfont(0);
                 valThorCWI->labelsize(14);
-                valThorCWI->labelcolor(FL_FOREGROUND_COLOR);
+                valThorCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valThorCWI->step(0.01);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(Fl_Align(FL_ALIGN_TOP));
@@ -5693,7 +5755,7 @@ an merging"));
             } // Fl_Group* o
             tabTHOR->end();
           } // Fl_Group* tabTHOR
-          { tabPacket = new Fl_Group(0, 50, 540, 320, _("Packet"));
+          { tabPacket = new Fl_Group(0, 50, 585, 320, _("Packet"));
             tabPacket->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 296);
               o->box(FL_ENGRAVED_FRAME);
@@ -5834,9 +5896,71 @@ an merging"));
             } // Fl_Group* o
             tabPacket->end();
           } // Fl_Group* tabPacket
-          { tabNavtex = new Fl_Group(-5, 50, 545, 320, _("Navtex"));
+          { tabWefax = new Fl_Group(-5, 50, 590, 320, _("Wefax"));
+            { Fl_Group* o = new Fl_Group(-5, 50, 590, 320);
+              { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(10, 130, 235, 30, _("Log Wefax messages to Adif file"));
+                btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));
+                btnWefaxAdifLog->down_box(FL_DOWN_BOX);
+                btnWefaxAdifLog->callback((Fl_Callback*)cb_btnWefaxAdifLog);
+                o->value(progdefaults.WEFAX_AdifLog);
+              } // Fl_Check_Button* btnWefaxAdifLog
+              { Fl_Check_Button* o = btnWefaxEmbeddedGui = new Fl_Check_Button(10, 65, 235, 30, _("Embedded Wefax Gui"));
+                btnWefaxEmbeddedGui->tooltip(_("Display tx and rx in mail fldigi window."));
+                btnWefaxEmbeddedGui->down_box(FL_DOWN_BOX);
+                btnWefaxEmbeddedGui->callback((Fl_Callback*)cb_btnWefaxEmbeddedGui);
+                o->value(progdefaults.WEFAX_EmbeddedGui);
+              } // Fl_Check_Button* btnWefaxEmbeddedGui
+              { Fl_Value_Input2* o = btnWefaxShift = new Fl_Value_Input2(10, 170, 80, 20, _("Frequency shift (800 Hz)"));
+                btnWefaxShift->tooltip(_("Default 800 Hz. Deutsche Wetterdienst 850Hz"));
+                btnWefaxShift->type(2);
+                btnWefaxShift->box(FL_DOWN_BOX);
+                btnWefaxShift->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                btnWefaxShift->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                btnWefaxShift->labeltype(FL_NORMAL_LABEL);
+                btnWefaxShift->labelfont(0);
+                btnWefaxShift->labelsize(14);
+                btnWefaxShift->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                btnWefaxShift->callback((Fl_Callback*)cb_btnWefaxShift);
+                btnWefaxShift->align(FL_ALIGN_RIGHT);
+                btnWefaxShift->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.WEFAX_Shift);
+              } // Fl_Value_Input2* btnWefaxShift
+              { Fl_Value_Input2* o = btnWefaxMaxRows = new Fl_Value_Input2(10, 210, 85, 20, _("Received fax maximum rows number (5000)"));
+                btnWefaxMaxRows->tooltip(_("Maximum row number for a received fax image."));
+                btnWefaxMaxRows->type(2);
+                btnWefaxMaxRows->box(FL_DOWN_BOX);
+                btnWefaxMaxRows->color((Fl_Color)FL_BACKGROUND2_COLOR);
+                btnWefaxMaxRows->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                btnWefaxMaxRows->labeltype(FL_NORMAL_LABEL);
+                btnWefaxMaxRows->labelfont(0);
+                btnWefaxMaxRows->labelsize(14);
+                btnWefaxMaxRows->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                btnWefaxMaxRows->callback((Fl_Callback*)cb_btnWefaxMaxRows);
+                btnWefaxMaxRows->align(FL_ALIGN_RIGHT);
+                btnWefaxMaxRows->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.WEFAX_MaxRows);
+              } // Fl_Value_Input2* btnWefaxMaxRows
+              { Fl_Input* o = btnWefaxSaveDir = new Fl_Input(10, 260, 310, 20, _("Fax images destination directory"));
+                btnWefaxSaveDir->callback((Fl_Callback*)cb_btnWefaxSaveDir);
+                btnWefaxSaveDir->align(FL_ALIGN_TOP_LEFT);
+                o->value(progdefaults.wefax_save_dir.c_str());
+              } // Fl_Input* btnWefaxSaveDir
+              { btnSelectFaxDestDir = new Fl_Button(340, 260, 80, 20, _("Directory..."));
+                btnSelectFaxDestDir->callback((Fl_Callback*)cb_btnSelectFaxDestDir);
+              } // Fl_Button* btnSelectFaxDestDir
+              { Fl_Check_Button* o = btnWefaxHideTx = new Fl_Check_Button(10, 100, 235, 30, _("Hide Transmission window"));
+                btnWefaxHideTx->tooltip(_("Hide transmission window by default."));
+                btnWefaxHideTx->down_box(FL_DOWN_BOX);
+                btnWefaxHideTx->callback((Fl_Callback*)cb_btnWefaxHideTx);
+                o->value(progdefaults.WEFAX_HideTx);
+              } // Fl_Check_Button* btnWefaxHideTx
+              o->end();
+            } // Fl_Group* o
+            tabWefax->end();
+          } // Fl_Group* tabWefax
+          { tabNavtex = new Fl_Group(-5, 50, 590, 320, _("Navtex"));
             tabNavtex->hide();
-            { Fl_Group* o = new Fl_Group(-5, 50, 545, 320);
+            { Fl_Group* o = new Fl_Group(-5, 50, 590, 320);
               { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(10, 65, 235, 30, _("Log Navtex messages to Adif file"));
                 btnNvtxAdifLog->down_box(FL_DOWN_BOX);
                 btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
@@ -5854,8 +5978,9 @@ an merging"));
         tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 23, 500, 345);
-          tabsRig->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(0, 48, 500, 320, _("Hardware PTT"));
+          tabsRig->selection_color((Fl_Color)FL_LIGHT1);
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(5, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(24, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -5941,9 +6066,8 @@ an merging"));
             } // Fl_Group* grpPTTdelays
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 48, 500, 320, _("RigCAT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(195, 58, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -6570,7 +6694,8 @@ ll with your audio device."));
                 valPCMvolume->labeltype(FL_NORMAL_LABEL);
                 valPCMvolume->labelfont(0);
                 valPCMvolume->labelsize(14);
-                valPCMvolume->labelcolor(FL_FOREGROUND_COLOR);
+                valPCMvolume->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                valPCMvolume->step(0.01);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
@@ -6811,6 +6936,7 @@ d frequency"));
             val_pretone->tooltip(_("Use for triggering amplifier carrier detect"));
             val_pretone->minimum(0);
             val_pretone->maximum(10);
+            val_pretone->step(0.1);
             val_pretone->callback((Fl_Callback*)cb_val_pretone);
             o->value(progdefaults.pretone);
           } // Fl_Counter* val_pretone
@@ -7548,4 +7674,13 @@ void createConfig() {
       dlgConfig = ConfigureDialog();
       dlgConfig->xclass(PACKAGE_NAME);
     }
+}
+
+void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata) {
+  /* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
+if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+	btnWefaxSaveDir->value( w->value() );
+	btnWefaxSaveDir->redraw();
+	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
+}
 }

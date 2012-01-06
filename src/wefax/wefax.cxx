@@ -299,8 +299,9 @@ static int ioc_to_width( int ioc )
 	return ioc * M_PI ;
 };
 
-/// Used by bandwidth.
-static const int fm_deviation = 400 ;
+/// Used by bandwidth. Standard shift is 800 Hz, so deviation is 400 Hz.
+/// Deutsche Wetterdienst shift is 850 Hz.
+static int fm_deviation = -1 ;
 
 class fax_implementation {
 	wefax * m_ptr_wefax ;  // Points to the modem of which this is the implementation.
@@ -333,12 +334,11 @@ class fax_implementation {
 	int m_stop_duration;   // Number of seconds for sending APT stop.
 	int m_img_tx_cols;     // Number of columns when transmitting.
 	int m_img_tx_rows;     // Number of rows when transmitting.
-	int m_carrier;         // Normalised fax carrier frequency.
+	int m_carrier;         // Normalised fax carrier frequency. Should be identical to modem::get_freq().
 	int m_fax_pix_num;     // Index of current pixel in received image.
 	int m_xmt_bytes ;      // Total number of bytes to send.
 	const unsigned char * m_xmt_pic_buf ; // Bytes to send. Size is m_xmt_bytes.
 	bool m_freq_mod ;      // Frequency modulation or AM.
-	int m_max_fax_rows ;   // Max admissible number of received lines.
 	bool m_manual_mode ;   // Tells whether everything is read, or apt+phasing detection.
 
 	/// The number of samples sent for one line. The LPM is given by the GUI. Typically 5512.
@@ -444,18 +444,6 @@ public:
 	bool manual_mode_get(void) const
 	{
 		return m_manual_mode ;
-	}
-
-	/// Called by the GUI.
-	void max_lines_set( int max_lines )
-	{
-		m_max_fax_rows = max_lines ;
-	}
-
-	/// Called by the GUI.
-	int max_lines_get(void) const
-	{
-		return m_max_fax_rows ;
 	}
 
 	int lpm_to_samples( int the_lpm ) const {
@@ -574,7 +562,17 @@ private:
 
 		fax_state                  _state ; /// Deduction made based on signal power.
 		const char *               _text;
+		unsigned int               _occurences ; /// How many times the same text is set.
 
+		void set_text( const char * txt )
+		{
+			if( _text == txt ) ++_occurences ;
+			else
+			{
+				_occurences = 0 ;
+				_text = txt ;
+			}
+		}
 		/// Finer tests can be added. These are all rule-of-thumb values based
 		/// on observation of real signals.
 		/// TODO: Adds a learning mode using the Hamfax detector to train the signal-based one.
@@ -688,10 +686,16 @@ private:
 		}
 
 		fax_signal( const fax_implementation * ptr_fax)
-			: _ptr_fax(ptr_fax), _cnt(0) {}
+		: _ptr_fax(ptr_fax)
+		, _cnt(0)
+		, _text(NULL)
+		, _occurences(0)
+		{}
 
 		fax_state signal_state(void) const { return _state ; }
 		const char * signal_text(void) const { return _text; };
+
+		unsigned int occurences(void) const { return _occurences ; }
 
 		double image_noise_ratio(void) const { return _image ; }
 
@@ -919,12 +923,13 @@ public:
 
 		static fax_state stable_state = IDLE ;
 
-		/// If the mobile abverage is not computed on enough lines, returns IDLE
+		/// If the mobile average is not computed on enough lines, returns IDLE
 		/// which means "Do not know" in this context.
 		if( m_corr_calls_nb >= m_min_corr_lines ) {
 			/// The threshold are very approximate.
 			if( m_curr_corr_avg < 0.05 ) {
 					stable_state = RXAPTSTOP ;
+			/// TODO: Beware, this is sometimes triggered with cyclic parasites.
 			} else if( m_curr_corr_avg > 0.20 ) {
 					stable_state = RXIMAGE ;
 			} else {
@@ -934,7 +939,12 @@ public:
 
 		/// Message for first detection.
 		if( (stable_state == IDLE) && (m_corr_calls_nb == m_min_corr_lines) ) {
-			LOG_INFO("Correlation average %lf: Detected %s", m_curr_corr_avg, state_to_str(stable_state) );
+			// Do not display twice the same value.
+			static double last_corr_avg = 0.0 ;
+			if( m_curr_corr_avg != last_corr_avg ) {
+				LOG_INFO("Correlation average %lf: Detected %s", m_curr_corr_avg, state_to_str(stable_state) );
+				last_corr_avg = m_curr_corr_avg ;
+			}
 		}
 
 		return stable_state;
@@ -986,6 +996,7 @@ fax_implementation::fax_implementation( int fax_mode, wefax * ptr_wefax  )
 	m_rx_state       = IDLE ;
 	m_tx_state       = IDLE ;
 	m_sample_rate    = 0 ;
+	reset_counters();
 
 	int index_of_correlation ;
 	/// http://en.wikipedia.org/wiki/Radiofax
@@ -1028,9 +1039,6 @@ void fax_implementation::init_rx(int the_smpl_rat)
 	m_apt_high=false;
 	/// Centers the carriers on the GUI and reinits the trigonometric tables.
 	m_ptr_wefax->set_freq(wefax_default_carrier);
-
-	/// No weather fax can have such a huge number of rows.
-	m_max_fax_rows = 5000 ;
 
 	/// Default value, can be the with the GUI.
 	m_ix_filt = 0 ; // 0=narrow, 1=middle, 2=wide.
@@ -1325,7 +1333,9 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 				break ;
 			/// If RXPHASING, we stay in phasing mode.
 			case RXAPTSTOP :
-				LOG_INFO( _("Strong APT stop when phasing:%s"), the_signal.signal_text() );
+				/// Do not display the same message over and over.
+				if( the_signal.occurences() == 1 )
+					LOG_INFO( _("Strong APT stop when phasing:%s"), the_signal.signal_text() );
 				end_rx();
 				skip_apt_rx();
 			default : break ;
@@ -1372,8 +1382,9 @@ bool fax_implementation::decode_image(int x)
 	}
 
 	/// Hard-limit to the number of rows.
-	if( current_row >= m_max_fax_rows ) {
-		LOG_INFO( _("Maximum number of rows reached:%d. Manual=%d"), current_row, m_manual_mode );
+	if( current_row >= progdefaults.WEFAX_MaxRows ) {
+		LOG_INFO( _("Maximum number of rows %d reached:%d. Manual=%d"),
+			progdefaults.WEFAX_MaxRows, current_row, m_manual_mode );
 		save_automatic("max");
 		end_rx();
 		return true ;
@@ -1404,7 +1415,6 @@ void fax_implementation::skip_apt_rx(void)
 void fax_implementation::skip_phasing_to_image(bool auto_center)
 {
 	m_ptr_wefax->qso_rec_init();
-	m_ptr_wefax->qso_rec().putField( TX_PWR, "0");
 
 	REQ( wefax_pic::skip_rx_phasing, auto_center );
 	if(m_rx_state!=RXPHASING) {
@@ -1844,20 +1854,27 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 	/// Now this object is usable by wefax_pic.
 	wefax_pic::setpicture_link(this);
 
+	int tmpShift = progdefaults.WEFAX_Shift ;
+	if(
+	          (progdefaults.WEFAX_Shift < 100 )
+	       || ( progdefaults.WEFAX_Shift > 1000 ) )
+	{
+		static const int standard_shift = 800;
+		LOG_WARN("Invalid weather fax shift: %d. setting standard value: %d",
+			progdefaults.WEFAX_Shift, standard_shift );
+		tmpShift = standard_shift ;
+	}
+	fm_deviation = tmpShift / 2 ;
+
 	modem::bandwidth = fm_deviation * 2 ;
 	
 	m_abortxmt = false;
 	modem::stopflag = false;
 
-	/// By default, images are not logged to adif file.
-	m_adif_log = false ;
-
 	// There is only one instance of the reception and transmission
 	// windows, therefore only static methods.
-	wefax_pic::create_tx_viewer();
+	wefax_pic::create_both( false );
 
-	/// TODO: Temp only, later remove sizing info, do it once only in resize.
-	wefax_pic::create_rx_viewer();
 	update_rx_label();
 
 	activate_wefax_image_item(true);
@@ -2030,17 +2047,6 @@ void wefax::set_rx_manual_mode( bool manual_flag )
 	update_rx_label();
 }
 
-// Maximum admissible number of lines for a fax, adjustable by the user.
-void wefax::set_max_lines( int max_lines )
-{
-	m_impl->max_lines_set( max_lines );
-}
-
-int wefax::get_max_lines(void) const
-{
-	return m_impl->max_lines_get();
-}
-
 void wefax::set_lpm( int the_lpm )
 {
 	return m_impl->lpm_set( the_lpm );
@@ -2095,15 +2101,15 @@ std::string wefax::suggested_filename(void) const
 /// This creates a QSO record to be written to an adif file.
 void wefax::qso_rec_init(void)
 {
-	if( m_adif_log == false ) {
-		return ;
-	}
+	/// This is always initialised because the flag progdefaults.WEFAX_AdifLog
+	/// may be set in the middle of an image reception.
 
 	/// Ideally we should find out the name of the fax station.
 	m_qso_rec.putField(CALL, "Wefax");
 	m_qso_rec.putField(NAME, "Weather fax");
+	m_qso_rec.putField( TX_PWR, "0");
 	m_qso_rec.setDateTime(true);
-	m_qso_rec.setFrequency( wf->rfcarrier() );
+	m_qso_rec.setFrequency( wf->rfcarrier() + m_impl->carrier() );
 
 	m_qso_rec.putField(MODE, mode_info[get_mode()].adif_name );
 
@@ -2125,13 +2131,12 @@ void wefax::qso_rec_init(void)
 	// m_qso_rec.putField(CONT, inpCONT_log->value());
 	// m_qso_rec.putField(CQZ, inpCQZ_log->value());
 	// m_qso_rec.putField(ITUZ, inpITUZ_log->value());
-	// m_qso_rec.putField(TX_PWR, inpTX_pwr_log->value());
 }
 
 /// Called once a QSO rec has been filled with information. Saved to adif file.
 void wefax::qso_rec_save(void)
 {
-	if( m_adif_log == false ) {
+	if( progdefaults.WEFAX_AdifLog == false ) {
 		return ;
 	}
 

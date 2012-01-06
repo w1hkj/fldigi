@@ -19,9 +19,6 @@ class wefax : public modem {
 	
 	bool	m_abortxmt;
 
-	// Tells whether received or transmit images are logged to Adif file.
-	bool    m_adif_log ;
-
 	/// For updating the logbook when loading/saving an image file.
 	cQsoRec m_qso_rec ;
 
@@ -62,11 +59,6 @@ public:
 	/// Whether reading without end, or apt/phasing/stop.
 	void set_rx_manual_mode( bool manual_flag );
 
-	/// If a fax it bigger than that, it is automatically saved, and the image is reset.
-	void set_max_lines( int max_lines_per_fax );
-
-	int get_max_lines(void) const ;
-
 	/// There are several possible input filter designated
 	/// by a name, for displaying, and an index.
 	static const char ** rx_filters(void);
@@ -94,16 +86,6 @@ public:
 	void qso_rec_save(void);
 
 	void set_freq(double);
-
-	bool get_adif_log(void) const
-	{
-		return m_adif_log ;
-	}
-
-	void set_adif_log(bool the_flag)
-	{
-		m_adif_log = the_flag ;
-	}
 
 	/// Helper string indicating the internal state of the wefax engine.
 	std::string state_string(void) const;

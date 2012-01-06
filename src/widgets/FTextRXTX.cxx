@@ -56,7 +56,6 @@
 #include "qrunner.h"
 
 #include "mfsk.h"
-#include "wefax-pic.h"
 #include "icons.h"
 #include "globals.h"
 #include "re.h"
@@ -1187,7 +1186,7 @@ void FTextTX::handle_context_menu(void)
 
 	bool modify_text_ok = insert_position() >= txpos;
 	bool selected = tbuf->selected();
-	set_active(&menu[TX_MENU_MFSK16_WEFAX_IMG], active_modem->get_cap() & modem::CAP_IMG);
+	set_active(&menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
 	set_active(&menu[TX_MENU_CLEAR], tbuf->length());
 	set_active(&menu[TX_MENU_CUT], selected && modify_text_ok);
 	set_active(&menu[TX_MENU_COPY], selected);
@@ -1227,20 +1226,6 @@ void FTextTX::menu_cb(size_t item)
  		else
  			abort_tx();
   		break;
-  	case TX_MENU_MFSK16_WEFAX_IMG:
-		{
-			switch (active_modem->get_mode()) {
-			case MODE_MFSK_FIRST ... MODE_MFSK_LAST:
-				showTxViewer(0, 0);
-				break;
-			case MODE_WEFAX_FIRST ... MODE_WEFAX_LAST:
-				wefax_pic::show_tx_viewer(0, 0);
-				break;
-			default:
-				break;
-			}
-		}
-		break;
 	case TX_MENU_CLEAR:
 		clear();
 		break;

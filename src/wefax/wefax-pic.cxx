@@ -42,7 +42,7 @@
 #include <FL/Fl_Counter.H>
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Slider.H>
-#include <FL/Fl_Browser.H>
+#include <FL/Fl_Select_Browser.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Chart.H>
 #include <FL/Fl_Shared_Image.H>
@@ -60,7 +60,7 @@
 #include "picture.h"
 #include "gettext.h"
 
-static Fl_Double_Window	*wefax_pic_rx_win = (Fl_Double_Window *)0;
+static Fl_Window	*wefax_pic_rx_win = 0;
 
 static Fl_Scroll       *wefax_pic_rx_scroll          = (Fl_Scroll *)0 ;
 static picture	       *wefax_pic_rx_picture         = (picture *)0;
@@ -69,12 +69,10 @@ static Fl_Button       *wefax_btn_rx_abort           = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_manual          = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_pause           = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_resume          = (Fl_Button *)0;
-static Fl_Round_Button *wefax_round_rx_adif_log      = (Fl_Round_Button *)0;
 static Fl_Choice       *wefax_choice_rx_zoom         = (Fl_Choice *)0;
 static Fl_Browser      *wefax_browse_rx_events       = (Fl_Browser *)0;
 static Fl_Button       *wefax_btn_rx_skip_apt        = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_skip_phasing    = (Fl_Button *)0;
-static Fl_Int_Input    *wefax_int_rx_max             = (Fl_Int_Input *)0;
 static Fl_Output       *wefax_out_rx_row_num         = (Fl_Output *)0;
 static Fl_Output       *wefax_out_rx_width           = (Fl_Output *)0;
 static Fl_Choice       *wefax_choice_rx_lpm          = (Fl_Choice *)0;
@@ -84,13 +82,13 @@ static Fl_Round_Button *wefax_round_rx_auto_center   = (Fl_Round_Button *)0;
 static Fl_Chart        *wefax_chart_rx_power         = (Fl_Chart *)0;
 static Fl_Choice       *wefax_choice_rx_filter       = (Fl_Choice *)0;
 
-static Fl_Double_Window	*wefax_pic_tx_win = (Fl_Double_Window *)0;
+static Fl_Window	*wefax_pic_tx_win = 0;
 
 static Fl_Scroll *wefax_pic_tx_scroll           = (Fl_Scroll *)0 ;
 static picture   *wefax_pic_tx_picture          = (picture *)0;
 static picbox    *wefax_pic_tx_box              = (picbox *)0;
+static Fl_Choice *wefax_choice_tx_zoom          = (Fl_Choice *)0;
 static Fl_Choice *wefax_choice_tx_lpm           = (Fl_Choice *)0;
-static Fl_Round_Button *wefax_round_tx_adif_log = (Fl_Round_Button *)0;
 static Fl_Button *wefax_btn_tx_send_color       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_send_grey        = (Fl_Button *)0;
 static Fl_Output *wefax_out_tx_row_num          = (Fl_Output *)0;
@@ -153,8 +151,11 @@ static const int mini_max_fax_lines = 1000 ;
 static volatile bool reception_paused = false ;
 
 /// Sets the label of the received or sent image.
-static void set_win_label( Fl_Double_Window * wefax_pic, const std::string & lab)
+static void set_win_label( Fl_Window * wefax_pic, const std::string & lab)
 {
+	/// If the wefax window (rx or tx) is embedded in the main window.
+	// then we would set wefax_pic = fl_digi_main;
+	if( progdefaults.WEFAX_EmbeddedGui ) return ; 
 	char* label = strdup(lab.c_str());
 	wefax_pic->copy_label(label);
 	free(label);
@@ -183,16 +184,47 @@ static void wefax_cb_pic_tx_clear( Fl_Widget *, void *)
 	wefax_image_loaded_in_gui = false ;
 	clear_image();
 	wefax_pic_tx_picture->clear();
+	wefax_pic_tx_picture->resize(0,0,0,0);
 	wefax_pic::restart_tx_viewer();
 	/// Now the lock can be acquired by XML-RPC.
 	wefax_serviceme->transmit_lock_release( "Cleared" );
 	FL_UNLOCK_D();
 }
 
+/// According to config flags, shows or hides the transmission window, and resizes both windows if needed.
+static void wefax_pic_show_tx()
+{
+	if( progdefaults.WEFAX_HideTx )
+	{
+		if( progdefaults.WEFAX_EmbeddedGui )
+		{
+			wefax_pic_rx_win->resize( 
+				text_panel->x() + mvgroup->w(), text_panel->y(),
+				text_panel->w() - mvgroup->w(),
+				text_panel->h() );
+		}
+		wefax_pic_tx_win->hide();
+	}
+	else
+	{
+		if( progdefaults.WEFAX_EmbeddedGui )
+		{
+			wefax_pic_rx_win->resize( 
+				text_panel->x() + mvgroup->w(), text_panel->y(),
+				text_panel->w() - mvgroup->w(), text_panel->h()/2);
+			wefax_pic_tx_win->resize( 
+				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
+				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
+		}
+		wefax_pic_tx_win->show();
+	}
+}
+
 static void wefax_cb_pic_tx_close( Fl_Widget *, void *)
 {
 	FL_LOCK_D();
-	wefax_pic_tx_win->hide();
+	progdefaults.WEFAX_HideTx = true ;
+	wefax_pic_show_tx();
 	FL_UNLOCK_D();
 }
 
@@ -233,7 +265,7 @@ static Fl_Choice * make_lpm_choice( int width_offset, int y_btn, int width_btn, 
 		choice_lpm->add( all_lpm_values[ ix_lpm ].m_label );
 	};
 	choice_lpm->value(lpm_default_idx);
-	choice_lpm->tooltip("Set the LPM value");
+	choice_lpm->tooltip(_("Set the LPM value"));
 	return choice_lpm ;
 }
 
@@ -506,7 +538,11 @@ static void add_to_files_list( const std::string & the_fil_nam )
 	std::stringstream tmp_strm ;
 	/// 999 images seem a reasonable sizing (3 digits).
 	tmp_strm << std::setw(3) << ( curr_siz + 1 ) << " " << dst_file;
-	wefax_browse_rx_events->add( tmp_strm.str().c_str() );
+
+	/// The complete file name is stored. It needs a private copy.
+	wefax_browse_rx_events->add(
+            tmp_strm.str().c_str(),
+            strdup( the_fil_nam.c_str() ) );
 	wefax_browse_rx_events->bottomline( curr_siz + 1 );
 
 	/// This window is hidden/shown to signal that a file was added.
@@ -597,7 +633,7 @@ static void default_dir_set( std::string & config_dir, const std::string & fil_n
 /// Adds the file name to log to the adif file.
 static void qso_notes( const char * direction, const std::string & file_name )
 {
-	if( wefax_serviceme->get_adif_log() == false ) {
+	if( progdefaults.WEFAX_AdifLog == false ) {
 		return ;
 	}
 	const std::string tmp_notes = direction + file_name ;
@@ -650,7 +686,6 @@ void wefax_pic::skip_rx_phasing(bool auto_center)
 	/// it seems that a call to skip_apt is lost... ?
 	wefax_btn_rx_skip_apt->hide();
 	wefax_btn_rx_skip_phasing->hide();
-	wefax_int_rx_max->show();
 	wefax_out_rx_row_num->show();
 	wefax_out_rx_width->show();
 	wefax_choice_rx_lpm->show();
@@ -678,36 +713,6 @@ static void wefax_cb_rx_set_filter( Fl_Widget *, void * )
 	/// Saved in the configuration.
 	progdefaults.wefax_filter = ix_filter ;
 	wefax_serviceme->set_rx_filter(ix_filter);
-}
-
-void wefax_pic::restore_max_lines(void)
-{
-	char buf_max_lines[20];
-	snprintf( buf_max_lines, sizeof(buf_max_lines), "%d", wefax_serviceme->get_max_lines() );
-	wefax_int_rx_max->value( buf_max_lines );
-}
-
-static void wefax_cb_pic_max_lines( Fl_Widget *, void * )
-{
-	if (wefax_serviceme != active_modem) return;
-	const char * ptr_val_gui = wefax_int_rx_max->value();
-	int max_val_gui ;
-
-	/// The value given by FLTK should be an integer, but better to be sure.
-	if( 1 != sscanf( ptr_val_gui, "%d", &max_val_gui ) ) {
-		LOG_ERROR( _("Cannot parse: %s"), ptr_val_gui ) ;
-		wefax_pic::restore_max_lines();
-		return ;
-	}
-
-	/// Faxes should not be too small otherwise we will spend all our time
-	/// saving automatic image files.
-	if( max_val_gui < mini_max_fax_lines ) {
-		wefax_pic::restore_max_lines();
-		return ;
-	}
-
-	wefax_serviceme->set_max_lines( max_val_gui );
 }
 
 static void wefax_cb_choice_rx_lpm( Fl_Widget *, void * )
@@ -752,25 +757,44 @@ static const int idx_default_zoom = 2 ;
 
 static int zoom_nb = sizeof(all_zooms) / sizeof(all_zooms[0]);
 
-static void wefax_cb_pic_rx_zoom( Fl_Widget *, void * )
+static void wefax_cb_pic_zoom( Fl_Widget * wefax_choice_zoom, void * )
 {
 	if (wefax_serviceme != active_modem) return;
-	int idx_zoom = wefax_choice_rx_zoom->value();
+	int idx_zoom = dynamic_cast<Fl_Choice *>(wefax_choice_zoom)->value();
 	if( ( idx_zoom < 0 ) || ( idx_zoom >= zoom_nb ) ) {
 		LOG_WARN( "Invalid zoom index=%d", idx_zoom );
 		idx_zoom = idx_default_zoom ;
 	}
-	wefax_pic_rx_picture->set_zoom( all_zooms[ idx_zoom ].m_value );
-	wefax_pic_rx_win->redraw();
+
+	/// Not very elegant but OK if two possibilities only.
+	if( wefax_choice_zoom == wefax_choice_rx_zoom )
+	{
+		wefax_pic_rx_picture->set_zoom( all_zooms[ idx_zoom ].m_value );
+		wefax_pic_rx_win->redraw();
+	}
+	else if( wefax_choice_zoom == wefax_choice_tx_zoom )
+	{
+		wefax_pic_tx_picture->set_zoom( all_zooms[ idx_zoom ].m_value );
+		wefax_pic_tx_win->redraw();
+	}
+	else
+	{
+		LOG_ERROR("Inconsistent possibility");
+	}
 }
 
-/// Called when ticking whether received images are logged to Adif file.
-static void wefax_cb_pic_rx_adif_log( Fl_Widget *, void * )
+static Fl_Choice * wefax_create_zoom(int wid_off_up, int hei_off_up, int wid_btn_curr, int height_btn)
 {
-	if (wefax_serviceme != active_modem) return;
-	char log_rx = wefax_round_rx_adif_log->value();
-	wefax_serviceme->set_adif_log( log_rx );
-	wefax_round_tx_adif_log->value(log_rx);
+	static const char * title_zoom = "Zoom" ;
+	Fl_Choice * wefax_choice_zoom = new Fl_Choice(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _(title_zoom));
+	wefax_choice_zoom->callback(wefax_cb_pic_zoom, 0);
+	for( int ix_zoom = 0; ix_zoom < zoom_nb ; ++ix_zoom ) {
+		wefax_choice_zoom->add( all_zooms[ ix_zoom ].m_label );
+	};
+	wefax_choice_zoom->value(idx_default_zoom);
+	wefax_choice_zoom->tooltip(_("Window zoom"));
+	wefax_choice_zoom->align(FL_ALIGN_LEFT);
+	return wefax_choice_zoom ;
 }
 
 void wefax_pic::abort_rx_viewer(void)
@@ -792,9 +816,6 @@ void wefax_pic::abort_rx_viewer(void)
 	wefax_btn_rx_manual->show();
 	wefax_btn_rx_skip_apt->show();
 	wefax_btn_rx_skip_phasing->hide();
-
-	wefax_int_rx_max->hide();
-	restore_max_lines();
 
 	wefax_out_rx_row_num->hide();
 	wefax_out_rx_row_num->value("");
@@ -864,44 +885,80 @@ class picture_scroll : public picture
 	}
 };
 
-void wefax_pic::create_rx_viewer(void)
+static void wefax_load_image(const char * fil_name);
+
+static void wefax_cb_browse_rx_events( Fl_Widget *, void * )
 {
-	if( wefax_pic_rx_win )
+	if (wefax_serviceme != active_modem) return;
+
+	int idx_file = wefax_browse_rx_events->value();
+	if( idx_file != 0 )
 	{
-		return ;
+		/// The file name with its directory is stored as data.
+		const char * filnam = (const char *)wefax_browse_rx_events->data( idx_file );
+		if(filnam == NULL)
+		{
+			LOG_INFO("Cannot find index=%d nb=%d", idx_file, wefax_browse_rx_events->size() );
+			return ;
+		}
+		LOG_INFO("File=%s",filnam);
+		/// The tx window might be hidden.
+		progdefaults.WEFAX_HideTx = false ;
+		wefax_pic_show_tx();
+		wefax_load_image(filnam);
 	}
+}
 
+static const int extra_win_wid = 800 ;
+
+void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
+{
 	rx_slant_ratio = progdefaults.wefax_slant ;
-
-	int wid_img = 904 ; // This is convenient for a typical screen, and matches half the size of a fax.
-
-	int hei_img = curr_pix_height ;
-
-	/// A bit wider so that it does not scroll at the beginning.
-	int wid_scroll = wid_img + 15 ;
-	int hei_scroll = 200 ;
-	int height_btn = 24 ;
-	int height_margin = 5 ;
-	int hei_win = hei_scroll + 12 + height_margin + 2 * height_btn ;
-
-	int wid_win = wid_scroll + 0 ;
 
 	FL_LOCK_D();
 
-	wefax_pic_rx_win = new Fl_Double_Window(wid_win, hei_win, "Fax reception" );
+	int wid_btn_margin = 1 ;
 
-	/// Approximate value for the minimum sizes.
-	wefax_pic_rx_win->size_range(500, 100, 0, 0 );
+	if( progdefaults.WEFAX_EmbeddedGui )
+	{
+		wefax_pic_rx_win = new Fl_Window(pos_x, pos_y, win_wid, hei_win);
+	}
+	else
+	{
+		Fl_Window * tmpWin = new Fl_Window(win_wid, hei_win, "Fax reception" );
+		wefax_pic_rx_win = tmpWin ;
+	}
+	wefax_pic_rx_win->color(
+			fl_rgb_color(
+				progdefaults.RxColor.R,
+				progdefaults.RxColor.G,
+				progdefaults.RxColor.B),
+			progdefaults.RxTxSelectcolor);
+	wefax_pic_rx_win->align(FL_ALIGN_CLIP);
 
-	wefax_pic_rx_win->xclass(PACKAGE_NAME);
+	int wid_img = win_wid - 15 ;
+
+	/// A bit wider so that it does not scroll at the beginning.
+	int height_btn = 20 ;
+	int height_margin = 6 ;
+	int margin_top_bottom = 2 ;
+	int hei_scroll = hei_win - height_margin - 2 * height_btn - 2 * margin_top_bottom -1 ;
+
 	wefax_pic_rx_win->begin();
 
-	wefax_pic_rx_scroll = new Fl_Scroll( 0, 0, wid_scroll, hei_scroll );
+	wefax_pic_rx_scroll = new Fl_Scroll( 1, 2, win_wid-2, hei_scroll );
 	wefax_pic_rx_scroll->type(Fl_Scroll::HORIZONTAL | Fl_Scroll::VERTICAL);
+	wefax_pic_rx_scroll->color(
+				fl_rgb_color(
+					255,
+					255,
+					255),
+				progdefaults.RxTxSelectcolor);
+	wefax_pic_rx_scroll->box(FL_ENGRAVED_FRAME);
 	wefax_pic_rx_scroll->begin();
 
 	/// It will be resized immediately.
-	wefax_pic_rx_picture = new picture_scroll( 0, 0, wid_img, hei_img);
+	wefax_pic_rx_picture = new picture_scroll( 0, 0, wid_img, curr_pix_height);
 	wefax_pic_rx_picture->align(FL_ALIGN_TOP);
 	wefax_pic_rx_picture->set_zoom( all_zooms[ idx_default_zoom ].m_value );
 
@@ -909,65 +966,51 @@ void wefax_pic::create_rx_viewer(void)
 
 	wefax_pic_rx_win->resizable( wefax_pic_rx_scroll );
 
-	static const int wid_btn_margin = 3 ;
-
-	int hei_off_up = hei_win - 2 * height_btn - 2 * height_margin ;
-	int wid_offset_up = 5 ;
+	int hei_off_up = hei_win - height_margin - 2 * height_btn - margin_top_bottom ;
+	int wid_margin = 2;
+	int wid_off_up = wid_margin ;
 	int wid_btn_curr = 0 ;
 
-	wid_btn_curr = 50 ;
-	wefax_btn_rx_save = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn,_("Save..."));
-	wefax_btn_rx_save->callback(wefax_cb_pic_rx_save, 0);
-	wefax_btn_rx_save->tooltip("Save current image in a file.");
+	/// Sets the group at a big size, we will resize later.
+	Fl_Group * tmpGroup = new Fl_Group( 0, hei_off_up, extra_win_wid, height_margin + 2 * height_btn + margin_top_bottom );
+	tmpGroup->begin();
 
-	wid_offset_up += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 50 ;
-	wefax_btn_rx_abort = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _("Abort"));
+	wid_btn_curr = 45 ;
+	wefax_btn_rx_save = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn,_("Save..."));
+	wefax_btn_rx_save->callback(wefax_cb_pic_rx_save, 0);
+	wefax_btn_rx_save->tooltip(_("Save current image in a file."));
+
+	wid_off_up += wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 45 ;
+	wefax_btn_rx_abort = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Abort"));
 	wefax_btn_rx_abort->callback(wefax_cb_pic_rx_abort, 0);
-	wefax_btn_rx_abort->tooltip("End and clear current image reception.");
+	wefax_btn_rx_abort->tooltip(_("End and clear current image reception."));
 	wefax_btn_rx_abort->hide();
 
 	/// At the same place and size as abort.
-	wefax_btn_rx_manual = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _("Manual"));
+	wefax_btn_rx_manual = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Manual"));
 	wefax_btn_rx_manual->callback(wefax_cb_pic_rx_manual, 0);
-	wefax_btn_rx_manual->tooltip("Fully manual mode. Press abort to quit.");
+	wefax_btn_rx_manual->tooltip(_("Fully manual mode. Press abort to quit."));
 
-	wid_offset_up += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 50 ;
-	wefax_btn_rx_pause = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _("Pause"));
+	wid_off_up += wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 55 ;
+	wefax_btn_rx_pause = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Pause"));
 	wefax_btn_rx_pause->callback(wefax_cb_pic_rx_pause, 0);
-	wefax_btn_rx_pause->tooltip("Pause reception.");
+	wefax_btn_rx_pause->tooltip(_("Pause reception."));
 
-	wefax_btn_rx_resume = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _("Resume"));
+	wefax_btn_rx_resume = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Resume"));
 	wefax_btn_rx_resume->callback(wefax_cb_pic_rx_resume, 0);
-	wefax_btn_rx_resume->tooltip("Resume reception.");
+	wefax_btn_rx_resume->tooltip(_("Resume reception."));
 	wefax_btn_rx_resume->hide();
 
-	static const char * title_adif_log = "Log";
-	wid_offset_up += 10 + wid_btn_curr + fl_width( title_adif_log ) ;
-	wid_btn_curr = 20 ;
-	wefax_round_rx_adif_log = new Fl_Round_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _(title_adif_log));
-	wefax_round_rx_adif_log->callback(wefax_cb_pic_rx_adif_log, 0);
-	wefax_round_rx_adif_log->value( wefax_serviceme->get_adif_log() );
-	wefax_round_rx_adif_log->tooltip("Log to Adif file");
-	wefax_round_rx_adif_log->align(FL_ALIGN_LEFT);
-
-	static const char * title_zoom = "Zoom" ;
-	wid_offset_up += 5 + wid_btn_curr + fl_width( title_zoom ) ;
-	wid_btn_curr = 60 ;
-	wefax_choice_rx_zoom = new Fl_Choice(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _(title_zoom));
-	wefax_choice_rx_zoom->callback(wefax_cb_pic_rx_zoom, 0);
-	for( int ix_zoom = 0; ix_zoom < zoom_nb ; ++ix_zoom ) {
-		wefax_choice_rx_zoom->add( all_zooms[ ix_zoom ].m_label );
-	};
-	wefax_choice_rx_zoom->value(idx_default_zoom);
-	wefax_choice_rx_zoom->tooltip("Window zoom");
-	wefax_choice_rx_zoom->align(FL_ALIGN_LEFT);
+	wid_off_up += wid_btn_margin + wid_btn_curr + 40;
+	wid_btn_curr = 55 ;
+	wefax_choice_rx_zoom = wefax_create_zoom( wid_off_up, hei_off_up, wid_btn_curr, height_btn );
 
 	static const char * title_filter = "FIR" ;
-	wid_offset_up += wid_btn_margin + wid_btn_curr + fl_width( title_filter ) ;
-	wid_btn_curr = 80 ;
-	wefax_choice_rx_filter = new Fl_Choice(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, title_filter );
+	wid_off_up += wid_btn_margin + wid_btn_curr + 25;
+	wid_btn_curr = 70 ;
+	wefax_choice_rx_filter = new Fl_Choice(wid_off_up, hei_off_up, wid_btn_curr, height_btn, title_filter );
 	wefax_choice_rx_filter->callback( wefax_cb_rx_set_filter, 0 );
 	wefax_choice_rx_filter->align(FL_ALIGN_LEFT);
 
@@ -984,73 +1027,58 @@ void wefax_pic::create_rx_viewer(void)
 		init_filter_idx = 0 ;
 	}
 	wefax_choice_rx_filter->value(init_filter_idx);
-	wefax_choice_rx_filter->tooltip("Set the reception filter.");
+	wefax_choice_rx_filter->tooltip(_("Set the reception filter."));
 
 	/// Skipt APT and Skip phasing are at the same place	
-	wid_offset_up += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 80 ;
-	wefax_btn_rx_skip_apt = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _("Skip APT"));
+	wid_off_up += wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 75 ;
+	wefax_btn_rx_skip_apt = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Skip APT"));
 	wefax_btn_rx_skip_apt->callback(wefax_cb_pic_rx_skip_apt, 0);
-	wefax_btn_rx_skip_apt->tooltip("Skip Automatic Picture Transmission step");
+	wefax_btn_rx_skip_apt->tooltip(_("Skip Automatic Picture Transmission step"));
 	
 	// This goes at the same place as "Skip Apt"
-	wefax_btn_rx_skip_phasing = new Fl_Button(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _("Skip Phasing"));
+	wefax_btn_rx_skip_phasing = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Skip Phasing"));
 	wefax_btn_rx_skip_phasing->callback(wefax_cb_pic_rx_skip_phasing, 0);
-	wefax_btn_rx_skip_phasing->tooltip("Skip phasing step");
+	wefax_btn_rx_skip_phasing->tooltip(_("Skip phasing step"));
 
-	static const char * title_max = "Max row" ;
-	wid_offset_up += fl_width( title_max );
-	wid_btn_curr = 50 ;
-	wefax_int_rx_max = new Fl_Int_Input(wid_offset_up, hei_off_up, wid_btn_curr, height_btn, _(title_max));
-	wefax_int_rx_max->align(FL_ALIGN_LEFT);
-	wefax_int_rx_max->callback(wefax_cb_pic_max_lines, 0);
-	/// This buffer will never change so it does not matter if it is static.
-	static char tooltip_max_lines[256];
-	snprintf(tooltip_max_lines, sizeof(tooltip_max_lines),
-			"Maximum number of lines per image. Minimum value is %d",
-			mini_max_fax_lines );
-	wefax_int_rx_max->tooltip(tooltip_max_lines);
-
-	wid_offset_up += wid_btn_margin + wid_btn_curr ;
+	wid_off_up += wid_btn_margin + wid_btn_curr ;
 
 	int hei_off_low = hei_off_up + height_btn + height_margin ;
-	int wid_off_low = 5 ;
+	int wid_off_low = wid_margin ;
 
 	/// SkipApt and SkipPhasing are never displayed at the same time then the following widgets.
 	/// Therefore we go back to the previous offset.
-	static const char * title_row_num = "" ;
-	wid_off_low += fl_width( title_row_num );
-	wid_btn_curr = 40 ;
-	wefax_out_rx_row_num = new Fl_Output(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_row_num));
+	wid_btn_curr = 35 ;
+	wefax_out_rx_row_num = new Fl_Output(wid_off_low, hei_off_low, wid_btn_curr, height_btn);
 	wefax_out_rx_row_num->align(FL_ALIGN_LEFT);
-	wefax_out_rx_row_num->tooltip("Fax line number being read. Image is saved when reaching max lines.");
+	wefax_out_rx_row_num->tooltip(_("Fax line number being read. Image is saved when reaching max lines."));
 
-	static const char * title_width = "Width" ;
-	wid_off_low += wid_btn_margin + wid_btn_curr + fl_width( title_width ) ;
+	static const char * title_width = _("Width");
+	wid_off_low += wid_btn_margin + wid_btn_curr + 35;
 	wid_btn_curr = 35 ;
 	wefax_out_rx_width = new Fl_Output(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_width));
 	wefax_out_rx_width->align(FL_ALIGN_LEFT);
 	wefax_out_rx_width->value("n/a");
-	wefax_out_rx_width->tooltip("Image width, in pixels.");
+	wefax_out_rx_width->tooltip(_("Image width, in pixels."));
 
 	/// fl_width does not take into account the different size of letters.
-	wid_off_low += 3 * wid_btn_margin + wid_btn_curr + fl_width( title_choice_lpm );
-	wid_btn_curr = 60 ;
+	wid_off_low += wid_btn_margin + wid_btn_curr + 30;
+	wid_btn_curr = 50 ;
 	wefax_choice_rx_lpm = make_lpm_choice( wid_off_low, hei_off_low, wid_btn_curr, height_btn );
 	wefax_choice_rx_lpm->callback(wefax_cb_choice_rx_lpm);
 
-	static const char * title_lpm = "Slant" ;
-	wid_off_low += wid_btn_margin + wid_btn_curr + fl_width( title_lpm );
-	wid_btn_curr = 80 ;
+	static const char * title_lpm = _("Slant");
+	wid_off_low += wid_btn_margin + wid_btn_curr + 35;
+	wid_btn_curr = 60 ;
 	wefax_cnt_rx_ratio = new Fl_Counter(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_lpm));
 	wefax_cnt_rx_ratio->align(FL_ALIGN_LEFT);
 	wefax_cnt_rx_ratio->type(FL_SIMPLE_COUNTER);
 	wefax_cnt_rx_ratio->callback(wefax_cb_pic_ratio, 0);
-	wefax_cnt_rx_ratio->tooltip("Adjust image slant to correct soundcard clock error.");
+	wefax_cnt_rx_ratio->tooltip(_("Adjust image slant to correct soundcard clock error."));
 
-	static const char * title_center = "Center" ;
-	wid_off_low += wid_btn_curr + fl_width( title_center );
-	wid_btn_curr = 85 ;
+	static const char * title_center = _("Center");
+	wid_off_low += wid_btn_curr + 45;
+	wid_btn_curr = 45 ;
 	wefax_slider_rx_center = new Fl_Slider(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_center));
 	wefax_slider_rx_center->type(FL_HORIZONTAL);
 	wefax_slider_rx_center->align(FL_ALIGN_LEFT);
@@ -1059,39 +1087,48 @@ void wefax_pic::create_rx_viewer(void)
 	wefax_slider_rx_center->range(-range_rx_center, range_rx_center);
 	wefax_slider_rx_center->step(1.0);
 	wefax_slider_rx_center->callback(wefax_cb_pic_rx_center, 0);
-	wefax_slider_rx_center->tooltip("Align image horizontally.");
+	wefax_slider_rx_center->tooltip(_("Align image horizontally."));
 	center_val_prev = 0 ;
 
-	static const char * title_auto_center = "Auto" ;
-	wid_off_low += wid_btn_margin + wid_btn_curr + fl_width( title_auto_center );
-	wid_btn_curr = 15 ;
+	static const char * title_auto_center = _("Auto");
+	wid_off_low += wid_btn_margin + wid_btn_curr + 35;
+	wid_btn_curr = 40 ;
 	wefax_round_rx_auto_center = new Fl_Round_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_auto_center) );
 	wefax_round_rx_auto_center->align(FL_ALIGN_LEFT);
 	wefax_round_rx_auto_center->callback(wefax_cb_pic_rx_auto_center, 0);
-	wefax_round_rx_auto_center->tooltip("Enable automatic image centering");
+	wefax_round_rx_auto_center->tooltip(_("Enable automatic image centering"));
 	update_auto_center(false);
 
-	wid_off_low += wid_btn_margin + wid_btn_curr ;
+	wid_off_low += wid_btn_curr ;
 
-	int wid_hei_two = wid_btn_margin + 2 * height_btn ;
+	int wid_hei_two = height_margin + 2 * height_btn ;
 
 	/// Starts from the longest of the two lines.
-	int wid_off_two = ( wid_off_low > wid_offset_up ) ? wid_off_low : wid_offset_up ;
+	int wid_off_two = std::max( wid_off_low, wid_off_up );
 
-	wid_btn_curr = 80 ;
+	wid_btn_curr = 60 ;
 	wefax_chart_rx_power = new Fl_Chart( wid_off_two, hei_off_up, wid_btn_curr, wid_hei_two );
-	wefax_chart_rx_power->tooltip("Power/noise for significant frequencies");
+	wefax_chart_rx_power->tooltip(_("Power/noise for significant frequencies"));
 	wefax_chart_rx_power->type(FL_HORBAR_CHART);
 
 	wid_off_two += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 315;
-	wefax_browse_rx_events = new Fl_Browser(wid_off_two, hei_off_up, wid_btn_curr, wid_hei_two );
+	wid_btn_curr = std::max( extra_win_wid - wid_off_two - wid_margin, 200 ) ;
+
+	wefax_browse_rx_events = new Fl_Select_Browser(wid_off_two, hei_off_up, wid_btn_curr, wid_hei_two );
+	wefax_browse_rx_events->callback(wefax_cb_browse_rx_events, 0);
 	static std::string tooltip_rx_events ;
-	tooltip_rx_events = "Files saved in " + default_dir_get( progdefaults.wefax_save_dir );
+	tooltip_rx_events = _("Files saved in ") + default_dir_get( progdefaults.wefax_save_dir );
 	wefax_browse_rx_events->tooltip( tooltip_rx_events.c_str() );
 	wefax_browse_rx_events->has_scrollbar(Fl_Browser::VERTICAL | Fl_Browser::HORIZONTAL);
 
+	tmpGroup->resizable(wefax_browse_rx_events);
+	tmpGroup->end();
+	tmpGroup->resize( 0, hei_off_up, win_wid-2, height_margin + 2 * height_btn + margin_top_bottom );
+
+
 	wefax_pic_rx_win->end();
+	wefax_pic_rx_win->init_sizes();
+	wefax_pic_rx_win->redraw();
 
 	FL_UNLOCK_D();
 }
@@ -1136,7 +1173,7 @@ void wefax_pic::save_image(const std::string & fil_name, const std::string & ext
 	local_comments << "Slant:" << rx_slant_ratio << "\n" ;
 	local_comments << "Center:" << global_auto_center << "\n" ;
 	wefax_pic_rx_picture->save_png(dfname.c_str(), local_comments.str().c_str());
-	add_to_files_list( fil_name );
+	add_to_files_list( dfname );
 	qso_notes( "RX:", fil_name );
 	wefax_serviceme->qso_rec_save();
 }
@@ -1206,17 +1243,18 @@ static std::string wefax_load_image_after_acquire(const char * fil_name)
 	int tim_color = wefax_serviceme->tx_time( img_wid * img_hei * bytes_per_pix );
 	static char wefax_txclr_tooltip[24];
 	snprintf( wefax_txclr_tooltip, sizeof(wefax_txclr_tooltip),
-		"Time needed: %dm %ds (Color)", tim_color/60, tim_color % 60 );
+		_("Time needed: %dm %ds (Color)"), tim_color/60, tim_color % 60 );
 	wefax_btn_tx_send_color->tooltip(wefax_txclr_tooltip);
 	wefax_btn_tx_send_color->activate();
 
 	int tim_grey = wefax_serviceme->tx_time( img_wid * img_hei );
 	static char wefax_txgry_tooltip[24];
 	snprintf( wefax_txgry_tooltip, sizeof(wefax_txgry_tooltip),
-		"Time needed: %dm %ds (B/W)", tim_grey/60, tim_grey % 60 );
+		_("Time needed: %dm %ds (B/W)"), tim_grey/60, tim_grey % 60 );
 	wefax_btn_tx_send_grey->tooltip(wefax_txgry_tooltip);
 	wefax_btn_tx_send_grey->activate();
 
+	wefax_choice_tx_zoom->activate();
 	wefax_btn_tx_clear->activate();
 
 	FL_UNLOCK_D();
@@ -1292,10 +1330,10 @@ static void wefax_pic_tx_send_common(
 	FL_LOCK_D();
 
 	wefax_choice_tx_lpm->hide();
-	wefax_round_tx_adif_log->hide();
 	wefax_btn_tx_send_color->hide();
 	wefax_btn_tx_send_grey->hide();
 	wefax_btn_tx_load->hide();
+	wefax_choice_tx_zoom->hide();
 	wefax_btn_tx_clear->hide();
 	wefax_btn_tx_close->hide();
 	wefax_out_tx_row_num->show();
@@ -1374,20 +1412,10 @@ static void wefax_cb_pic_tx_send_abort( Fl_Widget *, void *)
 	}
 }
 
-/// Called when ticking "log" check box in the transmit window.
-static void wefax_cb_pic_tx_adif_log( Fl_Widget *, void *)
-{
-	if (wefax_serviceme != active_modem) return;
-	char log_tx = wefax_round_tx_adif_log->value();
-	wefax_serviceme->set_adif_log( log_tx );
-	wefax_round_rx_adif_log->value(log_tx);
-}
-
 void wefax_pic::restart_tx_viewer(void)
 {
 	wefax_out_tx_row_num->hide();
 	wefax_btn_tx_send_abort->hide();
-	wefax_round_tx_adif_log->show();
 	wefax_btn_tx_load->show();
 	wefax_btn_tx_close->show();
 	if( wefax_image_loaded_in_gui )
@@ -1396,6 +1424,7 @@ void wefax_pic::restart_tx_viewer(void)
 		wefax_choice_tx_lpm->show();
 		wefax_btn_tx_send_color->show();
 		wefax_btn_tx_send_grey->show();
+		wefax_choice_tx_zoom->show();
 		wefax_btn_tx_clear->show();
 	}
 	else
@@ -1404,84 +1433,100 @@ void wefax_pic::restart_tx_viewer(void)
 		wefax_choice_tx_lpm->deactivate();
 		wefax_btn_tx_send_color->deactivate();
 		wefax_btn_tx_send_grey->deactivate();
+		wefax_choice_tx_zoom->deactivate();
 		wefax_btn_tx_clear->deactivate();
 	}
 }
 
-void wefax_pic::create_tx_viewer(void)
+void wefax_pic::create_tx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 {
-	if( wefax_pic_tx_win ) {
-		return ;
-	}
 	FL_LOCK_D();
 
-	int dbl_win_wid = 370 ;
-	wefax_pic_tx_win = new Fl_Double_Window(dbl_win_wid, 180, _("Send image"));
-	wefax_pic_tx_win->xclass(PACKAGE_NAME);
+	int wid_btn_margin = 5 ;
+	if( progdefaults.WEFAX_EmbeddedGui )
+	{
+		wefax_pic_tx_win = new Fl_Window(pos_x, pos_y, win_wid, hei_win );
+	}
+	else
+	{
+		Fl_Window * tmpWin = new Fl_Window(win_wid, hei_win, _("Send image"));
+		wefax_pic_tx_win = tmpWin;
+	}
+	wefax_pic_tx_win->color(
+			fl_rgb_color(
+				progdefaults.TxColor.R,
+				progdefaults.TxColor.G,
+				progdefaults.TxColor.B),
+			progdefaults.RxTxSelectcolor);
+
 	wefax_pic_tx_win->begin();
 
-	wefax_pic_tx_scroll = new Fl_Scroll( 2, 2, dbl_win_wid - 10, 150 );
+	wefax_pic_tx_scroll = new Fl_Scroll( 1, 1, win_wid-2, hei_win - 23 );
 	wefax_pic_tx_scroll->type(Fl_Scroll::HORIZONTAL | Fl_Scroll::VERTICAL);
+	wefax_pic_tx_scroll->color(
+				fl_rgb_color(
+					255,
+					255,
+					255),
+				progdefaults.RxTxSelectcolor);
+	wefax_pic_tx_scroll->box(FL_ENGRAVED_FRAME);
 	wefax_pic_tx_scroll->begin();
 
-	/// It will be resized immediately.
-	wefax_pic_tx_picture = new picture_scroll( 0, 0, 100, 100);
-
+	/// It will be resized immediately when an image is loaded.
+	wefax_pic_tx_picture = new picture_scroll( 0,0,0,0);
 	wefax_pic_tx_picture->align(FL_ALIGN_TOP);
+	wefax_pic_tx_picture->set_zoom( all_zooms[ idx_default_zoom ].m_value );
 
 	wefax_pic_tx_scroll->end();
 
 	wefax_pic_tx_win->resizable( wefax_pic_tx_scroll );
-	wefax_pic_tx_picture->hide();
 	wefax_pic_tx_box = new picbox(
-			wefax_pic_tx_win->x(),
-			wefax_pic_tx_win->y(),
-			wefax_pic_tx_win->w(),
-			wefax_pic_tx_win->h(),
+			wefax_pic_tx_scroll->x(),
+			wefax_pic_tx_scroll->y(),
+			wefax_pic_tx_scroll->w(),
+			wefax_pic_tx_scroll->h(),
 		      _("Loads an image file\nSupported types: PNG, JPEG, BMP"));
 	wefax_pic_tx_box->labelfont(FL_HELVETICA_ITALIC);
 
-	static const int y_btn = 155 ;
-	static const int hei_tx_btn = 24 ;
+	static const int last_margin = 21 ;
+	static const int y_btn = hei_win - last_margin ;
+	static const int hei_tx_btn = 20 ;
 
-	int width_btn = 0;
+	Fl_Group * tmpGroup = new Fl_Group( 0, y_btn, extra_win_wid, last_margin );
+	tmpGroup->begin();
+	int width_btn = 30;
 	int width_offset = 30;
 
-	width_btn = 70 ;
+	width_btn = 50 ;
 	wefax_choice_tx_lpm = make_lpm_choice( width_offset, y_btn, width_btn, hei_tx_btn );
 
-	static const char * title_adif_log = "Log";
-	width_offset += 5 + width_btn + fl_width( title_adif_log ) ;
-	width_btn = 25 ;
-	wefax_round_tx_adif_log = new Fl_Round_Button(width_offset, y_btn, width_btn, hei_tx_btn, _(title_adif_log));
-	wefax_round_tx_adif_log->callback(wefax_cb_pic_tx_adif_log, 0);
-	wefax_round_tx_adif_log->value( wefax_serviceme->get_adif_log() );
-	wefax_round_tx_adif_log->tooltip("Log to Adif file");
-	wefax_round_tx_adif_log->align(FL_ALIGN_LEFT);
-
-	width_offset += width_btn ;
-	width_btn = 50 ;
+	width_offset += width_btn + wid_btn_margin ;
+	width_btn = 55 ;
 	wefax_btn_tx_send_color = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Tx Color");
 	wefax_btn_tx_send_color->callback(wefax_cb_pic_tx_send_color, 0);
 
-	width_offset += width_btn ;
-	width_btn = 50 ;
+	width_offset += width_btn + wid_btn_margin ;
+	width_btn = 45 ;
 	wefax_btn_tx_send_grey = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Tx B/W");
 	wefax_btn_tx_send_grey->callback( wefax_cb_pic_tx_send_grey, 0);
 
-	width_offset += width_btn ;
-	width_btn = 35 ;
-	wefax_btn_tx_load = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Load"));
+	width_offset += width_btn + wid_btn_margin ;
+	width_btn = 55 ;
+	wefax_btn_tx_load = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Load..."));
 	wefax_btn_tx_load->callback(wefax_cb_pic_tx_load, 0);
-	wefax_btn_tx_load->tooltip("Load image to send");
+	wefax_btn_tx_load->tooltip(_("Load image to send"));
 
-	width_offset += width_btn ;
-	width_btn = 35 ;
+	width_offset += width_btn + wid_btn_margin + 40 ;
+	width_btn = 55 ;
+	wefax_choice_tx_zoom = wefax_create_zoom( width_offset, y_btn, width_btn, hei_tx_btn );
+
+	width_offset += width_btn + wid_btn_margin ;
+	width_btn = 45 ;
 	wefax_btn_tx_clear = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Clear"));
 	wefax_btn_tx_clear->callback(wefax_cb_pic_tx_clear, 0);
 
-	width_offset += width_btn ;
-	width_btn = 35 ;
+	width_offset += width_btn + wid_btn_margin ;
+	width_btn = 45 ;
 	wefax_btn_tx_close = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Close"));
 	wefax_btn_tx_close->callback(wefax_cb_pic_tx_close, 0);
 
@@ -1489,19 +1534,23 @@ void wefax_pic::create_tx_viewer(void)
 	width_offset += fl_width( title_row_num );
 	wefax_out_tx_row_num = new Fl_Output(20, y_btn, 100, hei_tx_btn, _(title_row_num));
 	wefax_out_tx_row_num->align(FL_ALIGN_LEFT);
-	wefax_out_tx_row_num->tooltip("Fax line number being sent.");
+	wefax_out_tx_row_num->tooltip(_("Fax line number being sent."));
 
 	wefax_btn_tx_send_abort = new Fl_Button(180, y_btn, 122, hei_tx_btn, "Abort Xmt");
 	wefax_btn_tx_send_abort->callback(wefax_cb_pic_tx_send_abort, 0);
-	wefax_btn_tx_send_abort->tooltip("Abort transmission");
+	wefax_btn_tx_send_abort->tooltip(_("Abort transmission"));
 
 	wefax_out_tx_row_num->hide();
 	wefax_btn_tx_send_abort->hide();
 	wefax_btn_tx_send_color->deactivate();
 	wefax_btn_tx_send_grey->deactivate();
+	wefax_choice_tx_zoom->deactivate();
 	wefax_btn_tx_clear->deactivate();
 
+	tmpGroup->end();
 	wefax_pic_tx_win->end();
+	wefax_pic_rx_win->init_sizes();
+	wefax_pic_rx_win->redraw();
 	FL_UNLOCK_D();
 }
 
@@ -1520,7 +1569,6 @@ void wefax_pic::tx_viewer_resize(int the_width, int the_height)
 	int pic_x = (win_width - the_width) / 2;
 	int pic_y =  (win_height - 30 - the_height)/2;
 	FL_LOCK_D();
-	wefax_pic_tx_win->size(win_width, win_height);
 
 	/// This because it is a picture_scroll object.
 	wefax_pic_tx_picture->picture::resize(pic_x, pic_y, the_width, the_height);
@@ -1530,29 +1578,7 @@ void wefax_pic::tx_viewer_resize(int the_width, int the_height)
 	FL_UNLOCK_D();
 }
 
-void wefax_pic::show_tx_viewer(int the_width, int the_height)
-{
-	LOG_DEBUG("the_width=%d the_height=%d", the_width, the_height );
-	if (wefax_pic_tx_win) {
-		wefax_pic_tx_win->show();
-		return;
-	}
-
-	int win_width = the_width < 288 ? 290 : the_width + 4;
-	int win_height = the_height < 180 ? 180 : the_height + 30;
-	int pic_x = (win_width - the_width) / 2;
-	int pic_y =  2;
-	FL_LOCK_D();
-	wefax_pic_tx_win->size(win_width, win_height);
-	wefax_pic_tx_picture->resize(pic_x, pic_y, the_width, the_height);
-
-	wefax_pic::restart_tx_viewer();
-	wefax_pic_tx_win->show();
-
-	FL_UNLOCK_D();
-}
-
-/// TODO: This crashes.
+/// TODO: This crashes but should be called.
 void wefax_pic::delete_tx_viewer()
 {
 	LOG_DEBUG("Entering");
@@ -1579,16 +1605,9 @@ void wefax_pic::delete_rx_viewer()
 	wefax_pic_rx_win->hide();
 	wefax_serviceme = 0;
 
-	/// First delete the Fl_Widget. CRASHES HERE.
-	delete wefax_pic_rx_win;
-
+	/// These objects are deleted with the main window.
+	wefax_pic_tx_win = 0;
 	wefax_pic_rx_win = 0;
-/*
-	if (wefax_pic_rx_picture) {
-		delete wefax_pic_rx_picture;
-		wefax_pic_rx_picture = 0;
-	}
-*/
 	FL_UNLOCK_D();
 }
 
@@ -1611,11 +1630,23 @@ void wefax_pic::tx_hide(void)
 	}
 }
 
-void wefax_pic::cb_mnu_pic_viewer(Fl_Menu_ *, void *) {
-	if (wefax_pic_rx_win) {
-		wefax_pic_rx_picture->redraw();
-		wefax_pic_rx_win->show();
+/// Called by the main menu bar to open explicitely a wefax reception window.
+void wefax_pic::cb_mnu_pic_viewer_rx(Fl_Menu_ *, void * ) {
+	if ( ! wefax_pic_rx_win) {
+		LOG_ERROR("wefax_rx_win should be created");
+		return ;
 	}
+	wefax_pic_rx_win->show();
+}
+
+/// Called by the main menu bar to open explicitely a wefax transmission window.
+void wefax_pic::cb_mnu_pic_viewer_tx(Fl_Menu_ *, void * ) {
+	if ( ! wefax_pic_tx_win) {
+		LOG_ERROR("wefax_tx_win should be created");
+		return ;
+	}
+	progdefaults.WEFAX_HideTx = false ;
+	wefax_pic_show_tx();
 }
 
 /// Called from XML-RPC thread.
@@ -1636,3 +1667,51 @@ void wefax_pic::send_image( const std::string & fil_nam )
 	wefax_cb_pic_tx_send_grey( NULL, NULL );
 }
 
+/// This function is called at two places:
+// - When creating the main window.
+// - When initializing the fax modem.
+void wefax_pic::create_both(bool called_from_fl_digi)
+{
+	if( wefax_pic_rx_win ) return ;
+
+	/// This function can be called from fl_digi.cxx or wefax.cxx.
+	if( called_from_fl_digi && progdefaults.WEFAX_EmbeddedGui )
+	{
+		wefax_pic::create_rx_viewer(
+			text_panel->x() + mvgroup->w(), text_panel->y(),
+			text_panel->w() - mvgroup->w(), text_panel->h()/2);
+		wefax_pic::create_tx_viewer(
+			text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
+			text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
+	}
+	else
+	if( ! called_from_fl_digi && ! progdefaults.WEFAX_EmbeddedGui )
+	{
+		wefax_pic::create_rx_viewer(
+			0, 0, extra_win_wid, 400 );
+		wefax_pic::create_tx_viewer(
+			0, 0, extra_win_wid, 400 );
+	}
+	/// Explicitely does nothing here if conditions are not met.
+
+	show_both();
+}
+
+void wefax_pic::show_both()
+{
+	if( ( NULL == wefax_pic_rx_win ) || ( NULL == wefax_pic_tx_win ) ) {
+		return;
+	}
+	wefax_pic_show_tx();
+	wefax_pic_rx_win->show();
+}
+
+void wefax_pic::hide_both()
+{
+	if( ( NULL == wefax_pic_rx_win ) || ( NULL == wefax_pic_tx_win ) ) {
+		LOG_ERROR("wefax_pic_rx_win and wefax_pic_tx_win should be created");
+		return;
+	}
+	wefax_pic_rx_win->hide();
+	wefax_pic_tx_win->hide();
+}

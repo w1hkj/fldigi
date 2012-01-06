@@ -47,6 +47,7 @@
 #include <xmlrpc-c/server_abyss.hpp>
 
 #include "globals.h"
+#include "configuration.h"
 #include "socket.h"
 #include "threads.h"
 #include "modem.h"
@@ -2561,7 +2562,7 @@ struct Wefax_set_adif_log : public xmlrpc_c::method
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
 	{
-		get_wefax()->set_adif_log( params.getBoolean(0));
+		progdefaults.WEFAX_AdifLog = params.getBoolean(0);
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
@@ -2579,9 +2580,8 @@ struct Wefax_set_max_lines : public xmlrpc_c::method
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
 	{
-		get_wefax()->set_max_lines( params.getInt(0));
+		progdefaults.WEFAX_MaxRows = params.getInt(0);
 		/// This updates the GUI.
-		REQ( wefax_pic::restore_max_lines );
 		*retval = xmlrpc_c::value_string( "" );
 	}
 	catch( const exception & e )
