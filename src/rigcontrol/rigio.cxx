@@ -1129,6 +1129,7 @@ void rigCAT_close(void)
 
 	rigio.ClosePort();
 	wf->USB(true);
+	rigCAT_open = false;
 }
 
 bool rigCAT_active(void)
