@@ -47,6 +47,23 @@
 	#include <dirent.h>
 #endif
 
+// this tests depends on a modified FL/filename.H in the Fltk-1.3.0
+// change
+//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__)
+// to
+//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__) && !defined(__WOE32__)
+
+#ifdef __MINGW32__
+#	if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR < 3
+#		undef dirent
+#		include <dirent.h>
+#	else
+#		include <dirent.h>
+#	endif
+#else
+#	include <dirent.h>
+#endif
+
 #include "flarq.h"
 #include "arq.h"
 #include "arqdialogs.h"

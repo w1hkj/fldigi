@@ -41,7 +41,23 @@
 #include <fstream>
 #include <algorithm>
 #include <map>
-#include <dirent.h>
+
+// this tests depends on a modified FL/filename.H in the Fltk-1.3.0
+// change
+//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__)
+// to
+//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__) && !defined(__WOE32__)
+
+#ifdef __MINGW32__
+#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
+#		undef dirent
+#		include <dirent.h>
+#	else
+#		include <dirent.h>
+#	endif
+#else
+#	include <dirent.h>
+#endif
 
 #ifndef __WOE32__
 #include <sys/wait.h>
@@ -3352,7 +3368,11 @@ int rightof(Fl_Widget* w)
 
 int leftof(Fl_Widget* w)
 {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	unsigned int a = w->align();
+#else
 	int a = w->align();
+#endif
 	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
 		return w->x();
 
@@ -3377,7 +3397,11 @@ int leftof(Fl_Widget* w)
 
 int above(Fl_Widget* w)
 {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	unsigned int a = w->align();
+#else
 	int a = w->align();
+#endif
 	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
 		return w->y();
 
@@ -3386,7 +3410,11 @@ int above(Fl_Widget* w)
 
 int below(Fl_Widget* w)
 {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	unsigned int a = w->align();
+#else
 	int a = w->align();
+#endif
 	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
 		return w->y() + w->h();
 
@@ -5702,6 +5730,7 @@ int Qidle_time = 0;
 
 static int que_timeout = 0;
 bool que_ok = true;
+bool que_waiting = true;
 
 void post_queue_execute(void*)
 {
@@ -5718,6 +5747,7 @@ void post_queue_execute(void*)
 
 void queue_execute_after_rx(void*)
 {
+	que_waiting = false;
 	if (!que_timeout) {
 		LOG_ERROR("%s", "timed out");
 		return;
@@ -5730,6 +5760,12 @@ void queue_execute_after_rx(void*)
 	que_ok = false;
 	que_timeout = 100; // 5 seconds
 	Fl::add_timeout(0.05, post_queue_execute);
+	queue_execute();
+}
+
+void do_que_execute(void *)
+{
+	que_waiting = false;
 	queue_execute();
 }
 
@@ -5831,10 +5867,12 @@ int get_tx_char(void)
 		if (queue_must_rx()) {
 			c = 3;
 			que_timeout = 400; // 20 seconds
-			Fl::add_timeout(0.0, queue_execute_after_rx);
+			REQ(queue_execute_after_rx, (void *)0);
+			while(que_waiting) MilliSleep(1);
 		} else {
 			c = -1;
-			queue_execute();
+			REQ(do_que_execute, (void*)0);
+			while(que_waiting) MilliSleep(1);
 		}
 		break;
 	case '^':

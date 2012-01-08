@@ -49,6 +49,8 @@
 
 #include "FTextView.h"
 
+#include "debug.h"
+
 using namespace std;
 
 
@@ -192,6 +194,17 @@ void FTextBase::resize(int X, int Y, int W, int H)
 	if (need_wrap_reset)
 		reset_wrap_col();
 
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	TOP_MARGIN = DEFAULT_TOP_MARGIN;
+	int r = H - Fl::box_dh(box()) - TOP_MARGIN - BOTTOM_MARGIN;
+	if (mHScrollBar->visible())
+		r -= scrollbar_width();
+	int msize = mMaxsize ? mMaxsize : textsize();
+	if (!msize) msize = 1;
+//printf("H %d, textsize %d, lines %d, extra %d\n", r, msize, r / msize, r % msize);
+	if (r %= msize)
+		TOP_MARGIN += r;
+#else
 	if (need_margin_reset && textsize() > 0) {
 		TOP_MARGIN = DEFAULT_TOP_MARGIN;
 		int r = H - Fl::box_dh(box()) - TOP_MARGIN - BOTTOM_MARGIN;
@@ -200,13 +213,13 @@ void FTextBase::resize(int X, int Y, int W, int H)
 		if (r %= textsize())
 			TOP_MARGIN += r;
 	}
-
-        if (scroll_hint) {
-                mTopLineNumHint = mNBufferLines;
-                mHorizOffsetHint = 0;
+#endif
+	if (scroll_hint) {
+		mTopLineNumHint = mNBufferLines;
+		mHorizOffsetHint = 0;
 //		display_insert_position_hint = 1;
-                scroll_hint = false;
-        }
+		scroll_hint = false;
+	}
 
 	bool hscroll_visible = mHScrollBar->visible();
 	Fl_Text_Editor_mod::resize(X, Y, W, H);
@@ -285,6 +298,8 @@ void FTextBase::set_style(int attr, Fl_Font f, int s, Fl_Color c, int set)
 /// @return 0 on success, -1 on error
 int FTextBase::readFile(const char* fn)
 {
+	set_word_wrap(restore_wrap);
+
 	if ( !(fn || (fn = FSEL::select(_("Insert text"), "Text\t*.txt"))) )
 		return -1;
 
@@ -393,6 +408,10 @@ char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 			return tbuf->selection_text();
 	}
 
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	start = tbuf->word_start(p);
+	end = tbuf->word_end(p);
+#else
 	string nonword = nwchars;
 	nonword.append(" \t\n");
 	if (!tbuf->findchars_backward(p, nonword.c_str(), &start))
@@ -401,6 +420,7 @@ char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 		start++;
 	if (!tbuf->findchars_forward(p, nonword.c_str(), &end))
 		end = tbuf->length();
+#endif
 
 	if (ontext && (p < start || p >= end))
 		return 0;
@@ -775,35 +795,32 @@ int FTextEdit::handle_dnd_drag(int pos)
 /// @return 1 or FTextBase::handle(FL_PASTE)
 int FTextEdit::handle_dnd_drop(void)
 {
-	restore_wrap = wrap;
-	set_word_wrap(false);
-
+// paste verbatim if the shift key was held down during dnd
 	if (Fl::event_shift())
 		return FTextBase::handle(FL_PASTE);
 
-#if !defined(__APPLE__) && !defined(__WOE32__)
-	if (strncmp(Fl::event_text(), "file://", 7))
-		return FTextBase::handle(FL_PASTE);
-#endif
+	string text;
+	string::size_type p, len;
 
-	string text = Fl::event_text();
-#if defined(__APPLE__) || defined(__WOE32__)
+	text = Fl::event_text();
+
 	const char sep[] = "\n";
+#if defined(__APPLE__) || defined(__WOE32__)
 	text += sep;
-#else
-	const char sep[] = "\r\n";
 #endif
 
-	string::size_type p, len = text.length();
+	len = text.length();
 	while ((p = text.find(sep)) != string::npos) {
 		text[p] = '\0';
 #if !defined(__APPLE__) && !defined(__WOE32__)
 		if (text.find("file://") == 0) {
 			text.erase(0, 7);
 			p -= 7;
+			len -= 7;
 		}
 #endif
-		// paste everything verbatim if we couldn't read the first file
+// paste everything verbatim if we cannot read the first file
+LOG_INFO("DnD file %s", text.c_str());
 		if (readFile(text.c_str()) == -1 && len == text.length())
 			return FTextBase::handle(FL_PASTE);
 		text.erase(0, p + sizeof(sep) - 1);

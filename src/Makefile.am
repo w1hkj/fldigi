@@ -541,6 +541,8 @@ EXTRA_fldigi_SOURCES += \
 	fileselector/Fl_Native_File_Chooser_MAC.cxx \
 	fileselector/Fl_Native_File_Chooser_WIN32.cxx \
 	fileselector/flnfc_common.cxx \
+	fileselector/fileselect_1_1.cxx \
+	fileselector/fileselect_1_3.cxx \
 	feld/Feld7x7-14.cxx \
 	feld/Feld7x7n-14.cxx \
 	feld/FeldDx-14.cxx \
