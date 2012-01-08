@@ -1,34 +1,18 @@
-// ----------------------------------------------------------------------------
-//
-// fileselect.h
-//
-// Copyright (C) 2008-2009
-//		Stelios Bounanos, M0GLD
-//
-// This file is part of fldigi.
-//
-// Fldigi is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Fldigi is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
-// ----------------------------------------------------------------------------
-
 #ifndef FILESELECT_H
 #define FILESELECT_H
 
-#ifdef __WOE32__
-#  define FSEL_THREAD 1
-#endif
+#include <config.h>
 
+#if (FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3) || (FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR < 3)
+//#ifdef __WIN32__
+//#  define FSEL_THREAD 1
+//#endif
+#define FSEL_THREAD 0
 class Fl_Native_File_Chooser;
+#else
+#include <FL/Fl_Native_File_Chooser.H>
+#define FSEL_THREAD 0
+#endif
 
 class FSEL
 {

@@ -30,6 +30,12 @@
 #include <FL/Fl_Window.H>
 
 #include "Panel.h"
+#include <config.h>
+
+#define FLTK13
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
+#undef FLTK13
+#endif
 
 // Drag the edges that were initially at oldx,oldy to newx,newy:
 // pass -1 as oldx or oldy to disable drag in that direction:
@@ -37,7 +43,11 @@
 int Panel::orgx()
 {
 	int oldx = w();
+#ifdef FLTK13
+	int *p = sizes() + 8;
+#else
 	short* p = sizes()+8;
+#endif
 	for (int i=children(); i--; p += 4)
 		if (p[1] < oldx) oldx = p[1];
 	return oldx;
@@ -46,7 +56,11 @@ int Panel::orgx()
 int Panel::orgy()
 {
 	int oldy = h();
+#ifdef FLTK13
+	int *p = sizes() + 8;
+#else
 	short* p = sizes()+8;
+#endif
 	for (int i=children(); i--; p += 4)
 		if (p[3] < oldy) oldy = p[3];
 	return oldy;
@@ -55,7 +69,11 @@ int Panel::orgy()
 void Panel::position(int oix, int oiy, int newx, int newy) {
 //printf("oix %3d, oiy %3d, nux %3d, nuy %3d\n", oix, oiy, newx, newy);
 	Fl_Widget* const* a = array();
+#ifdef FLTK13
+	int *p = sizes();
+#else
 	short* p = sizes();
+#endif
 //printf("p0 %3d, p1 %3d, p2 %3d, p3 %3d\n", p[0], p[1], p[2], p[3]);
 //printf("p4 %3d, p5 %3d, p6 %3d, p7 %3d\n", p[0], p[1], p[2], p[3]);
 	p += 8; // skip group & resizable's saved size
@@ -90,7 +108,11 @@ void Panel::position(int oix, int oiy, int newx, int newy) {
 // move the lower-right corner (sort of):
 void Panel::resize(int X,int Y,int W,int H) {
 	// remember how much to move the child widgets:
+#ifdef FLTK13
+	int *p = sizes();
+#else
 	short* p = sizes();
+#endif
 	int OX = x();
 	int OY = y();
 	int OW = w();
@@ -191,8 +213,13 @@ int Panel::handle(int event) {
 		int oldx = 0;
 		int oldy = 0;
 		Fl_Widget*const* a = array();
+#ifdef FLTK13
+		int *q = sizes();
+		int *p = q + 8;
+#else
 		short* q = sizes();
-		short* p = q+8;
+		short* p = q + 8;
+#endif
 		for (int i=children(); i--; p += 4) {
 			Fl_Widget* o = *a++;
 			if (o == resizable()) continue;
@@ -227,7 +254,9 @@ int Panel::handle(int event) {
 
 	case FL_DRAG:
 		// This is necessary if CONSOLIDATE_MOTION in Fl_x.cxx is turned off:
-		// if (damage()) return 1; // don't fall behind
+#ifdef FLTK13
+		if (damage()) return 1; // don't fall behind
+#endif
 	case FL_RELEASE: {
 		if (!sdrag) return 0; // should not happen
 		Fl_Widget* r = resizable(); if (!r) r = this;

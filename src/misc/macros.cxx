@@ -70,12 +70,12 @@ struct CMDS { std::string cmd; void (*fp)(std::string); };
 static queue<CMDS> cmds;
 
 // following used for debugging and development
-//void pushcmd(CMDS cmd)
-//{
-//	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)cmds.size());
-//	cmds.push(cmd);
-//}
-#define pushcmd(a) cmds.push((a))
+void pushcmd(CMDS cmd)
+{
+	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)cmds.size());
+	cmds.push(cmd);
+}
+//#define pushcmd(a) cmds.push((a))
 
 // these variables are referenced outside of this file
 MACROTEXT macros;
@@ -670,7 +670,7 @@ static void pZD(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 4, szDt);
 }
 
-static void pID(std::string &s, size_t &i, size_t endbracket)
+static void p_ID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
@@ -1833,7 +1833,8 @@ bool queue_must_rx()
 static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
 	if (cmds.empty()) return false;
 	CMDS cmd = cmds.front();
-	return (rxcmds.find(cmd.cmd.substr(0,5)) != std::string::npos);
+	bool ret = (rxcmds.find(cmd.cmd.substr(0,5)) != std::string::npos);
+	return ret;
 }
 
 struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
@@ -1862,7 +1863,7 @@ static const MTAGS mtags[] = {
 {"<ZT>",		pZT},
 {"<LD>",		pLD},
 {"<ZD>",		pZD},
-{"<ID>",		pID},
+{"<ID>",		p_ID},
 {"<TEXT>",		pTEXT},
 {"<CWID>",		pCWID},
 {"<RX>",		pRX},
@@ -2016,7 +2017,7 @@ void MACROTEXT::openMacroFile()
 {
 	std::string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
-    const char *p = FSEL::select(_("Open macro file"), _("Fldigi macro definition file\t*.mdf"), deffilename.c_str());
+    const char *p = FSEL::select(_("Open macro file"), _("Fldigi macro definition file\t*.{mdf}"), deffilename.c_str());
     if (p) {
 		loadMacros(p);
 		progStatus.LastMacroFile = fl_filename_name(p);
@@ -2028,10 +2029,15 @@ void MACROTEXT::saveMacroFile()
 {
 	std::string deffilename = MacrosDir;
 	deffilename.append(progStatus.LastMacroFile);
-    const char *p = FSEL::saveas(_("Save macro file"), _("Fldigi macro definition file\t*.mdf"), deffilename.c_str());
+    const char *p = FSEL::saveas(
+			_("Save macro file"), 
+			_("Fldigi macro definition file\t*.{mdf}"), 
+			deffilename.c_str());
     if (p) {
-		saveMacros(p);
-		progStatus.LastMacroFile = fl_filename_name(p);
+		string sp = p;
+		if (sp.rfind(".mdf") == string::npos) sp.append(".mdf");
+		saveMacros(sp.c_str());
+		progStatus.LastMacroFile = fl_filename_name(sp.c_str());
 	}
 }
 

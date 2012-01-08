@@ -143,7 +143,9 @@ FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
 	init_context_menu();
 	menu[RX_MENU_QUICK_ENTRY].clear();
 	menu[RX_MENU_SCROLL_HINTS].clear();
-
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	menu[RX_MENU_WRAP].hide();
+#endif
 	// Replace the scrollbar widget
 	MVScrollbar* mvsb = new MVScrollbar(mVScrollBar->x(), mVScrollBar->y(),
 					    mVScrollBar->w(), mVScrollBar->h(), NULL);
@@ -152,6 +154,9 @@ FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
 	remove(mVScrollBar);
 	delete mVScrollBar;
 	Fl_Group::add(mVScrollBar = mvsb);
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	mFastDisplay = 1;
+#endif
 }
 
 FTextRX::~FTextRX()
@@ -209,7 +214,11 @@ int FTextRX::handle(int event)
 		}
 	case FL_MOVE: {
 		int p = xy_to_position(Fl::event_x(), Fl::event_y(), Fl_Text_Display_mod::CURSOR_POS);
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		if (sbuf->char_at(p) >= CLICK_START + FTEXT_DEF) {
+#else
 		if (sbuf->character(p) >= CLICK_START + FTEXT_DEF) {
+#endif
 			if (cursor != FL_CURSOR_HAND)
 				window()->cursor(cursor = FL_CURSOR_HAND);
 			return 1;
@@ -248,6 +257,99 @@ out:
 /// @param c The character
 /// @param attr The attribute (@see enum text_attr_e); RECV if omitted.
 ///
+
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+void FTextRX::add(unsigned char c, int attr)
+{
+	if (c == '\r')
+		return;
+
+	char s[] = { '\0', '\0', FTEXT_DEF + attr, '\0' };
+	const char *cp = &s[0];
+
+	// The user may have moved the cursor by selecting text or
+	// scrolling. Place it at the end of the buffer.
+	if (mCursorPos != tbuf->length())
+		insert_position(tbuf->length());
+
+	switch (c) {
+	case '\b':
+		// we don't call kf_backspace because it kills selected text
+		tbuf->remove(tbuf->length() - 1, tbuf->length());
+		sbuf->remove(sbuf->length() - 1, sbuf->length());
+		if (s_text.length()) {
+			s_text.erase(s_text.end() - 1);
+			s_style.erase(s_style.end() - 1);
+		}
+		break;
+	case '\n':
+		// maintain the scrollback limit, if we have one
+		if (max_lines > 0 && tbuf->count_lines(0, tbuf->length()) >= max_lines) {
+			int le = tbuf->line_end(0) + 1; // plus 1 for the newline
+			tbuf->remove(0, le);
+			sbuf->remove(0, le);
+		}
+		s_text.clear();
+		s_style.clear();
+		insert("\n");
+		sbuf->append(s + 2);
+		break;
+	default:
+		if ((c < ' ' || c == 127) && attr != CTRL) // look it up
+			cp = ascii[(unsigned char)c];
+		else  // insert verbatim
+			s[0] = c;
+
+		for (int i = 0; cp[i]; ++i) {
+			s_text += cp[i];
+			s_style += s[2];
+		}
+
+		fl_font( textfont(), textsize() );
+		int lwidth = (int)fl_width( s_text.c_str(), s_text.length());
+		bool wrapped = false;
+		if ( lwidth >= (text_area.w - mVScrollBar->w() - LEFT_MARGIN - RIGHT_MARGIN)) {
+			if (c != ' ') {
+				size_t p = s_text.rfind(' ');
+				if (p != string::npos) {
+					s_text.erase(0, p+1);
+					s_style.erase(0, p+1);
+					if (s_text.length() < 10) { // wrap and delete trailing space
+						tbuf->remove(tbuf->length() - s_text.length(), tbuf->length());
+						sbuf->remove(sbuf->length() - s_style.length(), sbuf->length());
+						insert("\n"); // always insert new line
+						sbuf->append(s + 2);
+						insert(s_text.c_str());
+						sbuf->append(s_style.c_str());
+						wrapped = true;
+					}
+				}
+			}
+			if (!wrapped) { // add a new line if not wrapped
+				insert("\n");
+				sbuf->append(s + 2);
+				if (c != ' ') { // add character if not a space (no leading spaces)
+					for (int i = 0; cp[i]; ++i)
+						sbuf->append(s + 2);
+					insert(cp);
+				}
+			}
+			s_text.clear();
+			s_style.clear();
+		} else {
+			for (int i = 0; cp[i]; ++i)
+				sbuf->append(s + 2);
+			insert(cp);
+		}
+		break;
+	}
+
+// test for bottom of text visibility
+	if (// !mFastDisplay && 
+		(mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1))
+		show_insert_position();
+}
+#else
 void FTextRX::add(unsigned char c, int attr)
 {
 	if (c == '\r')
@@ -288,7 +390,11 @@ void FTextRX::add(unsigned char c, int attr)
 		insert(cp);
 		break;
 	}
+// test for bottom of text visibility
+	if (mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1)
+		show_insert_position();
 }
+#endif
 
 void FTextRX::set_quick_entry(bool b)
 {
@@ -317,6 +423,10 @@ void FTextRX::mark(FTextBase::TEXT_ATTR attr)
 void FTextRX::clear(void)
 {
 	FTextBase::clear();
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	s_text.clear();
+	s_style.clear();
+#endif
 	static_cast<MVScrollbar*>(mVScrollBar)->clear();
 }
 
@@ -328,21 +438,38 @@ void FTextRX::setFont(Fl_Font f, int attr)
 
 void FTextRX::handle_clickable(int x, int y)
 {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	int pos;
+	unsigned int style;
+#else
 	int pos, style;
+#endif
 
 	pos = xy_to_position(x + this->x(), y + this->y(), CURSOR_POS);
 	// return unless clickable style
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	if ((style = sbuf->char_at(pos)) < CLICK_START + FTEXT_DEF)
+#else
 	if ((style = sbuf->character(pos)) < CLICK_START + FTEXT_DEF)
+#endif
 		return;
 
 	int start, end;
 	for (start = pos-1; start >= 0; start--)
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		if (sbuf->char_at(start) != style)
+#else
 		if (sbuf->character(start) != style)
+#endif
 			break;
 	start++;
 	int len = sbuf->length();
 	for (end = pos+1; end < len; end++)
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		if (sbuf->char_at(end) != style)
+#else
 		if (sbuf->character(end) != style)
+#endif
 			break;
 
 	switch (style - FTEXT_DEF) {
@@ -786,7 +913,11 @@ int FTextTX::nextChar(void)
 	else if (insert_position() <= txpos) // empty buffer or cursor inside transmitted text
 		c = -1;
 	else {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		if ((c = static_cast<unsigned char>(tbuf->char_at(txpos)))) {
+#else
 		if ((c = static_cast<unsigned char>(tbuf->character(txpos)))) {
+#endif
 			++txpos;
 			REQ(FTextTX::changed_cb, txpos, 0, 0, -1,
 			    static_cast<const char *>(0), this);

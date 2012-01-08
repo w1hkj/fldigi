@@ -47,9 +47,7 @@
 #endif
 
 #include <unistd.h>
-#ifndef __MINGW32__
-#  include <dirent.h>
-#endif
+
 #include <exception>
 #include <signal.h>
 #include <locale.h>
@@ -63,9 +61,16 @@
 #  define dirent fl_dirent_no_thanks
 #endif
 #include <FL/filename.H>
-#ifdef __MINGW32__
-#  undef dirent
+
+#ifdef __WOE32__
+#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
+#		undef dirent
+#		include <dirent.h>
+#	endif
+#else
+#	include <dirent.h>
 #endif
+
 
 #include "gettext.h"
 #include "main.h"

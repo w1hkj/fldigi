@@ -1,9 +1,9 @@
 //
-// "$Id: Fl_Text_Editor.H 6893 2009-09-20 19:24:24Z greg.ercolano $"
+// "$Id: Fl_Text_Editor_mod.H 7903 2010-11-28 21:06:39Z matt $"
 //
-// Header file for Fl_Text_Editor class.
+// Header file for Fl_Text_Editor_mod class.
 //
-// Copyright 2001-2009 by Bill Spitzak and others.
+// Copyright 2001-2010 by Bill Spitzak and others.
 // Original code Copyright Mark Edel.  Permission to distribute under
 // the LGPL for the FLTK library granted by Mark Edel.
 //
@@ -28,22 +28,22 @@
 //
 
 /* \file
-   Fl_Text_Editor widget . */
+   Fl_Text_Editor_mod widget . */
 
 
-#ifndef FL_TEXT_EDITOR_H
-#define FL_TEXT_EDITOR_H
+#ifndef Fl_Text_Editor_mod_H
+#define Fl_Text_Editor_mod_H
 
 #include "Fl_Text_Display_mod.H"
 
 // key will match in any state
-#define FL_TEXT_EDITOR_ANY_STATE  (-1L)
+#define Fl_Text_Editor_mod_ANY_STATE  (-1L)
 
 /**
   This is the FLTK text editor widget. It allows the user to
   edit multiple lines of text and supports highlighting and
   scrolling. The buffer that is displayed in the widget is managed
-  by the Fl_Text_Buffer
+  by the Fl_Text_Buffer_mod
   class.
 */
 class FL_EXPORT Fl_Text_Editor_mod : public Fl_Text_Display_mod {
@@ -136,6 +136,6 @@ class FL_EXPORT Fl_Text_Editor_mod : public Fl_Text_Display_mod {
 #endif
 
 //
-// End of "$Id: Fl_Text_Editor.H 6893 2009-09-20 19:24:24Z greg.ercolano $".
+// End of "$Id: Fl_Text_Editor_mod.H 7903 2010-11-28 21:06:39Z matt $".
 //
 
