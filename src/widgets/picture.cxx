@@ -60,7 +60,6 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 {
 	width = W;
 	height = H;
-	depth = 3;
 	bufsize = W * H * depth;
 	numcol = 0;
 	slantdir = 0;
@@ -81,19 +80,6 @@ void picture::video(unsigned char *data, int len )
 	FL_LOCK_D();
 	memmove( vidbuf, data, len );
 	redraw();
-	FL_UNLOCK_D();
-}
-
-void picture::pixel(unsigned char data, int pos)
-{
-	if (pos < 0 || pos >= bufsize) {
-		LOG_ERROR("Image overflow pos=%d bufsize=%d", pos, bufsize );
-		return ;
-	}
-	FL_LOCK_D();
-	vidbuf[pos] = data;
-	if (pos % (width * 3) == 0)
-		redraw();
 	FL_UNLOCK_D();
 }
 
@@ -183,17 +169,19 @@ void picture::stretch(double the_ratio)
 	unsigned char * new_vidbuf = new unsigned char[new_bufsize];
 
 	/// No interpolation, it takes the nearest pixel.
-	for( int ix_out = 0 ; ix_out < new_bufsize ; ++ix_out ) {
+	for( int ix_out = 0 ; ix_out < new_bufsize ; ix_out += depth ) {
 
-		/// TODO: ix_out could be double to qvoid this conversion.
 		int ix_in = ( double )ix_out * the_ratio + 0.5 ;
+		ix_in = ( ix_in / depth ) * depth ;
 		if( ix_in >= bufsize ) {
 			/// Grey value as a filler to indicate the end. For debugging.
 			memset( new_vidbuf + ix_out, 128, new_bufsize - ix_out );
 			break ;
 		}
-		/// TODO: It might not properly work with color images !!!!
-		new_vidbuf[ ix_out ] = vidbuf[ ix_in ];
+		for( int i = 0; i < depth ; ++i )
+		{
+			new_vidbuf[ ix_out + i ] = vidbuf[ ix_in + i ];
+		}
 	};
 
 	delete [] vidbuf ;
@@ -208,6 +196,8 @@ void picture::stretch(double the_ratio)
 /// Beware that it is not protected by FL_LOCK_D/FL_UNLOCK_D
 void picture::shift_horizontal_center(int horizontal_shift)
 {
+	/// This is a number of pixels.
+	horizontal_shift *= depth ;
 	if( horizontal_shift < -bufsize ) {
 		horizontal_shift = -bufsize ;
 	}
@@ -240,14 +230,13 @@ void picture::set_zoom( int the_zoom )
 void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar *buf) 
 {
 	const picture * ptr_pic = ( const picture * ) data ;
-	static const int dpth=3 ;
 	int img_width = ptr_pic->width ;
 	const unsigned char * in_ptr = ptr_pic->vidbuf ;
-	const int max_buf_offset = ptr_pic->bufsize - dpth ;
+	const int max_buf_offset = ptr_pic->bufsize - depth ;
 	/// Should not happen because tested before. This ensures that memcpy is OK.
 	if( ptr_pic->zoom == 0 ) {
 		int in_offset = img_width * y_screen + x_screen ;
-		memcpy( buf, in_ptr + in_offset * dpth, dpth * wid_screen );
+		memcpy( buf, in_ptr + in_offset * depth, depth * wid_screen );
 		return ;
 	}
 
@@ -265,10 +254,10 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				stride );
 			return ;
 		}
-		int dpth_in_offset = dpth * in_offset ;
+		int dpth_in_offset = depth * in_offset ;
 
 		/// Check the latest offset.
-		if( dpth_in_offset + dpth * stride * wid_screen >= max_buf_offset ) {
+		if( dpth_in_offset + depth * stride * wid_screen >= max_buf_offset ) {
 			LOG_WARN(
 				"Boom1 y_sc=%d h=%d w=%d wd_sc=%d wdt=%d strd=%d off=%d prd=%d mbo=%d\n",
 				y_screen,
@@ -278,15 +267,15 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				img_width,
 				stride,
 				in_offset,
-				( dpth_in_offset + dpth ),
+				( dpth_in_offset + depth ),
 				max_buf_offset );
 			return ;
 		}
-		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
+		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
 			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
 			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
 			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
-			dpth_in_offset += dpth * stride ;
+			dpth_in_offset += depth * stride ;
 		}
 		return ;
 	}
@@ -306,9 +295,8 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				stride );
 			return ;
 		}
-		/// TODO: Will not properly work for color images.
-		int dpth_in_offset = dpth * in_offset ;
-		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
+		int dpth_in_offset = depth * in_offset ;
+		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
 #ifndef NDEBUG
 			if( dpth_in_offset >= max_buf_offset ) {
 				LOG_WARN(
@@ -328,8 +316,8 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
 			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
 			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
-			if( ( ix_w % ( dpth * stride ) ) == 0 ) {
-				dpth_in_offset += dpth ;
+			if( ( ix_w % ( depth * stride ) ) == 0 ) {
+				dpth_in_offset += depth ;
 			}
 		}
 		return ;

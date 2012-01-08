@@ -321,9 +321,6 @@ int wefax_pic::update_rx_pic_col(unsigned char data, int pix_pos )
 	/// Each time the received image becomes too high, we increase its height.
 	static const int curr_pix_incr_height = 100 ;
 
-	/// Maybe there is a slant.
-	pix_pos = ( double )pix_pos * slant_factor_default() + 0.5 ;
-
 	/// Three ints per pixel. It is safer to recalculate the 
 	/// row index to avoid any buffer overflow, because the given
 	/// row is invalid if the image was horizontally moved.
@@ -449,10 +446,16 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 		return ;
 	};
 	/// The image must be horizontally shifted.
-	pix_pos += center_val_prev ;
+	pix_pos += center_val_prev * bytes_per_pix ;
 	if( pix_pos < 0 ) {
 		pix_pos = 0 ;
 	}
+
+	/// Maybe there is a slant.
+	pix_pos = ( double )pix_pos * slant_factor_default() + 0.5 ;
+
+	/// Must be a multiple of the number of bytes per pixel.
+	pix_pos = ( pix_pos / bytes_per_pix ) * bytes_per_pix ;
 
 	static int last_row_number = 0 ;
 
@@ -1082,9 +1085,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_slider_rx_center = new Fl_Slider(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_center));
 	wefax_slider_rx_center->type(FL_HORIZONTAL);
 	wefax_slider_rx_center->align(FL_ALIGN_LEFT);
-	/// Multiplied by three because of color image.
-	double range_rx_center = bytes_per_pix * (double)wid_img ;
-	wefax_slider_rx_center->range(-range_rx_center, range_rx_center);
+	/// The range is set when the image size in pixels is known.
 	wefax_slider_rx_center->step(1.0);
 	wefax_slider_rx_center->callback(wefax_cb_pic_rx_center, 0);
 	wefax_slider_rx_center->tooltip(_("Align image horizontally."));
@@ -1145,6 +1146,10 @@ void wefax_pic::resize_rx_viewer(int wid_img)
 	char buffer_width[20];
 	snprintf( buffer_width, sizeof(buffer_width), "%d", wid_img );
 	wefax_out_rx_width->value(buffer_width);
+
+	/// This is a number of pixels.
+	double range_rx_center = wid_img / 2.0 ;
+	wefax_slider_rx_center->range(-range_rx_center, range_rx_center);
 
 	wefax_pic_rx_win->redraw();
 	FL_UNLOCK_D();
