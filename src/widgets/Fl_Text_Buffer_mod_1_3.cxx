@@ -848,6 +848,35 @@ int Fl_Text_Buffer_mod::word_start(int pos) const {
   return pos;
 }
 
+/*
+** Search backwards in buffer for characters in "searchChars", starting
+** with the character BEFORE "startPos", returning the result in "foundPos"
+** returns 1 if found, 0 if not.
+*/
+int Fl_Text_Buffer_mod::findchars_backward( int startPos, const char *searchChars,
+                                     int *foundPos ) {
+  int pos = startPos;
+  const char *c;
+  char ch = 0;
+
+  if ( startPos == 0 ) {
+    *foundPos = 0;
+    return 0;
+  }
+  while ( pos > 0 ) {
+    ch = char_at(pos);
+    for ( c = searchChars; *c != '\0'; c++ ) {
+      if ( ch == *c ) {
+        *foundPos = pos;
+        return 1;
+      }
+    }
+    pos = prev_char(pos);
+  }
+  *foundPos = 0;
+  return 0;
+}
+
 
 /*
  Find the end of a word.
@@ -860,6 +889,31 @@ int Fl_Text_Buffer_mod::word_end(int pos) const {
     pos = next_char(pos);
   }
   return pos;
+}
+
+/*
+** Search forwards in buffer for characters in "searchChars", starting
+** with the character "startPos", and returning the result in "foundPos"
+** returns 1 if found, 0 if not.
+*/
+int Fl_Text_Buffer_mod::findchars_forward( int startPos, const char *searchChars,
+                                    int *foundPos ) {
+  int pos = startPos;
+  const char *c;
+  char ch = 0;
+
+  while ( pos < length() ) {
+    ch = char_at(pos);
+    for ( c = searchChars; *c != '\0'; c++ ) {
+      if ( ch == *c ) {
+        *foundPos = pos;
+        return 1;
+      }
+    }
+    pos = next_char(pos);
+  }
+  *foundPos = length();
+  return 0;
 }
 
 

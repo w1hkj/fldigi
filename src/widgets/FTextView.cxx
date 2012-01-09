@@ -408,10 +408,10 @@ char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 			return tbuf->selection_text();
 	}
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-	start = tbuf->word_start(p);
-	end = tbuf->word_end(p);
-#else
+//#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+//	start = tbuf->word_start(p);
+//	end = tbuf->word_end(p);
+//#else
 	string nonword = nwchars;
 	nonword.append(" \t\n");
 	if (!tbuf->findchars_backward(p, nonword.c_str(), &start))
@@ -420,7 +420,7 @@ char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 		start++;
 	if (!tbuf->findchars_forward(p, nonword.c_str(), &end))
 		end = tbuf->length();
-#endif
+//#endif
 
 	if (ontext && (p < start || p >= end))
 		return 0;
