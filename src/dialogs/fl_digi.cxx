@@ -4652,8 +4652,9 @@ void create_fl_digi_main_primary() {
 			inpCall4->hide();
 
 			StatusBar = new Fl_Box(
-                rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-                progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel - rightof(Status2) - 2 * pad,// - 60,
+				rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
+				- 2 * DEFAULT_SW - rightof(Status2),
                 Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
@@ -4680,9 +4681,6 @@ void create_fl_digi_main_primary() {
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
 			int sql_width = bwSqlOnOff;
-#ifdef __APPLE__
-			sql_width -= 15; // leave room for resize handle
-#endif
 			btnAFC = new Fl_Light_Button(
 							progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
 							Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
@@ -5222,9 +5220,10 @@ void create_fl_digi_main_WF_only() {
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			StatusBar = new Fl_Box(
-                rightof(Status2), Y,
-                progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel - rightof(Status2) - 2 * pad,// - 60,
-                Hstatus, "");
+				rightof(Status2), Y,
+					progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
+					- 2 * DEFAULT_SW - rightof(Status2),
+					Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -5250,9 +5249,6 @@ void create_fl_digi_main_WF_only() {
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
 			int sql_width = bwSqlOnOff;
-#ifdef __APPLE__
-			sql_width -= 15; // leave room for resize handleresize
-#endif
 			btnAFC = new Fl_Light_Button(
 				progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
 				Y,
