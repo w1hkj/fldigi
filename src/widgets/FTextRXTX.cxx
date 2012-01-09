@@ -275,11 +275,11 @@ void FTextRX::add(unsigned char c, int attr)
 	switch (c) {
 	case '\b':
 		// we don't call kf_backspace because it kills selected text
-		tbuf->remove(tbuf->length() - 1, tbuf->length());
-		sbuf->remove(sbuf->length() - 1, sbuf->length());
 		if (s_text.length()) {
 			s_text.erase(s_text.end() - 1);
 			s_style.erase(s_style.end() - 1);
+			tbuf->remove(tbuf->length() - 1, tbuf->length());
+			sbuf->remove(sbuf->length() - 1, sbuf->length());
 		}
 		break;
 	case '\n':
@@ -306,7 +306,7 @@ void FTextRX::add(unsigned char c, int attr)
 		}
 
 		fl_font( textfont(), textsize() );
-		int lwidth = (int)fl_width( s_text.c_str(), s_text.length());
+		int lwidth = (int)(fl_width( s_text.c_str(), s_text.length()) + fl_width('X'));
 		bool wrapped = false;
 		if ( lwidth >= (text_area.w - mVScrollBar->w() - LEFT_MARGIN - RIGHT_MARGIN)) {
 			if (c != ' ') {
