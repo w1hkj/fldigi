@@ -617,7 +617,10 @@ public:
    */
   int search_backward(int startPos, const char* searchString, int* foundPos,
                       int matchCase = 0) const;
-  
+
+  int findchars_forward(int startPos, const char* searchChars, int* foundPos);
+  int findchars_backward(int startPos, const char* searchChars, int* foundPos);
+
   /** 
    Returns the primary selection.  
    */
