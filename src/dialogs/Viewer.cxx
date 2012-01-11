@@ -244,7 +244,8 @@ Fl_Double_Window* createViewer(void)
 	// search field
 	const char* label = _("Find: ");
 	fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
-	viewer_inp_seek = new Fl_Input2(static_cast<int>(BWSR_BORDER + fl_width(label)), BWSR_BORDER, 200, gseek->h(), label);
+	viewer_inp_seek = new Fl_Input2(static_cast<int>(BWSR_BORDER + fl_width(label) + fl_width("X")), BWSR_BORDER, 200, gseek->h(), label);
+	viewer_inp_seek->labelfont(FL_HELVETICA);
 	viewer_inp_seek->callback((Fl_Callback*)cb_Seek);
 	viewer_inp_seek->when(FL_WHEN_CHANGED);
 	viewer_inp_seek->textfont(FL_COURIER);
