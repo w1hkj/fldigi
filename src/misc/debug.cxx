@@ -27,6 +27,7 @@
 #endif
 
 #include <sstream>
+#include <fstream>
 
 #include <cstdio>
 #include <cstring>
@@ -42,7 +43,9 @@
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Menu_Item.H>
 #include <FL/Fl_Menu_Button.H>
-#include "FTextView.h"
+#include <FL/Fl_Button.H>
+
+#include <FL/Fl_Browser.H>
 
 #include "debug.h"
 #include "icons.h"
@@ -60,7 +63,11 @@ static bool tty;
 static bool want_popup = true;
 
 static Fl_Double_Window* window;
-static FTextView* text;
+//static FTextView* text;
+
+static Fl_Browser*			btext;
+static string dbg_buffer;
+static string linebuf;
 
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::INFO_LEVEL;
@@ -73,6 +80,8 @@ static const char* prefix[] = {
 static void slider_cb(Fl_Widget* w, void*);
 static void src_menu_cb(Fl_Widget* w, void*);
 static void popup_message(void*);
+
+static void clear_cb(Fl_Widget *w, void*);
 
 Fl_Menu_Item src_menu[] = {
 	{ _("ARQ control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
@@ -112,7 +121,7 @@ void debug::start(const char* filename)
 	rotate_log(filename);
 	inst = new debug(filename);
 
-	window = new Fl_Double_Window(512, 256, _("Event log"));
+	window = new Fl_Double_Window(600, 200, _("Event log"));
 	window->xclass(PACKAGE_TARNAME);
 
 	int pad = 2;
@@ -129,11 +138,15 @@ void debug::start(const char* filename)
 	slider->value(level);
 	slider->callback(slider_cb);
 
-	text = new FTextView(pad, slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
-	text->textfont(FL_COURIER);
-	text->textsize(FL_NORMAL_SIZE);
+	Fl_Button* clearbtn = new Fl_Button(window->w() - 64, pad, 60, 20, "clear");
+	clearbtn->callback(clear_cb);
 
-	window->resizable(text);
+	btext = new Fl_Browser(pad,  slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
+	btext->textfont(FL_COURIER);
+	btext->textsize(14);
+	window->resizable(btext);
+	dbg_buffer.clear();
+
 	window->end();
 }
 
@@ -185,7 +198,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 		if ((size_t)vsnprintf(msg, len, fmt, args) >= len)
 			memcpy(msg + len - 1, ellipsis, sizeof(ellipsis));
 		va_end(args);
-		Fl::add_timeout(0.0, popup_message, msg);
+		Fl::awake(popup_message, (void*)msg);
 		want_popup = false;
 	}
 
@@ -193,7 +206,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	fflush(wfile);
 #endif
 
-	Fl::add_timeout(0.0, sync_text, (void*)nw);
+	Fl::awake(sync_text, (void*)nw);
 }
 
 void debug::elog(const char* func, const char* srcf, int line, const char* text)
@@ -218,11 +231,20 @@ void debug::sync_text(void* arg)
 		if ((n = read(rfd, buf, block)) <= 0)
 			break;
 		if (unlikely(++nlines > MAX_LINES)) {
-			text->clear();
+			btext->clear();
 			nlines = 0;
 		}
 		buf[n] = '\0';
-		text->add(buf);
+		linebuf = buf;
+		if (linebuf[linebuf.length() - 1] != '\n')
+			linebuf += '\n';
+		size_t p1 = 0, p2 = linebuf.find("\n");
+		while( p2 != string::npos) {
+			btext->insert(1, linebuf.substr(p1, p2 - p1).c_str());
+			dbg_buffer.append(linebuf.substr(p1, p2 - p1)).append("\n");
+			p1 = p2 + 1;
+			p2 = linebuf.find("\n", p1);
+		}
 		toread -= n;
 	}
 }
@@ -273,14 +295,19 @@ static void popup_message(void* msg)
 		return;
 	}
 	if (!Fl::first_window() || !Fl::first_window()->visible()) // defer
-		return Fl::add_timeout(0.5, popup_message, msg);
+		Fl::awake(popup_message, (void*)msg);
 
 	if (fl_warn_choice2("%s:\n%s", _("Close"), _("View log"),
 			    NULL, _("A message was logged"), (char*)msg)) {
 		window->show();
-		text->insert_position(text->buffer()->length());
-		text->show_insert_position();
 	}
 
 	delete [] (char*)msg;
 }
+
+static void clear_cb(Fl_Widget* w, void*)
+{
+	btext->clear();
+	dbg_buffer.clear();
+}
+

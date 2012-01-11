@@ -319,6 +319,7 @@ void configuration::writeDefaultsXML()
 
 static void log_excluded_modes(void)
 {
+return;
 	struct {
 		mode_set_t* modes;
 		const char* msgstr;
