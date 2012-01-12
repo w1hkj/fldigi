@@ -1,6 +1,13 @@
-2011-12-27  David Freese  <w1hkj@w1hkj.com>
+2012-01-11  David Freese  <w1hkj@w1hkj.com>
 
-	ee92676: FLTK-1.3 mods
+	342e05a: Debug text
+	b3e675c: View browser find control
+	419a236: Find chars fwd/back
+	444eb6b: Corner controls
+	23b9a17: Fltk-1.3.0
+	e1c991f: Rig cat close
+	14d24d6: OpBrowser font
+	fd60201: Tune abort
 	faff489: VAC PTT delay
 	ca82dac: Mono audio
 	9409d6c: NAVTEX check-TESTS
