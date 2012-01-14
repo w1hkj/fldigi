@@ -391,7 +391,8 @@ void FTextRX::add(unsigned char c, int attr)
 		break;
 	}
 // test for bottom of text visibility
-	if (mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1)
+	if (mTopLineNum + mNVisibleLines - 1 == mNBufferLines)
+//	if (mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1)
 		show_insert_position();
 }
 #endif
