@@ -2541,6 +2541,13 @@ progdefaults.changed = true;} selected
                 tooltip {Hide transmission window by default.} xywh {10 100 235 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WEFAX_HideTx);}
               }
+              Fl_Check_Button btnWefaxSaveMonochrome {
+                label {Save image as monochrome file}
+                callback {progdefaults.WEFAX_SaveMonochrome=o->value();
+progdefaults.changed = true;}
+                tooltip {Save the fax image as a gray-level PNG file.} xywh {10 290 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+              }
             }
           }
           Fl_Group tabNavtex {

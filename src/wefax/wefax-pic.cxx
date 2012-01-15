@@ -66,13 +66,14 @@ static Fl_Scroll       *wefax_pic_rx_scroll          = (Fl_Scroll *)0 ;
 static picture	       *wefax_pic_rx_picture         = (picture *)0;
 static Fl_Button       *wefax_btn_rx_save            = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_abort           = (Fl_Button *)0;
-static Fl_Button       *wefax_btn_rx_manual          = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_pause           = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_resume          = (Fl_Button *)0;
 static Fl_Choice       *wefax_choice_rx_zoom         = (Fl_Choice *)0;
 static Fl_Browser      *wefax_browse_rx_events       = (Fl_Browser *)0;
 static Fl_Button       *wefax_btn_rx_skip_apt        = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_skip_phasing    = (Fl_Button *)0;
+static Fl_Round_Button *wefax_round_rx_noise_removal = (Fl_Round_Button *)0;
+static Fl_Round_Button *wefax_round_rx_non_stop      = (Fl_Round_Button *)0;
 static Fl_Output       *wefax_out_rx_row_num         = (Fl_Output *)0;
 static Fl_Output       *wefax_out_rx_width           = (Fl_Output *)0;
 static Fl_Choice       *wefax_choice_rx_lpm          = (Fl_Choice *)0;
@@ -127,6 +128,11 @@ static const int curr_pix_h_default = 300 ;
 
 /// Always reset before loading a new image.
 static volatile int curr_pix_height = curr_pix_h_default ;
+
+/// The antepenultimate line of the rx image is filtered to remove noise.
+static int rx_last_filtered_row = 0 ;
+
+static bool noise_removal = false ;
 
 /// Alters the slanting of the image based on LPM adjustments.
 static volatile double rx_slant_ratio = 0.0 ;
@@ -475,6 +481,19 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 		last_row_number = row_number ;
 	}
 
+	/// Eliminate the noise from the ante-antepenultimate line
+	if( noise_removal )
+	{
+		if( ( row_number > picture::noise_height_margin ) && ( row_number != rx_last_filtered_row ) )
+		{
+			wefax_pic_rx_picture->remove_noise(
+				row_number,
+				progdefaults.WEFAX_NoiseMargin,
+				progdefaults.WEFAX_NoiseThreshold );
+			rx_last_filtered_row = row_number ;
+		}
+	}
+
 	/// We start to recenter only if the row number is bigger than that.
 	static const int row_margin = 100 ;
 
@@ -497,7 +516,7 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 			wefax_pic_rx_picture->shift_horizontal_center( -delta_center );
 		}
 		/// Beware that the line number may go backward if the image is left-shifted,
-		/// that is, shortened.
+		/// that is, shortened. Is this assignment REALLY necessary ?
 		last_row_number = row_number ;
 	}
 }
@@ -575,6 +594,8 @@ static void wefax_cb_pic_rx_abort( Fl_Widget *, void *)
 	/// This will call wefax_pic::abort_rx_viewer
 	wefax_serviceme->end_reception();
 	wefax_serviceme->set_rx_manual_mode(false);
+	wefax_round_rx_non_stop->value(false);
+	wefax_round_rx_non_stop->redraw();
 	wefax_btn_rx_pause->show();
 	wefax_btn_rx_resume->hide();
 }
@@ -583,9 +604,16 @@ static void wefax_cb_pic_rx_manual( Fl_Widget *, void *)
 {
 	if (wefax_serviceme != active_modem) return;
 
-	wefax_serviceme->set_rx_manual_mode(true);
-	wefax_serviceme->skip_apt();
-	wefax_serviceme->skip_phasing(true);
+	if( wefax_round_rx_non_stop->value() )
+	{
+		wefax_serviceme->set_rx_manual_mode(true);
+		wefax_serviceme->skip_apt();
+		wefax_serviceme->skip_phasing(true);
+	}
+	else
+	{
+		wefax_serviceme->set_rx_manual_mode(false);
+	}
 }
 
 static void wefax_cb_pic_rx_center( Fl_Widget *, void *)
@@ -652,7 +680,7 @@ static void wefax_cb_pic_rx_save( Fl_Widget *, void *)
 	const char *file_name = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), NULL);
 	/// Beware that no extra comments are saved here.
 	if (file_name) {
-		wefax_pic_rx_picture->save_png(file_name);
+		wefax_pic_rx_picture->save_png(file_name,progdefaults.WEFAX_SaveMonochrome);
 		qso_notes( "RX:", file_name );
 		wefax_serviceme->qso_rec_save();
 		/// Next time, image will be saved at the same place.
@@ -666,10 +694,11 @@ static void wefax_cb_pic_rx_save( Fl_Widget *, void *)
 void wefax_pic::skip_rx_apt(void)
 {
 	FL_LOCK_D();
+	wefax_btn_rx_abort->hide();
 	wefax_btn_rx_skip_apt->hide();
-	wefax_btn_rx_abort->show();
-	wefax_btn_rx_manual->hide();
 	wefax_btn_rx_skip_phasing->show();
+
+	wefax_round_rx_noise_removal->hide();
 	FL_UNLOCK_D();
 }
 
@@ -687,8 +716,11 @@ void wefax_pic::skip_rx_phasing(bool auto_center)
 	FL_LOCK_D();
 	/// Theoretically, this widget should already be hidden, but sometimes
 	/// it seems that a call to skip_apt is lost... ?
+	wefax_btn_rx_abort->show();
 	wefax_btn_rx_skip_apt->hide();
 	wefax_btn_rx_skip_phasing->hide();
+
+	wefax_round_rx_noise_removal->show();
 	wefax_out_rx_row_num->show();
 	wefax_out_rx_width->show();
 	wefax_choice_rx_lpm->show();
@@ -706,6 +738,14 @@ static void wefax_cb_pic_rx_skip_phasing( Fl_Widget *w, void *)
 {
 	if (wefax_serviceme != active_modem) return;
 	wefax_serviceme->skip_phasing(true);
+}
+
+static void wefax_cb_pic_rx_noise_removal( Fl_Widget *, void *)
+{
+	if (wefax_serviceme != active_modem) return;
+
+	char rndVal = wefax_round_rx_noise_removal->value();
+	noise_removal = rndVal ? true : false;
 }
 
 /// Sets the reception filter: The change should be visible.
@@ -810,15 +850,16 @@ void wefax_pic::abort_rx_viewer(void)
 	wefax_pic_rx_picture->resize_height( curr_pix_h_default, true );
 
 	curr_pix_height = curr_pix_h_default ;
+	rx_last_filtered_row = 0;
 	center_val_prev = 0 ;
 	update_auto_center(false);
 	wefax_slider_rx_center->value(0.0);
 
-	/// Not sure whether lock/unlock is necessary.
 	wefax_btn_rx_abort->hide();
-	wefax_btn_rx_manual->show();
 	wefax_btn_rx_skip_apt->show();
 	wefax_btn_rx_skip_phasing->hide();
+
+	wefax_round_rx_noise_removal->hide();
 
 	wefax_out_rx_row_num->hide();
 	wefax_out_rx_row_num->value("");
@@ -983,20 +1024,23 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_btn_rx_save->callback(wefax_cb_pic_rx_save, 0);
 	wefax_btn_rx_save->tooltip(_("Save current image in a file."));
 
+	/// Clear, Skipt APT and Skip phasing are at the same place	
 	wid_off_up += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 45 ;
-	wefax_btn_rx_abort = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Abort"));
+	wid_btn_curr = 75 ;
+	wefax_btn_rx_abort = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Clear"));
 	wefax_btn_rx_abort->callback(wefax_cb_pic_rx_abort, 0);
 	wefax_btn_rx_abort->tooltip(_("End and clear current image reception."));
-	wefax_btn_rx_abort->hide();
 
-	/// At the same place and size as abort.
-	wefax_btn_rx_manual = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Manual"));
-	wefax_btn_rx_manual->callback(wefax_cb_pic_rx_manual, 0);
-	wefax_btn_rx_manual->tooltip(_("Fully manual mode. Press abort to quit."));
+	wefax_btn_rx_skip_apt = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Skip APT"));
+	wefax_btn_rx_skip_apt->callback(wefax_cb_pic_rx_skip_apt, 0);
+	wefax_btn_rx_skip_apt->tooltip(_("Skip Automatic Picture Transmission step"));
+	
+	wefax_btn_rx_skip_phasing = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Skip Phasing"));
+	wefax_btn_rx_skip_phasing->callback(wefax_cb_pic_rx_skip_phasing, 0);
+	wefax_btn_rx_skip_phasing->tooltip(_("Skip phasing step"));
 
 	wid_off_up += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 55 ;
+	wid_btn_curr = 45 ;
 	wefax_btn_rx_pause = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Pause"));
 	wefax_btn_rx_pause->callback(wefax_cb_pic_rx_pause, 0);
 	wefax_btn_rx_pause->tooltip(_("Pause reception."));
@@ -1005,6 +1049,12 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_btn_rx_resume->callback(wefax_cb_pic_rx_resume, 0);
 	wefax_btn_rx_resume->tooltip(_("Resume reception."));
 	wefax_btn_rx_resume->hide();
+
+	wid_off_up += wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 70 ;
+	wefax_round_rx_non_stop = new Fl_Round_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Non stop"));
+	wefax_round_rx_non_stop->callback(wefax_cb_pic_rx_manual, 0);
+	wefax_round_rx_non_stop->tooltip(_("Continuous reception mode"));
 
 	wid_off_up += wid_btn_margin + wid_btn_curr + 40;
 	wid_btn_curr = 55 ;
@@ -1031,18 +1081,6 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	}
 	wefax_choice_rx_filter->value(init_filter_idx);
 	wefax_choice_rx_filter->tooltip(_("Set the reception filter."));
-
-	/// Skipt APT and Skip phasing are at the same place	
-	wid_off_up += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 75 ;
-	wefax_btn_rx_skip_apt = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Skip APT"));
-	wefax_btn_rx_skip_apt->callback(wefax_cb_pic_rx_skip_apt, 0);
-	wefax_btn_rx_skip_apt->tooltip(_("Skip Automatic Picture Transmission step"));
-	
-	// This goes at the same place as "Skip Apt"
-	wefax_btn_rx_skip_phasing = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn, _("Skip Phasing"));
-	wefax_btn_rx_skip_phasing->callback(wefax_cb_pic_rx_skip_phasing, 0);
-	wefax_btn_rx_skip_phasing->tooltip(_("Skip phasing step"));
 
 	wid_off_up += wid_btn_margin + wid_btn_curr ;
 
@@ -1092,13 +1130,18 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	center_val_prev = 0 ;
 
 	static const char * title_auto_center = _("Auto");
-	wid_off_low += wid_btn_margin + wid_btn_curr + 35;
+	wid_off_low += wid_btn_margin + wid_btn_curr ;
 	wid_btn_curr = 40 ;
 	wefax_round_rx_auto_center = new Fl_Round_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_auto_center) );
-	wefax_round_rx_auto_center->align(FL_ALIGN_LEFT);
 	wefax_round_rx_auto_center->callback(wefax_cb_pic_rx_auto_center, 0);
 	wefax_round_rx_auto_center->tooltip(_("Enable automatic image centering"));
 	update_auto_center(false);
+
+	wid_off_low += wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 75 ;
+	wefax_round_rx_noise_removal = new Fl_Round_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _("Noise"));
+	wefax_round_rx_noise_removal->callback(wefax_cb_pic_rx_noise_removal, 0);
+	wefax_round_rx_noise_removal->tooltip(_("Removes noise when ticked"));
 
 	wid_off_low += wid_btn_curr ;
 
@@ -1177,7 +1220,7 @@ void wefax_pic::save_image(const std::string & fil_name, const std::string & ext
 	local_comments << extra_comments ;
 	local_comments << "Slant:" << rx_slant_ratio << "\n" ;
 	local_comments << "Center:" << global_auto_center << "\n" ;
-	wefax_pic_rx_picture->save_png(dfname.c_str(), local_comments.str().c_str());
+	wefax_pic_rx_picture->save_png(dfname.c_str(),progdefaults.WEFAX_SaveMonochrome, local_comments.str().c_str());
 	add_to_files_list( dfname );
 	qso_notes( "RX:", fil_name );
 	wefax_serviceme->qso_rec_save();

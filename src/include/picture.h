@@ -67,7 +67,7 @@ public:
 	void    resize_height(int new_height, bool clear_img);
 	void    shift_horizontal_center(int hShift);
 	void    stretch(double the_ratio);
-	int	save_png(const char * filename, const char * extra_comments = NULL);
+	int	save_png(const char * filename, bool monochrome = false, const char * extra_comments = NULL);
 	void    set_zoom(int the_zoom);
 	int     pix_width(void) const {
 		return width ;
@@ -78,6 +78,10 @@ public:
 	const unsigned char * buffer(void) const {
 		return vidbuf;
 	}
+	/// Sometimes the row number goes back of one due to rounding error.
+	/// If this happens, noise removal does not work.
+	static const int noise_height_margin = 5 ;
+	void remove_noise( int row, int half_len, int noise_margin );
 };
 
 class picbox : public Fl_Box

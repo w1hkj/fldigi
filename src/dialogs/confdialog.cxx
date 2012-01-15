@@ -1983,6 +1983,13 @@ static void cb_btnWefaxHideTx(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnWefaxSaveMonochrome=(Fl_Check_Button *)0;
+
+static void cb_btnWefaxSaveMonochrome(Fl_Check_Button* o, void*) {
+  progdefaults.WEFAX_SaveMonochrome=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabNavtex=(Fl_Group *)0;
 
 Fl_Check_Button *btnNvtxAdifLog=(Fl_Check_Button *)0;
@@ -5954,6 +5961,12 @@ an merging"));
                 btnWefaxHideTx->callback((Fl_Callback*)cb_btnWefaxHideTx);
                 o->value(progdefaults.WEFAX_HideTx);
               } // Fl_Check_Button* btnWefaxHideTx
+              { Fl_Check_Button* o = btnWefaxSaveMonochrome = new Fl_Check_Button(10, 290, 235, 30, _("Save image as monochrome file"));
+                btnWefaxSaveMonochrome->tooltip(_("Save the fax image as a gray-level PNG file."));
+                btnWefaxSaveMonochrome->down_box(FL_DOWN_BOX);
+                btnWefaxSaveMonochrome->callback((Fl_Callback*)cb_btnWefaxSaveMonochrome);
+                o->value(progdefaults.WEFAX_SaveMonochrome);
+              } // Fl_Check_Button* btnWefaxSaveMonochrome
               o->end();
             } // Fl_Group* o
             tabWefax->end();

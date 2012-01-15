@@ -346,6 +346,8 @@ class fax_implementation {
 
 	int m_ix_filt ;        // Index of the current reception filter.
 
+	static const int range_sample = 255 ;
+
 	/// This is always the same filter for all objects.
 	static fir_filter_pair_set m_rx_filters ;
 
@@ -853,36 +855,41 @@ public:
 
 	/// Maybe we could reset this buffer when we change the state so that we could
 	/// use the current LPM width.
-	mutable std::vector<unsigned char> m_correlation_buffer ;
+	struct corr_buffer_t : public std::vector<unsigned char> 
+	{
+		unsigned char at_mod(size_t i) const {
+			return operator[](i % size());
+		}
+		unsigned char & at_mod(size_t i) {
+			return operator[](i % size());
+		}
+	};
+	mutable corr_buffer_t m_correlation_buffer ;
 	mutable double m_current_corr ;
 	mutable double m_curr_corr_avg ;
 	mutable int m_corr_calls_nb;
 	static const int m_min_corr_lines = 20 ;
 
-	/// Absolute value of statistical correlation between the current line and the previous one.
-	/// Called once per maximum sample line.
-	void correlation_calc(void) const {
-		++m_corr_calls_nb;
-		/// We should in fact take the smallest one, 60.
-		size_t corr_samples_line = lpm_to_samples( LPM_DEFAULT );
-		size_t corr_samples_line_plus_img_sample = corr_samples_line + m_img_sample ;
-		size_t corr_buff_sz = 2 * corr_samples_line ;
+	double correlation_from_index(size_t line_length, size_t line_offset) const {
+                /// This is a ring buffer.
+		size_t line_length_plus_img_sample = line_length + m_img_sample ;
+		// size_t corr_buff_sz = 2 * line_length ;
 
 		int avg_pred = 0, avg_curr = 0 ;
-		for( size_t i = m_img_sample ; i < corr_samples_line_plus_img_sample ; ++i ) {
-			int pix_pred = m_correlation_buffer[ ( i                     ) % corr_buff_sz ];
-			int pix_curr = m_correlation_buffer[ ( i + corr_samples_line ) % corr_buff_sz ];
+		for( size_t i = m_img_sample ; i < line_length_plus_img_sample ; ++i ) {
+			int pix_pred = m_correlation_buffer.at_mod( i               );
+			int pix_curr = m_correlation_buffer.at_mod( i + line_offset );
 			avg_pred += pix_pred;
 			avg_curr += pix_curr ;
 		}
-		avg_pred /= corr_samples_line;
-		avg_curr /= corr_samples_line;
+		avg_pred /= line_length;
+		avg_curr /= line_length;
 
 		/// Use integers because it is faster. Samples are chars, so no overflow possible.
 		int numerator = 0, denom_pred = 0, denom_curr = 0 ;
-		for( size_t i = m_img_sample ; i < corr_samples_line_plus_img_sample ; ++i ) {
-			int pix_pred = m_correlation_buffer[ ( i                     ) % corr_buff_sz ];
-			int pix_curr = m_correlation_buffer[ ( i + corr_samples_line ) % corr_buff_sz ];
+		for( size_t i = m_img_sample ; i < line_length_plus_img_sample ; ++i ) {
+			int pix_pred = m_correlation_buffer.at_mod( i               );
+			int pix_curr = m_correlation_buffer.at_mod( i + line_offset );
 			int delta_pred = pix_pred - avg_pred ;
 			int delta_curr = pix_curr - avg_curr ;
 			numerator += delta_pred * delta_curr ;
@@ -891,10 +898,90 @@ public:
 		}
 		double denominator = sqrt( (double)denom_pred * (double)denom_curr );
 		if( denominator == 0.0 ) {
-			m_current_corr = 0.0 ;
+			return 0.0 ;
 		} else {
-			m_current_corr = fabs( numerator / (double)denominator );
+			return fabs( numerator / denominator );
 		}
+	}
+
+	// This is experimental.
+	// The goal is to eliminate artefact which echoes each pixel a couple of pixels later.
+	// This correlates each sample line with itself for each pixel number in a small given
+	// range. When the correlation reaches a maximum (A couple of dozens of samples),
+	// this estimates the echo delay.
+	// This delay is typical of a given emitter, at a given time of the day.
+	// Therefore, the array of occurences of a given delay must be refreshed when the frequence
+	// is changed.
+	// The next step is to estimate the amplitude of the echo, and later to substract
+	// each sample to the same sample "delay" mater, with the right attenuation.
+	//
+	// For an unknown reason, there is frequently a correlation peak after 9 or 10 samples.
+	//
+	// This happens with Bracknell (Not far from where I live),
+	// and surprisingly the weak signal comes first.
+	// This never happens with Deutsche Wetterdienst (Hundredth of kilometers).
+	size_t correlation_shift( size_t corr_smpl_lin ) const
+	{
+		static bool is_init = false ;
+		static const size_t max_space_echo = 100 ;
+
+		/// Specific to the antenna and the reception, so no need to clean it up.
+		static size_t shift_histogram[max_space_echo];
+		static size_t nb_calls = 0 ;
+
+		if( ! is_init ) {
+			for( size_t i = 0; i < max_space_echo; ++i ) shift_histogram[i] = 0 ;
+			is_init = true ;
+		}
+
+		double tmpCorrPrev = correlation_from_index(corr_smpl_lin, 0 );
+		double tmpCorrMax = 0.0 ;
+		size_t local_max = 0 ;
+		bool is_growing = false ;
+
+		/// We could even start the loop later because we are not interested by small shifts.
+		for( size_t i = 1 ; i < max_space_echo; i++ )
+		{
+			double tmpCorr = correlation_from_index(corr_smpl_lin, i );
+			bool is_growing_next = tmpCorr > tmpCorrPrev ;
+			if( is_growing && ( ! is_growing_next  ) ) {
+				local_max = i - 1 ;
+				tmpCorrMax = tmpCorr ;
+				break ;
+			}
+			is_growing = is_growing_next ;
+			tmpCorrPrev = tmpCorr ;
+		}
+
+		if( local_max != 0 ) {
+			++shift_histogram[local_max];
+			// LOG_INFO("Local max: i=%d corr=%lf", local_max, tmpCorrMax );
+		}
+		++nb_calls ;
+
+		size_t best_shift_idx = 0 ;
+		size_t biggest_shift = shift_histogram[best_shift_idx];
+		if( ( nb_calls > 100 ) && ( ( nb_calls % 10 ) == 0 ) ) {
+			for( size_t i = 0; i < max_space_echo; ++i ) {
+				size_t new_hist = shift_histogram[i];
+				if( new_hist > biggest_shift ) {
+					biggest_shift = new_hist ;
+					best_shift_idx = i ;
+				}
+			}
+
+			LOG_INFO("Shift: i=%d hist=%d", best_shift_idx, biggest_shift );
+		}
+		return best_shift_idx ;
+	}
+
+	/// Absolute value of statistical correlation between the current line and the previous one.
+	/// Called once per maximum sample line.
+	void correlation_calc(void) const {
+		++m_corr_calls_nb;
+		/// We should in fact take the smallest one, 60.
+		size_t corr_smpl_lin = lpm_to_samples( LPM_DEFAULT );
+		m_current_corr = correlation_from_index(corr_smpl_lin, corr_smpl_lin);
 
 		/// This never happened, but who knows (Inaccuracy etc...)?
 		if( m_current_corr > 1.0 ) {
@@ -914,6 +1001,10 @@ public:
 		}
 		double metric = m_curr_corr_avg * 100.0 ;
 		m_ptr_wefax->display_metric(metric);
+
+		static const bool calc_corr_shift = false ;
+		if( calc_corr_shift )
+			correlation_shift( corr_smpl_lin );
 	}
 
 	/// This is called quite often. It estimates, based on the mobile
@@ -952,8 +1043,8 @@ public:
 
 	/// We compute about the same when plotting a pixel.
 	void correlation_update( int the_sample ) {
-		size_t corr_samples_line = lpm_to_samples( LPM_DEFAULT );
-		size_t corr_buff_sz = 2 * corr_samples_line ;
+		size_t corr_smpl_lin = lpm_to_samples( LPM_DEFAULT );
+		size_t corr_buff_sz = 2 * corr_smpl_lin ;
 
 		static size_t cnt_upd = 0 ;
 
@@ -963,13 +1054,14 @@ public:
 			m_curr_corr_avg = 0.0 ;
 		}
 
-		if( ( cnt_upd % corr_samples_line ) == 0 ) {
+		if( ( cnt_upd % corr_smpl_lin ) == 0 ) {
 			correlation_calc();
 		}
 		++cnt_upd ;
 
-		m_correlation_buffer[ m_img_sample % corr_buff_sz ] = the_sample ;
-	}
+		m_correlation_buffer.at_mod( m_img_sample ) = the_sample ;
+
+	} // correlation_update
 }; // class fax_implementation
 
 /// Narrow, middle etc... input filters. Constructed at program startup. Readonly.
@@ -1048,7 +1140,7 @@ void fax_implementation::init_rx(int the_smpl_rat)
 	m_corr_calls_nb = 0;
 }
 
-/// Values are between 0 and 255.
+/// Values are between zero and +range_sample
 void fax_implementation::decode(const int* buf, int nb_samples)
 {
 	if(nb_samples==0)
@@ -1315,16 +1407,21 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 	}
 	else
 	{
-		/// We do not the LPM so we assume the default.
-		/// TODO: We could take the one given by the GUI.
+		/// We do not know the LPM so we assume the default.
+		/// TODO: We could take the one given by the GUI. Apparently; problem for Japanese faxes when lpm=60:
+		// http://forums.radioreference.com/digital-signals-decoding/228802-problems-decoding-wefax.html
 		double smpl_per_lin = lpm_to_samples( LPM_DEFAULT );
 		int smpl_per_lin_int = smpl_per_lin ;
 		int nb_tested_phasing_lines = m_phasing_calls_nb / smpl_per_lin ;
 
+		/// If this is too big, we lose the beginning of the fax.
+		// If this is too small, we start recording when we should not (But why not starting early ?)
+		// Value was: 30
+		static const int max_tested_phasing_lines = 20 ;
 		if(
 			(m_phase_lines == 0) &&
 			(m_num_phase_lines == 0) &&
-		 	(nb_tested_phasing_lines >= 30) &&
+		 	(nb_tested_phasing_lines >= max_tested_phasing_lines ) &&
 			( (m_phasing_calls_nb % smpl_per_lin_int) == 0 ) ) {
 			switch( the_signal.signal_state() ) {
 			case RXIMAGE :
@@ -1469,7 +1566,7 @@ void fax_implementation::end_rx(void)
 void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 {
 	int demod[audio_sz];
-	static const double half_255 = 255.0 * 0.5 ;
+	static const double half_255 = (double)range_sample * 0.5 ;
 	const double ratio_sam_devi = half_255 * static_cast<double>(m_sample_rate)/fm_deviation;
 
 	/// The reception filter may have been changed by the GUI.
@@ -1517,8 +1614,8 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 				int scaled_x = x + half_255 ;
 				if(scaled_x < 0) {
 					scaled_x=0;
-				} else if(scaled_x > 255) {
-					scaled_x=255;
+				} else if(scaled_x > range_sample) {
+					scaled_x=range_sample;
 				}
 				demod[i]=scaled_x;
 			} else {

@@ -1346,6 +1346,15 @@
        ELEM_(int, WEFAX_MaxRows, "WEFAXMAXROWS",                                        \
              "Received fax maximum number of rows",                                     \
              5000 )                                                                     \
+       ELEM_(int, WEFAX_NoiseMargin, "WEFAXNOISEMARGIN",                                \
+             "Pixel margin for noise removal",                                          \
+             1 )                                                                        \
+       ELEM_(int, WEFAX_NoiseThreshold, "WEFAXNOISETHRESHOLD",                          \
+             "Threshold level for noise detection and removal",                         \
+             5 )                                                                        \
+       ELEM_(int, WEFAX_SaveMonochrome, "WEFAXSAVEMONOCHROME",                          \
+             "Save fax image as monochrome",                                            \
+             false )                                                                    \
        ELEM_(bool, WEFAX_AdifLog, "WEFAXADIFLOG",                                       \
              "Logs wefax file names in Adif log file",                                  \
              false)                                                                     \

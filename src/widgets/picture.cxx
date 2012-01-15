@@ -37,6 +37,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
 
 #include <time.h>
 #include <sys/stat.h>
@@ -230,20 +231,22 @@ void picture::set_zoom( int the_zoom )
 void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar *buf) 
 {
 	const picture * ptr_pic = ( const picture * ) data ;
-	int img_width = ptr_pic->width ;
+	const int img_width = ptr_pic->width ;
 	const unsigned char * in_ptr = ptr_pic->vidbuf ;
-	const int max_buf_offset = ptr_pic->bufsize - depth ;
 	/// Should not happen because tested before. This ensures that memcpy is OK.
 	if( ptr_pic->zoom == 0 ) {
-		int in_offset = img_width * y_screen + x_screen ;
+		const int in_offset = img_width * y_screen + x_screen ;
 		memcpy( buf, in_ptr + in_offset * depth, depth * wid_screen );
 		return ;
 	}
 
 	/// One pixel out of (zoom+1)
 	if( ptr_pic->zoom < 0 ) {
-		int stride = -ptr_pic->zoom + 1 ;
-		int in_offset = ( img_width * y_screen + x_screen ) * stride ;
+		const int stride = -ptr_pic->zoom + 1 ;
+		const int in_offset = ( img_width * y_screen + x_screen ) * stride ;
+		int dpth_in_offset = depth * in_offset ;
+
+#ifndef NDEBUG
 		if( y_screen > ptr_pic->h() - 1 ) {
 			LOG_WARN(
 				"Overflow1 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
@@ -254,8 +257,8 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				stride );
 			return ;
 		}
-		int dpth_in_offset = depth * in_offset ;
 
+		const int max_buf_offset = ptr_pic->bufsize - depth ;
 		/// Check the latest offset.
 		if( dpth_in_offset + depth * stride * wid_screen >= max_buf_offset ) {
 			LOG_WARN(
@@ -271,10 +274,11 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				max_buf_offset );
 			return ;
 		}
-		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
-			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
-			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
-			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
+#endif
+		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ) {
+			buf[ ix_w++ ] = in_ptr[ dpth_in_offset     ];
+			buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 1 ];
+			buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 2 ];
 			dpth_in_offset += depth * stride ;
 		}
 		return ;
@@ -282,8 +286,8 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 
 	/// Reads each input pixel (-zoom+1) times.
 	if( ptr_pic->zoom > 0 ) {
-		int stride = ptr_pic->zoom + 1 ;
-		int in_offset = img_width * ( y_screen / stride ) + x_screen / stride ;
+		const int stride = ptr_pic->zoom + 1 ;
+		const int in_offset = img_width * ( y_screen / stride ) + x_screen / stride ;
 		if( y_screen / stride >= ptr_pic->h() )
 		{
 			LOG_WARN(
@@ -295,8 +299,9 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				stride );
 			return ;
 		}
-		int dpth_in_offset = depth * in_offset ;
-		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+
+                for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
+		{
 #ifndef NDEBUG
 			if( dpth_in_offset >= max_buf_offset ) {
 				LOG_WARN(
@@ -313,13 +318,20 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				break ;
 			}
 #endif
-			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
-			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
-			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
-			if( ( ix_w % ( depth * stride ) ) == 0 ) {
-				dpth_in_offset += depth ;
+			unsigned char in_dpth_in_offset_0 = in_ptr[ dpth_in_offset     ];
+			unsigned char in_dpth_in_offset_1 = in_ptr[ dpth_in_offset + 1 ];
+			unsigned char in_dpth_in_offset_2 = in_ptr[ dpth_in_offset + 2 ];
+
+			// Stride should be less than 4 or 5.
+			for( int j= 0; j < stride; j++ )
+			{
+				buf[ ix_w++ ] = in_dpth_in_offset_0;
+				buf[ ix_w++ ] = in_dpth_in_offset_1;
+				buf[ ix_w++ ] = in_dpth_in_offset_2;
 			}
+			dpth_in_offset += depth ;
 		}
+
 		return ;
 	}
 }
@@ -476,7 +488,7 @@ static FILE* open_file(const char* name, const char* suffix)
 	return fp;
 }
 
-int picture::save_png(const char* filename, const char *extra_comments)
+int picture::save_png(const char* filename, bool monochrome, const char *extra_comments)
 {
 	FILE* fp;
 	if ((fp = open_file(filename, ".png")) == NULL)
@@ -504,8 +516,9 @@ int picture::save_png(const char* filename, const char *extra_comments)
 	png_init_io(png, fp);
 
 	// set png header
+	int color_type = monochrome ? PNG_COLOR_TYPE_GRAY : PNG_COLOR_TYPE_RGB ;
 	png_set_IHDR(png, info, width, height, 1 << depth,
-		     PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+		     color_type, PNG_INTERLACE_NONE,
 		     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
 	// write text comments
@@ -543,10 +556,30 @@ int picture::save_png(const char* filename, const char *extra_comments)
 	}
 
 	// write image
-	png_bytep row;
-	for (int i = 0; i < height; i++) {
-		row = &vidbuf[i * width * depth];
-		png_write_rows(png, &row, 1);
+	if(monochrome)
+	{
+		unsigned char tmp_row[width];
+		png_bytep row;
+		for (int i = 0; i < height; i++) {
+			int row_offset = i * width * depth ;
+			for(int j =0 ; j < width; ++j )
+			{
+				int col_offset = row_offset + j * depth ;
+				tmp_row[j] = ( vidbuf[ col_offset ]
+				             + vidbuf[ col_offset + 1 ]
+				             + vidbuf[ col_offset + 2 ] ) / depth ;
+			}
+			row = tmp_row;
+			png_write_rows(png, &row, 1);
+		}
+	}
+	else
+	{
+		png_bytep row;
+		for (int i = 0; i < height; i++) {
+			row = &vidbuf[i * width * depth];
+			png_write_rows(png, &row, 1);
+		}
 	}
 	png_write_end(png, info);
 
@@ -559,6 +592,71 @@ int picture::save_png(const char* filename, const char *extra_comments)
 	return 0;
 }
 
+void picture::remove_noise( int row, int half_len, int noise_margin )
+{
+	if( ( row <= noise_height_margin ) || ( row >= height ) ) return ;
+
+	      unsigned char * line_ante = vidbuf + (row - noise_height_margin) * width * depth;
+	// Copy the new calculated value (at previous call) to all channels.
+	// TODO: Do that when switching off noise removal, otherwise a couple of colored pixels are left.
+	for( int col = half_len ; col < width - half_len; ++col )
+	{
+		int offset = col * depth ;
+		line_ante[ offset ] = line_ante[ offset + 2 ] = line_ante[ offset + 1 ];
+	}
+
+	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
+	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
+	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
+
+	/// Takes into account the first component only.
+	for( int col = half_len ; col < width - half_len; ++col )
+	{
+		int curr_pix = line_curr[ col * depth ];
+		if( curr_pix < 0 ) abort();
+		if( curr_pix > 255 ) abort();
+
+		int pix_min = 255, pix_max = 0;
+		const int nb_neighbours = ( 2 * ( 2 * half_len + 1 ) );
+		int medians[nb_neighbours];
+		for( int subcol = col - half_len, tmp, nghb_i = 0 ; subcol <= col + half_len ; ++subcol )
+		{
+			int offset = subcol * depth ;
+			tmp = line_prev[ offset ];
+			if( tmp < pix_min ) pix_min = tmp ;
+			else if( tmp > pix_max ) pix_max = tmp ;
+			medians[nghb_i++] = tmp;
+
+			tmp = line_next[ offset ];
+			if( tmp < pix_min ) pix_min = tmp ;
+			else if( tmp > pix_max ) pix_max = tmp ;
+			medians[nghb_i++] = tmp;
+		}
+
+		// Maybe the pixel is between min and max.
+		int thres_min = pix_min - noise_margin;
+		if(thres_min < 0) thres_min = 0;
+		if(thres_min > pix_min) abort();
+
+		int thres_max = pix_max + noise_margin;
+		if(thres_max > 255 ) thres_max = 255;
+		if(thres_max < pix_max) abort();
+
+		if( ( curr_pix >= thres_min ) && ( curr_pix <= thres_max ) ) continue ;
+		if( pix_max < 0 ) abort() ;
+		if( pix_max > 255 ) abort() ;
+
+		std::sort( medians, medians + nb_neighbours );
+		int new_pix = medians[ nb_neighbours / 2 ];
+
+		if( new_pix < 0 ) abort() ;
+		/// Use this channel as a buffer. Beware that if we change the slant,
+		// this component might not be restored
+		// because the line position changed. Not a big problem.
+		// We might forbid slanting when de-noising.
+		line_curr[ col * depth + 1 ] = new_pix;
+	}
+}
 
 int picbox::handle(int event)
 {

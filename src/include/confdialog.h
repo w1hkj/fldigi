@@ -271,6 +271,7 @@ extern Fl_Value_Input2 *btnWefaxMaxRows;
 extern Fl_Input *btnWefaxSaveDir;
 extern Fl_Button *btnSelectFaxDestDir;
 extern Fl_Check_Button *btnWefaxHideTx;
+extern Fl_Check_Button *btnWefaxSaveMonochrome;
 extern Fl_Group *tabNavtex;
 extern Fl_Check_Button *btnNvtxAdifLog;
 extern Fl_Group *tabRig;
