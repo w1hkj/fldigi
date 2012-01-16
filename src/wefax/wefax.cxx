@@ -25,6 +25,7 @@
 
 #include <config.h>
 
+#include <unistd.h>
 #include <cstdlib>
 #include <sstream>
 #include <iostream>
