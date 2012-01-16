@@ -1133,12 +1133,14 @@ echo	   : %c\n",
 
 void rigCAT_close(void)
 {
-	if (rigCAT_open == false)
+	if (rigCAT_open == false || rigCAT_exit)
 		return;
 
 	pthread_mutex_lock(&rigCAT_mutex);
 		rigCAT_exit = true;
 	pthread_mutex_unlock(&rigCAT_mutex);
+
+	if (!rigCAT_thread) return;
 
 	pthread_join(*rigCAT_thread, NULL);
 
