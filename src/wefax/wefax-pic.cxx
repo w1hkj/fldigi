@@ -30,7 +30,9 @@
 #include <sstream>
 #include <iomanip>
 
+
 #include <time.h>
+#include <unistd.h>
 
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Button.H>
