@@ -1741,8 +1741,6 @@ void wefax_pic::create_both(bool called_from_fl_digi)
 			0, 0, extra_win_wid, 400 );
 	}
 	/// Explicitely does nothing here if conditions are not met.
-
-	show_both();
 }
 
 void wefax_pic::show_both()

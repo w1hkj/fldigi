@@ -938,7 +938,7 @@ void startup_modem(modem* m, int f)
 		wefax_pic::hide_both();
 		sldrHellBW->value(progdefaults.HELL_BW);
 	}
-	if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
+	else if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
 		ReceiveText->hide();
 		TransmitText->hide();
 		FHdisp->hide();
