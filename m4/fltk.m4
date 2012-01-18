@@ -33,7 +33,7 @@ AC_DEFUN([AC_FLDIGI_FLTK], [
   *** To build $PACKAGE you need a FLTK version that provides API 1.1, 1.2 or 1.3.
           ])
       fi
-      if test $FLDIGI_FLTK_API_MINOR -gt 1; then
+      if test $FLDIGI_FLTK_API_MINOR -gt 3; then
           AC_MSG_WARN([$PACKAGE_TARNAME may not work with FLTK $FLTK_API_VERSION])
       fi
       FLTK_CFLAGS=`$FLTK_CONFIG --cxxflags`
