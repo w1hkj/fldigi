@@ -328,14 +328,17 @@ void FTextRX::add(unsigned char c, int attr)
 			if (!wrapped) { // add a new line if not wrapped
 				insert("\n");
 				sbuf->append(s + 2);
+				s_text.clear();
+				s_style.clear();
 				if (c != ' ') { // add character if not a space (no leading spaces)
-					for (int i = 0; cp[i]; ++i)
+					for (int i = 0; cp[i]; ++i) {
 						sbuf->append(s + 2);
+						s_style.append(s + 2);
+					}
+					s_text.append(cp);
 					insert(cp);
 				}
 			}
-			s_text.clear();
-			s_style.clear();
 		} else {
 			for (int i = 0; cp[i]; ++i)
 				sbuf->append(s + 2);
