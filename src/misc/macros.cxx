@@ -2008,11 +2008,14 @@ void MACROTEXT::loadDefault()
 {
 	int erc;
 	std::string Filename = MacrosDir;
-	if (progdefaults.UseLastMacro == true)
-		Filename.append(progStatus.LastMacroFile);
-	else {
+	if (progdefaults.UseLastMacro == true) {
+		if (progStatus.LastMacroFile.find("/") == string::npos)
+			Filename.append(progStatus.LastMacroFile);
+		else
+			Filename.assign(progStatus.LastMacroFile);
+	} else {
 		Filename.append("macros.mdf");
-		progStatus.LastMacroFile = "macros.mdf";
+		progStatus.LastMacroFile = Filename;
 	}
 	if ((erc = loadMacros(Filename)) != 0)
 #ifndef __WOE32__
@@ -2025,11 +2028,19 @@ void MACROTEXT::loadDefault()
 void MACROTEXT::openMacroFile()
 {
 	std::string deffilename = MacrosDir;
-	deffilename.append(progStatus.LastMacroFile);
-    const char *p = FSEL::select(_("Open macro file"), _("Fldigi macro definition file\t*.{mdf}"), deffilename.c_str());
+
+	if (progStatus.LastMacroFile.find("/") == string::npos)
+		deffilename.append(progStatus.LastMacroFile);
+	else
+		deffilename.assign(progStatus.LastMacroFile);
+
+	const char *p = FSEL::select(
+			_("Open macro file"),
+			_("Fldigi macro definition file\t*.{mdf}"),
+			deffilename.c_str());
     if (p) {
 		loadMacros(p);
-		progStatus.LastMacroFile = fl_filename_name(p);
+		progStatus.LastMacroFile = p;
 	}
 	showMacroSet();
 }
@@ -2037,8 +2048,13 @@ void MACROTEXT::openMacroFile()
 void MACROTEXT::saveMacroFile()
 {
 	std::string deffilename = MacrosDir;
-	deffilename.append(progStatus.LastMacroFile);
-    const char *p = FSEL::saveas(
+
+	if (progStatus.LastMacroFile.find("/") == string::npos)
+		deffilename.append(progStatus.LastMacroFile);
+	else
+		deffilename.assign(progStatus.LastMacroFile);
+
+	const char *p = FSEL::saveas(
 			_("Save macro file"), 
 			_("Fldigi macro definition file\t*.{mdf}"), 
 			deffilename.c_str());
@@ -2046,7 +2062,7 @@ void MACROTEXT::saveMacroFile()
 		string sp = p;
 		if (sp.rfind(".mdf") == string::npos) sp.append(".mdf");
 		saveMacros(sp.c_str());
-		progStatus.LastMacroFile = fl_filename_name(sp.c_str());
+		progStatus.LastMacroFile = sp;
 	}
 }
 
