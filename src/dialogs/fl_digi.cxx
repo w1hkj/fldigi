@@ -5546,8 +5546,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 			ReceiveText->add('\n', style);
 			break;
 		default:
-
-			ReceiveText->add(data, style);
+			ReceiveText->add(data & 0x7F, style);
 	}
 
 	last = data;
