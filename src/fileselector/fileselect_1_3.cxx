@@ -67,9 +67,6 @@ const char* FSEL::get_file(void)
 		case  1: break;  // CANCEL
 		default: 
 			filename = inst->chooser->filename();
-			string::size_type i = filename.rfind('/');
-			if (i != string::npos)
-				inst->chooser->directory(filename.substr(0, i).c_str());
 			return filename.c_str();
 	}
 	return NULL; // same as CANCELLED or ERROR
@@ -82,19 +79,9 @@ const char* FSEL::select(const char* title, const char* filter, const char* def,
 {
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
-	if (def) {
-		char *s = strdup(def), *dir = dirname(s);
-		if (strcmp(".", dir))
-			inst->chooser->directory(dir);
-		free(s);
-		s = strdup(def);
-		inst->chooser->preset_file(basename(s));
-		free(s);
-	} else {
-		inst->chooser->directory(NULL);
-	}
 	inst->chooser->options(Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_FILE);
+	if (def) inst->chooser->preset_file(def);
 
 	const char* fn = inst->get_file();
 	if (fsel)
@@ -109,22 +96,12 @@ const char* FSEL::saveas(const char* title, const char* filter, const char* def,
 {
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
-	if (def) {
-		char *s = strdup(def), *dir = dirname(s);
-		if (strcmp(".", dir))
-			inst->chooser->directory(dir);
-		free(s);
-		s = strdup(def);
-		inst->chooser->preset_file(basename(s));
-		free(s);
-	} else {
-		inst->chooser->directory(NULL);
-	}
 	inst->chooser->options(
 		Fl_Native_File_Chooser::SAVEAS_CONFIRM |
 		Fl_Native_File_Chooser::NEW_FOLDER |
 		Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
+	if (def) inst->chooser->preset_file(def);
 
 	const char* fn = inst->get_file();
 	if (fsel)
@@ -138,11 +115,10 @@ const char* FSEL::dir_select(const char* title, const char* filter, const char* 
 {
 	inst->chooser->title(title);
 	inst->chooser->filter(filter);
-	if (def)
-		inst->chooser->directory(def);
 	inst->chooser->options(Fl_Native_File_Chooser::NEW_FOLDER |
 			       Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
+	if (def) inst->chooser->directory(def);
 
 	return inst->get_file();
 }

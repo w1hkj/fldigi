@@ -610,7 +610,10 @@ static void wefax_cb_pic_rx_save( Fl_Widget *, void *)
 	std::string dfname = default_dir_get( progdefaults.wefax_save_dir );
 	dfname.append( wefax_serviceme->suggested_filename()  );
 
-	const char *file_name = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), NULL);
+	const char *file_name = FSEL::saveas(
+						_("Save image as:"),
+						ffilter,
+						dfname.c_str());
 	/// Beware that no extra comments are saved here.
 	if (file_name) {
 		wefax_pic_rx_picture->save_png(file_name);

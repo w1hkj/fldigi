@@ -79,9 +79,11 @@ void Export_CSV()
 
 	cQsoRec *rec;
 
-	string filters = "CSV\t*." "csv";
-	const char* p = FSEL::saveas(_("Export to CSV file"), filters.c_str(),
-					 "export." "csv");
+	string filters = "CSV\t*.csv";
+	const char* p = FSEL::saveas(
+						_("Export to CSV file"),
+						filters.c_str(),
+						"export.csv");
 	if (!p)
 		return;
 
@@ -101,9 +103,11 @@ void Export_TXT()
 
 	cQsoRec *rec;
 
-	string filters = "TEXT\t*." "txt";
-	const char* p = FSEL::saveas(_("Export to fixed field text file"), filters.c_str(),
-					 "export." "txt");
+	string filters = "TEXT\t*.txt";
+	const char* p = FSEL::saveas(
+						_("Export to fixed field text file"),
+						filters.c_str(),
+						"export.txt");
 	if (!p)
 		return;
 
@@ -123,9 +127,15 @@ void Export_ADIF()
 
 	cQsoRec *rec;
 
-	string filters = "ADIF\t*." ADIF_SUFFIX;
-	const char* p = FSEL::saveas(_("Export to ADIF file"), filters.c_str(),
-					 "export." ADIF_SUFFIX);
+	string filters;
+	string defname;
+	filters.assign("ADIF\t*.").append(ADIF_SUFFIX);
+	defname.assign("export.").append(ADIF_SUFFIX);
+	const char* p = FSEL::saveas(
+						_("Export to ADIF file"),
+						filters.c_str(),
+						defname.c_str());
+
 	if (!p)
 		return;
 
@@ -177,7 +187,7 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	saveLogbook();
 
 	logbook_filename = LogsDir;
-	logbook_filename.append("newlog." ADIF_SUFFIX);
+	logbook_filename.append("newlog.").append(ADIF_SUFFIX);
 	progdefaults.logbookfilename = logbook_filename;
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 	progdefaults.changed = true;
@@ -200,8 +210,13 @@ void adif_read_OK()
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
-	const char* p = FSEL::select(_("Open logbook file"), "ADIF\t*." ADIF_SUFFIX,
-				     logbook_filename.c_str());
+	string filters;
+	filters.assign("ADIF\t*.").append(ADIF_SUFFIX);
+
+	const char* p = FSEL::select(
+					_("Open logbook file"),
+					filters.c_str(),
+					logbook_filename.c_str());
 	if (p) {
 		saveLogbook();
 		qsodb.deleteRecs();
@@ -217,8 +232,13 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 }
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
-	const char* p = FSEL::saveas(_("Save logbook file"), "ADIF\t*." ADIF_SUFFIX,
-				     logbook_filename.c_str());
+	string filter;
+	filter.assign("ADIF\t*.").append(ADIF_SUFFIX);
+
+	const char* p = FSEL::saveas(
+						_("Save logbook file"),
+						filter.c_str(),
+						logbook_filename.c_str());
 	if (p) {
 		logbook_filename = p;
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
@@ -1305,8 +1325,10 @@ void WriteCabrillo()
 	string filters = "TEXT\t*.txt";
 	string strContest = "";
 
-	const char* p = FSEL::saveas(_("Create cabrillo report"), filters.c_str(),
-					 "contest.txt");
+	const char* p = FSEL::saveas(
+						_("Create cabrillo report"),
+						filters.c_str(),
+						"contest.txt");
 	if (!p)
 		return;
 
