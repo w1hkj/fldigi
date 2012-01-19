@@ -3622,12 +3622,6 @@ void setTabColors()
 }
 
 void showMacroSet() {
-	if (progdefaults.DisplayMacroFilename) {
-		string Macroset = "\n<<<===== Macro File ";
-		Macroset.append(progStatus.LastMacroFile);
-		Macroset.append(" Loaded =====>>>\n");
-		ReceiveText->add(Macroset.c_str());
-	}
 	set_macroLabels();
 }
 
