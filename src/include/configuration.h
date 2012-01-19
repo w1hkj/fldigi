@@ -1335,6 +1335,31 @@
        ELEM_(bool, NVTX_AdifLog, "NAVTEXADIFLOG",                                       \
              "Logs Navtex messages in Adig log file",                                   \
              false)                                                                     \
+        /* WX fetch from NOAA */                                                        \
+        ELEM_(std::string, wx_sta, "WX_STA",                                            \
+              "4 letter specifier for wx station",                                      \
+              "KMDQ")                                                                   \
+        ELEM_(bool, wx_condx, "WX_CONDX",                                               \
+              "weather conditions",                                                     \
+              true)                                                                     \
+        ELEM_(bool, wx_temp, "WX_TEMP",                                                 \
+              "temperature",                                                            \
+              true)                                                                     \
+        ELEM_(bool, wx_celsius, "WX_CELSIUS",                                           \
+              "report in Celsius",                                                      \
+              false)                                                                    \
+        ELEM_(bool, wx_wind, "WX_WIND",                                                 \
+              "wind direction/speed",                                                   \
+              true)                                                                     \
+        ELEM_(bool, wx_kph, "WX_KPH",                                                   \
+              "report speed in kilometers per hour",                                    \
+              false)                                                                    \
+        ELEM_(bool, wx_baro, "WX_BARO",                                                 \
+              "barometric pressure",                                                    \
+              true)                                                                     \
+        ELEM_(bool, wx_mbars, "WX_MBARS",                                               \
+              "report pressure in millibars",                                           \
+              false)                                                                    \
 
 
 // declare the struct
