@@ -403,6 +403,7 @@ fldigi_SOURCES += \
 	include/table.h \
 	include/textio.h \
 	include/psk_browser.h \
+	include/weather.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -453,6 +454,7 @@ fldigi_SOURCES += \
 	misc/threads.cxx \
 	misc/timeops.cxx \
 	misc/util.cxx \
+	misc/weather.cxx \
 	mt63/dsp.cxx \
 	mt63/mt63.cxx \
 	mt63/mt63base.cxx \

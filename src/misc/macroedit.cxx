@@ -116,6 +116,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<ZT>\tzulu time HHMMZ"));
 	w->add(_("<LD>\tlocal date YYYY-MM-DD"));
 	w->add(_("<ZD>\tzulu date YYYY-MM-DD Z"));
+	w->add(_("<WX>\tget weather data"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CNTR>\tcontest counter"));

@@ -1,81 +1,100 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0300 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {} 
-
-decl {\#include <FL/Fl_Tooltip.H>} {} 
-
-decl {\#include <FL/Fl_Box.H>} {} 
-
-decl {\#include <FL/filename.H>} {} 
-
-decl {\#include "main.h"} {} 
-
-decl {\#include "fl_digi.h"} {} 
-
-decl {\#include "soundconf.h"} {} 
-
-decl {\#include "globals.h"} {public
+decl {\#include <config.h>} {private local
 } 
 
-decl {\#include "modem.h"} {public
+decl {\#include <FL/Fl_Tooltip.H>} {private local
 } 
 
-decl {\#include "configuration.h"} {public
+decl {\#include <FL/Fl_Box.H>} {private local
 } 
 
-decl {\#include "combo.h"} {public
+decl {\#include <FL/filename.H>} {private local
 } 
 
-decl {\#include "colorsfonts.h"} {} 
-
-decl {\#include "waterfall.h"} {} 
-
-decl {\#include "rigxml.h"} {} 
-
-decl {\#include "lookupcall.h"} {} 
-
-decl {\#include "icons.h"} {} 
-
-decl {\#include "Viewer.h"} {} 
-
-decl {\#include "pskrep.h"} {global
+decl {\#include "main.h"} {private local
 } 
 
-decl {\#include "flinput2.h"} {public
+decl {\#include "fl_digi.h"} {private local
 } 
 
-decl {\#include "flslider2.h"} {public
+decl {\#include "soundconf.h"} {private local
 } 
 
-decl {\#include "flmisc.h"} {public
+decl {\#include "globals.h"} {public local
 } 
 
-decl {\#include "logsupport.h"} {} 
+decl {\#include "modem.h"} {public local
+} 
 
-decl {\#include "notify.h"} {} 
+decl {\#include "configuration.h"} {public local
+} 
 
-decl {\#include "debug.h"} {} 
+decl {\#include "combo.h"} {public local
+} 
 
-decl {\#include "status.h"} {} 
+decl {\#include "colorsfonts.h"} {private local
+} 
 
-decl {\#include "rx_extract.h"} {} 
+decl {\#include "waterfall.h"} {private local
+} 
+
+decl {\#include "rigxml.h"} {private local
+} 
+
+decl {\#include "lookupcall.h"} {private local
+} 
+
+decl {\#include "icons.h"} {private local
+} 
+
+decl {\#include "Viewer.h"} {private local
+} 
+
+decl {\#include "pskrep.h"} {private global
+} 
+
+decl {\#include "flinput2.h"} {public local
+} 
+
+decl {\#include "flslider2.h"} {public local
+} 
+
+decl {\#include "flmisc.h"} {public local
+} 
+
+decl {\#include "logsupport.h"} {private local
+} 
+
+decl {\#include "notify.h"} {private local
+} 
+
+decl {\#include "debug.h"} {private local
+} 
+
+decl {\#include "status.h"} {private local
+} 
+
+decl {\#include "rx_extract.h"} {private local
+} 
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
-\#endif} {} 
-
-decl {Fl_Double_Window *dlgConfig;} {public
+\#endif} {private local
 } 
 
-decl {Mode_Browser* mode_browser;} {public
+decl {Fl_Double_Window *dlgConfig;} {public local
 } 
 
-Function {set_qrzxml_buttons(Fl_Button* b)} {open return_type void
+decl {Mode_Browser* mode_browser;} {public local
+} 
+
+Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
 } {
   code {Fl_Button* qrzbxml[] = { btnQRZXMLnotavailable, btnQRZcdrom, btnQRZsub,
                          btnHamcall,
@@ -85,7 +104,7 @@ for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
 	qrzbxml[i]->value(b == qrzbxml[i]);} {}
 } 
 
-Function {set_qrzweb_buttons(Fl_Button* b)} {open return_type void
+Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 } {
   code {Fl_Button* qrzbweb[] = { btnQRZWEBnotavailable, btnQRZonline,
                               btnHAMCALLonline,
@@ -117,8 +136,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -197,7 +216,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
+        label UI
         xywh {0 25 506 346} hide
       } {
         Fl_Tabs tabsUI {open
@@ -205,7 +224,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {2 59 496 300} box ENGRAVED_FRAME
@@ -692,7 +711,7 @@ defined here. Tab and newline are automatically included.} xywh {144 258 279 24}
           }
           Fl_Group tabMBars {
             label Macros
-            xywh {0 50 500 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {2 250 496 40} box ENGRAVED_FRAME
@@ -2339,7 +2358,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig open
+        label Rig
         tooltip {Transceiver control} xywh {0 23 500 345} hide
       } {
         Fl_Tabs tabsRig {open
@@ -2957,7 +2976,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio open
+        label Audio
         tooltip {Audio devices} xywh {0 25 500 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3520,8 +3539,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
-        xywh {0 25 500 345} hide
+        label Misc open
+        xywh {0 25 500 345}
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 500 345} selection_color 50
@@ -3544,7 +3563,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNBEMS {
             label NBEMS open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
@@ -3849,10 +3868,78 @@ progdefaults.changed = true;}
               code0 {o->value(progdefaults.DTMFdecode);}
             }
           }
+          Fl_Group tabWX {
+            label WX open
+            xywh {0 50 500 320}
+          } {
+            Fl_Group {} {
+              label {Weather feed specification} open
+              xywh {5 60 490 300} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Input inpWXsta {
+                label {Airport ID code}
+                callback {progdefaults.wx_sta = o->value();
+progdefaults.changed = true;}
+                tooltip {for example KMDQ for 
+Huntsville-Madison Executive Airport, AL} xywh {150 85 43 24} align 8
+                code0 {o->value(progdefaults.wx_sta.c_str());}
+              }
+              Fl_Check_Button btn_wx_condx {
+                label Conditions
+                callback {progdefaults.wx_condx=o->value();
+progdefaults.changed = true;}
+                tooltip {current wx conditions} xywh {150 125 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_condx);}
+              }
+              Fl_Check_Button btn_wx_temp {
+                label Temp
+                callback {progdefaults.wx_temp=o->value();
+progdefaults.changed = true;}
+                tooltip temperature xywh {150 156 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_temp);}
+              }
+              Fl_Check_Button btn_wx_celsius {
+                label Celsius
+                callback {progdefaults.wx_celsius=o->value();
+progdefaults.changed = true;}
+                tooltip {display as Celsius} xywh {258 156 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_celsius);}
+              }
+              Fl_Check_Button btn_wx_wind {
+                label {Wind dir/spd}
+                callback {progdefaults.wx_wind = o->value();
+progdefaults.changed = true;}
+                tooltip {wind direction in degrees
+speed in mph} xywh {150 187 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_wind);}
+              }
+              Fl_Check_Button btn_wx_kph {
+                label {kilometers / hour}
+                callback {progdefaults.wx_kph=o->value();
+progdefaults.changed = true;}
+                tooltip {display wind speed in kph} xywh {258 187 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_kph);}
+              }
+              Fl_Check_Button btn_wx_baro {
+                label {Baro Press}
+                callback {progdefaults.wx_baro = o->value();
+progdefaults.changed = true;}
+                tooltip {barometric pressure in inches of mercury} xywh {150 219 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_baro);}
+              }
+              Fl_Check_Button btn_wx_mbars {
+                label mbars
+                callback {progdefaults.wx_mbars=o->value();
+progdefaults.changed = true;} selected
+                tooltip {display baro in millibars} xywh {258 219 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wx_mbars);}
+              }
+            }
+          }
         }
       }
       Fl_Group tabQRZ {
-        label Web open
+        label Web
         tooltip {Callsign database} xywh {0 25 500 345} hide
       } {
         Fl_Tabs {} {open

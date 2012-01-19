@@ -47,6 +47,7 @@
 #include "network.h"
 #include "logsupport.h"
 #include "icons.h"
+#include "weather.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -1427,6 +1428,13 @@ static void pFILWID(std::string& s, size_t& i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void pWX(std::string &s, size_t &i, size_t endbracket)
+{
+	string wx;
+	getwx(wx);
+	s.replace(i, 4, wx);
+}
+
 void set_macro_env(void)
 {
 	enum {
@@ -1923,6 +1931,7 @@ static const MTAGS mtags[] = {
 #ifdef __WIN32__
 {"<TALK:",		pTALK},
 #endif
+{"<WX>",		pWX},
 {"<!WPM:",		pQueWPM},
 {"<!RISE:",		pQueRISETIME},
 {"<!PRE:",		pQuePRE},
