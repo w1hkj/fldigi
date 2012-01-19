@@ -2023,6 +2023,11 @@ void MACROTEXT::loadDefault()
 #else
 	;
 #endif
+	if (progdefaults.DisplayMacroFilename) {
+		string Macroset;
+		Macroset.assign("\nMacros: ").append(progStatus.LastMacroFile).append("\n");
+		ReceiveText->add(Macroset.c_str());
+	}
 }
 
 void MACROTEXT::openMacroFile()
@@ -2043,6 +2048,11 @@ void MACROTEXT::openMacroFile()
 		progStatus.LastMacroFile = p;
 	}
 	showMacroSet();
+	if (progdefaults.DisplayMacroFilename) {
+		string Macroset;
+		Macroset.assign("\nMacros: ").append(progStatus.LastMacroFile).append("\n");
+		ReceiveText->add(Macroset.c_str());
+	}
 }
 
 void MACROTEXT::saveMacroFile()
