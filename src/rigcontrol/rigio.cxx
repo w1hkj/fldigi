@@ -89,7 +89,7 @@ bool sendCommand (string s, int retnbr)
 
 	retval = rigio.WriteBuffer((unsigned char *)s.c_str(), numwrite);
 	if (retval <= 0)
-		LOG_ERROR("Write error %d", retval);
+		LOG_VERBOSE("Write error %d", retval);
 
 	memset(replybuff, 0, RXBUFFSIZE + 1);
 	numread = 0;
@@ -302,7 +302,7 @@ long long fm_freqdata(DATA d, size_t p)
 	return fret;
 }
 
-long long rigCAT_getfreq()
+long long rigCAT_getfreq(int retries, bool &failed)
 {
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
@@ -310,7 +310,9 @@ long long rigCAT_getfreq()
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long long f = 0;
 
+	failed = false;
 	if (nonCATrig) {
+		failed = true;
 		return progStatus.noCATfreq;
 	}
 
@@ -322,6 +324,7 @@ long long rigCAT_getfreq()
 	}
 
 	if (itrCmd == commands.end()) {
+		failed = true;
 		return progStatus.noCATfreq; // get_freq command is not defined!
 	}
 
@@ -333,7 +336,10 @@ long long rigCAT_getfreq()
 	if (modeCmd.str2.empty() == false)
 		strCmd.append(modeCmd.str2);
 
-	if ( !modeCmd.info.size() ) return 0;
+	if ( !modeCmd.info.size() ) {
+		failed = true;
+		return 0;
+	}
 
 	for (list<XMLIOS>::iterator preply = reply.begin(); preply != reply.end(); ++preply) {
 		if (preply->SYMBOL != modeCmd.info)
@@ -343,7 +349,8 @@ long long rigCAT_getfreq()
 		len1 = rTemp.str1.size();
 		len2 = rTemp.str2.size();
 
-		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+//		for (int n = 0; n < progdefaults.RigCatRetries; n++) {
+		for (int n = 0; n < retries; n++) {
 			if (n && progdefaults.RigCatTimeout > 0)
 				MilliSleep(progdefaults.RigCatTimeout);
 // send the command
@@ -389,7 +396,8 @@ retry_get_freq: ;
 		}
 	}
 	if (progdefaults.RigCatVSP == false)
-		LOG_WARN("Retries failed");
+		LOG_VERBOSE("Retries failed");
+	failed = true;
 	return 0;
 }
 
@@ -414,7 +422,7 @@ void rigCAT_setfreq(long long f)
 		++itrCmd;
 	}
 	if (itrCmd == commands.end()) {
-		LOG_WARN("SET_FREQ not defined");
+		LOG_VERBOSE("SET_FREQ not defined");
 		return;
 	}
 
@@ -455,7 +463,7 @@ void rigCAT_setfreq(long long f)
 		}
 	}
 	if (progdefaults.RigCatVSP == false)
-		LOG_WARN("Retries failed");
+		LOG_VERBOSE("Retries failed");
 }
 
 string rigCAT_getmode()
@@ -552,7 +560,7 @@ retry_get_mode: ;
 		}
 	}
 	if (progdefaults.RigCatVSP == false)
-		LOG_WARN("Retries failed");
+		LOG_VERBOSE("Retries failed");
 	return "";
 }
 
@@ -627,7 +635,7 @@ void rigCAT_setmode(const string& md)
 		}
 	}
 	if (progdefaults.RigCatVSP == false)
-		LOG_WARN("Retries failed");
+		LOG_VERBOSE("Retries failed");
 }
 
 string rigCAT_getwidth()
@@ -724,7 +732,7 @@ retry_get_width: ;
 		}
 	}
 	if (progdefaults.RigCatVSP == false)
-		LOG_WARN("Retries failed");
+		LOG_VERBOSE("Retries failed");
 	return "";
 }
 
@@ -801,7 +809,7 @@ void rigCAT_setwidth(const string& w)
 			if (ok) return;
 		}
 	}
-	LOG_WARN("Retries failed");
+	LOG_VERBOSE("Retries failed");
 }
 
 void rigCAT_pttON()
@@ -855,7 +863,7 @@ void rigCAT_pttON()
 			if (ok) return;
 		}
 	}
-	LOG_WARN("Retries failed");
+	LOG_VERBOSE("Retries failed");
 }
 
 void rigCAT_pttOFF()
@@ -908,7 +916,7 @@ void rigCAT_pttOFF()
 			if (ok) return;
 		}
 	}
-	LOG_WARN("Retries failed");
+	LOG_VERBOSE("Retries failed");
 }
 
 void rigCAT_sendINIT()
@@ -961,7 +969,7 @@ void rigCAT_sendINIT()
 			if (ok) return;
 		}
 	}
-	LOG_WARN("Retries failed");
+	LOG_VERBOSE("Retries failed");
 }
 
 void rigCAT_defaults()
@@ -1068,7 +1076,7 @@ echo	   : %c\n",
 			progdefaults.RigCatECHO ? 'T' : 'F');
 
 		if (rigio.OpenPort() == false) {
-			LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+			LOG_VERBOSE("Cannot open serial port %s", rigio.Device().c_str());
 			nonCATrig = true;
 			init_NoRig_RigDialog();
 			return false;
@@ -1078,8 +1086,18 @@ echo	   : %c\n",
 
 		nonCATrig = false;
 
-		if (rigCAT_getfreq() == -1) { // will set nonCATrig to true if getfreq not spec'd
-			LOG_ERROR("Xcvr Freq request not answered");
+// must be able to get frequency 3 times in sequence or serial port might
+// be shared with another application (flrig)
+		bool failed = false;
+		for (int i = 1; i <= 5; i++) {
+			rigCAT_getfreq(1, failed);
+			if (failed) break;
+			LOG_INFO("Passed serial port test # %d", i);
+//			MilliSleep(50);
+		}
+
+		if (failed) {
+			LOG_INFO("Failed serial port test");
 			rigio.ClosePort();
 			nonCATrig = true;
 			init_NoRig_RigDialog();
@@ -1185,6 +1203,7 @@ static void *rigCAT_loop(void *args)
 
 	long long freq = 0L;
 	string sWidth, sMode;
+	bool failed;
 
 	for (;;) {
 		MilliSleep(200);
@@ -1195,7 +1214,7 @@ static void *rigCAT_loop(void *args)
 			break;
 
 		pthread_mutex_lock(&rigCAT_mutex);
-			freq = rigCAT_getfreq();
+			freq = rigCAT_getfreq(progdefaults.RigCatRetries, failed);
 		pthread_mutex_unlock(&rigCAT_mutex);
 
 		pthread_mutex_lock(&rigCAT_mutex);
