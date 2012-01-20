@@ -9,7 +9,7 @@ extern Cserial rigio;
 
 extern bool hexout(const std::string&);
 
-extern long long rigCAT_getfreq();
+extern long long rigCAT_getfreq(int retries, bool &failed);
 extern void rigCAT_setfreq(long long);
 
 extern std::string rigCAT_getmode();
