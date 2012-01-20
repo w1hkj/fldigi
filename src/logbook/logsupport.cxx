@@ -79,11 +79,12 @@ void Export_CSV()
 
 	cQsoRec *rec;
 
+	string title = _("Export to CSV file");
 	string filters = "CSV\t*.csv";
-	const char* p = FSEL::saveas(
-						_("Export to CSV file"),
-						filters.c_str(),
-						"export.csv");
+#ifdef __APPLE__
+	filters.append("\n");
+#endif
+	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "export.csv");
 	if (!p)
 		return;
 
@@ -94,7 +95,9 @@ void Export_CSV()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-	txtFile.writeCSVFile(p, &qsodb);
+	string sp = p;
+	if (sp.find(".csv") == string::npos) sp.append(".csv");
+	txtFile.writeCSVFile(sp.c_str(), &qsodb);
 }
 
 void Export_TXT()
@@ -102,12 +105,12 @@ void Export_TXT()
 	if (chkExportBrowser->nchecked() == 0) return;
 
 	cQsoRec *rec;
-
+	string title = _("Export to fixed field text file");
 	string filters = "TEXT\t*.txt";
-	const char* p = FSEL::saveas(
-						_("Export to fixed field text file"),
-						filters.c_str(),
-						"export.txt");
+#ifdef __APPLE__
+	filters.append("\n");
+#endif
+	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "export.txt");
 	if (!p)
 		return;
 
@@ -118,6 +121,8 @@ void Export_TXT()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
+	string sp = p;
+	if (sp.find(".txt") == string::npos) sp.append(".txt");
 	txtFile.writeTXTFile(p, &qsodb);
 }
 
@@ -127,14 +132,15 @@ void Export_ADIF()
 
 	cQsoRec *rec;
 
+	string title = _("Export to ADIF file");
 	string filters;
 	string defname;
 	filters.assign("ADIF\t*.").append(ADIF_SUFFIX);
+#ifdef __APPLE__
+	filters.append("\n");
+#endif
 	defname.assign("export.").append(ADIF_SUFFIX);
-	const char* p = FSEL::saveas(
-						_("Export to ADIF file"),
-						filters.c_str(),
-						defname.c_str());
+	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), defname.c_str());
 
 	if (!p)
 		return;
@@ -146,7 +152,9 @@ void Export_ADIF()
 			qsodb.qsoUpdRec (i, rec);
 		}
 	}
-	adifFile.writeFile (p, &qsodb);
+	string sp = p;
+	if (sp.find("."ADIF_SUFFIX) == string::npos) sp.append("."ADIF_SUFFIX);
+	adifFile.writeFile (sp.c_str(), &qsodb);
 }
 
 static savetype export_to = ADIF;
@@ -210,13 +218,14 @@ void adif_read_OK()
 
 void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
+	string title = _("Open logbook file");
 	string filters;
 	filters.assign("ADIF\t*.").append(ADIF_SUFFIX);
+#ifdef __APPLE__
+	filters.append("\n");
+#endif
 
-	const char* p = FSEL::select(
-					_("Open logbook file"),
-					filters.c_str(),
-					logbook_filename.c_str());
+	const char* p = FSEL::select( title.c_str(), filters.c_str(), logbook_filename.c_str());
 	if (p) {
 		saveLogbook();
 		qsodb.deleteRecs();
@@ -232,15 +241,17 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 }
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
+	string title = _("Save logbook file");
 	string filter;
 	filter.assign("ADIF\t*.").append(ADIF_SUFFIX);
-
-	const char* p = FSEL::saveas(
-						_("Save logbook file"),
-						filter.c_str(),
-						logbook_filename.c_str());
+#ifdef __APPLE__
+	filter.append("\n");
+#endif
+	const char* p = FSEL::saveas( title.c_str(), filter.c_str(), logbook_filename.c_str());
 	if (p) {
 		logbook_filename = p;
+		if (logbook_filename.find("."ADIF_SUFFIX) == string::npos)
+			logbook_filename.append("."ADIF_SUFFIX);
 		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 
 		cQsoDb::reverse = false;
@@ -1322,13 +1333,14 @@ void WriteCabrillo()
 
 	cQsoRec *rec;
 
+	string title = _("Create cabrillo report");
 	string filters = "TEXT\t*.txt";
+#ifdef __APPLE__
+	filters.append("\n");
+#endif
 	string strContest = "";
 
-	const char* p = FSEL::saveas(
-						_("Create cabrillo report"),
-						filters.c_str(),
-						"contest.txt");
+	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "contest.txt");
 	if (!p)
 		return;
 
@@ -1340,6 +1352,8 @@ void WriteCabrillo()
 		}
 	}
 
+	string sp = p;
+	if (sp.find(".txt") == string::npos) sp.append(".txt");
     FILE *cabFile = fopen (p, "w");
     if (!cabFile)
         return;
