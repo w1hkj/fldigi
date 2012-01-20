@@ -1,10 +1,27 @@
-2012-01-04  David Freese  <w1hkj@w1hkj.com>
 
-	cec2d68: Text edit dnd
-	a81d7fe: Text top-bottom margins
-	771b006: Tune abort
-	e599539: Align warning
-	b35f245: FLTK-1.3 mods
+
+=Version 3.21.36=
+
+2012-01-19  David Freese  <w1hkj@w1hkj.com>
+
+	58af524: Macro load display
+	f49bce0: File-dir selection
+	29221f1: Rx text wrap
+	73d1349: UTF-8 rx suppress
+	5de45c0: Get WX
+	22e1f8b: Update to fltk.m4
+	56104f4: GCC-4.7 fixes
+	e7ab7e2: Missing files
+	3b02bb3: RX last line
+	6e81738: Debug text
+	0f87d87: View browser find control
+	b6a8332: Rx text wrap
+	f1abc9e: Find chars fwd/back
+	6102e0c: Corner controls
+	2281325: Fltk-1.3.0
+	847fdd3: Rig cat close
+	672f4ee: OpBrowser font
+	5f8b712: Tune abort
 
 
 =Version 3.21.35=
