@@ -1416,6 +1416,25 @@ static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void doRIGMODE(std::string s)
+{
+	std::string sMode = s.substr(10, s.length() - 11);
+	qso_opMODE->value(sMode.c_str());
+	cb_qso_opMODE();
+	que_ok = true;
+}
+
+static void pQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGMODE };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 static void pFILWID(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
@@ -1426,6 +1445,26 @@ static void pFILWID(std::string& s, size_t& i, size_t endbracket)
 	qso_opBW->value(sWidth.c_str());
 	cb_qso_opBW();
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doFILWID(std::string s)
+{
+	std::string sWID = s.substr(9, s.length() - 10);
+	qso_opBW->value(sWID.c_str());
+	cb_qso_opBW();
+	que_ok = true;
+printf("BW %s\n", sWID.c_str());
+}
+
+static void pQueFILWID(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 static void pWX(std::string &s, size_t &i, size_t endbracket)
@@ -1838,7 +1877,7 @@ void queue_execute()
 
 bool queue_must_rx()
 {
-static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF";
+static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
 	if (cmds.empty()) return false;
 	CMDS cmd = cmds.front();
 	bool ret = (rxcmds.find(cmd.cmd.substr(0,5)) != std::string::npos);
@@ -1942,6 +1981,8 @@ static const MTAGS mtags[] = {
 {"<!IDLE:",		pQueIDLE},
 {"<!WAIT:",		pQueWAIT},
 {"<!MODEM:",	pQueMODEM},
+{"<!RIGMODE:",	pQueRIGMODE},
+{"<!FILWID:",	pQueFILWID},
 {0, 0}
 };
 
