@@ -25,7 +25,7 @@
 
 #include <string>
 
-extern void getwx(std::string& wx);
+extern void getwx(std::string& wx, const char *metar = NULL);
 
 #endif
 

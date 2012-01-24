@@ -52,11 +52,16 @@
 
 #include "weather.h"
 
-void getwx(std::string& wx)
+void getwx(std::string& wx, const char *metar)
 {
 	std::string url;
 	std::string retxml;
-	std::string wxsta = progdefaults.wx_sta;
+	std::string wxsta;
+	if (!metar)
+		wxsta = progdefaults.wx_sta;
+	else
+		wxsta = metar;
+
 	size_t p1, p2;
 
 	wx.clear();

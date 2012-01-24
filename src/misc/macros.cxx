@@ -1474,6 +1474,15 @@ static void pWX(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, 4, wx);
 }
 
+// <WX:metar>
+static void pWX2(std::string &s, size_t &i, size_t endbracket)
+{
+	string wx;
+	getwx(wx, s.substr(i+4, endbracket - i - 4).c_str());
+	s.replace(i, endbracket - i + 1, wx);
+}
+
+
 void set_macro_env(void)
 {
 	enum {
@@ -1971,6 +1980,7 @@ static const MTAGS mtags[] = {
 {"<TALK:",		pTALK},
 #endif
 {"<WX>",		pWX},
+{"<WX:",		pWX2},
 {"<!WPM:",		pQueWPM},
 {"<!RISE:",		pQueRISETIME},
 {"<!PRE:",		pQuePRE},
