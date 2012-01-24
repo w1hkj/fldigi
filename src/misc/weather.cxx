@@ -84,24 +84,25 @@ void getwx(std::string& wx, const char *metar)
 		if (p2 != std::string::npos)
 			wx.append("WX:   ").append(retxml.substr(p1, p2 - p1)).append("\n");
 	}
-	if (progdefaults.wx_temp &&
+	if ((progdefaults.wx_fahrenheit || progdefaults.wx_celsius) &&
 		(p1 = retxml.find("<temp_f>")) != std::string::npos) {
 		p1 += 8;
 		p2 = retxml.find("</temp_f>", p1);
 		if (p2 != std::string::npos) {
 			wx.append("Temp: ");
-			if (!progdefaults.wx_celsius)
-				wx.append(retxml.substr(p1, p2 - p1)).append(" F\n");
-			else {
+			if (progdefaults.wx_fahrenheit)
+				wx.append(retxml.substr(p1, p2 - p1)).append(" F ");
+			if (progdefaults.wx_celsius) {
 				float temp;
 				sscanf(retxml.substr(p1, p2 - p1).c_str(), "%f", &temp);
 				char ctemp[10];
-				snprintf(ctemp, sizeof(ctemp), "%.1f C\n", temp);
+				snprintf(ctemp, sizeof(ctemp), "%.1f C", (temp - 32)/2.12);
 				wx.append(ctemp);
 			}
+			wx.append("\n");
 		}
 	}
-	if (progdefaults.wx_wind &&
+	if ((progdefaults.wx_mph || progdefaults.wx_kph) &&
 		(p1 = retxml.find("<wind_degrees>")) != std::string::npos) {
 		p1 += 14;
 		p2 = retxml.find("</wind_degrees>", p1);
@@ -112,13 +113,13 @@ void getwx(std::string& wx, const char *metar)
 				p2 = retxml.find("</wind_mph>");
 				if (p2 != std::string::npos) {
 					wx.append(" at ");
-					if (!progdefaults.wx_kph)
-						wx.append(retxml.substr(p1, p2 - p1)).append(" mph");
-					else {
+					if (progdefaults.wx_mph)
+						wx.append(retxml.substr(p1, p2 - p1)).append(" mph ");
+					if (progdefaults.wx_kph) {
 						float mph;
 						sscanf(retxml.substr(p1, p2 - p1).c_str(), "%f", &mph);
 						char ckph[10];
-						snprintf(ckph, sizeof(ckph), "%.1f kph", 
+						snprintf(ckph, sizeof(ckph), "%.1f kph",
 							mph * 1.8288);
 						wx.append(ckph);
 					}
@@ -127,19 +128,19 @@ void getwx(std::string& wx, const char *metar)
 			wx.append("\n");
 		}
 	}
-	if (progdefaults.wx_baro &&
+	if ((progdefaults.wx_inches || progdefaults.wx_mbars) &&
 		(p1 = retxml.find("<pressure_in>")) != std::string::npos) {
 		p1 += 13;
 		p2 = retxml.find("</pressure_in>", p1);
 		if (p2 != std::string::npos) {
 			wx.append("Baro: ");
-			if (!progdefaults.wx_mbars)
-				wx.append(retxml.substr(p1, p2 - p1)).append(" in.");
-			else {
+			if (progdefaults.wx_inches)
+				wx.append(retxml.substr(p1, p2 - p1)).append(" in. ");
+			if (progdefaults.wx_mbars) {
 				float inches;
 				sscanf(retxml.substr(p1, p2 - p1).c_str(), "%f", &inches);
 				char cmbar[10];
-				snprintf(cmbar, sizeof(cmbar), "%.0f mbar", 
+				snprintf(cmbar, sizeof(cmbar), "%.0f mbar",
 					inches * 33.87);
 				wx.append(cmbar);
 			}
