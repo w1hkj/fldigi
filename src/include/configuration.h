@@ -1297,24 +1297,24 @@
         ELEM_(bool, wx_condx, "WX_CONDX",                                               \
               "weather conditions",                                                     \
               true)                                                                     \
-        ELEM_(bool, wx_temp, "WX_TEMP",                                                 \
-              "temperature",                                                            \
+        ELEM_(bool, wx_fahrenheit, "WX_FAHRENHEIT",                                     \
+              "report in Fahrenheit",                                                   \
               true)                                                                     \
         ELEM_(bool, wx_celsius, "WX_CELSIUS",                                           \
               "report in Celsius",                                                      \
-              false)                                                                    \
-        ELEM_(bool, wx_wind, "WX_WIND",                                                 \
-              "wind direction/speed",                                                   \
+              true)                                                                     \
+        ELEM_(bool, wx_mph, "WX_MPH",                                                   \
+              "report speed in miles per hour",                                         \
               true)                                                                     \
         ELEM_(bool, wx_kph, "WX_KPH",                                                   \
               "report speed in kilometers per hour",                                    \
-              false)                                                                    \
-        ELEM_(bool, wx_baro, "WX_BARO",                                                 \
-              "barometric pressure",                                                    \
+              true)                                                                     \
+        ELEM_(bool, wx_inches, "WX_INCHES",                                             \
+              "report pressure in inches of mercury",                                   \
               true)                                                                     \
         ELEM_(bool, wx_mbars, "WX_MBARS",                                               \
               "report pressure in millibars",                                           \
-              false)                                                                    \
+              true)                                                                     \
 
 
 // declare the struct
