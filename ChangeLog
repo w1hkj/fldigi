@@ -1,7 +1,14 @@
-2012-01-19  David Freese  <w1hkj@w1hkj.com>
+2012-01-23  David Freese  <w1hkj@w1hkj.com>
 
-	bb49f7a: UTF-8 rx suppress
-	67b1759: Get WX
+	60bac3c: Weather tag
+	56fb067: Inline tags
+	4187215: OS-X native file chooser
+	48998ff: rigcat serial test
+	19d9b1a: Macro load display
+	03c289c: File-dir selection
+	e0d4f89: Rx text wrap
+	dc190c4: UTF-8 rx suppress
+	92f313d: Get WX
 
 2012-01-18  Pavel Milanes Costa  <pavel@conas.co.cu>
 
