@@ -413,7 +413,9 @@ void QRZ_disp_result()
 			snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
 		inpAZ->value(buf);
 	}
-	inpNotes->value(lookup_notes.c_str());
+	string notes;
+	notes.assign(inpNotes->value()).append("\n").append(lookup_notes);
+	inpNotes->value(notes.c_str());
 }
 
 void QRZ_CD_query()
@@ -505,7 +507,9 @@ void QRZAlert()
 		qrznote.append(qrzalert);
 		qrzerror.clear();
 	}
-	inpNotes->value(qrznote.c_str());
+	string notes;
+	notes.assign(inpNotes->value()).append("\n").append(qrznote.c_str());
+	inpNotes->value(notes.c_str());
 }
 
 bool QRZLogin(string& sessionpage)
@@ -1001,10 +1005,10 @@ void CALLSIGNquery()
 
 	switch (DB_XML_query = static_cast<qrz_xmlquery_t>(progdefaults.QRZXML)) {
 	case QRZNET:
-		inpNotes->value("Request sent to\nqrz.com...");
+		LOG_INFO("%s","Request sent to\nqrz.com...");
 		break;
 	case HAMCALLNET:
-		inpNotes->value("Request sent to\nwww.hamcall.net...");
+		LOG_INFO("%s","Request sent to\nwww.hamcall.net...");
 		break;
 	case QRZCD:
 		if (!qCall)
@@ -1014,16 +1018,16 @@ void CALLSIGNquery()
 			progdefaults.QRZchanged = false;
 		}
 		if (!qCall->getQRZvalid()) {
-			inpNotes->value("QRZ DB error");
+			LOG_ERROR("%s","QRZ DB error");
 			DB_XML_query = QRZXMLNONE;
 			return;
 		}
 		break;
 	case CALLOOK:
-		inpNotes->value("Request sent to\nhttp://callook.info...");
+		LOG_INFO("%s","Request sent to\nhttp://callook.info...");
 		break;
 	case HAMQTH:
-		inpNotes->value("Request sent to \nhttp://hamqth.com...");
+		LOG_INFO("%s","Request sent to \nhttp://hamqth.com...");
 		break;
 	case QRZXMLNONE:
 		break;
