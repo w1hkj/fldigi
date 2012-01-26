@@ -1,6 +1,7 @@
-2012-01-25  David Freese  <w1hkj@w1hkj.com>
+2012-01-26  David Freese  <w1hkj@w1hkj.com>
 
-	1261094: Callsign query
+	46e4468: Macro filename
+	4a7468f: Callsign query
 	afc9487: WX Celsius
 	60bac3c: Weather tag
 	56fb067: Inline tags
