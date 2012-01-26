@@ -2059,15 +2059,18 @@ void MACROTEXT::loadDefault()
 {
 	int erc;
 	std::string Filename = MacrosDir;
+	Filename.append("macros.mdf");
+LOG_INFO("macro file name: %s", progStatus.LastMacroFile.c_str());
 	if (progdefaults.UseLastMacro == true) {
-		if (progStatus.LastMacroFile.find("/") == string::npos)
-			Filename.append(progStatus.LastMacroFile);
-		else
+		if (progStatus.LastMacroFile.find("/") != string::npos ||
+			progStatus.LastMacroFile.find("\\") != string::npos)
 			Filename.assign(progStatus.LastMacroFile);
-	} else {
-		Filename.append("macros.mdf");
-		progStatus.LastMacroFile = Filename;
+		else
+			Filename.assign(MacrosDir).append(progStatus.LastMacroFile);
 	}
+LOG_INFO("loading: %s", Filename.c_str());
+	progStatus.LastMacroFile = Filename;
+
 	if ((erc = loadMacros(Filename)) != 0)
 #ifndef __WOE32__
 		LOG_ERROR("Error #%d loading %s\n", erc, Filename.c_str());
