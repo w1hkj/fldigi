@@ -1,14 +1,25 @@
 
 
+=Version 3.21.37=
+
+2012-01-26  David Freese  <w1hkj@w1hkj.com>
+
+	c4336b7: Macro filename
+	ba5b5d5: Callsign query
+	2af9ebc: WX Celsius
+	62d9f42: Weather tag
+	3fc748e: Inline tags
+	3ae8ee9: OS-X native file chooser
+
+
 =Version 3.21.36=
 
-2012-01-19  David Freese  <w1hkj@w1hkj.com>
-
-	58af524: Macro load display
-	f49bce0: File-dir selection
-	29221f1: Rx text wrap
-	73d1349: UTF-8 rx suppress
-	5de45c0: Get WX
+	5cc14a1: rigcat serial test
+	4c0526a: Macro load display
+	5cbed0c: File-dir selection
+	59e8dc9: Rx text wrap
+	2dfd6fd: UTF-8 rx suppress
+	c36983e: Get WX
 	22e1f8b: Update to fltk.m4
 	56104f4: GCC-4.7 fixes
 	e7ab7e2: Missing files
