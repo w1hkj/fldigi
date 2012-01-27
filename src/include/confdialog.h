@@ -418,6 +418,8 @@ extern Fl_Group *tabDTMF;
 extern Fl_Check_Button *chkDTMFdecode;
 extern Fl_Group *tabWX;
 extern Fl_Input *inpWXsta;
+extern Fl_Check_Button *btn_wx_full;
+extern Fl_Check_Button *btn_wx_station_name;
 extern Fl_Check_Button *btn_wx_condx;
 extern Fl_Check_Button *btn_wx_fahrenheit;
 extern Fl_Check_Button *btn_wx_celsius;

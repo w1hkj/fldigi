@@ -1315,6 +1315,12 @@
         ELEM_(bool, wx_mbars, "WX_MBARS",                                               \
               "report pressure in millibars",                                           \
               true)                                                                     \
+        ELEM_(bool, wx_full, "WX_FULL",                                                 \
+              "use complete METAR report",                                              \
+              true)                                                                     \
+        ELEM_(bool, wx_station_name, "WX_STATION_NAME",                                 \
+              "report station noun name",                                               \
+              true)                                                                     \
 
 
 // declare the struct
