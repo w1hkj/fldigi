@@ -52,102 +52,147 @@
 
 #include "weather.h"
 
-void getwx(std::string& wx, const char *metar)
+using namespace std;
+
+void getwx(string& wx, const char *metar)
 {
-	std::string url;
-	std::string retxml;
-	std::string wxsta;
+	string url;
+	string text;
+	string field;
+	string wxsta;
+
 	if (!metar)
 		wxsta = progdefaults.wx_sta;
 	else
 		wxsta = metar;
 
-	size_t p1, p2;
-
 	wx.clear();
-	if (wxsta.empty()) return;
 
 	for (size_t n = 0; n < wxsta.length(); n++) wxsta[n] = toupper(wxsta[n]);
 
-	url.assign("http://www.weather.gov/xml/current_obs/")
-	   .append(wxsta).append(".xml");
+	url.assign("http://weather.noaa.gov/pub/data/observations/metar/decoded/")
+	   .append(wxsta).append(".TXT");
 
-	int ret = fetch_http(url, retxml, 5.0);
+	int ret = fetch_http(url, text, 5.0);
 
-	if (ret == -1)
+	if (ret == -1) return;
+
+	size_t p, p1, p2, p3;
+	p2 = text.find(wxsta);
+	if (p2 == string::npos) return;
+	p1 = text.rfind("\n", p2) + 1;
+	p3 = text.find("ob:", p2);
+	if (p3 == string::npos) return;
+
+	string wx_full = text.substr(p1, p3 - p1);
+	if (progdefaults.wx_full) {
+		wx.assign("Weather:\n").append(wx_full);
 		return;
-
-	if (progdefaults.wx_condx &&
-		(p1 = retxml.find("<weather>")) != std::string::npos) {
-		p1 += 9;
-		p2 = retxml.find("</weather>", p1);
-		if (p2 != std::string::npos)
-			wx.append("WX:   ").append(retxml.substr(p1, p2 - p1)).append("\n");
 	}
-	if ((progdefaults.wx_fahrenheit || progdefaults.wx_celsius) &&
-		(p1 = retxml.find("<temp_f>")) != std::string::npos) {
-		p1 += 8;
-		p2 = retxml.find("</temp_f>", p1);
-		if (p2 != std::string::npos) {
-			wx.append("Temp: ");
-			if (progdefaults.wx_fahrenheit)
-				wx.append(retxml.substr(p1, p2 - p1)).append(" F ");
-			if (progdefaults.wx_celsius) {
-				float temp;
-				sscanf(retxml.substr(p1, p2 - p1).c_str(), "%f", &temp);
-				char ctemp[10];
-				snprintf(ctemp, sizeof(ctemp), "%.1f C", (temp - 32)/2.12);
+
+	wx.assign("Weather:\n");
+
+	if (progdefaults.wx_station_name) { // parse noun name
+		if (text[p2-1] == '(') { // have valid line
+			wx.append(text.substr(p1, p2 - p1 -2)).append("\n");
+		}
+	}
+
+	if (progdefaults.wx_condx) {
+		size_t p4, p5, p6;
+		wx.append("Condx: ");
+		if ((p4 = wx_full.find("Weather: ")) != string::npos) {
+			p5 = p4 + 9;
+			p6 = wx_full.find("\n", p5);
+			if (p6 != string::npos)
+				wx.append(wx_full.substr(p5, p6 - p5));
+		}
+		if ((p4 = wx_full.find("Sky conditions: ")) != string::npos) {
+			p5 = p4 + 16;
+			p6 = wx_full.find("\n", p5);
+			if (p6 != string::npos)
+				wx.append(wx_full.substr(p5, p6 - p5));
+		}
+		wx.append("\n");
+	}
+
+	p = text.find(wxsta, p3 + 1);
+	text.erase(0, p + 1 + wxsta.length());
+
+	while(text.length()) {
+		p = text.find(" ");
+		if (p != string::npos) {
+			field = text.substr(0, p);
+			text.erase(0, p+1);
+		} else {
+			field = text;
+			text.clear();
+		}
+// parse field contents
+		if (field == "AUTO") ;
+
+		else if ((progdefaults.wx_mph || progdefaults.wx_kph) &&
+				 field.rfind("KT") == field.length() - 2) { // wind dir / speed
+			int knots;
+			sscanf(field.substr(3,2).c_str(), "%d", &knots);
+			wx.append("Wind:  ").append(field.substr(0,3)).append(" at ");
+			char ctemp[10];
+			if (progdefaults.wx_mph) {
+				snprintf(ctemp, sizeof(ctemp), "%d mph  ", (int)(knots * 528.0 / 600.0));
+				wx.append(ctemp);
+			}
+			if (progdefaults.wx_kph) {
+				snprintf(ctemp, sizeof(ctemp), "%d kph ", (int)(knots * 528.0 * 1.8288 / 600.0));
 				wx.append(ctemp);
 			}
 			wx.append("\n");
 		}
-	}
-	if ((progdefaults.wx_mph || progdefaults.wx_kph) &&
-		(p1 = retxml.find("<wind_degrees>")) != std::string::npos) {
-		p1 += 14;
-		p2 = retxml.find("</wind_degrees>", p1);
-		if (p2 != std::string::npos) {
-			wx.append("Wind: ").append(retxml.substr(p1, p2 - p1));
-			if ((p1 = retxml.find("<wind_mph>")) != std::string::npos) {
-				p1 += 10;
-				p2 = retxml.find("</wind_mph>");
-				if (p2 != std::string::npos) {
-					wx.append(" at ");
-					if (progdefaults.wx_mph)
-						wx.append(retxml.substr(p1, p2 - p1)).append(" mph ");
-					if (progdefaults.wx_kph) {
-						float mph;
-						sscanf(retxml.substr(p1, p2 - p1).c_str(), "%f", &mph);
-						char ckph[10];
-						snprintf(ckph, sizeof(ckph), "%.1f kph",
-							mph * 1.8288);
-						wx.append(ckph);
-					}
-				}
+
+		else if ((p = field.find("/") ) != string::npos &&
+				 (progdefaults.wx_fahrenheit || progdefaults.wx_celsius) ) { // temperature / dewpoint
+			string cent = field.substr(0, p);
+			if (cent[0] == 'M') cent[0] = '-';
+			int tempC, tempF;
+			sscanf(cent.c_str(), "%d", &tempC);
+			tempF = (int)(tempC * 2.12 + 32);
+			wx.append("Temp:  ");
+			char ctemp[10];
+			if (progdefaults.wx_fahrenheit) {
+				snprintf(ctemp, sizeof(ctemp), "%d F  ", tempF);
+				wx.append(ctemp);
+			}
+			if (progdefaults.wx_celsius) {
+				snprintf(ctemp, sizeof(ctemp), "%d C", tempC);
+				wx.append(ctemp);
 			}
 			wx.append("\n");
 		}
-	}
-	if ((progdefaults.wx_inches || progdefaults.wx_mbars) &&
-		(p1 = retxml.find("<pressure_in>")) != std::string::npos) {
-		p1 += 13;
-		p2 = retxml.find("</pressure_in>", p1);
-		if (p2 != std::string::npos) {
-			wx.append("Baro: ");
-			if (progdefaults.wx_inches)
-				wx.append(retxml.substr(p1, p2 - p1)).append(" in. ");
-			if (progdefaults.wx_mbars) {
+
+		if (progdefaults.wx_inches || progdefaults.wx_mbars) {
+			if ((field[0] == 'A' && field.length() == 5) || field[0] == 'Q') {
 				float inches;
-				sscanf(retxml.substr(p1, p2 - p1).c_str(), "%f", &inches);
-				char cmbar[10];
-				snprintf(cmbar, sizeof(cmbar), "%.0f mbar",
-					inches * 33.87);
-				wx.append(cmbar);
+				sscanf(field.substr(1).c_str(), "%f", &inches);
+				if (field[0] == 'A')
+					inches /= 100.0;
+				else
+					inches /= 33.87;
+				wx.append("Baro:  ");
+				char ctemp[20];
+				if (progdefaults.wx_inches) {
+					snprintf(ctemp, sizeof(ctemp), "%.2f in Hg  ", inches);
+					wx.append(ctemp);
+				}
+				if (progdefaults.wx_mbars) {
+					snprintf(ctemp, sizeof(ctemp), "%.0f mbar", inches * 33.87);
+					wx.append(ctemp);
+				}
+				wx.append("\n");
 			}
 		}
 	}
-	size_t len = wx.length();
-	if (wx[len-1] == '\n') wx.erase(len-1);
 
 	return;
+
 }
+//======================================================================
+
