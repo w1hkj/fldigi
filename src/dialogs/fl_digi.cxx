@@ -2373,6 +2373,8 @@ int default_handler(int event)
 			w->take_focus(); // remove this to leave tx text focused
 			return 1;
 		}
+
+
 #ifdef __APPLE__
 		if ((key == '=') && (Fl::event_state() == FL_COMMAND)) {
 #else
@@ -2393,9 +2395,14 @@ int default_handler(int event)
 			cntTxLevel->value(progdefaults.txlevel);
 			return 1;
 		}
+
 	}
 	else if (w == dlgLogbook || w->window() == dlgLogbook)
 		return log_search_handler(event);
+
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	else if (Fl::event_ctrl()) return w->handle(FL_KEYBOARD);
+#endif
 
 	return 0;
 }

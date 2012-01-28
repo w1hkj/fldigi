@@ -1722,6 +1722,21 @@ void cb_arqwin(Fl_Widget *, void*)
 	arqCLOSE();
 }
 
+#if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR == 3
+int default_handler(int event)
+{
+	if (event != FL_SHORTCUT)
+		return 0;
+
+	Fl_Widget* w = Fl::focus();
+
+	else if (Fl::event_ctrl()) return w->handle(FL_KEYBOARD);
+
+	return 0;
+}
+#endif
+
+
 int main (int argc, char *argv[] )
 {
 	sscanf(VERSION, "%f", &version);
@@ -1729,6 +1744,10 @@ int main (int argc, char *argv[] )
 	set_unexpected(handle_unexpected);
 	set_terminate(diediedie);
 	setup_signal_handlers();
+
+#if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR == 3
+	Fl::add_handler(default_handler);
+#endif
 
 	{
 		char dirbuf[FL_PATH_MAX + 1];

@@ -966,28 +966,27 @@ int FTextTX::handle_key(int key)
 {
 	switch (key) {
 	case FL_Escape: // set stop flag and clear
-	{
-		static time_t t[2] = { 0, 0 };
-		static unsigned char i = 0;
-		if (t[i] == time(&t[!i])) { // two presses in a second: abort transmission
-			if (trx_state == STATE_TX)
-				menu_cb(TX_MENU_ABORT);
-			t[i = !i] = 0;
-			return 1;
+		{
+			static time_t t[2] = { 0, 0 };
+			static unsigned char i = 0;
+			if (t[i] == time(&t[!i])) { // two presses in a second: abort transmission
+				if (trx_state == STATE_TX)
+					menu_cb(TX_MENU_ABORT);
+				t[i = !i] = 0;
+				return 1;
+			}
+			i = !i;
 		}
-		i = !i;
-	}
-
 		if (trx_state == STATE_TX && active_modem->get_stopflag() == false) {
+			kf_select_all(0, this);
+			kf_copy(0, this);
 			clear();
 			if (arq_text_available)
 				AbortARQ();
 			active_modem->set_stopflag(true);
 		}
-
 		if (trx_state == STATE_TUNE)
 			abort_tx();
-
 		stopMacroTimer();
 		return 1;
 	case 't': // transmit for C-t
