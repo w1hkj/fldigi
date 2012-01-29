@@ -736,11 +736,15 @@ int FTextEdit::handle_key(int key)
 {
 // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
 // and insert verbatim; e.g. ctl-001 inserts a <soh>
-	if (Fl::event_state() & FL_CTRL && (isdigit(key) || isdigit(key - FL_KP)))
+	if (key == FL_Control_L || key == FL_Control_R) return 0;
+	bool t1 = isdigit(key);
+	bool t2 = false;
+	if (key >= FL_KP) t2 = isdigit(key - FL_KP + '0');
+	bool t3 = (Fl::event_state() & FL_CTRL) == FL_CTRL;
+	if (t3 && (t1 || t2))
 		return handle_key_ascii(key);
 	ascii_cnt = 0; // restart the numeric keypad entries.
 	ascii_chr = 0;
-
 	return 0;
 }
 
