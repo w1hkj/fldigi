@@ -27,9 +27,9 @@
 #include <FL/Fl_Native_File_Chooser_WIN32.H>
 #endif
 
-// Use Apple's chooser
+// Use Apple's chooser designed by Stelios
 #ifdef __APPLE__
-#include <FL/Fl_Native_File_Chooser_MAC.H>
+#include "FL/MAC_chooser.h"
 #endif
 
 // All else falls back to FLTK's own chooser

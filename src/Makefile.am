@@ -537,10 +537,10 @@ EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
 	fileselector/FL/Fl_Native_File_Chooser_FLTK.H \
-	fileselector/FL/Fl_Native_File_Chooser_MAC.H \
+	fileselector/FL/MAC_chooser.h \
 	fileselector/FL/Fl_Native_File_Chooser_WIN32.H \
 	fileselector/Fl_Native_File_Chooser_FLTK.cxx \
-	fileselector/Fl_Native_File_Chooser_MAC.cxx \
+	fileselector/MAC_chooser.cxx \
 	fileselector/Fl_Native_File_Chooser_WIN32.cxx \
 	fileselector/flnfc_common.cxx \
 	fileselector/fileselect_1_1.cxx \

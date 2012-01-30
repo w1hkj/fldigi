@@ -35,6 +35,7 @@
 #include <errno.h>
 
 #include <FL/Fl.H>
+#include <FL/Fl_Widget.H>
 #include <FL/Enumerations.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Button.H>
@@ -54,7 +55,7 @@
 
 #ifdef __MINGW32__
 #	include "compat.h"
-#	if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR < 3
+#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
 #		define dirent fl_dirent_no_thanks
 #		undef dirent
 #		include <dirent.h>
@@ -1722,21 +1723,6 @@ void cb_arqwin(Fl_Widget *, void*)
 	arqCLOSE();
 }
 
-#if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR == 3
-int default_handler(int event)
-{
-	if (event != FL_SHORTCUT)
-		return 0;
-
-	Fl_Widget* w = Fl::focus();
-
-	else if (Fl::event_ctrl()) return w->handle(FL_KEYBOARD);
-
-	return 0;
-}
-#endif
-
-
 int main (int argc, char *argv[] )
 {
 	sscanf(VERSION, "%f", &version);
@@ -1744,10 +1730,6 @@ int main (int argc, char *argv[] )
 	set_unexpected(handle_unexpected);
 	set_terminate(diediedie);
 	setup_signal_handlers();
-
-#if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR == 3
-	Fl::add_handler(default_handler);
-#endif
 
 	{
 		char dirbuf[FL_PATH_MAX + 1];
