@@ -10,7 +10,7 @@
 #define FSEL_THREAD 0
 class Fl_Native_File_Chooser;
 #else
-#include <FL/Fl_Native_File_Chooser.H>
+#include "FL/Fl_Native_File_Chooser.H"
 #define FSEL_THREAD 0
 #endif
 
@@ -34,7 +34,11 @@ private:
 #endif
 private:
 	static FSEL* inst;
+#ifdef __APPLE__
+	MAC_chooser* chooser;
+#else
 	Fl_Native_File_Chooser* chooser;
+#endif
 	int result;
 };
 

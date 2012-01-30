@@ -1,8 +1,9 @@
 //
-// Fl_Native_File_Chooser_MAC.cxx -- FLTK native OS file chooser widget
+// MAC_chooser_MAC.cxx -- FLTK native OS file chooser widget
 //
 // Copyright 2004 by Greg Ercolano.
 // FLTK2/MAC port by Greg Ercolano 2007.
+//                   Dave Freese, W1HKJ 2012
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Library General Public
@@ -19,41 +20,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA.
 //
-// Please keep code 80 column compliant.
-//
-//      10        20        30        40        50        60        70
-//       |         |         |         |         |         |         |
-// 4567890123456789012345678901234567890123456789012345678901234567890123456789
-//
-// TODO:
-//	o When doing 'open file', only dir is preset, not filename.
-//        Possibly 'preset_file' could be used to select the filename.
 //
 #include "flnfc_common.cxx"		// strnew/strfree/strapp/chrcat
 
-#define FLTK1
-
-#ifdef FLTK1
-//
-// FLTK1
-//
 #include <FL/Fl.H>
-#include <FL/Fl_Native_File_Chooser.H>
+#include "FL/MAC_chooser.h"
 #include <FL/filename.H>
-#define FNFC_CLASS Fl_Native_File_Chooser
-#define FNFC_CTOR  Fl_Native_File_Chooser
-#else
-//
-// FLTK2
-//
-#include <fltk/NativeFileChooser.h>
-#include <fltk/run.h>
-#include <fltk/filename.h>
-#define FNFC_CTOR  NativeFileChooser
-#define FNFC_CLASS fltk::FNFC_CTOR
-#define fl_filename_match filename_match		// fltk1 name -> fltk2 name
-#define fl_filename_isdir filename_isdir		// fltk1 name -> fltk2 name
-#endif
 
 // TRY TO CONVERT AN AEDesc TO AN FSSpec
 //     As per Apple Technical Q&A QA1274
@@ -104,19 +76,19 @@ static OSStatus PathToFSSpec(const char *path, FSSpec &spec) {
 }
 
 // NAVREPLY: CTOR
-FNFC_CLASS::NavReply::NavReply() {
+MAC_chooser::NavReply::NavReply() {
     _valid_reply = 0;
 }
 
 // NAVREPLY: DTOR
-FNFC_CLASS::NavReply::~NavReply() {
+MAC_chooser::NavReply::~NavReply() {
     if ( _valid_reply ) {
 	NavDisposeReply(&_reply);
     }
 }
 
 // GET REPLY FROM THE NAV* DIALOG
-int FNFC_CLASS::NavReply::get_reply(NavDialogRef& ref) {
+int MAC_chooser::NavReply::get_reply(NavDialogRef& ref) {
     if ( _valid_reply ) {
 	NavDisposeReply(&_reply);	// dispose of previous
 	_valid_reply = 0;
@@ -129,7 +101,7 @@ int FNFC_CLASS::NavReply::get_reply(NavDialogRef& ref) {
 }
 
 // RETURN THE BASENAME USER WANTS TO 'Save As'
-int FNFC_CLASS::NavReply::get_saveas_basename(char *s, int slen) {
+int MAC_chooser::NavReply::get_saveas_basename(char *s, int slen) {
     if (CFStringGetCString(_reply.saveFileName, s, slen-1,
     					kCFStringEncodingUTF8) == false) {
 	s[0] = '\0';
@@ -141,7 +113,7 @@ int FNFC_CLASS::NavReply::get_saveas_basename(char *s, int slen) {
 // RETURN THE DIRECTORY NAME
 //    Returns 0 on success, -1 on error.
 //
-int FNFC_CLASS::NavReply::get_dirname(char *s, int slen) {
+int MAC_chooser::NavReply::get_dirname(char *s, int slen) {
     FSSpec fsspec;
     if ( AEDescToFSSpec(&_reply.selection, &fsspec) != noErr ) {
         // Conversion failed? Return empty name
@@ -156,7 +128,7 @@ int FNFC_CLASS::NavReply::get_dirname(char *s, int slen) {
 //     Returns: 0 on success with pathnames[] containing pathnames selected,
 //             -1 on error
 //
-int FNFC_CLASS::NavReply::get_pathnames(char **&pathnames,
+int MAC_chooser::NavReply::get_pathnames(char **&pathnames,
 						    int& tpathnames) {
     // How many items selected?
     long count = 0;
@@ -191,7 +163,7 @@ int FNFC_CLASS::NavReply::get_pathnames(char **&pathnames,
 }
 
 // FREE PATHNAMES ARRAY, IF IT HAS ANY CONTENTS
-void FNFC_CLASS::clear_pathnames() {
+void MAC_chooser::clear_pathnames() {
     if ( _pathnames ) {
 	while ( --_tpathnames >= 0 ) {
 	    _pathnames[_tpathnames] = strfree(_pathnames[_tpathnames]);
@@ -203,7 +175,7 @@ void FNFC_CLASS::clear_pathnames() {
 }
 
 // SET A SINGLE PATHNAME
-void FNFC_CLASS::set_single_pathname(const char *s) {
+void MAC_chooser::set_single_pathname(const char *s) {
     clear_pathnames();
     _pathnames = new char*[1];
     _pathnames[0] = strnew(s);
@@ -214,7 +186,7 @@ void FNFC_CLASS::set_single_pathname(const char *s) {
 //    Returns -1 on error, errmsg() has reason, filename == "".
 //             0 if OK, filename() has filename chosen.
 //
-int FNFC_CLASS::get_saveas_basename(NavDialogRef& ref) {
+int MAC_chooser::get_saveas_basename(NavDialogRef& ref) {
     if ( ref == NULL ) {
         errmsg("get_saveas_basename: ref is NULL");
 	return(-1);
@@ -255,7 +227,7 @@ int FNFC_CLASS::get_saveas_basename(NavDialogRef& ref) {
 //         -1 -- error, errmsg() has reason, filename == ""
 //          0 -- OK, pathnames()/filename() has pathname(s) chosen
 //
-int FNFC_CLASS::get_pathnames(NavDialogRef& ref) {
+int MAC_chooser::get_pathnames(NavDialogRef& ref) {
     if ( ref == NULL ) {
         errmsg("get_saveas_basename: ref is NULL");
 	return(-1);
@@ -278,12 +250,12 @@ int FNFC_CLASS::get_pathnames(NavDialogRef& ref) {
 }
 
 // NAV CALLBACK EVENT HANDLER
-void FNFC_CLASS::event_handler(
+void MAC_chooser::event_handler(
 				    NavEventCallbackMessage callBackSelector, 
 				    NavCBRecPtr cbparm,
 				    void *data) {
     OSStatus err;
-    FNFC_CLASS *nfb = (FNFC_CLASS*)data;
+    MAC_chooser *nfb = (MAC_chooser*)data;
     switch (callBackSelector) {
 	case kNavCBStart:
 	    if ( nfb->directory() || nfb->preset_file() ) {
@@ -394,7 +366,7 @@ void FNFC_CLASS::event_handler(
 }
 
 // CONSTRUCTOR
-FNFC_CLASS::FNFC_CTOR(int val) {
+MAC_chooser::MAC_chooser(int val) {
     _btype          = val;
     NavGetDefaultDialogCreationOptions(&_opts);
     _opts.optionFlags |= kNavDontConfirmReplacement;	// no confirms for "save as"
@@ -416,7 +388,7 @@ FNFC_CLASS::FNFC_CTOR(int val) {
 }
 
 // DESTRUCTOR
-FNFC_CLASS::~FNFC_CTOR() {
+MAC_chooser::~MAC_chooser() {
     // _opts			// nothing to manage
     if (_ref) { NavDialogDispose(_ref); _ref = NULL; }
     // _options			// nothing to manage
@@ -436,22 +408,22 @@ FNFC_CLASS::~FNFC_CTOR() {
 }
 
 // SET THE TYPE OF BROWSER
-void FNFC_CLASS::type(int val) {
+void MAC_chooser::type(int val) {
     _btype = val;
 }
 
 // GET TYPE OF BROWSER
-int FNFC_CLASS::type() const {
+int MAC_chooser::type() const {
     return(_btype);
 }
 
 // SET OPTIONS
-void FNFC_CLASS::options(int val) {
+void MAC_chooser::options(int val) {
     _options = val;
 }
 
 // GET OPTIONS
-int FNFC_CLASS::options() const {
+int MAC_chooser::options() const {
     return(_options);
 }
 
@@ -461,14 +433,10 @@ int FNFC_CLASS::options() const {
 //         1 - user cancelled
 //        -1 - failed; errmsg() has reason
 //
-int FNFC_CLASS::show() {
+int MAC_chooser::show() {
 
     // Make sure fltk interface updates before posting our dialog
-#ifdef FLTK1
     Fl::flush();
-#else
-    fltk::flush();
-#endif
 
     // BROWSER TITLE
     CFStringRef cfs_title;
@@ -534,7 +502,7 @@ int FNFC_CLASS::show() {
 //         1 - user cancelled
 //        -1 - failed; errmsg() has reason
 //     
-int FNFC_CLASS::post() {
+int MAC_chooser::post() {
 
     // INITIALIZE BROWSER
     OSStatus err;
@@ -629,37 +597,37 @@ int FNFC_CLASS::post() {
 // SET ERROR MESSAGE
 //     Internal use only.
 //
-void FNFC_CLASS::errmsg(const char *msg) {
+void MAC_chooser::errmsg(const char *msg) {
     _errmsg = strfree(_errmsg);
     _errmsg = strnew(msg);
 }
 
 // RETURN ERROR MESSAGE
-const char *FNFC_CLASS::errmsg() const {
+const char *MAC_chooser::errmsg() const {
     return(_errmsg ? _errmsg : "No error");
 }
 
 // GET FILENAME
-const char* FNFC_CLASS::filename() const {
+const char* MAC_chooser::filename() const {
     if ( _pathnames && _tpathnames > 0 ) return(_pathnames[0]);
     return("");
 }
 
 // GET FILENAME FROM LIST OF FILENAMES
-const char* FNFC_CLASS::filename(int i) const {
+const char* MAC_chooser::filename(int i) const {
     if ( _pathnames && i < _tpathnames ) return(_pathnames[i]);
     return("");
 }
 
 // GET TOTAL FILENAMES CHOSEN
-int FNFC_CLASS::count() const {
+int MAC_chooser::count() const {
     return(_tpathnames);
 }
 
 // PRESET PATHNAME
 //     Value can be NULL for none.
 //
-void FNFC_CLASS::directory(const char *val) {
+void MAC_chooser::directory(const char *val) {
     _directory = strfree(_directory);
     _directory = strnew(val);
 }
@@ -667,29 +635,33 @@ void FNFC_CLASS::directory(const char *val) {
 // GET PRESET PATHNAME
 //     Returned value can be NULL if none set.
 //
-const char* FNFC_CLASS::directory() const {
+const char* MAC_chooser::directory() const {
     return(_directory);
 }
 
+#include <string>
 // SET TITLE
 //     Value can be NULL if no title desired.
 //
-void FNFC_CLASS::title(const char *val) {
+void MAC_chooser::title(const char *val) {
+std::string tt = "My MAC ";
+tt.append(val);
     _title = strfree(_title);
-    _title = strnew(val);
+    _title = strnew(tt.c_str());
+//    _title = strnew(val);
 }
 
 // GET TITLE
 //     Returned value can be NULL if none set.
 //
-const char *FNFC_CLASS::title() const {
+const char *MAC_chooser::title() const {
     return(_title);
 }
 
 // SET FILTER
 //     Can be NULL if no filter needed
 //
-void FNFC_CLASS::filter(const char *val) {
+void MAC_chooser::filter(const char *val) {
     _filter = strfree(_filter);
     _filter = strnew(val);
 
@@ -706,14 +678,14 @@ void FNFC_CLASS::filter(const char *val) {
 // GET FILTER
 //     Returned value can be NULL if none set.
 //
-const char *FNFC_CLASS::filter() const {
+const char *MAC_chooser::filter() const {
     return(_filter);
 }
 
 // CLEAR ALL FILTERS
 //    Internal use only.
 //
-void FNFC_CLASS::clear_filters() {
+void MAC_chooser::clear_filters() {
     _filt_names = strfree(_filt_names);
     for (int i=0; i<_filt_total; i++) {
 	_filt_patt[i] = strfree(_filt_patt[i]);
@@ -741,7 +713,7 @@ void FNFC_CLASS::clear_filters() {
 //             \_____/  \_______/
 //              Name     Wildcard
 //
-void FNFC_CLASS::parse_filter(const char *in) {
+void MAC_chooser::parse_filter(const char *in) {
     clear_filters();
     if ( ! in ) return;
     int has_name = strchr(in, '\t') ? 1 : 0;
@@ -815,11 +787,11 @@ void FNFC_CLASS::parse_filter(const char *in) {
 }
 
 // STATIC: FILTER CALLBACK
-Boolean FNFC_CLASS::filter_proc_cb(AEDesc *theItem,
+Boolean MAC_chooser::filter_proc_cb(AEDesc *theItem,
 				   void *info,
 				   void *callBackUD,
 				   NavFilterModes filterMode) {
-     return((FNFC_CLASS*)callBackUD)->filter_proc_cb2(
+     return((MAC_chooser*)callBackUD)->filter_proc_cb2(
 				    theItem, info, callBackUD, filterMode);
 }
 
@@ -827,7 +799,7 @@ Boolean FNFC_CLASS::filter_proc_cb(AEDesc *theItem,
 //     Return true if match,
 //            false if no match.
 //
-Boolean FNFC_CLASS::filter_proc_cb2(AEDesc *theItem,
+Boolean MAC_chooser::filter_proc_cb2(AEDesc *theItem,
 				    void *info,
 				    void *callBackUD,
 				    NavFilterModes filterMode) {
@@ -851,7 +823,7 @@ Boolean FNFC_CLASS::filter_proc_cb2(AEDesc *theItem,
 // SET PRESET FILE
 //     Value can be NULL for none.
 //
-void FNFC_CLASS::preset_file(const char* val) {
+void MAC_chooser::preset_file(const char* val) {
     _preset_file = strfree(_preset_file);
     _preset_file = strnew(val);
 }
@@ -859,7 +831,7 @@ void FNFC_CLASS::preset_file(const char* val) {
 // PRESET FILE
 //     Returned value can be NULL if none set.
 //
-const char* FNFC_CLASS::preset_file() {
+const char* MAC_chooser::preset_file() {
     return(_preset_file);
 }
 

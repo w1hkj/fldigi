@@ -35,6 +35,7 @@
 #include <errno.h>
 
 #include <FL/Fl.H>
+#include <FL/Fl_Widget.H>
 #include <FL/Enumerations.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Button.H>
@@ -54,7 +55,7 @@
 
 #ifdef __MINGW32__
 #	include "compat.h"
-#	if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR < 3
+#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
 #		define dirent fl_dirent_no_thanks
 #		undef dirent
 #		include <dirent.h>
