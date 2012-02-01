@@ -1,8 +1,18 @@
 
 
-=Version 3.21.37=
+=Version 3.21.38=
 
-2012-01-26  David Freese  <w1hkj@w1hkj.com>
+2012-02-01  David Freese  <w1hkj@w1hkj.com>
+
+	9327490: Control sizing
+	df3bf09: eQSL
+	13b7107: OS X file chooser
+	5122c7b: Control key parsing
+	3c0bcd8: Control-shortcuts
+	b940e9c: WX international
+
+
+=Version 3.21.37=
 
 	c4336b7: Macro filename
 	ba5b5d5: Callsign query
@@ -21,6 +31,7 @@
 	2dfd6fd: UTF-8 rx suppress
 	c36983e: Get WX
 	22e1f8b: Update to fltk.m4
+	890013c: rigCAT closure
 	56104f4: GCC-4.7 fixes
 	e7ab7e2: Missing files
 	3b02bb3: RX last line
