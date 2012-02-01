@@ -1,5 +1,9 @@
-2012-01-26  David Freese  <w1hkj@w1hkj.com>
+2012-02-01  David Freese  <w1hkj@w1hkj.com>
 
+	e78677c: Control sizing
+	9d12f24: eQSL
+	9882ad4: OS X file chooser
+	9df3370: WX international
 	46e4468: Macro filename
 	4a7468f: Callsign query
 	afc9487: WX Celsius
