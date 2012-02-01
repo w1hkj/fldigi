@@ -201,6 +201,7 @@ extern modem *wefax576_modem;
 extern modem *wefax288_modem;
 
 extern modem *navtex_modem;
+extern modem *sitorb_modem;
 
 extern modem *mt63_500_modem;
 extern modem *mt63_1000_modem;

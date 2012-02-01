@@ -28,6 +28,7 @@ public:
 	int  tx_process();
 
 	std::string get_message(int max_seconds);
+	std::string send_message(const std::string & msg);
 };
 #endif
 

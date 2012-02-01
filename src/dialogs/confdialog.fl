@@ -1309,7 +1309,7 @@ behaves inside the waterfall} xywh {13 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabContestia {
             label Contestia open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 490 200} box ENGRAVED_FRAME
@@ -2481,7 +2481,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWefax {
             label Wefax open
-            xywh {-5 50 590 320}
+            xywh {-5 50 590 320} hide
           } {
             Fl_Group {} {open
               xywh {-5 50 590 320}
@@ -2537,7 +2537,7 @@ fc->show();}
               Fl_Check_Button btnWefaxHideTx {
                 label {Hide Transmission window}
                 callback {progdefaults.WEFAX_HideTx=o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {Hide transmission window by default.} xywh {10 100 235 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WEFAX_HideTx);}
               }
@@ -2552,7 +2552,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNavtex {
             label Navtex open
-            xywh {-5 50 590 320} hide
+            xywh {-5 50 590 320}
           } {
             Fl_Group {} {open
               xywh {-5 50 590 320}
@@ -2564,6 +2564,20 @@ progdefaults.changed = true;}
                 xywh {10 65 235 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NVTX_AdifLog);}
               }
+              Fl_Output txtNvtxCatalog {
+                label {Navtex stations file:}
+                callback {progdefaults.NVTX_Catalog=o->value();
+progdefaults.changed = true;}
+                tooltip {Use Open to select descriptor file} xywh {10 123 270 22} color 52 align 5
+                code0 {o->value(fl_filename_name(progdefaults.NVTX_Catalog.c_str()));}
+              }
+              Fl_Button btnSelectNvtxCatalog {
+                label {Directory...}
+                callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::SINGLE,"Navtex stations file");
+fc->callback(NvtxCatalogSet);
+fc->show();} selected
+                xywh {315 125 80 20}
+              }
             }
           }
         }
@@ -2573,7 +2587,7 @@ progdefaults.changed = true;}
         tooltip {Transceiver control} xywh {0 23 500 345} hide
       } {
         Fl_Tabs tabsRig {open
-          xywh {0 23 500 345} selection_color 50
+          xywh {0 23 500 347} selection_color 50
         } {
           Fl_Group {} {
             label {Hardware PTT} open
@@ -4467,5 +4481,15 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnWefaxSaveDir->value( w->value() );
 	btnWefaxSaveDir->redraw();
 	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
+}} {}
+} 
+
+Function {NvtxCatalogSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+} {
+  code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
+if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+	txtNvtxCatalog->value( w->value() );
+	txtNvtxCatalog->redraw();
+	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
 }} {}
 } 

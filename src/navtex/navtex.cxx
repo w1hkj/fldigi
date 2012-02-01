@@ -34,17 +34,319 @@
 #include <vector>
 #include <string>
 #include <queue>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <stdexcept>
 
 #include "config.h"
-
 #include "configuration.h"
 #include "fl_digi.h"
 #include "debug.h"
 #include "gettext.h"
 #include "navtex.h"
 #include "logbook.h"
+#include "locator.h"
+#include "misc.h"
 
-static const double PI = 3.1415926 ;
+class CoordinateT
+{
+	double m_angle ;
+	bool   m_is_lon ;
+public:
+	CoordinateT()
+	: m_angle(0.0), m_is_lon(true) {};
+
+	CoordinateT( double angle, bool is_lon ) : m_angle(angle), m_is_lon(is_lon) {};
+
+	CoordinateT( char direction, int degree, int minute, int second )
+	{
+		// std::cout << "ctor d=" << direction << " " << degree << " " << minute << " " << second << "\n";
+		if( ( degree < 0 ) || ( degree > 180.0 ) )
+			throw std::runtime_error("Invalid degree");
+
+		if( ( minute < 0 ) || ( minute >= 60.0 ) )
+			throw std::runtime_error("Invalid minute");
+
+		if( ( second < 0 ) || ( second >= 60.0 ) )
+			throw std::runtime_error("Invalid second");
+
+		m_angle = (double)degree + (double)minute / 60.0 + (double)second / 3600.0 ;
+		switch( direction )
+		{
+			case 'E':
+			case 'e':
+				m_angle = -m_angle ;
+			case 'W':
+			case 'w':
+				if( ( degree < -180.0 ) || ( degree > 180.0 ) )
+					throw std::runtime_error("Invalid longitude degree");
+				m_is_lon = true ;
+				break ;
+			case 'S':
+			case 's':
+				m_angle = -m_angle ;
+			case 'N':
+			case 'n':
+				if( ( degree < -90.0 ) || ( degree > 90.0 ) )
+					throw std::runtime_error("Invalid latitude degree");
+				m_is_lon = false ;
+				break ;
+			default:
+				throw std::runtime_error("Invalid direction");
+		}
+		// std::cout << "Angle=" << m_angle << "\n" ;
+	}
+
+	double angle(void) const { return m_angle ; }
+	bool is_lon(void) const { return m_is_lon; }
+
+	// 57 06 N : It should work with other formats.
+	// Specific for reading from the file of naxtex stations.
+	friend std::istream & operator>>( std::istream & istrm, CoordinateT & ref )
+	{
+		int degree, minute ;
+		if( ! istrm ) return istrm ;
+
+		istrm >> degree ;
+		if( ! istrm ) return istrm ;
+
+		istrm >> minute ;
+		if( ! istrm ) return istrm ;
+		
+		char direction ;
+		istrm >> direction ;
+		if( ! istrm ) return istrm ;
+
+		ref = CoordinateT( direction, degree, minute, 0 );
+		// std::cout << "::" << ref << ":" << degree << " " << minute << " " << direction << "\n" ;
+		return istrm ;
+	}
+
+	class Pair ;
+}; // CoordinateT
+
+	// Latitude , longitude.
+class CoordinateT::Pair
+{
+	CoordinateT m_lon, m_lat ;
+public:
+	Pair() {}
+
+	Pair( const CoordinateT & coo1, const CoordinateT & coo2 )
+	: m_lon( coo1.is_lon() ? coo1 : coo2 )
+	, m_lat( coo2.is_lon() ? coo1 : coo2 )
+	{
+		if( ! ( coo1.is_lon() ^ coo2.is_lon() ) )
+		{
+			throw std::runtime_error("Internal inconsistency");
+		}
+	}
+
+	CoordinateT longitude() const { return m_lon ; }
+
+	CoordinateT latitude() const { return m_lat ; }
+
+	CoordinateT & longitude() { return m_lon ; }
+
+	CoordinateT & latitude() { return m_lat ; }
+
+	double distance( const Pair & a ) const
+	{
+		double dist, azimuth ;
+		int res = qrb(
+			longitude().angle(), latitude().angle(),
+			a.longitude().angle(), a.latitude().angle(),
+			&dist, &azimuth );
+		if( res != RIG_OK) {
+			throw std::runtime_error("Bad qrb result");
+		}
+		return dist ;
+	}
+}; // CoordinateT::Pair
+
+static const char delim = ';';
+
+template< typename Type >
+bool read_until_delim( std::istream & istrm, Type & ref )
+{
+	std::string parsed_str ;
+	if( ! std::getline( istrm, parsed_str, delim ) ) return false ;
+	std::stringstream sstrm( parsed_str );
+	sstrm >> ref ;
+	return sstrm ;
+}
+
+static bool read_until_delim( std::istream & istrm, std::string & ref )
+{
+	return std::getline( istrm, ref, delim );
+}
+
+class NavtexRecord
+{
+	std::string       m_country ;
+	std::string       m_country_code ;
+	double            m_frequency ;
+	char              m_origin ;
+	std::string       m_callsign ;
+	std::string       m_name ;
+	CoordinateT::Pair m_coordinates ;
+	std::string       m_zone ;
+	std::string       m_language ;
+
+	std::string       m_locator ;
+
+public:
+	NavtexRecord()
+	: m_frequency(0.0)
+	, m_origin('?')
+	, m_name( _("Unknown station") ) {}
+
+	char origin(void) const { return m_origin; };
+	const CoordinateT::Pair & coordinates() const { return m_coordinates; }
+	double frequency(void) const { return m_frequency; };
+	const std::string & country_code() const { return m_country_code; }
+	const std::string & country() const { return m_country; }
+	const std::string & name() const { return m_name; }
+	const std::string & callsign() const { return m_callsign; }
+	const std::string & locator() const { return m_locator; }
+
+	friend std::istream & operator>>( std::istream &  istrm, NavtexRecord & rec )
+	{
+		std::string input_str ;
+		if( ! std::getline( istrm, input_str ) ) return istrm ;
+		std::stringstream str_strm( input_str );
+		
+		if( read_until_delim( str_strm, rec.m_country                 )
+		&&  read_until_delim( str_strm, rec.m_country_code            )
+		&&  read_until_delim( str_strm, rec.m_frequency               )
+		&&  read_until_delim( str_strm, rec.m_origin                  )
+		&&  read_until_delim( str_strm, rec.m_callsign                )
+		&&  read_until_delim( str_strm, rec.m_name                    )
+		&&  read_until_delim( str_strm, rec.m_coordinates.latitude()  )
+		&&  read_until_delim( str_strm, rec.m_coordinates.longitude() )
+		&&  read_until_delim( str_strm, rec.m_zone                    )
+		&&  read_until_delim( str_strm, rec.m_language                )
+
+		&& ( rec.m_coordinates.latitude().is_lon() == false  )
+		&& ( rec.m_coordinates.longitude().is_lon() == true  )
+		) 
+		{
+			char buf[64];
+			int ret = longlat2locator(
+					rec.m_coordinates.longitude().angle(),
+					rec.m_coordinates.latitude().angle(),
+					buf,
+					3 );
+
+			if( ret == RIG_OK ) {
+				rec.m_locator = buf ;
+				return istrm ;
+			}
+		}
+
+		istrm.setstate(std::ios::eofbit);
+		return istrm ;
+	}
+};
+
+class NavtexCatalog
+{
+	// TODO: Consider a multimap<char, NavtexRecord>
+	typedef std::deque< NavtexRecord > CatalogType ;
+	CatalogType m_catalog ;
+
+	static bool freq_close( double freqA, double freqB )
+	{
+		static const double freq_ratio = 1.1 ;
+		return ( freqA < freqB * freq_ratio ) || ( freqA * freq_ratio > freqB );
+	}
+
+	static bool freq_acceptable( double freq )
+	{
+		return	freq_close( freq, 518.0 )
+		||	freq_close( freq, 518.0 )
+		||	freq_close( freq, 4209.5 );
+	}
+
+	typedef std::multimap< double, CatalogType::const_iterator > SolutionType ;
+
+	static const NavtexRecord & dflt_solution(void) {
+		static const NavtexRecord dfltNavtex ;
+		return dfltNavtex ;
+	}
+
+	NavtexCatalog( const std::string & filnam )
+	{
+		LOG_INFO("Opening:%s", filnam.c_str());
+		std::ifstream ifs( filnam.c_str() );
+		if( !ifs )
+		{
+			std::string msg = "Cannot open:" + filnam ;
+			LOG_ERROR("%s",msg.c_str() );
+			throw std::runtime_error(msg);
+		}
+		for( ; ; )
+		{
+			NavtexRecord tmp ;
+			ifs >> tmp ;
+			if( !ifs) break ;
+			m_catalog.push_back( tmp );
+		}
+		ifs.close();
+	}
+
+	static const NavtexCatalog & inst() {
+		static const NavtexCatalog *ptr = NULL;
+		if( ptr == NULL ) ptr = new NavtexCatalog(progdefaults.NVTX_Catalog);
+		return *ptr ;
+	}
+
+public:
+	/// Usual frequencies are 490, 518 or 4209 kiloHertz.
+	static const NavtexRecord & Find(
+		long long freq_ll,
+		char origin,
+		const CoordinateT::Pair & coo )
+	{
+		SolutionType sol;
+
+		double freq = freq_ll / 1000.0 ; // As kiloHertz in the data file.
+
+		bool okFreq = freq_acceptable( freq );
+
+		for( CatalogType::const_iterator it = inst().m_catalog.begin(), en = inst().m_catalog.end(); it != en ; ++it )
+		{
+			if( origin != it->origin() ) continue ;
+
+			bool freqClose = freq_close( freq, it->frequency() );
+			if( okFreq && ! freqClose ) continue ;
+
+			double dist = coo.distance( it->coordinates() );
+			sol.insert( SolutionType::value_type( dist, it ) );
+		}
+		
+		return sol.empty() ? dflt_solution() : *( sol.begin()->second );
+	}
+
+	static const NavtexRecord & Find(
+		long long freq_ll,
+		char origin,
+		const std::string & maidenhead )
+	{
+		double lon, lat ;
+		int res = locator2longlat( &lon, &lat, maidenhead.c_str() );
+		if( res != RIG_OK ) {
+			throw std::runtime_error("Cannot decode:" + maidenhead );
+		};
+		CoordinateT::Pair coo(
+				CoordinateT( lon, true ),
+				CoordinateT( lat, false ) );
+		return Find( freq_ll, origin, coo );
+	}
+}; // NavtexCatalog
 
 class BiQuadraticFilter {
 public:
@@ -82,7 +384,7 @@ public:
 		m_center_freq = cf;
 		// only used for peaking and shelving filters
 		m_gain_abs = pow(10, m_gainDB / 40);
-		double omega = 2 * PI * cf / m_sample_rate;
+		double omega = 2 * M_PI * cf / m_sample_rate;
 		double sn = sin(omega);
 		double cs = cos(omega);
 		double alpha = sn / (2 * m_Q);
@@ -201,10 +503,8 @@ class CCIR476 {
 	unsigned char m_ltrs_to_code[128];
 	unsigned char m_figs_to_code[128];
 	bool m_valid_codes[128];
-	bool m_shift;
 public:
 	CCIR476() {
-		m_shift = false;
 		memset( m_ltrs_to_code, 0, 128 );
 		memset( m_figs_to_code, 0, 128 );
 		for( size_t i = 0; i < 128; ++i ) m_valid_codes[i] = false ;
@@ -225,28 +525,28 @@ public:
 		}
 	}
 
-	int char_to_code(int ch, bool ex_shift) {
+	void char_to_code(std::string & str, int ch, bool & ex_shift) const {
 		ch = toupper(ch);
-		// default: return -ch
-		// avoid unnececessary shifts
+		// avoid unnecessary shifts
 		if (ex_shift && m_figs_to_code[ch] != '\0') {
-			return m_figs_to_code[ch];
+			str.push_back(  m_figs_to_code[ch] );
 		}
-		if (!ex_shift && m_ltrs_to_code[ch] != '\0') {
-			return m_ltrs_to_code[ch];
+		else if (!ex_shift && m_ltrs_to_code[ch] != '\0') {
+			str.push_back( m_ltrs_to_code[ch] );
 		}
-		if (m_figs_to_code[ch] != '\0') {
-			m_shift = true;
-			return m_figs_to_code[ch];
+		else if (m_figs_to_code[ch] != '\0') {
+			ex_shift = true;
+			str.push_back( code_figs );
+			str.push_back( m_figs_to_code[ch] );
 		}
-		if (m_ltrs_to_code[ch] != '\0') {
-			m_shift = false;
-			return m_ltrs_to_code[ch];
+		else if (m_ltrs_to_code[ch] != '\0') {
+			ex_shift = false;
+			str.push_back( code_ltrs );
+			str.push_back( m_ltrs_to_code[ch] );
 		}
-		return -ch;
 	}
 
-	int code_to_char(int code, bool shift) {
+	int code_to_char(int code, bool shift) const {
 		const unsigned char * target = (shift) ? code_to_figs : code_to_ltrs;
 		if (target[code] != '_') {
 			return target[code];
@@ -276,31 +576,40 @@ class ccir_message : public std::string {
 	static const size_t header_len = 10 ;
 	static const size_t trunc_len = 5 ;
 
+	// Header structure is:
+	// ZCZCabcd message text NNNN
+	// a  : Origin of the station.
+	// b  : Message type.
+	// cd : Message number from this station.
+	char m_origin ;
 	char m_subject ;
+	int  m_number ;
+public:
 	const char * msg_type(void) const
 	{
 		switch(m_subject) {
-			case 'A' : return "Navigational warning";
-			case 'B' : return "Meteorological warning";
-			case 'C' : return "Ice report";
-			case 'D' : return "Search & rescue information, pirate warnings";
-			case 'E' : return "Meteorological forecast";
-			case 'F' : return "Pilot service message";
-			case 'G' : return "AIS message";
-			case 'H' : return "LORAN message";
-			case 'I' : return "Not used";
-			case 'J' : return "SATNAV messages";
-			case 'K' : return "Other electronic navaid messages";
-			case 'L' : return "Navigational warnings";
-			case 'T' : return "Test transmissions (UK only)";
-			case 'V' : return "Notice to fishermen (U.S. only)";
-			case 'W' : return "Environmental (U.S. only)";
-			case 'X' : return "Special services - allocation by IMO NAVTEX Panel";
-			case 'Y' : return "Special services - allocation by IMO NAVTEX Panel";
-			case 'Z' : return "No message on hand";
-			default  : return "";
+			case 'A' : return _("Navigational warning");
+			case 'B' : return _("Meteorological warning");
+			case 'C' : return _("Ice report");
+			case 'D' : return _("Search & rescue information, pirate warnings");
+			case 'E' : return _("Meteorological forecast");
+			case 'F' : return _("Pilot service message");
+			case 'G' : return _("AIS message");
+			case 'H' : return _("LORAN message");
+			case 'I' : return _("Not used");
+			case 'J' : return _("SATNAV messages");
+			case 'K' : return _("Other electronic navaid messages");
+			case 'L' : return _("Navigational warnings");
+			case 'T' : return _("Test transmissions (UK only)");
+			case 'V' : return _("Notice to fishermen (U.S. only)");
+			case 'W' : return _("Environmental (U.S. only)");
+			case 'X' : return _("Special services - allocation by IMO NAVTEX Panel");
+			case 'Y' : return _("Special services - allocation by IMO NAVTEX Panel");
+			case 'Z' : return _("No message on hand");
+			default  : return _("Invalid navtex subject");
 		}
 	}
+private:
 	/// Remove non-Ascii chars, replace new-line by semi-colon etc....
 	void cleanup() {
 		/// It would be possible to do the change in place, because the new string
@@ -311,32 +620,47 @@ class ccir_message : public std::string {
 			switch( *it ) {
 				case '\n':
 				case '\r': wasDelim = true ;
-						   break ;
+					   break ;
 				case ' ' :
 				case '\t': wasSpace = true ;
-						   break ;
-				default  : chrSeen = true;
-						   if( wasDelim ) {
-							   newStr.push_back(';');
-							   wasDelim = false ;
-							   wasSpace = false ;
-						   }
-						   if( wasSpace && chrSeen ) {
-							   newStr.push_back(' ');
-							   wasSpace = false ;
-						   }
-						   newStr.push_back( *it );
+					   break ;
+				default  : if( wasDelim ) {
+						   newStr.push_back('~');
+						   wasDelim = false ;
+						   wasSpace = false ;
+					   }
+					   if( wasSpace && chrSeen ) {
+						   newStr.push_back(' ');
+						   wasSpace = false ;
+					   }
+					   chrSeen = true ;
+					   newStr.push_back( *it );
 			}
 		}
 		swap( newStr );
 	}
-public:
-	ccir_message() {}
 
-	ccir_message( const std::string & s )
+	void init_members() {
+		m_origin = '?';
+		m_subject = '?';
+		m_number = 0 ;
+	}
+public:
+	ccir_message() {
+		init_members();
+	}
+
+	ccir_message( const std::string & s, char origin, char subject, int number )
 	: std::string(s)
-	, m_subject(' ') {
+	, m_origin(origin)
+	, m_subject(subject)
+	, m_number(number) {
 		cleanup();
+	}
+
+	void reset_msg() {
+		clear();
+		init_members();
 	}
 
 	typedef std::pair<bool, ccir_message> detect_result ;
@@ -358,13 +682,19 @@ public:
 				// (comp[9] == '\r') ) 
 				(strchr( "\n\r", comp[9] ) ) ) {
 
-				ccir_message msg_cut( substr( 0, size() - header_len ) );
+				/// This returns the garbage before the valid header.
+				// Garbage because the trailer could not be read, but maybe header OK.
+				ccir_message msg_cut(
+					substr( 0, size() - header_len ),
+				       	m_origin,
+					m_subject,
+					m_number );
+				m_origin  = comp[5];
 				m_subject = comp[6];
+				m_number = ( comp[7] - '0' ) * 10 + ( comp[8] - '0' );
 				// Remove the beginning useless chars.
-				std::string tp_str = msg_type() ;
-				if( ! tp_str.empty() ) tp_str += ":";
-				tp_str += substr( size() - header_len + 5 );
-				swap( tp_str );
+				/// TODO: Read broken headers such as "ZCZC EA0?"
+				clear();
 				return detect_result( true, msg_cut );
 			}
 		}
@@ -372,7 +702,7 @@ public:
 	}
 
 	bool detect_end() {
-		// static const char * stop_valid = "\r\nNNNN\r\n";
+		// Should be "\r\nNNNN\r\n" theoretically, but tolerates shorter strings.
 		static const size_t slen = 4 ;
 		static const char stop_valid[slen + 1] = "NNNN";
 		size_t qlen = size();
@@ -381,47 +711,65 @@ public:
 		}
 		std::string comp = substr(qlen - slen, slen);
 		bool end_seen = comp == stop_valid;
-	if( end_seen ) {
-		erase( qlen - slen, slen );
-		LOG_INFO("\n%s", c_str());
-	}
-	return end_seen ;
+		if( end_seen ) {
+			erase( qlen - slen, slen );
+			LOG_INFO("\n%s", c_str());
+		}
+		return end_seen ;
 	}
 
-	void display( const std::string & type ) {
+	void display( const std::string & alt_string ) {
+		std::string::operator=( alt_string );
 		cleanup();
 		if( progdefaults.NVTX_AdifLog ) {
 			/// For updating the logbook with received messages.
 			cQsoRec qso_rec ;
 
-			qso_rec.putField(CALL, "Navtex");
-			qso_rec.putField(NAME, "Navtex");
+			long long currFreq = wf->rfcarrier();
+
+			if( ! progdefaults.myLocator.empty() ) {
+				const NavtexRecord & refStat = NavtexCatalog::Find(currFreq, m_origin, progdefaults.myLocator );
+				LOG_INFO("name=%s lon=%lf lat=%lf",
+					refStat.name().c_str(),
+					refStat.coordinates().longitude().angle(),
+					refStat.coordinates().latitude().angle() );
+
+				qso_rec.putField(QTH, refStat.country().c_str() );
+				qso_rec.putField(CALL, refStat.callsign().c_str() );
+				qso_rec.putField(COUNTRY, refStat.country().c_str() );
+				qso_rec.putField(GRIDSQUARE, refStat.locator().c_str() );
+				qso_rec.putField(NAME, refStat.name().c_str() );
+				/// If the header is clean, the message type is removed from the string.
+				// In this context, this field cannot be used.
+				qso_rec.putField(XCHG1, msg_type() );
+				char numberBuf[32];
+				sprintf( numberBuf, "%d", m_number );
+				qso_rec.putField(SRX, numberBuf );
+			} else {
+				std::string tmpNam("Station_");
+				tmpNam += m_origin ;
+				qso_rec.putField(NAME, tmpNam.c_str() );
+			}
 			qso_rec.setDateTime(true);
 			qso_rec.setDateTime(false);
-			qso_rec.setFrequency( wf->rfcarrier() );
+			qso_rec.setFrequency( currFreq );
 
 			qso_rec.putField(MODE, mode_info[MODE_NAVTEX].adif_name );
 
 			// m_qso_rec.putField(QTH, inpQth_log->value());
 			// m_qso_rec.putField(STATE, inpState_log->value());
 			// m_qso_rec.putField(VE_PROV, inpVE_Prov_log->value());
-			// m_qso_rec.putField(COUNTRY, inpCountry_log->value());
-			// m_qso_rec.putField(GRIDSQUARE, inpLoc_log->value());
 			// m_qso_rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
 			// m_qso_rec.putField(QSLSDATE, inpQSLsentdate_log->value());
 			// m_qso_rec.putField(RST_RCVD, inpRstR_log->value ());
 			// m_qso_rec.putField(RST_SENT, inpRstS_log->value ());
-			// m_qso_rec.putField(SRX, inpSerNoIn_log->value());
-			// m_qso_rec.putField(STX, inpSerNoOut_log->value());
-			// m_qso_rec.putField(XCHG1, inpXchgIn_log->value());
-			// m_qso_rec.putField(MYXCHG, inpMyXchg_log->value());
 			// m_qso_rec.putField(IOTA, inpIOTA_log->value());
 			// m_qso_rec.putField(DXCC, inpDXCC_log->value());
 			// m_qso_rec.putField(CONT, inpCONT_log->value());
 			// m_qso_rec.putField(CQZ, inpCQZ_log->value());
 			// m_qso_rec.putField(ITUZ, inpITUZ_log->value());
 			// m_qso_rec.putField(TX_PWR, inpTX_pwr_log->value());
-		
+
 			qso_rec.putField(NOTES, c_str() );
 
 			qsodb.qsoNewRec (&qso_rec);
@@ -437,6 +785,10 @@ public:
 }; // ccir_message
 
 static const double deviation_f = 90.0;
+
+static const double dflt_center_freq = 1000.0 ;
+
+class navtex ;
 
 class navtex_implementation {
 
@@ -455,6 +807,22 @@ class navtex_implementation {
 		}
 	}
 
+	bool                            m_only_sitor_b ;
+	int                             m_message_counter ;
+
+	static const size_t             m_tx_block_len = 1024 ;
+	// Between -1 and 1.
+	double                          m_tx_buf[m_tx_block_len];
+	size_t                          m_tx_counter ;
+
+	navtex                        * m_ptr_navtex ;
+
+	pthread_mutex_t                 m_mutex_tx ;
+	typedef std::list<std::string>  TxMsgQueueT ;
+	TxMsgQueueT                     m_tx_msg_queue ;
+
+	double                          m_metric ;
+
 	CCIR476				m_ccir476;
 	typedef std::list<int> sync_chrs_type ;
 	sync_chrs_type		 m_sync_chrs;
@@ -465,7 +833,6 @@ class navtex_implementation {
 	std::vector<int>	   m_zero_crossings ;
 	long				   m_zero_crossing_count;
 	double				 m_message_time ;
-	double				 m_sample_interval;
 	double				 m_signal_accumulator ;
 	double				 m_mark_f, m_space_f;
 	double				 m_audio_average ;
@@ -495,25 +862,33 @@ class navtex_implementation {
 	int					m_valid_count;
 	double				 m_sync_delta;
 	bool				   m_alpha_phase ;
-	bool				   m_valid_message ;
+	bool				   m_header_found ;
 	// filter method related
 	double				 m_center_frequency_f ;
 
+	navtex_implementation( const navtex_implementation & );
+	navtex_implementation();
+	navtex_implementation & operator=( const navtex_implementation & );
 public:
-	navtex_implementation(int the_sample_rate) {
+	navtex_implementation(int the_sample_rate, bool only_sitor_b, navtex * ptr_navtex ) {
+		pthread_mutex_init( &m_mutex_tx, NULL );
+		m_ptr_navtex = ptr_navtex ;
+		m_only_sitor_b = only_sitor_b ;
+		m_message_counter = 1 ;
+		m_metric = 0.0 ;
+		m_time_sec = 0.0 ;
 		m_state = NOSIGNAL;
 		m_message_time = 0.0 ;
 		m_signal_accumulator = 0;
 		m_audio_average = 0;
 		m_audio_minimum = 256;
-		m_baud_rate = 100;
 		m_sample_rate = the_sample_rate;
 		m_bit_duration = 0;
 		m_next_event_count = 0;
 		m_shift = false;
 		m_alpha_phase = false;
-		m_valid_message = false;
-		m_center_frequency_f = 1000.0;
+		m_header_found = false;
+		m_center_frequency_f = dflt_center_freq;
 		m_audio_average_tc = 1000.0 / m_sample_rate;
 		// this value must never be zero and bigger than 10.
 		m_baud_rate = 100;
@@ -523,7 +898,6 @@ public:
 		m_pulse_edge_event = false;
 		m_error_count = 0;
 		m_valid_count = 0;
-		m_sample_interval = 1.0 / m_sample_rate;
 		m_inverse = false;
 		m_sample_count = 0;
 		m_next_event_count = 0;
@@ -537,11 +911,14 @@ public:
 		set_filter_values();
 		configure_filters();
 	}
+	~navtex_implementation() {
+		pthread_mutex_destroy( &m_mutex_tx );
+	}
 private:
 
 	void set_filter_values() {
 		// carefully manage the parameters WRT the center frequency
-		m_center_frequency_f = 1000 ;
+		m_center_frequency_f = dflt_center_freq ;
 		// Q must change with frequency
 		// try to maintain a zero mixer output at the carrier frequency
 		double qv = m_center_frequency_f + (4.0 * 1000 / m_center_frequency_f);
@@ -565,40 +942,65 @@ private:
 		}
 	}
 
+	void flush_message(const std::string & extra_info)
+	{
+		if( m_header_found )
+		{
+			m_header_found = false;
+			display_message( m_curr_msg, m_curr_msg + extra_info );
+		}
+		else
+		{
+			display_message( m_curr_msg, "<Lost header>:" + m_curr_msg + extra_info );
+		}
+		m_curr_msg.reset_msg();
+		m_message_time = m_time_sec;
+	}
+
+	void process_timeout() {
+		/// No messaging in SitorB
+		if ( m_only_sitor_b ) {
+			return ;
+		}
+		bool timeOut = m_time_sec - m_message_time > 600 ;
+		if ( ! timeOut ) return ;
+		LOG_INFO("Timeout: time_sec=%lf, message_time=%lf", m_time_sec, m_message_time );
+
+		// TODO: Headerless messages could be dropped if shorter than X chars.
+		flush_message(":<TIMEOUT>");
+	}
+
 	void process_messages(int c) {
 		m_curr_msg.push_back((char) c);
+
+		/// No header nor trailer for plain SitorB.
+		if ( m_only_sitor_b ) {
+			m_header_found = true;
+			m_message_time = m_time_sec;
+			return;
+		}
+
 		ccir_message::detect_result msg_cut = m_curr_msg.detect_header();
 		if ( msg_cut.first ) {
 			/// Maybe the message was already valid.
-			if( m_valid_message )
+			if( m_header_found )
 			{
-				display_message("Lost trailer", msg_cut.second );
+				display_message( msg_cut.second, msg_cut.second + ":<Lost trailer>" );
 			}
 			else
 			{
 				/// Maybe only non-significant chars.
 				if( ! msg_cut.second.empty() )
 				{
-					LOG_INFO("msg_cut=(%s)", msg_cut.second.c_str() );
-					display_message("Lost header and trailer", msg_cut.second );
+					display_message( msg_cut.second, "<Lost header>:" + msg_cut.second + ":<Lost trailer>" );
 				}
 			}
-			m_valid_message = true;
+			m_header_found = true;
 			m_message_time = m_time_sec;
 
 		} else { // valid message state
-			// if stop mark detected or 10-min time limit exceeded
-			if ( m_curr_msg.detect_end() || (m_time_sec - m_message_time > 600)) {
-				if( m_valid_message)
-				{
-					m_valid_message = false;
-					display_message("Message OK", m_curr_msg);
-				}
-				else
-				{
-					display_message("Lost header", m_curr_msg);
-				}
-				m_curr_msg.clear();
+			if ( m_curr_msg.detect_end() ) {
+				flush_message("");
 			}
 		}
 	}
@@ -637,7 +1039,6 @@ private:
 			if (chr == -1) {
 				LOG_INFO(_("Fail all options: %x %x"), code, m_c1); 
 			} else {
-
 				switch (chr) {
 					case code_rep:
 						break;
@@ -674,13 +1075,29 @@ private:
 
 	void filter_print(int c) {
 		if (c == char_bell) {
-			/// TODO: Add a real beep.
-			for( const char * p = "[BEEP]"; *p; ++p ) {
-			put_rx_char(*p);
-		}
+			/// TODO: It should be a beep, but French navtex displays a quote.
+			put_rx_char('\'');
 		} else if (c != -1 && c != '\r' && c != code_alpha && c != code_rep) {
 			put_rx_char(c);
 		}
+	}
+
+	void compute_metric(void)
+	{
+		static double avg_ratio = 0.0 ;
+		static const double width_f = 10.0 ;
+       		double numer_mark = wf->powerDensity(m_mark_f, width_f);
+       		double numer_space = wf->powerDensity(m_space_f, width_f);
+       		double numer_mid = wf->powerDensity(m_center_frequency_f, width_f);
+       		double denom = wf->powerDensity(m_center_frequency_f, 2 * deviation_f) + 1e-10;
+
+		double ratio = ( numer_space + numer_mark + numer_mid ) / denom ;
+
+		/// The only power in this band should come from the signal.
+       		m_metric = 100 * decayavg( avg_ratio, ratio, 20 );
+
+		// LOG_INFO("m_metric=%lf",m_metric);
+		m_ptr_navtex->display_metric(m_metric);
 	}
 
 	/* A NAVTEX message is built on SITOR collective B-mode and consists of:
@@ -700,11 +1117,11 @@ private:
 		* an end of emission idle signal alpha for at least 2 seconds.  */
 public:
 	void process_data(const double * data, int nb_samples) {
+		process_timeout();
 		for( int i =0; i < nb_samples; ++i ) {
 			short v = static_cast<short>(32767 * data[i]);
 
-			// printf("%d\n",(int)v);
-			m_time_sec = m_sample_count * m_sample_interval;
+			m_time_sec = m_sample_count / m_sample_rate ;
 			double dv = v;
 
 			// separate mark and space by narrow filtering
@@ -739,6 +1156,7 @@ public:
 					assert( m_sample_count - m_next_event_count + m_bit_sample_count * 8 >= 0 );
 					size_t index = size_t((m_sample_count - m_next_event_count + m_bit_sample_count * 8) % m_bit_sample_count);
 
+					// TODO: This never happened so could be replaced by assert() for speed-up.
 					// Size = m_bit_sample_count / m_zero_crossings_divisor
 					if( index / m_zero_crossings_divisor >= m_zero_crossings.size() ) {
 						LOG_ERROR("index=%d m_zero_crossings_divisor=%d m_zero_crossings.size()=%d\n",
@@ -846,7 +1264,7 @@ public:
 							} else { // failed subsequent bit test
 								m_code_bits = 0;
 								m_bit_count = 0;
-								LOG_INFO("restarting sync");
+								// LOG_INFO("restarting sync");
 								set_state(SYNC_SETUP);
 							}
 						}
@@ -880,6 +1298,7 @@ public:
 
 			m_sample_count++;
 		}
+		compute_metric();
 	}
 
 	/// This updates the window label according to the state.
@@ -889,16 +1308,16 @@ public:
 	}
 
 private:
-	/// Each received file has its name pushed in this queue.
+	/// Each received message is pushed in this queue, so it can be read by XML/RPC.
 	syncobj m_sync_rx ;
 	std::queue< std::string > m_received_messages ;
 
-	void display_message( const std::string & type, ccir_message & ccir_msg ) {
-		ccir_msg.display( type );
-		put_received_message( type + ":" + ccir_msg );
+	void display_message( ccir_message & ccir_msg, const std::string & alt_string ) {
+		ccir_msg.display(alt_string);
+		put_received_message( alt_string );
 	}
 
-	/// Called by the engine each time a file is saved.
+	/// Called by the engine each time a message is saved.
 	void put_received_message( const std::string &message )
 	{
 		guard_lock g( m_sync_rx.mtxp() );
@@ -921,6 +1340,184 @@ public:
 		std::string message = m_received_messages.front();
 		m_received_messages.pop();
 		return message ;
+	}
+
+	// http://www.arachnoid.com/JNX/index.html
+	// "NAUTICAL" becomes:
+	// rep alpha rep alpha N alpha A alpha U N T A I U C T A I L C blank A blank L
+	std::string create_fec( const std::string & str ) const
+	{
+		std::string res ;
+		const size_t sz = str.size();
+
+		static const size_t offset = 2 ;
+		for( size_t i = 0 ; i < offset ; ++i ) {
+			res.push_back( code_rep );
+			res.push_back( code_alpha );
+		}
+
+		for ( size_t i = 0; i < sz; ++i ) {
+			res.push_back( str[i] );
+			res.push_back( i >= offset ? str[ i - offset ] : code_alpha );
+		}
+
+		for( size_t i = 0 ; i < offset ; ++i ) {
+			res.push_back( code_char32 );
+			res.push_back( str[ sz - offset + i ] );
+		}
+		return res;
+	}
+
+	// Note path std::string can contain null characters.
+	// TODO: Beware of the extra copy constructor.
+	std::string encode( const std::string & str ) const
+	{
+		std::string res ;
+		bool shift = false ;
+		for ( size_t i = 0, sz = str.size(); i < sz; ++ i ) {
+			m_ccir476.char_to_code(res, str[i], shift );
+		}
+		return res;
+	}
+
+	void tx_flush()
+	{
+		if( m_tx_counter != 0 ) {
+			m_ptr_navtex->ModulateXmtr( m_tx_buf, m_tx_counter );
+			m_tx_counter = 0 ;
+		}
+	}
+
+	// Input value must be between -1 and 1
+	void add_sample( double sam )
+	{
+		m_tx_buf[ m_tx_counter++ ] = sam ;
+
+		if( m_tx_counter == m_tx_block_len ) {
+			tx_flush();
+		}
+	}
+
+	void send_sine( double seconds, double freq )
+	{
+		int nb_samples = seconds * m_ptr_navtex->get_samplerate();
+		double max_level = 0.99 ; // Between -1.0 and 1.0
+		double ratio = 2.0 * M_PI * (double)freq / (double)m_ptr_navtex->get_samplerate() ;
+		for (int i = 0; i < nb_samples ; ++i )
+		{
+			add_sample( max_level * sin( i * ratio ) );
+		}
+	}
+
+	void send_phasing( int seconds )
+	{
+		send_sine( seconds, m_center_frequency_f );
+	}
+
+	void send_bit( bool bit )
+	{
+		send_sine( 1.0 / (double)m_baud_rate, bit ? m_mark_f : m_space_f );
+	}
+
+	void send_string( const std::string & msg )
+	{
+		std::string encod = encode( msg );
+		std::string sevenbits = create_fec( encod );
+
+		for( size_t i = 0, sz = sevenbits.size(); i < sz; i++ )
+		{
+			char tmp_stat[64];
+			sprintf( tmp_stat, "Transmission %d%%", (int)( 100.0  * ( i + 1.0 ) / sz ) );
+			put_status( tmp_stat );
+
+			char c = sevenbits[i];
+			for( size_t j = 0; j < 7 ; ++j, c >>= 1 )
+			{
+				send_bit( c & 1 );
+			}
+		}
+	}
+	void send_message( const std::string & msg, bool is_first, bool is_last )
+	{
+		put_status( "Transmission" );
+		m_tx_counter = 0 ;
+
+		if( m_only_sitor_b )
+		{
+			send_string( msg );
+		}
+		else
+		{
+			put_status( "Phasing" );
+			send_phasing( is_first ? 10.0 : 5.0 );
+			char preamble[64];
+			const char origin = 'Z' ; // Never seen this value.
+			const char subject = 'I' ; // This code is not used.
+			sprintf( preamble, "ZCZC %c%c%02d\r\n", origin, subject, m_message_counter );
+			m_message_counter = ( m_message_counter + 1 ) % 100 ;
+
+			/// The extra cr-nl before NNNN is not in the specification but clarify things.
+			std::string full_msg = preamble + msg + "\r\nNNNN\r\n\n";
+			send_string( full_msg );
+
+			// 5 or more seconds of phasing signal and another message starting with "ZCZC" or
+			// an end of emission idle signal alpha for at least 2 seconds.  */
+			if( is_last ) {
+				put_status( "Trailer" );
+				send_phasing(2.0);
+			}
+		}
+		tx_flush();
+		put_status( "" );
+	}
+
+	void append_message_to_send( const std::string & msg )
+	{
+		guard_lock g( &m_mutex_tx );
+		m_tx_msg_queue.push_back( msg );
+	}
+
+	void transmit_message_async( const std::string & msg )
+	{
+		LOG_INFO("%s", msg.c_str() );
+
+		append_message_to_send( msg );
+
+		bool is_first = true ;
+		for(;;)
+		{
+			guard_lock g( &m_mutex_tx );
+
+			TxMsgQueueT::iterator it = m_tx_msg_queue.begin(), en = m_tx_msg_queue.end();
+			if( it == en ) break ;
+			TxMsgQueueT::iterator it_next = it ;
+			++it_next ;
+			bool is_last = it_next == en ;
+			send_message( *it, is_first, is_last );
+			is_first = false ;
+			m_tx_msg_queue.erase(it);
+		}
+	}
+
+	void process_tx()
+	{
+		std::string msg ;
+
+		for(;;)
+		{
+			int c = get_tx_char();
+			if( c == -1 ) {
+				break ;
+			}
+			msg.push_back( c );
+		}
+
+		for( size_t i = 0 ; i < msg.size(); ++ i)
+		{
+			put_echo_char( msg[i] );
+		}
+
+		transmit_message_async(msg);
 	}
 
 }; // navtex_implementation
@@ -955,9 +1552,17 @@ navtex::navtex (trx_mode md)
 {
 	navtex::mode = md;
 	modem::samplerate = 11025;
-    modem::bandwidth = 2 * deviation_f ;
-	m_impl = new navtex_implementation( modem::samplerate );
-	cap &= ~CAP_TX;
+	modem::bandwidth = 2 * deviation_f ;
+	bool only_sitor_b = false ;
+	switch( md )
+	{
+		case MODE_NAVTEX : only_sitor_b = false ;
+				   break;
+		case MODE_SITORB : only_sitor_b = true ;
+				   break;
+		default          : LOG_ERROR("Unknown mode");
+	}
+	m_impl = new navtex_implementation( modem::samplerate, only_sitor_b, this );
 }
 
 navtex::~navtex()
@@ -967,7 +1572,6 @@ navtex::~navtex()
 		delete m_impl ;
 	}
 }
-
 void navtex::rx_init()
 {
 	put_MODEstatus(modem::mode);
@@ -985,10 +1589,15 @@ int  navtex::rx_process(const double *buf, int len)
 
 void navtex::tx_init(SoundBase *sc)
 {
+	modem::scard = sc; // SoundBase
+	videoText(); // In trx/modem.cxx
+	//modem::set_freq(dflt_center_freq);
 }
 
 int  navtex::tx_process()
 {
+	m_impl->process_tx();
+
 	return -1;
 }
 
@@ -996,5 +1605,12 @@ int  navtex::tx_process()
 std::string navtex::get_message(int max_seconds)
 {
 	return m_impl->get_received_message(max_seconds);
+}
+
+std::string navtex::send_message(const std::string &msg)
+{
+	m_impl->append_message_to_send(msg);
+	start_tx(); // If this is not done.
+	return "";
 }
 

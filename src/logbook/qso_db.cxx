@@ -3,7 +3,7 @@
 //
 // Copyright (C) 2006-2009
 //		Dave Freese, W1HKJ
-//		Remi Chateaunaeu, 2011
+//		Remi Chateauneu, 2011
 //
 // This file is part of fldigi.
 //
@@ -34,8 +34,6 @@
 #include "pthread.h"
 
 using namespace std;
-
-// class cQsoRec
 
 static int compby = COMPDATE;
 static bool date_off = true;

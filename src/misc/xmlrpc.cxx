@@ -2631,20 +2631,21 @@ struct Wefax_send_file : public xmlrpc_c::method
 // Returns the current navtex modem pointer.
 static navtex * get_navtex(void)
 {
-	if( active_modem->get_mode() != MODE_NAVTEX )
+	if( ( active_modem->get_mode() != MODE_NAVTEX )
+	 && ( active_modem->get_mode() != MODE_SITORB ) )
 	{
 		navtex * ptr = dynamic_cast<navtex *>( active_modem );
 		if( ptr == NULL ) throw runtime_error("Inconsistent navtex object");
 		return ptr ;
 	}
-	throw runtime_error("Not in navtex mode");
+	throw runtime_error("Not in navtex or sitorB mode");
 }
 
 struct Navtex_get_message : public xmlrpc_c::method
 {
 	Navtex_get_message() {
 		_signature = "s:i";
-		_help = "Returns next Navtex message with a max delay in seconds.. Empty string if timeout."; }
+		_help = "Returns next Navtex/SitorB message with a max delay in seconds.. Empty string if timeout."; }
 
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	try
@@ -2657,6 +2658,23 @@ struct Navtex_get_message : public xmlrpc_c::method
 	}
 };
 
+struct Navtex_send_message : public xmlrpc_c::method
+{
+	Navtex_send_message() {
+		_signature = "s:s";
+		_help = "Send a Navtex/SitorB message. Returns an empty string if OK otherwise an error message."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		std::string status = get_navtex()->send_message( params.getString(0) );
+		*retval = xmlrpc_c::value_string( status );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
 // =============================================================================
 
 // End XML-RPC interface

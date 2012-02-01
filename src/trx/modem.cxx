@@ -59,6 +59,7 @@ modem *wefax576_modem = 0;
 modem *wefax288_modem = 0;
 
 modem *navtex_modem = 0;
+modem *sitorb_modem = 0;
 
 modem *mt63_500_modem = 0;
 modem *mt63_1000_modem = 0;

@@ -11,7 +11,7 @@ if WANT_FLARQ
 endif
 
 # The BUILD_* variables are defined in build.m4
-fldigi_CPPFLAGS = -DBUILD_FLDIGI -DLOCALEDIR=\"$(localedir)\" @FLDIGI_BUILD_CPPFLAGS@
+fldigi_CPPFLAGS = -DBUILD_FLDIGI -DLOCALEDIR=\"$(localedir)\" @FLDIGI_BUILD_CPPFLAGS@ -DPKGDATADIR=\"$(pkgdatadir)\"
 fldigi_CXXFLAGS = @FLDIGI_BUILD_CXXFLAGS@
 fldigi_CFLAGS = $(fldigi_CXXFLAGS)
 fldigi_LDFLAGS = @FLDIGI_BUILD_LDFLAGS@
@@ -132,6 +132,10 @@ if WANT_FLDIGI
 	if test -f $(srcdir)/../data/fldigi.desktop; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/applications; \
 	    $(INSTALL_DATA) $(srcdir)/../data/fldigi.desktop $(DESTDIR)/$(datadir)/applications; \
+	fi
+	if test -f $(srcdir)/../data/NAVTEX_Stations.csv; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
+	    $(INSTALL_DATA) $(srcdir)/../data/NAVTEX_Stations.csv $(DESTDIR)/$(pkgdatadir); \
 	fi
 endif
 if WANT_FLARQ
@@ -652,6 +656,7 @@ EXTRA_DIST = \
 	$(srcdir)/../data/fldigi-rtty.png \
 	$(srcdir)/../data/fldigi.xpm \
 	$(srcdir)/../data/fldigi.desktop \
+	$(srcdir)/../data/NAVTEX_Stations.csv \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/fldigi.icns \
 	$(srcdir)/../data/win32/fldigi.ico \

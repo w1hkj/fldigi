@@ -1999,6 +1999,21 @@ static void cb_btnNvtxAdifLog(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Output *txtNvtxCatalog=(Fl_Output *)0;
+
+static void cb_txtNvtxCatalog(Fl_Output* o, void*) {
+  progdefaults.NVTX_Catalog=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnSelectNvtxCatalog=(Fl_Button *)0;
+
+static void cb_btnSelectNvtxCatalog(Fl_Button*, void*) {
+  Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::SINGLE,"Navtex stations file");
+fc->callback(NvtxCatalogSet);
+fc->show();
+}
+
 Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
@@ -4599,6 +4614,7 @@ an merging"));
           tabsModems->selection_color((Fl_Color)FL_LIGHT1);
           tabsModems->align(FL_ALIGN_TOP_RIGHT);
           { tabContestia = new Fl_Group(0, 50, 500, 320, _("Contestia"));
+            tabContestia->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = mnuContestia_Bandwidth = new Fl_Choice(60, 80, 85, 20, _("Bandwidth"));
@@ -5904,6 +5920,7 @@ an merging"));
             tabPacket->end();
           } // Fl_Group* tabPacket
           { tabWefax = new Fl_Group(-5, 50, 590, 320, _("Wefax"));
+            tabWefax->hide();
             { Fl_Group* o = new Fl_Group(-5, 50, 590, 320);
               { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(10, 130, 235, 30, _("Log Wefax messages to Adif file"));
                 btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));
@@ -5972,13 +5989,22 @@ an merging"));
             tabWefax->end();
           } // Fl_Group* tabWefax
           { tabNavtex = new Fl_Group(-5, 50, 590, 320, _("Navtex"));
-            tabNavtex->hide();
             { Fl_Group* o = new Fl_Group(-5, 50, 590, 320);
               { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(10, 65, 235, 30, _("Log Navtex messages to Adif file"));
                 btnNvtxAdifLog->down_box(FL_DOWN_BOX);
                 btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
                 o->value(progdefaults.NVTX_AdifLog);
               } // Fl_Check_Button* btnNvtxAdifLog
+              { Fl_Output* o = txtNvtxCatalog = new Fl_Output(10, 123, 270, 22, _("Navtex stations file:"));
+                txtNvtxCatalog->tooltip(_("Use Open to select descriptor file"));
+                txtNvtxCatalog->color((Fl_Color)FL_LIGHT2);
+                txtNvtxCatalog->callback((Fl_Callback*)cb_txtNvtxCatalog);
+                txtNvtxCatalog->align(FL_ALIGN_TOP_LEFT);
+                o->value(fl_filename_name(progdefaults.NVTX_Catalog.c_str()));
+              } // Fl_Output* txtNvtxCatalog
+              { btnSelectNvtxCatalog = new Fl_Button(315, 125, 80, 20, _("Directory..."));
+                btnSelectNvtxCatalog->callback((Fl_Callback*)cb_btnSelectNvtxCatalog);
+              } // Fl_Button* btnSelectNvtxCatalog
               o->end();
             } // Fl_Group* o
             tabNavtex->end();
@@ -5987,10 +6013,10 @@ an merging"));
         } // Fl_Tabs* tabsModems
         tabModems->end();
       } // Fl_Group* tabModems
-      { tabRig = new Fl_Group(0, 23, 500, 345, _("Rig"));
+      { tabRig = new Fl_Group(0, 23, 500, 347, _("Rig"));
         tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
-        { tabsRig = new Fl_Tabs(0, 23, 500, 345);
+        { tabsRig = new Fl_Tabs(0, 23, 500, 347);
           tabsRig->selection_color((Fl_Color)FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->hide();
@@ -7695,5 +7721,14 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnWefaxSaveDir->value( w->value() );
 	btnWefaxSaveDir->redraw();
 	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
+}
+}
+
+void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata) {
+  /* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
+if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+	txtNvtxCatalog->value( w->value() );
+	txtNvtxCatalog->redraw();
+	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
 }
 }
