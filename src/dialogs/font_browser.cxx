@@ -52,6 +52,7 @@ void Font_Browser::ColorSelect()
 	    return;
     fontcolor = fl_rgb_color(r, g, b);
     btn_Color->color(fontcolor);
+    btn_Color->labelcolor( fl_contrast(FL_BLACK, fontcolor));
 }
 
 void Font_Browser::fb_callback(Fl_Widget* w, void* arg)
@@ -144,6 +145,7 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     btn_Color = new Fl_Button(345, 100, 80, 25, _("Color"));
     btn_Color->down_box(FL_BORDER_BOX);
     btn_Color->color(FL_FOREGROUND_COLOR);
+    btn_Color->labelcolor( fl_contrast(FL_BLACK, FL_FOREGROUND_COLOR));
     btn_Color->callback(fb_callback, this);
 
     box_Example = new Preview_Box(5, 145, 420, 75, _("That crazy fox jumped over the dog again!\n"

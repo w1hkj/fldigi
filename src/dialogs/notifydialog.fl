@@ -1,11 +1,12 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0300 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {} 
+decl {\#include <config.h>} {private local
+} 
 
 decl {\#include "table.h"} {public global
 } 
@@ -16,20 +17,21 @@ decl {\#include "flinput2.h"} {public global
 decl {\#include "flslider2.h"} {public global
 } 
 
-decl {\#include "notify.h"} {} 
+decl {\#include "notify.h"} {private local
+} 
 
 Function {make_notify_window()} {open
 } {
   Fl_Window {} {
     label Notifications open
-    xywh {671 482 500 550} type Double resizable size_range {500 550 0 0} visible
+    xywh {671 439 500 550} type Double resizable size_range {500 550 0 0} visible
   } {
     Fl_Group grpNotifyEvent {
       label Event open
       xywh {2 2 219 126} box ENGRAVED_FRAME align 21
     } {
-      Fl_Choice mnuNotifyEvent {open
-        xywh {36 29 175 22} down_box BORDER_BOX
+      Fl_Choice mnuNotifyEvent {open selected
+        xywh {10 29 205 22} down_box BORDER_BOX
       } {}
       Fl_Light_Button btnNotifyEnabled {
         label Enabled
@@ -171,7 +173,7 @@ chkNotifyFilterCall->value(0);}
     Fl_Button btnNotifyAdd {
       xywh {223 402 90 23}
     }
-    Fl_Button btnNotifyRemove {selected
+    Fl_Button btnNotifyRemove {
       xywh {316 402 90 23}
     }
     Fl_Button btnNotifyUpdate {

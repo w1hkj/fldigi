@@ -106,7 +106,7 @@ Fl_Double_Window* make_notify_window() {
     { grpNotifyEvent = new Fl_Group(2, 2, 219, 126, _("Event"));
       grpNotifyEvent->box(FL_ENGRAVED_FRAME);
       grpNotifyEvent->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-      { mnuNotifyEvent = new Fl_Choice(36, 29, 175, 22);
+      { mnuNotifyEvent = new Fl_Choice(10, 29, 205, 22);
         mnuNotifyEvent->down_box(FL_BORDER_BOX);
       } // Fl_Choice* mnuNotifyEvent
       { btnNotifyEnabled = new Fl_Light_Button(131, 94, 80, 23, _("Enabled"));

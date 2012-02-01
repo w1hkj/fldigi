@@ -263,7 +263,7 @@ Fl_Double_Window* createViewer(void)
 
 	Fl_Group *g = new Fl_Group(BWSR_BORDER, brwsViewer->y() + brwsViewer->h() + pad, viewerwidth, 20);
 	// close button
-	btnCloseViewer = new Fl_Button(g->w() + BWSR_BORDER - 65, g->y(), 65, g->h(),
+	btnCloseViewer = new Fl_Button(g->w() + BWSR_BORDER - 75, g->y(), 75, g->h(),
 				       make_icon_label(_("Close"), close_icon));
 	btnCloseViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 	set_icon_label(btnCloseViewer);

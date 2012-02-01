@@ -1,29 +1,33 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0300 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {} 
+decl {\#include <config.h>} {private local
+} 
 
-decl {\#include <FL/Fl_Pixmap.H>} {} 
+decl {\#include <FL/Fl_Pixmap.H>} {private local
+} 
 
-decl {\#include "logsupport.h"} {} 
+decl {\#include "logsupport.h"} {private local
+} 
 
-decl {\#include "pixmaps.h"} {} 
+decl {\#include "pixmaps.h"} {private local
+} 
 
-decl {\#include "flinput2.h"} {public
+decl {\#include "flinput2.h"} {public local
 } 
 
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup} open
-    xywh {571 56 655 439} type Double modal visible
+    label {Export Setup} open selected
+    xywh {517 143 675 439} type Double hide modal
   } {
     Fl_Group {} {
-      label {Select Records to Export} open
+      label {Select Records to Export}
       xywh {4 4 388 400} box ENGRAVED_FRAME align 21
     } {
       Fl_Check_Browser chkExportBrowser {
@@ -33,13 +37,13 @@ Function {create_logbook_dialogs()} {open return_type void
         label {Clear All}
         callback {btn_export_by_date->value(0);
 chkExportBrowser->check_none();}
-        xywh {69 325 109 24}
+        xywh {69 325 90 24}
       }
       Fl_Button btnCheckAll {
         label {Check All}
         callback {btn_export_by_date->value(0);
-chkExportBrowser->check_all();} selected
-        xywh {200 325 109 24}
+chkExportBrowser->check_all();}
+        xywh {200 325 90 24}
       }
       Fl_Input inp_export_start_date {
         label {Start Date}
@@ -67,16 +71,16 @@ chkExportBrowser->check_all();} selected
       label OK
       callback {wExport->hide();
 Export_log();}
-      xywh {536 408 100 24}
+      xywh {536 408 90 24}
     }
     Fl_Button btnCancel {
       label Cancel
       callback {wExport->hide();}
-      xywh {405 408 100 24}
+      xywh {405 408 90 24}
     }
     Fl_Group {} {
       label {Select Fields to Export} open
-      xywh {392 4 258 400} box ENGRAVED_FRAME align 21
+      xywh {392 4 280 400} box ENGRAVED_FRAME align 21
     } {
       Fl_Button btnClearAllFields {
         label {Clear All}
@@ -110,7 +114,7 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);}
-        xywh {400 372 76 24}
+        xywh {395 372 90 24}
       }
       Fl_Button btnCheckAllFields {
         label {Check All}
@@ -144,127 +148,127 @@ btnSelectCQZ->value(1);
 btnSelectITUZ->value(1);
 btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);}
-        xywh {480 372 76 24}
+        xywh {487 372 90 24}
       }
       Fl_Check_Button btnSelectCall {
         label Call
-        xywh {402 25 70 15} down_box DOWN_BOX value 1
+        xywh {402 31 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectName {
         label Name
-        xywh {402 46 70 15} down_box DOWN_BOX value 1
+        xywh {402 52 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectFreq {
         label Freq
-        xywh {402 68 70 15} down_box DOWN_BOX value 1
+        xywh {402 74 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectBand {
         label Band
-        xywh {402 90 70 15} down_box DOWN_BOX
+        xywh {402 96 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectMode {
         label Mode
-        xywh {402 111 70 15} down_box DOWN_BOX value 1
+        xywh {402 117 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQSOdateOn {
         label {QSO Date On}
-        xywh {402 133 70 15} down_box DOWN_BOX value 1
+        xywh {402 139 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQSOdateOff {
         label {QSO Date Off}
-        xywh {402 155 70 15} down_box DOWN_BOX value 1
+        xywh {402 161 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeON {
         label {Time ON}
-        xywh {402 177 70 15} down_box DOWN_BOX value 1
+        xywh {402 183 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeOFF {
         label {Time OFF}
-        xywh {402 198 70 15} down_box DOWN_BOX value 1
+        xywh {402 204 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTX_pwr {
         label {TX Power}
-        xywh {402 220 70 15} down_box DOWN_BOX
+        xywh {402 226 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectRSTsent {
         label {RST sent}
-        xywh {402 242 70 15} down_box DOWN_BOX value 1
+        xywh {402 248 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectRSTrcvd {
         label {RST rcvd}
-        xywh {402 263 70 15} down_box DOWN_BOX value 1
+        xywh {402 269 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQth {
         label Qth
-        xywh {402 285 70 15} down_box DOWN_BOX
+        xywh {402 291 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectLOC {
         label LOC
-        xywh {402 307 70 15} down_box DOWN_BOX value 1
+        xywh {402 313 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectState {
         label State
-        xywh {400 329 70 15} down_box DOWN_BOX
+        xywh {400 335 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectProvince {
         label Province
-        xywh {520 24 70 15} down_box DOWN_BOX
+        xywh {533 31 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCountry {
         label Country
-        xywh {520 45 70 15} down_box DOWN_BOX
+        xywh {533 51 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectNotes {
         label Notes
-        xywh {520 67 70 15} down_box DOWN_BOX
+        xywh {533 73 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectQSLrcvd {
         label {QSL rcvd date}
-        xywh {520 89 70 15} down_box DOWN_BOX
+        xywh {533 95 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectQSLsent {
         label {QSL sent date}
-        xywh {520 111 70 15} down_box DOWN_BOX
+        xywh {533 117 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectSerialIN {
         label {Serial \# in}
-        xywh {520 132 70 15} down_box DOWN_BOX
+        xywh {533 138 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectSerialOUT {
         label {Serial \# out}
-        xywh {520 154 70 15} down_box DOWN_BOX
+        xywh {533 160 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectXchgIn {
         label {Exchange In}
-        xywh {520 176 70 15} down_box DOWN_BOX
+        xywh {533 182 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectMyXchg {
         label {Exchange Out}
-        xywh {520 198 70 15} down_box DOWN_BOX
+        xywh {533 204 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCNTY {
         label County
-        xywh {520 220 70 15} down_box DOWN_BOX
+        xywh {533 226 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCONT {
         label Continent
-        xywh {521 241 70 15} down_box DOWN_BOX
+        xywh {534 247 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCQZ {
         label CQZ
-        xywh {521 263 70 15} down_box DOWN_BOX
+        xywh {534 269 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectDXCC {
         label DXCC
-        xywh {521 285 70 15} down_box DOWN_BOX
+        xywh {534 291 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectIOTA {
         label IOTA
-        xywh {521 307 70 15} down_box DOWN_BOX
+        xywh {534 313 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectITUZ {
         label ITUZ
-        xywh {521 329 70 15} down_box DOWN_BOX
+        xywh {534 335 70 15} down_box DOWN_BOX
       }
       Fl_Button btnSetFieldDefaults {
         label Defaults
@@ -298,7 +302,7 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);}
-        xywh {560 372 76 24}
+        xywh {578 372 90 24}
       }
     }
   }
@@ -443,22 +447,22 @@ btnSelectNotes->value(0);}
       Fl_Button bNewSave {
         label New
         callback cb_btnNewSave
-        tooltip {New record / Save record} xywh {163 263 55 22} shortcut 0x8004e color 50 selection_color 48
+        tooltip {New record / Save record} xywh {117 263 75 22} shortcut 0x8004e color 50 selection_color 48
       }
       Fl_Button bUpdateCancel {
         label Update
         callback cb_btnUpdateCancel
-        tooltip {Update the current record} xywh {235 263 55 22} shortcut 0x80055 color 50 selection_color 48
+        tooltip {Update the current record} xywh {204 263 75 22} shortcut 0x80055 color 50 selection_color 48
       }
       Fl_Button bDelete {
         label Delete
         callback cb_btnDelete
-        tooltip {Delete the current record} xywh {307 263 55 22} shortcut 0x80044 color 50 selection_color 48
+        tooltip {Delete the current record} xywh {292 263 75 22} shortcut 0x80044 color 50 selection_color 48
       }
       Fl_Button bDialFreq {
         label Dial
         callback cb_btnDialFreq
-        tooltip {Retrieve for active modem use} xywh {380 263 55 22} shortcut 0x50066 color 50 selection_color 48
+        tooltip {Retrieve for active modem use} xywh {380 263 75 22} shortcut 0x50066 color 50 selection_color 48
       }
       Fl_Input txtNbrRecs_log {
         label Recs
@@ -537,7 +541,7 @@ wBrowser->gridEnabled (0);
 dlgLogbook->xclass(PACKAGE_TARNAME);} {}
   Fl_Window wCabrillo {
     label {Cabrillo Setup}
-    xywh {572 526 655 340} type Double hide modal
+    xywh {516 612 675 340} type Double hide modal
   } {
     Fl_Group {} {
       label {Select Records to Export} open
@@ -549,80 +553,80 @@ dlgLogbook->xclass(PACKAGE_TARNAME);} {}
       Fl_Button btnCabClearAll {
         label {Clear All}
         callback {chkCabBrowser->check_none();}
-        xywh {69 277 109 20}
+        xywh {69 277 110 24}
       }
       Fl_Button btnCabCheckAll {
         label {Check All}
         callback {chkCabBrowser->check_all();}
-        xywh {200 277 109 20}
+        xywh {200 277 110 24}
       }
     }
     Fl_Return_Button btnCabOK {
       label OK
       callback {wCabrillo->hide();
 WriteCabrillo();}
-      xywh {536 312 100 20}
+      xywh {544 312 100 24}
     }
     Fl_Button btnCabCancel {
       label Cancel
       callback {wCabrillo->hide();}
-      xywh {405 312 100 20}
+      xywh {414 312 100 24}
     }
     Fl_Group {} {
       label {Select Cabrillo Contest & Fields}
-      xywh {390 4 258 303} box ENGRAVED_FRAME align 21
+      xywh {390 4 283 305} box ENGRAVED_FRAME align 21
     } {
       Fl_Group cboContest {
         label {Contest:}
         callback {setContestType();} open
-        xywh {460 35 180 20} box BORDER_BOX color 7 align 4
+        xywh {486 41 180 20} box BORDER_BOX color 7 align 4
         code0 {\#include "combo.h"}
         code1 {extern void setContestType();}
         class Fl_ComboBox
       } {}
       Fl_Check_Button btnCabCall {
         label Call
-        xywh {420 75 70 15} down_box DOWN_BOX value 1
+        xywh {423 75 70 16} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabFreq {
         label Freq
-        xywh {420 99 70 15} down_box DOWN_BOX value 1
+        xywh {423 100 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabMode {
         label Mode
-        xywh {420 123 70 15} down_box DOWN_BOX value 1
+        xywh {423 124 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabQSOdate {
         label {QSO Date}
-        xywh {420 147 70 15} down_box DOWN_BOX value 1
+        xywh {423 148 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabTimeOFF {
         label {Time OFF}
-        xywh {420 171 70 15} down_box DOWN_BOX value 1
+        xywh {423 172 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabRSTsent {
         label {RST sent}
-        xywh {420 195 70 15} down_box DOWN_BOX value 1
+        xywh {423 196 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabRSTrcvd {
         label {RST rcvd}
-        xywh {420 220 70 15} down_box DOWN_BOX value 1
+        xywh {423 221 70 16} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabSerialIN {
         label {Serial \# in}
-        xywh {522 99 70 15} down_box DOWN_BOX value 1
+        xywh {533 100 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabSerialOUT {
         label {Serial \# out}
-        xywh {522 123 70 15} down_box DOWN_BOX value 1
+        xywh {533 124 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabXchgIn {
         label {Exchange In}
-        xywh {522 147 70 15} down_box DOWN_BOX value 1
+        xywh {533 148 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnCabMyXchg {
         label {Exchange Out}
-        xywh {522 171 70 15} down_box DOWN_BOX value 1
+        xywh {533 172 70 15} down_box DOWN_BOX value 1
       }
       Fl_Button btnCabClearAllFields {
         label {Clear All}
@@ -637,7 +641,7 @@ btnCabXchgIn->value(0);
 btnCabMyXchg->value(0);
 btnCabRSTsent->value(0);
 btnCabRSTrcvd->value(0);}
-        xywh {435 275 76 20}
+        xywh {409 277 110 24}
       }
       Fl_Button btnCabCheckAllFields {
         label {Check All}
@@ -652,7 +656,7 @@ btnCabXchgIn->value(1);
 btnCabMyXchg->value(1);
 btnCabRSTsent->value(1);
 btnCabRSTrcvd->value(1);}
-        xywh {531 275 76 20}
+        xywh {539 277 110 24}
       }
     }
   }
