@@ -114,7 +114,8 @@ for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
 } 
 
-Function {ConfigureDialog()} {} {
+Function {ConfigureDialog()} {open
+} {
   code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|_850|Custom";
 static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
@@ -3880,7 +3881,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.wx_sta = o->value();
 progdefaults.changed = true;}
                 tooltip {for example KMDQ for 
-Huntsville-Madison Executive Airport, AL} xywh {197 92 43 24} align 8
+Huntsville-Madison Executive Airport, AL} xywh {70 92 43 24} align 8
                 code0 {o->value(progdefaults.wx_sta.c_str());}
               }
               Fl_Check_Button btn_wx_full {
@@ -3957,6 +3958,12 @@ progdefaults.changed = true;}
               Fl_Box {} {
                 label {Barometric pressure}
                 xywh {45 269 156 19} align 20
+              }
+              Fl_Button btn_metar_search {
+                label {Search on  web}
+                callback {get_METAR_station();}
+                xywh {286 92 130 24}
+                code0 {\#include "weather.h"}
               }
             }
           }
