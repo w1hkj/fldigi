@@ -4468,7 +4468,7 @@ void create_fl_digi_main_primary() {
 				Fl_Group *g = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 22, mvgroup->w(), 22);
 					g->box(FL_DOWN_BOX);
 					// squelch
-					mvsquelch = new Fl_Value_Slider2(g->x()+2, g->y()+1, g->w() - 65 - 2, g->h()-2);
+					mvsquelch = new Fl_Value_Slider2(g->x()+2, g->y()+1, g->w() - 75 - 2, g->h()-2);
 					mvsquelch->type(FL_HOR_NICE_SLIDER);
 					mvsquelch->range(-6.0, 20.0);
 					mvsquelch->value(progStatus.VIEWERsquelch);
@@ -4485,7 +4485,7 @@ void create_fl_digi_main_primary() {
 					mvsquelch->tooltip(_("Set Viewer Squelch"));
 
 					// clear button
-					btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w(), g->y()+1, 65, g->h()-2,
+					btnClearMViewer = new Fl_Button(mvsquelch->x() + mvsquelch->w(), g->y()+1, 75, g->h()-2,
 										make_icon_label(_("Clear"), edit_clear_icon));
 					btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 					set_icon_label(btnClearMViewer);
