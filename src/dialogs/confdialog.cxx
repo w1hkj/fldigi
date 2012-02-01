@@ -3292,6 +3292,13 @@ Fl_Box *eqsl_txt2=(Fl_Box *)0;
 
 Fl_Box *eqsl_txt3=(Fl_Box *)0;
 
+Fl_Check_Button *btn_send_datetime_off=(Fl_Check_Button *)0;
+
+static void cb_btn_send_datetime_off(Fl_Check_Button* o, void*) {
+  progdefaults.eqsl_datetime_off = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Button *btnSaveConfig=(Fl_Button *)0;
 
 static void cb_btnSaveConfig(Fl_Button*, void*) {
@@ -7114,7 +7121,7 @@ d frequency"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("eQSL"));
             o->hide();
-            { Fl_Input2* o = inpEQSL_id = new Fl_Input2(176, 75, 150, 20, _("User ID"));
+            { Fl_Input2* o = inpEQSL_id = new Fl_Input2(176, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);
               inpEQSL_id->color(FL_BACKGROUND2_COLOR);
@@ -7129,7 +7136,7 @@ d frequency"));
               o->value(progdefaults.eqsl_id.c_str());
               inpEQSL_id->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_id
-            { Fl_Input2* o = inpEQSL_pwd = new Fl_Input2(176, 106, 150, 20, _("Password"));
+            { Fl_Input2* o = inpEQSL_pwd = new Fl_Input2(176, 85, 150, 20, _("Password"));
               inpEQSL_pwd->tooltip(_("Your login password"));
               inpEQSL_pwd->box(FL_DOWN_BOX);
               inpEQSL_pwd->color(FL_BACKGROUND2_COLOR);
@@ -7145,11 +7152,11 @@ d frequency"));
               o->type(FL_SECRET_INPUT);
               inpEQSL_pwd->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_pwd
-            { btnEQSL_pwd_show = new Fl_Button(344, 106, 70, 20, _("Show"));
+            { btnEQSL_pwd_show = new Fl_Button(344, 85, 70, 20, _("Show"));
               btnEQSL_pwd_show->tooltip(_("Show password in plain text"));
               btnEQSL_pwd_show->callback((Fl_Callback*)cb_btnEQSL_pwd_show);
             } // Fl_Button* btnEQSL_pwd_show
-            { Fl_Input2* o = inpEQSL_nick = new Fl_Input2(176, 137, 150, 20, _("QTH Nickname"));
+            { Fl_Input2* o = inpEQSL_nick = new Fl_Input2(176, 114, 150, 20, _("QTH Nickname"));
               inpEQSL_nick->tooltip(_("Your login name"));
               inpEQSL_nick->box(FL_DOWN_BOX);
               inpEQSL_nick->color(FL_BACKGROUND2_COLOR);
@@ -7164,17 +7171,17 @@ d frequency"));
               o->value(progdefaults.eqsl_nick.c_str());
               inpEQSL_nick->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpEQSL_nick
-            { Fl_Group* o = new Fl_Group(4, 170, 492, 194, _("Options"));
+            { Fl_Group* o = new Fl_Group(4, 141, 492, 223, _("Options"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_send_when_logged = new Fl_Check_Button(29, 191, 70, 15, _("send when logged (log button, <LOG>, <LNW>)"));
-                btn_send_when_logged->tooltip(_("eQSL upload when record logged"));
+              { Fl_Check_Button* o = btn_send_when_logged = new Fl_Check_Button(29, 166, 70, 15, _("send when logged (log button, <LOG>, <LNW>)"));
+                btn_send_when_logged->tooltip(_("automatic data upload"));
                 btn_send_when_logged->down_box(FL_DOWN_BOX);
                 btn_send_when_logged->callback((Fl_Callback*)cb_btn_send_when_logged);
                 o->value(progdefaults.eqsl_when_logged);
               } // Fl_Check_Button* btn_send_when_logged
               { Fl_Input2* o = txt_eqsl_default_message = new Fl_Input2(33, 226, 451, 40, _("Default message"));
-                txt_eqsl_default_message->tooltip(_("Default message sent with eQSL"));
+                txt_eqsl_default_message->tooltip(_("default text to send with <LOG> etc"));
                 txt_eqsl_default_message->type(4);
                 txt_eqsl_default_message->box(FL_DOWN_BOX);
                 txt_eqsl_default_message->color(FL_BACKGROUND2_COLOR);
@@ -7204,6 +7211,12 @@ d frequency"));
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
+              { Fl_Check_Button* o = btn_send_datetime_off = new Fl_Check_Button(30, 188, 70, 15, _("Use date/time off for log entry"));
+                btn_send_datetime_off->tooltip(_("default uses date/time on"));
+                btn_send_datetime_off->down_box(FL_DOWN_BOX);
+                btn_send_datetime_off->callback((Fl_Callback*)cb_btn_send_datetime_off);
+                o->value(progdefaults.eqsl_datetime_off);
+              } // Fl_Check_Button* btn_send_datetime_off
               o->end();
             } // Fl_Group* o
             o->end();
