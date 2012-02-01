@@ -26,6 +26,7 @@
 #include <string>
 
 extern void getwx(std::string& wx, const char *metar = NULL);
+extern void get_METAR_station();
 
 #endif
 

@@ -444,6 +444,8 @@ extern Fl_Check_Button *btn_wx_mph;
 extern Fl_Check_Button *btn_wx_kph;
 extern Fl_Check_Button *btn_wx_inches;
 extern Fl_Check_Button *btn_wx_mbars;
+#include "weather.h"
+extern Fl_Button *btn_metar_search;
 extern Fl_Group *tabQRZ;
 extern Fl_Round_Button *btnQRZWEBnotavailable;
 extern Fl_Round_Button *btnQRZonline;

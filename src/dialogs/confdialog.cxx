@@ -3253,6 +3253,12 @@ static void cb_btn_wx_mbars(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Button *btn_metar_search=(Fl_Button *)0;
+
+static void cb_btn_metar_search(Fl_Button*, void*) {
+  get_METAR_station();
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZWEBnotavailable=(Fl_Round_Button *)0;
@@ -7196,7 +7202,7 @@ d frequency"));
             { Fl_Group* o = new Fl_Group(5, 60, 490, 300, _("Weather query specification"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input* o = inpWXsta = new Fl_Input(197, 92, 43, 24, _("METAR station ID code"));
+              { Fl_Input* o = inpWXsta = new Fl_Input(70, 92, 43, 24, _("METAR station ID code"));
                 inpWXsta->tooltip(_("for example KMDQ for \nHuntsville-Madison Executive Airport, AL"));
                 inpWXsta->callback((Fl_Callback*)cb_inpWXsta);
                 inpWXsta->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -7265,6 +7271,9 @@ d frequency"));
               { Fl_Box* o = new Fl_Box(45, 269, 156, 19, _("Barometric pressure"));
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
+              { btn_metar_search = new Fl_Button(286, 92, 130, 24, _("Search on  web"));
+                btn_metar_search->callback((Fl_Callback*)cb_btn_metar_search);
+              } // Fl_Button* btn_metar_search
               o->end();
             } // Fl_Group* o
             tabWX->end();
