@@ -735,6 +735,9 @@
         ELEM_(bool, eqsl_when_logged, "EQSL_WHEN_LOGGED",                               \
               "Send eQSL when other log action invoked",                                \
               false)                                                                    \
+        ELEM_(bool, eqsl_datetime_off, "EQSL_DATETIME_OFF",                             \
+              "Send logbook date/time off vice date on (default)",                      \
+              false)                                                                    \
         /* Rig control */                                                               \
         ELEM_(bool, btnusb, "BTNUSB",                                                   \
               "This setting is currently unused",                                       \

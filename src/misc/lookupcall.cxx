@@ -1220,12 +1220,20 @@ void makeEQSL(const char *message)
 		tempstr.c_str());
 	eQSL_url.append(sztemp);
 // qso date
-	snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
-		static_cast<int>(sDate_on.length()),
-		sDate_on.c_str());
+	if (progdefaults.eqsl_datetime_off)
+		snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
+			static_cast<int>(sDate_on.length()),
+			sDate_off.c_str());
+	else
+		snprintf(sztemp, sizeof(sztemp), "<QSO_DATE:%d>%s",
+			static_cast<int>(sDate_on.length()),
+			sDate_on.c_str());
 	eQSL_url.append(sztemp);
 // qso time
-	tempstr = inpTimeOn->value();
+	if (progdefaults.eqsl_datetime_off)
+		tempstr = inpTimeOff->value();
+	else
+		tempstr = inpTimeOn->value();
 	snprintf(sztemp, sizeof(sztemp), "<TIME_ON:%d>%s",
 		static_cast<int>(tempstr.length()),
 		tempstr.c_str());

@@ -468,6 +468,7 @@ extern Fl_Input2 *txt_eqsl_default_message;
 extern Fl_Box *eqsl_txt1;
 extern Fl_Box *eqsl_txt2;
 extern Fl_Box *eqsl_txt3;
+extern Fl_Check_Button *btn_send_datetime_off;
 extern Fl_Button *btnSaveConfig;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnCloseConfig;
