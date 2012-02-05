@@ -202,6 +202,7 @@ static void wefax_pic_show_tx()
 {
 	if( progdefaults.WEFAX_HideTx )
 	{
+		wefax_pic_tx_win->hide();
 		if( progdefaults.WEFAX_EmbeddedGui )
 		{
 			wefax_pic_rx_win->resize( 
@@ -209,7 +210,6 @@ static void wefax_pic_show_tx()
 				text_panel->w() - mvgroup->w(),
 				text_panel->h() );
 		}
-		wefax_pic_tx_win->hide();
 	}
 	else
 	{
@@ -219,8 +219,8 @@ static void wefax_pic_show_tx()
 				text_panel->x() + mvgroup->w(), text_panel->y(),
 				text_panel->w() - mvgroup->w(), text_panel->h()/2);
 			wefax_pic_tx_win->resize( 
-				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
-				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
+				text_panel->x() + mvgroup->w(), wefax_pic_rx_win->y() + wefax_pic_rx_win->h(),
+				text_panel->w() - mvgroup->w(), text_panel->h() - wefax_pic_rx_win->h());
 		}
 		wefax_pic_tx_win->show();
 	}
@@ -229,6 +229,7 @@ static void wefax_pic_show_tx()
 static void wefax_cb_pic_tx_close( Fl_Widget *, void *)
 {
 	FL_LOCK_D();
+	/// TODO: Small inconvenience: When coming back in wefax mode, the tx window is always closed.
 	progdefaults.WEFAX_HideTx = true ;
 	wefax_pic_show_tx();
 	FL_UNLOCK_D();
@@ -258,7 +259,8 @@ static int get_choice_lpm_value( Fl_Choice * the_choice_lpm )
 	return all_lpm_values[ idx_lpm ].m_value ;
 }
 
-/// Lpm=120 is by far the most common value, therefore used by default.
+/// Lpm=120 is by far the most common value, therefore used by default if nothing else works.
+// wefax.cxx will anyway try 120 for wefax576 or 60 for wefax288.
 static const int lpm_default_idx = 1 ;
 
 static const char * title_choice_lpm = "LPM" ;
@@ -349,8 +351,8 @@ int wefax_pic::update_rx_pic_col(unsigned char data, int pix_pos )
 			// Small margin at the bottom, so we can immediately see new lines.
 			y_pos += 20 ;
 		}
-		/// NOTE: Might be better to redraw here and not in resize_height.
-		wefax_pic_rx_scroll->position( wefax_pic_rx_scroll->xposition(), y_pos );
+		wefax_pic_rx_picture->position( wefax_pic_rx_picture->x(), -y_pos );
+		wefax_pic_rx_scroll->redraw();
 		FL_UNLOCK_D();
 	}
 	wefax_pic_rx_picture->pixel(data, pix_pos);
@@ -593,7 +595,6 @@ static void wefax_cb_pic_rx_abort( Fl_Widget *, void *)
 
 	/// This will call wefax_pic::abort_rx_viewer
 	wefax_serviceme->end_reception();
-	wefax_serviceme->set_rx_manual_mode(false);
 	wefax_round_rx_non_stop->value(false);
 	wefax_round_rx_non_stop->redraw();
 	wefax_btn_rx_pause->show();
@@ -945,7 +946,6 @@ static void wefax_cb_browse_rx_events( Fl_Widget *, void * )
 			LOG_INFO("Cannot find index=%d nb=%d", idx_file, wefax_browse_rx_events->size() );
 			return ;
 		}
-		LOG_INFO("File=%s",filnam);
 		/// The tx window might be hidden.
 		progdefaults.WEFAX_HideTx = false ;
 		wefax_pic_show_tx();
@@ -1015,11 +1015,11 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	int wid_off_up = wid_margin ;
 	int wid_btn_curr = 0 ;
 
-	/// Sets the group at a big size, we will resize later.
+	/// Sets the group at a big size, we will resize the width at the end.
 	Fl_Group * tmpGroup = new Fl_Group( 0, hei_off_up, extra_win_wid, height_margin + 2 * height_btn + margin_top_bottom );
 	tmpGroup->begin();
 
-	wid_btn_curr = 45 ;
+	wid_btn_curr = 80 ;
 	wefax_btn_rx_save = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn,_("Save..."));
 	wefax_btn_rx_save->callback(wefax_cb_pic_rx_save, 0);
 	wefax_btn_rx_save->tooltip(_("Save current image in a file."));
@@ -1095,8 +1095,8 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_out_rx_row_num->tooltip(_("Fax line number being read. Image is saved when reaching max lines."));
 
 	static const char * title_width = _("Width");
-	wid_off_low += wid_btn_margin + wid_btn_curr + 35;
-	wid_btn_curr = 35 ;
+	wid_off_low += wid_btn_margin + wid_btn_curr + 40;
+	wid_btn_curr = 40 ;
 	wefax_out_rx_width = new Fl_Output(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_width));
 	wefax_out_rx_width->align(FL_ALIGN_LEFT);
 	wefax_out_rx_width->value("n/a");
@@ -1131,7 +1131,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 
 	static const char * title_auto_center = _("Auto");
 	wid_off_low += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 40 ;
+	wid_btn_curr = 45 ;
 	wefax_round_rx_auto_center = new Fl_Round_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _(title_auto_center) );
 	wefax_round_rx_auto_center->callback(wefax_cb_pic_rx_auto_center, 0);
 	wefax_round_rx_auto_center->tooltip(_("Enable automatic image centering"));
@@ -1629,7 +1629,6 @@ void wefax_pic::tx_viewer_resize(int the_width, int the_height)
 /// TODO: This crashes but should be called.
 void wefax_pic::delete_tx_viewer()
 {
-	LOG_DEBUG("Entering");
 	FL_LOCK_D();
 	wefax_pic_tx_win->hide();
 	wefax_serviceme = 0;
@@ -1648,7 +1647,6 @@ void wefax_pic::delete_tx_viewer()
 /// TODO: This crashes.
 void wefax_pic::delete_rx_viewer()
 {
-	LOG_DEBUG("Entering");
 	FL_LOCK_D();
 	wefax_pic_rx_win->hide();
 	wefax_serviceme = 0;
@@ -1662,20 +1660,6 @@ void wefax_pic::delete_rx_viewer()
 void wefax_pic::setpicture_link(wefax *me)
 {
 	wefax_serviceme = me;
-}
-
-void wefax_pic::rx_hide(void)
-{
-	if( wefax_pic_rx_win ) {
-		wefax_pic_rx_win->hide();
-	}
-}
-
-void wefax_pic::tx_hide(void)
-{
-	if( wefax_pic_tx_win ) {
-		wefax_pic_tx_win->hide();
-	}
 }
 
 /// Called by the main menu bar to open explicitely a wefax reception window.
@@ -1693,7 +1677,7 @@ void wefax_pic::cb_mnu_pic_viewer_tx(Fl_Menu_ *, void * ) {
 		LOG_ERROR("wefax_tx_win should be created");
 		return ;
 	}
-	progdefaults.WEFAX_HideTx = false ;
+	progdefaults.WEFAX_HideTx = ! progdefaults.WEFAX_HideTx ;
 	wefax_pic_show_tx();
 }
 
@@ -1725,9 +1709,10 @@ void wefax_pic::create_both(bool called_from_fl_digi)
 	/// This function can be called from fl_digi.cxx or wefax.cxx.
 	if( called_from_fl_digi && progdefaults.WEFAX_EmbeddedGui )
 	{
+		int rxWinHeight = progdefaults.WEFAX_HideTx ? text_panel->h() : text_panel->h()/2 ;
 		wefax_pic::create_rx_viewer(
 			text_panel->x() + mvgroup->w(), text_panel->y(),
-			text_panel->w() - mvgroup->w(), text_panel->h()/2);
+			text_panel->w() - mvgroup->w(), rxWinHeight );
 		wefax_pic::create_tx_viewer(
 			text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
 			text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
@@ -1755,7 +1740,6 @@ void wefax_pic::show_both()
 void wefax_pic::hide_both()
 {
 	if( ( NULL == wefax_pic_rx_win ) || ( NULL == wefax_pic_tx_win ) ) {
-		LOG_ERROR("wefax_pic_rx_win and wefax_pic_tx_win should be created");
 		return;
 	}
 	wefax_pic_rx_win->hide();

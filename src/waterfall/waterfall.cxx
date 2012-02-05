@@ -439,6 +439,43 @@ double WFdisp::powerDensity(double f0, double bw)
 	return pwrdensity/(bw+1);
 }
 
+/// Frequency of the maximum power for a given bandwidth. Used for AFC.
+double WFdisp::powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
+{
+	double max_pwr = 0 ;
+	int f_lowest = bw[0][0];
+	int f_highest = bw[bw_nb-1][1];
+	if( f_lowest > f_highest ) abort();
+
+	for( int i = 0 ; i < bw_nb; ++i )
+	{
+		const int * p_bw = bw[i];
+		if( p_bw[0] > p_bw[1] ) abort();
+		for( int j = p_bw[0] ; j <= p_bw[1]; ++j )
+		{
+			max_pwr += pwr[ j - f_lowest ];
+		}
+	}
+
+	double curr_pwr = max_pwr ;
+	int max_idx = -1 ;
+	/// Single pass to compute the maximum on this bandwidth.
+	for( int f = -f_lowest ; f < IMAGE_WIDTH - f_highest; ++f )
+	{
+		/// Difference with previous power.
+		for( int i = 0 ; i < bw_nb; ++i )
+		{
+			const int * p_bw = bw[i];
+			curr_pwr += pwr[ f + p_bw[1] ] - pwr[ f + p_bw[0] ];
+		}
+		if( curr_pwr > max_pwr ) {
+			max_idx = f ;
+			max_pwr = curr_pwr ;
+		}
+	}
+	return max_idx ;
+}
+
 void WFdisp::setPrefilter(int v)
 {
 	switch (v) {

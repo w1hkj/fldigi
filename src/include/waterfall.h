@@ -178,6 +178,8 @@ public:
 		drawMarker();};
 	int peakFreq(int f0, int delta);
 	double powerDensity(double f0, double bw);
+	double powerDensityMaximum(int bw_nb, const int (*bw)[2]) const ;
+
 	void setPrefilter(int v);
 	void setcolors();
 	double dFreq() {return dfreq;}
@@ -317,6 +319,11 @@ public:
 	double powerDensity(double f0, double bw)
 	{
 		return (wfdisp->powerDensity(f0,bw));
+	}
+
+	double powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
+	{
+		return (wfdisp->powerDensityMaximum(bw_nb,bw));
 	}
 
 	int Speed();

@@ -28,8 +28,6 @@ public:
 	static void delete_tx_viewer(void);
 	static void skip_rx_apt(void);
 	static void skip_rx_phasing(bool auto_center);
-	static void rx_hide(void);
-	static void tx_hide(void);
 	static void cb_mnu_pic_viewer_rx(Fl_Menu_ *, void *);
 	static void cb_mnu_pic_viewer_tx(Fl_Menu_ *, void *);
 	static void setpicture_link(wefax *me);

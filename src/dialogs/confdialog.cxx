@@ -3539,20 +3539,19 @@ Fl_Double_Window* ConfigureDialog() {
   static const char szPktBauds[]  = "1200|300|2400";
   static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
   static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
-  { Fl_Double_Window* o = new Fl_Double_Window(500, 400, _("Fldigi configuration"));
+  { Fl_Double_Window* o = new Fl_Double_Window(595, 400, _("Fldigi configuration"));
     w = o;
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
-    o->align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE);
+    o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { tabsConfigure = new Fl_Tabs(-5, 0, 590, 372);
-      tabsConfigure->color((Fl_Color)FL_LIGHT1);
-      tabsConfigure->selection_color((Fl_Color)FL_LIGHT1);
+      tabsConfigure->color(FL_LIGHT1);
+      tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4610,9 +4609,10 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(-5, 25, 590, 347, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(-5, 25, 590, 347);
-          tabsModems->selection_color((Fl_Color)FL_LIGHT1);
-          tabsModems->align(FL_ALIGN_TOP_RIGHT);
+          tabsModems->selection_color(FL_LIGHT1);
+          tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabContestia = new Fl_Group(0, 50, 500, 320, _("Contestia"));
             tabContestia->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
@@ -4689,7 +4689,7 @@ an merging"));
           { tabCW = new Fl_Group(0, 50, 575, 320, _("CW"));
             tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 575, 320);
-              tabsCW->selection_color((Fl_Color)FL_LIGHT1);
+              tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
@@ -4857,7 +4857,7 @@ an merging"));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 575, 295, _("Timing and QSK"));
-                o->align(FL_ALIGN_TOP_LEFT);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 { Fl_Group* o = new Fl_Group(5, 85, 555, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4893,7 +4893,6 @@ an merging"));
                 cntCWdash2dot->labelcolor(FL_FOREGROUND_COLOR);
                 cntCWdash2dot->minimum(2.5);
                 cntCWdash2dot->maximum(4);
-                cntCWdash2dot->step(0.1);
                 cntCWdash2dot->value(3);
                 cntCWdash2dot->callback((Fl_Callback*)cb_cntCWdash2dot);
                 cntCWdash2dot->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -4913,7 +4912,6 @@ an merging"));
                 cntCWrisetime->labelcolor(FL_FOREGROUND_COLOR);
                 cntCWrisetime->minimum(0);
                 cntCWrisetime->maximum(15);
-                cntCWrisetime->step(0.1);
                 cntCWrisetime->value(4);
                 cntCWrisetime->callback((Fl_Callback*)cb_cntCWrisetime);
                 cntCWrisetime->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -5122,7 +5120,6 @@ an merging"));
                 valDominoEX_BW->labelcolor(FL_FOREGROUND_COLOR);
                 valDominoEX_BW->minimum(1);
                 valDominoEX_BW->maximum(2);
-                valDominoEX_BW->step(0.1);
                 valDominoEX_BW->value(1.5);
                 valDominoEX_BW->callback((Fl_Callback*)cb_valDominoEX_BW);
                 valDominoEX_BW->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -5145,8 +5142,7 @@ an merging"));
                 valDomCWI->labeltype(FL_NORMAL_LABEL);
                 valDomCWI->labelfont(0);
                 valDomCWI->labelsize(14);
-                valDomCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valDomCWI->step(0.01);
+                valDomCWI->labelcolor(FL_FOREGROUND_COLOR);
                 valDomCWI->textsize(14);
                 valDomCWI->callback((Fl_Callback*)cb_valDomCWI);
                 valDomCWI->align(Fl_Align(FL_ALIGN_TOP));
@@ -5728,7 +5724,6 @@ an merging"));
                 valTHOR_BW->labelcolor(FL_FOREGROUND_COLOR);
                 valTHOR_BW->minimum(1);
                 valTHOR_BW->maximum(2);
-                valTHOR_BW->step(0.1);
                 valTHOR_BW->value(1.5);
                 valTHOR_BW->callback((Fl_Callback*)cb_valTHOR_BW);
                 valTHOR_BW->align(Fl_Align(FL_ALIGN_RIGHT));
@@ -5745,8 +5740,7 @@ an merging"));
                 valThorCWI->labeltype(FL_NORMAL_LABEL);
                 valThorCWI->labelfont(0);
                 valThorCWI->labelsize(14);
-                valThorCWI->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valThorCWI->step(0.01);
+                valThorCWI->labelcolor(FL_FOREGROUND_COLOR);
                 valThorCWI->textsize(14);
                 valThorCWI->callback((Fl_Callback*)cb_valThorCWI);
                 valThorCWI->align(Fl_Align(FL_ALIGN_TOP));
@@ -5938,14 +5932,14 @@ an merging"));
                 btnWefaxShift->tooltip(_("Default 800 Hz. Deutsche Wetterdienst 850Hz"));
                 btnWefaxShift->type(2);
                 btnWefaxShift->box(FL_DOWN_BOX);
-                btnWefaxShift->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                btnWefaxShift->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                btnWefaxShift->color(FL_BACKGROUND2_COLOR);
+                btnWefaxShift->selection_color(FL_SELECTION_COLOR);
                 btnWefaxShift->labeltype(FL_NORMAL_LABEL);
                 btnWefaxShift->labelfont(0);
                 btnWefaxShift->labelsize(14);
-                btnWefaxShift->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                btnWefaxShift->labelcolor(FL_FOREGROUND_COLOR);
                 btnWefaxShift->callback((Fl_Callback*)cb_btnWefaxShift);
-                btnWefaxShift->align(FL_ALIGN_RIGHT);
+                btnWefaxShift->align(Fl_Align(FL_ALIGN_RIGHT));
                 btnWefaxShift->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.WEFAX_Shift);
               } // Fl_Value_Input2* btnWefaxShift
@@ -5953,20 +5947,20 @@ an merging"));
                 btnWefaxMaxRows->tooltip(_("Maximum row number for a received fax image."));
                 btnWefaxMaxRows->type(2);
                 btnWefaxMaxRows->box(FL_DOWN_BOX);
-                btnWefaxMaxRows->color((Fl_Color)FL_BACKGROUND2_COLOR);
-                btnWefaxMaxRows->selection_color((Fl_Color)FL_SELECTION_COLOR);
+                btnWefaxMaxRows->color(FL_BACKGROUND2_COLOR);
+                btnWefaxMaxRows->selection_color(FL_SELECTION_COLOR);
                 btnWefaxMaxRows->labeltype(FL_NORMAL_LABEL);
                 btnWefaxMaxRows->labelfont(0);
                 btnWefaxMaxRows->labelsize(14);
-                btnWefaxMaxRows->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
+                btnWefaxMaxRows->labelcolor(FL_FOREGROUND_COLOR);
                 btnWefaxMaxRows->callback((Fl_Callback*)cb_btnWefaxMaxRows);
-                btnWefaxMaxRows->align(FL_ALIGN_RIGHT);
+                btnWefaxMaxRows->align(Fl_Align(FL_ALIGN_RIGHT));
                 btnWefaxMaxRows->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.WEFAX_MaxRows);
               } // Fl_Value_Input2* btnWefaxMaxRows
               { Fl_Input* o = btnWefaxSaveDir = new Fl_Input(10, 260, 310, 20, _("Fax images destination directory"));
                 btnWefaxSaveDir->callback((Fl_Callback*)cb_btnWefaxSaveDir);
-                btnWefaxSaveDir->align(FL_ALIGN_TOP_LEFT);
+                btnWefaxSaveDir->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->value(progdefaults.wefax_save_dir.c_str());
               } // Fl_Input* btnWefaxSaveDir
               { btnSelectFaxDestDir = new Fl_Button(340, 260, 80, 20, _("Directory..."));
@@ -5997,9 +5991,9 @@ an merging"));
               } // Fl_Check_Button* btnNvtxAdifLog
               { Fl_Output* o = txtNvtxCatalog = new Fl_Output(10, 123, 270, 22, _("Navtex stations file:"));
                 txtNvtxCatalog->tooltip(_("Use Open to select descriptor file"));
-                txtNvtxCatalog->color((Fl_Color)FL_LIGHT2);
+                txtNvtxCatalog->color(FL_LIGHT2);
                 txtNvtxCatalog->callback((Fl_Callback*)cb_txtNvtxCatalog);
-                txtNvtxCatalog->align(FL_ALIGN_TOP_LEFT);
+                txtNvtxCatalog->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->value(fl_filename_name(progdefaults.NVTX_Catalog.c_str()));
               } // Fl_Output* txtNvtxCatalog
               { btnSelectNvtxCatalog = new Fl_Button(315, 125, 80, 20, _("Directory..."));
@@ -6013,11 +6007,11 @@ an merging"));
         } // Fl_Tabs* tabsModems
         tabModems->end();
       } // Fl_Group* tabModems
-      { tabRig = new Fl_Group(0, 23, 500, 347, _("Rig"));
+      { tabRig = new Fl_Group(0, 23, 500, 345, _("Rig"));
         tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 23, 500, 347);
-          tabsRig->selection_color((Fl_Color)FL_LIGHT1);
+          tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Hardware PTT"));
             o->hide();
             { Fl_Group* o = new Fl_Group(5, 57, 490, 38);
@@ -6733,8 +6727,7 @@ ll with your audio device."));
                 valPCMvolume->labeltype(FL_NORMAL_LABEL);
                 valPCMvolume->labelfont(0);
                 valPCMvolume->labelsize(14);
-                valPCMvolume->labelcolor((Fl_Color)FL_FOREGROUND_COLOR);
-                valPCMvolume->step(0.01);
+                valPCMvolume->labelcolor(FL_FOREGROUND_COLOR);
                 valPCMvolume->value(0.8);
                 valPCMvolume->textsize(14);
                 valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
@@ -6975,7 +6968,6 @@ d frequency"));
             val_pretone->tooltip(_("Use for triggering amplifier carrier detect"));
             val_pretone->minimum(0);
             val_pretone->maximum(10);
-            val_pretone->step(0.1);
             val_pretone->callback((Fl_Callback*)cb_val_pretone);
             o->value(progdefaults.pretone);
           } // Fl_Counter* val_pretone
@@ -7717,18 +7709,18 @@ void createConfig() {
 
 void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata) {
   /* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
-if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
-	btnWefaxSaveDir->value( w->value() );
-	btnWefaxSaveDir->redraw();
-	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
-}
+  if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+  	btnWefaxSaveDir->value( w->value() );
+  	btnWefaxSaveDir->redraw();
+  	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
+  }
 }
 
 void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata) {
   /* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
-if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
-	txtNvtxCatalog->value( w->value() );
-	txtNvtxCatalog->redraw();
-	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
-}
+  if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+  	txtNvtxCatalog->value( w->value() );
+  	txtNvtxCatalog->redraw();
+  	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
+  }
 }
