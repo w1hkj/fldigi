@@ -5894,8 +5894,8 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data, int style)
 {
-//if (bWF_only) return;
-    if (progdefaults.QSKadjust) return;
+    if (progdefaults.QSKadjust && (active_modem->get_mode() == MODE_CW))
+		return;
 
 	static unsigned int last = 0;
 	const char **asc = ascii;
