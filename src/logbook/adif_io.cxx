@@ -176,7 +176,7 @@ void cAdifIO::fillfield (int fieldnum, char *buff)
 
 static void write_rxtext(const char *s)
 {
-	ReceiveText->add(s);
+	ReceiveText->addstr(s);
 }
 
 void cAdifIO::do_readfile(const char *fname, cQsoDb *db)

@@ -3350,6 +3350,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4407,7 +4408,6 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(-5, 25, 545, 347, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(-5, 25, 545, 347);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -4997,15 +4997,17 @@ an merging"));
                 btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
                 o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
               } // Fl_Check_Button* btnmt63_interleave
-              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(150, 108, 205, 20, _("8-bit extended characters"));
-                btnMT63_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
+              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(150, 108, 205, 20, _("8-bit extended characters (UTF-8)"));
+                btnMT63_8bit->tooltip(_("Enable this for UTF-8 characters"));
                 btnMT63_8bit->down_box(FL_DOWN_BOX);
+                btnMT63_8bit->value(1);
                 btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
                 o->value(progdefaults.mt63_8bit);
               } // Fl_Check_Button* btnMT63_8bit
               { Fl_Check_Button* o = btnMT63_rx_integration = new Fl_Check_Button(150, 138, 190, 20, _("Long receive integration"));
                 btnMT63_rx_integration->tooltip(_("Enable for very weak signals"));
                 btnMT63_rx_integration->down_box(FL_DOWN_BOX);
+                btnMT63_rx_integration->value(1);
                 btnMT63_rx_integration->callback((Fl_Callback*)cb_btnMT63_rx_integration);
                 o->value(progdefaults.mt63_rx_integration);
               } // Fl_Check_Button* btnMT63_rx_integration
@@ -5051,7 +5053,7 @@ an merging"));
           } // Fl_Group* tabMT63
           { tabOlivia = new Fl_Group(0, 50, 500, 320, _("Olivia"));
             tabOlivia->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 490, 200);
+            { Fl_Group* o = new Fl_Group(5, 60, 490, 237);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(60, 80, 85, 20, _("Bandwidth"));
                 mnuOlivia_Bandwidth->tooltip(_("Select bandwidth"));
@@ -5112,8 +5114,8 @@ an merging"));
                 } // Fl_Counter2* cntOlivia_sinteg
                 o->end();
               } // Fl_Group* o
-              { btnOlivia_8bit = new Fl_Check_Button(60, 229, 200, 20, _("8-bit extended characters"));
-                btnOlivia_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
+              { btnOlivia_8bit = new Fl_Check_Button(60, 241, 265, 20, _("8-bit extended characters (UTF-8)"));
+                btnOlivia_8bit->tooltip(_("Enable this for UTF-8 character transmission"));
                 btnOlivia_8bit->down_box(FL_DOWN_BOX);
                 btnOlivia_8bit->callback((Fl_Callback*)cb_btnOlivia_8bit);
               } // Fl_Check_Button* btnOlivia_8bit

@@ -2232,7 +2232,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		XMLRPC_LOCK;
-		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0).c_str());
+		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -2250,7 +2250,7 @@ public:
 		XMLRPC_LOCK;
 		vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
-		REQ_SYNC(&FTextTX::add_text, TransmitText, (const char*)&bytes[0]);
+		REQ_SYNC(&FTextTX::add_text, TransmitText, string((const char*)&bytes[0]));
 
 		*retval = xmlrpc_c::value_nil();
 	}

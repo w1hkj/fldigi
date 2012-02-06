@@ -136,8 +136,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 500 345} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -1299,14 +1299,14 @@ behaves inside the waterfall} xywh {13 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
-        xywh {-5 25 545 347} hide
+        label Modems open
+        xywh {-5 25 545 347}
       } {
-        Fl_Tabs tabsModems {
+        Fl_Tabs tabsModems {open
           xywh {-5 25 545 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open
+            label CW open selected
             xywh {0 50 504 320}
           } {
             Fl_Tabs tabsCW {open
@@ -1860,17 +1860,17 @@ progdefaults.changed = true;}
                 code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
               Fl_Check_Button btnMT63_8bit {
-                label {8-bit extended characters}
+                label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.mt63_8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {150 108 205 20} down_box DOWN_BOX
+                tooltip {Enable this for UTF-8 characters} xywh {150 108 205 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.mt63_8bit);}
               }
               Fl_Check_Button btnMT63_rx_integration {
                 label {Long receive integration}
                 callback {progdefaults.mt63_rx_integration = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable for very weak signals} xywh {150 138 190 20} down_box DOWN_BOX
+                tooltip {Enable for very weak signals} xywh {150 138 190 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.mt63_rx_integration);}
               }
             }
@@ -1918,11 +1918,11 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia
+            label Olivia open
             xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
-              xywh {5 60 490 200} box ENGRAVED_FRAME
+              xywh {5 60 490 237} box ENGRAVED_FRAME
             } {
               Fl_Choice mnuOlivia_Bandwidth {
                 label Bandwidth
@@ -1968,10 +1968,10 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Check_Button btnOlivia_8bit {
-                label {8-bit extended characters}
+                label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.olivia8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {60 229 200 20} down_box DOWN_BOX
+                tooltip {Enable this for UTF-8 character transmission} xywh {60 241 265 20} down_box DOWN_BOX
               }
             }
           }

@@ -166,10 +166,10 @@ void viewpsk::rx_bit(int ch, int bit)
 	if ((channel[ch].shreg & 3) == 0) {
 		c = psk_varicode_decode(channel[ch].shreg >> 2);
 		channel[ch].shreg = 0;
+		if (c == -1) return;
 		if (c == '\n' || c == '\r') c = ' ';
-		if (isprint(c)) {
-			REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
-		}
+		if (iscntrl(c & 0xFF)) return;
+		REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
 	}
 }
 

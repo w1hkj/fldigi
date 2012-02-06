@@ -141,7 +141,6 @@ int olivia::unescape(int c)
 int olivia::tx_process()
 {
 	int c = 0, len = 0;
-	unsigned char ch;
 
 	if (tones	!= progdefaults.oliviatones ||
 		bw 		!= progdefaults.oliviabw ||
@@ -160,28 +159,46 @@ int olivia::tx_process()
 // modem already has that many characters buffered, don't try
 // to read any more. If stopflag is set, we will always read 
 // whatever there is.
+
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
 		if (!stopflag && (c = get_tx_char()) == 0x03)
 			stopflag = true;
 		if (stopflag)
 			Tx->Stop();
 		else {
-			/* Replace un-representable characters with a dot */
 			if (c == -1)
                 c = 0;
-			if (c > (progdefaults.olivia8bit ? 255 : 127))
-				c = '.';
-			if (c > 127) {
-				c &= 127;
-				Tx->PutChar(127);
+			if (c & 0xFF00) { // UTF-8 character send two bytes
+				unsigned char c1 = (c >> 8) & 0xFF;
+				unsigned char c2 = (c & 0xFF);
+				if (c1 > (progdefaults.olivia8bit ? 255 : 127))
+					c1 = '.';
+				if (progdefaults.olivia8bit  && (c1 > 127)) {
+					c1 &= 127;
+					Tx->PutChar(127);
+				}
+				Tx->PutChar(c1);
+				if (c2 > (progdefaults.olivia8bit ? 255 : 127))
+					c2 = '.';
+				if (progdefaults.olivia8bit  && (c2 > 127)) {
+					c2 &= 127;
+					Tx->PutChar(127);
+				}
+				Tx->PutChar(c2);
+			} else {
+				if (c > (progdefaults.olivia8bit ? 255 : 127))
+					c = '.';
+				if (!progdefaults.olivia8bit  && (c > 127)) {
+					c &= 127;
+					Tx->PutChar(127);
+				}
+				Tx->PutChar(c);
 			}
-			Tx->PutChar(c);
 		}
 	}
-
-	if (Tx->GetChar(ch) > 0)
-		if ((c = unescape(ch)) != -1)
-			put_echo_char(c);
+	if (c != 0 && c != 0x03) {
+		put_echo_char(c);
+	}
 
     if ((len = Tx->Output(txfbuffer)) > 0)
 		ModulateXmtr(txfbuffer, len);

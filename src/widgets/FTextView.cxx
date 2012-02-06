@@ -123,7 +123,6 @@ void FTextBase::add(const char *s, int attr)
 	memset(a, FTEXT_DEF + attr, n);
 	a[n] = '\0';
 	sbuf->replace(insert_position(), insert_position() + n, a);
-
 	insert(s);
 }
 
