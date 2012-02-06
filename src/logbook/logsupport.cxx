@@ -315,7 +315,7 @@ int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
 
 static void rxtext(const char *s)
 {
-	ReceiveText->add(s);
+	ReceiveText->addstr(s);
 }
 
 void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)

@@ -23,6 +23,8 @@
 #ifndef FTextRXTX_H_
 #define FTextRXTX_H_
 
+#include <string>
+
 #include "FTextView.h"
 
 ///
@@ -36,12 +38,21 @@ public:
 
 	virtual int	handle(int event);
 
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	virtual void	add(unsigned int  c, int attr = RECV);
+	virtual	void	add(const char *s, int attr = RECV)
+        {
+                while (*s)
+                        add(*s++, attr);
+        }
+#else
 	virtual void	add(unsigned char c, int attr = RECV);
 	virtual	void	add(const char *s, int attr = RECV)
         {
                 while (*s)
                         add(*s++, attr);
         }
+#endif
 
 	void		set_quick_entry(bool b);
 	bool		get_quick_entry(void) { return menu[RX_MENU_QUICK_ENTRY].value(); }
@@ -95,9 +106,9 @@ public:
 
 	void		clear(void);
 	void		clear_sent(void);
-	int			nextChar(void);
+	unsigned int			nextChar(void);
 	bool		eot(void);
-	void		add_text(const char *s);
+	void		add_text(std::string s);
 
 	void		setFont(Fl_Font f, int attr = NATTR);
 
@@ -124,9 +135,10 @@ private:
 
 protected:
 	static Fl_Menu_Item	menu[];
-	bool			PauseBreak;
+	bool		PauseBreak;
 	int			txpos;
-	static int		*ptxpos;
+	int			utf8_txpos;
+	static int	*ptxpos;
 	int			bkspaces;
 };
 

@@ -48,6 +48,7 @@
 #include "logsupport.h"
 #include "icons.h"
 #include "weather.h"
+#include "utf8file_io.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -1865,7 +1866,7 @@ void queue_reset()
 
 static void postQueue(std::string s)
 {
-	ReceiveText->add(s.c_str(), FTextBase::CTRL);
+	ReceiveText->addstr(s, FTextBase::CTRL);
 }
 
 void queue_execute()
@@ -2080,7 +2081,7 @@ LOG_INFO("loading: %s", Filename.c_str());
 	if (progdefaults.DisplayMacroFilename) {
 		string Macroset;
 		Macroset.assign("\nMacros: ").append(progStatus.LastMacroFile).append("\n");
-		ReceiveText->add(Macroset.c_str());
+		ReceiveText->addstr(Macroset);
 	}
 }
 
@@ -2105,7 +2106,7 @@ void MACROTEXT::openMacroFile()
 	if (progdefaults.DisplayMacroFilename) {
 		string Macroset;
 		Macroset.assign("\nMacros: ").append(progStatus.LastMacroFile).append("\n");
-		ReceiveText->add(Macroset.c_str());
+		ReceiveText->addstr(Macroset);
 	}
 }
 
@@ -2273,7 +2274,8 @@ void MACROTEXT::timed_execute()
 	queue_reset();
 	TransmitText->clear();
 	text2send = expandMacro(exec_string);
-	TransmitText->add(text2send.c_str());
+	TransmitText->add_text(text2send);
+//	TransmitText->addstr(text2send);
 	exec_string.clear();
 	active_modem->set_stopflag(false);
 	start_tx();
@@ -2293,7 +2295,8 @@ void MACROTEXT::execute(int n)
 	}
 
 	if (progStatus.repeatMacro == -1)
-		TransmitText->add( text2send.c_str() );
+		TransmitText->add_text( text2send );
+//		TransmitText->addstr( text2send );
 	else {
 		size_t p = std::string::npos;
 		text2send = text[n];
@@ -2301,7 +2304,8 @@ void MACROTEXT::execute(int n)
 			text2send[p] = '[';
 		while ((p = text2send.find('>')) != std::string::npos)
 			text2send[p] = ']';
-		TransmitText->add( text2send.c_str() );
+		TransmitText->add_text( text2send );
+//		TransmitText->addstr( text2send );
 	}
 	text2send.clear();
 
@@ -2367,7 +2371,32 @@ static std::string mtext =
 ";
 
 void MACROTEXT::saveMacros(const std::string& fname) {
+
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+
 	std::string work;
+	std::string output;
+	char temp[200];
+	output.assign(mtext);
+	for (int i = 0; i < MAXMACROS; i++) {
+		snprintf(temp, sizeof(temp), "\n//\n// Macro # %d\n/$ %d %s\n",
+			i+1, i, macros.name[i].c_str());
+		output.append(temp);
+		work = macros.text[i];
+		size_t pos;
+		pos = work.find('\n');
+		while (pos != std::string::npos) {
+			work.insert(pos, "\\n");
+			pos = work.find('\n', pos + 3);
+		}
+		output.append(work).append("\n");
+	}
+	UTF8_writefile(fname.c_str(), output);
+
+#else
+
+	std::string work;
+
 	ofstream mfile(fname.c_str());
 	mfile << mtext;
 	for (int i = 0; i < MAXMACROS; i++) {
@@ -2384,6 +2413,9 @@ void MACROTEXT::saveMacros(const std::string& fname) {
 	}
 	mfile << "\n";
 	mfile.close();
+
+#endif
+
 	changed = false;
 }
 

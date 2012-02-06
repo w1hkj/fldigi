@@ -753,7 +753,7 @@ void pskmail_notify_rsid(trx_mode mode)
 		for (int ii=0; ii < n; ii++)
 			WriteARQSysV((unsigned char)buf[ii]);
 #endif
-		ReceiveText->add(buf, FTextBase::CTRL);
+		ReceiveText->addstr(buf, FTextBase::CTRL);
 	}
 }
 
@@ -771,7 +771,7 @@ void pskmail_notify_s2n(double s2n_ncount, double s2n_avg, double s2n_stddev)
 		for (int ii=0; ii < n; ii++)
 			WriteARQSysV((unsigned char)buf[ii]);
 #endif
-		ReceiveText->add(buf, FTextBase::CTRL);
+		ReceiveText->addstr(buf, FTextBase::CTRL);
 	}
 }
 

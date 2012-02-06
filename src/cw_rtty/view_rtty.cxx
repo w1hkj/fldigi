@@ -255,7 +255,7 @@ int view_rtty::decode_char(int ch)
 	data = channel[ch].rxdata & ((1 << nbits) - 1);
 
 	if (nbits == 5)
-		return baudot_dec(ch, data);
+		return baudot_dec(ch & 0x7F, data);
 
 	return data;
 }
@@ -319,7 +319,6 @@ bool view_rtty::rx(int ch, bool bit)
 // print this RTTY_CHANNEL
 					if ( c != 0 )
 						REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, mode);
-//						put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
 				}
 				flag = true;
 			}

@@ -1816,12 +1816,13 @@ void waterfall::insert_text(bool check)
 	if ((i = progdefaults.WaterfallClickText.find("<FREQ>")) != string::npos) {
 		string s = progdefaults.WaterfallClickText;
 		s[i] = '\0';
-		ReceiveText->add(s.c_str());
+		ReceiveText->addstr(s);
 		note_qrg(false);
-		ReceiveText->add(s.c_str() + i + strlen("<FREQ>"));
+//		ReceiveText->addstr(s);
+//		ReceiveText->addstr(s.c_str() + i + strlen("<FREQ>"));
 	}
 	else
-		ReceiveText->add(progdefaults.WaterfallClickText.c_str(), FTextView::SKIP);
+		ReceiveText->addstr(progdefaults.WaterfallClickText, FTextView::SKIP);
 }
 
 static void find_signal_text(void)

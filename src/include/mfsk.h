@@ -242,7 +242,7 @@ protected:
 	void	eval_s2n();
 	void 	sendsymbol(int sym);
 	void	sendbit(int bit);
-	void	sendchar(unsigned char c);
+	void	sendchar(unsigned int c);
 	void	sendidle();
 	void	flushtx();
 	void	clearbits();

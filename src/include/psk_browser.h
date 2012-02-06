@@ -25,6 +25,7 @@ private:
 	static std::string bkgnd[];
 
 	std::string fline;
+	std::string nuline;
 
 	std::string bwsrline[MAXCHANNELS];
 	int bwsrfreq[MAXCHANNELS];
@@ -36,6 +37,8 @@ private:
 	int cols[2];
 	char szLine[32];
 	size_t nchars;
+	size_t linechars[32];
+	unsigned char firstUTF8[32];
 
 public:
 	static int cwidth;
@@ -54,7 +57,7 @@ public:
 	void setfont(Fl_Font font, int sz) { fnt = font; siz = sz; evalcwidth();}
 	void columns(int a) { cols[0] = a; cols[1] = 0; column_widths(cols); }
 	void resize(int x, int y, int w, int h);
-	void addchr(int ch, int freq, char c, int md);
+	void addchr(int ch, int freq, unsigned char c, int md);
 	std::string freqformat (int i);
 	void set_freq(int i, int freq);
 	void clearline(int i) { bwsrline[i] = ""; }
