@@ -1924,10 +1924,10 @@ progdefaults.changed = true;}
                 code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
               }
               Fl_Check_Button btnMT63_8bit {
-                label {8-bit extended characters}
+                label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.mt63_8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {195 106 205 20} down_box DOWN_BOX
+                tooltip {Enable this for UTF-8 characters} xywh {195 106 205 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_8bit);}
               }
               Fl_Check_Button btnMT63_rx_integration {
@@ -2032,10 +2032,10 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Check_Button btnOlivia_8bit {
-                label {8-bit extended characters}
+                label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.olivia8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {114 229 200 20} down_box DOWN_BOX
+                tooltip {Enable this for UTF-8 characters} xywh {114 229 200 20} down_box DOWN_BOX
               }
             }
           }

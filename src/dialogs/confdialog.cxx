@@ -5277,8 +5277,8 @@ an merging"));
                 btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
                 o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
               } // Fl_Check_Button* btnmt63_interleave
-              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(195, 106, 205, 20, _("8-bit extended characters"));
-                btnMT63_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
+              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(195, 106, 205, 20, _("8-bit extended characters (UTF-8)"));
+                btnMT63_8bit->tooltip(_("Enable this for UTF-8 characters"));
                 btnMT63_8bit->down_box(FL_DOWN_BOX);
                 btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
                 o->value(progdefaults.mt63_8bit);
@@ -5392,8 +5392,8 @@ an merging"));
                 } // Fl_Counter2* cntOlivia_sinteg
                 o->end();
               } // Fl_Group* o
-              { btnOlivia_8bit = new Fl_Check_Button(114, 229, 200, 20, _("8-bit extended characters"));
-                btnOlivia_8bit->tooltip(_("Enable this for Latin-1 accented characters"));
+              { btnOlivia_8bit = new Fl_Check_Button(114, 229, 200, 20, _("8-bit extended characters (UTF-8)"));
+                btnOlivia_8bit->tooltip(_("Enable this for UTF-8 characters"));
                 btnOlivia_8bit->down_box(FL_DOWN_BOX);
                 btnOlivia_8bit->callback((Fl_Callback*)cb_btnOlivia_8bit);
               } // Fl_Check_Button* btnOlivia_8bit

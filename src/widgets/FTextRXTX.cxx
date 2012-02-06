@@ -258,7 +258,7 @@ out:
 ///
 
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-void FTextRX::add(unsigned char c, int attr)
+void FTextRX::add(unsigned int c, int attr)
 {
 	if (c == '\r')
 		return;
@@ -277,8 +277,17 @@ void FTextRX::add(unsigned char c, int attr)
 		tbuf->remove(tbuf->length() - 1, tbuf->length());
 		sbuf->remove(sbuf->length() - 1, sbuf->length());
 		if (s_text.length()) {
-			s_text.erase(s_text.end() - 1);
-			s_style.erase(s_style.end() - 1);
+			if (tbuf->byte_at(tbuf->length() - 1 ) & 0x80) { //UTF-8 character
+				s_text.erase(s_text.end() - 2);
+				s_style.erase(s_style.end() - 2);
+				tbuf->remove(tbuf->length() - 2, tbuf->length());
+				sbuf->remove(sbuf->length() - 2, sbuf->length());
+			} else {
+				s_text.erase(s_text.end() - 1);
+				s_style.erase(s_style.end() - 1);
+				tbuf->remove(tbuf->length() - 1, tbuf->length());
+				sbuf->remove(sbuf->length() - 1, sbuf->length());
+			}
 		}
 		break;
 	case '\n':
@@ -835,6 +844,7 @@ FTextTX::FTextTX(int x, int y, int w, int h, const char *l)
 	memcpy(menu + TX_MENU_CUT, FTextEdit::menu, (FTextEdit::menu->size() - 1) * sizeof(*FTextEdit::menu));
 	context_menu = menu;
 	init_context_menu();
+	utf8_txpos = txpos = 0;
 }
 
 /// Handles fltk events for this widget.
@@ -870,6 +880,7 @@ void FTextTX::clear(void)
 {
 	FTextEdit::clear();
 	txpos = 0;
+	utf8_txpos = 0;
 	bkspaces = 0;
 	PauseBreak = false;
 }
@@ -879,8 +890,9 @@ void FTextTX::clear(void)
 ///
 void FTextTX::clear_sent(void)
 {
-	tbuf->remove(0, txpos);
+	clear();
 	txpos = 0;
+	utf8_txpos = 0;
 	bkspaces = 0;
 	PauseBreak = false;
 	set_word_wrap(restore_wrap);
@@ -901,9 +913,9 @@ bool FTextTX::eot(void)
 /// @return The next character, or ETX if the transmission has been paused, or
 /// NUL if no text should be transmitted.
 ///
-int FTextTX::nextChar(void)
+unsigned int FTextTX::nextChar(void)
 {
-	int c;
+	unsigned int c;
 
 	if (bkspaces) {
 		--bkspaces;
@@ -913,40 +925,58 @@ int FTextTX::nextChar(void)
 		PauseBreak = false;
 		c = 0x03;
 	}
-	else if (insert_position() <= txpos) // empty buffer or cursor inside transmitted text
-		c = -1;
-	else {
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-		if ((c = static_cast<unsigned char>(tbuf->char_at(txpos)))) {
-#else
-		if ((c = static_cast<unsigned char>(tbuf->character(txpos)))) {
-#endif
+	else if (insert_position() <= utf8_txpos) { // empty buffer or cursor inside transmitted text
+		c = -1;
+	} else {
+		int n;
+		if ((c = tbuf->get_char_at(utf8_txpos, n))) {
+//LOG_DEBUG("%04X, %d, %d ", c & 0xFFFF, utf8_txpos, n);
+			if (n == 1) c &= 0xFF;
+			REQ(FTextTX::changed_cb, utf8_txpos, 0, 0, -1, static_cast<const char *>(0), this);
+			REQ(FTextTX::changed_cb, utf8_txpos+1, 0, 0, -1, static_cast<const char *>(0), this);
 			++txpos;
-			REQ(FTextTX::changed_cb, txpos, 0, 0, -1,
-			    static_cast<const char *>(0), this);
+			utf8_txpos += n;
+		} else
+			c = -1;
+#else
+	else if (insert_position() <= txpos) { // empty buffer or cursor inside transmitted text
+		c = -1;
+	} else {
+		if ((c = static_cast<unsigned char>(tbuf->character(txpos)))) {
+			REQ(FTextTX::changed_cb, txpos, 0, 0, -1, static_cast<const char *>(0), this);
+			++txpos;
 		}
+#endif
 	}
-
 	return c;
 }
 
-void FTextTX::add_text(const char *s)
+// called by xmlrpc thread
+// called by macro execution
+void FTextTX::add_text(string s)
 {
-	while (*s) {
-		if (*s == '\b') {
+	for (size_t n = 0; n < s.length(); n++) {
+		if (s[n] == '\b') {
 			int ipos = insert_position();
 			if (tbuf->length()) {
 				if (ipos > 0 && txpos == ipos) {
 					bkspaces++;
 					txpos--;
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+					int nn;
+					tbuf->get_char_at(utf8_txpos, nn);
+					utf8_txpos -= nn;
+#endif
 				}
 				tbuf->remove(tbuf->length() - 1, tbuf->length());
 				sbuf->remove(sbuf->length() - 1, sbuf->length());
 				redraw();
 			}
-			s++;
-		} else
-			add(*s++, RECV);
+		} else {
+LOG_DEBUG("%04x ", s[n] & 0x00FF);
+			add(s[n] & 0xFF, RECV);
+		}
 	}
 }
 
@@ -1032,22 +1062,36 @@ int FTextTX::handle_key(int key)
 		// In CW mode: Tab pauses, skips rest of buffer, applies the
 		// SKIP style, then resumes sending when new text is entered.
 		// Ctrl-tab does the same thing as for all other modes.
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		if (utf8_txpos != insert_position())
+			insert_position(utf8_txpos);
+		else
+			insert_position(tbuf->length());
+		if (!(Fl::event_state() & FL_CTRL) && active_modem == cw_modem) {
+			int n = tbuf->length() - utf8_txpos;
+			char s[n + 1];
+			memset(s, FTEXT_DEF + SKIP, n);
+			s[n] = 0;
+			sbuf->replace(utf8_txpos, sbuf->length(), s);
+			insert_position(tbuf->length());
+			redisplay_range(utf8_txpos, insert_position());
+			utf8_txpos = insert_position();
+		}
+#else
 		insert_position(txpos != insert_position() ? txpos : tbuf->length());
-
 		if (!(Fl::event_state() & FL_CTRL) && active_modem == cw_modem) {
 			int n = tbuf->length() - txpos;
 			char s[n + 1];
 			memset(s, FTEXT_DEF + SKIP, n);
 			s[n] = 0;
-
 			sbuf->replace(txpos, sbuf->length(), s);
 			insert_position(tbuf->length());
 			redisplay_range(txpos, insert_position());
 			txpos = insert_position();
 		}
-		// show_insert_position();
+#endif
 		return 1;
-		// Move cursor, or search up/down with the Meta/Alt modifiers
+	// Move cursor, or search up/down with the Meta/Alt modifiers
 	case FL_Left:
 		if (Fl::event_state() & (FL_META | FL_ALT)) {
 			active_modem->searchDown();
@@ -1064,12 +1108,21 @@ int FTextTX::handle_key(int key)
 	case FL_BackSpace:
 	{
 		int ipos = insert_position();
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		if (utf8_txpos == ipos) {
+			bkspaces++;
+			if (tbuf->byte_at(ipos - 1) & 0x80) utf8_txpos -= 2;
+			else utf8_txpos--;
+			txpos--;
+		}
+#else
 		if (txpos > 0 && txpos >= ipos) {
 			if (tbuf->length() >= txpos && txpos > ipos)
 				return 1;
 			bkspaces++;
 			txpos--;
 		}
+#endif
 		return 0;
 	}
 // alt - 1 / 2 changes macro sets

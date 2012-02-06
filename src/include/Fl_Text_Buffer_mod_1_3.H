@@ -216,13 +216,22 @@ public:
   char* text_range(int start, int end) const;
   
   /**
-   Returns the character at the specified position pos in the buffer.
+   Returns the UCS-4 character at the specified position pos in the buffer.
    Positions start at 0 
-   \param pos byte offset into buffer, pos must be at acharacter boundary
+   \param pos byte offset into buffer, pos must be at a character boundary
    \return Unicode UCS-4 encoded character
    */
   unsigned int char_at(int pos) const;
-  
+
+  /**
+   Returns the UTF-8 character at the specified position pos in the buffer.
+   Positions start at 0 
+   param pos byte offset into buffer, pos must be at a character boundary
+   return Unicode UTF-8 encoded character
+   return length of Unicode encoded character in len
+   */
+  unsigned int get_char_at(int pos, int &len) const;
+
   /**
    Returns the raw byte at the specified position pos in the buffer.
    Positions start at 0 

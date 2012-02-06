@@ -2389,7 +2389,7 @@ void startTimedExecute(std::string &title)
 	btnMacroTimer->color(fl_rgb_color(240, 240, 0));
 	btnMacroTimer->redraw_label();
 	ReceiveText->clear();
-	ReceiveText->add(txt.c_str(), FTextBase::CTRL);
+	ReceiveText->addstr(txt, FTextBase::CTRL);
 }
 
 void cbMacroTimerButton(Fl_Widget*, void*)
@@ -3721,7 +3721,7 @@ void showMacroSet() {
 void showDTMF(const string s) {
 	string dtmfstr = "\n<DTMF> ";
 	dtmfstr.append(s);
-	ReceiveText->add(dtmfstr.c_str());
+	ReceiveText->addstr(dtmfstr);
 }
 
 void setwfrange() {
@@ -3785,7 +3785,7 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 				bHistory = true;
 			} else {
 				ReceiveText->addchr('\n', FTextBase::ALTR);
-				ReceiveText->addstr(mainViewer->line(sel).c_str(), FTextBase::ALTR);
+				ReceiveText->addstr(mainViewer->line(sel), FTextBase::ALTR);
 			}
 			active_modem->set_freq(mainViewer->freq(sel));
 			active_modem->set_sigsearch(SIGSEARCH);
@@ -5556,7 +5556,9 @@ void add_rxtx_char(int data)
 		memset(rxtx_raw_buff, 0, RAW_BUFF_LEN+1);
 		rxtx_raw_len = 0;
 	}
-	rxtx_raw_buff[rxtx_raw_len++] = (unsigned char)data;
+	if (data & 0xFF00) // UTF-8 character
+		rxtx_raw_buff[rxtx_raw_len++] = (data >> 8) & 0xFF;
+	rxtx_raw_buff[rxtx_raw_len++] = (unsigned char)(data & 0xFF);
 }
 
 //======================================================================
@@ -5581,6 +5583,8 @@ void add_rx_char(int data)
 		memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
 		rx_raw_len = 0;
 	}
+	if (data & 0xFF00) // UTF-8 character
+		rx_raw_buff[rx_raw_len++] = (data >> 8) & 0xFF;
 	rx_raw_buff[rx_raw_len++] = (unsigned char)data;
 }
 
@@ -5610,6 +5614,8 @@ void add_tx_char(int data)
 }
 
 //======================================================================
+static unsigned char firstUTF8 = 0;
+
 static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
@@ -5623,25 +5629,35 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
 
-	if (asc == ascii2 && iscntrl(data))
+	if (asc == ascii2 && (data < ' ') && iscntrl(data))
 		style = FTextBase::CTRL;
 	if (wf->tmp_carrier())
 		style = FTextBase::ALTR;
 
 	if (progdefaults.autoextract == true) rx_extract_add(data);
+
 	speak(data);
 
-	add_rx_char(data);
-
-	switch (data) {
-		case '\n':
-			if (last == '\r')
-				break;
-		case '\r':
+	if ((data & 0x80) == 0x80) {
+		if (firstUTF8 == 0)
+			firstUTF8 = data;
+		else {
+			add_rx_char(firstUTF8);
+			add_rx_char(data);
+			ReceiveText->add(firstUTF8, style);
+			ReceiveText->add(data, style);
+			firstUTF8 = 0;
+		}
+	} else {
+		firstUTF8 = 0;
+		if (data == '\n' && last == '\r');
+		else if (data == '\r') {
+			add_rx_char('\n');
 			ReceiveText->add('\n', style);
-			break;
-		default:
-			ReceiveText->add(data & 0x7F, style);
+		} else {
+			add_rx_char(data);
+			ReceiveText->add(data, style);
+		}
 	}
 
 	last = data;
@@ -5649,7 +5665,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	WriteARQ(data);
 
 	string s;
-	if (iscntrl(data))
+	if (data < ' ' && iscntrl(data))
 		s = ascii2[data & 0x7F];
 	else {
 		s += data;
@@ -5988,6 +6004,8 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data, int style)
 {
+	if (!data) return;
+
     if (progdefaults.QSKadjust && (active_modem->get_mode() == MODE_CW))
 		return;
 
@@ -6009,9 +6027,21 @@ void put_echo_char(unsigned int data, int style)
 
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
-	REQ(&FTextBase::addchr, ReceiveText, data, style);
 
-	string s = iscntrl(data) ? ascii2[data & 0x7F] : string(1, data);
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	string sch;
+	sch.clear();
+	if (data & 0xFF00) {
+		sch += (data >> 8) & 0xFF;
+		sch += (data & 0xFF);
+	} else
+		sch = (data & 0xFF);
+	REQ(&FTextRX::addstr, ReceiveText, sch, style);
+#else
+	REQ(&FTextBase::addchr, ReceiveText, data, style);
+#endif
+
+	string s = iscntrl(data & 0x7F) ? ascii2[data & 0x7F] : string(1, data);
 	if (Maillogfile)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 
@@ -6243,11 +6273,11 @@ void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode
 
 	qrg_marks[buf] = m;
 	if (prefix && *prefix)
-		ReceiveText->add(prefix);
-	ReceiveText->add(buf, FTextBase::QSY);
+		ReceiveText->addstr(prefix);
+	ReceiveText->addstr(buf, FTextBase::QSY);
 	ReceiveText->mark();
 	if (suffix && *suffix)
-		ReceiveText->add(suffix);
+		ReceiveText->addstr(suffix);
 }
 
 void xmtrcv_selection_color()

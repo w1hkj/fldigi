@@ -245,14 +245,43 @@ char *Fl_Text_Buffer_mod::text_range(int start, int end) const {
  Pos must be at a character boundary.
  */
 unsigned int Fl_Text_Buffer_mod::char_at(int pos) const {  
-  if (pos < 0 || pos >= mLength)
-    return '\0';
+	if (pos < 0 || pos >= mLength)
+		return '\0';
   
-  IS_UTF8_ALIGNED2(this, (pos))
+	IS_UTF8_ALIGNED2(this, (pos))
   
-  const char *src = address(pos);
-  return fl_utf8decode(src, 0, 0);
-} 
+	const char *src = address(pos);
+	return *src;
+}
+
+/*
+ Return a UTF-8 character at the given index.
+ Pos must be at a character boundary.
+ */
+unsigned int Fl_Text_Buffer_mod::get_char_at(int pos, int &len) const {  
+	if (pos < 0 || pos >= mLength) {
+		len = 1;
+		return 0;
+	}
+  
+	IS_UTF8_ALIGNED2(this, (pos))
+  
+	const char *src = address(pos);
+	unsigned int code;
+	int codelen;
+	if (*src & 0x80) {              // what should be a multibyte encoding
+		fl_utf8decode(src, src+2, &codelen);
+		if (codelen == 2)
+			code = (*src << 8) | (*(src+1) & 0xFF);
+		else
+			code = *src & 0xFF;
+    } else {                      // handle the 1-byte utf8 encoding:
+      code = (*src & 0xFF);
+      codelen = 1;
+    }
+    len = codelen;
+	return code;
+}
 
 
 /*

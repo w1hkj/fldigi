@@ -24,6 +24,7 @@
 #define FTextView_H_
 
 #include <stddef.h>
+#include <string>
 
 #include <FL/Fl.H>
 #include <FL/Enumerations.H>
@@ -48,9 +49,9 @@ public:
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
 
-	virtual void	add(const char *text, int attr = RECV);
 	virtual void	add(unsigned char c, int attr = RECV);
-	void	     	addstr(const char *text, int attr = RECV) { add(text, attr); }
+	virtual void	add(const char *text, int attr = RECV);
+	void	     	addstr(std::string text, int attr = RECV) { add(text.c_str(), attr); }
 	void	     	addchr(unsigned char c, int attr = RECV) { add(c, attr); }
 
 	virtual int	handle(int event);

@@ -46,6 +46,8 @@
 #include "pskeval.h"
 #include "ascii.h"
 
+#include "debug.h"
+
 extern waterfall *wf;
 
 // Change the following for DCD low pass filter adjustment
@@ -1100,7 +1102,11 @@ int psk::tx_process()
 			tx_bit(0);
 		}
 	} else {
-		tx_char(c);
+		if (c & 0xFF00) {
+			tx_char((c >> 8) & 0xFF);
+			tx_char(c & 0xFF);
+		} else
+			tx_char(c);
 		put_echo_char(c);
 	}
 	return 0;
