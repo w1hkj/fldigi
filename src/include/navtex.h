@@ -26,6 +26,7 @@ public:
 	void restart();
 	int  rx_process(const double *buf, int len);
 	int  tx_process();
+	void set_freq( double );
 
 	std::string get_message(int max_seconds);
 	std::string send_message(const std::string & msg);

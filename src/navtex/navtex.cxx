@@ -50,6 +50,7 @@
 #include "logbook.h"
 #include "locator.h"
 #include "misc.h"
+#include "status.h"
 
 class CoordinateT
 {
@@ -378,7 +379,7 @@ public:
 		m_gainDB = aGainDB;
 		reconfigure(aCenter_freq);
 	}
-
+private:
 	// allow parameter change while running
 	void reconfigure(double cf) {
 		m_center_freq = cf;
@@ -454,7 +455,7 @@ public:
 		m_a1 /= m_a0;
 		m_a2 /= m_a0;
 	}
-
+public:
 	// perform one filtering step
 	double filter(double x) {
 		y = m_b0 * x + m_b1 * m_x1 + m_b2 * m_x2 - m_a1 * m_y1 - m_a2 * m_y2;
@@ -624,15 +625,15 @@ private:
 				case ' ' :
 				case '\t': wasSpace = true ;
 					   break ;
-				default  : if( wasDelim ) {
-						   newStr.push_back('~');
-						   wasDelim = false ;
-						   wasSpace = false ;
+				default  : if( chrSeen ) {
+						   if( wasDelim ) {
+							  newStr.push_back('~');
+					   	   } else if( wasSpace ) {
+							  newStr.push_back(' ');
+					   	}
 					   }
-					   if( wasSpace && chrSeen ) {
-						   newStr.push_back(' ');
-						   wasSpace = false ;
-					   }
+					   wasDelim = false ;
+					   wasSpace = false ;
 					   chrSeen = true ;
 					   newStr.push_back( *it );
 			}
@@ -918,7 +919,6 @@ private:
 
 	void set_filter_values() {
 		// carefully manage the parameters WRT the center frequency
-		m_center_frequency_f = dflt_center_freq ;
 		// Q must change with frequency
 		// try to maintain a zero mixer output at the carrier frequency
 		double qv = m_center_frequency_f + (4.0 * 1000 / m_center_frequency_f);
@@ -1100,6 +1100,78 @@ private:
 		m_ptr_navtex->display_metric(m_metric);
 	}
 
+	void process_afc() {
+		if( progStatus.afconoff == false ) return ;
+		static size_t cnt_upd = 0 ;
+		static const size_t delay_upd = 50 ;
+		++cnt_upd ;
+
+		/// AFC from time to time.
+		if( ( cnt_upd % delay_upd ) != 0 ) {
+			return ;
+		}
+		static int cnt_read_data = 0 ;
+		/// This centers the carrier where the activity is the strongest.
+		static const int bw[][2] = {
+			{ -deviation_f - 2, -deviation_f + 8 },
+			{  deviation_f - 8,  deviation_f + 2 } };
+       		double max_carrier = wf->powerDensityMaximum( 2, bw );
+
+		/// Do not change the frequency too quickly if an image is received.
+		double next_carr = 0.0 ;
+
+		State lingering_state ;
+		if( m_state == READ_DATA ) {
+			/// Proportional to the number of lines between each AFC update.
+			cnt_read_data = delay_upd / 20 ;
+			lingering_state = READ_DATA ;
+		} else {
+			if( cnt_read_data ) {
+				--cnt_read_data ;
+				lingering_state = READ_DATA ;
+			} else {
+				lingering_state = m_state ;
+				/// Maybe this is the phasing signal, so we recenter.
+				double pwr_left = wf->powerDensity ( max_carrier - deviation_f, 10 );
+				double pwr_right = wf->powerDensity( max_carrier + deviation_f, 10 );
+				static const double ratio_left_right = 5.0 ;
+				if( pwr_left > ratio_left_right * pwr_right ) {
+					max_carrier -= deviation_f ;
+				} else if ( ratio_left_right * pwr_left < pwr_right ) {
+					max_carrier += deviation_f ;
+				}
+			}
+		}
+		switch( lingering_state ) {
+			case NOSIGNAL:
+			case SYNC_SETUP:
+				next_carr = max_carrier ;
+				break;
+			case SYNC1:
+			case SYNC2:
+				next_carr = decayavg( m_center_frequency_f, max_carrier, 1 );
+				break;
+			case READ_DATA:
+				// It will stay stable for a couple of calls.
+				if( max_carrier < m_center_frequency_f )
+					next_carr = std::max( max_carrier, m_center_frequency_f - 3.0 );
+				else if( max_carrier > m_center_frequency_f )
+					next_carr = std::min( max_carrier, m_center_frequency_f + 3.0 );
+				else next_carr = max_carrier ;
+				break;
+			default:
+				LOG_ERROR("Should not happen: lingering_state=%d", (int)lingering_state );
+				break ;
+		}
+
+		LOG_DEBUG("m_center_frequency_f=%f max_carrier=%f next_carr=%f cnt_read_data=%d",
+			(double)m_center_frequency_f, max_carrier, next_carr, cnt_read_data );
+		double delta = fabs( m_center_frequency_f - next_carr );
+		if( delta > 1.0 ) { // Hertz.
+			m_ptr_navtex->set_freq(next_carr);
+		}
+	}
+
 	/* A NAVTEX message is built on SITOR collective B-mode and consists of:
 	* a phasing signal of at least ten seconds
 	* the four characters "ZCZC" that identify the end of phasing
@@ -1117,6 +1189,7 @@ private:
 		* an end of emission idle signal alpha for at least 2 seconds.  */
 public:
 	void process_data(const double * data, int nb_samples) {
+		process_afc();
 		process_timeout();
 		for( int i =0; i < nb_samples; ++i ) {
 			short v = static_cast<short>(32767 * data[i]);
@@ -1313,8 +1386,15 @@ private:
 	std::queue< std::string > m_received_messages ;
 
 	void display_message( ccir_message & ccir_msg, const std::string & alt_string ) {
-		ccir_msg.display(alt_string);
-		put_received_message( alt_string );
+		if( ccir_msg.size() >= (size_t)progdefaults.NVTX_MinSizLoggedMsg )
+		{
+			ccir_msg.display(alt_string);
+			put_received_message( alt_string );
+		}
+		else
+		{
+			LOG_INFO("Do not log short message:%s", ccir_msg.c_str() );
+		}
 	}
 
 	/// Called by the engine each time a message is saved.
@@ -1520,6 +1600,13 @@ public:
 		transmit_message_async(msg);
 	}
 
+	void set_carrier( double freq )
+	{
+		m_center_frequency_f = freq;
+		set_filter_values();
+		configure_filters();
+	}
+
 }; // navtex_implementation
 
 #ifdef NAVTEX_COMMAND_LINE
@@ -1550,6 +1637,7 @@ int main(int n, const char ** v )
 
 navtex::navtex (trx_mode md)
 {
+	modem::cap |= CAP_AFC ;
 	navtex::mode = md;
 	modem::samplerate = 11025;
 	modem::bandwidth = 2 * deviation_f ;
@@ -1591,7 +1679,6 @@ void navtex::tx_init(SoundBase *sc)
 {
 	modem::scard = sc; // SoundBase
 	videoText(); // In trx/modem.cxx
-	//modem::set_freq(dflt_center_freq);
 }
 
 int  navtex::tx_process()
@@ -1599,6 +1686,12 @@ int  navtex::tx_process()
 	m_impl->process_tx();
 
 	return -1;
+}
+
+void navtex::set_freq( double freq )
+{
+	modem::set_freq( freq );
+	m_impl->set_carrier( freq );
 }
 
 /// This returns the next received message.

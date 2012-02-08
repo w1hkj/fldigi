@@ -1365,6 +1365,9 @@
        ELEM_(std::string, NVTX_Catalog, "NAVTEXCATALOG",                                \
              "Catalog pathname of Navtex stations",                                     \
              PKGDATADIR "/NAVTEX_Stations.txt")                                         \
+       ELEM_(int, NVTX_MinSizLoggedMsg, "NAVTEXMINSIZLOGGEDMSG",                        \
+             "Minimum length of logged messages",                                       \
+             0 )                                                                        \
         /* WX fetch from NOAA */                                                        \
         ELEM_(std::string, wx_sta, "WX_STA",                                            \
               "4 letter specifier for wx station",                                      \
