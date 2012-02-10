@@ -3707,7 +3707,6 @@ void setTabColors()
 	tabsWaterfall->selection_color(progdefaults.TabsColor);
 	tabsModems->selection_color(progdefaults.TabsColor);
 	tabsCW->selection_color(progdefaults.TabsColor);
-	tabsPSK->selection_color(progdefaults.TabsColor);
 	tabsRig->selection_color(progdefaults.TabsColor);
 	tabsSoundCard->selection_color(progdefaults.TabsColor);
 	tabsMisc->selection_color(progdefaults.TabsColor);
