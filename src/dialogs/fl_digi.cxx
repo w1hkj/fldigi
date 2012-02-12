@@ -2518,10 +2518,13 @@ bool clean_exit(void) {
 	if (logfile)
 		logfile->log_to_file_stop();
 
-//	if (bSaveFreqList)
-		saveFreqList();
+	saveFreqList();
 
 	progStatus.saveLastState();
+
+	if (scopeview) scopeview->hide();
+	if (dlgViewer) dlgViewer->hide();
+	if (dlgLogbook) dlgLogbook->hide();
 
 	delete push2talk;
 #if USE_HAMLIB
