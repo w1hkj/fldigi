@@ -2110,6 +2110,16 @@ void MACROTEXT::openMacroFile()
 	}
 }
 
+void MACROTEXT::writeMacroFile()
+{
+	std::string deffilename = MacrosDir;
+	if (progStatus.LastMacroFile.find("/") == string::npos)
+		deffilename.append(progStatus.LastMacroFile);
+	else
+		deffilename.assign(progStatus.LastMacroFile);
+	saveMacros(deffilename.c_str());
+}
+
 void MACROTEXT::saveMacroFile()
 {
 	std::string deffilename = MacrosDir;

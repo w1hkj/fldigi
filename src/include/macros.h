@@ -34,6 +34,7 @@ struct MACROTEXT {
 	int  loadMacros(const std::string& filename);
 	void loadDefault();
 	void openMacroFile();
+	void writeMacroFile();
 	void saveMacroFile();
 	void saveMacros(const std::string& fname);
 	std::string expandMacro(std::string &s);

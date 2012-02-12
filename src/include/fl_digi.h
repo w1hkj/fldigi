@@ -316,4 +316,8 @@ extern void open_recv_folder(const char *fname);
 extern void ADIF_RW_close(void);
 extern void EQSL_close(void);
 
+// notifier dialogs
+extern Fl_Double_Window *notify_window;
+extern Fl_Double_Window *dxcc_window;
+
 #endif

@@ -60,7 +60,7 @@
 #include "picture.h"
 #include "gettext.h"
 
-static Fl_Window	*wefax_pic_rx_win = 0;
+Fl_Double_Window	*wefax_pic_rx_win = (Fl_Double_Window *)0;
 
 static Fl_Scroll       *wefax_pic_rx_scroll          = (Fl_Scroll *)0 ;
 static picture	       *wefax_pic_rx_picture         = (picture *)0;
@@ -83,7 +83,7 @@ static Fl_Round_Button *wefax_round_rx_auto_center   = (Fl_Round_Button *)0;
 static Fl_Chart        *wefax_chart_rx_power         = (Fl_Chart *)0;
 static Fl_Choice       *wefax_choice_rx_filter       = (Fl_Choice *)0;
 
-static Fl_Window	*wefax_pic_tx_win = 0;
+Fl_Double_Window	*wefax_pic_tx_win = (Fl_Double_Window *)0;
 
 static Fl_Scroll *wefax_pic_tx_scroll           = (Fl_Scroll *)0 ;
 static picture   *wefax_pic_tx_picture          = (picture *)0;
@@ -965,11 +965,11 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 
 	if( progdefaults.WEFAX_EmbeddedGui )
 	{
-		wefax_pic_rx_win = new Fl_Window(pos_x, pos_y, win_wid, hei_win);
+		wefax_pic_rx_win = new Fl_Double_Window(pos_x, pos_y, win_wid, hei_win);
 	}
 	else
 	{
-		Fl_Window * tmpWin = new Fl_Window(win_wid, hei_win, "Fax reception" );
+		Fl_Double_Window * tmpWin = new Fl_Double_Window(win_wid, hei_win, "Fax reception" );
 		wefax_pic_rx_win = tmpWin ;
 	}
 	wefax_pic_rx_win->color(
@@ -1493,11 +1493,11 @@ void wefax_pic::create_tx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	int wid_btn_margin = 5 ;
 	if( progdefaults.WEFAX_EmbeddedGui )
 	{
-		wefax_pic_tx_win = new Fl_Window(pos_x, pos_y, win_wid, hei_win );
+		wefax_pic_tx_win = new Fl_Double_Window(pos_x, pos_y, win_wid, hei_win );
 	}
 	else
 	{
-		Fl_Window * tmpWin = new Fl_Window(win_wid, hei_win, _("Send image"));
+		Fl_Double_Window * tmpWin = new Fl_Double_Window(win_wid, hei_win, _("Send image"));
 		wefax_pic_tx_win = tmpWin;
 	}
 	wefax_pic_tx_win->color(

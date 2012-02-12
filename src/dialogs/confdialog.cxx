@@ -398,12 +398,36 @@ static void cb_btn_rx_lowercase(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_save_config_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn_save_config_on_exit(Fl_Check_Button* o, void*) {
+  progdefaults.SaveConfig = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2_save_macros_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn2_save_macros_on_exit(Fl_Check_Button* o, void*) {
+  btn_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2NagMe=(Fl_Check_Button *)0;
+
+static void cb_btn2NagMe(Fl_Check_Button* o, void*) {
+  btnNagMe->value(o->value());
+progdefaults.NagMe=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
-  progdefaults.NagMe=o->value();
+  btn2NagMe->value(o->value());
+progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
@@ -630,6 +654,14 @@ Fl_Check_Button *btnDisplayMacroFilename=(Fl_Check_Button *)0;
 
 static void cb_btnDisplayMacroFilename(Fl_Check_Button* o, void*) {
   progdefaults.DisplayMacroFilename = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_save_macros_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn_save_macros_on_exit(Fl_Check_Button* o, void*) {
+  btn2_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;
 }
 
@@ -3656,7 +3688,7 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(2, 25, 596, 345, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 506, 346, _("UI"));
         tabUI->hide();
         { tabsUI = new Fl_Tabs(2, 25, 596, 345);
           tabsUI->selection_color(FL_LIGHT1);
@@ -3909,7 +3941,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabUserInterface = new Fl_Group(2, 50, 594, 320, _("General"));
+          { tabUserInterface = new Fl_Group(4, 50, 592, 320, _("General"));
             tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(6, 55, 586, 76);
               o->box(FL_ENGRAVED_FRAME);
@@ -3958,14 +3990,41 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Check_Button* btn_rx_lowercase
               o->end();
             } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 195, 496, 171, _("Exit prompts"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(118, 274, 329, 20, _("Prompt to save Configuration"));
+                btn_save_config_on_exit->down_box(FL_DOWN_BOX);
+                btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
+                o->value(progdefaults.SaveConfig);
+              } // Fl_Check_Button* btn_save_config_on_exit
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(118, 300, 305, 20, _("Prompt to save macro file"));
+                btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
+                btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
+                btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
+                o->value(progdefaults.SaveMacros);
+              } // Fl_Check_Button* btn2_save_macros_on_exit
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(118, 326, 236, 20, _("Prompt to save log"));
+                btn2NagMe->tooltip(_("Bug me about saving log entries"));
+                btn2NagMe->down_box(FL_DOWN_BOX);
+                btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
+                o->value(progdefaults.NagMe);
+              } // Fl_Check_Button* btn2NagMe
+              { Fl_Box* o = new Fl_Box(42, 219, 436, 47, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
+ndow decoration close button pressed."));
+                o->box(FL_BORDER_BOX);
+                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+              } // Fl_Box* o
+              o->end();
+            } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(2, 50, 594, 320, _("Logging"));
+          { tabLogServer = new Fl_Group(4, 50, 592, 320, _("Logging"));
             tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(6, 57, 586, 180, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(62, 79, 236, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(62, 79, 236, 20, _("Prompt to save log on exit"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
@@ -4110,7 +4169,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabLogServer->end();
           } // Fl_Group* tabLogServer
-          { tabMBars = new Fl_Group(2, 50, 594, 320, _("Macros"));
+          { tabMBars = new Fl_Group(4, 50, 592, 320, _("Macros"));
             tabMBars->hide();
             { Fl_Group* o = new Fl_Group(6, 54, 586, 195, _("Number and position of macro bars"));
               o->box(FL_ENGRAVED_FRAME);
@@ -4169,23 +4228,29 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(6, 292, 586, 76);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(71, 302, 277, 20, _("Load last used macro file on startup"));
+              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(71, 298, 277, 20, _("Load last used macro file on startup"));
                 btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
                 btnUseLastMacro->down_box(FL_DOWN_BOX);
                 btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
                 o->value(progdefaults.UseLastMacro);
               } // Fl_Check_Button* btnUseLastMacro
-              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(71, 331, 277, 20, _("Display macro filename on startup"));
+              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(71, 320, 277, 20, _("Display macro filename on startup"));
                 btnDisplayMacroFilename->tooltip(_("The filename is written to the RX text area"));
                 btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
                 btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);
                 o->value(progdefaults.DisplayMacroFilename);
               } // Fl_Check_Button* btnDisplayMacroFilename
+              { Fl_Check_Button* o = btn_save_macros_on_exit = new Fl_Check_Button(71, 342, 305, 20, _("Prompt to save macro file when closing"));
+                btn_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
+                btn_save_macros_on_exit->down_box(FL_DOWN_BOX);
+                btn_save_macros_on_exit->callback((Fl_Callback*)cb_btn_save_macros_on_exit);
+                o->value(progdefaults.SaveMacros);
+              } // Fl_Check_Button* btn_save_macros_on_exit
               o->end();
             } // Fl_Group* o
             tabMBars->end();
           } // Fl_Group* tabMBars
-          { tabWF_UI = new Fl_Group(2, 50, 594, 320, _("WF Ctrls"));
+          { tabWF_UI = new Fl_Group(4, 50, 592, 320, _("WF Ctrls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(6, 58, 586, 306);
               o->box(FL_ENGRAVED_BOX);
@@ -4279,7 +4344,6 @@ ab and newline are automatically included."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 162, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4559,6 +4623,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("Mouse"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(6, 62, 588, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(69, 76, 340, 20, _("Left or right click always replays audio history"));
@@ -4606,12 +4671,12 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(2, 25, 596, 345, _("Modems"));
+      { tabModems = new Fl_Group(2, 25, 596, 347, _("Modems"));
         tabModems->hide();
         { tabsModems = new Fl_Tabs(2, 25, 596, 345, _("2"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
-          { tabContestia = new Fl_Group(4, 50, 592, 320, _("Cntst\'"));
+          { tabContestia = new Fl_Group(2, 50, 594, 320, _("Cntst\'"));
             { Fl_Group* o = new Fl_Group(6, 60, 588, 200, _("Contestia"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4684,7 +4749,7 @@ an merging"));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
-          { tabCW = new Fl_Group(4, 50, 592, 320, _("CW"));
+          { tabCW = new Fl_Group(0, 50, 594, 320, _("CW"));
             tabCW->hide();
             { tabsCW = new Fl_Tabs(4, 50, 592, 320);
               tabsCW->selection_color(FL_LIGHT1);
@@ -5081,7 +5146,7 @@ an merging"));
             } // Fl_Tabs* tabsCW
             tabCW->end();
           } // Fl_Group* tabCW
-          { tabDomEX = new Fl_Group(4, 50, 592, 320, _("Dom"));
+          { tabDomEX = new Fl_Group(2, 50, 594, 320, _("Dom"));
             tabDomEX->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 180);
               o->box(FL_ENGRAVED_FRAME);
@@ -5173,7 +5238,7 @@ an merging"));
             } // Fl_Group* o
             tabDomEX->end();
           } // Fl_Group* tabDomEX
-          { tabFeld = new Fl_Group(4, 50, 592, 320, _("Feld"));
+          { tabFeld = new Fl_Group(2, 50, 594, 320, _("Feld"));
             tabFeld->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 150);
               o->box(FL_ENGRAVED_FRAME);
@@ -5260,7 +5325,7 @@ an merging"));
             } // Fl_Group* o
             tabFeld->end();
           } // Fl_Group* tabFeld
-          { tabMT63 = new Fl_Group(4, 50, 592, 320, _("MT63"));
+          { tabMT63 = new Fl_Group(2, 50, 594, 320, _("MT63"));
             tabMT63->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 115);
               o->box(FL_ENGRAVED_FRAME);
@@ -5323,7 +5388,7 @@ an merging"));
             } // Fl_Group* o
             tabMT63->end();
           } // Fl_Group* tabMT63
-          { tabOlivia = new Fl_Group(4, 50, 592, 320, _("Olivia"));
+          { tabOlivia = new Fl_Group(2, 50, 594, 320, _("Olivia"));
             tabOlivia->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 200);
               o->box(FL_ENGRAVED_FRAME);
@@ -5395,7 +5460,7 @@ an merging"));
             } // Fl_Group* o
             tabOlivia->end();
           } // Fl_Group* tabOlivia
-          { tabPSK = new Fl_Group(4, 50, 592, 320, _("PSK"));
+          { tabPSK = new Fl_Group(2, 50, 594, 320, _("PSK"));
             tabPSK->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 98, _("AFC behavior"));
               o->box(FL_ENGRAVED_FRAME);
@@ -5489,7 +5554,7 @@ an merging"));
             } // Fl_Group* o
             tabPSK->end();
           } // Fl_Group* tabPSK
-          { tabRTTY = new Fl_Group(4, 50, 592, 320, _("RTTY"));
+          { tabRTTY = new Fl_Group(2, 50, 594, 320, _("RTTY"));
             tabRTTY->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 300);
               o->box(FL_ENGRAVED_FRAME);
@@ -5677,7 +5742,7 @@ an merging"));
             } // Fl_Group* o
             tabRTTY->end();
           } // Fl_Group* tabRTTY
-          { tabTHOR = new Fl_Group(4, 50, 592, 320, _("Thor"));
+          { tabTHOR = new Fl_Group(2, 50, 594, 320, _("Thor"));
             tabTHOR->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 170);
               o->box(FL_ENGRAVED_FRAME);
@@ -5763,7 +5828,7 @@ an merging"));
             } // Fl_Group* o
             tabTHOR->end();
           } // Fl_Group* tabTHOR
-          { tabPacket = new Fl_Group(4, 50, 592, 320, _("Packet"));
+          { tabPacket = new Fl_Group(2, 50, 594, 320, _("Packet"));
             tabPacket->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 296);
               o->box(FL_ENGRAVED_FRAME);
@@ -5904,7 +5969,7 @@ an merging"));
             } // Fl_Group* o
             tabPacket->end();
           } // Fl_Group* tabPacket
-          { tabNavtex = new Fl_Group(4, 50, 592, 320, _("Navtex"));
+          { tabNavtex = new Fl_Group(2, 50, 594, 320, _("Navtex"));
             tabNavtex->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 300);
               { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(81, 87, 235, 30, _("Log Navtex messages to Adif file"));
@@ -5926,7 +5991,7 @@ an merging"));
             } // Fl_Group* o
             tabNavtex->end();
           } // Fl_Group* tabNavtex
-          { tabWefax = new Fl_Group(4, 50, 592, 320, _("Wefax"));
+          { tabWefax = new Fl_Group(2, 50, 594, 320, _("Wefax"));
             tabWefax->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 300);
               { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(97, 141, 235, 30, _("Log Wefax messages to Adif file"));
@@ -6005,7 +6070,6 @@ an merging"));
         { tabsRig = new Fl_Tabs(4, 25, 592, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("Hardware PTT"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(6, 57, 588, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(175, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -6492,6 +6556,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { tabXMLRPC = new Fl_Group(4, 50, 592, 320, _("XML-RPC"));
+            tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(6, 58, 588, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(190, 77, 220, 58);
@@ -7436,7 +7501,6 @@ d frequency"));
         tabQRZ->hide();
         { Fl_Tabs* o = new Fl_Tabs(4, 25, 592, 345);
           { Fl_Group* o = new Fl_Group(4, 46, 592, 324, _("Call Lookup"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(6, 52, 588, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7562,6 +7626,7 @@ d frequency"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("eQSL"));
+            o->hide();
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(225, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);

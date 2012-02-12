@@ -72,9 +72,12 @@ void FSEL::destroy(void)
 	inst = 0;
 }
 
+#ifdef __APPLE__
+FSEL::FSEL() : chooser(new MAC_chooser) {}
+#else
+FSEL::FSEL() : chooser(new Fl_Native_File_Chooser) { }
+#endif
 
-FSEL::FSEL()
-	: chooser(new Fl_Native_File_Chooser) { }
 FSEL::~FSEL() { delete chooser; }
 
 
@@ -112,6 +115,10 @@ const char* FSEL::get_file(void)
 	}
 #else
 	result = chooser->show();
+#endif
+
+#ifdef __APPLE__
+	chooser->hide();
 #endif
 
 	switch (result) {

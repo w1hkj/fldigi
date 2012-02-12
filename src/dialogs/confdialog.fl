@@ -220,8 +220,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
-        xywh {2 25 596 345} hide
+        label UI open
+        xywh {0 25 506 346} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {2 25 596 345} selection_color 50
@@ -501,7 +501,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabUserInterface {
             label General
-            xywh {2 50 594 320} hide
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {open
               xywh {6 55 586 76} box ENGRAVED_FRAME
@@ -560,18 +560,52 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.rx_lowercase);}
               }
             }
+            Fl_Group {} {
+              label {Exit prompts} open
+              xywh {2 195 496 171} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btn_save_config_on_exit {
+                label {Prompt to save Configuration}
+                callback {progdefaults.SaveConfig = o->value();
+progdefaults.changed = true;}
+                xywh {118 274 329 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.SaveConfig);}
+              }
+              Fl_Check_Button btn2_save_macros_on_exit {
+                label {Prompt to save macro file}
+                callback {btn_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;}
+                tooltip {Write current macro set on program exit} xywh {118 300 305 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.SaveMacros);}
+              }
+              Fl_Check_Button btn2NagMe {
+                label {Prompt to save log}
+                callback {btnNagMe->value(o->value());
+progdefaults.NagMe=o->value();
+progdefaults.changed = true;}
+                tooltip {Bug me about saving log entries} xywh {118 326 236 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.NagMe);}
+              }
+              Fl_Box {} {
+                label {Exit prompts active only when File/Exit menu item selected.
+Not active if window decoration close button pressed.}
+                xywh {42 219 436 47} box BORDER_BOX align 20
+              }
+            }
           }
           Fl_Group tabLogServer {
-            label Logging
-            xywh {2 50 594 320} hide
+            label Logging open
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {
               label {QSO logging} open
               xywh {6 57 586 180} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
-                label {Prompt to save log}
-                callback {progdefaults.NagMe=o->value();
+                label {Prompt to save log on exit}
+                callback {btn2NagMe->value(o->value());
+progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
                 tooltip {Bug me about saving log entries} xywh {62 79 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
@@ -715,7 +749,7 @@ connect_to_log_server();}
           }
           Fl_Group tabMBars {
             label Macros
-            xywh {2 50 594 320} hide
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {
               label {Number and position of macro bars} open
@@ -814,21 +848,29 @@ progdefaults.changed = true;}
 update_main_title();
 progdefaults.changed = true;}
                 tooltip {ON - use last set of macros
-OFF - use default set} xywh {71 302 277 20} down_box DOWN_BOX
+OFF - use default set} xywh {71 298 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseLastMacro);}
               }
               Fl_Check_Button btnDisplayMacroFilename {
                 label {Display macro filename on startup}
                 callback {progdefaults.DisplayMacroFilename = o->value();
 progdefaults.changed = true;}
-                tooltip {The filename is written to the RX text area} xywh {71 331 277 20} down_box DOWN_BOX
+                tooltip {The filename is written to the RX text area} xywh {71 320 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.DisplayMacroFilename);}
+              }
+              Fl_Check_Button btn_save_macros_on_exit {
+                label {Prompt to save macro file when closing}
+                callback {btn2_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;}
+                tooltip {Write current macro set on program exit} xywh {71 342 305 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.SaveMacros);}
               }
             }
           }
           Fl_Group tabWF_UI {
             label {WF Ctrls}
-            xywh {2 50 594 320} hide
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {open
               xywh {6 58 586 306} box ENGRAVED_BOX
@@ -976,7 +1018,7 @@ WF_UI();}
         } {
           Fl_Group {} {
             label Display
-            xywh {4 50 592 320} hide
+            xywh {4 50 592 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -1253,7 +1295,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse
-            xywh {4 50 592 320}
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {open
               xywh {6 62 588 170} box ENGRAVED_FRAME
@@ -1303,8 +1345,8 @@ behaves inside the waterfall} xywh {69 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
-        xywh {2 25 596 345} hide
+        label Modems open
+        xywh {2 25 596 347} hide
       } {
         Fl_Tabs tabsModems {
           label 2 open
@@ -1312,7 +1354,7 @@ behaves inside the waterfall} xywh {69 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabContestia {
             label {Cntst'}
-            xywh {4 50 592 320}
+            xywh {2 50 594 320}
           } {
             Fl_Group {} {
               label Contestia
@@ -1370,8 +1412,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabCW {
-            label CW
-            xywh {4 50 592 320} hide
+            label CW open
+            xywh {0 50 594 320} hide
           } {
             Fl_Tabs tabsCW {
               xywh {4 50 592 320} selection_color 50
@@ -1774,7 +1816,7 @@ progdefaults.changed = true;} open
           }
           Fl_Group tabDomEX {
             label Dom
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 180} box ENGRAVED_FRAME
@@ -1835,7 +1877,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 150} box ENGRAVED_FRAME
@@ -1908,7 +1950,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMT63 {
             label MT63
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 115} box ENGRAVED_FRAME align 21
@@ -1983,7 +2025,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOlivia {
             label Olivia
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 200} box ENGRAVED_FRAME
@@ -2041,7 +2083,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {
               label {AFC behavior} open
@@ -2108,7 +2150,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 300} box ENGRAVED_FRAME
@@ -2300,7 +2342,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabTHOR {
             label Thor
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 170} box ENGRAVED_FRAME
@@ -2354,7 +2396,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPacket {
             label Packet
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 296} box ENGRAVED_FRAME
@@ -2476,7 +2518,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNavtex {
             label Navtex
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 300}
@@ -2506,7 +2548,7 @@ fc->show();}
           }
           Fl_Group tabWefax {
             label Wefax
-            xywh {4 50 592 320} hide
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 300}
@@ -2586,7 +2628,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT}
-            xywh {4 50 592 320} hide
+            xywh {4 50 592 320}
           } {
             Fl_Group {} {open
               xywh {6 57 588 38} box ENGRAVED_FRAME
@@ -3158,7 +3200,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabXMLRPC {
             label {XML-RPC}
-            xywh {4 50 592 320}
+            xywh {4 50 592 320} hide
           } {
             Fl_Group grpXMLRPC {open
               xywh {6 58 588 160} box ENGRAVED_FRAME
@@ -4205,7 +4247,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Call Lookup}
-            xywh {4 46 592 324} hide
+            xywh {4 46 592 324}
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
@@ -4339,7 +4381,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
           }
           Fl_Group {} {
             label eQSL open
-            xywh {4 50 592 320}
+            xywh {4 50 592 320} hide
           } {
             Fl_Input inpEQSL_id {
               label {User ID}
