@@ -62,6 +62,9 @@
 #endif
 
 #define CONFIG_LIST                                                                     \
+        ELEM_(bool, SaveConfig, "SAVECONFIG",                                           \
+              "Save current configuration on exit",                                     \
+              false)                                                                    \
         ELEM_(bool, noise, "NOISETEST",                                                 \
               "Noise test on/off",                                                      \
               false)                                                                    \
@@ -986,6 +989,9 @@
               false)                                                                    \
         ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME",                       \
               "Display macro filename on startup",                                      \
+              false)                                                                    \
+        ELEM_(bool, SaveMacros, "SAVEMACROS",                                           \
+              "Save current macros on exit",                                            \
               false)                                                                    \
         ELEM_(bool, macro_wheel, "MACROWHEEL",                                          \
               "Enable mouse wheel rotation to control visible macro set",               \

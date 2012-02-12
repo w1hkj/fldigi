@@ -258,8 +258,8 @@ static notify_list_t notify_list;
 static notify_t notify_tmp;
 static const vector<dxcc*>* dxcc_list;
 
-static Fl_Double_Window* notify_window;
-static Fl_Double_Window* dxcc_window;
+Fl_Double_Window* notify_window;
+Fl_Double_Window* dxcc_window;
 
 
 ////////////////////////////////////////////////////////////////////////////////

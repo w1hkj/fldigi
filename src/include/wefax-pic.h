@@ -4,6 +4,8 @@
 #ifndef _WEFAX_PIC_H
 #define _WEFAX_PIC_H
 
+#include <FL/Fl_Double_Window.H>
+
 class Fl_Menu_ ;
 
 class wefax ;
@@ -38,5 +40,8 @@ public:
 	static void send_image( const std::string & fil_name );
 	static void restore_max_lines(void);
 };
+
+extern Fl_Double_Window *wefax_pic_tx_win;
+extern Fl_Double_Window *wefax_pic_rx_win;
 
 #endif // _WEFAX_PIC_H

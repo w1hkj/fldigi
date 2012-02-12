@@ -20,6 +20,8 @@ extern Fl_Button		*btnInsertMacro;
 extern Fl_Input2		*macrotext;
 extern Fl_Input2		*labeltext;
 
+extern Fl_Double_Window *MacroEditDialog;
+
 extern Fl_Double_Window* make_macroeditor();
 
 enum { MACRO_EDIT_BUTTON, MACRO_EDIT_INPUT };

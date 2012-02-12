@@ -397,6 +397,29 @@ static void cb_btn_rx_lowercase(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_save_config_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn_save_config_on_exit(Fl_Check_Button* o, void*) {
+  progdefaults.SaveConfig = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2_save_macros_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn2_save_macros_on_exit(Fl_Check_Button* o, void*) {
+  btn_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2NagMe=(Fl_Check_Button *)0;
+
+static void cb_btn2NagMe(Fl_Check_Button* o, void*) {
+  btnNagMe->value(o->value());
+progdefaults.NagMe=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
 Fl_Input *xmllogServerAddress=(Fl_Input *)0;
@@ -421,7 +444,8 @@ connect_to_log_server();
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
-  progdefaults.NagMe=o->value();
+  btn2NagMe->value(o->value());
+progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
@@ -629,6 +653,14 @@ Fl_Check_Button *btnDisplayMacroFilename=(Fl_Check_Button *)0;
 
 static void cb_btnDisplayMacroFilename(Fl_Check_Button* o, void*) {
   progdefaults.DisplayMacroFilename = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_save_macros_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn_save_macros_on_exit(Fl_Check_Button* o, void*) {
+  btn2_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;
 }
 
@@ -3458,11 +3490,9 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 506, 346, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 506, 346);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 500, 320, _("Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(2, 59, 496, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(18, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -3760,9 +3790,37 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Check_Button* btn_rx_lowercase
               o->end();
             } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 195, 496, 171, _("Exit prompts"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(118, 274, 329, 20, _("Prompt to save Configuration"));
+                btn_save_config_on_exit->down_box(FL_DOWN_BOX);
+                btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
+                o->value(progdefaults.SaveConfig);
+              } // Fl_Check_Button* btn_save_config_on_exit
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(118, 300, 305, 20, _("Prompt to save macro file"));
+                btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
+                btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
+                btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
+                o->value(progdefaults.SaveMacros);
+              } // Fl_Check_Button* btn2_save_macros_on_exit
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(118, 326, 236, 20, _("Prompt to save log"));
+                btn2NagMe->tooltip(_("Bug me about saving log entries"));
+                btn2NagMe->down_box(FL_DOWN_BOX);
+                btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
+                o->value(progdefaults.NagMe);
+              } // Fl_Check_Button* btn2NagMe
+              { Fl_Box* o = new Fl_Box(42, 219, 436, 47, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
+ndow decoration close button pressed."));
+                o->box(FL_BORDER_BOX);
+                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+              } // Fl_Box* o
+              o->end();
+            } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 500, 320, _("Logging"));
+            tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(2, 313, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -3784,7 +3842,7 @@ Fl_Double_Window* ConfigureDialog() {
             { Fl_Group* o = new Fl_Group(2, 57, 496, 180, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(19, 79, 236, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(19, 79, 236, 20, _("Prompt to save log on exit"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
@@ -3970,18 +4028,24 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(2, 292, 496, 76);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(12, 302, 277, 20, _("Load last used macro file on startup"));
+              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(12, 298, 277, 20, _("Load last used macro file on startup"));
                 btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
                 btnUseLastMacro->down_box(FL_DOWN_BOX);
                 btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
                 o->value(progdefaults.UseLastMacro);
               } // Fl_Check_Button* btnUseLastMacro
-              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(12, 331, 277, 20, _("Display macro filename on startup"));
+              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(12, 320, 277, 20, _("Display macro filename on startup"));
                 btnDisplayMacroFilename->tooltip(_("The filename is written to the RX text area"));
                 btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
                 btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);
                 o->value(progdefaults.DisplayMacroFilename);
               } // Fl_Check_Button* btnDisplayMacroFilename
+              { Fl_Check_Button* o = btn_save_macros_on_exit = new Fl_Check_Button(12, 342, 305, 20, _("Prompt to save macro file when closing"));
+                btn_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
+                btn_save_macros_on_exit->down_box(FL_DOWN_BOX);
+                btn_save_macros_on_exit->callback((Fl_Callback*)cb_btn_save_macros_on_exit);
+                o->value(progdefaults.SaveMacros);
+              } // Fl_Check_Button* btn_save_macros_on_exit
               o->end();
             } // Fl_Group* o
             tabMBars->end();
@@ -4408,6 +4472,7 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(-5, 25, 545, 347, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(-5, 25, 545, 347);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));

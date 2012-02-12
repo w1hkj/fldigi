@@ -161,6 +161,10 @@
 
 #include "arq_io.h"
 
+#include "notifydialog.h"
+#include "macroedit.h"
+#include "wefax-pic.h"
+
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL      _("Rig control")
 #define OPMODES_MLABEL         _("Op &Mode")
@@ -419,7 +423,7 @@ Pixmap				fldigi_icon_pixmap;
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
 void UI_select();
-bool clean_exit(void);
+bool clean_exit(bool ask);
 
 void cb_init_mode(Fl_Widget *, void *arg);
 
@@ -944,21 +948,102 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 	restoreFocus();
 }
 
-void cb_E(Fl_Menu_*, void*) {
-	fl_digi_main->do_callback();
+void remove_windows()
+{
+	if (scopeview) {
+		scopeview->hide();
+		delete scopeview;
+	}
+	if (dlgViewer) {
+		dlgViewer->hide();
+		delete dlgViewer;
+	}
+	if (dlgLogbook) {
+		dlgLogbook->hide();
+		delete dlgLogbook;
+	}
+	if (dlgConfig) {
+		dlgConfig->hide();
+		delete cboHamlibRig;
+		delete dlgConfig;
+	}
+	if (dlgColorFont) {
+		dlgColorFont->hide();
+		delete dlgColorFont;
+	}
+	if (font_browser) {
+		font_browser->hide();
+		delete font_browser;
+	}
+	if (notify_window) {
+		notify_window->hide();
+		delete notify_window;
+	}
+	if (dxcc_window) {
+		dxcc_window->hide();
+		delete dxcc_window;
+	}
+	if (picRxWin) {
+		picRxWin->hide();
+		delete picRxWin;
+	}
+	if (picTxWin) {
+		picTxWin->hide();
+		delete picTxWin;
+	}
+	if (wefax_pic_rx_win) {
+		wefax_pic_rx_win->hide();
+		delete wefax_pic_rx_win;
+	}
+	if (wefax_pic_tx_win) {
+		wefax_pic_tx_win->hide();
+		delete wefax_pic_tx_win;
+	}
+	if (wExport) {
+		wExport->hide();
+		delete wExport;
+	}
+	if (wCabrillo) {
+		wCabrillo->hide();
+		delete wCabrillo;
+	}
+	if (MacroEditDialog) {
+		MacroEditDialog->hide();
+		delete MacroEditDialog;
+	}
 }
+
+// callback executed from Escape / Window decoration 'X' or OS X cmd-Q
+// capture cmd-Q to allow a normal shutdown.
+// Red-X on OS X window decoration will crash with Signal 11 if a dialog
+// is opened post pressing the Red-X
+// Lion also does not allow any dialog other than the main dialog to
+// remain open after a Red-X exit
 
 void cb_wMain(Fl_Widget*, void*)
 {
-	if (!clean_exit())
+	bool ret = false;
+#ifdef __APPLE__
+	if (((Fl::event_state() & FL_COMMAND) == FL_COMMAND) && (Fl::event_key() == 'q'))
+		ret = clean_exit(true);
+	else
+		ret = clean_exit(false);
+	if (!ret) return;
+#else
+	if (!clean_exit(true))
 		return;
-	// hide all shown windows
-	Fl::first_window(fl_digi_main);
-	for (Fl_Window* w = Fl::next_window(fl_digi_main); w; w = Fl::next_window(w)) {
-		w->do_callback();
-		w = fl_digi_main;
-	}
-	// this will make Fl::run return
+#endif
+	remove_windows();  // more Apple Lion madness
+// this will make Fl::run return
+	fl_digi_main->hide();
+}
+
+// callback executed from menu item File/Exit
+void cb_E(Fl_Menu_*, void*) {
+	if (!clean_exit(true))
+		return;
+	remove_windows();
+// this will make Fl::run return
 	fl_digi_main->hide();
 }
 
@@ -2407,51 +2492,56 @@ int default_handler(int event)
 	return 0;
 }
 
-
-bool clean_exit(void) {
-	if (progdefaults.changed) {
-		switch (fl_choice2(_("Save changed configuration before exiting?"),
-				  _("Cancel"), _("Save"), _("Don't save"))) {
+bool save_on_exit() {
+	if (progdefaults.changed && progdefaults.SaveConfig) {
+		switch (fl_choice2(_("Save changed configuration?"),
+				_("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
 		case 1:
 			progdefaults.saveDefaults();
-			// fall through
+		// fall through
+		case 2:
+			break;
+		}
+	}
+	if (macros.changed && progdefaults.SaveMacros) {
+		switch (fl_choice2(_("Save changed macros?"),
+				_("Cancel"), _("Save"), _("Don't save"))) {
+		case 0:
+			return false;
+		case 1:
+			macros.writeMacroFile();
+		// fall through
 		case 2:
 			break;
 		}
 	}
 	if (!oktoclear && progdefaults.NagMe) {
-		switch (fl_choice2(_("Save log before exiting?"),
-				  _("Cancel"), _("Save"), _("Don't save"))) {
+		switch (fl_choice2(_("Save current log entry?"),
+			  _("Cancel"), _("Save"), _("Don't save"))) {
 		case 0:
 			return false;
 		case 1:
 			qsoSave_cb(0, 0);
-			// fall through
+		// fall through
 		case 2:
 			break;
 		}
 	}
-	if (macros.changed) {
-		switch (fl_choice2(_("Save changed macros before exiting?"),
-				  _("Cancel"), _("Save"), _("Don't save"))) {
-		case 0:
-			return false;
-		case 1:
-			macros.saveMacroFile();
-			// fall through
-		case 2:
-			break;
-		}
-	}
+	return true;
+}
+
+bool clean_exit(bool ask) {
+	if (ask)
+		if (!save_on_exit()) return false;
+
 	if (Maillogfile)
 		Maillogfile->log_to_file_stop();
 	if (logfile)
 		logfile->log_to_file_stop();
 
-//	if (bSaveFreqList)
-		saveFreqList();
+	saveFreqList();
 
 	progStatus.saveLastState();
 
@@ -2475,12 +2565,6 @@ bool clean_exit(void) {
 	while (trx_state != STATE_ENDED) {
 		REQ_FLUSH(GET_THREAD_ID());
 		MilliSleep(10);
-	}
-
-	if (dlgConfig) {
-		dlgConfig->hide();
-		delete cboHamlibRig;
-		delete dlgConfig;
 	}
 
 #if USE_HAMLIB

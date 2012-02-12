@@ -216,15 +216,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
-        xywh {0 25 506 346} hide
+        label UI open
+        xywh {0 25 506 346}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 506 346} selection_color 50
         } {
           Fl_Group tabBrowser {
-            label Browser
-            xywh {0 50 500 320} hide
+            label Browser selected
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {open
               xywh {2 59 496 300} box ENGRAVED_FRAME
@@ -556,10 +556,43 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.rx_lowercase);}
               }
             }
+            Fl_Group {} {
+              label {Exit prompts} open
+              xywh {2 195 496 171} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btn_save_config_on_exit {
+                label {Prompt to save Configuration}
+                callback {progdefaults.SaveConfig = o->value();
+progdefaults.changed = true;}
+                xywh {118 274 329 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.SaveConfig);}
+              }
+              Fl_Check_Button btn2_save_macros_on_exit {
+                label {Prompt to save macro file}
+                callback {btn_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;}
+                tooltip {Write current macro set on program exit} xywh {118 300 305 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.SaveMacros);}
+              }
+              Fl_Check_Button btn2NagMe {
+                label {Prompt to save log}
+                callback {btnNagMe->value(o->value());
+progdefaults.NagMe=o->value();
+progdefaults.changed = true;}
+                tooltip {Bug me about saving log entries} xywh {118 326 236 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.NagMe);}
+              }
+              Fl_Box {} {
+                label {Exit prompts active only when File/Exit menu item selected.
+Not active if window decoration close button pressed.}
+                xywh {42 219 436 47} box BORDER_BOX align 20
+              }
+            }
           }
           Fl_Group tabLogServer {
             label Logging open
-            xywh {0 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {
               label {Client/Server Logbook} open
@@ -589,8 +622,9 @@ connect_to_log_server();}
               xywh {2 57 496 180} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
-                label {Prompt to save log}
-                callback {progdefaults.NagMe=o->value();
+                label {Prompt to save log on exit}
+                callback {btn2NagMe->value(o->value());
+progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
                 tooltip {Bug me about saving log entries} xywh {19 79 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
@@ -810,15 +844,23 @@ UI_select();}
 update_main_title();
 progdefaults.changed = true;}
                 tooltip {ON - use last set of macros
-OFF - use default set} xywh {12 302 277 20} down_box DOWN_BOX
+OFF - use default set} xywh {12 298 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseLastMacro);}
               }
               Fl_Check_Button btnDisplayMacroFilename {
                 label {Display macro filename on startup}
                 callback {progdefaults.DisplayMacroFilename = o->value();
 progdefaults.changed = true;}
-                tooltip {The filename is written to the RX text area} xywh {12 331 277 20} down_box DOWN_BOX
+                tooltip {The filename is written to the RX text area} xywh {12 320 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.DisplayMacroFilename);}
+              }
+              Fl_Check_Button btn_save_macros_on_exit {
+                label {Prompt to save macro file when closing}
+                callback {btn2_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;}
+                tooltip {Write current macro set on program exit} xywh {12 342 305 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.SaveMacros);}
               }
             }
           }
@@ -1300,13 +1342,13 @@ behaves inside the waterfall} xywh {13 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {-5 25 545 347}
+        xywh {-5 25 545 347} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {-5 25 545 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open selected
+            label CW open
             xywh {0 50 504 320}
           } {
             Fl_Tabs tabsCW {open

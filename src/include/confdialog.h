@@ -70,6 +70,9 @@ extern Fl_Choice *mnuScheme;
 extern Fl_Button *bVisibleModes;
 extern Fl_Choice *mnuLang;
 extern Fl_Check_Button *btn_rx_lowercase;
+extern Fl_Check_Button *btn_save_config_on_exit;
+extern Fl_Check_Button *btn2_save_macros_on_exit;
+extern Fl_Check_Button *btn2NagMe;
 extern Fl_Group *tabLogServer;
 #include <FL/Fl_Input.H>
 extern Fl_Input *xmllogServerAddress;
@@ -105,6 +108,7 @@ extern Fl_Round_Button *btn_twoE;
 extern Fl_Round_Button *btn_twoF;
 extern Fl_Check_Button *btnUseLastMacro;
 extern Fl_Check_Button *btnDisplayMacroFilename;
+extern Fl_Check_Button *btn_save_macros_on_exit;
 extern Fl_Group *tabWF_UI;
 extern Fl_Check_Button *btnWF_UIrev;
 extern Fl_Check_Button *btnWF_UIx1;

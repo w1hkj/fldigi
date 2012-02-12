@@ -60,7 +60,7 @@
 #include "picture.h"
 #include "gettext.h"
 
-static Fl_Double_Window	*wefax_pic_rx_win = (Fl_Double_Window *)0;
+Fl_Double_Window	*wefax_pic_rx_win = (Fl_Double_Window *)0;
 
 static Fl_Scroll       *wefax_pic_rx_scroll          = (Fl_Scroll *)0 ;
 static picture	       *wefax_pic_rx_picture         = (picture *)0;
@@ -84,7 +84,7 @@ static Fl_Round_Button *wefax_round_rx_auto_center   = (Fl_Round_Button *)0;
 static Fl_Chart        *wefax_chart_rx_power         = (Fl_Chart *)0;
 static Fl_Choice       *wefax_choice_rx_filter       = (Fl_Choice *)0;
 
-static Fl_Double_Window	*wefax_pic_tx_win = (Fl_Double_Window *)0;
+Fl_Double_Window	*wefax_pic_tx_win = (Fl_Double_Window *)0;
 
 static Fl_Scroll *wefax_pic_tx_scroll           = (Fl_Scroll *)0 ;
 static picture   *wefax_pic_tx_picture          = (picture *)0;
