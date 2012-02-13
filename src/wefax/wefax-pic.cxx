@@ -1138,7 +1138,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	update_auto_center(false);
 
 	wid_off_low += wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 75 ;
+	wid_btn_curr = 60 ;
 	wefax_round_rx_noise_removal = new Fl_Round_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _("Noise"));
 	wefax_round_rx_noise_removal->callback(wefax_cb_pic_rx_noise_removal, 0);
 	wefax_round_rx_noise_removal->tooltip(_("Removes noise when ticked"));
@@ -1150,7 +1150,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	/// Starts from the longest of the two lines.
 	int wid_off_two = std::max( wid_off_low, wid_off_up );
 
-	wid_btn_curr = 60 ;
+	wid_btn_curr = 75 ;
 	wefax_chart_rx_power = new Fl_Chart( wid_off_two, hei_off_up, wid_btn_curr, wid_hei_two );
 	wefax_chart_rx_power->tooltip(_("Power/noise for significant frequencies"));
 	wefax_chart_rx_power->type(FL_HORBAR_CHART);

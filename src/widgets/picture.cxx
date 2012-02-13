@@ -501,6 +501,14 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 		fclose(fp);
 		return -1;
 	}
+	/* png_set_compression_level() shall set the compression level to "level". 
+	 * The valid values for "level" range from [0,9], corresponding directly 
+	 * to compression levels for zlib. The value 0 implies no compression 
+	 * and 9 implies maximal compression. Note: Tests have shown that zlib 
+	 * compression levels 3-6 usually perform as well as level 9 for PNG images, 
+	 * and do considerably fewer calculations. */
+	png_set_compression_level(png, Z_BEST_COMPRESSION);
+
 	if ((info = png_create_info_struct(png)) == NULL) {
 		png_destroy_write_struct(&png, NULL);
 		fclose(fp);

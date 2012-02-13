@@ -1357,7 +1357,7 @@
              800 )                                                                      \
        ELEM_(int, WEFAX_MaxRows, "WEFAXMAXROWS",                                        \
              "Received fax maximum number of rows",                                     \
-             5000 )                                                                     \
+             2000 )                                                                     \
        ELEM_(int, WEFAX_NoiseMargin, "WEFAXNOISEMARGIN",                                \
              "Pixel margin for noise removal",                                          \
              1 )                                                                        \
