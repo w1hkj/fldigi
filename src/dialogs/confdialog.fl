@@ -4192,6 +4192,12 @@ progdefaults.changed = true;}
                 xywh {336 92 130 24}
                 code0 {\#include "weather.h"}
               }
+              Fl_Button btn_metar_search {
+                label {Search on  web}
+                callback {get_METAR_station();}
+                xywh {286 92 130 24}
+                code0 {\#include "weather.h"}
+              }
             }
           }
         }

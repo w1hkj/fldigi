@@ -3336,6 +3336,12 @@ static void cb_btn_metar_search(Fl_Button*, void*) {
   get_METAR_station();
 }
 
+Fl_Button *btn_metar_search=(Fl_Button *)0;
+
+static void cb_btn_metar_search1(Fl_Button*, void*) {
+  get_METAR_station();
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Round_Button *btnQRZWEBnotavailable=(Fl_Round_Button *)0;
@@ -7422,6 +7428,9 @@ d frequency"));
               } // Fl_Box* o
               { btn_metar_search = new Fl_Button(336, 92, 130, 24, _("Search on  web"));
                 btn_metar_search->callback((Fl_Callback*)cb_btn_metar_search);
+              } // Fl_Button* btn_metar_search
+              { btn_metar_search = new Fl_Button(286, 92, 130, 24, _("Search on  web"));
+                btn_metar_search->callback((Fl_Callback*)cb_btn_metar_search1);
               } // Fl_Button* btn_metar_search
               o->end();
             } // Fl_Group* o
