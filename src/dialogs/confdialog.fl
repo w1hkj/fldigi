@@ -3767,7 +3767,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {4 50 592 320} hide
+            xywh {4 50 592 320}
           } {
             Fl_Group {} {open
               xywh {6 60 588 51} box ENGRAVED_FRAME align 21
@@ -4097,7 +4097,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWX {
             label WX
-            xywh {4 50 592 320}
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {
               label {Weather query specification} open

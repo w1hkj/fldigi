@@ -236,23 +236,23 @@ void getwx(string& wx, const char *metar)
 		LOG_WARN("%s", "station not found\n");
 		return;
 	}
-
-	p1 = text.rfind("\n", p2);
-	if (p1 == string::npos) {
-		LOG_WARN("%s", "station not found\n");
-		return;
+	const char *eoh = "Connection: close";
+	p1 = text.find(eoh);
+	if (p1 != string::npos) {
+		text.erase(0, p1 + strlen(eoh) + 4);
+		p1 = text.find("\n");
+		if (p1 != string::npos)
+			name = text.substr(0, p1);
 	}
-	p1++;
 
-	p3 = text.find("ob:", p2);
+	p3 = text.find("ob:");
 	if (p3 == string::npos) {
 		LOG_WARN("%s", "observations not available\n");
 		return;
 	}
 
-	string wx_full = text.substr(p1, p3 - p1);
 	if (progdefaults.wx_full) {
-		wx.assign(wx_full);//text.substr(p1));
+		wx.assign(text.substr(0, p3));
 		return;
 	}
 //printf("%s\n",wx_full.c_str());
@@ -264,7 +264,6 @@ void getwx(string& wx, const char *metar)
 	text.erase(0, p + 1 + wxsta.length());
 	p = text.find("\n");
 	if (p != string::npos) text.erase(p);
-//printf("%s\n", text.c_str());
 
 // parse field contents
 	bool parsed = false;

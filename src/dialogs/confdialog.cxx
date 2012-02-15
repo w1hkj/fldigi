@@ -6972,7 +6972,6 @@ d frequency"));
         { tabsMisc = new Fl_Tabs(4, 25, 592, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(4, 50, 592, 320, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7348,6 +7347,7 @@ d frequency"));
             tabDTMFdecode->end();
           } // Fl_Group* tabDTMFdecode
           { tabWX = new Fl_Group(4, 50, 592, 320, _("WX"));
+            tabWX->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 300, _("Weather query specification"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
