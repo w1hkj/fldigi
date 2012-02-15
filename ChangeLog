@@ -1,5 +1,32 @@
+2012-02-15  David Freese  <w1hkj@w1hkj.com>
+
+	e7da774: Weather report
+	b1330ff: OSX Lion shutdown
+	b609cb6: Config Dialog
+
+2012-02-08  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	548f941: Navtex AFC 	* Automatic Frequency Control. 	* Now the input frequency can be changed.
+
+2012-02-06  David Freese  <w1hkj@w1hkj.com>
+
+	3223c68: Cyrillic-UTF8 chars
+
+2012-02-05  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	268d0f3: Wefax AFC and GUI
+
+2012-02-05  David Freese  <w1hkj@w1hkj.com>
+
+	fbca133: QSK test
+
+2012-02-01  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	f2268b8: Navtex enhancements.
+
 2012-02-01  David Freese  <w1hkj@w1hkj.com>
 
+	7c60aa8: Weather report
 	e78677c: Control sizing
 	9d12f24: eQSL
 	9882ad4: OS X file chooser
@@ -17,6 +44,10 @@
 	dc190c4: UTF-8 rx suppress
 	92f313d: Get WX
 
+2012-01-18  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	25b4499: WEFAX windows show/hide bug fix.
+
 2012-01-18  Pavel Milanes Costa  <pavel@conas.co.cu>
 
 	16856e0: es.po update
@@ -25,19 +56,48 @@
 
 	dd1416d: Update to fltk.m4
 	7a0ffda: GCC-4.7 fixes
+
+2012-01-15  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	2989baf: WEFAX : Noise reduction, less disk space.
+
+2012-01-13  David Freese  <w1hkj@w1hkj.com>
+
 	bcc5e9f: Missing files
 	f8d7da3: RX last line
 	e3d80a6: Debug text
 	b3e675c: View browser find control
 	419a236: Find chars fwd/back
 	444eb6b: Corner controls
+
+2012-01-08  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	6b7067e: Wefax b/w fix
+
+2012-01-08  David Freese  <w1hkj@w1hkj.com>
+
 	23b9a17: Fltk-1.3.0
+
+2012-01-06  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	ae36352: Wefax GUI enhancement.
+
+2012-01-06  David Freese  <w1hkj@w1hkj.com>
+
 	e1c991f: Rig cat close
 	14d24d6: OpBrowser font
 	fd60201: Tune abort
 	faff489: VAC PTT delay
 	ca82dac: Mono audio
 	9409d6c: NAVTEX check-TESTS
+
+2011-12-11  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	acd15ca: Navtex code cleanup and warnings.
+	cf895e9: Added Navtex deviation in waterfall.
+
+2011-12-09  David Freese  <w1hkj@w1hkj.com>
+
 	773c413: Right Channel audio
 	8d54e28: NAVTEX modem
 	0c064c6: WEFAX update
