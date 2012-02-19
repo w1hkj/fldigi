@@ -35,13 +35,13 @@ private:
 	int bufsize;
 	int width;
 	int height;
-	static const int depth = 3;
 	int numcol;
 	int slantdir;
 	void slant_corr(int x, int y);
 	void slant_undo();
 	int zoom ;
 	int background ;
+	bool binary ;
 	static void draw_cb(void *data, int x, int y, int w, uchar *buf);
 	void	resize_zoom(int, int, int, int);
 public:
@@ -69,6 +69,7 @@ public:
 	void    stretch(double the_ratio);
 	int	save_png(const char * filename, bool monochrome = false, const char * extra_comments = NULL);
 	void    set_zoom(int the_zoom);
+	void    set_binary(bool bin_mode) { binary = bin_mode ;}
 	int     pix_width(void) const {
 		return width ;
 	}
@@ -82,6 +83,7 @@ public:
 	/// If this happens, noise removal does not work.
 	static const int noise_height_margin = 5 ;
 	void remove_noise( int row, int half_len, int noise_margin );
+	static const int depth = 3;
 };
 
 class picbox : public Fl_Box

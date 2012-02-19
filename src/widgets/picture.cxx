@@ -68,6 +68,7 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 	background = bg_col ;
 	memset( vidbuf, background, bufsize );	
 	zoom = 0 ;
+	binary = false ;
 }
 
 picture::~picture()
@@ -171,9 +172,13 @@ void picture::stretch(double the_ratio)
 
 	/// No interpolation, it takes the nearest pixel.
 	for( int ix_out = 0 ; ix_out < new_bufsize ; ix_out += depth ) {
+		int ix_in = 0.5 + ( double )ix_out * the_ratio ;
+		switch( ix_in % depth ) {
+			case 1 : --ix_in ; break ;
+			case 2 : ++ix_in ; break ;
+			default: ;
+		}
 
-		int ix_in = ( double )ix_out * the_ratio + 0.5 ;
-		ix_in = ( ix_in / depth ) * depth ;
 		if( ix_in >= bufsize ) {
 			/// Grey value as a filler to indicate the end. For debugging.
 			memset( new_vidbuf + ix_out, 128, new_bufsize - ix_out );
@@ -224,6 +229,11 @@ void picture::set_zoom( int the_zoom )
 	resize_zoom( x(), y(), width, height );
 }
 
+inline unsigned char pix2bin( unsigned char x )
+{
+	return x >= 128 ? 255 : 0 ;
+}
+
 // in 	data 	                     user data passed to function
 // in 	x_screen,y_screen,wid_screen position and width of scan line in image
 // out 	buf 	                     buffer for generated image data.
@@ -233,10 +243,16 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 	const picture * ptr_pic = ( const picture * ) data ;
 	const int img_width = ptr_pic->width ;
 	const unsigned char * in_ptr = ptr_pic->vidbuf ;
-	/// Should not happen because tested before. This ensures that memcpy is OK.
+
 	if( ptr_pic->zoom == 0 ) {
 		const int in_offset = img_width * y_screen + x_screen ;
-		memcpy( buf, in_ptr + in_offset * depth, depth * wid_screen );
+		if(ptr_pic->binary) {
+			for( int i = in_offset * depth, i_end = i + depth * wid_screen; i < i_end ; ++i ) {
+				buf[i] = pix2bin(in_ptr[ i ]);
+			}
+		} else {
+			memcpy( buf, in_ptr + in_offset * depth, depth * wid_screen );
+		}
 		return ;
 	}
 
@@ -246,40 +262,21 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 		const int in_offset = ( img_width * y_screen + x_screen ) * stride ;
 		int dpth_in_offset = depth * in_offset ;
 
-#ifndef NDEBUG
-		if( y_screen > ptr_pic->h() - 1 ) {
-			LOG_WARN(
-				"Overflow1 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
-				y_screen,
-				ptr_pic->h(),
-				(y_screen*stride),
-				ptr_pic->height,
-				stride );
-			return ;
+		if(ptr_pic->binary) {
+			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ) {
+				buf[ ix_w++ ] = pix2bin(in_ptr[ dpth_in_offset     ]);
+				buf[ ix_w++ ] = pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+				buf[ ix_w++ ] = pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+				dpth_in_offset += depth * stride ;
+			}
 		}
-
-		const int max_buf_offset = ptr_pic->bufsize - depth ;
-		/// Check the latest offset.
-		if( dpth_in_offset + depth * stride * wid_screen >= max_buf_offset ) {
-			LOG_WARN(
-				"Boom1 y_sc=%d h=%d w=%d wd_sc=%d wdt=%d strd=%d off=%d prd=%d mbo=%d\n",
-				y_screen,
-				ptr_pic->h(),
-				ptr_pic->w(),
-				wid_screen,
-				img_width,
-				stride,
-				in_offset,
-				( dpth_in_offset + depth ),
-				max_buf_offset );
-			return ;
-		}
-#endif
-		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ) {
-			buf[ ix_w++ ] = in_ptr[ dpth_in_offset     ];
-			buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 1 ];
-			buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 2 ];
-			dpth_in_offset += depth * stride ;
+		else {
+			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ) {
+				buf[ ix_w++ ] = in_ptr[ dpth_in_offset     ];
+				buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 1 ];
+				buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 2 ];
+				dpth_in_offset += depth * stride ;
+			}
 		}
 		return ;
 	}
@@ -288,9 +285,10 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 	if( ptr_pic->zoom > 0 ) {
 		const int stride = ptr_pic->zoom + 1 ;
 		const int in_offset = img_width * ( y_screen / stride ) + x_screen / stride ;
+#ifndef NDEBUG
 		if( y_screen / stride >= ptr_pic->h() )
 		{
-			LOG_WARN(
+			LOG_ERROR(
 				"Overflow2 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
 				y_screen,
 				ptr_pic->h(),
@@ -299,37 +297,39 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				stride );
 			return ;
 		}
-
-                for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
-		{
-#ifndef NDEBUG
-			if( dpth_in_offset >= max_buf_offset ) {
-				LOG_WARN(
-					"Boom2 y_sc=%d h=%d w=%d ix_w=%d wd_sc=%d wdth=%d strd=%d in_off=%d mbo=%d\n",
-					y_screen,
-					ptr_pic->h(),
-					ptr_pic->w(),
-					ix_w,
-					wid_screen,
-					img_width,
-					stride,
-					in_offset,
-					max_buf_offset );
-				break ;
-			}
 #endif
-			unsigned char in_dpth_in_offset_0 = in_ptr[ dpth_in_offset     ];
-			unsigned char in_dpth_in_offset_1 = in_ptr[ dpth_in_offset + 1 ];
-			unsigned char in_dpth_in_offset_2 = in_ptr[ dpth_in_offset + 2 ];
-
-			// Stride should be less than 4 or 5.
-			for( int j= 0; j < stride; j++ )
+		if(ptr_pic->binary) {
+                	for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
 			{
-				buf[ ix_w++ ] = in_dpth_in_offset_0;
-				buf[ ix_w++ ] = in_dpth_in_offset_1;
-				buf[ ix_w++ ] = in_dpth_in_offset_2;
+				unsigned char in_dpth_in_offset_0 = pix2bin(in_ptr[ dpth_in_offset     ]);
+				unsigned char in_dpth_in_offset_1 = pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+				unsigned char in_dpth_in_offset_2 = pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+
+				// Stride should be less than 4 or 5.
+				for( int j= 0; j < stride; j++ )
+				{
+					buf[ ix_w++ ] = in_dpth_in_offset_0;
+					buf[ ix_w++ ] = in_dpth_in_offset_1;
+					buf[ ix_w++ ] = in_dpth_in_offset_2;
+				}
+				dpth_in_offset += depth ;
 			}
-			dpth_in_offset += depth ;
+		} else {
+                	for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
+			{
+				unsigned char in_dpth_in_offset_0 = in_ptr[ dpth_in_offset     ];
+				unsigned char in_dpth_in_offset_1 = in_ptr[ dpth_in_offset + 1 ];
+				unsigned char in_dpth_in_offset_2 = in_ptr[ dpth_in_offset + 2 ];
+
+				// Stride should be less than 4 or 5.
+				for( int j= 0; j < stride; j++ )
+				{
+					buf[ ix_w++ ] = in_dpth_in_offset_0;
+					buf[ ix_w++ ] = in_dpth_in_offset_1;
+					buf[ ix_w++ ] = in_dpth_in_offset_2;
+				}
+				dpth_in_offset += depth ;
+			}
 		}
 
 		return ;
@@ -488,6 +488,11 @@ static FILE* open_file(const char* name, const char* suffix)
 	return fp;
 }
 
+static inline unsigned char avg_pix( const unsigned char * vidbuf )
+{
+	return ( vidbuf[ 0 ] + vidbuf[ 1 ] + vidbuf[ 2 ] ) / picture::depth ;
+}
+
 int picture::save_png(const char* filename, bool monochrome, const char *extra_comments)
 {
 	FILE* fp;
@@ -525,7 +530,9 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 
 	// set png header
 	int color_type = monochrome ? PNG_COLOR_TYPE_GRAY : PNG_COLOR_TYPE_RGB ;
-	png_set_IHDR(png, info, width, height, 1 << depth,
+	/// Color images must take eight bits per pixel.
+	const int bit_depth = ( monochrome && binary ) ? 1 : 8 ;
+	png_set_IHDR(png, info, width, height, bit_depth,
 		     color_type, PNG_INTERLACE_NONE,
 		     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
@@ -570,12 +577,33 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 		png_bytep row;
 		for (int i = 0; i < height; i++) {
 			int row_offset = i * width * depth ;
-			for(int j =0 ; j < width; ++j )
+			if( binary )
 			{
-				int col_offset = row_offset + j * depth ;
-				tmp_row[j] = ( vidbuf[ col_offset ]
-				             + vidbuf[ col_offset + 1 ]
-				             + vidbuf[ col_offset + 2 ] ) / depth ;
+				unsigned char accumPix = 0 ;
+				int j_offset = 0 ;
+				for(int j = 0 ; j < width; ++j )
+				{
+					int col_offset = row_offset + j * depth ;
+					unsigned char tmpChr = avg_pix( vidbuf + col_offset );
+					tmpChr = pix2bin(tmpChr) ? 1 : 0 ;
+					j_offset = j & 0x07 ;
+					tmpChr = tmpChr << ( 7 - j_offset );
+					accumPix |= tmpChr ;
+
+					if( j_offset == 7 ) {
+						tmp_row[ j >> 3 ] = accumPix ;
+						accumPix = 0 ;
+					}
+				}
+				if( j_offset != 7 ) {
+					tmp_row[ width >> 3 ] = accumPix ;
+				}
+			} else {
+				for(int j = 0 ; j < width; ++j )
+				{
+					int col_offset = row_offset + j * depth ;
+					tmp_row[j] = avg_pix( vidbuf + col_offset );
+				}
 			}
 			row = tmp_row;
 			png_write_rows(png, &row, 1);

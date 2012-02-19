@@ -36,6 +36,7 @@ public:
 	static void save_image(const std::string & fil_name, const std::string & extra_comments);
 	static void power( double start, double phase, double image, double black, double stop );
 	static void send_image( const std::string & fil_name );
+	static void set_manual( bool manual_mode );
 
 	static void create_both( bool called_from_fl_digi );
 	static void show_both();

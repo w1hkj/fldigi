@@ -1366,7 +1366,7 @@
              5 )                                                                        \
        ELEM_(int, WEFAX_SaveMonochrome, "WEFAXSAVEMONOCHROME",                          \
              "Save fax image as monochrome",                                            \
-             false )                                                                    \
+             true )                                                                     \
        ELEM_(bool, WEFAX_AdifLog, "WEFAXADIFLOG",                                       \
              "Logs wefax file names in Adif log file",                                  \
              false)                                                                     \

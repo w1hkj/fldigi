@@ -631,13 +631,21 @@ private:
 				_state = IDLE ;
 				_text = _("No pixels detected");
 			}
-			/*
-			if( _image > 1000 * _black ) {
-				// _state = RXAPTSTOP ;
+
+			/* If used, this stops sometimes the reception when on a large white area.
+			 * If removed, it might go on receiving Hamburg which sends a constant frequency for 
+			 * for 1 or 2 hours, as from 12:30 to 15:20 UTC or from 19:45 to 21:00 UTC.
+			 * The criteria should be refined: Start is low, black, stop and phase are even lower.
+			 * The line-to-line correlation is very low too. */
+			if( 
+				( _apt_start   <  1.0          ) &&
+				( _phasing     <  1.0          ) &&
+				( _image       >  100 * _black ) &&
+				( _apt_stop    <  1.0          ) ) {
 				_state = RXAPTSTOP ;
 				_text = _("Constant frequency detected: Stopping reception.");
 			}
-			*/
+
 			/// Consecutive lines in a wefax image have a strong statistical correlation.
 			fax_state state_corr = _ptr_fax->correlation_state();
 			if( ( _state == RXIMAGE ) || ( _state == IDLE ) ) {
@@ -1030,7 +1038,7 @@ public:
 				: 0.05 ;                     // Deutsche Wetterdienst sometimes 1900 pixels high.
 			/// The thresholds are very approximate.
 			if( m_curr_corr_avg < low_corr ) {
-				LOG_INFO("Setting to stop m_curr_corr_avg=%f low_corr=%f", m_curr_corr_avg, low_corr );
+				LOG_DEBUG("Setting to stop m_curr_corr_avg=%f low_corr=%f", m_curr_corr_avg, low_corr );
 				stable_state = RXAPTSTOP ;
 
 			/// TODO: Beware, this is sometimes triggered with cyclic parasites.
@@ -1621,7 +1629,7 @@ bool fax_implementation::decode_image(int x)
 /// Called automatically or by the GUI, when clicking "Skip APT"
 void fax_implementation::skip_apt_rx(void)
 {
-	wefax_pic::skip_rx_apt();
+	REQ( wefax_pic::skip_rx_apt );
 	if(m_rx_state!=RXAPTSTART) {
 		LOG_ERROR( _("Should be in APT state. State=%s. Manual=%d"), state_rx_str(), m_manual_mode );
 	}
@@ -2025,11 +2033,7 @@ void  wefax::rx_init()
 	put_MODEstatus(modem::mode);
 	m_impl->init_rx(modem::samplerate) ;
 
-	/// This updates the window label.
-	set_rx_manual_mode(false);
-
 	REQ( wefax_pic::resize_rx_viewer, m_impl->fax_width() );
-	update_rx_label();
 }
 
 void wefax::init()
@@ -2101,7 +2105,8 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 	// windows, therefore only static methods.
 	wefax_pic::create_both( false );
 
-	update_rx_label();
+	/// This updates the window label.
+	set_rx_manual_mode( false );
 
 	activate_wefax_image_item(true);
 
@@ -2270,6 +2275,7 @@ void wefax::end_reception(void)
 void wefax::set_rx_manual_mode( bool manual_flag )
 {
 	m_impl->manual_mode_set( manual_flag );
+	wefax_pic::set_manual( manual_flag );
 	update_rx_label();
 }
 
