@@ -589,10 +589,13 @@ int picbox::handle(int event)
 
 	// handle FL_PASTE
 	string text = Fl::event_text();
+// from dnd event "file:///home/dave/Photos/dave.jpeg"
 	string::size_type p;
 	if ((p = text.find("file://")) != string::npos)
 		text.erase(0, p + strlen("file://"));
 	if ((p = text.find('\r')) != string::npos)
+		text.erase(p);
+	if ((p = text.find('\n')) != string::npos)
 		text.erase(p);
 
 	struct stat st;
