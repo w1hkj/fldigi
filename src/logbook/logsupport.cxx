@@ -359,19 +359,21 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 				if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) < 0) {
 					db->qsoNewRec(mrgdb->getRec(m));
 					merged->qsoNewRec(mrgdb->getRec(m));
-				} else
+				} else {
 					reject->qsoNewRec(mrgdb->getRec(m));
+				}
 				m++;
 			}
 		} else if (n == N) {
 			if (db->nbrRecs() == 0) {
 				db->qsoNewRec(mrgdb->getRec(m));
 				merged->qsoNewRec(mrgdb->getRec(m));
-			} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) < 0) {
+			} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) != 0) {
 				db->qsoNewRec(mrgdb->getRec(m));
 				merged->qsoNewRec(mrgdb->getRec(m));
-			} else
+			} else {
 				reject->qsoNewRec(mrgdb->getRec(m));
+			}
 			m++;
 		} else {
 			db->qsoNewRec(copy->getRec(n));
