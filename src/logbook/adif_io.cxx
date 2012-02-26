@@ -186,11 +186,16 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	int found;
 	int retval;
 
+LOG_INFO("Reading %s", fname);
+
 // open the adif file
 	FILE *adiFile = fopen (fname, "r");
 
-	if (adiFile == NULL)
+	if (adiFile == NULL) {
+LOG_INFO("Cannot open %s", fname);
 		return;
+	}
+
 // determine its size for buffer creation
 	fseek (adiFile, 0, SEEK_END);
 	filesize = ftell (adiFile);
@@ -373,8 +378,10 @@ void cAdifIO::readFile (const char *fname, cQsoDb *db)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	if (!ADIF_RW_thread)
+	if (!ADIF_RW_thread) {
 		ADIF_RW_init();
+		MilliSleep(50);
+	}
 
 	pthread_mutex_lock(&ADIF_RW_mutex);
 
@@ -565,11 +572,13 @@ static void ADIF_RW_init()
 
 	if (ADIF_RW_thread)
 		return;
+LOG_INFO("%s","Starting logbook r/w thread");
+
 	ADIF_RW_thread = new pthread_t;
 	ADIF_RW_EXIT = false;
 	if (pthread_create(ADIF_RW_thread, NULL, ADIF_RW_loop, NULL) != 0) {
 		LOG_PERROR("pthread_create");
 		return;
 	}
-	MilliSleep(10);
+//	MilliSleep(50); // increased from 10 for Win7 testing
 }
