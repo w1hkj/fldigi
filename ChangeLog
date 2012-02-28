@@ -1,7 +1,10 @@
-2012-02-15  David Freese  <w1hkj@w1hkj.com>
+2012-02-25  David Freese  <w1hkj@w1hkj.com>
 
-	e7da774: Weather report
-	b1330ff: OSX Lion shutdown
+	c9df726: MFSK pic dnd
+	4a0833e: Merge record logic error
+	d2d254e: Weather report
+	54249ea: OSX Lion shutdown
+	dedc82a: OSX Lion shutdown
 	b609cb6: Config Dialog
 
 2012-02-08  Remi Chateauneu  <remi.chateauneu@gmail.com>
@@ -10,7 +13,7 @@
 
 2012-02-06  David Freese  <w1hkj@w1hkj.com>
 
-	3223c68: Cyrillic-UTF8 chars
+	0d287c6: Cyrillic-UTF8 chars
 
 2012-02-05  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
