@@ -1,8 +1,19 @@
 
 
-=Version 3.21.38=
+=Version 3.21.39=
 
-2012-02-01  David Freese  <w1hkj@w1hkj.com>
+2012-02-26  David Freese  <w1hkj@w1hkj.com>
+
+	29ccdeb: Win7 Open Logbook
+	74da509: MFSK pic dnd
+	c2998df: Merge record logic error
+	24c470e: OSX Lion shutdown
+	b7ff115: Cyrillic-UTF8 chars
+	bf8046d: QSK test
+	1364186: Weather report
+
+
+=Version 3.21.38=
 
 	9327490: Control sizing
 	df3bf09: eQSL
