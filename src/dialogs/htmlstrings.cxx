@@ -39,7 +39,7 @@ const char* szAbout =
 Fast and Light Digital modem program\n\
 </CENTER>\n\
 <P>\n\
-Copyright \251 2008-2011 " FLDIGI_AUTHORS ".\n\
+Copyright \251 2008-2012 " FLDIGI_AUTHORS ".\n\
 <P>\n\
 Distributed under the GNU General Public License version 3 or later.<br>\n\
 This is free software: you are free to change and redistribute it.<br>\n\
