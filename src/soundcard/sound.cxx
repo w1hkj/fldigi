@@ -159,7 +159,7 @@ int SoundBase::Capture(bool val)
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
 	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
 	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
-		LOG_ERROR("Could not write %s", fname);
+		LOG_ERROR("Could not write %s:%s", fname, sf_strerror(NULL) );
 		return 0;
 	}
 	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
@@ -190,7 +190,7 @@ int SoundBase::Playback(bool val)
 
 	SF_INFO info = { 0, 0, 0, 0, 0, 0 };
 	if ((ifPlayback = sf_open(fname, SFM_READ, &info)) == NULL) {
-		LOG_ERROR("Could not read %s", fname);
+		LOG_ERROR("Could not read %s:%s", fname, sf_strerror(NULL) );
 		return 0;
 	}
 

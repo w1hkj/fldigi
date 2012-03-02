@@ -300,6 +300,8 @@ static int ioc_to_width( int ioc )
 /// Deutsche Wetterdienst shift is 850 Hz.
 static int fm_deviation = -1 ;
 
+static const char * garbage_file = "garbage";
+
 class fax_implementation {
 	wefax * m_ptr_wefax ;  // Points to the modem of which this is the implementation.
 	fax_state m_rx_state ; // RXPHASING, RXIMAGE etc...
@@ -311,8 +313,8 @@ class fax_implementation {
 	int m_apt_start_freq;  // Standard APT frequency. Set at startup.
 	int m_apt_stop_freq;   // Standard APT frequency.
 	bool m_phase_high;     // When state=RXPHASING
-	int m_curr_phase_len;
-	int m_curr_phase_high;
+	int m_curr_phase_len;  // Counts the len of the image band used for phasing
+	int m_curr_phase_high; // Counts the len of the white part of the phasing image band. 
 	int m_phase_lines;
 	int m_num_phase_lines;
 	int m_phasing_calls_nb;// Number of calls to decode_phasing for the current image.
@@ -324,7 +326,7 @@ class fax_implementation {
 	int m_img_sample;      // Current received samples number when in RXIMAGE.
 	int m_last_col;        // Current col based on samples number, decides to set a pixel when changes.
 	int m_pixel_val;       // Accumulates received samples, then averaged to set a pixel.
-	int m_pix_samples_nb;
+	int m_pix_samples_nb;  // Number of samples read for the next pixel, and current column. About 4 if 11025 Hz.
 	bool m_img_color;      // Whether this is a color image or not.
 	fax_state m_tx_state;  // Modem state when transmitting.
 	int m_tx_phasing_lin;  // Nb of phasing lines sent when transmitting an image.
@@ -528,12 +530,13 @@ private:
 	/// We eliminate it by comparing with a black signal.
 	/// If this is a real image, bith powers will be close.
 	/// If not, the image is very important, but not the black.
+	/// TODO: Consider removing this, because it is not used.
 	double power_usb_black(void) const
 	{
 		static double avg_pwr = 0.0 ;
 		/// This value is obtained by watching the waterfall.
 		static const int bandwidth_black = 20 ;
-       		double pwr = wf->powerDensity(m_carrier + fm_deviation, bandwidth_black);
+       		double pwr = wf->powerDensity(m_carrier - fm_deviation, bandwidth_black);
 
        		return decayavg( avg_pwr, pwr, 10 );
 	}
@@ -562,17 +565,8 @@ private:
 
 		fax_state                  _state ; /// Deduction made based on signal power.
 		const char *               _text;
-		unsigned int               _occurences ; /// How many times the same text is set.
+		const char *               _stop_code;
 
-		void set_text( const char * txt )
-		{
-			if( _text == txt ) ++_occurences ;
-			else
-			{
-				_occurences = 0 ;
-				_text = txt ;
-			}
-		}
 		/// Finer tests can be added. These are all rule-of-thumb values based
 		/// on observation of real signals.
 		/// TODO: Adds a learning mode using the Hamfax detector to train the signal-based one.
@@ -580,6 +574,7 @@ private:
 		{
 			_state = IDLE ;
 			_text = _("No signal detected");
+			_stop_code = "" ;
 
 			if( 	( _apt_start   > 20.0 ) &&
 				( _phasing     < 10.0 ) &&
@@ -622,32 +617,11 @@ private:
 				( _apt_stop    >  6.0 ) ) ) {
 				_state = RXAPTSTOP ;
 				_text = _("Strong APT stop signal: Stopping reception.");
-			}
-
-			/// Maybe this is a constant freq. If so, the power is very big
-			/// for the image, but the center, which should be important,
-			/// is very weak: This is a constant freq (Hambourg).
-			if( _image > 5 * _black ) {
-				_state = IDLE ;
-				_text = _("No pixels detected");
-			}
-
-			/* If used, this stops sometimes the reception when on a large white area.
-			 * If removed, it might go on receiving Hamburg which sends a constant frequency for 
-			 * for 1 or 2 hours, as from 12:30 to 15:20 UTC or from 19:45 to 21:00 UTC.
-			 * The criteria should be refined: Start is low, black, stop and phase are even lower.
-			 * The line-to-line correlation is very low too. */
-			if( 
-				( _apt_start   <  1.0          ) &&
-				( _phasing     <  1.0          ) &&
-				( _image       >  100 * _black ) &&
-				( _apt_stop    <  1.0          ) ) {
-				_state = RXAPTSTOP ;
-				_text = _("Constant frequency detected: Stopping reception.");
+				_stop_code = "stop";
 			}
 
 			/// Consecutive lines in a wefax image have a strong statistical correlation.
-			fax_state state_corr = _ptr_fax->correlation_state();
+			fax_state state_corr = _ptr_fax->correlation_state( &_stop_code );
 			if( ( _state == RXIMAGE ) || ( _state == IDLE ) ) {
 				if( state_corr == RXAPTSTOP ) {
 					_state = RXAPTSTOP ;
@@ -700,13 +674,11 @@ private:
 		: _ptr_fax(ptr_fax)
 		, _cnt(0)
 		, _text(NULL)
-		, _occurences(0)
 		{}
 
 		fax_state signal_state(void) const { return _state ; }
 		const char * signal_text(void) const { return _text; };
-
-		unsigned int occurences(void) const { return _occurences ; }
+		const char * signal_stop_code(void) const { return _stop_code; }
 
 		double image_noise_ratio(void) const { return _image ; }
 
@@ -759,7 +731,7 @@ private:
 		}
 	}
 
-	void save_automatic(const char * extra_msg);
+	void save_automatic(const char * extra_msg) const;
 
 	void decode_apt(int x, const fax_signal & the_signal );
 	void decode_phasing(int x, const fax_signal & the_signal );
@@ -806,7 +778,8 @@ public:
 	/// If the delay is exceeded, returns with an error message.
 	std::string send_file( const std::string & filnam, double max_seconds )
 	{
-		LOG_INFO("%s", filnam.c_str() );
+		LOG_INFO("%s rf_carried=%lld carrier=%d", filnam.c_str(), wf->rfcarrier(), m_carrier );
+
 		bool is_acquired = transmit_lock_acquire(filnam, max_seconds);
 		if( ! is_acquired ) return "Timeout sending " + filnam ;
 
@@ -822,12 +795,17 @@ public:
 			{
 				break ;
 			}
+			LOG_INFO("Locking");
+			guard_lock g( m_sync_tx_msg.mtxp() );
+			LOG_INFO("Waiting %f",max_seconds);
 			if( ! m_sync_tx_msg.wait( max_seconds ) )
 			{
+				LOG_INFO("Timeout %f", max_seconds );
 				return "Timeout";
 			}
 		}
 		std::string err_msg = itFi->second ;
+		LOG_INFO("err_msg=%s", err_msg.c_str() );
 		m_sent_files.erase( itFi );
 		return err_msg ;
 	}
@@ -835,19 +813,22 @@ public:
 	/// Called when loading a file from the GUI, or indirectly from XML-RPC.
 	bool transmit_lock_acquire(const std::string & filnam, double delay = wefax::max_delay )
 	{
-		LOG_INFO("%s", filnam.c_str() );
+		LOG_INFO("Sending %s delay=%f tid=%d", filnam.c_str(), delay, GET_THREAD_ID() );
 		guard_lock g( m_sync_tx_fil.mtxp() );
+		LOG_INFO("Locked");
 		if ( ! m_tx_fil.empty() )
 		{
 			if( ! m_sync_tx_fil.wait( delay ) ) return false ;
 		}
 		m_tx_fil = filnam ;
+		LOG_INFO("Sent %s", filnam.c_str() );
 		return true ;
 	}
 
 	/// Allows to send another file. Called by XML-RPC and the GUI.
 	void transmit_lock_release( const std::string & err_msg )
 	{
+		LOG_INFO("err_msg=%s tid=%d", err_msg.c_str(), GET_THREAD_ID() );
 		guard_lock g( m_sync_tx_msg.mtxp() );
 		LOG_INFO("%s %s", m_tx_fil.c_str(), err_msg.c_str() );
 		if( m_tx_fil.empty() )
@@ -859,6 +840,7 @@ public:
 			m_sent_files[ m_tx_fil ] = err_msg ;
 			m_tx_fil.clear();
 		}
+		LOG_INFO("Signaling");
 		m_sync_tx_msg.signal();
 	}
 
@@ -874,11 +856,13 @@ public:
 		}
 	};
 	mutable corr_buffer_t m_correlation_buffer ;
-	mutable double m_current_corr ;
-	mutable double m_curr_corr_avg ;
+	mutable double m_current_corr ;  // Correlation between the last and previous sampled lines.
+	mutable double m_curr_corr_avg ; // Average line-to-line correlation for the last m_min_corr_lines sampled lines.
+	mutable double m_imag_corr_max ; // Max line-to-line correlation for the current image.
 	mutable int m_corr_calls_nb;
-	static const int m_min_corr_lines = 20 ;
+	static const int m_min_corr_lines = 15 ;
 
+	/// Evaluates the correlation between two lines separated by line_offset pixels.
 	double correlation_from_index(size_t line_length, size_t line_offset) const {
                 /// This is a ring buffer.
 		size_t line_length_plus_img_sample = line_length + m_img_sample ;
@@ -913,7 +897,7 @@ public:
 		}
 	}
 
-	// This is experimental.
+	// This is experimental, and is disabled yet.
 	// The goal is to eliminate artefact which echoes each pixel a couple of pixels later.
 	// This correlates each sample line with itself for each pixel number in a small given
 	// range. When the correlation reaches a maximum (A couple of dozens of samples),
@@ -925,6 +909,7 @@ public:
 	// each sample to the same sample "delay" mater, with the right attenuation.
 	//
 	// For an unknown reason, there is frequently a correlation peak after 9 or 10 samples.
+	// Just as there were two propagation paths, distant from 10 / 11025 Hz * 300000 = 300 km.
 	//
 	// This happens with Bracknell (Not far from where I live),
 	// and surprisingly the weak signal comes first.
@@ -1000,14 +985,20 @@ public:
 
 		if( m_corr_calls_nb < m_min_corr_lines ) {
 			m_curr_corr_avg = m_current_corr ;
+			/// The max value of the correlation must be significative (Does not take peak values).
+			m_imag_corr_max = 0.0;
 		} else {
 			/// Equivalent to decayavg with weight= (min_corr_lin +1)/min_corr_lin
 			m_curr_corr_avg = ( m_curr_corr_avg * m_min_corr_lines + m_current_corr ) / ( m_min_corr_lines + 1 );
+			m_imag_corr_max = std::max( m_curr_corr_avg, m_imag_corr_max );
 		}
+
 		/// Debugging purpose only.
 		if( ( m_corr_calls_nb % 100 ) == 0 ) {
-			LOG_DEBUG( "m_current_corr=%lf m_curr_corr_avg=%lf m_corr_calls_nb=%d m_min_corr_lines=%d state=%s m_lpm_img=%f",
-				m_current_corr, m_curr_corr_avg, m_corr_calls_nb, m_min_corr_lines, state_rx_str(), m_lpm_img );
+			LOG_DEBUG( "m_current_corr=%lf m_curr_corr_avg=%lf m_imag_corr_max=%f m_corr_calls_nb=%d "
+				"m_min_corr_lines=%d state=%s m_lpm_img=%f",
+				m_current_corr, m_curr_corr_avg, m_imag_corr_max, 
+				m_corr_calls_nb, m_min_corr_lines, state_rx_str(), m_lpm_img );
 		}
 		double metric = m_curr_corr_avg * 100.0 ;
 		m_ptr_wefax->display_metric(metric);
@@ -1020,18 +1011,43 @@ public:
 	/// This is called quite often. It estimates, based on the mobile
 	/// average of statistical correlation between consecutive lines, whether this is a wefax
 	/// signal or not.
-	fax_state correlation_state(void) const {
+	fax_state correlation_state(const char ** stop_code) const {
+		static int max_crr_row = 0 ;
+		static double max_corr = 0.0 ;
 
 		static fax_state stable_state = IDLE ;
+
+		switch( stable_state )
+		{
+			case RXAPTSTART : *stop_code = "stable_start"  ; break;
+			case RXAPTSTOP  : *stop_code = "stable_stop"   ; break;
+			case RXPHASING  : *stop_code = "stable_phasing"; break;
+			case RXIMAGE    : *stop_code = "stable_image"  ; break;
+			case IDLE       : *stop_code = "stable_idle"   ; break;
+			default         : *stop_code = "unexpected"    ; break;
+		}
 
 		/// If the mobile average is not computed on enough lines, returns IDLE
 		/// which means "Do not know" in this context.
 		if( m_corr_calls_nb >= m_min_corr_lines ) {
+			int crr_row = m_img_sample / m_smpl_per_lin ;
+			if( ( ( m_corr_calls_nb % 100 ) == 0 ) && ( max_crr_row != crr_row ) ) {
+				LOG_INFO("m_curr_corr_avg=%lf max_corr=%f crr_row=%d max_crr_row=%d: Detected %s",
+					m_curr_corr_avg, max_corr, crr_row, max_crr_row, state_to_str(stable_state) );
+			}
+
+			/// Updates the max line-to-line correlation since we started to read this image.
+			if( crr_row < max_crr_row ) {
+				max_corr = m_curr_corr_avg ;
+				LOG_INFO("Resetting m_curr_corr_avg=%f max_crr_row=%d", m_curr_corr_avg, max_crr_row );
+			}
+			max_crr_row = crr_row ;
+			if( max_corr < m_curr_corr_avg ) max_corr = m_curr_corr_avg ;
+
 			/// Sometimes, we detected a Stop just after the header, and we create an image
 			// of 300 lignes. This is a rule of thumb. The bad consequence is that the image
 			// would be a bit too high. This an approximate row number.
 			// On the other hand, if we read very few lines, we assume this is just noise.
-			int crr_row = m_img_sample / m_smpl_per_lin ;
 			const double low_corr
 				= ( crr_row < 600 ) ? 0.01   // Short images containing text.
 				: ( crr_row < 1300 ) ? 0.02  // Most of images.
@@ -1039,11 +1055,24 @@ public:
 			/// The thresholds are very approximate.
 			if( m_curr_corr_avg < low_corr ) {
 				LOG_DEBUG("Setting to stop m_curr_corr_avg=%f low_corr=%f", m_curr_corr_avg, low_corr );
+				*stop_code = "nocorr";
 				stable_state = RXAPTSTOP ;
 
 			/// TODO: Beware, this is sometimes triggered with cyclic parasites.
 			} else if( m_curr_corr_avg > 0.20 ) {
-					stable_state = RXIMAGE ;
+				stable_state = RXIMAGE ;
+			} else if( ( max_corr < 0.10 ) && ( max_crr_row > 200 ) ) {
+				// If the correlation was always very low for many lines, 
+				// this means that we started to read a wrong image, so
+				// there might be a wrong tuning or the Hamburg constant frequency.
+				// So we trash the image.
+				// TODO: It is done too many times: Once is enough.
+				LOG_INFO("Flushing dummy image max_corr=%f max_crr_row=%d.", max_corr, max_crr_row );
+				process_afc(true);
+				*stop_code = garbage_file;
+				stable_state = RXAPTSTOP ;
+				max_corr = 0.0 ;
+				max_crr_row = 0 ;
 			} else {
 				stable_state = IDLE ;
 			}
@@ -1054,7 +1083,8 @@ public:
 			// Do not display twice the same value.
 			static double last_corr_avg = 0.0 ;
 			if( m_curr_corr_avg != last_corr_avg ) {
-				LOG_INFO("Correlation average %lf: Detected %s", m_curr_corr_avg, state_to_str(stable_state) );
+				LOG_INFO("Correlation average %lf max_corr=%f max_crr_row=%d: Detected %s",
+						m_curr_corr_avg, max_corr, max_crr_row, state_to_str(stable_state) );
 				last_corr_avg = m_curr_corr_avg ;
 			}
 		}
@@ -1085,10 +1115,31 @@ public:
 	} // correlation_update
 
 	/// Called once for each row of input data.
-	void process_afc() {
+	void process_afc(bool reset_afc) const {
+		static int prev_row = -1 ;
+		static int total_img_rows = 0 ;
+		/// Audio frequency.
+		static int stable_carrier = 0 ;
+
+		static const int max_median_freqs = 20 ;
+		static double median_freqs[ max_median_freqs ];
+		static int nb_median_freqs = 0 ;
+
+
+		/// Rig frequency.
+		static long long stable_rfcarrier = 0 ;
+		if( reset_afc ) {
+			LOG_INFO("Resetting AFC total_img_rows=%d",total_img_rows);
+			prev_row = -1 ;
+			total_img_rows = 0 ;
+			stable_carrier = 0;
+			stable_rfcarrier = 0 ;
+			nb_median_freqs = 0 ;
+			return;
+		}
+
 		if( progStatus.afconoff == false ) return ;
 
-		static int prev_row = -1 ;
 		/// The LPM might have changed, but this is very improbable.
 		/// We do not know the LPM so we assume the default.
 		double smpl_per_lin = lpm_to_samples( m_default_lpm );
@@ -1100,13 +1151,6 @@ public:
 			return ;
 		}
 
-		static int total_img_rows = 0 ;
-
-		/// Audio frequency.
-		static int stable_carrier = 0 ;
-
-		/// Rig frequency.
-		static long long stable_rfcarrier = 0 ;
 		long long curr_rfcarr = wf->rfcarrier() ;
 
 		/// If the freq changed, reset the number of good lines read.
@@ -1116,7 +1160,7 @@ public:
 			total_img_rows = 0 ;
 			stable_carrier = m_carrier ;
 			stable_rfcarrier = curr_rfcarr ;
-			LOG_INFO("m_carrier=%d curr_rfcarr=%lld total_img_rows=%d", m_carrier, curr_rfcarr, total_img_rows );
+			LOG_INFO("Setting m_carrier=%d curr_rfcarr=%lld total_img_rows=%d", m_carrier, curr_rfcarr, total_img_rows );
 		}
 
 		/// If we could read a big portion of an image, then no adjustment.
@@ -1139,12 +1183,15 @@ public:
 		prev_row = crr_row ;
 
 		/// If we could succesfully read this number of lines, it must be the right frequency.
-		static const int threshold_rows = 500 ;
-		if( total_img_rows >= threshold_rows )
+		static const int threshold_rows = 200 ;
+
+		/// Consider than not only we could read many lines, but also other criterias such
+		// as correlation, or if we could read apt start/stop. Otherwise, it may stabilize a useless frequency.
+		if( ( total_img_rows >= threshold_rows ) && ( m_curr_corr_avg > 0.10 ) )
 		{
 			if( total_img_rows == threshold_rows )
 			{
-				LOG_INFO("Stable total_img_rows=%d", total_img_rows );
+				LOG_INFO("Stable total_img_rows=%d m_curr_corr_avg=%f", total_img_rows, m_curr_corr_avg );
 			}
 
 			/// TODO: If the reception is always poor for a long time,
@@ -1155,20 +1202,28 @@ public:
 		/* TODO: If there are parasites, there is an excursion of the frequency. Therefore,
 		 * in order to keep constant a frequency which might be temporarily decentered,
 		 * it would be better to:
-		 * - Statbilize an average of the last X frequencies.
+		 * - Stabilize an average of the last X frequencies.
 		 * - And/Or maximize as well the correlation. */
 
 		/// This centers the carrier where the activity is the strongest.
-		static const int bw[][2] = {
-			{ -fm_deviation - 10, -fm_deviation + 40 },
-			{  fm_deviation - 40,  fm_deviation + 10 } };
-       		double max_carrier = wf->powerDensityMaximum( 2, bw );
+		// This might have to be adjusted because Hamburg has all the energy on the right
+		// band, but Northwood has some on the left.
+		static const int bw_right[][2] = {
+			// {  fm_deviation - 25,  fm_deviation + 25 } };
+			{  fm_deviation - 50,  fm_deviation + 50 } };
+       		double max_carrier = wf->powerDensityMaximum( 1, bw_right );
 
+		// TODO: If the correlation is below a given threshold, it might be useless to add it.
+		median_freqs[ nb_median_freqs % max_median_freqs ] = max_carrier ;
+		++nb_median_freqs;
+		if( nb_median_freqs >= max_median_freqs ) {
+			std::sort( median_freqs, median_freqs + max_median_freqs );
+			max_carrier = median_freqs[ max_median_freqs / 2 ];
+		}
 		double delta = fabs( m_carrier - max_carrier );
-		if( delta > 2.0 ) { // Hertz.
+		if( delta > 5.0 ) { // Hertz.
 			/// Do not change the frequency too quickly if an image is received.
-			int decayWeight = ( m_rx_state == RXIMAGE ) ? 40 : 10 ;
-			double next_carr = decayavg( m_carrier, max_carrier, decayWeight );
+			double next_carr = max_carrier ;
 			LOG_DEBUG("m_carrier=%f max_carrier=%f next_carr=%f", (double)m_carrier, max_carrier, next_carr );
 			m_ptr_wefax->set_freq(next_carr);
 		}
@@ -1265,7 +1320,7 @@ void fax_implementation::decode(const int* buf, int nb_samples)
 		end_rx();
 	}
 	fax_signal my_signal(this);
-	process_afc();
+	process_afc(false);
 	for(int i=0; i<nb_samples; i++) {
 		int crr_val = buf[i];
 		my_signal.refresh();
@@ -1320,15 +1375,31 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 		PUT_STATUS( state_rx_str() << " apt_count=" << m_apt_count );
 	}
 
-	if(x>229 && !m_apt_high) {
+	/// Maybe the thresholds 229 and 25 should be changed if the image is not contrasted enough.
+	// if(x>229 && !m_apt_high) {
+	if(x>215 && !m_apt_high) {
 		m_apt_high=true;
 		++m_apt_trans;
-	} else if(x<25 && m_apt_high) {
+	// } else if(x<25 && m_apt_high) {
+	} else if(x<40 && m_apt_high) {
 		m_apt_high=false;
 	}
 	++m_apt_count ;
-	if( m_apt_count >= m_sample_rate/2 ) {
-		int curr_freq=m_sample_rate*m_apt_trans/m_apt_count;
+
+	/// This makes one line if LPM=120: // samples_per_line = m_sample_rate * 60.0 / the_lpm ;
+	 if( m_apt_count >= m_sample_rate/2 ) {
+		static int curr_freq = 0 ;
+		static int cr_1_freq = 0 ;
+		static int cr_2_freq = 0 ;
+
+		// For APT start, we have several lines with freq=300 nearly exactly.
+		// For APT stop, one or two lines maximum with freq=452, and this is not accurate.
+		// On top of that, sometimes lines randomly have 300 or 452 black-white transitions,
+		// especially if the signal is very noisy. This is why we check the transitions
+		// frequency of two consecutive lines.
+		cr_2_freq=cr_1_freq;
+		cr_1_freq=curr_freq;
+		curr_freq=m_sample_rate*m_apt_trans/m_apt_count;
 
 		/// This writes the S/R level on the status bar.
 		double tmp_snr = the_signal.image_noise_ratio();
@@ -1336,16 +1407,23 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
         	snprintf(snr_buffer, sizeof(snr_buffer), "s/n %3.0f dB", 20.0 * log10(tmp_snr));
 		put_Status1(snr_buffer);
 
+		LOG_DEBUG("m_apt_count=%d m_apt_trans=%d curr_freq=%d cr_1_freq=%d cr_2_freq=%d",
+				m_apt_count, m_apt_trans, curr_freq, cr_1_freq, cr_2_freq );
+
 		m_apt_count=m_apt_trans=0;
 
 		if(m_rx_state==RXAPTSTART) {
-			if( is_near_freq(curr_freq,m_apt_start_freq, 8 ) ) {
+			if( is_near_freq(curr_freq,m_apt_start_freq, 8 )
+			&&  is_near_freq(cr_1_freq,m_apt_start_freq, 8 ) ) {
+				LOG_INFO(_("Skipping APT freq=%d State=%s"),
+						curr_freq, state_rx_str() );
 				skip_apt_rx();
 				PUT_STATUS( state_rx_str() << ", " << _("frequency") << ": "
 						<< curr_freq << " Hz. " << _("Skipping.") );
 				return ;
 			}
-			if( is_near_freq(curr_freq,m_apt_stop_freq, 2 ) ) {
+			if( is_near_freq(curr_freq,m_apt_stop_freq, 2 )
+			&&  is_near_freq(cr_1_freq,m_apt_stop_freq, 2 ) ) {
 				LOG_INFO(_("Spurious APT stop frequency=%d Hz as waiting for APT start. SNR=%f State=%s"),
 						curr_freq, tmp_snr, state_rx_str() );
 				return ;
@@ -1354,8 +1432,31 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 			PUT_STATUS( state_rx_str() << ", " << _("frequency") << ": " << curr_freq << " Hz." );
 		}
 
-		if( is_near_freq(curr_freq,m_apt_stop_freq, 12 ) ) {
-			LOG_INFO("curr_freq=%d  m_img_sample=%d State=%s", curr_freq, m_img_sample, state_rx_str() );
+		/// If APT start in the middle of an image, maybe the preceding APT Stop was not caught.
+		if(m_rx_state==RXIMAGE) {
+			/// TODO: We could enhance accuracy by taking into account the number of read lines.
+			int crr_row = m_img_sample / m_smpl_per_lin ;
+
+			if( is_near_freq(curr_freq,m_apt_start_freq, 4 )
+			&&  is_near_freq(cr_1_freq,m_apt_start_freq, 4 )
+			&&  is_near_freq(cr_2_freq,m_apt_start_freq, 4 ) ) {
+				LOG_INFO("APT start when receiving: curr_freq=%d cr_1_freq=%d cr_2_freq=%d crr_row=%d State=%s",
+						curr_freq, cr_1_freq, cr_2_freq, crr_row, state_rx_str() );
+				PUT_STATUS( state_rx_str() << ", " << _("frequency") << ": "
+						<< curr_freq << " Hz. " << _("Skipping.") );
+				save_automatic("apt");
+				end_rx();
+				skip_apt_rx();
+				return ;
+			}
+		}
+
+		/// TODO: Check that the correlation is not too high because there are false stops.
+		// if( is_near_freq(curr_freq,m_apt_stop_freq, 12 ) ) {
+		if( is_near_freq(curr_freq,m_apt_stop_freq, 6 )
+		&&  is_near_freq(cr_1_freq,m_apt_stop_freq, 6 ) ) {
+			LOG_INFO("APT Stop: curr_freq=%d m_img_sample=%d State=%s",
+					curr_freq, m_img_sample, state_rx_str() );
 			PUT_STATUS( state_rx_str() << " " << _("Apt stop frequency") << ": "
 					<< curr_freq << " Hz. " << _("Stopping.") );
 			save_automatic("ok");
@@ -1368,7 +1469,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 			switch( m_rx_state ) {
 				case RXAPTSTART :
 					skip_apt_rx();
-					LOG_DEBUG( "Start, start: %s", the_signal.signal_text() );
+					LOG_INFO( "Start, start: %s", the_signal.signal_text() );
 					break ;
 				default :
 					LOG_DEBUG( "Start, %s: %s", state_rx_str(), the_signal.signal_text() );
@@ -1379,7 +1480,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 			switch( m_rx_state ) {
 				case RXAPTSTART :
 					skip_apt_rx();
-					LOG_DEBUG( "Phasing, start: %s", the_signal.signal_text() );
+					LOG_INFO( "Phasing, start: %s", the_signal.signal_text() );
 					break ;
 				default :
 					LOG_DEBUG( "Phasing, %s: %s", state_rx_str(), the_signal.signal_text() );
@@ -1392,7 +1493,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 					skip_apt_rx();
 					/// The phasing step will start receiving the image later. First we try
 					/// to phase the image correctly.
-					LOG_DEBUG( "Image, start: %s", the_signal.signal_text() );
+					LOG_INFO( "Image, start: %s", the_signal.signal_text() );
 					break ;
 				default :
 					LOG_DEBUG( "Image, %s: %s", state_rx_str(), the_signal.signal_text() );
@@ -1403,7 +1504,7 @@ void fax_implementation::decode_apt(int x, const fax_signal & the_signal )
 			switch( m_rx_state ) {
 				case RXIMAGE    :
 					LOG_INFO( "Stop, image: %s", the_signal.signal_text() );
-					save_automatic("stop");
+					save_automatic( the_signal.signal_stop_code() );
 					end_rx();
 					break;
 				default :
@@ -1442,7 +1543,7 @@ std::string fax_implementation::generate_filename( const char *extra_msg ) const
 }
 
 /// This saves an image and adds the right comments.
-void fax_implementation::save_automatic(const char * extra_msg)
+void fax_implementation::save_automatic(const char * extra_msg) const
 {
 	/// Minimum pixel numbers for a valid image.
 	static const int max_fax_pix_num = 200000 ;
@@ -1452,18 +1553,25 @@ void fax_implementation::save_automatic(const char * extra_msg)
 		return ;
 	}
 
+	if( 0 == strcmp( extra_msg, garbage_file ) )
+	{
+		LOG_INFO( _("Do not save garbage file") );
+		return ;
+	}
+
 	std::string new_filnam = generate_filename(extra_msg);
 
-	LOG_INFO( "Saving %d bytes in %s.", m_fax_pix_num, new_filnam.c_str() );
+	LOG_INFO( "Saving %d bytes in %s. m_imag_corr_max=%f", m_fax_pix_num, new_filnam.c_str(), m_imag_corr_max );
 
 	std::stringstream extra_comments ;
-	extra_comments << "ControlMode:"   << ( m_manual_mode ? "Manual" : "APT control" ) << "\n" ;
-	extra_comments << "LPM:"           << m_lpm_img << "\n" ;
-	extra_comments << "FrequencyMode:" << ( m_freq_mod ? "FM" : "AM" ) << "\n" ;
-	extra_comments << "Carrier:"       << m_carrier << "\n" ;
-	extra_comments << "Inversion:"     << ( m_phase_inverted ? "Inverted" : "Normal" ) << "\n" ;
-	extra_comments << "Color:"         << ( m_img_color ? "Color" : "BW" ) << "\n" ;
-	extra_comments << "SampleRate:"    << m_sample_rate << "\n" ;
+	extra_comments << "ControlMode:"                      << ( m_manual_mode ? "Manual" : "APT control" ) << "\n" ;
+	extra_comments << "LPM:"                              << m_lpm_img << "\n" ;
+	extra_comments << "FrequencyMode:"                    << ( m_freq_mod ? "FM" : "AM" ) << "\n" ;
+	extra_comments << "Carrier:"                          << m_carrier << "\n" ;
+	extra_comments << "Inversion:"                        << ( m_phase_inverted ? "Inverted" : "Normal" ) << "\n" ;
+	extra_comments << "Color:"                            << ( m_img_color ? "Color" : "BW" ) << "\n" ;
+	extra_comments << "SampleRate:"                       << m_sample_rate << "\n" ;
+	extra_comments << "Maximum line-to-line correlation:" << m_imag_corr_max << "\n" ;
 	wefax_pic::save_image( new_filnam, extra_comments.str() );
 };
 
@@ -1475,7 +1583,7 @@ void fax_implementation::save_automatic(const char * extra_msg)
 // phasing line. Then the start of a line and the lpm is calculated.
 void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 {
-	if( (m_img_sample % 1000) == 0 ) {
+	if( (m_img_sample % 10000) == 0 ) {
 		PUT_STATUS( state_rx_str() << " curr_phase_len=" << m_curr_phase_len );
 	}
 
@@ -1521,14 +1629,17 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 			m_num_phase_lines=0;
 			/// NOTE: If five or more, blacks stripes appear on the image ???
 			if( m_phase_lines >= 4 ) {
-				LOG_INFO( _("Skipping to reception: m_phase_lines=%d m_num_phase_lines=%d LPM=%f State=%s"),
-					m_phase_lines, m_num_phase_lines, m_lpm_img, state_rx_str() );
+				LOG_INFO( 
+					"Skipping to reception: m_phase_lines=%d m_num_phase_lines=%d LPM=%f State=%s"
+					" m_img_sample=%d m_last_col=%d m_last_col=%d",
+					m_phase_lines, m_num_phase_lines, m_lpm_img, state_rx_str(),
+				       	m_img_sample, m_last_col, m_last_col );
 				skip_phasing_to_image(false);
 			}
 		} else if(m_phase_lines>0 && ++m_num_phase_lines>=5) {
 			/// TODO: Compare with m_tx_phasing_lin which indicates the number of phasing
 			/// lines sent when transmitting an image.
-			LOG_INFO( _("Missed last phasing line m_phase_lines=%d m_num_phase_lines=%d LPM=%f State=%s"),
+			LOG_INFO( "Missed last phasing line m_phase_lines=%d m_num_phase_lines=%d LPM=%f State=%s",
 				m_phase_lines, m_num_phase_lines, m_lpm_img, state_rx_str() );
 			/// Phasing header is finished but could not get the center.
 			skip_phasing_to_image(true);
@@ -1567,8 +1678,7 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 			/// If RXPHASING, we stay in phasing mode.
 			case RXAPTSTOP :
 				/// Do not display the same message over and over.
-				if( the_signal.occurences() == 1 )
-					LOG_INFO( _("Strong APT stop when phasing:%s"), the_signal.signal_text() );
+				LOG_DEBUG( _("Strong APT stop when phasing:%s"), the_signal.signal_text() );
 				end_rx();
 				skip_apt_rx();
 			default : break ;
@@ -1618,6 +1728,8 @@ bool fax_implementation::decode_image(int x)
 	if( current_row >= progdefaults.WEFAX_MaxRows ) {
 		LOG_INFO( _("Maximum number of rows %d reached:%d. Manual=%d"),
 			progdefaults.WEFAX_MaxRows, current_row, m_manual_mode );
+		/// The reception might be very poor, so reset AFC.
+		process_afc(true);
 		save_automatic("max");
 		end_rx();
 		return true ;
@@ -1629,6 +1741,7 @@ bool fax_implementation::decode_image(int x)
 /// Called automatically or by the GUI, when clicking "Skip APT"
 void fax_implementation::skip_apt_rx(void)
 {
+	LOG_INFO("state=%s",state_rx_str() );
 	REQ( wefax_pic::skip_rx_apt );
 	if(m_rx_state!=RXAPTSTART) {
 		LOG_ERROR( _("Should be in APT state. State=%s. Manual=%d"), state_rx_str(), m_manual_mode );
@@ -1641,6 +1754,7 @@ void fax_implementation::skip_apt_rx(void)
 	m_curr_phase_len=m_curr_phase_high=0;
 	m_phase_lines=m_num_phase_lines=0;
 	m_img_sample=0; /// Used for correlation between consecutive lines.
+	m_imag_corr_max = 0.0 ; // Used for finally deciding whether it is worth saving the image.
 }
 
 /// Called by the user when skipping phasing,
@@ -2409,7 +2523,6 @@ std::string wefax::get_received_file( int max_seconds )
 	return m_impl->get_received_file( max_seconds );
 }
 
-/// This is not thread-safe, at all.
 std::string wefax::send_file( const std::string & filnam, double max_seconds )
 {
 	return m_impl->send_file( filnam, max_seconds );

@@ -37,6 +37,7 @@
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Spinner.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Counter.H>
@@ -74,6 +75,7 @@ static Fl_Button       *wefax_btn_rx_skip_apt        = (Fl_Button *)0;
 static Fl_Button       *wefax_btn_rx_skip_phasing    = (Fl_Button *)0;
 static Fl_Light_Button *wefax_round_rx_noise_removal = (Fl_Light_Button *)0;
 static Fl_Light_Button *wefax_round_rx_binary        = (Fl_Light_Button *)0;
+static Fl_Spinner      *wefax_spinner_rx_binary      = (Fl_Spinner *)0;
 static Fl_Light_Button *wefax_round_rx_non_stop      = (Fl_Light_Button *)0;
 static Fl_Output       *wefax_out_rx_row_num         = (Fl_Output *)0;
 static Fl_Output       *wefax_out_rx_width           = (Fl_Output *)0;
@@ -478,7 +480,7 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 	int row_number = update_rx_pic_col(data, pix_pos + 2);
 
 	/// Prints the row number sometimes only, to save CPU.
-	if( ( pix_pos % 1000 ) == 0 ) {
+	if( ( pix_pos % 5000 ) == 0 ) {
 		char row_num_buffer[20];
 		snprintf( row_num_buffer, sizeof(row_num_buffer), "%d", row_number );
 		wefax_out_rx_row_num->value( row_num_buffer );
@@ -492,8 +494,20 @@ void wefax_pic::update_rx_pic_bw(unsigned char data, int pix_pos )
 	/// Eliminate the noise from the ante-antepenultimate line
 	if( noise_removal )
 	{
-		if( ( row_number > picture::noise_height_margin ) && ( row_number != rx_last_filtered_row ) )
+		if( ( row_number > picture::noise_height_margin - 2 ) && ( row_number != rx_last_filtered_row ) )
 		{
+			static bool math_morph_enhancement = false ;
+			/* Not used yet because this depends on the image features.
+			 * Lines are properly enhancement, but not letters.
+			 * Maybe row_number > 2 * picture::noise_height_margin
+		 	 * Also decrease picture::noise_height_margin and ensure image is repaired
+		 	 * when switching on/off noise removal. */
+			if( math_morph_enhancement ) {
+				wefax_pic_rx_picture->dilatation(
+					row_number - 2 * picture::noise_height_margin );
+				wefax_pic_rx_picture->erosion(
+					row_number - 1 * picture::noise_height_margin );
+			}
 			wefax_pic_rx_picture->remove_noise(
 				row_number,
 				progdefaults.WEFAX_NoiseMargin,
@@ -720,6 +734,7 @@ void wefax_pic::skip_rx_apt(void)
 
 	wefax_round_rx_noise_removal->hide();
 	wefax_round_rx_binary->hide();
+	wefax_spinner_rx_binary->hide();
 	FL_UNLOCK_D();
 }
 
@@ -746,6 +761,7 @@ void wefax_pic::skip_rx_phasing(bool auto_center)
 	wefax_round_rx_noise_removal->show();
 	if( progdefaults.WEFAX_SaveMonochrome ) {
 		wefax_round_rx_binary->show();
+		wefax_spinner_rx_binary->show();
 	}
 	wefax_out_rx_row_num->show();
 	wefax_out_rx_width->show();
@@ -780,7 +796,22 @@ static void wefax_cb_pic_rx_binary( Fl_Widget *, void *)
 	ENSURE_THREAD(FLMAIN_TID);
 
 	char rndVal = wefax_round_rx_binary->value();
-	wefax_pic_rx_picture->set_binary( rndVal ? true : false );
+	if( rndVal ) {
+		wefax_pic_rx_picture->set_binary( true );
+		wefax_spinner_rx_binary->activate();
+	} else {
+		wefax_pic_rx_picture->set_binary( false );
+		wefax_spinner_rx_binary->deactivate();
+	}
+}
+
+static void wefax_cb_pic_rx_bin_threshold( Fl_Widget *, void *)
+{
+	if (wefax_serviceme != active_modem) return;
+	ENSURE_THREAD(FLMAIN_TID);
+
+	int rndVal = wefax_spinner_rx_binary->value();
+	wefax_pic_rx_picture->set_binary_threshold( rndVal );
 }
 
 /// Sets the reception filter: The change should be visible.
@@ -888,6 +919,10 @@ void wefax_pic::abort_rx_viewer(void)
 	/// Maybe the image is too high, we make it shorter.
 	wefax_pic_rx_picture->resize_height( curr_pix_h_default, true );
 
+	/// Now returns to the top of the image, and refresh the scrolling.
+	wefax_pic_rx_picture->position( wefax_pic_rx_picture->x(), 0 );
+	wefax_pic_rx_scroll->redraw();
+
 	curr_pix_height = curr_pix_h_default ;
 	rx_last_filtered_row = 0;
 	center_val_prev = 0 ;
@@ -900,6 +935,7 @@ void wefax_pic::abort_rx_viewer(void)
 
 	wefax_round_rx_noise_removal->hide();
 	wefax_round_rx_binary->hide();
+	wefax_spinner_rx_binary->hide();
 
 	wefax_out_rx_row_num->hide();
 	wefax_out_rx_row_num->value("");
@@ -1059,7 +1095,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	Fl_Group * tmpGroup = new Fl_Group( 0, hei_off_up, extra_win_wid, height_margin + 2 * height_btn + margin_top_bottom );
 	tmpGroup->begin();
 
-	wid_btn_curr = 80 ;
+	wid_btn_curr = 90 ;
 	wefax_btn_rx_save = new Fl_Button(wid_off_up, hei_off_up, wid_btn_curr, height_btn,_("Save..."));
 	wefax_btn_rx_save->callback(wefax_cb_pic_rx_save, 0);
 	wefax_btn_rx_save->tooltip(_("Save current image in a file."));
@@ -1104,7 +1140,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 
 	static const char * title_filter = "FIR" ;
 	wid_off_up += wid_btn_margin + wid_btn_curr + 25;
-	wid_btn_curr = 70 ;
+	wid_btn_curr = 88 ;
 	wefax_choice_rx_filter = new Fl_Choice(wid_off_up, hei_off_up, wid_btn_curr, height_btn, title_filter );
 	wefax_choice_rx_filter->callback( wefax_cb_rx_set_filter, 0 );
 	wefax_choice_rx_filter->align(FL_ALIGN_LEFT);
@@ -1144,7 +1180,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_out_rx_row_num->tooltip(_("Fax line number being read. Image is saved when reaching max lines."));
 
 	wid_off_low += wid_btn_margin + wid_btn_curr + 10;
-	wid_btn_curr = 38 ;
+	wid_btn_curr = 37 ;
 	wefax_out_rx_width = new Fl_Output(wid_off_low, hei_off_low, wid_btn_curr, height_btn, "x");
 	wefax_out_rx_width->align(FL_ALIGN_LEFT);
 	wefax_out_rx_width->value("n/a");
@@ -1152,7 +1188,7 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 
 	static const char * title_lpm = _("Slant");
 	wid_off_low += wid_btn_margin + wid_btn_curr + 37;
-	wid_btn_curr = 65 ;
+	wid_btn_curr = 62 ;
 	wefax_cnt_rx_ratio = new Fl_Counter(wid_off_low, hei_off_low, wid_btn_curr, height_btn, title_lpm);
 	wefax_cnt_rx_ratio->align(FL_ALIGN_LEFT);
 	wefax_cnt_rx_ratio->type(FL_SIMPLE_COUNTER);
@@ -1179,24 +1215,41 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_round_rx_auto_center->tooltip(_("Enable automatic image centering"));
 	update_auto_center(false);
 
-	wid_off_low += 4 * wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 55 ;
+	wid_off_low += 2 * wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 53 ;
 	wefax_round_rx_noise_removal = new Fl_Light_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _("Noise"));
 	wefax_round_rx_noise_removal->callback(wefax_cb_pic_rx_noise_removal, 0);
 	wefax_round_rx_noise_removal->tooltip(_("Removes noise when ticked"));
 	wefax_round_rx_noise_removal->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 	wefax_round_rx_noise_removal->selection_color(FL_RED);
 
-	wid_off_low += 4 * wid_btn_margin + wid_btn_curr ;
-	wid_btn_curr = 40 ;
+	wid_off_low += 2 * wid_btn_margin + wid_btn_curr ;
+	wid_btn_curr = 38 ;
 	wefax_round_rx_binary = new Fl_Light_Button(wid_off_low, hei_off_low, wid_btn_curr, height_btn, _("Bin"));
 	wefax_round_rx_binary->callback(wefax_cb_pic_rx_binary, 0);
 	wefax_round_rx_binary->tooltip(_("Binary image when ticked"));
 	wefax_round_rx_binary->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 	wefax_round_rx_binary->selection_color(FL_RED);
+	wefax_round_rx_binary->value(0);
 	if( false == progdefaults.WEFAX_SaveMonochrome ) {
 		wefax_round_rx_binary->hide();
 	}
+
+	wid_off_low += wid_btn_curr ;
+	wid_btn_curr = 40 ;
+	wefax_spinner_rx_binary = new Fl_Spinner( wid_off_low, hei_off_low, wid_btn_curr, height_btn );
+	wefax_spinner_rx_binary->callback(wefax_cb_pic_rx_bin_threshold, 0);
+	wefax_spinner_rx_binary->tooltip(_("Set binarization level"));
+	wefax_spinner_rx_binary->format("%d");
+	wefax_spinner_rx_binary->type(FL_INT_INPUT);
+	wefax_spinner_rx_binary->range(0.0,255.0);
+	wefax_spinner_rx_binary->step(1.0);
+	wefax_spinner_rx_binary->value(wefax_pic_rx_picture->get_binary_threshold());
+	if( false == progdefaults.WEFAX_SaveMonochrome ) {
+		wefax_spinner_rx_binary->hide();
+	}
+	wefax_spinner_rx_binary->deactivate();
+
 
 	wid_off_low += wid_btn_curr ;
 
@@ -1215,9 +1268,10 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 
 	wefax_browse_rx_events = new Fl_Select_Browser(wid_off_two, hei_off_up, wid_btn_curr+2, wid_hei_two );
 	wefax_browse_rx_events->callback(wefax_cb_browse_rx_events, 0);
-	static std::string tooltip_rx_events ;
-	tooltip_rx_events = _("Files saved in ") + default_dir_get( progdefaults.wefax_save_dir );
+	// static std::string tooltip_rx_events ;
+	std::string tooltip_rx_events = _("Files saved in ") + default_dir_get( progdefaults.wefax_save_dir );
 	wefax_browse_rx_events->tooltip( tooltip_rx_events.c_str() );
+	/// TODO: The horizontal slider should not be always displayed.
 	wefax_browse_rx_events->has_scrollbar(Fl_Browser::VERTICAL_ALWAYS | Fl_Browser::HORIZONTAL);
 
 	tmpGroup->resizable(wefax_browse_rx_events);
@@ -1612,11 +1666,13 @@ void wefax_pic::create_tx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	width_btn = 55 ;
 	wefax_btn_tx_send_color = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Tx Color");
 	wefax_btn_tx_send_color->callback(wefax_cb_pic_tx_send_color, 0);
+	wefax_btn_tx_send_color->tooltip(_("Starts transmit in color mode"));
 
 	width_offset += width_btn + wid_btn_margin ;
 	width_btn = 45 ;
 	wefax_btn_tx_send_grey = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, "Tx B/W");
 	wefax_btn_tx_send_grey->callback( wefax_cb_pic_tx_send_grey, 0);
+	wefax_btn_tx_send_grey->tooltip(_("Starts transmit in gray level mode"));
 
 	width_offset += width_btn + wid_btn_margin ;
 	width_btn = 55 ;
@@ -1632,11 +1688,13 @@ void wefax_pic::create_tx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	width_btn = 45 ;
 	wefax_btn_tx_clear = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Clear"));
 	wefax_btn_tx_clear->callback(wefax_cb_pic_tx_clear, 0);
+	wefax_btn_tx_clear->tooltip(_("Clear image to transmit"));
 
 	width_offset += width_btn + wid_btn_margin ;
 	width_btn = 45 ;
 	wefax_btn_tx_close = new Fl_Button(width_offset, y_btn, width_btn, hei_tx_btn, _("Close"));
 	wefax_btn_tx_close->callback(wefax_cb_pic_tx_close, 0);
+	wefax_btn_tx_close->tooltip(_("Close transmit window"));
 
 	static const char * title_row_num = "" ;
 	width_offset += fl_width( title_row_num );
@@ -1748,7 +1806,7 @@ void wefax_pic::cb_mnu_pic_viewer_tx(Fl_Menu_ *, void * ) {
 /// Called from XML-RPC thread.
 void wefax_pic::send_image( const std::string & fil_nam )
 {
-	LOG_INFO("%s", fil_nam.c_str() );
+	LOG_INFO("Sending %s", fil_nam.c_str() );
 	/// Here, transmit_lock_acquire is called by the XML-RPC client.
 	std::string err_msg = wefax_load_image_after_acquire( fil_nam.c_str() );
 	if( ! err_msg.empty() )
@@ -1761,6 +1819,7 @@ void wefax_pic::send_image( const std::string & fil_nam )
 		return ;
 	}
 	wefax_cb_pic_tx_send_grey( NULL, NULL );
+	LOG_INFO("Sent %s", fil_nam.c_str() );
 }
 
 /// This function is called at two places:

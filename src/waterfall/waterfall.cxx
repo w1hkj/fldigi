@@ -495,41 +495,44 @@ void WFdisp::setPrefilter(int v)
 int WFdisp::log2disp(int v)
 {
 	double val = 255.0 * (reflevel- v) / ampspan;
-	if (val < 0) val = 0;
-	if (val > 255 ) val = 255;
+	if (val < 0) return 255;
+	if (val > 255 ) return 0;
 	return (int)(255 - val);
 }
 
 void WFdisp::processFFT() {
-	int		n;
-	double scale;
 	int    ptrSample;
 	if (prefilter != progdefaults.wfPreFilter)
 	    setPrefilter(progdefaults.wfPreFilter);
 
-	scale = (double)SC_SMPLRATE / srate;
-	scale *= FFT_LEN / 2000.0;
+        const double scale = ( (double)SC_SMPLRATE / srate ) * ( FFT_LEN / 2000.0 );
 
 	if (dispcnt == 0) {
-		memset (fftout, 0, FFT_LEN*2*sizeof(double));
 		ptrSample = ptrCB;
 		int step = 8 / progdefaults.latency;
-		for (int i = 0; i < FFT_LEN * 2 / step; i++)
-			fftout[i] = fftwindow[i * step] * circbuff[i] * step;
+
+		int last_i = FFT_LEN * 2 / step;
+		for (int i = 0; i < last_i; i++)
+		fftout[i] = fftwindow[i * step] * circbuff[i] * step;
+		/// Zeroes only the last elements.
+		memset (fftout + last_i , 0, ( FFT_LEN*2 - last_i ) *sizeof(double));
+
 		wfft->rdft(fftout);
 FL_LOCK_D();
-		double pw;
-		int ffth;
-		for (int i = 0; i < IMAGE_WIDTH; i++) {
-			n = 2*(int)((scale * i / 2 + 0.5));
-			if (i <= progdefaults.LowFreqCutoff)
-				pw = 0.0;
-			else
-				pw = fftout[n]*fftout[n] + fftout[n+1]*fftout[n+1];
+		const int log2disp100 = log2disp(-100);
+		for (int i = 0; i <= progdefaults.LowFreqCutoff; i++) {
+			pwr[i] = 0.0;
+			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp100;
+		}
+
+		for (int i = progdefaults.LowFreqCutoff + 1; i < IMAGE_WIDTH; i++) {
+			int n = (int)(scale * i) & ~1 ; // Even number.
+			double pw = fftout[n]*fftout[n] + fftout[n+1]*fftout[n+1];
 			pwr[i] = pw;
-			ffth = (int)(10.0 * log10(pw + 1e-10) );
+			int ffth = (int)(10.0 * log10(pw + 1e-10) );
 			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp(ffth);
 		}
+
 		ptrFFTbuff--;
 		if (ptrFFTbuff < 0) ptrFFTbuff += image_height;
 FL_UNLOCK_D();
@@ -560,7 +563,6 @@ FL_UNLOCK_D();
 	}
 	--dispcnt;
 }
-
 void WFdisp::process_analog (double *sig, int len) {
 	int h1, h2, h3, sigw, sigy, sigpixel, ynext, graylevel;
 	h1 = h()/8 - 1;
@@ -825,60 +827,42 @@ void WFdisp::drawMarker() {
 
 void WFdisp::update_waterfall() {
 // transfer the fft history data into the WF image
-	short int *p1, *p2;
-	RGBI *p3, *p4;
+	short int * __restrict__ p1, * __restrict__ p2;
+	RGBI * __restrict__ p3, * __restrict__ p4;
 	p1 = tmp_fft_db + offset;
 	p2 = p1;
 	p3 = fft_img;
 	p4 = p3;
 
-	short* limit = tmp_fft_db + image_area - step + 1;
+	short*  __restrict__ limit = tmp_fft_db + image_area - step + 1;
 
-	for (int row = 0; row < image_height; row++) {
-		p2 = p1;
-		p4 = p3;
-		if (progdefaults.WFaveraging) {
-			if (step == 4)
-				for (int col = 0; col < disp_width; col++) {
-					*(p4++) = mag2RGBI[ (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 ];
-					p2 += step;
-					if (p2 > limit) break;
-				}
-			else if (step == 2)
-				for (int col = 0; col < disp_width; col++) {
-					*(p4++) = mag2RGBI[ (*p2  + *(p2+1))/2 ];
-					p2 += step;
-					if (p2 > limit) break;
-				}
-			else
-				for (int col = 0; col < disp_width; col++) {
-					*(p4++) = mag2RGBI[ *p2 ];
-					p2 += step;
-					if (p2 > limit) break;
-				}
-		} else {
-			if (step == 4)
-				for (int col = 0; col < disp_width; col++) {
-					*(p4++) = mag2RGBI[ MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) ];
-					p2 += step;
-					if (p2 > limit) break;
-				}
-			else if (step == 2)
-				for (int col = 0; col < disp_width; col++) {
-					*(p4++) = mag2RGBI[ MAX( *p2, *(p2+1) ) ];
-					p2 += step;
-					if (p2 > limit) break;
-				}
-			else
-				for (int col = 0; col < disp_width; col++) {
-					*(p4++) = mag2RGBI[ *p2 ];
-					p2 += step;
-					if (p2 > limit) break;
-				}
+#define UPD_LOOP( Step, Operation ) \
+case Step: for (int row = 0; row < image_height; row++) { \
+		p2 = p1; \
+		p4 = p3; \
+		for ( const short *  __restrict__ last_p2 = std::min( p2 + Step * disp_width, limit +1 ); p2 < last_p2; p2 += Step ) { \
+			*(p4++) = mag2RGBI[ Operation ]; \
+		} \
+		p1 += IMAGE_WIDTH; \
+		p3 += disp_width; \
+	}; break
+
+	if (progdefaults.WFaveraging) {
+		switch(step) {
+			UPD_LOOP( 4, (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 );
+			UPD_LOOP( 2, (*p2  + *(p2+1))/2 );
+			UPD_LOOP( 1, *p2 );
+			default:;
 		}
-		p1 += IMAGE_WIDTH;
-		p3 += disp_width;
+	} else {
+		switch(step) {
+			UPD_LOOP( 4, MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) );
+			UPD_LOOP( 2, MAX( *p2, *(p2+1) ) );
+			UPD_LOOP( 1, *p2 );
+			default:;
+		}
 	}
+#undef UPD_LOOP
 
 	if (progdefaults.UseBWTracks) {
 		int bw_lo = bandwidth / 2;
@@ -891,33 +875,34 @@ void WFdisp::update_waterfall() {
 		if (unlikely(pos2 == fft_img + disp_width))
 			pos2--;
 		if (likely(pos1 >= fft_img && pos2 < fft_img + disp_width)) {
-			for (int y = 0; y < image_height; y ++) {
-				if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
-					if (active_modem->get_reverse()) {
-						*pos1 = progdefaults.rttymarkRGBI;
-						*pos2 = progdefaults.bwTrackRGBI;
-						if (progdefaults.UseWideTracks) {
-							*(pos1 + 1) = *pos1;
-							*(pos2 - 1) = *pos2;
-						}
-					} else {
-						*pos1 = progdefaults.bwTrackRGBI;
-						*pos2 = progdefaults.rttymarkRGBI;
-						if (progdefaults.UseWideTracks) {
-							*(pos1 + 1) = *pos1;
-							*(pos2 - 1) = *pos2;
-						}
-					}
+			RGBI rgbi1, rgbi2 ;
+
+			if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
+				if (active_modem->get_reverse()) {
+					rgbi1 = progdefaults.rttymarkRGBI;
+					rgbi2 = progdefaults.bwTrackRGBI;
 				} else {
-					*pos1 = progdefaults.bwTrackRGBI;
-					*pos2 = progdefaults.bwTrackRGBI;
-					if (progdefaults.UseWideTracks) {
-						*(pos1 + 1) = *pos1;
-						*(pos2 - 1) = *pos2;
-					}
+					rgbi1 = progdefaults.bwTrackRGBI;
+					rgbi2 = progdefaults.rttymarkRGBI;
 				}
-				pos1 += disp_width;
-				pos2 += disp_width;
+			} else {
+				rgbi1 = progdefaults.bwTrackRGBI;
+				rgbi2 = progdefaults.bwTrackRGBI;
+			}
+			if (progdefaults.UseWideTracks) {
+				for (int y = 0; y < image_height; y ++) {
+					*(pos1 + 1) = *pos1 = rgbi1;
+					*(pos2 - 1) = *pos2 = rgbi2;
+					pos1 += disp_width;
+					pos2 += disp_width;
+				}
+			} else {
+				for (int y = 0; y < image_height; y ++) {
+					*pos1 = rgbi1;
+					*pos2 = rgbi2;
+					pos1 += disp_width;
+					pos2 += disp_width;
+				}
 			}
 		}
 	}

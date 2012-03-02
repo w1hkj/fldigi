@@ -69,6 +69,7 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 	memset( vidbuf, background, bufsize );	
 	zoom = 0 ;
 	binary = false ;
+	binary_threshold = 128 ;
 }
 
 picture::~picture()
@@ -229,32 +230,15 @@ void picture::set_zoom( int the_zoom )
 	resize_zoom( x(), y(), width, height );
 }
 
-inline unsigned char pix2bin( unsigned char x )
-{
-	return x >= 128 ? 255 : 0 ;
-}
-
 // in 	data 	                     user data passed to function
 // in 	x_screen,y_screen,wid_screen position and width of scan line in image
 // out 	buf 	                     buffer for generated image data.
 // Must copy wid_screen pixels from scanline y_screen, starting at pixel x_screen to this buffer. 
-void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar *buf) 
+void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar * __restrict__ buf) 
 {
-	const picture * ptr_pic = ( const picture * ) data ;
+	const picture * __restrict__ ptr_pic = ( const picture * ) data ;
 	const int img_width = ptr_pic->width ;
-	const unsigned char * in_ptr = ptr_pic->vidbuf ;
-
-	if( ptr_pic->zoom == 0 ) {
-		const int in_offset = img_width * y_screen + x_screen ;
-		if(ptr_pic->binary) {
-			for( int i = in_offset * depth, i_end = i + depth * wid_screen; i < i_end ; ++i ) {
-				buf[i] = pix2bin(in_ptr[ i ]);
-			}
-		} else {
-			memcpy( buf, in_ptr + in_offset * depth, depth * wid_screen );
-		}
-		return ;
-	}
+	const unsigned char * __restrict__ in_ptr = ptr_pic->vidbuf ;
 
 	/// One pixel out of (zoom+1)
 	if( ptr_pic->zoom < 0 ) {
@@ -263,18 +247,18 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 		int dpth_in_offset = depth * in_offset ;
 
 		if(ptr_pic->binary) {
-			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ) {
-				buf[ ix_w++ ] = pix2bin(in_ptr[ dpth_in_offset     ]);
-				buf[ ix_w++ ] = pix2bin(in_ptr[ dpth_in_offset + 1 ]);
-				buf[ ix_w++ ] = pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+				buf[ ix_w     ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset     ]);
+				buf[ ix_w + 1 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+				buf[ ix_w + 2 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 2 ]);
 				dpth_in_offset += depth * stride ;
 			}
 		}
 		else {
-			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ) {
-				buf[ ix_w++ ] = in_ptr[ dpth_in_offset     ];
-				buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 1 ];
-				buf[ ix_w++ ] = in_ptr[ dpth_in_offset + 2 ];
+			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+				buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
+				buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
+				buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
 				dpth_in_offset += depth * stride ;
 			}
 		}
@@ -301,16 +285,16 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 		if(ptr_pic->binary) {
                 	for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
 			{
-				unsigned char in_dpth_in_offset_0 = pix2bin(in_ptr[ dpth_in_offset     ]);
-				unsigned char in_dpth_in_offset_1 = pix2bin(in_ptr[ dpth_in_offset + 1 ]);
-				unsigned char in_dpth_in_offset_2 = pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+				unsigned char in_dpth_in_offset_0 = ptr_pic->pix2bin(in_ptr[ dpth_in_offset     ]);
+				unsigned char in_dpth_in_offset_1 = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+				unsigned char in_dpth_in_offset_2 = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 2 ]);
 
-				// Stride should be less than 4 or 5.
-				for( int j= 0; j < stride; j++ )
+				// Stride is less than 4 or 5.
+				for( int j= 0; j < stride; j++, ix_w += depth )
 				{
-					buf[ ix_w++ ] = in_dpth_in_offset_0;
-					buf[ ix_w++ ] = in_dpth_in_offset_1;
-					buf[ ix_w++ ] = in_dpth_in_offset_2;
+					buf[ ix_w     ] = in_dpth_in_offset_0;
+					buf[ ix_w + 1 ] = in_dpth_in_offset_1;
+					buf[ ix_w + 2 ] = in_dpth_in_offset_2;
 				}
 				dpth_in_offset += depth ;
 			}
@@ -321,12 +305,12 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				unsigned char in_dpth_in_offset_1 = in_ptr[ dpth_in_offset + 1 ];
 				unsigned char in_dpth_in_offset_2 = in_ptr[ dpth_in_offset + 2 ];
 
-				// Stride should be less than 4 or 5.
-				for( int j= 0; j < stride; j++ )
+				// Stride is less than 4 or 5.
+				for( int j= 0; j < stride; j++, ix_w += depth )
 				{
-					buf[ ix_w++ ] = in_dpth_in_offset_0;
-					buf[ ix_w++ ] = in_dpth_in_offset_1;
-					buf[ ix_w++ ] = in_dpth_in_offset_2;
+					buf[ ix_w     ] = in_dpth_in_offset_0;
+					buf[ ix_w + 1 ] = in_dpth_in_offset_1;
+					buf[ ix_w + 2 ] = in_dpth_in_offset_2;
 				}
 				dpth_in_offset += depth ;
 			}
@@ -334,11 +318,25 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 
 		return ;
 	}
-}
+
+	// zoom == 0, stride=1
+	const int in_offset = img_width * y_screen + x_screen ;
+	if(ptr_pic->binary) {
+		int dpth_in_offset = depth * in_offset ;
+		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+			buf[ ix_w     ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset     ]);
+			buf[ ix_w + 1 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+			buf[ ix_w + 2 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+			dpth_in_offset += depth ;
+		}
+	} else {
+		abort(); // This should never be called, see optimization in picture::draw().
+	}
+} // picture::draw_cb
 
 void picture::draw()
 {
-	if( zoom == 0 ) {
+	if( ( zoom == 0 ) && ( binary == false ) ) {
 		/// No scaling, this is faster.
 		fl_draw_image( vidbuf, x(), y(), w(), h() );
 	} else {
@@ -628,33 +626,99 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 	return 0;
 }
 
-void picture::remove_noise( int row, int half_len, int noise_margin )
+bool picture::restore( int row, int margin )
 {
-	if( ( row <= noise_height_margin ) || ( row >= height ) ) return ;
+	if( ( row <= noise_height_margin ) || ( row >= height ) ) return true;
 
-	      unsigned char * line_ante = vidbuf + (row - noise_height_margin) * width * depth;
+	unsigned char * line_ante = vidbuf + (row - noise_height_margin) * width * depth;
 	// Copy the new calculated value (at previous call) to all channels.
 	// TODO: Do that when switching off noise removal, otherwise a couple of colored pixels are left.
-	for( int col = half_len ; col < width - half_len; ++col )
+	for( int col = margin ; col < width - margin; ++col )
 	{
 		int offset = col * depth ;
 		line_ante[ offset ] = line_ante[ offset + 2 ] = line_ante[ offset + 1 ];
 	}
+	return false ;
+}
+
+void picture::erosion( int row )
+{
+	static const size_t margin_one = 1 ;
+	if( restore( row, margin_one ) ) return ;
 
 	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
 	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
 	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
 
+	for( size_t col = margin_one ; col < width - margin_one; ++col )
+	{
+		unsigned char new_pix = 255 ;
+		new_pix = std::min( new_pix, line_prev[ depth * ( col - 1 ) ] );
+		new_pix = std::min( new_pix, line_prev[ depth * ( col     ) ] );
+		new_pix = std::min( new_pix, line_prev[ depth * ( col + 1 ) ] );
+		new_pix = std::min( new_pix, line_curr[ depth * ( col - 1 ) ] );
+		new_pix = std::min( new_pix, line_curr[ depth * ( col     ) ] );
+		new_pix = std::min( new_pix, line_curr[ depth * ( col + 1 ) ] );
+		new_pix = std::min( new_pix, line_next[ depth * ( col - 1 ) ] );
+		new_pix = std::min( new_pix, line_next[ depth * ( col     ) ] );
+		new_pix = std::min( new_pix, line_next[ depth * ( col + 1 ) ] );
+
+		/// Use this channel as a buffer. Beware that if we change the slant,
+		// this component might not be restored
+		// because the line position changed. Not a big problem.
+		// We might forbid slanting when de-noising.
+		line_curr[ col * depth + 1 ] = new_pix;
+	}
+}
+
+void picture::dilatation( int row )
+{
+	static const size_t margin_one = 1 ;
+	if( restore( row, margin_one ) ) return ;
+
+	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
+	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
+	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
+
+	for( size_t col = margin_one ; col < width - margin_one; ++col )
+	{
+		unsigned char new_pix = 0 ;
+		new_pix = std::max( new_pix, line_prev[ depth * ( col - 1 ) ] );
+		new_pix = std::max( new_pix, line_prev[ depth * ( col     ) ] );
+		new_pix = std::max( new_pix, line_prev[ depth * ( col + 1 ) ] );
+		new_pix = std::max( new_pix, line_curr[ depth * ( col - 1 ) ] );
+		new_pix = std::max( new_pix, line_curr[ depth * ( col     ) ] );
+		new_pix = std::max( new_pix, line_curr[ depth * ( col + 1 ) ] );
+		new_pix = std::max( new_pix, line_next[ depth * ( col - 1 ) ] );
+		new_pix = std::max( new_pix, line_next[ depth * ( col     ) ] );
+		new_pix = std::max( new_pix, line_next[ depth * ( col + 1 ) ] );
+
+		/// Use this channel as a buffer. Beware that if we change the slant,
+		// this component might not be restored
+		// because the line position changed. Not a big problem.
+		// We might forbid slanting when de-noising.
+		line_curr[ col * depth + 1 ] = new_pix;
+	}
+}
+
+void picture::remove_noise( int row, int half_len, int noise_margin )
+{
+	if( restore( row, half_len ) ) return ;
+
+	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
+	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
+	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
+
+	const int nb_neighbours = ( 2 * ( 2 * half_len + 1 ) );
+	int medians[nb_neighbours];
+
 	/// Takes into account the first component only.
 	for( int col = half_len ; col < width - half_len; ++col )
 	{
 		int curr_pix = line_curr[ col * depth ];
-		if( curr_pix < 0 ) abort();
-		if( curr_pix > 255 ) abort();
+		assert( ( curr_pix >= 0 ) && ( curr_pix <= 255 ) );
 
 		int pix_min = 255, pix_max = 0;
-		const int nb_neighbours = ( 2 * ( 2 * half_len + 1 ) );
-		int medians[nb_neighbours];
 		for( int subcol = col - half_len, tmp, nghb_i = 0 ; subcol <= col + half_len ; ++subcol )
 		{
 			int offset = subcol * depth ;
@@ -672,20 +736,19 @@ void picture::remove_noise( int row, int half_len, int noise_margin )
 		// Maybe the pixel is between min and max.
 		int thres_min = pix_min - noise_margin;
 		if(thres_min < 0) thres_min = 0;
-		if(thres_min > pix_min) abort();
+		assert(thres_min <= pix_min);
 
 		int thres_max = pix_max + noise_margin;
 		if(thres_max > 255 ) thres_max = 255;
 		if(thres_max < pix_max) abort();
 
 		if( ( curr_pix >= thres_min ) && ( curr_pix <= thres_max ) ) continue ;
-		if( pix_max < 0 ) abort() ;
-		if( pix_max > 255 ) abort() ;
+		assert( ( pix_max >= 0 ) && ( pix_max <= 255 ) );
 
 		std::sort( medians, medians + nb_neighbours );
 		int new_pix = medians[ nb_neighbours / 2 ];
+		assert( new_pix >= 0 );
 
-		if( new_pix < 0 ) abort() ;
 		/// Use this channel as a buffer. Beware that if we change the slant,
 		// this component might not be restored
 		// because the line position changed. Not a big problem.
