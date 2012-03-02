@@ -2089,10 +2089,11 @@ void MACROTEXT::openMacroFile()
 {
 	std::string deffilename = MacrosDir;
 
-	if (progStatus.LastMacroFile.find("/") == string::npos)
-		deffilename.append(progStatus.LastMacroFile);
-	else
+	if (progStatus.LastMacroFile.find("/") != string::npos ||
+		progStatus.LastMacroFile.find("\\") != string::npos)
 		deffilename.assign(progStatus.LastMacroFile);
+	else
+		deffilename.append(progStatus.LastMacroFile);
 
 	const char *p = FSEL::select(
 			_("Open macro file"),
@@ -2113,10 +2114,12 @@ void MACROTEXT::openMacroFile()
 void MACROTEXT::writeMacroFile()
 {
 	std::string deffilename = MacrosDir;
-	if (progStatus.LastMacroFile.find("/") == string::npos)
-		deffilename.append(progStatus.LastMacroFile);
-	else
+	if (progStatus.LastMacroFile.find("/") != string::npos ||
+		progStatus.LastMacroFile.find("\\") != string::npos)
 		deffilename.assign(progStatus.LastMacroFile);
+	else
+		deffilename.append(progStatus.LastMacroFile);
+
 	saveMacros(deffilename.c_str());
 }
 
@@ -2124,10 +2127,11 @@ void MACROTEXT::saveMacroFile()
 {
 	std::string deffilename = MacrosDir;
 
-	if (progStatus.LastMacroFile.find("/") == string::npos)
-		deffilename.append(progStatus.LastMacroFile);
-	else
+	if (progStatus.LastMacroFile.find("/") != string::npos ||
+		progStatus.LastMacroFile.find("\\") != string::npos)
 		deffilename.assign(progStatus.LastMacroFile);
+	else
+		deffilename.append(progStatus.LastMacroFile);
 
 	const char *p = FSEL::saveas(
 			_("Save macro file"), 
