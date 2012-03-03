@@ -1,8 +1,14 @@
 
 
-=Version 3.21.39=
+=Version 3.21.40=
 
-2012-02-26  David Freese  <w1hkj@w1hkj.com>
+2012-03-02  David Freese  <w1hkj@w1hkj.com>
+
+	3318229: Save Macro - Windows
+	2dc3120: About copyright date
+
+
+=Version 3.21.39=
 
 	29ccdeb: Win7 Open Logbook
 	74da509: MFSK pic dnd
