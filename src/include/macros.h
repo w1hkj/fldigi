@@ -37,7 +37,7 @@ struct MACROTEXT {
 	void writeMacroFile();
 	void saveMacroFile();
 	void saveMacros(const std::string& fname);
-	std::string expandMacro(std::string &s);
+	std::string expandMacro(std::string &s, bool recurse);
 	void execute(int n);
 	void repeat(int n);
 	void timed_execute();
