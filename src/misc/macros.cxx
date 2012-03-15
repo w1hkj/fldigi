@@ -1619,19 +1619,19 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 
-	size_t start, end;
-	if ((start = s.find('>', i)) == std::string::npos ||
-		(end = s.rfind("</EXEC>")) == std::string::npos) {
+	size_t start = s.find(">", i);
+	size_t end = s.find("</EXEC>", start);
+
+	if (start == std::string::npos ||
+		end == std::string::npos) {
 		i++;
 		return;
 	}
-	start++;
-	i++;
 
-	std::string execstr = s.substr(start, end-start);
+	std::string execstr = s.substr(start+1, end-start-1);
 	within_exec = true;
 	MACROTEXT m;
-	execstr = m.expandMacro(execstr);
+	execstr = m.expandMacro(execstr, true);
 //	execstr.insert(0,ScriptsDir);
 	within_exec = false;
 
@@ -1657,8 +1657,12 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 		perror("execl");
 		exit(EXIT_FAILURE);
 	}
-	// parent
+
+// parent
 	close(pfd[1]);
+	
+// give child process time to complete
+	MilliSleep(50);
 	FILE* fp = fdopen(pfd[0], "r");
 	if (!fp) {
 		LOG_PERROR("fdopen");
@@ -1666,26 +1670,26 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 
-	start = --i;
-	end = s.find('>', end) + 1;
-	s.erase(start, end-start);
+	s.erase(i, end - i + strlen("</EXEC>"));
+
 	char ln[BUFSIZ];
+	string lnbuff = "";
 	while (fgets(ln, sizeof(ln), fp)) {
-		end = strlen(ln);
-		s.insert(start, ln, end);
-		start += end;
+		lnbuff.append(ln);
 	}
-	// delete the trailing newline of what we read
-	if (start > i && s[start - 1] == '\n')
-		s.erase(start - 1, 1);
+// remove all trailing end-of-lines
+	while (lnbuff[lnbuff.length()-1] == '\n')
+		lnbuff.erase(lnbuff.length()-1,1);
+
+	if (!lnbuff.empty()) {
+		s.insert(i, lnbuff);
+		i += lnbuff.length();
+	} else
+		i++;
 
 	fclose(fp);
 	close(pfd[0]);
 
-	// what should we do with the shell-generated text?
-	// option 1: uncomment this line to skip & ignore it
-	// i = start;
-	// option 2: do nothing and allow it to be parsed for more macros
 }
 #else // !__MINGW32__
 
@@ -1706,7 +1710,7 @@ static void pEXEC(std::string& s, size_t& i, size_t endbracket)
 	std::string execstr = s.substr(start, end-start);
 	within_exec = true;
 	MACROTEXT m;
-	execstr = m.expandMacro(execstr);
+	execstr = m.expandMacro(execstr, true);
 	within_exec = false;
 
 	char* cmd = strdup(execstr.c_str());
@@ -2156,12 +2160,14 @@ void MACROTEXT::loadnewMACROS(std::string &s, size_t &i, size_t endbracket)
 	showMacroSet();
 }
 
-std::string MACROTEXT::expandMacro(std::string &s)
+std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 {
 	size_t idx = 0;
 	expand = true;
-	TransmitON = false;
-	ToggleTXRX = false;
+	if (!recurse) {
+		TransmitON = false;
+		ToggleTXRX = false;
+	}
 //	mNbr = n;
 	expanded = s;//text[n];
 	const MTAGS *pMtags;
