@@ -1076,8 +1076,8 @@ void remove_windows()
 
 void cb_wMain(Fl_Widget*, void*)
 {
-	bool ret = false;
 #ifdef __APPLE__
+	bool ret = false;
 	if (((Fl::event_state() & FL_COMMAND) == FL_COMMAND) && (Fl::event_key() == 'q'))
 		ret = clean_exit(true);
 	else
@@ -6536,4 +6536,13 @@ void set_rtty_bw(float bw)
 	sldrRTTYbandwidth->do_callback();
 }
 
+int notch_frequency = 0;
+void notch_on(int freq)
+{
+	notch_frequency = freq;
+}
 
+void notch_off()
+{
+	notch_frequency = 0;
+}

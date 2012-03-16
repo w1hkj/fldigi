@@ -1635,6 +1635,41 @@ public:
 	}
 };
 
+class Rig_get_notch : public xmlrpc_c::method
+{
+public:
+	Rig_get_notch()
+	{
+		_signature = "s:n";
+		_help = "Reports a notch filter frequency based on WF action";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_int(notch_frequency);
+	}
+};
+
+class Rig_set_notch : public xmlrpc_c::method
+{
+public:
+	Rig_set_notch()
+	{
+		_signature = "n:i";
+		_help = "Sets the notch filter position on WF";
+	}
+	static void set_notch(int freq)
+	{
+		notch_frequency = freq;
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		int notch = notch_frequency;
+		REQ(set_notch, params.getInt(0));
+		*retval = xmlrpc_c::value_int(notch);
+	}
+};
+
 static int rig_control_counter;
 
 static void set_rig_control(bool xmlrpc)
@@ -2786,6 +2821,8 @@ struct Navtex_send_message : public xmlrpc_c::method
 	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")					\
 	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")					\
 	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
+	ELEM_(Rig_get_notch, "rig.get_notch")							\
+	ELEM_(Rig_set_notch, "rig.set_notch")							\
 	ELEM_(Rig_take_control, "rig.take_control")						\
 	ELEM_(Rig_release_control, "rig.release_control")				\
 																	\
