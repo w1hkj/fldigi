@@ -306,6 +306,11 @@ extern void sync_cw_parameters();
 
 extern void open_recv_folder(const char *fname);
 
+// set notch parameter on flrig
+extern int  notch_frequency;
+extern void notch_on(int);
+extern void notch_off();
+
 // thread terminators
 extern void ADIF_RW_close(void);
 extern void EQSL_close(void);

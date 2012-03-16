@@ -158,6 +158,7 @@ public:
 	void movetocenter();
 	void carrier(int cf);
 	int  carrier();
+	inline void  makeNotch_(int notch_frequency);
 	inline void makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax);
 	void makeMarker();
 	void process_analog(double *sig, int len);
@@ -221,6 +222,7 @@ private:
 	RGB		*markerimage;
 	RGB		RGBmarker;
 	RGB		RGBcursor;
+	RGBI		RGBInotch;
 	double	*fftout;
     double  *fftwindow;
 	uchar	*scaleimage;

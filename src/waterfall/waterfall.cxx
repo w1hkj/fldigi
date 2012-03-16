@@ -98,7 +98,7 @@ static	RGB RGByellow	= {254,254,0};
 //static	RGB RGBdkgreen	= {0,128,0};
 //static	RGB RGBblue		= {0,0,255};
 static	RGB RGBred		= {254,0,0};
-//static	RGB RGBwhite	= {254,254,254};
+static	RGB RGBwhite	= {254,254,254};
 //static	RGB RGBblack	= {0,0,0};
 //static RGB RGBmagenta = {196,0,196};
 //static RGB RGBblack   = {0,0,0};
@@ -152,6 +152,10 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	bandwidth = 32;
 	RGBmarker = RGBred;
 	RGBcursor = RGByellow;
+	RGBInotch.I = 0;
+	RGBInotch.R = RGBwhite.R;
+	RGBInotch.G = RGBwhite.G;
+	RGBInotch.B = RGBwhite.B;
 	mode = WATERFALL;
 	centercarrier = false;
 	overload = false;
@@ -781,7 +785,6 @@ void WFdisp::drawMarker() {
 		step * RGBsize, RGBwidth);
 }
 
-
 void WFdisp::update_waterfall() {
 // transfer the fft history data into the WF image
 	short int *p1, *p2;
@@ -878,6 +881,18 @@ void WFdisp::update_waterfall() {
 				pos1 += disp_width;
 				pos2 += disp_width;
 			}
+		}
+	}
+
+// draw notch
+	if ((notch_frequency > 1) && (notch_frequency < progdefaults.HighFreqCutoff - 1)) {
+		RGBI  *notch = fft_img + (notch_frequency - offset) / step;
+		int dash = 0;
+		for (int y = 0; y < image_height; y++) {
+			dash = (dash + 1) % 6;
+			if (dash == 0 || dash == 1 || dash == 2)
+				*(notch-1) = *notch = *(notch+1) = RGBInotch;
+			notch += disp_width;
 		}
 	}
 }
@@ -1029,6 +1044,18 @@ void WFdisp::drawspectrum() {
 		}
 	}
 
+// draw notch
+	if ((notch_frequency > 1) && (notch_frequency < progdefaults.HighFreqCutoff - 1)) {
+		uchar  *notch = pixmap + (notch_frequency - offset) / step;
+		int dash = 0;
+		for (int y = 0; y < image_height; y++) {
+			dash = (dash + 1) % 6;
+			if (dash == 0 || dash == 1 || dash == 2)
+				*(notch-1) = *notch = *(notch+1) = 255;
+			notch += IMAGE_WIDTH/step;
+		}
+	}
+
 	fl_color(FL_BLACK);
 	fl_rectf(x(), y(), w(), WFSCALE + WFMARKER + WFTEXT + image_height);
 
@@ -1054,7 +1081,7 @@ void WFdisp::draw() {
 	checkWidth();
 	switch (mode) {
 	case SPECTRUM :
-			drawspectrum();
+		drawspectrum();
 		drawMarker();
 		break;
 	case SCOPE :
@@ -1062,10 +1089,10 @@ void WFdisp::draw() {
 		break;
 	case WATERFALL :
 	default:
-			if (dispcolor)
-				drawcolorWF();
-			else
-				drawgrayWF();
+		if (dispcolor)
+			drawcolorWF();
+		else
+			drawgrayWF();
 		drawMarker();
 	}
 }
@@ -1859,6 +1886,13 @@ int WFdisp::handle(int event)
 			}
 			goto lrclick;
 		case FL_LEFT_MOUSE:
+			if ((Fl::event_state() & (FL_ALT | FL_CTRL)) == (FL_ALT | FL_CTRL)) {
+				if (notch_frequency)
+					notch_off();
+				else
+					notch_on(cursorFreq(xpos));
+				return 1;
+			}
 			if (event == FL_PUSH) {
 				push = ypos;
 				pxpos = xpos;
