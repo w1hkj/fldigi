@@ -887,7 +887,8 @@ void FTextTX::clear(void)
 ///
 void FTextTX::clear_sent(void)
 {
-	clear();
+	tbuf->remove(0, utf8_txpos);
+	sbuf->remove(0, utf8_txpos);
 	txpos = 0;
 	utf8_txpos = 0;
 	bkspaces = 0;
