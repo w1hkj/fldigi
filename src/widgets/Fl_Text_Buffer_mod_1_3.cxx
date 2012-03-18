@@ -337,6 +337,8 @@ void Fl_Text_Buffer_mod::replace(int start, int end, const char *text)
     return;
   if (start < 0)
     start = 0;
+  if (end < 0) // needed to prevent control-Z crash
+    end = 0;
   if (end > mLength)
     end = mLength;
 
