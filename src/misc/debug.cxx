@@ -51,16 +51,18 @@
 #include "icons.h"
 #include "gettext.h"
 
+extern Fl_Double_Window *fl_digi_main;
+extern void update_main_title();
+
 using namespace std;
 
 #define MAX_LINES 65536
 
-static FILE* wfile;
-static FILE* rfile;
+static FILE* wfile = 0;
+static FILE* rfile = 0;
 static size_t nlines = 0;
 static int rfd;
 static bool tty;
-static bool want_popup = true;
 
 static Fl_Double_Window* window;
 
@@ -78,7 +80,6 @@ static const char* prefix[] = {
 
 static void slider_cb(Fl_Widget* w, void*);
 static void src_menu_cb(Fl_Widget* w, void*);
-static void popup_message(void*);
 
 static void clear_cb(Fl_Widget *w, void*);
 
@@ -151,9 +152,14 @@ void debug::start(const char* filename)
 
 void debug::stop(void)
 {
-	delete inst;
-	inst = 0;
-	delete window;
+	if (window) {
+		window->hide();
+		delete window;
+	}
+	if (inst) {
+		delete inst;
+		inst = 0;
+	}
 }
 
 static char fmt[1024];
@@ -182,23 +188,6 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 			vfprintf(stderr, fmt, args);
 			va_end(args);
 		}
-	}
-	else if (unlikely(want_popup && (level == ERROR_LEVEL || level == WARN_LEVEL))) {
-		// If the backends logged an error and our stderr is not a tty,
-		// alert the user and offer to show the log window.  We only do
-		// this once and thereafter assume that the user will keep the
-		// log window displayed to be notified of errors.  To keep the
-		// popup small, we set a maximum width and add a ("...")  if it
-		// must be truncated.
-		const char ellipsis[] = "...";
-		size_t len = 60;
-		char* msg = new char[len + sizeof(ellipsis)];
-		va_start(args, format);
-		if ((size_t)vsnprintf(msg, len, fmt, args) >= len)
-			memcpy(msg + len - 1, ellipsis, sizeof(ellipsis));
-		va_end(args);
-		Fl::awake(popup_message, (void*)msg);
-		want_popup = false;
 	}
 
 #ifdef __MINGW32__
@@ -271,8 +260,8 @@ debug::debug(const char* filename)
 
 debug::~debug()
 {
-	fclose(wfile);
-	fclose(rfile);
+	if (wfile) fclose(wfile);
+	if (rfile) fclose(rfile);
 }
 
 static void slider_cb(Fl_Widget* w, void*)
@@ -285,23 +274,6 @@ static void slider_cb(Fl_Widget* w, void*)
 static void src_menu_cb(Fl_Widget* w, void*)
 {
 	debug::mask ^= 1 << ((Fl_Menu_*)w)->value();
-}
-
-static void popup_message(void* msg)
-{
-	if (window->visible()) {
-		delete [] (char*)msg;
-		return;
-	}
-	if (!Fl::first_window() || !Fl::first_window()->visible()) // defer
-		Fl::awake(popup_message, (void*)msg);
-
-	if (fl_warn_choice2("%s:\n%s", _("Close"), _("View log"),
-			    NULL, _("A message was logged"), (char*)msg)) {
-		window->show();
-	}
-
-	delete [] (char*)msg;
 }
 
 static void clear_cb(Fl_Widget* w, void*)

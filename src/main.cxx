@@ -473,7 +473,6 @@ int main(int argc, char ** argv)
 		delete cbq[i];
 	}
 	FSEL::destroy();
-	debug::stop();
 
 	return ret;
 }

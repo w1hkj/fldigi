@@ -1065,6 +1065,7 @@ void remove_windows()
 		MacroEditDialog->hide();
 		delete MacroEditDialog;
 	}
+	debug::stop();
 }
 
 // callback executed from Escape / Window decoration 'X' or OS X cmd-Q
