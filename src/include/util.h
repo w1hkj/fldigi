@@ -199,11 +199,7 @@ deprecated__ typeof(strcat) strcat;
 #  define PRIdSZ "Id"
 #endif
 
-#ifndef __MINGW32__
 #  define PATH_SEP "/"
-#else
-#  define PATH_SEP "\\"
-#endif
 
 // Unnamed sempahores are not supported on OS X
 // (and named semaphores are broken on cygwin).
