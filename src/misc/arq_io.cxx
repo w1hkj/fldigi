@@ -131,14 +131,32 @@ static void set_button(Fl_Button* button, bool value)
 
 void ParseMode(string src)
 {
+	if (src.find("XMTTUNE") != string::npos) {
+		int msecs = 100;
+		if (src.length() > 7) {
+			int ret = sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
+			if (ret != 1 || msecs < 10 || msecs > 20000) msecs = 100;
+		}
+LOG_INFO("%s %5.2f sec", "ARQ tune on", msecs/1000.0);
+		trx_tune();
+		MilliSleep(msecs);
+LOG_INFO("%s", "ARQ tune off");
+		trx_receive();
+		return;
+	}
 	if (src.find("PTTTUNE") != string::npos) {
 		int msecs = 100;
-		if (src.length() > 7)
-			sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
-		REQ_SYNC(&PTT::set, push2talk, true);
+		if (src.length() > 7) {
+			int ret = sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
+			if (ret != 1 || msecs < 10 || msecs > 20000) msecs = 100;
+		}
+LOG_INFO("%s %5.2f sec", "ARQ set ptt on", msecs/1000.0);
+		push2talk->set(true);
+		REQ(&waterfall::set_XmtRcvBtn, wf, true);
 		MilliSleep(msecs);
-		REQ_SYNC(&PTT::set, push2talk, false);
-		LOG_VERBOSE("%s", "ARQ ptt toggled");
+LOG_INFO("%s", "ARQ set ptt off");
+		push2talk->set(false);
+		REQ(&waterfall::set_XmtRcvBtn, wf, false);
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {
@@ -204,7 +222,7 @@ void parse_arqtext(string &toparse)
 			if (progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
 			active_modem->set_freqlock(true);
-			LOG_DEBUG("%s", "ARQ is set to pskmail server");
+			LOG_VERBOSE("%s", "ARQ is set to pskmail server");
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
@@ -214,7 +232,7 @@ void parse_arqtext(string &toparse)
 			Maillogfile->log_to_file_start();
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-			LOG_DEBUG("%s", "ARQ is set to pskmail client");
+			LOG_VERBOSE("%s", "ARQ is set to pskmail client");
 		} else if (strCmdText == "normal") {
 			mailserver = false;
 			mailclient = false;
@@ -224,13 +242,14 @@ void parse_arqtext(string &toparse)
 			}
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-			LOG_DEBUG("%s", "ARQ is reset to normal ops");
+			LOG_VERBOSE("%s", "ARQ is reset to normal ops");
 		} else if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</mode>");
 			if (	idxSubCmdEnd != string::npos &&
 					idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 				ParseMode(strSubCmd);
+				LOG_VERBOSE("%s %s", "ARQ mode ", strSubCmd.c_str());
 			}
 		} else if ((idxSubCmd = strCmdText.find("<rsid>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</rsid>");
@@ -238,6 +257,7 @@ void parse_arqtext(string &toparse)
 					idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 				ParseRSID(strSubCmd);
+				LOG_VERBOSE("%s %s", "ARQ rsid ", strSubCmd.c_str());
 			}
 		} else if ((idxSubCmd = strCmdText.find("<txrsid>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</txrsid>");
@@ -245,6 +265,7 @@ void parse_arqtext(string &toparse)
 					idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 8, idxSubCmdEnd - idxSubCmd - 8);
 				ParseTxRSID(strSubCmd);
+				LOG_VERBOSE("%s %s", "ARQ txrsid ", strSubCmd.c_str());
 			}
 		}
 
@@ -364,7 +385,7 @@ bool TLF_arqRx()
 			pText = 0;
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
-			LOG_DEBUG("%s", arqtext.c_str());
+LOG_INFO("%s", arqtext.c_str());
 			start_tx();
 			txstring.clear();
 		}
