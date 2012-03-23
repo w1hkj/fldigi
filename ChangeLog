@@ -1,9 +1,18 @@
-2012-02-25  David Freese  <w1hkj@w1hkj.com>
+2012-03-23  David Freese  <w1hkj@w1hkj.com>
 
+	ca5ff49: ARQ Parse Mode
+	c3f315b: Path separator
+	a7169ea: Debug changes
+	39edf75: Clear sent text
+	1abbedf: Control-Z fault
+	0d3265f: Notch
+	7f2cfbe: EXEC macro
+	23e315b: Save Macro - Windows
+	331ff2e: About copyright date
 	c9df726: MFSK pic dnd
 	4a0833e: Merge record logic error
 	d2d254e: Weather report
-	54249ea: OSX Lion shutdown
+	eae67ba: OSX Lion shutdown
 	dedc82a: OSX Lion shutdown
 	b609cb6: Config Dialog
 
