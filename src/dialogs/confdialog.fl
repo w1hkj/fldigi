@@ -558,13 +558,13 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Exit prompts} open
-              xywh {2 195 496 171} box ENGRAVED_FRAME align 21
+              xywh {2 195 496 114} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_save_config_on_exit {
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {118 274 329 20} down_box DOWN_BOX
+                xywh {37 261 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -572,7 +572,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {118 300 305 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {37 287 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -580,13 +580,25 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {118 326 236 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {279 261 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Box {} {
                 label {Exit prompts active only when File/Exit menu item selected.
 Not active if window decoration close button pressed.}
-                xywh {42 219 436 47} box BORDER_BOX align 20
+                xywh {42 211 436 47} box BORDER_BOX align 20
+              }
+            }
+            Fl_Group {} {
+              label {Check for updates} open
+              xywh {2 311 496 56} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btn_check_for_updates {
+                label {Check for updates when starting program}
+                callback {progdefaults.check_for_updates = o->value();
+progdefaults.changed = true;}
+                xywh {37 335 324 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.check_for_updates);}
               }
             }
           }

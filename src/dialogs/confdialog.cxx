@@ -420,6 +420,13 @@ progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_check_for_updates=(Fl_Check_Button *)0;
+
+static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
+  progdefaults.check_for_updates = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
 Fl_Input *xmllogServerAddress=(Fl_Input *)0;
@@ -3804,31 +3811,41 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Check_Button* btn_rx_lowercase
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(2, 195, 496, 171, _("Exit prompts"));
+            { Fl_Group* o = new Fl_Group(2, 195, 496, 114, _("Exit prompts"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(118, 274, 329, 20, _("Prompt to save Configuration"));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(37, 261, 233, 20, _("Prompt to save Configuration"));
                 btn_save_config_on_exit->down_box(FL_DOWN_BOX);
                 btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
                 o->value(progdefaults.SaveConfig);
               } // Fl_Check_Button* btn_save_config_on_exit
-              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(118, 300, 305, 20, _("Prompt to save macro file"));
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(37, 287, 233, 20, _("Prompt to save macro file"));
                 btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
                 btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
                 btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn2_save_macros_on_exit
-              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(118, 326, 236, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(279, 261, 166, 20, _("Prompt to save log"));
                 btn2NagMe->tooltip(_("Bug me about saving log entries"));
                 btn2NagMe->down_box(FL_DOWN_BOX);
                 btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btn2NagMe
-              { Fl_Box* o = new Fl_Box(42, 219, 436, 47, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
+              { Fl_Box* o = new Fl_Box(42, 211, 436, 47, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
 ndow decoration close button pressed."));
                 o->box(FL_BORDER_BOX);
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 311, 496, 56, _("Check for updates"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(37, 335, 324, 20, _("Check for updates when starting program"));
+                btn_check_for_updates->down_box(FL_DOWN_BOX);
+                btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
+                o->value(progdefaults.check_for_updates);
+              } // Fl_Check_Button* btn_check_for_updates
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();
