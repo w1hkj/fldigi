@@ -98,7 +98,7 @@ static	RGB RGByellow	= {254,254,0};
 //static	RGB RGBdkgreen	= {0,128,0};
 //static	RGB RGBblue		= {0,0,255};
 static	RGB RGBred		= {254,0,0};
-static	RGB RGBwhite	= {254,254,254};
+//static	RGB RGBwhite	= {254,254,254};
 //static	RGB RGBblack	= {0,0,0};
 //static RGB RGBmagenta = {196,0,196};
 //static RGB RGBblack   = {0,0,0};
@@ -152,10 +152,10 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	bandwidth = 32;
 	RGBmarker = RGBred;
 	RGBcursor = RGByellow;
-	RGBInotch.I = 0;
-	RGBInotch.R = RGBwhite.R;
-	RGBInotch.G = RGBwhite.G;
-	RGBInotch.B = RGBwhite.B;
+	RGBInotch.I = progdefaults.notchRGBI.I;
+	RGBInotch.R = progdefaults.notchRGBI.R;
+	RGBInotch.G = progdefaults.notchRGBI.G;
+	RGBInotch.B = progdefaults.notchRGBI.B;
 	mode = WATERFALL;
 	centercarrier = false;
 	overload = false;
@@ -886,6 +886,10 @@ void WFdisp::update_waterfall() {
 
 // draw notch
 	if ((notch_frequency > 1) && (notch_frequency < progdefaults.HighFreqCutoff - 1)) {
+		RGBInotch.I = progdefaults.notchRGBI.I;
+		RGBInotch.R = progdefaults.notchRGBI.R;
+		RGBInotch.G = progdefaults.notchRGBI.G;
+		RGBInotch.B = progdefaults.notchRGBI.B;
 		RGBI  *notch = fft_img + (notch_frequency - offset) / step;
 		int dash = 0;
 		for (int y = 0; y < image_height; y++) {

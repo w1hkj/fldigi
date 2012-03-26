@@ -136,8 +136,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 500 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 500 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -217,13 +217,13 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 506 346}
+        xywh {0 25 506 346} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 506 346} selection_color 50
         } {
           Fl_Group tabBrowser {
-            label Browser selected
+            label Browser
             xywh {0 50 500 320}
           } {
             Fl_Group {} {open
@@ -1006,7 +1006,7 @@ WF_UI();}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall
+        label Waterfall open
         xywh {-2 25 501 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
@@ -1014,16 +1014,16 @@ WF_UI();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {-2 50 501 320}
+            xywh {-2 50 501 320} hide
           } {
             Fl_Group {} {
               label {Colors and cursors} open
-              xywh {3 60 496 162} box ENGRAVED_FRAME align 21
+              xywh {3 56 496 190} box ENGRAVED_FRAME align 21
             } {
               Fl_Button WF_Palette {
                 label aa
                 callback {progdefaults.changed = true;}
-                xywh {13 93 260 24} box DOWN_BOX color 0 labelsize 12 align 5
+                xywh {13 92 380 24} box DOWN_BOX color 0 labelsize 12 align 5
                 code0 {\#include "colorbox.h"}
                 code1 {o->label(progdefaults.PaletteName.c_str());}
                 code2 {o->labelsize(FL_NORMAL_SIZE);}
@@ -1032,75 +1032,79 @@ WF_UI();}
               Fl_Button {btnColor[0]} {
                 callback {selectColor(0);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {13 120 20 24}
+                tooltip {Change color} xywh {13 118 20 24}
               }
               Fl_Button {btnColor[1]} {
                 callback {selectColor(1);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {43 120 20 24}
+                tooltip {Change color} xywh {58 118 20 24}
               }
               Fl_Button {btnColor[2]} {
                 callback {selectColor(2);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {73 120 20 24}
+                tooltip {Change color} xywh {103 118 20 24}
               }
               Fl_Button {btnColor[3]} {
                 callback {selectColor(3);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {103 120 20 24}
+                tooltip {Change color} xywh {148 118 20 24}
               }
               Fl_Button {btnColor[4]} {
                 callback {selectColor(4);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {133 120 20 24}
+                tooltip {Change color} xywh {193 118 20 24}
               }
               Fl_Button {btnColor[5]} {
                 callback {selectColor(5);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {163 120 20 24}
+                tooltip {Change color} xywh {238 118 20 24}
               }
               Fl_Button {btnColor[6]} {
                 callback {selectColor(6);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {193 120 20 24}
+                tooltip {Change color} xywh {283 118 20 24}
               }
               Fl_Button {btnColor[7]} {
                 callback {selectColor(7);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {223 120 20 24}
+                tooltip {Change color} xywh {328 118 20 24}
               }
               Fl_Button {btnColor[8]} {
                 callback {selectColor(8);
 progdefaults.changed = true;}
-                tooltip {Change color} xywh {254 120 20 24}
+                tooltip {Change color} xywh {373 118 20 24}
               }
               Fl_Button btnLoadPalette {
                 label {Load...}
                 callback {loadPalette();
 progdefaults.changed = true;}
-                tooltip {Load a new palette} xywh {312 93 70 24}
+                tooltip {Load a new palette} xywh {403 92 70 24}
                 code0 {\#include "colorbox.h"}
               }
               Fl_Button btnSavePalette {
                 label {Save...}
                 callback {savePalette();}
-                tooltip {Save this palette} xywh {312 120 70 24}
+                tooltip {Save this palette} xywh {403 118 70 24}
                 code0 {\#include "colorbox.h"}
               }
-              Fl_Check_Button btnUseCursorLines {
-                label {Bandwidth cursor}
-                callback {progdefaults.UseCursorLines = o->value();
+              Fl_Group {} {
+                label Bandwidth open
+                xywh {12 146 113 96} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Check_Button btnUseCursorLines {
+                  label ON
+                  callback {progdefaults.UseCursorLines = o->value();
 if (o->value())
     btnCursorBWcolor->activate();
 else
     btnCursorBWcolor->deactivate();
 progdefaults.changed = true;}
-                tooltip {Show cursor with bandwidth lines} xywh {13 149 150 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UseCursorLines);}
-              }
-              Fl_Button btnCursorBWcolor {
-                label {Cursor color}
-                callback {if (fl_color_chooser("Cursor BW Lines",
+                  tooltip {Show cursor with bandwidth lines} xywh {40 166 56 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UseCursorLines);}
+                }
+                Fl_Button btnCursorBWcolor {
+                  label Color
+                  callback {if (fl_color_chooser("Cursor BW Lines",
   progdefaults.cursorLineRGBI.R, 
   progdefaults.cursorLineRGBI.G, 
   progdefaults.cursorLineRGBI.B) ) {
@@ -1108,20 +1112,32 @@ o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.
 o->redraw();
 progdefaults.changed = true;
 }}
-                tooltip {Change color} xywh {13 172 20 20} color 3 align 8
-                code0 {\#include <FL/Fl_Color_Chooser.H>}
-                code1 {o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));}
-              }
-              Fl_Check_Button btnUseCursorCenterLine {
-                label {Cursor center line}
-                callback {progdefaults.UseCursorCenterLine = o->value();
+                  tooltip {Change color} xywh {40 189 20 20} color 3 align 8
+                  code0 {\#include <FL/Fl_Color_Chooser.H>}
+                  code1 {o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));}
+                }
+                Fl_Check_Button btnUseWideCursor {
+                  label Wide
+                  callback {progdefaults.UseWideCursor = o->value();
 progdefaults.changed = true;}
-                tooltip {Show cursor with center line} xywh {183 149 149 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UseCursorCenterLine);}
+                  tooltip {Show bandwidth tracks on waterfall} xywh {40 212 62 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UseWideCursor);}
+                }
               }
-              Fl_Button btnCursorCenterLineColor {
-                label {Center line color}
-                callback {if (fl_color_chooser("Cursor Center Line",
+              Fl_Group {} {
+                label {Center line} open
+                xywh {136 146 113 96} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Check_Button btnUseCursorCenterLine {
+                  label ON
+                  callback {progdefaults.UseCursorCenterLine = o->value();
+progdefaults.changed = true;}
+                  tooltip {Show cursor with center line} xywh {168 166 48 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UseCursorCenterLine);}
+                }
+                Fl_Button btnCursorCenterLineColor {
+                  label Color
+                  callback {if (fl_color_chooser("Cursor Center Line",
   progdefaults.cursorCenterRGBI.R, 
   progdefaults.cursorCenterRGBI.G, 
   progdefaults.cursorCenterRGBI.B) ) {
@@ -1129,19 +1145,31 @@ o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterR
 o->redraw();
 progdefaults.changed = true;
 }}
-                tooltip {Change color} xywh {183 172 20 20} color 7 align 8
-                code0 {o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));}
-              }
-              Fl_Check_Button btnUseBWTracks {
-                label {Bandwidth tracks}
-                callback {progdefaults.UseBWTracks = o->value();
+                  tooltip {Change color} xywh {168 189 20 20} color 7 align 8
+                  code0 {o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));}
+                }
+                Fl_Check_Button btnUseWideCenter {
+                  label Wide
+                  callback {progdefaults.UseWideCenter = o->value();
 progdefaults.changed = true;}
-                tooltip {Show bandwidth tracks on waterfall} xywh {344 149 145 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UseBWTracks);}
+                  tooltip {Show bandwidth tracks on waterfall} xywh {168 214 69 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UseWideCenter);}
+                }
               }
-              Fl_Button btnBwTracksColor {
-                label {Tracks color}
-                callback {if (fl_color_chooser("Track Lines",
+              Fl_Group {} {
+                label {Signal tracks} open
+                xywh {259 146 113 96} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Check_Button btnUseBWTracks {
+                  label ON
+                  callback {progdefaults.UseBWTracks = o->value();
+progdefaults.changed = true;}
+                  tooltip {Show bandwidth tracks on waterfall} xywh {287 165 56 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UseBWTracks);}
+                }
+                Fl_Button btnBwTracksColor {
+                  label Color
+                  callback {if (fl_color_chooser("Track Lines",
   progdefaults.bwTrackRGBI.R, 
   progdefaults.bwTrackRGBI.G, 
   progdefaults.bwTrackRGBI.B) ) {
@@ -1150,40 +1178,46 @@ o->redraw();
 wf->redraw_marker();
 progdefaults.changed = true;
 }}
-                tooltip {Change color} xywh {344 172 20 20} color 1 align 8
-                code0 {o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));}
-              }
-              Fl_Check_Button btnUseWideTracks {
-                label {Wide tracks}
-                callback {progdefaults.UseWideTracks = o->value();
+                  tooltip {Change color} xywh {287 188 20 20} color 1 align 8
+                  code0 {o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));}
+                }
+                Fl_Check_Button btnUseWideTracks {
+                  label Wide
+                  callback {progdefaults.UseWideTracks = o->value();
 progdefaults.changed = true;}
-                tooltip {Show bandwidth tracks on waterfall} xywh {344 196 145 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UseWideTracks);}
+                  tooltip {Show bandwidth tracks on waterfall} xywh {287 212 74 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UseWideTracks);}
+                }
               }
-              Fl_Check_Button btnUseWideCenter {
-                label {Wide center line}
-                callback {progdefaults.UseWideCenter = o->value();
-progdefaults.changed = true;}
-                tooltip {Show bandwidth tracks on waterfall} xywh {183 197 145 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UseWideCenter);}
-              }
-              Fl_Check_Button btnUseWideCursor {
-                label {Wide cursor}
-                callback {progdefaults.UseWideCursor = o->value();
-progdefaults.changed = true;}
-                tooltip {Show bandwidth tracks on waterfall} xywh {13 195 145 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UseWideCursor);}
+              Fl_Group {} {
+                label Notch open
+                xywh {379 146 113 96} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Button btnNotchColor {
+                  label Color
+                  callback {if (fl_color_chooser("Notch Indicator",
+  progdefaults.notchRGBI.R, 
+  progdefaults.notchRGBI.G, 
+  progdefaults.notchRGBI.B) ) {
+o->color(fl_rgb_color(progdefaults.notchRGBI.R,progdefaults.notchRGBI.G,progdefaults.notchRGBI.B));
+o->redraw();
+wf->redraw_marker();
+progdefaults.changed = true;
+}}
+                  tooltip {Change color} xywh {407 188 20 20} color 1 align 8
+                  code0 {o->color(fl_rgb_color(progdefaults.notchRGBI.R,progdefaults.notchRGBI.G,progdefaults.notchRGBI.B));}
+                }
               }
             }
             Fl_Group {} {
               label {Frequency scale} open
-              xywh {3 222 490 62} box ENGRAVED_FRAME align 21
+              xywh {3 247 496 55} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkShowAudioScale {
                 label {Always show audio frequencies}
                 callback {progdefaults.wf_audioscale = o->value();
 progdefaults.changed = true;}
-                tooltip {Audio or RF frequencies on waterfall scale} xywh {13 252 240 20} down_box DOWN_BOX
+                tooltip {Audio or RF frequencies on waterfall scale} xywh {13 270 241 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wf_audioscale);}
               }
               Fl_Button btnWaterfallFont {
@@ -1194,25 +1228,25 @@ font_browser->fontColor(FL_FOREGROUND_COLOR);
 font_browser->fontFilter(Font_Browser::ALL_TYPES);
 font_browser->callback((Fl_Callback*)cbWaterfallFontBrowser);
 font_browser->show();}
-                tooltip {Select waterfall scale font} xywh {312 252 70 24}
+                tooltip {Select waterfall scale font} xywh {313 270 71 24}
               }
             }
             Fl_Group {} {
               label {Transmit signal} open
-              xywh {3 285 490 80} box ENGRAVED_FRAME align 21
+              xywh {3 303 496 65} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnViewXmtSignal {
                 label {Monitor transmitted signal}
                 callback {progdefaults.viewXmtSignal=o->value();
 progdefaults.changed = true;}
-                tooltip {Show transmit signal on waterfall} xywh {13 315 205 20} down_box DOWN_BOX
+                tooltip {Show transmit signal on waterfall} xywh {13 329 208 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.viewXmtSignal);}
               }
               Fl_Value_Slider valTxMonitorLevel {
                 label {Signal level}
                 callback {progdefaults.TxMonitorLevel = o->value();
 progdefaults.changed = true;}
-                tooltip {Set level for good viewing} xywh {268 315 200 20} type Horizontal align 1 step 0.05 value 0.5 textsize 14
+                tooltip {Set level for good viewing} xywh {271 329 203 20} type Horizontal align 1 step 0.05 value 0.5 textsize 14
                 code0 {o->value(progdefaults.TxMonitorLevel);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
@@ -1221,7 +1255,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {-2 50 500 320} hide
+            xywh {-2 50 500 320}
           } {
             Fl_Group {} {open
               xywh {3 62 490 135} box ENGRAVED_FRAME

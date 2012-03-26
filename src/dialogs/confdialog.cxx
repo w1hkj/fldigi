@@ -888,6 +888,13 @@ progdefaults.changed = true;
 };
 }
 
+Fl_Check_Button *btnUseWideCursor=(Fl_Check_Button *)0;
+
+static void cb_btnUseWideCursor(Fl_Check_Button* o, void*) {
+  progdefaults.UseWideCursor = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnUseCursorCenterLine=(Fl_Check_Button *)0;
 
 static void cb_btnUseCursorCenterLine(Fl_Check_Button* o, void*) {
@@ -906,6 +913,13 @@ o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterR
 o->redraw();
 progdefaults.changed = true;
 };
+}
+
+Fl_Check_Button *btnUseWideCenter=(Fl_Check_Button *)0;
+
+static void cb_btnUseWideCenter(Fl_Check_Button* o, void*) {
+  progdefaults.UseWideCenter = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnUseBWTracks=(Fl_Check_Button *)0;
@@ -936,18 +950,18 @@ static void cb_btnUseWideTracks(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnUseWideCenter=(Fl_Check_Button *)0;
+Fl_Button *btnNotchColor=(Fl_Button *)0;
 
-static void cb_btnUseWideCenter(Fl_Check_Button* o, void*) {
-  progdefaults.UseWideCenter = o->value();
+static void cb_btnNotchColor(Fl_Button* o, void*) {
+  if (fl_color_chooser("Notch Indicator",
+  progdefaults.notchRGBI.R, 
+  progdefaults.notchRGBI.G, 
+  progdefaults.notchRGBI.B) ) {
+o->color(fl_rgb_color(progdefaults.notchRGBI.R,progdefaults.notchRGBI.G,progdefaults.notchRGBI.B));
+o->redraw();
+wf->redraw_marker();
 progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnUseWideCursor=(Fl_Check_Button *)0;
-
-static void cb_btnUseWideCursor(Fl_Check_Button* o, void*) {
-  progdefaults.UseWideCursor = o->value();
-progdefaults.changed = true;
+};
 }
 
 Fl_Check_Button *chkShowAudioScale=(Fl_Check_Button *)0;
@@ -3382,7 +3396,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(5, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -3490,6 +3503,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 506, 346, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 506, 346);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 500, 320, _("Browser"));
@@ -4144,10 +4158,11 @@ ab and newline are automatically included."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(-2, 50, 501, 320, _("Display"));
-            { Fl_Group* o = new Fl_Group(3, 60, 496, 162, _("Colors and cursors"));
+            o->hide();
+            { Fl_Group* o = new Fl_Group(3, 56, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { colorbox* o = WF_Palette = new colorbox(13, 93, 260, 24, _("aa"));
+              { colorbox* o = WF_Palette = new colorbox(13, 92, 380, 24, _("aa"));
                 WF_Palette->box(FL_DOWN_BOX);
                 WF_Palette->color(FL_FOREGROUND_COLOR);
                 WF_Palette->selection_color(FL_BACKGROUND_COLOR);
@@ -4161,134 +4176,161 @@ ab and newline are automatically included."));
                 o->label(progdefaults.PaletteName.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
               } // colorbox* WF_Palette
-              { btnColor[0] = new Fl_Button(13, 120, 20, 24);
+              { btnColor[0] = new Fl_Button(13, 118, 20, 24);
                 btnColor[0]->tooltip(_("Change color"));
                 btnColor[0]->callback((Fl_Callback*)cb_btnColor);
               } // Fl_Button* btnColor[0]
-              { btnColor[1] = new Fl_Button(43, 120, 20, 24);
+              { btnColor[1] = new Fl_Button(58, 118, 20, 24);
                 btnColor[1]->tooltip(_("Change color"));
                 btnColor[1]->callback((Fl_Callback*)cb_btnColor1);
               } // Fl_Button* btnColor[1]
-              { btnColor[2] = new Fl_Button(73, 120, 20, 24);
+              { btnColor[2] = new Fl_Button(103, 118, 20, 24);
                 btnColor[2]->tooltip(_("Change color"));
                 btnColor[2]->callback((Fl_Callback*)cb_btnColor2);
               } // Fl_Button* btnColor[2]
-              { btnColor[3] = new Fl_Button(103, 120, 20, 24);
+              { btnColor[3] = new Fl_Button(148, 118, 20, 24);
                 btnColor[3]->tooltip(_("Change color"));
                 btnColor[3]->callback((Fl_Callback*)cb_btnColor3);
               } // Fl_Button* btnColor[3]
-              { btnColor[4] = new Fl_Button(133, 120, 20, 24);
+              { btnColor[4] = new Fl_Button(193, 118, 20, 24);
                 btnColor[4]->tooltip(_("Change color"));
                 btnColor[4]->callback((Fl_Callback*)cb_btnColor4);
               } // Fl_Button* btnColor[4]
-              { btnColor[5] = new Fl_Button(163, 120, 20, 24);
+              { btnColor[5] = new Fl_Button(238, 118, 20, 24);
                 btnColor[5]->tooltip(_("Change color"));
                 btnColor[5]->callback((Fl_Callback*)cb_btnColor5);
               } // Fl_Button* btnColor[5]
-              { btnColor[6] = new Fl_Button(193, 120, 20, 24);
+              { btnColor[6] = new Fl_Button(283, 118, 20, 24);
                 btnColor[6]->tooltip(_("Change color"));
                 btnColor[6]->callback((Fl_Callback*)cb_btnColor6);
               } // Fl_Button* btnColor[6]
-              { btnColor[7] = new Fl_Button(223, 120, 20, 24);
+              { btnColor[7] = new Fl_Button(328, 118, 20, 24);
                 btnColor[7]->tooltip(_("Change color"));
                 btnColor[7]->callback((Fl_Callback*)cb_btnColor7);
               } // Fl_Button* btnColor[7]
-              { btnColor[8] = new Fl_Button(254, 120, 20, 24);
+              { btnColor[8] = new Fl_Button(373, 118, 20, 24);
                 btnColor[8]->tooltip(_("Change color"));
                 btnColor[8]->callback((Fl_Callback*)cb_btnColor8);
               } // Fl_Button* btnColor[8]
-              { btnLoadPalette = new Fl_Button(312, 93, 70, 24, _("Load..."));
+              { btnLoadPalette = new Fl_Button(403, 92, 70, 24, _("Load..."));
                 btnLoadPalette->tooltip(_("Load a new palette"));
                 btnLoadPalette->callback((Fl_Callback*)cb_btnLoadPalette);
               } // Fl_Button* btnLoadPalette
-              { btnSavePalette = new Fl_Button(312, 120, 70, 24, _("Save..."));
+              { btnSavePalette = new Fl_Button(403, 118, 70, 24, _("Save..."));
                 btnSavePalette->tooltip(_("Save this palette"));
                 btnSavePalette->callback((Fl_Callback*)cb_btnSavePalette);
               } // Fl_Button* btnSavePalette
-              { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(13, 149, 150, 20, _("Bandwidth cursor"));
+              { Fl_Group* o = new Fl_Group(12, 146, 113, 96, _("Bandwidth"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnUseCursorLines = new Fl_Check_Button(40, 166, 56, 20, _("ON"));
                 btnUseCursorLines->tooltip(_("Show cursor with bandwidth lines"));
                 btnUseCursorLines->down_box(FL_DOWN_BOX);
                 btnUseCursorLines->callback((Fl_Callback*)cb_btnUseCursorLines);
                 o->value(progdefaults.UseCursorLines);
-              } // Fl_Check_Button* btnUseCursorLines
-              { Fl_Button* o = btnCursorBWcolor = new Fl_Button(13, 172, 20, 20, _("Cursor color"));
+                } // Fl_Check_Button* btnUseCursorLines
+                { Fl_Button* o = btnCursorBWcolor = new Fl_Button(40, 189, 20, 20, _("Color"));
                 btnCursorBWcolor->tooltip(_("Change color"));
                 btnCursorBWcolor->color((Fl_Color)3);
                 btnCursorBWcolor->callback((Fl_Callback*)cb_btnCursorBWcolor);
                 btnCursorBWcolor->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));
-              } // Fl_Button* btnCursorBWcolor
-              { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(183, 149, 149, 20, _("Cursor center line"));
+                } // Fl_Button* btnCursorBWcolor
+                { Fl_Check_Button* o = btnUseWideCursor = new Fl_Check_Button(40, 212, 62, 20, _("Wide"));
+                btnUseWideCursor->tooltip(_("Show bandwidth tracks on waterfall"));
+                btnUseWideCursor->down_box(FL_DOWN_BOX);
+                btnUseWideCursor->callback((Fl_Callback*)cb_btnUseWideCursor);
+                o->value(progdefaults.UseWideCursor);
+                } // Fl_Check_Button* btnUseWideCursor
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(136, 146, 113, 96, _("Center line"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnUseCursorCenterLine = new Fl_Check_Button(168, 166, 48, 20, _("ON"));
                 btnUseCursorCenterLine->tooltip(_("Show cursor with center line"));
                 btnUseCursorCenterLine->down_box(FL_DOWN_BOX);
                 btnUseCursorCenterLine->callback((Fl_Callback*)cb_btnUseCursorCenterLine);
                 o->value(progdefaults.UseCursorCenterLine);
-              } // Fl_Check_Button* btnUseCursorCenterLine
-              { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(183, 172, 20, 20, _("Center line color"));
+                } // Fl_Check_Button* btnUseCursorCenterLine
+                { Fl_Button* o = btnCursorCenterLineColor = new Fl_Button(168, 189, 20, 20, _("Color"));
                 btnCursorCenterLineColor->tooltip(_("Change color"));
                 btnCursorCenterLineColor->color(FL_BACKGROUND2_COLOR);
                 btnCursorCenterLineColor->callback((Fl_Callback*)cb_btnCursorCenterLineColor);
                 btnCursorCenterLineColor->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));
-              } // Fl_Button* btnCursorCenterLineColor
-              { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(344, 149, 145, 20, _("Bandwidth tracks"));
+                } // Fl_Button* btnCursorCenterLineColor
+                { Fl_Check_Button* o = btnUseWideCenter = new Fl_Check_Button(168, 214, 69, 20, _("Wide"));
+                btnUseWideCenter->tooltip(_("Show bandwidth tracks on waterfall"));
+                btnUseWideCenter->down_box(FL_DOWN_BOX);
+                btnUseWideCenter->callback((Fl_Callback*)cb_btnUseWideCenter);
+                o->value(progdefaults.UseWideCenter);
+                } // Fl_Check_Button* btnUseWideCenter
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(259, 146, 113, 96, _("Signal tracks"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnUseBWTracks = new Fl_Check_Button(287, 165, 56, 20, _("ON"));
                 btnUseBWTracks->tooltip(_("Show bandwidth tracks on waterfall"));
                 btnUseBWTracks->down_box(FL_DOWN_BOX);
                 btnUseBWTracks->callback((Fl_Callback*)cb_btnUseBWTracks);
                 o->value(progdefaults.UseBWTracks);
-              } // Fl_Check_Button* btnUseBWTracks
-              { Fl_Button* o = btnBwTracksColor = new Fl_Button(344, 172, 20, 20, _("Tracks color"));
+                } // Fl_Check_Button* btnUseBWTracks
+                { Fl_Button* o = btnBwTracksColor = new Fl_Button(287, 188, 20, 20, _("Color"));
                 btnBwTracksColor->tooltip(_("Change color"));
                 btnBwTracksColor->color((Fl_Color)1);
                 btnBwTracksColor->callback((Fl_Callback*)cb_btnBwTracksColor);
                 btnBwTracksColor->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
-              } // Fl_Button* btnBwTracksColor
-              { Fl_Check_Button* o = btnUseWideTracks = new Fl_Check_Button(344, 196, 145, 20, _("Wide tracks"));
+                } // Fl_Button* btnBwTracksColor
+                { Fl_Check_Button* o = btnUseWideTracks = new Fl_Check_Button(287, 212, 74, 20, _("Wide"));
                 btnUseWideTracks->tooltip(_("Show bandwidth tracks on waterfall"));
                 btnUseWideTracks->down_box(FL_DOWN_BOX);
                 btnUseWideTracks->callback((Fl_Callback*)cb_btnUseWideTracks);
                 o->value(progdefaults.UseWideTracks);
-              } // Fl_Check_Button* btnUseWideTracks
-              { Fl_Check_Button* o = btnUseWideCenter = new Fl_Check_Button(183, 197, 145, 20, _("Wide center line"));
-                btnUseWideCenter->tooltip(_("Show bandwidth tracks on waterfall"));
-                btnUseWideCenter->down_box(FL_DOWN_BOX);
-                btnUseWideCenter->callback((Fl_Callback*)cb_btnUseWideCenter);
-                o->value(progdefaults.UseWideCenter);
-              } // Fl_Check_Button* btnUseWideCenter
-              { Fl_Check_Button* o = btnUseWideCursor = new Fl_Check_Button(13, 195, 145, 20, _("Wide cursor"));
-                btnUseWideCursor->tooltip(_("Show bandwidth tracks on waterfall"));
-                btnUseWideCursor->down_box(FL_DOWN_BOX);
-                btnUseWideCursor->callback((Fl_Callback*)cb_btnUseWideCursor);
-                o->value(progdefaults.UseWideCursor);
-              } // Fl_Check_Button* btnUseWideCursor
+                } // Fl_Check_Button* btnUseWideTracks
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(379, 146, 113, 96, _("Notch"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Button* o = btnNotchColor = new Fl_Button(407, 188, 20, 20, _("Color"));
+                btnNotchColor->tooltip(_("Change color"));
+                btnNotchColor->color((Fl_Color)1);
+                btnNotchColor->callback((Fl_Callback*)cb_btnNotchColor);
+                btnNotchColor->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->color(fl_rgb_color(progdefaults.notchRGBI.R,progdefaults.notchRGBI.G,progdefaults.notchRGBI.B));
+                } // Fl_Button* btnNotchColor
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(3, 222, 490, 62, _("Frequency scale"));
+            { Fl_Group* o = new Fl_Group(3, 247, 496, 55, _("Frequency scale"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = chkShowAudioScale = new Fl_Check_Button(13, 252, 240, 20, _("Always show audio frequencies"));
+              { Fl_Check_Button* o = chkShowAudioScale = new Fl_Check_Button(13, 270, 241, 20, _("Always show audio frequencies"));
                 chkShowAudioScale->tooltip(_("Audio or RF frequencies on waterfall scale"));
                 chkShowAudioScale->down_box(FL_DOWN_BOX);
                 chkShowAudioScale->callback((Fl_Callback*)cb_chkShowAudioScale);
                 o->value(progdefaults.wf_audioscale);
               } // Fl_Check_Button* chkShowAudioScale
-              { btnWaterfallFont = new Fl_Button(312, 252, 70, 24, _("Font..."));
+              { btnWaterfallFont = new Fl_Button(313, 270, 71, 24, _("Font..."));
                 btnWaterfallFont->tooltip(_("Select waterfall scale font"));
                 btnWaterfallFont->callback((Fl_Callback*)cb_btnWaterfallFont);
               } // Fl_Button* btnWaterfallFont
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(3, 285, 490, 80, _("Transmit signal"));
+            { Fl_Group* o = new Fl_Group(3, 303, 496, 65, _("Transmit signal"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(13, 315, 205, 20, _("Monitor transmitted signal"));
+              { Fl_Check_Button* o = btnViewXmtSignal = new Fl_Check_Button(13, 329, 208, 20, _("Monitor transmitted signal"));
                 btnViewXmtSignal->tooltip(_("Show transmit signal on waterfall"));
                 btnViewXmtSignal->down_box(FL_DOWN_BOX);
                 btnViewXmtSignal->callback((Fl_Callback*)cb_btnViewXmtSignal);
                 o->value(progdefaults.viewXmtSignal);
               } // Fl_Check_Button* btnViewXmtSignal
-              { Fl_Value_Slider2* o = valTxMonitorLevel = new Fl_Value_Slider2(268, 315, 200, 20, _("Signal level"));
+              { Fl_Value_Slider2* o = valTxMonitorLevel = new Fl_Value_Slider2(271, 329, 203, 20, _("Signal level"));
                 valTxMonitorLevel->tooltip(_("Set level for good viewing"));
                 valTxMonitorLevel->type(1);
                 valTxMonitorLevel->box(FL_DOWN_BOX);
@@ -4312,7 +4354,6 @@ ab and newline are automatically included."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(-2, 50, 500, 320, _("FFT Processing"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(3, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(48, 72, 70, 20, _("Lower limit"));

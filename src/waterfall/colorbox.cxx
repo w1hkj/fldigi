@@ -40,10 +40,12 @@ void colorbox::draw() {
 	int ypos = y() + 2;
 	int xpos;
 	int ht = h() - 4;
+	int wd = w() - 4;
 	draw_box();
-	for(int i = 0; i < 256; i++){
+	for(int i = 0; i < wd; i++){
 		xpos = x() + 2 + i;
-		fl_rectf (xpos, ypos, 1, ht, mag2RGBI[i].R, mag2RGBI[i].G, mag2RGBI[i].B);
+		int xc = i * 256 / wd;
+		fl_rectf (xpos, ypos, 1, ht, mag2RGBI[xc].R, mag2RGBI[xc].G, mag2RGBI[xc].B);
 	}
 }
 
