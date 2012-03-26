@@ -586,6 +586,9 @@
         ELEM_(RGBI, bwTrackRGBI, "BWTCOLORS",                                           \
               "Color of bandwidth marker (RGBI)",                                       \
               {255, 0, 0, 255})                                                         \
+        ELEM_(RGBI, notchRGBI, "NOTCHCOLORS",                                           \
+              "Color of notch marker (RGBI)",                                           \
+              {255, 255, 255, 255})                                                     \
         ELEM_(RGBI, rttymarkRGBI, "RTTYMARKRGBI",                                       \
               "Color of RTTY MARK freq marker (RGBI)",                                  \
               {255, 120, 0, 255})                                                       \
