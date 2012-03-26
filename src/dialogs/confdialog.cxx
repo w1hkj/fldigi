@@ -421,6 +421,13 @@ progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_check_for_updates=(Fl_Check_Button *)0;
+
+static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
+  progdefaults.check_for_updates = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
@@ -3596,7 +3603,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(4, 35, 592, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -3704,6 +3710,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 598, 346, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(2, 25, 596, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(4, 50, 592, 320, _("Browser"));
@@ -4007,7 +4014,7 @@ Fl_Double_Window* ConfigureDialog() {
             { Fl_Group* o = new Fl_Group(6, 195, 586, 120, _("Exit prompts"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(14, 262, 233, 20, _("Prompt to save Configuration"));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(37, 261, 233, 20, _("Prompt to save Configuration"));
                 btn_save_config_on_exit->down_box(FL_DOWN_BOX);
                 btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
                 o->value(progdefaults.SaveConfig);
@@ -4031,8 +4038,14 @@ ndow decoration close button pressed."));
               } // Fl_Box* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(6, 315, 586, 50);
+            { Fl_Group* o = new Fl_Group(6, 315, 586, 50, _("Check for updates"));
               o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(47, 336, 383, 18, _("Check for updates when starting program"));
+                btn_check_for_updates->down_box(FL_DOWN_BOX);
+                btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
+                o->value(progdefaults.check_for_updates);
+              } // Fl_Check_Button* btn_check_for_updates
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();

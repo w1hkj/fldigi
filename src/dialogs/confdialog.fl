@@ -140,8 +140,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {2 25 596 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {2 25 596 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -221,13 +221,13 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 598 346}
+        xywh {0 25 598 346} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {2 25 596 345} selection_color 50
         } {
           Fl_Group tabBrowser {
-            label Browser selected
+            label Browser
             xywh {4 50 592 320}
           } {
             Fl_Group {} {open
@@ -568,7 +568,7 @@ progdefaults.changed = true;}
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {14 262 233 20} down_box DOWN_BOX
+                xywh {37 261 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -593,9 +593,18 @@ Not active if window decoration close button pressed.}
                 xywh {53 218 515 40} box BORDER_BOX align 20
               }
             }
-            Fl_Group {} {open
-              xywh {6 315 586 50} box ENGRAVED_FRAME
-            } {}
+            Fl_Group {} {
+              label {Check for updates} open
+              xywh {6 315 586 50} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btn_check_for_updates {
+                label {Check for updates when starting program}
+                callback {progdefaults.check_for_updates = o->value();
+progdefaults.changed = true;}
+                xywh {47 336 383 18} down_box DOWN_BOX
+                code0 {o->value(progdefaults.check_for_updates);}
+              }
+            }
           }
           Fl_Group tabLogServer {
             label Logging
@@ -1013,7 +1022,7 @@ WF_UI();}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall open
+        label Waterfall
         xywh {2 25 596 345} hide
       } {
         Fl_Tabs tabsWaterfall {open

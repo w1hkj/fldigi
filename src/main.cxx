@@ -229,6 +229,9 @@ void delayed_startup(void *)
 	if (progdefaults.usepskrep)
 		if (!pskrep_start())
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+
+	if (progdefaults.check_for_updates)
+		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
 }
 
 int main(int argc, char ** argv)

@@ -73,6 +73,7 @@ extern Fl_Check_Button *btn_rx_lowercase;
 extern Fl_Check_Button *btn_save_config_on_exit;
 extern Fl_Check_Button *btn2_save_macros_on_exit;
 extern Fl_Check_Button *btn2NagMe;
+extern Fl_Check_Button *btn_check_for_updates;
 extern Fl_Group *tabLogServer;
 extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;

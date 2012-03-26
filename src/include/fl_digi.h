@@ -325,4 +325,6 @@ extern void EQSL_close(void);
 extern Fl_Double_Window *notify_window;
 extern Fl_Double_Window *dxcc_window;
 
+extern void cb_mnuCheckUpdate(Fl_Widget *, void *);
+
 #endif
