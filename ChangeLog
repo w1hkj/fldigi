@@ -1,8 +1,21 @@
 
 
-=Version 3.21.40=
+=Version 3.21.41=
 
-2012-03-02  David Freese  <w1hkj@w1hkj.com>
+2012-03-26  David Freese  <w1hkj@w1hkj.com>
+
+	1779db5: Check for updates
+	0d2e7c3: Notch indicator color
+	970b00d: ARQ Parse Mode
+	d4e5caa: Path separator
+	d7dfbdb: Debug changes
+	80d67e3: Clear sent text
+	815d27a: Control-Z fault
+	bd14450: Notch
+	d1defa3: EXEC macro
+
+
+=Version 3.21.40=
 
 	3318229: Save Macro - Windows
 	2dc3120: About copyright date
