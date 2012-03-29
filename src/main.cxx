@@ -122,6 +122,7 @@ string appname;
 
 string scDevice[2];
 
+string BaseDir = "";
 string HomeDir = "";
 string RigsDir = "";
 string ScriptsDir = "";
@@ -254,34 +255,43 @@ int main(int argc, char ** argv)
 	setlocale(LC_TIME, "");
 #endif
 
+	set_platform_ui();
+
+	generate_version_text();
 	{
 		char dirbuf[FL_PATH_MAX + 1];
 #ifdef __WOE32__
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/fldigi.files/");
-		HomeDir = dirbuf;
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/NBEMS.files/");
-		NBEMS_dir = dirbuf;
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/");
-		PskMailDir = dirbuf;
-		FLMSG_dir_default = "$USERPROFILE/NBEMS.files/";
+		if (BaseDir.empty()) {
+			fl_filename_expand(dirbuf, sizeof(dirbuf) -1, "$USERPROFILE/");
+			BaseDir = dirbuf;
+		}
 #else
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.fldigi/");
-		HomeDir = dirbuf;
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.nbems/");
-		NBEMS_dir = dirbuf;
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/");
-		PskMailDir = dirbuf;
-		FLMSG_dir_default = "$HOME/.nbems/";
+		if (BaseDir.empty()) {
+			fl_filename_expand(dirbuf, sizeof(dirbuf) -1, "$HOME/");
+			BaseDir = dirbuf;
+		}
 #endif
 	}
-
-	set_platform_ui();
-
 	generate_option_help();
-	generate_version_text();
+
 	int arg_idx;
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
 		arg_error(argv[0], NULL, false);
+
+	{
+#ifdef __WOE32__
+		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
+		if (PskMailDir.empty()) PskMailDir = BaseDir;
+		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
+		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
+#else
+		if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
+		if (PskMailDir.empty()) PskMailDir = BaseDir;
+		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
+		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
+#endif
+	}
+
 	if (main_window_title.empty())
 		main_window_title = PACKAGE_TARNAME;
 
@@ -305,6 +315,42 @@ int main(int argc, char ** argv)
 		cerr << error << '\n';
 		debug::stop();
 	}
+
+	LOG_INFO("HomeDir: %s", HomeDir.c_str());
+	LOG_INFO("RigsDir: %s", RigsDir.c_str());
+	LOG_INFO("ScriptsDir: %s", ScriptsDir.c_str());
+	LOG_INFO("PalettesDir: %s", PalettesDir.c_str());
+	LOG_INFO("LogsDir: %s", LogsDir.c_str());
+	LOG_INFO("PicsDir: %s", PicsDir.c_str());
+	LOG_INFO("HelpDir: %s", HelpDir.c_str());
+	LOG_INFO("MacrosDir: %s", MacrosDir.c_str());
+	LOG_INFO("WrapDir: %s", WrapDir.c_str());
+	LOG_INFO("TalkDir: %s", TalkDir.c_str());
+	LOG_INFO("TempDir: %s", TempDir.c_str());
+	LOG_INFO("PskMailDir: %s", PskMailDir.c_str());
+
+	LOG_INFO("NBEMS_dir: %s", NBEMS_dir.c_str());
+	LOG_INFO("ARQ_dir: %s", ARQ_dir.c_str());
+	LOG_INFO("ARQ_files_dir: %s", ARQ_files_dir.c_str());
+	LOG_INFO("ARQ_recv_dir: %s", ARQ_recv_dir.c_str());
+	LOG_INFO("ARQ_send: %s", ARQ_send.c_str());
+	LOG_INFO("WRAP_dir: %s", WRAP_dir.c_str());
+	LOG_INFO("WRAP_recv_dir: %s", WRAP_recv_dir.c_str());
+	LOG_INFO("WRAP_send_dir: %s", WRAP_send_dir.c_str());
+	LOG_INFO("WRAP_auto_dir: %s", WRAP_auto_dir.c_str());
+	LOG_INFO("ICS_dir: %s", ICS_dir.c_str());
+	LOG_INFO("ICS_msg_dir: %s", ICS_msg_dir.c_str());
+	LOG_INFO("ICS_tmp_dir: %s", ICS_tmp_dir.c_str());
+
+	LOG_INFO("FLMSG_dir: %s", FLMSG_dir.c_str());
+	LOG_INFO("FLMSG_dir_default: %s", FLMSG_dir_default.c_str());
+	LOG_INFO("FLMSG_WRAP_dir: %s", FLMSG_WRAP_dir.c_str());
+	LOG_INFO("FLMSG_WRAP_recv_dir: %s", FLMSG_WRAP_recv_dir.c_str());
+	LOG_INFO("FLMSG_WRAP_send_dir: %s", FLMSG_WRAP_send_dir.c_str());
+	LOG_INFO("FLMSG_WRAP_auto_dir: %s", FLMSG_WRAP_auto_dir.c_str());
+	LOG_INFO("FLMSG_ICS_dir: %s", FLMSG_ICS_dir.c_str());
+	LOG_INFO("FLMSG_ICS_msg_dir: %s", FLMSG_ICS_msg_dir.c_str());
+	LOG_INFO("FLMSG_ICS_tmp_dir: %s", FLMSG_ICS_tmp_dir.c_str());
 
 	bool have_config = progdefaults.readDefaultsXML();
 
@@ -433,23 +479,6 @@ int main(int argc, char ** argv)
 			w->iconize();
 	update_main_title();
 
-//	arq_init();
-
-//#ifdef __WIN32__
-//	if (progdefaults.auto_talk) open_talker();
-//#else
-//	grpTalker->hide();
-//#endif
-
-//#if USE_XMLRPC
-//	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
-//#endif
-
-//	if (progdefaults.usepskrep)
-//		if (!pskrep_start())
-//			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
-
-//	notify_start();
 	mode_browser = new Mode_Browser;
 
 #if !SHOW_WIZARD_BEFORE_MAIN_WINDOW
@@ -457,7 +486,6 @@ int main(int argc, char ** argv)
 		show_wizard();
 #endif
 
-//	Fl::add_timeout(0.01, connect_to_log_server);
 	Fl::add_timeout(.05, delayed_startup);
 
 	int ret = Fl::run();
@@ -482,13 +510,40 @@ int main(int argc, char ** argv)
 
 void generate_option_help(void) {
 	ostringstream help;
+	string disp_base_dir = BaseDir;
+#ifdef __WOE32__
+	size_t p = 0;
+	while ((p = disp_base_dir.find("/")) != string::npos)
+		disp_base_dir[p] = '\\';
+#endif
+
 	help << "Usage:\n"
 	     << "    " << PACKAGE_NAME << " [option...]\n\n";
 
 	help << PACKAGE_NAME << " options:\n\n"
+#if !defined(__WOE32__)
+	     << "  --home-dir DIRECTORY\n"
+	     << "    Set the home directory to full pathname of DIRECTORY\n"
+	     << "    fldigi will put the file stores\n"
+	     << "      .fldigi.files, and .nbems.files\n"
+	     << "    in this directory\n"
+	     << "    The default is: " << disp_base_dir << "\n\n"
+
 	     << "  --config-dir DIRECTORY\n"
 	     << "    Look for configuration files in DIRECTORY\n"
-	     << "    The default is: " << HomeDir << "\n\n"
+	     << "    The default is: " << disp_base_dir << ".fldigi/\n\n"
+#else
+	     << "  --home-dir FOLDER\n"
+	     << "    Set the home folder to full pathname of FOLDER\n"
+	     << "    fldigi will put the file stores\n"
+	     << "       fldigi.files, and nbems.files\n"
+	     << "    in this folder\n"
+	     << "    The default is: " << disp_base_dir << "\n\n"
+
+	     << "  --config-dir FOLDER\n"
+	     << "    Look for configuration files in FOLDER\n"
+	     << "    The default is: " << disp_base_dir << "fldigi.files\\\n\n"
+#endif
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
 	     << "  --rx-ipc-key KEY\n"
@@ -662,6 +717,7 @@ int parse_args(int argc, char **argv, int& idx)
 #ifndef __WOE32__
 	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
+	       OPT_HOME_DIR,
 	       OPT_CONFIG_DIR,
 	       OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 	       OPT_SHOW_CPU_CHECK,
@@ -694,6 +750,7 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
 #endif
+		{ "home-dir",	   1, 0, OPT_HOME_DIR },
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
 
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
@@ -771,6 +828,15 @@ int parse_args(int argc, char **argv, int& idx)
 		}
 			break;
 #endif
+
+		case OPT_HOME_DIR: {
+			char buf[FL_PATH_MAX + 1];
+			fl_filename_absolute(buf, sizeof(buf) - 1, optarg);
+			BaseDir = buf;
+		}
+			if (*BaseDir.rbegin() != '/')
+			       BaseDir += '/';
+			break;
 
 		case OPT_CONFIG_DIR: {
 			char buf[FL_PATH_MAX + 1];
