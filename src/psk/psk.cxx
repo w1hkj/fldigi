@@ -875,22 +875,82 @@ int psk::rx_process(const double *buf, int len)
 			// final filter
 			fir2->run( z, z2 ); // fir2 returns value on every sample
 			calcSN_IMD(z);
-
+/**
+* This is the symbol timing recovery mechanism.  After the demodulated
+* signal is processed by the matched filters, the signal lobes are
+* expected to have been modified to a fairly symmetric shape.  The
+* magnitude of the samples are taken, thus rectifying the signal to
+* positive values. "bitclk" is a counter that is very close in rate to
+* (samples / symbol).  Its purpose is to repeatedly "draw" one symbol 
+* waveform in the syncbuf array, according to its amplitude (not phase).
+*/                         
 			int idx = (int) bitclk;
 			double sum = 0.0;
 			double ampsum = 0.0;
 			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2.mag();
-
+/**
+* Here we sum up the difference between each sample's magnitude in the
+* lower half of the array with its counterpart on the upper half of the
+* array, or the other side of the waveform.  Each pair's difference is 
+* divided by their sum, scaling it so that the signal amplitude does not
+* affect the result.  When the differences are summed, it gives an
+* indication of which side is larger than the other.
+*/                                    
 			for (int i = 0; i < 8; i++) {
 				sum += (syncbuf[i] - syncbuf[i+8]);
 				ampsum += (syncbuf[i] + syncbuf[i+8]);
 			}
 			// added correction as per PocketDigi
 			sum = (ampsum == 0 ? 0 : sum / ampsum);
-
+/**
+* If the lower side is larger (meaning that the waveform is shifted in that
+* direction), then the sum is negative, and bitclk needs to be adjusted to
+* be a little faster, so that the next drawing of the waveform in syncbuf
+* will be shifted right. Conversely, if the sum is positive, then it needs
+* to slow down bitclk so that the waveform is shifted left.  Thus the
+* error is subtracted from bitclk, rather than added.  The goal is to 
+* get the error as close to zero as possible, so that the receiver is
+* exactly synced with the transmitter and the waveform is exactly in
+* the middle of syncbuf.       
+*/                                                    
 			bitclk -= sum / 5.0;
 			bitclk += 1;
-
+/**
+* When bitclock reaches the end of the buffer, then a complete waveform
+* has been received.  It is time to output the current sample and wrap
+* around to the next cycle.
+*        
+* There is a complete symbol waveform in syncbuf, so that each
+* sample[0..N/2-1] is very close in amplitude with the corresponding
+* sample in [N/2..N-1].
+*        
+*     |            ********                       ********            |
+*     |        ****        ****               ****        ****        |
+*     |     ***                ***         ***                ***     |
+*     |   **                      **     **                      **   |
+*     |  *                          *   *                          *  |
+*     | *                            * *                            * |
+*     |*                              *                              *|
+*     |_______________________________________________________________|
+*     0                              N/2                             N-1
+*     
+*     === or some variation of it .... ===
+*                     
+*     |****                       ********                       *****|
+*     |    ****               ****        ****               ****     |
+*     |        ***         ***                ***         ***         |
+*     |           **     **                      **     **            |
+*     |             *   *                          *   *              |
+*     |              * *                            * *               |
+*     |               *                              *                |
+*     |_______________________________________________________________|
+*     0                              N/2                             N-1
+*
+* At the end of this cycle, bitclk is pointing at a sample which will
+* have the maximum phase difference, if any, from the previous symbol's
+* phase.
+*
+*/                           
 			if (bitclk < 0) bitclk += 16.0;
 			if (bitclk >= 16.0) {
 				bitclk -= 16.0;
