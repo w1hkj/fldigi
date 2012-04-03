@@ -1,5 +1,7 @@
-2012-03-23  David Freese  <w1hkj@w1hkj.com>
+2012-03-26  David Freese  <w1hkj@w1hkj.com>
 
+	5c71fdf: Check for updates
+	cd04cad: Notch indicator color
 	ca5ff49: ARQ Parse Mode
 	c3f315b: Path separator
 	a7169ea: Debug changes
