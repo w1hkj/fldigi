@@ -272,6 +272,13 @@ int cFreqControl::handle(int event)
 			d = -100;
 			break;
 		default:
+			if (Fl::event_ctrl()) {
+				if (Fl::event_key() == 'v') {
+					finp->handle(event);
+					Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+					return 1;
+				}
+			}
 			if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, decbx)) {
 				if (d == FL_Escape) {
 					cancel_kb_entry();
