@@ -272,12 +272,6 @@ int main(int argc, char ** argv)
 		}
 #endif
 	}
-	generate_option_help();
-
-	int arg_idx;
-	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
-		arg_error(argv[0], NULL, false);
-
 	{
 #ifdef __WOE32__
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
@@ -291,6 +285,25 @@ int main(int argc, char ** argv)
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #endif
 	}
+	{
+#ifdef __WOE32__
+		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
+		if (PskMailDir.empty()) PskMailDir = BaseDir;
+		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
+		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
+#else
+		if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
+		if (PskMailDir.empty()) PskMailDir = BaseDir;
+		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
+		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
+#endif
+	}
+	generate_option_help();
+
+	int arg_idx;
+	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
+		arg_error(argv[0], NULL, false);
+
 
 	if (main_window_title.empty())
 		main_window_title = PACKAGE_TARNAME;
@@ -570,7 +583,7 @@ void generate_option_help(void) {
 	     << "    The default is " << FLMSG_dir_default << "\n\n"
 	     << "  --auto-dir DIRECTORY\n"
 	     << "    Look for wrap_auto_file files in DIRECTORY\n"
-	     << "    The default is " << HomeDir << "/WRAP/auto/" << "\n\n"
+	     << "    The default is " << FLMSG_dir_default << "WRAP/auto/" << "\n\n"
 
 #if USE_XMLRPC
 	     << "  --xmlrpc-server-address HOSTNAME\n"
@@ -855,11 +868,23 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_FLMSG_DIR:
-			FLMSG_dir_default = optarg;
+		{
+			char buf[FL_PATH_MAX + 1];
+			fl_filename_absolute(buf, sizeof(buf) - 1, optarg);
+			FLMSG_dir_default = buf;
+			if (*FLMSG_dir_default.rbegin() != '/')
+				FLMSG_dir_default += '/';
+		}
 			break;
 
 		case OPT_AUTOSEND_DIR:
-			FLMSG_WRAP_auto_dir = optarg;
+		{
+			char buf[FL_PATH_MAX + 1];
+			fl_filename_absolute(buf, sizeof(buf) - 1, optarg);
+			FLMSG_WRAP_auto_dir = buf;
+			if (*FLMSG_WRAP_auto_dir.rbegin() != '/')
+				FLMSG_WRAP_auto_dir += '/';
+		}
 			break;
 
 #if USE_XMLRPC
@@ -1296,7 +1321,7 @@ void check_nbems_dirs(void)
 
 	for (size_t i = 0; i < sizeof(FLMSG_dirs)/sizeof(*FLMSG_dirs); i++) {
 		if (FLMSG_dirs[i].dir.empty() && FLMSG_dirs[i].suffix)
-			FLMSG_dirs[i].dir.assign(FLMSG_dir).append(FLMSG_dirs[i].suffix).append("/");
+			FLMSG_dirs[i].dir.assign(FLMSG_dir).append(FLMSG_dirs[i].suffix).append(PATH_SEP);
 
 		if ((r = mkdir(FLMSG_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
 			cerr << _("Could not make directory") << ' ' << FLMSG_dirs[i].dir

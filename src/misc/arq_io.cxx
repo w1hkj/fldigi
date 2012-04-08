@@ -403,10 +403,17 @@ bool WRAP_auto_arqRx()
 {
 	time_t start_time, prog_time;
 	static char mailline[1000];
-	string sAutoFile = FLMSG_WRAP_auto_dir;
-	sAutoFile += "wrap_auto_file";
+	string sAutoFile;
+	sAutoFile.assign(FLMSG_WRAP_auto_dir);
+	sAutoFile.append("wrap_auto_file");
 
-	ifstream autofile(sAutoFile.c_str());
+	ifstream autofile;
+	autofile.open(sAutoFile.c_str());
+	if (!autofile) {
+		sAutoFile.assign(WRAP_auto_dir);
+		sAutoFile.append("wrap_auto_file");
+		autofile.open(sAutoFile.c_str());
+	}
 	if(autofile) {
 		txstring.clear();
 		time(&start_time);
