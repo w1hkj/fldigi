@@ -569,8 +569,8 @@ void generate_option_help(void) {
 	     << "    Look for flmsg files in DIRECTORY\n"
 	     << "    The default is " << FLMSG_dir_default << "\n\n"
 	     << "  --auto-dir DIRECTORY\n"
-	     << "    Look for auto-send files in DIRECTORY\n"
-	     << "    The default is " << HomeDir << "/autosend" << "\n\n"
+	     << "    Look for wrap_auto_file files in DIRECTORY\n"
+	     << "    The default is " << HomeDir << "/WRAP/auto/" << "\n\n"
 
 #if USE_XMLRPC
 	     << "  --xmlrpc-server-address HOSTNAME\n"
