@@ -1,8 +1,9 @@
 // ----------------------------------------------------------------------------
 // strutil.cxx
 //
-// Copyright (C) 2009
+// Copyright (C) 2009-2012
 //		Stelios Bounanos, M0GLD
+//		Remi Chateauneu, F4ECW
 //
 // This file is part of fldigi.
 //
@@ -22,10 +23,14 @@
 
 #include <config.h>
 
+#include <stdio.h>
+#include <stdarg.h>
+
 #include <vector>
 #include <string>
 #include <cstring>
 #include <climits>
+#include <stdexcept>
 
 #include "re.h"
 #include "strutil.h"
@@ -60,4 +65,20 @@ vector<string> split(const char* re_str, const char* str, unsigned max_split)
 	if (!(ignore_trailing_empty && s.empty()))
 		v.push_back(s);
 	return v;
+}
+
+/// Builds a string out of a printf-style formatted vararg list.
+string strformat( const char * fmt, ... )
+{
+	struct auto_free // Automatically deleted when leaving.
+	{
+		char * _strp ;
+		~auto_free() { if( _strp ) free( _strp ); }
+	} ptr = { NULL };
+
+	va_list ap;
+	va_start  (ap, fmt);
+	int res = vasprintf( &ptr._strp, fmt, ap);
+	if( res < 0 ) throw runtime_error(__FUNCTION__);
+	return ptr._strp ? string( ptr._strp, res ) : string();
 }

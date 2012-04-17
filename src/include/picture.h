@@ -53,7 +53,7 @@ private:
 public:
 	picture(int, int, int, int, int bg_col = 0);
 	~picture();
-	void	video(unsigned char *, int);
+	void	video(unsigned char const *, int);
 	void	pixel(unsigned char data, int pos) {
 		if (pos < 0 || pos >= bufsize) {
 			return ;

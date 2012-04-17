@@ -96,14 +96,18 @@ static Fl_Choice *wefax_choice_tx_lpm           = (Fl_Choice *)0;
 static Fl_Button *wefax_btn_tx_send_color       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_send_grey        = (Fl_Button *)0;
 static Fl_Output *wefax_out_tx_row_num          = (Fl_Output *)0;
+static Fl_Output *wefax_out_tx_col_num          = (Fl_Output *)0;
 static Fl_Button *wefax_btn_tx_send_abort       = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_load             = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_clear            = (Fl_Button *)0;
 static Fl_Button *wefax_btn_tx_close            = (Fl_Button *)0;
 
+/// The image to send.
 static Fl_Shared_Image *wefax_shared_tx_img = (Fl_Shared_Image *)0;
+
+/// This contains the original content of the image to send,
+/// converted into three bytes per pixel.
 static unsigned char *wefax_xmtimg = (unsigned char *)0;
-static unsigned char *wefax_xmtpicbuff = (unsigned char *)0;
 
 /// This indicates whether an image to send is loaded in the GUI.
 /// It allows to acquire twice when re-loading an image without sending.
@@ -114,7 +118,7 @@ static volatile int center_val_prev = 0 ;
 
 static volatile bool global_auto_center = false ;
 
-static void update_auto_center(bool is_auto_center)
+void wefax_pic::update_auto_center(bool is_auto_center)
 {
 	wefax_round_rx_auto_center->value(is_auto_center ? 1 : 0);
 	global_auto_center = is_auto_center;
@@ -385,14 +389,17 @@ static int estimate_rx_image_center( int row_end )
 
 	unsigned const char * img_start = wefax_pic_rx_picture->buffer();
 
-	/// Ths computes the absolute value of the horizontal derivative.
+	/// This computes the absolute value of the horizontal derivative.
 	for( int row_ix = 1; row_ix < row_end ; ++row_ix ) {
 		int col_offset = row_ix * img_wid ;
+		/// Pixels of the current row.
 		const unsigned char * row_start = img_start + col_offset ;
-		/// This is an estimation of how the image has information or is just uniform.
+		/// This is the previous colum of the next row, does not matter.
 		int pix_prev = row_start[img_wid - 1];
+		/// This is an estimation of how the image has information or is just uniform.
 		for( int col_ix = 0; col_ix < img_wid ; ++col_ix ) {
 			int pix_next = row_start[ col_ix ];
+			/// Absolute value of the horizontal derivative.
 			int deriv = pix_next - pix_prev;
 			if( deriv < 0 ) {
 				deriv = -deriv ;
@@ -667,7 +674,7 @@ static void wefax_cb_pic_rx_auto_center( Fl_Widget *, void *)
 	ENSURE_THREAD(FLMAIN_TID);
 
 	char rndVal = wefax_round_rx_auto_center->value();
-	update_auto_center(rndVal ? true : false);
+	wefax_pic::update_auto_center(rndVal ? true : false);
 }
 
 /// This gets the directory where images are accessed by default.
@@ -1328,7 +1335,7 @@ void wefax_pic::save_image(const std::string & fil_name, const std::string & ext
 	std::stringstream local_comments;
 	local_comments << extra_comments ;
 	local_comments << "Slant:" << rx_slant_ratio << "\n" ;
-	local_comments << "Center:" << global_auto_center << "\n" ;
+	local_comments << "Auto-Center:" << ( global_auto_center ? "On" : "Off" ) << "\n" ;
 	wefax_pic_rx_picture->save_png(dfname.c_str(),progdefaults.WEFAX_SaveMonochrome, local_comments.str().c_str());
 	add_to_files_list( dfname );
 	qso_notes( "RX:", fil_name );
@@ -1403,7 +1410,10 @@ static std::string wefax_load_image_after_acquire(const char * fil_name)
 	snprintf( wefax_txclr_tooltip, sizeof(wefax_txclr_tooltip),
 		_("Time needed: %dm %ds (Color)"), tim_color/60, tim_color % 60 );
 	wefax_btn_tx_send_color->tooltip(wefax_txclr_tooltip);
-	wefax_btn_tx_send_color->activate();
+	if( false ) {
+		// No color transmission now because no information this format.
+		wefax_btn_tx_send_color->activate();
+	}
 
 	int tim_grey = wefax_serviceme->tx_time( img_wid * img_hei );
 	static char wefax_txgry_tooltip[24];
@@ -1431,18 +1441,17 @@ static void wefax_load_image(const char * fil_name)
 	wefax_load_image_after_acquire(fil_name);
 }
 
-void wefax_pic::set_tx_pic(unsigned char data, int col, int row, int tx_img_col, bool is_color )
+void wefax_pic::set_tx_pic(unsigned char data, int col, int row, bool is_color )
 {
 	if (wefax_serviceme != active_modem) return;
 	ENSURE_THREAD(FLMAIN_TID);
-	if( ( col >= tx_img_col )
-	 || ( col >= wefax_shared_tx_img->w() )
+	if( ( col >= wefax_shared_tx_img->w() )
 	 || ( row >= wefax_shared_tx_img->h() ) ) {
-		LOG_ERROR("invalid col=%d tx_img_col=%d row=%d", col, tx_img_col, row );
+		LOG_ERROR("invalid col=%d row=%d w=%d h=%d", col, row, wefax_shared_tx_img->w(), wefax_shared_tx_img->h() );
 		exit(EXIT_FAILURE);
 	}
 
-	int offset = row * tx_img_col + col ;
+	int offset = row * wefax_shared_tx_img->w() + col ;
 
 	if (is_color) {
 		wefax_pic_tx_picture->pixel( data, offset );
@@ -1457,9 +1466,11 @@ void wefax_pic::set_tx_pic(unsigned char data, int col, int row, int tx_img_col,
 	if( row != previous_row )
 	{
 		previous_row = row ;
-		char row_num_buffer[20];
-		snprintf( row_num_buffer, sizeof(row_num_buffer), "%d", row );
-		wefax_out_tx_row_num->value( row_num_buffer );
+		char num_buffer[20];
+		snprintf( num_buffer, sizeof(num_buffer), "%d", row );
+		wefax_out_tx_row_num->value( num_buffer );
+		snprintf( num_buffer, sizeof(num_buffer), "%d", wefax_shared_tx_img->w() );
+		wefax_out_tx_col_num->value( num_buffer );
 	}
 }
 
@@ -1481,13 +1492,15 @@ static void wefax_cb_pic_tx_load(Fl_Widget *, void *)
 
 /// Called whether color or b/w image.
 static void wefax_pic_tx_send_common(
-		bool is_color,
-		int img_w,
-		int img_h,
-		int xmt_bytes )
+		bool is_color )
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	FL_LOCK_D();
+
+	if (wefax_serviceme != active_modem) return;
+
+	int img_w = wefax_shared_tx_img->w();
+	int img_h = wefax_shared_tx_img->h();
 
 	wefax_choice_tx_lpm->hide();
 	wefax_btn_tx_send_color->hide();
@@ -1497,18 +1510,19 @@ static void wefax_pic_tx_send_common(
 	wefax_btn_tx_clear->hide();
 	wefax_btn_tx_close->hide();
 	wefax_out_tx_row_num->show();
+	wefax_out_tx_col_num->show();
 	wefax_btn_tx_send_abort->show();
 	wefax_pic_tx_picture->clear();
 
 	wefax_out_tx_row_num->value( "Init" );
+	wefax_out_tx_col_num->value( "" );
 
 	wefax_serviceme->set_tx_parameters(
 			get_choice_lpm_value( wefax_choice_tx_lpm ),
-			wefax_xmtpicbuff,
+			wefax_xmtimg,
 			is_color,
 			img_w,
-			img_h,
-			xmt_bytes );
+			img_h );
 
 	FL_UNLOCK_D();
 	start_tx();
@@ -1516,45 +1530,12 @@ static void wefax_pic_tx_send_common(
 
 static void wefax_cb_pic_tx_send_color( Fl_Widget * , void *)
 {
-	LOG_DEBUG("Entering" );
-	if (wefax_serviceme != active_modem) return;
-
-	int img_wid = wefax_shared_tx_img->w();
-	int img_hei = wefax_shared_tx_img->h();
-	if (wefax_xmtpicbuff) delete [] wefax_xmtpicbuff;
-	wefax_xmtpicbuff = new unsigned char [img_wid*img_hei*bytes_per_pix];
-
-	for (int iy = 0; iy < img_hei; iy++) {
-		int rowstart = iy * img_wid * bytes_per_pix;
-		for (int rgb = 0; rgb < bytes_per_pix; rgb++) {
-			for (int ix = 0; ix < img_wid; ix++) {
-				wefax_xmtpicbuff[rowstart + rgb*img_wid + ix]
-					= wefax_xmtimg[rowstart + rgb + ix*bytes_per_pix];
-			}
-		}
-	}
-
-	wefax_pic_tx_send_common(true,img_wid,img_hei,img_wid * img_hei * bytes_per_pix);
+	wefax_pic_tx_send_common(true);
 }
 
 static void wefax_cb_pic_tx_send_grey( Fl_Widget *, void *)
 {
-	LOG_DEBUG("Entering" );
-	if (wefax_serviceme != active_modem) return;
-
-	int img_wid = wefax_shared_tx_img->w();
-	int img_hei = wefax_shared_tx_img->h();
-	if (wefax_xmtpicbuff) delete [] wefax_xmtpicbuff;
-	wefax_xmtpicbuff = new unsigned char [img_wid*img_hei];
-
-	for (int i = 0; i < img_wid*img_hei; i++) {
-		wefax_xmtpicbuff[i]
-			= ( 31 * wefax_xmtimg[i*bytes_per_pix]
-				+ 61 * wefax_xmtimg[i*bytes_per_pix + 1]
-				+ 8 * wefax_xmtimg[i*bytes_per_pix + 2])/100;
-	}
-
-	wefax_pic_tx_send_common(false,img_wid,img_hei,img_wid * img_hei);
+	wefax_pic_tx_send_common(false);
 }
 
 
@@ -1576,6 +1557,7 @@ void wefax_pic::restart_tx_viewer(void)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	wefax_out_tx_row_num->hide();
+	wefax_out_tx_col_num->hide();
 	wefax_btn_tx_send_abort->hide();
 	wefax_btn_tx_load->show();
 	wefax_btn_tx_close->show();
@@ -1696,17 +1678,20 @@ void wefax_pic::create_tx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_btn_tx_close->callback(wefax_cb_pic_tx_close, 0);
 	wefax_btn_tx_close->tooltip(_("Close transmit window"));
 
-	static const char * title_row_num = "" ;
-	width_offset += fl_width( title_row_num );
-	wefax_out_tx_row_num = new Fl_Output(20, y_btn, 100, hei_tx_btn, _(title_row_num));
+	wefax_out_tx_row_num = new Fl_Output(20, y_btn, 50, hei_tx_btn );
 	wefax_out_tx_row_num->align(FL_ALIGN_LEFT);
 	wefax_out_tx_row_num->tooltip(_("Fax line number being sent."));
 
-	wefax_btn_tx_send_abort = new Fl_Button(180, y_btn, 122, hei_tx_btn, "Abort Xmt");
+	wefax_out_tx_col_num = new Fl_Output(80, y_btn, 50, hei_tx_btn, "x" );
+	wefax_out_tx_col_num->align(FL_ALIGN_LEFT);
+	wefax_out_tx_col_num->tooltip(_("Fax column number."));
+
+	wefax_btn_tx_send_abort = new Fl_Button(180, y_btn, 100, hei_tx_btn, _("Abort Transmit") );
 	wefax_btn_tx_send_abort->callback(wefax_cb_pic_tx_send_abort, 0);
 	wefax_btn_tx_send_abort->tooltip(_("Abort transmission"));
 
 	wefax_out_tx_row_num->hide();
+	wefax_out_tx_col_num->hide();
 	wefax_btn_tx_send_abort->hide();
 	wefax_btn_tx_send_color->deactivate();
 	wefax_btn_tx_send_grey->deactivate();
@@ -1759,8 +1744,6 @@ void wefax_pic::delete_tx_viewer()
 
 	delete [] wefax_xmtimg;
 	wefax_xmtimg = 0;
-	delete [] wefax_xmtpicbuff;
-	wefax_xmtpicbuff = 0;
 	FL_UNLOCK_D();
 }
 

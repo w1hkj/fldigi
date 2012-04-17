@@ -77,11 +77,11 @@ picture::~picture()
 	if (vidbuf) delete [] vidbuf;
 }
 
-void picture::video(unsigned char *data, int len )
+void picture::video(unsigned char const *data, int len )
 {
 	if (len > bufsize) return;
 	FL_LOCK_D();
-	memmove( vidbuf, data, len );
+	memcpy( vidbuf, data, len );
 	redraw();
 	FL_UNLOCK_D();
 }

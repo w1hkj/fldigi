@@ -48,8 +48,7 @@ public:
 		const unsigned char * xmtpic_buffer,
 		bool is_color,
 		int img_w,
-		int img_h,
-		int xmt_bytes );
+		int img_h );
 
 	void set_tx_abort_flag(void)
 	{

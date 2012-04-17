@@ -133,6 +133,8 @@ std::basic_string<CharT>  join(const std::basic_string<CharT>* begin, size_t len
 
 std::vector<std::string> split(const char* re_str, const char* str, unsigned max_split = UINT_MAX);
 
+std::string strformat( const char * fmt, ... );
+
 #endif // STRUTIL_H_
 
 // Local Variables:
