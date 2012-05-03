@@ -257,16 +257,17 @@ thor::thor(trx_mode md)
 
 	prev1symbol = prev2symbol = 0;
 
+	static const int traceback = 45 ;
+	static const int chunksize = 1 ;
+
 	if ( mode == MODE_THOR125 || mode == MODE_THOR85) {
 		Enc = new encoder (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
-		Dec = new viterbi (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
+		Dec = new viterbi::impl <GALILEO_K, chunksize, traceback >( GALILEO_POLY1, GALILEO_POLY2 );
 	} else {
 		Enc = new encoder (THOR_K, THOR_POLY1, THOR_POLY2);
-		Dec = new viterbi (THOR_K, THOR_POLY1, THOR_POLY2);
+		Dec = new viterbi::impl <THOR_K, chunksize, traceback >( THOR_POLY1, THOR_POLY2 );
 	}
 
-	Dec->settraceback (45);
-	Dec->setchunksize (1);
 	Txinlv = new interleave (4, INTERLEAVE_FWD); // 4x4x10
 	Rxinlv = new interleave (4, INTERLEAVE_REV); // 4x4x10
 	bitstate = 0;
@@ -339,8 +340,6 @@ void thor::recvchar(int c)
 
 void thor::decodePairs(unsigned char symbol)
 {
-	int c, ch, met;
-
 	symbolpair[0] = symbolpair[1];
 	symbolpair[1] = symbol;
 
@@ -348,7 +347,7 @@ void thor::decodePairs(unsigned char symbol)
 	
 	if (symcounter) return;
 
-	c = Dec->decode (symbolpair, &met);
+	int c = Dec->decode (symbolpair);
 
 	if (c == -1)
 		return;
@@ -358,7 +357,7 @@ void thor::decodePairs(unsigned char symbol)
 
 	datashreg = (datashreg << 1) | !!c;
 	if ((datashreg & 7) == 1) {
-		ch = thorvaridec(datashreg >> 1);
+		int ch = thorvaridec(datashreg >> 1);
 		recvchar(ch);
 		datashreg = 1;
 	}
@@ -366,14 +365,12 @@ void thor::decodePairs(unsigned char symbol)
 
 void thor::decodesymbol()
 {
-	int c;
-	double fdiff;//, softmag;
 	unsigned char symbols[4];
 	bool outofrange = false;
 
 // Decode the IFK+ sequence, which results in a single nibble
 
-	fdiff = currsymbol - prev1symbol;
+	double fdiff = currsymbol - prev1symbol;
 		
 	if (reverse) fdiff = -fdiff;
 	fdiff /= paths;
@@ -381,7 +378,7 @@ void thor::decodesymbol()
 
 	if (fabs(fdiff) > 17) outofrange = true;
 
-	c = (int)floor(fdiff + .5) - 2;
+	int c = (int)floor(fdiff + .5) - 2;
 	if (c < 0) c += THORNUMTONES;
 
 	if (staticburst == true || outofrange == true) // puncture the code

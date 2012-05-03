@@ -28,6 +28,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <memory.h>
 
 #include <cmath>
 #include "misc.h"
@@ -105,14 +106,15 @@ void fftfilt::create_filter(double f1, double f2)
 int fftfilt::run(const complex& in, complex **out)
 {
 // collect filterlen/2 input samples
+	const int filterlen_div2 = filterlen / 2 ;
 	filtdata[inptr++] = in;
 
-	if (inptr < filterlen / 2)
+	if (inptr < filterlen_div2)
 		return 0;
 	if (pass) --pass; // filter output is not stable until 2 passes
 
 // zero the rest of the input data
-	for (int i = filterlen / 2 ; i < filterlen; i++)
+	for (int i = filterlen_div2 ; i < filterlen; i++)
 		filtdata[i].re = filtdata[i].im = 0.0;
 	
 // FFT transpose to the frequency domain
@@ -127,15 +129,15 @@ int fftfilt::run(const complex& in, complex **out)
 	ift->icdft(filtdata);
 
 // overlap and add
-	for (int i = 0; i < filterlen / 2; i++) {
-		filtdata[i].re += ovlbuf[i].re;
-		filtdata[i].im += ovlbuf[i].im;
+	for (int i = 0; i < filterlen_div2; i++) {
+		filtdata[i] += ovlbuf[i];
 	}
 	*out = filtdata;
 
 // save the second half for overlapping
-	for (int i = 0; i < filterlen / 2; i++)
-		ovlbuf[i] = filtdata[i + filterlen / 2];
+	// Memcpy is allowed because complex are POD objects.
+	memcpy( ovlbuf, filtdata + filterlen_div2, sizeof( ovlbuf[0] ) * filterlen_div2 );
+
 
 // clear inbuf pointer
 	inptr = 0;
@@ -143,5 +145,5 @@ int fftfilt::run(const complex& in, complex **out)
 // signal the caller there is filterlen/2 samples ready
 	if (pass) return 0;
 	
-	return filterlen / 2;
+	return filterlen_div2;
 }

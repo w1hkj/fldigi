@@ -333,7 +333,7 @@ psk::psk(trx_mode pskmode) : modem()
 
 	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
-		dec = new viterbi(K, POLY1, POLY2);
+		dec = new viterbi::impl<K>(POLY1, POLY2);
 	}
 
 	if (_pskr) {
@@ -342,10 +342,8 @@ psk::psk(trx_mode pskmode) : modem()
 		// as 3 bits long. This minimises intercharacters decoding
 		// interactions.
 		enc = new encoder(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec->setchunksize(4);
-		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec2->setchunksize(4);
+		dec = new viterbi::impl<PSKR_K,4>( PSKR_POLY1, PSKR_POLY2);
+		dec2 = new viterbi::impl<PSKR_K,4>(PSKR_POLY1, PSKR_POLY2);
 
 		// Interleaver. To maintain constant time delay between bits,
 		// we double the number of concatenated square iterleavers for

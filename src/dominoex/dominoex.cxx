@@ -315,9 +315,7 @@ dominoex::dominoex(trx_mode md)
 	prev1symbol = prev2symbol = 0;
 
 	MuPskEnc	= new encoder (K, POLY1, POLY2);
-	MuPskDec	= new viterbi (K, POLY1, POLY2);
-	MuPskDec->settraceback (45);
-	MuPskDec->setchunksize (1);
+	MuPskDec	= new viterbi::impl <K, 1, 45>(POLY1, POLY2);
 	MuPskTxinlv = new interleave (-1, INTERLEAVE_FWD);
 	MuPskRxinlv = new interleave (-1, INTERLEAVE_REV);
 	Mu_bitstate = 0;

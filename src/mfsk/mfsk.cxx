@@ -224,13 +224,8 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	pipe		= new rxpipe[ 2 * symlen ];
 
 	enc			= new encoder (K, POLY1, POLY2);
-	dec1		= new viterbi (K, POLY1, POLY2);
-	dec2		= new viterbi (K, POLY1, POLY2);
-
-	dec1->settraceback (45);
-	dec2->settraceback (45);
-	dec1->setchunksize (1);
-	dec2->setchunksize (1);
+	dec1		= new viterbi::impl <K, 1, 45 >( POLY1, POLY2 );
+	dec2		= new viterbi::impl <K, 1, 45 >( POLY1, POLY2 );
 
 	txinlv = new interleave (symbits, INTERLEAVE_FWD);
 	rxinlv = new interleave (symbits, INTERLEAVE_REV);

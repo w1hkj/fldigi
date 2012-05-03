@@ -431,18 +431,17 @@ sfft::~sfft()
 
 complex *sfft::run(const complex& input)
 {
-	complex z;
-	complex y;
+	complex & de = delay[ptr];
+	complex z(
+		input.re - k2 * de.re,
+		input.im - k2 * de.im);
+	de = input;
 
-	z.re = input.re - k2 * delay[ptr].re;
-	z.im = input.im - k2 * delay[ptr].im;
-	delay[ptr] = input;
+	++ptr ;
+	if( ptr >= fftlen ) ptr = 0 ;
 
-	ptr = (ptr + 1) % fftlen;
-	
 	for (int i = first; i < last; i++) {
-		y = bins[i] + z;
-		bins[i] = y * vrot[i];
+		bins[i] = ( bins[i] + z ) * vrot[i];
 	}
 	return &bins[first];
 }
