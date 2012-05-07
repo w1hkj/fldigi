@@ -1,8 +1,17 @@
 
 
-=Version 3.21.41=
+=Version 3.21.42=
 
-2012-03-26  David Freese  <w1hkj@w1hkj.com>
+2012-04-08  David Freese  <w1hkj@w1hkj.com>
+
+	1089250: Auto file directory
+	8bdd45e: Cmd line help
+	ccc4d5d: FreqControl paste
+	fc870d5: Base directory
+	e298249: psk comments
+
+
+=Version 3.21.41=
 
 	1779db5: Check for updates
 	0d2e7c3: Notch indicator color
