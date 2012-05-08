@@ -2,15 +2,28 @@ const char* szBeginner = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n\
     \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n\
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
 <head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\
-<meta name=\"generator\" content=\"AsciiDoc 8.4.4\" />\n\
+<meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" />\n\
+<meta name=\"generator\" content=\"AsciiDoc 8.6.4\" />\n\
 <title>Beginners' Guide to Fldigi</title>\n\
 <style type=\"text/css\">\n\
-/* Debug borders */\n\
-p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {\n\
-/*\n\
-  border: 1px solid red;\n\
-*/\n\
+/* Sans-serif font. */\n\
+h1, h2, h3, h4, h5, h6,\n\
+div.title, caption.title,\n\
+thead, p.table.header,\n\
+div#toctitle,\n\
+span#author, span#revnumber, span#revdate, span#revremark,\n\
+div#footer {\n\
+  font-family: Arial,Helvetica,sans-serif;\n\
+}\n\
+\n\
+/* Serif font. */\n\
+div.sectionbody {\n\
+  font-family: Georgia,\"Times New Roman\",Times,serif;\n\
+}\n\
+\n\
+/* Monospace font. */\n\
+tt {\n\
+  font-size: inherit;\n\
 }\n\
 \n\
 body {\n\
@@ -36,12 +49,12 @@ strong {\n\
 }\n\
 \n\
 tt {\n\
+  font-size: inherit;\n\
   color: navy;\n\
 }\n\
 \n\
 h1, h2, h3, h4, h5, h6 {\n\
   color: #527bbd;\n\
-  font-family: sans-serif;\n\
   margin-top: 1.2em;\n\
   margin-bottom: 0.5em;\n\
   line-height: 1.3;\n\
@@ -61,7 +74,6 @@ h3 + * {\n\
 }\n\
 \n\
 div.sectionbody {\n\
-  font-family: serif;\n\
   margin-left: 0;\n\
 }\n\
 \n\
@@ -77,6 +89,8 @@ p {\n\
 ul, ol, li > p {\n\
   margin-top: 0;\n\
 }\n\
+ul > li     { color: #aaa; }\n\
+ul > li > * { color: black; }\n\
 \n\
 pre {\n\
   padding: 0;\n\
@@ -85,18 +99,15 @@ pre {\n\
 \n\
 span#author {\n\
   color: #527bbd;\n\
-  font-family: sans-serif;\n\
   font-weight: bold;\n\
   font-size: 1.1em;\n\
 }\n\
 span#email {\n\
 }\n\
-span#revision {\n\
-  font-family: sans-serif;\n\
+span#revnumber, span#revdate, span#revremark {\n\
 }\n\
 \n\
 div#footer {\n\
-  font-family: sans-serif;\n\
   font-size: small;\n\
   border-top: 2px solid silver;\n\
   padding-top: 0.5em;\n\
@@ -118,12 +129,14 @@ div#preamble {\n\
 div.tableblock, div.imageblock, div.exampleblock, div.verseblock,\n\
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,\n\
 div.admonitionblock {\n\
-  margin-top: 1.5em;\n\
+  margin-top: 1.0em;\n\
   margin-bottom: 1.5em;\n\
 }\n\
 div.admonitionblock {\n\
-  margin-top: 2.5em;\n\
-  margin-bottom: 2.5em;\n\
+  margin-top: 2.0em;\n\
+  margin-bottom: 2.0em;\n\
+  margin-right: 10%;\n\
+  color: #606060;\n\
 }\n\
 \n\
 div.content { /* Block element content. */\n\
@@ -133,7 +146,6 @@ div.content { /* Block element content. */\n\
 /* Block element titles. */\n\
 div.title, caption.title {\n\
   color: #527bbd;\n\
-  font-family: sans-serif;\n\
   font-weight: bold;\n\
   text-align: left;\n\
   margin-top: 1.0em;\n\
@@ -155,31 +167,34 @@ div.content + div.title {\n\
 \n\
 div.sidebarblock > div.content {\n\
   background: #ffffee;\n\
-  border: 1px solid silver;\n\
+  border: 1px solid #dddddd;\n\
+  border-left: 4px solid #f0f0f0;\n\
   padding: 0.5em;\n\
 }\n\
 \n\
 div.listingblock > div.content {\n\
-  border: 1px solid silver;\n\
-  background: #f4f4f4;\n\
+  border: 1px solid #dddddd;\n\
+  border-left: 5px solid #f0f0f0;\n\
+  background: #f8f8f8;\n\
   padding: 0.5em;\n\
 }\n\
 \n\
-div.quoteblock {\n\
-  padding-left: 2.0em;\n\
+div.quoteblock, div.verseblock {\n\
+  padding-left: 1.0em;\n\
+  margin-left: 1.0em;\n\
   margin-right: 10%;\n\
+  border-left: 5px solid #f0f0f0;\n\
+  color: #777777;\n\
 }\n\
+\n\
 div.quoteblock > div.attribution {\n\
   padding-top: 0.5em;\n\
   text-align: right;\n\
 }\n\
 \n\
-div.verseblock {\n\
-  padding-left: 2.0em;\n\
-  margin-right: 10%;\n\
-}\n\
-div.verseblock > div.content {\n\
-  white-space: pre;\n\
+div.verseblock > pre.content {\n\
+  font-family: inherit;\n\
+  font-size: inherit;\n\
 }\n\
 div.verseblock > div.attribution {\n\
   padding-top: 0.75em;\n\
@@ -200,17 +215,17 @@ div.admonitionblock .icon {\n\
 }\n\
 div.admonitionblock td.content {\n\
   padding-left: 0.5em;\n\
-  border-left: 2px solid silver;\n\
+  border-left: 3px solid #dddddd;\n\
 }\n\
 \n\
 div.exampleblock > div.content {\n\
-  border-left: 2px solid silver;\n\
-  padding: 0.5em;\n\
+  border-left: 3px solid #dddddd;\n\
+  padding-left: 0.5em;\n\
 }\n\
 \n\
 div.imageblock div.content { padding-left: 0; }\n\
-div.imageblock img { border: 1px solid silver; }\n\
 span.image img { border-style: none; }\n\
+a.image:visited { color: white; }\n\
 \n\
 dl {\n\
   margin-top: 0.8em;\n\
@@ -255,9 +270,9 @@ div.compact div, div.compact div {\n\
 div.tableblock > table {\n\
   border: 3px solid #527bbd;\n\
 }\n\
-thead {\n\
-  font-family: sans-serif;\n\
+thead, p.table.header {\n\
   font-weight: bold;\n\
+  color: #527bbd;\n\
 }\n\
 tfoot {\n\
   font-weight: bold;\n\
@@ -310,13 +325,52 @@ div.hdlist.compact tr {\n\
   background: yellow;\n\
 }\n\
 \n\
+.footnote, .footnoteref {\n\
+  font-size: 0.8em;\n\
+}\n\
+\n\
+span.footnote, span.footnoteref {\n\
+  vertical-align: super;\n\
+}\n\
+\n\
+#footnotes {\n\
+  margin: 20px 0 20px 0;\n\
+  padding: 7px 0 0 0;\n\
+}\n\
+\n\
+#footnotes div.footnote {\n\
+  margin: 0 0 5px 0;\n\
+}\n\
+\n\
+#footnotes hr {\n\
+  border: none;\n\
+  border-top: 1px solid silver;\n\
+  height: 1px;\n\
+  text-align: left;\n\
+  margin-left: 0;\n\
+  width: 20%;\n\
+  min-width: 100px;\n\
+}\n\
+\n\
+div.colist td {\n\
+  padding-right: 0.5em;\n\
+  padding-bottom: 0.3em;\n\
+  vertical-align: top;\n\
+}\n\
+div.colist td img {\n\
+  margin-top: 0.3em;\n\
+}\n\
+\n\
 @media print {\n\
   div#footer-badges { display: none; }\n\
 }\n\
 \n\
+div#toc {\n\
+  margin-bottom: 2.5em;\n\
+}\n\
+\n\
 div#toctitle {\n\
   color: #527bbd;\n\
-  font-family: sans-serif;\n\
   font-size: 1.1em;\n\
   font-weight: bold;\n\
   margin-top: 1.0em;\n\
@@ -339,51 +393,53 @@ div.toclevel4 {\n\
   margin-left: 6em;\n\
   font-size: 0.9em;\n\
 }\n\
-/* Workarounds for IE6's broken and incomplete CSS2. */\n\
 \n\
-div.sidebar-content {\n\
-  background: #ffffee;\n\
-  border: 1px solid silver;\n\
-  padding: 0.5em;\n\
-}\n\
-div.sidebar-title, div.image-title {\n\
-  color: #527bbd;\n\
-  font-family: sans-serif;\n\
-  font-weight: bold;\n\
-  margin-top: 0.0em;\n\
-  margin-bottom: 0.5em;\n\
-}\n\
+span.aqua { color: aqua; }\n\
+span.black { color: black; }\n\
+span.blue { color: blue; }\n\
+span.fuchsia { color: fuchsia; }\n\
+span.gray { color: gray; }\n\
+span.green { color: green; }\n\
+span.lime { color: lime; }\n\
+span.maroon { color: maroon; }\n\
+span.navy { color: navy; }\n\
+span.olive { color: olive; }\n\
+span.purple { color: purple; }\n\
+span.red { color: red; }\n\
+span.silver { color: silver; }\n\
+span.teal { color: teal; }\n\
+span.white { color: white; }\n\
+span.yellow { color: yellow; }\n\
 \n\
-div.listingblock div.content {\n\
-  border: 1px solid silver;\n\
-  background: #f4f4f4;\n\
-  padding: 0.5em;\n\
-}\n\
+span.aqua-background { background: aqua; }\n\
+span.black-background { background: black; }\n\
+span.blue-background { background: blue; }\n\
+span.fuchsia-background { background: fuchsia; }\n\
+span.gray-background { background: gray; }\n\
+span.green-background { background: green; }\n\
+span.lime-background { background: lime; }\n\
+span.maroon-background { background: maroon; }\n\
+span.navy-background { background: navy; }\n\
+span.olive-background { background: olive; }\n\
+span.purple-background { background: purple; }\n\
+span.red-background { background: red; }\n\
+span.silver-background { background: silver; }\n\
+span.teal-background { background: teal; }\n\
+span.white-background { background: white; }\n\
+span.yellow-background { background: yellow; }\n\
 \n\
-div.quoteblock-attribution {\n\
-  padding-top: 0.5em;\n\
-  text-align: right;\n\
-}\n\
-\n\
-div.verseblock-content {\n\
-  white-space: pre;\n\
-}\n\
-div.verseblock-attribution {\n\
-  padding-top: 0.75em;\n\
-  text-align: left;\n\
-}\n\
-\n\
-div.exampleblock-content {\n\
-  border-left: 2px solid silver;\n\
-  padding-left: 0.5em;\n\
-}\n\
-\n\
-/* IE6 sets dynamically generated links as visited. */\n\
-div#toc a:visited { color: blue; }\n\
+span.big { font-size: 2em; }\n\
+span.small { font-size: 0.6em; }\n\
 </style>\n\
 <script type=\"text/javascript\">\n\
 /*<![CDATA[*/\n\
-window.onload = function(){generateToc(1)}\n\
+window.onload = function(){asciidoc.footnotes(); asciidoc.toc(1);}\n\
+var asciidoc = {  // Namespace.\n\
+\n\
+/////////////////////////////////////////////////////////////////////\n\
+// Table Of Contents generator\n\
+/////////////////////////////////////////////////////////////////////\n\
+\n\
 /* Author: Mihai Bazon, September 2002\n\
  * http://students.infoiasi.ro/~mishoo\n\
  *\n\
@@ -395,53 +451,55 @@ window.onload = function(){generateToc(1)}\n\
  */\n\
 \n\
  /* modified by Troy D. Hanson, September 2006. License: GPL */\n\
- /* modified by Stuart Rackham, October 2006. License: GPL */\n\
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */\n\
 \n\
-function getText(el) {\n\
-  var text = \"\";\n\
-  for (var i = el.firstChild; i != null; i = i.nextSibling) {\n\
-    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.\n\
-      text += i.data;\n\
-    else if (i.firstChild != null)\n\
-      text += getText(i);\n\
-  }\n\
-  return text;\n\
-}\n\
+// toclevels = 1..4.\n\
+toc: function (toclevels) {\n\
 \n\
-function TocEntry(el, text, toclevel) {\n\
-  this.element = el;\n\
-  this.text = text;\n\
-  this.toclevel = toclevel;\n\
-}\n\
-\n\
-function tocEntries(el, toclevels) {\n\
-  var result = new Array;\n\
-  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');\n\
-  // Function that scans the DOM tree for header elements (the DOM2\n\
-  // nodeIterator API would be a better technique but not supported by all\n\
-  // browsers).\n\
-  var iterate = function (el) {\n\
+  function getText(el) {\n\
+    var text = \"\";\n\
     for (var i = el.firstChild; i != null; i = i.nextSibling) {\n\
-      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {\n\
-        var mo = re.exec(i.tagName)\n\
-        if (mo)\n\
-          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);\n\
-        iterate(i);\n\
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.\n\
+        text += i.data;\n\
+      else if (i.firstChild != null)\n\
+        text += getText(i);\n\
+    }\n\
+    return text;\n\
+  }\n\
+\n\
+  function TocEntry(el, text, toclevel) {\n\
+    this.element = el;\n\
+    this.text = text;\n\
+    this.toclevel = toclevel;\n\
+  }\n\
+\n\
+  function tocEntries(el, toclevels) {\n\
+    var result = new Array;\n\
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');\n\
+    // Function that scans the DOM tree for header elements (the DOM2\n\
+    // nodeIterator API would be a better technique but not supported by all\n\
+    // browsers).\n\
+    var iterate = function (el) {\n\
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {\n\
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {\n\
+          var mo = re.exec(i.tagName);\n\
+          if (mo && (i.getAttribute(\"class\") || i.getAttribute(\"className\")) != \"float\") {\n\
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);\n\
+          }\n\
+          iterate(i);\n\
+        }\n\
       }\n\
     }\n\
+    iterate(el);\n\
+    return result;\n\
   }\n\
-  iterate(el);\n\
-  return result;\n\
-}\n\
 \n\
-// This function does the work. toclevels = 1..4.\n\
-function generateToc(toclevels) {\n\
   var toc = document.getElementById(\"toc\");\n\
-  var entries = tocEntries(document.getElementsByTagName(\"body\")[0], toclevels);\n\
+  var entries = tocEntries(document.getElementById(\"content\"), toclevels);\n\
   for (var i = 0; i < entries.length; ++i) {\n\
     var entry = entries[i];\n\
     if (entry.element.id == \"\")\n\
-      entry.element.id = \"toc\" + i;\n\
+      entry.element.id = \"_toc_\" + i;\n\
     var a = document.createElement(\"a\");\n\
     a.href = \"#\" + entry.element.id;\n\
     a.appendChild(document.createTextNode(entry.text));\n\
@@ -451,12 +509,63 @@ function generateToc(toclevels) {\n\
     toc.appendChild(div);\n\
   }\n\
   if (entries.length == 0)\n\
-    document.getElementById(\"header\").removeChild(toc);\n\
+    toc.parentNode.removeChild(toc);\n\
+},\n\
+\n\
+\n\
+/////////////////////////////////////////////////////////////////////\n\
+// Footnotes generator\n\
+/////////////////////////////////////////////////////////////////////\n\
+\n\
+/* Based on footnote generation code from:\n\
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html\n\
+ */\n\
+\n\
+footnotes: function () {\n\
+  var cont = document.getElementById(\"content\");\n\
+  var noteholder = document.getElementById(\"footnotes\");\n\
+  var spans = cont.getElementsByTagName(\"span\");\n\
+  var refs = {};\n\
+  var n = 0;\n\
+  for (i=0; i<spans.length; i++) {\n\
+    if (spans[i].className == \"footnote\") {\n\
+      n++;\n\
+      // Use [\\s\\S] in place of . so multi-line matches work.\n\
+      // Because JavaScript has no s (dotall) regex flag.\n\
+      note = spans[i].innerHTML.match(/\\s*\\[([\\s\\S]*)]\\s*/)[1];\n\
+      noteholder.innerHTML +=\n\
+        \"<div class='footnote' id='_footnote_\" + n + \"'>\" +\n\
+        \"<a href='#_footnoteref_\" + n + \"' title='Return to text'>\" +\n\
+        n + \"</a>. \" + note + \"</div>\";\n\
+      spans[i].innerHTML =\n\
+        \"[<a id='_footnoteref_\" + n + \"' href='#_footnote_\" + n +\n\
+        \"' title='View footnote' class='footnote'>\" + n + \"</a>]\";\n\
+      var id =spans[i].getAttribute(\"id\");\n\
+      if (id != null) refs[\"#\"+id] = n;\n\
+    }\n\
+  }\n\
+  if (n == 0)\n\
+    noteholder.parentNode.removeChild(noteholder);\n\
+  else {\n\
+    // Process footnoterefs.\n\
+    for (i=0; i<spans.length; i++) {\n\
+      if (spans[i].className == \"footnoteref\") {\n\
+        var href = spans[i].getElementsByTagName(\"a\")[0].getAttribute(\"href\");\n\
+        href = href.match(/#.*/)[0];  // Because IE return full URL.\n\
+        n = refs[href];\n\
+        spans[i].innerHTML =\n\
+          \"[<a href='#_footnote_\" + n +\n\
+          \"' title='View footnote' class='footnote'>\" + n + \"</a>]\";\n\
+      }\n\
+    }\n\
+  }\n\
+}\n\
+\n\
 }\n\
 /*]]>*/\n\
 </script>\n\
 </head>\n\
-<body>\n\
+<body class=\"article\">\n\
 <div id=\"header\">\n\
 <h1>Beginners' Guide to Fldigi</h1>\n\
 <div id=\"toc\">\n\
@@ -464,10 +573,11 @@ function generateToc(toclevels) {\n\
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>\n\
 </div>\n\
 </div>\n\
+<div id=\"content\">\n\
 <div id=\"preamble\">\n\
 <div class=\"sectionbody\">\n\
 <div class=\"sidebarblock\">\n\
-<div class=\"sidebar-content\">\n\
+<div class=\"content\">\n\
 <div class=\"paragraph\"><p>Of necessity, this Beginners' Guide contains only as much as you need to know to\n\
 get started. You should learn how to make best use of the program by reading the\n\
 <a href=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</a>. You can also access it from within the Fldigi program from the <em>Help</em>\n\
@@ -475,9 +585,11 @@ menu item.</p></div>\n\
 </div></div>\n\
 </div>\n\
 </div>\n\
+<div class=\"sect1\">\n\
 <h2 id=\"ref-beginners-q-a\">1. Beginners' Questions Answered</h2>\n\
 <div class=\"sectionbody\">\n\
-<h3 id=\"_what_is_fldigi\">1.1. What is Fldigi?</h3><div style=\"clear:left\"></div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_what_is_fldigi\">1.1. What is Fldigi?</h3>\n\
 <div class=\"paragraph\"><p><a href=\"http://www.w1hkj.com/Fldigi.html\">Fldigi</a> is a computer program intended for Amateur Radio Digital Modes\n\
 operation using a PC (Personal Computer). Fldigi operates (as does most similar\n\
 software) in conjunction with a conventional HF SSB radio transceiver, and uses\n\
@@ -490,7 +602,9 @@ learn. Fldigi includes all the popular modes, such as DominoEX, MFSK16, PSK31,\n
 and RTTY.</p></div>\n\
 <div class=\"paragraph\"><p>Unusually, Fldigi is available for multiple computer operating systems;\n\
 FreeBSD&#8482;; Linux&#8482;, OS X&#8482; and Windows&#8482;.</p></div>\n\
-<h3 id=\"_what_is_a_digital_mode\">1.2. What is a Digital Mode?</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_what_is_a_digital_mode\">1.2. What is a Digital Mode?</h3>\n\
 <div class=\"paragraph\"><p>Digital Modes are a means of operating Amateur radio from the computer\n\
 keyboard. The computer acts as <em>modem</em> (modulator - demodulator), as well as\n\
 allowing you to type, and see what the other person types. It also controls the\n\
@@ -510,7 +624,9 @@ modes also offer built-in automatic error correction.</p></div>\n\
 same abbreviations are used. Software such as Fldigi makes this very simple as\n\
 most of the procedural business is set up for you using the Function Keys at the\n\
 top of the keyboard. These are easy to learn.</p></div>\n\
-<h3 id=\"_why_all_the_different_modes\">1.3. Why all the different modes?</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_why_all_the_different_modes\">1.3. Why all the different modes?</h3>\n\
 <div class=\"paragraph\"><p>HF propagation is very dependent on the ionosphere, which reflects the signals\n\
 back to earth. There are strong interactions between different signals arriving\n\
 from different paths. Experience has shown that particular modulation systems,\n\
@@ -520,12 +636,14 @@ noise level, signal level and available power also affect the choice of\n\
 mode. While in many cases several different modes might be suitable, having a\n\
 choice adds to the operating pleasure. It is difficult to advise which mode is\n\
 best for each particular occasion, and experience plays an important role.\n\
-<br />[To gain a good insight into each mode and its capabilities, you might\n\
+<span class=\"footnote\"><br />[To gain a good insight into each mode and its capabilities, you might\n\
 consider purchasing <em>Digital Modes for All Occasions</em> (ISBN 1-872309-82-8) by\n\
 Murray Greenman ZL1BPU, published by the RSGB and also available from\n\
 FUNKAMATEUR and CQ Communications; or the ARRL&#8217;s <em>HF Digital Handbook</em> (ISBN\n\
-0-87259-103-4) by Steve Ford, WB8IMY.]<br /></p></div>\n\
-<h3 id=\"_how_do_i_recognise_and_tune_in_the_signals\">1.4. How do I recognise and tune in the signals?</h3><div style=\"clear:left\"></div>\n\
+0-87259-103-4) by Steve Ford, WB8IMY.]<br /></span></p></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_how_do_i_recognise_and_tune_in_the_signals\">1.4. How do I recognise and tune in the signals?</h3>\n\
 <div class=\"paragraph\"><p>Recognising the different modes comes with experience. It is a matter of\n\
 listening to the signal, and observing the appearance of the signal on the\n\
 tuning display. You can also practise transmitting with the transceiver\n\
@@ -545,9 +663,13 @@ you need to enable the feature in the receiver, but in addition the stations you
 are wishing to tune in need to have this feature enabled on transmission. Other\n\
 programs also offer this RSID feature as an option.</p></div>\n\
 </div>\n\
+</div>\n\
+</div>\n\
+<div class=\"sect1\">\n\
 <h2 id=\"ref-setting-up\">2. Setting Up</h2>\n\
 <div class=\"sectionbody\">\n\
-<h3 id=\"_fldigi_settings\">2.1. Fldigi settings</h3><div style=\"clear:left\"></div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_fldigi_settings\">2.1. Fldigi settings</h3>\n\
 <div class=\"ulist\"><div class=\"title\">Essentials</div><ul>\n\
 <li>\n\
 <p>\n\
@@ -587,50 +709,50 @@ If you plan to use CAT control of the rig via the COM port, check <em>Use Hamlib
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Note\" src=\"data:image/png;base64,\n\
-iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAJhUlEQVRoge2ZWWycVxXHf+fce7/v\n\
-m/GaGCde4pI0aQlJC0kRtE1L00JbLIjY4QkeUB9YHhAIJFCExAsKUkE8IAFFPIDUIqhBRSDRBUqC\n\
-CimFFBCBpCWx02IaZ3G2SdyxPZ7vHh6+mcnSZnFjKIge6Wj8zYzvPf9z/me5d8TM+F8WfbkNuFx5\n\
-BcDLLf/fAEZGRmx4eNh6enqsp6fHhoeHbWRk5D9aFeSlVqHNmzfb6H33sHnT7ZQmD5GfOMax6Sm+\n\
-Pl5h1Yc+xpYtW2SBbX1ReUkRGBkZsdH77mHLW95EOv4Ms3ueJh6YYPHUFF9aljJ63z3cf//9/5FI\n\
-vKQIDA8P293L2yhVjjH7t51ocDiviFecF46n7XzBreChhx4qNhH5t0XjJUVgx44ddGUZ9b/vIpQD\n\
-oRQIWSDJAiFL6B9axo4dO4gxAmANWVDLG+Ln82URMRGhVCqRHxonlAPqFXWKC4r6IhI6OMjMzBN4\n\
-/4LlTUQQEZxzZ32QJAlpmrb+p16vU6vVOHXq1AWjN18AnDj0F971vrs4OnmYJVkoDA4FCPUO172I\n\
-Cgnt7SV++4vvsGhRJx3tJbIsRVVpsUnOBBABBVFEClKYwbKr7sTM7EIUnBcA7z21k7t49x1X8JXv\n\
-bOWra7rw5QRtcN8PLCfvvZJvb9vJycpJpg4/hp/N0I4SMQs4Jw0A5zBXHGiCaIZIKABgpGlKjPEF\n\
-0TpT5pUDRXiVt99+Le03r+WzuytM1gO6pB/3+o0cbxvk8yOPMjW6i2iR2lxOjJDHSDMFogmGwzQ7\n\
-rRJAUpAENAGXIZq2AFzQpvkACCEQcahP+cRH3sKHn9zHXU+MM7rtGeD33NDXzaZynZU9gcezpUw9\n\
-X6OzIyOakkfF4QEpPG6nDRNNEA2FSgKimETSNCXPc0II57VpXhEolUqoOrxPSLOMT330Dv5SqfKD\n\
-NR388Y2L+caQsjITNv3pMBs3rOT56ZyZGaM+J0QUxDc0INrWUgggoRGBAOIRAt77hY1AmqaoeJxP\n\
-cN645jVDbNn8Hj73o8fZ/af9mEE9j9y2YRXt5YzZWmRmzjj1/BwhTXAKzitOHEbeWlc0AVwDnCv8\n\
-KoZzjotV33lTSL1HNKAuEtKM1169jM98/E6mTk3x4Nbd7Bk7TEdHRvAeVY+hmDqmZwx1kIkiqrhz\n\
-S2zL+AbNMC6l/80LgHMOEY9oQvBCks5RKpXo7JhFxbhz42pet2aQet1YtLiDJAkIDq8BHwJmwlwO\n\
-UaD0ojsrNKuUReIZyb9gABCHcwWFgg+0lTPyvIRToVzKWLpkMfV6REQplYvmZCj1uuBUSdJwTg8A\n\
-XBdoCZMOsBkQBeGi/J83gBgjmABC8AlJGsjzFLMyaXDM1etEA0VR50iCx6mSZhkiijpPjEpQD+SF\n\
-4WdJrTAewdCFB1CtVlFVVATnhMQnWJqC5aTBk+c5IIgWRoTgSZJAmiZAo1s7hwsppglI+fTiljeY\n\
-nyHkLQotKIAYI4igzpFHISQOiwEnKTEG8hhRVZw6YjRQLfJGHcF7jleqTBw8znXr12MABnv37efY\n\
-iSnesG4tiUsRUQwD7JIAzKsPqCqiRbVwweM04XdPjhJN+dvTBxgbn6G9q59yZx9/3HWEb33vN+zc\n\
-/RzOJ+w/eJLtO8Z5ZNtT7PvHIUQTvvv9X/Lc/mN0d3by3fseRLQwvWh0Fy+h8wbQ2VFG1KM+xfuA\n\
-qufo8So/fejPPD/rqJys8pvf7eLAoeNMHqnw2U9+kH3jVQ5MClMzKUla5obr13HliiEMmDx6gltv\n\
-uY7Vr1nBQF8PJopQ9AFTt/AROFfMjCW9XTy19xB33Hodb924jr1j+/nDk3/nzTdei4jw3nfeyCOP\n\
-bufa1y5jzeoVrcHM8HR3dfHlr/2Q+x94jFtuuh44/9B2PplXDryYLF3STXd3e+t5UXcHY89OsOH6\n\
-NS2Qed7wpM1Rm50G4MGHH2P961Zy3bqreXrPP5mrzwLt5y6/cACq1eoLCKm+TN/SAebmfn8aUG83\n\
-PYs7+cnPH+eqKwd5as8/edc7bi02847pmVkATk1VWbF8AOcca1Yv59DkqcYK0tCL02deACqVCldc\n\
-0YdIwLmEPM9RV6NnUZlPf3wT6oqJcePN6wHhzTeu4/CRCrfctJ4sSxBRli7pYfHEMUSU97/7Th75\n\
-1RP8eec+Yp5zzTVXM9DfDyogBvHS6HTJACYmJnjVoq5GFw0454gCEOnoaMfiNGZFFRFxJGkbywZ6\n\
-i1NWoy9kWYmbb1gHKCHApuGbisVFGyoYUswa5OR5ftF56JIBjI6OMtDfWwAQ35jnc8AVpRXBohVq\n\
-UowECKqK4RBxoE0W6gvGCcEjaOEAwEQWdpgbGxujt7erOLO2mk3R8i0Wz9EiuUGz+qlKEQEUaJbI\n\
-4lTHmTVePKgWzpDGJGpc8CDTlEsuo88++wxXDA0UIUbAOP23KGZKjI48KnkuhcbiPbPCOBoeBikO\n\
-Lk2VxjqNRilaAEqSZGEAbN261bZt+zW33XY7IAXXm6Ou0YhIMamaaUOl5WRrzg00viuKWWxpQUOH\n\
-NAZFQRpD48Xlkig0MTHBB95zG+VSylz1KCbWyDOh2XyK+56IqjWMKigkUnzWnPPFFFRRLZ29SQRU\n\
-ELOGY4pZ6LKOlM07mZ07d/KOtw1TcB4sGkTDiDQ9K1IkrKeYmQC08d7pZLSiRBpE5s7aS0XAHFEK\n\
-AGY51Wr18g80Zmb33nsvX/z8XdSmj2AWOXhwkrxe46+79jB55Dh/3T2GxUhHextdXW2sXN7PNWtW\n\
-IQKDA71FFBoAjIgQkVg/a5+oHrU5zIznDhxk964xKpXKggAoTlWW8+OfPorlOQ//cjsDy1bS2dFO\n\
-W+diVly1iL6+Pqanpzl5qsL4pPHwN3/G1InDlMsZ7Z1tDA30cfWqIa5dexV9fb2YnT7UTxw4xsHJ\n\
-o4yOjfOP8QOMjx/k4OQx7r777lY0zycXvJ02M4sxMjg4SL1eR0TYsGEDw8PD9PX10d7ejogUN3a1\n\
-GqpKCIE8z5mdnUVVqVarbN++nba2Nvbu3csDDzyAqrJ8+atb+zjn6e/vZ/Xq1axatYq1a9fS29tL\n\
-lmUMDQ1RKpXOm9EXvV6v1+tWr9eZnp5mZmaGWq1GjLHF62aiNZ+bnPfe45xrvTZzxMyYmZk56+LX\n\
-zKjX661DvHOOJElIkoRSqYT3/vLvRlW15eHCa4VxzdvmpjZDfubzuXeb3vuzqCEixBhbo0NTkyS5\n\
-PAr9L8j/96+U/w3yCoCXW14B8HLLvwDd67nwZIEPdgAAAABJRU5ErkJggg==\" />\n\
+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\n\
+YII=\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>If your rig is CAT-capable but not yet supported by\n\
@@ -657,10 +779,10 @@ When you start Fldigi for the very first time, it makes a series of\n\
 Each of the modems can be individually set up from the <tt>Configure&#8594;Modems</tt>\n\
   multi-tabbed dialog. You need not change anything here to start with, although\n\
   it might be a good idea to set the <em>secondary text</em> for DominoEX and THOR to\n\
-  something useful, such as your call and locator. <br />[Secondary text is\n\
+  something useful, such as your call and locator. <span class=\"footnote\"><br />[Secondary text is\n\
   transmitted when the text you type does not keep up with the typing speed of\n\
   the mode — this handy text appears in a small window at the very bottom of the\n\
-  screen.]<br /> Note that this set of tabs is also where you set the RTTY modem speed\n\
+  screen.]<br /></span> Note that this set of tabs is also where you set the RTTY modem speed\n\
   and shift, although the default values should be fine for normal operation.\n\
 </p>\n\
 </li>\n\
@@ -685,7 +807,9 @@ Use the menu <tt>Configure&#8594;IDs</tt> item to set whether you wish to transm
 </ul></div>\n\
 <div class=\"paragraph\"><p>Finally, use the menu item <tt>Configure&#8594;Save Config</tt> to save the new\n\
 configuration.</p></div>\n\
-<h3 id=\"_sound_card_mixer\">2.2. Sound Card Mixer</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_sound_card_mixer\">2.2. Sound Card Mixer</h3>\n\
 <div class=\"ulist\"><ul>\n\
 <li>\n\
 <p>\n\
@@ -723,6 +847,9 @@ On Windows, the <em>Record</em> applet can usually be opened by clicking\n\
 </li>\n\
 </ul></div>\n\
 </div>\n\
+</div>\n\
+</div>\n\
+<div class=\"sect1\">\n\
 <h2 id=\"ref-guided-tour\">3. Guided Tour</h2>\n\
 <div class=\"sectionbody\">\n\
 <div class=\"paragraph\"><p>The main window consists of three main panes.  Study it carefully as you read\n\
@@ -738,7 +865,8 @@ features. This is the Controls group. The program and various buttons can mostly
 be operated using the mouse or the keyboard, and users generally find it\n\
 convenient to use the mouse while tuning around, and the keyboard and function\n\
 keys during a QSO.</p></div>\n\
-<h3 id=\"ref-receive-pane\">3.1. Receive Pane</h3><div style=\"clear:left\"></div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"ref-receive-pane\">3.1. Receive Pane</h3>\n\
 <div class=\"paragraph\"><p>This is where the text from decoded incoming signals is displayed, in black\n\
 text. When you transmit, the transmitted text is also displayed here, but in red,\n\
 so the Receive pane becomes a complete record of the QSO. The information in\n\
@@ -746,7 +874,9 @@ this pane can also be logged to a file.</p></div>\n\
 <div class=\"paragraph\"><p>The line at the bottom of this pane can be dragged up and down with the\n\
 mouse. You might prefer to drag it down a bit to enlarge the Receive pane and\n\
 reduce the size of the Transmit pane.</p></div>\n\
-<h3 id=\"_transmit_pane\">3.2. Transmit Pane</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_transmit_pane\">3.2. Transmit Pane</h3>\n\
 <div class=\"paragraph\"><p>This is where you type what you want to transmit. The mouse must click in here\n\
 before you type (to obtain <em>focus</em>) otherwise your text will go nowhere. You can\n\
 type in here while you are receiving, and when you start transmitting, the text\n\
@@ -754,7 +884,9 @@ already typed will be sent first. This trick is a cool way to impress others\n\
 with your typing speed! As the text is transmitted, the text colour changes from\n\
 black to red. At the end of the over, all the transmitted text (and any as yet\n\
 not transmitted) will be deleted.</p></div>\n\
-<h3 id=\"_waterfall_pane\">3.3. Waterfall Pane</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_waterfall_pane\">3.3. Waterfall Pane</h3>\n\
 <div class=\"paragraph\"><p>This is the main tuning facility. There are three modes, Waterfall, FFT and\n\
 Signal, selected by a button in the Control group. For now, leave it in\n\
 Waterfall mode, as this is the easiest to tune with, and gives the best\n\
@@ -817,54 +949,50 @@ attempt to auto-track the signal from there.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Tip\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"title\">Audio history and &#8220;casual tuning&#8221;</div>\n\
@@ -877,7 +1005,9 @@ frequency.</p></div>\n\
 </td>\n\
 </tr></table>\n\
 </div>\n\
-<h3 id=\"_log_data\">3.4. Log Data</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_log_data\">3.4. Log Data</h3>\n\
 <div class=\"paragraph\"><p>Fldigi provides two QSO entry views, one for casual QSO logging and the second\n\
 for contesting.  The <tt>View&#8594;Contest fields</tt> menu item switches between the two\n\
 modes.</p></div>\n\
@@ -895,54 +1025,50 @@ operate on the single word.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Tip\" src=\"data:image/png;base64,\n\
-iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAKZUlEQVRoge2aa3BU5RmAn3Pbs7fs\n\
-JmwCRGITk0hVLFAtNWoq6pAiU0cKaYfa6ShT+YN4YbQw9F/8QX+UMv6gM3Q6oxMV6TgIbe10Gq2g\n\
-cSzDpRaFgmIk4SKB3LP3Pff+SM66m+xuFvEyzvSbeefsbva8+z7nvXzf934RHMfhmzzEr9uAqx3/\n\
-B/i6xzceQP6iFDmT1cBxHNzCkFsgBEHIXnNeC1f7u1cN4DiOY9s2rliWhWVZWRDHcbJGC4KAJElI\n\
-koQoioii6IiieFUgnxvAtm3HNdg0Tbq6uuju7ubYsWP09vYyMjKCpmmoqkokEqGhoYGFCxfS2tpK\n\
-W1sbiqJkRZIkZxLoikGEK50H3CdumiZ9fX3s3LmT3bt3U1V3A0033cKc2nkEQxV4PSqSJOI4Dpqu\n\
-k0gkGLx8kZ4T7zF87iSrV69m3bp1NDY2oqoqHo8HWZa5Uo9cEYBt245lWRiGQUdHB9u2beOe1Y8w\n\
-/6bFVAT9xJJpYvEUiVSGjG5gmBY4DqIoonoUfF4PoYAfRRE5/8kp3njlD6xfv54tW7YQCATw+Xyu\n\
-R8r2RtkAtm07pmly5MgRHn/8cZSaZpbcfjd+n5f+wVEGRqJkdCMv3vME8t77vB6qQn4+OX6YsXPH\n\
-2bp1Ky0tLQQCAVRVdb0xI0RZZdQ1ft++fSxbtozrlqzgrnvvI5nRee9UL+f6h9B0A1EQEIsBiOKE\n\
-TL7XdJOBkTg1jYtouu1+1qxZw549e4hGo6TTaUzTxLbtGZ/ujEmca/wvHnqYnz/2DLNn19B74TID\n\
-I9HPjCvwlLMls4RHdMNC8IRZ8dBmnnp6E7Zts2rVKgB8Ph+yLDulPFEyhBzHcUzT5PDhwyxbtow1\n\
-j3YQqanmozOfEk2kChuLQ3x0lGQihmM7qF4vVdWz8fr9hYFyoK30OG/ufpYXXniB1tZWwuEwXq8X\n\
-WZaLJnZJAMuyHE3TuPPOO2lcsoLGpmZO9ZzPM37q0x0ZuISla2xY2077j5ZSFargZM9Znt97gE8u\n\
-DBb3ziRIfPAcF4/v59VXX6W6uppQKISqqkiSVBCgaA64odPR0YFS00xjUzNnLlwmmkznxbKYI45j\n\
-k04mefaZJ3j04VXMqZ6Fx6Pw3QXXs/3Xv6Tp2rnTALL3T8wDBCLz8M2Zz/bt24nFYjPmQ0EAt9b3\n\
-9fWxbds2ltxxD0NjMQbdmC+QlIIgIIkSoWCAH971/Wk6PYrCg/f/oHiVmhSP6qWm/gY6Ozvp6ekh\n\
-mUyi6zq2bWeXK+UAYFkWO3fu5N72dQT8Pi5cGp6xuoiiiBoMktH0gl5trp87DbqQBEMRbl32U3bt\n\
-2kUikUDTtOzypGwAwzDYvXs3316wiEuDoxiGWVaZrAjP4qW/vFUQ4NAHPdlwKQWiqF4qa+ro6uoi\n\
-kUiQTqcxDKM8ADd8Xn/9dWZdewMVwSCDo7GicT8NSBTZt/8oT259jgOHThBNpIgmUjy3dz/P7z2Q\n\
-r2My7gs9FNUXoPpbN9Ld3Z0FKBRG0+YBN3y6u7tpWnAr8WR6+gxLfr03TYNMMolhGFimiWVbXDzb\n\
-x4G3/4XgOIiyTF3DdW45nHG2RhBQfX6q65o5evQoy5cvn9BtWUiSRG5FLQhg2zbHjh3j+tsfKFrv\n\
-3R8EGL7UT23NLNraWmi+ro5r5kSYHakiVOHH7/OiyDKxZIonf9NJIpWZMQcEwOPx4vNXcPr0B2Qy\n\
-mdxEzrO34ExsWRa9vb3csjzEaP9w1sUFZ1RBQJJk/vjbTdTXzS2kDoBQwI9HmcEDOSJ7PAiiSH9/\n\
-P7quY5omlmVN01soB3Ach5GREbyqiqabM8a+NxAglcmvPOf7h9jR+WdOfNQLwNtHTzIeT+XFfdGC\n\
-IAiIogSOQzQaxTRNdy4ozwO2baNpGpIkY1j2RAJTeJ0jCAKRmtmcPHORmkglxz48y/5DJ3jrnUPM\n\
-b7iGxx7+MZZls/efR0rG/VQPgwMC2eQtZHxRAABVVbM3lEpgV178azcvvfYOgiCgZTJomsbGR9oR\n\
-BIHzl4YYGo2VlcCuWOaE5xVFwbbtqVHiCJOZXBQgEomg6zqSKOIUMrqER+LRKItvaubW78wH4NLQ\n\
-WNmx7+q1DB1ZkgmFQohifqS7xhcFEEWRhoYGEokEqkeeWPLmurcEiGPbpJJJfvbAPVl95/qHJyYv\n\
-mH5/EdG1FA5QW1ubzZvc8pm1deoHroKFCxcycPkiPlWdnmC5iTxlVk2n0wT9Xu69Y3FW51g8OfH3\n\
-ye+WnAgnRcukyKQSNDU1Icty7n65NACAJEm0trbSc/zfVAT9JZ/U1NWklslwx/duxqMoWX0Zzcy/\n\
-bwr0VCDT0NDTSS6f/ZBFixZlN/ySJJXnAVEUaWtrY6DvOIoiFlx5FhPLsrjl5uvzdPq8nsLfL6I3\n\
-FR1FlhUG+v5LS0tLtmtRlgcEYaL5pCgKq1ev5lzPKfxeT8FwKSQA115Tk6eztjpcsubn6rUMnfj4\n\
-MLHxIZYuXYrX683rVpQDIIiiiKIorFu3jn+8vIPKCt+0cCkG4m4Bc0fd3OqCoVIIJDo2iCQrvPu3\n\
-F1m5cmVeu6VQz6hgDrj1t7GxkfXr1/Px+wdRPcr02C+wmgxVVnLm3KU8ffNmVxX03lSgRHSEVGyc\n\
-oYt9tLe3U19fTzAYzAKUVYVyw0hVVbZs2cJw7/uYyZGSIeCCeFWVd499jGGaWX1zq8OfrYOKeC+T\n\
-ijM+cBHHsRju/Q9r164lFAoRDAbdPfEVAQiiKOLxeAgEAmzdupW/v/A7RLPEyjTHuGjKYMfLb3B5\n\
-eBzdMNl/+CSmZReN+0wqztDFs4iSxIE9O9mwYQPhcJhwOEwgEMhN4GkEZXUlYrEYe/bs4elfbWLF\n\
-Q5tQKyJlVaRy+kSJ6AhjA58iihJdf9rBUxufYPny5cyZM6esrkTJxpabzIFAgFWrVmHbNps3b+bu\n\
-n6wnVF2H4lHLmlULgZiGTmxkgGR8DNu2efOV3/PUxo20tbURiUSorKwkEAhkk7fYmLE36rZX0uk0\n\
-0WiUgwcP0tHRQcW8G5ndsIBgaBYe1TvtyRYDMXWNZGyU+Ngwkiwz+GkfQ73vsWHDBhYvXkwkEmHW\n\
-rFmEw2G3M1eyR1pWczcXIh6PMz4+zvbt2+ns7OS2+x6kanYdqjeA1xdAUb3IioIoSjg42JaJaejo\n\
-mTRaOoGeTiHJEvGxYd55rZP29nbWrl1LOBymqqqKyspKKioqyjK+bIBcCE3TSCaTxGIxenp62LVr\n\
-F11dXdTUL2BO/Xx8/goEUcSxbYSJ2EGS5IlzgnSC/r4PuXzmOEuXLmXlypXU19cTCoUIh8OEQqEr\n\
-7k5/7vOBdDpNMpkkkUiQSCTo7u7m6NGjnD59mv7+fqLRKIZhoCgKoVCI2tpampqaWLRoES0tLfh8\n\
-Pvx+P8FgkGAw+OWfD7gj94RG13U0TSOdTpNOp8lMbmQ0TcvbArrrK1mW8Xg8eL3e7BLB5/N9dSc0\n\
-uSP3jMwwjKy4G3AXwB0ugAsx5YzMndW//DOy3OFMjGwrxrKs7NX9LBfAneFFUcxec6rU5zqpvCqA\n\
-qTCT16/0nPgLA/i6xjf+Xw3+B2ll/uiqTaJTAAAAAElFTkSuQmCC\" />\n\
+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\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"title\">Quick log entry</div>\n\
@@ -973,7 +1099,9 @@ will also be selected for viewing in the logbook.</p></div>\n\
 <div class=\"paragraph\"><p>You open the logbook by selecting from the View menu; <tt>View&#8594;Logbook</tt>.  The\n\
 logbook title bar will show you which logbook you currently have open.  Fldigi\n\
 can maintain an unlimited (except for disk space) number of logbooks.</p></div>\n\
-<h3 id=\"_menu\">3.5. Menu</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_menu\">3.5. Menu</h3>\n\
 <div class=\"paragraph\"><p>At the very top of the program window is a conventional drop-down menu. If you\n\
 click on any of the items, a list of optional functions will appear. Keyboard\n\
 menu selection is also provided. Where underscored characters are shown in the\n\
@@ -981,6 +1109,7 @@ menu, you can select these menu items from the keyboard using the marked\n\
 character and <tt>Alt</tt> at the same time, then moving around with the\n\
 <tt>up</tt>/<tt>down</tt>/<tt>left</tt>/<tt>right</tt> keys. Press <tt>Esc</tt> to quit from the menu with no\n\
 change.</p></div>\n\
+<div class=\"sect3\">\n\
 <h4 id=\"_menu_functions\">3.5.1. Menu functions</h4>\n\
 <div class=\"paragraph\"><div class=\"title\">File</div><p>Allows you to open or save Macros (we won&#8217;t get into that here), turn on/off\n\
 logging to file, record/play audio samples, and exit the program. You can also\n\
@@ -1018,6 +1147,8 @@ several PSK31 signals all at the same time! These windows can be resized to\n\
 suit.</p></div>\n\
 <div class=\"paragraph\"><div class=\"title\">Help</div><p>Brings up the Online Documentation, the Fldigi Home Page, and various\n\
 information about the program.</p></div>\n\
+</div>\n\
+<div class=\"sect3\">\n\
 <h4 id=\"_other_controls\">3.5.2. Other controls</h4>\n\
 <div class=\"paragraph\" id=\"ref-rsid\"><div class=\"title\">RSID</div><p>The RxID button turns on the receive RSID (automatic mode detection and tuning)\n\
 feature. When in use, the button turns yellow and no text reception is possible\n\
@@ -1027,7 +1158,10 @@ Spot</em> item in the menu <tt>Configure&#8594;Defaults&#8594;Misc</tt> tab unch
 <div class=\"paragraph\" id=\"ref-tune\"><div class=\"title\">TUNE</div><p>This button transmits a continuous tone at the current audio frequency. The tone\n\
 level will be at the maximum signal level for any modem, which makes this\n\
 function useful for adjusting your transceiver&#8217;s output power.</p></div>\n\
-<h3 id=\"_macro_buttons\">3.6. Macro buttons</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_macro_buttons\">3.6. Macro buttons</h3>\n\
 <div class=\"paragraph\"><p>This line of buttons provides user-editable QSO features. For example, the first\n\
 button on the left sends CQ for you. Both the function of these buttons (we call\n\
 them Macros) and the label on each button, can be changed.</p></div>\n\
@@ -1050,50 +1184,50 @@ time.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Note\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\n\
+YII=\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>If you <em>really</em> mess up the Macros and can&#8217;t see how to fix them, just close the\n\
@@ -1101,7 +1235,9 @@ program without saving them, and reopen it.</p></div>\n\
 </td>\n\
 </tr></table>\n\
 </div>\n\
-<h3 id=\"_controls\">3.7. Controls</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_controls\">3.7. Controls</h3>\n\
 <div class=\"paragraph\"><p>The line of buttons under the waterfall is used to control the program (as\n\
 opposed to the QSO). If you hover the mouse over these buttons, you&#8217;ll see a\n\
 little yellow hint box appear which tells you what each button does.</p></div>\n\
@@ -1131,54 +1267,51 @@ sideband setting.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Caution\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\n\
+PD2s/fgvlLDkWQ1/L8QAAAAASUVORK5CYII=\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>Use the <tt>T/R</tt> button with care, as it will stop transmission immediately, losing\n\
@@ -1216,7 +1349,9 @@ right of the Status line:</p></div>\n\
 </p>\n\
 </dd>\n\
 </dl></div>\n\
-<h3 id=\"_status_line\">3.8. Status Line</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_status_line\">3.8. Status Line</h3>\n\
 <div class=\"paragraph\"><p>At the very bottom line of the Fldigi window is a row of useful information. At\n\
 the left is the current operating mode. Next (some modes) is the measured\n\
 signal-to-noise ratio at the receiver, and (in some modes) the measured signal\n\
@@ -1228,9 +1363,13 @@ that is available to send. It is transmitted using special characters, and is\n\
 automatically directed to this special window. Secondary text you transmit is\n\
 also shown here. This box changes size when you enlarge the program window.</p></div>\n\
 </div>\n\
+</div>\n\
+</div>\n\
+<div class=\"sect1\">\n\
 <h2 id=\"ref-operating\">4. Operating</h2>\n\
 <div class=\"sectionbody\">\n\
-<h3 id=\"_procedure\">4.1. Procedure</h3><div style=\"clear:left\"></div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_procedure\">4.1. Procedure</h3>\n\
 <div class=\"paragraph\"><p>Operating procedure for digital modes is similar to that for Morse. Some of the\n\
 same abbreviations are used. For example, at the beginning of an over, you might\n\
 send <tt>VK3XYZ de WB8ABC</tt> or just <tt>RR Jack</tt> and so on. At the end of an over, it\n\
@@ -1251,50 +1390,50 @@ you use the log facility or not.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Note\" src=\"data:image/png;base64,\n\
-iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAJhUlEQVRoge2ZWWycVxXHf+fce7/v\n\
-m/GaGCde4pI0aQlJC0kRtE1L00JbLIjY4QkeUB9YHhAIJFCExAsKUkE8IAFFPIDUIqhBRSDRBUqC\n\
-CimFFBCBpCWx02IaZ3G2SdyxPZ7vHh6+mcnSZnFjKIge6Wj8zYzvPf9z/me5d8TM+F8WfbkNuFx5\n\
-BcDLLf/fAEZGRmx4eNh6enqsp6fHhoeHbWRk5D9aFeSlVqHNmzfb6H33sHnT7ZQmD5GfOMax6Sm+\n\
-Pl5h1Yc+xpYtW2SBbX1ReUkRGBkZsdH77mHLW95EOv4Ms3ueJh6YYPHUFF9aljJ63z3cf//9/5FI\n\
-vKQIDA8P293L2yhVjjH7t51ocDiviFecF46n7XzBreChhx4qNhH5t0XjJUVgx44ddGUZ9b/vIpQD\n\
-oRQIWSDJAiFL6B9axo4dO4gxAmANWVDLG+Ln82URMRGhVCqRHxonlAPqFXWKC4r6IhI6OMjMzBN4\n\
-/4LlTUQQEZxzZ32QJAlpmrb+p16vU6vVOHXq1AWjN18AnDj0F971vrs4OnmYJVkoDA4FCPUO172I\n\
-Cgnt7SV++4vvsGhRJx3tJbIsRVVpsUnOBBABBVFEClKYwbKr7sTM7EIUnBcA7z21k7t49x1X8JXv\n\
-bOWra7rw5QRtcN8PLCfvvZJvb9vJycpJpg4/hp/N0I4SMQs4Jw0A5zBXHGiCaIZIKABgpGlKjPEF\n\
-0TpT5pUDRXiVt99+Le03r+WzuytM1gO6pB/3+o0cbxvk8yOPMjW6i2iR2lxOjJDHSDMFogmGwzQ7\n\
-rRJAUpAENAGXIZq2AFzQpvkACCEQcahP+cRH3sKHn9zHXU+MM7rtGeD33NDXzaZynZU9gcezpUw9\n\
-X6OzIyOakkfF4QEpPG6nDRNNEA2FSgKimETSNCXPc0II57VpXhEolUqoOrxPSLOMT330Dv5SqfKD\n\
-NR388Y2L+caQsjITNv3pMBs3rOT56ZyZGaM+J0QUxDc0INrWUgggoRGBAOIRAt77hY1AmqaoeJxP\n\
-cN645jVDbNn8Hj73o8fZ/af9mEE9j9y2YRXt5YzZWmRmzjj1/BwhTXAKzitOHEbeWlc0AVwDnCv8\n\
-KoZzjotV33lTSL1HNKAuEtKM1169jM98/E6mTk3x4Nbd7Bk7TEdHRvAeVY+hmDqmZwx1kIkiqrhz\n\
-S2zL+AbNMC6l/80LgHMOEY9oQvBCks5RKpXo7JhFxbhz42pet2aQet1YtLiDJAkIDq8BHwJmwlwO\n\
-UaD0ojsrNKuUReIZyb9gABCHcwWFgg+0lTPyvIRToVzKWLpkMfV6REQplYvmZCj1uuBUSdJwTg8A\n\
-XBdoCZMOsBkQBeGi/J83gBgjmABC8AlJGsjzFLMyaXDM1etEA0VR50iCx6mSZhkiijpPjEpQD+SF\n\
-4WdJrTAewdCFB1CtVlFVVATnhMQnWJqC5aTBk+c5IIgWRoTgSZJAmiZAo1s7hwsppglI+fTiljeY\n\
-nyHkLQotKIAYI4igzpFHISQOiwEnKTEG8hhRVZw6YjRQLfJGHcF7jleqTBw8znXr12MABnv37efY\n\
-iSnesG4tiUsRUQwD7JIAzKsPqCqiRbVwweM04XdPjhJN+dvTBxgbn6G9q59yZx9/3HWEb33vN+zc\n\
-/RzOJ+w/eJLtO8Z5ZNtT7PvHIUQTvvv9X/Lc/mN0d3by3fseRLQwvWh0Fy+h8wbQ2VFG1KM+xfuA\n\
-qufo8So/fejPPD/rqJys8pvf7eLAoeNMHqnw2U9+kH3jVQ5MClMzKUla5obr13HliiEMmDx6gltv\n\
-uY7Vr1nBQF8PJopQ9AFTt/AROFfMjCW9XTy19xB33Hodb924jr1j+/nDk3/nzTdei4jw3nfeyCOP\n\
-bufa1y5jzeoVrcHM8HR3dfHlr/2Q+x94jFtuuh44/9B2PplXDryYLF3STXd3e+t5UXcHY89OsOH6\n\
-NS2Qed7wpM1Rm50G4MGHH2P961Zy3bqreXrPP5mrzwLt5y6/cACq1eoLCKm+TN/SAebmfn8aUG83\n\
-PYs7+cnPH+eqKwd5as8/edc7bi02847pmVkATk1VWbF8AOcca1Yv59DkqcYK0tCL02deACqVCldc\n\
-0YdIwLmEPM9RV6NnUZlPf3wT6oqJcePN6wHhzTeu4/CRCrfctJ4sSxBRli7pYfHEMUSU97/7Th75\n\
-1RP8eec+Yp5zzTVXM9DfDyogBvHS6HTJACYmJnjVoq5GFw0454gCEOnoaMfiNGZFFRFxJGkbywZ6\n\
-i1NWoy9kWYmbb1gHKCHApuGbisVFGyoYUswa5OR5ftF56JIBjI6OMtDfWwAQ35jnc8AVpRXBohVq\n\
-UowECKqK4RBxoE0W6gvGCcEjaOEAwEQWdpgbGxujt7erOLO2mk3R8i0Wz9EiuUGz+qlKEQEUaJbI\n\
-4lTHmTVePKgWzpDGJGpc8CDTlEsuo88++wxXDA0UIUbAOP23KGZKjI48KnkuhcbiPbPCOBoeBikO\n\
-Lk2VxjqNRilaAEqSZGEAbN261bZt+zW33XY7IAXXm6Ou0YhIMamaaUOl5WRrzg00viuKWWxpQUOH\n\
-NAZFQRpD48Xlkig0MTHBB95zG+VSylz1KCbWyDOh2XyK+56IqjWMKigkUnzWnPPFFFRRLZ29SQRU\n\
-ELOGY4pZ6LKOlM07mZ07d/KOtw1TcB4sGkTDiDQ9K1IkrKeYmQC08d7pZLSiRBpE5s7aS0XAHFEK\n\
-AGY51Wr18g80Zmb33nsvX/z8XdSmj2AWOXhwkrxe46+79jB55Dh/3T2GxUhHextdXW2sXN7PNWtW\n\
-IQKDA71FFBoAjIgQkVg/a5+oHrU5zIznDhxk964xKpXKggAoTlWW8+OfPorlOQ//cjsDy1bS2dFO\n\
-W+diVly1iL6+Pqanpzl5qsL4pPHwN3/G1InDlMsZ7Z1tDA30cfWqIa5dexV9fb2YnT7UTxw4xsHJ\n\
-o4yOjfOP8QOMjx/k4OQx7r777lY0zycXvJ02M4sxMjg4SL1eR0TYsGEDw8PD9PX10d7ejogUN3a1\n\
-GqpKCIE8z5mdnUVVqVarbN++nba2Nvbu3csDDzyAqrJ8+atb+zjn6e/vZ/Xq1axatYq1a9fS29tL\n\
-lmUMDQ1RKpXOm9EXvV6v1+tWr9eZnp5mZmaGWq1GjLHF62aiNZ+bnPfe45xrvTZzxMyYmZk56+LX\n\
-zKjX661DvHOOJElIkoRSqYT3/vLvRlW15eHCa4VxzdvmpjZDfubzuXeb3vuzqCEixBhbo0NTkyS5\n\
-PAr9L8j/96+U/w3yCoCXW14B8HLLvwDd67nwZIEPdgAAAABJRU5ErkJggg==\" />\n\
+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\n\
+YII=\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"title\">Macro symbols</div>\n\
@@ -1354,50 +1493,50 @@ Then press <tt>QSO</tt> (F3) to start each over, and <tt>BTU</tt> (F4) to end it
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Note\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\n\
+YII=\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>When typing text, the correct use of upper and lower case is important:</p></div>\n\
@@ -1426,7 +1565,9 @@ Modes such as PSK31, MFSK16, DominoEX and THOR use character sets which are\n\
 </td>\n\
 </tr></table>\n\
 </div>\n\
-<h3 id=\"_adjustment\">4.2. Adjustment</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_adjustment\">4.2. Adjustment</h3>\n\
 <div class=\"paragraph\"><p>Most digital modes do not require much transmitter power, as the receiver\n\
 software is very sensitive. Many modes (PSK31, THROB, MT63) also require very\n\
 high transmitter linearity, which is another reason to keep transmitter power\n\
@@ -1445,54 +1586,50 @@ the average power may be rather low.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Tip\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>Where possible, use the area above 1200Hz on the waterfall.</p></div>\n\
@@ -1528,7 +1665,9 @@ Keep the sound card audio level to a minimum and set the transmitter gain to a\n
 </td>\n\
 </tr></table>\n\
 </div>\n\
-<h3 id=\"_waterfall_tuning\">4.3. Waterfall Tuning</h3><div style=\"clear:left\"></div>\n\
+</div>\n\
+<div class=\"sect2\">\n\
+<h3 id=\"_waterfall_tuning\">4.3. Waterfall Tuning</h3>\n\
 <div class=\"paragraph\"><p>When using this program, as with most other digital modes programs, tuning is\n\
 generally accomplished by leaving the transceiver VFO at a popular spot (for\n\
 example 14.070MHz, USB), and performing all the <em>tuning</em> by moving around within\n\
@@ -1546,59 +1685,52 @@ station.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Important\" src=\"data:image/png;base64,\n\
-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\n\
-EQn3XQAAAABJRU5ErkJggg==\" />\n\
+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\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>You <strong>must not</strong> use RIT (Clarifier) when using digital modes.</p></div>\n\
@@ -1630,6 +1762,9 @@ tuning is not at all critical. The software tuning still operates, but because\n
 the signal is so wide, there is limited ability to move around in the waterfall\n\
 tuning.</p></div>\n\
 </div>\n\
+</div>\n\
+</div>\n\
+<div class=\"sect1\">\n\
 <h2 id=\"ref-special-keys\">5. Special Keys</h2>\n\
 <div class=\"sectionbody\">\n\
 <div class=\"paragraph\"><p>Several special keyboard controls are provided to make operating easier.</p></div>\n\
@@ -1657,54 +1792,50 @@ returns to receive. Any unsent text in the transmit buffer will be lost.</p></di
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Tip\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>If you press <tt>Esc Esc</tt> (i.e. twice in quick succession), transmission stops\n\
@@ -1726,16 +1857,18 @@ keypad or the normal numeric keys) to insert the ASCII character designated by\n
 that entry value into the transmit buffer. For example, <tt>Ctrl 177</tt> is &#8220;±&#8221;\n\
 (plus/minus) and <tt>Ctrl 176</tt> is &#8220;°&#8221; (degree). If you press a key other than the\n\
 numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
-<h2 id=\"ref-credits\">Credits</h2>\n\
+<h2 id=\"ref-credits\" class=\"float\">Credits</h2>\n\
 <div class=\"paragraph\"><p>Copyright &#169; 2008 Murray Greenman, <tt>ZL1BPU</tt>.</p></div>\n\
 <div class=\"paragraph\"><p>Copyright &#169; 2008-2009 David Freese, <tt>W1HKJ</tt>.</p></div>\n\
 <div class=\"paragraph\"><p>Copyright &#169; 2009 Stelios Bounanos, <tt>M0GLD</tt>.</p></div>\n\
 <div class=\"paragraph\"><p>License GPLv3+: <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU GPL version 3 or later</a>.</p></div>\n\
 </div>\n\
+</div>\n\
+</div>\n\
+<div id=\"footnotes\"><hr /></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
-Version 3.11<br />\n\
-Last updated 2011-06-04 06:49:34 CDT\n\
+Last updated 2012-05-05 15:04:49 PDT\n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\

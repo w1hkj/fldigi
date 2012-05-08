@@ -460,6 +460,15 @@
         ELEM_(double, ThorCWI, "THORCWI",                                               \
               "CWI threshold (CWI detection and suppression)",                          \
               0.0)                                                                      \
+        ELEM_(bool, THOR_PREAMBLE, "THORPREAMBLE",                                 \
+              "Detect THOR preamble (and flush Rx pipeline)",                           \
+              true)                                                                     \
+        ELEM_(bool, THOR_SOFTSYMBOLS, "THORSOFTSYMBOLS",                                \
+              "Enable Soft-symbol decoding",                                            \
+              true)                                                                     \
+        ELEM_(bool, THOR_SOFTBITS, "THORSOFTBITS",                                      \
+              "Enable Soft-bit decoding",                                               \
+              true)                                                                     \
         /* PACKET */                                                                    \
         ELEM_(int, PKT_BAUD_SELECT, "PKTBAUDSELECT",                                                 \
               "Packet baud rate. Values are as follows:\n"                              \

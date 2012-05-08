@@ -55,8 +55,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_DOMINOEX11, &dominoex11_modem, "DOMX11", "DominoEX 11", "DOMINOEX11", "DOMINO", "DM11" },
 	{ MODE_DOMINOEX16, &dominoex16_modem, "DOMX16", "DominoEX 16", "DOMINOEX16", "DOMINO", "DM16" },
 	{ MODE_DOMINOEX22, &dominoex22_modem, "DOMX22", "DominoEX 22", "DOMINOEX22", "DOMINO", "DM22" },
-	{ MODE_DOMINOEX85, &dominoex85_modem, "DOMINO_85", "Domino_85", "DOMINO_85", "DOMINO", "DOM 85" },
-	{ MODE_DOMINOEX125, &dominoex125_modem, "DOMINO_125", "Domino_125", "DOMINO_125", "DOMINO", "DOM 125" },
+	{ MODE_DOMINOEX44, &dominoex44_modem, "DOMX44", "DominoEX 44", "DOMINOEX44", "DOMINO", "DOM44" },
+	{ MODE_DOMINOEX88, &dominoex88_modem, "DOMX88", "DominoEX 88", "DOMINOEX88", "DOMINO", "DOM88" },
 
 	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "", "HELL", "HELL" },
 	{ MODE_SLOWHELL, &feld_slowmodem, "SLOWHELL", "Slow Hell", "", "HELL", "SHLL" },
@@ -111,8 +111,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THOR11, &thor11_modem, "THOR11", "THOR 11", "THOR11", "THOR", "TH11" },
 	{ MODE_THOR16, &thor16_modem, "THOR16", "THOR 16", "THOR16", "THOR", "TH16" },
 	{ MODE_THOR22, &thor22_modem, "THOR22", "THOR 22", "THOR22", "THOR", "TH22" },
-	{ MODE_THOR85, &thor85_modem, "THOR_85", "Thor_85", "THOR_85", "THOR", "THOR 85" },
-	{ MODE_THOR125, &thor125_modem, "THOR_125", "Thor 125", "THOR_125", "THOR", "THOR 125" },
+	{ MODE_THOR44, &thor44_modem, "THOR44", "THOR 44", "THOR44", "THOR", "TH44" },
+	{ MODE_THOR88, &thor88_modem, "THOR88", "THOR 88", "THOR88", "THOR", "TH88" },
 
 	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "", "THRB", "TB1" },
 	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "", "THRB", "TB2" },

@@ -103,8 +103,8 @@ modem *thor8_modem = 0;
 modem *thor11_modem = 0;
 modem *thor16_modem = 0;
 modem *thor22_modem = 0;
-modem *thor85_modem = 0;
-modem *thor125_modem = 0;
+modem *thor44_modem = 0;
+modem *thor88_modem = 0;
 
 modem *dominoex4_modem = 0;
 modem *dominoex5_modem = 0;
@@ -112,8 +112,8 @@ modem *dominoex8_modem = 0;
 modem *dominoex11_modem = 0;
 modem *dominoex16_modem = 0;
 modem *dominoex22_modem = 0;
-modem *dominoex85_modem = 0;
-modem *dominoex125_modem = 0;
+modem *dominoex44_modem = 0;
+modem *dominoex88_modem = 0;
 
 modem *throb1_modem = 0;
 modem *throb2_modem = 0;

@@ -41,6 +41,9 @@
 #include "ascii.h"
 #include "main.h"
 
+// Enable to enable profiling output for the soft-decision decoder
+#define SOFTPROFILE false
+
 using namespace std;
 
 char thormsg[80];
@@ -184,16 +187,16 @@ thor::thor(trx_mode md)
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
-// 22.050kHz modes
-	case MODE_THOR85:
-		symlen = 260;
-		doublespaced = 1;
-		samplerate = 22050;
+
+	case MODE_THOR44:
+		symlen = 250;
+		doublespaced = 2;
+		samplerate = 11025;
 		break;
-	case MODE_THOR125:
-		symlen = 176;
+	case MODE_THOR88:
+		symlen = 125;
 		doublespaced = 1;
-		samplerate = 22050;
+		samplerate = 11025;
 		break;
 // 8kHz modes
 	case MODE_THOR4:
@@ -257,19 +260,21 @@ thor::thor(trx_mode md)
 
 	prev1symbol = prev2symbol = 0;
 
+	static const int longtraceback = 127 ;
 	static const int traceback = 45 ;
 	static const int chunksize = 1 ;
 
-	if ( mode == MODE_THOR125 || mode == MODE_THOR85) {
+	if ( mode == MODE_THOR88 || mode == MODE_THOR44) {
 		Enc = new encoder (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
-		Dec = new viterbi::impl <GALILEO_K, chunksize, traceback >( GALILEO_POLY1, GALILEO_POLY2 );
+		Dec = new viterbi::impl <GALILEO_K, chunksize, longtraceback >( GALILEO_POLY1, GALILEO_POLY2 );
+		Txinlv = new interleave (-488, INTERLEAVE_FWD); // 4x4x88
+		Rxinlv = new interleave (-488, INTERLEAVE_REV); // 4x4x88
 	} else {
 		Enc = new encoder (THOR_K, THOR_POLY1, THOR_POLY2);
 		Dec = new viterbi::impl <THOR_K, chunksize, traceback >( THOR_POLY1, THOR_POLY2 );
+		Txinlv = new interleave (4, INTERLEAVE_FWD); // 4x4x10
+		Rxinlv = new interleave (4, INTERLEAVE_REV); // 4x4x10
 	}
-
-	Txinlv = new interleave (4, INTERLEAVE_FWD); // 4x4x10
-	Rxinlv = new interleave (4, INTERLEAVE_REV); // 4x4x10
 	bitstate = 0;
 	symbolpair[0] = symbolpair[1] = 0;
 	datashreg = 1;
@@ -378,11 +383,19 @@ void thor::decodesymbol()
 
 	if (fabs(fdiff) > 17) outofrange = true;
 
-	int c = (int)floor(fdiff + .5) - 2;
+	int c = (int)floor(fdiff + .5); {
+	 	if (progdefaults.THOR_PREAMBLE) {
+			if ( preambledetect(c) ) {
+				softflushrx(); // Flush the soft rx pipeline with punctures (interleaver & viterbi decoder)
+				return;
+			}
+		} 
+	}
+	c -= 2;
 	if (c < 0) c += THORNUMTONES;
 
 	if (staticburst == true || outofrange == true) // puncture the code
-		symbols[3] = symbols[2] = symbols[1] = symbols[0] = 0;	
+		symbols[3] = symbols[2] = symbols[1] = symbols[0] = 128;	
 	else {
 		symbols[3] = (c & 1) == 1 ? 255 : 0; c /= 2;
 		symbols[2] = (c & 1) == 1 ? 255 : 0; c /= 2;
@@ -395,6 +408,87 @@ void thor::decodesymbol()
 	for (int i = 0; i < 4; i++) decodePairs(symbols[i]);
 	
 }
+
+void thor::softdecodesymbol()
+{
+	unsigned char one, zero;
+	int c, nextmag=127;
+	static int lastc=0, lastmag=0, nowmag=0;
+	unsigned char lastsymbols[4];
+	bool outofrange=false;
+
+	double fdiff = currsymbol - prev1symbol;
+	if (reverse) fdiff = -fdiff;
+	fdiff /= paths;
+	fdiff /= doublespaced;
+	
+	c = (int)floor(fdiff + .5); {
+		if (c < -16 || 0 == c || 1 == c || c > 17) outofrange = true; // Out of the range of the function thor::sendsymbol()
+		if (progdefaults.THOR_PREAMBLE) {
+			if ( preambledetect(c) ) {
+				softflushrx(); // Flush the soft rx pipeline with punctures (interleaver & viterbi decoder)
+				lastmag = 0;
+				return;
+			}
+		}
+#if SOFTPROFILE
+		printf("\nSymbol: %3d",currsymbol);
+		if (c >= 0) printf(" \tDELTAf: +%2d",c);
+		else printf(" \tDELTAf: %3d",c);
+#endif
+	}
+	c -= 2;
+	if (c < 0) c += THORNUMTONES;	
+	
+	// Since the THOR modem is differential, when an outofrange error occurs there are 2 possibilities:
+	// either previous (reference) symbol or current. 50% probability of each being the culprit.
+	// either way, the current symbol is lost, puncture it. Also 50% probability next symbol will have an error
+	if (outofrange){
+		lastmag /= 2;
+		nowmag = 0;
+		nextmag /= 2;
+	}
+
+	// One in 16 chance the correct reference tone chosen in staticburst
+	if (staticburst){
+		nowmag /= 16;
+		nextmag /= 16;
+	}
+	
+	if (lastmag <= 0) { // puncture 
+		one = 128;
+		zero = 128;
+	}
+	else if (lastmag > 127) { // limit
+		one = 255;
+		zero = 0;
+	}
+	else { // Calculate soft bits
+		one = static_cast<unsigned char>( lastmag+128 ); // never > 255
+		zero = static_cast<unsigned char>( 127-lastmag ); // never < 0
+	}
+
+#if SOFTPROFILE 
+	printf("   \t-->%.3d|%.3d|%.3d = ",nextmag, nowmag, lastmag);
+	printf("%.3d|%.3d",zero,one);
+	if (outofrange) printf(" (outofrange)");
+	if (staticburst) printf("  (staticburst)");
+#endif
+
+	lastsymbols[3] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
+	lastsymbols[2] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
+	lastsymbols[1] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
+	lastsymbols[0] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
+	
+	Rxinlv->symbols(lastsymbols);
+	for (int i = 0; i < 4; i++) decodePairs(lastsymbols[i]);
+
+	// Since modem is differential, wait until next symbol (to detect errors) then decode.
+	lastc = c;
+	lastmag = nowmag;
+	nowmag = nextmag;
+}
+
 
 int thor::harddecode()
 {
@@ -437,6 +531,43 @@ int thor::harddecode()
 	staticburst = (max / avg < 1.2);
 
 	return symbol;
+}
+
+bool thor::preambledetect(int c)
+{
+	static int preamblecheck=0, twocount=0;
+	static bool neg16seen=false;
+
+	if (twocount > 14 ) twocount = 0;
+
+	if (-16 == c && twocount > 2 ) neg16seen = true;
+	else if (2 != c) neg16seen = false; // 2 does not reset the neg16seen bool
+	else if (2 == c) twocount ++;
+	
+	if (-16 != c && 2 != c) // -16 does not reset the twos counter
+		if (twocount > 1) twocount -= 2; 
+#if SOFTPROFILE
+	printf(" [%d:%d]",twocount, preamblecheck);
+#endif
+	if ( twocount > 4 && neg16seen ){
+		if ( ++preamblecheck > 4 ) return true;
+	}
+	else preamblecheck = 0; 
+	  
+	return false;
+}
+
+// Flush the interleaver and convolutional decoder with punctures
+void thor::softflushrx()
+{
+	unsigned char puncture[2], flushsymbols[4];
+	puncture[0]=128;
+	puncture[1]=128;
+	
+	for (int i = 0; i < 4; i++) flushsymbols[i] = 128;
+	
+	for(int i=0; i<90; i++) Rxinlv->symbols(flushsymbols); // flush interleaver with punctured symbols
+	for (int j = 0; j < 128; j++) Dec->decode (puncture, NULL); // flush viterbi with puncture soft-bits
 }
 
 void thor::update_syncscope()
@@ -581,10 +712,14 @@ int thor::rx_process(const double *buf, int len)
 				}
 				if (--synccounter <= 0) {
 					synccounter = symlen;
+					//if (progdefaults.THOR_SOFTSYMBOLS)
 					currsymbol = harddecode();
 					currmag = pipe[pipeptr].vector[currsymbol].mag();
 					eval_s2n();
-        		    decodesymbol();
+        		    
+					if (progdefaults.THOR_SOFTBITS) softdecodesymbol();
+					else decodesymbol();
+				
 					synchronize();
 					prev2symbol = prev1symbol;
 					prev1symbol = currsymbol;
@@ -684,7 +819,7 @@ void thor::sendsecondary()
 void thor::Clearbits()
 {
 	int data = Enc->encode(0);
-	for (int k = 0; k < 100; k++) {
+	for (int k = 0; k < 1400; k++) {
 		for (int i = 0; i < 2; i++) {
 			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
 			bitstate++;
@@ -701,9 +836,12 @@ void thor::flushtx()
 {
 // flush the varicode decoder at the other end
 // flush the convolutional encoder and interleaver
+  if ( mode == MODE_THOR88 || mode == MODE_THOR44) for (int i=0; i<57; i++) sendidle();
+  else {
     for (int i = 0; i < 4; i++)
   	    sendidle();
 	bitstate = 0;
+  }
 }
 
 int thor::tx_process()

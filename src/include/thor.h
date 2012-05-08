@@ -150,6 +150,7 @@ private:
 // Rx
 	void	recvchar(int c);
 	void	decodesymbol();
+	void	softdecodesymbol();
 	int		harddecode();
 	void	update_syncscope();
 	void	synchronize();
@@ -159,6 +160,8 @@ private:
 	void	reset_filters();
 	void	decodePairs(unsigned char symbol);
 //	void	decodeEX(int c);
+	bool	preambledetect(int c);
+	void	softflushrx();
 
 // Tx
 	void	sendtone(int tone, int duration);

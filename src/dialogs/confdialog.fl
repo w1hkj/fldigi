@@ -133,15 +133,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {587 73 600 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {183 175 600 400} type Double color 45 selection_color 51 labelsize 18 align 80 hide non_modal
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 598 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {2 25 596 345} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {2 25 596 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -1391,8 +1391,8 @@ behaves inside the waterfall} xywh {69 196 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
-        xywh {0 25 598 347} hide
+        label Modems open
+        xywh {0 25 598 347}
       } {
         Fl_Tabs tabsModems {
           label 2 open
@@ -1400,7 +1400,7 @@ behaves inside the waterfall} xywh {69 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabContestia {
             label {Cntst'}
-            xywh {2 50 594 320}
+            xywh {2 50 594 320} hide
           } {
             Fl_Group {} {
               label Contestia
@@ -2387,17 +2387,17 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabTHOR {
-            label Thor
-            xywh {2 50 594 320} hide
+            label Thor open
+            xywh {2 50 594 320}
           } {
             Fl_Group {} {open
-              xywh {6 60 588 170} box ENGRAVED_FRAME
+              xywh {5 60 588 270} box ENGRAVED_FRAME
             } {
               Fl_Input txtTHORSecondary {
                 label {Secondary Text}
                 callback {progdefaults.THORsecText = o->value();
 progdefaults.changed = true;}
-                tooltip {Text to send during keyboard idle times} xywh {92 87 360 40} type Multiline align 5 when 1
+                tooltip {Text to send during keyboard idle times} xywh {91 87 360 40} type Multiline align 5 when 1
                 code0 {txtTHORSecondary->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
@@ -2406,7 +2406,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_FILTER = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Enable DSP prior to decoder} xywh {92 141 80 20} down_box DOWN_BOX value 1
+                tooltip {Enable DSP prior to decoder} xywh {91 141 80 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.THOR_FILTER);}
               }
               Fl_Counter valTHOR_BW {
@@ -2414,7 +2414,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {233 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {232 141 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2423,7 +2423,7 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {92 194 260 20} type Horizontal align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {89 295 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
@@ -2432,11 +2432,32 @@ progdefaults.changed = true;}
                 label {Paths (hidden)}
                 callback {progdefaults.THOR_PATHS = (int)o->value();
 progdefaults.changed = true;}
-                xywh {430 193 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
+                xywh {429 193 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.THOR_PATHS);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 code2 {o->hide();}
                 class Fl_Counter2
+              }
+              Fl_Check_Button valTHOR_PREAMBLE {
+                label {Preamble Detection}
+                callback {progdefaults.THOR_PREAMBLE = o->value();
+progdefaults.changed = true;}
+                tooltip {Detect the THOR preamble (and clear the Rx pipeline in preparation for data)} xywh {90 170 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_PREAMBLE);}
+              }
+              Fl_Check_Button valTHOR_SOFTSYMBOLS {
+                label {Soft-symbol decoding}
+                callback {progdefaults.THOR_SOFTSYMBOLS = o->value();
+progdefaults.changed = true;}
+                tooltip {Use soft-decision decoding for symbol detection (also assists soft-bit decoding)} xywh {90 200 190 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_SOFTSYMBOLS);}
+              }
+              Fl_Check_Button valTHOR_SOFTBITS {
+                label {Soft-bit decoding}
+                callback {progdefaults.THOR_SOFTBITS = o->value();
+progdefaults.changed = true;} selected
+                tooltip {Use soft-bit viterbi decoding for better Forward Error Correction (works best with soft-symbol decoding enabled)} xywh {90 230 170 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_SOFTBITS);}
               }
             }
           }

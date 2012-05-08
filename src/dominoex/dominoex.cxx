@@ -237,16 +237,16 @@ dominoex::dominoex(trx_mode md)
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
-// 22.050 kHz modes
-	case MODE_DOMINOEX85:
-		symlen = 260;
-		doublespaced = 1;
-		samplerate = 22050;
+
+	case MODE_DOMINOEX44:
+		symlen = 250;
+		doublespaced = 2;
+		samplerate = 11025;
 		break;
-	case MODE_DOMINOEX125:
-		symlen = 176;
+	case MODE_DOMINOEX88:
+		symlen = 125;
 		doublespaced = 1;
-		samplerate = 22050;
+		samplerate = 11025;
 		break;
 // 8kHz modes
 	case MODE_DOMINOEX4:

@@ -523,8 +523,8 @@ Fl_Menu_Item quick_change_thor[] = {
 	{ mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11 },
 	{ mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16 },
 	{ mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22 },
-	{ mode_info[MODE_THOR85].name, 0, cb_init_mode, (void *)MODE_THOR85 },
-	{ mode_info[MODE_THOR125].name, 0, cb_init_mode, (void *)MODE_THOR125 },
+	{ mode_info[MODE_THOR44].name, 0, cb_init_mode, (void *)MODE_THOR44 },
+	{ mode_info[MODE_THOR88].name, 0, cb_init_mode, (void *)MODE_THOR88 },
 	{ 0 }
 };
 
@@ -535,8 +535,8 @@ Fl_Menu_Item quick_change_domino[] = {
 	{ mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11 },
 	{ mode_info[MODE_DOMINOEX16].name, 0, cb_init_mode, (void *)MODE_DOMINOEX16 },
 	{ mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22 },
-	{ mode_info[MODE_DOMINOEX85].name, 0, cb_init_mode, (void *)MODE_DOMINOEX85 },
-	{ mode_info[MODE_DOMINOEX125].name, 0, cb_init_mode, (void *)MODE_DOMINOEX125 },
+	{ mode_info[MODE_DOMINOEX44].name, 0, cb_init_mode, (void *)MODE_DOMINOEX44 },
+	{ mode_info[MODE_DOMINOEX88].name, 0, cb_init_mode, (void *)MODE_DOMINOEX88 },
 	{ 0 }
 };
 
@@ -1151,7 +1151,7 @@ void init_modem(trx_mode mode, int freq)
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
 	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: 
-	case MODE_THOR85: case MODE_THOR125:
+	case MODE_THOR44: case MODE_THOR88:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode), freq);
 		quick_change = quick_change_thor;
@@ -1160,7 +1160,7 @@ void init_modem(trx_mode mode, int freq)
 
 	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
-	case MODE_DOMINOEX85: case MODE_DOMINOEX125:
+	case MODE_DOMINOEX44: case MODE_DOMINOEX88:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new dominoex(mode), freq);
 		quick_change = quick_change_domino;
@@ -3159,8 +3159,8 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_DOMINOEX11].name, 0, cb_init_mode, (void *)MODE_DOMINOEX11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX16].name, 0, cb_init_mode, (void *)MODE_DOMINOEX16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX85].name, 0, cb_init_mode, (void *)MODE_DOMINOEX85, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_DOMINOEX125].name, 0, cb_init_mode, (void *)MODE_DOMINOEX125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX44].name, 0, cb_init_mode, (void *)MODE_DOMINOEX44, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEX88].name, 0, cb_init_mode, (void *)MODE_DOMINOEX88, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"Hell", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3239,8 +3239,8 @@ Fl_Menu_Item menu_[] = {
 { mode_info[MODE_THOR11].name, 0, cb_init_mode, (void *)MODE_THOR11, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR16].name, 0, cb_init_mode, (void *)MODE_THOR16, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR22].name, 0, cb_init_mode, (void *)MODE_THOR22, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR85].name, 0, cb_init_mode, (void *)MODE_THOR85, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_THOR125].name, 0, cb_init_mode, (void *)MODE_THOR125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR44].name, 0, cb_init_mode, (void *)MODE_THOR44, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THOR88].name, 0, cb_init_mode, (void *)MODE_THOR88, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"Throb", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -6163,7 +6163,7 @@ void resetTHOR() {
 	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
 		md == MODE_THOR11 ||
 		md == MODE_THOR16 || md == MODE_THOR22 ||
-		md == MODE_THOR85 || md == MODE_THOR125 )
+		md == MODE_THOR44 || md == MODE_THOR88 )
 		trx_start_modem(active_modem);
 }
 
@@ -6172,7 +6172,7 @@ void resetDOMEX() {
 	if (md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
 		md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
 		md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 ||
-		md == MODE_DOMINOEX85 || md == MODE_DOMINOEX125 )
+		md == MODE_DOMINOEX44 || md == MODE_DOMINOEX88 )
 		trx_start_modem(active_modem);
 }
 

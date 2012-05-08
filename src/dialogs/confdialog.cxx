@@ -1872,6 +1872,27 @@ static void cb_valTHOR_PATHS(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *valTHOR_PREAMBLE=(Fl_Check_Button *)0;
+
+static void cb_valTHOR_PREAMBLE(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_PREAMBLE = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *valTHOR_SOFTSYMBOLS=(Fl_Check_Button *)0;
+
+static void cb_valTHOR_SOFTSYMBOLS(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_SOFTSYMBOLS = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *valTHOR_SOFTBITS=(Fl_Check_Button *)0;
+
+static void cb_valTHOR_SOFTBITS(Fl_Check_Button* o, void*) {
+  progdefaults.THOR_SOFTBITS = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabPacket=(Fl_Group *)0;
 
 Fl_Choice *selPacket_Baud=(Fl_Choice *)0;
@@ -3603,6 +3624,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(4, 35, 592, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4730,11 +4752,11 @@ an merging"));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 598, 347, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 598, 345, _("2"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabContestia = new Fl_Group(2, 50, 594, 320, _("Cntst\'"));
+            tabContestia->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 200, _("Contestia"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5801,10 +5823,9 @@ an merging"));
             tabRTTY->end();
           } // Fl_Group* tabRTTY
           { tabTHOR = new Fl_Group(2, 50, 594, 320, _("Thor"));
-            tabTHOR->hide();
-            { Fl_Group* o = new Fl_Group(6, 60, 588, 170);
+            { Fl_Group* o = new Fl_Group(5, 60, 588, 270);
               o->box(FL_ENGRAVED_FRAME);
-              { txtTHORSecondary = new Fl_Input2(92, 87, 360, 40, _("Secondary Text"));
+              { txtTHORSecondary = new Fl_Input2(91, 87, 360, 40, _("Secondary Text"));
                 txtTHORSecondary->tooltip(_("Text to send during keyboard idle times"));
                 txtTHORSecondary->type(4);
                 txtTHORSecondary->box(FL_DOWN_BOX);
@@ -5819,14 +5840,14 @@ an merging"));
                 txtTHORSecondary->when(FL_WHEN_CHANGED);
                 txtTHORSecondary->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* txtTHORSecondary
-              { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(92, 141, 80, 20, _("Filtering"));
+              { Fl_Check_Button* o = valTHOR_FILTER = new Fl_Check_Button(91, 141, 80, 20, _("Filtering"));
                 valTHOR_FILTER->tooltip(_("Enable DSP prior to decoder"));
                 valTHOR_FILTER->down_box(FL_DOWN_BOX);
                 valTHOR_FILTER->value(1);
                 valTHOR_FILTER->callback((Fl_Callback*)cb_valTHOR_FILTER);
                 o->value(progdefaults.THOR_FILTER);
               } // Fl_Check_Button* valTHOR_FILTER
-              { Fl_Counter2* o = valTHOR_BW = new Fl_Counter2(233, 141, 63, 20, _("Filter bandwidth factor"));
+              { Fl_Counter2* o = valTHOR_BW = new Fl_Counter2(232, 141, 63, 20, _("Filter bandwidth factor"));
                 valTHOR_BW->tooltip(_("Filter bandwidth relative to signal width"));
                 valTHOR_BW->type(1);
                 valTHOR_BW->box(FL_UP_BOX);
@@ -5845,7 +5866,7 @@ an merging"));
                 o->value(progdefaults.THOR_BW);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valTHOR_BW
-              { Fl_Value_Slider2* o = valThorCWI = new Fl_Value_Slider2(92, 194, 260, 20, _("CWI threshold"));
+              { Fl_Value_Slider2* o = valThorCWI = new Fl_Value_Slider2(89, 295, 260, 20, _("CWI threshold"));
                 valThorCWI->tooltip(_("CWI detection and suppression"));
                 valThorCWI->type(1);
                 valThorCWI->box(FL_DOWN_BOX);
@@ -5862,7 +5883,7 @@ an merging"));
                 o->value(progdefaults.ThorCWI);
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* valThorCWI
-              { Fl_Counter2* o = valTHOR_PATHS = new Fl_Counter2(430, 193, 75, 21, _("Paths (hidden)"));
+              { Fl_Counter2* o = valTHOR_PATHS = new Fl_Counter2(429, 193, 75, 21, _("Paths (hidden)"));
                 valTHOR_PATHS->type(1);
                 valTHOR_PATHS->box(FL_UP_BOX);
                 valTHOR_PATHS->color(FL_BACKGROUND_COLOR);
@@ -5882,6 +5903,26 @@ an merging"));
                 o->labelsize(FL_NORMAL_SIZE);
                 o->hide();
               } // Fl_Counter2* valTHOR_PATHS
+              { Fl_Check_Button* o = valTHOR_PREAMBLE = new Fl_Check_Button(90, 170, 200, 20, _("Preamble Detection"));
+                valTHOR_PREAMBLE->tooltip(_("Detect the THOR preamble (and clear the Rx pipeline in preparation for data)"));
+                valTHOR_PREAMBLE->down_box(FL_DOWN_BOX);
+                valTHOR_PREAMBLE->callback((Fl_Callback*)cb_valTHOR_PREAMBLE);
+                o->value(progdefaults.THOR_PREAMBLE);
+              } // Fl_Check_Button* valTHOR_PREAMBLE
+              { Fl_Check_Button* o = valTHOR_SOFTSYMBOLS = new Fl_Check_Button(90, 200, 190, 20, _("Soft-symbol decoding"));
+                valTHOR_SOFTSYMBOLS->tooltip(_("Use soft-decision decoding for symbol detection (also assists soft-bit decodi\
+ng)"));
+                valTHOR_SOFTSYMBOLS->down_box(FL_DOWN_BOX);
+                valTHOR_SOFTSYMBOLS->callback((Fl_Callback*)cb_valTHOR_SOFTSYMBOLS);
+                o->value(progdefaults.THOR_SOFTSYMBOLS);
+              } // Fl_Check_Button* valTHOR_SOFTSYMBOLS
+              { Fl_Check_Button* o = valTHOR_SOFTBITS = new Fl_Check_Button(90, 230, 170, 20, _("Soft-bit decoding"));
+                valTHOR_SOFTBITS->tooltip(_("Use soft-bit viterbi decoding for better Forward Error Correction (works best\
+ with soft-symbol decoding enabled)"));
+                valTHOR_SOFTBITS->down_box(FL_DOWN_BOX);
+                valTHOR_SOFTBITS->callback((Fl_Callback*)cb_valTHOR_SOFTBITS);
+                o->value(progdefaults.THOR_SOFTBITS);
+              } // Fl_Check_Button* valTHOR_SOFTBITS
               o->end();
             } // Fl_Group* o
             tabTHOR->end();

@@ -50,6 +50,9 @@ interleave::interleave (int _size, int dir)
 	} else if (size == -2160) { // BPSK FEC + Interleaver 2x2x160
 		size = 2;
 		depth = 160;
+	} else if (size == -488) { // THOR 44/88 Interleaver 4x4x88
+		size = 4;
+		depth = 88;
 	} else if (size == 5)
 		depth = 5;
 	else

@@ -246,10 +246,10 @@ extern modem *thor11_modem;
 extern modem *thor16_modem;
 extern modem *thor22_modem;
 
-extern modem *dominoex85_modem;
-extern modem *thor85_modem;
-extern modem *dominoex125_modem;
-extern modem *thor125_modem;
+extern modem *dominoex44_modem;
+extern modem *thor44_modem;
+extern modem *dominoex88_modem;
+extern modem *thor88_modem;
 
 extern modem *dominoex4_modem;
 extern modem *dominoex5_modem;

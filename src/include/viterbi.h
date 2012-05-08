@@ -25,7 +25,7 @@
 #ifndef VITERBI_H
 #define VITERBI_H
 
-#define PATHMEM 64
+#define PATHMEM 128 // Must be a power of base 2 (32,64,128,256...)
 
 class viterbi  {
 protected:
