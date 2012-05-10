@@ -165,15 +165,16 @@ void C_FIR_filter::init_hilbert (int len, int dec) {
 // returns 1 when stable and decimated complex output value is valid
 //=====================================================================
 
-int C_FIR_filter::run (complex &in, complex &out) {
-	ibuffer[pointer] = in.real();
-	qbuffer[pointer] = in.imag();
+int C_FIR_filter::run (const complex &in, complex &out) {
+	ibuffer[pointer] = in.re;
+	qbuffer[pointer] = in.im;
 	counter++;
 	if (counter == decimateratio)
 		out = complex (	mac(&ibuffer[pointer - length], ifilter, length),
 						mac(&qbuffer[pointer - length], qfilter, length) );
 	pointer++;
 	if (pointer == FIRBufferLen) {
+		/// memmove is necessary if length >= FIRBufferLen/2 , theoretically possible.
 		memmove (ibuffer, ibuffer + FIRBufferLen - length, length * sizeof (double) );
 		memmove (qbuffer, qbuffer + FIRBufferLen - length, length * sizeof (double) );
 		pointer = length;
@@ -189,7 +190,7 @@ int C_FIR_filter::run (complex &in, complex &out) {
 // Run the filter for the Real part of the complex variable
 //=====================================================================
 
-int C_FIR_filter::Irun (double &in, double &out) {
+int C_FIR_filter::Irun (const double &in, double &out) {
 	double *iptr = ibuffer + pointer;
 
 	pointer++;
@@ -219,7 +220,7 @@ int C_FIR_filter::Irun (double &in, double &out) {
 // Run the filter for the Imaginary part of the complex variable
 //=====================================================================
 
-int C_FIR_filter::Qrun (double &in, double &out) {
+int C_FIR_filter::Qrun (const double &in, double &out) {
 	double *qptr = ibuffer + pointer;
 
 	pointer++;
@@ -397,11 +398,15 @@ void Cmovavg::reset()
 //
 //=====================================================================
 
+struct sfft::vrot_bins_pair {
+	complex vrot;
+	complex bins;
+} ;
+
 sfft::sfft(int len, int _first, int _last)
 {
-	vrot = new complex[len];
+	vrot_bins = new vrot_bins_pair[len];
 	delay  = new complex[len];
-	bins     = new complex[len];
 	fftlen = len;
 	first = _first;
 	last = _last;
@@ -409,41 +414,40 @@ sfft::sfft(int len, int _first, int _last)
 	double phi = 0.0, tau = 2.0 * M_PI/ len;
 	k2 = 1.0;
 	for (int i = 0; i < len; i++) {
-		vrot[i].re = K1 * cos (phi);
-		vrot[i].im = K1 * sin (phi);
+		vrot_bins[i].vrot = complex( cos (phi), sin (phi) ) * K1 ;
 		phi += tau;
-		delay[i] = bins[i] = 0.0;
+		delay[i] = vrot_bins[i].bins = 0.0;
 		k2 *= K1;
 	}
 }
 
 sfft::~sfft()
 {
-	delete [] vrot;
+	delete [] vrot_bins;
 	delete [] delay;
-	delete [] bins;
 }
 
 // Sliding FFT, complex input, complex output
 // FFT is computed for each value from first to last
 // Values are not stable until more than "len" samples have been processed.
-// returns address of first component in array
-
-complex *sfft::run(const complex& input)
+// Copies the frequencies to a pointer with a given stride.
+void sfft::run(const complex& input, complex * __restrict__ result, int stride )
 {
 	complex & de = delay[ptr];
-	complex z(
-		input.re - k2 * de.re,
-		input.im - k2 * de.im);
+	const complex z( input.re - k2 * de.re, input.im - k2 * de.im);
 	de = input;
 
 	++ptr ;
 	if( ptr >= fftlen ) ptr = 0 ;
 
-	for (int i = first; i < last; i++) {
-		bins[i] = ( bins[i] + z ) * vrot[i];
+	// It is more efficient to have vrot and bins very close to each other.
+	for(	vrot_bins_pair
+			* __restrict__ itr = vrot_bins + first,
+			* __restrict__ end = vrot_bins + last ;
+		itr != end ;
+		++itr, result += stride ) {
+		*result = itr->bins = itr->bins * itr->vrot + z * itr->vrot;
 	}
-	return &bins[first];
 }
 
 // ============================================================================

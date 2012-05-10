@@ -157,8 +157,9 @@ int BLANK::rx_process(const double *buf, int len)
 // with required bandwidth 
 		bandpass->run ( z, z );
 		
-// binsfft->run(z) returns pointer to first frequency of interest
-		bins = sliding->run (z);
+// binsfft->run(z) copies frequencies of interest
+		complex dummy ;
+		sliding->run (z, &dummy, 0 );
 // etc
 		decodesymbol();
 		update_syncscope();

@@ -287,7 +287,6 @@ thor::thor(trx_mode md)
 
 complex thor::mixer(int n, const complex& in)
 {
-	complex z;
 	double f;
 // first IF mixer (n == 0) plus
 // THORMAXFFTS mixers are supported each separated by 1/THORMAXFFTS bin size
@@ -295,16 +294,17 @@ complex thor::mixer(int n, const complex& in)
 	if (n == 0)
 		f = frequency - THORFIRSTIF;
 	else
-		f = THORFIRSTIF - THORBASEFREQ - bandwidth/2 + (samplerate / symlen) * (1.0 * n / paths);
+		f = THORFIRSTIF - THORBASEFREQ - bandwidth*0.5 + (samplerate / symlen) * ( (double)n / paths);
 
-	z.re = cos(phase[n]);
-	z.im = sin(phase[n]);
+	double phase_n = phase[n];
+	complex z( cos(phase_n), sin(phase_n) );
 	z *= in;
-	phase[n] -= TWOPI * f / samplerate;
-	if (phase[n] > M_PI)
-		phase[n] -= TWOPI;
-	else if (phase[n] < M_PI)
-		phase[n] += TWOPI;
+	phase_n -= TWOPI * f / samplerate;
+	if (phase_n > M_PI)
+		phase_n -= TWOPI;
+	else if (phase_n < M_PI)
+		phase_n += TWOPI;
+	phase[n] = phase_n;
 	return z;
 }
 
@@ -671,7 +671,7 @@ void thor::eval_s2n()
 
 int thor::rx_process(const double *buf, int len)
 {
-	complex zref,  z, *zp, *bins = 0;
+	complex zref, *zp;
 	complex zarray[1];
 	int n;
 
@@ -699,22 +699,21 @@ int thor::rx_process(const double *buf, int len)
 		
 		if (n) {
 			for (int i = 0; i < n; i++) {
+				complex * pipe_pipeptr_vector = pipe[pipeptr].vector ;
+				const complex zp_i = zp[i];
 // process THORMAXFFTS sets of sliding FFTs spaced at 1/THORMAXFFTS bin intervals each of which
 // is a matched filter for the current symbol length
 				for (int k = 0; k < paths; k++) {
 // shift in frequency to base band for the sliding DFTs
-					z = mixer(k + 1, zp[i]);
-					bins = binsfft[k]->run(z);
+					const complex z = mixer(k + 1, zp_i );
 // copy current vector to the pipe interleaving the FFT vectors
-					for (int j = 0; j < numbins; j++) {
-						pipe[pipeptr].vector[k + paths * j] = bins[j];
-					}
+					binsfft[k]->run(z, pipe_pipeptr_vector + k, paths );
 				}
 				if (--synccounter <= 0) {
 					synccounter = symlen;
 					//if (progdefaults.THOR_SOFTSYMBOLS)
 					currsymbol = harddecode();
-					currmag = pipe[pipeptr].vector[currsymbol].mag();
+					currmag = pipe_pipeptr_vector[currsymbol].mag();
 					eval_s2n();
         		    
 					if (progdefaults.THOR_SOFTBITS) softdecodesymbol();
