@@ -1,5 +1,16 @@
-2012-03-26  David Freese  <w1hkj@w1hkj.com>
+2012-05-08  John Phelps  <kl4yfd@gmail.com>
 
+	93e0a1b: DominoEX-THOR mods
+
+2012-05-03  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	350f83e: Viterbi and filter speed-up.
+	4200036: Wefax
+
+2012-04-06  David Freese  <w1hkj@w1hkj.com>
+
+	7041a5e: FreqControl paste
+	ede22f5: Base directory
 	5c71fdf: Check for updates
 	cd04cad: Notch indicator color
 	ca5ff49: ARQ Parse Mode
@@ -9,11 +20,32 @@
 	1abbedf: Control-Z fault
 	0d3265f: Notch
 	7f2cfbe: EXEC macro
+
+2012-03-02  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	e2eb292: Wefax fixes, AFC, speedup.
+
+2012-03-02  David Freese  <w1hkj@w1hkj.com>
+
 	23e315b: Save Macro - Windows
 	331ff2e: About copyright date
 	c9df726: MFSK pic dnd
 	4a0833e: Merge record logic error
+
+2012-02-19  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	490058b: Wefax bin images + debugging.
+
+2012-02-15  David Freese  <w1hkj@w1hkj.com>
+
 	d2d254e: Weather report
+
+2012-02-13  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	ccee94d: Wefax AFC.
+
+2012-02-12  David Freese  <w1hkj@w1hkj.com>
+
 	eae67ba: OSX Lion shutdown
 	dedc82a: OSX Lion shutdown
 	b609cb6: Config Dialog
