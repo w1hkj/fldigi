@@ -98,9 +98,9 @@ public:
 	void init_hilbert (int len, int dec);
 	double *bp_FIR(int len, int hilbert, double f1, double f2);
 	void dump();
-	int run (complex &in, complex &out);
-	int Irun (double &in, double &out);
-	int Qrun (double &in, double &out);
+	int run (const complex &in, complex &out);
+	int Irun (const double &in, double &out);
+	int Qrun (const double &in, double &out);
 };
 
 //=====================================================================
@@ -134,14 +134,14 @@ private:
 	int first;
 	int last;
 	int ptr;
-	complex *vrot;
-	complex *bins;
-	complex *delay;
+	struct vrot_bins_pair ;
+	vrot_bins_pair * __restrict__ vrot_bins ;
+	complex * __restrict__ delay;
 	double k2;
 public:
 	sfft(int len, int first, int last);
 	~sfft();
-	complex *run(const complex& input);
+	void run(const complex& input, complex * __restrict__ result, int stride );
 };
 
 

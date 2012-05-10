@@ -685,8 +685,8 @@ void mfsk::eval_s2n()
 
 int mfsk::rx_process(const double *buf, int len)
 {
-	complex z, *bins = 0;
-	int i;
+	complex z;
+	complex* bins;
 
 	while (len-- > 0) {
 // create analytic signal...
@@ -724,13 +724,11 @@ int mfsk::rx_process(const double *buf, int len)
 			continue;
 		}
 
-// binsfft->run(z) returns pointer to first frequency of interest
-		bins = binsfft->run (z);
+		// copy current vector to the pipe
+		// binsfft->bin(i) copies frequencies of interest.
+		binsfft->run (z, pipe[pipeptr].vector, 1);
+		bins = pipe[pipeptr].vector;
 
-// copy current vector to the pipe
-		for (i = 0; i < numtones; i++)
-			pipe[pipeptr].vector[i] = bins[i];
-			
 		if (--synccounter <= 0) {
 			
 			synccounter = symlen;

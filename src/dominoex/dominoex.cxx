@@ -540,7 +540,7 @@ void dominoex::eval_s2n()
 
 int dominoex::rx_process(const double *buf, int len)
 {
-	complex zref,  z, *zp, *bins = 0;
+	complex zref,  z, *zp;
 	complex zarray[1];
 	int n;
 
@@ -573,11 +573,8 @@ int dominoex::rx_process(const double *buf, int len)
 				for (int j = 0; j < paths; j++) {
 // shift in frequency to base band for the sliding DFTs
 					z = mixer(j + 1, zp[i]);
-					bins = binsfft[j]->run(z);
 // copy current vector to the pipe interleaving the FFT vectors
-					for (int k = 0; k < numbins; k++) {
-						pipe[pipeptr].vector[j + paths * k] = bins[k];
-					}
+					binsfft[j]->run(z, pipe[pipeptr].vector + j, paths );
 				}
 				if (--synccounter <= 0) {
 					synccounter = symlen;
