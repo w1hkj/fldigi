@@ -70,15 +70,21 @@ vector<string> split(const char* re_str, const char* str, unsigned max_split)
 /// Builds a string out of a printf-style formatted vararg list.
 string strformat( const char * fmt, ... )
 {
-	struct auto_free // Automatically deleted when leaving.
-	{
-		char * _strp ;
-		~auto_free() { if( _strp ) free( _strp ); }
-	} ptr = { NULL };
+	static const int sz_buf = 512 ;
+	char buf_usual[sz_buf];
+ 
+ 	va_list ap;
+	va_start(ap, fmt);
+	int res = vsnprintf( buf_usual, sz_buf, fmt, ap);
+	va_end(ap);
+ 	if( res < 0 ) throw runtime_error(__FUNCTION__);
+	if( res < sz_buf ) return buf_usual ;
 
-	va_list ap;
-	va_start  (ap, fmt);
-	int res = vasprintf( &ptr._strp, fmt, ap);
+	string str( res, ' ' );
+	va_start(ap, fmt);
+	res = vsnprintf( &str[0], res + 1, fmt, ap);
+	va_end(ap);
 	if( res < 0 ) throw runtime_error(__FUNCTION__);
-	return ptr._strp ? string( ptr._strp, res ) : string();
+	return str ;
 }
+

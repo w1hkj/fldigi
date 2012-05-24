@@ -46,6 +46,7 @@
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 
+#include <zlib.h>
 #include <png.h>
 
 #include "fl_digi.h"
