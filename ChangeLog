@@ -1,3 +1,16 @@
+2012-05-24  David Freese  <w1hkj@w1hkj.com>
+
+	c3738ce: WEFAX mingw32 fixes
+	8bdd53f: Combined CW decoder
+
+2012-05-17  david freese (none)  <dave@dave-laptop>
+
+	69a7757: CW decoder update
+
+2012-05-10  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	2349e04: sfft speedup
+
 2012-05-08  John Phelps  <kl4yfd@gmail.com>
 
 	93e0a1b: DominoEX-THOR mods
