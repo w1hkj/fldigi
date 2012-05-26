@@ -1136,6 +1136,8 @@ void rigCAT_close(void)
 	if (rigCAT_open == false || rigCAT_exit)
 		return;
 
+	if (rigCAT_thread == 0) return;
+
 	pthread_mutex_lock(&rigCAT_mutex);
 		rigCAT_exit = true;
 	pthread_mutex_unlock(&rigCAT_mutex);
@@ -1148,7 +1150,6 @@ void rigCAT_close(void)
 	delete rigCAT_thread;
 	rigCAT_thread = 0;
 
-	rigio.ClosePort();
 	wf->USB(true);
 	rigCAT_open = false;
 }
@@ -1211,10 +1212,11 @@ static void *rigCAT_loop(void *args)
 	for (;;) {
 		MilliSleep(200);
 
-		if (rigCAT_bypass == true)
-			continue;
 		if (rigCAT_exit == true)
 			break;
+
+		if (rigCAT_bypass == true)
+			continue;
 
 		pthread_mutex_lock(&rigCAT_mutex);
 			freq = rigCAT_getfreq(progdefaults.RigCatRetries, failed);
