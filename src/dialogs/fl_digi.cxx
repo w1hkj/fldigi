@@ -5570,17 +5570,14 @@ void set_scope_mode(Digiscope::scope_mode md)
 		REQ(&Fl_Window::size_range, scopeview, SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT,
 		    0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
 	}
-//	if (wfscope)
-//		wfscope->mode(md);
 	wf->wfscope->mode(md);
+	if (md == Digiscope::SCOPE) set_scope_clear_axis();
 }
 
 void set_scope(double *data, int len, bool autoscale)
 {
 	if (digiscope)
 		digiscope->data(data, len, autoscale);
-//	if (wfscope)
-//		wfscope->data(data, len, autoscale);
 	wf->wfscope->data(data, len, autoscale);
 }
 
@@ -5588,8 +5585,6 @@ void set_phase(double phase, double quality, bool highlight)
 {
 	if (digiscope)
 		digiscope->phase(phase, quality, highlight);
-//	if (wfscope)
-//		wfscope->phase(phase, quality, highlight);
 	wf->wfscope->phase(phase, quality, highlight);
 }
 
@@ -5597,8 +5592,6 @@ void set_rtty(double flo, double fhi, double amp)
 {
 	if (digiscope)
 		digiscope->rtty(flo, fhi, amp);
-//	if (wfscope)
-//		wfscope->rtty(flo, fhi, amp);
 	wf->wfscope->rtty(flo, fhi, amp);
 }
 
@@ -5606,8 +5599,6 @@ void set_video(double *data, int len, bool dir)
 {
 	if (digiscope)
 		digiscope->video(data, len, dir);
-//	if (wfscope)
-//		wfscope->video(data, len, dir);
 	wf->wfscope->video(data, len, dir);
 }
 
@@ -5615,9 +5606,49 @@ void set_zdata(complex *zarray, int len)
 {
 	if (digiscope)
 		digiscope->zdata(zarray, len);
-//	if (wfscope)
-//		wfscope->zdata(zarray, len);
 	wf->wfscope->zdata(zarray, len);
+}
+
+void set_scope_xaxis_1(double y1)
+{
+	if (digiscope)
+		digiscope->xaxis_1(y1);
+	wf->wfscope->xaxis_1(y1);
+}
+
+void set_scope_xaxis_2(double y2)
+{
+	if (digiscope)
+		digiscope->xaxis_2(y2);
+	wf->wfscope->xaxis_2(y2);
+}
+
+void set_scope_yaxis_1(double x1)
+{
+	if (digiscope)
+		digiscope->yaxis_1(x1);
+	wf->wfscope->yaxis_1(x1);
+}
+
+void set_scope_yaxis_2(double x2)
+{
+	if (digiscope)
+		digiscope->yaxis_2(x2);
+	wf->wfscope->yaxis_2(x2);
+}
+
+void set_scope_clear_axis()
+{
+	if (digiscope) {
+		digiscope->xaxis_1(0);
+		digiscope->xaxis_2(0);
+		digiscope->yaxis_1(0);
+		digiscope->yaxis_2(0);
+	}
+	wf->wfscope->xaxis_1(0);
+	wf->wfscope->xaxis_2(0);
+	wf->wfscope->yaxis_1(0);
+	wf->wfscope->yaxis_2(0);
 }
 
 // raw buffer functions can ONLY be called by FLMAIN_TID

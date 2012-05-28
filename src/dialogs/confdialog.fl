@@ -138,15 +138,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {183 175 600 400} type Double color 45 selection_color 51 labelsize 18 align 80 hide non_modal
+    xywh {604 62 600 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 598 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {2 25 596 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 598 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -212,21 +212,21 @@ progdefaults.changed = true;}
           Fl_Check_Button btnNoiseOn {
             label {Noise on}
             callback {progdefaults.noise = o->value();}
-            xywh {153 214 70 15} down_box DOWN_BOX
+            xywh {153 236 70 15} down_box DOWN_BOX
             code0 {o->value(progdefaults.noise);}
           }
           Fl_Counter noiseDB {
             label dB
             callback {progdefaults.s2n = o->value();}
-            xywh {153 252 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
+            xywh {153 274 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
             code0 {o->value(progdefaults.s2n);}
             class Fl_Counter2
           }
         }
       }
       Fl_Group tabUI {
-        label UI open
-        xywh {0 25 598 346} hide
+        label UI
+        xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {2 25 596 345} selection_color 50
@@ -1028,7 +1028,7 @@ WF_UI();}
       }
       Fl_Group tabWaterfall {
         label Waterfall
-        xywh {2 25 596 345} hide
+        xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {2 25 596 345} color 50 selection_color 50
@@ -1397,7 +1397,7 @@ behaves inside the waterfall} xywh {69 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 598 347}
+        xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsModems {
           label 2 open
@@ -1405,7 +1405,7 @@ behaves inside the waterfall} xywh {69 196 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabContestia {
             label {Cntst'}
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320}
           } {
             Fl_Group {} {
               label Contestia
@@ -1464,59 +1464,99 @@ progdefaults.changed = true;}
           }
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 596 320} hide
+            xywh {0 50 598 320} hide
           } {
-            Fl_Tabs tabsCW {
-              xywh {4 50 592 320} selection_color 50
+            Fl_Tabs tabsCW {open
+              xywh {0 50 598 320} selection_color 50
             } {
               Fl_Group {} {
-                label General
-                xywh {4 75 592 295} align 5 hide
+                label General open
+                xywh {4 75 592 295} align 5
               } {
                 Fl_Group {} {
                   label Receive open
-                  xywh {6 85 588 130} box ENGRAVED_FRAME align 21
+                  xywh {6 85 588 153} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Value_Slider sldrCWbandwidth {
-                    label {Filter bandwidth}
+                    label Bandwidth
                     callback {progdefaults.CWbandwidth = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {CW dsp filter bandwidth} xywh {75 115 290 20} type Horizontal align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
+                    tooltip {CW dsp filter bandwidth} xywh {20 159 400 20} type Horizontal align 5 minimum 2 maximum 400 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
                     code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
+                  }
+                  Fl_Check_Button btnCWuseSOMdecoding {
+                    label {SOM decoding}
+                    callback {progdefaults.CWuseSOMdecoding = o->value();
+progdefaults.changed = true;}
+                    tooltip {Self Organizing Mapping} xywh {20 118 125 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWuseSOMdecoding);}
+                  }
+                  Fl_Counter cntLower {
+                    label Lower
+                    callback {progdefaults.CWlower = o->value();
+progdefaults.changed = true;}
+                    tooltip {Detector low threshold} xywh {166 118 65 20} type Simple align 8 minimum 0.01 maximum 0.99 step 0.01 value 0.45
+                    code0 {o->value(progdefaults.CWlower);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Counter cntUpper {
+                    label Upper
+                    callback {progdefaults.CWupper = o->value();
+progdefaults.changed = true;}
+                    tooltip {Detector high threshold} xywh {289 118 65 20} type Simple align 8 minimum 0.01 maximum 0.99 step 0.01 value 0.55
+                    code0 {o->value(progdefaults.CWupper);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Check_Button btnCWmfilt {
+                    label {Matched Filter}
+                    callback {progdefaults.CWmfilt = o->value();
+progdefaults.changed = true;}
+                    tooltip {Matched Filter bandwidth} xywh {427 118 80 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWmfilt);}
+                  }
+                  Fl_Check_Button btnCWuseFFTfilter {
+                    label {FFT filter}
+                    callback {progdefaults.CWuse_fft_filter = o->value();
+progdefaults.changed = true;}
+                    tooltip {FFT / FIR filter} xywh {427 148 125 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWuse_fft_filter);}
                   }
                   Fl_Check_Button btnCWrcvTrack {
                     label Tracking
                     callback {progdefaults.CWtrack = o->value();
 progdefaults.changed = true;}
-                    tooltip {Automatic Rx speed tracking} xywh {75 150 80 20} down_box DOWN_BOX value 1
+                    tooltip {Automatic Rx speed tracking} xywh {427 178 80 20} down_box DOWN_BOX value 1
                     code0 {o->value(progdefaults.CWtrack);}
                   }
                   Fl_Counter cntCWrange {
-                    label {Tracking range (WPM)}
+                    label {Range,WPM}
                     callback {progdefaults.CWrange = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {Range +/- wpm} xywh {260 150 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
+                    tooltip {Range +/- wpm} xywh {427 209 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
                     code0 {o->value(progdefaults.CWrange);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Value_Output valCWrcvWPM {
+                    label {Rx WPM}
                     callback {progdefaults.changed = true;}
-                    xywh {70 185 35 20} color 7
+                    xywh {20 209 35 20} color 7 align 5
                   }
                   Fl_Progress prgsCWrcvWPM {
-                    tooltip {Tracked CW speed in WPM} xywh {140 185 250 20} color 49 selection_color 15 align 0
+                    tooltip {Tracked CW speed in WPM} xywh {57 209 363 20} color 49 selection_color 15 align 5
                   }
                   Fl_Box {} {
-                    label {RX WPM}
-                    xywh {360 185 70 20} align 20
+                    label {Detector threshold}
+                    xywh {166 96 258 17}
                   }
                 }
                 Fl_Group {} {
                   label Transmit open
-                  xywh {6 215 588 150} box ENGRAVED_FRAME align 21
+                  xywh {6 239 588 126} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Value_Slider sldrCWxmtWPM {
                     label {TX WPM}
@@ -1527,7 +1567,7 @@ if (sldrCWfarnsworth->value() > progdefaults.CWspeed)
 sldrCWfarnsworth->value(progdefaults.CWspeed);
 progdefaults.changed = true;
 sync_cw_parameters();}
-                    tooltip {My transmit CW WPM} xywh {62 240 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    tooltip {My transmit CW WPM} xywh {20 267 400 20} type Horizontal align 1 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWspeed);}
                     code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
@@ -1536,10 +1576,17 @@ sync_cw_parameters();}
                     label Default
                     callback {progdefaults.defCWspeed = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {The default CW speed} xywh {82 281 64 20} type Simple align 1 minimum 5 maximum 200 step 1 value 18
+                    tooltip {The default CW speed} xywh {427 267 64 20} type Simple align 8 minimum 5 maximum 200 step 1 value 18
                     code0 {o->value(progdefaults.defCWspeed);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
+                  }
+                  Fl_Check_Button btnCWusefarnsworth {
+                    label {Use Farnsworth}
+                    callback {progdefaults.CWusefarnsworth=o->value();
+progdefaults.changed = true;}
+                    xywh {20 303 136 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.CWusefarnsworth);}
                   }
                   Fl_Counter cntCWlowerlimit {
                     label {Lower limit}
@@ -1550,7 +1597,7 @@ sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWupperlimit->minimum(progdefaults.CWlowerlimit+20);
 cntCW_WPM->minimum(progdefaults.CWlowerlimit);}
-                    tooltip {No slower than this} xywh {239 281 65 20} type Simple align 1 minimum 5 maximum 20 step 5 value 10
+                    tooltip {No slower than this} xywh {427 300 65 20} type Simple align 8 minimum 5 maximum 20 step 5 value 10
                     code0 {o->value(progdefaults.CWlowerlimit);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                   }
@@ -1563,7 +1610,7 @@ sldrCWxmtWPM->value(progdefaults.CWspeed);
 sldrCWxmtWPM->redraw();
 cntCWlowerlimit->maximum(progdefaults.CWupperlimit-20);
 cntCW_WPM->maximum(progdefaults.CWupperlimit);}
-                    tooltip {No faster than this} xywh {397 281 65 20} type Simple align 1 minimum 25 maximum 200 step 5 value 100
+                    tooltip {No faster than this} xywh {427 335 65 20} type Simple align 8 minimum 25 maximum 200 step 5 value 100
                     code0 {o->value(progdefaults.CWupperlimit);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                   }
@@ -1571,17 +1618,10 @@ cntCW_WPM->maximum(progdefaults.CWupperlimit);}
                     label {F-WPM}
                     callback {progdefaults.CWfarnsworth = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {My transmit CW WPM} xywh {62 335 400 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14
+                    tooltip {My transmit CW WPM} xywh {20 335 400 20} type Horizontal align 1 minimum 5 maximum 100 step 1 value 20 textsize 14
                     code0 {o->value(progdefaults.CWfarnsworth);}
                     code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
-                  }
-                  Fl_Check_Button btnCWusefarnsworth {
-                    label {Use Farnsworth timing}
-                    callback {progdefaults.CWusefarnsworth=o->value();
-progdefaults.changed = true;}
-                    xywh {82 312 180 15} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.CWusefarnsworth);}
                   }
                 }
               }
@@ -1696,7 +1736,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Prosigns
-                xywh {4 75 592 295} align 5
+                xywh {4 75 592 295} align 5 hide
               } {
                 Fl_Group {} {open
                   xywh {6 86 588 280} box ENGRAVED_FRAME
@@ -1867,7 +1907,7 @@ progdefaults.changed = true;} open
           }
           Fl_Group tabDomEX {
             label Dom
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 180} box ENGRAVED_FRAME
@@ -1928,7 +1968,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 150} box ENGRAVED_FRAME
@@ -2001,7 +2041,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMT63 {
             label MT63
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 115} box ENGRAVED_FRAME align 21
@@ -2076,7 +2116,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOlivia {
             label Olivia
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 200} box ENGRAVED_FRAME
@@ -2134,7 +2174,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {AFC behavior} open
@@ -2201,7 +2241,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 300} box ENGRAVED_FRAME
@@ -2392,8 +2432,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabTHOR {
-            label Thor open
-            xywh {2 50 594 320}
+            label Thor
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {5 60 588 270} box ENGRAVED_FRAME
@@ -2468,7 +2508,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPacket {
             label Packet
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 296} box ENGRAVED_FRAME
@@ -2590,7 +2630,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNavtex {
             label Navtex
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 300}
@@ -2620,7 +2660,7 @@ fc->show();}
           }
           Fl_Group tabWefax {
             label Wefax
-            xywh {2 50 594 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 300}
@@ -2693,7 +2733,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig
-        tooltip {Transceiver control} xywh {2 25 596 345} hide
+        tooltip {Transceiver control} xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {4 25 592 345} selection_color 50
@@ -3311,7 +3351,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabSoundCard {
         label Audio
-        tooltip {Audio devices} xywh {2 25 596 345} hide
+        tooltip {Audio devices} xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {2 25 596 345} selection_color 50
@@ -3686,7 +3726,7 @@ if (o->value()) {
       }
       Fl_Group tabID {
         label ID
-        xywh {2 25 596 345} hide
+        xywh {0 25 598 345} hide
       } {
         Fl_Group {} {
           label {Video Preamble ID} open
@@ -3874,7 +3914,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc
-        xywh {2 25 596 345} hide
+        xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsMisc {open
           xywh {4 25 592 345} selection_color 50
@@ -4312,7 +4352,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label Web
-        tooltip {Callsign database} xywh {2 25 596 345} hide
+        tooltip {Callsign database} xywh {0 25 598 345} hide
       } {
         Fl_Tabs {} {open
           xywh {4 25 592 345}

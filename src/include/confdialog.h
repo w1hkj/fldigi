@@ -167,6 +167,11 @@ extern Fl_Check_Button *btnContestia_8bit;
 extern Fl_Group *tabCW;
 extern Fl_Tabs *tabsCW;
 extern Fl_Value_Slider2 *sldrCWbandwidth;
+extern Fl_Check_Button *btnCWuseSOMdecoding;
+extern Fl_Counter2 *cntLower;
+extern Fl_Counter2 *cntUpper;
+extern Fl_Check_Button *btnCWmfilt;
+extern Fl_Check_Button *btnCWuseFFTfilter;
 extern Fl_Check_Button *btnCWrcvTrack;
 extern Fl_Counter2 *cntCWrange;
 #include <FL/Fl_Value_Output.H>
@@ -175,11 +180,11 @@ extern Fl_Value_Output *valCWrcvWPM;
 extern Fl_Progress *prgsCWrcvWPM;
 extern Fl_Value_Slider2 *sldrCWxmtWPM;
 extern Fl_Counter2 *cntCWdefWPM;
+extern Fl_Check_Button *btnCWusefarnsworth;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cntCWlowerlimit;
 extern Fl_Counter *cntCWupperlimit;
 extern Fl_Value_Slider2 *sldrCWfarnsworth;
-extern Fl_Check_Button *btnCWusefarnsworth;
 extern Fl_Counter2 *cntCWweight;
 extern Fl_Counter2 *cntCWdash2dot;
 extern Fl_Counter2 *cntCWrisetime;

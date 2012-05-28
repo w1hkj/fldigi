@@ -327,9 +327,27 @@
         ELEM_(int, CWbandwidth, "CWBANDWIDTH",                                          \
               "Filter bandwidth (Hz)",                                                  \
               150)                                                                      \
+        ELEM_(double, CWlower, "CWLOWER",                                               \
+              "Detector hysterisis, lower threshold",                                   \
+              0.4)                                                                      \
+        ELEM_(double, CWupper, "CWUPPER",                                               \
+              "Detector hysterisis, upper threshold",                                   \
+              0.6)                                                                      \
+        ELEM_(int, CWmfiltlen, "CWMFILTLEN",                                            \
+              "Matched Filter length",                                                  \
+              100)                                                                      \
         ELEM_(bool, CWtrack, "CWTRACK",                                                 \
               "Automatic receive speed tracking",                                       \
               true)                                                                     \
+        ELEM_(bool, CWmfilt, "CWMFILT",                                                 \
+              "Matched Filter in use",                                                  \
+              false)                                                                    \
+        ELEM_(bool, CWuse_fft_filter, "CWUSEFFTFILTER",                                 \
+              "Use FFT overlap and add convolution filter",                             \
+              false)                                                                    \
+        ELEM_(bool, CWuseSOMdecoding, "CWUSESOMDECODING",                               \
+              "Self Organizing Map decoding",                                           \
+              false)                                                                    \
         ELEM_(int, CWrange, "CWRANGE",                                                  \
               "Tracking range for CWTRACK (WPM)",                                       \
               10)                                                                       \

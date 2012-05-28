@@ -1,5 +1,6 @@
 ## Copyright (C) 2007-2009 Stelios Bounanos, M0GLD (m0gld AT enotty DOT net)
 # Copyright (c) 2008 Dave Freese, W1HKJ (w1hkj AT w1hkj DOT com)
+# Copyright (c) 2012 Remi Chateauneu, F4ECW (remi dot chateauneu AT gmail DOT com)
 # License: GPLv3+: GNU GPL version 3 or later.
 
 bin_PROGRAMS =
@@ -270,6 +271,7 @@ fldigi_SOURCES += \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
+	filters/mfilt.cxx \
 	globals/globals.cxx \
 	include/htmlstrings.h \
 	include/arq_io.h \
@@ -303,6 +305,7 @@ fldigi_SOURCES += \
 	include/fft.h \
 	include/fftfilt.h \
 	include/filters.h \
+	include/mfilt.h \
 	include/fl_digi.h \
 	include/fl_lock.h \
 	include/fldigi-config.h \

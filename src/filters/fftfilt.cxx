@@ -53,8 +53,29 @@ fftfilt::fftfilt(double f1, double f2, int len)
 		ovlbuf[i].re = ovlbuf[i].im = 0.0;
 
 	inptr = 0;
-	
+
 	create_filter(f1, f2);
+}
+
+fftfilt::fftfilt(double f, int len)
+{
+	filterlen = len;
+	fft = new Cfft(filterlen);
+	ift = new Cfft(filterlen);
+
+	ovlbuf		= new complex[filterlen/2];
+	filter		= new complex[filterlen];
+	filtdata	= new complex[filterlen];
+	
+	for (int i = 0; i < filterlen; i++)
+		filter[i].re = filter[i].im =
+		filtdata[i].re = filtdata[i].im = 0.0;
+	for (int i = 0; i < filterlen/2; i++)
+		ovlbuf[i].re = ovlbuf[i].im = 0.0;
+
+	inptr = 0;
+
+	create_lpf(f);
 }
 
 fftfilt::~fftfilt()
@@ -76,7 +97,7 @@ void fftfilt::create_filter(double f1, double f2)
 	
 // initialize the filter to zero	
 	for (int i = 0; i < filterlen; i++)
-		filter[i].re = filter[i].im = 0.0;
+		filter[i].re   = filter[i].im   = 0.0;
 
 // create the filter shape coefficients by fft
 // filter values initialized to the impulse response h(t)
@@ -88,6 +109,37 @@ void fftfilt::create_filter(double f1, double f2)
 		x = f2 * sinc(2 * f2 * t) - f1 * sinc(2 * f1 * t); // sinc(x)
 //		x *= hamming(t);
 //		x *= hanning(h);
+		x *= blackman(h);	// windowed by Blackman function
+		x *= filterlen;		// scaled for unity in passband
+		filter[i].re = x;
+	}
+// perform the complex forward fft to obtain H(w)
+	tmpfft->cdft(filter);
+// start outputs after 2 full passes are complete
+	pass = 2;
+	delete tmpfft;
+}
+
+
+void fftfilt::create_lpf(double f)
+{
+	int len = filterlen / 2 + 1;
+	double t, h, x, it;
+	Cfft *tmpfft;
+	tmpfft = new Cfft(filterlen);
+	
+// initialize the filter to zero	
+	for (int i = 0; i < filterlen; i++)
+		filter[i].re   = filter[i].im   = 0.0;
+
+// create the filter shape coefficients by fft
+// filter values initialized to the impulse response h(t)
+	for (int i = 0; i < len; i++) {
+		it = (double) i;
+		t = it - (len - 1) / 2.0;
+		h = it / (len - 1);
+
+		x = f * sinc(2 * f * t);
 		x *= blackman(h);	// windowed by Blackman function
 		x *= filterlen;		// scaled for unity in passband
 		filter[i].re = x;

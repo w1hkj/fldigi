@@ -3,6 +3,7 @@
 //
 // Copyright (C) 2006-2010
 //		Dave Freese, W1HKJ
+//		   (C) Mauri Niininen, AG1LE
 //
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
@@ -30,26 +31,149 @@
 
 #include <cstring>
 #include <string>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
 
 #include "digiscope.h"
 #include "waterfall.h"
 #include "fl_digi.h"
+#include "fftfilt.h"
 
 #include "cw.h"
 #include "misc.h"
-//#include "modeIO.h"
 #include "configuration.h"
+#include "confdialog.h"
 #include "status.h"
 #include "debug.h"
 #include "FTextRXTX.h"
 
-#define	DEC_RATIO	16
-#define CW_FIRLEN   64
+#include "qrunner.h"
 
 using namespace std;
 
-static bool use_paren;
-string prosigns;
+const cw::SOM_TABLE cw::som_table[] = {
+	/* Prosigns */
+	{'=',	"<BT>",   {1.0,  0.33,  0.33,  0.33, 1.0,   0, 0}	}, // 0
+	{'~',	"<AA>",   { 0.33, 1.0,  0.33, 1.0,   0,   0, 0}	}, // 1
+	{'%',	"<AS>",   { 0.33, 1.0,  0.33,  0.33,  0.33,   0, 0} 	}, // 2
+	{'+',	"<AR>",   { 0.33, 1.0,  0.33, 1.0,  0.33,   0, 0} 	}, // 3
+	{'>',	"<SK>",   { 0.33,  0.33,  0.33, 1.0,  0.33, 1.0, 0}	}, // 4
+	{'<',	"<KN>",   {1.0,  0.33, 1.0, 1.0,  0.33,   0, 0} 	}, // 5
+	{'&',	"<INT>",  { 0.33,  0.33, 1.0,  0.33, 1.0,   0, 0}	}, // 6
+	{'}',	"<HM>",   { 0.33,  0.33,  0.33,  0.33, 1.0, 1.0, 0}	}, // 7
+	{'{',	"<VE>",   { 0.33,  0.33,  0.33, 1.0,  0.33,   0, 0}	}, // 8
+	/* ASCII 7bit letters */
+	{'A',	"A",	{ 0.33, 1.0,   0,   0,   0,   0, 0}	},
+	{'B',	"B",	{1.0,  0.33,  0.33,  0.33,   0,   0, 0}	},
+	{'C',	"C",	{1.0,  0.33, 1.0,  0.33,   0,   0, 0}	},
+	{'D',	"D",	{1.0,  0.33,  0.33,   0,   0,   0, 0} 	},
+	{'E',	"E",	{ 0.33,   0,   0,   0,   0,   0, 0}	},
+	{'F',	"F",	{ 0.33,  0.33, 1.0,  0.33,   0,   0, 0}	},
+	{'G',	"G",	{1.0, 1.0,  0.33,   0,   0,   0, 0}	},
+	{'H',	"H",	{ 0.33,  0.33,  0.33,  0.33,   0,   0, 0}	},
+	{'I',	"I",	{ 0.33,  0.33,   0,   0,   0,   0, 0}	},
+	{'J',	"J",	{ 0.33, 1.0, 1.0, 1.0,   0,   0, 0}	},
+	{'K',	"K",	{1.0,  0.33, 1.0,   0,   0,   0, 0}	},
+	{'L',	"L",	{ 0.33, 1.0,  0.33,  0.33,   0,   0, 0}	},
+	{'M',	"M",	{1.0, 1.0,   0,   0,   0,   0, 0}	},
+	{'N',	"N",	{1.0,  0.33,   0,   0,   0,   0, 0}	},
+	{'O',	"O",	{1.0, 1.0, 1.0,   0,   0,   0, 0}	},
+	{'P',	"P",	{ 0.33, 1.0, 1.0,  0.33,   0,   0, 0}	},
+	{'Q',	"Q",	{1.0, 1.0,  0.33, 1.0,   0,   0, 0}	},
+	{'R',	"R",	{ 0.33, 1.0,  0.33,   0,   0,   0, 0}	},
+	{'S',	"S",	{ 0.33,  0.33,  0.33,   0,   0,   0, 0}	},
+	{'T',	"T",	{1.0,   0,   0,   0,   0,   0, 0}	},
+	{'U',	"U",	{ 0.33,  0.33, 1.0,   0,   0,   0, 0}	},
+	{'V',	"V",	{ 0.33,  0.33,  0.33, 1.0,   0,   0, 0}	},
+	{'W',	"W",	{ 0.33, 1.0, 1.0,   0,   0,   0, 0}	},
+	{'X',	"X",	{1.0,  0.33,  0.33, 1.0,   0,   0, 0}	},
+	{'Y',	"Y",	{1.0,  0.33, 1.0, 1.0,   0,   0, 0}	},
+	{'Z',	"Z",	{1.0, 1.0,  0.33,  0.33,   0,   0, 0}	},
+	/* Numerals */
+	{'0',	"0",	{1.0, 1.0, 1.0, 1.0, 1.0,   0, 0}	},
+	{'1',	"1",	{ 0.33, 1.0, 1.0, 1.0, 1.0,   0, 0}	},
+	{'2',	"2",	{ 0.33,  0.33, 1.0, 1.0, 1.0,   0, 0}	},
+	{'3',	"3",	{ 0.33,  0.33,  0.33, 1.0, 1.0,   0, 0}	},
+	{'4',	"4",	{ 0.33,  0.33,  0.33,  0.33, 1.0,   0, 0}	},
+	{'5',	"5",	{ 0.33,  0.33,  0.33,  0.33,  0.33,   0, 0}	},
+	{'6',	"6",	{1.0,  0.33,  0.33,  0.33,  0.33,   0, 0}	},
+	{'7',	"7",	{1.0, 1.0,  0.33,  0.33,  0.33,   0, 0}	},
+	{'8',	"8",	{1.0, 1.0, 1.0,  0.33,  0.33,   0, 0}	},
+	{'9',	"9",	{1.0, 1.0, 1.0, 1.0,  0.33,   0, 0}	},
+	/* Punctuation */
+	{'\\',	"\\",	{ 0.33, 1.0,  0.33,  0.33, 1.0,  0.33, 0}	},
+	{'\'',	"'",	{ 0.33, 1.0, 1.0, 1.0, 1.0,  0.33, 0}	},
+	{'$',	"$",	{ 0.33,  0.33,  0.33, 1.0,  0.33,  0.33,1.0}	},
+	{'(',	"(",	{1.0,  0.33, 1.0, 1.0,  0.33,   0, 0}	},
+	{')',	")",	{1.0,  0.33, 1.0, 1.0,  0.33, 1.0, 0}	},
+	{',',	",",	{1.0, 1.0,  0.33,  0.33, 1.0, 1.0, 0}	},
+	{'-',	"-",	{1.0,  0.33,  0.33,  0.33,  0.33, 1.0, 0}	},
+	{'.',	".",	{ 0.33, 1.0,  0.33, 1.0,  0.33, 1.0, 0}	},
+	{'/',	"/",	{1.0,  0.33,  0.33, 1.0,  0.33,   0, 0}	},
+	{':',	":",	{1.0, 1.0, 1.0,  0.33,  0.33,  0.33, 0}	},
+	{';',	";",	{1.0,  0.33, 1.0,  0.33, 1.0,  0.33, 0}	},
+	{'?',	"?",	{ 0.33,  0.33, 1.0, 1.0,  0.33,  0.33, 0}	},
+	{'_',	"_",	{ 0.33,  0.33, 1.0, 1.0,  0.33, 1.0, 0}	},
+	{'@',	"@",	{ 0.33, 1.0, 1.0,  0.33, 1.0,  0.33, 0}	},
+	{'!',	"!",	{1.0,  0.33, 1.0,  0.33, 1.0, 1.0, 0}	},
+	{0, NULL, {0.0}}
+};
+
+int cw::normalize(float *v, int n, int twodots)
+{
+	if( n == 0 ) return 0 ;
+
+	float max = v[0];
+	float min = v[0];
+	int j;
+
+	/* find max and min values */
+	for (j=1; j<n; j++) {
+		float vj = v[j];
+		if (vj > max)	max = vj;
+		else if (vj < min)	min = vj;
+	}
+	/* all values 0 - no need to normalize or decode */
+	if (max == 0.0) return 0;
+
+	/* scale values between  [0,1] -- if Max longer than 2 dots it was "dah" and should be 1.0, otherwise it was "dit" and should be 0.33 */
+	float ratio = (max > twodots) ? 1.0 : 0.33 ;
+	ratio /= max ;
+	for (j=0; j<n; j++) v[j] *= ratio;
+	return (1);
+}
+
+
+const char * cw::find_winner (float *inbuf, int twodots)
+{
+	float diffsf = 999999999999.0;
+
+	if ( normalize (inbuf, WGT_SIZE, twodots) == 0) return NULL;
+
+	const SOM_TABLE * winner = NULL;
+	for ( const SOM_TABLE * som = som_table; som->chr != 0; som++) {
+		 /* Compute the distance between codebook and input entry */
+		float difference = 0.0;
+	   	for (int i = 0; i < WGT_SIZE; i++) {
+			float diff = (inbuf[i] - som->wgt[i]);
+					difference += diff * diff;
+					if (difference > diffsf) break;
+	  		}
+
+	 /* If distance is smaller than previous distances */
+			if (difference < diffsf) {
+	  			winner = som;
+	  			diffsf = difference;
+			}
+	}
+
+	if (winner != NULL)
+		return winner->prt;
+	else
+		return NULL;
+}
 
 void cw::tx_init(SoundBase *sc)
 {
@@ -64,8 +188,10 @@ void cw::rx_init()
 	cw_receive_state = RS_IDLE;
 	smpl_ctr = 0;
 	cw_rr_current = 0;
+	cw_ptr = 0;
 	agc_peak = 0;
-    set_scope_mode(Digiscope::SCOPE);
+	set_scope_mode(Digiscope::SCOPE);
+
 	update_Status();
 	usedefaultWPM = false;
 	scope_clear = true;
@@ -99,17 +225,15 @@ void cw::init()
 }
 
 cw::~cw() {
-	if (cwfilter) delete cwfilter;
+	if (hilbert) delete hilbert;
+	if (cw_FIR_filter) delete cw_FIR_filter;
+	if (cw_FFT_filter) delete cw_FFT_filter;
 	if (bitfilter) delete bitfilter;
 	if (trackingfilter) delete trackingfilter;
 }
 
-
-//cw::cw() : morse(), modem()
 cw::cw() : modem()
 {
-	double lp;
-
 	cap |= CAP_BW;
 
 	mode = MODE_CW;
@@ -119,6 +243,9 @@ cw::cw() : modem()
 	tx_frequency = get_txfreq_woffset();
 	risetime = progdefaults.CWrisetime;
 	QSKshape = progdefaults.QSKshape;
+
+	cw_ptr = 0;
+	clrcount = CLRCOUNT;
 
 	samplerate = CWSampleRate;
 	fragmentsize = CWMaxSymLen;
@@ -138,28 +265,105 @@ cw::cw() : modem()
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
 // block of variables that get updated each time speed changes
-	pipesize = 512;
+	pipesize = (22 * samplerate * 12) / (progdefaults.CWspeed * 160);
+	if (pipesize < 0) pipesize = 512;
+	if (pipesize > MAX_PIPE_SIZE) pipesize = MAX_PIPE_SIZE;
+
 	cwTrack = true;
 	phaseacc = 0.0;
+	FFTphase = 0.0;
+	FIRphase = 0.0;
+	FFTvalue = 0.0;
+	FIRvalue = 0.0;
 	pipeptr = 0;
+	clrcount = 0;
+
+	upper_threshold = progdefaults.CWupper;
+	lower_threshold = progdefaults.CWlower;
+	for (int i = 0; i < MAX_PIPE_SIZE; clearpipe[i++] = 0.0);
+
 	agc_peak = 1.0;
+	in_replay = 0;
 
-	lp = 0.5 * bandwidth / samplerate;
-	cwfilter = new C_FIR_filter();
-	cwfilter->init_lowpass (CW_FIRLEN, DEC_RATIO, lp);
+	use_fft_filter = progdefaults.CWuse_fft_filter;
+	use_matched_filter = progdefaults.CWmfilt;
 
-	bitfilter = new Cmovavg(8);
-	bitfilterlen = (int)(samplerate / frequency / 4);
-	bitfilterlen = bitfilterlen < 2 ? 2 : bitfilterlen;
-	bitfilter->setLength(bitfilterlen);
+	bandwidth = progdefaults.CWbandwidth;
+	if (use_matched_filter)
+		progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2 + 0.5;
+
+	hilbert = new C_FIR_filter(); // hilbert transform used by FFT filter
+	hilbert->init_hilbert(37, 1);
+
+	cw_FIR_filter = new C_FIR_filter();
+	cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, 0.5 * bandwidth / samplerate);
+
+//overlap and add filter length should be a factor of 2
+	FilterFFTLen = 4096;
+	cw_FFT_filter = new fftfilt(0.5 * bandwidth / samplerate, FilterFFTLen); // low pass implementation
+
+// bit filter based on 10 msec rise time of CW waveform
+int bfv = (int)(samplerate * .010 / DEC_RATIO);
+	bitfilter = new Cmovavg(bfv);
 
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
 
 	makeshape();
 	sync_parameters();
-	wf->Bandwidth ((int)bandwidth);
+	REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth), wf, (int)bandwidth);
+	REQ(static_cast<int (Fl_Value_Slider2::*)(double)>(&Fl_Value_Slider2::value), sldrCWbandwidth, (int)bandwidth);
 	update_Status();
-//printf("%s\n", progdefaults.CW_prosigns.c_str());
+}
+
+// SHOULD ONLY BE CALLED FROM THE rx_processing loop
+// MUST FIX
+void cw::reset_rx_filter()
+{
+	if (use_fft_filter != progdefaults.CWuse_fft_filter ||
+		use_matched_filter != progdefaults.CWmfilt ||
+		cw_speed != progdefaults.CWspeed ||
+		bandwidth != progdefaults.CWbandwidth ) {
+
+		use_fft_filter = progdefaults.CWuse_fft_filter;
+		use_matched_filter = progdefaults.CWmfilt;
+		cw_send_speed = cw_speed = progdefaults.CWspeed;
+
+		if (use_matched_filter)
+			progdefaults.CWbandwidth = bandwidth = (int)(2.0 * progdefaults.CWspeed / 1.2 + .05);
+		else
+			bandwidth = progdefaults.CWbandwidth;
+
+		if (use_fft_filter) { // FFT filter
+			cw_FFT_filter->create_lpf(0.5 * bandwidth / samplerate);
+			FFTphase = 0;
+		} else { // FIR filter
+			cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, 0.5 * bandwidth / samplerate);
+			FIRphase = 0;
+		}
+		REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth),
+			wf, (int)bandwidth);
+		REQ(static_cast<int (Fl_Value_Slider2::*)(double)>(&Fl_Value_Slider2::value),
+			sldrCWbandwidth, (int)bandwidth);
+
+		pipesize = (22 * samplerate * 12) / (progdefaults.CWspeed * 160);
+		if (pipesize < 0) pipesize = 512;
+		if (pipesize > MAX_PIPE_SIZE) pipesize = MAX_PIPE_SIZE;
+
+		agc_peak = 0;
+/*
+printf("%s%s, %3.0f Hz, %d wpm\n",
+	use_fft_filter ? "FFT" : "FIR",
+	use_matched_filter ? ", Matched" : "",
+	bandwidth,
+	cw_speed);
+*/
+	}
+	if (lower_threshold != progdefaults.CWlower ||
+		upper_threshold != progdefaults.CWupper) {
+		lower_threshold = progdefaults.CWlower;
+		upper_threshold = progdefaults.CWupper;
+		clear_syncscope();
+	}
 }
 
 // sync_parameters()
@@ -170,45 +374,32 @@ void cw::sync_parameters()
 {
 	int lowerwpm, upperwpm, nusymbollen, nufsymlen;
 
-    int wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
-    int fwpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWfarnsworth;
+	int wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
+	int fwpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWfarnsworth;
 
-    cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
-
-//	if (usedefaultWPM == false)
-//		cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
-//	else
-//		cw_send_dot_length = DOT_MAGIC / progdefaults.defCWspeed;
+	cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
 
 	cw_send_dash_length = 3 * cw_send_dot_length;
 
 	nusymbollen = (int)(samplerate * 1.2 / wpm);
-    nufsymlen = (int)((50*(samplerate * 1.2 / fwpm) - 41*symbollen)/9);
-//	nusymbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
-//    nufsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
+	nufsymlen = (int)((50*(samplerate * 1.2 / fwpm) - 41*symbollen)/9);
 
 	if (symbollen != nusymbollen ||
-	    nufsymlen != fsymlen ||
-        risetime  != progdefaults.CWrisetime ||
-	    QSKshape  != progdefaults.QSKshape ) {
+		nufsymlen != fsymlen ||
+		risetime  != progdefaults.CWrisetime ||
+		QSKshape  != progdefaults.QSKshape ) {
 		risetime = progdefaults.CWrisetime;
 		QSKshape = progdefaults.QSKshape;
 		symbollen = nusymbollen;
 		fsymlen = nufsymlen;
 		makeshape();
 	}
-	int len = (int)(samplerate / frequency / 4);
-	len = len < 2 ? 2 : len;
-	if (bitfilterlen != len) {
-		bitfilterlen = len;
-		bitfilter->setLength(bitfilterlen);
-	}
 
 // check if user changed the tracking or the cw default speed
 	if ((cwTrack != progdefaults.CWtrack) ||
 		(cw_send_speed != progdefaults.CWspeed)) {
 		trackingfilter->reset();
-		cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
+		cw_adaptive_receive_threshold = 2 * cw_send_dot_length;
 		put_cwRcvWPM(cw_send_speed);
 	}
 	cwTrack = progdefaults.CWtrack;
@@ -231,11 +422,15 @@ void cw::sync_parameters()
 		cw_adaptive_receive_threshold = 2 * cw_send_dot_length;
 	}
 
-	cw_receive_dot_length = DOT_MAGIC / cw_receive_speed;
+	if (cw_receive_speed > 0)
+		cw_receive_dot_length = DOT_MAGIC / cw_receive_speed;
+	else
+		cw_receive_dot_length = DOT_MAGIC / 5;
 
 	cw_receive_dash_length = 3 * cw_receive_dot_length;
 
-	cw_noise_spike_threshold = cw_receive_dot_length / 4;
+	cw_noise_spike_threshold = cw_receive_dot_length / 2;
+
 }
 
 
@@ -260,7 +455,9 @@ void cw::update_tracking(int idot, int idash)
 		dash = cw_send_dash_length;
 
 	cw_adaptive_receive_threshold = (long int)trackingfilter->run((dash + dot) / 2);
-	sync_parameters();
+
+//	if (!use_matched_filter)
+		sync_parameters();
 }
 
 //=======================================================================
@@ -272,6 +469,7 @@ void cw::update_tracking(int idot, int idash)
 void cw::update_Status()
 {
 	put_MODEstatus("CW %s Rx %d", usedefaultWPM ? "*" : " ", cw_receive_speed);
+
 }
 
 //=======================================================================
@@ -281,109 +479,190 @@ void cw::update_Status()
 //=======================================================================
 //
 
-static int clrcount = 16;
 void cw::update_syncscope()
 {
-	int j;
+	if (pipesize < 0 || pipesize > MAX_PIPE_SIZE)
+		return;
 
-	for (int i = 0; i < pipesize; i++) {
-		j = (i + pipeptr) % pipesize;
-		scopedata[i] = 0.1 + 0.6 * pipe[j] / agc_peak;
-	}
-	set_scope(scopedata, pipesize, false);
+	for (int i = 0; i < pipesize; i++)
+		scopedata[i] = 0.96*pipe[i]+0.02;
+
+	set_scope_xaxis_1(progdefaults.CWupper);
+	set_scope_xaxis_2(progdefaults.CWlower);
+
+	set_scope(scopedata, pipesize, true);
 	scopedata.next(); // change buffers
-	clrcount = 16;
+
+	clrcount = CLRCOUNT;
 	put_cwRcvWPM(cw_receive_speed);
 	update_Status();
 }
 
 void cw::clear_syncscope()
 {
-    if (--clrcount) return;
-    for (int i = 0; i < pipesize; i++)
-        scopedata[i] = 0;
-    set_scope(scopedata, pipesize, false);
-    scopedata.next();
-    clrcount = 16;
+	set_scope_xaxis_1(upper_threshold);
+	set_scope_xaxis_2(lower_threshold);
+	set_scope(clearpipe, pipesize, false);
+	clrcount = CLRCOUNT;
 }
 
+complex cw::mixer(complex in)
+{
+	complex z (cos(phaseacc), sin(phaseacc));
+	z = z * in;
 
+	phaseacc += TWOPI * frequency / samplerate;
+	if (phaseacc > M_PI)
+		phaseacc -= TWOPI;
+	else if (phaseacc < M_PI)
+		phaseacc += TWOPI;
+
+	return z;
+}
 
 //=====================================================================
 // cw_rxprocess()
-// Called with a block (512 samples) of audio.
+// Called with a block (size SCBLOCKSIZE samples) of audio.
+//
 //======================================================================
 
-int cw::rx_process(const double *buf, int len)
+void cw::decode_stream(double value)
 {
-	complex z;
-	double delta;
-	double value;
-	const char *c;
+	const char *c, *somc;
+	static int state = 0;
+	char *cptr;
 
-	if (use_paren != progdefaults.CW_use_paren ||
-		prosigns != progdefaults.CW_prosigns) {
-		use_paren = progdefaults.CW_use_paren;
-		prosigns = progdefaults.CW_prosigns;
-		morse::init();
+
+// Compute a variable threshold value for tone detection
+// Fast attack and slow decay.
+	if (value > agc_peak)
+		agc_peak = decayavg(agc_peak, value, 20);
+	else
+		agc_peak = decayavg(agc_peak, value, 800);
+
+	metric = clamp(agc_peak * 2e3 , 0.0, 100.0);
+
+// save correlation amplitude value for the sync scope
+// normalize if possible
+	if (agc_peak) 
+		value /= agc_peak;
+	else
+		value = 0;
+
+	pipe[pipeptr] = value;
+	if (++pipeptr == pipesize) pipeptr = 0;
+
+	if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
+// Power detection using hysterisis detector
+// upward trend means tone starting
+		if ((value > progdefaults.CWupper) && (cw_receive_state != RS_IN_TONE)) {
+			handle_event(CW_KEYDOWN_EVENT, NULL);
+			state = 1;
+		}
+// downward trend means tone stopping
+		if ((value < progdefaults.CWlower) && (cw_receive_state == RS_IN_TONE)) {
+			handle_event(CW_KEYUP_EVENT, NULL);
+			state = 0;
+		}
 	}
 
-// check if user changed filter bandwidth
-	if (bandwidth != progdefaults.CWbandwidth) {
-		bandwidth = progdefaults.CWbandwidth;
-		cwfilter->init_lowpass (CW_FIRLEN, DEC_RATIO, 0.5 * bandwidth / samplerate);
-		wf->Bandwidth ((int)bandwidth);
+	if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
+		update_syncscope();
+		if (progdefaults.CWuseSOMdecoding) {
+			somc = find_winner(cw_buffer, cw_adaptive_receive_threshold);
+			cptr = (char*)somc;
+			if (somc != NULL) {
+				while (*cptr != '\0')
+					put_rx_char(progdefaults.rx_lowercase ? tolower(*cptr++) : *cptr++,FTextBase::CTRL);
+			}
+			if (strlen(c) == 1 && *c == ' ')
+				put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
+			cw_ptr = 0;
+			memset(cw_buffer, 0, sizeof(cw_buffer));
+		} else {
+			if (strlen(c) == 1)
+				put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
+			else while (*c)
+				put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++, FTextBase::CTRL);
+		}
 	}
+}
 
-// compute phase increment expected at our specific rx tone freq
-	delta = 2.0 * M_PI * frequency / samplerate;
+void cw::rx_FFTprocess(const double *buf, int len)
+{
+	complex z, *zp;
+	int n;
 
 	while (len-- > 0) {
-		// Mix with the internal NCO
-		z = complex ( *buf * cos(phaseacc), *buf * sin(phaseacc) );
+
+		z = complex ( *buf * cos(FFTphase), *buf * sin(FFTphase) );
+		FFTphase += TWOPI * frequency / samplerate;
+		if (FFTphase > M_PI)
+			FFTphase -= TWOPI;
+		else if (FFTphase < M_PI)
+			FFTphase += TWOPI;
+
 		buf++;
-		phaseacc += delta;
-		if (phaseacc > M_PI)
-			phaseacc -= 2.0 * M_PI;
-		if (cwfilter->run ( z, z )) {
+
+		n = cw_FFT_filter->run(z, &zp); // n = 0 or filterlen/2
+
+		if (!n) continue;
+
+		for (int i = 0; i < n; i++) {
+// update the basic sample counter used for morse timing
+			++smpl_ctr;
+
+			if (smpl_ctr % DEC_RATIO) continue; // decimate by DEC_RATIO
+
+// demodulate
+			FFTvalue = zp[i].mag();
+			FFTvalue = bitfilter->run(FFTvalue);
+
+			decode_stream(FFTvalue);
+
+		} // for (i =0; i < n ...
+
+	} //while (len-- > 0)
+}
+
+void cw::rx_FIRprocess(const double *buf, int len)
+{
+	complex z;
+
+	while (len-- > 0) {
+		z = complex ( *buf * cos(FIRphase), *buf * sin(FIRphase) );
+		buf++;
+
+		FIRphase += TWOPI * frequency / samplerate;
+		if (FIRphase > M_PI)
+			FIRphase -= TWOPI;
+		else if (FIRphase < M_PI)
+			FIRphase += TWOPI;
+
+		if (cw_FIR_filter->run ( z, z )) {
 
 // update the basic sample counter used for morse timing
 			smpl_ctr += DEC_RATIO;
 // demodulate
-			value = z.mag();
+			FIRvalue = z.mag();
+			FIRvalue = bitfilter->run(FIRvalue);
 
-			value = bitfilter->run(value);
-// Compute a variable threshold value for tone
-// detection. Fast attack and slow decay.
-			if (value > agc_peak)
-				agc_peak = decayavg(agc_peak, value, 80.0);
-			else
-				agc_peak = decayavg(agc_peak, value, 800.0);
-
-			metric = clamp(agc_peak * 1000.0 , 0.0, 100.0);
-
-// save correlation amplitude value for the sync scope
-			pipe[pipeptr] = value;
-			pipeptr = (pipeptr + 1) % pipesize;
-
-			if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
-// upward trend means tone starting
-				if ((value > 0.66 * agc_peak) && (cw_receive_state != RS_IN_TONE))
-					handle_event(CW_KEYDOWN_EVENT, NULL);
-// downward trend means tone stopping
-				if ((value < 0.33 * agc_peak) && (cw_receive_state == RS_IN_TONE))
-					handle_event(CW_KEYUP_EVENT, NULL);
-			}
-			if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
-				if (strlen(c) == 1)
-					put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
-				else while (*c)
-					put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++, FTextBase::CTRL);
-				update_syncscope();
-			}
+			decode_stream(FIRvalue);
 		}
 	}
-	clear_syncscope();
+}
+
+int cw::rx_process(const double *buf, int len)
+{
+	reset_rx_filter();
+
+	if (use_fft_filter)
+		rx_FFTprocess(buf, len);
+	else
+		rx_FIRprocess(buf, len);
+
+	if (!clrcount--) clear_syncscope();
+
 	display_metric(metric);
 
 	return 0;
@@ -407,26 +686,28 @@ int cw::usec_diff(unsigned int earlier, unsigned int later)
 
 //=======================================================================
 // handle_event()
-//    high level cw decoder... gets called with keyup, keydown, reset and
-//    query commands.
+//	high level cw decoder... gets called with keyup, keydown, reset and
+//	query commands.
 //   Keyup/down influences decoding logic.
-//    Reset starts everything out fresh.
-//    The query command returns CW_SUCCESS and the character that has
-//    been decoded (may be '*',' ' or [a-z,0-9] or a few others)
-//    If there is no data ready, CW_ERROR is returned.
+//	Reset starts everything out fresh.
+//	The query command returns CW_SUCCESS and the character that has
+//	been decoded (may be '*',' ' or [a-z,0-9] or a few others)
+//	If there is no data ready, CW_ERROR is returned.
 //=======================================================================
 
 int cw::handle_event(int cw_event, const char **c)
 {
 	static int space_sent = true;	// for word space logic
 	static int last_element = 0;	// length of last dot/dash
-	int element_usec;				// Time difference in usecs
+	int element_usec;		// Time difference in usecs
 
 	switch (cw_event) {
 	case CW_RESET_EVENT:
 		sync_parameters();
 		cw_receive_state = RS_IDLE;
 		cw_rr_current = 0;			// reset decoding pointer
+		cw_ptr = 0;
+		memset(cw_buffer, 0, sizeof(cw_buffer));
 		smpl_ctr = 0;					// reset audio sample counter
 		memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 		break;
@@ -440,6 +721,7 @@ int cw::handle_event(int cw_event, const char **c)
 			smpl_ctr = 0;
 			memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 			cw_rr_current = 0;
+			cw_ptr = 0;
 		}
 // save the timestamp
 		cw_rr_start_timestamp = smpl_ctr;
@@ -461,7 +743,7 @@ int cw::handle_event(int cw_event, const char **c)
 // If the tone length is shorter than any noise cancelling
 // threshold that has been set, then ignore this tone.
 		if (cw_noise_spike_threshold > 0
-		    && element_usec < cw_noise_spike_threshold) {
+			&& element_usec < cw_noise_spike_threshold) {
 			cw_receive_state = old_cw_receive_state;
  			return CW_ERROR;
 		}
@@ -477,12 +759,12 @@ int cw::handle_event(int cw_event, const char **c)
 		if (last_element > 0) {
 // check for dot dash sequence (current should be 3 x last)
 			if ((element_usec > 2 * last_element) &&
-			    (element_usec < 4 * last_element)) {
+				(element_usec < 4 * last_element)) {
 				update_tracking(last_element, element_usec);
 			}
 // check for dash dot sequence (last should be 3 x current)
 			if ((last_element > 2 * element_usec) &&
-			    (last_element < 4 * element_usec)) {
+				(last_element < 4 * element_usec)) {
 				update_tracking(element_usec, last_element);
 			}
 		}
@@ -491,20 +773,26 @@ int cw::handle_event(int cw_event, const char **c)
 // a dot is anything shorter than 2 dot times
 		if (element_usec <= cw_adaptive_receive_threshold) {
 			rx_rep_buf[cw_rr_current++] = CW_DOT_REPRESENTATION;
+	//		printf("%d dit ", last_element/1000);  // print dot length
+			cw_buffer[cw_ptr++] = (float)last_element;
 		} else {
 // a dash is anything longer than 2 dot times
 			rx_rep_buf[cw_rr_current++] = CW_DASH_REPRESENTATION;
+			cw_buffer[cw_ptr++] = (float)last_element;
 		}
 // We just added a representation to the receive buffer.
 // If it's full, then reset everything as it probably noise
 		if (cw_rr_current == RECEIVE_CAPACITY - 1) {
 			cw_receive_state = RS_IDLE;
 			cw_rr_current = 0;	// reset decoding pointer
+			cw_ptr = 0;
 			smpl_ctr = 0;		// reset audio sample counter
 			return CW_ERROR;
-		} else
+		} else {
 // zero terminate representation
 			rx_rep_buf[cw_rr_current] = 0;
+			cw_buffer[cw_ptr] = 0.0;
+		}
 // All is well.  Move to the more normal after-tone state.
 		cw_receive_state = RS_AFTER_TONE;
 		return CW_ERROR;
@@ -520,13 +808,13 @@ int cw::handle_event(int cw_event, const char **c)
 // else we had no place to put character...
 			cw_receive_state = RS_IDLE;
 			cw_rr_current = 0;
+			cw_ptr = 0;
 // reset decoding pointer
 			return CW_ERROR;
 		}
 // compute length of silence so far
 		sync_parameters();
 		element_usec = usec_diff(cw_rr_end_timestamp, smpl_ctr);
-
 // SHORT time since keyup... nothing to do yet
 		if (element_usec < (2 * cw_receive_dot_length))
 			return CW_ERROR;
@@ -534,16 +822,21 @@ int cw::handle_event(int cw_event, const char **c)
 // one shot through this code via receive state logic
 // FARNSWOTH MOD HERE -->
 		if (element_usec >= (2 * cw_receive_dot_length) &&
-		    element_usec <= (4 * cw_receive_dot_length) &&
-		    cw_receive_state == RS_AFTER_TONE) {
+			element_usec <= (4 * cw_receive_dot_length) &&
+			cw_receive_state == RS_AFTER_TONE) {
 // Look up the representation
+//cout << "CW_QUERY medium time after keyup: " << rx_rep_buf;
 			*c = morse::rx_lookup(rx_rep_buf);
-			if (*c == NULL)
+//cout <<": " << *c <<flush;
+			if (*c == NULL) {
 // invalid decode... let user see error
 				*c = "*";
+			}
 			cw_receive_state = RS_IDLE;
 			cw_rr_current = 0;	// reset decoding pointer
 			space_sent = false;
+			cw_ptr = 0;
+
 			return CW_SUCCESS;
 		}
 // LONG time since keyup... check for a word space
@@ -580,16 +873,16 @@ void cw::makeshape()
 	if (knum > KNUM)
 		knum = KNUM;
 
-    switch (QSKshape) {
-        case 1: // blackman
-            for (int i = 0; i < knum; i++)
-                keyshape[i] = (0.42 - 0.50 * cos(M_PI * i/ knum) + 0.08 * cos(2 * M_PI * i / knum));
-            break;
-        case 0: // raised cosine (hanning)
-        default:
-            for (int i = 0; i < knum; i++)
-                keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
-    }
+	switch (QSKshape) {
+		case 1: // blackman
+			for (int i = 0; i < knum; i++)
+				keyshape[i] = (0.42 - 0.50 * cos(M_PI * i/ knum) + 0.08 * cos(2 * M_PI * i / knum));
+			break;
+		case 0: // raised cosine (hanning)
+		default:
+			for (int i = 0; i < knum; i++)
+				keyshape[i] = 0.5 * (1.0 - cos (M_PI * i / knum));
+	}
 }
 
 inline double cw::nco(double freq)
@@ -604,7 +897,7 @@ inline double cw::nco(double freq)
 
 inline double cw::qsknco()
 {
-	qskphase += 2.0 * M_PI * 1000 / samplerate;//1600.0 / samplerate;
+	qskphase += 2.0 * M_PI * 1000 / samplerate;
 
 	if (qskphase > M_PI)
 		qskphase -= 2.0 * M_PI;
@@ -645,15 +938,15 @@ void cw::send_symbol(int bits, int len)
 
 	freq = get_txfreq_woffset();
 
-    delta = (int) (len * (progdefaults.CWweight - 50) / 100.0);
+	delta = (int) (len * (progdefaults.CWweight - 50) / 100.0);
 
-    symlen = len;
+	symlen = len;
 	if (currsym == 1) {
    		dsymlen = len * (progdefaults.CWdash2dot - 3.0) / (progdefaults.CWdash2dot + 1.0);
 		if (lastsym == 1 && currsym == 1)
 			symlen += (int)(3 * dsymlen);
-        else
-            symlen -= (int)dsymlen;
+		else
+			symlen -= (int)dsymlen;
 	}
 
 	if (delta < -(symlen - knum)) delta = -(symlen - knum);
@@ -662,6 +955,8 @@ void cw::send_symbol(int bits, int len)
 	keydown = symlen + delta ;
 	keyup = symlen - delta;
 
+	kpre = (int)(progdefaults.CWpre * 8);
+	if (kpre > symlen) kpre = symlen;
 	if (progdefaults.QSK) {
 		kpre = (int)(progdefaults.CWpre * 8);
 		if (kpre > symlen) kpre = symlen;
@@ -673,118 +968,117 @@ void cw::send_symbol(int bits, int len)
 				kpost = keydown - knum + (int)(progdefaults.CWpost * 8);
 		} else
 			kpost = keydown + (int)(progdefaults.CWpost * 8);
-
-		if (kpost < 0) kpost = 0;
-	} else {
-		kpre = 0;
-		kpost = 0;
+			if (kpost < 0) kpost = 0;
+		} else {
+			kpre = 0;
+			kpost = 0;
 	}
 
 	if (firstelement) {
-	    firstelement = false;
-	    return;
-    }
+		firstelement = false;
+		return;
+	}
 
-    if (currsym == 1) { // keydown
-        sample = 0;
-        if (lastsym == 1) {
-            for (i = 0; i < keydown; i++, sample++) {
-                outbuf[sample] = nco(freq);
-                qskbuf[sample] = qsknco();
-            }
-            duration = keydown;
-        } else {
-            if (carryover) {
-                for (int i = carryover; i < knum; i++, sample++)
-                    outbuf[sample] = nco(freq) * keyshape[knum - i];
-                while (sample < kpre)
-                    outbuf[sample++] = 0 * nco(freq);
-            } else
-                for (int i = 0; i < kpre; i++, sample++)
-                    outbuf[sample] = 0 * nco(freq);
-            sample = 0;
-            for (int i = 0; i < kpre; i++, sample++) {
-                qskbuf[sample] = qsknco();
-            }
-            for (int i = 0; i < knum; i++, sample++) {
-                outbuf[sample] = nco(freq) * keyshape[i];
-                qskbuf[sample] = qsknco();
-            }
-            duration = kpre + knum;
-        }
-        carryover = 0;
-    }
-    else { // keyup
-        if (lastsym == 0) {
-            duration = keyup;
-            sample = 0;
-            if (carryover) {
-                for (int i = carryover; i < knum; i++, sample++)
-                    outbuf[sample] = nco(freq) * keyshape[knum - i];
-                while (sample < duration)
-                    outbuf[sample++] = 0 * nco(freq);
-            } else
-                while (sample < duration)
-                    outbuf[sample++] = 0 * nco(freq);
-            carryover = 0;
+	if (currsym == 1) { // keydown
+		sample = 0;
+		if (lastsym == 1) {
+			for (i = 0; i < keydown; i++, sample++) {
+				outbuf[sample] = nco(freq);
+				qskbuf[sample] = qsknco();
+			}
+			duration = keydown;
+		} else {
+			if (carryover) {
+				for (int i = carryover; i < knum; i++, sample++)
+					outbuf[sample] = nco(freq) * keyshape[knum - i];
+				while (sample < kpre)
+					outbuf[sample++] = 0 * nco(freq);
+			} else
+				for (int i = 0; i < kpre; i++, sample++)
+					outbuf[sample] = 0 * nco(freq);
+			sample = 0;
+			for (int i = 0; i < kpre; i++, sample++) {
+				qskbuf[sample] = qsknco();
+			}
+			for (int i = 0; i < knum; i++, sample++) {
+				outbuf[sample] = nco(freq) * keyshape[i];
+				qskbuf[sample] = qsknco();
+			}
+			duration = kpre + knum;
+		}
+		carryover = 0;
+	}
+	else { // keyup
+		if (lastsym == 0) {
+			duration = keyup;
+			sample = 0;
+			if (carryover) {
+				for (int i = carryover; i < knum; i++, sample++)
+					outbuf[sample] = nco(freq) * keyshape[knum - i];
+				while (sample < duration)
+					outbuf[sample++] = 0 * nco(freq);
+			} else
+				while (sample < duration)
+					outbuf[sample++] = 0 * nco(freq);
+			carryover = 0;
 
-            qsample = 0;
-            if (q_carryover) {
-                for (int i = 0; i < q_carryover; i++, qsample++) {
-                    qskbuf[qsample] = qsknco();
-                }
-                while (qsample < duration)
-                    qskbuf[qsample++] = 0 * qsknco();
-            } else
-                while (qsample < duration)
-                    qskbuf[qsample++] = 0 * qsknco();
-            if (q_carryover > duration)
-                q_carryover = duration - q_carryover;
-            else
-                q_carryover = 0;
+			qsample = 0;
+			if (q_carryover) {
+				for (int i = 0; i < q_carryover; i++, qsample++) {
+					qskbuf[qsample] = qsknco();
+				}
+				while (qsample < duration)
+					qskbuf[qsample++] = 0 * qsknco();
+			} else
+				while (qsample < duration)
+					qskbuf[qsample++] = 0 * qsknco();
+			if (q_carryover > duration)
+				q_carryover = duration - q_carryover;
+			else
+				q_carryover = 0;
 
-        } else { // last symbol = 1
-            duration = 2 * symbollen - kpre - knum;
-            carryover = 0;
-            sample = 0;
+		} else { // last symbol = 1
+			duration = 2 * symbollen - kpre - knum;
+			carryover = 0;
+			sample = 0;
 
-            int next = keydown - knum;
-            if (progdefaults.CWnarrow)
-                next = keydown - 2*knum;
+			int next = keydown - knum;
+			if (progdefaults.CWnarrow)
+				next = keydown - 2*knum;
 
-            for (int i = 0; i < next; i++, sample++)
-                outbuf[sample] = nco(freq);
+			for (int i = 0; i < next; i++, sample++)
+				outbuf[sample] = nco(freq);
 
-            for (int i = 0; i < knum; i++, sample++) {
-                if (sample == duration) {
-                    carryover = i;
-                    break;
-                }
-                outbuf[sample] = nco(freq) * keyshape[knum - i];
-            }
-            while (sample < duration)
-                outbuf[sample++] = 0 * nco(freq);
+			for (int i = 0; i < knum; i++, sample++) {
+				if (sample == duration) {
+					carryover = i;
+					break;
+				}
+				outbuf[sample] = nco(freq) * keyshape[knum - i];
+			}
+			while (sample < duration)
+				outbuf[sample++] = 0 * nco(freq);
 
-            q_carryover = 0;
-            qsample = 0;
+			q_carryover = 0;
+			qsample = 0;
 
-            for (int i = 0; i < kpost; i++, qsample++) {
-                if (qsample == duration) {
-                    q_carryover = kpost - duration;
-                    break;
-                }
-                qskbuf[qsample] = qsknco();
-            }
-            while (qsample < duration)
-                qskbuf[qsample++] = 0 * qsknco();
-        }
-    }
+			for (int i = 0; i < kpost; i++, qsample++) {
+				if (qsample == duration) {
+					q_carryover = kpost - duration;
+					break;
+				}
+				qskbuf[qsample] = qsknco();
+			}
+			while (qsample < duration)
+				qskbuf[qsample++] = 0 * qsknco();
+		}
+	}
 
-    if (duration > 0) {
-    	if (progdefaults.QSK)
-	    	ModulateStereo(outbuf, qskbuf, duration);
-	    else
-		    ModulateXmtr(outbuf, duration);
+	if (duration > 0) {
+		if (progdefaults.QSK)
+			ModulateStereo(outbuf, qskbuf, duration);
+		else
+			ModulateXmtr(outbuf, duration);
 	}
 
 	lastsym = currsym;
@@ -809,14 +1103,14 @@ void cw::send_ch(int ch)
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
 		if (progdefaults.CWusefarnsworth)
-    		flen = 4 * fsymlen;
-        else
-            flen = 4 * symbollen;
+			flen = 4 * fsymlen;
+		else
+			flen = 4 * symbollen;
 		while (flen - symbollen > 0) {
-		    send_symbol(0, symbollen);
-		    flen -= symbollen;
-        }
-        if (flen) send_symbol(0, flen);
+			send_symbol(0, symbollen);
+			flen -= symbollen;
+		}
+		if (flen) send_symbol(0, flen);
 		put_echo_char(progdefaults.rx_lowercase ? tolower(ch) : ch);
 		return;
 	}
@@ -836,16 +1130,16 @@ void cw::send_ch(int ch)
 		code = code >> 1;
 	}
 		if (progdefaults.CWusefarnsworth)
-    		flen = fsymlen;
-        else
-            flen = symbollen;
+			flen = fsymlen;
+		else
+			flen = symbollen;
 	while(flen - symbollen > 0) {
-    	send_symbol(0, symbollen);
-        flen -= symbollen;
-    }
-    if (flen) send_symbol(0, flen);
+		send_symbol(0, symbollen);
+		flen -= symbollen;
+	}
+	if (flen) send_symbol(0, flen);
 
-    FL_AWAKE();
+	FL_AWAKE();
 
 	if (ch != -1) {
 		string prtstr = tx_print(ch);
@@ -884,8 +1178,9 @@ int cw::tx_process()
 	return 0;
 }
 
-void	cw::incWPM()
+void cw::incWPM()
 {
+
 	if (usedefaultWPM) return;
 	if (progdefaults.CWspeed < progdefaults.CWupperlimit) {
 		progdefaults.CWspeed++;
@@ -895,8 +1190,9 @@ void	cw::incWPM()
 	}
 }
 
-void	cw::decWPM()
+void cw::decWPM()
 {
+
 	if (usedefaultWPM) return;
 	if (progdefaults.CWspeed > progdefaults.CWlowerlimit) {
 		progdefaults.CWspeed--;
@@ -906,7 +1202,7 @@ void	cw::decWPM()
 	}
 }
 
-void	cw::toggleWPM()
+void cw::toggleWPM()
 {
 	usedefaultWPM = !usedefaultWPM;
 	sync_parameters();
