@@ -52,6 +52,7 @@ Digiscope::Digiscope (int X, int Y, int W, int H) :
 	_highlight = false;
 	_len = MAX_LEN;
 	_zptr = 0;
+	_x1 = _x2 = _y1 = _y2;
 	phase_mode = PHASE1;
 }
 
@@ -138,11 +139,9 @@ void Digiscope::data(double *data, int len, bool scale)
 			max = MAX(max, _buf[i]);
 			min = MIN(min, _buf[i]);
 		}
+		if (max == min) max *= 1.001;
 		for (int i = 0; i < _len; i++)
-			if (_buf[i] > 0.001) // threshold
-				_buf[i] = (_buf[i] - min) / (max - min);
-			else
-				_buf[i] = 0.0;
+			_buf[i] = (_buf[i] - min) / (max - min);
 	}
 	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();
@@ -336,9 +335,41 @@ void Digiscope::draw_scope()
 	for (int i = 0; i < npts; i++)
 		fl_vertex( (double)i / npts, _buf[i * _len / npts] );
 	fl_end_line();
+
+// x & y axis'
+	if (_x1) {
+		fl_color(FL_WHITE);
+		fl_begin_line();
+			fl_vertex(_x1, 0.0);
+			fl_vertex(_x1, 1.0);
+		fl_end_line();
+	}
+	if (_x2) {
+		fl_color(FL_YELLOW);
+		fl_begin_line();
+			fl_vertex(_x2, 0.0);
+			fl_vertex(_x2, 1.0);
+		fl_end_line();
+	}
+	if (_y1) {
+		fl_color(FL_WHITE);
+		fl_begin_line();
+			fl_vertex(0.0, _y1);
+			fl_vertex(1.0, _y1);
+		fl_end_line();
+	}
+	if (_y2) {
+		fl_color(FL_YELLOW);
+		fl_begin_line();
+			fl_vertex(0.0, _y2);
+			fl_vertex(1.0, _y2);
+		fl_end_line();
+	}
+
 	fl_pop_matrix();
 	fl_pop_clip();
 }
+
 
 void Digiscope::draw_xy()
 {

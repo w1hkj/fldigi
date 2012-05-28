@@ -161,12 +161,17 @@ extern Fl_Tabs *tabsModems;
 extern Fl_Group *tabCW;
 extern Fl_Tabs *tabsCW;
 extern Fl_Value_Slider2 *sldrCWbandwidth;
-extern Fl_Check_Button *btnCWrcvTrack;
-extern Fl_Counter2 *cntCWrange;
 #include <FL/Fl_Value_Output.H>
 extern Fl_Value_Output *valCWrcvWPM;
 #include <FL/Fl_Progress.H>
 extern Fl_Progress *prgsCWrcvWPM;
+extern Fl_Check_Button *btnCWuseSOMdecoding;
+extern Fl_Counter2 *cntLower;
+extern Fl_Counter2 *cntUpper;
+extern Fl_Check_Button *btnCWmfilt;
+extern Fl_Check_Button *btnCWuseFFTfilter;
+extern Fl_Check_Button *btnCWrcvTrack;
+extern Fl_Counter2 *cntCWrange;
 extern Fl_Value_Slider2 *sldrCWxmtWPM;
 extern Fl_Counter2 *cntCWdefWPM;
 #include <FL/Fl_Counter.H>

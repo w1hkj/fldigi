@@ -22,8 +22,10 @@ protected:
 	int pass;
 public:
 	fftfilt(double f1, double f2, int len);
+	fftfilt(double f, int len);
 	~fftfilt();
 	void create_filter(double f1, double f2);
+	void create_lpf(double f);
 	int run(const complex& in, complex **out);
 };
 

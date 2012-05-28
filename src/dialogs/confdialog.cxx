@@ -1101,6 +1101,49 @@ static void cb_sldrCWbandwidth(Fl_Value_Slider2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Value_Output *valCWrcvWPM=(Fl_Value_Output *)0;
+
+static void cb_valCWrcvWPM(Fl_Value_Output*, void*) {
+  progdefaults.changed = true;
+}
+
+Fl_Progress *prgsCWrcvWPM=(Fl_Progress *)0;
+
+Fl_Check_Button *btnCWuseSOMdecoding=(Fl_Check_Button *)0;
+
+static void cb_btnCWuseSOMdecoding(Fl_Check_Button* o, void*) {
+  progdefaults.CWuseSOMdecoding = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntLower=(Fl_Counter2 *)0;
+
+static void cb_cntLower(Fl_Counter2* o, void*) {
+  progdefaults.CWlower = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntUpper=(Fl_Counter2 *)0;
+
+static void cb_cntUpper(Fl_Counter2* o, void*) {
+  progdefaults.CWupper = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWmfilt=(Fl_Check_Button *)0;
+
+static void cb_btnCWmfilt(Fl_Check_Button* o, void*) {
+  progdefaults.CWmfilt = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWuseFFTfilter=(Fl_Check_Button *)0;
+
+static void cb_btnCWuseFFTfilter(Fl_Check_Button* o, void*) {
+  progdefaults.CWuse_fft_filter = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnCWrcvTrack=(Fl_Check_Button *)0;
 
 static void cb_btnCWrcvTrack(Fl_Check_Button* o, void*) {
@@ -1114,14 +1157,6 @@ static void cb_cntCWrange(Fl_Counter2* o, void*) {
   progdefaults.CWrange = (int)o->value();
 progdefaults.changed = true;
 }
-
-Fl_Value_Output *valCWrcvWPM=(Fl_Value_Output *)0;
-
-static void cb_valCWrcvWPM(Fl_Value_Output*, void*) {
-  progdefaults.changed = true;
-}
-
-Fl_Progress *prgsCWrcvWPM=(Fl_Progress *)0;
 
 Fl_Value_Slider2 *sldrCWxmtWPM=(Fl_Value_Slider2 *)0;
 
@@ -3396,7 +3431,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(-5, 0, 545, 372);
+    { tabsConfigure = new Fl_Tabs(-5, 0, 553, 372);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 500, 345, _("Operator"));
@@ -3509,7 +3544,7 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 506, 346, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 500, 346, _("UI"));
         tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 506, 346);
           tabsUI->selection_color(FL_LIGHT1);
@@ -4169,13 +4204,12 @@ ab and newline are automatically included."));
         } // Fl_Tabs* tabsUI
         tabUI->end();
       } // Fl_Group* tabUI
-      { tabWaterfall = new Fl_Group(-2, 25, 501, 347, _("Waterfall"));
+      { tabWaterfall = new Fl_Group(0, 25, 500, 347, _("Waterfall"));
         tabWaterfall->hide();
         { tabsWaterfall = new Fl_Tabs(-2, 25, 501, 347);
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(-2, 50, 501, 320, _("Display"));
-            o->hide();
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Display"));
             { Fl_Group* o = new Fl_Group(3, 56, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4370,7 +4404,8 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(-2, 50, 500, 320, _("FFT Processing"));
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("FFT Processing"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(3, 62, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(48, 72, 70, 20, _("Lower limit"));
@@ -4480,7 +4515,7 @@ an merging"));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(-2, 50, 500, 320, _("Mouse"));
+          { Fl_Group* o = new Fl_Group(0, 50, 500, 320, _("Mouse"));
             o->hide();
             { Fl_Group* o = new Fl_Group(3, 62, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
@@ -4529,20 +4564,20 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-5, 25, 545, 347, _("Modems"));
+      { tabModems = new Fl_Group(0, 25, 500, 347, _("Modems"));
         tabModems->hide();
-        { tabsModems = new Fl_Tabs(-5, 25, 545, 347);
+        { tabsModems = new Fl_Tabs(0, 25, 500, 347);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
-          { tabCW = new Fl_Group(0, 50, 504, 320, _("CW"));
-            { tabsCW = new Fl_Tabs(0, 50, 504, 320);
+          { tabCW = new Fl_Group(0, 50, 500, 320, _("CW"));
+            { tabsCW = new Fl_Tabs(0, 50, 500, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 500, 295, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 { Fl_Group* o = new Fl_Group(5, 85, 490, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Value_Slider2* o = sldrCWbandwidth = new Fl_Value_Slider2(40, 115, 290, 20, _("Filter bandwidth"));
+                { Fl_Value_Slider2* o = sldrCWbandwidth = new Fl_Value_Slider2(20, 149, 300, 20, _("Filter bandwidth"));
                 sldrCWbandwidth->tooltip(_("CW dsp filter bandwidth"));
                 sldrCWbandwidth->type(1);
                 sldrCWbandwidth->box(FL_DOWN_BOX);
@@ -4553,24 +4588,96 @@ an merging"));
                 sldrCWbandwidth->labelsize(14);
                 sldrCWbandwidth->labelcolor(FL_FOREGROUND_COLOR);
                 sldrCWbandwidth->minimum(10);
-                sldrCWbandwidth->maximum(500);
-                sldrCWbandwidth->step(10);
-                sldrCWbandwidth->value(150);
+                sldrCWbandwidth->maximum(400);
+                sldrCWbandwidth->step(1);
+                sldrCWbandwidth->value(66);
                 sldrCWbandwidth->textsize(14);
                 sldrCWbandwidth->callback((Fl_Callback*)cb_sldrCWbandwidth);
-                sldrCWbandwidth->align(Fl_Align(FL_ALIGN_RIGHT));
+                sldrCWbandwidth->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 sldrCWbandwidth->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.CWbandwidth);
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWbandwidth
-                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(40, 150, 80, 20, _("Tracking"));
+                { valCWrcvWPM = new Fl_Value_Output(20, 188, 35, 20, _("Rx WPM"));
+                valCWrcvWPM->color(FL_BACKGROUND2_COLOR);
+                valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
+                valCWrcvWPM->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                } // Fl_Value_Output* valCWrcvWPM
+                { prgsCWrcvWPM = new Fl_Progress(56, 188, 264, 20);
+                prgsCWrcvWPM->tooltip(_("Tracked CW speed in WPM"));
+                prgsCWrcvWPM->color(FL_BACKGROUND_COLOR);
+                prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
+                prgsCWrcvWPM->align(Fl_Align(FL_ALIGN_CENTER));
+                } // Fl_Progress* prgsCWrcvWPM
+                { Fl_Check_Button* o = btnCWuseSOMdecoding = new Fl_Check_Button(16, 108, 125, 20, _("SOM decoding"));
+                btnCWuseSOMdecoding->tooltip(_("Self Organizing Mapping"));
+                btnCWuseSOMdecoding->down_box(FL_DOWN_BOX);
+                btnCWuseSOMdecoding->value(1);
+                btnCWuseSOMdecoding->callback((Fl_Callback*)cb_btnCWuseSOMdecoding);
+                o->value(progdefaults.CWuseSOMdecoding);
+                } // Fl_Check_Button* btnCWuseSOMdecoding
+                { Fl_Counter2* o = cntLower = new Fl_Counter2(162, 108, 65, 20, _("Lower"));
+                cntLower->tooltip(_("Detector low threshold"));
+                cntLower->type(1);
+                cntLower->box(FL_UP_BOX);
+                cntLower->color(FL_BACKGROUND_COLOR);
+                cntLower->selection_color(FL_INACTIVE_COLOR);
+                cntLower->labeltype(FL_NORMAL_LABEL);
+                cntLower->labelfont(0);
+                cntLower->labelsize(14);
+                cntLower->labelcolor(FL_FOREGROUND_COLOR);
+                cntLower->minimum(0.01);
+                cntLower->maximum(0.99);
+                cntLower->step(0.01);
+                cntLower->value(0.45);
+                cntLower->callback((Fl_Callback*)cb_cntLower);
+                cntLower->align(Fl_Align(FL_ALIGN_TOP));
+                cntLower->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.CWlower);
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Counter2* cntLower
+                { Fl_Counter2* o = cntUpper = new Fl_Counter2(255, 108, 65, 20, _("Upper"));
+                cntUpper->tooltip(_("Detector high threshold"));
+                cntUpper->type(1);
+                cntUpper->box(FL_UP_BOX);
+                cntUpper->color(FL_BACKGROUND_COLOR);
+                cntUpper->selection_color(FL_INACTIVE_COLOR);
+                cntUpper->labeltype(FL_NORMAL_LABEL);
+                cntUpper->labelfont(0);
+                cntUpper->labelsize(14);
+                cntUpper->labelcolor(FL_FOREGROUND_COLOR);
+                cntUpper->minimum(0.01);
+                cntUpper->maximum(0.99);
+                cntUpper->step(0.01);
+                cntUpper->value(0.55);
+                cntUpper->callback((Fl_Callback*)cb_cntUpper);
+                cntUpper->align(Fl_Align(FL_ALIGN_TOP));
+                cntUpper->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.CWupper);
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Counter2* cntUpper
+                { Fl_Check_Button* o = btnCWmfilt = new Fl_Check_Button(330, 108, 80, 20, _("Matched Filter"));
+                btnCWmfilt->tooltip(_("Matched Filter bandwidth"));
+                btnCWmfilt->down_box(FL_DOWN_BOX);
+                btnCWmfilt->value(1);
+                btnCWmfilt->callback((Fl_Callback*)cb_btnCWmfilt);
+                o->value(progdefaults.CWmfilt);
+                } // Fl_Check_Button* btnCWmfilt
+                { Fl_Check_Button* o = btnCWuseFFTfilter = new Fl_Check_Button(330, 134, 125, 20, _("FFT filter"));
+                btnCWuseFFTfilter->tooltip(_("FFT / FIR filter"));
+                btnCWuseFFTfilter->down_box(FL_DOWN_BOX);
+                btnCWuseFFTfilter->value(1);
+                btnCWuseFFTfilter->callback((Fl_Callback*)cb_btnCWuseFFTfilter);
+                o->value(progdefaults.CWuse_fft_filter);
+                } // Fl_Check_Button* btnCWuseFFTfilter
+                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(330, 160, 80, 20, _("Tracking"));
                 btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
                 btnCWrcvTrack->down_box(FL_DOWN_BOX);
                 btnCWrcvTrack->value(1);
                 btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
                 o->value(progdefaults.CWtrack);
                 } // Fl_Check_Button* btnCWrcvTrack
-                { Fl_Counter2* o = cntCWrange = new Fl_Counter2(225, 150, 65, 20, _("Tracking range (WPM)"));
+                { Fl_Counter2* o = cntCWrange = new Fl_Counter2(330, 187, 65, 20, _("Range, WPM"));
                 cntCWrange->tooltip(_("Range +/- wpm"));
                 cntCWrange->type(1);
                 cntCWrange->box(FL_UP_BOX);
@@ -4590,19 +4697,6 @@ an merging"));
                 o->value(progdefaults.CWrange);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWrange
-                { valCWrcvWPM = new Fl_Value_Output(70, 185, 35, 20);
-                valCWrcvWPM->color(FL_BACKGROUND2_COLOR);
-                valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
-                } // Fl_Value_Output* valCWrcvWPM
-                { prgsCWrcvWPM = new Fl_Progress(105, 185, 250, 20);
-                prgsCWrcvWPM->tooltip(_("Tracked CW speed in WPM"));
-                prgsCWrcvWPM->color(FL_BACKGROUND_COLOR);
-                prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
-                prgsCWrcvWPM->align(Fl_Align(FL_ALIGN_CENTER));
-                } // Fl_Progress* prgsCWrcvWPM
-                { Fl_Box* o = new Fl_Box(360, 185, 70, 20, _("RX WPM"));
-                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
-                } // Fl_Box* o
                 o->end();
                 } // Fl_Group* o
                 { Fl_Group* o = new Fl_Group(5, 215, 490, 150, _("Transmit"));
@@ -5319,7 +5413,7 @@ an merging"));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
-          { tabPSK = new Fl_Group(-4, 50, 521, 322, _("PSK"));
+          { tabPSK = new Fl_Group(0, 50, 500, 322, _("PSK"));
             tabPSK->hide();
             { tabsPSK = new Fl_Tabs(-4, 50, 521, 322);
               tabsPSK->selection_color(FL_LIGHT1);

@@ -179,6 +179,12 @@ extern void set_rtty(double, double, double);
 extern void set_video(double *, int, bool = true);
 extern void set_zdata(complex *, int);
 
+extern void set_scope_xaxis_1(double y1);
+extern void set_scope_xaxis_2(double y2);
+extern void set_scope_yaxis_1(double x1);
+extern void set_scope_yaxis_2(double x2);
+extern void set_scope_clear_axis();
+
 extern void set_CWwpm();
 extern void put_rx_char(unsigned int data, int style = FTextBase::RECV);
 extern void put_sec_char( char chr );

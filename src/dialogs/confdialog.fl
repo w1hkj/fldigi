@@ -132,7 +132,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     xywh {729 57 500 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {-5 0 545 372} color 50 selection_color 50
+      xywh {-5 0 553 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -217,7 +217,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 506 346} hide
+        xywh {0 25 500 346} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 506 346} selection_color 50
@@ -1019,14 +1019,14 @@ WF_UI();}
       }
       Fl_Group tabWaterfall {
         label Waterfall open
-        xywh {-2 25 501 347} hide
+        xywh {0 25 500 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {-2 25 501 347} color 50 selection_color 50
         } {
           Fl_Group {} {
             label Display open
-            xywh {-2 50 501 320} hide
+            xywh {0 50 500 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -1267,7 +1267,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {-2 50 500 320}
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {3 62 490 135} box ENGRAVED_FRAME
@@ -1337,7 +1337,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {-2 50 500 320} hide
+            xywh {0 50 500 320} hide
           } {
             Fl_Group {} {open
               xywh {3 62 490 170} box ENGRAVED_FRAME
@@ -1388,17 +1388,17 @@ behaves inside the waterfall} xywh {13 196 150 22} down_box BORDER_BOX align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {-5 25 545 347} hide
+        xywh {0 25 500 347} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {-5 25 545 347} selection_color 50 align 9
+          xywh {0 25 500 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 504 320}
+            xywh {0 50 500 320}
           } {
             Fl_Tabs tabsCW {open
-              xywh {0 50 504 320} selection_color 50
+              xywh {0 50 500 320} selection_color 50
             } {
               Fl_Group {} {
                 label General open
@@ -1412,37 +1412,73 @@ behaves inside the waterfall} xywh {13 196 150 22} down_box BORDER_BOX align 8
                     label {Filter bandwidth}
                     callback {progdefaults.CWbandwidth = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {CW dsp filter bandwidth} xywh {40 115 290 20} type Horizontal align 8 minimum 10 maximum 500 step 10 value 150 textsize 14
+                    tooltip {CW dsp filter bandwidth} xywh {20 149 300 20} type Horizontal align 5 minimum 10 maximum 400 step 1 value 66 textsize 14
                     code0 {o->value(progdefaults.CWbandwidth);}
                     code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
+                  }
+                  Fl_Value_Output valCWrcvWPM {
+                    label {Rx WPM}
+                    callback {progdefaults.changed = true;}
+                    xywh {20 188 35 20} color 7 align 5
+                  }
+                  Fl_Progress prgsCWrcvWPM {
+                    tooltip {Tracked CW speed in WPM} xywh {56 188 264 20} color 49 selection_color 15 align 0
+                  }
+                  Fl_Check_Button btnCWuseSOMdecoding {
+                    label {SOM decoding}
+                    callback {progdefaults.CWuseSOMdecoding = o->value();
+progdefaults.changed = true;}
+                    tooltip {Self Organizing Mapping} xywh {16 108 125 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWuseSOMdecoding);}
+                  }
+                  Fl_Counter cntLower {
+                    label Lower
+                    callback {progdefaults.CWlower = o->value();
+progdefaults.changed = true;}
+                    tooltip {Detector low threshold} xywh {162 108 65 20} type Simple align 1 minimum 0.01 maximum 0.99 step 0.01 value 0.45
+                    code0 {o->value(progdefaults.CWlower);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Counter cntUpper {
+                    label Upper
+                    callback {progdefaults.CWupper = o->value();
+progdefaults.changed = true;}
+                    tooltip {Detector high threshold} xywh {255 108 65 20} type Simple align 1 minimum 0.01 maximum 0.99 step 0.01 value 0.55
+                    code0 {o->value(progdefaults.CWupper);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Check_Button btnCWmfilt {
+                    label {Matched Filter}
+                    callback {progdefaults.CWmfilt = o->value();
+progdefaults.changed = true;}
+                    tooltip {Matched Filter bandwidth} xywh {330 108 80 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWmfilt);}
+                  }
+                  Fl_Check_Button btnCWuseFFTfilter {
+                    label {FFT filter}
+                    callback {progdefaults.CWuse_fft_filter = o->value();
+progdefaults.changed = true;}
+                    tooltip {FFT / FIR filter} xywh {330 134 125 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWuse_fft_filter);}
                   }
                   Fl_Check_Button btnCWrcvTrack {
                     label Tracking
                     callback {progdefaults.CWtrack = o->value();
 progdefaults.changed = true;}
-                    tooltip {Automatic Rx speed tracking} xywh {40 150 80 20} down_box DOWN_BOX value 1
+                    tooltip {Automatic Rx speed tracking} xywh {330 160 80 20} down_box DOWN_BOX value 1
                     code0 {o->value(progdefaults.CWtrack);}
                   }
                   Fl_Counter cntCWrange {
-                    label {Tracking range (WPM)}
+                    label {Range, WPM}
                     callback {progdefaults.CWrange = (int)o->value();
 progdefaults.changed = true;}
-                    tooltip {Range +/- wpm} xywh {225 150 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
+                    tooltip {Range +/- wpm} xywh {330 187 65 20} type Simple align 8 minimum 5 maximum 25 step 1 value 10
                     code0 {o->value(progdefaults.CWrange);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
-                  }
-                  Fl_Value_Output valCWrcvWPM {
-                    callback {progdefaults.changed = true;}
-                    xywh {70 185 35 20} color 7
-                  }
-                  Fl_Progress prgsCWrcvWPM {
-                    tooltip {Tracked CW speed in WPM} xywh {105 185 250 20} color 49 selection_color 15 align 0
-                  }
-                  Fl_Box {} {
-                    label {RX WPM}
-                    xywh {360 185 70 20} align 20
                   }
                 }
                 Fl_Group {} {
@@ -2123,7 +2159,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {-4 50 521 322} hide
+            xywh {0 50 500 322} hide
           } {
             Fl_Tabs tabsPSK {open
               xywh {-4 50 521 322} selection_color 50

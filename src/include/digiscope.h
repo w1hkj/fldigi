@@ -67,6 +67,7 @@ private:
 	double _phase;
 	double _quality;
 	double _flo, _fhi, _amp;
+	double _x1, _x2, _y1, _y2;
 	bool _highlight;
 	scope_mode phase_mode;
 
@@ -89,6 +90,11 @@ public:
 	void rtty(double flo, double fhi, double amp);
 	void mode(scope_mode md);
 	scope_mode mode() { return _mode;};
+	void xaxis_1(double y1) { _y1 = y1; }
+	void xaxis_2(double y2) { _y2 = y2; }
+	void yaxis_1(double x1) { _x1 = x1; }
+	void yaxis_2(double x2) { _x2 = x2; }
+	void clear_axis() { _x1 = _x2 = _y1 = _y2 = 0; }
 };
 
 #endif

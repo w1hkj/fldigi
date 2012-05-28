@@ -5522,6 +5522,48 @@ void set_zdata(complex *zarray, int len)
 	wf->wfscope->zdata(zarray, len);
 }
 
+void set_scope_xaxis_1(double y1)
+{
+	if (digiscope)
+		digiscope->xaxis_1(y1);
+	wf->wfscope->xaxis_1(y1);
+}
+
+void set_scope_xaxis_2(double y2)
+{
+	if (digiscope)
+		digiscope->xaxis_2(y2);
+	wf->wfscope->xaxis_2(y2);
+}
+
+void set_scope_yaxis_1(double x1)
+{
+	if (digiscope)
+		digiscope->yaxis_1(x1);
+	wf->wfscope->yaxis_1(x1);
+}
+
+void set_scope_yaxis_2(double x2)
+{
+	if (digiscope)
+		digiscope->yaxis_2(x2);
+	wf->wfscope->yaxis_2(x2);
+}
+
+void set_scope_clear_axis()
+{
+	if (digiscope) {
+		digiscope->xaxis_1(0);
+		digiscope->xaxis_2(0);
+		digiscope->yaxis_1(0);
+		digiscope->yaxis_2(0);
+	}
+	wf->wfscope->xaxis_1(0);
+	wf->wfscope->xaxis_2(0);
+	wf->wfscope->yaxis_1(0);
+	wf->wfscope->yaxis_2(0);
+}
+
 // raw buffer functions can ONLY be called by FLMAIN_TID
 
 //======================================================================
