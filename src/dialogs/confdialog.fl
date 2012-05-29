@@ -88,7 +88,13 @@ decl {\#include "rx_extract.h"} {private local
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
-\#endif} {private local
+\#endif} {selected private local
+} 
+
+decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
+} 
+
+decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {private local
 } 
 
 decl {Fl_Double_Window *dlgConfig;} {public local
@@ -117,8 +123,7 @@ for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
 } 
 
-Function {ConfigureDialog()} {open
-} {
+Function {ConfigureDialog()} {} {
   code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|_850|Custom";
 static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
@@ -2455,7 +2460,7 @@ progdefaults.changed = true;}
               Fl_Check_Button valTHOR_SOFTBITS {
                 label {Soft-bit decoding}
                 callback {progdefaults.THOR_SOFTBITS = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {Use soft-bit viterbi decoding for better Forward Error Correction (works best with soft-symbol decoding enabled)} xywh {90 230 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.THOR_SOFTBITS);}
               }

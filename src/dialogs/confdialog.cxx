@@ -25,6 +25,8 @@
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
+extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
+extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 Fl_Double_Window *dlgConfig; 
 Mode_Browser* mode_browser; 
 
