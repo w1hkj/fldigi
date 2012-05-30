@@ -1,8 +1,17 @@
 
 
-=Version 3.21.42=
+=Version 3.21.43=
 
-2012-04-08  David Freese  <w1hkj@w1hkj.com>
+2012-05-30  Kamal Mostafa  <kamal@whence.com>
+
+	39998f7: Fix TX text clear after macro
+
+2012-05-26  David Freese  <w1hkj@w1hkj.com>
+
+	0c113b6: Rigio thread
+
+
+=Version 3.21.42=
 
 	1089250: Auto file directory
 	8bdd45e: Cmd line help
