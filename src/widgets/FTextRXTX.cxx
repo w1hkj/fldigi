@@ -887,8 +887,13 @@ void FTextTX::clear(void)
 ///
 void FTextTX::clear_sent(void)
 {
-	tbuf->remove(0, utf8_txpos);
-	sbuf->remove(0, utf8_txpos);
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+ 	tbuf->remove(0, utf8_txpos);
+ 	sbuf->remove(0, utf8_txpos);
+#else
+	tbuf->remove(0, txpos);
+	sbuf->remove(0, txpos);
+#endif
 	txpos = 0;
 	utf8_txpos = 0;
 	bkspaces = 0;
