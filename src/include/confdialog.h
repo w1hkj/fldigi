@@ -260,6 +260,11 @@ extern Fl_Check_Button *valTHOR_FILTER;
 extern Fl_Counter2 *valTHOR_BW;
 extern Fl_Value_Slider2 *valThorCWI;
 extern Fl_Counter2 *valTHOR_PATHS;
+extern Fl_Group *tabNavtex;
+extern Fl_Check_Button *btnNvtxAdifLog;
+#include <FL/Fl_Output.H>
+extern Fl_Output *txtNvtxCatalog;
+extern Fl_Button *btnSelectNvtxCatalog;
 extern Fl_Group *tabRig;
 extern Fl_Tabs *tabsRig;
 extern Fl_Check_Button *btnPTTrightchannel;
@@ -279,7 +284,6 @@ extern Fl_Counter *cntPTT_on_delay;
 extern Fl_Counter *cntPTT_off_delay;
 extern Fl_Check_Button *chkUSERIGCAT;
 extern Fl_Group *grpRigCAT;
-#include <FL/Fl_Output.H>
 extern Fl_Output *txtXmlRigFilename;
 extern Fl_Button *btnSelectRigXmlFile;
 extern Fl_Input_Choice *inpXmlRigDevice;
@@ -473,4 +477,6 @@ Fl_Double_Window* ConfigureDialog();
 void openConfig();
 void closeDialog();
 void createConfig();
+class Fl_File_Chooser ;
+void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 #endif

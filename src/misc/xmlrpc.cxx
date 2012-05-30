@@ -59,6 +59,7 @@
 #include "qrunner.h"
 #include "wefax.h"
 #include "wefax-pic.h"
+#include "navtex.h"
 
 #if USE_HAMLIB
         #include "hamlib.h"
@@ -2663,6 +2664,56 @@ struct Wefax_send_file : public xmlrpc_c::method
 
 // =============================================================================
 
+// Returns the current navtex modem pointer.
+static navtex * get_navtex(void)
+{
+	if( ( active_modem->get_mode() != MODE_NAVTEX )
+	 && ( active_modem->get_mode() != MODE_SITORB ) )
+	{
+		navtex * ptr = dynamic_cast<navtex *>( active_modem );
+		if( ptr == NULL ) throw runtime_error("Inconsistent navtex object");
+		return ptr ;
+	}
+	throw runtime_error("Not in navtex or sitorB mode");
+}
+
+struct Navtex_get_message : public xmlrpc_c::method
+{
+	Navtex_get_message() {
+		_signature = "s:i";
+		_help = "Returns next Navtex/SitorB message with a max delay in seconds.. Empty string if timeout."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		*retval = xmlrpc_c::value_string( get_navtex()->get_message( params.getInt(0)) );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what());
+	}
+};
+
+struct Navtex_send_message : public xmlrpc_c::method
+{
+	Navtex_send_message() {
+		_signature = "s:s";
+		_help = "Send a Navtex/SitorB message. Returns an empty string if OK otherwise an error message."; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		std::string status = get_navtex()->send_message( params.getString(0) );
+		*retval = xmlrpc_c::value_string( status );
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+// =============================================================================
+
 // End XML-RPC interface
 
 // method list: ELEM_(class_name, "method_name")
@@ -2818,18 +2869,20 @@ struct Wefax_send_file : public xmlrpc_c::method
 	ELEM_(Spot_get_auto, "spot.get_auto")							\
 	ELEM_(Spot_set_auto, "spot.set_auto")							\
 	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
-	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")	                                \
-	\
-	ELEM_(Wefax_state_string, "wefax.state_string")	                    \
-	ELEM_(Wefax_skip_apt, "wefax.skip_apt")                             \
-	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")                     \
-	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")           \
-	ELEM_(Wefax_end_reception, "wefax.end_reception")                   \
-	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception") \
-	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")                     \
-	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")                   \
-	ELEM_(Wefax_get_received_file, "wefax.get_received_file")           \
-	ELEM_(Wefax_send_file, "wefax.send_file")                           \
+	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")			\
+																		\
+	ELEM_(Wefax_state_string, "wefax.state_string")						\
+	ELEM_(Wefax_skip_apt, "wefax.skip_apt")								\
+	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")						\
+	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")			\
+	ELEM_(Wefax_end_reception, "wefax.end_reception")					\
+	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")	\
+	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")						\
+	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")					\
+	ELEM_(Wefax_get_received_file, "wefax.get_received_file")			\
+	ELEM_(Wefax_send_file, "wefax.send_file")							\
+																		\
+	ELEM_(Navtex_get_message, "navtex.get_message")						\
 
 
 struct rm_pred

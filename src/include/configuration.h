@@ -1397,6 +1397,16 @@
        ELEM_(bool, WEFAX_AdifLog, "WEFAXADIFLOG",                                       \
              "Logs wefax file names in Adif log file",                                  \
              false)                                                                     \
+       /* NAVTEX configuration items */                                                 \
+       ELEM_(bool, NVTX_AdifLog, "NAVTEXADIFLOG",                                       \
+             "Logs Navtex messages in Adig log file",                                   \
+             false)                                                                     \
+       ELEM_(std::string, NVTX_Catalog, "NAVTEXCATALOG",                                \
+             "Catalog pathname of Navtex stations",                                     \
+             PKGDATADIR "/NAVTEX_Stations.txt")                                         \
+       ELEM_(int, NVTX_MinSizLoggedMsg, "NAVTEXMINSIZLOGGEDMSG",                        \
+             "Minimum length of logged messages",                                       \
+             0 )                                                                        \
         /* WX fetch from NOAA */                                                        \
         ELEM_(std::string, wx_sta, "WX_STA",                                            \
               "4 letter specifier for wx station",                                      \

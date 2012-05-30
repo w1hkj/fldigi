@@ -77,6 +77,9 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_WEFAX_576, &wefax576_modem, "WEFAX576", "WEFAX-IOC576", "WEFAXIOC576", "FAX", "FX576" },
 	{ MODE_WEFAX_288, &wefax288_modem, "WEFAX288", "WEFAX-IOC288", "WEFAXIOC288", "FAX", "FX288" },
 
+	{ MODE_NAVTEX, &navtex_modem, "NAVTEX", "NAVTEX", "NAVTEX", "TOR", "NAVTEX" },
+	{ MODE_SITORB, &sitorb_modem, "SITORB", "SITORB", "SITORB", "TOR", "SITORB" },
+
 	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "MT63-500", "MT63", "MT63-500" },
 	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1K", "MT63-1000", "MT63-1XX", "MT63", "MT63 1K" },
 	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2K", "MT63-2000", "MT63-2XX", "MT63", "MT63 2K" },
