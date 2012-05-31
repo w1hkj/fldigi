@@ -73,6 +73,64 @@ bool freqfwd = true;
 
 void restore_sort();
 
+// convert to and from "00:00:00" <=> "000000"
+const char *timeview(const char *s)
+{
+	static char ds[9];
+	int len = strlen(s);
+	strcpy(ds, "00:00:00");
+	if (len < 4)
+		return ds;
+	ds[0] = s[0]; ds[1] = s[1];
+	ds[3] = s[2]; ds[4] = s[3];
+	if (len < 6)
+		return ds;
+	ds[6] = s[4];
+	ds[7] = s[5];
+	return ds;
+}
+
+const char *timestring(const char *s)
+{
+	static char ds[7];
+	int len = strlen(s);
+	if (len <= 4) return s;
+	ds[0] = s[0]; ds[1] = s[1];
+	ds[2] = s[3]; ds[3] = s[4];
+	if (len < 8) {
+		ds[4] = ds[5] = '0';
+		ds[6] = 0;
+		return ds;
+	}
+	ds[4] = s[6];
+	ds[5] = s[7];
+	ds[6] = 0;
+	return ds;
+}
+
+const char *timeview4(const char *s)
+{
+	static char ds[6];
+	int len = strlen(s);
+	strcpy(ds, "00:00");
+	if (len < 5)
+		return ds;
+	ds[0] = s[0]; ds[1] = s[1];
+	ds[3] = s[2]; ds[4] = s[3];
+	return ds;
+}
+
+const char *time4(const char *s)
+{
+	static char ds[5];
+	int len = strlen(s);
+	if (len <= 4)
+		return ds;
+	memset(ds, 0, 5);
+	strncpy(ds, s, 4);
+	return ds;
+}
+
 void Export_CSV()
 {
 	if (chkExportBrowser->nchecked() == 0) return;
@@ -455,6 +513,14 @@ void cb_export_date_select() {
 	chkExportBrowser->redraw();
 }
 
+inline const char *szfreq(const char *freq)
+{
+	static char szf[11];
+	float f = atof(freq);
+	snprintf(szf, sizeof(szf), "%10.6f", f);
+	return szf;
+}
+
 void cb_Export_log() {
 	if (qsodb.nbrRecs() == 0) return;
 	cQsoRec *rec;
@@ -464,12 +530,11 @@ void cb_Export_log() {
 	chkExportBrowser->textsize(12);
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
-		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%8s  %4s  %-32s  %10s  %-s",
-			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
-			rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON),
-			rec->getField(CALL),
-			rec->getField(FREQ),
+		snprintf(line,sizeof(line),"%8s|%6s|%-10s|%10s|%-s",
+ 			rec->getField(QSO_DATE),
+ 			rec->getField(TIME_OFF),
+ 			rec->getField(CALL),
+			szfreq(rec->getField(FREQ)),
 			rec->getField(MODE) );
         chkExportBrowser->add(line);
 	}
@@ -851,8 +916,15 @@ void saveRecord() {
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
 	rec.putField(QSO_DATE_OFF, inpDateOff_log->value());
-	rec.putField(TIME_ON, inpTimeOn_log->value());
-	rec.putField(TIME_OFF, inpTimeOff_log->value());
+
+	string tm = timestring(inpTimeOn_log->value());
+	rec.putField(TIME_ON, tm.c_str());
+	inpTimeOn_log->value(timeview(tm.c_str()));
+
+	tm = timestring(inpTimeOff_log->value());
+	rec.putField(TIME_OFF, tm.c_str());
+	inpTimeOff_log->value(timeview(tm.c_str()));
+
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
@@ -909,8 +981,15 @@ cQsoRec rec;
 	rec.putField(NAME, inpName_log->value());
 	rec.putField(QSO_DATE, inpDate_log->value());
 	rec.putField(QSO_DATE_OFF, inpDateOff_log->value());
-	rec.putField(TIME_ON, inpTimeOn_log->value());
-	rec.putField(TIME_OFF, inpTimeOff_log->value());
+
+	string tm = timestring(inpTimeOn_log->value());
+	rec.putField(TIME_ON, tm.c_str());
+	inpTimeOn_log->value(timeview(tm.c_str()));
+
+	tm = timestring(inpTimeOff_log->value());
+	rec.putField(TIME_OFF, tm.c_str());
+	inpTimeOff_log->value(timeview(tm.c_str()));
+
 	rec.putField(FREQ, inpFreq_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
@@ -980,8 +1059,8 @@ void EditRecord( int i )
 	inpName_log->value (editQSO->getField(NAME));
 	inpDate_log->value (editQSO->getField(QSO_DATE));
 	inpDateOff_log->value (editQSO->getField(QSO_DATE_OFF));
-	inpTimeOn_log->value (editQSO->getField(TIME_ON));
-	inpTimeOff_log->value (editQSO->getField(TIME_OFF));
+	inpTimeOn_log->value (timeview(editQSO->getField(TIME_ON)));
+	inpTimeOff_log->value (timeview(editQSO->getField(TIME_OFF)));
 	inpRstR_log->value (editQSO->getField(RST_RCVD));
 	inpRstS_log->value (editQSO->getField(RST_SENT));
 	inpFreq_log->value (editQSO->getField(FREQ));
@@ -1009,21 +1088,24 @@ void EditRecord( int i )
 }
 
 std::string sDate_on = "";
+std::string sTime_on = "";
 std::string sDate_off = "";
+std::string sTime_off = "";
 
 void AddRecord ()
 {
 	inpCall_log->value(inpCall->value());
 	inpName_log->value (inpName->value());
+
 	if (progdefaults.force_date_time) {
 		inpDate_log->value(sDate_off.c_str());
-		inpTimeOn_log->value (inpTimeOff->value());
+		inpTimeOn_log->value (timeview(sTime_off.c_str()));
 	} else {
 		inpDate_log->value(sDate_on.c_str());
-		inpTimeOn_log->value (inpTimeOn->value());
+		inpTimeOn_log->value (timeview(sTime_on.c_str()));
 	}
 	inpDateOff_log->value(sDate_off.c_str());
-	inpTimeOff_log->value (inpTimeOff->value());
+	inpTimeOff_log->value (timeview(sTime_off.c_str()));
 
 	inpRstR_log->value (inpRstIn->value());
 	inpRstS_log->value (inpRstOut->value());
@@ -1086,7 +1168,7 @@ void loadBrowser(bool keep_pos)
 		snprintf(sNbr,sizeof(sNbr),"%d",i);
 		wBrowser->addRow (7,
 			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
-			rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON),
+			timeview4(rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON)),
 			rec->getField(CALL),
 			rec->getField(NAME),
 			rec->getField(FREQ),
@@ -1221,11 +1303,11 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%8s  %4s  %-32s  %10s  %-s",
-			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
-			rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON),
-			rec->getField(CALL),
-			rec->getField(FREQ),
+		snprintf(line,sizeof(line),"%8s|%4s|%-10s|%10s|%-s",
+ 			rec->getField(QSO_DATE),
+ 			time4(rec->getField(TIME_OFF)),
+ 			rec->getField(CALL),
+			szfreq(rec->getField(FREQ)),
 			rec->getField(MODE) );
         chkCabBrowser->add(line);
 	}
@@ -1268,7 +1350,7 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 
 	if (btnCabTimeOFF->value()) {
 		time = rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON);
-		qsoline.append(time); qsoline.append(" ");
+		qsoline.append(time4(time.c_str())); qsoline.append(" ");
 	}
 
 	mycall = progdefaults.myCall;

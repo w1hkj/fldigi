@@ -226,9 +226,9 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 				if (btnSelectQSOdateOff->value())
 					fprintf (txtFile, "%-10s", pRec->getField(QSO_DATE_OFF));
 				if (btnSelectTimeON->value())
-					fprintf (txtFile, "%-6s", pRec->getField(TIME_ON));
+					fprintf (txtFile, "%-8s", pRec->getField(TIME_ON));
 				if (btnSelectTimeOFF->value())
-					fprintf (txtFile, "%-6s", pRec->getField(TIME_OFF));
+					fprintf (txtFile, "%-8s", pRec->getField(TIME_OFF));
 				if (btnSelectCall->value())
 					fprintf (txtFile, "%-10s", pRec->getField(CALL));
 				if (btnSelectName->value())

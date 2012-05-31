@@ -2052,34 +2052,38 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	restoreFocus();
 }
 
-static char ztbuf[14];
+static char ztbuf[20] = "20120602 123000";
 
 const char* zdate(void) { return ztbuf; }
 const char* ztime(void) { return ztbuf + 9; }
+const char* zshowtime(void) {
+	static char s[5];
+	strncpy(s, &ztbuf[9], 4);
+	s[4] = 0;
+	return (const char *)s;
+}
 
 void ztimer(void* first_call)
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 
-	double st = 60.0 - tv.tv_sec % 60 - tv.tv_usec / 1e6;
-	if (!first_call) {
-		tv.tv_sec = (int)(60.0 * round(tv.tv_sec / 60.0));
-		if (st < 1.0)
-			st += 60.0;
-	}
-	Fl::repeat_timeout(st, ztimer);
+	if (first_call) {
+		double st = 1.0 - tv.tv_usec / 1e6;
+		Fl::repeat_timeout(st, ztimer);
+	} else
+		Fl::repeat_timeout(1.0, ztimer);
 
 	struct tm tm;
 	gmtime_r(&tv.tv_sec, &tm);
-	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M", &tm))
+	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
 		memset(ztbuf, 0, sizeof(ztbuf));
 	else
 		ztbuf[8] = '\0';
 
-	inpTimeOff1->value(ztbuf + 9);
-	inpTimeOff2->value(ztbuf + 9);
-	inpTimeOff3->value(ztbuf + 9);
+	inpTimeOff1->value(zshowtime());
+	inpTimeOff2->value(zshowtime());
+	inpTimeOff3->value(zshowtime());
 }
 
 
@@ -2154,6 +2158,7 @@ void cb_ResetSerNbr()
 void cb_btnTimeOn(Fl_Widget* w, void*)
 {
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
+	sTime_on = sTime_off = ztime();
 	sDate_on = sDate_off = zdate();
 	restoreFocus();
 }
@@ -2226,12 +2231,13 @@ if (bWF_only) return;
 	old_call = new_call;
 	oktoclear = false;
 
+	sDate_on = sDate_off = zdate();
+	sTime_on = sTime_off = ztime();
+
 	inpTimeOn->value(inpTimeOff->value());
 
 	if (inpTimeOn == inpTimeOn1) inpTimeOn2->value(inpTimeOn->value());
 	else inpTimeOn1->value(inpTimeOn->value());
-
-	sDate_on = sDate_off = zdate();
 
 	if (progdefaults.EnableDupCheck) {
 		DupCheck();
@@ -2331,6 +2337,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 		return;
 	}
 	sDate_off = zdate();
+	sTime_off = ztime();
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
@@ -2346,6 +2353,7 @@ void qso_save_now()
 		return;
 
 	sDate_off = zdate();
+	sTime_off = ztime();
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
