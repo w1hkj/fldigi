@@ -86,6 +86,9 @@ decl {\#include "status.h"} {private local
 decl {\#include "rx_extract.h"} {private local
 } 
 
+decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
+} 
+
 decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {private local
 } 
 
@@ -2515,6 +2518,78 @@ fc->show();}
               }
             }
           }
+          Fl_Group tabWefax {
+            label Wefax open
+            xywh {0 50 540 320} hide
+          } {
+            Fl_Group {} {open
+              xywh {2 63 534 300}
+            } {
+              Fl_Check_Button btnWefaxAdifLog {
+                label {Log Wefax messages to Adif file}
+                callback {progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;}
+                tooltip {Sent and received faxes are logged to Adif file.} xywh {94 137 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_AdifLog);}
+              }
+              Fl_Check_Button btnWefaxEmbeddedGui {
+                label {Embedded Wefax Gui}
+                callback {progdefaults.WEFAX_EmbeddedGui=o->value();
+progdefaults.changed = true;}
+                tooltip {Display tx and rx in main fldigi window.
+Change requires restart of fldigi} xywh {94 74 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
+              }
+              Fl_Input btnWefaxShift {
+                label {Frequency shift (800 Hz)}
+                callback {if( o->value() > 900 ) { o->value(900); return; }
+if( o->value() < 750 ) { o->value(750); return; }
+progdefaults.WEFAX_Shift=o->value();
+progdefaults.changed = true;}
+                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {94 177 80 20} type Int align 8
+                code0 {o->value(progdefaults.WEFAX_Shift);}
+                class Fl_Value_Input2
+              }
+              Fl_Input btnWefaxMaxRows {
+                label {Received fax maximum rows number (5000)}
+                callback {if(o->value() > 10000 ) { o->value(10000); return ; }
+if(o->value() < 1000 ) { o->value(1000); return ; }
+progdefaults.WEFAX_MaxRows=o->value();
+progdefaults.changed = true;}
+                tooltip {Maximum row number for a received fax image.} xywh {94 217 85 20} type Int align 8
+                code0 {o->value(progdefaults.WEFAX_MaxRows);}
+                class Fl_Value_Input2
+              }
+              Fl_Input btnWefaxSaveDir {
+                label {Fax images destination directory}
+                callback {progdefaults.wefax_save_dir=o->value();
+progdefaults.changed = true;}
+                xywh {94 267 310 20} align 5
+                code0 {o->value(progdefaults.wefax_save_dir.c_str());}
+              }
+              Fl_Button btnSelectFaxDestDir {
+                label {Directory...}
+                callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+fc->callback(WefaxDestDirSet);
+fc->show();}
+                xywh {424 267 80 20}
+              }
+              Fl_Check_Button btnWefaxHideTx {
+                label {Hide Transmission window}
+                callback {progdefaults.WEFAX_HideTx=o->value();
+progdefaults.changed = true;}
+                tooltip {Hide transmission window by default.} xywh {94 107 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_HideTx);}
+              }
+              Fl_Check_Button btnWefaxSaveMonochrome {
+                label {Save image as monochrome file}
+                callback {progdefaults.WEFAX_SaveMonochrome=o->value();
+progdefaults.changed = true;}
+                tooltip {Save the fax image as a gray-level PNG file.} xywh {94 297 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+              }
+            }
+          }
         }
       }
       Fl_Group tabRig {
@@ -4400,6 +4475,16 @@ Function {createConfig()} {return_type void
 } 
 
 decl {class Fl_File_Chooser ;} {public global
+} 
+
+Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+} {
+  code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
+if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
+	btnWefaxSaveDir->value( w->value() );
+	btnWefaxSaveDir->redraw();
+	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
+}} {}
 } 
 
 Function {NvtxCatalogSet(Fl_File_Chooser *w, void *userdata)} {open return_type void

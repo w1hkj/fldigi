@@ -35,20 +35,35 @@ private:
 	int bufsize;
 	int width;
 	int height;
-	int depth;
 	int numcol;
 	int slantdir;
 	void slant_corr(int x, int y);
 	void slant_undo();
 	int zoom ;
 	int background ;
+	bool binary ;
+	unsigned char binary_threshold ;
+
+	inline unsigned char pix2bin( unsigned char x ) const {
+		return x < binary_threshold ? 0 : 255 ;
+	}
+
 	static void draw_cb(void *data, int x, int y, int w, uchar *buf);
 	void	resize_zoom(int, int, int, int);
 public:
 	picture(int, int, int, int, int bg_col = 0);
 	~picture();
-	void	video(unsigned char *, int);
-	void	pixel(unsigned char, int);
+	void	video(unsigned char const *, int);
+	void	pixel(unsigned char data, int pos) {
+		if (pos < 0 || pos >= bufsize) {
+			return ;
+		}
+		FL_LOCK_D();
+		vidbuf[pos] = data;
+		if (pos % (width * depth) == 0)
+			redraw();
+		FL_UNLOCK_D();
+	}
 	unsigned char	pixel(int);
 	int		handle(int);
 	void	draw();
@@ -58,8 +73,9 @@ public:
 	void    resize_height(int new_height, bool clear_img);
 	void    shift_horizontal_center(int hShift);
 	void    stretch(double the_ratio);
-	int	save_png(const char * filename, const char * extra_comments = NULL);
+	int	save_png(const char * filename, bool monochrome = false, const char * extra_comments = NULL);
 	void    set_zoom(int the_zoom);
+	void    set_binary(bool bin_mode) { binary = bin_mode ;}
 	int     pix_width(void) const {
 		return width ;
 	}
@@ -68,6 +84,23 @@ public:
 	}
 	const unsigned char * buffer(void) const {
 		return vidbuf;
+	}
+	/// Sometimes the row number goes back of one due to rounding error.
+	/// If this happens, noise removal does not work.
+	static const int noise_height_margin = 5 ;
+	void remove_noise( int row, int half_len, int noise_margin );
+	static const int depth = 3;
+
+private:
+	bool restore( int row, int margin );
+public:
+	void dilatation( int row );
+	void erosion( int row );
+	void set_binary_threshold(unsigned char thres) {
+		binary_threshold = thres ;
+	}
+	unsigned char get_binary_threshold() const {
+		return binary_threshold ;
 	}
 };
 

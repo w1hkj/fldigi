@@ -56,7 +56,6 @@
 #include "qrunner.h"
 
 #include "mfsk.h"
-#include "wefax-pic.h"
 #include "icons.h"
 #include "globals.h"
 #include "re.h"
@@ -275,6 +274,8 @@ void FTextRX::add(unsigned int c, int attr)
 	switch (c) {
 	case '\b':
 		// we don't call kf_backspace because it kills selected text
+		tbuf->remove(tbuf->length() - 1, tbuf->length());
+		sbuf->remove(sbuf->length() - 1, sbuf->length());
 		if (s_text.length()) {
 			if (tbuf->byte_at(tbuf->length() - 1 ) & 0x80) { //UTF-8 character
 				s_text.erase(s_text.end() - 2);
@@ -313,7 +314,7 @@ void FTextRX::add(unsigned int c, int attr)
 		}
 
 		fl_font( textfont(), textsize() );
-		int lwidth = (int)(fl_width( s_text.c_str(), s_text.length()) + fl_width('X'));
+		int lwidth = (int)fl_width( s_text.c_str(), s_text.length());
 		bool wrapped = false;
 		if ( lwidth >= (text_area.w - mVScrollBar->w() - LEFT_MARGIN - RIGHT_MARGIN)) {
 			if (c != ' ') {
@@ -355,7 +356,8 @@ void FTextRX::add(unsigned int c, int attr)
 	}
 
 // test for bottom of text visibility
-	if (mTopLineNum + mNVisibleLines - 1 == mNBufferLines)
+	if (// !mFastDisplay && 
+		(mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1))
 		show_insert_position();
 }
 #else
@@ -401,6 +403,7 @@ void FTextRX::add(unsigned char c, int attr)
 	}
 // test for bottom of text visibility
 	if (mTopLineNum + mNVisibleLines - 1 == mNBufferLines)
+//	if (mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1)
 		show_insert_position();
 }
 #endif
@@ -1000,27 +1003,28 @@ int FTextTX::handle_key(int key)
 {
 	switch (key) {
 	case FL_Escape: // set stop flag and clear
-		{
-			static time_t t[2] = { 0, 0 };
-			static unsigned char i = 0;
-			if (t[i] == time(&t[!i])) { // two presses in a second: abort transmission
-				if (trx_state == STATE_TX)
-					menu_cb(TX_MENU_ABORT);
-				t[i = !i] = 0;
-				return 1;
-			}
-			i = !i;
+	{
+		static time_t t[2] = { 0, 0 };
+		static unsigned char i = 0;
+		if (t[i] == time(&t[!i])) { // two presses in a second: abort transmission
+			if (trx_state == STATE_TX)
+				menu_cb(TX_MENU_ABORT);
+			t[i = !i] = 0;
+			return 1;
 		}
+		i = !i;
+	}
+
 		if (trx_state == STATE_TX && active_modem->get_stopflag() == false) {
-			kf_select_all(0, this);
-			kf_copy(0, this);
 			clear();
 			if (arq_text_available)
 				AbortARQ();
 			active_modem->set_stopflag(true);
 		}
+
 		if (trx_state == STATE_TUNE)
 			abort_tx();
+
 		stopMacroTimer();
 		return 1;
 	case 't': // transmit for C-t
@@ -1241,7 +1245,7 @@ void FTextTX::handle_context_menu(void)
 
 	bool modify_text_ok = insert_position() >= txpos;
 	bool selected = tbuf->selected();
-	set_active(&menu[TX_MENU_MFSK16_WEFAX_IMG], active_modem->get_cap() & modem::CAP_IMG);
+ 	set_active(&menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
 	set_active(&menu[TX_MENU_CLEAR], tbuf->length());
 	set_active(&menu[TX_MENU_CUT], selected && modify_text_ok);
 	set_active(&menu[TX_MENU_COPY], selected);
@@ -1281,19 +1285,8 @@ void FTextTX::menu_cb(size_t item)
  		else
  			abort_tx();
   		break;
-  	case TX_MENU_MFSK16_WEFAX_IMG:
-		{
-			switch (active_modem->get_mode()) {
-			case MODE_MFSK_FIRST ... MODE_MFSK_LAST:
-				showTxViewer(0, 0);
-				break;
-			case MODE_WEFAX_FIRST ... MODE_WEFAX_LAST:
-				wefax_pic::show_tx_viewer(0, 0);
-				break;
-			default:
-				break;
-			}
-		}
+	case TX_MENU_MFSK16_IMG:
+		showTxViewer(0, 0);
 		break;
 	case TX_MENU_CLEAR:
 		clear();

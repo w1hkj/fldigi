@@ -153,6 +153,11 @@ extern int Qidle_time;
 
 extern void toggleRSID();
 
+extern int rightof(Fl_Widget* w);
+extern int leftof(Fl_Widget* w);
+extern int above(Fl_Widget* w);
+extern int below(Fl_Widget* w);
+
 extern void set_menus();
 extern void create_fl_digi_main(int argc, char** argv);
 extern void update_main_title();

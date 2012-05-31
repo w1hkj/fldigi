@@ -37,6 +37,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
 
 #include <time.h>
 #include <sys/stat.h>
@@ -45,6 +46,7 @@
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 
+#include <zlib.h>
 #include <png.h>
 
 #include "fl_digi.h"
@@ -60,7 +62,6 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 {
 	width = W;
 	height = H;
-	depth = 3;
 	bufsize = W * H * depth;
 	numcol = 0;
 	slantdir = 0;
@@ -68,6 +69,8 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 	background = bg_col ;
 	memset( vidbuf, background, bufsize );	
 	zoom = 0 ;
+	binary = false ;
+	binary_threshold = 128 ;
 }
 
 picture::~picture()
@@ -75,25 +78,12 @@ picture::~picture()
 	if (vidbuf) delete [] vidbuf;
 }
 
-void picture::video(unsigned char *data, int len )
+void picture::video(unsigned char const *data, int len )
 {
 	if (len > bufsize) return;
 	FL_LOCK_D();
-	memmove( vidbuf, data, len );
+	memcpy( vidbuf, data, len );
 	redraw();
-	FL_UNLOCK_D();
-}
-
-void picture::pixel(unsigned char data, int pos)
-{
-	if (pos < 0 || pos >= bufsize) {
-		LOG_ERROR("Image overflow pos=%d bufsize=%d", pos, bufsize );
-		return ;
-	}
-	FL_LOCK_D();
-	vidbuf[pos] = data;
-	if (pos % (width * 3) == 0)
-		redraw();
 	FL_UNLOCK_D();
 }
 
@@ -183,17 +173,23 @@ void picture::stretch(double the_ratio)
 	unsigned char * new_vidbuf = new unsigned char[new_bufsize];
 
 	/// No interpolation, it takes the nearest pixel.
-	for( int ix_out = 0 ; ix_out < new_bufsize ; ++ix_out ) {
+	for( int ix_out = 0 ; ix_out < new_bufsize ; ix_out += depth ) {
+		int ix_in = 0.5 + ( double )ix_out * the_ratio ;
+		switch( ix_in % depth ) {
+			case 1 : --ix_in ; break ;
+			case 2 : ++ix_in ; break ;
+			default: ;
+		}
 
-		/// TODO: ix_out could be double to qvoid this conversion.
-		int ix_in = ( double )ix_out * the_ratio + 0.5 ;
 		if( ix_in >= bufsize ) {
 			/// Grey value as a filler to indicate the end. For debugging.
 			memset( new_vidbuf + ix_out, 128, new_bufsize - ix_out );
 			break ;
 		}
-		/// TODO: It might not properly work with color images !!!!
-		new_vidbuf[ ix_out ] = vidbuf[ ix_in ];
+		for( int i = 0; i < depth ; ++i )
+		{
+			new_vidbuf[ ix_out + i ] = vidbuf[ ix_in + i ];
+		}
 	};
 
 	delete [] vidbuf ;
@@ -208,6 +204,8 @@ void picture::stretch(double the_ratio)
 /// Beware that it is not protected by FL_LOCK_D/FL_UNLOCK_D
 void picture::shift_horizontal_center(int horizontal_shift)
 {
+	/// This is a number of pixels.
+	horizontal_shift *= depth ;
 	if( horizontal_shift < -bufsize ) {
 		horizontal_shift = -bufsize ;
 	}
@@ -237,67 +235,45 @@ void picture::set_zoom( int the_zoom )
 // in 	x_screen,y_screen,wid_screen position and width of scan line in image
 // out 	buf 	                     buffer for generated image data.
 // Must copy wid_screen pixels from scanline y_screen, starting at pixel x_screen to this buffer. 
-void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar *buf) 
+void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar * __restrict__ buf) 
 {
-	const picture * ptr_pic = ( const picture * ) data ;
-	static const int dpth=3 ;
-	int img_width = ptr_pic->width ;
-	const unsigned char * in_ptr = ptr_pic->vidbuf ;
-	const int max_buf_offset = ptr_pic->bufsize - dpth ;
-	/// Should not happen because tested before. This ensures that memcpy is OK.
-	if( ptr_pic->zoom == 0 ) {
-		int in_offset = img_width * y_screen + x_screen ;
-		memcpy( buf, in_ptr + in_offset * dpth, dpth * wid_screen );
-		return ;
-	}
+	const picture * __restrict__ ptr_pic = ( const picture * ) data ;
+	const int img_width = ptr_pic->width ;
+	const unsigned char * __restrict__ in_ptr = ptr_pic->vidbuf ;
 
 	/// One pixel out of (zoom+1)
 	if( ptr_pic->zoom < 0 ) {
-		int stride = -ptr_pic->zoom + 1 ;
-		int in_offset = ( img_width * y_screen + x_screen ) * stride ;
-		if( y_screen > ptr_pic->h() - 1 ) {
-			LOG_WARN(
-				"Overflow1 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
-				y_screen,
-				ptr_pic->h(),
-				(y_screen*stride),
-				ptr_pic->height,
-				stride );
-			return ;
-		}
-		int dpth_in_offset = dpth * in_offset ;
+		const int stride = -ptr_pic->zoom + 1 ;
+		const int in_offset = ( img_width * y_screen + x_screen ) * stride ;
+		int dpth_in_offset = depth * in_offset ;
 
-		/// Check the latest offset.
-		if( dpth_in_offset + dpth * stride * wid_screen >= max_buf_offset ) {
-			LOG_WARN(
-				"Boom1 y_sc=%d h=%d w=%d wd_sc=%d wdt=%d strd=%d off=%d prd=%d mbo=%d\n",
-				y_screen,
-				ptr_pic->h(),
-				ptr_pic->w(),
-				wid_screen,
-				img_width,
-				stride,
-				in_offset,
-				( dpth_in_offset + dpth ),
-				max_buf_offset );
-			return ;
+		if(ptr_pic->binary) {
+			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+				buf[ ix_w     ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset     ]);
+				buf[ ix_w + 1 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+				buf[ ix_w + 2 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+				dpth_in_offset += depth * stride ;
+			}
 		}
-		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
-			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
-			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
-			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
-			dpth_in_offset += dpth * stride ;
+		else {
+			for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+				buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
+				buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
+				buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
+				dpth_in_offset += depth * stride ;
+			}
 		}
 		return ;
 	}
 
 	/// Reads each input pixel (-zoom+1) times.
 	if( ptr_pic->zoom > 0 ) {
-		int stride = ptr_pic->zoom + 1 ;
-		int in_offset = img_width * ( y_screen / stride ) + x_screen / stride ;
+		const int stride = ptr_pic->zoom + 1 ;
+		const int in_offset = img_width * ( y_screen / stride ) + x_screen / stride ;
+#ifndef NDEBUG
 		if( y_screen / stride >= ptr_pic->h() )
 		{
-			LOG_WARN(
+			LOG_ERROR(
 				"Overflow2 y_screen=%d h=%d y_screen*stride=%d height=%d stride=%d\n",
 				y_screen,
 				ptr_pic->h(),
@@ -306,39 +282,62 @@ void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, u
 				stride );
 			return ;
 		}
-		/// TODO: Will not properly work for color images.
-		int dpth_in_offset = dpth * in_offset ;
-		for( int ix_w = 0, max_w = wid_screen * dpth; ix_w < max_w ; ix_w += dpth ) {
-#ifndef NDEBUG
-			if( dpth_in_offset >= max_buf_offset ) {
-				LOG_WARN(
-					"Boom2 y_sc=%d h=%d w=%d ix_w=%d wd_sc=%d wdth=%d strd=%d in_off=%d mbo=%d\n",
-					y_screen,
-					ptr_pic->h(),
-					ptr_pic->w(),
-					ix_w,
-					wid_screen,
-					img_width,
-					stride,
-					in_offset,
-					max_buf_offset );
-				break ;
-			}
 #endif
-			buf[ ix_w     ] = in_ptr[ dpth_in_offset     ];
-			buf[ ix_w + 1 ] = in_ptr[ dpth_in_offset + 1 ];
-			buf[ ix_w + 2 ] = in_ptr[ dpth_in_offset + 2 ];
-			if( ( ix_w % ( dpth * stride ) ) == 0 ) {
-				dpth_in_offset += dpth ;
+		if(ptr_pic->binary) {
+                	for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
+			{
+				unsigned char in_dpth_in_offset_0 = ptr_pic->pix2bin(in_ptr[ dpth_in_offset     ]);
+				unsigned char in_dpth_in_offset_1 = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+				unsigned char in_dpth_in_offset_2 = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+
+				// Stride is less than 4 or 5.
+				for( int j= 0; j < stride; j++, ix_w += depth )
+				{
+					buf[ ix_w     ] = in_dpth_in_offset_0;
+					buf[ ix_w + 1 ] = in_dpth_in_offset_1;
+					buf[ ix_w + 2 ] = in_dpth_in_offset_2;
+				}
+				dpth_in_offset += depth ;
+			}
+		} else {
+                	for( int ix_w = 0, max_w = wid_screen * depth, dpth_in_offset = depth * in_offset ; ix_w < max_w ; )
+			{
+				unsigned char in_dpth_in_offset_0 = in_ptr[ dpth_in_offset     ];
+				unsigned char in_dpth_in_offset_1 = in_ptr[ dpth_in_offset + 1 ];
+				unsigned char in_dpth_in_offset_2 = in_ptr[ dpth_in_offset + 2 ];
+
+				// Stride is less than 4 or 5.
+				for( int j= 0; j < stride; j++, ix_w += depth )
+				{
+					buf[ ix_w     ] = in_dpth_in_offset_0;
+					buf[ ix_w + 1 ] = in_dpth_in_offset_1;
+					buf[ ix_w + 2 ] = in_dpth_in_offset_2;
+				}
+				dpth_in_offset += depth ;
 			}
 		}
+
 		return ;
 	}
-}
+
+	// zoom == 0, stride=1
+	const int in_offset = img_width * y_screen + x_screen ;
+	if(ptr_pic->binary) {
+		int dpth_in_offset = depth * in_offset ;
+		for( int ix_w = 0, max_w = wid_screen * depth; ix_w < max_w ; ix_w += depth ) {
+			buf[ ix_w     ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset     ]);
+			buf[ ix_w + 1 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 1 ]);
+			buf[ ix_w + 2 ] = ptr_pic->pix2bin(in_ptr[ dpth_in_offset + 2 ]);
+			dpth_in_offset += depth ;
+		}
+	} else {
+		abort(); // This should never be called, see optimization in picture::draw().
+	}
+} // picture::draw_cb
 
 void picture::draw()
 {
-	if( zoom == 0 ) {
+	if( ( zoom == 0 ) && ( binary == false ) ) {
 		/// No scaling, this is faster.
 		fl_draw_image( vidbuf, x(), y(), w(), h() );
 	} else {
@@ -488,7 +487,12 @@ static FILE* open_file(const char* name, const char* suffix)
 	return fp;
 }
 
-int picture::save_png(const char* filename, const char *extra_comments)
+static inline unsigned char avg_pix( const unsigned char * vidbuf )
+{
+	return ( vidbuf[ 0 ] + vidbuf[ 1 ] + vidbuf[ 2 ] ) / picture::depth ;
+}
+
+int picture::save_png(const char* filename, bool monochrome, const char *extra_comments)
 {
 	FILE* fp;
 	if ((fp = open_file(filename, ".png")) == NULL)
@@ -501,6 +505,14 @@ int picture::save_png(const char* filename, const char *extra_comments)
 		fclose(fp);
 		return -1;
 	}
+	/* png_set_compression_level() shall set the compression level to "level". 
+	 * The valid values for "level" range from [0,9], corresponding directly 
+	 * to compression levels for zlib. The value 0 implies no compression 
+	 * and 9 implies maximal compression. Note: Tests have shown that zlib 
+	 * compression levels 3-6 usually perform as well as level 9 for PNG images, 
+	 * and do considerably fewer calculations. */
+	png_set_compression_level(png, Z_BEST_COMPRESSION);
+
 	if ((info = png_create_info_struct(png)) == NULL) {
 		png_destroy_write_struct(&png, NULL);
 		fclose(fp);
@@ -516,8 +528,11 @@ int picture::save_png(const char* filename, const char *extra_comments)
 	png_init_io(png, fp);
 
 	// set png header
-	png_set_IHDR(png, info, width, height, 1 << depth,
-		     PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+	int color_type = monochrome ? PNG_COLOR_TYPE_GRAY : PNG_COLOR_TYPE_RGB ;
+	/// Color images must take eight bits per pixel.
+	const int bit_depth = ( monochrome && binary ) ? 1 : 8 ;
+	png_set_IHDR(png, info, width, height, bit_depth,
+		     color_type, PNG_INTERLACE_NONE,
 		     PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
 	// write text comments
@@ -555,10 +570,51 @@ int picture::save_png(const char* filename, const char *extra_comments)
 	}
 
 	// write image
-	png_bytep row;
-	for (int i = 0; i < height; i++) {
-		row = &vidbuf[i * width * depth];
-		png_write_rows(png, &row, 1);
+	if(monochrome)
+	{
+		unsigned char tmp_row[width];
+		png_bytep row;
+		for (int i = 0; i < height; i++) {
+			int row_offset = i * width * depth ;
+			if( binary )
+			{
+				unsigned char accumPix = 0 ;
+				int j_offset = 0 ;
+				for(int j = 0 ; j < width; ++j )
+				{
+					int col_offset = row_offset + j * depth ;
+					unsigned char tmpChr = avg_pix( vidbuf + col_offset );
+					tmpChr = pix2bin(tmpChr) ? 1 : 0 ;
+					j_offset = j & 0x07 ;
+					tmpChr = tmpChr << ( 7 - j_offset );
+					accumPix |= tmpChr ;
+
+					if( j_offset == 7 ) {
+						tmp_row[ j >> 3 ] = accumPix ;
+						accumPix = 0 ;
+					}
+				}
+				if( j_offset != 7 ) {
+					tmp_row[ width >> 3 ] = accumPix ;
+				}
+			} else {
+				for(int j = 0 ; j < width; ++j )
+				{
+					int col_offset = row_offset + j * depth ;
+					tmp_row[j] = avg_pix( vidbuf + col_offset );
+				}
+			}
+			row = tmp_row;
+			png_write_rows(png, &row, 1);
+		}
+	}
+	else
+	{
+		png_bytep row;
+		for (int i = 0; i < height; i++) {
+			row = &vidbuf[i * width * depth];
+			png_write_rows(png, &row, 1);
+		}
 	}
 	png_write_end(png, info);
 
@@ -571,6 +627,136 @@ int picture::save_png(const char* filename, const char *extra_comments)
 	return 0;
 }
 
+bool picture::restore( int row, int margin )
+{
+	if( ( row <= noise_height_margin ) || ( row >= height ) ) return true;
+
+	unsigned char * line_ante = vidbuf + (row - noise_height_margin) * width * depth;
+	// Copy the new calculated value (at previous call) to all channels.
+	// TODO: Do that when switching off noise removal, otherwise a couple of colored pixels are left.
+	for( int col = margin ; col < width - margin; ++col )
+	{
+		int offset = col * depth ;
+		line_ante[ offset ] = line_ante[ offset + 2 ] = line_ante[ offset + 1 ];
+	}
+	return false ;
+}
+
+void picture::erosion( int row )
+{
+	static const size_t margin_one = 1 ;
+	if( restore( row, margin_one ) ) return ;
+
+	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
+	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
+	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
+
+	for( size_t col = margin_one ; col < width - margin_one; ++col )
+	{
+		unsigned char new_pix = 255 ;
+		new_pix = std::min( new_pix, line_prev[ depth * ( col - 1 ) ] );
+		new_pix = std::min( new_pix, line_prev[ depth * ( col     ) ] );
+		new_pix = std::min( new_pix, line_prev[ depth * ( col + 1 ) ] );
+		new_pix = std::min( new_pix, line_curr[ depth * ( col - 1 ) ] );
+		new_pix = std::min( new_pix, line_curr[ depth * ( col     ) ] );
+		new_pix = std::min( new_pix, line_curr[ depth * ( col + 1 ) ] );
+		new_pix = std::min( new_pix, line_next[ depth * ( col - 1 ) ] );
+		new_pix = std::min( new_pix, line_next[ depth * ( col     ) ] );
+		new_pix = std::min( new_pix, line_next[ depth * ( col + 1 ) ] );
+
+		/// Use this channel as a buffer. Beware that if we change the slant,
+		// this component might not be restored
+		// because the line position changed. Not a big problem.
+		// We might forbid slanting when de-noising.
+		line_curr[ col * depth + 1 ] = new_pix;
+	}
+}
+
+void picture::dilatation( int row )
+{
+	static const size_t margin_one = 1 ;
+	if( restore( row, margin_one ) ) return ;
+
+	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
+	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
+	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
+
+	for( size_t col = margin_one ; col < width - margin_one; ++col )
+	{
+		unsigned char new_pix = 0 ;
+		new_pix = std::max( new_pix, line_prev[ depth * ( col - 1 ) ] );
+		new_pix = std::max( new_pix, line_prev[ depth * ( col     ) ] );
+		new_pix = std::max( new_pix, line_prev[ depth * ( col + 1 ) ] );
+		new_pix = std::max( new_pix, line_curr[ depth * ( col - 1 ) ] );
+		new_pix = std::max( new_pix, line_curr[ depth * ( col     ) ] );
+		new_pix = std::max( new_pix, line_curr[ depth * ( col + 1 ) ] );
+		new_pix = std::max( new_pix, line_next[ depth * ( col - 1 ) ] );
+		new_pix = std::max( new_pix, line_next[ depth * ( col     ) ] );
+		new_pix = std::max( new_pix, line_next[ depth * ( col + 1 ) ] );
+
+		/// Use this channel as a buffer. Beware that if we change the slant,
+		// this component might not be restored
+		// because the line position changed. Not a big problem.
+		// We might forbid slanting when de-noising.
+		line_curr[ col * depth + 1 ] = new_pix;
+	}
+}
+
+void picture::remove_noise( int row, int half_len, int noise_margin )
+{
+	if( restore( row, half_len ) ) return ;
+
+	const unsigned char * line_prev = vidbuf + (row - noise_height_margin + 1) * width * depth;
+	      unsigned char * line_curr = vidbuf + (row - noise_height_margin + 2) * width * depth;
+	const unsigned char * line_next = vidbuf + (row - noise_height_margin + 3) * width * depth;
+
+	const int nb_neighbours = ( 2 * ( 2 * half_len + 1 ) );
+	int medians[nb_neighbours];
+
+	/// Takes into account the first component only.
+	for( int col = half_len ; col < width - half_len; ++col )
+	{
+		int curr_pix = line_curr[ col * depth ];
+		assert( ( curr_pix >= 0 ) && ( curr_pix <= 255 ) );
+
+		int pix_min = 255, pix_max = 0;
+		for( int subcol = col - half_len, tmp, nghb_i = 0 ; subcol <= col + half_len ; ++subcol )
+		{
+			int offset = subcol * depth ;
+			tmp = line_prev[ offset ];
+			if( tmp < pix_min ) pix_min = tmp ;
+			else if( tmp > pix_max ) pix_max = tmp ;
+			medians[nghb_i++] = tmp;
+
+			tmp = line_next[ offset ];
+			if( tmp < pix_min ) pix_min = tmp ;
+			else if( tmp > pix_max ) pix_max = tmp ;
+			medians[nghb_i++] = tmp;
+		}
+
+		// Maybe the pixel is between min and max.
+		int thres_min = pix_min - noise_margin;
+		if(thres_min < 0) thres_min = 0;
+		assert(thres_min <= pix_min);
+
+		int thres_max = pix_max + noise_margin;
+		if(thres_max > 255 ) thres_max = 255;
+		if(thres_max < pix_max) abort();
+
+		if( ( curr_pix >= thres_min ) && ( curr_pix <= thres_max ) ) continue ;
+		assert( ( pix_max >= 0 ) && ( pix_max <= 255 ) );
+
+		std::sort( medians, medians + nb_neighbours );
+		int new_pix = medians[ nb_neighbours / 2 ];
+		assert( new_pix >= 0 );
+
+		/// Use this channel as a buffer. Beware that if we change the slant,
+		// this component might not be restored
+		// because the line position changed. Not a big problem.
+		// We might forbid slanting when de-noising.
+		line_curr[ col * depth + 1 ] = new_pix;
+	}
+}
 
 int picbox::handle(int event)
 {

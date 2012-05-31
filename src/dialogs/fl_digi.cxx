@@ -176,7 +176,8 @@
 #define RTTY_MLABEL              "RTTY"
 #define VIEW_MLABEL            _("&View")
 #define MFSK_IMAGE_MLABEL      _("&MFSK Image")
-#define WEFAX_IMAGE_MLABEL     _("&Weather Fax Image")
+#define WEFAX_RX_IMAGE_MLABEL  _("&Weather Fax Image RX")
+#define WEFAX_TX_IMAGE_MLABEL  _("&Weather Fax Image TX")
 #define CONTEST_MLABEL         _("Contest")
 #define CONTEST_FIELDS_MLABEL  _("&Contest fields")
 #define COUNTRIES_MLABEL       _("C&ountries")
@@ -204,11 +205,6 @@ Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
-
-int rightof(Fl_Widget* w);
-int leftof(Fl_Widget* w);
-int above(Fl_Widget* w);
-int below(Fl_Widget* w);
 
 Fl_Group			*mnuFrame;
 Fl_Menu_Bar 		*mnu;
@@ -901,12 +897,22 @@ void startup_modem(modem* m, int f)
 
 	if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 		ReceiveText->hide();
+		TransmitText->show();
 		FHdisp->show();
+		wefax_pic::hide_both();
 		sldrHellBW->value(progdefaults.HELL_BW);
+	}
+	else if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
+		ReceiveText->hide();
+		TransmitText->hide();
+		FHdisp->hide();
+		wefax_pic::show_both();
 	}
 	else if (!bWF_only) {
 		ReceiveText->show();
+		TransmitText->show();
 		FHdisp->hide();
+		wefax_pic::hide_both();
 	}
 
 	if (id == MODE_RTTY)
@@ -1103,7 +1109,7 @@ void init_modem(trx_mode mode, int freq)
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
-	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
+	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: 
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode), freq);
 		quick_change = quick_change_thor;
@@ -1230,7 +1236,12 @@ void init_modem(trx_mode mode, int freq)
 
 	default:
 		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
-		return init_modem(MODE_PSK31, freq);
+		mode = MODE_PSK31;
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode), freq);
+		quick_change = quick_change_psk;
+		modem_config_tab = tabPSK;
+		break;
 	}
 
 #if BENCHMARK_MODE
@@ -2481,8 +2492,6 @@ int default_handler(int event)
 			w->take_focus(); // remove this to leave tx text focused
 			return 1;
 		}
-
-
 #ifdef __APPLE__
 		if ((key == '=') && (Fl::event_state() == FL_COMMAND)) {
 #else
@@ -2503,14 +2512,9 @@ int default_handler(int event)
 			cntTxLevel->value(progdefaults.txlevel);
 			return 1;
 		}
-
 	}
 	else if (w == dlgLogbook || w->window() == dlgLogbook)
 		return log_search_handler(event);
-
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-	else if (Fl::event_ctrl()) return w->handle(FL_KEYBOARD);
-#endif
 
 	return 0;
 }
@@ -2567,6 +2571,10 @@ bool clean_exit(bool ask) {
 	saveFreqList();
 
 	progStatus.saveLastState();
+
+	if (scopeview) scopeview->hide();
+	if (dlgViewer) dlgViewer->hide();
+	if (dlgLogbook) dlgLogbook->hide();
 
 	delete push2talk;
 #if USE_HAMLIB
@@ -3245,11 +3253,12 @@ Fl_Menu_Item menu_[] = {
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
-{make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{"View/Hide Channels", 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 't', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
@@ -3287,6 +3296,7 @@ Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Save")), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { LOG_CONNECT_SERVER, 0, cb_log_server, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+
 {0,0,0,0,0,0,0,0,0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3432,6 +3442,29 @@ Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu)
 	return item;
 }
 
+void activate_wefax_image_item(bool b)
+{
+	/// Maybe do not do anything if the new modem has activated this menu item.
+	/// This is necessary because of trx_start_modem_loop which deletes
+	/// the current modem after the new one is created..
+	if( ( b == false )
+	 && ( active_modem->get_cap() & modem::CAP_IMG )
+	 && ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
+	 && ( active_modem->get_mode() <= MODE_WEFAX_LAST )
+	 )
+	{
+		return ;
+	}
+
+	Fl_Menu_Item *wefax_rx_item = getMenuItem(WEFAX_RX_IMAGE_MLABEL);
+	if (wefax_rx_item)
+		set_active(wefax_rx_item, b);
+	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_TX_IMAGE_MLABEL);
+	if (wefax_tx_item)
+		set_active(wefax_tx_item, b);
+}
+
+
 void activate_menu_item(const char *caption, bool val)
 {
 	Fl_Menu_Item *m = getMenuItem(caption);
@@ -3443,25 +3476,6 @@ void activate_mfsk_image_item(bool b)
 	Fl_Menu_Item *mfsk_item = getMenuItem(MFSK_IMAGE_MLABEL);
 	if (mfsk_item)
 		set_active(mfsk_item, b);
-}
-
-void activate_wefax_image_item(bool b)
-{
-	/// Maybe do not do anything if the new modem has activated this menu item.
-	/// This is necessary because of trx_start_modem_loop which deletes 
-	/// the current modem after the new one is created..
-	if( ( b == false )
-	 && ( active_modem->get_cap() & modem::CAP_IMG )
-	 && ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
-	 && ( active_modem->get_mode() <= MODE_WEFAX_LAST )
-	 )
-	{
-		return ;
-	}
-
-	Fl_Menu_Item *wefax_item = getMenuItem(WEFAX_IMAGE_MLABEL);
-	if (wefax_item)
-		set_active(wefax_item, b);
 }
 
 int rightof(Fl_Widget* w)
@@ -3732,7 +3746,6 @@ void setTabColors()
 	tabsWaterfall->selection_color(progdefaults.TabsColor);
 	tabsModems->selection_color(progdefaults.TabsColor);
 	tabsCW->selection_color(progdefaults.TabsColor);
-	tabsPSK->selection_color(progdefaults.TabsColor);
 	tabsRig->selection_color(progdefaults.TabsColor);
 	tabsSoundCard->selection_color(progdefaults.TabsColor);
 	tabsMisc->selection_color(progdefaults.TabsColor);
@@ -4632,6 +4645,8 @@ void create_fl_digi_main_primary() {
 			FHdisp->align(FL_ALIGN_CLIP);
 			FHdisp->hide();
 
+			wefax_pic::create_both( true );
+
 			TransmitText = new FTextTX(
 				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(), 
 				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
@@ -5069,7 +5084,8 @@ Fl_Menu_Item alt_menu_[] = {
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 //{ make_icon_label(_("Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(WEFAX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Signal Browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
@@ -5504,17 +5520,14 @@ void set_scope_mode(Digiscope::scope_mode md)
 		REQ(&Fl_Window::size_range, scopeview, SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT,
 		    0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
 	}
-//	if (wfscope)
-//		wfscope->mode(md);
 	wf->wfscope->mode(md);
+	if (md == Digiscope::SCOPE) set_scope_clear_axis();
 }
 
 void set_scope(double *data, int len, bool autoscale)
 {
 	if (digiscope)
 		digiscope->data(data, len, autoscale);
-//	if (wfscope)
-//		wfscope->data(data, len, autoscale);
 	wf->wfscope->data(data, len, autoscale);
 }
 
@@ -5522,8 +5535,6 @@ void set_phase(double phase, double quality, bool highlight)
 {
 	if (digiscope)
 		digiscope->phase(phase, quality, highlight);
-//	if (wfscope)
-//		wfscope->phase(phase, quality, highlight);
 	wf->wfscope->phase(phase, quality, highlight);
 }
 
@@ -5531,8 +5542,6 @@ void set_rtty(double flo, double fhi, double amp)
 {
 	if (digiscope)
 		digiscope->rtty(flo, fhi, amp);
-//	if (wfscope)
-//		wfscope->rtty(flo, fhi, amp);
 	wf->wfscope->rtty(flo, fhi, amp);
 }
 
@@ -5540,8 +5549,6 @@ void set_video(double *data, int len, bool dir)
 {
 	if (digiscope)
 		digiscope->video(data, len, dir);
-//	if (wfscope)
-//		wfscope->video(data, len, dir);
 	wf->wfscope->video(data, len, dir);
 }
 
@@ -5549,8 +5556,6 @@ void set_zdata(complex *zarray, int len)
 {
 	if (digiscope)
 		digiscope->zdata(zarray, len);
-//	if (wfscope)
-//		wfscope->zdata(zarray, len);
 	wf->wfscope->zdata(zarray, len);
 }
 
@@ -6132,16 +6137,16 @@ void resetCONTESTIA() {
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
 	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
-	    md == MODE_THOR11 ||
-	    md == MODE_THOR16 || md == MODE_THOR22 )
+		md == MODE_THOR11 ||
+		md == MODE_THOR16 || md == MODE_THOR22 )
 		trx_start_modem(active_modem);
 }
 
 void resetDOMEX() {
 	trx_mode md = active_modem->get_mode();
 	if (md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
-	    md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
-	    md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 )
+		md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
+		md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 )
 		trx_start_modem(active_modem);
 }
 

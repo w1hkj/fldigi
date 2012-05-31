@@ -265,6 +265,15 @@ extern Fl_Check_Button *btnNvtxAdifLog;
 #include <FL/Fl_Output.H>
 extern Fl_Output *txtNvtxCatalog;
 extern Fl_Button *btnSelectNvtxCatalog;
+extern Fl_Group *tabWefax;
+extern Fl_Check_Button *btnWefaxAdifLog;
+extern Fl_Check_Button *btnWefaxEmbeddedGui;
+extern Fl_Value_Input2 *btnWefaxShift;
+extern Fl_Value_Input2 *btnWefaxMaxRows;
+extern Fl_Input *btnWefaxSaveDir;
+extern Fl_Button *btnSelectFaxDestDir;
+extern Fl_Check_Button *btnWefaxHideTx;
+extern Fl_Check_Button *btnWefaxSaveMonochrome;
 extern Fl_Group *tabRig;
 extern Fl_Tabs *tabsRig;
 extern Fl_Check_Button *btnPTTrightchannel;
@@ -478,5 +487,6 @@ void openConfig();
 void closeDialog();
 void createConfig();
 class Fl_File_Chooser ;
+void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 #endif

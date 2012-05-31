@@ -70,9 +70,21 @@ private:
 	}
 	inline double mac(const double *a, const double *b, unsigned int size) {
 		double sum = 0.0;
-		for (unsigned int i = 0; i < size; i++)
+		double sum2 = 0.0;
+		double sum3 = 0.0;
+		double sum4 = 0.0;
+		// Reduces read-after-write dependencies : Each subsum does not wait for the others.
+		// The CPU can therefore schedule each line independently.
+		for (; size > 3; size -= 4, a += 4, b+=4)
+		{
+			sum  += a[0] * b[0];
+			sum2 += a[1] * b[1];
+			sum3 += a[2] * b[2];
+			sum4 += a[3] * b[3];
+		}
+		for (; size; --size)
 			sum += (*a++) * (*b++);
-		return sum;
+		return sum + sum2 + sum3 + sum4 ;
 	}
 
 protected:
@@ -140,9 +152,6 @@ public:
 
 class goertzel {
 private:
-	double SR;
-	double FREQ;
-	double K;
 	int N;
 	int count;
 	double Q0;

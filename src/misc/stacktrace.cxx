@@ -54,6 +54,15 @@ static void pstack(ostream& out, unsigned skip = 0);
 
 void diediedie(void)
 {
+#ifndef __MINGW32__
+	// If this environment variable is set, creates a core dump.
+	if( getenv("FLDIGI_COREDUMP") )
+	{
+		signal(SIGSEGV, SIG_DFL);
+		kill(getpid(), SIGSEGV);
+	}
+#endif
+
 	static bool print_trace = true;
 
 	if (!print_trace)
