@@ -68,7 +68,7 @@ private:
 	static const int jdays[][13];
 	bool isleapyear( int y ) const;
 	int dayofyear (int year, int mon, int mday);
-	unsigned int epoch_minutes (const char *szdate, const char *sztime);	
+	unsigned long epoch_dt (const char *szdate, const char *sztime);
 public:
 	cQsoDb ();
 	cQsoDb (cQsoDb *);

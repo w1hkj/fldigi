@@ -169,9 +169,13 @@ void cAdifIO::fillfield (int fieldnum, char *buff)
 		}
 		p1++;
 	}
-	if (fieldnum == TIME_ON || fieldnum == TIME_OFF)
-		fldsize = 4; // lotw sends time in 6 digits ... RIGHT !!
-	adifqso->putField (fieldnum, p2+1, fldsize);
+	if ((fieldnum == TIME_ON || fieldnum == TIME_OFF) && fldsize < 6) {
+		string tmp = "";
+		tmp.assign(p2+1, fldsize);
+		while (tmp.length() < 6) tmp += '0';
+		adifqso->putField(fieldnum, tmp.c_str(), 6);
+	} else
+		adifqso->putField (fieldnum, p2+1, fldsize);
 }
 
 static void write_rxtext(const char *s)

@@ -424,6 +424,8 @@ fldigi_SOURCES += \
 	logbook/lgbook.cxx \
 	logbook/logbook.cxx \
 	logbook/logsupport.cxx \
+	logbook/lookupcall.cxx \
+	logbook/qrzlib.cxx \
 	logbook/qso_db.cxx \
 	logbook/table.cxx \
 	logbook/textio.cxx \
@@ -449,9 +451,7 @@ fldigi_SOURCES += \
 	misc/network.cxx \
 	misc/newinstall.cxx \
 	misc/arq_io.cxx \
-	misc/lookupcall.cxx \
 	misc/pixmaps.cxx \
-	misc/qrzlib.cxx \
 	misc/re.cxx \
 	misc/socket.cxx \
 	misc/stacktrace.cxx \

@@ -129,17 +129,17 @@ status progStatus = {
 	true,				// bool rx_word_wrap
 	true,				// bool tx_word_wrap
 
-	50,					// int logbook_x;
-	50,					// int logbook_y;
-	570,				// int logbook_w;
-	350,				// int logbook_h;
+	20,					// int logbook_x;
+	20,					// int logbook_y;
+	590,				// int logbook_w;
+	490,				// int logbook_h;
 	false,				// bool logbook_reverse;
 	85,					// int		logbook_browser_col_0;
-	50,					// int		logbook_browser_col_1;
+	47,					// int		logbook_browser_col_1;
 	100,				// int		logbook_browser_col_2;
 	110,				// int		logbook_browser_col_3;
 	120,				// int		logbook_browser_col_4;
-	90,					// int		logbook_browser_col_5;
+	103,				// int		logbook_browser_col_5;
 
 	progdefaults.contestiatones,
 	progdefaults.contestiabw,

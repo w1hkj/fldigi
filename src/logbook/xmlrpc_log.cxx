@@ -161,8 +161,8 @@ void xml_add_record()
 
 	adif_str(QSO_DATE, sDate_on.c_str()); 
 	adif_str(QSO_DATE_OFF, sDate_off.c_str());
-	adif_str(TIME_ON, inpTimeOn->value());
-	adif_str(TIME_OFF, ztime());
+	adif_str(TIME_ON, sTime_on.c_str());
+	adif_str(TIME_OFF, sTime_off.c_str());
 	adif_str(CALL, inpCall->value());
 	{
 		char Mhz[30];

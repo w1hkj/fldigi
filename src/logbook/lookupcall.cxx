@@ -414,7 +414,8 @@ void QRZ_disp_result()
 		inpAZ->value(buf);
 	}
 	string notes;
-	notes.assign(inpNotes->value()).append("\n").append(lookup_notes);
+	notes.assign(inpNotes->value());
+	if (!lookup_notes.empty()) notes.append("\n").append(lookup_notes);
 	inpNotes->value(notes.c_str());
 }
 
@@ -508,7 +509,8 @@ void QRZAlert()
 		qrzerror.clear();
 	}
 	string notes;
-	notes.assign(inpNotes->value()).append("\n").append(qrznote.c_str());
+	notes.assign(inpNotes->value());
+	if (!qrznote.empty()) notes.append("\n").append(qrznote);
 	inpNotes->value(notes.c_str());
 }
 

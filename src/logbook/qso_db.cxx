@@ -106,9 +106,10 @@ void cQsoRec::setDateTime(bool dtOn) {
 
 		char buf_time[64] ;
 		snprintf( buf_time, sizeof(buf_time),
-			"%02d%02d",
+			"%02d%02d%02d",
 			tmp_tm.tm_hour,
-			tmp_tm.tm_min );
+			tmp_tm.tm_min,
+			tmp_tm.tm_sec );
 
 		if(dtOn) {
 			putField(QSO_DATE, buf_date);
@@ -481,18 +482,19 @@ int cQsoDb::dayofyear (int year, int mon, int mday)
   return mday + jdays[isleapyear (year) ? 1 : 0][mon];
 }
 
-unsigned int cQsoDb::epoch_minutes (const char *szdate, const char *sztime)
+unsigned long cQsoDb::epoch_dt (const char *szdate, const char *sztime)
 {
-  unsigned int  doe;
+  unsigned long  doe;
   int  era, cent, quad, rest;
   int year, mon, mday;
-  int mins;
+  int secs;
   
   year = ((szdate[0]*10 + szdate[1])*10 + szdate[2])*10 + szdate[3];
   mon  = szdate[4]*10 + szdate[5];
   mday = szdate[6]*10 + szdate[7];
   
-  mins = (sztime[0]*10 + sztime[1])*60 + sztime[2]*10 + sztime[3];
+  secs = ((sztime[0]*10 + sztime[1])*60 + sztime[2]*10 + sztime[3])*60 +
+         + sztime[4]*10 + sztime[5];
   
   /* break down the year into 400, 100, 4, and 1 year multiples */
   rest = year - 1;
@@ -507,7 +509,7 @@ unsigned int cQsoDb::epoch_minutes (const char *szdate, const char *sztime)
   doe += quad * (4 * 365 + 1);
   doe += rest * 365;
   
-  return doe*60*24 + mins;
+  return doe*60*60*24 + secs;
 }
 
 bool cQsoDb::duplicate(
@@ -523,8 +525,8 @@ bool cQsoDb::duplicate(
 	bool b_freqDUP = true, b_stateDUP = true, b_modeDUP = true,
 		 b_xchg1DUP = true,
 		 b_dtimeDUP = true;
-	unsigned int datetime = epoch_minutes(szdate, sztime);
-	unsigned int qsodatetime;
+	unsigned long datetime = epoch_dt(szdate, sztime);
+	unsigned long qsodatetime;
 	
 	for (int i = 0; i < nbrrecs; i++) {
 		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
@@ -546,10 +548,10 @@ bool cQsoDb::duplicate(
 							 (strcasestr(qsorec[i].getField(XCHG1), xchg1) != 0);
 
 			if (chkdatetime) {
-				qsodatetime = epoch_minutes (
+				qsodatetime = epoch_dt (
 								qsorec[i].getField(QSO_DATE),
 								qsorec[i].getField(TIME_OFF));
-				if ((datetime - qsodatetime) < interval) b_dtimeDUP = true;
+				if ((datetime - qsodatetime) < interval*60) b_dtimeDUP = true;
 			}
  			if ( (!chkfreq     || (chkfreq     && b_freqDUP)) &&
 			     (!chkstate    || (chkstate    && b_stateDUP)) &&
