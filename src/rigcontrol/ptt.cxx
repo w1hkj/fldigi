@@ -204,7 +204,12 @@ void PTT::open_tty(void)
 	com_to_tty(pttdevName);
 #    endif
 
-	if ((pttfd = open(pttdevName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0) {
+	int oflags = O_RDWR | O_NOCTTY | O_NDELAY;
+#	ifdef HAVE_O_CLOEXEC
+		oflags = oflags | O_CLOEXEC;
+#	endif
+
+	if ((pttfd = open(pttdevName.c_str(), oflags)) < 0) {
 		LOG_ERROR("Could not open \"%s\": %s", pttdevName.c_str(), strerror(errno));
 		return;
 	}
@@ -295,8 +300,13 @@ void PTT::set_tty(bool ptt)
 void PTT::open_parport(void)
 {
     if (progdefaults.PTTdev.find("tty") != string::npos) return;
-    
-	if ((pttfd = open(progdefaults.PTTdev.c_str(), O_RDWR | O_NDELAY)) == -1) {
+
+	int oflags = O_RDWR | O_NDELAY;
+#	ifdef HAVE_O_CLOEXEC
+		oflags = oflags | O_CLOEXEC;
+#	endif
+
+	if ((pttfd = open(progdefaults.PTTdev.c_str(),  oflags)) == -1) {
 		LOG_ERROR("Could not open %s: %s", progdefaults.PTTdev.c_str(), strerror(errno));
 		return;
 	}
@@ -417,7 +427,13 @@ static bool open_fifos(const char* base, int fd[2])
 		LOG_ERROR("%s is not a fifo", fifo.c_str());
 		return false;
 	}
-	if ((fd[0] = open(fifo.c_str(), O_RDONLY | O_NONBLOCK)) == -1) {
+
+	int oflags = O_RDONLY | O_NONBLOCK;
+#	ifdef HAVE_O_CLOEXEC
+		oflags = oflags | O_CLOEXEC;
+#	endif
+
+	if ((fd[0] = open(fifo.c_str(), oflags)) == -1) {
 		LOG_ERROR("Could not open %s: %s", fifo.c_str(), strerror(errno));
 		return false;
 	}
@@ -428,7 +444,13 @@ static bool open_fifos(const char* base, int fd[2])
 		LOG_ERROR("%s is not a fifo", fifo.c_str());
 		return false;
 	}
-	if ((fd[1] = open(fifo.c_str(), O_WRONLY | O_NONBLOCK)) == -1) {
+	oflags = O_WRONLY | O_NONBLOCK;
+
+#	ifdef HAVE_O_CLOEXEC
+		oflags = oflags | O_CLOEXEC;
+#	endif
+
+	if ((fd[1] = open(fifo.c_str(), oflags)) == -1) {
 		LOG_ERROR("Could not open %s: %s", fifo.c_str(), strerror(errno));
 		return false;
 	}

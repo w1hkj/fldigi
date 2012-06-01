@@ -71,7 +71,13 @@ bool Cserial::OpenPort()  {
 #ifdef __CYGWIN__
 	com_to_tty(device);
 #endif
-	if ((fd = open( device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+
+	int oflags = O_RDWR | O_NOCTTY | O_NDELAY;
+#	ifdef HAVE_O_CLOEXEC
+		oflags = oflags | O_CLOEXEC;
+#	endif
+
+	if ((fd = open( device.c_str(), oflags)) < 0)
 		return false;
 // save current port settings
 	tcflush (fd, TCIFLUSH);

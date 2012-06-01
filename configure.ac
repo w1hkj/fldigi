@@ -123,6 +123,8 @@ AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([getaddrinfo gethostbyname hstrerror gmtime_r localtime_r memmove memset mkdir select setenv snprintf socket socketpair strcasecmp strcasestr strchr strdup strerror strlcpy strncasecmp strrchr strstr strtol uname unsetenv vsnprintf])
 
+# Check for O_CLOEXEC
+AC_FCNTL_FLAGS
 
 AC_PRESERVE_HELP_ORDER
 
