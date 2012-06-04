@@ -363,8 +363,11 @@ int w_inpRstOut = 30;
 int w_SerNo		= 40;
 int sw			= 22;
 
-int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
-          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
+int wlabel		= 30;
+
+int wf1 = 436;
+//int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
+//          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
 
 int w_inpFreq2   = 80;
 int w_inpTime2   = 40;
@@ -385,8 +388,10 @@ int w_inpProv	= 25;
 int w_inpCountry = 60;
 int w_inpLOC   	= 55;
 int w_inpAZ    	= 30;
+
 int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 - w_fm6 -
                   w_inpState - w_inpProv - w_inpLOC - w_inpAZ - w_inpCountry;
+
 int w_Xchg      = wf1 - 2*w_fm7 - w_fm5 - 2*pad - 2 * w_SerNo;
 
 int qh = Hqsoframe / 2;
@@ -2846,10 +2851,6 @@ void UI_select()
 			hpack->position(x, y1);
 			break;
 		}
-		inpNotes->resize(
-			inpNotes->x(), inpNotes->y(),
-			inpNotes->w(), 2*Hentry + pad);
-		inpNotes->redraw();
 		TopFrame2->hide();
 		TopFrame3->hide();
 		TopFrame1->show();
@@ -3934,7 +3935,6 @@ void create_fl_digi_main_primary() {
 			0, Hmenu,
 			rig_control_width, Hqsoframe);
 
-//			txtRigName = new Fl_Box(pad, Hmenu, freqwidth, Hentry);
 			txtRigName = new Fl_Box(pad, Hmenu + pad, freqwidth - Wbtn - 2 * pad, Hentry);
 			txtRigName->box(FL_FLAT_BOX);
 			txtRigName->align(FL_ALIGN_CENTER);
@@ -3949,7 +3949,6 @@ void create_fl_digi_main_primary() {
 
 			qsoFreqDisp1 = new cFreqControl(
 				pad, Hmenu + Hentry + 2 * pad, freqwidth, Hentry, "");
-//				freqwidth, freqheight, "");
 
 			qsoFreqDisp1->box(FL_DOWN_BOX);
 			qsoFreqDisp1->color(FL_BACKGROUND_COLOR);
@@ -3972,7 +3971,6 @@ void create_fl_digi_main_primary() {
 
 			Y = Hmenu + 2 * (Hentry + pad) + pad;
 
-//				int w_pmb = (freqwidth - Wbtn + 2 * pad) / 2;
 				int w_pmb = (freqwidth - 2 * pad) / 2;
 
 				qso_opMODE = new Fl_ComboBox(
@@ -3993,7 +3991,6 @@ void create_fl_digi_main_primary() {
 				qso_opBW = new Fl_ComboBox(
 					rightof(qso_opMODE), Y,
 					rig_control_width - rightof(qso_opMODE) - pad, Hentry);
-//					w_pmb, Hentry);
 				qso_opBW->box(FL_DOWN_BOX);
 				qso_opBW->color(FL_BACKGROUND2_COLOR);
 				qso_opBW->selection_color(FL_BACKGROUND_COLOR);
@@ -4112,115 +4109,80 @@ void create_fl_digi_main_primary() {
 
 			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe);
 
-				inpFreq1 = new Fl_Input2(x_qsoframe + pad, y2, w_inpFreq, Hentry, _("QSO Freq"));
+				inpFreq1 = new Fl_Input2(x_qsoframe + 38, Hmenu + pad, 120, Hentry, _("Freq"));
 				inpFreq1->type(FL_NORMAL_OUTPUT);
-				inpFreq1->tooltip("");
-				inpFreq1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpFreq1->tooltip(_("frequency kHz"));
+				inpFreq1->align(FL_ALIGN_LEFT);
 
-				inpTimeOn1 = new Fl_Input2(rightof(inpFreq1) + pad, y2, w_inpTime, Hentry, "");
-				inpTimeOn1->tooltip("");
-				inpTimeOn1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
-				inpTimeOn1->type(FL_INT_INPUT);
-
-				btnTimeOn = new Fl_Button(leftof(inpTimeOn1), Hmenu + pad, w_inpTime, Hentry, _("On"));
-				btnTimeOn->align(FL_ALIGN_LEFT | FL_ALIGN_BOTTOM | FL_ALIGN_INSIDE);
-				btnTimeOn->tooltip(_("Press to update"));
-				btnTimeOn->box(FL_NO_BOX);
+				btnTimeOn = new Fl_Button(x_qsoframe + 162, Hmenu + pad, Hentry, Hentry, _("On"));
+				btnTimeOn->tooltip(_("Press to update QSO start time"));
 				btnTimeOn->callback(cb_btnTimeOn);
 
-				inpTimeOff1 = new Fl_Input2(rightof(inpTimeOn1) + pad, y2, w_inpTime, Hentry, _("Off"));
-				inpTimeOff1->tooltip("");
-				inpTimeOff1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpTimeOn1 = new Fl_Input2(x_qsoframe + 188, Hmenu + pad, 40, Hentry, "");
+				inpTimeOn1->tooltip(_("QSO start time"));
+				inpTimeOn1->align(FL_ALIGN_LEFT);
+				inpTimeOn1->type(FL_INT_INPUT);
+
+				inpTimeOff1 = new Fl_Input2(x_qsoframe + 257, Hmenu + pad, 40, Hentry, _("Off"));
+				inpTimeOff1->tooltip(_("QSO end time"));
+				inpTimeOff1->align(FL_ALIGN_LEFT);
 				inpTimeOff1->type(FL_NORMAL_OUTPUT);
 
-				inpCall1 = new Fl_Input2(rightof(inpTimeOff1) + pad, y2, w_inpCall, Hentry, _("Call"));
-				inpCall1->tooltip("");
-				inpCall1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpRstIn1 = new Fl_Input2(x_qsoframe + 324, Hmenu + pad, 40, Hentry, _("In"));
+				inpRstIn1->tooltip("RST in");
+				inpRstIn1->align(FL_ALIGN_LEFT);
 
-				inpName1 = new Fl_Input2(rightof(inpCall1) + pad, y2, w_inpName, Hentry, _("Name"));
-				inpName1->tooltip("");
-				inpName1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpRstOut1 = new Fl_Input2(x_qsoframe + 395, Hmenu + pad, 40, Hentry, _("Out"));
+				inpRstOut1->tooltip("RST out");
+				inpRstOut1->align(FL_ALIGN_LEFT);
 
-				inpRstIn1 = new Fl_Input2(rightof(inpName1) + pad, y2, w_inpRstIn, Hentry, _("In"));
-				inpRstIn1->tooltip("");
-				inpRstIn1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpCall1 = new Fl_Input2(x_qsoframe + 38, y2, 120, Hentry, _("Call"));
+				inpCall1->tooltip(_("call sign"));
+				inpCall1->align(FL_ALIGN_LEFT);
 
-				inpRstOut1 = new Fl_Input2(rightof(inpRstIn1) + pad, y2, w_inpRstOut, Hentry, _("Out"));
-				inpRstOut1->tooltip("");
-				inpRstOut1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpName1 = new Fl_Input2(x_qsoframe + 188, y2, 176, Hentry, _("Op"));
+				inpName1->tooltip(_("Operator name"));
+				inpName1->align(FL_ALIGN_LEFT);
+
+				inpAZ = new Fl_Input2(x_qsoframe + 395, y2, 40, Hentry, "Az");
+				inpAZ->tooltip(_("Azimuth"));
+				inpAZ->align(FL_ALIGN_LEFT);
 
 				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3, wf1, Hentry + pad);
-					Fl_Box *fm1box = new Fl_Box(x_qsoframe, y3, w_fm1, Hentry, _("QTH"));
-					fm1box->align(FL_ALIGN_INSIDE);
-					inpQth = new Fl_Input2( rightof(fm1box), y3, w_inpQth, Hentry, "");
+
+					inpQth = new Fl_Input2(x_qsoframe + 38, y3, 205, Hentry, "Qth");
 					inpQth->tooltip(_("City"));
-					inpQth->align(FL_ALIGN_INSIDE);
+					inpQth->align(FL_ALIGN_LEFT);
 
-					Fl_Box *fm2box = new Fl_Box(rightof(inpQth), y3, w_fm2, Hentry, _("St"));
-					fm2box->align(FL_ALIGN_INSIDE);
-					inpState = new Fl_Input2(rightof(fm2box), y3, w_inpState, Hentry, "");
+					inpState = new Fl_Input2(x_qsoframe + 262, y3, 30, Hentry, "St");
 					inpState->tooltip(_("US State"));
-					inpState->align(FL_ALIGN_INSIDE);
+					inpState->align(FL_ALIGN_LEFT);
 
-					Fl_Box *fm3box = new Fl_Box(rightof(inpState), y3, w_fm3, Hentry, _("Pr"));
-					fm3box->align(FL_ALIGN_INSIDE);
-					inpVEprov = new Fl_Input2(rightof(fm3box), y3, w_inpProv, Hentry, "");
+					inpVEprov = new Fl_Input2(x_qsoframe + 315, y3, 30, Hentry, "Pr");
 					inpVEprov->tooltip(_("Can. Province"));
-					inpVEprov->align(FL_ALIGN_INSIDE);
+					inpVEprov->align(FL_ALIGN_LEFT);
 
-					Fl_Box *fm11box = new Fl_Box(rightof(inpVEprov), y3, w_fm6, Hentry, _("Cnty"));
-					fm11box->align(FL_ALIGN_INSIDE);
-					inpCountry = new Fl_Input2(rightof(fm11box), y3, w_inpCountry, Hentry, "");
-					inpCountry->tooltip(_("Country"));
-					inpCountry->align(FL_ALIGN_INSIDE);
-
-					Fl_Box *fm4box = new Fl_Box(rightof(inpCountry), y3, w_fm4, Hentry, _("Loc"));
-					fm4box->align(FL_ALIGN_INSIDE);
-					inpLoc = new Fl_Input2(rightof(fm4box), y3, w_inpLOC, Hentry, "");
-					inpLoc->tooltip("");
-					inpLoc->align(FL_ALIGN_INSIDE);
-
-					Fl_Box *fm5box = new Fl_Box(rightof(inpLoc), y3, w_fm5, Hentry, _("Az"));
-					fm5box->align(FL_ALIGN_INSIDE);
-					inpAZ = new Fl_Input2(rightof(fm5box), y3,
-					    rightof(inpRstOut1) - rightof(fm5box), Hentry, "");
-					inpAZ->tooltip("");
-					inpAZ->align(FL_ALIGN_INSIDE);
+					inpLoc = new Fl_Input2(x_qsoframe + 375, y3, 60, Hentry, "Loc");
+					inpLoc->tooltip(_("Maidenhead Locator"));
+					inpLoc->align(FL_ALIGN_LEFT);
 
 				QsoInfoFrame1A->end();
 
 				QsoInfoFrame1B = new Fl_Group (
 						x_qsoframe, y3,
 						wf1, Hentry + pad);
-					Fl_Box *fm6box = new Fl_Box(
-						x_qsoframe, y3,
-						w_fm7, Hentry, _("#Out"));
-					fm6box->align(FL_ALIGN_INSIDE);
-					outSerNo1 = new Fl_Input2(
-						rightof(fm6box), y3,
-						w_SerNo, Hentry, "");
-					outSerNo1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+
+					outSerNo1 = new Fl_Input2(x_qsoframe + 38, y3, 40, Hentry, "#out");
+					outSerNo1->align(FL_ALIGN_LEFT);
 					outSerNo1->tooltip(_("Sent serial number (read only)"));
 					outSerNo1->type(FL_NORMAL_OUTPUT);
 
-					Fl_Box *fm7box = new Fl_Box(
-						rightof(outSerNo1) + pad, y3,
-						w_fm5, Hentry, _("#In"));
-					fm7box->align(FL_ALIGN_INSIDE);
-					inpSerNo1 = new Fl_Input2(
-						rightof(fm7box), y3,
-						w_SerNo, Hentry, "");
-					inpSerNo1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpSerNo1 = new Fl_Input2(x_qsoframe + 118, y3, 40, Hentry, "#in");
+					inpSerNo1->align(FL_ALIGN_LEFT);
 					inpSerNo1->tooltip(_("Received serial number"));
 
-					Fl_Box *fm8box = new Fl_Box(
-						rightof(inpSerNo1) + pad, y3,
-						w_fm7, Hentry, _("Xchg"));
-					fm8box->align(FL_ALIGN_INSIDE);
-					inpXchgIn1 = new Fl_Input2(
-						rightof(fm8box), y3,
-					    rightof(inpRstOut1) - rightof(fm8box), Hentry, "");
-					inpXchgIn1->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+					inpXchgIn1 = new Fl_Input2(x_qsoframe + 188, y3, 247, Hentry, "Xch");
+					inpXchgIn1->align(FL_ALIGN_LEFT);
 					inpXchgIn1->tooltip(_("Contest exchange in"));
 
 				QsoInfoFrame1B->end();
@@ -4233,13 +4195,17 @@ void create_fl_digi_main_primary() {
 				x_qsoframe + wf1 + pad, Hmenu,
 				progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
 
-				inpNotes = new Fl_Input2(
-					x_qsoframe + wf1 + pad, y2,
-					progStatus.mainW - rightof(QsoInfoFrame1) - pad, 2*Hentry + pad, _("Notes"));
-				inpNotes->type(FL_MULTILINE_INPUT);
-				inpNotes->align(FL_ALIGN_TOP | FL_ALIGN_LEFT);
+				inpCountry = new Fl_Input2(
+					rightof(QsoInfoFrame1) + pad, Hmenu + pad, 
+					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hentry, "");
+				inpCountry->tooltip(_("Country"));
 
-				Fl_Group::current()->resizable(inpNotes);
+				inpNotes = new Fl_Input2(
+					rightof(QsoInfoFrame1) + pad, y2, 
+					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, "");
+				inpNotes->type(FL_MULTILINE_INPUT);
+				inpNotes->tooltip(_("Notes"));
+
 			QsoInfoFrame2->end();
 			Fl_Group::current()->resizable(QsoInfoFrame2);
 		QsoInfoFrame->end();
