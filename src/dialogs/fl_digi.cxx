@@ -1196,6 +1196,7 @@ void init_modem(trx_mode mode, int freq)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new wefax(mode), freq);
 		quick_change = quick_change_wefax;
+		modem_config_tab = tabWefax;
 		break;
 
 	case MODE_NAVTEX:
@@ -1203,6 +1204,7 @@ void init_modem(trx_mode mode, int freq)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new navtex(mode), freq);
 		quick_change = quick_change_navtex;
+		modem_config_tab = tabNavtex;
 		break;
 
 	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
