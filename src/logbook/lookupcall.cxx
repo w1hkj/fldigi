@@ -415,7 +415,10 @@ void QRZ_disp_result()
 	}
 	string notes;
 	notes.assign(inpNotes->value());
-	if (!lookup_notes.empty()) notes.append("\n").append(lookup_notes);
+	if (!lookup_notes.empty()) {
+		if (!notes.empty()) notes.append("\n");
+		notes.append(lookup_notes);
+	}
 	inpNotes->value(notes.c_str());
 }
 
@@ -769,6 +772,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 {
 	size_t p = string::npos;
 	size_t p1 = string::npos;
+	string tempstr;
 
 	clear_Lookup();
 
@@ -821,39 +825,48 @@ void parse_HAMQTH_html(const string& htmlpage)
 	if ((p = htmlpage.find("<qsl_via>")) != string::npos) {
 		p += 9;
 		p1 = htmlpage.find("</qsl_via>");
-		if (p1 != string::npos)
-			lookup_notes.append("QSL via: ").append(htmlpage.substr(p, p1 - p)).append("\n");
+		if (p1 != string::npos) {
+			tempstr.assign(htmlpage.substr(p, p1 - p));
+			if (!tempstr.empty())
+				lookup_notes.append("QSL via: ").append(tempstr).append("\n");
+		}
 	}
 	if ((p = htmlpage.find("<adr_name>")) != string::npos) {
 		p += 10;
 		p1 = htmlpage.find("</adr_name>");
-		if (p1 != string::npos)
-			lookup_notes.append(htmlpage.substr(p, p1 - p)).append("\n");
+		if (p1 != string::npos) {
+			tempstr.assign(htmlpage.substr(p, p1 - p));
+			if (!tempstr.empty())
+				lookup_notes.append(tempstr).append("\n");
+		}
 	}
 	if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
 		p += 13;
 		p1 = htmlpage.find("</adr_street1>");
-		if (p1 != string::npos)
-			lookup_notes.append(htmlpage.substr(p, p1 - p)).append("\n");
+		if (p1 != string::npos) {
+			tempstr.assign(htmlpage.substr(p, p1 - p));
+			if (!tempstr.empty())
+				lookup_notes.append(tempstr).append("\n");
+		}
 	}
 	if ((p = htmlpage.find("<adr_city>")) != string::npos) {
 		p += 10;
 		p1 = htmlpage.find("</adr_city>");
-		if (p1 != string::npos)
-			lookup_notes.append(htmlpage.substr(p, p1 - p)).append(", ").append(lookup_state);
+		if (p1 != string::npos) {
+			tempstr.assign(htmlpage.substr(p, p1 - p));
+			if (!tempstr.empty())
+				lookup_notes.append(tempstr).append(", ").append(lookup_state);
+		}
 	}
 	if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
 		p += 9;
 		p1 = htmlpage.find("</adr_zip>");
-		if (p1 != string::npos)
-			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
+		if (p1 != string::npos) {
+			tempstr.assign(htmlpage.substr(p, p1 - p));
+			if (!tempstr.empty())
+				lookup_notes.append("  ").append(tempstr);
+		}
 	}
-//	if ((p = htmlpage.find("<adr_country>")) != string::npos) {
-//		p += 13;
-//		p1 = htmlpage.find("</adr_country>");
-//		if (p1 != string::npos)
-//			lookup_notes.append("  ").append(htmlpage.substr(p, p1 - p));
-//	}
 }
 
 bool HAMQTHget(string& htmlpage)
@@ -861,16 +874,28 @@ bool HAMQTHget(string& htmlpage)
 	string url = "";
 	bool ret;
 	if (HAMQTH_session_id.empty()) {
-		if (!HAMQTH_get_session_id()) return false;
+		if (!HAMQTH_get_session_id()) {
+			LOG_WARN("HAMQTH session id failed!");
+			lookup_notes = "Get session id failed!\n";
+			return false;
+		}
 	}
 	url.append("http://www.hamqth.com/xml.php?id=").append(HAMQTH_session_id);
 	url.append("&callsign=").append(callsign);
 	url.append("&prg=FLDIGI");
 
 	ret = fetch_http(url, htmlpage, 5.0);
-	if (htmlpage.find("<error>") != string::npos) {
+	if (htmlpage.find("<error>") != string::npos ) {
+		size_t p = htmlpage.find("<error>") + 7;
+		size_t p1 = htmlpage.find("</error>");
+		if (p1 != string::npos) {
+			string tempstr;
+			tempstr.assign(htmlpage.substr(p1, p1 - p));
+			LOG_WARN("HAMQTH error: %s", tempstr.c_str());
+		}
 		htmlpage.clear();
 		if (!HAMQTH_get_session_id()) {
+			LOG_WARN("HAMQTH session id failed!");
 			lookup_notes = "Get session id failed!\n";
 			return false;
 		}
