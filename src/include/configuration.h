@@ -1222,6 +1222,18 @@
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE",                              \
               "Waterfall font size",                                                    \
               12)                                                                       \
+        ELEM_(Fl_Color, LOGGINGtextcolor, "LOGGINGTEXTCOLOR",                           \
+              "Text color in logging controls",                                         \
+              FL_BLACK)                                                                 \
+        ELEM_(Fl_Color, LOGGINGcolor, "LOGGINGCOLOR",                                   \
+              "Background color in logging controls",                                   \
+              FL_BACKGROUND2_COLOR)                                                     \
+        ELEM_(Fl_Font, LOGGINGtextfont, "LOGGINGTEXTFONT",                              \
+              "Logging Controls font number",                                           \
+              FL_HELVETICA)                                                             \
+        ELEM_(int, LOGGINGtextsize, "LOGGINGTEXTSIZE",                                  \
+              "Logging Controls font size",                                             \
+              12)                                                                       \
         ELEM_(std::string, FreqControlFontName, "FREQCONTROLFONTNAME",                  \
               "Frequency Control font name",                                            \
               "")                                                                       \

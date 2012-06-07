@@ -58,6 +58,7 @@ class Fl_PopBrowser : public Fl_Window {
     retvals  Rvals;
     int hRow;
     int wRow;
+    Fl_Color _color;
   public: 
     Fl_PopBrowser (int x, int y, int w, int h, retvals R);
     ~Fl_PopBrowser ();
@@ -69,6 +70,7 @@ class Fl_PopBrowser : public Fl_Window {
     void clear ();
     void sort ();
     int  handle (int);
+    void color(Fl_Color c) {_color = c;};
 
     Fl_ComboBox *parent;
 
@@ -94,6 +96,7 @@ class Fl_ComboBox : public Fl_Group  {
     void *retdata;
     int  idx;
     retvals R;
+    Fl_Color _color;
 
   public:
 
@@ -114,6 +117,8 @@ class Fl_ComboBox : public Fl_Group  {
     void *data ();
     void textfont (int);
     void textsize (uchar);
+    void textcolor (Fl_Color);
+    void color (Fl_Color);
     void readonly();
     int size();
 };
