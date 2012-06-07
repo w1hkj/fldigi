@@ -704,7 +704,7 @@ void cb_SortByFreq (void) {
 
 void DupCheck()
 {
-	Fl_Color call_clr = FL_BACKGROUND2_COLOR;
+	Fl_Color call_clr = progdefaults.LOGGINGcolor;
 
 	if (progdefaults.xml_logbook)
 		if (xml_check_dup())
@@ -714,7 +714,6 @@ void DupCheck()
 				progdefaults.dup_color.B);
 
 	if (!progdefaults.xml_logbook && qsodb.duplicate(
-//	if (qsodb.duplicate(
 			inpCall->value(),
 			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
 			inpFreq->value(), progdefaults.dupband,

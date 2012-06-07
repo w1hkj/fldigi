@@ -70,6 +70,7 @@ void Fl_PopBrowser::popshow (int x, int y)
 			i = 0;
 	}
 
+	popbrwsr->color(_color);
 	show ();
 	popbrwsr->topline (i);
 
@@ -165,6 +166,7 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *L)
 	R.Inp = Output;
 	R.retval = retdata;
 	R.idx = &idx;
+	_color = FL_BACKGROUND2_COLOR;
 }
 
 Fl_ComboBox::~Fl_ComboBox()
@@ -238,6 +240,7 @@ void Fl_ComboBox::add( const char *s, void * d)
 {
 	if (Brwsr == 0) {
 		Brwsr = new Fl_PopBrowser(0, 0, width, height, R);
+		Brwsr->color(_color);
 	}
 // test for uniqueness of entry if required
 	if ((listtype & FL_COMBO_UNIQUE) == FL_COMBO_UNIQUE) {
@@ -273,11 +276,13 @@ void Fl_ComboBox::add( const char *s, void * d)
 
 void Fl_ComboBox::clear()
 {
-	if (Brwsr == 0)
+	if (Brwsr == 0) {
 		Brwsr = new Fl_PopBrowser(0, 0, width, height, R);
-	else
+		Brwsr->color(_color);
+	} else {
 		Brwsr->clear();
-	
+		Brwsr->color(_color);
+	}
 	if (listsize == 0) return;
 	for (int i = 0; i < listsize; i++) {
 		delete [] datalist[i]->s;
@@ -318,6 +323,18 @@ void Fl_ComboBox::textfont (int fnt)
 void Fl_ComboBox::textsize (uchar n)
 {
 	Output->textsize (n);
+}
+
+void Fl_ComboBox::textcolor( Fl_Color c)
+{
+	Output->textcolor (c);
+}
+
+void Fl_ComboBox::color(Fl_Color c)
+{
+	_color = c;
+	Output->color(c);
+	if (Brwsr) Brwsr->color(c);
 }
 
 int Fl_ComboBox::size()

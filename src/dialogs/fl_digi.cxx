@@ -300,7 +300,6 @@ Fl_Group			*QsoButtonFrame = (Fl_Group *)0;
 
 Fl_Group			*TopFrame2 = (Fl_Group *)0;
 cFreqControl 		*qsoFreqDisp2 = (cFreqControl *)0;
-Fl_Input2			*inpFreq2;
 Fl_Input2			*inpTimeOff2;
 Fl_Input2			*inpTimeOn2;
 Fl_Button           *btnTimeOn2;
@@ -369,7 +368,6 @@ int wf1 = 436;
 //int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
 //          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
 
-int w_inpFreq2   = 80;
 int w_inpTime2   = 40;
 int w_inpCall2   = 100;
 int w_inpName2   = 80;
@@ -2088,14 +2086,6 @@ if (bWF_only) return;
 		if (progdefaults.RSTin_default)
 			inpRstIn1->value("599");
 	}
-	inpCall1->color(FL_BACKGROUND2_COLOR);
-	inpCall2->color(FL_BACKGROUND2_COLOR);
-	inpCall3->color(FL_BACKGROUND2_COLOR);
-	inpCall4->color(FL_BACKGROUND2_COLOR);
-	inpCall1->redraw();
-	inpCall2->redraw();
-	inpCall3->redraw();
-	inpCall4->redraw();
 	updateOutSerNo();
 	if (inpSearchString)
 		inpSearchString->value ("");
@@ -2104,6 +2094,7 @@ if (bWF_only) return;
 	qso_time.clear();
 	qso_exchange.clear();
 	oktoclear = true;
+	LOGGING_colors_font();
 }
 
 void cb_ResetSerNbr()
@@ -2168,17 +2159,6 @@ if (bWF_only) return;
 		inpCall2->value(new_call.c_str());
 		inpCall3->value(new_call.c_str());
 	}
-	if (inpCall->value()[0] == 0) {
-		inpCall1->color(FL_BACKGROUND2_COLOR);
-		inpCall2->color(FL_BACKGROUND2_COLOR);
-		inpCall3->color(FL_BACKGROUND2_COLOR);
-		inpCall4->color(FL_BACKGROUND2_COLOR);
-		inpCall1->redraw();
-		inpCall2->redraw();
-		inpCall3->redraw();
-		inpCall4->redraw();
-	}
-
 	if (progStatus.timer && (Fl::event() != FL_HIDE))
 		stopMacroTimer();
 
@@ -3852,6 +3832,84 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 	}
 }
 
+void widget_color_font(Fl_Widget *widget)
+{
+	widget->labelsize(progdefaults.LOGGINGtextsize);
+	widget->labelfont(progdefaults.LOGGINGtextfont);
+	widget->labelcolor(progdefaults.LOGGINGtextcolor);
+	widget->color(progdefaults.LOGGINGcolor);
+	widget->redraw_label();
+	widget->redraw();
+}
+
+void input_color_font(Fl_Input *input)
+{
+	input->textsize(progdefaults.LOGGINGtextsize);
+	input->textfont(progdefaults.LOGGINGtextfont);
+	input->textcolor(progdefaults.LOGGINGtextcolor);
+	input->color(progdefaults.LOGGINGcolor);
+	input->redraw();
+}
+
+void counter_color_font(Fl_Counter2 * cntr)
+{
+	cntr->textsize(progdefaults.LOGGINGtextsize);
+	cntr->textfont(progdefaults.LOGGINGtextfont);
+	cntr->textcolor(progdefaults.LOGGINGtextcolor);
+//	cntr->labelcolor(progdefaults.LOGGINGcolor);
+	cntr->textbkcolor(progdefaults.LOGGINGcolor);
+	cntr->redraw();
+}
+
+void combo_color_font(Fl_ComboBox *cbo)
+{
+	cbo->color(progdefaults.LOGGINGcolor);
+	cbo->selection_color(progdefaults.LOGGINGcolor);
+	cbo->textfont(progdefaults.LOGGINGtextfont);
+	cbo->textsize(progdefaults.LOGGINGtextsize);
+	cbo->textcolor(progdefaults.LOGGINGtextcolor);
+	cbo->redraw();
+	cbo->redraw_label();
+}
+
+void LOGGING_colors_font()
+{
+// input / output fields
+	Fl_Input* in[] = {
+		inpFreq1,
+		inpCall1, inpCall2, inpCall3, inpCall4,
+		inpName1, inpName2,
+		inpTimeOn1, inpTimeOn2, inpTimeOn3,
+		inpTimeOff1, inpTimeOff2, inpTimeOff3,
+		inpRstIn1, inpRstIn2,
+		inpRstOut1, inpRstOut2,
+		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
+		inpSerNo1, inpSerNo2,
+		outSerNo1, outSerNo2,
+		inpXchgIn1, inpXchgIn2,
+		inpNotes };
+	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
+		input_color_font(in[i]);
+
+// buttons, boxes
+	Fl_Widget *wid[] = {
+		MODEstatus, Status1, Status2, StatusBar, WARNstatus };
+	for (size_t i = 0; i < sizeof(wid)/sizeof(*wid); i++)
+		widget_color_font(wid[i]);
+
+// counters
+	counter_color_font(cntCW_WPM);
+	counter_color_font(cntTxLevel);
+	counter_color_font(wf->wfRefLevel);
+	counter_color_font(wf->wfAmpSpan);
+	counter_color_font(wf->wfcarrier);
+
+// combo boxes
+	combo_color_font(qso_opMODE);
+	combo_color_font(qso_opBW);
+
+}
+
 void create_fl_digi_main_primary() {
 // bx used as a temporary spacer
 	Fl_Box *bx;
@@ -3861,12 +3919,11 @@ void create_fl_digi_main_primary() {
 	int ypos;
 	int wBLANK;
 
-	int fnt = fl_font();
-	int fsize = fl_size();
-	int freqheight = Hentry;// + 2 * pad;
+	int fnt = progdefaults.FreqControlFontnbr;
+	int freqheight = Hentry;
 	fl_font(fnt, freqheight);
-	int freqwidth = (int)fl_width("999999999") + 10;
-	fl_font(fnt, fsize);
+	int freqwidth = (int)fl_width("999999.999");
+	fl_font(progdefaults.LOGGINGtextfont, progdefaults.LOGGINGtextsize);
 	int rig_control_width = freqwidth + 2 * pad;
 
 	int Y = 0;
@@ -3973,7 +4030,7 @@ void create_fl_digi_main_primary() {
 
 			Y = Hmenu + 2 * (Hentry + pad) + pad;
 
-				int w_pmb = (freqwidth - 2 * pad) / 2;
+				int w_pmb = 4 * (freqwidth - 2 * pad) / 7;
 
 				qso_opMODE = new Fl_ComboBox(
 					pad, Y,
@@ -4899,6 +4956,8 @@ void create_fl_digi_main_primary() {
 		Fl_Button* b[] = { btn_twoD, btn_twoE, btn_twoF };
 		b[progdefaults.mbar2_pos - 1]->setonly();
 	}
+
+	LOGGING_colors_font();
 }
 
 void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);
@@ -5130,7 +5189,6 @@ void noop_controls() // create and then hide all controls not being used
 	inpSerNo1 = new Fl_Input2(defwidget); inpSerNo1->hide();
 	qsoFreqDisp1 = new cFreqControl(defwidget); qsoFreqDisp1->hide();
 
-	inpFreq2 = new Fl_Input2(defwidget); inpFreq2->hide();
 	inpTimeOff2 = new Fl_Input2(defwidget); inpTimeOff2->hide();
 	inpTimeOn2 = new Fl_Input2(defwidget); inpTimeOn2->hide();
 	btnTimeOn2 = new Fl_Button(defwidget); btnTimeOn2->hide();
