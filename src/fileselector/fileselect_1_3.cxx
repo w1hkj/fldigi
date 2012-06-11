@@ -21,177 +21,205 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#include <config.h>
-
 #include <string>
 #include <cstdlib>
 #include <libgen.h>
 
 #include "fileselect.h"
-#include "icons.h"
 #include "debug.h"
 
 #include <FL/fl_ask.H>
 #include <FL/Fl_Native_File_Chooser.H>
 
-#if FSEL_THREAD
-#    include <FL/Fl.H>
-#    include <semaphore.h>
-#    include "threads.h"
-#endif
+/**
+  \class Fl_Native_File_Chooser
+
+  This class lets an FLTK application easily and consistently access 
+  the operating system's native file chooser. Some operating systems 
+  have very complex and specific file choosers that many users want 
+  access to specifically, instead of FLTK's default file chooser(s). 
+
+  In cases where there is no native file browser, FLTK's own file browser
+  is used instead.
+
+  To use this widget correctly, use the following include in your code:
+  \code
+  #include <FL/Fl_Native_File_Chooser.H>
+  \endcode
+  Do not include the other Fl_Native_File_Choser_XXX.H files in your code;
+  those are platform specific files that will be included automatically
+  depending on your build platform.
+
+  The following example shows how to pick a single file:
+  \code
+  // Create and post the local native file chooser
+  #include <FL/Fl_Native_File_Chooser.H>
+  [..]
+  Fl_Native_File_Chooser fnfc;
+  fnfc.title("Pick a file");
+  fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+  fnfc.filter("Text\t*.txt\n"
+              "C Files\t*.{cxx,h,c}");
+  fnfc.directory("/var/tmp");           // default directory to use
+  // Show native chooser
+  switch ( fnfc.show() ) {
+    case -1: printf("ERROR: %s\n", fnfc.errmsg());    break;  // ERROR
+    case  1: printf("CANCEL\n");                      break;  // CANCEL
+    default: printf("PICKED: %s\n", fnfc.filename()); break;  // FILE CHOSEN
+  }
+  \endcode
+
+  <B>Platform Specific Caveats</B>
+
+  - Under X windows, it's best if you call Fl_File_Icon::load_system_icons()
+    at the start of main(), to enable the nicer looking file browser widgets.
+    Use the static public attributes of class Fl_File_Chooser to localize
+    the browser.
+  - Some operating systems support certain OS specific options; see 
+    Fl_Native_File_Chooser::options() for a list.
+
+  \image html Fl_Native_File_Chooser.png "The Fl_Native_File_Chooser on different platforms."
+  \image latex Fl_Native_File_Chooser.png "The Fl_Native_File_Chooser on different platforms" width=14cm
+
+  enum Type {
+    BROWSE_FILE = 0,			///< browse files (lets user choose one file)
+    BROWSE_DIRECTORY,			///< browse directories (lets user choose one directory)
+    BROWSE_MULTI_FILE,			///< browse files (lets user choose multiple files)
+    BROWSE_MULTI_DIRECTORY,		///< browse directories (lets user choose multiple directories)
+    BROWSE_SAVE_FILE,			///< browse to save a file
+    BROWSE_SAVE_DIRECTORY		///< browse to save a directory
+  };
+  enum Option {
+    NO_OPTIONS     = 0x0000,		///< no options enabled
+    SAVEAS_CONFIRM = 0x0001,		///< Show native 'Save As' overwrite confirm dialog (if supported)
+    NEW_FOLDER     = 0x0002,		///< Show 'New Folder' icon (if supported)
+    PREVIEW        = 0x0004		///< enable preview mode
+  };
+
+IMPORTANT NOTICE:
+
+The filter type must be terminated with a '\n' on OS X or the application crashes with a Bus timeout
+
+*/
 
 using namespace std;
 
+namespace FSEL {
 
-FSEL* FSEL::inst = 0;
-static std::string filename;
-#if FSEL_THREAD
-static pthread_t fsel_thread;
-sem_t fsel_sem;
-#endif
+string filename;
 
-void FSEL::create(void)
+void create(void) {};
+void destroy(void) {};
+
+string stitle, sfilter, sdef;
+
+const char* select(const char* title, const char* filter, const char* def, int* fsel)
 {
-	if (inst)
-		return;
-#if FSEL_THREAD
-	if (sem_init(&fsel_sem, 0, 0) == -1) {
-		LOG_PERROR("sem_init");
-		return;
+	Fl_Native_File_Chooser native;
+
+	stitle.clear();
+	sfilter.clear();
+	sdef.clear();
+	if (title) stitle.assign(title);
+	if (filter) sfilter.assign(filter);
+	if (def) sdef.assign(def);
+	if (!sfilter.empty() && sfilter[sfilter.length()-1] != '\n') sfilter += '\n';
+
+	if (!stitle.empty()) native.title(stitle.c_str());
+	native.type(Fl_Native_File_Chooser::BROWSE_FILE);
+	if (!sfilter.empty()) native.filter(sfilter.c_str());
+	native.options(Fl_Native_File_Chooser::PREVIEW);
+	if (!sdef.empty()) native.preset_file(sdef.c_str());
+
+	filename.clear();
+	switch ( native.show() ) {
+		case -1: LOG_INFO("ERROR: %s\n", native.errmsg()); break;	// ERROR
+		case  1: break;
+		default:
+			if ( native.filename() ) {
+				filename = native.filename();
+			} else {
+				filename = "";
+		}
+		break;
 	}
-#endif
-	inst = new FSEL;
-}
 
-void FSEL::destroy(void)
-{
-#if FSEL_THREAD
-	sem_destroy(&fsel_sem);
-#endif
-	delete inst;
-	inst = 0;
-}
-
-#ifdef __APPLE__
-FSEL::FSEL() : chooser(new MAC_chooser) {}
-#else
-FSEL::FSEL() : chooser(new Fl_Native_File_Chooser) { }
-#endif
-
-FSEL::~FSEL() { delete chooser; }
-
-
-#if FSEL_THREAD
-void* FSEL::thread_func(void* arg)
-{
-	FSEL* fsel = reinterpret_cast<FSEL*>(arg);
-	fsel->result = fsel->chooser->show();
-	sem_post(&fsel_sem);
-	return NULL;
-}
-#endif
-
-const char* FSEL::get_file(void)
-{
-	// Calling directory() is apparently not enough on Linux
-#if !defined(__WIN32__) && !defined(__APPLE__)
-	const char* preset = chooser->preset_file();
-	if (preset && *preset != '/' && chooser->directory()) {
-		filename = chooser->directory();
-		filename.append("/").append(preset);
-		chooser->preset_file(filename.c_str());
-	}
-#endif
-
-#if FSEL_THREAD
-	if (pthread_create(&fsel_thread, NULL, thread_func, this) != 0) {
-		fl_alert2("could not create file selector thread");
-		return NULL;
-	}
-	for (;;) {
-		if (sem_trywait(&fsel_sem) == 0)
-			break;
-		Fl::wait(0.1);
-	}
-#else
-	result = chooser->show();
-#endif
-
-#ifdef __APPLE__
-	chooser->hide();
-#endif
-
-	switch (result) {
-	case -1:
-		fl_alert2("%s", chooser->errmsg());
-		// fall through
-	case 1:
-		return NULL;
-	default:
-		filename = chooser->filename();
-		string::size_type i = filename.rfind('/');
-		if (i != string::npos)
-			chooser->directory(filename.substr(0, i).c_str());
-		return filename.c_str();
-	}
-}
-
-const char* FSEL::select(const char* title, const char* filter, const char* def, int* fsel)
-{
-	inst->chooser->title(title);
-	inst->chooser->filter(filter);
-	if (def) {
-		char *s = strdup(def), *dir = dirname(s);
-		if (strcmp(".", dir))
-			inst->chooser->directory(dir);
-		free(s);
-		s = strdup(def);
-		inst->chooser->preset_file(basename(s));
-		free(s);
-	}
-	inst->chooser->options(Fl_Native_File_Chooser::PREVIEW);
-	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_FILE);
-
-	const char* fn = inst->get_file();
 	if (fsel)
-		*fsel = inst->chooser->filter_value();
-	return fn;
+		*fsel = native.filter_value();
+
+	return filename.c_str();
 }
 
-const char* FSEL::saveas(const char* title, const char* filter, const char* def, int* fsel)
+const char* saveas(const char* title, const char* filter, const char* def, int* fsel)
 {
-	inst->chooser->title(title);
-	inst->chooser->filter(filter);
-	if (def) {
-		char *s = strdup(def), *dir = dirname(s);
-		if (strcmp(".", dir))
-			inst->chooser->directory(dir);
-		free(s);
-		s = strdup(def);
-		inst->chooser->preset_file(basename(s));
-		free(s);
+	Fl_Native_File_Chooser native;
+
+	stitle.clear();
+	sfilter.clear();
+	sdef.clear();
+	if (title) stitle.assign(title);
+	if (filter) sfilter.assign(filter);
+	if (def) sdef.assign(def);
+	if (!sfilter.empty() && sfilter[sfilter.length()-1] != '\n') sfilter += '\n';
+
+	if (!stitle.empty()) native.title(stitle.c_str());
+	native.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
+	if (!sfilter.empty()) native.filter(sfilter.c_str());
+	native.options(Fl_Native_File_Chooser::NEW_FOLDER || Fl_Native_File_Chooser::SAVEAS_CONFIRM);
+	if (!sdef.empty()) native.preset_file(sdef.c_str());
+
+	filename.clear();
+	switch ( native.show() ) {
+		case -1: LOG_INFO("ERROR: %s\n", native.errmsg()); break;	// ERROR
+		case  1: break;		// CANCEL
+		default: 
+			if ( native.filename() ) {
+				filename = native.filename();
+			} else {
+				filename = "";
+		}
+		break;
 	}
-	inst->chooser->options(Fl_Native_File_Chooser::SAVEAS_CONFIRM |
-			       Fl_Native_File_Chooser::NEW_FOLDER |
-			       Fl_Native_File_Chooser::PREVIEW);
-	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
 
-	const char* fn = inst->get_file();
 	if (fsel)
-		*fsel = inst->chooser->filter_value();
-	return fn;
+		*fsel = native.filter_value();
+
+	return filename.c_str();
+
 }
 
-const char* FSEL::dir_select(const char* title, const char* filter, const char* def)
+const char* dir_select(const char* title, const char* filter, const char* def)
 {
-	inst->chooser->title(title);
-	inst->chooser->filter(filter);
-	if (def)
-		inst->chooser->directory(def);
-	inst->chooser->options(Fl_Native_File_Chooser::NEW_FOLDER |
-			       Fl_Native_File_Chooser::PREVIEW);
-	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
+	Fl_Native_File_Chooser native;
 
-	return inst->get_file();
+	stitle.clear();
+	sfilter.clear();
+	sdef.clear();
+	if (title) stitle.assign(title);
+	if (filter) sfilter.assign(filter);
+	if (def) sdef.assign(def);
+	if (!sfilter.empty() && sfilter[sfilter.length()-1] != '\n') sfilter += '\n';
+
+	if (!stitle.empty()) native.title(stitle.c_str());
+	native.type(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
+	if (!sfilter.empty()) native.filter(sfilter.c_str());
+	native.options(Fl_Native_File_Chooser::NO_OPTIONS);
+	if (!sdef.empty()) native.directory(sdef.c_str());
+
+	filename.clear();
+	switch ( native.show() ) {
+		case -1: LOG_INFO("ERROR: %s\n", native.errmsg()); break;	// ERROR
+		case  1: break;		// CANCEL
+		default:
+			if ( native.filename() ) {
+				filename = native.filename();
+			} else {
+				filename = "";
+		}
+		break;
+	}
+
+	return filename.c_str();
 }
 
+} // FSEL

@@ -264,8 +264,8 @@ fldigi_SOURCES += \
 	feld/feld.cxx \
 	feld/feldfonts.cxx \
 	fft/fft.cxx \
-	fileselector/FL/Fl_Native_File_Chooser.H \
-	fileselector/Fl_Native_File_Chooser.cxx \
+	fileselector/FL/Native_File_Chooser.H \
+	fileselector/Native_File_Chooser.cxx \
 	fileselector/fileselect.cxx \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
@@ -544,12 +544,12 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
-	fileselector/FL/Fl_Native_File_Chooser_FLTK.H \
-	fileselector/FL/MAC_chooser.h \
-	fileselector/FL/Fl_Native_File_Chooser_WIN32.H \
-	fileselector/Fl_Native_File_Chooser_FLTK.cxx \
-	fileselector/MAC_chooser.cxx \
-	fileselector/Fl_Native_File_Chooser_WIN32.cxx \
+	fileselector/FL/Native_File_Chooser_FLTK.H \
+	fileselector/FL/Native_File_Chooser_MAC.H \
+	fileselector/FL/Native_File_Chooser_WIN32.H \
+	fileselector/Native_File_Chooser_FLTK.cxx \
+	fileselector/Native_File_Chooser_WIN32.cxx \
+	fileselector/Native_File_Chooser_MAC.cxx \
 	fileselector/flnfc_common.cxx \
 	fileselector/fileselect_1_1.cxx \
 	fileselector/fileselect_1_3.cxx \
@@ -622,8 +622,8 @@ flarq_SOURCES += \
 	include/table.h \
 	include/util.h \
 	combo/combo.cxx \
-	fileselector/FL/Fl_Native_File_Chooser.H \
-	fileselector/Fl_Native_File_Chooser.cxx \
+	fileselector/FL/Native_File_Chooser.H \
+	fileselector/Native_File_Chooser.cxx \
 	fileselector/fileselect.cxx \
 	logbook/table.cxx \
 	misc/ascii.cxx \

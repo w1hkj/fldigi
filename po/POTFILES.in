@@ -5,7 +5,6 @@ src/main.cxx
 src/dialogs/fl_digi.cxx
 src/dialogs/font_browser.cxx
 src/dialogs/Viewer.cxx
-src/fileselector/FL/Fl_Native_File_Chooser_FLTK.H
 src/globals/globals.cxx
 src/logbook/adif_io.cxx
 src/logbook/logbook.cxx
