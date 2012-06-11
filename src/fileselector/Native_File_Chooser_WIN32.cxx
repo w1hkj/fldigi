@@ -34,24 +34,9 @@
 #include <stdio.h>		// debugging
 #include "flnfc_common.cxx"		// strnew/strfree/strapp/chrcat
 
-#define FLTK1
-
-#ifdef FLTK1
-//
-// FLTK1
-//
-#include <FL/Fl_Native_File_Chooser.H>
+#include "FL/Native_File_Chooser.H"
 #define FNFC_CLASS Fl_Native_File_Chooser
 #define FNFC_CTOR  Fl_Native_File_Chooser
-#else
-//
-// FLTK2
-//
-#include <fltk/NativeFileChooser.h>
-#include <fltk/run.h>
-#define FNFC_CTOR  NativeFileChooser
-#define FNFC_CLASS fltk::FNFC_CTOR
-#endif
 
 #define LCURLY_CHR	'{'
 #define RCURLY_CHR	'}'

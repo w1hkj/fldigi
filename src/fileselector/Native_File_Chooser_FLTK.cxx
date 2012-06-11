@@ -26,32 +26,13 @@
 // 4567890123456789012345678901234567890123456789012345678901234567890123456789
 //
 
-#define FLTK1
-
-#ifdef FLTK1
-//
-// FLTK1
-//
-#include <FL/Fl_Native_File_Chooser.H>
+#include "FL/Native_File_Chooser.H"
 #define FNFC_CLASS Fl_Native_File_Chooser
 #define FNFC_CTOR  Fl_Native_File_Chooser
 #define FLTK_CHOOSER_SINGLE    Fl_File_Chooser::SINGLE
 #define FLTK_CHOOSER_DIRECTORY Fl_File_Chooser::DIRECTORY
 #define FLTK_CHOOSER_MULTI     Fl_File_Chooser::MULTI
 #define FLTK_CHOOSER_CREATE    Fl_File_Chooser::CREATE
-#else
-//
-// FLTK2
-//
-#include <fltk/NativeFileChooser.h>
-#include <fltk/run.h>
-#define FNFC_CTOR  NativeFileChooser
-#define FNFC_CLASS fltk::FNFC_CTOR
-#define FLTK_CHOOSER_SINGLE    fltk::FileChooser::SINGLE
-#define FLTK_CHOOSER_DIRECTORY fltk::FileChooser::DIRECTORY
-#define FLTK_CHOOSER_MULTI     fltk::FileChooser::MULTI
-#define FLTK_CHOOSER_CREATE    fltk::FileChooser::CREATE
-#endif
 
 #include "flnfc_common.cxx"
 #include <sys/stat.h>

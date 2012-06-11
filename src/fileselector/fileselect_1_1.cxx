@@ -21,8 +21,6 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#include <config.h>
-
 #include <string>
 #include <cstdlib>
 #include <libgen.h>
@@ -32,7 +30,7 @@
 #include "debug.h"
 
 #include <FL/fl_ask.H>
-#include <FL/Fl_Native_File_Chooser.H>
+#include "FL/Native_File_Chooser.H"
 
 #if FSEL_THREAD
 #    include <FL/Fl.H>
@@ -45,47 +43,28 @@ using namespace std;
 
 FSEL* FSEL::inst = 0;
 static std::string filename;
-#if FSEL_THREAD
-static pthread_t fsel_thread;
-sem_t fsel_sem;
-#endif
 
 void FSEL::create(void)
 {
 	if (inst)
 		return;
-#if FSEL_THREAD
-	if (sem_init(&fsel_sem, 0, 0) == -1) {
-		LOG_PERROR("sem_init");
-		return;
-	}
-#endif
 	inst = new FSEL;
 }
 
 void FSEL::destroy(void)
 {
-#if FSEL_THREAD
-	sem_destroy(&fsel_sem);
-#endif
 	delete inst;
 	inst = 0;
 }
 
-
+#ifdef __APPLE__
+FSEL::FSEL()
+	: chooser(new MAC_chooser) { }
+FSEL::~FSEL() { delete chooser; }
+#else
 FSEL::FSEL()
 	: chooser(new Fl_Native_File_Chooser) { }
 FSEL::~FSEL() { delete chooser; }
-
-
-#if FSEL_THREAD
-void* FSEL::thread_func(void* arg)
-{
-	FSEL* fsel = reinterpret_cast<FSEL*>(arg);
-	fsel->result = fsel->chooser->show();
-	sem_post(&fsel_sem);
-	return NULL;
-}
 #endif
 
 const char* FSEL::get_file(void)
@@ -100,19 +79,7 @@ const char* FSEL::get_file(void)
 	}
 #endif
 
-#if FSEL_THREAD
-	if (pthread_create(&fsel_thread, NULL, thread_func, this) != 0) {
-		fl_alert2("could not create file selector thread");
-		return NULL;
-	}
-	for (;;) {
-		if (sem_trywait(&fsel_sem) == 0)
-			break;
-		Fl::wait(0.1);
-	}
-#else
 	result = chooser->show();
-#endif
 
 	switch (result) {
 	case -1:
@@ -142,9 +109,13 @@ const char* FSEL::select(const char* title, const char* filter, const char* def,
 		inst->chooser->preset_file(basename(s));
 		free(s);
 	}
+#ifdef __APPLE__
+	inst->chooser->options(MAC_chooser::PREVIEW);
+	inst->chooser->type(MAC_chooser::BROWSE_FILE);
+#else
 	inst->chooser->options(Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_FILE);
-
+#endif
 	const char* fn = inst->get_file();
 	if (fsel)
 		*fsel = inst->chooser->filter_value();
@@ -164,11 +135,17 @@ const char* FSEL::saveas(const char* title, const char* filter, const char* def,
 		inst->chooser->preset_file(basename(s));
 		free(s);
 	}
+#ifdef __APPLE__
+	inst->chooser->options( MAC_chooser::SAVEAS_CONFIRM |
+							MAC_chooser::NEW_FOLDER |
+							MAC_chooser::PREVIEW);
+	inst->chooser->type(MAC_chooser::BROWSE_SAVE_FILE);
+#else
 	inst->chooser->options(Fl_Native_File_Chooser::SAVEAS_CONFIRM |
 			       Fl_Native_File_Chooser::NEW_FOLDER |
 			       Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
-
+#endif
 	const char* fn = inst->get_file();
 	if (fsel)
 		*fsel = inst->chooser->filter_value();
@@ -181,9 +158,14 @@ const char* FSEL::dir_select(const char* title, const char* filter, const char* 
 	inst->chooser->filter(filter);
 	if (def)
 		inst->chooser->directory(def);
+#ifdef __APPLE__
+	inst->chooser->options(	MAC_chooser::NEW_FOLDER |
+							MAC_chooser::PREVIEW);
+	inst->chooser->type(MAC_chooser::BROWSE_DIRECTORY);
+#else
 	inst->chooser->options(Fl_Native_File_Chooser::NEW_FOLDER |
 			       Fl_Native_File_Chooser::PREVIEW);
 	inst->chooser->type(Fl_Native_File_Chooser::BROWSE_DIRECTORY);
-
+#endif
 	return inst->get_file();
 }
