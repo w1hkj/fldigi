@@ -1,17 +1,48 @@
 
 
+=Version 3.21.44=
+
+2012-06-13  David Freese  <w1hkj@w1hkj.com>
+
+	496a10b: Polish translation
+	25fcf8d: file-chooser
+	990492b: Main Panel Controls Colors-Fonts
+	bdacdd8: HamQTH
+	cdc22d6: WEFAX/NAVTEX config
+	c3162ed: Log Entries
+	cb392e4: Fork open file descriptors
+
+2012-05-31  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	a28eb60: WEFAX update
+
+2012-05-31  David Freese  <w1hkj@w1hkj.com>
+
+	81a9f43: Logbook Update
+	ed638a5: Navtex
+
+
 =Version 3.21.43=
+
 
 2012-05-30  Kamal Mostafa  <kamal@whence.com>
 
 	39998f7: Fix TX text clear after macro
 
-2012-05-26  David Freese  <w1hkj@w1hkj.com>
+2012-05-28  David Freese  <w1hkj@w1hkj.com>
 
+	c7f11f4: CW decoder update
 	0c113b6: Rigio thread
+
+2012-05-10  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	967cc68: sfft speedup
 
 
 =Version 3.21.42=
+
+
+2012-04-08  David Freese  <w1hkj@w1hkj.com>
 
 	1089250: Auto file directory
 	8bdd45e: Cmd line help
