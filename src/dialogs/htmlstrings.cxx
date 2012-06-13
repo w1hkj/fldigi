@@ -50,8 +50,9 @@ There is NO WARRANTY, to the extent permitted by law.\n\
 &nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\n\
 &nbsp; &nbsp; &nbsp;Rem\355 Chateauneu, F4ECW<br>\n\
 <H4>Localization:</H4>\n\
-&nbsp; &nbsp; &nbsp;French: St\351phane Fillod, F8CFE<br>\n\
-&nbsp; &nbsp; &nbsp;Italian: Pierfrancesco Caci, IK5PVX<br>\n\
+&nbsp; &nbsp; &nbsp;French:  St\351phane Fillod,     F8CFE<br>\n\
+&nbsp; &nbsp; &nbsp;Italian: Pierfrancesco Caci,  IK5PVX<br>\n\
+&nbsp; &nbsp; &nbsp;Polish:  Roman Bagiński,      SP4JEU<br>\n\
 &nbsp; &nbsp; &nbsp;Spanish: Pavel Milanes Costa, CO7WT<br>\n\
 <H4>Beginners' Guide:</H4>\n\
 &nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\n\
