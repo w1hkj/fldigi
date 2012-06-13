@@ -50,6 +50,7 @@ struct lang_def_t ui_langs[] = {
 	{ "fr", "fr_FR", "Fran\347ais", 38 },
 	{ "it", "it_IT", "Italiano",    100 },
 	{ "es", "es_ES", "Espa\361ol",  97 },
+	{ "pl", "pl_PL", "Polish", 97},
 	{ NULL, NULL, NULL, 0 }
 };
 
