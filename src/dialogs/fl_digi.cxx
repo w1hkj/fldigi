@@ -3928,6 +3928,10 @@ void create_fl_digi_main_primary() {
 
 	int Y = 0;
 
+#ifdef __APPLE__
+	fl_mac_set_about(cb_mnuAboutURL, 0);
+#endif
+
 	x_qsoframe += rig_control_width;
 
 	IMAGE_WIDTH = 4000;
