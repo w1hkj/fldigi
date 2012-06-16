@@ -561,27 +561,32 @@ static void pRST(std::string &s, size_t &i, size_t endbracket)
 
 static void pMYCALL(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 8, inpMyCallsign->value() );
+	s.replace( i, 8, progdefaults.myCall.c_str() );
 }
 
 static void pMYLOC(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 7, inpMyLocator->value() );
+	s.replace( i, 7, progdefaults.myLocator.c_str() );
 }
 
 static void pMYNAME(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 8, inpMyName->value() );
+	s.replace( i, 8, progdefaults.myName.c_str() );
 }
 
 static void pMYQTH(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 7, inpMyQth->value() );
+	s.replace( i, 7, progdefaults.myQth.c_str() );
 }
 
 static void pMYRST(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpRstIn->value() );
+}
+
+static void pANTENNA(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 9, progdefaults.myAntenna.c_str() );
 }
 
 static void pLDT(std::string &s, size_t &i, size_t endbracket)
@@ -1913,6 +1918,7 @@ static const MTAGS mtags[] = {
 {"<MYNAME>",	pMYNAME},
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
+{"<ANTENNA>",	pANTENNA},
 {"<QSOTIME>",	pQSOTIME},
 {"<INFO1>",		pINFO1},
 {"<INFO2>",		pINFO2},
