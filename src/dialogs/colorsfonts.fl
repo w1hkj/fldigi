@@ -298,7 +298,7 @@ font_browser->show();}
           }
         }
         Fl_Group {} {
-          label {Logging Panel Controls} open selected
+          label {Logging Panel Controls} open
           xywh {3 123 370 62} box ENGRAVED_FRAME align 21
         } {
           Fl_Output LOGGINGdisplay {
@@ -339,7 +339,7 @@ font_browser->show();}
           Fl_Button btnLOGGINGdefault_colors_font {
             label Default
             callback {progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
-progdefaults.LOGGINGtextfont = 0;
+progdefaults.LOGGINGtextfont = (Fl_Font)0;
 progdefaults.LOGGINGtextsize = 12;
 progdefaults.LOGGINGtextcolor = FL_BLACK;
 
@@ -351,7 +351,7 @@ LOGGINGdisplay->redraw();
     
 LOGGING_colors_font();
     
-progdefaults.changed = true;}
+progdefaults.changed = true;} selected
             xywh {283 147 80 25}
           }
         }

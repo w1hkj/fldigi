@@ -292,7 +292,7 @@ Fl_Button *btnLOGGINGdefault_colors_font=(Fl_Button *)0;
 
 static void cb_btnLOGGINGdefault_colors_font(Fl_Button*, void*) {
   progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
-progdefaults.LOGGINGtextfont = 0;
+progdefaults.LOGGINGtextfont = (Fl_Font)0;
 progdefaults.LOGGINGtextsize = 12;
 progdefaults.LOGGINGtextcolor = FL_BLACK;
 

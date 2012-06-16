@@ -54,11 +54,7 @@ FNFC_CLASS::FNFC_CTOR(int val) {
     _prevvalue   = NULL;
     _directory   = NULL;
     _errmsg      = NULL;
-#ifdef FLTK1
     file_chooser = new Fl_File_Chooser(NULL, NULL, 0, NULL);
-#else
-    file_chooser = new fltk::FileChooser(NULL, NULL, 0, NULL);
-#endif
     type(val);		// do this after file_chooser created
     _nfilters    = 0;
 }
@@ -159,17 +155,10 @@ int FNFC_CLASS::show() {
     // SHOW
     file_chooser->show();
 
-#ifdef FLTK1
     // FLTK1: BLOCK WHILE BROWSER SHOWN
     while ( file_chooser->shown() ) {
         Fl::wait();
     }
-#else
-    // FLTK2: BLOCK WHILE BROWSER SHOWN
-    while ( file_chooser->visible() ) {
-        fltk::wait();
-    }
-#endif
 
     if ( file_chooser->value() && file_chooser->value()[0] ) {
         _prevvalue = strfree(_prevvalue);

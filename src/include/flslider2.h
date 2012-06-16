@@ -23,6 +23,78 @@
 #ifndef FL_SLIDER2_
 #define FL_SLIDER2_
 
+#include "config.h"
+
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
+#include <FL/Fl_Slider.H>
+#include <FL/Fl_Value_Slider.H>
+#include <FL/Fl_Counter.H>
+#include <FL/Fl_Value_Input.H>
+#include <FL/Fl_Spinner.H>
+
+class Fl_Slider2 : public Fl_Slider
+{
+public:
+	Fl_Slider2(int x, int y, int w, int h, const char* l = 0)
+		: Fl_Slider(x, y, w, h, l) { }
+	int handle(int event);
+};
+
+class Fl_Value_Slider2 : public Fl_Value_Slider
+{
+public:
+	Fl_Value_Slider2(int x, int y, int w, int h, const char* l = 0)
+		: Fl_Value_Slider(x, y, w, h, l) { }
+	int handle(int event);
+};
+
+class Fl_Counter2 : public Fl_Counter
+{
+	Fl_Font textfont_;
+	int textsize_;
+	Fl_Color textcolor_;
+	Fl_Color bkcolor_;
+public:
+	Fl_Counter2(int x, int y, int w, int h, const char* l = 0)
+		: Fl_Counter(x, y, w, h, l) { }
+	int handle(int event);
+  /** Gets the text font */
+  Fl_Font textfont() const {return textfont_;}
+  /** Sets the text font to \p s */
+  void textfont(Fl_Font s) {textfont_ = s;}
+
+  /** Gets the font size */
+  int  textsize() const {return textsize_;}
+  /** Sets the font size to \p s */
+  void textsize(int s) {textsize_ = s;}
+
+  /** Gets the font color */
+  Fl_Color textcolor() const {return textcolor_;}
+  /** Sets the font color to \p s */
+  void textcolor(Fl_Color s) {textcolor_ = s;}
+  
+  void textbkcolor(Fl_Color c) {bkcolor_ = c;}
+};
+
+class Fl_Value_Input2 : public Fl_Value_Input
+{
+public:
+	Fl_Value_Input2(int x, int y, int w, int h, const char* l = 0)
+		: Fl_Value_Input(x, y, w, h, l) { }
+	int handle(int event);
+};
+
+class Fl_Spinner2 : public Fl_Spinner
+{
+public:
+	Fl_Spinner2(int x, int y, int w, int h, const char* l = 0)
+		: Fl_Spinner(x, y, w, h, l) { }
+	int handle(int event);
+};
+
+
+#else
+// support for 1.3.0 style slider
 #include <FL/Fl_Slider.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Value_Input.H>
@@ -157,5 +229,7 @@ public:
 		: My_Counter(x, y, w, h, l) { }
 	int handle(int event);
 };
+
+#endif // fltk-1.3.0 style slider
 
 #endif // FL_SLIDER2_
