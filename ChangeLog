@@ -1,10 +1,17 @@
 
 
+=Version 3.21.45=
+
+2012-06-16  David Freese  <w1hkj@w1hkj.com>
+
+	817f299: ANTENNA macro tag
+	a3f236a: fltk-1.1.10 compatibility
+	91ac4a9: APPLE about
+
+
 =Version 3.21.44=
 
-2012-06-13  David Freese  <w1hkj@w1hkj.com>
-
-	496a10b: Polish translation
+	39cad15: Polish translation
 	25fcf8d: file-chooser
 	990492b: Main Panel Controls Colors-Fonts
 	bdacdd8: HamQTH
