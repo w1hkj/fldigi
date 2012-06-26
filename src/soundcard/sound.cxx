@@ -186,16 +186,21 @@ int SoundBase::Playback(bool val)
 	int format;
 	get_file_params("playback.wav", &fname, &format);
 	if (!fname)
-		return 0;
+		return -1;
 
 	SF_INFO info = { 0, 0, 0, 0, 0, 0 };
 	if ((ifPlayback = sf_open(fname, SFM_READ, &info)) == NULL) {
 		LOG_ERROR("Could not read %s:%s", fname, sf_strerror(NULL) );
-		return 0;
+		return -2;
 	}
 
+ 	if (info.channels != 1) {
+ 		sf_close(ifPlayback);
+ 		return -3;
+ 	}
+
 	playback = true;
-	return 1;
+	return 0;
 }
 
 int SoundBase::Generate(bool val)

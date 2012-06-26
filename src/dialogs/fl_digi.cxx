@@ -1653,7 +1653,23 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		return;
 	}
 	playval = m->value();
-	if(!scard->Playback(playval)) {
+
+	int err = scard->Playback(playval);
+
+	if(err < 0) {
+		switch (err) {
+			case -1:
+				fl_alert2(_("No file name given"));
+				break;
+			case -2:
+				fl_alert2(_("Unsupported format"));
+				break;
+			case -3:
+				fl_alert2(_("channels != 1"));
+				break;
+			default:
+				fl_alert2(_("unknown wave file error"));
+		}
 		m->clear();
 		playval = false;
 	}
@@ -4528,7 +4544,7 @@ void create_fl_digi_main_primary() {
 			const char *label6a = _("# R");
 			const char *label7a = _("Ex");
 			const char *xData = "00000";
-			const char *xCall = "WW8WWW/WWWW";
+			const char *xCall = "WW8WWW";//"WW8WWW/WWWW";
 			int   wData = static_cast<int>(fl_width(xData));
 			int   wCall = static_cast<int>(fl_width(xCall));
 
