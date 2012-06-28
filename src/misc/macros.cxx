@@ -185,14 +185,32 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	int number;
-	std::string sTime = s.substr(i+5, endbracket - i - 5);
-	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
+	std::string snumber = s.substr(i+5, endbracket - i - 5);
+
+	if (snumber.length() > 0) {
+
+// first value = WPM
+		sscanf(snumber.c_str(), "%d", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
 		sldrCWxmtWPM->value(number);
+printf("wpm %d\n", number);
+
+// second value = Farnsworth WPM
+		size_t pos;
+		if ((pos = snumber.find(":")) != std::string::npos) {
+			snumber.erase(0, pos+1);
+			if (snumber.length())
+				sscanf(snumber.c_str(), "%d", &number);
+			if (number < 15) number = 15;
+			if (number > 200) number = 200;
+			progdefaults.CWfarnsworth = number;
+			sldrCWfarnsworth->value(number);
+printf("fwpm %d\n", number);
+		}
 	}
+
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -256,17 +274,40 @@ static void setwpm(int d)
 	cntCW_WPM->value(d);
 }
 
+static void setfwpm(int d)
+{
+	sldrCWfarnsworth->value(d);
+	progdefaults.CWusefarnsworth = true;
+	btnCWusefarnsworth->value(1);
+}
+
 static void doWPM(std::string s)
 {
 	int number;
-	std::string sTime = s.substr(6);
-	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
+	std::string snumber = s.substr(6);
+
+	if (snumber.length() > 0) {
+
+// first value = WPM
+		sscanf(snumber.c_str(), "%d", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
 		REQ(setwpm, number);
+
+// second value = Farnsworth WPM
+		size_t pos;
+		if ((pos = snumber.find(":")) != std::string::npos) {
+			snumber.erase(0, pos+1);
+			if (snumber.length())
+				sscanf(snumber.c_str(), "%d", &number);
+			if (number < 15) number = 15;
+			if (number > 200) number = 200;
+			progdefaults.CWfarnsworth = number;
+			REQ(setfwpm, number);
+		}
 	}
+
 }
 
 static void pQueWPM(std::string &s, size_t &i, size_t endbracket)

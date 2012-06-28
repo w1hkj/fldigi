@@ -1403,7 +1403,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
           xywh {-4 25 595 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW
+            label CW open
             xywh {0 50 540 320}
           } {
             Fl_Tabs tabsCW {open
@@ -1498,9 +1498,6 @@ progdefaults.changed = true;}
                     label {TX WPM}
                     callback {progdefaults.CWspeed = (int)o->value();
 cntCW_WPM->value(progdefaults.CWspeed);
-sldrCWfarnsworth->maximum(progdefaults.CWspeed);
-if (sldrCWfarnsworth->value() > progdefaults.CWspeed)
-sldrCWfarnsworth->value(progdefaults.CWspeed);
 progdefaults.changed = true;
 sync_cw_parameters();}
                     tooltip {My transmit CW WPM} xywh {20 240 440 20} type Horizontal align 8 minimum 5 maximum 100 step 1 value 20 textsize 14

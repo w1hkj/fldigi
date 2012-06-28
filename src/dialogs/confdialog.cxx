@@ -1166,9 +1166,6 @@ Fl_Value_Slider2 *sldrCWxmtWPM=(Fl_Value_Slider2 *)0;
 static void cb_sldrCWxmtWPM(Fl_Value_Slider2* o, void*) {
   progdefaults.CWspeed = (int)o->value();
 cntCW_WPM->value(progdefaults.CWspeed);
-sldrCWfarnsworth->maximum(progdefaults.CWspeed);
-if (sldrCWfarnsworth->value() > progdefaults.CWspeed)
-sldrCWfarnsworth->value(progdefaults.CWspeed);
 progdefaults.changed = true;
 sync_cw_parameters();
 }

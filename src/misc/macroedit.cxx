@@ -167,7 +167,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<POST:+/-nn.n>\tCW QSK post-timing"));
 	w->add(_("<PRE:nn.n>\tCW QSK pre-timing"));
 	w->add(_("<RISE:nn.n>\tCW rise time"));
-	w->add(_("<WPM:NN>\tCW WPM"));
+	w->add(_("<WPM:NN:FF>\tCW WPM:Farnsworth"));
 
 	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
