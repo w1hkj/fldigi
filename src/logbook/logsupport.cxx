@@ -340,6 +340,7 @@ int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
 		}
 	} else // not a normal call, do a simple string comparison
 		cmp = strcmp(s1, s2);
+
 	if (cmp != 0)
 		return cmp;
 
@@ -350,7 +351,7 @@ int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
 // compare by time
 	int t1 = atoi(r1->getField(TIME_ON));
 	int t2 = atoi(r2->getField(TIME_ON));
-	if (abs(t1 - t2) > 2) {
+	if (abs(t1 - t2) > 200) { // changed from 2 to accommodate seconds
 		if (t1 < t2)
 			return -1;
 		if (t1 > t2)
@@ -370,6 +371,10 @@ int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
 
 // compare by band
 	cmp = strcasecmp( r1->getField(BAND), r2->getField(BAND));
+
+if (cmp == 0) printf("r1: %s, %s, %s, %s, %s\nr2: %s, %s, %s, %s, %s\n",
+r1->getField(CALL), r1->getField(QSO_DATE), r1->getField(TIME_ON), r1->getField(MODE), r1->getField(BAND),
+r2->getField(CALL), r2->getField(QSO_DATE), r2->getField(TIME_ON), r2->getField(MODE), r2->getField(BAND));
 
 	return cmp;
 }
@@ -417,12 +422,15 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 					m++;
 				}
 			} else {
-				if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) < 0) {
+				if (db->nbrRecs() == 0) {
 					db->qsoNewRec(mrgdb->getRec(m));
 					merged->qsoNewRec(mrgdb->getRec(m));
+				} else if (comparerecs(db->getRec(db->nbrRecs()-1), mrgdb->getRec(m)) != 0) {
+						db->qsoNewRec(mrgdb->getRec(m));
+						merged->qsoNewRec(mrgdb->getRec(m));
 				} else {
 					reject->qsoNewRec(mrgdb->getRec(m));
-				}
+}
 				m++;
 			}
 		} else if (n == N) {
