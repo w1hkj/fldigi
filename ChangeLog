@@ -1,6 +1,18 @@
 
 
+=Version 3.21.46=
+
+2012-06-28  David Freese  <w1hkj@w1hkj.com>
+
+	ae08433: Merge log records
+
+2012-06-26  Leonardo  <leonardo.masoni@gmail.com>
+
+	0ddb867: Wavefile playback
+
+
 =Version 3.21.45=
+
 
 2012-06-16  David Freese  <w1hkj@w1hkj.com>
 
