@@ -458,6 +458,7 @@ fldigi_SOURCES += \
 	misc/newinstall.cxx \
 	misc/arq_io.cxx \
 	misc/pixmaps.cxx \
+	misc/pixmaps_tango.cxx \
 	misc/re.cxx \
 	misc/socket.cxx \
 	misc/stacktrace.cxx \
@@ -642,6 +643,7 @@ flarq_SOURCES += \
 	widgets/flslider2.cxx \
 	misc/icons.cxx \
 	misc/pixmaps.cxx \
+	misc/pixmaps_tango.cxx \
 	misc/re.cxx \
 	misc/socket.cxx \
 	misc/util.cxx \
