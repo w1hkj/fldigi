@@ -732,7 +732,8 @@ void rtty::send_char(int c)
 			c = figures[c];
 		if (c)
 			put_echo_char(progdefaults.rx_lowercase ? tolower(c) : c);
-	}
+	} else if (c)
+		put_echo_char(c);
 }
 
 void rtty::send_idle()
