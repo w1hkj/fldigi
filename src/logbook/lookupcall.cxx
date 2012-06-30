@@ -751,20 +751,22 @@ bool HAMQTH_get_session_id()
 	if (!fetch_http(url, retstr, 5.0)) {
 		return false;
 	}
-	if ((p1 = retstr.find("<error>")) != string::npos) {
+	p1 = retstr.find("<error>");
+	if (p1 != string::npos) {
 		p2 = retstr.find("</error>");
-		lookup_notes = retstr.substr(p1 + 7, p2 - p1 - 7);
+		if (p2 != string::npos) {
+			p1 += 7;
+			lookup_notes = retstr.substr(p1, p2 - p1);
+		}
 		return false;
 	}
-	if ((p1 = retstr.find("<session_id>")) == string::npos) {
+	p1 = retstr.find("<session_id>");
+	if (p1 == string::npos) {
 		lookup_notes = "HamQTH not available";
 		return false;
 	}
 	p2 = retstr.find("</session_id>");
 	HAMQTH_session_id = retstr.substr(p1 + 12, p2 - p1 - 12);
-//#ifdef HAMQTH_DEBUG
-//	printf("session id = %s\n", HAMQTH_session_id.c_str());
-//#endif
 	return true;
 }
 
@@ -885,12 +887,13 @@ bool HAMQTHget(string& htmlpage)
 	url.append("&prg=FLDIGI");
 
 	ret = fetch_http(url, htmlpage, 5.0);
-	if (htmlpage.find("<error>") != string::npos ) {
-		size_t p = htmlpage.find("<error>") + 7;
-		size_t p1 = htmlpage.find("</error>");
+	size_t p = htmlpage.find("<error>");
+	if (p != string::npos ) {
+		size_t p1 = htmlpage.find("</error>", p);
 		if (p1 != string::npos) {
 			string tempstr;
-			tempstr.assign(htmlpage.substr(p1, p1 - p));
+			p += 7;
+			tempstr.assign(htmlpage.substr(p, p1 - p));
 			LOG_WARN("HAMQTH error: %s", tempstr.c_str());
 		}
 		htmlpage.clear();
