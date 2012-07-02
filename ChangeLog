@@ -1,15 +1,36 @@
-2012-05-24  David Freese  <w1hkj@w1hkj.com>
+2012-06-30  David Freese  <w1hkj@w1hkj.com>
 
-	c3738ce: WEFAX mingw32 fixes
-	8bdd53f: Combined CW decoder
+	55c0372: HAMQTH Session ID
 
-2012-05-17  david freese (none)  <dave@dave-laptop>
+2012-06-29  Kamal Mostafa  <kamal@whence.com>
 
-	69a7757: CW decoder update
+	24b8bcc: Tango icon pixmaps update to version 0.8.90 (public domain)
+
+2012-06-28  David Freese  <w1hkj@w1hkj.com>
+
+	47b5bf6: Merge log records
+
+2012-06-26  Leonardo  <leonardo.masoni@gmail.com>
+
+	ff063eb: Wavefile playback
+
+2012-06-14  David Freese  <w1hkj@w1hkj.com>
+
+	0dbf248: Polish translation
+	91cdbe4: file-chooser
+	b7200d6: HamQTH
+	909f3fa: Main Panel Controls Colors-Fonts
+	6280de9: WEFAX/NAVTEX config
+	9b3dabd: Fork open file descriptors
+	e9587fe: Logbook Update
+	686e8b5: Wefax/Navtex
+	f47119c: CW decoder update
+	ff25bae: Rigio thread
+	52f27c8: WEFAX mingw32 fixes
 
 2012-05-10  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
-	2349e04: sfft speedup
+	a3435a7: sfft speedup
 
 2012-05-08  John Phelps  <kl4yfd@gmail.com>
 
