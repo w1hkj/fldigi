@@ -274,8 +274,6 @@ void FTextRX::add(unsigned int c, int attr)
 	switch (c) {
 	case '\b':
 		// we don't call kf_backspace because it kills selected text
-		tbuf->remove(tbuf->length() - 1, tbuf->length());
-		sbuf->remove(sbuf->length() - 1, sbuf->length());
 		if (s_text.length()) {
 			if (tbuf->byte_at(tbuf->length() - 1 ) & 0x80) { //UTF-8 character
 				s_text.erase(s_text.end() - 2);
