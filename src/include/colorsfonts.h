@@ -21,11 +21,6 @@ extern Fl_Button *btn_freq_control_font;
 extern Fl_Button *btnBackgroundColor;
 extern Fl_Button *btnForegroundColor;
 extern Fl_Button *btnFD_SystemColor;
-#include <FL/Fl_Output.H>
-extern Fl_Output *LOGGINGdisplay;
-extern Fl_Button *btnLOGGING_color;
-extern Fl_Button *btn_LOGGING_font;
-extern Fl_Button *btnLOGGINGdefault_colors_font;
 #include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnUseGroupColors;
 extern Fl_Button *btnGroup1;
@@ -77,5 +72,14 @@ extern Fl_Button *btnNormalSignal;
 extern Fl_Box *normalcolor;
 extern Fl_Button *btnOverSignal;
 extern Fl_Box *overcolor;
+#include <FL/Fl_Output.H>
+extern Fl_Output *LOGGINGdisplay;
+extern Fl_Button *btnLOGGING_color;
+extern Fl_Button *btn_LOGGING_font;
+extern Fl_Button *btnLOGGINGdefault_colors_font;
+extern Fl_Output *LOGBOOKdisplay;
+extern Fl_Button *btnLOGBOOK_color;
+extern Fl_Button *btn_LOGBOOK_font;
+extern Fl_Button *btnLOGBOOKdefault_colors_font;
 Fl_Double_Window* make_colorsfonts();
 #endif

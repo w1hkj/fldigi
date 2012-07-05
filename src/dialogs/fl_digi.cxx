@@ -3887,6 +3887,7 @@ void combo_color_font(Fl_ComboBox *cbo)
 
 void LOGGING_colors_font()
 {
+//	int wh = fl_height(progdefaults.LOGGINGtextfont, progdefaults.LOGGINGtextsize) + 4;
 // input / output fields
 	Fl_Input* in[] = {
 		inpFreq1,
@@ -3899,11 +3900,14 @@ void LOGGING_colors_font()
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
-		inpXchgIn1, inpXchgIn2,
-		inpNotes };
-	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
+		inpXchgIn1, inpXchgIn2 };
+	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++) {
 		input_color_font(in[i]);
-
+//		in[i]->size(in[i]->w(), wh);
+	}
+	input_color_font(inpNotes);
+//	inpNotes->size(inpNotes->w(), wh*2);
+	
 // buttons, boxes
 	Fl_Widget *wid[] = {
 		MODEstatus, Status1, Status2, StatusBar, WARNstatus };
@@ -3920,6 +3924,162 @@ void LOGGING_colors_font()
 // combo boxes
 	combo_color_font(qso_opMODE);
 	combo_color_font(qso_opBW);
+
+	fl_digi_main->redraw();
+
+}
+
+inline void inp_font_pos(Fl_Input2* inp, int x, int y, int w, int h)
+{
+	inp->textsize(progdefaults.LOGBOOKtextsize);
+	inp->textfont(progdefaults.LOGBOOKtextfont);
+	inp->textcolor(progdefaults.LOGBOOKtextcolor);
+	inp->color(progdefaults.LOGBOOKcolor);
+	int ls = progdefaults.LOGBOOKtextsize;
+	inp->labelsize(ls < 14 ? ls : 14);
+	inp->redraw_label();
+	inp->resize(x, y, w, h);
+}
+
+inline void date_font_pos(Fl_DateInput* inp, int x, int y, int w, int h)
+{
+	inp->textsize(progdefaults.LOGBOOKtextsize);
+	inp->textfont(progdefaults.LOGBOOKtextfont);
+	inp->textcolor(progdefaults.LOGBOOKtextcolor);
+	inp->color(progdefaults.LOGBOOKcolor);
+	int ls = progdefaults.LOGBOOKtextsize;
+	inp->labelsize(ls < 14 ? ls : 14);
+	inp->redraw_label();
+	inp->resize(x, y, w, h);
+}
+
+void LOGBOOK_colors_font()
+{
+	if (!dlgLogbook) return;
+
+// input / output / date / text fields
+	fl_font(progdefaults.LOGBOOKtextfont, progdefaults.LOGBOOKtextsize);
+	int wh = fl_height() + 4;// + 8;
+	int width_date = fl_width("888888888") + wh;
+	int width_time = fl_width("23:59:599");
+//	int width_call = fl_width("WW/WW8WWW/WW.");
+	int width_freq = fl_width("99.9999999");
+	int width_rst  = fl_width("5999");
+	int width_pwr  = fl_width("0000");
+	int width_loc  = fl_width("XX88XXX");
+	int width_mode = fl_width("CONTESTIA");
+
+	int dlg_width =	inpDate_log->x() + 
+					width_date + 2 + 
+					width_time + 2 +
+					width_freq + 2 + 
+					width_mode + 2 +
+					width_pwr + 2 +
+					width_rst + 2 +
+					width_date + 2;
+
+	int newheight = 24 + 4*(wh + 20) + 3*wh + 4 + bNewSave->h() + 4 + wBrowser->h() + 2;
+
+	dlgLogbook->resize(dlgLogbook->x(), dlgLogbook->y(), dlg_width, newheight);//dlgLogbook->h());
+
+// row1
+	int ypos = 24;
+	int xpos = inpDate_log->x();
+
+	date_font_pos(inpDate_log, xpos, ypos, width_date, wh); xpos += width_date + 2;
+	inp_font_pos(inpTimeOn_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
+	inp_font_pos(inpCall_log, xpos, ypos, width_freq, wh);
+
+	date_font_pos(inpQSLrcvddate_log, 
+					dlg_width - 2 - width_date, ypos, width_date, wh);
+	inp_font_pos(inpRstR_log, 
+					inpQSLrcvddate_log->x() - 2 - width_rst, ypos, 
+					width_rst, wh);
+	inp_font_pos(inpName_log, 
+					inpCall_log->x() + width_freq + 2, ypos, 
+					inpRstR_log->x() - 2 - (inpCall_log->x() + width_freq + 2), wh);
+// row2
+	ypos += wh + 20;
+	xpos = inpDateOff_log->x();
+
+	date_font_pos(inpDateOff_log, xpos, ypos, width_date, wh); xpos += width_date + 2;
+	inp_font_pos(inpTimeOff_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
+	inp_font_pos(inpFreq_log, xpos, ypos, width_freq, wh);
+
+	date_font_pos(inpQSLsentdate_log, 
+					dlg_width - 2 - width_date, ypos, width_date, wh);
+	inp_font_pos(inpRstS_log, 
+					inpQSLsentdate_log->x() - 2 - width_rst, ypos, 
+					width_rst, wh);
+	inp_font_pos(inpTX_pwr_log, 
+					inpRstS_log->x() - 2 - width_pwr, ypos, 
+					width_pwr, wh);
+	inp_font_pos(inpMode_log, 
+					inpFreq_log->x() + width_freq + 2, ypos, 
+					inpTX_pwr_log->x() - 2 - (inpFreq_log->x() + width_freq + 2), wh);
+// row 3
+	ypos += (20 + wh);
+
+	inp_font_pos(inpLoc_log,
+					dlg_width - 2 - width_loc, ypos, width_loc, wh);
+	inp_font_pos(inpCountry_log,
+					inpLoc_log->x() - 2 - inpCountry_log->w(), ypos, inpCountry_log->w(), wh);
+	inp_font_pos(inpVE_Prov_log,
+					inpCountry_log->x() - 2 - inpVE_Prov_log->w(), ypos, inpVE_Prov_log->w(), wh);
+	inp_font_pos(inpState_log,
+					inpVE_Prov_log->x() - 2 - inpState_log->w(), ypos, inpState_log->w(), wh);
+	inp_font_pos(inpQth_log,
+					inpQth_log->x(), ypos, inpState_log->x() - 2 - inpQth_log->x(), wh);
+
+	ypos += (20 + wh);
+	Fl_Input2* row4[] = {
+		inpCNTY_log, inpIOTA_log, inpCQZ_log };
+	for (size_t i = 0; i < sizeof(row4)/sizeof(*row4); i++) {
+		inp_font_pos(row4[i], row4[i]->x(), ypos, row4[i]->w(), wh);
+	}
+
+	inp_font_pos(inpNotes_log, inpNotes_log->x(), ypos, inpNotes_log->w(), 3 * wh);
+
+	ypos = inpNotes_log->y() + inpNotes_log->h() - wh;
+	Fl_Input2* row5[] = {
+		inpITUZ_log, inpCONT_log, inpDXCC_log };
+	for (size_t i = 0; i < sizeof(row5)/sizeof(*row5); i++) {
+		inp_font_pos(row5[i], row5[i]->x(), ypos, row5[i]->w(), wh);
+	}
+
+	ypos += 20 + wh;
+	Fl_Input2* row6[] = {
+		inpSerNoOut_log, inpMyXchg_log, inpSerNoIn_log, inpXchgIn_log, inpSearchString };
+	for (size_t i = 0; i < sizeof(row6)/sizeof(*row6); i++) {
+		inp_font_pos(row6[i], row6[i]->x(), ypos, row6[i]->w(), wh);
+	}
+
+	ypos += wh + 4;
+	txtNbrRecs_log->textcolor(progdefaults.LOGBOOKtextcolor);
+	txtNbrRecs_log->color(progdefaults.LOGBOOKcolor);
+	txtNbrRecs_log->resize(txtNbrRecs_log->x(), ypos, txtNbrRecs_log->w(), txtNbrRecs_log->h());
+	int ls = progdefaults.LOGBOOKtextsize;
+	txtNbrRecs_log->labelsize(ls < 14 ? ls : 14);
+	txtNbrRecs_log->redraw_label();
+
+	Fl_Button* btns[] = { bNewSave, bUpdateCancel, bDelete, bDialFreq,
+		bSearchPrev, bSearchNext };
+	for (size_t i = 0; i < sizeof(btns)/sizeof(*btns); i++) {
+		btns[i]->resize(btns[i]->x(), ypos, btns[i]->w(), btns[i]->h());
+		btns[i]->redraw();
+	}
+
+// browser (table)
+	ypos += btns[0]->h() + 4;
+
+	wBrowser->color(progdefaults.LOGBOOKcolor);
+	wBrowser->selection_color(FL_SELECTION_COLOR);
+
+	wBrowser->resize(wBrowser->x(), ypos, dlgLogbook->w() - 2*wBrowser->x(), dlgLogbook->h() - 2 - ypos);
+
+	dlgLogbook->init_sizes();
+	dlgLogbook->damage();
+	dlgLogbook->redraw();
 
 }
 

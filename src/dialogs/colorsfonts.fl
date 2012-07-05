@@ -156,6 +156,28 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {open private return_type voi
     progdefaults.changed = true;} {}
 } 
 
+Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {open private return_type void
+} {
+  code {Fl_Font font = font_browser->fontNumber();
+    int size = font_browser->fontSize();
+    Fl_Color color = font_browser->fontColor();
+
+    progdefaults.LOGBOOKtextfont = font;
+    progdefaults.LOGBOOKtextsize = size;
+    progdefaults.LOGBOOKtextcolor = color;
+
+    LOGBOOKdisplay->textsize(size);
+    LOGBOOKdisplay->textcolor(color);
+    LOGBOOKdisplay->textfont(font);
+    LOGBOOKdisplay->redraw();
+    
+    LOGBOOK_colors_font();
+
+    font_browser->hide();
+
+    progdefaults.changed = true;} {}
+} 
+
 Function {make_colorsfonts()} {open
 } {
   code {font_browser = new Font_Browser;} {}
@@ -173,7 +195,7 @@ Function {make_colorsfonts()} {open
       xywh {0 5 375 185}
     } {
       Fl_Group {} {
-        label Displays open
+        label Disp open selected
         xywh {0 30 375 155}
       } {
         Fl_Group {} {open
@@ -295,64 +317,6 @@ font_browser->show();}
          
     progdefaults.changed = true;}
             xywh {284 89 80 24}
-          }
-        }
-        Fl_Group {} {
-          label {Logging Panel Controls} open
-          xywh {3 123 370 62} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Output LOGGINGdisplay {
-            xywh {19 147 98 25}
-            code0 {o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGGINGtextcolor);}
-            code1 {o->color(progdefaults.LOGGINGcolor);}
-            code2 {o->value("W1HKJ");}
-            code3 {o->redraw();}
-          }
-          Fl_Button btnLOGGING_color {
-            label {Bg Color}
-            callback {uchar r, g, b;
-    Fl::get_color(progdefaults.LOGGINGcolor, r, g, b);
-
-    if (!fl_color_chooser("Background", r, g, b))
-        return;
-
-    progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
-    
-    LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
-    LOGGINGdisplay->redraw();
-
-    LOGGING_colors_font();
-    
-    progdefaults.changed = true;}
-            xywh {127 147 80 25}
-          }
-          Fl_Button btn_LOGGING_font {
-            label Font
-            callback {font_browser->fontNumber(progdefaults.LOGGINGtextfont);
-font_browser->fontSize(progdefaults.LOGGINGtextsize);
-font_browser->fontColor(progdefaults.LOGGINGtextcolor);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
-font_browser->callback(cbLOGGINGFontBrowser);
-font_browser->show();}
-            xywh {217 147 55 25}
-          }
-          Fl_Button btnLOGGINGdefault_colors_font {
-            label Default
-            callback {progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
-progdefaults.LOGGINGtextfont = (Fl_Font)0;
-progdefaults.LOGGINGtextsize = 12;
-progdefaults.LOGGINGtextcolor = FL_BLACK;
-
-LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
-LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
-LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
-LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
-LOGGINGdisplay->redraw();
-    
-LOGGING_colors_font();
-    
-progdefaults.changed = true;} selected
-            xywh {283 147 80 25}
           }
         }
       }
@@ -986,6 +950,127 @@ progdefaults.changed = true;}
         Fl_Box {} {
           label {Signal Level Colors}
           xywh {27 41 316 21}
+        }
+      }
+      Fl_Group {} {
+        label Log open
+        xywh {0 30 375 155} hide
+      } {
+        Fl_Group {} {
+          label {Logging Panel Controls} open
+          xywh {1 33 372 65} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Output LOGGINGdisplay {
+            xywh {19 57 98 25}
+            code0 {o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGGINGtextcolor);}
+            code1 {o->color(progdefaults.LOGGINGcolor);}
+            code2 {o->value("W1HKJ");}
+            code3 {o->redraw();}
+          }
+          Fl_Button btnLOGGING_color {
+            label {Bg Color}
+            callback {uchar r, g, b;
+    Fl::get_color(progdefaults.LOGGINGcolor, r, g, b);
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
+    
+    LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
+    LOGGINGdisplay->redraw();
+
+    LOGGING_colors_font();
+    
+    progdefaults.changed = true;}
+            xywh {127 57 80 25}
+          }
+          Fl_Button btn_LOGGING_font {
+            label Font
+            callback {font_browser->fontNumber(progdefaults.LOGGINGtextfont);
+font_browser->fontSize(progdefaults.LOGGINGtextsize);
+font_browser->fontColor(progdefaults.LOGGINGtextcolor);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbLOGGINGFontBrowser);
+font_browser->show();}
+            xywh {217 57 55 25}
+          }
+          Fl_Button btnLOGGINGdefault_colors_font {
+            label Default
+            callback {progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
+progdefaults.LOGGINGtextfont = (Fl_Font)0;
+progdefaults.LOGGINGtextsize = 12;
+progdefaults.LOGGINGtextcolor = FL_BLACK;
+
+LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
+LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
+LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
+LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
+LOGGINGdisplay->redraw();
+    
+LOGGING_colors_font();
+    
+progdefaults.changed = true;}
+            xywh {283 57 80 25}
+          }
+        }
+        Fl_Group {} {
+          label {Logbook Dialog} open
+          xywh {3 108 370 65} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Output LOGBOOKdisplay {
+            xywh {19 132 98 25}
+            code0 {o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGBOOKtextcolor);}
+            code1 {o->color(progdefaults.LOGBOOKcolor);}
+            code2 {o->value("14.070000");}
+            code3 {o->redraw();}
+          }
+          Fl_Button btnLOGBOOK_color {
+            label {Bg Color}
+            callback {uchar r, g, b;
+    Fl::get_color(progdefaults.LOGBOOKcolor, r, g, b);
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.LOGBOOKcolor = fl_rgb_color(r, g, b);
+    
+    LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
+    LOGBOOKdisplay->redraw();
+
+    LOGBOOK_colors_font();
+    
+    progdefaults.changed = true;}
+            xywh {127 132 80 25}
+          }
+          Fl_Button btn_LOGBOOK_font {
+            label Font
+            callback {font_browser->fontNumber(progdefaults.LOGBOOKtextfont);
+font_browser->fontSize(progdefaults.LOGBOOKtextsize);
+font_browser->fontColor(progdefaults.LOGBOOKtextcolor);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbLOGBOOKFontBrowser);
+font_browser->show();}
+            xywh {217 132 55 25}
+          }
+          Fl_Button btnLOGBOOKdefault_colors_font {
+            label Default
+            callback {progdefaults.LOGBOOKcolor = FL_BACKGROUND2_COLOR;
+progdefaults.LOGBOOKtextfont = (Fl_Font)0;
+progdefaults.LOGBOOKtextsize = 12;
+progdefaults.LOGBOOKtextcolor = FL_BLACK;
+
+LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
+LOGBOOKdisplay->textsize(progdefaults.LOGBOOKtextsize);
+LOGBOOKdisplay->textcolor(progdefaults.LOGBOOKtextcolor);
+LOGBOOKdisplay->textfont(progdefaults.LOGBOOKtextfont);
+LOGBOOKdisplay->redraw();
+    
+LOGBOOK_colors_font();
+    
+progdefaults.changed = true;}
+            xywh {283 132 80 25}
+          }
         }
       }
     }

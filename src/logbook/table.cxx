@@ -1591,8 +1591,27 @@ void Table::draw() {
  *
  * FLTK internal. Called when Table widget is resized.
  */
-void Table::resize(int x, int y, int w, int h) {
-  Fl_Widget::resize(x, y, w, h);
+void Table::resize(int x, int y, int w2, int h) {
+// resize the columns proportionally if the width changes
+  if (w2 != w()) {
+    int iw = w() - (vScroll->visible() ? vScroll->w() : 0) - 4;
+    int iw2 = w2 - (vScroll->visible() ? vScroll->w() : 0) - 4;
+    if (iw > 0 && iw2 > 0) {
+      int lastcol = 0;
+      int iw3 = 0;
+      for (int i = 0; i < nCols - 1; i++) {
+        if (!header[i].hidden) {
+          header[i].width = (int)(1.0 * header[i].width * iw2 / iw + 0.5);
+          iw3 += header[i].width;
+          lastcol = i;
+        }
+      }
+      // adjust last visible column
+      if (iw3 < iw2) header[lastcol].width += (iw2 - iw3);
+      if (iw3 > iw2) header[lastcol].width -= (iw3 - iw2);
+    }
+  }
+  Fl_Widget::resize(x, y, w2, h);
   resized();
   damage(FL_DAMAGE_ALL);
 }

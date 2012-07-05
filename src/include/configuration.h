@@ -1234,6 +1234,18 @@
         ELEM_(int, LOGGINGtextsize, "LOGGINGTEXTSIZE",                                  \
               "Logging Controls font size",                                             \
               12)                                                                       \
+        ELEM_(Fl_Color, LOGBOOKtextcolor, "LOGBOOKTEXTCOLOR",                           \
+              "Text color in logbook dialog",                                           \
+              FL_BLACK)                                                                 \
+        ELEM_(Fl_Color, LOGBOOKcolor, "LOGBOOKCOLOR",                                   \
+              "Background color in logbook dialog",                                     \
+              FL_BACKGROUND2_COLOR)                                                     \
+        ELEM_(Fl_Font, LOGBOOKtextfont, "LOGBOOKTEXTFONT",                              \
+              "Logbook dialog controls font number",                                    \
+              FL_HELVETICA)                                                             \
+        ELEM_(int, LOGBOOKtextsize, "LOGBOOKTEXTSIZE",                                  \
+              "Logbook dialog controls font size",                                      \
+              12)                                                                       \
         ELEM_(std::string, FreqControlFontName, "FREQCONTROLFONTNAME",                  \
               "Frequency Control font name",                                            \
               "")                                                                       \

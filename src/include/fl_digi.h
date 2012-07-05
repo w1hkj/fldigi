@@ -265,6 +265,7 @@ extern void start_tx();
 extern void abort_tx();
 
 extern void LOGGING_colors_font();
+extern void LOGBOOK_colors_font();
 
 extern void colorize_macro(int i);
 extern void colorize_macros();
