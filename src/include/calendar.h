@@ -136,8 +136,10 @@ class Fl_DateInput : public Fl_Group  {
     void format (int);
     const char *value ();
     void value (const char *);
+    void color (Fl_Color);
     void textfont (int);
     void textsize (int);
+    void textcolor (Fl_Color);
     void labelfont (int);
     void labelsize (int);
     void labelcolor (int);

@@ -512,7 +512,7 @@ void btnDateInput_cb (Fl_Widget *v, void *d)
 Fl_DateInput::Fl_DateInput (int X,int Y,int W,int H, const char *L)
  : Fl_Group (X, Y, W, H, 0)
 {
-  Btn = new Fl_Button (X + W - H + 1, Y + 1, H - 2, H - 2);
+  Btn = new Fl_Button (X + W - H, Y, H, H);
   (new Fl_Pixmap (time_icon))->label (Btn);
   Btn->callback ((Fl_Callback *)btnDateInput_cb, 0);
   Input = new Fl_Input2 (X, Y, W-H, H, L);
@@ -548,6 +548,16 @@ void Fl_DateInput::textfont(int tf)
 void Fl_DateInput::textsize(int sz)
 {
   Input->textsize (sz);
+}
+
+void Fl_DateInput::textcolor(Fl_Color c)
+{
+  Input->textcolor(c);
+}
+
+void Fl_DateInput::color(Fl_Color c)
+{
+  Input->color(c);
 }
 
 void Fl_DateInput::labelfont(int fnt)

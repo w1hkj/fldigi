@@ -130,6 +130,27 @@ static void cbLOGGINGFontBrowser(Fl_Widget*, void*) {
       progdefaults.changed = true;
 }
 
+static void cbLOGBOOKFontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+      Fl_Color color = font_browser->fontColor();
+  
+      progdefaults.LOGBOOKtextfont = font;
+      progdefaults.LOGBOOKtextsize = size;
+      progdefaults.LOGBOOKtextcolor = color;
+  
+      LOGBOOKdisplay->textsize(size);
+      LOGBOOKdisplay->textcolor(color);
+      LOGBOOKdisplay->textfont(font);
+      LOGBOOKdisplay->redraw();
+      
+      LOGBOOK_colors_font();
+  
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
+
 Fl_Double_Window *dlgColorFont=(Fl_Double_Window *)0;
 
 Fl_Button *btnClrFntClose=(Fl_Button *)0;
@@ -254,57 +275,6 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
     }
          
     progdefaults.changed = true;
-}
-
-Fl_Output *LOGGINGdisplay=(Fl_Output *)0;
-
-Fl_Button *btnLOGGING_color=(Fl_Button *)0;
-
-static void cb_btnLOGGING_color(Fl_Button*, void*) {
-  uchar r, g, b;
-    Fl::get_color(progdefaults.LOGGINGcolor, r, g, b);
-
-    if (!fl_color_chooser("Background", r, g, b))
-        return;
-
-    progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
-    
-    LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
-    LOGGINGdisplay->redraw();
-
-    LOGGING_colors_font();
-    
-    progdefaults.changed = true;
-}
-
-Fl_Button *btn_LOGGING_font=(Fl_Button *)0;
-
-static void cb_btn_LOGGING_font(Fl_Button*, void*) {
-  font_browser->fontNumber(progdefaults.LOGGINGtextfont);
-font_browser->fontSize(progdefaults.LOGGINGtextsize);
-font_browser->fontColor(progdefaults.LOGGINGtextcolor);
-font_browser->fontFilter(Font_Browser::ALL_TYPES);
-font_browser->callback(cbLOGGINGFontBrowser);
-font_browser->show();
-}
-
-Fl_Button *btnLOGGINGdefault_colors_font=(Fl_Button *)0;
-
-static void cb_btnLOGGINGdefault_colors_font(Fl_Button*, void*) {
-  progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
-progdefaults.LOGGINGtextfont = 0;
-progdefaults.LOGGINGtextsize = 12;
-progdefaults.LOGGINGtextcolor = FL_BLACK;
-
-LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
-LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
-LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
-LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
-LOGGINGdisplay->redraw();
-    
-LOGGING_colors_font();
-    
-progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnUseGroupColors=(Fl_Check_Button *)0;
@@ -886,6 +856,108 @@ progdefaults.changed = true;
 
 Fl_Box *overcolor=(Fl_Box *)0;
 
+Fl_Output *LOGGINGdisplay=(Fl_Output *)0;
+
+Fl_Button *btnLOGGING_color=(Fl_Button *)0;
+
+static void cb_btnLOGGING_color(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl::get_color(progdefaults.LOGGINGcolor, r, g, b);
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
+    
+    LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
+    LOGGINGdisplay->redraw();
+
+    LOGGING_colors_font();
+    
+    progdefaults.changed = true;
+}
+
+Fl_Button *btn_LOGGING_font=(Fl_Button *)0;
+
+static void cb_btn_LOGGING_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.LOGGINGtextfont);
+font_browser->fontSize(progdefaults.LOGGINGtextsize);
+font_browser->fontColor(progdefaults.LOGGINGtextcolor);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbLOGGINGFontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnLOGGINGdefault_colors_font=(Fl_Button *)0;
+
+static void cb_btnLOGGINGdefault_colors_font(Fl_Button*, void*) {
+  progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
+progdefaults.LOGGINGtextfont = (Fl_Font)0;
+progdefaults.LOGGINGtextsize = 12;
+progdefaults.LOGGINGtextcolor = FL_BLACK;
+
+LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
+LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
+LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
+LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
+LOGGINGdisplay->redraw();
+    
+LOGGING_colors_font();
+    
+progdefaults.changed = true;
+}
+
+Fl_Output *LOGBOOKdisplay=(Fl_Output *)0;
+
+Fl_Button *btnLOGBOOK_color=(Fl_Button *)0;
+
+static void cb_btnLOGBOOK_color(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl::get_color(progdefaults.LOGBOOKcolor, r, g, b);
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.LOGBOOKcolor = fl_rgb_color(r, g, b);
+    
+    LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
+    LOGBOOKdisplay->redraw();
+
+    LOGBOOK_colors_font();
+    
+    progdefaults.changed = true;
+}
+
+Fl_Button *btn_LOGBOOK_font=(Fl_Button *)0;
+
+static void cb_btn_LOGBOOK_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.LOGBOOKtextfont);
+font_browser->fontSize(progdefaults.LOGBOOKtextsize);
+font_browser->fontColor(progdefaults.LOGBOOKtextcolor);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbLOGBOOKFontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnLOGBOOKdefault_colors_font=(Fl_Button *)0;
+
+static void cb_btnLOGBOOKdefault_colors_font(Fl_Button*, void*) {
+  progdefaults.LOGBOOKcolor = FL_BACKGROUND2_COLOR;
+progdefaults.LOGBOOKtextfont = (Fl_Font)0;
+progdefaults.LOGBOOKtextsize = 12;
+progdefaults.LOGBOOKtextcolor = FL_BLACK;
+
+LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
+LOGBOOKdisplay->textsize(progdefaults.LOGBOOKtextsize);
+LOGBOOKdisplay->textcolor(progdefaults.LOGBOOKtextcolor);
+LOGBOOKdisplay->textfont(progdefaults.LOGBOOKtextfont);
+LOGBOOKdisplay->redraw();
+    
+LOGBOOK_colors_font();
+    
+progdefaults.changed = true;
+}
+
 Fl_Double_Window* make_colorsfonts() {
   font_browser = new Font_Browser;
   { dlgColorFont = new Fl_Double_Window(375, 220, _("Colors and Fonts"));
@@ -893,7 +965,7 @@ Fl_Double_Window* make_colorsfonts() {
       btnClrFntClose->callback((Fl_Callback*)cb_btnClrFntClose);
     } // Fl_Button* btnClrFntClose
     { tabsColors = new Fl_Tabs(0, 5, 375, 185);
-      { Fl_Group* o = new Fl_Group(0, 30, 375, 155, _("Displays"));
+      { Fl_Group* o = new Fl_Group(0, 30, 375, 155, _("Disp"));
         { Fl_Group* o = new Fl_Group(3, 34, 370, 87);
           o->box(FL_ENGRAVED_FRAME);
           { Fl_Box* o = FDdisplay = new Fl_Box(70, 38, 235, 45, _("14070.150"));
@@ -917,26 +989,6 @@ Fl_Double_Window* make_colorsfonts() {
           { btnFD_SystemColor = new Fl_Button(284, 89, 80, 24, _("Sys Colors"));
             btnFD_SystemColor->callback((Fl_Callback*)cb_btnFD_SystemColor);
           } // Fl_Button* btnFD_SystemColor
-          o->end();
-        } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(3, 123, 370, 62, _("Logging Panel Controls"));
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { Fl_Output* o = LOGGINGdisplay = new Fl_Output(19, 147, 98, 25);
-            o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGGINGtextcolor);
-            o->color(progdefaults.LOGGINGcolor);
-            o->value("W1HKJ");
-            o->redraw();
-          } // Fl_Output* LOGGINGdisplay
-          { btnLOGGING_color = new Fl_Button(127, 147, 80, 25, _("Bg Color"));
-            btnLOGGING_color->callback((Fl_Callback*)cb_btnLOGGING_color);
-          } // Fl_Button* btnLOGGING_color
-          { btn_LOGGING_font = new Fl_Button(217, 147, 55, 25, _("Font"));
-            btn_LOGGING_font->callback((Fl_Callback*)cb_btn_LOGGING_font);
-          } // Fl_Button* btn_LOGGING_font
-          { btnLOGGINGdefault_colors_font = new Fl_Button(283, 147, 80, 25, _("Default"));
-            btnLOGGINGdefault_colors_font->callback((Fl_Callback*)cb_btnLOGGINGdefault_colors_font);
-          } // Fl_Button* btnLOGGINGdefault_colors_font
           o->end();
         } // Fl_Group* o
         o->end();
@@ -1166,6 +1218,50 @@ Fl_Double_Window* make_colorsfonts() {
         } // Fl_Box* overcolor
         { new Fl_Box(27, 41, 316, 21, _("Signal Level Colors"));
         } // Fl_Box* o
+        o->end();
+      } // Fl_Group* o
+      { Fl_Group* o = new Fl_Group(0, 30, 375, 155, _("Log"));
+        o->hide();
+        { Fl_Group* o = new Fl_Group(1, 33, 372, 65, _("Logging Panel Controls"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Output* o = LOGGINGdisplay = new Fl_Output(19, 57, 98, 25);
+            o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGGINGtextcolor);
+            o->color(progdefaults.LOGGINGcolor);
+            o->value("W1HKJ");
+            o->redraw();
+          } // Fl_Output* LOGGINGdisplay
+          { btnLOGGING_color = new Fl_Button(127, 57, 80, 25, _("Bg Color"));
+            btnLOGGING_color->callback((Fl_Callback*)cb_btnLOGGING_color);
+          } // Fl_Button* btnLOGGING_color
+          { btn_LOGGING_font = new Fl_Button(217, 57, 55, 25, _("Font"));
+            btn_LOGGING_font->callback((Fl_Callback*)cb_btn_LOGGING_font);
+          } // Fl_Button* btn_LOGGING_font
+          { btnLOGGINGdefault_colors_font = new Fl_Button(283, 57, 80, 25, _("Default"));
+            btnLOGGINGdefault_colors_font->callback((Fl_Callback*)cb_btnLOGGINGdefault_colors_font);
+          } // Fl_Button* btnLOGGINGdefault_colors_font
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(3, 108, 370, 65, _("Logbook Dialog"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Output* o = LOGBOOKdisplay = new Fl_Output(19, 132, 98, 25);
+            o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGBOOKtextcolor);
+            o->color(progdefaults.LOGBOOKcolor);
+            o->value("14.070000");
+            o->redraw();
+          } // Fl_Output* LOGBOOKdisplay
+          { btnLOGBOOK_color = new Fl_Button(127, 132, 80, 25, _("Bg Color"));
+            btnLOGBOOK_color->callback((Fl_Callback*)cb_btnLOGBOOK_color);
+          } // Fl_Button* btnLOGBOOK_color
+          { btn_LOGBOOK_font = new Fl_Button(217, 132, 55, 25, _("Font"));
+            btn_LOGBOOK_font->callback((Fl_Callback*)cb_btn_LOGBOOK_font);
+          } // Fl_Button* btn_LOGBOOK_font
+          { btnLOGBOOKdefault_colors_font = new Fl_Button(283, 132, 80, 25, _("Default"));
+            btnLOGBOOKdefault_colors_font->callback((Fl_Callback*)cb_btnLOGBOOKdefault_colors_font);
+          } // Fl_Button* btnLOGBOOKdefault_colors_font
+          o->end();
+        } // Fl_Group* o
         o->end();
       } // Fl_Group* o
       tabsColors->end();

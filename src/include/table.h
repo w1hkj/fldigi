@@ -115,7 +115,6 @@ protected:
 	virtual void drawRow(int row, char *rowData[], int x, int y);
 
 	virtual void draw();
-	virtual void resize(int x, int y, int w, int h);
 
 	void calcDimensions();
 	void scrolled();
@@ -142,6 +141,8 @@ public:
 	void rowSize(int height);
 	int scrollbSize() const;
 	void scrollbSize(int size);
+
+	virtual void resize(int x, int y, int w, int h);
 
 	Fl_Align headerAlign(int column) const;
 	void headerAlign(int column, Fl_Align align);
@@ -212,6 +213,8 @@ public:
 	void PrevPage ();
 	void NextPage ();
 	void GotoRow (int);
+
+	int  vScrollWidth() { return (vScroll ? vScroll->w() : 0);}
 
 	bool search(int& row, int& col, bool rev, const char* re);
 };

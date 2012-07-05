@@ -461,6 +461,7 @@ int main(int argc, char ** argv)
 
 	dlgViewer = createViewer();
 	create_logbook_dialogs();
+	LOGBOOK_colors_font();
 
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
