@@ -340,9 +340,7 @@ bool view_rtty::rx(int ch, bool bit)
 void view_rtty::Metric(int ch)
 {
 	double delta = rtty_baud/2.0;
-	double np =
-		wf->powerDensity(channel[ch].frequency - shift * 1.5, delta) +
-	 	wf->powerDensity(channel[ch].frequency + shift * 1.5, delta) + 1e-10;
+	double np = wf->powerDensity(channel[ch].frequency, delta);
 	double sp =
 		wf->powerDensity(channel[ch].frequency - shift/2, delta) +
 		wf->powerDensity(channel[ch].frequency + shift/2, delta) + 1e-10;
