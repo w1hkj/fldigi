@@ -1,8 +1,14 @@
 
 
-=Version 3.21.48=
+=Version 3.21.49=
 
-2012-06-30  David Freese  <w1hkj@w1hkj.com>
+2012-07-05  David Freese  <w1hkj@w1hkj.com>
+
+	77bb7a1: Logbook Colors-Fonts
+	f2c18cb: RX Text backspace
+
+
+=Version 3.21.48=
 
 	e94e2f2: HAMQTH Session ID
 
