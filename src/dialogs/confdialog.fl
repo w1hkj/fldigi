@@ -3754,7 +3754,14 @@ progdefaults.changed = true;}
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;}
-            xywh {345 233 130 20}
+            xywh {345 222 130 20}
+          }
+          Fl_Check_Button btn_post_rsid {
+            label {End of xmt ID}
+            callback {progdefaults.rsid_post=o->value();
+progdefaults.changed = true;}
+            tooltip {Add RsID signal to end of transmission} xywh {345 256 70 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.rsid_post);}
           }
         }
         Fl_Group {} {

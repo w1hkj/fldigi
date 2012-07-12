@@ -2994,6 +2994,13 @@ mode_browser->show(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_post_rsid=(Fl_Check_Button *)0;
+
+static void cb_btn_post_rsid(Fl_Check_Button* o, void*) {
+  progdefaults.rsid_post=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Counter *val_pretone=(Fl_Counter *)0;
 
 static void cb_val_pretone(Fl_Counter* o, void*) {
@@ -6921,9 +6928,15 @@ d frequency"));
         { Fl_Group* o = new Fl_Group(317, 198, 195, 85, _("Reed-Solomon ID (Tx)"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { bRSIDTxModes = new Fl_Button(345, 233, 130, 20, _("Transmit modes"));
+          { bRSIDTxModes = new Fl_Button(345, 222, 130, 20, _("Transmit modes"));
             bRSIDTxModes->callback((Fl_Callback*)cb_bRSIDTxModes);
           } // Fl_Button* bRSIDTxModes
+          { Fl_Check_Button* o = btn_post_rsid = new Fl_Check_Button(345, 256, 70, 15, _("End of xmt ID"));
+            btn_post_rsid->tooltip(_("Add RsID signal to end of transmission"));
+            btn_post_rsid->down_box(FL_DOWN_BOX);
+            btn_post_rsid->callback((Fl_Callback*)cb_btn_post_rsid);
+            o->value(progdefaults.rsid_post);
+          } // Fl_Check_Button* btn_post_rsid
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(317, 284, 195, 80, _("Pre-Signal Tone"));
