@@ -88,7 +88,7 @@ decl {\#include "rx_extract.h"} {private local
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
-\#endif} {selected private local
+\#endif} {private local
 } 
 
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
@@ -123,7 +123,8 @@ for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
 } 
 
-Function {ConfigureDialog()} {} {
+Function {ConfigureDialog()} {open
+} {
   code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|_850|Custom";
 static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
@@ -3725,7 +3726,7 @@ if (o->value()) {
         }
       }
       Fl_Group tabID {
-        label ID
+        label ID open
         xywh {0 25 598 345} hide
       } {
         Fl_Group {} {
@@ -3896,7 +3897,14 @@ progdefaults.changed = true;}
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;}
-            xywh {397 233 130 20}
+            xywh {397 220 130 20}
+          }
+          Fl_Check_Button btn_post_rsid {
+            label {End of xmt ID}
+            callback {progdefaults.rsid_post=o->value();
+progdefaults.changed = true;}
+            tooltip {Add RsID signal to end of transmission} xywh {404 253 115 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.rsid_post);}
           }
         }
         Fl_Group {} {

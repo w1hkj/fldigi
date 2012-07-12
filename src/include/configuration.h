@@ -92,7 +92,7 @@
               false)                                                                    \
         ELEM_(bool, rsid_auto_disable, "RSIDAUTODISABLE",                               \
               "Disable RSID detection when RsID signal is detected",                    \
-              false)                                                                      \
+              false)                                                                    \
         ELEM_(bool, rsid_post, "RSIDPOST",                                              \
               "Transmit an RSID signal when modem data is concluded",                   \
               false)                                                                    \

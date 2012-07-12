@@ -335,6 +335,12 @@ void trx_trx_transmit_loop()
 			}
 		}
 
+		if ((active_modem != null_modem && 
+			active_modem != ssb_modem &&
+			active_modem != wwv_modem ) && 
+			progdefaults.TransmitRSid &&
+			progdefaults.rsid_post)
+			ReedSolomon->send(false);
 		trx_xmit_wfall_end(current_samplerate);
 
 		scard->flush();

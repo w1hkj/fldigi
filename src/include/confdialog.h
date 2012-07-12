@@ -414,6 +414,7 @@ extern Fl_Check_Button *chkRSidNotifyOnly;
 extern Fl_Button *bRSIDRxModes;
 extern Fl_Value_Slider2 *sldrRSIDsquelch;
 extern Fl_Button *bRSIDTxModes;
+extern Fl_Check_Button *btn_post_rsid;
 extern Fl_Counter *val_pretone;
 extern Fl_Group *tabMisc;
 extern Fl_Tabs *tabsMisc;
