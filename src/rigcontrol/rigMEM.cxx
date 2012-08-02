@@ -22,6 +22,10 @@
 
 #include <config.h>
 
+#if defined(__OpenBSD__)
+#  include <sys/types.h>
+#endif
+
 #if !defined(__WOE32__) && !defined(__APPLE__)
 #  include <sys/ipc.h>
 #  include <sys/msg.h>

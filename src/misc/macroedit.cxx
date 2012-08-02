@@ -224,7 +224,12 @@ void loadBrowser(Fl_Widget *widget) {
 	}
 	w->add(LINE_SEP);
 	struct stat st;
+
+#  if defined(__OpenBSD__)
+	for (int i = 0; i < gbuf.gl_pathc; i++) {
+#  else
 	for (size_t i = 0; i < gbuf.gl_pathc; i++) {
+#  endif
 		if (!(stat(gbuf.gl_pathv[i], &st) == 0
 		      && S_ISREG(st.st_mode) && (st.st_mode & S_IXUSR)))
 			continue;

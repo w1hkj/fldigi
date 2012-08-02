@@ -40,6 +40,14 @@
 #  define DEFAULT_PTTDEV "/dev/ttyd0"
 #  define DEFAULT_CWFSKPORT "/dev/ttyd1"
 #  define DEFAULT_HAMRIGDEVICE "/dev/ttyd0"
+#elif defined(__NetBSD__)
+#  define DEFAULT_PTTDEV "/dev/tty00"
+#  define DEFAULT_CWFSKPORT "/dev/tty01"
+#  define DEFAULT_HAMRIGDEVICE "/dev/tty00"
+#elif defined(__OpenBSD__)
+#  define DEFAULT_PTTDEV "/dev/tty00"
+#  define DEFAULT_CWFSKPORT "/dev/tty01"
+#  define DEFAULT_HAMRIGDEVICE "/dev/tty00"
 #elif defined(__WOE32__)
 #  define DEFAULT_PTTDEV "COM1"
 #  define DEFAULT_CWFSKPORT "COM2"

@@ -881,7 +881,7 @@ public:
 	/// Called when loading a file from the GUI, or indirectly from XML-RPC.
 	bool transmit_lock_acquire(const std::string & filnam, double delay = wefax::max_delay )
 	{
-		LOG_INFO("Sending %s delay=%f tid=%d", filnam.c_str(), delay, GET_THREAD_ID() );
+		LOG_INFO("Sending %s delay=%f tid=%d", filnam.c_str(), delay, (int)GET_THREAD_ID() );
 		guard_lock g( m_sync_tx_fil.mtxp() );
 		LOG_INFO("Locked");
 		if ( ! m_tx_fil.empty() )
@@ -896,7 +896,7 @@ public:
 	/// Allows to send another file. Called by XML-RPC and the GUI.
 	void transmit_lock_release( const std::string & err_msg )
 	{
-		LOG_INFO("err_msg=%s tid=%d", err_msg.c_str(), GET_THREAD_ID() );
+		LOG_INFO("err_msg=%s tid=%d", err_msg.c_str(), (int)GET_THREAD_ID() );
 		guard_lock g( m_sync_tx_msg.mtxp() );
 		LOG_INFO("%s %s", m_tx_fil.c_str(), err_msg.c_str() );
 		if( m_tx_fil.empty() )
@@ -1031,7 +1031,7 @@ public:
 				}
 			}
 
-			LOG_INFO("Shift: i=%d hist=%d", best_shift_idx, biggest_shift );
+			LOG_INFO("Shift: i=%d hist=%d", (int)best_shift_idx, (int)biggest_shift );
 		}
 		return best_shift_idx ;
 	}
@@ -2491,19 +2491,9 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 // receive processing
 //=====================================================================
 
-#ifdef __linux__
-
-#include <sys/timeb.h>
 /// This must return the current time in seconds with high precision.
-static double current_time(void)
-{
-	struct timeb tmp_timb ;
-	ftime( &tmp_timb );
 
-	return (double)tmp_timb.time + tmp_timb.millitm / 1000.0 ;
-}
-
-#else
+#if defined(__WIN32__) || defined(__APPLE__)
 #include <ctime>
 /// This is much less accurate.
 static double current_time(void)
@@ -2512,8 +2502,50 @@ static double current_time(void)
 
 	return clks * 1.0 / CLOCKS_PER_SEC;
 }
-#endif
+#else
+#if defined(HAVE_CLOCK_GETTIME)
 
+#include <sys/time.h>
+
+static double current_time(void)
+{
+//  DJV/AB3NR
+// Replace call to deprecated ftime() function with call to
+// clock_gettime(2).  clock_gettime(2) is POSIX.1 compliant.
+// Replace ifdef __linux__ with autoconf generated guard.
+// (Note __linux__ fails for *BSD, which all have better functions
+// than the fallback Windows routine.  Note, clock(2) on Unix systems
+// returns CPU time used so far.  It's not a "clock" in any generally
+// accepted sense of the word.
+//
+// Check system call return codes and abort on failure.
+//  DJV/AB3NR
+
+	struct timespec ts;
+	double curtime;
+
+// Do not know if CLOCK_MONOTONIC or CLOCK_REALTIME is appropriate. DJV
+
+	if(clock_gettime(CLOCK_REALTIME, &ts)!=0) {
+                LOG_PERROR("clock_gettime");
+                abort();
+        }
+	curtime= ts.tv_nsec*1e-09 + (double)ts.tv_sec;
+	return curtime;
+}
+#else
+#include <ctime>
+// This is much less accurate.
+// Add compile time warning  DJV/AB3NR
+#warning imprecise clock() call in function current_time in wefax.cxx
+static double current_time(void)
+{
+	clock_t clks = clock();
+
+	return clks * 1.0 / CLOCKS_PER_SEC;
+}
+#endif // HAVE_CLOCK_GETTIME
+#endif //__WIN32__
 
 /// Callback continuously called by fldigi modem class.
 int wefax::rx_process(const double *buf, int len)

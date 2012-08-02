@@ -32,7 +32,11 @@
 #include <string>
 
 #if USE_OSS
+#  if defined(__OpenBSD__)
+#    include <soundcard.h>
+#  else
 #    include <sys/soundcard.h>
+#  endif
 #endif
 
 class MixerException {

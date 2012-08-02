@@ -970,6 +970,8 @@ out:
 		"/dev/usb/ttyUSB%u"
 #elif defined(__FreeBSD__)
 		"/dev/ttyd%u"
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
+		"/dev/tty%2.2u"
 #elif defined(__CYGWIN__)
 		"/dev/ttyS%u"
 #elif defined(__MINGW32__)
@@ -984,6 +986,8 @@ out:
 #  define TTY_MAX 255
 #elif defined(__APPLE__)
 	glob_t gbuf;
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
+#  define TTY_MAX 4
 #else
 #  define TTY_MAX 8
 #endif

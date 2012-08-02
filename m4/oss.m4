@@ -19,7 +19,8 @@ AC_DEFUN([AC_FLDIGI_OSS], [
       AC_DEFINE(USE_OSS, 0, [Defined if we are using OSS])
   else
       AC_CHECK_HEADER( [sys/soundcard.h], [ac_cv_oss=yes],
-                       [AC_CHECK_HEADER([machine/soundcard.h], [ac_cv_oss=yes], [])] )
+                       [AC_CHECK_HEADER([machine/soundcard.h], [ac_cv_oss=yes],
+		       [AC_CHECK_HEADER([soundcard.h], [ac_cv_oss=yes], [])])])
       if test "x$ac_cv_want_oss" = "xcheck"; then
           if test "x$ac_cv_oss" = "xyes"; then
               AC_DEFINE(USE_OSS, 1, [Defined if we are using OSS])

@@ -2091,7 +2091,10 @@ void ztimer(void* first_call)
 		Fl::repeat_timeout(1.0, ztimer);
 
 	struct tm tm;
-	gmtime_r(&tv.tv_sec, &tm);
+	time_t t_temp;
+
+	t_temp=(time_t)tv.tv_sec;
+	gmtime_r(&t_temp, &tm);
 	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
 		memset(ztbuf, 0, sizeof(ztbuf));
 	else

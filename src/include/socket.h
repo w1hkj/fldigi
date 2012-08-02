@@ -29,6 +29,9 @@
 #ifndef __MINGW32__
 #  include <sys/socket.h>
 #  include <netdb.h>
+#  if defined(__OpenBSD__) && defined(nitems)
+#    undef nitems
+#  endif
 #  include <netinet/in.h>
 #else
 #  include <winsock2.h>
