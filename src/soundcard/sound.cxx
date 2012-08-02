@@ -45,8 +45,12 @@
 #include <limits.h>
 
 #if USE_OSS
-#    include <sys/ioctl.h>
+#  include <sys/ioctl.h>
+#  if defined(__OpenBSD__)
+#    include <soundcard.h>
+#  else
 #    include <sys/soundcard.h>
+#  endif
 #endif
 #include <math.h>
 

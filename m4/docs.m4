@@ -12,7 +12,7 @@ AC_DEFUN([AC_FLDIGI_DOCS], [
       asciidoc_min=8.2.0
       if test "x$ASCIIDOC" != "x"; then
           AC_MSG_CHECKING([for asciidoc >= $asciidoc_min])
-          asciidoc_ver=$($ASCIIDOC --version | sed -n '1 { s/.* //; p }')
+          asciidoc_ver=$($ASCIIDOC --version | sed -n '1 s/.* //; p')
           AX_COMPARE_VERSION([$asciidoc_ver], [ge], [$asciidoc_min],
                              [AC_MSG_RESULT([yes ($asciidoc_ver)])],
                              [AC_MSG_RESULT([no ($asciidoc_ver)]); ASCIIDOC=""])

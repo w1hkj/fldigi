@@ -27,6 +27,9 @@
 #ifndef __MINGW32__
 #  include <sys/socket.h>
 #  include <netdb.h>
+#  if defined(__OpenBSD__) && defined(nitems)
+#    undef nitems
+#  endif
 #  include <arpa/inet.h>
 #  include <netinet/in.h>
 #  include <sys/time.h>
