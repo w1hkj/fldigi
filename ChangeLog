@@ -1,3 +1,15 @@
+2012-08-02  David J Vanecek  <marmot@pennswoods.net>
+
+	9025bea: Open BSD fixes
+
+2012-07-12  David Freese  <w1hkj@w1hkj.com>
+
+	07d5d89: Restore post signal rsid
+
+2012-07-08  Kamal Mostafa  <kamal@whence.com>
+
+	dae167e: Tango icon: Restore missing weather_clear_icon
+
 2012-07-07  David Freese  <w1hkj@w1hkj.com>
 
 	b36a5e8: RTTY metric
