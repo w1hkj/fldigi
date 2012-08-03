@@ -1,9 +1,26 @@
 
 
+=Version 3.21.50=
+
+2012-08-02  David J Vanecek  <marmot@pennswoods.net>
+
+	eeaa755: Open BSD fixes
+
+2012-07-12  David Freese  <w1hkj@w1hkj.com>
+
+	e212c36: Restore post signal rsid
+
+2012-07-08  Kamal Mostafa  <kamal@whence.com>
+
+	f45a09b: Tango icon: Restore missing weather_clear_icon
+
+
 =Version 3.21.49=
 
-2012-07-05  David Freese  <w1hkj@w1hkj.com>
 
+2012-07-07  David Freese  <w1hkj@w1hkj.com>
+
+	ba1ec30: RTTY metric
 	77bb7a1: Logbook Colors-Fonts
 	f2c18cb: RX Text backspace
 

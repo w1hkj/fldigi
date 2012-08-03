@@ -1832,7 +1832,7 @@ numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
 <div id=\"footnotes\"><hr /></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
-Last updated 2012-06-15 07:46:33 CDT\n\
+Last updated 2012-08-02 10:32:00 CDT\n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\
