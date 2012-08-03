@@ -314,33 +314,54 @@ void trx_trx_transmit_loop()
 		active_modem->tx_init(scard);
 
 		if ((active_modem != null_modem && 
-			active_modem != ssb_modem &&
-			active_modem != wwv_modem ) && 
-			progdefaults.TransmitRSid)
-			ReedSolomon->send(true);
-
-		while (trx_state == STATE_TX) {
-			if (active_modem != ssb_modem && !progdefaults.DTMFstr.empty())
-				dtmf->send();
-			try {
-				if (active_modem->tx_process() < 0)
-					trx_state = STATE_RX;
-			}
-			catch (const SndException& e) {
-				scard->Close();
-				LOG_ERROR("%s. line: %i", e.what(), __LINE__);
-				put_status(e.what(), 5);
-				MilliSleep(10);
-				return;
-			}
+				active_modem != ssb_modem &&
+				active_modem != wwv_modem ) && 
+				(progdefaults.TransmitRSid || progStatus.n_rsids != 0)) {
+			if (progStatus.n_rsids < 0) {
+				for (int i = 0; i > progStatus.n_rsids; i--) {
+					ReedSolomon->send(true);
+					MilliSleep(200);
+				}
+			} else if ( progStatus.n_rsids > 0 ) {
+				for (int i = 0; i < progStatus.n_rsids; i++) {
+					ReedSolomon->send(true);
+					MilliSleep(200);
+				}
+				MilliSleep(200);
+				if (progStatus.n_rsids == 1) progStatus.n_rsids = 0;
+			} else
+				ReedSolomon->send(true);
 		}
 
+		if (progStatus.n_rsids >= 0) {
+			while (trx_state == STATE_TX) {
+				if (active_modem != ssb_modem && !progdefaults.DTMFstr.empty())
+					dtmf->send();
+				try {
+					if (active_modem->tx_process() < 0)
+						trx_state = STATE_RX;
+				}
+				catch (const SndException& e) {
+					scard->Close();
+					LOG_ERROR("%s", e.what());
+					put_status(e.what(), 5);
+					MilliSleep(10);
+					return;
+				}
+			}
+		} else
+			trx_state = STATE_RX;
+
 		if ((active_modem != null_modem && 
-			active_modem != ssb_modem &&
-			active_modem != wwv_modem ) && 
-			progdefaults.TransmitRSid &&
-			progdefaults.rsid_post)
+				active_modem != ssb_modem &&
+				active_modem != wwv_modem ) && 
+				progdefaults.TransmitRSid &&
+				progdefaults.rsid_post &&
+				progStatus.n_rsids >= 0)
 			ReedSolomon->send(false);
+
+		progStatus.n_rsids = 0;
+
 		trx_xmit_wfall_end(current_samplerate);
 
 		scard->flush();

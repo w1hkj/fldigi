@@ -63,6 +63,7 @@ struct status {
 	int		timer;
 	int		timerMacro;
 	std::string	LastMacroFile;
+	int		n_rsids;
 
 	bool	spot_recv;
 	bool	spot_log;

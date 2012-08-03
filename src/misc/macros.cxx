@@ -431,6 +431,21 @@ static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void pNRSID(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	int number = 0;
+	std::string sNumber = s.substr(i+7, endbracket - i - 7);
+	if (sNumber.length() > 0) {
+		sscanf(sNumber.c_str(), "%d", &number);
+		progStatus.n_rsids = number;
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static bool useWait = false;
 static int  waitTime = 0;
 
@@ -1948,6 +1963,7 @@ static const MTAGS mtags[] = {
 {"<IDLE:",		pIDLE},
 {"<TUNE:",		pTUNE},
 {"<WAIT:",		pWAIT},
+{"<NRSID:",		pNRSID},
 {"<MODEM>",		pMODEM_compSKED},
 {"<MODEM:",		pMODEM},
 {"<EXEC>",		pEXEC},
