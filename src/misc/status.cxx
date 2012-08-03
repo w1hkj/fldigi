@@ -120,6 +120,7 @@ status progStatus = {
 	0,					// int timer
 	0,					// int timerMacro
 	"macros.mdf",		// string LastMacroFile;
+	0,					// int n_rsids
 	false,				// bool spot_recv
 	false,				// bool spot_log
 	false,				// bool contest
