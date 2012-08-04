@@ -4043,7 +4043,18 @@ void LOGBOOK_colors_font()
 
 	int newheight = 24 + 4*(wh + 20) + 3*wh + 4 + bNewSave->h() + 4 + wBrowser->h() + 2;
 
-	dlgLogbook->resize(dlgLogbook->x(), dlgLogbook->y(), dlg_width, newheight);//dlgLogbook->h());
+	if (dlg_width > progStatus.logbook_w)
+		logbook_w = dlg_width;
+	else
+		dlg_width = progStatus.logbook_w;
+	if (newheight > progStatus.logbook_h)
+		progStatus.logbook_h = newheight;
+	else
+		newheight = progStatus.logbook_h;
+
+	dlgLogbook->resize(
+		progStatus.logbook_x, progStatus.logbook_y, 
+		progStatus.logbook_w, progStatus.logbook_h);
 
 // row1
 	int ypos = 24;
