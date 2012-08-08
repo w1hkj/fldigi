@@ -177,7 +177,7 @@ void help_cb() {
 "<P>A notification area in the bar just above the Plain Talk label will show the name\n"
 "and size of the file being transferred and how long it took to transfer when the\n"
 "transfer is completed. The left and right arrows are for adjusting the number of\n"
-"SOH characters preceeding each block. Leave it at the default of 10 unless you\n"
+"SOH characters preceding each block. Leave it at the default of 10 unless you\n"
 "have trouble connecting at high speed, or have too many repeat blocks. Then try\n"
 "higher values to reduce the number of repeated blocks.</P>\n"
 
