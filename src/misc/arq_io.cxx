@@ -198,8 +198,8 @@ void ParseTxRSID(string src)
 
 void parse_arqtext(string &toparse)
 {
-	string strCmdText;
-	string strSubCmd;
+static	string strCmdText;
+static	string strSubCmd;
 	unsigned long int idxCmd, idxCmdEnd, idxSubCmd, idxSubCmdEnd;
 
 	LOG_DEBUG("Arq text: %s", noctrl(toparse).c_str());
@@ -214,8 +214,9 @@ void parse_arqtext(string &toparse)
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
 			mailclient = false;
-			string PskMailLogName = PskMailDir;
-			PskMailLogName += "gMFSK.log";
+			string PskMailLogName;
+			PskMailLogName.assign(PskMailDir);
+			PskMailLogName.append("gMFSK.log");
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
 			REQ(set_button, wf->xmtlock, 1);
@@ -226,8 +227,9 @@ void parse_arqtext(string &toparse)
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
-			string PskMailLogName = PskMailDir;
-			PskMailLogName += "gMFSK.log";
+			string PskMailLogName;
+			PskMailLogName.assign(PskMailDir);
+			PskMailLogName.append("gMFSK.log");
 			Maillogfile = new cLogfile(PskMailLogName.c_str());
 			Maillogfile->log_to_file_start();
 			REQ(set_button, wf->xmtlock, 0);
@@ -329,22 +331,22 @@ bool SysV_arqRx()
 // in $HOME
 
 void checkTLF() {
-	string TLFfile;
-	string TLFlogname;
+static	string TLFfile;
+static	string TLFlogname;
 	ifstream testFile;
 
 	tlfio = mailserver = mailclient = false;
 
-	TLFfile = PskMailDir;
-	TLFfile += "TLFfldigi";
+	TLFfile.assign(PskMailDir);
+	TLFfile.append("TLFfldigi");
 
 	testFile.open(TLFfile.c_str());
 	if (testFile.is_open()) {
 		testFile.close();
 		mailclient = true;
 		tlfio = true;
-		TLFlogname = PskMailDir;
-		TLFlogname += "gMFSK.log";
+		TLFlogname.assign(PskMailDir);
+		TLFlogname.append("gMFSK.log");
 		Maillogfile = new cLogfile(TLFlogname.c_str());
 		Maillogfile->log_to_file_start();
 	}
@@ -354,8 +356,9 @@ bool TLF_arqRx()
 {
 	time_t start_time, prog_time;
 	static char mailline[1000];
-	string sAutoFile = PskMailDir;
-	sAutoFile += "gmfsk_autofile";
+	static string sAutoFile;
+	sAutoFile.assign(PskMailDir);
+	sAutoFile.append("gmfsk_autofile");
 
 	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
@@ -401,10 +404,17 @@ bool WRAP_auto_arqRx()
 {
 	time_t start_time, prog_time;
 	static char mailline[1000];
-	string sAutoFile = FLMSG_WRAP_auto_dir;
-	sAutoFile += "wrap_auto_file";
+	static string sAutoFile;
+	sAutoFile.assign(FLMSG_WRAP_auto_dir);
+	sAutoFile.append("wrap_auto_file");
 
-	ifstream autofile(sAutoFile.c_str());
+	ifstream autofile;
+	autofile.open(sAutoFile.c_str());
+	if (!autofile) {
+		sAutoFile.assign(WRAP_auto_dir);
+		sAutoFile.append("wrap_auto_file");
+		autofile.open(sAutoFile.c_str());
+	}
 	if(autofile) {
 		txstring.clear();
 		time(&start_time);
@@ -425,7 +435,7 @@ bool WRAP_auto_arqRx()
 		std::remove (sAutoFile.c_str());
 
 		if (!txstring.empty()) {
-			arqtext = "\n....start\n";
+			arqtext.assign("\n....start\n");
 			arqtext.append(txstring);
 			arqtext.append("\n......end\n");
 			pText = 0;
@@ -495,7 +505,7 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 #endif
 	}
 	catch (const SocketException& e) {
-		errstring = "Could not start ARQ server (";
+		errstring.assign("Could not start ARQ server (");
 		errstring.append(e.what()).append(")");
 		if (e.error() == EADDRINUSE)
 			errstring.append("\nMultiple instances of fldigi??");
@@ -572,6 +582,15 @@ void arq_stop()
 
 void WriteARQsocket(unsigned char* data, size_t len)
 {
+static string instr;
+	instr.clear();
+	try {
+		size_t n = arqclient.recv(instr);
+		if ( n > 0) txstring.append(instr);
+	} catch (const SocketException& e) {
+		arq_stop();
+		return;
+	}
 	if (!isSocketConnected) return;
 	try {
 		arqclient.send(data, len);
@@ -586,7 +605,8 @@ bool Socket_arqRx()
 {
 	if (!isSocketConnected) return false;
 
-	string instr;
+	static string instr;
+	instr.clear();
 
 	try {
 		size_t n = arqclient.recv(instr);
@@ -682,8 +702,9 @@ static void *arq_loop(void *args)
 		// order of precedence; Socket, Wrap autofile, TLF autofile
 		if (!Socket_arqRx())
 			if (!SysV_arqRx())
-				if (!WRAP_auto_arqRx())
-					TLF_arqRx();
+				WRAP_auto_arqRx();
+//				if (!WRAP_auto_arqRx())
+//					TLF_arqRx();
 #else
 		if (!Socket_arqRx())
 			WRAP_auto_arqRx();
