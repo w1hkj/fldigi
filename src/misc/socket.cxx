@@ -689,16 +689,33 @@ size_t Socket::send(const void* buf, size_t len)
 		if (!wait(1))
 			return 0;
 
-	ssize_t r = ::send(sockfd, (const char*)buf, len, 0);
-	if (r == 0)
-		shutdown(sockfd, SHUT_WR);
-	else if (r == -1) {
-		if (errno != EAGAIN)
-			throw SocketException(errno, "send");
-		r = 0;
-	}
+	size_t nToWrite = len;
+	int r = 0;
+	const char *sp = (const char *)buf;
 
+	while ( nToWrite > 0) {
+#if defined(__WIN32__)
+		r = ::send(sockfd, sp, nToWrite, 0);
+#else
+		r = ::write(sockfd, sp, nToWrite);
+#endif
+
+		if (r > 0) {
+			sp += r;
+			nToWrite -= r;
+		} else {
+			if (r == 0) {
+				shutdown(sockfd, SHUT_WR);
+				throw SocketException(errno, "send");
+			} else if (r == -1) {
+				if (errno != EAGAIN)
+					throw SocketException(errno, "send");
+				r = 0;
+			}
+		}
+	}
 	return r;
+
 }
 
 ///
@@ -753,10 +770,14 @@ size_t Socket::recv(string& buf)
 {
 	size_t n = 0;
 	ssize_t r;
-	while ((r = recv(buffer, BUFSIZ)) > 0) {
-		buf.reserve(buf.length() + r);
-		buf.append(buffer, r);
-		n += r;
+	try {
+		while ((r = recv(buffer, BUFSIZ)) > 0) {
+			buf.reserve(buf.length() + r);
+			buf.append(buffer, r);
+			n += r;
+		}
+	} catch (...) {
+		throw;
 	}
 
 	return n;
