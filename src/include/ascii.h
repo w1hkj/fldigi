@@ -30,6 +30,7 @@
 
 extern const char *ascii[];
 extern const char *ascii2[];
+extern const char *ascii3[];
 
 #define SOH 0x01 // SOH ascii character
 #define EOT 0x04 // EOT ascii character
