@@ -5908,7 +5908,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	ENSURE_THREAD(FLMAIN_TID);
 
 	static unsigned int last = 0;
-	const char **asc = ascii;
+	const char **asc = ascii3;
 	trx_mode mode = active_modem->get_mode();
 
 	if (mailclient || mailserver || arqmode)
@@ -5943,7 +5943,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 			ReceiveText->add('\n', style);
 		} else {
 			add_rx_char(data);
-			ReceiveText->add(data, style);
+			ReceiveText->add(asc[data & 0xFF], style);
 		}
 	}
 
@@ -5953,7 +5953,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 
 	string s;
 	if (data < ' ' && iscntrl(data))
-		s = ascii2[data & 0x7F];
+		s = ascii3[data & 0x7F];
 	else {
 		s += data;
 		if (progStatus.spot_recv)
@@ -6297,11 +6297,11 @@ void put_echo_char(unsigned int data, int style)
 		return;
 
 	static unsigned int last = 0;
-	const char **asc = ascii;
+	const char **asc = ascii3;
 
 	add_tx_char(data);
 
-	if (mailclient || mailserver || arqmode)
+	if (mailclient || mailserver)
 		asc = ascii2;
 	if (active_modem->get_mode() == MODE_RTTY ||
 		active_modem->get_mode() == MODE_CW)
@@ -6322,7 +6322,7 @@ void put_echo_char(unsigned int data, int style)
 		sch += (data >> 8) & 0xFF;
 		sch += (data & 0xFF);
 	} else
-		sch = (data & 0xFF);
+		sch = asc[data & 0xFF];
 	REQ(&FTextRX::addstr, ReceiveText, sch, style);
 #else
 	REQ(&FTextBase::addchr, ReceiveText, data, style);
