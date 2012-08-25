@@ -3806,46 +3806,33 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
-              xywh {26 65 490 75} box ENGRAVED_FRAME align 21
+              xywh {20 65 500 75} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chkAutoExtract {
                 label Enable
                 callback {progdefaults.autoextract = o->value();
 progdefaults.changed = true;}
-                tooltip {Extract files for use with external "wrap / flmsg" program} xywh {46 100 75 20} down_box DOWN_BOX
+                tooltip {Extract files for use with external "wrap / flmsg" program} xywh {74 96 75 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autoextract);}
               }
               Fl_Check_Button chk_open_wrap_folder {
                 label {Open message folder}
                 callback {progdefaults.open_nbems_folder = o->value();
 progdefaults.changed = true;}
-                tooltip {Opens NBEMS file folder upon successful capture} xywh {280 100 146 20} down_box DOWN_BOX
+                tooltip {Opens NBEMS file folder upon successful capture} xywh {280 96 146 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_nbems_folder);}
               }
             }
             Fl_Group {} {
               label {Reception of flmsg file} open
-              xywh {26 141 490 95} box ENGRAVED_FRAME align 21
+              xywh {20 141 500 129} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chk_open_flmsg {
                 label {Open with flmsg}
                 callback {progdefaults.open_flmsg = o->value();
 progdefaults.changed = true;}
-                tooltip {Open message with flmsg} xywh {46 168 136 20} down_box DOWN_BOX
+                tooltip {Open message with flmsg} xywh {74 168 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg);}
-              }
-              Fl_Input txt_flmsg_pathname {
-                label {flmsg:}
-                callback {progdefaults.flmsg_pathname = o->value();
-progdefaults.changed = true;}
-                tooltip {Enter full path-filename for flmsg} xywh {78 199 330 24} when 1
-                code0 {o->value(progdefaults.flmsg_pathname.c_str());}
-                class Fl_Input2
-              }
-              Fl_Button btn_select_flmsg {
-                label {Locate flmsg}
-                callback {select_flmsg_pathname();}
-                tooltip {Locate flmsg executable} xywh {411 199 100 24}
               }
               Fl_Check_Button chk_open_flmsg_print {
                 label {Open in browser}
@@ -3853,6 +3840,26 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {Open file with default browser} xywh {280 168 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg_print);}
+              }
+              Fl_Value_Slider sldr_extract_timeout {
+                label {Timeout (secs)}
+                callback {progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;}
+                tooltip {Extract times out after NN seconds of inactivity.} xywh {40 199 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
+                code0 {o->value(progdefaults.extract_timeout);}
+              }
+              Fl_Input txt_flmsg_pathname {
+                label {flmsg:}
+                callback {progdefaults.flmsg_pathname = o->value();
+progdefaults.changed = true;}
+                tooltip {Enter full path-filename for flmsg} xywh {74 231 330 24} when 1
+                code0 {o->value(progdefaults.flmsg_pathname.c_str());}
+                class Fl_Input2
+              }
+              Fl_Button btn_select_flmsg {
+                label {Locate flmsg}
+                callback {select_flmsg_pathname();}
+                tooltip {Locate flmsg executable} xywh {411 231 100 24}
               }
             }
           }
