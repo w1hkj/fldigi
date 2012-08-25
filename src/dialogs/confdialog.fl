@@ -234,7 +234,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            xywh {4 50 592 320}
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {open
               xywh {6 59 588 300} box ENGRAVED_FRAME
@@ -507,7 +507,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabUserInterface {
             label General open
-            xywh {4 50 592 320} hide
+            xywh {4 50 592 320}
           } {
             Fl_Group {} {open
               xywh {6 55 586 76} box ENGRAVED_FRAME
@@ -590,7 +590,7 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {14 286 233 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {37 285 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Box {} {
@@ -3921,7 +3921,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 598 345} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -3944,7 +3944,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabNBEMS {
-            label NBEMS
+            label NBEMS open
             xywh {4 50 592 320} hide
           } {
             Fl_Group {} {
@@ -3968,34 +3968,41 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Reception of flmsg file} open
-              xywh {6 136 588 95} box ENGRAVED_FRAME align 21
+              xywh {6 136 588 140} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chk_open_flmsg {
                 label {Open with flmsg}
                 callback {progdefaults.open_flmsg = o->value();
 progdefaults.changed = true;}
-                tooltip {Open message with flmsg} xywh {68 163 136 20} down_box DOWN_BOX
+                tooltip {Open message with flmsg} xywh {88 171 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg);}
+              }
+              Fl_Check_Button chk_open_flmsg_print {
+                label {Open in browser}
+                callback {progdefaults.open_flmsg_print = o->value();
+progdefaults.changed = true;}
+                tooltip {Open file with default browser} xywh {322 171 136 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.open_flmsg_print);}
+              }
+              Fl_Value_Slider sldr_extract_timeout {
+                label {Timeout (secs)}
+                callback {progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;}
+                tooltip {Extract times out after NN seconds of inactivity.} xywh {40 207 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
+                code0 {o->value(progdefaults.extract_timeout);}
               }
               Fl_Input txt_flmsg_pathname {
                 label {flmsg:}
                 callback {progdefaults.flmsg_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-filename for flmsg} xywh {100 194 330 24} when 1
+                tooltip {Enter full path-filename for flmsg} xywh {74 242 330 24} when 1
                 code0 {o->value(progdefaults.flmsg_pathname.c_str());}
                 class Fl_Input2
               }
               Fl_Button btn_select_flmsg {
                 label {Locate flmsg}
                 callback {select_flmsg_pathname();}
-                tooltip {Locate flmsg executable} xywh {433 194 100 24}
-              }
-              Fl_Check_Button chk_open_flmsg_print {
-                label {Open in browser}
-                callback {progdefaults.open_flmsg_print = o->value();
-progdefaults.changed = true;}
-                tooltip {Open file with default browser} xywh {302 163 136 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.open_flmsg_print);}
+                tooltip {Locate flmsg executable} xywh {433 242 100 24}
               }
             }
           }

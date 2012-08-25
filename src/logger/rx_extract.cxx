@@ -38,6 +38,7 @@
 #include "confdialog.h"
 #include "debug.h"
 #include "icons.h"
+#include "qrunner.h"
 
 using namespace std;
 
@@ -74,6 +75,23 @@ void rx_extract_reset()
 	extracting = false;
 }
 
+void rx_extract_timer(void *)
+{
+	rx_extract_msg = "Extract timed out";
+	put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
+	rx_extract_reset();
+}
+
+void rx_add_timer()
+{
+	Fl::add_timeout(progdefaults.extract_timeout, rx_extract_timer, NULL);
+}
+
+void rx_remove_timer()
+{
+	Fl::remove_timeout(rx_extract_timer);
+}
+
 void rx_extract_add(int c)
 {
 	if (!c) return;
@@ -96,9 +114,14 @@ void rx_extract_add(int c)
 
 		memset(rx_extract_buff, ' ', bufsize);
 		extracting = true;
+		REQ(rx_remove_timer);
+		REQ(rx_add_timer);
 	} else if (extracting) {
 		rx_buff += ch;
+		REQ(rx_remove_timer);
+		REQ(rx_add_timer);
 		if (strstr(rx_extract_buff, end) != NULL) {
+			REQ(rx_remove_timer);
 			struct tm tim;
 			time_t t;
 			time(&t);
@@ -166,10 +189,6 @@ void rx_extract_add(int c)
 				}
 #endif
 			}
-			rx_extract_reset();
-		} else if (rx_buff.length() > 16384) {
-			rx_extract_msg = "Extract length exceeded 16384 bytes";
-			put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
 			rx_extract_reset();
 		}
 	}

@@ -3172,6 +3172,20 @@ static void cb_chk_open_flmsg(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chk_open_flmsg_print=(Fl_Check_Button *)0;
+
+static void cb_chk_open_flmsg_print(Fl_Check_Button* o, void*) {
+  progdefaults.open_flmsg_print = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *sldr_extract_timeout=(Fl_Value_Slider *)0;
+
+static void cb_sldr_extract_timeout(Fl_Value_Slider* o, void*) {
+  progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Input2 *txt_flmsg_pathname=(Fl_Input2 *)0;
 
 static void cb_txt_flmsg_pathname(Fl_Input2* o, void*) {
@@ -3183,13 +3197,6 @@ Fl_Button *btn_select_flmsg=(Fl_Button *)0;
 
 static void cb_btn_select_flmsg(Fl_Button*, void*) {
   select_flmsg_pathname();
-}
-
-Fl_Check_Button *chk_open_flmsg_print=(Fl_Check_Button *)0;
-
-static void cb_chk_open_flmsg_print(Fl_Check_Button* o, void*) {
-  progdefaults.open_flmsg_print = o->value();
-progdefaults.changed = true;
 }
 
 Fl_Group *tabPskmail=(Fl_Group *)0;
@@ -3779,6 +3786,7 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(2, 25, 596, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(4, 50, 592, 320, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(6, 59, 588, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(18, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -4028,7 +4036,6 @@ Fl_Double_Window* ConfigureDialog() {
             tabContest->end();
           } // Fl_Group* tabContest
           { tabUserInterface = new Fl_Group(4, 50, 592, 320, _("General"));
-            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(6, 55, 586, 76);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 68, 120, 20, _("Show tooltips"));
@@ -4090,7 +4097,7 @@ Fl_Double_Window* ConfigureDialog() {
                 btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn2_save_macros_on_exit
-              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(14, 286, 233, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(37, 285, 233, 20, _("Prompt to save log"));
                 btn2NagMe->tooltip(_("Bug me about saving log entries"));
                 btn2NagMe->down_box(FL_DOWN_BOX);
                 btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
@@ -7279,16 +7286,36 @@ d frequency"));
               } // Fl_Check_Button* chk_open_wrap_folder
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(6, 136, 588, 95, _("Reception of flmsg file"));
+            { Fl_Group* o = new Fl_Group(6, 136, 588, 140, _("Reception of flmsg file"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(68, 163, 136, 20, _("Open with flmsg"));
+              { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(88, 171, 136, 20, _("Open with flmsg"));
                 chk_open_flmsg->tooltip(_("Open message with flmsg"));
                 chk_open_flmsg->down_box(FL_DOWN_BOX);
                 chk_open_flmsg->callback((Fl_Callback*)cb_chk_open_flmsg);
                 o->value(progdefaults.open_flmsg);
               } // Fl_Check_Button* chk_open_flmsg
-              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(100, 194, 330, 24, _("flmsg:"));
+              { Fl_Check_Button* o = chk_open_flmsg_print = new Fl_Check_Button(322, 171, 136, 20, _("Open in browser"));
+                chk_open_flmsg_print->tooltip(_("Open file with default browser"));
+                chk_open_flmsg_print->down_box(FL_DOWN_BOX);
+                chk_open_flmsg_print->callback((Fl_Callback*)cb_chk_open_flmsg_print);
+                o->value(progdefaults.open_flmsg_print);
+              } // Fl_Check_Button* chk_open_flmsg_print
+              { Fl_Value_Slider* o = sldr_extract_timeout = new Fl_Value_Slider(40, 207, 364, 21, _("Timeout (secs)"));
+                sldr_extract_timeout->tooltip(_("Extract times out after NN seconds of inactivity."));
+                sldr_extract_timeout->type(5);
+                sldr_extract_timeout->color(FL_LIGHT3);
+                sldr_extract_timeout->selection_color(FL_FOREGROUND_COLOR);
+                sldr_extract_timeout->minimum(1);
+                sldr_extract_timeout->maximum(10);
+                sldr_extract_timeout->step(0.5);
+                sldr_extract_timeout->value(4);
+                sldr_extract_timeout->textsize(14);
+                sldr_extract_timeout->callback((Fl_Callback*)cb_sldr_extract_timeout);
+                sldr_extract_timeout->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.extract_timeout);
+              } // Fl_Value_Slider* sldr_extract_timeout
+              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(74, 242, 330, 24, _("flmsg:"));
                 txt_flmsg_pathname->tooltip(_("Enter full path-filename for flmsg"));
                 txt_flmsg_pathname->box(FL_DOWN_BOX);
                 txt_flmsg_pathname->color(FL_BACKGROUND2_COLOR);
@@ -7302,16 +7329,10 @@ d frequency"));
                 txt_flmsg_pathname->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.flmsg_pathname.c_str());
               } // Fl_Input2* txt_flmsg_pathname
-              { btn_select_flmsg = new Fl_Button(433, 194, 100, 24, _("Locate flmsg"));
+              { btn_select_flmsg = new Fl_Button(433, 242, 100, 24, _("Locate flmsg"));
                 btn_select_flmsg->tooltip(_("Locate flmsg executable"));
                 btn_select_flmsg->callback((Fl_Callback*)cb_btn_select_flmsg);
               } // Fl_Button* btn_select_flmsg
-              { Fl_Check_Button* o = chk_open_flmsg_print = new Fl_Check_Button(302, 163, 136, 20, _("Open in browser"));
-                chk_open_flmsg_print->tooltip(_("Open file with default browser"));
-                chk_open_flmsg_print->down_box(FL_DOWN_BOX);
-                chk_open_flmsg_print->callback((Fl_Callback*)cb_chk_open_flmsg_print);
-                o->value(progdefaults.open_flmsg_print);
-              } // Fl_Check_Button* chk_open_flmsg_print
               o->end();
             } // Fl_Group* o
             tabNBEMS->end();

@@ -729,6 +729,9 @@
         ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
               "Full pathname to the flmsg executable",                                  \
               "")                                                                       \
+        ELEM_(double, extract_timeout, "EXTRACT_TIMEOUT",                               \
+              "Abort message extraction after nn.n seconds of inactivity",              \
+              2.0)                                                                      \
         ELEM_(std::string, cty_dat_pathname, "CTYDAT_PATHNAME",                         \
               "Full pathname to the cty.dat data file",                                 \
               "")                                                                       \
