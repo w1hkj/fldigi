@@ -117,6 +117,7 @@ protected:
 	       TX_MENU_CUT, TX_MENU_COPY, TX_MENU_PASTE, TX_MENU_CLEAR, TX_MENU_READ,
 	       TX_MENU_WRAP
 	};
+	int		handle_key_shortcuts(int key);
 	int		handle_key(int key);
 	int		handle_key_macro(int key);
 	int		handle_dnd_drag(int pos);

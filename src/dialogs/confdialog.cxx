@@ -423,6 +423,14 @@ progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn2_confirm_exit=(Fl_Check_Button *)0;
+
+static void cb_btn2_confirm_exit(Fl_Check_Button* o, void*) {
+  btn2_confirm_exit->value(o->value());
+progdefaults.confirmExit=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btn_check_for_updates=(Fl_Check_Button *)0;
 
 static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
@@ -3902,14 +3910,14 @@ Fl_Double_Window* ConfigureDialog() {
             tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(21, 55, 496, 76);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(39, 68, 120, 20, _("Show tooltips"));
+              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(56, 68, 120, 20, _("Show tooltips"));
                 btnShowTooltips->tooltip(_("Enable / disable tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
                 btnShowTooltips->value(1);
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(174, 68, 150, 20, _("Show menu icons"));
+              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(200, 68, 150, 20, _("Show menu icons"));
                 chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
                 chkMenuIcons->down_box(FL_DOWN_BOX);
                 chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
@@ -3940,7 +3948,7 @@ Fl_Double_Window* ConfigureDialog() {
             { Fl_Group* o = new Fl_Group(21, 133, 496, 60);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(44, 150, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
+              { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(56, 149, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
                 btn_rx_lowercase->down_box(FL_DOWN_BOX);
                 btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
                 o->value(progdefaults.rx_lowercase);
@@ -3955,23 +3963,28 @@ Fl_Double_Window* ConfigureDialog() {
                 btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
                 o->value(progdefaults.SaveConfig);
               } // Fl_Check_Button* btn_save_config_on_exit
-              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(56, 287, 233, 20, _("Prompt to save macro file"));
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(56, 283, 233, 20, _("Prompt to save macro file"));
                 btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
                 btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
                 btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn2_save_macros_on_exit
-              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(298, 261, 166, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(300, 261, 166, 20, _("Prompt to save log"));
                 btn2NagMe->tooltip(_("Bug me about saving log entries"));
                 btn2NagMe->down_box(FL_DOWN_BOX);
                 btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btn2NagMe
-              { Fl_Box* o = new Fl_Box(61, 211, 436, 47, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
+              { Fl_Box* o = new Fl_Box(61, 215, 436, 40, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
 ndow decoration close button pressed."));
                 o->box(FL_BORDER_BOX);
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
+              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(300, 283, 200, 20, _("Confirm exit"));
+                btn2_confirm_exit->down_box(FL_DOWN_BOX);
+                btn2_confirm_exit->callback((Fl_Callback*)cb_btn2_confirm_exit);
+                o->value(progdefaults.confirmExit);
+              } // Fl_Check_Button* btn2_confirm_exit
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(21, 311, 496, 56, _("Check for updates"));

@@ -138,7 +138,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {609 58 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {597 70 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-5 0 596 372} color 50 selection_color 50
@@ -516,7 +516,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
-                tooltip {Enable / disable tooltips} xywh {39 68 120 20} down_box DOWN_BOX value 1
+                tooltip {Enable / disable tooltips} xywh {56 68 120 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
               }
               Fl_Check_Button chkMenuIcons {
@@ -524,7 +524,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.menuicons = o->value();
 toggle_icon_labels();
 progdefaults.changed = true;}
-                tooltip {Enable / disable icons on menus} xywh {174 68 150 20} down_box DOWN_BOX
+                tooltip {Enable / disable icons on menus} xywh {200 68 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}
               }
               Fl_Choice mnuScheme {
@@ -561,7 +561,7 @@ progdefaults.changed = true;} open
                 label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
                 callback {progdefaults.rx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {44 150 389 20} down_box DOWN_BOX
+                xywh {56 149 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rx_lowercase);}
               }
             }
@@ -581,7 +581,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {56 287 233 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {56 283 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -589,13 +589,21 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {298 261 166 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {300 261 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Box {} {
                 label {Exit prompts active only when File/Exit menu item selected.
 Not active if window decoration close button pressed.}
-                xywh {61 211 436 47} box BORDER_BOX align 20
+                xywh {61 215 436 40} box BORDER_BOX align 20
+              }
+              Fl_Check_Button btn2_confirm_exit {
+                label {Confirm exit}
+                callback {btn2_confirm_exit->value(o->value());
+progdefaults.confirmExit=o->value();
+progdefaults.changed = true;}
+                xywh {300 283 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
@@ -4507,3 +4515,6 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
 }} {}
 } 
+
+Function {make_window()} {open
+} {} 

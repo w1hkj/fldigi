@@ -73,6 +73,7 @@ extern Fl_Check_Button *btn_rx_lowercase;
 extern Fl_Check_Button *btn_save_config_on_exit;
 extern Fl_Check_Button *btn2_save_macros_on_exit;
 extern Fl_Check_Button *btn2NagMe;
+extern Fl_Check_Button *btn2_confirm_exit;
 extern Fl_Check_Button *btn_check_for_updates;
 extern Fl_Group *tabLogServer;
 #include <FL/Fl_Input.H>
@@ -492,4 +493,5 @@ void createConfig();
 class Fl_File_Chooser ;
 void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
+void make_window();
 #endif
