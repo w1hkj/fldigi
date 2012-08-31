@@ -243,7 +243,7 @@ static void set_combo_value(Fl_ComboBox* box, const string& s)
 
 static void get_combo_contents(Fl_ComboBox* box, vector<xmlrpc_c::value>* items)
 {
-	int n = box->size(), p = box->index();
+	int n = box->lsize(), p = box->index();
 	items->reserve(n);
 	for (int i = 0; i < n; i++) {
 		box->index(i);
