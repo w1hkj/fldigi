@@ -985,6 +985,73 @@ void FTextTX::setFont(Fl_Font f, int attr)
 	show_font_warning(this);
 }
 
+/// Handles keyboard shorcuts
+///
+/// @param key
+//   pressed key
+///
+/// @return
+//   1 if shortcut is handled, otherwise 0.
+///
+int FTextTX::handle_key_shortcuts(int key)
+{
+	std::string etag = "";
+
+	switch (key) {
+	case 'c': // add <CALL> for SC-c
+	case 'm': // add <MYCALL> for SC-m
+	case 'n': // add <NAME> for SC-n
+	case 'r': // add <RST> for SC-r
+	case 'l': // add <MYLOC> for SC-l
+	case 'h': // add <MYQTH> for SC-h
+	case 'a': // add <ANTENNA> for SC-a
+		if ((Fl::event_state() & FL_CTRL) && (Fl::event_state() & FL_SHIFT))
+//		if ((Fl::event_state() & (FL_CTRL | FL_SHIFT))) // investigate why this doesn't work...
+		{
+			switch (key)
+			{
+			case 'c':
+				etag = inpCall->value();
+				break;
+			case 'm':
+				etag = progdefaults.myCall;
+				break;
+			case 'n':
+				etag = inpName->value();
+				break;
+			case 'r':
+			        {
+					std::string s;
+					etag = (s = inpRstIn->value()).length() ? s : std::string("599");
+				}
+				break;
+			case 'l':
+				etag = progdefaults.myLocator;
+				break;
+			case 'h':
+				etag = progdefaults.myQth;
+				break;
+			case 'a':
+				etag = progdefaults.myAntenna;
+			default:
+				break;
+			}
+			
+			// Add text + space if length is > 0
+			if (etag.length())
+				add_text(etag + std::string(" "));
+			
+			return 1;
+		}
+		break;
+		
+	default:
+		break;
+	}
+
+	return 0;
+}
+
 /// Handles keyboard events to override Fl_Text_Editor_mod's handling of some
 /// keystrokes.
 ///
@@ -994,6 +1061,10 @@ void FTextTX::setFont(Fl_Font f, int attr)
 ///
 int FTextTX::handle_key(int key)
 {
+
+	if (handle_key_shortcuts(key))
+	    return 1;
+
 	switch (key) {
 	case FL_Escape: // set stop flag and clear
 	{
@@ -1020,6 +1091,7 @@ int FTextTX::handle_key(int key)
 
 		stopMacroTimer();
 		return 1;
+
 	case 't': // transmit for C-t
 		if (trx_state == STATE_RX && Fl::event_state() & FL_CTRL) {
 			menu_cb(TX_MENU_TX);
@@ -1034,6 +1106,7 @@ int FTextTX::handle_key(int key)
 		else if (!(Fl::event_state() & (FL_META | FL_ALT)))
 			break;
 		// fall through to (un)pause for M-r or A-r
+	
 	case FL_Pause:
 		if (trx_state != STATE_TX) {
 			start_tx();

@@ -234,7 +234,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            xywh {4 50 592 320} hide
+            xywh {4 50 592 320}
           } {
             Fl_Group {} {open
               xywh {6 59 588 300} box ENGRAVED_FRAME
@@ -507,7 +507,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabUserInterface {
             label General open
-            xywh {4 50 592 320}
+            xywh {4 50 592 320} hide
           } {
             Fl_Group {} {open
               xywh {6 55 586 76} box ENGRAVED_FRAME
@@ -597,6 +597,14 @@ progdefaults.changed = true;}
                 label {Exit prompts active only when File/Exit menu item selected.
 Not active if window decoration close button pressed.}
                 xywh {53 218 515 40} box BORDER_BOX align 20
+              }
+              Fl_Check_Button btn2_confirm_exit {
+                label {Confirm exit}
+                callback {btn2_confirm_exit->value(o->value());
+progdefaults.confirmExit=o->value();
+progdefaults.changed = true;}
+                xywh {335 285 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
@@ -4657,3 +4665,6 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
 }} {}
 } 
+
+Function {make_window()} {open
+} {} 

@@ -70,6 +70,9 @@
 #endif
 
 #define CONFIG_LIST                                                                     \
+	ELEM_(bool, confirmExit, "CONFIRMEXIT",				                \
+	      "Ensure user wants to leave flgidi",			                \
+	      false)							                \
         ELEM_(bool, SaveConfig, "SAVECONFIG",                                           \
               "Save current configuration on exit",                                     \
               false)                                                                    \

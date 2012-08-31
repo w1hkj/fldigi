@@ -155,12 +155,16 @@ static void send_IPC_log(cQsoRec &rec)
 	sscanf(szdate, "%d", &yyyy);
 	Date logdate(mm, dd, yyyy);
 
-	log_msg = "";
-	log_msg = log_msg + "program:"	+ PACKAGE_NAME + " v " 	+ PACKAGE_VERSION + LOG_MSEPARATOR;
+	log_msg.clear();
+	log_msg = string("program:") + PACKAGE_NAME + string(" v ") + PACKAGE_VERSION + LOG_MSEPARATOR;
 	addtomsg("version:",	LOG_MVERSION);
 	addtomsg("date:",		logdate.szDate(5));
-	addtomsg("time:", 		rec.getField(TIME_ON));
-	addtomsg("endtime:", 	rec.getField(TIME_OFF));
+	memset(sztime, 0, sizeof(sztime) / sizeof(char));
+	strncpy(sztime, rec.getField(TIME_ON), (sizeof(sztime) / sizeof(char)) - 1);
+	addtomsg("TIME:",		sztime);
+	memset(sztime, 0, 5);
+	strncpy(sztime, rec.getField(TIME_OFF), 4);
+	addtomsg("endtime:",            sztime);
 	addtomsg("call:",		rec.getField(CALL));
 	addtomsg("mhz:",		rec.getField(FREQ));
 	addtomsg("mode:",		rec.getField(MODE));
@@ -169,11 +173,11 @@ static void send_IPC_log(cQsoRec &rec)
 	addtomsg("name:",		rec.getField(NAME));
 	addtomsg("qth:",		rec.getField(QTH));
 	addtomsg("state:",		rec.getField(STATE));
-	addtomsg("province:",	rec.getField(VE_PROV));
-	addtomsg("country:",	rec.getField(COUNTRY));
-	addtomsg("locator:",	rec.getField(GRIDSQUARE));
-	addtomsg("serialout:",	rec.getField(STX));
-	addtomsg("serialin:",	rec.getField(SRX));
+	addtomsg("province:",	        rec.getField(VE_PROV));
+	addtomsg("country:",	        rec.getField(COUNTRY));
+	addtomsg("locator:",	        rec.getField(GRIDSQUARE));
+	addtomsg("serialout:",	        rec.getField(STX));
+	addtomsg("serialin:",	        rec.getField(SRX));
 	addtomsg("free1:",		rec.getField(XCHG1));
 	notes = rec.getField(NOTES);
 	for (size_t i = 0; i < notes.length(); i++)

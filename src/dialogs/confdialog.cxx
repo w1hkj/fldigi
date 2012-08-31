@@ -423,6 +423,14 @@ progdefaults.NagMe=o->value();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn2_confirm_exit=(Fl_Check_Button *)0;
+
+static void cb_btn2_confirm_exit(Fl_Check_Button* o, void*) {
+  btn2_confirm_exit->value(o->value());
+progdefaults.confirmExit=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btn_check_for_updates=(Fl_Check_Button *)0;
 
 static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
@@ -3786,7 +3794,6 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(2, 25, 596, 345);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(4, 50, 592, 320, _("Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(6, 59, 588, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(18, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -4036,6 +4043,7 @@ Fl_Double_Window* ConfigureDialog() {
             tabContest->end();
           } // Fl_Group* tabContest
           { tabUserInterface = new Fl_Group(4, 50, 592, 320, _("General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(6, 55, 586, 76);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(20, 68, 120, 20, _("Show tooltips"));
@@ -4108,6 +4116,11 @@ ndow decoration close button pressed."));
                 o->box(FL_BORDER_BOX);
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
+              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(335, 285, 200, 20, _("Confirm exit"));
+                btn2_confirm_exit->down_box(FL_DOWN_BOX);
+                btn2_confirm_exit->callback((Fl_Callback*)cb_btn2_confirm_exit);
+                o->value(progdefaults.confirmExit);
+              } // Fl_Check_Button* btn2_confirm_exit
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(6, 315, 586, 50, _("Check for updates"));

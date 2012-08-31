@@ -2331,6 +2331,8 @@ void qsoClear_cb(Fl_Widget *b, void *)
 void qsoSave_cb(Fl_Widget *b, void *)
 {
 	string havecall = inpCall->value();
+	string timeon = inpTimeOn->value();
+
 	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
 	if (havecall.empty()) {
 		fl_message2(_("Enter a CALL !"));
@@ -2339,6 +2341,12 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	}
 	sDate_off = zdate();
 	sTime_off = ztime();
+
+	if (!timeon.empty())
+	  sTime_on = timeon.c_str();
+	else
+	  sTime_on = sTime_off;
+
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
@@ -2611,6 +2619,22 @@ bool save_on_exit() {
 }
 
 bool clean_exit(bool ask) {
+
+	
+	if (progdefaults.confirmExit && (!(progdefaults.changed && progdefaults.SaveConfig) ||
+					 !(macros.changed && progdefaults.SaveMacros) ||
+					 !(!oktoclear && progdefaults.NagMe)))
+	{
+		switch (fl_choice2(_("Really want to quit?"), NULL, _("No"), _("Yes")))
+		{
+		case 0:
+		case 1:
+			return false;
+		case 2:
+			break;
+		}
+	}
+		
 	if (ask)
 		if (!save_on_exit()) return false;
 
@@ -3312,7 +3336,7 @@ Fl_Menu_Item menu_[] = {
 
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
-{"View/Hide Channels", 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3336,15 +3360,15 @@ Fl_Menu_Item menu_[] = {
 
 {0,0,0,0,0,0,0,0,0},
 
-{_("&Logbook"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("&Logbook"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("View")), 'l', (Fl_Callback*)cb_mnuShowLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
-{"ADIF", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("ADIF")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Merge...")), 0, (Fl_Callback*)cb_mnuMergeADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Export...")), 0, (Fl_Callback*)cb_mnuExportADIF_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{"Reports", 0, 0, 0, FL_SUBMENU | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ make_icon_label(_("Reports")), 0, 0, 0, FL_SUBMENU | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Text...")), 0, (Fl_Callback*)cb_mnuExportTEXT_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("CSV...")), 0, (Fl_Callback*)cb_mnuExportCSV_log, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Cabrillo...")), 0, (Fl_Callback*)cb_Export_Cabrillo, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
