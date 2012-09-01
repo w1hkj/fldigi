@@ -1181,7 +1181,7 @@ int FTextTX::handle_key(int key)
 	{
 		int ipos = insert_position();
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-		if (utf8_txpos == ipos) {
+		if (utf8_txpos > 0 && utf8_txpos == ipos) {
 			bkspaces++;
 			if (tbuf->byte_at(ipos - 1) & 0x80) utf8_txpos -= 2;
 			else utf8_txpos--;
