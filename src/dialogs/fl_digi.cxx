@@ -165,6 +165,7 @@
 
 #include "notifydialog.h"
 #include "macroedit.h"
+#include "rx_extract.h"
 #include "wefax-pic.h"
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
@@ -5952,7 +5953,9 @@ char *get_rxtx_data()
 
 void add_rxtx_char(int data)
 {
-	if (rxtx_raw_len == RAW_BUFF_LEN) {
+	ENSURE_THREAD(FLMAIN_TID);
+	if (rxtx_raw_len == RAW_BUFF_LEN || 
+		((rxtx_raw_len == RAW_BUFF_LEN -1) && (data & 0xFF00))) {
 		memset(rxtx_raw_buff, 0, RAW_BUFF_LEN+1);
 		rxtx_raw_len = 0;
 	}
@@ -5978,8 +5981,10 @@ char *get_rx_data()
 
 void add_rx_char(int data)
 {
+	ENSURE_THREAD(FLMAIN_TID);
 	add_rxtx_char(data);
-	if (rx_raw_len == RAW_BUFF_LEN) {
+	if (rx_raw_len == RAW_BUFF_LEN || 
+		((rx_raw_len == RAW_BUFF_LEN -1) && (data & 0xFF00))) {
 		memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
 		rx_raw_len = 0;
 	}
@@ -6005,11 +6010,15 @@ char *get_tx_data()
 
 void add_tx_char(int data)
 {
+	ENSURE_THREAD(FLMAIN_TID);
 	add_rxtx_char(data);
-	if (tx_raw_len == RAW_BUFF_LEN) {
+	if (tx_raw_len == RAW_BUFF_LEN || 
+		((tx_raw_len == RAW_BUFF_LEN -1) && (data & 0xFF00))) {
 		memset(tx_raw_buff, 0, RAW_BUFF_LEN+1);
 		tx_raw_len = 0;
 	}
+	if (data & 0xFF00) // UTF-8 character
+		tx_raw_buff[tx_raw_len++] = (data >> 8) & 0xFF;
 	tx_raw_buff[tx_raw_len++] = (unsigned char)data;
 }
 
@@ -6028,6 +6037,10 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		asc = ascii2;
 	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
+	if (extracting) {
+		asc = ascii3;
+		style = FTextBase::RECV;
+	}
 
 	if (asc == ascii2 && (data < ' ') && iscntrl(data))
 		style = FTextBase::CTRL;
@@ -6038,7 +6051,10 @@ static void put_rx_char_flmain(unsigned int data, int style)
 
 	speak(data);
 
-	if ((data & 0x80) == 0x80) {
+	if (extracting) {
+		add_rx_char(data);
+		ReceiveText->add(asc[data & 0xFF], style);
+	} else if ((data & 0x80) == 0x80) {
 		if (firstUTF8 == 0)
 			firstUTF8 = data;
 		else {
@@ -6402,22 +6418,27 @@ int get_tx_char(void)
 	return c;
 }
 
+static string sch;
+
 void put_echo_char(unsigned int data, int style)
 {
+
 	if (!data) return;
 
     if (progdefaults.QSKadjust && (active_modem->get_mode() == MODE_CW))
 		return;
 
 	static unsigned int last = 0;
-	const char **asc = ascii3;
+	const char **asc = NULL;
 
 	add_tx_char(data);
 
 	if (mailclient || mailserver)
 		asc = ascii2;
-	if (active_modem->get_mode() == MODE_RTTY ||
-		active_modem->get_mode() == MODE_CW)
+	else if (arq_text_available)
+		asc = ascii3;
+	else if ( active_modem->get_mode() == MODE_RTTY ||
+			  active_modem->get_mode() == MODE_CW)
 		asc = ascii;
 
 	if (data == '\r' && last == '\r') // reject multiple CRs
@@ -6429,13 +6450,17 @@ void put_echo_char(unsigned int data, int style)
 		style = FTextBase::CTRL;
 
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-	string sch;
 	sch.clear();
-	if (data & 0xFF00) {
-		sch += (data >> 8) & 0xFF;
-		sch += (data & 0xFF);
-	} else
-		sch = asc[data & 0xFF];
+	if (asc != NULL) { // MAIL / ARQ / RTTY / CW
+		sch.assign(asc[data & 0xFF]);
+	} else if ((data & 0xFF00) == 0x8000) { //UTF-8 extended character
+		sch.assign("  ");
+		sch[0] = 0x80;
+		sch[1] = (data & 0xFF);
+	} else { // keyboard character including MSB set chars
+		sch.assign(" ");
+		sch[0] = data;
+	}
 	REQ(&FTextRX::addstr, ReceiveText, sch, style);
 #else
 	REQ(&FTextBase::addchr, ReceiveText, data, style);
