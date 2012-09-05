@@ -149,6 +149,9 @@ void rx_extract_add(int c)
 				!progdefaults.flmsg_pathname.empty()) {
 				string cmd = progdefaults.flmsg_pathname;
 #ifdef __MINGW32__
+				cmd.append(" -title ").append(dttm);
+				cmd.append(" --flmsg-dir ").append("\"").append(FLMSG_dir).append("\"");
+
 				if (progdefaults.open_flmsg_print && progdefaults.open_flmsg)
 					cmd.append(" --b");
 				else if (progdefaults.open_flmsg_print)
@@ -169,20 +172,114 @@ void rx_extract_add(int c)
 				free (cmdstr);
 #else
 				string params = "";
-				if (progdefaults.open_flmsg_print)
-					params = "--p";
+				static string ap[10];// = cmd;//"";
+				string param = "";
+
+				size_t p = cmd.find(" -");
+				if (p != string::npos) {
+					param.assign(cmd.substr(p));
+					cmd = cmd.substr(0,p);
+				}
+				for (int i = 0; i < 10; i++) ap[i].clear();
+
+				int n = 0;
+				ap[n++] = "-title"; ap[n++] = dttm;
+				ap[n++] = "--flmsg-dir"; ap[n++] = FLMSG_dir;
+				if (progdefaults.open_flmsg_print && progdefaults.open_flmsg)
+					ap[n++] = " --b";//params = " --b";
+				else if (progdefaults.open_flmsg_print)
+					ap[n++] = " --p";//params = " --p";
+				ap[n++] = outfilename; 
+
 				switch (fork()) {
 				case 0:
 #  ifndef NDEBUG
 					unsetenv("MALLOC_CHECK_");
 					unsetenv("MALLOC_PERTURB_");
 #  endif
-					execlp(
-						(char*)cmd.c_str(), 
-						(char*)cmd.c_str(),
-						(char*)params.c_str(),
-						(char*)outfilename.c_str(), 
-						(char*)0);
+					switch (n) {
+						case 1:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(),
+								(char*)0);
+							break;
+						case 2:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)0);
+							break;
+						case 3:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(),
+								(char*)0);
+							break;
+						case 4:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)0);
+							break;
+						case 5:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)ap[4].c_str(),
+								(char*)0);
+							break;
+						case 6:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)ap[4].c_str(), (char*)ap[5].c_str(),
+								(char*)0);
+							break;
+						case 7:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)ap[4].c_str(), (char*)ap[5].c_str(),
+								(char*)ap[6].c_str(),
+								(char*)0);
+							break;
+						case 8:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)ap[4].c_str(), (char*)ap[5].c_str(),
+								(char*)ap[6].c_str(), (char*)ap[7].c_str(),
+								(char*)0);
+							break;
+						case 9:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)ap[4].c_str(), (char*)ap[5].c_str(),
+								(char*)ap[6].c_str(), (char*)ap[7].c_str(),
+								(char*)ap[8].c_str(),
+								(char*)0);
+							break;
+						case 10:
+							execlp(
+								(char*)cmd.c_str(), (char*)cmd.c_str(),
+								(char*)ap[0].c_str(), (char*)ap[1].c_str(),
+								(char*)ap[2].c_str(), (char*)ap[3].c_str(),
+								(char*)ap[4].c_str(), (char*)ap[5].c_str(),
+								(char*)ap[6].c_str(), (char*)ap[7].c_str(),
+								(char*)ap[8].c_str(), (char*)ap[9].c_str(),
+								(char*)0);
+							break;
+						default : ;
+					}
 					exit(EXIT_FAILURE);
 				case -1:
 					fl_alert2(_("Could not start flmsg"));
