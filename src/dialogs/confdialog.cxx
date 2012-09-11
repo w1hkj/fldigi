@@ -3193,13 +3193,6 @@ static void cb_chk_open_flmsg_print(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Value_Slider *sldr_extract_timeout=(Fl_Value_Slider *)0;
-
-static void cb_sldr_extract_timeout(Fl_Value_Slider* o, void*) {
-  progdefaults.extract_timeout=o->value();
-progdefaults.changed=true;
-}
-
 Fl_Input2 *txt_flmsg_pathname=(Fl_Input2 *)0;
 
 static void cb_txt_flmsg_pathname(Fl_Input2* o, void*) {
@@ -3211,6 +3204,13 @@ Fl_Button *btn_select_flmsg=(Fl_Button *)0;
 
 static void cb_btn_select_flmsg(Fl_Button*, void*) {
   select_flmsg_pathname();
+}
+
+Fl_Value_Slider *sldr_extract_timeout=(Fl_Value_Slider *)0;
+
+static void cb_sldr_extract_timeout(Fl_Value_Slider* o, void*) {
+  progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;
 }
 
 Fl_Group *tabPskmail=(Fl_Group *)0;
@@ -7306,7 +7306,7 @@ d frequency"));
               } // Fl_Check_Button* chk_open_wrap_folder
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(6, 136, 588, 140, _("Reception of flmsg file"));
+            { Fl_Group* o = new Fl_Group(6, 136, 588, 145, _("Reception of flmsg file"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(88, 171, 136, 20, _("Open with flmsg"));
@@ -7321,21 +7321,7 @@ d frequency"));
                 chk_open_flmsg_print->callback((Fl_Callback*)cb_chk_open_flmsg_print);
                 o->value(progdefaults.open_flmsg_print);
               } // Fl_Check_Button* chk_open_flmsg_print
-              { Fl_Value_Slider* o = sldr_extract_timeout = new Fl_Value_Slider(40, 207, 364, 21, _("Timeout (secs)"));
-                sldr_extract_timeout->tooltip(_("Extract times out after NN seconds of inactivity."));
-                sldr_extract_timeout->type(5);
-                sldr_extract_timeout->color(FL_LIGHT3);
-                sldr_extract_timeout->selection_color(FL_FOREGROUND_COLOR);
-                sldr_extract_timeout->minimum(1);
-                sldr_extract_timeout->maximum(10);
-                sldr_extract_timeout->step(0.5);
-                sldr_extract_timeout->value(4);
-                sldr_extract_timeout->textsize(14);
-                sldr_extract_timeout->callback((Fl_Callback*)cb_sldr_extract_timeout);
-                sldr_extract_timeout->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.extract_timeout);
-              } // Fl_Value_Slider* sldr_extract_timeout
-              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(74, 242, 330, 24, _("flmsg:"));
+              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(74, 200, 330, 24, _("flmsg:"));
                 txt_flmsg_pathname->tooltip(_("Enter full path-filename for flmsg"));
                 txt_flmsg_pathname->box(FL_DOWN_BOX);
                 txt_flmsg_pathname->color(FL_BACKGROUND2_COLOR);
@@ -7349,10 +7335,24 @@ d frequency"));
                 txt_flmsg_pathname->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.flmsg_pathname.c_str());
               } // Fl_Input2* txt_flmsg_pathname
-              { btn_select_flmsg = new Fl_Button(433, 242, 100, 24, _("Locate flmsg"));
+              { btn_select_flmsg = new Fl_Button(411, 200, 100, 24, _("Locate flmsg"));
                 btn_select_flmsg->tooltip(_("Locate flmsg executable"));
                 btn_select_flmsg->callback((Fl_Callback*)cb_btn_select_flmsg);
               } // Fl_Button* btn_select_flmsg
+              { Fl_Value_Slider* o = sldr_extract_timeout = new Fl_Value_Slider(40, 239, 364, 21, _("Timeout (secs)"));
+                sldr_extract_timeout->tooltip(_("Extract times out after NN seconds of inactivity."));
+                sldr_extract_timeout->type(5);
+                sldr_extract_timeout->color(FL_LIGHT3);
+                sldr_extract_timeout->selection_color(FL_FOREGROUND_COLOR);
+                sldr_extract_timeout->minimum(1);
+                sldr_extract_timeout->maximum(10);
+                sldr_extract_timeout->step(0.5);
+                sldr_extract_timeout->value(4);
+                sldr_extract_timeout->textsize(14);
+                sldr_extract_timeout->callback((Fl_Callback*)cb_sldr_extract_timeout);
+                sldr_extract_timeout->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.extract_timeout);
+              } // Fl_Value_Slider* sldr_extract_timeout
               o->end();
             } // Fl_Group* o
             tabNBEMS->end();

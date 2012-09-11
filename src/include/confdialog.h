@@ -426,10 +426,10 @@ extern Fl_Check_Button *chkAutoExtract;
 extern Fl_Check_Button *chk_open_wrap_folder;
 extern Fl_Check_Button *chk_open_flmsg;
 extern Fl_Check_Button *chk_open_flmsg_print;
-#include <FL/Fl_Value_Slider.H>
-extern Fl_Value_Slider *sldr_extract_timeout;
 extern Fl_Input2 *txt_flmsg_pathname;
 extern Fl_Button *btn_select_flmsg;
+#include <FL/Fl_Value_Slider.H>
+extern Fl_Value_Slider *sldr_extract_timeout;
 extern Fl_Group *tabPskmail;
 extern Fl_Counter2 *cntServerCarrier;
 extern Fl_Counter2 *cntServerOffset;

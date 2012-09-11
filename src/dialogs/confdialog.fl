@@ -3979,7 +3979,7 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Reception of flmsg file} open
-              xywh {6 136 588 140} box ENGRAVED_FRAME align 21
+              xywh {6 136 588 145} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chk_open_flmsg {
                 label {Open with flmsg}
@@ -3995,25 +3995,25 @@ progdefaults.changed = true;}
                 tooltip {Open file with default browser} xywh {322 171 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg_print);}
               }
-              Fl_Value_Slider sldr_extract_timeout {
-                label {Timeout (secs)}
-                callback {progdefaults.extract_timeout=o->value();
-progdefaults.changed=true;}
-                tooltip {Extract times out after NN seconds of inactivity.} xywh {40 207 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
-                code0 {o->value(progdefaults.extract_timeout);}
-              }
               Fl_Input txt_flmsg_pathname {
                 label {flmsg:}
                 callback {progdefaults.flmsg_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-filename for flmsg} xywh {74 242 330 24} when 1
+                tooltip {Enter full path-filename for flmsg} xywh {74 200 330 24} when 1
                 code0 {o->value(progdefaults.flmsg_pathname.c_str());}
                 class Fl_Input2
               }
               Fl_Button btn_select_flmsg {
                 label {Locate flmsg}
                 callback {select_flmsg_pathname();}
-                tooltip {Locate flmsg executable} xywh {433 242 100 24}
+                tooltip {Locate flmsg executable} xywh {411 200 100 24}
+              }
+              Fl_Value_Slider sldr_extract_timeout {
+                label {Timeout (secs)}
+                callback {progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;}
+                tooltip {Extract times out after NN seconds of inactivity.} xywh {40 239 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
+                code0 {o->value(progdefaults.extract_timeout);}
               }
             }
           }
@@ -4649,7 +4649,7 @@ Function {createConfig()} {open return_type void
 decl {class Fl_File_Chooser ;} {public global
 } 
 
-Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
   code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
 if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
@@ -4659,7 +4659,7 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 }} {}
 } 
 
-Function {NvtxCatalogSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+Function {NvtxCatalogSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
   code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
 if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
@@ -4669,5 +4669,4 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 }} {}
 } 
 
-Function {make_window()} {open
-} {} 
+Function {make_window()} {} {} 

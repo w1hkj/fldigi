@@ -272,11 +272,6 @@ int main(int argc, char ** argv)
 		}
 #endif
 	}
-	generate_option_help();
-
-	int arg_idx;
-	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
-		arg_error(argv[0], NULL, false);
 
 	{
 #ifdef __WOE32__
@@ -291,6 +286,11 @@ int main(int argc, char ** argv)
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #endif
 	}
+	generate_option_help();
+
+	int arg_idx;
+	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
+		arg_error(argv[0], NULL, false);
 
 	if (main_window_title.empty())
 		main_window_title = PACKAGE_TARNAME;

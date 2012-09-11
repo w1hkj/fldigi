@@ -68,7 +68,7 @@ using namespace std;
 //======================================================================
 // test code for pskmail eol issues
 
-const char *asc[256] = {
+static const char *asc[128] = {
 	"<NUL>", "<SOH>", "<STX>", "<ETX>",
 	"<EOT>", "<ENQ>", "<ACK>", "<BEL>",
 	"<BS>",  "<TAB>", "<LF>",  "<VT>", 
@@ -107,7 +107,7 @@ string noctrl(string src)
 {
 	static string retstr;
 	retstr.clear();
-	for (size_t i = 0; i < src.length(); i++) retstr.append(asc[(int)src[i]]);
+	for (size_t i = 0; i < src.length(); i++) retstr.append(asc[(int)src[i] & 0x7F]);
 	return retstr;
 }
 
@@ -653,14 +653,6 @@ void WriteARQSysV(unsigned char data)
 }
 #endif
 
-void WriteARQ(unsigned char data)
-{
-	WriteARQsocket(&data, 1);
-#if !defined(__WOE32__) && !defined(__APPLE__)
-	WriteARQSysV(data);
-#endif
-}
-
 //-----------------------------------------------------------------------------
 // Write End of Transmit character to ARQ client
 //-----------------------------------------------------------------------------
@@ -684,6 +676,22 @@ static void *arq_loop(void *args);
 static bool arq_exit = false;
 static bool arq_enabled;
 
+string tosend = "";
+string enroute = "";
+
+void WriteARQ(unsigned char data)
+{
+	pthread_mutex_lock (&arq_mutex);
+	tosend += data;
+	pthread_mutex_unlock (&arq_mutex);
+	return;
+
+//	WriteARQsocket(&data, 1);
+//#if !defined(__WOE32__) && !defined(__APPLE__)
+//	WriteARQSysV(data);
+//#endif
+}
+
 static void *arq_loop(void *args)
 {
 	SET_THREAD_ID(ARQ_TID);
@@ -694,6 +702,18 @@ static void *arq_loop(void *args)
 			break;
 
 		pthread_mutex_lock (&arq_mutex);
+
+		if (!tosend.empty()) {
+			enroute = tosend;
+			tosend.clear();
+			pthread_mutex_unlock (&arq_mutex);
+			WriteARQsocket((unsigned char*)enroute.c_str(), enroute.length());
+#if !defined(__WOE32__) && !defined(__APPLE__)
+			for (size_t i = 0; i < enroute.length(); i++)
+				WriteARQSysV((unsigned char)enroute[i]);
+#endif
+		} else
+			pthread_mutex_unlock (&arq_mutex);
 
 		if (bSend0x06)
 			send0x06();
@@ -709,8 +729,8 @@ static void *arq_loop(void *args)
 		if (!Socket_arqRx())
 			WRAP_auto_arqRx();
 #endif
-		pthread_mutex_unlock (&arq_mutex);
-		MilliSleep(50);
+//		pthread_mutex_unlock (&arq_mutex);
+		MilliSleep(100);
 
 	}
 // exit the arq thread

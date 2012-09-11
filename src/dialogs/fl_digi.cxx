@@ -6037,7 +6037,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		asc = ascii2;
 	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
-	if (extracting) {
+	if (extract_wrap || extract_flamp) {
 		asc = ascii3;
 		style = FTextBase::RECV;
 	}
@@ -6051,7 +6051,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 
 	speak(data);
 
-	if (extracting) {
+	if (extract_wrap || extract_flamp) {
 		add_rx_char(data);
 		ReceiveText->add(asc[data & 0xFF], style);
 	} else if ((data & 0x80) == 0x80) {
