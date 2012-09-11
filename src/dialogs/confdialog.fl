@@ -225,10 +225,10 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
+        label UI
         xywh {0 25 540 346} hide
       } {
-        Fl_Tabs tabsUI {open
+        Fl_Tabs tabsUI {
           xywh {0 25 540 346} selection_color 50
         } {
           Fl_Group tabBrowser {
@@ -1035,7 +1035,7 @@ WF_UI();}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall open
+        label Waterfall
         xywh {-2 25 563 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
@@ -1404,7 +1404,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
+        label Modems
         xywh {-4 25 595 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -3216,7 +3216,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio open
+        label Audio
         tooltip {Audio devices} xywh {0 25 540 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -3591,7 +3591,7 @@ if (o->value()) {
         }
       }
       Fl_Group tabID {
-        label ID open
+        label ID
         xywh {0 25 540 346} hide
       } {
         Fl_Group {} {
@@ -3832,8 +3832,8 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {
-              label {Reception of flmsg file} open
-              xywh {20 141 500 129} box ENGRAVED_FRAME align 21
+              label {Reception of flmsg files} open
+              xywh {20 141 500 130} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chk_open_flmsg {
                 label {Open with flmsg}
@@ -3849,25 +3849,25 @@ progdefaults.changed = true;}
                 tooltip {Open file with default browser} xywh {280 168 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg_print);}
               }
-              Fl_Value_Slider sldr_extract_timeout {
-                label {Timeout (secs)}
-                callback {progdefaults.extract_timeout=o->value();
-progdefaults.changed=true;}
-                tooltip {Extract times out after NN seconds of inactivity.} xywh {40 199 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
-                code0 {o->value(progdefaults.extract_timeout);}
-              }
               Fl_Input txt_flmsg_pathname {
                 label {flmsg:}
                 callback {progdefaults.flmsg_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-filename for flmsg} xywh {74 231 330 24} when 1
+                tooltip {Enter full path-filename for flmsg} xywh {74 199 330 24} when 1
                 code0 {o->value(progdefaults.flmsg_pathname.c_str());}
                 class Fl_Input2
               }
               Fl_Button btn_select_flmsg {
                 label {Locate flmsg}
                 callback {select_flmsg_pathname();}
-                tooltip {Locate flmsg executable} xywh {411 231 100 24}
+                tooltip {Locate flmsg executable} xywh {411 199 100 24}
+              }
+              Fl_Value_Slider sldr_extract_timeout {
+                label {Timeout (secs)}
+                callback {progdefaults.extract_timeout=o->value();
+progdefaults.changed=true;}
+                tooltip {Extract times out after NN seconds of inactivity.} xywh {40 237 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
+                code0 {o->value(progdefaults.extract_timeout);}
               }
             }
           }
@@ -4224,7 +4224,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label Web open
+        label Web
         tooltip {Callsign database} xywh {0 25 540 345} hide
       } {
         Fl_Tabs {} {open
@@ -4496,7 +4496,7 @@ Function {createConfig()} {return_type void
 decl {class Fl_File_Chooser ;} {public global
 } 
 
-Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
   code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
 if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
@@ -4506,7 +4506,7 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 }} {}
 } 
 
-Function {NvtxCatalogSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
+Function {NvtxCatalogSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
   code {/* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
 if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
@@ -4516,5 +4516,4 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 }} {}
 } 
 
-Function {make_window()} {open
-} {} 
+Function {make_window()} {} {} 

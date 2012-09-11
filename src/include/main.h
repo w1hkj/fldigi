@@ -47,6 +47,10 @@ extern std::string		FLMSG_ICS_dir;
 extern std::string		FLMSG_ICS_msg_dir;
 extern std::string		FLMSG_ICS_tmp_dir;
 
+extern std::string		FLAMP_dir;
+extern std::string		FLAMP_rx_dir;
+extern std::string		FLAMP_tx_dir;
+
 extern std::string		xmlfname;
 
 extern std::string	 	scDevice[2];

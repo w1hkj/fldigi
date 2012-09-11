@@ -285,19 +285,6 @@ int main(int argc, char ** argv)
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #endif
 	}
-	{
-#ifdef __WOE32__
-		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
-		if (PskMailDir.empty()) PskMailDir = BaseDir;
-		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
-		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
-#else
-		if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
-		if (PskMailDir.empty()) PskMailDir = BaseDir;
-		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
-		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
-#endif
-	}
 	generate_option_help();
 
 	int arg_idx;
