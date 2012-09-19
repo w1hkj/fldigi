@@ -1,6 +1,40 @@
 
 
+=Version 3.21.51=
+
+2012-09-11  David Freese  <w1hkj@w1hkj.com>
+
+	638a3c2: flmsg/flamp stream processing
+	8a41aad: DominoEX varicode
+	de95906: WRAP binary files
+
+2012-08-31  Andrej Lajovic  <s57ln@hamradio.si>
+
+	8fdb2ca: Backspaces patch
+
+2012-08-31  Daniel F1RMB  <f1rmb.daniel@gmail.com>
+
+	8d38260: UI enhancements
+
+2012-08-31  David Freese  <w1hkj@w1hkj.com>
+
+	29c9c6a: Combo update
+	a30ad34: Extract timeout
+	7286512: ASCII tables
+	e765c4e: Socket send on Linux
+
+2012-08-07  Kamal Mostafa  <kamal@whence.com>
+
+	8ab2f6e: fix spelling error
+
+2012-08-04  David Freese  <w1hkj@w1hkj.com>
+
+	2f7de4d: Logbook dialog initial size
+
+
 =Version 3.21.50=
+
+	5b175c1: RsID Multiple
 
 2012-08-02  David J Vanecek  <marmot@pennswoods.net>
 
