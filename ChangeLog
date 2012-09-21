@@ -1,8 +1,13 @@
 
 
-=Version 3.21.51=
+=Version 3.21.52=
 
-2012-09-11  David Freese  <w1hkj@w1hkj.com>
+2012-09-21  David Freese  <w1hkj@w1hkj.com>
+
+	a31af3e: ASCII table correction
+
+
+=Version 3.21.51=
 
 	638a3c2: flmsg/flamp stream processing
 	8a41aad: DominoEX varicode
