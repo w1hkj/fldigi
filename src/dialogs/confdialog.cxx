@@ -2426,6 +2426,12 @@ progdefaults.changed = true;
 
 Fl_Choice *mnuSideband=(Fl_Choice *)0;
 
+static void cb_mnuSideband(Fl_Choice*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();
+}
+
 Fl_Round_Button *btnHamlibCMDptt=(Fl_Round_Button *)0;
 
 static void cb_btnHamlibCMDptt(Fl_Round_Button*, void*) {
@@ -6418,6 +6424,7 @@ an merging"));
               { mnuSideband = new Fl_Choice(352, 212, 144, 22, _("Sideband:"));
                 mnuSideband->tooltip(_("Force the rig sideband. Takes\neffect when rig mode changes."));
                 mnuSideband->down_box(FL_BORDER_BOX);
+                mnuSideband->callback((Fl_Callback*)cb_mnuSideband);
                 mnuSideband->align(Fl_Align(FL_ALIGN_TOP_LEFT));
               } // Fl_Choice* mnuSideband
               { Fl_Round_Button* o = btnHamlibCMDptt = new Fl_Round_Button(57, 213, 200, 20, _("PTT via Hamlib command"));

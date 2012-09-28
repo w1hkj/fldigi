@@ -3064,7 +3064,10 @@ progdefaults.changed = true;}
                 tooltip {Initialize hamlib interface} xywh {383 320 113 24}
               }
               Fl_Choice mnuSideband {
-                label {Sideband:} open
+                label {Sideband:}
+                callback {btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+btnRevertHAMLIB->activate();} open
                 tooltip {Force the rig sideband. Takes
 effect when rig mode changes.} xywh {352 212 144 22} down_box BORDER_BOX align 5
               } {}
