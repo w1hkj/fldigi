@@ -413,16 +413,6 @@ int main(int argc, char ** argv)
 	if (progdefaults.XmlRigFilename.empty())
 		progdefaults.XmlRigFilename = xmlfname;
 
-	if (progStatus.LOGenabled == true) {
-    	Date tdy;
-	    string lfname = HomeDir;
-	    lfname.append("fldigi");
-	    lfname.append(tdy.szDate(2));
-	    lfname.append(".log");
-	    logfile = new cLogfile(lfname);
-	    logfile->log_to_file_start();
-	}
-
 #if BENCHMARK_MODE
 	return setup_benchmark();
 #endif

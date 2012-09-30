@@ -82,7 +82,7 @@ void cLogfile::log_to_file(log_t type, const string& s)
 			fprintf(logfile, "%s %s : %s (%s): ", lognames[type], freq, logmode, timestr);
 		}
 		for (size_t i = 0; i < s.length(); i++)
-			if (s[i] == '\n' || s[i] >= ' ') fprintf(logfile, "%c", s[i]);
+			if (s[i] == '\n' || (unsigned char)s[i] >= ' ') fprintf(logfile, "%c", s[i]);
 		retflag = *s.rbegin() == '\n';
 		if (!retflag)
 			fflush(logfile);

@@ -6360,7 +6360,6 @@ void put_echo_char(unsigned int data, int style)
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 	sch.clear();
 	if (asc != NULL) { // MAIL / ARQ / RTTY / CW
 		sch.assign(asc[data & 0xFF]);
@@ -6372,6 +6371,7 @@ void put_echo_char(unsigned int data, int style)
 		sch.assign(" ");
 		sch[0] = data;
 	}
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 	REQ(&FTextRX::addstr, ReceiveText, sch, style);
 #else
 	REQ(&FTextBase::addchr, ReceiveText, data, style);
@@ -6382,7 +6382,7 @@ void put_echo_char(unsigned int data, int style)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 
 	if (progStatus.LOGenabled)
-		logfile->log_to_file(cLogfile::LOG_TX, s);
+		logfile->log_to_file(cLogfile::LOG_TX, sch);
 }
 
 void resetRTTY() {
