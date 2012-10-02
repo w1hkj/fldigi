@@ -3991,7 +3991,7 @@ void LOGBOOK_colors_font()
 	int width_date = fl_width("888888888") + wh;
 	int width_time = fl_width("23:59:599");
 //	int width_call = fl_width("WW/WW8WWW/WW.");
-	int width_freq = fl_width("99.9999999");
+	int width_freq = fl_width("WW/WW8WWW/WW.");//fl_width("99.9999999");
 	int width_rst  = fl_width("5999");
 	int width_pwr  = fl_width("0000");
 	int width_loc  = fl_width("XX88XXX");
