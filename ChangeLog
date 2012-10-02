@@ -1,10 +1,28 @@
 
 
+=Version 3.21.53=
+
+2012-10-02  Kamal Mostafa  <kamal@whence.com>
+
+	199978a: Fix crash if no OSS mixer support
+
+2012-10-02  David Freese  <w1hkj@w1hkj.com>
+
+	a698359: Logbook Call width
+
+2012-09-29  Andrej Lajovic  <s57ln@hamradio.si>
+
+	a8a148f: Log file update
+	946bbb8: UTF-8 char echo
+	bab4a53: Hamlib sideband menu
+
+
 =Version 3.21.52=
+
 
 2012-09-21  David Freese  <w1hkj@w1hkj.com>
 
-	a31af3e: ASCII table correction
+	f8a6e1c: ASCII table correction
 
 
 =Version 3.21.51=
