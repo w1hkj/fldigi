@@ -105,6 +105,7 @@ void MixerOSS::closeMixer()
 
 void MixerOSS::initValues()
 {
+	if (mixer_fd == -1) return;
 	int devnbr;
 
 	inpsrc0 = GetCurrentInputSource();
@@ -129,6 +130,7 @@ void MixerOSS::initValues()
 
 void MixerOSS::restoreValues()
 {
+	if (mixer_fd == -1) return;
 	int devnbr;
 	devnbr = InputSourceNbr("Line");
 	SetCurrentInputSource(devnbr);
@@ -230,6 +232,7 @@ int MixerOSS::initMask()
 // returns value between 0.0 and 1.0
 double MixerOSS::ChannelVolume(int channel)
 {
+	if (mixer_fd == -1) return 0.0;
 	int vol;
 	int stereo;
 
@@ -282,22 +285,26 @@ void MixerOSS::PCMVolume(double volume )
 
 int MixerOSS::NumOutputVolumes()
 {
+	if (mixer_fd == -1) return 0;
 	return num_out;
 }
 
 const char *MixerOSS::OutputVolumeName( int i )
 {
+	if (mixer_fd == -1) return NULL;
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	return labels[outs[i]];
 }
 
 double MixerOSS::OutputVolume( int i )
 {
+	if (mixer_fd == -1) return 0.0;
 	return ChannelVolume(outs[i]);
 }
 
 void MixerOSS::OutputVolume( int i, double volume )
 {
+	if (mixer_fd == -1) return;
 	int vol = (int)((volume * 100.0) + 0.5);
 	vol = (vol | (vol<<8));
 	ioctl(mixer_fd, MIXER_WRITE(outs[i]), &vol);
@@ -305,17 +312,20 @@ void MixerOSS::OutputVolume( int i, double volume )
 
 int MixerOSS::GetNumInputSources()
 {
+	if (mixer_fd == -1) return 0;
 	return num_rec;
 }
 
 const char *MixerOSS::GetInputSourceName( int i)
 {
+	if (mixer_fd == -1) return NULL;
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	return labels[recs[i]];
 }
 
 int MixerOSS::InputSourceNbr(const char *source)
 {
+	if (mixer_fd == -1) return -1;
 	const char *labels[] = SOUND_DEVICE_LABELS;
 	char lbl[80];
 	int len;
@@ -363,6 +373,7 @@ double MixerOSS::InputVolume()
 
 void MixerOSS::InputVolume( double volume )
 {
+	if (mixer_fd == -1) return;
 	int vol;
 	vol = (int)((volume * 100.0) + 0.5);
 	vol = (vol | (vol<<8));
