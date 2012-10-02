@@ -1,3 +1,47 @@
+2012-10-02  Kamal Mostafa  <kamal@whence.com>
+
+	e203c4e: Fix crash if no OSS mixer support
+
+2012-10-02  David Freese  <w1hkj@w1hkj.com>
+
+	1880cfe: Logbook Call width
+
+2012-09-29  Andrej Lajovic  <s57ln@hamradio.si>
+
+	2a391bc: Log file update
+	3e0dac7: UTF-8 char echo
+	e84c5ce: Hamlib sideband menu
+
+2012-09-05  David Freese  <w1hkj@w1hkj.com>
+
+	1bfdfee: flmsg cmd line params
+	6142046: DominoEX varicode
+	d02f714: WRAP binary files
+
+2012-08-31  Andrej Lajovic  <s57ln@hamradio.si>
+
+	e6ee942: Backspaces patch
+
+2012-08-31  Daniel F1RMB  <f1rmb.daniel@gmail.com>
+
+	6d6c7b3: UI enhancements
+
+2012-08-31  David Freese  <w1hkj@w1hkj.com>
+
+	4cb619d: Combo update
+	ad43c73: Extract timeout
+	22ad2be: ASCII tables
+	4cf9425: Socket send on Linux
+
+2012-08-07  Kamal Mostafa  <kamal@whence.com>
+
+	db78661: fix spelling error
+
+2012-08-04  David Freese  <w1hkj@w1hkj.com>
+
+	57801e9: Logbook dialog initial size
+	ede0fd8: RsID Multiple
+
 2012-08-02  David J Vanecek  <marmot@pennswoods.net>
 
 	9025bea: Open BSD fixes
