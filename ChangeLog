@@ -1,3 +1,7 @@
+2012-10-03  David Freese  <w1hkj@w1hkj.com>
+
+	caac757: Code merge fixes
+
 2012-10-02  Kamal Mostafa  <kamal@whence.com>
 
 	e203c4e: Fix crash if no OSS mixer support
