@@ -4069,7 +4069,7 @@ void LOGBOOK_colors_font()
 	int newheight = 24 + 4*(wh + 20) + 3*wh + 4 + bNewSave->h() + 4 + wBrowser->h() + 2;
 
 	if (dlg_width > progStatus.logbook_w)
-		logbook_w = dlg_width;
+		progStatus.logbook_w = dlg_width;
 	else
 		dlg_width = progStatus.logbook_w;
 	if (newheight > progStatus.logbook_h)
