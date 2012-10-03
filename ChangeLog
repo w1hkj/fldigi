@@ -1,5 +1,6 @@
 2012-10-03  David Freese  <w1hkj@w1hkj.com>
 
+	d43f564: UI update
 	caac757: Code merge fixes
 
 2012-10-02  Kamal Mostafa  <kamal@whence.com>
@@ -16,8 +17,9 @@
 	3e0dac7: UTF-8 char echo
 	e84c5ce: Hamlib sideband menu
 
-2012-09-05  David Freese  <w1hkj@w1hkj.com>
+2012-09-11  David Freese  <w1hkj@w1hkj.com>
 
+	14346a7: flmsg/flamp stream processing
 	1bfdfee: flmsg cmd line params
 	6142046: DominoEX varicode
 	d02f714: WRAP binary files
