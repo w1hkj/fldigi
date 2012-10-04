@@ -6364,9 +6364,14 @@ void put_echo_char(unsigned int data, int style)
 	if (asc != NULL) { // MAIL / ARQ / RTTY / CW
 		sch.assign(asc[data & 0xFF]);
 	} else if (data & 0x8000) { //UTF-8 extended character
-		sch.assign("  ");
-		sch[0] = (data >> 8) & 0xFF;
-		sch[1] = (data & 0xFF);
+		unsigned int shiftdata = data;
+		while (!(shiftdata & 0xff000000))
+			shiftdata <<= 8;
+		unsigned char c;
+		while ((c = (shiftdata >> 24) & 0xff)) {
+			sch += c;
+			shiftdata <<= 8;
+		}
 	} else { // keyboard character including MSB set chars
 		sch.assign(" ");
 		sch[0] = data;
