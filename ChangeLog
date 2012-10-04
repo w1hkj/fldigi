@@ -1,6 +1,15 @@
+2012-10-04  David Freese  <w1hkj@w1hkj.com>
+
+	02901ad: UTF-8 wide characters
+
+2012-10-04  Andrej Lajovic  <s57ln@hamradio.si>
+
+	1b8cccd: flarq bug fix
+	bad1660: Add_tx_char
 
 
 =Version 3.21.53=
+
 
 2012-10-02  Kamal Mostafa  <kamal@whence.com>
 
