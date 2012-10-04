@@ -195,7 +195,6 @@ private:
 	char	lastRxChar;
 	bool	TXflag;
 
-	int		Sessionnumber;
 	int		Bufferlength;
 	int		maxheaders;
 	int		exponent;
@@ -207,7 +206,7 @@ private:
 	int	nbrbadRx;		// number with crc errors
 	int	nbrbadTx;		// total number of repeats required
 //	int 	max_idle;		// Dynamic timing slot initial value
-	int		SessionNumber;
+	int	SessionNumber;
 	bool	PollOK;			// used for status handshake
 	bool	wrappedFlag;	// set true if missing blocks bit count
 							// has wrapped around

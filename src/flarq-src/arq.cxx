@@ -88,7 +88,7 @@ arq::arq()
 	lastRxChar = 0;
 	TXflag = false;
 
-	Sessionnumber = 0;
+	SessionNumber = 0;
 	
 	exponent = EXPONENT;
 	maxheaders = MAXHEADERS;
