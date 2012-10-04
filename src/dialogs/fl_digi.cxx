@@ -6405,7 +6405,7 @@ void put_echo_char(unsigned int data, int style)
 	static unsigned int last = 0;
 	const char **asc = NULL;
 
-	add_tx_char(data);
+	REQ(&add_tx_char, data);
 
 	if (mailclient || mailserver)
 		asc = ascii2;
