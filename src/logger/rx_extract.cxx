@@ -42,9 +42,12 @@
 
 using namespace std;
 
-const char *wrap_beg = "[WRAP:beg]";
-const char *wrap_end = "[WRAP:end]";
-const char *flmsg = "<flmsg>";
+static const char *wrap_beg = "[WRAP:beg]";
+static const char *wrap_end = "[WRAP:end]";
+static const char *flmsg = "<flmsg>";
+
+static const char flamp_beg[] = ">FLAMP";
+static const char flamp_end[] = "{EOT}";
 
 #ifdef __WIN32__
 const char *txtWrapInfo = _("\
@@ -266,9 +269,6 @@ void invoke_flmsg()
 #endif
 	}
 }
-
-static const char flamp_beg[] = "<FLAMP";
-static const char flamp_end[] = "{EOT}";
 
 void rx_extract_add(int c)
 {
