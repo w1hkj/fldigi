@@ -174,7 +174,6 @@ void pskBrowser::resize(int x, int y, int w, int h)
 			} else if (!progdefaults.myCall.empty() &&
 					strcasestr(bwsrline[j].c_str(), progdefaults.myCall.c_str()))
 				bline.append(dkgreen);
-//		bline.append(bwsrline[j]);
 			Fl_Hold_Browser::add(bline.c_str());
 		}
 	}
@@ -184,21 +183,21 @@ void pskBrowser::makecolors()
 {
 	char tempstr[20];
 
-	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+	snprintf(tempstr, sizeof(tempstr), "@C%d",
 		 adjust_color(fl_color_cube(128 * (FL_NUM_RED - 1) / 255,
 					    0 * (FL_NUM_GREEN - 1) / 255,
 					    0 * (FL_NUM_BLUE - 1) / 255),
 			      FL_BACKGROUND2_COLOR)); // dark red
 	dkred = tempstr;
 
-	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+	snprintf(tempstr, sizeof(tempstr), "@C%d",
 		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
 					    128 * (FL_NUM_GREEN - 1) / 255,
 					    0 * (FL_NUM_BLUE - 1) / 255),
 			      FL_BACKGROUND2_COLOR)); // dark green
 	dkgreen = tempstr;
 
-	snprintf(tempstr, sizeof(tempstr), "@b@C%d",
+	snprintf(tempstr, sizeof(tempstr), "@C%d",
 		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
 					    0 * (FL_NUM_GREEN - 1) / 255,
 					    128 * (FL_NUM_BLUE - 1) / 255),
@@ -249,6 +248,8 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 				else
 					bwsrline[ch].erase(0,1);
 				linechars[ch]--;
+				bwsrline[ch].erase(0,1);
+				linechars[ch] -= 1;
 			}
 		} else {
 			bwsrline[ch].clear();
