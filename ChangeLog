@@ -1,9 +1,15 @@
-2012-10-04  David Freese  <w1hkj@w1hkj.com>
+2012-10-07  David Freese  <w1hkj@w1hkj.com>
 
-	02901ad: UTF-8 wide characters
+	06e5ed5: View browser
+	1390d0b: FLAMP interface fix
+
+
+=Version 3.21.54=
+
 
 2012-10-04  Andrej Lajovic  <s57ln@hamradio.si>
 
+	1abb9b9: UTF-8 wide characters
 	1b8cccd: flarq bug fix
 	bad1660: Add_tx_char
 
