@@ -6223,7 +6223,7 @@ int get_tx_char(void)
 	if (idling) { return -1; }
 
 	if (arq_text_available)
-		return arq_get_char();
+		return (arq_get_char() & 0xFF);
 
     if (active_modem == cw_modem && progdefaults.QSKadjust)
         return szTestChar[2 * progdefaults.TestChar];

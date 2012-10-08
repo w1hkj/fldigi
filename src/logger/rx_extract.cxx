@@ -80,6 +80,7 @@ void rx_extract_reset()
 	rx_extract_buff[bufsize] = 0;
 	extract_wrap = false;
 	extract_flamp = false;
+	put_status("");
 }
 
 void rx_extract_timer(void *)
@@ -286,9 +287,9 @@ void rx_extract_add(int c)
 
 	if ( strstr(rx_extract_buff, wrap_beg) && !extract_flamp) {
 		rx_buff.assign(wrap_beg);
-		rx_extract_msg = "Extract WRAP";
+		rx_extract_msg = "Extracting WRAP/FLMSG";
 
-		put_status(rx_extract_msg.c_str(), 60, STATUS_CLEAR);
+		put_status(rx_extract_msg.c_str());
 
 		memset(rx_extract_buff, ' ', bufsize);
 		extract_wrap = true;
@@ -304,6 +305,8 @@ void rx_extract_add(int c)
 		}
 	} else if (strstr(rx_extract_buff, flamp_beg) && ! extract_wrap) {
 		extract_flamp = true;
+		rx_extract_msg = "Extracting FLAMP";
+		put_status(rx_extract_msg.c_str());
 	} else if (extract_flamp == true) {
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
