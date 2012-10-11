@@ -24,7 +24,7 @@ Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
     label {Export Setup}
-    xywh {517 143 675 439} type Double hide modal
+    xywh {517 143 675 439} type Double visible
   } {
     Fl_Group {} {
       label {Select Records to Export}
@@ -307,7 +307,7 @@ btnSelectNotes->value(0);}
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook open
+    label Logbook
     xywh {603 71 590 514} type Double resizable visible
   } {
     Fl_Input inpDate_log {
@@ -467,7 +467,7 @@ btnSelectNotes->value(0);}
       class Fl_Input2
     }
     Fl_Input txtNbrRecs_log {
-      label Recs selected
+      label Recs
       tooltip {\# Records in logbook} xywh {54 284 65 22}
       class Fl_Input2
     }
@@ -528,8 +528,8 @@ wBrowser->allowResize (1);
 wBrowser->gridEnabled (0);
 dlgLogbook->xclass(PACKAGE_TARNAME);} {}
   Fl_Window wCabrillo {
-    label {Cabrillo Setup}
-    xywh {516 612 675 340} type Double hide modal
+    label {Cabrillo Setup} selected
+    xywh {516 612 675 340} type Double hide
   } {
     Fl_Group {} {
       label {Select Records to Export} open
