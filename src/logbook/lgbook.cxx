@@ -557,7 +557,6 @@ void create_logbook_dialogs() {
       } // Fl_Button* btnSetFieldDefaults
       o->end();
     } // Fl_Group* o
-    wExport->set_modal();
     wExport->end();
   } // Fl_Double_Window* wExport
   { dlgLogbook = new Fl_Double_Window(590, 514, _("Logbook"));
@@ -1105,7 +1104,6 @@ void create_logbook_dialogs() {
       } // Fl_Button* btnCabCheckAllFields
       o->end();
     } // Fl_Group* o
-    wCabrillo->set_modal();
     wCabrillo->end();
   } // Fl_Double_Window* wCabrillo
 }
