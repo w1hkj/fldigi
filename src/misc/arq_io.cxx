@@ -725,8 +725,8 @@ static void *arq_loop(void *args)
 		if (!Socket_arqRx())
 			if (!SysV_arqRx())
 				WRAP_auto_arqRx();
-//				if (!WRAP_auto_arqRx())
-//					TLF_arqRx();
+				if (!WRAP_auto_arqRx())
+					TLF_arqRx();
 #else
 		if (!Socket_arqRx())
 			WRAP_auto_arqRx();
