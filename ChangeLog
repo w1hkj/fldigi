@@ -1,8 +1,15 @@
 
 
-=Version 3.21.56=
+=Version 3.21.57=
 
-2012-10-07  David Freese  <w1hkj@w1hkj.com>
+2012-10-20  David Freese  <w1hkj@w1hkj.com>
+
+	d925c85: Escape aborts clean start
+	0366447: TLF arq
+	d85631b: Logbook Dialogs
+
+
+=Version 3.21.56=
 
 	320fc54: ARQ rx/tx
 
