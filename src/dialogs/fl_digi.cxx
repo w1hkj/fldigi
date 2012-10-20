@@ -2487,15 +2487,6 @@ void cb_btnClearMViewer(Fl_Widget *w, void *d)
 
 int default_handler(int event)
 {
-	if (event != FL_SHORTCUT)
-		return 0;
-
-	if (RigViewerFrame && Fl::event_key() == FL_Escape &&
-	    RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
-		CloseQsoView();
-		return 1;
-	}
-
 	Fl_Widget* w = Fl::focus();
 
 	if (w == fl_digi_main || w->window() == fl_digi_main) {
@@ -2528,8 +2519,15 @@ int default_handler(int event)
 			return 1;
 		}
 	}
-	else if (w == dlgLogbook || w->window() == dlgLogbook)
+
+	if (w == dlgLogbook || w->window() == dlgLogbook)
 		return log_search_handler(event);
+
+	if (RigViewerFrame && Fl::event_key() == FL_Escape &&
+	    RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
+		CloseQsoView();
+		return 1;
+	}
 
 	return 0;
 }
