@@ -13,6 +13,7 @@
 #endif
 
 extern std::string		appname;
+extern std::string		BaseDir;
 extern std::string		HomeDir;
 extern std::string		RigsDir;
 extern std::string		ScriptsDir;

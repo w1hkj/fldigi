@@ -1731,16 +1731,55 @@ int main (int argc, char *argv[] )
 	set_terminate(diediedie);
 	setup_signal_handlers();
 
+	NBEMS_dir.clear();
 	{
+		string appname = argv[0];
+		string appdir;
 		char dirbuf[FL_PATH_MAX + 1];
+		fl_filename_expand(dirbuf, FL_PATH_MAX, appname.c_str());
+		appdir.assign(dirbuf);
+
 #ifdef __WOE32__
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$USERPROFILE/NBEMS.files/");
-		NBEMS_dir = dirbuf;
+		size_t p = appdir.rfind("flarq.exe");
+		if (p != std::string::npos) {
+			appdir.erase(p);
+			string testfile;
+			testfile.assign(appdir).append("NBEMS.DIR");
+			FILE *testdir = fopen(testfile.c_str(),"r");
+			if (testdir) {
+				fclose(testdir);
+				NBEMS_dir = appdir;
+			}
+		}
+		if (NBEMS_dir.empty()) {
+			fl_filename_expand(dirbuf, FL_PATH_MAX, "$USERPROFILE/");
+			NBEMS_dir = dirbuf;
+		}
+		NBEMS_dir.append("NBEMS.files\\");
 #else
-		fl_filename_expand(dirbuf, sizeof(dirbuf) - 1, "$HOME/.nbems/");
-		NBEMS_dir = dirbuf;
+		size_t p = appdir.rfind("flarq");
+		if (p != std::string::npos) {
+			if (appdir.find("./flarq") != std::string::npos) {
+				if (getcwd(dirbuf, FL_PATH_MAX))
+					appdir.assign(dirbuf).append("/");
+			} else
+				appdir.erase(p);
+			string testfile;
+			testfile.assign(appdir).append("NBEMS.DIR");
+			FILE *testdir = fopen(testfile.c_str(),"r");
+			if (testdir) {
+				fclose(testdir);
+				NBEMS_dir = appdir;
+			}
+		}
+		if (NBEMS_dir.empty()) {
+			fl_filename_expand(dirbuf, FL_PATH_MAX, "$HOME/");
+			NBEMS_dir = dirbuf;
+		}
+		NBEMS_dir.append(".nbems/");
 #endif
 	}
+
 	checkdirectories();
 
 	Logfile = ARQ_dir;

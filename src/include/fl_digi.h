@@ -50,6 +50,8 @@ extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
 //extern Fl_Double_Window *opBrowserView;
 
+extern bool				NBEMSapps_dir;
+
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
 extern pskBrowser		*mainViewer;
