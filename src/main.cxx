@@ -122,6 +122,7 @@ string appname;
 
 string scDevice[2];
 
+bool NBEMSapps_dir = false;
 string BaseDir = "";
 string HomeDir = "";
 string RigsDir = "";
@@ -238,6 +239,36 @@ void delayed_startup(void *)
 int main(int argc, char ** argv)
 {
 	appname = argv[0];
+	{
+		string appdir;
+		char apptemp[FL_PATH_MAX];
+		fl_filename_expand(apptemp, sizeof(apptemp), appname.c_str());
+		appdir.assign(apptemp);
+
+#ifdef __WOE32__
+		size_t p = appdir.rfind("fldigi.exe");
+		appdir.erase(p);
+#else
+		size_t p = appdir.rfind("fldigi");
+		if (appdir.find("./fldigi") != std::string::npos) {
+			if (getcwd(apptemp, sizeof(apptemp)))
+				appdir.assign(apptemp).append("/");
+		} else
+			appdir.erase(p);
+#endif
+
+		if (p != std::string::npos) {
+			string testfile;
+			testfile.assign(appdir).append("NBEMS.DIR");
+			FILE *testdir = fopen(testfile.c_str(),"r");
+			if (testdir) {
+				fclose(testdir);
+				BaseDir = appdir;
+				NBEMSapps_dir = true;
+			}
+		}
+	}
+
 	debug_exec(argv);
 	CREATE_THREAD_ID(); // only call this once
 	SET_THREAD_ID(FLMAIN_TID);
@@ -315,6 +346,8 @@ int main(int argc, char ** argv)
 		cerr << error << '\n';
 		debug::stop();
 	}
+
+	LOG_INFO("appname: %s", appname.c_str());
 
 	LOG_INFO("HomeDir: %s", HomeDir.c_str());
 	LOG_INFO("RigsDir: %s", RigsDir.c_str());
