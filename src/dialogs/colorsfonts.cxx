@@ -958,6 +958,8 @@ LOGBOOK_colors_font();
 progdefaults.changed = true;
 }
 
+Fl_Menu_Button *CHARSETstatus=(Fl_Menu_Button *)0;
+
 Fl_Double_Window* make_colorsfonts() {
   font_browser = new Font_Browser;
   { dlgColorFont = new Fl_Double_Window(375, 220, _("Colors and Fonts"));
@@ -1266,6 +1268,14 @@ Fl_Double_Window* make_colorsfonts() {
       } // Fl_Group* o
       tabsColors->end();
     } // Fl_Tabs* tabsColors
+    { CHARSETstatus = new Fl_Menu_Button(3, 192, 120, 24, _("Char set"));
+      CHARSETstatus->tooltip(_("Select Rx/Tx Character Set"));
+      CHARSETstatus->color((Fl_Color)55);
+      CHARSETstatus->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+    } // Fl_Menu_Button* CHARSETstatus
+    { Fl_Box* o = new Fl_Box(125, 192, 125, 25, _("Select Char Set"));
+      o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+    } // Fl_Box* o
     dlgColorFont->xclass(PACKAGE_TARNAME);
     dlgColorFont->end();
   } // Fl_Double_Window* dlgColorFont

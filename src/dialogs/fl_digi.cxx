@@ -167,6 +167,9 @@
 #include "macroedit.h"
 #include "rx_extract.h"
 #include "wefax-pic.h"
+#include "charsetdistiller.h"
+#include "charsetlist.h"
+#include "outputencoder.h"
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL      _("Rig control")
@@ -420,6 +423,12 @@ Fl_Pixmap 			*addrbookpixmap = 0;
 #if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
 Pixmap				fldigi_icon_pixmap;
 #endif
+
+// for character set conversion
+int rxtx_charset = 0;
+static CharsetDistiller rx_chd(charset_list[rxtx_charset].tiniconv_id);
+static CharsetDistiller echo_chd(charset_list[rxtx_charset].tiniconv_id);
+static OutputEncoder    tx_encoder(charset_list[rxtx_charset].tiniconv_id);
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
 void UI_select();
@@ -1328,6 +1337,46 @@ void cb_init_mode(Fl_Widget *, void *mode)
 	init_modem(reinterpret_cast<trx_mode>(mode));
 }
 
+// character set selection menu
+
+void cb_charset_menu(Fl_Widget *, void *charset)
+{
+	rxtx_charset = reinterpret_cast<intptr_t>(charset);
+	int tiniconv_id = charset_list[rxtx_charset].tiniconv_id;
+
+	// order all converters to switch to the new encoding
+	rx_chd.set_input_encoding(tiniconv_id);
+	echo_chd.set_input_encoding(tiniconv_id);
+	tx_encoder.set_output_encoding(tiniconv_id);
+
+	if (mainViewer)
+		mainViewer->set_input_encoding(tiniconv_id);
+	if (brwsViewer)
+		brwsViewer->set_input_encoding(tiniconv_id);
+
+	// update the button
+	CHARSETstatus->label(charset_list[rxtx_charset].name);
+	progdefaults.charset_name = charset_list[rxtx_charset].name;
+	restoreFocus();
+}
+
+void populate_charset_menu(void)
+{
+	for (unsigned int i = 0; i < number_of_charsets; i++)
+		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu, (void *)charset_list[i].tiniconv_id);
+}
+
+void set_default_charset(void)
+{
+	// find the position of the default charset in charset_list[] and
+	// trigger the callback
+	for (unsigned int i = 0; i < number_of_charsets; i++) {
+		if (strcmp(charset_list[i].name, progdefaults.charset_name.c_str()) == 0) {
+			cb_charset_menu(0, (void *)charset_list[i].tiniconv_id);
+			return;
+		}
+	}
+}
 
 void restoreFocus(Fl_Widget* w)
 {
@@ -5931,14 +5980,11 @@ char *get_rxtx_data()
 void add_rxtx_char(int data)
 {
 	ENSURE_THREAD(FLMAIN_TID);
-	if (rxtx_raw_len == RAW_BUFF_LEN || 
-		((rxtx_raw_len == RAW_BUFF_LEN -1) && (data & 0xFF00))) {
+	if (rxtx_raw_len == RAW_BUFF_LEN) {
 		memset(rxtx_raw_buff, 0, RAW_BUFF_LEN+1);
 		rxtx_raw_len = 0;
 	}
-	if (data & 0xFF00) // UTF-8 character
-		rxtx_raw_buff[rxtx_raw_len++] = (data >> 8) & 0xFF;
-	rxtx_raw_buff[rxtx_raw_len++] = (unsigned char)(data & 0xFF);
+	rxtx_raw_buff[rxtx_raw_len++] = (unsigned char)data;
 }
 
 //======================================================================
@@ -5960,13 +6006,10 @@ void add_rx_char(int data)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	add_rxtx_char(data);
-	if (rx_raw_len == RAW_BUFF_LEN || 
-		((rx_raw_len == RAW_BUFF_LEN -1) && (data & 0xFF00))) {
+	if (rx_raw_len == RAW_BUFF_LEN) {
 		memset(rx_raw_buff, 0, RAW_BUFF_LEN+1);
 		rx_raw_len = 0;
 	}
-	if (data & 0xFF00) // UTF-8 character
-		rx_raw_buff[rx_raw_len++] = (data >> 8) & 0xFF;
 	rx_raw_buff[rx_raw_len++] = (unsigned char)data;
 }
 
@@ -5989,87 +6032,116 @@ void add_tx_char(int data)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	add_rxtx_char(data);
-	if (tx_raw_len == RAW_BUFF_LEN || 
-		((tx_raw_len == RAW_BUFF_LEN -1) && (data & 0xFF00))) {
+	if (tx_raw_len == RAW_BUFF_LEN) {
 		memset(tx_raw_buff, 0, RAW_BUFF_LEN+1);
 		tx_raw_len = 0;
 	}
-	if (data & 0xFF00) // UTF-8 character
-		tx_raw_buff[tx_raw_len++] = (data >> 8) & 0xFF;
 	tx_raw_buff[tx_raw_len++] = (unsigned char)data;
 }
 
 //======================================================================
-static unsigned char firstUTF8 = 0;
+static void display_rx_data(const unsigned char data, int style) {
+	ReceiveText->add(data, style);
+	speak(data);
+
+	if (Maillogfile)
+		Maillogfile->log_to_file(cLogfile::LOG_RX, string(1, (const char)data));
+
+	if (progStatus.LOGenabled)
+		logfile->log_to_file(cLogfile::LOG_RX, string(1, (const char)data));
+}
+
+static void rx_parser(const unsigned char data, int style)
+{
+	// assign a style to the incoming data
+	if (extract_wrap || extract_flamp)
+		style = FTextBase::RECV;
+	if ((data < ' ') && iscntrl(data))
+		style = FTextBase::CTRL;
+	if (wf->tmp_carrier())
+		style = FTextBase::ALTR;
+	
+	// Collapse the "\r\n" sequence into "\n".
+	//
+	// The 'data' variable possibly contains only a part of a multi-byte
+	// UTF-8 character. This is not a problem. All data has passed
+	// through a distiller before we got here, so we can be sure that
+	// the input is valid UTF-8. All bytes of a multi-byte character
+	// will therefore have the eight bit set and can not match either
+	// '\r' or '\n'.
+	
+	static unsigned int lastdata = 0;
+	
+	if (data == '\n' && lastdata == '\r');
+	else if (data == '\r') {
+		add_rx_char('\n');
+		display_rx_data('\n', style);
+	} else {
+		add_rx_char(data);
+		display_rx_data(data, style);
+	}
+
+	lastdata = data;
+
+	if (!(data < ' ' && iscntrl(data)) && progStatus.spot_recv)
+		spot_recv(data);
+}
+
 
 static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
+	
+	// save raw data if autoextracting
+	if (progdefaults.autoextract == true)
+		rx_extract_add(data);
 
-	static unsigned int last = 0;
-	const char **asc = ascii3;
+	WriteARQ(data);
+
+	// possible destinations for the data
+	enum dest_type {
+		DEST_RECV,	// ordinary received text
+		DEST_ALTR	// alternate received text
+	};
+	static enum dest_type destination = DEST_RECV;
+	static enum dest_type prev_destination = DEST_RECV;
+
+	// Determine the destination of the incoming data. If the destination had
+	// changed, clear the contents of the distiller.
+	destination = (wf->tmp_carrier() ? DEST_ALTR : DEST_RECV);
+
+	if (destination != prev_destination) {
+		rx_chd.reset();
+		rx_chd.clear();
+	}
+	
+	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
-
+	const char **asc = NULL;
+	
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
 	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
-	if (extract_wrap || extract_flamp) {
+	if (extract_wrap || extract_flamp)
 		asc = ascii3;
-		style = FTextBase::RECV;
+	
+	// pass the data to the distiller
+	if (asc != NULL)
+		rx_chd.rx((unsigned char *)asc[data & 0xFF]);
+	else
+		rx_chd.rx(data & 0xFF);
+	
+	// feed the decoded data into the RX parser
+	if (rx_chd.data_length() > 0) {
+		const char *ptr = rx_chd.data().data();
+		const char *end = ptr + rx_chd.data_length();
+		
+		while (ptr < end)
+			rx_parser((const unsigned char)*ptr++, style);
+		
+		rx_chd.clear();
 	}
-
-	if (asc == ascii2 && (data < ' ') && iscntrl(data))
-		style = FTextBase::CTRL;
-	if (wf->tmp_carrier())
-		style = FTextBase::ALTR;
-
-	if (progdefaults.autoextract == true) rx_extract_add(data);
-
-	speak(data);
-
-	if (extract_wrap || extract_flamp) {
-		add_rx_char(data);
-		ReceiveText->add(asc[data & 0xFF], style);
-	} else if ((data & 0x80) == 0x80) {
-		if (firstUTF8 == 0)
-			firstUTF8 = data;
-		else {
-			add_rx_char(firstUTF8);
-			add_rx_char(data);
-			ReceiveText->add(firstUTF8, style);
-			ReceiveText->add(data, style);
-			firstUTF8 = 0;
-		}
-	} else {
-		firstUTF8 = 0;
-		if (data == '\n' && last == '\r');
-		else if (data == '\r') {
-			add_rx_char('\n');
-			ReceiveText->add('\n', style);
-		} else {
-			add_rx_char(data);
-			ReceiveText->add(data & 0xFF, style);
-		}
-	}
-
-	last = data;
-
-	WriteARQ(data);
-
-	string s;
-	if (data < ' ' && iscntrl(data))
-		s = ascii3[data & 0x7F];
-	else {
-		s += data;
-		if (progStatus.spot_recv)
-			spot_recv(data);
-	}
-	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_RX, s);
-
-	if (progStatus.LOGenabled)
-		logfile->log_to_file(cLogfile::LOG_RX, s);
 }
 
 void put_rx_char(unsigned int data, int style)
@@ -6275,10 +6347,9 @@ void do_que_execute(void *)
 }
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
+
 int get_tx_char(void)
 {
-	int c;
-	static int pending = -1;
 	enum { STATE_CHAR, STATE_CTRL };
 	static int state = STATE_CHAR;
 
@@ -6291,8 +6362,8 @@ int get_tx_char(void)
 	if (arq_text_available)
 		return (arq_get_char() & 0xFF);
 
-    if (active_modem == cw_modem && progdefaults.QSKadjust)
-        return szTestChar[2 * progdefaults.TestChar];
+	if (active_modem == cw_modem && progdefaults.QSKadjust)
+		return szTestChar[2 * progdefaults.TestChar];
 
 	if ( progStatus.repeatMacro && progStatus.repeatIdleTime > 0 &&
 		 !idling ) {
@@ -6301,159 +6372,149 @@ int get_tx_char(void)
 		return -1;
 	}
 
-	if (pending >= 0) {
-		c = pending;
-		pending = -1;
-		return c;
-	}
+	int c;
+	
+	if ((c = tx_encoder.pop()) != -1)
+		return(c);
 
 	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
-		c = text2repeat[repeatchar];
-		repeatchar++;
+		char *repeat_content = &text2repeat[repeatchar];
+		tx_encoder.push(repeat_content);
+		repeatchar += fl_utf8len1(*repeat_content);
+		
 		if (repeatchar == text2repeat.length()) {
 			text2repeat.clear();
 			macros.repeat(progStatus.repeatMacro);
 		}
-		return c;
+		goto transmit;
 	}
-
+	
 	c = TransmitText->nextChar();
 
 	if (c == '^' && state == STATE_CHAR) {
 		state = STATE_CTRL;
 		c = TransmitText->nextChar();
 	}
-	switch (c) {
-	case -1: // no character available
+	
+	if (c == -1) {
 		queue_reset();
-		break;
-	case '\n':
-		pending = '\n';
-		return '\r';
-	case 'r':
-		if (state != STATE_CTRL)
-			break;
-		REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+		return(-1);
+	}
+	
+	if (state == STATE_CTRL) {
 		state = STATE_CHAR;
-		c = 3; // ETX
-//		if (progStatus.timer)
-//			REQ(startMacroTimer);
-		break;
-	case 'R':
-		if (state != STATE_CTRL)
-			break;
-		state = STATE_CHAR;
-		if (TransmitText->eot()) {
+		
+		switch (c) {
+		case 'r':
 			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-			c = 3; // ETX
-//			if (progStatus.timer)
-//				REQ(startMacroTimer);
-		} else
-			c = -1;
-		break;
-	case 'L':
-		if (state != STATE_CTRL)
+			return(3); // ETX
 			break;
-		state = STATE_CHAR;
-		c = -1;
-		REQ(qso_save_now);
-		break;
-	case 'C':
-		if (state != STATE_CTRL)
+		case 'R':
+			if (TransmitText->eot()) {
+				REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+				return(3); // ETX
+			} else
+				return(-1);
 			break;
-		state = STATE_CHAR;
-		c = -1;
-		REQ(clearQSO);
-		break;
-	case '!':
-		if (state != STATE_CTRL)
+		case 'L':
+			REQ(qso_save_now);
+			return(-1);
 			break;
-		state = STATE_CHAR;
-		if (queue_must_rx()) {
-			c = 3;
-			que_timeout = 400; // 20 seconds
-			REQ(queue_execute_after_rx, (void *)0);
-			while(que_waiting) MilliSleep(1);
-		} else {
-			c = -1;
-			REQ(do_que_execute, (void*)0);
-			while(que_waiting) MilliSleep(1);
-		}
-		break;
-	case '^':
-		state = STATE_CHAR;
-		break;
-	default:
-		if (state == STATE_CTRL) {
-			state = STATE_CHAR;
-			pending = c;
-			return '^';
+		case 'C':
+			REQ(clearQSO);
+			return(-1);
+			break;
+		case '!':
+			if (queue_must_rx()) {
+				que_timeout = 400; // 20 seconds
+				REQ(queue_execute_after_rx, (void *)0);
+				while(que_waiting) MilliSleep(1);
+				return(3);
+			} else {
+				REQ(do_que_execute, (void*)0);
+				while(que_waiting) MilliSleep(1);
+				return(-1);
+			}
+			break;
+		default:
+			char utf8_char[6];
+			int utf8_len = fl_utf8encode(c, utf8_char);
+			tx_encoder.push("^" + string(utf8_char, utf8_len));
 		}
 	}
+	else if (c == '\n') {
+		tx_encoder.push("\r\n");
+	}
+	else {
+		char utf8_char[6];
+		int utf8_len = fl_utf8encode(c, utf8_char);
+		tx_encoder.push(string(utf8_char, utf8_len));
+	}
+	
+	transmit:
+	
+	c = tx_encoder.pop();
+	if (c == -1)
+		LOG_ERROR("TX encoding conversion error: pushed content, but got nothing back");
 
-	pending = -1;
-	return c;
+	return(c);
 }
-
-static string sch;
 
 void put_echo_char(unsigned int data, int style)
 {
+        trx_mode mode = active_modem->get_mode();
 
-	if (!data) return;
-
-    if (progdefaults.QSKadjust && (active_modem->get_mode() == MODE_CW))
+	if (mode == MODE_CW && progdefaults.QSKadjust)
 		return;
 
-	static unsigned int last = 0;
-	const char **asc = NULL;
-
 	REQ(&add_tx_char, data);
+
+	// select a byte translation table
+	const char **asc = NULL;
 
 	if (mailclient || mailserver)
 		asc = ascii2;
 	else if (arq_text_available)
 		asc = ascii3;
-	else if ( active_modem->get_mode() == MODE_RTTY ||
-			  active_modem->get_mode() == MODE_CW)
+	else if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
 
-	if (data == '\r' && last == '\r') // reject multiple CRs
-		return;
-
-	last = data;
-
+	// assign a style to the data
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
+	
+	// receive and convert the data
+	static unsigned int lastdata = 0;
 
-	sch.clear();
-	if (asc != NULL) { // MAIL / ARQ / RTTY / CW
-		sch.assign(asc[data & 0xFF]);
-	} else if (data & 0x8000) { //UTF-8 extended character
-		unsigned int shiftdata = data;
-		while (!(shiftdata & 0xff000000))
-			shiftdata <<= 8;
-		unsigned char c;
-		while ((c = (shiftdata >> 24) & 0xff)) {
-			sch += c;
-			shiftdata <<= 8;
-		}
-	} else { // keyboard character including MSB set chars
-		sch.assign(" ");
-		sch[0] = data;
+	if (data == '\r' && lastdata == '\r') // reject multiple CRs
+		return;
+	if (asc != NULL) // MAIL / ARQ / RTTY / CW
+		echo_chd.rx((unsigned char *)asc[data & 0xFF]);
+	else
+		echo_chd.rx(data & 0xFF);
+	
+	lastdata = data;
+
+	if (Maillogfile) {
+		string s = iscntrl(data & 0x7F) ? ascii2[data & 0x7F] : string(1, data);
+		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 	}
+
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-	REQ(&FTextRX::addstr, ReceiveText, sch, style);
 #else
 	REQ(&FTextBase::addchr, ReceiveText, data, style);
 #endif
 
-	string s = iscntrl(data & 0x7F) ? ascii2[data & 0x7F] : string(1, data);
-	if (Maillogfile)
-		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
-
-	if (progStatus.LOGenabled)
-		logfile->log_to_file(cLogfile::LOG_TX, sch);
+	if (echo_chd.data_length() > 0)
+	{
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		REQ(&FTextRX::addstr, ReceiveText, echo_chd.data(), style);
+#endif
+		if (progStatus.LOGenabled)
+			logfile->log_to_file(cLogfile::LOG_TX, echo_chd.data());
+		
+		echo_chd.clear();
+	}
 }
 
 void resetRTTY() {

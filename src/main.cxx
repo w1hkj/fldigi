@@ -420,6 +420,8 @@ int main(int argc, char ** argv)
 	FSEL::create();
 
 	make_colorsfonts();
+	populate_charset_menu();
+	set_default_charset();
 	setTabColors();
 
 	progdefaults.testCommPorts();

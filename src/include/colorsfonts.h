@@ -81,5 +81,8 @@ extern Fl_Output *LOGBOOKdisplay;
 extern Fl_Button *btnLOGBOOK_color;
 extern Fl_Button *btn_LOGBOOK_font;
 extern Fl_Button *btnLOGBOOKdefault_colors_font;
+#include <FL/Fl_Menu_Button.H>
+#include "fl_digi.h"
+extern Fl_Menu_Button *CHARSETstatus;
 Fl_Double_Window* make_colorsfonts();
 #endif

@@ -214,7 +214,7 @@ int FTextRX::handle(int event)
 	case FL_MOVE: {
 		int p = xy_to_position(Fl::event_x(), Fl::event_y(), Fl_Text_Display_mod::CURSOR_POS);
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-		if (sbuf->char_at(p) >= CLICK_START + FTEXT_DEF) {
+		if ((unsigned char)sbuf->byte_at(p) >= CLICK_START + FTEXT_DEF) {
 #else
 		if (sbuf->character(p) >= CLICK_START + FTEXT_DEF) {
 #endif
@@ -275,17 +275,13 @@ void FTextRX::add(unsigned int c, int attr)
 	case '\b':
 		// we don't call kf_backspace because it kills selected text
 		if (s_text.length()) {
-			if (tbuf->byte_at(tbuf->length() - 1 ) & 0x80) { //UTF-8 character
-				s_text.erase(s_text.end() - 2);
-				s_style.erase(s_style.end() - 2);
-				tbuf->remove(tbuf->length() - 2, tbuf->length());
-				sbuf->remove(sbuf->length() - 2, sbuf->length());
-			} else {
-				s_text.erase(s_text.end() - 1);
-				s_style.erase(s_style.end() - 1);
-				tbuf->remove(tbuf->length() - 1, tbuf->length());
-				sbuf->remove(sbuf->length() - 1, sbuf->length());
-			}
+			int character_start = tbuf->utf8_align(tbuf->length() - 1);
+			int character_length = fl_utf8len1(tbuf->byte_at(character_start));
+
+			tbuf->remove(character_start, tbuf->length());
+			sbuf->remove(character_start, sbuf->length());
+			s_text.resize(s_text.length() - character_length);
+			s_style.resize(s_style.length() - character_length);
 		}
 		break;
 	case '\n':
@@ -458,7 +454,7 @@ void FTextRX::handle_clickable(int x, int y)
 	pos = xy_to_position(x + this->x(), y + this->y(), CURSOR_POS);
 	// return unless clickable style
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-	if ((style = sbuf->char_at(pos)) < CLICK_START + FTEXT_DEF)
+	if ((style = (unsigned char)sbuf->byte_at(pos)) < CLICK_START + FTEXT_DEF)
 #else
 	if ((style = sbuf->character(pos)) < CLICK_START + FTEXT_DEF)
 #endif
@@ -467,7 +463,7 @@ void FTextRX::handle_clickable(int x, int y)
 	int start, end;
 	for (start = pos-1; start >= 0; start--)
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-		if (sbuf->char_at(start) != style)
+		if ((unsigned char)sbuf->byte_at(start) != style)
 #else
 		if (sbuf->character(start) != style)
 #endif
@@ -476,7 +472,7 @@ void FTextRX::handle_clickable(int x, int y)
 	int len = sbuf->length();
 	for (end = pos+1; end < len; end++)
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-		if (sbuf->char_at(end) != style)
+		if ((unsigned char)sbuf->byte_at(end) != style)
 #else
 		if (sbuf->character(end) != style)
 #endif
@@ -912,9 +908,9 @@ bool FTextTX::eot(void)
 /// @return The next character, or ETX if the transmission has been paused, or
 /// NUL if no text should be transmitted.
 ///
-unsigned int FTextTX::nextChar(void)
+int FTextTX::nextChar(void)
 {
-	unsigned int c;
+	int c;
 
 	if (bkspaces) {
 		--bkspaces;
@@ -928,10 +924,9 @@ unsigned int FTextTX::nextChar(void)
 	else if (insert_position() <= utf8_txpos) { // empty buffer or cursor inside transmitted text
 		c = -1;
 	} else {
-		int n;
-		if ((c = tbuf->get_char_at(utf8_txpos, n))) {
-//LOG_DEBUG("%04X, %d, %d ", c & 0xFFFF, utf8_txpos, n);
-			if (n == 1) c &= 0xFF;
+		if ((c = tbuf->char_at(utf8_txpos)) > 0) {
+			int n = fl_utf8bytes(c);
+
 			REQ(FTextTX::changed_cb, utf8_txpos, 0, 0, -1, static_cast<const char *>(0), this);
 			REQ(FTextTX::changed_cb, utf8_txpos+1, 0, 0, -1, static_cast<const char *>(0), this);
 			++txpos;
@@ -1183,8 +1178,7 @@ int FTextTX::handle_key(int key)
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 		if (utf8_txpos > 0 && utf8_txpos == ipos) {
 			bkspaces++;
-			if (tbuf->byte_at(ipos - 1) & 0x80) utf8_txpos -= 2;
-			else utf8_txpos--;
+			utf8_txpos = tbuf->prev_char(ipos);
 			txpos--;
 		}
 #else

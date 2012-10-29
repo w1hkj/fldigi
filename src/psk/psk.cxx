@@ -1100,11 +1100,7 @@ int psk::tx_process()
 			tx_bit(0);
 		}
 	} else {
-		if (c & 0xFF00) {
-			tx_char((c >> 8) & 0xFF);
-			tx_char(c & 0xFF);
-		} else
-			tx_char(c);
+		tx_char(c);
 		put_echo_char(c);
 	}
 	return 0;

@@ -10,6 +10,7 @@
 #include <config.h>
 #include "viewpsk.h"
 #include "globals.h"
+#include "charsetdistiller.h"
 
 #include "re.h"
 
@@ -29,6 +30,8 @@ private:
 
 	std::string bwsrline[MAXCHANNELS];
 	int bwsrfreq[MAXCHANNELS];
+	CharsetDistiller *cdistiller;
+	
 
 	int labelwidth[VIEWER_LABEL_NTYPES];
 
@@ -38,7 +41,6 @@ private:
 	char szLine[32];
 	size_t nchars;
 	size_t linechars[32];
-	unsigned char firstUTF8[32];
 
 public:
 	static int cwidth;
@@ -51,7 +53,7 @@ public:
 
 public:
 	pskBrowser(int x, int y, int w, int h, const char *l = "");
-	~pskBrowser() {};
+	~pskBrowser();
 	void makecolors();
 	void evalcwidth();
 	void setfont(Fl_Font font, int sz) { fnt = font; siz = sz; evalcwidth();}
@@ -67,6 +69,7 @@ public:
 	void clearch(int n, int freq);
 	void swap(int, int);
 	int  numchars() { return nchars; }
+	void set_input_encoding(int encoding_id);
 };
 
 #endif
