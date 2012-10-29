@@ -56,7 +56,7 @@ int pskBrowser::cheight = 12;
 int pskBrowser::sbarwidth = 16;
 
 pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
-	:Fl_Hold_Browser(x,y,w,h,l) 
+	:Fl_Hold_Browser(x,y,w,h,l)
 {
 	fnt = FL_COURIER;
 	siz = 12;
@@ -66,6 +66,7 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	cols[0] = 80; cols[1] = 0;
 	evalcwidth();
 	makecolors();
+	cdistiller = reinterpret_cast<CharsetDistiller*>(operator new(MAXCHANNELS*sizeof(CharsetDistiller)));
 
 	string bline;
 	for (int i = 0; i < MAXCHANNELS; i++) {
@@ -74,11 +75,19 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 		bline = freqformat(i);
 		if ( i < progdefaults.VIEWERchannels) add(bline.c_str());
 		linechars[i] = 0;
-		firstUTF8[i] = 0;
+		new(&cdistiller[i]) CharsetDistiller(rxtx_charset);
 	}
 	nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
 	nchars = nchars < 1 ? 1 : nchars;
 
+}
+
+pskBrowser::~pskBrowser()
+{
+	for (int i = MAXCHANNELS-1; i >= 0; i--)
+		cdistiller[i].~CharsetDistiller();
+	
+	operator delete(cdistiller);
 }
 
 void pskBrowser::evalcwidth()
@@ -162,7 +171,6 @@ void pskBrowser::resize(int x, int y, int w, int h)
 			if (progdefaults.VIEWERascend) j = progdefaults.VIEWERchannels - 1 - i;
 			else j = i;
 			bwsrline[j].clear();
-			firstUTF8[j] = 0;
 			linechars[j] = 0;
 //		size_t len = bwsrline[j].length();
 //		if (len > nchars)
@@ -237,38 +245,26 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 	if (bwsrline[ch].length() == 1 && bwsrline[ch][0] == ' ') {
 		bwsrline[ch].clear();
 		linechars[ch] = 0;
-		firstUTF8[ch] = 0;
+	}
+	
+	cdistiller[ch].rx(c);
+
+	if (cdistiller[ch].data_length() > 0) {
+		bwsrline[ch] += cdistiller[ch].data();
+		linechars[ch] += cdistiller[ch].num_chars();
+		cdistiller[ch].clear();
 	}
 
-	if ((linechars[ch] > nchars) && (firstUTF8[ch] == 0)) {
+	if (linechars[ch] > nchars) {
 		if (progdefaults.VIEWERmarquee) {
 			while (linechars[ch] > nchars) {
-				if ((bwsrline[ch][0] & 0x80) == 0x80) // UTF-8 character
-					bwsrline[ch].erase(0,2);
-				else
-					bwsrline[ch].erase(0,1);
+				bwsrline[ch].erase(0, fl_utf8len1(bwsrline[ch][0]));
 				linechars[ch]--;
-				bwsrline[ch].erase(0,1);
-				linechars[ch] -= 1;
 			}
 		} else {
 			bwsrline[ch].clear();
 			linechars[ch] = 0;
-			firstUTF8[ch] = 0;
 		}
-	}
-
-	if (firstUTF8[ch] != 0) {
-		bwsrline[ch] += firstUTF8[ch];
-		bwsrline[ch] += c;
-		linechars[ch]++;
-		firstUTF8[ch] = 0;
-	} else if ((c & 0x80) == 0x80) {
-			firstUTF8[ch] = c;
-			return;
-	} else {
-		bwsrline[ch] += c;
-		linechars[ch]++;
 	}
 
 	nuline = freqformat(ch);
@@ -335,3 +331,8 @@ int pskBrowser::freq(int i) { // 1 < i < progdefaults.VIEWERchannels
 		return (i < 1 ? 0 : i > MAXCHANNELS ? 0 : bwsrfreq[i - 1]); 
 }
 
+void pskBrowser::set_input_encoding(int encoding_id)
+{
+	for (int i = 0; i < MAXCHANNELS; i++)
+		cdistiller[i].set_input_encoding(encoding_id);
+}

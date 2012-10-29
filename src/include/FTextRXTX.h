@@ -106,7 +106,7 @@ public:
 
 	void		clear(void);
 	void		clear_sent(void);
-	unsigned int			nextChar(void);
+	int			nextChar(void);
 	bool		eot(void);
 	void		add_text(std::string s);
 

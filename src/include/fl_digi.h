@@ -232,6 +232,7 @@ extern bool que_ok;
 extern void post_queue_execute(void*);
 extern void queue_execute_after_rx(void*);
 
+extern int rxtx_charset;
 extern void put_rx_data(int *data, int len);
 extern int get_tx_char();
 extern int  get_secondary_char();
@@ -319,6 +320,11 @@ extern void set_rtty_bw(float bw);
 extern void sync_cw_parameters();
 
 extern void open_recv_folder(const char *fname);
+
+// character set
+extern void cb_charset_menu(Fl_Widget *, void *charset);
+extern void populate_charset_menu(void);
+extern void set_default_charset(void);
 
 // set notch parameter on flrig
 extern int  notch_frequency;

@@ -167,40 +167,27 @@ int olivia::tx_process()
 			Tx->Stop();
 		else {
 			if (c == -1)
-                c = 0;
-			if (c & 0xFF00) { // UTF-8 character send two bytes
-				unsigned char c1 = (c >> 8) & 0xFF;
-				unsigned char c2 = (c & 0xFF);
-				if (c1 > (progdefaults.olivia8bit ? 255 : 127))
-					c1 = '.';
-				if (progdefaults.olivia8bit  && (c1 > 127)) {
-					c1 &= 127;
+		                c = 0;
+			if (c > 127) {
+				if (progdefaults.olivia8bit && c <= 255) {
 					Tx->PutChar(127);
+					Tx->PutChar(c & 127);
 				}
-				Tx->PutChar(c1);
-				if (c2 > (progdefaults.olivia8bit ? 255 : 127))
-					c2 = '.';
-				if (progdefaults.olivia8bit  && (c2 > 127)) {
-					c2 &= 127;
-					Tx->PutChar(127);
-				}
-				Tx->PutChar(c2);
-			} else {
-				if (c > (progdefaults.olivia8bit ? 255 : 127))
+				else {
 					c = '.';
-				if (!progdefaults.olivia8bit  && (c > 127)) {
-					c &= 127;
-					Tx->PutChar(127);
+					Tx->PutChar(c);
 				}
-				Tx->PutChar(c);
 			}
+			else
+				Tx->PutChar(c);
 		}
 	}
+
 	if (c != 0 && c != 0x03) {
 		put_echo_char(c);
 	}
 
-    if ((len = Tx->Output(txfbuffer)) > 0)
+	if ((len = Tx->Output(txfbuffer)) > 0)
 		ModulateXmtr(txfbuffer, len);
 
 	if (stopflag && Tx->DoPostambleYet() == 1 && postamblesent != 1) {

@@ -195,7 +195,7 @@ Function {make_colorsfonts()} {open
       xywh {0 5 375 185}
     } {
       Fl_Group {} {
-        label Disp open selected
+        label Disp open
         xywh {0 30 375 155}
       } {
         Fl_Group {} {open
@@ -1073,6 +1073,15 @@ progdefaults.changed = true;}
           }
         }
       }
+    }
+    Fl_Menu_Button CHARSETstatus {
+      label {Char set} open
+      tooltip {Select Rx/Tx Character Set} xywh {3 192 120 24} color 55 align 20
+      code0 {\#include "fl_digi.h"}
+    } {}
+    Fl_Box {} {
+      label {Select Char Set} selected
+      xywh {125 192 125 25} align 20
     }
   }
 } 

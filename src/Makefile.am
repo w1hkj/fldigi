@@ -3,6 +3,7 @@
 # License: GPLv3+: GNU GPL version 3 or later.
 
 bin_PROGRAMS =
+SUBDIRS =
 if WANT_FLDIGI
     bin_PROGRAMS += fldigi
 endif
@@ -285,6 +286,8 @@ fldigi_SOURCES += \
 	include/FreqControl.h \
 	include/analysis.h \
 	include/ascii.h \
+	include/charsetdistiller.h \
+	include/charsetlist.h \
 	include/colorbox.h \
 	include/colorsfonts.h \
 	include/combo.h \
@@ -404,6 +407,7 @@ fldigi_SOURCES += \
 	include/logbook.h \
 	include/lgbook.h \
 	include/logsupport.h \
+	include/outputencoder.h \
 	include/qso_db.h \
 	include/table.h \
 	include/textio.h \
@@ -439,6 +443,8 @@ fldigi_SOURCES += \
 	wefax/wefax.cxx \
 	wefax/wefax-pic.cxx \
 	misc/ascii.cxx \
+	misc/charsetdistiller.cxx \
+	misc/charsetlist.cxx \
 	misc/configuration.cxx \
 	misc/debug.cxx \
 	misc/dxcc.cxx \
@@ -450,6 +456,7 @@ fldigi_SOURCES += \
 	misc/misc.cxx \
 	misc/network.cxx \
 	misc/newinstall.cxx \
+	misc/outputencoder.cxx \
 	misc/arq_io.cxx \
 	misc/pixmaps.cxx \
 	misc/pixmaps_tango.cxx \
@@ -539,7 +546,9 @@ fldigi_SOURCES += \
 	xmlrpcpp/XmlRpcUtil.h \
 	xmlrpcpp/XmlRpcValue.cpp \
 	xmlrpcpp/XmlRpcValue.h \
-	xmlrpcpp/base64.h
+	xmlrpcpp/base64.h \
+	libtiniconv/tiniconv.c \
+	libtiniconv/tiniconv_desc.c
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \
@@ -589,8 +598,58 @@ EXTRA_fldigi_SOURCES += \
 	widgets/Fl_Text_Display_mod_1_1.cxx \
 	widgets/Fl_Text_Display_mod_1_3.cxx \
 	widgets/Fl_Text_Editor_mod_1_1.cxx \
-	widgets/Fl_Text_Editor_mod_1_3.cxx
-
+	widgets/Fl_Text_Editor_mod_1_3.cxx \
+	libtiniconv/tiniconv.h \
+	libtiniconv/tiniconv_int.h \
+	libtiniconv/encdec/ascii.h \
+	libtiniconv/encdec/big5.h \
+	libtiniconv/encdec/ces_big5.h \
+	libtiniconv/encdec/ces_gbk.h \
+	libtiniconv/encdec/cp1250.h \
+	libtiniconv/encdec/cp1251.h \
+	libtiniconv/encdec/cp1252.h \
+	libtiniconv/encdec/cp1253.h \
+	libtiniconv/encdec/cp1254.h \
+	libtiniconv/encdec/cp1255.h \
+	libtiniconv/encdec/cp1256.h \
+	libtiniconv/encdec/cp1257.h \
+	libtiniconv/encdec/cp1258.h \
+	libtiniconv/encdec/cp866.h \
+	libtiniconv/encdec/cp936ext.h \
+	libtiniconv/encdec/cp936.h \
+	libtiniconv/encdec/euc_cn.h \
+	libtiniconv/encdec/flushwc.h \
+	libtiniconv/encdec/gb2312.h \
+	libtiniconv/encdec/gbkext1.h \
+	libtiniconv/encdec/gbkext2.h \
+	libtiniconv/encdec/gbkext_inv.h \
+	libtiniconv/encdec/gbk.h \
+	libtiniconv/encdec/iso2022_jp.h \
+	libtiniconv/encdec/iso8859_10.h \
+	libtiniconv/encdec/iso8859_11.h \
+	libtiniconv/encdec/iso8859_13.h \
+	libtiniconv/encdec/iso8859_14.h \
+	libtiniconv/encdec/iso8859_15.h \
+	libtiniconv/encdec/iso8859_16.h \
+	libtiniconv/encdec/iso8859_1.h \
+	libtiniconv/encdec/iso8859_2.h \
+	libtiniconv/encdec/iso8859_3.h \
+	libtiniconv/encdec/iso8859_4.h \
+	libtiniconv/encdec/iso8859_5.h \
+	libtiniconv/encdec/iso8859_6.h \
+	libtiniconv/encdec/iso8859_7.h \
+	libtiniconv/encdec/iso8859_8.h \
+	libtiniconv/encdec/iso8859_9.h \
+	libtiniconv/encdec/jisx0201.h \
+	libtiniconv/encdec/jisx0208.h \
+	libtiniconv/encdec/koi8_r.h \
+	libtiniconv/encdec/koi8_ru.h \
+	libtiniconv/encdec/koi8_u.h \
+	libtiniconv/encdec/mac_cyrillic.h \
+	libtiniconv/encdec/ucs2.h \
+	libtiniconv/encdec/utf7.h \
+	libtiniconv/encdec/utf8.h \
+	libtiniconv/encdec/vietcomb.h
 
 flarq_SOURCES += \
 	dialogs/font_browser.cxx \

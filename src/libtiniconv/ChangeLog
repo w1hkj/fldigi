@@ -1,0 +1,7 @@
+Thu, 07 May 2009 16:24:02 +0400
+    * stealed some another coders (BIG5, GB2312) from gnu iconv
+    * fixed compiler warnings
+
+Sun, 07 Sep 2008 00:47:06 +0400
+    * fixed bugs in UTF7 and GBK converters
+    * released 1.0.0

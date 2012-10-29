@@ -810,18 +810,10 @@ void mfsk::sendbit(int bit)
 
 void mfsk::sendchar(unsigned int c)
 {
-	const char *code;
-	if (c & 0xFF00) { // UTF-8 character send two bytes
-		unsigned char c1 = (c >> 8) & 0xFF;
-		unsigned char c2 = (c & 0xFF);
-		code = varienc(c1);
-		while (*code) sendbit(*code++ - '0');
-		code = varienc(c2);
-		while (*code) sendbit(*code++ - '0');
-	} else {
-		code = varienc(c);
-		while (*code) sendbit(*code++ - '0');
-	}
+	const char *code = varienc(c);
+	while (*code)
+		sendbit(*code++ - '0');
+
 	put_echo_char(c);
 }
 
@@ -898,7 +890,6 @@ void mfsk::clearbits()
 
 int mfsk::tx_process()
 {
-
 	int xmtbyte;
 
 	switch (txstate) {

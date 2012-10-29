@@ -245,14 +245,14 @@ char *Fl_Text_Buffer_mod::text_range(int start, int end) const {
  Pos must be at a character boundary.
  */
 unsigned int Fl_Text_Buffer_mod::char_at(int pos) const {  
-	if (pos < 0 || pos >= mLength)
-		return '\0';
+  if (pos < 0 || pos >= mLength)
+    return '\0';
   
-	IS_UTF8_ALIGNED2(this, (pos))
+  IS_UTF8_ALIGNED2(this, (pos))
   
-	const char *src = address(pos);
-	return *src;
-}
+  const char *src = address(pos);
+  return fl_utf8decode(src, 0, 0);
+} 
 
 /*
  Return a UTF-8 character at the given index.
@@ -896,7 +896,7 @@ int Fl_Text_Buffer_mod::findchars_backward( int startPos, const char *searchChar
     return 0;
   }
   while ( pos > 0 ) {
-    ch = char_at(pos);
+    ch = byte_at(pos);
     for ( c = searchChars; *c != '\0'; c++ ) {
       if ( ch == *c ) {
         *foundPos = pos;
@@ -935,7 +935,7 @@ int Fl_Text_Buffer_mod::findchars_forward( int startPos, const char *searchChars
   char ch = 0;
 
   while ( pos < length() ) {
-    ch = char_at(pos);
+    ch = byte_at(pos);
     for ( c = searchChars; *c != '\0'; c++ ) {
       if ( ch == *c ) {
         *foundPos = pos;

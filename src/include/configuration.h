@@ -1164,6 +1164,9 @@
               "Macro button foreground ",                                               \
               { 255, 255, 255 })                                                        \
         /* RX / TX / Waterfall text widgets */                                          \
+        ELEM_(std::string, charset_name, "CHARSET_NAME",                                \
+              "Default character set",                                                  \
+              "UTF-8")                                                                  \
         ELEM_(std::string, RxFontName, "RXFONTNAME",                                    \
               "RX text font name",                                                      \
               "")                                                                       \
