@@ -1,8 +1,17 @@
 
 
-=Version 3.21.58=
+=Version 3.21.59=
 
-2012-10-20  David Freese  <w1hkj@w1hkj.com>
+2012-10-29  Andrej Lajovic  <s57ln@hamradio.si>
+
+	0c1f371: UTF-8 overhaul
+
+2012-10-26  David Freese  <w1hkj@w1hkj.com>
+
+	1d6469f: Thumbdrive
+
+
+=Version 3.21.58=
 
 	6875022: Escape aborts
 
