@@ -161,12 +161,12 @@ int olivia::tx_process()
 // whatever there is.
 
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
-		if (!stopflag && (c = get_tx_char()) == 0x03)
+		if (!stopflag && (c = get_tx_char()) == GET_TX_CHAR_ETX)
 			stopflag = true;
 		if (stopflag)
 			Tx->Stop();
 		else {
-			if (c == -1)
+			if (c == GET_TX_CHAR_NODATA)
 		                c = 0;
 			if (c > 127) {
 				if (progdefaults.olivia8bit && c <= 255) {
@@ -183,9 +183,8 @@ int olivia::tx_process()
 		}
 	}
 
-	if (c != 0 && c != 0x03) {
+	if (c > 0)
 		put_echo_char(c);
-	}
 
 	if ((len = Tx->Output(txfbuffer)) > 0)
 		ModulateXmtr(txfbuffer, len);

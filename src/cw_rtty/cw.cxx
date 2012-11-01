@@ -1169,7 +1169,7 @@ int cw::tx_process()
 	}
 
 	c = get_tx_char();
-	if (c == 0x03 || stopflag) {
+	if (c == GET_TX_CHAR_ETX || stopflag) {
 		send_symbol(0, symbollen);
 		stopflag = false;
 			return -1;

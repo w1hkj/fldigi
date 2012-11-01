@@ -762,7 +762,7 @@ int rtty::tx_process()
 	c = get_tx_char();
 
 // TX buffer empty
-	if (c == 3 || stopflag) {
+	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		line_char_count = 0;
 		if (nbits != 5) {
@@ -780,7 +780,7 @@ int rtty::tx_process()
 	}
 
 // send idle character if c == -1
-	if (c == -1) {
+	if (c == GET_TX_CHAR_NODATA) {
 		send_idle();
 		return 0;
 	}

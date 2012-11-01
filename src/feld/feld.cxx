@@ -575,7 +575,7 @@ int feld::tx_process()
 
 	c = get_tx_char();
 
-	if (c == 0x03 || stopflag) {
+	if (c == GET_TX_CHAR_ETX || stopflag) {
 		tx_state = POSTAMBLE;
 		postamble = 3;
 		return 0;
@@ -583,7 +583,7 @@ int feld::tx_process()
 
 // if TX buffer empty
 // send idle character
-	if (c == -1) {
+	if (c == GET_TX_CHAR_NODATA) {
 		if (progdefaults.HellXmtIdle == true)
 			c = '.';
 		else {

@@ -202,7 +202,7 @@ int wwv::tx_process()
 	static int cycle = 4;
 	int c = get_tx_char();
 
-	if (c == 0x03 || stopflag) {
+	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		return -1;
 	}

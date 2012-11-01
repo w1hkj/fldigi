@@ -76,12 +76,12 @@ int mt63::tx_process()
     }
 
 	c = get_tx_char();
-	if (c == 0x03)  {
+	if (c == GET_TX_CHAR_ETX)  {
 		stopflag = true;
 		flush = Tx->DataInterleave;
 	}
 
-	if (c == -1 || stopflag == true) c = 0;
+	if (c == GET_TX_CHAR_NODATA || stopflag == true) c = 0;
 
 	if (stopflag) {
 		stopflag = false;

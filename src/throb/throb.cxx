@@ -621,7 +621,7 @@ int throb::tx_process()
 	c = get_tx_char();
 
 // end of transmission
-	if (c == 0x03 || stopflag) {
+	if (c == GET_TX_CHAR_ETX || stopflag) {
 		send(idlesym);
 //		reset_syms(); //prepare RX. idle/space syms always start as 0 and 1, respectively.
 		cwid();
@@ -629,7 +629,7 @@ int throb::tx_process()
 	}
 
 // TX buffer empty
-	if (c == -1) {
+	if (c == GET_TX_CHAR_NODATA) {
 		send(idlesym);	/* send idle throbs */
 		flip_syms();
 		return 0;

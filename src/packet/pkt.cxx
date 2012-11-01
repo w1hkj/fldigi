@@ -2304,7 +2304,7 @@ int pkt::tx_process()
 
     // TX buffer empty
     //    if (c == 0x03 || stopflag) {
-    if (c == -1 || stopflag || tx_char_count == 0) {
+    if (c == GET_TX_CHAR_ETX || stopflag || tx_char_count == 0) {
 	if (!stopflag) {
 	    // compute FCS and add it to the frame via *tx_cbuf
 	    unsigned int fcs = computeFCS(&txbuf[0], tx_cbuf);
