@@ -1586,7 +1586,7 @@ public:
 		for(;;)
 		{
 			int c = get_tx_char();
-			if( c == -1 ) {
+			if( c == GET_TX_CHAR_NODATA ) {
 				break ;
 			}
 			msg.push_back( c );

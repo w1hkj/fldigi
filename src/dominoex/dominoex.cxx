@@ -701,9 +701,9 @@ int dominoex::tx_process()
 		break;
 	case TX_STATE_DATA:
 		i = get_tx_char();
-		if (i == -1)
+		if (i == GET_TX_CHAR_NODATA)
 			sendsecondary();
-		else if (i == 3)
+		else if (i == GET_TX_CHAR_ETX)
 			txstate = TX_STATE_END;
 		else
 			sendchar(i, 0);

@@ -83,7 +83,7 @@ int NULLMODEM::rx_process(const double *buf, int len)
 int NULLMODEM::tx_process()
 {
 	MilliSleep(10);
-	if ( get_tx_char() == 0x03 || stopflag) {
+	if ( get_tx_char() == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		return -1;
 	}

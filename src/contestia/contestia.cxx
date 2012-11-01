@@ -160,14 +160,14 @@ int contestia::tx_process()
 // to read any more. If stopflag is set, we will always read 
 // whatever there is.
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
-		if (!stopflag && (c = get_tx_char()) == 0x03)
+		if (!stopflag && (c = get_tx_char()) == GET_TX_CHAR_ETX)
 			stopflag = true;
 		if (stopflag)
 			Tx->Stop();
 		else {
+			if (c == GET_TX_CHAR_NODATA)
+		                c = 0;
 			/* Replace un-representable characters with a dot */
-			if (c == -1)
-                c = 0;
 			if (c > (progdefaults.contestia8bit ? 255 : 127))
 				c = '.';
 			if (c > 127) {

@@ -919,9 +919,9 @@ int mfsk::tx_process()
 				startpic = false;
 				txstate = TX_STATE_PICTURE_START;
 			}
-			else if ( xmtbyte == 0x03 || stopflag)
+			else if ( xmtbyte == GET_TX_CHAR_ETX || stopflag)
 				txstate = TX_STATE_FLUSH;
-			else if (xmtbyte == -1)
+			else if (xmtbyte == GET_TX_CHAR_NODATA)
 				sendidle();
 			else
 				sendchar(xmtbyte);

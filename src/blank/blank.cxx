@@ -204,9 +204,9 @@ int xmtbyte;
 
 	case TX_STATE_DATA:
 		xmtbyte = get_tx_char();
-		if (xmtbyte == -1)
+		if (xmtbyte == GET_TX_CHAR_NODATA)
 			sendidle();
-		else if ( xmtbyte == 0x03 || stopflag)
+		else if ( xmtbyte == GET_TX_CHAR_ETX || stopflag)
 			txstate = TX_STATE_FLUSH;
 		else
 			sendchar(xmtbyte);

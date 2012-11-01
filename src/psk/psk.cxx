@@ -1143,14 +1143,14 @@ int psk::tx_process()
 
 	c = get_tx_char();
 
-	if (c == 0x03 || stopflag) {
+	if (c == GET_TX_CHAR_ETX || stopflag) {
 		tx_flush();
 		stopflag = false;
 		cwid();
 		return -1;   // we're done
 	}
 
-	if (c == -1) {
+	if (c == GET_TX_CHAR_NODATA) {
 		if (_pskr) {
 			// MFSK varicode instead of psk
 			tx_char(0);   // <NUL>

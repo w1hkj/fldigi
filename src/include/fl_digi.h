@@ -236,6 +236,14 @@ extern void queue_execute_after_rx(void*);
 
 extern int rxtx_charset;
 extern void put_rx_data(int *data, int len);
+
+// Values returned by get_tx_char() to signal various conditions to the
+// modems. These values need to be negative so they don't interfere with
+// normal TX data (which is always byte-sized and positive).
+
+#define GET_TX_CHAR_NODATA -1	// no data available
+#define GET_TX_CHAR_ETX -3	// end of transmission requested
+
 extern int get_tx_char();
 extern int  get_secondary_char();
 extern void put_echo_char(unsigned int data, int style = FTextBase::XMIT);

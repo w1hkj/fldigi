@@ -6290,14 +6290,21 @@ int get_tx_char(void)
 	enum { STATE_CHAR, STATE_CTRL };
 	static int state = STATE_CHAR;
 
-	if (!que_ok) { return -1; }
-	if (Qwait_time) { return -1; }
-	if (Qidle_time) { return -1; }
-	if (macro_idle_on) { return -1; }
-	if (idling) { return -1; }
-
-	if (arq_text_available)
-		return (arq_get_char() & 0xFF);
+	if (!que_ok) { return GET_TX_CHAR_NODATA; }
+	if (Qwait_time) { return GET_TX_CHAR_NODATA; }
+	if (Qidle_time) { return GET_TX_CHAR_NODATA; }
+	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
+	if (idling) { return GET_TX_CHAR_NODATA; }
+	
+	if (arq_text_available) {
+		char character = (arq_get_char() & 0xFF);
+		if (character == 0x03) {
+			// ETX (0x03) in ARQ data means "stop transmitting" not "send ETX"
+			return(GET_TX_CHAR_ETX);
+		}
+		else
+			return(character);
+	}
 
 	if (active_modem == cw_modem && progdefaults.QSKadjust)
 		return szTestChar[2 * progdefaults.TestChar];
@@ -6306,7 +6313,7 @@ int get_tx_char(void)
 		 !idling ) {
 		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
 		idling = true;
-		return -1;
+		return GET_TX_CHAR_NODATA;
 	}
 
 	int c;
@@ -6335,7 +6342,7 @@ int get_tx_char(void)
 	
 	if (c == -1) {
 		queue_reset();
-		return(-1);
+		return(GET_TX_CHAR_NODATA);
 	}
 	
 	if (state == STATE_CTRL) {
@@ -6344,33 +6351,33 @@ int get_tx_char(void)
 		switch (c) {
 		case 'r':
 			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-			return(3); // ETX
+			return(GET_TX_CHAR_ETX);
 			break;
 		case 'R':
 			if (TransmitText->eot()) {
 				REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-				return(3); // ETX
+				return(GET_TX_CHAR_ETX);
 			} else
-				return(-1);
+				return(GET_TX_CHAR_NODATA);
 			break;
 		case 'L':
 			REQ(qso_save_now);
-			return(-1);
+			return(GET_TX_CHAR_NODATA);
 			break;
 		case 'C':
 			REQ(clearQSO);
-			return(-1);
+			return(GET_TX_CHAR_NODATA);
 			break;
 		case '!':
 			if (queue_must_rx()) {
 				que_timeout = 400; // 20 seconds
 				REQ(queue_execute_after_rx, (void *)0);
 				while(que_waiting) MilliSleep(1);
-				return(3);
+				return(GET_TX_CHAR_ETX);
 			} else {
 				REQ(do_que_execute, (void*)0);
 				while(que_waiting) MilliSleep(1);
-				return(-1);
+				return(GET_TX_CHAR_NODATA);
 			}
 			break;
 		default:
@@ -6391,8 +6398,10 @@ int get_tx_char(void)
 	transmit:
 	
 	c = tx_encoder.pop();
-	if (c == -1)
+	if (c == -1) {
 		LOG_ERROR("TX encoding conversion error: pushed content, but got nothing back");
+		return(GET_TX_CHAR_NODATA);
+	}
 
 	return(c);
 }
