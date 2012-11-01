@@ -2579,6 +2579,9 @@ int default_handler(int event)
 	else if (w == dlgLogbook || w->window() == dlgLogbook)
 		return log_search_handler(event);
 
+	else if (Fl::event_key() == FL_Escape)
+		return 1;
+
 	return 0;
 }
 
