@@ -1,0 +1,8 @@
+tiniconv is built as a set of built in functions rather than as a stand-alone
+library.
+
+No other changes to the code.
+
+Tested and correctly executes on Linux, Windows (NT, 2000, XP, Vista, Win7, Win8)
+and OS X.
+

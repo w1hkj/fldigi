@@ -649,7 +649,11 @@ EXTRA_fldigi_SOURCES += \
 	libtiniconv/encdec/ucs2.h \
 	libtiniconv/encdec/utf7.h \
 	libtiniconv/encdec/utf8.h \
-	libtiniconv/encdec/vietcomb.h
+	libtiniconv/encdec/vietcomb.h \
+	libtiniconv/AUTHORS \
+	libtiniconv/COPYING \
+	libtiniconv/README \
+	libtiniconv/README.FLDIGI
 
 flarq_SOURCES += \
 	dialogs/font_browser.cxx \
