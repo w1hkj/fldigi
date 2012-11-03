@@ -6324,7 +6324,11 @@ int get_tx_char(void)
 	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
 		char *repeat_content = &text2repeat[repeatchar];
 		tx_encoder.push(repeat_content);
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 		repeatchar += fl_utf8len1(*repeat_content);
+#else
+		repeatchar += 1;
+#endif
 		
 		if (repeatchar == text2repeat.length()) {
 			text2repeat.clear();
@@ -6381,18 +6385,30 @@ int get_tx_char(void)
 			}
 			break;
 		default:
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 			char utf8_char[6];
 			int utf8_len = fl_utf8encode(c, utf8_char);
 			tx_encoder.push("^" + string(utf8_char, utf8_len));
+#else
+			string tmp("^");
+			tmp += c;
+			tx_encoder.push(tmp);
+#endif
 		}
 	}
 	else if (c == '\n') {
 		tx_encoder.push("\r\n");
 	}
 	else {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 		char utf8_char[6];
 		int utf8_len = fl_utf8encode(c, utf8_char);
 		tx_encoder.push(string(utf8_char, utf8_len));
+#else
+		string tmp;
+		tmp += c;
+		tx_encoder.push(tmp);
+#endif
 	}
 	
 	transmit:

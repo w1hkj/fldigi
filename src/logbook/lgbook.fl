@@ -1,23 +1,19 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0110 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {private local
-} 
+decl {\#include <config.h>} {} 
 
-decl {\#include <FL/Fl_Pixmap.H>} {private local
-} 
+decl {\#include <FL/Fl_Pixmap.H>} {} 
 
-decl {\#include "logsupport.h"} {private local
-} 
+decl {\#include "logsupport.h"} {} 
 
-decl {\#include "pixmaps.h"} {private local
-} 
+decl {\#include "pixmaps.h"} {} 
 
-decl {\#include "flinput2.h"} {public local
+decl {\#include "flinput2.h"} {public
 } 
 
 Function {create_logbook_dialogs()} {open return_type void
@@ -307,11 +303,11 @@ btnSelectNotes->value(0);}
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook
+    label Logbook open
     xywh {603 71 590 514} type Double resizable visible
   } {
     Fl_Input inpDate_log {
-      label {Date On}
+      label {Date On} selected
       tooltip {Date QSO started} xywh {4 24 100 24} align 5
       code0 {\#include "calendar.h"}
       code1 {inpDate_log->format(2);}
@@ -528,7 +524,7 @@ wBrowser->allowResize (1);
 wBrowser->gridEnabled (0);
 dlgLogbook->xclass(PACKAGE_TARNAME);} {}
   Fl_Window wCabrillo {
-    label {Cabrillo Setup} selected
+    label {Cabrillo Setup}
     xywh {516 612 675 340} type Double hide
   } {
     Fl_Group {} {

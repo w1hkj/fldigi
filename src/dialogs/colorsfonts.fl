@@ -1,30 +1,28 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0110 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {private global
+decl {\#include <config.h>} {global
 } 
 
-decl {\#include "fl_digi.h"} {private global
+decl {\#include "fl_digi.h"} {global
 } 
 
-decl {\#include "configuration.h"} {private global
+decl {\#include "configuration.h"} {global
 } 
 
-decl {\#include "Viewer.h"} {private global
+decl {\#include "Viewer.h"} {global
 } 
 
 decl {\#include "font_browser.h"} {public global
 } 
 
-decl {\#include <FL/Fl_Color_Chooser.H>} {private local
-} 
+decl {\#include <FL/Fl_Color_Chooser.H>} {} 
 
-decl {\#include <FL/fl_show_colormap.H>} {private local
-} 
+decl {\#include <FL/fl_show_colormap.H>} {} 
 
 Function {selectColorsFonts()} {open return_type void
 } {
@@ -1075,12 +1073,12 @@ progdefaults.changed = true;}
       }
     }
     Fl_Menu_Button CHARSETstatus {
-      label {Char set} open
+      label {Char set} open selected
       tooltip {Select Rx/Tx Character Set} xywh {3 192 120 24} color 55 align 20
       code0 {\#include "fl_digi.h"}
     } {}
-    Fl_Box {} {
-      label {Select Char Set} selected
+    Fl_Box CHARSETlabel {
+      label {Select Char Set}
       xywh {125 192 125 25} align 20
     }
   }

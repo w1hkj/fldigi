@@ -258,7 +258,11 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 	if (linechars[ch] > nchars) {
 		if (progdefaults.VIEWERmarquee) {
 			while (linechars[ch] > nchars) {
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 				bwsrline[ch].erase(0, fl_utf8len1(bwsrline[ch][0]));
+#else
+				bwsrline[ch].erase(0, 1);
+#endif
 				linechars[ch]--;
 			}
 		} else {

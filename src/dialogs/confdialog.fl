@@ -1,106 +1,84 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0110 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {private local
+decl {\#include <config.h>} {} 
+
+decl {\#include <FL/Fl_Tooltip.H>} {} 
+
+decl {\#include <FL/Fl_Box.H>} {} 
+
+decl {\#include <FL/filename.H>} {} 
+
+decl {\#include <FL/Fl_File_Chooser.H>} {} 
+
+decl {\#include "main.h"} {} 
+
+decl {\#include "fl_digi.h"} {} 
+
+decl {\#include "soundconf.h"} {} 
+
+decl {\#include "globals.h"} {public
 } 
 
-decl {\#include <FL/Fl_Tooltip.H>} {private local
+decl {\#include "modem.h"} {public
 } 
 
-decl {\#include <FL/Fl_Box.H>} {private local
+decl {\#include "configuration.h"} {public
 } 
 
-decl {\#include <FL/filename.H>} {private local
+decl {\#include "combo.h"} {public
 } 
 
-decl {\#include <FL/Fl_File_Chooser.H>} {private local
+decl {\#include "colorsfonts.h"} {} 
+
+decl {\#include "waterfall.h"} {} 
+
+decl {\#include "rigxml.h"} {} 
+
+decl {\#include "lookupcall.h"} {} 
+
+decl {\#include "icons.h"} {} 
+
+decl {\#include "Viewer.h"} {} 
+
+decl {\#include "pskrep.h"} {global
 } 
 
-decl {\#include "main.h"} {private local
+decl {\#include "flinput2.h"} {public
 } 
 
-decl {\#include "fl_digi.h"} {private local
+decl {\#include "flslider2.h"} {public
 } 
 
-decl {\#include "soundconf.h"} {private local
+decl {\#include "flmisc.h"} {public
 } 
 
-decl {\#include "globals.h"} {public local
-} 
+decl {\#include "logsupport.h"} {} 
 
-decl {\#include "modem.h"} {public local
-} 
+decl {\#include "notify.h"} {} 
 
-decl {\#include "configuration.h"} {public local
-} 
+decl {\#include "debug.h"} {} 
 
-decl {\#include "combo.h"} {public local
-} 
+decl {\#include "status.h"} {} 
 
-decl {\#include "colorsfonts.h"} {private local
-} 
+decl {\#include "rx_extract.h"} {} 
 
-decl {\#include "waterfall.h"} {private local
-} 
+decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {} 
 
-decl {\#include "rigxml.h"} {private local
-} 
-
-decl {\#include "lookupcall.h"} {private local
-} 
-
-decl {\#include "icons.h"} {private local
-} 
-
-decl {\#include "Viewer.h"} {private local
-} 
-
-decl {\#include "pskrep.h"} {private global
-} 
-
-decl {\#include "flinput2.h"} {public local
-} 
-
-decl {\#include "flslider2.h"} {public local
-} 
-
-decl {\#include "flmisc.h"} {public local
-} 
-
-decl {\#include "logsupport.h"} {private local
-} 
-
-decl {\#include "notify.h"} {private local
-} 
-
-decl {\#include "debug.h"} {private local
-} 
-
-decl {\#include "status.h"} {private local
-} 
-
-decl {\#include "rx_extract.h"} {private local
-} 
-
-decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
-} 
-
-decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {private local
-} 
+decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {} 
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
-\#endif} {private local
+\#endif} {} 
+
+decl {Fl_Double_Window *dlgConfig;} {public
 } 
 
-decl {Fl_Double_Window *dlgConfig;} {public local
-} 
-
-decl {Mode_Browser* mode_browser;} {public local
+decl {Mode_Browser* mode_browser;} {public
 } 
 
 Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
