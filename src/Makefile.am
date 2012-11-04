@@ -155,6 +155,7 @@ if WANT_FLDIGI
 	rm -f $(DESTDIR)$(bindir)/fldigi-shell
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
+	rm -fr $(DESTDIR)/$(datadir)/fldigi
 endif
 if WANT_FLARQ
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/flarq.xpm
