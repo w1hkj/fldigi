@@ -694,12 +694,16 @@ size_t Socket::send(const void* buf, size_t len)
 	const char *sp = (const char *)buf;
 
 	while ( nToWrite > 0) {
+		try {
 #if defined(__WIN32__)
 		r = ::send(sockfd, sp, nToWrite, 0);
 #else
 		r = ::write(sockfd, sp, nToWrite);
 #endif
-
+		}
+		catch (...) {
+			throw;
+		}
 		if (r > 0) {
 			sp += r;
 			nToWrite -= r;
@@ -747,13 +751,19 @@ size_t Socket::recv(void* buf, size_t len)
 		if (!wait(0))
 			return 0;
 
-	ssize_t r = ::recv(sockfd, (char*)buf, len, 0);
-	if (r == 0)
-		shutdown(sockfd, SHUT_RD);
-	else if (r == -1) {
-		if (errno != EAGAIN)
-			throw SocketException(errno, "recv");
-		r = 0;
+	int r = 0;
+	try {
+		r = ::recv(sockfd, (char*)buf, len, 0);
+		if (r == 0)
+			shutdown(sockfd, SHUT_RD);
+		else if (r == -1) {
+			if (errno != EAGAIN)
+				throw SocketException(errno, "recv");
+			r = 0;
+		}
+	}
+	catch (...) {
+		throw;
 	}
 
 	return r;

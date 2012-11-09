@@ -114,7 +114,6 @@ string noctrl(string src)
 //======================================================================
 
 static string arqtext;
-//string::iterator pText;
 size_t pText;
 
 bool arq_text_available = false;
@@ -455,22 +454,15 @@ bool WRAP_auto_arqRx()
 // Socket ARQ i/o used on all platforms
 //-----------------------------------------------------------------------------
 
-extern void arq_run(Socket s);
-extern void arq_stop();
-
-string errstring;
-string cmdstring;
-string response;
-bool isTxChar = false;
-bool isCmdChar = false;
-
-bool isNotMULTIPSK = true;
+static string errstring;
+static string cmdstring;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
+static std::vector<Socket> arqclient;
 
-Socket arqclient;
-bool isSocketConnected = false;
+void arq_run(Socket);
+void arq_stop(Socket);
 
 ARQ_SOCKET_Server::ARQ_SOCKET_Server()
 {
@@ -493,8 +485,7 @@ ARQ_SOCKET_Server::~ARQ_SOCKET_Server()
 
 bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 {
-	if (inst)
-		return false;
+	if (inst) return false;
 
 	inst = new ARQ_SOCKET_Server;
 
@@ -545,9 +536,11 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		try {
 #ifdef __WOE32__
 			if (inst->server_socket->wait(0))
-#endif
 				arq_run(inst->server_socket->accept());
+#else
+			arq_run(inst->server_socket->accept());
 			TEST_THREAD_CANCEL();
+#endif
 		}
 		catch (const SocketException& e) {
 			if (e.error() != EINTR) {
@@ -560,61 +553,74 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 			break;
 		}
 	}
-	arq_stop();
+	if (!arqclient.empty()) {
+		vector<Socket>::iterator p = arqclient.begin();
+		while (p != arqclient.end()) {
+			arq_stop(*p);
+			p++;
+		}
+	}
 	inst->server_socket->close();
 	return NULL;
 }
 
 void arq_run(Socket s)
 {
+LOG_INFO("Adding ARQ client %d", s.fd());
 	struct timeval t = { 0, 20000 };
-	arqclient = s;
-	arqclient.set_timeout(t);
-	arqclient.set_nonblocking();
-	isSocketConnected = true;
+	s.set_timeout(t);
+	s.set_nonblocking();
+	arqclient.push_back(s);
 	arqmode = true;
 }
 
-void arq_stop()
+void arq_stop(Socket s)
 {
-	arqclient.close();
-	isSocketConnected = false;
-	arqmode = false;
+	LOG_INFO("Closing socket %d", s.fd());
+	s.close();
 }
 
 void WriteARQsocket(unsigned char* data, size_t len)
 {
-static string instr;
+	if (arqclient.empty()) return;
+	static string instr;
 	instr.clear();
+	vector<Socket>::iterator p;
 	try {
-		size_t n = arqclient.recv(instr);
-		if ( n > 0) txstring.append(instr);
-	} catch (const SocketException& e) {
-		arq_stop();
-		return;
-	}
-	if (!isSocketConnected) return;
-	try {
-		arqclient.send(data, len);
+		p = arqclient.begin();
+		while (p != arqclient.end()) {
+			(*p).wait(1);
+			(*p).send(data, len);
+LOG_INFO("Wrote to socket %d", (*p).fd());
+			p++;
+		}
 	}
 	catch (const SocketException& e) {
-		LOG_ERROR("%s", e.what());
-		arq_stop();
+		LOG_ERROR("socket fd %d %s", (*p).fd(), e.what());
+		arq_stop(*p);
+		arqclient.erase(p);
+		if (arqclient.empty()) arqmode = false;
 	}
 }
 
 bool Socket_arqRx()
 {
-	if (!isSocketConnected) return false;
+	if (arqclient.empty()) return false;
 
 	static string instr;
+	vector<Socket>::iterator p = arqclient.begin();
+	size_t n = 0;
 	instr.clear();
 
 	try {
-		size_t n = arqclient.recv(instr);
-		if ( n > 0)
-			txstring.append(instr);
-
+		while (p != arqclient.end()) {
+			(*p).wait(0);
+			n = (*p).recv(instr);
+			if ( n > 0) {
+				txstring.append(instr);
+			}
+			p++;
+		}
 		if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
 			parse_arqtext(arqtext);
@@ -635,7 +641,9 @@ bool Socket_arqRx()
 		return false;
 	}
 	catch (const SocketException& e) {
-		arq_stop();
+		LOG_ERROR("socket fd %d %s", (*p).fd(), e.what());
+		arq_stop(*p);
+		arqclient.erase(p);
 		return false;
 	}
 }
@@ -678,8 +686,8 @@ static void *arq_loop(void *args);
 static bool arq_exit = false;
 static bool arq_enabled;
 
-string tosend = "";
-string enroute = "";
+static string tosend = "";
+static string enroute = "";
 
 void WriteARQ(unsigned char data)
 {
@@ -687,11 +695,6 @@ void WriteARQ(unsigned char data)
 	tosend += data;
 	pthread_mutex_unlock (&arq_mutex);
 	return;
-
-//	WriteARQsocket(&data, 1);
-//#if !defined(__WOE32__) && !defined(__APPLE__)
-//	WriteARQSysV(data);
-//#endif
 }
 
 static void *arq_loop(void *args)
@@ -731,7 +734,6 @@ static void *arq_loop(void *args)
 		if (!Socket_arqRx())
 			WRAP_auto_arqRx();
 #endif
-//		pthread_mutex_unlock (&arq_mutex);
 		MilliSleep(100);
 
 	}
@@ -773,19 +775,19 @@ void arq_close(void)
 	arq_exit = false;
 }
 
-char arq_get_char()
+int arq_get_char()
 {
-	char c = 0;
+	int c = 0;
 	pthread_mutex_lock (&arq_mutex);
 	if (arq_text_available) {
-		if (pText != arqtext.length())
-			c = arqtext[pText++];
-		else {
+		if (pText != arqtext.length()) {
+			c = arqtext[pText++] & 0xFF;
+		} else {
 			arqtext.clear();
 			pText = 0;
 			bSend0x06 = true;
 			arq_text_available = false;
-			c = 0x03;
+			c = GET_TX_CHAR_ETX;
 		}
 	}
 	pthread_mutex_unlock (&arq_mutex);

@@ -70,7 +70,7 @@ extern bool			mailclient;
 extern bool			mailserver;
 extern bool			tlfio;
 extern bool			arq_text_available;
-extern char			arq_get_char();
+extern int			arq_get_char();
 
 // ARQ mail implementation
 extern void			arq_init();

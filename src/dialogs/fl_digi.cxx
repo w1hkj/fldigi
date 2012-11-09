@@ -6297,13 +6297,7 @@ int get_tx_char(void)
 	if (idling) { return GET_TX_CHAR_NODATA; }
 	
 	if (arq_text_available) {
-		char character = (arq_get_char() & 0xFF);
-		if (character == 0x03) {
-			// ETX (0x03) in ARQ data means "stop transmitting" not "send ETX"
-			return(GET_TX_CHAR_ETX);
-		}
-		else
-			return(character);
+		return arq_get_char();
 	}
 
 	if (active_modem == cw_modem && progdefaults.QSKadjust)
