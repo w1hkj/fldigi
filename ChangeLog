@@ -1,8 +1,17 @@
 
 
-=Version 3.21.60=
+=Version 3.21.61=
 
-2012-11-03  David Freese  <w1hkj@w1hkj.com>
+2012-11-08  Dave Freese (none)  <dave@compaq>
+
+	372fa1e: ARQ server
+
+2012-11-04  David Freese  <w1hkj@w1hkj.com>
+
+	e388b7b: DistCheck cleanup
+
+
+=Version 3.21.60=
 
 	a239363: FLTK-1.1.x
 	7bd9355: Libtiniconv
