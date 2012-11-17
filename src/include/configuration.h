@@ -566,7 +566,7 @@
         ELEM_(int, mt63_interleave, "MT63INTERLEAVE",                                   \
               "64-bit (long) interleave.  Values are as follows:\n"                     \
               "  0: short (32-bit); 1: long (64-bit).",                                 \
-              64) /* long interleave */                                                 \
+              1) /* long interleave */                                                  \
         ELEM_(bool, mt63_rx_integration, "MT63INTEGRATION",                             \
               "Long receive integration",                                               \
               false)                                                                    \
