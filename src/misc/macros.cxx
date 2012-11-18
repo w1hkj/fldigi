@@ -195,7 +195,6 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
 		sldrCWxmtWPM->value(number);
-printf("wpm %d\n", number);
 
 // second value = Farnsworth WPM
 		size_t pos;
@@ -207,7 +206,6 @@ printf("wpm %d\n", number);
 			if (number > 200) number = 200;
 			progdefaults.CWfarnsworth = number;
 			sldrCWfarnsworth->value(number);
-printf("fwpm %d\n", number);
 		}
 	}
 
@@ -1693,7 +1691,6 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 	within_exec = true;
 	MACROTEXT m;
 	execstr = m.expandMacro(execstr, true);
-//	execstr.insert(0,ScriptsDir);
 	within_exec = false;
 
 	int pfd[2];
@@ -2232,7 +2229,7 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 		ToggleTXRX = false;
 	}
 //	mNbr = n;
-	expanded = s;//text[n];
+	expanded = s;
 	const MTAGS *pMtags;
 
 	xbeg = xend = -1;
@@ -2358,7 +2355,6 @@ void MACROTEXT::timed_execute()
 	TransmitText->clear();
 	text2send = expandMacro(exec_string);
 	TransmitText->add_text(text2send);
-//	TransmitText->addstr(text2send);
 	exec_string.clear();
 	active_modem->set_stopflag(false);
 	start_tx();
@@ -2379,7 +2375,6 @@ void MACROTEXT::execute(int n)
 
 	if (progStatus.repeatMacro == -1)
 		TransmitText->add_text( text2send );
-//		TransmitText->addstr( text2send );
 	else {
 		size_t p = std::string::npos;
 		text2send = text[n];
@@ -2388,7 +2383,6 @@ void MACROTEXT::execute(int n)
 		while ((p = text2send.find('>')) != std::string::npos)
 			text2send[p] = ']';
 		TransmitText->add_text( text2send );
-//		TransmitText->addstr( text2send );
 	}
 	text2send.clear();
 
@@ -2426,7 +2420,7 @@ void MACROTEXT::execute(int n)
 void MACROTEXT::repeat(int n)
 {
 	expandMacro(text[n]);
-	LOG_WARN("%s",text2repeat.c_str());
+	LOG_INFO("%s",text2repeat.c_str());
 	macro_idle_on = false;
 	if (idleTime) progStatus.repeatIdleTime = idleTime;
 }

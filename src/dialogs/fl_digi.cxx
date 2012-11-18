@@ -6303,7 +6303,7 @@ int get_tx_char(void)
 	if (active_modem == cw_modem && progdefaults.QSKadjust)
 		return szTestChar[2 * progdefaults.TestChar];
 
-	if ( progStatus.repeatMacro && progStatus.repeatIdleTime > 0 &&
+	if ( (progStatus.repeatMacro > -1) && (progStatus.repeatIdleTime > 0) &&
 		 !idling ) {
 		Fl::add_timeout(progStatus.repeatIdleTime, get_tx_char_idle);
 		idling = true;
@@ -6315,16 +6315,20 @@ int get_tx_char(void)
 	if ((c = tx_encoder.pop()) != -1)
 		return(c);
 
-	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
-		char *repeat_content = &text2repeat[repeatchar];
-		tx_encoder.push(repeat_content);
+	if ((progStatus.repeatMacro > -1) && text2repeat.length()) {
+		string repeat_content;
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-		repeatchar += fl_utf8len1(*repeat_content);
+		int utf8size = fl_utf8len1(text2repeat[repeatchar]);
+		for (int i = 0; i < utf8size; i++)
+			repeat_content += text2repeat[repeatchar + i];
+		repeatchar += utf8size;
 #else
-		repeatchar += 1;
+		repeat_content += text2repeat[repeatchar];
+		repeatchar++;
 #endif
-		
-		if (repeatchar == text2repeat.length()) {
+		tx_encoder.push(repeat_content);
+
+		if (repeatchar >= text2repeat.length()) {
 			text2repeat.clear();
 			macros.repeat(progStatus.repeatMacro);
 		}
