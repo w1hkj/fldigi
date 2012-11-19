@@ -2555,7 +2555,7 @@ int default_handler(int event)
 			((key == '1' || key == '2' || key == '3' || key == '4') && Fl::event_alt())) {
 			TransmitText->take_focus();
 			TransmitText->handle(FL_KEYBOARD);
-			w->take_focus(); // remove this to leave tx text focused
+//			w->take_focus(); // remove this to leave tx text focused
 			return 1;
 		}
 #ifdef __APPLE__
@@ -6336,8 +6336,11 @@ int get_tx_char(void)
 		}
 		goto transmit;
 	}
-	
+
 	c = TransmitText->nextChar();
+	if (c == GET_TX_CHAR_ETX) {
+		return c;
+	}
 
 	if (c == '^' && state == STATE_CHAR) {
 		state = STATE_CTRL;

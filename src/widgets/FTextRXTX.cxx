@@ -923,10 +923,9 @@ int FTextTX::nextChar(void)
 	}
 	else if (PauseBreak) {
 		PauseBreak = false;
-		c = 0x03;
-	}
+		c = GET_TX_CHAR_ETX;//0x03;
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-	else if (insert_position() <= utf8_txpos) { // empty buffer or cursor inside transmitted text
+	} else if (insert_position() <= utf8_txpos) { // empty buffer or cursor inside transmitted text
 		c = -1;
 	} else {
 		if ((c = tbuf->char_at(utf8_txpos)) > 0) {
@@ -939,7 +938,7 @@ int FTextTX::nextChar(void)
 		} else
 			c = -1;
 #else
-	else if (insert_position() <= txpos) { // empty buffer or cursor inside transmitted text
+	} else if (insert_position() <= txpos) { // empty buffer or cursor inside transmitted text
 		c = -1;
 	} else {
 		if ((c = static_cast<unsigned char>(tbuf->character(txpos)))) {

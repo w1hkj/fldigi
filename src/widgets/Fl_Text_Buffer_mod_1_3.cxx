@@ -349,7 +349,8 @@ void Fl_Text_Buffer_mod::replace(int start, int end, const char *text)
   
   call_predelete_callbacks(start, end - start);
   const char *deletedText = text_range(start, end);
-  remove_(start, end);
+  if (end > start)
+    remove_(start, end);
   int nInserted = insert_(start, text);
   mCursorPosHint = start + nInserted;
   call_modify_callbacks(start, end - start, nInserted, 0, deletedText);
