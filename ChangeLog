@@ -1,10 +1,20 @@
 
 
+=Version 3.21.62=
+
+2012-11-19  David Freese  <w1hkj@w1hkj.com>
+
+	2ca1bf7: WF-only-escape
+	326a75d: REPEAT Macro
+	44e6ae6: MT63 Long
+
+
 =Version 3.21.61=
+
 
 2012-11-08  Dave Freese (none)  <dave@compaq>
 
-	372fa1e: ARQ server
+	c7f2918: ARQ server
 
 2012-11-04  David Freese  <w1hkj@w1hkj.com>
 
