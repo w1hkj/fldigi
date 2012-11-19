@@ -2536,6 +2536,8 @@ void cb_btnClearMViewer(Fl_Widget *w, void *d)
 
 int default_handler(int event)
 {
+	if (bWF_only) return 1;
+
 	if (event != FL_SHORTCUT)
 		return 0;
 
