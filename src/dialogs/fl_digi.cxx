@@ -2548,9 +2548,9 @@ int default_handler(int event)
 	}
 
 	Fl_Widget* w = Fl::focus();
+	int key = Fl::event_key();
 
 	if (w == fl_digi_main || w->window() == fl_digi_main) {
-		int key = Fl::event_key();
 		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last) ||
 			((key == '1' || key == '2' || key == '3' || key == '4') && Fl::event_alt())) {
 			TransmitText->take_focus();
@@ -2582,8 +2582,12 @@ int default_handler(int event)
 	else if (w == dlgLogbook || w->window() == dlgLogbook)
 		return log_search_handler(event);
 
-	else if (Fl::event_key() == FL_Escape)
+	else if ((Fl::event_key() == FL_Escape) ||
+			(Fl::event_ctrl() && ((key == 'z' || key == 'Z')) &&
+			TransmitText->visible_focus()))
 		return 1;
+
+	else if (Fl::event_ctrl()) return w->handle(FL_KEYBOARD);
 
 	return 0;
 }

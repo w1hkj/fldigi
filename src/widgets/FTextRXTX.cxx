@@ -1079,6 +1079,8 @@ int FTextTX::handle_key(int key)
 	}
 
 		if (trx_state == STATE_TX && active_modem->get_stopflag() == false) {
+			kf_select_all(0, this);
+			kf_copy(0, this);
 			clear();
 			if (arq_text_available)
 				AbortARQ();

@@ -338,10 +338,10 @@ void Fl_Text_Buffer_mod::replace(int start, int end, const char *text)
     return;
   if (start < 0)
     start = 0;
-  if (end < 0) // needed to prevent control-Z crash
-    end = 0;
   if (end > mLength)
     end = mLength;
+  if (end < start)
+    end = start;
 
   IS_UTF8_ALIGNED2(this, (start))
   IS_UTF8_ALIGNED2(this, (end))
@@ -349,8 +349,7 @@ void Fl_Text_Buffer_mod::replace(int start, int end, const char *text)
   
   call_predelete_callbacks(start, end - start);
   const char *deletedText = text_range(start, end);
-  if (end > start)
-    remove_(start, end);
+  remove_(start, end);
   int nInserted = insert_(start, text);
   mCursorPosHint = start + nInserted;
   call_modify_callbacks(start, end - start, nInserted, 0, deletedText);
