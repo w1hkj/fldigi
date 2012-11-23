@@ -411,7 +411,7 @@ bool rtty::rx(bool bit)
 			if (bit) {
 				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff)|| !progStatus.sqlonoff) {
 					c = decode_char();
-					if ( c != 0 )
+					if ( c != 0 && c != '\r')
 						put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
 				}
 				flag = true;
