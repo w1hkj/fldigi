@@ -239,8 +239,10 @@ void delayed_startup(void *)
 int main(int argc, char ** argv)
 {
 	appname = argv[0];
+	string appdir;
+	string test_file_name;
+	FILE *test_file = NULL;
 	{
-		string appdir;
 		char apptemp[FL_PATH_MAX];
 		fl_filename_expand(apptemp, sizeof(apptemp), appname.c_str());
 		appdir.assign(apptemp);
@@ -258,11 +260,14 @@ int main(int argc, char ** argv)
 #endif
 
 		if (p != std::string::npos) {
-			string testfile;
-			testfile.assign(appdir).append("NBEMS.DIR");
-			FILE *testdir = fopen(testfile.c_str(),"r");
-			if (testdir) {
-				fclose(testdir);
+			test_file_name.assign(appdir).append("NBEMS.DIR");
+#ifdef __WOE32__
+			while ((p = test_file_name.find("\\")) != std::string::npos)
+				test_file_name[p] = '/';
+#endif
+			test_file = fopen(test_file_name.c_str(),"r");
+			if (test_file != NULL) {
+				fclose(test_file);
 				BaseDir = appdir;
 				NBEMSapps_dir = true;
 			}
@@ -348,7 +353,11 @@ int main(int argc, char ** argv)
 	}
 
 	LOG_INFO("appname: %s", appname.c_str());
-
+	LOG_INFO("Test file %p", test_file);
+	if (NBEMSapps_dir)
+		LOG_INFO("%s present", test_file_name.c_str());
+	else
+		LOG_INFO("%s not present", test_file_name.c_str());
 	LOG_INFO("HomeDir: %s", HomeDir.c_str());
 	LOG_INFO("RigsDir: %s", RigsDir.c_str());
 	LOG_INFO("ScriptsDir: %s", ScriptsDir.c_str());
