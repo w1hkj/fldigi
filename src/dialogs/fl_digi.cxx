@@ -6062,6 +6062,8 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	trx_mode mode = active_modem->get_mode();
 	const char **asc = NULL;
 	
+	if (progdefaults.charset_name == "ASCII")
+		asc = ascii;
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
 	if (mode == MODE_RTTY || mode == MODE_CW)

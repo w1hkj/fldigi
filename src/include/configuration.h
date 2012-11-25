@@ -1166,7 +1166,7 @@
         /* RX / TX / Waterfall text widgets */                                          \
         ELEM_(std::string, charset_name, "CHARSET_NAME",                                \
               "Default character set",                                                  \
-              "UTF-8")                                                                  \
+              "ASCII")                                                                  \
         ELEM_(std::string, RxFontName, "RXFONTNAME",                                    \
               "RX text font name",                                                      \
               "")                                                                       \
