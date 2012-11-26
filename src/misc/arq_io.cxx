@@ -65,6 +65,20 @@ LOG_FILE_SOURCE(debug::LOG_ARQCONTROL);
 
 using namespace std;
 
+// ============================================================================
+// Implementation using thread vice the fldigi timeout facility
+// ============================================================================
+static pthread_t arq_thread;
+static pthread_mutex_t arq_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t tosend_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static void *arq_loop(void *args);
+
+static bool arq_exit = false;
+static bool arq_enabled;
+
+static string tosend = "";
+static string enroute = "";
 //======================================================================
 // test code for pskmail eol issues
 
@@ -119,7 +133,6 @@ size_t pText;
 bool arq_text_available = false;
 string txstring;
 
-extern void send0x06();
 extern void parse_arqtext(string &toparse);
 
 static void set_button(Fl_Button* button, bool value)
@@ -462,7 +475,6 @@ ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
 static std::vector<Socket> arqclient;
 
 void arq_run(Socket);
-void arq_stop(Socket);
 
 ARQ_SOCKET_Server::ARQ_SOCKET_Server()
 {
@@ -556,7 +568,11 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	if (!arqclient.empty()) {
 		vector<Socket>::iterator p = arqclient.begin();
 		while (p != arqclient.end()) {
-			arq_stop(*p);
+			try {
+				(*p).close();
+				arqclient.erase(p);
+			}
+			catch (...) {;}
 			p++;
 		}
 	}
@@ -566,18 +582,14 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 
 void arq_run(Socket s)
 {
-LOG_INFO("Adding ARQ client %d", s.fd());
+	pthread_mutex_lock (&arq_mutex);
+	LOG_INFO("Adding ARQ client %d", s.fd());
 	struct timeval t = { 0, 20000 };
 	s.set_timeout(t);
 	s.set_nonblocking();
 	arqclient.push_back(s);
 	arqmode = true;
-}
-
-void arq_stop(Socket s)
-{
-	LOG_INFO("Closing socket %d", s.fd());
-	s.close();
+	pthread_mutex_unlock (&arq_mutex);
 }
 
 void WriteARQsocket(unsigned char* data, size_t len)
@@ -591,14 +603,16 @@ void WriteARQsocket(unsigned char* data, size_t len)
 		while (p != arqclient.end()) {
 			(*p).wait(1);
 			(*p).send(data, len);
-LOG_INFO("Wrote to socket %d", (*p).fd());
+			LOG_DEBUG("Wrote to socket %d", (*p).fd());
 			p++;
 		}
 	}
 	catch (const SocketException& e) {
 		LOG_ERROR("socket fd %d %s", (*p).fd(), e.what());
-		arq_stop(*p);
-		arqclient.erase(p);
+		try {
+			(*p).close();
+			arqclient.erase(p);
+		} catch (...) {;}
 		if (arqclient.empty()) arqmode = false;
 	}
 }
@@ -612,8 +626,11 @@ bool Socket_arqRx()
 	size_t n = 0;
 	instr.clear();
 
+	pthread_mutex_lock (&arq_mutex);
+
 	try {
 		while (p != arqclient.end()) {
+			LOG_DEBUG("Query %d", (*p).fd());
 			(*p).wait(0);
 			n = (*p).recv(instr);
 			if ( n > 0) {
@@ -635,17 +652,24 @@ bool Socket_arqRx()
 			}
 			txstring.clear();
 			cmdstring.clear();
+			pthread_mutex_unlock (&arq_mutex);
 			return true;
 		}
 		cmdstring.clear();
+		pthread_mutex_unlock (&arq_mutex);
 		return false;
 	}
 	catch (const SocketException& e) {
 		LOG_ERROR("socket fd %d %s", (*p).fd(), e.what());
-		arq_stop(*p);
-		arqclient.erase(p);
+		try {
+			(*p).close();
+			arqclient.erase(p);
+		} catch (...) {;}
+		pthread_mutex_unlock (&arq_mutex);
 		return false;
 	}
+	pthread_mutex_unlock (&arq_mutex);
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -663,37 +687,15 @@ void WriteARQSysV(unsigned char data)
 }
 #endif
 
-//-----------------------------------------------------------------------------
-// Write End of Transmit character to ARQ client
-//-----------------------------------------------------------------------------
-
-void send0x06()
-{
-	if (trx_state == STATE_RX) {
-		bSend0x06 = false;
-		WriteARQ(0x06);
-	}
-}
-
 // ============================================================================
 // Implementation using thread vice the fldigi timeout facility
 // ============================================================================
-static pthread_t arq_thread;
-static pthread_mutex_t arq_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-static void *arq_loop(void *args);
-
-static bool arq_exit = false;
-static bool arq_enabled;
-
-static string tosend = "";
-static string enroute = "";
 
 void WriteARQ(unsigned char data)
 {
-	pthread_mutex_lock (&arq_mutex);
+	pthread_mutex_lock (&tosend_mutex);
 	tosend += data;
-	pthread_mutex_unlock (&arq_mutex);
+	pthread_mutex_unlock (&tosend_mutex);
 	return;
 }
 
@@ -706,22 +708,29 @@ static void *arq_loop(void *args)
 		if (arq_exit)
 			break;
 
-		pthread_mutex_lock (&arq_mutex);
-
 		if (!tosend.empty()) {
+			pthread_mutex_lock(&tosend_mutex);
 			enroute = tosend;
 			tosend.clear();
-			pthread_mutex_unlock (&arq_mutex);
+			pthread_mutex_unlock(&tosend_mutex);
+
+			pthread_mutex_lock (&arq_mutex);
 			WriteARQsocket((unsigned char*)enroute.c_str(), enroute.length());
 #if !defined(__WOE32__) && !defined(__APPLE__)
 			for (size_t i = 0; i < enroute.length(); i++)
 				WriteARQSysV((unsigned char)enroute[i]);
 #endif
-		} else
 			pthread_mutex_unlock (&arq_mutex);
+		}
 
-		if (bSend0x06)
-			send0x06();
+		if (bSend0x06) {
+			pthread_mutex_lock (&arq_mutex);
+			string xmtdone;
+			xmtdone += 0x06;
+			WriteARQsocket((unsigned char*)xmtdone.c_str(), xmtdone.length());
+			bSend0x06 = false;
+			pthread_mutex_unlock (&arq_mutex);
+		}
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
 		// order of precedence; Socket, Wrap autofile, TLF autofile
