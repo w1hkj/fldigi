@@ -102,9 +102,12 @@ void loadBrowser(Fl_Widget *widget) {
 #endif
 
 	w->add(LINE_SEP);
-	w->add(_("<LOG>\tsave QSO data"));
-	w->add(_("<LNW>\tlog at xmt time"));
 	w->add(_("<CLRLOG>\tclear log fields"));
+	w->add(_("<LOG>\tsave QSO data"));
+	w->add(_("<LOG:msg>\tsaveQSO data, append msg to notes"));
+	w->add(_("<LNW>\tlog at xmt time"));
+	w->add(_("<LNW:msg>\tsaveQSO data, append msg to notes"));
+	w->add(_("<EQSL>\tlog eQSL"));
 	w->add(_("<EQSL:[msg]>\tlog eQSL optional msg"));
 
 	w->add(LINE_SEP);

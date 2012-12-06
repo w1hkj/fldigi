@@ -904,8 +904,15 @@ static void pLOG(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
+	size_t start = s.find(':', i);
+	if (start != std::string::npos) {
+		string msg = inpNotes->value();
+		if (!msg.empty()) msg.append("\n");
+		msg.append(s.substr(start + 1, endbracket-start-1));
+		inpNotes->value(msg.c_str());
+	}
+	s.replace(i, endbracket - i + 1, "");
 	qsoSave_cb(0, 0);
-	s.replace(i, 5, "");
 }
 
 static void pLNW(std::string &s, size_t &i, size_t endbracket)
@@ -914,7 +921,14 @@ static void pLNW(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	s.replace(i, 5, "^L");
+	size_t start = s.find(':', i);
+	if (start != std::string::npos) {
+		string msg = inpNotes->value();
+		if (!msg.empty()) msg.append("\n");
+		msg.append(s.substr(start + 1, endbracket-start-1));
+		inpNotes->value(msg.c_str());
+	}
+	s.replace(i, endbracket - i + 1, "^L");
 }
 
 static void pCLRLOG(std::string &s, size_t &i, size_t endbracket)
@@ -1740,6 +1754,7 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 		lnbuff.erase(lnbuff.length()-1,1);
 
 	if (!lnbuff.empty()) {
+		lnbuff = m.expandMacro(lnbuff, false);
 		s.insert(i, lnbuff);
 		i += lnbuff.length();
 	} else
@@ -1999,8 +2014,8 @@ static const MTAGS mtags[] = {
 {"<XBEG>",		pXBEG},
 {"<XEND>",		pXEND},
 {"<SAVEXCHG>",	pSAVEXCHG},
-{"<LOG>",		pLOG},
-{"<LNW>",		pLNW},
+{"<LOG",		pLOG},
+{"<LNW",		pLNW},
 {"<CLRLOG>",	pCLRLOG},
 {"<EQSL",		pEQSL},
 {"<TIMER:",		pTIMER},
