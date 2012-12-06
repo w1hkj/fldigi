@@ -1,9 +1,20 @@
 
 
+=Version 3.21.63=
+
+2012-12-06  David Freese  <w1hkj@w1hkj.com>
+
+	972865e: Macros LOG LNW EXEC
+	01ef002: ARQ Socket
+	261b7fb: Default char set
+	614a542: NBEMS.DIR
+	cb820ae: RTTY CR-CR-LF
+	de390ac: Control-V/Z
+
+
 =Version 3.21.62=
 
-2012-11-19  David Freese  <w1hkj@w1hkj.com>
-
+	fec0ead: Pause-break
 	2ca1bf7: WF-only-escape
 	326a75d: REPEAT Macro
 	44e6ae6: MT63 Long
