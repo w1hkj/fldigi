@@ -2550,6 +2550,8 @@ int default_handler(int event)
 	Fl_Widget* w = Fl::focus();
 	int key = Fl::event_key();
 
+	if ((key == FL_F + 4) && Fl::event_alt()) clean_exit(true);
+
 	if (w == fl_digi_main || w->window() == fl_digi_main) {
 		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last) ||
 			((key == '1' || key == '2' || key == '3' || key == '4') && Fl::event_alt())) {
