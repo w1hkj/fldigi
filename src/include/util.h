@@ -24,6 +24,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+// include the system defines
+#include "config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
