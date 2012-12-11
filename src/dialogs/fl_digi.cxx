@@ -5901,7 +5901,7 @@ void set_scope_clear_axis()
 // raw buffer functions can ONLY be called by FLMAIN_TID
 
 //======================================================================
-#define RAW_BUFF_LEN 256
+#define RAW_BUFF_LEN 4096
 
 static char rxtx_raw_chars[RAW_BUFF_LEN+1] = "";
 static char rxtx_raw_buff[RAW_BUFF_LEN+1] = "";
