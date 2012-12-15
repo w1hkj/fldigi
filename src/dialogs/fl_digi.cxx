@@ -2293,30 +2293,25 @@ if (bWF_only) return;
 	if (inpTimeOn == inpTimeOn1) inpTimeOn2->value(inpTimeOn->value());
 	else inpTimeOn1->value(inpTimeOn->value());
 
-	if (progdefaults.EnableDupCheck) {
-		DupCheck();
-		return restoreFocus(w);
-	}
-
 	SearchLastQSO(inpCall->value());
 
-	if (inpAZ->value()[0])
-		return restoreFocus(w);
-
-	if (!progdefaults.autofill_qso_fields)
-		return restoreFocus(w);
-	const struct dxcc* e = dxcc_lookup(inpCall->value());
-	if (!e)
-		return restoreFocus(w);
-	double lon, lat, distance, azimuth;
-	if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
-	    qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK) {
-		char az[4];
-		snprintf(az, sizeof(az), "%3.0f", azimuth);
-		inpAZ->value(az, sizeof(az) - 1);
+	if (!inpAZ->value()[0] && progdefaults.autofill_qso_fields) {
+		const struct dxcc* e = dxcc_lookup(inpCall->value());
+		if (e) {
+			double lon, lat, distance, azimuth;
+			if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
+				qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK) {
+				char az[4];
+				snprintf(az, sizeof(az), "%3.0f", azimuth);
+				inpAZ->value(az, sizeof(az) - 1);
+			}
+			inpCountry->value(e->country);
+			inpCountry->position(0);
+		}
 	}
-	inpCountry->value(e->country);
-	inpCountry->position(0);
+
+	if (progdefaults.EnableDupCheck)
+		DupCheck();
 
 	restoreFocus(w);
 }
