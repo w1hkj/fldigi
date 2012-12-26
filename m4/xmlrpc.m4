@@ -12,7 +12,11 @@ AC_DEFUN([AC_FLDIGI_XMLRPC_CONFIG], [
 
           test "x$XMLRPC_CFLAGS" = "x" && XMLRPC_CFLAGS=`$XMLRPC_C_CONFIG c++2 abyss-server --cflags`
           if test "x$XMLRPC_LIBS" = "x"; then
-              XMLRPC_LIBS=`$XMLRPC_C_CONFIG c++2 abyss-server --ldadd | sed s/.-lpthread.//`
+              XMLRPC_LIBS=`$XMLRPC_C_CONFIG c++2 abyss-server --ldadd | \
+              sed -e 's/^-lpthread$//'  \
+                  -e 's/^-lpthread / /' \
+                  -e 's/ -lpthread$//'  \
+                  -e 's/ -lpthread / /' `
               test "$ac_cv_static" = "yes" && XMLRPC_LIBS="-Wl,-Bstatic $XMLRPC_LIBS -Wl,-Bdynamic"
           fi
       fi
