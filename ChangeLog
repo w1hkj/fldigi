@@ -1,8 +1,19 @@
 
 
-=Version 3.21.63=
+=Version 3.21.64=
 
-2012-12-06  David Freese  <w1hkj@w1hkj.com>
+2012-12-26  Makoto Fujiwara  <makoto@ki.nu>
+
+	640378a: NetBSD compile error
+
+2012-12-15  David Freese  <w1hkj@w1hkj.com>
+
+	05b3ad0: Dup Cty lookup
+	b02da36: Get RX buffer
+	d52579b: Capture Alt-F4
+
+
+=Version 3.21.63=
 
 	972865e: Macros LOG LNW EXEC
 	01ef002: ARQ Socket
