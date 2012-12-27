@@ -531,6 +531,9 @@ int configuration::setDefaults()
 	valTHOR_FILTER->value(THOR_FILTER);
 	valTHOR_PATHS->value(THOR_PATHS);
 	valThorCWI->value(ThorCWI);
+	valTHOR_PREAMBLE->value(THOR_PREAMBLE);
+	valTHOR_SOFTSYMBOLS->value(THOR_SOFTSYMBOLS);
+	valTHOR_SOFTBITS->value(THOR_SOFTBITS);
 
 	valDominoEX_BW->value(DOMINOEX_BW);
 	valDominoEX_FILTER->value(DOMINOEX_FILTER);

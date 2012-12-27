@@ -76,7 +76,7 @@ private:
 	void		send_tones();
 	
 public:
-	olivia();
+	olivia(trx_mode omode = MODE_OLIVIA);
 	~olivia();
 	void init();
 	void rx_init();

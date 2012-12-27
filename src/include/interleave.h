@@ -41,7 +41,7 @@ protected:
 	}
 
 public:
-	interleave(int _size, int dir);
+	interleave(int _size, int depth, int dir);
 	~interleave();
 	void symbols (unsigned char *psyms);
 	void bits (unsigned int *pbits);

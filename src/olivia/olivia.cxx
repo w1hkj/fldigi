@@ -37,6 +37,7 @@
 #include "confdialog.h"
 #include "status.h"
 #include "debug.h"
+#include "qrunner.h"
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
@@ -142,8 +143,9 @@ int olivia::tx_process()
 {
 	int c = 0, len = 0;
 
-	if (tones	!= progdefaults.oliviatones ||
-		bw 		!= progdefaults.oliviabw ||
+	if ((mode == MODE_OLIVIA && 
+		(tones	!= progdefaults.oliviatones ||
+		bw 		!= progdefaults.oliviabw)) ||
 		smargin != progdefaults.oliviasmargin ||
 		sinteg	!= progdefaults.oliviasinteg )
 			restart();
@@ -212,8 +214,9 @@ int olivia::rx_process(const double *buf, int len)
 	static char msg1[20];
 	static char msg2[20];
 
-	if (tones	!= progdefaults.oliviatones ||
-		bw 		!= progdefaults.oliviabw ||
+	if ((mode == MODE_OLIVIA && 
+		(tones	!= progdefaults.oliviatones ||
+		bw 		!= progdefaults.oliviabw)) ||
 		smargin != progdefaults.oliviasmargin ||
 		sinteg	!= progdefaults.oliviasinteg )
 			restart();
@@ -270,8 +273,10 @@ int olivia::rx_process(const double *buf, int len)
 
 void olivia::restart()
 {
-	tones	= progdefaults.oliviatones;
-	bw 		= progdefaults.oliviabw;
+	if (mode == MODE_OLIVIA) {
+		tones	= progdefaults.oliviatones;
+		bw 		= progdefaults.oliviabw;
+	}
 	smargin = progdefaults.oliviasmargin;
 	sinteg	= progdefaults.oliviasinteg;
 	
@@ -329,7 +334,11 @@ void olivia::restart()
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
-	put_MODEstatus("%s %" PRIuSZ "/%" PRIuSZ "", get_mode_name(), Tx->Tones, Tx->Bandwidth);
+	if (mode == MODE_OLIVIA)
+		put_MODEstatus("%s %" PRIuSZ "/%" PRIuSZ "", get_mode_name(), Tx->Tones, Tx->Bandwidth);
+	else
+		put_MODEstatus("%s", mode_info[mode].sname);//get_mode_name());
+
 	metric = 0;
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
@@ -343,17 +352,71 @@ void olivia::init()
 	set_scope_mode(Digiscope::BLANK);
 }
 
-olivia::olivia()
+olivia::olivia(trx_mode omode)
 {
+	mode = omode;
 	cap |= CAP_REV;
 
 	txfbuffer = 0;
 	samplerate = 8000;
 
+	switch (mode) {
+		case MODE_OLIVIA_4_250:
+			progdefaults.oliviatones = tones = 1;
+			progdefaults.oliviabw = bw = 1;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_8_250:
+			progdefaults.oliviatones = tones = 2;
+			progdefaults.oliviabw = bw = 1;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_4_500:
+			progdefaults.oliviatones = tones = 1;
+			progdefaults.oliviabw = bw = 2;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_8_500:
+			progdefaults.oliviatones = tones = 2;
+			progdefaults.oliviabw = bw = 2;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_16_500:
+			progdefaults.oliviatones = tones = 3;
+			progdefaults.oliviabw = bw = 2;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_8_1000:
+			progdefaults.oliviatones = tones = 2;
+			progdefaults.oliviabw = bw = 3;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_16_1000:
+			progdefaults.oliviatones = tones = 3;
+			progdefaults.oliviabw = bw = 3;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_32_1000:
+			progdefaults.oliviatones = tones = 4;
+			progdefaults.oliviabw = bw = 3;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA_64_2000:
+			progdefaults.oliviatones = tones = 5;
+			progdefaults.oliviabw = bw = 4;
+			REQ(set_olivia_tab_widgets);
+			break;
+		case MODE_OLIVIA:
+		default:
+			tones = progdefaults.oliviatones;
+			bw    = progdefaults.oliviabw;
+			REQ(set_olivia_tab_widgets);
+			break;
+	}
+
 	Tx = new MFSK_Transmitter< double >;
 	Rx = new MFSK_Receiver< double >;
 
-	mode = MODE_OLIVIA;
 	lastfreq = 0;
 
 	for (int i = 0; i < SR4; i++) ampshape[i] = 1.0;

@@ -72,15 +72,28 @@ enum {
 struct RSIDs { unsigned short rs; trx_mode mode; const char* name; };
 
 class cRsId {
+
+protected:
+// note: hamming distance > 5 causes false detection on second burst
+enum { HAMMING_HIGH = 2, HAMMING_MED = 4, HAMMING_LOW = 5 };// 6 };
+enum { INITIAL, EXTENDED, WAIT };
+
 private:
 	// Table of precalculated Reed Solomon symbols
 	unsigned char   *pCodes;
+	unsigned char   *pCodes2;
 
 	static const RSIDs  rsid_ids[];
 	static const int rsid_ids_size;
-
 	static const int Squares[];
 	static const int indices[];
+
+	static const RSIDs  rsid_ids2[];
+	static const int rsid_ids_size2;
+
+	int state;
+
+	int hamming_resolution;
 
 // Span of FFT bins, in which the RSID will be searched for
 	int		nBinLow;
@@ -95,12 +108,21 @@ private:
 	unsigned char	aHashTable1[RSID_HASH_LEN];
 	unsigned char	aHashTable2[RSID_HASH_LEN];
 
-	bool		bPrevTimeSliceValid;
+	unsigned char	aHashTable1_2[RSID_HASH_LEN];
+	unsigned char	aHashTable2_2[RSID_HASH_LEN];
+
+	bool	bPrevTimeSliceValid;
 	int		iPrevDistance;
 	int		iPrevBin;
 	int		iPrevSymbol;
 	int		iTime; // modulo RSID_NTIMES
 	int		aBuckets[RSID_NTIMES][RSID_FFT_SIZE];
+
+	bool	bPrevTimeSliceValid2;
+	int		iPrevDistance2;
+	int		iPrevBin2;
+	int		iPrevSymbol2;
+	int		iTime2; // modulo RSID_NTIMES
 
 	int		DistanceOut;
 	int		MetricsOut;
@@ -120,14 +142,18 @@ private:
 	int		HammingDistance(int iBucket, unsigned char *p2);
 	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
 	bool	search_amp( int &pSymbolOut, int &pBinOut);
+	bool	search_amp2( int &pSymbolOut, int &pBinOut);
 	void	search(void);
 	void	apply (int iSymbol, int iBin);
+	void	apply2 (int iSymbol, int iBin);
 public:
 	cRsId();
 	~cRsId();
 	void	reset();
 	void	receive(const float* buf, size_t len);
 	void	send(bool postidle);
+
+friend void reset_rsid(void *who);
 };
 
 #endif

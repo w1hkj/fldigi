@@ -592,6 +592,7 @@ EXTRA_fldigi_SOURCES += \
 	mt63/symbol.dat \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
+	rsid/rsid_defs.cxx \
 	trx/tune.cxx \
 	dialogs/guide.cxx \
 	widgets/Fl_Text_Buffer_mod_1_1.cxx \

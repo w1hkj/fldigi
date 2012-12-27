@@ -197,6 +197,7 @@ extern modem *mfsk11_modem;
 extern modem *mfsk22_modem;
 extern modem *mfsk31_modem;
 extern modem *mfsk64_modem;
+extern modem *mfsk128_modem;
 
 extern modem *wefax576_modem;
 extern modem *wefax288_modem;
@@ -223,6 +224,7 @@ extern modem *psk63f_modem;
 extern modem *psk125_modem;
 extern modem *psk250_modem;
 extern modem *psk500_modem;
+extern modem *psk1000_modem;
 
 extern modem *qpsk31_modem;
 extern modem *qpsk63_modem;
@@ -233,11 +235,55 @@ extern modem *qpsk500_modem;
 extern modem *psk125r_modem;
 extern modem *psk250r_modem;
 extern modem *psk500r_modem;
+extern modem *psk1000r_modem;
+
+extern modem *psk800_c2_modem;
+extern modem *psk800r_c2_modem;
+
+extern modem *psk1000_c2_modem;
+extern modem *psk1000r_c2_modem;
+
+extern modem *psk63r_c4_modem;
+extern modem *psk63r_c5_modem;
+extern modem *psk63r_c10_modem;
+extern modem *psk63r_c20_modem;
+extern modem *psk63r_c32_modem;
+
+extern modem *psk125r_c4_modem;
+extern modem *psk125r_c5_modem;
+extern modem *psk125r_c10_modem;
+extern modem *psk125_c12_modem;
+extern modem *psk125r_c12_modem;
+extern modem *psk125r_c16_modem;
+
+extern modem *psk250r_c2_modem;
+extern modem *psk250r_c3_modem;
+extern modem *psk250r_c5_modem;
+extern modem *psk250_c6_modem;
+extern modem *psk250r_c6_modem;
+extern modem *psk250r_c7_modem;
+
+extern modem *psk500_c2_modem;
+extern modem *psk500_c4_modem;
+
+extern modem *psk500r_c2_modem;
+extern modem *psk500r_c3_modem;
+extern modem *psk500r_c4_modem;
 
 extern modem *rtty_modem;
 extern modem *pkt_modem;
 
 extern modem *olivia_modem;
+extern modem *olivia_4_250_modem;
+extern modem *olivia_8_250_modem;
+extern modem *olivia_4_500_modem;
+extern modem *olivia_8_500_modem;
+extern modem *olivia_16_500_modem;
+extern modem *olivia_8_1000_modem;
+extern modem *olivia_16_1000_modem;
+extern modem *olivia_32_1000_modem;
+extern modem *olivia_64_2000_modem;
+
 extern modem *contestia_modem;
 
 extern modem *thor4_modem;
@@ -246,11 +292,10 @@ extern modem *thor8_modem;
 extern modem *thor11_modem;
 extern modem *thor16_modem;
 extern modem *thor22_modem;
-
-extern modem *dominoex44_modem;
-extern modem *thor44_modem;
-extern modem *dominoex88_modem;
-extern modem *thor88_modem;
+extern modem *thor25x4_modem;
+extern modem *thor50x1_modem;
+extern modem *thor50x2_modem;
+extern modem *thor100_modem;
 
 extern modem *dominoex4_modem;
 extern modem *dominoex5_modem;
@@ -258,6 +303,8 @@ extern modem *dominoex8_modem;
 extern modem *dominoex11_modem;
 extern modem *dominoex16_modem;
 extern modem *dominoex22_modem;
+extern modem *dominoex44_modem;
+extern modem *dominoex88_modem;
 
 extern modem *throb1_modem;
 extern modem *throb2_modem;

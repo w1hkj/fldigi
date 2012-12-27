@@ -55,6 +55,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_DOMINOEX11, &dominoex11_modem, "DOMX11", "DominoEX 11", "DOMINOEX11", "DOMINO", "DM11" },
 	{ MODE_DOMINOEX16, &dominoex16_modem, "DOMX16", "DominoEX 16", "DOMINOEX16", "DOMINO", "DM16" },
 	{ MODE_DOMINOEX22, &dominoex22_modem, "DOMX22", "DominoEX 22", "DOMINOEX22", "DOMINO", "DM22" },
+	{ MODE_DOMINOEX44, &dominoex44_modem, "DOMX44", "DominoEX 44", "DOMINOEX44", "DOMINO", "DM44" },
+	{ MODE_DOMINOEX88, &dominoex88_modem, "DOMX88", "DominoEX 88", "DOMINOEX88", "DOMINO", "DM88" },
 
 	{ MODE_FELDHELL, &feld_modem, "FELDHELL", "Feld Hell", "", "HELL", "HELL" },
 	{ MODE_SLOWHELL, &feld_slowmodem, "SLOWHELL", "Slow Hell", "", "HELL", "SHLL" },
@@ -73,6 +75,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_MFSK22, &mfsk22_modem, "MFSK22", "MFSK-22", "MFSK22", "MFSK22", "MK22" },
 	{ MODE_MFSK31, &mfsk31_modem, "MFSK31", "MFSK-31", "MFSK31", "MFSK31", "MK31" },
 	{ MODE_MFSK64, &mfsk64_modem, "MFSK64", "MFSK-64", "MFSK64", "MFSK64", "MK64" },
+	{ MODE_MFSK128, &mfsk128_modem, "MFSK128", "MFSK-128", "MFSK128", "MFSK128", "MK128" },
 
 	{ MODE_WEFAX_576, &wefax576_modem, "WEFAX576", "WEFAX-IOC576", "WEFAXIOC576", "FAX", "FX576" },
 	{ MODE_WEFAX_288, &wefax288_modem, "WEFAX288", "WEFAX-IOC288", "WEFAXIOC288", "FAX", "FX288" },
@@ -90,16 +93,30 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_PSK125, &psk125_modem, "BPSK125", "BPSK-125", "PSK125", "PSK125", "P125" },
 	{ MODE_PSK250, &psk250_modem, "BPSK250", "BPSK-250", "PSK250", "PSK250", "P250" },
 	{ MODE_PSK500, &psk500_modem, "BPSK500", "BPSK-500", "PSK500", "PSK500", "P500" },
+
 	{ MODE_QPSK31, &qpsk31_modem, "QPSK31", "QPSK-31", "QPSK31", "QPSK31", "Q31" },
 	{ MODE_QPSK63, &qpsk63_modem, "QPSK63", "QPSK-63", "QPSK63", "QPSK63", "Q63" },
 	{ MODE_QPSK125, &qpsk125_modem, "QPSK125", "QPSK-125", "QPSK125", "QPSK125", "Q125" },
 	{ MODE_QPSK250, &qpsk250_modem, "QPSK250", "QPSK-250", "QPSK250", "QPSK250", "Q250" },
 	{ MODE_QPSK500, &qpsk500_modem, "QPSK500", "QPSK-500", "QPSK500", "QPSK500", "Q500" },
+
 	{ MODE_PSK125R, &psk125r_modem, "PSK125R", "PSK-125R", "PSK125R", "PSK125R", "P125R" },
 	{ MODE_PSK250R, &psk250r_modem, "PSK250R", "PSK-250R", "PSK250R", "PSK250R", "P250R" },
 	{ MODE_PSK500R, &psk500r_modem, "PSK500R", "PSK-500R", "PSK500R", "PSK500R", "P500R" },
 
-	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "Olivia", "", "OLIVIA", "OL" },
+	{ MODE_PSK1000, &psk1000_modem, "BPSK1000", "BPSK-1000", "PSK1000", "PSK1000", "P1000" },
+	{ MODE_PSK1000R, &psk1000r_modem, "PSK1000R", "PSK-1000R", "PSK1000R", "PSK1000R", "PSK1000R" },
+
+	{ MODE_OLIVIA, &olivia_modem, "OLIVIA", "OLIVIA", "OLIVIA", "OLIVIA", "OL" },
+	{ MODE_OLIVIA_4_250, &olivia_4_250_modem, "Olivia-4-250", "OL 4-250", "OLIV 4/250", "OLIVIA", "OL4/250" },
+	{ MODE_OLIVIA_8_250, &olivia_8_250_modem, "Olivia-8-250", "OL 8-250", "OLIV 8/250", "OLIVIA", "OL8/250" },
+	{ MODE_OLIVIA_4_500, &olivia_4_500_modem, "Olivia-4-500", "OL 4-500", "OLIV 4/500", "OLIVIA", "OL4/500" },
+	{ MODE_OLIVIA_8_500, &olivia_8_500_modem, "Olivia-8-500", "OL 8-500", "OLIV 8/500", "OLIVIA", "OL8/500" },
+	{ MODE_OLIVIA_16_500, &olivia_16_500_modem, "Olivia-16-500", "OL 16-500", "OLIV 16/500", "OLIVIA", "OL16/500" },
+	{ MODE_OLIVIA_8_1000, &olivia_8_1000_modem, "Olivia-8-1K", "OL 8-1K", "OLIV 8/1K", "OLIVIA", "OL8/1K" },
+	{ MODE_OLIVIA_16_1000, &olivia_16_1000_modem, "Olivia-16-1K", "OL 16-1K", "OLIV 16/1K", "OLIVIA", "OL16/1K" },
+	{ MODE_OLIVIA_32_1000, &olivia_32_1000_modem, "Olivia-32-1K", "OL 32-1K", "OLIV 32/1K", "OLIVIA", "OL32/1K" },
+	{ MODE_OLIVIA_64_2000, &olivia_64_2000_modem, "Olivia-64-2K", "OL 64-2K", "OLIV 64/2K", "OLIVIA", "OL64/2K" },
 
 	{ MODE_RTTY, &rtty_modem, "RTTY", "RTTY", "RTTY", "RTTY", "RY" },
 
@@ -109,6 +126,11 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THOR11, &thor11_modem, "THOR11", "THOR 11", "THOR11", "THOR", "TH11" },
 	{ MODE_THOR16, &thor16_modem, "THOR16", "THOR 16", "THOR16", "THOR", "TH16" },
 	{ MODE_THOR22, &thor22_modem, "THOR22", "THOR 22", "THOR22", "THOR", "TH22" },
+	{ MODE_THOR25x4, &thor25x4_modem, "THOR25x4", "THOR 25 x4", "THOR25x4", "THOR", "TH25" },
+	{ MODE_THOR50x1, &thor50x1_modem, "THOR50x1", "THOR 50 x1", "THOR50x1", "THOR", "TH51" },
+	{ MODE_THOR50x2, &thor50x2_modem, "THOR50x2", "THOR 50 x2", "THOR50x2", "THOR", "TH52" },
+	{ MODE_THOR100, &thor100_modem, "THOR100", "THOR 100", "THOR100", "THOR", "TH10" },
+
 
 	{ MODE_THROB1, &throb1_modem, "THROB1", "Throb 1", "", "THRB", "TB1" },
 	{ MODE_THROB2, &throb2_modem, "THROB2", "Throb 2", "", "THRB", "TB2" },
@@ -117,9 +139,45 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "", "THRBX", "TX2" },
 	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "", "THRBX", "TX4" },
 
+	{ MODE_4X_PSK63R, &psk63r_c4_modem, "PSK63RC4", "4xPSK63R", "PSK63RC4", "PSK63RC4", "P63R4" },
+	{ MODE_5X_PSK63R, &psk63r_c5_modem, "PSK63RC5", "5xPSK63R", "PSK63RC5", "PSK63RC5", "P63R5" },
+	{ MODE_10X_PSK63R, &psk63r_c10_modem, "PSK63RC10", "10xPSK63R", "PSK63RC10", "PSK63RC10", "P63R10" },
+	{ MODE_20X_PSK63R, &psk63r_c20_modem, "PSK63RC20", "20xPSK63R", "PSK63RC20", "PSK63RC20", "P63R20" },
+	{ MODE_32X_PSK63R, &psk63r_c32_modem, "PSK63RC32", "32xPSK63R", "PSK63RC32", "PSK63RC32", "P63R32" },
+
+	{ MODE_4X_PSK125R, &psk125r_c4_modem, "PSK125RC4", "4xPSK125R", "PSK125RC4", "PSK125RC4", "P125R4" },
+	{ MODE_5X_PSK125R, &psk125r_c5_modem, "PSK125RC5", "5xPSK125R", "PSK125RC5", "PSK125RC5", "P125R5" },
+	{ MODE_10X_PSK125R, &psk125r_c10_modem, "PSK125RC10", "10xPSK125R", "PSK125RC10", "PSK125RC10", "P125R10" },
+	{ MODE_12X_PSK125, &psk125_c12_modem, "PSK125C12", "12xPSK125", "PSK125C12", "PSK125C12", "P125C12" },
+	{ MODE_12X_PSK125R, &psk125r_c12_modem, "PSK125RC12", "12xPSK125R", "PSK125RC12", "PSK125RC12", "P125R12" },
+	{ MODE_16X_PSK125R, &psk125r_c16_modem, "PSK125RC16", "16xPSK125R", "PSK125RC16", "PSK125RC16", "P125R16" },
+
+	{ MODE_6X_PSK250, &psk250_c6_modem, "PSK250C6", "6xPSK250", "PSK250C6", "PSK250C6", "P2506"},
+
+	{ MODE_2X_PSK250R, &psk250r_c2_modem, "PSK250RC2", "2xPSK250R", "PSK250RC2", "PSK250RC2", "P250R2" },
+	{ MODE_3X_PSK250R, &psk250r_c3_modem, "PSK250RC3", "3xPSK250R", "PSK250RC3", "PSK250RC3", "P250R3" },
+	{ MODE_5X_PSK250R, &psk250r_c5_modem, "PSK250RC5", "5xPSK250R", "PSK250RC5", "PSK250RC5", "P250R5"},
+	{ MODE_6X_PSK250R, &psk250r_c6_modem, "PSK250RC6", "6xPSK250R", "PSK250RC6", "PSK250RC6", "P250R6"},
+	{ MODE_7X_PSK250R, &psk250r_c7_modem, "PSK250RC7", "7xPSK250R", "PSK250RC7", "PSK250RC7", "P250R7"},
+
+	{ MODE_2X_PSK500, &psk500_c2_modem, "PSK500C2", "2xPSK500", "PSK500C2", "PSK500C2", "2xP500" },
+	{ MODE_4X_PSK500, &psk500_c4_modem, "PSK500C4", "4xPSK500", "PSK500C4", "PSK500C4", "4xP500" },
+
+	{ MODE_2X_PSK500R, &psk500r_c2_modem, "PSK500RC2", "2xPSK500R", "PSK500RC2", "PSK500RC2", "P500R2" },
+	{ MODE_3X_PSK500R, &psk500r_c3_modem, "PSK500RC3", "3xPSK500R", "PSK500RC3", "PSK500RC3", "P500R3" },
+	{ MODE_4X_PSK500R, &psk500r_c4_modem, "PSK500RC4", "4xPSK500R", "PSK500RC4", "PSK500RC4", "P500R4"},
+
+	{ MODE_2X_PSK800, &psk800_c2_modem, "PSK800C2", "2xPSK800", "PSK800C2", "PSK800C2", "P800RC2" },
+
+	{ MODE_2X_PSK800R, &psk800r_c2_modem, "PSK800RC2", "2xPSK800R", "PSK800RC2", "PSK800RC2", "P800RC2" },
+
+	{ MODE_2X_PSK1000, &psk1000_c2_modem, "PSK1000C2", "2xPSK1000", "PSK1000C2", "PSK1000C2", "P1KC2" },
+	{ MODE_2X_PSK1000R, &psk1000r_c2_modem, "PSK1000RC2", "2xPSK1000R", "PSK1000RC2", "PSK1000RC2", "P1KRC2" },
+
 	{ MODE_SSB, &ssb_modem, "SSB", "SSB", "", "SSB", "" },
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "", "", "" },
 	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "" }
+
 };
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)

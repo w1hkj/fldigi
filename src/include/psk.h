@@ -48,6 +48,8 @@
 #define NUM_FILTERS 3
 #define GOERTZEL 288		//96 x 2 must be an integer value
 
+#define MAX_CARRIERS 32
+
 //=====================================================================
 
 class psk : public modem {
@@ -56,17 +58,18 @@ private:
 	int				symbollen;
 	bool			_qpsk;
 	bool			_pskr;
-	double			phaseacc;
-	complex			prevsymbol;
+	double			phaseacc[MAX_CARRIERS];
+	complex			prevsymbol[MAX_CARRIERS];
 	unsigned int		shreg;
 	//FEC: 2nd stream
 	unsigned int		shreg2;
 	int			numinterleavers; //interleaver size (speed dependant)
+	double 			numcarriers; //Number of parallel carriers for M CAR PSK and PSKR and QPSKR
+	double 			inter_carrier; // Frequency gap betweeb carriers
 
 // rx variables & functions
-
-	C_FIR_filter		*fir1;
-	C_FIR_filter		*fir2;
+	C_FIR_filter		*fir1[MAX_CARRIERS];
+	C_FIR_filter		*fir2[MAX_CARRIERS];
 //	C_FIR_filter		*fir3;
 	double			*fir1c;
 	double			*fir2c;
@@ -89,7 +92,7 @@ private:
 	interleave		*Rxinlv;
 	interleave		*Rxinlv2;
 	interleave		*Txinlv;
-	unsigned int 	bitshreg;
+	unsigned int 		bitshreg;
 	int 			rxbitstate;
 	//PSKR modes - Soft decoding
 	unsigned char		symbolpair[2];
@@ -115,7 +118,7 @@ private:
 	viewpsk*		pskviewer;
 	pskeval*		evalpsk;
 
-	void			rx_symbol(complex symbol);
+	void			rx_symbol(complex symbol, int car);
 	void 			rx_bit(int bit);
 	void 			rx_bit2(int bit);
 	void			rx_qpsk(int bits);
@@ -127,15 +130,20 @@ private:
 	double			snratio, s2n, imdratio, imd;
 	double			E1, E2, E3;
 	double			afcmetric;
-	
-	//PSKR modes
+
+//PSKR modes
 	bool			firstbit;
 	bool			startpreamble;
 
+//MULTI-CARRIER
+	double			sc_bw; // single carrier bandwidth
 
 	
 //	complex thirdorder;
 // tx variables & functions
+	int			accumulated_bits; //JD for multiple carriers
+	int			txsymbols[MAX_CARRIERS];
+
 	double			*tx_shape;
 	int 			preamble;
 	void 			tx_symbol(int sym);

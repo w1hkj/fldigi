@@ -113,7 +113,9 @@ public:
                 }
 
 #ifndef NDEBUG
-		LOG_ERROR("qrunner: thread %" PRIdPTR " fifo full!", GET_THREAD_ID());
+//Remi's extra debugging info		LOG_ERROR("qrunner: thread %" PRIdPTR " fifo full!", GET_THREAD_ID());
+		LOG_ERROR("qrunner: thread %" PRIdPTR " fifo full at %s!", GET_THREAD_ID(),typeid(F).name() );
+
 #endif
                 return false;
         }

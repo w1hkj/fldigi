@@ -133,13 +133,26 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	double bw, cf, flo, fhi;
 	mode = mfsk_mode;
+	int depth = 10;
+
+	//VK2ETA high speed modes
+	preamble = 107;
 
 	switch (mode) {
 		
+	case MODE_MFSK4:
+		samplerate = 8000;
+		symlen = 2048;
+		symbits = 5;
+		depth = 5;
+		basetone = 256;
+		numtones = 32;
+		break;
 	case MODE_MFSK8:
 		samplerate = 8000;
 		symlen =  1024;
 		symbits =    5;
+		depth = 5;
 		basetone = 128;
 		numtones = 32;
 		break;
@@ -147,46 +160,55 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		samplerate = 8000;
 		symlen =  512;
 		symbits =   4;
+		depth = 10;
 		basetone = 64;
 		numtones = 16;
+		cap |= CAP_IMG;
+		break;
+	case MODE_MFSK31:
+		samplerate = 8000;
+		symlen =  256;
+		symbits =   3;
+		depth = 10;
+		basetone = 32;
+		numtones = 8;
 		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK32:
 		samplerate = 8000;
 		symlen =  256;
 		symbits =   4;
+		depth = 10;
 		basetone = 32;
 		numtones = 16;
-		cap |= CAP_IMG;
-		break;
-
-	case MODE_MFSK4:
-		samplerate = 8000;
-		symlen = 2048;
-		symbits = 5;
-		basetone = 256;
-		numtones = 32;
-		break;
-	case MODE_MFSK31:
-		samplerate = 8000;
-		symlen =  256;
-		symbits =   3;
-		basetone = 32;
-		numtones = 8;
 		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK64:
 		samplerate = 8000;
 		symlen =  128;
 		symbits =    4;
+		depth = 10;
 		basetone = 16;
 		numtones = 16;
+		preamble = 180;
 		cap |= CAP_IMG;
 		break;
+	case MODE_MFSK128:
+		samplerate = 8000;
+		symlen =  64;
+		symbits =   4;
+		depth = 20;
+		basetone = 8;
+		numtones = 16;
+		cap |= CAP_IMG;
+		preamble = 214;
+		break;
+
 	case MODE_MFSK11:
 		samplerate = 11025;
 		symlen =  1024;
 		symbits =   4;
+		depth = 10;
 		basetone = 93;
 		numtones = 16;
 		cap |= CAP_IMG;
@@ -195,15 +217,17 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		samplerate = 11025;
 		symlen =  512;
 		symbits =    4;
+		depth = 10;
 		basetone = 46;
 		numtones = 16;
 		cap |= CAP_IMG;
 		break;
-//
+
 	default:
 		samplerate = 8000;
 		symlen =  512;
 		symbits =   4;
+		depth = 10;
 		basetone = 64;
 		numtones = 16;
         break;
@@ -232,8 +256,8 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	dec1->setchunksize (1);
 	dec2->setchunksize (1);
 
-	txinlv = new interleave (symbits, INTERLEAVE_FWD);
-	rxinlv = new interleave (symbits, INTERLEAVE_REV);
+	txinlv = new interleave (symbits, depth, INTERLEAVE_FWD);
+	rxinlv = new interleave (symbits, depth, INTERLEAVE_REV);
 
 	bw = (numtones - 1) * tonespacing;
 	cf = basefreq + bw / 2.0;
@@ -517,7 +541,7 @@ void mfsk::softdecode(complex *bins)
 // shift to range 0...255
 	for (i = 0; i < symbits; i++)
 		if (staticburst)
-			symbols[i] = 128;  // puncturing 128 is neither 0 nor a 1
+			symbols[i] = 0;  // puncturing
 		else
 			symbols[i] = (unsigned char)clamp(128.0 + (b[i] / sum * 128.0), 0, 255);
 
@@ -808,12 +832,11 @@ void mfsk::sendbit(int bit)
 	}
 }
 
-void mfsk::sendchar(unsigned int c)
+void mfsk::sendchar(unsigned char c)
 {
 	const char *code = varienc(c);
 	while (*code)
 		sendbit(*code++ - '0');
-
 	put_echo_char(c);
 }
 
@@ -833,7 +856,8 @@ void mfsk::flushtx()
 	sendbit(1);
 
 // flush the convolutional encoder and interleaver
-	for (int i = 0; i < 107; i++)
+//VK2ETA high speed modes	for (int i = 0; i < 107; i++)
+	for (int i = 0; i < preamble; i++)
 		sendbit(0);
 
 	bitstate = 0;
@@ -873,7 +897,8 @@ void mfsk::sendpic(unsigned char *data, int len)
 void mfsk::clearbits()
 {
 	int data = enc->encode(0);
-	for (int k = 0; k < 100; k++) {
+//VK2ETA high speed modes	for (int k = 0; k < 100; k++) {
+	for (int k = 0; k < preamble; k++) {
 		for (int i = 0; i < 2; i++) {
 			bitshreg = (bitshreg << 1) | ((data >> i) & 1);
 			bitstate++;
@@ -895,7 +920,8 @@ int mfsk::tx_process()
 	switch (txstate) {
 		case TX_STATE_PREAMBLE:
 			clearbits();
-			for (int i = 0; i < 32; i++)
+//VK2ETA high speed modes			for (int i = 0; i < 32; i++)
+			for (int i = 0; i < preamble / 3; i++)
 				sendbit(0);
 			txstate = TX_STATE_START;
 			break;
@@ -923,9 +949,12 @@ int mfsk::tx_process()
 				txstate = TX_STATE_FLUSH;
 			else if (xmtbyte == GET_TX_CHAR_NODATA)
 				sendidle();
-			else
+			else {
+				if (xmtbyte & 0x8000) // UTF-8 character send two bytes
+					sendchar((xmtbyte >> 8) & 0xFF);
 				sendchar(xmtbyte);
-			break;
+			}
+ 			break;
 
 		case TX_STATE_FLUSH:
 			sendchar('\r');

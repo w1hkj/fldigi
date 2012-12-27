@@ -1457,7 +1457,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
           xywh {-4 25 595 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open
+            label CW
             xywh {0 50 540 320}
           } {
             Fl_Tabs tabsCW {open
@@ -2486,17 +2486,17 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabTHOR {
-            label Thor
+            label Thor open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
-              xywh {26 78 490 170} box ENGRAVED_FRAME
+              xywh {26 78 490 270} box ENGRAVED_FRAME
             } {
               Fl_Input txtTHORSecondary {
                 label {Secondary Text}
                 callback {progdefaults.THORsecText = o->value();
 progdefaults.changed = true;}
-                tooltip {Text to send during keyboard idle times} xywh {36 105 360 40} type Multiline align 5 when 1
+                tooltip {Text to send during keyboard idle times} xywh {55 105 430 40} type Multiline align 5 when 1
                 code0 {txtTHORSecondary->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
@@ -2505,7 +2505,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_FILTER = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Enable DSP prior to decoder} xywh {36 159 80 20} down_box DOWN_BOX value 1
+                tooltip {Enable DSP prior to decoder} xywh {55 159 80 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.THOR_FILTER);}
               }
               Fl_Counter valTHOR_BW {
@@ -2513,7 +2513,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.THOR_BW = o->value();
 resetTHOR();
 progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {177 159 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                tooltip {Filter bandwidth relative to signal width} xywh {200 159 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
                 code0 {o->value(progdefaults.THOR_BW);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2522,16 +2522,40 @@ progdefaults.changed = true;}
                 label {CWI threshold}
                 callback {progdefaults.ThorCWI = o->value();
 progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {36 212 260 20} type Horizontal align 1 textsize 14
+                tooltip {CWI detection and suppression} xywh {55 212 260 20} type Horizontal align 1 textsize 14
                 code0 {o->value(progdefaults.ThorCWI);}
                 code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2
+              }
+              Fl_Check_Button valTHOR_PREAMBLE {
+                label {Preamble Detection}
+                callback {progdefaults.THOR_PREAMBLE = o->value();
+progdefaults.changed = true;}
+                tooltip {Detect the THOR preamble
+Clear the Rx pipeline} xywh {55 254 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_PREAMBLE);}
+              }
+              Fl_Check_Button valTHOR_SOFTSYMBOLS {
+                label {Soft-symbol decoding}
+                callback {progdefaults.THOR_SOFTSYMBOLS = o->value();
+progdefaults.changed = true;}
+                tooltip {Use soft-decision decoding for symbol detection
+Assists soft-bit decoding} xywh {55 284 190 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_SOFTSYMBOLS);}
+              }
+              Fl_Check_Button valTHOR_SOFTBITS {
+                label {Soft-bit decoding}
+                callback {progdefaults.THOR_SOFTBITS = o->value();
+progdefaults.changed = true;}
+                tooltip {Use soft-bit viterbi decoding for better Forward Error Correction
+Works best with soft-symbol decoding enabled} xywh {55 314 170 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_SOFTBITS);}
               }
               Fl_Counter valTHOR_PATHS {
                 label {Paths (hidden)}
                 callback {progdefaults.THOR_PATHS = (int)o->value();
 progdefaults.changed = true;}
-                xywh {374 211 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
+                xywh {402 303 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
                 code0 {o->value(progdefaults.THOR_PATHS);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 code2 {o->hide();}
@@ -3769,7 +3793,7 @@ progdefaults.changed = true;}
             code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
           }
           Fl_Check_Button chkRSidNotifyOnly {
-            label {Notifications only}
+            label {Notify only}
             callback {progdefaults.rsid_notify_only = o->value();
 notify_create_rsid_event(progdefaults.rsid_notify_only);
 if (progdefaults.rsid_notify_only) {
@@ -3780,7 +3804,7 @@ else
     chkRSidAutoDisable->activate();
 progdefaults.changed = true;}
             tooltip {Check this to be notified when an RSID is received
-without changing modem and frequency} xywh {32 317 155 20} down_box DOWN_BOX
+without changing modem and frequency} xywh {32 317 101 20} down_box DOWN_BOX
             code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
           }
           Fl_Button bRSIDRxModes {
@@ -3795,8 +3819,18 @@ progdefaults.changed = true;}
             label {Squelch open (sec)}
             callback {progdefaults.rsid_squelch = (int)o->value();
 progdefaults.changed = true;}
-            tooltip {Open squelch for nn sec if RSID detected} xywh {32 339 144 20} type Horizontal align 8 maximum 20 step 1 textsize 14
+            tooltip {Open squelch for nn sec if RSID detected} xywh {32 339 144 18} type Horizontal align 8 maximum 20 step 1 textsize 14
             code0 {o->value(progdefaults.rsid_squelch);}
+            code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+            class Fl_Value_Slider2
+          }
+          Fl_Value_Slider sldrRSIDresolution {
+            label Sensitivity
+            callback {progdefaults.rsid_resolution = (int)o->value();
+progdefaults.changed = true;}
+            tooltip {2 = low sensitivity / decreased false detection
+5 = high sensitivity / increased false detection} xywh {133 317 90 18} type Horizontal align 8 minimum 2 maximum 5 step 1 value 5 textsize 14
+            code0 {o->value(progdefaults.rsid_resolution);}
             code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
             class Fl_Value_Slider2
           }

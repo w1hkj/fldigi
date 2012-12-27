@@ -31,29 +31,10 @@
 
 // ---------------------------------------------------------------------- 
 
-interleave::interleave (int _size, int dir)
+interleave::interleave (int _size, int _depth, int dir)
 {
 	size = _size;
-	if (size == -1) { // dominoEX interleaver
-		size = 4;
-		depth = 4;
-//BPSK+FEC+interleaver. First digit is size, then number of concatenated square interleavers
-	} else if (size == -220) { // BPSK FEC + Interleaver 2x2x20
-		size = 2;
-		depth = 20;
-	} else if (size == -240) { // BPSK FEC + Interleaver 2x2x40
-		size = 2;
-		depth = 40;
-	} else if (size == -280) { // BPSK FEC + Interleaver 2x2x80
-		size = 2;
-		depth = 80;
-	} else if (size == -2160) { // BPSK FEC + Interleaver 2x2x160
-		size = 2;
-		depth = 160;
-	} else if (size == 5)
-		depth = 5;
-	else
-		depth = 10;
+	depth = _depth;
 	direction = dir;
 	table = new unsigned char [depth * size * size];
 	memset(table, 0, depth * size * size);

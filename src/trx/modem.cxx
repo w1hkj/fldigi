@@ -54,6 +54,7 @@ modem *mfsk11_modem = 0;
 modem *mfsk22_modem = 0;
 modem *mfsk31_modem = 0;
 modem *mfsk64_modem = 0;
+modem *mfsk128_modem = 0;
 
 modem *wefax576_modem = 0;
 modem *wefax288_modem = 0;
@@ -80,6 +81,7 @@ modem *psk63f_modem = 0;
 modem *psk125_modem = 0;
 modem *psk250_modem = 0;
 modem *psk500_modem = 0;
+modem *psk1000_modem = 0;
 
 modem *qpsk31_modem = 0;
 modem *qpsk63_modem = 0;
@@ -90,8 +92,51 @@ modem *qpsk500_modem = 0;
 modem *psk125r_modem = 0;
 modem *psk250r_modem = 0;
 modem *psk500r_modem = 0;
+modem *psk1000r_modem = 0;
+
+modem *psk800_c2_modem = 0;
+modem *psk800r_c2_modem = 0;
+modem *psk1000_c2_modem = 0;
+modem *psk1000r_c2_modem = 0;
+
+modem *psk63r_c4_modem = 0;
+modem *psk63r_c5_modem = 0;
+modem *psk63r_c10_modem = 0;
+modem *psk63r_c20_modem = 0;
+modem *psk63r_c32_modem = 0;
+
+modem *psk125r_c4_modem = 0;
+modem *psk125r_c5_modem = 0;
+modem *psk125r_c10_modem = 0;
+modem *psk125_c12_modem = 0;
+modem *psk125r_c12_modem = 0;
+modem *psk125r_c16_modem = 0;
+
+modem *psk250r_c2_modem = 0;
+modem *psk250r_c3_modem = 0;
+modem *psk250r_c5_modem = 0;
+modem *psk250_c6_modem = 0;
+modem *psk250r_c6_modem = 0;
+modem *psk250r_c7_modem = 0;
+
+modem *psk500_c2_modem = 0;
+modem *psk500_c4_modem = 0;
+
+modem *psk500r_c2_modem = 0;
+modem *psk500r_c3_modem = 0;
+modem *psk500r_c4_modem = 0;
 
 modem *olivia_modem = 0;
+modem *olivia_4_250_modem = 0;
+modem *olivia_8_250_modem = 0;
+modem *olivia_4_500_modem = 0;
+modem *olivia_8_500_modem = 0;
+modem *olivia_16_500_modem = 0;
+modem *olivia_8_1000_modem = 0;
+modem *olivia_16_1000_modem = 0;
+modem *olivia_32_1000_modem = 0;
+modem *olivia_64_2000_modem = 0;
+
 modem *contestia_modem = 0;
 
 modem *rtty_modem = 0;
@@ -100,9 +145,12 @@ modem *thor4_modem = 0;
 modem *thor5_modem = 0;
 modem *thor8_modem = 0;
 modem *thor11_modem = 0;
-//modem *tsor11_modem = 0;
 modem *thor16_modem = 0;
 modem *thor22_modem = 0;
+modem *thor25x4_modem = 0;
+modem *thor50x1_modem = 0;
+modem *thor50x2_modem = 0;
+modem *thor100_modem = 0;
 
 modem *dominoex4_modem = 0;
 modem *dominoex5_modem = 0;
@@ -110,6 +158,8 @@ modem *dominoex8_modem = 0;
 modem *dominoex11_modem = 0;
 modem *dominoex16_modem = 0;
 modem *dominoex22_modem = 0;
+modem *dominoex44_modem = 0;
+modem *dominoex88_modem = 0;
 
 modem *throb1_modem = 0;
 modem *throb2_modem = 0;
@@ -661,7 +711,6 @@ void modem::wfid_send(int numchars)
 
 void modem::wfid_sendchars(string s)
 {
-	long long int symbol;
 	int len = s.length();
 	int  n[len];
 	int  c;
@@ -678,7 +727,6 @@ void modem::wfid_sendchars(string s)
 	}
 // send rows from bottom to top so they appear to scroll down the waterfall correctly
 	for (int row = 0; row < NUMROWS; row++) {
-		symbol = 0;
 		for (int i = 0; i < len; i++) {
 			if (useIDSMALL)
 				symbols[i] = idch1[n[i]].byte[NUMROWS - 1 - row];

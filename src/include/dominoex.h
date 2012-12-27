@@ -45,11 +45,9 @@
 #include "viterbi.h"
 
 #define NUMTONES 18
-//#define MAXFFTS  4
 #define MAXFFTS  8
-//#define BASEFREQ 1000.0
-#define BASEFREQ 500.0
-#define FIRSTIF 1000.0
+#define BASEFREQ 1000.0
+#define FIRSTIF  1500.0
 
 #define SCOPESIZE 64
 
