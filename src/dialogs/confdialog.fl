@@ -1,84 +1,106 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0300 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {} 
-
-decl {\#include <FL/Fl_Tooltip.H>} {} 
-
-decl {\#include <FL/Fl_Box.H>} {} 
-
-decl {\#include <FL/filename.H>} {} 
-
-decl {\#include <FL/Fl_File_Chooser.H>} {} 
-
-decl {\#include "main.h"} {} 
-
-decl {\#include "fl_digi.h"} {} 
-
-decl {\#include "soundconf.h"} {} 
-
-decl {\#include "globals.h"} {public
+decl {\#include <config.h>} {private local
 } 
 
-decl {\#include "modem.h"} {public
+decl {\#include <FL/Fl_Tooltip.H>} {private local
 } 
 
-decl {\#include "configuration.h"} {public
+decl {\#include <FL/Fl_Box.H>} {private local
 } 
 
-decl {\#include "combo.h"} {public
+decl {\#include <FL/filename.H>} {private local
 } 
 
-decl {\#include "colorsfonts.h"} {} 
-
-decl {\#include "waterfall.h"} {} 
-
-decl {\#include "rigxml.h"} {} 
-
-decl {\#include "lookupcall.h"} {} 
-
-decl {\#include "icons.h"} {} 
-
-decl {\#include "Viewer.h"} {} 
-
-decl {\#include "pskrep.h"} {global
+decl {\#include <FL/Fl_File_Chooser.H>} {private local
 } 
 
-decl {\#include "flinput2.h"} {public
+decl {\#include "main.h"} {private local
 } 
 
-decl {\#include "flslider2.h"} {public
+decl {\#include "fl_digi.h"} {private local
 } 
 
-decl {\#include "flmisc.h"} {public
+decl {\#include "soundconf.h"} {private local
 } 
 
-decl {\#include "logsupport.h"} {} 
+decl {\#include "globals.h"} {public local
+} 
 
-decl {\#include "notify.h"} {} 
+decl {\#include "modem.h"} {public local
+} 
 
-decl {\#include "debug.h"} {} 
+decl {\#include "configuration.h"} {public local
+} 
 
-decl {\#include "status.h"} {} 
+decl {\#include "combo.h"} {public local
+} 
 
-decl {\#include "rx_extract.h"} {} 
+decl {\#include "colorsfonts.h"} {private local
+} 
 
-decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {} 
+decl {\#include "waterfall.h"} {private local
+} 
 
-decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {} 
+decl {\#include "rigxml.h"} {private local
+} 
+
+decl {\#include "lookupcall.h"} {private local
+} 
+
+decl {\#include "icons.h"} {private local
+} 
+
+decl {\#include "Viewer.h"} {private local
+} 
+
+decl {\#include "pskrep.h"} {private global
+} 
+
+decl {\#include "flinput2.h"} {public local
+} 
+
+decl {\#include "flslider2.h"} {public local
+} 
+
+decl {\#include "flmisc.h"} {public local
+} 
+
+decl {\#include "logsupport.h"} {private local
+} 
+
+decl {\#include "notify.h"} {private local
+} 
+
+decl {\#include "debug.h"} {private local
+} 
+
+decl {\#include "status.h"} {private local
+} 
+
+decl {\#include "rx_extract.h"} {private local
+} 
+
+decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
+} 
+
+decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {private local
+} 
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
-\#endif} {} 
-
-decl {Fl_Double_Window *dlgConfig;} {public
+\#endif} {private local
 } 
 
-decl {Mode_Browser* mode_browser;} {public
+decl {Fl_Double_Window *dlgConfig;} {public local
+} 
+
+decl {Mode_Browser* mode_browser;} {public local
 } 
 
 Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
@@ -116,7 +138,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {597 70 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {593 55 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-5 0 596 372} color 50 selection_color 50
@@ -203,10 +225,10 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
+        label UI open
         xywh {0 25 540 346} hide
       } {
-        Fl_Tabs tabsUI {
+        Fl_Tabs tabsUI {open
           xywh {0 25 540 346} selection_color 50
         } {
           Fl_Group tabBrowser {
@@ -291,7 +313,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Detection Level Colors} open
-                xywh {42 265 219 60} box ENGRAVED_FRAME align 17
+                xywh {42 281 187 60} box ENGRAVED_FRAME
               } {
                 Fl_Button bwsrSliderColor {
                   label Backgnd
@@ -313,7 +335,7 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Background color of signal viewer squelch control} xywh {65 288 80 24}
+                  tooltip {Background color of signal viewer squelch control} xywh {49 304 80 24} align 1
                   code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
                 }
                 Fl_Button bwsrSldrSelColor {
@@ -336,8 +358,54 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Slider hilite color of signal viewer squelch control} xywh {157 288 80 24}
+                  tooltip {Slider hilite color of signal viewer squelch control} xywh {141 304 80 24} align 1
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
+                }
+              }
+              Fl_Group {} {
+                label {Parser Colors} open
+                xywh {237 281 187 60} box ENGRAVED_FRAME
+              } {
+                Fl_Button bwsrHiLite_1_color {
+                  label {HiLite 1}
+                  callback {uchar r, g, b;
+    r = progdefaults.bwsrHiLight1.R;
+    g = progdefaults.bwsrHiLight1.G;
+    b = progdefaults.bwsrHiLight1.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrHiLight1.R = r;
+    progdefaults.bwsrHiLight1.G = g;
+    progdefaults.bwsrHiLight1.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+
+    viewer_redraw();
+    progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {245 303 80 24} align 1
+                  code0 {bwsrHiLite_1_color->color(fl_rgb_color(progdefaults.bwsrHiLight1.R, progdefaults.bwsrHiLight1.G,progdefaults.bwsrHiLight1.B));}
+                  code1 {\#include "Viewer.h"}
+                }
+                Fl_Button bwsrHiLite_2_color {
+                  label {HiLite 2}
+                  callback {uchar r, g, b;
+    r = progdefaults.bwsrHiLight2.R;
+    g = progdefaults.bwsrHiLight2.G;
+    b = progdefaults.bwsrHiLight2.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrHiLight2.R = r;
+    progdefaults.bwsrHiLight2.G = g;
+    progdefaults.bwsrHiLight2.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+
+    viewer_redraw();
+    progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {333 303 80 24} align 1
+                  code0 {bwsrHiLite_2_color->color(fl_rgb_color(progdefaults.bwsrHiLight2.R, progdefaults.bwsrHiLight2.G,progdefaults.bwsrHiLight2.B));}
                 }
               }
             }

@@ -114,6 +114,10 @@
               "Mode names for which RSID transmission is disabled",                     \
               mode_set_t())                                                             \
                                                                                         \
+        ELEM_(int, rsid_resolution, "RSID_RESOLUTION",                                  \
+              "values (LOW)  5, 4, 3, 2 (HIGH)",                                        \
+              5)                                                                        \
+                                                                                        \
         ELEM_(bool, slowcpu, "SLOWCPU",                                                 \
               "Disable expensive processing in some decoders",                          \
               true)                                                                     \
@@ -489,7 +493,7 @@
         ELEM_(double, ThorCWI, "THORCWI",                                               \
               "CWI threshold (CWI detection and suppression)",                          \
               0.0)                                                                      \
-        ELEM_(bool, THOR_PREAMBLE, "THORPREAMBLE",                                 \
+        ELEM_(bool, THOR_PREAMBLE, "THORPREAMBLE",                                      \
               "Detect THOR preamble (and flush Rx pipeline)",                           \
               true)                                                                     \
         ELEM_(bool, THOR_SOFTSYMBOLS, "THORSOFTSYMBOLS",                                \
@@ -499,7 +503,7 @@
               "Enable Soft-bit decoding",                                               \
               true)                                                                     \
         /* PACKET */                                                                    \
-        ELEM_(int, PKT_BAUD_SELECT, "PKTBAUDSELECT",                                                 \
+        ELEM_(int, PKT_BAUD_SELECT, "PKTBAUDSELECT",                                    \
               "Packet baud rate. Values are as follows:\n"                              \
               "  0: 1200 (V/UHF); 1: 300 (HF); 2: 2400 (V/UHF)",                        \
               0)   /* 1200 baud (V/UHF) default. */                                     \
@@ -517,14 +521,15 @@
               0.0)                                                                      \
         ELEM_(bool, PKT_PreferXhairScope, "PKTPREFERXHAIRSCOPE",                        \
               "Default to syncscope (detected symbol scope)",                           \
-              false)                                                                    ELEM_(bool, PKT_AudioBoost, "PKTAUDIOBOOST",                                    \
+              false)                                                                    \
+        ELEM_(bool, PKT_AudioBoost, "PKTAUDIOBOOST",                                    \
               "No extra input gain (similar to Mic Boost) by default",                  \
               false)                                                                    \
-        \
+                                                                                        \
         ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
               "No timestamps on RX packets by default",                                 \
               false)                                                                    \
-        \
+                                                                                        \
         ELEM_(bool, PKT_expandMicE, "PKTEXPANDMICE",                                    \
               "decode received Mic-E data",                                             \
               false)                                                                    \
@@ -941,7 +946,7 @@
               "Operator name",                                                          \
               "")                                                                       \
         ELEM_(std::string, myLocator, "MYLOC",                                          \
-              "Operator Maidenhead locator",                                                  \
+              "Operator Maidenhead locator",                                            \
               "")                                                                       \
         ELEM_(std::string, myAntenna, "MYANTENNA",                                      \
               "Antenna description (keep short!)",                                      \
@@ -1033,6 +1038,15 @@
         ELEM_(RGB, bwsrSldrSelColor,"BWSRSLDRSELCOLOR",                                 \
               "Button highlight color, signal browser detect level",                    \
               {54, 100, 139})                                                           \
+        ELEM_(RGB, bwsrHiLight1, "BWSRHILIGHT1",                                        \
+              "View Browser highlight color 1, default Dark Red",                       \
+              {128, 0, 0})                                                              \
+        ELEM_(RGB, bwsrHiLight2, "BWSRHILIGHT2",                                        \
+              "View Browser highlight color 2, default Dark Green",                     \
+              {0, 128, 0})                                                              \
+        ELEM_(RGB, bwsrHiLight3, "BWSRHILIGHT3",                                        \
+              "View Browser highlight color 3, default Dark Blue",                      \
+              {0, 0, 128})                                                              \
         ELEM_(RGB, dup_color, "dupcolor",                                               \
               "Callsign background color when duplicate detected",                      \
               {255, 110, 180})                                                          \

@@ -126,7 +126,7 @@ void make_pixmap(Pixmap *xpm, const char **data, int argc, char** argv)
 	w.hide();
 
 	fl_begin_offscreen(*xpm);
-	// fl_color(FL_BACKGROUND_COLOR);
+	// Fl_Color(FL_BACKGROUND_COLOR);
 	// fl_rectf(0, 0, maxd, maxd);
 	icon.draw(maxd - icon.w(), maxd - icon.h());
 	fl_end_offscreen();

@@ -54,7 +54,7 @@ void Table::drawHeader(int x, int y) {
   int w;
   struct ColumnInfo col;
 
-  fl_font(FL_HELVETICA, headerHeight - 4);
+  fl_font(tbl_font, tbl_fontsize);
 
   /*
    * Draw all header cells that aren't clipped.
@@ -105,7 +105,7 @@ void Table::drawRow(int row, char *rowData[], int x, int y) {
   int w;
   ColumnInfo col;
 
-  fl_font(FL_HELVETICA, rowHeight - 4);
+  fl_font(tbl_font, tbl_fontsize);
 
   // Draw background box.
   if (row != selected) {
@@ -185,8 +185,9 @@ Table::Table(int x, int y, int w, int h, char *label) :
   box(FL_THIN_DOWN_FRAME);
   color(FL_BACKGROUND2_COLOR, FL_SELECTION_COLOR);
 
-  headerHeight = 18;
-  rowHeight = 17;
+  tbl_fontsize = 14;
+  headerHeight = tbl_fontsize + 4;
+  rowHeight = tbl_fontsize + 4;
   scrollbarSize = 16;
 
   // Create scrollbars.
@@ -230,6 +231,8 @@ Table::Table(int x, int y, int w, int h, char *label) :
 
   Vscroll = var;
   Hscroll = var;
+  
+  tbl_font = FL_HELVETICA;
 }
 
 
