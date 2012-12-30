@@ -4214,10 +4214,27 @@ void LOGBOOK_colors_font()
 // browser (table)
 	ypos += btns[0]->h() + 4;
 
+	wBrowser->font(progdefaults.LOGBOOKtextfont);
+	wBrowser->fontsize(progdefaults.LOGBOOKtextsize);
 	wBrowser->color(progdefaults.LOGBOOKcolor);
 	wBrowser->selection_color(FL_SELECTION_COLOR);
 
 	wBrowser->resize(wBrowser->x(), ypos, dlgLogbook->w() - 2*wBrowser->x(), dlgLogbook->h() - 2 - ypos);
+
+	int twidth = wBrowser->w() - wBrowser->scrollbSize() - 4;
+	int datewidth = fl_width( "8", 9 ) + 4;
+	int timewidth = fl_width( "8", 6 ) + 4;
+	int callwidth = fl_width( "W", 12) + 4;
+	int freqwidth = fl_width( "8", 10) + 4;
+	int modewidth = fl_width( "W", 20) + 4;
+	int namewidth = twidth - datewidth - timewidth - callwidth - freqwidth - modewidth;
+
+	wBrowser->columnWidth (0, datewidth); // Date column
+	wBrowser->columnWidth (1, timewidth); // Time column
+	wBrowser->columnWidth (2, callwidth); // Callsign column
+	wBrowser->columnWidth (3, namewidth); // Name column
+	wBrowser->columnWidth (4, freqwidth); // Frequency column
+	wBrowser->columnWidth (5, modewidth); // Mode column
 
 	dlgLogbook->init_sizes();
 	dlgLogbook->damage();

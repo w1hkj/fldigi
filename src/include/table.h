@@ -95,6 +95,9 @@ private:
 	int selected;
 	char **curRow;
 
+	Fl_Font tbl_font;
+	int tbl_fontsize;
+
 	// Various flags
 	bool ascent;
 	bool canResize, canSort;
@@ -143,6 +146,15 @@ public:
 	void scrollbSize(int size);
 
 	virtual void resize(int x, int y, int w, int h);
+
+	void font(Fl_Font fnt) { tbl_font = fnt; }
+	Fl_Font font() { return tbl_font; }
+	void fontsize(int fntsize) { 
+		tbl_fontsize = fntsize; 
+		headerHeight = tbl_fontsize + 4;
+		rowHeight = tbl_fontsize + 4;
+	}
+	int  fontsize() { return tbl_fontsize; }
 
 	Fl_Align headerAlign(int column) const;
 	void headerAlign(int column, Fl_Align align);

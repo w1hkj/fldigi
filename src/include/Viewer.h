@@ -25,5 +25,6 @@ extern void viewerswap(int, int);
 extern void initViewer();
 extern void viewclearchannel(int ch);
 extern void viewer_paste_freq(int freq);
+extern void viewer_redraw();
 
 #endif

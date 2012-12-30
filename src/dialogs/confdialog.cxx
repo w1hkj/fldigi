@@ -5,8 +5,8 @@
 #include <config.h>
 #include <FL/Fl_Tooltip.H>
 #include <FL/Fl_Box.H>
-#include <FL/Fl_File_Chooser.H>
 #include <FL/filename.H>
+#include <FL/Fl_File_Chooser.H>
 #include "main.h"
 #include "fl_digi.h"
 #include "soundconf.h"
@@ -25,8 +25,6 @@
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
-extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
-extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 Fl_Double_Window *dlgConfig; 
 Mode_Browser* mode_browser; 
 
@@ -230,6 +228,46 @@ static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
     mvsquelch->selection_color(fl_rgb_color(r,g,b));
     mvsquelch->redraw();
     
+    progdefaults.changed = true;
+}
+
+Fl_Button *bwsrHiLite_1_color=(Fl_Button *)0;
+
+static void cb_bwsrHiLite_1_color(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.bwsrHiLight1.R;
+    g = progdefaults.bwsrHiLight1.G;
+    b = progdefaults.bwsrHiLight1.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrHiLight1.R = r;
+    progdefaults.bwsrHiLight1.G = g;
+    progdefaults.bwsrHiLight1.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+
+    viewer_redraw();
+    progdefaults.changed = true;
+}
+
+Fl_Button *bwsrHiLite_2_color=(Fl_Button *)0;
+
+static void cb_bwsrHiLite_2_color(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.bwsrHiLight2.R;
+    g = progdefaults.bwsrHiLight2.G;
+    b = progdefaults.bwsrHiLight2.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrHiLight2.R = r;
+    progdefaults.bwsrHiLight2.G = g;
+    progdefaults.bwsrHiLight2.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+
+    viewer_redraw();
     progdefaults.changed = true;
 }
 
@@ -3682,7 +3720,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 598, 372);
+    { tabsConfigure = new Fl_Tabs(0, 0, 598, 370);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 598, 345, _("Operator"));
@@ -3799,7 +3837,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabUI->hide();
         { tabsUI = new Fl_Tabs(2, 25, 596, 345);
           tabsUI->selection_color(FL_LIGHT1);
-          { tabBrowser = new Fl_Group(4, 50, 592, 320, _("Browser"));
+          { tabBrowser = new Fl_Group(0, 50, 598, 320, _("Browser"));
             { Fl_Group* o = new Fl_Group(6, 59, 588, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(18, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -3891,11 +3929,27 @@ Fl_Double_Window* ConfigureDialog() {
                 } // Fl_Button* bwsrSldrSelColor
                 o->end();
               } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(237, 281, 187, 60, _("Parser Colors"));
+                o->box(FL_ENGRAVED_FRAME);
+                { bwsrHiLite_1_color = new Fl_Button(245, 303, 80, 24, _("HiLite 1"));
+                bwsrHiLite_1_color->tooltip(_("PSK/RTTY Viewer HiLite Color 1"));
+                bwsrHiLite_1_color->callback((Fl_Callback*)cb_bwsrHiLite_1_color);
+                bwsrHiLite_1_color->align(Fl_Align(FL_ALIGN_TOP));
+                bwsrHiLite_1_color->color(fl_rgb_color(progdefaults.bwsrHiLight1.R, progdefaults.bwsrHiLight1.G,progdefaults.bwsrHiLight1.B));
+                } // Fl_Button* bwsrHiLite_1_color
+                { bwsrHiLite_2_color = new Fl_Button(333, 303, 80, 24, _("HiLite 2"));
+                bwsrHiLite_2_color->tooltip(_("PSK/RTTY Viewer HiLite Color 2"));
+                bwsrHiLite_2_color->callback((Fl_Callback*)cb_bwsrHiLite_2_color);
+                bwsrHiLite_2_color->align(Fl_Align(FL_ALIGN_TOP));
+                bwsrHiLite_2_color->color(fl_rgb_color(progdefaults.bwsrHiLight2.R, progdefaults.bwsrHiLight2.G,progdefaults.bwsrHiLight2.B));
+                } // Fl_Button* bwsrHiLite_2_color
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
             tabBrowser->end();
           } // Fl_Group* tabBrowser
-          { tabContest = new Fl_Group(4, 50, 592, 320, _("Contest"));
+          { tabContest = new Fl_Group(0, 50, 598, 320, _("Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(8, 60, 584, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
@@ -4048,7 +4102,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabUserInterface = new Fl_Group(4, 50, 592, 320, _("General"));
+          { tabUserInterface = new Fl_Group(0, 50, 598, 320, _("General"));
             tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(6, 55, 586, 76);
               o->box(FL_ENGRAVED_FRAME);
@@ -4141,7 +4195,7 @@ ndow decoration close button pressed."));
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(4, 50, 592, 320, _("Logging"));
+          { tabLogServer = new Fl_Group(0, 50, 598, 320, _("Logging"));
             tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(6, 57, 586, 180, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
@@ -4291,7 +4345,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabLogServer->end();
           } // Fl_Group* tabLogServer
-          { tabMBars = new Fl_Group(4, 50, 592, 320, _("Macros"));
+          { tabMBars = new Fl_Group(0, 50, 598, 320, _("Macros"));
             tabMBars->hide();
             { Fl_Group* o = new Fl_Group(6, 54, 586, 195, _("Number and position of macro bars"));
               o->box(FL_ENGRAVED_FRAME);
@@ -4372,7 +4426,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabMBars->end();
           } // Fl_Group* tabMBars
-          { tabWF_UI = new Fl_Group(4, 50, 592, 320, _("WF Ctrls"));
+          { tabWF_UI = new Fl_Group(0, 50, 598, 320, _("WF Ctrls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(6, 58, 586, 306);
               o->box(FL_ENGRAVED_BOX);
@@ -4465,7 +4519,7 @@ ab and newline are automatically included."));
         { tabsWaterfall = new Fl_Tabs(2, 25, 596, 345);
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("Display"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("Display"));
             { Fl_Group* o = new Fl_Group(6, 60, 588, 194, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4660,7 +4714,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(3, 50, 593, 320, _("FFT Processing"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("FFT Processing"));
             o->hide();
             { Fl_Group* o = new Fl_Group(6, 62, 588, 135);
               o->box(FL_ENGRAVED_FRAME);
@@ -4771,7 +4825,7 @@ an merging"));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("Mouse"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("Mouse"));
             o->hide();
             { Fl_Group* o = new Fl_Group(6, 62, 588, 170);
               o->box(FL_ENGRAVED_FRAME);
@@ -4902,7 +4956,7 @@ an merging"));
             tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 598, 320);
               tabsCW->selection_color(FL_LIGHT1);
-              { Fl_Group* o = new Fl_Group(4, 75, 592, 295, _("General"));
+              { Fl_Group* o = new Fl_Group(0, 75, 598, 295, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 { Fl_Group* o = new Fl_Group(6, 85, 588, 153, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
@@ -5129,7 +5183,7 @@ an merging"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(4, 75, 592, 295, _("Timing and QSK"));
+              { Fl_Group* o = new Fl_Group(0, 75, 598, 295, _("Timing and QSK"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(6, 85, 588, 120, _("Timing"));
@@ -5275,10 +5329,10 @@ an merging"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(4, 75, 592, 295, _("Prosigns"));
+              { Fl_Group* o = new Fl_Group(0, 75, 598, 295, _("Prosigns"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->hide();
-                { Fl_Group* o = new Fl_Group(6, 86, 588, 280);
+                { Fl_Group* o = new Fl_Group(6, 84, 588, 280);
                 o->box(FL_ENGRAVED_FRAME);
                 { Fl_Check_Button* o = btnCW_use_paren = new Fl_Check_Button(289, 249, 68, 15, _("Use \'(\' paren not KN"));
                 btnCW_use_paren->down_box(FL_DOWN_BOX);
@@ -6299,7 +6353,7 @@ ng)"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(4, 25, 592, 345);
           tabsRig->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("Hardware PTT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("Hardware PTT"));
             { Fl_Group* o = new Fl_Group(6, 57, 588, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(175, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -6385,7 +6439,7 @@ ng)"));
             } // Fl_Group* grpPTTdelays
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("RigCAT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
             o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 58, 110, 20, _("Use RigCAT"));
@@ -6548,7 +6602,7 @@ ng)"));
             } // Fl_Group* grpRigCAT
             o->end();
           } // Fl_Group* o
-          { tabHamlib = new Fl_Group(4, 50, 592, 320, _("Hamlib"));
+          { tabHamlib = new Fl_Group(0, 50, 598, 320, _("Hamlib"));
             tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(250, 58, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
@@ -6757,7 +6811,7 @@ ng)"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
-          { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("MemMap"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("MemMap"));
             o->hide();
             { grpMemmap = new Fl_Group(6, 58, 588, 185);
               grpMemmap->box(FL_ENGRAVED_FRAME);
@@ -6786,7 +6840,7 @@ ng)"));
             } // Fl_Group* grpMemmap
             o->end();
           } // Fl_Group* o
-          { tabXMLRPC = new Fl_Group(4, 50, 592, 320, _("XML-RPC"));
+          { tabXMLRPC = new Fl_Group(0, 50, 598, 320, _("XML-RPC"));
             tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(6, 58, 588, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
@@ -6818,7 +6872,7 @@ ng)"));
         tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(2, 25, 596, 345);
           tabsSoundCard->selection_color(FL_LIGHT1);
-          { tabAudio = new Fl_Group(4, 50, 592, 320, _("Devices"));
+          { tabAudio = new Fl_Group(0, 50, 598, 320, _("Devices"));
             { AudioOSS = new Fl_Group(6, 60, 588, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(15, 70, 53, 25, _("OSS"));
@@ -6891,7 +6945,7 @@ ng)"));
             } // Fl_Group* AudioNull
             tabAudio->end();
           } // Fl_Group* tabAudio
-          { tabAudioOpt = new Fl_Group(4, 50, 592, 320, _("Settings"));
+          { tabAudioOpt = new Fl_Group(0, 50, 598, 320, _("Settings"));
             tabAudioOpt->hide();
             { grpAudioSampleRate = new Fl_Group(10, 60, 580, 90, _("Sample rate"));
               grpAudioSampleRate->box(FL_ENGRAVED_FRAME);
@@ -6981,7 +7035,7 @@ ll with your audio device."));
             } // Fl_Group* o
             tabAudioOpt->end();
           } // Fl_Group* tabAudioOpt
-          { tabMixer = new Fl_Group(4, 50, 592, 320, _("Mixer"));
+          { tabMixer = new Fl_Group(0, 50, 598, 320, _("Mixer"));
             tabMixer->hide();
             { Fl_Group* o = new Fl_Group(10, 57, 580, 145, _("OSS mixer"));
               o->box(FL_ENGRAVED_FRAME);
@@ -7027,7 +7081,7 @@ ll with your audio device."));
             } // Fl_Group* o
             tabMixer->end();
           } // Fl_Group* tabMixer
-          { tabAudioRightChannel = new Fl_Group(4, 50, 592, 320, _("Right channel"));
+          { tabAudioRightChannel = new Fl_Group(0, 50, 598, 320, _("Right channel"));
             tabAudioRightChannel->hide();
             { chkForceMono = new Fl_Check_Button(145, 66, 332, 20, _("Mono audio output"));
               chkForceMono->tooltip(_("Force output audio to single channel"));
@@ -7273,7 +7327,7 @@ d frequency"));
         tabMisc->hide();
         { tabsMisc = new Fl_Tabs(4, 25, 592, 345);
           tabsMisc->selection_color(FL_LIGHT1);
-          { tabCPUspeed = new Fl_Group(4, 50, 592, 320, _("CPU"));
+          { tabCPUspeed = new Fl_Group(0, 50, 598, 320, _("CPU"));
             { Fl_Group* o = new Fl_Group(6, 60, 588, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7287,7 +7341,7 @@ d frequency"));
             } // Fl_Group* o
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
-          { tabNBEMS = new Fl_Group(4, 50, 592, 320, _("NBEMS"));
+          { tabNBEMS = new Fl_Group(0, 50, 598, 320, _("NBEMS"));
             tabNBEMS->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 75, _("NBEMS data file interface"));
               o->box(FL_ENGRAVED_FRAME);
@@ -7357,7 +7411,7 @@ d frequency"));
             } // Fl_Group* o
             tabNBEMS->end();
           } // Fl_Group* tabNBEMS
-          { tabPskmail = new Fl_Group(4, 50, 592, 320, _("Pskmail"));
+          { tabPskmail = new Fl_Group(0, 50, 598, 320, _("Pskmail"));
             tabPskmail->align(Fl_Align(FL_ALIGN_TOP_LEFT));
             tabPskmail->hide();
             { Fl_Group* o = new Fl_Group(6, 58, 588, 174, _("Mail Server Attributes"));
@@ -7464,7 +7518,7 @@ d frequency"));
             } // Fl_Group* o
             tabPskmail->end();
           } // Fl_Group* tabPskmail
-          { tabSpot = new Fl_Group(4, 50, 592, 320, _("Spotting"));
+          { tabSpot = new Fl_Group(0, 50, 598, 320, _("Spotting"));
             tabSpot->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 215, _("PSK Reporter"));
               o->box(FL_ENGRAVED_FRAME);
@@ -7529,7 +7583,7 @@ d frequency"));
             } // Fl_Group* o
             tabSpot->end();
           } // Fl_Group* tabSpot
-          { tabSweetSpot = new Fl_Group(4, 50, 592, 320, _("Sweet Spot"));
+          { tabSweetSpot = new Fl_Group(0, 50, 598, 320, _("Sweet Spot"));
             tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 75);
               o->box(FL_ENGRAVED_FRAME);
@@ -7620,7 +7674,7 @@ d frequency"));
             } // Fl_Group* o
             tabSweetSpot->end();
           } // Fl_Group* tabSweetSpot
-          { tabText_IO = new Fl_Group(4, 50, 592, 320, _("Text i/o"));
+          { tabText_IO = new Fl_Group(0, 50, 598, 320, _("Text i/o"));
             tabText_IO->hide();
             { grpTalker = new Fl_Group(6, 117, 588, 80, _("Talker Socket (MS only)"));
               grpTalker->box(FL_ENGRAVED_FRAME);
@@ -7652,7 +7706,7 @@ d frequency"));
             } // Fl_Group* o
             tabText_IO->end();
           } // Fl_Group* tabText_IO
-          { tabDTMFdecode = new Fl_Group(4, 50, 592, 320, _("DTMF"));
+          { tabDTMFdecode = new Fl_Group(0, 50, 598, 320, _("DTMF"));
             tabDTMFdecode->hide();
             { Fl_Check_Button* o = chkDTMFdecode = new Fl_Check_Button(212, 85, 175, 20, _("Decode DTMF tones"));
               chkDTMFdecode->tooltip(_("Send rx text to file: textout.txt"));
@@ -7662,7 +7716,7 @@ d frequency"));
             } // Fl_Check_Button* chkDTMFdecode
             tabDTMFdecode->end();
           } // Fl_Group* tabDTMFdecode
-          { tabWX = new Fl_Group(4, 50, 592, 320, _("WX"));
+          { tabWX = new Fl_Group(0, 50, 598, 320, _("WX"));
             tabWX->hide();
             { Fl_Group* o = new Fl_Group(6, 60, 588, 300, _("Weather query specification"));
               o->box(FL_ENGRAVED_FRAME);
@@ -7751,7 +7805,7 @@ d frequency"));
         tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
         { Fl_Tabs* o = new Fl_Tabs(4, 25, 592, 345);
-          { Fl_Group* o = new Fl_Group(4, 46, 592, 324, _("Call Lookup"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("Call Lookup"));
             { Fl_Group* o = new Fl_Group(6, 52, 588, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7876,7 +7930,7 @@ d frequency"));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(4, 50, 592, 320, _("eQSL"));
+          { Fl_Group* o = new Fl_Group(0, 50, 598, 320, _("eQSL"));
             o->hide();
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(225, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));

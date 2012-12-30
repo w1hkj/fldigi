@@ -14,10 +14,10 @@ decl {\#include <FL/Fl_Tooltip.H>} {private local
 decl {\#include <FL/Fl_Box.H>} {private local
 } 
 
-decl {\#include <FL/Fl_File_Chooser.H>} {private local
+decl {\#include <FL/filename.H>} {private local
 } 
 
-decl {\#include <FL/filename.H>} {private local
+decl {\#include <FL/Fl_File_Chooser.H>} {private local
 } 
 
 decl {\#include "main.h"} {private local
@@ -91,12 +91,6 @@ decl {\#if USE_HAMLIB
 \#endif} {private local
 } 
 
-decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
-} 
-
-decl {extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);} {private local
-} 
-
 decl {Fl_Double_Window *dlgConfig;} {public local
 } 
 
@@ -142,7 +136,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     xywh {604 62 600 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 598 372} color 50 selection_color 50
+      xywh {0 0 598 370} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -234,7 +228,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            xywh {4 50 592 320}
+            xywh {0 50 598 320}
           } {
             Fl_Group {} {open
               xywh {6 59 588 300} box ENGRAVED_FRAME
@@ -363,11 +357,57 @@ progdefaults.changed = true;}
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
                 }
               }
+              Fl_Group {} {
+                label {Parser Colors} open
+                xywh {237 281 187 60} box ENGRAVED_FRAME
+              } {
+                Fl_Button bwsrHiLite_1_color {
+                  label {HiLite 1}
+                  callback {uchar r, g, b;
+    r = progdefaults.bwsrHiLight1.R;
+    g = progdefaults.bwsrHiLight1.G;
+    b = progdefaults.bwsrHiLight1.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrHiLight1.R = r;
+    progdefaults.bwsrHiLight1.G = g;
+    progdefaults.bwsrHiLight1.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+
+    viewer_redraw();
+    progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {245 303 80 24} align 1
+                  code0 {bwsrHiLite_1_color->color(fl_rgb_color(progdefaults.bwsrHiLight1.R, progdefaults.bwsrHiLight1.G,progdefaults.bwsrHiLight1.B));}
+                  code1 {\#include "Viewer.h"}
+                }
+                Fl_Button bwsrHiLite_2_color {
+                  label {HiLite 2}
+                  callback {uchar r, g, b;
+    r = progdefaults.bwsrHiLight2.R;
+    g = progdefaults.bwsrHiLight2.G;
+    b = progdefaults.bwsrHiLight2.B;
+
+    if (fl_color_chooser("Slider Color", r, g, b) == 0)
+        return;
+    progdefaults.bwsrHiLight2.R = r;
+    progdefaults.bwsrHiLight2.G = g;
+    progdefaults.bwsrHiLight2.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    o->redraw();
+
+    viewer_redraw();
+    progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {333 303 80 24} align 1
+                  code0 {bwsrHiLite_2_color->color(fl_rgb_color(progdefaults.bwsrHiLight2.R, progdefaults.bwsrHiLight2.G,progdefaults.bwsrHiLight2.B));}
+                }
+              }
             }
           }
           Fl_Group tabContest {
             label Contest
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label Exchanges open
@@ -507,7 +547,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabUserInterface {
             label General open
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 55 586 76} box ENGRAVED_FRAME
@@ -622,7 +662,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Logging
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {QSO logging} open
@@ -775,7 +815,7 @@ connect_to_log_server();}
           }
           Fl_Group tabMBars {
             label Macros
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {Number and position of macro bars} open
@@ -896,7 +936,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWF_UI {
             label {WF Ctrls}
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 58 586 306} box ENGRAVED_BOX
@@ -1044,7 +1084,7 @@ WF_UI();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {4 50 592 320}
+            xywh {0 50 598 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -1285,7 +1325,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing}
-            xywh {3 50 593 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 62 588 135} box ENGRAVED_FRAME
@@ -1355,7 +1395,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 62 588 170} box ENGRAVED_FRAME
@@ -1479,8 +1519,8 @@ progdefaults.changed = true;}
               xywh {0 50 598 320} selection_color 50
             } {
               Fl_Group {} {
-                label General open
-                xywh {4 75 592 295} align 5
+                label General
+                xywh {0 75 598 295} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -1636,7 +1676,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Timing and QSK}
-                xywh {4 75 592 295} align 5 hide
+                xywh {0 75 598 295} align 5 hide
               } {
                 Fl_Group {} {
                   label Timing open
@@ -1745,10 +1785,10 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Prosigns
-                xywh {4 75 592 295} align 5 hide
+                xywh {0 75 598 295} align 5 hide
               } {
                 Fl_Group {} {open
-                  xywh {6 86 588 280} box ENGRAVED_FRAME
+                  xywh {6 84 588 280} box ENGRAVED_FRAME
                 } {
                   Fl_Check_Button btnCW_use_paren {
                     label {Use '(' paren not KN}
@@ -2749,7 +2789,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT}
-            xywh {4 50 592 320}
+            xywh {0 50 598 320}
           } {
             Fl_Group {} {open
               xywh {6 57 588 38} box ENGRAVED_FRAME
@@ -2886,7 +2926,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT
-            tooltip {Rig Control using xml spec file} xywh {4 50 592 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 50 598 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -3076,7 +3116,7 @@ btnRevertRIGCAT->activate();}
           }
           Fl_Group tabHamlib {
             label Hamlib
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -3277,7 +3317,7 @@ hamlib_restore_defaults();
           }
           Fl_Group {} {
             label MemMap
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group grpMemmap {open
               xywh {6 58 588 185} box ENGRAVED_FRAME
@@ -3324,7 +3364,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabXMLRPC {
             label {XML-RPC}
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group grpXMLRPC {open
               xywh {6 58 588 160} box ENGRAVED_FRAME
@@ -3370,7 +3410,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabAudio {
             label Devices
-            xywh {4 50 592 320}
+            xywh {0 50 598 320}
           } {
             Fl_Group AudioOSS {
               xywh {6 60 588 45} box ENGRAVED_FRAME
@@ -3454,7 +3494,7 @@ resetSoundCard();}
           }
           Fl_Group tabAudioOpt {
             label Settings
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group grpAudioSampleRate {
               label {Sample rate} open
@@ -3535,7 +3575,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMixer {
             label Mixer open
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {OSS mixer} open
@@ -3600,7 +3640,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabAudioRightChannel {
             label {Right channel} open
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Check_Button chkForceMono {
               label {Mono audio output}
@@ -3940,7 +3980,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {4 50 592 320}
+            xywh {0 50 598 320}
           } {
             Fl_Group {} {open
               xywh {6 60 588 51} box ENGRAVED_FRAME align 21
@@ -3956,7 +3996,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNBEMS {
             label NBEMS open
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
@@ -4019,7 +4059,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabPskmail {
             label Pskmail
-            xywh {4 50 592 320} align 5 hide
+            xywh {0 50 598 320} align 5 hide
           } {
             Fl_Group {} {
               label {Mail Server Attributes} open
@@ -4086,7 +4126,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSpot {
             label Spotting
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {PSK Reporter} open
@@ -4162,7 +4202,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSweetSpot {
             label {Sweet Spot}
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {open
               xywh {6 60 588 75} box ENGRAVED_FRAME align 21
@@ -4226,7 +4266,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabText_IO {
             label {Text i/o}
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group grpTalker {
               label {Talker Socket (MS only)} open
@@ -4266,7 +4306,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDTMFdecode {
             label DTMF
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Check_Button chkDTMFdecode {
               label {Decode DTMF tones}
@@ -4277,7 +4317,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWX {
             label WX
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Group {} {
               label {Weather query specification} open
@@ -4385,7 +4425,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Call Lookup}
-            xywh {4 46 592 324}
+            xywh {0 50 598 320}
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
@@ -4519,7 +4559,7 @@ o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
           }
           Fl_Group {} {
             label eQSL open
-            xywh {4 50 592 320} hide
+            xywh {0 50 598 320} hide
           } {
             Fl_Input inpEQSL_id {
               label {User ID}

@@ -44,9 +44,9 @@
 
 using namespace std;
 
-string pskBrowser::dkred;
-string pskBrowser::dkblue;
-string pskBrowser::dkgreen;
+string pskBrowser::hilite_color_1;
+string pskBrowser::hilite_color_3;
+string pskBrowser::hilite_color_2;
 string pskBrowser::bkselect;
 string pskBrowser::white;
 string pskBrowser::bkgnd[2];
@@ -65,6 +65,11 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	seek_re = NULL;
 	cols[0] = 80; cols[1] = 0;
 	evalcwidth();
+
+	HiLite_1 = fl_rgb_color(128, 0, 0);
+	HiLite_2 = fl_rgb_color(0, 128, 0);
+	HiLite_3 = fl_rgb_color(0, 0, 128);
+
 	makecolors();
 	cdistiller = reinterpret_cast<CharsetDistiller*>(operator new(MAXCHANNELS*sizeof(CharsetDistiller)));
 
@@ -172,16 +177,13 @@ void pskBrowser::resize(int x, int y, int w, int h)
 			else j = i;
 			bwsrline[j].clear();
 			linechars[j] = 0;
-//		size_t len = bwsrline[j].length();
-//		if (len > nchars)
-//			bwsrline[j] = bwsrline[j].substr(len - nchars);
 			bline = freqformat(j);
 			if (seek_re) {
 				if (seek_re->match(bwsrline[j].c_str(), REG_NOTBOL | REG_NOTEOL))
-					bline.append(dkred);
+					bline.append(hilite_color_1);
 			} else if (!progdefaults.myCall.empty() &&
 					strcasestr(bwsrline[j].c_str(), progdefaults.myCall.c_str()))
-				bline.append(dkgreen);
+				bline.append(hilite_color_2);
 			Fl_Hold_Browser::add(bline.c_str());
 		}
 	}
@@ -191,26 +193,14 @@ void pskBrowser::makecolors()
 {
 	char tempstr[20];
 
-	snprintf(tempstr, sizeof(tempstr), "@C%d",
-		 adjust_color(fl_color_cube(128 * (FL_NUM_RED - 1) / 255,
-					    0 * (FL_NUM_GREEN - 1) / 255,
-					    0 * (FL_NUM_BLUE - 1) / 255),
-			      FL_BACKGROUND2_COLOR)); // dark red
-	dkred = tempstr;
+	snprintf(tempstr, sizeof(tempstr), "@C%d", HiLite_1);
+	hilite_color_1 = tempstr;
 
-	snprintf(tempstr, sizeof(tempstr), "@C%d",
-		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
-					    128 * (FL_NUM_GREEN - 1) / 255,
-					    0 * (FL_NUM_BLUE - 1) / 255),
-			      FL_BACKGROUND2_COLOR)); // dark green
-	dkgreen = tempstr;
+	snprintf(tempstr, sizeof(tempstr), "@C%d", HiLite_2);
+	hilite_color_2 = tempstr;
 
-	snprintf(tempstr, sizeof(tempstr), "@C%d",
-		 adjust_color(fl_color_cube(0 * (FL_NUM_RED - 1) / 255,
-					    0 * (FL_NUM_GREEN - 1) / 255,
-					    128 * (FL_NUM_BLUE - 1) / 255),
-			      FL_BACKGROUND2_COLOR)); // dark blue
-	dkblue = tempstr;
+	snprintf(tempstr, sizeof(tempstr), "@C%d", HiLite_3);
+	hilite_color_3 = tempstr;
 
 	snprintf(tempstr, sizeof(tempstr), "@C%d", FL_FOREGROUND_COLOR); // foreground
 	white = tempstr;
@@ -271,10 +261,10 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 
 	if (seek_re) {
 		if (seek_re->match(bwsrline[ch].c_str(), REG_NOTBOL | REG_NOTEOL))
-			nuline.append(dkred);
+			nuline.append(hilite_color_1);
 	} else if (!progdefaults.myCall.empty() &&
 		 strcasestr(bwsrline[ch].c_str(), progdefaults.myCall.c_str()))
-		nuline.append(dkgreen);
+		nuline.append(hilite_color_2);
 
 	nuline.append("@.").append(bwsrline[ch]);
 

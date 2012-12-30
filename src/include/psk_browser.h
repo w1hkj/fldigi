@@ -1,6 +1,7 @@
 #ifndef PSK_BROWSER_H
 #define PSK_BROWSER_H
 
+#include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
@@ -18,9 +19,9 @@
 
 class pskBrowser : public Fl_Hold_Browser{
 private:
-	static std::string dkred;
-	static std::string dkblue;
-	static std::string dkgreen;
+	static std::string hilite_color_1;
+	static std::string hilite_color_3;
+	static std::string hilite_color_2;
 	static std::string bkselect;
 	static std::string white;
 	static std::string bkgnd[];
@@ -36,6 +37,10 @@ private:
 	int labelwidth[VIEWER_LABEL_NTYPES];
 
 	Fl_Font fnt;
+	Fl_Color HiLite_1;
+	Fl_Color HiLite_2;
+	Fl_Color HiLite_3;
+
 	int siz;
 	int cols[2];
 	char szLine[32];
@@ -57,6 +62,12 @@ public:
 	void makecolors();
 	void evalcwidth();
 	void setfont(Fl_Font font, int sz) { fnt = font; siz = sz; evalcwidth();}
+	void HighLight_1(Fl_Color clr) { HiLite_1 = clr; }
+	Fl_Color HighLight_1() { return HiLite_1; }
+	void HighLight_2(Fl_Color clr) { HiLite_3 = clr; }
+	Fl_Color HighLight_2() { return HiLite_2; }
+	void HighLight_3(Fl_Color clr) { HiLite_3 = clr; }
+	Fl_Color HighLight_3() { return HiLite_3; }
 	void columns(int a) { cols[0] = a; cols[1] = 0; column_widths(cols); }
 	void resize(int x, int y, int w, int h);
 	void addchr(int ch, int freq, unsigned char c, int md);
