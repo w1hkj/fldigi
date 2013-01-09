@@ -145,18 +145,27 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<QSYFM>\tright-clk QSY button"));
 
 	w->add(LINE_SEP);
+	w->add(_("<QRG:text>\tinsert QRG into Rx text"));
+
+	w->add(LINE_SEP);
 	w->add(_("<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"));
 	w->add(_("<RIGMODE:mode>\tvalid xcvr mode"));
 	w->add(_("<FILWID:width>\tvalid xcvr filter width"));
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));
+	w->add(LINE_SEP);
+
+	w->add(_("<PAUSE>\tpause transmit"));
 	w->add(_("<IDLE:NN.nn>\tidle signal for NN.nn sec"));
 	w->add(_("<TIMER:NN>\trepeat every NN sec"));
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
 	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
 	w->add(_("<REPEAT>\trepeat macro continuously"));
 	w->add(_("<SKED:hhmm[:YYYYDDMM]>\tschedule execution"));
+
+	w->add(LINE_SEP);
+	w->add(_("<TXATTEN:nn.n>\t set xmt attenuator"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CWID>\tCW identifier"));
@@ -180,6 +189,10 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<MACROS:>\tchange macro defs file"));
+	w->add(_("<SAVE>\tsave current macro file"));
+
+	w->add(LINE_SEP);
+	w->add(_("<COMMENT:text>\tuntransmitted comment"));
 
 	w->add(LINE_SEP);
 	assert(MODE_CONTESTIA < MODE_OLIVIA);
