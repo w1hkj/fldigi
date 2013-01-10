@@ -133,8 +133,11 @@ const char* select(const char* title, const char* filter, const char* def, int* 
 
 	filename.clear();
 	switch ( native.show() ) {
-		case -1: LOG_INFO("ERROR: %s\n", native.errmsg()); break;	// ERROR
-		case  1: break;
+		case -1: 
+			LOG_INFO("ERROR: %s\n", native.errmsg()); // Error fall through
+		case  1: 
+			return 0;
+			break;
 		default:
 			if ( native.filename() ) {
 				filename = native.filename();
