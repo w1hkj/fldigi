@@ -37,7 +37,8 @@
 #include "fqueue.h"
 #include "qrunner.h"
 
-#define FIFO_SIZE 2048
+//Remi's advice for FIFO full issue #define FIFO_SIZE 2048
+#define FIFO_SIZE 8192
 
 #ifndef __MINGW32__
 #  define QRUNNER_EAGAIN() (errno == EAGAIN)

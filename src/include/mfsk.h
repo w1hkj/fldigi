@@ -167,6 +167,9 @@ protected:
 
 	unsigned int datashreg;
 
+	//VK2ETA high speed modes
+	int	preamble;
+
 	complex currvector;
 	complex prev1vector;
 	complex prev2vector;
@@ -242,7 +245,7 @@ protected:
 	void	eval_s2n();
 	void 	sendsymbol(int sym);
 	void	sendbit(int bit);
-	void	sendchar(unsigned int c);
+	void	sendchar(unsigned char c);
 	void	sendidle();
 	void	flushtx();
 	void	clearbits();

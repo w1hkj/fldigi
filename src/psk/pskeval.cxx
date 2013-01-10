@@ -77,7 +77,7 @@ void pskeval::sigdensity() {
 	delete [] vals;
 }
 
-double pskeval::sigpeak(int &f, int f1, int f2, int w)
+double pskeval::sigpeak(int &f, int f1, int f2)
 {
 	double peak = 0;
 	f1 -= bw;

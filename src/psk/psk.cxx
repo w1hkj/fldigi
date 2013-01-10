@@ -46,8 +46,6 @@
 #include "pskeval.h"
 #include "ascii.h"
 
-#include "debug.h"
-
 extern waterfall *wf;
 
 // Change the following for DCD low pass filter adjustment
@@ -65,15 +63,22 @@ extern waterfall *wf;
 #define PSKR_POLY1	0x6d
 #define PSKR_POLY2	0x4f
 
+#define SEPARATION	1.4 //separation between carriers expressed as a ratio to sc_bw
+
+#define        GALILEO_K       15
+#define        GALILEO_POLY1   046321
+#define        GALILEO_POLY2   051271
+
 char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
-pskeval *evalpsk = (pskeval *)0;
 
 void psk::tx_init(SoundBase *sc)
 {
 	scard = sc;
-	phaseacc = 0;
-	prevsymbol = complex (1.0, 0.0);
+	for (int car = 0; car < numcarriers; car++) {
+		phaseacc[car] = 0;
+		prevsymbol[car] = complex (1.0, 0.0);
+	}
 	preamble = dcdbits;
 	if (_pskr) {
 		// MFSK based varicode instead of psk
@@ -89,12 +94,17 @@ void psk::tx_init(SoundBase *sc)
 	bitshreg = 0;
 	startpreamble = true;
 
+//Multiple carriers handling
+	accumulated_bits = 0;
+
 }
 
 void psk::rx_init()
 {
-	phaseacc = 0;
-	prevsymbol	= complex (1.0, 0.0);
+	for (int car = 0; car < numcarriers; car++) {
+		phaseacc[car] = 0;
+		prevsymbol[car] = complex (1.0, 0.0);
+	}
 	quality		= complex (0.0, 0.0);
 	if (_pskr) {
 		// MFSK varicode instead of psk
@@ -124,8 +134,9 @@ void psk::rx_init()
 
 void psk::restart()
 {
-	pskviewer->restart(mode);
-	evalpsk->setbw(bandwidth);
+	if (numcarriers == 1)
+		pskviewer->restart(mode);
+	evalpsk->setbw(sc_bw);
 }
 
 void psk::init()
@@ -147,13 +158,17 @@ psk::~psk()
 	// FEC 2nd Viterbi decoder
 	if (dec2) delete dec2;
 
-	if (fir1) delete fir1;
-	if (fir2) delete fir2;
+	for (int i = 0; i < MAX_CARRIERS; i++) {
+		if (fir1[i]) delete fir1[i];
+		if (fir2[i]) delete fir2[i];
+	}
 	if (snfilt) delete snfilt;
 	if (imdfilt) delete imdfilt;
-// delete local reference to global pointer
-	pskviewer = 0;
-	evalpsk = 0;
+	if (::pskviewer == pskviewer)
+		::pskviewer = 0;
+	delete pskviewer;
+	delete evalpsk;
+
 	// Interleaver
 	if (Rxinlv) delete Rxinlv;
 	if (Rxinlv2) delete Rxinlv2;
@@ -166,6 +181,10 @@ psk::psk(trx_mode pskmode) : modem()
 	cap |= CAP_AFC | CAP_AFC_SR;
 
 	mode = pskmode;
+	int  isize = 5;
+	int  idepth = 5;  // 5x5x5 interleaver
+
+	numcarriers = 1;
 
 	switch (mode) {
 	case MODE_PSK31:
@@ -173,30 +192,42 @@ psk::psk(trx_mode pskmode) : modem()
 		_qpsk = false;
 		_pskr = false;
 		dcdbits = 32;
+		numcarriers = 1;
 		break;
 	case MODE_PSK63:
 		symbollen = 128;
 		_qpsk = false;
 		_pskr = false;
 		dcdbits = 64;
+		numcarriers = 1;
 		break;
 	case MODE_PSK125:
 		symbollen = 64;
 		_qpsk = false;
 		_pskr = false;
 		dcdbits = 128;
+		numcarriers = 1;
 		break;
 	case MODE_PSK250:
 		symbollen = 32;
 		_qpsk = false;
 		_pskr = false;
 		dcdbits = 256;
+		numcarriers = 1;
 		break;
 	case MODE_PSK500:
 		symbollen = 16;
 		_qpsk = false;
 		_pskr = false;
 		dcdbits = 512;
+		numcarriers = 1;
+		break;
+	case MODE_PSK1000:
+		symbollen = 8;
+		_qpsk = false;
+		_pskr = false;
+		dcdbits = 128;
+		numcarriers = 1;
 		break;
 
 	case MODE_QPSK31:
@@ -205,6 +236,7 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = false;
 		dcdbits = 32;
 		cap |= CAP_REV;
+		numcarriers = 1;
 		break;
 	case MODE_QPSK63:
 		symbollen = 128;
@@ -212,6 +244,7 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = false;
 		dcdbits = 64;
 		cap |= CAP_REV;
+		numcarriers = 1;
 		break;
 	case MODE_QPSK125:
 		symbollen = 64;
@@ -219,6 +252,7 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = false;
 		dcdbits = 128;
 		cap |= CAP_REV;
+		numcarriers = 1;
 		break;
 	case MODE_QPSK250:
 		symbollen = 32;
@@ -226,6 +260,7 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = false;
 		dcdbits = 256;
 		cap |= CAP_REV;
+		numcarriers = 1;
 		break;
 	case MODE_QPSK500:
 		symbollen = 16;
@@ -233,13 +268,14 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = false;
 		dcdbits = 512;
 		cap |= CAP_REV;
+		numcarriers = 1;
 		break;
-
 	case MODE_PSK63F:  // As per Multipsk (BPSK63 + FEC + MFSK Varicode)
 		symbollen = 128;
 		_qpsk = false;
 		_pskr = true;
 		dcdbits = 64;
+		numcarriers = 1;
 		break;
 
 	case MODE_PSK125R:
@@ -247,21 +283,270 @@ psk::psk(trx_mode pskmode) : modem()
 		_qpsk = false;
 		_pskr = true;
 		dcdbits = 128;
-		numinterleavers = -240;  // 2x2x40 interleaver
+		isize = 2;
+		idepth = 40;  // 2x2x40 interleaver
+		numcarriers = 1;
 		break;
 	case MODE_PSK250R:
 		symbollen = 32;
 		_qpsk = false;
 		_pskr = true;
 		dcdbits = 256;
-		numinterleavers = -280;  // 2x2x80 interleaver
+		isize = 2;
+		idepth = 80;  // 2x2x80 interleaver
+		numcarriers = 1;
 		break;
 	case MODE_PSK500R:
 		symbollen = 16;
 		_qpsk = false;
 		_pskr = true;
 		dcdbits = 512;
-		numinterleavers = -2160; // 2x2x160 interleaver
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		numcarriers = 1;
+		break;
+	case MODE_PSK1000R:
+		symbollen = 8;
+		_qpsk = false;
+		_pskr = true;
+		dcdbits = 512;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		numcarriers = 1;
+		break;
+
+// multi-carrier modems
+	case MODE_4X_PSK63R:
+		symbollen = 128;//PSK63
+		dcdbits = 128;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 4;
+		isize = 2;
+		idepth = 80; // 2x2x80 interleaver
+		break;
+	case MODE_5X_PSK63R:
+		symbollen = 128; //PSK63
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true; //PSKR
+		numcarriers = 5;
+		isize = 2;
+		idepth = 260; // 2x2x160 interleaver
+		break;
+	case MODE_10X_PSK63R:
+		symbollen = 128; //PSK63
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true; //PSKR
+		numcarriers = 10;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_20X_PSK63R:
+		symbollen = 128; //PSK63
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true; //PSKR
+		numcarriers = 20;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_32X_PSK63R:
+		symbollen = 128; //PSK63
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true; //PSKR
+		numcarriers = 32;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+
+	case MODE_4X_PSK125R:
+		symbollen = 64;//PSK125
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 4;
+		isize = 2;
+		idepth = 80; // 2x2x80 interleaver
+		break;
+	case MODE_5X_PSK125R:
+		symbollen = 64;//PSK125
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 5;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_10X_PSK125R:
+		symbollen = 64;//PSK125
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 10;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+
+	case MODE_12X_PSK125:
+		symbollen = 64;//PSK125
+		dcdbits = 128;//512;
+		_qpsk = false;
+		_pskr = false;
+		numcarriers = 12;
+		break;
+	case MODE_12X_PSK125R:
+		symbollen = 64;//PSK125
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 12;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+
+	case MODE_16X_PSK125R:
+		symbollen = 64;//PSK125
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 16;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+
+	case MODE_2X_PSK250R:
+		symbollen = 32;//PSK250
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 2;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_3X_PSK250R:
+		symbollen = 32;//PSK250
+		dcdbits = 512;
+		_qpsk = false;
+		_pskr = true;//PSKR
+		numcarriers = 3;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_5X_PSK250R:
+		symbollen = 32;//PSK250
+		_qpsk = false;
+		_pskr = true;//PSKR
+		dcdbits = 1024;
+		numcarriers = 5;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_6X_PSK250:
+		symbollen = 32;//PSK250
+		_qpsk = false;
+		_pskr = false;
+		dcdbits = 512;
+		numcarriers = 6;
+		break;
+	case MODE_6X_PSK250R:
+		symbollen = 32;//PSK250
+		_qpsk = false;
+		_pskr = true;//PSKR
+		dcdbits = 1024;
+		numcarriers = 6;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_7X_PSK250R:
+		symbollen = 32;//PSK250
+		_qpsk = false;
+		_pskr = true;//PSKR
+		dcdbits = 1024;
+		numcarriers = 7;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+
+	case MODE_2X_PSK500:
+		symbollen = 16;
+		_qpsk = false;
+		_pskr = false;
+		dcdbits = 512;
+		numcarriers = 2;
+		break;
+	case MODE_4X_PSK500:
+		symbollen = 16;
+		_qpsk = false;
+		_pskr = false;
+		dcdbits = 512;
+		numcarriers = 4;
+		break;
+
+	case MODE_2X_PSK500R:
+		symbollen = 16;
+		_qpsk = false;
+		_pskr = true;
+		dcdbits = 1024;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		numcarriers = 2;
+		break;
+	case MODE_3X_PSK500R:
+		symbollen = 16;
+		_qpsk = false;
+		_pskr = true;
+		dcdbits = 1024;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		numcarriers = 3;
+		break;
+	case MODE_4X_PSK500R:
+		symbollen = 16;
+		_qpsk = false;
+		_pskr = true;
+		dcdbits = 1024;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		numcarriers = 4;
+		break;
+
+	case MODE_2X_PSK800:
+		symbollen = 10;
+		_qpsk = false;
+		_pskr = false;
+		dcdbits = 512;
+		numcarriers = 2;
+		break;
+	case MODE_2X_PSK800R:
+		symbollen = 10;
+		_qpsk = false;
+		_pskr = true;
+		dcdbits = 1024;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		numcarriers = 2;
+		break;
+
+	case MODE_2X_PSK1000:
+		symbollen = 8;//PSK1000
+		_qpsk = false;
+		_pskr = false;
+		dcdbits = 1024;
+		numcarriers = 2;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
+		break;
+	case MODE_2X_PSK1000R:
+		symbollen = 8;//PSK1000
+		_qpsk = false;
+		_pskr = true;//PSKR
+		dcdbits = 1024;
+		numcarriers = 2;
+		isize = 2;
+		idepth = 160; // 2x2x160 interleaver
 		break;
 
 	default:
@@ -270,7 +555,12 @@ psk::psk(trx_mode pskmode) : modem()
 		_qpsk = false;
 		_pskr = false;
 		dcdbits = 32;
+		numcarriers = 1;
 	}
+
+//printf("%s: symlen %d, dcdbits %d, _qpsk %d, _pskr %d, numc %f\n",
+//mode_info[mode].sname,
+//symbollen, dcdbits, _qpsk, _pskr, numcarriers);
 
 	enc = (encoder *)0;
 	dec = (viterbi *)0;
@@ -285,9 +575,15 @@ psk::psk(trx_mode pskmode) : modem()
 	double fir1c[64];
 	double fir2c[64];
 
-	fir1 = new C_FIR_filter();
-	fir2 = new C_FIR_filter();
-
+	for (int i = 0; i < MAX_CARRIERS; i++) {
+		if (i < numcarriers) {
+			fir1[i] = new C_FIR_filter();
+			fir2[i] = new C_FIR_filter();
+		} else {
+			fir1[i] = (C_FIR_filter *)0;
+			fir2[i] = (C_FIR_filter *)0;
+		}
+	}
 	switch (progdefaults.PSK_filter) {
 		case 1:
 		// use the original gmfsk matched filters
@@ -295,37 +591,47 @@ psk::psk(trx_mode pskmode) : modem()
 				fir1c[i] = gmfir1c[i];
 				fir2c[i] = gmfir2c[i];
 			}
-			fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
-			fir2->init(FIRLEN, 1, fir2c, fir2c);
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
+				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
+			}
 			break;
 		case 2:
 		// creates fir1c matched sin(x)/x filter w hamming
 			wsincfilt(fir1c, 1.0 / symbollen, false);
-			fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 		// creates fir2c matched sin(x)/x filter w hamming
 			wsincfilt(fir2c, 1.0 / 16.0, false);
-			fir2->init(FIRLEN, 1, fir2c, fir2c);
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
+				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
+			}
 			break;
 		case 3:
 		// creates fir1c matched sin(x)/x filter w hamming
 			wsincfilt(fir1c, 1.0 / symbollen, false);
-			fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 		// 1/22 with Hamming window nearly identical to gmfir2c
 			wsincfilt(fir2c, 1.0 / 22.0, false);
-			fir2->init(FIRLEN, 1, fir2c, fir2c);
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
+				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
+			}
 			break;
 		case 4:
-			fir1->init_lowpass (FIRLEN, 16, 1.5 / symbollen);
 			wsincfilt(fir2c, 1.5 / 16.0, true);
-			fir2->init(FIRLEN, 1, fir2c, fir2c);
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init_lowpass (FIRLEN, 16, 1.5 / symbollen);
+				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
+			}
 		case 0:
 		default :
 		// creates fir1c matched sin(x)/x filter w blackman
 			wsincfilt(fir1c, 1.0 / symbollen, true);
-			fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
 		// creates fir2c matched sin(x)/x filter w blackman
 			wsincfilt(fir2c, 1.0 / 16.0, true);
-			fir2->init(FIRLEN, 1, fir2c, fir2c);
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
+				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
+			}
 	}
 
 	snfilt = new Cmovavg(16);
@@ -333,29 +639,31 @@ psk::psk(trx_mode pskmode) : modem()
 
 	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
-		dec = new viterbi::impl<K>(POLY1, POLY2);
+		dec = new viterbi(K, POLY1, POLY2);
 	}
 
 	if (_pskr) {
-		// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
-		// Set decode size to 4 since some characters can be as small
-		// as 3 bits long. This minimises intercharacters decoding
-		// interactions.
+// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
+// Set decode size to 4 since some characters can be as small
+// as 3 bits long. This minimises intercharacters decoding
+// interactions.
 		enc = new encoder(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec = new viterbi::impl<PSKR_K,4>( PSKR_POLY1, PSKR_POLY2);
-		dec2 = new viterbi::impl<PSKR_K,4>(PSKR_POLY1, PSKR_POLY2);
+		dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		dec->setchunksize(4);
+		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		dec2->setchunksize(4);
 
-		// Interleaver. To maintain constant time delay between bits,
-		// we double the number of concatenated square iterleavers for
-		// each doubling of speed: 2x2x20 for BSK63+FEC, 2x2x40 for
-		// BPSK125+FEC, etc..
+// Interleaver. To maintain constant time delay between bits,
+// we double the number of concatenated square iterleavers for
+// each doubling of speed: 2x2x20 for BSK63+FEC, 2x2x40 for
+// BPSK125+FEC, etc..
 		if (_pskr && (mode != MODE_PSK63F)) {
-		// 2x2x(20,40,80,160)
-			Txinlv = new interleave (numinterleavers, INTERLEAVE_FWD);
-		// 2x2x(20,40,80,160)
-			Rxinlv = new interleave (numinterleavers, INTERLEAVE_REV);
-		// 2x2x(20,40,80,160)
-			Rxinlv2 = new interleave (numinterleavers, INTERLEAVE_REV);
+// 2x2x(20,40,80,160)
+			Txinlv = new interleave (isize, idepth, INTERLEAVE_FWD);//numinterleavers, INTERLEAVE_FWD);
+// 2x2x(20,40,80,160)
+			Rxinlv = new interleave (isize, idepth, INTERLEAVE_REV);//numinterleavers, INTERLEAVE_REV);
+// 2x2x(20,40,80,160)
+			Rxinlv2 = new interleave (isize, idepth, INTERLEAVE_REV);//numinterleavers, INTERLEAVE_REV);
 		}
 		bitshreg = 0;
 		rxbitstate = 0;
@@ -370,7 +678,11 @@ psk::psk(trx_mode pskmode) : modem()
 
 	samplerate = PskSampleRate;
 	fragmentsize = symbollen;
-	bandwidth = samplerate / symbollen;
+	sc_bw = samplerate / symbollen;
+	//JD added for multiple carriers
+	inter_carrier = SEPARATION * sc_bw;
+	bandwidth = sc_bw * ( 1 + SEPARATION * (numcarriers - 1));
+
 	snratio = s2n = imdratio = imd = 0;
 
 	if (mailserver && progdefaults.PSKmailSweetSpot)
@@ -382,13 +694,12 @@ psk::psk(trx_mode pskmode) : modem()
 	E1 = E2 = E3 = 0.0;
 	acquire = 0;
 
-//create global instances of evalpsk and pskviewer if they do not exist
-	if (!::evalpsk) ::evalpsk = new pskeval;
-	if (!::pskviewer) ::pskviewer = new viewpsk(::evalpsk, mode);
-	evalpsk = ::evalpsk;
-	pskviewer = ::pskviewer;
+	evalpsk = new pskeval;
+	if (numcarriers == 1) {
+		::pskviewer = pskviewer = new viewpsk(evalpsk, mode);
+	} else
+		::pskviewer = pskviewer = 0;
 
-//	init();
 }
 
 //=============================================================================
@@ -399,7 +710,7 @@ psk::psk(trx_mode pskmode) : modem()
 void psk::s2nreport(void)
 {
 	modem::s2nreport();
-	s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+ 	s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
 }
 
 void psk::rx_bit(int bit)
@@ -419,6 +730,12 @@ void psk::rx_bit(int bit)
 						s2n_sum += s2n_metric;
 						s2n_sum2 += (s2n_metric * s2n_metric);
 						s2n_ncount ++;
+/*						if (c == SOH && noSOHyet) {
+							s2n_sum = s2n_sum2 = 0.0;
+							s2n_ncount = 1.0;
+							noSOHyet = false;
+						}
+*/
 						if (c == EOT)
 							s2nreport();
 					}
@@ -435,6 +752,12 @@ void psk::rx_bit(int bit)
 					s2n_sum += s2n_metric;
 					s2n_sum2 += (s2n_metric * s2n_metric);
 					s2n_ncount++;
+/*					if (c == SOH && noSOHyet) {
+						s2n_sum = s2n_sum2 = 0.0;
+						s2n_ncount = 1.0;
+						noSOHyet = false;
+					}
+*/
 					if (c == EOT)
 						s2nreport();
 				}
@@ -463,6 +786,12 @@ void psk::rx_bit2(int bit)
 					s2n_sum += s2n_metric;
 					s2n_sum2 += (s2n_metric * s2n_metric);
 					s2n_ncount++;
+/*					if (c == SOH && noSOHyet) {
+						s2n_sum = s2n_sum2 = 0.0;
+						s2n_ncount = 1.0;
+						noSOHyet = false;
+					}
+*/
 					if (c == EOT)
 						s2nreport();
 				}
@@ -482,6 +811,9 @@ void psk::rx_qpsk(int bits)
 
 	sym[0] = (bits & 1) ? 255 : 0;
 	sym[1] = (bits & 2) ? 0 : 255;	// top bit is flipped
+
+	//JD added de-interleaver
+//	Rxinlv->symbols(sym);
 
 	c = dec->decode(sym, NULL);
 
@@ -504,7 +836,9 @@ void psk::rx_pskr(unsigned char symbol)
 	unsigned char tempc;
 	int c;
 
-	// Accumulate the soft bits for the interleaver THEN submit to Viterbi
+	//In the case of multiple carriers, if even number of carriers then we
+	// know the bit-order and don't need voting otherwise  
+	// we accumulate the soft bits for the interleaver THEN submit to Viterbi
 	// decoder in alternance so that each one is processed one bit later.
 	// Only two possibilities for sync: current bit or previous one since
 	// we encode with R = 1/2 and send encoded bits one after the other
@@ -513,8 +847,14 @@ void psk::rx_pskr(unsigned char symbol)
 	symbolpair[1] = symbolpair[0];
 	symbolpair[0] = symbol;
 
+
 	if (rxbitstate == 0) {
 		rxbitstate++;
+		//Only use one decoder is using even carriers (we know the bits order)
+//		if (((int)numcarriers) % 2 == 0) {
+//			fecmet2 = -9999.0; 
+//			return;
+//		}
 		// copy to avoid scrambling symbolpair for the next bit
 		twosym[0] = symbolpair[0];
 		twosym[1] = symbolpair[1];
@@ -559,37 +899,37 @@ void psk::rx_pskr(unsigned char symbol)
 
 void psk::searchDown()
 {
-	double srchfreq = frequency - bandwidth * 2;
-	double minfreq = bandwidth * 2;
+	double srchfreq = frequency - sc_bw * 2;
+	double minfreq = sc_bw * 2;
 	double spwr, npwr;
 	while (srchfreq > minfreq) {
-		spwr = wf->powerDensity(srchfreq, bandwidth);
-		npwr = wf->powerDensity(srchfreq + bandwidth, bandwidth/2) + 1e-10;
+		spwr = wf->powerDensity(srchfreq, sc_bw);
+		npwr = wf->powerDensity(srchfreq + sc_bw, sc_bw/2) + 1e-10;
 		if (spwr / npwr > pow(10, progdefaults.ServerACQsn / 10)) {
 			frequency = srchfreq;
 			set_freq(frequency);
 			sigsearch = SIGSEARCH;
 			break;
 		}
-		srchfreq -= bandwidth;
+		srchfreq -= sc_bw;
 	}
 }
 
 void psk::searchUp()
 {
-	double srchfreq = frequency + bandwidth * 2;
-	double maxfreq = IMAGE_WIDTH - bandwidth * 2;
+	double srchfreq = frequency + sc_bw * 2;
+	double maxfreq = IMAGE_WIDTH - sc_bw * 2;
 	double spwr, npwr;
 	while (srchfreq < maxfreq) {
-		spwr = wf->powerDensity(srchfreq, bandwidth/2);
-		npwr = wf->powerDensity(srchfreq - bandwidth, bandwidth/2) + 1e-10;
+		spwr = wf->powerDensity(srchfreq, sc_bw/2);
+		npwr = wf->powerDensity(srchfreq - sc_bw, sc_bw/2) + 1e-10;
 		if (spwr / npwr > pow(10, progdefaults.ServerACQsn / 10)) {
 			frequency = srchfreq;
 			set_freq(frequency);
 			sigsearch = SIGSEARCH;
 			break;
 		}
-		srchfreq += bandwidth;
+		srchfreq += sc_bw;
 	}
 }
 
@@ -609,7 +949,7 @@ void psk::findsignal()
 				f1 = (int)(frequency - progdefaults.ServerOffset);
 				f2 = (int)(frequency + progdefaults.ServerOffset);
 			}
-			if (evalpsk->sigpeak(ftest, f1, f2, bandwidth) > pow(10, progdefaults.ServerACQsn / 10) ) {
+			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ServerACQsn / 10) ) {
 				if (progdefaults.PSKmailSweetSpot) {
 					if (fabs(ftest - progdefaults.ServerCarrier) < progdefaults.ServerOffset) {
 						frequency = ftest;
@@ -633,10 +973,9 @@ void psk::findsignal()
 				}
 			}
 		} else { // normal signal search algorithm
-			ftest = frequency; 
-			f1 = ftest - progdefaults.SearchRange/2;
-			f2 = ftest + progdefaults.SearchRange/2;
-			if (evalpsk->peak(ftest, f1, f2, progdefaults.ACQsn) ) {
+			f1 = (int)(frequency - progdefaults.SearchRange/2);
+			f2 = (int)(frequency + progdefaults.SearchRange/2);
+			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ACQsn / 10.0) ) {
 				frequency = ftest;
 				set_freq(frequency);
 				freqerr = 0.0;
@@ -647,26 +986,30 @@ void psk::findsignal()
 	}
 }
 
+//JD: disable for multiple carriers as we are running as modem and 
+//    therefore use other strategies for frequency alignment like RSID
 void psk::phaseafc()
 {
 	double error;
-	if (afcmetric < 0.05) return;
+	if (afcmetric < 0.05 || 
+		mode == MODE_PSK500 ||
+		mode == MODE_QPSK500 ||
+		numcarriers > 1 ) return;
 
 	error = (phase - bits * M_PI / 2.0);
-	if (error < M_PI / 2.0) error += 2 * M_PI;
-	if (error > M_PI / 2.0) error -= 2 * M_PI;
-
-	error *= (samplerate / (TWOPI * symbollen))/16.0; // the count between symbols
-	frequency -= error;
-
-	if (mailserver) {
-		if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)
-			frequency = progdefaults.ServerCarrier - progdefaults.ServerAFCrange;
-		if (frequency > progdefaults.ServerCarrier + progdefaults.ServerAFCrange)
-			frequency = progdefaults.ServerCarrier + progdefaults.ServerAFCrange;
+	if (error < -M_PI / 2.0 || error > M_PI / 2.0) return;
+	error *= samplerate / (TWOPI * symbollen);
+	if (fabs(error) < sc_bw ) {
+		freqerr = error / dcdbits;
+		frequency -= freqerr;
+		if (mailserver) {
+			if (frequency < progdefaults.ServerCarrier - progdefaults.ServerAFCrange)
+				frequency = progdefaults.ServerCarrier - progdefaults.ServerAFCrange;
+			if (frequency > progdefaults.ServerCarrier + progdefaults.ServerAFCrange)
+				frequency = progdefaults.ServerCarrier + progdefaults.ServerAFCrange;
+		}
+		set_freq (frequency);
 	}
-	set_freq (frequency);
-
 	if (acquire) acquire--;
 }
 
@@ -679,7 +1022,7 @@ void psk::afc()
 }
 
 
-void psk::rx_symbol(complex symbol)
+void psk::rx_symbol(complex symbol, int car)
 {
 	int n;
 	unsigned char softbit = 0;
@@ -689,8 +1032,8 @@ void psk::rx_symbol(complex symbol)
 
 static double averageamp;
 
-	phase = (prevsymbol % symbol).arg();
-	prevsymbol = symbol;
+	phase = (prevsymbol[car] % symbol).arg();
+	prevsymbol[car] = symbol;
 
 	if (phase < 0)
 		phase += TWOPI;
@@ -723,8 +1066,10 @@ static double averageamp;
 	}
 
 	// simple low pass filter for quality of signal
-	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
-	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
+//	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
+//	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
+	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
+	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
 
 	metric = 100.0 * quality.norm();
 
@@ -770,6 +1115,8 @@ static double averageamp;
 			acquire = 0;
 			quality = complex (1.0, 0.0);
 			imdValid = true;
+//VK2ETA added logic to prevent resetting
+//			noSOHyet = true;
 			if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
 				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
 		}
@@ -845,58 +1192,171 @@ char bitstatus[100];
 
 int psk::rx_process(const double *buf, int len)
 {
-	double delta;
-	complex z, z2;
+	double delta[MAX_CARRIERS], frequencies[MAX_CARRIERS];
+	complex z, z2[MAX_CARRIERS];
+	bool can_rx_symbol = false;
 
-	if (pskviewer && !bHistory && progdefaults.pskbrowser_on)
-		pskviewer->rx_process(buf, len);
-	if (evalpsk) evalpsk->sigdensity();
+	if (numcarriers == 1) {
+		if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
+		if (evalpsk) evalpsk->sigdensity();
+	}
 
-	delta = TWOPI * frequency / samplerate;
+	frequencies[0] = frequency + ((-1 * numcarriers) + 1) * inter_carrier / 2;
+	delta[0] = TWOPI * frequencies[0] / samplerate;
+	for (int car = 1; car < numcarriers; car++) {
+			frequencies[car] = frequencies[car - 1] + inter_carrier;
+			delta[car] = TWOPI * frequencies[car] / samplerate;
+	}
 
 	while (len-- > 0) {
-		// Mix with the internal NCO
-		z = complex ( *buf * cos(phaseacc), *buf * sin(phaseacc) );
 
-		buf++;
-		phaseacc += delta;
-		if (phaseacc > M_PI)
-			phaseacc -= TWOPI;
+	   for (int car = 0; car < numcarriers; car++) {
+
+		// Mix with the internal NCO
+		z = complex ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
+
+		phaseacc[car] += delta[car];
+		if (phaseacc[car] > M_PI)
+			phaseacc[car] -= TWOPI;
 
 		// Filter and downsample
 		// by 16 (psk31, qpsk31)
 		// by  8 (psk63, qpsk63)
 		// by  4 (psk125, qpsk125)
 		// by  2 (psk250, qpsk250)
+		// by  1 (psk500, qpsk500) = no down sampling
 		// first filter
-		if (fir1->run( z, z )) { // fir1 returns true every Nth sample
-			// final filter
-			fir2->run( z, z2 ); // fir2 returns value on every sample
-			calcSN_IMD(z);
+		if (fir1[car]->run( z, z )) { // fir1 returns true every Nth sample
+		    // final filter
+		    fir2[car]->run( z, z2[car] ); // fir2 returns value on every sample
+
+		    //On last carrier processing
+		    if (car == numcarriers - 1) { 
+
+			calcSN_IMD(z); //JD OR all carriers together check logic???
+
+/**
+* This is the symbol timing recovery mechanism.  After the demodulated
+* signal is processed by the matched filters, the signal lobes are
+* expected to have been modified to a fairly symmetric shape.  The
+* magnitude of the samples are taken, thus rectifying the signal to
+* positive values. "bitclk" is a counter that is very close in rate to
+* (samples / symbol).  Its purpose is to repeatedly "draw" one symbol 
+* waveform in the syncbuf array, according to its amplitude (not phase).
+*/                         
 
 			int idx = (int) bitclk;
 			double sum = 0.0;
 			double ampsum = 0.0;
-			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2.mag();
+			for (int ii = 0; ii < numcarriers; ii++) {
+				sum += z2[ii].mag()/numcarriers;
+			}
+//			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2[car].mag();
+			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * sum;
+			sum = 0.0;
 
-			for (int i = 0; i < 8; i++) {
+			//Handling of modes faster than PSK500/PSK500R
+
+/*			for (int i = 0; i < 8; i++) {
 				sum += (syncbuf[i] - syncbuf[i+8]);
 				ampsum += (syncbuf[i] + syncbuf[i+8]);
+			}
+*/
+//			double bitsteps = (symbollen >= 16 ? 16 : 8);
+			double bitsteps = (symbollen >= 16 ? 16 : symbollen);
+			int symsteps = (int) (bitsteps / 2);
+
+/**
+* Here we sum up the difference between each sample's magnitude in the
+* lower half of the array with its counterpart on the upper half of the
+* array, or the other side of the waveform.  Each pair's difference is 
+* divided by their sum, scaling it so that the signal amplitude does not
+* affect the result.  When the differences are summed, it gives an
+* indication of which side is larger than the other.
+*/                                    
+
+			for (int i = 0; i < symsteps; i++) {
+				sum += (syncbuf[i] - syncbuf[i+symsteps]);
+				ampsum += (syncbuf[i] + syncbuf[i+symsteps]);
 			}
 			// added correction as per PocketDigi
 			sum = (ampsum == 0 ? 0 : sum / ampsum);
 
-			bitclk -= sum / 5.0;
+/**
+* If the lower side is larger (meaning that the waveform is shifted in that
+* direction), then the sum is negative, and bitclk needs to be adjusted to
+* be a little faster, so that the next drawing of the waveform in syncbuf
+* will be shifted right. Conversely, if the sum is positive, then it needs
+* to slow down bitclk so that the waveform is shifted left.  Thus the
+* error is subtracted from bitclk, rather than added.  The goal is to 
+* get the error as close to zero as possible, so that the receiver is
+* exactly synced with the transmitter and the waveform is exactly in
+* the middle of syncbuf.       
+*/                                                    
+
+//			bitclk -= sum / 5.0;
+			bitclk -= sum / (5.0 * 16 / bitsteps);
 			bitclk += 1;
 
-			if (bitclk < 0) bitclk += 16.0;
-			if (bitclk >= 16.0) {
-				bitclk -= 16.0;
-				rx_symbol(z2);
+/**
+* When bitclock reaches the end of the buffer, then a complete waveform
+* has been received.  It is time to output the current sample and wrap
+* around to the next cycle.
+*        
+* There is a complete symbol waveform in syncbuf, so that each
+* sample[0..N/2-1] is very close in amplitude with the corresponding
+* sample in [N/2..N-1].
+*        
+*     |            ********                       ********            |
+*     |        ****        ****               ****        ****        |
+*     |     ***                ***         ***                ***     |
+*     |   **                      **     **                      **   |
+*     |  *                          *   *                          *  |
+*     | *                            * *                            * |
+*     |*                              *                              *|
+*     |_______________________________________________________________|
+*     0                              N/2                             N-1
+*     
+*     === or some variation of it .... ===
+*                     
+*     |****                       ********                       *****|
+*     |    ****               ****        ****               ****     |
+*     |        ***         ***                ***         ***         |
+*     |           **     **                      **     **            |
+*     |             *   *                          *   *              |
+*     |              * *                            * *               |
+*     |               *                              *                |
+*     |_______________________________________________________________|
+*     0                              N/2                             N-1
+*
+* At the end of this cycle, bitclk is pointing at a sample which will
+* have the maximum phase difference, if any, from the previous symbol's
+* phase.
+*
+*/                           
+
+//			if (bitclk < 0) bitclk += 16.0;
+//			if (bitclk >= 16.0) {
+//				bitclk -= 16.0;
+
+			if (bitclk < 0) bitclk += bitsteps;
+			if (bitclk >= bitsteps) {
+				bitclk -= bitsteps;
+				can_rx_symbol = true;
 				update_syncscope();
 				afc();
 			}
+		    }
+
 		}
+	   }
+	   if (can_rx_symbol) {
+		for (int car = 0; car < numcarriers; car++) {
+			rx_symbol(z2[car], car);
+		}
+	   	can_rx_symbol = false;
+	   }
+ 	   buf++;
 	}
 
 	if (sigsearch)
@@ -926,50 +1386,78 @@ int psk::rx_process(const double *buf, int len)
 
 void psk::tx_symbol(int sym)
 {
-	double delta;
+	double delta[MAX_CARRIERS];
 	double	ival, qval, shapeA, shapeB;
 	complex symbol;
+	double	frequencies[MAX_CARRIERS];
 
-	if (_qpsk && !reverse)
-		sym = (4 - sym) & 3;
+	txsymbols[accumulated_bits] = sym;
 
-	// differential QPSK modulation - top bit flipped
-	switch (sym) {
-	case 0:
-		symbol = complex (-1.0, 0.0);	// 180 degrees
-		break;
-	case 1:
-		symbol = complex (0.0, -1.0);	// 270 degrees
-		break;
-	case 2:
-		symbol = complex (1.0, 0.0);		// 0 degrees
-		break;
-	case 3:
-		symbol = complex (0.0, 1.0);		// 90 degrees
-		break;
+	if (++accumulated_bits < numcarriers) {
+		return;
+	} 
+
+	//Process all carrier's symbols, then submit to sound card
+	accumulated_bits = 0; //reset
+	frequencies[0] = get_txfreq_woffset() + ((-1 * numcarriers) + 1) * inter_carrier / 2;
+	delta[0] = TWOPI * frequencies[0] / samplerate;
+	for (int car = 1; car < numcarriers; car++) {
+			frequencies[car] = frequencies[car - 1] + inter_carrier;
+			delta[car] = TWOPI * frequencies[car] / samplerate;
 	}
-	symbol = prevsymbol * symbol;	// complex multiplication
 
-	delta = 2.0 * M_PI * get_txfreq_woffset() / samplerate;
+double maxamp = 0;
+	for (int car = 0; car < numcarriers; car++) {
+		sym = txsymbols[car];
 
-	for (int i = 0; i < symbollen; i++) {
+		if (_qpsk && !reverse)
+			sym = (4 - sym) & 3;
 
-		shapeA = tx_shape[i];
-		shapeB = (1.0 - shapeA);
+		// differential QPSK modulation - top bit flipped
+		switch (sym) {
+		case 0:
+			symbol = complex (-1.0, 0.0);	// 180 degrees
+			break;
+		case 1:
+			symbol = complex (0.0, -1.0);	// 270 degrees
+			break;
+		case 2:
+			symbol = complex (1.0, 0.0);		// 0 degrees
+			break;
+		case 3:
+			symbol = complex (0.0, 1.0);		// 90 degrees
+			break;
+		}
+		symbol = prevsymbol[car] * symbol;	// complex multiplication
 
-		ival = shapeA * prevsymbol.real() + shapeB * symbol.real();
-		qval = shapeA * prevsymbol.imag() + shapeB * symbol.imag();
+		for (int i = 0; i < symbollen; i++) {
 
-		outbuf[i] = ival * cos(phaseacc) + qval * sin(phaseacc);
+			shapeA = tx_shape[i];
+			shapeB = (1.0 - shapeA);
 
-		phaseacc += delta;
-		if (phaseacc > M_PI)
-			phaseacc -= 2.0 * M_PI;
+			ival = shapeA * prevsymbol[car].real() + shapeB * symbol.real();
+			qval = shapeA * prevsymbol[car].imag() + shapeB * symbol.imag();
+
+			if (car != 0) {
+				outbuf[i] += (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car]));// / numcarriers; 
+			} else {
+				outbuf[i] = (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car]));// / numcarriers;
+			}
+			if (maxamp < fabs(outbuf[i])) {
+				maxamp = fabs(outbuf[i]);
+			}
+
+			phaseacc[car] += delta[car];
+			if (phaseacc[car] > M_PI)
+				phaseacc[car] -= 2.0 * M_PI;
+		}
+
+		prevsymbol[car] = symbol;
 	}
+	if (maxamp)
+		for (int i = 0; i < symbollen; i++) outbuf[i] /= maxamp;
 
 	ModulateXmtr(outbuf, symbollen);
-
-	prevsymbol = symbol;
 }
 
 void psk::tx_bit(int bit)
@@ -979,6 +1467,9 @@ void psk::tx_bit(int bit)
 	// qpsk transmission
 	if (_qpsk) {
 		sym = enc->encode(bit);
+		//JD add interleaver
+//		Txinlv->bits(&sym); 
+		sym = sym & 3;//JD just to make sure
 		tx_symbol(sym);
 	// else pskr (fec + interleaver) transmission
 	} else if (_pskr) {
@@ -1026,8 +1517,15 @@ void psk::tx_char(unsigned char c)
 void psk::tx_flush()
 {
 	if (_pskr) {
-		for (int i = 0; i < dcdbits; i++)
-		tx_bit(0);
+		//VK2ETA replace with a more effective flushing sequence (avoids cutting the last characters in low s/n)
+/*		for (int i = 0; i < dcdbits; i++)
+			tx_bit(0);
+		}
+*/
+		for (int i = 0; i < dcdbits / 2; i++) {
+			tx_bit(1);
+			tx_bit(1);
+		}
 	}
 	// QPSK - flush the encoder
 	if (_qpsk) {
@@ -1037,8 +1535,11 @@ void psk::tx_flush()
 	}
 	// Standard BPSK postamble
 	// DCD off sequence (unmodulated carrier)
-	for (int i = 0; i < dcdbits; i++)
-		tx_symbol(2);
+	//VK2ETA remove for pskr since it is not used for DCD and only adds delay and creates TX overlaps
+	if (!_pskr) {
+		for (int i = 0; i < dcdbits; i++)
+			tx_symbol(2);
+	}
 }
 
 // Necessary to clear the interleaver before we start sending
@@ -1072,6 +1573,8 @@ int psk::tx_process()
 			if (preamble == 0)  tx_bit(0);
 			return 0;
 		} else {
+			//JD for QPSK500R
+//			if (mode == MODE_QPSK500) clearbits();
 			// Standard BPSK/QPSK preamble
 			preamble--;
 			tx_symbol(0);   // send phase reversals

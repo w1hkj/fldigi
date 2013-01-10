@@ -1,3 +1,53 @@
+2013-01-10  David Freese  <w1hkj@w1hkj.com>
+
+	d946848: High Speed / Multi-Carrier Modems
+	ce1d5c2: User configurable items
+
+2012-12-26  Makoto Fujiwara  <makoto@ki.nu>
+
+	2a22c31: NetBSD compile error
+
+2012-12-15  David Freese  <w1hkj@w1hkj.com>
+
+	6fe5fee: Dup Cty lookup
+	2a3d1ae: Get RX buffer
+	2004343: Util.h mod
+	1884f2f: Capture Alt-F4
+	2719b0f: Macros LOG LNW EXEC
+
+2012-12-03  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	836c5c3: Progress widget
+
+2012-11-25  David Freese  <w1hkj@w1hkj.com>
+
+	2252cab: ARQ Socket
+	5b9e09f: NBEMS modes
+	cb82ed8: Escape aborts
+
+2012-10-31  John Phelps  <kl4yfd@gmail.com>
+
+	51db482: Allow xmit of EOT character
+
+2012-10-29  Andrej Lajovic  <s57ln@hamradio.si>
+
+	87afa66: UTF-8 overhaul
+
+2012-10-26  David Freese  <w1hkj@w1hkj.com>
+
+	600db9e: Thumbdrive
+	0fa9396: TLF arq
+	5ac5065: Logbook Dialogs
+	c17590e: ARQ rx/tx
+	9006fde: View browser
+	2a0f09d: FLAMP interface fix
+
+2012-10-04  Andrej Lajovic  <s57ln@hamradio.si>
+
+	7bdf035: UTF-8 wide characters
+	6706da0: flarq bug fix
+	1d7f8c2: Add_tx_char
+
 2012-10-03  David Freese  <w1hkj@w1hkj.com>
 
 	d43f564: UI update

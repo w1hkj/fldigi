@@ -2,10 +2,10 @@
 //
 // dominoex.cxx  --  DominoEX modem
 //
-// Copyright (C) 2008-2009
-//		David Freese (w1hkj@w1hkj.com)
-// Copyright (C) 2006
-//		Hamish Moffatt (hamish@debian.org)
+// Copyright (C) 2008-20012
+//     David Freese   <w1hkj@w1hkj.com>
+//     Hamish Moffatt <hamish@debian.org>
+//     John Phelps    <kl4yfd@gmail.com>
 //
 // based on code in gmfsk
 //
@@ -94,16 +94,15 @@ void dominoex::rx_init()
 void dominoex::reset_filters()
 {
 // fft filter at first IF frequency
-	fft->create_filter( 
-		(FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
-		(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
+	fft->create_filter( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+						(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate );
 
 	for (int i = 0; i < MAXFFTS; i++) {
 		if (binsfft[i]) delete binsfft[i];
 		binsfft[i] = 0;
 	}
 
-	if (slowcpu || samplerate == 22050) {
+	if (slowcpu) {
 		extones = 4;
 		paths = 3;
 	} else {
@@ -116,13 +115,8 @@ void dominoex::reset_filters()
 
 	numbins = hitone - lotone;
 
-	for (int i = 0; i < paths; i++) { //MAXFFTS; i++)
+	for (int i = 0; i < paths; i++)//MAXFFTS; i++)
 		binsfft[i] = new sfft (symlen, lotone, hitone);
-		if (!binsfft[i]) {
-			printf("Domino Arrgh %d\n", i);
-			exit(0);
-		}
-	}
 
 	filter_reset = false;
 }
@@ -138,6 +132,7 @@ void dominoex::init()
 		MuPsk_sec2pri_init();
 
 	modem::init();
+//	reset_filters();
 	rx_init();
 
 	set_scope_mode(Digiscope::DOMDATA);
@@ -190,11 +185,9 @@ dominoex::~dominoex()
 {
 	if (hilbert) delete hilbert;
 
-	for (int i = 0; i < MAXFFTS; i++) { //paths; i++) {//MAXFFTS; i++) {
-		if (binsfft[i]) {
-			delete binsfft[i];
-			binsfft[i] = 0;
-		}
+	for (int i = 0; i < MAXFFTS; i++) {
+		if (binsfft[i]) delete binsfft[i];
+		binsfft[i] = 0;
 	}
 
 	for (int i = 0; i < SCOPESIZE; i++) {
@@ -225,26 +218,13 @@ dominoex::dominoex(trx_mode md)
 		doublespaced = 2;
 		samplerate = 11025;
 		break;
-
 	case MODE_DOMINOEX11:
 		symlen = 1024;
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
-
 	case MODE_DOMINOEX22:
 		symlen = 512;
-		doublespaced = 1;
-		samplerate = 11025;
-		break;
-
-	case MODE_DOMINOEX44:
-		symlen = 250;
-		doublespaced = 2;
-		samplerate = 11025;
-		break;
-	case MODE_DOMINOEX88:
-		symlen = 125;
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
@@ -264,6 +244,19 @@ dominoex::dominoex(trx_mode md)
 		doublespaced = 1;
 		samplerate = 8000;
 		break;
+// experimental 
+	case MODE_DOMINOEX44:
+		symlen = 256;
+		doublespaced = 2;
+		samplerate = 11025;
+		break;
+	case MODE_DOMINOEX88:
+		symlen = 128;
+ 		doublespaced = 1;
+		samplerate = 11025;
+ 		break;
+
+
 	default: // EX8
 		symlen = 1024;
 		doublespaced = 2;
@@ -278,10 +271,10 @@ dominoex::dominoex(trx_mode md)
 	hilbert->init_hilbert(37, 1);
 
 // fft filter at first if frequency
-	fft = new fftfilt( 
-			(FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
-			(FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
-			1024 );
+	fft = new fftfilt( (FIRSTIF - 0.5 * progdefaults.DOMINOEX_BW * bandwidth) / samplerate,
+					   (FIRSTIF + 0.5 * progdefaults.DOMINOEX_BW * bandwidth)/ samplerate,
+					   1024 );
+
 	basetone = (int)floor(BASEFREQ * symlen / samplerate + 0.5);
 
 	slowcpu = progdefaults.slowcpu;
@@ -315,9 +308,11 @@ dominoex::dominoex(trx_mode md)
 	prev1symbol = prev2symbol = 0;
 
 	MuPskEnc	= new encoder (K, POLY1, POLY2);
-	MuPskDec	= new viterbi::impl <K, 1, 45>(POLY1, POLY2);
-	MuPskTxinlv = new interleave (-1, INTERLEAVE_FWD);
-	MuPskRxinlv = new interleave (-1, INTERLEAVE_REV);
+	MuPskDec	= new viterbi (K, POLY1, POLY2);
+	MuPskDec->settraceback (45);
+	MuPskDec->setchunksize (1);
+	MuPskTxinlv = new interleave (4, 4, INTERLEAVE_FWD);
+	MuPskRxinlv = new interleave (4, 4, INTERLEAVE_REV);
 	Mu_bitstate = 0;
 	Mu_symbolpair[0] = Mu_symbolpair[1] = 0;
 	Mu_datashreg = 1;

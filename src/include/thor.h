@@ -1,8 +1,10 @@
 // ----------------------------------------------------------------------------
 //    thor.h  --  thor modem
 //
-//	Copyright (C) 2008-2009
-//		David Freese (w1hkj@w1hkj.com)
+// Copyright (C) 2008-2012
+//     David Freese <w1hkj@w1hkj.com>
+//     John Douyere <vk2eta@gmail.com>
+//     John Phelps  <kl4yfd@gmail.com>
 //
 // This file is part of fldigi.
 //
@@ -39,6 +41,7 @@
 #define	THOR_POLY1	0x6d
 #define	THOR_POLY2	0x4f
 
+//VK2ETA high speed modes
 // NASA Galileo coefficients for viterbi encode/decode algorithms
 #define	GALILEO_K	15
 #define	GALILEO_POLY1	046321
@@ -51,10 +54,8 @@
 
 #define THORNUMTONES 18
 #define THORMAXFFTS  8
-//#define THORBASEFREQ 500.0
-//#define THORFIRSTIF 1000.0
-#define THORBASEFREQ 1000.0
-#define THORFIRSTIF  1500.0
+#define THORBASEFREQ 1500.0
+#define THORFIRSTIF  2000.0
 
 #define THORSCOPESIZE 64
 
@@ -129,6 +130,8 @@ protected:
 	
 	bool filter_reset;
 	bool staticburst;
+	
+	int fec_confidence;
 
 // tx variables
 	int txstate;
@@ -144,6 +147,9 @@ protected:
 	int			bitstate;
 	unsigned char symbolpair[2];
 	
+	int flushlength;
+
+	
 private:
 	complex	mixer(int n, const complex& in);
 
@@ -152,6 +158,7 @@ private:
 	void	decodesymbol();
 	void	softdecodesymbol();
 	int		harddecode();
+	int		softdecode();
 	void	update_syncscope();
 	void	synchronize();
 	void	reset_afc();
@@ -159,7 +166,6 @@ private:
 	int		get_secondary_char();
 	void	reset_filters();
 	void	decodePairs(unsigned char symbol);
-//	void	decodeEX(int c);
 	bool	preambledetect(int c);
 	void	softflushrx();
 

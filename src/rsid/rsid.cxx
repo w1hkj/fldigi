@@ -2,10 +2,12 @@
 //
 //	rsid.cxx
 //
-// Copyright (C) 2008-2010
+// Copyright (C) 2008-2012
 //		Dave Freese, W1HKJ
-// Copyright (C) 2009
+// Copyright (C) 2009-2012
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2012
+//		John Douyere, VK2ETA
 //
 // This file is part of fldigi.
 //
@@ -47,203 +49,19 @@
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
-// Syntax: ELEM_(rsid_code, rsid_tag, fldigi_mode)
-// fldigi_mode is NUM_MODES if mode is not available in fldigi,
-// otherwise one of the tags defined in globals.h.
-// rsid_tag is stringified and may be shown to the user.
-#undef ELEM_
-#define RSID_LIST                                       \
-        ELEM_(1, BPSK31, MODE_PSK31)                    \
-        ELEM_(110, QPSK31, MODE_QPSK31)                 \
-        ELEM_(2, BPSK63, MODE_PSK63)                    \
-        ELEM_(3, QPSK63, MODE_QPSK63)                   \
-        ELEM_(4, BPSK125, MODE_PSK125)                  \
-        ELEM_(5, QPSK125, MODE_QPSK125)                 \
-        ELEM_(126, BPSK250, MODE_PSK250)                \
-        ELEM_(127, QPSK250, MODE_QPSK250)               \
-        ELEM_(173, BPSK500, MODE_PSK500)                \
-                                                        \
-        ELEM_(183, PSK125R, MODE_PSK125R)               \
-        ELEM_(186, PSK250R, MODE_PSK250R)               \
-        ELEM_(187, PSK500R, MODE_PSK500R)               \
-                                                        \
-        ELEM_(7, PSKFEC31, NUM_MODES)                   \
-        ELEM_(8, PSK10, NUM_MODES)                      \
-                                                        \
-        ELEM_(9, MT63_500_LG, MODE_MT63_500)            \
-        ELEM_(10, MT63_500_ST, MODE_MT63_500)           \
-        ELEM_(11, MT63_500_VST, MODE_MT63_500)          \
-        ELEM_(12, MT63_1000_LG, MODE_MT63_1000)         \
-        ELEM_(13, MT63_1000_ST, MODE_MT63_1000)         \
-        ELEM_(14, MT63_1000_VST, MODE_MT63_1000)        \
-        ELEM_(15, MT63_2000_LG, MODE_MT63_2000)         \
-        ELEM_(17, MT63_2000_ST, MODE_MT63_2000)         \
-        ELEM_(18, MT63_2000_VST, MODE_MT63_2000)        \
-                                                        \
-        ELEM_(19, PSKAM10, NUM_MODES)                   \
-        ELEM_(20, PSKAM31, NUM_MODES)                   \
-        ELEM_(21, PSKAM50, NUM_MODES)                   \
-                                                        \
-        ELEM_(22, PSK63F, MODE_PSK63F)                  \
-        ELEM_(23, PSK220F, NUM_MODES)                   \
-                                                        \
-        ELEM_(24, CHIP64, NUM_MODES)                    \
-        ELEM_(25, CHIP128, NUM_MODES)                   \
-                                                        \
-        ELEM_(26, CW, MODE_CW)                          \
-                                                        \
-        ELEM_(27, CCW_OOK_12, NUM_MODES)                \
-        ELEM_(28, CCW_OOK_24, NUM_MODES)                \
-        ELEM_(29, CCW_OOK_48, NUM_MODES)                \
-        ELEM_(30, CCW_FSK_12, NUM_MODES)                \
-        ELEM_(31, CCW_FSK_24, NUM_MODES)                \
-        ELEM_(33, CCW_FSK_48, NUM_MODES)                \
-                                                        \
-        ELEM_(34, PACTOR1_FEC, NUM_MODES)               \
-                                                        \
-        ELEM_(113, PACKET_110, NUM_MODES)               \
-        ELEM_(35, PACKET_300, NUM_MODES)                \
-        ELEM_(36, PACKET_1200, NUM_MODES)               \
-                                                        \
-        ELEM_(37, RTTY_ASCII_7, MODE_RTTY)              \
-        ELEM_(38, RTTY_ASCII_8, MODE_RTTY)              \
-        ELEM_(39, RTTY_45, MODE_RTTY)                   \
-        ELEM_(40, RTTY_50, MODE_RTTY)                   \
-        ELEM_(41, RTTY_75, MODE_RTTY)                   \
-                                                        \
-        ELEM_(42, AMTOR_FEC, NUM_MODES)                 \
-                                                        \
-        ELEM_(43, THROB_1, MODE_THROB1)                 \
-        ELEM_(44, THROB_2, MODE_THROB2)                 \
-        ELEM_(45, THROB_4, MODE_THROB4)                 \
-        ELEM_(46, THROBX_1, MODE_THROBX1)               \
-        ELEM_(47, THROBX_2, MODE_THROBX2)               \
-        ELEM_(146, THROBX_4, MODE_THROBX4)              \
-                                                        \
-        ELEM_(204, CONTESTIA_4_125, MODE_CONTESTIA)     \
-        ELEM_(55,  CONTESTIA_4_250, MODE_CONTESTIA)     \
-        ELEM_(54,  CONTESTIA_4_500, MODE_CONTESTIA)     \
-        ELEM_(255, CONTESTIA_4_1000, MODE_CONTESTIA)    \
-        ELEM_(254, CONTESTIA_4_2000, MODE_CONTESTIA)    \
-                                                        \
-        ELEM_(169, CONTESTIA_8_125, MODE_CONTESTIA)     \
-        ELEM_(49,  CONTESTIA_8_250, MODE_CONTESTIA)     \
-        ELEM_(52,  CONTESTIA_8_500, MODE_CONTESTIA)     \
-        ELEM_(117, CONTESTIA_8_1000, MODE_CONTESTIA)    \
-        ELEM_(247, CONTESTIA_8_2000, MODE_CONTESTIA)    \
-                                                        \
-        ELEM_(50,  CONTESTIA_16_500, MODE_CONTESTIA)    \
-        ELEM_(53,  CONTESTIA_16_1000, MODE_CONTESTIA)   \
-        ELEM_(259, CONTESTIA_16_2000, MODE_CONTESTIA)   \
-                                                        \
-        ELEM_(51,  CONTESTIA_32_1000, MODE_CONTESTIA)   \
-        ELEM_(201, CONTESTIA_32_2000, MODE_CONTESTIA)   \
-                                                        \
-        ELEM_(194, CONTESTIA_64_500, MODE_CONTESTIA)    \
-        ELEM_(193, CONTESTIA_64_1000, MODE_CONTESTIA)   \
-        ELEM_(191, CONTESTIA_64_2000, MODE_CONTESTIA)   \
-                                                        \
-        ELEM_(261, CONTESTIA_128_2000, MODE_CONTESTIA)  \
-                                                        \
-        ELEM_(56, VOICE, NUM_MODES)                     \
-                                                        \
-        ELEM_(60, MFSK8, MODE_MFSK8)                    \
-        ELEM_(57, MFSK16, MODE_MFSK16)                  \
-        ELEM_(147, MFSK32, MODE_MFSK32)                 \
-        ELEM_(148, MFSK11, MODE_MFSK11)                 \
-        ELEM_(152, MFSK22, MODE_MFSK22)                 \
-                                                        \
-        ELEM_(61, RTTYM_8_250, NUM_MODES)               \
-        ELEM_(62, RTTYM_16_500, NUM_MODES)              \
-        ELEM_(63, RTTYM_32_1000, NUM_MODES)             \
-        ELEM_(65, RTTYM_8_500, NUM_MODES)               \
-        ELEM_(66, RTTYM_16_1000, NUM_MODES)             \
-        ELEM_(67, RTTYM_4_500, NUM_MODES)               \
-        ELEM_(68, RTTYM_4_250, NUM_MODES)               \
-        ELEM_(119, RTTYM_8_1000, NUM_MODES)             \
-        ELEM_(170, RTTYM_8_125, NUM_MODES)              \
-                                                        \
-        ELEM_(203, OLIVIA_4_125, MODE_OLIVIA)           \
-        ELEM_(75,  OLIVIA_4_250, MODE_OLIVIA)           \
-        ELEM_(74,  OLIVIA_4_500, MODE_OLIVIA)           \
-        ELEM_(229, OLIVIA_4_1000, MODE_OLIVIA)          \
-        ELEM_(238, OLIVIA_4_2000, MODE_OLIVIA)          \
-                                                        \
-        ELEM_(163, OLIVIA_8_125, MODE_OLIVIA)           \
-        ELEM_(69,  OLIVIA_8_250, MODE_OLIVIA)           \
-        ELEM_(72,  OLIVIA_8_500, MODE_OLIVIA)           \
-        ELEM_(116, OLIVIA_8_1000, MODE_OLIVIA)          \
-        ELEM_(214, OLIVIA_8_2000, MODE_OLIVIA)          \
-                                                        \
-        ELEM_(70,  OLIVIA_16_500, MODE_OLIVIA)          \
-        ELEM_(73,  OLIVIA_16_1000, MODE_OLIVIA)         \
-        ELEM_(234, OLIVIA_16_2000, MODE_OLIVIA)         \
-                                                        \
-        ELEM_(71,  OLIVIA_32_1000, MODE_OLIVIA)         \
-        ELEM_(221, OLIVIA_32_2000, MODE_OLIVIA)         \
-                                                        \
-        ELEM_(211, OLIVIA_64_2000, MODE_OLIVIA)         \
-                                                        \
-        ELEM_(76, PAX, NUM_MODES)                       \
-        ELEM_(77, PAX2, NUM_MODES)                      \
-        ELEM_(78, DOMINOF, NUM_MODES)                   \
-        ELEM_(79, FAX, NUM_MODES)                       \
-        ELEM_(81, SSTV, NUM_MODES)                      \
-                                                        \
-        ELEM_(84, DOMINOEX_4, MODE_DOMINOEX4)           \
-        ELEM_(85, DOMINOEX_5, MODE_DOMINOEX5)           \
-        ELEM_(86, DOMINOEX_8, MODE_DOMINOEX8)           \
-        ELEM_(87, DOMINOEX_11, MODE_DOMINOEX11)         \
-        ELEM_(88, DOMINOEX_16, MODE_DOMINOEX16)         \
-        ELEM_(90, DOMINOEX_22, MODE_DOMINOEX22)         \
-        ELEM_(92, DOMINOEX_4_FEC, MODE_DOMINOEX4)       \
-        ELEM_(93, DOMINOEX_5_FEC, MODE_DOMINOEX5)       \
-        ELEM_(97, DOMINOEX_8_FEC, MODE_DOMINOEX8)       \
-        ELEM_(98, DOMINOEX_11_FEC, MODE_DOMINOEX11)     \
-        ELEM_(99, DOMINOEX_16_FEC, MODE_DOMINOEX16)     \
-        ELEM_(101, DOMINOEX_22_FEC, MODE_DOMINOEX22)    \
-                                                        \
-        ELEM_(104, FELD_HELL, MODE_FELDHELL)            \
-        ELEM_(105, PSK_HELL, NUM_MODES)                 \
-        ELEM_(106, HELL_80, MODE_HELL80)                \
-        ELEM_(107, FM_HELL_105, MODE_FSKH105)           \
-        ELEM_(108, FM_HELL_245, NUM_MODES)              \
-                                                        \
-        ELEM_(114, MODE_141A, NUM_MODES)                \
-        ELEM_(123, DTMF, NUM_MODES)                     \
-        ELEM_(125, ALE400, NUM_MODES)                   \
-        ELEM_(131, FDMDV, NUM_MODES)                    \
-                                                        \
-        ELEM_(132, JT65_A, NUM_MODES)                   \
-        ELEM_(134, JT65_B, NUM_MODES)                   \
-        ELEM_(135, JT65_C, NUM_MODES)                   \
-                                                        \
-        ELEM_(136, THOR_4, MODE_THOR4)                  \
-        ELEM_(137, THOR_8, MODE_THOR8)                  \
-        ELEM_(138, THOR_16, MODE_THOR16)                \
-        ELEM_(139, THOR_5, MODE_THOR5)                  \
-        ELEM_(143, THOR_11, MODE_THOR11)                \
-        ELEM_(145, THOR_22, MODE_THOR22)                \
-                                                        \
-        ELEM_(153, CALL_ID, NUM_MODES)                  \
-                                                        \
-        ELEM_(155, PACKET_PSK1200, NUM_MODES)           \
-        ELEM_(156, PACKET_PSK250, NUM_MODES)            \
-        ELEM_(159, PACKET_PSK63, NUM_MODES)             \
-                                                        \
-        ELEM_(172, MODE_188_110A_8N1, NUM_MODES)        \
-                                                        \
-        /* NONE must be the last element */             \
-        ELEM_(0, NONE, NUM_MODES)
+#include "rsid_defs.cxx"
 
-#define ELEM_(code_, tag_, mode_) RSID_ ## tag_ = code_,
-enum { RSID_LIST };
-#undef ELEM_
+void reset_rsid(void *who) {
+	cRsId *me = (cRsId *)who;
+	LOG_INFO("%s", "RxID detector reset");
+	me->state = cRsId::INITIAL;
+	me->reset();
+}
 
-#define ELEM_(code_, tag_, mode_) { RSID_ ## tag_, mode_, #tag_ },
-const RSIDs cRsId::rsid_ids[] = { RSID_LIST };
-#undef ELEM_
-const int cRsId::rsid_ids_size = sizeof(rsid_ids)/sizeof(*rsid_ids) - 1;
+void reset_rsid_detector(void *me) {
+	Fl::remove_timeout(reset_rsid);
+	Fl::add_timeout(3*15*RSID_SYMLEN, reset_rsid, me);
+}
 
 const int cRsId::Squares[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -285,13 +103,13 @@ cRsId::cRsId()
 	memset(aHashTable1, 255, sizeof(aHashTable1));
 	memset(aHashTable2, 255, sizeof(aHashTable2));
 	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
-//	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
-//	HammingWindow(fftwindow, RSID_FFT_SIZE);
-//	HanningWindow(fftwindow, RSID_FFT_SIZE);
 	RectWindow(fftwindow, RSID_FFT_SIZE);
-	
+
 	pCodes = new unsigned char[rsid_ids_size * RSID_NSYMBOLS];
 	memset(pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
+
+	pCodes2 = new unsigned char[rsid_ids_size2 * RSID_NSYMBOLS];
+	memset(pCodes, 0, rsid_ids_size2 * RSID_NSYMBOLS);
 
 	// Initialization  of assigned mode/submode IDs.
 	// HashTable is used for finding a code with lowest Hamming distance.
@@ -306,17 +124,33 @@ cRsId::cRsId()
 		aHashTable2[hash2] = i;
 	}
 
+	for (int i = 0; i < rsid_ids_size2; i++) {
+		c = pCodes2 + i * RSID_NSYMBOLS;
+		Encode(rsid_ids2[i].rs, c);
+		hash1 = c[11] | (c[12] << 4);
+		hash2 = c[13] | (c[14] << 4);
+		aHashTable1_2[hash1] = i;
+		aHashTable2_2[hash2] = i;
+	}
+
 	nBinLow = RSID_RESOL + 1;
 	nBinHigh = RSID_FFT_SIZE - 32;
 
 	outbuf = 0;
 	symlen = 0;
+
+	hamming_resolution = progdefaults.rsid_resolution;
+
+	state = INITIAL;
 }
 
 cRsId::~cRsId()
 {
 	delete [] pCodes;
+	delete [] pCodes2;
+
 	delete [] outbuf;
+	delete rsfft;
 	src_delete(src_state);
 }
 
@@ -324,7 +158,9 @@ void cRsId::reset()
 {
 	iPrevDistance = 99;
 	bPrevTimeSliceValid = false;
+	bPrevTimeSliceValid2 = false;
 	iTime = 0;
+	iTime2 = 0;
 	memset(aInputSamples, 0, sizeof(aInputSamples));
 	memset(aFFTReal, 0, sizeof(aFFTReal));
 	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
@@ -350,7 +186,6 @@ void cRsId::Encode(int code, unsigned char *rsid)
 		rsid[0] = Squares[(rsid[0] << 4) + indices[i]];
 	}
 }
-
 
 void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 {
@@ -435,9 +270,7 @@ void cRsId::search(void)
 	else {
 		double centerfreq = active_modem->get_freq();
 		nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
-		if (nBinLow < RSID_RESOL + 1) nBinLow = RSID_RESOL + 1;
 		nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
-		if (nBinHigh > RSID_FFT_SIZE -32) nBinHigh = RSID_FFT_SIZE;
 	}
 
 	bool bReverse = !(wf->Reverse() ^ wf->USB());
@@ -475,10 +308,29 @@ void cRsId::search(void)
 	}
 
 	int SymbolOut = -1, BinOut = -1;
-	if (search_amp(SymbolOut, BinOut)) {
+	if (state == INITIAL && search_amp(SymbolOut, BinOut)) {
+		LOG_INFO("Rsid_code detected: %d", SymbolOut);
+		if (SymbolOut == RSID_ESCAPE) {
+			state = EXTENDED;
+			reset();
+			REQ(reset_rsid_detector, this);  // reset after fixed time interval
+			return;
+		}
 		if (bReverse)
 			BinOut = 1024 - BinOut - 31;
 		apply(SymbolOut, BinOut);
+		Fl::remove_timeout(reset_rsid);
+		state = INITIAL;
+		reset();
+	} else if (state == EXTENDED && search_amp(SymbolOut, BinOut)) {
+		LOG_INFO("Ext' rsid_code detected: %d", SymbolOut);
+		if (bReverse)
+			BinOut = 1024 - BinOut - 31;
+		if (SymbolOut != RSID_ESCAPE2)
+			apply2(SymbolOut, BinOut);
+		Fl::remove_timeout(reset_rsid);
+		state = INITIAL;
+		reset();
 	}
 }
 
@@ -729,11 +581,6 @@ void cRsId::apply(int iSymbol, int iBin)
 		progdefaults.contestiabw = 4;
 		REQ(&set_contestia_tab_widgets);
 		break;
-	case RSID_CONTESTIA_128_2000:
-		progdefaults.contestiatones = 6;
-		progdefaults.contestiabw = 4;
-		REQ(&set_contestia_tab_widgets);
-		break;
 	// mt63
 	case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
 		progdefaults.mt63_interleave = 64;
@@ -764,6 +611,54 @@ void cRsId::apply(int iSymbol, int iBin)
 	}
 }
 
+void cRsId::apply2(int iSymbol, int iBin)
+{
+	ENSURE_THREAD(TRX_TID);
+
+	double freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
+
+	int n, mbin = NUM_MODES;
+	for (n = 0; n < rsid_ids_size2; n++) {
+		if (rsid_ids2[n].rs == iSymbol) {
+			mbin = rsid_ids2[n].mode;
+			break;
+		}
+	}
+	if (mbin == NUM_MODES) {
+		char msg[50];
+		if (n < rsid_ids_size2) // RSID known but unimplemented
+			snprintf(msg, sizeof(msg), "RSID-2: %s unimplemented", rsid_ids2[n].name);
+		else // RSID unknown; shouldn't  happen
+			snprintf(msg, sizeof(msg), "RSID-2: code %d unknown", iSymbol);
+		put_status(msg, 4.0);
+		LOG_VERBOSE("%s", msg);
+		return;
+	}
+	else if (!progdefaults.rsid_rx_modes.test(mbin)) {
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids2[n].name, freq);
+		return;
+	}
+	else
+		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids2[n].name, freq);
+
+	if (!progdefaults.rsid_notify_only && progdefaults.rsid_auto_disable)
+		REQ(toggleRSID);
+
+	if (mailclient || mailserver)
+		REQ(pskmail_notify_rsid, mbin);
+
+	if (progdefaults.rsid_mark && !progdefaults.rsid_notify_only) // mark current modem & freq
+		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
+		    active_modem->get_mode(), 0LL, active_modem->get_freq());
+	REQ(notify_rsid, mbin, freq);
+	if (!progdefaults.rsid_notify_only) {
+		if (progdefaults.rsid_squelch)
+			REQ(init_modem_squelch, mbin, freq);
+		else
+			REQ(init_modem, mbin, freq);
+	}
+}
+
 //=============================================================================
 // search_amp routine #1
 //=============================================================================
@@ -776,7 +671,8 @@ int cRsId::HammingDistance(int iBucket, unsigned char *p2)
 		j += RSID_NTIMES;
 	for (int i = 0; i < RSID_NSYMBOLS; i++) {
 		if (aBuckets[j][iBucket] != p2[i])//*p2++)
-			if (++dist == 2)
+//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
+			if (++dist == hamming_resolution)
 				return dist;
 		j += RSID_RESOL;//2;
 		if (j >= RSID_NTIMES)
@@ -816,9 +712,10 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 
 	for (i = nBinLow; i < iEnd; ++ i) {
 		j = aHashTable1[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
-		if (j < rsid_ids_size)  { //!= 255) {
+		if (j < rsid_ids_size)  {
 			iDistance = HammingDistance(i, pCodes + j * RSID_NSYMBOLS);
-			if (iDistance < 2 && iDistance < iDistanceMin) {
+//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
+			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
 				iDistanceMin = iDistance;
 				iSymbol  	 = rsid_ids[j].rs;
 				iBin		 = i;
@@ -827,7 +724,8 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 		j = aHashTable2[aBuckets[i3][i] | (aBuckets[iTime][i] << 4)];
 		if (j < rsid_ids_size)  { //!= 255) {
 			iDistance = HammingDistance (i, pCodes + j * RSID_NSYMBOLS);
-			if (iDistance < 2 && iDistance < iDistanceMin) {
+//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
+			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
 				iDistanceMin = iDistance;
 				iSymbol		 = rsid_ids[j].rs;
 				iBin		 = i;
@@ -859,6 +757,82 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 	return false;
 }
 
+bool cRsId::search_amp2( int &SymbolOut,	int &BinOut)
+{
+	int i, j;
+	int iDistanceMin = 99;  // infinity
+	int iDistance;
+	int iBin		 = -1;
+	int iSymbol		 = -1;
+	int iEnd		 = nBinHigh - RSID_NTIMES;//30;
+	int i1, i2, i3;
+
+	if (++iTime2 == RSID_NTIMES)
+		iTime2 = 0;
+
+	i1 = iTime2 - 3 * RSID_RESOL;//6;
+	i2 = i1 + RSID_RESOL;//2;
+	i3 = i2 + RSID_RESOL;//2;
+
+	if (i1 < 0) {
+		i1 += RSID_NTIMES;
+		if (i2 < 0) {
+			i2 += RSID_NTIMES;
+			if (i3 < 0)
+				i3 += RSID_NTIMES;
+		}
+	}
+
+	CalculateBuckets ( aFFTAmpl, nBinLow,     iEnd);//nBinHigh - 30);
+	CalculateBuckets ( aFFTAmpl, nBinLow + 1, iEnd);//nBinHigh - 30);
+
+	for (i = nBinLow; i < iEnd; ++ i) {
+		j = aHashTable1_2[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
+		if (j < rsid_ids_size2)  {
+			iDistance = HammingDistance(i, pCodes2 + j * RSID_NSYMBOLS);
+//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
+			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
+				iDistanceMin	= iDistance;
+				iSymbol  		= rsid_ids2[j].rs;
+				iBin			= i;
+			}
+		}
+		j = aHashTable2_2[aBuckets[i3][i] | (aBuckets[iTime2][i] << 4)];
+		if (j < rsid_ids_size2)  {
+			iDistance = HammingDistance (i, pCodes2 + j * RSID_NSYMBOLS);
+//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
+			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
+				iDistanceMin	= iDistance;
+				iSymbol			= rsid_ids2[j].rs;
+				iBin			= i;
+			}
+		}
+	}
+
+	if (iSymbol == -1) {
+		// No RSID found in this time slice.
+		// If there is a code stored from the previous time slice, return it.
+		if (bPrevTimeSliceValid2) {
+			SymbolOut			= iPrevSymbol2;
+			BinOut				= iPrevBin2;
+			DistanceOut	    	= iPrevDistance2;
+			MetricsOut			= 0;
+			bPrevTimeSliceValid = false;
+			return true;
+		}
+		return false;
+	}
+
+	if (! bPrevTimeSliceValid2 ||
+		iDistanceMin <= iPrevDistance2) {
+		iPrevSymbol2	= iSymbol;
+		iPrevBin2		= iBin;
+		iPrevDistance2	= iDistanceMin;
+	}
+	bPrevTimeSliceValid2 = true;
+	return false;
+}
+
 //=============================================================================
 // transmit rsid code for current mode
 //=============================================================================
@@ -876,6 +850,7 @@ void cRsId::send(bool preRSID)
 		return;
 
 	unsigned short rmode = RSID_NONE;
+	unsigned short rmode2 = RSID_NONE;
 
 	switch (mode) {
 	case MODE_RTTY :
@@ -894,7 +869,15 @@ void cRsId::send(bool preRSID)
 		break;
 
 	case MODE_OLIVIA:
-
+	case MODE_OLIVIA_4_250:
+	case MODE_OLIVIA_8_250:
+	case MODE_OLIVIA_4_500:
+	case MODE_OLIVIA_8_500:
+	case MODE_OLIVIA_16_500:
+	case MODE_OLIVIA_8_1000:
+	case MODE_OLIVIA_16_1000:
+	case MODE_OLIVIA_32_1000:
+	case MODE_OLIVIA_64_2000:
 		if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 0)
 			rmode = RSID_OLIVIA_4_125;
 		else if (progdefaults.oliviatones == 1 && progdefaults.oliviabw == 1)
@@ -979,9 +962,6 @@ void cRsId::send(bool preRSID)
 		else if (progdefaults.contestiatones == 5 && progdefaults.contestiabw == 4)
 			rmode = RSID_CONTESTIA_64_2000;
 
-		else if (progdefaults.contestiatones == 6 && progdefaults.contestiabw == 4)
-			rmode = RSID_CONTESTIA_128_2000;
-
 		else
 			return;
 		break;
@@ -1025,49 +1005,60 @@ void cRsId::send(bool preRSID)
 		break;
 	}
 
-	// if rmode is still unset, look it up
+// if rmode is still unset, look it up
+// Try secondary table first
 	if (rmode == RSID_NONE) {
-		for (size_t i = 0; i < sizeof(rsid_ids)/sizeof(*rsid_ids); i++) {
-			if (mode == rsid_ids[i].mode) {
-				rmode = rsid_ids[i].rs;
+		for (size_t i = 0; i < sizeof(rsid_ids2)/sizeof(*rsid_ids2); i++) {
+			if (mode == rsid_ids2[i].mode) {
+				rmode2 = rsid_ids2[i].rs;
 				break;
 			}
 		}
+		if (rmode2 == RSID_NONE2) {
+			for (size_t i = 0; i < sizeof(rsid_ids)/sizeof(*rsid_ids); i++) {
+				if (mode == rsid_ids[i].mode) {
+					rmode = rsid_ids[i].rs;
+					break;
+				}
+			}
+		} else
+			rmode = RSID_ESCAPE;
 	}
 	if (rmode == RSID_NONE)
 		return;
 
 	unsigned char rsid[RSID_NSYMBOLS];
+	double sr;
+	size_t len;
+	int iTone;
+	double freq, phaseincr;
+	double fr;
+	double phase;
 
 	Encode(rmode, rsid);
-
-	double sr = active_modem->get_samplerate();
-	size_t len = (size_t)floor(RSID_SYMLEN * sr);
+	sr = active_modem->get_samplerate();
+	len = (size_t)floor(RSID_SYMLEN * sr);
 	if (unlikely(len != symlen)) {
 		symlen = len;
 		delete [] outbuf;
 		outbuf = new double[symlen];
 	}
 
-
-	// transmit 3 symbol periods of silence at end of transmission
+// transmit 3 symbol periods of silence at end of transmission
 	if (!preRSID) {
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
 		for (int i = 0; i < 3; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);
 	}
 
-	// transmit sequence of 15 symbols (tones)
-	int iTone;
-	double freq, phaseincr;
-	double fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
-	double phase = 0.0;
-
+// transmit sequence of 15 symbols (tones)
+	fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
+	phase = 0.0;
 
 	for (int i = 0; i < 15; i++) {
 		iTone = rsid[i];
 		if (active_modem->get_reverse())
-			iTone = 15 - iTone;
+		iTone = 15 - iTone;
 		freq = fr + iTone * RSID_SAMPLE_RATE / 1024;
 		phaseincr = 2.0 * M_PI * freq / sr;
 
@@ -1077,8 +1068,42 @@ void cRsId::send(bool preRSID)
 			outbuf[j] = sin(phase);
 		}
 		active_modem->ModulateXmtr(outbuf, symlen);
-
 	}
+
+	if (rmode == RSID_ESCAPE && rmode2 != RSID_NONE2) {
+// transmit 3 symbol periods between rsid bursts
+		memset(outbuf, 0, symlen * sizeof(*outbuf));
+		for (int i = 0; i < 3; i++)
+			active_modem->ModulateXmtr(outbuf, symlen);
+
+		Encode(rmode2, rsid);
+		sr = active_modem->get_samplerate();
+		len = (size_t)floor(RSID_SYMLEN * sr);
+		if (unlikely(len != symlen)) {
+			symlen = len;
+			delete [] outbuf;
+			outbuf = new double[symlen];
+		}
+// transmit sequence of 15 symbols (tones)
+		fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
+		phase = 0.0;
+
+		for (int i = 0; i < 15; i++) {
+			iTone = rsid[i];
+			if (active_modem->get_reverse())
+			iTone = 15 - iTone;
+			freq = fr + iTone * RSID_SAMPLE_RATE / 1024;
+			phaseincr = 2.0 * M_PI * freq / sr;
+
+			for (size_t j = 0; j < symlen; j++) {
+				phase += phaseincr;
+				if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+				outbuf[j] = sin(phase);
+			}
+			active_modem->ModulateXmtr(outbuf, symlen);
+		}
+	}
+
 // one symbol period of silence
 	memset(outbuf, 0, symlen * sizeof(*outbuf));
 	active_modem->ModulateXmtr(outbuf, symlen);
@@ -1089,6 +1114,7 @@ void cRsId::send(bool preRSID)
 		for (int i = 0; i < 3; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);
 	}
+
 
 }
 
