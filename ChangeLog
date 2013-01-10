@@ -1,10 +1,19 @@
 
 
+=Version 3.21.66=
+
+2013-01-10  David Freese  <w1hkj@w1hkj.com>
+
+	e1878a3: Thor reset
+	d2dea40: File Selector
+	810dd2a: Macros
+	d12f7da: CW modem
+	282886b: User configurable items
+
+
 =Version 3.21.65=
 
-2012-12-27  David Freese  <w1hkj@w1hkj.com>
-
-	ad64c6c: High Speed / Multi-Carrier Modems
+	7680b05: High Speed / Multi-Carrier Modems
 
 
 =Version 3.21.64=
