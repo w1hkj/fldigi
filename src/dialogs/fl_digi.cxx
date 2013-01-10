@@ -6594,7 +6594,9 @@ void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
 	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
 		md == MODE_THOR11 ||
-		md == MODE_THOR16 || md == MODE_THOR22 )
+		md == MODE_THOR16 || md == MODE_THOR22 ||
+		md == MODE_THOR25x4 || md == MODE_THOR50x1 ||
+		md == MODE_THOR50x2 || md == MODE_THOR100 )
 		trx_start_modem(active_modem);
 }
 
