@@ -6485,6 +6485,9 @@ int get_tx_char(void)
 		state = STATE_CHAR;
 		
 		switch (c) {
+		case 'p': case 'P':
+			TransmitText->pause();
+			break;
 		case 'r':
 			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 			return(GET_TX_CHAR_ETX);

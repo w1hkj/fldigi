@@ -69,6 +69,7 @@ extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
 extern Fl_Counter2		*cntCW_WPM;
+extern Fl_Counter2		*cntTxLevel;
 extern Fl_Box			*WARNstatus;
 extern Fl_Button		*MODEstatus;
 extern Fl_Slider2		*sldrSquelch;

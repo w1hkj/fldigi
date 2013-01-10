@@ -30,6 +30,7 @@
 
 #include "gettext.h"
 #include "main.h"
+#include "misc.h"
 
 #include "fl_digi.h"
 #include "configuration.h"
@@ -129,6 +130,12 @@ static std::string cut_string(const char *s)
 
 static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
+}
+
+static void pCOMMENT(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace(i, endbracket - i + 1, "");
+	if (s[i] == '\n') i++;
 }
 
 static void pFILE(std::string &s, size_t &i, size_t endbracket)
@@ -363,6 +370,51 @@ static void pQuePOST(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void setTXATTEN(float v)
+{
+	int d = (int)(v * 10);
+	v = d / 10.0;
+	v = clamp(v, -30.0, 0.0);
+	progdefaults.txlevel = v;
+	cntTxLevel->value(progdefaults.txlevel);;
+}
+
+static void pTXATTEN(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	float number;
+	std::string sVal = s.substr(i+9, endbracket - i - 9);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		setTXATTEN(number);
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doTXATTEN(std::string s)
+{
+	float number;
+	std::string sVal = s.substr(10);
+	if (sVal.length() > 0) {
+		sscanf(sVal.c_str(), "%f", &number);
+		REQ(setTXATTEN, number);
+	}
+}
+
+static void pQueTXATTEN(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTXATTEN };
 	pushcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
@@ -733,6 +785,15 @@ static void pDTMF(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+static void pPAUSE(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	s.replace (i, 7, "^p");
+}
+
 static void pRX(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -999,7 +1060,7 @@ static void doMODEM(std::string s)
 				else {
 					set_olivia_bw(bw);
 					set_olivia_tones(tones);
-				}	
+				}
 			}
 			break;
 		default:
@@ -1103,7 +1164,7 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 				else {
 					set_olivia_bw(bw);
 					set_olivia_tones(tones);
-				}	
+				}
 			}
 			break;
 		default:
@@ -1355,6 +1416,18 @@ static void pQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+static void pQRG(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string prefix = "\n";
+	prefix.append(s.substr(i+5, endbracket - i - 5));
+	if (prefix.length()) note_qrg ( false, prefix.c_str(), "\n" );
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void pQSYTO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -1555,6 +1628,8 @@ void set_macro_env(void)
 	       FLDIGI_MODEM, FLDIGI_MODEM_LONG_NAME, FLDIGI_DIAL_FREQUENCY,
 	       FLDIGI_AUDIO_FREQUENCY, FLDIGI_FREQUENCY,
 
+	       FLDIGI_MACRO_FILE,
+	       FLDIGI_LOG_FILE,
 	       FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME_ON, FLDIGI_LOG_TIME_OFF, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
 	       FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
 	       FLDIGI_LOG_NOTES, FLDIGI_AZ, ENV_SIZE
@@ -1589,6 +1664,9 @@ void set_macro_env(void)
 		{ "FLDIGI_FREQUENCY", "" },
 
 		// logging frame
+		{ "FLDIGI_MACRO_FILE", progStatus.LastMacroFile.c_str() },
+
+		{ "FLDIGI_LOG_FILE", progdefaults.logbookfilename.c_str() },
 		{ "FLDIGI_LOG_FREQUENCY", inpFreq->value() },
 		{ "FLDIGI_LOG_TIME_ON", inpTimeOn->value() },
 		{ "FLDIGI_LOG_TIME_OFF", inpTimeOff->value() },
@@ -1715,7 +1793,7 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 
 // parent
 	close(pfd[1]);
-	
+
 // give child process time to complete
 	MilliSleep(50);
 	FILE* fp = fdopen(pfd[0], "r");
@@ -1827,11 +1905,11 @@ static void MAPIT(int how)
 			if (sLOC[0] -'A' > 17 || sLOC[4] - 'A' > 23 ||
 				sLOC[1] -'A' > 17 || sLOC[5] - 'A' > 23 ||
 				!isdigit(sLOC[2]) || !isdigit(sLOC[3])) return;
-			lon =	-180.0 + 
+			lon =	-180.0 +
 					(sLOC[0] - 'A') * 20 +
 					(sLOC[2] - '0') * 2 +
 					(sLOC[4] - 'A' + 0.5) / 12;
-			lat = -90.0 + 
+			lat = -90.0 +
 					(sLOC[1] - 'A') * 10 +
 					(sLOC[3] - '0') +
 					(sLOC[5] - 'A' + 0.5) / 24;
@@ -1957,6 +2035,7 @@ static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
 struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
 
 static const MTAGS mtags[] = {
+{"<COMMENT:",	pCOMMENT},
 {"<CALL>",		pCALL},
 {"<FREQ>",		pFREQ},
 {"<LOC>",		pLOC},
@@ -2011,6 +2090,7 @@ static const MTAGS mtags[] = {
 {"</EXEC>",		pEND_EXEC},
 {"<STOP>",		pSTOP},
 {"<CONT>",		pCONT},
+{"<PAUSE>",		pPAUSE},
 {"<GET>",		pGET},
 {"<CLRRX>",		pCLRRX},
 {"<CLRTX>",		pCLRTX},
@@ -2029,6 +2109,7 @@ static const MTAGS mtags[] = {
 {"<SRCHDN>",	pSRCHDN},
 {"<GOHOME>",	pGOHOME},
 {"<GOFREQ:",	pGOFREQ},
+{"<QRG:",		pQRG},
 {"<QSY:",		pQSY},
 {"<QSYTO>",		pQSYTO},
 {"<QSYFM>",		pQSYFM},
@@ -2038,6 +2119,7 @@ static const MTAGS mtags[] = {
 {"<MAPIT>",		pMAPIT},
 {"<REPEAT>",	pREPEAT},
 {"<SKED:",		pSKED},
+{"<TXATTEN:",	pTXATTEN},
 #ifdef __WIN32__
 {"<TALK:",		pTALK},
 #endif
@@ -2055,6 +2137,7 @@ static const MTAGS mtags[] = {
 {"<!MODEM:",	pQueMODEM},
 {"<!RIGMODE:",	pQueRIGMODE},
 {"<!FILWID:",	pQueFILWID},
+{"<!TXATTEN:",	pQueTXATTEN},
 {0, 0}
 };
 
@@ -2195,8 +2278,8 @@ void MACROTEXT::saveMacroFile()
 		deffilename.append(progStatus.LastMacroFile);
 
 	const char *p = FSEL::saveas(
-			_("Save macro file"), 
-			_("Fldigi macro definition file\t*.{mdf}"), 
+			_("Save macro file"),
+			_("Fldigi macro definition file\t*.{mdf}"),
 			deffilename.c_str());
     if (p) {
 		string sp = p;
@@ -2204,6 +2287,12 @@ void MACROTEXT::saveMacroFile()
 		saveMacros(sp.c_str());
 		progStatus.LastMacroFile = sp;
 	}
+}
+
+void MACROTEXT::savecurrentMACROS(std::string &s, size_t &i, size_t endbracket)
+{
+	saveMacros(progStatus.LastMacroFile.c_str());
+	s.replace(i, endbracket - i + 1, "");
 }
 
 void MACROTEXT::loadnewMACROS(std::string &s, size_t &i, size_t endbracket)
@@ -2239,6 +2328,11 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 
 	while ((idx = expanded.find('<', idx)) != std::string::npos) {
 		size_t endbracket = expanded.find('>',idx);
+		if (expanded.find("<SAVE", idx) == idx) {
+			savecurrentMACROS(expanded, idx, endbracket);
+			idx++;
+			continue;
+		}
  		if (expanded.find("<MACROS:",idx) == idx) {
 			loadnewMACROS(expanded, idx, endbracket);
 			idx++;
