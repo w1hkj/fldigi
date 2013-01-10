@@ -290,17 +290,18 @@ cw::cw() : modem()
 
 	bandwidth = progdefaults.CWbandwidth;
 	if (use_matched_filter)
-		progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2 + 0.5;
+		progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2;
 
 	hilbert = new C_FIR_filter(); // hilbert transform used by FFT filter
 	hilbert->init_hilbert(37, 1);
 
 	cw_FIR_filter = new C_FIR_filter();
-	cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, 0.5 * bandwidth / samplerate);
+	cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, progdefaults.CWspeed/(1.2 * samplerate));
 
 //overlap and add filter length should be a factor of 2
+// low pass implementation
 	FilterFFTLen = 4096;
-	cw_FFT_filter = new fftfilt(0.5 * bandwidth / samplerate, FilterFFTLen); // low pass implementation
+	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), FilterFFTLen);
 
 // bit filter based on 10 msec rise time of CW waveform
 int bfv = (int)(samplerate * .010 / DEC_RATIO);
@@ -329,15 +330,15 @@ void cw::reset_rx_filter()
 		cw_send_speed = cw_speed = progdefaults.CWspeed;
 
 		if (use_matched_filter)
-			progdefaults.CWbandwidth = bandwidth = (int)(2.0 * progdefaults.CWspeed / 1.2 + .05);
+			progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2;
 		else
 			bandwidth = progdefaults.CWbandwidth;
 
 		if (use_fft_filter) { // FFT filter
-			cw_FFT_filter->create_lpf(0.5 * bandwidth / samplerate);
+			cw_FFT_filter->create_lpf(progdefaults.CWspeed/(1.2 * samplerate));
 			FFTphase = 0;
 		} else { // FIR filter
-			cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, 0.5 * bandwidth / samplerate);
+			cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, progdefaults.CWspeed/(1.2 * samplerate));
 			FIRphase = 0;
 		}
 		REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth),
@@ -529,7 +530,6 @@ complex cw::mixer(complex in)
 void cw::decode_stream(double value)
 {
 	const char *c, *somc;
-	static int state = 0;
 	char *cptr;
 
 
@@ -557,12 +557,10 @@ void cw::decode_stream(double value)
 // upward trend means tone starting
 		if ((value > progdefaults.CWupper) && (cw_receive_state != RS_IN_TONE)) {
 			handle_event(CW_KEYDOWN_EVENT, NULL);
-			state = 1;
 		}
 // downward trend means tone stopping
 		if ((value < progdefaults.CWlower) && (cw_receive_state == RS_IN_TONE)) {
 			handle_event(CW_KEYUP_EVENT, NULL);
-			state = 0;
 		}
 	}
 
@@ -744,7 +742,7 @@ int cw::handle_event(int cw_event, const char **c)
 // threshold that has been set, then ignore this tone.
 		if (cw_noise_spike_threshold > 0
 			&& element_usec < cw_noise_spike_threshold) {
-			cw_receive_state = old_cw_receive_state;
+			cw_receive_state = RS_IDLE;
  			return CW_ERROR;
 		}
 
