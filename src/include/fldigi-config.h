@@ -78,10 +78,10 @@ extern int Hmacros;
 //#define Hxmttxt		(Htext - (Hrcvtxt))
 
 #define Wmode 		80
-#define Ws2n  		100
-#define Wimd  		100
+#define Ws2n  		120
+#define Wimd  		120
 #define Wwarn 		16
-#define bwTxLevel	100
+#define bwTxLevel	120
 #define bwAfcOnOff	(Hwfall -22)/2
 #define bwSqlOnOff	(Hwfall -22)/2
 
