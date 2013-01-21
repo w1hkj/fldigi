@@ -1,14 +1,17 @@
 // ----------------------------------------------------------------------------
 // rtty.h  --  RTTY modem
 //
-// Copyright (C) 2006
+// Copyright (C) 2012
 //		Dave Freese, W1HKJ
+//		Stefan Fendt, DO2SMF
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
-// distribution.
-//  gmfsk Copyright (C) 2001, 2002, 2003
-//  Tomi Manninen (oh2bns@sral.fi)
+// This file is part of fldigi.
 //
+// This code bears some resemblance to code contained in gmfsk from which
+// it originated.  Much has been changed, but credit should still be 
+// given to Tomi Manninen (oh2bns@sral.fi), who so graciously distributed
+// his gmfsk modem under the GPL.
+// 
 // Fldigi is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -26,6 +29,8 @@
 #ifndef _RTTY_H
 #define _RTTY_H
 
+#include <iostream>
+
 #include "complex.h"
 #include "modem.h"
 #include "globals.h"
@@ -37,8 +42,9 @@
 //#define RTTY_SampleRate 11025
 //#define RTTY_SampleRate 12000
 
-#define	RTTYMaxSymLen	(RTTY_SampleRate / 23)
-#define MAXPIPE (2*RTTYMaxSymLen)
+#define	RTTYMaxSymLen	(RTTY_SampleRate / 45)
+#define MAXPIPE			1024
+#define SHIFT_REG_SIZE	12
 
 #define	LETTERS	0x100
 #define	FIGURES	0x200
@@ -62,6 +68,52 @@ enum RTTY_PARITY {
 	RTTY_PARITY_ONE
 };
 
+// simple oscillator-class
+class Oscillator
+{
+public:
+	Oscillator( double samplerate );
+	~Oscillator() {}
+	double Update( double frequency );
+
+private:
+	double m_phase;
+	double m_samplerate;
+};
+
+class SymbolShaper
+{
+public:
+	SymbolShaper(double baud = 45.45, int stop = 1, double sr = 8000.0);
+	~SymbolShaper() {}
+	void reset();
+	void Preset(double baud, int stop, double sr);
+	void print_sinc_table();
+	double Update( bool state );
+
+private:
+	int		 m_table_size;
+	double*	 m_sinc_table;
+
+	bool		m_State;
+	double		m_Accumulator;
+	long		m_Counter0;
+	long		m_Counter1;
+	long		m_Counter2;
+	long		m_Counter3;
+	long		m_Counter4;
+	long		m_Counter5;
+	double		m_Factor0;
+	double		m_Factor1;
+	double		m_Factor2;
+	double		m_Factor3;
+	double		m_Factor4;
+	double		m_Factor5;
+	double		m_SincTable[1024];
+
+	double		baudrate;
+	double		samplerate;
+};
 
 //enum TTY_MODE { LETTERS, FIGURES };
 
@@ -69,9 +121,14 @@ class rtty : public modem {
 public:
 	static const double SHIFT[];
 	static const double BAUD[];
-	static const int    BITS[];
+	static const int	BITS[];
 
 private:
+
+	Oscillator		*m_Osc1;
+	Oscillator		*m_Osc2;
+	SymbolShaper	*m_SymShaper1;
+	SymbolShaper	*m_SymShaper2;
 
 	double shift;
 	int symbollen;
@@ -84,7 +141,7 @@ private:
 	double		phaseacc;
 	double		rtty_squelch;
 	double		rtty_shift;
-	double      rtty_BW;
+	double	  rtty_BW;
 	double		rtty_baud;
 	int 		rtty_bits;
 	RTTY_PARITY	rtty_parity;
@@ -95,7 +152,17 @@ private:
 	C_FIR_filter	*hilbert;
 	C_FIR_filter	*lpfilt;
 	Cmovavg *bitfilt;
-	fftfilt *bpfilt;
+
+	double		mark_noise;
+	double		space_noise;
+	Cmovavg		*bits;
+	bool		nubit;
+	bool		bit;
+
+	double mark_phase;
+	double space_phase;
+	fftfilt *mark_filt;
+	fftfilt *space_filt;
 
 	int bflen;
 	double bp_filt_lo;
@@ -107,6 +174,9 @@ private:
 
 	double bbfilter[MAXPIPE];
 	unsigned int filterptr;
+
+	complex mark_history[MAXPIPE];
+	complex space_history[MAXPIPE];
 
 	RTTY_RX_STATE rxstate;
 
@@ -123,13 +193,24 @@ private:
 	double prevsymbol;
 	complex prevsmpl;
 	complex *samples;
-	
-	complex QI[MAX_ZLEN];
-	int QIptr;
+
+	double xy_phase;
+	double rotate;
+
+	complex QI[MAXPIPE];
+	int inp_ptr;
+
+	complex xy;
+
 	bool   clear_zdata;
 	double sigpwr;
 	double noisepwr;
 	double avgsig;
+
+	double mark_mag;
+	double space_mag;
+	double mark_env;
+	double space_env;
 
 	double FSKbuf[OUTBUFSIZE];		// signal array for qrq drive
 	double FSKphaseacc;
@@ -138,16 +219,18 @@ private:
 	int rxmode;
 	int txmode;
 	int preamble;
-	
-	void clear_syncscope();
-	void update_syncscope();
-	inline complex mixer(complex in);
 
-	unsigned char bitreverse(unsigned char in, int n);
+	void Clear_syncscope();
+	void Update_syncscope();
+
+	double IF_freq;
+	inline complex mixer(double &phase, double f, complex in);
+
+	unsigned char Bit_reverse(unsigned char in, int n);
 	int decode_char();
 	int rttyparity(unsigned int);
 	bool rx(bool bit);
-// transmit	
+// transmit
 	double nco(double freq);
 	void send_symbol(int symbol);
 	void send_stop();
@@ -165,8 +248,10 @@ public:
 	void rx_init();
 	void tx_init(SoundBase *sc);
 	void restart();
+	void reset_filters();
 	int rx_process(const double *buf, int len);
 	int tx_process();
+	void flush_stream();
 
 	void searchDown();
 	void searchUp();

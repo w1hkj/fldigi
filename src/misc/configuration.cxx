@@ -440,7 +440,6 @@ void configuration::loadDefaults()
 	chkPseudoFSK->value(PseudoFSK);
 	chkUOSrx->value(UOSrx);
 	chkUOStx->value(UOStx);
-	chkXagc->value(Xagc);
 
 	mnuRTTYAFCSpeed->value(rtty_afcspeed);
 	btnPreferXhairScope->value(PreferXhairScope);

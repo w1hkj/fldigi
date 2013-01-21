@@ -26,6 +26,7 @@ public:
 	~fftfilt();
 	void create_filter(double f1, double f2);
 	void create_lpf(double f);
+	void create_rttyfilt(double f);
 	int run(const complex& in, complex **out);
 };
 

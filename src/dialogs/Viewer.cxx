@@ -66,7 +66,6 @@ static bool usb;
 
 void initViewer()
 {
-//	if (!pskviewer) return;
 	usb = wf->USB();
 	rfc = wf->rfcarrier();
 	if (mainViewer) {
@@ -90,11 +89,17 @@ void initViewer()
 				progdefaults.bwsrHiLight1.G));
 		mainViewer->makecolors();
 		mainViewer->clear();
+		if (active_modem->get_mode() == MODE_RTTY) {
+			mvsquelch->range(-12.0, 6.0);
+			mvsquelch->value(progStatus.VIEWER_rttysquelch);
+		} else {
+			mvsquelch->range(-3.0, 6.0);
+			mvsquelch->value(progStatus.VIEWER_psksquelch);
+		}
 	}
 	if (brwsViewer) {
 		brwsViewer->usb = usb;
 		brwsViewer->rfc = rfc;
-		sldrViewerSquelch->value(progStatus.VIEWERsquelch);
 		brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 		brwsViewer->HighLight_1(
 			fl_rgb_color(
@@ -115,6 +120,13 @@ void initViewer()
 		brwsViewer->clear();
 		dlgViewer->size(dlgViewer->w(), dlgViewer->h() - brwsViewer->h() +
 			pskBrowser::cheight * progdefaults.VIEWERchannels + 4);
+		if (active_modem->get_mode() == MODE_RTTY) {
+			sldrViewerSquelch->range(-12.0, 6.0);
+			sldrViewerSquelch->value(progStatus.VIEWER_rttysquelch);
+		} else {
+			sldrViewerSquelch->range(-3.0, 6.0);
+			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
+		}
 	}
 	if (pskviewer) pskviewer->clear();
 	if (rttyviewer) rttyviewer->clear();
@@ -266,9 +278,13 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Squelch(Fl_Slider *, void *)
 {
-	progStatus.VIEWERsquelch = sldrViewerSquelch->value();
+	if (active_modem->get_mode() == MODE_RTTY)
+		progStatus.VIEWER_rttysquelch = sldrViewerSquelch->value();
+	else
+		progStatus.VIEWER_psksquelch = sldrViewerSquelch->value();
+
 	if (mainViewer)
-		mvsquelch->value(progStatus.VIEWERsquelch);
+		mvsquelch->value(sldrViewerSquelch->value());
 }
 
 static void cb_Seek(Fl_Input *, void *)
@@ -345,9 +361,9 @@ Fl_Double_Window* createViewer(void)
 	sldrViewerSquelch->align(FL_ALIGN_RIGHT);
 	sldrViewerSquelch->tooltip(_("Set Viewer Squelch"));
 	sldrViewerSquelch->type(FL_HOR_NICE_SLIDER);
-	sldrViewerSquelch->range(-6.0, 20.0);
-	sldrViewerSquelch->step(0.5);
-	sldrViewerSquelch->value(progStatus.VIEWERsquelch);
+	sldrViewerSquelch->range(-12.0, 6.0);
+	sldrViewerSquelch->step(0.1);
+	sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
 	sldrViewerSquelch->callback((Fl_Callback*)cb_Squelch);
 	sldrViewerSquelch->color( fl_rgb_color(
 		progdefaults.bwsrSliderColor.R, 

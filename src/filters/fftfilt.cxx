@@ -30,6 +30,8 @@
 #include <config.h>
 #include <memory.h>
 
+#include <stdio.h>
+
 #include <cmath>
 #include "misc.h"
 
@@ -151,6 +153,67 @@ void fftfilt::create_lpf(double f)
 	delete tmpfft;
 }
 
+void fftfilt::create_rttyfilt(double f)
+{
+    int len = filterlen / 2 + 1;
+	double t, h, x, it;
+	Cfft *tmpfft;
+	tmpfft = new Cfft(filterlen);
+	
+    // initialize the filter to zero	
+	for (int i = 0; i < filterlen; i++)
+		filter[i].re   = filter[i].im   = 0.0;
+
+    // get an array to hold the sinc-respose
+    double* sinc_array = new double[ len ];
+    
+    // create the impulse-response in it
+    for (int i = 0; i < len; ++i) {
+        it = (double)i;
+        t  = it - ( (double)len - 1.0) / 2.0;
+        h  = it / ( (double)len - 1.0);
+        
+        // create the filter impulses with an additional zero at 1.5f
+        // remark: sinc(..) is scaled by 2, see misc.h
+        
+        sinc_array[i] = sinc( 4.0 * f * t       )+ 
+                        sinc( 4.0 * f * t - 1.0 )+ 
+                        sinc( 4.0 * f * t + 1.0 );
+    }
+    
+    // normalize the impulse-responses
+    double sum = 0.0;
+    for (int i = 0; i < len; ++i) {
+        sum += sinc_array[i];
+        }
+    for (int i = 0; i < len; ++i) {
+        sinc_array[i] /= 8*sum;
+        }
+                
+    // setup windowed-filter
+    for (int i = 0; i < len; ++i) {
+        it = (double)i;
+        t  = it - ( (double)len - 1.0) / 2.0;
+        h  = it / ( (double)len - 1.0);
+        
+        filter[i].re = ( sinc_array[i] ) * (double)filterlen * blackman(h);
+        }
+        
+    delete [] sinc_array;
+
+//printf("Raised Cosine filter\n");
+//printf("h(t)\n");
+//for (int i = 0; i < len; i++) printf("%f, %f\n", filter[i].re, filter[i].im);
+//printf("\n");
+// perform the complex forward fft to obtain H(w)
+	tmpfft->cdft(filter);
+//printf("H(w)\n");
+//for (int i = 0; i < len; i++) printf("%f, %f\n", filter[i].re, filter[i].im);
+
+// start outputs after 2 full passes are complete
+	pass = 2;
+	delete tmpfft;
+}
 
 /*
  * Filter with fast convolution (overlap-add algorithm).

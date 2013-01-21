@@ -1780,6 +1780,14 @@ resetRTTY();
 progdefaults.changed = true;
 }
 
+Fl_Counter2 *selCustomShift=(Fl_Counter2 *)0;
+
+static void cb_selCustomShift(Fl_Counter2* o, void*) {
+  progdefaults.rtty_custom_shift = o->value();
+resetRTTY();
+progdefaults.changed = true;
+}
+
 Fl_Choice *selBaud=(Fl_Choice *)0;
 
 static void cb_selBaud(Fl_Choice* o, void*) {
@@ -1814,17 +1822,29 @@ resetRTTY();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *chkPseudoFSK=(Fl_Check_Button *)0;
+
+static void cb_chkPseudoFSK(Fl_Check_Button* o, void*) {
+  progdefaults.PseudoFSK = o->value();
+chkPseudoFSK2->value(o->value());
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  if (progdefaults.mono_audio) {
+    progdefaults.mono_audio = false;
+    chkForceMono->value(0);
+    resetSoundCard();
+  }
+};
+}
+
 Fl_Check_Button *btnAUTOCRLF=(Fl_Check_Button *)0;
 
 static void cb_btnAUTOCRLF(Fl_Check_Button* o, void*) {
   progdefaults.rtty_autocrlf = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCRCRLF=(Fl_Check_Button *)0;
-
-static void cb_btnCRCRLF(Fl_Check_Button* o, void*) {
-  progdefaults.rtty_crcrlf = o->value();
 progdefaults.changed = true;
 }
 
@@ -1835,10 +1855,10 @@ static void cb_cntrAUTOCRLF(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkUOSrx=(Fl_Check_Button *)0;
+Fl_Check_Button *btnCRCRLF=(Fl_Check_Button *)0;
 
-static void cb_chkUOSrx(Fl_Check_Button* o, void*) {
-  progdefaults.UOSrx=o->value();
+static void cb_btnCRCRLF(Fl_Check_Button* o, void*) {
+  progdefaults.rtty_crcrlf = o->value();
 progdefaults.changed = true;
 }
 
@@ -1846,6 +1866,64 @@ Fl_Check_Button *chkUOStx=(Fl_Check_Button *)0;
 
 static void cb_chkUOStx(Fl_Check_Button* o, void*) {
   progdefaults.UOStx=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider2 *sldrRTTYbandwidth=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrRTTYbandwidth(Fl_Value_Slider2* o, void*) {
+  progdefaults.RTTY_BW = o->value();
+}
+
+Fl_Choice *mnu_RTTY_filter_quality=(Fl_Choice *)0;
+
+static void cb_mnu_RTTY_filter_quality(Fl_Choice* o, void*) {
+  progdefaults.rtty_filter_quality = o->value();
+progdefaults.changed = true;
+progStatus.rtty_filter_changed = true;
+}
+
+Fl_Button *btn_optimum_rtty_bw=(Fl_Button *)0;
+
+static void cb_btn_optimum_rtty_bw(Fl_Button*, void*) {
+  static const double BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
+progdefaults.RTTY_BW = 2 * BAUD[progdefaults.rtty_baud];
+sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnuRTTYAFCSpeed=(Fl_Choice *)0;
+
+static void cb_mnuRTTYAFCSpeed(Fl_Choice* o, void*) {
+  progdefaults.rtty_afcspeed = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnu_kahn_demod=(Fl_Choice *)0;
+
+static void cb_mnu_kahn_demod(Fl_Choice* o, void*) {
+  progdefaults.kahn_demod = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkUOSrx=(Fl_Check_Button *)0;
+
+static void cb_chkUOSrx(Fl_Check_Button* o, void*) {
+  progdefaults.UOSrx=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPreferXhairScope=(Fl_Check_Button *)0;
+
+static void cb_btnPreferXhairScope(Fl_Check_Button* o, void*) {
+  progdefaults.PreferXhairScope=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chk_true_scope=(Fl_Check_Button *)0;
+
+static void cb_chk_true_scope(Fl_Check_Button* o, void*) {
+  progdefaults.true_scope=o->value();
 progdefaults.changed = true;
 }
 
@@ -1868,60 +1946,6 @@ o->redraw();
 wf->redraw_marker();
 progdefaults.changed = true;
 };
-}
-
-Fl_Check_Button *btnPreferXhairScope=(Fl_Check_Button *)0;
-
-static void cb_btnPreferXhairScope(Fl_Check_Button* o, void*) {
-  progdefaults.PreferXhairScope=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkPseudoFSK=(Fl_Check_Button *)0;
-
-static void cb_chkPseudoFSK(Fl_Check_Button* o, void*) {
-  progdefaults.PseudoFSK = o->value();
-chkPseudoFSK2->value(o->value());
-progdefaults.changed = true;
-if (o->value()) {
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
-  progdefaults.PTTrightchannel = false;
-  btnPTTrightchannel->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
-};
-}
-
-Fl_Choice *mnuRTTYAFCSpeed=(Fl_Choice *)0;
-
-static void cb_mnuRTTYAFCSpeed(Fl_Choice* o, void*) {
-  progdefaults.rtty_afcspeed = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *chkXagc=(Fl_Check_Button *)0;
-
-static void cb_chkXagc(Fl_Check_Button* o, void*) {
-  progdefaults.Xagc=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Value_Slider2 *sldrRTTYbandwidth=(Fl_Value_Slider2 *)0;
-
-static void cb_sldrRTTYbandwidth(Fl_Value_Slider2* o, void*) {
-  progdefaults.RTTY_BW = o->value();
-}
-
-Fl_Counter2 *selCustomShift=(Fl_Counter2 *)0;
-
-static void cb_selCustomShift(Fl_Counter2* o, void*) {
-  progdefaults.rtty_custom_shift = o->value();
-resetRTTY();
-progdefaults.changed = true;
 }
 
 Fl_Group *tabTHOR=(Fl_Group *)0;
@@ -5741,11 +5765,12 @@ an merging"));
             } // Fl_Tabs* tabsPSK
             tabPSK->end();
           } // Fl_Group* tabPSK
-          { tabRTTY = new Fl_Group(0, 50, 540, 320, _("RTTY"));
+          { tabRTTY = new Fl_Group(0, 50, 548, 320, _("RTTY"));
             tabRTTY->hide();
-            { Fl_Group* o = new Fl_Group(26, 63, 490, 300);
+            { Fl_Group* o = new Fl_Group(2, 57, 267, 182, _("Transmit /Receive"));
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Choice* o = selShift = new Fl_Choice(36, 73, 100, 20, _("Carrier shift"));
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Choice* o = selShift = new Fl_Choice(30, 78, 100, 20, _("Carrier shift"));
                 selShift->tooltip(_("Select carrier shift"));
                 selShift->down_box(FL_BORDER_BOX);
                 selShift->callback((Fl_Callback*)cb_selShift);
@@ -5753,160 +5778,7 @@ an merging"));
                 selShift->when(FL_WHEN_CHANGED);
                 o->add(szShifts);
               } // Fl_Choice* selShift
-              { Fl_Choice* o = selBaud = new Fl_Choice(36, 133, 100, 20, _("Baud rate"));
-                selBaud->tooltip(_("Select carrier baudrate"));
-                selBaud->down_box(FL_BORDER_BOX);
-                selBaud->callback((Fl_Callback*)cb_selBaud);
-                selBaud->align(Fl_Align(FL_ALIGN_RIGHT));
-                selBaud->when(FL_WHEN_CHANGED);
-                o->add(szBauds);
-              } // Fl_Choice* selBaud
-              { Fl_Choice* o = selBits = new Fl_Choice(36, 163, 100, 20, _("Bits per character"));
-                selBits->tooltip(_("Select # bits / char"));
-                selBits->down_box(FL_BORDER_BOX);
-                selBits->callback((Fl_Callback*)cb_selBits);
-                selBits->align(Fl_Align(FL_ALIGN_RIGHT));
-                selBits->when(FL_WHEN_CHANGED);
-                o->add(szSelBits);
-              } // Fl_Choice* selBits
-              { Fl_Choice* o = selParity = new Fl_Choice(36, 193, 100, 20, _("Parity"));
-                selParity->tooltip(_("Select parity"));
-                selParity->down_box(FL_BORDER_BOX);
-                selParity->callback((Fl_Callback*)cb_selParity);
-                selParity->align(Fl_Align(FL_ALIGN_RIGHT));
-                selParity->when(FL_WHEN_CHANGED);
-                o->add(szParity);
-              } // Fl_Choice* selParity
-              { Fl_Choice* o = selStopBits = new Fl_Choice(36, 223, 100, 20, _("Stop bits"));
-                selStopBits->tooltip(_("Select # stop bits"));
-                selStopBits->down_box(FL_BORDER_BOX);
-                selStopBits->callback((Fl_Callback*)cb_selStopBits);
-                selStopBits->align(Fl_Align(FL_ALIGN_RIGHT));
-                selStopBits->when(FL_WHEN_CHANGED);
-                o->add(szStopBits);
-              } // Fl_Choice* selStopBits
-              { Fl_Group* o = new Fl_Group(280, 69, 230, 70);
-                o->box(FL_ENGRAVED_FRAME);
-                { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(290, 80, 90, 22, _("AutoCRLF"));
-                btnAUTOCRLF->tooltip(_("Add CRLF after page width characters"));
-                btnAUTOCRLF->down_box(FL_DOWN_BOX);
-                btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
-                o->value(progdefaults.rtty_autocrlf);
-                } // Fl_Check_Button* btnAUTOCRLF
-                { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(410, 80, 90, 22, _("CR-CR-LF"));
-                btnCRCRLF->tooltip(_("Use \"cr cr lf\" for \"cr lf\""));
-                btnCRCRLF->down_box(FL_DOWN_BOX);
-                btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
-                btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
-                o->value(progdefaults.rtty_crcrlf);
-                } // Fl_Check_Button* btnCRCRLF
-                { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(360, 110, 65, 20, _("characters"));
-                cntrAUTOCRLF->tooltip(_("Set page width"));
-                cntrAUTOCRLF->type(1);
-                cntrAUTOCRLF->box(FL_UP_BOX);
-                cntrAUTOCRLF->color(FL_BACKGROUND_COLOR);
-                cntrAUTOCRLF->selection_color(FL_INACTIVE_COLOR);
-                cntrAUTOCRLF->labeltype(FL_NORMAL_LABEL);
-                cntrAUTOCRLF->labelfont(0);
-                cntrAUTOCRLF->labelsize(14);
-                cntrAUTOCRLF->labelcolor(FL_FOREGROUND_COLOR);
-                cntrAUTOCRLF->minimum(68);
-                cntrAUTOCRLF->maximum(80);
-                cntrAUTOCRLF->step(1);
-                cntrAUTOCRLF->value(72);
-                cntrAUTOCRLF->callback((Fl_Callback*)cb_cntrAUTOCRLF);
-                cntrAUTOCRLF->align(Fl_Align(FL_ALIGN_RIGHT));
-                cntrAUTOCRLF->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Counter2* cntrAUTOCRLF
-                { Fl_Box* o = new Fl_Box(290, 110, 60, 20, _("after:"));
-                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
-                } // Fl_Box* o
-                o->end();
-              } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(280, 138, 231, 52, _("Unshift On Space"));
-                o->box(FL_ENGRAVED_FRAME);
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(329, 156, 63, 26, _("RX"));
-                chkUOSrx->tooltip(_("Revert to Unsifted char\'s on a space"));
-                chkUOSrx->down_box(FL_DOWN_BOX);
-                chkUOSrx->callback((Fl_Callback*)cb_chkUOSrx);
-                o->value(progdefaults.UOSrx);
-                } // Fl_Check_Button* chkUOSrx
-                { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(419, 156, 63, 26, _("TX"));
-                chkUOStx->tooltip(_("Revert to Unsifted char\'s on a space"));
-                chkUOStx->down_box(FL_DOWN_BOX);
-                chkUOStx->callback((Fl_Callback*)cb_chkUOStx);
-                o->value(progdefaults.UOStx);
-                } // Fl_Check_Button* chkUOStx
-                o->end();
-              } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(280, 190, 231, 52, _("Log RTTY frequency"));
-                o->box(FL_ENGRAVED_FRAME);
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(290, 208, 63, 26, _("Use MARK freq\'"));
-                chk_useMARKfreq->tooltip(_("Revert to Unsifted char\'s on a space"));
-                chk_useMARKfreq->down_box(FL_DOWN_BOX);
-                chk_useMARKfreq->callback((Fl_Callback*)cb_chk_useMARKfreq);
-                o->value(progdefaults.useMARKfreq);
-                } // Fl_Check_Button* chk_useMARKfreq
-                { Fl_Button* o = btnRTTY_mark_color = new Fl_Button(424, 211, 18, 18, _("track clr"));
-                btnRTTY_mark_color->tooltip(_("Change color"));
-                btnRTTY_mark_color->color((Fl_Color)2);
-                btnRTTY_mark_color->callback((Fl_Callback*)cb_btnRTTY_mark_color);
-                btnRTTY_mark_color->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
-                } // Fl_Button* btnRTTY_mark_color
-                o->end();
-              } // Fl_Group* o
-              { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(36, 257, 165, 20, _("Use cross hair scope"));
-                btnPreferXhairScope->tooltip(_("Default to cross hair digiscope"));
-                btnPreferXhairScope->down_box(FL_DOWN_BOX);
-                btnPreferXhairScope->callback((Fl_Callback*)cb_btnPreferXhairScope);
-                o->value(progdefaults.PreferXhairScope);
-              } // Fl_Check_Button* btnPreferXhairScope
-              { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(36, 287, 270, 20, _("Pseudo-FSK on right audio channel"));
-                chkPseudoFSK->tooltip(_("Create square wave on right channel"));
-                chkPseudoFSK->down_box(FL_DOWN_BOX);
-                chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
-                o->value(progdefaults.PseudoFSK);
-              } // Fl_Check_Button* chkPseudoFSK
-              { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(329, 257, 80, 20, _("AFC speed"));
-                mnuRTTYAFCSpeed->tooltip(_("AFC tracking speed"));
-                mnuRTTYAFCSpeed->down_box(FL_BORDER_BOX);
-                mnuRTTYAFCSpeed->callback((Fl_Callback*)cb_mnuRTTYAFCSpeed);
-                mnuRTTYAFCSpeed->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->add("Slow"); o->add("Normal"); o->add("Fast");
-                o->value(progdefaults.rtty_afcspeed);
-              } // Fl_Choice* mnuRTTYAFCSpeed
-              { Fl_Check_Button* o = chkXagc = new Fl_Check_Button(329, 287, 62, 22, _("X-agc (hidden)"));
-                chkXagc->down_box(FL_DOWN_BOX);
-                chkXagc->callback((Fl_Callback*)cb_chkXagc);
-                o->value(progdefaults.Xagc);
-                o->hide();
-              } // Fl_Check_Button* chkXagc
-              { Fl_Value_Slider2* o = sldrRTTYbandwidth = new Fl_Value_Slider2(121, 328, 300, 20, _("Receive filter bandwidth"));
-                sldrRTTYbandwidth->tooltip(_("Adjust the DSP bandwidth"));
-                sldrRTTYbandwidth->type(1);
-                sldrRTTYbandwidth->box(FL_DOWN_BOX);
-                sldrRTTYbandwidth->color(FL_BACKGROUND_COLOR);
-                sldrRTTYbandwidth->selection_color(FL_BACKGROUND_COLOR);
-                sldrRTTYbandwidth->labeltype(FL_NORMAL_LABEL);
-                sldrRTTYbandwidth->labelfont(0);
-                sldrRTTYbandwidth->labelsize(14);
-                sldrRTTYbandwidth->labelcolor(FL_FOREGROUND_COLOR);
-                sldrRTTYbandwidth->minimum(5);
-                sldrRTTYbandwidth->maximum(200);
-                sldrRTTYbandwidth->step(1);
-                sldrRTTYbandwidth->value(25);
-                sldrRTTYbandwidth->textsize(14);
-                sldrRTTYbandwidth->callback((Fl_Callback*)cb_sldrRTTYbandwidth);
-                sldrRTTYbandwidth->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                sldrRTTYbandwidth->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.RTTY_BW);
-                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Slider2* sldrRTTYbandwidth
-              { Fl_Counter2* o = selCustomShift = new Fl_Counter2(36, 103, 100, 20, _("Custom shift"));
+              { Fl_Counter2* o = selCustomShift = new Fl_Counter2(30, 104, 100, 20, _("Custom shift"));
                 selCustomShift->tooltip(_("Input carrier shift"));
                 selCustomShift->box(FL_UP_BOX);
                 selCustomShift->color(FL_BACKGROUND_COLOR);
@@ -5925,6 +5797,179 @@ an merging"));
                 o->lstep(10.0);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* selCustomShift
+              { Fl_Choice* o = selBaud = new Fl_Choice(30, 130, 100, 20, _("Baud rate"));
+                selBaud->tooltip(_("Select carrier baudrate"));
+                selBaud->down_box(FL_BORDER_BOX);
+                selBaud->callback((Fl_Callback*)cb_selBaud);
+                selBaud->align(Fl_Align(FL_ALIGN_RIGHT));
+                selBaud->when(FL_WHEN_CHANGED);
+                o->add(szBauds);
+              } // Fl_Choice* selBaud
+              { Fl_Choice* o = selBits = new Fl_Choice(30, 156, 100, 20, _("Bits per character"));
+                selBits->tooltip(_("Select # bits / char"));
+                selBits->down_box(FL_BORDER_BOX);
+                selBits->callback((Fl_Callback*)cb_selBits);
+                selBits->align(Fl_Align(FL_ALIGN_RIGHT));
+                selBits->when(FL_WHEN_CHANGED);
+                o->add(szSelBits);
+              } // Fl_Choice* selBits
+              { Fl_Choice* o = selParity = new Fl_Choice(30, 182, 100, 20, _("Parity"));
+                selParity->tooltip(_("Select parity"));
+                selParity->down_box(FL_BORDER_BOX);
+                selParity->callback((Fl_Callback*)cb_selParity);
+                selParity->align(Fl_Align(FL_ALIGN_RIGHT));
+                selParity->when(FL_WHEN_CHANGED);
+                o->add(szParity);
+              } // Fl_Choice* selParity
+              { Fl_Choice* o = selStopBits = new Fl_Choice(30, 208, 100, 20, _("Stop bits"));
+                selStopBits->tooltip(_("Select # stop bits"));
+                selStopBits->down_box(FL_BORDER_BOX);
+                selStopBits->callback((Fl_Callback*)cb_selStopBits);
+                selStopBits->align(Fl_Align(FL_ALIGN_RIGHT));
+                selStopBits->when(FL_WHEN_CHANGED);
+                o->add(szStopBits);
+              } // Fl_Choice* selStopBits
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(2, 242, 267, 124, _("Transmit"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = chkPseudoFSK = new Fl_Check_Button(32, 264, 212, 22, _("Pseudo-FSK - right channel"));
+                chkPseudoFSK->tooltip(_("Create keyed square wave on right audio channel"));
+                chkPseudoFSK->down_box(FL_DOWN_BOX);
+                chkPseudoFSK->callback((Fl_Callback*)cb_chkPseudoFSK);
+                o->value(progdefaults.PseudoFSK);
+              } // Fl_Check_Button* chkPseudoFSK
+              { Fl_Check_Button* o = btnAUTOCRLF = new Fl_Check_Button(32, 288, 90, 22, _("AutoCRLF"));
+                btnAUTOCRLF->tooltip(_("Add CRLF after page width characters"));
+                btnAUTOCRLF->down_box(FL_DOWN_BOX);
+                btnAUTOCRLF->callback((Fl_Callback*)cb_btnAUTOCRLF);
+                o->value(progdefaults.rtty_autocrlf);
+              } // Fl_Check_Button* btnAUTOCRLF
+              { Fl_Counter2* o = cntrAUTOCRLF = new Fl_Counter2(143, 289, 65, 20, _("chars"));
+                cntrAUTOCRLF->tooltip(_("Auto CRLF line length"));
+                cntrAUTOCRLF->type(1);
+                cntrAUTOCRLF->box(FL_UP_BOX);
+                cntrAUTOCRLF->color(FL_BACKGROUND_COLOR);
+                cntrAUTOCRLF->selection_color(FL_INACTIVE_COLOR);
+                cntrAUTOCRLF->labeltype(FL_NORMAL_LABEL);
+                cntrAUTOCRLF->labelfont(0);
+                cntrAUTOCRLF->labelsize(14);
+                cntrAUTOCRLF->labelcolor(FL_FOREGROUND_COLOR);
+                cntrAUTOCRLF->minimum(68);
+                cntrAUTOCRLF->maximum(80);
+                cntrAUTOCRLF->step(1);
+                cntrAUTOCRLF->value(72);
+                cntrAUTOCRLF->callback((Fl_Callback*)cb_cntrAUTOCRLF);
+                cntrAUTOCRLF->align(Fl_Align(FL_ALIGN_RIGHT));
+                cntrAUTOCRLF->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* cntrAUTOCRLF
+              { Fl_Check_Button* o = btnCRCRLF = new Fl_Check_Button(32, 312, 90, 22, _("CR-CR-LF"));
+                btnCRCRLF->tooltip(_("Use \"cr cr lf\" for \"cr lf\""));
+                btnCRCRLF->down_box(FL_DOWN_BOX);
+                btnCRCRLF->callback((Fl_Callback*)cb_btnCRCRLF);
+                btnCRCRLF->when(FL_WHEN_RELEASE_ALWAYS);
+                o->value(progdefaults.rtty_crcrlf);
+              } // Fl_Check_Button* btnCRCRLF
+              { Fl_Check_Button* o = chkUOStx = new Fl_Check_Button(32, 336, 63, 22, _("TX - unshift on space"));
+                chkUOStx->tooltip(_("Revert to Unsifted char\'s on a space"));
+                chkUOStx->down_box(FL_DOWN_BOX);
+                chkUOStx->callback((Fl_Callback*)cb_chkUOStx);
+                o->value(progdefaults.UOStx);
+              } // Fl_Check_Button* chkUOStx
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(271, 57, 267, 250, _("Receive"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Value_Slider2* o = sldrRTTYbandwidth = new Fl_Value_Slider2(280, 84, 250, 23, _("Receive filter bandwidth"));
+                sldrRTTYbandwidth->tooltip(_("Adjust the DSP bandwidth"));
+                sldrRTTYbandwidth->type(1);
+                sldrRTTYbandwidth->box(FL_DOWN_BOX);
+                sldrRTTYbandwidth->color(FL_BACKGROUND_COLOR);
+                sldrRTTYbandwidth->selection_color(FL_BACKGROUND_COLOR);
+                sldrRTTYbandwidth->labeltype(FL_NORMAL_LABEL);
+                sldrRTTYbandwidth->labelfont(0);
+                sldrRTTYbandwidth->labelsize(14);
+                sldrRTTYbandwidth->labelcolor(FL_FOREGROUND_COLOR);
+                sldrRTTYbandwidth->minimum(5);
+                sldrRTTYbandwidth->maximum(600);
+                sldrRTTYbandwidth->step(1);
+                sldrRTTYbandwidth->value(91);
+                sldrRTTYbandwidth->textsize(14);
+                sldrRTTYbandwidth->callback((Fl_Callback*)cb_sldrRTTYbandwidth);
+                sldrRTTYbandwidth->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
+                sldrRTTYbandwidth->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.RTTY_BW);
+                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
+              } // Fl_Value_Slider2* sldrRTTYbandwidth
+              { Fl_Choice* o = mnu_RTTY_filter_quality = new Fl_Choice(280, 114, 75, 22, _("Filter Quality"));
+                mnu_RTTY_filter_quality->tooltip(_("Low -> High\nDSP filter length\nLow reduces load on CPU\nHigh gives best perf\
+ormance"));
+                mnu_RTTY_filter_quality->down_box(FL_BORDER_BOX);
+                mnu_RTTY_filter_quality->callback((Fl_Callback*)cb_mnu_RTTY_filter_quality);
+                mnu_RTTY_filter_quality->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->add("Low"); o->add("Normal"); o->add("High");
+                o->value(progdefaults.rtty_filter_quality);
+              } // Fl_Choice* mnu_RTTY_filter_quality
+              { btn_optimum_rtty_bw = new Fl_Button(455, 114, 75, 23, _("Optimum"));
+                btn_optimum_rtty_bw->tooltip(_("Reset Filter to Optimum bandwidth"));
+                btn_optimum_rtty_bw->callback((Fl_Callback*)cb_btn_optimum_rtty_bw);
+              } // Fl_Button* btn_optimum_rtty_bw
+              { Fl_Choice* o = mnuRTTYAFCSpeed = new Fl_Choice(280, 144, 75, 22, _("AFC speed"));
+                mnuRTTYAFCSpeed->tooltip(_("AFC tracking speed"));
+                mnuRTTYAFCSpeed->down_box(FL_BORDER_BOX);
+                mnuRTTYAFCSpeed->callback((Fl_Callback*)cb_mnuRTTYAFCSpeed);
+                mnuRTTYAFCSpeed->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->add("Slow"); o->add("Normal"); o->add("Fast");
+                o->value(progdefaults.rtty_afcspeed);
+              } // Fl_Choice* mnuRTTYAFCSpeed
+              { Fl_Choice* o = mnu_kahn_demod = new Fl_Choice(280, 174, 75, 22, _("Demodulator"));
+                mnu_kahn_demod->tooltip(_("Select demodulator type\nKahn power detector\nAutomatic Threshold Correcting"));
+                mnu_kahn_demod->down_box(FL_BORDER_BOX);
+                mnu_kahn_demod->callback((Fl_Callback*)cb_mnu_kahn_demod);
+                mnu_kahn_demod->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->add("ATC"); o->add("Kahn");
+                o->value(progdefaults.kahn_demod);
+              } // Fl_Choice* mnu_kahn_demod
+              { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(288, 204, 63, 22, _("RX - unshift on space"));
+                chkUOSrx->tooltip(_("Revert to Unsifted char\'s on a space"));
+                chkUOSrx->down_box(FL_DOWN_BOX);
+                chkUOSrx->callback((Fl_Callback*)cb_chkUOSrx);
+                o->value(progdefaults.UOSrx);
+              } // Fl_Check_Button* chkUOSrx
+              { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(288, 234, 165, 22, _("Use cross hair scope"));
+                btnPreferXhairScope->tooltip(_("Default to cross hair digiscope"));
+                btnPreferXhairScope->down_box(FL_DOWN_BOX);
+                btnPreferXhairScope->callback((Fl_Callback*)cb_btnPreferXhairScope);
+                o->value(progdefaults.PreferXhairScope);
+              } // Fl_Check_Button* btnPreferXhairScope
+              { Fl_Check_Button* o = chk_true_scope = new Fl_Check_Button(288, 264, 70, 22, _("XY - classic scope"));
+                chk_true_scope->tooltip(_("Enabled - use Mark/Space filter outputs\nDisabled - use pseudo signals"));
+                chk_true_scope->down_box(FL_DOWN_BOX);
+                chk_true_scope->callback((Fl_Callback*)cb_chk_true_scope);
+                o->value(progdefaults.true_scope);
+              } // Fl_Check_Button* chk_true_scope
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(271, 310, 267, 55, _("Log RTTY frequency"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(288, 333, 74, 22, _("Use MARK freq\'"));
+                chk_useMARKfreq->tooltip(_("Revert to Unsifted char\'s on a space"));
+                chk_useMARKfreq->down_box(FL_DOWN_BOX);
+                chk_useMARKfreq->value(1);
+                chk_useMARKfreq->callback((Fl_Callback*)cb_chk_useMARKfreq);
+                o->value(progdefaults.useMARKfreq);
+              } // Fl_Check_Button* chk_useMARKfreq
+              { Fl_Button* o = btnRTTY_mark_color = new Fl_Button(437, 336, 21, 18, _("track clr"));
+                btnRTTY_mark_color->tooltip(_("Color of Mark Track"));
+                btnRTTY_mark_color->color((Fl_Color)2);
+                btnRTTY_mark_color->callback((Fl_Callback*)cb_btnRTTY_mark_color);
+                btnRTTY_mark_color->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
+              } // Fl_Button* btnRTTY_mark_color
               o->end();
             } // Fl_Group* o
             tabRTTY->end();

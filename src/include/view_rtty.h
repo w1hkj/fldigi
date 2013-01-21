@@ -50,40 +50,54 @@ struct RTTY_CHANNEL {
 
 	C_FIR_filter	*lpfilt;
 	Cmovavg *bitfilt;
-	fftfilt *bpfilt;
+//	fftfilt *bpfilt;
+	fftfilt *mark_filt;
+	fftfilt *space_filt;
+
+	double mark_phase;
+	double space_phase;
 
 	double bbfilter[MAXPIPE];
 	unsigned int filterptr;
 
-	double			metric;
+	double		metric;
 
-	int				rxmode;
+	int			rxmode;
 	RTTY_RX_STATE	rxstate;
 
-	double			frequency;
-	double			freqerr;
-	double			phase;
-	double			posfreq;
-	double			negfreq;
-	double			freqerrhi;
-	double			freqerrlo;
-	double			poserr;
-	double			negerr;
-	int				poscnt;
-	int				negcnt;
-	int				timeout;
+	double		frequency;
+	double		freqerr;
+	double		phase;
+	double		posfreq;
+	double		negfreq;
+	double		freqerrhi;
+	double		freqerrlo;
+	double		poserr;
+	double		negerr;
+	int			poscnt;
+	int			negcnt;
+	int			timeout;
 
-	double			sigpwr;
-	double			noisepwr;
-	double			avgsig;
+	double		mark_mag;
+	double		space_mag;
+	double		mark_env;
+	double		space_env;
 
-	double			prevsymbol;
-	complex			prevsmpl;
-	int				counter;
-	int				bitcntr;
-	int				rxdata;
+	double		sigpwr;
+	double		noisepwr;
+	double		avgsig;
 
-	int				sigsearch;
+	double		prevsymbol;
+	complex		prevsmpl;
+	int			counter;
+	int			bitcntr;
+	int			rxdata;
+	int			inp_ptr;
+
+	complex		mark_history[MAXPIPE];
+	complex		space_history[MAXPIPE];
+
+	int			sigsearch;
 };
 
 
@@ -102,7 +116,7 @@ private:
 	int msb;
 	bool useFSK;
 
-	RTTY_CHANNEL		channel[MAX_CHANNELS];
+	RTTY_CHANNEL	channel[MAX_CHANNELS];
 	C_FIR_filter	*hilbert;
 
 	double		rtty_squelch;
@@ -124,7 +138,7 @@ private:
 
 	void clear_syncscope();
 	void update_syncscope();
-	inline complex mixer(int ch, complex in);
+	complex mixer(double &phase, double f, complex in);
 
 	unsigned char bitreverse(unsigned char in, int n);
 	int decode_char(int ch);
@@ -141,6 +155,7 @@ public:
 	void rx_init();
 	void tx_init(SoundBase *sc){}
 	void restart();
+	void reset_filters(int ch);
 	int rx_process(const double *buf, int len);
 	int tx_process();
 
