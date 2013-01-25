@@ -1669,6 +1669,13 @@ resetOLIVIA();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_olivia_reset_fec=(Fl_Check_Button *)0;
+
+static void cb_btn_olivia_reset_fec(Fl_Check_Button* o, void*) {
+  progdefaults.olivia_reset_fec = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btnOlivia_8bit=(Fl_Check_Button *)0;
 
 static void cb_btnOlivia_8bit(Fl_Check_Button* o, void*) {
@@ -5475,7 +5482,7 @@ an merging"));
           } // Fl_Group* tabMT63
           { tabOlivia = new Fl_Group(0, 50, 540, 320, _("Olivia"));
             tabOlivia->hide();
-            { Fl_Group* o = new Fl_Group(24, 76, 490, 237);
+            { Fl_Group* o = new Fl_Group(24, 76, 490, 280);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Choice* o = mnuOlivia_Bandwidth = new Fl_Choice(79, 96, 85, 20, _("Bandwidth"));
                 mnuOlivia_Bandwidth->tooltip(_("Select bandwidth"));
@@ -5493,7 +5500,7 @@ an merging"));
                 o->add(szOliviaTones);
                 o->value(2);
               } // Fl_Choice* mnuOlivia_Tones
-              { Fl_Group* o = new Fl_Group(79, 135, 379, 100, _("Receive synchronizer"));
+              { Fl_Group* o = new Fl_Group(79, 135, 379, 133, _("Receive synchronizer"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 { Fl_Counter2* o = cntOlivia_smargin = new Fl_Counter2(99, 166, 70, 20, _("Tune margin (tone frequency spacing)"));
@@ -5534,9 +5541,15 @@ an merging"));
                 cntOlivia_sinteg->when(FL_WHEN_CHANGED);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntOlivia_sinteg
+                { Fl_Check_Button* o = btn_olivia_reset_fec = new Fl_Check_Button(100, 230, 349, 20, _("Reset FEC blocks when changing BW or Tones"));
+                btn_olivia_reset_fec->tooltip(_("Enable this for UTF-8 character transmission"));
+                btn_olivia_reset_fec->down_box(FL_DOWN_BOX);
+                btn_olivia_reset_fec->callback((Fl_Callback*)cb_btn_olivia_reset_fec);
+                o->value(progdefaults.olivia_reset_fec);
+                } // Fl_Check_Button* btn_olivia_reset_fec
                 o->end();
               } // Fl_Group* o
-              { btnOlivia_8bit = new Fl_Check_Button(79, 257, 265, 20, _("8-bit extended characters (UTF-8)"));
+              { btnOlivia_8bit = new Fl_Check_Button(79, 291, 265, 20, _("8-bit extended characters (UTF-8)"));
                 btnOlivia_8bit->tooltip(_("Enable this for UTF-8 character transmission"));
                 btnOlivia_8bit->down_box(FL_DOWN_BOX);
                 btnOlivia_8bit->callback((Fl_Callback*)cb_btnOlivia_8bit);

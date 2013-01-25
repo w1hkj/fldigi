@@ -456,6 +456,9 @@
         ELEM_(int, oliviasinteg, "OLIVIASINTEG",                                        \
               "Integration period (FEC blocks)",                                        \
               4)                                                                        \
+        ELEM_(bool, olivia_reset_fec, "OLIVIARESETFEC",                                 \
+              "Force Integration (FEC) depth to be reset when new BW/Tones selected",   \
+              false)                                                                    \
         ELEM_(bool, olivia8bit, "OLIVIA8BIT",                                           \
               "8-bit extended characters",                                              \
               true)                                                                     \

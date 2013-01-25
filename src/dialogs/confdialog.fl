@@ -2102,11 +2102,11 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia
+            label Olivia open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
-              xywh {24 76 490 237} box ENGRAVED_FRAME
+              xywh {24 76 490 280} box ENGRAVED_FRAME
             } {
               Fl_Choice mnuOlivia_Bandwidth {
                 label Bandwidth
@@ -2130,7 +2130,7 @@ progdefaults.changed = true;} open
               } {}
               Fl_Group {} {
                 label {Receive synchronizer} open
-                xywh {79 135 379 100} box ENGRAVED_FRAME align 21
+                xywh {79 135 379 133} box ENGRAVED_FRAME align 21
               } {
                 Fl_Counter cntOlivia_smargin {
                   label {Tune margin (tone frequency spacing)}
@@ -2150,12 +2150,19 @@ progdefaults.changed = true;}
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
+                Fl_Check_Button btn_olivia_reset_fec {
+                  label {Reset FEC blocks when changing BW or Tones}
+                  callback {progdefaults.olivia_reset_fec = o->value();
+progdefaults.changed = true;}
+                  tooltip {Enable this for UTF-8 character transmission} xywh {100 230 349 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.olivia_reset_fec);}
+                }
               }
               Fl_Check_Button btnOlivia_8bit {
                 label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.olivia8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for UTF-8 character transmission} xywh {79 257 265 20} down_box DOWN_BOX
+                tooltip {Enable this for UTF-8 character transmission} xywh {79 291 265 20} down_box DOWN_BOX
               }
             }
           }
