@@ -919,8 +919,7 @@ void rigCAT_pttOFF()
 	LOG_VERBOSE("Retries failed");
 }
 
-void rigCAT_sendINIT()
-{
+void rigCAT_sendINIT(const string& icmd){
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
@@ -930,7 +929,7 @@ void rigCAT_sendINIT()
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
-		if ((*itrCmd).SYMBOL == "INIT")
+		if ((*itrCmd).SYMBOL == icmd)
 			break;
 		++itrCmd;
 	}
@@ -980,6 +979,7 @@ void rigCAT_defaults()
 	btnRigCatDTRplus->value(xmlrig.dtr);
 	btnRigCatRTSptt->value(xmlrig.rtsptt);
 	btnRigCatDTRptt->value(xmlrig.dtrptt);
+	chk_restore_tio->value(xmlrig.restore_tio);
 	chkRigCatRTSCTSflow->value(xmlrig.rtscts);
 	cntRigCatRetries->value(xmlrig.retries);
 	cntRigCatTimeout->value(xmlrig.timeout);
@@ -998,6 +998,7 @@ void rigCAT_restore_defaults()
 	btnRigCatDTRplus->value(progdefaults.RigCatDTRplus);
 	btnRigCatRTSptt->value(progdefaults.RigCatRTSptt);
 	btnRigCatDTRptt->value(progdefaults.RigCatDTRptt);
+	chk_restore_tio->value(progdefaults.RigCatRestoreTIO);
 	chkRigCatRTSCTSflow->value(progdefaults.RigCatRTSCTSflow);
 	cntRigCatRetries->value(progdefaults.RigCatRetries);
 	cntRigCatTimeout->value(progdefaults.RigCatTimeout);
@@ -1020,6 +1021,7 @@ void rigCAT_init_defaults()
 	progdefaults.RigCatDTRplus = btnRigCatDTRplus->value();
 	progdefaults.RigCatRTSptt = btnRigCatRTSptt->value();
 	progdefaults.RigCatDTRptt = btnRigCatDTRptt->value();
+	progdefaults.RigCatRestoreTIO = chk_restore_tio->value();
 	progdefaults.RigCatRTSCTSflow = chkRigCatRTSCTSflow->value();
 	progdefaults.RigCatRetries = static_cast<int>(cntRigCatRetries->value());
 	progdefaults.RigCatTimeout = static_cast<int>(cntRigCatTimeout->value());
@@ -1048,6 +1050,7 @@ bool rigCAT_init(bool useXML)
 		rigio.DTR(progdefaults.RigCatDTRplus);
 		rigio.RTSptt(progdefaults.RigCatRTSptt);
 		rigio.DTRptt(progdefaults.RigCatDTRptt);
+		rigio.RestoreTIO(progdefaults.RigCatRestoreTIO);
 		rigio.RTSCTS(progdefaults.RigCatRTSCTSflow);
 		rigio.Stopbits(progdefaults.RigCatStopbits);
 
@@ -1063,6 +1066,7 @@ initial rts: %+d\n\
 use rts ptt: %c\n\
 initial dtr: %+d\n\
 use dtr ptt: %c\n\
+restore tio: %c\n\
 flowcontrol: %c\n\
 echo	   : %c\n",
 		rigio.Device().c_str(),
@@ -1073,6 +1077,7 @@ echo	   : %c\n",
 		progdefaults.RigCatWait,
 			(rigio.RTS() ? +12 : -12), (rigio.RTSptt() ? 'T' : 'F'),
 			(rigio.DTR() ? +12 : -12), (rigio.DTRptt() ? 'T' : 'F'),
+			(rigio.RestoreTIO() ? 'T' : 'F'),
 			(rigio.RTSCTS() ? 'T' : 'F'),
 			progdefaults.RigCatECHO ? 'T' : 'F');
 
@@ -1086,6 +1091,7 @@ echo	   : %c\n",
 		sRigWidth = "";
 
 		nonCATrig = false;
+		rigCAT_sendINIT("INIT");
 
 // must be able to get frequency 3 times in sequence or serial port might
 // be shared with another application (flrig)
@@ -1105,7 +1111,6 @@ echo	   : %c\n",
 			return false;
 		} else {
 			nonCATrig = false;
-			rigCAT_sendINIT();
 			init_Xml_RigDialog();
 		}
 	} else {
@@ -1137,6 +1142,8 @@ void rigCAT_close(void)
 		return;
 
 	if (rigCAT_thread == 0) return;
+
+	rigCAT_sendINIT("CLOSE");
 
 	pthread_mutex_lock(&rigCAT_mutex);
 		rigCAT_exit = true;

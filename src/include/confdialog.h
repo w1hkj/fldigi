@@ -317,6 +317,7 @@ extern Fl_Round_Button *btnRigCatDTRptt;
 extern Fl_Check_Button *btnRigCatRTSplus;
 extern Fl_Check_Button *btnRigCatDTRplus;
 extern Fl_Check_Button *chkRigCatRTSCTSflow;
+extern Fl_Check_Button *chk_restore_tio;
 #include "rigio.h"
 extern Fl_Button *btnRevertRIGCAT;
 extern Fl_Check_Button *chkRigCatVSP;

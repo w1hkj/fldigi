@@ -2362,6 +2362,14 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();
 }
 
+Fl_Check_Button *chk_restore_tio=(Fl_Check_Button *)0;
+
+static void cb_chk_restore_tio(Fl_Check_Button*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+btnRevertRIGCAT->activate();
+}
+
 Fl_Button *btnRevertRIGCAT=(Fl_Button *)0;
 
 static void cb_btnRevertRIGCAT(Fl_Button*, void*) {
@@ -6331,42 +6339,48 @@ an merging"));
                 btnRigCatCMDptt->callback((Fl_Callback*)cb_btnRigCatCMDptt);
                 o->value(progdefaults.RigCatCMDptt);
               } // Fl_Round_Button* btnRigCatCMDptt
-              { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(70, 250, 160, 20, _("Toggle RTS for PTT"));
+              { Fl_Round_Button* o = btnRigCatRTSptt = new Fl_Round_Button(70, 246, 160, 20, _("Toggle RTS for PTT"));
                 btnRigCatRTSptt->tooltip(_("RTS is ptt line"));
                 btnRigCatRTSptt->down_box(FL_DOWN_BOX);
                 btnRigCatRTSptt->callback((Fl_Callback*)cb_btnRigCatRTSptt);
                 o->value(progdefaults.RigCatRTSptt);
               } // Fl_Round_Button* btnRigCatRTSptt
-              { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(276, 250, 160, 20, _("Toggle DTR for PTT"));
+              { Fl_Round_Button* o = btnRigCatDTRptt = new Fl_Round_Button(276, 244, 160, 20, _("Toggle DTR for PTT"));
                 btnRigCatDTRptt->tooltip(_("DTR is ptt line"));
                 btnRigCatDTRptt->down_box(FL_DOWN_BOX);
                 btnRigCatDTRptt->callback((Fl_Callback*)cb_btnRigCatDTRptt);
                 o->value(progdefaults.RigCatDTRptt);
               } // Fl_Round_Button* btnRigCatDTRptt
-              { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(70, 285, 100, 20, _("RTS +12 v"));
+              { Fl_Check_Button* o = btnRigCatRTSplus = new Fl_Check_Button(70, 275, 100, 20, _("RTS +12 v"));
                 btnRigCatRTSplus->tooltip(_("Initial state of RTS"));
                 btnRigCatRTSplus->down_box(FL_DOWN_BOX);
                 btnRigCatRTSplus->callback((Fl_Callback*)cb_btnRigCatRTSplus);
                 o->value(progdefaults.RigCatRTSplus);
               } // Fl_Check_Button* btnRigCatRTSplus
-              { Fl_Check_Button* o = btnRigCatDTRplus = new Fl_Check_Button(276, 285, 100, 20, _("DTR +12 v"));
+              { Fl_Check_Button* o = btnRigCatDTRplus = new Fl_Check_Button(276, 272, 100, 20, _("DTR +12 v"));
                 btnRigCatDTRplus->tooltip(_("Initial state of DTR"));
                 btnRigCatDTRplus->down_box(FL_DOWN_BOX);
                 btnRigCatDTRplus->callback((Fl_Callback*)cb_btnRigCatDTRplus);
                 o->value(progdefaults.RigCatDTRplus);
               } // Fl_Check_Button* btnRigCatDTRplus
-              { Fl_Check_Button* o = chkRigCatRTSCTSflow = new Fl_Check_Button(70, 320, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkRigCatRTSCTSflow = new Fl_Check_Button(70, 303, 170, 20, _("RTS/CTS flow control"));
                 chkRigCatRTSCTSflow->tooltip(_("Rig uses RTS/CTS handshake"));
                 chkRigCatRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkRigCatRTSCTSflow->callback((Fl_Callback*)cb_chkRigCatRTSCTSflow);
                 o->value(progdefaults.RigCatRTSCTSflow);
               } // Fl_Check_Button* chkRigCatRTSCTSflow
+              { Fl_Check_Button* o = chk_restore_tio = new Fl_Check_Button(70, 332, 205, 20, _("Restore Settings on Close"));
+                chk_restore_tio->tooltip(_("Restore the serial (COM) port settings"));
+                chk_restore_tio->down_box(FL_DOWN_BOX);
+                chk_restore_tio->callback((Fl_Callback*)cb_chk_restore_tio);
+                o->value(progdefaults.RigCatRestoreTIO);
+              } // Fl_Check_Button* chk_restore_tio
               { btnRevertRIGCAT = new Fl_Button(385, 289, 113, 24, _("Revert"));
                 btnRevertRIGCAT->tooltip(_("Initialize hamlib interface"));
                 btnRevertRIGCAT->callback((Fl_Callback*)cb_btnRevertRIGCAT);
                 btnRevertRIGCAT->deactivate();
               } // Fl_Button* btnRevertRIGCAT
-              { Fl_Check_Button* o = chkRigCatVSP = new Fl_Check_Button(276, 315, 100, 25, _("VSP Enable"));
+              { Fl_Check_Button* o = chkRigCatVSP = new Fl_Check_Button(276, 300, 100, 25, _("VSP Enable"));
                 chkRigCatVSP->tooltip(_("Virtual Serial Port Emulator - suppress WARNINGS"));
                 chkRigCatVSP->down_box(FL_DOWN_BOX);
                 chkRigCatVSP->callback((Fl_Callback*)cb_chkRigCatVSP);
