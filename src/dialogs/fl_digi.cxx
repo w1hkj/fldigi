@@ -4796,7 +4796,7 @@ void create_fl_digi_main_primary() {
 			qsoSave3->callback(qsoSave_cb, 0);
 			qsoSave3->tooltip(_("Save"));
 
-			fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
+			fl_font(FL_HELVETICA, 14);//FL_NORMAL_SIZE);
 			const char *label2a = _("On");
 			const char *label3a = _("Off");
 			const char *label4a = _("Call");
@@ -4804,7 +4804,7 @@ void create_fl_digi_main_primary() {
 			const char *label6a = _("# R");
 			const char *label7a = _("Ex");
 			const char *xData = "00000";
-			const char *xCall = "WW8WWW";//"WW8WWW/WWWW";
+			const char *xCall = "WW8WWW/WW";//"WW8WWW/WWWW";
 			int   wData = static_cast<int>(fl_width(xData));
 			int   wCall = static_cast<int>(fl_width(xCall));
 
