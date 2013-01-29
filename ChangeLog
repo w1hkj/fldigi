@@ -1,12 +1,22 @@
 
 
+=Version 3.21.67=
+
+2013-01-29  David Freese  <w1hkj@w1hkj.com>
+
+	645acab: PSK viewer
+	63323a4: Contest fields
+	f3abd4c: RigCAT INIT/CLOSE
+	4af6dcd: Olivia FEC reset
+	f220d36: RTTY FSK modem
+	b8fd4db: Status / Tx Level Controls
+
+
 =Version 3.21.66=
 
-2013-01-10  David Freese  <w1hkj@w1hkj.com>
-
-	e1878a3: Thor reset
+	305fa6d: Thor reset
 	d2dea40: File Selector
-	810dd2a: Macros
+	f83a413: Macros
 	d12f7da: CW modem
 	282886b: User configurable items
 
