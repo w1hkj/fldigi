@@ -45,6 +45,7 @@
 #include "viewpsk.h"
 #include "pskeval.h"
 #include "ascii.h"
+#include "Viewer.h"
 
 extern waterfall *wf;
 
@@ -1197,8 +1198,11 @@ int psk::rx_process(const double *buf, int len)
 	bool can_rx_symbol = false;
 
 	if (numcarriers == 1) {
-		if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
-		if (evalpsk) evalpsk->sigdensity();
+		if (pskviewer && !bHistory && 
+			(dlgViewer->visible() || progStatus.show_channels))
+			pskviewer->rx_process(buf, len);
+		if (evalpsk)
+			evalpsk->sigdensity();
 	}
 
 	frequencies[0] = frequency + ((-1 * numcarriers) + 1) * inter_carrier / 2;
