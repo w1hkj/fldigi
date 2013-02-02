@@ -663,6 +663,8 @@ inline int minmax(int val, int min, int max)
 // Olivia
 void set_olivia_default_integ()
 {
+	if (!progdefaults.olivia_reset_fec) return;
+
 	int tones = progdefaults.oliviatones;
 	int bw = progdefaults.oliviabw;
 

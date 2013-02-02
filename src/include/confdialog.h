@@ -232,6 +232,7 @@ extern Fl_Choice *mnuOlivia_Bandwidth;
 extern Fl_Choice *mnuOlivia_Tones;
 extern Fl_Counter2 *cntOlivia_smargin;
 extern Fl_Counter2 *cntOlivia_sinteg;
+extern Fl_Check_Button *btn_olivia_reset_fec;
 extern Fl_Check_Button *btnOlivia_8bit;
 extern Fl_Group *tabPSK;
 extern Fl_Counter2 *cntSearchRange;
