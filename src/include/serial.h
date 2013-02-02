@@ -52,6 +52,9 @@ public:
 	bool RTSCTS(){return rtscts;}
 	void SetPTT(bool b);
 
+	void RestoreTIO(bool b) { restore_tio = b; }
+	bool RestoreTIO() { return restore_tio; }
+
 	void Stopbits(int n) {stopbits = (n == 1 ? 1 : 2);}
 	int  Stopbits() { return stopbits;}
 
@@ -75,6 +78,7 @@ private:
 	bool	rts;
 	bool	rtsptt;
 	bool	rtscts;
+	bool	restore_tio;
 	int		stopbits;
 	char	bfr[2048];
 //Methods
@@ -157,6 +161,9 @@ public:
 	bool RTSCTS(){return rtscts;}
 	void SetPTT(bool b);
 
+	void RestoreTIO(bool b) { restore_tio = b; }
+	bool RestoreTIO() { return restore_tio; }
+
 	void Stopbits(int n) {stopbits = (n == 1 ? 1 : 2);}
 	int  Stopbits() { return stopbits;}
 
@@ -194,6 +201,7 @@ private:
 	bool	rts;
 	bool	rtsptt;
 	bool	rtscts;
+	bool	restore_tio;
 	int		stopbits;
 };
 

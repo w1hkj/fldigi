@@ -54,6 +54,7 @@ Cserial::Cserial() {
 	status = 0;
 	stopbits = 2;
 	fd = -1;
+	restore_tio = true;
 }
 
 Cserial::~Cserial() {
@@ -214,8 +215,10 @@ void Cserial::ClosePort()
 {
 	if (fd < 0) return;
 	LOG_DEBUG("Serial port closed, fd = %d", fd);
-	ioctl(fd, TIOCMSET, &origstatus);
-	tcsetattr (fd, TCSANOW, &oldtio);
+	if (restore_tio) {
+		ioctl(fd, TIOCMSET, &origstatus);
+		tcsetattr (fd, TCSANOW, &oldtio);
+	}
 	close(fd);
 	fd = -1;
 	return;
@@ -339,7 +342,8 @@ BOOL Cserial::OpenPort()
 void Cserial::ClosePort()
 {
 	if (hComm) {
-		bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
+		if (restore_tio)
+			bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
 	}

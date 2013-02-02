@@ -74,6 +74,7 @@ void parseRTSPLUS(size_t &);
 void parseDTRPLUS(size_t &);
 void parseRTSPTT(size_t &);
 void parseDTRPTT(size_t &);
+void parseRESTORE_TIO(size_t &);
 void parseECHO(size_t &);
 
 void parseIOSsymbol(size_t &);
@@ -141,6 +142,7 @@ TAGS rigdeftags[] = {
 	{"<DTRPLUS", parseDTRPLUS},
 	{"<RTSPTT", parseRTSPTT},
 	{"<DTRPTT", parseDTRPTT},
+	{"<RESTORE_TIO", parseRESTORE_TIO},
 	{"<ECHO", parseECHO},
 	{"<CMDPTT", parseCMDPTT},
 	{"<STOPBITS", parseSTOPBITS},
@@ -584,6 +586,14 @@ void parseDTRPTT(size_t &p0)
 {
 	bool val = getBool(p0);
 	xmlrig.dtrptt = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseRESTORE_TIO(size_t &p0)
+{
+	bool val = getBool(p0);
+	xmlrig.restore_tio = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }

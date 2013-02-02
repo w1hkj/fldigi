@@ -909,6 +909,9 @@
         ELEM_(bool, RigCatVSP, "RIGCATVSP",                                             \
               "VSP support enabled",                                                    \
               false)                                                                    \
+        ELEM_(bool, RigCatRestoreTIO, "RIGCATRESTORETIO",                               \
+              "Restore original state of comm port when closing",                       \
+              false)                                                                    \
         /* Hamlib parameters */                                                         \
         ELEM_(bool, HamlibRTSplus, "HAMLIBRTSPLUS",                                     \
               "RTS +12",                                                                \

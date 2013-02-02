@@ -2788,8 +2788,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
-        tooltip {Transceiver control} xywh {1 25 598 345} hide
+        label Rig open
+        tooltip {Transceiver control} xywh {0 23 540 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {2 25 596 345} selection_color 50
@@ -3063,7 +3063,7 @@ btnRevertRIGCAT->activate();}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {RTS is ptt line} xywh {102 248 160 20} down_box DOWN_BOX
+                tooltip {RTS is ptt line} xywh {70 246 160 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSptt);}
               }
               Fl_Round_Button btnRigCatDTRptt {
@@ -3076,7 +3076,7 @@ btnRevertRIGCAT->activate();}
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {DTR is ptt line} xywh {308 248 160 20} down_box DOWN_BOX
+                tooltip {DTR is ptt line} xywh {276 244 160 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRptt);}
               }
               Fl_Check_Button btnRigCatRTSplus {
@@ -3084,7 +3084,7 @@ btnRevertRIGCAT->activate();}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {Initial state of RTS} xywh {102 283 100 20} down_box DOWN_BOX
+                tooltip {Initial state of RTS} xywh {70 275 100 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSplus);}
               }
               Fl_Check_Button btnRigCatDTRplus {
@@ -3092,7 +3092,7 @@ btnRevertRIGCAT->activate();}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {Initial state of DTR} xywh {308 283 100 20} down_box DOWN_BOX
+                tooltip {Initial state of DTR} xywh {276 272 100 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatDTRplus);}
               }
               Fl_Check_Button chkRigCatRTSCTSflow {
@@ -3100,8 +3100,16 @@ btnRevertRIGCAT->activate();}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {Rig uses RTS/CTS handshake} xywh {102 318 170 20} down_box DOWN_BOX
+                tooltip {Rig uses RTS/CTS handshake} xywh {70 303 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatRTSCTSflow);}
+              }
+              Fl_Check_Button chk_restore_tio {
+                label {Restore Settings on Close}
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+btnRevertRIGCAT->activate();}
+                tooltip {Restore the serial (COM) port settings} xywh {70 332 205 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.RigCatRestoreTIO);}
               }
               Fl_Button btnRevertRIGCAT {
                 label Revert
@@ -3116,7 +3124,7 @@ rigCAT_restore_defaults();}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {Virtual Serial Port Emulator - suppress WARNINGS} xywh {308 313 100 25} down_box DOWN_BOX
+                tooltip {Virtual Serial Port Emulator - suppress WARNINGS} xywh {276 300 100 25} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatVSP);}
               }
             }
