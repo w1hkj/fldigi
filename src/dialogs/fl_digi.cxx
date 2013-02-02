@@ -952,10 +952,27 @@ void startup_modem(modem* m, int f)
 		wefax_pic::hide_both();
 	}
 
-	if (id == MODE_RTTY)
-	    sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
-	else if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST)
+	if (id == MODE_RTTY) {
+		sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
+		if (mvsquelch) {
+			mvsquelch->value(progStatus.VIEWER_rttysquelch);
+			mvsquelch->range(-12.0, 6.0);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->value(progStatus.VIEWER_rttysquelch);
+			sldrViewerSquelch->range(-12.0, 6.0);
+		}
+	} else if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST) {
 		m->set_sigsearch(SIGSEARCH);
+		if (mvsquelch) {
+			mvsquelch->value(progStatus.VIEWER_psksquelch);
+			mvsquelch->range(-3.0, 6.0);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
+			sldrViewerSquelch->range(-3.0, 6.0);
+		}
+	}
 
 	if (m->get_cap() & modem::CAP_AFC) {
 		btnAFC->value(progStatus.afconoff);
@@ -1317,7 +1334,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_PACKET:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new pkt(mode), freq);
-		modem_config_tab = tabPacket;
+		modem_config_tab = tabNavtex;
 		quick_change = quick_change_pkt;
 		break;
 
@@ -2602,9 +2619,13 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 
 void cb_mvsquelch(Fl_Widget *w, void *d)
 {
-	progStatus.VIEWERsquelch = mvsquelch->value();
+	if (active_modem->get_mode() == MODE_RTTY)
+		progStatus.VIEWER_rttysquelch = mvsquelch->value();
+	else
+		progStatus.VIEWER_psksquelch = mvsquelch->value();
+
 	if (sldrViewerSquelch)
-		sldrViewerSquelch->value(progStatus.VIEWERsquelch);
+		sldrViewerSquelch->value(mvsquelch->value());
 }
 
 void cb_btnClearMViewer(Fl_Widget *w, void *d)
@@ -5033,9 +5054,9 @@ void create_fl_digi_main_primary() {
 					// squelch
 					mvsquelch = new Fl_Value_Slider2(g->x()+2, g->y()+1, g->w() - 75 - 2, g->h()-2);
 					mvsquelch->type(FL_HOR_NICE_SLIDER);
-					mvsquelch->range(-6.0, 20.0);
-					mvsquelch->value(progStatus.VIEWERsquelch);
-					mvsquelch->step(0.5);
+					mvsquelch->range(-3.0, 6.0);
+					mvsquelch->value(progStatus.VIEWER_psksquelch);
+					mvsquelch->step(0.1);
 					mvsquelch->color( fl_rgb_color(
 						progdefaults.bwsrSliderColor.R, 
 						progdefaults.bwsrSliderColor.G,

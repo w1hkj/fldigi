@@ -181,8 +181,8 @@
         ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT",                               \
               "Always start new modems at sweet spot frequencies",                      \
               false)                                                                    \
-        ELEM_(bool, CWOffset, "CWOFFSET",                                                 \
-              "Select if waterfall should compensate for BFO offset in CW",                        \
+        ELEM_(bool, CWOffset, "CWOFFSET",                                               \
+              "Select if waterfall should compensate for BFO offset in CW",             \
               false)                                                                    \
         ELEM_(bool, CWIsLSB, "CWISLSB",                                                 \
               "Select if BFO is injected as LSB instead of USB",                        \
@@ -252,6 +252,14 @@
               "Acquisition S/N (dB)",                                                   \
               9.0)                                                                      \
         /* RTTY */                                                                      \
+        ELEM_(int, kahn_demod, "KAHNDEMOD",                                             \
+              "1 - use Kahn power demodulator\n"                                        \
+              "0 - use ATC (Kok Chen) demodulator",                                     \
+              1)                                                                        \
+        ELEM_(bool, true_scope, "TRUESCOPE",                                            \
+              "Enabled  - XY scope displays Mark/Space channel signals\n"               \
+              "Disabled - XY scope displays pseudo M/S signals",                        \
+              true)                                                                     \
         ELEM_(int, rtty_shift, "RTTYSHIFT",                                             \
               "Carrier shift (Hz). Values are as follows:\n"                            \
               "  0: 23; 1: 85; 2: 160; 3: 170; 4: 182; 5: 200; 6: 240; 7: 350;\n"       \
@@ -299,6 +307,12 @@
               "AFC tracking speed. Values are as follows:\n"                            \
               "  0: slow; 1: normal; 2: fast",                                          \
               1)   /* normal */                                                         \
+        ELEM_(int, rtty_filter_quality, "RTTYFILTERQUALITY",                            \
+              "DSP filter length:\n"                                                    \
+              "  0: low, 512, low cpu load\n"                                           \
+              "  1: normal, 1024, medium cpu load\n"                                    \
+              "  2: high, 2048, high cpu load",                                         \
+              1)   /* normal */                                                         \
         ELEM_(bool, useFSKkeyline, "", "",  false)                                      \
         ELEM_(bool, useFSKkeylineDTR, "", "",  false)                                   \
         ELEM_(bool, FSKisLSB, "", "",  true)                                            \
@@ -318,9 +332,6 @@
         ELEM_(bool, useMARKfreq, "USEMARKFREQ",                                         \
               "Use MARK frequency for logging",                                         \
               true)                                                                     \
-        ELEM_(bool, Xagc, "XAGC",                                                       \
-              "This setting is currently unused",                                       \
-              false)                                                                    \
         /* CW */                                                                        \
         ELEM_(bool, useCWkeylineRTS, "", "",  false)                                    \
         ELEM_(bool, useCWkeylineDTR, "", "",  false)                                    \

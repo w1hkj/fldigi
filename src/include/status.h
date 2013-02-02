@@ -40,7 +40,8 @@ struct status {
 	unsigned int	VIEWERypos;
 	unsigned int	VIEWERwidth;
 	unsigned int	VIEWERheight;
-	double	VIEWERsquelch;
+	double	VIEWER_psksquelch;
+	double	VIEWER_rttysquelch;
 	bool	VIEWERvisible;
 	int		tile_x;
 	int		tile_w;
@@ -109,6 +110,7 @@ struct status {
 	bool	rtty_autocrlf;
 	int		rtty_autocount;
 	int		rtty_afcspeed;
+	bool	rtty_filter_changed;
 	bool	useFSKkeyline;
 	bool	useFSKkeylineDTR;
 	bool	FSKisLSB;

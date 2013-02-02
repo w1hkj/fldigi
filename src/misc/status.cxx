@@ -98,7 +98,8 @@ status progStatus = {
 	50,					// uint	VIEWERypos
 	200,				// uint VIEWERwidth
 	400,				// uint VIEDWERheight
-	3.0,				// uint VIEWERsquelch
+	3.0,				// double VIEWER_psksquelch
+	-6.0,				// double VIEWER_rttysquelch
 	false,				// bool VIEWERvisible
 	100,				// int		tile_x
 	200,				// int		tile_w;
@@ -165,6 +166,7 @@ status progStatus = {
 	progdefaults.rtty_autocrlf,
 	progdefaults.rtty_autocount,
 	progdefaults.rtty_afcspeed,
+	false, // bool rtty_filter_changed
 	progdefaults.useFSKkeyline,
 	progdefaults.useFSKkeylineDTR,
 	progdefaults.FSKisLSB,
@@ -323,7 +325,8 @@ if (!bWF_only) {
 	spref.set("viewer_y", static_cast<int>(VIEWERypos));
 	spref.set("viewer_w", static_cast<int>(VIEWERwidth));
 	spref.set("viewer_h", static_cast<int>(VIEWERheight));
-	spref.set("viewer_squelch", VIEWERsquelch);
+	spref.set("viewer_psksq", VIEWER_psksquelch);
+	spref.set("viewer_rttysq", VIEWER_rttysquelch);
 	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
 
 	spref.set("tile_x", tile_x);
@@ -475,8 +478,10 @@ void status::loadLastState()
 	spref.get("viewer_y", i, VIEWERypos); VIEWERypos = i;
 	spref.get("viewer_w", i, VIEWERwidth); VIEWERwidth = i;
 	spref.get("viewer_h", i, VIEWERheight); VIEWERheight = i;
-	spref.get("viewer_squelch", VIEWERsquelch, VIEWERsquelch);
+	spref.get("viewer_psksq", VIEWER_psksquelch, VIEWER_psksquelch);
+	spref.get("viewer_rttysq", VIEWER_rttysquelch, VIEWER_rttysquelch);
 	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
+
 
 	spref.get("tile_x", tile_x, tile_x);
 	spref.get("tile_y", tile_y, tile_y);
@@ -584,6 +589,29 @@ void status::initLastState()
 //		chkXagc->value(progdefaults.Xagc = Xagc);
 		mnuRTTYAFCSpeed->value(progdefaults.rtty_afcspeed = rtty_afcspeed);
 		btnPreferXhairScope->value(progdefaults.PreferXhairScope = PreferXhairScope);
+
+		if (mvsquelch) {
+
+printf("init rtty squelch %f\n", VIEWER_rttysquelch);
+
+			mvsquelch->range(-12.0, 6.0);
+			mvsquelch->value(VIEWER_rttysquelch);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->range(-12.0, 6.0);
+			sldrViewerSquelch->value(VIEWER_rttysquelch);
+		}
+	}
+
+	if (lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST) {
+		if (mvsquelch) {
+			mvsquelch->range(-3.0, 6.0);
+			mvsquelch->value(progStatus.VIEWER_psksquelch);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->range(-3.0, 6.0);
+			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
+		}
 	}
 
 // OLIVIA

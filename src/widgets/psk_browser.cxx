@@ -42,6 +42,8 @@
 #include "icons.h"
 #include "Viewer.h"
 
+#include <string>
+
 using namespace std;
 
 string pskBrowser::hilite_color_1;
@@ -163,6 +165,15 @@ void pskBrowser::swap(int i, int j)
 
 }
 
+static size_t case_find(string &haystack, string &needle)
+{
+	string Uhaystack = haystack;
+	string Uneedle = needle;
+	for (size_t i = 0; i < Uhaystack.length(); i++ ) Uhaystack[i] = toupper(Uhaystack[i]);
+	for (size_t i = 0; i < Uneedle.length(); i++ ) Uneedle[i] = toupper(Uneedle[i]);
+	return Uhaystack.find(Uneedle);
+}
+
 void pskBrowser::resize(int x, int y, int w, int h)
 {
 	if (w) {
@@ -178,11 +189,10 @@ void pskBrowser::resize(int x, int y, int w, int h)
 			bwsrline[j].clear();
 			linechars[j] = 0;
 			bline = freqformat(j);
-			if (seek_re) {
-				if (seek_re->match(bwsrline[j].c_str(), REG_NOTBOL | REG_NOTEOL))
-					bline.append(hilite_color_1);
-			} else if (!progdefaults.myCall.empty() &&
-					strcasestr(bwsrline[j].c_str(), progdefaults.myCall.c_str()))
+			if (seek_re  && seek_re->match(bwsrline[j].c_str(), REG_NOTBOL | REG_NOTEOL))
+				bline.append(hilite_color_1);
+			else if (	!progdefaults.myCall.empty() && 
+						case_find (bwsrline[j], progdefaults.myCall ) != string::npos)
 				bline.append(hilite_color_2);
 			Fl_Hold_Browser::add(bline.c_str());
 		}
@@ -259,11 +269,10 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 
 	nuline = freqformat(ch);
 
-	if (seek_re) {
-		if (seek_re->match(bwsrline[ch].c_str(), REG_NOTBOL | REG_NOTEOL))
-			nuline.append(hilite_color_1);
-	} else if (!progdefaults.myCall.empty() &&
-		 strcasestr(bwsrline[ch].c_str(), progdefaults.myCall.c_str()))
+	if (seek_re  && seek_re->match(bwsrline[ch].c_str(), REG_NOTBOL | REG_NOTEOL))
+		nuline.append(hilite_color_1);
+	else if (	!progdefaults.myCall.empty() && 
+				case_find (bwsrline[ch], progdefaults.myCall ) != string::npos)
 		nuline.append(hilite_color_2);
 
 	nuline.append("@.").append(bwsrline[ch]);

@@ -36,8 +36,6 @@ class Digiscope : public Fl_Widget {
 public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100
-//#define	MAX_LEN			4096
-//#define MAX_ZLEN		4096
 #define	MAX_LEN			1024
 #define MAX_ZLEN		1024
 	enum scope_mode {
@@ -80,7 +78,6 @@ public:
 	void draw_scope();
 	void draw_phase();
 	void draw_rtty();
-	void draw_crosshairs();
 	void draw_xy();
 	void draw_video();
 	void data(double *data, int len, bool scale = true);

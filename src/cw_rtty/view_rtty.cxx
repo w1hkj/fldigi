@@ -42,19 +42,19 @@ using namespace std;
 // Baudot support
 //=====================================================================
 
-static unsigned char letters[32] = {
+static char letters[32] = {
 	'\0',	'E',	'\n',	'A',	' ',	'S',	'I',	'U',
 	'\r',	'D',	'R',	'J',	'N',	'F',	'C',	'K',
 	'T',	'Z',	'L',	'W',	'H',	'Y',	'P',	'Q',
-	'O',	'B',	'G',	'·',	'M',	'X',	'V',	'·'
+	'O',	'B',	'G',	' ',	'M',	'X',	'V',	' '
 };
 
 // U.S. version of the figures case.
-static unsigned char figures[32] = {
+static char figures[32] = {
 	'\0',	'3',	'\n',	'-',	' ',	'\a',	'8',	'7',
 	'\r',	'$',	'4',	'\'',	',',	'!',	':',	'(',
 	'5',	'"',	')',	'2',	'#',	'6',	'0',	'1',
-	'9',	'?',	'&',	'·',	'.',	'/',	';',	'·'
+	'9',	'?',	'&',	' ',	'.',	'/',	';',	' '
 };
 
 const double view_rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
@@ -75,6 +75,29 @@ void view_rtty::rx_init()
 		}
 		channel[ch].bitfilt->reset();
 		channel[ch].poserr = channel[ch].negerr = 0.0;
+
+		channel[ch].mark_phase = 0;
+		channel[ch].space_phase = 0;
+		channel[ch].mark_mag = 0;
+		channel[ch].space_mag = 0;
+		channel[ch].mark_env = 0;
+		channel[ch].space_env = 0;
+
+		channel[ch].inp_ptr = 0;
+
+		channel[ch].mark_phase = 0;
+		channel[ch].space_phase = 0;
+
+		channel[ch].mark_mag = 0;
+		channel[ch].space_mag = 0;
+		channel[ch].mark_env = 0;
+		channel[ch].space_env = 0;
+
+		channel[ch].inp_ptr = 0;
+
+		for (int i = 0; i < MAXPIPE; i++)
+			channel[ch].mark_history[i] = 
+			channel[ch].space_history[i] = complex(0,0);
 	}
 }
 
@@ -91,7 +114,35 @@ view_rtty::~view_rtty()
 	if (hilbert) delete hilbert;
 	for (int ch = 0; ch < MAX_CHANNELS; ch ++) {
 		if (channel[ch].bitfilt) delete channel[ch].bitfilt;
-		if (channel[ch].bpfilt) delete channel[ch].bpfilt;
+//		if (channel[ch].bpfilt) delete channel[ch].bpfilt;
+		if (channel[ch].mark_filt) delete channel[ch].mark_filt;
+		if (channel[ch].space_filt) delete channel[ch].space_filt;
+	}
+}
+
+void view_rtty::reset_filters(int ch)
+{
+	if (progStatus.rtty_filter_changed) {
+		delete channel[ch].mark_filt;
+		channel[ch].mark_filt = 0;
+		delete channel[ch].space_filt;
+		channel[ch].space_filt = 0;
+	}
+
+// filter_length = 512 / 1024 / 2048
+	int filter_length = (1 << progdefaults.rtty_filter_quality) * 512;
+	if (channel[ch].mark_filt) {
+		channel[ch].mark_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+	} else {
+		channel[ch].mark_filt = new fftfilt(rtty_BW/2.0/samplerate, filter_length);
+		channel[ch].mark_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+	}
+
+	if (channel[ch].space_filt) {
+		channel[ch].space_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+	} else {
+		channel[ch].space_filt = new fftfilt(rtty_BW/2.0/samplerate, filter_length);
+		channel[ch].space_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
 	}
 }
 
@@ -129,13 +180,14 @@ void view_rtty::restart()
 	bp_filt_hi = (shift/2.0 + rtty_BW/2.0) / samplerate;
 
 	for (int ch = 0; ch < MAX_CHANNELS; ch ++) {
-		if (channel[ch].bpfilt) {
-			channel[ch].bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
+
+		if (channel[ch].bitfilt)
 			channel[ch].bitfilt->setLength(bflen);
-		} else {
-			channel[ch].bpfilt = new fftfilt(bp_filt_lo, bp_filt_hi, 1024);
+		else
 			channel[ch].bitfilt = new Cmovavg(bflen);
-		}
+
+		reset_filters(ch);
+
 		channel[ch].state = IDLE;
 		channel[ch].timeout = 0;
 		channel[ch].freqerr = 0.0;
@@ -152,6 +204,7 @@ void view_rtty::restart()
 		channel[ch].sigsearch = 0;
 		channel[ch].frequency = NULLFREQ;
 		channel[ch].counter = symbollen / 2;
+
 	}
 
 // stop length = 1, 1.5 or 2 bits
@@ -173,8 +226,10 @@ view_rtty::view_rtty(trx_mode tty_mode)
 	samplerate = RTTY_SampleRate;
 
 	for (int ch = 0; ch < MAX_CHANNELS; ch ++) {
-		channel[ch].bpfilt = (fftfilt *)0;
+//		channel[ch].bpfilt = (fftfilt *)0;
 		channel[ch].bitfilt = (Cmovavg *)0;
+		channel[ch].mark_filt = (fftfilt *)0;
+		channel[ch].space_filt = (fftfilt *)0;
 	}
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
@@ -182,21 +237,22 @@ view_rtty::view_rtty(trx_mode tty_mode)
 	restart();
 }
 
-complex view_rtty::mixer(int ch, complex in)
+complex view_rtty::mixer(double &phase, double f, complex in)
 {
 	complex z;
-	z.re = cos(channel[ch].phaseacc);
-	z.im = sin(channel[ch].phaseacc);
+	z.re = cos(phase);
+	z.im = sin(phase);
 	z = z * in;
 
-	channel[ch].phaseacc -= TWOPI * channel[ch].frequency / samplerate;
-	if (channel[ch].phaseacc > M_PI)
-		channel[ch].phaseacc -= TWOPI;
-	else if (channel[ch].phaseacc < M_PI)
-		channel[ch].phaseacc += TWOPI;
+	phase -= TWOPI * f / samplerate;
+	if (phase > M_PI)
+		phase -= TWOPI;
+	else if (phase < M_PI)
+		phase += TWOPI;
 
 	return z;
 }
+
 
 unsigned char view_rtty::bitreverse(unsigned char in, int n)
 {
@@ -340,14 +396,14 @@ bool view_rtty::rx(int ch, bool bit)
 void view_rtty::Metric(int ch)
 {
 	double delta = rtty_baud/2.0;
-	double np = wf->powerDensity(channel[ch].frequency, delta);
+	double np = wf->powerDensity(channel[ch].frequency, delta) * 3000 / delta;
 	double sp =
 		wf->powerDensity(channel[ch].frequency - shift/2, delta) +
 		wf->powerDensity(channel[ch].frequency + shift/2, delta) + 1e-10;
 
-	channel[ch].sigpwr = decayavg( channel[ch].sigpwr, sp, sp - channel[ch].sigpwr > 0 ? 2 : 8);
+	channel[ch].sigpwr = decayavg( channel[ch].sigpwr, sp, sp - channel[ch].sigpwr > 0 ? 2 : 16);
 
-	channel[ch].noisepwr = decayavg( channel[ch].noisepwr, np, 32 );
+	channel[ch].noisepwr = decayavg( channel[ch].noisepwr, np, 16 );
 
 	channel[ch].metric = CLAMP(channel[ch].sigpwr/channel[ch].noisepwr, 0.0, 100.0);
 
@@ -372,16 +428,16 @@ void view_rtty::Metric(int ch)
 void view_rtty::find_signals()
 {
 	double spwrhi = 0.0, spwrlo = 0.0, npwr = 0.0;
-	double rtty_squelch = pow(10, progStatus.VIEWERsquelch / 10.0);
+	double rtty_squelch = pow(10, progStatus.VIEWER_rttysquelch / 10.0);
 	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
 		if (channel[i].state != IDLE) continue;
 		int cf = progdefaults.LowFreqCutoff + 100 * i;
 		if (cf < shift) cf = shift;
-		for (int chf = cf; chf < cf + 100; chf += 5) {
-			if (chf < shift) continue;
-			spwrlo = wf->powerDensity(chf - shift/2, rtty_baud) / 2;
-			spwrhi = wf->powerDensity(chf + shift/2, rtty_baud) / 2;
-			npwr = wf->powerDensity(chf, rtty_baud / 2) + 1e-10;
+		double delta = rtty_baud / 8;
+		for (int chf = cf; chf < cf + 100 - rtty_baud / 4; chf += 5) {
+			spwrlo = wf->powerDensity(chf - shift/2, delta);
+			spwrhi = wf->powerDensity(chf + shift/2, delta);
+			npwr = (wf->powerDensity(chf, delta) * 3000 / rtty_baud) + 1e-10;
 			if ((spwrlo / npwr > rtty_squelch) && (spwrhi / npwr > rtty_squelch)) {
 				if (!i && (channel[i+1].state == SRCHG || channel[i+1].state == RCVNG)) break;
 				if ((i == (progdefaults.VIEWERchannels -2)) && 
@@ -396,6 +452,9 @@ void view_rtty::find_signals()
 			}
 		}
 	}
+	for (int i = 1; i < progdefaults.VIEWERchannels; i++ )
+		if (fabs(channel[i].frequency - channel[i-1].frequency) < rtty_baud/2)
+			clearch(i);
 }
 
 void view_rtty::clearch(int ch)
@@ -431,23 +490,17 @@ void view_rtty::clear()
 
 int view_rtty::rx_process(const double *buf, int buflen)
 {
-	complex z, *zp;
-	double f = 0.0;
-	double fin;
+	complex z, zmark, zspace, *zp_mark, *zp_space;
 	static bool bit = true;
 	int n = 0;
-	double deadzone = shift/4;
-	double ferr = 0;
 
-	if (progdefaults.RTTY_BW != rtty_BW) {
+	if (progdefaults.RTTY_BW != rtty_BW ||
+		progStatus.rtty_filter_changed) {
 		rtty_BW = progdefaults.RTTY_BW;
-		bp_filt_lo = (shift/2.0 - rtty_BW/2.0) / samplerate;
-		if (bp_filt_lo < 0) bp_filt_lo = 0;
-		bp_filt_hi = (shift/2.0 + rtty_BW/2.0) / samplerate;
-		for (int ch = 0; ch < MAX_CHANNELS; ch++)
-			channel[ch].bpfilt->create_filter(bp_filt_lo, bp_filt_hi);
+		for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++)
+			reset_filters(ch);
 	}
-	rtty_squelch = pow(10, progStatus.VIEWERsquelch / 10.0);
+	rtty_squelch = pow(10, progStatus.VIEWER_rttysquelch / 10.0);
 
 	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
 		if (channel[ch].state == IDLE)
@@ -460,58 +513,63 @@ int view_rtty::rx_process(const double *buf, int buflen)
 		for (int len = 0; len < buflen; len++) {
 			z.re = z.im = buf[len];
 			hilbert->run(z, z);
-			z = mixer(ch, z);
-			n = channel[ch].bpfilt->run(z, &zp);
+
+			zmark = mixer(channel[ch].mark_phase, channel[ch].frequency + shift/2.0, z);
+			channel[ch].mark_filt->run(zmark, &zp_mark);
+
+			zspace = mixer(channel[ch].space_phase, channel[ch].frequency - shift/2.0, z);
+			n = channel[ch].space_filt->run(zspace, &zp_space);
+
+// n loop
 			if (n) {
+				Metric(ch);
 				for (int i = 0; i < n; i++) {
-					fin = (channel[ch].prevsmpl % zp[i]).arg() * samplerate / TWOPI;
-					channel[ch].prevsmpl = zp[i];
+//
+				if (progdefaults.kahn_demod) {
+// Kahn Square Law demodulator
+// KISS - outperforms the ATC implementation
+					bit = zp_mark[i].norm() >= zp_space[i].norm();
+				} else {
+// ATC signal envelope detector iaw Kok Chen, W7AY, technical paper
+// "Improved Automatic Threshold Correction Methods for FSK"
+// www.w7ay.net/site/Technical/ATC, dated 16 December 2012
+					channel[ch].mark_mag = zp_mark[i].mag();
+					channel[ch].mark_env = decayavg (channel[ch].mark_env, channel[ch].mark_mag,
+							(channel[ch].mark_mag > channel[ch].mark_env) ? symbollen / 4 : symbollen * 16);
 
-					if (fin > 0.0) {
-						channel[ch].poscnt++;
-						channel[ch].posfreq += fin;
-					}
-					if (fin < 0.0) {
-						channel[ch].negcnt++;
-						channel[ch].negfreq += fin;
-					}
+					channel[ch].space_mag = zp_space[i].mag();
+					channel[ch].space_env = decayavg (channel[ch].space_env, channel[ch].space_mag,
+							(channel[ch].space_mag > channel[ch].space_env) ? symbollen / 4 : symbollen * 16);
+					bit = 	channel[ch].mark_env * channel[ch].mark_mag 
+						- 0.5 * channel[ch].mark_env * channel[ch].mark_env >
+						channel[ch].space_env * channel[ch].space_mag - 
+						0.5 * channel[ch].space_env * channel[ch].space_env;
+				}
+					channel[ch].mark_history[channel[ch].inp_ptr] = zp_mark[i];
+					channel[ch].space_history[channel[ch].inp_ptr] = zp_space[i];
 
-					fin = CLAMP(fin, - rtty_shift, rtty_shift);
-// filter the result with a moving average filter
-					f = channel[ch].bitfilt->run(fin);
-//	hysterisis dead zone in frequency discriminator bit detector
-					if (f > deadzone )
-						bit = true;
-					if (f < -deadzone)
-						bit = false;
+					channel[ch].inp_ptr = (channel[ch].inp_ptr + 1) % MAXPIPE;
 
-					if (channel[ch].state == RCVNG) {
-						if ( rx( ch, reverse ? !bit : bit ) ) {
-							if (channel[ch].poscnt && channel[ch].negcnt) {
-								channel[ch].poserr = channel[ch].posfreq / channel[ch].poscnt;
-								channel[ch].negerr = channel[ch].negfreq / channel[ch].negcnt;
-
-								ferr = -(channel[ch].poserr + channel[ch].negerr) /
-												(2*(SIGSEARCH - channel[ch].sigsearch + 1));
-
-								int fs = progdefaults.rtty_afcspeed;
-								int avging;
-								if (fs == 0) avging = 8;
-								else if (fs == 1) avging = 4;
-								else avging = 1;
-								channel[ch].freqerr   = decayavg(channel[ch].freqerr, ferr,  avging);
-								channel[ch].poscnt = channel[ch].negcnt = 0;
-								channel[ch].posfreq = channel[ch].negfreq = 0.0;
-							}
-						}
+					if (channel[ch].state == RCVNG && rx( ch, reverse ? !bit : bit ) ) {
+						if (channel[ch].sigsearch) channel[ch].sigsearch--;
+						int mp0 = channel[ch].inp_ptr - 2;
+						int mp1 = mp0 + 1;
+						if (mp0 < 0) mp0 += MAXPIPE;
+						if (mp1 < 0) mp1 += MAXPIPE;
+						double ferr = (TWOPI * samplerate / rtty_baud) *
+							(!reverse ? 
+							(channel[ch].mark_history[mp1] % channel[ch].mark_history[mp0]).arg() :
+							(channel[ch].space_history[mp1] % channel[ch].space_history[mp0]).arg());
+						if (fabs(ferr) > rtty_baud / 2) ferr = 0;
+						channel[ch].freqerr = decayavg ( channel[ch].freqerr, ferr / 4,
+							progdefaults.rtty_afcspeed == 0 ? 8 :
+							progdefaults.rtty_afcspeed == 1 ? 4 : 1 );
+						if (channel[ch].metric > pow(10, progStatus.VIEWER_rttysquelch / 10.0))
+							channel[ch].frequency -= ferr;
 					}
 				}
 			}
 		}
-
-		Metric(ch);
-		if (channel[ch].metric > pow(10, progStatus.VIEWERsquelch / 10.0))
-			channel[ch].frequency -= ferr;
 	}
 
 	find_signals();

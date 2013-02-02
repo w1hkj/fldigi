@@ -274,53 +274,6 @@ void Digiscope::draw_phase()
 	fl_pop_clip();
 }
 
-void Digiscope::draw_crosshairs()
-{
-	double phi, xp, yp;
-	fl_clip(x()+2,y()+2,w()-4,h()-4);
-	fl_color(FL_BLACK);
-	fl_rectf(x()+2,y()+2,w()-4,h()-4);
-	fl_push_matrix();
-	fl_translate(x() + w() / 2.0, y() + w() / 2.0);
-	fl_scale( 0.9*w()/2, -0.9*w()/2);
-	fl_color(FL_WHITE);
-	fl_circle( 0.0, 0.0, 1.0);
-	fl_begin_line();
-		fl_vertex(-1.0, 0.0);
-		fl_vertex(-0.9, 0.0);
-	fl_end_line();
-	fl_begin_line();
-		fl_vertex(1.0, 0.0);
-		fl_vertex(0.9, 0.0);
-	fl_end_line();
-	fl_begin_line();
-		fl_vertex(0.0, -1.0);
-		fl_vertex(0.0, -0.9);
-	fl_end_line();
-	fl_begin_line();
-		fl_vertex(0.0, 1.0);
-		fl_vertex(0.0, 0.9);
-	fl_end_line();
-	
-	fl_color(FL_GREEN);
-	phi = (_fhi - 1.0)*M_PI/4.0;
-	xp = 0.9*cos(phi); yp = 0.9*sin(phi);
-	fl_begin_line();
-		fl_vertex(-xp, -yp);
-		fl_vertex( xp,  yp);
-	fl_end_line();
-	
-	fl_color(FL_RED);
-	phi = M_PI / 2.0 + (_flo + 1.0)*M_PI/4.0;
-	xp = 0.9*cos(phi); yp = 0.9*sin(phi);
-	fl_begin_line();
-		fl_vertex(-xp, -yp);
-		fl_vertex( xp,  yp);
-	fl_end_line();
-	fl_pop_matrix();
-	fl_pop_clip();
-}
-
 void Digiscope::draw_scope()
 {
 	int npts;
@@ -382,29 +335,41 @@ void Digiscope::draw_xy()
 	fl_translate(x() + w() / 2.0, y() + w() / 2.0);
 	fl_scale( w()/2.0, -w()/2.0);
 // x & y axis	
-	fl_color(FL_WHITE);
+	fl_color(FL_LIGHT1);
 	fl_begin_line();
+		fl_vertex(-0.6, 0.0);
 		fl_vertex(-1.0, 0.0);
-		fl_vertex(+1.0, 0.0);
 	fl_end_line();
 	fl_begin_line();
+		fl_vertex(0.6, 0.0);
+		fl_vertex(1.0, 0.0);
+	fl_end_line();
+	fl_begin_line();
+		fl_vertex(0.0, -0.6);
 		fl_vertex(0.0, -1.0);
-		fl_vertex(0.0, +1.0);
+	fl_end_line();
+	fl_begin_line();
+		fl_vertex(0.0, 0.6);
+		fl_vertex(0.0, 1.0);
 	fl_end_line();
 // data
-	fl_color(FL_GREEN);
-	int xp, yp;
 	int W = w() / 2;
 	int H = h() / 2;
 	int X = x();
 	int Y = y();
-	for (int i = 0, j = _zptr; i <  MAX_ZLEN; i++ ) {
-		xp = X + (int)((_zdata[j].re + 1.0) * W);
-		yp = Y + (int)((_zdata[j].im + 1.0) * H);
-		fl_color(fl_color_average(FL_GREEN, FL_BLACK, 0.2 + 0.8 * i / MAX_ZLEN));
-		fl_point(xp,yp);
-		j++;
-		if (j == MAX_ZLEN) j = 0;
+	int xp, yp, xp1, yp1;
+	int j = _zptr;
+	if (++j == MAX_ZLEN) j = 0;
+	xp = X + (int)((_zdata[j].re + 1.0) * W);
+	yp = Y + (int)((_zdata[j].im + 1.0) * H);
+
+	fl_color(fl_rgb_color(0, 230,0));
+	for (int i = 0; i <  MAX_ZLEN; i++ ) {
+		if (++j == MAX_ZLEN) j = 0;
+		xp1 = X + (int)((_zdata[j].re + 1.0) * W);
+		yp1 = Y + (int)((_zdata[j].im + 1.0) * H);
+		fl_line(xp, yp, xp1, yp1);
+		xp = xp1; yp = yp1;
 	}
 
 	fl_pop_matrix();
@@ -456,9 +421,10 @@ void Digiscope::draw()
 	else {
 		switch (_mode) {
 			case SCOPE :	draw_scope(); break;
-			case PHASE1: case PHASE2: case PHASE3:	draw_phase(); break;
+			case PHASE1:
+			case PHASE2:
+			case PHASE3:	draw_phase(); break;
 			case RTTY :		draw_rtty(); break;
-//			case XHAIRS :	draw_crosshairs(); break;
 			case XHAIRS :	draw_xy(); break;
 			case DOMDATA :	draw_scope(); break;
 			case BLANK : 
