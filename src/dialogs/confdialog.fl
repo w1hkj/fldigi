@@ -2474,7 +2474,7 @@ Automatic Threshold Correcting} xywh {280 174 75 22} down_box BORDER_BOX align 8
                 label {RX - unshift on space}
                 callback {progdefaults.UOSrx=o->value();
 progdefaults.changed = true;}
-                tooltip {Revert to Unsifted char's on a space} xywh {288 204 63 22} down_box DOWN_BOX
+                tooltip {Revert to unshifted char's on a space} xywh {288 204 63 22} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UOSrx);}
               }
               Fl_Check_Button btnPreferXhairScope {
@@ -2501,7 +2501,8 @@ Disabled - use pseudo signals} xywh {288 264 70 22} down_box DOWN_BOX
                 label {Use MARK freq'}
                 callback {progdefaults.useMARKfreq=o->value();
 progdefaults.changed = true;}
-                tooltip {Revert to Unsifted char's on a space} xywh {288 333 74 22} down_box DOWN_BOX value 1
+                tooltip {Enabled - log QSO using Mark frequency
+Disabled - log QSO using center frequency} xywh {288 333 74 22} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.useMARKfreq);}
               }
               Fl_Button btnRTTY_mark_color {

@@ -5934,7 +5934,7 @@ ormance"));
                 o->value(progdefaults.kahn_demod);
               } // Fl_Choice* mnu_kahn_demod
               { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(288, 204, 63, 22, _("RX - unshift on space"));
-                chkUOSrx->tooltip(_("Revert to Unsifted char\'s on a space"));
+                chkUOSrx->tooltip(_("Revert to unshifted char\'s on a space"));
                 chkUOSrx->down_box(FL_DOWN_BOX);
                 chkUOSrx->callback((Fl_Callback*)cb_chkUOSrx);
                 o->value(progdefaults.UOSrx);
@@ -5957,7 +5957,8 @@ ormance"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(288, 333, 74, 22, _("Use MARK freq\'"));
-                chk_useMARKfreq->tooltip(_("Revert to Unsifted char\'s on a space"));
+                chk_useMARKfreq->tooltip(_("Enabled - log QSO using Mark frequency\nDisabled - log QSO using center frequ\
+ency"));
                 chk_useMARKfreq->down_box(FL_DOWN_BOX);
                 chk_useMARKfreq->value(1);
                 chk_useMARKfreq->callback((Fl_Callback*)cb_chk_useMARKfreq);
