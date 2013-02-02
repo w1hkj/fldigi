@@ -3749,6 +3749,7 @@ Fl_Double_Window* ConfigureDialog() {
   static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
   static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
   static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
+  static const char szPktBauds[]  = "1200|300|2400";
   static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
   static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
   { Fl_Double_Window* o = new Fl_Double_Window(540, 400, _("Fldigi configuration"));
