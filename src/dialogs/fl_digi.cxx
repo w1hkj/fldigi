@@ -1635,10 +1635,12 @@ void cb_logfile(Fl_Widget* w, void*)
 	    lfname.append(tdy.szDate(2));
 	    lfname.append(".log");
 	   	logfile = new cLogfile(lfname);
-    	logfile->log_to_file_start();
+	   	if (logfile) logfile->log_to_file_start();
     } else {
-        logfile->log_to_file_stop();
-        delete logfile;
+		if (logfile) {
+			logfile->log_to_file_stop();
+			delete logfile;
+		}
         logfile = 0;
     }
 }
@@ -6090,6 +6092,9 @@ void add_tx_char(int data)
 //======================================================================
 static void display_rx_data(const unsigned char data, int style) {
 	ReceiveText->add(data, style);
+
+	if (bWF_only) return;
+
 	speak(data);
 
 	if (Maillogfile)
