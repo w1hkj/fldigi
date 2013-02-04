@@ -65,7 +65,7 @@ public:
 	// The ptt_t enums must be defined even if the corresponding
 	// code is not compiled.  New tags go to the end of the list.
 	enum ptt_t {
-		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB, PTT_MEMMAP,
+		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB,
 		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER
 	};
 

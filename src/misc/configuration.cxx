@@ -41,7 +41,6 @@
 	#include "rigclass.h"
 #endif
 
-#include "rigMEM.h"
 #include "rigio.h"
 #include "rigxml.h"
 #include "debug.h"
@@ -540,7 +539,6 @@ int configuration::setDefaults()
 	valDominoEX_PATHS->value(DOMINOEX_PATHS);
 	valDomCWI->value(DomCWI);
 
-	btnMEMMAPptt->value(MEMMAPptt);
 	btnRigCatCMDptt->value(RigCatCMDptt);
 	btnTTYptt->value(TTYptt);
 	btnUsePPortPTT->value(progdefaults.UsePPortPTT);
@@ -566,21 +564,20 @@ int configuration::setDefaults()
 
 	inpTTYdev->value(PTTdev.c_str());
 
-	if(chkUSEMEMMAPis) {
-		chkUSEMEMMAP->value(1); 
-		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0); chkUSEXMLRPC->value(0);
-	} else if (chkUSEHAMLIBis) {
+	if (chkUSEHAMLIBis) {
 		chkUSEHAMLIB->value(1);
-		chkUSEMEMMAP->value(0); chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
+		chkUSERIGCAT->value(0);  chkUSEXMLRPC->value(0);
 	} else if (chkUSERIGCATis) {
 		chkUSERIGCAT->value(1);
-		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
+		chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
 	} else if (chkUSEXMLRPCis) {
 		chkUSEXMLRPC->value(1);
-		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
+		chkUSEHAMLIB->value(0); chkUSERIGCAT->value(0);
 	} else {
-		chkUSEMEMMAP->value(0); chkUSEHAMLIB->value(0); 
-		chkUSERIGCAT->value(0);	chkUSEHAMLIB->value(0); chkUSEXMLRPC->value(0);
+		chkUSEHAMLIB->value(0); 
+		chkUSERIGCAT->value(0);
+		chkUSEHAMLIB->value(0);
+		chkUSEXMLRPC->value(0);
 	}
 	if (!XmlRigFilename.empty()) readRigXML();
 
@@ -768,14 +765,9 @@ void configuration::initInterface()
 // close down any possible rig interface threads
 #if USE_HAMLIB
 	hamlib_close();
-//		MilliSleep(100);
 #endif
-	rigMEM_close();
-//		MilliSleep(100);
 	rigCAT_close();
-//		MilliSleep(100);
 
-	MEMMAPptt = btnMEMMAPptt->value();
 	RigCatCMDptt = btnRigCatCMDptt->value();
 	TTYptt = btnTTYptt->value();
 
@@ -790,7 +782,6 @@ void configuration::initInterface()
 	chkUSEHAMLIBis = chkUSEHAMLIB->value();
      HamlibCMDptt = btnHamlibCMDptt->value();
 #endif
-	chkUSEMEMMAPis = chkUSEMEMMAP->value();
 	chkUSERIGCATis = chkUSERIGCAT->value();
 
 #if USE_HAMLIB
@@ -808,12 +799,7 @@ void configuration::initInterface()
 
 	bool riginitOK = false;
 
-	if (chkUSEMEMMAPis) {// start the memory mapped i/o thread
-		if (rigMEM_init()) {
-			wf->setQSY(1);
-			riginitOK = true;
-		}
-	} else if (chkUSERIGCATis) { // start the rigCAT thread
+	if (chkUSERIGCATis) { // start the rigCAT thread
 		if (rigCAT_init(true)) {
 			wf->USB(true);
 			wf->setQSY(1);
@@ -843,8 +829,6 @@ void configuration::initInterface()
 
 	if (HamlibCMDptt && chkUSEHAMLIBis)
 		push2talk->reset(PTT::PTT_HAMLIB);
-	else if (MEMMAPptt && chkUSEMEMMAPis)
-		push2talk->reset(PTT::PTT_MEMMAP);
 	else if ((RigCatCMDptt || RigCatRTSptt || RigCatDTRptt) && chkUSERIGCATis)
 		push2talk->reset(PTT::PTT_RIGCAT);
 	else if (TTYptt)

@@ -2233,9 +2233,7 @@ Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
-  chkUSEMEMMAP->value(0);
   chkUSEXMLRPC->value(0);
-  progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
   progdefaults.chkUSEXMLRPCis = false;
@@ -2417,10 +2415,8 @@ Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
 static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
   progdefaults.chkUSEHAMLIBis = o->value();
 if (o->value() == 1) {
-  chkUSEMEMMAP->value(0);
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
-  progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
 }
@@ -2591,44 +2587,6 @@ hamlib_restore_defaults();
 #endif
 }
 
-Fl_Group *grpMemmap=(Fl_Group *)0;
-
-Fl_Check_Button *chkUSEMEMMAP=(Fl_Check_Button *)0;
-
-static void cb_chkUSEMEMMAP(Fl_Check_Button* o, void*) {
-  progdefaults.chkUSEMEMMAPis = o->value();
-if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  chkUSEXMLRPC->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
-  progdefaults.chkUSERIGCATis = false;
-  progdefaults.chkUSEXMLRPCis = false;
-}
-  
-btnInitMEMMAP->labelcolor(FL_RED);
-btnInitMEMMAP->redraw_label();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnMEMMAPptt=(Fl_Round_Button *)0;
-
-static void cb_btnMEMMAPptt(Fl_Round_Button* o, void*) {
-  progdefaults.MEMMAPptt=o->value();
-
-btnInitMEMMAP->labelcolor(FL_RED);
-btnInitMEMMAP->redraw_label();
-progdefaults.changed = true;
-}
-
-Fl_Button *btnInitMEMMAP=(Fl_Button *)0;
-
-static void cb_btnInitMEMMAP(Fl_Button* o, void*) {
-  progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;
-}
-
 Fl_Group *tabXMLRPC=(Fl_Group *)0;
 
 Fl_Group *grpXMLRPC=(Fl_Group *)0;
@@ -2640,8 +2598,6 @@ static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
 if(o->value() == 1){
   chkUSEHAMLIB->value(0);
   chkUSERIGCAT->value(0);
-  chkUSEMEMMAP->value(0);
-  progdefaults.chkUSEMEMMAPis = false;
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
 }
@@ -6645,35 +6601,6 @@ ency"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
-          { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("MemMap"));
-            o->hide();
-            { grpMemmap = new Fl_Group(22, 66, 490, 185);
-              grpMemmap->box(FL_ENGRAVED_FRAME);
-              { Fl_Output* o = new Fl_Output(177, 85, 190, 58);
-                o->type(12);
-                o->box(FL_BORDER_BOX);
-                o->color(FL_LIGHT1);
-                o->value(_("Control via Memory Mapped\nshared variables\ni.e.: Kachina program"));
-              } // Fl_Output* o
-              { Fl_Check_Button* o = chkUSEMEMMAP = new Fl_Check_Button(177, 153, 120, 20, _("Use Memmap"));
-                chkUSEMEMMAP->tooltip(_("Rig control via memory mapped Kachina"));
-                chkUSEMEMMAP->down_box(FL_DOWN_BOX);
-                chkUSEMEMMAP->callback((Fl_Callback*)cb_chkUSEMEMMAP);
-                o->value(progdefaults.chkUSEMEMMAPis);
-              } // Fl_Check_Button* chkUSEMEMMAP
-              { btnMEMMAPptt = new Fl_Round_Button(177, 183, 150, 20, _("Use Memmap PTT"));
-                btnMEMMAPptt->down_box(FL_DOWN_BOX);
-                btnMEMMAPptt->selection_color((Fl_Color)1);
-                btnMEMMAPptt->callback((Fl_Callback*)cb_btnMEMMAPptt);
-              } // Fl_Round_Button* btnMEMMAPptt
-              { btnInitMEMMAP = new Fl_Button(214, 213, 113, 24, _("Initialize"));
-                btnInitMEMMAP->tooltip(_("Initialize Memmap interface"));
-                btnInitMEMMAP->callback((Fl_Callback*)cb_btnInitMEMMAP);
-              } // Fl_Button* btnInitMEMMAP
-              grpMemmap->end();
-            } // Fl_Group* grpMemmap
-            o->end();
-          } // Fl_Group* o
           { tabXMLRPC = new Fl_Group(0, 48, 540, 320, _("XML-RPC"));
             tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(23, 61, 490, 160);

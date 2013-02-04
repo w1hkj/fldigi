@@ -52,7 +52,6 @@
 #include "trx.h"
 #include "ptt.h"
 #include "configuration.h"
-#include "rigMEM.h"
 #include "rigio.h"
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -128,9 +127,6 @@ void PTT::set(bool ptt)
 		hamlib_set_ptt(ptt);
 		break;
 #endif
-	case PTT_MEMMAP:
-		setrigMEM_PTT(ptt);
-		break;
 	case PTT_RIGCAT: 
 		rigCAT_set_ptt(ptt);
 		break;

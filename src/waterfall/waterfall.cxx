@@ -55,7 +55,6 @@
 #if USE_HAMLIB
 	#include "hamlib.h"
 #endif
-#include "rigMEM.h"
 #include "rigio.h"
 
 #include "fldigi-config.h"

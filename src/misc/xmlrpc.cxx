@@ -65,7 +65,6 @@
 #if USE_HAMLIB
         #include "hamlib.h"
 #endif
-#include "rigMEM.h"
 #include "rigio.h"
 #include "debug.h"
 #include "re.h"
@@ -1682,8 +1681,9 @@ static void set_rig_control(bool xmlrpc)
 
 	if (xmlrpc) {
 		rcb_t b[] = {
-			{ chkUSERIGCAT, btnInitRIGCAT }, { chkUSEHAMLIB, btnInitHAMLIB },
-			{ chkUSEMEMMAP, btnInitMEMMAP }, { chkUSEXMLRPC, btnInitXMLRPC }
+			{ chkUSERIGCAT, btnInitRIGCAT },
+			{ chkUSEHAMLIB, btnInitHAMLIB },
+			{ chkUSEXMLRPC, btnInitXMLRPC }
 		};
 		for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++) {
 			if (b[i].toggle->value()) {

@@ -35,7 +35,6 @@
 
 #include "rigsupport.h"
 #include "rigxml.h"
-#include "rigMEM.h"
 #include "rigio.h"
 
 #include "threads.h"
@@ -323,9 +322,6 @@ int cb_qso_opMODE()
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
 	else
 #endif
-	if (progdefaults.chkUSEMEMMAPis)
-		rigMEM_setmode(qso_opMODE->value());
-	else
 		rigCAT_setmode(qso_opMODE->value());
 	return 0;
 }
@@ -345,9 +341,6 @@ void sendFreq(long int f)
 		hamlib_setfreq(f);
 	else
 #endif
-	if (progdefaults.chkUSEMEMMAPis)
-		rigMEM_set_freq(f);
-	else
 		rigCAT_setfreq(f);
 }
 
@@ -474,29 +467,6 @@ bool init_NoRig_RigDialog()
 	buildlist();
 
 	windowTitle = _("Enter Xcvr Freq");
-	setTitle();
-
-	return true;
-}
-
-bool init_rigMEM_RigDialog()
-{
-	LOG_DEBUG("Mem Mapped rig");
-
-	qso_opBW->deactivate();
-	qso_opMODE->clear();
-
-	qso_opBW->deactivate();
-	qso_opMODE->clear();
-	qso_opMODE->add("LSB");
-	qso_opMODE->add("USB");
-	qso_opMODE->index(0);
-	qso_opMODE->activate();
-
-	clearList();
-	buildlist();
-
-	windowTitle = _("Memory Mapped Rig");
 	setTitle();
 
 	return true;

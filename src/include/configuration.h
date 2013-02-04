@@ -823,9 +823,6 @@
         ELEM_(bool, PTTrightchannel, "PTTRIGHTCHANNEL",                                 \
               "Generate PTT signal on right audio channel",                             \
               false)                                                                    \
-        ELEM_(int, chkUSEMEMMAPis, "CHKUSEMEMMAPIS",                                    \
-              "Use MEMMAP rig control",                                                 \
-              0)                                                                        \
         ELEM_(int, chkUSEHAMLIBis, "CHKUSEHAMLIBIS",                                    \
               "Use Hamlib rig control",                                                 \
               0)                                                                        \
@@ -879,9 +876,6 @@
               false)                                                                    \
         ELEM_(bool, RigCatCMDptt, "RIGCATCMDPTT",                                       \
               "PTT via RigCAT command",                                                 \
-              false)                                                                    \
-        ELEM_(bool, MEMMAPptt, "MEMMAPPTT",                                             \
-              "Use Memmap PTT",                                                         \
               false)                                                                    \
         ELEM_(bool, UseUHrouterPTT, "USEUHROUTERPTT",                                   \
               "Use uHRouter PTT (OS X only)",                                           \
