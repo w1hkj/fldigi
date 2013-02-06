@@ -801,6 +801,7 @@ void configuration::initInterface()
 
 	if (chkUSERIGCATis) { // start the rigCAT thread
 		if (rigCAT_init(true)) {
+			LOG_VERBOSE("%s", "using rigCAT");
 			wf->USB(true);
 			wf->setQSY(1);
 			riginitOK = true;
@@ -815,13 +816,16 @@ void configuration::initInterface()
 #endif
 	} else if (chkUSEXMLRPCis) {
 		wf->setXMLRPC(1);
-		rigCAT_init(false);
-		wf->USB(true);
-		wf->setQSY(0);
-		riginitOK = true;
+		if (rigCAT_init(false)) {
+			LOG_VERBOSE("%s", "using XMLRPC");
+			wf->USB(true);
+			wf->setQSY(0);
+			riginitOK = true;
+		}
 	}
 
 	if (riginitOK == false) {
+		LOG_VERBOSE("%s", "NO rig control");
 		rigCAT_init(false);
 		wf->USB(true);
 		wf->setQSY(0);

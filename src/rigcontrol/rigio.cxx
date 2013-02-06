@@ -1116,6 +1116,23 @@ echo	   : %c\n",
 	} else {
 		nonCATrig = true;
 		init_NoRig_RigDialog();
+		llFreq = 0;
+		rigCAT_bypass = false;
+		rigCAT_exit = false;
+
+		rigCAT_thread = new pthread_t;
+
+		if (pthread_create(rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
+			LOG_ERROR("nonCATrig pthread_create failed");
+			rigio.ClosePort();
+			delete rigCAT_thread;
+			rigCAT_thread = 0;
+			return false;
+		}
+		LOG_VERBOSE("New thread for nonCATrig %p", rigCAT_thread);
+
+		rigCAT_open = true;
+		return true;
 	}
 
 	llFreq = 0;
@@ -1125,11 +1142,13 @@ echo	   : %c\n",
 	rigCAT_thread = new pthread_t;
 
 	if (pthread_create(rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
-		LOG_ERROR("pthread_create failed");
+		LOG_ERROR("rigCAT pthread_create failed");
 		rigio.ClosePort();
+		delete rigCAT_thread;
+		rigCAT_thread = 0;
 		return false;
 	}
-	LOG_VERBOSE("New thread %p", rigCAT_thread);
+	LOG_VERBOSE("New rigCAT thread %p", rigCAT_thread);
 
 	rigCAT_open = true;
 
