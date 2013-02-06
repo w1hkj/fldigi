@@ -228,7 +228,7 @@ int anal::rx_process(const double *buf, int len)
 						snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() + frequency + fout_2 ); 
 					else
 						snprintf(msg1, sizeof(msg1), "Freq: %12.2f", wf->rfcarrier() - frequency - fout_2 );
-					put_status(msg1);
+					put_status(msg1, 2.0);
 					writeFile();
 // reset the display counter & the pipe pointer
 					dspcnt = symbollen;
