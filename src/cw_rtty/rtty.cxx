@@ -189,16 +189,20 @@ void rtty::reset_filters()
 // filter_length = 512 / 1024 / 2048
 	int filter_length = (1 << progdefaults.rtty_filter_quality) * 512;
 	if (mark_filt) {
+//		mark_filt->create_lpf(rtty_BW/2.0/samplerate);
 		mark_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
 	} else {
 		mark_filt = new fftfilt(rtty_BW/2.0/samplerate, filter_length);
+//		mark_filt->create_lpf(rtty_BW/2.0/samplerate);
 		mark_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
      }
 
 	if (space_filt) {
+//		space_filt->create_lpf(rtty_BW/2.0/samplerate);
 		space_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
 	} else {
 		space_filt = new fftfilt(rtty_BW/2.0/samplerate, filter_length);
+//		space_filt->create_lpf(rtty_BW/2.0/samplerate);
 		space_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
      }
 }

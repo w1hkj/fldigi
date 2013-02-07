@@ -591,9 +591,6 @@ void status::initLastState()
 		btnPreferXhairScope->value(progdefaults.PreferXhairScope = PreferXhairScope);
 
 		if (mvsquelch) {
-
-printf("init rtty squelch %f\n", VIEWER_rttysquelch);
-
 			mvsquelch->range(-12.0, 6.0);
 			mvsquelch->value(VIEWER_rttysquelch);
 		}

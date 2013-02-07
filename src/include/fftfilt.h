@@ -11,6 +11,8 @@
 //----------------------------------------------------------------------
 
 class fftfilt {
+enum {NONE, BLACKMAN, HAMMING, HANNING};
+
 protected:
 	int filterlen;
     Cfft *fft;
@@ -20,6 +22,7 @@ protected:
 	complex *ovlbuf;
 	int inptr;
 	int pass;
+	int window;
 public:
 	fftfilt(double f1, double f2, int len);
 	fftfilt(double f, int len);
@@ -27,6 +30,7 @@ public:
 	void create_filter(double f1, double f2);
 	void create_lpf(double f);
 	void create_rttyfilt(double f);
+	void set_window(int w) { window = w; }
 	int run(const complex& in, complex **out);
 };
 

@@ -1,13 +1,13 @@
 // ----------------------------------------------------------------------------
-//    fftfilt.cxx  --  Fast convolution Overlap-Add filter
+//	fftfilt.cxx  --  Fast convolution Overlap-Add filter
 //
 // Filter implemented using overlap-add FFT convolution method
 // h(t) characterized by Windowed-Sinc impulse response
-// 
-// Reference: 
-//     "The Scientist and Engineer's Guide to Digital Signal Processing"
-//     by Dr. Steven W. Smith, http://www.dspguide.com
-//     Chapters 16, 18 and 21
+//
+// Reference:
+//	 "The Scientist and Engineer's Guide to Digital Signal Processing"
+//	 by Dr. Steven W. Smith, http://www.dspguide.com
+//	 Chapters 16, 18 and 21
 //
 // Copyright (C) 2006-2008 Dave Freese, W1HKJ
 //
@@ -47,7 +47,7 @@ fftfilt::fftfilt(double f1, double f2, int len)
 	ovlbuf		= new complex[filterlen/2];
 	filter		= new complex[filterlen];
 	filtdata	= new complex[filterlen];
-	
+
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re = filter[i].im =
 		filtdata[i].re = filtdata[i].im = 0.0;
@@ -68,7 +68,7 @@ fftfilt::fftfilt(double f, int len)
 	ovlbuf		= new complex[filterlen/2];
 	filter		= new complex[filterlen];
 	filtdata	= new complex[filterlen];
-	
+
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re = filter[i].im =
 		filtdata[i].re = filtdata[i].im = 0.0;
@@ -96,8 +96,8 @@ void fftfilt::create_filter(double f1, double f2)
 	double t, h, x, it;
 	Cfft *tmpfft;
 	tmpfft = new Cfft(filterlen);
-	
-// initialize the filter to zero	
+
+// initialize the filter to zero
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re   = filter[i].im   = 0.0;
 
@@ -129,8 +129,8 @@ void fftfilt::create_lpf(double f)
 	double t, h, x, it;
 	Cfft *tmpfft;
 	tmpfft = new Cfft(filterlen);
-	
-// initialize the filter to zero	
+
+// initialize the filter to zero
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re   = filter[i].im   = 0.0;
 
@@ -153,66 +153,80 @@ void fftfilt::create_lpf(double f)
 	delete tmpfft;
 }
 
+//bool print_filter = true; // flag to inhibit printing multiple copies
+
 void fftfilt::create_rttyfilt(double f)
 {
-    int len = filterlen / 2 + 1;
-	double t, h, x, it;
+	int len = filterlen / 2 + 1;
+	double t, h, it;
 	Cfft *tmpfft;
 	tmpfft = new Cfft(filterlen);
-	
-    // initialize the filter to zero	
+
+	// initialize the filter to zero
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re   = filter[i].im   = 0.0;
 
-    // get an array to hold the sinc-respose
-    double* sinc_array = new double[ len ];
-    
-    // create the impulse-response in it
-    for (int i = 0; i < len; ++i) {
-        it = (double)i;
-        t  = it - ( (double)len - 1.0) / 2.0;
-        h  = it / ( (double)len - 1.0);
-        
-        // create the filter impulses with an additional zero at 1.5f
-        // remark: sinc(..) is scaled by 2, see misc.h
-        
-        sinc_array[i] = sinc( 4.0 * f * t       )+ 
-                        sinc( 4.0 * f * t - 1.0 )+ 
-                        sinc( 4.0 * f * t + 1.0 );
-    }
-    
-    // normalize the impulse-responses
-    double sum = 0.0;
-    for (int i = 0; i < len; ++i) {
-        sum += sinc_array[i];
-        }
-    for (int i = 0; i < len; ++i) {
-        sinc_array[i] /= 8*sum;
-        }
-                
-    // setup windowed-filter
-    for (int i = 0; i < len; ++i) {
-        it = (double)i;
-        t  = it - ( (double)len - 1.0) / 2.0;
-        h  = it / ( (double)len - 1.0);
-        
-        filter[i].re = ( sinc_array[i] ) * (double)filterlen * blackman(h);
-        }
-        
-    delete [] sinc_array;
+	// get an array to hold the sinc-respose
+	double* sinc_array = new double[ len ];
 
-//printf("Raised Cosine filter\n");
-//printf("h(t)\n");
-//for (int i = 0; i < len; i++) printf("%f, %f\n", filter[i].re, filter[i].im);
-//printf("\n");
+	// create the impulse-response in it
+	for (int i = 0; i < len; ++i) {
+		it = (double)i;
+		t  = it - ( (double)len - 1.0) / 2.0;
+		h  = it / ( (double)len - 1.0);
+
+		// create the filter impulses with an additional zero at 1.5f
+		// remark: sinc(..) is scaled by 2, see misc.h
+
+// Modified Lanzcos filter see http://en.wikipedia.org/wiki/Lanczos_resampling
+		sinc_array[i] = 
+			( sinc( 3.0 * f * t             ) +
+			  sinc( 3.0 * f * t - 1.0       ) * 0.8 +
+			  sinc( 3.0 * f * t + 1.0       ) * 0.8 ) *
+			( sinc( 4.0 * f * t / 3.0       ) +
+			  sinc( 4.0 * f * t / 3.0 - 1.0 ) * 0.8 +
+			  sinc( 4.0 * f * t / 3.0 + 1.0 ) * 0.8 );
+	}
+
+	// normalize the impulse-responses
+	double sum = 0.0;
+	for (int i = 0; i < len; ++i) {
+		sum += sinc_array[i];
+		}
+	for (int i = 0; i < len; ++i) {
+		sinc_array[i] /= 8*sum;
+		}
+
+	// setup windowed-filter
+	for (int i = 0; i < len; ++i) {
+		it = (double)i;
+		t  = it - ( (double)len - 1.0) / 2.0;
+		h  = it / ( (double)len - 1.0);
+
+		filter[i].re = ( sinc_array[i] ) * (double)filterlen * blackman(h);
+		sinc_array[i] = filter[i].re;
+		}
+
 // perform the complex forward fft to obtain H(w)
 	tmpfft->cdft(filter);
-//printf("H(w)\n");
-//for (int i = 0; i < len; i++) printf("%f, %f\n", filter[i].re, filter[i].im);
-
+/*
+	if (print_filter) {
+		printf("Modified Lanzcos 1.5 stop bit filter\n\n");
+		printf("h(t), |H(w)|, dB\n\n");
+		double dc = 20*log10(filter[0].mag());
+		for (int i = 0; i < len; i++)
+			printf("%f, %f, %f\n", 
+				sinc_array[i], 
+				filter[i].mag(),
+				20*log10(filter[i].mag()) - dc);
+		print_filter = false;
+	}
+*/
 // start outputs after 2 full passes are complete
 	pass = 2;
 	delete tmpfft;
+	delete [] sinc_array;
+
 }
 
 /*
@@ -231,7 +245,7 @@ int fftfilt::run(const complex& in, complex **out)
 // zero the rest of the input data
 	for (int i = filterlen_div2 ; i < filterlen; i++)
 		filtdata[i].re = filtdata[i].im = 0.0;
-	
+
 // FFT transpose to the frequency domain
 	fft->cdft(filtdata);
 
@@ -259,6 +273,6 @@ int fftfilt::run(const complex& in, complex **out)
 
 // signal the caller there is filterlen/2 samples ready
 	if (pass) return 0;
-	
+
 	return filterlen_div2;
 }
