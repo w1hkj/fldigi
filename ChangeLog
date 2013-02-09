@@ -1,14 +1,36 @@
 
 
-=Version 3.21.67=
+=Version 3.21.68=
 
-2013-01-29  David Freese  <w1hkj@w1hkj.com>
+2013-02-08  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	efe6687: RTTY bug fix
+
+2013-02-07  David Freese  <w1hkj@w1hkj.com>
+
+	2a6bfee: RTTY filters
+	48dcf51: Hang on start
+	72dd5f2: Analysis
+	55b76e9: rigMEM
+	be3dd1f: WF only ESC abort
+
+2013-02-03  John Phelps  <kl4yfd@gmail.com>
+
+	4a8e3ca: WF only null pointer fix
+
+2013-02-02  David Freese  <w1hkj@w1hkj.com>
+
+	48ed1f0: RTTY config tab
+	f684b91: RTTY stop bits
+
+
+=Version 3.21.67=
 
 	645acab: PSK viewer
 	63323a4: Contest fields
 	f3abd4c: RigCAT INIT/CLOSE
 	4af6dcd: Olivia FEC reset
-	f220d36: RTTY FSK modem
+	0d4d55d: RTTY FSK modem
 	b8fd4db: Status / Tx Level Controls
 
 
