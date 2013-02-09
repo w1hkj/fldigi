@@ -322,6 +322,7 @@ rtty::rtty(trx_mode tty_mode)
 	space_filt = (fftfilt *)0;
 
 	bitfilt = (Cmovavg *)0;
+	bits = (Cmovavg *)0;
 
 	hilbert = new C_FIR_filter();
 	hilbert->init_hilbert(37, 1);
