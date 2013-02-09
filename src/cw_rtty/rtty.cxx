@@ -1179,7 +1179,7 @@ void SymbolShaper::Preset(double baud, int stop, double sr)
 
 // kill old sinc-table and get memory for the new one -----------------
 
-	delete m_sinc_table;
+	delete [] m_sinc_table;
 	m_sinc_table = new double[m_table_size];
 
 // set up the new sinc-table based on the new parameters --------------
