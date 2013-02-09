@@ -216,6 +216,8 @@ private:
 	double FSKphaseacc;
 	double FSKnco();
 
+	unsigned char lastchar;
+
 	int rxmode;
 	int txmode;
 	int preamble;

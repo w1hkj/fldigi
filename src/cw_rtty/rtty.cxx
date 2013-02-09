@@ -130,6 +130,8 @@ void rtty::rx_init()
 
 	inp_ptr = 0;
 
+	lastchar = 0;
+
 }
 
 void rtty::init()
@@ -161,6 +163,8 @@ void rtty::init()
 	else
 		set_scope_mode(Digiscope::RTTY);
 	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = complex(0,0);
+
+	lastchar = 0;
 }
 
 rtty::~rtty()
@@ -491,8 +495,14 @@ bool rtty::rx(bool bit)
 			if (bit) {
 				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
 					c = decode_char();
-					if ( c != 0 && c != '\r') {
-						put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
+					if ( c != 0 ) {
+// supress <CR><CR> and <LF><LF> sequences
+// these were observed during the RTTY contest 2/9/2013
+						if (c == '\r' && lastchar == '\r');
+						else if (c == '\n' && lastchar == '\n');
+						else
+							put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
+						lastchar = c;
 					}
 					flag = true;
 				}
