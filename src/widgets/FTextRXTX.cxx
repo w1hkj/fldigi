@@ -517,24 +517,39 @@ void FTextRX::handle_qso_data(int start, int end)
 
 	Fl_Input* target = 0;
 
-	if (rst.match(s))
-		target = inpRstIn;
-	else if (loc.match(s))
-		target = inpLoc;
-	else if (call.match(s)) { // point p to substring
-		const regmatch_t& offsets = call.suboff()[1];
-		p = s + offsets.rm_so;
-		*(s + offsets.rm_eo) = '\0';
-		target = inpCall;
-	}
-	else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
-		target = inpQth;
-	else
-		target = *inpName->value() ? inpQth : inpName;
+	if (inpXchgIn->visible()) {
+		if (call.match(s)) { // point p to substring
+			const regmatch_t& offsets = call.suboff()[1];
+			p = s + offsets.rm_so;
+			*(s + offsets.rm_eo) = '\0';
+			inpCall->value(p);
+			inpCall->do_callback();
+		} else {
+			inpXchgIn->position(inpXchgIn->size());
+			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
+			inpXchgIn->insert(s);
+		}
+	} else {
+		if (rst.match(s))
+			target = inpRstIn;
+		else if (loc.match(s))
+			target = inpLoc;
+		else if (call.match(s)) { // point p to substring
+			const regmatch_t& offsets = call.suboff()[1];
+			p = s + offsets.rm_so;
+			*(s + offsets.rm_eo) = '\0';
+			target = inpCall;
+		}
+		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
+			target = inpQth;
+		else
+			target = *inpName->value() ? inpQth : inpName;
 
-	target->value(p);
-	target->do_callback();
+		target->value(p);
+		target->do_callback();
+	}
 	free(s);
+
 	restoreFocus(NULL);
 }
 
