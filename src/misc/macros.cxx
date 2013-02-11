@@ -634,6 +634,11 @@ static void pFREQ(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, inpFreq->value() );
 }
 
+static void pBAND(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 6, band_name( band( wf->rfcarrier() ) ) );
+}
+
 static void pLOC(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, inpLoc->value() );
@@ -2081,6 +2086,7 @@ static const MTAGS mtags[] = {
 {"<COMMENT:",	pCOMMENT},
 {"<CALL>",		pCALL},
 {"<FREQ>",		pFREQ},
+{"<BAND>",		pBAND},
 {"<LOC>",		pLOC},
 {"<MODE>",		pMODE},
 {"<NAME>",		pNAME},
