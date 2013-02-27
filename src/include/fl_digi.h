@@ -332,6 +332,8 @@ extern void sync_cw_parameters();
 
 extern void open_recv_folder(const char *fname);
 
+extern void reset_mnuPlayback();
+
 // character set
 extern void cb_charset_menu(Fl_Widget *, void *charset);
 extern void populate_charset_menu(void);

@@ -1714,15 +1714,25 @@ void cb_mnuGenerate(Fl_Widget *w, void *d)
 	}
 }
 
+Fl_Menu_Item *Playback_menu_item = (Fl_Menu_Item *)0;
+void reset_mnuPlayback()
+{
+	if (Playback_menu_item == 0) return;
+	Playback_menu_item->clear();
+}
+
 void cb_mnuPlayback(Fl_Widget *w, void *d)
 {
 	if (!scard) return;
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
+	Playback_menu_item = m;
 	if (capval || genval) {
 		m->clear();
+		bHighSpeed = false;
 		return;
 	}
 	playval = m->value();
+	if (!playval) bHighSpeed = false;
 
 	int err = scard->Playback(playval);
 
@@ -1742,6 +1752,7 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 		}
 		m->clear();
 		playval = false;
+		bHighSpeed = false;
 	}
 	else if (btnAutoSpot->value()) {
 		put_status(_("Spotting disabled"), 3.0);
