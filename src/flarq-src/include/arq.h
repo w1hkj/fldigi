@@ -121,7 +121,7 @@ public:
 		return ss;
 	}
 	void update(char c) {
-		crcval ^= c;
+		crcval ^= c & 255;
         for (int i = 0; i < 8; ++i) {
             if (crcval & 1)
                 crcval = (crcval >> 1) ^ 0xA001;
