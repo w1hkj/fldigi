@@ -75,6 +75,7 @@ public:
 	virtual void tx_init (SoundBase *sc) = 0;
 	virtual void rx_init () = 0;
 	virtual void restart () = 0;
+	virtual void rx_flush() {};
 	virtual int  tx_process () = 0;
 	virtual int  rx_process (const double *, int len) = 0;
 	virtual void shutdown(){};

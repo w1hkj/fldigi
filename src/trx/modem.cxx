@@ -176,6 +176,16 @@ modem::modem()
 {
 	scptr = 0;
 	freqlock = false;
+	frequency = 1000.0;
+	
+	if(progdefaults.retain_freq_lock) {
+		if(active_modem) {
+			frequency = active_modem->get_freq();
+			tx_frequency = active_modem->get_txfreq();
+			freqlock = active_modem->freqlocked();
+		}
+	}
+	
 	sigsearch = 0;
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
@@ -183,7 +193,6 @@ modem::modem()
 	historyON = false;
 	cap = CAP_RX | CAP_TX;
 	PTTphaseacc = 0.0;
-	frequency = 1000.0;
 	s2n_ncount = s2n_sum = s2n_sum2 = s2n_metric = 0.0;
 	s2n_valid = false;
 }

@@ -70,9 +70,9 @@
 #endif
 
 #define CONFIG_LIST                                                                     \
-	ELEM_(bool, confirmExit, "CONFIRMEXIT",				                \
-	      "Ensure user wants to leave flgidi",			                \
-	      false)							                \
+    ELEM_(bool, confirmExit, "CONFIRMEXIT",                                             \
+          "Ensure user wants to leave flgidi",                                          \
+          false)                                                                        \
         ELEM_(bool, SaveConfig, "SAVECONFIG",                                           \
               "Save current configuration on exit",                                     \
               false)                                                                    \
@@ -117,11 +117,18 @@
         ELEM_(int, rsid_resolution, "RSID_RESOLUTION",                                  \
               "values (LOW)  5, 4, 3, 2 (HIGH)",                                        \
               5)                                                                        \
-                                                                                        \
+        ELEM_(bool, disable_rsid_warning_dialog_box, "DISABLE_RSID_WARNING_DIALOG_BOX", \
+              "disable displaying the rsid warning dialog box",                         \
+              false)                                                                    \
         ELEM_(bool, slowcpu, "SLOWCPU",                                                 \
               "Disable expensive processing in some decoders",                          \
               true)                                                                     \
-                                                                                        \
+        ELEM_(bool, disable_rsid_freq_change, "DISABLERSIDFREQCHANGE",                  \
+              "disable changing frequency on rsid modem change/reset",                  \
+              false)                                                                    \
+		ELEM_(bool, retain_freq_lock, "RETAINFREQLOCK",                                 \
+			 "retain frequency lock on rsid modem change/reset",                   \
+			 false)                                                                     \
         ELEM_(bool, changed, "", "",  false)                                            \
                                                                                         \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
@@ -491,6 +498,9 @@
         ELEM_(bool, contestia8bit, "CONTESTIA8BIT",                                     \
               "8-bit extended characters",                                              \
               true)                                                                     \
+		ELEM_(bool, contestia_reset_fec, "CONTESTIARESETFEC",                           \
+		      "Force Integration (FEC) depth to be reset when new BW/Tones selected",   \
+			  false)                                                                    \
         /* THOR */                                                                      \
         ELEM_(double, THOR_BW, "THORBW",                                                \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \

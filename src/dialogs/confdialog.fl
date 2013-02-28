@@ -138,7 +138,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {593 55 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {589 128 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-5 0 596 372} color 50 selection_color 50
@@ -1458,7 +1458,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -2146,7 +2146,7 @@ progdefaults.changed = true;}
                   callback {progdefaults.oliviasinteg = (int)(o->value());
 resetOLIVIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 196 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  tooltip {Change ONLY to experiment} xywh {99 198 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
@@ -2162,16 +2162,16 @@ progdefaults.changed = true;}
                 label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.olivia8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for UTF-8 character transmission} xywh {79 291 265 20} down_box DOWN_BOX
+                tooltip {Enable this for UTF-8 character transmission} xywh {100 291 265 20} down_box DOWN_BOX
               }
             }
           }
           Fl_Group tabContestia {
-            label {Cont'}
+            label {Cont'} open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
-              xywh {24 80 490 200} box ENGRAVED_FRAME
+              xywh {25 80 490 200} box ENGRAVED_FRAME
             } {
               Fl_Choice mnuContestia_Bandwidth {
                 label Bandwidth
@@ -2179,7 +2179,7 @@ progdefaults.changed = true;}
 set_contestia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;} open
-                tooltip {Select bandwidth} xywh {79 100 85 20} down_box BORDER_BOX align 8
+                tooltip {Select bandwidth} xywh {80 100 85 20} down_box BORDER_BOX align 8
                 code0 {o->add(szContestiaBandwidth);}
                 code1 {o->value(2);}
               } {}
@@ -2189,20 +2189,20 @@ progdefaults.changed = true;} open
 set_contestia_default_integ();
 resetCONTESTIA();
 progdefaults.changed = true;} open
-                tooltip {Select number of tones} xywh {340 100 70 20} down_box BORDER_BOX align 8
+                tooltip {Select number of tones} xywh {341 100 70 20} down_box BORDER_BOX align 8
                 code0 {o->add(szContestiaTones);}
                 code1 {o->value(2);}
               } {}
               Fl_Group {} {
                 label {Receive synchronizer} open
-                xywh {79 139 379 100} box ENGRAVED_FRAME align 21
+                xywh {63 139 414 131} box ENGRAVED_FRAME align 21
               } {
                 Fl_Counter cntContestia_smargin {
                   label {Tune margin (tone frequency spacing)}
                   callback {progdefaults.contestiasmargin = (int)(o->value());
 resetCONTESTIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 170 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  tooltip {Change ONLY to experiment} xywh {97 170 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
@@ -2211,16 +2211,23 @@ progdefaults.changed = true;}
                   callback {progdefaults.contestiasinteg = (int)(o->value());
 resetCONTESTIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 200 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  tooltip {Change ONLY to experiment} xywh {97 202 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
+                }
+                Fl_Check_Button btn_contestia_reset_fec {
+                  label {Reset FEC blocks when changing BW or Tones}
+                  callback {progdefaults.contestia_reset_fec = o->value();
+progdefaults.changed = true;}
+                  tooltip {Enable this for UTF-8 character transmission} xywh {108 235 349 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.contestia_reset_fec);}
                 }
               }
               Fl_Check_Button btnContestia_8bit {
                 label {8-bit extended characters}
                 callback {progdefaults.contestia8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {79 249 200 20} down_box DOWN_BOX hide
+                tooltip {Enable this for Latin-1 accented characters} xywh {80 249 200 20} down_box DOWN_BOX hide
               }
             }
           }
@@ -2302,7 +2309,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 540 320} selection_color 50
@@ -2721,9 +2728,9 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 48 540 320}
+            xywh {0 48 540 320} hide
           } {
-            Fl_Group {} {open
+            Fl_Group {} {
               xywh {26 57 490 38} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnPTTrightchannel {
@@ -2749,7 +2756,7 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group grpHWPTT {
-              label {h/w ptt device-pin} open
+              label {h/w ptt device-pin}
               xywh {26 97 490 171} box ENGRAVED_FRAME align 21
             } {
               Fl_Input_Choice inpTTYdev {
@@ -2835,7 +2842,7 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group grpPTTdelays {
-              label {PTT delays valid for all CAT/PTT types} open
+              label {PTT delays valid for all CAT/PTT types}
               xywh {26 270 490 91} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter cntPTT_on_delay {
@@ -2857,7 +2864,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group {} {
-            label RigCAT open
+            label RigCAT
             tooltip {Rig Control using xml spec file} xywh {0 48 540 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
@@ -3053,7 +3060,7 @@ btnRevertRIGCAT->activate();}
             }
           }
           Fl_Group tabHamlib {
-            label Hamlib open
+            label Hamlib
             xywh {0 48 540 320} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
@@ -3253,7 +3260,7 @@ hamlib_restore_defaults();
           }
           Fl_Group tabXMLRPC {
             label {XML-RPC} open
-            xywh {0 48 540 320} hide
+            xywh {0 48 540 320}
           } {
             Fl_Group grpXMLRPC {open
               xywh {23 61 490 160} box ENGRAVED_FRAME
@@ -3664,137 +3671,23 @@ if (o->value()) {
         }
       }
       Fl_Group tabID {
-        label ID
-        xywh {0 25 540 346} hide
+        label ID open
+        xywh {0 23 541 348} hide
       } {
-        Fl_Group {} {
-          label {Video Preamble ID} open
-          xywh {22 35 490 103} box ENGRAVED_FRAME align 21
+        Fl_Tabs {} {open
+          xywh {0 23 541 345}
         } {
-          Fl_Check_Button btnsendid {
-            label {Transmit mode ID}
-            callback {progdefaults.sendid=o->value();
-progdefaults.changed = true;}
-            tooltip {Waterfall video ID} xywh {32 58 150 20} down_box DOWN_BOX
-          }
-          Fl_Check_Button btnsendvideotext {
-            label {Transmit video text}
-            callback {progdefaults.sendtextid=o->value();
-progdefaults.changed = true;}
-            tooltip {Waterfall video text} xywh {32 83 155 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.sendtextid);}
-          }
-          Fl_Input valVideotext {
-            label {:}
-            callback {progdefaults.strTextid = o->value();
-progdefaults.changed = true;}
-            tooltip {Limit to a few characters,
-as in CQEM or IOTA etc.} xywh {199 83 161 20}
-            code0 {o->value(progdefaults.strTextid.c_str());}
-            code1 {valVideotext->labelsize(FL_NORMAL_SIZE);}
-            class Fl_Input2
-          }
-          Fl_Check_Button chkID_SMALL {
-            label {Use small font}
-            callback {progdefaults.ID_SMALL=o->value();
-progdefaults.changed = true;}
-            tooltip {ON - small font
-OFF - large font} xywh {32 109 120 20} down_box DOWN_BOX value 1
-            code0 {o->value(progdefaults.ID_SMALL);}
-          }
-          Fl_Value_Slider sldrVideowidth {
-            label {Chars/Row:}
-            callback {progdefaults.videowidth = (int)o->value();
-progdefaults.changed = true;}
-            tooltip {Set the number of characters per row} xywh {260 109 100 20} type Horizontal align 4 minimum 1 maximum 8 step 1 value 4 textsize 14
-            code0 {o->value(progdefaults.videowidth);}
-            code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-            class Fl_Value_Slider2
-          }
-          Fl_Check_Button btn_vidlimit {
-            label {500 Hz limit}
-            callback {progdefaults.vidlimit=o->value();
-progdefaults.changed = true;}
-            xywh {369 85 110 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.vidlimit);}
-          }
-          Fl_Check_Button btn_vidmodelimit {
-            label {Mode width limit}
-            callback {progdefaults.vidmodelimit=o->value();
-progdefaults.changed=true;}
-            xywh {369 111 110 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.vidmodelimit);}
-          }
-          Fl_Button bVideoIDModes {
-            label {Video ID modes}
-            callback {mode_browser->label(o->label());
-mode_browser->callback(0);
-mode_browser->show(&progdefaults.videoid_modes);
-progdefaults.changed = true;}
-            xywh {240 58 120 20}
-          }
-        }
-        Fl_Group sld {
-          label {CW Postamble ID} open
-          xywh {22 138 490 60} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Check_Button btnCWID {
-            label {Transmit callsign}
-            callback {progdefaults.CWid = o->value();
-progdefaults.changed = true;}
-            tooltip {Send Callsign in CW at end of every transmission} xywh {32 165 140 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.CWid);}
-          }
-          Fl_Value_Slider sldrCWIDwpm {
-            label {Speed (WPM):}
-            callback {progdefaults.CWIDwpm = (int)o->value();
-progdefaults.changed = true;}
-            tooltip {Send at this WPM} xywh {182 165 180 20} type Horizontal align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
-            code0 {o->value(progdefaults.CWIDwpm);}
-            code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-            class Fl_Value_Slider2
-          }
-          Fl_Button bCWIDModes {
-            label {CW ID modes}
-            callback {mode_browser->label(o->label());
-mode_browser->callback(0);
-mode_browser->show(&progdefaults.cwid_modes);
-progdefaults.changed = true;}
-            xywh {382 165 120 20}
-          }
-        }
-        Fl_Group {} {
-          label {Reed-Solomon ID (Rx)} open
-          xywh {22 198 295 167} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Check_Button chkRSidWideSearch {
-            label {Detector searches entire passband}
-            callback {progdefaults.rsidWideSearch=o->value();
-progdefaults.changed = true;}
-            tooltip {ON - search over entire waterfall
-OFF - limit search to +/- 200 Hz} xywh {32 247 270 20} down_box DOWN_BOX
-            code0 {o->value(progdefaults.rsidWideSearch);}
-          }
-          Fl_Check_Button chkRSidMark {
-            label {Mark previous frequency and mode}
-            callback {progdefaults.rsid_mark = o->value();
-progdefaults.changed = true;}
-            tooltip {Insert RX text marker before
-changing frequency and modem} xywh {32 270 270 20} down_box DOWN_BOX
-            code0 {chkRSidMark->value(progdefaults.rsid_mark);}
-          }
-          Fl_Check_Button chkRSidAutoDisable {
-            label {Reception disables detector}
-            callback {progdefaults.rsid_auto_disable = o->value();
-progdefaults.changed = true;}
-            tooltip {Disable further detection when RSID is received} xywh {32 293 200 20} down_box DOWN_BOX
-            code0 {if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;}
-            code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
-            code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
-          }
-          Fl_Check_Button chkRSidNotifyOnly {
-            label {Notify only}
-            callback {progdefaults.rsid_notify_only = o->value();
+          Fl_Group tabRsID {
+            label RsID open
+            xywh {0 48 541 320}
+          } {
+            Fl_Group {} {
+              label {Reed-Solomon ID (Rx)} open
+              xywh {2 55 535 193} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkRSidNotifyOnly {
+                label {Notify only}
+                callback {progdefaults.rsid_notify_only = o->value();
 notify_create_rsid_event(progdefaults.rsid_notify_only);
 if (progdefaults.rsid_notify_only) {
     chkRSidAutoDisable->value(0);
@@ -3803,68 +3696,222 @@ if (progdefaults.rsid_notify_only) {
 else
     chkRSidAutoDisable->activate();
 progdefaults.changed = true;}
-            tooltip {Check this to be notified when an RSID is received
-without changing modem and frequency} xywh {32 317 101 20} down_box DOWN_BOX
-            code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
-          }
-          Fl_Button bRSIDRxModes {
-            label {Receive modes}
-            callback {mode_browser->label(o->label());
+                tooltip {Check this to be notified when an RSID is received
+without changing modem and frequency} xywh {11 88 90 20} down_box DOWN_BOX
+                code0 {chkRSidNotifyOnly->value(progdefaults.rsid_notify_only);}
+              }
+              Fl_Button bRSIDRxModes {
+                label {Receive modes}
+                callback {mode_browser->label(o->label());
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.rsid_rx_modes);
 progdefaults.changed = true;}
-            xywh {32 224 130 20}
-          }
-          Fl_Value_Slider sldrRSIDsquelch {
-            label {Squelch open (sec)}
-            callback {progdefaults.rsid_squelch = (int)o->value();
+                xywh {348 86 130 24}
+              }
+              Fl_Check_Button chkRSidWideSearch {
+                label {Searches passband}
+                callback {progdefaults.rsidWideSearch=o->value();
 progdefaults.changed = true;}
-            tooltip {Open squelch for nn sec if RSID detected} xywh {32 339 144 18} type Horizontal align 8 maximum 20 step 1 textsize 14
-            code0 {o->value(progdefaults.rsid_squelch);}
-            code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-            class Fl_Value_Slider2
-          }
-          Fl_Value_Slider sldrRSIDresolution {
-            label Sensitivity
-            callback {progdefaults.rsid_resolution = (int)o->value();
+                tooltip {ON - search over entire waterfall
+OFF - limit search to +/- 200 Hz} xywh {11 119 90 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rsidWideSearch);}
+              }
+              Fl_Check_Button chkRSidMark {
+                label {Mark prev freq/mode}
+                callback {progdefaults.rsid_mark = o->value();
 progdefaults.changed = true;}
-            tooltip {2 = low sensitivity / decreased false detection
-5 = high sensitivity / increased false detection} xywh {133 317 90 18} type Horizontal align 8 minimum 2 maximum 5 step 1 value 5 textsize 14
-            code0 {o->value(progdefaults.rsid_resolution);}
-            code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-            class Fl_Value_Slider2
-          }
-        }
-        Fl_Group {} {
-          label {Reed-Solomon ID (Tx)} open
-          xywh {317 198 195 85} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Button bRSIDTxModes {
-            label {Transmit modes}
-            callback {mode_browser->label(o->label());
+                tooltip {Insert RX text marker before
+changing frequency and modem} xywh {11 151 90 20} down_box DOWN_BOX
+                code0 {chkRSidMark->value(progdefaults.rsid_mark);}
+              }
+              Fl_Check_Button chkRSidAutoDisable {
+                label {Disables detector}
+                callback {progdefaults.rsid_auto_disable = o->value();
+progdefaults.changed = true;}
+                tooltip {Disable further detection when RSID is received} xywh {11 183 90 20} down_box DOWN_BOX
+                code0 {if (progdefaults.rsid_notify_only) progdefaults.rsid_auto_disable = false;}
+                code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
+                code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
+              }
+              Fl_Value_Slider sldrRSIDresolution {
+                label Sensitivity
+                callback {progdefaults.rsid_resolution = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {2 = low sensitivity / decreased false detection
+5 = high sensitivity / increased false detection} xywh {12 215 145 22} type Horizontal align 8 minimum 2 maximum 5 step 1 value 5 textsize 14
+                code0 {o->value(progdefaults.rsid_resolution);}
+                code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Slider2
+              }
+              Fl_Value_Slider sldrRSIDsquelch {
+                label {Squelch open (sec)}
+                callback {progdefaults.rsid_squelch = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {Open squelch for nn sec if RSID detected} xywh {246 215 145 22} type Horizontal align 8 maximum 20 step 1 textsize 14
+                code0 {o->value(progdefaults.rsid_squelch);}
+                code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Slider2
+              }
+              Fl_Check_Button chkRSidShowAlert {
+                label {Disable alert dialog}
+                callback {progdefaults.disable_rsid_warning_dialog_box = o->value();
+progdefaults.changed = true;}
+                tooltip {Do not show RsID alert dialog box} xywh {246 119 90 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.disable_rsid_warning_dialog_box);}
+              }
+              Fl_Check_Button chkRetainFreqLock {
+                label {Retain tx freq lock}
+                callback {progdefaults.retain_freq_lock = o->value();
+progdefaults.changed = true;}
+                tooltip {Do not show RsID alert dialog box} xywh {246 151 90 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.retain_freq_lock);}
+              }
+              Fl_Check_Button chkDisableFreqChange {
+                label {Disable freq change}
+                callback {progdefaults.disable_rsid_freq_change = o->value();
+progdefaults.changed = true;}
+                tooltip {Do not show RsID alert dialog box} xywh {246 183 90 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.disable_rsid_freq_change);}
+              }
+            }
+            Fl_Group {} {
+              label {Pre-Signal Tone} open
+              xywh {3 250 265 97} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Counter val_pretone {
+                label Seconds
+                callback {progdefaults.pretone = o->value();
+progdefaults.changed = true;}
+                tooltip {Use for triggering amplifier carrier detect} xywh {59 288 140 21} minimum 0 maximum 10
+                code0 {o->value(progdefaults.pretone);}
+              }
+            }
+            Fl_Group {} {
+              label {Reed-Solomon ID (Tx)} open
+              xywh {271 250 265 97} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Button bRSIDTxModes {
+                label {Transmit modes}
+                callback {mode_browser->label(o->label());
 mode_browser->callback(0);
 mode_browser->show(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;}
-            xywh {345 222 130 20}
-          }
-          Fl_Check_Button btn_post_rsid {
-            label {End of xmt ID}
-            callback {progdefaults.rsid_post=o->value();
+                xywh {348 277 130 24}
+              }
+              Fl_Check_Button btn_post_rsid {
+                label {End of xmt ID}
+                callback {progdefaults.rsid_post=o->value();
 progdefaults.changed = true;}
-            tooltip {Add RsID signal to end of transmission} xywh {345 256 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.rsid_post);}
+                tooltip {Add RsID signal to end of transmission} xywh {348 312 97 17} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rsid_post);}
+              }
+            }
           }
-        }
-        Fl_Group {} {
-          label {Pre-Signal Tone} open
-          xywh {317 284 195 80} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Counter val_pretone {
-            label Seconds
-            callback {progdefaults.pretone = o->value();
+          Fl_Group tabVideoID {
+            label Video open
+            xywh {0 48 540 320} hide
+          } {
+            Fl_Group {} {
+              label {Video Preamble ID} open
+              xywh {2 55 536 189} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnsendid {
+                label {Transmit mode ID}
+                callback {progdefaults.sendid=o->value();
 progdefaults.changed = true;}
-            tooltip {Use for triggering amplifier carrier detect} xywh {340 310 140 21} minimum 0 maximum 10
-            code0 {o->value(progdefaults.pretone);}
+                tooltip {Waterfall video ID} xywh {20 89 150 20} down_box DOWN_BOX
+              }
+              Fl_Check_Button btnsendvideotext {
+                label {Transmit video text}
+                callback {progdefaults.sendtextid=o->value();
+progdefaults.changed = true;}
+                tooltip {Waterfall video text} xywh {20 121 155 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.sendtextid);}
+              }
+              Fl_Input valVideotext {
+                label {:}
+                callback {progdefaults.strTextid = o->value();
+progdefaults.changed = true;}
+                tooltip {Limit to a few characters,
+as in CQEM or IOTA etc.} xywh {187 119 323 24}
+                code0 {o->value(progdefaults.strTextid.c_str());}
+                code1 {valVideotext->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+              Fl_Check_Button chkID_SMALL {
+                label {Use small font}
+                callback {progdefaults.ID_SMALL=o->value();
+progdefaults.changed = true;}
+                tooltip {ON - small font
+OFF - large font} xywh {20 153 120 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.ID_SMALL);}
+              }
+              Fl_Value_Slider sldrVideowidth {
+                label {Chars/Row:}
+                callback {progdefaults.videowidth = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {Set the number of characters per row} xywh {260 151 125 24} type Horizontal align 4 minimum 1 maximum 8 step 1 value 4 textsize 14
+                code0 {o->value(progdefaults.videowidth);}
+                code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Slider2
+              }
+              Fl_Check_Button btn_vidlimit {
+                label {500 Hz limit}
+                callback {progdefaults.vidlimit=o->value();
+progdefaults.changed = true;}
+                xywh {20 185 110 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.vidlimit);}
+              }
+              Fl_Check_Button btn_vidmodelimit {
+                label {Mode width limit}
+                callback {progdefaults.vidmodelimit=o->value();
+progdefaults.changed=true;}
+                xywh {20 213 110 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.vidmodelimit);}
+              }
+              Fl_Button bVideoIDModes {
+                label {Video ID modes}
+                callback {mode_browser->label(o->label());
+mode_browser->callback(0);
+mode_browser->show(&progdefaults.videoid_modes);
+progdefaults.changed = true;}
+                xywh {390 86 120 24}
+              }
+            }
+          }
+          Fl_Group tabCwID {
+            label CW
+            xywh {0 48 540 320} hide
+          } {
+            Fl_Group sld {
+              label {CW Postamble ID} open
+              xywh {2 56 536 127} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btnCWID {
+                label {Transmit callsign}
+                callback {progdefaults.CWid = o->value();
+progdefaults.changed = true;}
+                tooltip {Send Callsign in CW at end of every transmission} xywh {109 94 140 24} down_box DOWN_BOX
+                code0 {o->value(progdefaults.CWid);}
+              }
+              Fl_Value_Slider sldrCWIDwpm {
+                label {Speed (WPM):}
+                callback {progdefaults.CWIDwpm = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {Send at this WPM} xywh {109 137 180 20} type Horizontal align 1 minimum 15 maximum 40 step 1 value 18 textsize 14
+                code0 {o->value(progdefaults.CWIDwpm);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Slider2
+              }
+              Fl_Button bCWIDModes {
+                label {CW ID modes}
+                callback {mode_browser->label(o->label());
+mode_browser->callback(0);
+mode_browser->show(&progdefaults.cwid_modes);
+progdefaults.changed = true;}
+                xywh {382 94 120 24}
+              }
+            }
           }
         }
       }
@@ -3877,7 +3924,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
               xywh {25 75 490 51} box ENGRAVED_FRAME align 21
@@ -4207,7 +4254,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWX {
             label WX open
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {
               label {Weather query specification} open

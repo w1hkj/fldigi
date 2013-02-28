@@ -80,6 +80,7 @@ public:
 	~olivia();
 	void init();
 	void rx_init();
+	void rx_flush();
 	void tx_init(SoundBase *sc);
 	void restart();
 	int rx_process(const double *buf, int len);
