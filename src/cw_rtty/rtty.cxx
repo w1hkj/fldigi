@@ -1165,68 +1165,47 @@ void SymbolShaper::reset()
 	m_Factor5 = 0.0;
 }
 
-void SymbolShaper::Preset(double baud, int stop, double sr)
+void SymbolShaper::Preset(double baud, double sr)
 {
-	double baud_rate = baud;
-	double sample_rate = sr;
+    double baud_rate = baud;
+    double sample_rate = sr;
 
-	LOG_INFO("Shaper::reset( %f, %f )",  baud_rate, sample_rate);
+    LOG_INFO("Shaper::reset( %f, %f )",  baud_rate, sample_rate);
 
 // calculate new table-size for six integrators ----------------------
 
-	m_table_size = sample_rate / baud_rate * 5.49;
-	LOG_INFO("Shaper::m_table_size = %d", m_table_size);
+    m_table_size = sample_rate / baud_rate * 5.49;
+    LOG_INFO("Shaper::m_table_size = %d", m_table_size);
 
 // kill old sinc-table and get memory for the new one -----------------
 
-	delete [] m_sinc_table;
-	m_sinc_table = new double[m_table_size];
+    delete [] m_sinc_table;
+    m_sinc_table = new double[m_table_size];
 
 // set up the new sinc-table based on the new parameters --------------
 
-	long double sum = 0.0;
+    long double sum = 0.0;
 
-// if not using 1.5 stopbits, then place the second zero to the next symbol
-
-	if( stop != 1) baud_rate/=1.5;
-
-	for( int x=0; x<m_table_size; ++x ) {
-		int const offset = m_table_size/2;
-		double const symbol_len = sample_rate / baud_rate;
-		double const sinc_scale = TWOPI * ( 1.0 / symbol_len );
-
-		if( x != offset ) {
-// the sinc(x) itself...
-			m_sinc_table[x] = sin( ( x - offset ) * sinc_scale ) /
-									 ( ( x - offset ) * sinc_scale );
-
-// add further zero
-				m_sinc_table[x]  = sin( ( x - offset ) * sinc_scale * 1.5) /
-									  ( ( x - offset ) * sinc_scale * 1.5);
-
-// blackman-window
-			m_sinc_table[x] *=
-				  7938.0/18608.0
-				- 9240.0/18608.0 * cos( 2.0*M_PI*(x)/(m_table_size-1.0) )
-				+ 1430.0/18608.0 * cos( 4.0*M_PI*(x)/(m_table_size-1.0) );
-
-		} else {
-			m_sinc_table[x] = 1.0;
-		}
-
+    for( int x=0; x<m_table_size; ++x ) {
+        int const offset = m_table_size/2;
+        double const T = sample_rate / (baud_rate*2.0); // symbol-length in samples
+        double const t = (x-offset); // symbol-time relative to zero
+       
+        m_sinc_table[x] = rcos( t, T, 1.0 );
+   
 // calculate integral
-		sum += m_sinc_table[x];
-	}
+        sum += m_sinc_table[x];
+    }
 
 // scale the values in the table so that the integral over it is as
 // exactly 1.0000000 as we can do this...
 
-	for( int x=0; x<m_table_size; ++x ) {
-		m_sinc_table[x] *= 1.0 / sum;
-	}
+    for( int x=0; x<m_table_size; ++x ) {
+        m_sinc_table[x] *= 1.0 / sum;
+    }
 
 // reset internal states
-	reset();
+    reset();
 }
 
 double SymbolShaper::Update( bool state )
@@ -1279,4 +1258,3 @@ void SymbolShaper::print_sinc_table()
 {
 	for (int i = 0; i < 1024; i++) printf("%f\n", m_SincTable[i]);
 }
-

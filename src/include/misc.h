@@ -83,6 +83,13 @@ inline double hanning(double x)
 	return 0.5 - 0.5 * cos(2 * M_PI * x);
 }
 
+inline double rcos( double t, double T, double alpha=1.0 )
+{
+    if( t == 0 ) return 1.0;
+    if( fabs(t) == ( T/(2*alpha) ) ) return ((alpha/2.0) * sin(M_PI/(2.0*alpha)));
+    return sin(M_PI*t/T)/(M_PI*t/T)*cos(alpha*M_PI*t/T)/(1.0-(2.0*alpha*t/T)*(2.0*alpha*t/T));
+}
+
 // Rectangular - no pre filtering of data array
 void RectWindow(double *array, int n);
 // Hamming - used by gmfsk
