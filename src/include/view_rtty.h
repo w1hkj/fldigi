@@ -36,7 +36,7 @@
 
 #define	VIEW_RTTY_SampleRate	8000
 
-#define	VIEW_RTTYMaxSymLen	(VIEW_RTTY_SampleRate / 23)
+#define	VIEW_RTTY_MAXBITS	(2 * VIEW_RTTY_SampleRate / 23 + 1)
 
 #define MAX_CHANNELS 30
 
@@ -48,17 +48,17 @@ struct RTTY_CHANNEL {
 
 	double			phaseacc;
 
-	C_FIR_filter	*lpfilt;
-	Cmovavg *bitfilt;
-//	fftfilt *bpfilt;
 	fftfilt *mark_filt;
 	fftfilt *space_filt;
 
+	Cmovavg		*bits;
+	bool		nubit;
+	bool		bit;
+
+	bool		bit_buf[MAXBITS];
+
 	double mark_phase;
 	double space_phase;
-
-	double bbfilter[MAXPIPE];
-	unsigned int filterptr;
 
 	double		metric;
 
@@ -82,6 +82,9 @@ struct RTTY_CHANNEL {
 	double		space_mag;
 	double		mark_env;
 	double		space_env;
+	double		noise_floor;
+	double		mark_noise;
+	double		space_noise;
 
 	double		sigpwr;
 	double		noisepwr;
@@ -117,7 +120,6 @@ private:
 	bool useFSK;
 
 	RTTY_CHANNEL	channel[MAX_CHANNELS];
-	C_FIR_filter	*hilbert;
 
 	double		rtty_squelch;
 	double		rtty_shift;
@@ -163,6 +165,9 @@ public:
 	void clearch(int ch);
 	void clear();
 	int get_freq(int n) { return (int)channel[n].frequency;}
+
+	bool is_mark_space(int ch, int &);
+	bool is_mark(int ch);
 
 };
 

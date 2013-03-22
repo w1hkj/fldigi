@@ -86,7 +86,7 @@ inline double hanning(double x)
 inline double rcos( double t, double T, double alpha=1.0 )
 {
     if( t == 0 ) return 1.0;
-    if( fabs(t) == ( T/(2*alpha) ) ) return ((alpha/2.0) * sin(M_PI/(2.0*alpha)));
+    if( fabs(t) == ( T/(2.0*alpha) ) ) return ((alpha/2.0) * sin(M_PI/(2.0*alpha)));
     return sin(M_PI*t/T)/(M_PI*t/T)*cos(alpha*M_PI*t/T)/(1.0-(2.0*alpha*t/T)*(2.0*alpha*t/T));
 }
 

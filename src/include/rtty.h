@@ -42,9 +42,8 @@
 //#define RTTY_SampleRate 11025
 //#define RTTY_SampleRate 12000
 
-#define	RTTYMaxSymLen	(RTTY_SampleRate / 45)
 #define MAXPIPE			1024
-#define SHIFT_REG_SIZE	12
+#define MAXBITS			(2 * RTTY_SampleRate / 23 + 1)
 
 #define	LETTERS	0x100
 #define	FIGURES	0x200
@@ -84,10 +83,10 @@ private:
 class SymbolShaper
 {
 public:
-	SymbolShaper(double baud = 45.45, int stop = 1, double sr = 8000.0);
+	SymbolShaper(double baud = 45.45, double sr = 8000.0);
 	~SymbolShaper() {}
 	void reset();
-	void Preset(double baud, int stop, double sr);
+	void Preset(double baud, double sr);
 	void print_sinc_table();
 	double Update( bool state );
 
@@ -141,7 +140,7 @@ private:
 	double		phaseacc;
 	double		rtty_squelch;
 	double		rtty_shift;
-	double	  rtty_BW;
+	double		rtty_BW;
 	double		rtty_baud;
 	int 		rtty_bits;
 	RTTY_PARITY	rtty_parity;
@@ -149,31 +148,22 @@ private:
 	bool 		rtty_reverse;
 	bool		rtty_msbfirst;
 
-	C_FIR_filter	*hilbert;
-	C_FIR_filter	*lpfilt;
-	Cmovavg *bitfilt;
-
 	double		mark_noise;
 	double		space_noise;
 	Cmovavg		*bits;
 	bool		nubit;
 	bool		bit;
 
+	bool		bit_buf[MAXBITS];
+
 	double mark_phase;
 	double space_phase;
 	fftfilt *mark_filt;
 	fftfilt *space_filt;
 
-	int bflen;
-	double bp_filt_lo;
-	double bp_filt_hi;
-
 	double *pipe;
 	double *dsppipe;
 	int pipeptr;
-
-	double bbfilter[MAXPIPE];
-	unsigned int filterptr;
 
 	complex mark_history[MAXPIPE];
 	complex space_history[MAXPIPE];
@@ -185,14 +175,9 @@ private:
 	int rxdata;
 	double cfreq; // center frequency between MARK/SPACE tones
 	double shift_offset; // 1/2 rtty_shift
-	double posfreq, negfreq;
-	double freqerrhi, freqerrlo;
-	double poserr, negerr;
-	int poscnt, negcnt;
 
 	double prevsymbol;
 	complex prevsmpl;
-	complex *samples;
 
 	double xy_phase;
 	double rotate;
@@ -211,6 +196,7 @@ private:
 	double space_mag;
 	double mark_env;
 	double space_env;
+	double	noise_floor;
 
 	double FSKbuf[OUTBUFSIZE];		// signal array for qrq drive
 	double FSKphaseacc;
@@ -220,7 +206,7 @@ private:
 
 	int rxmode;
 	int txmode;
-	int preamble;
+	bool preamble;
 
 	void Clear_syncscope();
 	void Update_syncscope();
@@ -234,15 +220,18 @@ private:
 	bool rx(bool bit);
 // transmit
 	double nco(double freq);
-	void send_symbol(int symbol);
+	void send_symbol(int symbol, int len);
 	void send_stop();
 	void send_char(int c);
 	void send_idle();
-//	void keyline(int);
 	int rttyxprocess();
 	int baudot_enc(unsigned char data);
 	char baudot_dec(unsigned char data);
 	void Metric();
+
+	bool is_mark_space(int &);
+	bool is_mark();
+
 public:
 	rtty(trx_mode mode);
 	~rtty();

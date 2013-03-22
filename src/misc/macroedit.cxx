@@ -227,7 +227,7 @@ void loadBrowser(Fl_Widget *widget) {
 		w->add(s);
 	}
 	// add some RTTY macros
-	const char* rtty[] = { "170:45.45:5:90", "170:50:5:100", "850:75:5:150" };
+	const char* rtty[] = { "170:45.45:5", "170:50:5", "850:75:5" };
 	for (size_t i = 0; i < sizeof(rtty)/sizeof(*rtty); i++) {
 		snprintf(s, sizeof(s), "<MODEM:%s:%s>", mode_info[MODE_RTTY].sname, rtty[i]);
 		w->add(s);

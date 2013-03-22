@@ -28,6 +28,8 @@
 
 #include <config.h>
 #include <iostream>
+#include <fstream>
+
 using namespace std;
 
 #include "view_rtty.h"
@@ -42,6 +44,8 @@ using namespace std;
 #include "trx.h"
 #include "debug.h"
 
+#define FILTER_DEBUG 0
+
 view_rtty *rttyviewer = (view_rtty *)0;
 
 //=====================================================================
@@ -55,18 +59,6 @@ static char letters[32] = {
 	'O',	'B',	'G',	' ',	'M',	'X',	'V',	' '
 };
 
-#if 0
-/*
- * ITA-2 version of the figures case.
- */
-static char figures[32] = {
-	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
-	'\r',	'·',	'4',	'\a',	',',	'·',	':',	'(',
-	'5',	'+',	')',	'2',	'·',	'6',	'0',	'1',
-	'9',	'?',	'·',	'·',	'.',	'/',	'=',	'·'
-};
-#endif
-#if 1
 /*
  * U.S. version of the figures case.
  */
@@ -76,21 +68,8 @@ static char figures[32] = {
 	'5',	'"',	')',	'2',	'#',	'6',	'0',	'1',
 	'9',	'?',	'&',	' ',	'.',	'/',	';',	' '
 };
-#endif
-#if 0
-/*
- * A mix of the two. This is what seems to be what people actually use.
- */
-static unsigned char figures[32] = {
-	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
-	'\r',	'$',	'4',	'\a',	',',	'!',	':',	'(',
-	'5',	'+',	')',	'2',	'#',	'6',	'0',	'1',
-	'9',	'?',	'&',	'·',	'.',	'/',	'=',	'·'
-};
-#endif
 
 int dspcnt = 0;
-
 
 static char msg1[20];
 
@@ -100,10 +79,9 @@ const int	rtty::BITS[]  = {5, 7, 8};
 
 void rtty::tx_init(SoundBase *sc)
 {
-// start each new transmission 20 bit lengths MARK tone
 	scard = sc;
 	phaseacc = 0;
-	preamble = 20;
+	preamble = true;
 	videoText();
 }
 
@@ -113,11 +91,8 @@ void rtty::rx_init()
 	rxmode = LETTERS;
 	phaseacc = 0;
 	FSKphaseacc = 0;
-	for (int i = 0; i < RTTYMaxSymLen; i++ ) {
-		bbfilter[i] = 0.0;
-	}
-	bitfilt->reset();
-	poserr = negerr = 0.0;
+
+	for (int i = 0; i < MAXBITS; i++ ) bit_buf[i] = 0.0;
 
 	mark_phase = 0;
 	space_phase = 0;
@@ -169,8 +144,6 @@ void rtty::init()
 
 rtty::~rtty()
 {
-	if (hilbert) delete hilbert;
-	if (bitfilt) delete bitfilt;
 	if (mark_filt) delete mark_filt;
 	if (space_filt) delete space_filt;
 	if (pipe) delete [] pipe;
@@ -183,31 +156,58 @@ rtty::~rtty()
 
 void rtty::reset_filters()
 {
-	if (progStatus.rtty_filter_changed) {
-		delete mark_filt;
-		mark_filt = 0;
-		delete space_filt;
-		space_filt = 0;
-	}
+	int filter_length = 1024;
 
-// filter_length = 512 / 1024 / 2048
-	int filter_length = (1 << progdefaults.rtty_filter_quality) * 512;
+/* filtertype:
+ * 0 - extended rcos(0); K * (t/T)
+ * 1 - extended rcos(1)
+ * 2 - extended rcos(2)
+ * 3 - smf rcos(0)
+ * 4 - smf rcos(1)
+ * 5 - smf rcos(2)
+ * 6 - sinc
+ * 7 - smf3
+ * 8 - matched
+*/
+
+// Stefan:
+// rtty_filter
+// 1.25 ==> best performance on Dave's computer(s)
+// 1.5 ===> best performance on Stefan's computer
+// see fftfilt.h and fftfilt.cxx
+//
 	if (mark_filt) {
-//		mark_filt->create_lpf(rtty_BW/2.0/samplerate);
-		mark_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+		if (progdefaults.rtty_filter == 1)
+			mark_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
+		else
+			mark_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
 	} else {
-		mark_filt = new fftfilt(rtty_BW/2.0/samplerate, filter_length);
-//		mark_filt->create_lpf(rtty_BW/2.0/samplerate);
-		mark_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+		mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
+		if (progdefaults.rtty_filter == 1)
+			mark_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
+		else
+			mark_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
      }
 
 	if (space_filt) {
-//		space_filt->create_lpf(rtty_BW/2.0/samplerate);
-		space_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+		if (progdefaults.rtty_filter == 1)
+			space_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
+		else
+			space_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
 	} else {
-		space_filt = new fftfilt(rtty_BW/2.0/samplerate, filter_length);
-//		space_filt->create_lpf(rtty_BW/2.0/samplerate);
-		space_filt->create_rttyfilt(rtty_BW/2.0/samplerate);
+		space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
+		if (progdefaults.rtty_filter == 1)
+			space_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
+		else
+			space_filt->rtty_order(rtty_baud/samplerate, 0,
+				progdefaults.rtty_filter, 1.0);
      }
 }
 
@@ -237,29 +237,16 @@ void rtty::restart()
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
-//	if (progdefaults.RTTY_BW < rtty_baud)
-//		progdefaults.RTTY_BW = rtty_baud;
 	rtty_BW = progdefaults.RTTY_BW = rtty_baud * 2;
-	sldrRTTYbandwidth->value(rtty_BW);
 
 	wf->redraw_marker();
 
-	bp_filt_lo = (shift/2.0 - rtty_BW/2.0) / samplerate;
-	if (bp_filt_lo < 0) bp_filt_lo = 0;
-	bp_filt_hi = (shift/2.0 + rtty_BW/2.0) / samplerate;
-
 	reset_filters();
 
-	bflen = symbollen/3;
-	if (bitfilt)
-		bitfilt->setLength(bflen);
-	else
-		bitfilt = new Cmovavg(bflen);
-
 	if (bits)
-		bits->setLength(symbollen / 2);
+		bits->setLength(symbollen / 8);//2);
 	else
-		bits = new Cmovavg(symbollen / 2);
+		bits = new Cmovavg(symbollen / 8);//2);
 	mark_noise = space_noise = 0;
 	bit = nubit = true;
 
@@ -270,10 +257,9 @@ void rtty::restart()
 	else stl = 2.0;
 	stoplen = (int) (stl * samplerate / rtty_baud + 0.5);
 	freqerr = 0.0;
-	filterptr = 0;
 	pipeptr = 0;
-	poscnt = negcnt = 0;
-	posfreq = negfreq = 0.0;
+
+	for (int i = 0; i < MAXBITS; i++ ) bit_buf[i] = 0.0;
 
 	metric = 0.0;
 
@@ -286,15 +272,14 @@ void rtty::restart()
 	for (int i = 0; i < MAXPIPE; i++) QI[i].re = QI[i].im = 0.0;
 	sigpwr = 0.0;
 	noisepwr = 0.0;
-	freqerrlo = freqerrhi = 0.0;
 	sigsearch = 0;
 	dspcnt = 2*(nbits + 2);
 
 	clear_zdata = true;
 
 	// restart symbol-rtty_shaper
-	m_SymShaper1->Preset(rtty_baud, rtty_stop, samplerate);
-	m_SymShaper2->Preset(rtty_baud, rtty_stop, samplerate);
+	m_SymShaper1->Preset(rtty_baud, samplerate);
+	m_SymShaper2->Preset(rtty_baud, samplerate);
 
 	mark_phase = 0;
 	space_phase = 0;
@@ -325,16 +310,10 @@ rtty::rtty(trx_mode tty_mode)
 	mark_filt = (fftfilt *)0;
 	space_filt = (fftfilt *)0;
 
-	bitfilt = (Cmovavg *)0;
 	bits = (Cmovavg *)0;
-
-	hilbert = new C_FIR_filter();
-	hilbert->init_hilbert(37, 1);
 
 	pipe = new double[MAXPIPE];
 	dsppipe = new double [MAXPIPE];
-
-	samples = new complex[8];
 
 	::rttyviewer = new view_rtty(mode);
 
@@ -366,10 +345,7 @@ void rtty::Clear_syncscope()
 
 complex rtty::mixer(double &phase, double f, complex in)
 {
-	complex z;
-	z.re = cos(phase);
-	z.im = sin(phase);
-	z = z * in;
+	complex z = complex( cos(phase), sin(phase)) * in;
 
 	phase -= TWOPI * f / samplerate;
 	if (phase < -TWOPI) phase += TWOPI;
@@ -439,22 +415,44 @@ int rtty::decode_char()
 	return data;
 }
 
-bool rtty::rx(bool bit)
+bool rtty::is_mark_space( int &correction)
+{
+	correction = 0;
+// test for rough bit position
+	if (bit_buf[0] && !bit_buf[symbollen-1]) {
+// test for mark/space straddle point
+		for (int i = 0; i < symbollen; i++)
+			correction += bit_buf[i];
+		if (abs(symbollen/2 - correction) < 6) // too small & bad signals as not decoded
+			return true;
+	}
+	return false;
+}
+
+bool rtty::is_mark()
+{
+	return bit_buf[symbollen / 2];
+}
+
+bool rtty::rx(bool bit) // original modified for probability test
 {
 	bool flag = false;
 	unsigned char c = 0;
+	int correction;
+
+	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
+	bit_buf[symbollen - 1] = bit;
 
 	switch (rxstate) {
 	case RTTY_RX_STATE_IDLE:
-		if (!bit) {
+		if ( is_mark_space(correction)) {
 			rxstate = RTTY_RX_STATE_START;
-			counter = symbollen / 2;
+			counter = correction;
 		}
 		break;
-
 	case RTTY_RX_STATE_START:
 		if (--counter == 0) {
-			if (!bit) {
+			if (!is_mark()) {
 				rxstate = RTTY_RX_STATE_DATA;
 				counter = symbollen;
 				bitcntr = 0;
@@ -462,37 +460,19 @@ bool rtty::rx(bool bit)
 			} else {
 				rxstate = RTTY_RX_STATE_IDLE;
 			}
-		} else
-			if (bit) rxstate = RTTY_RX_STATE_IDLE;
+		}
 		break;
-
 	case RTTY_RX_STATE_DATA:
 		if (--counter == 0) {
-			rxdata |= bit << bitcntr++;
+			rxdata |= is_mark() << bitcntr++;
 			counter = symbollen;
 		}
-
-		if (bitcntr == nbits) {
-			if (rtty_parity == RTTY_PARITY_NONE) {
-				rxstate = RTTY_RX_STATE_STOP;
-			}
-			else {
-				rxstate = RTTY_RX_STATE_PARITY;
-			}
-		}
-		break;
-
-	case RTTY_RX_STATE_PARITY:
-		if (--counter == 0) {
+		if (bitcntr == nbits + (rtty_parity != RTTY_PARITY_NONE ? 1 : 0))
 			rxstate = RTTY_RX_STATE_STOP;
-			rxdata |= bit << bitcntr++;
-			counter = symbollen;
-		}
 		break;
-
 	case RTTY_RX_STATE_STOP:
 		if (--counter == 0) {
-			if (bit) {
+			if (is_mark()) {
 				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
 					c = decode_char();
 					if ( c != 0 ) {
@@ -507,16 +487,10 @@ bool rtty::rx(bool bit)
 					flag = true;
 				}
 			}
-			rxstate = RTTY_RX_STATE_STOP2;
-			counter = symbollen / 2;
-		}
-		break;
-
-	case RTTY_RX_STATE_STOP2:
-		if (--counter == 0) {
 			rxstate = RTTY_RX_STATE_IDLE;
 		}
 		break;
+	default : break;
 	}
 
 	return flag;
@@ -580,10 +554,24 @@ void rtty::searchUp()
 	}
 }
 
+#if FILTER_DEBUG == 1
+int snum = 0;
+int mnum = 0;
+#define ook(sp) \
+{ \
+	value = sin(2.0*M_PI*( \
+		(((sp / symbollen) % 2 == 0) ? (frequency + shift/2.0) : (frequency - shift/2.0))\
+		/samplerate)*sp); \
+}
+
+std::fstream ook_signal("ook_signal.csv", std::ios::out );
+#endif
+
 int rtty::rx_process(const double *buf, int len)
 {
 	const double *buffer = buf;
 	int length = len;
+	static int showxy = symbollen;
 
 	complex z, zmark, zspace, *zp_mark, *zp_space;
 
@@ -595,26 +583,33 @@ int rtty::rx_process(const double *buf, int len)
 		  progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels)))
 		rttyviewer->rx_process(buf, len);
 
-	if (progdefaults.RTTY_BW != rtty_BW || 
-		progStatus.rtty_filter_changed) {
-		rtty_BW = progdefaults.RTTY_BW;
-		reset_filters();
+	if (progStatus.rtty_filter_changed) {
 		progStatus.rtty_filter_changed = false;
-		wf->redraw_marker();
-		for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = complex(0,0);
-		bits->setLength(symbollen / 2);
-		mark_noise = space_noise = 0;
-		bit = nubit = true;
+		reset_filters();
 	}
 
 	Metric();
-
+#if FILTER_DEBUG == 1
+double value;
+#endif
 	while (length-- > 0) {
 
 // Create analytic signal from sound card input samples
 
+#if FILTER_DEBUG == 1
+if (snum < 2 * filter_length) {
+	frequency = 1000.0;
+	ook(snum);
+//	z.re = z.im = (snum/symbollen % 2 == 0) ? 1.0 : 0.0;
+	z.re = z.im = value;
+	ook_signal << snum << "," << z.re << ",";
+//	snum++;
+} else {
+	z.re = z.im = *buffer++;
+}
+#else
 		z.re = z.im = *buffer++;
-		hilbert->run(z, z);
+#endif
 
 // Mix it with the audio carrier frequency to create two baseband signals
 // mark and space are separated and processed independently
@@ -628,39 +623,87 @@ int rtty::rx_process(const double *buf, int len)
 
 		zspace = mixer(space_phase, frequency - shift/2.0, z);
 		n_out = space_filt->run(zspace, &zp_space);
-
-		if (n_out) {
-			for (int i = 0; i < n_out; i++) {
-
-
-				mark_mag = zp_mark[i].mag();
-				mark_env = decayavg (mark_env, mark_mag,
-							(mark_mag > mark_env) ? symbollen / 4 : symbollen * 16);
-				mark_noise = decayavg (mark_noise, mark_mag,
-							(mark_mag < mark_noise) ? symbollen / 4 : symbollen * 48);
-
-				space_mag = zp_space[i].mag();
-				space_env = decayavg (space_env, space_mag,
-							(space_mag > space_env) ? symbollen / 4 : symbollen * 16);
-				space_noise = decayavg (space_noise, space_mag,
-							(space_mag < space_noise) ? symbollen / 4 : symbollen * 48);
-
-if (progdefaults.kahn_demod == 0) {
-// Kahn Square Law demodulator
-// KISS - outperforms the ATC implementation
-				nubit = zp_mark[i].norm() > zp_space[i].norm();
-
-} else {
-// ATC signal envelope detector iaw Kok Chen, W7AY, technical paper
-// "Improved Automatic Threshold Correction Methods for FSK"
-// www.w7ay.net/site/Technical/ATC, dated 16 December 2012
-				nubit = 	mark_env * mark_mag - 0.5 * mark_env * mark_env >
-						space_env * space_mag - 0.5 * space_env * space_env;
+#if FILTER_DEBUG == 1
+if (snum < 2 * filter_length) {
+	ook_signal << zmark.mag() <<"\n";
+	snum++;
 }
+#endif
+		for (int i = 0; i < n_out; i++) {
+
+			mark_mag = zp_mark[i].mag();
+			mark_env = decayavg (mark_env, mark_mag,
+						(mark_mag > mark_env) ? symbollen / 4 : symbollen * 16);
+			mark_noise = decayavg (mark_noise, mark_mag,
+						(mark_mag < mark_noise) ? symbollen / 4 : symbollen * 48);
+			space_mag = zp_space[i].mag();
+			space_env = decayavg (space_env, space_mag,
+						(space_mag > space_env) ? symbollen / 4 : symbollen * 16);
+			space_noise = decayavg (space_noise, space_mag,
+						(space_mag < space_noise) ? symbollen / 4 : symbollen * 48);
+#if FILTER_DEBUG == 1
+if (mnum < 2 * filter_length)
+	ook_signal << ",,," << mnum++ + filter_length / 2 << "," << mark_mag << "," << space_mag << "\n";
+#endif
+			noise_floor = min(space_noise, mark_noise);
+
+// clipped if clipped decoder selected
+			double mclipped = 0, sclipped = 0;
+			mclipped = mark_mag > mark_env ? mark_env : mark_mag;
+			sclipped = space_mag > space_env ? space_env : space_mag;
+			if (mclipped < noise_floor) mclipped = noise_floor;
+			if (sclipped < noise_floor) sclipped = noise_floor;
+
+//			double v0, v1, v2, v3, v4, v5;
+			double v3;
+// no ATC
+//			v0 = mark_mag - space_mag;
+// Linear ATC
+//			v1 = mark_mag - space_mag - 0.5 * (mark_env - space_env);
+// Clipped ATC
+//			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
+//					(mark_env - noise_floor) - (space_env - noise_floor));
+// Optimal ATC
+			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
+					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
+					(mark_env - noise_floor) * (mark_env - noise_floor) -
+					(space_env - noise_floor) * (space_env - noise_floor));
+// Kahn Squarer with Linear ATC
+//			v4 =  (mark_mag - noise_floor) * (mark_mag - noise_floor) -
+//					(space_mag - noise_floor) * (space_mag - noise_floor) - 0.25 * (
+//					(mark_env - noise_floor) * (mark_env - noise_floor) -
+//					(space_env - noise_floor) * (space_env - noise_floor));
+// Kahn Squarer with Clipped ATC
+//			v5 =  (mclipped - noise_floor) * (mclipped - noise_floor) -
+//					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
+//					(mark_env - noise_floor) * (mark_env - noise_floor) -
+//					(space_env - noise_floor) * (space_env - noise_floor));
+
+//				switch (progdefaults.rtty_demodulator) {
+//			switch (2) { // Optimal ATC
+//			case 0: // linear ATC
+//				bit = v1 > 0;
+//				break;
+//			case 1: // clipped ATC
+//				bit = v2 > 0;
+//				break;
+//			case 2: // optimal ATC
+				bit = v3 > 0;
+//				break;
+//			case 3: // Kahn linear ATC
+//				bit = v4 > 0;
+//				break;
+//			case 4: // Kahn clipped
+//				bit = v5 > 0;
+//				break;
+//			case 5: // No ATC
+//			default :
+//				bit = v0 > 0;
+//			}
 
 // XY scope signal generation
 
-if (progdefaults.true_scope) {
+			if (progdefaults.true_scope) {
 //----------------------------------------------------------------------
 // "true" scope implementation------------------------------------------
 //----------------------------------------------------------------------
@@ -683,7 +726,7 @@ if (progdefaults.true_scope) {
 				double const norm = 1.3*(zp_mark [i].mag() + zp_space[i].mag());
 				xy /= norm;
 
-} else {
+			} else {
 //----------------------------------------------------------------------
 // "ortho" scope implementation-----------------------------------------
 //----------------------------------------------------------------------
@@ -695,77 +738,71 @@ if (progdefaults.true_scope) {
 // now normalize the scope
 				double const norm = (mark_env + space_env);
 				xy /= norm;
-}
+			}
 
 // Rotate the scope x-y iaw frequency error.  Old scopes were not capable
 // of this, but it should be very handy, so... who cares of realism anyways?
-				double const rotate = 8 * TWOPI * freqerr / rtty_shift;
-				xy = xy * complex(cos(rotate), sin(rotate));
+			double const rotate = 8 * TWOPI * freqerr / rtty_shift;
+			xy = xy * complex(cos(rotate), sin(rotate));
 
-				QI[inp_ptr] = xy;
+			QI[inp_ptr] = xy;
 
 // shift it to 128Hz(!) and not to it's original position.
 // this makes it more pretty and does not remove it's other
 // qualities. Reason is that this is a fraction of the used
 // block-size.
-				xy_phase += (TWOPI * (128.0 / samplerate));
-
-				double testbit = bits->run(nubit);
-				if (!bit && testbit > 0.75) {
-					bit = true;
-					if (bitcount) set_zdata(QI, MAXPIPE);
-				} else if (bit && testbit < 0.25) {
-					bit = false;
-					if (bitcount) set_zdata(QI, MAXPIPE);
-				}
-
-
+			xy_phase += (TWOPI * (128.0 / samplerate));
 // end XY signal generation
 
-				mark_history[inp_ptr] = zp_mark[i];
-				space_history[inp_ptr] = zp_space[i];
+			mark_history[inp_ptr] = zp_mark[i];
+			space_history[inp_ptr] = zp_space[i];
 
-				inp_ptr = (inp_ptr + 1) % MAXPIPE;
+			inp_ptr = (inp_ptr + 1) % MAXPIPE;
 
-				if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
-					pipe[pipeptr] = bit - 0.5; //testbit - 0.5;
-					pipeptr = (pipeptr + 1) % symbollen;
-				}
+			if (dspcnt && (--dspcnt % (nbits + 2) == 0)) {
+				pipe[pipeptr] = bit - 0.5; //testbit - 0.5;
+				pipeptr = (pipeptr + 1) % symbollen;
+			}
 
 // detect TTY signal transitions
 // rx(...) returns true if valid TTY bit stream detected
 // either character or idle signal
-				if ( rx( reverse ? !bit : bit ) ) {
-					dspcnt = symbollen * (nbits + 2);
-					Update_syncscope();
-					bitcount = 5 * nbits * symbollen;
-					clear_zdata = true;
-					if (sigsearch) sigsearch--;
-
+			if ( rx( reverse ? !bit : bit ) ) {
+				dspcnt = symbollen * (nbits + 2);
+				if (!bHighSpeed) Update_syncscope();
+				clear_zdata = true;
+				bitcount = 5 * nbits * symbollen;
+				if (sigsearch) sigsearch--;
 					int mp0 = inp_ptr - 2;
-					int mp1 = mp0 + 1;
-					if (mp0 < 0) mp0 += MAXPIPE;
-					if (mp1 < 0) mp1 += MAXPIPE;
-					double ferr = (TWOPI * samplerate / rtty_baud) *
-							(!reverse ?
-								(mark_history[mp1] % mark_history[mp0]).arg() :
-								(space_history[mp1] % space_history[mp0]).arg());
-					if (fabs(ferr) > rtty_baud / 2) ferr = 0;
-					freqerr = decayavg ( freqerr, ferr / 8,
-						progdefaults.rtty_afcspeed == 0 ? 8 :
-						progdefaults.rtty_afcspeed == 1 ? 4 : 1 );
-					if (progStatus.afconoff &&
-						(metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff))
-						set_freq(frequency - freqerr);
-				} else
-					if (bitcount) --bitcount;
-			}
+				int mp1 = mp0 + 1;
+				if (mp0 < 0) mp0 += MAXPIPE;
+				if (mp1 < 0) mp1 += MAXPIPE;
+				double ferr = (TWOPI * samplerate / rtty_baud) *
+						(!reverse ?
+							(mark_history[mp1] % mark_history[mp0]).arg() :
+							(space_history[mp1] % space_history[mp0]).arg());
+				if (fabs(ferr) > rtty_baud / 2) ferr = 0;
+				freqerr = decayavg ( freqerr, ferr / 8,
+					progdefaults.rtty_afcspeed == 0 ? 8 :
+					progdefaults.rtty_afcspeed == 1 ? 4 : 1 );
+				if (progStatus.afconoff &&
+					(metric > progStatus.sldrSquelchValue || !progStatus.sqlonoff))
+					set_freq(frequency - freqerr);
+			} else
+				if (bitcount) --bitcount;
 		}
-		if (!bitcount && clear_zdata) {
-			clear_zdata = false;
-			Clear_syncscope();
-			for (int i = 0; i < MAXPIPE; i++) QI[i].re = QI[i].im = 0.0;
-			set_zdata(QI, MAXPIPE);
+		if (!bHighSpeed) {
+			if (!bitcount) {
+				if (clear_zdata) {
+					clear_zdata = false;
+					Clear_syncscope();
+					for (int i = 0; i < MAXPIPE; i++) QI[i].re = QI[i].im = 0.0;
+				}
+			}
+			if (!--showxy) {
+				set_zdata(QI, MAXPIPE);
+				showxy = symbollen;
+			}
 		}
 	}
 	return 0;
@@ -774,7 +811,7 @@ if (progdefaults.true_scope) {
 //=====================================================================
 // RTTY transmit
 //=====================================================================
-double freq1;
+//double freq1;
 double minamp = 100;
 double maxamp = -100;
 
@@ -801,7 +838,7 @@ double rtty::FSKnco()
 }
 
 
-void rtty::send_symbol(int symbol)
+void rtty::send_symbol(int symbol, int len)
 {
 #if 0
 	double freq;
@@ -814,7 +851,7 @@ void rtty::send_symbol(int symbol)
 	else
 		freq = get_txfreq_woffset() - shift / 2.0;
 
-	for (int i = 0; i < symbollen; i++) {
+	for (int i = 0; i < len; i++) {
 		outbuf[i] = nco(freq);
 		if (symbol)
 			FSKbuf[i] = FSKnco();
@@ -831,7 +868,7 @@ void rtty::send_symbol(int symbol)
 	if (reverse)
 		symbol = !symbol;
 
-	for( int i = 0; i < symbollen; ++i ) {
+	for( int i = 0; i < len; ++i ) {
 		mark  = m_SymShaper1->Update( symbol) * m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(!symbol) * m_Osc2->Update( freq2 );
 		outbuf[i] = mark + space;
@@ -929,14 +966,14 @@ void rtty::send_char(int c)
 	}
 
 // start bit
-	send_symbol(0);
+	send_symbol(0, symbollen);
 // data bits
 	for (i = 0; i < nbits; i++) {
-		send_symbol((c >> i) & 1);
+		send_symbol((c >> i) & 1, symbollen);
 	}
 // parity bit
 	if (rtty_parity != RTTY_PARITY_NONE)
-		send_symbol(rttyparity(c));
+		send_symbol(rttyparity(c), symbollen);
 // stop bit(s)
 	send_stop();
 
@@ -968,13 +1005,16 @@ int rtty::tx_process()
 {
 	int c;
 
-	if (preamble > 0) {
+	if (preamble) {
 		m_SymShaper1->reset();
 		m_SymShaper2->reset();
+		for (int i = 0; i < nbits + 1; i++) send_symbol(0, symbollen);
+		send_stop();
+		for (int i = 0; i < nbits + 1; i++) send_symbol(1, symbollen);
+		send_stop();
 		send_idle();
-		preamble = 0;
-		freq1 = get_txfreq_woffset() + shift / 2.0;
-
+		preamble = false;
+//		freq1 = get_txfreq_woffset() + shift / 2.0;
 	}
 	c = get_tx_char();
 
@@ -995,7 +1035,6 @@ int rtty::tx_process()
 // if (progdefaults.rtty_shaper)
 		flush_stream();
 #endif
-//		KeyLine->clearDTR();
 		cwid();
 		return -1;
 	}
@@ -1143,10 +1182,10 @@ double Oscillator::Update( double frequency )
 	return ( sin( m_phase ) );
 }
 
-SymbolShaper::SymbolShaper(double baud, int stop, double sr)
+SymbolShaper::SymbolShaper(double baud, double sr)
 {
 	m_sinc_table = 0;
-	Preset( baud, stop, sr );
+	Preset( baud, sr );
 }
 
 void SymbolShaper::reset()

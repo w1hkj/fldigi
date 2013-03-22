@@ -138,7 +138,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {589 128 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {554 73 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-5 0 596 372} color 50 selection_color 50
@@ -1474,7 +1474,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -2324,8 +2324,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label RTTY
-            xywh {0 50 540 320}
+            label RTTY open
+            xywh {0 50 540 320} hide
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 540 320} selection_color 50
@@ -2336,71 +2336,44 @@ progdefaults.changed = true;}
               } {
                 Fl_Group {} {
                   label Receive open
-                  xywh {2 81 535 161} box ENGRAVED_FRAME align 21
+                  xywh {2 82 535 70} box ENGRAVED_FRAME align 21
                 } {
-                  Fl_Button btn_optimum_rtty_bw {
-                    label Optimum
-                    callback {static const double BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
-progdefaults.RTTY_BW = 2 * BAUD[progdefaults.rtty_baud];
-sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
-progdefaults.changed = true;}
-                    tooltip {Reset Filter to Optimum bandwidth} xywh {450 109 75 23}
-                  }
-                  Fl_Value_Slider sldrRTTYbandwidth {
-                    label Bandwidth
-                    callback {progdefaults.RTTY_BW = o->value();}
-                    tooltip {Adjust the DSP bandwidth} xywh {15 109 430 23} type Horizontal align 1 minimum 5 maximum 600 step 1 value 91 textsize 14
-                    code0 {o->value(progdefaults.RTTY_BW);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                    class Fl_Value_Slider2
-                  }
-                  Fl_Choice mnu_RTTY_filter_quality {
-                    label {Filter Quality}
-                    callback {progdefaults.rtty_filter_quality = o->value();
-progdefaults.changed = true;
-progStatus.rtty_filter_changed = true;} open
-                    tooltip {Low -> High
-DSP filter length
-Low reduces load on CPU
-High gives best performance} xywh {45 161 90 22} down_box BORDER_BOX align 1
-                    code0 {o->add("Low"); o->add("Normal"); o->add("High");}
-                    code1 {o->value(progdefaults.rtty_filter_quality);}
-                  } {}
                   Fl_Choice mnuRTTYAFCSpeed {
                     label {AFC speed}
                     callback {progdefaults.rtty_afcspeed = o->value();
 progdefaults.changed = true;} open
-                    tooltip {AFC tracking speed} xywh {45 208 90 22} down_box BORDER_BOX align 1
+                    tooltip {AFC tracking speed} xywh {77 110 90 22} down_box BORDER_BOX align 1
                     code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
                     code1 {o->value(progdefaults.rtty_afcspeed);}
-                  } {}
-                  Fl_Choice mnu_kahn_demod {
-                    label Demodulator
-                    callback {progdefaults.kahn_demod = o->value();
-progdefaults.changed = true;} open
-                    tooltip {Select demodulator type
-Kahn power detector
-Automatic Threshold Correcting} xywh {155 208 90 22} down_box BORDER_BOX align 1
-                    code0 {o->add("ATC"); o->add("Kahn");}
-                    code1 {o->value(progdefaults.kahn_demod);}
                   } {}
                   Fl_Check_Button chkUOSrx {
                     label {RX - unshift on space}
                     callback {progdefaults.UOSrx=o->value();
 progdefaults.changed = true;}
-                    tooltip {Revert to unshifted char's on a space} xywh {312 161 63 22} down_box DOWN_BOX
+                    tooltip {Revert to unshifted char's on a space} xywh {181 110 63 22} down_box DOWN_BOX
                     code0 {o->value(progdefaults.UOSrx);}
+                  }
+                  Fl_Value_Input rtty_rx_shape {
+                    label {Filter Shape Factor}
+                    callback {progdefaults.rtty_filter = o->value();
+progStatus.rtty_filter_changed = true;
+progdefaults.changed = true;}
+                    tooltip {rcos timing coefficient:
+1.0 ... 2.0
+W1HKJ best 1.275
+DO2SMF best 1.500} xywh {415 108 48 25} align 1 minimum 1 maximum 2 step 0.001 value 1.25 hide
+                    code0 {o->value(progdefaults.rtty_filter);}
                   }
                 }
                 Fl_Group {} {
                   label {RTTY Scope Display} open
-                  xywh {2 243 535 55} box ENGRAVED_FRAME align 21
+                  xywh {2 153 535 55} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnPreferXhairScope {
                     label {Use cross hair scope}
                     callback {progdefaults.PreferXhairScope=o->value();
 progdefaults.changed = true;}
-                    tooltip {Default to cross hair digiscope} xywh {91 266 165 22} down_box DOWN_BOX
+                    tooltip {Default to cross hair digiscope} xywh {90 175 165 22} down_box DOWN_BOX
                     code0 {o->value(progdefaults.PreferXhairScope);}
                   }
                   Fl_Check_Button chk_true_scope {
@@ -2408,20 +2381,20 @@ progdefaults.changed = true;}
                     callback {progdefaults.true_scope=o->value();
 progdefaults.changed = true;}
                     tooltip {Enabled - use Mark/Space filter outputs
-Disabled - use pseudo signals} xywh {312 266 70 22} down_box DOWN_BOX
+Disabled - use pseudo signals} xywh {310 175 70 22} down_box DOWN_BOX
                     code0 {o->value(progdefaults.true_scope);}
                   }
                 }
                 Fl_Group {} {
                   label {Log RTTY frequency} open
-                  xywh {2 300 535 65} box ENGRAVED_FRAME align 21
+                  xywh {2 210 535 65} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button chk_useMARKfreq {
                     label {Use MARK freq'}
                     callback {progdefaults.useMARKfreq=o->value();
 progdefaults.changed = true;}
                     tooltip {Enabled - log QSO using Mark frequency
-Disabled - log QSO using center frequency} xywh {91 325 146 22} down_box DOWN_BOX value 1
+Disabled - log QSO using center frequency} xywh {90 236 146 22} down_box DOWN_BOX value 1
                     code0 {o->value(progdefaults.useMARKfreq);}
                   }
                   Fl_Button btnRTTY_mark_color {
@@ -2435,7 +2408,7 @@ o->redraw();
 wf->redraw_marker();
 progdefaults.changed = true;
 }}
-                    tooltip {Color of Mark Track} xywh {312 327 41 18} color 2 align 8
+                    tooltip {Color of Mark Track} xywh {310 236 41 18} color 2 align 8
                     code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
                   }
                 }
@@ -2549,78 +2522,6 @@ if (o->value()) {
 }}
                   tooltip {Create keyed square wave on right audio channel} xywh {286 202 212 22} down_box DOWN_BOX
                   code0 {o->value(progdefaults.PseudoFSK);}
-                }
-              }
-              Fl_Group {} {
-                label Rx open
-                xywh {0 75 540 295} align 5 hide
-              } {
-                Fl_Group {} {
-                  label Receive open
-                  xywh {2 82 535 70} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Choice mnuRTTYAFCSpeed {
-                    label {AFC speed}
-                    callback {progdefaults.rtty_afcspeed = o->value();
-progdefaults.changed = true;} open
-                    tooltip {AFC tracking speed} xywh {90 110 90 22} down_box BORDER_BOX align 1
-                    code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
-                    code1 {o->value(progdefaults.rtty_afcspeed);}
-                  } {}
-                  Fl_Check_Button chkUOSrx {
-                    label {RX - unshift on space}
-                    callback {progdefaults.UOSrx=o->value();
-progdefaults.changed = true;}
-                    tooltip {Revert to unshifted char's on a space} xywh {310 110 63 22} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.UOSrx);}
-                  }
-                }
-                Fl_Group {} {
-                  label {RTTY Scope Display} open
-                  xywh {2 153 535 55} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Check_Button btnPreferXhairScope {
-                    label {Use cross hair scope}
-                    callback {progdefaults.PreferXhairScope=o->value();
-progdefaults.changed = true;}
-                    tooltip {Default to cross hair digiscope} xywh {90 175 165 22} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.PreferXhairScope);}
-                  }
-                  Fl_Check_Button chk_true_scope {
-                    label {XY - classic scope}
-                    callback {progdefaults.true_scope=o->value();
-progdefaults.changed = true;}
-                    tooltip {Enabled - use Mark/Space filter outputs
-Disabled - use pseudo signals} xywh {310 175 70 22} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.true_scope);}
-                  }
-                }
-                Fl_Group {} {
-                  label {Log RTTY frequency} open
-                  xywh {2 210 535 65} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Check_Button chk_useMARKfreq {
-                    label {Use MARK freq'}
-                    callback {progdefaults.useMARKfreq=o->value();
-progdefaults.changed = true;}
-                    tooltip {Enabled - log QSO using Mark frequency
-Disabled - log QSO using center frequency} xywh {90 236 146 22} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.useMARKfreq);}
-                  }
-                  Fl_Button btnRTTY_mark_color {
-                    label {track color}
-                    callback {if (fl_color_chooser("MARK freq track",
-  progdefaults.rttymarkRGBI.R, 
-  progdefaults.rttymarkRGBI.G, 
-  progdefaults.rttymarkRGBI.B) ) {
-o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
-o->redraw();
-wf->redraw_marker();
-progdefaults.changed = true;
-}}
-                    tooltip {Color of Mark Track} xywh {310 236 41 18} color 2 align 8
-                    code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
-                  }
                 }
               }
             }

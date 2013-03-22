@@ -2096,10 +2096,6 @@ void waterfall::handle_mouse_wheel(int what, int d)
 			val = sldrCWbandwidth;
 			msg_label = "BW";
 		}
-		else if (m == MODE_RTTY) {
-			val = sldrRTTYbandwidth;
-			msg_label = "BW";
-		}
 		else
 			return;
 		msg_fmt = "%s: %2.0f Hz";

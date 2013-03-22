@@ -917,7 +917,6 @@ void startup_modem(modem* m, int f)
 	}
 
 	if (id == MODE_RTTY) {
-		sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
 		if (mvsquelch) {
 			mvsquelch->value(progStatus.VIEWER_rttysquelch);
 			mvsquelch->range(-12.0, 6.0);
@@ -7076,8 +7075,6 @@ void set_rtty_bits(int bits)
 
 void set_rtty_bw(float bw)
 {
-	sldrRTTYbandwidth->value(bw);
-	sldrRTTYbandwidth->do_callback();
 }
 
 int notch_frequency = 0;

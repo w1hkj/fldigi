@@ -281,6 +281,13 @@
         ELEM_(double, RTTY_BW, "RTTYBW",                                                \
               "Receive filter bandwidth (Hz)",                                          \
               68.0)                                                                     \
+        ELEM_(double, rtty_filter, "RTTYFILTER",                                        \
+              "Rtty Rx Filter shape factor, K * (t/T)\n"                                \
+              "You may alter this value using a text editor\n"                          \
+              "change will be effective when restarting fldigi\n"                       \
+              "K = 1.25; best for W1HKJ (default)\n"                                    \
+              "K = 1.5 - best for DO2SMF",                                              \
+              1.25)                                                                     \
         ELEM_(int, rtty_baud, "RTTYBAUD",                                               \
               "Carrier baud rate. Values are as follows:\n"                             \
               "  1: 45; 1: 45.45; 2: 50; 3: 56; 4: 75; 5: 100; 6: 110; 7: 150; \n"      \
@@ -316,12 +323,6 @@
         ELEM_(int, rtty_afcspeed, "RTTYAFCSPEED",                                       \
               "AFC tracking speed. Values are as follows:\n"                            \
               "  0: slow; 1: normal; 2: fast",                                          \
-              1)   /* normal */                                                         \
-        ELEM_(int, rtty_filter_quality, "RTTYFILTERQUALITY",                            \
-              "DSP filter length:\n"                                                    \
-              "  0: low, 512, low cpu load\n"                                           \
-              "  1: normal, 1024, medium cpu load\n"                                    \
-              "  2: high, 2048, high cpu load",                                         \
               1)   /* normal */                                                         \
         ELEM_(bool, useFSKkeyline, "", "",  false)                                      \
         ELEM_(bool, useFSKkeylineDTR, "", "",  false)                                   \

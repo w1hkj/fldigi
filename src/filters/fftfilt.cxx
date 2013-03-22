@@ -27,6 +27,8 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <fstream>
+
 #include <config.h>
 #include <memory.h>
 
@@ -47,6 +49,7 @@ fftfilt::fftfilt(double f1, double f2, int len)
 	ovlbuf		= new complex[filterlen/2];
 	filter		= new complex[filterlen];
 	filtdata	= new complex[filterlen];
+	ht			= new complex[filterlen];
 
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re = filter[i].im =
@@ -68,6 +71,7 @@ fftfilt::fftfilt(double f, int len)
 	ovlbuf		= new complex[filterlen/2];
 	filter		= new complex[filterlen];
 	filtdata	= new complex[filterlen];
+	ht			= new complex[filterlen];
 
 	for (int i = 0; i < filterlen; i++)
 		filter[i].re = filter[i].im =
@@ -87,8 +91,54 @@ fftfilt::~fftfilt()
 	if (ovlbuf) delete [] ovlbuf;
 	if (filter) delete [] filter;
 	if (filtdata) delete [] filtdata;
+	if (ht) delete [] ht;
 }
 
+/*
+ * Filter with fast convolution (overlap-add algorithm).
+ */
+int fftfilt::run(const complex& in, complex **out)
+{
+// collect filterlen/2 input samples
+	const int filterlen_div2 = filterlen / 2 ;
+	filtdata[inptr++] = in;
+
+	if (inptr < filterlen_div2)
+		return 0;
+	if (pass) --pass; // filter output is not stable until 2 passes
+
+// zero the rest of the input data
+	for (int i = filterlen_div2 ; i < filterlen; i++)
+		filtdata[i].re = filtdata[i].im = 0.0;
+
+// FFT transpose to the frequency domain
+	fft->cdft(filtdata);
+
+// multiply with the filter shape
+	for (int i = 0; i < filterlen; i++)
+		filtdata[i] *= filter[i];
+
+// IFFT transpose back to the time domain
+	ift->icdft(filtdata);
+
+// overlap and add
+	for (int i = 0; i < filterlen_div2; i++) {
+		filtdata[i] += ovlbuf[i];
+	}
+	*out = filtdata;
+
+// save the second half for overlapping
+	// Memcpy is allowed because complex are POD objects.
+	memcpy( ovlbuf, filtdata + filterlen_div2, sizeof( ovlbuf[0] ) * filterlen_div2 );
+
+// clear inbuf pointer
+	inptr = 0;
+
+// signal the caller there is filterlen/2 samples ready
+	if (pass) return 0;
+
+	return filterlen_div2;
+}
 
 void fftfilt::create_filter(double f1, double f2)
 {
@@ -121,7 +171,6 @@ void fftfilt::create_filter(double f1, double f2)
 	pass = 2;
 	delete tmpfft;
 }
-
 
 void fftfilt::create_lpf(double f)
 {
@@ -180,10 +229,10 @@ void fftfilt::create_rttyfilt(double f)
 
 // Modified Lanzcos filter see http://en.wikipedia.org/wiki/Lanczos_resampling
 		sinc_array[i] = 
-			( sinc( 3.0 * f * t             ) +
-			  sinc( 3.0 * f * t - 1.0       ) * 0.8 +
-			  sinc( 3.0 * f * t + 1.0       ) * 0.8 ) *
-			( sinc( 4.0 * f * t / 3.0       ) +
+			( sinc( 3.0 * f * t			 ) +
+			  sinc( 3.0 * f * t - 1.0	   ) * 0.8 +
+			  sinc( 3.0 * f * t + 1.0	   ) * 0.8 ) *
+			( sinc( 4.0 * f * t / 3.0	   ) +
 			  sinc( 4.0 * f * t / 3.0 - 1.0 ) * 0.8 +
 			  sinc( 4.0 * f * t / 3.0 + 1.0 ) * 0.8 );
 	}
@@ -207,21 +256,54 @@ void fftfilt::create_rttyfilt(double f)
 		sinc_array[i] = filter[i].re;
 		}
 
+/*
+// create an identical filter impulse response for testing
+// ht_B should be identical to ht_A within limits of math processing
+// Hw is the frequency response of filter created using ht_A impulse
+// response
+	Cfft test_fft(filterlen);
+	complex ht_A[filterlen]; // original impulse response
+	complex ht_B[filterlen]; // computed impulse response
+	complex Hw[filterlen];   // computed H(w)
+
+// ht_A retains the original normalized impulse response
+// ht_B used for forward / reverse FFT
+	for (int i = 0; i < len; ++i)
+		ht_B[i] = ht_A[i] = filter[i];
+
+// perform the complex forward fft to obtain H(w)
+	test_fft.cdft(ht_B);
+	for (int i = 0; i < len; ++i)
+		Hw[i] = ht_B[i];
+
+// perform the complex reverse fft to obtain h(t) again
+	test_fft.icdft(ht_B);
+
+// ht_B should be equal to ht_A
+	std::fstream file1("filter_debug.csv", std::ios::out );
+	for (int i = 0; i < len; ++i)
+		file1 << ht_A[i].re << "," << ht_A[i].im << "," << 
+				ht_B[i].re << "," << ht_B[i].im << "," <<
+				Hw[i].re << "," << Hw[i].im << "," << Hw[i].mag() << "\n";
+	file1.close();
+*/
+
 // perform the complex forward fft to obtain H(w)
 	tmpfft->cdft(filter);
 /*
 	if (print_filter) {
-		printf("Modified Lanzcos 1.5 stop bit filter\n\n");
-		printf("h(t), |H(w)|, dB\n\n");
+		std::fstream file2("filter_response.csv", std::ios::out );
+		file2 << "Modified Lanzcos 1.5 stop bit filter\n\n";
+		file2 << "h(t), |H(w)|, dB\n\n";
 		double dc = 20*log10(filter[0].mag());
 		for (int i = 0; i < len; i++)
-			printf("%f, %f, %f\n", 
-				sinc_array[i], 
-				filter[i].mag(),
-				20*log10(filter[i].mag()) - dc);
+			file2 << sinc_array[i] << "," << filter[i].mag() << ","
+					20*log10(filter[i].mag()) - dc << "\n";
+		file2.close();
 		print_filter = false;
 	}
 */
+
 // start outputs after 2 full passes are complete
 	pass = 2;
 	delete tmpfft;
@@ -229,50 +311,142 @@ void fftfilt::create_rttyfilt(double f)
 
 }
 
-/*
- * Filter with fast convolution (overlap-add algorithm).
- */
-int fftfilt::run(const complex& in, complex **out)
+double xrcos(double t, double T, int order, double alpha = 1)
 {
-// collect filterlen/2 input samples
-	const int filterlen_div2 = filterlen / 2 ;
-	filtdata[inptr++] = in;
+	if (order == 1) return rcos(t, T, alpha);
+	order--;
+	return xrcos(2*t - T/2, T, order, alpha) + xrcos(2*t + T/2, T, order, alpha);
+}
 
-	if (inptr < filterlen_div2)
-		return 0;
-	if (pass) --pass; // filter output is not stable until 2 passes
+double stefan(double t, double T)
+{
+// Stefan implementation
+	double a=.7;
+	double h = rcos( t		, T/4.0, a );
+	h += rcos( t - T/4.0, T/4.0, a );
+	h += rcos( t + T/4.0, T/4.0, a );
+	return h;
+}
 
-// zero the rest of the input data
-	for (int i = filterlen_div2 ; i < filterlen; i++)
-		filtdata[i].re = filtdata[i].im = 0.0;
+double matched(double t, double T)
+{
+	if (t > -T/2 && t < T/2) return 1;
+	return 0;
+}
 
-// FFT transpose to the frequency domain
-	fft->cdft(filtdata);
+double sinc_filter(double t, double T)
+{
+	return sinc(t / T);
+}
 
-// multiply with the filter shape
-	for (int i = 0; i < filterlen; i++)
-//		filtdata[i] = filtdata[i] * filter[i];
-		filtdata[i] *= filter[i];
+void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
+{
+	int len = filterlen / 2 + 1;
+	double ft;
+	Cfft tmpfft(filterlen);
 
-// IFFT transpose back to the time domain
-	ift->icdft(filtdata);
-
-// overlap and add
-	for (int i = 0; i < filterlen_div2; i++) {
-		filtdata[i] += ovlbuf[i];
+	// create the impulse-response
+	for (int i = 0; i < filterlen; ++i) {
+		if (i > len) {
+			ht[i].re = ht[i].im = 0.0;
+			continue;
+		}
+		ft = f * (1.0* i - len / 2.0);
+		switch(N) {
+		default:
+		case 0:
+			ft *= twarp; // compromise filter CPFSK vs SHAPED_AFSK
+			ht[i] = xrcos( ft, 1.0, 1, alpha);
+			break;
+		case 1:
+			ft *= 1.1;
+			ht[i] = xrcos( ft, 1.0, 2, alpha );
+			break;
+		case 2:
+//			ft *= 1.0;
+			ht[i] = xrcos( ft, 1.0, 3, alpha );
+			break;
+		case 3:
+			ft *= 1.5;
+			ht[i] = rcos( ft, 1.0 );
+			break;
+		case 4:
+			ft *= (1.0 + M_PI/2.0);
+			ht[i]  = rcos( ft - 0.5, 1.0 );
+			ht[i] += rcos( ft + 0.5, 1.0 );
+			break;
+		case 5:
+			ft *= (3.0 + M_PI/2.0);
+			ht[i]  = rcos( ft - 1.5, 1.0 );
+			ht[i] += rcos( ft - 0.5, 1.0 );
+			ht[i] += rcos( ft + 0.5, 1.0 );
+			ht[i] += rcos( ft + 1.5, 1.0 );
+			break;
+		case 6:
+			ft *= M_PI / 2.0;
+			ht[i] = sinc_filter(ft, 1.0 );
+			break;
+		case 7:
+			ft *= (2.0 + M_PI/2.0);
+			ht[i]  = rcos( ft - 1.0, 1.0 );
+			ht[i] += rcos( ft, 1.0 );
+			ht[i] += rcos( ft + 1.0, 1.0 );
+			break;
+		case 8:
+//			ft *= 1.0+0.57079/10.0E10; // simulating inf
+			ht[i] = matched(ft, 1.0);
+			break;
+		}
 	}
-	*out = filtdata;
 
-// save the second half for overlapping
-	// Memcpy is allowed because complex are POD objects.
-	memcpy( ovlbuf, filtdata + filterlen_div2, sizeof( ovlbuf[0] ) * filterlen_div2 );
+// normalize the impulse-response
+	double sum = 0.0;
+	for (int i = 0; i <= len; ++i) {
+		sum += ht[i].re;
+	}
+	for (int i = 0; i < filterlen; ++i) {
+		ht[i].re *= filterlen/sum;
+		filter[i] = ht[i];
+	}
 
+/*
+// create an identical filter impulse response for testing
+// ht_B should be identical to ht_A within limits of math processing
+// Hw is the frequency response of filter created using ht_A impulse
+// response
+	Cfft test_fft(filterlen);
+	complex ht_A[filterlen]; // original impulse response
+	complex ht_B[filterlen]; // computed impulse response
+	complex Hw[filterlen];   // computed H(w)
 
-// clear inbuf pointer
-	inptr = 0;
+// ht_A retains the original normalized impulse response
+// ht_B used for forward / reverse FFT
+	for (int i = 0; i < filterlen; i++)
+		ht_B[i] = ht_A[i] = filter[i];
 
-// signal the caller there is filterlen/2 samples ready
-	if (pass) return 0;
+// perform the complex forward fft to obtain H(w)
+	test_fft.cdft(ht_B);
+	for (int i = 0; i < filterlen; i++)
+		Hw[i] = ht_B[i];
 
-	return filterlen_div2;
+// perform the complex reverse fft to obtain h(t) again
+	test_fft.icdft(ht_B);
+
+// ht_B should be equal to ht_A
+	std::fstream file1("filter_debug.csv", std::ios::out );
+	for (int i = 0; i < filterlen; i++)//len; ++i)
+		file1 << ht_A[i].re << "," << ht_B[i].re << "," 
+			  << ht_A[i].re - ht_B[i].re << ","
+			  << Hw[i].mag() << "\n";
+	file1.close();
+*/
+
+// perform the complex forward fft to obtain H(w)
+//	tmpfft->cdft(filter);
+	tmpfft.cdft(filter);
+
+// start outputs after 2 full passes are complete
+	pass = 2;
+//	delete tmpfft;
+
 }
