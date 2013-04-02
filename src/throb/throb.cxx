@@ -37,6 +37,8 @@
 #include "fl_digi.h"
 #include "status.h"
 
+#define MAX_TONES	15
+
 #undef  CLAMP
 #define CLAMP(x,low,high)       (((x)>(high))?(high):(((x)<(low))?(low):(x)))
 
@@ -410,7 +412,7 @@ void throb::decodechar(int tone1, int tone2)
 
 void throb::rx(complex in)
 {
-	complex rxword[num_tones];
+	complex rxword[MAX_TONES];
 	int i, tone1, tone2, maxtone;
 
 	symbol[symptr] = in;
