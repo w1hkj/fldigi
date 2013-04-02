@@ -43,7 +43,8 @@ void Progress::draw()
 	int	progress;	// Size of progress bar...
 	int	bx, by, bw, bh;	// Box areas...
 	int	tx, tw;		// Temporary X + width
-	int	ty, th;		// Temporary Y + height
+//	int	ty, th;		// Temporary Y + height
+	int th;
 
 
   // Get the box borders...
@@ -54,7 +55,7 @@ void Progress::draw()
 
 	tx = x() + bx;
 	tw = w() - bw;
-	ty = y() + by;
+//	ty = y() + by;
 	th = h() - bh;  
 
   // Draw the progress bar...

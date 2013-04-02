@@ -1029,7 +1029,8 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
 	dspCmpx SymbTime;
 	double SymbConf, SymbShift, FreqOfs;
 	double dspRMS;
-	int Loops, Incl;
+//	int Loops;
+	int Incl;
 
 	SyncPtr = (SyncPtr + 1) & (SymbolDiv - 1); // increment the correlators pointer
 
@@ -1240,7 +1241,8 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
 		FreqPipe[TrackPipePtr] = FreqOfs;   // for averaging
 
 // find dspAverage symbol time
-		Loops = dspSelFitAver( SymbPipe,
+//		Loops = 
+		dspSelFitAver( SymbPipe,
 							   TrackPipeLen,
 							   (double)3.0,
 							   4,
@@ -1250,7 +1252,8 @@ void MT63rx::SyncProcess(dspCmpx *Slice)
 // printf(" AverSymb=[%+5.2f,%+5.2f], dspRMS=%5.3f/%2d",
 //		 AverSymb.re,AverSymb.im,dspRMS,Incl);
 // find dspAverage freq. offset
-		Loops = dspSelFitAver( FreqPipe,
+//		Loops = 
+		dspSelFitAver( FreqPipe,
 							   TrackPipeLen,
 							   (double)2.5,
 							   4,

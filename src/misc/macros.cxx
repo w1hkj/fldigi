@@ -903,10 +903,8 @@ static void pDECR(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int  contestval;
 	contest_count.count--;
 	if (contest_count.count < 0) contest_count.count = 0;
-	contestval = contest_count.count;
 	s.replace (i, 6, "");
 	updateOutSerNo();
 }
@@ -917,9 +915,7 @@ static void pINCR(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int  contestval;
 	contest_count.count++;
-	contestval = contest_count.count;
 	s.replace (i, 6, "");
 	updateOutSerNo();
 }
@@ -2218,7 +2214,6 @@ int MACROTEXT::loadMacros(const std::string& filename)
 	std::string mLine;
 	std::string mName;
 	std::string mDef;
-	bool   inMacro = false;
 	int    mNumber = 0;
 	unsigned long int	   crlf; // 64 bit cpu's
 	char   szLine[4096];
@@ -2245,7 +2240,6 @@ int MACROTEXT::loadMacros(const std::string& filename)
 		name[i] = "";
 		text[i] = "";
 	}
-	inMacro = false;
 	while (!mFile.eof()) {
 		mFile.getline(szLine,4095);
 		mLine = szLine;

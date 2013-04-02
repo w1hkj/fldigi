@@ -251,7 +251,7 @@ active:
         return RET_TOOSMALL;
       if ((state & 3) >= 2) {
         unsigned int i = state & -4;
-        unsigned char c;
+        unsigned char c = 0;
         if (i < 26)
           c = i+'A';
         else if (i < 52)
@@ -289,7 +289,7 @@ active:
         return RET_TOOSMALL;
       for (;;) {
         unsigned int i;
-        unsigned char c;
+        unsigned char c = 0;
         switch (state & 3) {
           case 0: /* inside base64, 6 bits known for 4th byte */
             c = (state & -4) >> 2; state = 1; break;
@@ -337,7 +337,7 @@ utf7_reset (conv_t conv, unsigned char *r, int n)
       return RET_TOOSMALL;
     if ((state & 3) >= 2) {
       unsigned int i = state & -4;
-      unsigned char c;
+      unsigned char c = 0;
       if (i < 26)
         c = i+'A';
       else if (i < 52)

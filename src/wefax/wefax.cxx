@@ -996,7 +996,7 @@ public:
 		}
 
 		double tmpCorrPrev = correlation_from_index(corr_smpl_lin, 0 );
-		double tmpCorrMax = 0.0 ;
+//		double tmpCorrMax = 0.0 ;
 		size_t local_max = 0 ;
 		bool is_growing = false ;
 
@@ -1007,7 +1007,7 @@ public:
 			bool is_growing_next = tmpCorr > tmpCorrPrev ;
 			if( is_growing && ( ! is_growing_next  ) ) {
 				local_max = i - 1 ;
-				tmpCorrMax = tmpCorr ;
+//				tmpCorrMax = tmpCorr ;
 				break ;
 			}
 			is_growing = is_growing_next ;

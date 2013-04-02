@@ -322,53 +322,98 @@ void dspFitPoly2(double Data[3], double &A, double &B, double &C);
 template <class type>
  int dspSelFitAver(type *Data, int Len, double SelThres, int Loops,
 		double &Aver, double &dspRMS, int &Sel)
-{ int i,loop,Incl,prev; double Sum,ErrSum,Lev,dLev,Diff,Thres;
-  for(ErrSum=Sum=0.0,i=0; i<Len; i++)
-  { Sum+=Data[i]; ErrSum+=dspPower(Data[i]); }
-  Lev=Sum/Len; ErrSum/=Len; ErrSum-=Lev*Lev;
-  // printf("Len=%d, Lev=%+7.4f, ErrSum=%7.4f, dspRMS=%7.4f\n",
-  //	 Len,Lev,ErrSum,sqrt(ErrSum));
-  for(Incl=0,prev=Len,loop=0; loop<Loops; loop++)
-  { Thres=SelThres*SelThres*ErrSum;
-    for(ErrSum=Sum=0.0,Incl=0,i=0; i<Len; i++)
-    { Diff=dspPower(Data[i]-Lev);
-      if(Diff<=Thres) { Sum+=Data[i]; ErrSum+=Diff; Incl+=1; }
-      // else printf(" %d",i);
-    } Sum/=Incl; dLev=Sum-Lev; ErrSum/=Incl;
-      ErrSum-=dLev*dLev; Lev+=dLev; ErrSum=fabs(ErrSum);
-      // printf("\nLoop #%d, Lev=%+7.4f, dLev=%+7.4f, ErrSum=%7.4f, dspRMS=%7.4f, Incl=%d\n",
-      //	     loop,Lev,dLev,ErrSum,sqrt(ErrSum),Incl);
-    // if(Incl==prev) { loop++; break; }
-    // prev=Incl;
-  } Aver=Lev; dspRMS=sqrt(ErrSum); Sel=Incl;
-  return loop;
+{
+	int i, loop, Incl;//, prev;
+	double Sum, ErrSum, Lev, dLev, Diff, Thres;
+	for (ErrSum = Sum = 0.0, i = 0; i < Len; i++) {
+		Sum += Data[i];
+		ErrSum += dspPower(Data[i]);
+	}
+	Lev = Sum/Len;
+	ErrSum /= Len;
+	ErrSum -= Lev*Lev;
+// printf("Len=%d, Lev=%+7.4f, ErrSum=%7.4f, dspRMS=%7.4f\n",
+//	 Len,Lev,ErrSum,sqrt(ErrSum));
+//	prev = Len;
+	Incl = 0;
+	for (loop = 0; loop < Loops; loop++) {
+		Thres = SelThres * SelThres * ErrSum;
+		for (ErrSum = Sum = 0.0, Incl = 0, i = 0; i < Len; i++) {
+			Diff = dspPower(Data[i]-Lev);
+			if (Diff <= Thres) {
+				Sum += Data[i];
+				ErrSum += Diff;
+				Incl += 1;
+			}
+			// else printf(" %d",i);
+		}
+		Sum /= Incl;
+		dLev = Sum - Lev;
+		ErrSum /= Incl;
+		ErrSum -= dLev * dLev;
+		Lev += dLev;
+		ErrSum = fabs(ErrSum);
+		// printf("\nLoop #%d, Lev=%+7.4f, dLev=%+7.4f, ErrSum=%7.4f, dspRMS=%7.4f, Incl=%d\n",
+		//	     loop,Lev,dLev,ErrSum,sqrt(ErrSum),Incl);
+		// if(Incl==prev) { loop++; break; }
+		// prev=Incl;
+	}
+	Aver = Lev;
+	dspRMS = sqrt(ErrSum);
+	Sel=Incl;
+	return loop;
 }
 
 template <class type>
- int dspSelFitAver(Cdspcmpx<type> *Data, int Len, double SelThres, int Loops,
+int dspSelFitAver(Cdspcmpx<type> *Data, int Len, double SelThres, int Loops,
 		Cdspcmpx<double> &Aver, double &dspRMS, int &Sel)
-{ int i,loop,Incl,prev; dspCmpx Sum,Lev,dLev; double ErrSum,Diff,Thres;
-  for(ErrSum=0.0,Sum.re=Sum.im=0.0,i=0; i<Len; i++)
-  { Sum.re+=Data[i].re; Sum.im+=Data[i].im; ErrSum+=dspPower(Data[i]); }
-  Lev.re=Sum.re/Len; Lev.im=Sum.im/Len; ErrSum/=Len; ErrSum-=dspPower(Lev);
-  // printf("Len=%d, Lev=[%+7.4f,%+7.4f], ErrSum=%7.4f, dspRMS=%7.4f\n",
-  //	 Len,Lev.re,Lev.im,ErrSum,sqrt(ErrSum));
-  for(Incl=0,prev=Len,loop=0; loop<Loops; loop++)
-  { Thres=0.5*SelThres*SelThres*ErrSum;
-    for(ErrSum=0.0,Sum.re=Sum.im=0.0,Incl=0,i=0; i<Len; i++)
-    { Diff=dspPower(Data[i].re-Lev.re,Data[i].im-Lev.im);
-      if(Diff<=Thres) { Sum.re+=Data[i].re; Sum.im+=Data[i].im; ErrSum+=Diff; Incl+=1; }
-      // else printf(" %d",i);
-    } Sum.re/=Incl; Sum.im/=Incl;
-      dLev.re=Sum.re-Lev.re; dLev.im=Sum.im-Lev.im;
-      ErrSum/=Incl; ErrSum-=dspPower(dLev); ErrSum=fabs(ErrSum);
-      Lev.re+=dLev.re; Lev.im+=dLev.im;
-      // printf("\nLoop #%d, Lev=[%+6.3f,%+6.3f], dLev=[%+6.3f,%+6.3f], ErrSum=%7.4f, dspRMS=%7.4f, Incl=%d\n",
-      //	     loop, Lev.re,Lev.im, dLev.re,dLev.im, ErrSum,sqrt(ErrSum), Incl);
-    // if(Incl==prev) { loop++; break; }
-    // prev=Incl;
-  } Aver=Lev; dspRMS=sqrt(ErrSum); Sel=Incl;
-  return loop;
+{
+	int i, loop, Incl;//, prev;
+	dspCmpx Sum, Lev, dLev;
+	double ErrSum, Diff, Thres;
+	for (ErrSum = 0.0, Sum.re = Sum.im = 0.0, i = 0; i < Len; i++) {
+		Sum.re += Data[i].re;
+		Sum.im += Data[i].im;
+		ErrSum += dspPower(Data[i]);
+	}
+	Lev.re = Sum.re / Len;
+	Lev.im = Sum.im / Len;
+	ErrSum /= Len;
+	ErrSum -= dspPower(Lev);
+	// printf("Len=%d, Lev=[%+7.4f,%+7.4f], ErrSum=%7.4f, dspRMS=%7.4f\n",
+	//	 Len,Lev.re,Lev.im,ErrSum,sqrt(ErrSum));
+	Incl = 0;
+//	prev = Len;
+	for (loop = 0; loop < Loops; loop++) {
+		Thres = 0.5 * SelThres * SelThres * ErrSum;
+		for (ErrSum = 0.0, Sum.re = Sum.im = 0.0, Incl = 0, i = 0; i < Len; i++) {
+			Diff = dspPower(Data[i].re - Lev.re, Data[i].im - Lev.im);
+			if (Diff <= Thres) {
+				Sum.re += Data[i].re;
+				Sum.im += Data[i].im;
+				ErrSum += Diff;
+				Incl += 1;
+			}
+			// else printf(" %d",i);
+		}
+		Sum.re /= Incl;
+		Sum.im /= Incl;
+		dLev.re = Sum.re - Lev.re;
+		dLev.im = Sum.im - Lev.im;
+		ErrSum /= Incl;
+		ErrSum -= dspPower(dLev);
+		ErrSum = fabs(ErrSum);
+		Lev.re += dLev.re;
+		Lev.im += dLev.im;
+		// printf("\nLoop #%d, Lev=[%+6.3f,%+6.3f], dLev=[%+6.3f,%+6.3f], ErrSum=%7.4f, dspRMS=%7.4f, Incl=%d\n",
+		//	     loop, Lev.re,Lev.im, dLev.re,dLev.im, ErrSum,sqrt(ErrSum), Incl);
+		// if(Incl==prev) { loop++; break; }
+		// prev=Incl;
+	}
+	Aver = Lev;
+	dspRMS = sqrt(ErrSum);
+	Sel = Incl;
+	return loop;
 }
 
 // ----------------------------------------------------------------------------
