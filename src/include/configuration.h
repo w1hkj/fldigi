@@ -1063,15 +1063,21 @@
         ELEM_(RGB, bwsrSldrSelColor,"BWSRSLDRSELCOLOR",                                 \
               "Button highlight color, signal browser detect level",                    \
               {54, 100, 139})                                                           \
-        ELEM_(RGB, bwsrHiLight1, "BWSRHILIGHT1",                                        \
+        ELEM_(int, bwsrHiLight1, "BWSRHILIGHT1",                                        \
               "View Browser highlight color 1, default Dark Red",                       \
-              {128, 0, 0})                                                              \
-        ELEM_(RGB, bwsrHiLight2, "BWSRHILIGHT2",                                        \
+              FL_RED)                                                                   \
+        ELEM_(int, bwsrHiLight2, "BWSRHILIGHT2",                                        \
               "View Browser highlight color 2, default Dark Green",                     \
-              {0, 128, 0})                                                              \
-        ELEM_(RGB, bwsrHiLight3, "BWSRHILIGHT3",                                        \
-              "View Browser highlight color 3, default Dark Blue",                      \
-              {0, 0, 128})                                                              \
+              FL_GREEN)                                                                 \
+        ELEM_(int, bwsrBackgnd1, "BWSRBACKGND1",                                        \
+              "View Browser background odd lines",                                      \
+              55)                                                                       \
+        ELEM_(int, bwsrBackgnd2, "BWSRBACKGND2",                                        \
+              "View Browser background odd lines",                                      \
+              53)                                                                       \
+        ELEM_(int, bwsrSelect, "BWSRSELECT",                                            \
+              "View Browser line select color",                                         \
+              FL_BLUE)                                                                  \
         ELEM_(RGB, dup_color, "dupcolor",                                               \
               "Callsign background color when duplicate detected",                      \
               {255, 110, 180})                                                          \

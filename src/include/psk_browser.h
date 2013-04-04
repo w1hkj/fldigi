@@ -20,9 +20,7 @@
 class pskBrowser : public Fl_Hold_Browser{
 private:
 	static std::string hilite_color_1;
-	static std::string hilite_color_3;
 	static std::string hilite_color_2;
-	static std::string bkselect;
 	static std::string white;
 	static std::string bkgnd[];
 
@@ -39,7 +37,9 @@ private:
 	Fl_Font fnt;
 	Fl_Color HiLite_1;
 	Fl_Color HiLite_2;
-	Fl_Color HiLite_3;
+	Fl_Color BkSelect;
+	Fl_Color Backgnd1;
+	Fl_Color Backgnd2;
 
 	int siz;
 	int cols[2];
@@ -64,10 +64,14 @@ public:
 	void setfont(Fl_Font font, int sz) { fnt = font; siz = sz; evalcwidth();}
 	void HighLight_1(Fl_Color clr) { HiLite_1 = clr; }
 	Fl_Color HighLight_1() { return HiLite_1; }
-	void HighLight_2(Fl_Color clr) { HiLite_3 = clr; }
+	void HighLight_2(Fl_Color clr) { HiLite_2 = clr; }
 	Fl_Color HighLight_2() { return HiLite_2; }
-	void HighLight_3(Fl_Color clr) { HiLite_3 = clr; }
-	Fl_Color HighLight_3() { return HiLite_3; }
+	void SelectColor(Fl_Color clr) { BkSelect = clr; }
+	Fl_Color SelectColor() { return BkSelect; }
+	void Background1(Fl_Color clr) { Backgnd1 = clr; }
+	Fl_Color Background1() { return Backgnd1; }
+	void Background2(Fl_Color clr) { Backgnd2 = clr; }
+	Fl_Color Background2() { return Backgnd2; }
 	void columns(int a) { cols[0] = a; cols[1] = 0; column_widths(cols); }
 	void resize(int x, int y, int w, int h);
 	void addchr(int ch, int freq, unsigned char c, int md);

@@ -312,8 +312,8 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.VIEWERhistory);}
               }
               Fl_Group {} {
-                label {Detection Level Colors} open
-                xywh {42 281 187 60} box ENGRAVED_FRAME
+                label {Detection Level} open
+                xywh {34 281 144 60} box ENGRAVED_FRAME
               } {
                 Fl_Button bwsrSliderColor {
                   label Backgnd
@@ -335,7 +335,7 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Background color of signal viewer squelch control} xywh {49 304 80 24} align 1
+                  tooltip {Background color of signal viewer squelch control} xywh {41 304 60 24} align 1
                   code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
                 }
                 Fl_Button bwsrSldrSelColor {
@@ -358,54 +358,59 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Slider hilite color of signal viewer squelch control} xywh {141 304 80 24} align 1
+                  tooltip {Slider hilite color of signal viewer squelch control} xywh {109 304 60 24} align 1
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
                 }
               }
               Fl_Group {} {
-                label {Parser Colors} open
-                xywh {237 281 187 60} box ENGRAVED_FRAME
+                label {Browser Line Colors} open
+                xywh {186 281 326 60} box ENGRAVED_FRAME
               } {
                 Fl_Button bwsrHiLite_1_color {
                   label {HiLite 1}
-                  callback {uchar r, g, b;
-    r = progdefaults.bwsrHiLight1.R;
-    g = progdefaults.bwsrHiLight1.G;
-    b = progdefaults.bwsrHiLight1.B;
-
-    if (fl_color_chooser("Slider Color", r, g, b) == 0)
-        return;
-    progdefaults.bwsrHiLight1.R = r;
-    progdefaults.bwsrHiLight1.G = g;
-    progdefaults.bwsrHiLight1.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    o->redraw();
-
-    viewer_redraw();
-    progdefaults.changed = true;}
-                  tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {245 303 80 24} align 1
-                  code0 {bwsrHiLite_1_color->color(fl_rgb_color(progdefaults.bwsrHiLight1.R, progdefaults.bwsrHiLight1.G,progdefaults.bwsrHiLight1.B));}
+                  callback {progdefaults.bwsrHiLight1 = fl_show_colormap(progdefaults.bwsrHiLight1);
+bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {192 303 60 24} align 1
+                  code0 {bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);}
                   code1 {\#include "Viewer.h"}
                 }
                 Fl_Button bwsrHiLite_2_color {
                   label {HiLite 2}
-                  callback {uchar r, g, b;
-    r = progdefaults.bwsrHiLight2.R;
-    g = progdefaults.bwsrHiLight2.G;
-    b = progdefaults.bwsrHiLight2.B;
-
-    if (fl_color_chooser("Slider Color", r, g, b) == 0)
-        return;
-    progdefaults.bwsrHiLight2.R = r;
-    progdefaults.bwsrHiLight2.G = g;
-    progdefaults.bwsrHiLight2.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    o->redraw();
-
-    viewer_redraw();
-    progdefaults.changed = true;}
-                  tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {333 303 80 24} align 1
-                  code0 {bwsrHiLite_2_color->color(fl_rgb_color(progdefaults.bwsrHiLight2.R, progdefaults.bwsrHiLight2.G,progdefaults.bwsrHiLight2.B));}
+                  callback {progdefaults.bwsrHiLight2 = fl_show_colormap(progdefaults.bwsrHiLight2);
+bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {255 303 60 24} align 1
+                  code0 {bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);}
+                }
+                Fl_Button bwsrHiLite_even_lines {
+                  label Even
+                  callback {progdefaults.bwsrBackgnd2 = fl_show_colormap(progdefaults.bwsrBackgnd2);
+bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+viewer_redraw();
+progdefaults.changed = true;;}
+                  tooltip {Even lines} xywh {318 303 60 24} align 1
+                  code0 {bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);}
+                }
+                Fl_Button bwsrHiLite_odd_lines {
+                  label Odd
+                  callback {progdefaults.bwsrBackgnd1 = fl_show_colormap(progdefaults.bwsrBackgnd1);
+bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {Odd lines} xywh {381 303 60 24} align 1
+                  code0 {bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);}
+                }
+                Fl_Button bwsrHiLite_select {
+                  label Select
+                  callback {progdefaults.bwsrSelect = fl_show_colormap(progdefaults.bwsrSelect);
+bwsrHiLite_select->color(progdefaults.bwsrSelect);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {Select line} xywh {445 303 60 24} align 1
+                  code0 {bwsrHiLite_select->color(progdefaults.bwsrSelect);}
                 }
               }
             }
@@ -2533,6 +2538,78 @@ if (o->value()) {
 }}
                   tooltip {Create keyed square wave on right audio channel} xywh {286 202 212 22} down_box DOWN_BOX
                   code0 {o->value(progdefaults.PseudoFSK);}
+                }
+              }
+              Fl_Group {} {
+                label Rx open
+                xywh {0 75 540 295} align 5 hide
+              } {
+                Fl_Group {} {
+                  label Receive open
+                  xywh {2 82 535 70} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Choice mnuRTTYAFCSpeed {
+                    label {AFC speed}
+                    callback {progdefaults.rtty_afcspeed = o->value();
+progdefaults.changed = true;} open
+                    tooltip {AFC tracking speed} xywh {90 110 90 22} down_box BORDER_BOX align 1
+                    code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
+                    code1 {o->value(progdefaults.rtty_afcspeed);}
+                  } {}
+                  Fl_Check_Button chkUOSrx {
+                    label {RX - unshift on space}
+                    callback {progdefaults.UOSrx=o->value();
+progdefaults.changed = true;}
+                    tooltip {Revert to unshifted char's on a space} xywh {310 110 63 22} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.UOSrx);}
+                  }
+                }
+                Fl_Group {} {
+                  label {RTTY Scope Display} open
+                  xywh {2 153 535 55} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button btnPreferXhairScope {
+                    label {Use cross hair scope}
+                    callback {progdefaults.PreferXhairScope=o->value();
+progdefaults.changed = true;}
+                    tooltip {Default to cross hair digiscope} xywh {90 175 165 22} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.PreferXhairScope);}
+                  }
+                  Fl_Check_Button chk_true_scope {
+                    label {XY - classic scope}
+                    callback {progdefaults.true_scope=o->value();
+progdefaults.changed = true;}
+                    tooltip {Enabled - use Mark/Space filter outputs
+Disabled - use pseudo signals} xywh {310 175 70 22} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.true_scope);}
+                  }
+                }
+                Fl_Group {} {
+                  label {Log RTTY frequency} open
+                  xywh {2 210 535 65} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button chk_useMARKfreq {
+                    label {Use MARK freq'}
+                    callback {progdefaults.useMARKfreq=o->value();
+progdefaults.changed = true;}
+                    tooltip {Enabled - log QSO using Mark frequency
+Disabled - log QSO using center frequency} xywh {90 236 146 22} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.useMARKfreq);}
+                  }
+                  Fl_Button btnRTTY_mark_color {
+                    label {track color}
+                    callback {if (fl_color_chooser("MARK freq track",
+  progdefaults.rttymarkRGBI.R, 
+  progdefaults.rttymarkRGBI.G, 
+  progdefaults.rttymarkRGBI.B) ) {
+o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
+o->redraw();
+wf->redraw_marker();
+progdefaults.changed = true;
+}}
+                    tooltip {Color of Mark Track} xywh {310 236 41 18} color 2 align 8
+                    code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
+                  }
                 }
               }
             }

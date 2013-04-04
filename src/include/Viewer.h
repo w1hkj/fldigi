@@ -4,6 +4,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
+#include <FL/fl_show_colormap.H>
 
 #include <string>
 
