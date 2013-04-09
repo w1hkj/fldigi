@@ -218,6 +218,9 @@
         ELEM_(bool, rx_lowercase, "RX_LOWERCASE",                                       \
               "Print Rx in lowercase for CW, RTTY, CONTESTIA and THROB",                \
               false)                                                                    \
+        ELEM_(bool, tx_lowercase, "TX_LOWERCASE",                                       \
+              "Transmit all text in lowercase",                                         \
+              false)                                                                    \
         /* PSK, filter can be 0, 1, 2, 3 or 4 */                                        \
         ELEM_(int, PSK_filter, "PSKFILTER",                                             \
               "Not configurable; must always be 0",                                     \

@@ -606,25 +606,36 @@ progdefaults.changed = true;} open
               } {}
             }
             Fl_Group {} {open
-              xywh {21 133 496 60} box ENGRAVED_FRAME align 21
+              xywh {21 132 496 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_rx_lowercase {
                 label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
                 callback {progdefaults.rx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {56 149 389 20} down_box DOWN_BOX
+                xywh {56 139 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rx_lowercase);}
+              }
+            }
+            Fl_Group {} {open
+              xywh {21 167 496 34} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button btn_tx_lowercase {
+                label {Transmit all text in lower case}
+                callback {progdefaults.tx_lowercase = o->value();
+progdefaults.changed = true;}
+                xywh {56 175 389 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.tx_lowercase);}
               }
             }
             Fl_Group {} {
               label {Exit prompts} open
-              xywh {21 195 496 114} box ENGRAVED_FRAME align 21
+              xywh {21 202 496 110} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_save_config_on_exit {
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {56 261 233 20} down_box DOWN_BOX
+                xywh {56 265 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -632,7 +643,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {56 283 233 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {56 287 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -640,32 +651,32 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {300 261 166 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {300 265 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Box {} {
                 label {Exit prompts active only when File/Exit menu item selected.
 Not active if window decoration close button pressed.}
-                xywh {61 215 436 40} box BORDER_BOX align 20
+                xywh {61 219 436 40} box BORDER_BOX align 20
               }
               Fl_Check_Button btn2_confirm_exit {
                 label {Confirm exit}
                 callback {btn2_confirm_exit->value(o->value());
 progdefaults.confirmExit=o->value();
 progdefaults.changed = true;}
-                xywh {300 283 200 20} down_box DOWN_BOX
+                xywh {300 287 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
               label {Check for updates} open
-              xywh {21 311 496 56} box ENGRAVED_FRAME align 21
+              xywh {21 314 496 54} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_check_for_updates {
                 label {Check for updates when starting program}
                 callback {progdefaults.check_for_updates = o->value();
 progdefaults.changed = true;}
-                xywh {56 335 324 20} down_box DOWN_BOX
+                xywh {56 337 324 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.check_for_updates);}
               }
             }
@@ -4001,7 +4012,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {open
               xywh {25 75 490 51} box ENGRAVED_FRAME align 21
@@ -4331,7 +4342,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWX {
             label WX open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
               label {Weather query specification} open

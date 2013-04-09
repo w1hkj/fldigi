@@ -6621,6 +6621,13 @@ int get_tx_char(void)
 		return(GET_TX_CHAR_NODATA);
 	}
 
+	if (progdefaults.tx_lowercase)
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+		c = fl_tolower(c);
+#else
+		c = tolower(c);
+#endif
+
 	return(c);
 }
 
