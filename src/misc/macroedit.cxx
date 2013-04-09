@@ -88,6 +88,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<NAME>\tother name"));
 	w->add(_("<QTH>\tother QTH"));
 	w->add(_("<RST>\tother RST"));
+	w->add(_("<QSONBR>\t# QSO recs"));
+	w->add(_("<NXTNBR>\tnext QSO rec #"));
 	w->add(_("<MAPIT>\tmap on google"));
 	w->add(_("<MAPIT:adr/lat/loc>\tmap by value"));
  
