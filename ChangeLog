@@ -1,6 +1,50 @@
 
 
+=Version 3.21.69=
+
+2013-04-09  David Freese  <w1hkj@w1hkj.com>
+
+	b5d08e4: QSO NBR/NXT macro tag
+	3f99de8: TX lower case
+	69bab69: WX parser
+	6e5a68d: Signal Browser
+	2ecbeca: Compiler Warnings
+	5134b81: Free BSD mods
+	f794566: flstring
+	234380f: RTTY filters
+	6e9a943: Serial by-id
+	5a2c244: RTTY tx symbol shaper
+	093796f: Misc NBEMS mods
+
+2013-02-28  Arvo Järve  <arvo@softshark.ee>
+
+	b088667: CRC16 and ANSII char set
+
+2013-02-27  David Freese  <w1hkj@w1hkj.com>
+
+	c586219: High Speed Playback
+	0a9823d: RTTY config tab
+
+2013-02-11  Arvo Järve ES1JA  <arvo@softshark.ee>
+
+	cd2fdd7:   * Added BAND macro tag
+
+2013-02-09  David Freese  <w1hkj@w1hkj.com>
+
+	64f04d8: Dbl Click for Xchg In
+	a7f42b9: Status Reports
+
+2013-02-09  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	5d6d921: RTTY tx code
+
+2013-02-09  David Freese  <w1hkj@w1hkj.com>
+
+	163f1f6: RTTY no LF
+
+
 =Version 3.21.68=
+
 
 2013-02-08  Remi Chateauneu  <remi.chateauneu@gmail.com>
 
