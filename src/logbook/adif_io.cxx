@@ -131,7 +131,7 @@ static inline int findfield( char *p )
 			pos = p;
 			do { *pos = toupper(*pos); } while (++pos < p1);
 			*p1 = 0;
-			pos = strstr(fastlookup, p);
+			pos = strcasestr(fastlookup, p);
 			*p1 = ':';
 			if (pos) return fields[(pos - fastlookup) / maxlen].type;
 		}
