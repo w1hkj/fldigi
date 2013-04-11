@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
+version 1.0302 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
@@ -145,8 +145,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 540 345} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 540 345} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -4005,14 +4005,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 540 345} hide
+        xywh {0 25 540 345}
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 540 345} selection_color 50
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
               xywh {25 75 490 51} box ENGRAVED_FRAME align 21
@@ -4158,11 +4158,11 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSpot {
             label Spotting open
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {
               label {PSK Reporter} open
-              xywh {30 72 490 215} box ENGRAVED_FRAME align 21
+              xywh {30 72 490 254} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnPSKRepAuto {
                 label {Automatically spot callsigns in decoded text}
@@ -4186,8 +4186,15 @@ progdefaults.changed = true;}
                 label {Report rig frequency (enable only if you have rig control!)}
                 callback {progdefaults.pskrep_qrg = o->value();
 progdefaults.changed = true;}
-                tooltip {Include the transmit frequency} xywh {40 163 416 20} down_box DOWN_BOX
+                tooltip {Include the transmit frequency} xywh {40 164 416 20} down_box DOWN_BOX
                 code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
+              }
+              Fl_Check_Button btn_report_when_visible {
+                label {Enable spotting only when signal browser(s) are visible}
+                callback {progdefaults.report_when_visible = o->value();
+progdefaults.changed = true;} selected
+                tooltip {Enable to reduce CPU load} xywh {40 195 416 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.report_when_visible);}
               }
               Fl_Input inpPSKRepHost {
                 label {Host:}
@@ -4195,7 +4202,7 @@ progdefaults.changed = true;}
 btnPSKRepInit->labelcolor(FL_RED);
 btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
-                tooltip {To whom the connection is made} xywh {81 203 220 24} when 1
+                tooltip {To whom the connection is made} xywh {83 228 220 24} when 1
                 code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
                 code1 {inpPSKRepHost->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -4206,7 +4213,7 @@ progdefaults.changed = true;}
 btnPSKRepInit->labelcolor(FL_RED);
 btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Using UDP port \#} xywh {450 203 60 24} when 1
+                tooltip {Using UDP port \#} xywh {452 228 60 24} when 1
                 code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
                 code1 {inpPSKRepPort->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -4223,11 +4230,11 @@ if (!pskrep_start()) {
     progdefaults.usepskrep = true;
 }
 progdefaults.changed = true;}
-                tooltip {Initialize the socket client} xywh {430 248 80 24}
+                tooltip {Initialize the socket client} xywh {432 273 80 24}
               }
               Fl_Box boxPSKRepMsg {
                 label {<PSK Reporter error message>}
-                xywh {40 232 300 48} labelfont 2
+                xywh {42 257 300 48} labelfont 2
                 code0 {boxPSKRepMsg->label(0);}
               }
             }

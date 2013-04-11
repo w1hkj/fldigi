@@ -3318,6 +3318,13 @@ static void cb_btnPSKRepQRG(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_report_when_visible=(Fl_Check_Button *)0;
+
+static void cb_btn_report_when_visible(Fl_Check_Button* o, void*) {
+  progdefaults.report_when_visible = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Input2 *inpPSKRepHost=(Fl_Input2 *)0;
 
 static void cb_inpPSKRepHost(Fl_Input2* o, void*) {
@@ -3713,6 +3720,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(27, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7339,10 +7347,10 @@ ased false detection"));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 540, 345, _("Misc"));
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 540, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 540, 320, _("CPU"));
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(25, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7534,8 +7542,7 @@ ased false detection"));
             tabPskmail->end();
           } // Fl_Group* tabPskmail
           { tabSpot = new Fl_Group(0, 50, 540, 320, _("Spotting"));
-            tabSpot->hide();
-            { Fl_Group* o = new Fl_Group(30, 72, 490, 215, _("PSK Reporter"));
+            { Fl_Group* o = new Fl_Group(30, 72, 490, 254, _("PSK Reporter"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { btnPSKRepAuto = new Fl_Check_Button(40, 103, 324, 20, _("Automatically spot callsigns in decoded text"));
@@ -7550,13 +7557,19 @@ ased false detection"));
                 btnPSKRepLog->callback((Fl_Callback*)cb_btnPSKRepLog);
                 btnPSKRepLog->value(progdefaults.pskrep_log);
               } // Fl_Check_Button* btnPSKRepLog
-              { btnPSKRepQRG = new Fl_Check_Button(40, 163, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
+              { btnPSKRepQRG = new Fl_Check_Button(40, 164, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
                 btnPSKRepQRG->tooltip(_("Include the transmit frequency"));
                 btnPSKRepQRG->down_box(FL_DOWN_BOX);
                 btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
                 btnPSKRepQRG->value(progdefaults.pskrep_qrg);
               } // Fl_Check_Button* btnPSKRepQRG
-              { inpPSKRepHost = new Fl_Input2(81, 203, 220, 24, _("Host:"));
+              { Fl_Check_Button* o = btn_report_when_visible = new Fl_Check_Button(40, 195, 416, 20, _("Enable spotting only when signal browser(s) are visible"));
+                btn_report_when_visible->tooltip(_("Enable to reduce CPU load"));
+                btn_report_when_visible->down_box(FL_DOWN_BOX);
+                btn_report_when_visible->callback((Fl_Callback*)cb_btn_report_when_visible);
+                o->value(progdefaults.report_when_visible);
+              } // Fl_Check_Button* btn_report_when_visible
+              { inpPSKRepHost = new Fl_Input2(83, 228, 220, 24, _("Host:"));
                 inpPSKRepHost->tooltip(_("To whom the connection is made"));
                 inpPSKRepHost->box(FL_DOWN_BOX);
                 inpPSKRepHost->color(FL_BACKGROUND2_COLOR);
@@ -7571,7 +7584,7 @@ ased false detection"));
                 inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
                 inpPSKRepHost->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPSKRepHost
-              { inpPSKRepPort = new Fl_Input2(450, 203, 60, 24, _("Port:"));
+              { inpPSKRepPort = new Fl_Input2(452, 228, 60, 24, _("Port:"));
                 inpPSKRepPort->tooltip(_("Using UDP port #"));
                 inpPSKRepPort->box(FL_DOWN_BOX);
                 inpPSKRepPort->color(FL_BACKGROUND2_COLOR);
@@ -7586,11 +7599,11 @@ ased false detection"));
                 inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
                 inpPSKRepPort->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPSKRepPort
-              { btnPSKRepInit = new Fl_Button(430, 248, 80, 24, _("Initialize"));
+              { btnPSKRepInit = new Fl_Button(432, 273, 80, 24, _("Initialize"));
                 btnPSKRepInit->tooltip(_("Initialize the socket client"));
                 btnPSKRepInit->callback((Fl_Callback*)cb_btnPSKRepInit);
               } // Fl_Button* btnPSKRepInit
-              { boxPSKRepMsg = new Fl_Box(40, 232, 300, 48, _("<PSK Reporter error message>"));
+              { boxPSKRepMsg = new Fl_Box(42, 257, 300, 48, _("<PSK Reporter error message>"));
                 boxPSKRepMsg->labelfont(2);
                 boxPSKRepMsg->label(0);
               } // Fl_Box* boxPSKRepMsg
