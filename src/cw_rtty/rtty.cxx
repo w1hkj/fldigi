@@ -158,56 +158,22 @@ void rtty::reset_filters()
 {
 	int filter_length = 1024;
 
-/* filtertype:
- * 0 - extended rcos(0); K * (t/T)
- * 1 - extended rcos(1)
- * 2 - extended rcos(2)
- * 3 - smf rcos(0)
- * 4 - smf rcos(1)
- * 5 - smf rcos(2)
- * 6 - sinc
- * 7 - smf3
- * 8 - matched
-*/
-
-// Stefan:
-// rtty_filter
-// 1.25 ==> best performance on Dave's computer(s)
-// 1.5 ===> best performance on Stefan's computer
-// see fftfilt.h and fftfilt.cxx
-//
 	if (mark_filt) {
-		if (progdefaults.rtty_filter == 1)
-			mark_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
-		else
-			mark_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
+		mark_filt->rtty_order(rtty_baud/samplerate, 0,
+			progdefaults.rtty_filter, 1.0);
 	} else {
 		mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		if (progdefaults.rtty_filter == 1)
-			mark_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
-		else
-			mark_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
+		mark_filt->rtty_order(rtty_baud/samplerate, 0,
+			progdefaults.rtty_filter, 1.0);
      }
 
 	if (space_filt) {
-		if (progdefaults.rtty_filter == 1)
-			space_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
-		else
-			space_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
+		space_filt->rtty_order(rtty_baud/samplerate, 0,
+			progdefaults.rtty_filter, 1.0);
 	} else {
 		space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		if (progdefaults.rtty_filter == 1)
-			space_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
-		else
-			space_filt->rtty_order(rtty_baud/samplerate, 0,
-				progdefaults.rtty_filter, 1.0);
+		space_filt->rtty_order(rtty_baud/samplerate, 0,
+			progdefaults.rtty_filter, 1.0);
      }
 }
 
@@ -423,7 +389,7 @@ bool rtty::is_mark_space( int &correction)
 // test for mark/space straddle point
 		for (int i = 0; i < symbollen; i++)
 			correction += bit_buf[i];
-		if (abs(symbollen/2 - correction) < 6) // too small & bad signals as not decoded
+		if (abs(symbollen/2 - correction) < 6) // too small & bad signals are not decoded
 			return true;
 	}
 	return false;
@@ -653,6 +619,15 @@ if (mnum < 2 * filter_length)
 			sclipped = space_mag > space_env ? space_env : space_mag;
 			if (mclipped < noise_floor) mclipped = noise_floor;
 			if (sclipped < noise_floor) sclipped = noise_floor;
+
+			switch (progdefaults.rtty_cwi) {
+				case 1 : // mark only decode
+					space_env = sclipped = noise_floor;
+					break;
+				case 2: // space only decode
+					mark_env = mclipped = noise_floor;
+				default : ;
+			}
 
 //			double v0, v1, v2, v3, v4, v5;
 			double v3;

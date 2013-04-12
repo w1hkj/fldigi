@@ -237,7 +237,7 @@ Fl_Button *bwsrHiLite_1_color=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_1_color(Fl_Button*, void*) {
   progdefaults.bwsrHiLight1 = fl_show_colormap((Fl_Color)progdefaults.bwsrHiLight1);
-bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
+bwsrHiLite_1_color->color((Fl_Color)progdefaults.bwsrHiLight1);
 viewer_redraw();
 progdefaults.changed = true;
 }
@@ -246,7 +246,7 @@ Fl_Button *bwsrHiLite_2_color=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_2_color(Fl_Button*, void*) {
   progdefaults.bwsrHiLight2 = fl_show_colormap((Fl_Color)progdefaults.bwsrHiLight2);
-bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
+bwsrHiLite_2_color->color((Fl_Color)progdefaults.bwsrHiLight2);
 viewer_redraw();
 progdefaults.changed = true;
 }
@@ -255,7 +255,7 @@ Fl_Button *bwsrHiLite_even_lines=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_even_lines(Fl_Button*, void*) {
   progdefaults.bwsrBackgnd2 = fl_show_colormap((Fl_Color)progdefaults.bwsrBackgnd2);
-bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+bwsrHiLite_even_lines->color((Fl_Color)progdefaults.bwsrBackgnd2);
 viewer_redraw();
 progdefaults.changed = true;;
 }
@@ -264,7 +264,7 @@ Fl_Button *bwsrHiLite_odd_lines=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_odd_lines(Fl_Button*, void*) {
   progdefaults.bwsrBackgnd1 = fl_show_colormap((Fl_Color)progdefaults.bwsrBackgnd1);
-bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+bwsrHiLite_odd_lines->color((Fl_Color)progdefaults.bwsrBackgnd1);
 viewer_redraw();
 progdefaults.changed = true;
 }
@@ -273,7 +273,7 @@ Fl_Button *bwsrHiLite_select=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_select(Fl_Button*, void*) {
   progdefaults.bwsrSelect = fl_show_colormap((Fl_Color)progdefaults.bwsrSelect);
-bwsrHiLite_select->color(progdefaults.bwsrSelect);
+bwsrHiLite_select->color((Fl_Color)progdefaults.bwsrSelect);
 viewer_redraw();
 progdefaults.changed = true;
 }
@@ -1807,6 +1807,32 @@ static void cb_rtty_rx_shape(Fl_Value_Input* o, void*) {
   progdefaults.rtty_filter = o->value();
 progStatus.rtty_filter_changed = true;
 progdefaults.changed = true;
+}
+
+static void cb_btnRxTones(Fl_Check_Button* o, void*) {
+  if (o->value()) {
+  btnRxTones[1]->value(0);
+  btnRxTones[2]->value(0);
+  progdefaults.rtty_cwi = 0;
+};
+}
+
+static void cb_btnRxTones1(Fl_Check_Button* o, void*) {
+  if (o->value()) {
+  btnRxTones[0]->value(0);
+  btnRxTones[2]->value(0);
+  progdefaults.rtty_cwi = 1;
+};
+}
+
+Fl_Check_Button *btnRxTones[3]={(Fl_Check_Button *)0};
+
+static void cb_btnRxTones2(Fl_Check_Button* o, void*) {
+  if (o->value()) {
+  btnRxTones[1]->value(0);
+  btnRxTones[0]->value(0);
+  progdefaults.rtty_cwi = 2;
+};
 }
 
 Fl_Check_Button *btnPreferXhairScope=(Fl_Check_Button *)0;
@@ -3649,7 +3675,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(27, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -3859,31 +3884,31 @@ Fl_Double_Window* ConfigureDialog() {
                 bwsrHiLite_1_color->tooltip(_("PSK/RTTY Viewer HiLite Color 1"));
                 bwsrHiLite_1_color->callback((Fl_Callback*)cb_bwsrHiLite_1_color);
                 bwsrHiLite_1_color->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
+                bwsrHiLite_1_color->color((Fl_Color)progdefaults.bwsrHiLight1);
                 } // Fl_Button* bwsrHiLite_1_color
                 { bwsrHiLite_2_color = new Fl_Button(255, 303, 60, 24, _("HiLite 2"));
                 bwsrHiLite_2_color->tooltip(_("PSK/RTTY Viewer HiLite Color 2"));
                 bwsrHiLite_2_color->callback((Fl_Callback*)cb_bwsrHiLite_2_color);
                 bwsrHiLite_2_color->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
+                bwsrHiLite_2_color->color((Fl_Color)progdefaults.bwsrHiLight2);
                 } // Fl_Button* bwsrHiLite_2_color
                 { bwsrHiLite_even_lines = new Fl_Button(318, 303, 60, 24, _("Even"));
                 bwsrHiLite_even_lines->tooltip(_("Even lines"));
                 bwsrHiLite_even_lines->callback((Fl_Callback*)cb_bwsrHiLite_even_lines);
                 bwsrHiLite_even_lines->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+                bwsrHiLite_even_lines->color((Fl_Color)progdefaults.bwsrBackgnd2);
                 } // Fl_Button* bwsrHiLite_even_lines
                 { bwsrHiLite_odd_lines = new Fl_Button(381, 303, 60, 24, _("Odd"));
                 bwsrHiLite_odd_lines->tooltip(_("Odd lines"));
                 bwsrHiLite_odd_lines->callback((Fl_Callback*)cb_bwsrHiLite_odd_lines);
                 bwsrHiLite_odd_lines->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+                bwsrHiLite_odd_lines->color((Fl_Color)progdefaults.bwsrBackgnd1);
                 } // Fl_Button* bwsrHiLite_odd_lines
                 { bwsrHiLite_select = new Fl_Button(445, 303, 60, 24, _("Select"));
                 bwsrHiLite_select->tooltip(_("Select line"));
                 bwsrHiLite_select->callback((Fl_Callback*)cb_bwsrHiLite_select);
                 bwsrHiLite_select->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_select->color(progdefaults.bwsrSelect);
+                bwsrHiLite_select->color((Fl_Color)progdefaults.bwsrSelect);
                 } // Fl_Button* bwsrHiLite_select
                 o->end();
               } // Fl_Group* o
@@ -5825,16 +5850,36 @@ an merging"));
                 } // Fl_Value_Input* rtty_rx_shape
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(2, 153, 535, 55, _("RTTY Scope Display"));
+                { Fl_Group* o = new Fl_Group(2, 153, 535, 55, _("Decode (CWI suppression)"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(90, 175, 165, 22, _("Use cross hair scope"));
+                { Fl_Check_Button* o = btnRxTones[0] = new Fl_Check_Button(90, 180, 70, 15, _("Mark-Space"));
+                btnRxTones[0]->down_box(FL_DOWN_BOX);
+                btnRxTones[0]->callback((Fl_Callback*)cb_btnRxTones);
+                o->value(progdefaults.rtty_cwi == 0);
+                } // Fl_Check_Button* btnRxTones[0]
+                { Fl_Check_Button* o = btnRxTones[1] = new Fl_Check_Button(223, 180, 70, 15, _("Mark only"));
+                btnRxTones[1]->down_box(FL_DOWN_BOX);
+                btnRxTones[1]->callback((Fl_Callback*)cb_btnRxTones1);
+                o->value(progdefaults.rtty_cwi == 1);
+                } // Fl_Check_Button* btnRxTones[1]
+                { Fl_Check_Button* o = btnRxTones[2] = new Fl_Check_Button(357, 180, 70, 15, _("Space only"));
+                btnRxTones[2]->down_box(FL_DOWN_BOX);
+                btnRxTones[2]->callback((Fl_Callback*)cb_btnRxTones2);
+                o->value(progdefaults.rtty_cwi == 2);
+                } // Fl_Check_Button* btnRxTones[2]
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(2, 210, 535, 55, _("RTTY Scope Display"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnPreferXhairScope = new Fl_Check_Button(90, 232, 165, 22, _("Use cross hair scope"));
                 btnPreferXhairScope->tooltip(_("Default to cross hair digiscope"));
                 btnPreferXhairScope->down_box(FL_DOWN_BOX);
                 btnPreferXhairScope->callback((Fl_Callback*)cb_btnPreferXhairScope);
                 o->value(progdefaults.PreferXhairScope);
                 } // Fl_Check_Button* btnPreferXhairScope
-                { Fl_Check_Button* o = chk_true_scope = new Fl_Check_Button(310, 175, 70, 22, _("XY - classic scope"));
+                { Fl_Check_Button* o = chk_true_scope = new Fl_Check_Button(310, 232, 70, 22, _("XY - classic scope"));
                 chk_true_scope->tooltip(_("Enabled - use Mark/Space filter outputs\nDisabled - use pseudo signals"));
                 chk_true_scope->down_box(FL_DOWN_BOX);
                 chk_true_scope->callback((Fl_Callback*)cb_chk_true_scope);
@@ -5842,10 +5887,10 @@ an merging"));
                 } // Fl_Check_Button* chk_true_scope
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(2, 210, 535, 65, _("Log RTTY frequency"));
+                { Fl_Group* o = new Fl_Group(2, 267, 535, 65, _("Log RTTY frequency"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(90, 236, 146, 22, _("Use MARK freq\'"));
+                { Fl_Check_Button* o = chk_useMARKfreq = new Fl_Check_Button(90, 293, 146, 22, _("Use MARK freq\'"));
                 chk_useMARKfreq->tooltip(_("Enabled - log QSO using Mark frequency\nDisabled - log QSO using center frequ\
 ency"));
                 chk_useMARKfreq->down_box(FL_DOWN_BOX);
@@ -5853,7 +5898,7 @@ ency"));
                 chk_useMARKfreq->callback((Fl_Callback*)cb_chk_useMARKfreq);
                 o->value(progdefaults.useMARKfreq);
                 } // Fl_Check_Button* chk_useMARKfreq
-                { Fl_Button* o = btnRTTY_mark_color = new Fl_Button(310, 236, 41, 18, _("track color"));
+                { Fl_Button* o = btnRTTY_mark_color = new Fl_Button(310, 293, 41, 18, _("track color"));
                 btnRTTY_mark_color->tooltip(_("Color of Mark Track"));
                 btnRTTY_mark_color->color((Fl_Color)2);
                 btnRTTY_mark_color->callback((Fl_Callback*)cb_btnRTTY_mark_color);
@@ -6183,7 +6228,6 @@ ency"));
         { tabsRig = new Fl_Tabs(0, 23, 540, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("Hardware PTT"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(26, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -6648,6 +6692,7 @@ ency"));
             tabHamlib->end();
           } // Fl_Group* tabHamlib
           { tabXMLRPC = new Fl_Group(0, 48, 540, 320, _("XML-RPC"));
+            tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(23, 61, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(178, 80, 190, 58);
@@ -7184,10 +7229,10 @@ ased false detection"));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 540, 345, _("Misc"));
+        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 540, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 540, 320, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(25, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7379,6 +7424,7 @@ ased false detection"));
             tabPskmail->end();
           } // Fl_Group* tabPskmail
           { tabSpot = new Fl_Group(0, 50, 540, 320, _("Spotting"));
+            tabSpot->hide();
             { Fl_Group* o = new Fl_Group(30, 72, 490, 254, _("PSK Reporter"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));

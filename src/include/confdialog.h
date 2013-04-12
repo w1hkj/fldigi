@@ -251,6 +251,7 @@ extern Fl_Choice *mnuRTTYAFCSpeed;
 extern Fl_Check_Button *chkUOSrx;
 #include <FL/Fl_Value_Input.H>
 extern Fl_Value_Input *rtty_rx_shape;
+extern Fl_Check_Button *btnRxTones[3];
 extern Fl_Check_Button *btnPreferXhairScope;
 extern Fl_Check_Button *chk_true_scope;
 extern Fl_Check_Button *chk_useMARKfreq;
