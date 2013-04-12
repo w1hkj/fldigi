@@ -236,7 +236,7 @@ static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
 Fl_Button *bwsrHiLite_1_color=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_1_color(Fl_Button*, void*) {
-  progdefaults.bwsrHiLight1 = fl_show_colormap(progdefaults.bwsrHiLight1);
+  progdefaults.bwsrHiLight1 = fl_show_colormap((Fl_Color)progdefaults.bwsrHiLight1);
 bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
 viewer_redraw();
 progdefaults.changed = true;
@@ -245,7 +245,7 @@ progdefaults.changed = true;
 Fl_Button *bwsrHiLite_2_color=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_2_color(Fl_Button*, void*) {
-  progdefaults.bwsrHiLight2 = fl_show_colormap(progdefaults.bwsrHiLight2);
+  progdefaults.bwsrHiLight2 = fl_show_colormap((Fl_Color)progdefaults.bwsrHiLight2);
 bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
 viewer_redraw();
 progdefaults.changed = true;
@@ -254,7 +254,7 @@ progdefaults.changed = true;
 Fl_Button *bwsrHiLite_even_lines=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_even_lines(Fl_Button*, void*) {
-  progdefaults.bwsrBackgnd2 = fl_show_colormap(progdefaults.bwsrBackgnd2);
+  progdefaults.bwsrBackgnd2 = fl_show_colormap((Fl_Color)progdefaults.bwsrBackgnd2);
 bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
 viewer_redraw();
 progdefaults.changed = true;;
@@ -263,7 +263,7 @@ progdefaults.changed = true;;
 Fl_Button *bwsrHiLite_odd_lines=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_odd_lines(Fl_Button*, void*) {
-  progdefaults.bwsrBackgnd1 = fl_show_colormap(progdefaults.bwsrBackgnd1);
+  progdefaults.bwsrBackgnd1 = fl_show_colormap((Fl_Color)progdefaults.bwsrBackgnd1);
 bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
 viewer_redraw();
 progdefaults.changed = true;
@@ -272,7 +272,7 @@ progdefaults.changed = true;
 Fl_Button *bwsrHiLite_select=(Fl_Button *)0;
 
 static void cb_bwsrHiLite_select(Fl_Button*, void*) {
-  progdefaults.bwsrSelect = fl_show_colormap(progdefaults.bwsrSelect);
+  progdefaults.bwsrSelect = fl_show_colormap((Fl_Color)progdefaults.bwsrSelect);
 bwsrHiLite_select->color(progdefaults.bwsrSelect);
 viewer_redraw();
 progdefaults.changed = true;

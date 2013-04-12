@@ -69,8 +69,8 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	HiLite_1 = FL_RED;
 	HiLite_2 = FL_GREEN;
 	BkSelect = FL_BLUE;
-	Backgnd1 = 55;
-	Backgnd2 = 53;
+	Backgnd1 = (Fl_Color)55;
+	Backgnd2 = (Fl_Color)53;
 	makecolors();
 	cdistiller = reinterpret_cast<CharsetDistiller*>(operator new(MAXCHANNELS*sizeof(CharsetDistiller)));
 
