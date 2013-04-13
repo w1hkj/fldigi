@@ -1702,7 +1702,7 @@ Fl_Choice *mnuContestia_Bandwidth=(Fl_Choice *)0;
 static void cb_mnuContestia_Bandwidth(Fl_Choice* o, void*) {
   progdefaults.contestiabw = o->value();
 set_contestia_default_integ();
-resetOLIVIA();
+resetCONTESTIA();
 progdefaults.changed = true;
 }
 
@@ -4861,7 +4861,6 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 540, 320, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 540, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 540, 295, _("General"));
@@ -6155,6 +6154,7 @@ ency"));
             tabNavtex->end();
           } // Fl_Group* tabNavtex
           { tabWefax = new Fl_Group(0, 50, 540, 320, _("Wefax"));
+            tabWefax->hide();
             { Fl_Group* o = new Fl_Group(2, 63, 534, 300);
               { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(94, 137, 235, 30, _("Log Wefax messages to Adif file"));
                 btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));

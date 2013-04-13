@@ -140,16 +140,16 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     label {Fldigi configuration} open
     xywh {554 73 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
-    Fl_Tabs tabsConfigure {
+    Fl_Tabs tabsConfigure {open
       xywh {-5 0 596 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;} open selected
         tooltip {Operator information} xywh {0 25 540 345} when 1
       } {
         Fl_Group {} {
-          label Station open selected
+          label Station open
           xywh {27 35 490 165} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
@@ -1466,7 +1466,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
+        label Modems open
         xywh {-4 25 595 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -1474,7 +1474,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -2183,7 +2183,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContestia {
-            label {Cont'}
+            label {Cont'} open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2193,7 +2193,7 @@ progdefaults.changed = true;}
                 label Bandwidth
                 callback {progdefaults.contestiabw = o->value();
 set_contestia_default_integ();
-resetOLIVIA();
+resetCONTESTIA();
 progdefaults.changed = true;} open
                 tooltip {Select bandwidth} xywh {80 100 85 20} down_box BORDER_BOX align 8
                 code0 {o->add(szContestiaBandwidth);}
@@ -2671,7 +2671,7 @@ fc->show();}
           }
           Fl_Group tabWefax {
             label Wefax
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
               xywh {2 63 534 300}
