@@ -4007,6 +4007,8 @@ void setTabColors()
 	tabsRig->selection_color(progdefaults.TabsColor);
 	tabsSoundCard->selection_color(progdefaults.TabsColor);
 	tabsMisc->selection_color(progdefaults.TabsColor);
+	tabsID->selection_color(progdefaults.TabsColor);
+	tabsQRZ->selection_color(progdefaults.TabsColor);
 	if (dlgConfig->visible()) dlgConfig->redraw();
 	if (dlgColorFont->visible()) dlgColorFont->redraw();
 }

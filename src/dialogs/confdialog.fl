@@ -140,16 +140,16 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     label {Fldigi configuration} open
     xywh {554 73 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
-    Fl_Tabs tabsConfigure {open
+    Fl_Tabs tabsConfigure {
       xywh {-5 0 596 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
+        callback {progdefaults.changed = true;} open
         tooltip {Operator information} xywh {0 25 540 345} when 1
       } {
         Fl_Group {} {
-          label Station open
+          label Station open selected
           xywh {27 35 490 165} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
@@ -228,7 +228,7 @@ progdefaults.changed = true;}
         label UI open
         xywh {0 25 540 346} hide
       } {
-        Fl_Tabs tabsUI {open
+        Fl_Tabs tabsUI {
           xywh {0 25 540 346} selection_color 50
         } {
           Fl_Group tabBrowser {
@@ -1466,15 +1466,15 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
+        label Modems
         xywh {-4 25 595 347} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {-4 25 595 347} selection_color 50 align 9
+          xywh {0 25 540 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -2118,7 +2118,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia open
+            label Olivia
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2183,7 +2183,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContestia {
-            label {Cont'} open
+            label {Cont'}
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2249,10 +2249,10 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK
-            xywh {-4 50 544 322} hide
+            xywh {0 50 540 322} hide
           } {
-            Fl_Tabs tabsPSK {open
-              xywh {-4 50 544 322} selection_color 50
+            Fl_Tabs tabsPSK {
+              xywh {0 50 540 322} selection_color 50
             } {
               Fl_Group {} {
                 label General open
@@ -2324,7 +2324,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label RTTY open
+            label RTTY
             xywh {0 50 540 320} hide
           } {
             Fl_Tabs tabsRTTY {open
@@ -2562,7 +2562,7 @@ if (o->value()) {
             }
           }
           Fl_Group tabTHOR {
-            label Thor open
+            label Thor
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2640,7 +2640,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabNavtex {
-            label Navtex open
+            label Navtex
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2670,8 +2670,8 @@ fc->show();}
             }
           }
           Fl_Group tabWefax {
-            label Wefax open
-            xywh {0 50 540 320} hide
+            label Wefax
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {open
               xywh {2 63 534 300}
@@ -2744,7 +2744,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig open
+        label Rig
         tooltip {Transceiver control} xywh {0 23 540 345} hide
       } {
         Fl_Tabs tabsRig {open
@@ -3695,15 +3695,15 @@ if (o->value()) {
         }
       }
       Fl_Group tabID {
-        label ID open
-        xywh {0 23 541 348} hide
+        label ID
+        xywh {0 23 540 348} hide
       } {
-        Fl_Tabs {} {open
-          xywh {0 23 541 345}
+        Fl_Tabs tabsID {
+          xywh {0 23 540 345}
         } {
           Fl_Group tabRsID {
             label RsID open
-            xywh {0 48 541 320}
+            xywh {0 48 540 320}
           } {
             Fl_Group {} {
               label {Reed-Solomon ID (Rx)} open
@@ -3940,10 +3940,10 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 540 345} hide
       } {
-        Fl_Tabs tabsMisc {open
+        Fl_Tabs tabsMisc {
           xywh {0 25 540 345} selection_color 50
         } {
           Fl_Group tabCPUspeed {
@@ -4388,7 +4388,7 @@ progdefaults.changed = true;}
         label Web
         tooltip {Callsign database} xywh {0 25 540 345} hide
       } {
-        Fl_Tabs {} {open
+        Fl_Tabs tabsQRZ {open
           xywh {0 25 540 345}
         } {
           Fl_Group {} {
