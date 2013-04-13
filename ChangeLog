@@ -1,17 +1,42 @@
 
 
+=Version 3.21.70=
+
+2013-04-13  David Freese  <w1hkj@w1hkj.com>
+
+	ab4e0f2: Contestia/Olivia
+	45be148: Tabs Colors
+
+2013-04-13  Arvo Järve  <arvo@softshark.ee>
+
+	89e1df1: Double Click bug fix
+
+2013-04-12  David Freese  <w1hkj@w1hkj.com>
+
+	efce800: RTTY update
+	e2b050e: Fltk backward compatibility
+	27e753e: Compiler warning fix
+
+2013-04-11  Kamal Mostafa  <kamal@whence.com>
+
+	5f770be: Fix glob_t usage
+
+2013-04-11  David Freese  <w1hkj@w1hkj.com>
+
+	1e94067: Spotting
+	fc68397: ADIF case
+
+
 =Version 3.21.69=
 
-2013-04-09  David Freese  <w1hkj@w1hkj.com>
-
-	b5d08e4: QSO NBR/NXT macro tag
-	3f99de8: TX lower case
+	524864e: QSO NBR/NXT macro tag
+	303681e: TX lower case
 	69bab69: WX parser
 	6e5a68d: Signal Browser
 	2ecbeca: Compiler Warnings
 	5134b81: Free BSD mods
 	f794566: flstring
-	234380f: RTTY filters
+	92ede71: RTTY filters
 	6e9a943: Serial by-id
 	5a2c244: RTTY tx symbol shaper
 	093796f: Misc NBEMS mods
