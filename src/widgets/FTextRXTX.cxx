@@ -517,7 +517,7 @@ void FTextRX::handle_qso_data(int start, int end)
 
 	Fl_Input* target = 0;
 
-	if (inpXchgIn->visible()) {
+	if (QsoInfoFrame1B->visible()) {
 		if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
