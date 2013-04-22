@@ -1,13 +1,13 @@
 # Polish translations for fldigi package
 # Copyright (C) 2008 Dave Freese, Stelios Bounanos, Leigh Klotz, and others
 # This file is distributed under the same license as the fldigi package.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: fldigi 3.22.0 ALPHA series\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
 "POT-Creation-Date: 2012-10-21 16:44-0500\n"
-"PO-Revision-Date: 2012-06-15 20:34+0100\n"
+"PO-Revision-Date: 2012-09-30 17:43+0100\n"
 "Last-Translator: Roman Bagiński <sp4jeu@op.pl>\n"
 "Language-Team: Polish (Roman Bagiński) <sp4jeu@op.pl>\n"
 "Language: Polish\n"
@@ -62,7 +62,7 @@ msgstr "Pokaz wszystkie tryby"
 
 #: src/dialogs/fl_digi.cxx:178
 msgid "&View"
-msgstr "Widok"
+msgstr "Pokaz"
 
 #: src/dialogs/fl_digi.cxx:179
 msgid "&MFSK Image"
@@ -94,7 +94,7 @@ msgstr "&UI"
 
 #: src/dialogs/fl_digi.cxx:186
 msgid "Full"
-msgstr "Pełny"
+msgstr "Pełna"
 
 #: src/dialogs/fl_digi.cxx:187 src/waterfall/waterfall.cxx:2146
 #: src/dialogs/confdialog.cxx:3709 src/dialogs/confdialog.cxx:7462
@@ -104,7 +104,7 @@ msgstr "Brak"
 
 #: src/dialogs/fl_digi.cxx:188
 msgid "Rig control and logging"
-msgstr "Kontrola Rig i logowanie"
+msgstr "Kontrola Rig i logowania"
 
 #: src/dialogs/fl_digi.cxx:189
 msgid "Rig control and contest"
@@ -120,7 +120,7 @@ msgstr "Minimum sterowania"
 
 #: src/dialogs/fl_digi.cxx:192
 msgid "Show channels"
-msgstr "Pokaz kanały"
+msgstr "Pokaz kanaly"
 
 #: src/dialogs/fl_digi.cxx:194
 msgid "Connect to server"
@@ -169,9 +169,8 @@ msgid "Unsupported format"
 msgstr ""
 
 #: src/dialogs/fl_digi.cxx:1624
-#, fuzzy
 msgid "channels != 1"
-msgstr "Pokaz kanały"
+msgstr "kanaly ! = 1"
 
 #: src/dialogs/fl_digi.cxx:1627
 msgid "unknown wave file error"
@@ -242,7 +241,7 @@ msgstr "Zamknij"
 
 #: src/dialogs/fl_digi.cxx:1763
 msgid "Visit URL"
-msgstr "zobacz URL"
+msgstr "Zobacz URL"
 
 #: src/dialogs/fl_digi.cxx:1763
 msgid "Copy URL"
@@ -435,7 +434,7 @@ msgstr "Zapisz konfiguracje"
 
 #: src/dialogs/fl_digi.cxx:3286
 msgid "View/Hide Channels"
-msgstr "Pokaz/ukryj kanaly"
+msgstr "Pokaz/Ukryj Kanaly"
 
 #: src/dialogs/fl_digi.cxx:3288
 msgid "Floating scope"
@@ -455,7 +454,7 @@ msgstr "Dziennik"
 
 #: src/dialogs/fl_digi.cxx:3311
 msgid "View"
-msgstr "Widok"
+msgstr "Pokaz"
 
 #: src/dialogs/fl_digi.cxx:3313
 msgid "ADIF"
@@ -1381,9 +1380,8 @@ msgid "<RISE:nn.n>\tCW rise time"
 msgstr "<RISE:nn.n>\tCzas narastania CW"
 
 #: src/misc/macroedit.cxx:171
-#, fuzzy
 msgid "<WPM:NN:FF>\tCW WPM:Farnsworth"
-msgstr "<WPM:NN>\tCW WPM"
+msgstr "<WPM:NN>\tCW WPM:Farnsworth"
 
 #: src/misc/macroedit.cxx:174
 msgid "<AFC:on|off|t>\tAFC  on,off,toggle"
@@ -1439,7 +1437,7 @@ msgstr "Otwórz plik makro"
 
 #: src/misc/macros.cxx:2167 src/misc/macros.cxx:2205
 msgid "Fldigi macro definition file\t*.{mdf}"
-msgstr "Plik definicji makro Fldigi\t*.mdf"
+msgstr "Plik definicji makro Fldigi\t*.{mdf}"
 
 #: src/misc/macros.cxx:2204
 msgid "Save macro file"
@@ -1488,7 +1486,7 @@ msgid ""
 "Supported types: PNG, JPEG, BMP"
 msgstr ""
 "Załaduj lub upusc plik obrazu\n"
-"pliki (PNG, JPEG, BMP)"
+"pliki: PNG, JPEG, BMP"
 
 #: src/mfsk/mfsk-pic.cxx:361
 msgid "Transfer speed, X1-normal"
@@ -1592,7 +1590,7 @@ msgstr "Wpisz xcvr Czest."
 
 #: src/rigcontrol/rigsupport.cxx:499
 msgid "Memory Mapped Rig"
-msgstr "Pamiec zamapowana Rig"
+msgstr "Pamiec zmapowana Rig"
 
 #: src/rigcontrol/rigxml.cxx:880
 msgid "Open rig xml file"
@@ -2081,9 +2079,8 @@ msgid "Signal Level Colors"
 msgstr "Kolor Poziomu Sygnału"
 
 #: src/dialogs/colorsfonts.cxx:1223
-#, fuzzy
 msgid "Log"
-msgstr "Niski"
+msgstr "Log"
 
 #: src/dialogs/colorsfonts.cxx:1225
 msgid "Logging Panel Controls"
@@ -3298,9 +3295,8 @@ msgid "Paths (hidden)"
 msgstr "Sciezki (ukryta)"
 
 #: src/dialogs/confdialog.cxx:5239
-#, fuzzy
 msgid "Feld"
-msgstr "Feldhell"
+msgstr "Pole"
 
 #: src/dialogs/confdialog.cxx:5243
 msgid "Transmit font"
@@ -4180,7 +4176,7 @@ msgstr "Uzyj portu Audio Server"
 
 #: src/dialogs/confdialog.cxx:6556
 msgid "Capture:"
-msgstr "Nadawanie:"
+msgstr "Chwyc:"
 
 #: src/dialogs/confdialog.cxx:6557
 msgid "Audio input device"
@@ -4204,7 +4200,7 @@ msgstr "Uzyj Pulse Audio Server"
 
 #: src/dialogs/confdialog.cxx:6576
 msgid "Server string:"
-msgstr "Server string:"
+msgstr "Ciąg znaków serwera:"
 
 #: src/dialogs/confdialog.cxx:6577
 msgid ""
@@ -4232,7 +4228,7 @@ msgstr "Częstotliwosc próbkowania"
 
 #: src/dialogs/confdialog.cxx:6610
 msgid "Capture"
-msgstr "Nadawanie"
+msgstr "Chwycic"
 
 #: src/dialogs/confdialog.cxx:6611
 msgid ""
@@ -4309,11 +4305,11 @@ msgstr "Uzyj wejścia mikrofonowego"
 
 #: src/dialogs/confdialog.cxx:6715
 msgid "Line In"
-msgstr "Line In"
+msgstr "Linia We"
 
 #: src/dialogs/confdialog.cxx:6716
 msgid "Use Line-In device"
-msgstr "Uzyj urządzenia Line-In"
+msgstr "Uzyj urządzenia Linia-We"
 
 #: src/dialogs/confdialog.cxx:6720
 msgid "PCM"
@@ -4636,9 +4632,8 @@ msgid "Locate flmsg"
 msgstr "Szukaj flmsg"
 
 #: src/dialogs/confdialog.cxx:7053
-#, fuzzy
 msgid "Timeout (secs)"
-msgstr "Czas (y):"
+msgstr "Czas (sek)"
 
 #: src/dialogs/confdialog.cxx:7054
 #, fuzzy
@@ -5291,7 +5286,7 @@ msgstr "Data QSO"
 
 #: src/logbook/lgbook.cxx:477
 msgid "QSO Date Off"
-msgstr "Data zakonczenia QSO"
+msgstr "Data zakon QSO"
 
 #: src/logbook/lgbook.cxx:481
 msgid "Time ON"
@@ -5319,7 +5314,7 @@ msgstr "Qth"
 
 #: src/logbook/lgbook.cxx:503
 msgid "LOC"
-msgstr "Lokator"
+msgstr "LOK"
 
 #: src/logbook/lgbook.cxx:519
 msgid "QSL rcvd date"
@@ -5364,11 +5359,11 @@ msgstr "Logbook"
 
 #: src/logbook/lgbook.cxx:563
 msgid "Date On"
-msgstr "Data"
+msgstr "Data rozpocz"
 
 #: src/logbook/lgbook.cxx:564
 msgid "Date QSO started"
-msgstr "Data rozpoczecia QSO"
+msgstr "Data rozpocz QSO"
 
 #: src/logbook/lgbook.cxx:577
 msgid "Time QSO started"
@@ -5396,7 +5391,7 @@ msgstr "QSL otrzymana w dniu"
 
 #: src/logbook/lgbook.cxx:637
 msgid "Date Off"
-msgstr "Data zakonczenia"
+msgstr "Data zakoncz"
 
 #: src/logbook/lgbook.cxx:638
 msgid "Date QSO Ended"
@@ -5408,7 +5403,7 @@ msgstr "Koniec QSO"
 
 #: src/logbook/lgbook.cxx:662
 msgid "Freq."
-msgstr "Czestotliwosc"
+msgstr "Czestotli"
 
 #: src/logbook/lgbook.cxx:663
 msgid "Frequency in MHz"
@@ -5419,9 +5414,8 @@ msgid "Mode in use"
 msgstr "Tryb pracy"
 
 #: src/logbook/lgbook.cxx:686
-#, fuzzy
 msgid "Pwr"
-msgstr "Pr"
+msgstr "Moc"
 
 #: src/logbook/lgbook.cxx:687
 msgid "Transmit power used"
@@ -5472,9 +5466,8 @@ msgid "Stations grid square"
 msgstr "Siatka kwadratów"
 
 #: src/logbook/lgbook.cxx:784
-#, fuzzy
 msgid "Interesting notes"
-msgstr "Ciekawe notatki (80 znaków max )"
+msgstr "Ciekawe notatki"
 
 #: src/logbook/lgbook.cxx:809
 msgid "Islands on the air"
@@ -5489,9 +5482,8 @@ msgid "DXCC designator"
 msgstr "Identyfikator DXCC"
 
 #: src/logbook/lgbook.cxx:868
-#, fuzzy
 msgid "Ser out"
-msgstr "Nr# wyslany"
+msgstr "Nr wyslany"
 
 #: src/logbook/lgbook.cxx:869
 msgid "Contest seral # sent"
@@ -5503,7 +5495,7 @@ msgstr "Zawody wymiana wyslana"
 
 #: src/logbook/lgbook.cxx:892
 msgid "Ser in"
-msgstr ""
+msgstr "Nr odebrany"
 
 #: src/logbook/lgbook.cxx:893
 msgid "Contest serial # received"
