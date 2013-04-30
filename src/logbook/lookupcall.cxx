@@ -122,6 +122,15 @@ void QRZ_DETAILS_query();
 
 QRZ *qCall = 0;
 
+void print_query(const string &name, const string &s)
+{
+	LOG_DEBUG("%s query:\n%s\n", name.c_str(), s.c_str());
+}
+
+void print_data(const string &name, const string &s) {
+	LOG_DEBUG("%s data:\n%s\n", name.c_str(), s.c_str());
+}
+
 void clear_Lookup()
 {
 	lookup_name.clear();
@@ -196,7 +205,8 @@ bool parseSessionKey(const string& sessionpage)
 
 bool parse_xml(const string& xmlpage)
 {
-//printf("%s\n", xmlpage.c_str());
+	print_data("QTH.com", xmlpage);
+
 	IrrXMLReader* xml = createIrrXMLReader(new IIrrXMLStringReader(xmlpage));
 
 // If we got any result back, clear the session key so that it will be
@@ -256,10 +266,6 @@ bool parse_xml(const string& xmlpage)
 						break;
 					case QRZ_GRID:
 						lookup_grid =  xml->getNodeData();
-						break;
-					case QRZ_DOB:
-						lookup_notes = "DOB: ";
-						lookup_notes += xml->getNodeData();
 						break;
 					case QRZ_ALERT:
 						qrzalert = xml->getNodeData();
@@ -330,6 +336,8 @@ bool getSessionKey(string& sessionpage)
 	detail += "Connection: close\n";
 	detail += "\n";
 
+	print_query("QRZ session key", detail);
+
 	return request_reply(qrzhost, "http", detail, sessionpage, 5.0);
 }
 
@@ -348,6 +356,8 @@ bool QRZGetXML(string& xmlpage)
 	detail += "\n";
 
 //	return request_reply(qrzhost, "http", detail, xmlpage, 5.0);
+	print_query("QRZ data", detail);
+
 	bool res = request_reply(qrzhost, "http", detail, xmlpage, 5.0);
 	LOG_DEBUG("result = %d", res);
 	return res;
@@ -413,13 +423,8 @@ void QRZ_disp_result()
 			snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
 		inpAZ->value(buf);
 	}
-	string notes;
-	notes.assign(inpNotes->value());
-	if (!lookup_notes.empty()) {
-		if (!notes.empty()) notes.append("\n");
-		notes.append(lookup_notes);
-	}
-	inpNotes->value(notes.c_str());
+	inpNotes->value(lookup_notes.c_str());
+
 }
 
 void QRZ_CD_query()
@@ -434,6 +439,8 @@ void QRZ_CD_query()
 	for (size_t i = 0; i < strlen(srch); i ++ )
 		srch[i] = toupper(srch[i]);
 
+	string notes;
+	notes.assign(inpNotes->value());
 	if( qCall->FindRecord( srch ) == 1) {
 		lookup_fname = qCall->GetFname();
 		camel_case(lookup_fname);
@@ -443,13 +450,22 @@ void QRZ_CD_query()
 		lookup_qth = qCall->GetCity();
 		lookup_state = qCall->GetState();
 		lookup_grid.clear();
-		lookup_notes.clear();
+		if (!notes.empty()) notes.append("\n");
+		notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
+		notes.append(lookup_addr1).append("\n");
+		notes.append(lookup_addr2);
+		if (!lookup_state.empty())
+			notes.append(", ").append(lookup_state).append("  ").append(lookup_zip);
+		else if (!lookup_province.empty())
+			notes.append(", ").append(lookup_province).append("  ").append(lookup_zip);
+		else
+			notes.append("  ").append(lookup_country);
 	} else {
 		lookup_fname.clear();
 		lookup_qth.clear();
 		lookup_grid.clear();
 		lookup_born.clear();
-		lookup_notes = "Not found in CD database";
+		lookup_notes.append("Not found in CD database");
 	}
 	REQ(QRZ_disp_result);
 }
@@ -556,20 +572,24 @@ void QRZquery()
 			REQ(QRZAlert);
 		else {
 			lookup_qth = lookup_addr2;
-			string isCAN = "vV";
-			if (isCAN.find(callsign[0]) != string::npos) { // Can callsign
-				size_t pos = lookup_qth.find(',');
-				if (pos != string::npos) {
-					lookup_province = lookup_qth.substr(pos);
-					lookup_qth = lookup_qth.substr(0, pos);
-					pos = lookup_province.find_first_not_of(", ");
-					if (pos != string::npos)
-						lookup_province = lookup_province.substr(pos);
-					pos = lookup_province.find(' ');
-					if (pos != string::npos)
-						lookup_province = lookup_province.substr(0,pos);
-				}
+			if (lookup_country.find("Canada") != string::npos) {
+				lookup_province = lookup_state;
+				lookup_state.clear();
 			}
+
+			string notes;
+			notes.assign(inpNotes->value());
+			if (!notes.empty()) notes.append("\n");
+			notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
+			notes.append(lookup_addr1).append("\n");
+			notes.append(lookup_addr2);
+			if (!lookup_state.empty())
+				notes.append(", ").append(lookup_state).append("  ").append(lookup_zip);
+			else if (!lookup_province.empty())
+				notes.append(", ").append(lookup_province).append("  ").append(lookup_zip);
+			else
+				notes.append("  ").append(lookup_country);
+			lookup_notes = notes;
 			REQ(QRZ_disp_result);
 		}
 	}
@@ -586,38 +606,57 @@ void QRZquery()
 string node_data(const string &xmlpage, const string nodename)
 {
 	size_t pos1, pos2;
-	pos1 = xmlpage.find(string("<").append(nodename).append(">"));
+	string test;
+	test.assign("<").append(nodename).append(">");
+	pos1 = xmlpage.find(test);
 	if (pos1 == string::npos) return "";
-	pos2 = xmlpage.find(string("</").append(nodename).append(">"));
+	pos1 += test.length();
+	test.assign("</").append(nodename).append(">");
+	pos2 = xmlpage.find(test);
 	if (pos2 == string::npos) return "";
-	pos1 += (string("<").append(nodename).append(">")).length();
 	return xmlpage.substr(pos1, pos2 - pos1);
 }
 
 void parse_callook(string& xmlpage)
 {
+	print_data("Callook info", xmlpage);
 	string nodestr;
 	nodestr = node_data(xmlpage, "current");
 	if (nodestr.empty()) {
 		lookup_notes = "no data from callook.info";
 		return;
 	}
-	xmlpage = xmlpage.substr(xmlpage.find("</trustee>"));
-	lookup_fname = node_data(xmlpage, "name");
-	camel_case(lookup_fname);
+	size_t start_pos = xmlpage.find("</trustee>");
+	if (start_pos == string::npos) return;
+
+	start_pos += 10;
+	xmlpage = xmlpage.substr(start_pos);
+	lookup_name = node_data(xmlpage, "name");
+	camel_case(lookup_name);
+	lookup_fname = lookup_name;
+
 	nodestr = node_data(xmlpage, "address");
 	if (!nodestr.empty()) {
 		lookup_addr1 = node_data(nodestr, "line1");
 		lookup_addr2 = node_data(nodestr, "line2");
 	}
+
 	nodestr = node_data(xmlpage, "location");
 	if (!nodestr.empty()) {
 		lookup_lond = node_data(nodestr, "longitude");
 		lookup_latd = node_data(nodestr, "latitude");
 		lookup_grid = node_data(nodestr, "gridsquare");
 	}
-	size_t p;
-	p = lookup_addr2.find(",");
+
+	string notes;
+	notes.assign(inpNotes->value());
+	if (!notes.empty()) notes.append("\n");
+	notes.append(lookup_name).append("\n");
+	notes.append(lookup_addr1).append("\n");
+	notes.append(lookup_addr2);
+	lookup_notes = notes;
+
+	size_t p = lookup_addr2.find(",");
 	if (p != string::npos) {
 		lookup_qth = lookup_addr2.substr(0, p);
 		lookup_addr2.erase(0, p+2);
@@ -625,6 +664,7 @@ void parse_callook(string& xmlpage)
 		if (p != string::npos)
 			lookup_state = lookup_addr2.substr(0, p);
 	}
+
 }
 
 bool CALLOOKGetXML(string& xmlpage)
@@ -665,6 +705,8 @@ void CALLOOKquery()
 
 void parse_html(const string& htmlpage)
 {
+	print_data("Hamcall data", htmlpage);
+
 	size_t p;
 
 	clear_Lookup();
@@ -710,6 +752,8 @@ bool HAMCALLget(string& htmlpage)
 	url_detail += "&program=fldigi-";
 	url_detail += VERSION;
 	url_detail += "\r\n";
+
+	print_query("hamcall", url_detail);
 
 	return request_reply("www.hamcall.net", "http", url_detail, htmlpage, 5.0);
 }
@@ -767,11 +811,14 @@ bool HAMQTH_get_session_id()
 	}
 	p2 = retstr.find("</session_id>");
 	HAMQTH_session_id = retstr.substr(p1 + 12, p2 - p1 - 12);
+	print_data("HamQTH session id", HAMQTH_session_id);
 	return true;
 }
 
 void parse_HAMQTH_html(const string& htmlpage)
 {
+	print_data("HamQth html", htmlpage);
+
 	size_t p = string::npos;
 	size_t p1 = string::npos;
 	string tempstr;
@@ -787,8 +834,8 @@ void parse_HAMQTH_html(const string& htmlpage)
 
 	if ((p = htmlpage.find("<error>")) != string::npos) {
 		p += 7;
-		p1 = htmlpage.find("</error>");
-		if (p1 != string::npos) 
+		p1 = htmlpage.find("</error>", p);
+		if (p1 != string::npos)
 			lookup_notes.append(htmlpage.substr(p, p1 - p));
 		return;
 	}
@@ -809,24 +856,34 @@ void parse_HAMQTH_html(const string& htmlpage)
 	if ((p = htmlpage.find("<country>")) != string::npos) {
 		p += 9;
 		p1 = htmlpage.find("</country>", p);
-		if (p1 != string::npos)
+		if (p1 != string::npos) {
 			lookup_country = htmlpage.substr(p, p1 - p);
+			if (lookup_country == "Canada") {
+				p = htmlpage.find("<district>");
+				if (p != string::npos) {
+					p += 10;
+					p1 = htmlpage.find("</district>", p);
+					if (p1 != string::npos)
+						lookup_province = htmlpage.substr(p, p1 - p);
+				}
+			}
+		}
 	}
 	if ((p = htmlpage.find("<us_state>")) != string::npos) {
 		p += 10;
-		p1 = htmlpage.find("</us_state>");
+		p1 = htmlpage.find("</us_state>", p);
 		if (p1 != string::npos)
 			lookup_state = htmlpage.substr(p, p1 - p);
 	}
 	if ((p = htmlpage.find("<grid>")) != string::npos) {
 		p += 6;
-		p1 = htmlpage.find("</grid>");
+		p1 = htmlpage.find("</grid>", p);
 		if (p1 != string::npos)
 			lookup_grid = htmlpage.substr(p, p1 - p);
 	}
 	if ((p = htmlpage.find("<qsl_via>")) != string::npos) {
 		p += 9;
-		p1 = htmlpage.find("</qsl_via>");
+		p1 = htmlpage.find("</qsl_via>", p);
 		if (p1 != string::npos) {
 			tempstr.assign(htmlpage.substr(p, p1 - p));
 			if (!tempstr.empty())
@@ -835,7 +892,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 	}
 	if ((p = htmlpage.find("<adr_name>")) != string::npos) {
 		p += 10;
-		p1 = htmlpage.find("</adr_name>");
+		p1 = htmlpage.find("</adr_name>", p);
 		if (p1 != string::npos) {
 			tempstr.assign(htmlpage.substr(p, p1 - p));
 			if (!tempstr.empty())
@@ -844,7 +901,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 	}
 	if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
 		p += 13;
-		p1 = htmlpage.find("</adr_street1>");
+		p1 = htmlpage.find("</adr_street1>", p);
 		if (p1 != string::npos) {
 			tempstr.assign(htmlpage.substr(p, p1 - p));
 			if (!tempstr.empty())
@@ -853,16 +910,20 @@ void parse_HAMQTH_html(const string& htmlpage)
 	}
 	if ((p = htmlpage.find("<adr_city>")) != string::npos) {
 		p += 10;
-		p1 = htmlpage.find("</adr_city>");
+		p1 = htmlpage.find("</adr_city>", p);
 		if (p1 != string::npos) {
 			tempstr.assign(htmlpage.substr(p, p1 - p));
 			if (!tempstr.empty())
-				lookup_notes.append(tempstr).append(", ").append(lookup_state);
+				lookup_notes.append(tempstr);
+			if (!lookup_state.empty())
+				lookup_notes.append(", ").append(lookup_state);
+			else if (!lookup_province.empty())
+				lookup_notes.append(", ").append(lookup_province);
 		}
 	}
 	if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
 		p += 9;
-		p1 = htmlpage.find("</adr_zip>");
+		p1 = htmlpage.find("</adr_zip>", p);
 		if (p1 != string::npos) {
 			tempstr.assign(htmlpage.substr(p, p1 - p));
 			if (!tempstr.empty())
@@ -886,23 +947,34 @@ bool HAMQTHget(string& htmlpage)
 	url.append("&callsign=").append(callsign);
 	url.append("&prg=FLDIGI");
 
+	print_query("HamQTH", url);
+
 	ret = fetch_http(url, htmlpage, 5.0);
 	size_t p = htmlpage.find("<error>");
+	string tempstr = "";
 	if (p != string::npos ) {
 		size_t p1 = htmlpage.find("</error>", p);
 		if (p1 != string::npos) {
-			string tempstr;
+			tempstr.clear();
 			p += 7;
 			tempstr.assign(htmlpage.substr(p, p1 - p));
-			LOG_WARN("HAMQTH error: %s", tempstr.c_str());
+			if (tempstr.find("Session does not exist or expired") != string::npos) {
+				htmlpage.clear();
+				LOG_WARN("HAMQTH session id expired!");
+				HAMQTH_session_id.clear();
+				if (!HAMQTH_get_session_id()) {
+					LOG_WARN("HAMQTH get session id failed!");
+					lookup_notes = "Get session id failed!\n";
+					htmlpage.clear();
+					return false;
+				}
+				ret = fetch_http(url, htmlpage, 5.0);
+			} else {
+				LOG_WARN("HAMQTH error: %s", tempstr.c_str());
+				htmlpage.clear();
+				return false;
+			}
 		}
-		htmlpage.clear();
-		if (!HAMQTH_get_session_id()) {
-			LOG_WARN("HAMQTH session id failed!");
-			lookup_notes = "Get session id failed!\n";
-			return false;
-		}
-		ret = fetch_http(url, htmlpage, 5.0);
 	}
 #ifdef HAMQTH_DEBUG
 	FILE *fetchit = fopen("fetchit.txt", "a");
@@ -1115,7 +1187,7 @@ static void *EQSL_loop(void *args)
 			size_t p2 = EQSL_xmlpage.find('\n', p);
 			LOG_ERROR("%s\n%s", EQSL_xmlpage.substr(p, p2 - p - 1).c_str(), EQSL_url.c_str());
 		} else
-			LOG_INFO("eQSL logged %s", EQSL_url.c_str()); 
+			LOG_INFO("eQSL logged %s", EQSL_url.c_str());
 
 	}
 	return NULL;
@@ -1194,7 +1266,7 @@ void makeEQSL(const char *message)
 
 // eqsl url header
 	eQSL_url = "http://www.eqsl.cc/qslcard/importADIF.cfm?ADIFdata=upload <adIF_ver:5>2.1.9";
-	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s", 
+	snprintf(sztemp, sizeof(sztemp),"<EQSL_USER:%d>%s<EQSL_PSWD:%d>%s",
 		static_cast<int>(progdefaults.eqsl_id.length()),
 		progdefaults.eqsl_id.c_str(),
 		static_cast<int>(progdefaults.eqsl_pwd.length()),
