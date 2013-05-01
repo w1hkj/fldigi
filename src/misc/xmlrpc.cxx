@@ -5,6 +5,8 @@
 //              Stelios Bounanos, M0GLD
 // Copyright (C) 2008-2010
 //              Dave Freese, W1HKJ
+// Copyright (C) 2013
+//              Remi Chateauneu, F4ECW
 //
 // See EOF for a list of method names. Run "fldigi --xmlrpc-list"
 // to see a list of method names, signatures and descriptions.
@@ -41,14 +43,15 @@
 
 #include <signal.h>
 
-#include <xmlrpc-c/base.hpp>
-#include <xmlrpc-c/girerr.hpp>
-#include <xmlrpc-c/registry.hpp>
-#include <xmlrpc-c/server_abyss.hpp>
+#include <xmlrpcpp/XmlRpcServer.h>
+#include <xmlrpcpp/XmlRpcServerMethod.h>
+#include <xmlrpcpp/XmlRpcValue.h>
 
 #include "globals.h"
 #include "configuration.h"
-#include "socket.h"
+#ifdef HAVE_VALUES_H
+#	include <values.h>
+#endif
 #include "threads.h"
 #include "modem.h"
 #include "trx.h"
@@ -79,12 +82,129 @@
 LOG_FILE_SOURCE(debug::LOG_RPC);
 
 using namespace std;
+using namespace XmlRpc;
+
+/// Not defined the usual way on Mingw
+#ifndef DBL_MAX
+#define DBL_MAX 1.7976931348623157e+308
+#endif
+
+namespace xmlrpc_c
+{
+	struct method
+	{
+		const char * _signature ;
+		const char * _help ;
+		virtual std::string help(void) const { return _help;}
+		const char * signature() const { return _signature; }
+		virtual ~method() {}
+	};
+
+	typedef method * methodPtr ;
+	typedef XmlRpcValue value ;
+	typedef XmlRpcValue value_string ;
+	typedef XmlRpcValue value_bytestring ;
+	typedef XmlRpcValue value_struct ;
+	typedef XmlRpcValue value_nil ;
+	typedef XmlRpcValue value_array ;
+	typedef XmlRpcValue value_double ;
+	typedef XmlRpcValue value_int ;
+	typedef XmlRpcValue value_boolean ;
+
+	struct fault : public std::runtime_error
+	{
+		typedef enum { CODE_INTERNAL } Codes;
+
+		fault( const char * msg, Codes cd = CODE_INTERNAL ) : std::runtime_error(msg) {}
+	};
+
+	struct paramList
+	{
+		const XmlRpcValue & _params ;
+		paramList( const XmlRpcValue & prm ) : _params(prm) {}
+
+		int getInt(int i, int mini = INT_MIN, int maxi = INT_MAX ) const
+		{
+			int tmp = _params[i];
+			if( tmp < mini ) tmp = mini ;
+			else if(tmp > maxi) tmp = maxi ;
+			return tmp ;
+		}
+		string getString(int i) const { return _params[i]; }
+		std::vector<unsigned char> getBytestring(int i) const
+		{
+			return _params[i];
+		}
+		double getDouble(int i, double mini = -DBL_MAX, double maxi = DBL_MAX) const
+		{
+			double tmp = _params[i];
+			if( tmp < mini ) tmp = mini ;
+			else if(tmp > maxi) tmp = maxi ;
+			return tmp ;
+		}
+		bool getBoolean(int i) const { return _params[i]; }
+		const std::vector<value> & getArray(int i) const { return _params[i]; }
+		void verifyEnd(size_t sz) const
+		{
+			const std::vector<value> & tmpRef = _params ;
+			if( sz != tmpRef.size() ) throw std::runtime_error("Bad size");
+		}
+	};
+
+}
+
+template< class RPC_METHOD >
+struct Method : public RPC_METHOD, public XmlRpcServerMethod
+{
+	Method( const char * n )
+	: XmlRpcServerMethod( n ) {}
+
+	void execute (XmlRpcValue &params, XmlRpcValue &result)
+	{
+		xmlrpc_c::paramList params2(params) ;
+		RPC_METHOD::execute( params2, &result );
+	}
+};
+
+typedef XmlRpcServerMethod * (*RpcFactory)( const char * );
+
+template<class RPC_METHOD>
+struct RpcBuilder
+{
+	static XmlRpcServerMethod * factory( const char * name )
+	{
+		return new Method< RPC_METHOD >( name );
+	}
+};
+
+struct XmlRpcImpl : public XmlRpcServer
+{
+	void open(const char * port)
+	{
+  		bindAndListen( atoi( port ) );
+
+		enableIntrospection(true);
+	}
+	void run()
+	{
+		double milli_secs = -1.0 ;
+		// Tell our server to wait indefinately for messages
+		work(milli_secs);
+	}
+	/// BEWARE IT IS CALLED FROM ANOTHER THREAD.
+	void close()
+	{
+		LOG_INFO("Stopping XML-RPC server");
+		exit();
+		shutdown();
+	}
+};
 
 struct rpc_method
 {
-	rpc_method(const xmlrpc_c::methodPtr& m, const char* n)
-		: method(m), name(n) { }
-	xmlrpc_c::methodPtr method;
+	RpcFactory m_fact ;
+	~rpc_method() { delete method ; }
+	xmlrpc_c::method * method ;
 	const char* name;
 };
 typedef list<rpc_method> methods_t;
@@ -97,28 +217,29 @@ XML_RPC_Server* XML_RPC_Server::inst = 0;
 
 XML_RPC_Server::XML_RPC_Server()
 {
-	server_socket = new Socket;
+	server_impl = new XmlRpcImpl;
 	add_methods();
+
+	for( methods_t::iterator it = methods->begin(), en = methods->end(); it != en; ++it )
+	{
+		XmlRpcServerMethod * mth = dynamic_cast< XmlRpcServerMethod * >( it->method );
+		server_impl->addMethod( mth );
+	}
+
 	server_thread = new pthread_t;
 	server_mutex = new pthread_mutex_t;
 	pthread_mutex_init(server_mutex, NULL);
-	run = true;
+//	run = true;
 }
 
 XML_RPC_Server::~XML_RPC_Server()
 {
-	run = false;
-	if (server_thread) {
-		CANCEL_THREAD(*server_thread);
-		pthread_join(*server_thread, NULL);
-		delete server_thread;
-		server_thread = 0;
-	}
-	delete methods;
-	delete server_socket;
-	methods = 0;
+//	run = false;
+// the xmlrpc server is closed and deleted  when 
+// 	XML_RPC_Server::stop();
+// is called from main
+//	delete methods;
 }
-
 
 void XML_RPC_Server::start(const char* node, const char* service)
 {
@@ -128,8 +249,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	inst = new XML_RPC_Server;
 
 	try {
-		inst->server_socket->open(Address(node, service));
-		inst->server_socket->bind();
+		inst->server_impl->open(service);
 		if (pthread_create(server_thread, NULL, thread_func, NULL) != 0)
 			throw runtime_error(strerror(errno));
 	}
@@ -143,38 +263,26 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	}
 }
 
+/// BEWARE IT IS CALLED FROM ANOTHER THREAD.
 void XML_RPC_Server::stop(void)
 {
 // FIXME: uncomment when we have an xmlrpc server that can be interrupted
 	// if (!inst)
-	// 	return;
-	// inst->server_socket->close();
-	// delete inst;
-	// inst = 0;
+	//	return;
+	inst->server_impl->close();
+	delete inst;
+	inst = 0;
 }
 
 void* XML_RPC_Server::thread_func(void*)
 {
 	SET_THREAD_ID(XMLRPC_TID);
 
-	xmlrpc_c::registry reg;
-	for (methods_t::iterator i = methods->begin(); i != methods->end(); ++i)
-		reg.addMethod(i->name, i->method);
-
 	save_signals();
-	xmlrpc_c::serverAbyss server(xmlrpc_c::serverAbyss::constrOpt()
-				     .registryP(&reg)
-				     .keepaliveMaxConn(INT_MAX)
-				     .socketFd(inst->server_socket->fd())
-#ifndef NDEBUG
-				     .logFileName(HomeDir + "xmlrpc.log")
-#endif
-	    		      );
+	inst->server_impl->run();
 	restore_signals();
 
 	SET_THREAD_CANCEL();
-	server.run();
-
 	return NULL;
 }
 
@@ -405,7 +513,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_string(mode_info[active_modem->get_mode()].sname);
+		const char* cur = mode_info[active_modem->get_mode()].sname;
+		*retval = xmlrpc_c::value_string(cur);
 	}
 };
 
@@ -437,7 +546,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_int(active_modem->get_mode());
+        int md = active_modem->get_mode();
+		*retval = xmlrpc_c::value_int(md);
 	}
 };
 
@@ -927,7 +1037,8 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_double(wf->rfcarrier());
+        double rfc = wf->rfcarrier();
+		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
 
@@ -2902,7 +3013,7 @@ void XML_RPC_Server::add_methods(void)
 	if (methods)
 		return;
 #undef ELEM_
-#define ELEM_(class_, name_) rpc_method(new class_, name_),
+#define ELEM_(class_, name_) { RpcBuilder<class_>::factory, NULL, name_ },
 	rpc_method m[] = { METHOD_LIST };
 	methods = new methods_t(m, m + sizeof(m)/sizeof(*m));
 
@@ -2910,4 +3021,10 @@ void XML_RPC_Server::add_methods(void)
 		methods->remove_if(rm_pred(progdefaults.xmlrpc_deny.c_str(), false));
 	else if (!progdefaults.xmlrpc_allow.empty())
 		methods->remove_if(rm_pred(progdefaults.xmlrpc_allow.c_str(), true));
+
+	for( methods_t::iterator it = methods->begin(), en = methods->end(); it != en; ++it )
+	{
+		XmlRpcServerMethod * mth = it->m_fact( it->name );
+		it->method = dynamic_cast< xmlrpc_c::method * >( mth );
+	}
 }
