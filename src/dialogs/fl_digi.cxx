@@ -3237,6 +3237,8 @@ UI_return:
 			text_panel->orgx(), text_panel->orgy(), 
 			text_panel->x(), 
 			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
+
+	viewer_redraw();
 	fl_digi_main->init_sizes();
 	fl_digi_main->redraw();
 }
@@ -5066,6 +5068,7 @@ void create_fl_digi_main_primary() {
 				mainViewer->callback((Fl_Callback*)cb_mainViewer);
 				mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
 				mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
+
 // mainViewer uses same regular expression evaluator as Viewer
 				mainViewer->seek_re = &seek_re;
 
