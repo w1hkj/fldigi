@@ -21,15 +21,15 @@
         ELEM_(7, PSKFEC31, NUM_MODES)                   \
         ELEM_(8, PSK10, NUM_MODES)                      \
                                                         \
-        ELEM_(9, MT63_500_LG, MODE_MT63_500)            \
-        ELEM_(10, MT63_500_ST, MODE_MT63_500)           \
-        ELEM_(11, MT63_500_VST, MODE_MT63_500)          \
-        ELEM_(12, MT63_1000_LG, MODE_MT63_1000)         \
-        ELEM_(13, MT63_1000_ST, MODE_MT63_1000)         \
-        ELEM_(14, MT63_1000_VST, MODE_MT63_1000)        \
-        ELEM_(15, MT63_2000_LG, MODE_MT63_2000)         \
-        ELEM_(17, MT63_2000_ST, MODE_MT63_2000)         \
-        ELEM_(18, MT63_2000_VST, MODE_MT63_2000)        \
+        ELEM_(9, MT63_500_LG, MODE_MT63_500L)           \
+        ELEM_(10, MT63_500_ST, MODE_MT63_500S)          \
+        ELEM_(11, MT63_500_VST, NUM_MODES)              \
+        ELEM_(12, MT63_1000_LG, MODE_MT63_1000L)        \
+        ELEM_(13, MT63_1000_ST, MODE_MT63_1000S)        \
+        ELEM_(14, MT63_1000_VST, NUM_MODES)             \
+        ELEM_(15, MT63_2000_LG, MODE_MT63_2000L)        \
+        ELEM_(17, MT63_2000_ST, MODE_MT63_2000S)        \
+        ELEM_(18, MT63_2000_VST, NUM_MODES)             \
                                                         \
         ELEM_(19, PSKAM10, NUM_MODES)                   \
         ELEM_(20, PSKAM31, NUM_MODES)                   \

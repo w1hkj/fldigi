@@ -604,13 +604,13 @@ void cRsId::apply(int iSymbol, int iBin)
             REQ(&set_contestia_tab_widgets);
             break;
         // mt63
-        case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
-            progdefaults.mt63_interleave = 64;
-            break;
-        case RSID_MT63_500_ST: case RSID_MT63_1000_ST: case RSID_MT63_2000_ST:
-        case RSID_MT63_500_VST: case RSID_MT63_1000_VST: case RSID_MT63_2000_VST:
-            progdefaults.mt63_interleave = 32;
-            break;
+//        case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
+//            progdefaults.mt63_interleave = 64;
+//            break;
+//        case RSID_MT63_500_ST: case RSID_MT63_1000_ST: case RSID_MT63_2000_ST:
+//        case RSID_MT63_500_VST: case RSID_MT63_1000_VST: case RSID_MT63_2000_VST:
+//            progdefaults.mt63_interleave = 32;
+//            break;
 
         default:
             break;
@@ -1020,17 +1020,23 @@ void cRsId::send(bool preRSID)
 			rmode = RSID_DOMINOEX_22_FEC;
 		break;
 
-	case MODE_MT63_500:
-		if (progdefaults.mt63_interleave == 32)
-			rmode = RSID_MT63_500_ST;
+	case MODE_MT63_500S:
+		rmode = RSID_MT63_500_ST;
 		break;
-	case MODE_MT63_1000:
-		if (progdefaults.mt63_interleave == 32)
-			rmode = RSID_MT63_1000_ST;
+	case MODE_MT63_500L:
+		rmode = RSID_MT63_500_LG;
 		break;
-	case MODE_MT63_2000:
-		if (progdefaults.mt63_interleave == 32)
-			rmode = RSID_MT63_2000_ST;
+	case MODE_MT63_1000S:
+		rmode = RSID_MT63_1000_ST;
+		break;
+	case MODE_MT63_1000L:
+		rmode = RSID_MT63_1000_LG;
+		break;
+	case MODE_MT63_2000S:
+		rmode = RSID_MT63_2000_ST;
+		break;
+	case MODE_MT63_2000L:
+		rmode = RSID_MT63_2000_LG;
 		break;
 	}
 

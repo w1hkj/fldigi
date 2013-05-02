@@ -83,9 +83,12 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_NAVTEX, &navtex_modem, "NAVTEX", "NAVTEX", "NAVTEX", "TOR", "NAVTEX" },
 	{ MODE_SITORB, &sitorb_modem, "SITORB", "SITORB", "SITORB", "TOR", "SITORB" },
 
-	{ MODE_MT63_500, &mt63_500_modem, "MT63-500", "MT63-500", "MT63-500", "MT63", "MT63-500" },
-	{ MODE_MT63_1000, &mt63_1000_modem, "MT63-1K", "MT63-1000", "MT63-1XX", "MT63", "MT63 1K" },
-	{ MODE_MT63_2000, &mt63_2000_modem, "MT63-2K", "MT63-2000", "MT63-2XX", "MT63", "MT63 2K" },
+	{ MODE_MT63_500S, &mt63_500S_modem, "MT63-500S", "MT63-500S", "MT63-500S", "MT63", "MT63-500S" },
+	{ MODE_MT63_500L, &mt63_500L_modem, "MT63-500L", "MT63-500L", "MT63-500L", "MT63", "MT63-500L" },
+	{ MODE_MT63_1000S, &mt63_1000S_modem, "MT63-1KS", "MT63-1000S", "MT63-1XXS", "MT63", "MT63 1KS" },
+	{ MODE_MT63_1000L, &mt63_1000L_modem, "MT63-1KL", "MT63-1000L", "MT63-1XXL", "MT63", "MT63 1KL" },
+	{ MODE_MT63_2000S, &mt63_2000S_modem, "MT63-2KS", "MT63-2000S", "MT63-2XXS", "MT63", "MT63 2KS" },
+	{ MODE_MT63_2000L, &mt63_2000L_modem, "MT63-2KL", "MT63-2000L", "MT63-2XXL", "MT63", "MT63 2KL" },
 
 	{ MODE_PSK31, &psk31_modem, "BPSK31", "BPSK-31", "PSK31", "PSK31", "P31" },
 	{ MODE_PSK63, &psk63_modem, "BPSK63", "BPSK-63", "PSK63", "PSK63", "P63" },
