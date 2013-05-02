@@ -1706,12 +1706,12 @@ void cb_mnuCapture(Fl_Widget *w, void *d)
 
 void cb_mnuGenerate(Fl_Widget *w, void *d)
 {
-	if (!scard) return;
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	if (capval || playval) {
 		m->clear();
 		return;
 	}
+	if (!scard) return;
 	genval = m->value();
 	if (!scard->Generate(genval)) {
 		m->clear();
