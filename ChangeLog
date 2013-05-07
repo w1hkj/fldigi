@@ -1,8 +1,29 @@
 
 
-=Version 3.21.70=
+=Version 3.21.71=
 
-2013-04-13  David Freese  <w1hkj@w1hkj.com>
+2013-05-06  David Freese  <w1hkj@w1hkj.com>
+
+	d9e2c6f: About update
+	603e6a7: Wavefile generate
+	4c7ffd7: MT63 mode selection
+	bae6d2c: ARQ server
+
+2013-04-30  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	9750f38: xmlrpc-c removal
+
+2013-04-30  David Freese  <w1hkj@w1hkj.com>
+
+	a2624eb: Signal Browser Colors
+	0bc251a: QRZ query
+	816aea5: Rigsupport
+	54708a2: PO file update
+	6b28784: eQSL url
+	acd5297: PSKMAIL
+
+
+=Version 3.21.70=
 
 	ab4e0f2: Contestia/Olivia
 	45be148: Tabs Colors
