@@ -6239,12 +6239,6 @@ static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 	
-	// save raw data if autoextracting
-	if (progdefaults.autoextract == true)
-		rx_extract_add(data);
-
-	WriteARQ(data);
-
 	// possible destinations for the data
 	enum dest_type {
 		DEST_RECV,	// ordinary received text
@@ -6302,6 +6296,9 @@ void put_rx_char(unsigned int data, int style)
 		benchmark.buffer += (char)data;
 	}
 #else
+	if (progdefaults.autoextract == true)
+		rx_extract_add(data);
+	WriteARQ(data);
 	REQ(put_rx_char_flmain, data, style);
 #endif
 }

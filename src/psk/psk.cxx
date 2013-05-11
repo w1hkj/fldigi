@@ -731,12 +731,6 @@ void psk::rx_bit(int bit)
 						s2n_sum += s2n_metric;
 						s2n_sum2 += (s2n_metric * s2n_metric);
 						s2n_ncount ++;
-/*						if (c == SOH && noSOHyet) {
-							s2n_sum = s2n_sum2 = 0.0;
-							s2n_ncount = 1.0;
-							noSOHyet = false;
-						}
-*/
 						if (c == EOT)
 							s2nreport();
 					}
@@ -753,12 +747,6 @@ void psk::rx_bit(int bit)
 					s2n_sum += s2n_metric;
 					s2n_sum2 += (s2n_metric * s2n_metric);
 					s2n_ncount++;
-/*					if (c == SOH && noSOHyet) {
-						s2n_sum = s2n_sum2 = 0.0;
-						s2n_ncount = 1.0;
-						noSOHyet = false;
-					}
-*/
 					if (c == EOT)
 						s2nreport();
 				}
@@ -787,12 +775,6 @@ void psk::rx_bit2(int bit)
 					s2n_sum += s2n_metric;
 					s2n_sum2 += (s2n_metric * s2n_metric);
 					s2n_ncount++;
-/*					if (c == SOH && noSOHyet) {
-						s2n_sum = s2n_sum2 = 0.0;
-						s2n_ncount = 1.0;
-						noSOHyet = false;
-					}
-*/
 					if (c == EOT)
 						s2nreport();
 				}
