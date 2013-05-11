@@ -162,7 +162,7 @@ if WANT_FLARQ
 	rm -f $(DESTDIR)/$(datadir)/applications/flarq.desktop
 endif
 
-FLDIGI_FL_SRC = dialogs/confdialog.fl dialogs/colorsfonts.fl \
+FLDIGI_FL_SRC = dialogs/confdialog.fl  \
 		logbook/lgbook.fl dialogs/notifydialog.fl
 FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 
@@ -251,7 +251,6 @@ fldigi_SOURCES += \
 	cw_rtty/rtty.cxx \
 	cw_rtty/view_rtty.cxx \
 	contestia/contestia.cxx \
-	dialogs/colorsfonts.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
 	dialogs/font_browser.cxx \
@@ -290,7 +289,6 @@ fldigi_SOURCES += \
 	include/charsetdistiller.h \
 	include/charsetlist.h \
 	include/colorbox.h \
-	include/colorsfonts.h \
 	include/combo.h \
 	include/complex.h \
 	include/configuration.h \

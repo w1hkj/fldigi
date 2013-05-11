@@ -7,10 +7,11 @@
 #include <FL/Fl_Box.H>
 #include <FL/filename.H>
 #include <FL/Fl_File_Chooser.H>
+#include <FL/fl_show_colormap.H>
 #include "main.h"
 #include "fl_digi.h"
+#include "Viewer.h"
 #include "soundconf.h"
-#include "colorsfonts.h"
 #include "waterfall.h"
 #include "rigxml.h"
 #include "lookupcall.h"
@@ -29,6 +30,142 @@ extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 #endif
 Fl_Double_Window *dlgConfig; 
 Mode_Browser* mode_browser; 
+
+static void choose_color(Fl_Color & c) {
+  unsigned char r, g, b;
+  Fl::get_color(c, r, g, b);
+  if (fl_color_chooser("Font color", r, g, b))
+      c = fl_rgb_color(r, g, b);
+}
+
+static void adjust_label(Fl_Widget* w) {
+  w->labelcolor(fl_contrast(w->labelcolor(), w->color()));
+}
+
+static void cbRxFontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+      Fl_Color color = font_browser->fontColor();
+  
+      RxText->textfont(font);
+      RxText->textsize(size);
+      RxText->textcolor(color);
+      RxText->redraw();
+  
+      progdefaults.RxFontnbr = font;
+      progdefaults.RxFontsize = size;
+      progdefaults.RxFontcolor = color;
+  
+      ReceiveText->setFont(font);
+      ReceiveText->setFontSize(size);
+      ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+  
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
+
+static void cbTxFontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+      Fl_Color color = font_browser->fontColor();
+  
+      TxText->textfont(font);
+      TxText->textsize(size);
+      TxText->textcolor(color);
+      TxText->redraw();
+  
+      progdefaults.TxFontnbr = font;
+      progdefaults.TxFontsize = size;
+      progdefaults.TxFontcolor = color;
+  
+      TransmitText->setFont(font);
+      TransmitText->setFontSize(size);
+      TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+  
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
+
+void cbWaterfallFontBrowser(Fl_Widget*, void*) {
+  Fl_Font fnt = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+  
+      progdefaults.WaterfallFontnbr = fnt;
+      progdefaults.WaterfallFontsize = size;
+      progdefaults.changed = true;
+  
+      font_browser->hide();
+}
+
+void cbViewerFontBrowser(Fl_Widget*, void*) {
+  progdefaults.ViewerFontnbr = font_browser->fontNumber();
+      progdefaults.ViewerFontsize = font_browser->fontSize();
+      initViewer();
+      progdefaults.changed = true;
+  
+      font_browser->hide();
+}
+
+void cbFreqControlFontBrowser(Fl_Widget*, void*) {
+  Fl_Font fnt = font_browser->fontNumber();
+      progdefaults.FreqControlFontnbr = fnt;
+      progdefaults.changed = true;
+  
+      FDdisplay->labelfont(progdefaults.FreqControlFontnbr);
+      FDdisplay->redraw();
+      qsoFreqDisp1->font(progdefaults.FreqControlFontnbr);
+      qsoFreqDisp2->font(progdefaults.FreqControlFontnbr);
+      qsoFreqDisp3->font(progdefaults.FreqControlFontnbr);
+      qsoFreqDisp1->redraw();
+      qsoFreqDisp2->redraw();
+      qsoFreqDisp3->redraw();
+      
+      font_browser->hide();
+}
+
+static void cbLOGGINGFontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+      Fl_Color color = font_browser->fontColor();
+  
+      progdefaults.LOGGINGtextfont = font;
+      progdefaults.LOGGINGtextsize = size;
+      progdefaults.LOGGINGtextcolor = color;
+  
+      LOGGINGdisplay->textsize(size);
+      LOGGINGdisplay->textcolor(color);
+      LOGGINGdisplay->textfont(font);
+      LOGGINGdisplay->redraw();
+      
+      LOGGING_colors_font();
+  
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
+
+static void cbLOGBOOKFontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+      Fl_Color color = font_browser->fontColor();
+  
+      progdefaults.LOGBOOKtextfont = font;
+      progdefaults.LOGBOOKtextsize = size;
+      progdefaults.LOGBOOKtextcolor = color;
+  
+      LOGBOOKdisplay->textsize(size);
+      LOGBOOKdisplay->textcolor(color);
+      LOGBOOKdisplay->textfont(font);
+      LOGBOOKdisplay->redraw();
+      
+      LOGBOOK_colors_font();
+  
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
 
 void set_qrzxml_buttons(Fl_Button* b) {
   Fl_Button* qrzbxml[] = { btnQRZXMLnotavailable, btnQRZcdrom, btnQRZsub,
@@ -863,6 +1000,809 @@ btnWF_UIxmtlock->value(progdefaults.WF_UIxmtlock = 0);
 progdefaults.changed = true;
 WF_UI();
 }
+
+Fl_Group *tabColorsFonts=(Fl_Group *)0;
+
+Fl_Tabs *tabsColors=(Fl_Tabs *)0;
+
+Fl_Menu_Button *CHARSETstatus=(Fl_Menu_Button *)0;
+
+Fl_Input *RxText=(Fl_Input *)0;
+
+Fl_Button *btnRxColor=(Fl_Button *)0;
+
+static void cb_btnRxColor(Fl_Button*, void*) {
+  uchar r, g, b;
+    r = progdefaults.RxColor.R;
+    g = progdefaults.RxColor.G;
+    b = progdefaults.RxColor.B;
+
+    if (!fl_color_chooser("Rx Color", r, g, b))
+        return;
+
+    progdefaults.RxColor.R = r;
+    progdefaults.RxColor.G = g;
+    progdefaults.RxColor.B = b;
+    RxText->color(fl_rgb_color(r,g,b));
+    ReceiveText->color(RxText->color());
+    RxText->redraw();
+    ReceiveText->redraw();
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnTxColor=(Fl_Button *)0;
+
+static void cb_btnTxColor(Fl_Button*, void*) {
+  uchar r, g, b;
+    r = progdefaults.TxColor.R;
+    g = progdefaults.TxColor.G;
+    b = progdefaults.TxColor.B;
+
+    if (!fl_color_chooser("Tx Color", r, g, b))
+        return;
+
+    progdefaults.TxColor.R = r;
+    progdefaults.TxColor.G = g;
+    progdefaults.TxColor.B = b;
+    TxText->color(fl_rgb_color(r,g,b));
+    TransmitText->color(TxText->color());
+    TxText->redraw();
+    TransmitText->redraw();
+
+progdefaults.changed = true;
+}
+
+Fl_Input *TxText=(Fl_Input *)0;
+
+Fl_Button *btnRxFont=(Fl_Button *)0;
+
+static void cb_btnRxFont(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.RxFontnbr);
+    font_browser->fontSize(progdefaults.RxFontsize);
+    font_browser->fontColor(progdefaults.RxFontcolor);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbRxFontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnTxFont=(Fl_Button *)0;
+
+static void cb_btnTxFont(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.TxFontnbr);
+    font_browser->fontSize(progdefaults.TxFontsize);
+    font_browser->fontColor(progdefaults.TxFontcolor);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbTxFontBrowser);
+    font_browser->show();
+}
+
+Fl_Button *btnXMIT=(Fl_Button *)0;
+
+static void cb_btnXMIT(Fl_Button*, void*) {
+  choose_color(progdefaults.XMITcolor);
+    btnXMIT->color( progdefaults.XMITcolor );
+    btnXMIT->redraw();
+    TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnCTRL=(Fl_Button *)0;
+
+static void cb_btnCTRL(Fl_Button*, void*) {
+  choose_color(progdefaults.CTRLcolor);
+    btnCTRL->color( progdefaults.CTRLcolor );
+    btnCTRL->redraw();
+    TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnSKIP=(Fl_Button *)0;
+
+static void cb_btnSKIP(Fl_Button*, void*) {
+  choose_color(progdefaults.SKIPcolor);
+    btnSKIP->color( progdefaults.SKIPcolor );
+    btnSKIP->redraw();
+    TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnALTR=(Fl_Button *)0;
+
+static void cb_btnALTR(Fl_Button*, void*) {
+  choose_color(progdefaults.ALTRcolor);
+    btnALTR->color( progdefaults.ALTRcolor );
+    btnALTR->redraw();
+    TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnSEL=(Fl_Button *)0;
+
+static void cb_btnSEL(Fl_Button*, void*) {
+  choose_color(progdefaults.RxTxSelectcolor);
+btnSEL->color( progdefaults.RxTxSelectcolor );
+btnSEL->redraw();
+ReceiveText->color(
+  fl_rgb_color(
+    progdefaults.RxColor.R,
+    progdefaults.RxColor.G,
+    progdefaults.RxColor.B),
+    progdefaults.RxTxSelectcolor);
+TransmitText->color(
+  fl_rgb_color(
+    progdefaults.TxColor.R,
+    progdefaults.TxColor.G,
+    progdefaults.TxColor.B),
+    progdefaults.RxTxSelectcolor);
+    
+progdefaults.changed = true;
+}
+
+Fl_Button *btnNoTextColor=(Fl_Button *)0;
+
+static void cb_btnNoTextColor(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl_Color clr = FL_BACKGROUND2_COLOR;
+
+    Fl::get_color(clr, r, g, b);
+
+    progdefaults.TxFontcolor = FL_BLACK;
+    progdefaults.RxFontcolor = FL_BLACK;
+    progdefaults.XMITcolor = FL_RED;
+    progdefaults.CTRLcolor = FL_DARK_GREEN;
+    progdefaults.SKIPcolor = FL_BLUE;
+    progdefaults.ALTRcolor = FL_DARK_MAGENTA;
+    btnXMIT->color(progdefaults.XMITcolor);
+    btnCTRL->color(progdefaults.CTRLcolor);
+    btnSKIP->color(progdefaults.SKIPcolor);
+    btnALTR->color(progdefaults.ALTRcolor);
+    btnXMIT->redraw();
+    btnCTRL->redraw();
+    btnSKIP->redraw();
+    btnALTR->redraw();
+
+    progdefaults.RxColor.R = r;
+    progdefaults.RxColor.G = g;
+    progdefaults.RxColor.B = b;
+
+    clr = fl_rgb_color(r,g,b);
+    RxText->color(clr);
+    RxText->textcolor(progdefaults.RxFontcolor);
+    RxText->redraw();
+
+    ReceiveText->color(clr);
+    ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->redraw();
+
+    progdefaults.TxColor.R = r;
+    progdefaults.TxColor.G = g;
+    progdefaults.TxColor.B = b;
+
+    TxText->color(clr);
+    TxText->textcolor(progdefaults.TxFontcolor);
+    TxText->redraw();
+
+    TransmitText->color(clr);
+    TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->redraw();
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnTextDefaults=(Fl_Button *)0;
+
+static void cb_btnTextDefaults(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl_Color clr;
+
+    progdefaults.TxFontcolor = FL_BLACK;
+    progdefaults.RxFontcolor = FL_BLACK;
+    progdefaults.XMITcolor = FL_RED;
+    progdefaults.CTRLcolor = FL_DARK_GREEN;
+    progdefaults.SKIPcolor = FL_BLUE;
+    progdefaults.ALTRcolor = FL_DARK_MAGENTA;
+    btnXMIT->color(progdefaults.XMITcolor);
+    btnCTRL->color(progdefaults.CTRLcolor);
+    btnSKIP->color(progdefaults.SKIPcolor);
+    btnALTR->color(progdefaults.ALTRcolor);
+    btnXMIT->redraw();
+    btnCTRL->redraw();
+    btnSKIP->redraw();
+    btnALTR->redraw();
+
+    r = 255; g = 242; b = 190;
+    progdefaults.RxColor.R = r;
+    progdefaults.RxColor.G = g;
+    progdefaults.RxColor.B = b;
+
+    clr = fl_rgb_color(r,g,b);
+    RxText->color(clr);
+    RxText->textcolor(progdefaults.RxFontcolor);
+    RxText->redraw();
+
+    ReceiveText->color(clr);
+    ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+    ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+    ReceiveText->redraw();
+
+    r = 200; g = 235; b = 255;
+    progdefaults.TxColor.R = r;
+    progdefaults.TxColor.G = g;
+    progdefaults.TxColor.B = b;
+
+    clr = fl_rgb_color(r,g,b);
+    TxText->color(clr);
+    TxText->textcolor(progdefaults.TxFontcolor);
+    TxText->redraw();
+
+    TransmitText->color(clr);
+    TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+    TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+    TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+    TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+    TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+    TransmitText->redraw();
+
+    progdefaults.changed = true;
+}
+
+Fl_Box *FDdisplay=(Fl_Box *)0;
+
+Fl_Button *btn_freq_control_font=(Fl_Button *)0;
+
+static void cb_btn_freq_control_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.FreqControlFontnbr);
+    font_browser->fontSize(14);
+    font_browser->fontColor(FL_FOREGROUND_COLOR);
+    font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbFreqControlFontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnBackgroundColor=(Fl_Button *)0;
+
+static void cb_btnBackgroundColor(Fl_Button*, void*) {
+  uchar r, g, b;
+    r = progdefaults.FDbackground.R;
+    g = progdefaults.FDbackground.G;
+    b = progdefaults.FDbackground.B;
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.FDbackground.R = r;
+    progdefaults.FDbackground.G = g;
+    progdefaults.FDbackground.B = b;
+    
+    FDdisplay->color(fl_rgb_color(r,g,b));
+    FDdisplay->redraw();
+    
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnForegroundColor=(Fl_Button *)0;
+
+static void cb_btnForegroundColor(Fl_Button*, void*) {
+  uchar r, g, b;
+    r = progdefaults.FDforeground.R;
+    g = progdefaults.FDforeground.G;
+    b = progdefaults.FDforeground.B;
+
+    if (!fl_color_chooser("Foreground", r, g, b))
+        return;
+
+    progdefaults.FDforeground.R = r;
+    progdefaults.FDforeground.G = g;
+    progdefaults.FDforeground.B = b;
+    
+    FDdisplay->labelcolor(fl_rgb_color(r,g,b));
+    FDdisplay->redraw();
+    
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnFD_SystemColor=(Fl_Button *)0;
+
+static void cb_btnFD_SystemColor(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl_Color clr = FL_BACKGROUND2_COLOR;
+
+    Fl::get_color(clr, r, g, b);
+
+    progdefaults.FDbackground.R = r;
+    progdefaults.FDbackground.G = g;
+    progdefaults.FDbackground.B = b;
+   
+    FDdisplay->color(clr);
+    
+    clr = FL_FOREGROUND_COLOR;
+    Fl::get_color(clr, r, g, b);
+    
+    FDdisplay->labelcolor(clr);
+    FDdisplay->redraw();
+    
+    progdefaults.FDforeground.R = r;
+    progdefaults.FDforeground.G = g;
+    progdefaults.FDforeground.B = b;
+
+    if (qsoFreqDisp) {
+        qsoFreqDisp->SetONOFFCOLOR(
+          fl_rgb_color(	progdefaults.FDforeground.R,
+                        progdefaults.FDforeground.G,
+                        progdefaults.FDforeground.B),
+          fl_rgb_color(	progdefaults.FDbackground.R,
+                        progdefaults.FDbackground.G,
+                        progdefaults.FDbackground.B));
+        qsoFreqDisp->redraw();
+    }
+         
+    progdefaults.changed = true;
+}
+
+Fl_Output *LOGGINGdisplay=(Fl_Output *)0;
+
+Fl_Button *btnLOGGING_color=(Fl_Button *)0;
+
+static void cb_btnLOGGING_color(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl::get_color(progdefaults.LOGGINGcolor, r, g, b);
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
+    
+    LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
+    LOGGINGdisplay->redraw();
+
+    LOGGING_colors_font();
+    
+    progdefaults.changed = true;
+}
+
+Fl_Button *btn_LOGGING_font=(Fl_Button *)0;
+
+static void cb_btn_LOGGING_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.LOGGINGtextfont);
+font_browser->fontSize(progdefaults.LOGGINGtextsize);
+font_browser->fontColor(progdefaults.LOGGINGtextcolor);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbLOGGINGFontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnLOGGINGdefault_colors_font=(Fl_Button *)0;
+
+static void cb_btnLOGGINGdefault_colors_font(Fl_Button*, void*) {
+  progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
+progdefaults.LOGGINGtextfont = (Fl_Font)0;
+progdefaults.LOGGINGtextsize = 12;
+progdefaults.LOGGINGtextcolor = FL_BLACK;
+
+LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
+LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
+LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
+LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
+LOGGINGdisplay->redraw();
+    
+LOGGING_colors_font();
+    
+progdefaults.changed = true;
+}
+
+Fl_Output *LOGBOOKdisplay=(Fl_Output *)0;
+
+Fl_Button *btnLOGBOOK_color=(Fl_Button *)0;
+
+static void cb_btnLOGBOOK_color(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl::get_color(progdefaults.LOGBOOKcolor, r, g, b);
+
+    if (!fl_color_chooser("Background", r, g, b))
+        return;
+
+    progdefaults.LOGBOOKcolor = fl_rgb_color(r, g, b);
+    
+    LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
+    LOGBOOKdisplay->redraw();
+
+    LOGBOOK_colors_font();
+    
+    progdefaults.changed = true;
+}
+
+Fl_Button *btn_LOGBOOK_font=(Fl_Button *)0;
+
+static void cb_btn_LOGBOOK_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.LOGBOOKtextfont);
+font_browser->fontSize(progdefaults.LOGBOOKtextsize);
+font_browser->fontColor(progdefaults.LOGBOOKtextcolor);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbLOGBOOKFontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnLOGBOOKdefault_colors_font=(Fl_Button *)0;
+
+static void cb_btnLOGBOOKdefault_colors_font(Fl_Button*, void*) {
+  progdefaults.LOGBOOKcolor = FL_BACKGROUND2_COLOR;
+progdefaults.LOGBOOKtextfont = (Fl_Font)0;
+progdefaults.LOGBOOKtextsize = 12;
+progdefaults.LOGBOOKtextcolor = FL_BLACK;
+
+LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
+LOGBOOKdisplay->textsize(progdefaults.LOGBOOKtextsize);
+LOGBOOKdisplay->textcolor(progdefaults.LOGBOOKtextcolor);
+LOGBOOKdisplay->textfont(progdefaults.LOGBOOKtextfont);
+LOGBOOKdisplay->redraw();
+    
+LOGBOOK_colors_font();
+    
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnUseGroupColors=(Fl_Check_Button *)0;
+
+static void cb_btnUseGroupColors(Fl_Check_Button* o, void*) {
+  progdefaults.useGroupColors = o->value();
+    colorize_macros();
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnGroup1=(Fl_Button *)0;
+
+static void cb_btnGroup1(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.btnGroup1.R;
+    g = progdefaults.btnGroup1.G;
+    b = progdefaults.btnGroup1.B;
+
+    if (fl_color_chooser("Group 1", r, g, b) == 0)
+        return;
+    progdefaults.btnGroup1.R = r;
+    progdefaults.btnGroup1.G = g;
+    progdefaults.btnGroup1.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    colorize_macros();
+    
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnGroup2=(Fl_Button *)0;
+
+static void cb_btnGroup2(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.btnGroup2.R;
+    g = progdefaults.btnGroup2.G;
+    b = progdefaults.btnGroup2.B;
+
+    if (fl_color_chooser("Group 2", r, g, b) == 0)
+        return;
+    progdefaults.btnGroup2.R = r;
+    progdefaults.btnGroup2.G = g;
+    progdefaults.btnGroup2.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    colorize_macros();
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnGroup3=(Fl_Button *)0;
+
+static void cb_btnGroup3(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.btnGroup3.R;
+    g = progdefaults.btnGroup3.G;
+    b = progdefaults.btnGroup3.B;
+
+    if (fl_color_chooser("Group 3", r, g, b) == 0)
+        return;
+    progdefaults.btnGroup3.R = r;
+    progdefaults.btnGroup3.G = g;
+    progdefaults.btnGroup3.B = b;
+    o->color(fl_rgb_color(r,g,b));
+
+    colorize_macros();
+    progdefaults.changed = true;
+}
+
+Fl_Button *btnFkeyTextColor=(Fl_Button *)0;
+
+static void cb_btnFkeyTextColor(Fl_Button* o, void*) {
+  uchar r, g, b;
+    r = progdefaults.btnFkeyTextColor.R;
+    g = progdefaults.btnFkeyTextColor.G;
+    b = progdefaults.btnFkeyTextColor.B;
+
+    if (fl_color_chooser("Fkey Text", r, g, b) == 0)
+        return;
+
+    progdefaults.btnFkeyTextColor.R = r;
+    progdefaults.btnFkeyTextColor.G = g;
+    progdefaults.btnFkeyTextColor.B = b;
+    o->color(fl_rgb_color(r,g,b));
+    adjust_label(o);
+    btnGroup1->labelcolor(fl_rgb_color(r,g,b));
+    btnGroup2->labelcolor(fl_rgb_color(r,g,b));
+    btnGroup3->labelcolor(fl_rgb_color(r,g,b));
+    btnGroup1->redraw_label();
+    btnGroup2->redraw_label();
+    btnGroup3->redraw_label();
+    progdefaults.changed = true;
+    colorize_macros();
+}
+
+Fl_Button *btnFkeyDEfaults=(Fl_Button *)0;
+
+static void cb_btnFkeyDEfaults(Fl_Button*, void*) {
+  uchar r, g, b;
+    Fl_Color clr;
+
+    r = 80; g = 144; b = 144;
+    clr = fl_rgb_color(r,g,b);
+    btnGroup1->color(clr);
+    progdefaults.btnGroup1.R = r;
+    progdefaults.btnGroup1.G = g;
+    progdefaults.btnGroup1.B = b;
+
+    r = 144; g = 80; b = 80;
+    clr = fl_rgb_color(r,g,b);
+    btnGroup2->color(clr);
+    progdefaults.btnGroup2.R = r;
+    progdefaults.btnGroup2.G = g;
+    progdefaults.btnGroup2.B = b;
+
+    r = 80; g = 80; b = 144;
+    clr = fl_rgb_color(r,g,b);
+    btnGroup3->color(clr);
+    progdefaults.btnGroup3.R = r;
+    progdefaults.btnGroup3.G = g;
+    progdefaults.btnGroup3.B = b;
+
+    r = 255; g = 255; b = 255;
+    clr = fl_rgb_color(r,g,b);
+    btnFkeyTextColor->color(clr);
+    btnFkeyTextColor->redraw_label();
+    progdefaults.btnFkeyTextColor.R = r;
+    progdefaults.btnFkeyTextColor.G = g;
+    progdefaults.btnFkeyTextColor.B = b;
+
+    btnGroup1->labelcolor(clr);
+    btnGroup1->redraw_label();
+
+    btnGroup2->labelcolor(clr);
+    btnGroup2->redraw_label();
+
+    btnGroup3->labelcolor(clr);
+    btnGroup3->redraw_label();
+
+    colorize_macros();
+
+progdefaults.changed = true;
+}
+
+Fl_Button *btnTabColor=(Fl_Button *)0;
+
+static void cb_btnTabColor(Fl_Button*, void*) {
+  progdefaults.TabsColor = fl_show_colormap(progdefaults.TabsColor);
+setTabColors();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnTabDefaultColor=(Fl_Button *)0;
+
+static void cb_btnTabDefaultColor(Fl_Button*, void*) {
+  progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
+setTabColors();    
+progdefaults.changed = true;
+}
+
+Fl_Button *btnSpotColor=(Fl_Button *)0;
+
+static void cb_btnSpotColor(Fl_Button*, void*) {
+  progdefaults.SpotColor = fl_show_colormap(progdefaults.SpotColor);
+spotcolor->color(progdefaults.SpotColor);
+spotcolor->redraw();
+spot_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnRxIDColor=(Fl_Button *)0;
+
+static void cb_btnRxIDColor(Fl_Button*, void*) {
+  progdefaults.RxIDColor = fl_show_colormap(progdefaults.RxIDColor);
+rxidcolor->color(progdefaults.RxIDColor);
+rxidcolor->redraw();
+rxid_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnTxIDColor=(Fl_Button *)0;
+
+static void cb_btnTxIDColor(Fl_Button*, void*) {
+  progdefaults.TxIDColor = fl_show_colormap(progdefaults.TxIDColor);
+txidcolor->color(progdefaults.TxIDColor);
+txidcolor->redraw();
+txid_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnTuneColor=(Fl_Button *)0;
+
+static void cb_btnTuneColor(Fl_Button*, void*) {
+  progdefaults.TuneColor = fl_show_colormap(progdefaults.TuneColor);
+tunecolor->color(progdefaults.TuneColor);
+tunecolor->redraw();
+tune_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnLkColor=(Fl_Button *)0;
+
+static void cb_btnLkColor(Fl_Button*, void*) {
+  progdefaults.LkColor = fl_show_colormap(progdefaults.LkColor);
+lockcolor->color(progdefaults.LkColor);
+lockcolor->redraw();
+xmtlock_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnRevColor=(Fl_Button *)0;
+
+static void cb_btnRevColor(Fl_Button*, void*) {
+  progdefaults.RevColor = fl_show_colormap(progdefaults.RevColor);
+revcolor->color(progdefaults.RevColor);
+revcolor->redraw();
+rev_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnXmtColor=(Fl_Button *)0;
+
+static void cb_btnXmtColor(Fl_Button*, void*) {
+  progdefaults.XmtColor = fl_show_colormap(progdefaults.XmtColor);
+xmtcolor->color(progdefaults.XmtColor);
+xmtcolor->redraw();
+xmtrcv_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnAfcColor=(Fl_Button *)0;
+
+static void cb_btnAfcColor(Fl_Button*, void*) {
+  progdefaults.AfcColor = fl_show_colormap(progdefaults.AfcColor);
+afccolor->color(progdefaults.AfcColor);
+afccolor->redraw();
+afc_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnSql1Color=(Fl_Button *)0;
+
+static void cb_btnSql1Color(Fl_Button*, void*) {
+  progdefaults.Sql1Color = fl_show_colormap(progdefaults.Sql1Color);
+sql1color->color(progdefaults.Sql1Color);
+sql1color->redraw();
+sql_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnSql2Color=(Fl_Button *)0;
+
+static void cb_btnSql2Color(Fl_Button*, void*) {
+  progdefaults.Sql2Color = fl_show_colormap(progdefaults.Sql2Color);
+sql2color->color(progdefaults.Sql2Color);
+sql2color->redraw();
+sql_selection_color();
+progdefaults.changed = true;
+}
+
+Fl_Box *spotcolor=(Fl_Box *)0;
+
+Fl_Box *rxidcolor=(Fl_Box *)0;
+
+Fl_Box *txidcolor=(Fl_Box *)0;
+
+Fl_Box *tunecolor=(Fl_Box *)0;
+
+Fl_Box *lockcolor=(Fl_Box *)0;
+
+Fl_Box *revcolor=(Fl_Box *)0;
+
+Fl_Box *xmtcolor=(Fl_Box *)0;
+
+Fl_Box *afccolor=(Fl_Box *)0;
+
+Fl_Box *sql1color=(Fl_Box *)0;
+
+Fl_Box *sql2color=(Fl_Box *)0;
+
+Fl_Button *btnLowSignal=(Fl_Button *)0;
+
+static void cb_btnLowSignal(Fl_Button*, void*) {
+  progdefaults.LowSignal = fl_show_colormap(progdefaults.LowSignal);
+lowcolor->color(progdefaults.LowSignal);
+lowcolor->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Box *lowcolor=(Fl_Box *)0;
+
+Fl_Button *btnHighSignal=(Fl_Button *)0;
+
+static void cb_btnHighSignal(Fl_Button*, void*) {
+  progdefaults.HighSignal = fl_show_colormap(progdefaults.HighSignal);
+highcolor->color(progdefaults.HighSignal);
+highcolor->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Box *highcolor=(Fl_Box *)0;
+
+Fl_Button *btnNormalSignal=(Fl_Button *)0;
+
+static void cb_btnNormalSignal(Fl_Button*, void*) {
+  progdefaults.NormSignal = fl_show_colormap(progdefaults.NormSignal);
+normalcolor->color(progdefaults.NormSignal);
+normalcolor->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Box *normalcolor=(Fl_Box *)0;
+
+Fl_Button *btnOverSignal=(Fl_Button *)0;
+
+static void cb_btnOverSignal(Fl_Button*, void*) {
+  progdefaults.OverSignal = fl_show_colormap(progdefaults.OverSignal);
+overcolor->color(progdefaults.OverSignal);
+overcolor->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Box *overcolor=(Fl_Box *)0;
 
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
@@ -3645,6 +4585,7 @@ progdefaults.changed = false;
 
 Fl_Double_Window* ConfigureDialog() {
   Fl_Double_Window* w;
+  font_browser = new Font_Browser;
   static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|_850|Custom";
   static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
   static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
@@ -3662,13 +4603,14 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(-5, 0, 596, 372);
+    { tabsConfigure = new Fl_Tabs(-5, 0, 600, 372);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 540, 345, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(27, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -3776,10 +4718,10 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 540, 346, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 540, 346);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 540, 320, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(24, 59, 496, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(40, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -4481,6 +5423,321 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
+          { tabColorsFonts = new Fl_Group(0, 50, 540, 320, _("Colors/Fonts"));
+            { tabsColors = new Fl_Tabs(0, 55, 540, 313);
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("Rx/Tx"));
+                { CHARSETstatus = new Fl_Menu_Button(99, 109, 165, 26, _("Char set"));
+                CHARSETstatus->tooltip(_("Select Rx/Tx Character Set"));
+                CHARSETstatus->color((Fl_Color)55);
+                CHARSETstatus->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+                } // Fl_Menu_Button* CHARSETstatus
+                { RxText = new Fl_Input(99, 143, 165, 36);
+                RxText->value("Receive Text");
+                RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));
+                RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);
+                RxText->type(FL_MULTILINE_INPUT_WRAP);
+                } // Fl_Input* RxText
+                { btnRxColor = new Fl_Button(273, 150, 75, 21, _("Rx bkgnd"));
+                btnRxColor->callback((Fl_Callback*)cb_btnRxColor);
+                } // Fl_Button* btnRxColor
+                { btnTxColor = new Fl_Button(273, 191, 75, 21, _("Tx bkgnd"));
+                btnTxColor->callback((Fl_Callback*)cb_btnTxColor);
+                } // Fl_Button* btnTxColor
+                { TxText = new Fl_Input(99, 186, 165, 37);
+                TxText->value("Transmit Text");
+                TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));
+                TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);
+                TxText->type(FL_MULTILINE_INPUT_WRAP);
+                } // Fl_Input* TxText
+                { btnRxFont = new Fl_Button(358, 150, 75, 21, _("Rx font"));
+                btnRxFont->callback((Fl_Callback*)cb_btnRxFont);
+                } // Fl_Button* btnRxFont
+                { btnTxFont = new Fl_Button(358, 191, 75, 21, _("Tx font"));
+                btnTxFont->callback((Fl_Callback*)cb_btnTxFont);
+                } // Fl_Button* btnTxFont
+                { Fl_Group* o = new Fl_Group(71, 235, 404, 81, _("Text Highlighting"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+                { btnXMIT = new Fl_Button(89, 263, 40, 21, _("XMIT"));
+                btnXMIT->tooltip(_("Sent chars in Rx/Tx pane"));
+                btnXMIT->callback((Fl_Callback*)cb_btnXMIT);
+                btnXMIT->align(Fl_Align(FL_ALIGN_BOTTOM));
+                btnXMIT->color(progdefaults.XMITcolor);
+                } // Fl_Button* btnXMIT
+                { btnCTRL = new Fl_Button(132, 263, 40, 21, _("CTRL"));
+                btnCTRL->tooltip(_("Control chars in Rx/Tx pane"));
+                btnCTRL->callback((Fl_Callback*)cb_btnCTRL);
+                btnCTRL->align(Fl_Align(FL_ALIGN_BOTTOM));
+                btnCTRL->color(progdefaults.CTRLcolor);
+                } // Fl_Button* btnCTRL
+                { btnSKIP = new Fl_Button(176, 263, 40, 21, _("SKIP"));
+                btnSKIP->tooltip(_("Skipped chars in Tx pane\n(Tx on/off in CW)"));
+                btnSKIP->callback((Fl_Callback*)cb_btnSKIP);
+                btnSKIP->align(Fl_Align(FL_ALIGN_BOTTOM));
+                btnSKIP->color(progdefaults.SKIPcolor);
+                } // Fl_Button* btnSKIP
+                { btnALTR = new Fl_Button(219, 263, 40, 21, _("ALTR"));
+                btnALTR->tooltip(_("Alternate character color in Rx panelr"));
+                btnALTR->callback((Fl_Callback*)cb_btnALTR);
+                btnALTR->align(Fl_Align(FL_ALIGN_BOTTOM));
+                btnALTR->color(progdefaults.ALTRcolor);
+                } // Fl_Button* btnALTR
+                { btnSEL = new Fl_Button(263, 263, 39, 21, _("SEL"));
+                btnSEL->tooltip(_("Selection background color in Rx Tx panels"));
+                btnSEL->callback((Fl_Callback*)cb_btnSEL);
+                btnSEL->align(Fl_Align(FL_ALIGN_BOTTOM));
+                btnSEL->color(progdefaults.RxTxSelectcolor);
+                } // Fl_Button* btnSEL
+                { btnNoTextColor = new Fl_Button(310, 263, 70, 21, _("System"));
+                btnNoTextColor->callback((Fl_Callback*)cb_btnNoTextColor);
+                } // Fl_Button* btnNoTextColor
+                { btnTextDefaults = new Fl_Button(384, 263, 70, 21, _("Defaults"));
+                btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
+                } // Fl_Button* btnTextDefaults
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("Frq Disp"));
+                o->hide();
+                { Fl_Group* o = new Fl_Group(81, 108, 370, 87);
+                o->box(FL_ENGRAVED_FRAME);
+                { Fl_Box* o = FDdisplay = new Fl_Box(148, 112, 235, 45, _("14070.150"));
+                FDdisplay->box(FL_DOWN_BOX);
+                FDdisplay->color((Fl_Color)55);
+                FDdisplay->labelfont(4);
+                FDdisplay->labelsize(40);
+                o->color(fl_rgb_color(progdefaults.FDbackground.R,progdefaults.FDbackground.G,progdefaults.FDbackground.B));
+                o->labelcolor(fl_rgb_color(progdefaults.FDforeground.R,progdefaults.FDforeground.G,progdefaults.FDforeground.B));
+                o->labelfont(progdefaults.FreqControlFontnbr);
+                } // Fl_Box* FDdisplay
+                { btn_freq_control_font = new Fl_Button(91, 163, 80, 24, _("Font"));
+                btn_freq_control_font->callback((Fl_Callback*)cb_btn_freq_control_font);
+                } // Fl_Button* btn_freq_control_font
+                { btnBackgroundColor = new Fl_Button(181, 163, 80, 24, _("Bg Color"));
+                btnBackgroundColor->callback((Fl_Callback*)cb_btnBackgroundColor);
+                } // Fl_Button* btnBackgroundColor
+                { btnForegroundColor = new Fl_Button(271, 163, 80, 24, _("Digit Color"));
+                btnForegroundColor->callback((Fl_Callback*)cb_btnForegroundColor);
+                } // Fl_Button* btnForegroundColor
+                { btnFD_SystemColor = new Fl_Button(362, 163, 80, 24, _("Sys Colors"));
+                btnFD_SystemColor->callback((Fl_Callback*)cb_btnFD_SystemColor);
+                } // Fl_Button* btnFD_SystemColor
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("Log"));
+                o->hide();
+                { Fl_Group* o = new Fl_Group(75, 101, 372, 65, _("Logging Panel Controls"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Output* o = LOGGINGdisplay = new Fl_Output(93, 125, 98, 25);
+                o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGGINGtextcolor);
+                o->color(progdefaults.LOGGINGcolor);
+                o->value("W1HKJ");
+                o->redraw();
+                } // Fl_Output* LOGGINGdisplay
+                { btnLOGGING_color = new Fl_Button(201, 125, 80, 25, _("Bg Color"));
+                btnLOGGING_color->callback((Fl_Callback*)cb_btnLOGGING_color);
+                } // Fl_Button* btnLOGGING_color
+                { btn_LOGGING_font = new Fl_Button(291, 125, 55, 25, _("Font"));
+                btn_LOGGING_font->callback((Fl_Callback*)cb_btn_LOGGING_font);
+                } // Fl_Button* btn_LOGGING_font
+                { btnLOGGINGdefault_colors_font = new Fl_Button(357, 125, 80, 25, _("Default"));
+                btnLOGGINGdefault_colors_font->callback((Fl_Callback*)cb_btnLOGGINGdefault_colors_font);
+                } // Fl_Button* btnLOGGINGdefault_colors_font
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(77, 176, 370, 65, _("Logbook Dialog"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Output* o = LOGBOOKdisplay = new Fl_Output(93, 200, 98, 25);
+                o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGBOOKtextcolor);
+                o->color(progdefaults.LOGBOOKcolor);
+                o->value("14.070000");
+                o->redraw();
+                } // Fl_Output* LOGBOOKdisplay
+                { btnLOGBOOK_color = new Fl_Button(201, 200, 80, 25, _("Bg Color"));
+                btnLOGBOOK_color->callback((Fl_Callback*)cb_btnLOGBOOK_color);
+                } // Fl_Button* btnLOGBOOK_color
+                { btn_LOGBOOK_font = new Fl_Button(291, 200, 55, 25, _("Font"));
+                btn_LOGBOOK_font->callback((Fl_Callback*)cb_btn_LOGBOOK_font);
+                } // Fl_Button* btn_LOGBOOK_font
+                { btnLOGBOOKdefault_colors_font = new Fl_Button(357, 200, 80, 25, _("Default"));
+                btnLOGBOOKdefault_colors_font->callback((Fl_Callback*)cb_btnLOGBOOKdefault_colors_font);
+                } // Fl_Button* btnLOGBOOKdefault_colors_font
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("F_keys"));
+                o->hide();
+                { btnUseGroupColors = new Fl_Check_Button(94, 107, 165, 21, _("Use colored buttons"));
+                btnUseGroupColors->down_box(FL_DOWN_BOX);
+                btnUseGroupColors->callback((Fl_Callback*)cb_btnUseGroupColors);
+                btnUseGroupColors->value(progdefaults.useGroupColors);
+                } // Fl_Check_Button* btnUseGroupColors
+                { btnGroup1 = new Fl_Button(94, 139, 75, 20, _("Group 1"));
+                btnGroup1->tooltip(_("Background color for Function key group 1"));
+                btnGroup1->callback((Fl_Callback*)cb_btnGroup1);
+                btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));
+                btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));
+                } // Fl_Button* btnGroup1
+                { btnGroup2 = new Fl_Button(185, 139, 75, 20, _("Group 2"));
+                btnGroup2->tooltip(_("Background color for Function key group 2"));
+                btnGroup2->callback((Fl_Callback*)cb_btnGroup2);
+                btnGroup2->color(fl_rgb_color(progdefaults.btnGroup2.R, progdefaults.btnGroup2.G,progdefaults.btnGroup2.B));
+                btnGroup2->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));
+                } // Fl_Button* btnGroup2
+                { btnGroup3 = new Fl_Button(277, 139, 75, 20, _("Group 3"));
+                btnGroup3->tooltip(_("Background color for Function key group 3"));
+                btnGroup3->callback((Fl_Callback*)cb_btnGroup3);
+                btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));
+                btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));
+                } // Fl_Button* btnGroup3
+                { btnFkeyTextColor = new Fl_Button(277, 107, 75, 21, _("Label text"));
+                btnFkeyTextColor->callback((Fl_Callback*)cb_btnFkeyTextColor);
+                btnFkeyTextColor->color(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.G, progdefaults.btnFkeyTextColor.B));
+                adjust_label(btnFkeyTextColor);
+                } // Fl_Button* btnFkeyTextColor
+                { btnFkeyDEfaults = new Fl_Button(369, 139, 75, 20, _("Defaults"));
+                btnFkeyDEfaults->callback((Fl_Callback*)cb_btnFkeyDEfaults);
+                } // Fl_Button* btnFkeyDEfaults
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("Tabs"));
+                o->hide();
+                { btnTabColor = new Fl_Button(162, 113, 75, 21, _("Tab Color"));
+                btnTabColor->callback((Fl_Callback*)cb_btnTabColor);
+                } // Fl_Button* btnTabColor
+                { btnTabDefaultColor = new Fl_Button(292, 113, 75, 21, _("System"));
+                btnTabDefaultColor->callback((Fl_Callback*)cb_btnTabDefaultColor);
+                } // Fl_Button* btnTabDefaultColor
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("Buttons"));
+                o->hide();
+                { btnSpotColor = new Fl_Button(118, 121, 70, 21, _("Spot"));
+                btnSpotColor->callback((Fl_Callback*)cb_btnSpotColor);
+                } // Fl_Button* btnSpotColor
+                { btnRxIDColor = new Fl_Button(118, 156, 70, 21, _("RxID"));
+                btnRxIDColor->callback((Fl_Callback*)cb_btnRxIDColor);
+                } // Fl_Button* btnRxIDColor
+                { btnTxIDColor = new Fl_Button(118, 193, 70, 20, _("TxID"));
+                btnTxIDColor->callback((Fl_Callback*)cb_btnTxIDColor);
+                } // Fl_Button* btnTxIDColor
+                { btnTuneColor = new Fl_Button(118, 229, 70, 21, _("Tune"));
+                btnTuneColor->callback((Fl_Callback*)cb_btnTuneColor);
+                } // Fl_Button* btnTuneColor
+                { btnLkColor = new Fl_Button(229, 121, 70, 21, _("Lk"));
+                btnLkColor->callback((Fl_Callback*)cb_btnLkColor);
+                } // Fl_Button* btnLkColor
+                { btnRevColor = new Fl_Button(229, 156, 70, 21, _("Rev"));
+                btnRevColor->callback((Fl_Callback*)cb_btnRevColor);
+                } // Fl_Button* btnRevColor
+                { btnXmtColor = new Fl_Button(229, 192, 70, 20, _("T/R"));
+                btnXmtColor->callback((Fl_Callback*)cb_btnXmtColor);
+                } // Fl_Button* btnXmtColor
+                { btnAfcColor = new Fl_Button(344, 120, 70, 21, _("AFC"));
+                btnAfcColor->callback((Fl_Callback*)cb_btnAfcColor);
+                } // Fl_Button* btnAfcColor
+                { btnSql1Color = new Fl_Button(344, 157, 70, 21, _("SQL-1"));
+                btnSql1Color->callback((Fl_Callback*)cb_btnSql1Color);
+                } // Fl_Button* btnSql1Color
+                { btnSql2Color = new Fl_Button(344, 193, 70, 20, _("SQL-2"));
+                btnSql2Color->callback((Fl_Callback*)cb_btnSql2Color);
+                } // Fl_Button* btnSql2Color
+                { Fl_Box* o = spotcolor = new Fl_Box(99, 122, 18, 19);
+                spotcolor->box(FL_THIN_DOWN_BOX);
+                spotcolor->color((Fl_Color)3);
+                o->color(progdefaults.SpotColor);
+                } // Fl_Box* spotcolor
+                { Fl_Box* o = rxidcolor = new Fl_Box(99, 157, 18, 19);
+                rxidcolor->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.RxIDColor);
+                } // Fl_Box* rxidcolor
+                { Fl_Box* o = txidcolor = new Fl_Box(99, 194, 18, 18);
+                txidcolor->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.TxIDColor);
+                } // Fl_Box* txidcolor
+                { Fl_Box* o = tunecolor = new Fl_Box(99, 230, 18, 19);
+                tunecolor->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.TuneColor);
+                } // Fl_Box* tunecolor
+                { Fl_Box* o = lockcolor = new Fl_Box(209, 121, 18, 19);
+                lockcolor->box(FL_THIN_DOWN_BOX);
+                lockcolor->color((Fl_Color)3);
+                o->color(progdefaults.LkColor);
+                } // Fl_Box* lockcolor
+                { Fl_Box* o = revcolor = new Fl_Box(209, 157, 18, 19);
+                revcolor->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.RevColor);
+                } // Fl_Box* revcolor
+                { Fl_Box* o = xmtcolor = new Fl_Box(209, 193, 18, 18);
+                xmtcolor->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.XmtColor);
+                } // Fl_Box* xmtcolor
+                { Fl_Box* o = afccolor = new Fl_Box(324, 122, 18, 19);
+                afccolor->box(FL_THIN_DOWN_BOX);
+                afccolor->color((Fl_Color)3);
+                o->color(progdefaults.AfcColor);
+                } // Fl_Box* afccolor
+                { Fl_Box* o = sql1color = new Fl_Box(324, 158, 18, 19);
+                sql1color->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.Sql1Color);
+                } // Fl_Box* sql1color
+                { Fl_Box* o = sql2color = new Fl_Box(324, 194, 18, 18);
+                sql2color->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.Sql2Color);
+                } // Fl_Box* sql2color
+                { Fl_Box* o = new Fl_Box(207, 229, 220, 20, _("Lighted button enabled colors"));
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                } // Fl_Box* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("SigLvl"));
+                o->hide();
+                { btnLowSignal = new Fl_Button(183, 142, 70, 21, _("Low"));
+                btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
+                } // Fl_Button* btnLowSignal
+                { Fl_Box* o = lowcolor = new Fl_Box(162, 142, 21, 21);
+                lowcolor->box(FL_DIAMOND_DOWN_BOX);
+                lowcolor->color(FL_FOREGROUND_COLOR);
+                o->color(progdefaults.LowSignal);
+                } // Fl_Box* lowcolor
+                { btnHighSignal = new Fl_Button(183, 180, 70, 21, _("High"));
+                btnHighSignal->callback((Fl_Callback*)cb_btnHighSignal);
+                } // Fl_Button* btnHighSignal
+                { Fl_Box* o = highcolor = new Fl_Box(162, 180, 21, 21);
+                highcolor->box(FL_DIAMOND_DOWN_BOX);
+                highcolor->color((Fl_Color)3);
+                o->color(progdefaults.HighSignal);
+                } // Fl_Box* highcolor
+                { btnNormalSignal = new Fl_Button(306, 142, 70, 21, _("Normal"));
+                btnNormalSignal->callback((Fl_Callback*)cb_btnNormalSignal);
+                } // Fl_Button* btnNormalSignal
+                { Fl_Box* o = normalcolor = new Fl_Box(285, 141, 21, 21);
+                normalcolor->box(FL_DIAMOND_DOWN_BOX);
+                normalcolor->color((Fl_Color)2);
+                o->color(progdefaults.NormSignal);
+                } // Fl_Box* normalcolor
+                { btnOverSignal = new Fl_Button(306, 180, 70, 21, _("Over"));
+                btnOverSignal->callback((Fl_Callback*)cb_btnOverSignal);
+                } // Fl_Button* btnOverSignal
+                { Fl_Box* o = overcolor = new Fl_Box(285, 180, 21, 21);
+                overcolor->box(FL_DIAMOND_DOWN_BOX);
+                overcolor->color((Fl_Color)1);
+                o->color(progdefaults.OverSignal);
+                } // Fl_Box* overcolor
+                { new Fl_Box(108, 110, 316, 21, _("Signal Level Colors"));
+                } // Fl_Box* o
+                o->end();
+              } // Fl_Group* o
+              tabsColors->end();
+            } // Fl_Tabs* tabsColors
+            tabColorsFonts->end();
+          } // Fl_Group* tabColorsFonts
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();
@@ -4845,7 +6102,7 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-4, 25, 595, 347, _("Modems"));
+      { tabModems = new Fl_Group(0, 25, 595, 347, _("Modems"));
         tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 540, 347);
           tabsModems->selection_color(FL_LIGHT1);

@@ -119,7 +119,6 @@
 
 #include "confdialog.h"
 #include "configuration.h"
-#include "colorsfonts.h"
 #include "status.h"
 
 #include "macros.h"
@@ -998,10 +997,6 @@ void remove_windows()
 		delete cboHamlibRig;
 		delete dlgConfig;
 	}
-	if (dlgColorFont) {
-		dlgColorFont->hide();
-		delete dlgColorFont;
-	}
 	if (font_browser) {
 		font_browser->hide();
 		delete font_browser;
@@ -1768,7 +1763,10 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 #endif // USE_SNDFILE
 
 void cb_mnuConfigFonts(Fl_Menu_*, void *) {
-	selectColorsFonts();
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabUI);
+	tabsUI->value(tabColorsFonts);
+	dlgConfig->show();
 }
 
 void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
@@ -3505,7 +3503,7 @@ Fl_Menu_Item menu_[] = {
 
 {_("&Configure"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Operator"), system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Colors && Fonts"), preferences_desktop_font_icon), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Colors && Fonts")), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER, 
@@ -4022,7 +4020,6 @@ void setTabColors()
 	tabsID->selection_color(progdefaults.TabsColor);
 	tabsQRZ->selection_color(progdefaults.TabsColor);
 	if (dlgConfig->visible()) dlgConfig->redraw();
-	if (dlgColorFont->visible()) dlgColorFont->redraw();
 }
 
 void showMacroSet() {
