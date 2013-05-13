@@ -4610,7 +4610,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(27, 35, 490, 165, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -4718,6 +4717,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 540, 346, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 540, 346);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 540, 320, _("Browser"));
@@ -8276,7 +8276,7 @@ ased false detection"));
                 sldrRSIDresolution->labelfont(0);
                 sldrRSIDresolution->labelsize(14);
                 sldrRSIDresolution->labelcolor(FL_FOREGROUND_COLOR);
-                sldrRSIDresolution->minimum(2);
+                sldrRSIDresolution->minimum(1);
                 sldrRSIDresolution->maximum(5);
                 sldrRSIDresolution->step(1);
                 sldrRSIDresolution->value(5);

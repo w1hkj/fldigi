@@ -297,8 +297,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 540 345} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 540 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -378,7 +378,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 540 346}
+        xywh {0 25 540 346} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 540 346} selection_color 50
@@ -1250,7 +1250,7 @@ WF_UI();}
             label {Colors/Fonts} open
             xywh {0 50 540 320}
           } {
-            Fl_Tabs tabsColors {open selected
+            Fl_Tabs tabsColors {open
               xywh {0 55 540 313}
             } {
               Fl_Group {} {
@@ -4735,10 +4735,10 @@ if (o->value()) {
         }
       }
       Fl_Group tabID {
-        label ID
+        label ID open
         xywh {0 23 540 348} hide
       } {
-        Fl_Tabs tabsID {
+        Fl_Tabs tabsID {open
           xywh {0 23 540 345}
         } {
           Fl_Group tabRsID {
@@ -4802,7 +4802,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.rsid_resolution = (int)o->value();
 progdefaults.changed = true;}
                 tooltip {2 = low sensitivity / decreased false detection
-5 = high sensitivity / increased false detection} xywh {12 215 145 22} type Horizontal align 8 minimum 2 maximum 5 step 1 value 5 textsize 14
+5 = high sensitivity / increased false detection} xywh {12 215 145 22} type Horizontal align 8 minimum 1 maximum 5 step 1 value 5 textsize 14
                 code0 {o->value(progdefaults.rsid_resolution);}
                 code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2

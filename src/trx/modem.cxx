@@ -760,8 +760,6 @@ void modem::pretone()
 	double phase = 0.0;
 	double outbuf[symlen];
 
-printf("pretone symlen = %d\nduration = %4.1f\n", symlen, progdefaults.pretone);
-
 	for (int j = 0; j < symlen; j++) {
 		outbuf[j] = (0.5 * (1.0 - cos (M_PI * j / symlen)))*sin(phase);
 		phase += phaseincr;

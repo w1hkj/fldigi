@@ -91,7 +91,7 @@ private:
 	static const RSIDs  rsid_ids2[];
 	static const int rsid_ids_size2;
 
-	int state;
+	int rsid_secondary_time_out;
 
 	int hamming_resolution;
 
