@@ -1,8 +1,12 @@
+2013-05-13  David Freese  <w1hkj@w1hkj.com>
+
+	a933da1: RsID Timeout
+	ff1d69a: PSKMAIL
+	531c40c: Colors/Fonts Dialog
+	8be3913: Developer List
 
 
 =Version 3.21.71=
-
-2013-05-06  David Freese  <w1hkj@w1hkj.com>
 
 	d9e2c6f: About update
 	603e6a7: Wavefile generate
