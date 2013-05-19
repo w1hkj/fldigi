@@ -698,6 +698,8 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 // Contestia
 void set_contestia_default_integ()
 {
+	if (!progdefaults.contestia_reset_fec) return;
+
 	int tones = progdefaults.contestiatones;
 	int bw = progdefaults.contestiabw;
 
@@ -1369,9 +1371,11 @@ void init_modem(trx_mode mode, int freq)
 	progStatus.lastmode = mode;
 
 	if (wf->xmtlock->value() == 1 && !mailserver) {
-		wf->xmtlock->value(0);
-		wf->xmtlock->damage();
-		active_modem->set_freqlock(false);
+		if(!progdefaults.retain_freq_lock) {
+			wf->xmtlock->value(0);
+			wf->xmtlock->damage();
+			active_modem->set_freqlock(false);
+		}
 	}
 }
 
