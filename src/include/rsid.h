@@ -146,6 +146,7 @@ private:
 	void	search(void);
 	void	apply (int iSymbol, int iBin);
 	void	apply2 (int iSymbol, int iBin);
+	void	setup_mode(int m);
 public:
 	cRsId();
 	~cRsId();
