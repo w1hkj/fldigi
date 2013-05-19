@@ -236,13 +236,14 @@ void getwx(string& wx, const char *metar)
 		LOG_WARN("%s", "station not found\n");
 		return;
 	}
-	const char *eoh = "Connection: close";
+	const char *eoh = "Content-Type:";
 	p1 = text.find(eoh);
 	if (p1 != string::npos) {
-		text.erase(0, p1 + strlen(eoh) + 4);
+		p1 = text.find("\n",p1);
+		text.erase(0, p1);
+		while (text[0] == '\r' || text[0] == '\n') text.erase(0,1);
 		p1 = text.find("\n");
-		if (p1 != string::npos)
-			name = text.substr(0, p1);
+		name = text.substr(0, p1);
 	}
 
 	p3 = text.find("ob:");
