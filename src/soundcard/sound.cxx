@@ -69,6 +69,8 @@
 #include "timeops.h"
 #include "ringbuffer.h"
 #include "debug.h"
+#include "qrunner.h"
+#include "icons.h"
 
 #define	SND_BUF_LEN		65536
 // #define	SRC_BUF_LEN		(8*SND_BUF_LEN)
@@ -198,10 +200,12 @@ int SoundBase::Playback(bool val)
 		return -2;
 	}
 
- 	if (info.channels != 1) {
- 		sf_close(ifPlayback);
- 		return -3;
- 	}
+	if (info.channels != 1) {
+		sf_close(ifPlayback);
+		return -3;
+	}
+ 
+	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
 
 	playback = true;
 	return 0;
@@ -242,15 +246,25 @@ int SoundBase::Generate(bool val)
 
 sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 {
-	sf_count_t r = sf_readf_float(file, buf, count);
+	sf_count_t r = 0;
+	sf_count_t rd_count = sf_readf_float(file, buf, count);
+	r = rd_count;
 
-	while (r < (sf_count_t)count) {
-		sf_seek(file, 0, SEEK_SET);
-		r += sf_readf_float(file, buf + r, count - r);
-                if (r == 0)
-                        break;
-        }
+	while (r < count) {
+		r += (rd_count = sf_readf_float(file, buf + r, count - r));
+		if (rd_count == 0) break;
+	}
 
+	if (r == 0) {
+		if (!progdefaults.loop_playback) {
+			Playback(0);
+			bHighSpeed = false;
+			REQ(reset_mnuPlayback);
+		} else {
+			memset(buf, count, sizeof(*buf));
+			sf_seek(file, 0, SEEK_SET);
+		}
+	}
 	return r;
 }
 
@@ -1015,7 +1029,8 @@ size_t SoundPort::Read(float *buf, size_t count)
 			for (size_t i = 0; i < count; i++)
 				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
-			MilliSleep((long)ceil((1e3 * count) / req_sample_rate));
+			if (!bHighSpeed)
+				MilliSleep((long)ceil((1e3 * count) / req_sample_rate));
 			return count;
 		}
 	}
@@ -1841,7 +1856,8 @@ size_t SoundPulse::Read(float *buf, size_t count)
 				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
 			flush(0);
-			MilliSleep((long)ceil((1e3 * count) / sample_frequency));
+			if (!bHighSpeed)
+				MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 			return count;
 		}
 	}
@@ -1941,8 +1957,8 @@ size_t SoundNull::Read(float *buf, size_t count)
 	if (capture)
 		write_file(ofCapture, buf, count);
 #endif
-
-	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
+	if (!bHighSpeed)
+		MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 
 	return count;
 

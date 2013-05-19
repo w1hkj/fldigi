@@ -79,6 +79,8 @@ static int	_trx_tune;
 static ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
 static float fbuf[SCBLOCKSIZE];
 bool    bHistory = false;
+bool    bHighSpeed = false;
+static  double hsbuff[SCBLOCKSIZE];
 
 static bool trxrunning = false;
 
@@ -233,18 +235,16 @@ void trx_trx_receive_loop()
 			numread = 0;
 			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
 				numread += scard->Read(fbuf + numread, SCBLOCKSIZE - numread);
-			if (trxrb.write_space() == 0) // discard some old data
-				trxrb.read_advance(SCBLOCKSIZE);
-			trxrb.get_wv(rbvec);
-			if (active_modem == pkt_modem && progdefaults.PKT_AudioBoost) {
-			    // convert to double and write to rb with added gain
-			    for (size_t i = 0; i < numread; i++)
-				rbvec[0].buf[i] = 60.0 * fbuf[i];
-			}
-			else {
-			    // convert to double and write to rb
-			    for (size_t i = 0; i < numread; i++)
-				rbvec[0].buf[i] = fbuf[i];
+			if (bHighSpeed) {
+				for (size_t i = 0; i < numread; i++)
+					hsbuff[i] = fbuf[i];
+			} else {
+				if (trxrb.write_space() == 0) // discard some old data
+					trxrb.read_advance(SCBLOCKSIZE);
+				trxrb.get_wv(rbvec);
+			// convert to double and write to rb
+				for (size_t i = 0; i < numread; i++)
+					rbvec[0].buf[i] = fbuf[i];
 			}
 		}
 		catch (const SndException& e) {
@@ -257,29 +257,39 @@ void trx_trx_receive_loop()
 		if (trx_state != STATE_RX)
 			break;
 
-		trxrb.write_advance(numread);
-		REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
-
-		if (!bHistory) {
-			active_modem->rx_process(rbvec[0].buf, numread);
-			if (progdefaults.rsid)
-				ReedSolomon->receive(fbuf, numread);
-			dtmf->receive(fbuf, numread);
-		}
-		else {
+		if (bHighSpeed) {
 			bool afc = progStatus.afconoff;
 			progStatus.afconoff = false;
 			QRUNNER_DROP(true);
 			active_modem->HistoryON(true);
-			trxrb.get_rv(rbvec);
-			if (rbvec[0].len)
-				active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
-			if (rbvec[1].len)
-				active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
+			active_modem->rx_process(hsbuff, numread);
 			QRUNNER_DROP(false);
 			progStatus.afconoff = afc;
-			bHistory = false;
 			active_modem->HistoryON(false);
+		} else {
+			trxrb.write_advance(numread);
+			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
+
+			if (!bHistory) {
+				active_modem->rx_process(rbvec[0].buf, numread);
+				if (progdefaults.rsid)
+					ReedSolomon->receive(fbuf, numread);
+				dtmf->receive(fbuf, numread);
+			} else {
+				bool afc = progStatus.afconoff;
+				progStatus.afconoff = false;
+				QRUNNER_DROP(true);
+				active_modem->HistoryON(true);
+				trxrb.get_rv(rbvec);
+				if (rbvec[0].len)
+					active_modem->rx_process(rbvec[0].buf, rbvec[0].len);
+				if (rbvec[1].len)
+					active_modem->rx_process(rbvec[1].buf, rbvec[1].len);
+				QRUNNER_DROP(false);
+				progStatus.afconoff = afc;
+				bHistory = false;
+				active_modem->HistoryON(false);
+			}
 		}
 	}
 	if (scard->must_close(O_RDONLY))

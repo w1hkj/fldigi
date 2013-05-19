@@ -1225,6 +1225,27 @@ static void pREV(std::string &s, size_t &i, size_t endbracket)
   s.replace(i, endbracket - i + 1, "");
 }
 
+// <HS:on|off|t>
+static void pHS(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+  std::string sVal = s.substr(i+4, endbracket - i - 4);
+  if (sVal.length() > 0) {
+// sVal = on|off|t   [ON, OFF or Toggle]
+    if (sVal.compare(0,2,"on") == 0)
+      bHighSpeed = 1;
+    else if (sVal.compare(0,3,"off") == 0)
+      bHighSpeed = 0;
+    else if (sVal.compare(0,1,"t") == 0)
+      bHighSpeed = !bHighSpeed;
+  }
+  s.replace(i, endbracket - i + 1, "");
+}
+
+
 static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -2102,6 +2123,7 @@ static const MTAGS mtags[] = {
 {"<AFC:",		pAFC},
 {"<LOCK:",		pLOCK},
 {"<REV:",		pREV},
+{"<HS:",		pHS},
 {"<RXRSID:",	pRX_RSID},
 {"<TXRSID:",	pTX_RSID},
 {"<DTMF:",		pDTMF},

@@ -53,6 +53,7 @@ extern cRsId		*ReedSolomon;
 extern	SoundBase 	*scard;
 
 extern  bool bHistory;
+extern  bool bHighSpeed;
 
 #define TRX_WAIT(s_, code_)			\
 	do {					\

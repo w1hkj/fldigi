@@ -1030,6 +1030,10 @@
         ELEM_(int, TxOffset, "TXOFFSET",                                                \
               "Difference between RX and TX freq (rig offset)",                         \
               0)                                                                        \
+        ELEM_(bool, loop_playback, "LOOPPLAYBACK",                                      \
+              "true = continuous loop of sound file playback\n"                         \
+              "false = single pass through playback file.",                             \
+              false)                                                                    \
         ELEM_(int, PTT_on_delay, "PTTONDELAY",                                          \
               "Start of transmit delay before sending audio",                           \
               0)                                                                        \
