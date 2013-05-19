@@ -58,6 +58,7 @@
 #  include <dirent.h>
 #  include <limits.h>
 #  include <errno.h>
+#  include <glob.h>
 #endif
 #ifdef __APPLE__
 #  include <glob.h>
@@ -903,12 +904,11 @@ static bool open_serial(const char* dev)
 
 void configuration::testCommPorts()
 {
-	int retval;
+//	int retval;
 
 	inpTTYdev->clear();
 	inpRIGdev->clear();
 	inpXmlRigDevice->clear();
-
 #ifndef PATH_MAX
 #  define PATH_MAX 1024
 #endif
@@ -920,6 +920,7 @@ void configuration::testCommPorts()
 	char ttyname[PATH_MAX + 1];
 #endif
 
+/*
 #ifdef __linux__
 	bool ret = false;
 	DIR* sys = NULL;
@@ -960,8 +961,7 @@ out:
 		return;
 #endif // __linux__
 
-	// TODO: will the mingw probing work for cygwin too?
-
+*/
 	const char* tty_fmt[] = {
 #if defined(__linux__)
 		"/dev/ttyS%u",
@@ -989,6 +989,23 @@ out:
 #  define TTY_MAX 4
 #else
 #  define TTY_MAX 8
+	glob_t gbuf;
+#endif
+
+#ifdef __linux__
+	glob("/dev/serial/by-id/*", 0, NULL, &gbuf);
+	for (size_t j = 0; j < gbuf.gl_pathc; j++) {
+		if ( !(stat(gbuf.gl_pathv[j], &st) == 0 && S_ISCHR(st.st_mode)) ||
+		     strstr(gbuf.gl_pathv[j], "modem") )
+			continue;
+		LOG_INFO("Found serial port %s", gbuf.gl_pathv[j]);
+		inpTTYdev->add(gbuf.gl_pathv[j]);
+#  if USE_HAMLIB
+		inpRIGdev->add(gbuf.gl_pathv[j]);
+#  endif
+		inpXmlRigDevice->add(gbuf.gl_pathv[j]);
+	}
+	globfree(&gbuf);
 #endif
 
 	for (size_t i = 0; i < sizeof(tty_fmt)/sizeof(*tty_fmt); i++) {
