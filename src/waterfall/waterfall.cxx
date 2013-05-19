@@ -501,14 +501,12 @@ int WFdisp::log2disp(int v)
 }
 
 void WFdisp::processFFT() {
-	int    ptrSample;
 	if (prefilter != progdefaults.wfPreFilter)
 	    setPrefilter(progdefaults.wfPreFilter);
 
         const double scale = ( (double)SC_SMPLRATE / srate ) * ( FFT_LEN / 2000.0 );
 
 	if (dispcnt == 0) {
-		ptrSample = ptrCB;
 		int step = 8 / progdefaults.latency;
 
 		int last_i = FFT_LEN * 2 / step;
@@ -564,11 +562,11 @@ FL_UNLOCK_D();
 	--dispcnt;
 }
 void WFdisp::process_analog (double *sig, int len) {
-	int h1, h2, h3, sigw, sigy, sigpixel, ynext, graylevel;
+	int h1, h2, h3;
+	int sigy, sigpixel, ynext, graylevel;
 	h1 = h()/8 - 1;
 	h2 = h()/2 - 1;
 	h3 = h()*7/8 + 1;
-	sigw = IMAGE_WIDTH;
 	graylevel = 220;
 // clear the signal display area
 	sigy = 0;

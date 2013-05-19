@@ -27,6 +27,7 @@
 #include <outputencoder.h>
 
 #include "config.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -77,14 +78,22 @@ void OutputEncoder::push(string s)
 	int available = buffer_size - (encoding_ptr - buffer);
 	int consumed_in;
 	int consumed_out;
-	int status;
-	
-	status = tiniconv_convert(&ctx,
+
+	int status = tiniconv_convert(&ctx,
 		(unsigned char*)s.data(), s.length(), &consumed_in,
 		encoding_ptr, available, &consumed_out);
+	if (status != TINICONV_CONVERT_OK) {
+		LOG_ERROR("Error %s",
+			status == TINICONV_CONVERT_IN_TOO_SMALL  ? "input too small" :
+			status == TINICONV_CONVERT_OUT_TOO_SMALL ? "output too small" :
+			status == TINICONV_CONVERT_IN_ILSEQ ? "input illegal sequence" :
+			status == TINICONV_CONVERT_OUT_ILSEQ ? "output illegal sequence" :
+			"unknown error");
+		return;
+	}
 
 	encoding_ptr += consumed_out;
-	
+
 	if (consumed_in < (int)s.length())
 	{
 		// All input data was not consumed, possibly because the
@@ -93,7 +102,7 @@ void OutputEncoder::push(string s)
 		memmove(buffer, pop_ptr, buffer + buffer_size - pop_ptr);
 		encoding_ptr -= (pop_ptr - buffer);
 		pop_ptr = buffer;
-		
+
 		// Now try again; fingers crossed. We don't check for
 		// success anymore, because there is nothing that we can do
 		// if the buffer is still too small.
@@ -115,9 +124,9 @@ const unsigned int OutputEncoder::pop(void)
 {
 	if (pop_ptr == encoding_ptr)
 		return(-1);
-	
+
 	unsigned int c = *pop_ptr++;
-	
+
 	// Note that by only advancing pop_ptr, we leave stale data at the
 	// beginning of the buffer, so sooner or later it will clutter up.
 	// If there is no data left to send, both encoding_ptr and pop_ptr

@@ -824,7 +824,7 @@ void Fl_Text_Display_mod::overstrike(const char* text) {
 int Fl_Text_Display_mod::position_to_xy( int pos, int* X, int* Y ) const {
   IS_UTF8_ALIGNED2(buffer(), pos)
 
-  int lineStartPos, fontHeight, lineLen;
+  int lineStartPos, fontHeight;//, lineLen;
   int visLineNum;
   
   /* If position is not displayed, return false */
@@ -851,7 +851,7 @@ int Fl_Text_Display_mod::position_to_xy( int pos, int* X, int* Y ) const {
     *X = text_area.x - mHorizOffset;
     return 1;
   }
-  lineLen = vline_length( visLineNum );
+//  lineLen = vline_length( visLineNum );
   *X = text_area.x + handle_vline(GET_WIDTH, lineStartPos, pos-lineStartPos, 0, 0, 0, 0, 0, 0) - mHorizOffset;
   return 1;
 }
@@ -2984,7 +2984,8 @@ void Fl_Text_Display_mod::measure_deleted_lines(int pos, int nDeleted) {
   int nVisLines = mNVisibleLines;
   int *lineStarts = mLineStarts;
   int countFrom, lineStart;
-  int visLineNum = 0, nLines = 0, i;
+//  int visLineNum = 0;
+  int nLines = 0, i;
   /*
    ** Determine where to begin searching: either the previous newline, or
    ** if possible, limit to the start of the (original) previous displayed
@@ -2996,7 +2997,7 @@ void Fl_Text_Display_mod::measure_deleted_lines(int pos, int nDeleted) {
         break;
     if (i > 0) {
       countFrom = lineStarts[i-1];
-      visLineNum = i-1;
+//      visLineNum = i-1;
     } else
       countFrom = buf->line_start(pos);
   } else

@@ -14,8 +14,8 @@ namespace core
 
 //!	Very simple string class with some useful features.
 /**	string<c8> and string<wchar_t> work both with unicode AND ascii,
-so you can assign unicode to string<c8> and ascii to string<wchar_t> 
-(and the other way round) if your ever would want to. 
+so you can assign unicode to string<c8> and ascii to string<wchar_t>
+(and the other way round) if your ever would want to.
 Note that the conversation between both is not done using an encoding.
 
 Known bugs:
@@ -62,11 +62,11 @@ public:
 
 		c8 tmpbuf[16];
 		tmpbuf[15] = 0;
-		s32 idx = 15;	
+		s32 idx = 15;
 
 		// special case '0'
 
-		if (!number) 
+		if (!number)
 		{
 			tmpbuf[14] = '0';
 			*this = &tmpbuf[14];
@@ -77,9 +77,9 @@ public:
 
 		while(number && idx)
 		{
-			idx--;	
+			idx--;
 			tmpbuf[idx] = (c8)('0' + (number % 10));
-			number = number / 10;					
+			number = number / 10;
 		}
 
 		// add sign
@@ -87,7 +87,7 @@ public:
 		if (negative)
 		{
 			idx--;
-			tmpbuf[idx] = '-';			
+			tmpbuf[idx] = '-';
 		}
 
 		*this = &tmpbuf[idx];
@@ -133,7 +133,7 @@ public:
 
 
 	//! Assignment operator
-	string<T>& operator=(const string<T>& other) 
+	string<T>& operator=(const string<T>& other)
 	{
 		if (this == &other)
 			return *this;
@@ -153,7 +153,7 @@ public:
 
 	//! Assignment operator for strings, ascii and unicode
 	template <class B>
-	string<T>& operator=(const B* c) 
+	string<T>& operator=(const B* c)
 	{
 		if (!c)
 		{
@@ -193,22 +193,22 @@ public:
 	}
 
 	//! Add operator for other strings
-	string<T> operator+(const string<T>& other) 
-	{ 
-		string<T> str(*this); 
-		str.append(other); 
+	string<T> operator+(const string<T>& other)
+	{
+		string<T> str(*this);
+		str.append(other);
 
-		return str; 
-	} 
+		return str;
+	}
 
-	//! Add operator for strings, ascii and unicode 
-	template <class B> 
-	string<T> operator+(const B* c) 
-	{ 
-		string<T> str(*this); 
-		str.append(c); 
+	//! Add operator for strings, ascii and unicode
+	template <class B>
+	string<T> operator+(const B* c)
+	{
+		string<T> str(*this);
+		str.append(c);
 
-		return str; 
+		return str;
 	}
 
 
@@ -266,7 +266,7 @@ public:
 	}
 
 
-    
+
 	//! Returns length of string
 	/** \return Returns length of the string in characters. */
 	s32 size() const
@@ -347,7 +347,7 @@ public:
 	//! compares the first n characters of the strings
 	bool equalsn(const T* str, int len)
 	{
-		int i;	
+		int i;
 		for(i=0; array[i] && str[i] && i < len; ++i)
 			if (array[i] != str[i])
 				return false;
@@ -378,7 +378,7 @@ public:
 		--used;
 
 		s32 len = other.size();
-		
+
 		if (used + len + 1 > allocated)
 			reallocate((s32)used + (s32)len + 1);
 
@@ -404,7 +404,7 @@ public:
 
 		len = length;
 		--used;
-		
+
 		if (used + len > allocated)
 			reallocate((s32)used + (s32)len);
 
@@ -442,7 +442,7 @@ public:
 	//! finds first occurrence of a character of a list in string
 	/** \param c: List of strings to find. For example if the method
 	should find the first occurance of 'a' or 'b', this parameter should be "ab".
-	\param count: Amount of characters in the list. Ususally, 
+	\param count: Amount of characters in the list. Ususally,
 	this should be strlen(ofParameter1)
 	\return Returns position where one of the character has been found,
 	or -1 if not found. */
@@ -460,11 +460,11 @@ public:
 	//! Finds first position of a character not in a given list.
 	/** \param c: List of characters not to find. For example if the method
 	 should find the first occurance of a character not 'a' or 'b', this parameter should be "ab".
-	\param count: Amount of characters in the list. Ususally, 
+	\param count: Amount of characters in the list. Ususally,
 	this should be strlen(ofParameter1)
 	\return Returns position where the character has been found,
 	or -1 if not found. */
-	template <class B> 
+	template <class B>
 	s32 findFirstCharNotInList(B* c, int count) const
 	{
 		for (int i=0; i<used; ++i)
@@ -484,11 +484,11 @@ public:
 	//! Finds last position of a character not in a given list.
 	/** \param c: List of characters not to find. For example if the method
 	 should find the first occurance of a character not 'a' or 'b', this parameter should be "ab".
-	\param count: Amount of characters in the list. Ususally, 
+	\param count: Amount of characters in the list. Ususally,
 	this should be strlen(ofParameter1)
 	\return Returns position where the character has been found,
 	or -1 if not found. */
-	template <class B> 
+	template <class B>
 	s32 findLastCharNotInList(B* c, int count) const
 	{
 		for (int i=used-2; i>=0; --i)
@@ -507,7 +507,7 @@ public:
 
 	//! finds next occurrence of character in string
 	/** \param c: Character to search for.
-	\param startPos: Position in string to start searching. 
+	\param startPos: Position in string to start searching.
 	\return Returns position where the character has been found,
 	or -1 if not found. */
 	s32 findNext(T c, s32 startPos) const
@@ -598,7 +598,7 @@ public:
 	}
 
 
-	//! Erases a character from the string. May be slow, because all elements 
+	//! Erases a character from the string. May be slow, because all elements
 	//! following after the erased element have to be copied.
 	//! \param index: Index of element to be erased.
 	void erase(int index)
@@ -611,7 +611,7 @@ public:
 		--used;
 	}
 
-    	
+
 
 private:
 
@@ -631,14 +631,15 @@ private:
 
 		array = new T[new_size];
 		allocated = new_size;
-		
+
 		s32 amount = used < new_size ? used : new_size;
 		for (s32 i=0; i<amount; ++i)
 			array[i] = old_array[i];
 
-		if (allocated < used)
-			used = allocated;
-		
+//		if (allocated < used)
+//			used = allocated;
+		used = amount;
+
 		delete [] old_array;
 	}
 

@@ -55,8 +55,6 @@ double olivia::nco(double freq)
 
 void olivia::tx_init(SoundBase *sc)
 {
-	unsigned char c;
-
 	scard = sc;
 	phaseacc = 0;
 	prevsymbol = complex (1.0, 0.0);

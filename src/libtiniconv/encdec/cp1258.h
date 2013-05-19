@@ -88,7 +88,7 @@ cp1258_mbtowc (conv_t conv, ucs4_t *pwc, const unsigned char *s, int n)
   if (last_wc) {
     if (wc >= 0x0300 && wc < 0x0340) {
       /* See whether last_wc and wc can be combined. */
-      unsigned int k;
+      unsigned int k = 0;
       unsigned int i1, i2;
       switch (wc) {
         case 0x0300: k = 0; break;
