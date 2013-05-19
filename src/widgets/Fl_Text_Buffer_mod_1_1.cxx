@@ -27,7 +27,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "flstring.h"
 #include <ctype.h>
 #include <FL/Fl.H>
 #include "Fl_Text_Buffer_mod.H"
