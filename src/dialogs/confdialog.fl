@@ -313,8 +313,8 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.VIEWERhistory);}
               }
               Fl_Group {} {
-                label {Detection Level Colors} open
-                xywh {42 281 187 60} box ENGRAVED_FRAME
+                label {Detection Level} open
+                xywh {34 281 144 60} box ENGRAVED_FRAME
               } {
                 Fl_Button bwsrSliderColor {
                   label Backgnd
@@ -336,7 +336,7 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Background color of signal viewer squelch control} xywh {49 304 80 24} align 1
+                  tooltip {Background color of signal viewer squelch control} xywh {41 304 60 24} align 1
                   code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
                 }
                 Fl_Button bwsrSldrSelColor {
@@ -359,54 +359,59 @@ progdefaults.changed = true;}
     mvsquelch->redraw();
     
     progdefaults.changed = true;}
-                  tooltip {Slider hilite color of signal viewer squelch control} xywh {141 304 80 24} align 1
+                  tooltip {Slider hilite color of signal viewer squelch control} xywh {109 304 60 24} align 1
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
                 }
               }
               Fl_Group {} {
-                label {Parser Colors} open
-                xywh {237 281 187 60} box ENGRAVED_FRAME
+                label {Browser Line Colors} open
+                xywh {186 281 326 60} box ENGRAVED_FRAME
               } {
                 Fl_Button bwsrHiLite_1_color {
                   label {HiLite 1}
-                  callback {uchar r, g, b;
-    r = progdefaults.bwsrHiLight1.R;
-    g = progdefaults.bwsrHiLight1.G;
-    b = progdefaults.bwsrHiLight1.B;
-
-    if (fl_color_chooser("Slider Color", r, g, b) == 0)
-        return;
-    progdefaults.bwsrHiLight1.R = r;
-    progdefaults.bwsrHiLight1.G = g;
-    progdefaults.bwsrHiLight1.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    o->redraw();
-
-    viewer_redraw();
-    progdefaults.changed = true;}
-                  tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {245 303 80 24} align 1
-                  code0 {bwsrHiLite_1_color->color(fl_rgb_color(progdefaults.bwsrHiLight1.R, progdefaults.bwsrHiLight1.G,progdefaults.bwsrHiLight1.B));}
+                  callback {progdefaults.bwsrHiLight1 = fl_show_colormap(progdefaults.bwsrHiLight1);
+bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {192 303 60 24} align 1
+                  code0 {bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);}
                   code1 {\#include "Viewer.h"}
                 }
                 Fl_Button bwsrHiLite_2_color {
                   label {HiLite 2}
-                  callback {uchar r, g, b;
-    r = progdefaults.bwsrHiLight2.R;
-    g = progdefaults.bwsrHiLight2.G;
-    b = progdefaults.bwsrHiLight2.B;
-
-    if (fl_color_chooser("Slider Color", r, g, b) == 0)
-        return;
-    progdefaults.bwsrHiLight2.R = r;
-    progdefaults.bwsrHiLight2.G = g;
-    progdefaults.bwsrHiLight2.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    o->redraw();
-
-    viewer_redraw();
-    progdefaults.changed = true;}
-                  tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {333 303 80 24} align 1
-                  code0 {bwsrHiLite_2_color->color(fl_rgb_color(progdefaults.bwsrHiLight2.R, progdefaults.bwsrHiLight2.G,progdefaults.bwsrHiLight2.B));}
+                  callback {progdefaults.bwsrHiLight2 = fl_show_colormap(progdefaults.bwsrHiLight2);
+bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {255 303 60 24} align 1
+                  code0 {bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);}
+                }
+                Fl_Button bwsrHiLite_even_lines {
+                  label Even
+                  callback {progdefaults.bwsrBackgnd2 = fl_show_colormap(progdefaults.bwsrBackgnd2);
+bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+viewer_redraw();
+progdefaults.changed = true;;}
+                  tooltip {Even lines} xywh {318 303 60 24} align 1
+                  code0 {bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);}
+                }
+                Fl_Button bwsrHiLite_odd_lines {
+                  label Odd
+                  callback {progdefaults.bwsrBackgnd1 = fl_show_colormap(progdefaults.bwsrBackgnd1);
+bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {Odd lines} xywh {381 303 60 24} align 1
+                  code0 {bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);}
+                }
+                Fl_Button bwsrHiLite_select {
+                  label Select
+                  callback {progdefaults.bwsrSelect = fl_show_colormap(progdefaults.bwsrSelect);
+bwsrHiLite_select->color(progdefaults.bwsrSelect);
+viewer_redraw();
+progdefaults.changed = true;}
+                  tooltip {Select line} xywh {445 303 60 24} align 1
+                  code0 {bwsrHiLite_select->color(progdefaults.bwsrSelect);}
                 }
               }
             }
@@ -1083,7 +1088,7 @@ WF_UI();}
       }
       Fl_Group tabWaterfall {
         label Waterfall
-        xywh {-2 25 563 347} hide
+        xywh {-2 25 540 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {-2 25 563 347} color 50 selection_color 50
@@ -2161,7 +2166,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabNavtex {
-            label {Nvtx/Pkt} open
+            label {Nvtx/Pkt}
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
@@ -2310,7 +2315,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia open
+            label Olivia
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2451,7 +2456,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label RTTY
+            label RTTY open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
@@ -2672,7 +2677,7 @@ progdefaults.changed = true;
             }
           }
           Fl_Group tabTHOR {
-            label Thor open
+            label Thor
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open

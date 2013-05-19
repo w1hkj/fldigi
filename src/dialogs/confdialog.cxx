@@ -235,42 +235,47 @@ static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
 
 Fl_Button *bwsrHiLite_1_color=(Fl_Button *)0;
 
-static void cb_bwsrHiLite_1_color(Fl_Button* o, void*) {
-  uchar r, g, b;
-    r = progdefaults.bwsrHiLight1.R;
-    g = progdefaults.bwsrHiLight1.G;
-    b = progdefaults.bwsrHiLight1.B;
-
-    if (fl_color_chooser("Slider Color", r, g, b) == 0)
-        return;
-    progdefaults.bwsrHiLight1.R = r;
-    progdefaults.bwsrHiLight1.G = g;
-    progdefaults.bwsrHiLight1.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    o->redraw();
-
-    viewer_redraw();
-    progdefaults.changed = true;
+static void cb_bwsrHiLite_1_color(Fl_Button*, void*) {
+  progdefaults.bwsrHiLight1 = fl_show_colormap(progdefaults.bwsrHiLight1);
+bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
+viewer_redraw();
+progdefaults.changed = true;
 }
 
 Fl_Button *bwsrHiLite_2_color=(Fl_Button *)0;
 
-static void cb_bwsrHiLite_2_color(Fl_Button* o, void*) {
-  uchar r, g, b;
-    r = progdefaults.bwsrHiLight2.R;
-    g = progdefaults.bwsrHiLight2.G;
-    b = progdefaults.bwsrHiLight2.B;
+static void cb_bwsrHiLite_2_color(Fl_Button*, void*) {
+  progdefaults.bwsrHiLight2 = fl_show_colormap(progdefaults.bwsrHiLight2);
+bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
+viewer_redraw();
+progdefaults.changed = true;
+}
 
-    if (fl_color_chooser("Slider Color", r, g, b) == 0)
-        return;
-    progdefaults.bwsrHiLight2.R = r;
-    progdefaults.bwsrHiLight2.G = g;
-    progdefaults.bwsrHiLight2.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    o->redraw();
+Fl_Button *bwsrHiLite_even_lines=(Fl_Button *)0;
 
-    viewer_redraw();
-    progdefaults.changed = true;
+static void cb_bwsrHiLite_even_lines(Fl_Button*, void*) {
+  progdefaults.bwsrBackgnd2 = fl_show_colormap(progdefaults.bwsrBackgnd2);
+bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+viewer_redraw();
+progdefaults.changed = true;;
+}
+
+Fl_Button *bwsrHiLite_odd_lines=(Fl_Button *)0;
+
+static void cb_bwsrHiLite_odd_lines(Fl_Button*, void*) {
+  progdefaults.bwsrBackgnd1 = fl_show_colormap(progdefaults.bwsrBackgnd1);
+bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+viewer_redraw();
+progdefaults.changed = true;
+}
+
+Fl_Button *bwsrHiLite_select=(Fl_Button *)0;
+
+static void cb_bwsrHiLite_select(Fl_Button*, void*) {
+  progdefaults.bwsrSelect = fl_show_colormap(progdefaults.bwsrSelect);
+bwsrHiLite_select->color(progdefaults.bwsrSelect);
+viewer_redraw();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabContest=(Fl_Group *)0;
@@ -3979,15 +3984,15 @@ Fl_Double_Window* ConfigureDialog() {
                 btnBrowserHistory->callback((Fl_Callback*)cb_btnBrowserHistory);
                 o->value(progdefaults.VIEWERhistory);
               } // Fl_Check_Button* btnBrowserHistory
-              { Fl_Group* o = new Fl_Group(42, 281, 187, 60, _("Detection Level Colors"));
+              { Fl_Group* o = new Fl_Group(34, 281, 144, 60, _("Detection Level"));
                 o->box(FL_ENGRAVED_FRAME);
-                { bwsrSliderColor = new Fl_Button(49, 304, 80, 24, _("Backgnd"));
+                { bwsrSliderColor = new Fl_Button(41, 304, 60, 24, _("Backgnd"));
                 bwsrSliderColor->tooltip(_("Background color of signal viewer squelch control"));
                 bwsrSliderColor->callback((Fl_Callback*)cb_bwsrSliderColor);
                 bwsrSliderColor->align(Fl_Align(FL_ALIGN_TOP));
                 bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));
                 } // Fl_Button* bwsrSliderColor
-                { bwsrSldrSelColor = new Fl_Button(141, 304, 80, 24, _("Button"));
+                { bwsrSldrSelColor = new Fl_Button(109, 304, 60, 24, _("Button"));
                 bwsrSldrSelColor->tooltip(_("Slider hilite color of signal viewer squelch control"));
                 bwsrSldrSelColor->callback((Fl_Callback*)cb_bwsrSldrSelColor);
                 bwsrSldrSelColor->align(Fl_Align(FL_ALIGN_TOP));
@@ -3995,20 +4000,38 @@ Fl_Double_Window* ConfigureDialog() {
                 } // Fl_Button* bwsrSldrSelColor
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(237, 281, 187, 60, _("Parser Colors"));
+              { Fl_Group* o = new Fl_Group(186, 281, 326, 60, _("Browser Line Colors"));
                 o->box(FL_ENGRAVED_FRAME);
-                { bwsrHiLite_1_color = new Fl_Button(245, 303, 80, 24, _("HiLite 1"));
+                { bwsrHiLite_1_color = new Fl_Button(192, 303, 60, 24, _("HiLite 1"));
                 bwsrHiLite_1_color->tooltip(_("PSK/RTTY Viewer HiLite Color 1"));
                 bwsrHiLite_1_color->callback((Fl_Callback*)cb_bwsrHiLite_1_color);
                 bwsrHiLite_1_color->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_1_color->color(fl_rgb_color(progdefaults.bwsrHiLight1.R, progdefaults.bwsrHiLight1.G,progdefaults.bwsrHiLight1.B));
+                bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
                 } // Fl_Button* bwsrHiLite_1_color
-                { bwsrHiLite_2_color = new Fl_Button(333, 303, 80, 24, _("HiLite 2"));
+                { bwsrHiLite_2_color = new Fl_Button(255, 303, 60, 24, _("HiLite 2"));
                 bwsrHiLite_2_color->tooltip(_("PSK/RTTY Viewer HiLite Color 2"));
                 bwsrHiLite_2_color->callback((Fl_Callback*)cb_bwsrHiLite_2_color);
                 bwsrHiLite_2_color->align(Fl_Align(FL_ALIGN_TOP));
-                bwsrHiLite_2_color->color(fl_rgb_color(progdefaults.bwsrHiLight2.R, progdefaults.bwsrHiLight2.G,progdefaults.bwsrHiLight2.B));
+                bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
                 } // Fl_Button* bwsrHiLite_2_color
+                { bwsrHiLite_even_lines = new Fl_Button(318, 303, 60, 24, _("Even"));
+                bwsrHiLite_even_lines->tooltip(_("Even lines"));
+                bwsrHiLite_even_lines->callback((Fl_Callback*)cb_bwsrHiLite_even_lines);
+                bwsrHiLite_even_lines->align(Fl_Align(FL_ALIGN_TOP));
+                bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+                } // Fl_Button* bwsrHiLite_even_lines
+                { bwsrHiLite_odd_lines = new Fl_Button(381, 303, 60, 24, _("Odd"));
+                bwsrHiLite_odd_lines->tooltip(_("Odd lines"));
+                bwsrHiLite_odd_lines->callback((Fl_Callback*)cb_bwsrHiLite_odd_lines);
+                bwsrHiLite_odd_lines->align(Fl_Align(FL_ALIGN_TOP));
+                bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+                } // Fl_Button* bwsrHiLite_odd_lines
+                { bwsrHiLite_select = new Fl_Button(445, 303, 60, 24, _("Select"));
+                bwsrHiLite_select->tooltip(_("Select line"));
+                bwsrHiLite_select->callback((Fl_Callback*)cb_bwsrHiLite_select);
+                bwsrHiLite_select->align(Fl_Align(FL_ALIGN_TOP));
+                bwsrHiLite_select->color(progdefaults.bwsrSelect);
+                } // Fl_Button* bwsrHiLite_select
                 o->end();
               } // Fl_Group* o
               o->end();
@@ -4580,7 +4603,7 @@ ab and newline are automatically included."));
         } // Fl_Tabs* tabsUI
         tabUI->end();
       } // Fl_Group* tabUI
-      { tabWaterfall = new Fl_Group(-2, 25, 563, 347, _("Waterfall"));
+      { tabWaterfall = new Fl_Group(-2, 25, 540, 347, _("Waterfall"));
         tabWaterfall->hide();
         { tabsWaterfall = new Fl_Tabs(-2, 25, 563, 347);
           tabsWaterfall->color(FL_LIGHT1);

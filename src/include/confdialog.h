@@ -46,6 +46,9 @@ extern Fl_Button *bwsrSldrSelColor;
 #include "Viewer.h"
 extern Fl_Button *bwsrHiLite_1_color;
 extern Fl_Button *bwsrHiLite_2_color;
+extern Fl_Button *bwsrHiLite_even_lines;
+extern Fl_Button *bwsrHiLite_odd_lines;
+extern Fl_Button *bwsrHiLite_select;
 extern Fl_Group *tabContest;
 #include <FL/Fl_Box.H>
 extern Fl_Box *lblSend;
