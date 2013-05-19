@@ -483,6 +483,28 @@ static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static void pQSONBR(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	char szqsonbr[10];
+	snprintf(szqsonbr, sizeof(szqsonbr), "%d", qsodb.nbrRecs());
+	s.replace(i, endbracket - i + 1, szqsonbr);
+}
+
+static void pNXTNBR(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	char szqsonbr[10];
+	snprintf(szqsonbr, sizeof(szqsonbr), "%d", qsodb.nbrRecs() + 1);
+	s.replace(i, endbracket - i + 1, szqsonbr);
+}
+
 static void pNRSID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -2066,6 +2088,8 @@ static const MTAGS mtags[] = {
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
 {"<QSOTIME>",	pQSOTIME},
+{"<QSONBR>",	pQSONBR},
+{"<NXTNBR>",	pNXTNBR},
 {"<INFO1>",		pINFO1},
 {"<INFO2>",		pINFO2},
 {"<LDT>",		pLDT},
