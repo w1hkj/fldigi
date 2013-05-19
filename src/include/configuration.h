@@ -1449,6 +1449,9 @@
         ELEM_(bool, pskrep_qrg, "PSKREPQRG",                                            \
               "Include rig frequency in reception report",                              \
               false)                                                                    \
+        ELEM_(bool, report_when_visible, "REPORTWHENVISIBLE",                           \
+              "Enable Reporter ONLY when a signal browser is visible",                  \
+              false)                                                                    \
         ELEM_(std::string, pskrep_host, "PSKREPHOST",                                   \
               "Reception report server address",                                        \
               "report.pskreporter.info")                                                \

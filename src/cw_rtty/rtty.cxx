@@ -575,8 +575,10 @@ int rtty::rx_process(const double *buf, int len)
 	int n_out = 0;
 	static int bitcount = 5 * nbits * symbollen;
 
-	if (rttyviewer && !bHistory &&
-		(dlgViewer->visible() || progStatus.show_channels)) rttyviewer->rx_process(buf, len);
+	if (rttyviewer && !bHistory && 
+		(!progdefaults.report_when_visible ||
+		  progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels)))
+		rttyviewer->rx_process(buf, len);
 
 	if (progdefaults.RTTY_BW != rtty_BW || 
 		progStatus.rtty_filter_changed) {

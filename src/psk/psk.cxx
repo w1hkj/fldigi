@@ -1199,7 +1199,8 @@ int psk::rx_process(const double *buf, int len)
 
 	if (numcarriers == 1) {
 		if (pskviewer && !bHistory && 
-			(dlgViewer->visible() || progStatus.show_channels))
+			(!progdefaults.report_when_visible ||
+			  progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels)))
 			pskviewer->rx_process(buf, len);
 		if (evalpsk)
 			evalpsk->sigdensity();
