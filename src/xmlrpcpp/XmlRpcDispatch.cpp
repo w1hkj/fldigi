@@ -10,7 +10,14 @@
 
 #include <errno.h>
 #include <math.h>
-#include <sys/timeb.h>
+
+#if defined(__FreeBSD__) 
+#	ifdef USE_FTIME
+#		include <sys/timeb.h>
+#	endif
+#else
+#	include <sys/timeb.h>
+#endif // __FreeBSD__
 
 #if defined(_WINDOWS)
 # include <winsock2.h>
