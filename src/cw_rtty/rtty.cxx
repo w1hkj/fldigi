@@ -570,7 +570,7 @@ int rtty::rx_process(const double *buf, int len)
 
 	if (rttyviewer && !bHistory && 
 		(!progdefaults.report_when_visible ||
-		  progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels)))
+		 (progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels))))
 		rttyviewer->rx_process(buf, len);
 
 	if (progStatus.rtty_filter_changed) {
