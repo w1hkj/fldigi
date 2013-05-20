@@ -295,7 +295,7 @@ void buildlist()
 
 	if (readFreqList() == true)
 		return;
-	Fl::lock();
+//	Fl::lock();
 	updateList (1807000L, 1000, "USB", MODE_PSK31 );
 	updateList (3505000L, 800, "USB", MODE_CW);
 	updateList (3580000L, 1000, "USB", MODE_PSK31 );
@@ -313,7 +313,7 @@ void buildlist()
 	updateList (28005000L, 800, "USB", MODE_CW);
 	updateList (28120000, 1000, "USB", MODE_PSK31 );
 	updateSelect();
-	Fl::unlock();
+//	Fl::unlock();
 }
 
 int cb_qso_opMODE()
