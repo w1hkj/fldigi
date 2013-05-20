@@ -1586,16 +1586,6 @@ progdefaults.changed = true;
 
 Fl_Group *tabMT63=(Fl_Group *)0;
 
-Fl_Check_Button *btnmt63_interleave=(Fl_Check_Button *)0;
-
-static void cb_btnmt63_interleave(Fl_Check_Button* o, void*) {
-  if (o->value() == 1)
-progdefaults.mt63_interleave = 64;
-else
-progdefaults.mt63_interleave = 32;
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btnMT63_8bit=(Fl_Check_Button *)0;
 
 static void cb_btnMT63_8bit(Fl_Check_Button* o, void*) {
@@ -5638,23 +5628,17 @@ an merging"));
           } // Fl_Group* tabFeld
           { tabMT63 = new Fl_Group(0, 50, 540, 320, _("MT-63"));
             tabMT63->hide();
-            { Fl_Group* o = new Fl_Group(18, 73, 490, 115);
+            { Fl_Group* o = new Fl_Group(18, 73, 490, 84);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnmt63_interleave = new Fl_Check_Button(163, 91, 185, 20, _("64-bit (long) interleave"));
-                btnmt63_interleave->down_box(FL_DOWN_BOX);
-                btnmt63_interleave->value(1);
-                btnmt63_interleave->callback((Fl_Callback*)cb_btnmt63_interleave);
-                o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);
-              } // Fl_Check_Button* btnmt63_interleave
-              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(163, 121, 205, 20, _("8-bit extended characters (UTF-8)"));
+              { Fl_Check_Button* o = btnMT63_8bit = new Fl_Check_Button(163, 87, 205, 20, _("8-bit extended characters (UTF-8)"));
                 btnMT63_8bit->tooltip(_("Enable this for UTF-8 characters"));
                 btnMT63_8bit->down_box(FL_DOWN_BOX);
                 btnMT63_8bit->value(1);
                 btnMT63_8bit->callback((Fl_Callback*)cb_btnMT63_8bit);
                 o->value(progdefaults.mt63_8bit);
               } // Fl_Check_Button* btnMT63_8bit
-              { Fl_Check_Button* o = btnMT63_rx_integration = new Fl_Check_Button(163, 151, 190, 20, _("Long receive integration"));
+              { Fl_Check_Button* o = btnMT63_rx_integration = new Fl_Check_Button(163, 117, 190, 20, _("Long receive integration"));
                 btnMT63_rx_integration->tooltip(_("Enable for very weak signals"));
                 btnMT63_rx_integration->down_box(FL_DOWN_BOX);
                 btnMT63_rx_integration->value(1);
@@ -5663,20 +5647,20 @@ an merging"));
               } // Fl_Check_Button* btnMT63_rx_integration
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(19, 189, 490, 131);
+            { Fl_Group* o = new Fl_Group(19, 169, 490, 131);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnMT63_usetones = new Fl_Check_Button(163, 197, 200, 20, _("Transmit lower start tone"));
+              { Fl_Check_Button* o = btnMT63_usetones = new Fl_Check_Button(163, 177, 200, 20, _("Transmit lower start tone"));
                 btnMT63_usetones->down_box(FL_DOWN_BOX);
                 btnMT63_usetones->callback((Fl_Callback*)cb_btnMT63_usetones);
                 o->value(progdefaults.mt63_usetones);
               } // Fl_Check_Button* btnMT63_usetones
-              { Fl_Check_Button* o = btnMT63_upper_lower = new Fl_Check_Button(163, 227, 200, 20, _("Transmit upper start tone"));
+              { Fl_Check_Button* o = btnMT63_upper_lower = new Fl_Check_Button(163, 207, 200, 20, _("Transmit upper start tone"));
                 btnMT63_upper_lower->down_box(FL_DOWN_BOX);
                 btnMT63_upper_lower->callback((Fl_Callback*)cb_btnMT63_upper_lower);
                 o->value(progdefaults.mt63_twotones);
                 if (!btnMT63_usetones->value()) o->deactivate();
               } // Fl_Check_Button* btnMT63_upper_lower
-              { Fl_Spinner2* o = MT63_tone_duration = new Fl_Spinner2(163, 253, 40, 20, _("Tone Duration (secs)"));
+              { Fl_Spinner2* o = MT63_tone_duration = new Fl_Spinner2(163, 233, 40, 20, _("Tone Duration (secs)"));
                 MT63_tone_duration->box(FL_NO_BOX);
                 MT63_tone_duration->color(FL_BACKGROUND_COLOR);
                 MT63_tone_duration->selection_color(FL_BACKGROUND_COLOR);
@@ -5692,7 +5676,7 @@ an merging"));
                 o->value(progdefaults.mt63_tone_duration);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Spinner2* MT63_tone_duration
-              { Fl_Check_Button* o = btnMT63_at500 = new Fl_Check_Button(163, 282, 200, 20, _("Allow manual tuning"));
+              { Fl_Check_Button* o = btnMT63_at500 = new Fl_Check_Button(163, 262, 200, 20, _("Allow manual tuning"));
                 btnMT63_at500->down_box(FL_DOWN_BOX);
                 btnMT63_at500->callback((Fl_Callback*)cb_btnMT63_at500);
                 o->value(!progdefaults.mt63_at500);

@@ -218,7 +218,6 @@ extern Fl_Value_Slider2 *sldrHellBW;
 extern Fl_Check_Button *btnFeldHellIdle;
 extern Fl_Check_Button *btnHellXmtWidth;
 extern Fl_Group *tabMT63;
-extern Fl_Check_Button *btnmt63_interleave;
 extern Fl_Check_Button *btnMT63_8bit;
 extern Fl_Check_Button *btnMT63_rx_integration;
 extern Fl_Check_Button *btnMT63_usetones;

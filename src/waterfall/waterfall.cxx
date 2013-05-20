@@ -246,9 +246,7 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 
 	int bw_lower = -width, bw_upper = width;
 
-	if (marker_mode == MODE_MT63_500 ||
-		marker_mode == MODE_MT63_1000 ||
-		marker_mode == MODE_MT63_2000 )
+	if (marker_mode >= MODE_MT63_500S && marker_mode <= MODE_MT63_2000L)
 			bw_upper = (int)(width * 31 / 32);
 
 	if (bw_lower + static_cast<int>(freq+0.5) < 0)
@@ -324,7 +322,7 @@ void WFdisp::makeMarker()
 
 	int bw_lo = marker_width;
 	int bw_hi = marker_width;
-	if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+	if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 		bw_hi = bw_hi * 31 / 32;
 
 	for (int y = 0; y < WFMARKER - 2; y++) {
@@ -866,7 +864,7 @@ case Step: for (int row = 0; row < image_height; row++) { \
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
 		trx_mode mode = active_modem->get_mode();
-		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
 		RGBI  *pos1 = fft_img + (carrierfreq - offset - bw_lo) / step;
 		RGBI  *pos2 = fft_img + (carrierfreq - offset + bw_hi) / step;
@@ -931,7 +929,7 @@ void WFdisp::drawcolorWF() {
 		trx_mode mode = active_modem->get_mode();
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
-		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
 		RGBI  *pos0 = (fft_img + cursorpos);
 		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
@@ -975,7 +973,7 @@ void WFdisp::drawgrayWF() {
 		trx_mode mode = active_modem->get_mode();
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
-		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
 		RGBI  *pos0 = (fft_img + cursorpos);
 		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
@@ -1048,7 +1046,7 @@ void WFdisp::drawspectrum() {
 		trx_mode mode = active_modem->get_mode();
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
-		if (mode >= MODE_MT63_500 && mode <= MODE_MT63_2000)
+		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
 		uchar  *pos0 = pixmap + cursorpos;
 		uchar  *pos1 = (pixmap + cursorpos - bw_lo/step);

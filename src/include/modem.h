@@ -206,9 +206,12 @@ extern modem *wefax288_modem;
 extern modem *navtex_modem;
 extern modem *sitorb_modem;
 
-extern modem *mt63_500_modem;
-extern modem *mt63_1000_modem;
-extern modem *mt63_2000_modem;
+extern modem *mt63_500S_modem;
+extern modem *mt63_1000S_modem;
+extern modem *mt63_2000S_modem;
+extern modem *mt63_500L_modem;
+extern modem *mt63_1000L_modem;
+extern modem *mt63_2000L_modem;
 
 extern modem *feld_modem;
 extern modem *feld_slowmodem;

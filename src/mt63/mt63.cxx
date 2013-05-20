@@ -144,10 +144,10 @@ int mt63::rx_process(const double *buf, int len)
 	static char msg1[20];
 	static char msg2[20];
 
-	if (Interleave != progdefaults.mt63_interleave) {
-		Interleave = progdefaults.mt63_interleave;
-		restart();
-	}
+//	if (Interleave != progdefaults.mt63_interleave) {
+//		Interleave = progdefaults.mt63_interleave;
+//		restart();
+//	}
 	if (long_integral != progdefaults.mt63_rx_integration) {
 		long_integral = progdefaults.mt63_rx_integration;
 		restart();
@@ -297,17 +297,32 @@ mt63::mt63 (trx_mode mt63_mode) : modem()
 {
 	mode = mt63_mode;
 	switch (mode) {
-	case MODE_MT63_500:
+	case MODE_MT63_500S:
+		Interleave = 32;
 		bandwidth = 500;
 		break;
-	case MODE_MT63_1000:
+	case MODE_MT63_500L:
+		Interleave = 64;
+		bandwidth = 500;
+		break;
+	case MODE_MT63_1000S:
+		Interleave = 32;
 		bandwidth = 1000;
 		break;
-	case MODE_MT63_2000:
+	case MODE_MT63_1000L:
+		Interleave = 64;
+		bandwidth = 1000;
+		break;
+	case MODE_MT63_2000S:
+		Interleave = 32;
+		bandwidth = 2000;
+		break;
+	case MODE_MT63_2000L:
+		Interleave = 64;
 		bandwidth = 2000;
 		break;
 	}
-	Interleave = progdefaults.mt63_interleave;
+//	Interleave = progdefaults.mt63_interleave;
     long_integral = progdefaults.mt63_rx_integration;
 
 	Tx = new MT63tx;

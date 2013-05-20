@@ -2044,39 +2044,29 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMT63 {
-            label {MT-63}
+            label {MT-63} open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
-              xywh {18 73 490 115} box ENGRAVED_FRAME align 21
+              xywh {18 73 490 84} box ENGRAVED_FRAME align 21
             } {
-              Fl_Check_Button btnmt63_interleave {
-                label {64-bit (long) interleave}
-                callback {if (o->value() == 1)
-progdefaults.mt63_interleave = 64;
-else
-progdefaults.mt63_interleave = 32;
-progdefaults.changed = true;}
-                xywh {163 91 185 20} down_box DOWN_BOX value 1
-                code0 {o->value(0);if (progdefaults.mt63_interleave == 64) o->value(1);}
-              }
               Fl_Check_Button btnMT63_8bit {
                 label {8-bit extended characters (UTF-8)}
                 callback {progdefaults.mt63_8bit = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable this for UTF-8 characters} xywh {163 121 205 20} down_box DOWN_BOX value 1
+                tooltip {Enable this for UTF-8 characters} xywh {163 87 205 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.mt63_8bit);}
               }
               Fl_Check_Button btnMT63_rx_integration {
                 label {Long receive integration}
                 callback {progdefaults.mt63_rx_integration = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable for very weak signals} xywh {163 151 190 20} down_box DOWN_BOX value 1
+                tooltip {Enable for very weak signals} xywh {163 117 190 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.mt63_rx_integration);}
               }
             }
             Fl_Group {} {open
-              xywh {19 189 490 131} box ENGRAVED_FRAME
+              xywh {19 169 490 131} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMT63_usetones {
                 label {Transmit lower start tone}
@@ -2089,14 +2079,14 @@ if (!o->value()) {
 else
     btnMT63_upper_lower->activate();
 progdefaults.changed = true;}
-                xywh {163 197 200 20} down_box DOWN_BOX
+                xywh {163 177 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_usetones);}
               }
               Fl_Check_Button btnMT63_upper_lower {
                 label {Transmit upper start tone}
                 callback {progdefaults.mt63_twotones = o->value();
 progdefaults.changed = true;}
-                xywh {163 227 200 20} down_box DOWN_BOX
+                xywh {163 207 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.mt63_twotones);}
                 code1 {if (!btnMT63_usetones->value()) o->deactivate();}
               }
@@ -2104,7 +2094,7 @@ progdefaults.changed = true;}
                 label {Tone Duration (secs)}
                 callback {progdefaults.mt63_tone_duration=(int)o->value();
 progdefaults.changed = true;}
-                xywh {163 253 40 20} align 8 maximum 10 value 4
+                xywh {163 233 40 20} align 8 maximum 10 value 4
                 code0 {o->value(progdefaults.mt63_tone_duration);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
@@ -2113,7 +2103,7 @@ progdefaults.changed = true;}
                 label {Allow manual tuning}
                 callback {progdefaults.mt63_at500 = !o->value();
 progdefaults.changed = true;}
-                xywh {163 282 200 20} down_box DOWN_BOX
+                xywh {163 262 200 20} down_box DOWN_BOX
                 code0 {o->value(!progdefaults.mt63_at500);}
               }
             }

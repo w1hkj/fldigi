@@ -62,9 +62,12 @@ modem *wefax288_modem = 0;
 modem *navtex_modem = 0;
 modem *sitorb_modem = 0;
 
-modem *mt63_500_modem = 0;
-modem *mt63_1000_modem = 0;
-modem *mt63_2000_modem = 0;
+modem *mt63_500S_modem = 0;
+modem *mt63_500L_modem = 0;
+modem *mt63_1000S_modem = 0;
+modem *mt63_1000L_modem = 0;
+modem *mt63_2000S_modem = 0;
+modem *mt63_2000L_modem = 0;
 
 modem *feld_modem = 0;
 modem *feld_slowmodem = 0;
@@ -333,7 +336,8 @@ double modem::sigmaN (double es_ovr_n0)
 	case MODE_HELLX5: case MODE_HELLX9:
 		mode_factor /= 0.22;
 		break;
-	case MODE_MT63_500: case MODE_MT63_1000: case MODE_MT63_2000 :
+	case MODE_MT63_500S: case MODE_MT63_1000S: case MODE_MT63_2000S :
+	case MODE_MT63_500L: case MODE_MT63_1000L: case MODE_MT63_2000L :
 		mode_factor *= 3.0;
 		break;
 	case MODE_PSK31: case MODE_PSK63: case MODE_PSK63F:

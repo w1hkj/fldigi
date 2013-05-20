@@ -461,8 +461,6 @@ void configuration::loadDefaults()
 
 	chkDominoEX_FEC->value(DOMINOEX_FEC);
 
-	btnmt63_interleave->value(mt63_interleave == 64);
-
 	Fl_Tooltip::enable(tooltips);
 }
 
