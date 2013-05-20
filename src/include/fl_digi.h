@@ -118,6 +118,7 @@ extern Fl_Input2		*inpCall2;
 extern Fl_Input2		*inpCall3;
 extern Fl_Input2		*inpCall4;
 
+extern Fl_Group			*QsoInfoFrame1B;
 extern Fl_Group			*qsoFrameView;
 extern Fl_Group			*QsoButtonFrame;
 extern Fl_Group			*QsoInfoFrame;
