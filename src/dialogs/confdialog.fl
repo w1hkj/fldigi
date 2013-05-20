@@ -369,49 +369,49 @@ progdefaults.changed = true;}
               } {
                 Fl_Button bwsrHiLite_1_color {
                   label {HiLite 1}
-                  callback {progdefaults.bwsrHiLight1 = fl_show_colormap(progdefaults.bwsrHiLight1);
-bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);
+                  callback {progdefaults.bwsrHiLight1 = fl_show_colormap((Fl_Color)progdefaults.bwsrHiLight1);
+bwsrHiLite_1_color->color((Fl_Color)progdefaults.bwsrHiLight1);
 viewer_redraw();
 progdefaults.changed = true;}
                   tooltip {PSK/RTTY Viewer HiLite Color 1} xywh {192 303 60 24} align 1
-                  code0 {bwsrHiLite_1_color->color(progdefaults.bwsrHiLight1);}
+                  code0 {bwsrHiLite_1_color->color((Fl_Color)progdefaults.bwsrHiLight1);}
                   code1 {\#include "Viewer.h"}
                 }
                 Fl_Button bwsrHiLite_2_color {
                   label {HiLite 2}
-                  callback {progdefaults.bwsrHiLight2 = fl_show_colormap(progdefaults.bwsrHiLight2);
-bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);
+                  callback {progdefaults.bwsrHiLight2 = fl_show_colormap((Fl_Color)progdefaults.bwsrHiLight2);
+bwsrHiLite_2_color->color((Fl_Color)progdefaults.bwsrHiLight2);
 viewer_redraw();
 progdefaults.changed = true;}
                   tooltip {PSK/RTTY Viewer HiLite Color 2} xywh {255 303 60 24} align 1
-                  code0 {bwsrHiLite_2_color->color(progdefaults.bwsrHiLight2);}
+                  code0 {bwsrHiLite_2_color->color((Fl_Color)progdefaults.bwsrHiLight2);}
                 }
                 Fl_Button bwsrHiLite_even_lines {
                   label Even
-                  callback {progdefaults.bwsrBackgnd2 = fl_show_colormap(progdefaults.bwsrBackgnd2);
-bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);
+                  callback {progdefaults.bwsrBackgnd2 = fl_show_colormap((Fl_Color)progdefaults.bwsrBackgnd2);
+bwsrHiLite_even_lines->color((Fl_Color)progdefaults.bwsrBackgnd2);
 viewer_redraw();
 progdefaults.changed = true;;}
                   tooltip {Even lines} xywh {318 303 60 24} align 1
-                  code0 {bwsrHiLite_even_lines->color(progdefaults.bwsrBackgnd2);}
+                  code0 {bwsrHiLite_even_lines->color((Fl_Color)progdefaults.bwsrBackgnd2);}
                 }
                 Fl_Button bwsrHiLite_odd_lines {
                   label Odd
-                  callback {progdefaults.bwsrBackgnd1 = fl_show_colormap(progdefaults.bwsrBackgnd1);
-bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);
+                  callback {progdefaults.bwsrBackgnd1 = fl_show_colormap((Fl_Color)progdefaults.bwsrBackgnd1);
+bwsrHiLite_odd_lines->color((Fl_Color)progdefaults.bwsrBackgnd1);
 viewer_redraw();
 progdefaults.changed = true;}
                   tooltip {Odd lines} xywh {381 303 60 24} align 1
-                  code0 {bwsrHiLite_odd_lines->color(progdefaults.bwsrBackgnd1);}
+                  code0 {bwsrHiLite_odd_lines->color((Fl_Color)progdefaults.bwsrBackgnd1);}
                 }
                 Fl_Button bwsrHiLite_select {
                   label Select
-                  callback {progdefaults.bwsrSelect = fl_show_colormap(progdefaults.bwsrSelect);
-bwsrHiLite_select->color(progdefaults.bwsrSelect);
+                  callback {progdefaults.bwsrSelect = fl_show_colormap((Fl_Color)progdefaults.bwsrSelect);
+bwsrHiLite_select->color((Fl_Color)progdefaults.bwsrSelect);
 viewer_redraw();
 progdefaults.changed = true;}
                   tooltip {Select line} xywh {445 303 60 24} align 1
-                  code0 {bwsrHiLite_select->color(progdefaults.bwsrSelect);}
+                  code0 {bwsrHiLite_select->color((Fl_Color)progdefaults.bwsrSelect);}
                 }
               }
             }
@@ -2360,14 +2360,49 @@ DO2SMF best 1.500} xywh {415 108 48 25} align 1 minimum 1 maximum 2 step 0.001 v
                   }
                 }
                 Fl_Group {} {
-                  label {RTTY Scope Display} open
+                  label {Decode (CWI suppression)} open
                   xywh {2 153 535 55} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button {btnRxTones[0]} {
+                    label {Mark-Space}
+                    callback {if (o->value()) {
+  btnRxTones[1]->value(0);
+  btnRxTones[2]->value(0);
+  progdefaults.rtty_cwi = 0;
+}}
+                    xywh {90 180 70 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.rtty_cwi == 0);}
+                  }
+                  Fl_Check_Button {btnRxTones[1]} {
+                    label {Mark only}
+                    callback {if (o->value()) {
+  btnRxTones[0]->value(0);
+  btnRxTones[2]->value(0);
+  progdefaults.rtty_cwi = 1;
+}}
+                    xywh {223 180 70 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.rtty_cwi == 1);}
+                  }
+                  Fl_Check_Button {btnRxTones[2]} {
+                    label {Space only}
+                    callback {if (o->value()) {
+  btnRxTones[1]->value(0);
+  btnRxTones[0]->value(0);
+  progdefaults.rtty_cwi = 2;
+}}
+                    xywh {357 180 70 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.rtty_cwi == 2);}
+                  }
+                }
+                Fl_Group {} {
+                  label {RTTY Scope Display} open
+                  xywh {2 210 535 55} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnPreferXhairScope {
                     label {Use cross hair scope}
                     callback {progdefaults.PreferXhairScope=o->value();
 progdefaults.changed = true;}
-                    tooltip {Default to cross hair digiscope} xywh {90 175 165 22} down_box DOWN_BOX
+                    tooltip {Default to cross hair digiscope} xywh {90 232 165 22} down_box DOWN_BOX
                     code0 {o->value(progdefaults.PreferXhairScope);}
                   }
                   Fl_Check_Button chk_true_scope {
@@ -2375,20 +2410,20 @@ progdefaults.changed = true;}
                     callback {progdefaults.true_scope=o->value();
 progdefaults.changed = true;}
                     tooltip {Enabled - use Mark/Space filter outputs
-Disabled - use pseudo signals} xywh {310 175 70 22} down_box DOWN_BOX
+Disabled - use pseudo signals} xywh {310 232 70 22} down_box DOWN_BOX
                     code0 {o->value(progdefaults.true_scope);}
                   }
                 }
                 Fl_Group {} {
                   label {Log RTTY frequency} open
-                  xywh {2 210 535 65} box ENGRAVED_FRAME align 21
+                  xywh {2 267 535 65} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button chk_useMARKfreq {
                     label {Use MARK freq'}
                     callback {progdefaults.useMARKfreq=o->value();
 progdefaults.changed = true;}
                     tooltip {Enabled - log QSO using Mark frequency
-Disabled - log QSO using center frequency} xywh {90 236 146 22} down_box DOWN_BOX value 1
+Disabled - log QSO using center frequency} xywh {90 293 146 22} down_box DOWN_BOX value 1
                     code0 {o->value(progdefaults.useMARKfreq);}
                   }
                   Fl_Button btnRTTY_mark_color {
@@ -2402,7 +2437,7 @@ o->redraw();
 wf->redraw_marker();
 progdefaults.changed = true;
 }}
-                    tooltip {Color of Mark Track} xywh {310 236 41 18} color 2 align 8
+                    tooltip {Color of Mark Track} xywh {310 293 41 18} color 2 align 8
                     code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
                   }
                 }
@@ -4079,7 +4114,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {open
               xywh {25 75 490 51} box ENGRAVED_FRAME align 21
@@ -4225,7 +4260,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSpot {
             label Spotting open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
               label {PSK Reporter} open

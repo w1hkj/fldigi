@@ -281,6 +281,12 @@
         ELEM_(double, RTTY_BW, "RTTYBW",                                                \
               "Receive filter bandwidth (Hz)",                                          \
               68.0)                                                                     \
+        ELEM_(int, rtty_cwi, "RTTYCWI",                                                 \
+              "Selective decoding of mark/space tones\n"                                \
+              "0 - both\n"                                                              \
+              "1 - mark only\n"                                                         \
+              "2 - space only",                                                         \
+              0)                                                                        \
         ELEM_(double, rtty_filter, "RTTYFILTER",                                        \
               "Rtty Rx Filter shape factor, K * (t/T)\n"                                \
               "You may alter this value using a text editor\n"                          \
