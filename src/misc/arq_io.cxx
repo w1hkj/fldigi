@@ -34,6 +34,7 @@
 #endif
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <cstdlib>
 #include <ctime>
@@ -70,6 +71,7 @@ using namespace std;
 // ============================================================================
 static pthread_t arq_thread;
 static pthread_mutex_t arq_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t arq_rx_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t tosend_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void *arq_loop(void *args);
@@ -467,12 +469,15 @@ bool WRAP_auto_arqRx()
 // Socket ARQ i/o used on all platforms
 //-----------------------------------------------------------------------------
 
+#define ARQLOOP_TIMING 100 // msec
+#define CLIENT_TIMEOUT 5 // timeout after N secs
+
+struct ARQCLIENT { Socket sock; time_t keep_alive; };
 static string errstring;
-static string cmdstring;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
-static std::vector<Socket> arqclient;
+static std::vector<ARQCLIENT> arqclient;
 
 void arq_run(Socket);
 
@@ -566,10 +571,10 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		}
 	}
 	if (!arqclient.empty()) {
-		vector<Socket>::iterator p = arqclient.begin();
+		vector<ARQCLIENT>::iterator p = arqclient.begin();
 		while (p != arqclient.end()) {
 			try {
-				(*p).close();
+				(*p).sock.close();
 				arqclient.erase(p);
 			}
 			catch (...) {;}
@@ -583,12 +588,22 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 void arq_run(Socket s)
 {
 	pthread_mutex_lock (&arq_mutex);
-	LOG_INFO("Adding ARQ client %d", s.fd());
 	struct timeval t = { 0, 20000 };
 	s.set_timeout(t);
 	s.set_nonblocking();
-	arqclient.push_back(s);
+	ARQCLIENT client;
+	client.sock = s;
+	client.keep_alive = time(0);
+	arqclient.push_back(client);
 	arqmode = true;
+	vector<ARQCLIENT>::iterator p = arqclient.begin();
+	ostringstream outs;
+	outs << "Clients: ";
+	while (p != arqclient.end()) {
+		outs << (*p).sock.fd() << " ";
+		p++;
+	}
+	LOG_INFO("%s", outs.str().c_str());
 	pthread_mutex_unlock (&arq_mutex);
 }
 
@@ -597,24 +612,61 @@ void WriteARQsocket(unsigned char* data, size_t len)
 	if (arqclient.empty()) return;
 	static string instr;
 	instr.clear();
-	vector<Socket>::iterator p;
-	try {
-		p = arqclient.begin();
-		while (p != arqclient.end()) {
-			(*p).wait(1);
-			(*p).send(data, len);
-			LOG_DEBUG("Wrote to socket %d", (*p).fd());
+	vector<ARQCLIENT>::iterator p;
+	p = arqclient.begin();
+	while (p != arqclient.end()) {
+		try {
+			(*p).sock.wait(1);
+			(*p).sock.send(data, len);
+			(*p).keep_alive = time(0);
+			p++;
+		}
+		catch (const SocketException& e) {
+			LOG_INFO("closing socket fd %d %s", (*p).sock.fd(), e.what());
+			try {
+				(*p).sock.close();
+			} catch (const SocketException& e) {
+				LOG_ERROR("Socket error on # %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+			}
+			arqclient.erase(p);
+		}
+	}
+	if (arqclient.empty()) arqmode = false;
+}
+
+void test_arq_clients()
+{
+	if (arqclient.empty()) return;
+	static string instr;
+	instr.clear();
+	vector<ARQCLIENT>::iterator p;
+	p = arqclient.begin();
+	pthread_mutex_lock (&arq_mutex);
+	time_t now;
+	while (p != arqclient.end()) {
+		if (difftime(now = time(0), (*p).keep_alive) > CLIENT_TIMEOUT) {
+			try {
+				(*p).sock.wait(1);
+				(*p).sock.send("\0", 1);
+				(*p).keep_alive = now;
+				p++;
+			}
+			catch (const SocketException& e) {
+				LOG_INFO("socket %d timed out, error %d, %s", (*p).sock.fd(), e.error(), e.what());
+				try {
+					(*p).sock.close();
+				} catch (const SocketException& e) {
+					LOG_ERROR("Socket error on # %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+				}
+				arqclient.erase(p);
+			}
+		} else {
 			p++;
 		}
 	}
-	catch (const SocketException& e) {
-		LOG_ERROR("socket fd %d %s", (*p).fd(), e.what());
-		try {
-			(*p).close();
-			arqclient.erase(p);
-		} catch (...) {;}
-		if (arqclient.empty()) arqmode = false;
-	}
+	pthread_mutex_unlock (&arq_mutex);
+
+	if (arqclient.empty()) arqmode = false;
 }
 
 bool Socket_arqRx()
@@ -622,53 +674,56 @@ bool Socket_arqRx()
 	if (arqclient.empty()) return false;
 
 	static string instr;
-	vector<Socket>::iterator p = arqclient.begin();
+	vector<ARQCLIENT>::iterator p = arqclient.begin();
 	size_t n = 0;
 	instr.clear();
 
 	pthread_mutex_lock (&arq_mutex);
 
-	try {
-		while (p != arqclient.end()) {
-			LOG_DEBUG("Query %d", (*p).fd());
-			(*p).wait(0);
-			n = (*p).recv(instr);
+	while (p != arqclient.end()) {
+		try {
+			(*p).sock.wait(0);
+			n = (*p).sock.recv(instr);
 			if ( n > 0) {
 				txstring.append(instr);
+				(*p).keep_alive = time(0);
 			}
 			p++;
 		}
-		if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
-			arqtext = txstring;
-			parse_arqtext(arqtext);
-			if (!arqtext.empty()) {
-				if (mailserver && progdefaults.PSKmailSweetSpot)
-					active_modem->set_freq(progdefaults.PSKsweetspot);
-				pText = 0;//arqtext.begin();
-				arq_text_available = true;
-				active_modem->set_stopflag(false);
-				LOG_DEBUG("%s", arqtext.c_str());
-				start_tx();
-			}
+		catch (const SocketException& e) {
 			txstring.clear();
-			cmdstring.clear();
-			pthread_mutex_unlock (&arq_mutex);
-			return true;
-		}
-		cmdstring.clear();
-		pthread_mutex_unlock (&arq_mutex);
-		return false;
-	}
-	catch (const SocketException& e) {
-		LOG_ERROR("socket fd %d %s", (*p).fd(), e.what());
-		try {
-			(*p).close();
+			LOG_INFO("closing socket fd %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+			try {
+				(*p).sock.close();
+			} catch (const SocketException& e) {
+				LOG_ERROR("socket error on # %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+			}
 			arqclient.erase(p);
-		} catch (...) {;}
-		pthread_mutex_unlock (&arq_mutex);
-		return false;
+		}
 	}
 	pthread_mutex_unlock (&arq_mutex);
+
+	if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
+
+		pthread_mutex_lock (&arq_rx_mutex);
+		arqtext.assign(txstring);
+		if (mailserver || mailclient)
+			parse_arqtext(arqtext);
+		txstring.clear();
+		LOG_VERBOSE("arqtext\n%s\n", arqtext.c_str());
+
+		if (!arqtext.empty()) {
+			if (mailserver && progdefaults.PSKmailSweetSpot)
+				active_modem->set_freq(progdefaults.PSKsweetspot);
+			pText = 0;
+			arq_text_available = true;
+			active_modem->set_stopflag(false);
+			start_tx();
+		}
+		pthread_mutex_unlock (&arq_rx_mutex);
+		return true;
+	}
+
 	return false;
 }
 
@@ -708,12 +763,13 @@ static void *arq_loop(void *args)
 		if (arq_exit)
 			break;
 
+		test_arq_clients();
+
 		enroute.clear();
 		pthread_mutex_lock(&tosend_mutex);
 		if (!tosend.empty()) {
 			enroute = tosend;
 			tosend.clear();
-LOG_VERBOSE("%s", enroute.c_str());
 		}
 		pthread_mutex_unlock(&tosend_mutex);
 
@@ -747,7 +803,7 @@ LOG_VERBOSE("%s", enroute.c_str());
 		if (!Socket_arqRx())
 			WRAP_auto_arqRx();
 #endif
-		MilliSleep(100);
+		MilliSleep(ARQLOOP_TIMING);
 
 	}
 // exit the arq thread
@@ -759,7 +815,6 @@ void arq_init()
 	arq_enabled = false;
 
 	txstring.clear();
-	cmdstring.clear();
 
 	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() ))
 		return;
@@ -791,8 +846,8 @@ void arq_close(void)
 int arq_get_char()
 {
 	int c = 0;
-	pthread_mutex_lock (&arq_mutex);
 	if (arq_text_available) {
+		pthread_mutex_lock (&arq_rx_mutex);
 		if (pText != arqtext.length()) {
 			c = arqtext[pText++] & 0xFF;
 		} else {
@@ -802,8 +857,8 @@ int arq_get_char()
 			arq_text_available = false;
 			c = GET_TX_CHAR_ETX;
 		}
+		pthread_mutex_unlock (&arq_rx_mutex);
 	}
-	pthread_mutex_unlock (&arq_mutex);
 	return c;
 }
 
