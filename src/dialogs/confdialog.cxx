@@ -3087,6 +3087,8 @@ if (o->value()) {
 
 Fl_Group *tabID=(Fl_Group *)0;
 
+Fl_Tabs *tabsID=(Fl_Tabs *)0;
+
 Fl_Group *tabRsID=(Fl_Group *)0;
 
 Fl_Check_Button *chkRSidNotifyOnly=(Fl_Check_Button *)0;
@@ -3605,6 +3607,8 @@ static void cb_btn_metar_search(Fl_Button*, void*) {
 
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
+Fl_Tabs *tabsQRZ=(Fl_Tabs *)0;
+
 Fl_Round_Button *btnQRZWEBnotavailable=(Fl_Round_Button *)0;
 
 static void cb_btnQRZWEBnotavailable(Fl_Round_Button* o, void*) {
@@ -3810,7 +3814,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(-5, 0, 599, 372);
+    { tabsConfigure = new Fl_Tabs(-5, 0, 596, 372);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 540, 345, _("Operator"));
@@ -4993,9 +4997,9 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(-4, 25, 540, 347, _("Modems"));
+      { tabModems = new Fl_Group(0, 25, 540, 347, _("Modems"));
         tabModems->hide();
-        { tabsModems = new Fl_Tabs(-4, 25, 598, 347);
+        { tabsModems = new Fl_Tabs(0, 25, 540, 347);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 540, 320, _("CW"));
@@ -5848,9 +5852,9 @@ an merging"));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
-          { tabPSK = new Fl_Group(-4, 50, 540, 322, _("PSK"));
+          { tabPSK = new Fl_Group(0, 50, 540, 322, _("PSK"));
             tabPSK->hide();
-            { tabsPSK = new Fl_Tabs(-4, 50, 540, 322);
+            { tabsPSK = new Fl_Tabs(0, 50, 540, 322);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 540, 295, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -7289,7 +7293,7 @@ nce.\nYou may change the state from either location.\n..."));
       } // Fl_Group* tabSoundCard
       { tabID = new Fl_Group(0, 23, 540, 348, _("ID"));
         tabID->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 23, 541, 345);
+        { tabsID = new Fl_Tabs(0, 23, 540, 345);
           { tabRsID = new Fl_Group(0, 48, 540, 320, _("RsID"));
             { Fl_Group* o = new Fl_Group(2, 55, 535, 193, _("Reed-Solomon ID (Rx)"));
               o->box(FL_ENGRAVED_FRAME);
@@ -7528,8 +7532,8 @@ ased false detection"));
             } // Fl_Group* sld
             tabCwID->end();
           } // Fl_Group* tabCwID
-          o->end();
-        } // Fl_Tabs* o
+          tabsID->end();
+        } // Fl_Tabs* tabsID
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 540, 345, _("Misc"));
@@ -8012,7 +8016,7 @@ ased false detection"));
       { tabQRZ = new Fl_Group(0, 25, 540, 345, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
-        { Fl_Tabs* o = new Fl_Tabs(0, 25, 540, 345);
+        { tabsQRZ = new Fl_Tabs(0, 25, 540, 345);
           { Fl_Group* o = new Fl_Group(0, 46, 540, 324, _("Call Lookup"));
             { Fl_Group* o = new Fl_Group(27, 52, 490, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
@@ -8240,8 +8244,8 @@ ased false detection"));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          o->end();
-        } // Fl_Tabs* o
+          tabsQRZ->end();
+        } // Fl_Tabs* tabsQRZ
         tabQRZ->end();
       } // Fl_Group* tabQRZ
       tabsConfigure->end();
