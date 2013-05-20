@@ -1285,10 +1285,11 @@ void makeEQSL(const char *message)
 
 	tempstr.clear();
 	for (size_t n = 0; n < eQSL_url.length(); n++) {
-		if (eQSL_url[n] == ' ') tempstr.append("%20");
+		if (eQSL_url[n] == ' ' || eQSL_url[n] == '\n') tempstr.append("%20");
 		else if (eQSL_url[n] == '<') tempstr.append("%3c");
 		else if (eQSL_url[n] == '>') tempstr.append("%3e");
-		else tempstr += eQSL_url[n];
+		else if (eQSL_url[n] > ' ' && eQSL_url[n] <= '}')
+			tempstr += eQSL_url[n];
 	}
 
 	sendEQSL(tempstr.c_str());
