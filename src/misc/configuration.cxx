@@ -937,16 +937,14 @@ void configuration::testCommPorts()
 
 #if defined(__WOE32__)
 #  define TTY_MAX 255
-#elif defined(__APPLE__)
-	glob_t gbuf;
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
 #  define TTY_MAX 4
 #else
 #  define TTY_MAX 8
-	glob_t gbuf;
 #endif
 
 #ifdef __linux__
+	glob_t gbuf;
 	glob("/dev/serial/by-id/*", 0, NULL, &gbuf);
 	for (size_t j = 0; j < gbuf.gl_pathc; j++) {
 		if ( !(stat(gbuf.gl_pathv[j], &st) == 0 && S_ISCHR(st.st_mode)) ||
@@ -987,6 +985,7 @@ void configuration::testCommPorts()
 			inpXmlRigDevice->add(ttyname);
 		}
 #else // __APPLE__
+		glob_t gbuf;
 		glob(tty_fmt[i], 0, NULL, &gbuf);
 		for (size_t j = 0; j < gbuf.gl_pathc; j++) {
 			if ( !(stat(gbuf.gl_pathv[j], &st) == 0 && S_ISCHR(st.st_mode)) ||
