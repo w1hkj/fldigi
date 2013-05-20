@@ -141,7 +141,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     label {Fldigi configuration} open
     xywh {589 128 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
-    Fl_Tabs tabsConfigure {
+    Fl_Tabs tabsConfigure {open
       xywh {-5 0 596 372} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
@@ -2184,7 +2184,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContestia {
-            label {Cont'}
+            label {Cont'} open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
@@ -2194,7 +2194,7 @@ progdefaults.changed = true;}
                 label Bandwidth
                 callback {progdefaults.contestiabw = o->value();
 set_contestia_default_integ();
-resetOLIVIA();
+resetCONTESTIA();
 progdefaults.changed = true;} open
                 tooltip {Select bandwidth} xywh {79 100 85 20} down_box BORDER_BOX align 8
                 code0 {o->add(szContestiaBandwidth);}

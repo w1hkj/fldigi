@@ -1702,7 +1702,7 @@ Fl_Choice *mnuContestia_Bandwidth=(Fl_Choice *)0;
 static void cb_mnuContestia_Bandwidth(Fl_Choice* o, void*) {
   progdefaults.contestiabw = o->value();
 set_contestia_default_integ();
-resetOLIVIA();
+resetCONTESTIA();
 progdefaults.changed = true;
 }
 

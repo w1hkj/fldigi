@@ -292,7 +292,7 @@ void olivia::restart()
 	Tx->Bandwidth = bandwidth;
 	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
-    txbasefreq = get_txfreq_woffset();
+	txbasefreq = get_txfreq_woffset();
 
 	int fc_offset = Tx->Bandwidth * (1.0 - 0.5/Tx->Tones) / 2.0;
 	if (reverse) { 
