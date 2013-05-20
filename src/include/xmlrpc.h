@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 
-class Socket;
+class XmlRpcImpl;
 
 class XML_RPC_Server
 {
@@ -22,7 +22,7 @@ private:
 private:
 	static XML_RPC_Server* inst;
 	bool run;
-	Socket* server_socket;
+	XmlRpcImpl* server_impl;
 };
 
 void xmlrpc_set_qsy(long long rfc);

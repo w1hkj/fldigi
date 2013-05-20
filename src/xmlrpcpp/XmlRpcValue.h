@@ -32,6 +32,8 @@ namespace XmlRpc {
       TypeNil,
       TypeBoolean,
       TypeInt,
+      TypeUnsigned,
+      TypeLongLong,
       TypeDouble,
       TypeString,
       TypeDateTime,
@@ -41,7 +43,7 @@ namespace XmlRpc {
     };
 
     // Non-primitive types
-    typedef std::vector<char> BinaryData;
+    typedef std::vector<unsigned char> BinaryData;
     typedef std::vector<XmlRpcValue> ValueArray;
     typedef std::map<std::string, XmlRpcValue> ValueStruct;
 
@@ -59,6 +61,10 @@ namespace XmlRpc {
     //! Construct an XmlRpcValue with an int value
     XmlRpcValue(int value)  : _type(TypeInt) { _value.asInt = value; }
 
+    XmlRpcValue(unsigned int value)  : _type(TypeUnsigned) { _value.asUnsigned = value; }
+
+    XmlRpcValue(long long value)  : _type(TypeLongLong) { _value.asLongLong = value; }
+ 
     //! Construct an XmlRpcValue with a double value
     XmlRpcValue(double value)  : _type(TypeDouble) { _value.asDouble = value; }
 
@@ -70,6 +76,15 @@ namespace XmlRpc {
     //! @param value A null-terminated (C) string.
     XmlRpcValue(const char* value)  : _type(TypeString)
     { _value.asString = new std::string(value); }
+
+    XmlRpcValue(BinaryData const& value) : _type(TypeBase64) 
+    { _value.asBinary = new BinaryData(value); }
+
+    XmlRpcValue(ValueStruct const& value) : _type(TypeStruct) 
+    { _value.asStruct = new ValueStruct(value); }
+
+    XmlRpcValue(ValueArray const& value) : _type(TypeArray) 
+    { _value.asArray = new ValueArray(value); }
 
     //! Construct an XmlRpcValue with a date/time value.
     //! @param value A pointer to a struct tm (see localtime)
@@ -135,6 +150,12 @@ namespace XmlRpc {
     operator int&()           { assertType(TypeInt); return _value.asInt; }
     operator int() const      { assertType(TypeInt); return _value.asInt; }
 
+    operator unsigned int&()           { assertType(TypeUnsigned); return _value.asUnsigned; }
+    operator unsigned int() const      { assertType(TypeUnsigned); return _value.asUnsigned; }
+
+    operator long long&()           { assertType(TypeLongLong); return _value.asLongLong; }
+    operator long long() const      { assertType(TypeLongLong); return _value.asLongLong; }
+
     //! Treat an XmlRpcValue as a double.
     //! Throws XmlRpcException if the value is initialized to 
     //! a type that is not TypeDouble.
@@ -182,6 +203,8 @@ namespace XmlRpc {
     //! Access the struct value map.
     //! Can be used to iterate over the entries in the map to find all defined entries.
     operator ValueStruct const&() { assertStruct(); return *_value.asStruct; } 
+
+    operator ValueArray const&() const { assertType(TypeArray); return *_value.asArray; } 
 
     // Accessors
     //! Return true if the value has been set to something.
@@ -259,6 +282,8 @@ namespace XmlRpc {
     union {
       bool          asBool;
       int           asInt;
+      unsigned int  asUnsigned;
+      long long     asLongLong;
       double        asDouble;
       struct tm*    asTime;
       std::string*  asString;
