@@ -708,12 +708,16 @@ static void *arq_loop(void *args)
 		if (arq_exit)
 			break;
 
+		enroute.clear();
+		pthread_mutex_lock(&tosend_mutex);
 		if (!tosend.empty()) {
-			pthread_mutex_lock(&tosend_mutex);
 			enroute = tosend;
 			tosend.clear();
-			pthread_mutex_unlock(&tosend_mutex);
+LOG_VERBOSE("%s", enroute.c_str());
+		}
+		pthread_mutex_unlock(&tosend_mutex);
 
+		if (!enroute.empty()) {
 			pthread_mutex_lock (&arq_mutex);
 			WriteARQsocket((unsigned char*)enroute.c_str(), enroute.length());
 #if !defined(__WOE32__) && !defined(__APPLE__)
