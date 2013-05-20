@@ -2089,10 +2089,14 @@ void waterfall::handle_mouse_wheel(int what, int d)
 			val = mailserver ? cntServerOffset : cntSearchRange;
 		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
 			val = sldrHellBW;
-		else if (m == MODE_CW)
+		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST) {
+			val = sldrHellBW;
+			msg_label = "BW";
+		}
+		else if (m == MODE_CW) {
 			val = sldrCWbandwidth;
-        else if (m == MODE_RTTY)
-            val = sldrRTTYbandwidth;
+			msg_label = "BW";
+		}
 		else
 			return;
 		msg_fmt = "%s = %2.0f Hz";

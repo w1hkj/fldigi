@@ -80,7 +80,6 @@ void Cfft::icdft(double *aCmpx)
 {
 	bitrv2conj(fftsiz, ip + 2, aCmpx);
 	cftbsub(fftsiz, aCmpx);
-	for (int i = 0; i < fftsiz; i++) aCmpx[i] = aCmpx[i] / 2.0;
 }
 
 // FFT of an array of short integers

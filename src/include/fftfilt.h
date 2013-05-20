@@ -18,6 +18,7 @@ protected:
 	complex *filter;
 	complex *filtdata;
 	complex *ovlbuf;
+	complex *ht;
 	int inptr;
 	int pass;
 public:
@@ -27,6 +28,8 @@ public:
 	void create_filter(double f1, double f2);
 	void create_lpf(double f);
 	void create_rttyfilt(double f);
+	void rtty_order(double, int, double twarp = 1.275, double alpha = 1.0);
+
 	int run(const complex& in, complex **out);
 };
 

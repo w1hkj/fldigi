@@ -146,8 +146,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 540 345} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 540 345} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -1473,67 +1473,9 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         Fl_Tabs tabsModems {open
           xywh {-4 25 598 347} selection_color 50 align 9
         } {
-          Fl_Group tabContestia {
-            label {Cont'}
-            xywh {0 50 540 320}
-          } {
-            Fl_Group {} {open
-              xywh {24 80 490 200} box ENGRAVED_FRAME
-            } {
-              Fl_Choice mnuContestia_Bandwidth {
-                label Bandwidth
-                callback {progdefaults.contestiabw = o->value();
-set_contestia_default_integ();
-resetOLIVIA();
-progdefaults.changed = true;} open
-                tooltip {Select bandwidth} xywh {79 100 85 20} down_box BORDER_BOX align 8
-                code0 {o->add(szContestiaBandwidth);}
-                code1 {o->value(2);}
-              } {}
-              Fl_Choice mnuContestia_Tones {
-                label Tones
-                callback {progdefaults.contestiatones = o->value();
-set_contestia_default_integ();
-resetCONTESTIA();
-progdefaults.changed = true;} open
-                tooltip {Select number of tones} xywh {340 100 70 20} down_box BORDER_BOX align 8
-                code0 {o->add(szContestiaTones);}
-                code1 {o->value(2);}
-              } {}
-              Fl_Group {} {
-                label {Receive synchronizer} open
-                xywh {79 139 379 100} box ENGRAVED_FRAME align 21
-              } {
-                Fl_Counter cntContestia_smargin {
-                  label {Tune margin (tone frequency spacing)}
-                  callback {progdefaults.contestiasmargin = (int)(o->value());
-resetCONTESTIA();
-progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 170 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
-                  code0 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Counter2
-                }
-                Fl_Counter cntContestia_sinteg {
-                  label {Integration period (FEC blocks)}
-                  callback {progdefaults.contestiasinteg = (int)(o->value());
-resetCONTESTIA();
-progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 200 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
-                  code0 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Counter2
-                }
-              }
-              Fl_Check_Button btnContestia_8bit {
-                label {8-bit extended characters}
-                callback {progdefaults.contestia8bit = o->value();
-progdefaults.changed = true;}
-                tooltip {Enable this for Latin-1 accented characters} xywh {79 249 200 20} down_box DOWN_BOX hide
-              }
-            }
-          }
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -2176,6 +2118,486 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabOlivia {
+            label Olivia
+            xywh {0 50 540 320} hide
+          } {
+            Fl_Group {} {open
+              xywh {24 76 490 280} box ENGRAVED_FRAME
+            } {
+              Fl_Choice mnuOlivia_Bandwidth {
+                label Bandwidth
+                callback {progdefaults.oliviabw = o->value();
+set_olivia_default_integ();
+resetOLIVIA();
+progdefaults.changed = true;} open
+                tooltip {Select bandwidth} xywh {79 96 85 20} down_box BORDER_BOX align 8
+                code0 {o->add(szOliviaBandwidth);}
+                code1 {o->value(2);}
+              } {}
+              Fl_Choice mnuOlivia_Tones {
+                label Tones
+                callback {progdefaults.oliviatones = o->value();
+set_olivia_default_integ();
+resetOLIVIA();
+progdefaults.changed = true;} open
+                tooltip {Select number of tones} xywh {340 96 70 20} down_box BORDER_BOX align 8
+                code0 {o->add(szOliviaTones);}
+                code1 {o->value(2);}
+              } {}
+              Fl_Group {} {
+                label {Receive synchronizer} open
+                xywh {79 135 379 133} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Counter cntOlivia_smargin {
+                  label {Tune margin (tone frequency spacing)}
+                  callback {progdefaults.oliviasmargin = (int)(o->value());
+resetOLIVIA();
+progdefaults.changed = true;}
+                  tooltip {Change ONLY to experiment} xywh {99 166 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Counter cntOlivia_sinteg {
+                  label {Integration period (FEC blocks)}
+                  callback {progdefaults.oliviasinteg = (int)(o->value());
+resetOLIVIA();
+progdefaults.changed = true;}
+                  tooltip {Change ONLY to experiment} xywh {99 198 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Check_Button btn_olivia_reset_fec {
+                  label {Reset FEC blocks when changing BW or Tones}
+                  callback {progdefaults.olivia_reset_fec = o->value();
+progdefaults.changed = true;}
+                  tooltip {Enable this for UTF-8 character transmission} xywh {100 230 349 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.olivia_reset_fec);}
+                }
+              }
+              Fl_Check_Button btnOlivia_8bit {
+                label {8-bit extended characters (UTF-8)}
+                callback {progdefaults.olivia8bit = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable this for UTF-8 character transmission} xywh {100 291 265 20} down_box DOWN_BOX
+              }
+            }
+          }
+          Fl_Group tabContestia {
+            label {Cont'}
+            xywh {0 50 540 320} hide
+          } {
+            Fl_Group {} {open
+              xywh {24 80 490 200} box ENGRAVED_FRAME
+            } {
+              Fl_Choice mnuContestia_Bandwidth {
+                label Bandwidth
+                callback {progdefaults.contestiabw = o->value();
+set_contestia_default_integ();
+resetOLIVIA();
+progdefaults.changed = true;} open
+                tooltip {Select bandwidth} xywh {79 100 85 20} down_box BORDER_BOX align 8
+                code0 {o->add(szContestiaBandwidth);}
+                code1 {o->value(2);}
+              } {}
+              Fl_Choice mnuContestia_Tones {
+                label Tones
+                callback {progdefaults.contestiatones = o->value();
+set_contestia_default_integ();
+resetCONTESTIA();
+progdefaults.changed = true;} open
+                tooltip {Select number of tones} xywh {340 100 70 20} down_box BORDER_BOX align 8
+                code0 {o->add(szContestiaTones);}
+                code1 {o->value(2);}
+              } {}
+              Fl_Group {} {
+                label {Receive synchronizer} open
+                xywh {79 139 379 100} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Counter cntContestia_smargin {
+                  label {Tune margin (tone frequency spacing)}
+                  callback {progdefaults.contestiasmargin = (int)(o->value());
+resetCONTESTIA();
+progdefaults.changed = true;}
+                  tooltip {Change ONLY to experiment} xywh {99 170 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Counter cntContestia_sinteg {
+                  label {Integration period (FEC blocks)}
+                  callback {progdefaults.contestiasinteg = (int)(o->value());
+resetCONTESTIA();
+progdefaults.changed = true;}
+                  tooltip {Change ONLY to experiment} xywh {99 200 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+              }
+              Fl_Check_Button btnContestia_8bit {
+                label {8-bit extended characters}
+                callback {progdefaults.contestia8bit = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable this for Latin-1 accented characters} xywh {79 249 200 20} down_box DOWN_BOX hide
+              }
+            }
+          }
+          Fl_Group tabPSK {
+            label PSK open
+            xywh {-4 50 540 322} hide
+          } {
+            Fl_Tabs tabsPSK {open
+              xywh {-4 50 540 322} selection_color 50
+            } {
+              Fl_Group {} {
+                label General open
+                xywh {0 75 540 295} align 5
+              } {
+                Fl_Group {} {
+                  label {AFC behavior} open
+                  xywh {21 93 490 98} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Counter cntSearchRange {
+                    label {Acquisition search range (Hz)}
+                    callback {progdefaults.SearchRange = (int)o->value();
+wf->redraw_marker();
+progdefaults.changed = true;}
+                    tooltip {Capture signals within this frequency range} xywh {31 125 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+                    code0 {o->value(progdefaults.SearchRange);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Counter cntACQsn {
+                    label {Acquisition S/N (dB)}
+                    callback {progdefaults.ACQsn = o->value();
+progdefaults.changed = true;}
+                    tooltip {Capture signals over this threshold} xywh {31 154 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
+                    code0 {o->value(progdefaults.ACQsn);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                }
+                Fl_Group {} {
+                  label {S/N and IMD behavior} open
+                  xywh {21 191 490 65} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Choice mnuPSKStatusTimeout {
+                    label after
+                    callback {progdefaults.StatusDim = o->value();
+progdefaults.changed = true;} open
+                    tooltip {Behavior of s/n imd} xywh {31 222 80 20} down_box BORDER_BOX align 8
+                    code0 {o->add(_("Clear")); o->add(_("Dim"));}
+                    code1 {o->value(progdefaults.StatusDim);}
+                  } {}
+                  Fl_Counter {} {
+                    label seconds
+                    callback {progdefaults.StatusTimeout = (int)(o->value());
+progdefaults.changed = true;}
+                    tooltip {Will occur after this time in seconds} xywh {172 222 75 20} type Simple align 8 minimum 0 maximum 30 step 1
+                    code0 {o->value(progdefaults.StatusTimeout);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                }
+                Fl_Group {} {
+                  label {Multi-Channel Signal Processing} open
+                  xywh {22 258 490 98} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button btnEnablePSKbrowsing {
+                    label {Multi-channel detector}
+                    callback {progdefaults.pskbrowser_on = o->value();
+progdefaults.changed = true;}
+                    xywh {32 315 180 20} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.pskbrowser_on);}
+                  }
+                  Fl_Box {} {
+                    label {Disable on very slow CPUs of if signal browser is not used}
+                    xywh {32 285 440 20} align 20
+                  }
+                }
+              }
+            }
+          }
+          Fl_Group tabRTTY {
+            label RTTY open
+            xywh {0 50 540 320} hide
+          } {
+            Fl_Tabs tabsRTTY {open
+              xywh {0 50 540 320} selection_color 50
+            } {
+              Fl_Group {} {
+                label Rx open
+                xywh {0 75 540 295} align 5
+              } {
+                Fl_Group {} {
+                  label Receive open
+                  xywh {2 82 535 70} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Choice mnuRTTYAFCSpeed {
+                    label {AFC speed}
+                    callback {progdefaults.rtty_afcspeed = o->value();
+progdefaults.changed = true;} open
+                    tooltip {AFC tracking speed} xywh {77 110 90 22} down_box BORDER_BOX align 1
+                    code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
+                    code1 {o->value(progdefaults.rtty_afcspeed);}
+                  } {}
+                  Fl_Check_Button chkUOSrx {
+                    label {RX - unshift on space}
+                    callback {progdefaults.UOSrx=o->value();
+progdefaults.changed = true;}
+                    tooltip {Revert to unshifted char's on a space} xywh {181 110 63 22} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.UOSrx);}
+                  }
+                  Fl_Value_Input rtty_rx_shape {
+                    label {Filter Shape Factor}
+                    callback {progdefaults.rtty_filter = o->value();
+progStatus.rtty_filter_changed = true;
+progdefaults.changed = true;}
+                    tooltip {rcos timing coefficient:
+1.0 ... 2.0
+W1HKJ best 1.275
+DO2SMF best 1.500} xywh {415 108 48 25} align 1 minimum 1 maximum 2 step 0.001 value 1.25 hide
+                    code0 {o->value(progdefaults.rtty_filter);}
+                  }
+                }
+                Fl_Group {} {
+                  label {RTTY Scope Display} open
+                  xywh {2 153 535 55} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button btnPreferXhairScope {
+                    label {Use cross hair scope}
+                    callback {progdefaults.PreferXhairScope=o->value();
+progdefaults.changed = true;}
+                    tooltip {Default to cross hair digiscope} xywh {90 175 165 22} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.PreferXhairScope);}
+                  }
+                  Fl_Check_Button chk_true_scope {
+                    label {XY - classic scope}
+                    callback {progdefaults.true_scope=o->value();
+progdefaults.changed = true;}
+                    tooltip {Enabled - use Mark/Space filter outputs
+Disabled - use pseudo signals} xywh {310 175 70 22} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.true_scope);}
+                  }
+                }
+                Fl_Group {} {
+                  label {Log RTTY frequency} open
+                  xywh {2 210 535 65} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button chk_useMARKfreq {
+                    label {Use MARK freq'}
+                    callback {progdefaults.useMARKfreq=o->value();
+progdefaults.changed = true;}
+                    tooltip {Enabled - log QSO using Mark frequency
+Disabled - log QSO using center frequency} xywh {90 236 146 22} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.useMARKfreq);}
+                  }
+                  Fl_Button btnRTTY_mark_color {
+                    label {track color}
+                    callback {if (fl_color_chooser("MARK freq track",
+  progdefaults.rttymarkRGBI.R, 
+  progdefaults.rttymarkRGBI.G, 
+  progdefaults.rttymarkRGBI.B) ) {
+o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
+o->redraw();
+wf->redraw_marker();
+progdefaults.changed = true;
+}}
+                    tooltip {Color of Mark Track} xywh {310 236 41 18} color 2 align 8
+                    code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
+                  }
+                }
+              }
+              Fl_Group {} {
+                label Tx open
+                xywh {0 75 540 295} align 5 hide
+              } {
+                Fl_Choice selShift {
+                  label {Carrier shift}
+                  callback {progdefaults.rtty_shift = o->value();
+if (progdefaults.rtty_shift == o->size() - 2) {
+    progdefaults.rtty_shift = -1;
+    selCustomShift->activate();
+}
+else
+    selCustomShift->deactivate();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select carrier shift} xywh {35 104 100 20} down_box BORDER_BOX align 8 when 1
+                  code0 {o->add(szShifts);o->value(progdefaults.rtty_shift);}
+                } {}
+                Fl_Counter selCustomShift {
+                  label {Custom shift}
+                  callback {progdefaults.rtty_custom_shift = o->value();
+resetRTTY();
+progdefaults.changed = true;}
+                  tooltip {Input carrier shift} xywh {35 137 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
+                  code0 {o->lstep(10.0);}
+                  code1 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Choice selBaud {
+                  label {Baud rate}
+                  callback {progdefaults.rtty_baud = o->value();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select carrier baudrate} xywh {35 170 100 20} down_box BORDER_BOX align 8 when 1
+                  code0 {o->add(szBauds);o->value(progdefaults.rtty_baud);}
+                } {}
+                Fl_Choice selBits {
+                  label {Bits per character}
+                  callback {progdefaults.rtty_bits = o->value();
+selParity->do_callback();} open
+                  tooltip {Select \# bits / char} xywh {35 203 100 20} down_box BORDER_BOX align 8 when 1
+                  code0 {o->add(szSelBits);o->value(progdefaults.rtty_bits);}
+                } {}
+                Fl_Choice selParity {
+                  label Parity
+                  callback {if (progdefaults.rtty_bits == 0)
+  o->value(progdefaults.rtty_parity = RTTY_PARITY_NONE);
+else
+  progdefaults.rtty_parity = o->value();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select parity} xywh {35 236 100 20} down_box BORDER_BOX align 8 when 1
+                  code0 {o->add(szParity);o->value(progdefaults.rtty_parity);}
+                } {}
+                Fl_Choice selStopBits {
+                  label {Stop bits}
+                  callback {progdefaults.rtty_stop = o->value();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select \# stop bits} xywh {35 270 100 20} down_box BORDER_BOX align 8 when 1
+                  code0 {o->add(szStopBits);o->value(progdefaults.rtty_stop);}
+                } {}
+                Fl_Check_Button btnAUTOCRLF {
+                  label AutoCRLF
+                  callback {progdefaults.rtty_autocrlf = o->value();
+progdefaults.changed = true;}
+                  tooltip {Add CRLF after page width characters} xywh {286 103 90 22} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.rtty_autocrlf);}
+                }
+                Fl_Counter cntrAUTOCRLF {
+                  label chars
+                  callback {progdefaults.rtty_autocount = (int)o->value();
+progdefaults.changed = true;}
+                  tooltip {Auto CRLF line length} xywh {397 104 65 20} type Simple align 8 minimum 68 maximum 80 step 1 value 72
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Check_Button btnCRCRLF {
+                  label {CR-CR-LF}
+                  callback {progdefaults.rtty_crcrlf = o->value();
+progdefaults.changed = true;}
+                  tooltip {Use "cr cr lf" for "cr lf"} xywh {286 136 90 22} down_box DOWN_BOX when 6
+                  code0 {o->value(progdefaults.rtty_crcrlf);}
+                }
+                Fl_Check_Button chkUOStx {
+                  label {TX - unshift on space}
+                  callback {progdefaults.UOStx=o->value();
+progdefaults.changed = true;}
+                  tooltip {Revert to Unsifted char's on a space} xywh {286 169 63 22} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UOStx);}
+                }
+                Fl_Check_Button chkPseudoFSK {
+                  label {Pseudo-FSK - right channel}
+                  callback {progdefaults.PseudoFSK = o->value();
+chkPseudoFSK2->value(o->value());
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  if (progdefaults.mono_audio) {
+    progdefaults.mono_audio = false;
+    chkForceMono->value(0);
+    resetSoundCard();
+  }
+}}
+                  tooltip {Create keyed square wave on right audio channel} xywh {286 202 212 22} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PseudoFSK);}
+                }
+              }
+            }
+          }
+          Fl_Group tabTHOR {
+            label Thor
+            xywh {0 50 540 320} hide
+          } {
+            Fl_Group {} {open
+              xywh {26 78 490 270} box ENGRAVED_FRAME
+            } {
+              Fl_Input txtTHORSecondary {
+                label {Secondary Text}
+                callback {progdefaults.THORsecText = o->value();
+progdefaults.changed = true;}
+                tooltip {Text to send during keyboard idle times} xywh {55 105 430 40} type Multiline align 5 when 1
+                code0 {txtTHORSecondary->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+              Fl_Check_Button valTHOR_FILTER {
+                label Filtering
+                callback {progdefaults.THOR_FILTER = o->value();
+resetTHOR();
+progdefaults.changed = true;}
+                tooltip {Enable DSP prior to decoder} xywh {55 159 80 20} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.THOR_FILTER);}
+              }
+              Fl_Counter valTHOR_BW {
+                label {Filter bandwidth factor}
+                callback {progdefaults.THOR_BW = o->value();
+resetTHOR();
+progdefaults.changed = true;}
+                tooltip {Filter bandwidth relative to signal width} xywh {200 159 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
+                code0 {o->value(progdefaults.THOR_BW);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Counter2
+              }
+              Fl_Value_Slider valThorCWI {
+                label {CWI threshold}
+                callback {progdefaults.ThorCWI = o->value();
+progdefaults.changed = true;}
+                tooltip {CWI detection and suppression} xywh {55 212 260 20} type Horizontal align 1 textsize 14
+                code0 {o->value(progdefaults.ThorCWI);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Slider2
+              }
+              Fl_Check_Button valTHOR_PREAMBLE {
+                label {Preamble Detection}
+                callback {progdefaults.THOR_PREAMBLE = o->value();
+progdefaults.changed = true;}
+                tooltip {Detect the THOR preamble
+Clear the Rx pipeline} xywh {55 254 200 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_PREAMBLE);}
+              }
+              Fl_Check_Button valTHOR_SOFTSYMBOLS {
+                label {Soft-symbol decoding}
+                callback {progdefaults.THOR_SOFTSYMBOLS = o->value();
+progdefaults.changed = true;}
+                tooltip {Use soft-decision decoding for symbol detection
+Assists soft-bit decoding} xywh {55 284 190 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_SOFTSYMBOLS);}
+              }
+              Fl_Check_Button valTHOR_SOFTBITS {
+                label {Soft-bit decoding}
+                callback {progdefaults.THOR_SOFTBITS = o->value();
+progdefaults.changed = true;}
+                tooltip {Use soft-bit viterbi decoding for better Forward Error Correction
+Works best with soft-symbol decoding enabled} xywh {55 314 170 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.THOR_SOFTBITS);}
+              }
+              Fl_Counter valTHOR_PATHS {
+                label {Paths (hidden)}
+                callback {progdefaults.THOR_PATHS = (int)o->value();
+progdefaults.changed = true;}
+                xywh {402 303 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
+                code0 {o->value(progdefaults.THOR_PATHS);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                code2 {o->hide();}
+                class Fl_Counter2
+              }
+            }
+          }
           Fl_Group tabNavtex {
             label {Nvtx/Pkt}
             xywh {0 50 540 320} hide
@@ -2322,446 +2744,6 @@ progdefaults.changed = true;}
 progdefaults.changed = true;}
                 tooltip {add additional gain to audio input for low-output interfaces} xywh {289 156 164 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PKT_AudioBoost);}
-              }
-            }
-          }
-          Fl_Group tabOlivia {
-            label Olivia
-            xywh {0 50 540 320} hide
-          } {
-            Fl_Group {} {open
-              xywh {24 76 490 280} box ENGRAVED_FRAME
-            } {
-              Fl_Choice mnuOlivia_Bandwidth {
-                label Bandwidth
-                callback {progdefaults.oliviabw = o->value();
-set_olivia_default_integ();
-resetOLIVIA();
-progdefaults.changed = true;} open
-                tooltip {Select bandwidth} xywh {79 96 85 20} down_box BORDER_BOX align 8
-                code0 {o->add(szOliviaBandwidth);}
-                code1 {o->value(2);}
-              } {}
-              Fl_Choice mnuOlivia_Tones {
-                label Tones
-                callback {progdefaults.oliviatones = o->value();
-set_olivia_default_integ();
-resetOLIVIA();
-progdefaults.changed = true;} open
-                tooltip {Select number of tones} xywh {340 96 70 20} down_box BORDER_BOX align 8
-                code0 {o->add(szOliviaTones);}
-                code1 {o->value(2);}
-              } {}
-              Fl_Group {} {
-                label {Receive synchronizer} open
-                xywh {79 135 379 133} box ENGRAVED_FRAME align 21
-              } {
-                Fl_Counter cntOlivia_smargin {
-                  label {Tune margin (tone frequency spacing)}
-                  callback {progdefaults.oliviasmargin = (int)(o->value());
-resetOLIVIA();
-progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 166 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
-                  code0 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Counter2
-                }
-                Fl_Counter cntOlivia_sinteg {
-                  label {Integration period (FEC blocks)}
-                  callback {progdefaults.oliviasinteg = (int)(o->value());
-resetOLIVIA();
-progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {99 198 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
-                  code0 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Counter2
-                }
-                Fl_Check_Button btn_olivia_reset_fec {
-                  label {Reset FEC blocks when changing BW or Tones}
-                  callback {progdefaults.olivia_reset_fec = o->value();
-progdefaults.changed = true;}
-                  tooltip {Enable this for UTF-8 character transmission} xywh {100 230 349 20} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.olivia_reset_fec);}
-                }
-              }
-              Fl_Check_Button btnOlivia_8bit {
-                label {8-bit extended characters (UTF-8)}
-                callback {progdefaults.olivia8bit = o->value();
-progdefaults.changed = true;}
-                tooltip {Enable this for UTF-8 character transmission} xywh {100 291 265 20} down_box DOWN_BOX
-              }
-            }
-          }
-          Fl_Group tabPSK {
-            label PSK
-            xywh {-4 50 544 322} hide
-          } {
-            Fl_Tabs tabsPSK {open
-              xywh {-4 50 544 322} selection_color 50
-            } {
-              Fl_Group {} {
-                label General open
-                xywh {0 75 540 295} align 5
-              } {
-                Fl_Group {} {
-                  label {AFC behavior} open
-                  xywh {21 93 490 98} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Counter cntSearchRange {
-                    label {Acquisition search range (Hz)}
-                    callback {progdefaults.SearchRange = (int)o->value();
-wf->redraw_marker();
-progdefaults.changed = true;}
-                    tooltip {Capture signals within this frequency range} xywh {31 125 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
-                    code0 {o->value(progdefaults.SearchRange);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
-                  Fl_Counter cntACQsn {
-                    label {Acquisition S/N (dB)}
-                    callback {progdefaults.ACQsn = o->value();
-progdefaults.changed = true;}
-                    tooltip {Capture signals over this threshold} xywh {31 154 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
-                    code0 {o->value(progdefaults.ACQsn);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
-                }
-                Fl_Group {} {
-                  label {S/N and IMD behavior} open
-                  xywh {21 191 490 65} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Choice mnuPSKStatusTimeout {
-                    label after
-                    callback {progdefaults.StatusDim = o->value();
-progdefaults.changed = true;} open
-                    tooltip {Behavior of s/n imd} xywh {31 222 80 20} down_box BORDER_BOX align 8
-                    code0 {o->add(_("Clear")); o->add(_("Dim"));}
-                    code1 {o->value(progdefaults.StatusDim);}
-                  } {}
-                  Fl_Counter {} {
-                    label seconds
-                    callback {progdefaults.StatusTimeout = (int)(o->value());
-progdefaults.changed = true;}
-                    tooltip {Will occur after this time in seconds} xywh {172 222 75 20} type Simple align 8 minimum 0 maximum 30 step 1
-                    code0 {o->value(progdefaults.StatusTimeout);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
-                }
-                Fl_Group {} {
-                  label {Multi-Channel Signal Processing} open
-                  xywh {22 258 490 98} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Check_Button btnEnablePSKbrowsing {
-                    label {Multi-channel detector}
-                    callback {progdefaults.pskbrowser_on = o->value();
-progdefaults.changed = true;}
-                    xywh {32 315 180 20} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.pskbrowser_on);}
-                  }
-                  Fl_Box {} {
-                    label {Disable on very slow CPUs of if signal browser is not used}
-                    xywh {32 285 440 20} align 20
-                  }
-                }
-              }
-            }
-          }
-          Fl_Group tabRTTY {
-            label RTTY open
-            xywh {0 50 540 320} hide
-          } {
-            Fl_Group {} {
-              label {Transmit /Receive} open
-              xywh {2 57 267 182} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Choice selShift {
-                label {Carrier shift}
-                callback {progdefaults.rtty_shift = o->value();
-if (progdefaults.rtty_shift == o->size() - 2) {
-    progdefaults.rtty_shift = -1;
-    selCustomShift->activate();
-}
-else
-    selCustomShift->deactivate();
-resetRTTY();
-progdefaults.changed = true;} open
-                tooltip {Select carrier shift} xywh {30 78 100 20} down_box BORDER_BOX align 8 when 1
-                code0 {o->add(szShifts);}
-              } {}
-              Fl_Counter selCustomShift {
-                label {Custom shift}
-                callback {progdefaults.rtty_custom_shift = o->value();
-resetRTTY();
-progdefaults.changed = true;}
-                tooltip {Input carrier shift} xywh {30 104 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
-                code0 {o->lstep(10.0);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Choice selBaud {
-                label {Baud rate}
-                callback {progdefaults.rtty_baud = o->value();
-resetRTTY();
-progdefaults.changed = true;} open
-                tooltip {Select carrier baudrate} xywh {30 130 100 20} down_box BORDER_BOX align 8 when 1
-                code0 {o->add(szBauds);}
-              } {}
-              Fl_Choice selBits {
-                label {Bits per character}
-                callback {progdefaults.rtty_bits = o->value();
-selParity->do_callback();} open
-                tooltip {Select \# bits / char} xywh {30 156 100 20} down_box BORDER_BOX align 8 when 1
-                code0 {o->add(szSelBits);}
-              } {}
-              Fl_Choice selParity {
-                label Parity
-                callback {if (progdefaults.rtty_bits == 0)
-  o->value(progdefaults.rtty_parity = RTTY_PARITY_NONE);
-else
-  progdefaults.rtty_parity = o->value();
-resetRTTY();
-progdefaults.changed = true;} open
-                tooltip {Select parity} xywh {30 182 100 20} down_box BORDER_BOX align 8 when 1
-                code0 {o->add(szParity);}
-              } {}
-              Fl_Choice selStopBits {
-                label {Stop bits}
-                callback {progdefaults.rtty_stop = o->value();
-resetRTTY();
-progdefaults.changed = true;} open
-                tooltip {Select \# stop bits} xywh {30 208 100 20} down_box BORDER_BOX align 8 when 1
-                code0 {o->add(szStopBits);}
-              } {}
-            }
-            Fl_Group {} {
-              label Transmit open
-              xywh {2 242 267 124} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Check_Button chkPseudoFSK {
-                label {Pseudo-FSK - right channel}
-                callback {progdefaults.PseudoFSK = o->value();
-chkPseudoFSK2->value(o->value());
-progdefaults.changed = true;
-if (o->value()) {
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
-  progdefaults.PTTrightchannel = false;
-  btnPTTrightchannel->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
-}}
-                tooltip {Create keyed square wave on right audio channel} xywh {32 264 212 22} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PseudoFSK);}
-              }
-              Fl_Check_Button btnAUTOCRLF {
-                label AutoCRLF
-                callback {progdefaults.rtty_autocrlf = o->value();
-progdefaults.changed = true;}
-                tooltip {Add CRLF after page width characters} xywh {32 288 90 22} down_box DOWN_BOX
-                code0 {o->value(progdefaults.rtty_autocrlf);}
-              }
-              Fl_Counter cntrAUTOCRLF {
-                label chars
-                callback {progdefaults.rtty_autocount = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {Auto CRLF line length} xywh {143 289 65 20} type Simple align 8 minimum 68 maximum 80 step 1 value 72
-                code0 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Check_Button btnCRCRLF {
-                label {CR-CR-LF}
-                callback {progdefaults.rtty_crcrlf = o->value();
-progdefaults.changed = true;}
-                tooltip {Use "cr cr lf" for "cr lf"} xywh {32 312 90 22} down_box DOWN_BOX when 6
-                code0 {o->value(progdefaults.rtty_crcrlf);}
-              }
-              Fl_Check_Button chkUOStx {
-                label {TX - unshift on space}
-                callback {progdefaults.UOStx=o->value();
-progdefaults.changed = true;}
-                tooltip {Revert to Unsifted char's on a space} xywh {32 336 63 22} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UOStx);}
-              }
-            }
-            Fl_Group {} {
-              label Receive open
-              xywh {271 57 267 250} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Value_Slider sldrRTTYbandwidth {
-                label {Receive filter bandwidth}
-                callback {progdefaults.RTTY_BW = o->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {280 84 250 23} type Horizontal align 9 minimum 5 maximum 600 step 1 value 91 textsize 14
-                code0 {o->value(progdefaults.RTTY_BW);}
-                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                class Fl_Value_Slider2
-              }
-              Fl_Choice mnu_RTTY_filter_quality {
-                label {Filter Quality}
-                callback {progdefaults.rtty_filter_quality = o->value();
-progdefaults.changed = true;
-progStatus.rtty_filter_changed = true;} open
-                tooltip {Low -> High
-DSP filter length
-Low reduces load on CPU
-High gives best performance} xywh {280 114 75 22} down_box BORDER_BOX align 8
-                code0 {o->add("Low"); o->add("Normal"); o->add("High");}
-                code1 {o->value(progdefaults.rtty_filter_quality);}
-              } {}
-              Fl_Button btn_optimum_rtty_bw {
-                label Optimum
-                callback {static const double BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
-progdefaults.RTTY_BW = 2 * BAUD[progdefaults.rtty_baud];
-sldrRTTYbandwidth->value(progdefaults.RTTY_BW);
-progdefaults.changed = true;}
-                tooltip {Reset Filter to Optimum bandwidth} xywh {455 114 75 23}
-              }
-              Fl_Choice mnuRTTYAFCSpeed {
-                label {AFC speed}
-                callback {progdefaults.rtty_afcspeed = o->value();
-progdefaults.changed = true;} open
-                tooltip {AFC tracking speed} xywh {280 144 75 22} down_box BORDER_BOX align 8
-                code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
-                code1 {o->value(progdefaults.rtty_afcspeed);}
-              } {}
-              Fl_Choice mnu_kahn_demod {
-                label Demodulator
-                callback {progdefaults.kahn_demod = o->value();
-progdefaults.changed = true;} open
-                tooltip {Select demodulator type
-Kahn power detector
-Automatic Threshold Correcting} xywh {280 174 75 22} down_box BORDER_BOX align 8
-                code0 {o->add("ATC"); o->add("Kahn");}
-                code1 {o->value(progdefaults.kahn_demod);}
-              } {}
-              Fl_Check_Button chkUOSrx {
-                label {RX - unshift on space}
-                callback {progdefaults.UOSrx=o->value();
-progdefaults.changed = true;}
-                tooltip {Revert to unshifted char's on a space} xywh {288 204 63 22} down_box DOWN_BOX
-                code0 {o->value(progdefaults.UOSrx);}
-              }
-              Fl_Check_Button btnPreferXhairScope {
-                label {Use cross hair scope}
-                callback {progdefaults.PreferXhairScope=o->value();
-progdefaults.changed = true;}
-                tooltip {Default to cross hair digiscope} xywh {288 234 165 22} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PreferXhairScope);}
-              }
-              Fl_Check_Button chk_true_scope {
-                label {XY - classic scope}
-                callback {progdefaults.true_scope=o->value();
-progdefaults.changed = true;}
-                tooltip {Enabled - use Mark/Space filter outputs
-Disabled - use pseudo signals} xywh {288 264 70 22} down_box DOWN_BOX
-                code0 {o->value(progdefaults.true_scope);}
-              }
-            }
-            Fl_Group {} {
-              label {Log RTTY frequency} open
-              xywh {271 310 267 55} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Check_Button chk_useMARKfreq {
-                label {Use MARK freq'}
-                callback {progdefaults.useMARKfreq=o->value();
-progdefaults.changed = true;}
-                tooltip {Enabled - log QSO using Mark frequency
-Disabled - log QSO using center frequency} xywh {288 333 74 22} down_box DOWN_BOX value 1
-                code0 {o->value(progdefaults.useMARKfreq);}
-              }
-              Fl_Button btnRTTY_mark_color {
-                label {track clr}
-                callback {if (fl_color_chooser("MARK freq track",
-  progdefaults.rttymarkRGBI.R, 
-  progdefaults.rttymarkRGBI.G, 
-  progdefaults.rttymarkRGBI.B) ) {
-o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
-o->redraw();
-wf->redraw_marker();
-progdefaults.changed = true;
-}}
-                tooltip {Color of Mark Track} xywh {437 336 21 18} color 2 align 8
-                code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
-              }
-            }
-          }
-          Fl_Group tabTHOR {
-            label Thor
-            xywh {0 50 540 320} hide
-          } {
-            Fl_Group {} {open
-              xywh {26 78 490 270} box ENGRAVED_FRAME
-            } {
-              Fl_Input txtTHORSecondary {
-                label {Secondary Text}
-                callback {progdefaults.THORsecText = o->value();
-progdefaults.changed = true;}
-                tooltip {Text to send during keyboard idle times} xywh {55 105 430 40} type Multiline align 5 when 1
-                code0 {txtTHORSecondary->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Input2
-              }
-              Fl_Check_Button valTHOR_FILTER {
-                label Filtering
-                callback {progdefaults.THOR_FILTER = o->value();
-resetTHOR();
-progdefaults.changed = true;}
-                tooltip {Enable DSP prior to decoder} xywh {55 159 80 20} down_box DOWN_BOX value 1
-                code0 {o->value(progdefaults.THOR_FILTER);}
-              }
-              Fl_Counter valTHOR_BW {
-                label {Filter bandwidth factor}
-                callback {progdefaults.THOR_BW = o->value();
-resetTHOR();
-progdefaults.changed = true;}
-                tooltip {Filter bandwidth relative to signal width} xywh {200 159 63 20} type Simple align 8 minimum 1 maximum 2 value 1.5
-                code0 {o->value(progdefaults.THOR_BW);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Value_Slider valThorCWI {
-                label {CWI threshold}
-                callback {progdefaults.ThorCWI = o->value();
-progdefaults.changed = true;}
-                tooltip {CWI detection and suppression} xywh {55 212 260 20} type Horizontal align 1 textsize 14
-                code0 {o->value(progdefaults.ThorCWI);}
-                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                class Fl_Value_Slider2
-              }
-              Fl_Check_Button valTHOR_PREAMBLE {
-                label {Preamble Detection}
-                callback {progdefaults.THOR_PREAMBLE = o->value();
-progdefaults.changed = true;}
-                tooltip {Detect the THOR preamble
-Clear the Rx pipeline} xywh {55 254 200 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.THOR_PREAMBLE);}
-              }
-              Fl_Check_Button valTHOR_SOFTSYMBOLS {
-                label {Soft-symbol decoding}
-                callback {progdefaults.THOR_SOFTSYMBOLS = o->value();
-progdefaults.changed = true;}
-                tooltip {Use soft-decision decoding for symbol detection
-Assists soft-bit decoding} xywh {55 284 190 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.THOR_SOFTSYMBOLS);}
-              }
-              Fl_Check_Button valTHOR_SOFTBITS {
-                label {Soft-bit decoding}
-                callback {progdefaults.THOR_SOFTBITS = o->value();
-progdefaults.changed = true;}
-                tooltip {Use soft-bit viterbi decoding for better Forward Error Correction
-Works best with soft-symbol decoding enabled} xywh {55 314 170 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.THOR_SOFTBITS);}
-              }
-              Fl_Counter valTHOR_PATHS {
-                label {Paths (hidden)}
-                callback {progdefaults.THOR_PATHS = (int)o->value();
-progdefaults.changed = true;}
-                xywh {402 303 75 21} type Simple align 1 minimum 4 maximum 8 step 1 value 5
-                code0 {o->value(progdefaults.THOR_PATHS);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                code2 {o->hide();}
-                class Fl_Counter2
               }
             }
           }
@@ -4090,7 +4072,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 540 345}
+        xywh {0 25 540 345} hide
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 540 345} selection_color 50
@@ -4277,7 +4259,7 @@ progdefaults.changed = true;}
               Fl_Check_Button btn_report_when_visible {
                 label {Enable spotting only when signal browser(s) are visible}
                 callback {progdefaults.report_when_visible = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {Enable to reduce CPU load} xywh {40 195 416 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.report_when_visible);}
               }
