@@ -36,6 +36,8 @@
 #include "Fl_Text_Display_mod.H"
 #include <FL/Fl_Window.H>
 
+#include "missing_strings.h"
+
 #undef min
 #undef max
 

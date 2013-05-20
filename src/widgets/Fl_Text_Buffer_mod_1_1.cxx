@@ -31,6 +31,7 @@
 #include <FL/Fl.H>
 #include "Fl_Text_Buffer_mod.H"
 
+#include "missing_strings.h"
 
 #define PREFERRED_GAP_SIZE 1024
 /* Initial size for the buffer gap (empty space

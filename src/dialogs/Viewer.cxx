@@ -72,11 +72,11 @@ void initViewer()
 		mainViewer->usb = usb;
 		mainViewer->rfc = rfc;
 		mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
-		mainViewer->HighLight_1(progdefaults.bwsrHiLight1);
-		mainViewer->HighLight_2(progdefaults.bwsrHiLight2);
-		mainViewer->SelectColor(progdefaults.bwsrSelect);
-		mainViewer->Background1(progdefaults.bwsrBackgnd1);
-		mainViewer->Background2(progdefaults.bwsrBackgnd2);
+		mainViewer->HighLight_1((Fl_Color)progdefaults.bwsrHiLight1);
+		mainViewer->HighLight_2((Fl_Color)progdefaults.bwsrHiLight2);
+		mainViewer->SelectColor((Fl_Color)progdefaults.bwsrSelect);
+		mainViewer->Background1((Fl_Color)progdefaults.bwsrBackgnd1);
+		mainViewer->Background2((Fl_Color)progdefaults.bwsrBackgnd2);
 		mainViewer->makecolors();
 		mainViewer->clear();
 		if (active_modem->get_mode() == MODE_RTTY) {
@@ -91,11 +91,11 @@ void initViewer()
 		brwsViewer->usb = usb;
 		brwsViewer->rfc = rfc;
 		brwsViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
-		brwsViewer->HighLight_1(progdefaults.bwsrHiLight1);
-		brwsViewer->HighLight_2(progdefaults.bwsrHiLight2);
-		brwsViewer->SelectColor(progdefaults.bwsrSelect);
-		brwsViewer->Background1(progdefaults.bwsrBackgnd1);
-		brwsViewer->Background2(progdefaults.bwsrBackgnd2);
+		brwsViewer->HighLight_1((Fl_Color)progdefaults.bwsrHiLight1);
+		brwsViewer->HighLight_2((Fl_Color)progdefaults.bwsrHiLight2);
+		brwsViewer->SelectColor((Fl_Color)progdefaults.bwsrSelect);
+		brwsViewer->Background1((Fl_Color)progdefaults.bwsrBackgnd1);
+		brwsViewer->Background2((Fl_Color)progdefaults.bwsrBackgnd2);
 		brwsViewer->makecolors();
 		brwsViewer->clear();
 		dlgViewer->size(dlgViewer->w(), dlgViewer->h() - brwsViewer->h() +
@@ -158,11 +158,11 @@ void viewer_redraw()
 	if (mainViewer) {
 		mainViewer->usb = usb;
 		mainViewer->rfc = rfc;
-		mainViewer->HighLight_1(progdefaults.bwsrHiLight1);
-		mainViewer->HighLight_2(progdefaults.bwsrHiLight2);
-		mainViewer->SelectColor(progdefaults.bwsrSelect);
-		mainViewer->Background1(progdefaults.bwsrBackgnd1);
-		mainViewer->Background2(progdefaults.bwsrBackgnd2);
+		mainViewer->HighLight_1((Fl_Color)progdefaults.bwsrHiLight1);
+		mainViewer->HighLight_2((Fl_Color)progdefaults.bwsrHiLight2);
+		mainViewer->SelectColor((Fl_Color)progdefaults.bwsrSelect);
+		mainViewer->Background1((Fl_Color)progdefaults.bwsrBackgnd1);
+		mainViewer->Background2((Fl_Color)progdefaults.bwsrBackgnd2);
 		mainViewer->makecolors();
 		mainViewer->resize(mainViewer->x(), mainViewer->y(), mainViewer->w(), mainViewer->h());
 	}
@@ -171,11 +171,11 @@ void viewer_redraw()
 		brwsViewer->rfc = rfc;
 		brwsViewer->resize(
 			brwsViewer->x(), brwsViewer->y(), brwsViewer->w(), brwsViewer->h());
-		brwsViewer->HighLight_1(progdefaults.bwsrHiLight1);
-		brwsViewer->HighLight_2(progdefaults.bwsrHiLight2);
-		brwsViewer->SelectColor(progdefaults.bwsrSelect);
-		brwsViewer->Background1(progdefaults.bwsrBackgnd1);
-		brwsViewer->Background2(progdefaults.bwsrBackgnd2);
+		brwsViewer->HighLight_1((Fl_Color)progdefaults.bwsrHiLight1);
+		brwsViewer->HighLight_2((Fl_Color)progdefaults.bwsrHiLight2);
+		brwsViewer->SelectColor((Fl_Color)progdefaults.bwsrSelect);
+		brwsViewer->Background1((Fl_Color)progdefaults.bwsrBackgnd1);
+		brwsViewer->Background2((Fl_Color)progdefaults.bwsrBackgnd2);
 		brwsViewer->makecolors();
 		dlgViewer->redraw();
 	}

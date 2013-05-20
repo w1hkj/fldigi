@@ -521,6 +521,8 @@ fldigi_SOURCES += \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	widgets/psk_browser.cxx \
+	widgets/missing_strings.c \
+	widgets/missing_strings.h \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx \
 	logbook/xmlrpc_log.cxx \
