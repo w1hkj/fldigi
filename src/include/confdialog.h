@@ -3,6 +3,7 @@
 #ifndef confdialog_h
 #define confdialog_h
 #include <FL/Fl.H>
+#include "font_browser.h"
 #include "globals.h"
 #include "modem.h"
 #include "configuration.h"
@@ -12,6 +13,9 @@
 #include "flmisc.h"
 extern Fl_Double_Window *dlgConfig; 
 extern Mode_Browser* mode_browser; 
+void cbWaterfallFontBrowser(Fl_Widget*, void*);
+void cbViewerFontBrowser(Fl_Widget*, void*);
+void cbFreqControlFontBrowser(Fl_Widget*, void*);
 void set_qrzxml_buttons(Fl_Button* b);
 void set_qrzweb_buttons(Fl_Button* b);
 #include <FL/Fl_Double_Window.H>
@@ -132,6 +136,74 @@ extern Fl_Check_Button *btnWF_UIqsy;
 extern Fl_Check_Button *btnWF_UIxmtlock;
 extern Fl_Button *btn_wf_enable_all;
 extern Fl_Button *btn_wf_disable_all;
+extern Fl_Group *tabColorsFonts;
+extern Fl_Tabs *tabsColors;
+#include <FL/Fl_Menu_Button.H>
+#include "fl_digi.h"
+extern Fl_Menu_Button *CHARSETstatus;
+extern Fl_Input *RxText;
+extern Fl_Button *btnRxColor;
+extern Fl_Button *btnTxColor;
+extern Fl_Input *TxText;
+extern Fl_Button *btnRxFont;
+extern Fl_Button *btnTxFont;
+extern Fl_Button *btnXMIT;
+extern Fl_Button *btnCTRL;
+extern Fl_Button *btnSKIP;
+extern Fl_Button *btnALTR;
+extern Fl_Button *btnSEL;
+extern Fl_Button *btnNoTextColor;
+extern Fl_Button *btnTextDefaults;
+extern Fl_Box *FDdisplay;
+extern Fl_Button *btn_freq_control_font;
+extern Fl_Button *btnBackgroundColor;
+extern Fl_Button *btnForegroundColor;
+extern Fl_Button *btnFD_SystemColor;
+#include <FL/Fl_Output.H>
+extern Fl_Output *LOGGINGdisplay;
+extern Fl_Button *btnLOGGING_color;
+extern Fl_Button *btn_LOGGING_font;
+extern Fl_Button *btnLOGGINGdefault_colors_font;
+extern Fl_Output *LOGBOOKdisplay;
+extern Fl_Button *btnLOGBOOK_color;
+extern Fl_Button *btn_LOGBOOK_font;
+extern Fl_Button *btnLOGBOOKdefault_colors_font;
+extern Fl_Check_Button *btnUseGroupColors;
+extern Fl_Button *btnGroup1;
+extern Fl_Button *btnGroup2;
+extern Fl_Button *btnGroup3;
+extern Fl_Button *btnFkeyTextColor;
+extern Fl_Button *btnFkeyDEfaults;
+extern Fl_Button *btnTabColor;
+extern Fl_Button *btnTabDefaultColor;
+extern Fl_Button *btnSpotColor;
+extern Fl_Button *btnRxIDColor;
+extern Fl_Button *btnTxIDColor;
+extern Fl_Button *btnTuneColor;
+extern Fl_Button *btnLkColor;
+extern Fl_Button *btnRevColor;
+extern Fl_Button *btnXmtColor;
+extern Fl_Button *btnAfcColor;
+extern Fl_Button *btnSql1Color;
+extern Fl_Button *btnSql2Color;
+extern Fl_Box *spotcolor;
+extern Fl_Box *rxidcolor;
+extern Fl_Box *txidcolor;
+extern Fl_Box *tunecolor;
+extern Fl_Box *lockcolor;
+extern Fl_Box *revcolor;
+extern Fl_Box *xmtcolor;
+extern Fl_Box *afccolor;
+extern Fl_Box *sql1color;
+extern Fl_Box *sql2color;
+extern Fl_Button *btnLowSignal;
+extern Fl_Box *lowcolor;
+extern Fl_Button *btnHighSignal;
+extern Fl_Box *highcolor;
+extern Fl_Button *btnNormalSignal;
+extern Fl_Box *normalcolor;
+extern Fl_Button *btnOverSignal;
+extern Fl_Box *overcolor;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
@@ -276,7 +348,6 @@ extern Fl_Check_Button *valTHOR_SOFTBITS;
 extern Fl_Counter2 *valTHOR_PATHS;
 extern Fl_Group *tabNavtex;
 extern Fl_Check_Button *btnNvtxAdifLog;
-#include <FL/Fl_Output.H>
 extern Fl_Output *txtNvtxCatalog;
 extern Fl_Button *btnSelectNvtxCatalog;
 extern Fl_Choice *selPacket_Baud;

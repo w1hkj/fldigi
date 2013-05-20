@@ -81,7 +81,6 @@
 #include "rigio.h"
 #include "globals.h"
 #include "confdialog.h"
-#include "colorsfonts.h"
 #include "configuration.h"
 #include "macros.h"
 #include "status.h"
@@ -452,7 +451,11 @@ int main(int argc, char ** argv)
 
 	FSEL::create();
 
-	make_colorsfonts();
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
+		CHARSETstatus->hide();
+#else
+		CHARSETstatus->show();
+#endif
 	populate_charset_menu();
 	set_default_charset();
 	setTabColors();
