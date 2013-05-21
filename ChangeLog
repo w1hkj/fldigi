@@ -1,7 +1,70 @@
-2013-02-02  David Freese  <w1hkj@w1hkj.com>
+2013-05-21  David Freese  <w1hkj@w1hkj.com>
 
-	9ae612a: RTTY stop bits
-	d8859e9: RTTY FSK modem
+	8b84443: METAR format
+	2140c90: RSID logic
+	ffcdeb1: PSKMAIL
+	b03bde8: RsID Timeout
+	9e259e6: Colors/Fonts Dialog
+	5b184a0: Developer List
+	4adb556: About update
+	c836420: ARQ server
+	4729da1: Wavefile generate
+	ac83021: MT63 mode selection
+
+2013-05-20  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	c648263: xmlrpc-c removal
+
+2013-05-20  David Freese  <w1hkj@w1hkj.com>
+
+	6131426: Signal Browser Colors
+	97c2c19: QRZ query
+	7bad521: Rigsupport
+	0ac9199: eQSL url
+	cc11225: PSKMAIL
+	799444f: Contestia/Olivia
+	848481b: Tabs Colors
+
+2013-05-20  Arvo Järve  <arvo@softshark.ee>
+
+	fe31558: Double Click bug fix
+
+2013-05-20  David Freese  <w1hkj@w1hkj.com>
+
+	9dd563a: RTTY update
+	fe1e10a: Fltk backward compatibility
+	b168ea7: Compiler warning fix
+
+2013-05-20  Kamal Mostafa  <kamal@whence.com>
+
+	3fcac6e: Fix glob_t usage
+
+2013-05-20  David Freese  <w1hkj@w1hkj.com>
+
+	417ce51: RTTY filters
+	d6fc193: RTTY tx symbol shaper
+	c5c4b11: Spotting
+	8fb7b80: ADIF case
+	b7dcd87: QSO NBR/NXT macro tag
+	2c5f422: TX lower case
+	3d33980: WX parser
+	f636509: Signal Browser
+	af77a52: Compiler Warnings
+	ab422bb: Free BSD mods
+	3ed4099: Serial by-id
+	860444b: Misc NBEMS mods
+
+2013-05-19  Arvo Järve  <arvo@softshark.ee>
+
+	8c55811: CRC16 and ANSII char set
+
+2013-05-19  David Freese  <w1hkj@w1hkj.com>
+
+	75a8e09: High Speed Playback
+	9d791d2: flstring
+	793c1cb: RTTY config tab
+	63b4eb3: RTTY stop bits
+	4dc9bc9: RTTY FSK modem
 	1444a63: PSK viewer
 	65c53fb: Contest fields
 	dc65247: RigCAT INIT/CLOSE
