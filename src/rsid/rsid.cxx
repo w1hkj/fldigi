@@ -51,18 +51,6 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 #include "rsid_defs.cxx"
 
-void reset_rsid(void *who) {
-	cRsId *me = (cRsId *)who;
-	LOG_INFO("%s", "RxID detector reset");
-	me->state = cRsId::INITIAL;
-	me->reset();
-}
-
-void reset_rsid_detector(void *me) {
-	Fl::remove_timeout(reset_rsid);
-	Fl::add_timeout(3*15*RSID_SYMLEN, reset_rsid, me);
-}
-
 const int cRsId::Squares[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
@@ -139,9 +127,9 @@ cRsId::cRsId()
 	outbuf = 0;
 	symlen = 0;
 
-	hamming_resolution = progdefaults.rsid_resolution;
+	hamming_resolution = progdefaults.rsid_resolution + 1;
 
-	state = INITIAL;
+	rsid_secondary_time_out = 0;
 }
 
 cRsId::~cRsId()
@@ -171,6 +159,7 @@ void cRsId::reset()
 		LOG_ERROR("src_reset error %d: %s", error, src_strerror(error));
 	src_data.src_ratio = 0.0;
 	inptr = aInputSamples + RSID_FFT_SAMPLES;
+	hamming_resolution = progdefaults.rsid_resolution + 1;
 }
 
 void cRsId::Encode(int code, unsigned char *rsid)
@@ -222,6 +211,14 @@ void cRsId::receive(const float* buf, size_t len)
 	double src_ratio = RSID_SAMPLE_RATE / active_modem->get_samplerate();
 	bool resample = (fabs(src_ratio - 1.0) >= DBL_EPSILON);
 	size_t ns;
+
+	if (rsid_secondary_time_out > 0) {
+		rsid_secondary_time_out -= (int)(len / src_ratio);
+		if (rsid_secondary_time_out <= 0) {
+			LOG_INFO("%s", "Secondary RsID sequence timed out");
+			rsid_secondary_time_out = 0;
+		}
+	}
 
 	while (len) {
 		ns = inptr - aInputSamples;
@@ -308,28 +305,29 @@ void cRsId::search(void)
 	}
 
 	int SymbolOut = -1, BinOut = -1;
-	if (state == INITIAL && search_amp(SymbolOut, BinOut)) {
+// rsid_secondary_time_out == 0 ==> waiting for initial rsid tone sequence
+	if (rsid_secondary_time_out == 0 && search_amp(SymbolOut, BinOut)) {
 		LOG_INFO("Rsid_code detected: %d", SymbolOut);
 		if (SymbolOut == RSID_ESCAPE) {
-			state = EXTENDED;
 			reset();
-			REQ(reset_rsid_detector, this);  // reset after fixed time interval
+			rsid_secondary_time_out = 2*15*1024;
 			return;
 		}
 		if (bReverse)
 			BinOut = 1024 - BinOut - 31;
 		apply(SymbolOut, BinOut);
-		Fl::remove_timeout(reset_rsid);
-		state = INITIAL;
+		rsid_secondary_time_out = 0;
 		reset();
-	} else if (state == EXTENDED && search_amp(SymbolOut, BinOut)) {
-		LOG_INFO("Ext' rsid_code detected: %d", SymbolOut);
-		if (bReverse)
-			BinOut = 1024 - BinOut - 31;
-		if (SymbolOut != RSID_ESCAPE2)
+// rsid_secondary_time_out > 0 ==> waiting for secondary rsid tone sequence
+	} else if (rsid_secondary_time_out > 0 && search_amp(SymbolOut, BinOut)) {
+		if (SymbolOut != RSID_ESCAPE2) {
+			LOG_INFO("Ext' rsid_code detected: %d", SymbolOut);
+			if (bReverse)
+				BinOut = 1024 - BinOut - 31;
 			apply2(SymbolOut, BinOut);
-		Fl::remove_timeout(reset_rsid);
-		state = INITIAL;
+		} else
+			LOG_INFO("%s", "Invalid secondary RsID code");
+		rsid_secondary_time_out = 0;
 		reset();
 	}
 }
@@ -603,15 +601,6 @@ void cRsId::apply(int iSymbol, int iBin)
             progdefaults.contestiabw = 4;
             REQ(&set_contestia_tab_widgets);
             break;
-        // mt63
-//        case RSID_MT63_500_LG: case RSID_MT63_1000_LG: case RSID_MT63_2000_LG:
-//            progdefaults.mt63_interleave = 64;
-//            break;
-//        case RSID_MT63_500_ST: case RSID_MT63_1000_ST: case RSID_MT63_2000_ST:
-//        case RSID_MT63_500_VST: case RSID_MT63_1000_VST: case RSID_MT63_2000_VST:
-//            progdefaults.mt63_interleave = 32;
-//            break;
-
         default:
             break;
 
@@ -1079,7 +1068,7 @@ void cRsId::send(bool preRSID)
 		outbuf = new double[symlen];
 	}
 
-// transmit 3 symbol periods of silence at end of transmission
+// transmit 3 symbol periods between rsid sequences
 	if (!preRSID) {
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
 		for (int i = 0; i < 3; i++)

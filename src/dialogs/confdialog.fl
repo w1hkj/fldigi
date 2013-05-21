@@ -4968,7 +4968,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.rsid_resolution = (int)o->value();
 progdefaults.changed = true;}
                 tooltip {2 = low sensitivity / decreased false detection
-5 = high sensitivity / increased false detection} xywh {12 215 145 22} type Horizontal align 8 minimum 2 maximum 5 step 1 value 5 textsize 14
+5 = high sensitivity / increased false detection} xywh {12 215 145 22} type Horizontal align 8 minimum 1 maximum 5 step 1 value 5 textsize 14
                 code0 {o->value(progdefaults.rsid_resolution);}
                 code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Slider2

@@ -8580,7 +8580,7 @@ ased false detection"));
                 sldrRSIDresolution->labelfont(0);
                 sldrRSIDresolution->labelsize(14);
                 sldrRSIDresolution->labelcolor(FL_FOREGROUND_COLOR);
-                sldrRSIDresolution->minimum(2);
+                sldrRSIDresolution->minimum(1);
                 sldrRSIDresolution->maximum(5);
                 sldrRSIDresolution->step(1);
                 sldrRSIDresolution->value(5);
