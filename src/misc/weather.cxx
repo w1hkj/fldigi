@@ -238,7 +238,10 @@ void getwx(string& wx, const char *metar)
 		LOG_WARN("%s", "station not found\n");
 		return;
 	}
-	const char *eoh = "Content-Type:";
+
+	string eoh = progdefaults.wx_eoh;
+	if (eoh.empty()) eoh = "Connection: close";
+
 	p1 = text.find(eoh);
 	if (p1 != string::npos) {
 		p1 = text.find("\n",p1);

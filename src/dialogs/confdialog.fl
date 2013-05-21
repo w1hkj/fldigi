@@ -4988,10 +4988,10 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 540 345} hide
       } {
-        Fl_Tabs tabsMisc {
+        Fl_Tabs tabsMisc {open
           xywh {0 25 540 345} selection_color 50
         } {
           Fl_Group tabCPUspeed {
@@ -5344,83 +5344,92 @@ progdefaults.changed = true;}
                 callback {progdefaults.wx_sta = o->value();
 progdefaults.changed = true;}
                 tooltip {for example KMDQ for 
-Huntsville-Madison Executive Airport, AL} xywh {92 92 43 24} align 8
+Huntsville-Madison Executive Airport, AL} xywh {66 92 43 24} align 8
                 code0 {o->value(progdefaults.wx_sta.c_str());}
               }
               Fl_Check_Button btn_wx_full {
                 label {Full report}
                 callback {progdefaults.wx_full=o->value();
 progdefaults.changed = true;}
-                tooltip {Insert full METAR report} xywh {229 130 70 15} down_box DOWN_BOX
+                tooltip {Insert full METAR report} xywh {230 130 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_full);}
+              }
+              Fl_Input {} {
+                label {End of header string:}
+                callback {progdefaults.wx_eoh = o->value();
+progdefaults.changed = true;}
+                tooltip {Text defining end of METAR header
+Typically 'Connection: close'
+Used to search for station name} xywh {230 156 266 25} when 1
+                code0 {o->value(progdefaults.wx_eoh.c_str());}
               }
               Fl_Check_Button btn_wx_station_name {
                 label {METAR station location}
                 callback {progdefaults.wx_station_name = o->value();
 progdefaults.changed = true;}
-                tooltip {Add geopolitical name of METAR station} xywh {229 158 70 15} down_box DOWN_BOX
+                tooltip {Add geopolitical name of METAR station} xywh {230 192 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_station_name);}
               }
               Fl_Check_Button btn_wx_condx {
                 label Conditions
                 callback {progdefaults.wx_condx=o->value();
 progdefaults.changed = true;}
-                tooltip {current wx conditions} xywh {229 186 70 15} down_box DOWN_BOX
+                tooltip {current wx conditions} xywh {230 218 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_condx);}
               }
               Fl_Check_Button btn_wx_fahrenheit {
                 label Fahrenheit
                 callback {progdefaults.wx_fahrenheit=o->value();
 progdefaults.changed = true;}
-                tooltip {report Fahrenheit} xywh {227 214 70 15} down_box DOWN_BOX
+                tooltip {report Fahrenheit} xywh {230 245 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_fahrenheit);}
               }
               Fl_Check_Button btn_wx_celsius {
                 label Celsius
                 callback {progdefaults.wx_celsius=o->value();
 progdefaults.changed = true;}
-                tooltip {report Celsius} xywh {358 214 70 15} down_box DOWN_BOX
+                tooltip {report Celsius} xywh {358 245 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_celsius);}
               }
               Fl_Check_Button btn_wx_mph {
                 label {Miles / Hour}
                 callback {progdefaults.wx_mph=o->value();
 progdefaults.changed = true;}
-                tooltip {report miles per hour} xywh {227 242 70 15} down_box DOWN_BOX
+                tooltip {report miles per hour} xywh {230 271 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_mph);}
               }
               Fl_Check_Button btn_wx_kph {
                 label {kilometers / hour}
                 callback {progdefaults.wx_kph=o->value();
 progdefaults.changed = true;}
-                tooltip {report kilometers per hour} xywh {358 242 70 15} down_box DOWN_BOX
+                tooltip {report kilometers per hour} xywh {358 271 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_kph);}
               }
               Fl_Check_Button btn_wx_inches {
                 label {Inches Mg.}
                 callback {progdefaults.wx_inches=o->value();
 progdefaults.changed = true;}
-                tooltip {report inches mercury} xywh {227 271 70 15} down_box DOWN_BOX
+                tooltip {report inches mercury} xywh {230 298 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_inches);}
               }
               Fl_Check_Button btn_wx_mbars {
                 label mbars
                 callback {progdefaults.wx_mbars=o->value();
 progdefaults.changed = true;}
-                tooltip {report millibars} xywh {358 271 70 15} down_box DOWN_BOX
+                tooltip {report millibars} xywh {358 298 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_mbars);}
               }
               Fl_Box {} {
                 label Temperature
-                xywh {67 212 156 19} align 20
+                xywh {65 245 156 19} align 20
               }
               Fl_Box {} {
                 label {Wind speed/dir}
-                xywh {67 240 156 19} align 20
+                xywh {65 271 156 19} align 20
               }
               Fl_Box {} {
                 label {Barometric pressure}
-                xywh {67 269 156 19} align 20
+                xywh {65 298 156 19} align 20
               }
               Fl_Button btn_metar_search {
                 label {Search on  web}

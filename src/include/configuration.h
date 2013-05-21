@@ -1503,6 +1503,10 @@
              "Minimum length of logged messages",                                       \
              0 )                                                                        \
         /* WX fetch from NOAA */                                                        \
+        ELEM_(std::string, wx_eoh, "WX_EOH",                                            \
+             "Text at end of METAR report header\n"                                     \
+             "default = Connection: close",                                             \
+             "Connection: close")                                                       \
         ELEM_(std::string, wx_sta, "WX_STA",                                            \
               "4 letter specifier for wx station",                                      \
               "KMDQ")                                                                   \
