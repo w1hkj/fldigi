@@ -4473,6 +4473,11 @@ static void cb_btn_wx_full(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+static void cb_End(Fl_Input* o, void*) {
+  progdefaults.wx_eoh = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Check_Button *btn_wx_station_name=(Fl_Check_Button *)0;
 
 static void cb_btn_wx_station_name(Fl_Check_Button* o, void*) {
@@ -9174,73 +9179,80 @@ ased false detection"));
             { Fl_Group* o = new Fl_Group(27, 60, 490, 300, _("Weather query specification"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input* o = inpWXsta = new Fl_Input(92, 92, 43, 24, _("METAR station ID code"));
+              { Fl_Input* o = inpWXsta = new Fl_Input(66, 92, 43, 24, _("METAR station ID code"));
                 inpWXsta->tooltip(_("for example KMDQ for \nHuntsville-Madison Executive Airport, AL"));
                 inpWXsta->callback((Fl_Callback*)cb_inpWXsta);
                 inpWXsta->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.wx_sta.c_str());
               } // Fl_Input* inpWXsta
-              { Fl_Check_Button* o = btn_wx_full = new Fl_Check_Button(229, 130, 70, 15, _("Full report"));
+              { Fl_Check_Button* o = btn_wx_full = new Fl_Check_Button(230, 130, 70, 15, _("Full report"));
                 btn_wx_full->tooltip(_("Insert full METAR report"));
                 btn_wx_full->down_box(FL_DOWN_BOX);
                 btn_wx_full->callback((Fl_Callback*)cb_btn_wx_full);
                 o->value(progdefaults.wx_full);
               } // Fl_Check_Button* btn_wx_full
-              { Fl_Check_Button* o = btn_wx_station_name = new Fl_Check_Button(229, 158, 70, 15, _("METAR station location"));
+              { Fl_Input* o = new Fl_Input(230, 156, 266, 25, _("End of header string:"));
+                o->tooltip(_("Text defining end of METAR header\nTypically \'Connection: close\'\nUsed to s\
+earch for station name"));
+                o->callback((Fl_Callback*)cb_End);
+                o->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.wx_eoh.c_str());
+              } // Fl_Input* o
+              { Fl_Check_Button* o = btn_wx_station_name = new Fl_Check_Button(230, 192, 70, 15, _("METAR station location"));
                 btn_wx_station_name->tooltip(_("Add geopolitical name of METAR station"));
                 btn_wx_station_name->down_box(FL_DOWN_BOX);
                 btn_wx_station_name->callback((Fl_Callback*)cb_btn_wx_station_name);
                 o->value(progdefaults.wx_station_name);
               } // Fl_Check_Button* btn_wx_station_name
-              { Fl_Check_Button* o = btn_wx_condx = new Fl_Check_Button(229, 186, 70, 15, _("Conditions"));
+              { Fl_Check_Button* o = btn_wx_condx = new Fl_Check_Button(230, 218, 70, 15, _("Conditions"));
                 btn_wx_condx->tooltip(_("current wx conditions"));
                 btn_wx_condx->down_box(FL_DOWN_BOX);
                 btn_wx_condx->callback((Fl_Callback*)cb_btn_wx_condx);
                 o->value(progdefaults.wx_condx);
               } // Fl_Check_Button* btn_wx_condx
-              { Fl_Check_Button* o = btn_wx_fahrenheit = new Fl_Check_Button(227, 214, 70, 15, _("Fahrenheit"));
+              { Fl_Check_Button* o = btn_wx_fahrenheit = new Fl_Check_Button(230, 245, 70, 15, _("Fahrenheit"));
                 btn_wx_fahrenheit->tooltip(_("report Fahrenheit"));
                 btn_wx_fahrenheit->down_box(FL_DOWN_BOX);
                 btn_wx_fahrenheit->callback((Fl_Callback*)cb_btn_wx_fahrenheit);
                 o->value(progdefaults.wx_fahrenheit);
               } // Fl_Check_Button* btn_wx_fahrenheit
-              { Fl_Check_Button* o = btn_wx_celsius = new Fl_Check_Button(358, 214, 70, 15, _("Celsius"));
+              { Fl_Check_Button* o = btn_wx_celsius = new Fl_Check_Button(358, 245, 70, 15, _("Celsius"));
                 btn_wx_celsius->tooltip(_("report Celsius"));
                 btn_wx_celsius->down_box(FL_DOWN_BOX);
                 btn_wx_celsius->callback((Fl_Callback*)cb_btn_wx_celsius);
                 o->value(progdefaults.wx_celsius);
               } // Fl_Check_Button* btn_wx_celsius
-              { Fl_Check_Button* o = btn_wx_mph = new Fl_Check_Button(227, 242, 70, 15, _("Miles / Hour"));
+              { Fl_Check_Button* o = btn_wx_mph = new Fl_Check_Button(230, 271, 70, 15, _("Miles / Hour"));
                 btn_wx_mph->tooltip(_("report miles per hour"));
                 btn_wx_mph->down_box(FL_DOWN_BOX);
                 btn_wx_mph->callback((Fl_Callback*)cb_btn_wx_mph);
                 o->value(progdefaults.wx_mph);
               } // Fl_Check_Button* btn_wx_mph
-              { Fl_Check_Button* o = btn_wx_kph = new Fl_Check_Button(358, 242, 70, 15, _("kilometers / hour"));
+              { Fl_Check_Button* o = btn_wx_kph = new Fl_Check_Button(358, 271, 70, 15, _("kilometers / hour"));
                 btn_wx_kph->tooltip(_("report kilometers per hour"));
                 btn_wx_kph->down_box(FL_DOWN_BOX);
                 btn_wx_kph->callback((Fl_Callback*)cb_btn_wx_kph);
                 o->value(progdefaults.wx_kph);
               } // Fl_Check_Button* btn_wx_kph
-              { Fl_Check_Button* o = btn_wx_inches = new Fl_Check_Button(227, 271, 70, 15, _("Inches Mg."));
+              { Fl_Check_Button* o = btn_wx_inches = new Fl_Check_Button(230, 298, 70, 15, _("Inches Mg."));
                 btn_wx_inches->tooltip(_("report inches mercury"));
                 btn_wx_inches->down_box(FL_DOWN_BOX);
                 btn_wx_inches->callback((Fl_Callback*)cb_btn_wx_inches);
                 o->value(progdefaults.wx_inches);
               } // Fl_Check_Button* btn_wx_inches
-              { Fl_Check_Button* o = btn_wx_mbars = new Fl_Check_Button(358, 271, 70, 15, _("mbars"));
+              { Fl_Check_Button* o = btn_wx_mbars = new Fl_Check_Button(358, 298, 70, 15, _("mbars"));
                 btn_wx_mbars->tooltip(_("report millibars"));
                 btn_wx_mbars->down_box(FL_DOWN_BOX);
                 btn_wx_mbars->callback((Fl_Callback*)cb_btn_wx_mbars);
                 o->value(progdefaults.wx_mbars);
               } // Fl_Check_Button* btn_wx_mbars
-              { Fl_Box* o = new Fl_Box(67, 212, 156, 19, _("Temperature"));
+              { Fl_Box* o = new Fl_Box(65, 245, 156, 19, _("Temperature"));
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
-              { Fl_Box* o = new Fl_Box(67, 240, 156, 19, _("Wind speed/dir"));
+              { Fl_Box* o = new Fl_Box(65, 271, 156, 19, _("Wind speed/dir"));
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
-              { Fl_Box* o = new Fl_Box(67, 269, 156, 19, _("Barometric pressure"));
+              { Fl_Box* o = new Fl_Box(65, 298, 156, 19, _("Barometric pressure"));
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
               { btn_metar_search = new Fl_Button(308, 92, 130, 24, _("Search on  web"));
