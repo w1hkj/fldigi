@@ -442,7 +442,7 @@ void mfsk::recvchar(int c)
 			s2n_sum += s2n_metric;
 			s2n_sum2 += (s2n_metric * s2n_metric);
 			s2n_ncount++;
-			if (c == EOT && (mailserver || mailclient))
+			if (c == EOT)
 				s2nreport();
 		}
 	}

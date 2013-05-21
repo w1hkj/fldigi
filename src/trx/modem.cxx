@@ -408,7 +408,7 @@ void modem::s2nreport(void)
 	double s2n_avg = s2n_sum / s2n_ncount;
 	double s2n_stddev = sqrt((s2n_sum2 / s2n_ncount) - (s2n_avg * s2n_avg));
 
-	REQ(pskmail_notify_s2n, s2n_ncount, s2n_avg, s2n_stddev);
+	pskmail_notify_s2n(s2n_ncount, s2n_avg, s2n_stddev);
 }
 
 void modem::ModulateXmtr(double *buffer, int len)

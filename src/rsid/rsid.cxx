@@ -370,7 +370,7 @@ void cRsId::apply(int iSymbol, int iBin)
 		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
 
 	if (mailclient || mailserver)
-		REQ(pskmail_notify_rsid, mbin);
+		pskmail_notify_rsid(mbin);
 
 	if(progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);

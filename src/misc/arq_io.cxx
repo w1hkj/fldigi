@@ -707,8 +707,7 @@ bool Socket_arqRx()
 
 		pthread_mutex_lock (&arq_rx_mutex);
 		arqtext.assign(txstring);
-		if (mailserver || mailclient)
-			parse_arqtext(arqtext);
+		parse_arqtext(arqtext);
 		txstring.clear();
 		LOG_VERBOSE("arqtext\n%s\n", arqtext.c_str());
 
@@ -750,6 +749,14 @@ void WriteARQ(unsigned char data)
 {
 	pthread_mutex_lock (&tosend_mutex);
 	tosend += data;
+	pthread_mutex_unlock (&tosend_mutex);
+	return;
+}
+
+void WriteARQ(const char *data)
+{
+	pthread_mutex_lock (&tosend_mutex);
+	tosend.append(data);
 	pthread_mutex_unlock (&tosend_mutex);
 	return;
 }
@@ -880,14 +887,13 @@ void AbortARQ() {
 void pskmail_notify_rsid(trx_mode mode)
 {
 	char buf[64];
-	int n = snprintf(buf, sizeof(buf), "%c<Mode:%s>\n", 0x12, mode_info[mode].name);
+	int n = snprintf(buf, sizeof(buf),
+				"\x12<Mode:%s>\n",
+				mode_info[mode].name);
 	if (n > 0 && n < (int)sizeof(buf)) {
-		WriteARQsocket((unsigned char*)buf, n);
-#if !defined(__WOE32__) && !defined(__APPLE__)
-		for (int ii=0; ii < n; ii++)
-			WriteARQSysV((unsigned char)buf[ii]);
-#endif
-		ReceiveText->addstr(buf, FTextBase::CTRL);
+		WriteARQ((const char *)buf);
+		REQ(&FTextBase::addstr, ReceiveText, buf, FTextBase::CTRL);
+		LOG_VERBOSE("%s", buf);
 	}
 }
 
@@ -897,15 +903,13 @@ void pskmail_notify_rsid(trx_mode mode)
 void pskmail_notify_s2n(double s2n_ncount, double s2n_avg, double s2n_stddev)
 {
 	char buf[64];
-	int n = snprintf(buf, sizeof(buf), "%c<s2n: %1.0f, %1.1f, %1.1f>",
-			 0x12, s2n_ncount, s2n_avg, s2n_stddev);
+	int n = snprintf(buf, sizeof(buf),
+				"\x12<s2n: %1.0f, %1.1f, %1.1f>\n",
+				s2n_ncount, s2n_avg, s2n_stddev);
 	if (n > 0 && n < (int)sizeof(buf)) {
-		WriteARQsocket((unsigned char*)buf, n);
-#if !defined(__WOE32__) && !defined(__APPLE__)
-		for (int ii=0; ii < n; ii++)
-			WriteARQSysV((unsigned char)buf[ii]);
-#endif
-		ReceiveText->addstr(buf, FTextBase::CTRL);
+		WriteARQ((const char *)buf);
+		REQ(&FTextBase::addstr, ReceiveText, buf, FTextBase::CTRL);
+		LOG_VERBOSE("%s", buf);
 	}
 }
 
