@@ -4901,10 +4901,10 @@ if (o->value()) {
         }
       }
       Fl_Group tabID {
-        label ID
+        label ID open
         xywh {0 23 540 348} hide
       } {
-        Fl_Tabs tabsID {
+        Fl_Tabs tabsID {open
           xywh {0 23 540 345}
         } {
           Fl_Group tabRsID {
@@ -4986,14 +4986,14 @@ progdefaults.changed = true;}
                 label {Disable alert dialog}
                 callback {progdefaults.disable_rsid_warning_dialog_box = o->value();
 progdefaults.changed = true;}
-                tooltip {Do not show RsID alert dialog box} xywh {246 119 90 20} down_box DOWN_BOX
+                tooltip {Retain TX lock frequency (Lk) when changing to RX RsID frequency} xywh {246 119 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.disable_rsid_warning_dialog_box);}
               }
               Fl_Check_Button chkRetainFreqLock {
                 label {Retain tx freq lock}
                 callback {progdefaults.retain_freq_lock = o->value();
 progdefaults.changed = true;}
-                tooltip {Do not show RsID alert dialog box} xywh {246 151 90 20} down_box DOWN_BOX
+                tooltip {Do not automatically change to RX RsID frequency} xywh {246 151 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.retain_freq_lock);}
               }
               Fl_Check_Button chkDisableFreqChange {

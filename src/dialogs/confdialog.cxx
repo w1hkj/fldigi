@@ -8611,13 +8611,13 @@ ased false detection"));
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* sldrRSIDsquelch
               { Fl_Check_Button* o = chkRSidShowAlert = new Fl_Check_Button(246, 119, 90, 20, _("Disable alert dialog"));
-                chkRSidShowAlert->tooltip(_("Do not show RsID alert dialog box"));
+                chkRSidShowAlert->tooltip(_("Retain TX lock frequency (Lk) when changing to RX RsID frequency"));
                 chkRSidShowAlert->down_box(FL_DOWN_BOX);
                 chkRSidShowAlert->callback((Fl_Callback*)cb_chkRSidShowAlert);
                 o->value(progdefaults.disable_rsid_warning_dialog_box);
               } // Fl_Check_Button* chkRSidShowAlert
               { Fl_Check_Button* o = chkRetainFreqLock = new Fl_Check_Button(246, 151, 90, 20, _("Retain tx freq lock"));
-                chkRetainFreqLock->tooltip(_("Do not show RsID alert dialog box"));
+                chkRetainFreqLock->tooltip(_("Do not automatically change to RX RsID frequency"));
                 chkRetainFreqLock->down_box(FL_DOWN_BOX);
                 chkRetainFreqLock->callback((Fl_Callback*)cb_chkRetainFreqLock);
                 o->value(progdefaults.retain_freq_lock);

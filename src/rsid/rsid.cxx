@@ -332,18 +332,236 @@ void cRsId::search(void)
 	}
 }
 
+void cRsId::setup_mode(int iSymbol)
+{
+	switch (iSymbol) {
+	case RSID_RTTY_ASCII_7:
+		progdefaults.rtty_baud = 5;
+		progdefaults.rtty_bits = 1;
+		progdefaults.rtty_shift = 9;
+		REQ(&set_rtty_tab_widgets);
+		break;
+	case RSID_RTTY_ASCII_8:
+		progdefaults.rtty_baud = 5;
+		progdefaults.rtty_bits = 2;
+		progdefaults.rtty_shift = 9;
+		REQ(&set_rtty_tab_widgets);
+		break;
+	case RSID_RTTY_45:
+		progdefaults.rtty_baud = 1;
+		progdefaults.rtty_bits = 0;
+		progdefaults.rtty_shift = 3;
+		REQ(&set_rtty_tab_widgets);
+		break;
+	case RSID_RTTY_50:
+		progdefaults.rtty_baud = 2;
+		progdefaults.rtty_bits = 0;
+		progdefaults.rtty_shift = 3;
+		REQ(&set_rtty_tab_widgets);
+		break;
+	case RSID_RTTY_75:
+		progdefaults.rtty_baud = 4;
+		progdefaults.rtty_bits = 0;
+		progdefaults.rtty_shift = 9;
+		REQ(&set_rtty_tab_widgets);
+		break;
+// DominoEX / FEC
+	case RSID_DOMINOEX_4: case RSID_DOMINOEX_5: case RSID_DOMINOEX_8:
+	case RSID_DOMINOEX_11: case RSID_DOMINOEX_16: case RSID_DOMINOEX_22:
+		progdefaults.DOMINOEX_FEC = false;
+		REQ(&set_dominoex_tab_widgets);
+		break;
+	case RSID_DOMINOEX_4_FEC: case RSID_DOMINOEX_5_FEC: case RSID_DOMINOEX_8_FEC:
+	case RSID_DOMINOEX_11_FEC: case RSID_DOMINOEX_16_FEC: case RSID_DOMINOEX_22_FEC:
+		progdefaults.DOMINOEX_FEC = true;
+		REQ(&set_dominoex_tab_widgets);
+		break;
+// olivia parameters
+	case RSID_OLIVIA_4_125:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 0;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_250:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 1;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_500:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_1000:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_4_2000:
+		progdefaults.oliviatones = 1;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_125:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 0;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_250:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 1;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_500:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_1000:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_8_2000:
+		progdefaults.oliviatones = 2;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_16_500:
+		progdefaults.oliviatones = 3;
+		progdefaults.oliviabw = 2;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_16_1000:
+		progdefaults.oliviatones = 3;
+		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_16_2000:
+		progdefaults.oliviatones = 3;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_32_1000:
+		progdefaults.oliviatones = 4;
+		progdefaults.oliviabw = 3;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_32_2000:
+		progdefaults.oliviatones = 4;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+	case RSID_OLIVIA_64_2000:
+		progdefaults.oliviatones = 5;
+		progdefaults.oliviabw = 4;
+		REQ(&set_olivia_tab_widgets);
+		break;
+// contestia parameters
+	case RSID_CONTESTIA_4_125:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 0;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_4_250:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 1;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_4_500:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_4_1000:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_4_2000:
+		progdefaults.contestiatones = 1;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_125:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 0;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_250:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 1;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_500:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_1000:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_8_2000:
+		progdefaults.contestiatones = 2;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_500:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_1000:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_16_2000:
+		progdefaults.contestiatones = 3;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_32_1000:
+		progdefaults.contestiatones = 4;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_32_2000:
+		progdefaults.contestiatones = 4;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_64_500:
+		progdefaults.contestiatones = 5;
+		progdefaults.contestiabw = 2;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_64_1000:
+		progdefaults.contestiatones = 5;
+		progdefaults.contestiabw = 3;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_CONTESTIA_64_2000:
+		progdefaults.contestiatones = 5;
+		progdefaults.contestiabw = 4;
+		REQ(&set_contestia_tab_widgets);
+		break;
+	default:
+		break;
+	} // switch (iSymbol)
+}
+
 void cRsId::apply(int iSymbol, int iBin)
 {
 	ENSURE_THREAD(TRX_TID);
 
-	double freq;
+	double rsidfreq = 0, currfreq = 0;
 	int n, mbin = NUM_MODES;
 
-
-	if(progdefaults.disable_rsid_freq_change)
-		freq = active_modem->get_freq();
-	else
-		freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
+	currfreq = active_modem->get_freq();
+	rsidfreq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
 
 	for (n = 0; n < rsid_ids_size; n++) {
 		if (rsid_ids[n].rs == iSymbol) {
@@ -362,257 +580,38 @@ void cRsId::apply(int iSymbol, int iBin)
 		LOG_VERBOSE("%s", msg);
 		return;
 	}
-	else if (!progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
+	else if (progdefaults.rsid_rx_modes.test(mbin)) {
+		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, rsidfreq);
+	}
+	else {
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids[n].name, rsidfreq);
 		return;
 	}
-	else
-		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, freq);
 
 	if (mailclient || mailserver)
 		pskmail_notify_rsid(mbin);
 
-	if(progdefaults.rsid_auto_disable)
+	if (progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);
 
-	if(!progdefaults.disable_rsid_warning_dialog_box)
-		REQ(notify_rsid, mbin, freq);
+	if (!progdefaults.disable_rsid_warning_dialog_box)
+		REQ(notify_rsid, mbin, rsidfreq);
+
+	if (progdefaults.rsid_notify_only) return;
+
+	if (progdefaults.rsid_mark) // mark current modem & freq
+		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
+			active_modem->get_mode(), 0LL, currfreq);
 
 	if(active_modem) // Currently only effects Olivia, Contestia and MT63.
 		active_modem->rx_flush();
 
-	if (progdefaults.rsid_mark) // mark current modem & freq
-		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
-			active_modem->get_mode(), 0LL, active_modem->get_freq());
-
-	if (!progdefaults.rsid_notify_only) {
-
-        switch (iSymbol) {
-        case RSID_RTTY_ASCII_7:
-            progdefaults.rtty_baud = 5;
-            progdefaults.rtty_bits = 1;
-            progdefaults.rtty_shift = 9;
-            REQ(&set_rtty_tab_widgets);
-            break;
-        case RSID_RTTY_ASCII_8:
-            progdefaults.rtty_baud = 5;
-            progdefaults.rtty_bits = 2;
-            progdefaults.rtty_shift = 9;
-            REQ(&set_rtty_tab_widgets);
-            break;
-        case RSID_RTTY_45:
-            progdefaults.rtty_baud = 1;
-            progdefaults.rtty_bits = 0;
-            progdefaults.rtty_shift = 3;
-            REQ(&set_rtty_tab_widgets);
-            break;
-        case RSID_RTTY_50:
-            progdefaults.rtty_baud = 2;
-            progdefaults.rtty_bits = 0;
-            progdefaults.rtty_shift = 3;
-            REQ(&set_rtty_tab_widgets);
-            break;
-        case RSID_RTTY_75:
-            progdefaults.rtty_baud = 4;
-            progdefaults.rtty_bits = 0;
-            progdefaults.rtty_shift = 9;
-            REQ(&set_rtty_tab_widgets);
-            break;
-        // DominoEX / FEC
-        case RSID_DOMINOEX_4: case RSID_DOMINOEX_5: case RSID_DOMINOEX_8:
-        case RSID_DOMINOEX_11: case RSID_DOMINOEX_16: case RSID_DOMINOEX_22:
-            progdefaults.DOMINOEX_FEC = false;
-            REQ(&set_dominoex_tab_widgets);
-            break;
-        case RSID_DOMINOEX_4_FEC: case RSID_DOMINOEX_5_FEC: case RSID_DOMINOEX_8_FEC:
-        case RSID_DOMINOEX_11_FEC: case RSID_DOMINOEX_16_FEC: case RSID_DOMINOEX_22_FEC:
-            progdefaults.DOMINOEX_FEC = true;
-            REQ(&set_dominoex_tab_widgets);
-            break;
-        // olivia parameters
-        case RSID_OLIVIA_4_125:
-            progdefaults.oliviatones = 1;
-            progdefaults.oliviabw = 0;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_4_250:
-            progdefaults.oliviatones = 1;
-            progdefaults.oliviabw = 1;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_4_500:
-            progdefaults.oliviatones = 1;
-            progdefaults.oliviabw = 2;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_4_1000:
-            progdefaults.oliviatones = 1;
-            progdefaults.oliviabw = 3;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_4_2000:
-            progdefaults.oliviatones = 1;
-            progdefaults.oliviabw = 4;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_8_125:
-            progdefaults.oliviatones = 2;
-            progdefaults.oliviabw = 0;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_8_250:
-            progdefaults.oliviatones = 2;
-            progdefaults.oliviabw = 1;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_8_500:
-            progdefaults.oliviatones = 2;
-            progdefaults.oliviabw = 2;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_8_1000:
-            progdefaults.oliviatones = 2;
-            progdefaults.oliviabw = 3;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_8_2000:
-            progdefaults.oliviatones = 2;
-            progdefaults.oliviabw = 4;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_16_500:
-            progdefaults.oliviatones = 3;
-            progdefaults.oliviabw = 2;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_16_1000:
-            progdefaults.oliviatones = 3;
-            progdefaults.oliviabw = 3;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_16_2000:
-            progdefaults.oliviatones = 3;
-            progdefaults.oliviabw = 4;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_32_1000:
-            progdefaults.oliviatones = 4;
-            progdefaults.oliviabw = 3;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_32_2000:
-            progdefaults.oliviatones = 4;
-            progdefaults.oliviabw = 4;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        case RSID_OLIVIA_64_2000:
-            progdefaults.oliviatones = 5;
-            progdefaults.oliviabw = 4;
-            REQ(&set_olivia_tab_widgets);
-            break;
-        // contestia parameters
-        case RSID_CONTESTIA_4_125:
-            progdefaults.contestiatones = 1;
-            progdefaults.contestiabw = 0;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_4_250:
-            progdefaults.contestiatones = 1;
-            progdefaults.contestiabw = 1;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_4_500:
-            progdefaults.contestiatones = 1;
-            progdefaults.contestiabw = 2;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_4_1000:
-            progdefaults.contestiatones = 1;
-            progdefaults.contestiabw = 3;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_4_2000:
-            progdefaults.contestiatones = 1;
-            progdefaults.contestiabw = 4;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_8_125:
-            progdefaults.contestiatones = 2;
-            progdefaults.contestiabw = 0;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_8_250:
-            progdefaults.contestiatones = 2;
-            progdefaults.contestiabw = 1;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_8_500:
-            progdefaults.contestiatones = 2;
-            progdefaults.contestiabw = 2;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_8_1000:
-            progdefaults.contestiatones = 2;
-            progdefaults.contestiabw = 3;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_8_2000:
-            progdefaults.contestiatones = 2;
-            progdefaults.contestiabw = 4;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_16_500:
-            progdefaults.contestiatones = 3;
-            progdefaults.contestiabw = 2;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_16_1000:
-            progdefaults.contestiatones = 3;
-            progdefaults.contestiabw = 3;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_16_2000:
-            progdefaults.contestiatones = 3;
-            progdefaults.contestiabw = 4;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_32_1000:
-            progdefaults.contestiatones = 4;
-            progdefaults.contestiabw = 3;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_32_2000:
-            progdefaults.contestiatones = 4;
-            progdefaults.contestiabw = 4;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_64_500:
-            progdefaults.contestiatones = 5;
-            progdefaults.contestiabw = 2;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_64_1000:
-            progdefaults.contestiatones = 5;
-            progdefaults.contestiabw = 3;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        case RSID_CONTESTIA_64_2000:
-            progdefaults.contestiatones = 5;
-            progdefaults.contestiabw = 4;
-            REQ(&set_contestia_tab_widgets);
-            break;
-        default:
-            break;
-
-        } // switch (iSymbol)
-    } else {
-       mbin = active_modem->get_mode();
-    }
+	setup_mode(iSymbol);
 
 	if (progdefaults.rsid_squelch)
-		REQ(init_modem_squelch, mbin, freq);
+		REQ(init_modem_squelch, mbin, progdefaults.disable_rsid_freq_change ? currfreq : rsidfreq);
 	else
-		REQ(init_modem, mbin, freq);
+		REQ(init_modem, mbin, progdefaults.disable_rsid_freq_change ? currfreq : rsidfreq);
 
 }
 
@@ -620,13 +619,11 @@ void cRsId::apply2(int iSymbol, int iBin)
 {
 	ENSURE_THREAD(TRX_TID);
 
-	double freq;
+	double currfreq = 0, rsidfreq = 0;
 	int n, mbin = NUM_MODES;
 
-	if(progdefaults.disable_rsid_freq_change)
-		freq = active_modem->get_freq();
-	else
-		freq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
+	currfreq = active_modem->get_freq();
+	rsidfreq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
 
 	for (n = 0; n < rsid_ids_size2; n++) {
 		if (rsid_ids2[n].rs == iSymbol) {
@@ -645,36 +642,36 @@ void cRsId::apply2(int iSymbol, int iBin)
 		LOG_VERBOSE("%s", msg);
 		return;
 	}
-	else if (!progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids2[n].name, freq);
+	else if (progdefaults.rsid_rx_modes.test(mbin)) {
+		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids2[n].name, rsidfreq);
+	}
+	else {
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids2[n].name, rsidfreq);
 		return;
 	}
-	else
-		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids2[n].name, freq);
 
 	if (mailclient || mailserver)
 		REQ(pskmail_notify_rsid, mbin);
 
 	if (!progdefaults.disable_rsid_warning_dialog_box)
-		REQ(notify_rsid, mbin, freq);
+		REQ(notify_rsid, mbin, rsidfreq);
 
-	if(progdefaults.rsid_auto_disable)
+	if (progdefaults.rsid_notify_only) return;
+
+	if (progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);
-
-	if(active_modem) // Currently only effects Olivia, Contestia and MT63.
-		active_modem->rx_flush();
 
 	if (progdefaults.rsid_mark) // mark current modem & freq
 		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
-			active_modem->get_mode(), 0LL, active_modem->get_freq());
+			active_modem->get_mode(), 0LL, currfreq);
 
-	if (progdefaults.rsid_notify_only)
-	    mbin = active_modem->get_mode();
+	if (active_modem) // Currently only effects Olivia, Contestia and MT63.
+		active_modem->rx_flush();
 
 	if (progdefaults.rsid_squelch)
-		REQ(init_modem_squelch, mbin, freq);
+		REQ(init_modem_squelch, mbin, progdefaults.disable_rsid_freq_change ? currfreq : rsidfreq);
 	else
-		REQ(init_modem, mbin, freq);
+		REQ(init_modem, mbin, progdefaults.disable_rsid_freq_change ? currfreq : rsidfreq);
 }
 
 //=============================================================================
