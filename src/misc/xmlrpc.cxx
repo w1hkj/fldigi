@@ -586,7 +586,8 @@ public:
 				return;
 			}
 		}
-		throw xmlrpc_c::fault("No such modem");
+		*retval = "No such modem";
+		return;
 	}
 };
 
@@ -673,9 +674,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
-			throw xmlrpc_c::fault("Operation not supported by modem");
-
-		*retval = xmlrpc_c::value_int((int)cntSearchRange->value());
+			*retval = "Operation not supported by modem";
+//			throw xmlrpc_c::fault("Operation not supported by modem");
+		else
+			*retval = xmlrpc_c::value_int((int)cntSearchRange->value());
 	}
 };
 
@@ -690,8 +692,11 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		XMLRPC_LOCK;
-		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
-			throw xmlrpc_c::fault("Operation not supported by modem");
+		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
+			*retval = "Operation not supported by modem";
+			return;
+//			throw xmlrpc_c::fault("Operation not supported by modem");
+		}
 
 		int v = (int)(cntSearchRange->value());
 		REQ(set_valuator, cntSearchRange, params.getInt(0, (int)cntSearchRange->minimum(), (int)cntSearchRange->maximum()));
@@ -710,8 +715,11 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		XMLRPC_LOCK;
-		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
-			throw xmlrpc_c::fault("Operation not supported by modem");
+		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
+			*retval = "Operation not supported by modem";
+			return;
+//			throw xmlrpc_c::fault("Operation not supported by modem");
+		}
 
 		int v = (int)(cntSearchRange->value() + params.getInt(0));
 		REQ(set_valuator, cntSearchRange, v);
@@ -724,15 +732,16 @@ public:
 static Fl_Valuator* get_bw_val(void)
 {
 	if (!(active_modem->get_cap() & modem::CAP_BW))
-		throw xmlrpc_c::fault("Operation not supported by modem");
+		return 0;
+//		throw xmlrpc_c::fault("Operation not supported by modem");
 
 	trx_mode m = active_modem->get_mode();
 	if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
 		return sldrHellBW;
 	else if (m == MODE_CW)
 		return sldrCWbandwidth;
-
-	throw xmlrpc_c::fault("Unknown CAP_BW modem");
+	return 0;
+//	throw xmlrpc_c::fault("Unknown CAP_BW modem");
 }
 
 class Modem_get_bw : public xmlrpc_c::method
@@ -853,7 +862,8 @@ public:
 		}
 			break;
 		default:
-			throw xmlrpc_c::fault("Invalid Olivia bandwidth");
+			*retval = "Invalid Olivia bandwidth";
+//			throw xmlrpc_c::fault("Invalid Olivia bandwidth");
 		}
 	}
 };
@@ -902,7 +912,8 @@ public:
 			*retval = xmlrpc_c::value_nil();
 		}
 		else
-			throw xmlrpc_c::fault("Invalid Olivia tones");
+			*retval = "Invalid Olivia tones";
+//			throw xmlrpc_c::fault("Invalid Olivia tones");
 	}
 };
 
@@ -976,8 +987,11 @@ public:
         {
 		XMLRPC_LOCK;
 		string s = params.getString(0);
-		if (s != "LSB" && s != "USB")
-			throw xmlrpc_c::fault("Invalid argument");
+		if (s != "LSB" && s != "USB") {
+			*retval = "Invalid argument";
+			return;
+//			throw xmlrpc_c::fault("Invalid argument");
+		}
 
 		if (progdefaults.chkUSERIGCATis)
 			rigCAT_setmode(s);
@@ -1019,7 +1033,9 @@ public:
 		XMLRPC_LOCK;
 		string s = params.getString(0);
 		if (s != "USB" && s != "LSB")
-			throw xmlrpc_c::fault("Invalid argument");
+			*retval = "Invalid argument";
+//			throw xmlrpc_c::fault("Invalid argument");
+		else
 		REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();
