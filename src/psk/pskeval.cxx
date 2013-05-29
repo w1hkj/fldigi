@@ -34,11 +34,14 @@ using namespace std;
 //=============================================================================
 
 pskeval::pskeval() {
+	/// BEWARE: FFT_LEN might change !!!
+	sigpwr = new double[FFT_LEN];
 	bw = 31.25;
 	clear();
 }
 
 pskeval::~pskeval() {
+	delete [] sigpwr;
 }
 
 int countdown = 8;
@@ -48,7 +51,7 @@ void pskeval::sigdensity() {
 	int ihbw = (int)(0.6*bw);
 	int ibw = 2 * ihbw;
 
-	double *vals = new double[ibw];
+	double vals[ibw];
 	double sig = 0.0;
 	double val = 0.0;
 
@@ -74,7 +77,6 @@ void pskeval::sigdensity() {
 	}
 
 	if (sigmin < 1e-8) sigmin = 1e-8;
-	delete [] vals;
 }
 
 double pskeval::sigpeak(int &f, int f1, int f2)

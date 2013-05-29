@@ -370,7 +370,8 @@ static const int w_inpAZ    	= 30;
 
 static const int qh = Hqsoframe / 2;
 
-int IMAGE_WIDTH;
+int IMAGE_WIDTH =-1;
+int FFT_LEN = -1;
 int Hwfall;
 int HNOM = DEFAULT_HNOM;
 // WNOM must be large enough to contain ALL of the horizontal widgets
@@ -4386,8 +4387,6 @@ void create_fl_digi_main_primary() {
 
 	x_qsoframe += rig_control_width;
 
-	IMAGE_WIDTH = 4000;
-
 	Hwfall = progdefaults.wfheight;
 
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
@@ -5722,8 +5721,6 @@ void create_fl_digi_main_WF_only() {
 	fl_font(fnt, freqheight);
 	fl_font(fnt, fsize);
 
-
-	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
 	Hwfall = progdefaults.wfheight;
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
 	WF_only_height = Hmenu + Hwfall + Hstatus + 4 * pad;
@@ -5929,9 +5926,20 @@ void create_fl_digi_main_WF_only() {
 
 }
 
+static void init_image_width(void)
+{
+	// Will never change anymore during execution, even if progdefaults.HighFreqCutoff is adjusted.
+	// ... which is a problem !!!!!
+	IMAGE_WIDTH = progdefaults.HighFreqCutoff;
+
+	// // First power of two greater or equal to IMAGE_WIDTH.
+	// Should be recalculated when setwfrange() then waterfall::opmode.
+	FFT_LEN = round_up_next_pow_two( IMAGE_WIDTH );
+}
 
 void create_fl_digi_main(int argc, char** argv)
 {
+	init_image_width();
 	if (bWF_only)
 		create_fl_digi_main_WF_only();
 	else

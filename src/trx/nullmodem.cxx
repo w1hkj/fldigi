@@ -40,7 +40,7 @@
 NULLMODEM:: NULLMODEM() : modem() 
 {
 	mode = MODE_NULL;
-	samplerate = 8000;
+	samplerate = 12000;
 	restart();
 }
 

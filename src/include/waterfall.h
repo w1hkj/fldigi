@@ -49,12 +49,6 @@ enum {
 #endif
 */
 
-#define FFT_LEN		4096
-//8192
-//2048
-//4096
-
-#define SC_SMPLRATE	8000
 #define WFBLOCKSIZE	512
 
 struct RGB {
@@ -80,11 +74,6 @@ enum WFmode {
 	NUM_WF_MODES
 };
 
-#define MAG_1 1
-#define MAG_2 2
-#define MAG_4 3
-
-//enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
 enum WFspeed { PAUSE = 0, FAST = 1, NORMAL = 2, SLOW = 4 };
 
 extern void do_qsy(bool);
@@ -101,35 +90,26 @@ public:
 	void Mode(WFmode M) {
 		mode = M;
 	}
-	WFmode Mode() {
+	WFmode Mode() const {
 		return mode;
 	}
-	int cursorFreq(int xpos) {
+	int cursorFreq(int xpos) const {
 		return (offset + step * xpos);
-	}
-	void DispColor(bool Y) {
-		dispcolor = Y;
-	}
-	bool DispColor() {
-		return dispcolor;
 	}
 	void Ampspan(double AmpSpn) {
 		ampspan = (int)AmpSpn;
 	}
-	double Ampspan() {
-		return ampspan;
-	}
 	void Reflevel(double RefLev) {
 		reflevel = (int)RefLev;
 	}
-	double Reflevel() {
+	double Reflevel() const {
 		return reflevel;
 	}
 	void Bandwidth (int bw) {
 		bandwidth = bw;
 		makeMarker();
 	}
-	int  Bandwidth () {
+	int  Bandwidth () const {
 		return bandwidth;
 	}
 	void Overload(int ovr) {
@@ -137,19 +117,16 @@ public:
 		overload = ovr;
 	}
 
-    double AudioPeak() { return peakaudio; }
-
-	WFspeed Speed() { return wfspeed;}
+	WFspeed Speed() const { return wfspeed;}
 	void Speed(WFspeed rate) { wfspeed = rate;}
 
-	int Mag() { return mag;}
+	int Mag() const { return mag;}
 	void Mag(int m) { setMag(m);}
-	int Offset() { return offset;}
+	int Offset() const { return offset;}
 	void Offset(int v) { setOffset(v);}
 
 	void initmaps();
 	void draw();
-//	void resize (int, int, int, int);
 	int handle(int event);
 	void update_sigmap();
 	void update_waterfall();
@@ -170,10 +147,8 @@ public:
 	void USB(bool b) {
 		usb = b;
 	}
-	bool USB() {return usb;};
-	long long rfcarrier() { return rfc;};
-
-//	void useBands(bool b) { usebands = b;};
+	bool USB() const {return usb;};
+	long long rfcarrier() const { return rfc;};
 
 	void updateMarker() {
 		drawMarker();};
@@ -202,7 +177,6 @@ private:
 	bool	overload;
 	bool	usb;
 	long long	rfc;
-//	bool	usebands;
 	int		offset;
 	int		sigoffset;
 	int		step;
@@ -220,11 +194,11 @@ private:
 	WFspeed	wfspeed;
 	int		srate;
 	RGBI	*fft_img;
-//	RGBI	mag2RGBI[256];
 	RGB		*markerimage;
 	RGB		RGBmarker;
 	RGB		RGBcursor;
 	RGBI		RGBInotch;
+	int	fft_len_array ;
 	double	*fftout;
     double  *fftwindow;
 	uchar	*scaleimage;
@@ -263,7 +237,7 @@ public:
 	int	newcarrier;
 	int	oldcarrier;
 	bool	tmp_carrier;
-	double Pwr(int i) {
+	double Pwr(int i) const {
 		if ( i > 0 && i < IMAGE_WIDTH) return pwr[i];
 		return 0.0;
 	}
@@ -271,7 +245,6 @@ public:
 
 class waterfall: public Fl_Group {
 	friend void x1_cb(Fl_Widget *w, void* v);
-//	friend void slew_cb(Fl_Widget *w, void * v);
 	friend void slew_left(Fl_Widget *w, void * v);
 	friend void slew_right(Fl_Widget *w, void * v);
 	friend void center_cb(Fl_Widget *w, void *v);
@@ -293,18 +266,18 @@ public:
 	void Overload(bool ovr) {
 		wfdisp->Overload(ovr);
 	}
-	int carrier() {
+	int carrier() const {
 		return wfdisp->carrier();
 	}
 	void carrier(int f);
 	void rfcarrier(long long cf);
-	long long rfcarrier();
-	bool tmp_carrier(void) { return wfdisp->tmp_carrier; }
+	long long rfcarrier() const { return wfdisp->rfcarrier(); }
+	bool tmp_carrier(void) const { return wfdisp->tmp_carrier; }
 	void set_XmtRcvBtn(bool val);
 	void USB(bool b);
-	bool USB();
+	bool USB() const { return wfdisp->USB(); }
 	void Reverse( bool v) { reverse = v;}
-	bool Reverse() { return reverse;}
+	bool Reverse() const { return reverse;}
 
 	void xmtrcv_selection_color(Fl_Color clr) {xmtrcv->selection_color(clr);}
 	void reverse_selection_color(Fl_Color clr) {btnRev->selection_color(clr);}
@@ -314,11 +287,11 @@ public:
 	{
 		wfdisp->Bandwidth(bw);
 	}
-	int peakFreq(int f0, int delta)
+	int peakFreq(int f0, int delta) const
 	{
 		return (wfdisp->peakFreq(f0, delta));
 	}
-	double powerDensity(double f0, double bw)
+	double powerDensity(double f0, double bw) const
 	{
 		return (wfdisp->powerDensity(f0,bw));
 	}
@@ -328,13 +301,13 @@ public:
 		return (wfdisp->powerDensityMaximum(bw_nb,bw));
 	}
 
-	int Speed();
+	int Speed() const { return (int)wfdisp->Speed(); }
 	void Speed(int rate);
-	int Mag();
+	int Mag() const { return wfdisp->Mag(); }
 	void Mag(int m);
-	int Offset();
+	int Offset() const { return wfdisp->Offset(); }
 	void Offset(int v);
-	int Carrier();
+	int Carrier() const { return wfdisp->carrier(); }
 	void Carrier(int f);
 
 	void movetocenter() { wfdisp->movetocenter();}
@@ -344,19 +317,17 @@ public:
 	void setcolors() { wfdisp->setcolors(); }
 	void setRefLevel();
 	void setAmpSpan();
-	double dFreq() { return wfdisp->dFreq();}
+	double dFreq() const { return wfdisp->dFreq();}
 
 	void setQSY(bool on) {
 		if (on)
 			qsy->activate();
 		else
 			qsy->deactivate();
-//		wfdisp->useBands(!on);
 	}
 	void setXMLRPC(bool on) {
-//		wfdisp->useBands(!on);
 	}
-	double Pwr(int i) { return wfdisp->Pwr(i); }
+	double Pwr(int i) const { return wfdisp->Pwr(i); }
 
 	int handle(int event);
 

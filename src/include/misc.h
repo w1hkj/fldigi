@@ -38,6 +38,7 @@ extern unsigned int log2u(unsigned int x);
 
 extern unsigned char graydecode(unsigned char data);
 extern unsigned char grayencode(unsigned char data);
+extern unsigned int round_up_next_pow_two(unsigned int v);
 extern void MilliSleep(long msecs);
 
 inline double sinc(double x)

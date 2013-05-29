@@ -144,6 +144,23 @@ unsigned char graydecode(unsigned char data)
 
 // ----------------------------------------------------------------------------
 
+// This computes the next highest power of 2 of 32-bit v
+unsigned int round_up_next_pow_two(unsigned int v)
+{
+	// See http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+	v--;
+	v |= v >> 1;
+	v |= v >> 2;
+	v |= v >> 4;
+	v |= v >> 8;
+	v |= v >> 16;
+	v++;
+	return v;
+}
+
+// ----------------------------------------------------------------------------
+
+
 // Rectangular - no pre filtering of data array
 void RectWindow(double *array, int n) {
 	for (int i = 0; i < n; i++)

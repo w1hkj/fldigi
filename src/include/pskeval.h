@@ -28,12 +28,9 @@
 #include "filters.h"
 #include "waterfall.h"
 
-#define FLOWER 200
-#define FUPPER 4000
-
 class pskeval {
 private:
-	double	sigpwr[FFT_LEN];
+	double	*sigpwr;
 	double	sigmin;
 	double	bw;
 public:

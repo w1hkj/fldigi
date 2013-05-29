@@ -5,6 +5,8 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2007-2010
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2013
+//		Remi Chateauneu, F4ECW
 //
 // This file is part of fldigi.
 //
@@ -22,15 +24,12 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-//#define USE_BLACKMAN
-//#define USE_HAMMING
-//#define USE_HANNING
-
 #include <config.h>
 
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <map>
 
 #include <FL/Fl.H>
@@ -109,7 +108,28 @@ static	RGB RGBred		= {254,0,0};
 RGBI	mag2RGBI[256];
 RGB		palette[9];
 
-short int *tmp_fft_db;
+static short int *tmp_fft_db;
+
+#define SC_SMPLRATE 8000
+
+/// SC_SMPLRATE = 8000, FFT_LEN up to 16384, was 4096 initially.
+/// srate = 8000 by default, 11025 etc... so srate was about 2.
+#define smpl_rate_to_fft_scale(smpl_rate) ( (double)SC_SMPLRATE / smpl_rate ) * ( FFT_LEN / 2000.0 );
+
+/// step is always a power of two. Therefore, if needed, it is easy to have
+/// a significant speedup by replacing integer multiplies and divides by bit shifts.
+static const struct {
+	const char * m_title ;
+	int          m_step ; // Always a power of two.
+} mags[] = {
+	{	"x1",  4 }, // Default value.
+	{	"x2",  2 },
+	{	"x4",  1 },
+	{	"/4", 16 },
+	{	"/2",  8 }
+};
+static const size_t mags_nb = sizeof(mags)/sizeof(*mags);
+
 
 WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 			  Fl_Widget(x0,y0,w0,h0,"") {
@@ -131,17 +151,20 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	pwr				= new double[IMAGE_WIDTH];
 	fft_db			= new short int[image_area];
 	tmp_fft_db		= new short int[image_area];
-	circbuff		= new double[FFT_LEN * 2];
-	fftout			= new double[FFT_LEN * 2];
+	static const int min_sample_rate = 8000;
+	double max_fft_scale	= smpl_rate_to_fft_scale(min_sample_rate);
+	fft_len_array		= FFT_LEN * (int)( 0.5 + max_fft_scale );
+	circbuff		= new double[fft_len_array];
+	fftout			= new double[fft_len_array];
 	wfft			= new Cfft(FFT_LEN);
-	fftwindow	   = new double[FFT_LEN * 2];
+	fftwindow		= new double[fft_len_array];
 	setPrefilter(progdefaults.wfPreFilter);
 
-	for (int i = 0; i < FFT_LEN*2; i++)
+	for (int i = 0; i < fft_len_array; i++)
 		circbuff[i] = fftout[i] = 0.0;
 
-	mag = 1;
-	step = 4;
+	mag = 0; // Was 1
+	step = mags[mag].m_step;
 	dispcolor = true;
 	offset = 0;
 	sigoffset = 0;
@@ -480,11 +503,11 @@ double WFdisp::powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
 void WFdisp::setPrefilter(int v)
 {
 	switch (v) {
-	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN*2); break;
+	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, fft_len_array); break;
+	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, fft_len_array); break;
+	case WF_FFT_HAMMING: HammingWindow(fftwindow, fft_len_array); break;
+	case WF_FFT_HANNING: HanningWindow(fftwindow, fft_len_array); break;
+	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, fft_len_array); break;
 	}
 	prefilter = v;
 }
@@ -501,16 +524,18 @@ void WFdisp::processFFT() {
 	if (prefilter != progdefaults.wfPreFilter)
 		setPrefilter(progdefaults.wfPreFilter);
 
-		const double scale = ( (double)SC_SMPLRATE / srate ) * ( FFT_LEN / 2000.0 );
+	// SC_SMPLRATE = 8000, FFT_LEN up to 16384, was 4096 initially.
+	// srate = 8000 by default, 11025 etc... so srate was about 2.
+	const double scale = smpl_rate_to_fft_scale(srate);
 
 	if (dispcnt == 0) {
-		int step = 8 / progdefaults.latency;
+		int local_stp = 8 / progdefaults.latency;
 
-		int last_i = FFT_LEN * 2 / step;
+		int last_i = fft_len_array / local_stp;
 		for (int i = 0; i < last_i; i++)
-		fftout[i] = fftwindow[i * step] * circbuff[i] * step;
+		fftout[i] = fftwindow[i * local_stp] * circbuff[i] * local_stp;
 		/// Zeroes only the last elements.
-		memset (fftout + last_i , 0, ( FFT_LEN*2 - last_i ) *sizeof(double));
+		memset (fftout + last_i , 0, ( fft_len_array - last_i ) *sizeof(double));
 
 		wfft->rdft(fftout);
 FL_LOCK_D();
@@ -603,7 +628,7 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 	// if sound card sampling rate changed reset the waterfall buffer
 	if (srate != sr) {
 		srate = sr;
-		memset (circbuff, 0, FFT_LEN * 2 * sizeof(double));
+		memset (circbuff, 0, fft_len_array * sizeof(double));
 		ptrCB = 0;
 	}
 
@@ -612,8 +637,8 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 		double overval, peak = 0.0;
 		memmove((void*)circbuff,
 				(void*)(circbuff + len), 
-				(size_t)((FFT_LEN *2 - len)*sizeof(double)));
-		memmove((void*)(circbuff + (FFT_LEN*2-len)),
+				(size_t)((fft_len_array - len)*sizeof(double)));
+		memmove((void*)(circbuff + (fft_len_array-len)),
 				(void*)sig,
 				(size_t)(len*sizeof(double)));
 		for (int i = 0; i < len; i++) {
@@ -623,7 +648,7 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
 	if (mode == SCOPE)
-		process_analog(circbuff, FFT_LEN * 2);
+		process_analog(circbuff, fft_len_array);
 	else
 		processFFT();
 
@@ -709,13 +734,9 @@ int WFdisp::carrier() {
 void WFdisp::checkWidth()
 {
 	disp_width = w();
-	if (mag == MAG_1) step = 4;
-	if (mag == MAG_1 && disp_width > progdefaults.HighFreqCutoff/4)
-		disp_width = progdefaults.HighFreqCutoff/4;
-	if (mag == MAG_2) step = 2;
-	if (mag == MAG_2 && disp_width > progdefaults.HighFreqCutoff/2)
-		disp_width = progdefaults.HighFreqCutoff/2;
-	if (mag == MAG_4) step = 1;
+	step = mags[ mag ].m_step ;
+	if ( disp_width > progdefaults.HighFreqCutoff/step )
+		disp_width = progdefaults.HighFreqCutoff/step;
 }
 
 int WFdisp::checkMag()
@@ -741,9 +762,7 @@ int WFdisp::setMag(int m)
 
 int WFdisp::wfmag() {
 	int mid = offset + (disp_width * step / 2);
-	if (mag == MAG_1) mag = MAG_2;
-	else if (mag == MAG_2) mag = MAG_4;
-	else mag = MAG_1;
+	mag = ( mag + 1 ) % mags_nb ;
 	checkMag();
 	if (centercarrier || Fl::event_shift()) {
 		offset = mid - (disp_width * step / 2);
@@ -777,6 +796,9 @@ void WFdisp::drawScale() {
 	fl_color(fl_rgb_color(228));
 	fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
 	for (int i = 1; ; i++) {
+		/// If small scale, do not print all numbers.
+		if( ( step > 4 ) && ( i & 1 ) ) continue ;
+
 		if (progdefaults.wf_audioscale)
 			fr = 500.0 * i;
 		else {
@@ -844,6 +866,8 @@ case Step: for (int row = 0; row < image_height; row++) { \
 
 	if (progdefaults.WFaveraging) {
 		switch(step) {
+			UPD_LOOP(16, std::accumulate(p2, p2+16, 0) / 16 );
+			UPD_LOOP( 8, std::accumulate(p2, p2+8, 0) / 8 );
 			UPD_LOOP( 4, (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 );
 			UPD_LOOP( 2, (*p2  + *(p2+1))/2 );
 			UPD_LOOP( 1, *p2 );
@@ -851,6 +875,8 @@ case Step: for (int row = 0; row < image_height; row++) { \
 		}
 	} else {
 		switch(step) {
+			UPD_LOOP(16, *std::max_element(p2, p2+16) );
+			UPD_LOOP( 8, *std::max_element(p2, p2+8) );
 			UPD_LOOP( 4, MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) );
 			UPD_LOOP( 2, MAX( *p2, *(p2+1) ) );
 			UPD_LOOP( 1, *p2 );
@@ -1126,9 +1152,7 @@ void WFdisp::draw() {
 void x1_cb(Fl_Widget *w, void* v) {
 	waterfall *wf = (waterfall *)w->parent();
 	int m = wf->wfdisp->wfmag();
-	if (m == MAG_1) w->label("x1");
-	if (m == MAG_2) w->label("x2");
-	if (m == MAG_4) w->label("x4");
+	w->label( mags[ m ].m_title );
 	restoreFocus();
 }
 
@@ -1457,10 +1481,6 @@ void waterfall::carrier(int f) {
 	FL_UNLOCK_D();
 }
 
-int waterfall::Speed() {
-	return (int)wfdisp->Speed();
-}
-
 void waterfall::Speed(int rate)
 {
 	WFspeed speed = static_cast<WFspeed>(rate);
@@ -1486,33 +1506,18 @@ void waterfall::Speed(int rate)
 	wfrate->redraw_label();
 }
 
-int waterfall::Mag() {
-	return wfdisp->Mag();
-}
-
 void waterfall::Mag(int m) {
 	FL_LOCK_D();
 	wfdisp->Mag(m);
-	if (m == MAG_1) x1->label("x1");
-	if (m == MAG_2) x1->label("x2");
-	if (m == MAG_4) x1->label("x4");
+	x1->label( mags[ m ].m_title );
 	x1->redraw_label();
 	FL_UNLOCK_D();
-}
-
-int waterfall::Offset() {
-	return wfdisp->Offset();
 }
 
 void waterfall::Offset(int v) {
 	FL_LOCK_D();
 	wfdisp->Offset(v);
 	FL_UNLOCK_D();
-}
-
-int waterfall::Carrier()
-{
-	return wfdisp->carrier();
 }
 
 void waterfall::Carrier(int f)
@@ -1522,10 +1527,6 @@ void waterfall::Carrier(int f)
 
 void waterfall::rfcarrier(long long cf) {
 	wfdisp->rfcarrier(cf);
-}
-
-long long waterfall::rfcarrier() {
-	return wfdisp->rfcarrier();
 }
 
 void waterfall::setRefLevel() {
@@ -1548,10 +1549,6 @@ void waterfall::USB(bool b) {
 	wfdisp->USB(b);
 	active_modem->set_reverse(reverse);
 	REQ(&viewer_redraw);
-}
-
-bool waterfall::USB() {
-	return wfdisp->USB();
 }
 
 void waterfall::show_scope(bool on)
