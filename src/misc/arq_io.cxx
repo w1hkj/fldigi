@@ -78,6 +78,7 @@ static void *arq_loop(void *args);
 
 static bool arq_exit = false;
 static bool arq_enabled;
+static bool abort_flag = false;
 
 static string tosend = "";
 static string enroute = "";
@@ -87,8 +88,8 @@ static string enroute = "";
 static const char *asc[128] = {
 	"<NUL>", "<SOH>", "<STX>", "<ETX>",
 	"<EOT>", "<ENQ>", "<ACK>", "<BEL>",
-	"<BS>",  "<TAB>", "<LF>",  "<VT>", 
-	"<FF>",  "<CR>",  "<SO>",  "<SI>",
+	"<BS>",  "<TAB>", "\n",  "<VT>", 
+	"<FF>",  "",  "<SO>",  "<SI>",
 	"<DLE>", "<DC1>", "<DC2>", "<DC3>",
 	"<DC4>", "<NAK>", "<SYN>", "<ETB>",
 	"<CAN>", "<EM>",  "<SUB>", "<ESC>",
@@ -125,7 +126,7 @@ string noctrl(string src)
 	retstr.clear();
 	char hexstr[10];
 	for (size_t i = 0; i < src.length(); i++)  {
-		if ( i < 128) retstr.append(asc[(int)src[i]]);
+		if ( src[i] < 128) retstr.append(asc[(int)src[i]]);
 		else {
 			snprintf(hexstr, sizeof(hexstr), "<%0X>", src[i]);
 			retstr.append(hexstr);
@@ -293,6 +294,9 @@ static	string strSubCmd;
 				ParseTxRSID(strSubCmd);
 				LOG_INFO("%s %s", "ARQ txrsid ", strSubCmd.c_str());
 			}
+		} else if (strCmdText == "abort") {
+			LOG_INFO("%s", "Abort current ARQ ops");
+			abort_flag = true;
 		}
 
 		toparse.erase(idxCmd, idxCmdEnd - idxCmd + 6);
@@ -351,7 +355,6 @@ bool TLF_arqRx()
 
 	ifstream autofile(sAutoFile.c_str());
 	if(autofile) {
-		arqtext = "";
 		time(&start_time);
 		while (!autofile.eof()) {
 			memset(mailline, 0, sizeof(mailline));
@@ -370,6 +373,15 @@ bool TLF_arqRx()
 		std::remove (sAutoFile.c_str());
 
 		parse_arqtext(txstring);
+
+		if (abort_flag) {
+			AbortARQ();
+			abort_flag = false;
+			return true;
+		}
+
+		pthread_mutex_lock (&arq_rx_mutex);
+
 		if (arqtext.empty() && !txstring.empty()) {
 			arqtext = txstring;
 			if (mailserver && progdefaults.PSKmailSweetSpot)
@@ -377,10 +389,11 @@ bool TLF_arqRx()
 			pText = 0;
 			arq_text_available = true;
 			active_modem->set_stopflag(false);
-LOG_INFO("%s", arqtext.c_str());
 			start_tx();
 			txstring.clear();
 		}
+
+		pthread_mutex_unlock (&arq_rx_mutex);
 
 	}
 	return true;
@@ -559,6 +572,15 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	return NULL;
 }
 
+void arq_reset()
+{
+	arqmode = mailserver = mailclient = false;
+	txstring.clear();
+	arqtext.clear();
+	bSend0x06 = false;
+	pText = 0;
+}
+
 void arq_run(Socket s)
 {
 	pthread_mutex_lock (&arq_mutex);
@@ -605,7 +627,7 @@ void WriteARQsocket(unsigned char* data, size_t len)
 			arqclient.erase(p);
 		}
 	}
-	if (arqclient.empty()) arqmode = false;
+	if (arqclient.empty()) arq_reset();
 }
 
 void test_arq_clients()
@@ -638,9 +660,10 @@ void test_arq_clients()
 			p++;
 		}
 	}
+	if (arqclient.empty()) arq_reset();
+
 	pthread_mutex_unlock (&arq_mutex);
 
-	if (arqclient.empty()) arqmode = false;
 }
 
 bool Socket_arqRx()
@@ -675,29 +698,41 @@ bool Socket_arqRx()
 			arqclient.erase(p);
 		}
 	}
+	if (arqclient.empty()) arq_reset();
+
 	pthread_mutex_unlock (&arq_mutex);
 
 	if (!txstring.empty()) parse_arqtext(txstring);
 
-	if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
-
-		pthread_mutex_lock (&arq_rx_mutex);
-
-		arqtext.assign(txstring);
-		pText = 0;
-		txstring.clear();
-		LOG_INFO("arqtext\n%s\n", arqtext.c_str());
-		if (mailserver && progdefaults.PSKmailSweetSpot)
-			active_modem->set_freq(progdefaults.PSKsweetspot);
-		arq_text_available = true;
-		active_modem->set_stopflag(false);
-		start_tx();
-
-		pthread_mutex_unlock (&arq_rx_mutex);
+	if (abort_flag) {
+		AbortARQ();
+		abort_flag = false;
 		return true;
 	}
 
-	return false;
+	if (bSend0x06 || txstring.empty()) return false;
+
+	pthread_mutex_lock (&arq_rx_mutex);
+
+	if (arqtext.empty()) {
+		arqtext.assign(txstring);
+		LOG_INFO("Assigned tx text: %s", noctrl(txstring).c_str());
+		pText = 0;
+		if (mailserver && progdefaults.PSKmailSweetSpot)
+			active_modem->set_freq(progdefaults.PSKsweetspot);
+		start_tx();
+	} else {
+		arqtext.append(txstring); //assign(txstring);
+		LOG_INFO("Appended tx text: %s", noctrl(txstring).c_str());
+	}
+	txstring.clear();
+
+	arq_text_available = true;
+	active_modem->set_stopflag(false);
+
+	pthread_mutex_unlock (&arq_rx_mutex);
+
+	return true;
 }
 
 // ============================================================================
@@ -826,6 +861,7 @@ int arq_get_char()
 void AbortARQ() {
 	pthread_mutex_lock (&arq_mutex);
 	arqtext.clear();
+	txstring.clear();
 	pText = 0;
 	arq_text_available = false;
 	bSend0x06 = true;
