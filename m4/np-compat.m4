@@ -5,7 +5,8 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   AM_CONDITIONAL([COMPAT_REGEX], [test "x$ac_cv_header_regex_h" != "xyes"])
 
   if test "x$target_mingw32" = "xyes"; then
-      sem_libs="pthreadGC2"
+      # Newer versions of mingw32 comes with pthread.
+      sem_libs="pthreadGC2 pthread"
   else
       sem_libs="pthread rt"
   fi

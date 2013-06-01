@@ -1788,13 +1788,13 @@ void set_macro_env(void)
 
 	// frequencies
 	char dial_freq[20];
-	snprintf(dial_freq, sizeof(dial_freq), "%lld", wf->rfcarrier());
+	snprintf(dial_freq, sizeof(dial_freq), "%" PRId64, wf->rfcarrier());
 	env[FLDIGI_DIAL_FREQUENCY].val = dial_freq;
 	char audio_freq[6];
 	snprintf(audio_freq, sizeof(audio_freq), "%d", active_modem->get_freq());
 	env[FLDIGI_AUDIO_FREQUENCY].val = audio_freq;
 	char freq[20];
-	snprintf(freq, sizeof(freq), "%lld", wf->rfcarrier() + (wf->USB()
+	snprintf(freq, sizeof(freq), "%" PRId64, wf->rfcarrier() + (wf->USB()
 								? active_modem->get_freq()
 								: -active_modem->get_freq()));
 	env[FLDIGI_FREQUENCY].val = freq;

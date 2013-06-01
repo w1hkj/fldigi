@@ -263,7 +263,7 @@ void FTextRX::add(unsigned int c, int attr)
 	if (c == '\r')
 		return;
 
-	char s[] = { '\0', '\0', FTEXT_DEF + attr, '\0' };
+	char s[] = { '\0', '\0', char( FTEXT_DEF + attr ), '\0' };
 	const char *cp = &s[0];
 
 	// The user may have moved the cursor by selecting text or
