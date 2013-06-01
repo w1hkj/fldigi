@@ -191,6 +191,7 @@ void xml_add_record()
 // need to add the remaining fields
 	adif_str(IOTA, "");
 	adif_str(DXCC, "");
+	adif_str(QSL_VIA, "");
 	adif_str(QSLRDATE, "");
 	adif_str(QSLSDATE, "");
 	adif.append("<eor>");

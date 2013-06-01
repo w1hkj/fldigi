@@ -1,26 +1,30 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0302 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
-decl {\#include <config.h>} {} 
+decl {\#include <config.h>} {private local
+} 
 
-decl {\#include <FL/Fl_Pixmap.H>} {} 
+decl {\#include <FL/Fl_Pixmap.H>} {private local
+} 
 
-decl {\#include "logsupport.h"} {} 
+decl {\#include "logsupport.h"} {private local
+} 
 
-decl {\#include "pixmaps.h"} {} 
+decl {\#include "pixmaps.h"} {private local
+} 
 
-decl {\#include "flinput2.h"} {public
+decl {\#include "flinput2.h"} {public local
 } 
 
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup}
-    xywh {517 143 675 439} type Double visible
+    label {Export Setup} open
+    xywh {168 180 675 435} type Double hide
   } {
     Fl_Group {} {
       label {Select Records to Export}
@@ -110,7 +114,7 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);}
-        xywh {395 372 90 24}
+        xywh {395 375 90 24}
       }
       Fl_Button btnCheckAllFields {
         label {Check All}
@@ -144,7 +148,7 @@ btnSelectCQZ->value(1);
 btnSelectITUZ->value(1);
 btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);}
-        xywh {487 372 90 24}
+        xywh {487 375 90 24}
       }
       Fl_Check_Button btnSelectCall {
         label Call
@@ -156,55 +160,59 @@ btnSelectNotes->value(1);}
       }
       Fl_Check_Button btnSelectFreq {
         label Freq
-        xywh {402 74 70 15} down_box DOWN_BOX value 1
+        xywh {402 73 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectBand {
         label Band
-        xywh {402 96 70 15} down_box DOWN_BOX
+        xywh {402 94 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectMode {
         label Mode
-        xywh {402 117 70 15} down_box DOWN_BOX value 1
+        xywh {402 115 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQSOdateOn {
         label {QSO Date On}
-        xywh {402 139 70 15} down_box DOWN_BOX value 1
+        xywh {402 136 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQSOdateOff {
         label {QSO Date Off}
-        xywh {402 161 70 15} down_box DOWN_BOX value 1
+        xywh {402 157 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeON {
         label {Time ON}
-        xywh {402 183 70 15} down_box DOWN_BOX value 1
+        xywh {402 178 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTimeOFF {
         label {Time OFF}
-        xywh {402 204 70 15} down_box DOWN_BOX value 1
+        xywh {402 199 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectTX_pwr {
         label {TX Power}
-        xywh {402 226 70 15} down_box DOWN_BOX
+        xywh {402 220 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectRSTsent {
         label {RST sent}
-        xywh {402 248 70 15} down_box DOWN_BOX value 1
+        xywh {402 241 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectRSTrcvd {
         label {RST rcvd}
-        xywh {402 269 70 15} down_box DOWN_BOX value 1
+        xywh {402 262 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectQth {
         label Qth
-        xywh {402 291 70 15} down_box DOWN_BOX
+        xywh {402 283 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectLOC {
         label LOC
-        xywh {402 313 70 15} down_box DOWN_BOX value 1
+        xywh {402 304 70 15} down_box DOWN_BOX value 1
       }
       Fl_Check_Button btnSelectState {
         label State
-        xywh {400 335 70 15} down_box DOWN_BOX
+        xywh {402 325 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectQSL_VIA {
+        label {QSL-VIA}
+        xywh {402 346 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectProvince {
         label Province
@@ -212,7 +220,7 @@ btnSelectNotes->value(1);}
       }
       Fl_Check_Button btnSelectCountry {
         label Country
-        xywh {533 51 70 15} down_box DOWN_BOX
+        xywh {533 52 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectNotes {
         label Notes
@@ -220,51 +228,51 @@ btnSelectNotes->value(1);}
       }
       Fl_Check_Button btnSelectQSLrcvd {
         label {QSL rcvd date}
-        xywh {533 95 70 15} down_box DOWN_BOX
+        xywh {533 94 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectQSLsent {
         label {QSL sent date}
-        xywh {533 117 70 15} down_box DOWN_BOX
+        xywh {533 115 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectSerialIN {
         label {Serial \# in}
-        xywh {533 138 70 15} down_box DOWN_BOX
+        xywh {533 136 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectSerialOUT {
         label {Serial \# out}
-        xywh {533 160 70 15} down_box DOWN_BOX
+        xywh {533 157 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectXchgIn {
         label {Exchange In}
-        xywh {533 182 70 15} down_box DOWN_BOX
+        xywh {533 178 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectMyXchg {
         label {Exchange Out}
-        xywh {533 204 70 15} down_box DOWN_BOX
+        xywh {533 199 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCNTY {
         label County
-        xywh {533 226 70 15} down_box DOWN_BOX
+        xywh {533 220 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCONT {
         label Continent
-        xywh {534 247 70 15} down_box DOWN_BOX
+        xywh {533 241 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectCQZ {
         label CQZ
-        xywh {534 269 70 15} down_box DOWN_BOX
+        xywh {533 262 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectDXCC {
         label DXCC
-        xywh {534 291 70 15} down_box DOWN_BOX
+        xywh {533 283 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectIOTA {
         label IOTA
-        xywh {534 313 70 15} down_box DOWN_BOX
+        xywh {533 304 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectITUZ {
         label ITUZ
-        xywh {534 335 70 15} down_box DOWN_BOX
+        xywh {533 325 70 15} down_box DOWN_BOX
       }
       Fl_Button btnSetFieldDefaults {
         label Defaults
@@ -298,16 +306,16 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);}
-        xywh {578 372 90 24}
+        xywh {578 375 90 24}
       }
     }
   }
   Fl_Window dlgLogbook {
     label Logbook open
-    xywh {603 71 590 514} type Double resizable visible
+    xywh {522 70 590 510} type Double resizable visible
   } {
     Fl_Input inpDate_log {
-      label {Date On} selected
+      label {Date On}
       tooltip {Date QSO started} xywh {4 24 100 24} align 5
       code0 {\#include "calendar.h"}
       code1 {inpDate_log->format(2);}
@@ -424,22 +432,27 @@ btnSelectNotes->value(0);}
     }
     Fl_Input inpITUZ_log {
       label ITUZ
-      tooltip {ITU zone} xywh {311 204 80 24} labelsize 12 align 5
+      tooltip {ITU zone} xywh {311 204 59 24} align 5
       class Fl_Input2
     }
     Fl_Input inpCONT_log {
       label CONT
-      tooltip Continent xywh {409 204 80 24} labelsize 12 align 5
+      tooltip Continent xywh {374 204 66 24} align 5
       class Fl_Input2
     }
     Fl_Input inpDXCC_log {
       label DXCC
-      tooltip {DXCC designator} xywh {506 204 80 24} labelsize 12 align 5
+      tooltip {DXCC designator} xywh {445 204 70 24} align 5
+      class Fl_Input2
+    }
+    Fl_Input inpQSL_VIA_log {
+      label {QSL-VIA}
+      tooltip {QSL route of contacted station} xywh {518 204 70 24} align 5
       class Fl_Input2
     }
     Fl_Input inpSerNoOut_log {
       label {Ser out}
-      tooltip {Contest seral \# sent} xywh {4 252 55 24} align 1
+      tooltip {Contest serial \# sent} xywh {4 252 55 24} align 1
       class Fl_Input2
     }
     Fl_Input inpMyXchg_log {
@@ -497,7 +510,7 @@ btnSelectNotes->value(0);}
       tooltip {Find next} xywh {547 284 24 22} color 50 selection_color 48 align 16
       code0 {bSearchNext->image(new Fl_Pixmap(right_arrow_icon));}
     }
-    Fl_Group wBrowser {open
+    Fl_Group wBrowser {open selected
       xywh {2 315 586 195} box DOWN_FRAME color 7 selection_color 15 resizable
       code0 {\#include "table.h"}
       class Table

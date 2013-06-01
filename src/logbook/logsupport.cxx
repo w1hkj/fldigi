@@ -911,6 +911,7 @@ void clearRecord() {
 	inpNotes_log->value ("");
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
+	inpQSL_VIA_log->value("");
 	inpCONT_log->value("");
 	inpCNTY_log->value("");
 	inpCQZ_log->value("");
@@ -964,6 +965,7 @@ void saveRecord() {
 	rec.putField(CNTY, inpCNTY_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
+	rec.putField(DXCC, inpQSL_VIA_log->value());
 	rec.putField(CONT, inpCONT_log->value());
 	rec.putField(CQZ, inpCQZ_log->value());
 	rec.putField(ITUZ, inpITUZ_log->value());
@@ -1018,6 +1020,7 @@ cQsoRec rec;
 	rec.putField(CNTY, inpCNTY_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
+	rec.putField(QSL_VIA, inpQSL_VIA_log->value());
 	rec.putField(CONT, inpCONT_log->value());
 	rec.putField(CQZ, inpCQZ_log->value());
 	rec.putField(ITUZ, inpITUZ_log->value());
@@ -1089,6 +1092,7 @@ void EditRecord( int i )
 	inpCNTY_log->value(editQSO->getField(CNTY));
 	inpIOTA_log->value(editQSO->getField(IOTA));
 	inpDXCC_log->value(editQSO->getField(DXCC));
+	inpQSL_VIA_log->value(editQSO->getField(QSL_VIA));
 	inpCONT_log->value(editQSO->getField(CONT));
 	inpCQZ_log->value(editQSO->getField(CQZ));
 	inpITUZ_log->value(editQSO->getField(ITUZ));
@@ -1142,6 +1146,7 @@ void AddRecord ()
 	inpCNTY_log->value("");
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
+	inpQSL_VIA_log->value("");
 	inpCONT_log->value("");
 	inpCQZ_log->value("");
 	inpITUZ_log->value("");
