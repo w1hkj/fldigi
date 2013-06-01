@@ -336,4 +336,6 @@ extern Fl_Double_Window *dxcc_window;
 
 extern void cb_mnuCheckUpdate(Fl_Widget *, void *);
 
+bool ask_dir_creation( const std::string & dir );
+
 #endif

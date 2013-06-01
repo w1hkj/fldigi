@@ -201,13 +201,23 @@ deprecated__ typeof(strcat) strcat;
 
 #  define PATH_SEP "/"
 
-// Unnamed sempahores are not supported on OS X
-// (and named semaphores are broken on cygwin).
+/// Unnamed sempahores are not supported on OS X (and named semaphores are broken on cygwin).
 #ifdef __APPLE__
 #  define USE_NAMED_SEMAPHORES 1
 #else
 #  define USE_NAMED_SEMAPHORES 0
 #endif
+
+/// Returns 0 if a process is running, 0 if not there and -1 if the test cannot be made.
+int test_process(int pid);
+
+/// Starts a process and returns its pid, and -1 if error. Returns 0 if this cannot be made.
+int fork_process( const char * cmd );
+
+/// Returns NULL if no error.
+const char * create_directory( const char * dir );
+
+int directory_is_created( const char * dir );
 
 #endif /* UTIL_H */
 

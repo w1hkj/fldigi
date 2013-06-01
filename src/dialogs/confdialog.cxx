@@ -23,8 +23,8 @@
 #include "debug.h"
 #include "status.h"
 #include "rx_extract.h"
+#include "kmlserver.h"
 extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
-extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
@@ -2903,6 +2903,27 @@ if (o->value()) {
 };
 }
 
+Fl_Check_Button *btnSynopAdifDecoding=(Fl_Check_Button *)0;
+
+static void cb_btnSynopAdifDecoding(Fl_Check_Button* o, void*) {
+  progdefaults.SynopAdifDecoding=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnSynopKmlDecoding=(Fl_Check_Button *)0;
+
+static void cb_btnSynopKmlDecoding(Fl_Check_Button* o, void*) {
+  progdefaults.SynopKmlDecoding=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnSynopInterleaved=(Fl_Check_Button *)0;
+
+static void cb_btnSynopInterleaved(Fl_Check_Button* o, void*) {
+  progdefaults.SynopInterleaved=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabTHOR=(Fl_Group *)0;
 
 Fl_Input2 *txtTHORSecondary=(Fl_Input2 *)0;
@@ -2972,19 +2993,11 @@ static void cb_btnNvtxAdifLog(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Output *txtNvtxCatalog=(Fl_Output *)0;
+Fl_Check_Button *btnNvtxKmlLog=(Fl_Check_Button *)0;
 
-static void cb_txtNvtxCatalog(Fl_Output* o, void*) {
-  progdefaults.NVTX_Catalog=o->value();
+static void cb_btnNvtxKmlLog(Fl_Check_Button* o, void*) {
+  progdefaults.NVTX_KmlLog=o->value();
 progdefaults.changed = true;
-}
-
-Fl_Button *btnSelectNvtxCatalog=(Fl_Button *)0;
-
-static void cb_btnSelectNvtxCatalog(Fl_Button*, void*) {
-  Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::SINGLE,"Navtex stations file");
-fc->callback(NvtxCatalogSet);
-fc->show();
 }
 
 Fl_Group *tabWefax=(Fl_Group *)0;
@@ -4401,6 +4414,85 @@ static void cb_btn_metar_search(Fl_Button*, void*) {
   get_METAR_station();
 }
 
+Fl_Group *tabKML=(Fl_Group *)0;
+
+Fl_Input *btnKmlSaveDir=(Fl_Input *)0;
+
+static void cb_btnKmlSaveDir(Fl_Input* o, void*) {
+  progdefaults.kml_save_dir=o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Input *inputKmlRootFile=(Fl_Input *)0;
+
+Fl_Counter *cntKmlMergeDistance=(Fl_Counter *)0;
+
+static void cb_cntKmlMergeDistance(Fl_Counter* o, void*) {
+  progdefaults.kml_merge_distance = o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Counter *cntKmlRetentionTime=(Fl_Counter *)0;
+
+static void cb_cntKmlRetentionTime(Fl_Counter* o, void*) {
+  progdefaults.kml_retention_time = o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Spinner2 *cntKmlRefreshInterval=(Fl_Spinner2 *)0;
+
+static void cb_cntKmlRefreshInterval(Fl_Spinner2* o, void*) {
+  progdefaults.kml_refresh_interval = (int)(o->value());
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Choice *selKmlBalloonStyle=(Fl_Choice *)0;
+
+static void cb_selKmlBalloonStyle(Fl_Choice* o, void*) {
+  progdefaults.kml_balloon_style = o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Input *btnKmlCommand=(Fl_Input *)0;
+
+static void cb_btnKmlCommand(Fl_Input* o, void*) {
+  progdefaults.kml_command=o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Button *btlTestKmlCommand=(Fl_Button *)0;
+
+static void cb_btlTestKmlCommand(Fl_Button*, void*) {
+  KmlServer::SpawnProcess();
+}
+
+Fl_Button *btnSelectKmlDestDir=(Fl_Button *)0;
+
+static void cb_btnSelectKmlDestDir(Fl_Button*, void*) {
+  Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+fc->callback(KmlDestDirSet);
+fc->show();
+}
+
+Fl_Button *btlPurge=(Fl_Button *)0;
+
+static void cb_btlPurge(Fl_Button*, void*) {
+  KmlServer::GetInstance()->Reset();
+}
+
+Fl_Check_Button *btnKmlPurgeOnStartup=(Fl_Check_Button *)0;
+
+static void cb_btnKmlPurgeOnStartup(Fl_Check_Button* o, void*) {
+  progdefaults.kml_purge_on_startup = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Tabs *tabsQRZ=(Fl_Tabs *)0;
@@ -4610,7 +4702,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(-5, 0, 600, 372);
+    { tabsConfigure = new Fl_Tabs(-5, 0, 600, 374);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 540, 345, _("Operator"));
@@ -4728,7 +4820,6 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 540, 346);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 540, 320, _("Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(24, 59, 496, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(40, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5431,6 +5522,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 540, 320, _("Colors/Fonts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 540, 313);
               { Fl_Group* o = new Fl_Group(0, 80, 540, 283, _("Rx/Tx"));
                 { CHARSETstatus = new Fl_Menu_Button(99, 109, 165, 26, _("Char set"));
@@ -7269,6 +7361,33 @@ ency"));
                 } // Fl_Check_Button* chkPseudoFSK
                 o->end();
               } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 75, 540, 295, _("Synop"));
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->hide();
+                { Fl_Check_Button* o = btnSynopAdifDecoding = new Fl_Check_Button(124, 120, 126, 22, _("SYNOP to ADIF"));
+                btnSynopAdifDecoding->tooltip(_("Decodes SYNOP messages (Ex: Deutsche Wetterdienst) to ADIF log file"));
+                btnSynopAdifDecoding->down_box(FL_DOWN_BOX);
+                btnSynopAdifDecoding->callback((Fl_Callback*)cb_btnSynopAdifDecoding);
+                btnSynopAdifDecoding->align(Fl_Align(132|FL_ALIGN_INSIDE));
+                o->value(progdefaults.SynopAdifDecoding);
+                } // Fl_Check_Button* btnSynopAdifDecoding
+                { Fl_Check_Button* o = btnSynopKmlDecoding = new Fl_Check_Button(124, 158, 119, 22, _("SYNOP to KML"));
+                btnSynopKmlDecoding->tooltip(_("Decodes SYNOP messages (Ex: Deutsche Wetterdienst) to KML documents (Ex: Goog\
+le Earth)"));
+                btnSynopKmlDecoding->down_box(FL_DOWN_BOX);
+                btnSynopKmlDecoding->callback((Fl_Callback*)cb_btnSynopKmlDecoding);
+                btnSynopKmlDecoding->align(Fl_Align(132|FL_ALIGN_INSIDE));
+                o->value(progdefaults.SynopKmlDecoding);
+                } // Fl_Check_Button* btnSynopKmlDecoding
+                { Fl_Check_Button* o = btnSynopInterleaved = new Fl_Check_Button(124, 197, 210, 22, _("Interleave SYNOP and text"));
+                btnSynopInterleaved->tooltip(_("Interleave text with decoded SYNOP messages, or replacement."));
+                btnSynopInterleaved->down_box(FL_DOWN_BOX);
+                btnSynopInterleaved->callback((Fl_Callback*)cb_btnSynopInterleaved);
+                btnSynopInterleaved->align(Fl_Align(132|FL_ALIGN_INSIDE));
+                o->value(progdefaults.SynopInterleaved);
+                } // Fl_Check_Button* btnSynopInterleaved
+                o->end();
+              } // Fl_Group* o
               tabsRTTY->end();
             } // Fl_Tabs* tabsRTTY
             tabRTTY->end();
@@ -7380,25 +7499,17 @@ ency"));
           } // Fl_Group* tabTHOR
           { tabNavtex = new Fl_Group(0, 50, 540, 320, _("Navtex"));
             tabNavtex->hide();
-            { Fl_Group* o = new Fl_Group(6, 60, 527, 300);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(81, 87, 235, 30, _("Log Navtex messages to Adif file"));
-                btnNvtxAdifLog->down_box(FL_DOWN_BOX);
-                btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
-                o->value(progdefaults.NVTX_AdifLog);
-              } // Fl_Check_Button* btnNvtxAdifLog
-              { Fl_Output* o = txtNvtxCatalog = new Fl_Output(81, 145, 270, 22, _("Navtex stations file:"));
-                txtNvtxCatalog->tooltip(_("Use Open to select descriptor file"));
-                txtNvtxCatalog->color(FL_LIGHT2);
-                txtNvtxCatalog->callback((Fl_Callback*)cb_txtNvtxCatalog);
-                txtNvtxCatalog->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->value(fl_filename_name(progdefaults.NVTX_Catalog.c_str()));
-              } // Fl_Output* txtNvtxCatalog
-              { btnSelectNvtxCatalog = new Fl_Button(386, 147, 80, 20, _("Directory..."));
-                btnSelectNvtxCatalog->callback((Fl_Callback*)cb_btnSelectNvtxCatalog);
-              } // Fl_Button* btnSelectNvtxCatalog
-              o->end();
-            } // Fl_Group* o
+            { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(83, 150, 235, 30, _("Log Navtex messages to Adif file"));
+              btnNvtxAdifLog->down_box(FL_DOWN_BOX);
+              btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
+              o->value(progdefaults.NVTX_AdifLog);
+            } // Fl_Check_Button* btnNvtxAdifLog
+            { Fl_Check_Button* o = btnNvtxKmlLog = new Fl_Check_Button(82, 196, 270, 30, _("Log Navtex messages to KML"));
+              btnNvtxKmlLog->tooltip(_("Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)"));
+              btnNvtxKmlLog->down_box(FL_DOWN_BOX);
+              btnNvtxKmlLog->callback((Fl_Callback*)cb_btnNvtxKmlLog);
+              o->value(progdefaults.NVTX_KmlLog);
+            } // Fl_Check_Button* btnNvtxKmlLog
             tabNavtex->end();
           } // Fl_Group* tabNavtex
           { tabWefax = new Fl_Group(0, 50, 540, 320, _("Wefax"));
@@ -8235,10 +8346,10 @@ nce.\nYou may change the state from either location.\n..."));
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
-      { tabID = new Fl_Group(0, 23, 540, 348, _("ID"));
+      { tabID = new Fl_Group(0, 23, 540, 350, _("ID"));
         tabID->hide();
-        { tabsID = new Fl_Tabs(0, 23, 540, 345);
-          { tabRsID = new Fl_Group(0, 48, 540, 320, _("RsID"));
+        { tabsID = new Fl_Tabs(0, 23, 540, 347);
+          { tabRsID = new Fl_Group(0, 50, 540, 320, _("RsID"));
             { Fl_Group* o = new Fl_Group(2, 55, 535, 210, _("Reed-Solomon ID (Rx)"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8367,7 +8478,7 @@ igured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabRsID->end();
           } // Fl_Group* tabRsID
-          { tabVideoID = new Fl_Group(0, 48, 540, 320, _("Video"));
+          { tabVideoID = new Fl_Group(0, 50, 540, 320, _("Video"));
             tabVideoID->hide();
             { Fl_Group* o = new Fl_Group(2, 55, 536, 189, _("Video Preamble ID"));
               o->box(FL_ENGRAVED_FRAME);
@@ -8443,7 +8554,7 @@ igured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabVideoID->end();
           } // Fl_Group* tabVideoID
-          { tabCwID = new Fl_Group(0, 48, 540, 320, _("CW"));
+          { tabCwID = new Fl_Group(0, 50, 540, 320, _("CW"));
             tabCwID->hide();
             { sld = new Fl_Group(2, 56, 536, 127, _("CW Postamble ID"));
               sld->box(FL_ENGRAVED_FRAME);
@@ -8966,15 +9077,100 @@ earch for station name"));
             } // Fl_Group* o
             tabWX->end();
           } // Fl_Group* tabWX
+          { tabKML = new Fl_Group(0, 50, 540, 320, _("KML"));
+            tabKML->hide();
+            { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
+              btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
+              btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);
+              btnKmlSaveDir->align(Fl_Align(69));
+              o->value(progdefaults.kml_save_dir.c_str());
+            } // Fl_Input* btnKmlSaveDir
+            { Fl_Input* o = inputKmlRootFile = new Fl_Input(25, 119, 300, 24, _("KML root file"));
+              inputKmlRootFile->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+              o->value("fldigi.kml");
+            } // Fl_Input* inputKmlRootFile
+            { Fl_Counter* o = cntKmlMergeDistance = new Fl_Counter(26, 155, 100, 24, _("Minimum distance for splitting aliases (Meters)"));
+              cntKmlMergeDistance->tooltip(_("Minimum distance for splitting alias nodes (Meters)"));
+              cntKmlMergeDistance->minimum(0);
+              cntKmlMergeDistance->maximum(100000);
+              cntKmlMergeDistance->step(10);
+              cntKmlMergeDistance->value(1000);
+              cntKmlMergeDistance->callback((Fl_Callback*)cb_cntKmlMergeDistance);
+              cntKmlMergeDistance->align(Fl_Align(FL_ALIGN_RIGHT));
+              o->value(progdefaults.kml_merge_distance);
+              o->lstep(1000);
+            } // Fl_Counter* cntKmlMergeDistance
+            { Fl_Counter* o = cntKmlRetentionTime = new Fl_Counter(25, 191, 100, 24, _("Data retention time, in hours (0 for no limit)"));
+              cntKmlRetentionTime->tooltip(_("Number of hours data is kept for each node. Zero means keeping everything."));
+              cntKmlRetentionTime->minimum(0);
+              cntKmlRetentionTime->maximum(500);
+              cntKmlRetentionTime->step(1);
+              cntKmlRetentionTime->callback((Fl_Callback*)cb_cntKmlRetentionTime);
+              cntKmlRetentionTime->align(Fl_Align(FL_ALIGN_RIGHT));
+              o->value(progdefaults.kml_retention_time);
+              o->lstep(24);
+            } // Fl_Counter* cntKmlRetentionTime
+            { Fl_Spinner2* o = cntKmlRefreshInterval = new Fl_Spinner2(24, 227, 50, 24, _("KML refresh interval (seconds)"));
+              cntKmlRefreshInterval->tooltip(_("Refresh time interval written in KML file (Seconds)"));
+              cntKmlRefreshInterval->box(FL_NO_BOX);
+              cntKmlRefreshInterval->color(FL_BACKGROUND_COLOR);
+              cntKmlRefreshInterval->selection_color(FL_BACKGROUND_COLOR);
+              cntKmlRefreshInterval->labeltype(FL_NORMAL_LABEL);
+              cntKmlRefreshInterval->labelfont(0);
+              cntKmlRefreshInterval->labelsize(14);
+              cntKmlRefreshInterval->labelcolor(FL_FOREGROUND_COLOR);
+              cntKmlRefreshInterval->value(10);
+              cntKmlRefreshInterval->callback((Fl_Callback*)cb_cntKmlRefreshInterval);
+              cntKmlRefreshInterval->align(Fl_Align(FL_ALIGN_RIGHT));
+              cntKmlRefreshInterval->when(FL_WHEN_RELEASE);
+              o->minimum(1); o->maximum(3600); o->step(1);
+              o->value(progdefaults.kml_refresh_interval);
+              o->labelsize(FL_NORMAL_SIZE);
+            } // Fl_Spinner2* cntKmlRefreshInterval
+            { Fl_Choice* o = selKmlBalloonStyle = new Fl_Choice(24, 263, 201, 24, _("KML balloon display style"));
+              selKmlBalloonStyle->tooltip(_("KML balloon in plain text, or HTML, in plain tables or matrices."));
+              selKmlBalloonStyle->down_box(FL_BORDER_BOX);
+              selKmlBalloonStyle->callback((Fl_Callback*)cb_selKmlBalloonStyle);
+              selKmlBalloonStyle->align(Fl_Align(FL_ALIGN_RIGHT));
+              selKmlBalloonStyle->when(FL_WHEN_CHANGED);
+              o->add("Plain text|HTML tables|Single HTML matrix");o->value(progdefaults.kml_balloon_style);
+            } // Fl_Choice* selKmlBalloonStyle
+            { Fl_Input* o = btnKmlCommand = new Fl_Input(24, 299, 246, 24, _("Command run on KML creation"));
+              btnKmlCommand->tooltip(_("Command started when KML files are generated. Subprocesses are started once, \
+and restarted if needed."));
+              btnKmlCommand->callback((Fl_Callback*)cb_btnKmlCommand);
+              btnKmlCommand->align(Fl_Align(72));
+              o->value(progdefaults.kml_command.c_str());
+            } // Fl_Input* btnKmlCommand
+            { btlTestKmlCommand = new Fl_Button(24, 335, 191, 24, _("Test command"));
+              btlTestKmlCommand->tooltip(_("Execute command on KML files."));
+              btlTestKmlCommand->callback((Fl_Callback*)cb_btlTestKmlCommand);
+            } // Fl_Button* btlTestKmlCommand
+            { btnSelectKmlDestDir = new Fl_Button(425, 75, 101, 24, _("Change dir..."));
+              btnSelectKmlDestDir->tooltip(_("Choose directory to store KML documents"));
+              btnSelectKmlDestDir->callback((Fl_Callback*)cb_btnSelectKmlDestDir);
+            } // Fl_Button* btnSelectKmlDestDir
+            { btlPurge = new Fl_Button(336, 119, 190, 24, _("Cleanup KML data now !"));
+              btlPurge->tooltip(_("Cleanups KML documents, empties Google Earth display."));
+              btlPurge->callback((Fl_Callback*)cb_btlPurge);
+            } // Fl_Button* btlPurge
+            { Fl_Check_Button* o = btnKmlPurgeOnStartup = new Fl_Check_Button(322, 231, 172, 15, _("Cleanup on startup"));
+              btnKmlPurgeOnStartup->tooltip(_("Empties KML documents when starting program."));
+              btnKmlPurgeOnStartup->down_box(FL_DOWN_BOX);
+              btnKmlPurgeOnStartup->callback((Fl_Callback*)cb_btnKmlPurgeOnStartup);
+              o->value(progdefaults.kml_purge_on_startup);
+            } // Fl_Check_Button* btnKmlPurgeOnStartup
+            tabKML->end();
+          } // Fl_Group* tabKML
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();
       } // Fl_Group* tabMisc
-      { tabQRZ = new Fl_Group(0, 25, 540, 345, _("Web"));
+      { tabQRZ = new Fl_Group(0, 25, 540, 349, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
-        { tabsQRZ = new Fl_Tabs(0, 25, 540, 345);
-          { Fl_Group* o = new Fl_Group(0, 46, 540, 324, _("Call Lookup"));
+        { tabsQRZ = new Fl_Tabs(0, 25, 540, 349);
+          { Fl_Group* o = new Fl_Group(0, 50, 540, 324, _("Call Lookup"));
             { Fl_Group* o = new Fl_Group(27, 52, 490, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9247,11 +9443,11 @@ void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata) {
   }
 }
 
-void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata) {
+void KmlDestDirSet(Fl_File_Chooser *w, void *userdata) {
   /* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
   if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
-  	txtNvtxCatalog->value( w->value() );
-  	txtNvtxCatalog->redraw();
-  	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
+  	btnKmlSaveDir->value( w->value() );
+  	btnKmlSaveDir->redraw();
+  	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
   }
 }

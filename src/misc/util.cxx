@@ -5,6 +5,8 @@
 //		Stelios Bounanos, M0GLD
 // Copyright (C) 2009
 //		Dave Freese, W1HKJ
+// Copyright (C) 2013
+//		Remi Chateauneu, F4ECW
 //
 // This file is part of fldigi.
 //
@@ -22,16 +24,21 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#include <config.h>
-
 #include <string.h>
+#include <stdio.h>
+#include <errno.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <cstdlib>
+
+#include "config.h"
 #include "util.h"
+
 #ifdef __MINGW32__
 #  include "compat.h"
 #endif
 
-/* Return the smallest power of 2 not less than n */
+/// Return the smallest power of 2 not less than n
 uint32_t ceil2(uint32_t n)
 {
         --n;
@@ -44,7 +51,7 @@ uint32_t ceil2(uint32_t n)
         return n + 1;
 }
 
-/* Return the largest power of 2 not greater than n */
+/// Return the largest power of 2 not greater than n
 uint32_t floor2(uint32_t n)
 {
         n |= n >> 1;
@@ -57,6 +64,8 @@ uint32_t floor2(uint32_t n)
 }
 
 #include <stdlib.h>
+
+/// Transforms the version, as a string, into an integer, so comparisons are possible.
 unsigned long ver2int(const char* version)
 {
 	unsigned long v = 0L;
@@ -285,6 +294,7 @@ uint32_t simple_hash_str(const unsigned char* str, uint32_t code)
 #include <climits>
 
 static const char hexsym[] = "0123456789ABCDEF";
+
 static std::vector<char>* hexbuf;
 const char* str2hex(const unsigned char* str, size_t len)
 {
@@ -343,4 +353,113 @@ void MilliSleep(long msecs)
 #else
 	Sleep(msecs);
 #endif
+}
+
+/// Returns 0 if a process is running, 0 if not there and -1 if the test cannot be made.
+int test_process(int pid)
+{
+#ifdef __MINGW32__
+	HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, pid);
+	DWORD ret = WaitForSingleObject(process, 0);
+	CloseHandle(process);
+	return ret == WAIT_TIMEOUT;
+#elif defined(__linux__)
+	/// This is dependent on procfs.
+	char buf[32];
+	sprintf(buf,"/proc/%d/cmdline",pid);
+	FILE * tmpF = fopen( buf, "r" );
+	if( tmpF != NULL ) {
+		fclose(tmpF);
+		return 1 ;
+	}
+	return 0 ;
+#else
+	int ret = kill(pid,0);
+	switch( ret ) {
+		case EINVAL: return -1 ;
+		case EPERM : return -1 ;
+		case ESRCH : return  0 ; // Process is not there.
+		case 0     : return  1 ; // Process is found.
+	}
+	fprintf(stderr,"kill failed with %s", strerror(ret) );
+
+	return -1 ;
+#endif
+}
+
+#ifdef __MINGW32__
+/// This includes Windows.h
+#include <winbase.h>
+
+/// Retrieve the system error message for the last-error code
+static const char * WindowsError(DWORD dw) 
+{ 
+    LPVOID lpMsgBuf;
+
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        dw,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR) &lpMsgBuf,
+        0, NULL );
+
+    /// BEWARE, this is NOT reentrant !
+    static char buffer[2048];
+    strcpy( buffer, (const char *)lpMsgBuf );
+    LocalFree(lpMsgBuf);
+    return buffer ;
+}
+#endif
+
+/// Starts a process and returns its pid, and -1 if error. Returns 0 if this cannot be made.
+int fork_process( const char * cmd )
+{
+#ifdef __MINGW32__
+	char* cmd_local = strdup(cmd);
+
+	STARTUPINFO si;
+	memset(&si, 0, sizeof(si));
+	si.cb = sizeof(si);
+	PROCESS_INFORMATION pi;
+	memset(&pi, 0, sizeof(pi));
+	if (!CreateProcess(NULL, cmd_local, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+		fprintf(stderr,"CreateProcess failed: %s", WindowsError(GetLastError()) );
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+	free(cmd_local);
+	return pi.dwProcessId ;
+#else
+	pid_t newpid = fork();
+	switch(newpid) {
+	case -1:
+		return -1 ;
+	case 0:
+		execl("/bin/sh", "sh", "-c", cmd, NULL );
+		fprintf(stderr,"execl failed with %s", strerror(errno) );
+		/// Ideally we should warn the main process.
+		exit(EXIT_FAILURE);
+	}
+	return newpid ;
+#endif
+}
+
+/// Returns true if OK. Beware, the error case is not reentrant.
+const char * create_directory( const char * dir )
+{
+#ifdef __WIN32__
+	if( !CreateDirectory( dir, NULL ) ) {
+		DWORD err = GetLastError();
+		if( err == ERROR_ALREADY_EXISTS ) return NULL ;
+		return WindowsError(err);
+	}
+#else
+	if ( mkdir(dir, 0777) == -1 ) {
+		if( errno == EEXIST ) return NULL ;
+		return strerror(errno);
+	}
+#endif
+	return NULL ;
 }

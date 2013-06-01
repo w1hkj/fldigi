@@ -7,7 +7,7 @@
 // This file is part of fldigi.  Adapted from code contained in JNX source code 
 // distribution.
 //  JNX Copyright (C) Paul Lutus
-// http://www.arachnoid.com/BiQuadDesigner/index.html
+// http://www.arachnoid.com/JNX/index.html
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,143 +48,16 @@
 #include "gettext.h"
 #include "navtex.h"
 #include "logbook.h"
-#include "locator.h"
+#include "coordinate.h"
 #include "misc.h"
 #include "status.h"
+#include "strutil.h"
+#include "kmlserver.h"
+#include "record_loader.h"
 
-class CoordinateT
-{
-	double m_angle ;
-	bool   m_is_lon ;
-public:
-	CoordinateT()
-	: m_angle(0.0), m_is_lon(true) {};
+#include "FL/fl_ask.H"
 
-	CoordinateT( double angle, bool is_lon ) : m_angle(angle), m_is_lon(is_lon) {};
-
-	CoordinateT( char direction, int degree, int minute, int second )
-	{
-		// std::cout << "ctor d=" << direction << " " << degree << " " << minute << " " << second << "\n";
-		if( ( degree < 0 ) || ( degree > 180.0 ) )
-			throw std::runtime_error("Invalid degree");
-
-		if( ( minute < 0 ) || ( minute >= 60.0 ) )
-			throw std::runtime_error("Invalid minute");
-
-		if( ( second < 0 ) || ( second >= 60.0 ) )
-			throw std::runtime_error("Invalid second");
-
-		m_angle = (double)degree + (double)minute / 60.0 + (double)second / 3600.0 ;
-		switch( direction )
-		{
-			case 'E':
-			case 'e':
-				m_angle = -m_angle ;
-			case 'W':
-			case 'w':
-				if( ( degree < -180.0 ) || ( degree > 180.0 ) )
-					throw std::runtime_error("Invalid longitude degree");
-				m_is_lon = true ;
-				break ;
-			case 'S':
-			case 's':
-				m_angle = -m_angle ;
-			case 'N':
-			case 'n':
-				if( ( degree < -90.0 ) || ( degree > 90.0 ) )
-					throw std::runtime_error("Invalid latitude degree");
-				m_is_lon = false ;
-				break ;
-			default:
-				throw std::runtime_error("Invalid direction");
-		}
-		// std::cout << "Angle=" << m_angle << "\n" ;
-	}
-
-	double angle(void) const { return m_angle ; }
-	bool is_lon(void) const { return m_is_lon; }
-
-	// 57 06 N : It should work with other formats.
-	// Specific for reading from the file of naxtex stations.
-	friend std::istream & operator>>( std::istream & istrm, CoordinateT & ref )
-	{
-		int degree, minute ;
-		if( ! istrm ) return istrm ;
-
-		istrm >> degree ;
-		if( ! istrm ) return istrm ;
-
-		istrm >> minute ;
-		if( ! istrm ) return istrm ;
-		
-		char direction ;
-		istrm >> direction ;
-		if( ! istrm ) return istrm ;
-
-		ref = CoordinateT( direction, degree, minute, 0 );
-		// std::cout << "::" << ref << ":" << degree << " " << minute << " " << direction << "\n" ;
-		return istrm ;
-	}
-
-	class Pair ;
-}; // CoordinateT
-
-	// Latitude , longitude.
-class CoordinateT::Pair
-{
-	CoordinateT m_lon, m_lat ;
-public:
-	Pair() {}
-
-	Pair( const CoordinateT & coo1, const CoordinateT & coo2 )
-	: m_lon( coo1.is_lon() ? coo1 : coo2 )
-	, m_lat( coo2.is_lon() ? coo1 : coo2 )
-	{
-		if( ! ( coo1.is_lon() ^ coo2.is_lon() ) )
-		{
-			throw std::runtime_error("Internal inconsistency");
-		}
-	}
-
-	CoordinateT longitude() const { return m_lon ; }
-
-	CoordinateT latitude() const { return m_lat ; }
-
-	CoordinateT & longitude() { return m_lon ; }
-
-	CoordinateT & latitude() { return m_lat ; }
-
-	double distance( const Pair & a ) const
-	{
-		double dist, azimuth ;
-		int res = qrb(
-			longitude().angle(), latitude().angle(),
-			a.longitude().angle(), a.latitude().angle(),
-			&dist, &azimuth );
-		if( res != RIG_OK) {
-			throw std::runtime_error("Bad qrb result");
-		}
-		return dist ;
-	}
-}; // CoordinateT::Pair
-
-static const char delim = ';';
-
-template< typename Type >
-bool read_until_delim( std::istream & istrm, Type & ref )
-{
-	std::string parsed_str ;
-	if( ! std::getline( istrm, parsed_str, delim ) ) return false ;
-	std::stringstream sstrm( parsed_str );
-	sstrm >> ref ;
-	return sstrm ;
-}
-
-static bool read_until_delim( std::istream & istrm, std::string & ref )
-{
-	return std::getline( istrm, ref, delim );
-}
-
+/// This models a line of the file defining Navtex stations.
 class NavtexRecord
 {
 	std::string       m_country ;
@@ -194,11 +67,11 @@ class NavtexRecord
 	std::string       m_callsign ;
 	std::string       m_name ;
 	CoordinateT::Pair m_coordinates ;
-	std::string       m_zone ;
-	std::string       m_language ;
 
 	std::string       m_locator ;
 
+	/// Reads a CSV file.
+	static const char m_delim = ';';
 public:
 	NavtexRecord()
 	: m_frequency(0.0)
@@ -208,44 +81,33 @@ public:
 	char origin(void) const { return m_origin; };
 	const CoordinateT::Pair & coordinates() const { return m_coordinates; }
 	double frequency(void) const { return m_frequency; };
-	const std::string & country_code() const { return m_country_code; }
 	const std::string & country() const { return m_country; }
 	const std::string & name() const { return m_name; }
 	const std::string & callsign() const { return m_callsign; }
-	const std::string & locator() const { return m_locator; }
 
+	/// Example: Azores;AZR;490.0;J;CTH;Horta;38 32 N;28 38 W;II;PP
 	friend std::istream & operator>>( std::istream &  istrm, NavtexRecord & rec )
 	{
 		std::string input_str ;
 		if( ! std::getline( istrm, input_str ) ) return istrm ;
 		std::stringstream str_strm( input_str );
 		
-		if( read_until_delim( str_strm, rec.m_country                 )
-		&&  read_until_delim( str_strm, rec.m_country_code            )
-		&&  read_until_delim( str_strm, rec.m_frequency               )
-		&&  read_until_delim( str_strm, rec.m_origin                  )
-		&&  read_until_delim( str_strm, rec.m_callsign                )
-		&&  read_until_delim( str_strm, rec.m_name                    )
-		&&  read_until_delim( str_strm, rec.m_coordinates.latitude()  )
-		&&  read_until_delim( str_strm, rec.m_coordinates.longitude() )
-		&&  read_until_delim( str_strm, rec.m_zone                    )
-		&&  read_until_delim( str_strm, rec.m_language                )
+		if( read_until_delim( m_delim, str_strm, rec.m_country                 )
+		&&  read_until_delim( m_delim, str_strm  /* Country code */            )
+		&&  read_until_delim( m_delim, str_strm, rec.m_frequency               )
+		&&  read_until_delim( m_delim, str_strm, rec.m_origin                  )
+		&&  read_until_delim( m_delim, str_strm, rec.m_callsign                )
+		&&  read_until_delim( m_delim, str_strm, rec.m_name                    )
+		&&  read_until_delim( m_delim, str_strm, rec.m_coordinates.latitude()  )
+		&&  read_until_delim( m_delim, str_strm, rec.m_coordinates.longitude() )
+		&&  read_until_delim( m_delim, str_strm  /* Zone */                    )
+		&&  read_until_delim( m_delim, str_strm  /* Language */                )
 
 		&& ( rec.m_coordinates.latitude().is_lon() == false  )
 		&& ( rec.m_coordinates.longitude().is_lon() == true  )
 		) 
 		{
-			char buf[64];
-			int ret = longlat2locator(
-					rec.m_coordinates.longitude().angle(),
-					rec.m_coordinates.latitude().angle(),
-					buf,
-					3 );
-
-			if( ret == RIG_OK ) {
-				rec.m_locator = buf ;
-				return istrm ;
-			}
+			return istrm ;
 		}
 
 		istrm.setstate(std::ios::eofbit);
@@ -253,102 +115,198 @@ public:
 	}
 };
 
-class NavtexCatalog
+/// Navtex catalog of stations is used when logging to ADIF file: It gives the station name, callsign etc...
+class NavtexCatalog : public RecordLoader< NavtexCatalog >
 {
 	// TODO: Consider a multimap<char, NavtexRecord>
 	typedef std::deque< NavtexRecord > CatalogType ;
 	CatalogType m_catalog ;
 
+	/// Frequency more or less 1 %: 485-494 kHz, 512-523 kHz etc...
 	static bool freq_close( double freqA, double freqB )
 	{
-		static const double freq_ratio = 1.1 ;
+		static const double freq_ratio = 1.01 ;
 		return ( freqA < freqB * freq_ratio ) || ( freqA * freq_ratio > freqB );
 	}
 
+	/// Tells if this is a reasonable Navtex frequency.
 	static bool freq_acceptable( double freq )
 	{
-		return	freq_close( freq, 518.0 )
+		return	freq_close( freq, 490.0 )
 		||	freq_close( freq, 518.0 )
 		||	freq_close( freq, 4209.5 );
 	}
 
-	typedef std::multimap< double, CatalogType::const_iterator > SolutionType ;
-
-	static const NavtexRecord & dflt_solution(void) {
-		static const NavtexRecord dfltNavtex ;
-		return dfltNavtex ;
+	void Clear() {
+		m_catalog.clear();
 	}
 
-	NavtexCatalog( const std::string & filnam )
-	{
-		LOG_INFO("Opening:%s", filnam.c_str());
-		std::ifstream ifs( filnam.c_str() );
-		if( !ifs )
-		{
-			std::string msg = "Cannot open:" + filnam ;
-			LOG_ERROR("%s",msg.c_str() );
-			throw std::runtime_error(msg);
-		}
-		for( ; ; )
-		{
-			NavtexRecord tmp ;
-			ifs >> tmp ;
-			if( !ifs) break ;
+	bool ReadRecord( std::istream & istrm ) {
+		NavtexRecord tmp ;
+		istrm >> tmp ;
+		if( istrm || istrm.eof() ) {
 			m_catalog.push_back( tmp );
+			return true ;
 		}
-		ifs.close();
+		return false ;
 	}
 
-	static const NavtexCatalog & inst() {
-		static const NavtexCatalog *ptr = NULL;
-		if( ptr == NULL ) ptr = new NavtexCatalog(progdefaults.NVTX_Catalog);
-		return *ptr ;
+	/// Minimal edit distance (Levenshtein) between the pattern and any token of the string.
+	static double DistToStationName( const std::string & msg, const std::string & pattern ) {
+		std::stringstream strm( msg );
+		/// Any big number is OK, if bigger than any string length.
+		double currDist = 1.7976931348623157e+308; // DBL_MAX ;
+		typedef std::istream_iterator<std::string> StrmIterStr ;
+		for( StrmIterStr itStrm( strm ); itStrm != StrmIterStr(); ++itStrm ) {
+			const std::string tmp = *itStrm ;
+			currDist = std::min( currDist, (double)levenshtein( tmp, pattern ) );
+		}
+		return currDist ;
 	}
 
 public:
+	std::string base_filename() const
+	{
+		return "NAVTEX_Stations.csv";
+	}
+
+	const char * Description() const
+	{
+		return _("Navtex stations");
+	}
+
 	/// Usual frequencies are 490, 518 or 4209 kiloHertz.
-	static const NavtexRecord & Find(
+	const NavtexRecord * FindStation(
 		long long freq_ll,
 		char origin,
-		const CoordinateT::Pair & coo )
+		const std::string & maidenhead,
+		const std::string & msg)
 	{
-		SolutionType sol;
+		if( maidenhead.empty() ) return NULL;
+
+		if( m_catalog.empty() ) {
+			int nbRecs = LoadAndRegister();
+
+			static bool error_signaled = false ;
+
+			if( nbRecs <= 0 ) {
+				LOG_WARN("Error reading Navtex stations file");
+				if(error_signaled == false) {
+					fl_alert("Cannot read Navtex file %s", storage_filename().first.c_str() );
+					error_signaled = true ;
+					return NULL;
+				}
+			}
+			error_signaled = false ;
+		}
+
+		const CoordinateT::Pair coo( maidenhead );
+
+		/// Possible Navtex stations stored by closer first.
+		typedef std::multimap< double, CatalogType::const_iterator > SolutionType ;
+
+		SolutionType solDistKm;
 
 		double freq = freq_ll / 1000.0 ; // As kiloHertz in the data file.
 
 		bool okFreq = freq_acceptable( freq );
 
-		for( CatalogType::const_iterator it = inst().m_catalog.begin(), en = inst().m_catalog.end(); it != en ; ++it )
+		//LOG_INFO("Operator Maidenhead=%s lon=%lf lat=%lf okFreq=%d Origin=%c",
+		//	maidenhead.c_str(), coo.longitude().angle(), coo.latitude().angle(), okFreq, origin );
+
+		for( CatalogType::const_iterator it = m_catalog.begin(), en = m_catalog.end(); it != en ; ++it )
 		{
+			/// The origin letters must be identical.
 			if( origin != it->origin() ) continue ;
 
+			/// The two frequencies must be close more or less 10%.
 			bool freqClose = freq_close( freq, it->frequency() );
 			if( okFreq && ! freqClose ) continue ;
 
+			/// Solutions are stored smallest distance first.
 			double dist = coo.distance( it->coordinates() );
-			sol.insert( SolutionType::value_type( dist, it ) );
+			solDistKm.insert( SolutionType::value_type( dist, it ) );
 		}
-		
-		return sol.empty() ? dflt_solution() : *( sol.begin()->second );
-	}
 
-	static const NavtexRecord & Find(
-		long long freq_ll,
-		char origin,
-		const std::string & maidenhead )
-	{
-		double lon, lat ;
-		int res = locator2longlat( &lon, &lat, maidenhead.c_str() );
-		if( res != RIG_OK ) {
-			throw std::runtime_error("Cannot decode:" + maidenhead );
-		};
-		CoordinateT::Pair coo(
-				CoordinateT( lon, true ),
-				CoordinateT( lat, false ) );
-		return Find( freq_ll, origin, coo );
+		/// No station found.
+		if( solDistKm.empty() ) return NULL;
+
+		/// Only one station, no ambiguity.
+		SolutionType::iterator begSolKm = solDistKm.begin();
+		if( solDistKm.size() == 1 ) return & ( *begSolKm->second );
+
+		SolutionType solStrDist ;
+		// Maybe some station names appear but not others. This can be for example "Maltaradio", "Cullercoat", "Limnos" etc...
+		for( SolutionType::iterator itSolKm = begSolKm, endSolKm = solDistKm.end(); itSolKm != endSolKm; ++itSolKm ) {
+			std::stringstream strm ;
+			strm << itSolKm->second->coordinates();
+			// LOG_INFO("Name=%s Dist=%lf %s", itSolKm->second->name().c_str(), itSolKm->first, strm.str().c_str() );
+			// The message is in uppercase anyway, so no need to convert.
+			double str_dist = DistToStationName( msg, uppercase( itSolKm->second->name() ) );
+
+			solStrDist.insert( SolutionType::value_type( str_dist, itSolKm->second ) );
+		}
+
+		// There are at least two elements, so we can do this.
+		SolutionType::iterator begSolStr = solStrDist.begin();
+		SolutionType::iterator nxtSolStr = begSolStr;
+		++nxtSolStr ;
+
+		// The first message only contains a string very similar to a radio station.
+		if( (begSolStr->first < 2) && ( nxtSolStr->first > 2 ) ) {
+			//LOG_INFO("Levenshtein beg=%lf beg_name=%s next=%lf next_name=%s",
+			//	begSolStr->first, begSolStr->second->name().c_str(),
+			//	nxtSolStr->first, nxtSolStr->second->name().c_str() );
+			return & (*begSolStr->second) ;
+		}
+
+		// There are at least two elements, and more than one station name, or none of them,
+		// is contained in the message.
+
+		// Just returns the closest element.
+		return & ( *begSolKm->second );
+
+		// Now we could search for a coordinate in the message, and we will keep the station which is the closest
+		// to this coordinate. We wish to do that anyway in order to map things in KML.
+		// Possible formats are -(This is experimental):
+ 		// 67-04.0N 032-25.7E
+ 		// 47-29'30N 003-16'00W
+		// 6930.1N 01729.9E
+		// 48-21'45N 004-31'45W
+		// 58-37N 003-32W
+		// 314408N 341742E
+		// 42-42N 005-10E
+		// 54-02.3N 004-45.8E
+		// 55-20.76N 014-45.27E
+		// 55-31.1 N 012-44.7 E
+		// 5330.4N 01051.5W
+		// 43 45.0 N - 015 44.8 E
+		// 34-33.7N 012-28.7E
+		// 51 10.55 N - 001 51.02 E
+		// 51.21.67N 002.13.29E
+		// 73 NORTH 14 EAST
+		// 58-01.20N 005-27.08W
+		// 50.56N 007.00,5W
+		// 5630,1N- 00501,6E
+		// LAT. 41.06N - LONG 012.57E
+		// 42 40 01 N - 018 05 10 E
+		// 40 25 31N - 18 15 30E
+		// 40-32.2N 000-33.5E
+		// 58-01.2 NORTH 005-27.1 WEST
+		// 39-07,7N 026-39,2E
+		//
+		// ESTIMATED LIMIT OF ALL KNOWN ICE:
+		// 4649N 5411W TO 4530N 5400W TO
+		// 4400N 4900W TO 4545N 4530W TO
+		// 4715N 4530W TO 5000N 4715W TO
+		// 5530N 5115W TO 5700N 5545W.
+		//
+
+
 	}
 }; // NavtexCatalog
 
+/// Explanations here: http://www.arachnoid.com/BiQuadDesigner/index.html
 class BiQuadraticFilter {
 public:
 	enum Type {
@@ -380,7 +338,7 @@ public:
 		reconfigure(aCenter_freq);
 	}
 private:
-	// allow parameter change while running
+	/// Allows parameter change while running
 	void reconfigure(double cf) {
 		m_center_freq = cf;
 		// only used for peaking and shelving filters
@@ -448,7 +406,7 @@ private:
 				m_a2 = (m_gain_abs + 1) - (m_gain_abs - 1) * cs - beta * sn;
 				break;
 		}
-		// prescale filter constants
+		/// Prescale filter constants
 		m_b0 /= m_a0;
 		m_b1 /= m_a0;
 		m_b2 /= m_a0;
@@ -456,7 +414,7 @@ private:
 		m_a2 /= m_a0;
 	}
 public:
-	// perform one filtering step
+	/// Perform one filtering step
 	double filter(double x) {
 		y = m_b0 * x + m_b1 * m_x1 + m_b2 * m_x2 - m_a1 * m_y1 - m_a2 * m_y2;
 		m_x2 = m_x1;
@@ -557,7 +515,7 @@ public:
 	}
 
 	// http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetNaive
-	// Counting set bits, Brian Kernighan's way
+	/// Counting set bits, Brian Kernighan's way
 	static bool check_bits(int v) {
 		int bc = 0;
 		while (v != 0) {
@@ -568,6 +526,9 @@ public:
 		return bc == 4;
 	}
 };
+
+/// This is temporary, to manipulate a multi-line string.
+static const char * new_line = "\n";
 
 // Coordinates samples:
 // 52-08.5N 003-18.0E
@@ -611,7 +572,7 @@ public:
 		}
 	}
 private:
-	/// Remove non-Ascii chars, replace new-line by semi-colon etc....
+	/// Remove non-Ascii chars, replace new-line by special character etc....
 	void cleanup() {
 		/// It would be possible to do the change in place, because the new string
 		/// it shorter than the current one, but at the expense of clarity.
@@ -627,7 +588,7 @@ private:
 					   break ;
 				default  : if( chrSeen ) {
 						   if( wasDelim ) {
-							  newStr.push_back('~');
+							  newStr.append(new_line);
 					   	   } else if( wasSpace ) {
 							  newStr.push_back(' ');
 					   	}
@@ -722,65 +683,76 @@ public:
 	void display( const std::string & alt_string ) {
 		std::string::operator=( alt_string );
 		cleanup();
+
+		long long currFreq = wf->rfcarrier();
+
+		if( ! progdefaults.NVTX_AdifLog && ! progdefaults.NVTX_KmlLog ) {
+			return ;
+		}
+
+		const NavtexRecord * ptrNavRec = NavtexCatalog::InstCatalog().FindStation(currFreq, m_origin, progdefaults.myLocator, *this );
+		if( ptrNavRec != NULL ) {
+			LOG_INFO("Locator=%s Origin=%c freq=%" PRId64 " name=%s lon=%lf lat=%lf",
+				progdefaults.myLocator.c_str(),
+				m_origin,
+				currFreq,
+				ptrNavRec->name().c_str(),
+				ptrNavRec->coordinates().longitude().angle(),
+				ptrNavRec->coordinates().latitude().angle() );
+		} else {
+			LOG_INFO("Locator=%s Origin=%c freq=%" PRId64 " Navtex station not found",
+				progdefaults.myLocator.c_str(),
+				m_origin,
+				currFreq );
+		}
+
 		if( progdefaults.NVTX_AdifLog ) {
 			/// For updating the logbook with received messages.
-			cQsoRec qso_rec ;
+			QsoHelper qso(MODE_NAVTEX);
 
-			long long currFreq = wf->rfcarrier();
-
-			if( ! progdefaults.myLocator.empty() ) {
-				const NavtexRecord & refStat = NavtexCatalog::Find(currFreq, m_origin, progdefaults.myLocator );
-				LOG_INFO("name=%s lon=%lf lat=%lf",
-					refStat.name().c_str(),
-					refStat.coordinates().longitude().angle(),
-					refStat.coordinates().latitude().angle() );
-
-				qso_rec.putField(QTH, refStat.country().c_str() );
-				qso_rec.putField(CALL, refStat.callsign().c_str() );
-				qso_rec.putField(COUNTRY, refStat.country().c_str() );
-				qso_rec.putField(GRIDSQUARE, refStat.locator().c_str() );
-				qso_rec.putField(NAME, refStat.name().c_str() );
+			if( ptrNavRec ) {
+				qso.Push(QTH, ptrNavRec->country() );
+				qso.Push(CALL, ptrNavRec->callsign() );
+				qso.Push(COUNTRY, ptrNavRec->country() );
+				qso.Push(GRIDSQUARE, ptrNavRec->coordinates().locator() );
+				qso.Push(NAME, ptrNavRec->name() );
 				/// If the header is clean, the message type is removed from the string.
 				// In this context, this field cannot be used.
-				qso_rec.putField(XCHG1, msg_type() );
-				char numberBuf[32];
-				sprintf( numberBuf, "%d", m_number );
-				qso_rec.putField(SRX, numberBuf );
+				qso.Push(XCHG1, msg_type() );
+				qso.Push(SRX, strformat( "%d", m_number ) );
 			} else {
-				std::string tmpNam("Station_");
-				tmpNam += m_origin ;
-				qso_rec.putField(NAME, tmpNam.c_str() );
+				qso.Push(NAME, std::string("Station_") + m_origin );
 			}
-			qso_rec.setDateTime(true);
-			qso_rec.setDateTime(false);
-			qso_rec.setFrequency( currFreq );
 
-			qso_rec.putField(MODE, mode_info[MODE_NAVTEX].adif_name );
+			// Sequence of Chars and line-breaks, ASCII CR (code 13) + ASCII LF (code 10)
+			qso.Push(NOTES, strreplace( *this, new_line, ADIF_EOL ) );
+		}
 
-			// m_qso_rec.putField(QTH, inpQth_log->value());
-			// m_qso_rec.putField(STATE, inpState_log->value());
-			// m_qso_rec.putField(VE_PROV, inpVE_Prov_log->value());
-			// m_qso_rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
-			// m_qso_rec.putField(QSLSDATE, inpQSLsentdate_log->value());
-			// m_qso_rec.putField(RST_RCVD, inpRstR_log->value ());
-			// m_qso_rec.putField(RST_SENT, inpRstS_log->value ());
-			// m_qso_rec.putField(IOTA, inpIOTA_log->value());
-			// m_qso_rec.putField(DXCC, inpDXCC_log->value());
-			// m_qso_rec.putField(CONT, inpCONT_log->value());
-			// m_qso_rec.putField(CQZ, inpCQZ_log->value());
-			// m_qso_rec.putField(ITUZ, inpITUZ_log->value());
-			// m_qso_rec.putField(TX_PWR, inpTX_pwr_log->value());
+		// Adds a placemark to the navtex KML file.
+		if( progdefaults.NVTX_KmlLog ) {
+			if( ptrNavRec ) {
+				KmlServer::CustomDataT custData ;
+				custData.Push( "Callsign", ptrNavRec->callsign() );
+				custData.Push( "Country", ptrNavRec->country() );
+				custData.Push( "Locator", ptrNavRec->coordinates().locator() );
+				custData.Push( "Message number", m_number );
+				custData.Push( "Frequency", currFreq );
 
-			qso_rec.putField(NOTES, c_str() );
+				custData.Push( "Mode", mode_info[MODE_NAVTEX].adif_name );
+				custData.Push( "Message", *this );
 
-			qsodb.qsoNewRec (&qso_rec);
-			qsodb.isdirty(0);
+				KmlServer::GetInstance()->Broadcast(
+					"Navtex",
+					0,
+					ptrNavRec->coordinates(),
+					0,
+					ptrNavRec->name(),
+					"navtex_station",
+					substr( 0, 20 ) + "...",
+					custData );
+			}
 
-			loadBrowser(true);
-
-			adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-
-			LOG_INFO( _("Updating log book %s"), logbook_filename.c_str() );
+			// TODO: Parse the message to extract coordinates.
 		}
 	} // display
 }; // ccir_message
@@ -791,6 +763,7 @@ static const double dflt_center_freq = 1000.0 ;
 
 class navtex ;
 
+/// Implements PIMPL idiom.
 class navtex_implementation {
 
 	enum State {
@@ -812,7 +785,7 @@ class navtex_implementation {
 	int                             m_message_counter ;
 
 	static const size_t             m_tx_block_len = 1024 ;
-	// Between -1 and 1.
+	/// Between -1 and 1.
 	double                          m_tx_buf[m_tx_block_len];
 	size_t                          m_tx_counter ;
 
@@ -826,13 +799,13 @@ class navtex_implementation {
 
 	CCIR476				m_ccir476;
 	typedef std::list<int> sync_chrs_type ;
-	sync_chrs_type		 m_sync_chrs;
-	ccir_message		   m_curr_msg ;
+	sync_chrs_type                  m_sync_chrs;
+	ccir_message                    m_curr_msg ;
 
 	int					m_c1, m_c2, m_c3;
-	static const int	   m_zero_crossings_divisor = 4;
-	std::vector<int>	   m_zero_crossings ;
-	long				   m_zero_crossing_count;
+	static const int                 m_zero_crossings_divisor = 4;
+	std::vector<int>                 m_zero_crossings ;
+	long                             m_zero_crossing_count;
 	double				 m_message_time ;
 	double				 m_signal_accumulator ;
 	double				 m_mark_f, m_space_f;
@@ -857,7 +830,6 @@ class navtex_implementation {
 	int					m_bit_count;
 	int					m_code_bits;
 	bool				   m_shift ;
-	bool				   m_inverse ;
 	bool				   m_pulse_edge_event;
 	int					m_error_count;
 	int					m_valid_count;
@@ -899,7 +871,6 @@ public:
 		m_pulse_edge_event = false;
 		m_error_count = 0;
 		m_valid_count = 0;
-		m_inverse = false;
 		m_sample_count = 0;
 		m_next_event_count = 0;
 		m_zero_crossing_count = 0;
@@ -942,6 +913,7 @@ private:
 		}
 	}
 
+	/// The parameter is appended at the message end.
 	void flush_message(const std::string & extra_info)
 	{
 		if( m_header_found )
@@ -951,12 +923,13 @@ private:
 		}
 		else
 		{
-			display_message( m_curr_msg, "<Lost header>:" + m_curr_msg + extra_info );
+			display_message( m_curr_msg, "[Lost header]:" + m_curr_msg + extra_info );
 		}
 		m_curr_msg.reset_msg();
 		m_message_time = m_time_sec;
 	}
 
+	/// Checks that we have no waited too long, and if so, flushes the message with a specific terminator.
 	void process_timeout() {
 		/// No messaging in SitorB
 		if ( m_only_sitor_b ) {
@@ -985,14 +958,14 @@ private:
 			/// Maybe the message was already valid.
 			if( m_header_found )
 			{
-				display_message( msg_cut.second, msg_cut.second + ":<Lost trailer>" );
+				display_message( msg_cut.second, msg_cut.second + ":[Lost trailer]" );
 			}
 			else
 			{
 				/// Maybe only non-significant chars.
 				if( ! msg_cut.second.empty() )
 				{
-					display_message( msg_cut.second, "<Lost header>:" + msg_cut.second + ":<Lost trailer>" );
+					display_message( msg_cut.second, "[Lost header]:" + msg_cut.second + ":[Lost trailer]" );
 				}
 			}
 			m_header_found = true;
@@ -1033,11 +1006,11 @@ private:
 					chr = code;
 				} else if (CCIR476::check_bits(m_c1)) {
 					chr = m_c1;
-					LOG_INFO( _("FEC replacement: %x -> %x"), code, m_c1);
+					LOG_DEBUG("FEC replacement: %x -> %x", code, m_c1);
 				}
 			}
 			if (chr == -1) {
-				LOG_INFO(_("Fail all options: %x %x"), code, m_c1); 
+				LOG_DEBUG("Fail all options: %x %x", code, m_c1); 
 			} else {
 				switch (chr) {
 					case code_rep:
@@ -1278,7 +1251,7 @@ public:
 			// flag the center of signal pulses
 			m_pulse_edge_event = m_sample_count >= m_next_event_count;
 			if (m_pulse_edge_event) {
-				m_averaged_mark_state = (m_signal_accumulator > 0) ^ m_inverse;
+				m_averaged_mark_state = (m_signal_accumulator > 0) ^ m_ptr_navtex->get_reverse();
 				m_signal_accumulator = 0;
 				// set new timeout value, include zero crossing correction
 				m_next_event_count = m_sample_count + m_bit_sample_count + (int) (m_sync_delta + 0.5);
@@ -1349,7 +1322,7 @@ public:
 						m_bit_count++;
 						if (m_bit_count == 7) {
 							if (m_error_count > 0) {
-								LOG_INFO(_("Error count: %d"), m_error_count);
+								LOG_DEBUG("Error count: %d", m_error_count);
 							}
 							if (process_char(m_code_bits)) {
 								if (m_error_count > 0) {
@@ -1358,7 +1331,7 @@ public:
 							} else {
 								m_error_count++;
 								if (m_error_count > 2) {
-									LOG_INFO(_("Returning to sync"));
+									LOG_DEBUG("Returning to sync");
 									set_state(SYNC_SETUP);
 								}
 							}
@@ -1388,8 +1361,13 @@ private:
 	void display_message( ccir_message & ccir_msg, const std::string & alt_string ) {
 		if( ccir_msg.size() >= (size_t)progdefaults.NVTX_MinSizLoggedMsg )
 		{
-			ccir_msg.display(alt_string);
-			put_received_message( alt_string );
+			try
+			{
+				ccir_msg.display(alt_string);
+				put_received_message( alt_string );
+			} catch( const std::exception & exc ) {
+				LOG_WARN("Caught %s", exc.what() );
+			}
 		}
 		else
 		{
@@ -1412,7 +1390,7 @@ public:
 	{
 		guard_lock g( m_sync_rx.mtxp() );
 
-		LOG_INFO(_("delay=%f"), max_seconds );
+		LOG_DEBUG("Delay=%f", max_seconds );
 		if( m_received_messages.empty() )
 		{
 			if( ! m_sync_rx.wait(max_seconds) ) return "Timeout";
@@ -1448,8 +1426,7 @@ public:
 		return res;
 	}
 
-	// Note path std::string can contain null characters.
-	// TODO: Beware of the extra copy constructor.
+	/// Note path std::string can contain null characters. TODO: Beware of the extra copy constructor.
 	std::string encode( const std::string & str ) const
 	{
 		std::string res ;
@@ -1468,7 +1445,7 @@ public:
 		}
 	}
 
-	// Input value must be between -1 and 1
+	/// Input value must be between -1 and 1
 	void add_sample( double sam )
 	{
 		m_tx_buf[ m_tx_counter++ ] = sam ;
@@ -1610,6 +1587,7 @@ public:
 }; // navtex_implementation
 
 #ifdef NAVTEX_COMMAND_LINE
+/// For testing purpose, this file can be compiled and run separately as a command-line program.
 int main(int n, const char ** v )
 {
 	printf("%s\n", v[1] );
@@ -1637,10 +1615,11 @@ int main(int n, const char ** v )
 
 navtex::navtex (trx_mode md)
 {
-	modem::cap |= CAP_AFC ;
+	modem::cap |= CAP_AFC | CAP_REV;
 	navtex::mode = md;
 	modem::samplerate = 11025;
 	modem::bandwidth = 2 * deviation_f ;
+	modem::reverse = false ;
 	bool only_sitor_b = false ;
 	switch( md )
 	{

@@ -42,23 +42,6 @@
 #include <algorithm>
 #include <map>
 
-// this tests depends on a modified FL/filename.H in the Fltk-1.3.0
-// change
-//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__)
-// to
-//#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__) && !defined(__WOE32__)
-
-#ifdef __MINGW32__
-#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
-#		undef dirent
-#		include <dirent.h>
-#	else
-#		include <dirent.h>
-#	endif
-#else
-#	include <dirent.h>
-#endif
-
 #ifndef __WOE32__
 #include <sys/wait.h>
 #endif
@@ -166,6 +149,8 @@
 #include "charsetdistiller.h"
 #include "charsetlist.h"
 #include "outputencoder.h"
+#include "record_loader.h"
+#include "record_browse.h"
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL      _("Rig control")
@@ -847,15 +832,6 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 void set_dominoex_tab_widgets()
 {
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
-}
-
-static void busy_cursor(void*)
-{
-	Fl::first_window()->cursor(FL_CURSOR_WAIT);
-}
-static void default_cursor(void*)
-{
-	Fl::first_window()->cursor(FL_CURSOR_DEFAULT);
 }
 
 void startup_modem(modem* m, int f)
@@ -1866,7 +1842,7 @@ void cb_mnuCheckUpdate(Fl_Widget*, void*)
 	put_status(_("Checking for updates..."));
 	for (size_t i = 0; i < sizeof(sites)/sizeof(*sites); i++) { // fetch .url, grep for .re
 		reply.clear();
-		if (!fetch_http_gui(sites[i].url, reply, 20.0, busy_cursor, 0, default_cursor, 0))
+		if (!fetch_http_gui(sites[i].url, reply, 20.0))
 			continue;
 		re_t re(sites[i].re, REG_EXTENDED | REG_ICASE | REG_NEWLINE);
 		if (!re.match(reply.c_str()) || re.nsub() != 2)
@@ -2019,29 +1995,35 @@ void cb_ShowConfig(Fl_Widget*, void*)
 	cb_mnuVisitURL(0, (void*)HomeDir.c_str());
 }
 
+static void cb_ShowDATA(Fl_Widget*, void*)
+{
+	/// Must be already created by createRecordLoader()
+	dlgRecordLoader->show();
+}
+
+bool ask_dir_creation( const std::string & dir )
+{
+	if ( 0 == directory_is_created(dir.c_str())) {
+		int ans = fl_choice2(_("%s: Do not exist, create?"), _("No"), _("Yes"), 0, dir.c_str() );
+		if (!ans) return false ;
+		return true ;
+	}
+	return false ;
+}
+
 void cb_ShowNBEMS(Fl_Widget*, void*)
 {
-	DIR *nbems_dir;
-	nbems_dir = opendir(NBEMS_dir.c_str());
-	if (!nbems_dir) {
-		int ans = fl_choice2(_("Do not exist, create?"), _("No"), _("Yes"), 0);
-		if (!ans) return;
+	if ( ask_dir_creation(NBEMS_dir)) {
 		check_nbems_dirs();
 	}
-	closedir(nbems_dir);
 	cb_mnuVisitURL(0, (void*)NBEMS_dir.c_str());
 }
 
 void cb_ShowFLMSG(Fl_Widget*, void*)
 {
-	DIR *flmsg_dir;
-	flmsg_dir = opendir(FLMSG_dir.c_str());
-	if (!flmsg_dir) {
-		int ans = fl_choice2(_("Do not exist, create?"), _("No"), _("Yes"), 0);
-		if (!ans) return;
+	if ( ask_dir_creation(FLMSG_dir)) {
 		check_nbems_dirs();
 	}
-	closedir(flmsg_dir);
 	cb_mnuVisitURL(0, (void*)FLMSG_dir.c_str());
 }
 
@@ -3298,6 +3280,7 @@ static Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Fldigi config..."), folder_open_icon), 0, cb_ShowConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("FLMSG files..."), folder_open_icon), 0, cb_ShowFLMSG, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("NBEMS files..."), folder_open_icon), 0, cb_ShowNBEMS, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Data files..."), folder_open_icon), 0, cb_ShowDATA, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { make_icon_label(_("Macros")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3896,7 +3879,7 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 		url.append("?grid=").append(progdefaults.myLocator, 0, 2);
 
 	string::size_type i;
-	if (!fetch_http_gui(url, data, 10.0, busy_cursor, 0, default_cursor, 0) ||
+	if (!fetch_http_gui(url, data, 10.0) ||
 	    (i = data.find("\r\n\r\n")) == string::npos) {
 		LOG_ERROR("Error while fetching \"%s\": %s", url.c_str(), data.c_str());
 		return;
@@ -5415,6 +5398,7 @@ void create_fl_digi_main_primary() {
 	clearQSO(); 
 
 	createConfig();
+	createRecordLoader();
 	if (withnoise)
 		grpNoise->show();
 
@@ -5941,6 +5925,7 @@ void create_fl_digi_main_WF_only() {
 	wf->UI_select(true);
 
 	createConfig();
+	createRecordLoader();
 	if (withnoise)
 		grpNoise->show();
 	altTabs();

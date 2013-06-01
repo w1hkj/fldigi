@@ -1,0 +1,10 @@
+#define BUILD_FLDIGI 1
+#include "config.h"
+
+#define IDI_ICON 101
+IDI_ICON ICON DISCARDABLE "fldigi.ico"
+
+#define RC_FILE_VERSION_QUAD FLDIGI_VERSION_MAJOR,FLDIGI_VERSION_MINOR,0,0
+#define RC_FILE_DESCRIPTION  "Fast Light Digital Modem Application"
+
+#include "common.rc"

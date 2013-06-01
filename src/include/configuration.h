@@ -26,6 +26,7 @@
 #define _CONFIGURATION_H
 
 #include <string>
+#include <math.h>
 
 #include "rtty.h"
 #include "waterfall.h"
@@ -339,6 +340,15 @@
               false)                                                                    \
         ELEM_(bool, PseudoFSK, "PSEUDOFSK",                                             \
               "Generate Pseudo-FSK signal on right audio channel",                      \
+              false)                                                                    \
+        ELEM_(bool, SynopAdifDecoding, "SYNOPADIFDECODING",                             \
+              "Decoding of Synop weather information on RTTY to ADIF log",              \
+              false)                                                                    \
+        ELEM_(bool, SynopKmlDecoding, "SYNOPKMLDECODING",                               \
+              "Decoding of Synop weather information on RTTY to KML file",              \
+              false)                                                                    \
+        ELEM_(bool, SynopInterleaved, "SYNOPINTERLEAVED",                               \
+              "Decoding of Synop interleaved with coded text, or replaces it",          \
               false)                                                                    \
         ELEM_(bool, UOSrx, "UOSRX",                                                     \
               "Revert to unshifted chars on a space (RX)",                              \
@@ -1165,7 +1175,7 @@
               "This setting is currently unused",                                       \
               true)                                                                     \
         ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL",                                 \
-              "Level for monitored (on watrerfall) transmit signal",                    \
+              "Level for monitored (on waterfall) transmit signal",                     \
               0.5)                                                                      \
         /* Waterfall palette */                                                         \
         ELEM_(std::string, PaletteName, "PALETTENAME",                                  \
@@ -1496,9 +1506,9 @@
        ELEM_(bool, NVTX_AdifLog, "NAVTEXADIFLOG",                                       \
              "Logs Navtex messages in Adig log file",                                   \
              false)                                                                     \
-       ELEM_(std::string, NVTX_Catalog, "NAVTEXCATALOG",                                \
-             "Catalog pathname of Navtex stations",                                     \
-             PKGDATADIR "/NAVTEX_Stations.txt")                                         \
+       ELEM_(bool, NVTX_KmlLog, "NAVTEXKMLLOG",                                         \
+             "Logs Navtex messages to KML document",                                    \
+             false)                                                                     \
        ELEM_(int, NVTX_MinSizLoggedMsg, "NAVTEXMINSIZLOGGEDMSG",                        \
              "Minimum length of logged messages",                                       \
              0 )                                                                        \
@@ -1511,32 +1521,54 @@
               "4 letter specifier for wx station",                                      \
               "KMDQ")                                                                   \
         ELEM_(bool, wx_condx, "WX_CONDX",                                               \
-              "weather conditions",                                                     \
+              "Weather conditions",                                                     \
               true)                                                                     \
         ELEM_(bool, wx_fahrenheit, "WX_FAHRENHEIT",                                     \
-              "report in Fahrenheit",                                                   \
+              "Report in Fahrenheit",                                                   \
               true)                                                                     \
         ELEM_(bool, wx_celsius, "WX_CELSIUS",                                           \
-              "report in Celsius",                                                      \
+              "Report in Celsius",                                                      \
               true)                                                                     \
         ELEM_(bool, wx_mph, "WX_MPH",                                                   \
-              "report speed in miles per hour",                                         \
+              "Report speed in miles per hour",                                         \
               true)                                                                     \
         ELEM_(bool, wx_kph, "WX_KPH",                                                   \
-              "report speed in kilometers per hour",                                    \
+              "Report speed in kilometers per hour",                                    \
               true)                                                                     \
         ELEM_(bool, wx_inches, "WX_INCHES",                                             \
-              "report pressure in inches of mercury",                                   \
+              "Report pressure in inches of mercury",                                   \
               true)                                                                     \
         ELEM_(bool, wx_mbars, "WX_MBARS",                                               \
-              "report pressure in millibars",                                           \
+              "Report pressure in millibars",                                           \
               true)                                                                     \
         ELEM_(bool, wx_full, "WX_FULL",                                                 \
-              "use complete METAR report",                                              \
+              "Use complete METAR report",                                              \
               true)                                                                     \
         ELEM_(bool, wx_station_name, "WX_STATION_NAME",                                 \
-              "report station noun name",                                               \
+              "Report station noun name",                                               \
               true)                                                                     \
+	/* KML Keyhole Markup Language */                                               \
+        ELEM_(bool, kml_purge_on_startup, "KML_PURGE_ON_STARTUP",                       \
+              "Purge KML data at startup",                                              \
+              false)                                                                    \
+       ELEM_(std::string, kml_save_dir, "KML_SAVE_DIR",                                 \
+             "Destination directory for generated KML documents",                       \
+             "")                                                                        \
+       ELEM_(std::string, kml_command, "KML_COMMAND",                                   \
+             "Command executed when creating KML files",                                \
+             "")                                                                        \
+       ELEM_(int, kml_merge_distance, "KML_MERGE_DISTANCE",                             \
+             "Minimum distance for splitting alias nodes",                              \
+             10000)                                                                     \
+       ELEM_(int, kml_retention_time, "KML_RETENTION_TIME",                             \
+             "Number of hours for keeping data in each node",                           \
+             0)                                                                         \
+       ELEM_(int, kml_refresh_interval, "KML_REFRESH_INTERVAL",                         \
+             "Refresh interval written in KML files (In seconds)",                      \
+             120)                                                                       \
+       ELEM_(int, kml_balloon_style, "KML_BALLOON_STYLE",                               \
+             "KML balloons data displayed as text, HTML tables, HTML single matrix",    \
+             2)                                                                         \
 
 
 // declare the struct
