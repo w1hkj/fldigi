@@ -104,12 +104,12 @@ void print(size_t &);
 
 list<XMLIOS>	commands;
 list<XMLIOS>	reply;
-list<MODE> 		lmodes;
+list<RIGMODE> 		lmodes;
 list<BW> 		lbws;
 list<BW>		lbwCMD;
 list<BW>		lbwREPLY;
-list<MODE>		lmodeCMD;
-list<MODE>		lmodeREPLY;
+list<RIGMODE>		lmodeCMD;
+list<RIGMODE>		lmodeREPLY;
 list<string> 	LSBmodes;
 
 XMLRIG xmlrig;
@@ -344,7 +344,7 @@ bool tagIs(size_t &p0, string tag)
 // Parse modesTO definitions
 //---------------------------------------------------------------------
 
-void parseMODEdefs(size_t &p0, list<MODE> &lmd)
+void parseMODEdefs(size_t &p0, list<RIGMODE> &lmd)
 {
 	size_t pend = tagEnd(p0);
 	size_t elend;
@@ -367,18 +367,18 @@ void parseMODEdefs(size_t &p0, list<MODE> &lmd)
 			while (p0 != string::npos && p0 < elend) {
 				print(p0,1);
 				if ( isBytes(p0, stemp) ) {
-					lmd.push_back(MODE(strELEMENT,stemp));
+					lmd.push_back(RIGMODE(strELEMENT,stemp));
 				}
 				else if ( isByte(p0, ch) ) {
 					stemp = ch;
-					lmd.push_back(MODE(strELEMENT,stemp));
+					lmd.push_back(RIGMODE(strELEMENT,stemp));
 				}
 				else if ( isInt(p0, n) ) {
 					stemp = (char)(n & 0xFF);
-					lmd.push_back(MODE(strELEMENT, stemp));
+					lmd.push_back(RIGMODE(strELEMENT, stemp));
 				}
 				else if ( isString(p0, stemp) ) {
-					lmd.push_back(MODE(strELEMENT,stemp));
+					lmd.push_back(RIGMODE(strELEMENT,stemp));
 				}
 				p0 = tagEnd(p0);
 				p0 = nextTag(p0);

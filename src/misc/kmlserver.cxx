@@ -63,6 +63,8 @@
 #	define FLDIGI_KML_CONDITION_VARIABLE 1
 #endif
 
+#include "timeops.h"
+
 // ----------------------------------------------------------------------------
 
 static const char * KmlSrvUnique = "Permanent";

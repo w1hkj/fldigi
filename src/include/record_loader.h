@@ -22,7 +22,7 @@
 #ifndef RECORD_LOADER_H
 #define RECORD_LOADER_H
 
-#include <iosfwd>
+#include <iostream>
 #include <string>
 
 /** This wraps the logic of loading a datafile made of distinct records.
@@ -91,10 +91,112 @@ template<class Catalog> Catalog RecordLoaderSingleton< Catalog >::s_cata_inst = 
 
 /// Loads tabular records from a file.
 template< class Catalog >
-struct RecordLoader : public RecordLoaderInterface, public RecordLoaderSingleton<Catalog>
+struct RecordLoader
+: public virtual RecordLoaderInterface
+, public RecordLoaderSingleton<Catalog>
 {
 }; // RecordLoader
 
 void createRecordLoader();
+
+
+// ----------------------------------------------------------------------------
+
+/// This is a read-only replacement for std::stringstream.
+struct imemstream : public std::streambuf, public std::istream {
+	/// Faster than stringstream because no copy.
+	imemstream(char* s, std::size_t n) : std::istream( this )
+	{
+		setg(s, s, s + n);
+	}
+	/// Faster than stringstream because no copy.
+	imemstream(const std::string & r) : std::istream( this )
+	{
+		char * s = const_cast< char * >( r.c_str() );
+		setg(s, s, s + r.size());
+	}
+};
+// ----------------------------------------------------------------------------
+
+/// Tells if type is a char[]. Used for SFINAE.
+template< class T >
+struct DtTyp {
+	/// In the general case, data types are not char arrays.
+	struct Any {};
+};
+
+/// Matches if the type is a char[].
+template< size_t N >
+struct DtTyp< char[N] > {
+	struct Array {};
+	static const size_t Size = N ;
+};
+
+/// Reads all chars until after the delimiter.
+bool read_until_delim( char delim, std::istream & istrm );
+
+/// Reads a char followed by the delimiter.
+bool read_until_delim( char delim, std::istream & istrm, char & ref, const char dflt );
+
+/// Reads a double up to the given delimiter.
+bool read_until_delim( char delim, std::istream & istrm, double & ref );
+
+/// Reads a string up to the given delimiter.
+bool read_until_delim( char delim, std::istream & istrm, std::string & ref );
+
+/// For reading from a string with tokens separated by a char. Used to load CSV files.
+template< typename Tp >
+bool read_until_delim( char delim, std::istream & istrm, Tp & ref, typename DtTyp< Tp >::Any = typename DtTyp< Tp >::Any() )
+{
+	std::string parsed_str ;
+	if( ! std::getline( istrm, parsed_str, delim ) ) {
+		return false ;
+	}
+	imemstream sstrm( parsed_str );
+	sstrm >> ref ;
+	return sstrm ;
+}
+
+/// Same, with a default value if there is nothing to read.
+template< typename Tp >
+bool read_until_delim( char delim, std::istream & istrm, Tp & ref, const Tp dflt, typename DtTyp< Tp >::Any = typename DtTyp< Tp >::Any() )
+{
+	std::string parsed_str ;
+	if( ! std::getline( istrm, parsed_str, delim ) ) {
+		return false ;
+	}
+	if( parsed_str.empty() ) {
+		ref = dflt ;
+		return true;
+	}
+	imemstream sstrm( parsed_str );
+	sstrm >> ref ;
+	return sstrm ;
+}
+
+/// For reading from a string with tokens separated by a char to a fixed-size array.
+template< typename Tp >
+bool read_until_delim( char delim, std::istream & istrm, Tp & ref, typename DtTyp< Tp >::Array = typename DtTyp< Tp >::Array() )
+{
+	istrm.getline( ref, DtTyp< Tp >::Size, delim );
+	// Should we return an error if buffer is too small?
+	return istrm ;
+}
+
+/// Same, with a default value if there is nothing to read. Fixed-size array.
+template< typename Tp >
+bool read_until_delim( char delim, std::istream & istrm, Tp & ref, const Tp dflt, typename DtTyp< Tp >::Array = typename DtTyp< Tp >::Array() )
+{
+	istrm.getline( ref, DtTyp< Tp >::Size, delim );
+	// If nothing to read, copy the default value.
+	if( ref[0] == '\0' ) {
+		strncpy( ref, dflt, DtTyp< Tp >::Size - 1 );
+	}
+	// Should we return an error if buffer is too small?
+	return istrm;
+}
+
+
+
 
 #endif // RECORD_LOADER_H

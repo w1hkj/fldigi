@@ -47,7 +47,7 @@ There is NO WARRANTY, to the extent permitted by law.\n\
 <H4>Programmers:</H4>\n\
 &nbsp; &nbsp; &nbsp;Dave Freese, W1HKJ<br>\n\
 &nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\n\
-&nbsp; &nbsp; &nbsp;Rem\355 Chateauneu, F4ECW<br>\n\
+&nbsp; &nbsp; &nbsp;Remi Chateauneu, F4ECW<br>\n\
 &nbsp; &nbsp; &nbsp;John Douyere, VK2ETA<br>\n\
 &nbsp; &nbsp; &nbsp;Stefan Fendt, DO2SMF<br>\n\
 &nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\n\

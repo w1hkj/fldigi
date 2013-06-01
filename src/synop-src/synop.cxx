@@ -51,6 +51,7 @@
 #include "field_def.h"
 
 #include "record_loader.h"
+#include "catalog.h"
 #include "coordinate.h"
 #include "strutil.h"
 
@@ -514,64 +515,6 @@ public:
 
 // ----------------------------------------------------------------------------
 
-/// This wraps a record type and allows to load a cvs file and access it using a key.
-template< class Key, class Record, Key (Record::*Method)(void) const, class Terminal >
-class Catalog : public RecordLoader< Terminal >
-{
-	/// The keying method might return a reference instead of a value.
-	template< class Type > struct deref { typedef Type type ; };
-	template< class Type > struct deref< Type & > { typedef Type type ; };
-	/// If the return value of the indexing function is for example a reference
-	/// to a const string, then KeyType is a string.
-	template< class Type > struct deref< const Type & > { typedef Type type ; };
-protected:
-	typedef typename deref< Key >::type KeyType ;
-	typedef std::map< KeyType, Record > CatalogType ;
-	typedef typename CatalogType::iterator IteratorType ;
-
-	CatalogType m_catalog ;
-
-	bool FillAndTest() {
-		int nbRec = this->LoadAndRegister();
-		if( nbRec < 0 ) {
-			return false ;
-		}
-		else {
-			LOG_INFO("record=%s nb_recs=%d", typeid(Record).name(), nbRec );
-			return true ;
-		}
-	}
-public:
-	void Clear() {
-		m_catalog.clear();
-	}
-	bool ReadRecord( std::istream & istrm ) {
-		Record tmp ;
-		istrm >> tmp ;
-		if( istrm || istrm.eof() ) {
-			m_catalog[ (tmp.*Method)() ] = tmp ;
-			return true ;
-		}
-		return false;
-	}
-
-	/// Returns a station with wmo_indicator to zero if cannot find the right one.
-	static const Record * FindFromKey( Key key )
-	{
-		CatalogType & refCat = RecordLoader< Terminal >::InstCatalog().m_catalog;
-
-		typename CatalogType::const_iterator it = refCat.find( key );
-		return ( it == refCat.end() ) ? NULL : &it->second ;
-	}
-
-	bool Fill() {
-		return FillAndTest();
-	}
-
-}; // Catalog
-
-// ----------------------------------------------------------------------------
-
 /// This contains all WMO stations records read from the file.
 class CatalogWmoStations : public Catalog< int, RecordWmoStation, &RecordWmoStation::wmo_indicator, CatalogWmoStations >
 {
@@ -763,7 +706,7 @@ struct CatalogJComm : public Catalog< const std::string &, RecordJComm, &RecordJ
 // Returns true if properly initialised.
 // TODO: Have all the derived class link to the base class so the initialisation
 // can be done without having to enumerate the sub-classes.
-bool SynopDB::Init( const std::string & data_dir )
+bool SynopDB::Init()
 {
 	try
 	{

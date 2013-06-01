@@ -1111,11 +1111,10 @@ static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
 	while (++k < len)
 	    if (isspace(s[k])  || s[k] == '<') break;
 	name = s.substr(j, k - j);
-	for (int m = 0; m < NUM_MODES; m++) {
-		if (name == mode_info[m].sname) {
-			if (active_modem->get_mode() != mode_info[m].mode)
-				init_modem(mode_info[m].mode);
-			break;
+	trx_mode tmp_mode = trx_mode_lookup( name );
+	if( tmp_mode != NUM_MODES ) {
+		if (active_modem->get_mode() != tmp_mode) {
+			init_modem(tmp_mode);
 		}
 	}
 	s.erase(i, k-i);
@@ -1136,10 +1135,7 @@ static void doMODEM(std::string s)
 
 	const std::vector<regmatch_t>& o = re.suboff();
 	std::string name = tomatch.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
-	trx_mode m;
-	for (m = 0; m < NUM_MODES; m++)
-		if (name == mode_info[m].sname)
-			break;
+	trx_mode m = trx_mode_lookup( name );
 	// do we have arguments and a valid modem?
 	if (o.size() == 2 || m == NUM_MODES) {
 		que_ok = true;
@@ -1246,10 +1242,7 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 
 	const std::vector<regmatch_t>& o = re.suboff();
 	std::string name = s.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
-	trx_mode m;
-	for (m = 0; m < NUM_MODES; m++)
-		if (name == mode_info[m].sname)
-			break;
+	trx_mode m = trx_mode_lookup( name );
 	// do we have arguments and a valid modem?
 	if (o.size() == 2 || m == NUM_MODES) {
 		if (m < NUM_MODES && active_modem->get_mode() != mode_info[m].mode)

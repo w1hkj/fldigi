@@ -38,7 +38,7 @@ public:
 	Ccrc16() { crcval = 0xFFFF; }
 	~Ccrc16() {};
 	void reset() { crcval = 0xFFFF;}
-	unsigned int val() {return crcval;}
+	unsigned int val() const {return crcval;}
 	std::string sval() {
 		snprintf(ss, sizeof(ss), "%04X", crcval);
 		return ss;
@@ -56,13 +56,13 @@ public:
 		update(c); 
 		return crcval;
 	}
-	unsigned int crc16(std::string s) {
+	unsigned int crc16(const std::string & s) {
 		reset();
-		for (size_t i = 0; i < s.length(); i++)
+		for (size_t i = 0, nb = s.length(); i < nb; i++)
 			update(s[i]);
 		return crcval;
 	}
-	std::string scrc16(std::string s) {
+	std::string scrc16(const std::string & s) {
 		crc16(s);
 		return sval();
 	}

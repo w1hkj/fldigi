@@ -13,7 +13,7 @@ decl {\#include <FL/Fl_Double_Window.H>} {public local
 
 Function {make_record_loader_window()} {open
 } {
-  Fl_Window {} {
+  Fl_Window dlgRecordLoader {
     label {Data files sources} open
     tooltip {Data files update} xywh {614 112 540 280} type Double resizable visible
   } {

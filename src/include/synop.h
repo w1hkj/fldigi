@@ -23,12 +23,12 @@
 #ifndef _SYNOP_H
 #define _SYNOP_H
 
-// This tells how Synop data are serialized.
+/// This tells how Synop data are serialized.
 class synop_callback {
 public:
 	virtual ~synop_callback() {} ;
 
-	// These methods could as well be pure virtual.
+	/// These methods could as well be pure virtual.
 	virtual bool interleaved(void) const { return true; }
 	virtual void print( const char * str, size_t nb, bool ) const  = 0;
 	virtual bool log_adif(void) const = 0;
@@ -36,7 +36,7 @@ public:
 };
 
 
-// Implementation hidden in synop.cxx
+/// Implementation hidden in synop.cxx
 class synop {
 	// When set, the output does not contain Synop sentences but only
 	// the name of the regular expression which matched. It helps
@@ -59,7 +59,7 @@ public:
 
 	virtual ~synop() {};
 
-	// It is used as a global object, the constructor does not do anything.
+	/// It is used as a global object, the constructor does not do anything.
 	virtual void init() = 0;
 
 	virtual void cleanup() = 0;
@@ -67,7 +67,7 @@ public:
 	/// We should have a tempo as well.
 	virtual void add(char c) = 0;
 
-	// When Synop decoding is disabled.
+	/// When Synop decoding is disabled.
 	virtual void flush(bool finish_decoding) = 0;
 
 	virtual bool enabled(void) const = 0;
@@ -76,16 +76,16 @@ public:
 	static void SetTestMode(bool test_mode) { m_test_mode = test_mode ; };
 };
 
-// gathers the various data files used for Synop decoding.
+/// Gathers the various data files used for Synop decoding.
 struct SynopDB {
-	// Loads the files from s given directory.
-	static bool Init( const std::string & data_dir );
+	/// Loads the files from s given directory.
+	static bool Init();
 
-	// For testing purpose.
+	/// For testing purpose.
 	static const std::string & IndicatorToName( int wmo_indicator );
 	static const std::string IndicatorToCoordinates( int wmo_indicator );
 
-	// To Test the reading of our weather stations data files.
+	/// To Test the reading of our weather stations data files.
 	static const std::string & BuoyToName( const char * buoy_id );
 	static const std::string & ShipToName( const char * ship_id );
 	static const std::string & JCommToName( const char * ship_id );

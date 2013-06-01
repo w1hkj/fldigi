@@ -3,6 +3,8 @@
 #include "record_browse.h"
 #include <config.h>
 
+Fl_Double_Window *dlgRecordLoader=(Fl_Double_Window *)0;
+
 Fl_Group *tabDataFiles=(Fl_Group *)0;
 
 Fl_Input_Choice *inpDataSources=(Fl_Input_Choice *)0;
@@ -20,10 +22,8 @@ static void cb_btnDataSourceReset(Fl_Button*, void*) {
 }
 
 Fl_Double_Window* make_record_loader_window() {
-  Fl_Double_Window* w;
-  { Fl_Double_Window* o = new Fl_Double_Window(540, 280, "Data files sources");
-    w = o;
-    o->tooltip("Data files update");
+  { dlgRecordLoader = new Fl_Double_Window(540, 280, "Data files sources");
+    dlgRecordLoader->tooltip("Data files update");
     { tabDataFiles = new Fl_Group(5, 25, 570, 275);
       tabDataFiles->tooltip("Tabular data sources");
       { DerivedRecordLst* o = new DerivedRecordLst(6, 25, 529, 217, "Data files sources");
@@ -54,7 +54,7 @@ Fl_Double_Window* make_record_loader_window() {
       tabDataFiles->end();
       Fl_Group::current()->resizable(tabDataFiles);
     } // Fl_Group* tabDataFiles
-    o->end();
-  } // Fl_Double_Window* o
-  return w;
+    dlgRecordLoader->end();
+  } // Fl_Double_Window* dlgRecordLoader
+  return dlgRecordLoader;
 }

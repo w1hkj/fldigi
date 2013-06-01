@@ -36,40 +36,26 @@
 #include <cctype>
 #include <locale>
 #include <limits>
+#include <iostream>
 
-#include "re.h"
 #include "strutil.h"
 
 using namespace std;
 
-vector<string> split(const char* re_str, const char* str, unsigned max_split)
+
+/// Splits a string based on a char delimiter.
+void strsplit( std::vector< std::string > & tokens, const std::string &str, char delim)
 {
-	vector<string> v;
-	size_t n = strlen(re_str);
-	string s; s.reserve(n + 2); s.append(1, '(').append(re_str, n).append(1, ')');
-	fre_t re(s.c_str(), REG_EXTENDED);
-
-	bool ignore_trailing_empty = false;
-	if (max_split == 0) {
-		max_split = UINT_MAX;
-		ignore_trailing_empty = true;
-	}
-
-	s = str;
-	const vector<regmatch_t>& sub = re.suboff();
-	while (re.match(s.c_str())) {
-		if (unlikely(sub.empty() || ((max_split != UINT_MAX) && --max_split == 0)))
+	for( const char * prev = str.c_str(), * next ; ; prev = next + 1 )
+	{
+		next = strchr( prev, delim );
+		if( next == NULL )
+		{
+			tokens.push_back( std::string( prev ) );
 			break;
-		else {
-			s[sub[0].rm_so] = '\0';
-			v.push_back(s.c_str());
-			s.erase(0, sub[0].rm_eo);
 		}
+		tokens.push_back( std::string( prev, next ) );
 	}
-
-	if (!(ignore_trailing_empty && s.empty()))
-		v.push_back(s);
-	return v;
 }
 
 /// Builds a string out of a printf-style formatted vararg list.
@@ -215,34 +201,111 @@ string uppercase( const string & str )
 	return resu ;
 }
 
+/// Surrounds a string with double-quotes and escapes control chars.
+void string_escape( std::ostream & ostrm, const std::string & str )
+{
+	ostrm << '"';
+        for( const char * it = str.c_str(), * beg = it, * ptr = NULL ; ; ++it )
+        {
+                char ch = *it ;
+                switch( ch )
+                {
+			/// TODO: Printf the hexadecimal value for a non-printable char.
+                        case '"'    : ptr = "\""; break;
+                        case '\n'   : ptr = "\\n"; break;
+                        case '\r'   : ptr = "\\r"; break;
+                        case '\b'   : ptr = "\\b"; break;
+                        case '\t'   : ptr = "\\t"; break;
+                        case '\0'  : break ;
+                        default    : continue ;
+                }
+                if( it != beg ) {
+                        ostrm.write( beg, it - beg );
+                }
+
+                if( ch == '\0' ) break ;
+                ostrm << ptr ;
+                beg = it + 1 ;
+        }
+	ostrm << '"';
+}
+
+/// Reads a string surrounded by double-quotes.
+void string_unescape( std::istream & istrm, std::string & str )
+{
+	if( ! str.empty() ) str.clear();
+	bool is_quoted = false ;
+	for(;;) {
+		/// Starts to read only after the double-quote.
+		char ch = istrm.get();
+		switch(ch) {
+			case ' '  : /// The string is not started yet.
+			case '\t' : continue ;
+			case '\r' : /// String ends before having started.
+			case '\n' :
+			case  -1  : return ;
+			default   : is_quoted = false ;
+				    break ;
+			case '"'  : is_quoted = true;
+				    break ;
+		}
+		break ;
+	}
+
+	/// Any chars can be between the quotes if it is escaped.
+	bool backslashed = false ;
+	for(;;) {
+		char ch = istrm.get();
+		if( backslashed ) {
+			backslashed = false ;
+			switch(ch) {
+				case -1  : return;
+				case '"' : str += '\"'; continue;
+				case 'r' : str += '\r'; continue;
+				case 'n' : str += '\n'; continue;
+				case 'b' : str += '\b'; continue;
+				case 't' : str += '\t'; continue;
+				/// This should not happen, but we accept that all chars can be escaped.
+				default  : str += ch; continue ;
+			}
+		} else {
+			switch(ch) {
+				case -1  :
+				case '\r':
+				case '\n':
+				case '\0':
+				case '"' : return ;
+				case '\\': backslashed = true ; continue ;
+				case ' ' : /// Spaces and tabs end the string if it was not quoted.
+				case '\t': if( ! is_quoted ) return ;
+				default  : str += ch ; continue ;
+			}
+		}
+	}
+}
+
+/// Joins strings with a "," separator only if they are not empty.
+std::string strjoin( const std::string & str1, const std::string & str2 )
+{
+	std::string trim1(str1);
+	strtrim(trim1);
+	std::string trim2(str2);
+	strtrim(trim2);
+
+	// This could be faster by detecting the beginning and the end
+	// of the spaces in the string.
+	if( trim2.empty() ) return trim1;
+	if( trim1.empty() ) return trim2;
+	return trim1 + "," + trim2 ;
+}
+
+/// Joins strings with a "," separator only if they are not empty.
+std::string strjoin( const std::string & str1, const std::string & str2, const std::string & str3 )
+{
+	return strjoin( str1, strjoin( str2, str3 ) );
+}
+
+
+
 // ----------------------------------------------------------------------------
-
-/// Just reads all chars until the delimiter.
-bool read_until_delim( char delim, std::istream & istrm )
-{
-	istrm.ignore ( std::numeric_limits<std::streamsize>::max(), delim );
-	if(istrm.eof()) return true ;
-	return istrm.bad() ? false : true ;
-}
-
-/// Reads a char up to the given delimiter, or returns the default value if there is none.
-bool read_until_delim( char delim, std::istream & istrm, char & ref, const char dflt )
-{
-	if(istrm.eof()) {
-		ref = dflt ;
-		return true ;
-	}
-	ref = istrm.get();
-	if( istrm.bad() ) return false;
-	if( ref == delim ) {
-		ref = dflt ;
-		return true ;
-	}
-	char tmpc = istrm.get();
-	if( istrm.eof() ) return true;
-	if( tmpc == delim ) return true ;
-	if( tmpc == '\n' ) return true ;
-	if( tmpc == '\r' ) return true ;
-	return false;
-}
 

@@ -131,8 +131,7 @@ void rtty::rx_init()
 	// Synop file is reloaded each time we enter this modem. Ideally do that when the file is changed.
 	static bool wmo_loaded = false ;
 	if( wmo_loaded == false ) {
-		wmo_loaded = true ;
-		SynopDB::Init(PKGDATADIR);
+		wmo_loaded = SynopDB::Init();
 	}
 	/// Used by weather reports decoding.
 	synop::setup<rtty_callback>();

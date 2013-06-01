@@ -1,0 +1,264 @@
+ITU Country Codes
+1998
+
+Name = short country name in English
+ITU  = ITU country designator
+ISO  = ISO country designator
+M    = ITU member? (Y/N)
+C    = ITU council member? (Y/N)
+L    = Main language spoken in country
+
+
+Country Name                            ITU   ISO     M    C    L
+
+Adelie Land                             ADL           N    N    F  
+Afghanistan                             AFG   AFG     Y    N    F/E
+Albania                                 ALB   ALB     Y    N    F  
+Algeria                                 ALG   DZA     Y    Y    F  
+American Samoa                          SMA   ASM     N    N    E  
+Andorra                                 AND   AND     Y    N    F/S
+Angola                                  AGL   AGO     Y    N    F  
+Anguilla                                AIA   AIA     N    N    E  
+Antigua and Barbuda                     ATG   ATG     Y    N    E  
+Argentina                               ARG   ARG     Y    Y    S  
+Armenia                                 ARM   ARM     Y    N    E  
+Aruba                                   ABW   ABW     N    N    E  
+Ascension                               ASC           N    N    E  
+Australia                               AUS   AUS     Y    Y    E  
+Austria                                 AUT   AUT     Y    N    E  
+Azerbaijan                              AZE   AZE     Y    N    E  
+Azores                                  AZR           N    N    F  
+Bahamas                                 BAH   BHS     Y    Y    E  
+Bahrain                                 BHR   BHR     Y    N    E  
+Bangladesh                              BGD   BGD     Y    N    E  
+Barbados                                BRB   BRB     Y    N    E  
+Belarus                                 BLR   BLR     Y    N    E  
+Belgium                                 BEL   BEL     Y    N    F  
+Belize                                  BLZ   BLZ     Y    N    E  
+Benin                                   BEN   BEN     Y    Y    F  
+Bermuda                                 BER   BMU     N    N    E  
+Bhutan                                  BTN   BTN     Y    N    E  
+Bolivia                                 BOL   BOL     Y    N    S  
+Bosnia and Herzegovina                  BIH   BIH     Y    N    E  
+Botswana                                BOT   BWA     Y    N    E  
+Brazil                                  B     BRA     Y    Y    E  
+British Virgin Islands                  VRG   VGB     N    N    E  
+Brunei Darussalam                       BRU   BRN     Y    N    E  
+Bulgaria                                BUL   BGR     Y    Y    F  
+Burkina Faso                            BFA   BFA     Y    Y    F  
+Burundi                                 BDI   BDI     Y    N    F  
+Cambodia                                CBG   KHM     Y    N    F  
+Cameroon                                CME   CMR     Y    Y    F/E
+Canada                                  CAN   CAN     Y    Y    F/E
+Cape Verde                              CPV   CPV     Y    Y    F  
+Cayman Islands                          CYM   CYM     N    N    E  
+Central African Rep.                    CAF   CAF     Y    N    F  
+Chad                                    TCD   TCD     Y    N    F  
+Chagos Islands                          BIO   IOT     N    N    E  
+Chile                                   CHL   CHL     Y    Y    S  
+China                                   CHN   CHN     Y    Y    E  
+Christmas Island                        CHR   CXR     N    N    E  
+Cocos (Keeling) Islands                 ICO   CCK     N    N    E  
+Colombia                                CLM   COL     Y    N    S  
+Comoros                                 COM   COM     Y    N    F  
+Congo                                   COG   COG     Y    N    F  
+Cook Islands                            CKH   COK     N    N    E  
+Costa Rica                              CTR   CRI     Y    N    S  
+C“te d'Ivoire                           CTI   CIV     Y    N    F  
+Croatia                                 HRV   HRV     Y    N    E  
+Crozet Archipelago                      CRO           N    N    F  
+Cuba                                    CUB   CUB     Y    Y    S  
+Cyprus                                  CYP   CYP     Y    N    E  
+Czech Rep.                              CZE   CZE     Y    N    E  
+Dem. People's Rep. of Korea             KRE   PRK     Y    N    E  
+Denmark                                 DNK   DNK     Y    Y    E  
+Diego Garcia                            DGA           N    N    E  
+Djibouti                                DJI   DJI     Y    N    F  
+Dominica                                DMA   DMA     N    N    E  
+Dominican Rep.                          DOM   DOM     Y    N    S  
+East Timor                              TMP   TMP     N    N       
+Easter Island                           PAQ           N    N    S  
+Ecuador                                 EQA   ECU     Y    N    S  
+Egypt                                   EGY   EGY     Y    Y    E  
+El Salvador                             SLV   SLV     Y    N    S  
+Equatorial Guinea                       GNE   GNQ     Y    N    S  
+Eritrea                                 ERI   ERI     Y    N    E
+Estonia                                 EST   EST     Y    N    E  
+Ethiopia                                ETH   ETH     Y    N    E  
+Falkland Islands (Malvinas)             FLK   FLK     N    N    E  
+Faroe Islands                           FRO   FRO     N    N    E  
+Fiji                                    FJI   FJI     Y    N    E  
+Finland                                 FIN   FIN     Y    N    E  
+France                                  F     FRA     Y    Y    F  
+French Polynesia                        OCE   PYF     N    N    F  
+Gabon                                   GAB   GAB     Y    N    F  
+Gambia                                  GMB   GMB     Y    N    E  
+Georgia                                 GEO   GEO     Y    N    E  
+Germany                                 D     DEU     Y    Y    F/E
+Ghana                                   GHA   GHA     Y    N    E  
+Gibraltar                               GIB   GIB     N    N    E  
+Greece                                  GRC   GRC     Y    N    F/E
+Greenland                               GRL   GRL     N    N    E  
+Grenada                                 GRD   GRD     Y    N    E  
+Guadeloupe                              GDL   GLP     N    N    F  
+Guam                                    GUM   GUM     N    N    E  
+Guatemala                               GTM   GTM     Y    N    S  
+Guiana                                  GUF   GUF     N    N    F  
+Guinea                                  GUI   GIN     Y    N    F  
+Guinea-Bissau                           GNB   GNB     Y    N    F  
+Guyana                                  GUY   GUY     Y    N    E  
+Haiti                                   HTI   HTI     Y    N    F  
+Honduras                                HND   HND     Y    N    S  
+Hongkong                                HKG   HKG     N    N    E  
+Howland Island                          HWL           N    N    E  
+Hungary                                 HNG   HUN     Y    N    E  
+Iceland                                 ISL   ISL     Y    N    E  
+India                                   IND   IND     Y    Y    E  
+Indonesia                               INS   IDN     Y    Y    E  
+Iran (Islamic Rep. of)                  IRN   IRN     Y    N    E  
+Iraq                                    IRQ   IRQ     Y    N    E  
+Ireland                                 IRL   IRL     Y    N    E  
+Israel                                  ISR   ISR     Y    N    E  
+Italy                                   I     ITA     Y    Y    F  
+Jamaica                                 JMC   JAM     Y    N    E  
+Japan                                   J     JPN     Y    Y    E  
+Jarvis Island                           JAR           N    N    E  
+Johnston Island                         JON           N    N    E  
+Jordan                                  JOR   JOR     Y    N    E  
+Kazakhstan                              KAZ   KAZ     Y    N    E  
+Kenya                                   KEN   KEN     Y    Y    E  
+Kerguelen                               KER           N    N    F  
+Kiribati                                KIR   KIR     Y    N    E  
+Korea (Rep. of)                         KOR   KOR     Y    Y    E  
+Kuwait                                  KWT   KWT     Y    Y    E  
+Kyrgyzstan                              KGZ   KGZ     Y    N    E  
+Lao P.D.R.                              LAO   LAO     Y    N    F  
+Latvia                                  LVA   LVA     Y    N    E  
+Lebanon                                 LBN   LBN     Y    N    F  
+Lesotho                                 LSO   LSO     Y    N    E  
+Liberia                                 LBR   LBR     Y    N    E  
+Libya                                   LBY   LBY     Y    N    E  
+Liechtenstein                           LIE   LIE     Y    N    F  
+Lithuania                               LTU   LTU     Y    N    E  
+Luxembourg                              LUX   LUX     Y    N    F  
+Macao                                   MAC   MAC     N    N    F  
+Madagascar                              MDG   MDG     Y    N    F  
+Madeira                                 MDR           N    N    F  
+Malawi                                  MWI   MWI     Y    N    E  
+Malaysia                                MLA   MYS     Y    N    E  
+Maldives                                MLD   MDV     Y    N    E  
+Mali                                    MLI   MLI     Y    Y    F  
+Malta                                   MLT   MLT     Y    N    E  
+Marion Island                           MRN           N    N    E  
+Marshall Islands                        MHL   MHL     N    N    E  
+Martinique                              MRT   MTQ     N    N    F  
+Mauritania                              MTN   MRT     Y    N    F  
+Mauritius                               MAU   MUS     Y    N    E  
+Mayotte                                 MYT   MYT     N    N    F  
+Mexico                                  MEX   MEX     Y    Y    S  
+Micronesia                              FSM   FSM     Y    N    E  
+Midway Islands                          MDW           N    N    E  
+Moldova                                 MDA   MDA     Y    N    E  
+Monaco                                  MCO   MCO     Y    N    F  
+Mongolia                                MNG   MNG     Y    N    E  
+Montserrat                              MSR   MSR     N    N    E  
+Morocco                                 MRC   MAR     Y    Y    F  
+Mozambique                              MOZ   MOZ     Y    N    F  
+Myanmar                                 BRM   MMR     Y    N    E  
+Namibia                                 NMB   NAM     Y    N    E  
+Nauru                                   NRU   NRU     Y    N    E  
+Nepal                                   NPL   NPL     Y    N    E  
+Netherlands                             HOL   NLD     Y    N    F/E
+Netherlands Antilles                    ATN   ANT     N    N    E  
+New Caledonia                           NCL   NCL     N    N    F  
+New Zealand                             NZL   NZL     Y    N    E  
+Nicaragua                               NCG   NIC     Y    N    S  
+Niger                                   NGR   NER     Y    N    F  
+Nigeria                                 NIG   NGA     Y    Y    E  
+Niue                                    NIU   NIU     N    N    E  
+Norfolk Island                          NFK   NFK     N    N    E  
+Northern Marianas                       MRA   MNP     N    N    E  
+Norway                                  NOR   NOR     Y    N    E  
+Oman                                    OMA   OMN     Y    N    E  
+Pakistan                                PAK   PAK     Y    Y    E  
+Palau                                   PLW   PLW     N    N    E  
+Palmyra Island                          PLM           N    N    E  
+Panama                                  PNR   PAN     Y    N    S  
+Papua New Guinea                        PNG   PNG     Y    N    E  
+Paraguay                                PRG   PRY     Y    N    S  
+Peru                                    PRU   PER     Y    N    S  
+Philippines                             PHL   PHL     Y    Y    E  
+Phoenix Islands                         PHX           N    N    E  
+Pitcairn                                PTC   PCN     N    N    E  
+Poland                                  POL   POL     Y    Y    F  
+Portugal                                POR   PRT     Y    Y    F  
+Puerto Rico                             PTR   PRI     N    N    E  
+Qatar                                   QAT   QAT     Y    N    E  
+Reunion                                 REU   REU     N    N    F  
+Rodrigues                               ROD           N    N    E  
+Romania                                 ROU   ROM     Y    Y    F  
+Russia                                  RUS   RUS     Y    Y    F  
+Rwanda                                  RRW   RWA     Y    N    F  
+Saint Helena                            SHN   SHN     N    N    E  
+Saint Kitts and Nevis                   SCN   KNA     N    N    E  
+Saint Lucia                             LCA   LCA     N    N    E  
+Saint Paul and Amsterdam                AMS           N    N    F  
+Saint Pierre and Miquelon               SPM   SPM     N    N    F  
+Saint Vincent and the Grenadines        VCT   VCT     Y    N    E  
+San Marino                              SMR   SMR     Y    N    E  
+Sao Tome and Principe                   STP   STP     Y    N    F/E
+Saudi Arabia                            ARS   SAU     Y    Y    E  
+Senegal                                 SEN   SEN     Y    Y    F  
+Seychelles                              SEY   SYC     N    N    F/E
+Sierra Leone                            SRL   SLE     Y    N    E  
+Singapore                               SNG   SGP     Y    N    E  
+Slovakia                                SVK   SVK     Y    N    E  
+Slovenia                                SVN   SVN     Y    N    E  
+Solomon                                 SLM   SLB     Y    N    E  
+Somalia                                 SOM   SOM     Y    N    E  
+South Africa                            AFS   ZAF     Y    Y    E  
+Spain                                   E     ESP     Y    Y    S  
+Sri Lanka                               CLN   LKA     Y    N    E  
+Sudan                                   SDN   SDN     Y    N    E  
+Suriname                                SUR   SUR     Y    N    E  
+Swan Islands                            SWN           N    N    S  
+Swaziland                               SWZ   SWZ     Y    N    E  
+Sweden                                  S     SWE     Y    N    E  
+Switzerland                             SUI   CHE     Y    Y    F  
+Syria                                   SYR   SYR     Y    N    E  
+Tajikistan                              TJK   TJK     Y    N    E  
+Tanzania                                TZA   TZA     Y    Y    E  
+Thailand                                THA   THA     Y    Y    E  
+The Former Yugoslav Rep. of Macedonia   MKD   MKD     Y    N    E  
+Togo                                    TGO   TGO     Y    N    F  
+Tokelau                                 TKL   TKL     N    N    E  
+Tonga                                   TON   TON     Y    N    E  
+Trinidad and Tobago                     TRD   TTO     Y    N    E  
+Tristan da Cunha                        TRC           N    N    E  
+Tunisia                                 TUN   TUN     Y    N    F  
+Turkey                                  TUR   TUR     Y    N    F/E
+Turkmenistan                            TKM   TKM     Y    N    E  
+Turks and Caicos Islands                TCA   TCA     N    N    E  
+Tuvalu                                  TUV   TUV     N    N    E  
+Uganda                                  UGA   UGA     Y    N    E  
+Ukraine                                 UKR   UKR     Y    Y    F  
+United Arab Emirates                    UAE   ARE     Y    N    E  
+United Kingdom                          G     GBR     Y    Y    E  
+United States                           USA   USA     Y    Y    E  
+United States Virgin Islands            VIR   VIR     N    N    E  
+Uruguay                                 URG   URY     Y    N    S  
+Uzbekistan                              UZB   UZB     Y    N    E  
+Vanuatu                                 VUT   VUT     Y    N    E  
+Vatican                                 CVA   VAT     Y    N    F  
+Venezuela                               VEN   VEN     Y    N    S  
+Viet Nam                                VTN   VNM     Y    Y    F  
+Wake Island                             WAK           N    N    E  
+Wallis and Futuna                       WAL   WLF     N    N    F  
+Western Sahara                          AOE   ESH     N    N       
+Western Samoa                           SMO   WSM     Y    N    E  
+Yemen                                   YEM   YEM     Y    N    E  
+Yugoslavia                              YUG   YUG     Y    N    F  
+Zaire                                   ZAI   ZAR     Y    N    F  
+Zambia                                  ZMB   ZMB     Y    N    E  
+Zimbabwe                                ZWE   ZWE     Y    N    E  
+

@@ -13,19 +13,19 @@
 extern std::string windowTitle;
 extern Cserial rigio;
 
-extern void initOptionMenus();
 extern void clearList();
-extern void updateSelect();
-extern size_t addtoList(long val);
-extern void buildlist();
 extern void qso_movFreq(Fl_Widget* w, void*);
 extern int	cb_qso_opMODE();
 extern int  cb_qso_opBW();
 extern void qso_setMode();
 extern void setTitle();
 
+
+extern void qso_createFreqList(int frqHorPos, int frqVrtPos, int btnWidth, int totalHeight, int Hmenu, int pad );
+extern void qso_updateFreqColor(int selLin);
 extern void qso_addFreq();
 extern void qso_delFreq();
+extern void qso_displayFreq( long long freq );
 extern void qso_selectFreq();
 extern void qso_setFreq();
 extern void qso_clearList();
@@ -38,7 +38,7 @@ extern bool init_NoRig_RigDialog();
 #if USE_HAMLIB
 extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
-extern std::string modeString(rmode_t m);
+extern const std::string & modeString(rmode_t m);
 #endif
 
 #endif

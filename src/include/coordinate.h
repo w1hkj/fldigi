@@ -26,13 +26,12 @@
 #include <iostream>
 #include <list>
 
-// Models a longitude or latitude.
+/// Models a longitude or latitude.
 class CoordinateT
 {
 	// Precision is: 360 * 3600 = 1296000, 21 bits. A float might be enough.
-	double m_angle ;  // In decimal degrees, between -180.0 and 180.0.
-	bool   m_is_lon ; // Longitude or latitude.
-	// TODO: Consider adding a big offset to m_angle, instead of an extra flag.
+	float m_angle ;  // In decimal degrees, between -180.0 and 180.0.
+	bool   m_is_lon ; // Longitude or latitude. Should rather add an big offset.
 
 	void Check(void) const ;
 
@@ -60,11 +59,12 @@ public:
 	class Pair ;
 }; // CoordinateT
 
-// Longitude , latitude.
+/// Longitude + latitude.
 class CoordinateT::Pair
 {
 	CoordinateT m_lon, m_lat ;
 public:
+	/// This is intentionaly left in an invalid state.
 	Pair() {}
 
 	Pair( const CoordinateT & coo1, const CoordinateT & coo2 );
@@ -88,6 +88,9 @@ public:
 	friend std::istream & operator>>( std::istream & istrm, Pair & ref );
 
 	friend std::ostream & operator<<( std::ostream & ostrm, const Pair & ref );
+
+	bool is_valid() const { return m_lon.is_lon() && ! m_lat.is_lon(); }
+
 }; // CoordinateT::Pair
 
 /// This models a single point, or a polygon, or a path.

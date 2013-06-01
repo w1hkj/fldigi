@@ -6,6 +6,8 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2007-2010
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2013
+//		Remi Chateauneu, F4ECW
 //
 // This file is part of fldigi.  Adapted in part from code contained in gmfsk
 // source code distribution.
@@ -29,6 +31,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <bitset>
 
 enum state_t {
 	STATE_PAUSE = 0,
@@ -206,7 +209,8 @@ enum {
 	NUM_RXTX_MODES = NUM_MODES - 2
 };
 
-typedef intptr_t trx_mode;
+/// A normal int is enough.
+typedef int trx_mode;
 
 struct mode_info_t {
 	trx_mode mode;
@@ -219,32 +223,34 @@ struct mode_info_t {
 };
 extern const struct mode_info_t mode_info[NUM_MODES];
 
+/// Returns NUM_MODES if not found.
+trx_mode trx_mode_lookup( const std::string & sMode );
+
+/// Stores an element of the frequency list.
 class qrg_mode_t
 {
 public:
-	long long rfcarrier;
-	std::string rmode;
-	int carrier;
-	trx_mode mode;
+	long long   rfcarrier; /// Frequency.
+	int         carrier;   /// Typically 1000 Hz, does not need to be huge.
+	trx_mode    mode;
 
-	qrg_mode_t() : rfcarrier(0), rmode("NONE"), carrier(0), mode(NUM_MODES) { }
-	qrg_mode_t(long long rfc_, std::string rm_, int c_, trx_mode m_)
-                : rfcarrier(rfc_), rmode(rm_), carrier(c_), mode(m_) { }
-	bool operator<(const qrg_mode_t& rhs) const
-        {
-		return rfcarrier < rhs.rfcarrier;
-	}
+	qrg_mode_t(
+		long long  rfcrr = 0,
+		int        carr  = 0,
+		trx_mode   trxmd = NUM_MODES )
+	: rfcarrier(rfcrr)
+	, carrier(carr)
+	, mode(trxmd) {}
+
+	/// Compare first the members which changes the most often.
 	bool operator==(const qrg_mode_t& rhs) const
 	{
-		return rfcarrier == rhs.rfcarrier && rmode == rhs.rmode &&
-		       carrier == rhs.carrier && mode == rhs.mode;
+		return rfcarrier == rhs.rfcarrier
+		&&     mode      == rhs.mode
+		&&     carrier   == rhs.carrier;
 	}
-        std::string str(void);
 };
-std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
-std::istream& operator>>(std::istream& s, qrg_mode_t& m);
 
-#include <bitset>
 class mode_set_t : public std::bitset<NUM_RXTX_MODES> { };
 
 enum band_t {

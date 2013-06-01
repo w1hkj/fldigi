@@ -433,12 +433,14 @@ int hamlib_setfreq(long f)
 	return 1;
 }
 
+/// Returns 1 if OK, otherwise -1 or 0 depending on the error.
 int hamlib_setmode(rmode_t m)
 {
 	if (need_mode == false)
 		return -1;
 	if (xcvr->isOnLine() == false)
 		return -1;
+	int retval = 1 ;
 	pthread_mutex_lock(&hamlib_mutex);
 		try {
 			hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
@@ -448,9 +450,10 @@ int hamlib_setmode(rmode_t m)
 		catch (const RigException& Ex) {
 			show_error("Set Mode", Ex.what());
 			hamlib_passes = 0;
+			retval = 0;
 		}
 	pthread_mutex_unlock(&hamlib_mutex);
-	return 1;
+	return retval;
 }
 
 int hamlib_setwidth(pbwidth_t w)

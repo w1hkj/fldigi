@@ -31,10 +31,12 @@
 #include <cstdlib>
 #include <cerrno>
 #include <cstdio>
+#include <map>
 
 #include "gettext.h"
 #include "globals.h"
 #include "modem.h"
+#include "strutil.h"
 
 using namespace std;
 
@@ -183,42 +185,6 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 };
 
-std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
-{
-	return s << m.rfcarrier << ' ' << m.rmode << ' ' << m.carrier << ' ' << mode_info[m.mode].sname;
-}
-
-std::istream& operator>>(std::istream& s, qrg_mode_t& m)
-{
-	string sMode;
-	int mnbr;
-	s >> m.rfcarrier >> m.rmode >> m.carrier >> sMode;
-// handle case for reading older type of specification string
-	if (sscanf(sMode.c_str(), "%d", &mnbr)) {
-		m.mode = mnbr;
-		return s;
-	}
-	m.mode = MODE_PSK31;
-	for (mnbr = MODE_CW; mnbr < NUM_MODES; mnbr++)
-		if (sMode == mode_info[mnbr].sname) {
-			m.mode = mnbr;
-			break;
-		}
-	return s;
-}
-
-std::string qrg_mode_t::str(void)
-{
-	ostringstream s;
-	s << setiosflags(ios::left | ios::fixed)
-	  << setw(12) << setprecision(3) << rfcarrier/1000.0
-	  << setw(8) << rmode
-	  << setw(10) << (mode < NUM_MODES ? mode_info[mode].sname : "NONE")
-	  << carrier;
-	return s.str();
-}
-
-
 band_t band(long long freq_hz)
 {
 	switch (freq_hz / 1000000LL) {
@@ -270,7 +236,7 @@ struct band_freq_t {
 	const char* freq;
 };
 
-static struct band_freq_t band_names[NUM_BANDS] = {
+static const struct band_freq_t band_names[NUM_BANDS] = {
 	{ "160m", "1.8" },
 	{ "80m", "3.5" },
 	{ "75m", "4.0" },
@@ -325,3 +291,28 @@ const char* band_freq(const char* band_name)
 
 	return "";
 }
+
+/// Lookup of the TX mode, "PSK31" => MODE_PSK31, or NUM_MODES if not found.
+trx_mode trx_mode_lookup( const std::string & sMode )
+{
+	/// Consider hash_map when available on all platforms.
+	typedef std::map< std::string, trx_mode > ModeToTrxMap ;
+
+	/// Do not change between calls.
+	static ModeToTrxMap mapLookup ;
+
+	/// First time it is called, we fill an internal cache.
+	if( mapLookup.empty() )
+	{
+		for ( trx_mode mnbr = MODE_NULL; mnbr < NUM_MODES; mnbr++)
+		{
+			mapLookup[ mode_info[mnbr].sname ] = mnbr ;
+		}
+	}
+
+	/// A map is faster than a linear search because there are about 140 modes and growing.
+	ModeToTrxMap::const_iterator it = mapLookup.find( sMode );
+
+	return it == mapLookup.end() ? NUM_MODES : it->second ;
+}
+

@@ -6,11 +6,11 @@
 
 using namespace std;
 
-struct MODE {
+struct RIGMODE {
 	std::string SYMBOL;
 	std::string BYTES;
-	MODE(std::string nm, std::string b) { SYMBOL = nm; BYTES = b;}
-	MODE(std::string nm, char c) { SYMBOL = nm; BYTES += c;}
+	RIGMODE(const std::string & nm, const std::string & b) { SYMBOL = nm; BYTES = b;}
+	RIGMODE(const std::string & nm, char c) { SYMBOL = nm; BYTES += c;}
 };
 
 struct BW {
@@ -107,9 +107,9 @@ struct XMLRIG {
 	
 extern std::list<XMLIOS> commands;
 extern std::list<XMLIOS> reply;
-extern std::list<MODE> lmodes;
-extern std::list<MODE> lmodeCMD;
-extern std::list<MODE> lmodeREPLY;
+extern std::list<RIGMODE> lmodes;
+extern std::list<RIGMODE> lmodeCMD;
+extern std::list<RIGMODE> lmodeREPLY;
 extern std::list<BW> lbws;
 extern std::list<BW> lbwCMD;
 extern std::list<BW> lbwREPLY;

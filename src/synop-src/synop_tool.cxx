@@ -1178,9 +1178,6 @@ static	bool regex_output_only = false ;
 // and the number of times each of them was used.
 static	bool display_synop_usage = false ;
 
-// Where the CSV files for Synop decoding are loaded from.
-static	std::string data_dir = "data/";
-
 // Where the KML files are periodically written to.
 static	std::string kml_dir = "kml/";
 
@@ -1203,7 +1200,6 @@ try {
 	for(;;) {
 		static const char shortopts[] = "b:k:l:d:utmrvwh";
 		static const struct option longopts[] = {
-			{ "data_dir",  required_argument, 0, 'b' },
 			{ "kml_dir",   required_argument, 0, 'k' },
 			{ "load_dir",  required_argument, 0, 'l' },
 			{ "dbg",       required_argument, 0, 'd' },
@@ -1229,9 +1225,6 @@ try {
 				if (optarg)
 					printf (" with arg %s", optarg);
 				printf ("\n");
-				continue;
-			case 'b':
-				data_dir = optarg;
 				continue;
 			case 'k':
 				kml_dir = optarg;
@@ -1290,9 +1283,9 @@ try {
 
 	// Must be done before any use of WMO stations data.
 	// http://weather.noaa.gov/data/nsd_bbsss.txt
-	std::cout << "Opening:" << data_dir << "\n";
-	if( ! SynopDB::Init(data_dir) ) {
-		std::cerr << "Error opening:" << data_dir << ":" << strerror(errno) << "\n";
+	std::cout << "SynopDB::Init\n";
+	if( ! SynopDB::Init() ) {
+		std::cerr << "Error SynopDB::Init:" << strerror(errno) << "\n";
 		exit(EXIT_FAILURE);
 	}
 

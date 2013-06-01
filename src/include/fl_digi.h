@@ -29,7 +29,6 @@
 #include <FL/Fl_Pack.H>
 
 #include "combo.h"
-//#include "Fl_Tile_Check.h"
 #include "Panel.h"
 #include "FTextRXTX.h"
 #include "raster.h"
@@ -48,7 +47,6 @@ extern fre_t seek_re;
 
 extern Fl_Double_Window *fl_digi_main;
 extern Fl_Double_Window *scopeview;
-//extern Fl_Double_Window *opBrowserView;
 
 extern Fl_Double_Window *dlgRecordLoader;
 
@@ -97,10 +95,10 @@ extern Fl_Input2		*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;
 
-extern cFreqControl	*qsoFreqDisp1;
-extern cFreqControl 	*qsoFreqDisp2;
-extern cFreqControl	*qsoFreqDisp3;
-extern Fl_Input2		*inpFreq2;
+extern cFreqControl		*qsoFreqDisp1;
+extern cFreqControl 		*qsoFreqDisp2;
+extern cFreqControl		*qsoFreqDisp3;
+extern Fl_Input2		*inpName1;
 
 extern Fl_Input2		*inpCall1;
 extern Fl_Input2		*inpCall2;
@@ -108,20 +106,19 @@ extern Fl_Input2		*inpCall3;
 extern Fl_Input2		*inpCall4;
 extern Fl_Input2		*inpName1;
 
-extern Fl_Group		*QsoInfoFrame1B;
-extern Fl_Group		*qsoFrameView;
-extern Fl_Group		*QsoInfoFrame;
-extern cFreqControl	*qsoFreqDisp;
+extern Fl_Group			*QsoInfoFrame1B;
+extern Fl_Group			*QsoInfoFrame;
+extern cFreqControl		*qsoFreqDisp;
 extern Fl_ComboBox		*qso_opMODE;
 extern Fl_ComboBox		*qso_opBW;
 extern Fl_Button		*qso_opPICK;
 extern Fl_Browser		*qso_opBrowser;
 
-extern Fl_Value_Slider2	*mvsquelch;
-extern Fl_Value_Slider2	*valRcvMixer;
-extern Fl_Value_Slider2	*valXmtMixer;
-extern Fl_Button			*btnAFC;
-extern Fl_Button			*btnSQL;
+extern Fl_Value_Slider2		*mvsquelch;
+extern Fl_Value_Slider2		*valRcvMixer;
+extern Fl_Value_Slider2		*valXmtMixer;
+extern Fl_Button		*btnAFC;
+extern Fl_Button		*btnSQL;
 extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
@@ -319,7 +316,7 @@ extern void open_recv_folder(const char *fname);
 extern void reset_mnuPlayback();
 
 // character set
-extern void cb_charset_menu(Fl_Widget *, void *charset);
+// extern void cb_charset_menu(Fl_Widget *, void *charset);
 extern void populate_charset_menu(void);
 extern void set_default_charset(void);
 
@@ -330,7 +327,7 @@ extern void notch_off();
 
 // thread terminators
 extern void ADIF_RW_close(void);
-extern void EQSL_close(void);
+// extern void EQSL_close(void); /// BEWARE: Never used !
 
 // notifier dialogs
 extern Fl_Double_Window *notify_window;

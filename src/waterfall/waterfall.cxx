@@ -1186,10 +1186,17 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	restoreFocus();
 }
 
+/// This is just needed to store the frequency and carrier.
+struct qrg_local_t {
+	long long rfcarrier;
+	int carrier;
+	qrg_local_t() : rfcarrier(0), carrier(0) {}
+};
+
 void do_qsy(bool dir)
 {
-	static vector<qrg_mode_t> qsy_stack;
-	qrg_mode_t m;
+	static vector<qrg_local_t> qsy_stack;
+	qrg_local_t m;
 
 	wf->xmtlock->value(0);
 	wf->xmtlock->do_callback();

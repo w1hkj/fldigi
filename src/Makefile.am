@@ -152,9 +152,25 @@ if WANT_FLDIGI
 	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
 	    $(INSTALL_DATA) $(srcdir)/../data/ToR-Stats-SHIP.csv $(DESTDIR)/$(pkgdatadir); \
 	fi
+	if test -f $(srcdir)/../data/sked-b12.csv; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
+	    $(INSTALL_DATA) $(srcdir)/../data/sked-b12.csv $(DESTDIR)/$(pkgdatadir); \
+	fi
+	if test -f $(srcdir)/../data/mwlist.txt; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
+	    $(INSTALL_DATA) $(srcdir)/../data/mwlist.txt $(DESTDIR)/$(pkgdatadir); \
+	fi
 	if test -f $(srcdir)/../data/wmo_list.txt; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
 	    $(INSTALL_DATA) $(srcdir)/../data/wmo_list.txt $(DESTDIR)/$(pkgdatadir); \
+	fi
+	if test -f $(srcdir)/../data/ISO-639-2_8859-1.txt; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
+	    $(INSTALL_DATA) $(srcdir)/../data/ISO-639-2_8859-1.txt $(DESTDIR)/$(pkgdatadir); \
+	fi
+	if test -f $(srcdir)/../data/itucode.txt; then \
+	    $(mkinstalldirs) $(DESTDIR)/$(datadir)/fldigi; \
+	    $(INSTALL_DATA) $(srcdir)/../data/itucode.txt $(DESTDIR)/$(pkgdatadir); \
 	fi
 	if test -f $(srcdir)/../kml/styles.kml; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(pkgdatadir)/kml; \
@@ -310,6 +326,7 @@ fldigi_SOURCES += \
 	include/FreqControl.h \
 	include/analysis.h \
 	include/ascii.h \
+	include/catalog.h \
 	include/charsetdistiller.h \
 	include/charsetlist.h \
 	include/colorbox.h \
@@ -739,6 +756,11 @@ EXTRA_DIST = \
 	$(srcdir)/../data/nsd_bbsss.txt \
 	$(srcdir)/../data/station_table.txt \
 	$(srcdir)/../data/ToR-Stats-SHIP.csv \
+	$(srcdir)/../data/sked-b12.csv \
+	$(srcdir)/../data/mwlist.txt \
+	$(srcdir)/../data/wmo_list.txt \
+	$(srcdir)/../data/ISO-639-2_8859-1.txt \
+	$(srcdir)/../data/itucode.txt \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/fldigi.icns \
 	$(srcdir)/../data/win32/fldigi.ico \

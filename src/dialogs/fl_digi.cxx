@@ -39,6 +39,7 @@
 #include <cstdarg>
 #include <string>
 #include <fstream>
+#include <iostream>
 #include <algorithm>
 #include <map>
 
@@ -53,7 +54,6 @@
 #include <FL/fl_ask.H>
 #include <FL/Fl_Pixmap.H>
 #include <FL/Fl_Image.H>
-//#include <FL/Fl_Tile.H>
 #include <FL/x.H>
 #include <FL/Fl_Help_Dialog.H>
 #include <FL/Fl_Progress.H>
@@ -99,7 +99,6 @@
 #include "globals.h"
 #include "misc.h"
 #include "FTextRXTX.h"
-//#include "Fl_Tile_Check.h"
 
 #include "confdialog.h"
 #include "configuration.h"
@@ -958,6 +957,10 @@ void remove_windows()
 		delete cboHamlibRig;
 		delete dlgConfig;
 	}
+	if (dlgRecordLoader) {
+		dlgRecordLoader->hide();
+		delete dlgRecordLoader;
+	}
 	if (font_browser) {
 		font_browser->hide();
 		delete font_browser;
@@ -1365,7 +1368,7 @@ void populate_charset_menu(void)
 		reinterpret_cast<void *>(charset_list[i].tiniconv_id));
 }
 
-// find the position of the default charset in charset_list[] and trigger the callback
+/// find the position of the default charset in charset_list[] and trigger the callback
 void set_default_charset(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++) {
@@ -1377,7 +1380,7 @@ void set_default_charset(void)
 	}
 }
 
-// if w is not NULL, give focus to TransmitText only if the last event was an Enter keypress
+/// if w is not NULL, give focus to TransmitText only if the last event was an Enter keypress
 void restoreFocus(Fl_Widget* w)
 {
 	if (!w)
@@ -1632,7 +1635,7 @@ void cb_logfile(Fl_Widget* w, void*)
 }
 
 
-// LOGBOOK server connect
+/// LOGBOOK server connect
 void cb_log_server(Fl_Widget* w, void*)
 {
 	progdefaults.xml_logbook = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
@@ -1757,7 +1760,7 @@ void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 	restoreFocus();
 }
 
-// This function may be called by the QRZ thread
+/// This function may be called by the QRZ thread
 void cb_mnuVisitURL(Fl_Widget*, void* arg)
 {
 	const char* url = reinterpret_cast<const char *>(arg);
@@ -2007,6 +2010,7 @@ void cb_ShowConfig(Fl_Widget*, void*)
 	cb_mnuVisitURL(0, (void*)HomeDir.c_str());
 }
 
+/// Opens the window for downloading data files.
 static void cb_ShowDATA(Fl_Widget*, void*)
 {
 	/// Must be already created by createRecordLoader()
@@ -3913,41 +3917,68 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 		qsy(strtoll(str[j - 1].erase(str[j - 1].find(' ')).c_str(), NULL, 10));
 }
 
-void cb_qso_opBrowser(Fl_Browser*, void*)
+/// This makes the multi browser behave more like a hold browser,
+/// but with the ability to invoke the callback via space/return.
+static void opBrowserJump( int selLin )
 {
-	int i = qso_opBrowser->value();
-	if (!i)
-		return;
-
-	// This makes the multi browser behave more like a hold browser,
-	// but with the ability to invoke the callback via space/return.
 	qso_opBrowser->deselect();
-	qso_opBrowser->select(i);
 
-	switch (i = Fl::event_key()) {
-	case FL_Enter: case FL_KP_Enter: case FL_Button + FL_LEFT_MOUSE:
-		if (i == FL_Button + FL_LEFT_MOUSE && !Fl::event_clicks())
-			break;
-		qso_selectFreq();
-		CloseQsoView();
-		break;
-	case ' ': case FL_Button + FL_RIGHT_MOUSE:
-		qso_setFreq();
-		break;
-	case FL_Button + FL_MIDDLE_MOUSE:
-		i = qso_opBrowser->value();
-		qso_delFreq();
-		qso_addFreq();
-		qso_opBrowser->select(i);
-		break;
-	}
+	int nbLin = qso_opBrowser->size();
+
+	if( selLin < 1 ) selLin = 1 ;
+		else if ( selLin > nbLin )
+			selLin = nbLin ;
+
+	qso_opBrowser->select(selLin);
+	qso_selectFreq();
 }
 
+/// Callback of the frequencies list.
+static void cb_qso_opBrowser(Fl_Browser*, void*)
+{
+	/// Fl_Button+n means mouse button n
+	int key = Fl::event_key();
+
+	int selLin = qso_opBrowser->value();
+
+	switch (key) {
+	case FL_Button + FL_LEFT_MOUSE:
+		/// Returns non zero if double click event. 
+		if (!Fl::event_clicks()) {
+			break;
+		}
+
+	/// FL_KP+'x' for 'x' on numeric keypad
+	case FL_Enter: case FL_KP_Enter:
+		// qso_selectFreq();
+		CloseQsoView();
+		break;
+
+	/// FL_KP_Enter same as Fl_KP+'\r'
+	case ' ': case FL_Button + FL_RIGHT_MOUSE:
+		/// TODO: Why do we set only the frequency and not the mode ?
+		// qso_setFreq();
+		// qso_selectFreq();
+		break;
+
+	case FL_Button + FL_MIDDLE_MOUSE:
+		qso_updateFreqColor(selLin);
+		return;
+	default:
+		return;
+	}
+	opBrowserJump(selLin);
+}
+
+/// Called by the radio control loop, or XML/RPC, and the widget callback.
 void _show_frequency(long long freq)
 {
+	// Maybe these three updates should be called in the main thread too ?
 	qsoFreqDisp1->value(freq);
 	qsoFreqDisp2->value(freq);
 	qsoFreqDisp3->value(freq);
+	/// Without these remote call, it crashes very easily when tuning the rig.
+	REQ_SYNC( qso_displayFreq, freq);
 }
 
 void show_frequency(long long freq)
@@ -4521,7 +4552,11 @@ void create_fl_digi_main_primary() {
 
 		RigControlFrame->end();
 
-		int opB_w = 380;
+		// Original.
+		// int opB_w = 380;
+		int opB_w = progStatus.mainW - rightof(RigControlFrame) - 2*pad;
+		// opB_w -= Wbtn ; // Scroll on the right side.
+
 		int qFV_w = opB_w + 2 * (Wbtn + pad) + pad;
 
 		RigViewerFrame = new Fl_Group(rightof(RigControlFrame), Hmenu, qFV_w, Hqsoframe);
@@ -4559,32 +4594,61 @@ void create_fl_digi_main_primary() {
 				Wbtn, Hentry);
 			qso_btnAct->image(new Fl_Pixmap(chat_icon));
 			qso_btnAct->callback(cb_qso_inpAct);
-			qso_btnAct->tooltip("Show active frequencies");
+			qso_btnAct->tooltip(_("Show active frequencies"));
 
 			qso_inpAct = new Fl_Input2(
 				rightof(qso_btnAct) + pad, Hmenu + 2*(Hentry + pad) + pad,
 				Wbtn, Hentry);
 			qso_inpAct->when(FL_WHEN_ENTER_KEY | FL_WHEN_NOT_CHANGED);
 			qso_inpAct->callback(cb_qso_inpAct);
-			qso_inpAct->tooltip("Grid prefix for activity list");
+			qso_inpAct->tooltip(_("Grid prefix for activity list"));
 
-			qso_opBrowser = new Fl_Browser(
+			/// Width of the buttons controling the frequency list, on the right.
+			static const int widthFreqList = 240 ;
+
+			/// This filters key to tune the frequency we are on.
+			struct Freq_Fl_Browser : public Fl_Browser
+			{
+				Freq_Fl_Browser( int X, int Y, int W, int H ) : Fl_Browser( X, Y, W, H ) {}
+
+				/// When clicking or typing a key.
+				int handle(int e) {
+					int ret = Fl_Browser::handle(e);
+					/// Tunes to the frequency indicated by the line number of the frequency list.
+					if( e == FL_KEYDOWN ) {
+						int selLin = lineno(selection());
+						opBrowserJump( selLin );
+					}
+					return ret ;
+				}
+			};
+
+			/// "25" is the width of a vertical scrollbar.
+			qso_opBrowser = new Freq_Fl_Browser(
 				rightof(qso_btnDelFreq) + pad,  Hmenu + pad,
-				opB_w, Hqsoframe - 2 * pad );
+				opB_w - Wbtn -25 - widthFreqList, Hqsoframe - 2 * pad );
 			qso_opBrowser->tooltip(_("Select operating parameters"));
 			qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
 			qso_opBrowser->type(FL_MULTI_BROWSER);
 			qso_opBrowser->box(FL_DOWN_BOX);
 			qso_opBrowser->labelfont(4);
 			qso_opBrowser->labelsize(12);
+			// No need of horizontal scroll because the lines are always short.
+			// Sometimes, when resizing the font size, the zomm bar vanishes.
+			qso_opBrowser->has_scrollbar(Fl_Scroll::VERTICAL_ALWAYS);
 #ifdef __APPLE__
 			qso_opBrowser->textfont(FL_COURIER_BOLD);
 			qso_opBrowser->textsize(16);
 #else
 			qso_opBrowser->textfont(FL_COURIER);
-			qso_opBrowser->textsize(14);
+			qso_opBrowser->textsize(12);
 #endif
-			RigViewerFrame->resizable(NULL);
+
+			static const int frqHorPos = progStatus.mainW - widthFreqList - pad;
+			static const int frqVrtPos = Hmenu + pad ;
+			qso_createFreqList( frqHorPos, frqVrtPos, widthFreqList, Hqsoframe - 2 * pad, pad, Hentry );
+
+			RigViewerFrame->resizable(qso_opBrowser);
 
 		RigViewerFrame->end();
 		RigViewerFrame->hide();
@@ -5363,7 +5427,7 @@ void create_fl_digi_main_primary() {
 	// ztimer must be run by FLTK's timeout handler
 	Fl::add_timeout(0.0, ztimer, (void*)true);
 
-	// Set the state of checked toggle menu items. Never changes.
+	/// Set the state of checked toggle menu items. Never changes.
 	const struct {
 		bool var; const char* label;
 	} toggles[] = {
@@ -6840,39 +6904,39 @@ qrg_mode_t last_marked_qrg;
 
 void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode, long long rfc, int afreq)
 {
-	qrg_mode_t m;
-	m.rfcarrier = (rfc ? rfc : wf->rfcarrier());
-	m.carrier = (afreq ? afreq : active_modem->get_freq());
-	m.mode = (mode < NUM_MODES ? mode : active_modem->get_mode());
-	if (no_dup && last_marked_qrg == m)
-		return;
-	last_marked_qrg = m;
+	qrg_mode_t m(
+			rfc ? rfc : wf->rfcarrier(),
+			afreq ? afreq : active_modem->get_freq(),
+			mode < NUM_MODES ? mode : active_modem->get_mode() );
+        if (no_dup && last_marked_qrg == m)
+                return;
+        last_marked_qrg = m;
 
-	char buf[64];
+        char buf[64];
 
-	time_t t = time(NULL);
-	struct tm tm;
-	gmtime_r(&t, &tm);
-	size_t r1;
-	if ((r1 = strftime(buf, sizeof(buf), "<<%Y-%m-%dT%H:%MZ ", &tm)) == 0)
-		return;
+        time_t t = time(NULL);
+        struct tm tm;
+        gmtime_r(&t, &tm);
+        size_t r1;
+        if ((r1 = strftime(buf, sizeof(buf), "<<%Y-%m-%dT%H:%MZ ", &tm)) == 0)
+                return;
 
-	size_t r2;
-	if (m.rfcarrier)
-		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %lld%c%04d>>",
-			     mode_info[m.mode].name, m.rfcarrier, (wf->USB() ? '+' : '-'), m.carrier);
-	else
-		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %04d>>", mode_info[m.mode].name, m.carrier);
-	if (r2 >= sizeof(buf)-r1)
-		return;
+        size_t r2;
+        if (m.rfcarrier)
+                r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %lld%c%04d>>",
+                             mode_info[m.mode].name, m.rfcarrier, (wf->USB() ? '+' : '-'), m.carrier);
+        else
+                r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %04d>>", mode_info[m.mode].name, m.carrier);
+        if (r2 >= sizeof(buf)-r1)
+                return;
 
-	qrg_marks[buf] = m;
-	if (prefix && *prefix)
-		ReceiveText->addstr(prefix);
-	ReceiveText->addstr(buf, FTextBase::QSY);
-	ReceiveText->mark();
-	if (suffix && *suffix)
-		ReceiveText->addstr(suffix);
+        qrg_marks[buf] = m;
+        if (prefix && *prefix)
+                ReceiveText->addstr(prefix);
+        ReceiveText->addstr(buf, FTextBase::QSY);
+        ReceiveText->mark();
+        if (suffix && *suffix)
+                ReceiveText->addstr(suffix);
 }
 
 void xmtrcv_selection_color()
@@ -6997,7 +7061,7 @@ void set_rtty_shift(int shift)
 	if (shift < selCustomShift->minimum() || shift > selCustomShift->maximum())
 		return;
 
-	// Static const array otherwise will be built at each call.
+	/// Static const array otherwise will be built at each call.
 	static const int shifts[] = { 23, 85, 160, 170, 182, 200, 240, 350, 425, 850 };
 	size_t i;
 	for (i = 0; i < sizeof(shifts)/sizeof(*shifts); i++)
@@ -7013,7 +7077,7 @@ void set_rtty_shift(int shift)
 
 void set_rtty_baud(float baud)
 {
-	// Static const array otherwise will be rebuilt at each call.
+	/// Static const array otherwise will be rebuilt at each call.
 	static const float bauds[] = {
 		45.0f, 45.45f, 50.0f, 56.0f, 75.0f,
 		100.0f, 110.0f, 150.0f, 200.0f, 300.0f
@@ -7029,7 +7093,7 @@ void set_rtty_baud(float baud)
 
 void set_rtty_bits(int bits)
 {
-	// Static const array otherwise will be built at each call.
+	/// Static const array otherwise will be built at each call.
 	static const int bits_[] = { 5, 7, 8 };
 	for (size_t i = 0; i < sizeof(bits_)/sizeof(*bits_); i++) {
 		if (bits_[i] == bits) {

@@ -37,6 +37,7 @@ pskeval::pskeval() {
 	/// BEWARE: FFT_LEN might change !!!
 	sigpwr = new double[FFT_LEN];
 	bw = 31.25;
+	sigmin = 1e6; /// Must be initialised before use.
 	clear();
 }
 
