@@ -7,6 +7,8 @@
 //		Leigh L. Klotz, Jr., WA5ZNU
 // Copyright (C) 2007-2010
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2013
+//		Remi Chateauneu, F4ECW
 //
 // This file is part of fldigi.
 //
@@ -230,8 +232,6 @@ public:
 	string& str;
 };
 
-#include "re.h"
-
 // Special handling for mode bitsets
 template <>
 class tag_elem<mode_set_t> : public tag_base
@@ -248,20 +248,19 @@ public:
 	}
 	void read(const char* data)
 	{
-		re_t mode_name_re("([^,]+)", REG_EXTENDED);
-		int end;
-
 		modes.set();
-		while (mode_name_re.match(data)) {
-			const char* name = mode_name_re.submatch(1).c_str();
+		for( ; data ; )
+		{
+			const char * comma = strchr( data, ',' );
+			size_t tok_len = comma ? comma - data : strlen(data);
+
 			for (size_t i = 0; i < modes.size(); i++) {
-				if (!strcmp(mode_info[i].name, name)) {
+				if (!strncmp(mode_info[i].name, data, tok_len )) {
 					modes.set(i, 0);
 					break;
 				}
 			}
-			mode_name_re.suboff(0, NULL, &end);
-			data += end;
+			data = comma ? comma + 1 : NULL ;
 		}
 	}
 	mode_set_t& modes;
@@ -389,7 +388,7 @@ bool configuration::readDefaultsXML()
 			tag_map[tag_list[i]->tag] = tag_list[i];
 
 	// parse the xml buffer
-	tag_map_t::const_iterator i;
+	tag_map_t::const_iterator i = tag_map.end();
 	while(xml->read()) {
 		switch(xml->getNodeType()) {
 		case EXN_TEXT:
