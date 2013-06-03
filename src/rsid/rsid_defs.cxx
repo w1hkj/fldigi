@@ -4,6 +4,9 @@
 // rsid_tag is stringified and may be shown to the user.
 #undef ELEM_
 #define RSID_LIST                                       \
+/* ESCAPE used to transition to 2nd RSID set */         \
+        ELEM_(6, ESCAPE, NUM_MODES)                     \
+                                                        \
         ELEM_(1, BPSK31, MODE_PSK31)                    \
         ELEM_(110, QPSK31, MODE_QPSK31)                 \
         ELEM_(2, BPSK63, MODE_PSK63)                    \
@@ -183,8 +186,6 @@
                                                         \
         ELEM_(172, MODE_188_110A_8N1, NUM_MODES)        \
                                                         \
-/* ESCAPE used to transition to 2nd RSID set */         \
-        ELEM_(263, ESCAPE, NUM_MODES)                   \
         /* NONE must be the last element */             \
         ELEM_(0, NONE, NUM_MODES)
 
@@ -193,70 +194,70 @@ enum { RSID_LIST };
 #undef ELEM_
 
 #define ELEM_(code_, tag_, mode_) { RSID_ ## tag_, mode_, #tag_ },
-const RSIDs cRsId::rsid_ids[] = { RSID_LIST };
+const RSIDs cRsId::rsid_ids_1[] = { RSID_LIST };
 #undef ELEM_
 
-const int cRsId::rsid_ids_size = sizeof(rsid_ids)/sizeof(*rsid_ids) - 1;
+const int cRsId::rsid_ids_size1 = sizeof(rsid_ids_1)/sizeof(*rsid_ids_1) - 1;
 
 //======================================================================
+/*        ELEM_(263, ESCAPE2, NUM_MODES)                  \ */
 
 #define RSID_LIST2                                      \
-        ELEM_(263, ESCAPE2, NUM_MODES)                  \
+        ELEM2_(450, PSK63RX4, MODE_4X_PSK63R)           \
+        ELEM2_(457, PSK63RX5, MODE_5X_PSK63R)           \
+        ELEM2_(458, PSK63RX10, MODE_10X_PSK63R)         \
+        ELEM2_(460, PSK63RX20, MODE_20X_PSK63R)         \
+        ELEM2_(462, PSK63RX32, MODE_32X_PSK63R)         \
                                                         \
-        ELEM_(1, PSK63RX4, MODE_4X_PSK63R)              \
-        ELEM_(2, PSK63RX5, MODE_5X_PSK63R)              \
-        ELEM_(3, PSK63RX10, MODE_10X_PSK63R)            \
-        ELEM_(4, PSK63RX20, MODE_20X_PSK63R)            \
-        ELEM_(5, PSK63RX32, MODE_32X_PSK63R)            \
+        ELEM2_(467, PSK125RX4, MODE_4X_PSK125R)         \
+        ELEM2_(497, PSK125RX5, MODE_5X_PSK125R)         \
+        ELEM2_(513, PSK125RX10, MODE_10X_PSK125R)       \
+        ELEM2_(519, PSK125X12, MODE_12X_PSK125)         \
+        ELEM2_(522, PSK125RX12, MODE_12X_PSK125R)       \
+        ELEM2_(527, PSK125RX16, MODE_16X_PSK125R)       \
                                                         \
-        ELEM_(10, PSK125RX4, MODE_4X_PSK125R)           \
-        ELEM_(11, PSK125RX5, MODE_5X_PSK125R)           \
-        ELEM_(12, PSK125RX10, MODE_10X_PSK125R)         \
-        ELEM_(61, PSK125X12, MODE_12X_PSK125)           \
-        ELEM_(62, PSK125RX12, MODE_12X_PSK125R)         \
-        ELEM_(13, PSK125RX16, MODE_16X_PSK125R)         \
+        ELEM2_(529, PSK250RX2, MODE_2X_PSK250R)         \
+        ELEM2_(533, PSK250RX3, MODE_3X_PSK250R)         \
+        ELEM2_(539, PSK250RX5, MODE_5X_PSK250R)         \
+        ELEM2_(541, PSK250X6, MODE_6X_PSK250)           \
+        ELEM2_(545, PSK250RX6, MODE_6X_PSK250R)         \
+        ELEM2_(551, PSK250RX7, MODE_7X_PSK250R)         \
                                                         \
-        ELEM_(20, PSK250RX2, MODE_2X_PSK250R)           \
-        ELEM_(21, PSK250RX3, MODE_3X_PSK250R)           \
-        ELEM_(22, PSK250RX5, MODE_5X_PSK250R)           \
-        ELEM_(63, PSK250X6, MODE_6X_PSK250)             \
-        ELEM_(65, PSK250RX6, MODE_6X_PSK250R)           \
-        ELEM_(23, PSK250RX7, MODE_7X_PSK250R)           \
+        ELEM2_(553, PSK500RX2, MODE_2X_PSK500R)         \
+        ELEM2_(558, PSK500RX3, MODE_3X_PSK500R)         \
+        ELEM2_(564, PSK500RX4, MODE_4X_PSK500R)         \
+        ELEM2_(566, PSK500X2, MODE_2X_PSK500)           \
+        ELEM2_(569, PSK500X4, MODE_4X_PSK500)           \
                                                         \
-        ELEM_(24, PSK500RX2, MODE_2X_PSK500R)           \
-        ELEM_(25, PSK500RX3, MODE_3X_PSK500R)           \
-        ELEM_(26, PSK500RX4, MODE_4X_PSK500R)           \
-        ELEM_(27, PSK500X2, MODE_2X_PSK500)             \
-        ELEM_(28, PSK500X4, MODE_4X_PSK500)             \
+        ELEM2_(570, PSK1000, MODE_PSK1000)              \
+        ELEM2_(580, PSK1000R, MODE_PSK1000R)            \
+        ELEM2_(587, PSK1000X2, MODE_2X_PSK1000)         \
+        ELEM2_(595, PSK1000RX2, MODE_2X_PSK1000R)       \
+        ELEM2_(604, PSK800RX2, MODE_2X_PSK800R)         \
+        ELEM2_(610, PSK800X2, MODE_2X_PSK800)           \
                                                         \
-        ELEM_(30, MFSK64, MODE_MFSK64)                  \
-        ELEM_(31, MFSK128, MODE_MFSK128)                \
+        ELEM2_(620, MFSK64, MODE_MFSK64)                \
+        ELEM2_(625, MFSK128, MODE_MFSK128)              \
                                                         \
-        ELEM_(40, THOR25x4, MODE_THOR25x4)              \
-        ELEM_(41, THOR50x1, MODE_THOR50x1)              \
-        ELEM_(42, THOR50x2, MODE_THOR50x2)              \
-        ELEM_(43, THOR100, MODE_THOR100)                \
+        ELEM2_(639, THOR25x4, MODE_THOR25x4)            \
+        ELEM2_(649, THOR50x1, MODE_THOR50x1)            \
+        ELEM2_(653, THOR50x2, MODE_THOR50x2)            \
+        ELEM2_(658, THOR100, MODE_THOR100)              \
                                                         \
-        ELEM_(45, DOMINOEX_44, MODE_DOMINOEX44)         \
-        ELEM_(46, DOMINOEX_88, MODE_DOMINOEX88)         \
+        ELEM2_(662, DOMINOEX_44, MODE_DOMINOEX44)       \
+        ELEM2_(681, DOMINOEX_88, MODE_DOMINOEX88)       \
                                                         \
-        ELEM_(50, PSK1000, MODE_PSK1000)                \
-        ELEM_(51, PSK1000R, MODE_PSK1000R)              \
-        ELEM_(52, PSK1000X2, MODE_2X_PSK1000)           \
-        ELEM_(53, PSK1000RX2, MODE_2X_PSK1000R)         \
-        ELEM_(54, PSK800RX2, MODE_2X_PSK800R)           \
-        ELEM_(57, PSK800X2, MODE_2X_PSK800)             \
+        ELEM2_(687, MFSK31, MODE_MFSK31)                \
                                                         \
-        /* NONE2 must be the last element */            \
-        ELEM_(0, NONE2, NUM_MODES)
+        ELEM2_(0, NONE2, NUM_MODES)
 
-#define ELEM_(code_, tag_, mode_) RSID_ ## tag_ = code_,
+#define ELEM2_(code_, tag_, mode_) RSID_ ## tag_ = code_,
 enum { RSID_LIST2 };
-#undef ELEM_
+#undef ELEM2_
 
-#define ELEM_(code_, tag_, mode_) { RSID_ ## tag_, mode_, #tag_ },
-const RSIDs cRsId::rsid_ids2[] = { RSID_LIST2 };
-#undef ELEM_
+#define ELEM2_(code_, tag_, mode_) { RSID_ ## tag_, mode_, #tag_ },
+const RSIDs cRsId::rsid_ids_2[] = { RSID_LIST2 };
+#undef ELEM2_
 
-const int cRsId::rsid_ids_size2 = sizeof(rsid_ids2)/sizeof(*rsid_ids2) - 1;
+const int cRsId::rsid_ids_size2 = sizeof(rsid_ids_2)/sizeof(*rsid_ids_2) - 1;
 

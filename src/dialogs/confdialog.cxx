@@ -8273,8 +8273,8 @@ d frequency"));
                 if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();
               } // Fl_Check_Button* chkRSidAutoDisable
               { Fl_Value_Slider2* o = sldrRSIDresolution = new Fl_Value_Slider2(10, 233, 145, 22, _("Sensitivity"));
-                sldrRSIDresolution->tooltip(_("2 = low sensitivity / decreased false detection\n5 = high sensitivity / incre\
-ased false detection"));
+                sldrRSIDresolution->tooltip(_("2 = normal sensitivity / decreased false detection\n5 = high sensitivity / in\
+creased false detection"));
                 sldrRSIDresolution->type(1);
                 sldrRSIDresolution->box(FL_DOWN_BOX);
                 sldrRSIDresolution->color(FL_BACKGROUND_COLOR);
@@ -8283,10 +8283,10 @@ ased false detection"));
                 sldrRSIDresolution->labelfont(0);
                 sldrRSIDresolution->labelsize(14);
                 sldrRSIDresolution->labelcolor(FL_FOREGROUND_COLOR);
-                sldrRSIDresolution->minimum(1);
+                sldrRSIDresolution->minimum(2);
                 sldrRSIDresolution->maximum(5);
                 sldrRSIDresolution->step(1);
-                sldrRSIDresolution->value(5);
+                sldrRSIDresolution->value(2);
                 sldrRSIDresolution->textsize(14);
                 sldrRSIDresolution->callback((Fl_Callback*)cb_sldrRSIDresolution);
                 sldrRSIDresolution->align(Fl_Align(FL_ALIGN_RIGHT));
