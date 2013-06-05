@@ -125,10 +125,13 @@ string noctrl(string src)
 	static string retstr;
 	retstr.clear();
 	char hexstr[10];
+	int c;
 	for (size_t i = 0; i < src.length(); i++)  {
-		if ( src[i] < 128) retstr.append(asc[(int)src[i]]);
+		c = src[i];
+		if ( c > 0 && c < 128)
+			retstr.append(asc[c]);
 		else {
-			snprintf(hexstr, sizeof(hexstr), "<%0X>", src[i]);
+			snprintf(hexstr, sizeof(hexstr), "<%0X>", c & 0xFF);
 			retstr.append(hexstr);
 		}
 	}
@@ -228,6 +231,9 @@ static	string strSubCmd;
 
 	if (toparse.empty()) return;
 
+if (DEBUG_PSKMAIL)
+	LOG_INFO("Arq text: %s", noctrl(toparse).c_str());
+else
 	LOG_VERBOSE("Arq text: %s", noctrl(toparse).c_str());
 
 	idxCmd = toparse.find("<cmd>");
@@ -627,6 +633,12 @@ void WriteARQsocket(unsigned char* data, size_t len)
 			arqclient.erase(p);
 		}
 	}
+
+	string outs = "";
+	for (unsigned int i = 0; i < len; i++)
+		outs += asc[data[i] & 0x7F];
+	LOG_INFO("%s", outs.c_str());
+
 	if (arqclient.empty()) arq_reset();
 }
 
@@ -722,8 +734,12 @@ bool Socket_arqRx()
 			active_modem->set_freq(progdefaults.PSKsweetspot);
 		start_tx();
 	} else {
-		arqtext.append(txstring); //assign(txstring);
+		arqtext.append(txstring);
 		LOG_INFO("Appended tx text: %s", noctrl(txstring).c_str());
+		if (trx_state != STATE_TX) {
+			LOG_INFO("%s","Restarting TX");
+			start_tx();
+		}
 	}
 	txstring.clear();
 

@@ -1099,6 +1099,8 @@ void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
+LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
+
 #if !BENCHMARK_MODE
        quick_change = 0;
        modem_config_tab = tabsModems->child(0);
@@ -1340,10 +1342,22 @@ void init_modem_sync(trx_mode m, int f)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	if (trx_state != STATE_RX)
-		TRX_WAIT(STATE_RX, abort_tx());
+	if (trx_state != STATE_RX) {
+		LOG_INFO("%s", "Waiting for STATE_RX");
+		abort_tx();
+		while (trx_state != STATE_RX)
+			trx_wait_state();
+	}
 
-	TRX_WAIT(STATE_RX, init_modem(m, f));
+	LOG_INFO("Call init_modem %d, %d", m, f);
+	init_modem(m, f);
+
+	if (trx_state != STATE_RX) {
+		LOG_INFO("%s","Waiting for state RX");
+		while (trx_state != STATE_RX)
+			trx_wait_state();
+	}
+
 	REQ_FLUSH(TRX_TID);
 }
 
