@@ -1554,11 +1554,13 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-//		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
-		if (btnTune->value() || wf->xmtrcv->value())
+		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
+//		if (btnTune->value() || wf->xmtrcv->value())
 			*retval = xmlrpc_c::value_string("TX");
-		else
+		else if (trx_state == STATE_RX)
 			*retval = xmlrpc_c::value_string("RX");
+		else
+			*retval = xmlrpc_c::value_string("OTHER");
 	}
 };
 
