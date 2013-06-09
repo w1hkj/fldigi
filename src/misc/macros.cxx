@@ -894,6 +894,75 @@ static void pTXRX(std::string &s, size_t &i, size_t endbracket)
 	ToggleTXRX = true;
 }
 
+static std::string hexstr(std::string &s)
+{
+	static std::string hex;
+	static char val[3];
+	hex.clear();
+	for (size_t i = 0; i < s.length(); i++) {
+		snprintf(val, sizeof(val), "%02x", s[i] & 0xFF);
+		hex.append("<").append(val).append(">");
+	}
+	return hex;
+}
+
+static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+
+	LOG_INFO("cat cmd:retnbr %s", s.c_str());
+
+	size_t start = s.find(':', i);
+	std::basic_string<char> buff;
+
+	size_t val = 0;
+	int retnbr = 0;
+	char c, ch;
+	bool asciisw = false;
+	bool valsw = false;
+
+	for (size_t j = start+1 ; j <= endbracket ; j++) {
+		ch = s[j];
+		if (ch == '\"') {
+			asciisw = !asciisw;
+			continue;
+		}
+// accumulate ascii string
+		if (asciisw) {
+			if (isprint(ch)) buff += ch;
+			continue;
+		}
+// following digits is expected size of CAT response from xcvr
+		if (ch == ':' && s[j+1] != '>') {
+			sscanf(&s[j+1], "%d", &retnbr);
+		}
+// accumulate hex string values
+		if ((ch == ' ' || ch == '>' || ch == ':') && valsw) {
+			c = char(val);
+//			LOG_INFO("c=%02x, val=%d", c, val);
+			buff += c;
+			val = 0;
+			valsw = false;
+		} else {
+			val *= 16;
+			ch = toupper(ch);
+			if (isdigit(ch)) val += ch - '0';
+			else if (ch >= 'A' && ch <= 'F') val += ch - 'A' + 10;
+			valsw = true;
+		}
+		if (ch == ':') break;
+	}
+
+	LOG_INFO("cat %s", hexstr(buff).c_str());
+
+	sendCommand(buff, retnbr);
+
+	s.replace(i, endbracket - i + 1, "");
+}
+
 
 static void pVER(std::string &s, size_t &i, size_t endbracket)
 {
@@ -1788,15 +1857,15 @@ void set_macro_env(void)
 
 	// frequencies
 	char dial_freq[20];
-	snprintf(dial_freq, sizeof(dial_freq), "%" PRId64, wf->rfcarrier());
+	snprintf(dial_freq, sizeof(dial_freq), "%lld", (long long)wf->rfcarrier());
 	env[FLDIGI_DIAL_FREQUENCY].val = dial_freq;
 	char audio_freq[6];
 	snprintf(audio_freq, sizeof(audio_freq), "%d", active_modem->get_freq());
 	env[FLDIGI_AUDIO_FREQUENCY].val = audio_freq;
 	char freq[20];
-	snprintf(freq, sizeof(freq), "%" PRId64, wf->rfcarrier() + (wf->USB()
+	snprintf(freq, sizeof(freq), "%lld", (long long)(wf->rfcarrier() + (wf->USB()
 								? active_modem->get_freq()
-								: -active_modem->get_freq()));
+								: -active_modem->get_freq())));
 	env[FLDIGI_FREQUENCY].val = freq;
 
 	// debugging vars
@@ -2153,6 +2222,7 @@ static const MTAGS mtags[] = {
 {"<TX>",		pTX},
 {"<TX/RX>",		pTXRX},
 {"<VER>",		pVER},
+{"<RIGCAT:",	pRIGCAT},
 {"<CNTR>",		pCNTR},
 {"<DECR>",		pDECR},
 {"<INCR>",		pINCR},
