@@ -449,4 +449,43 @@ void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
 	pass = 2;
 //	delete tmpfft;
 
+// Stefan's latest
+
+	f*=1.275; // This factor is ominous to me. I can't explain it. It shouldn't
+			  // be there. But if I leave it out ht(f) differs inbetween the 
+			  // raised cosine from above and this one. And if left out the error
+			  // rate increases... So, this is an unsolved mystery for now.
+
+	for( int i = 0; i < filterlen/2; ++i ) {
+		double a = 1.0; 
+		double x = (double)i/(double)(filterlen/2);		
+
+	// raised cosine response (changed for -1.0...+1.0 times Nyquist-f
+	// instead of books versions ranging from -1..+1 times samplerate)
+
+		double ht =
+			fabs(x) <= (1.0 - a)/(1.0/f) ? 1.0:
+			fabs(x) >  (1.0 + a)/(1.0/f) ? 0.0:
+			cos(M_PI/(f*4.0*a)*(fabs(x)-(1.0-a)/(1.0/f)));
+		ht *= ht; // cos^2
+
+		// equalized nyquist-channel response
+		double eq = 1.0/sinc((double)i*f*2);  
+
+		// compensate for "awkward" FFT-implementation. For every other imple-
+		// mentation of a FFT this would have been just...
+
+		filter[i].re = eq*ht*sin((double)i* - 0.5*M_PI);
+		filter[i].im = eq*ht*cos((double)i* - 0.5*M_PI);
+
+		filter[(filterlen-i)%filterlen].re = eq*ht*sin((double)i*+0.5*M_PI);
+		filter[(filterlen-i)%filterlen].im = eq*ht*cos((double)i*+0.5*M_PI);
+
+		// ... this (caused most headache):
+		//filter[i].re = eq*ht*0.7071;
+		//filter[i].im = eq*ht*0.7071;
+		//filter[(filterlen-i)%filterlen].re = eq*ht*0.7071;
+		//filter[(filterlen-i)%filterlen].im = eq*ht*0.7071;
+
+	}
 }
