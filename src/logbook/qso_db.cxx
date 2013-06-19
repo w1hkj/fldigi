@@ -37,6 +37,7 @@
 #include "qso_db.h"
 #include "field_def.h"
 #include "globals.h"
+#include "timeops.h"
 
 // following needed for localtime_r
 #include <pthread.h>

@@ -33,6 +33,8 @@
 #include <cctype>
 #include <cstdlib>
 
+#include "timeops.h"
+
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
 #  define MAP_TYPE std::tr1::unordered_map
 #  include <tr1/unordered_map>

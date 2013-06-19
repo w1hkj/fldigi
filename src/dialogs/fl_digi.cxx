@@ -91,6 +91,7 @@
 #if USE_HAMLIB
 	#include "hamlib.h"
 #endif
+#include "timeops.h"
 #include "rigio.h"
 #include "nullmodem.h"
 #include "psk.h"

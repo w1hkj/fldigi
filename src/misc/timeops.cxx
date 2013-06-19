@@ -173,3 +173,31 @@ bool operator==(const struct timeval &t0, const struct timeval &t1)
 {
 	return t0.tv_sec == t1.tv_sec && t0.tv_usec == t1.tv_usec;
 }
+
+
+#ifndef HAVE_GMTIME_R
+#include "threads.h"
+
+static pthread_mutex_t gmtime_r_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+struct tm *gmtime_r(const time_t *_Time, struct tm *_Tm)
+{
+  pthread_mutex_lock (&gmtime_r_mutex);
+  struct tm *p = gmtime(_Time);
+  if (p && _Tm) memcpy (_Tm, p, sizeof (struct tm));
+  pthread_mutex_unlock (&gmtime_r_mutex);
+  return p;
+}
+
+static pthread_mutex_t gmtime_local_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+struct tm *localtime_r(const time_t *_Time,struct tm *_Tm)
+{
+  pthread_mutex_lock (&gmtime_local_mutex);
+  struct tm *p = localtime(_Time);
+  if (p && _Tm) memcpy (_Tm, p, sizeof (struct tm));
+  pthread_mutex_unlock (&gmtime_local_mutex);
+  return p;
+}
+
+#endif
