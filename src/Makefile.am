@@ -45,15 +45,13 @@ EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC)
 fldigi_SOURCES =
 flarq_SOURCES =
 
+fldigi_SOURCES += $(XMLRPC_SRC)
+
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
 endif
 if NEED_HAMLIB_LOCATOR
   fldigi_SOURCES += $(LOCATOR_SRC)
-endif
-
-if ENABLE_XMLRPC
-  fldigi_SOURCES += $(XMLRPC_SRC)
 endif
 
 if ENABLE_BENCHMARK
@@ -116,12 +114,10 @@ endif
 
 install-exec-local:
 if WANT_FLDIGI
-if ENABLE_XMLRPC
 	if test -f $(srcdir)/../scripts/fldigi-shell; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(bindir); \
             $(INSTALL_SCRIPT) $(srcdir)/../scripts/fldigi-shell $(DESTDIR)/$(bindir); \
         fi
-endif
 endif
 
 install-data-local:

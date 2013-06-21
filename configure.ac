@@ -196,13 +196,6 @@ AC_FLDIGI_BIND
 # Set HAVE_FLUID Makefile conditional
 AC_FLDIGI_FLTK
 
-### XML-RPC library
-# Set ac_cv_xmlrpc to yes/no
-# Substitute XMLRPC_CFLAGS and XMLRPC_LIBS in Makefile
-# Define USE_XMLRPC in config.h
-# Set ENABLE_XMLRPC Makefile conditional
-AC_FLDIGI_XMLRPC
-
 ### OSS
 # Set ac_cv_oss to yes/no
 # Define USE_OSS in config.h
@@ -331,6 +324,5 @@ if test "x$ac_cv_want_fldigi" = "xyes"; then
   pulseaudio .................. $ac_cv_pulseaudio
 
   hamlib ...................... $ac_cv_hamlib
-  xmlrpc ...................... $ac_cv_xmlrpc
 ])
 fi

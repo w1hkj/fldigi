@@ -138,9 +138,7 @@
 #include "soundconf.h"
 
 #include "htmlstrings.h"
-#if USE_XMLRPC
 #	include "xmlrpc.h"
-#endif
 #if BENCHMARK_MODE
 #	include "benchmark.h"
 #endif
@@ -6891,10 +6889,8 @@ void qsy(long long rfc, int fmid)
 	else if (progdefaults.chkUSEHAMLIBis)
 		REQ(hamlib_set_qsy, rfc);
 #endif
-#if USE_XMLRPC
 	else if (progdefaults.chkUSEXMLRPCis)
 		REQ(xmlrpc_set_qsy, rfc);
-#endif
 	else
 		LOG_VERBOSE("Ignoring rfcarrier change request (no rig control)");
 }
