@@ -105,6 +105,7 @@ void pskBrowser::evalcwidth()
 	const char *szRF = " 999999.99";
 	const char *szCH = " 99";
 	cwidth = (int)fl_width("W");
+	if (cwidth <= 0) cwidth = 5;
 	cheight = fl_height();
 	labelwidth[VIEWER_LABEL_OFF] = 1;//cwidth;
 	labelwidth[VIEWER_LABEL_AF] = (int)fl_width(szAF);
@@ -178,7 +179,7 @@ void pskBrowser::resize(int x, int y, int w, int h)
 	if (w) {
 		Fl_Hold_Browser::resize(x,y,w,h);
 		evalcwidth();
-		nchars = (w - cols[0] - (sbarwidth + 2 * BWSR_BORDER)) / cwidth;
+		nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
 		nchars = nchars < 1 ? 1 : nchars; 
 		string bline;
 		Fl_Hold_Browser::clear();
@@ -228,7 +229,7 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 	if (c == '\n') c = ' ';
 	if (c < ' ') return;
 
-	nchars = (w() - cols[0] - (sbarwidth + 2 * BWSR_BORDER)) / cwidth;
+	nchars = (w() - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
 	nchars = nchars < 1 ? 1 : nchars; 
 
 	bwsrfreq[ch] = freq;
