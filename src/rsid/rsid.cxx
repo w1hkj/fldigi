@@ -622,7 +622,7 @@ void cRsId::apply1(int iSymbol, int iBin)
 	}
 
 	if (mailclient || mailserver)
-		pskmail_notify_rsid(mbin);
+		REQ(pskmail_notify_rsid, mbin);
 
 	if (progdefaults.rsid_auto_disable)
 		REQ(toggleRSID);
