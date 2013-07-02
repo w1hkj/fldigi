@@ -45,14 +45,12 @@ static void GetVendorID (char *vid)
 BOOL GetMachInfo(LPSTR MachineName, LPSTR ProcessorName)
 {
    SYSTEM_INFO sysinf;
-   int family, model, stepping;
+   int family;
    char VendorId [VIDSIZE+2];
 
    ZeroMemory(&sysinf, sizeof(SYSTEM_INFO));
    GetSystemInfo(&sysinf);
    family = sysinf.wProcessorLevel;
-   model = HIBYTE(sysinf.wProcessorRevision);
-   stepping = LOBYTE(sysinf.wProcessorRevision);
 
    switch (sysinf.wProcessorArchitecture) {
    	case PROCESSOR_ARCHITECTURE_UNKNOWN:

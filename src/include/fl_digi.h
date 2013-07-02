@@ -57,28 +57,24 @@ extern FTextTX			*TransmitText;
 extern pskBrowser		*mainViewer;
 extern Fl_Input2		*txtInpSeek;
 extern Fl_Box			*hideViewer;
-extern Raster			*FHdisp;
-extern Fl_Group			*mvgroup;
+extern Fl_Group		*mvgroup;
 
 extern Panel			*text_panel;
 extern Fl_Box			*minbox;
-extern Fl_Group			*MixerFrame;
 extern int				oix;
 
-extern Fl_Box			*StatusBar;
 extern Fl_Box			*Status2;
 extern Fl_Box			*Status1;
 extern Fl_Counter2		*cntCW_WPM;
 extern Fl_Counter2		*cntTxLevel;
-extern Fl_Box			*WARNstatus;
 extern Fl_Button		*MODEstatus;
 extern Fl_Slider2		*sldrSquelch;
-extern Progress			*pgrsSquelch;
+extern Progress		*pgrsSquelch;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Button		*btnAltMacros1;
 extern Fl_Button		*btnAltMacros2;
-extern Fl_Group			*macroFrame1;
-extern Fl_Group			*macroFrame2;
+extern Fl_Group		*macroFrame1;
+extern Fl_Group		*macroFrame2;
 extern Fl_Input2		*inpFreq;
 extern Fl_Input2		*inpTimeOff;
 extern Fl_Input2		*inpTimeOn;
@@ -96,56 +92,41 @@ extern Fl_Input2		*inpVEprov;
 extern Fl_Input2		*inpLoc;
 extern Fl_Input2		*inpNotes;
 extern Fl_Input2		*inpAZ;	// WA5ZNU
-extern Fl_Button		*qsoClear;
 extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;
 
-extern cFreqControl		*qsoFreqDisp1;
+extern cFreqControl	*qsoFreqDisp1;
 extern cFreqControl 	*qsoFreqDisp2;
-extern cFreqControl		*qsoFreqDisp3;
+extern cFreqControl	*qsoFreqDisp3;
 extern Fl_Input2		*inpFreq2;
-extern Fl_Input2		*inpTimeOff2;
-extern Fl_Input2		*inpTimeOn2;
-extern Fl_Button		*btnTimeOn2;
-extern Fl_Input2		*inpName2;
-extern Fl_Input2		*inpRstIn2;
-extern Fl_Input2		*inpRstOut2;
-extern Fl_Button		*qsoClear2;
-extern Fl_Button		*qsoSave2;
 
 extern Fl_Input2		*inpCall1;
 extern Fl_Input2		*inpCall2;
 extern Fl_Input2		*inpCall3;
 extern Fl_Input2		*inpCall4;
+extern Fl_Input2		*inpName1;
 
-extern Fl_Group			*QsoInfoFrame1B;
-extern Fl_Group			*qsoFrameView;
-extern Fl_Group			*QsoButtonFrame;
-extern Fl_Group			*QsoInfoFrame;
-extern cFreqControl		*qsoFreqDisp;
+extern Fl_Group		*QsoInfoFrame1B;
+extern Fl_Group		*qsoFrameView;
+extern Fl_Group		*QsoInfoFrame;
+extern cFreqControl	*qsoFreqDisp;
 extern Fl_ComboBox		*qso_opMODE;
 extern Fl_ComboBox		*qso_opBW;
 extern Fl_Button		*qso_opPICK;
 extern Fl_Browser		*qso_opBrowser;
-extern Fl_Button		*qso_btnAddFreq;
-extern Fl_Button		*qso_btnSelFreq;
-extern Fl_Button		*qso_btnDelFreq;
-extern Fl_Button		*qso_btnClearList;
 
-extern Fl_Value_Slider2		*mvsquelch;
-extern Fl_Value_Slider2		*valRcvMixer;
-extern Fl_Value_Slider2		*valXmtMixer;
+extern Fl_Value_Slider2	*mvsquelch;
+extern Fl_Value_Slider2	*valRcvMixer;
+extern Fl_Value_Slider2	*valXmtMixer;
 extern Fl_Button			*btnAFC;
 extern Fl_Button			*btnSQL;
 extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
 
-extern Fl_Button		*btnMacroTimer;
-
 extern bool			bWF_only;
 extern bool			withnoise;
-extern int			altMacros;
+extern int				altMacros;
 
 extern waterfall		*wf;
 extern Digiscope		*digiscope;

@@ -207,14 +207,14 @@ Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
 MixerBase* mixer = 0;
 
-Fl_Group			*mnuFrame;
+static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
 
 Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
-Fl_Button		    *btnMacroTimer = (Fl_Button *)0;
+static Fl_Button    		*btnMacroTimer = (Fl_Button *)0;
 
 Panel				*text_panel = 0;
 Fl_Group			*mvgroup = 0;
@@ -223,21 +223,20 @@ Fl_Group			*macroFrame1 = 0;
 Fl_Group			*macroFrame2 = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
-Raster				*FHdisp;
+static Raster			*FHdisp;
 Fl_Box				*minbox;
 int					oix;
-int					minRxHeight;
 
 pskBrowser			*mainViewer = (pskBrowser *)0;
 Fl_Input2			*txtInpSeek = (Fl_Input2 *)0;
 
-Fl_Box				*StatusBar = (Fl_Box *)0;
+static Fl_Box			*StatusBar = (Fl_Box *)0;
 Fl_Box				*Status2 = (Fl_Box *)0;
 Fl_Box				*Status1 = (Fl_Box *)0;
 Fl_Counter2			*cntTxLevel = (Fl_Counter2 *)0;
 Fl_Counter2			*cntCW_WPM=(Fl_Counter2 *)0;
-Fl_Button			*btnCW_Default=(Fl_Button *)0;
-Fl_Box				*WARNstatus = (Fl_Box *)0;
+static Fl_Button		*btnCW_Default=(Fl_Button *)0;
+static Fl_Box			*WARNstatus = (Fl_Box *)0;
 Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS * NUMKEYROWS];
 Fl_Button			*btnAltMacros1 = (Fl_Button *)0;
@@ -256,7 +255,7 @@ Fl_Input2			*inpNotes;
 Fl_Input2			*inpAZ;	// WA5ZNU
 Fl_Button			*qsoTime;
 Fl_Button			*btnQRZ;
-Fl_Button			*qsoClear;
+static Fl_Button		*qsoClear;
 Fl_Button			*qsoSave;
 Fl_Box				*txtRigName = (Fl_Box *)0;
 cFreqControl 		*qsoFreqDisp = (cFreqControl *)0;
@@ -273,127 +272,117 @@ Fl_Input2			*inpName;
 Fl_Input2			*inpRstIn;
 Fl_Input2			*inpRstOut;
 
-Fl_Group			*TopFrame1 = (Fl_Group *)0;
-Fl_Input2			*inpFreq1;
-Fl_Input2			*inpTimeOff1;
-Fl_Input2			*inpTimeOn1;
-Fl_Button           *btnTimeOn1;
+static Fl_Group			*TopFrame1 = (Fl_Group *)0;
+static Fl_Input2		*inpFreq1;
+static Fl_Input2		*inpTimeOff1;
+static Fl_Input2		*inpTimeOn1;
+static Fl_Button		*btnTimeOn1;
 Fl_Input2			*inpCall1;
 Fl_Input2			*inpName1;
-Fl_Input2			*inpRstIn1;
-Fl_Input2			*inpRstOut1;
-Fl_Input2			*inpXchgIn1;
-Fl_Input2			*outSerNo1;
-Fl_Input2			*inpSerNo1;
+static Fl_Input2		*inpRstIn1;
+static Fl_Input2		*inpRstOut1;
+static Fl_Input2		*inpXchgIn1;
+static Fl_Input2		*outSerNo1;
+static Fl_Input2		*inpSerNo1;
 cFreqControl 		*qsoFreqDisp1 = (cFreqControl *)0;
 
 Fl_Group			*RigControlFrame = (Fl_Group *)0;
 Fl_Group			*RigViewerFrame = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrame = (Fl_Group *)0;
-Fl_Group			*QsoInfoFrame1 = (Fl_Group *)0;
-Fl_Group			*QsoInfoFrame1A = (Fl_Group *)0;
+static Fl_Group			*QsoInfoFrame1 = (Fl_Group *)0;
+static Fl_Group			*QsoInfoFrame1A = (Fl_Group *)0;
 Fl_Group			*QsoInfoFrame1B = (Fl_Group *)0;
-Fl_Group			*QsoInfoFrameLeft = (Fl_Group *)0;
-Fl_Group			*QsoInfoFrameCenter = (Fl_Group *)0;
-Fl_Group			*QsoInfoFrameRight = (Fl_Group *)0;
-Fl_Group			*QsoInfoFrame2 = (Fl_Group *)0;
-Fl_Group			*QsoButtonFrame = (Fl_Group *)0;
+static Fl_Group			*QsoInfoFrame2 = (Fl_Group *)0;
+static Fl_Group			*QsoButtonFrame = (Fl_Group *)0;
 
 Fl_Group			*TopFrame2 = (Fl_Group *)0;
-cFreqControl 		*qsoFreqDisp2 = (cFreqControl *)0;
-Fl_Input2			*inpTimeOff2;
-Fl_Input2			*inpTimeOn2;
-Fl_Button           *btnTimeOn2;
+cFreqControl			*qsoFreqDisp2 = (cFreqControl *)0;
+static Fl_Input2		*inpTimeOff2;
+static Fl_Input2		*inpTimeOn2;
+static Fl_Button		*btnTimeOn2;
 Fl_Input2			*inpCall2;
-Fl_Input2			*inpName2;
-Fl_Input2			*inpRstIn2;
-Fl_Input2			*inpRstOut2;
+static Fl_Input2		*inpName2;
+static Fl_Input2		*inpRstIn2;
+static Fl_Input2		*inpRstOut2;
 Fl_Button			*qso_opPICK2;
-Fl_Button			*qsoClear2;
-Fl_Button			*qsoSave2;
+static Fl_Button		*qsoClear2;
+static Fl_Button		*qsoSave2;
 Fl_Button			*btnQRZ2;
 
-Fl_Group			*TopFrame3 = (Fl_Group *)0;
-cFreqControl 		*qsoFreqDisp3 = (cFreqControl *)0;
-Fl_Input2			*inpTimeOff3;
-Fl_Input2			*inpTimeOn3;
-Fl_Button           *btnTimeOn3;
+static Fl_Group			*TopFrame3 = (Fl_Group *)0;
+cFreqControl 			*qsoFreqDisp3 = (cFreqControl *)0;
+static Fl_Input2		*inpTimeOff3;
+static Fl_Input2		*inpTimeOn3;
+static Fl_Button		*btnTimeOn3;
 Fl_Input2			*inpCall3;
-Fl_Input2			*outSerNo2;
-Fl_Input2			*inpSerNo2;
-Fl_Input2			*inpXchgIn2;
-Fl_Button			*qso_opPICK3;
-Fl_Button			*qsoClear3;
-Fl_Button			*qsoSave3;
+static Fl_Input2		*outSerNo2;
+static Fl_Input2		*inpSerNo2;
+static Fl_Input2		*inpXchgIn2;
+static Fl_Button		*qso_opPICK3;
+static Fl_Button		*qsoClear3;
+static	Fl_Button		*qsoSave3;
 
 Fl_Input2			*inpCall4;
 
 Fl_Browser			*qso_opBrowser = (Fl_Browser *)0;
-Fl_Button			*qso_btnAddFreq = (Fl_Button *)0;
-Fl_Button			*qso_btnSelFreq = (Fl_Button *)0;
-Fl_Button			*qso_btnDelFreq = (Fl_Button *)0;
-Fl_Button			*qso_btnClearList = (Fl_Button *)0;
-Fl_Button			*qso_btnAct = 0;
-Fl_Input2			*qso_inpAct = 0;
+static Fl_Button		*qso_btnAddFreq = (Fl_Button *)0;
+static Fl_Button		*qso_btnSelFreq = (Fl_Button *)0;
+static Fl_Button		*qso_btnDelFreq = (Fl_Button *)0;
+static Fl_Button		*qso_btnClearList = (Fl_Button *)0;
+static Fl_Button		*qso_btnAct = 0;
+static Fl_Input2		*qso_inpAct = 0;
 
-Fl_Group			*MixerFrame;
+static Fl_Group			*MixerFrame;
 Fl_Value_Slider2	*valRcvMixer = (Fl_Value_Slider2 *)0;
 Fl_Value_Slider2	*valXmtMixer = (Fl_Value_Slider2 *)0;
 
-Fl_Pack 			*wfpack = (Fl_Pack *)0;
-Fl_Pack				*hpack = (Fl_Pack *)0;
+static Fl_Pack 			*wfpack = (Fl_Pack *)0;
+static Fl_Pack			*hpack = (Fl_Pack *)0;
 
 Fl_Value_Slider2	*mvsquelch = (Fl_Value_Slider2 *)0;
-Fl_Button			*btnClearMViewer = 0;
+static Fl_Button		*btnClearMViewer = 0;
 
-int pad = 1;
-int Hentry		= 24;
-int Wbtn		= Hentry;
-int x_qsoframe	= Wbtn;
+static const int pad = 1;
+static const int Hentry		= 24;
+static const int Wbtn		= Hentry;
+static int x_qsoframe	= Wbtn;
 int Hmenu		= 22;
-int Hqsoframe	= pad + 3 * (Hentry + pad);
-int Hstatus		= 22;
-int Hmacros		= 22;
-int w_inpFreq	= 80;
-int w_inpTime	= 40;
-int w_inpCall	= 120;
-int w_inpName  	= 90;
-int w_inpRstIn	= 30;
-int w_inpRstOut = 30;
-int w_SerNo		= 40;
-int sw			= 22;
+static const int Hqsoframe	= pad + 3 * (Hentry + pad);
+int Hstatus	= 22;
+int Hmacros	= 22;
+static const int w_inpFreq	= 80;
+static const int w_inpTime	= 40;
+static const int w_inpCall	= 120;
+static const int w_inpName  	= 90;
+static const int w_inpRstIn	= 30;
+static const int w_inpRstOut	= 30;
+static const int w_SerNo	= 40;
+static const int sw		= 22;
 
-int wlabel		= 30;
+static const int wlabel		= 30;
 
-int wf1 = 436;
-//int wf1 = pad + w_inpFreq + pad + 2*w_inpTime +  pad + w_inpCall +
-//          pad + w_inpName + pad + w_inpRstIn + pad + w_inpRstOut + pad;
+static const int wf1		= 436;
 
-int w_inpTime2   = 40;
-int w_inpCall2   = 100;
-int w_inpName2   = 80;
-int w_inpRstIn2  = 30;
-int w_inpRstOut2 = 30;
+static const int w_inpTime2	= 40;
+static const int w_inpCall2	= 100;
+static const int w_inpName2	= 80;
+static const int w_inpRstIn2	= 30;
+static const int w_inpRstOut2	= 30;
 
-int w_fm1 		= 25;
-int w_fm2 		= 15;
-int w_fm3 		= 15;
-int w_fm4 		= 25;
-int w_fm5 		= 25;
-int w_fm6		= 30;
-int w_fm7       = 35;
-int w_inpState 	= 25;
-int w_inpProv	= 25;
-int w_inpCountry = 60;
-int w_inpLOC   	= 55;
-int w_inpAZ    	= 30;
+static const int w_fm1 		= 25;
+static const int w_fm2 		= 15;
+static const int w_fm3 		= 15;
+static const int w_fm4 		= 25;
+static const int w_fm5 		= 25;
+static const int w_fm6		= 30;
+static const int w_fm7		= 35;
+static const int w_inpState 	= 25;
+static const int w_inpProv	= 25;
+static const int w_inpCountry	= 60;
+static const int w_inpLOC   	= 55;
+static const int w_inpAZ    	= 30;
 
-int w_inpQth 	= wf1 - w_fm1 - w_fm2 - w_fm3 - w_fm4 - w_fm5 - w_fm6 -
-                  w_inpState - w_inpProv - w_inpLOC - w_inpAZ - w_inpCountry;
-
-int w_Xchg      = wf1 - 2*w_fm7 - w_fm5 - 2*pad - 2 * w_SerNo;
-
-int qh = Hqsoframe / 2;
+static const int qh = Hqsoframe / 2;
 
 int IMAGE_WIDTH;
 int Hwfall;
@@ -404,19 +393,14 @@ int WNOM = 650;//progStatus.mainW ? progStatus.mainW : WMIN;
 int Wwfall;
 
 int					altMacros = 0;
-bool				bSaveFreqList = false;
-string				strMacroName[NUMMACKEYS];
-
 
 waterfall			*wf = (waterfall *)0;
 Digiscope			*digiscope = (Digiscope *)0;
-//Digiscope			*wfscope = (Digiscope *)0;
 
 Fl_Slider2			*sldrSquelch = (Fl_Slider2 *)0;
 Progress			*pgrsSquelch = (Progress *)0;
 
-Fl_RGB_Image		*feld_image = 0;
-Fl_Pixmap 			*addrbookpixmap = 0;
+static Fl_Pixmap 		*addrbookpixmap = 0;
 
 #if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
 Pixmap				fldigi_icon_pixmap;
@@ -454,10 +438,10 @@ void cb_rtty75N(Fl_Widget *w, void *arg);
 void cb_rtty75W(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
-Fl_Widget *modem_config_tab;
-Fl_Menu_Item *quick_change;
+static Fl_Widget *modem_config_tab;
+static const Fl_Menu_Item *quick_change;
 
-Fl_Menu_Item quick_change_psk[] = {
+static const Fl_Menu_Item quick_change_psk[] = {
 	{ mode_info[MODE_PSK31].name, 0, cb_init_mode, (void *)MODE_PSK31 },
 	{ mode_info[MODE_PSK63].name, 0, cb_init_mode, (void *)MODE_PSK63 },
 	{ mode_info[MODE_PSK63F].name, 0, cb_init_mode, (void *)MODE_PSK63F },
@@ -468,7 +452,7 @@ Fl_Menu_Item quick_change_psk[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_qpsk[] = {
+static const Fl_Menu_Item quick_change_qpsk[] = {
 	{ mode_info[MODE_QPSK31].name, 0, cb_init_mode, (void *)MODE_QPSK31 },
 	{ mode_info[MODE_QPSK63].name, 0, cb_init_mode, (void *)MODE_QPSK63 },
 	{ mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125 },
@@ -477,7 +461,7 @@ Fl_Menu_Item quick_change_qpsk[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_pskr[] = {
+static const Fl_Menu_Item quick_change_pskr[] = {
 	{ mode_info[MODE_PSK125R].name, 0, cb_init_mode, (void *)MODE_PSK125R },
 	{ mode_info[MODE_PSK250R].name, 0, cb_init_mode, (void *)MODE_PSK250R },
 	{ mode_info[MODE_PSK500R].name, 0, cb_init_mode, (void *)MODE_PSK500R },
@@ -485,7 +469,7 @@ Fl_Menu_Item quick_change_pskr[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_psk_multiR[] = {
+static const Fl_Menu_Item quick_change_psk_multiR[] = {
 	{ mode_info[MODE_4X_PSK63R].name, 0, cb_init_mode, (void *)MODE_4X_PSK63R },
 	{ mode_info[MODE_5X_PSK63R].name, 0, cb_init_mode, (void *)MODE_5X_PSK63R },
 	{ mode_info[MODE_10X_PSK63R].name, 0, cb_init_mode, (void *)MODE_10X_PSK63R },
@@ -514,7 +498,7 @@ Fl_Menu_Item quick_change_psk_multiR[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_psk_multi[] = {
+static const Fl_Menu_Item quick_change_psk_multi[] = {
 	{ mode_info[MODE_12X_PSK125].name, 0, cb_init_mode, (void *)MODE_12X_PSK125 },
 	{ mode_info[MODE_6X_PSK250].name, 0, cb_init_mode, (void *)MODE_6X_PSK250 },
 	{ mode_info[MODE_2X_PSK500].name, 0, cb_init_mode, (void *)MODE_2X_PSK500 },
@@ -524,7 +508,7 @@ Fl_Menu_Item quick_change_psk_multi[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_mfsk[] = {
+static const Fl_Menu_Item quick_change_mfsk[] = {
 	{ mode_info[MODE_MFSK4].name, 0, cb_init_mode, (void *)MODE_MFSK4 },
 	{ mode_info[MODE_MFSK8].name, 0, cb_init_mode, (void *)MODE_MFSK8 },
 	{ mode_info[MODE_MFSK16].name, 0, cb_init_mode, (void *)MODE_MFSK16 },
@@ -537,19 +521,19 @@ Fl_Menu_Item quick_change_mfsk[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_wefax[] = {
+static const Fl_Menu_Item quick_change_wefax[] = {
 	{ mode_info[MODE_WEFAX_576].name, 0, cb_init_mode, (void *)MODE_WEFAX_576 },
 	{ mode_info[MODE_WEFAX_288].name, 0, cb_init_mode, (void *)MODE_WEFAX_288 },
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_navtex[] = {
+static const Fl_Menu_Item quick_change_navtex[] = {
 	{ mode_info[MODE_NAVTEX].name, 0, cb_init_mode, (void *)MODE_NAVTEX },
 	{ mode_info[MODE_SITORB].name, 0, cb_init_mode, (void *)MODE_SITORB },
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_mt63[] = {
+static const Fl_Menu_Item quick_change_mt63[] = {
 	{ mode_info[MODE_MT63_500S].name, 0, cb_init_mode, (void *)MODE_MT63_500S },
 	{ mode_info[MODE_MT63_500L].name, 0, cb_init_mode, (void *)MODE_MT63_500L },
 	{ mode_info[MODE_MT63_1000S].name, 0, cb_init_mode, (void *)MODE_MT63_1000S },
@@ -559,7 +543,7 @@ Fl_Menu_Item quick_change_mt63[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_thor[] = {
+static const Fl_Menu_Item quick_change_thor[] = {
 	{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4 },
 	{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5 },
 	{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8 },
@@ -573,7 +557,7 @@ Fl_Menu_Item quick_change_thor[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_domino[] = {
+static const Fl_Menu_Item quick_change_domino[] = {
 	{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4 },
 	{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5 },
 	{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8 },
@@ -585,7 +569,7 @@ Fl_Menu_Item quick_change_domino[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_feld[] = {
+static const Fl_Menu_Item quick_change_feld[] = {
 	{ mode_info[MODE_FELDHELL].name, 0, cb_init_mode, (void *)MODE_FELDHELL },
 	{ mode_info[MODE_SLOWHELL].name, 0, cb_init_mode, (void *)MODE_SLOWHELL },
 	{ mode_info[MODE_HELLX5].name,   0, cb_init_mode, (void *)MODE_HELLX5 },
@@ -596,7 +580,7 @@ Fl_Menu_Item quick_change_feld[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_throb[] = {
+static const Fl_Menu_Item quick_change_throb[] = {
 	{ mode_info[MODE_THROB1].name, 0, cb_init_mode, (void *)MODE_THROB1 },
 	{ mode_info[MODE_THROB2].name, 0, cb_init_mode, (void *)MODE_THROB2 },
 	{ mode_info[MODE_THROB4].name, 0, cb_init_mode, (void *)MODE_THROB4 },
@@ -606,7 +590,7 @@ Fl_Menu_Item quick_change_throb[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_olivia[] = {
+static const Fl_Menu_Item quick_change_olivia[] = {
 	{ mode_info[MODE_OLIVIA_4_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_250 },
 	{ mode_info[MODE_OLIVIA_8_250].name, 0, cb_init_mode, (void *)MODE_OLIVIA_8_250 },
 	{ mode_info[MODE_OLIVIA_4_500].name, 0, cb_init_mode, (void *)MODE_OLIVIA_4_500 },
@@ -620,7 +604,7 @@ Fl_Menu_Item quick_change_olivia[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_contestia[] = {
+static const Fl_Menu_Item quick_change_contestia[] = {
 	{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA },
 	{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA },
 	{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA },
@@ -635,7 +619,7 @@ Fl_Menu_Item quick_change_contestia[] = {
 	{ 0 }
 };
 
-Fl_Menu_Item quick_change_rtty[] = {
+static const Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
 	{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY },
@@ -1077,7 +1061,7 @@ void cb_E(Fl_Menu_*, void*) {
 	fl_digi_main->hide();
 }
 
-int squelch_val;
+static int squelch_val;
 void rsid_squelch_timer(void*)
 {
 	progStatus.sqlonoff = squelch_val;
@@ -1394,10 +1378,9 @@ void populate_charset_menu(void)
 		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu, (void *)charset_list[i].tiniconv_id);
 }
 
+// find the position of the default charset in charset_list[] and trigger the callback
 void set_default_charset(void)
 {
-	// find the position of the default charset in charset_list[] and
-	// trigger the callback
 	for (unsigned int i = 0; i < number_of_charsets; i++) {
 		if (strcmp(charset_list[i].name, progdefaults.charset_name.c_str()) == 0) {
 			cb_charset_menu(0, (void *)charset_list[i].tiniconv_id);
@@ -1406,10 +1389,9 @@ void set_default_charset(void)
 	}
 }
 
+// if w is not NULL, give focus to TransmitText only if the last event was an Enter keypress
 void restoreFocus(Fl_Widget* w)
 {
-	// if w is not NULL, give focus to TransmitText only if the last event
-	// was an Enter keypress
 	if (!w)
 		TransmitText->take_focus();
 	else if (Fl::event() == FL_KEYBOARD) {
@@ -1694,9 +1676,9 @@ void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 }
 
 #if USE_SNDFILE
-bool capval = false;
-bool genval = false;
-bool playval = false;
+static bool capval = false;
+static bool genval = false;
+static bool playval = false;
 void cb_mnuCapture(Fl_Widget *w, void *d)
 {
 	if (!scard) return;
@@ -2219,8 +2201,8 @@ void updateOutSerNo()
 	}
 }
 
-string old_call;
-string new_call;
+static string old_call;
+static string new_call;
 
 void clearQSO()
 {
@@ -2855,7 +2837,7 @@ bool clean_exit(bool ask) {
 	return true;
 }
 
-bool restore_minimize = false;
+static bool restore_minimize = false;
 
 void UI_select()
 {
@@ -3309,7 +3291,7 @@ void WF_UI()
 
 static void cb_opmode_show(Fl_Widget* w, void*);
 
-Fl_Menu_Item menu_[] = {
+static Fl_Menu_Item menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Folders")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3980,11 +3962,16 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 	}
 }
 
-void show_frequency(long long freq)
+void _show_frequency(long long freq)
 {
 	qsoFreqDisp1->value(freq);
 	qsoFreqDisp2->value(freq);
 	qsoFreqDisp3->value(freq);
+}
+
+void show_frequency(long long freq)
+{
+	REQ_SYNC(_show_frequency, freq);
 }
 
 void show_mode(const string& sMode)
@@ -4073,7 +4060,7 @@ void cb_btnCW_Default(Fl_Widget *w, void *v)
 
 static void cb_mainViewer_Seek(Fl_Input *, void *)
 {
-	static Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
+	static const Fl_Color seek_color[2] = { FL_FOREGROUND_COLOR,
 					  adjust_color(FL_RED, FL_BACKGROUND2_COLOR) }; // invalid RE
 	seek_re.recompile(*txtInpSeek->value() ? txtInpSeek->value() : "[invalid");
 	if (txtInpSeek->textcolor() != seek_color[!seek_re]) {
@@ -5397,9 +5384,8 @@ void create_fl_digi_main_primary() {
 	// ztimer must be run by FLTK's timeout handler
 	Fl::add_timeout(0.0, ztimer, (void*)true);
 
-	// Set the state of checked toggle menu items
-
-	struct {
+	// Set the state of checked toggle menu items. Never changes.
+	const struct {
 		bool var; const char* label;
 	} toggles[] = {
 		{ progStatus.LOGenabled, LOG_TO_FILE_MLABEL },
@@ -5452,7 +5438,7 @@ void create_fl_digi_main_primary() {
 
 void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);
 
-Fl_Menu_Item alt_menu_[] = {
+static Fl_Menu_Item alt_menu_[] = {
 {_("&File"), 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { make_icon_label(_("Exit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -5743,7 +5729,7 @@ void altTabs()
 	tabsModems->remove(tabFeld);
 }
 
-int WF_only_height = 0;
+static int WF_only_height = 0;
 
 void create_fl_digi_main_WF_only() {
 
@@ -5922,7 +5908,7 @@ void create_fl_digi_main_WF_only() {
 	fl_digi_main->callback(cb_wMain);
 	fl_digi_main->resizable(wf);
 
-	struct {
+	const struct {
 		bool var; const char* label;
 	} toggles[] = {
 		{ progStatus.DOCKEDSCOPE, DOCKEDSCOPE_MLABEL }
@@ -7058,7 +7044,8 @@ void set_rtty_shift(int shift)
 	if (shift < selCustomShift->minimum() || shift > selCustomShift->maximum())
 		return;
 
-	const int shifts[] = { 23, 85, 160, 170, 182, 200, 240, 350, 425, 850 };
+	// Static const array otherwise will be built at each call.
+	static const int shifts[] = { 23, 85, 160, 170, 182, 200, 240, 350, 425, 850 };
 	size_t i;
 	for (i = 0; i < sizeof(shifts)/sizeof(*shifts); i++)
 		if (shifts[i] == shift)
@@ -7073,7 +7060,8 @@ void set_rtty_shift(int shift)
 
 void set_rtty_baud(float baud)
 {
-	const float bauds[] = {
+	// Static const array otherwise will be rebuilt at each call.
+	static const float bauds[] = {
 		45.0f, 45.45f, 50.0f, 56.0f, 75.0f,
 		100.0f, 110.0f, 150.0f, 200.0f, 300.0f
 	};
@@ -7088,7 +7076,8 @@ void set_rtty_baud(float baud)
 
 void set_rtty_bits(int bits)
 {
-	const int bits_[] = { 5, 7, 8 };
+	// Static const array otherwise will be built at each call.
+	static const int bits_[] = { 5, 7, 8 };
 	for (size_t i = 0; i < sizeof(bits_)/sizeof(*bits_); i++) {
 		if (bits_[i] == bits) {
 			selBits->value(i);
