@@ -987,7 +987,7 @@ void FTextTX::add_text(string s)
 				redraw();
 			}
 		} else {
-LOG_DEBUG("%04x ", s[n] & 0x00FF);
+//LOG_DEBUG("%04x ", s[n] & 0x00FF);
 			add(s[n] & 0xFF, RECV);
 		}
 	}

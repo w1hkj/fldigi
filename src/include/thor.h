@@ -62,6 +62,10 @@
 #define THORSLOWPATHS 3
 #define THORFASTPATHS 5
 
+// the following constant changes if a mode with more tones than 25x4 is
+// created
+#define MAXPATHS (8 * THORFASTPATHS * THORNUMTONES )
+
 struct THORrxpipe {
 	complex vector[THORMAXFFTS * THORNUMTONES * 6];
 };

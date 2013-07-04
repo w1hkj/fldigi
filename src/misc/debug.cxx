@@ -85,6 +85,7 @@ debug::level_e debug::level = debug::INFO_LEVEL;
 uint32_t debug::mask = ~0u;
 
 bool debug_pskmail = false;
+bool debug_audio = false;
 
 static const char* prefix[] = {
 	_("Quiet"), _("Error"), _("Warning"), _("Info"), _("Verbose"), _("Debug")
@@ -183,7 +184,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 
 	if (!inst)
 		return;
-	if (unlikely(debug::level == DEBUG_LEVEL) || debug_pskmail) {
+	if (unlikely(debug::level == DEBUG_LEVEL) || debug_pskmail || debug_audio) {
 		time_t t = time(NULL);
 		struct tm stm;
 		(void)localtime_r(&t, &stm);

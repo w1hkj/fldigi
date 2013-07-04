@@ -45,7 +45,8 @@
 #include "debug.h"
 
 // Enable to enable profiling output for the soft-decision decoder
-#define SOFTPROFILE true
+#define SOFTPROFILE false 
+//#define SOFTPROFILE true
 
 using namespace std;
 
@@ -85,14 +86,18 @@ void thor::rx_init()
 	datashreg = 1;
 	sig = noise = 6;
 
+	fec_confidence = 0;
+
 	s2n_valid = false;
 }
 
 void thor::reset_filters()
 {
+//LOG_INFO("%s", "Reset filters");
 // fft filter at first IF frequency
+	if (fft)
 	fft->create_filter( (THORFIRSTIF - 0.5 * progdefaults.THOR_BW * bandwidth) / samplerate,
-	                    (THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
+						(THORFIRSTIF + 0.5 * progdefaults.THOR_BW * bandwidth)/ samplerate );
 
 	for (int i = 0; i < THORMAXFFTS; i++)
 		if (binsfft[i]) {
@@ -113,9 +118,23 @@ void thor::reset_filters()
 
 	numbins = hitone - lotone;
 
-	for (int i = 0; i < paths; i++)
-		binsfft[i] = new sfft (symlen, lotone, hitone);
+//LOG_INFO("MAX ARRAY SIZE %d, paths %d, numbins %d, array_size %d", MAXPATHS, paths, numbins, numbins * paths);
 
+	for (int i = 0; i < paths; i++) {
+		if (binsfft[i]) delete binsfft[i];
+		binsfft[i] = new sfft (symlen, lotone, hitone);
+	}
+//LOG_INFO("binsfft(%d) initialized", paths);
+
+	for (int i = 0; i < THORSCOPESIZE; i++) {
+		if (vidfilter[i]) delete vidfilter[i];
+		vidfilter[i] = new Cmovavg(16);
+	}
+//LOG_INFO("vidfilter(%d) initialized", THORSCOPESIZE);
+
+	if (syncfilter) delete syncfilter;
+	syncfilter = new Cmovavg(8);
+//LOG_INFO("%s", "syncfilter initialized");
 
 	filter_reset = false;
 }
@@ -127,6 +146,7 @@ void thor::restart()
 
 void thor::init()
 {
+//LOG_INFO("%s", "thor::init");
 	modem::init();
 //	reset_filters();
 	rx_init();
@@ -157,7 +177,7 @@ thor::~thor()
 
 }
 
-thor::thor(trx_mode md)
+thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 {
 	cap |= CAP_REV;
 
@@ -257,13 +277,11 @@ thor::thor(trx_mode md)
 
 	for (int i = 0; i < THORMAXFFTS; i++)
 		binsfft[i] = 0;
+	for (int i = 0; i < THORSCOPESIZE; i++)
+		vidfilter[i] = 0;
+	syncfilter = 0;
 
 	reset_filters();
-
-	for (int i = 0; i < THORSCOPESIZE; i++)
-		vidfilter[i] = new Cmovavg(16);
-
-	syncfilter = new Cmovavg(8);
 
 	twosym = 2 * symlen;
 	pipe = new THORrxpipe[twosym];
@@ -301,6 +319,7 @@ thor::thor(trx_mode md)
 	symbolpair[0] = symbolpair[1] = 0;
 	datashreg = 1;
 
+	init();
 }
 
 //=====================================================================
@@ -392,6 +411,7 @@ void thor::decodePairs(unsigned char symbol)
 	if ((datashreg & 7) == 1) {
 		ch = thorvaridec(datashreg >> 1);
 		recvchar(ch);
+//LOG_INFO("thorvaridec %X = %d", datashreg >> 1, ch);
 		datashreg = 1;
 	}
 	
@@ -464,7 +484,7 @@ void thor::softdecodesymbol()
 			}
 		}
 #if SOFTPROFILE
-		LOG_DEBUG("\nSymbol: %3d; DELTAf: +%3d",currsymbol, c);
+		LOG_INFO("\nSymbol: %3d; DELTAf: +%3d",currsymbol, c);
 #endif
 	}
 	c -= 2;
@@ -511,9 +531,9 @@ void thor::softdecodesymbol()
 	}
 
 #if SOFTPROFILE
-	LOG_DEBUG("next mag %.3d | now mag %.3d | last mag %.3d",nextmag, nowmag, lastmag);
-	if (outofrange) LOG_DEBUG("%s","outofrange");
-	if (staticburst) LOG_DEBUG("%s","staticburst");
+	LOG_INFO("next mag %.3d | now mag %.3d | last mag %.3d",nextmag, nowmag, lastmag);
+	if (outofrange) LOG_INFO("%s","outofrange");
+	if (staticburst) LOG_INFO("%s","staticburst");
 #endif
 
 	lastsymbols[3] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
@@ -536,8 +556,10 @@ int thor::harddecode()
 	double x, max = 0.0;
 	int symbol = 0;
 	double avg = 0.0;
-	bool cwi[paths * numbins];
+	static bool cwi[MAXPATHS]; //[paths * numbins];
 	double cwmag;
+
+	for (int i = 0; i < MAXPATHS; i++) cwi[i] = false;
 
 	for (int i = 0; i < paths * numbins; i++)
 		avg += pipe[pipeptr].vector[i].mag();
@@ -566,7 +588,8 @@ int thor::harddecode()
 				max = x;
 				symbol = i;
 			}
-		}
+		} else
+LOG_DEBUG("cwi detected in bin %d", i);
 	}
 
 	staticburst = (max / avg < 1.2);
@@ -576,6 +599,8 @@ int thor::harddecode()
 
 int thor::softdecode()
 {
+	static bool lastCWI[MAXPATHS] = {false};
+	static bool nextCWI[MAXPATHS] = {false};
 	static const int SoftBailout=6; // Max number of attempts to get a valid symbol
 
 	double x, max = 0.0, avg = 0.0;
@@ -583,17 +608,17 @@ int thor::softdecode()
 	int avgcount = 0;
 	int soft_symbol_trycount=0;
 
-	static bool lastCWI[1024] = {false};
-	bool nextCWI[paths * numbins];
-
 	int lowest_tone = 0;
 	int highest_tone = paths * numbins;
 
-	// Clear nextCWI  bool array for this run
-	for (int i = lowest_tone; i < highest_tone; i++) nextCWI[i] = false;
+// Clear nextCWI  bool array for this run
+	for (int i = 0; i < MAXPATHS; i++)
+		nextCWI[i] = false;
+//	for (int i = lowest_tone; i < highest_tone; i++) nextCWI[i] = false;
 
 	// Allow for case where symbol == prev2symbol  (before calculating signal average...)
-	lastCWI[prev2symbol-1] =  lastCWI[prev2symbol] = lastCWI[prev2symbol+1] = false;
+	if (prev2symbol && (prev2symbol < MAXPATHS - 1)) // array bounds checking
+		lastCWI[prev2symbol-1] =  lastCWI[prev2symbol] = lastCWI[prev2symbol+1] = false;
 
 	// Constrict the tone set further so CWI detect & set does not go out of intended range
 	lowest_tone += 1;
@@ -624,13 +649,15 @@ int thor::softdecode()
 			}
 		}
 
+		if (symbol && (symbol < MAXPATHS - 1)) {  // array bounds checking
 		// detect repeated symbols (an invalid pattern for IFK+ modems)
-		if ( abs(prev1symbol - symbol) < paths ) {
-			nextCWI[symbol-1] = nextCWI[symbol] = nextCWI[symbol+1] = true;
-		}
+			if ( abs(prev1symbol - symbol) < paths ) {
+				nextCWI[symbol-1] = nextCWI[symbol] = nextCWI[symbol+1] = true;
+			}
 		// Update the next CWI mask if the tone from last-run persists
-		else if ( lastCWI[symbol-1] || lastCWI[symbol] || lastCWI[symbol+1] ) {
-			nextCWI[symbol-1] = nextCWI[symbol] = nextCWI[symbol+1] = true;
+			else if ( lastCWI[symbol-1] || lastCWI[symbol] || lastCWI[symbol+1] ) {
+				nextCWI[symbol-1] = nextCWI[symbol] = nextCWI[symbol+1] = true;
+			}
 		}
 
 	} while ( nextCWI[symbol] && soft_symbol_trycount < SoftBailout ); // Run while the detected symbol has been identified as CWI (alt: bailout after 6 trys)
@@ -660,9 +687,9 @@ bool thor::preambledetect(int c)
 // -16 does not reset the twos counter
 	if (-16 != c && 2 != c)
 		if (twocount > 1) twocount -= 2;
-//#if SOFTPROFILE
-//	LOG_DEBUG("[2count:pcheck] [%d:%d]",twocount, preamblecheck);
-//#endif
+#if SOFTPROFILE
+	LOG_INFO("[2count:pcheck] [%d:%d]",twocount, preamblecheck);
+#endif
 	if ( twocount > 4 && neg16seen ){
 		if ( ++preamblecheck > 4 ) return true;
 	}
@@ -674,6 +701,9 @@ bool thor::preambledetect(int c)
 // Flush the interleaver and convolutional decoder with punctures
 void thor::softflushrx()
 {
+#if SOFTPROFILE
+LOG_INFO("%s", "softflushrx()");
+#endif
 	unsigned char puncture[2], flushsymbols[4];
 	puncture[0]=128;
 	puncture[1]=128;
@@ -692,7 +722,7 @@ void thor::update_syncscope()
 	double max = 0, min = 1e6, range, mag;
 
 	memset(videodata, 0, paths * numbins * sizeof(double));
-
+//LOG_INFO("%s", "cleared videodata");
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
 		for (int i = 0; i < paths * numbins; i++ ) {
 			mag = pipe[pipeptr].vector[i].mag();
@@ -803,12 +833,12 @@ int thor::rx_process(const double *buf, int len)
 	complex zarray[1];
 	int n;
 
-	if (filter_reset) reset_filters();
-
 	if (slowcpu != progdefaults.slowcpu) {
 		slowcpu = progdefaults.slowcpu;
-		reset_filters();
+		filter_reset = true;
 	}
+
+	if (filter_reset) reset_filters();
 
 	while (len) {
 // create analytic signal at first IF
@@ -816,7 +846,7 @@ int thor::rx_process(const double *buf, int len)
 		hilbert->run(zref, zref);
 		zref = mixer(0, zref);
 
-		if (progdefaults.THOR_FILTER) {
+		if (progdefaults.THOR_FILTER && fft) {
 // filter using fft convolution
 			n = fft->run(zref, &zp);
 		} else {
