@@ -655,6 +655,9 @@ void generate_option_help(void) {
 	     << "  --debug-level LEVEL\n"
 	     << "    Set the event log verbosity\n\n"
 
+	     << "  --debug-pskmail\n"
+	     << "    Enable logging for pskmail / arq events\n\n"
+
 	     << "  --version\n"
 	     << "    Print version information\n\n"
 
@@ -754,7 +757,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
-	       OPT_NOISE, OPT_DEBUG_LEVEL,
+	       OPT_NOISE, OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL,
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
@@ -807,6 +810,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 		{ "noise", 0, 0, OPT_NOISE },
 		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
+		{ "debug-pskmail", 0, 0, OPT_DEBUG_PSKMAIL },
 
 		{ "help",	   0, 0, OPT_HELP },
 		{ "version",	   0, 0, OPT_VERSION },
@@ -1004,6 +1008,10 @@ int parse_args(int argc, char **argv, int& idx)
 			int v = strtol(optarg, 0, 10);
 			debug::level = (debug::level_e)CLAMP(v, 0, debug::LOG_NLEVELS-1);
 		}
+			break;
+
+		case OPT_DEBUG_PSKMAIL:
+			debug_pskmail = true;
 			break;
 
 		case OPT_DEPRECATED:

@@ -52,6 +52,14 @@
 #include "icons.h"
 #include "gettext.h"
 
+#include "threads.h"
+
+#ifndef FLARQ_VERSION
+#	include "fl_digi.h"
+#endif
+
+static pthread_mutex_t debug_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 extern Fl_Double_Window *fl_digi_main;
 extern void update_main_title();
 
@@ -75,6 +83,8 @@ static string linebuf;
 debug* debug::inst = 0;
 debug::level_e debug::level = debug::INFO_LEVEL;
 uint32_t debug::mask = ~0u;
+
+bool debug_pskmail = false;
 
 static const char* prefix[] = {
 	_("Quiet"), _("Error"), _("Warning"), _("Info"), _("Verbose"), _("Debug")
@@ -154,6 +164,7 @@ void debug::start(const char* filename)
 
 void debug::stop(void)
 {
+	guard_lock debug_lock(&debug_mutex);
 	if (window) {
 		window->hide();
 		delete window;
@@ -168,10 +179,11 @@ static char fmt[1024];
 
 void debug::log(level_e level, const char* func, const char* srcf, int line, const char* format, ...)
 {
+	guard_lock debug_lock(&debug_mutex);
+
 	if (!inst)
 		return;
-
-	if (unlikely(debug::level == DEBUG_LEVEL) || DEBUG_PSKMAIL) {
+	if (unlikely(debug::level == DEBUG_LEVEL) || debug_pskmail) {
 		time_t t = time(NULL);
 		struct tm stm;
 		(void)localtime_r(&t, &stm);
