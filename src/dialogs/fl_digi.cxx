@@ -1301,20 +1301,30 @@ void init_modem_sync(trx_mode m, int f)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
+	int count = 500;
 	if (trx_state != STATE_RX) {
 		LOG_INFO("%s", "Waiting for STATE_RX");
 		abort_tx();
-		while (trx_state != STATE_RX)
-			trx_wait_state();
+		while (trx_state != STATE_RX && count) {
+			LOG_VERBOSE("%d msecs remaining", count * 10);
+			MilliSleep(10);
+			count--;
+		}
+		if (!count) LOG_ERROR("%s", "trx wait for RX timeout");
 	}
 
 	LOG_INFO("Call init_modem %d, %d", m, f);
 	init_modem(m, f);
 
+	count = 500;
 	if (trx_state != STATE_RX) {
-		LOG_INFO("%s","Waiting for state RX");
-		while (trx_state != STATE_RX)
-			trx_wait_state();
+		LOG_INFO("%s","Post init_modem waiting for state RX");
+		while (trx_state != STATE_RX && count) {
+			LOG_VERBOSE("%d msecs remaining", count * 10);
+			MilliSleep(10);
+			count--;
+		}
+		if (!count) LOG_ERROR("%s", "trx wait for RX timeout");
 	}
 
 	REQ_FLUSH(TRX_TID);
