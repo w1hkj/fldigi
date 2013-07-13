@@ -2805,6 +2805,8 @@ bool clean_exit(bool ask) {
 #endif
 	rigCAT_close();
 
+	ADIF_RW_close();
+
 	if (mixer)
 		mixer->closeMixer();
 
