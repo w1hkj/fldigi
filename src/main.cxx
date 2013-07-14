@@ -522,8 +522,13 @@ int main(int argc, char ** argv)
 
 	int ret = Fl::run();
 
-	arq_close();
+	return ret;
+}
 
+void exit_process() {
+
+	KmlServer::Exit();
+	arq_close();
 	XML_RPC_Server::stop();
 
 	if (progdefaults.usepskrep)
@@ -533,11 +538,9 @@ int main(int argc, char ** argv)
 		cbq[i]->detach();
 		delete cbq[i];
 	}
+
 	FSEL::destroy();
 
-	KmlServer::Exit();
-
-	return ret;
 }
 
 void generate_option_help(void) {
