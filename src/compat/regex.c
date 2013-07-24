@@ -1137,8 +1137,10 @@ regex_compile (pattern, size, syntax, bufp)
 	{ /* Caller did not allocate a buffer.  Do it for them.  */
 	  bufp->buffer = TALLOC (INIT_BUF_SIZE, unsigned char);
 	}
-      if (!bufp->buffer) return REG_ESPACE;
-
+      if (!bufp->buffer)  {
+		free(compile_stack.stack);
+		return REG_ESPACE;
+	}
       bufp->allocated = INIT_BUF_SIZE;
     }
 
@@ -4815,8 +4817,11 @@ regexec (preg, string, nmatch, pmatch, eflags)
       regs.num_regs = nmatch;
       regs.start = TALLOC (nmatch, regoff_t);
       regs.end = TALLOC (nmatch, regoff_t);
-      if (regs.start == NULL || regs.end == NULL)
-	return (int) REG_NOMATCH;
+      if (regs.start == NULL || regs.end == NULL) {
+		  free (regs.start);
+		  free (regs.end);
+		return (int) REG_NOMATCH;
+	}
     }
 
   /* Perform the searching operation.  */
