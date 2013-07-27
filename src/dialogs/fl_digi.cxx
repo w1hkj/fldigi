@@ -1319,13 +1319,11 @@ void init_modem_sync(trx_mode m, int f)
 
 	count = 500;
 	if (trx_state != STATE_RX) {
-		LOG_INFO("%s","Post init_modem waiting for state RX");
 		while (trx_state != STATE_RX && count) {
-			LOG_VERBOSE("%d msecs remaining", count * 10);
 			MilliSleep(10);
 			count--;
 		}
-		if (!count) LOG_ERROR("%s", "trx wait for RX timeout");
+		LOG_INFO("Waited %.2f sec for RX state", (500 - count) * 0.01);
 	}
 
 	REQ_FLUSH(TRX_TID);
