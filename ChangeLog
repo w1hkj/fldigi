@@ -1,4 +1,86 @@
-2013-05-13  David Freese  <w1hkj@w1hkj.com>
+
+
+=Version 3.21.73=
+
+2013-07-28  David Freese  <w1hkj@w1hkj.com>
+
+	627bddc: qrunner mod
+	98b61eb: Pskmail-test
+
+2013-07-24  John Phelps  <kl4yfd@gmail.com>
+
+	989a111: Doxygen for fldigi  * Added scripts to generate Doxygen documentation from fldigi git repository / source  * Also executes "cppcheck" and includes those results on Doxygen page (if installed on system)  * Generates patches and log for the last 125 commits: includes links on Doxygen page
+
+2013-07-24  David Freese  <w1hkj@w1hkj.com>
+
+	86bb08b: CPPcheck errors
+	4a9724c: Modem class
+	3b9dff0: Rigcat Thread
+	55df4c7: Missing header
+	65640ca: fldigi-shell
+	59a9029: Fl::focus on OS X
+	edc0c9f: Data files
+	6794811: KML thread
+	fe82181: Fl::flush
+	59d9fbb: ADIF_RW thread
+	dfb6eaa: trx semaphore
+	35e8135: Digiscope buffer
+
+2013-07-07  Robert Stiles  <kk5vd@yahoo.com>
+
+	c75ac9a: Portaudio exceptions
+
+2013-07-07  David Freese  <w1hkj@w1hkj.com>
+
+	18534e4: mxe-win32 regex
+	0f5ede7: PSKMAIL/ARQ socket
+	e624bc0: Thor update
+	07f9cb8: record_loader fix
+	6e16b41: Code cleanup
+	50c1c12: Pskmail Notify RsID
+	4b9c578: MFSK shut down
+
+2013-06-27  Robert Stiles  <kk5vd@yahoo.com>
+
+	af5e09a: Cwidth test for zero
+
+2013-06-21  David Freese  <w1hkj@w1hkj.com>
+
+	b6ee3f7: XMLRPC
+	389c189: MXE compile
+
+2013-06-19  Stefan Fendt  <smfendt@gmail.com>
+
+	dfc2bd8: RTTY decoder
+
+2013-06-09  Dennis Engdahl  <engdahl@snowcrest.net>
+
+	7d62b22: RigCAT user commands
+
+2013-06-08  David Freese  <w1hkj@w1hkj.com>
+
+	3850862: TX state
+	9b26ff6: pskmail events
+	e12a373:   * Changed extended rsid iaw doc/rsid_codes.gnumeric
+
+2013-06-01  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	982f335: KML/Synop/RTTY/Navtex
+	3bb70e4: Port to MXE / MingW
+	34b3baf: QSL VIA
+	6cd7017: XML parser
+
+2013-05-31  David Freese  <w1hkj@w1hkj.com>
+
+	2c9c73f: ARQ support changes
+	f8e26f3: xmlrpcpp
+	237cc8f: PortAudio
+	dc7173c: SysV ARQ interface
+	1ea46c6: METAR format
+	e1004fc: RSID logic
+
+
+=Version 3.21.72=
 
 	a933da1: RsID Timeout
 	ff1d69a: PSKMAIL
@@ -1929,7 +2011,7 @@
 
 2009-02-25  Stelios Bounanos  <vcs@enotty.net>
 
-	a2fc0c8: Add better support for proportional fonts
+	a2fc0c8db: Add better support for proportional fonts
 	f6466f2: Fix font name/number compatibility code
 	eb1ec8a: Fix printf format string
 
