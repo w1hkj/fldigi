@@ -248,7 +248,8 @@ hamlib-static: $(fldigi_OBJECTS)
 endif
 endif
 
-TESTS = $(srcdir)/../scripts/tests/config-h.sh $(srcdir)/../scripts/tests/cr.sh
+tmp_srcdir_var=$(srcdir)
+TESTS = $(tmp_srcdir_var)/../scripts/tests/config-h.sh $(tmp_srcdir_var)/../scripts/tests/cr.sh
 
 if HAVE_ASCIIDOC
 $(builddir)/../doc/guide.html: $(builddir)/../doc/guide.txt
