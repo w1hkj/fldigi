@@ -404,7 +404,7 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 	band_map_t& bandq = queue[call][band(freq)];
 	if (bandq.empty() || rtime - bandq.back().rtime >= DUP_INTERVAL) { // add new
 		bandq.push_back(rcpt_report_t(mode, freq, rtime, rtype, loc));
-		LOG_VERBOSE("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%jd, type=%u)",
+		LOG_VERBOSE("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%" PRId64 ", time=%" PRIdMAX ", type=%u)",
 			 call.c_str(), loc, mode_info[mode].adif_name, freq, (intmax_t)rtime, rtype);
 		new_count++;
 		save_queue();
@@ -414,7 +414,7 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 		if (r.status != PSKR_STATUS_SENT && *loc && r.locator != loc) { // update last
 			r.locator = loc;
 			r.rtype = rtype;
-			LOG_VERBOSE("Updated (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%lld, time=%jd, type=%u)",
+			LOG_VERBOSE("Updated (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%" PRId64 ", time=%" PRIdMAX ", type=%u)",
 				 call.c_str(), loc, mode_info[r.mode].adif_name, r.freq, (intmax_t)r.rtime, rtype);
 			save_queue();
 		}
@@ -732,7 +732,7 @@ bool pskrep_sender::append(const string& callsign, const band_map_t::value_type&
 		return false;
 
 
-	LOG_INFO("Appending report (call=%s mode=%s freq=%lld time=%jd type=%u)",
+	LOG_INFO("Appending report (call=%s mode=%s freq=%" PRId64 " time=%" PRIdMAX " type=%u)",
 		 callsign.c_str(), mode_info[r.mode].adif_name, r.freq, (intmax_t)r.rtime, r.rtype);
 
 	unsigned char* start = dgram + dgram_size;
