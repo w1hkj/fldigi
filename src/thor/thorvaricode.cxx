@@ -165,6 +165,7 @@ static const unsigned int thor_varidecode[] = {
 	0xF68, 0xF6C, 0xF70, 0xF74, 0xF78, 0xF7C, 0xF80, 0xFA0,
 	0xFA8, 0xFAC, 0xFB0
 };
+static int limit = sizeof(thor_varidecode)/sizeof(unsigned int);
 
 const char *thorvarienc(int c, int sec)
 {
@@ -184,7 +185,7 @@ int thorvaridec(unsigned int symbol)
 	if (symbol < 0xB80)
 		return varidec(symbol);  // find in the MFSK decode table	
 
-	for (i = 0; i < 92; i++)
+	for (i = 0; i < limit; i++)
 		if (symbol == thor_varidecode[i])
 			return (' ' + i + 0x100);  // found in the extended decode table
 			

@@ -87,6 +87,7 @@ unused__ static uint32_t log_source_ = debug::LOG_OTHER;
 #define LOG_SET_SOURCE(source__) log_source_ = source__
 
 extern bool	debug_pskmail;
+extern bool	debug_audio;
 
 #endif // _DEBUG_H_
 
