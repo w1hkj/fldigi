@@ -78,23 +78,6 @@ extern void			arq_close();
 extern void			WriteARQ(unsigned char);
 extern void			checkTLF();
 
-#define ARQBUFSIZ 8192
-
-struct RXMSGSTRUC {
-	long int msg_type;
-	char c;
-};
-
-struct TXMSGSTRUC {
-	long int msg_type;
-	char buffer[ARQBUFSIZ];
-};
-
-extern RXMSGSTRUC rxmsgst;
-extern int rxmsgid;
-extern TXMSGSTRUC txmsgst;
-extern int txmsgid;
-
 void check_nbems_dirs(void);
 extern bool nbems_dirs_checked;
 
