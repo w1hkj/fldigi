@@ -4009,17 +4009,17 @@ void _show_frequency(long long freq)
 
 void show_frequency(long long freq)
 {
-	REQ_SYNC(_show_frequency, freq);
+	REQ(_show_frequency, freq);
 }
 
 void show_mode(const string& sMode)
 {
-	REQ_SYNC(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
+	REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
 }
 
 void show_bw(const string& sWidth)
 {
-	REQ_SYNC(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
+	REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
 }
 
 
