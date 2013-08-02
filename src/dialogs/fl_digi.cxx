@@ -2783,6 +2783,8 @@ bool clean_exit(bool ask) {
 	rigMEM_close();
 
 
+	ADIF_RW_close();
+
 	if (mixer)
 		mixer->closeMixer();
 
