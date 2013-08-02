@@ -559,8 +559,7 @@ void createRecordLoader()
 {
 	if (dlgRecordLoader) return; 
 	dlgRecordLoader = make_record_loader_window();
-	fl_input_add("http://www.w1hkj.com/data");
-	fl_input_add("http://fldigi.org/data/");
+	fl_input_add("http://www.w1hkj.com/support_files/");
 	fl_input_add("http://primhillcomputers.com/fldigi/data");
 
 	inpDataSources->value(0);
