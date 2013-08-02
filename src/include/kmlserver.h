@@ -36,6 +36,8 @@ class KmlServer {
 protected:
 	/// Counts the number of complete messages written.
 	int m_nb_broadcasts ;
+	int exit_kml_server;
+	int request_broadcast;
 public:
 	/// List of key-value pairs displayed for example in Google Earth balloons.
 	struct CustomDataT : public std::vector< std::pair< std::string, std::string > > {
@@ -55,7 +57,7 @@ public:
 		}
 	};
 
-	KmlServer() : m_nb_broadcasts(0) {}
+	KmlServer() : m_nb_broadcasts(0), exit_kml_server(0), request_broadcast(0) {}
 
 	virtual ~KmlServer() {}
 

@@ -143,6 +143,7 @@
 #include "flmisc.h"
 
 #include "arq_io.h"
+#include "kmlserver.h"
 
 #include "notifydialog.h"
 #include "macroedit.h"
@@ -2805,6 +2806,8 @@ bool clean_exit(bool ask) {
 
 	close_logbook();
 	MilliSleep(50);
+
+	exit_process();
 
 	return true;
 }
