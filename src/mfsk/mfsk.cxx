@@ -106,6 +106,8 @@ void mfsk::shutdown()
 mfsk::~mfsk()
 {
 	stopflag = true;
+	int msecs = 200;
+	while(--msecs && txstate != TX_STATE_PREAMBLE) MilliSleep(1); 
 	if (picTxWin)
 		picTxWin->hide();
 	if (picRxWin)
