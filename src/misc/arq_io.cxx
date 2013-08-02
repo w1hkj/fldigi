@@ -194,9 +194,9 @@ void ParseMode(string src)
 	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
-				while (trx_state != STATE_RX) {
-					MilliSleep(10);
-				}
+//				while (trx_state != STATE_RX) {
+//					MilliSleep(10);
+//				}
 				if (debug_pskmail)
 					LOG_INFO("Setting modem to %s", mode_info[i].pskmail_name);
 				REQ_SYNC(init_modem_sync, mode_info[i].mode, 0);
