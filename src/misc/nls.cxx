@@ -76,7 +76,7 @@ int get_ui_lang(const char* homedir)
 
 	string::size_type u = string::npos;
 	while (in >> lang) {
-		if (lang[0] != '\n' & lang[0] != '#' && (u = lang.find('_')) != string::npos)
+		if ( (lang[0] != '\n') & (lang[0] != '#') && ( (u = lang.find('_')) != string::npos) )
 			break;
 	}
 	in.close();

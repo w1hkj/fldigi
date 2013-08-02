@@ -678,13 +678,15 @@ static void wefax_cb_pic_rx_auto_center( Fl_Widget *, void *)
 }
 
 /// This gets the directory where images are accessed by default.
-static const std::string & default_dir_get( const std::string & config_dir )
+static std::string default_dir_get( const std::string & config_dir )
 {
-	if( config_dir.empty() ) {
-		return PicsDir ;
-	} else {
-		return config_dir ;
+	std::string tmp_dir = config_dir.empty() ? PicsDir : config_dir ;
+	/// Valid dir names must end with a slash.
+	if( ! tmp_dir.empty() ) {
+		char termin = tmp_dir[ tmp_dir.size() - 1 ];
+		if( ( termin != '/' ) && ( termin != '\\' ) ) tmp_dir += '/';
 	}
+	return tmp_dir ;
 }
 
 /// This sets the directory where images are accessed by default.
