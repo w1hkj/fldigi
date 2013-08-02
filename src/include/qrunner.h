@@ -131,8 +131,8 @@ public:
                                 break;
                         sched_yield();
                 }
-                pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
-                pthread_cond_t c = PTHREAD_COND_INITIALIZER;
+                static pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+                static pthread_cond_t c = PTHREAD_COND_INITIALIZER;
                 fsignal s(&m, &c);
                 pthread_mutex_lock(&m);
                 for (;;) {
