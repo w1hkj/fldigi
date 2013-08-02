@@ -36,6 +36,7 @@ SRX,
 STX,
 TX_PWR,
 EXPORT, // flag used internally in fldigi's logbook
+QSL_VIA,
 NUMFIELDS };
 
 #endif
