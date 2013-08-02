@@ -104,9 +104,7 @@
 #include "qrunner.h"
 #include "stacktrace.h"
 
-#if USE_XMLRPC
-	#include "xmlrpc.h"
-#endif
+#include "xmlrpc.h"
 
 #if BENCHMARK_MODE
 	#include "benchmark.h"
@@ -215,9 +213,7 @@ void delayed_startup(void *)
 	grpTalker->hide();
 #endif
 
-#if USE_XMLRPC
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
-#endif
 
 	notify_start();
 
@@ -507,9 +503,7 @@ int main(int argc, char ** argv)
 
 	arq_close();
 
-#if USE_XMLRPC
 	XML_RPC_Server::stop();
-#endif
 
 	if (progdefaults.usepskrep)
 		pskrep_stop();
@@ -587,7 +581,6 @@ void generate_option_help(void) {
 	     << "    Look for auto-send files in DIRECTORY\n"
 	     << "    The default is " << HomeDir << "/autosend" << "\n\n"
 
-#if USE_XMLRPC
 	     << "  --xmlrpc-server-address HOSTNAME\n"
 	     << "    Set the XML-RPC server address\n"
 	     << "    The default is: " << progdefaults.xmlrpc_address << "\n\n"
@@ -600,7 +593,6 @@ void generate_option_help(void) {
 	     << "    Allow only the methods whose names don't match REGEX\n\n"
 	     << "  --xmlrpc-list\n"
 	     << "    List all available methods\n\n"
-#endif
 
 #if BENCHMARK_MODE
 	     << "  --benchmark-modem ID\n"
@@ -739,10 +731,8 @@ int parse_args(int argc, char **argv, int& idx)
 	       OPT_FLMSG_DIR,
 	       OPT_AUTOSEND_DIR,
 
-#if USE_XMLRPC
 	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
-#endif
 
 #if BENCHMARK_MODE
 	       OPT_BENCHMARK_MODEM, OPT_BENCHMARK_AFC, OPT_BENCHMARK_SQL, OPT_BENCHMARK_SQLEVEL,
@@ -775,13 +765,11 @@ int parse_args(int argc, char **argv, int& idx)
 
 		{ "cpu-speed-test", 0, 0, OPT_SHOW_CPU_CHECK },
 
-#if USE_XMLRPC
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
 		{ "xmlrpc-allow",          1, 0, OPT_CONFIG_XMLRPC_ALLOW },
 		{ "xmlrpc-deny",           1, 0, OPT_CONFIG_XMLRPC_DENY },
 		{ "xmlrpc-list",           0, 0, OPT_CONFIG_XMLRPC_LIST },
-#endif
 
 #if BENCHMARK_MODE
 		{ "benchmark-modem", 1, 0, OPT_BENCHMARK_MODEM },
@@ -877,7 +865,6 @@ int parse_args(int argc, char **argv, int& idx)
 			FLMSG_WRAP_auto_dir = optarg;
 			break;
 
-#if USE_XMLRPC
 		case OPT_CONFIG_XMLRPC_ADDRESS:
 			progdefaults.xmlrpc_address = optarg;
 			break;
@@ -899,7 +886,6 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_CONFIG_XMLRPC_LIST:
 			XML_RPC_Server::list_methods(cout);
 			exit(EXIT_SUCCESS);
-#endif
 
 #if BENCHMARK_MODE
 		case OPT_BENCHMARK_MODEM:
@@ -1065,9 +1051,6 @@ void generate_version_text(void)
 #endif
 #if USE_HAMLIB
 	s << "                   " "Hamlib " << HAMLIB_BUILD_VERSION "\n";
-#endif
-#if USE_XMLRPC
-	s << "                   " "XMLRPC-C " << XMLRPC_BUILD_VERSION "\n\n";
 #endif
 
 	s << "\nRuntime information:\n";
