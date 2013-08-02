@@ -432,11 +432,13 @@ void modem::ModulateXmtr(double *buffer, int len)
 		unsigned n = 4;
 		while (scard->Write(buffer, len) == 0 && --n);
 		if (n == 0)
-			throw SndException("Sound write failed");
+			throw SndException(-99, "Sound write failed");
 	}
 	catch (const SndException& e) {
-		LOG_ERROR("%s", e.what());
-		throw;
+		if(e.error() < 0) {
+ 			LOG_ERROR("%s", e.what());
+ 			throw;
+		}
 		return;
 	}
 
@@ -458,11 +460,13 @@ void modem::ModulateStereo(double *left, double *right, int len)
 		unsigned n = 4;
 		while (scard->Write_stereo(left, right, len) == 0 && --n);
 		if (n == 0)
-			throw SndException("Sound write failed");
+			throw SndException(-99, "Sound write failed");
 	}
 	catch (const SndException& e) {
-		LOG_ERROR("%s", e.what());
-		throw;
+		if(e.error() < 0) {
+ 			LOG_ERROR("%s", e.what());
+ 			throw;
+		}
 		return;
 	}
 
