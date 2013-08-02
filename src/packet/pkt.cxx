@@ -43,6 +43,8 @@ using namespace std;
 #include "configuration.h"
 #include "status.h"
 
+#include "timeops.h"
+
 static char msg1[20];
 static char msg2[20];
 
