@@ -276,7 +276,7 @@ void Digiscope::draw_phase()
 
 void Digiscope::draw_scope()
 {
-	int npts;
+	int npts, np;
 	fl_clip(x()+2,y()+2,w()-4,h()-4);
 	fl_color(FL_BLACK);
 	fl_rectf(x()+2,y()+2,w()-4,h()-4);
@@ -287,8 +287,11 @@ void Digiscope::draw_scope()
 	fl_scale ((w()-4), - (h() - 4));
 	fl_color(FL_GREEN);
 	fl_begin_line();
-	for (int i = 0; i < npts; i++)
-		fl_vertex( (double)i / npts, _buf[i * _len / npts] );
+	for (int i = 0; i < npts; i++) {
+		np = i * _len / npts;
+		np = np < MAX_LEN ? np : MAX_LEN - 1;
+		fl_vertex( (double)i / npts, _buf[np] );
+	}
 	fl_end_line();
 
 // x & y axis'
@@ -378,7 +381,7 @@ void Digiscope::draw_xy()
 
 void Digiscope::draw_rtty()
 {
-	int npts;
+	int npts, np;
 	fl_clip(x()+2,y()+2,w()-4,h()-4);
 	fl_color(FL_BLACK);
 	fl_rectf(x()+2,y()+2,w()-4,h()-4);
@@ -398,8 +401,11 @@ void Digiscope::draw_rtty()
 	fl_end_line();
 	fl_color(FL_GREEN);
 	fl_begin_line();
-	for (int i = 0; i < npts; i++)
-		fl_vertex( (double)i / npts, 0.5 + 0.75 * _buf[i * _len / npts] );
+	for (int i = 0; i < npts; i++) {
+		np = i * _len / npts;
+		np = np < MAX_LEN ? np : MAX_LEN - 1;
+		fl_vertex( (double)i / npts, 0.5 + 0.75 * _buf[np] );
+	}
 	fl_end_line();
 	fl_pop_matrix();
 	fl_pop_clip();
