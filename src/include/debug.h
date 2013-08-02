@@ -23,6 +23,8 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#define DEBUG_PSKMAIL 0
+
 #include "util.h"
 
 class debug
