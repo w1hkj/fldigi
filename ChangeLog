@@ -1,5 +1,86 @@
-2013-05-21  David Freese  <w1hkj@w1hkj.com>
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
 
+	7706597: Automake bug
+	2c3206c: qrunner mod
+	f451b5b: Pskmail-test
+	4cb1b4f: Rigcat Thread
+
+2013-08-02  John Phelps  <kl4yfd@gmail.com>
+
+	0fe29c7: Doxygen for fldigi  * Added scripts to generate Doxygen documentation from fldigi git repository / source  * Also executes "cppcheck" and includes those results on Doxygen page (if installed on system)  * Generates patches and log for the last 125 commits: includes links on Doxygen page
+
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
+
+	b2a4ffa: CPPcheck errors
+	5960f89: Modem class
+	26974f2: Missing header
+	5361a6d: fldigi-shell
+	d19ccea: Fl::focus on OS X
+	1a71448: KML thread
+	bfc1ff2: Data files
+	cb76a5a: Fl::flush
+	21463ee: ADIF_RW thread
+	e490ece: trx semaphore
+	d8cb0bd: Digiscope buffer
+
+2013-08-02  Robert Stiles  <kk5vd@yahoo.com>
+
+	6cbcb7b: Portaudio exceptions
+
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
+
+	89d5d62: mxe-win32 regex
+	df94a6b: Thor update
+	73605c7: record_loader fix
+
+2013-08-02  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	09480e2: KML/Synop/RTTY/Navtex
+
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
+
+	9b7ebf2: PSKMAIL/ARQ socket
+	bdbcbd8: Code cleanup
+	10fbfae: Pskmail Notify RsID
+	fdbaa82: MFSK shut down
+
+2013-08-02  Robert Stiles  <kk5vd@yahoo.com>
+
+	a49aa8c: Cwidth test for zero
+
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
+
+	474c1a5: Packet timeops
+	99de32b: MXE compile
+	54f6798: XMLRPC
+
+2013-08-02  Stefan Fendt  <smfendt@gmail.com>
+
+	8ca10ad: RTTY decoder
+
+2013-08-02  Dennis Engdahl  <engdahl@snowcrest.net>
+
+	35c3e7a: RigCAT user commands
+
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
+
+	02bcc30: TX state
+	33dab12: pskmail events
+	1ed7ecf:   * Changed extended rsid iaw doc/rsid_codes.gnumeric
+
+2013-08-02  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	1a53263: Port to MXE / MingW
+	3edfada: QSL VIA
+	d7f7811: XML parser
+
+2013-08-02  David Freese  <w1hkj@w1hkj.com>
+
+	a4c0367: ARQ support changes
+	47555e0: xmlrpcpp
+	f71038c: PortAudio
+	c4e1fb6: SysV ARQ interface
+	f7e4faa: RsID
 	8b84443: METAR format
 	2140c90: RSID logic
 	ffcdeb1: PSKMAIL
@@ -1730,7 +1811,7 @@
 
 2009-02-25  Stelios Bounanos  <vcs@enotty.net>
 
-	a2fc0c8: Add better support for proportional fonts
+	a2fc0c8db: Add better support for proportional fonts
 	f6466f2: Fix font name/number compatibility code
 	eb1ec8a: Fix printf format string
 
