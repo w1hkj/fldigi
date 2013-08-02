@@ -493,7 +493,7 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*." ADIF_SUFFIX);
 	Fl::wait();
 	fl_digi_main->redraw();
-	Fl::flush();
+	Fl::awake();
 	if (p) {
 		cQsoDb *mrgdb = new cQsoDb;
 		adifFile.do_readfile (p, mrgdb);
