@@ -158,7 +158,7 @@ sub execute($)
 	}
 	print Dumper(\@line) if ($debug);
 	my $r = decode(@line);
-	print $OUT $r, "\n" if ($r ne "");
+	if (defined $r) { print $OUT $r, "\n"};
     }
     else {
 	print $OUT $line[0] . ": command not found. Do you need ``help''?\n";
