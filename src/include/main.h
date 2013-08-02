@@ -86,6 +86,9 @@ extern bool nbems_dirs_checked;
 // This inits or reinits everything related to KML: Reloads params etc...
 void kml_init(bool load_files = false);
 
+// close down remaining threads just before exiting UI
+extern void exit_process();
+
 int directory_is_created( const char * strdir );
 
 #endif

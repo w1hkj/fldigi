@@ -46,9 +46,22 @@
 #include "strutil.h"
 #include "configuration.h"
 
+#include "irrXML.h"
+
 #include "timeops.h"
 
-#include "irrXML.h"
+/** Some platforms have problems with condition variables apparently.
+ * When cancelling a thread which waits in pthread_cond_timedwait,
+ * the thread is stuck.
+ * We replace it by an unconditional wait, and a test on a boolean
+ * which indicates if data was saved in the internal buffers.
+ * The consequence is that data are not immediately saved in KML files,
+ * and the user has to wait until the end of the delay.
+ */
+
+#if !defined(__APPLE__)
+#	define FLDIGI_KML_CONDITION_VARIABLE 1
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -85,7 +98,10 @@ static time_t KmlFromTimestamp( const char * ts ) {
 
 	if( 0 == strcmp( ts, KmlSrvUnique ) ) return KmlServer::UniqueEvent ;
 
-	tm objTm ;
+	/// So all fields are initialised with correct default values.
+	time_t timNow = time(NULL);
+	tm objTm = *gmtime( &timNow ); 
+
 	int r = sscanf( ts, "%4d-%02d-%02dT%02d:%02dZ",
 			&objTm.tm_year,
 			&objTm.tm_mon,
@@ -96,6 +112,7 @@ static time_t KmlFromTimestamp( const char * ts ) {
 	objTm.tm_year -= 1900;
 	objTm.tm_mon -= 1;
 	objTm.tm_sec = 0;
+
 	time_t res = mktime( &objTm );
 	if( res < 0 ) throw std::runtime_error("Cannot make timestamp from " + std::string(ts) );
 	return res;
@@ -185,12 +202,12 @@ static void KmlHeader( std::ostream & ostrm, const std::string & title ) {
 		"<name>" << title << "</name>\n" ;
 }
 
-// Appended at the end of each KML document.
+/// Appended at the end of each KML document.
 static const char KmlFooter[] = 
 	"</Document>\n"
 	"</kml>\n" ;
 
-// Contains for example GIF images, and all the styles. Can be customised by the user.
+/// Contains for example GIF images, and all the styles. Can be customised by the user.
 static const std::string namStyles = "styles.kml";
 
 /** Used to code the data for reloading. The description tag is too complicated
@@ -789,7 +806,6 @@ class  KmlSrvImpl : public KmlServer {
 				{
 					PlacesMapItrSetT::const_iterator itNamNxt = itNamLast;
 					++itNamNxt ;
-					assert( (*itNamBeg)->first != (*itNamLast)->first );
 					if( ( itNamNxt == itStylNext ) || ( (*itNamNxt)->first != (*itNamLast)->first ) ) {
 						// No point tracing a line with one point only.
 						if( *itNamBeg != *itNamLast ) {
@@ -852,15 +868,17 @@ class  KmlSrvImpl : public KmlServer {
 
 	/// This file copy does not need to be atomic because it happens once only.
 	void CopyStyleFileIfNotExists(void) {
-		// Where the installed file is stored. Used as default.
+		/// Where the installed file is stored and never moved from. Used as default.
 		std::string namSrc = PKGDATADIR "/kml/" + namStyles ;
 
 		/// The use might customize its styles file: It will not be altered.
 		std::string namDst = m_kml_dir + namStyles ;
 
+		/// Used to copy the master file to the user copy if needed.
 		FILE * filSrc = NULL;
 		FILE * filDst = fopen( namDst.c_str(), "r" );
-		// If the file is there, leave as it is because it is maybe customize.
+
+		/// If the file is there, leave as it is because it is maybe customize.
 		if( filDst ) {
 			LOG_INFO("Style file %s not altered", namDst.c_str() );
 			goto close_and_quit ;
@@ -875,6 +893,8 @@ class  KmlSrvImpl : public KmlServer {
 			LOG_INFO("Cannot open source style file %s", namSrc.c_str() );
 			goto close_and_quit ;
 		}
+
+		/// Transient buffer to copy the file.
     		char buffer[BUFSIZ];
     		size_t n;
 
@@ -898,7 +918,7 @@ class  KmlSrvImpl : public KmlServer {
 
 		LOG_INFO("Creating baseFil=%s", baseFil.c_str() );
 
-		// We do not need to make this file aomtic because it is read once only.
+		/// We do not need to make this file atomic because it is read once only.
 		AtomicRenamer ar( baseFil );
 
 		KmlHeader( ar, "Fldigi");
@@ -918,7 +938,7 @@ class  KmlSrvImpl : public KmlServer {
 		PlacesMapT::const_iterator beg,
 		PlacesMapT::const_iterator last ) {
 
-		// The polyline gets an id based on the beginning of the path, which will never change.
+		/// The polyline gets an id based on the beginning of the path, which will never change.
 		ostrm
 			<< "<Placemark id=\"" << beg->second.KmlId() << ":Path\">"
 			"<name>" << beg->second.KmlId() << "</name>"
@@ -1102,7 +1122,7 @@ class  KmlSrvImpl : public KmlServer {
 				if( ! avoidNode.empty() ) break ;
 
 				const char * msgTxt = xml->getNodeData();
-				// LOG_INFO( "getNodeData=%s currState=%s", msgTxt, KmlRdToStr(currState) );
+				LOG_DEBUG( "getNodeData=%s currState=%s", msgTxt, KmlRdToStr(currState) );
 				switch(currState) {
 					case KMLRD_FOLDER_NAME : 
 					       currFolderName = msgTxt ? msgTxt : "NullFolder";
@@ -1135,8 +1155,14 @@ class  KmlSrvImpl : public KmlServer {
 						if (!strcmp("Folder", nodeName)) {
 							currState = KMLRD_FOLDER ;
 						} else {
+							/// These tags are not meaningful for us.
+							if(	strcmp( "kml", nodeName ) &&
+								strcmp( "Document", nodeName ) &&
+								strcmp( "name", nodeName ) )
+							{
 							LOG_INFO("Unexpected %s in document %s. currState=%s",
 								nodeName, category.c_str(), KmlRdToStr(currState) );
+							}
 						}
 						break;
 					case KMLRD_FOLDER : 
@@ -1331,7 +1357,16 @@ class  KmlSrvImpl : public KmlServer {
 		return wasSaved ;
 	} // KmlSrvImpl::RewriteKmlFileFull
 
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
+	/// This is signaled when geographic data is broadcasted.
 	pthread_cond_t  m_cond_queue ;
+#else
+	/// This is set to true when geographic data is broadcasted.
+	bool            m_bool_queue ;
+
+	/// This tells that the subthread must leave at the first opportunity.
+	bool            m_kml_must_leave;
+#endif
 	pthread_mutex_t m_mutex_write ;
 
 	typedef std::list< PlacemarkT > PlacemarkListT ;
@@ -1359,6 +1394,7 @@ class  KmlSrvImpl : public KmlServer {
 		// Endless loop until end of program, which cancels this subthread.
 		for(;;)
 		{
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
 			struct timespec tmp_tim;
 			{
 				guard_lock myGuard( &m_mutex_write );
@@ -1373,6 +1409,23 @@ class  KmlSrvImpl : public KmlServer {
 					LOG_ERROR("pthread_cond_timedwait %s d=%d", strerror(errno), m_refresh_interval );
 					return (void *)"Error in pthread_cond_timed_wait";
 				}
+#else
+			/// On the platforms where pthread_cond_timedwait has problems, everything behaves
+			// as if there was a timeout when data is saved. refresh_delay is never changed.
+			for( int i = 0; i < refresh_delay; ++i )
+			{
+				MilliSleep( 1000 );
+				if( m_kml_must_leave )
+				{
+					LOG_INFO("Exit flag detected. Leaving");
+					return (void *)"Exit flag detected";
+				}
+			}
+			{
+				guard_lock myGuard( &m_mutex_write );
+				r = m_bool_queue ? ETIMEDOUT : 0 ;
+				m_bool_queue = false;
+#endif
 
 				// Except if extremely slow init, the object should be ready now: Files loaded etc...
 				if( ! m_loaded ) {
@@ -1414,10 +1467,12 @@ class  KmlSrvImpl : public KmlServer {
 
 				// Reset the interval to the initial value.
 				refresh_delay = m_refresh_interval ;
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
 			} else {
 				refresh_delay = tmp_tim.tv_sec - time(NULL);
 				if( refresh_delay <= 0 ) refresh_delay = 1 ;
 				// LOG_INFO("Interrupted when waiting. Restart with wait=%d", refresh );
+#endif
 			}
 		} // Endless loop.
 		return NULL ;
@@ -1494,7 +1549,7 @@ public:
 		}
 
 		// Now the object is usable. Theoretically should be protected by a mutex.
-		LOG_INFO("Object ready");
+		LOG_DEBUG("Object ready");
 
 		/// Even if an exception was thrown when loading the previous file, it does not 
 		/// prevent to overwrite the old files with new and clean ones.
@@ -1510,8 +1565,13 @@ public:
 	, m_refresh_interval(-1)
 	, m_balloon_style(0)
 	{
-		LOG_INFO("Creation");
+		LOG_DEBUG("Creation");
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
 		pthread_cond_init( &m_cond_queue, NULL );
+#else
+		m_bool_queue = false;
+		m_kml_must_leave = false;
+#endif
 		pthread_mutex_init( &m_mutex_write, NULL );
 
 		/// TODO: Add this thread to the other fldigi threads stored in cbq[].
@@ -1553,7 +1613,11 @@ public:
 			LOG_ERROR("Category %s undefined", category.c_str());
 		}
 		ptrMap->Enqueue( tmpKmlNam, currPM );
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
 		pthread_cond_signal( &m_cond_queue );
+#else
+		m_bool_queue = true;
+#endif
 		LOG_INFO("'%s' sz=%d time=%s nb_broad=%d m_merge_dist=%lf",
 			descrTxt.c_str(), (int)ptrMap->size(),
 			KmlTimestamp(evtTim).c_str(),
@@ -1567,12 +1631,17 @@ public:
 			LOG_INFO("Cancelling writer thread");
 			guard_lock myGuard( &m_mutex_write );
 
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
 			LOG_INFO("Cancelling subthread");
 			int r = pthread_cancel( m_writer_thread );
 			if( r ) {
 				LOG_ERROR("pthread_cancel %s", strerror(errno) );
 				return ;
 			}
+#else
+			LOG_INFO("Setting exit flag.");
+			m_kml_must_leave = true ;
+#endif
 		}
 		// LOG_INFO("Joining subthread");
 		void * retPtr;
@@ -1592,7 +1661,9 @@ public:
 		/// Here we are sure that the subthread is stopped. The subprocess is not called.
 		RewriteKmlFileFull();
 
+#ifdef FLDIGI_KML_CONDITION_VARIABLE
 		pthread_cond_destroy( &m_cond_queue );
+#endif
 		pthread_mutex_destroy( &m_mutex_write );
 	}
 
