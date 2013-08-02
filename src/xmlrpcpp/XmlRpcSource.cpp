@@ -189,7 +189,7 @@ namespace XmlRpc {
       _ssl = 0;
     }
 #endif
-    if (_fd != -1)
+    if ( (int)_fd != -1)
     {
       XmlRpcUtil::log(2,"XmlRpcSource::close: closing socket %d.", _fd);
       XmlRpcSocket::close(_fd);

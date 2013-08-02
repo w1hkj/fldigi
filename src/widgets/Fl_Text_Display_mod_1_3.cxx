@@ -3473,7 +3473,7 @@ void Fl_Text_Display_mod::draw(void) {
                  text_area.w+LEFT_MARGIN+RIGHT_MARGIN,
                  text_area.h);
     
-    int X, Y;
+    int X, Y = 0;
     if (position_to_xy(mCursorPos, &X, &Y)) draw_cursor(X, Y);
     //    else puts("position_to_xy() failed - unable to draw cursor!");
     //printf("drew cursor at pos: %d (%d,%d)\n", mCursorPos, X, Y);
