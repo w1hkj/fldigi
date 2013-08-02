@@ -436,7 +436,7 @@ int MAC_chooser::options() const {
 int MAC_chooser::show() {
 
     // Make sure fltk interface updates before posting our dialog
-    Fl::flush();
+    Fl::awake();
 
     // BROWSER TITLE
     CFStringRef cfs_title;
