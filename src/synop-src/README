@@ -1,0 +1,8 @@
+The "makefile" in this directory can be used to create a linux only
+command line tool 'synop_tool.'
+
+The make file is not named "Makefile" to avoid it being excluded by the
+automake distribution scripts.  DO NOT rename this file.  You can simply
+invoke "make" from within this directory and "make" will act upon the
+makefile script.
+

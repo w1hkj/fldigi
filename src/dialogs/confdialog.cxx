@@ -23,8 +23,8 @@
 #include "debug.h"
 #include "status.h"
 #include "rx_extract.h"
+#include "kmlserver.h"
 extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
-extern void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata);
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
@@ -2668,6 +2668,112 @@ static void cb_btnContestia_8bit(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabPacket=(Fl_Group *)0;
+
+Fl_Choice *selPacket_Baud=(Fl_Choice *)0;
+
+static void cb_selPacket_Baud(Fl_Choice* o, void*) {
+  progdefaults.PKT_BAUD_SELECT = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_LoSig_RXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_LoSig_RXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_LOSIG_RXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_HiSig_RXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_HiSig_RXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_HISIG_RXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_LoSig_TXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_LoSig_TXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_LOSIG_TXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *valPacket_HiSig_TXGain=(Fl_Counter2 *)0;
+
+static void cb_valPacket_HiSig_TXGain(Fl_Counter2* o, void*) {
+  progdefaults.PKT_HISIG_TXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktRXTimestamp=(Fl_Check_Button *)0;
+
+static void cb_btnPktRXTimestamp(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_RXTimestamp=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktexpandCmp=(Fl_Check_Button *)0;
+
+static void cb_btnPktexpandCmp(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_expandCmp=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktexpandMicE=(Fl_Check_Button *)0;
+
+static void cb_btnPktexpandMicE(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_expandMicE=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktexpandPHG=(Fl_Check_Button *)0;
+
+static void cb_btnPktexpandPHG(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_expandPHG=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktunitsSI=(Fl_Check_Button *)0;
+
+static void cb_btnPktunitsSI(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_unitsSI=o->value();
+if (progdefaults.PKT_unitsSI) {
+ progdefaults.PKT_unitsEnglish=false;
+ btnPktunitsEnglish->value(false);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktunitsEnglish=(Fl_Check_Button *)0;
+
+static void cb_btnPktunitsEnglish(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_unitsEnglish=o->value();
+if (progdefaults.PKT_unitsSI) {
+ progdefaults.PKT_unitsSI=false;
+ btnPktunitsSI->value(false);
+}
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktPreferXhairScope=(Fl_Check_Button *)0;
+
+static void cb_btnPktPreferXhairScope(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_PreferXhairScope=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPktAudioBoost=(Fl_Check_Button *)0;
+
+static void cb_btnPktAudioBoost(Fl_Check_Button* o, void*) {
+  progdefaults.PKT_AudioBoost=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabPSK=(Fl_Group *)0;
 
 Fl_Tabs *tabsPSK=(Fl_Tabs *)0;
@@ -2896,6 +3002,27 @@ if (o->value()) {
 };
 }
 
+Fl_Check_Button *btnSynopAdifDecoding=(Fl_Check_Button *)0;
+
+static void cb_btnSynopAdifDecoding(Fl_Check_Button* o, void*) {
+  progdefaults.SynopAdifDecoding=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnSynopKmlDecoding=(Fl_Check_Button *)0;
+
+static void cb_btnSynopKmlDecoding(Fl_Check_Button* o, void*) {
+  progdefaults.SynopKmlDecoding=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnSynopInterleaved=(Fl_Check_Button *)0;
+
+static void cb_btnSynopInterleaved(Fl_Check_Button* o, void*) {
+  progdefaults.SynopInterleaved=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabTHOR=(Fl_Group *)0;
 
 Fl_Input2 *txtTHORSecondary=(Fl_Input2 *)0;
@@ -2965,122 +3092,10 @@ static void cb_btnNvtxAdifLog(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Output *txtNvtxCatalog=(Fl_Output *)0;
+Fl_Check_Button *btnNvtxKmlLog=(Fl_Check_Button *)0;
 
-static void cb_txtNvtxCatalog(Fl_Output* o, void*) {
-  progdefaults.NVTX_Catalog=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Button *btnSelectNvtxCatalog=(Fl_Button *)0;
-
-static void cb_btnSelectNvtxCatalog(Fl_Button*, void*) {
-  Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::SINGLE,"Navtex stations file");
-fc->callback(NvtxCatalogSet);
-fc->show();
-}
-
-Fl_Choice *selPacket_Baud=(Fl_Choice *)0;
-
-static void cb_selPacket_Baud(Fl_Choice* o, void*) {
-  progdefaults.PKT_BAUD_SELECT = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_LoSig_RXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_LoSig_RXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_LOSIG_RXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_HiSig_RXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_HiSig_RXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_HISIG_RXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_LoSig_TXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_LoSig_TXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_LOSIG_TXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_HiSig_TXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_HiSig_TXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_HISIG_TXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktRXTimestamp=(Fl_Check_Button *)0;
-
-static void cb_btnPktRXTimestamp(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_RXTimestamp=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktexpandCmp=(Fl_Check_Button *)0;
-
-static void cb_btnPktexpandCmp(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_expandCmp=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktexpandMicE=(Fl_Check_Button *)0;
-
-static void cb_btnPktexpandMicE(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_expandMicE=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktexpandPHG=(Fl_Check_Button *)0;
-
-static void cb_btnPktexpandPHG(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_expandPHG=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktunitsSI=(Fl_Check_Button *)0;
-
-static void cb_btnPktunitsSI(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_unitsSI=o->value();
-if (progdefaults.PKT_unitsSI) {
- progdefaults.PKT_unitsEnglish=false;
- btnPktunitsEnglish->value(false);
-}
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktunitsEnglish=(Fl_Check_Button *)0;
-
-static void cb_btnPktunitsEnglish(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_unitsEnglish=o->value();
-if (progdefaults.PKT_unitsSI) {
- progdefaults.PKT_unitsSI=false;
- btnPktunitsSI->value(false);
-}
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktPreferXhairScope=(Fl_Check_Button *)0;
-
-static void cb_btnPktPreferXhairScope(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_PreferXhairScope=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktAudioBoost=(Fl_Check_Button *)0;
-
-static void cb_btnPktAudioBoost(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_AudioBoost=o->value();
+static void cb_btnNvtxKmlLog(Fl_Check_Button* o, void*) {
+  progdefaults.NVTX_KmlLog=o->value();
 progdefaults.changed = true;
 }
 
@@ -4542,6 +4557,85 @@ static void cb_btn_metar_search(Fl_Button*, void*) {
   get_METAR_station();
 }
 
+Fl_Group *tabKML=(Fl_Group *)0;
+
+Fl_Input *btnKmlSaveDir=(Fl_Input *)0;
+
+static void cb_btnKmlSaveDir(Fl_Input* o, void*) {
+  progdefaults.kml_save_dir=o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Input *inputKmlRootFile=(Fl_Input *)0;
+
+Fl_Counter *cntKmlMergeDistance=(Fl_Counter *)0;
+
+static void cb_cntKmlMergeDistance(Fl_Counter* o, void*) {
+  progdefaults.kml_merge_distance = o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Counter *cntKmlRetentionTime=(Fl_Counter *)0;
+
+static void cb_cntKmlRetentionTime(Fl_Counter* o, void*) {
+  progdefaults.kml_retention_time = o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Spinner2 *cntKmlRefreshInterval=(Fl_Spinner2 *)0;
+
+static void cb_cntKmlRefreshInterval(Fl_Spinner2* o, void*) {
+  progdefaults.kml_refresh_interval = (int)(o->value());
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Choice *selKmlBalloonStyle=(Fl_Choice *)0;
+
+static void cb_selKmlBalloonStyle(Fl_Choice* o, void*) {
+  progdefaults.kml_balloon_style = o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Input *btnKmlCommand=(Fl_Input *)0;
+
+static void cb_btnKmlCommand(Fl_Input* o, void*) {
+  progdefaults.kml_command=o->value();
+progdefaults.changed = true;
+kml_init();
+}
+
+Fl_Button *btlTestKmlCommand=(Fl_Button *)0;
+
+static void cb_btlTestKmlCommand(Fl_Button*, void*) {
+  KmlServer::SpawnProcess();
+}
+
+Fl_Button *btnSelectKmlDestDir=(Fl_Button *)0;
+
+static void cb_btnSelectKmlDestDir(Fl_Button*, void*) {
+  Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+fc->callback(KmlDestDirSet);
+fc->show();
+}
+
+Fl_Button *btlPurge=(Fl_Button *)0;
+
+static void cb_btlPurge(Fl_Button*, void*) {
+  KmlServer::GetInstance()->Reset();
+}
+
+Fl_Check_Button *btnKmlPurgeOnStartup=(Fl_Check_Button *)0;
+
+static void cb_btnKmlPurgeOnStartup(Fl_Check_Button* o, void*) {
+  progdefaults.kml_purge_on_startup = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Tabs *tabsQRZ=(Fl_Tabs *)0;
@@ -4752,10 +4846,10 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 540, 372);
+    { tabsConfigure = new Fl_Tabs(0, 0, 540, 370);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
-      { tabOperator = new Fl_Group(0, 25, 540, 345, _("Operator"));
+      { tabOperator = new Fl_Group(0, 25, 540, 340, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
@@ -4865,7 +4959,7 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 540, 346, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 540, 340, _("UI"));
         tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 540, 346);
           tabsUI->selection_color(FL_LIGHT1);
@@ -5891,12 +5985,13 @@ ab and newline are automatically included."));
         } // Fl_Tabs* tabsUI
         tabUI->end();
       } // Fl_Group* tabUI
-      { tabWaterfall = new Fl_Group(-2, 25, 540, 347, _("Waterfall"));
+      { tabWaterfall = new Fl_Group(0, 25, 540, 340, _("Waterfall"));
         tabWaterfall->hide();
         { tabsWaterfall = new Fl_Tabs(-2, 25, 563, 347);
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("Display"));
+          { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(24, 54, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6203,7 +6298,6 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("Mouse"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(24, 73, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(34, 87, 340, 20, _("Left or right click always replays audio history"));
@@ -6251,9 +6345,9 @@ an merging"));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(0, 25, 540, 347, _("Modems"));
+      { tabModems = new Fl_Group(0, 25, 550, 355, _("Modems"));
         tabModems->hide();
-        { tabsModems = new Fl_Tabs(0, 25, 540, 347);
+        { tabsModems = new Fl_Tabs(0, 25, 540, 340);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 540, 320, _("CW"));
@@ -7100,6 +7194,148 @@ an merging"));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
+          { tabPacket = new Fl_Group(0, 50, 540, 320, _("Pkt"));
+            tabPacket->hide();
+            { Fl_Group* o = new Fl_Group(4, 61, 532, 234, _("Packet"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Choice* o = selPacket_Baud = new Fl_Choice(72, 84, 99, 22, _("Baud rate"));
+                selPacket_Baud->tooltip(_("Select packet baudrate"));
+                selPacket_Baud->down_box(FL_BORDER_BOX);
+                selPacket_Baud->callback((Fl_Callback*)cb_selPacket_Baud);
+                selPacket_Baud->align(Fl_Align(FL_ALIGN_RIGHT));
+                selPacket_Baud->when(FL_WHEN_CHANGED);
+                o->add(szPktBauds);
+                o->value(progdefaults.PKT_BAUD_SELECT);
+              } // Fl_Choice* selPacket_Baud
+              { Fl_Counter2* o = valPacket_LoSig_RXGain = new Fl_Counter2(72, 115, 62, 20, _("RX Low Freq Gain"));
+                valPacket_LoSig_RXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
+                valPacket_LoSig_RXGain->type(1);
+                valPacket_LoSig_RXGain->box(FL_UP_BOX);
+                valPacket_LoSig_RXGain->color(FL_BACKGROUND_COLOR);
+                valPacket_LoSig_RXGain->selection_color(FL_INACTIVE_COLOR);
+                valPacket_LoSig_RXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_LoSig_RXGain->labelfont(0);
+                valPacket_LoSig_RXGain->labelsize(14);
+                valPacket_LoSig_RXGain->labelcolor(FL_FOREGROUND_COLOR);
+                valPacket_LoSig_RXGain->minimum(-6);
+                valPacket_LoSig_RXGain->maximum(6);
+                valPacket_LoSig_RXGain->step(0.5);
+                valPacket_LoSig_RXGain->callback((Fl_Callback*)cb_valPacket_LoSig_RXGain);
+                valPacket_LoSig_RXGain->align(Fl_Align(FL_ALIGN_RIGHT));
+                valPacket_LoSig_RXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_LOSIG_RXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_LoSig_RXGain
+              { Fl_Counter2* o = valPacket_HiSig_RXGain = new Fl_Counter2(72, 144, 62, 20, _("RX High Freq Gain"));
+                valPacket_HiSig_RXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
+                valPacket_HiSig_RXGain->type(1);
+                valPacket_HiSig_RXGain->box(FL_UP_BOX);
+                valPacket_HiSig_RXGain->color(FL_BACKGROUND_COLOR);
+                valPacket_HiSig_RXGain->selection_color(FL_INACTIVE_COLOR);
+                valPacket_HiSig_RXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_HiSig_RXGain->labelfont(0);
+                valPacket_HiSig_RXGain->labelsize(14);
+                valPacket_HiSig_RXGain->labelcolor(FL_FOREGROUND_COLOR);
+                valPacket_HiSig_RXGain->minimum(-6);
+                valPacket_HiSig_RXGain->maximum(6);
+                valPacket_HiSig_RXGain->step(0.5);
+                valPacket_HiSig_RXGain->callback((Fl_Callback*)cb_valPacket_HiSig_RXGain);
+                valPacket_HiSig_RXGain->align(Fl_Align(FL_ALIGN_RIGHT));
+                valPacket_HiSig_RXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_HISIG_RXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_HiSig_RXGain
+              { Fl_Counter2* o = valPacket_LoSig_TXGain = new Fl_Counter2(289, 115, 63, 20, _("TX Low Freq Gain"));
+                valPacket_LoSig_TXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
+                valPacket_LoSig_TXGain->type(1);
+                valPacket_LoSig_TXGain->box(FL_UP_BOX);
+                valPacket_LoSig_TXGain->color(FL_BACKGROUND_COLOR);
+                valPacket_LoSig_TXGain->selection_color(FL_INACTIVE_COLOR);
+                valPacket_LoSig_TXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_LoSig_TXGain->labelfont(0);
+                valPacket_LoSig_TXGain->labelsize(14);
+                valPacket_LoSig_TXGain->labelcolor(FL_FOREGROUND_COLOR);
+                valPacket_LoSig_TXGain->minimum(-6);
+                valPacket_LoSig_TXGain->maximum(6);
+                valPacket_LoSig_TXGain->step(0.5);
+                valPacket_LoSig_TXGain->callback((Fl_Callback*)cb_valPacket_LoSig_TXGain);
+                valPacket_LoSig_TXGain->align(Fl_Align(FL_ALIGN_RIGHT));
+                valPacket_LoSig_TXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_LOSIG_TXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_LoSig_TXGain
+              { Fl_Counter2* o = valPacket_HiSig_TXGain = new Fl_Counter2(289, 144, 63, 20, _("TX High Freq Gain"));
+                valPacket_HiSig_TXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
+                valPacket_HiSig_TXGain->type(1);
+                valPacket_HiSig_TXGain->box(FL_UP_BOX);
+                valPacket_HiSig_TXGain->color(FL_BACKGROUND_COLOR);
+                valPacket_HiSig_TXGain->selection_color(FL_INACTIVE_COLOR);
+                valPacket_HiSig_TXGain->labeltype(FL_NORMAL_LABEL);
+                valPacket_HiSig_TXGain->labelfont(0);
+                valPacket_HiSig_TXGain->labelsize(14);
+                valPacket_HiSig_TXGain->labelcolor(FL_FOREGROUND_COLOR);
+                valPacket_HiSig_TXGain->minimum(-6);
+                valPacket_HiSig_TXGain->maximum(6);
+                valPacket_HiSig_TXGain->step(0.5);
+                valPacket_HiSig_TXGain->callback((Fl_Callback*)cb_valPacket_HiSig_TXGain);
+                valPacket_HiSig_TXGain->align(Fl_Align(FL_ALIGN_RIGHT));
+                valPacket_HiSig_TXGain->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.PKT_HISIG_TXGAIN);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valPacket_HiSig_TXGain
+              { Fl_Check_Button* o = btnPktRXTimestamp = new Fl_Check_Button(72, 173, 164, 20, _("add RX timestamps"));
+                btnPktRXTimestamp->tooltip(_("Prepend timestamp to each RX packet"));
+                btnPktRXTimestamp->down_box(FL_DOWN_BOX);
+                btnPktRXTimestamp->callback((Fl_Callback*)cb_btnPktRXTimestamp);
+                o->value(progdefaults.PKT_RXTimestamp);
+              } // Fl_Check_Button* btnPktRXTimestamp
+              { Fl_Check_Button* o = btnPktexpandCmp = new Fl_Check_Button(289, 173, 189, 20, _("decode Compressed data"));
+                btnPktexpandCmp->tooltip(_("Decode received Compressed Position data"));
+                btnPktexpandCmp->down_box(FL_DOWN_BOX);
+                btnPktexpandCmp->callback((Fl_Callback*)cb_btnPktexpandCmp);
+                o->value(progdefaults.PKT_expandCmp);
+              } // Fl_Check_Button* btnPktexpandCmp
+              { Fl_Check_Button* o = btnPktexpandMicE = new Fl_Check_Button(289, 233, 164, 20, _("decode Mic-E data"));
+                btnPktexpandMicE->tooltip(_("Decode received Mic-E data"));
+                btnPktexpandMicE->down_box(FL_DOWN_BOX);
+                btnPktexpandMicE->callback((Fl_Callback*)cb_btnPktexpandMicE);
+                o->value(progdefaults.PKT_expandMicE);
+              } // Fl_Check_Button* btnPktexpandMicE
+              { Fl_Check_Button* o = btnPktexpandPHG = new Fl_Check_Button(289, 262, 164, 20, _("decode PHG data"));
+                btnPktexpandPHG->tooltip(_("Decode received PHG data"));
+                btnPktexpandPHG->down_box(FL_DOWN_BOX);
+                btnPktexpandPHG->callback((Fl_Callback*)cb_btnPktexpandPHG);
+                o->value(progdefaults.PKT_expandPHG);
+              } // Fl_Check_Button* btnPktexpandPHG
+              { Fl_Check_Button* o = btnPktunitsSI = new Fl_Check_Button(72, 202, 164, 20, _("use SI units"));
+                btnPktunitsSI->tooltip(_("Display decoded data values in SI units"));
+                btnPktunitsSI->down_box(FL_DOWN_BOX);
+                btnPktunitsSI->callback((Fl_Callback*)cb_btnPktunitsSI);
+                o->value(progdefaults.PKT_unitsSI);
+              } // Fl_Check_Button* btnPktunitsSI
+              { Fl_Check_Button* o = btnPktunitsEnglish = new Fl_Check_Button(72, 233, 164, 20, _("use English units"));
+                btnPktunitsEnglish->tooltip(_("Display decoded data in English units"));
+                btnPktunitsEnglish->down_box(FL_DOWN_BOX);
+                btnPktunitsEnglish->callback((Fl_Callback*)cb_btnPktunitsEnglish);
+                o->value(progdefaults.PKT_unitsEnglish);
+              } // Fl_Check_Button* btnPktunitsEnglish
+              { Fl_Check_Button* o = btnPktPreferXhairScope = new Fl_Check_Button(289, 202, 164, 20, _("Use cross-hair scope"));
+                btnPktPreferXhairScope->tooltip(_("Defaults to syncscope instead of phase (cross-hair) scope"));
+                btnPktPreferXhairScope->down_box(FL_DOWN_BOX);
+                btnPktPreferXhairScope->callback((Fl_Callback*)cb_btnPktPreferXhairScope);
+                o->value(progdefaults.PKT_PreferXhairScope);
+              } // Fl_Check_Button* btnPktPreferXhairScope
+              { Fl_Check_Button* o = btnPktAudioBoost = new Fl_Check_Button(289, 85, 164, 20, _("boost Audio input"));
+                btnPktAudioBoost->tooltip(_("add additional gain to audio input for low-output interfaces"));
+                btnPktAudioBoost->down_box(FL_DOWN_BOX);
+                btnPktAudioBoost->callback((Fl_Callback*)cb_btnPktAudioBoost);
+                o->value(progdefaults.PKT_AudioBoost);
+              } // Fl_Check_Button* btnPktAudioBoost
+              o->end();
+            } // Fl_Group* o
+            tabPacket->end();
+          } // Fl_Group* tabPacket
           { tabPSK = new Fl_Group(0, 50, 540, 322, _("PSK"));
             tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 540, 322);
@@ -7405,6 +7641,33 @@ ency"));
                 } // Fl_Check_Button* chkPseudoFSK
                 o->end();
               } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 75, 540, 295, _("Synop"));
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->hide();
+                { Fl_Check_Button* o = btnSynopAdifDecoding = new Fl_Check_Button(124, 120, 126, 22, _("SYNOP to ADIF"));
+                btnSynopAdifDecoding->tooltip(_("Decodes SYNOP messages (Ex: Deutsche Wetterdienst) to ADIF log file"));
+                btnSynopAdifDecoding->down_box(FL_DOWN_BOX);
+                btnSynopAdifDecoding->callback((Fl_Callback*)cb_btnSynopAdifDecoding);
+                btnSynopAdifDecoding->align(Fl_Align(132|FL_ALIGN_INSIDE));
+                o->value(progdefaults.SynopAdifDecoding);
+                } // Fl_Check_Button* btnSynopAdifDecoding
+                { Fl_Check_Button* o = btnSynopKmlDecoding = new Fl_Check_Button(124, 158, 119, 22, _("SYNOP to KML"));
+                btnSynopKmlDecoding->tooltip(_("Decodes SYNOP messages (Ex: Deutsche Wetterdienst) to KML documents (Ex: Goog\
+le Earth)"));
+                btnSynopKmlDecoding->down_box(FL_DOWN_BOX);
+                btnSynopKmlDecoding->callback((Fl_Callback*)cb_btnSynopKmlDecoding);
+                btnSynopKmlDecoding->align(Fl_Align(132|FL_ALIGN_INSIDE));
+                o->value(progdefaults.SynopKmlDecoding);
+                } // Fl_Check_Button* btnSynopKmlDecoding
+                { Fl_Check_Button* o = btnSynopInterleaved = new Fl_Check_Button(124, 197, 210, 22, _("Interleave SYNOP and text"));
+                btnSynopInterleaved->tooltip(_("Interleave text with decoded SYNOP messages, or replacement."));
+                btnSynopInterleaved->down_box(FL_DOWN_BOX);
+                btnSynopInterleaved->callback((Fl_Callback*)cb_btnSynopInterleaved);
+                btnSynopInterleaved->align(Fl_Align(132|FL_ALIGN_INSIDE));
+                o->value(progdefaults.SynopInterleaved);
+                } // Fl_Check_Button* btnSynopInterleaved
+                o->end();
+              } // Fl_Group* o
               tabsRTTY->end();
             } // Fl_Tabs* tabsRTTY
             tabRTTY->end();
@@ -7514,166 +7777,19 @@ ency"));
             } // Fl_Group* o
             tabTHOR->end();
           } // Fl_Group* tabTHOR
-          { tabNavtex = new Fl_Group(0, 50, 540, 320, _("Nvtx/Pkt"));
+          { tabNavtex = new Fl_Group(0, 50, 540, 320, _("Nvtx"));
             tabNavtex->hide();
-            { Fl_Group* o = new Fl_Group(4, 60, 532, 71, _("Navtex"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(280, 66, 235, 30, _("Log Navtex messages to Adif file"));
-                btnNvtxAdifLog->down_box(FL_DOWN_BOX);
-                btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
-                o->value(progdefaults.NVTX_AdifLog);
-              } // Fl_Check_Button* btnNvtxAdifLog
-              { Fl_Output* o = txtNvtxCatalog = new Fl_Output(11, 100, 395, 22, _("Navtex stations file:"));
-                txtNvtxCatalog->tooltip(_("Use Open to select descriptor file"));
-                txtNvtxCatalog->color(FL_LIGHT2);
-                txtNvtxCatalog->callback((Fl_Callback*)cb_txtNvtxCatalog);
-                txtNvtxCatalog->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->value(fl_filename_name(progdefaults.NVTX_Catalog.c_str()));
-              } // Fl_Output* txtNvtxCatalog
-              { btnSelectNvtxCatalog = new Fl_Button(434, 100, 80, 22, _("Directory..."));
-                btnSelectNvtxCatalog->callback((Fl_Callback*)cb_btnSelectNvtxCatalog);
-              } // Fl_Button* btnSelectNvtxCatalog
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(4, 132, 532, 234, _("Packet"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Choice* o = selPacket_Baud = new Fl_Choice(72, 155, 99, 22, _("Baud rate"));
-                selPacket_Baud->tooltip(_("Select packet baudrate"));
-                selPacket_Baud->down_box(FL_BORDER_BOX);
-                selPacket_Baud->callback((Fl_Callback*)cb_selPacket_Baud);
-                selPacket_Baud->align(Fl_Align(FL_ALIGN_RIGHT));
-                selPacket_Baud->when(FL_WHEN_CHANGED);
-                o->add(szPktBauds);
-                o->value(progdefaults.PKT_BAUD_SELECT);
-              } // Fl_Choice* selPacket_Baud
-              { Fl_Counter2* o = valPacket_LoSig_RXGain = new Fl_Counter2(72, 186, 62, 20, _("RX Low Freq Gain"));
-                valPacket_LoSig_RXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
-                valPacket_LoSig_RXGain->type(1);
-                valPacket_LoSig_RXGain->box(FL_UP_BOX);
-                valPacket_LoSig_RXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_LoSig_RXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_LoSig_RXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_LoSig_RXGain->labelfont(0);
-                valPacket_LoSig_RXGain->labelsize(14);
-                valPacket_LoSig_RXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_LoSig_RXGain->minimum(-6);
-                valPacket_LoSig_RXGain->maximum(6);
-                valPacket_LoSig_RXGain->step(0.5);
-                valPacket_LoSig_RXGain->callback((Fl_Callback*)cb_valPacket_LoSig_RXGain);
-                valPacket_LoSig_RXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_LoSig_RXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_LOSIG_RXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_LoSig_RXGain
-              { Fl_Counter2* o = valPacket_HiSig_RXGain = new Fl_Counter2(72, 215, 62, 20, _("RX High Freq Gain"));
-                valPacket_HiSig_RXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
-                valPacket_HiSig_RXGain->type(1);
-                valPacket_HiSig_RXGain->box(FL_UP_BOX);
-                valPacket_HiSig_RXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_HiSig_RXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_HiSig_RXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_HiSig_RXGain->labelfont(0);
-                valPacket_HiSig_RXGain->labelsize(14);
-                valPacket_HiSig_RXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_HiSig_RXGain->minimum(-6);
-                valPacket_HiSig_RXGain->maximum(6);
-                valPacket_HiSig_RXGain->step(0.5);
-                valPacket_HiSig_RXGain->callback((Fl_Callback*)cb_valPacket_HiSig_RXGain);
-                valPacket_HiSig_RXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_HiSig_RXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_HISIG_RXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_HiSig_RXGain
-              { Fl_Counter2* o = valPacket_LoSig_TXGain = new Fl_Counter2(289, 186, 63, 20, _("TX Low Freq Gain"));
-                valPacket_LoSig_TXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
-                valPacket_LoSig_TXGain->type(1);
-                valPacket_LoSig_TXGain->box(FL_UP_BOX);
-                valPacket_LoSig_TXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_LoSig_TXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_LoSig_TXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_LoSig_TXGain->labelfont(0);
-                valPacket_LoSig_TXGain->labelsize(14);
-                valPacket_LoSig_TXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_LoSig_TXGain->minimum(-6);
-                valPacket_LoSig_TXGain->maximum(6);
-                valPacket_LoSig_TXGain->step(0.5);
-                valPacket_LoSig_TXGain->callback((Fl_Callback*)cb_valPacket_LoSig_TXGain);
-                valPacket_LoSig_TXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_LoSig_TXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_LOSIG_TXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_LoSig_TXGain
-              { Fl_Counter2* o = valPacket_HiSig_TXGain = new Fl_Counter2(289, 215, 63, 20, _("TX High Freq Gain"));
-                valPacket_HiSig_TXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
-                valPacket_HiSig_TXGain->type(1);
-                valPacket_HiSig_TXGain->box(FL_UP_BOX);
-                valPacket_HiSig_TXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_HiSig_TXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_HiSig_TXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_HiSig_TXGain->labelfont(0);
-                valPacket_HiSig_TXGain->labelsize(14);
-                valPacket_HiSig_TXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_HiSig_TXGain->minimum(-6);
-                valPacket_HiSig_TXGain->maximum(6);
-                valPacket_HiSig_TXGain->step(0.5);
-                valPacket_HiSig_TXGain->callback((Fl_Callback*)cb_valPacket_HiSig_TXGain);
-                valPacket_HiSig_TXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_HiSig_TXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_HISIG_TXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_HiSig_TXGain
-              { Fl_Check_Button* o = btnPktRXTimestamp = new Fl_Check_Button(72, 244, 164, 20, _("add RX timestamps"));
-                btnPktRXTimestamp->tooltip(_("Prepend timestamp to each RX packet"));
-                btnPktRXTimestamp->down_box(FL_DOWN_BOX);
-                btnPktRXTimestamp->callback((Fl_Callback*)cb_btnPktRXTimestamp);
-                o->value(progdefaults.PKT_RXTimestamp);
-              } // Fl_Check_Button* btnPktRXTimestamp
-              { Fl_Check_Button* o = btnPktexpandCmp = new Fl_Check_Button(289, 244, 189, 20, _("decode Compressed data"));
-                btnPktexpandCmp->tooltip(_("Decode received Compressed Position data"));
-                btnPktexpandCmp->down_box(FL_DOWN_BOX);
-                btnPktexpandCmp->callback((Fl_Callback*)cb_btnPktexpandCmp);
-                o->value(progdefaults.PKT_expandCmp);
-              } // Fl_Check_Button* btnPktexpandCmp
-              { Fl_Check_Button* o = btnPktexpandMicE = new Fl_Check_Button(289, 304, 164, 20, _("decode Mic-E data"));
-                btnPktexpandMicE->tooltip(_("Decode received Mic-E data"));
-                btnPktexpandMicE->down_box(FL_DOWN_BOX);
-                btnPktexpandMicE->callback((Fl_Callback*)cb_btnPktexpandMicE);
-                o->value(progdefaults.PKT_expandMicE);
-              } // Fl_Check_Button* btnPktexpandMicE
-              { Fl_Check_Button* o = btnPktexpandPHG = new Fl_Check_Button(289, 333, 164, 20, _("decode PHG data"));
-                btnPktexpandPHG->tooltip(_("Decode received PHG data"));
-                btnPktexpandPHG->down_box(FL_DOWN_BOX);
-                btnPktexpandPHG->callback((Fl_Callback*)cb_btnPktexpandPHG);
-                o->value(progdefaults.PKT_expandPHG);
-              } // Fl_Check_Button* btnPktexpandPHG
-              { Fl_Check_Button* o = btnPktunitsSI = new Fl_Check_Button(72, 273, 164, 20, _("use SI units"));
-                btnPktunitsSI->tooltip(_("Display decoded data values in SI units"));
-                btnPktunitsSI->down_box(FL_DOWN_BOX);
-                btnPktunitsSI->callback((Fl_Callback*)cb_btnPktunitsSI);
-                o->value(progdefaults.PKT_unitsSI);
-              } // Fl_Check_Button* btnPktunitsSI
-              { Fl_Check_Button* o = btnPktunitsEnglish = new Fl_Check_Button(72, 304, 164, 20, _("use English units"));
-                btnPktunitsEnglish->tooltip(_("Display decoded data in English units"));
-                btnPktunitsEnglish->down_box(FL_DOWN_BOX);
-                btnPktunitsEnglish->callback((Fl_Callback*)cb_btnPktunitsEnglish);
-                o->value(progdefaults.PKT_unitsEnglish);
-              } // Fl_Check_Button* btnPktunitsEnglish
-              { Fl_Check_Button* o = btnPktPreferXhairScope = new Fl_Check_Button(289, 273, 164, 20, _("Use cross-hair scope"));
-                btnPktPreferXhairScope->tooltip(_("Defaults to syncscope instead of phase (cross-hair) scope"));
-                btnPktPreferXhairScope->down_box(FL_DOWN_BOX);
-                btnPktPreferXhairScope->callback((Fl_Callback*)cb_btnPktPreferXhairScope);
-                o->value(progdefaults.PKT_PreferXhairScope);
-              } // Fl_Check_Button* btnPktPreferXhairScope
-              { Fl_Check_Button* o = btnPktAudioBoost = new Fl_Check_Button(289, 156, 164, 20, _("boost Audio input"));
-                btnPktAudioBoost->tooltip(_("add additional gain to audio input for low-output interfaces"));
-                btnPktAudioBoost->down_box(FL_DOWN_BOX);
-                btnPktAudioBoost->callback((Fl_Callback*)cb_btnPktAudioBoost);
-                o->value(progdefaults.PKT_AudioBoost);
-              } // Fl_Check_Button* btnPktAudioBoost
-              o->end();
-            } // Fl_Group* o
+            { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(75, 74, 235, 30, _("Log Navtex messages to Adif file"));
+              btnNvtxAdifLog->down_box(FL_DOWN_BOX);
+              btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
+              o->value(progdefaults.NVTX_AdifLog);
+            } // Fl_Check_Button* btnNvtxAdifLog
+            { Fl_Check_Button* o = btnNvtxKmlLog = new Fl_Check_Button(76, 101, 270, 30, _("Log Navtex messages to KML"));
+              btnNvtxKmlLog->tooltip(_("Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)"));
+              btnNvtxKmlLog->down_box(FL_DOWN_BOX);
+              btnNvtxKmlLog->callback((Fl_Callback*)cb_btnNvtxKmlLog);
+              o->value(progdefaults.NVTX_KmlLog);
+            } // Fl_Check_Button* btnNvtxKmlLog
             tabNavtex->end();
           } // Fl_Group* tabNavtex
           { tabWefax = new Fl_Group(0, 50, 540, 320, _("Wefax"));
@@ -7749,12 +7865,12 @@ ency"));
         } // Fl_Tabs* tabsModems
         tabModems->end();
       } // Fl_Group* tabModems
-      { tabRig = new Fl_Group(0, 23, 540, 345, _("Rig"));
+      { tabRig = new Fl_Group(0, 25, 540, 340, _("Rig"));
         tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 23, 540, 345);
           tabsRig->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("Hardware PTT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("Hardware PTT"));
             { Fl_Group* o = new Fl_Group(26, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -7840,7 +7956,7 @@ ency"));
             } // Fl_Group* grpPTTdelays
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("RigCAT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
             o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(215, 60, 110, 20, _("Use RigCAT"));
@@ -8009,7 +8125,7 @@ ency"));
             } // Fl_Group* grpRigCAT
             o->end();
           } // Fl_Group* o
-          { tabHamlib = new Fl_Group(0, 48, 540, 320, _("Hamlib"));
+          { tabHamlib = new Fl_Group(0, 50, 540, 320, _("Hamlib"));
             tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(207, 55, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
@@ -8218,7 +8334,7 @@ ency"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
-          { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("MemMap"));
+          { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("MemMap"));
             o->hide();
             { grpMemmap = new Fl_Group(22, 66, 490, 185);
               grpMemmap->box(FL_ENGRAVED_FRAME);
@@ -8247,7 +8363,7 @@ ency"));
             } // Fl_Group* grpMemmap
             o->end();
           } // Fl_Group* o
-          { tabXMLRPC = new Fl_Group(0, 48, 540, 320, _("XML-RPC"));
+          { tabXMLRPC = new Fl_Group(0, 50, 540, 320, _("XML-RPC"));
             tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(23, 61, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
@@ -8274,7 +8390,7 @@ ency"));
         } // Fl_Tabs* tabsRig
         tabRig->end();
       } // Fl_Group* tabRig
-      { tabSoundCard = new Fl_Group(0, 25, 540, 345, _("Audio"));
+      { tabSoundCard = new Fl_Group(0, 25, 540, 340, _("Audio"));
         tabSoundCard->tooltip(_("Audio devices"));
         tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 540, 345);
@@ -8539,10 +8655,10 @@ nce.\nYou may change the state from either location.\n..."));
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
-      { tabID = new Fl_Group(0, 23, 540, 348, _("ID"));
+      { tabID = new Fl_Group(0, 25, 540, 340, _("ID"));
         tabID->hide();
-        { tabsID = new Fl_Tabs(0, 23, 540, 345);
-          { tabRsID = new Fl_Group(0, 48, 540, 320, _("RsID"));
+        { tabsID = new Fl_Tabs(0, 23, 540, 347);
+          { tabRsID = new Fl_Group(0, 50, 540, 320, _("RsID"));
             { Fl_Group* o = new Fl_Group(2, 55, 535, 210, _("Reed-Solomon ID (Rx)"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8671,7 +8787,7 @@ igured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabRsID->end();
           } // Fl_Group* tabRsID
-          { tabVideoID = new Fl_Group(0, 48, 540, 320, _("Video"));
+          { tabVideoID = new Fl_Group(0, 50, 540, 320, _("Video"));
             tabVideoID->hide();
             { Fl_Group* o = new Fl_Group(2, 55, 536, 189, _("Video Preamble ID"));
               o->box(FL_ENGRAVED_FRAME);
@@ -8747,7 +8863,7 @@ igured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabVideoID->end();
           } // Fl_Group* tabVideoID
-          { tabCwID = new Fl_Group(0, 48, 540, 320, _("CW"));
+          { tabCwID = new Fl_Group(0, 50, 540, 320, _("CW"));
             tabCwID->hide();
             { sld = new Fl_Group(2, 56, 536, 127, _("CW Postamble ID"));
               sld->box(FL_ENGRAVED_FRAME);
@@ -8790,7 +8906,7 @@ igured on the\n\"Notifications\" configure dialog."));
         } // Fl_Tabs* tabsID
         tabID->end();
       } // Fl_Group* tabID
-      { tabMisc = new Fl_Group(0, 25, 540, 345, _("Misc"));
+      { tabMisc = new Fl_Group(0, 25, 540, 340, _("Misc"));
         tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 540, 345);
           tabsMisc->selection_color(FL_LIGHT1);
@@ -9270,15 +9386,101 @@ earch for station name"));
             } // Fl_Group* o
             tabWX->end();
           } // Fl_Group* tabWX
+          { tabKML = new Fl_Group(0, 50, 540, 320, _("KML"));
+            tabKML->hide();
+            { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
+              btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
+              btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);
+              btnKmlSaveDir->align(Fl_Align(69));
+              o->value(progdefaults.kml_save_dir.c_str());
+            } // Fl_Input* btnKmlSaveDir
+            { Fl_Input* o = inputKmlRootFile = new Fl_Input(25, 119, 300, 24, _("KML root file"));
+              inputKmlRootFile->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+              o->value("fldigi.kml");
+            } // Fl_Input* inputKmlRootFile
+            { Fl_Counter* o = cntKmlMergeDistance = new Fl_Counter(26, 155, 100, 24, _("Minimum distance for splitting aliases (Meters)"));
+              cntKmlMergeDistance->tooltip(_("Minimum distance for splitting alias nodes (Meters)"));
+              cntKmlMergeDistance->minimum(0);
+              cntKmlMergeDistance->maximum(100000);
+              cntKmlMergeDistance->step(10);
+              cntKmlMergeDistance->value(1000);
+              cntKmlMergeDistance->callback((Fl_Callback*)cb_cntKmlMergeDistance);
+              cntKmlMergeDistance->align(Fl_Align(FL_ALIGN_RIGHT));
+              o->value(progdefaults.kml_merge_distance);
+              o->lstep(1000);
+            } // Fl_Counter* cntKmlMergeDistance
+            { Fl_Counter* o = cntKmlRetentionTime = new Fl_Counter(25, 191, 100, 24, _("Data retention time, in hours (0 for no limit)"));
+              cntKmlRetentionTime->tooltip(_("Number of hours data is kept for each node. Zero means keeping everything."));
+              cntKmlRetentionTime->minimum(0);
+              cntKmlRetentionTime->maximum(500);
+              cntKmlRetentionTime->step(1);
+              cntKmlRetentionTime->callback((Fl_Callback*)cb_cntKmlRetentionTime);
+              cntKmlRetentionTime->align(Fl_Align(FL_ALIGN_RIGHT));
+              o->value(progdefaults.kml_retention_time);
+              o->lstep(24);
+            } // Fl_Counter* cntKmlRetentionTime
+            { Fl_Spinner2* o = cntKmlRefreshInterval = new Fl_Spinner2(24, 227, 50, 24, _("KML refresh interval (seconds)"));
+              cntKmlRefreshInterval->tooltip(_("Refresh time interval written in KML file (Seconds)"));
+              cntKmlRefreshInterval->box(FL_NO_BOX);
+              cntKmlRefreshInterval->color(FL_BACKGROUND_COLOR);
+              cntKmlRefreshInterval->selection_color(FL_BACKGROUND_COLOR);
+              cntKmlRefreshInterval->labeltype(FL_NORMAL_LABEL);
+              cntKmlRefreshInterval->labelfont(0);
+              cntKmlRefreshInterval->labelsize(14);
+              cntKmlRefreshInterval->labelcolor(FL_FOREGROUND_COLOR);
+              cntKmlRefreshInterval->value(10);
+              cntKmlRefreshInterval->callback((Fl_Callback*)cb_cntKmlRefreshInterval);
+              cntKmlRefreshInterval->align(Fl_Align(FL_ALIGN_RIGHT));
+              cntKmlRefreshInterval->when(FL_WHEN_RELEASE);
+              o->minimum(1); o->maximum(3600); o->step(1);
+              o->value(progdefaults.kml_refresh_interval);
+              o->labelsize(FL_NORMAL_SIZE);
+            } // Fl_Spinner2* cntKmlRefreshInterval
+            { Fl_Choice* o = selKmlBalloonStyle = new Fl_Choice(24, 263, 201, 24, _("KML balloon display style"));
+              selKmlBalloonStyle->tooltip(_("KML balloon in plain text, or HTML, in plain tables or matrices."));
+              selKmlBalloonStyle->down_box(FL_BORDER_BOX);
+              selKmlBalloonStyle->callback((Fl_Callback*)cb_selKmlBalloonStyle);
+              selKmlBalloonStyle->align(Fl_Align(FL_ALIGN_RIGHT));
+              selKmlBalloonStyle->when(FL_WHEN_CHANGED);
+              o->add("Plain text|HTML tables|Single HTML matrix");o->value(progdefaults.kml_balloon_style);
+            } // Fl_Choice* selKmlBalloonStyle
+            { Fl_Input* o = btnKmlCommand = new Fl_Input(24, 299, 246, 24, _("Command run on KML creation"));
+              btnKmlCommand->tooltip(_("Command started when KML files are generated. Subprocesses are started once, \
+and restarted if needed."));
+              btnKmlCommand->callback((Fl_Callback*)cb_btnKmlCommand);
+              btnKmlCommand->align(Fl_Align(72));
+              o->value(progdefaults.kml_command.c_str());
+            } // Fl_Input* btnKmlCommand
+            { btlTestKmlCommand = new Fl_Button(24, 335, 191, 24, _("Test command"));
+              btlTestKmlCommand->tooltip(_("Execute command on KML files."));
+              btlTestKmlCommand->callback((Fl_Callback*)cb_btlTestKmlCommand);
+            } // Fl_Button* btlTestKmlCommand
+            { btnSelectKmlDestDir = new Fl_Button(425, 75, 101, 24, _("Change dir..."));
+              btnSelectKmlDestDir->tooltip(_("Choose directory to store KML documents"));
+              btnSelectKmlDestDir->callback((Fl_Callback*)cb_btnSelectKmlDestDir);
+            } // Fl_Button* btnSelectKmlDestDir
+            { btlPurge = new Fl_Button(336, 119, 190, 24, _("Cleanup KML data now !"));
+              btlPurge->tooltip(_("Cleanups KML documents, empties Google Earth display."));
+              btlPurge->callback((Fl_Callback*)cb_btlPurge);
+            } // Fl_Button* btlPurge
+            { Fl_Check_Button* o = btnKmlPurgeOnStartup = new Fl_Check_Button(322, 231, 172, 15, _("Cleanup on startup"));
+              btnKmlPurgeOnStartup->tooltip(_("Empties KML documents when starting program."));
+              btnKmlPurgeOnStartup->down_box(FL_DOWN_BOX);
+              btnKmlPurgeOnStartup->callback((Fl_Callback*)cb_btnKmlPurgeOnStartup);
+              o->value(progdefaults.kml_purge_on_startup);
+            } // Fl_Check_Button* btnKmlPurgeOnStartup
+            tabKML->end();
+          } // Fl_Group* tabKML
           tabsMisc->end();
         } // Fl_Tabs* tabsMisc
         tabMisc->end();
       } // Fl_Group* tabMisc
-      { tabQRZ = new Fl_Group(0, 25, 540, 345, _("Web"));
+      { tabQRZ = new Fl_Group(0, 25, 540, 340, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
-        { tabsQRZ = new Fl_Tabs(0, 25, 540, 345);
-          { Fl_Group* o = new Fl_Group(0, 46, 540, 324, _("Call Lookup"));
+        { tabsQRZ = new Fl_Tabs(0, 25, 540, 349);
+          { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("Call Lookup"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(27, 52, 490, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9404,7 +9606,6 @@ earch for station name"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("eQSL"));
-            o->hide();
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(194, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);
@@ -9551,11 +9752,11 @@ void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata) {
   }
 }
 
-void NvtxCatalogSet(Fl_File_Chooser *w, void *userdata) {
+void KmlDestDirSet(Fl_File_Chooser *w, void *userdata) {
   /* http://www.fltk.org/documentation.php/doc-1.1/Fl_File_Chooser.html */
   if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
-  	txtNvtxCatalog->value( w->value() );
-  	txtNvtxCatalog->redraw();
-  	cb_txtNvtxCatalog( txtNvtxCatalog, NULL );
+  	btnKmlSaveDir->value( w->value() );
+  	btnKmlSaveDir->redraw();
+  	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
   }
 }

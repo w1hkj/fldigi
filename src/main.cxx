@@ -93,6 +93,7 @@
 #include "dxcc.h"
 #include "newinstall.h"
 #include "Viewer.h"
+#include "kmlserver.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -132,9 +133,11 @@ string MacrosDir = "";
 string WrapDir = "";
 string TalkDir = "";
 string TempDir = "";
+string KmlDir = "";
 string PskMailDir = "";
 
 string NBEMS_dir = "";
+string DATA_dir = "";
 string ARQ_dir = "";
 string ARQ_files_dir = "";
 string ARQ_recv_dir = "";
@@ -297,11 +300,13 @@ int main(int argc, char ** argv)
 #ifdef __WOE32__
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
 		if (PskMailDir.empty()) PskMailDir = BaseDir;
+		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
 		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #else
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
 		if (PskMailDir.empty()) PskMailDir = BaseDir;
+		if (DATA_dir.empty()) DATA_dir.assign(HomeDir).append("data/");
 		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #endif
@@ -348,8 +353,10 @@ int main(int argc, char ** argv)
 	LOG_INFO("WrapDir: %s", WrapDir.c_str());
 	LOG_INFO("TalkDir: %s", TalkDir.c_str());
 	LOG_INFO("TempDir: %s", TempDir.c_str());
+	LOG_INFO("KmlDir: %s", KmlDir.c_str());
 	LOG_INFO("PskMailDir: %s", PskMailDir.c_str());
 
+	LOG_INFO("DATA_dir: %s", DATA_dir.c_str());
 	LOG_INFO("NBEMS_dir: %s", NBEMS_dir.c_str());
 	LOG_INFO("ARQ_dir: %s", ARQ_dir.c_str());
 	LOG_INFO("ARQ_files_dir: %s", ARQ_files_dir.c_str());
@@ -473,6 +480,11 @@ int main(int argc, char ** argv)
 	create_logbook_dialogs();
 	LOGBOOK_colors_font();
 
+	if( progdefaults.kml_save_dir.empty() ) {
+		progdefaults.kml_save_dir = KmlDir ;
+	}
+	kml_init(true);
+
 // OS X will prevent the main window from being resized if we change its
 // size *after* it has been shown. With some X11 window managers, OTOH,
 // the main window will not be restored at its exact saved position if
@@ -513,6 +525,8 @@ int main(int argc, char ** argv)
 		delete cbq[i];
 	}
 	FSEL::destroy();
+
+	KmlServer::Exit();
 
 	return ret;
 }
@@ -752,8 +766,8 @@ int parse_args(int argc, char **argv, int& idx)
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
-	const char shortopts[] = ":";
-	static struct option longopts[] = {
+	static const char shortopts[] = ":";
+	static const struct option longopts[] = {
 #ifndef __WOE32__
 		{ "rx-ipc-key",	   1, 0, OPT_RX_IPC_KEY },
 		{ "tx-ipc-key",	   1, 0, OPT_TX_IPC_KEY },
@@ -1231,6 +1245,7 @@ static void checkdirectories(void)
 		{ WrapDir, "wrap", 0 },
 		{ TalkDir, "talk", 0 },
 		{ TempDir, "temp", 0 },
+		{ KmlDir, "kml", 0 },
 	};
 
 	int r;
@@ -1352,3 +1367,57 @@ static void arg_error(const char* name, const char* arg, bool missing)
 
 	exit(EXIT_FAILURE);
 }
+
+/// Sets or resets the KML parameters, and loads existing files.
+void kml_init(bool load_files)
+{
+	KmlServer::GetInstance()->InitParams(
+			progdefaults.kml_command,
+			progdefaults.kml_save_dir,
+			(double)progdefaults.kml_merge_distance,
+			progdefaults.kml_retention_time,
+			progdefaults.kml_refresh_interval,
+			progdefaults.kml_balloon_style);
+
+	if(load_files) {
+		KmlServer::GetInstance()->ReloadKmlFiles();
+	}
+
+	/// TODO: Should do this only when the locator has changed.
+	try {
+		/// One special KML object for the user.
+		CoordinateT::Pair myCoo( progdefaults.myLocator );
+
+		/// TODO: Fix this: It does not seem to create a polyline when changing the locator.
+		KmlServer::CustomDataT custData ;
+		custData.Push( "QTH", progdefaults.myQth );
+		custData.Push( "Locator", progdefaults.myLocator );
+		custData.Push( "Antenna", progdefaults.myAntenna );
+		custData.Push( "Name", progdefaults.myName );
+
+		KmlServer::GetInstance()->Broadcast(
+			"User",
+			KmlServer::UniqueEvent,
+			myCoo,
+			0.0, // Altitude.
+			progdefaults.myCall,
+			progdefaults.myLocator,
+			progdefaults.myQth,
+			custData );
+	}
+	catch( const std::exception & exc ) {
+		LOG_WARN("Cannot publish user position:%s", exc.what() );
+	}
+}
+
+/// Tests if a directory exists.
+int directory_is_created( const char * strdir )
+{
+	DIR *dir = opendir(strdir);
+	if (dir) {
+		closedir(dir);
+		return true;
+	}
+	return false;
+}
+

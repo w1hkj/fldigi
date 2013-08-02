@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document>
+<Style id="10-meter discus buoy">
+	<IconStyle><Icon><href></href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="2-meter discus buoy">
+	<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-stars.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="2.4-meter discus buoy">
+	<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-square.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="2.4-meter foam hull buoy">
+	<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/pause.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="2.5-meter ODAS buoy">
+	<IconStyle><Icon><href>http://google.com/mapfiles/ms/micons/ferry.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="3-meter discus buoy">
+	<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-stars.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="6-meter NOMAD buoy">
+	<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/ltblu-circle.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="automated">
+<IconStyle><Icon><href>root://icons/palette-2.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="Buoy">
+<IconStyle><Icon><href>http://google.com/mapfiles/ms/micons/marina.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="Canadian NOMAD buoy">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/N.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="Drifting Buoy">
+<IconStyle><Icon><href>root://icons/palette-4.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="INMARSAT">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/S.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="METEOSAT">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/M.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="Lightship">
+<IconStyle><Icon><href>root://icons/palette-5.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="Oil Platform">
+<IconStyle><Icon><href>http://google.com/mapfiles/ms/micons/gas.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="ORBCOMM">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/O.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="OTHER">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="other buoy">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/pal3/icon20.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="ship">
+<IconStyle><Icon><href>root://icons/palette-8.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="Weather Station">
+<IconStyle><Icon><href>http://google.com/mapfiles/ms/micons/partly_cloudy.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="wmo">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/W.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="ARGOS">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/A.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+<Style id="IRIDIUM">
+<IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/paddle/I.png</href></Icon></IconStyle>
+<BalloonStyle><text>$[description]</text></BalloonStyle>
+</Style>
+</Document>
+</kml>

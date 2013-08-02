@@ -1368,3 +1368,45 @@ void makeEQSL(const char *message)
 
 }
 
+/// With this constructor, no need to declare the array mode_info[] in the calling program.
+QsoHelper::QsoHelper(int the_mode)
+	: qso_rec( new cQsoRec )
+{
+	qso_rec->putField(MODE, mode_info[the_mode].adif_name );
+}
+
+/// This saves the new record to a file and must be run in the main thread.
+static void QsoHelperSave(cQsoRec * qso_rec_ptr)
+{
+	qsodb.qsoNewRec (qso_rec_ptr);
+	qsodb.isdirty(0);
+	qsodb.isdirty(0);
+
+	loadBrowser(true);
+
+	/// It is mandatory to do this in the main thread. TODO: Crash suspected.
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+
+	/// Beware that this object is created in a thread and deleted in the main one.
+	delete qso_rec_ptr ;
+}
+
+/// This must be called from the main thread, according to writeLog().
+QsoHelper::~QsoHelper()
+{
+	qso_rec->setDateTime(true);
+	qso_rec->setDateTime(false);
+	qso_rec->setFrequency( wf->rfcarrier() );
+
+	REQ( QsoHelperSave, qso_rec );
+
+	// It will be deleted in the main thread.
+	qso_rec = NULL ;
+}
+
+/// Adds one key-value pair to display in the ADIF file.
+void QsoHelper::Push( ADIF_FIELD_POS pos, const std::string & value )
+{
+	qso_rec->putField( pos, value.c_str() );
+}
+

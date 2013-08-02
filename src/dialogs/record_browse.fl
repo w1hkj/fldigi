@@ -1,0 +1,47 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <config.h>} {selected private local
+} 
+
+decl {\#include "record_loader_gui.h"} {public global
+} 
+
+decl {\#include <FL/Fl_Double_Window.H>} {public local
+} 
+
+decl {Fl_Double_Window *dlgRecordLoader;} {public local
+} 
+
+Function {make_record_loader_window()} {open
+} {
+  Fl_Window {} {
+    label {Data files sources} open
+    tooltip {Data files update} xywh {550 108 540 280} type Double resizable visible
+  } {
+    Fl_Group tabDataFiles {open
+      tooltip {Tabular data sources} xywh {5 25 570 275} resizable
+    } {
+      Fl_Table {} {
+        label {Data files sources} open
+        xywh {6 25 529 217} labeltype NO_LABEL resizable
+        class DerivedRecordLst
+      } {}
+      Fl_Input_Choice inpDataSources {
+        label {Data source} open
+        tooltip {Data files repository} xywh {6 254 284 21} align 8
+      } {}
+      Fl_Light_Button btnDataSourceUpdate {
+        label Update
+        callback {DerivedRecordLst::cbGuiUpdate();}
+        tooltip {Update selected local data files with repository content} xywh {387 254 74 20}
+      }
+      Fl_Button btnDataSourceReset {
+        label Reset
+        callback {DerivedRecordLst::cbGuiReset();}
+        tooltip {Delete local data files if selected.} xywh {465 254 70 20}
+      }
+    }
+  }
+} 

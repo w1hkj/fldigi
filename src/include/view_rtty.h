@@ -128,7 +128,6 @@ private:
 	int 		rtty_bits;
 	RTTY_PARITY	rtty_parity;
 	int			rtty_stop;
-	bool 		rtty_reverse;
 	bool		rtty_msbfirst;
 
 	int bflen;

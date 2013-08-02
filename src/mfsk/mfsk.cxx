@@ -712,7 +712,7 @@ void mfsk::eval_s2n()
 int mfsk::rx_process(const double *buf, int len)
 {
 	complex z;
-	complex* bins;
+	complex* bins = 0;
 
 	while (len-- > 0) {
 // create analytic signal...

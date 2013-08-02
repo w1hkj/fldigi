@@ -25,7 +25,9 @@ extern std::string		MacrosDir;
 extern std::string		WrapDir;
 extern std::string		TalkDir;
 extern std::string		TempDir;
+extern std::string		KmlDir;
 extern std::string		PskMailDir;
+extern std::string		DATA_dir;
 extern std::string		NBEMS_dir;
 extern std::string		ARQ_dir;
 extern std::string		ARQ_files_dir;
@@ -80,5 +82,10 @@ extern void			checkTLF();
 
 void check_nbems_dirs(void);
 extern bool nbems_dirs_checked;
+
+// This inits or reinits everything related to KML: Reloads params etc...
+void kml_init(bool load_files = false);
+
+int directory_is_created( const char * strdir );
 
 #endif

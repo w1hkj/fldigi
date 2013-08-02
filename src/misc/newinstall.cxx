@@ -30,6 +30,7 @@
 #include "fl_digi.h"
 #include "configuration.h"
 #include "confdialog.h"
+#include "record_browse.h"
 #include "logger.h"
 
 #include <string>
@@ -411,6 +412,7 @@ void Wizard::create_wizard(void)
 		{ tabOperator },
 		{ tabSoundCard },
 		{ tabRig },
+		{ tabDataFiles },
 	};
 
 	tabs.resize(sizeof(tabs_)/sizeof(*tabs_));
