@@ -40,9 +40,7 @@ int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, dou
 enum {
 	INVALID_TID = -1,
 	TRX_TID, QRZ_TID, RIGCTL_TID, NORIGCTL_TID, EQSL_TID, ADIF_RW_TID,
-#if USE_XMLRPC
 	XMLRPC_TID,
-#endif
 	ARQ_TID, ARQSOCKET_TID,
 	FLMAIN_TID,
 	NUM_THREADS, NUM_QRUNNER_THREADS = NUM_THREADS - 1

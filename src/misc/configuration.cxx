@@ -585,10 +585,6 @@ int configuration::setDefaults()
 	inpRIGdev->value(HamRigDevice.c_str());
 	mnuBaudRate->value(HamRigBaudrate);
 
-#if !USE_XMLRPC
-	tabXMLRPC->parent()->remove(*tabXMLRPC);
-#endif
-
 	inpXmlRigDevice->value(XmlRigDevice.c_str());
 	mnuXmlRigBaudrate->value(XmlRigBaudrate);
 
