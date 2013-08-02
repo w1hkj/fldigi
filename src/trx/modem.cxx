@@ -181,7 +181,7 @@ modem::modem()
 	scptr = 0;
 	freqlock = false;
 	frequency = 1000.0;
-	
+
 	if(progdefaults.retain_freq_lock) {
 		if(active_modem) {
 			frequency = active_modem->get_freq();
@@ -189,7 +189,7 @@ modem::modem()
 			freqlock = active_modem->freqlocked();
 		}
 	}
-	
+
 	sigsearch = 0;
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
@@ -370,12 +370,12 @@ double modem::sigmaN (double es_ovr_n0)
 
 // A Rayleigh-distributed random variable R, with the probability
 // distribution
-//    F(R) = 0 where R < 0 and
-//    F(R) = 1 - exp(-R^2/2*sigma^2) where R >= 0,
+//	F(R) = 0 where R < 0 and
+//	F(R) = 1 - exp(-R^2/2*sigma^2) where R >= 0,
 // is related to a pair of Gaussian variables C and D
 // through the transformation
-//    C = R * cos(theta) and
-//    D = R * sin(theta),
+//	C = R * cos(theta) and
+//	D = R * sin(theta),
 // where theta is a uniformly distributed variable in the interval
 // 0 to 2 * Pi.
 
@@ -413,12 +413,12 @@ void modem::s2nreport(void)
 
 void modem::ModulateXmtr(double *buffer, int len)
 {
-    if (progdefaults.PTTrightchannel) {
-        for (int i = 0; i < len; i++)
-            PTTchannel[i] = PTTnco();
-            ModulateStereo( buffer, PTTchannel, len);
-        return;
-    }
+	if (progdefaults.PTTrightchannel) {
+		for (int i = 0; i < len; i++)
+			PTTchannel[i] = PTTnco();
+			ModulateStereo( buffer, PTTchannel, len);
+		return;
+	}
 
 	if (progdefaults.viewXmtSignal)
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
@@ -436,6 +436,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 	}
 	catch (const SndException& e) {
 		LOG_ERROR("%s", e.what());
+		throw;
 		return;
 	}
 
@@ -461,6 +462,7 @@ void modem::ModulateStereo(double *left, double *right, int len)
 	}
 	catch (const SndException& e) {
 		LOG_ERROR("%s", e.what());
+		throw;
 		return;
 	}
 
@@ -509,7 +511,7 @@ void modem::videoText()
 			else
 				strcpy(idtxt, mode_info[mode].vid_name);
 			break;
-	    default:
+		default:
 			strcpy(idtxt, mode_info[mode].vid_name);
 			break;
 		}
@@ -563,8 +565,8 @@ void modem::cwid_send_symbol(int bits)
 
 	freq = tx_frequency - progdefaults.TxOffset;
 
-    if ((currsym == 1) && (cwid_lastsym == 0))
-    	cwid_phaseacc = 0.0;
+	if ((currsym == 1) && (cwid_lastsym == 0))
+		cwid_phaseacc = 0.0;
 
 	keydown = cwid_symbollen - RT;
 	keyup = cwid_symbollen - RT;
