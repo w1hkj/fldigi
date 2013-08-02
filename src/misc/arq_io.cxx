@@ -123,7 +123,14 @@ string noctrl(string src)
 {
 	static string retstr;
 	retstr.clear();
-	for (size_t i = 0; i < src.length(); i++) retstr.append(asc[(int)src[i] & 0x7F]);
+	char hexstr[10];
+	for (size_t i = 0; i < src.length(); i++)  {
+		if ( i < 128) retstr.append(asc[(int)src[i]]);
+		else {
+			snprintf(hexstr, sizeof(hexstr), "<%0X>", src[i]);
+			retstr.append(hexstr);
+		}
+	}
 	return retstr;
 }
 
@@ -190,11 +197,11 @@ LOG_INFO("Setting modem to %s", mode_info[i].pskmail_name);
 void ParseRSID(string src)
 {
 	if (src == "ON") {
-		LOG_VERBOSE("%s", "RsID turned ON");
+		LOG_INFO("%s", "RsID turned ON");
 		REQ(set_button, btnRSID, 1);
 	}
 	if (src == "OFF") {
-		LOG_VERBOSE("%s", "RsID turned OFF");
+		LOG_INFO("%s", "RsID turned OFF");
 		REQ(set_button, btnRSID, 0);
 	}
 }
@@ -203,11 +210,11 @@ void ParseRSID(string src)
 void ParseTxRSID(string src)
 {
 	if (src == "ON") {
-		LOG_VERBOSE("%s", "TxRsID turned ON");
+		LOG_INFO("%s", "TxRsID turned ON");
 		REQ(set_button, btnTxRSID, 1);
 	}
 	if (src == "OFF") {
-		LOG_VERBOSE("%s", "TxRsID turned OFF");
+		LOG_INFO("%s", "TxRsID turned OFF");
 		REQ(set_button, btnTxRSID, 0);
 	}
 }
@@ -218,14 +225,15 @@ static	string strCmdText;
 static	string strSubCmd;
 	unsigned long int idxCmd, idxCmdEnd, idxSubCmd, idxSubCmdEnd;
 
-	LOG_DEBUG("Arq text: %s", noctrl(toparse).c_str());
+	if (toparse.empty()) return;
+
+	LOG_VERBOSE("Arq text: %s", noctrl(toparse).c_str());
 
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
 
 	while ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
 
-		LOG_DEBUG("Cmd text: %s", toparse.substr(idxCmd, idxCmdEnd + 6).c_str());
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
 			mailserver = true;
@@ -239,7 +247,7 @@ static	string strSubCmd;
 			if (progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
 			active_modem->set_freqlock(true);
-			LOG_VERBOSE("%s", "ARQ is set to pskmail server");
+			LOG_INFO("%s", "ARQ is set to pskmail server");
 		} else if (strCmdText == "client" && mailclient == false && mailserver == false) {
 			mailclient = true;
 			mailserver = false;
@@ -250,7 +258,7 @@ static	string strSubCmd;
 			Maillogfile->log_to_file_start();
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-			LOG_VERBOSE("%s", "ARQ is set to pskmail client");
+			LOG_INFO("%s", "ARQ is set to pskmail client");
 		} else if (strCmdText == "normal") {
 			mailserver = false;
 			mailclient = false;
@@ -260,14 +268,14 @@ static	string strSubCmd;
 			}
 			REQ(set_button, wf->xmtlock, 0);
 			active_modem->set_freqlock(false);
-			LOG_VERBOSE("%s", "ARQ is reset to normal ops");
+			LOG_INFO("%s", "ARQ is reset to normal ops");
 		} else if ((idxSubCmd = strCmdText.find("<mode>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</mode>");
 			if (	idxSubCmdEnd != string::npos &&
 					idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 				ParseMode(strSubCmd);
-				LOG_VERBOSE("%s %s", "ARQ mode ", strSubCmd.c_str());
+				LOG_INFO("%s %s", "ARQ mode ", strSubCmd.c_str());
 			}
 		} else if ((idxSubCmd = strCmdText.find("<rsid>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</rsid>");
@@ -275,7 +283,7 @@ static	string strSubCmd;
 					idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
 				ParseRSID(strSubCmd);
-				LOG_VERBOSE("%s %s", "ARQ rsid ", strSubCmd.c_str());
+				LOG_INFO("%s %s", "ARQ rsid ", strSubCmd.c_str());
 			}
 		} else if ((idxSubCmd = strCmdText.find("<txrsid>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</txrsid>");
@@ -283,7 +291,7 @@ static	string strSubCmd;
 					idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 8, idxSubCmdEnd - idxSubCmd - 8);
 				ParseTxRSID(strSubCmd);
-				LOG_VERBOSE("%s %s", "ARQ txrsid ", strSubCmd.c_str());
+				LOG_INFO("%s %s", "ARQ txrsid ", strSubCmd.c_str());
 			}
 		}
 
@@ -298,44 +306,6 @@ static	string strSubCmd;
 #define TIMEOUT 180 // 3 minutes
 
 bool bSend0x06 = false;
-
-//-----------------------------------------------------------------------------
-// SysV ARQ used only on Linux / Free-BSD or Unix type OS
-//-----------------------------------------------------------------------------
-
-#if !defined(__WOE32__) && !defined(__APPLE__)
-void process_msgque()
-{
-	memset(txmsgst.buffer, 0, ARQBUFSIZ);
-	int nbytes = msgrcv (txmsgid, (void *)&txmsgst, ARQBUFSIZ, 0, IPC_NOWAIT);
-	if (nbytes > 0) {
-		txstring.append(txmsgst.buffer);
-		parse_arqtext(txstring);
-
-		if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
-			arqtext = txstring;
-			if (mailserver && progdefaults.PSKmailSweetSpot)
-				active_modem->set_freq(progdefaults.PSKsweetspot);
-			pText = 0;
-			arq_text_available = true;
-			active_modem->set_stopflag(false);
-			LOG_DEBUG("SYSV ARQ string: %s", arqtext.c_str());
-			start_tx();
-			txstring.clear();
-		}
-	}
-}
-
-bool SysV_arqRx()
-{
-   	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
-   	if (txmsgid != -1) {
-   		process_msgque();
-   		return true;
-   	}
-	return false;
-}
-#endif
 
 //-----------------------------------------------------------------------------
 // Gmfsk ARQ file i/o used only on Linux
@@ -370,6 +340,9 @@ static	string TLFlogname;
 
 bool TLF_arqRx()
 {
+#if defined(__WOE32__) || defined(__APPLE__)
+	return false;
+#else
 	time_t start_time, prog_time;
 	static char mailline[1000];
 	static string sAutoFile;
@@ -411,6 +384,7 @@ LOG_INFO("%s", arqtext.c_str());
 
 	}
 	return true;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -703,43 +677,28 @@ bool Socket_arqRx()
 	}
 	pthread_mutex_unlock (&arq_mutex);
 
+	if (!txstring.empty()) parse_arqtext(txstring);
+
 	if (!bSend0x06 && arqtext.empty() && !txstring.empty()) {
 
 		pthread_mutex_lock (&arq_rx_mutex);
-		arqtext.assign(txstring);
-		parse_arqtext(arqtext);
-		txstring.clear();
-		LOG_VERBOSE("arqtext\n%s\n", arqtext.c_str());
 
-		if (!arqtext.empty()) {
-			if (mailserver && progdefaults.PSKmailSweetSpot)
-				active_modem->set_freq(progdefaults.PSKsweetspot);
-			pText = 0;
-			arq_text_available = true;
-			active_modem->set_stopflag(false);
-			start_tx();
-		}
+		arqtext.assign(txstring);
+		pText = 0;
+		txstring.clear();
+		LOG_INFO("arqtext\n%s\n", arqtext.c_str());
+		if (mailserver && progdefaults.PSKmailSweetSpot)
+			active_modem->set_freq(progdefaults.PSKsweetspot);
+		arq_text_available = true;
+		active_modem->set_stopflag(false);
+		start_tx();
+
 		pthread_mutex_unlock (&arq_rx_mutex);
 		return true;
 	}
 
 	return false;
 }
-
-//-----------------------------------------------------------------------------
-// Send ARQ characters to ARQ client
-//-----------------------------------------------------------------------------
-#if !defined(__WOE32__) && !defined(__APPLE__)
-void WriteARQSysV(unsigned char data)
-{
-	rxmsgid = msgget( (key_t) progdefaults.rx_msgid, 0666);
-	if ( rxmsgid != -1) {
-		rxmsgst.msg_type = 1;
-		rxmsgst.c = data;
-		msgsnd (rxmsgid, (void *)&rxmsgst, 1, IPC_NOWAIT);
-	}
-}
-#endif
 
 // ============================================================================
 // Implementation using thread vice the fldigi timeout facility
@@ -783,10 +742,6 @@ static void *arq_loop(void *args)
 		if (!enroute.empty()) {
 			pthread_mutex_lock (&arq_mutex);
 			WriteARQsocket((unsigned char*)enroute.c_str(), enroute.length());
-#if !defined(__WOE32__) && !defined(__APPLE__)
-			for (size_t i = 0; i < enroute.length(); i++)
-				WriteARQSysV((unsigned char)enroute[i]);
-#endif
 			pthread_mutex_unlock (&arq_mutex);
 		}
 
@@ -799,17 +754,12 @@ static void *arq_loop(void *args)
 			pthread_mutex_unlock (&arq_mutex);
 		}
 
-#if !defined(__WOE32__) && !defined(__APPLE__)
-		// order of precedence; Socket, Wrap autofile, TLF autofile
+
+// order of precedence; Socket, Wrap autofile, TLF autofile
 		if (!Socket_arqRx())
-			if (!SysV_arqRx())
-				WRAP_auto_arqRx();
-				if (!WRAP_auto_arqRx())
-					TLF_arqRx();
-#else
-		if (!Socket_arqRx())
-			WRAP_auto_arqRx();
-#endif
+			if (!WRAP_auto_arqRx())
+				TLF_arqRx();
+
 		MilliSleep(ARQLOOP_TIMING);
 
 	}
@@ -893,7 +843,7 @@ void pskmail_notify_rsid(trx_mode mode)
 	if (n > 0 && n < (int)sizeof(buf)) {
 		WriteARQ((const char *)buf);
 		REQ(&FTextBase::addstr, ReceiveText, buf, FTextBase::CTRL);
-		LOG_VERBOSE("%s", buf);
+		LOG_INFO("%s", buf);
 	}
 }
 
@@ -909,7 +859,7 @@ void pskmail_notify_s2n(double s2n_ncount, double s2n_avg, double s2n_stddev)
 	if (n > 0 && n < (int)sizeof(buf)) {
 		WriteARQ((const char *)buf);
 		REQ(&FTextBase::addstr, ReceiveText, buf, FTextBase::CTRL);
-		LOG_VERBOSE("%s", buf);
+		LOG_INFO("%s", buf);
 	}
 }
 

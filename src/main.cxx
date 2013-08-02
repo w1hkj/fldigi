@@ -177,12 +177,6 @@ bool	mailserver = false, mailclient = false, arqmode = false;
 static bool show_cpucheck = false;
 static bool iconified = false;
 
-RXMSGSTRUC rxmsgst;
-int		rxmsgid = -1;
-
-TXMSGSTRUC txmsgst;
-int txmsgid = -1;
-
 string option_help, version_text, build_text;
 
 qrunner *cbq[NUM_QRUNNER_THREADS];
@@ -347,7 +341,6 @@ int main(int argc, char ** argv)
 	}
 
 	LOG_INFO("appname: %s", appname.c_str());
-
 	LOG_INFO("HomeDir: %s", HomeDir.c_str());
 	LOG_INFO("RigsDir: %s", RigsDir.c_str());
 	LOG_INFO("ScriptsDir: %s", ScriptsDir.c_str());
@@ -389,14 +382,7 @@ int main(int argc, char ** argv)
 	xmlfname = HomeDir;
 	xmlfname.append("rig.xml");
 
-#if !defined(__WOE32__) && !defined(__APPLE__)
-   	txmsgid = msgget( (key_t) progdefaults.tx_msgid, 0666 );
-#else
-	txmsgid = -1;
-#endif
-
 	checkTLF();
-
 
 	Fl::lock();  // start the gui thread!!
 	Fl::visual(FL_RGB); // insure 24 bit color operation
