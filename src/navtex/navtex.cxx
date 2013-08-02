@@ -785,7 +785,7 @@ public:
 	} // display
 }; // ccir_message
 
-static const double deviation_f = 90.0;
+static const int deviation_f = 90;
 
 static const double dflt_center_freq = 1000.0 ;
 

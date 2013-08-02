@@ -39,6 +39,7 @@
 #include "debug.h"
 #include "icons.h"
 #include "qrunner.h"
+#include "timeops.h"
 
 using namespace std;
 

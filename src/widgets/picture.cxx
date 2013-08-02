@@ -54,6 +54,7 @@
 #include "fl_lock.h"
 #include "picture.h"
 #include "debug.h"
+#include "timeops.h"
 
 using namespace std;
 

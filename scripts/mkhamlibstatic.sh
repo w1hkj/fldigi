@@ -13,7 +13,7 @@ if test "x$PKG_CONFIG" != "x"; then
 else
     hamlib_dir="${HAMLIB_LIBS#*-L}"
     hamlib_dir="${HAMLIB_LIBS%% *}"
-    if test "x$hamlib_dir" = "x"; then
+    if test "x$hamlib_dir" = "x"; then\
 	hamlib_dir=/usr/lib
     fi
 fi
