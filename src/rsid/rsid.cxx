@@ -88,38 +88,58 @@ cRsId::cRsId()
 
 	rsfft = new Cfft(RSID_FFT_SIZE);
 
-	memset(aHashTable1, 255, sizeof(aHashTable1));
-	memset(aHashTable2, 255, sizeof(aHashTable2));
+	memset(hash_table_A, 255, sizeof(hash_table_A));
+	memset(hash_table_B, 255, sizeof(hash_table_B));
+	memset(hash_table_C, 255, sizeof(hash_table_C));
+	memset(hash_table_D, 255, sizeof(hash_table_D));
 	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
 	RectWindow(fftwindow, RSID_FFT_SIZE);
 
-	pCodes = new unsigned char[rsid_ids_size * RSID_NSYMBOLS];
-	memset(pCodes, 0, rsid_ids_size * RSID_NSYMBOLS);
+	pCodes1 = new unsigned char[rsid_ids_size1 * RSID_NSYMBOLS];
+	memset(pCodes1, 0, rsid_ids_size1 * RSID_NSYMBOLS);
 
 	pCodes2 = new unsigned char[rsid_ids_size2 * RSID_NSYMBOLS];
-	memset(pCodes, 0, rsid_ids_size2 * RSID_NSYMBOLS);
+	memset(pCodes2, 0, rsid_ids_size2 * RSID_NSYMBOLS);
 
 	// Initialization  of assigned mode/submode IDs.
 	// HashTable is used for finding a code with lowest Hamming distance.
 	unsigned char* c;
 	int hash1, hash2;
-	for (int i = 0; i < rsid_ids_size; i++) {
-		c = pCodes + i * RSID_NSYMBOLS;
-		Encode(rsid_ids[i].rs, c);
+	for (int i = 0; i < rsid_ids_size1; i++) {
+		c = pCodes1 + i * RSID_NSYMBOLS;
+		Encode(rsid_ids_1[i].rs, c);
 		hash1 = c[11] | (c[12] << 4);
 		hash2 = c[13] | (c[14] << 4);
-		aHashTable1[hash1] = i;
-		aHashTable2[hash2] = i;
+		hash_table_A[hash1] = i;
+		hash_table_B[hash2] = i;
 	}
 
 	for (int i = 0; i < rsid_ids_size2; i++) {
 		c = pCodes2 + i * RSID_NSYMBOLS;
-		Encode(rsid_ids2[i].rs, c);
+		Encode(rsid_ids_2[i].rs, c);
 		hash1 = c[11] | (c[12] << 4);
 		hash2 = c[13] | (c[14] << 4);
-		aHashTable1_2[hash1] = i;
-		aHashTable2_2[hash2] = i;
+		hash_table_C[hash1] = i;
+		hash_table_D[hash2] = i;
 	}
+#if 0
+	printf("pcode table 1\n");
+	printf("rs, name, mode,sequence\n");
+	for (int i = 0; i < rsid_ids_size1; i++) {
+		printf("%d,%s,%d", rsid_ids_1[i].rs, rsid_ids_1[i].name, rsid_ids_1[i].mode);
+		for (int j = 0; j < RSID_NSYMBOLS; j++)
+			printf(",%d", pCodes1[i*RSID_NSYMBOLS + j]);
+		printf("\n");
+	}
+	printf("pcode table 2\n");
+	printf("rs, name, mode,sequence\n");
+	for (int i = 0; i < rsid_ids_size2; i++) {
+		printf("%d,%s,%d", rsid_ids_2[i].rs, rsid_ids_2[i].name, rsid_ids_2[i].mode);
+		for (int j = 0; j < RSID_NSYMBOLS; j++)
+			printf(",%d", pCodes2[i*RSID_NSYMBOLS + j]);
+		printf("\n");
+	}
+#endif
 
 	nBinLow = RSID_RESOL + 1;
 	nBinHigh = RSID_FFT_SIZE - 32;
@@ -127,14 +147,13 @@ cRsId::cRsId()
 	outbuf = 0;
 	symlen = 0;
 
-	hamming_resolution = progdefaults.rsid_resolution + 1;
+	hamming_resolution = progdefaults.rsid_resolution;
 
-	rsid_secondary_time_out = 0;
 }
 
 cRsId::~cRsId()
 {
-	delete [] pCodes;
+	delete [] pCodes1;
 	delete [] pCodes2;
 
 	delete [] outbuf;
@@ -144,11 +163,12 @@ cRsId::~cRsId()
 
 void cRsId::reset()
 {
-	iPrevDistance = 99;
-	bPrevTimeSliceValid = false;
-	bPrevTimeSliceValid2 = false;
 	iTime = 0;
-	iTime2 = 0;
+	iPrevDistance = iPrevDistance2 = 99;
+	bPrevTimeSliceValid = bPrevTimeSliceValid2 = false;
+	found1 = found2 = false;
+	rsid_secondary_time_out = 0;
+
 	memset(aInputSamples, 0, sizeof(aInputSamples));
 	memset(aFFTReal, 0, sizeof(aFFTReal));
 	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
@@ -159,7 +179,7 @@ void cRsId::reset()
 		LOG_ERROR("src_reset error %d: %s", error, src_strerror(error));
 	src_data.src_ratio = 0.0;
 	inptr = aInputSamples + RSID_FFT_SAMPLES;
-	hamming_resolution = progdefaults.rsid_resolution + 1;
+	hamming_resolution = progdefaults.rsid_resolution;
 }
 
 void cRsId::Encode(int code, unsigned char *rsid)
@@ -216,7 +236,7 @@ void cRsId::receive(const float* buf, size_t len)
 		rsid_secondary_time_out -= (int)(len / src_ratio);
 		if (rsid_secondary_time_out <= 0) {
 			LOG_INFO("%s", "Secondary RsID sequence timed out");
-			rsid_secondary_time_out = 0;
+			reset();
 		}
 	}
 
@@ -304,30 +324,43 @@ void cRsId::search(void)
 			aFFTAmpl[i] = Real * Real + Imag * Imag;
 	}
 
-	int SymbolOut = -1, BinOut = -1;
+	if (++iTime == RSID_NTIMES)
+		iTime = 0;
+	i1 = iTime - 3 * RSID_RESOL;
+	if (i1 < 0) i1 += RSID_NTIMES;
+	i2 = i1 + RSID_RESOL;
+	i3 = i2 + RSID_RESOL;
+
+	CalculateBuckets ( aFFTAmpl, nBinLow,     nBinHigh - RSID_NTIMES);
+	CalculateBuckets ( aFFTAmpl, nBinLow + 1, nBinHigh - RSID_NTIMES);
+
+	int symbol_out_1 = -1;
+	int bin_out_1 = -1;
+	int symbol_out_2 = -1;
+	int bin_out_2 = -1;
+	if (!found1) found1 = search_amp1(symbol_out_1, bin_out_1, pCodes1);
+	found2 = search_amp2(symbol_out_2, bin_out_2, pCodes2);
+
 // rsid_secondary_time_out == 0 ==> waiting for initial rsid tone sequence
-	if (rsid_secondary_time_out == 0 && search_amp(SymbolOut, BinOut)) {
-		LOG_INFO("Rsid_code detected: %d", SymbolOut);
-		if (SymbolOut == RSID_ESCAPE) {
+	if (rsid_secondary_time_out == 0 && found1) {
+		if (symbol_out_1 != RSID_ESCAPE) {
+			if (bReverse)
+				bin_out_1 = 1024 - bin_out_1 - 31;
+			apply1(symbol_out_1, bin_out_1);
 			reset();
-			rsid_secondary_time_out = 2*15*1024;
+			return;
+		} else {
+			LOG_INFO("%s", "Extended RsID");
+			rsid_secondary_time_out = 3*15*1024;
 			return;
 		}
-		if (bReverse)
-			BinOut = 1024 - BinOut - 31;
-		apply(SymbolOut, BinOut);
-		rsid_secondary_time_out = 0;
-		reset();
-// rsid_secondary_time_out > 0 ==> waiting for secondary rsid tone sequence
-	} else if (rsid_secondary_time_out > 0 && search_amp(SymbolOut, BinOut)) {
-		if (SymbolOut != RSID_ESCAPE2) {
-			LOG_INFO("Ext' rsid_code detected: %d", SymbolOut);
+	} else if (found1 && found2) {
+		if (symbol_out_2 != RSID_NONE2) { //RSID_ESCAPE2) {
 			if (bReverse)
-				BinOut = 1024 - BinOut - 31;
-			apply2(SymbolOut, BinOut);
+				bin_out_2 = 1024 - bin_out_2 - 31;
+			apply2(symbol_out_2, bin_out_2);
 		} else
 			LOG_INFO("%s", "Invalid secondary RsID code");
-		rsid_secondary_time_out = 0;
 		reset();
 	}
 }
@@ -553,7 +586,7 @@ void cRsId::setup_mode(int iSymbol)
 	} // switch (iSymbol)
 }
 
-void cRsId::apply(int iSymbol, int iBin)
+void cRsId::apply1(int iSymbol, int iBin)
 {
 	ENSURE_THREAD(TRX_TID);
 
@@ -563,17 +596,17 @@ void cRsId::apply(int iSymbol, int iBin)
 	currfreq = active_modem->get_freq();
 	rsidfreq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
 
-	for (n = 0; n < rsid_ids_size; n++) {
-		if (rsid_ids[n].rs == iSymbol) {
-			mbin = rsid_ids[n].mode;
+	for (n = 0; n < rsid_ids_size1; n++) {
+		if (rsid_ids_1[n].rs == iSymbol) {
+			mbin = rsid_ids_1[n].mode;
 			break;
 		}
 	}
 
 	if (mbin == NUM_MODES) {
 		char msg[50];
-		if (n < rsid_ids_size) // RSID known but unimplemented
-			snprintf(msg, sizeof(msg), "RSID: %s unimplemented", rsid_ids[n].name);
+		if (n < rsid_ids_size1) // RSID known but unimplemented
+			snprintf(msg, sizeof(msg), "RSID: %s unimplemented", rsid_ids_1[n].name);
 		else // RSID unknown; shouldn't  happen
 			snprintf(msg, sizeof(msg), "RSID: code %d unknown", iSymbol);
 		put_status(msg, 4.0);
@@ -581,10 +614,10 @@ void cRsId::apply(int iSymbol, int iBin)
 		return;
 	}
 	else if (progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids[n].name, rsidfreq);
+		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids_1[n].name, rsidfreq);
 	}
 	else {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids[n].name, rsidfreq);
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids_1[n].name, rsidfreq);
 		return;
 	}
 
@@ -626,8 +659,8 @@ void cRsId::apply2(int iSymbol, int iBin)
 	rsidfreq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
 
 	for (n = 0; n < rsid_ids_size2; n++) {
-		if (rsid_ids2[n].rs == iSymbol) {
-			mbin = rsid_ids2[n].mode;
+		if (rsid_ids_2[n].rs == iSymbol) {
+			mbin = rsid_ids_2[n].mode;
 			break;
 		}
 	}
@@ -635,7 +668,7 @@ void cRsId::apply2(int iSymbol, int iBin)
 	if (mbin == NUM_MODES) {
 		char msg[50];
 		if (n < rsid_ids_size2) // RSID known but unimplemented
-			snprintf(msg, sizeof(msg), "RSID-2: %s unimplemented", rsid_ids2[n].name);
+			snprintf(msg, sizeof(msg), "RSID-2: %s unimplemented", rsid_ids_2[n].name);
 		else // RSID unknown; shouldn't  happen
 			snprintf(msg, sizeof(msg), "RSID-2: code %d unknown", iSymbol);
 		put_status(msg, 4.0);
@@ -643,10 +676,10 @@ void cRsId::apply2(int iSymbol, int iBin)
 		return;
 	}
 	else if (progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids2[n].name, rsidfreq);
+		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids_2[n].name, rsidfreq);
 	}
 	else {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids2[n].name, rsidfreq);
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids_2[n].name, rsidfreq);
 		return;
 	}
 
@@ -675,7 +708,7 @@ void cRsId::apply2(int iSymbol, int iBin)
 }
 
 //=============================================================================
-// search_amp routine #1
+// search_amp1 routine #1
 //=============================================================================
 
 int cRsId::HammingDistance(int iBucket, unsigned char *p2)
@@ -686,7 +719,6 @@ int cRsId::HammingDistance(int iBucket, unsigned char *p2)
 		j += RSID_NTIMES;
 	for (int i = 0; i < RSID_NSYMBOLS; i++) {
 		if (aBuckets[j][iBucket] != p2[i])
-//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
 			if (++dist == hamming_resolution)
 				return dist;
 		j += RSID_RESOL;//2;
@@ -696,54 +728,35 @@ int cRsId::HammingDistance(int iBucket, unsigned char *p2)
 	return dist;
 }
 
-bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
+bool cRsId::search_amp1( int &SymbolOut, int &BinOut, unsigned char *pcode)
 {
 	int i, j;
 	int iDistanceMin = 99;  // infinity
 	int iDistance;
 	int iBin		 = -1;
 	int iSymbol		 = -1;
-	int iEnd		 = nBinHigh - RSID_NTIMES;
-	int i1, i2, i3;
 
-	if (++iTime == RSID_NTIMES)
-		iTime = 0;
-
-	i1 = iTime - 3 * RSID_RESOL;
-	i2 = i1 + RSID_RESOL;
-	i3 = i2 + RSID_RESOL;
-
-	if (i1 < 0) {
-		i1 += RSID_NTIMES;
-		if (i2 < 0) {
-			i2 += RSID_NTIMES;
-			if (i3 < 0)
-				i3 += RSID_NTIMES;
-		}
-	}
-
-	CalculateBuckets ( aFFTAmpl, nBinLow,     iEnd);
-	CalculateBuckets ( aFFTAmpl, nBinLow + 1, iEnd);
-
-	for (i = nBinLow; i < iEnd; ++ i) {
-		j = aHashTable1[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
-		if (j < rsid_ids_size)  {
-			iDistance = HammingDistance(i, pCodes + j * RSID_NSYMBOLS);
-//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
-			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-				iDistanceMin = iDistance;
-				iSymbol  	 = rsid_ids[j].rs;
-				iBin		 = i;
+	for (i = nBinLow; i < nBinHigh - RSID_NTIMES; ++ i) {
+		int n = aBuckets[i1][i] | (aBuckets[i2][i] << 4);
+		if (n > 0 && n < 256)  {
+			if ( (j = hash_table_A[n]) != 255) {
+				iDistance = HammingDistance(i, pcode + j * RSID_NSYMBOLS);
+				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
+					iDistanceMin = iDistance;
+					iSymbol  	 = rsid_ids_1[j].rs;
+					iBin		 = i;
+				}
 			}
 		}
-		j = aHashTable2[aBuckets[i3][i] | (aBuckets[iTime][i] << 4)];
-		if (j < rsid_ids_size)  { //!= 255) {
-			iDistance = HammingDistance (i, pCodes + j * RSID_NSYMBOLS);
-//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
-			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-				iDistanceMin = iDistance;
-				iSymbol		 = rsid_ids[j].rs;
-				iBin		 = i;
+		n = aBuckets[i3][i] | (aBuckets[iTime][i] << 4);
+		if (n > 0 && n < 256) {
+			if ((j = hash_table_B[n]) != 255) {
+				iDistance = HammingDistance (i, pcode + j * RSID_NSYMBOLS);
+				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
+					iDistanceMin = iDistance;
+					iSymbol		 = rsid_ids_1[j].rs;
+					iBin		 = i;
+				}
 			}
 		}
 	}
@@ -754,8 +767,6 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 		if (bPrevTimeSliceValid) {
 			SymbolOut			= iPrevSymbol;
 			BinOut				= iPrevBin;
-			DistanceOut	    	= iPrevDistance;
-			MetricsOut			= 0;
 			bPrevTimeSliceValid = false;
 			return true;
 		}
@@ -772,54 +783,35 @@ bool cRsId::search_amp( int &SymbolOut,	int &BinOut)
 	return false;
 }
 
-bool cRsId::search_amp2( int &SymbolOut,	int &BinOut)
+bool cRsId::search_amp2( int &SymbolOut, int &BinOut, unsigned char *pcode)
 {
 	int i, j;
 	int iDistanceMin = 99;  // infinity
 	int iDistance;
 	int iBin		 = -1;
 	int iSymbol		 = -1;
-	int iEnd		 = nBinHigh - RSID_NTIMES;
-	int i1, i2, i3;
 
-	if (++iTime2 == RSID_NTIMES)
-		iTime2 = 0;
-
-	i1 = iTime2 - 3 * RSID_RESOL;//6;
-	i2 = i1 + RSID_RESOL;//2;
-	i3 = i2 + RSID_RESOL;//2;
-
-	if (i1 < 0) {
-		i1 += RSID_NTIMES;
-		if (i2 < 0) {
-			i2 += RSID_NTIMES;
-			if (i3 < 0)
-				i3 += RSID_NTIMES;
-		}
-	}
-
-	CalculateBuckets ( aFFTAmpl, nBinLow,     iEnd);
-	CalculateBuckets ( aFFTAmpl, nBinLow + 1, iEnd);
-
-	for (i = nBinLow; i < iEnd; ++ i) {
-		j = aHashTable1_2[aBuckets[i1][i] | (aBuckets[i2][i] << 4)];
-		if (j < rsid_ids_size2)  {
-			iDistance = HammingDistance(i, pCodes2 + j * RSID_NSYMBOLS);
-//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
-			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-				iDistanceMin	= iDistance;
-				iSymbol  		= rsid_ids2[j].rs;
-				iBin			= i;
+	for (i = nBinLow; i < nBinHigh - RSID_NTIMES; ++ i) {
+		int n = aBuckets[i1][i] | (aBuckets[i2][i] << 4);
+		if (n > 0 && n < 256)  {
+			if ( (j = hash_table_C[n]) != 255) {
+				iDistance = HammingDistance(i, pcode + j * RSID_NSYMBOLS);
+				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
+					iDistanceMin = iDistance;
+					iSymbol  	 = rsid_ids_2[j].rs;
+					iBin		 = i;
+				}
 			}
 		}
-		j = aHashTable2_2[aBuckets[i3][i] | (aBuckets[iTime2][i] << 4)];
-		if (j < rsid_ids_size2)  {
-			iDistance = HammingDistance (i, pCodes2 + j * RSID_NSYMBOLS);
-//VK2ETA For ARQ modes, allow more bit corrections (4 in 6)
-			if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-				iDistanceMin	= iDistance;
-				iSymbol			= rsid_ids2[j].rs;
-				iBin			= i;
+		n = aBuckets[i3][i] | (aBuckets[iTime][i] << 4);
+		if (n > 0 && n < 256)  {
+			if ( (j = hash_table_D[n]) != 255) {
+				iDistance = HammingDistance (i, pcode + j * RSID_NSYMBOLS);
+				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
+					iDistanceMin = iDistance;
+					iSymbol		 = rsid_ids_2[j].rs;
+					iBin		 = i;
+				}
 			}
 		}
 	}
@@ -830,9 +822,7 @@ bool cRsId::search_amp2( int &SymbolOut,	int &BinOut)
 		if (bPrevTimeSliceValid2) {
 			SymbolOut			= iPrevSymbol2;
 			BinOut				= iPrevBin2;
-			DistanceOut	    	= iPrevDistance2;
-			MetricsOut			= 0;
-			bPrevTimeSliceValid = false;
+			bPrevTimeSliceValid2 = false;
 			return true;
 		}
 		return false;
@@ -1029,21 +1019,21 @@ void cRsId::send(bool preRSID)
 // if rmode is still unset, look it up
 // Try secondary table first
 	if (rmode == RSID_NONE) {
-		for (size_t i = 0; i < sizeof(rsid_ids2)/sizeof(*rsid_ids2); i++) {
-			if (mode == rsid_ids2[i].mode) {
-				rmode2 = rsid_ids2[i].rs;
+		for (size_t i = 0; i < sizeof(rsid_ids_2)/sizeof(*rsid_ids_2); i++) {
+			if (mode == rsid_ids_2[i].mode) {
+				rmode = RSID_ESCAPE;
+				rmode2 = rsid_ids_2[i].rs;
 				break;
 			}
 		}
 		if (rmode2 == RSID_NONE2) {
-			for (size_t i = 0; i < sizeof(rsid_ids)/sizeof(*rsid_ids); i++) {
-				if (mode == rsid_ids[i].mode) {
-					rmode = rsid_ids[i].rs;
+			for (size_t i = 0; i < sizeof(rsid_ids_1)/sizeof(*rsid_ids_1); i++) {
+				if (mode == rsid_ids_1[i].mode) {
+					rmode = rsid_ids_1[i].rs;
 					break;
 				}
 			}
-		} else
-			rmode = RSID_ESCAPE;
+		}
 	}
 	if (rmode == RSID_NONE)
 		return;
@@ -1065,12 +1055,10 @@ void cRsId::send(bool preRSID)
 		outbuf = new double[symlen];
 	}
 
-// transmit 3 symbol periods between rsid sequences
-	if (!preRSID) {
-		memset(outbuf, 0, symlen * sizeof(*outbuf));
-		for (int i = 0; i < 3; i++)
-			active_modem->ModulateXmtr(outbuf, symlen);
-	}
+// transmit 5 symbol periods of silence at beginning of rsid
+	memset(outbuf, 0, symlen * sizeof(*outbuf));
+	for (int i = 0; i < 5; i++)
+		active_modem->ModulateXmtr(outbuf, symlen);
 
 // transmit sequence of 15 symbols (tones)
 	fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
@@ -1092,9 +1080,9 @@ void cRsId::send(bool preRSID)
 	}
 
 	if (rmode == RSID_ESCAPE && rmode2 != RSID_NONE2) {
-// transmit 3 symbol periods between rsid bursts
+// transmit 10 symbol periods of silence between rsid sequences
 		memset(outbuf, 0, symlen * sizeof(*outbuf));
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 10; i++)
 			active_modem->ModulateXmtr(outbuf, symlen);
 
 		Encode(rmode2, rsid);
@@ -1125,17 +1113,12 @@ void cRsId::send(bool preRSID)
 		}
 	}
 
-// one symbol period of silence
+	// 5 symbol periods of silence at end of transmission
+	// and between RsID and the data signal
+	int nperiods = 5;
 	memset(outbuf, 0, symlen * sizeof(*outbuf));
-	active_modem->ModulateXmtr(outbuf, symlen);
-
-	// transmit 3 symbol periods of silence at beginning of transmission
-	if (preRSID) {
-		memset(outbuf, 0, symlen * sizeof(*outbuf));
-		for (int i = 0; i < 3; i++)
-			active_modem->ModulateXmtr(outbuf, symlen);
-	}
-
+	for (int i = 0; i < nperiods; i++)
+		active_modem->ModulateXmtr(outbuf, symlen);
 
 }
 

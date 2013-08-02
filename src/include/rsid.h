@@ -80,15 +80,18 @@ enum { INITIAL, EXTENDED, WAIT };
 
 private:
 	// Table of precalculated Reed Solomon symbols
-	unsigned char   *pCodes;
+	unsigned char   *pCodes1;
 	unsigned char   *pCodes2;
 
-	static const RSIDs  rsid_ids[];
-	static const int rsid_ids_size;
+	bool found1;
+	bool found2;
+
+	static const RSIDs  rsid_ids_1[];
+	static const int rsid_ids_size1;
 	static const int Squares[];
 	static const int indices[];
 
-	static const RSIDs  rsid_ids2[];
+	static const RSIDs  rsid_ids_2[];
 	static const int rsid_ids_size2;
 
 	int rsid_secondary_time_out;
@@ -105,27 +108,24 @@ private:
 	Cfft	*rsfft;
 
 	// Hashing tables
-	unsigned char	aHashTable1[RSID_HASH_LEN];
-	unsigned char	aHashTable2[RSID_HASH_LEN];
+	unsigned char	hash_table_A[RSID_HASH_LEN];
+	unsigned char	hash_table_B[RSID_HASH_LEN];
 
-	unsigned char	aHashTable1_2[RSID_HASH_LEN];
-	unsigned char	aHashTable2_2[RSID_HASH_LEN];
+	unsigned char	hash_table_C[RSID_HASH_LEN];
+	unsigned char	hash_table_D[RSID_HASH_LEN];
 
 	bool	bPrevTimeSliceValid;
 	int		iPrevDistance;
 	int		iPrevBin;
 	int		iPrevSymbol;
 	int		iTime; // modulo RSID_NTIMES
-	int		aBuckets[RSID_NTIMES][RSID_FFT_SIZE];
+	int		i1, i2, i3;
+	int		aBuckets[RSID_NTIMES][RSID_FFT_SIZE]; // history of detected rsid tones
 
 	bool	bPrevTimeSliceValid2;
 	int		iPrevDistance2;
 	int		iPrevBin2;
 	int		iPrevSymbol2;
-	int		iTime2; // modulo RSID_NTIMES
-
-	int		DistanceOut;
-	int		MetricsOut;
 
 // resample
 	SRC_STATE* 	src_state;
@@ -141,10 +141,10 @@ private:
 	void	Encode(int code, unsigned char *rsid);
 	int		HammingDistance(int iBucket, unsigned char *p2);
 	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
-	bool	search_amp( int &pSymbolOut, int &pBinOut);
-	bool	search_amp2( int &pSymbolOut, int &pBinOut);
+	bool	search_amp1( int &pSymbolOut, int &pBinOut, unsigned char *table);
+	bool	search_amp2( int &pSymbolOut, int &pBinOut, unsigned char *table);
 	void	search(void);
-	void	apply (int iSymbol, int iBin);
+	void	apply1 (int iSymbol, int iBin);
 	void	apply2 (int iSymbol, int iBin);
 	void	setup_mode(int m);
 public:
