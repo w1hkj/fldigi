@@ -2665,19 +2665,76 @@ int default_handler(int event)
 	int key = Fl::event_key();
 	if ((key == FL_F + 4) && Fl::event_alt()) clean_exit(true);
 
-	if (w == fl_digi_main || w->window() == fl_digi_main) {
+	if (fl_digi_main->contains(w)) {
 		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last) ||
 			((key == '1' || key == '2' || key == '3' || key == '4') && Fl::event_alt())) {
 			TransmitText->take_focus();
 			TransmitText->handle(FL_KEYBOARD);
-			w->take_focus(); // remove this to leave tx text focused
 			return 1;
 		}
 #ifdef __APPLE__
-		if ((key == '=') && (Fl::event_state() == FL_COMMAND)) {
+		if ((key == '=') && (Fl::event_state() == FL_COMMAND))
 #else
-		if (key == '=' && Fl::event_alt()) {
+		if (key == '=' && Fl::event_alt())
 #endif
+		{
+			progdefaults.txlevel += 0.1;
+			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
+			cntTxLevel->value(progdefaults.txlevel);
+			return 1;
+		}
+#ifdef __APPLE__
+		if ((key == '-') && (Fl::event_state() == FL_COMMAND))
+#else
+		if (key == '-' && Fl::event_alt())
+#endif
+		{
+			progdefaults.txlevel -= 0.1;
+			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
+			cntTxLevel->value(progdefaults.txlevel);
+			return 1;
+		}
+	}
+	else if (dlgLogbook->contains(w))
+		return log_search_handler(event);
+
+	else if (Fl::event_key() == FL_Escape)
+		return 1;
+
+	else if ( (fl_digi_main->contains(w) || dlgLogbook->contains(w)) && 
+				Fl::event_ctrl() ) 
+			return w->handle(FL_KEYBOARD);
+
+	return 0;
+}
+
+int wo_default_handler(int event)
+{
+	if (event != FL_SHORTCUT)
+		return 0;
+
+	if (RigViewerFrame && Fl::event_key() == FL_Escape &&
+	    RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
+		CloseQsoView();
+		return 1;
+	}
+
+	Fl_Widget* w = Fl::focus();
+	int key = Fl::event_key();
+
+	if ((key == FL_F + 4) && Fl::event_alt()) clean_exit(true);
+
+	if (fl_digi_main->contains(w)) {
+		if (key == FL_Escape || (key >= FL_F && key <= FL_F_Last) ||
+			((key == '1' || key == '2' || key == '3' || key == '4') && Fl::event_alt())) {
+			return 1;
+		}
+#ifdef __APPLE__
+		if ((key == '=') && (Fl::event_state() == FL_COMMAND))
+#else
+		if (key == '=' && Fl::event_alt())
+#endif
+		{
 			progdefaults.txlevel += 0.1;
 			if (progdefaults.txlevel > 0) progdefaults.txlevel = 0;
 			cntTxLevel->value(progdefaults.txlevel);
@@ -2694,11 +2751,8 @@ int default_handler(int event)
 			return 1;
 		}
 	}
-	else if (w == dlgLogbook || w->window() == dlgLogbook)
-		return log_search_handler(event);
 
-	else if (Fl::event_key() == FL_Escape)
-		return 1;
+	else if (Fl::event_ctrl()) return w->handle(FL_KEYBOARD);
 
 	return 0;
 }
