@@ -79,6 +79,7 @@
 #include "rigsupport.h"
 
 #include "confdialog.h"
+#include "arq_io.h"
 
 LOG_FILE_SOURCE(debug::LOG_RPC);
 
@@ -1483,8 +1484,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
 		XMLRPC_LOCK;
-		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
+		if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
 			REQ(abort_tx);
+			REQ(AbortARQ);
+		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
