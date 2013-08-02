@@ -4305,7 +4305,8 @@ void LOGBOOK_colors_font()
 
 	ypos = inpNotes_log->y() + inpNotes_log->h() - wh;
 	Fl_Input2* row5[] = {
-		inpITUZ_log, inpCONT_log, inpDXCC_log };
+		inpITUZ_log, inpCONT_log, inpDXCC_log, inpQSL_VIA_log
+       	};
 	for (size_t i = 0; i < sizeof(row5)/sizeof(*row5); i++) {
 		inp_font_pos(row5[i], row5[i]->x(), ypos, row5[i]->w(), wh);
 	}

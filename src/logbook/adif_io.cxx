@@ -57,6 +57,7 @@ FIELD fields[] = {
 	{COUNTRY,        "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
 	{CQZ,            "CQZ",          &btnSelectCQZ},       // contacted stations CQ Zone
 	{DXCC,           "DXCC",         &btnSelectDXCC},      // contacted stations Country Code
+	{QSL_VIA,        "QSL_VIA",      &btnSelectQSL_VIA},   // contacted stations path
 	{IOTA,           "IOTA",         &btnSelectIOTA},      // Islands on the air
 	{ITUZ,           "ITUZ",         &btnSelectITUZ},      // ITU zone
 	{CONT,           "CONT",         &btnSelectCONT},      // contacted stations continent

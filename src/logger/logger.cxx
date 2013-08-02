@@ -124,6 +124,7 @@ void submit_ADIF(cQsoRec &rec)
 // QSO log area.
 	putadif(IOTA, rec.getField(IOTA));
 	putadif(DXCC, rec.getField(DXCC));
+	putadif(QSL_VIA, rec.getField(QSL_VIA));
 	putadif(QSLRDATE, rec.getField(QSLRDATE));
 	putadif(QSLSDATE, rec.getField(QSLSDATE));
 
