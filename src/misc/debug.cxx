@@ -48,6 +48,7 @@
 #include <FL/Fl_Browser.H>
 
 #include "debug.h"
+#include "timeops.h"
 #include "icons.h"
 #include "gettext.h"
 

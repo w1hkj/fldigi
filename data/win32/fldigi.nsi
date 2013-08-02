@@ -121,7 +121,6 @@ SectionEnd
         SectionIn RO
         SetOutPath $INSTDIR
         File "${FLDIGI_BINARY}"
-        File /nonfatal "${MINGWM_DLL}" "${PTW32_DLL}"
         !ifdef FLDIGI_LOCALE_DIR
 	    File /r "${FLDIGI_LOCALE_PATH}/${FLDIGI_LOCALE_DIR}"
         !endif
@@ -138,9 +137,6 @@ SectionEnd
         !endif
         SetOutPath $INSTDIR
         File "${FLARQ_BINARY}"
-!ifndef HAVE_FLDIGI
-        File /nonfatal "${MINGWM_DLL}" "${PTW32_DLL}"
-!endif
         StrCpy $WANT_FLARQ "true"
     SectionEnd
 !endif
@@ -215,8 +211,6 @@ Section "Uninstall"
     !ifdef HAVE_FLARQ
         Delete /REBOOTOK $INSTDIR\${FLARQ_BINARY}
     !endif
-    Delete /REBOOTOK $INSTDIR\${MINGWM_DLL}
-    Delete /REBOOTOK $INSTDIR\${PTW32_DLL}
     Delete /REBOOTOK $INSTDIR\uninstall.exe
 
     # Remove shortcuts, if any

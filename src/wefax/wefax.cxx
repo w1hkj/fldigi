@@ -45,6 +45,7 @@
 #include "main.h"
 
 #include "misc.h"
+#include "timeops.h"
 #include "fl_digi.h"
 #include "configuration.h"
 #include "status.h"

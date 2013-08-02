@@ -30,6 +30,7 @@
 #include "qso_db.h"
 #include "field_def.h"
 #include "globals.h"
+#include "timeops.h"
 
 #include "pthread.h"
 
