@@ -184,6 +184,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<WPM:NN>\tCW WPM"));
 
 	w->add(LINE_SEP);
+	w->add(_("<RIGCAT:[\"text\"][hex ...]:ret>\tsend CAT cmd"));
+
+	w->add(LINE_SEP);
 	w->add(_("<AFC:on|off|t>\tAFC  on,off,toggle"));
 	w->add(_("<LOCK:on|off|t>\tLOCK on,off,toggle"));
 	w->add(_("<REV:on|off|t>\tRev on,off,toggle"));

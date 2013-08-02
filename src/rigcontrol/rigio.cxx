@@ -91,6 +91,8 @@ bool sendCommand (string s, int retnbr)
 	if (retval <= 0)
 		LOG_VERBOSE("Write error %d", retval);
 
+	if (retnbr == 0) return true;
+
 	memset(replybuff, 0, RXBUFFSIZE + 1);
 	numread = 0;
 	MilliSleep( readafter );
