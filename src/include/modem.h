@@ -18,8 +18,9 @@
 
 #define TWOPI (2.0 * M_PI)
 
-class modem : public morse {
+class modem {
 protected:
+	cMorse	morse;
 	trx_mode mode;
 	SoundBase	*scard;
 

@@ -145,7 +145,7 @@ static CW_TABLE cw_table[] = {
  * is viewable as an integer in the range 2 (".") to 255 ("-------"), and can
  * be used as an index into a fast lookup array.
  */
-unsigned int morse::tokenize_representation(const char *representation)
+unsigned int cMorse::tokenize_representation(const char *representation)
 {
 	unsigned int token;	/* Return token value */
 	const char *sptr;	/* Pointer through string */
@@ -184,7 +184,7 @@ unsigned int morse::tokenize_representation(const char *representation)
 
 /* ---------------------------------------------------------------------- */
 
-void morse::init()
+void cMorse::init()
 {
 	CW_TABLE *cw;	/* Pointer to table entry */
 	unsigned int i;
@@ -230,7 +230,7 @@ void morse::init()
 	}
 }
 
-const char *morse::rx_lookup(char *r)
+const char *cMorse::rx_lookup(char *r)
 {
 	int			token;
 	CW_TABLE *cw;
@@ -244,7 +244,7 @@ const char *morse::rx_lookup(char *r)
 	return cw->prt;
 }
 
-const char *morse::tx_print(int c)
+const char *cMorse::tx_print(int c)
 {
 	if (cw_tx_lookup[toupper(c)].prt)
 		return cw_tx_lookup[toupper(c)].prt;
@@ -252,7 +252,7 @@ const char *morse::tx_print(int c)
 		return "";
 }
 
-unsigned long morse::tx_lookup(int c)
+unsigned long cMorse::tx_lookup(int c)
 {
 	return cw_tx_lookup[toupper(c)].code;
 }

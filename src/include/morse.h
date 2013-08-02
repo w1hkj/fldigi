@@ -47,16 +47,16 @@ struct CW_XMT_TABLE {
 	const    char *prt;
 };
 
-class morse {
+class cMorse {
 private:
 	CW_TABLE 		*cw_rx_lookup[256];
 	CW_XMT_TABLE 	cw_tx_lookup[256];
 	unsigned int 	tokenize_representation(const char *representation);
 public:
-	morse() { 
+	cMorse() { 
 		init(); 
 	}
-	~morse() {
+	~cMorse() {
 	}
 	void init();
 	const char	*rx_lookup(char *r);

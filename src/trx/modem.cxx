@@ -628,7 +628,7 @@ void modem::cwid_send_ch(int ch)
 
 // convert character code to a morse representation
 	if ((ch < 256) && (ch >= 0)) {
-		code = tx_lookup(ch); //cw_tx_lookup(ch);
+		code = morse.tx_lookup(ch); //cw_tx_lookup(ch);
 	} else {
 		code = 0x04; 	// two extra dot spaces
 	}
