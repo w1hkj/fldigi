@@ -824,7 +824,7 @@ int cw::handle_event(int cw_event, const char **c)
 			cw_receive_state == RS_AFTER_TONE) {
 // Look up the representation
 //cout << "CW_QUERY medium time after keyup: " << rx_rep_buf;
-			*c = morse::rx_lookup(rx_rep_buf);
+			*c = morse.rx_lookup(rx_rep_buf);
 //cout <<": " << *c <<flush;
 			if (*c == NULL) {
 // invalid decode... let user see error
@@ -1115,7 +1115,7 @@ void cw::send_ch(int ch)
 
 // convert character code to a morse representation
 	if ((chout < 256) && (chout >= 0)) {
-		code = tx_lookup(chout); //cw_tx_lookup(ch);
+		code = morse.tx_lookup(chout); //cw_tx_lookup(ch);
 		firstelement = true;
 	} else {
 		code = 0x04; 	// two extra dot spaces
@@ -1140,7 +1140,7 @@ void cw::send_ch(int ch)
 	FL_AWAKE();
 
 	if (ch != -1) {
-		string prtstr = tx_print(ch);
+		string prtstr = morse.tx_print(ch);
 		if (prtstr.length() == 1)
 			put_echo_char(progdefaults.rx_lowercase ? tolower(prtstr[0]) : prtstr[0]);
 		else
@@ -1163,7 +1163,7 @@ int cw::tx_process()
 		prosigns != progdefaults.CW_prosigns) {
 		use_paren = progdefaults.CW_use_paren;
 		prosigns = progdefaults.CW_prosigns;
-		morse::init();
+		morse.init();
 	}
 
 	c = get_tx_char();
