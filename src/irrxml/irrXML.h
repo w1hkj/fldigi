@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-/** \mainpage irrXML 1.2 API documentation
+/** irrXML 1.2 API documentation
  <div align="center"><img src="logobig.png" ></div>
 
  \section intro Introduction
