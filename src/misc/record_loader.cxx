@@ -45,9 +45,12 @@
 
 #include <sys/stat.h>
 
+#include "FL/Fl_Double_Window.H"
 #include "FL/Fl_Output.H"
 #include "FL/fl_ask.H"
 #include "FL/Fl_Check_Button.H"
+
+Fl_Double_Window *dlgRecordLoader = (Fl_Double_Window *)0;
 
 /// Loads a file and stores it for later lookup.
 int RecordLoaderInterface::LoadAndRegister()
@@ -128,7 +131,8 @@ struct Row
 			const std::string strnam = m_itf->base_filename();
 			m_url->tooltip( strurl );
 		}
-		dlgRecordLoader->damage();
+		if (dlgRecordLoader)
+			dlgRecordLoader->damage();
 		return isGood ;
 	}
 };

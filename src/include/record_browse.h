@@ -5,7 +5,6 @@
 #include <FL/Fl.H>
 #include "record_loader_gui.h"
 #include <FL/Fl_Double_Window.H>
-extern Fl_Double_Window *dlgRecordLoader; 
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
 extern Fl_Group *tabDataFiles;

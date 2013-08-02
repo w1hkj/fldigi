@@ -2,7 +2,6 @@
 
 #include "record_browse.h"
 #include <config.h>
-Fl_Double_Window *dlgRecordLoader; 
 
 Fl_Group *tabDataFiles=(Fl_Group *)0;
 
