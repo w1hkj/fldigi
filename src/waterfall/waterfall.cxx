@@ -1336,6 +1336,8 @@ void btnRev_cb(Fl_Widget *w, void *v) {
 	wf->Reverse(b->value());
 	FL_UNLOCK_D();
 	active_modem->set_reverse(wf->Reverse());
+	progdefaults.rtty_reverse = b->value();
+	progdefaults.changed = true;
 	restoreFocus();
 }
 
@@ -1673,13 +1675,14 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	xmtlock->selection_color(progdefaults.LkColor);
 	xmtlock->tooltip(_("Lock transmit frequency"));
 
+	/// We save this flag which is used by rtty decoding.
 	xpos = xpos + (int)(bwXmtLock*ratio) + wSpace;
 	btnRev = new Fl_Light_Button(xpos, buttonrow, (int)(bwRev*ratio), BTN_HEIGHT, "Rv");
 	btnRev->callback(btnRev_cb, 0);
-	btnRev->value(0);
+	reverse = progdefaults.rtty_reverse;
+	btnRev->value(reverse);
 	btnRev->selection_color(progdefaults.RevColor);
 	btnRev->tooltip(_("Reverse"));
-	reverse = false;
 
 	xpos = w() - (int)(bwXmtRcv*ratio) - wSpace;
 	xmtrcv = new Fl_Light_Button(xpos, buttonrow, (int)(bwXmtRcv*ratio) - BEZEL, BTN_HEIGHT, "T/R");

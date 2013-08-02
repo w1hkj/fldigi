@@ -3000,21 +3000,21 @@ struct Navtex_send_message : public xmlrpc_c::method
 	ELEM_(Spot_get_auto, "spot.get_auto")							\
 	ELEM_(Spot_set_auto, "spot.set_auto")							\
 	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
-	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")	                                \
-	\
-	ELEM_(Wefax_state_string, "wefax.state_string")	                    \
-	ELEM_(Wefax_skip_apt, "wefax.skip_apt")                             \
-	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")                     \
-	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")           \
-	ELEM_(Wefax_end_reception, "wefax.end_reception")                   \
-	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception") \
-	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")                     \
-	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")                   \
-	ELEM_(Wefax_get_received_file, "wefax.get_received_file")           \
-	ELEM_(Wefax_send_file, "wefax.send_file")                           \
-	\
-	ELEM_(Navtex_get_message, "navtex.get_message")	                    \
-
+	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")				\
+																		\
+	ELEM_(Wefax_state_string, "wefax.state_string")						\
+	ELEM_(Wefax_skip_apt, "wefax.skip_apt")								\
+	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")						\
+	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")			\
+	ELEM_(Wefax_end_reception, "wefax.end_reception")					\
+	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")	\
+	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")						\
+	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")					\
+	ELEM_(Wefax_get_received_file, "wefax.get_received_file")			\
+	ELEM_(Wefax_send_file, "wefax.send_file")							\
+																		\
+	ELEM_(Navtex_get_message, "navtex.get_message")						\
+	ELEM_(Navtex_send_message, "navtex.send_message")					\
 
 struct rm_pred
 {

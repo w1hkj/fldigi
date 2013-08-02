@@ -43,6 +43,8 @@ using namespace std;
 #include "digiscope.h"
 #include "trx.h"
 #include "debug.h"
+#include "synop.h"
+#include "main.h"
 
 #define FILTER_DEBUG 0
 
@@ -85,6 +87,25 @@ void rtty::tx_init(SoundBase *sc)
 	videoText();
 }
 
+// Customizes output of Synop decoded data.
+struct rtty_callback : public synop_callback {
+	// Callback for writing decoded synop messages.
+	void print(const char * str, size_t nb, bool bold ) const {
+		// Could choose: FTextBase::CTRL,XMIT,RECV
+		int style = bold ? FTextBase::XMIT : FTextBase::RECV;
+		for( size_t i = 0; i < nb; ++i ) {
+			unsigned char c = str[i];
+			put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c, style );
+		}
+	}
+	// Should we log new Synop messages to the current Adif log file ?
+	bool log_adif(void) const { return progdefaults.SynopAdifDecoding ;}
+	// Should we log new Synop messages to KML file ?
+	bool log_kml(void) const { return progdefaults.SynopKmlDecoding ;}
+
+	bool interleaved(void) const { return progdefaults.SynopInterleaved ;}
+};
+
 void rtty::rx_init()
 {
 	rxstate = RTTY_RX_STATE_IDLE;
@@ -105,12 +126,24 @@ void rtty::rx_init()
 
 	inp_ptr = 0;
 
+	lastchar = 0;
+
+	// Synop file is reloaded each time we enter this modem. Ideally do that when the file is changed.
+	static bool wmo_loaded = false ;
+	if( wmo_loaded == false ) {
+		wmo_loaded = true ;
+		SynopDB::Init(PKGDATADIR);
+	}
+	/// Used by weather reports decoding.
+	synop::setup<rtty_callback>();
+	synop::instance()->init();
 }
 
 void rtty::init()
 {
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
+	// Probably not necessary because similar to modem::set_reverse
 	reverse = wfrev ^ !wfsb;
 	stopflag = false;
 
@@ -136,6 +169,8 @@ void rtty::init()
 	else
 		set_scope_mode(Digiscope::RTTY);
 	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = complex(0,0);
+
+	lastchar = 0;
 }
 
 rtty::~rtty()
@@ -437,8 +472,22 @@ bool rtty::rx(bool bit) // original modified for probability test
 			if (is_mark()) {
 				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
 					c = decode_char();
-					if ( c != 0 && c != '\r') {
-						put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
+					if( progdefaults.SynopAdifDecoding || progdefaults.SynopKmlDecoding ) {
+						if (c != 0 && c != '\r')  {
+							synop::instance()->add(c);
+						} else {
+							if( synop::instance()->enabled() )
+								synop::instance()->flush(false);
+							put_rx_char(c);
+						}
+					} else if ( c != 0 ) {
+// supress <CR><CR> and <LF><LF> sequences
+// these were observed during the RTTY contest 2/9/2013
+						if (c == '\r' && lastchar == '\r');
+						else if (c == '\n' && lastchar == '\n');
+						else
+							put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
+						lastchar = c;
 					}
 					flag = true;
 				}

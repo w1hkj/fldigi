@@ -13,6 +13,9 @@ France;FRA;490.0;E;FRC;CROSS Corsen;48 24 N;05 03 W;II;FF
 France;FRA;490.0;S;FRL;CROSS La Garde;43 06 N;05 59 E;III;FF
 Germany;DEU;490.0;L;DDH47;Pinneberg;53 43 N;09 55 E;I;DD
 Iceland;ISL;490.0;R;TFA;Reykiavik;64 05 N;21 51 W;I;IS
+Italy;ICH;490.0;I;IAR;La Maddalena;41 13 N;09 25 E;III;II
+Italy;IQM;490.0;E;IAR;Mondolfo;43 45 N;13 05 E;III;II
+Italy;ICI;490.0;W;IAR;Sellia Marina;38 54 N;16 44 E;III;II
 Portugal;POR;490.0;G;CTV;Monsanto;38 44 N;09 11 W;II;PP
 Romania;ROU;490.0;L;YOI;Constanta;44 12 N;28 40 E;III;RO
 Scotland;SCT;490.0;C;GPK;Portpatrick;54 51 N;05 07 W;I;EE
@@ -113,8 +116,9 @@ Iran;IRN;518.0;H;EOI;Bandar Abbas;27 08 N;57 04 E;IX;EE
 Ireland;IRL;518.0;O;EJM;Malin Head Coastguard;55 22 N;07 21 W;I;EE
 Ireland;IRL;518.0;W;EJK;Valentia Coastguard;51 27 N;09 49 W;I;EE
 Israel;ISR;518.0;P;4XO;Haifa;32 49 N;35 00 E;III;EE
-Italy;ITA;518.0;R;IAR;Roma;41 48 N;12 31 E;III;EE/II
-Italy;ITA;518.0;U;IOX;Trieste;45 41 N;13 46 E;III;EE/II
+Italy;ICH;518.0;R;IAR;La Maddalena;41 13 N;09 25 E;III;EE
+Italy;IQM;518.0;U;IAR;Mondolfo;43 45 N;13 05 E;III;EE
+Italy;ICI;518.0;V;IAR;Sellia Marina;38 54 N;16 44 E;III;EE
 Japan;JPN;518.0;G;JNB;Naha;26 09 N;127 46 E;XI;EE
 Japan;JPN;518.0;H;JNR;Moji;33 52 N;130 36 E;XI;EE
 Japan;JPN;518.0;I;JGC;Yokohama;35 22 N;118 43 E;XI;EE

@@ -31,10 +31,10 @@
 #include <time.h>
 
 #include <FL/Fl.H>
+#include <FL/Fl_Window.H>
 
 #include "network.h"
 #include "socket.h"
-#include "re.h"
 #include "timeops.h"
 #include "gettext.h"
 
@@ -63,16 +63,24 @@ bool request_reply(const string& node, const string& service, const string& requ
 
 bool fetch_http(const string& url, string& reply, double timeout)
 {
-	re_t http_re("http://([^/]+)(.+)", REG_EXTENDED | REG_ICASE);
+	static const size_t http_len = 7;
+	static const char http_str[http_len+1] = "http://";
 
-	if (!http_re.match(url.c_str()) || http_re.nsub() != 3)
-		return false;
+	const char * url_str = url.c_str();
+	if( strncmp( url_str, http_str, http_len ) ) return false;
+	const char * http_host_begin = url_str + http_len ;
+
+	const char * http_host_end = strchr( http_host_begin, '/' );
+	const char * http_page = http_host_end == NULL ? "" : http_host_end ;
+	std::string http_host = ( http_host_end == NULL )
+		? http_host_begin
+		: std::string( http_host_begin, http_host_end );
 
 	string request;
-	request.append("GET ").append(http_re.submatch(2)).append(" HTTP/1.0\n")
-	       .append("Host: ").append(http_re.submatch(1)).append("\nConnection: close\n\n");
+	request.append("GET ").append(http_page).append(" HTTP/1.0\n")
+	       .append("Host: ").append(http_host).append("\nConnection: close\n\n");
 
-	return request_reply(http_re.submatch(1), "http", request, reply, timeout);
+	return request_reply( http_host, "http", request, reply, timeout);
 }
 
 struct fetch_data_t {
@@ -100,6 +108,24 @@ static void fetch_url_cleanup(void* data)
 		delete p;
 	else
 		Fl::repeat_timeout(1.0, fetch_url_cleanup, data);
+}
+
+/// This callback changes the cursor when waiting for loading from the network.
+static void busy_cursor(void*)
+{
+	Fl::first_window()->cursor(FL_CURSOR_WAIT);
+}
+
+/// This restores the cursor after loading.
+static void default_cursor(void*)
+{
+	Fl::first_window()->cursor(FL_CURSOR_DEFAULT);
+}
+
+/// Loads a HTTP page to a string with standard cursor display.
+bool fetch_http_gui(const string& url, string& reply, double timeout)
+{
+	return fetch_http_gui(url, reply, timeout, busy_cursor, NULL, default_cursor, NULL);
 }
 
 // Like fetch_http, but calls Fl::wait and busy() until the time out has elapsed,
