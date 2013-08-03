@@ -5204,7 +5204,8 @@ class synop_impl
 			// Quick check if the message is very short. Beware, it it the total
 			// number of tokens, not the number of sections.
 			if(m_nbTokens <= 2 ) {
-				LOG_DEBUG("No publish1 m_nbTokens=%d:%s",m_nbTokens, TstToStr().c_str() );
+				LOG_DEBUG("No publish1 m_nbTokens=%d:%s",
+					static_cast<int>(m_nbTokens), TstToStr().c_str() );
 				return ;
 			}
 

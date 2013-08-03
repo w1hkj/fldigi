@@ -1314,7 +1314,7 @@ void init_modem_sync(trx_mode m, int f)
 		if (!count) LOG_ERROR("%s", "trx wait for RX timeout");
 	}
 
-	LOG_INFO("Call init_modem %d, %d", m, f);
+	LOG_INFO("Call init_modem %d, %d", (int)m, f);
 	init_modem(m, f);
 
 	count = 500;
@@ -1360,7 +1360,8 @@ void cb_charset_menu(Fl_Widget *, void *charset)
 void populate_charset_menu(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++)
-		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu, (void *)charset_list[i].tiniconv_id);
+		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu, 
+		reinterpret_cast<void *>(charset_list[i].tiniconv_id));
 }
 
 // find the position of the default charset in charset_list[] and trigger the callback
@@ -1368,7 +1369,8 @@ void set_default_charset(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++) {
 		if (strcmp(charset_list[i].name, progdefaults.charset_name.c_str()) == 0) {
-			cb_charset_menu(0, (void *)charset_list[i].tiniconv_id);
+			cb_charset_menu(0, 
+			reinterpret_cast<void *>(charset_list[i].tiniconv_id));
 			return;
 		}
 	}
@@ -5006,7 +5008,7 @@ void create_fl_digi_main_primary() {
 				}
 				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
 					macros.name[NUMMACKEYS + i].c_str());
-				btnMacro[NUMMACKEYS + i]->callback(macro_cb, (void *)(NUMMACKEYS + i));
+				btnMacro[NUMMACKEYS + i]->callback(macro_cb, reinterpret_cast<void *>(NUMMACKEYS + i));
 				btnMacro[NUMMACKEYS + i]->tooltip(
 					_("Left Click - execute\nShift-Fkey - execute\nRight Click - edit"));
 				colorize_macro(NUMMACKEYS + i);
@@ -5185,7 +5187,7 @@ void create_fl_digi_main_primary() {
 				}
 				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
 					macros.name[i].c_str());
-				btnMacro[i]->callback(macro_cb, (void *)(i));
+				btnMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i));
 				btnMacro[i]->tooltip(_("Left Click - execute\nFkey - execute\nRight Click - edit"));
 				colorize_macro(i);
 				xpos += Wmacrobtn;

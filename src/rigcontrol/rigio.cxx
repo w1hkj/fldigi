@@ -385,7 +385,7 @@ long long rigCAT_getfreq(int retries, bool &failed)
 			if (len2) {
 				for (size_t i = 0; i < len2; i++)
 					if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
-						LOG_VERBOSE("failed post data string test @ %" PRIuSZ, i);
+						LOG_VERBOSE("failed post data string test @ %d", static_cast<int>(i));
 						goto retry_get_freq;
 					}
 			}
@@ -393,7 +393,7 @@ long long rigCAT_getfreq(int retries, bool &failed)
 			f = fm_freqdata(rTemp.data, pData);
 			if ( f >= rTemp.data.min && f <= rTemp.data.max)
 				return f;
-			LOG_VERBOSE("freq: %" PRId64, f);
+			LOG_VERBOSE("freq: %d", static_cast<int>(f));
 retry_get_freq: ;
 		}
 	}
