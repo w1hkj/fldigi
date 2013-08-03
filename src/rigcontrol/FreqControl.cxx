@@ -111,7 +111,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR, SELCOLOR);
 		Digit[n]->labelsize(fcHeight-4);
-		Digit[n]->callback(cbSelectDigit, (void *) n);
+		Digit[n]->callback(cbSelectDigit, reinterpret_cast<void *>(n) );
 		mult[n] = max;
 		max *= 10;
 	}

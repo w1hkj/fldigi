@@ -104,13 +104,13 @@ void Font_Browser::FontNameSelect()
     //
     for (int i = !*sizes; i < nsizes; i++)
 	if ((size_t)snprintf(buf, sizeof(buf), "%d", sizes[i]) < sizeof(buf))
-	    lst_Size->add(buf, (void*)sizes[i]);
+	    lst_Size->add(buf, reinterpret_cast<void*>(sizes[i]));
 
     // scalable font with no suggested sizes
     if (!lst_Size->size()) {
 	for (int i = 1; i <= 48; i++) {
 	    snprintf(buf, sizeof(buf), "%d", i);
-	    lst_Size->add(buf, (void*)i);
+	    lst_Size->add(buf, reinterpret_cast<void*>(i));
 	}
     }
     fontSize(fontsize);
@@ -169,7 +169,7 @@ Font_Browser::Font_Browser(int x, int y, int w, int h, const char *lbl )
     for(int i = 0; i < numfonts; i++) {
 	name = Fl::get_font_name((Fl_Font)i);
 	if (isalpha(*name))
-	    lst_Font->add(name, (void *)i);
+	    lst_Font->add(name, reinterpret_cast<void *>(i));
     }
     FontSort();
 

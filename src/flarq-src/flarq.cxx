@@ -1036,7 +1036,6 @@ string nextFileName(string fname)
 void saveEmailFile()
 {
 	static char xfrmsg[80];
-	int    fnum;
 	string tempname;
 
 	time(&EndTime_t);
@@ -1045,7 +1044,6 @@ void saveEmailFile()
 
 	string savetoname = ARQ_mail_in_dir;
 
-	fnum = 1;
 	if (rxfname.find(".eml") == string::npos)
 		rxfname.append(".eml");
 	savetoname.append(rxfname);
@@ -1117,7 +1115,8 @@ void payloadText(string s)
 					sscanf(sizechars.c_str(), "%" PRIuSZ, &arqPayloadSize);
 					rxARQhavesize = true;
 					char statusmsg[40];
-					snprintf(statusmsg, sizeof(statusmsg), "Rcvg: %" PRIuSZ, arqPayloadSize);
+					snprintf(statusmsg, sizeof(statusmsg), "Rcvg: %d", 
+						static_cast<int>(arqPayloadSize));
 					txtStatus->value(statusmsg);
 				}
 			}
@@ -1267,7 +1266,8 @@ void sendEmailFile()
 		txtsize = textin.length();
 		arqPayloadSize = txtsize;
 		blocksSent = 0;
-		snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%" PRIuSZ "\n", txtsize);
+		snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+			static_cast<int>(txtsize));
 		TX.append(sizemsg);
 		TX.append(arqstart);
 		TX.append(textin);
@@ -1321,7 +1321,8 @@ void sendAsciiFile()
 			txtsize = textin.length();
 			arqPayloadSize = txtsize;
 			blocksSent = 0;
-			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%" PRIuSZ "\n", txtsize);
+			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+				static_cast<int>(txtsize));
 			TX.append(sizemsg);
 			TX.append(arqstart);
 			TX.append(textin);
@@ -1347,7 +1348,7 @@ void sendImageFile()
 	}
 	const char *p = FSEL::select("ARQ image file", "*.{png,jpg,bmp}\t*", "");
 	char cin;
-	size_t txtsize, b64size;
+	size_t b64size;
 	string textin = "";
 	string b64text;
 	base64 b64(true);
@@ -1365,10 +1366,10 @@ void sendImageFile()
 			while (textfile.get(cin))
 				textin += cin;
 			textfile.close();
-			txtsize = textin.length();
 			b64text = b64.encode(textin);
 			b64size = b64text.length();
-			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%" PRIuSZ "\n", b64size);
+			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+				static_cast<int>(b64size));
 			arqPayloadSize = b64size;
 			blocksSent = 0;
 			TX.append(sizemsg);
@@ -1396,7 +1397,7 @@ void sendBinaryFile()
 	}
 	const char *p = FSEL::select("ARQ file", "*", "");
 	char cin;
-	size_t txtsize, b64size;
+	size_t b64size;
 	string textin = "";
 	string b64text;
 	base64 b64(true);
@@ -1414,10 +1415,10 @@ void sendBinaryFile()
 			while (textfile.get(cin))
 				textin += cin;
 			textfile.close();
-			txtsize = textin.length();
 			b64text = b64.encode(textin);
 			b64size = b64text.length();
-			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%" PRIuSZ "\n", b64size);
+			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+				static_cast<int>(b64size));
 			arqPayloadSize = b64size;
 			blocksSent = 0;
 			TX.append(sizemsg);
