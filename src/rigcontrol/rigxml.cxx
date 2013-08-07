@@ -43,9 +43,11 @@
 #include "fileselect.h"
 #include "confdialog.h"
 
+#include "icons.h"
+
 using namespace std;
 
-//#define DEBUGXML
+//#define DEBUGXML 1
 
 void parseRIGDEF(size_t &);
 void parseRIG(size_t &);
@@ -59,7 +61,6 @@ void parseMODECMD(size_t &);
 void parseMODEREPLY(size_t &);
 void parseTITLE(size_t &);
 void parseLSBMODES(size_t &);
-void parseCOMMENTS(size_t &);
 void parseDISCARD(size_t &);
 
 void parseWRITE_DELAY(size_t &);
@@ -130,7 +131,6 @@ TAGS rigdeftags[] = {
 	{"<MODE-REPLY", parseMODEREPLY},
 	{"<TITLE",		parseTITLE},
 	{"<LSBMODES",	parseLSBMODES},
-	{"<!--",		parseCOMMENTS},
 	{"<PROGRAMMER", parseDISCARD},
 	{"<STATUS",		parseDISCARD},
 	{"<WRITE_DELAY", parseWRITE_DELAY},
@@ -197,7 +197,7 @@ void print(size_t &p0, int indent)
 #ifdef DEBUGXML
 	std::string istr(indent, '\t');
 	size_t tend = strXML.find(">", p0);
-	LOG_VERBOSE("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
+	LOG_INFO("%s%s", istr.c_str(), strXML.substr(p0, tend - p0 + 1).c_str());
 #endif
 }
 
@@ -433,38 +433,50 @@ void parseBWdefs(size_t &p0, list<BW> &lbw)
 	string strELEMENT;
 	string stemp;
 	if (pend == string::npos) {
+		LOG_ERROR("Unmatched tag %s", strXML.substr(p0, 10).c_str());
 		p0++;
 		return;
 	}
 	print(p0,0);
-	p0 = nextTag(p0);
-	while (p0 != string::npos && p0 < pend && tagIs(p0, "<ELEMENT")) {
-		elend = tagEnd(p0);
-		p0 = nextTag(p0);
-		if (isSymbol(p0, strELEMENT)) {
-			p0 = tagEnd(p0);
-			p0 = nextTag(p0);
-			while (p0 != string::npos && p0 < elend) {
-				print(p0,1);
-				if ( isBytes(p0, stemp) ) {
+	size_t p1 = nextTag(p0);
+	while (p1 != string::npos && p1 < pend && tagIs(p1, "<ELEMENT")) {
+		elend = tagEnd(p1);
+		if (elend == string::npos || elend > pend) {
+			LOG_ERROR("Unmatched tag %s", "<ELEMENT");
+			p0 = pend;
+			return;
+		}
+		p1 = nextTag(p1);
+		if (isSymbol(p1, strELEMENT)) {
+			p1 = tagEnd(p1);
+			p1 = nextTag(p1);
+			while (p1 != string::npos && p1 < elend) {
+				print(p1,1);
+				if ( isBytes(p1, stemp) ) {
 					lbw.push_back(BW(strELEMENT,stemp));
+					p1 = tagEnd(p1);
 				}
-				else if ( isByte(p0, ch) ) {
+				else if ( isByte(p1, ch) ) {
 					stemp = ch;
 					lbw.push_back(BW(strELEMENT,stemp));
+					p1 = tagEnd(p1);
 				}
-				else if ( isInt(p0, n) ) {
+				else if ( isInt(p1, n) ) {
 					stemp = (char)(n & 0xFF);
 					lbw.push_back(BW(strELEMENT, stemp));
+					p1 = tagEnd(p1);
 				}
-				else if ( isString(p0, stemp) ) {
+				else if ( isString(p1, stemp) ) {
 					lbw.push_back(BW(strELEMENT,stemp));
+					p1 = tagEnd(p1);
+				} else {
+					LOG_ERROR("Invalid tag: %s", strXML.substr(p1, 10).c_str());
+					parseDISCARD(p1);
 				}
-				p0 = tagEnd(p0);
-				p0 = nextTag(p0);
+				p1 = nextTag(p1);
 			}
 		}
-		p0 = nextTag(p0);
+		p1 = nextTag(p1);
 	}
 	p0 = pend;
 }
@@ -722,15 +734,18 @@ void parseIOSdata(size_t &p0)
 	while (p1 < pend) {
 		pv = datatags;
 		while (pv->tag) {
-			if (strXML.find(pv->tag, p1) == p1) {
-				print(p1, 1);
-				if (pv->fp) 
-					(pv->fp)(p1);
+			if (strXML.find(pv->tag, p1) == p1)
 				break;
-			}
 			pv++;
 		}
-		p1 = tagEnd(p1);
+		if (pv->fp) {
+			print(p1, 1);
+			(pv->fp)(p1);
+			p1 = tagEnd(p1);
+		} else {
+			LOG_ERROR("Invalid tag: %s", strXML.substr(p1, 10).c_str());
+			parseDISCARD(p1);
+		}
 		p1 = nextTag(p1);
 	}
 }
@@ -786,17 +801,19 @@ bool parseIOS(size_t &p0, TAGS *valid)
 	while (p1 < pend) {
 		pv = valid;
 		while (pv->tag) {
-			if (strXML.find(pv->tag, p1) == p1) {
-				print(p1, 1);
-				if (pv->fp) 
-					(pv->fp)(p1);
+			if (strXML.find(pv->tag, p1) == p1)
 				break;
-			}
 			pv++;
 		}
-		p1 = tagEnd(p1);
+		if (pv->fp) {
+			print(p1, 1);
+			(pv->fp)(p1);
+			p1 = tagEnd(p1);
+		} else {
+			LOG_ERROR("Invalid tag: %s", strXML.substr(p1, 10).c_str());
+			parseDISCARD(p1);
+		}
 		p1 = nextTag(p1);
-//		if (pv->tag == 0) p1 = pend;
 	}
 	p0 = pend;
 	return (!iosTemp.SYMBOL.empty());
@@ -814,14 +831,12 @@ void parseREPLY(size_t &p0)
 		reply.push_back(iosTemp);
 }
 
-void parseCOMMENTS(size_t &p0)
-{
-	p0 = strXML.find("-->",p0);
-}
-
 void parseRIGDEF(size_t &p0)
 {
-	p0 = nextTag(p0);
+	print(p0,0);
+	size_t p1 = tagEnd(p0);
+	if (p1 != string::npos)
+		strXML.erase(p1);
 }
 
 void parseDISCARD(size_t &p0)
@@ -833,10 +848,10 @@ void parseDISCARD(size_t &p0)
 
 void parseXML()
 {
-	size_t p0;
-	p0 = 0;
-	p0 = nextTag(p0);
-	TAGS *pValid;
+	size_t p0 = 0;
+	TAGS *pValid = rigdeftags;
+
+	p0 = strXML.find("<");
 	while (p0 != string::npos) {
 		pValid = rigdeftags;
 		while (pValid->tag) {
@@ -844,12 +859,42 @@ void parseXML()
 				break;
 			pValid++;
 		}
-		if (pValid->tag)
+		if (pValid->tag) {
 			(pValid->fp)(p0);
-		else
+		 } else {
+			LOG_ERROR("Invalid tag: %s", strXML.substr(p0, 10).c_str());
 			parseDISCARD(p0);
+		}
 		p0 = nextTag(p0);
 	}
+}
+
+bool remove_comments()
+{
+	size_t p0 = 0;
+	size_t p1 = 0;
+
+// remove comments from xml text
+	while ((p0 = strXML.find("<!--")) != string::npos) {
+		p1 = strXML.find("-->", p0);
+		if (p1 == string::npos) {
+			fl_alert2("Corrupt rig XML defintion file\nMismatched comment tags!");
+			return false;
+		}
+		strXML.erase(p0, p1 - p0 + 3);
+	}
+	if (strXML.find("-->") != string::npos) {
+		fl_alert2("Corrupt rig XML defintion file\nMismatched comment tags!");
+		return false;
+	}
+	return true;
+}
+
+bool testXML()
+{
+	if (!remove_comments()) return false;
+
+	return true;
 }
 
 bool readRigXML()
@@ -877,8 +922,10 @@ bool readRigXML()
 			strXML.append(szLine);
 		}
 		xmlfile.close();
-		parseXML();
-		return true;
+		if (testXML()) {
+			parseXML();
+			return true;
+		}
 	}
 	return false;
 }

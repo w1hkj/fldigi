@@ -3484,7 +3484,7 @@ Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
 static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
   progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
-btnRevertHAMLIB->deactivate();
+//btnRevertHAMLIB->activate();
 progdefaults.changed = true;
 }
 
@@ -7831,8 +7831,9 @@ le Earth)"));
                 o->value(progdefaults.RigCatRestoreTIO);
               } // Fl_Check_Button* chk_restore_tio
               { btnRevertRIGCAT = new Fl_Button(385, 289, 113, 24, _("Revert"));
-                btnRevertRIGCAT->tooltip(_("Initialize hamlib interface"));
+                btnRevertRIGCAT->tooltip(_("Reset rigCAT interface"));
                 btnRevertRIGCAT->callback((Fl_Callback*)cb_btnRevertRIGCAT);
+                btnRevertRIGCAT->hide();
                 btnRevertRIGCAT->deactivate();
               } // Fl_Button* btnRevertRIGCAT
               { Fl_Check_Button* o = chkRigCatVSP = new Fl_Check_Button(276, 300, 100, 25, _("VSP Enable"));
@@ -8046,8 +8047,9 @@ le Earth)"));
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
               { btnRevertHAMLIB = new Fl_Button(383, 289, 113, 24, _("Revert"));
-                btnRevertHAMLIB->tooltip(_("Initialize hamlib interface"));
+                btnRevertHAMLIB->tooltip(_("Reset hamlib interface"));
                 btnRevertHAMLIB->callback((Fl_Callback*)cb_btnRevertHAMLIB);
+                btnRevertHAMLIB->hide();
                 btnRevertHAMLIB->deactivate();
               } // Fl_Button* btnRevertHAMLIB
               grpHamlib->end();
