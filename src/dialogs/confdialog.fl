@@ -3916,8 +3916,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
-        tooltip {Transceiver control} xywh {0 25 540 340} hide
+        label Rig open
+        tooltip {Transceiver control} xywh {0 23 540 345} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 23 540 345} selection_color 50
@@ -4060,8 +4060,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group {} {
-            label RigCAT
-            tooltip {Rig Control using xml spec file} xywh {0 50 540 320} hide
+            label RigCAT open
+            tooltip {Rig Control using xml spec file} xywh {0 48 540 320} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -4244,7 +4244,7 @@ btnRevertRIGCAT->activate();}
                 callback {btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
 btnInitRIGCAT->redraw_label();
 rigCAT_restore_defaults();}
-                tooltip {Initialize hamlib interface} xywh {385 289 113 24} deactivate
+                tooltip {Reset rigCAT interface} xywh {385 289 113 24} hide deactivate
                 code0 {\#include "rigio.h"}
               }
               Fl_Check_Button chkRigCatVSP {
@@ -4385,7 +4385,7 @@ in format: param=val ...} xywh {32 321 320 22} align 5
                 label Initialize
                 callback {progdefaults.initInterface();
 o->labelcolor(FL_FOREGROUND_COLOR);
-btnRevertHAMLIB->deactivate();
+//btnRevertHAMLIB->activate();
 progdefaults.changed = true;}
                 tooltip {Initialize hamlib interface} xywh {383 320 113 24}
               }
@@ -4454,7 +4454,7 @@ btnInitHAMLIB->redraw_label();
 \#if USE_HAMLIB
 hamlib_restore_defaults();
 \#endif}
-                tooltip {Initialize hamlib interface} xywh {383 289 113 24} deactivate
+                tooltip {Reset hamlib interface} xywh {383 289 113 24} hide deactivate
               }
             }
           }
