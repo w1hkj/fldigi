@@ -4085,9 +4085,6 @@ void cb_cntCW_WPM(Fl_Widget * w, void *v)
 	Fl_Counter2 *cnt = (Fl_Counter2 *) w;
 	progdefaults.CWspeed = (int)cnt->value();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
-	if (sldrCWfarnsworth->value() > progdefaults.CWspeed)
-		sldrCWfarnsworth->value(progdefaults.CWspeed);
-	sldrCWfarnsworth->maximum(progdefaults.CWspeed);
 	progdefaults.changed = true;
 	sync_cw_parameters();
 	restoreFocus();

@@ -260,7 +260,7 @@ cw::cw() : modem()
 	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
 	symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
-	fsymlen = (int)((50*(samplerate * 1.2 / progdefaults.CWfarnsworth) - 41*symbollen)/9);
+	fsymlen = (int)(samplerate * 1.2 / progdefaults.CWfarnsworth);
 
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
@@ -350,6 +350,24 @@ void cw::reset_rx_filter()
 		if (pipesize < 0) pipesize = 512;
 		if (pipesize > MAX_PIPE_SIZE) pipesize = MAX_PIPE_SIZE;
 
+		cw_adaptive_receive_threshold = 2 * DOT_MAGIC / cw_speed;
+		cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
+		cw_send_dot_length = DOT_MAGIC / cw_send_speed;
+		cw_send_dash_length = 3 * cw_send_dot_length;
+		symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
+		fsymlen = (int)(samplerate * 1.2 / progdefaults.CWfarnsworth);
+
+		phaseacc = 0.0;
+		FFTphase = 0.0;
+		FIRphase = 0.0;
+		FFTvalue = 0.0;
+		FIRvalue = 0.0;
+		pipeptr = 0;
+		clrcount = 0;
+		smpl_ctr = 0;
+
+		memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
+
 		agc_peak = 0;
 /*
 printf("%s%s, %3.0f Hz, %d wpm\n",
@@ -376,14 +394,14 @@ void cw::sync_parameters()
 	int lowerwpm, upperwpm, nusymbollen, nufsymlen;
 
 	int wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
-	int fwpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWfarnsworth;
+	int fwpm = progdefaults.CWfarnsworth;
 
 	cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
 
 	cw_send_dash_length = 3 * cw_send_dot_length;
 
 	nusymbollen = (int)(samplerate * 1.2 / wpm);
-	nufsymlen = (int)((50*(samplerate * 1.2 / fwpm) - 41*symbollen)/9);
+	nufsymlen = (int)(samplerate * 1.2 / fwpm);
 
 	if (symbollen != nusymbollen ||
 		nufsymlen != fsymlen ||
@@ -1036,7 +1054,7 @@ void cw::send_symbol(int bits, int len)
 				q_carryover = 0;
 
 		} else { // last symbol = 1
-			duration = 2 * symbollen - kpre - knum;
+			duration = 2 * len - kpre - knum;
 			carryover = 0;
 			sample = 0;
 
@@ -1100,10 +1118,7 @@ void cw::send_ch(int ch)
 
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
-		if (progdefaults.CWusefarnsworth)
-			flen = 4 * fsymlen;
-		else
-			flen = 4 * symbollen;
+		flen = 4 * symbollen;
 		while (flen - symbollen > 0) {
 			send_symbol(0, symbollen);
 			flen -= symbollen;
@@ -1123,14 +1138,24 @@ void cw::send_ch(int ch)
 	}
 
 // loop sending out binary bits of cw character
+// at WPM or Farnsworth rate
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth))
+		flen = fsymlen;
+	else
+		flen = symbollen;
+
+	int charlen = 0;
 	while (code > 1) {
-		send_symbol(code, symbollen);// & 1);
+		send_symbol(code, flen);
+		charlen++;
 		code = code >> 1;
 	}
-		if (progdefaults.CWusefarnsworth)
-			flen = fsymlen;
-		else
-			flen = symbollen;
+
+// inter character space at WPM/FWPM rate
+	flen = symbollen;
+	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth))
+		flen += (symbollen - fsymlen)*charlen;
+
 	while(flen - symbollen > 0) {
 		send_symbol(0, symbollen);
 		flen -= symbollen;
