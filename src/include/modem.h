@@ -19,6 +19,10 @@
 #define TWOPI (2.0 * M_PI)
 
 class modem {
+public:
+	static double	frequency;
+	static double	tx_frequency;
+	static bool	freqlock;
 protected:
 	cMorse	morse;
 	trx_mode mode;
@@ -30,13 +34,10 @@ protected:
 	bool	reverse;
 	int		sigsearch;
 
-	bool	freqlock;
 	double	bandwidth;
-	double	frequency;
 	double	freqerr;
 	double	rx_corr;
 	double	tx_corr;
-	double	tx_frequency;
 	double  PTTphaseacc;
 	double  PTTchannel[OUTBUFSIZE];
 
