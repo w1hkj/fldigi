@@ -1,8 +1,16 @@
 
 
-=Version 3.21.73=
+=Version 3.21.74=
 
-2013-07-28  David Freese  <w1hkj@w1hkj.com>
+2013-08-13  David Freese  <w1hkj@w1hkj.com>
+
+	d17f1b1: initialize active_modem
+	bdbaf78: XML parser
+	6fcf6bd: 64 bit compile warnings
+	1a870d9: Automake bug
+
+
+=Version 3.21.73=
 
 	627bddc: qrunner mod
 	98b61eb: Pskmail-test
