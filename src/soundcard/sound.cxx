@@ -1,12 +1,12 @@
 // ----------------------------------------------------------------------------
 //
-//	  sound.cxx
+//	sound.cxx
 //
-// Copyright (C) 2006-2010
-//			  Dave Freese, W1HKJ
+// Copyright (C) 2006-2013
+//			Dave Freese, W1HKJ
 //
 // Copyright (C) 2007-2010
-//			  Stelios Bounanos, M0GLD
+//			Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
 //
@@ -47,9 +47,9 @@
 #if USE_OSS
 #  include <sys/ioctl.h>
 #  if defined(__OpenBSD__)
-#	include <soundcard.h>
+#   include <soundcard.h>
 #  else
-#	include <sys/soundcard.h>
+#   include <sys/soundcard.h>
 #  endif
 #endif
 #include <math.h>
@@ -72,11 +72,14 @@
 #include "qrunner.h"
 #include "icons.h"
 
-#define	SND_BUF_LEN		65536
-// #define	SRC_BUF_LEN		(8*SND_BUF_LEN)
+#define SND_BUF_LEN	 65536
+#define SND_RW_LEN	(8 * SND_BUF_LEN)
+// #define  SRC_BUF_LEN	 (8*SND_BUF_LEN)
 
-// We never write duplicate/QSK/PseudoFSK data to the sound files
+// We never write duplicate/QSK/PTT tone/PseudoFSK data to the sound files
 #define SNDFILE_CHANNELS 1
+
+int sndfile_samplerate[4] = {22050, 24000, 44100, 48000};
 
 using namespace std;
 
@@ -94,6 +97,31 @@ SoundBase::SoundBase()
 	  capture(false), playback(false), generate(false)
 {
 	memset(wrt_buffer, 0, SND_BUF_LEN * sizeof(*wrt_buffer));
+
+#if USE_SNDFILE
+	int err;
+	writ_src_data = new SRC_DATA;
+	play_src_data = new SRC_DATA;
+
+	writ_src_state = src_new(progdefaults.sample_converter, 1, &err);
+	if (writ_src_state == 0)
+		throw SndException(src_strerror(err));
+
+	play_src_state = src_new(progdefaults.sample_converter, 1, &err);
+	if (play_src_state == 0)
+		throw SndException(src_strerror(err));
+
+	if (play_src_state == 0)
+		throw SndException(src_strerror(err));
+	src_out_buffer = new float [SND_RW_LEN];
+	if (!src_out_buffer)
+		throw SndException(src_strerror(err));
+	src_inp_buffer = new float [SND_RW_LEN];
+	if (!src_inp_buffer)
+		throw SndException(src_strerror(err));
+	modem_wr_sr = modem_play_sr = 0;
+	inp_pointer = src_out_buffer;
+#endif
 }
 
 SoundBase::~SoundBase()
@@ -107,6 +135,10 @@ SoundBase::~SoundBase()
 		sf_close(ofCapture);
 	if (ifPlayback)
 		sf_close(ifPlayback);
+	delete writ_src_data;
+	delete play_src_data;
+	delete [] src_out_buffer;
+	delete [] src_inp_buffer;
 #endif
 }
 
@@ -163,7 +195,8 @@ int SoundBase::Capture(bool val)
 		return 0;
 
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
-	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
+//  SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
+	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], SNDFILE_CHANNELS, format, 0, 0 };
 	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
 		LOG_ERROR("Could not write %s:%s", fname, sf_strerror(NULL) );
 		return 0;
@@ -172,43 +205,11 @@ int SoundBase::Capture(bool val)
 		LOG_ERROR("ofCapture update header command failed: %s", sf_strerror(ofCapture));
 	tag_file(ofCapture, "Captured audio");
 
+//	memset(src_inp_buffer, 0, 512 * sizeof(float));
+//	write_file(ofCapture, src_inp_buffer, 512);
+
 	capture = true;
 	return 1;
-}
-
-int SoundBase::Playback(bool val)
-{
-	if (!val) {
-		if (ifPlayback) {
-			int err;
-			if ((err = sf_close(ifPlayback)) != 0)
-				LOG_ERROR("sf_close error: %s", sf_error_number(err));
-			ifPlayback = 0;
-		}
-		playback = false;
-		return 1;
-	}
-	const char* fname;
-	int format;
-	get_file_params("playback.wav", &fname, &format);
-	if (!fname)
-		return -1;
-
-	SF_INFO info = { 0, 0, 0, 0, 0, 0 };
-	if ((ifPlayback = sf_open(fname, SFM_READ, &info)) == NULL) {
-		LOG_ERROR("Could not read %s:%s", fname, sf_strerror(NULL) );
-		return -2;
-	}
-
-	if (info.channels != 1) {
-		sf_close(ifPlayback);
-		return -3;
-	}
- 
-	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
-
-	playback = true;
-	return 0;
 }
 
 int SoundBase::Generate(bool val)
@@ -230,8 +231,7 @@ int SoundBase::Generate(bool val)
 	if (!fname)
 		return 0;
 
-	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
-	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
+	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], SNDFILE_CHANNELS, format, 0, 0 };
 	if ((ofGenerate = sf_open(fname, SFM_WRITE, &info)) == NULL) {
 		LOG_ERROR("Could not write %s", fname);
 		return 0;
@@ -240,22 +240,128 @@ int SoundBase::Generate(bool val)
 		LOG_ERROR("ofGenerate update header command failed: %s", sf_strerror(ofGenerate));
 	tag_file(ofGenerate, "Generated audio");
 
+//	memset(src_inp_buffer, 0, 512 * sizeof(float));
+//	write_file(ofGenerate, src_inp_buffer, 512);
+
 	generate = true;
 	return 1;
 }
 
+
+int SoundBase::Playback(bool val)
+{
+	if (!val) {
+		if (ifPlayback) {
+			int err;
+			if ((err = sf_close(ifPlayback)) != 0)
+				LOG_ERROR("sf_close error: %s", sf_error_number(err));
+			ifPlayback = 0;
+		}
+		playback = false;
+		return 1;
+	}
+	const char* fname;
+	int format;
+	get_file_params("playback.wav", &fname, &format);
+	if (!fname)
+		return -1;
+
+	play_info.frames = 0;
+	play_info.samplerate = 0;
+	play_info.channels = 0;
+	play_info.format = 0;
+	play_info.sections = 0;
+	play_info.seekable = 0;
+
+	if ((ifPlayback = sf_open(fname, SFM_READ, &play_info)) == NULL) {
+		LOG_ERROR("Could not read %s:%s", fname, sf_strerror(NULL) );
+		return -2;
+	}
+LOG_INFO("wav file stats:\n\
+frames     : %d\n\
+samplerate : %d\n\
+channels   : %d\n\
+format     : %d\n\
+sections   : %d\n\
+seekable   : %d",
+static_cast<unsigned int>(play_info.frames),
+play_info.samplerate,
+play_info.channels,
+play_info.format,
+play_info.sections,
+play_info.seekable);
+
+// this restriction needs to be removed!
+	if (play_info.channels != 1) {
+		sf_close(ifPlayback);
+		return -3;
+	}
+
+	modem_play_sr = sample_frequency;
+	play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
+	src_set_ratio(play_src_state, play_src_data->src_ratio);
+LOG_INFO("src ratio %f", play_src_data->src_ratio);
+
+	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
+
+	playback = true;
+	new_playback = true;
+
+	return 0;
+}
+
+// ---------------------------------------------------------------------
+// read_file
+//    can be simplified from the equivalent read audio stream
+//   source sr is arbitrary, requested is either 8000 or 11025 depending
+// on the modem in use
+// read from file and resample until a "count" number of converted samples
+// is available, or until at the end of the input file
+// ---------------------------------------------------------------------
 sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 {
-	sf_count_t r = 0;
-	sf_count_t rd_count = sf_readf_float(file, buf, count);
-	r = rd_count;
+	sf_count_t r = 0, rd_count = 0;
+	int err = 0;
 
-	while (r < count) {
-		r += (rd_count = sf_readf_float(file, buf + r, count - r));
-		if (rd_count == 0) break;
+	if (new_playback || modem_play_sr != sample_frequency) {
+		modem_play_sr = sample_frequency;
+		play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
+		src_set_ratio(play_src_state, play_src_data->src_ratio);
+LOG_INFO("src ratio %f", play_src_data->src_ratio);
+		new_playback = true;
+	}
+
+	while ( static_cast<size_t>(inp_pointer - src_out_buffer) < count) {
+		if (new_playback) {
+			memset(src_inp_buffer, 0, 1024 * sizeof(float));
+			new_playback = false;
+			rd_count = 1024;
+		} else
+			rd_count = sf_readf_float(file, src_inp_buffer, 1024);
+		if (!rd_count) break;
+		play_src_data->data_in = src_inp_buffer;
+		play_src_data->input_frames = rd_count;
+		play_src_data->data_out = inp_pointer;
+		play_src_data->output_frames = SND_RW_LEN - (inp_pointer - src_out_buffer);
+		play_src_data->end_of_input = 0;
+
+		if ((err = src_process(play_src_state, play_src_data)) != 0)
+			throw SndException(src_strerror(err));
+
+		inp_pointer += play_src_data->output_frames_gen;
+//LOG_INFO("read: %d, conversion %d", (int)rd_count, (int)(play_src_data->output_frames_gen));
+	}
+//LOG_INFO("available: %d", (int)(inp_pointer - src_out_buffer));
+	if ( static_cast<size_t>(inp_pointer - src_out_buffer) >= count) {
+		memcpy(buf, src_out_buffer, count * sizeof(float));
+		memmove(src_out_buffer, src_out_buffer + count, (SND_RW_LEN - count) * sizeof(float));
+		inp_pointer -= count;
+		r = count;
 	}
 
 	if (r == 0) {
+		src_reset (play_src_state);
+		inp_pointer = src_out_buffer;
 		if (!progdefaults.loop_playback) {
 			Playback(0);
 			bHighSpeed = false;
@@ -268,38 +374,57 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 	return r;
 }
 
-#define WRITE_FILE(type_, file_, buf_, count_)					\
-	if (capture || !progdefaults.EnableMixer)				\
-		return sf_writef_ ## type_(file, buf, count);			\
-	/* generated audio; apply transmit mixer level */			\
-	size_t nw = count;							\
-	type_* wrtbuf = (type_*)wrt_buffer;					\
-	for (size_t n = MIN(SND_BUF_LEN, count); count; count -= n) {		\
-		for (size_t i = 0; i < n; i++)					\
-			wrtbuf[i] = buf[i] * progStatus.XmtMixer;		\
-		if (sf_writef_ ## type_(file, wrtbuf, n) != (sf_count_t)n) {	\
-			LOG_ERROR("sf_write error: %s", sf_strerror(file));	\
-			break;							\
-		}								\
-	}									\
-	return nw - count
-
-
-sf_count_t SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
+// ---------------------------------------------------------------------
+// write_file
+//   All sound buffer data is resampled to 48000 samples/sec
+// resultant data (left channel only) is written to a wav file
+//----------------------------------------------------------------------
+void SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
 {
-	WRITE_FILE(float, file, buf, count);
+	int err;
+	if (modem_wr_sr != sample_frequency) {
+		modem_wr_sr = sample_frequency;
+		writ_src_data->src_ratio = sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		src_set_ratio(writ_src_state, writ_src_data->src_ratio);
+	}
+	writ_src_data->data_in = buf;
+	writ_src_data->input_frames = count;
+	writ_src_data->data_out = src_out_buffer;
+	writ_src_data->output_frames = SND_RW_LEN;
+	writ_src_data->end_of_input = 0;
+
+	if ((err = src_process(writ_src_state, writ_src_data)) != 0) {
+		throw SndException(src_strerror(err));
+	}
+
+	size_t output_size = writ_src_data->output_frames_gen;
+
+	if (output_size)
+		sf_writef_float(file, writ_src_data->data_out, output_size);
+
+	return;
+
 }
 
-sf_count_t SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
+void SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
 {
-	WRITE_FILE(double, file, buf, count);
+	float *outbuf = new float[count];
+	for (size_t i = 0; i < count; i++)
+		outbuf[i] = buf[i];
+	write_file(file, outbuf, count);
+	delete [] outbuf;
+	return;
 }
-
 
 bool SoundBase::format_supported(int format)
 {
-
-	SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
+	SF_INFO info = { 
+		0,
+		sndfile_samplerate[progdefaults.wavSampleRate],
+		SNDFILE_CHANNELS,
+		format,
+		0,
+		0 };
 	FILE* f;
 	if ((f = tmpfile()) == NULL)
 		return false;
@@ -342,8 +467,8 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 #define maxsc 32000.0
 
 SoundOSS::SoundOSS(const char *dev ) {
-	device			= dev;
-	cbuff			= 0;
+	device		  = dev;
+	cbuff		   = 0;
 	try {
 		Open(O_RDONLY);
 		getVersion();
@@ -357,11 +482,11 @@ SoundOSS::SoundOSS(const char *dev ) {
 
 	snd_buffer = new float [2 * SND_BUF_LEN];
 	src_buffer = new float [2 * SND_BUF_LEN];
-	cbuff	  = new unsigned char [4 * SND_BUF_LEN];
+	cbuff	 = new unsigned char [4 * SND_BUF_LEN];
 
 	memset(snd_buffer, 0, 2 * SND_BUF_LEN * sizeof(*snd_buffer));
 	memset(src_buffer, 0, 2 * SND_BUF_LEN * sizeof(*src_buffer));
-	memset(cbuff,	  0, 4 * SND_BUF_LEN * sizeof(*cbuff));
+	memset(cbuff,	 0, 4 * SND_BUF_LEN * sizeof(*cbuff));
 
 	tx_src_data = new SRC_DATA;
 	rx_src_data = new SRC_DATA;
@@ -423,16 +548,16 @@ int SoundOSS::Open(int md, int freq)
 	mode = md;
 	try {
 		int oflags = md;
-#		ifdef HAVE_O_CLOEXEC
+#	   ifdef HAVE_O_CLOEXEC
 			oflags = oflags | O_CLOEXEC;
-#		endif
+#	   endif
 
 		device_fd = open(device.c_str(), oflags, 0);
 		if (device_fd == -1)
 			throw SndException(errno);
 		Format(AFMT_S16_LE);	// default: 16 bit little endian
-//		Channels(1);			//		  1 channel
-		Channels(2);			//		  2 channels
+//	  Channels(1);			//		1 channel
+		Channels(2);			//		2 channels
 		Frequency(freq);
 		setfragsize();
 	}
@@ -454,10 +579,10 @@ void SoundOSS::getVersion()
 {
 	version = 0;
 #ifndef __FreeBSD__
- 	if (ioctl(device_fd, OSS_GETVERSION, &version) == -1) {
- 		version = -1;
- 		throw SndException("OSS Version");
- 	}
+	if (ioctl(device_fd, OSS_GETVERSION, &version) == -1) {
+		version = -1;
+		throw SndException("OSS Version");
+	}
 #endif
 }
 
@@ -1003,20 +1128,20 @@ void SoundPort::Abort(unsigned dir)
 }
 
 
-#define WAIT_FOR_COND(cond, s, t)					\
+#define WAIT_FOR_COND(cond, s, t)				   \
 	do {											\
-		while (!(cond)) {							\
+		while (!(cond)) {						   \
 			if (sem_timedwait_rel(s, t) == -1) {	\
-				if (errno == ETIMEDOUT) {			\
-					timeout = true;					\
-					break;							\
-				}									\
+				if (errno == ETIMEDOUT) {		   \
+					timeout = true;				 \
+					break;						  \
+				}								   \
 				else if (errno == EINTR)			\
-					continue;						\
+					continue;					   \
 				LOG_PERROR("sem_timedwait");		\
-				throw SndException(errno);			\
-			}										\
-		}											\
+				throw SndException(errno);		  \
+			}									   \
+		}										   \
 	} while (0)
 
 
@@ -1036,11 +1161,11 @@ size_t SoundPort::Read(float *buf, size_t count)
 	}
 #endif
 
-	if (rxppm != progdefaults.RX_corr) {
+	if (rxppm != progdefaults.RX_corr)
 		rxppm = progdefaults.RX_corr;
-		sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
-		src_set_ratio(rx_src_state, sd[0].src_ratio);
-	}
+
+	sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
+	src_set_ratio(rx_src_state, sd[0].src_ratio);
 
 	size_t maxframes = (size_t)floor(sd[0].rb->length() * sd[0].src_ratio / sd[0].params.channelCount);
 
@@ -1193,11 +1318,12 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 				else
 						wbuf = src_buffer;
 
-				if (txppm != progdefaults.TX_corr) {
-						txppm = progdefaults.TX_corr;
-						tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
-						src_set_ratio(tx_src_state, tx_src_data->src_ratio);
-				}
+				if (txppm != progdefaults.TX_corr)
+					txppm = progdefaults.TX_corr;
+
+				tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+				src_set_ratio(tx_src_state, tx_src_data->src_ratio);
+
 				tx_src_data->data_in = buf;
 				tx_src_data->input_frames = count;
 				tx_src_data->data_out = wbuf;
@@ -1406,8 +1532,8 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\ndefault high output latency: " << (*sd[dir].idev)->defaultHighOutputLatency
 		<< "\n";
 
-//	LOG_DEBUG("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
-//		  sd[dir].device.c_str(), device_text[dir].str().c_str());
+//  LOG_DEBUG("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
+//		sd[dir].device.c_str(), device_text[dir].str().c_str());
 
 
 		sd[dir].dev_sample_rate = find_srate(dir);
@@ -1735,7 +1861,7 @@ void SoundPulse::flush(unsigned dir)
 	int err = PA_OK;
 	if ((dir == 1 || dir == UINT_MAX) && sd[1].stream) {
 		// wait for audio to finish playing
-//		pa_simple_drain(sd[1].stream, &err);
+//	  pa_simple_drain(sd[1].stream, &err);
 		MilliSleep(SCBLOCKSIZE * 1000 / sd[1].stream_params.rate);
 		pa_simple_flush(sd[1].stream, &err);
 	}
@@ -1822,19 +1948,19 @@ size_t SoundPulse::resample_write(float* buf, size_t count)
 			tx_src_data->src_ratio = 1.0 + txppm / 1e6;
 			src_set_ratio(tx_src_state, tx_src_data->src_ratio);
 		}
-				tx_src_data->data_in = wbuf;
-				tx_src_data->input_frames = count;
-				tx_src_data->data_out = src_buffer;
-				tx_src_data->output_frames = SND_BUF_LEN;
-				tx_src_data->end_of_input = 0;
-				if ((err = src_process(tx_src_state, tx_src_data)) != 0)
+		tx_src_data->data_in = wbuf;
+		tx_src_data->input_frames = count;
+		tx_src_data->data_out = src_buffer;
+		tx_src_data->output_frames = SND_BUF_LEN;
+		tx_src_data->end_of_input = 0;
+		if ((err = src_process(tx_src_state, tx_src_data)) != 0)
 			throw SndException(src_strerror(err));
 		if (tx_src_data->output_frames_gen == 0) // input was too small
 			return count;
 
-				wbuf = tx_src_data->data_out;
-				count = tx_src_data->output_frames_gen;
-		}
+		wbuf = tx_src_data->data_out;
+		count = tx_src_data->output_frames_gen;
+	}
 
 	if (pa_simple_write(sd[1].stream, wbuf, count * sd[1].stream_params.channels * sizeof(float), &err) == -1)
 		throw SndPulseException(err);
