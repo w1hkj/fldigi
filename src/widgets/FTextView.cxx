@@ -193,7 +193,6 @@ void FTextBase::resize(int X, int Y, int W, int H)
 	if (need_wrap_reset)
 		reset_wrap_col();
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 	TOP_MARGIN = DEFAULT_TOP_MARGIN;
 	int r = H - Fl::box_dh(box()) - TOP_MARGIN - BOTTOM_MARGIN;
 	if (mHScrollBar->visible())
@@ -203,16 +202,6 @@ void FTextBase::resize(int X, int Y, int W, int H)
 //printf("H %d, textsize %d, lines %d, extra %d\n", r, msize, r / msize, r % msize);
 	if (r %= msize)
 		TOP_MARGIN += r;
-#else
-	if (need_margin_reset && textsize() > 0) {
-		TOP_MARGIN = DEFAULT_TOP_MARGIN;
-		int r = H - Fl::box_dh(box()) - TOP_MARGIN - BOTTOM_MARGIN;
-		if (mHScrollBar->visible())
-			r -= scrollbar_width();
-		if (r %= textsize())
-			TOP_MARGIN += r;
-	}
-#endif
 	if (scroll_hint) {
 		mTopLineNumHint = mNBufferLines;
 		mHorizOffsetHint = 0;
@@ -407,10 +396,6 @@ char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 			return tbuf->selection_text();
 	}
 
-//#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-//	start = tbuf->word_start(p);
-//	end = tbuf->word_end(p);
-//#else
 	string nonword = nwchars;
 	nonword.append(" \t\n");
 	if (!tbuf->findchars_backward(p, nonword.c_str(), &start))
@@ -419,7 +404,6 @@ char* FTextBase::get_word(int x, int y, const char* nwchars, bool ontext)
 		start++;
 	if (!tbuf->findchars_forward(p, nonword.c_str(), &end))
 		end = tbuf->length();
-//#endif
 
 	if (ontext && (p < start || p >= end))
 		return 0;

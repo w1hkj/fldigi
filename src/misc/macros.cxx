@@ -2697,8 +2697,6 @@ static std::string mtext =
 
 void MACROTEXT::saveMacros(const std::string& fname) {
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-
 	std::string work;
 	std::string output;
 	char temp[200];
@@ -2717,29 +2715,6 @@ void MACROTEXT::saveMacros(const std::string& fname) {
 		output.append(work).append("\n");
 	}
 	UTF8_writefile(fname.c_str(), output);
-
-#else
-
-	std::string work;
-
-	ofstream mfile(fname.c_str());
-	mfile << mtext;
-	for (int i = 0; i < MAXMACROS; i++) {
-		mfile << "\n//\n// Macro # " << i+1 << "\n";
-		mfile << "/$ " << i << " " << macros.name[i].c_str() << "\n";
-		work = macros.text[i];
-		size_t pos;
-		pos = work.find('\n');
-		while (pos != std::string::npos) {
-			work.insert(pos, "\\n");
-			pos = work.find('\n', pos + 3);
-		}
-		mfile << work.c_str();
-	}
-	mfile << "\n";
-	mfile.close();
-
-#endif
 
 	changed = false;
 }

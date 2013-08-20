@@ -53,16 +53,7 @@
 // to
 //#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__) && !defined(__WOE32__)
 
-#ifdef __MINGW32__
-#	if FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR < 3
-#		undef dirent
-#		include <dirent.h>
-#	else
-#		include <dirent.h>
-#	endif
-#else
-#	include <dirent.h>
-#endif
+#include <dirent.h>
 
 #include "flarq.h"
 #include "arq.h"

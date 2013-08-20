@@ -43,7 +43,6 @@
 // so output differs from input.
 //----------------------------------------------------------------------
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 #include <FL/fl_utf8.h>
 
 static int utf8_read_(
@@ -150,16 +149,4 @@ int UTF8_writefile( const char *file, std::string &text )
 	return e;
 }
 
-#else
-
-int UTF8_readfile(const char *file, std::string &output)
-{
-	return 0;
-}
-
-int UTF8_writefile( const char *file, std::string &text )
-{
-	return 0;
-}
-#endif
 
