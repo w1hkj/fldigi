@@ -193,7 +193,8 @@ double speed_test(int converter, unsigned repeat);
 static void setup_signal_handlers(void);
 static void checkdirectories(void);
 
-static void arg_error(const char* name, const char* arg, bool missing) noreturn__;
+static void arg_error(const char* name, const char* arg, bool missing);
+static void fatal_error(string);
 
 // TODO: find out why fldigi crashes on OS X if the wizard window is
 // shown before fldigi_main.
@@ -309,13 +310,13 @@ int main(int argc, char ** argv)
 #ifdef __WOE32__
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
 		if (PskMailDir.empty()) PskMailDir = BaseDir;
-		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
+//		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
 		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #else
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
 		if (PskMailDir.empty()) PskMailDir = BaseDir;
-		if (DATA_dir.empty()) DATA_dir.assign(HomeDir).append("data/");
+//		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("data/");
 		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
 		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
 #endif
@@ -339,6 +340,7 @@ int main(int argc, char ** argv)
 	}
 	checkdirectories();
 	check_nbems_dirs();
+	check_data_dir();
 
 	try {
 		debug::start(string(HomeDir).append("status_log.txt").c_str());
@@ -942,16 +944,14 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_BENCHMARK_MODEM:
 			benchmark.modem = strtol(optarg, NULL, 10);
 			if (!(benchmark.modem >= 0 && benchmark.modem < NUM_MODES)) {
-				cerr << "Bad modem id\n";
-				exit(EXIT_FAILURE);
+				fatal_error(_("Bad modem id"));
 			}
 			break;
 
 		case OPT_BENCHMARK_FREQ:
 			benchmark.freq = strtol(optarg, NULL, 10);
 			if (benchmark.freq < 0) {
-				cerr << "Bad frequency\n";
-				exit(EXIT_FAILURE);
+				fatal_error(_("Bad frequency"));
 			}
 			break;
 
@@ -1263,6 +1263,21 @@ static void setup_signal_handlers(void)
 #endif
 }
 
+// Show an error dialog and print to cerr if available.
+// On win32 Fl::fatal displays its own error window.
+static void fatal_error(string sz_error)
+{
+	string s = "Fatal error!\n";
+	s.append(sz_error).append("\n").append(strerror(errno));
+
+// Win32 will display a MessageBox error message
+#if !defined(__WOE32__)
+	fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
+	fl_alert2("%s", s.c_str());
+#endif
+	Fl::fatal(s.c_str());
+}
+
 static void checkdirectories(void)
 {
 	struct DIRS {
@@ -1283,6 +1298,7 @@ static void checkdirectories(void)
 		{ TalkDir, "talk", 0 },
 		{ TempDir, "temp", 0 },
 		{ KmlDir, "kml", 0 },
+		{ DATA_dir, "data", 0 },
 	};
 
 	int r;
@@ -1291,9 +1307,9 @@ static void checkdirectories(void)
 			fldigi_dirs[i].dir.assign(HomeDir).append(fldigi_dirs[i].suffix).append(PATH_SEP);
 
 		if ((r = mkdir(fldigi_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << _("Could not make directory") << ' ' << fldigi_dirs[i].dir
-			     << ": " << strerror(errno) << '\n';
-			exit(EXIT_FAILURE);
+			string s = _("Could not make directory ");
+			s.append(fldigi_dirs[i].dir);
+			fatal_error(s);
 		}
 		else if (r == 0 && fldigi_dirs[i].new_dir_func)
 			fldigi_dirs[i].new_dir_func();
@@ -1333,9 +1349,9 @@ void check_nbems_dirs(void)
 			NBEMS_dirs[i].dir.assign(NBEMS_dir).append(NBEMS_dirs[i].suffix).append(PATH_SEP);
 
 		if ((r = mkdir(NBEMS_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << _("Could not make directory") << ' ' << NBEMS_dirs[i].dir
-			     << ": " << strerror(errno) << '\n';
-			exit(EXIT_FAILURE);
+			string s = _("Could not make directory ");
+			s.append(NBEMS_dirs[i].dir);
+			fatal_error(s);
 		}
 		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
 			NBEMS_dirs[i].new_dir_func();
@@ -1357,9 +1373,9 @@ void check_nbems_dirs(void)
 			FLMSG_dirs[i].dir.assign(FLMSG_dir).append(FLMSG_dirs[i].suffix).append(PATH_SEP);
 
 		if ((r = mkdir(FLMSG_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
-			cerr << _("Could not make directory") << ' ' << FLMSG_dirs[i].dir
-			     << ": " << strerror(errno) << '\n';
-			exit(EXIT_FAILURE);
+			string s = _("Could not make directory ");
+			s.append(FLMSG_dirs[i].dir);
+			fatal_error(s);
 		}
 		else if (r == 0 && FLMSG_dirs[i].new_dir_func)
 			FLMSG_dirs[i].new_dir_func();
@@ -1368,9 +1384,16 @@ void check_nbems_dirs(void)
 	nbems_dirs_checked = true;
 }
 
-// Print an error message and exit. If stderr is not a terminal
-// show an error dialog instead. On win32 we always use Fl::fatal,
-// which displays its own error window.
+void check_data_dir(void)
+{
+	if (mkdir(DATA_dir.c_str(), 0777) == -1 && errno != EEXIST) {
+		string s = _("Could not make directory ");
+		s.append(DATA_dir);
+		fatal_error(s);
+	}
+}
+
+// Print an error message and exit.
 static void arg_error(const char* name, const char* arg, bool missing)
 {
 	ostringstream msg;
@@ -1384,25 +1407,9 @@ static void arg_error(const char* name, const char* arg, bool missing)
 	else
 		msg << "error while parsing command line\n";
 
-#ifdef __WOE32__
-	bool woe32 = true;
-#else
-	bool woe32 = false;
-#endif
-	bool tty = isatty(STDERR_FILENO);
+	msg << "See command line help for more information.";
 
-	if (tty && !woe32)
-		msg << "Try `" << name << " --help' for more information.";
-	else
-		msg << "See command line help for more information.";
-	if (tty || woe32)
-		Fl::fatal("%s", msg.str().c_str());
-	else {
-		fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
-		fl_alert2("%s", msg.str().c_str());
-	}
-
-	exit(EXIT_FAILURE);
+	fatal_error(msg.str());
 }
 
 /// Sets or resets the KML parameters, and loads existing files.

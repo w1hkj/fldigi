@@ -81,6 +81,7 @@ extern void			WriteARQ(unsigned char);
 extern void			checkTLF();
 
 void check_nbems_dirs(void);
+void check_data_dir(void);
 extern bool nbems_dirs_checked;
 
 // This inits or reinits everything related to KML: Reloads params etc...
