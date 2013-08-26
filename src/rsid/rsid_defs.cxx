@@ -2,9 +2,14 @@
 // fldigi_mode is NUM_MODES if mode is not available in fldigi,
 // otherwise one of the tags defined in globals.h.
 // rsid_tag is stringified and may be shown to the user.
+/*
+        ELEM_(263, ESCAPE, NUM_MODES)                   \
+*/
 #undef ELEM_
 #define RSID_LIST                                       \
+                                                        \
 /* ESCAPE used to transition to 2nd RSID set */         \
+                                                        \
         ELEM_(6, ESCAPE, NUM_MODES)                     \
                                                         \
         ELEM_(1, BPSK31, MODE_PSK31)                    \
@@ -200,7 +205,7 @@ const RSIDs cRsId::rsid_ids_1[] = { RSID_LIST };
 const int cRsId::rsid_ids_size1 = sizeof(rsid_ids_1)/sizeof(*rsid_ids_1) - 1;
 
 //======================================================================
-/*        ELEM_(263, ESCAPE2, NUM_MODES)                  \ */
+/*        ELEM_(6, ESCAPE2, NUM_MODES)                  \ */
 
 #define RSID_LIST2                                      \
         ELEM2_(450, PSK63RX4, MODE_4X_PSK63R)           \

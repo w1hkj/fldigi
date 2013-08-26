@@ -41,6 +41,8 @@
 #ifndef RSID_H
 #define RSID_H
 
+#include <string>
+
 #include <samplerate.h>
 
 #include "ringbuffer.h"
@@ -55,9 +57,7 @@
 #define RSID_ARRAY_SIZE	 (RSID_FFT_SIZE * 2)
 
 #define RSID_NSYMBOLS    15
-#define RSID_RESOL       2
-#define RSID_NTIMES      (RSID_NSYMBOLS * RSID_RESOL)
-#define RSID_HASH_LEN    256
+#define RSID_NTIMES      (RSID_NSYMBOLS * 2)
 #define RSID_PRECISION   2.7 // detected frequency precision in Hz
 
 // each rsid symbol has a duration equal to 1024 samples at 11025 Hz smpl rate
@@ -74,8 +74,6 @@ struct RSIDs { unsigned short rs; trx_mode mode; const char* name; };
 class cRsId {
 
 protected:
-// note: hamming distance > 5 causes false detection on second burst
-enum { HAMMING_HIGH = 2, HAMMING_MED = 4, HAMMING_LOW = 5 };// 6 };
 enum { INITIAL, EXTENDED, WAIT };
 
 private:
@@ -101,26 +99,18 @@ private:
 // Span of FFT bins, in which the RSID will be searched for
 	int		nBinLow;
 	int		nBinHigh;
-	float	aInputSamples[RSID_ARRAY_SIZE];
+	float	aInputSamples[RSID_ARRAY_SIZE * 2];
 	double	fftwindow[RSID_ARRAY_SIZE];
 	double  aFFTReal[RSID_ARRAY_SIZE];
 	double	aFFTAmpl[RSID_FFT_SIZE];
 	Cfft	*rsfft;
 
-	// Hashing tables
-	unsigned char	hash_table_A[RSID_HASH_LEN];
-	unsigned char	hash_table_B[RSID_HASH_LEN];
-
-	unsigned char	hash_table_C[RSID_HASH_LEN];
-	unsigned char	hash_table_D[RSID_HASH_LEN];
-
 	bool	bPrevTimeSliceValid;
 	int		iPrevDistance;
 	int		iPrevBin;
 	int		iPrevSymbol;
-	int		iTime; // modulo RSID_NTIMES
-	int		i1, i2, i3;
-	int		aBuckets[RSID_NTIMES][RSID_FFT_SIZE]; // history of detected rsid tones
+
+	int		fft_buckets[RSID_NTIMES][RSID_FFT_SIZE];
 
 	bool	bPrevTimeSliceValid2;
 	int		iPrevDistance2;
@@ -139,14 +129,14 @@ private:
 
 private:
 	void	Encode(int code, unsigned char *rsid);
-	int		HammingDistance(int iBucket, unsigned char *p2);
-	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
-	bool	search_amp1( int &pSymbolOut, int &pBinOut, unsigned char *table);
-	bool	search_amp2( int &pSymbolOut, int &pBinOut, unsigned char *table);
 	void	search(void);
-	void	apply1 (int iSymbol, int iBin);
-	void	apply2 (int iSymbol, int iBin);
 	void	setup_mode(int m);
+
+	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
+	inline int		HammingDistance(int iBucket, unsigned char *p2);
+	bool	search_amp( int &bin_out, int &symbol_out, unsigned char *pcode_table );
+	void	apply ( int iBin, int iSymbol, int extended );
+
 public:
 	cRsId();
 	~cRsId();

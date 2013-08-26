@@ -262,6 +262,8 @@ void trx_trx_receive_loop()
 			bool afc = progStatus.afconoff;
 			progStatus.afconoff = false;
 			QRUNNER_DROP(true);
+			if (progdefaults.rsid)
+				ReedSolomon->receive(fbuf, numread);
 			active_modem->HistoryON(true);
 			active_modem->rx_process(hsbuff, numread);
 			QRUNNER_DROP(false);
