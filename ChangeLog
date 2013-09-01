@@ -1,8 +1,13 @@
+2013-08-27  David Freese  <w1hkj@w1hkj.com>
+
+	30915e4: xmlrpcpp methods
+	7037ad6: RSID update
+	fce7654: Error exit
+	263f540: fltk 1.1.x
+	433ec86: Sound File
 
 
 =Version 3.21.74=
-
-2013-08-13  David Freese  <w1hkj@w1hkj.com>
 
 	d17f1b1: initialize active_modem
 	bdbaf78: XML parser
