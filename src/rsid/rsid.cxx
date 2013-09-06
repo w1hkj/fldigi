@@ -712,20 +712,10 @@ bool cRsId::search_amp( int &bin_out, int &symbol_out, unsigned char *pcode)
 // transmit rsid code for current mode
 //=============================================================================
 
-void cRsId::send(bool preRSID)
-{
-	trx_mode mode = active_modem->get_mode();
+bool cRsId::assigned(trx_mode mode) {
 
-	if (!progdefaults.rsid_tx_modes.test(mode)) {
-		LOG_DEBUG("Mode %s excluded, not sending RSID", mode_info[mode].sname);
-		return;
-	}
-
-	if (!progdefaults.rsid_post && !preRSID)
-		return;
-
-	unsigned short rmode = RSID_NONE;
-	unsigned short rmode2 = RSID_NONE2;
+	rmode = RSID_NONE;
+	rmode2 = RSID_NONE2;
 
 	switch (mode) {
 	case MODE_RTTY :
@@ -740,7 +730,8 @@ void cRsId::send(bool preRSID)
 		else if (progdefaults.rtty_baud == 4 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 9)
 			rmode = RSID_RTTY_75;
 		else
-			return;
+			return false;
+		return true;
 		break;
 
 	case MODE_OLIVIA:
@@ -791,7 +782,8 @@ void cRsId::send(bool preRSID)
 			rmode = RSID_OLIVIA_64_2000;
 
 		else
-			return;
+			return false;
+		return true;
 		break;
 
 	case MODE_CONTESTIA:
@@ -838,7 +830,8 @@ void cRsId::send(bool preRSID)
 			rmode = RSID_CONTESTIA_64_2000;
 
 		else
-			return;
+			return false;
+		return true;
 		break;
 
 	case MODE_DOMINOEX4:
@@ -905,8 +898,26 @@ void cRsId::send(bool preRSID)
 			}
 		}
 	}
-	if (rmode == RSID_NONE)
+	if (rmode == RSID_NONE) {
+		LOG_DEBUG("%s mode is not assigned an RSID", mode_info[mode].sname);
+		return false;
+	}
+	return true;
+}
+
+void cRsId::send(bool preRSID)
+{
+	trx_mode mode = active_modem->get_mode();
+
+	if (!progdefaults.rsid_tx_modes.test(mode)) {
+		LOG_DEBUG("Mode %s excluded, not sending RSID", mode_info[mode].sname);
 		return;
+	}
+
+	if (!progdefaults.rsid_post && !preRSID)
+		return;
+
+	if (!assigned(mode)) return;
 
 	unsigned char rsid[RSID_NSYMBOLS];
 	double sr;

@@ -79,7 +79,6 @@ void pushcmd(CMDS cmd)
 	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)cmds.size());
 	cmds.push(cmd);
 }
-//#define pushcmd(a) cmds.push((a))
 
 // these variables are referenced outside of this file
 MACROTEXT macros;
@@ -1215,9 +1214,19 @@ static void pQueMODEM(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doMODEM };
-	pushcmd(cmd);
-	s.replace(i, endbracket - i + 1, "^!");
+	string cmdstr = s.substr(i, endbracket - i + 1);
+	struct CMDS cmd = { cmdstr, doMODEM };
+	if (cmdstr.find("SSB") != string::npos || cmdstr.find("ANALYSIS") != string::npos) {
+		LOG_ERROR("Disallowed: %s", cmdstr.c_str());
+		size_t nextbracket = s.find('<', endbracket);
+		if (nextbracket != string::npos)
+			s.erase(i, nextbracket - i - 1);
+		else
+			s.clear(); 
+	} else {
+		pushcmd(cmd);
+		s.replace(i, endbracket - i + 1, "^!");
+	}
 }
 
 static void pMODEM(std::string &s, size_t &i, size_t endbracket)
@@ -1736,7 +1745,6 @@ static void doFILWID(std::string s)
 	qso_opBW->value(sWID.c_str());
 	cb_qso_opBW();
 	que_ok = true;
-printf("BW %s\n", sWID.c_str());
 }
 
 static void pQueFILWID(std::string &s, size_t &i, size_t endbracket)
