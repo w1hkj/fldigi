@@ -1,4 +1,20 @@
-2013-08-27  David Freese  <w1hkj@w1hkj.com>
+2013-09-12  David Freese  <w1hkj@w1hkj.com>
+
+	78d11dd: ADIF log database
+	dbabd63: MFSK update
+	3d400ae: Thor update
+
+
+=Version 3.21.76=
+
+	e743f37: AMP end of text
+	e640b53: ARQ mode character set
+	e875d6e: RsID, Macro Queue, DTMF transmit management
+	e618ecf: Xmlrpc method signatures
+	6e8f57a: RsID fo computation
+
+
+=Version 3.21.75=
 
 	30915e4: xmlrpcpp methods
 	7037ad6: RSID update
