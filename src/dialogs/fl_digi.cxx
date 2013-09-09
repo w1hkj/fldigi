@@ -6237,34 +6237,24 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		rx_chd.reset();
 		rx_chd.clear();
 	}
-	
+
 	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
-	const char **asc = NULL;
-	
-	if (progdefaults.charset_name == "ASCII")
-		asc = ascii;
-	if (mailclient || mailserver || arqmode)
-		asc = ascii2;
+
 	if (mode == MODE_RTTY || mode == MODE_CW)
-		asc = ascii;
-	if (extract_wrap || extract_flamp)
-		asc = ascii3;
-	
-	// pass the data to the distiller
-	if (asc != NULL)
-		rx_chd.rx((unsigned char *)asc[data & 0xFF]);
+		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
+
+	else if (mailclient || mailserver || (data > 0 && data < 0x20))
+		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
 	else
-		rx_chd.rx(data & 0xFF);
-	
+		rx_chd.rx(data);
+
 	// feed the decoded data into the RX parser
 	if (rx_chd.data_length() > 0) {
 		const char *ptr = rx_chd.data().data();
 		const char *end = ptr + rx_chd.data_length();
-		
 		while (ptr < end)
 			rx_parser((const unsigned char)*ptr++, style);
-		
 		rx_chd.clear();
 	}
 }
@@ -6618,7 +6608,7 @@ void put_echo_char(unsigned int data, int style)
 	if (mailclient || mailserver)
 		asc = ascii2;
 	else if (arq_text_available)
-		asc = ascii3;
+		asc = ascii2;
 	else if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
 
