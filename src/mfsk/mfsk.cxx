@@ -65,6 +65,8 @@ struct TRACEPAIR {
 
 TRACEPAIR tracepair(45, 352);
 
+bool xmt_filter = true;
+
 //=============================================================================
 char mfskmsg[80];
 //=============================================================================
@@ -77,6 +79,12 @@ void  mfsk::tx_init(SoundBase *sc)
 	txstate = TX_STATE_PREAMBLE;
 	bitstate = 0;
 
+	double bw2 = (numtones + 1) * samplerate / symlen / 2.0;
+	double flo = (frequency - bw2) / samplerate;
+	if (flo <= 0) flo = 0;
+	double fhi = (frequency + bw2) / samplerate;
+	xmtfilt->init_bandpass (127, 1, flo, fhi);
+
 	videoText();
 }
 
@@ -88,6 +96,8 @@ void  mfsk::rx_init()
 	met1 = 0.0;
 	met2 = 0.0;
 	counter = 0;
+	RXspp = 8;
+
 	for (int i = 0; i < 2 * symlen; i++) {
 		for (int j = 0; j < 32; j++)
 			(pipe[i].vector[j]).re = (pipe[i].vector[j]).im = 0.0;
@@ -126,10 +136,11 @@ mfsk::~mfsk()
 	while(--msecs && txstate != TX_STATE_PREAMBLE) MilliSleep(1);
 // do not destroy picTxWin or picRxWin as there may be pending updates
 // in the UI request queue
-	if (picTxWin) picTxWin->hide(); 
+	if (picTxWin) picTxWin->hide();
 	activate_mfsk_image_item(false);
 
 	if (bpfilt) delete bpfilt;
+	if (xmtfilt) delete xmtfilt;
 	if (rxinlv) delete rxinlv;
 	if (txinlv) delete txinlv;
 	if (dec2) delete dec2;
@@ -155,6 +166,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	//VK2ETA high speed modes
 	preamble = 107;
 
+// CAP_IMG is set in cap iff image transfer supported
 	switch (mode) {
 
 	case MODE_MFSK4:
@@ -173,15 +185,6 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		basetone = 128;
 		numtones = 32;
 		break;
-	case MODE_MFSK16:
-		samplerate = 8000;
-		symlen =  512;
-		symbits =   4;
-		depth = 10;
-		basetone = 64;
-		numtones = 16;
-		cap |= CAP_IMG;
-		break;
 	case MODE_MFSK31:
 		samplerate = 8000;
 		symlen =  256;
@@ -189,7 +192,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 32;
 		numtones = 8;
-		cap |= CAP_IMG;
+//		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK32:
 		samplerate = 8000;
@@ -228,7 +231,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 93;
 		numtones = 16;
-		cap |= CAP_IMG;
+//		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK22:
 		samplerate = 11025;
@@ -237,9 +240,10 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 46;
 		numtones = 16;
-		cap |= CAP_IMG;
+//		cap |= CAP_IMG;
 		break;
 
+	case MODE_MFSK16:
 	default:
 		samplerate = 8000;
 		symlen =  512;
@@ -247,7 +251,8 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 64;
 		numtones = 16;
-        break;
+		cap |= CAP_IMG;
+		break;
 	}
 
 	tonespacing = (double) samplerate / symlen;
@@ -281,9 +286,10 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	flo = (cf - bw/2 - 2 * tonespacing) / samplerate;
 	fhi = (cf + bw/2 + 2 * tonespacing) / samplerate;
-
 	bpfilt = new C_FIR_filter();
 	bpfilt->init_bandpass (127, 1, flo, fhi);
+
+	xmtfilt = new C_FIR_filter();
 
 	scopedata.alloc(symlen * 2);
 
@@ -310,6 +316,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	afcmetric = 0.0;
 	datashreg = 1;
 
+	for (int i = 0; i < 128; i++) prepost[i] = 0;
 }
 
 
@@ -388,9 +395,6 @@ void mfsk::recvpic(complex z)
 	picf += (prevz % z).arg() * samplerate / TWOPI;
 	prevz = z;
 
-	if (RXspp < 8 && progdefaults.slowcpu == true)
-		return;
-
 	if ((counter % RXspp) == 0) {
 		picf = 256 * (picf / RXspp - basefreq) / bandwidth;
 		byte = (int)CLAMP(picf, 0.0, 255.0);
@@ -415,12 +419,9 @@ void mfsk::recvpic(complex z)
 
 		int n = picW * picH * 3;
 		if (pixelnbr % (picW * 3) == 0) {
-			int s = snprintf(mfskmsg, sizeof(mfskmsg),
-					 "Recv picture: %04.1f%% done",
+			snprintf(mfskmsg, sizeof(mfskmsg),
+					 "Rx pic: %3.1f%%",
 					 (100.0f * pixelnbr) / n);
-			print_time_left( (n - pixelnbr ) * 0.000125 * RXspp ,
-					mfskmsg + s,
-					sizeof(mfskmsg) - s, ", ", " left");
 			put_status(mfskmsg);
 		}
 	}
@@ -435,7 +436,33 @@ void mfsk::recvchar(int c)
 
 	if (check_picture_header(c) == true) {
 		counter = tracepair.delay;
-		if (symbolbit == symbits) counter += symlen;
+printf("symbolbit = %d, symbits = %d\n", symbolbit, symbits);
+		switch (mode) {
+			case MODE_MFSK16:
+				if (symbolbit == symbits) counter += symlen;
+				break;
+			case MODE_MFSK32:
+				if (symbolbit == symbits) counter += symlen;
+				break;
+			case MODE_MFSK64:
+				counter = 4956;
+				if (symbolbit % 2 == 0) counter += symlen;
+				break;
+			case MODE_MFSK128:
+				counter = 1824;
+				if (symbolbit % 2 == 0) counter += symlen;
+				break;
+			case MODE_MFSK31:
+				counter = 5216;
+				if (symbolbit == symbits) counter += symlen;
+				break;
+			case MODE_MFSK4:
+			case MODE_MFSK8:
+			case MODE_MFSK11:
+			case MODE_MFSK22:
+			default: break;
+		};
+
 		rxstate = RX_STATE_PICTURE_START;
 		picturesize = RXspp * picW * picH * (color ? 3 : 1);
 		pixelnbr = 0;
@@ -445,7 +472,7 @@ void mfsk::recvchar(int c)
 		memset(picheader, ' ', PICHEADER - 1);
 		picheader[PICHEADER -1] = 0;
 		return;
-	}
+	} else counter = 0;
 
 	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 		if ((c == SOH) && !s2n_valid) {
@@ -461,6 +488,7 @@ void mfsk::recvchar(int c)
 				s2nreport();
 		}
 	}
+	return;
 }
 
 void mfsk::recvbit(int bit)
@@ -473,7 +501,6 @@ void mfsk::recvbit(int bit)
 		recvchar(c);
 		datashreg = 1;
 	}
-
 }
 
 void mfsk::decodesymbol(unsigned char symbol)
@@ -617,6 +644,7 @@ void mfsk::softdecode(complex *bins)
 	for (i = 0; i < symbits; i++) {
 		symbolbit = i + 1;
 		decodesymbol(symbols[i]);
+		if (counter) return;
 	}
 }
 
@@ -787,13 +815,16 @@ int mfsk::rx_process(const double *buf, int len)
 // with required bandwidth
 		bpfilt->run ( z, z );
 
+// copy current vector to the pipe
+		binsfft->run (z, pipe[pipeptr].vector, 1);
+		bins = pipe[pipeptr].vector;
+
 		if (rxstate == RX_STATE_PICTURE_START) {
 			if (--counter == 0) {
 				counter = picturesize;
 				rxstate = RX_STATE_PICTURE;
 				REQ( showRxViewer, picW, picH );
 			}
-			continue;
 		}
 		if (rxstate == RX_STATE_PICTURE) {
 			if (--counter == 0) {
@@ -802,14 +833,15 @@ int mfsk::rx_process(const double *buf, int len)
 
 				string autosave_dir = PicsDir;
 				picRx->save_png(autosave_dir.c_str());
+				rx_init();
 			} else
 				recvpic(z);
 			continue;
 		}
 
 // copy current vector to the pipe
-		binsfft->run (z, pipe[pipeptr].vector, 1);
-		bins = pipe[pipeptr].vector;
+//		binsfft->run (z, pipe[pipeptr].vector, 1);
+//		bins = pipe[pipeptr].vector;
 
 		if (--synccounter <= 0) {
 
@@ -842,6 +874,14 @@ int mfsk::rx_process(const double *buf, int len)
 // transmit processing
 //=====================================================================
 
+void mfsk::transmit(double *buf, int len)
+{
+	if (xmt_filter)
+		for (int i = 0; i < len; i++) xmtfilt->Irun(buf[i], buf[i]);
+
+	ModulateXmtr(buf, len);
+}
+
 
 void mfsk::sendsymbol(int sym)
 {
@@ -863,8 +903,7 @@ void mfsk::sendsymbol(int sym)
 		else if (phaseacc < M_PI)
 			phaseacc += TWOPI;
 	}
-	ModulateXmtr(outbuf, symlen);
-
+	transmit (outbuf, symlen);
 }
 
 void mfsk::sendbit(int bit)
@@ -901,14 +940,15 @@ void mfsk::sendidle()
 		sendbit(0);
 }
 
-void mfsk::flushtx()
+void mfsk::flushtx(int nbits)
 {
 // flush the varicode decoder at the other end
 	sendbit(1);
 
 // flush the convolutional encoder and interleaver
 //VK2ETA high speed modes	for (int i = 0; i < 107; i++)
-	for (int i = 0; i < preamble; i++)
+//W1HKJ	for (int i = 0; i < preamble; i++)
+	for (int i = 0; i < nbits; i++)
 		sendbit(0);
 
 	bitstate = 0;
@@ -933,17 +973,39 @@ void mfsk::sendpic(unsigned char *data, int len)
 
 		for (j = 0; j < TXspp; j++) {
 			*ptr++ = cos(phaseacc);
-
 			phaseacc += TWOPI * f / samplerate;
-
 			if (phaseacc > M_PI)
 				phaseacc -= 2.0 * M_PI;
 		}
 	}
 
-	ModulateXmtr(outbuf, TXspp * len);
+	transmit (outbuf, TXspp * len);
 }
 
+// -----------------------------------------------------------------------------
+// send prologue consisting of tracepair.delay 0's
+void mfsk::flush_xmt_filter(int n)
+{
+	double f1 = get_txfreq_woffset() - bandwidth / 2.0;
+	double f2 = get_txfreq_woffset() + bandwidth / 2.0;
+	for (int i = 0; i < n; i++) {
+		outbuf[i] = cos(phaseacc);
+		phaseacc += TWOPI * (reverse ? f2 : f1) / samplerate;
+		if (phaseacc > M_PI)
+			phaseacc -= 2.0 * M_PI;
+	}
+	transmit (outbuf, tracepair.delay);
+}
+
+void mfsk::send_prologue()
+{
+	flush_xmt_filter(tracepair.delay);
+}
+
+void mfsk::send_epilogue()
+{
+	flush_xmt_filter(64);
+}
 
 void mfsk::clearbits()
 {
@@ -974,7 +1036,6 @@ int mfsk::tx_process()
 				sendbit(0);
 			txstate = TX_STATE_START;
 			break;
-
 		case TX_STATE_START:
 			sendchar('\r');
 			sendchar(2);		// STX
@@ -986,11 +1047,11 @@ int mfsk::tx_process()
 			xmtbyte = get_tx_char();
 
 			if (xmtbyte == 0x05 || startpic == true) {
-				put_status("Send picture: start");
+				put_status("Tx pic: start");
 				int len = (int)strlen(picheader);
 				for (int i = 0; i < len; i++)
 					sendchar(picheader[i]);
-				flushtx();
+				flushtx(preamble);
 				startpic = false;
 				txstate = TX_STATE_PICTURE_START;
 			}
@@ -1009,7 +1070,9 @@ int mfsk::tx_process()
 			sendchar('\r');
 			sendchar(4);		// EOT
 			sendchar('\r');
-			flushtx();
+			flushtx(preamble);
+//			clearbits();
+//			send_epilogue();
 			rxstate = RX_STATE_DATA;
 			txstate = TX_STATE_PREAMBLE;
 			stopflag = false;
@@ -1017,9 +1080,7 @@ int mfsk::tx_process()
 			return -1;
 
 		case TX_STATE_PICTURE_START:
-// 176 samples
-			memset(picprologue, 0, 44 * 8 / TXspp);
-			sendpic(picprologue, 44 * 8 / TXspp);
+			send_prologue();
 			txstate = TX_STATE_PICTURE;
 			break;
 
@@ -1034,19 +1095,19 @@ int mfsk::tx_process()
 				else
 					sendpic( &xmtpicbuff[i], xmtbytes - i);
 				if ( (100 * i / xmtbytes) % 2 == 0) {
-					int n = snprintf(mfskmsg, sizeof(mfskmsg),
-							 "Send picture: %04.1f%% done",
+					snprintf(mfskmsg, sizeof(mfskmsg),
+							 "Tx pic: %3.1f%%",
 							 (100.0f * i) / xmtbytes);
-					print_time_left((xmtbytes - i) * 0.000125 * TXspp, mfskmsg + n,
-							sizeof(mfskmsg) - n, ", ", " left");
 					put_status(mfskmsg);
 				}
 				i += blocklen;
 			}
+			flushtx(preamble);
+
 			REQ_FLUSH(GET_THREAD_ID());
 
 			txstate = TX_STATE_DATA;
-			put_status("Send picture: done");
+			put_status("Tx pic: done");
 			FL_LOCK_E();
 			btnpicTxSendAbort->hide();
 			btnpicTxSPP->show();

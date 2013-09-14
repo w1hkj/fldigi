@@ -155,6 +155,7 @@ protected:
 	C_FIR_filter	*hbfilt;
 	sfft			*binsfft;
 	C_FIR_filter	*bpfilt;
+	C_FIR_filter	*xmtfilt;
 	Cmovavg			*vidfilter[SCOPESIZE];
 	Cmovavg			*syncfilter;
 
@@ -214,6 +215,7 @@ protected:
 	char picheader[PICHEADER];
 	complex prevz;
 	double picf;
+	unsigned char prepost[128];
 	
 	int		row;
 	int		col;
@@ -243,11 +245,15 @@ protected:
 	void	afc();
 	void	reset_afc();
 	void	eval_s2n();
+	void	transmit(double *, int);
 	void 	sendsymbol(int sym);
 	void	sendbit(int bit);
 	void	sendchar(unsigned char c);
 	void	sendidle();
-	void	flushtx();
+	void	flush_xmt_filter(int);
+	void	send_prologue();
+	void	send_epilogue();
+	void	flushtx(int nbits);
 	void	clearbits();
 	void	sendpic(unsigned char *data, int len);
 	bool	check_picture_header(char c);
