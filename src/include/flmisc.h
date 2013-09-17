@@ -72,7 +72,13 @@ private:
 
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Button.H>
+// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk's
+// FL/Fl_Check_Browser.H (http://www.fltk.org/str.php?L2984)
+#undef nitems
 #include <FL/Fl_Check_Browser.H>
+#define FLTK_nitems nitems
+#undef nitems
+// ^^^ Avoid 'nitems' macro collision
 #include "globals.h"
 
 class Mode_Browser : public Fl_Double_Window
