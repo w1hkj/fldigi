@@ -72,6 +72,7 @@ extern	void	deleteTxViewer();
 
 extern void cb_picRxClose( Fl_Widget *w, void *);
 extern void cb_picRxAbort( Fl_Widget *w, void *);
+extern void picTxSendColor();
 extern void cb_picTxSendColor( Fl_Widget *w, void *);
 extern void cb_picTxSendGrey( Fl_Widget *w, void *);
 extern void cb_picTxSendAbort( Fl_Widget *w, void *);
@@ -113,6 +114,7 @@ class mfsk : public modem {
 friend void updateTxPic(unsigned char data);
 friend void cb_picRxClose( Fl_Widget *w, void *);
 friend void cb_picRxAbort( Fl_Widget *w, void *);
+friend void pic_TxSendColor();
 friend void cb_picTxSendColor( Fl_Widget *w, void *);
 friend void cb_picTxSendGrey( Fl_Widget *w, void *);
 friend void cb_picTxSendAbort( Fl_Widget *w, void *);
@@ -269,6 +271,7 @@ public:
 	void	restart() {};
 	int		rx_process(const double *buf, int len);
 	int		tx_process();
+	void	send_image(std::string s);
 	void	shutdown();
 };
 

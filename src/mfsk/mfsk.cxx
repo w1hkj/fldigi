@@ -1126,3 +1126,10 @@ int mfsk::tx_process()
 	return 0;
 }
 
+void mfsk::send_image(std::string s)
+{
+	load_image(s.c_str());
+	pic_TxSendColor();
+}
+
+

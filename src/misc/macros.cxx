@@ -1121,6 +1121,35 @@ static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
 	s.erase(i, k-i);
 }
 
+static void doIMAGE(std::string s)
+{
+	if (s.length() > 0) {
+		string fname = s.substr(7);
+		fname.erase(fname.length() - 1);
+		trx_mode active_mode = active_modem->get_mode();
+		if ((active_mode == MODE_MFSK16 ||
+			 active_mode == MODE_MFSK32 ||
+			 active_mode == MODE_MFSK64 ||
+			 active_mode == MODE_MFSK128) &&
+			 active_modem->get_cap() & modem::CAP_IMG) {
+			active_modem->send_image(fname);
+		}
+	}
+	que_ok = true;
+}
+
+static void pQueIMAGE(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	string cmdstr = s.substr(i, endbracket - i + 1);
+	struct CMDS cmd = { cmdstr, doIMAGE };
+	pushcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 #include <float.h>
 #include "re.h"
 
@@ -2292,6 +2321,7 @@ static const MTAGS mtags[] = {
 #endif
 {"<WX>",		pWX},
 {"<WX:",		pWX2},
+{"<IMAGE:",		pQueIMAGE},
 {"<!WPM:",		pQueWPM},
 {"<!RISE:",		pQueRISETIME},
 {"<!PRE:",		pQuePRE},
