@@ -3948,10 +3948,10 @@ static void cb_chkRSidAutoDisable(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Value_Slider2 *sldrRSIDresolution=(Fl_Value_Slider2 *)0;
+Fl_Choice *mnu_RsID_errors=(Fl_Choice *)0;
 
-static void cb_sldrRSIDresolution(Fl_Value_Slider2* o, void*) {
-  progdefaults.rsid_resolution = (int)o->value();
+static void cb_mnu_RsID_errors(Fl_Choice* o, void*) {
+  progdefaults.RsID_label_type = o->value();
 progdefaults.changed = true;
 }
 
@@ -8406,25 +8406,14 @@ d frequency"));
                 chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);
                 if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();
               } // Fl_Check_Button* chkRSidAutoDisable
-              { Fl_Value_Slider2* o = sldrRSIDresolution = new Fl_Value_Slider2(10, 233, 145, 22, _("Errors"));
-                sldrRSIDresolution->tooltip(_("Number of errors allowed in RsID comparison"));
-                sldrRSIDresolution->type(1);
-                sldrRSIDresolution->box(FL_DOWN_BOX);
-                sldrRSIDresolution->color(FL_BACKGROUND_COLOR);
-                sldrRSIDresolution->selection_color(FL_BACKGROUND_COLOR);
-                sldrRSIDresolution->labeltype(FL_NORMAL_LABEL);
-                sldrRSIDresolution->labelfont(0);
-                sldrRSIDresolution->labelsize(14);
-                sldrRSIDresolution->labelcolor(FL_FOREGROUND_COLOR);
-                sldrRSIDresolution->maximum(4);
-                sldrRSIDresolution->step(1);
-                sldrRSIDresolution->textsize(14);
-                sldrRSIDresolution->callback((Fl_Callback*)cb_sldrRSIDresolution);
-                sldrRSIDresolution->align(Fl_Align(FL_ALIGN_RIGHT));
-                sldrRSIDresolution->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.rsid_resolution);
-                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Slider2* sldrRSIDresolution
+              { mnu_RsID_errors = new Fl_Choice(10, 233, 100, 22, _("Allow errors"));
+                mnu_RsID_errors->tooltip(_("Low = zero errors\nMedium = 1 error\nHigh = 2 errors"));
+                mnu_RsID_errors->down_box(FL_BORDER_BOX);
+                mnu_RsID_errors->callback((Fl_Callback*)cb_mnu_RsID_errors);
+                mnu_RsID_errors->align(Fl_Align(FL_ALIGN_RIGHT));
+                mnu_RsID_errors->add(_("Low")); mnu_RsID_errors->add(_("Medium")); mnu_RsID_errors->add(_("High"));
+                mnu_RsID_errors->value(progdefaults.RsID_label_type);
+              } // Fl_Choice* mnu_RsID_errors
               { Fl_Value_Slider2* o = sldrRSIDsquelch = new Fl_Value_Slider2(246, 233, 145, 22, _("Squelch open (sec)"));
                 sldrRSIDsquelch->tooltip(_("Open squelch for nn sec if RSID detected"));
                 sldrRSIDsquelch->type(1);

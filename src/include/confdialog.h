@@ -473,7 +473,7 @@ extern Fl_Button *bRSIDRxModes;
 extern Fl_Check_Button *chkRSidWideSearch;
 extern Fl_Check_Button *chkRSidMark;
 extern Fl_Check_Button *chkRSidAutoDisable;
-extern Fl_Value_Slider2 *sldrRSIDresolution;
+extern Fl_Choice *mnu_RsID_errors;
 extern Fl_Value_Slider2 *sldrRSIDsquelch;
 extern Fl_Check_Button *chkRSidShowAlert;
 extern Fl_Check_Button *chkRetainFreqLock;

@@ -115,9 +115,9 @@
               "Mode names for which RSID transmission is disabled",                     \
               mode_set_t())                                                             \
                                                                                         \
-        ELEM_(int, rsid_resolution, "RSID_RESOLUTION",                                  \
-              "values (LOW)  5, 4, 3, 2 (HIGH)",                                        \
-              5)                                                                        \
+        ELEM_(int, RsID_label_type, "RSID_ERRORS",                                      \
+              "values (low, medium, high)  0, 1, 2",                                    \
+              1)                                                                        \
         ELEM_(bool, disable_rsid_warning_dialog_box, "DISABLE_RSID_WARNING_DIALOG_BOX", \
               "disable displaying the rsid warning dialog box",                         \
               false)                                                                    \
