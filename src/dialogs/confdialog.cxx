@@ -4672,6 +4672,215 @@ static void cb_btn_send_datetime_off(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabAutoStart=(Fl_Group *)0;
+
+static void cb_tabAutoStart(Fl_Group*, void*) {
+  progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_flrig_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_flrig_pathname(Fl_Input2* o, void*) {
+  progdefaults.auto_flrig_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_flrig=(Fl_Button *)0;
+
+static void cb_btn_select_flrig(Fl_Button*, void*) {
+  std::string str = select_binary_pathname("flrig");
+txt_auto_flrig_pathname->value(str.c_str());
+progdefaults.auto_flrig_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_flamp_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_flamp_pathname(Fl_Input2* o, void*) {
+  progdefaults.auto_flamp_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_auto_flamp=(Fl_Button *)0;
+
+static void cb_btn_select_auto_flamp(Fl_Button*, void*) {
+  std::string str = select_binary_pathname("flamp");
+txt_auto_flamp_pathname->value(str.c_str());
+progdefaults.auto_flamp_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_flnet_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_flnet_pathname(Fl_Input2* o, void*) {
+  progdefaults.flmsg_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_auto_flnet=(Fl_Button *)0;
+
+static void cb_btn_select_auto_flnet(Fl_Button*, void*) {
+  std::string str = select_binary_pathname("flnet");
+txt_auto_flnet_pathname->value(str.c_str());
+progdefaults.auto_flnet_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_fllog_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_fllog_pathname(Fl_Input2* o, void*) {
+  progdefaults.auto_fllog_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_fllog=(Fl_Button *)0;
+
+static void cb_btn_select_fllog(Fl_Button*, void*) {
+  std::string str = select_binary_pathname("fllog");
+txt_auto_fllog_pathname->value(str.c_str());
+progdefaults.auto_fllog_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_prog1_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_prog1_pathname(Fl_Input2* o, void*) {
+  progdefaults.auto_prog1_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_prog1=(Fl_Button *)0;
+
+static void cb_btn_select_prog1(Fl_Button*, void*) {
+  std::string str = select_binary_pathname(progdefaults.auto_prog1_pathname);
+txt_auto_prog1_pathname->value(str.c_str());
+progdefaults.auto_prog1_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_prog2_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_prog2_pathname(Fl_Input2* o, void*) {
+  progdefaults.auto_prog2_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_prog2=(Fl_Button *)0;
+
+static void cb_btn_select_prog2(Fl_Button*, void*) {
+  std::string str = select_binary_pathname(progdefaults.auto_prog2_pathname);
+txt_auto_prog2_pathname->value(str.c_str());
+progdefaults.auto_prog2_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_auto_prog3_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_auto_prog3_pathname(Fl_Input2* o, void*) {
+  progdefaults.auto_prog3_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_prog3=(Fl_Button *)0;
+
+static void cb_btn_select_prog3(Fl_Button*, void*) {
+  std::string str = select_binary_pathname(progdefaults.auto_prog3_pathname);
+txt_auto_prog3_pathname->value(str.c_str());
+progdefaults.auto_prog3_pathname = str;
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_flrig_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_flrig_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.flrig_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_flamp_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_flamp_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.flamp_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_flnet_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_flnet_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.flnet_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_fllog_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_fllog_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.fllog_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_prog1_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_prog1_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.prog1_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_prog2_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_prog2_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.prog2_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_prog3_auto_enable=(Fl_Check_Button *)0;
+
+static void cb_btn_prog3_auto_enable(Fl_Check_Button* o, void*) {
+  progdefaults.prog3_auto_enable = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_test_flrig=(Fl_Button *)0;
+
+static void cb_btn_test_flrig(Fl_Button*, void*) {
+  start_process(progdefaults.auto_flrig_pathname);
+}
+
+Fl_Button *btn_test_flamp=(Fl_Button *)0;
+
+static void cb_btn_test_flamp(Fl_Button*, void*) {
+  start_process(progdefaults.auto_flamp_pathname);
+}
+
+Fl_Button *btn_test_flnet=(Fl_Button *)0;
+
+static void cb_btn_test_flnet(Fl_Button*, void*) {
+  start_process(progdefaults.auto_flnet_pathname);
+}
+
+Fl_Button *btn_test_fllog=(Fl_Button *)0;
+
+static void cb_btn_test_fllog(Fl_Button*, void*) {
+  start_process(progdefaults.auto_fllog_pathname);
+}
+
+Fl_Button *btn_test_prog1=(Fl_Button *)0;
+
+static void cb_btn_test_prog1(Fl_Button*, void*) {
+  start_process(progdefaults.auto_prog1_pathname);
+}
+
+Fl_Button *btn_test_prog2=(Fl_Button *)0;
+
+static void cb_btn_test_prog2(Fl_Button*, void*) {
+  start_process(progdefaults.auto_prog2_pathname);
+}
+
+Fl_Button *btn_test_prog3=(Fl_Button *)0;
+
+static void cb_btn_test_prog3(Fl_Button*, void*) {
+  start_process(progdefaults.auto_prog3_pathname);
+}
+
 Fl_Button *btnSaveConfig=(Fl_Button *)0;
 
 static void cb_btnSaveConfig(Fl_Button*, void*) {
@@ -6216,6 +6425,7 @@ an merging"));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 540, 320, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 540, 320);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 540, 295, _("General"));
@@ -7066,7 +7276,6 @@ an merging"));
             tabContestia->end();
           } // Fl_Group* tabContestia
           { tabPSK = new Fl_Group(0, 50, 540, 322, _("PSK"));
-            tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 540, 322);
               tabsPSK->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 540, 295, _("General"));
@@ -8611,6 +8820,7 @@ igured on the\n\"Notifications\" configure dialog."));
         { tabsMisc = new Fl_Tabs(0, 25, 540, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 540, 320, _("CPU"));
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(25, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8625,7 +8835,6 @@ igured on the\n\"Notifications\" configure dialog."));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabNBEMS = new Fl_Group(0, 50, 540, 320, _("NBEMS"));
-            tabNBEMS->hide();
             { Fl_Group* o = new Fl_Group(20, 65, 500, 75, _("NBEMS data file interface"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9410,6 +9619,215 @@ and restarted if needed."));
         } // Fl_Tabs* tabsQRZ
         tabQRZ->end();
       } // Fl_Group* tabQRZ
+      { tabAutoStart = new Fl_Group(0, 25, 540, 345, _("Autostart"));
+        tabAutoStart->tooltip(_("Operator information"));
+        tabAutoStart->callback((Fl_Callback*)cb_tabAutoStart);
+        tabAutoStart->when(FL_WHEN_CHANGED);
+        tabAutoStart->hide();
+        { Fl_Group* o = new Fl_Group(2, 32, 536, 336, _("Auto start programs with fldigi"));
+          o->box(FL_ENGRAVED_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+          { Fl_Input2* o = txt_auto_flrig_pathname = new Fl_Input2(63, 71, 310, 24, _("flrig:"));
+            txt_auto_flrig_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_flrig_pathname->box(FL_DOWN_BOX);
+            txt_auto_flrig_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_flrig_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_flrig_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_flrig_pathname->labelfont(0);
+            txt_auto_flrig_pathname->labelsize(14);
+            txt_auto_flrig_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_flrig_pathname->callback((Fl_Callback*)cb_txt_auto_flrig_pathname);
+            txt_auto_flrig_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_flrig_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_flrig_pathname.c_str());
+          } // Fl_Input2* txt_auto_flrig_pathname
+          { btn_select_flrig = new Fl_Button(380, 71, 70, 24, _("Locate"));
+            btn_select_flrig->tooltip(_("Locate flrig executable"));
+            btn_select_flrig->callback((Fl_Callback*)cb_btn_select_flrig);
+          } // Fl_Button* btn_select_flrig
+          { Fl_Input2* o = txt_auto_flamp_pathname = new Fl_Input2(63, 109, 310, 24, _("flamp:"));
+            txt_auto_flamp_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_flamp_pathname->box(FL_DOWN_BOX);
+            txt_auto_flamp_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_flamp_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_flamp_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_flamp_pathname->labelfont(0);
+            txt_auto_flamp_pathname->labelsize(14);
+            txt_auto_flamp_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_flamp_pathname->callback((Fl_Callback*)cb_txt_auto_flamp_pathname);
+            txt_auto_flamp_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_flamp_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_flamp_pathname.c_str());
+          } // Fl_Input2* txt_auto_flamp_pathname
+          { btn_select_auto_flamp = new Fl_Button(380, 109, 70, 24, _("Locate"));
+            btn_select_auto_flamp->tooltip(_("Locate flamp executable"));
+            btn_select_auto_flamp->callback((Fl_Callback*)cb_btn_select_auto_flamp);
+          } // Fl_Button* btn_select_auto_flamp
+          { Fl_Input2* o = txt_auto_flnet_pathname = new Fl_Input2(63, 147, 310, 24, _("flnet:"));
+            txt_auto_flnet_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_flnet_pathname->box(FL_DOWN_BOX);
+            txt_auto_flnet_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_flnet_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_flnet_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_flnet_pathname->labelfont(0);
+            txt_auto_flnet_pathname->labelsize(14);
+            txt_auto_flnet_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_flnet_pathname->callback((Fl_Callback*)cb_txt_auto_flnet_pathname);
+            txt_auto_flnet_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_flnet_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_flnet_pathname.c_str());
+          } // Fl_Input2* txt_auto_flnet_pathname
+          { btn_select_auto_flnet = new Fl_Button(380, 147, 70, 24, _("Locate"));
+            btn_select_auto_flnet->tooltip(_("Locate flnet executable"));
+            btn_select_auto_flnet->callback((Fl_Callback*)cb_btn_select_auto_flnet);
+          } // Fl_Button* btn_select_auto_flnet
+          { Fl_Input2* o = txt_auto_fllog_pathname = new Fl_Input2(63, 186, 310, 24, _("fllog:"));
+            txt_auto_fllog_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_fllog_pathname->box(FL_DOWN_BOX);
+            txt_auto_fllog_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_fllog_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_fllog_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_fllog_pathname->labelfont(0);
+            txt_auto_fllog_pathname->labelsize(14);
+            txt_auto_fllog_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_fllog_pathname->callback((Fl_Callback*)cb_txt_auto_fllog_pathname);
+            txt_auto_fllog_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_fllog_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_fllog_pathname.c_str());
+          } // Fl_Input2* txt_auto_fllog_pathname
+          { btn_select_fllog = new Fl_Button(380, 186, 70, 24, _("Locate"));
+            btn_select_fllog->tooltip(_("Locate fllog executable"));
+            btn_select_fllog->callback((Fl_Callback*)cb_btn_select_fllog);
+          } // Fl_Button* btn_select_fllog
+          { Fl_Input2* o = txt_auto_prog1_pathname = new Fl_Input2(63, 224, 310, 24, _("Prog 1:"));
+            txt_auto_prog1_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_prog1_pathname->box(FL_DOWN_BOX);
+            txt_auto_prog1_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_prog1_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_prog1_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_prog1_pathname->labelfont(0);
+            txt_auto_prog1_pathname->labelsize(14);
+            txt_auto_prog1_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_prog1_pathname->callback((Fl_Callback*)cb_txt_auto_prog1_pathname);
+            txt_auto_prog1_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_prog1_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_prog1_pathname.c_str());
+          } // Fl_Input2* txt_auto_prog1_pathname
+          { btn_select_prog1 = new Fl_Button(380, 224, 70, 24, _("Locate"));
+            btn_select_prog1->tooltip(_("Locate program #1 executable"));
+            btn_select_prog1->callback((Fl_Callback*)cb_btn_select_prog1);
+          } // Fl_Button* btn_select_prog1
+          { Fl_Input2* o = txt_auto_prog2_pathname = new Fl_Input2(63, 262, 310, 24, _("Prog 2:"));
+            txt_auto_prog2_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_prog2_pathname->box(FL_DOWN_BOX);
+            txt_auto_prog2_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_prog2_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_prog2_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_prog2_pathname->labelfont(0);
+            txt_auto_prog2_pathname->labelsize(14);
+            txt_auto_prog2_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_prog2_pathname->callback((Fl_Callback*)cb_txt_auto_prog2_pathname);
+            txt_auto_prog2_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_prog2_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_prog2_pathname.c_str());
+          } // Fl_Input2* txt_auto_prog2_pathname
+          { btn_select_prog2 = new Fl_Button(380, 262, 70, 24, _("Locate"));
+            btn_select_prog2->tooltip(_("Locate program #2 executable"));
+            btn_select_prog2->callback((Fl_Callback*)cb_btn_select_prog2);
+          } // Fl_Button* btn_select_prog2
+          { Fl_Input2* o = txt_auto_prog3_pathname = new Fl_Input2(63, 301, 310, 24, _("Prog 3:"));
+            txt_auto_prog3_pathname->tooltip(_("Enter full path-filename for external program\nOr simple name of program"));
+            txt_auto_prog3_pathname->box(FL_DOWN_BOX);
+            txt_auto_prog3_pathname->color(FL_BACKGROUND2_COLOR);
+            txt_auto_prog3_pathname->selection_color(FL_SELECTION_COLOR);
+            txt_auto_prog3_pathname->labeltype(FL_NORMAL_LABEL);
+            txt_auto_prog3_pathname->labelfont(0);
+            txt_auto_prog3_pathname->labelsize(14);
+            txt_auto_prog3_pathname->labelcolor(FL_FOREGROUND_COLOR);
+            txt_auto_prog3_pathname->callback((Fl_Callback*)cb_txt_auto_prog3_pathname);
+            txt_auto_prog3_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+            txt_auto_prog3_pathname->when(FL_WHEN_CHANGED);
+            o->value(progdefaults.auto_prog3_pathname.c_str());
+          } // Fl_Input2* txt_auto_prog3_pathname
+          { btn_select_prog3 = new Fl_Button(380, 301, 70, 24, _("Locate"));
+            btn_select_prog3->tooltip(_("Locate program #3 executable"));
+            btn_select_prog3->callback((Fl_Callback*)cb_btn_select_prog3);
+          } // Fl_Button* btn_select_prog3
+          { Fl_Check_Button* o = btn_flrig_auto_enable = new Fl_Check_Button(455, 75, 19, 15, _("Enable\n-"));
+            btn_flrig_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_flrig_auto_enable->down_box(FL_DOWN_BOX);
+            btn_flrig_auto_enable->callback((Fl_Callback*)cb_btn_flrig_auto_enable);
+            btn_flrig_auto_enable->align(Fl_Align(FL_ALIGN_TOP));
+            o->value(progdefaults.flrig_auto_enable);
+          } // Fl_Check_Button* btn_flrig_auto_enable
+          { Fl_Check_Button* o = btn_flamp_auto_enable = new Fl_Check_Button(455, 113, 23, 15);
+            btn_flamp_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_flamp_auto_enable->down_box(FL_DOWN_BOX);
+            btn_flamp_auto_enable->callback((Fl_Callback*)cb_btn_flamp_auto_enable);
+            o->value(progdefaults.flamp_auto_enable);
+          } // Fl_Check_Button* btn_flamp_auto_enable
+          { Fl_Check_Button* o = btn_flnet_auto_enable = new Fl_Check_Button(455, 151, 23, 15);
+            btn_flnet_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_flnet_auto_enable->down_box(FL_DOWN_BOX);
+            btn_flnet_auto_enable->callback((Fl_Callback*)cb_btn_flnet_auto_enable);
+            o->value(progdefaults.flnet_auto_enable);
+          } // Fl_Check_Button* btn_flnet_auto_enable
+          { Fl_Check_Button* o = btn_fllog_auto_enable = new Fl_Check_Button(455, 190, 23, 15);
+            btn_fllog_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_fllog_auto_enable->down_box(FL_DOWN_BOX);
+            btn_fllog_auto_enable->callback((Fl_Callback*)cb_btn_fllog_auto_enable);
+            o->value(progdefaults.fllog_auto_enable);
+          } // Fl_Check_Button* btn_fllog_auto_enable
+          { Fl_Check_Button* o = btn_prog1_auto_enable = new Fl_Check_Button(455, 228, 23, 15);
+            btn_prog1_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_prog1_auto_enable->down_box(FL_DOWN_BOX);
+            btn_prog1_auto_enable->callback((Fl_Callback*)cb_btn_prog1_auto_enable);
+            o->value(progdefaults.prog1_auto_enable);
+          } // Fl_Check_Button* btn_prog1_auto_enable
+          { Fl_Check_Button* o = btn_prog2_auto_enable = new Fl_Check_Button(455, 266, 23, 15);
+            btn_prog2_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_prog2_auto_enable->down_box(FL_DOWN_BOX);
+            btn_prog2_auto_enable->callback((Fl_Callback*)cb_btn_prog2_auto_enable);
+            o->value(progdefaults.prog2_auto_enable);
+          } // Fl_Check_Button* btn_prog2_auto_enable
+          { Fl_Check_Button* o = btn_prog3_auto_enable = new Fl_Check_Button(455, 305, 23, 15);
+            btn_prog3_auto_enable->tooltip(_("Enable this entry when fldigi first starts"));
+            btn_prog3_auto_enable->down_box(FL_DOWN_BOX);
+            btn_prog3_auto_enable->callback((Fl_Callback*)cb_btn_prog3_auto_enable);
+            o->value(progdefaults.prog3_auto_enable);
+          } // Fl_Check_Button* btn_prog3_auto_enable
+          { btn_test_flrig = new Fl_Button(479, 71, 50, 24, _("Test"));
+            btn_test_flrig->tooltip(_("Start flrig"));
+            btn_test_flrig->callback((Fl_Callback*)cb_btn_test_flrig);
+          } // Fl_Button* btn_test_flrig
+          { btn_test_flamp = new Fl_Button(479, 109, 50, 24, _("Test"));
+            btn_test_flamp->tooltip(_("Start flamp"));
+            btn_test_flamp->callback((Fl_Callback*)cb_btn_test_flamp);
+          } // Fl_Button* btn_test_flamp
+          { btn_test_flnet = new Fl_Button(479, 147, 50, 24, _("Test"));
+            btn_test_flnet->tooltip(_("Start flnet"));
+            btn_test_flnet->callback((Fl_Callback*)cb_btn_test_flnet);
+          } // Fl_Button* btn_test_flnet
+          { btn_test_fllog = new Fl_Button(479, 186, 50, 24, _("Test"));
+            btn_test_fllog->tooltip(_("Start fllog"));
+            btn_test_fllog->callback((Fl_Callback*)cb_btn_test_fllog);
+          } // Fl_Button* btn_test_fllog
+          { btn_test_prog1 = new Fl_Button(479, 224, 50, 24, _("Test"));
+            btn_test_prog1->tooltip(_("Start prog1"));
+            btn_test_prog1->callback((Fl_Callback*)cb_btn_test_prog1);
+          } // Fl_Button* btn_test_prog1
+          { btn_test_prog2 = new Fl_Button(479, 262, 50, 24, _("Test"));
+            btn_test_prog2->tooltip(_("Start prog2"));
+            btn_test_prog2->callback((Fl_Callback*)cb_btn_test_prog2);
+          } // Fl_Button* btn_test_prog2
+          { btn_test_prog3 = new Fl_Button(479, 301, 50, 24, _("Test"));
+            btn_test_prog3->tooltip(_("Start prog3"));
+            btn_test_prog3->callback((Fl_Callback*)cb_btn_test_prog3);
+          } // Fl_Button* btn_test_prog3
+          o->end();
+        } // Fl_Group* o
+        tabAutoStart->end();
+      } // Fl_Group* tabAutoStart
       tabsConfigure->end();
     } // Fl_Tabs* tabsConfigure
     { btnSaveConfig = new Fl_Button(251, 375, 130, 22, _("Save"));

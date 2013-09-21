@@ -1537,6 +1537,17 @@ void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 
 }
 
+void cb_mnuConfigAutostart(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabAutoStart);
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
+}
+
 void cb_mnuConfigNotify(Fl_Menu_*, void*)
 {
 	notify_show();
@@ -3501,6 +3512,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Autostart")), 0,  (Fl_Callback*)cb_mnuConfigAutostart, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("QRZ/eQSL"), net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},

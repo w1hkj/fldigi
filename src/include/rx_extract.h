@@ -22,9 +22,12 @@
 #ifndef _RX_EXTRACT_H
 #define _RX_EXTRACT_H
 
+#include <string>
+
 extern const char *txtWrapInfo;
 extern void rx_extract_add(int c);
 extern void select_flmsg_pathname();
+extern std::string select_binary_pathname(std::string deffilename);
 
 extern bool extract_wrap;
 extern bool extract_flamp;
