@@ -27,6 +27,7 @@
 
 #include <config.h>
 
+#include <string>
 #include <cmath>
 #include <cstring>
 #include <float.h>
@@ -88,66 +89,55 @@ cRsId::cRsId()
 
 	rsfft = new Cfft(RSID_FFT_SIZE);
 
-	memset(hash_table_A, 255, sizeof(hash_table_A));
-	memset(hash_table_B, 255, sizeof(hash_table_B));
-	memset(hash_table_C, 255, sizeof(hash_table_C));
-	memset(hash_table_D, 255, sizeof(hash_table_D));
 	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
+
 	RectWindow(fftwindow, RSID_FFT_SIZE);
+//	HammingWindow(fftwindow, RSID_FFT_SIZE);
 
 	pCodes1 = new unsigned char[rsid_ids_size1 * RSID_NSYMBOLS];
-	memset(pCodes1, 0, rsid_ids_size1 * RSID_NSYMBOLS);
+	memset(pCodes1, 0, sizeof(pCodes1) * sizeof(unsigned char));
 
 	pCodes2 = new unsigned char[rsid_ids_size2 * RSID_NSYMBOLS];
-	memset(pCodes2, 0, rsid_ids_size2 * RSID_NSYMBOLS);
+	memset(pCodes2, 0, sizeof(pCodes2) * sizeof(unsigned char));
 
 	// Initialization  of assigned mode/submode IDs.
-	// HashTable is used for finding a code with lowest Hamming distance.
 	unsigned char* c;
-	int hash1, hash2;
 	for (int i = 0; i < rsid_ids_size1; i++) {
 		c = pCodes1 + i * RSID_NSYMBOLS;
 		Encode(rsid_ids_1[i].rs, c);
-		hash1 = c[11] | (c[12] << 4);
-		hash2 = c[13] | (c[14] << 4);
-		hash_table_A[hash1] = i;
-		hash_table_B[hash2] = i;
 	}
 
 	for (int i = 0; i < rsid_ids_size2; i++) {
 		c = pCodes2 + i * RSID_NSYMBOLS;
 		Encode(rsid_ids_2[i].rs, c);
-		hash1 = c[11] | (c[12] << 4);
-		hash2 = c[13] | (c[14] << 4);
-		hash_table_C[hash1] = i;
-		hash_table_D[hash2] = i;
 	}
+
 #if 0
-	printf("pcode table 1\n");
-	printf("rs, name, mode,sequence\n");
+	printf("pcode 1\n");
+	printf(",rs, name, mode,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14\n");
 	for (int i = 0; i < rsid_ids_size1; i++) {
-		printf("%d,%s,%d", rsid_ids_1[i].rs, rsid_ids_1[i].name, rsid_ids_1[i].mode);
-		for (int j = 0; j < RSID_NSYMBOLS; j++)
-			printf(",%d", pCodes1[i*RSID_NSYMBOLS + j]);
+		printf("%d,%d,%s,%d", i, rsid_ids_1[i].rs, rsid_ids_1[i].name, rsid_ids_1[i].mode);
+		for (int j = 0; j < RSID_NSYMBOLS + 1; j++)
+			printf(",%d", pCodes1[i*(RSID_NSYMBOLS + 1) + j]);
 		printf("\n");
 	}
-	printf("pcode table 2\n");
-	printf("rs, name, mode,sequence\n");
+	printf("\npcode 2\n");
+	printf(", rs, name, mode,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14\n");
 	for (int i = 0; i < rsid_ids_size2; i++) {
-		printf("%d,%s,%d", rsid_ids_2[i].rs, rsid_ids_2[i].name, rsid_ids_2[i].mode);
-		for (int j = 0; j < RSID_NSYMBOLS; j++)
-			printf(",%d", pCodes2[i*RSID_NSYMBOLS + j]);
+		printf("%d,%d,%s,%d", i, rsid_ids_2[i].rs, rsid_ids_2[i].name, rsid_ids_2[i].mode);
+		for (int j = 0; j < RSID_NSYMBOLS + 1; j++)
+			printf(",%d", pCodes2[i*(RSID_NSYMBOLS+ 1) + j]);
 		printf("\n");
 	}
 #endif
 
-	nBinLow = RSID_RESOL + 1;
-	nBinHigh = RSID_FFT_SIZE - 32;
+	nBinLow = 3;
+	nBinHigh = RSID_FFT_SIZE - 32; // - RSID_NTIMES - 2
 
 	outbuf = 0;
 	symlen = 0;
 
-	hamming_resolution = progdefaults.rsid_resolution;
+	reset();
 
 }
 
@@ -163,7 +153,6 @@ cRsId::~cRsId()
 
 void cRsId::reset()
 {
-	iTime = 0;
 	iPrevDistance = iPrevDistance2 = 99;
 	bPrevTimeSliceValid = bPrevTimeSliceValid2 = false;
 	found1 = found2 = false;
@@ -172,7 +161,7 @@ void cRsId::reset()
 	memset(aInputSamples, 0, sizeof(aInputSamples));
 	memset(aFFTReal, 0, sizeof(aFFTReal));
 	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
-	memset(aBuckets, 0, sizeof(aBuckets));
+	memset(fft_buckets, 0, sizeof(fft_buckets));
 
 	int error = src_reset(src_state);
 	if (error)
@@ -199,14 +188,14 @@ void cRsId::Encode(int code, unsigned char *rsid)
 void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 {
 	double Amp = 0.0, AmpMax = 0.0;
-	int iBucketMax = iBegin - RSID_RESOL;
+	int iBucketMax = iBegin - 2;
 	int j;
 
-	for (int i = iBegin; i < iEnd; i += RSID_RESOL) {
-		if (iBucketMax == i - RSID_RESOL) {
+	for (int i = iBegin; i < iEnd; i += 2) {
+		if (iBucketMax == i - 2) {
 			AmpMax = pSpectrum[i];
 			iBucketMax = i;
-			for (j = i + RSID_RESOL; j < i + RSID_NTIMES + RSID_RESOL; j += RSID_RESOL) {
+			for (j = i + 2; j < i + RSID_NTIMES + 2; j += 2) {
 				Amp = pSpectrum[j];
 				if (Amp > AmpMax) {
 					AmpMax = Amp;
@@ -222,20 +211,19 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 				iBucketMax = j;
 			}
 		}
-		aBuckets[iTime][i] = (iBucketMax - i) >> 1;
+		fft_buckets[RSID_NTIMES - 1][i] = (iBucketMax - i) >> 1;
 	}
 }
 
 void cRsId::receive(const float* buf, size_t len)
 {
 	double src_ratio = RSID_SAMPLE_RATE / active_modem->get_samplerate();
-	bool resample = (fabs(src_ratio - 1.0) >= DBL_EPSILON);
 	size_t ns;
 
 	if (rsid_secondary_time_out > 0) {
 		rsid_secondary_time_out -= (int)(len / src_ratio);
 		if (rsid_secondary_time_out <= 0) {
-			LOG_INFO("%s", "Secondary RsID sequence timed out");
+			LOG_INFO("%s", "Secondary RsID timed out");
 			reset();
 		}
 	}
@@ -246,34 +234,24 @@ void cRsId::receive(const float* buf, size_t len)
 			ns -= RSID_FFT_SAMPLES;
 		ns = RSID_FFT_SAMPLES - ns; // number of additional samples we need to call search()
 
-		if (resample) {
-			if (src_data.src_ratio != src_ratio)
-				src_set_ratio(src_state, src_data.src_ratio = src_ratio);
-			src_data.data_in = const_cast<float*>(buf);
-			src_data.input_frames = len;
-			src_data.data_out = inptr;
-			src_data.output_frames = ns;
-			src_data.input_frames_used = 0;
-			int error = src_process(src_state, &src_data);
-			if (unlikely(error)) {
-				LOG_ERROR("src_process error %d: %s", error, src_strerror(error));
-				return;
-			}
-			inptr += src_data.output_frames_gen;
-			buf += src_data.input_frames_used;
-			len -= src_data.input_frames_used;
+		if (src_data.src_ratio != src_ratio)
+			src_set_ratio(src_state, src_data.src_ratio = src_ratio);
+		src_data.data_in = const_cast<float*>(buf);
+		src_data.input_frames = len;
+		src_data.data_out = inptr;
+		src_data.output_frames = ns;
+		src_data.input_frames_used = 0;
+		int error = src_process(src_state, &src_data);
+		if (unlikely(error)) {
+			LOG_ERROR("src_process error %d: %s", error, src_strerror(error));
+			return;
 		}
-		else {
-
-			ns = MIN(ns, len);
-			memcpy(inptr, buf, ns * sizeof(*inptr));
-			inptr += ns;
-			buf += ns;
-			len -= ns;
-		}
+		inptr += src_data.output_frames_gen;
+		buf += src_data.input_frames_used;
+		len -= src_data.input_frames_used;
 
 		ns = inptr - aInputSamples;
-		if (ns == RSID_FFT_SAMPLES || ns == RSID_FFT_SIZE)
+		if (ns >= RSID_FFT_SAMPLES || ns >= RSID_FFT_SIZE)
 			search(); // will reset inptr if at end of input
 	}
 }
@@ -281,14 +259,16 @@ void cRsId::receive(const float* buf, size_t len)
 void cRsId::search(void)
 {
 	if (progdefaults.rsidWideSearch) {
-		nBinLow = RSID_RESOL + 1;
+		nBinLow = 3;
 		nBinHigh = RSID_FFT_SIZE - 32;
 	}
 	else {
 		double centerfreq = active_modem->get_freq();
-		nBinLow = (int)((centerfreq  - 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
-		nBinHigh = (int)((centerfreq  + 100.0 * RSID_RESOL) * 2048.0 / RSID_SAMPLE_RATE);
+		nBinLow = (int)((centerfreq  - 100.0 * 2) * 2048.0 / RSID_SAMPLE_RATE);
+		nBinHigh = (int)((centerfreq  + 100.0 * 2) * 2048.0 / RSID_SAMPLE_RATE);
 	}
+	if (nBinLow < 3) nBinLow = 3;
+	if (nBinHigh > RSID_FFT_SIZE - 32) nBinHigh = RSID_FFT_SIZE - 32;
 
 	bool bReverse = !(wf->Reverse() ^ wf->USB());
 	if (bReverse) {
@@ -324,45 +304,55 @@ void cRsId::search(void)
 			aFFTAmpl[i] = Real * Real + Imag * Imag;
 	}
 
-	if (++iTime == RSID_NTIMES)
-		iTime = 0;
-	i1 = iTime - 3 * RSID_RESOL;
-	if (i1 < 0) i1 += RSID_NTIMES;
-	i2 = i1 + RSID_RESOL;
-	i3 = i2 + RSID_RESOL;
+	int bucket_low =3;
+	int bucket_high = RSID_FFT_SIZE -32;
+	if (bReverse) {
+		bucket_low  = RSID_FFT_SIZE - bucket_high;
+		bucket_high = RSID_FFT_SIZE - bucket_low;
+	}
 
-	CalculateBuckets ( aFFTAmpl, nBinLow,     nBinHigh - RSID_NTIMES);
-	CalculateBuckets ( aFFTAmpl, nBinLow + 1, nBinHigh - RSID_NTIMES);
+	memmove(fft_buckets,
+			&(fft_buckets[1][0]),
+			(RSID_NTIMES - 1) * RSID_FFT_SIZE * sizeof(int));
+	memset(&(fft_buckets[RSID_NTIMES - 1][0]), 0, RSID_FFT_SIZE * sizeof(int));
+
+//	CalculateBuckets ( aFFTAmpl, nBinLow,  nBinHigh -1);
+//	CalculateBuckets ( aFFTAmpl, nBinLow + 1, nBinHigh);
+	CalculateBuckets ( aFFTAmpl, bucket_low,  bucket_high - RSID_NTIMES);
+	CalculateBuckets ( aFFTAmpl, bucket_low + 1, bucket_high - RSID_NTIMES);
 
 	int symbol_out_1 = -1;
-	int bin_out_1 = -1;
+	int bin_out_1    = -1;
 	int symbol_out_2 = -1;
-	int bin_out_2 = -1;
-	if (!found1) found1 = search_amp1(symbol_out_1, bin_out_1, pCodes1);
-	found2 = search_amp2(symbol_out_2, bin_out_2, pCodes2);
+	int bin_out_2    = -1;
 
-// rsid_secondary_time_out == 0 ==> waiting for initial rsid tone sequence
-	if (rsid_secondary_time_out == 0 && found1) {
-		if (symbol_out_1 != RSID_ESCAPE) {
-			if (bReverse)
-				bin_out_1 = 1024 - bin_out_1 - 31;
-			apply1(symbol_out_1, bin_out_1);
-			reset();
+	if (rsid_secondary_time_out == 0) {
+		found1 = search_amp(bin_out_1, symbol_out_1, pCodes1);
+		if (found1) {
+			if (symbol_out_1 != RSID_ESCAPE) {
+				if (bReverse)
+					bin_out_1 = 1024 - bin_out_1 - 31;
+				apply(bin_out_1, symbol_out_1, 0);
+				reset();
+				return;
+			} else {
+				rsid_secondary_time_out = 3*15*1024;
+				return;
+			}
+		} else
 			return;
-		} else {
-			LOG_INFO("%s", "Extended RsID");
-			rsid_secondary_time_out = 3*15*1024;
-			return;
-		}
-	} else if (found1 && found2) {
-		if (symbol_out_2 != RSID_NONE2) { //RSID_ESCAPE2) {
+	}
+
+	found2 = search_amp(bin_out_2, symbol_out_2, pCodes2);
+	if (found2) {
+		if (symbol_out_2 != RSID_NONE2) {
 			if (bReverse)
 				bin_out_2 = 1024 - bin_out_2 - 31;
-			apply2(symbol_out_2, bin_out_2);
-		} else
-			LOG_INFO("%s", "Invalid secondary RsID code");
+			apply(bin_out_2, symbol_out_2, 1);
+		}
 		reset();
 	}
+
 }
 
 void cRsId::setup_mode(int iSymbol)
@@ -586,38 +576,54 @@ void cRsId::setup_mode(int iSymbol)
 	} // switch (iSymbol)
 }
 
-void cRsId::apply1(int iSymbol, int iBin)
+void cRsId::apply(int iBin, int iSymbol, int extended)
 {
 	ENSURE_THREAD(TRX_TID);
 
 	double rsidfreq = 0, currfreq = 0;
 	int n, mbin = NUM_MODES;
 
-	currfreq = active_modem->get_freq();
-	rsidfreq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
+	int tblsize;
+	const RSIDs *p_rsid;
 
-	for (n = 0; n < rsid_ids_size1; n++) {
-		if (rsid_ids_1[n].rs == iSymbol) {
-			mbin = rsid_ids_1[n].mode;
+	if (extended) {
+		tblsize = rsid_ids_size2;
+		p_rsid = rsid_ids_2;
+	}
+	else {
+		tblsize = rsid_ids_size1;
+		p_rsid = rsid_ids_1;
+	}
+
+	currfreq = active_modem->get_freq();
+	rsidfreq = (iBin + RSID_NSYMBOLS) * RSID_SAMPLE_RATE / 2048.0;
+
+	for (n = 0; n < tblsize; n++) {
+		if (p_rsid[n].rs == iSymbol) {
+			mbin = p_rsid[n].mode;
 			break;
 		}
 	}
 
 	if (mbin == NUM_MODES) {
 		char msg[50];
-		if (n < rsid_ids_size1) // RSID known but unimplemented
-			snprintf(msg, sizeof(msg), "RSID: %s unimplemented", rsid_ids_1[n].name);
+		if (n < tblsize) // RSID known but unimplemented
+			snprintf(msg, sizeof(msg), "RSID: %s unimplemented",
+				p_rsid[n].name);
 		else // RSID unknown; shouldn't  happen
 			snprintf(msg, sizeof(msg), "RSID: code %d unknown", iSymbol);
 		put_status(msg, 4.0);
 		LOG_VERBOSE("%s", msg);
 		return;
 	}
-	else if (progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids_1[n].name, rsidfreq);
+
+	if (progdefaults.rsid_rx_modes.test(mbin)) {
+		LOG_VERBOSE("RSID: %s @ %0.0f Hz",
+			p_rsid[n].name, rsidfreq);
 	}
 	else {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids_1[n].name, rsidfreq);
+		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz",
+			p_rsid[n].name, rsidfreq);
 		return;
 	}
 
@@ -648,193 +654,58 @@ void cRsId::apply1(int iSymbol, int iBin)
 
 }
 
-void cRsId::apply2(int iSymbol, int iBin)
-{
-	ENSURE_THREAD(TRX_TID);
-
-	double currfreq = 0, rsidfreq = 0;
-	int n, mbin = NUM_MODES;
-
-	currfreq = active_modem->get_freq();
-	rsidfreq = (iBin + (RSID_NSYMBOLS - 1) * RSID_RESOL / 2) * RSID_SAMPLE_RATE / 2048.0;
-
-	for (n = 0; n < rsid_ids_size2; n++) {
-		if (rsid_ids_2[n].rs == iSymbol) {
-			mbin = rsid_ids_2[n].mode;
-			break;
-		}
-	}
-
-	if (mbin == NUM_MODES) {
-		char msg[50];
-		if (n < rsid_ids_size2) // RSID known but unimplemented
-			snprintf(msg, sizeof(msg), "RSID-2: %s unimplemented", rsid_ids_2[n].name);
-		else // RSID unknown; shouldn't  happen
-			snprintf(msg, sizeof(msg), "RSID-2: code %d unknown", iSymbol);
-		put_status(msg, 4.0);
-		LOG_VERBOSE("%s", msg);
-		return;
-	}
-	else if (progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_INFO("RSID: %s @ %0.0f Hz", rsid_ids_2[n].name, rsidfreq);
-	}
-	else {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz", rsid_ids_2[n].name, rsidfreq);
-		return;
-	}
-
-	if (mailclient || mailserver)
-		REQ(pskmail_notify_rsid, mbin);
-
-	if (!progdefaults.disable_rsid_warning_dialog_box)
-		REQ(notify_rsid, mbin, rsidfreq);
-
-	if (progdefaults.rsid_notify_only) return;
-
-	if (progdefaults.rsid_auto_disable)
-		REQ(toggleRSID);
-
-	if (progdefaults.rsid_mark) // mark current modem & freq
-		REQ(note_qrg, false, "\nBefore RSID: ", "\n",
-			active_modem->get_mode(), 0LL, currfreq);
-
-	if (active_modem) // Currently only effects Olivia, Contestia and MT63.
-		active_modem->rx_flush();
-
-	if (progdefaults.rsid_squelch)
-		REQ(init_modem_squelch, mbin, progdefaults.disable_rsid_freq_change ? currfreq : rsidfreq);
-	else
-		REQ(init_modem, mbin, progdefaults.disable_rsid_freq_change ? currfreq : rsidfreq);
-}
-
-//=============================================================================
-// search_amp1 routine #1
-//=============================================================================
-
-int cRsId::HammingDistance(int iBucket, unsigned char *p2)
+inline int cRsId::HammingDistance(int iBucket, unsigned char *p2)
 {
 	int dist = 0;
-	int j = iTime - RSID_NTIMES + 1; // first value
-	if (j < 0)
-		j += RSID_NTIMES;
-	for (int i = 0; i < RSID_NSYMBOLS; i++) {
-		if (aBuckets[j][iBucket] != p2[i])
-			if (++dist == hamming_resolution)
-				return dist;
-		j += RSID_RESOL;//2;
-		if (j >= RSID_NTIMES)
-			j -= RSID_NTIMES;
+	for (int i = 0, j = 1; i < RSID_NSYMBOLS; i++, j += 2) {
+		if (fft_buckets[j][iBucket] != p2[i]) {
+			++dist;
+			if (dist > hamming_resolution)
+				break;
+		}
 	}
 	return dist;
 }
 
-bool cRsId::search_amp1( int &SymbolOut, int &BinOut, unsigned char *pcode)
+bool cRsId::search_amp( int &bin_out, int &symbol_out, unsigned char *pcode)
 {
 	int i, j;
-	int iDistanceMin = 99;  // infinity
-	int iDistance;
-	int iBin		 = -1;
-	int iSymbol		 = -1;
+	int iDistanceMin = 1000;  // infinity
+	int iDistance    = 1000;
+	int iBin         = -1;
+	int iSymbol      = -1;
 
-	for (i = nBinLow; i < nBinHigh - RSID_NTIMES; ++ i) {
-		int n = aBuckets[i1][i] | (aBuckets[i2][i] << 4);
-		if (n > 0 && n < 256)  {
-			if ( (j = hash_table_A[n]) != 255) {
-				iDistance = HammingDistance(i, pcode + j * RSID_NSYMBOLS);
-				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-					iDistanceMin = iDistance;
-					iSymbol  	 = rsid_ids_1[j].rs;
-					iBin		 = i;
-				}
-			}
-		}
-		n = aBuckets[i3][i] | (aBuckets[iTime][i] << 4);
-		if (n > 0 && n < 256) {
-			if ((j = hash_table_B[n]) != 255) {
-				iDistance = HammingDistance (i, pcode + j * RSID_NSYMBOLS);
-				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-					iDistanceMin = iDistance;
-					iSymbol		 = rsid_ids_1[j].rs;
-					iBin		 = i;
-				}
-			}
-		}
+	int tblsize;
+	const RSIDs *prsid;
+
+	if (pcode == pCodes1) {
+		tblsize = rsid_ids_size1;
+		prsid = rsid_ids_1;
+	} else {
+		tblsize = rsid_ids_size2;
+		prsid = rsid_ids_2;
 	}
 
-	if (iSymbol == -1) {
-		// No RSID found in this time slice.
-		// If there is a code stored from the previous time slice, return it.
-		if (bPrevTimeSliceValid) {
-			SymbolOut			= iPrevSymbol;
-			BinOut				= iPrevBin;
-			bPrevTimeSliceValid = false;
-			return true;
-		}
-		return false;
-	}
-
-	if (! bPrevTimeSliceValid ||
-		iDistanceMin <= iPrevDistance) {
-		iPrevSymbol		= iSymbol;
-		iPrevBin		= iBin;
-		iPrevDistance	= iDistanceMin;
-	}
-	bPrevTimeSliceValid = true;
-	return false;
-}
-
-bool cRsId::search_amp2( int &SymbolOut, int &BinOut, unsigned char *pcode)
-{
-	int i, j;
-	int iDistanceMin = 99;  // infinity
-	int iDistance;
-	int iBin		 = -1;
-	int iSymbol		 = -1;
-
-	for (i = nBinLow; i < nBinHigh - RSID_NTIMES; ++ i) {
-		int n = aBuckets[i1][i] | (aBuckets[i2][i] << 4);
-		if (n > 0 && n < 256)  {
-			if ( (j = hash_table_C[n]) != 255) {
-				iDistance = HammingDistance(i, pcode + j * RSID_NSYMBOLS);
-				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-					iDistanceMin = iDistance;
-					iSymbol  	 = rsid_ids_2[j].rs;
-					iBin		 = i;
-				}
-			}
-		}
-		n = aBuckets[i3][i] | (aBuckets[iTime][i] << 4);
-		if (n > 0 && n < 256)  {
-			if ( (j = hash_table_D[n]) != 255) {
-				iDistance = HammingDistance (i, pcode + j * RSID_NSYMBOLS);
-				if (iDistance < hamming_resolution && iDistance < iDistanceMin) {
-					iDistanceMin = iDistance;
-					iSymbol		 = rsid_ids_2[j].rs;
-					iBin		 = i;
-				}
+	unsigned char *pc = 0;
+	for (i = 0; i < tblsize; i++) {
+		pc = pcode + i * RSID_NSYMBOLS;
+		for (j = nBinLow; j < nBinHigh - RSID_NTIMES; j++) {
+			iDistance = HammingDistance(j, pc);
+			if (iDistance < iDistanceMin) {
+				iDistanceMin = iDistance;
+				iSymbol  	 = prsid[i].rs;
+				iBin		 = j;
+				if (iDistanceMin == 0) break;
 			}
 		}
 	}
 
-	if (iSymbol == -1) {
-		// No RSID found in this time slice.
-		// If there is a code stored from the previous time slice, return it.
-		if (bPrevTimeSliceValid2) {
-			SymbolOut			= iPrevSymbol2;
-			BinOut				= iPrevBin2;
-			bPrevTimeSliceValid2 = false;
-			return true;
-		}
-		return false;
+	if (iDistanceMin <= hamming_resolution) {
+		symbol_out	= iSymbol;
+		bin_out		= iBin;
+		return true;
 	}
 
-	if (! bPrevTimeSliceValid2 ||
-		iDistanceMin <= iPrevDistance2) {
-		iPrevSymbol2	= iSymbol;
-		iPrevBin2		= iBin;
-		iPrevDistance2	= iDistanceMin;
-	}
-	bPrevTimeSliceValid2 = true;
 	return false;
 }
 
@@ -855,7 +726,7 @@ void cRsId::send(bool preRSID)
 		return;
 
 	unsigned short rmode = RSID_NONE;
-	unsigned short rmode2 = RSID_NONE;
+	unsigned short rmode2 = RSID_NONE2;
 
 	switch (mode) {
 	case MODE_RTTY :
