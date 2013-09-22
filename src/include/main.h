@@ -92,4 +92,7 @@ extern void exit_process();
 
 int directory_is_created( const char * strdir );
 
+// autostart an external program
+extern void start_process(std::string executable);
+
 #endif

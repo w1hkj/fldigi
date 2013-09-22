@@ -346,3 +346,24 @@ void select_flmsg_pathname()
 #endif
 }
 
+string select_binary_pathname(string deffilename)
+{
+#ifdef __APPLE__
+	open_recv_folder("/Applications/");
+	return "";
+#else
+#  ifdef __MINGW32__
+	deffilename = "C:\\Program Files\\";
+	const char *p = FSEL::select(_("Locate executable"), _("*.exe"), deffilename.c_str());
+#  else
+	deffilename = "/usr/local/bin/";
+	const char *p = FSEL::select(_("Locate binary"), _("*"), deffilename.c_str());
+# endif
+	string executable = "";
+	if (p) executable = p;
+// do not allow recursion !!
+	if (executable.find("fldigi") != string::npos) return "";
+	return executable;
+#endif
+}
+

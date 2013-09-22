@@ -2525,7 +2525,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -3405,8 +3405,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabPSK {
-            label PSK open
-            xywh {0 50 540 322} hide
+            label PSK
+            xywh {0 50 540 322}
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 540 322} selection_color 50
@@ -5194,7 +5194,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
               xywh {25 75 490 51} box ENGRAVED_FRAME align 21
@@ -5209,8 +5209,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabNBEMS {
-            label NBEMS
-            xywh {0 50 540 320} hide
+            label NBEMS open
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
@@ -5954,6 +5954,208 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.eqsl_datetime_off);}
               }
             }
+          }
+        }
+      }
+      Fl_Group tabAutoStart {
+        label Autostart
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 540 345} when 1 hide
+      } {
+        Fl_Group {} {
+          label {Auto start programs with fldigi} open
+          xywh {2 32 536 336} box ENGRAVED_BOX align 17
+        } {
+          Fl_Input txt_auto_flrig_pathname {
+            label {flrig:}
+            callback {progdefaults.auto_flrig_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for flrig} xywh {63 71 310 24} when 1
+            code0 {o->value(progdefaults.auto_flrig_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_flrig {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_flrig_pathname);
+txt_auto_flrig_pathname->value(str.c_str());
+progdefaults.auto_flrig_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flrig executable} xywh {380 71 70 24}
+          }
+          Fl_Input txt_auto_flamp_pathname {
+            label {flamp:}
+            callback {progdefaults.auto_flamp_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for flamp} xywh {63 109 310 24} when 1
+            code0 {o->value(progdefaults.auto_flamp_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_auto_flamp {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_flamp_pathname);
+txt_auto_flamp_pathname->value(str.c_str());
+progdefaults.auto_flamp_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flamp executable} xywh {380 109 70 24}
+          }
+          Fl_Input txt_auto_flnet_pathname {
+            label {flnet:}
+            callback {progdefaults.flmsg_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for flnet} xywh {63 147 310 24} when 1
+            code0 {o->value(progdefaults.auto_flnet_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_auto_flnet {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_flnet_pathname);
+txt_auto_flnet_pathname->value(str.c_str());
+progdefaults.auto_flnet_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flnet executable} xywh {380 147 70 24}
+          }
+          Fl_Input txt_auto_fllog_pathname {
+            label {fllog:}
+            callback {progdefaults.auto_fllog_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for fllog} xywh {63 186 310 24} when 1
+            code0 {o->value(progdefaults.auto_fllog_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_fllog {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_fllog_pathname);
+txt_auto_fllog_pathname->value(str.c_str());
+progdefaults.auto_fllog_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flmsg executable} xywh {380 186 70 24}
+          }
+          Fl_Input txt_auto_prog1_pathname {
+            label {Prog 1:}
+            callback {progdefaults.auto_prog1_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for external program} xywh {63 224 310 24} when 1
+            code0 {o->value(progdefaults.auto_prog1_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_prog1 {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_prog1_pathname);
+txt_auto_prog1_pathname->value(str.c_str());
+progdefaults.auto_prog1_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flmsg executable} xywh {380 224 70 24}
+          }
+          Fl_Input txt_auto_prog2_pathname {
+            label {Prog 2:}
+            callback {progdefaults.auto_prog2_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for external program} xywh {63 262 310 24} when 1
+            code0 {o->value(progdefaults.auto_prog2_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_prog2 {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_prog2_pathname);
+txt_auto_prog2_pathname->value(str.c_str());
+progdefaults.auto_prog2_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flmsg executable} xywh {380 262 70 24}
+          }
+          Fl_Input txt_auto_prog3_pathname {
+            label {Prog 3:}
+            callback {progdefaults.auto_prog3_pathname = o->value();
+progdefaults.changed = true;}
+            tooltip {Enter full path-filename for external program} xywh {63 301 310 24} when 1
+            code0 {o->value(progdefaults.auto_prog3_pathname.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btn_select_prog3 {
+            label Locate
+            callback {std::string str = select_binary_pathname(progdefaults.auto_prog3_pathname);
+txt_auto_prog3_pathname->value(str.c_str());
+progdefaults.auto_prog3_pathname = str;
+progdefaults.changed = true;}
+            tooltip {Locate flmsg executable} xywh {380 301 70 24}
+          }
+          Fl_Check_Button btn_flrig_auto_enable {
+            label {Enable
+-}
+            callback {progdefaults.flrig_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 75 19 15} down_box DOWN_BOX align 1
+            code0 {o->value(progdefaults.flrig_auto_enable);}
+          }
+          Fl_Check_Button btn_flamp_auto_enable {
+            callback {progdefaults.flamp_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 113 23 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.flamp_auto_enable);}
+          }
+          Fl_Check_Button btn_flnet_auto_enable {
+            callback {progdefaults.flnet_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 151 23 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.flnet_auto_enable);}
+          }
+          Fl_Check_Button btn_fllog_auto_enable {
+            callback {progdefaults.fllog_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 190 23 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.fllog_auto_enable);}
+          }
+          Fl_Check_Button btn_prog1_auto_enable {
+            callback {progdefaults.prog1_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 228 23 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.prog1_auto_enable);}
+          }
+          Fl_Check_Button btn_prog2_auto_enable {
+            callback {progdefaults.prog2_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 266 23 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.prog2_auto_enable);}
+          }
+          Fl_Check_Button btn_prog3_auto_enable {
+            callback {progdefaults.prog3_auto_enable = o->value();
+progdefaults.changed = true;}
+            xywh {455 305 23 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.prog3_auto_enable);}
+          }
+          Fl_Button btn_test_flrig {
+            label Test
+            callback {start_process(progdefaults.auto_flrig_pathname);}
+            tooltip {Start flrig} xywh {479 71 50 24}
+          }
+          Fl_Button btn_test_flamp {
+            label Test
+            callback {start_process(progdefaults.auto_flamp_pathname);}
+            tooltip {Start flamp} xywh {479 109 50 24}
+          }
+          Fl_Button btn_test_flnet {
+            label Test
+            callback {start_process(progdefaults.auto_flnet_pathname);}
+            tooltip {Start flnet} xywh {479 147 50 24}
+          }
+          Fl_Button btn_test_fllog {
+            label Test
+            callback {start_process(progdefaults.auto_fllog_pathname);}
+            tooltip {Start fllog} xywh {479 186 50 24}
+          }
+          Fl_Button btn_test_prog1 {
+            label Test
+            callback {start_process(progdefaults.auto_prog1_pathname);}
+            tooltip {Start prog1} xywh {479 224 50 24}
+          }
+          Fl_Button btn_test_prog2 {
+            label Test
+            callback {start_process(progdefaults.auto_prog2_pathname);}
+            tooltip {Start prog2} xywh {479 262 50 24}
+          }
+          Fl_Button btn_test_prog3 {
+            label Test
+            callback {start_process(progdefaults.auto_prog3_pathname);}
+            tooltip {Start prog3} xywh {479 301 50 24}
           }
         }
       }

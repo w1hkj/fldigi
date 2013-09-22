@@ -204,6 +204,70 @@ static void fatal_error(string);
 #  define SHOW_WIZARD_BEFORE_MAIN_WINDOW 0
 #endif
 
+void start_process(string executable)
+{
+	if (!executable.empty()) {
+#ifndef __MINGW32__
+		switch (fork()) {
+		case -1:
+			LOG_PERROR("fork");
+			// fall through
+		default:
+			break;
+		case 0:
+#endif
+#ifdef __MINGW32__
+			char* cmd = strdup(executable.c_str());
+			STARTUPINFO si;
+			PROCESS_INFORMATION pi;
+			memset(&si, 0, sizeof(si));
+			si.cb = sizeof(si);
+			memset(&pi, 0, sizeof(pi));
+			if (!CreateProcess(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+				LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+			free(cmd);
+#else
+			execl("/bin/sh", "sh", "-c", executable.c_str(), (char *)NULL);
+			perror("execl");
+			exit(EXIT_FAILURE);
+		}
+#endif
+	}
+}
+
+static void auto_start()
+{
+	if (!progdefaults.auto_flrig_pathname.empty() &&
+		 progdefaults.flrig_auto_enable)
+		start_process(progdefaults.auto_flrig_pathname);
+		
+	if (!progdefaults.auto_flamp_pathname.empty() &&
+		 progdefaults.flamp_auto_enable)
+		start_process(progdefaults.auto_flamp_pathname);
+		
+	if (!progdefaults.auto_fllog_pathname.empty() &&
+		 progdefaults.fllog_auto_enable)
+		start_process(progdefaults.auto_fllog_pathname);
+		
+	if (!progdefaults.auto_flnet_pathname.empty() &&
+		 progdefaults.flnet_auto_enable)
+		start_process(progdefaults.auto_flnet_pathname);
+		
+	if (!progdefaults.auto_prog1_pathname.empty() &&
+		 progdefaults.prog1_auto_enable)
+		start_process(progdefaults.auto_prog1_pathname);
+		
+	if (!progdefaults.auto_prog2_pathname.empty() &&
+		 progdefaults.prog2_auto_enable)
+		start_process(progdefaults.auto_prog2_pathname);
+		
+	if (!progdefaults.auto_prog3_pathname.empty() &&
+		 progdefaults.prog3_auto_enable)
+		start_process(progdefaults.auto_prog3_pathname);
+}
+
 // these functions are all started after Fl::run() is executing
 void delayed_startup(void *)
 {
@@ -226,8 +290,11 @@ void delayed_startup(void *)
 		if (!pskrep_start())
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
 
+	auto_start();
+
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
+
 }
 
 int main(int argc, char ** argv)
