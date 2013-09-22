@@ -28,9 +28,6 @@
 Fl_Double_Window	*picRxWin = (Fl_Double_Window *)0;
 
 picture		*picRx = (picture *)0;
-Fl_Button	*btnpicRxSave = (Fl_Button *)0;
-Fl_Button	*btnpicRxAbort = (Fl_Button *)0;
-Fl_Button	*btnpicRxClose = (Fl_Button *)0;
 
 Fl_Double_Window	*picTxWin = (Fl_Double_Window *)0;
 
@@ -58,46 +55,13 @@ void updateRxPic(unsigned char data, int pos)
 	picRx->pixel(data, pos);
 }
 
-void cb_picRxClose( Fl_Widget *w, void *)
-{
-	picRxWin->hide();
-}
-
-void cb_picRxAbort( Fl_Widget *w, void *)
-{
-	if (serviceme != active_modem) return;
-	serviceme->rxstate = serviceme->RX_STATE_DATA;
-	put_status("");
-	picRx->clear();
-}
-
-void cb_picRxSave( Fl_Widget *w, void *)
-{
-	const char ffilter[] = "Portable Network Graphics\t*.png\n";
-	string dfname = PicsDir;
-	dfname.append("image.png");
-
-	const char *fn = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), NULL);
-	if (fn)
-		picRx->save_png(fn);
-}
-
 void createRxViewer()
 {
 	FL_LOCK_D();
 	picRxWin = new Fl_Double_Window(200, 140);
 	picRxWin->xclass(PACKAGE_NAME);
 	picRxWin->begin();
-
 	picRx = new picture(2, 2, 136, 104);
-	btnpicRxSave = new Fl_Button(5, 140 - 30, 60, 24,_("Save..."));
-	btnpicRxSave->callback(cb_picRxSave, 0);
-	btnpicRxSave->hide();
-	btnpicRxAbort = new Fl_Button(70, 140 - 30, 60, 24, _("Abort"));
-	btnpicRxAbort->callback(cb_picRxAbort, 0);
-	btnpicRxClose = new Fl_Button(135, 140 - 30, 60, 24, _("Hide"));
-	btnpicRxClose->callback(cb_picRxClose, 0);
-
 	picRxWin->end();
 	FL_UNLOCK_D();
 }
@@ -109,16 +73,11 @@ void showRxViewer(int W, int H)
 	int winW, winH;
 	int picX, picY;
 	winW = W < 136 ? 140 : W + 4;
-	winH = H + 34;
+	winH = H + 4;
 	picX = (winW - W) / 2;
 	picY = 2;
 	picRxWin->size(winW, winH);
 	picRx->resize(picX, picY, W, H);
-	btnpicRxSave->resize(winW/2 - 65, H + 6, 60, 24);
-	btnpicRxSave->hide();
-	btnpicRxAbort->resize(winW/2 - 65, H + 6, 60, 24);
-	btnpicRxAbort->show();
-	btnpicRxClose->resize(winW/2 + 5, H + 6, 60, 24);
 	picRx->clear();
 	picRxWin->show();
 	FL_UNLOCK_E();
