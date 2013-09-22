@@ -44,6 +44,7 @@
 #include "qrunner.h"
 #include "debug.h"
 #include "nullmodem.h"
+#include "macros.h"
 
 #if BENCHMARK_MODE
 #  include "benchmark.h"
@@ -320,16 +321,16 @@ void trx_trx_transmit_loop()
 		    return;
 		}
 
-		if (active_modem != ssb_modem) {
+		if (active_modem != ssb_modem && active_modem != anal_modem) {
 			push2talk->set(true);
 			REQ(&waterfall::set_XmtRcvBtn, wf, true);
 		}
 		active_modem->tx_init(scard);
 
-		if ((active_modem != null_modem && 
-				active_modem != ssb_modem &&
-				active_modem != wwv_modem ) && 
-				(progdefaults.TransmitRSid || progStatus.n_rsids != 0)) {
+		if (!progdefaults.DTMFstr.empty()) dtmf->send();
+
+		if ( ReedSolomon->assigned(active_modem->get_mode()) && 
+			 (progdefaults.TransmitRSid || progStatus.n_rsids != 0)) {
 			if (progStatus.n_rsids < 0) {
 				for (int i = 0; i > progStatus.n_rsids; i--) {
 					ReedSolomon->send(true);
@@ -348,8 +349,6 @@ void trx_trx_transmit_loop()
 
 		if (progStatus.n_rsids >= 0) {
 			while (trx_state == STATE_TX) {
-				if (active_modem != ssb_modem && !progdefaults.DTMFstr.empty())
-					dtmf->send();
 				try {
 					if (active_modem->tx_process() < 0)
 						trx_state = STATE_RX;
@@ -365,13 +364,10 @@ void trx_trx_transmit_loop()
 		} else
 			trx_state = STATE_RX;
 
-		if ((active_modem != null_modem && 
-				active_modem != ssb_modem &&
-				active_modem != wwv_modem ) && 
-				progdefaults.TransmitRSid &&
-				progdefaults.rsid_post &&
-				progStatus.n_rsids >= 0)
-			ReedSolomon->send(false);
+		if (ReedSolomon->assigned(active_modem->get_mode()) && 
+			progdefaults.TransmitRSid &&
+			progdefaults.rsid_post &&
+			progStatus.n_rsids >= 0) ReedSolomon->send(false);
 
 		progStatus.n_rsids = 0;
 

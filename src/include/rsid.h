@@ -126,6 +126,8 @@ private:
 // transmit
 	double	*outbuf;
 	size_t  symlen;
+	unsigned short rmode;
+	unsigned short rmode2;
 
 private:
 	void	Encode(int code, unsigned char *rsid);
@@ -143,6 +145,7 @@ public:
 	void	reset();
 	void	receive(const float* buf, size_t len);
 	void	send(bool postidle);
+	bool	assigned(trx_mode mode);
 
 friend void reset_rsid(void *who);
 };
