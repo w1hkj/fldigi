@@ -677,7 +677,6 @@ public:
         {
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
 			*retval = "Operation not supported by modem";
-//			throw xmlrpc_c::fault("Operation not supported by modem");
 		else
 			*retval = xmlrpc_c::value_int((int)cntSearchRange->value());
 	}
@@ -697,7 +696,6 @@ public:
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
 			*retval = "Operation not supported by modem";
 			return;
-//			throw xmlrpc_c::fault("Operation not supported by modem");
 		}
 
 		int v = (int)(cntSearchRange->value());
@@ -720,7 +718,6 @@ public:
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
 			*retval = "Operation not supported by modem";
 			return;
-//			throw xmlrpc_c::fault("Operation not supported by modem");
 		}
 
 		int v = (int)(cntSearchRange->value() + params.getInt(0));
@@ -735,7 +732,6 @@ static Fl_Valuator* get_bw_val(void)
 {
 	if (!(active_modem->get_cap() & modem::CAP_BW))
 		return 0;
-//		throw xmlrpc_c::fault("Operation not supported by modem");
 
 	trx_mode m = active_modem->get_mode();
 	if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST)
@@ -743,7 +739,6 @@ static Fl_Valuator* get_bw_val(void)
 	else if (m == MODE_CW)
 		return sldrCWbandwidth;
 	return 0;
-//	throw xmlrpc_c::fault("Unknown CAP_BW modem");
 }
 
 class Modem_get_bw : public xmlrpc_c::method
@@ -756,7 +751,11 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
         {
-		*retval = xmlrpc_c::value_int((int)get_bw_val()->value());
+			Fl_Valuator* val = get_bw_val();
+			if (val)
+				*retval = xmlrpc_c::value_int((int)get_bw_val()->value());
+			else
+				*retval = xmlrpc_c::value_int(0);
 	}
 };
 
@@ -772,9 +771,12 @@ public:
         {
 		XMLRPC_LOCK;
 		Fl_Valuator* val = get_bw_val();
-		int v = (int)(val->value());
-		REQ(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
-		*retval = xmlrpc_c::value_int(v);
+		if (val) {
+			int v = (int)(val->value());
+			REQ(set_valuator, val, params.getInt(0, (int)val->minimum(), (int)val->maximum()));
+			*retval = xmlrpc_c::value_int(v);
+		} else
+			*retval = xmlrpc_c::value_int(0);
 	}
 };
 
@@ -790,9 +792,12 @@ public:
         {
 		XMLRPC_LOCK;
 		Fl_Valuator* val = get_bw_val();
-		int v = (int)(val->value() + params.getInt(0));
-		REQ(set_valuator, val, v);
-		*retval = xmlrpc_c::value_int(v);
+		if (val) {
+			int v = (int)(val->value() + params.getInt(0));
+			REQ(set_valuator, val, v);
+			*retval = xmlrpc_c::value_int(v);
+		} else
+			*retval = xmlrpc_c::value_int(0);
 	}
 };
 
@@ -915,7 +920,6 @@ public:
 		}
 		else
 			*retval = "Invalid Olivia tones";
-//			throw xmlrpc_c::fault("Invalid Olivia tones");
 	}
 };
 
@@ -992,7 +996,6 @@ public:
 		if (s != "LSB" && s != "USB") {
 			*retval = "Invalid argument";
 			return;
-//			throw xmlrpc_c::fault("Invalid argument");
 		}
 
 		if (progdefaults.chkUSERIGCATis)
@@ -1036,7 +1039,6 @@ public:
 		string s = params.getString(0);
 		if (s != "USB" && s != "LSB")
 			*retval = "Invalid argument";
-//			throw xmlrpc_c::fault("Invalid argument");
 		else
 		REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
@@ -1556,7 +1558,6 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE)
-//		if (btnTune->value() || wf->xmtrcv->value())
 			*retval = xmlrpc_c::value_string("TX");
 		else if (trx_state == STATE_RX)
 			*retval = xmlrpc_c::value_string("RX");
@@ -2368,9 +2369,13 @@ public:
 			throw f;
 		}
 
-		vector<unsigned char> bytes(size);
-		memcpy(&bytes[0], text, size);
-		*retval = xmlrpc_c::value_bytestring(bytes);
+		if (!size) {
+			*retval = xmlrpc_c::value_bytestring("empty rx buffer!");
+		} else {
+			vector<unsigned char> bytes(size);
+			memcpy(&bytes[0], text, size);
+			*retval = xmlrpc_c::value_bytestring(bytes);
+		}
 		free(text);
 	}
 };

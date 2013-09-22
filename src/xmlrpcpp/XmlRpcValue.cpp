@@ -231,10 +231,14 @@ namespace XmlRpc {
     }
 
     // No type tag? Assume string
-    bool result = true;
+//    bool result = true;
+    bool result = false;
+
     int valueOffset = *offset;
+
     if (XmlRpcUtil::nextTagIsEnd(VALUE_TAG, valueXml, offset))
     {
+      result = true;
       return stringFromXml(valueXml, &valueOffset);
     }
     else if (XmlRpcUtil::nextTagIs(NIL_TAG, valueXml, offset, &emptyTag))
@@ -244,41 +248,46 @@ namespace XmlRpc {
     }
     else if (XmlRpcUtil::nextTagIs(BOOLEAN_TAG, valueXml, offset, &emptyTag))
     {
-      if (emptyTag)
+      if (emptyTag) {
         *this = false;
-      else
+        result = true;
+      } else
         result = boolFromXml(valueXml, offset) && 
                  XmlRpcUtil::nextTagIsEnd(BOOLEAN_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(I4_TAG, valueXml, offset, &emptyTag))
     {
-      if (emptyTag)
+      if (emptyTag) {
         *this = 0;
-      else
+        result = true;
+      } else
         result = intFromXml(valueXml, offset) && 
                  XmlRpcUtil::nextTagIsEnd(I4_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(INT_TAG, valueXml, offset, &emptyTag))
     {
-      if (emptyTag)
+      if (emptyTag) {
         *this = 0;
-      else
+        result = true;
+      } else
         result = intFromXml(valueXml, offset) && 
                  XmlRpcUtil::nextTagIsEnd(INT_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(DOUBLE_TAG, valueXml, offset, &emptyTag))
     {
-      if (emptyTag)
+      if (emptyTag) {
         *this = 0.0;
-      else
+        result = true;
+      } else
         result = doubleFromXml(valueXml, offset) && 
                  XmlRpcUtil::nextTagIsEnd(DOUBLE_TAG, valueXml, offset);
     }
     else if (XmlRpcUtil::nextTagIs(STRING_TAG, valueXml, offset, &emptyTag))
     {
-      if (emptyTag)
+      if (emptyTag) {
         *this = "";
-      else
+        result = true;
+      } else
         result = stringFromXml(valueXml, offset) && 
                  XmlRpcUtil::nextTagIsEnd(STRING_TAG, valueXml, offset);
     }
