@@ -869,15 +869,6 @@ void cb_pkt2400(Fl_Widget *w, void *arg)
     cb_init_mode(w, arg);
 }
 
-static void busy_cursor(void*)
-{
-	Fl::first_window()->cursor(FL_CURSOR_WAIT);
-}
-static void default_cursor(void*)
-{
-	Fl::first_window()->cursor(FL_CURSOR_DEFAULT);
-}
-
 void startup_modem(modem* m, int f)
 {
 	trx_start_modem(m, f);
@@ -1127,8 +1118,8 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
-	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: 
-	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100: 
+	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
+	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode), freq);
 		quick_change = quick_change_thor;
@@ -1406,7 +1397,7 @@ void cb_charset_menu(Fl_Widget *, void *charset)
 void populate_charset_menu(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++)
-		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu, 
+		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu,
 		reinterpret_cast<void *>(charset_list[i].tiniconv_id));
 }
 
@@ -1415,7 +1406,7 @@ void set_default_charset(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++) {
 		if (strcmp(charset_list[i].name, progdefaults.charset_name.c_str()) == 0) {
-			cb_charset_menu(0, 
+			cb_charset_menu(0,
 			reinterpret_cast<void *>(charset_list[i].tiniconv_id));
 			return;
 		}
@@ -2701,8 +2692,8 @@ int default_handler(int event)
 	else if (Fl::event_key() == FL_Escape)
 		return 1;
 
-	else if ( (fl_digi_main->contains(w) || dlgLogbook->contains(w)) && 
-				Fl::event_ctrl() ) 
+	else if ( (fl_digi_main->contains(w) || dlgLogbook->contains(w)) &&
+				Fl::event_ctrl() )
 			return w->handle(FL_KEYBOARD);
 
 	return 0;
@@ -2799,7 +2790,7 @@ bool save_on_exit() {
 
 bool clean_exit(bool ask) {
 
-	
+
 	if (progdefaults.confirmExit && (!(progdefaults.changed && progdefaults.SaveConfig) ||
 					 !(macros.changed && progdefaults.SaveMacros) ||
 					 !(!oktoclear && progdefaults.NagMe)))
@@ -2813,7 +2804,7 @@ bool clean_exit(bool ask) {
 			break;
 		}
 	}
-		
+
 	if (ask)
 		if (!save_on_exit()) return false;
 
@@ -3259,13 +3250,13 @@ void UI_select()
 UI_return:
 	if (progStatus.show_channels)
 		text_panel->position(
-			text_panel->orgx(), text_panel->orgy(), 
-			text_panel->x() + (int)(1.0*text_panel->w()*progStatus.tile_x/progStatus.tile_w + 0.5), 
+			text_panel->orgx(), text_panel->orgy(),
+			text_panel->x() + (int)(1.0*text_panel->w()*progStatus.tile_x/progStatus.tile_w + 0.5),
 			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
 	 else
 		text_panel->position(
-			text_panel->orgx(), text_panel->orgy(), 
-			text_panel->x(), 
+			text_panel->orgx(), text_panel->orgy(),
+			text_panel->x(),
 			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
 
 	viewer_redraw();
@@ -3539,7 +3530,7 @@ static Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Colors && Fonts")), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER, 
+{ make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER,
 _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -3802,11 +3793,7 @@ int rightof(Fl_Widget* w)
 
 int leftof(Fl_Widget* w)
 {
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 	unsigned int a = w->align();
-#else
-	int a = w->align();
-#endif
 	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
 		return w->x();
 
@@ -3831,11 +3818,7 @@ int leftof(Fl_Widget* w)
 
 int above(Fl_Widget* w)
 {
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 	unsigned int a = w->align();
-#else
-	int a = w->align();
-#endif
 	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
 		return w->y();
 
@@ -3844,11 +3827,7 @@ int above(Fl_Widget* w)
 
 int below(Fl_Widget* w)
 {
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 	unsigned int a = w->align();
-#else
-	int a = w->align();
-#endif
 	if (a == FL_ALIGN_CENTER || a & FL_ALIGN_INSIDE)
 		return w->y() + w->h();
 
@@ -4215,7 +4194,7 @@ void LOGGING_colors_font()
 	}
 	input_color_font(inpNotes);
 //	inpNotes->size(inpNotes->w(), wh*2);
-	
+
 // buttons, boxes
 	Fl_Widget *wid[] = {
 		MODEstatus, Status1, Status2, StatusBar, WARNstatus };
@@ -4277,10 +4256,10 @@ void LOGBOOK_colors_font()
 	int width_loc  = fl_width("XX88XXX");
 	int width_mode = fl_width("CONTESTIA");
 
-	int dlg_width =	inpDate_log->x() + 
-					width_date + 2 + 
+	int dlg_width =	inpDate_log->x() +
+					width_date + 2 +
 					width_time + 2 +
-					width_freq + 2 + 
+					width_freq + 2 +
 					width_mode + 2 +
 					width_pwr + 2 +
 					width_rst + 2 +
@@ -4298,7 +4277,7 @@ void LOGBOOK_colors_font()
 		newheight = progStatus.logbook_h;
 
 	dlgLogbook->resize(
-		progStatus.logbook_x, progStatus.logbook_y, 
+		progStatus.logbook_x, progStatus.logbook_y,
 		progStatus.logbook_w, progStatus.logbook_h);
 
 // row1
@@ -4309,13 +4288,13 @@ void LOGBOOK_colors_font()
 	inp_font_pos(inpTimeOn_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
 	inp_font_pos(inpCall_log, xpos, ypos, width_freq, wh);
 
-	date_font_pos(inpQSLrcvddate_log, 
+	date_font_pos(inpQSLrcvddate_log,
 					dlg_width - 2 - width_date, ypos, width_date, wh);
-	inp_font_pos(inpRstR_log, 
-					inpQSLrcvddate_log->x() - 2 - width_rst, ypos, 
+	inp_font_pos(inpRstR_log,
+					inpQSLrcvddate_log->x() - 2 - width_rst, ypos,
 					width_rst, wh);
-	inp_font_pos(inpName_log, 
-					inpCall_log->x() + width_freq + 2, ypos, 
+	inp_font_pos(inpName_log,
+					inpCall_log->x() + width_freq + 2, ypos,
 					inpRstR_log->x() - 2 - (inpCall_log->x() + width_freq + 2), wh);
 // row2
 	ypos += wh + 20;
@@ -4325,16 +4304,16 @@ void LOGBOOK_colors_font()
 	inp_font_pos(inpTimeOff_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
 	inp_font_pos(inpFreq_log, xpos, ypos, width_freq, wh);
 
-	date_font_pos(inpQSLsentdate_log, 
+	date_font_pos(inpQSLsentdate_log,
 					dlg_width - 2 - width_date, ypos, width_date, wh);
-	inp_font_pos(inpRstS_log, 
-					inpQSLsentdate_log->x() - 2 - width_rst, ypos, 
+	inp_font_pos(inpRstS_log,
+					inpQSLsentdate_log->x() - 2 - width_rst, ypos,
 					width_rst, wh);
-	inp_font_pos(inpTX_pwr_log, 
-					inpRstS_log->x() - 2 - width_pwr, ypos, 
+	inp_font_pos(inpTX_pwr_log,
+					inpRstS_log->x() - 2 - width_pwr, ypos,
 					width_pwr, wh);
-	inp_font_pos(inpMode_log, 
-					inpFreq_log->x() + width_freq + 2, ypos, 
+	inp_font_pos(inpMode_log,
+					inpFreq_log->x() + width_freq + 2, ypos,
 					inpTX_pwr_log->x() - 2 - (inpFreq_log->x() + width_freq + 2), wh);
 // row 3
 	ypos += (20 + wh);
@@ -4769,12 +4748,12 @@ void create_fl_digi_main_primary() {
 				progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
 
 				inpCountry = new Fl_Input2(
-					rightof(QsoInfoFrame1) + pad, Hmenu + pad, 
+					rightof(QsoInfoFrame1) + pad, Hmenu + pad,
 					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hentry, "");
 				inpCountry->tooltip(_("Country"));
 
 				inpNotes = new Fl_Input2(
-					rightof(QsoInfoFrame1) + pad, y2, 
+					rightof(QsoInfoFrame1) + pad, y2,
 					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, "");
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->tooltip(_("Notes"));
@@ -4971,12 +4950,12 @@ void create_fl_digi_main_primary() {
 			bx7a->align(FL_ALIGN_INSIDE);
 			inpXchgIn2 = new Fl_Input2(
 				rightof(bx7a), y,
-				static_cast<int>(progStatus.mainW 
+				static_cast<int>(progStatus.mainW
 				- rightof(bx7a) - pad
 				- fl_width(label6a) - wData - pad
 				- fl_width(label5a) - wData - pad
 				- fl_width(label2a) - wData - pad
-				- fl_width(label3a) - wData - pad), 
+				- fl_width(label3a) - wData - pad),
 				h, "");
 			inpXchgIn2->tooltip(_("Contest exchange in"));
 
@@ -5052,7 +5031,7 @@ void create_fl_digi_main_primary() {
 					bx->box(FL_FLAT_BOX);
 					xpos += wBLANK;
 				}
-				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
+				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn,
 					macros.name[NUMMACKEYS + i].c_str());
 				btnMacro[NUMMACKEYS + i]->callback(macro_cb, reinterpret_cast<void *>(NUMMACKEYS + i));
 				btnMacro[NUMMACKEYS + i]->tooltip(
@@ -5139,11 +5118,11 @@ void create_fl_digi_main_primary() {
 					mvsquelch->value(progStatus.VIEWER_psksquelch);
 					mvsquelch->step(0.1);
 					mvsquelch->color( fl_rgb_color(
-						progdefaults.bwsrSliderColor.R, 
+						progdefaults.bwsrSliderColor.R,
 						progdefaults.bwsrSliderColor.G,
 						progdefaults.bwsrSliderColor.B));
 					mvsquelch->selection_color( fl_rgb_color(
-						progdefaults.bwsrSldrSelColor.R, 
+						progdefaults.bwsrSldrSelColor.R,
 						progdefaults.bwsrSldrSelColor.G,
 						progdefaults.bwsrSldrSelColor.B));
 					mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
@@ -5163,7 +5142,7 @@ void create_fl_digi_main_primary() {
 			mvgroup->end();
 
 			ReceiveText = new FTextRX(
-				text_panel->x() + mvgroup->w(), text_panel->y(), 
+				text_panel->x() + mvgroup->w(), text_panel->y(),
 				text_panel->w() - mvgroup->w(), text_panel->h()/2, "");
 			ReceiveText->color(
 				fl_rgb_color(
@@ -5180,7 +5159,7 @@ void create_fl_digi_main_primary() {
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			FHdisp = new Raster(
-				text_panel->x() + mvgroup->w(), text_panel->y(), 
+				text_panel->x() + mvgroup->w(), text_panel->y(),
 				text_panel->w() - mvgroup->w(), text_panel->h()/2);
 			FHdisp->align(FL_ALIGN_CLIP);
 			FHdisp->hide();
@@ -5188,7 +5167,7 @@ void create_fl_digi_main_primary() {
 			wefax_pic::create_both( true );
 
 			TransmitText = new FTextTX(
-				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(), 
+				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
 				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
 			TransmitText->color(
 				fl_rgb_color(
@@ -5231,7 +5210,7 @@ void create_fl_digi_main_primary() {
 					bx->box(FL_FLAT_BOX);
 					xpos += wBLANK;
 				}
-				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
+				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn,
 					macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i));
 				btnMacro[i]->tooltip(_("Left Click - execute\nFkey - execute\nRight Click - edit"));
@@ -5285,7 +5264,7 @@ void create_fl_digi_main_primary() {
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
-			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 				Ws2n - Hstatus, Hstatus, "");
 			cntCW_WPM->callback(cb_cntCW_WPM);
 			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
@@ -5450,7 +5429,7 @@ void create_fl_digi_main_primary() {
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
 
-	clearQSO(); 
+	clearQSO();
 
 	createConfig();
 	createRecordLoader();
@@ -6241,7 +6220,7 @@ static void rx_parser(const unsigned char data, int style)
 		style = FTextBase::CTRL;
 	if (wf->tmp_carrier())
 		style = FTextBase::ALTR;
-	
+
 	// Collapse the "\r\n" sequence into "\n".
 	//
 	// The 'data' variable possibly contains only a part of a multi-byte
@@ -6250,9 +6229,9 @@ static void rx_parser(const unsigned char data, int style)
 	// the input is valid UTF-8. All bytes of a multi-byte character
 	// will therefore have the eight bit set and can not match either
 	// '\r' or '\n'.
-	
+
 	static unsigned int lastdata = 0;
-	
+
 	if (data == '\n' && lastdata == '\r');
 	else if (data == '\r') {
 		add_rx_char('\n');
@@ -6272,7 +6251,7 @@ static void rx_parser(const unsigned char data, int style)
 static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
-	
+
 	// possible destinations for the data
 	enum dest_type {
 		DEST_RECV,	// ordinary received text
@@ -6289,32 +6268,32 @@ static void put_rx_char_flmain(unsigned int data, int style)
 		rx_chd.reset();
 		rx_chd.clear();
 	}
-	
+
 	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
 	const char **asc = NULL;
-	
+
 	if (mailclient || mailserver || arqmode)
 		asc = ascii2;
 	if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
 	if (extract_wrap || extract_flamp)
 		asc = ascii3;
-	
+
 	// pass the data to the distiller
 	if (asc != NULL)
 		rx_chd.rx((unsigned char *)asc[data & 0xFF]);
 	else
 		rx_chd.rx(data & 0xFF);
-	
+
 	// feed the decoded data into the RX parser
 	if (rx_chd.data_length() > 0) {
 		const char *ptr = rx_chd.data().data();
 		const char *end = ptr + rx_chd.data_length();
-		
+
 		while (ptr < end)
 			rx_parser((const unsigned char)*ptr++, style);
-		
+
 		rx_chd.clear();
 	}
 }
@@ -6536,7 +6515,7 @@ int get_tx_char(void)
 	if (Qidle_time) { return GET_TX_CHAR_NODATA; }
 	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
 	if (idling) { return GET_TX_CHAR_NODATA; }
-	
+
 	if (arq_text_available) {
 		char character = (arq_get_char() & 0xFF);
 		if (character == 0x03) {
@@ -6558,37 +6537,40 @@ int get_tx_char(void)
 	}
 
 	int c;
-	
+
 	if ((c = tx_encoder.pop()) != -1)
 		return(c);
 
-	if (progStatus.repeatMacro > -1 && text2repeat.length()) {
-		char *repeat_content = &text2repeat[repeatchar];
+	if ((progStatus.repeatMacro > -1) && text2repeat.length()) {
+		string repeat_content;
+		int utf8size = fl_utf8len1(text2repeat[repeatchar]);
+		for (int i = 0; i < utf8size; i++)
+			repeat_content += text2repeat[repeatchar + i];
+		repeatchar += utf8size;
 		tx_encoder.push(repeat_content);
-		repeatchar += fl_utf8len1(*repeat_content);
-		
-		if (repeatchar == text2repeat.length()) {
+
+		if (repeatchar >= text2repeat.length()) {
 			text2repeat.clear();
 			macros.repeat(progStatus.repeatMacro);
 		}
 		goto transmit;
 	}
-	
+
 	c = TransmitText->nextChar();
 
 	if (c == '^' && state == STATE_CHAR) {
 		state = STATE_CTRL;
 		c = TransmitText->nextChar();
 	}
-	
+
 	if (c == -1) {
 		queue_reset();
 		return(GET_TX_CHAR_NODATA);
 	}
-	
+
 	if (state == STATE_CTRL) {
 		state = STATE_CHAR;
-		
+
 		switch (c) {
 		case 'p': case 'P':
 			TransmitText->pause();
@@ -6638,9 +6620,9 @@ int get_tx_char(void)
 		int utf8_len = fl_utf8encode(c, utf8_char);
 		tx_encoder.push(string(utf8_char, utf8_len));
 	}
-	
+
 	transmit:
-	
+
 	c = tx_encoder.pop();
 	if (c == -1) {
 		LOG_ERROR("TX encoding conversion error: pushed content, but got nothing back");
@@ -6648,11 +6630,7 @@ int get_tx_char(void)
 	}
 
 	if (progdefaults.tx_lowercase)
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 		c = fl_tolower(c);
-#else
-		c = tolower(c);
-#endif
 
 	return(c);
 }
@@ -6679,7 +6657,7 @@ void put_echo_char(unsigned int data, int style)
 	// assign a style to the data
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
-	
+
 	// receive and convert the data
 	static unsigned int lastdata = 0;
 
@@ -6689,7 +6667,7 @@ void put_echo_char(unsigned int data, int style)
 		echo_chd.rx((unsigned char *)asc[data & 0xFF]);
 	else
 		echo_chd.rx(data & 0xFF);
-	
+
 	lastdata = data;
 
 	if (Maillogfile) {
@@ -6697,19 +6675,13 @@ void put_echo_char(unsigned int data, int style)
 		Maillogfile->log_to_file(cLogfile::LOG_TX, s);
 	}
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
-#else
-	REQ(&FTextBase::addchr, ReceiveText, data, style);
-#endif
 
 	if (echo_chd.data_length() > 0)
 	{
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
 		REQ(&FTextRX::addstr, ReceiveText, echo_chd.data(), style);
-#endif
 		if (progStatus.LOGenabled)
 			logfile->log_to_file(cLogfile::LOG_TX, echo_chd.data());
-		
+
 		echo_chd.clear();
 	}
 }

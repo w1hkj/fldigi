@@ -77,16 +77,7 @@
 // to
 //#  if defined(WIN32) && !defined(__CYGWIN__) && !defined(__WATCOMC__) && !defined(__WOE32__)
 
-#ifdef __MINGW32__
-#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
-#		undef dirent
-#		include <dirent.h>
-#	else
-#		include <dirent.h>
-#	endif
-#else
-#	include <dirent.h>
-#endif
+#include <dirent.h>
 
 using namespace std;
 
@@ -102,32 +93,6 @@ const char *szBands[] = {
 	"1830", "3580", "7030", "7070", "10138",
 	"14070", "18100", "21070", "21080", "24920", "28070", "28120", 0};
 
-#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 1
-// Define stream I/O operators for non-builtin types.
-// Right now we have: Fl_Color, Fl_Font, RGB, and RGBI
-ostream& operator<<(ostream& out, const Fl_Color& c)
-{
-	return out << static_cast<int>(c);
-}
-istream& operator>>(istream& in, Fl_Color& c)
-{
-	int i;
-	in >> i;
-	c = static_cast<Fl_Color>(i);
-	return in;
-}
-ostream& operator<<(ostream& out, const Fl_Font& f)
-{
-	return out << static_cast<int>(f);
-}
-istream& operator>>(istream& in, Fl_Font& f)
-{
-	int i;
-	in >> i;
-	f = static_cast<Fl_Font>(i);
-	return in;
-}
-#endif
 ostream& operator<<(ostream& out, const RGB& rgb)
 {
 	return out << (int)rgb.R << ' ' << (int)rgb.G << ' ' << (int)rgb.B;

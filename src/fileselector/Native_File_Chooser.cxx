@@ -22,21 +22,3 @@
 
 #include <config.h>
 
-#if (FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3) || (FLARQ_FLTK_API_MAJOR == 1 && FLARQ_FLTK_API_MINOR < 3)
-
-// Use Windows' chooser
-#if defined(__WIN32__) || defined(__CYGWIN__)
-#include "Native_File_Chooser_WIN32.cxx"
-#endif
-
-// Use Apple's chooser
-#ifdef __APPLE__
-#include "Native_File_Chooser_MAC.cxx"
-#endif
-
-// All else falls back to FLTK's own chooser
-#if ! defined(__APPLE__) && !defined(_WIN32) && !defined(__CYGWIN__)
-#include "Native_File_Chooser_FLTK.cxx"
-#endif
-
-#endif

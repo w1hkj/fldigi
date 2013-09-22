@@ -55,16 +55,9 @@
 
 #ifdef __MINGW32__
 #	include "compat.h"
-#	if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
-#		define dirent fl_dirent_no_thanks
-#		undef dirent
-#		include <dirent.h>
-#	else
-#		include <dirent.h>
-#	endif
-#else
-#	include <dirent.h>
 #endif
+
+#include <dirent.h>
 
 #include "fileselect.h"
 

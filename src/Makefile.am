@@ -308,9 +308,6 @@ fldigi_SOURCES += \
 	include/FTextView.h \
 	include/FTextRXTX.h \
 	include/fileselect.h \
-	include/Fl_Text_Buffer_mod.H \
-	include/Fl_Text_Display_mod.H \
-	include/Fl_Text_Editor_mod.H \
 	include/Panel.h \
 	include/FreqControl.h \
 	include/analysis.h \
@@ -546,11 +543,11 @@ fldigi_SOURCES += \
 	waterfall/digiscope.cxx \
 	waterfall/raster.cxx \
 	waterfall/waterfall.cxx \
-	widgets/FTextView.cxx \
-	widgets/FTextRXTX.cxx \
 	widgets/Fl_Text_Buffer_mod.cxx \
 	widgets/Fl_Text_Display_mod.cxx \
 	widgets/Fl_Text_Editor_mod.cxx \
+	widgets/FTextView.cxx \
+	widgets/FTextRXTX.cxx \
 	widgets/Panel.cxx \
 	widgets/flinput2.cxx \
 	widgets/flmisc.cxx \
@@ -558,8 +555,6 @@ fldigi_SOURCES += \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	widgets/psk_browser.cxx \
-	widgets/missing_strings.c \
-	widgets/missing_strings.h \
 	wwv/analysis.cxx \
 	wwv/wwv.cxx \
 	logbook/xmlrpc_log.cxx \
@@ -597,15 +592,7 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
-	fileselector/FL/Native_File_Chooser_FLTK.H \
-	fileselector/FL/Native_File_Chooser_MAC.H \
-	fileselector/FL/Native_File_Chooser_WIN32.H \
-	fileselector/Native_File_Chooser_FLTK.cxx \
-	fileselector/Native_File_Chooser_WIN32.cxx \
-	fileselector/Native_File_Chooser_MAC.cxx \
 	fileselector/flnfc_common.cxx \
-	fileselector/fileselect_1_1.cxx \
-	fileselector/fileselect_1_3.cxx \
 	feld/Feld7x7-14.cxx \
 	feld/Feld7x7n-14.cxx \
 	feld/FeldDx-14.cxx \
@@ -621,12 +608,9 @@ EXTRA_fldigi_SOURCES += \
 	feld/FeldStyl-14.cxx \
 	feld/FeldVert-14.cxx \
 	feld/FeldWide-14.cxx \
-	include/Fl_Text_Buffer_mod_1_1.H \
-	include/Fl_Text_Buffer_mod_1_3.H \
-	include/Fl_Text_Display_mod_1_1.H \
-	include/Fl_Text_Display_mod_1_3.H \
-	include/Fl_Text_Editor_mod_1_1.H \
-	include/Fl_Text_Editor_mod_1_3.H \
+	include/Fl_Text_Buffer_mod.H \
+	include/Fl_Text_Display_mod.H \
+	include/Fl_Text_Editor_mod.H \
 	mfsk/mfsk-pic.cxx \
 	mt63/alias_1k.dat \
 	mt63/alias_2k.dat \
@@ -637,12 +621,6 @@ EXTRA_fldigi_SOURCES += \
 	rsid/rsid_defs.cxx \
 	trx/tune.cxx \
 	dialogs/guide.cxx \
-	widgets/Fl_Text_Buffer_mod_1_1.cxx \
-	widgets/Fl_Text_Buffer_mod_1_3.cxx \
-	widgets/Fl_Text_Display_mod_1_1.cxx \
-	widgets/Fl_Text_Display_mod_1_3.cxx \
-	widgets/Fl_Text_Editor_mod_1_1.cxx \
-	widgets/Fl_Text_Editor_mod_1_3.cxx \
 	libtiniconv/tiniconv.h \
 	libtiniconv/tiniconv_int.h \
 	libtiniconv/encdec/ascii.h \
