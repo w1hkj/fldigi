@@ -169,7 +169,7 @@ void cRsId::reset()
 		LOG_ERROR("src_reset error %d: %s", error, src_strerror(error));
 	src_data.src_ratio = 0.0;
 	inptr = aInputSamples + RSID_FFT_SAMPLES;
-	hamming_resolution = progdefaults.rsid_resolution;
+	hamming_resolution = progdefaults.RsID_label_type;
 }
 
 void cRsId::Encode(int code, unsigned char *rsid)

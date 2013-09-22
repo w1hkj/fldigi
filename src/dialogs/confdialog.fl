@@ -4997,15 +4997,16 @@ progdefaults.changed = true;}
                 code1 {chkRSidAutoDisable->value(progdefaults.rsid_auto_disable);}
                 code2 {if (progdefaults.rsid_notify_only) chkRSidAutoDisable->deactivate();}
               }
-              Fl_Value_Slider sldrRSIDresolution {
-                label Errors
-                callback {progdefaults.rsid_resolution = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {Number of errors allowed in RsID comparison} xywh {10 233 145 22} type Horizontal align 8 maximum 4 step 1 textsize 14
-                code0 {o->value(progdefaults.rsid_resolution);}
-                code2 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                class Fl_Value_Slider2
-              }
+              Fl_Choice mnu_RsID_errors {
+                label {Allow errors}
+                callback {progdefaults.RsID_label_type = o->value();
+progdefaults.changed = true;} open
+                tooltip {Low = zero errors
+Medium = 1 error
+High = 2 errors} xywh {10 233 100 22} down_box BORDER_BOX align 8
+                code0 {mnu_RsID_errors->add(_("Low")); mnu_RsID_errors->add(_("Medium")); mnu_RsID_errors->add(_("High"));}
+                code1 {mnu_RsID_errors->value(progdefaults.RsID_label_type);}
+              } {}
               Fl_Value_Slider sldrRSIDsquelch {
                 label {Squelch open (sec)}
                 callback {progdefaults.rsid_squelch = (int)o->value();
