@@ -303,8 +303,8 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 	prev1symbol = prev2symbol = 0;
 
 	if ( mode == MODE_THOR100 || mode == MODE_THOR50x1 || mode == MODE_THOR50x2 || mode == MODE_THOR25x4 ) {
-		Enc = new encoder (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
-		Dec = new viterbi (GALILEO_K, GALILEO_POLY1, GALILEO_POLY2);
+		Enc = new encoder (THOR_K15, K15_POLY1, K15_POLY2);
+		Dec = new viterbi (THOR_K15, K15_POLY1, K15_POLY2);
 		Dec->settraceback (PATHMEM-1); // Long constraint length codes require longer traceback
 	} else {
 		Enc = new encoder (THOR_K, THOR_POLY1, THOR_POLY2);
@@ -464,8 +464,9 @@ void thor::decodesymbol()
 void thor::softdecodesymbol()
 {
 	unsigned char one, zero;
-	int c, nextmag=127;
-	static int lastc=0, lastmag=0, nowmag=0;
+	int c, nextmag=127, rawdoppler=0;
+	static int lastc=0, lastmag=0, nowmag=0, prev1rawdoppler=0;
+	static double lastdoppler=0, nowdoppler=0;
 	unsigned char lastsymbols[4];
 	bool outofrange=false;
 
@@ -484,11 +485,40 @@ void thor::softdecodesymbol()
 			}
 		}
 #if SOFTPROFILE
-		LOG_INFO("\nSymbol: %3d; DELTAf: +%3d",currsymbol, c);
+		LOG_INFO("Symbol: %3d; DELTAf: +%3d",currsymbol, c);
 #endif
 	}
 	c -= 2;
 	if (c < 0) c += THORNUMTONES;
+	
+		
+	// Calculate soft-doppler / frequency-error of the symbol
+	// For a perfect & undistorted symbol, rawdoppler will == 0 (be a perfect multiple of paths*doublespaced)
+	rawdoppler = (currsymbol - prev1symbol) % (paths * doublespaced) ; 
+#if SOFTPROFILE
+	LOG_INFO("Raw Doppler: %3d", rawdoppler);
+#endif
+	if ( 0 == rawdoppler) 
+		nowdoppler = 1.0f; // Perfect symbol: assign probability = 100%
+	else {
+		// Detect modem "de-sync + immediate re-sync" events and reverse the incurred soft-penalty
+		// Probability of these events increases as baudrate increases
+		if ( -1 * prev1rawdoppler == rawdoppler) { 
+			rawdoppler = 0;
+			lastdoppler = 1.0f;
+		}
+		// calculate the nowdoppler soft-value as a probability >= 50%
+		// centering the "50% confidence point" directly between two symbols.
+		if ( abs(rawdoppler) <= paths * doublespaced / 2  )
+			nowdoppler = 1.0 - ((1.0 / (paths * doublespaced)) * abs(rawdoppler)) ;
+		else
+			nowdoppler = 0.0 + ((1.0 / (paths * doublespaced)) * abs(rawdoppler)) ;
+	}
+	
+	prev1rawdoppler = rawdoppler; // save raw-value for comparison on next run
+#if SOFTPROFILE
+	LOG_INFO("Doppler Confidence: %3.1f", nowdoppler);
+#endif
 
 // Since the THOR modem is differential, when an outofrange error occurs
 // there are 2 possibilities:
@@ -516,6 +546,9 @@ void thor::softdecodesymbol()
 		nowmag /= 16;
 		nextmag /= 16;
 	}
+	
+	// Apply the soft-doppler probability to the previous symbol's soft-magnitude
+	lastmag *= lastdoppler;
 
 	if (lastmag <= 0) { // puncture
 		one = 128;
@@ -531,9 +564,9 @@ void thor::softdecodesymbol()
 	}
 
 #if SOFTPROFILE
-	LOG_INFO("next mag %.3d | now mag %.3d | last mag %.3d",nextmag, nowmag, lastmag);
 	if (outofrange) LOG_INFO("%s","outofrange");
 	if (staticburst) LOG_INFO("%s","staticburst");
+	LOG_INFO("next mag %.3d | now mag %.3d | last mag %.3d \n",nextmag, nowmag, lastmag);
 #endif
 
 	lastsymbols[3] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
@@ -549,6 +582,7 @@ void thor::softdecodesymbol()
 	lastc = c;
 	lastmag = nowmag;
 	nowmag = nextmag;
+	lastdoppler = nowdoppler;
 }
 
 int thor::harddecode()

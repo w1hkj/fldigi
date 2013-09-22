@@ -42,13 +42,14 @@
 #define	THOR_POLY2	0x4f
 
 //VK2ETA high speed modes
-// NASA Galileo coefficients for viterbi encode/decode algorithms
-#define	GALILEO_K	15
-#define	GALILEO_POLY1	046321
-#define	GALILEO_POLY2	051271
+// IEEE coefficients for viterbi encode/decode algorithms
+#define	THOR_K15	15
+#define	K15_POLY1	044735
+#define	K15_POLY2	063057
 
 //#include "mfskvaricode.h"
 #include "interleave.h"
+
 #include "viterbi.h"
 
 
