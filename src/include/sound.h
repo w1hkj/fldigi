@@ -75,14 +75,35 @@ protected:
 	double		*wrt_buffer;
 
 #if USE_SNDFILE
+
 	SNDFILE* ofCapture;
 	SNDFILE* ifPlayback;
 	SNDFILE* ofGenerate;
+
+	SRC_STATE	*writ_src_state;
+	SRC_STATE	*play_src_state;
+
+	SRC_DATA	*writ_src_data;
+	SRC_DATA	*play_src_data;
+
+	float		*src_out_buffer;
+	float		*src_inp_buffer;
+	float		*inp_pointer;
+
+	SF_INFO		play_info;
+
+	float modem_wr_sr;
+	float modem_play_sr;
+
+	bool   new_playback;
+
 	sf_count_t  read_file(SNDFILE* file, float* buf, size_t count);
-	sf_count_t  write_file(SNDFILE* file, float* buf, size_t count);
-	sf_count_t  write_file(SNDFILE* file, double* buf, size_t count);
+	void         write_file(SNDFILE* file, float* buf, size_t count);
+	void         write_file(SNDFILE* file, double* buf, size_t count);
+
 	bool	 format_supported(int format);
 	void	 tag_file(SNDFILE *sndfile, const char *title);
+
 #endif
 
 	bool	capture;
@@ -101,7 +122,7 @@ public:
 	virtual void    flush(unsigned dir = UINT_MAX) = 0;
 	virtual bool	must_close(int dir = 0) = 0;
 #if USE_SNDFILE
-	void		get_file_params(const char* def_fname, const char** fname, int* format);
+	void	get_file_params(const char* def_fname, const char** fname, int* format);
 	int		Capture(bool val);
 	int		Playback(bool val);
 	int		Generate(bool val);

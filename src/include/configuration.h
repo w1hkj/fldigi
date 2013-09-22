@@ -1056,6 +1056,10 @@
         ELEM_(int, TxOffset, "TXOFFSET",                                                \
               "Difference between RX and TX freq (rig offset)",                         \
               0)                                                                        \
+        ELEM_(int, wavSampleRate, "WAV_SAMPLERATE",                                     \
+              "Wave file record sample rate\n"                                          \
+              "0 - 22050, 1 - 24000, 2 - 44100, 3 - 48000",                             \
+              3)                                                                        \
         ELEM_(bool, loop_playback, "LOOPPLAYBACK",                                      \
               "true = continuous loop of sound file playback\n"                         \
               "false = single pass through playback file.",                             \

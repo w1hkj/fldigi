@@ -480,6 +480,8 @@ extern Fl_Check_Button *chkReverseAudio;
 extern Fl_Check_Button *btnPTTrightchannel2;
 extern Fl_Check_Button *btnQSK2;
 extern Fl_Check_Button *chkPseudoFSK2;
+extern Fl_Group *tabWavFile;
+extern Fl_Choice *mnuWavSampleRate;
 extern Fl_Group *tabID;
 extern Fl_Tabs *tabsID;
 extern Fl_Group *tabRsID;

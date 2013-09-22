@@ -378,8 +378,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
-        xywh {0 25 540 340} hide
+        label UI
+        xywh {0 25 540 346} hide
       } {
         Fl_Tabs tabsUI {
           xywh {0 25 540 346} selection_color 50
@@ -2517,8 +2517,8 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
-        xywh {0 25 550 355} hide
+        label Modems
+        xywh {0 25 595 347} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 540 340} selection_color 50 align 9
@@ -3916,7 +3916,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig open
+        label Rig
         tooltip {Transceiver control} xywh {0 23 540 345} hide
       } {
         Fl_Tabs tabsRig {open
@@ -3924,7 +3924,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 540 320}
+            xywh {0 48 540 320} hide
           } {
             Fl_Group {} {
               xywh {26 57 490 38} box ENGRAVED_FRAME
@@ -4061,7 +4061,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 48 540 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 48 540 320}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -4545,8 +4545,8 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
-        tooltip {Audio devices} xywh {0 25 540 340} hide
+        label Audio open
+        tooltip {Audio devices} xywh {0 25 540 345} hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 540 345} selection_color 50
@@ -4721,7 +4721,7 @@ progdefaults.changed = true;}
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
-              label {OSS mixer} open
+              label {OSS Mixer} open
               xywh {23 69 490 145} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnMixer {
@@ -4916,6 +4916,19 @@ if (o->value()) {
                 code0 {o->value(progdefaults.PseudoFSK);}
               }
             }
+          }
+          Fl_Group tabWavFile {
+            label Wav open
+            xywh {0 50 540 320} hide
+          } {
+            Fl_Choice mnuWavSampleRate {
+              label {Wav write sample rate}
+              callback {progdefaults.wavSampleRate = o->value();
+progdefaults.changed = true;} open
+              tooltip {Pick baud rate from list} xywh {60 96 150 24} down_box BORDER_BOX align 5
+              code0 {o->add("22050|24000|44100|48000");}
+              code1 {o->value(progdefaults.wavSampleRate);}
+            } {}
           }
         }
       }
