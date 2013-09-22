@@ -91,8 +91,9 @@ cRsId::cRsId()
 
 	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
 
-	RectWindow(fftwindow, RSID_FFT_SIZE);
+//	RectWindow(fftwindow, RSID_FFT_SIZE);
 //	HammingWindow(fftwindow, RSID_FFT_SIZE);
+	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
 
 	pCodes1 = new unsigned char[rsid_ids_size1 * RSID_NSYMBOLS];
 	memset(pCodes1, 0, sizeof(pCodes1) * sizeof(unsigned char));
@@ -316,8 +317,6 @@ void cRsId::search(void)
 			(RSID_NTIMES - 1) * RSID_FFT_SIZE * sizeof(int));
 	memset(&(fft_buckets[RSID_NTIMES - 1][0]), 0, RSID_FFT_SIZE * sizeof(int));
 
-//	CalculateBuckets ( aFFTAmpl, nBinLow,  nBinHigh -1);
-//	CalculateBuckets ( aFFTAmpl, nBinLow + 1, nBinHigh);
 	CalculateBuckets ( aFFTAmpl, bucket_low,  bucket_high - RSID_NTIMES);
 	CalculateBuckets ( aFFTAmpl, bucket_low + 1, bucket_high - RSID_NTIMES);
 
@@ -596,7 +595,7 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 	}
 
 	currfreq = active_modem->get_freq();
-	rsidfreq = (iBin + RSID_NSYMBOLS) * RSID_SAMPLE_RATE / 2048.0;
+	rsidfreq = (iBin + RSID_NSYMBOLS - 0.5) * RSID_SAMPLE_RATE / 2048.0;
 
 	for (n = 0; n < tblsize; n++) {
 		if (p_rsid[n].rs == iSymbol) {
@@ -618,11 +617,11 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 	}
 
 	if (progdefaults.rsid_rx_modes.test(mbin)) {
-		LOG_VERBOSE("RSID: %s @ %0.0f Hz",
+		LOG_VERBOSE("RSID: %s @ %0.1f Hz",
 			p_rsid[n].name, rsidfreq);
 	}
 	else {
-		LOG_DEBUG("Ignoring RSID: %s @ %0.0f Hz",
+		LOG_DEBUG("Ignoring RSID: %s @ %0.1f Hz",
 			p_rsid[n].name, rsidfreq);
 		return;
 	}
