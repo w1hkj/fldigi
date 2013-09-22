@@ -1736,6 +1736,7 @@ void reset_mnuPlayback()
 {
 	if (Playback_menu_item == 0) return;
 	Playback_menu_item->clear();
+	playval = false;
 }
 
 void cb_mnuPlayback(Fl_Widget *w, void *d)
