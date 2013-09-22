@@ -48,7 +48,7 @@ static const char *wrap_end = "[WRAP:end]";
 static const char *flmsg = "<flmsg>";
 
 static const char flamp_beg[] = ">FLAMP";
-static const char flamp_end[] = "{EOT}";
+static const char flamp_end[] = ":EOT}";
 
 #ifdef __WIN32__
 const char *txtWrapInfo = _("\
