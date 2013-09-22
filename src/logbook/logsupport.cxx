@@ -146,7 +146,7 @@ void Export_CSV()
 	if (!p)
 		return;
 
-	for (int i = 0; i < chkExportBrowser->nitems(); i++) {
+	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
 			rec = qsodb.getRec(i);
 			rec->putField(EXPORT, "E");
@@ -172,7 +172,7 @@ void Export_TXT()
 	if (!p)
 		return;
 
-	for (int i = 0; i < chkExportBrowser->nitems(); i++) {
+	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
 			rec = qsodb.getRec(i);
 			rec->putField(EXPORT, "E");
@@ -203,7 +203,7 @@ void Export_ADIF()
 	if (!p)
 		return;
 
-	for (int i = 0; i < chkExportBrowser->nitems(); i++) {
+	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
 			rec = qsodb.getRec(i);
 			rec->putField(EXPORT, "E");
@@ -1436,7 +1436,7 @@ void WriteCabrillo()
 	if (!p)
 		return;
 
-	for (int i = 0; i < chkCabBrowser->nitems(); i++) {
+	for (int i = 0; i < chkCabBrowser->FLTK_nitems(); i++) {
 		if (chkCabBrowser->checked(i + 1)) {
 			rec = qsodb.getRec(i);
 			rec->putField(EXPORT, "E");

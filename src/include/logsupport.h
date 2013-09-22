@@ -9,7 +9,14 @@
 #include "qso_db.h"
 #include "adif_io.h"
 
+// Avoid 'nitems' macro collision in FreeBSD's sys/params.h
+// with fltk's FL/Fl_Check_Browser.H
+// ->nitems() is called by functions in this file
+
+#undef nitems
 #include "lgbook.h"
+#define FLTK_nitems nitems
+#undef nitems
 
 #ifdef __WOE32__
 #  define ADIF_SUFFIX "adi"
