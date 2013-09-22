@@ -61,8 +61,13 @@ FIELD fields[] = {
 	{IOTA,           "IOTA",         &btnSelectIOTA},      // Islands on the air
 	{ITUZ,           "ITUZ",         &btnSelectITUZ},      // ITU zone
 	{CONT,           "CONT",         &btnSelectCONT},      // contacted stations continent
+
 	{MYXCHG,         "MYXCHG",       &btnSelectMyXchg},    // contest exchange sent
 	{XCHG1,          "XCHG1",        &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+
+	{MYXCHG,         "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
+	{XCHG1,          "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+
 	{SRX,            "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
 	{STX,            "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
 	{TX_PWR,         "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
@@ -331,6 +336,8 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 		if (rec->getField(EXPORT)[0] == 'E') {
 			int j = 0;
 			while (fields[j].type != NUMFIELDS) {
+				if (strcmp(fields[j].name,"MYXCHG") == 0) { j++; continue; }
+				if (strcmp(fields[j].name,"XCHG1") == 0) { j++; continue; }
 				if (fields[j].btn != NULL)
 					if ((*fields[j].btn)->value()) {
 					sFld = rec->getField(fields[j].type);
@@ -469,6 +476,8 @@ void cAdifIO::do_writelog()
 		record.clear();
 		int j = 0;
 		while (fields[j].type != NUMFIELDS) {
+			if (strcmp(fields[j].name,"MYXCHG") == 0) { j++; continue; }
+			if (strcmp(fields[j].name,"XCHG1") == 0) { j++; continue; }
 			sFld = rec->getField(fields[j].type);
 			if (!sFld.empty()) {
 				snprintf(recfield, sizeof(recfield), adifmt,
