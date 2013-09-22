@@ -186,7 +186,7 @@ void cb_picTxClose( Fl_Widget *w, void *)
 	FL_UNLOCK_D();
 }
 
-void cb_picTxSendColor( Fl_Widget *w, void *)
+void pic_TxSendColor()
 {
 	int W, H, rowstart;
 	W = TxImg->w();
@@ -221,9 +221,18 @@ void cb_picTxSendColor( Fl_Widget *w, void *)
 	btnpicTxSendAbort->show();
 	picTx->clear();
 	FL_UNLOCK_D();
+	if (!picTxWin->visible())
+		picTxWin->show();
+;
+
 // start the transmission
 	start_tx();
 	serviceme->startpic = true;
+}
+
+void cb_picTxSendColor( Fl_Widget *w, void *)
+{
+	pic_TxSendColor();
 }
 
 void cb_picTxSendGrey( Fl_Widget *w, void *)

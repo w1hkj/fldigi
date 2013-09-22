@@ -121,6 +121,8 @@ public:
 	void		videoText();
 	void		pretone();
 
+	virtual void		send_image(std::string) {}
+
 	void		set_stopflag(bool b) { stopflag = b;};
 	bool		get_stopflag() const { return stopflag; };
 

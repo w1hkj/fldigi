@@ -155,6 +155,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));
+	w->add(_("<IMAGE:>\tinsert MFSK image"));
 	w->add(LINE_SEP);
 
 	w->add(_("<PAUSE>\tpause transmit"));
@@ -315,6 +316,13 @@ void cbInsertMacro(Fl_Widget *, void *)
 					 "text." "txt");
 		if (p) {
 			text.insert(6, p);
+		} else
+			text = "";
+	} else if (text == "<IMAGE:>") {
+		string filters = "Text\t*." "txt";
+		const char *p = FSEL::select(_("MFSK image file"), "*.{png,jpg,bmp}\t*", "");
+		if (p) {
+			text.insert(7, p);
 		} else
 			text = "";
 	} else if (text == "<MACROS:>") {
