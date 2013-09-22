@@ -687,7 +687,7 @@ class Modem_set_afc_sr : public xmlrpc_c::method
 public:
 	Modem_set_afc_sr()
 	{
-		_signature = "n:i";
+		_signature = "i:i";
 		_help = "Sets the modem AFC search range. Returns the old value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -709,7 +709,7 @@ class Modem_inc_afc_sr : public xmlrpc_c::method
 public:
 	Modem_inc_afc_sr()
 	{
-		_signature = "n:i";
+		_signature = "i:i";
 		_help = "Increments the modem AFC search range. Returns the new value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -764,7 +764,7 @@ class Modem_set_bw : public xmlrpc_c::method
 public:
 	Modem_set_bw()
 	{
-		_signature = "n:i";
+		_signature = "i:i";
 		_help = "Sets the modem bandwidth. Returns the old value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -785,7 +785,7 @@ class Modem_inc_bw : public xmlrpc_c::method
 public:
 	Modem_inc_bw()
 	{
-		_signature = "n:i";
+		_signature = "i:i";
 		_help = "Increments the modem bandwidth. Returns the new value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -870,7 +870,6 @@ public:
 			break;
 		default:
 			*retval = "Invalid Olivia bandwidth";
-//			throw xmlrpc_c::fault("Invalid Olivia bandwidth");
 		}
 	}
 };
@@ -2557,7 +2556,7 @@ class Spot_set_auto : public xmlrpc_c::method
 public:
 	Spot_set_auto()
 	{
-		_signature = "n:b";
+		_signature = "b:b";
 		_help = "Sets the autospotter state. Returns the old state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -2574,7 +2573,7 @@ class Spot_toggle_auto : public xmlrpc_c::method
 public:
 	Spot_toggle_auto()
 	{
-		_signature = "n:b";
+		_signature = "b:n";
 		_help = "Toggles the autospotter state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
