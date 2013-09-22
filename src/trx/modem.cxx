@@ -176,24 +176,26 @@ modem *wwv_modem = 0;
 modem *anal_modem = 0;
 modem *ssb_modem = 0;
 
+double modem::frequency = 1000;
+double modem::tx_frequency = 1000;
+bool   modem::freqlock = false;
+
 modem::modem()
 {
 	scptr = 0;
-	freqlock = false;
-	frequency = 1000.0;
 
-	if(progdefaults.retain_freq_lock) {
-		if(active_modem) {
-			frequency = active_modem->get_freq();
-			tx_frequency = active_modem->get_txfreq();
-			freqlock = active_modem->freqlocked();
-		}
+	if( !progdefaults.retain_freq_lock ) {
+		freqlock = false;
+		frequency = tx_frequency = 1000;
 	}
 
 	sigsearch = 0;
-	bool wfrev = wf->Reverse();
-	bool wfsb = wf->USB();
-	reverse = wfrev ^ !wfsb;
+	if (wf) {
+		bool wfrev = wf->Reverse();
+		bool wfsb = wf->USB();
+		reverse = wfrev ^ !wfsb;
+	} else
+		reverse = false;
 	historyON = false;
 	cap = CAP_RX | CAP_TX;
 	PTTphaseacc = 0.0;
@@ -204,6 +206,9 @@ modem::modem()
 // modem types CW and RTTY do not use the base init()
 void modem::init()
 {
+	stopflag = false;
+	if (!wf) return;
+
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
@@ -217,7 +222,6 @@ void modem::init()
 #endif
 	} else
 		set_freq(wf->Carrier());
-	stopflag = false;
 }
 
 void modem::set_freq(double freq)
@@ -262,7 +266,10 @@ void modem::set_bandwidth(double bw)
 
 void modem::set_reverse(bool on)
 {
-	reverse = on ^ (!wf->USB());
+	if (likely(wf))
+		reverse = on ^ (!wf->USB());
+	else
+		reverse = false;
 }
 
 void modem::set_metric(double m)
@@ -413,6 +420,8 @@ void modem::s2nreport(void)
 
 void modem::ModulateXmtr(double *buffer, int len)
 {
+	if (unlikely(!scard)) return;
+
 	if (progdefaults.PTTrightchannel) {
 		for (int i = 0; i < len; i++)
 			PTTchannel[i] = PTTnco();
@@ -448,6 +457,8 @@ void modem::ModulateXmtr(double *buffer, int len)
 using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len)
 {
+	if (unlikely(!scard)) return;
+
 	if (progdefaults.viewXmtSignal)
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 
@@ -761,9 +772,9 @@ void modem::wfid_sendchars(string s)
 
 void modem::pretone()
 {
-	int sr = active_modem->get_samplerate();
+	int sr = get_samplerate();
 	int symlen = sr / 10;
-	double phaseincr = 2.0 * M_PI * active_modem->get_txfreq() / sr;
+	double phaseincr = 2.0 * M_PI * get_txfreq() / sr;
 	double phase = 0.0;
 	double outbuf[symlen];
 
@@ -772,7 +783,7 @@ void modem::pretone()
 		phase += phaseincr;
 		if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
 	}
-	active_modem->ModulateXmtr(outbuf, symlen);
+	ModulateXmtr(outbuf, symlen);
 
 	for (int i = 0; i < progdefaults.pretone * 10 - 2; i++) {
 		for (int j = 0; j < symlen; j++) {
@@ -780,7 +791,7 @@ void modem::pretone()
 			phase += phaseincr;
 			if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
 		}
-		active_modem->ModulateXmtr(outbuf, symlen);
+		ModulateXmtr(outbuf, symlen);
 	}
 
 	for (int j = 0; j < symlen; j++) {
@@ -788,10 +799,10 @@ void modem::pretone()
 		phase += phaseincr;
 		if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
 	}
-	active_modem->ModulateXmtr(outbuf, symlen);
+	ModulateXmtr(outbuf, symlen);
 
 	memset(outbuf, 0, symlen * sizeof(*outbuf));
-	active_modem->ModulateXmtr(outbuf, symlen);
+	ModulateXmtr(outbuf, symlen);
 
 }
 
@@ -823,8 +834,8 @@ void modem::wfid_text(const string& s)
 				vidwidth = 500 / (TONESPACING * (NUMCOLS + CHARSPACE));
 		}
 		if (progdefaults.vidmodelimit) {
-			if ((vidwidth * TONESPACING * (NUMCOLS + CHARSPACE)) > active_modem->get_bandwidth())
-				vidwidth = (int)ceil(active_modem->get_bandwidth() / (TONESPACING * (NUMCOLS + CHARSPACE)));
+			if ((vidwidth * TONESPACING * (NUMCOLS + CHARSPACE)) > get_bandwidth())
+				vidwidth = (int)ceil(get_bandwidth() / (TONESPACING * (NUMCOLS + CHARSPACE)));
 		}
 
 	put_status(video.c_str());

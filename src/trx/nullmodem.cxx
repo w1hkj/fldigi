@@ -35,6 +35,9 @@
 #define null_bw 1
 #define null_symbol_len 256
 
+// a NULLMODEM and will be instantiated before the dynamic member wf, 
+// digiscope, and fl_digi_main, the main dialog
+
 NULLMODEM:: NULLMODEM() : modem() 
 {
 	mode = MODE_NULL;
@@ -51,21 +54,21 @@ void  NULLMODEM::tx_init(SoundBase *sc)
 
 void  NULLMODEM::rx_init()
 {
-	put_MODEstatus(mode);
+	if (fl_digi_main)
+		put_MODEstatus(mode);
 }
 
 void NULLMODEM::init()
 {
 	modem::init();
 	rx_init();
-	for (int i = 0; i < null_symbol_len; i++)
-		outbuf[i] = 0.0;
-	digiscope->mode(Digiscope::SCOPE);
+	if (digiscope)
+		digiscope->mode(Digiscope::SCOPE);
 }
 
 void NULLMODEM::restart()
 {
-	set_bandwidth(null_bw);
+	if (wf) set_bandwidth(null_bw);
 }
 
 
@@ -86,6 +89,8 @@ int NULLMODEM::rx_process(const double *buf, int len)
 int NULLMODEM::tx_process()
 {
 	MilliSleep(10);
+	if (!fl_digi_main) return 0;
+
 	if ( get_tx_char() == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		return -1;
@@ -93,3 +98,4 @@ int NULLMODEM::tx_process()
 	ModulateXmtr(outbuf, null_symbol_len);
 	return 0;
 }
+

@@ -43,6 +43,7 @@
 #include "ringbuffer.h"
 #include "qrunner.h"
 #include "debug.h"
+#include "nullmodem.h"
 
 #if BENCHMARK_MODE
 #  include "benchmark.h"

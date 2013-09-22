@@ -113,6 +113,7 @@
 
 #include "icons.h"
 
+#include "nullmodem.h"
 
 using namespace std;
 
@@ -230,6 +231,10 @@ void delayed_startup(void *)
 
 int main(int argc, char ** argv)
 {
+//	null_modem = new NULLMODEM;
+//	active_modem = null_modem;
+	active_modem = new NULLMODEM;
+
 	appname = argv[0];
 	{
 		string appdir;
