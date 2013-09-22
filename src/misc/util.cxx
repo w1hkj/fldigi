@@ -449,17 +449,7 @@ int fork_process( const char * cmd )
 /// Returns true if OK. Beware, the error case is not reentrant.
 const char * create_directory( const char * dir )
 {
-#ifdef __WIN32__
-	if( !CreateDirectory( dir, NULL ) ) {
-		DWORD err = GetLastError();
-		if( err == ERROR_ALREADY_EXISTS ) return NULL ;
-		return WindowsError(err);
-	}
-#else
-	if ( mkdir(dir, 0777) == -1 ) {
-		if( errno == EEXIST ) return NULL ;
-		return strerror(errno);
-	}
-#endif
+	if ( mkdir(dir, 0777) == -1 )
+		if( errno != EEXIST ) return strerror(errno);
 	return NULL ;
 }

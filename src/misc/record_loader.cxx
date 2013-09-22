@@ -199,7 +199,8 @@ std::pair< std::string, bool > RecordLoaderInterface::storage_filename(bool crea
 		}
 	}
 
-	std::string filnam_data = DATA_dir + "/" + base_filename();
+	std::string filnam_data = DATA_dir;
+	filnam_data.append(base_filename());
 	if( create_dir ) {
 		return std::make_pair( filnam_data, false );
 	}
