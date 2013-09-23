@@ -2516,7 +2516,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
+        label Modems open
         xywh {0 25 595 347} hide
       } {
         Fl_Tabs tabsModems {open
@@ -2524,7 +2524,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 540 320} selection_color 50
@@ -3289,7 +3289,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK
-            xywh {0 50 540 322}
+            xywh {0 50 540 322} hide
           } {
             Fl_Tabs tabsPSK {
               xywh {0 50 540 322} selection_color 50
@@ -3725,19 +3725,12 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWefax {
-            label Wefax
+            label Wefax open
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
               xywh {2 63 534 300}
             } {
-              Fl_Check_Button btnWefaxAdifLog {
-                label {Log Wefax messages to Adif file}
-                callback {progdefaults.WEFAX_AdifLog=o->value();
-progdefaults.changed = true;}
-                tooltip {Sent and received faxes are logged to Adif file.} xywh {94 137 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_AdifLog);}
-              }
               Fl_Check_Button btnWefaxEmbeddedGui {
                 label {Embedded Wefax Gui}
                 callback {progdefaults.WEFAX_EmbeddedGui=o->value();
@@ -3746,31 +3739,39 @@ progdefaults.changed = true;}
 Change requires restart of fldigi} xywh {94 74 235 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
               }
-              Fl_Input btnWefaxShift {
-                label {Frequency shift (800 Hz)}
-                callback {if( o->value() > 900 ) { o->value(900); return; }
-if( o->value() < 750 ) { o->value(750); return; }
-progdefaults.WEFAX_Shift=o->value();
+              Fl_Check_Button btnWefaxHideTx {
+                label {Hide Transmission window}
+                callback {progdefaults.WEFAX_HideTx=o->value();
 progdefaults.changed = true;}
-                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {94 177 80 20} type Int align 8
-                code0 {o->value(progdefaults.WEFAX_Shift);}
-                class Fl_Value_Input2
+                tooltip {Hide transmission window by default.} xywh {94 119 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_HideTx);}
               }
-              Fl_Input btnWefaxMaxRows {
-                label {Received fax maximum rows number (5000)}
-                callback {if(o->value() > 10000 ) { o->value(10000); return ; }
-if(o->value() < 1000 ) { o->value(1000); return ; }
-progdefaults.WEFAX_MaxRows=o->value();
+              Fl_Check_Button btnWefaxAdifLog {
+                label {Log Wefax messages to Adif file}
+                callback {progdefaults.WEFAX_AdifLog=o->value();
 progdefaults.changed = true;}
-                tooltip {Maximum row number for a received fax image.} xywh {94 217 85 20} type Int align 8
+                tooltip {Sent and received faxes are logged to Adif file.} xywh {94 165 235 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.WEFAX_AdifLog);}
+              }
+              Fl_Counter cntr_wefax_shift {
+                label {Frequency shift (800 Hz)}
+                callback {progdefaults.WEFAX_Shift=o->value();
+progdefaults.changed = true;}
+                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {95 211 90 22} type Simple align 8 minimum 750 maximum 900 step 10 value 800
+                code0 {o->value(progdefaults.WEFAX_Shift);}
+              }
+              Fl_Counter ctr_wefax_max_rows {
+                label {Rx fax max rows}
+                callback {progdefaults.WEFAX_MaxRows=o->value();
+progdefaults.changed = true;}
+                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {95 247 90 22} type Simple align 8 minimum 1000 maximum 10000 step 50 value 5000
                 code0 {o->value(progdefaults.WEFAX_MaxRows);}
-                class Fl_Value_Input2
               }
               Fl_Input btnWefaxSaveDir {
                 label {Fax images destination directory}
                 callback {progdefaults.wefax_save_dir=o->value();
 progdefaults.changed = true;}
-                xywh {94 267 310 20} align 5
+                xywh {94 290 310 24} align 5
                 code0 {o->value(progdefaults.wefax_save_dir.c_str());}
               }
               Fl_Button btnSelectFaxDestDir {
@@ -3778,20 +3779,13 @@ progdefaults.changed = true;}
                 callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
 fc->callback(WefaxDestDirSet);
 fc->show();}
-                xywh {424 267 80 20}
-              }
-              Fl_Check_Button btnWefaxHideTx {
-                label {Hide Transmission window}
-                callback {progdefaults.WEFAX_HideTx=o->value();
-progdefaults.changed = true;}
-                tooltip {Hide transmission window by default.} xywh {94 107 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_HideTx);}
+                xywh {424 290 80 24}
               }
               Fl_Check_Button btnWefaxSaveMonochrome {
                 label {Save image as monochrome file}
                 callback {progdefaults.WEFAX_SaveMonochrome=o->value();
 progdefaults.changed = true;}
-                tooltip {Save the fax image as a gray-level PNG file.} xywh {94 297 235 30} down_box DOWN_BOX
+                tooltip {Save the fax image as a gray-level PNG file.} xywh {94 320 235 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
               }
             }
