@@ -153,8 +153,9 @@ void RectWindow(double *array, int n) {
 // Hamming - used by gmfsk
 void HammingWindow(double *array, int n) {
 	double pwr = 0.0;
+	double inv_n = 1.0 / (double)n;
 	for (int i = 0; i < n; i++) {
-		array[i] = hamming((double)i/(double)n);
+		array[i] = hamming((double)i * inv_n);
 		pwr += array[i] * array[i];
 	}
 	pwr = sqrt((double)n/pwr);
@@ -165,8 +166,9 @@ void HammingWindow(double *array, int n) {
 // Hanning - used by winpsk
 void HanningWindow(double *array, int n) {
 	double pwr = 0.0;
+	double inv_n = 1.0 / (double)n;
 	for (int i = 0; i < n; i++) {
-		array[i] = hanning((double)i/(double)n);
+		array[i] = hanning((double)i * inv_n);
 		pwr += array[i] * array[i];
 	}
 	pwr = sqrt((double)n/pwr);
@@ -177,8 +179,9 @@ void HanningWindow(double *array, int n) {
 // Best lob suppression - least in band ripple
 void BlackmanWindow(double *array, int n) {
 	double pwr = 0.0;
+	double inv_n = 1.0 / (double)n;
 	for (int i = 0; i < n; i++) {
-		array[i] = blackman((double)i/(double)n);
+		array[i] = blackman((double)i * inv_n);
 		pwr += array[i] * array[i];
 	}
 	pwr = sqrt((double)n/pwr);
@@ -190,8 +193,9 @@ void BlackmanWindow(double *array, int n) {
 void TriangularWindow(double *array, int n) {
 	double pwr = 0.0;
 	for (int i = 0; i < n; i++) array[i] = 1.0;
+	double inv_n = 1.0 / (double)n;
 	for (int i = 0; i < n / 4; i++) {
-			array[i] = 4.0 * (double)i / (double)n;
+			array[i] = 4.0 * (double)i * inv_n ;
 			array[n-i] = array[i];
 	}
 	for (int i = 0; i < n; i++)	pwr += array[i] * array[i];
