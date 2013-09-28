@@ -68,7 +68,7 @@ public:
 	virtual void Broadcast(
 		const std::string       & category,
 		time_t                    evtTim,
-		const CoordinateT::Pair & refCoo,
+		const CoordinatesShapeT & refShape,
 		double                    altitude,
 		const std::string       & kml_name,
 		const std::string       & styleNam,

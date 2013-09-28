@@ -65,6 +65,13 @@ static vector<string>* cnames = 0;
 
 static void add_prefix(string& prefix, dxcc* entry);
 
+/**
+ * Sov Mil Order of Malta:   15:  28:  EU:   41.90:   -12.43:    -1.0:  1A:
+ *   1A;
+ * Spratly Islands:          26:  50:  AS:    9.88:  -114.23:    -8.0:  1S:
+ *   1S,9M0,BV9S;
+ */
+
 bool dxcc_open(const char* filename)
 {
 	if (cmap)

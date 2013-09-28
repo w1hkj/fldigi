@@ -1,3 +1,31 @@
+# FIX THIS:
+# http://www.navtex.net/blog/index.php?category=StationNews
+# New NAVTEX Station for Skagerrak - 13 September 2012
+# 
+# A new NAVTEX station is now operational at Jeloya to cover the Skagerrak area.
+# As a consequence, amendments have been made to the NAVTEX Service Areas
+# for Rogaland and Grimeton along with changes to B1 NAVTEX Transmitter
+# Identification Characters (B1 idents) within NAVAREAs I, XIX and XX.
+# 
+# Changes to Indicator letter  (the B Ident) that determines the times of broadcasts:
+# 
+# Arkhangelsk (Russian Federation - NAVAREA XX)  B1 ident is now “L”
+# 
+# Murmansk (Russian Federation - NAVAREA XX)  B1 ident is now "K"
+# 
+# Vardo (Norway - NAVAREA XIX) B1 ident is now "C".
+# 
+# The new station  at Jeloya (Norway – NAVAREA I) B1 ident is  "M”
+# 
+# Grimeton (Sweden – SubAREA I) reduction of NAVTEX Service Area.
+# 
+# The United Kingdom transmission from Oostende  B1 ident is now  "V".
+# 
+# Vardo (Norway - NAVAREA XIX) B1 ident is now  "C".
+# 
+# 
+# 
+# 
 Azores;AZR;490.0;J;CTH;Horta;38 32 N;28 38 W;II;PP
 Canada;CAN;490.0;D;VCK;Riviere-au-Renard, OC;50 11 N;66 07 W;IV;FF
 Canada;CAN;490.0;J;VOO;Sydney, NS;46 11 N;59 54 W;IV;FF

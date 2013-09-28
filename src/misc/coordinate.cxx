@@ -101,13 +101,14 @@ CoordinateT::CoordinateT( char direction, int degree, int minute, int second )
 	Init( direction, angle_degrees );
 }
 
-// Specific for reading from the file of navtex or wmo stations.
-// Navtex: "57 06 N"
-// Wmo   : "69-36N", "013-27E", "009-25E" ou floating-point degrees: "12.34 E".
-// Station Latitude or Latitude :DD-MM-SSH where DD is degrees, MM is minutes, SS is seconds 
-// and H is N for northern hemisphere or S for southern hemisphere or
-// E for eastern hemisphere or W for western hemisphere.
-// The seconds value is omitted for those stations where the seconds value is unknown.
+/**Specific for reading from the file of navtex or wmo stations.
+ * Navtex: "57 06 N"
+ * Wmo   : "69-36N", "013-27E", "009-25E" ou floating-point degrees: "12.34 E".
+ * Station Latitude or Latitude :DD-MM-SSH where DD is degrees, MM is minutes, SS is seconds
+ * and H is N for northern hemisphere or S for southern hemisphere or
+ * E for eastern hemisphere or W for western hemisphere.
+ * The seconds value is omitted for those stations where the seconds value is unknown.
+ */
 std::istream & operator>>( std::istream & istrm, CoordinateT & ref )
 {
 	if( ! istrm ) return istrm ;
@@ -251,5 +252,4 @@ std::istream & operator>>( std::istream & istrm, CoordinateT::Pair & ref )
 	istrm >> ref.latitude() >> ref.longitude();
 	return istrm;
 }
-
 

@@ -25,17 +25,32 @@
 #include <iosfwd>
 #include <string>
 
-class RecordLoaderInterface
+/** This wraps the logic of loading a datafile made of distinct records.
+ * This class is used for loading files belonging to the user, which
+ * are not part of the fldigi distribution and are not downloaded
+ * from the support web sites not stored in the fldigi directories.
+ */
+class RecordLoaderContainer
 {
-	RecordLoaderInterface & operator=( const RecordLoaderInterface & );
-
 public:
-	RecordLoaderInterface();
-
 	virtual void Clear() = 0 ;
 
 	/// Reads just one record.
 	virtual bool ReadRecord( std::istream & ) = 0 ;
+
+	/// Loads a file and stores it for later lookup. Returns the number of records, or -1.
+	int LoadFromFile(const std::string & filnam );
+
+}; // RecordLoaderContainer
+
+/// This adds the logic of a data file downloaded from the web and locally stored.
+class RecordLoaderInterface : public virtual RecordLoaderContainer
+{
+	/// No assignement, this would break the unique registering of singletons.
+	RecordLoaderInterface & operator=( const RecordLoaderInterface & );
+
+public:
+	RecordLoaderInterface();
 
 	/// Loads a file and stores it for later lookup. Returns the number of records, or -1.
 	int LoadAndRegister();
@@ -65,11 +80,13 @@ class RecordLoaderSingleton
 {
 	static Catalog s_cata_inst ;
 public:
+	/// This calls a constructor which register the object in a global array.
 	static Catalog & InstCatalog() {
 		return s_cata_inst ;
 	}
 };
 
+/// This ensures that an object is created at startup time.
 template<class Catalog> Catalog RecordLoaderSingleton< Catalog >::s_cata_inst = Catalog();
 
 /// Loads tabular records from a file.

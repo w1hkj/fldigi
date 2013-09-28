@@ -54,6 +54,7 @@
 #include "strutil.h"
 #include "kmlserver.h"
 #include "record_loader.h"
+#include "navtex_shapes.h"
 
 #include "FL/fl_ask.H"
 
@@ -266,42 +267,21 @@ public:
 		// Just returns the closest element.
 		return & ( *begSolKm->second );
 
-		// Now we could search for a coordinate in the message, and we will keep the station which is the closest
-		// to this coordinate. We wish to do that anyway in order to map things in KML.
-		// Possible formats are -(This is experimental):
- 		// 67-04.0N 032-25.7E
- 		// 47-29'30N 003-16'00W
-		// 6930.1N 01729.9E
-		// 48-21'45N 004-31'45W
-		// 58-37N 003-32W
-		// 314408N 341742E
-		// 42-42N 005-10E
-		// 54-02.3N 004-45.8E
-		// 55-20.76N 014-45.27E
-		// 55-31.1 N 012-44.7 E
-		// 5330.4N 01051.5W
-		// 43 45.0 N - 015 44.8 E
-		// 34-33.7N 012-28.7E
-		// 51 10.55 N - 001 51.02 E
-		// 51.21.67N 002.13.29E
-		// 73 NORTH 14 EAST
-		// 58-01.20N 005-27.08W
-		// 50.56N 007.00,5W
-		// 5630,1N- 00501,6E
-		// LAT. 41.06N - LONG 012.57E
-		// 42 40 01 N - 018 05 10 E
-		// 40 25 31N - 18 15 30E
-		// 40-32.2N 000-33.5E
-		// 58-01.2 NORTH 005-27.1 WEST
-		// 39-07,7N 026-39,2E
-		//
-		// ESTIMATED LIMIT OF ALL KNOWN ICE:
-		// 4649N 5411W TO 4530N 5400W TO
-		// 4400N 4900W TO 4545N 4530W TO
-		// 4715N 4530W TO 5000N 4715W TO
-		// 5530N 5115W TO 5700N 5545W.
-		//
-
+		/** Now we could search for a coordinate in the message, and we will keep the station which is the closest
+		 * to this coordinate. We wish to do that anyway in order to map things in KML.
+		 *
+		 * The stations file is not necessary.
+		 * If four consecutive frequencies with less than two or three punctuations chars
+		 * between them, it is a closed path. If not four, this is a simple path.
+		 * We might check the angles to see if this is a path or a closed shape.
+		 *
+		 * For example, see http://navtex.lv 
+		 * http://www.sjofartsverket.se/sv/Sjofart/Sjotrafikinformation/Navigationsvarningar/NAVTEX/
+		 *
+		 * The frequencies will be highlighted when detected.
+		 * As long as the message is decoded, we built a list of frequencies plus their offsets and length
+		 * in the message.
+		*/
 
 	}
 }; // NavtexCatalog
@@ -530,23 +510,31 @@ public:
 /// This is temporary, to manipulate a multi-line string.
 static const char * new_line = "\n";
 
-// Coordinates samples:
-// 52-08.5N 003-18.0E
-// 51-03.93N 001-09.17E
-// 50-40.2N 001-03.7W
+/** This parses a message header:
+ *
+ * Header structure is:
+ * 	ZCZCabcd message text NNNN
+ * 	a  : Origin of the station.
+ * 	b  : Message type.
+ * 	cd : Message number from this station.
+ *
+ * CCIR stands for "Comité consultatif international pour la radio",
+ * a forerunner of "ITU Radiocommunication Sector"
+ */
 class ccir_message : public std::string {
 	static const size_t header_len = 10 ;
 	static const size_t trunc_len = 5 ;
 
-	// Header structure is:
-	// ZCZCabcd message text NNNN
-	// a  : Origin of the station.
-	// b  : Message type.
-	// cd : Message number from this station.
+	/// Origin of the station, lookup in a file.
 	char m_origin ;
+
+	/// Message subject, as decoded by msg_type.
 	char m_subject ;
+
+	/// Message number from this station, in the day, on two digits.
 	int  m_number ;
 public:
+	/// Navtex messages are typed with a letter indicating the message subject.
 	const char * msg_type(void) const
 	{
 		switch(m_subject) {
@@ -574,8 +562,9 @@ public:
 private:
 	/// Remove non-Ascii chars, replace new-line by special character etc....
 	void cleanup() {
-		/// It would be possible to do the change in place, because the new string
-		/// it shorter than the current one, but at the expense of clarity.
+		/** It would be possible to do the change in place, because the new string
+		 * it shorter than the current one, but at the expense of clarity.
+		 */
 		bool wasDelim = false, wasSpace = false, chrSeen = false ;
 		std::string newStr ;
 		for( iterator it = begin(); it != end(); ++it ) {
@@ -625,7 +614,10 @@ public:
 		init_members();
 	}
 
+	/// First is true if we found a message header, whi²ch is truncated from the returned message.
 	typedef std::pair<bool, ccir_message> detect_result ;
+
+	/// Tells if a message header is detected. The header is extracted from the message.
 	detect_result detect_header() {
 		size_t qlen = size();
 
@@ -644,8 +636,9 @@ public:
 				// (comp[9] == '\r') ) 
 				(strchr( "\n\r", comp[9] ) ) ) {
 
-				/// This returns the garbage before the valid header.
-				// Garbage because the trailer could not be read, but maybe header OK.
+				/** This returns the garbage before the valid header.
+				 * Garbage because the trailer could not be read, but maybe header OK.
+				 */
 				ccir_message msg_cut(
 					substr( 0, size() - header_len ),
 				       	m_origin,
@@ -654,17 +647,18 @@ public:
 				m_origin  = comp[5];
 				m_subject = comp[6];
 				m_number = ( comp[7] - '0' ) * 10 + ( comp[8] - '0' );
-				// Remove the beginning useless chars.
-				/// TODO: Read broken headers such as "ZCZC EA0?"
+				/// Remove the beginning useless chars.
 				clear();
+				/// TODO: Read broken headers such as "ZCZC EA0?"
 				return detect_result( true, msg_cut );
 			}
 		}
 		return detect_result( false, ccir_message() ); ;
 	}
 
+	/// This attempts to detect "NNNN", the teleprinter end-of-message token. 
 	bool detect_end() {
-		// Should be "\r\nNNNN\r\n" theoretically, but tolerates shorter strings.
+		/// Should be "\r\nNNNN\r\n" theoretically, but tolerates shorter strings.
 		static const size_t slen = 4 ;
 		static const char stop_valid[slen + 1] = "NNNN";
 		size_t qlen = size();
@@ -680,7 +674,8 @@ public:
 		return end_seen ;
 	}
 
-	void display( const std::string & alt_string ) {
+	/// Display the header and content message to various destinations.
+	void publish_everywhere( const std::string & alt_string ) {
 		std::string::operator=( alt_string );
 		cleanup();
 
@@ -690,7 +685,10 @@ public:
 			return ;
 		}
 
-		const NavtexRecord * ptrNavRec = NavtexCatalog::InstCatalog().FindStation(currFreq, m_origin, progdefaults.myLocator, *this );
+		/// Lookup in the stations file to find if this station exists.
+		const NavtexRecord * ptrNavRec = NavtexCatalog::InstCatalog().FindStation(
+				currFreq, m_origin, progdefaults.myLocator, *this );
+
 		if( ptrNavRec != NULL ) {
 			LOG_INFO("Locator=%s Origin=%c freq=%d name=%s lon=%lf lat=%lf",
 				progdefaults.myLocator.c_str(),
@@ -724,37 +722,73 @@ public:
 				qso.Push(NAME, std::string("Station_") + m_origin );
 			}
 
-			// Sequence of Chars and line-breaks, ASCII CR (code 13) + ASCII LF (code 10)
+			/// Sequence of Chars and line-breaks, ASCII CR (code 13) + ASCII LF (code 10)
 			qso.Push(NOTES, strreplace( *this, new_line, ADIF_EOL ) );
 		}
 
-		// Adds a placemark to the navtex KML file.
+		/// Adds a placemark to the navtex KML file.
 		if( progdefaults.NVTX_KmlLog ) {
-			if( ptrNavRec ) {
+
+			/// Maybe we can detect coordinates or paths in the message.
+			ShapesSetT cooShapes( *this );
+
+			if( ptrNavRec || ( false == cooShapes.empty() ) ) {
 				KmlServer::CustomDataT custData ;
-				custData.Push( "Callsign", ptrNavRec->callsign() );
-				custData.Push( "Country", ptrNavRec->country() );
-				custData.Push( "Locator", ptrNavRec->coordinates().locator() );
+				std::string stationName;
+
+				/// If we can detect the name of the station, this adds a specific placemark.
+				if( ptrNavRec ) {
+					custData.Push( "Callsign", ptrNavRec->callsign() );
+					custData.Push( "Country", ptrNavRec->country() );
+					custData.Push( "Locator", ptrNavRec->coordinates().locator() );
+					/// This shape, which is a point, might have several events on it.
+					cooShapes["Navtex station"] = ptrNavRec->coordinates();
+					stationName = ptrNavRec->name();
+				}
+				else
+				{
+					/** Unique name to avoid tracking and accumulating events on an unique shape.
+					 * This happens if the station name could not be deduced. */
+					tm tmpTm;
+					time_t tmpTim = time(NULL);
+					gmtime_r( &tmpTim, & tmpTm );
+					stationName = strformat( "Station %c %c %d:%4d-%02d-%02d",
+							m_origin,
+							m_subject,
+							m_number,
+							tmpTm.tm_year + 1900,
+							tmpTm.tm_mon + 1,
+							tmpTm.tm_mday);
+				}
+
 				custData.Push( "Message number", m_number );
 				custData.Push( "Frequency", currFreq );
 
 				custData.Push( "Mode", mode_info[MODE_NAVTEX].adif_name );
 				custData.Push( "Message", *this );
 
-				KmlServer::GetInstance()->Broadcast(
-					"Navtex",
-					0,
-					ptrNavRec->coordinates(),
-					0,
-					ptrNavRec->name(),
-					"navtex_station",
-					substr( 0, 20 ) + "...",
-					custData );
+				/** Loops on the multiple geographic patterns detected in the message, plus
+				*  the station name and coordinates. */
+				for(
+					ShapesSetT::const_iterator itShapes = cooShapes.begin(), en = cooShapes.end();
+					itShapes != en;
+					++itShapes )
+				{
+					KmlServer::GetInstance()->Broadcast(
+						"Navtex",
+						0,
+						itShapes->second,
+						0,
+						stationName, // Unique name of the object.
+						itShapes->first, // Style name.
+						substr( 0, 20 ) + "...",
+						custData );
+				}
 			}
 
 			// TODO: Parse the message to extract coordinates.
 		}
-	} // display
+	} // publish_everywhere
 }; // ccir_message
 
 static const int deviation_f = 90;
@@ -770,6 +804,7 @@ class navtex_implementation {
 		NOSIGNAL, SYNC_SETUP, SYNC1, SYNC2, READ_DATA
 	};
 
+	/// For informational purpose only, when decoding.
 	static const char * state_to_str( State s ) {
 		switch( s ) {
 			case NOSIGNAL  : return "NOSIGNAL";
@@ -781,7 +816,10 @@ class navtex_implementation {
 		}
 	}
 
+	/// Difference between Navtex and sitor-b which have the same modem.
 	bool                            m_only_sitor_b ;
+
+	/// Between 1 and 99, can apply to Navtex reports only.
 	int                             m_message_counter ;
 
 	static const size_t             m_tx_block_len = 1024 ;
@@ -802,7 +840,9 @@ class navtex_implementation {
 	sync_chrs_type                  m_sync_chrs;
 	ccir_message                    m_curr_msg ;
 
-	int					m_c1, m_c2, m_c3;
+	/// For reading FEC messages.
+	int                              m_c1, m_c2, m_c3;
+
 	static const int                 m_zero_crossings_divisor = 4;
 	std::vector<int>                 m_zero_crossings ;
 	long                             m_zero_crossing_count;
@@ -889,9 +929,10 @@ public:
 private:
 
 	void set_filter_values() {
-		// carefully manage the parameters WRT the center frequency
-		// Q must change with frequency
-		// try to maintain a zero mixer output at the carrier frequency
+		/** carefully manage the parameters WRT the center frequency
+		 * Q must change with frequency
+		 * try to maintain a zero mixer output at the carrier frequency
+		 * */
 		double qv = m_center_frequency_f + (4.0 * 1000 / m_center_frequency_f);
 		m_mark_f = qv + deviation_f;
 		m_space_f = qv - deviation_f;
@@ -978,10 +1019,11 @@ private:
 		}
 	}
 
-	// two phases: alpha and rep
-	// marked during sync by code_alpha and code_rep
-	// then for data: rep phase character is sent first,
-	// then, three chars later, same char is sent in alpha phase
+	/** Two phases: alpha and rep
+	 * marked during sync by code_alpha and code_rep
+	 * then for data: rep phase character is sent first,
+	 * then, three chars later, same char is sent in alpha phase
+	 * */
 	bool process_char(int code) {
 		bool success = CCIR476::check_bits(code);
 		int chr = -1;
@@ -1032,6 +1074,10 @@ private:
 						if (chr < 0) {
 							LOG_INFO(_("Missed this code: %x"), abs(chr));
 						} else {
+							/** Here, a couple of characters are help back until
+							 * we are sure they do not contain a coordinate.
+							 * But if they, the coordinate is highlighted in the text.
+							 */
 							filter_print(chr);
 							process_messages(chr);
 						}
@@ -1046,6 +1092,10 @@ private:
 		return success;
 	}
 
+	/** TODO: Should detect coordinates, and print them in a different color. On the other hand
+	 * it implies holding back the last words, which could be annoying for users.
+	 * Maybe this could be an optional mode for the Navtex decoder.
+	 */
 	void filter_print(int c) {
 		if (c == char_bell) {
 			/// TODO: It should be a beep, but French navtex displays a quote.
@@ -1355,15 +1405,18 @@ public:
 
 private:
 	/// Each received message is pushed in this queue, so it can be read by XML/RPC.
-	syncobj m_sync_rx ;
 	std::queue< std::string > m_received_messages ;
 
+	/// This protects the message queue against concurrent accesses.
+	syncobj m_sync_rx ;
+
+	/// When the message ned is detected.
 	void display_message( ccir_message & ccir_msg, const std::string & alt_string ) {
 		if( ccir_msg.size() >= (size_t)progdefaults.NVTX_MinSizLoggedMsg )
 		{
 			try
 			{
-				ccir_msg.display(alt_string);
+				ccir_msg.publish_everywhere(alt_string);
 				put_received_message( alt_string );
 			} catch( const std::exception & exc ) {
 				LOG_WARN("Caught %s", exc.what() );

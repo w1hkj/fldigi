@@ -24,6 +24,7 @@
 #define _COORDINATE_H
 
 #include <iostream>
+#include <list>
 
 // Models a longitude or latitude.
 class CoordinateT
@@ -89,5 +90,19 @@ public:
 	friend std::ostream & operator<<( std::ostream & ostrm, const Pair & ref );
 }; // CoordinateT::Pair
 
+/// This models a single point, or a polygon, or a path.
+class CoordinatesShapeT : public std::list< CoordinateT::Pair >
+{
+	bool m_is_closed ;
+public:
+	CoordinatesShapeT( bool is_closed = true )
+	: m_is_closed(is_closed) {}
+
+	CoordinatesShapeT( const CoordinateT::Pair & refCoo )
+	: m_is_closed(true)
+	{
+		push_back( refCoo );
+	}
+};
 
 #endif // _COORDINATE_H

@@ -53,11 +53,9 @@
 Fl_Double_Window *dlgRecordLoader = (Fl_Double_Window *)0;
 
 /// Loads a file and stores it for later lookup.
-int RecordLoaderInterface::LoadAndRegister()
+int RecordLoaderContainer::LoadFromFile( const std::string & filnam )
 {
 	Clear();
-
-	std::string filnam = storage_filename().first;
 
 	time_t cntTim = time(NULL);
 	LOG_INFO("Opening:%s", filnam.c_str());
@@ -86,7 +84,7 @@ int RecordLoaderInterface::LoadAndRegister()
 		catch(const std::exception & exc)
 		{
 			LOG_WARN( "%s: Caught <%s> when reading '%s'",
-				base_filename().c_str(),
+				filnam.c_str(),
 				exc.what(),
 				input_str.c_str() );
 			return -1 ;
@@ -172,6 +170,12 @@ RecordLoaderInterface::~RecordLoaderInterface()
 
 }
 
+/// Loads a file and stores it for later lookup. Returns the number of records, or -1.
+int RecordLoaderInterface::LoadAndRegister()
+{
+	return LoadFromFile( storage_filename().first );
+}
+
 /// This takes only the filename from the complete HTTP or FTP URL, or file path.
 std::string RecordLoaderInterface::base_filename() const
 {
@@ -187,6 +191,10 @@ std::string RecordLoaderInterface::base_filename() const
 	return std::string( pFil, quest );
 }
 
+/** Returns the local path of the file, where it is available, where we must store it.
+ * The boolean is true if the file is present and copied at installation time (that is,
+ * not downloaded from the internet to the user directory), and therefore write-protected.
+ */
 std::pair< std::string, bool > RecordLoaderInterface::storage_filename(bool create_dir) const
 {
 	/// We check if it is changed, it is not performance-critical.

@@ -233,8 +233,9 @@ class  KmlSrvImpl : public KmlServer {
 	int           m_balloon_style;    /// Display style in KML balloons: Lines, matrices, plain text.
 	pthread_t     m_writer_thread ;   /// Periodically woken up to write things to the KML file.
 
-	/// Models a KML placemark. It contains events indexed my a timestamp.
-	/// We need an ordered container in order to remove old data in one erase.
+	/** Models a KML placemark. It contains events indexed my a timestamp.
+	 *  We need an ordered container in order to remove old data in one erase.
+	 */
 	class PlacemarkT : public std::multimap< time_t, CustomDataT > {
 		CoordinateT::Pair m_coord;
 		double            m_altitude;
@@ -413,6 +414,45 @@ class  KmlSrvImpl : public KmlServer {
 				LOG_WARN("Inconsistency: No event kmlId=%s",m_kmlId.c_str() );
 				return ;
 			}
+/*
+ * Pour les polygones:
+ *
+
+
+  <Placemark>
+    <name>The Pentagon</name>
+    <Polygon>
+      <extrude>1</extrude>
+      <altitudeMode>relativeToGround</altitudeMode>
+      <outerBoundaryIs>
+        <LinearRing>
+          <coordinates>
+            -77.05788457660967,38.87253259892824,100 
+            -77.05465973756702,38.87291016281703,100 
+            -77.05315536854791,38.87053267794386,100 
+            -77.05552622493516,38.868757801256,100 
+            -77.05844056290393,38.86996206506943,100 
+            -77.05788457660967,38.87253259892824,100
+          </coordinates>
+        </LinearRing>
+      </outerBoundaryIs>
+      <innerBoundaryIs>
+        <LinearRing>
+          <coordinates>
+            -77.05668055019126,38.87154239798456,100 
+            -77.05542625960818,38.87167890344077,100 
+            -77.05485125901024,38.87076535397792,100 
+            -77.05577677433152,38.87008686581446,100 
+            -77.05691162017543,38.87054446963351,100 
+            -77.05668055019126,38.87154239798456,100
+          </coordinates>
+        </LinearRing>
+      </innerBoundaryIs>
+    </Polygon>
+  </Placemark>
+
+
+*/
 
 			// The unique key is indeed the name and the time,
 			// because an object such as a ship might move and come back to the same place.
@@ -504,7 +544,7 @@ class  KmlSrvImpl : public KmlServer {
 				}
 				ostrm << "</table>]]>\n";
 				break;
-		case 2 :
+			case 2 :
 				{
 				/// Transposition of the html matrix.
 				typedef std::vector<time_t> TitleT ;
@@ -578,10 +618,9 @@ class  KmlSrvImpl : public KmlServer {
 	}; // PlacemarkT
 
 	/** The placemark name is unique wrt to the application.
-	It might map to several PlaceMark, each having distinct coordinates.
-	It is not really possible to sort the different locations by coordinates,
-	because it is a list created by the object trajectory.
-	class PlacesMapT : public std::multimap< std::string, PlacemarkT >
+	 * It might map to several PlacemarkT, each having distinct coordinates.
+	 * It is not really possible to sort the different locations by coordinates,
+	 * because it is a list created by the object trajectory.
 	*/
 	class PlacesMapT : public std::multimap< std::string, PlacemarkT >
 	{
@@ -634,7 +673,6 @@ class  KmlSrvImpl : public KmlServer {
 				otherwise several if reloading from a file.
 				The new events will be inserted based on their timestamp.
 				*/
-				// last->second.insert( refVL.second.begin(), refVL.second.end() );
 				last->second.concatenate( refVL.second );
 				return ;
 			}
@@ -644,16 +682,16 @@ class  KmlSrvImpl : public KmlServer {
 			/// The object is inserted at the end of all elements with the same key.
 			iterator ret = insert( next, refVL );
 
-			/// Runtime check of an assumption.
+			/// Runtime check of the insertion place.
 			{
 				iterator tst = last ;
 				++tst ;
 				if( tst != ret ) {
-					LOG_WARN("Iterators assumption is wrong (1): %s", refVL.first.c_str() );
+					LOG_WARN("Iterator position is wrong (1): %s", refVL.first.c_str() );
 				}
 				++tst ;
 				if( tst != next ) {
-					LOG_WARN("Iterators assumption is wrong (2): %s", refVL.first.c_str() );
+					LOG_WARN("Iterator position is wrong (2): %s", refVL.first.c_str() );
 				}
 			}
 
@@ -1593,7 +1631,7 @@ public:
 	void Broadcast(
 		const std::string & category,
 		time_t evtTim,
-		const CoordinateT::Pair & refCoo,
+		const CoordinatesShapeT & refShape,
 		double altitude,
 		const std::string & kmlNam,
 		const std::string & styleNam,
@@ -1602,7 +1640,15 @@ public:
 	{
 		/// Hyphen: No idea why, but the string "10-meter discus buoy:W GULF 207 NM " just displays  as "10-"
 		std::string tmpKmlNam = strreplace( kmlNam, "-", " ");
-		PlacemarkT currPM( refCoo, altitude, styleNam, tmpKmlNam );
+
+		/** The shape can be a single point, a polygon or a path.
+		 * Or a combination of these. */
+		if( refShape.size() != 1 )
+		{
+			LOG_ERROR("Cannot process shapes yet");
+			return;
+		}
+		PlacemarkT currPM( *refShape.begin(), altitude, styleNam, tmpKmlNam );
 		currPM.AppendEvent( evtTim, descrTxt, custDat );
 
 		guard_lock myGuard( &m_mutex_write );

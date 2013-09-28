@@ -3752,7 +3752,7 @@ public:
 
 /// Can be added several times after 55jjj
 HEADTK(jjjjj) {
-	char m_not_decoded_yet[5] ;
+	char m_not_decoded_yet[6] ;
 public:
 	GENTK( jjjjj, "[0-9/]{5}[;=]?" )
 

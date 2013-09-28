@@ -370,6 +370,8 @@ fldigi_SOURCES += \
 	include/mt63.h \
 	include/network.h \
 	include/dsp.h \
+	include/navtex.h \
+	include/navtex_shapes.h \
 	include/newinstall.h \
 	include/notify.h \
 	include/notifydialog.h \
@@ -502,7 +504,7 @@ fldigi_SOURCES += \
 	mt63/mt63.cxx \
 	mt63/mt63base.cxx \
 	navtex/navtex.cxx \
-	include/navtex.h \
+	navtex/navtex_shapes.cxx \
 	olivia/olivia.cxx \
 	psk/psk.cxx \
 	psk/pskcoeff.cxx \
