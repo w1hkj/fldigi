@@ -128,17 +128,16 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	scline			= new uchar[scale_width];
 	fft_sig_img 	= new uchar[image_area];
 	sig_img			= new uchar[sig_image_area];
-	pwr				= new double[IMAGE_WIDTH];
+	pwr				= new wf_fft_type[IMAGE_WIDTH];
 	fft_db			= new short int[image_area];
 	tmp_fft_db		= new short int[image_area];
-	circbuff		= new double[FFT_LEN * 2];
-	fftout			= new double[FFT_LEN * 2];
-	wfft			= new Cfft(FFT_LEN);
-	fftwindow	   = new double[FFT_LEN * 2];
+	circbuff		= new wf_fft_type[FFT_LEN];
+	wfbuf			= new wf_cpx_type[FFT_LEN];
+	wfft			= new g_fft<wf_fft_type>(FFT_LEN);
+	fftwindow		= new double[FFT_LEN];
 	setPrefilter(progdefaults.wfPreFilter);
 
-	for (int i = 0; i < FFT_LEN*2; i++)
-		circbuff[i] = fftout[i] = 0.0;
+	memset(circbuff, 0, FFT_LEN * sizeof(*circbuff));
 
 	mag = 1;
 	step = 4;
@@ -480,11 +479,11 @@ double WFdisp::powerDensityMaximum(int bw_nb, const int (*bw)[2]) const
 void WFdisp::setPrefilter(int v)
 {
 	switch (v) {
-	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN*2); break;
-	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN*2); break;
+	case WF_FFT_RECTANGULAR: RectWindow(fftwindow, FFT_LEN); break;
+	case WF_FFT_BLACKMAN: BlackmanWindow(fftwindow, FFT_LEN); break;
+	case WF_FFT_HAMMING: HammingWindow(fftwindow, FFT_LEN); break;
+	case WF_FFT_HANNING: HanningWindow(fftwindow, FFT_LEN); break;
+	case WF_FFT_TRIANGULAR: TriangularWindow(fftwindow, FFT_LEN); break;
 	}
 	prefilter = v;
 }
@@ -501,40 +500,37 @@ void WFdisp::processFFT() {
 	if (prefilter != progdefaults.wfPreFilter)
 		setPrefilter(progdefaults.wfPreFilter);
 
-		const double scale = ( (double)SC_SMPLRATE / srate ) * ( FFT_LEN / 2000.0 );
+	wf_fft_type scale = ( 1.0 * SC_SMPLRATE / srate ) * ( FFT_LEN / 8000.0);
 
-	if (dispcnt == 0) {
-		int step = 8 / progdefaults.latency;
+	if (--dispcnt == 0) {
+		static const int log2disp100 = log2disp(-100);
+		static const double vscale = 2.0 / FFT_LEN;
 
-		int last_i = FFT_LEN * 2 / step;
-		for (int i = 0; i < last_i; i++)
-		fftout[i] = fftwindow[i * step] * circbuff[i] * step;
-		/// Zeroes only the last elements.
-		memset (fftout + last_i , 0, ( FFT_LEN*2 - last_i ) *sizeof(double));
+		memset(wfbuf, 0, FFT_LEN * sizeof(*wfbuf));
+		void *pv = static_cast<void*>(wfbuf);
+		wf_fft_type *pbuf = static_cast<wf_fft_type*>(pv);
 
-		wfft->rdft(fftout);
-FL_LOCK_D();
-		const int log2disp100 = log2disp(-100);
-		for (int i = 0; i <= progdefaults.LowFreqCutoff; i++) {
-			pwr[i] = 0.0;
-			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp100;
-		}
+		for (int i = 0; i < FFT_LEN; i++)
+			pbuf[i] = fftwindow[i] * circbuff[i] * vscale;
 
+		wfft->RealFFT(wfbuf);
+
+		memset(pwr, 0, progdefaults.LowFreqCutoff * sizeof(wf_fft_type));
+		memset(&fft_db[ptrFFTbuff * IMAGE_WIDTH],
+				log2disp100,
+				progdefaults.LowFreqCutoff * sizeof(*fft_db));
+
+		int n = 0;
 		for (int i = progdefaults.LowFreqCutoff + 1; i < IMAGE_WIDTH; i++) {
-			int n = (int)(scale * i) & ~1 ; // Even number.
-			double pw = fftout[n]*fftout[n] + fftout[n+1]*fftout[n+1];
-			pwr[i] = pw;
-			int ffth = (int)(10.0 * log10(pw + 1e-10) );
+			n = round(scale * i);
+			pwr[i] = norm(wfbuf[n]);
+			int ffth = round(10.0 * log10(pwr[i] + 1e-10) );
 			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp(ffth);
 		}
 
 		ptrFFTbuff--;
 		if (ptrFFTbuff < 0) ptrFFTbuff += image_height;
-FL_UNLOCK_D();
-	}
 
-	if (dispcnt == 0) {
-FL_LOCK_D();
 		if (dispcnt == 0) {
 			for (int i = 0; i < image_height; i++) {
 				int j = (i + 1 + ptrFFTbuff) % image_height;
@@ -544,10 +540,7 @@ FL_LOCK_D();
 			}
 		}
 		redraw();
-FL_UNLOCK_D();
-	}
 
-	if (dispcnt == 0) {
 		if (srate == 8000)
 			dispcnt = wfspeed;
 		else if (srate == 11025)
@@ -556,9 +549,9 @@ FL_UNLOCK_D();
 		else
 			dispcnt = wfspeed * 8 / 3;
 	}
-	--dispcnt;
 }
-void WFdisp::process_analog (double *sig, int len) {
+
+void WFdisp::process_analog (wf_fft_type *sig, int len) {
 	int h1, h2, h3;
 	int sigy, sigpixel, ynext, graylevel;
 	h1 = h()/8 - 1;
@@ -579,7 +572,7 @@ FL_LOCK_D();
 		ynext = (int)(h2 * sig[cbc]);
 		if (ynext < -h2) ynext = -h2;
 		if (ynext > h2) ynext = h2;
-		cbc = (cbc + 1) % (FFT_LEN *2);
+		cbc = (cbc + 1) % (FFT_LEN);
 		for (; sigy < ynext; sigy++) sig_img[sigpixel -= IMAGE_WIDTH] = graylevel;
 		for (; sigy > ynext; sigy--) sig_img[sigpixel += IMAGE_WIDTH] = graylevel;
 		sig_img[sigpixel++] = graylevel;
@@ -603,7 +596,7 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 	// if sound card sampling rate changed reset the waterfall buffer
 	if (srate != sr) {
 		srate = sr;
-		memset (circbuff, 0, FFT_LEN * 2 * sizeof(double));
+		memset(circbuff, 0, FFT_LEN * sizeof(*circbuff));
 		ptrCB = 0;
 	}
 
@@ -612,18 +605,17 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 		double overval, peak = 0.0;
 		memmove((void*)circbuff,
 				(void*)(circbuff + len), 
-				(size_t)((FFT_LEN *2 - len)*sizeof(double)));
-		memmove((void*)(circbuff + (FFT_LEN*2-len)),
-				(void*)sig,
-				(size_t)(len*sizeof(double)));
+				(size_t)((FFT_LEN - len)*sizeof(wf_fft_type)));
+
 		for (int i = 0; i < len; i++) {
+			circbuff[FFT_LEN - len + i] = sig[i];
 			overval = fabs(sig[i]);
 			if (overval > peak) peak = overval;
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
 	if (mode == SCOPE)
-		process_analog(circbuff, FFT_LEN * 2);
+		process_analog(circbuff, FFT_LEN);
 	else
 		processFFT();
 

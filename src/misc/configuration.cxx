@@ -774,7 +774,6 @@ void configuration::initInterface()
 		}
 #endif
 	} else if (chkUSEXMLRPCis) {
-		wf->setXMLRPC(1);
 		if (rigCAT_init(false)) {
 			LOG_VERBOSE("%s", "using XMLRPC");
 			wf->USB(true);

@@ -3,8 +3,8 @@
 #include "filters.h"
 
 class cDTMF {
-public:
-#define N        240 // 30 msec interval at 8000 sps
+private:
+//#define N        240 // 30 msec interval at 8000 sps
 
 #define RANGE  0.5         /* any thing higher than RANGE*peak is "on" */
 #define THRESH 1000        /* 6 dB s/n for detection */
@@ -43,7 +43,7 @@ public:
 	cDTMF() {
 		for (int i = 0; i < 4; i++) filt[i] = new goertzel(240, row[i], 8000);
 		for (int i = 0; i < 4; i++) filt[i+4] = new goertzel(240, col[i], 8000);
-		for (int i = 0; i < N; i++) data[i] = 0;
+		for (int i = 0; i < 240; i++) data[i] = 0;
 		dtmfchars.clear();
 		framesize = 240; // 8000 sr default
 		silence_time = 0;

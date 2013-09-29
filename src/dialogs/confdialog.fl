@@ -2147,7 +2147,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall
+        label Waterfall open
         xywh {-2 25 563 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
@@ -2406,18 +2406,8 @@ progdefaults.changed = true;}
                 callback {progdefaults.LowFreqCutoff=(int)(o->value());
 progdefaults.changed = true;
 setwfrange();}
-                tooltip {Low frequency limit in Hz} xywh {72 81 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
+                tooltip {Low frequency limit in Hz} xywh {72 89 70 22} type Simple align 8 minimum 0 maximum 500 step 50 value 300
                 code0 {o->value(progdefaults.LowFreqCutoff);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Counter valLatency {
-                label {FFT latency (scan merging)}
-                callback {progdefaults.latency = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {Latency increases frequency resolution,
-decreases time resolution. 1 = no scan merging} xywh {72 111 70 21} type Simple align 8 minimum 1 maximum 8 step 1 value 4
-                code0 {o->value(progdefaults.latency);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
@@ -2425,14 +2415,14 @@ decreases time resolution. 1 = no scan merging} xywh {72 111 70 21} type Simple 
                 label {FFT averaging}
                 callback {progdefaults.WFaveraging = o->value();
 progdefaults.changed = true;}
-                tooltip {Use averaging to decrease waterfall noise} xywh {72 142 120 20} down_box DOWN_BOX
+                tooltip {Use averaging to decrease waterfall noise} xywh {72 125 120 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WFaveraging);}
               }
               Fl_Choice mnuFFTPrefilter {
                 label {FFT prefilter window function}
                 callback {progdefaults.wfPreFilter = o->value();
 progdefaults.changed = true;} open
-                tooltip {Select the type of FFT prefilter} xywh {72 172 120 25} down_box BORDER_BOX align 8
+                tooltip {Select the type of FFT prefilter} xywh {72 155 120 24} down_box BORDER_BOX align 8
                 code0 {mnuFFTPrefilter->add(_("Rectangular")); mnuFFTPrefilter->add("Blackman");}
                 code1 {mnuFFTPrefilter->add("Hamming"); mnuFFTPrefilter->add("Hanning");}
                 code2 {mnuFFTPrefilter->add(_("Triangular"));}
@@ -2443,7 +2433,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.HighFreqCutoff = (int)o->value();
 progdefaults.changed = true;
 setwfrange();}
-                tooltip {High frequency limit in Hz} xywh {295 81 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
+                tooltip {High frequency limit in Hz} xywh {295 89 95 22} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
                 code0 {o->value(progdefaults.HighFreqCutoff);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2457,7 +2447,7 @@ setwfrange();}
                 label {Waterfall height in pixels}
                 callback {progdefaults.wfheight = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {72 251 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                tooltip {CPU usage increases with waterfall height} xywh {72 251 95 22} type Simple align 8 minimum 100 maximum 160 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2

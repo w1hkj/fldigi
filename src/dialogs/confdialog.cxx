@@ -2014,13 +2014,6 @@ progdefaults.changed = true;
 setwfrange();
 }
 
-Fl_Counter2 *valLatency=(Fl_Counter2 *)0;
-
-static void cb_valLatency(Fl_Counter2* o, void*) {
-  progdefaults.latency = (int)o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btnWFaveraging=(Fl_Check_Button *)0;
 
 static void cb_btnWFaveraging(Fl_Check_Button* o, void*) {
@@ -6259,7 +6252,7 @@ ab and newline are automatically included."));
             o->hide();
             { Fl_Group* o = new Fl_Group(27, 71, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(72, 81, 70, 20, _("Lower limit"));
+              { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(72, 89, 70, 22, _("Lower limit"));
                 cntLowFreqCutoff->tooltip(_("Low frequency limit in Hz"));
                 cntLowFreqCutoff->type(1);
                 cntLowFreqCutoff->box(FL_UP_BOX);
@@ -6279,34 +6272,13 @@ ab and newline are automatically included."));
                 o->value(progdefaults.LowFreqCutoff);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntLowFreqCutoff
-              { Fl_Counter2* o = valLatency = new Fl_Counter2(72, 111, 70, 21, _("FFT latency (scan merging)"));
-                valLatency->tooltip(_("Latency increases frequency resolution,\ndecreases time resolution. 1 = no sc\
-an merging"));
-                valLatency->type(1);
-                valLatency->box(FL_UP_BOX);
-                valLatency->color(FL_BACKGROUND_COLOR);
-                valLatency->selection_color(FL_INACTIVE_COLOR);
-                valLatency->labeltype(FL_NORMAL_LABEL);
-                valLatency->labelfont(0);
-                valLatency->labelsize(14);
-                valLatency->labelcolor(FL_FOREGROUND_COLOR);
-                valLatency->minimum(1);
-                valLatency->maximum(8);
-                valLatency->step(1);
-                valLatency->value(4);
-                valLatency->callback((Fl_Callback*)cb_valLatency);
-                valLatency->align(Fl_Align(FL_ALIGN_RIGHT));
-                valLatency->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.latency);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valLatency
-              { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(72, 142, 120, 20, _("FFT averaging"));
+              { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(72, 125, 120, 20, _("FFT averaging"));
                 btnWFaveraging->tooltip(_("Use averaging to decrease waterfall noise"));
                 btnWFaveraging->down_box(FL_DOWN_BOX);
                 btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
                 o->value(progdefaults.WFaveraging);
               } // Fl_Check_Button* btnWFaveraging
-              { mnuFFTPrefilter = new Fl_Choice(72, 172, 120, 25, _("FFT prefilter window function"));
+              { mnuFFTPrefilter = new Fl_Choice(72, 155, 120, 24, _("FFT prefilter window function"));
                 mnuFFTPrefilter->tooltip(_("Select the type of FFT prefilter"));
                 mnuFFTPrefilter->down_box(FL_BORDER_BOX);
                 mnuFFTPrefilter->callback((Fl_Callback*)cb_mnuFFTPrefilter);
@@ -6316,7 +6288,7 @@ an merging"));
                 mnuFFTPrefilter->add(_("Triangular"));
                 mnuFFTPrefilter->value(progdefaults.wfPreFilter);
               } // Fl_Choice* mnuFFTPrefilter
-              { Fl_Counter2* o = cntrWfwidth = new Fl_Counter2(295, 81, 95, 21, _("Upper limit"));
+              { Fl_Counter2* o = cntrWfwidth = new Fl_Counter2(295, 89, 95, 22, _("Upper limit"));
                 cntrWfwidth->tooltip(_("High frequency limit in Hz"));
                 cntrWfwidth->type(1);
                 cntrWfwidth->box(FL_UP_BOX);
@@ -6342,7 +6314,7 @@ an merging"));
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-              { Fl_Counter2* o = cntrWfheight = new Fl_Counter2(72, 251, 95, 21, _("Waterfall height in pixels"));
+              { Fl_Counter2* o = cntrWfheight = new Fl_Counter2(72, 251, 95, 22, _("Waterfall height in pixels"));
                 cntrWfheight->tooltip(_("CPU usage increases with waterfall height"));
                 cntrWfheight->type(1);
                 cntrWfheight->box(FL_UP_BOX);
