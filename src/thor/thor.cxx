@@ -325,7 +325,7 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 //=====================================================================
 // rx modules
 
-complex thor::mixer(int n, const complex& in)
+cmplx thor::mixer(int n, const cmplx& in)
 {
 	double f;
 // first IF mixer (n == 0) plus
@@ -337,7 +337,7 @@ complex thor::mixer(int n, const complex& in)
 		f = THORFIRSTIF - THORBASEFREQ - bandwidth*0.5 + (samplerate / symlen) * ( (double)n / paths);
 
 	double phase_n = phase[n];
-	complex z( cos(phase_n), sin(phase_n) );
+	cmplx z( cos(phase_n), sin(phase_n) );
 	z *= in;
 	phase_n -= TWOPI * f / samplerate;
 	if (phase_n > M_PI)
@@ -596,7 +596,7 @@ int thor::harddecode()
 	for (int i = 0; i < MAXPATHS; i++) cwi[i] = false;
 
 	for (int i = 0; i < paths * numbins; i++)
-		avg += pipe[pipeptr].vector[i].mag();
+		avg += abs(pipe[pipeptr].vector[i]);
 	avg /= (paths * numbins);
 
 	if (avg < 1e-10) avg = 1e-10;
@@ -609,7 +609,7 @@ int thor::harddecode()
 		for (int j = 1; j <= numtests; j++) {
 			int p = pipeptr - j;
 			if (p < 0) p += twosym;
-			cwmag = (pipe[j].vector[i].mag())/numtests;
+			cwmag = abs(pipe[j].vector[i])/numtests;
 			if (cwmag >= 50.0 * (1.0 - progdefaults.ThorCWI) * avg) count++;
 		}
 		cwi[i] = (count == numtests);
@@ -617,7 +617,7 @@ int thor::harddecode()
 
 	for (int i = 0; i <  paths * numbins ; i++) {
 		if (cwi[i] == false) {
-			x = pipe[pipeptr].vector[i].mag();
+			x = abs(pipe[pipeptr].vector[i]);
 			if (x > max) {
 				max = x;
 				symbol = i;
@@ -662,7 +662,7 @@ int thor::softdecode()
 	for (int i = lowest_tone; i < highest_tone; i++)
 	{
 		if ( !lastCWI[i]  ) {
-			avg += pipe[pipeptr].vector[i].mag();
+			avg += abs(pipe[pipeptr].vector[i]);
 			avgcount++;
 		}
 	}
@@ -676,7 +676,7 @@ int thor::softdecode()
 		max = 0.0;
 
 		for (int i = lowest_tone; i < highest_tone; i++) {
-		  	x = pipe[pipeptr].vector[i].mag();
+		  	x = abs(pipe[pipeptr].vector[i]);
 			if ( x > max && !nextCWI[i-1] && !nextCWI[i] && !nextCWI[i+1] ) {
 				max = x;
 				symbol = i;
@@ -759,14 +759,14 @@ void thor::update_syncscope()
 //LOG_INFO("%s", "cleared videodata");
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
 		for (int i = 0; i < paths * numbins; i++ ) {
-			mag = pipe[pipeptr].vector[i].mag();
+			mag = abs(pipe[pipeptr].vector[i]);
 			if (max < mag) max = mag;
 			if (min > mag) min = mag;
 		}
 		range = max - min;
 		for (int i = 0; i < paths * numbins; i++ ) {
 			if (range > 2) {
-				mag = (pipe[pipeptr].vector[i].mag() - min) / range + 0.0001;
+				mag = (abs(pipe[pipeptr].vector[i]) - min) / range + 0.0001;
 				mag = 1 + 2 * log10(mag);
 				if (mag < 0) mag = 0;
 			} else
@@ -781,7 +781,7 @@ void thor::update_syncscope()
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
 		for (unsigned int i = 0, j = 0; i < THORSCOPESIZE; i++) {
 			j = (pipeptr + i * twosym / THORSCOPESIZE + 1) % (twosym);
-			scopedata[i] = vidfilter[i]->run(pipe[j].vector[prev1symbol].mag());
+			scopedata[i] = vidfilter[i]->run(abs(pipe[j].vector[prev1symbol]));
 		}
 	}
 	set_scope(scopedata, THORSCOPESIZE);
@@ -801,7 +801,7 @@ void thor::synchronize()
 		return;
 
 	for (unsigned int i = 0, j = pipeptr; i < twosym; i++) {
-		val = (pipe[j].vector[prev1symbol]).mag();
+		val = abs(pipe[j].vector[prev1symbol]);
 		if (val > max) {
 			max = val;
 			syn = i;
@@ -820,8 +820,9 @@ void thor::synchronize()
 
 void thor::eval_s2n()
 {
-	double s = pipe[pipeptr].vector[currsymbol].mag();
-	double n = (THORNUMTONES - 1) * pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
+	double s = abs(pipe[pipeptr].vector[currsymbol]);
+	double n = (THORNUMTONES - 1) * 
+				abs( pipe[(pipeptr + symlen) % twosym].vector[currsymbol]);
 
 	sig = decayavg( sig, s, s - sig > 0 ? 4 : 20);
 	noise = decayavg( noise, n, 64);
@@ -863,8 +864,8 @@ void thor::eval_s2n()
 
 int thor::rx_process(const double *buf, int len)
 {
-	complex zref, *zp;
-	complex zarray[1];
+	cmplx zref, *zp;
+	cmplx zarray[1];
 	int n;
 
 	if (slowcpu != progdefaults.slowcpu) {
@@ -876,7 +877,8 @@ int thor::rx_process(const double *buf, int len)
 
 	while (len) {
 // create analytic signal at first IF
-		zref.re = zref.im = *buf++;
+		zref = cmplx( *buf, *buf );
+		buf++;
 		hilbert->run(zref, zref);
 		zref = mixer(0, zref);
 
@@ -891,13 +893,13 @@ int thor::rx_process(const double *buf, int len)
 
 		if (n) {
 			for (int i = 0; i < n; i++) {
-				complex * pipe_pipeptr_vector = pipe[pipeptr].vector ;
-				const complex zp_i = zp[i];
+				cmplx * pipe_pipeptr_vector = pipe[pipeptr].vector ;
+				const cmplx zp_i = zp[i];
 // process THORMAXFFTS sets of sliding FFTs spaced at 1/THORMAXFFTS bin intervals each of which
 // is a matched filter for the current symbol length
 				for (int k = 0; k < paths; k++) {
 // shift in frequency to base band for the sliding DFTs
-					const complex z = mixer(k + 1, zp_i );
+					const cmplx z = mixer(k + 1, zp_i );
 // copy current vector to the pipe interleaving the FFT vectors
 					binsfft[k]->run(z, pipe_pipeptr_vector + k, paths );
 				}
@@ -909,7 +911,7 @@ int thor::rx_process(const double *buf, int len)
 					else 
 						currsymbol = harddecode();
 					
-					currmag = pipe_pipeptr_vector[currsymbol].mag();
+					currmag = abs(pipe_pipeptr_vector[currsymbol]);
 					eval_s2n();
 
 					if (progdefaults.THOR_SOFTBITS)
@@ -967,7 +969,7 @@ void thor::sendtone(int tone, int duration)
 
 void thor::sendsymbol(int sym)
 {
-	complex z;
+	cmplx z;
     int tone;
 
 	tone = (txprevtone + 2 + sym) % THORNUMTONES;

@@ -41,8 +41,8 @@
 
 struct CHANNEL {
 	double			phaseacc;
-	complex			prevsymbol;
-	complex			quality;
+	cmplx			prevsymbol;
+	cmplx			quality;
 	unsigned int	shreg;
 	double			metric;
 
@@ -88,7 +88,7 @@ private:
 
 	pskeval*	evalpsk;
 
-	void		rx_symbol(int ch, complex symbol);
+	void		rx_symbol(int ch, cmplx symbol);
 	void 		rx_bit(int ch, int bit);
 	void		findsignal(int);
 	void		afc(int);

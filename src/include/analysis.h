@@ -52,7 +52,7 @@ private:
 	int pipeptr;
 
 	double prevsymbol;
-	complex prevsmpl;
+	cmplx prevsmpl;
 	int	symbollen;
 
 	int restart_count;
@@ -66,7 +66,7 @@ private:
 	double sum;
 
 	void clear_syncscope();
-	inline complex mixer(complex in);
+	inline cmplx mixer(cmplx in);
 	int rx(bool bit);
 
 	double nco(double freq);

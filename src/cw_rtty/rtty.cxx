@@ -168,7 +168,7 @@ void rtty::init()
 		set_scope_mode(Digiscope::XHAIRS);
 	else
 		set_scope_mode(Digiscope::RTTY);
-	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = complex(0,0);
+	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = cmplx(0,0);
 
 	lastchar = 0;
 }
@@ -266,7 +266,7 @@ void rtty::restart()
 		snprintf(msg1, sizeof(msg1), "%-4.2f/%-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
 	put_MODEstatus(mode);
-	for (int i = 0; i < MAXPIPE; i++) QI[i].re = QI[i].im = 0.0;
+	for (int i = 0; i < MAXPIPE; i++) QI[i].real() = QI[i].imag() = 0.0;
 	sigpwr = 0.0;
 	noisepwr = 0.0;
 	sigsearch = 0;
@@ -289,7 +289,7 @@ void rtty::restart()
 
 	inp_ptr = 0;
 
-	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = complex(0,0);
+	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = cmplx(0,0);
 
 	rttyviewer->restart();
 	progStatus.rtty_filter_changed = false;
@@ -340,9 +340,9 @@ void rtty::Clear_syncscope()
 	set_scope(0, 0, false);
 }
 
-complex rtty::mixer(double &phase, double f, complex in)
+cmplx rtty::mixer(double &phase, double f, cmplx in)
 {
-	complex z = complex( cos(phase), sin(phase)) * in;
+	cmplx z = cmplx( cos(phase), sin(phase)) * in;
 
 	phase -= TWOPI * f / samplerate;
 	if (phase < -TWOPI) phase += TWOPI;
@@ -579,7 +579,7 @@ int rtty::rx_process(const double *buf, int len)
 	int length = len;
 	static int showxy = symbollen;
 
-	complex z, zmark, zspace, *zp_mark, *zp_space;
+	cmplx z, zmark, zspace, *zp_mark, *zp_space;
 
 	int n_out = 0;
 	static int bitcount = 5 * nbits * symbollen;
@@ -606,16 +606,17 @@ double value;
 if (snum < 2 * filter_length) {
 	frequency = 1000.0;
 	ook(snum);
-//	z.re = z.im = (snum/symbollen % 2 == 0) ? 1.0 : 0.0;
-	z.re = z.im = value;
-	ook_signal << snum << "," << z.re << ",";
+//	z.real() = z.imag() = (snum/symbollen % 2 == 0) ? 1.0 : 0.0;
+	z = complex(value, value);
+	ook_signal << snum << "," << z.real() << ",";
 //	snum++;
 } else {
-	z.re = z.im = *buffer++;
+	z = cmplx(*buffer, *buffer);
 }
 #else
-		z.re = z.im = *buffer++;
+	z = cmplx(*buffer, *buffer);
 #endif
+	buffer++;
 
 // Mix it with the audio carrier frequency to create two baseband signals
 // mark and space are separated and processed independently
@@ -631,18 +632,18 @@ if (snum < 2 * filter_length) {
 		n_out = space_filt->run(zspace, &zp_space);
 #if FILTER_DEBUG == 1
 if (snum < 2 * filter_length) {
-	ook_signal << zmark.mag() <<"\n";
+	ook_signal << abs(zmark) <<"\n";
 	snum++;
 }
 #endif
 		for (int i = 0; i < n_out; i++) {
 
-			mark_mag = zp_mark[i].mag();
+			mark_mag = abs(zp_mark[i]);
 			mark_env = decayavg (mark_env, mark_mag,
 						(mark_mag > mark_env) ? symbollen / 4 : symbollen * 16);
 			mark_noise = decayavg (mark_noise, mark_mag,
 						(mark_mag < mark_noise) ? symbollen / 4 : symbollen * 48);
-			space_mag = zp_space[i].mag();
+			space_mag = abs(zp_space[i]);
 			space_env = decayavg (space_env, space_mag,
 						(space_mag > space_env) ? symbollen / 4 : symbollen * 16);
 			space_noise = decayavg (space_noise, space_mag,
@@ -724,21 +725,21 @@ if (mnum < 2 * filter_length)
 //----------------------------------------------------------------------
 
 // get the baseband-signal and...
-				xy.re = zp_mark[i].re * cos(xy_phase) + zp_mark[i].im * sin(xy_phase);
-				xy.im = zp_space[i].re * cos(xy_phase) + zp_space[i].im * sin(xy_phase);
+				xy.real() = zp_mark[i].real() * cos(xy_phase) + zp_mark[i].imag() * sin(xy_phase);
+				xy.imag() = zp_space[i].real() * cos(xy_phase) + zp_space[i].imag() * sin(xy_phase);
 
 // if mark-tone has a higher magnitude than the space-tone,
 // further reduce the scope's space-amplitude and vice versa
 // this makes the scope looking a little bit nicer, too...
 // aka: less noisy...
-				if( zp_mark[i].mag() > zp_space[i].mag() ) {
-					xy.im *= zp_space[i].mag()/zp_mark[i].mag();
+				if( abs(zp_mark[i]) > abs(zp_space[i]) ) {
+					xy.imag() *= abs(zp_space[i])/abs(zp_mark[i]);
 				} else {
-					xy.re /= zp_space[i].mag()/zp_mark[i].mag();
+					xy.real() /= abs(zp_space[i])/abs(zp_mark[i]);
 				}
 
 // now normalize the scope
-				double const norm = 1.3*(zp_mark [i].mag() + zp_space[i].mag());
+				double const norm = 1.3*(abs(zp_mark [i]) + abs(zp_space[i]));
 				xy /= norm;
 
 			} else {
@@ -747,9 +748,9 @@ if (mnum < 2 * filter_length)
 //----------------------------------------------------------------------
 // get magnitude of the baseband-signal
 				if (bit)
-					xy = complex( mark_mag * cos(xy_phase), space_noise * sin(xy_phase) / 2.0);
+					xy = cmplx( mark_mag * cos(xy_phase), space_noise * sin(xy_phase) / 2.0);
 				else
-					xy = complex( mark_noise * cos(xy_phase) / 2.0, space_mag * sin(xy_phase));
+					xy = cmplx( mark_noise * cos(xy_phase) / 2.0, space_mag * sin(xy_phase));
 // now normalize the scope
 				double const norm = (mark_env + space_env);
 				xy /= norm;
@@ -758,7 +759,7 @@ if (mnum < 2 * filter_length)
 // Rotate the scope x-y iaw frequency error.  Old scopes were not capable
 // of this, but it should be very handy, so... who cares of realism anyways?
 			double const rotate = 8 * TWOPI * freqerr / rtty_shift;
-			xy = xy * complex(cos(rotate), sin(rotate));
+			xy = xy * cmplx(cos(rotate), sin(rotate));
 
 			QI[inp_ptr] = xy;
 
@@ -794,8 +795,8 @@ if (mnum < 2 * filter_length)
 				if (mp1 < 0) mp1 += MAXPIPE;
 				double ferr = (TWOPI * samplerate / rtty_baud) *
 						(!reverse ?
-							(mark_history[mp1] % mark_history[mp0]).arg() :
-							(space_history[mp1] % space_history[mp0]).arg());
+							arg(conj(mark_history[mp1]) * mark_history[mp0]) :
+							arg(conj(space_history[mp1]) * space_history[mp0]));
 				if (fabs(ferr) > rtty_baud / 2) ferr = 0;
 				freqerr = decayavg ( freqerr, ferr / 8,
 					progdefaults.rtty_afcspeed == 0 ? 8 :
@@ -811,7 +812,7 @@ if (mnum < 2 * filter_length)
 				if (clear_zdata) {
 					clear_zdata = false;
 					Clear_syncscope();
-					for (int i = 0; i < MAXPIPE; i++) QI[i].re = QI[i].im = 0.0;
+					for (int i = 0; i < MAXPIPE; i++) QI[i].real() = QI[i].imag() = 0.0;
 				}
 			}
 			if (!--showxy) {

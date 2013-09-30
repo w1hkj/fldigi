@@ -250,29 +250,29 @@ throb::throb(trx_mode throb_mode) : modem()
 // receive processing
 //=====================================================================
 
-// Make a 32 times down sampled complex prototype tone for rx.
+// Make a 32 times down sampled cmplx prototype tone for rx.
 
-complex *throb::mk_rxtone(double freq, double *pulse, int len)
+cmplx *throb::mk_rxtone(double freq, double *pulse, int len)
 {
-	complex *tone;
+	cmplx *tone;
 	double x;
 	int i;
 
-	tone = new complex [len / DOWN_SAMPLE];
+	tone = new cmplx [len / DOWN_SAMPLE];
 
 	for (i = 0; i < len; i += DOWN_SAMPLE) {
 		x = -2.0 * M_PI * freq * i / THROB_SAMPLE_RATE;
-		tone[i / DOWN_SAMPLE].re = pulse[i] * cos(x);
-		tone[i / DOWN_SAMPLE].im = pulse[i] * sin(x);
+		tone[i / DOWN_SAMPLE] =
+			cmplx ( pulse[i] * cos(x), pulse[i] * sin(x) );
 	}
 
 	return tone;
 }
 
-complex throb::mixer(complex in)
+cmplx throb::mixer(cmplx in)
 {
 	double f;
-	complex z (cos(phaseacc), sin(phaseacc));
+	cmplx z (cos(phaseacc), sin(phaseacc));
 
 	z = z * in;
 
@@ -288,7 +288,7 @@ complex throb::mixer(complex in)
 	return z;
 }
 
-int throb::findtones(complex *word, int &tone1, int &tone2)
+int throb::findtones(cmplx *word, int &tone1, int &tone2)
 {
 	double max1, max2;
 	int maxtone, i;
@@ -296,8 +296,8 @@ int throb::findtones(complex *word, int &tone1, int &tone2)
 	max1 = 0;
 	tone1 = 0;
 	for (i = 0; i < num_tones; i++) {
-		if ( word[i].mag() > max1 ) {
-			max1 = word[i].mag();
+		if ( abs(word[i]) > max1 ) {
+			max1 = abs(word[i]);
 			tone1 = i;
 		}
 	}
@@ -309,8 +309,8 @@ int throb::findtones(complex *word, int &tone1, int &tone2)
 	for (i = 0; i < num_tones; i++) {
 		if (i == tone1)
 			continue;
-		if ( word[i].mag() > max2) {
-			max2 = word[i].mag();
+		if ( abs(word[i]) > max2) {
+			max2 = abs(word[i]);
 			tone2 = i;
 		}
 	}
@@ -331,9 +331,9 @@ int throb::findtones(complex *word, int &tone1, int &tone2)
 	signal = noise = 0.0;
 	for (i = 0; i < num_tones; i++) {
 		if ( i == tone1 || i == tone2)
-			signal += word[i].mag() / 2.0;
+			signal += abs(word[i]) / 2.0;
 		else
-			noise += word[i].mag() / (num_tones - 2.0);
+			noise += abs(word[i]) / (num_tones - 2.0);
 	}
 
 	metric = snfilter->run( signal / (noise + 1e-6));
@@ -410,9 +410,9 @@ void throb::decodechar(int tone1, int tone2)
 	return;
 }
 
-void throb::rx(complex in)
+void throb::rx(cmplx in)
 {
-	complex rxword[MAX_TONES];
+	cmplx rxword[MAX_TONES];
 	int i, tone1, tone2, maxtone;
 
 	symbol[symptr] = in;
@@ -434,13 +434,13 @@ void throb::rx(complex in)
 		decodechar (tone1, tone2);
 
 	if (progStatus.afconoff == true && (metric >= progStatus.sldrSquelchValue || progStatus.sqlonoff == false)) {
-		complex z1, z2;
+		cmplx z1, z2;
 		double f;
 
 		z1 = rxword[maxtone];
 		z2 = cmac(rxtone[maxtone], symbol, symptr + 2, rxsymlen);
 
-		f = (z1 % z2).arg() / (2 * DOWN_SAMPLE * M_PI / THROB_SAMPLE_RATE);
+		f = arg( conj(z1) * z2 ) / (2 * DOWN_SAMPLE * M_PI / THROB_SAMPLE_RATE);
 
 		f -= freqs[maxtone];
 
@@ -457,14 +457,14 @@ void throb::rx(complex in)
 
 }
 
-void throb::sync(complex in)
+void throb::sync(cmplx in)
 {
 	double f, maxval = 0;
 	double mag;
 	int i, maxpos = 0;
 
 	/* "rectify", filter and store input */
-	mag = in.mag();
+	mag = abs(in);
 	syncfilt->Irun( mag, f);
 	syncbuf[symptr] = f;
 
@@ -498,11 +498,12 @@ void throb::sync(complex in)
 
 int throb::rx_process(const double *buf, int len)
 {
-	complex z, *zp;
+	cmplx z, *zp;
 	int i, n;
 
 	while (len-- > 0) {
-		z.re = z.im = *buf++;
+		z = cmplx( *buf, *buf );
+		buf++;
 
 		hilbert->run(z, z);
 		z = mixer(z);

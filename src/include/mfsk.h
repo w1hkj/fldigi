@@ -99,11 +99,11 @@ extern	unsigned char *xmtimg;
 extern	unsigned char *xmtpicbuff;
 
 struct rxpipe {
-	complex vector[MAX_SYMBOLS];	//numtones <= 32
+	cmplx vector[MAX_SYMBOLS];	//numtones <= 32
 };
 
 struct history {
-	complex val;
+	cmplx val;
 	int symnbr;
 };
 	
@@ -173,9 +173,9 @@ protected:
 	//VK2ETA high speed modes
 	int	preamble;
 
-	complex currvector;
-	complex prev1vector;
-	complex prev2vector;
+	cmplx currvector;
+	cmplx prev1vector;
+	cmplx prev2vector;
 
 	int currsymbol;
 	int prev1symbol;
@@ -215,7 +215,7 @@ protected:
 // Picutre data and methods
 	int picturesize;
 	char picheader[PICHEADER];
-	complex prevz;
+	cmplx prevz;
 	double picf;
 	unsigned char prepost[128];
 	
@@ -233,15 +233,15 @@ protected:
 	bool		startpic;
 	bool		abortxmt;
 
-	void	recvpic(complex z);
+	void	recvpic(cmplx z);
 	void	recvchar(int c);
 	void	recvbit(int bit);
 
 // internal processes
 	void	decodesymbol(unsigned char symbol);
-	void	softdecode(complex *bins);
-	complex	mixer(complex in, double f);
-	int		harddecode(complex *in);
+	void	softdecode(cmplx *bins);
+	cmplx	mixer(cmplx in, double f);
+	int		harddecode(cmplx *in);
 	void	update_syncscope();
 	void	synchronize();
 	void	afc();

@@ -160,17 +160,17 @@ void C_FIR_filter::init_hilbert (int len, int dec) {
 
 //=====================================================================
 // Run
-// passes a complex value (in) and receives the complex value (out)
+// passes a cmplx value (in) and receives the cmplx value (out)
 // function returns 0 if the filter is not yet stable
-// returns 1 when stable and decimated complex output value is valid
+// returns 1 when stable and decimated cmplx output value is valid
 //=====================================================================
 
-int C_FIR_filter::run (const complex &in, complex &out) {
-	ibuffer[pointer] = in.re;
-	qbuffer[pointer] = in.im;
+int C_FIR_filter::run (const cmplx &in, cmplx &out) {
+	ibuffer[pointer] = in.real();
+	qbuffer[pointer] = in.imag();
 	counter++;
 	if (counter == decimateratio)
-		out = complex (	mac(&ibuffer[pointer - length], ifilter, length),
+		out = cmplx (	mac(&ibuffer[pointer - length], ifilter, length),
 						mac(&qbuffer[pointer - length], qfilter, length) );
 	pointer++;
 	if (pointer == FIRBufferLen) {
@@ -187,7 +187,7 @@ int C_FIR_filter::run (const complex &in, complex &out) {
 }
 
 //=====================================================================
-// Run the filter for the Real part of the complex variable
+// Run the filter for the Real part of the cmplx variable
 //=====================================================================
 
 int C_FIR_filter::Irun (const double &in, double &out) {
@@ -217,7 +217,7 @@ int C_FIR_filter::Irun (const double &in, double &out) {
 }
 
 //=====================================================================
-// Run the filter for the Imaginary part of the complex variable
+// Run the filter for the Imaginary part of the cmplx variable
 //=====================================================================
 
 int C_FIR_filter::Qrun (const double &in, double &out) {
@@ -365,12 +365,12 @@ void Cmovavg::reset()
 //	phase rotate each frequency bin in F(k) by WN^(k) and then 
 //	add [(a + bj) + (c + dj)] to each frequency bin. 
 //
-// One complex multiplication and two complex additions per frequency bin are 
+// One cmplx multiplication and two cmplx additions per frequency bin are 
 // therefore required, per sample period, regardless of the size of the transform.
 //
-// For example, a traditional 1024-point FFT needs 5120 complex multiplies 
-// and 10240 complex additions to calculate all 1024 frequency bins. A 1024-point 
-// Sliding FFT however needs 1024 complex multiplies and 2048 complex additions 
+// For example, a traditional 1024-point FFT needs 5120 cmplx multiplies 
+// and 10240 cmplx additions to calculate all 1024 frequency bins. A 1024-point 
+// Sliding FFT however needs 1024 cmplx multiplies and 2048 cmplx additions 
 // for all 1024 frequency bins, and as each frequency bin is calculated separately, 
 // it is only necessary to calculate the ones that are of interest.
 //
@@ -399,14 +399,14 @@ void Cmovavg::reset()
 //=====================================================================
 
 struct sfft::vrot_bins_pair {
-	complex vrot;
-	complex bins;
+	cmplx vrot;
+	cmplx bins;
 } ;
 
 sfft::sfft(int len, int _first, int _last)
 {
 	vrot_bins = new vrot_bins_pair[len];
-	delay  = new complex[len];
+	delay  = new cmplx[len];
 	fftlen = len;
 	first = _first;
 	last = _last;
@@ -414,7 +414,7 @@ sfft::sfft(int len, int _first, int _last)
 	double phi = 0.0, tau = 2.0 * M_PI/ len;
 	k2 = 1.0;
 	for (int i = 0; i < len; i++) {
-		vrot_bins[i].vrot = complex( cos (phi), sin (phi) ) * K1 ;
+		vrot_bins[i].vrot = cmplx( K1 * cos (phi), K1 * sin (phi) );
 		phi += tau;
 		delay[i] = vrot_bins[i].bins = 0.0;
 		k2 *= K1;
@@ -427,14 +427,14 @@ sfft::~sfft()
 	delete [] delay;
 }
 
-// Sliding FFT, complex input, complex output
+// Sliding FFT, cmplx input, cmplx output
 // FFT is computed for each value from first to last
 // Values are not stable until more than "len" samples have been processed.
 // Copies the frequencies to a pointer with a given stride.
-void sfft::run(const complex& input, complex * __restrict__ result, int stride )
+void sfft::run(const cmplx& input, cmplx * __restrict__ result, int stride )
 {
-	complex & de = delay[ptr];
-	const complex z( input.re - k2 * de.re, input.im - k2 * de.im);
+	cmplx & de = delay[ptr];
+	const cmplx z( input.real() - k2 * de.real(), input.imag() - k2 * de.imag());
 	de = input;
 
 	++ptr ;

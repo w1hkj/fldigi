@@ -83,7 +83,7 @@ void view_rtty::rx_init()
 
 		for (int i = 0; i < MAXPIPE; i++)
 			channel[ch].mark_history[i] = 
-			channel[ch].space_history[i] = complex(0,0);
+			channel[ch].space_history[i] = cmplx(0,0);
 	}
 }
 
@@ -188,7 +188,7 @@ void view_rtty::restart()
 		for (int i = 0; i < VIEW_RTTY_MAXBITS; i++) channel[ch].bit_buf[i] = 0.0;
 
 		for (int i = 0; i < MAXPIPE; i++) 
-			channel[ch].mark_history[i] = channel[ch].space_history[i] = complex(0,0);
+			channel[ch].mark_history[i] = channel[ch].space_history[i] = cmplx(0,0);
 	}
 
 // stop length = 1, 1.5 or 2 bits
@@ -218,9 +218,9 @@ view_rtty::view_rtty(trx_mode tty_mode)
 	restart();
 }
 
-complex view_rtty::mixer(double &phase, double f, complex in)
+cmplx view_rtty::mixer(double &phase, double f, cmplx in)
 {
-	complex z = complex( cos(phase), sin(phase)) * in;;
+	cmplx z = cmplx( cos(phase), sin(phase)) * in;;
 
 	phase -= TWOPI * f / samplerate;
 	if (phase < - TWOPI) phase += TWOPI;
@@ -457,7 +457,7 @@ void view_rtty::clear()
 
 int view_rtty::rx_process(const double *buf, int buflen)
 {
-	complex z, zmark, zspace, *zp_mark, *zp_space;
+	cmplx z, zmark, zspace, *zp_mark, *zp_space;
 	static bool bit = true;
 	int n = 0;
 
@@ -473,7 +473,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 		}
 
 		for (int len = 0; len < buflen; len++) {
-			z.re = z.im = buf[len];
+			z = cmplx(buf[len], buf[len]);
 
 			zmark = mixer(channel[ch].mark_phase, channel[ch].frequency + shift/2.0, z);
 			channel[ch].mark_filt->run(zmark, &zp_mark);
@@ -486,12 +486,12 @@ int view_rtty::rx_process(const double *buf, int buflen)
 
 			for (int i = 0; i < n; i++) {
 
-				channel[ch].mark_mag = zp_mark[i].mag();
+				channel[ch].mark_mag = abs(zp_mark[i]);
 				channel[ch].mark_env = decayavg (channel[ch].mark_env, channel[ch].mark_mag,
 					(channel[ch].mark_mag > channel[ch].mark_env) ? symbollen / 4 : symbollen * 16);
 				channel[ch].mark_noise = decayavg (channel[ch].mark_noise, channel[ch].mark_mag,
 					(channel[ch].mark_mag < channel[ch].mark_noise) ? symbollen / 4 : symbollen * 48);
-				channel[ch].space_mag = zp_space[i].mag();
+				channel[ch].space_mag = abs(zp_space[i]);
 				channel[ch].space_env = decayavg (channel[ch].space_env, channel[ch].space_mag,
 					(channel[ch].space_mag > channel[ch].space_env) ? symbollen / 4 : symbollen * 16);
 				channel[ch].space_noise = decayavg (channel[ch].space_noise, channel[ch].space_mag,
@@ -517,7 +517,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 //						(channel[ch].space_env - channel[ch].noise_floor)));
 //				bit = (v > 0);
 // Kahn Square Law demodulator
-				bit = zp_mark[i].norm() >= zp_space[i].norm();
+				bit = norm(zp_mark[i]) >= norm(zp_space[i]);
 
 				channel[ch].mark_history[channel[ch].inp_ptr] = zp_mark[i];
 				channel[ch].space_history[channel[ch].inp_ptr] = zp_space[i];
@@ -531,8 +531,8 @@ int view_rtty::rx_process(const double *buf, int buflen)
 					if (mp1 < 0) mp1 += MAXPIPE;
 					double ferr = (TWOPI * samplerate / rtty_baud) *
 						(!reverse ? 
-						(channel[ch].mark_history[mp1] % channel[ch].mark_history[mp0]).arg() :
-						(channel[ch].space_history[mp1] % channel[ch].space_history[mp0]).arg());
+						arg(conj(channel[ch].mark_history[mp1]) * channel[ch].mark_history[mp0]) :
+						arg(conj(channel[ch].space_history[mp1]) * channel[ch].space_history[mp0]));
 					if (fabs(ferr) > rtty_baud / 2) ferr = 0;
 					channel[ch].freqerr = decayavg ( channel[ch].freqerr, ferr / 4,
 						progdefaults.rtty_afcspeed == 0 ? 8 :

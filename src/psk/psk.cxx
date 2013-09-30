@@ -78,7 +78,7 @@ void psk::tx_init(SoundBase *sc)
 	scard = sc;
 	for (int car = 0; car < numcarriers; car++) {
 		phaseacc[car] = 0;
-		prevsymbol[car] = complex (1.0, 0.0);
+		prevsymbol[car] = cmplx (1.0, 0.0);
 	}
 	preamble = dcdbits;
 	if (_pskr) {
@@ -104,9 +104,9 @@ void psk::rx_init()
 {
 	for (int car = 0; car < numcarriers; car++) {
 		phaseacc[car] = 0;
-		prevsymbol[car] = complex (1.0, 0.0);
+		prevsymbol[car] = cmplx (1.0, 0.0);
 	}
-	quality		= complex (0.0, 0.0);
+	quality		= cmplx (0.0, 0.0);
 	if (_pskr) {
 		// MFSK varicode instead of psk
 		shreg = 1;
@@ -1005,17 +1005,17 @@ void psk::afc()
 }
 
 
-void psk::rx_symbol(complex symbol, int car)
+void psk::rx_symbol(cmplx symbol, int car)
 {
 	int n;
 	unsigned char softbit = 0;
 	double softangle;
 	double softamp;
-	double sigamp = symbol.norm();
+	double sigamp = norm(symbol);
 
 static double averageamp;
 
-	phase = (prevsymbol[car] % symbol).arg();
+	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
 
 	if (phase < 0)
@@ -1051,10 +1051,12 @@ static double averageamp;
 	// simple low pass filter for quality of signal
 //	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
 //	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
-	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
-	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
-
-	metric = 100.0 * quality.norm();
+//	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
+//	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
+	quality = cmplx(
+		decayavg(quality.real(), cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY),
+		decayavg(quality.imag(), sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY));
+	metric = 100.0 * norm(quality);
 
 	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 		//s2n reporting: rescale depending on mode, clip after scaling
@@ -1074,7 +1076,7 @@ static double averageamp;
 	if (metric > 100)
 		metric = 100;
 
-	afcmetric = decayavg(afcmetric, quality.norm(), 50);
+	afcmetric = decayavg(afcmetric, norm(quality), 50);
 
 	dcdshreg = (dcdshreg << 2) | bits;
 
@@ -1085,7 +1087,7 @@ static double averageamp;
 		if (!_pskr) {
 			dcd = true;
 			acquire = 0;
-			quality = complex (1.0, 0.0);
+			quality = cmplx (1.0, 0.0);
 			imdValid = true;
 			if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
 				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
@@ -1096,7 +1098,7 @@ static double averageamp;
 		if (_pskr) {
 			dcd = true;
 			acquire = 0;
-			quality = complex (1.0, 0.0);
+			quality = cmplx (1.0, 0.0);
 			imdValid = true;
 //VK2ETA added logic to prevent resetting
 //			noSOHyet = true;
@@ -1109,7 +1111,7 @@ static double averageamp;
 		if (!_pskr) {
 			dcd = false;
 			acquire = 0;
-			quality = complex (0.0, 0.0);
+			quality = cmplx (0.0, 0.0);
 		}
 		break;
 	default:
@@ -1121,7 +1123,7 @@ static double averageamp;
 	}
 
 	if (!_pskr) {
-		set_phase(phase, quality.norm(), dcd);
+		set_phase(phase, norm(quality), dcd);
 
 		if (dcd == true) {
 			if (_qpsk )
@@ -1132,7 +1134,7 @@ static double averageamp;
 	} else { // pskr processing
 		// FEC: moved below the rx_bit to use proper value for dcd
 		rx_pskr(softbit);
-		set_phase(phase, quality.norm(), dcd);
+		set_phase(phase, norm(quality), dcd);
 	}
 
 }
@@ -1176,7 +1178,7 @@ char bitstatus[100];
 int psk::rx_process(const double *buf, int len)
 {
 	double delta[MAX_CARRIERS], frequencies[MAX_CARRIERS];
-	complex z, z2[MAX_CARRIERS];
+	cmplx z, z2[MAX_CARRIERS];
 	bool can_rx_symbol = false;
 
 	if (numcarriers == 1) {
@@ -1200,7 +1202,7 @@ int psk::rx_process(const double *buf, int len)
 	   for (int car = 0; car < numcarriers; car++) {
 
 		// Mix with the internal NCO
-		z = complex ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
+		z = cmplx ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
 
 		phaseacc[car] += delta[car];
 		if (phaseacc[car] > M_PI)
@@ -1236,7 +1238,7 @@ int psk::rx_process(const double *buf, int len)
 			double sum = 0.0;
 			double ampsum = 0.0;
 			for (int ii = 0; ii < numcarriers; ii++) {
-				sum += z2[ii].mag()/numcarriers;
+				sum += abs(z2[ii])/numcarriers;
 			}
 //			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2[car].mag();
 			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * sum;
@@ -1375,7 +1377,7 @@ void psk::tx_symbol(int sym)
 {
 	double delta[MAX_CARRIERS];
 	double	ival, qval, shapeA, shapeB;
-	complex symbol;
+	cmplx symbol;
 	double	frequencies[MAX_CARRIERS];
 
 	txsymbols[accumulated_bits] = sym;
@@ -1403,19 +1405,19 @@ double maxamp = 0;
 		// differential QPSK modulation - top bit flipped
 		switch (sym) {
 		case 0:
-			symbol = complex (-1.0, 0.0);	// 180 degrees
+			symbol = cmplx (-1.0, 0.0);	// 180 degrees
 			break;
 		case 1:
-			symbol = complex (0.0, -1.0);	// 270 degrees
+			symbol = cmplx (0.0, -1.0);	// 270 degrees
 			break;
 		case 2:
-			symbol = complex (1.0, 0.0);		// 0 degrees
+			symbol = cmplx (1.0, 0.0);		// 0 degrees
 			break;
 		case 3:
-			symbol = complex (0.0, 1.0);		// 90 degrees
+			symbol = cmplx (0.0, 1.0);		// 90 degrees
 			break;
 		}
-		symbol = prevsymbol[car] * symbol;	// complex multiplication
+		symbol = prevsymbol[car] * symbol;	// cmplx multiplication
 
 		for (int i = 0; i < symbollen; i++) {
 
@@ -1628,19 +1630,21 @@ void psk::resetSN_IMD()
 //  This routine calculates the energy in the frequency bands of
 //   carrier=F0(15.625), noise=F1(31.25), and
 //   3rd order product=F2(46.875)
-//  It is called with complex data samples at 500 Hz.
+//  It is called with cmplx data samples at 500 Hz.
 //============================================================================
 
-void psk::calcSN_IMD(complex z)
+void psk::calcSN_IMD(cmplx z)
 {
 	int i;
-	complex temp;
+	double tempI = 0, tempQ = 0;
 
 	for(i = 0; i < NUM_FILTERS; i++) {
-		temp.re = I1[i]; temp.im = Q1[i];
-		I1[i] = I1[i] * COEF[i]- I2[i] + z.re;
-		Q1[i] = Q1[i] * COEF[i]- Q2[i] + z.im;
-		I2[i] = temp.re; Q2[i] = temp.im;
+		tempI = I1[i];
+		tempQ = Q1[i];
+		I1[i] = I1[i] * COEF[i]- I2[i] + z.real();
+		Q1[i] = Q1[i] * COEF[i]- Q2[i] + z.imag();
+		I2[i] = tempI;
+		Q2[i] = tempQ;
 	}
 
 	if( ++m_NCount >= GOERTZEL ) {

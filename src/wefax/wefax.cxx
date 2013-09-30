@@ -2105,8 +2105,8 @@ void fax_implementation::rx_new_samples(const double* audio_ptr, int audio_sz)
 	for(int i=0; i<audio_sz; i++) {
 		double idx_aux = audio_ptr[i] ;
 
-		complex firin( idx_aux*m_dbl_cosine.next_value(), idx_aux*m_dbl_sine.next_value() );
-		complex firout ;
+		cmplx firin( idx_aux*m_dbl_cosine.next_value(), idx_aux*m_dbl_sine.next_value() );
+		cmplx firout ;
 
 		/// This returns zero if the filter is not yet stable.
 		/* int run_status = */ ref_fir_filt_pair.run( firin, firout );

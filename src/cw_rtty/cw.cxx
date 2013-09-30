@@ -518,9 +518,9 @@ void cw::clear_syncscope()
 	clrcount = CLRCOUNT;
 }
 
-complex cw::mixer(complex in)
+cmplx cw::mixer(cmplx in)
 {
-	complex z (cos(phaseacc), sin(phaseacc));
+	cmplx z (cos(phaseacc), sin(phaseacc));
 	z = z * in;
 
 	phaseacc += TWOPI * frequency / samplerate;
@@ -599,12 +599,12 @@ void cw::decode_stream(double value)
 
 void cw::rx_FFTprocess(const double *buf, int len)
 {
-	complex z, *zp;
+	cmplx z, *zp;
 	int n;
 
 	while (len-- > 0) {
 
-		z = complex ( *buf * cos(FFTphase), *buf * sin(FFTphase) );
+		z = cmplx ( *buf * cos(FFTphase), *buf * sin(FFTphase) );
 		FFTphase += TWOPI * frequency / samplerate;
 		if (FFTphase > M_PI)
 			FFTphase -= TWOPI;
@@ -624,7 +624,7 @@ void cw::rx_FFTprocess(const double *buf, int len)
 			if (smpl_ctr % DEC_RATIO) continue; // decimate by DEC_RATIO
 
 // demodulate
-			FFTvalue = zp[i].mag();
+			FFTvalue = abs(zp[i]);
 			FFTvalue = bitfilter->run(FFTvalue);
 
 			decode_stream(FFTvalue);
@@ -636,10 +636,10 @@ void cw::rx_FFTprocess(const double *buf, int len)
 
 void cw::rx_FIRprocess(const double *buf, int len)
 {
-	complex z;
+	cmplx z;
 
 	while (len-- > 0) {
-		z = complex ( *buf * cos(FIRphase), *buf * sin(FIRphase) );
+		z = cmplx ( *buf * cos(FIRphase), *buf * sin(FIRphase) );
 		buf++;
 
 		FIRphase += TWOPI * frequency / samplerate;
@@ -653,7 +653,7 @@ void cw::rx_FIRprocess(const double *buf, int len)
 // update the basic sample counter used for morse timing
 			smpl_ctr += DEC_RATIO;
 // demodulate
-			FIRvalue = z.mag();
+			FIRvalue = abs(z);
 			FIRvalue = bitfilter->run(FIRvalue);
 
 			decode_stream(FIRvalue);

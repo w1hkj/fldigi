@@ -142,12 +142,9 @@ void anal::clear_syncscope()
 	set_scope(0, 0, false);
 }
 
-complex anal::mixer(complex in)
+cmplx anal::mixer(cmplx in)
 {
-	complex z;
-	z.re = cos(phaseacc);
-	z.im = sin(phaseacc);
-	z = z * in;
+	cmplx z = cmplx( cos(phaseacc), sin(phaseacc)) * in;
 
 	phaseacc -= TWOPI * frequency / samplerate;
 	if (phaseacc > M_PI) 
@@ -189,7 +186,7 @@ void anal::writeFile()
 
 int anal::rx_process(const double *buf, int len)
 {
-	complex z, *zp;
+	cmplx z, *zp;
 	double fin;
 	int n;
 	static int dspcnt = symbollen;
@@ -198,7 +195,8 @@ int anal::rx_process(const double *buf, int len)
 
 	while (len-- > 0) {
 // create analytic signal from sound card input samples
-		z.re = z.im = *buf++;
+		z = cmplx( *buf, *buf );
+		buf++;
 		hilbert->run(z, z);
 // mix it with the audio carrier frequency to create a baseband signal
 		z = mixer(z);
@@ -208,8 +206,8 @@ int anal::rx_process(const double *buf, int len)
 		if (n) for (int i = 0; i < n; i++) {
 // measure phase difference between successive samples to determine
 // the frequency of the baseband signal (+anal_baud or -anal_baud)
-// see class complex definiton for operator %
-			fin = (prevsmpl % zp[i]).arg() * samplerate / TWOPI;
+// see class cmplx definiton for operator %
+			fin = arg( conj(prevsmpl) * zp[i] ) * samplerate / TWOPI;
 			prevsmpl = zp[i];
 			if (restart_count) restart_count--;
 			else {

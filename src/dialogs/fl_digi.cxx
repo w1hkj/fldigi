@@ -6048,7 +6048,7 @@ void set_video(double *data, int len, bool dir)
 	wf->wfscope->video(data, len, dir);
 }
 
-void set_zdata(complex *zarray, int len)
+void set_zdata(cmplx *zarray, int len)
 {
 	if (digiscope)
 		digiscope->zdata(zarray, len);

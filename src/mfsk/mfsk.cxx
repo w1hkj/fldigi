@@ -100,7 +100,7 @@ void  mfsk::rx_init()
 
 	for (int i = 0; i < 2 * symlen; i++) {
 		for (int j = 0; j < 32; j++)
-			(pipe[i].vector[j]).re = (pipe[i].vector[j]).im = 0.0;
+			pipe[i].vector[j] = cmplx(0,0);
 	}
 	reset_afc();
 	s2n = 0.0;
@@ -389,10 +389,10 @@ bool mfsk::check_picture_header(char c)
 	return true;
 }
 
-void mfsk::recvpic(complex z)
+void mfsk::recvpic(cmplx z)
 {
 	int byte;
-	picf += (prevz % z).arg() * samplerate / TWOPI;
+	picf += arg( conj(prevz) * z) * samplerate / TWOPI;
 	prevz = z;
 
 	if ((counter % RXspp) == 0) {
@@ -555,7 +555,7 @@ void mfsk::decodesymbol(unsigned char symbol)
 
 }
 
-void mfsk::softdecode(complex *bins)
+void mfsk::softdecode(cmplx *bins)
 {
 	double binmag, sum=0, avg=0, b[symbits];
 	unsigned char symbols[symbits];
@@ -570,7 +570,7 @@ void mfsk::softdecode(complex *bins)
 	// Calculate the average signal, ignoring CWI tones
 	for (i = 0; i < numtones; i++) {
 	  	if ( CWIcounter[i] < CWI_MAXCOUNT )
-			sum += bins[i].mag();
+			sum += abs(bins[i]);
 	}
 	avg = sum / numtones;
 
@@ -614,9 +614,9 @@ void mfsk::softdecode(complex *bins)
 		if ( CWIcounter[k] > CWI_MAXCOUNT ) {
 			binmag = avg; // soft-puncture to the average signal-level
 		} else if ( CWIsymbol == k )
-			binmag = 2.0f * bins[k].mag(); // give harddecode() a vote in softdecode's decision.
+			binmag = 2.0f * abs(bins[k]); // give harddecode() a vote in softdecode's decision.
 		else
-			binmag = bins[k].mag();
+			binmag = abs(bins[k]);
 
 		for (k = 0; k < symbits; k++)
 			b[k] += (j & (1 << (symbits - k - 1))) ? binmag : -binmag;
@@ -648,14 +648,14 @@ void mfsk::softdecode(complex *bins)
 	}
 }
 
-complex mfsk::mixer(complex in, double f)
+cmplx mfsk::mixer(cmplx in, double f)
 {
-	complex z;
+	cmplx z;
 
 // Basetone is a nominal 1000 Hz
 	f -= tonespacing * basetone + bandwidth / 2;
 
-	z = in * complex( cos(phaseacc), sin(phaseacc) );
+	z = in * cmplx( cos(phaseacc), sin(phaseacc) );
 
 	phaseacc -= TWOPI * f / samplerate;
 	if (phaseacc > TWOPI) phaseacc -= TWOPI;
@@ -668,20 +668,20 @@ complex mfsk::mixer(complex in, double f)
 // assumes that will be the present tone received
 // with NO CW inteference
 
-int mfsk::harddecode(complex *in)
+int mfsk::harddecode(cmplx *in)
 {
 	double x, max = 0.0, avg = 0.0;
 	int i, symbol = 0;
 	int burstcount = 0;
 
 	for (int i = 0; i < numtones; i++)
-		avg += in[i].mag();
+		avg += abs(in[i]);
 	avg /= numtones;
 
 	if (avg < 1e-20) avg = 1e-20;
 
 	for (i = 0; i < numtones; i++) {
-		x = in[i].mag();
+		x = abs(in[i]);
 		if ( x > max) {
 			max = x;
 			symbol = i;
@@ -707,7 +707,7 @@ void mfsk::update_syncscope()
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue)
 		for (unsigned int i = 0; i < SCOPESIZE; i++) {
 			j = (pipeptr + i * pipelen / SCOPESIZE + 1) % (pipelen);
-			scopedata[i] = vidfilter[i]->run(pipe[j].vector[prev1symbol].mag());
+			scopedata[i] = vidfilter[i]->run(abs(pipe[j].vector[prev1symbol]));
 		}
 	set_scope(scopedata, SCOPESIZE);
 
@@ -730,7 +730,7 @@ void mfsk::synchronize()
 	j = pipeptr;
 
 	for (i = 0; i < 2 * symlen; i++) {
-		val = (pipe[j].vector[prev1symbol]).mag();
+		val = abs(pipe[j].vector[prev1symbol]);
 
 		if (val > max) {
 			max = val;
@@ -755,8 +755,8 @@ void mfsk::reset_afc() {
 
 void mfsk::afc()
 {
-	complex z;
-	complex prevvector;
+	cmplx z;
+	cmplx prevvector;
 	double f, f1;
 	double ts = tonespacing / 4;
 
@@ -778,9 +778,9 @@ void mfsk::afc()
 		prevvector = pipe[2*symlen - 1].vector[currsymbol];
 	else
 		prevvector = pipe[pipeptr - 1].vector[currsymbol];
-	z = prevvector % currvector;
+	z = conj(prevvector) * currvector;
 
-	f = z.arg() * samplerate / TWOPI;
+	f = arg(z) * samplerate / TWOPI;
 
 	f1 = tonespacing * (basetone + currsymbol);
 
@@ -793,8 +793,8 @@ void mfsk::afc()
 
 void mfsk::eval_s2n()
 {
-	sig = pipe[pipeptr].vector[currsymbol].mag();
-	noise = (numtones -1) * pipe[pipeptr].vector[prev2symbol].mag();
+	sig = abs(pipe[pipeptr].vector[currsymbol]);
+	noise = (numtones -1) * abs(pipe[pipeptr].vector[prev2symbol]);
 	if (noise > 0)
 		s2n = decayavg ( s2n, sig / noise, 64 );
 
@@ -802,12 +802,13 @@ void mfsk::eval_s2n()
 
 int mfsk::rx_process(const double *buf, int len)
 {
-	complex z;
-	complex* bins = 0;
+	cmplx z;
+	cmplx* bins = 0;
 
 	while (len-- > 0) {
 // create analytic signal...
-		z.re = z.im = *buf++;
+		z = cmplx( *buf, *buf );
+		buf++;
 		hbfilt->run ( z, z );
 // shift in frequency to the base freq
 		z = mixer(z, frequency);

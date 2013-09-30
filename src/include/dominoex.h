@@ -52,7 +52,7 @@
 #define SCOPESIZE 64
 
 struct domrxpipe {
-	complex vector[MAXFFTS * NUMTONES * 6];
+	cmplx vector[MAXFFTS * NUMTONES * 6];
 };
 
 class dominoex : public modem {
@@ -93,7 +93,7 @@ protected:
 	mbuffer<double, 0, 2>	scopedata;
 	mbuffer<double, 0, 2>	videodata;
 
-	complex currvector;
+	cmplx currvector;
 
 	int currsymbol;
 	int prev1symbol;
@@ -133,7 +133,7 @@ protected:
 	int			Mu_symcounter;
 	
 private:
-	complex	mixer(int n, complex in);
+	cmplx	mixer(int n, cmplx in);
 	void	recvchar(int c);
 	void	decodesymbol();
 	void	decodeDomino(int c);

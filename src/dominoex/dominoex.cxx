@@ -321,9 +321,9 @@ dominoex::dominoex(trx_mode md)
 
 //=====================================================================
 // rx modules
-complex dominoex::mixer(int n, complex in)
+cmplx dominoex::mixer(int n, cmplx in)
 {
-	complex z;
+	cmplx z;
 	double f;
 
 // first IF mixer (n == 0) plus
@@ -333,8 +333,7 @@ complex dominoex::mixer(int n, complex in)
 		f = frequency - FIRSTIF;
 	else
 		f = FIRSTIF - BASEFREQ - bandwidth / 2.0 + tonespacing * (1.0 * (n - 1) / paths );
-	z.re = cos(phase[n]);
-	z.im = sin(phase[n]);
+	z = cmplx( cos(phase[n]), sin(phase[n]));
 	z = z * in;
 	phase[n] -= TWOPI * f / samplerate;
 	if (phase[n] > M_PI)
@@ -419,7 +418,7 @@ int dominoex::harddecode()
 	double cwmag;
 
 	for (int i = 0; i < paths * numbins; i++)
-		avg += pipe[pipeptr].vector[i].mag();
+		avg += abs(pipe[pipeptr].vector[i]);
 	avg /= (paths * numbins);
 
 	if (avg < 1e-10) avg = 1e-10;
@@ -432,7 +431,7 @@ int dominoex::harddecode()
 		for (int j = 1; j <= numtests; j++) {
 			int p = pipeptr - j;
 			if (p < 0) p += twosym;
-			cwmag = (pipe[j].vector[i].mag())/numtests;
+			cwmag = abs(pipe[j].vector[i])/numtests;
 			if (cwmag >= 50.0 * (1.0 - progdefaults.ThorCWI) * avg) count++;
 		}
 		cwi[i] = (count == numtests);
@@ -440,7 +439,7 @@ int dominoex::harddecode()
 
 	for (int i = 0; i <  (paths * numbins); i++) {
 		if (cwi[i] == false) {
-			x = pipe[pipeptr].vector[i].mag();
+			x = abs(pipe[pipeptr].vector[i]);
 			avg += x;
 			if (x > max) {
 				max = x;
@@ -464,14 +463,14 @@ void dominoex::update_syncscope()
 
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
 		for (int i = 0; i < (paths * numbins); i++ ) {
-			mag = pipe[pipeptr].vector[i].mag();
+			mag = abs(pipe[pipeptr].vector[i]);
 			if (max < mag) max = mag;
 			if (min > mag) min = mag;
 		}
 		range = max - min;
 		for (int i = 0; i < (paths * numbins); i++ ) {
 			if (range > 2) {
-				mag = (pipe[pipeptr].vector[i].mag() - min) / range + 0.0001;
+				mag = (abs(pipe[pipeptr].vector[i]) - min) / range + 0.0001;
 				mag = 1 + 2 * log10(mag);
 				if (mag < 0) mag = 0;
 			} else
@@ -489,7 +488,7 @@ void dominoex::update_syncscope()
 	if (!progStatus.sqlonoff || metric >= progStatus.sldrSquelchValue) {
 		for (unsigned int i = 0, j = 0; i < SCOPESIZE; i++) {
 			j = (pipeptr + i * twosym / SCOPESIZE + 1) % (twosym);
-			scopedata[i] = vidfilter[i]->run(pipe[j].vector[prev1symbol].mag());
+			scopedata[i] = vidfilter[i]->run(abs(pipe[j].vector[prev1symbol]));
 		}
 	}
 	set_scope(scopedata, SCOPESIZE);
@@ -510,7 +509,7 @@ void dominoex::synchronize()
 		return;
 
 	for (unsigned int i = 0, j = pipeptr; i < twosym; i++) {
-		val = (pipe[j].vector[prev1symbol]).mag();
+		val = abs(pipe[j].vector[prev1symbol]);
 		if (val > max) {
 			max = val;
 			syn = i;
@@ -527,8 +526,8 @@ void dominoex::synchronize()
 
 void dominoex::eval_s2n()
 {
-	double s = pipe[pipeptr].vector[currsymbol].mag();
-	double n = (NUMTONES - 1 ) * pipe[(pipeptr + symlen) % twosym].vector[currsymbol].mag();
+	double s = abs(pipe[pipeptr].vector[currsymbol]);
+	double n = (NUMTONES - 1 ) * abs(pipe[(pipeptr + symlen) % twosym].vector[currsymbol]);
 
 	sig = decayavg( sig, s, abs( s - sig) > 4 ? 4 : 32);
 	noise = decayavg( noise, n, 64);
@@ -554,8 +553,8 @@ void dominoex::eval_s2n()
 
 int dominoex::rx_process(const double *buf, int len)
 {
-	complex zref,  z, *zp;
-	complex zarray[1];
+	cmplx zref,  z, *zp;
+	cmplx zarray[1];
 	int n;
 
 	if (filter_reset) reset_filters();
@@ -567,7 +566,8 @@ int dominoex::rx_process(const double *buf, int len)
 
 	while (len) {
 // create analytic signal at first IF
-		zref.re = zref.im = *buf++;
+		zref = cmplx( *buf, *buf );
+		buf++;
 		hilbert->run(zref, zref);
 		zref = mixer(0, zref);
 
@@ -645,7 +645,7 @@ void dominoex::sendtone(int tone, int duration)
 void dominoex::sendsymbol(int sym)
 {
 //static int first = 0;
-	complex z;
+	cmplx z;
 	int tone;
 
 	tone = (txprevtone + 2 + sym) % NUMTONES;
