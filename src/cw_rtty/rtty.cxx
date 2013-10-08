@@ -190,21 +190,17 @@ void rtty::reset_filters()
 	int filter_length = 1024;
 
 	if (mark_filt) {
-		mark_filt->rtty_order(rtty_baud/samplerate, 0,
-			progdefaults.rtty_filter, 1.0);
+		mark_filt->rtty_filter(rtty_baud/samplerate);
 	} else {
 		mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		mark_filt->rtty_order(rtty_baud/samplerate, 0,
-			progdefaults.rtty_filter, 1.0);
+		mark_filt->rtty_filter(rtty_baud/samplerate);
      }
 
 	if (space_filt) {
-		space_filt->rtty_order(rtty_baud/samplerate, 0,
-			progdefaults.rtty_filter, 1.0);
+		space_filt->rtty_filter(rtty_baud/samplerate);
 	} else {
 		space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		space_filt->rtty_order(rtty_baud/samplerate, 0,
-			progdefaults.rtty_filter, 1.0);
+		space_filt->rtty_filter(rtty_baud/samplerate);
      }
 }
 
@@ -584,10 +580,9 @@ int rtty::rx_process(const double *buf, int len)
 	int n_out = 0;
 	static int bitcount = 5 * nbits * symbollen;
 
-	if (rttyviewer && !bHistory && 
-		(!progdefaults.report_when_visible ||
-		 (progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels))))
-		rttyviewer->rx_process(buf, len);
+	if ( !progdefaults.report_when_visible ||
+		 dlgViewer->visible() || progStatus.show_channels )
+		if (!bHistory && rttyviewer) rttyviewer->rx_process(buf, len);
 
 	if (progStatus.rtty_filter_changed) {
 		progStatus.rtty_filter_changed = false;

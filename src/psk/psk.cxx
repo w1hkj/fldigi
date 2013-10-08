@@ -1182,10 +1182,9 @@ int psk::rx_process(const double *buf, int len)
 	bool can_rx_symbol = false;
 
 	if (numcarriers == 1) {
-		if (pskviewer && !bHistory && 
-			(!progdefaults.report_when_visible ||
-			 (progdefaults.report_when_visible && (dlgViewer->visible() || progStatus.show_channels))))
-			pskviewer->rx_process(buf, len);
+		if (!progdefaults.report_when_visible ||
+			 dlgViewer->visible() || progStatus.show_channels )
+			if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
 		if (evalpsk)
 			evalpsk->sigdensity();
 	}
