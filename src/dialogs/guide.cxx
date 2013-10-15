@@ -3,27 +3,24 @@ const char* szBeginner = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n\
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
 <head>\n\
 <meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" />\n\
-<meta name=\"generator\" content=\"AsciiDoc 8.6.3\" />\n\
+<meta name=\"generator\" content=\"AsciiDoc 8.6.6\" />\n\
 <title>Beginners' Guide to Fldigi</title>\n\
 <style type=\"text/css\">\n\
-/* Sans-serif font. */\n\
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */\n\
+\n\
+/* Default font. */\n\
+body {\n\
+  font-family: Georgia,serif;\n\
+}\n\
+\n\
+/* Title font. */\n\
 h1, h2, h3, h4, h5, h6,\n\
 div.title, caption.title,\n\
 thead, p.table.header,\n\
-div#toctitle,\n\
-span#author, span#revnumber, span#revdate, span#revremark,\n\
-div#footer {\n\
+#toctitle,\n\
+#author, #revnumber, #revdate, #revremark,\n\
+#footer {\n\
   font-family: Arial,Helvetica,sans-serif;\n\
-}\n\
-\n\
-/* Serif font. */\n\
-div.sectionbody {\n\
-  font-family: Georgia,\"Times New Roman\",Times,serif;\n\
-}\n\
-\n\
-/* Monospace font. */\n\
-tt {\n\
-  font-size: inherit;\n\
 }\n\
 \n\
 body {\n\
@@ -48,11 +45,6 @@ strong {\n\
   color: #083194;\n\
 }\n\
 \n\
-tt {\n\
-  font-size: inherit;\n\
-  color: navy;\n\
-}\n\
-\n\
 h1, h2, h3, h4, h5, h6 {\n\
   color: #527bbd;\n\
   margin-top: 1.2em;\n\
@@ -71,6 +63,9 @@ h3 {\n\
 }\n\
 h3 + * {\n\
   clear: left;\n\
+}\n\
+h5 {\n\
+  font-size: 1.0em;\n\
 }\n\
 \n\
 div.sectionbody {\n\
@@ -97,36 +92,36 @@ pre {\n\
   margin: 0;\n\
 }\n\
 \n\
-span#author {\n\
+#author {\n\
   color: #527bbd;\n\
   font-weight: bold;\n\
   font-size: 1.1em;\n\
 }\n\
-span#email {\n\
+#email {\n\
 }\n\
-span#revnumber, span#revdate, span#revremark {\n\
+#revnumber, #revdate, #revremark {\n\
 }\n\
 \n\
-div#footer {\n\
+#footer {\n\
   font-size: small;\n\
   border-top: 2px solid silver;\n\
   padding-top: 0.5em;\n\
   margin-top: 4.0em;\n\
 }\n\
-div#footer-text {\n\
+#footer-text {\n\
   float: left;\n\
   padding-bottom: 0.5em;\n\
 }\n\
-div#footer-badges {\n\
+#footer-badges {\n\
   float: right;\n\
   padding-bottom: 0.5em;\n\
 }\n\
 \n\
-div#preamble {\n\
+#preamble {\n\
   margin-top: 1.5em;\n\
   margin-bottom: 1.5em;\n\
 }\n\
-div.tableblock, div.imageblock, div.exampleblock, div.verseblock,\n\
+div.imageblock, div.exampleblock, div.verseblock,\n\
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,\n\
 div.admonitionblock {\n\
   margin-top: 1.0em;\n\
@@ -184,7 +179,7 @@ div.quoteblock, div.verseblock {\n\
   margin-left: 1.0em;\n\
   margin-right: 10%;\n\
   border-left: 5px solid #f0f0f0;\n\
-  color: #777777;\n\
+  color: #888;\n\
 }\n\
 \n\
 div.quoteblock > div.attribution {\n\
@@ -267,35 +262,12 @@ div.compact div, div.compact div {\n\
   margin-bottom: 0.1em;\n\
 }\n\
 \n\
-div.tableblock > table {\n\
-  border: 3px solid #527bbd;\n\
-}\n\
-thead, p.table.header {\n\
-  font-weight: bold;\n\
-  color: #527bbd;\n\
-}\n\
 tfoot {\n\
   font-weight: bold;\n\
 }\n\
 td > div.verse {\n\
   white-space: pre;\n\
 }\n\
-p.table {\n\
-  margin-top: 0;\n\
-}\n\
-/* Because the table frame attribute is overriden by CSS in most browsers. */\n\
-div.tableblock > table[frame=\"void\"] {\n\
-  border-style: none;\n\
-}\n\
-div.tableblock > table[frame=\"hsides\"] {\n\
-  border-left-style: none;\n\
-  border-right-style: none;\n\
-}\n\
-div.tableblock > table[frame=\"vsides\"] {\n\
-  border-top-style: none;\n\
-  border-bottom-style: none;\n\
-}\n\
-\n\
 \n\
 div.hdlist {\n\
   margin-top: 0.8em;\n\
@@ -362,14 +334,14 @@ div.colist td img {\n\
 }\n\
 \n\
 @media print {\n\
-  div#footer-badges { display: none; }\n\
+  #footer-badges { display: none; }\n\
 }\n\
 \n\
-div#toc {\n\
+#toc {\n\
   margin-bottom: 2.5em;\n\
 }\n\
 \n\
-div#toctitle {\n\
+#toctitle {\n\
   color: #527bbd;\n\
   font-size: 1.1em;\n\
   font-weight: bold;\n\
@@ -394,10 +366,180 @@ div.toclevel4 {\n\
   font-size: 0.9em;\n\
 }\n\
 \n\
+span.aqua { color: aqua; }\n\
+span.black { color: black; }\n\
+span.blue { color: blue; }\n\
+span.fuchsia { color: fuchsia; }\n\
+span.gray { color: gray; }\n\
+span.green { color: green; }\n\
+span.lime { color: lime; }\n\
+span.maroon { color: maroon; }\n\
+span.navy { color: navy; }\n\
+span.olive { color: olive; }\n\
+span.purple { color: purple; }\n\
+span.red { color: red; }\n\
+span.silver { color: silver; }\n\
+span.teal { color: teal; }\n\
+span.white { color: white; }\n\
+span.yellow { color: yellow; }\n\
+\n\
+span.aqua-background { background: aqua; }\n\
+span.black-background { background: black; }\n\
+span.blue-background { background: blue; }\n\
+span.fuchsia-background { background: fuchsia; }\n\
+span.gray-background { background: gray; }\n\
+span.green-background { background: green; }\n\
+span.lime-background { background: lime; }\n\
+span.maroon-background { background: maroon; }\n\
+span.navy-background { background: navy; }\n\
+span.olive-background { background: olive; }\n\
+span.purple-background { background: purple; }\n\
+span.red-background { background: red; }\n\
+span.silver-background { background: silver; }\n\
+span.teal-background { background: teal; }\n\
+span.white-background { background: white; }\n\
+span.yellow-background { background: yellow; }\n\
+\n\
+span.big { font-size: 2em; }\n\
+span.small { font-size: 0.6em; }\n\
+\n\
+span.underline { text-decoration: underline; }\n\
+span.overline { text-decoration: overline; }\n\
+span.line-through { text-decoration: line-through; }\n\
+\n\
+\n\
+/*\n\
+ * xhtml11 specific\n\
+ *\n\
+ * */\n\
+\n\
+tt {\n\
+  font-family: monospace;\n\
+  font-size: inherit;\n\
+  color: navy;\n\
+}\n\
+\n\
+div.tableblock {\n\
+  margin-top: 1.0em;\n\
+  margin-bottom: 1.5em;\n\
+}\n\
+div.tableblock > table {\n\
+  border: 3px solid #527bbd;\n\
+}\n\
+thead, p.table.header {\n\
+  font-weight: bold;\n\
+  color: #527bbd;\n\
+}\n\
+p.table {\n\
+  margin-top: 0;\n\
+}\n\
+/* Because the table frame attribute is overriden by CSS in most browsers. */\n\
+div.tableblock > table[frame=\"void\"] {\n\
+  border-style: none;\n\
+}\n\
+div.tableblock > table[frame=\"hsides\"] {\n\
+  border-left-style: none;\n\
+  border-right-style: none;\n\
+}\n\
+div.tableblock > table[frame=\"vsides\"] {\n\
+  border-top-style: none;\n\
+  border-bottom-style: none;\n\
+}\n\
+\n\
+\n\
+/*\n\
+ * html5 specific\n\
+ *\n\
+ * */\n\
+\n\
+.monospaced {\n\
+  font-family: monospace;\n\
+  font-size: inherit;\n\
+  color: navy;\n\
+}\n\
+\n\
+table.tableblock {\n\
+  margin-top: 1.0em;\n\
+  margin-bottom: 1.5em;\n\
+}\n\
+thead, p.tableblock.header {\n\
+  font-weight: bold;\n\
+  color: #527bbd;\n\
+}\n\
+p.tableblock {\n\
+  margin-top: 0;\n\
+}\n\
+table.tableblock {\n\
+  border-width: 3px;\n\
+  border-spacing: 0px;\n\
+  border-style: solid;\n\
+  border-color: #527bbd;\n\
+  border-collapse: collapse;\n\
+}\n\
+th.tableblock, td.tableblock {\n\
+  border-width: 1px;\n\
+  padding: 4px;\n\
+  border-style: solid;\n\
+  border-color: #527bbd;\n\
+}\n\
+\n\
+table.tableblock.frame-topbot {\n\
+  border-left-style: hidden;\n\
+  border-right-style: hidden;\n\
+}\n\
+table.tableblock.frame-sides {\n\
+  border-top-style: hidden;\n\
+  border-bottom-style: hidden;\n\
+}\n\
+table.tableblock.frame-none {\n\
+  border-style: hidden;\n\
+}\n\
+\n\
+th.tableblock.halign-left, td.tableblock.halign-left {\n\
+  text-align: left;\n\
+}\n\
+th.tableblock.halign-center, td.tableblock.halign-center {\n\
+  text-align: center;\n\
+}\n\
+th.tableblock.halign-right, td.tableblock.halign-right {\n\
+  text-align: right;\n\
+}\n\
+\n\
+th.tableblock.valign-top, td.tableblock.valign-top {\n\
+  vertical-align: top;\n\
+}\n\
+th.tableblock.valign-middle, td.tableblock.valign-middle {\n\
+  vertical-align: middle;\n\
+}\n\
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {\n\
+  vertical-align: bottom;\n\
+}\n\
+\n\
+\n\
+/*\n\
+ * manpage specific\n\
+ *\n\
+ * */\n\
+\n\
+body.manpage h1 {\n\
+  padding-top: 0.5em;\n\
+  padding-bottom: 0.5em;\n\
+  border-top: 2px solid silver;\n\
+  border-bottom: 2px solid silver;\n\
+}\n\
+body.manpage h2 {\n\
+  border-style: none;\n\
+}\n\
+body.manpage div.sectionbody {\n\
+  margin-left: 3em;\n\
+}\n\
+\n\
+@media print {\n\
+  body.manpage div#toc { display: none; }\n\
+}\n\
 </style>\n\
 <script type=\"text/javascript\">\n\
 /*<![CDATA[*/\n\
-window.onload = function(){asciidoc.footnotes(); asciidoc.toc(1);}\n\
 var asciidoc = {  // Namespace.\n\
 \n\
 /////////////////////////////////////////////////////////////////////\n\
@@ -459,6 +601,25 @@ toc: function (toclevels) {\n\
   }\n\
 \n\
   var toc = document.getElementById(\"toc\");\n\
+  if (!toc) {\n\
+    return;\n\
+  }\n\
+\n\
+  // Delete existing TOC entries in case we're reloading the TOC.\n\
+  var tocEntriesToRemove = [];\n\
+  var i;\n\
+  for (i = 0; i < toc.childNodes.length; i++) {\n\
+    var entry = toc.childNodes[i];\n\
+    if (entry.nodeName == 'div'\n\
+     && entry.getAttribute(\"class\")\n\
+     && entry.getAttribute(\"class\").match(/^toclevel/))\n\
+      tocEntriesToRemove.push(entry);\n\
+  }\n\
+  for (i = 0; i < tocEntriesToRemove.length; i++) {\n\
+    toc.removeChild(tocEntriesToRemove[i]);\n\
+  }\n\
+\n\
+  // Rebuild TOC entries.\n\
   var entries = tocEntries(document.getElementById(\"content\"), toclevels);\n\
   for (var i = 0; i < entries.length; ++i) {\n\
     var entry = entries[i];\n\
@@ -486,24 +647,44 @@ toc: function (toclevels) {\n\
  */\n\
 \n\
 footnotes: function () {\n\
-  var cont = document.getElementById(\"content\");\n\
+  // Delete existing footnote entries in case we're reloading the footnodes.\n\
+  var i;\n\
   var noteholder = document.getElementById(\"footnotes\");\n\
+  if (!noteholder) {\n\
+    return;\n\
+  }\n\
+  var entriesToRemove = [];\n\
+  for (i = 0; i < noteholder.childNodes.length; i++) {\n\
+    var entry = noteholder.childNodes[i];\n\
+    if (entry.nodeName == 'div' && entry.getAttribute(\"class\") == \"footnote\")\n\
+      entriesToRemove.push(entry);\n\
+  }\n\
+  for (i = 0; i < entriesToRemove.length; i++) {\n\
+    noteholder.removeChild(entriesToRemove[i]);\n\
+  }\n\
+\n\
+  // Rebuild footnote entries.\n\
+  var cont = document.getElementById(\"content\");\n\
   var spans = cont.getElementsByTagName(\"span\");\n\
   var refs = {};\n\
   var n = 0;\n\
   for (i=0; i<spans.length; i++) {\n\
     if (spans[i].className == \"footnote\") {\n\
       n++;\n\
-      // Use [\\s\\S] in place of . so multi-line matches work.\n\
-      // Because JavaScript has no s (dotall) regex flag.\n\
-      note = spans[i].innerHTML.match(/\\s*\\[([\\s\\S]*)]\\s*/)[1];\n\
+      var note = spans[i].getAttribute(\"data-note\");\n\
+      if (!note) {\n\
+        // Use [\\s\\S] in place of . so multi-line matches work.\n\
+        // Because JavaScript has no s (dotall) regex flag.\n\
+        note = spans[i].innerHTML.match(/\\s*\\[([\\s\\S]*)]\\s*/)[1];\n\
+        spans[i].innerHTML =\n\
+          \"[<a id='_footnoteref_\" + n + \"' href='#_footnote_\" + n +\n\
+          \"' title='View footnote' class='footnote'>\" + n + \"</a>]\";\n\
+        spans[i].setAttribute(\"data-note\", note);\n\
+      }\n\
       noteholder.innerHTML +=\n\
         \"<div class='footnote' id='_footnote_\" + n + \"'>\" +\n\
         \"<a href='#_footnoteref_\" + n + \"' title='Return to text'>\" +\n\
         n + \"</a>. \" + note + \"</div>\";\n\
-      spans[i].innerHTML =\n\
-        \"[<a id='_footnoteref_\" + n + \"' href='#_footnote_\" + n +\n\
-        \"' title='View footnote' class='footnote'>\" + n + \"</a>]\";\n\
       var id =spans[i].getAttribute(\"id\");\n\
       if (id != null) refs[\"#\"+id] = n;\n\
     }\n\
@@ -523,9 +704,32 @@ footnotes: function () {\n\
       }\n\
     }\n\
   }\n\
+},\n\
+\n\
+install: function(toclevels) {\n\
+  var timerId;\n\
+\n\
+  function reinstall() {\n\
+    asciidoc.footnotes();\n\
+    if (toclevels) {\n\
+      asciidoc.toc(toclevels);\n\
+    }\n\
+  }\n\
+\n\
+  function reinstallAndRemoveTimer() {\n\
+    clearInterval(timerId);\n\
+    reinstall();\n\
+  }\n\
+\n\
+  timerId = setInterval(reinstall, 500);\n\
+  if (document.addEventListener)\n\
+    document.addEventListener(\"DOMContentLoaded\", reinstallAndRemoveTimer, false);\n\
+  else\n\
+    window.onload = reinstallAndRemoveTimer;\n\
 }\n\
 \n\
 }\n\
+asciidoc.install(1);\n\
 /*]]>*/\n\
 </script>\n\
 </head>\n\
@@ -1832,7 +2036,7 @@ numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
 <div id=\"footnotes\"><hr /></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
-Last updated 2012-08-02 10:32:00 CDT\n\
+Last updated 2013-10-17 06:25:14 CDT\n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\
@@ -1844,11 +2048,6 @@ Last updated 2012-08-02 10:32:00 CDT\n\
   <img style=\"border:0;width:88px;height:31px\"\n\
     src=\"http://jigsaw.w3.org/css-validator/images/vcss-blue\"\n\
     alt=\"Valid CSS!\" />\n\
-</a>\n\
-<a href=\"http://www.mozilla.org/products/firefox/\">\n\
-  <img style=\"border:none; width:110px; height:32px;\"\n\
-       src=\"http://www.spreadfirefox.com/community/images/affiliates/Buttons/110x32/safer.gif\"\n\
-       alt=\"Get Firefox!\" />\n\
 </a>\n\
 </div>\n\
 </div>\n\

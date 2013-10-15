@@ -6,174 +6,183 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: fldigi 3.21.68\n"
+"Project-Id-Version: fldigi 3.21.76\n"
 "Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
-"POT-Creation-Date: 2013-02-28 22:34+0000\n"
+"POT-Creation-Date: 2013-10-17 12:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main.cxx:349
+#: src/main.cxx:415
 #, c-format
 msgid "%s log started on %s"
 msgstr ""
 
-#: src/main.cxx:1089
+#: src/main.cxx:1014
+msgid "Bad modem id"
+msgstr ""
+
+#: src/main.cxx:1021
+msgid "Bad frequency"
+msgstr ""
+
+#: src/main.cxx:1152
 msgid ""
-"License GPLv3+: GNU GPL version 3 or later <http://www.gnu.org/licenses/gpl-"
-"3.0.html>\n"
+"License GPLv3+: GNU GPL version 3 or later <http://www.gnu.org/licenses/"
+"gpl-3.0.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
 
-#: src/main.cxx:1301 src/main.cxx:1343 src/main.cxx:1367
-msgid "Could not make directory"
+#: src/main.cxx:1377 src/main.cxx:1419 src/main.cxx:1443 src/main.cxx:1457
+msgid "Could not make directory "
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:172
+#: src/dialogs/fl_digi.cxx:156
 msgid "Log all RX/TX text"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:173 src/misc/debug.cxx:91
+#: src/dialogs/fl_digi.cxx:157 src/misc/debug.cxx:103
 msgid "Rig control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:174 src/dialogs/fl_digi.cxx:5420
+#: src/dialogs/fl_digi.cxx:158 src/dialogs/fl_digi.cxx:5440
 msgid "Op &Mode"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:175
+#: src/dialogs/fl_digi.cxx:159
 msgid "Show fewer modes"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:176
+#: src/dialogs/fl_digi.cxx:160
 msgid "Show all modes"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:180
+#: src/dialogs/fl_digi.cxx:164
 msgid "&View"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:181
+#: src/dialogs/fl_digi.cxx:165
 msgid "&MFSK Image"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:182
+#: src/dialogs/fl_digi.cxx:166
 msgid "&Weather Fax Image RX"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:183
+#: src/dialogs/fl_digi.cxx:167
 msgid "&Weather Fax Image TX"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:184 src/dialogs/confdialog.cxx:3952
+#: src/dialogs/fl_digi.cxx:168 src/dialogs/confdialog.cxx:5167
 msgid "Contest"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:185
+#: src/dialogs/fl_digi.cxx:169
 msgid "&Contest fields"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:186
+#: src/dialogs/fl_digi.cxx:170
 msgid "C&ountries"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:187
+#: src/dialogs/fl_digi.cxx:171
 msgid "&UI"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:188
+#: src/dialogs/fl_digi.cxx:172
 msgid "Full"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:189 src/waterfall/waterfall.cxx:2153
-#: src/dialogs/confdialog.cxx:3882 src/dialogs/confdialog.cxx:7820
-#: src/dialogs/confdialog.cxx:7850
+#: src/dialogs/fl_digi.cxx:173 src/waterfall/waterfall.cxx:2145
+#: src/dialogs/confdialog.cxx:5079 src/dialogs/confdialog.cxx:9384
+#: src/dialogs/confdialog.cxx:9414
 msgid "None"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:190
+#: src/dialogs/fl_digi.cxx:174
 msgid "Rig control and logging"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:191
+#: src/dialogs/fl_digi.cxx:175
 msgid "Rig control and contest"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:192
+#: src/dialogs/fl_digi.cxx:176
 msgid "Docked scope"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:193
+#: src/dialogs/fl_digi.cxx:177
 msgid "Minimal controls"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:194
+#: src/dialogs/fl_digi.cxx:178
 msgid "Show channels"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:196
+#: src/dialogs/fl_digi.cxx:180
 msgid "Connect to server"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:618 src/dialogs/fl_digi.cxx:633
-#: src/dialogs/fl_digi.cxx:642 src/dialogs/fl_digi.cxx:3321
-#: src/dialogs/fl_digi.cxx:3373 src/dialogs/fl_digi.cxx:3436
-#: src/dialogs/fl_digi.cxx:5435 src/dialogs/fl_digi.cxx:5474
-#: src/dialogs/fl_digi.cxx:5505
+#: src/dialogs/fl_digi.cxx:589 src/dialogs/fl_digi.cxx:604
+#: src/dialogs/fl_digi.cxx:613 src/dialogs/fl_digi.cxx:3341
+#: src/dialogs/fl_digi.cxx:3396 src/dialogs/fl_digi.cxx:3459
+#: src/dialogs/fl_digi.cxx:5455 src/dialogs/fl_digi.cxx:5497
+#: src/dialogs/fl_digi.cxx:5528
 msgid "Custom..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:960 src/dialogs/fl_digi.cxx:2737
+#: src/dialogs/fl_digi.cxx:921 src/dialogs/fl_digi.cxx:2750
 msgid "Save changed macros?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:960 src/dialogs/fl_digi.cxx:2388
-#: src/dialogs/fl_digi.cxx:2450 src/dialogs/fl_digi.cxx:2726
-#: src/dialogs/fl_digi.cxx:2738 src/dialogs/fl_digi.cxx:2750
-#: src/dialogs/fl_digi.cxx:3865 src/dialogs/font_browser.cxx:141
-#: src/logbook/logsupport.cxx:584 src/misc/configuration.cxx:743
-#: src/logbook/lgbook.cxx:442 src/logbook/lgbook.cxx:1036
+#: src/dialogs/fl_digi.cxx:921 src/dialogs/fl_digi.cxx:2402
+#: src/dialogs/fl_digi.cxx:2464 src/dialogs/fl_digi.cxx:2739
+#: src/dialogs/fl_digi.cxx:2751 src/dialogs/fl_digi.cxx:2763
+#: src/dialogs/fl_digi.cxx:3877 src/logbook/logsupport.cxx:584
+#: src/misc/configuration.cxx:702 src/dialogs/font_browser.cxx:141
+#: src/logbook/lgbook.cxx:446 src/logbook/lgbook.cxx:1055
 msgid "Cancel"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:960 src/dialogs/fl_digi.cxx:2726
-#: src/dialogs/fl_digi.cxx:2738 src/dialogs/fl_digi.cxx:2750
-#: src/dialogs/fl_digi.cxx:3540 src/dialogs/fl_digi.cxx:4609
-#: src/dialogs/fl_digi.cxx:4776 src/dialogs/fl_digi.cxx:4881
-#: src/logbook/logsupport.cxx:583 src/dialogs/confdialog.cxx:8049
+#: src/dialogs/fl_digi.cxx:921 src/dialogs/fl_digi.cxx:2739
+#: src/dialogs/fl_digi.cxx:2751 src/dialogs/fl_digi.cxx:2763
+#: src/dialogs/fl_digi.cxx:3564 src/dialogs/fl_digi.cxx:4628
+#: src/dialogs/fl_digi.cxx:4795 src/dialogs/fl_digi.cxx:4900
+#: src/logbook/logsupport.cxx:583 src/dialogs/confdialog.cxx:9822
 msgid "Save"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:960 src/dialogs/fl_digi.cxx:2726
-#: src/dialogs/fl_digi.cxx:2738 src/dialogs/fl_digi.cxx:2750
+#: src/dialogs/fl_digi.cxx:921 src/dialogs/fl_digi.cxx:2739
+#: src/dialogs/fl_digi.cxx:2751 src/dialogs/fl_digi.cxx:2763
 msgid "Don't save"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1732
+#: src/dialogs/fl_digi.cxx:1736
 msgid "No file name given"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1735
+#: src/dialogs/fl_digi.cxx:1739
 msgid "Unsupported format"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1738
+#: src/dialogs/fl_digi.cxx:1742
 msgid "channels != 1"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1741
+#: src/dialogs/fl_digi.cxx:1745
 msgid "unknown wave file error"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1747
+#: src/dialogs/fl_digi.cxx:1752
 msgid "Spotting disabled"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1793
+#: src/dialogs/fl_digi.cxx:1801
 #, c-format
 msgid ""
 "Could not run a web browser:\n"
@@ -183,25 +192,25 @@ msgid ""
 "%s"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1806
+#: src/dialogs/fl_digi.cxx:1814
 #, c-format
 msgid ""
 "Could not open url:\n"
 "%s\n"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1857
+#: src/dialogs/fl_digi.cxx:1865
 msgid "Checking for updates..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1872
+#: src/dialogs/fl_digi.cxx:1880
 #, c-format
 msgid ""
 "Could not check for updates:\n"
 "%s"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1876
+#: src/dialogs/fl_digi.cxx:1884
 #, c-format
 msgid ""
 "Version %s is available at\n"
@@ -211,657 +220,639 @@ msgid ""
 "What would you like to do?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1877 src/dialogs/Viewer.cxx:344
-#: src/misc/macroedit.cxx:388 src/mfsk/mfsk-pic.cxx:376
-#: src/spot/notify.cxx:512 src/spot/notify.cxx:516
-#: src/dialogs/colorsfonts.cxx:968 src/dialogs/confdialog.cxx:8052
+#: src/dialogs/fl_digi.cxx:1885 src/dialogs/Viewer.cxx:304
+#: src/misc/macroedit.cxx:401 src/misc/newinstall.cxx:391
+#: src/mfsk/mfsk-pic.cxx:342 src/spot/notify.cxx:514 src/spot/notify.cxx:518
+#: src/dialogs/confdialog.cxx:9825
 msgid "Close"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1877
+#: src/dialogs/fl_digi.cxx:1885
 msgid "Visit URL"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1877
+#: src/dialogs/fl_digi.cxx:1885
 msgid "Copy URL"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1889
+#: src/dialogs/fl_digi.cxx:1897
 msgid "You are running the latest version"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1955
+#: src/dialogs/fl_digi.cxx:1963
 msgid "Sunspot creation underway!"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1962
+#: src/dialogs/fl_digi.cxx:1970
 msgid "Audio device information is only available for the PortAudio backend"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1971
+#: src/dialogs/fl_digi.cxx:1979
 msgid "Capture device"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1972
+#: src/dialogs/fl_digi.cxx:1980
 msgid "Playback device"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:1976
+#: src/dialogs/fl_digi.cxx:1984
 msgid "Capture and playback devices"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2018 src/dialogs/fl_digi.cxx:2031
-msgid "Do not exist, create?"
+#: src/dialogs/fl_digi.cxx:2030
+#, c-format
+msgid "%s: Do not exist, create?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2018 src/dialogs/fl_digi.cxx:2031
-#: src/dialogs/fl_digi.cxx:2770 src/logbook/logbook.cxx:43
-#: src/logbook/logsupport.cxx:231 src/logbook/logsupport.cxx:250
-#: src/logbook/logsupport.cxx:1043 src/misc/configuration.cxx:745
+#: src/dialogs/fl_digi.cxx:2030 src/dialogs/fl_digi.cxx:2783
+#: src/logbook/logbook.cxx:43 src/logbook/logsupport.cxx:231
+#: src/logbook/logsupport.cxx:250 src/logbook/logsupport.cxx:1046
+#: src/misc/configuration.cxx:704 src/soundcard/sound.cxx:305
 msgid "No"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2018 src/dialogs/fl_digi.cxx:2031
-#: src/dialogs/fl_digi.cxx:2770 src/logbook/logbook.cxx:43
-#: src/logbook/logsupport.cxx:231 src/logbook/logsupport.cxx:250
-#: src/logbook/logsupport.cxx:1043 src/misc/configuration.cxx:745
+#: src/dialogs/fl_digi.cxx:2030 src/dialogs/fl_digi.cxx:2783
+#: src/logbook/logbook.cxx:43 src/logbook/logsupport.cxx:231
+#: src/logbook/logsupport.cxx:250 src/logbook/logsupport.cxx:1046
+#: src/misc/configuration.cxx:704 src/soundcard/sound.cxx:305
 msgid "Yes"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2388
+#: src/dialogs/fl_digi.cxx:2402
 msgid "Clear log fields?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2388 src/misc/configuration.cxx:743
-#: src/logbook/lgbook.cxx:439 src/logbook/lgbook.cxx:1033
+#: src/dialogs/fl_digi.cxx:2402 src/misc/configuration.cxx:702
+#: src/logbook/lgbook.cxx:443 src/logbook/lgbook.cxx:1052
 msgid "OK"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2403
+#: src/dialogs/fl_digi.cxx:2417
 msgid "Enter a CALL !"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2450 src/dialogs/fl_digi.cxx:3865
+#: src/dialogs/fl_digi.cxx:2464 src/dialogs/fl_digi.cxx:3877
 msgid "Confirm"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2725
+#: src/dialogs/fl_digi.cxx:2738
 msgid "Save changed configuration?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2749
+#: src/dialogs/fl_digi.cxx:2762
 msgid "Save current log entry?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:2770
+#: src/dialogs/fl_digi.cxx:2783
 msgid "Really want to quit?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3279 src/dialogs/fl_digi.cxx:5416
+#: src/dialogs/fl_digi.cxx:3298 src/dialogs/fl_digi.cxx:5436
 msgid "&File"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3281
+#: src/dialogs/fl_digi.cxx:3300
 msgid "Folders"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3282
+#: src/dialogs/fl_digi.cxx:3301
 msgid "Fldigi config..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3283
+#: src/dialogs/fl_digi.cxx:3302
 msgid "FLMSG files..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3284
+#: src/dialogs/fl_digi.cxx:3303
 msgid "NBEMS files..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3287 src/dialogs/confdialog.cxx:4348
+#: src/dialogs/fl_digi.cxx:3304
+msgid "Data files..."
+msgstr ""
+
+#: src/dialogs/fl_digi.cxx:3307 src/dialogs/confdialog.cxx:5573
 msgid "Macros"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3288
+#: src/dialogs/fl_digi.cxx:3308
 msgid "Open ..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3289
+#: src/dialogs/fl_digi.cxx:3309
 msgid "Save ..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3292
+#: src/dialogs/fl_digi.cxx:3312
 msgid "Text Capture"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3297 src/misc/debug.cxx:89
-#: src/dialogs/confdialog.cxx:6778
+#: src/dialogs/fl_digi.cxx:3317 src/misc/debug.cxx:101
+#: src/dialogs/confdialog.cxx:8292
 msgid "Audio"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3298
+#: src/dialogs/fl_digi.cxx:3318
 msgid "RX capture"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3299
+#: src/dialogs/fl_digi.cxx:3319
 msgid "TX generate"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3300 src/dialogs/confdialog.cxx:6871
+#: src/dialogs/fl_digi.cxx:3320 src/dialogs/confdialog.cxx:8385
 msgid "Playback"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3304 src/dialogs/fl_digi.cxx:5417
+#: src/dialogs/fl_digi.cxx:3324 src/dialogs/fl_digi.cxx:5437
 msgid "Exit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3480 src/dialogs/fl_digi.cxx:5545
+#: src/dialogs/fl_digi.cxx:3503 src/dialogs/fl_digi.cxx:5568
 msgid "&Configure"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3481 src/dialogs/confdialog.cxx:3725
+#: src/dialogs/fl_digi.cxx:3504 src/dialogs/confdialog.cxx:4922
 msgid "Operator"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3482
+#: src/dialogs/fl_digi.cxx:3505
 msgid "Colors && Fonts"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3483
+#: src/dialogs/fl_digi.cxx:3506
 msgid "User Interface"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3484 src/dialogs/fl_digi.cxx:3517
-#: src/dialogs/fl_digi.cxx:5546 src/dialogs/confdialog.cxx:4517
+#: src/dialogs/fl_digi.cxx:3507 src/dialogs/fl_digi.cxx:3541
+#: src/dialogs/fl_digi.cxx:5569 src/dialogs/confdialog.cxx:6058
 msgid "Waterfall"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3485
+#: src/dialogs/fl_digi.cxx:3508
 msgid "Waterfall controls"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3487 src/dialogs/fl_digi.cxx:5549
-#: src/dialogs/confdialog.cxx:4877
+#: src/dialogs/fl_digi.cxx:3510 src/dialogs/fl_digi.cxx:5572
+#: src/dialogs/confdialog.cxx:6418
 msgid "Modems"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3489 src/dialogs/fl_digi.cxx:5548
+#: src/dialogs/fl_digi.cxx:3512 src/dialogs/fl_digi.cxx:5571
 msgid "Sound Card"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3490 src/dialogs/fl_digi.cxx:5550
+#: src/dialogs/fl_digi.cxx:3513 src/dialogs/fl_digi.cxx:5573
 msgid "IDs"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3491 src/dialogs/confdialog.cxx:7256
+#: src/dialogs/fl_digi.cxx:3514 src/dialogs/confdialog.cxx:8806
 msgid "Misc"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3492 src/dialogs/fl_digi.cxx:5551
+#: src/dialogs/fl_digi.cxx:3515 src/dialogs/confdialog.cxx:9611
+msgid "Autostart"
+msgstr ""
+
+#: src/dialogs/fl_digi.cxx:3516 src/dialogs/fl_digi.cxx:5574
 #: src/dialogs/notifydialog.cxx:104
 msgid "Notifications"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3494
+#: src/dialogs/fl_digi.cxx:3518
 msgid "QRZ/eQSL"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3495 src/dialogs/fl_digi.cxx:5552
+#: src/dialogs/fl_digi.cxx:3519 src/dialogs/fl_digi.cxx:5575
 msgid "Save Config"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3500
+#: src/dialogs/fl_digi.cxx:3524
 msgid "View/Hide Channels"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3502
+#: src/dialogs/fl_digi.cxx:3526
 msgid "Floating scope"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3506
+#: src/dialogs/fl_digi.cxx:3530
 msgid "Signal browser"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3509
+#: src/dialogs/fl_digi.cxx:3533
 msgid "Controls"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3524
+#: src/dialogs/fl_digi.cxx:3548
 msgid "&Logbook"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3525
+#: src/dialogs/fl_digi.cxx:3549
 msgid "View"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3527
+#: src/dialogs/fl_digi.cxx:3551
 msgid "ADIF"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3528
+#: src/dialogs/fl_digi.cxx:3552
 msgid "Merge..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3529
+#: src/dialogs/fl_digi.cxx:3553
 msgid "Export..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3532
+#: src/dialogs/fl_digi.cxx:3556
 msgid "Reports"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3533
+#: src/dialogs/fl_digi.cxx:3557
 msgid "Text..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3534
+#: src/dialogs/fl_digi.cxx:3558
 msgid "CSV..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3535
+#: src/dialogs/fl_digi.cxx:3559
 msgid "Cabrillo..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3538 src/logbook/logsupport.cxx:592
-#: src/logbook/lgbook.cxx:940
+#: src/dialogs/fl_digi.cxx:3562 src/logbook/logsupport.cxx:592
+#: src/logbook/lgbook.cxx:959
 msgid "New"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3539 src/dialogs/confdialog.cxx:6389
+#: src/dialogs/fl_digi.cxx:3563 src/dialogs/confdialog.cxx:7901
 msgid "Open..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3547
+#: src/dialogs/fl_digi.cxx:3571
 msgid "&Help"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3550
+#: src/dialogs/fl_digi.cxx:3574
 msgid "Create sunspots"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3552
+#: src/dialogs/fl_digi.cxx:3576
 msgid "Beginners' Guide"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3553
+#: src/dialogs/fl_digi.cxx:3577
 msgid "Online documentation..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3554
+#: src/dialogs/fl_digi.cxx:3578
 msgid "Fldigi web site..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3555
+#: src/dialogs/fl_digi.cxx:3579
 msgid "Reception reports..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3556
+#: src/dialogs/fl_digi.cxx:3580
 msgid "Command line options"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3557
+#: src/dialogs/fl_digi.cxx:3581
 msgid "Audio device info"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3558
+#: src/dialogs/fl_digi.cxx:3582
 msgid "Build info"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3559 src/misc/debug.cxx:125
+#: src/dialogs/fl_digi.cxx:3583 src/misc/debug.cxx:137
 msgid "Event log"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3560
+#: src/dialogs/fl_digi.cxx:3584
 msgid "Check for updates..."
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3561
+#: src/dialogs/fl_digi.cxx:3585
 msgid "&About"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3807
+#: src/dialogs/fl_digi.cxx:3819
 msgid "waterfall-only mode"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3809
+#: src/dialogs/fl_digi.cxx:3821
 msgid "NO CALLSIGN SET"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3824
+#: src/dialogs/fl_digi.cxx:3836
 msgid "Close List"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3834 src/dialogs/fl_digi.cxx:4457
-#: src/dialogs/fl_digi.cxx:4755 src/dialogs/fl_digi.cxx:4867
+#: src/dialogs/fl_digi.cxx:3846 src/dialogs/fl_digi.cxx:4476
+#: src/dialogs/fl_digi.cxx:4774 src/dialogs/fl_digi.cxx:4886
 msgid "Open List"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3865
+#: src/dialogs/fl_digi.cxx:3877
 msgid "Clear list?"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3898
+#: src/dialogs/fl_digi.cxx:3910
 msgid "report"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3898
+#: src/dialogs/fl_digi.cxx:3910
 msgid "reports"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:3908
+#: src/dialogs/fl_digi.cxx:3920
 msgid "Recent activity for grid"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4451
+#: src/dialogs/fl_digi.cxx:4470
 msgid "No rig specified"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4528 src/spot/notify.cxx:208
+#: src/dialogs/fl_digi.cxx:4547 src/spot/notify.cxx:210
+#: src/dialogs/confdialog.cxx:5155
 msgid "Select"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4535
+#: src/dialogs/fl_digi.cxx:4554
 msgid "Add current frequency"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4542
+#: src/dialogs/fl_digi.cxx:4561
 msgid "Clear list"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4549
+#: src/dialogs/fl_digi.cxx:4568
 msgid "Delete from list"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4569
+#: src/dialogs/fl_digi.cxx:4588
 msgid "Select operating parameters"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4595 src/dialogs/fl_digi.cxx:4762
+#: src/dialogs/fl_digi.cxx:4614 src/dialogs/fl_digi.cxx:4781
 msgid "QRZ"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4602 src/dialogs/fl_digi.cxx:4769
-#: src/dialogs/fl_digi.cxx:4874 src/dialogs/fl_digi.cxx:5089
-#: src/dialogs/Viewer.cxx:352 src/widgets/FTextView.cxx:495
-#: src/widgets/FTextView.cxx:661 src/widgets/flinput2.cxx:47
-#: src/dialogs/confdialog.cxx:5791
+#: src/dialogs/fl_digi.cxx:4621 src/dialogs/fl_digi.cxx:4788
+#: src/dialogs/fl_digi.cxx:4893 src/dialogs/fl_digi.cxx:5109
+#: src/dialogs/Viewer.cxx:312 src/widgets/FTextView.cxx:479
+#: src/widgets/FTextView.cxx:645 src/widgets/flinput2.cxx:47
+#: src/dialogs/confdialog.cxx:7332
 msgid "Clear"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4621 src/logbook/lgbook.cxx:462
-#: src/logbook/lgbook.cxx:1059
+#: src/dialogs/fl_digi.cxx:4640 src/logbook/lgbook.cxx:466
+#: src/logbook/lgbook.cxx:1078
 msgid "Freq"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4623
+#: src/dialogs/fl_digi.cxx:4642
 msgid "frequency kHz"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4626 src/dialogs/fl_digi.cxx:4778
-#: src/dialogs/fl_digi.cxx:4884
+#: src/dialogs/fl_digi.cxx:4645 src/dialogs/fl_digi.cxx:4797
+#: src/dialogs/fl_digi.cxx:4903
 msgid "On"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4627
+#: src/dialogs/fl_digi.cxx:4646
 msgid "Press to update QSO start time"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4631
+#: src/dialogs/fl_digi.cxx:4650
 msgid "QSO start time"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4635 src/dialogs/fl_digi.cxx:4791
-#: src/dialogs/fl_digi.cxx:4885
+#: src/dialogs/fl_digi.cxx:4654 src/dialogs/fl_digi.cxx:4810
+#: src/dialogs/fl_digi.cxx:4904
 msgid "Off"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4636
+#: src/dialogs/fl_digi.cxx:4655
 msgid "QSO end time"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4640 src/dialogs/fl_digi.cxx:4808
-#: src/logbook/lgbook.cxx:612
+#: src/dialogs/fl_digi.cxx:4659 src/dialogs/fl_digi.cxx:4827
+#: src/logbook/lgbook.cxx:619
 msgid "In"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4644 src/dialogs/fl_digi.cxx:4816
-#: src/logbook/lgbook.cxx:698
+#: src/dialogs/fl_digi.cxx:4663 src/dialogs/fl_digi.cxx:4835
+#: src/logbook/lgbook.cxx:705
 msgid "Out"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4648 src/dialogs/fl_digi.cxx:4800
-#: src/dialogs/fl_digi.cxx:4886 src/widgets/FTextRXTX.cxx:105
-#: src/logbook/lgbook.cxx:454 src/logbook/lgbook.cxx:588
-#: src/logbook/lgbook.cxx:1055
+#: src/dialogs/fl_digi.cxx:4667 src/dialogs/fl_digi.cxx:4819
+#: src/dialogs/fl_digi.cxx:4905 src/widgets/FTextRXTX.cxx:105
+#: src/logbook/lgbook.cxx:458 src/logbook/lgbook.cxx:595
+#: src/logbook/lgbook.cxx:1074
 msgid "Call"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4649
+#: src/dialogs/fl_digi.cxx:4668
 msgid "call sign"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4652
+#: src/dialogs/fl_digi.cxx:4671
 msgid "Op"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4653
+#: src/dialogs/fl_digi.cxx:4672
 msgid "Operator name"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4657
+#: src/dialogs/fl_digi.cxx:4676
 msgid "Azimuth"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4663
+#: src/dialogs/fl_digi.cxx:4682
 msgid "City"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4667
+#: src/dialogs/fl_digi.cxx:4686
 msgid "US State"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4671
+#: src/dialogs/fl_digi.cxx:4690
 msgid "Can. Province"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4675
+#: src/dialogs/fl_digi.cxx:4694
 msgid "Maidenhead Locator"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4686 src/dialogs/fl_digi.cxx:4935
+#: src/dialogs/fl_digi.cxx:4705 src/dialogs/fl_digi.cxx:4954
 msgid "Sent serial number (read only)"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4691 src/dialogs/fl_digi.cxx:4926
+#: src/dialogs/fl_digi.cxx:4710 src/dialogs/fl_digi.cxx:4945
 msgid "Received serial number"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4695 src/dialogs/fl_digi.cxx:4917
+#: src/dialogs/fl_digi.cxx:4714 src/dialogs/fl_digi.cxx:4936
 msgid "Contest exchange in"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4710 src/spot/notify.cxx:562
-#: src/widgets/FTextRXTX.cxx:110 src/logbook/lgbook.cxx:513
-#: src/logbook/lgbook.cxx:759
+#: src/dialogs/fl_digi.cxx:4729 src/spot/notify.cxx:564
+#: src/widgets/FTextRXTX.cxx:110 src/logbook/lgbook.cxx:520
+#: src/logbook/lgbook.cxx:766
 msgid "Country"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4716 src/logbook/lgbook.cxx:516
-#: src/logbook/lgbook.cxx:783
+#: src/dialogs/fl_digi.cxx:4735 src/logbook/lgbook.cxx:523
+#: src/logbook/lgbook.cxx:790
 msgid "Notes"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4782 src/dialogs/fl_digi.cxx:4941
+#: src/dialogs/fl_digi.cxx:4801 src/dialogs/fl_digi.cxx:4960
 msgid "Press to update"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4788 src/dialogs/fl_digi.cxx:4947
-#: src/logbook/lgbook.cxx:576
+#: src/dialogs/fl_digi.cxx:4807 src/dialogs/fl_digi.cxx:4966
+#: src/logbook/lgbook.cxx:583
 msgid "Time On"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4797 src/dialogs/fl_digi.cxx:4955
-#: src/logbook/lgbook.cxx:650
+#: src/dialogs/fl_digi.cxx:4816 src/dialogs/fl_digi.cxx:4974
+#: src/logbook/lgbook.cxx:657
 msgid "Time Off"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4806 src/dialogs/fl_digi.cxx:4902
-#: src/dialogs/fl_digi.cxx:5254
+#: src/dialogs/fl_digi.cxx:4825 src/dialogs/fl_digi.cxx:4921
+#: src/dialogs/fl_digi.cxx:5274
 msgid "Other call"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4814
+#: src/dialogs/fl_digi.cxx:4833
 msgid "Received RST"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4822
+#: src/dialogs/fl_digi.cxx:4841
 msgid "Sent RST"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4824
+#: src/dialogs/fl_digi.cxx:4843
 msgid "Nm"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4831
+#: src/dialogs/fl_digi.cxx:4850
 msgid "Other name"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4887
+#: src/dialogs/fl_digi.cxx:4906
 msgid "# S"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4888
+#: src/dialogs/fl_digi.cxx:4907
 msgid "# R"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4889
+#: src/dialogs/fl_digi.cxx:4908
 msgid "Ex"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:4995
+#: src/dialogs/fl_digi.cxx:5014
 msgid ""
 "Left Click - execute\n"
 "Shift-Fkey - execute\n"
 "Right Click - edit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5002
+#: src/dialogs/fl_digi.cxx:5021
 msgid "Shift-key macro set"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5049
+#: src/dialogs/fl_digi.cxx:5068
 msgid ""
 "Left click - select\n"
 "Right click - clear line"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5064
+#: src/dialogs/fl_digi.cxx:5084
 msgid "seek - regular expression"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5085 src/dialogs/Viewer.cxx:362
+#: src/dialogs/fl_digi.cxx:5105 src/dialogs/Viewer.cxx:322
 msgid "Set Viewer Squelch"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5172
+#: src/dialogs/fl_digi.cxx:5192
 msgid ""
 "Left Click - execute\n"
 "Fkey - execute\n"
 "Right Click - edit"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5179
+#: src/dialogs/fl_digi.cxx:5199
 msgid "Primary macro set"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5196 src/dialogs/fl_digi.cxx:5773
+#: src/dialogs/fl_digi.cxx:5216 src/dialogs/fl_digi.cxx:5796
 msgid "Detected signal level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5207 src/dialogs/fl_digi.cxx:5785
-#: src/waterfall/waterfall.cxx:2154
+#: src/dialogs/fl_digi.cxx:5227 src/dialogs/fl_digi.cxx:5808
+#: src/waterfall/waterfall.cxx:2146
 msgid "Squelch level"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5221 src/dialogs/fl_digi.cxx:5799
+#: src/dialogs/fl_digi.cxx:5241 src/dialogs/fl_digi.cxx:5822
 msgid ""
 "Left click: change mode\n"
 "Right click: configure"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5231 src/dialogs/fl_digi.cxx:5806
+#: src/dialogs/fl_digi.cxx:5251 src/dialogs/fl_digi.cxx:5829
 msgid "CW transmit WPM"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5237 src/dialogs/fl_digi.cxx:5813
+#: src/dialogs/fl_digi.cxx:5257 src/dialogs/fl_digi.cxx:5836
 msgid "Default WPM"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5276 src/dialogs/fl_digi.cxx:5845
+#: src/dialogs/fl_digi.cxx:5296 src/dialogs/fl_digi.cxx:5868
 msgid "Tx level attenuator (dB)"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5300 src/dialogs/fl_digi.cxx:5868
+#: src/dialogs/fl_digi.cxx:5320 src/dialogs/fl_digi.cxx:5891
 msgid "Automatic Frequency Control"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5303 src/dialogs/fl_digi.cxx:5871
+#: src/dialogs/fl_digi.cxx:5323 src/dialogs/fl_digi.cxx:5894
 msgid "Squelch"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5346 src/dialogs/fl_digi.cxx:5683
+#: src/dialogs/fl_digi.cxx:5366 src/dialogs/fl_digi.cxx:5706
 msgid "Scope"
 msgstr ""
 
-#: src/dialogs/fl_digi.cxx:5561 src/dialogs/Viewer.cxx:319
+#: src/dialogs/fl_digi.cxx:5584 src/dialogs/Viewer.cxx:279
 msgid "Signal Browser"
 msgstr ""
 
-#: src/dialogs/font_browser.cxx:51
-msgid "Font color"
-msgstr ""
-
-#: src/dialogs/font_browser.cxx:122
-msgid "Font:"
-msgstr ""
-
-#: src/dialogs/font_browser.cxx:127
-msgid "Size:"
-msgstr ""
-
-#: src/dialogs/font_browser.cxx:137
-msgid "&OK"
-msgstr ""
-
-#: src/dialogs/font_browser.cxx:145 src/dialogs/confdialog.cxx:4593
-#: src/dialogs/confdialog.cxx:4617 src/dialogs/confdialog.cxx:4641
-#: src/dialogs/confdialog.cxx:4659
-msgid "Color"
-msgstr ""
-
-#: src/dialogs/font_browser.cxx:151
-msgid ""
-"That crazy fox jumped over the dog again!\n"
-"ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n"
-"!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~"
-msgstr ""
-
-#: src/dialogs/font_browser.cxx:287
-msgid "Reading fonts..."
-msgstr ""
-
-#: src/dialogs/Viewer.cxx:323
+#: src/dialogs/Viewer.cxx:283
 msgid "Find: "
 msgstr ""
 
-#: src/dialogs/Viewer.cxx:356
+#: src/dialogs/Viewer.cxx:316
 msgid ""
 "Left click to clear text\n"
 "Right click to reset frequencies"
 msgstr ""
 
-#: src/logbook/adif_io.cxx:208
+#: src/logbook/adif_io.cxx:213
 #, c-format
 msgid "Empty ADIF logbook file %s"
+msgstr ""
+
+#: src/logbook/adif_io.cxx:232
+#, c-format
+msgid "Error reading %s"
 msgstr ""
 
 #: src/logbook/logbook.cxx:43 src/logbook/logsupport.cxx:231
@@ -896,49 +887,66 @@ msgstr ""
 msgid "Merge ADIF file"
 msgstr ""
 
-#: src/logbook/logsupport.cxx:593 src/spot/notify.cxx:196
-#: src/spot/notify.cxx:510 src/logbook/lgbook.cxx:947
+#: src/logbook/logsupport.cxx:593 src/spot/notify.cxx:198
+#: src/spot/notify.cxx:512 src/dialogs/record_browse.cxx:47
+#: src/logbook/lgbook.cxx:966
 msgid "Update"
 msgstr ""
 
-#: src/logbook/logsupport.cxx:1042
+#: src/logbook/logsupport.cxx:1045
 #, c-format
 msgid "Really delete record for \"%s\"?"
 msgstr ""
 
-#: src/logbook/logsupport.cxx:1425
+#: src/logbook/logsupport.cxx:1430
 msgid "Create cabrillo report"
 msgstr ""
 
-#: src/logger/rx_extract.cxx:53
+#: src/logger/rx_extract.cxx:55
 msgid ""
 "Detect the occurance of [WRAP:beg] and [WRAP:end]\n"
 "Save tags and all enclosed text to date-time stamped file, ie:\n"
 "    NBEMS.files\\WRAP\\recv\\extract-20090127-092515.wrap"
 msgstr ""
 
-#: src/logger/rx_extract.cxx:58
+#: src/logger/rx_extract.cxx:60
 msgid ""
 "Detect the occurance of [WRAP:beg] and [WRAP:end]\n"
 "Save tags and all enclosed text to date-time stamped file, ie:\n"
 "    ~/.nbems/WRAP/recv/extract-20090127-092515.wrap"
 msgstr ""
 
-#: src/logger/rx_extract.cxx:268
+#: src/logger/rx_extract.cxx:270
 msgid "Could not start flmsg"
 msgstr ""
 
-#: src/logger/rx_extract.cxx:335 src/logger/rx_extract.cxx:338
-#: src/dialogs/confdialog.cxx:7323
+#: src/logger/rx_extract.cxx:337 src/logger/rx_extract.cxx:340
+#: src/dialogs/confdialog.cxx:8873
 msgid "Locate flmsg executable"
 msgstr ""
 
-#: src/logger/rx_extract.cxx:335
+#: src/logger/rx_extract.cxx:337
 msgid "flmsg.exe\t*.exe"
 msgstr ""
 
-#: src/logger/rx_extract.cxx:338
+#: src/logger/rx_extract.cxx:340
 msgid "flmsg\t*"
+msgstr ""
+
+#: src/logger/rx_extract.cxx:415
+msgid "Locate executable"
+msgstr ""
+
+#: src/logger/rx_extract.cxx:415
+msgid "*.exe"
+msgstr ""
+
+#: src/logger/rx_extract.cxx:425
+msgid "Locate binary"
+msgstr ""
+
+#: src/logger/rx_extract.cxx:425
+msgid "*"
 msgstr ""
 
 #: src/logger/speak.cxx:42
@@ -949,19 +957,19 @@ msgid ""
 "    ~/.fldigi/talk/textout.txt (Linux, OS X, Free BSD)"
 msgstr ""
 
-#: src/misc/configuration.cxx:548
+#: src/misc/configuration.cxx:511
 msgid "Rig mode"
 msgstr ""
 
-#: src/misc/configuration.cxx:549
+#: src/misc/configuration.cxx:512
 msgid "Always LSB"
 msgstr ""
 
-#: src/misc/configuration.cxx:550
+#: src/misc/configuration.cxx:513
 msgid "Always USB"
 msgstr ""
 
-#: src/misc/configuration.cxx:740
+#: src/misc/configuration.cxx:699
 msgid ""
 "Reset all options to their default values?\n"
 "\n"
@@ -969,59 +977,59 @@ msgid ""
 "Files: fldigi_def.xml and fldigi.prefs will be deleted!\n"
 msgstr ""
 
-#: src/misc/configuration.cxx:745
+#: src/misc/configuration.cxx:704
 msgid "Confirm RESET"
 msgstr ""
 
-#: src/misc/debug.cxx:79
+#: src/misc/debug.cxx:91
 msgid "Quiet"
 msgstr ""
 
-#: src/misc/debug.cxx:79
+#: src/misc/debug.cxx:91
 msgid "Error"
 msgstr ""
 
-#: src/misc/debug.cxx:79
+#: src/misc/debug.cxx:91
 msgid "Warning"
 msgstr ""
 
-#: src/misc/debug.cxx:79
+#: src/misc/debug.cxx:91
 msgid "Info"
 msgstr ""
 
-#: src/misc/debug.cxx:79
+#: src/misc/debug.cxx:91
 msgid "Verbose"
 msgstr ""
 
-#: src/misc/debug.cxx:79
+#: src/misc/debug.cxx:91
 msgid "Debug"
 msgstr ""
 
-#: src/misc/debug.cxx:88
+#: src/misc/debug.cxx:100
 msgid "ARQ control"
 msgstr ""
 
-#: src/misc/debug.cxx:90 src/waterfall/waterfall.cxx:2155
+#: src/misc/debug.cxx:102 src/waterfall/waterfall.cxx:2147
 msgid "Modem"
 msgstr ""
 
-#: src/misc/debug.cxx:92
+#: src/misc/debug.cxx:104
 msgid "RPC"
 msgstr ""
 
-#: src/misc/debug.cxx:93
+#: src/misc/debug.cxx:105
 msgid "Spotter"
 msgstr ""
 
-#: src/misc/debug.cxx:94
+#: src/misc/debug.cxx:106
 msgid "Other"
 msgstr ""
 
-#: src/misc/debug.cxx:129
+#: src/misc/debug.cxx:141
 msgid "Log sources"
 msgstr ""
 
-#: src/misc/debug.cxx:134
+#: src/misc/debug.cxx:146
 msgid "Change log level"
 msgstr ""
 
@@ -1094,457 +1102,489 @@ msgid "<RST>\tother RST"
 msgstr ""
 
 #: src/misc/macroedit.cxx:91
-msgid "<MAPIT>\tmap on google"
+msgid "<QSONBR>\t# QSO recs"
 msgstr ""
 
 #: src/misc/macroedit.cxx:92
+msgid "<NXTNBR>\tnext QSO rec #"
+msgstr ""
+
+#: src/misc/macroedit.cxx:93
+msgid "<MAPIT>\tmap on google"
+msgstr ""
+
+#: src/misc/macroedit.cxx:94
 msgid "<MAPIT:adr/lat/loc>\tmap by value"
 msgstr ""
 
-#: src/misc/macroedit.cxx:95
+#: src/misc/macroedit.cxx:97
 msgid "<CLRRX>\tclear RX pane"
 msgstr ""
 
-#: src/misc/macroedit.cxx:96
+#: src/misc/macroedit.cxx:98
 msgid "<CLRTX>\tclear TX pane"
 msgstr ""
 
-#: src/misc/macroedit.cxx:99
+#: src/misc/macroedit.cxx:101
 msgid "<GET>\ttext to NAME/QTH"
 msgstr ""
 
-#: src/misc/macroedit.cxx:103
+#: src/misc/macroedit.cxx:105
 msgid "<TALK:on|off|t>\tDigitalk On, Off, Toggle"
 msgstr ""
 
-#: src/misc/macroedit.cxx:107
+#: src/misc/macroedit.cxx:109
 msgid "<CLRLOG>\tclear log fields"
 msgstr ""
 
-#: src/misc/macroedit.cxx:108
+#: src/misc/macroedit.cxx:110
 msgid "<LOG>\tsave QSO data"
 msgstr ""
 
-#: src/misc/macroedit.cxx:109
+#: src/misc/macroedit.cxx:111
 msgid "<LOG:msg>\tsaveQSO data, append msg to notes"
 msgstr ""
 
-#: src/misc/macroedit.cxx:110
+#: src/misc/macroedit.cxx:112
 msgid "<LNW>\tlog at xmt time"
 msgstr ""
 
-#: src/misc/macroedit.cxx:111
+#: src/misc/macroedit.cxx:113
 msgid "<LNW:msg>\tsaveQSO data, append msg to notes"
 msgstr ""
 
-#: src/misc/macroedit.cxx:112
+#: src/misc/macroedit.cxx:114
 msgid "<EQSL>\tlog eQSL"
 msgstr ""
 
-#: src/misc/macroedit.cxx:113
+#: src/misc/macroedit.cxx:115
 msgid "<EQSL:[msg]>\tlog eQSL optional msg"
 msgstr ""
 
-#: src/misc/macroedit.cxx:116
+#: src/misc/macroedit.cxx:118
 msgid "<QSOTIME>\tQSO time (HHMM))"
 msgstr ""
 
-#: src/misc/macroedit.cxx:117
+#: src/misc/macroedit.cxx:119
 msgid "<ILDT>\tLDT in iso-8601 format"
 msgstr ""
 
-#: src/misc/macroedit.cxx:118
+#: src/misc/macroedit.cxx:120
 msgid "<LDT>\tLocal datetime"
 msgstr ""
 
-#: src/misc/macroedit.cxx:119
+#: src/misc/macroedit.cxx:121
 msgid "<IZDT>\tZDT in iso-8601 format"
 msgstr ""
 
-#: src/misc/macroedit.cxx:120
+#: src/misc/macroedit.cxx:122
 msgid "<ZDT>\tUTC datetime"
 msgstr ""
 
-#: src/misc/macroedit.cxx:121
+#: src/misc/macroedit.cxx:123
 msgid "<LT>\tlocal time HHMM"
 msgstr ""
 
-#: src/misc/macroedit.cxx:122
+#: src/misc/macroedit.cxx:124
 msgid "<ZT>\tzulu time HHMMZ"
 msgstr ""
 
-#: src/misc/macroedit.cxx:123
+#: src/misc/macroedit.cxx:125
 msgid "<LD>\tlocal date YYYY-MM-DD"
 msgstr ""
 
-#: src/misc/macroedit.cxx:124
+#: src/misc/macroedit.cxx:126
 msgid "<ZD>\tzulu date YYYY-MM-DD Z"
 msgstr ""
 
-#: src/misc/macroedit.cxx:125
+#: src/misc/macroedit.cxx:127
 msgid "<WX>\tget weather data"
 msgstr ""
 
-#: src/misc/macroedit.cxx:126
+#: src/misc/macroedit.cxx:128
 msgid "<WX:xxxx>\tget weather data for station"
 msgstr ""
 
-#: src/misc/macroedit.cxx:129
+#: src/misc/macroedit.cxx:131
 msgid "<CNTR>\tcontest counter"
 msgstr ""
 
-#: src/misc/macroedit.cxx:130
+#: src/misc/macroedit.cxx:132
 msgid "<DECR>\tdecrement counter"
 msgstr ""
 
-#: src/misc/macroedit.cxx:131
+#: src/misc/macroedit.cxx:133
 msgid "<INCR>\tincrement counter"
 msgstr ""
 
-#: src/misc/macroedit.cxx:132
+#: src/misc/macroedit.cxx:134
 msgid "<XIN>\texchange in"
 msgstr ""
 
-#: src/misc/macroedit.cxx:133
+#: src/misc/macroedit.cxx:135
 msgid "<XOUT>\texchange out"
 msgstr ""
 
-#: src/misc/macroedit.cxx:134
+#: src/misc/macroedit.cxx:136
 msgid "<XBEG>\texchange begin"
 msgstr ""
 
-#: src/misc/macroedit.cxx:135
+#: src/misc/macroedit.cxx:137
 msgid "<XEND>\texchange end"
 msgstr ""
 
-#: src/misc/macroedit.cxx:136
+#: src/misc/macroedit.cxx:138
 msgid "<SAVEXCHG>\tsave contest out"
 msgstr ""
 
-#: src/misc/macroedit.cxx:139
+#: src/misc/macroedit.cxx:141
 msgid "<RX>\treceive"
 msgstr ""
 
-#: src/misc/macroedit.cxx:140
+#: src/misc/macroedit.cxx:142
 msgid "<TX>\ttransmit"
 msgstr ""
 
-#: src/misc/macroedit.cxx:141
+#: src/misc/macroedit.cxx:143
 msgid "<TX/RX>\ttoggle T/R"
 msgstr ""
 
-#: src/misc/macroedit.cxx:142
+#: src/misc/macroedit.cxx:144
 msgid "<SRCHUP>\tsearch UP for signal"
 msgstr ""
 
-#: src/misc/macroedit.cxx:143
+#: src/misc/macroedit.cxx:145
 msgid "<SRCHDN>\tsearch DOWN for signal"
 msgstr ""
 
-#: src/misc/macroedit.cxx:144
+#: src/misc/macroedit.cxx:146
 msgid "<GOHOME>\treturn to sweet spot"
 msgstr ""
 
-#: src/misc/macroedit.cxx:145
+#: src/misc/macroedit.cxx:147
 msgid "<GOFREQ:NNNN>\tmove to freq NNNN Hz"
 msgstr ""
 
-#: src/misc/macroedit.cxx:146
+#: src/misc/macroedit.cxx:148
 msgid "<QSYTO>\tleft-clk QSY button"
 msgstr ""
 
-#: src/misc/macroedit.cxx:147
+#: src/misc/macroedit.cxx:149
 msgid "<QSYFM>\tright-clk QSY button"
 msgstr ""
 
-#: src/misc/macroedit.cxx:150
+#: src/misc/macroedit.cxx:152
 msgid "<QRG:text>\tinsert QRG into Rx text"
 msgstr ""
 
-#: src/misc/macroedit.cxx:153
+#: src/misc/macroedit.cxx:155
 msgid "<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"
 msgstr ""
 
-#: src/misc/macroedit.cxx:154
+#: src/misc/macroedit.cxx:156
 msgid "<RIGMODE:mode>\tvalid xcvr mode"
 msgstr ""
 
-#: src/misc/macroedit.cxx:155
+#: src/misc/macroedit.cxx:157
 msgid "<FILWID:width>\tvalid xcvr filter width"
 msgstr ""
 
-#: src/misc/macroedit.cxx:158
+#: src/misc/macroedit.cxx:160
 msgid "<FILE:>\tinsert text file"
 msgstr ""
 
 #: src/misc/macroedit.cxx:161
-msgid "<PAUSE>\tpause transmit"
-msgstr ""
-
-#: src/misc/macroedit.cxx:162
-msgid "<IDLE:NN.nn>\tidle signal for NN.nn sec"
-msgstr ""
-
-#: src/misc/macroedit.cxx:163
-msgid "<TIMER:NN>\trepeat every NN sec"
+msgid "<IMAGE:>\tinsert MFSK image"
 msgstr ""
 
 #: src/misc/macroedit.cxx:164
-msgid "<TUNE:NN>\ttune signal for NN sec"
+msgid "<PAUSE>\tpause transmit"
 msgstr ""
 
 #: src/misc/macroedit.cxx:165
-msgid "<WAIT:NN>\tdelay xmt for NN sec"
+msgid "<IDLE:NN.nn>\tidle signal for NN.nn sec"
 msgstr ""
 
 #: src/misc/macroedit.cxx:166
-msgid "<REPEAT>\trepeat macro continuously"
+msgid "<TIMER:NN>\trepeat every NN sec"
 msgstr ""
 
 #: src/misc/macroedit.cxx:167
-msgid "<SKED:hhmm[:YYYYDDMM]>\tschedule execution"
+msgid "<TUNE:NN>\ttune signal for NN sec"
+msgstr ""
+
+#: src/misc/macroedit.cxx:168
+msgid "<WAIT:NN>\tdelay xmt for NN sec"
+msgstr ""
+
+#: src/misc/macroedit.cxx:169
+msgid "<REPEAT>\trepeat macro continuously"
 msgstr ""
 
 #: src/misc/macroedit.cxx:170
-msgid "<TXATTEN:nn.n>\t set xmt attenuator"
+msgid "<SKED:hhmm[:YYYYDDMM]>\tschedule execution"
 msgstr ""
 
 #: src/misc/macroedit.cxx:173
-msgid "<CWID>\tCW identifier"
-msgstr ""
-
-#: src/misc/macroedit.cxx:174
-msgid "<ID>\tsend mode ID in video text"
-msgstr ""
-
-#: src/misc/macroedit.cxx:175
-msgid "<TEXT>\tvideo text"
+msgid "<TXATTEN:nn.n>\t set xmt attenuator"
 msgstr ""
 
 #: src/misc/macroedit.cxx:176
-msgid "<TXRSID:on|off|t>\tTx RSID on,off,toggle"
+msgid "<CWID>\tCW identifier"
 msgstr ""
 
 #: src/misc/macroedit.cxx:177
-msgid "<RXRSID:on|off|t>\tRx RSID on,off,toggle"
+msgid "<ID>\tsend mode ID in video text"
 msgstr ""
 
 #: src/misc/macroedit.cxx:178
-msgid "<NRSID:NN>\tTransmit |NN| successive RsID bursts"
+msgid "<TEXT>\tvideo text"
 msgstr ""
 
 #: src/misc/macroedit.cxx:179
-msgid "<DTMF:[Wn:][Ln:]chrs>\t[Wait][Len](ms)"
+msgid "<TXRSID:on|off|t>\tTx RSID on,off,toggle"
+msgstr ""
+
+#: src/misc/macroedit.cxx:180
+msgid "<RXRSID:on|off|t>\tRx RSID on,off,toggle"
+msgstr ""
+
+#: src/misc/macroedit.cxx:181
+msgid "<NRSID:NN>\tTransmit |NN| successive RsID bursts"
 msgstr ""
 
 #: src/misc/macroedit.cxx:182
-msgid "<POST:+/-nn.n>\tCW QSK post-timing"
-msgstr ""
-
-#: src/misc/macroedit.cxx:183
-msgid "<PRE:nn.n>\tCW QSK pre-timing"
-msgstr ""
-
-#: src/misc/macroedit.cxx:184
-msgid "<RISE:nn.n>\tCW rise time"
+msgid "<DTMF:[Wn:][Ln:]chrs>\t[Wait][Len](ms)"
 msgstr ""
 
 #: src/misc/macroedit.cxx:185
-msgid "<WPM:NN:FF>\tCW WPM:Farnsworth"
+msgid "<POST:+/-nn.n>\tCW QSK post-timing"
+msgstr ""
+
+#: src/misc/macroedit.cxx:186
+msgid "<PRE:nn.n>\tCW QSK pre-timing"
+msgstr ""
+
+#: src/misc/macroedit.cxx:187
+msgid "<RISE:nn.n>\tCW rise time"
 msgstr ""
 
 #: src/misc/macroedit.cxx:188
-msgid "<AFC:on|off|t>\tAFC  on,off,toggle"
+msgid "<WPM:NN:FF>\tCW WPM:Farnsworth"
 msgstr ""
 
-#: src/misc/macroedit.cxx:189
-msgid "<LOCK:on|off|t>\tLOCK on,off,toggle"
-msgstr ""
-
-#: src/misc/macroedit.cxx:190
-msgid "<REV:on|off|t>\tRev on,off,toggle"
-msgstr ""
-
-#: src/misc/macroedit.cxx:193
-msgid "<MACROS:>\tchange macro defs file"
+#: src/misc/macroedit.cxx:191
+msgid "<RIGCAT:[\"text\"][hex ...]:ret>\tsend CAT cmd"
 msgstr ""
 
 #: src/misc/macroedit.cxx:194
+msgid "<AFC:on|off|t>\tAFC  on,off,toggle"
+msgstr ""
+
+#: src/misc/macroedit.cxx:195
+msgid "<LOCK:on|off|t>\tLOCK on,off,toggle"
+msgstr ""
+
+#: src/misc/macroedit.cxx:196
+msgid "<REV:on|off|t>\tRev on,off,toggle"
+msgstr ""
+
+#: src/misc/macroedit.cxx:199
+msgid "<MACROS:>\tchange macro defs file"
+msgstr ""
+
+#: src/misc/macroedit.cxx:200
 msgid "<SAVE>\tsave current macro file"
 msgstr ""
 
-#: src/misc/macroedit.cxx:197
+#: src/misc/macroedit.cxx:203
 msgid "<COMMENT:text>\tuntransmitted comment"
 msgstr ""
 
-#: src/misc/macroedit.cxx:312
+#: src/misc/macroedit.cxx:318
 msgid "Text file to insert"
 msgstr ""
 
-#: src/misc/macroedit.cxx:320
+#: src/misc/macroedit.cxx:326
+msgid "MFSK image file"
+msgstr ""
+
+#: src/misc/macroedit.cxx:333
 msgid "Change to Macro file"
 msgstr ""
 
-#: src/misc/macroedit.cxx:330
+#: src/misc/macroedit.cxx:343
 msgid "Executable file to insert"
 msgstr ""
 
-#: src/misc/macroedit.cxx:360
+#: src/misc/macroedit.cxx:373
 msgid "Macro Text"
 msgstr ""
 
-#: src/misc/macroedit.cxx:365
+#: src/misc/macroedit.cxx:378
 msgid "Select Tag"
 msgstr ""
 
-#: src/misc/macroedit.cxx:377
+#: src/misc/macroedit.cxx:390
 msgid "Macro Button Label"
 msgstr ""
 
-#: src/misc/macroedit.cxx:385
+#: src/misc/macroedit.cxx:398
 msgid "Apply"
 msgstr ""
 
-#: src/misc/macroedit.cxx:412
+#: src/misc/macroedit.cxx:425
 msgid "Macro editor - "
 msgstr ""
 
-#: src/misc/macros.cxx:2293
+#: src/misc/macros.cxx:2438
 msgid "Open macro file"
 msgstr ""
 
-#: src/misc/macros.cxx:2294 src/misc/macros.cxx:2332
+#: src/misc/macros.cxx:2439 src/misc/macros.cxx:2477
 msgid "Fldigi macro definition file\t*.{mdf}"
 msgstr ""
 
-#: src/misc/macros.cxx:2331
+#: src/misc/macros.cxx:2476
 msgid "Save macro file"
 msgstr ""
 
-#: src/misc/network.cxx:144
+#: src/misc/network.cxx:170
 msgid "Aborted"
 msgstr ""
 
-#: src/misc/network.cxx:144
+#: src/misc/network.cxx:170
 msgid "Timed out"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:80
-msgid "Save image as:"
+#: src/misc/newinstall.cxx:387
+msgid "Finish"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:93 src/dialogs/confdialog.cxx:4580
-msgid "Save..."
+#: src/misc/newinstall.cxx:388
+msgid "Next"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:96 src/widgets/FTextRXTX.cxx:829
-msgid "Abort"
+#: src/misc/newinstall.cxx:389
+msgid "Back"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:98
-msgid "Hide"
+#: src/misc/newinstall.cxx:519
+msgid "The wizard will guide you through the basic fldigi settings"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:183 src/mfsk/mfsk-pic.cxx:187
-#: src/mfsk/mfsk-pic.cxx:339 src/mfsk/mfsk-pic.cxx:342
+#: src/misc/newinstall.cxx:522
+msgid "Feel free to skip any pages or exit the wizard at any time"
+msgstr ""
+
+#: src/misc/newinstall.cxx:523
+msgid "All settings shown here can be changed later via the Configure menu"
+msgstr ""
+
+#: src/misc/newinstall.cxx:538
+msgid "Fldigi configuration wizard"
+msgstr ""
+
+#: src/mfsk/mfsk-pic.cxx:142 src/mfsk/mfsk-pic.cxx:146
+#: src/mfsk/mfsk-pic.cxx:305 src/mfsk/mfsk-pic.cxx:308
 msgid "Time needed: "
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:216
+#: src/mfsk/mfsk-pic.cxx:175
 msgid "Load image file"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:350
+#: src/mfsk/mfsk-pic.cxx:316
 msgid "Send image"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:357
+#: src/mfsk/mfsk-pic.cxx:323
 msgid ""
 "Load or drop an image file\n"
 "Supported types: PNG, JPEG, BMP"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:361
+#: src/mfsk/mfsk-pic.cxx:327
 msgid "Transfer speed, X1-normal"
 msgstr ""
 
-#: src/mfsk/mfsk-pic.cxx:373
+#: src/mfsk/mfsk-pic.cxx:339
 msgid "Load"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1601
+#: src/waterfall/waterfall.cxx:1597
 msgid "Waterfall / FFT / Scope"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1611
+#: src/waterfall/waterfall.cxx:1607
 msgid "Upper signal level (dB)"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1622
+#: src/waterfall/waterfall.cxx:1618
 msgid "Signal range (dB)"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1628
+#: src/waterfall/waterfall.cxx:1624
 msgid "Change waterfall scale"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1633
+#: src/waterfall/waterfall.cxx:1629
 msgid "Slew display lower in frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1638
+#: src/waterfall/waterfall.cxx:1634
 msgid "Center display on signal"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1643
+#: src/waterfall/waterfall.cxx:1639
 msgid "Slew display higher in frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1648
+#: src/waterfall/waterfall.cxx:1644
 msgid "Waterfall drop speed"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1658
+#: src/waterfall/waterfall.cxx:1654
 msgid "Adjust cursor frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1663
+#: src/waterfall/waterfall.cxx:1659
 msgid ""
 "Center in passband\n"
 "Right click to undo"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1669
+#: src/waterfall/waterfall.cxx:1665
 msgid ""
 "Store mode and frequency\n"
 "Right click for list"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1679
+#: src/waterfall/waterfall.cxx:1675
 msgid "Lock transmit frequency"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1688 src/dialogs/confdialog.cxx:4437
+#: src/waterfall/waterfall.cxx:1684 src/dialogs/confdialog.cxx:5662
 msgid "Reverse"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:1695
+#: src/waterfall/waterfall.cxx:1691
 msgid "Transmit/Receive"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:2153
+#: src/waterfall/waterfall.cxx:2145
 msgid "AFC range or BW"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:2154
+#: src/waterfall/waterfall.cxx:2146
 msgid "Signal search"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:2155
+#: src/waterfall/waterfall.cxx:2147
 msgid "Modem carrier"
 msgstr ""
 
-#: src/waterfall/waterfall.cxx:2155
+#: src/waterfall/waterfall.cxx:2147
 msgid "Scroll"
 msgstr ""
 
@@ -1558,136 +1598,140 @@ msgstr ""
 msgid "Enter Xcvr Freq"
 msgstr ""
 
-#: src/rigcontrol/rigxml.cxx:890
+#: src/rigcontrol/rigxml.cxx:937
 msgid "Open rig xml file"
 msgstr ""
 
-#: src/rigcontrol/rigxml.cxx:890
+#: src/rigcontrol/rigxml.cxx:937
 msgid "Fldigi rig xml definition file\t*.xml"
 msgstr ""
 
-#: src/soundcard/sound.cxx:114
+#: src/soundcard/sound.cxx:148
 msgid ""
 "Waveform Audio Format\t*.wav\n"
 "AU\t*.{au,snd}\n"
 msgstr ""
 
-#: src/soundcard/sound.cxx:117
+#: src/soundcard/sound.cxx:151
 msgid "Free Lossless Audio Codec\t*.flac"
 msgstr ""
 
-#: src/soundcard/sound.cxx:123 src/soundcard/sound.cxx:125
+#: src/soundcard/sound.cxx:157 src/soundcard/sound.cxx:159
 msgid "Audio file"
 msgstr ""
 
-#: src/spot/notify.cxx:184
-msgid "My callsign de CALL"
-msgstr ""
-
-#: src/spot/notify.cxx:185
-msgid "Station heard twice"
+#: src/soundcard/sound.cxx:305
+msgid "Playback continuous loop?"
 msgstr ""
 
 #: src/spot/notify.cxx:186
-msgid "Custom text search"
+msgid "My callsign de CALL"
 msgstr ""
 
 #: src/spot/notify.cxx:187
+msgid "Station heard twice"
+msgstr ""
+
+#: src/spot/notify.cxx:188
+msgid "Custom text search"
+msgstr ""
+
+#: src/spot/notify.cxx:189
 msgid "RSID reception"
 msgstr ""
 
-#: src/spot/notify.cxx:195
+#: src/spot/notify.cxx:197
 msgid "Toggle"
 msgstr ""
 
-#: src/spot/notify.cxx:197 src/spot/notify.cxx:509
+#: src/spot/notify.cxx:199 src/spot/notify.cxx:511
 msgid "Remove"
 msgstr ""
 
-#: src/spot/notify.cxx:209 src/spot/notify.cxx:215 src/spot/notify.cxx:563
-#: src/logbook/lgbook.cxx:540 src/logbook/lgbook.cxx:845
+#: src/spot/notify.cxx:211 src/spot/notify.cxx:217 src/spot/notify.cxx:565
+#: src/logbook/lgbook.cxx:547 src/logbook/lgbook.cxx:852
 msgid "Continent"
 msgstr ""
 
-#: src/spot/notify.cxx:210 src/spot/notify.cxx:216 src/logbook/lgbook.cxx:833
+#: src/spot/notify.cxx:212 src/spot/notify.cxx:218 src/logbook/lgbook.cxx:840
 msgid "ITU zone"
 msgstr ""
 
-#: src/spot/notify.cxx:211 src/spot/notify.cxx:217 src/logbook/lgbook.cxx:821
+#: src/spot/notify.cxx:213 src/spot/notify.cxx:219 src/logbook/lgbook.cxx:828
 msgid "CQ zone"
 msgstr ""
 
-#: src/spot/notify.cxx:212 src/spot/notify.cxx:218
+#: src/spot/notify.cxx:214 src/spot/notify.cxx:220
 msgid "All"
 msgstr ""
 
-#: src/spot/notify.cxx:214
+#: src/spot/notify.cxx:216
 msgid "Deselect"
 msgstr ""
 
-#: src/spot/notify.cxx:508
+#: src/spot/notify.cxx:510
 msgid "Add"
 msgstr ""
 
-#: src/spot/notify.cxx:511
+#: src/spot/notify.cxx:513
 msgid "Test..."
 msgstr ""
 
-#: src/spot/notify.cxx:514 src/widgets/FTextView.cxx:496
+#: src/spot/notify.cxx:516 src/widgets/FTextView.cxx:480
 #: src/widgets/flinput2.cxx:48
 msgid "Select All"
 msgstr ""
 
-#: src/spot/notify.cxx:515 src/logbook/lgbook.cxx:398
-#: src/logbook/lgbook.cxx:448 src/logbook/lgbook.cxx:1025
-#: src/logbook/lgbook.cxx:1099
+#: src/spot/notify.cxx:517 src/logbook/lgbook.cxx:402
+#: src/logbook/lgbook.cxx:452 src/logbook/lgbook.cxx:1044
+#: src/logbook/lgbook.cxx:1118
 msgid "Clear All"
 msgstr ""
 
-#: src/spot/notify.cxx:1088
+#: src/spot/notify.cxx:1090
 msgid "The regular expression field must not be empty."
 msgstr ""
 
-#: src/spot/notify.cxx:1094
+#: src/spot/notify.cxx:1096
 msgid "The regular expression must be valid."
 msgstr ""
 
-#: src/spot/notify.cxx:1101
+#: src/spot/notify.cxx:1103
 msgid "Please set your callsign first."
 msgstr ""
 
-#: src/spot/notify.cxx:1238
+#: src/spot/notify.cxx:1240
 msgid "Run program"
 msgstr ""
 
-#: src/spot/notify.cxx:1271
+#: src/spot/notify.cxx:1273
 msgid ""
 "Default test string is:\n"
 "  \""
 msgstr ""
 
-#: src/spot/notify.cxx:1272
+#: src/spot/notify.cxx:1274
 msgid "Enter test string or leave blank for default:"
 msgstr ""
 
-#: src/spot/notify.cxx:1283
+#: src/spot/notify.cxx:1285
 msgid "This event's regular expression is invalid."
 msgstr ""
 
-#: src/spot/notify.cxx:1290
+#: src/spot/notify.cxx:1292
 msgid "The test string did not match this event's search pattern."
 msgstr ""
 
-#: src/spot/notify.cxx:1308
+#: src/spot/notify.cxx:1310
 msgid "Available substrings"
 msgstr ""
 
-#: src/spot/notify.cxx:1391 src/logbook/lgbook.cxx:1006
+#: src/spot/notify.cxx:1393 src/logbook/lgbook.cxx:1025
 msgid "Frequency"
 msgstr ""
 
-#: src/spot/notify.cxx:1393 src/dialogs/notifydialog.cxx:131
-#: src/logbook/lgbook.cxx:1003
+#: src/spot/notify.cxx:1395 src/dialogs/notifydialog.cxx:131
+#: src/logbook/lgbook.cxx:1022
 msgid "Callsign"
 msgstr ""
 
@@ -1711,8 +1755,8 @@ msgstr ""
 msgid "Look up call"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:106 src/logbook/lgbook.cxx:458
-#: src/logbook/lgbook.cxx:600 src/logbook/lgbook.cxx:1005
+#: src/widgets/FTextRXTX.cxx:106 src/logbook/lgbook.cxx:462
+#: src/logbook/lgbook.cxx:607 src/logbook/lgbook.cxx:1024
 msgid "Name"
 msgstr ""
 
@@ -1720,12 +1764,12 @@ msgstr ""
 msgid "QTH"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:108 src/dialogs/confdialog.cxx:4057
-#: src/logbook/lgbook.cxx:507
+#: src/widgets/FTextRXTX.cxx:108 src/dialogs/confdialog.cxx:5272
+#: src/logbook/lgbook.cxx:511
 msgid "State"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:109 src/logbook/lgbook.cxx:510
+#: src/widgets/FTextRXTX.cxx:109 src/logbook/lgbook.cxx:517
 msgid "Province"
 msgstr ""
 
@@ -1737,13 +1781,13 @@ msgstr ""
 msgid "RST(r)"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:113 src/dialogs/confdialog.cxx:4063
-#: src/logbook/lgbook.cxx:531 src/logbook/lgbook.cxx:904
-#: src/logbook/lgbook.cxx:1091
+#: src/widgets/FTextRXTX.cxx:113 src/dialogs/confdialog.cxx:5278
+#: src/logbook/lgbook.cxx:538 src/logbook/lgbook.cxx:923
+#: src/logbook/lgbook.cxx:1110
 msgid "Exchange In"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:114 src/dialogs/confdialog.cxx:3988
+#: src/widgets/FTextRXTX.cxx:114 src/dialogs/confdialog.cxx:5203
 msgid "Serial number"
 msgstr ""
 
@@ -1759,57 +1803,61 @@ msgstr ""
 msgid "Scroll hints"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:780
+#: src/widgets/FTextRXTX.cxx:705
 msgid " in "
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:782
+#: src/widgets/FTextRXTX.cxx:707
 msgid "Last QSO"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:827 src/dialogs/confdialog.cxx:5012
+#: src/widgets/FTextRXTX.cxx:752 src/dialogs/confdialog.cxx:6553
 msgid "Transmit"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:828 src/dialogs/confdialog.cxx:4887
-#: src/dialogs/confdialog.cxx:5840
+#: src/widgets/FTextRXTX.cxx:753 src/dialogs/confdialog.cxx:6428
+#: src/dialogs/confdialog.cxx:7381
 msgid "Receive"
 msgstr ""
 
-#: src/widgets/FTextRXTX.cxx:830
+#: src/widgets/FTextRXTX.cxx:754
+msgid "Abort"
+msgstr ""
+
+#: src/widgets/FTextRXTX.cxx:755
 msgid "Send image..."
 msgstr ""
 
-#: src/widgets/FTextView.cxx:302
+#: src/widgets/FTextView.cxx:291
 msgid "Insert text"
 msgstr ""
 
-#: src/widgets/FTextView.cxx:361
+#: src/widgets/FTextView.cxx:350
 msgid "Save text as"
 msgstr ""
 
-#: src/widgets/FTextView.cxx:494 src/widgets/FTextView.cxx:659
+#: src/widgets/FTextView.cxx:478 src/widgets/FTextView.cxx:643
 #: src/widgets/flinput2.cxx:44
 msgid "Copy"
 msgstr ""
 
-#: src/widgets/FTextView.cxx:497
+#: src/widgets/FTextView.cxx:481
 msgid "Save as..."
 msgstr ""
 
-#: src/widgets/FTextView.cxx:498 src/widgets/FTextView.cxx:663
+#: src/widgets/FTextView.cxx:482 src/widgets/FTextView.cxx:647
 msgid "Word wrap"
 msgstr ""
 
-#: src/widgets/FTextView.cxx:658 src/widgets/flinput2.cxx:43
+#: src/widgets/FTextView.cxx:642 src/widgets/flinput2.cxx:43
 msgid "Cut"
 msgstr ""
 
-#: src/widgets/FTextView.cxx:660 src/widgets/flinput2.cxx:45
+#: src/widgets/FTextView.cxx:644 src/widgets/flinput2.cxx:45
 msgid "Paste"
 msgstr ""
 
-#: src/widgets/FTextView.cxx:662
+#: src/widgets/FTextView.cxx:646
 msgid "Insert file..."
 msgstr ""
 
@@ -1817,2597 +1865,2625 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-#: src/widgets/flinput2.cxx:46 src/logbook/lgbook.cxx:954
+#: src/widgets/flinput2.cxx:46 src/logbook/lgbook.cxx:973
 msgid "Delete"
 msgstr ""
 
-#: src/dialogs/colorsfonts.cxx:967
-msgid "Colors and Fonts"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:972
-msgid "Disp"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:975
-msgid "14070.150"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:984 src/dialogs/colorsfonts.cxx:1241
-#: src/dialogs/colorsfonts.cxx:1261
-msgid "Font"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:987 src/dialogs/colorsfonts.cxx:1238
-#: src/dialogs/colorsfonts.cxx:1258
-msgid "Bg Color"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:990
-msgid "Digit Color"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:993
-msgid "Sys Colors"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1000
-msgid "F_keys"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1002
-msgid "Use colored buttons"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1007
-msgid "Group 1"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1008
-msgid "Background color for Function key group 1"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1013
-msgid "Group 2"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1014
-msgid "Background color for Function key group 2"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1019
-msgid "Group 3"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1020
-msgid "Background color for Function key group 3"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1025
-msgid "Label text"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1030 src/dialogs/colorsfonts.cxx:1094
-#: src/logbook/lgbook.cxx:555
-msgid "Defaults"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1035
-msgid "Rx/Tx"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1043
-msgid "Rx bkgnd"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1046
-msgid "Tx bkgnd"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1055
-msgid "Rx font"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1058
-msgid "Tx font"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1061
-msgid "XMIT"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1062
-msgid "Sent chars in Rx/Tx pane"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1067
-msgid "CTRL"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1068
-msgid "Control chars in Rx/Tx pane"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1073
-msgid "SKIP"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1074
-msgid ""
-"Skipped chars in Tx pane\n"
-"(Tx on/off in CW)"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1079
-msgid "ALTR"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1080
-msgid "Alternate character color in Rx panelr"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1085
-msgid "SEL"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1086
-msgid "Selection background color in Rx Tx panels"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1091 src/dialogs/colorsfonts.cxx:1104
-msgid "System"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1099
-msgid "Tabs"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1101
-msgid "Tab Color"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1109
-msgid "Buttons"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1111
-msgid "Spot"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1114
-msgid "RxID"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1117
-msgid "TxID"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1120
-msgid "Tune"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1123
-msgid "Lk"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1126
-msgid "Rev"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1129
-msgid "T/R"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1132
-msgid "AFC"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1135
-msgid "SQL-1"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1138
-msgid "SQL-2"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1184
-msgid "Lighted button enabled colors"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1189
-msgid "SigLvl"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1191
-msgid "Low"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1199
-msgid "High"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1207
-msgid "Normal"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1215
-msgid "Over"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1223
-msgid "Signal Level Colors"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1227
-msgid "Log"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1229
-msgid "Logging Panel Controls"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1244 src/dialogs/colorsfonts.cxx:1264
-#: src/dialogs/confdialog.cxx:4287 src/dialogs/confdialog.cxx:5036
-msgid "Default"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1249
-msgid "Logbook Dialog"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1273
-msgid "Char set"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1274
-msgid "Select Rx/Tx Character Set"
-msgstr ""
-
-#: src/dialogs/colorsfonts.cxx:1278
-msgid "Select Char Set"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:3716
+#: src/dialogs/confdialog.cxx:4913
 msgid "Fldigi configuration"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3726
+#: src/dialogs/confdialog.cxx:4923 src/dialogs/confdialog.cxx:9612
 msgid "Operator information"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3729
+#: src/dialogs/confdialog.cxx:4926
 msgid "Station"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3732
+#: src/dialogs/confdialog.cxx:4929
 msgid "Callsign:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3733
+#: src/dialogs/confdialog.cxx:4930
 msgid "Operators callsign"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3746
+#: src/dialogs/confdialog.cxx:4943
 msgid "Name:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3747
+#: src/dialogs/confdialog.cxx:4944
 msgid "Operators name"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3760
+#: src/dialogs/confdialog.cxx:4957
 msgid "QTH:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3761
+#: src/dialogs/confdialog.cxx:4958
 msgid "Operators QTH"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3774
+#: src/dialogs/confdialog.cxx:4971
 msgid "Locator:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3775
+#: src/dialogs/confdialog.cxx:4972
 msgid "Maidenhead locator as in EM64qv"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3790
+#: src/dialogs/confdialog.cxx:4987
 msgid "Antenna:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3791
+#: src/dialogs/confdialog.cxx:4988
 msgid "Short description of antenna"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3804
+#: src/dialogs/confdialog.cxx:5001
 msgid "Test Signal - Do NOT use with transmitter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3808
+#: src/dialogs/confdialog.cxx:5005
 msgid "Noise on"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3813
+#: src/dialogs/confdialog.cxx:5010
 msgid "dB"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3835
+#: src/dialogs/confdialog.cxx:5032
 msgid "UI"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3839
+#: src/dialogs/confdialog.cxx:5036
 msgid "Browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3842
+#: src/dialogs/confdialog.cxx:5039
 msgid "Channels, first channel starts at waterfall lower limit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3843
+#: src/dialogs/confdialog.cxx:5040
 msgid "Change # of psk viewer channels"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3860
+#: src/dialogs/confdialog.cxx:5057
 msgid "Inactivity timeout"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3861
+#: src/dialogs/confdialog.cxx:5058
 msgid ""
 "Clear channel text after\n"
 "# seconds of inactivity"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3877
+#: src/dialogs/confdialog.cxx:5074
 msgid "Channel label"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3878
+#: src/dialogs/confdialog.cxx:5075
 msgid "Appearance of label on each channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3882
+#: src/dialogs/confdialog.cxx:5079
 msgid "Audio frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3883
+#: src/dialogs/confdialog.cxx:5080
 msgid "Radio frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3883
+#: src/dialogs/confdialog.cxx:5080
 msgid "Channel number"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3886 src/dialogs/confdialog.cxx:4679
+#: src/dialogs/confdialog.cxx:5083 src/dialogs/confdialog.cxx:6220
 msgid "Font..."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3887
+#: src/dialogs/confdialog.cxx:5084
 msgid "select browser font"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3890
+#: src/dialogs/confdialog.cxx:5087
 msgid "Fixed Intervals"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3891
+#: src/dialogs/confdialog.cxx:5088
 msgid "Force channel spacing to even 100 Hz increments"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3898
+#: src/dialogs/confdialog.cxx:5095
 msgid "Continuous scrolling"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3899
+#: src/dialogs/confdialog.cxx:5096
 msgid ""
 "ON - Marquee style\n"
 "OFF - Clear & restart"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3904
+#: src/dialogs/confdialog.cxx:5101
 msgid "Lowest freq on bottom of viewer"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3905
+#: src/dialogs/confdialog.cxx:5102
 msgid "Change positions of low to high channels"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3910
+#: src/dialogs/confdialog.cxx:5107
 msgid "Play back history when active channel selected"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3911
+#: src/dialogs/confdialog.cxx:5108
 msgid "Audio stream history decoded on selected signal"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3916
-msgid "Detection Level Colors"
+#: src/dialogs/confdialog.cxx:5113
+msgid "Detection Level"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3918
+#: src/dialogs/confdialog.cxx:5115
 msgid "Backgnd"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3919
+#: src/dialogs/confdialog.cxx:5116
 msgid "Background color of signal viewer squelch control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3924
+#: src/dialogs/confdialog.cxx:5121
 msgid "Button"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3925
+#: src/dialogs/confdialog.cxx:5122
 msgid "Slider hilite color of signal viewer squelch control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3932
-msgid "Parser Colors"
+#: src/dialogs/confdialog.cxx:5129
+msgid "Browser Line Colors"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3934
+#: src/dialogs/confdialog.cxx:5131
 msgid "HiLite 1"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3935
+#: src/dialogs/confdialog.cxx:5132
 msgid "PSK/RTTY Viewer HiLite Color 1"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3940
+#: src/dialogs/confdialog.cxx:5137
 msgid "HiLite 2"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3941
+#: src/dialogs/confdialog.cxx:5138
 msgid "PSK/RTTY Viewer HiLite Color 2"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3954
+#: src/dialogs/confdialog.cxx:5143
+msgid "Even"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5144
+msgid "Even lines"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5149
+msgid "Odd"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5150
+msgid "Odd lines"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5156
+msgid "Select line"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5169
 msgid "Exchanges"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3957
+#: src/dialogs/confdialog.cxx:5172
 msgid "Send:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3959 src/logbook/lgbook.cxx:534
-#: src/logbook/lgbook.cxx:880 src/logbook/lgbook.cxx:1095
+#: src/dialogs/confdialog.cxx:5174 src/logbook/lgbook.cxx:541
+#: src/logbook/lgbook.cxx:899 src/logbook/lgbook.cxx:1114
 msgid "Exchange Out"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3960
+#: src/dialogs/confdialog.cxx:5175
 msgid "free form exchange"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3974
+#: src/dialogs/confdialog.cxx:5189
 msgid "RST always 599"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3975
+#: src/dialogs/confdialog.cxx:5190
 msgid "Force RST in/out to 599"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3980
+#: src/dialogs/confdialog.cxx:5195
 msgid "Send CW cut numbers"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3981
+#: src/dialogs/confdialog.cxx:5196
 msgid "0 = T; 9 = N"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3991
+#: src/dialogs/confdialog.cxx:5206
 msgid "Use leading zeros"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3992
+#: src/dialogs/confdialog.cxx:5207
 msgid "Insert leading zeros into Xmtd serial number"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3997
+#: src/dialogs/confdialog.cxx:5212
 msgid "Start"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:3998
+#: src/dialogs/confdialog.cxx:5213
 msgid "Starting number"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4013
+#: src/dialogs/confdialog.cxx:5228
 msgid "Digits"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4014
+#: src/dialogs/confdialog.cxx:5229
 msgid "Number of digits in serial number"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4030
+#: src/dialogs/confdialog.cxx:5245 src/dialogs/record_browse.cxx:51
 msgid "Reset"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4031
+#: src/dialogs/confdialog.cxx:5246
 msgid "Initialize the QSO logging fields"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4036
+#: src/dialogs/confdialog.cxx:5251
 msgid "Duplicate check, CALL plus"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4039
+#: src/dialogs/confdialog.cxx:5254
 msgid "On/Off"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4040
+#: src/dialogs/confdialog.cxx:5255
 msgid "Check for duplicates"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4045 src/dialogs/notifydialog.cxx:188
-#: src/logbook/lgbook.cxx:466
+#: src/dialogs/confdialog.cxx:5260 src/dialogs/notifydialog.cxx:188
+#: src/logbook/lgbook.cxx:470
 msgid "Band"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4046
+#: src/dialogs/confdialog.cxx:5261
 msgid "Bands must match"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4051 src/dialogs/notifydialog.cxx:191
-#: src/logbook/lgbook.cxx:469 src/logbook/lgbook.cxx:674
-#: src/logbook/lgbook.cxx:1008 src/logbook/lgbook.cxx:1063
+#: src/dialogs/confdialog.cxx:5266 src/dialogs/notifydialog.cxx:191
+#: src/logbook/lgbook.cxx:473 src/logbook/lgbook.cxx:681
+#: src/logbook/lgbook.cxx:1027 src/logbook/lgbook.cxx:1082
 msgid "Mode"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4052
+#: src/dialogs/confdialog.cxx:5267
 msgid "Mode must match"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4058
+#: src/dialogs/confdialog.cxx:5273
 msgid "State must match"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4064
+#: src/dialogs/confdialog.cxx:5279
 msgid "free form 1 must match"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4069
+#: src/dialogs/confdialog.cxx:5284
 msgid "Time span over"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4070
+#: src/dialogs/confdialog.cxx:5285
 msgid "QSO must not occur within a time period of"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4075
+#: src/dialogs/confdialog.cxx:5290
 msgid "minutes"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4076
+#: src/dialogs/confdialog.cxx:5291
 msgid "Enter time span in minutes"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4092
+#: src/dialogs/confdialog.cxx:5307
 msgid "Dup Color"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4093
+#: src/dialogs/confdialog.cxx:5308
 msgid "Left click to select dup color"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4105 src/dialogs/confdialog.cxx:4885
-#: src/dialogs/confdialog.cxx:5736 src/dialogs/confdialog.cxx:7439
+#: src/dialogs/confdialog.cxx:5320 src/dialogs/confdialog.cxx:6426
+#: src/dialogs/confdialog.cxx:7277 src/dialogs/confdialog.cxx:8989
 msgid "General"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4109
+#: src/dialogs/confdialog.cxx:5324
 msgid "Show tooltips"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4110
+#: src/dialogs/confdialog.cxx:5325
 msgid "Enable / disable tooltips"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4116
+#: src/dialogs/confdialog.cxx:5331
 msgid "Show menu icons"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4117
+#: src/dialogs/confdialog.cxx:5332
 msgid "Enable / disable icons on menus"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4122
+#: src/dialogs/confdialog.cxx:5337
 msgid "UI scheme"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4123
+#: src/dialogs/confdialog.cxx:5338
 msgid "Change application look and feel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4132
+#: src/dialogs/confdialog.cxx:5347
 msgid "Visible modes"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4133
+#: src/dialogs/confdialog.cxx:5348
 msgid "Select modes for menu access"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4136
+#: src/dialogs/confdialog.cxx:5351
 msgid "UI language"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4137 src/dialogs/confdialog.cxx:4800
+#: src/dialogs/confdialog.cxx:5352 src/dialogs/confdialog.cxx:6341
 msgid "Changes take effect on next program startup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4147
+#: src/dialogs/confdialog.cxx:5362
 msgid "Print CW / RTTY / THROB / CONTESTIA in lowercase"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4154
+#: src/dialogs/confdialog.cxx:5372
+msgid "Transmit all text in lower case"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5379
 msgid "Exit prompts"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4157
+#: src/dialogs/confdialog.cxx:5382
 msgid "Prompt to save Configuration"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4162
+#: src/dialogs/confdialog.cxx:5387
 msgid "Prompt to save macro file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4163 src/dialogs/confdialog.cxx:4420
+#: src/dialogs/confdialog.cxx:5388 src/dialogs/confdialog.cxx:5645
 msgid "Write current macro set on program exit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4168
+#: src/dialogs/confdialog.cxx:5393
 msgid "Prompt to save log"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4169 src/dialogs/confdialog.cxx:4222
+#: src/dialogs/confdialog.cxx:5394 src/dialogs/confdialog.cxx:5447
 msgid "Bug me about saving log entries"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4174
+#: src/dialogs/confdialog.cxx:5399
 msgid ""
 "Exit prompts active only when File/Exit menu item selected.\n"
 "Not active if window decoration close button pressed."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4179
+#: src/dialogs/confdialog.cxx:5404
 msgid "Confirm exit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4186
+#: src/dialogs/confdialog.cxx:5411
 msgid "Check for updates"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4189
+#: src/dialogs/confdialog.cxx:5414
 msgid "Check for updates when starting program"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4198
+#: src/dialogs/confdialog.cxx:5423
 msgid "Logging"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4200
+#: src/dialogs/confdialog.cxx:5425
 msgid "Client/Server Logbook"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4203
+#: src/dialogs/confdialog.cxx:5428
 msgid "Address:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4204
+#: src/dialogs/confdialog.cxx:5429
 msgid "Enter URL address of server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4208 src/dialogs/confdialog.cxx:7489
+#: src/dialogs/confdialog.cxx:5433 src/dialogs/confdialog.cxx:9046
 msgid "Port:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4209
+#: src/dialogs/confdialog.cxx:5434
 msgid "Enter Port # assigned to server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4213
+#: src/dialogs/confdialog.cxx:5438
 msgid "Reconnect"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4218
+#: src/dialogs/confdialog.cxx:5443
 msgid "QSO logging"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4221
+#: src/dialogs/confdialog.cxx:5446
 msgid "Prompt to save log on exit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4227
+#: src/dialogs/confdialog.cxx:5452
 msgid "Clear on save"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4228
+#: src/dialogs/confdialog.cxx:5453
 msgid "Clear log entries after saving or using macro <LOG>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4233
+#: src/dialogs/confdialog.cxx:5458
 msgid "Convert callsign to upper case"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4234
+#: src/dialogs/confdialog.cxx:5459
 msgid "Force callsign field to UPPERCASE"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4239
+#: src/dialogs/confdialog.cxx:5464
 msgid "Auto-fill Country and Azimuth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4240
+#: src/dialogs/confdialog.cxx:5465
 msgid "Fill in Country / Azimuth using cty.dat information"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4245
+#: src/dialogs/confdialog.cxx:5470
 msgid "Sort by Date/Time OFF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4246
+#: src/dialogs/confdialog.cxx:5471
 msgid "Sort by date/time OFF - effects all ADIF/Cabrillo reports"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4251
+#: src/dialogs/confdialog.cxx:5476
 msgid "Date time ON == OFF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4252
+#: src/dialogs/confdialog.cxx:5477
 msgid "Force date/time ON == date/time OFF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4257
+#: src/dialogs/confdialog.cxx:5482
 msgid "Default RST in to 599"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4258
+#: src/dialogs/confdialog.cxx:5483
 msgid "Clear log controls sets RST in to 599"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4263
+#: src/dialogs/confdialog.cxx:5488
 msgid "Default RST out to 599"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4264
+#: src/dialogs/confdialog.cxx:5489
 msgid "Clear log controls sets RST out to 599"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4269
+#: src/dialogs/confdialog.cxx:5494
 msgid "cty.dat pathname"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4270
+#: src/dialogs/confdialog.cxx:5495
 msgid "Enter full path-filename for cty.dat"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4283
+#: src/dialogs/confdialog.cxx:5508
 msgid "Browse"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4284
+#: src/dialogs/confdialog.cxx:5509
 msgid "Locate cty.dat file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4288
+#: src/dialogs/confdialog.cxx:5512 src/dialogs/confdialog.cxx:5860
+#: src/dialogs/confdialog.cxx:5880 src/dialogs/confdialog.cxx:6577
+msgid "Default"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5513
 msgid "Restore cty.dat default folder"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4291
+#: src/dialogs/confdialog.cxx:5516
 msgid "Reload"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4292
+#: src/dialogs/confdialog.cxx:5517
 msgid "Reload cty.dat"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4295
+#: src/dialogs/confdialog.cxx:5520
 msgid "Transmit Power"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4296
+#: src/dialogs/confdialog.cxx:5521
 msgid "Tx power used for logbook entries"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4312
+#: src/dialogs/confdialog.cxx:5537
 msgid "Rx Text Capture"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4315
+#: src/dialogs/confdialog.cxx:5540
 msgid "Double-click to capture"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4316
+#: src/dialogs/confdialog.cxx:5541
 msgid "Enable if you cannot use the middle mouse button"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4321
+#: src/dialogs/confdialog.cxx:5546
 msgid "callsign tooltips in received text"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4322
+#: src/dialogs/confdialog.cxx:5547
 msgid "Popup info after a 2 second hover on a callsign"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4327
+#: src/dialogs/confdialog.cxx:5552
 msgid "Word delimiters"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4328
+#: src/dialogs/confdialog.cxx:5553
 msgid ""
 "RX text QSO data entry is bounded by the non-word characters\n"
 "defined here. Tab and newline are automatically included."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4352
+#: src/dialogs/confdialog.cxx:5577
 msgid "Mouse wheel active on macro buttons"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4353
+#: src/dialogs/confdialog.cxx:5578
 msgid "enable mouse wheel control of macro bar"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4360
+#: src/dialogs/confdialog.cxx:5585
 msgid "Number and position of macro bars"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4363
+#: src/dialogs/confdialog.cxx:5588
 msgid "One bar (above waterfall)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4368
+#: src/dialogs/confdialog.cxx:5593
 msgid "One bar (below waterfall)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4373
+#: src/dialogs/confdialog.cxx:5598
 msgid "Two bars (scheme 1)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4378
+#: src/dialogs/confdialog.cxx:5603
 msgid "Two bars (scheme 2)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4383
+#: src/dialogs/confdialog.cxx:5608
 msgid "Two bars (scheme 3)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4388
+#: src/dialogs/confdialog.cxx:5613
 msgid "Two bars (scheme 4)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4393
+#: src/dialogs/confdialog.cxx:5618
 msgid "Two bars (scheme 5)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4398
+#: src/dialogs/confdialog.cxx:5623
 msgid "Two bars (scheme 6)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4407
+#: src/dialogs/confdialog.cxx:5632
 msgid "Load last used macro file on startup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4408
+#: src/dialogs/confdialog.cxx:5633
 msgid ""
 "ON - use last set of macros\n"
 "OFF - use default set"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4413
+#: src/dialogs/confdialog.cxx:5638
 msgid "Display macro filename on startup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4414
+#: src/dialogs/confdialog.cxx:5639
 msgid "The filename is written to the RX text area"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4419
+#: src/dialogs/confdialog.cxx:5644
 msgid "Prompt to save macro file when closing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4429
+#: src/dialogs/confdialog.cxx:5654
 msgid "WF Ctrls"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4433
+#: src/dialogs/confdialog.cxx:5658
 msgid "Enable check box to show each respective operator control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4443
+#: src/dialogs/confdialog.cxx:5668
 msgid "WF Magnification"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4449
+#: src/dialogs/confdialog.cxx:5674
 msgid "WF carrier"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4455
+#: src/dialogs/confdialog.cxx:5680
 msgid "WF Shift Controls"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4461
+#: src/dialogs/confdialog.cxx:5686
 msgid "WF ref level"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4467
+#: src/dialogs/confdialog.cxx:5692
 msgid "WF drop rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4473
+#: src/dialogs/confdialog.cxx:5698
 msgid "WF amp span"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4479
+#: src/dialogs/confdialog.cxx:5704
 msgid "WF Store"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4485
+#: src/dialogs/confdialog.cxx:5710
 msgid "WF mode"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4491
+#: src/dialogs/confdialog.cxx:5716
 msgid "QSY"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4497
+#: src/dialogs/confdialog.cxx:5722
 msgid "XMT lock"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4503
+#: src/dialogs/confdialog.cxx:5728
 msgid "Enable all"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4506
+#: src/dialogs/confdialog.cxx:5731
 msgid "Disable all"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4522
+#: src/dialogs/confdialog.cxx:5738
+msgid "Colors/Fonts"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5741
+msgid "Rx/Tx"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5742
+msgid "Char set"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5743
+msgid "Select Rx/Tx Character Set"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5753
+msgid "Rx bkgnd"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5756
+msgid "Tx bkgnd"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5765
+msgid "Rx font"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5768
+msgid "Tx font"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5771
+msgid "Text Highlighting"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5774
+msgid "XMIT"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5775
+msgid "Sent chars in Rx/Tx pane"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5780
+msgid "CTRL"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5781
+msgid "Control chars in Rx/Tx pane"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5786
+msgid "SKIP"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5787
+msgid ""
+"Skipped chars in Tx pane\n"
+"(Tx on/off in CW)"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5792
+msgid "ALTR"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5793
+msgid "Alternate character color in Rx panelr"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5798
+msgid "SEL"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5799
+msgid "Selection background color in Rx Tx panels"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5804 src/dialogs/confdialog.cxx:5927
+msgid "System"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5807 src/dialogs/confdialog.cxx:5917
+#: src/logbook/lgbook.cxx:562
+msgid "Defaults"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5814
+msgid "Frq Disp"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5818
+msgid "14070.150"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5827 src/dialogs/confdialog.cxx:5857
+#: src/dialogs/confdialog.cxx:5877
+msgid "Font"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5830 src/dialogs/confdialog.cxx:5854
+#: src/dialogs/confdialog.cxx:5874
+msgid "Bg Color"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5833
+msgid "Digit Color"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5836
+msgid "Sys Colors"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5843
+msgid "Log"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5845
+msgid "Logging Panel Controls"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5865
+msgid "Logbook Dialog"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5887
+msgid "F_keys"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5889
+msgid "Use colored buttons"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5894
+msgid "Group 1"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5895
+msgid "Background color for Function key group 1"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5900
+msgid "Group 2"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5901
+msgid "Background color for Function key group 2"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5906
+msgid "Group 3"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5907
+msgid "Background color for Function key group 3"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5912
+msgid "Label text"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5922
+msgid "Tabs"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5924
+msgid "Tab Color"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5932
+msgid "Buttons"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5934
+msgid "Spot"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5937
+msgid "RxID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5940
+msgid "TxID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5943
+msgid "Tune"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5946
+msgid "Lk"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5949
+msgid "Rev"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5952
+msgid "T/R"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5955
+msgid "AFC"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5958
+msgid "SQL-1"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:5961
+msgid "SQL-2"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6007
+msgid "Lighted button enabled colors"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6012
+msgid "SigLvl"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6014 src/dialogs/confdialog.cxx:8611
+msgid "Low"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6022 src/dialogs/confdialog.cxx:8611
+msgid "High"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6030
+msgid "Normal"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6038
+msgid "Over"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6046
+msgid "Signal Level Colors"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6063
 msgid "Display"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4523
+#: src/dialogs/confdialog.cxx:6064
 msgid "Colors and cursors"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4526
+#: src/dialogs/confdialog.cxx:6067
 msgid "aa"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4541 src/dialogs/confdialog.cxx:4545
-#: src/dialogs/confdialog.cxx:4549 src/dialogs/confdialog.cxx:4553
-#: src/dialogs/confdialog.cxx:4557 src/dialogs/confdialog.cxx:4561
-#: src/dialogs/confdialog.cxx:4565 src/dialogs/confdialog.cxx:4569
-#: src/dialogs/confdialog.cxx:4573 src/dialogs/confdialog.cxx:4594
-#: src/dialogs/confdialog.cxx:4618 src/dialogs/confdialog.cxx:4642
-#: src/dialogs/confdialog.cxx:4660
+#: src/dialogs/confdialog.cxx:6082 src/dialogs/confdialog.cxx:6086
+#: src/dialogs/confdialog.cxx:6090 src/dialogs/confdialog.cxx:6094
+#: src/dialogs/confdialog.cxx:6098 src/dialogs/confdialog.cxx:6102
+#: src/dialogs/confdialog.cxx:6106 src/dialogs/confdialog.cxx:6110
+#: src/dialogs/confdialog.cxx:6114 src/dialogs/confdialog.cxx:6135
+#: src/dialogs/confdialog.cxx:6159 src/dialogs/confdialog.cxx:6183
+#: src/dialogs/confdialog.cxx:6201
 msgid "Change color"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4576
+#: src/dialogs/confdialog.cxx:6117
 msgid "Load..."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4577
+#: src/dialogs/confdialog.cxx:6118
 msgid "Load a new palette"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4581
+#: src/dialogs/confdialog.cxx:6121
+msgid "Save..."
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6122
 msgid "Save this palette"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4584 src/dialogs/confdialog.cxx:5585
-#: src/dialogs/confdialog.cxx:5663 src/dialogs/confdialog.cxx:5847
+#: src/dialogs/confdialog.cxx:6125 src/dialogs/confdialog.cxx:7120
+#: src/dialogs/confdialog.cxx:7198
 msgid "Bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4587 src/dialogs/confdialog.cxx:4611
-#: src/dialogs/confdialog.cxx:4635
+#: src/dialogs/confdialog.cxx:6128 src/dialogs/confdialog.cxx:6152
+#: src/dialogs/confdialog.cxx:6176
 msgid "ON"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4588
+#: src/dialogs/confdialog.cxx:6129
 msgid "Show cursor with bandwidth lines"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4600 src/dialogs/confdialog.cxx:4624
-#: src/dialogs/confdialog.cxx:4648
+#: src/dialogs/confdialog.cxx:6134 src/dialogs/confdialog.cxx:6158
+#: src/dialogs/confdialog.cxx:6182 src/dialogs/confdialog.cxx:6200
+#: src/dialogs/font_browser.cxx:145
+msgid "Color"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:6141 src/dialogs/confdialog.cxx:6165
+#: src/dialogs/confdialog.cxx:6189
 msgid "Wide"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4601 src/dialogs/confdialog.cxx:4625
-#: src/dialogs/confdialog.cxx:4636 src/dialogs/confdialog.cxx:4649
+#: src/dialogs/confdialog.cxx:6142 src/dialogs/confdialog.cxx:6166
+#: src/dialogs/confdialog.cxx:6177 src/dialogs/confdialog.cxx:6190
 msgid "Show bandwidth tracks on waterfall"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4608
+#: src/dialogs/confdialog.cxx:6149
 msgid "Center line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4612
+#: src/dialogs/confdialog.cxx:6153
 msgid "Show cursor with center line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4632
+#: src/dialogs/confdialog.cxx:6173
 msgid "Signal tracks"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4656
+#: src/dialogs/confdialog.cxx:6197
 msgid "Notch"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4670
+#: src/dialogs/confdialog.cxx:6211
 msgid "Frequency scale"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4673
+#: src/dialogs/confdialog.cxx:6214
 msgid "Always show audio frequencies"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4674
+#: src/dialogs/confdialog.cxx:6215
 msgid "Audio or RF frequencies on waterfall scale"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4680
+#: src/dialogs/confdialog.cxx:6221
 msgid "Select waterfall scale font"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4685
+#: src/dialogs/confdialog.cxx:6226
 msgid "Transmit signal"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4688
+#: src/dialogs/confdialog.cxx:6229
 msgid "Monitor transmitted signal"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4689
+#: src/dialogs/confdialog.cxx:6230
 msgid "Show transmit signal on waterfall"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4694
+#: src/dialogs/confdialog.cxx:6235
 msgid "Signal level"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4695
+#: src/dialogs/confdialog.cxx:6236
 msgid "Set level for good viewing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4717
+#: src/dialogs/confdialog.cxx:6258
 msgid "FFT Processing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4721 src/dialogs/confdialog.cxx:5056
+#: src/dialogs/confdialog.cxx:6262 src/dialogs/confdialog.cxx:6597
 msgid "Lower limit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4722
+#: src/dialogs/confdialog.cxx:6263
 msgid "Low frequency limit in Hz"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4741
+#: src/dialogs/confdialog.cxx:6282
 msgid "FFT latency (scan merging)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4742
+#: src/dialogs/confdialog.cxx:6283
 msgid ""
 "Latency increases frequency resolution,\n"
 "decreases time resolution. 1 = no scan merging"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4762
+#: src/dialogs/confdialog.cxx:6303
 msgid "FFT averaging"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4763
+#: src/dialogs/confdialog.cxx:6304
 msgid "Use averaging to decrease waterfall noise"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4768
+#: src/dialogs/confdialog.cxx:6309
 msgid "FFT prefilter window function"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4769
+#: src/dialogs/confdialog.cxx:6310
 msgid "Select the type of FFT prefilter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4773
+#: src/dialogs/confdialog.cxx:6314
 msgid "Rectangular"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4775
+#: src/dialogs/confdialog.cxx:6316
 msgid "Triangular"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4778 src/dialogs/confdialog.cxx:5068
+#: src/dialogs/confdialog.cxx:6319 src/dialogs/confdialog.cxx:6609
 msgid "Upper limit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4779
+#: src/dialogs/confdialog.cxx:6320
 msgid "High frequency limit in Hz"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4801
+#: src/dialogs/confdialog.cxx:6342
 msgid "Show me more or less waterfall"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4804
+#: src/dialogs/confdialog.cxx:6345
 msgid "Waterfall height in pixels"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4805
+#: src/dialogs/confdialog.cxx:6346
 msgid "CPU usage increases with waterfall height"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4828
+#: src/dialogs/confdialog.cxx:6369
 msgid "Mouse"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4832
+#: src/dialogs/confdialog.cxx:6373
 msgid "Left or right click always replays audio history"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4833
+#: src/dialogs/confdialog.cxx:6374
 msgid "Replay trackline audio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4838
+#: src/dialogs/confdialog.cxx:6379
 msgid "Dragging on the waterfall scale changes frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4839
+#: src/dialogs/confdialog.cxx:6380
 msgid "Enable drag cursor on waterfall scale"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4844
+#: src/dialogs/confdialog.cxx:6385
 msgid "Insert text on single left click"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4845
+#: src/dialogs/confdialog.cxx:6386
 msgid ""
 "Insert special text in Rx panel\n"
 "when waterfall clicked"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4851
+#: src/dialogs/confdialog.cxx:6392
 msgid ""
 "The string <FREQ> is replaced with\n"
 "the current modem and frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4865
+#: src/dialogs/confdialog.cxx:6406
 msgid "Wheel action"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4866
+#: src/dialogs/confdialog.cxx:6407
 msgid ""
 "Select how the mouse wheel\n"
 "behaves inside the waterfall"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4882 src/dialogs/confdialog.cxx:7521
+#: src/dialogs/confdialog.cxx:6423 src/dialogs/confdialog.cxx:8763
+#: src/dialogs/confdialog.cxx:9078
 msgid "CW"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4890
+#: src/dialogs/confdialog.cxx:6431
 msgid "Filter bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4891
+#: src/dialogs/confdialog.cxx:6432
 msgid "CW dsp filter bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4911
+#: src/dialogs/confdialog.cxx:6452
 msgid "Rx WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4917
+#: src/dialogs/confdialog.cxx:6458
 msgid "Tracked CW speed in WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4922
+#: src/dialogs/confdialog.cxx:6463
 msgid "SOM decoding"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4923
+#: src/dialogs/confdialog.cxx:6464
 msgid "Self Organizing Mapping"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4929
+#: src/dialogs/confdialog.cxx:6470
 msgid "Lower"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4930
+#: src/dialogs/confdialog.cxx:6471
 msgid "Detector low threshold"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4949
+#: src/dialogs/confdialog.cxx:6490
 msgid "Upper"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4950
+#: src/dialogs/confdialog.cxx:6491
 msgid "Detector high threshold"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4969
+#: src/dialogs/confdialog.cxx:6510
 msgid "Matched Filter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4970
+#: src/dialogs/confdialog.cxx:6511
 msgid "Matched Filter bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4976
+#: src/dialogs/confdialog.cxx:6517
 msgid "FFT filter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4977
+#: src/dialogs/confdialog.cxx:6518
 msgid "FFT / FIR filter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4983
+#: src/dialogs/confdialog.cxx:6524
 msgid "Tracking"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4984
+#: src/dialogs/confdialog.cxx:6525
 msgid "Automatic Rx speed tracking"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4990
+#: src/dialogs/confdialog.cxx:6531
 msgid "Range, WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:4991
+#: src/dialogs/confdialog.cxx:6532
 msgid "Range +/- wpm"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5015
+#: src/dialogs/confdialog.cxx:6556
 msgid "TX WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5016 src/dialogs/confdialog.cxx:5081
+#: src/dialogs/confdialog.cxx:6557 src/dialogs/confdialog.cxx:6622
 msgid "My transmit CW WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5037
+#: src/dialogs/confdialog.cxx:6578
 msgid "The default CW speed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5057
+#: src/dialogs/confdialog.cxx:6598
 msgid "No slower than this"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5069
+#: src/dialogs/confdialog.cxx:6610
 msgid "No faster than this"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5080
+#: src/dialogs/confdialog.cxx:6621
 msgid "F-WPM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5101
+#: src/dialogs/confdialog.cxx:6642
 msgid "Use Farnsworth timing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5110
+#: src/dialogs/confdialog.cxx:6651
 msgid "Timing and QSK"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5113
+#: src/dialogs/confdialog.cxx:6654
 msgid "Timing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5116
+#: src/dialogs/confdialog.cxx:6657
 msgid "Weight (%)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5117
+#: src/dialogs/confdialog.cxx:6658
 msgid "Dot to dot-space ratio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5136 src/dialogs/confdialog.cxx:5137
+#: src/dialogs/confdialog.cxx:6677 src/dialogs/confdialog.cxx:6678
 msgid "Dash to dot ratio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5155
+#: src/dialogs/confdialog.cxx:6696
 msgid "Edge timing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5156
+#: src/dialogs/confdialog.cxx:6697
 msgid "Leading and Trailing edge risetimes (msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5174
+#: src/dialogs/confdialog.cxx:6715
 msgid "Edge shape"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5175
+#: src/dialogs/confdialog.cxx:6716
 msgid "Raised cosine = Hanning"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5183
+#: src/dialogs/confdialog.cxx:6724
 msgid "Edge decreases pulse width"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5184
+#: src/dialogs/confdialog.cxx:6725
 msgid "Weight decreases with increasing edge timing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5191
+#: src/dialogs/confdialog.cxx:6732
 msgid "QSK"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5194
+#: src/dialogs/confdialog.cxx:6735
 msgid "QSK on right audio channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5195
+#: src/dialogs/confdialog.cxx:6736
 msgid "Generate square wave signal on right channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5200
+#: src/dialogs/confdialog.cxx:6741
 msgid "Pre-keydown timing (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5201
+#: src/dialogs/confdialog.cxx:6742
 msgid "Msec pre-keydown (+ is earlier in time)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5219
+#: src/dialogs/confdialog.cxx:6760
 msgid "Post-keydown timing (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5220
+#: src/dialogs/confdialog.cxx:6761
 msgid "Msec post-keydown (+ is earlier in time)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5238
+#: src/dialogs/confdialog.cxx:6779
 msgid "Send continuously"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5239
+#: src/dialogs/confdialog.cxx:6780
 msgid "Send a continuous stream of test characters"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5244
+#: src/dialogs/confdialog.cxx:6785
 msgid "Test char"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5245
+#: src/dialogs/confdialog.cxx:6786
 msgid "Test character for QSK adjustment"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5256
+#: src/dialogs/confdialog.cxx:6797
 msgid "Prosigns"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5261
+#: src/dialogs/confdialog.cxx:6802
 msgid "Use '(' paren not KN"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5268
+#: src/dialogs/confdialog.cxx:6809
 msgid "<BT>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5275
+#: src/dialogs/confdialog.cxx:6816
 msgid "<AA>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5282
+#: src/dialogs/confdialog.cxx:6823
 msgid "<AS>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5289
+#: src/dialogs/confdialog.cxx:6830
 msgid "<AR>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5296
+#: src/dialogs/confdialog.cxx:6837
 msgid "<SK>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5303
+#: src/dialogs/confdialog.cxx:6844
 msgid "<KN>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5310
+#: src/dialogs/confdialog.cxx:6851
 msgid "<INT>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5317
+#: src/dialogs/confdialog.cxx:6858
 msgid "<HM>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5324
+#: src/dialogs/confdialog.cxx:6865
 msgid "<VE>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5337
+#: src/dialogs/confdialog.cxx:6878
 msgid "Dom"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5341 src/dialogs/confdialog.cxx:6083
+#: src/dialogs/confdialog.cxx:6882 src/dialogs/confdialog.cxx:7613
 msgid "Secondary Text"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5342 src/dialogs/confdialog.cxx:6084
+#: src/dialogs/confdialog.cxx:6883 src/dialogs/confdialog.cxx:7614
 msgid "Text to send during keyboard idle times"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5356 src/dialogs/confdialog.cxx:6098
+#: src/dialogs/confdialog.cxx:6897 src/dialogs/confdialog.cxx:7628
 msgid "Filtering"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5357
+#: src/dialogs/confdialog.cxx:6898
 msgid "Use DSP filter before decoder"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5363 src/dialogs/confdialog.cxx:6105
+#: src/dialogs/confdialog.cxx:6904 src/dialogs/confdialog.cxx:7635
 msgid "Filter bandwidth factor"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5364 src/dialogs/confdialog.cxx:6106
+#: src/dialogs/confdialog.cxx:6905 src/dialogs/confdialog.cxx:7636
 msgid "Filter bandwidth relative to signal width"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5382
+#: src/dialogs/confdialog.cxx:6923
 msgid "FEC"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5383
+#: src/dialogs/confdialog.cxx:6924
 msgid "Enable MultiPSK-compatible FEC"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5388 src/dialogs/confdialog.cxx:6124
+#: src/dialogs/confdialog.cxx:6929 src/dialogs/confdialog.cxx:7654
 msgid "CWI threshold"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5389 src/dialogs/confdialog.cxx:6125
+#: src/dialogs/confdialog.cxx:6930 src/dialogs/confdialog.cxx:7655
 msgid "CWI detection and suppression"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5405 src/dialogs/confdialog.cxx:6160
+#: src/dialogs/confdialog.cxx:6946 src/dialogs/confdialog.cxx:7690
 msgid "Paths (hidden)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5429
+#: src/dialogs/confdialog.cxx:6970
 msgid "Feld"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5433
+#: src/dialogs/confdialog.cxx:6974
 msgid "Transmit font"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5434
+#: src/dialogs/confdialog.cxx:6975
 msgid "Select TX raster font"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5441
+#: src/dialogs/confdialog.cxx:6982
 msgid "Reverse video"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5442
+#: src/dialogs/confdialog.cxx:6983
 msgid "Display RX in reverse video"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5447
+#: src/dialogs/confdialog.cxx:6988
 msgid "Transmit width"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5448
+#: src/dialogs/confdialog.cxx:6989
 msgid "# of multiple scans / character line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5463
+#: src/dialogs/confdialog.cxx:7004
 msgid "Halve receive width"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5464
+#: src/dialogs/confdialog.cxx:7005
 msgid "Compress Rx in time"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5469
+#: src/dialogs/confdialog.cxx:7010
 msgid "Pulse shape"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5470
+#: src/dialogs/confdialog.cxx:7011
 msgid "Raised cosine pulse shape factor"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5474
+#: src/dialogs/confdialog.cxx:7015
 msgid "Slow (4 msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5475
+#: src/dialogs/confdialog.cxx:7016
 msgid "Fast (2 msec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5478
+#: src/dialogs/confdialog.cxx:7019
 msgid "Receive filter bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5479 src/dialogs/confdialog.cxx:5848
+#: src/dialogs/confdialog.cxx:7020
 msgid "Adjust the DSP bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5499
+#: src/dialogs/confdialog.cxx:7040
 msgid "Transmit periods (.) when idle"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5500
+#: src/dialogs/confdialog.cxx:7041
 msgid "Transmits a diddle dot when no keyboard activity"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5506
+#: src/dialogs/confdialog.cxx:7047
 msgid "2x Xmt Width (hidden)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5516
+#: src/dialogs/confdialog.cxx:7057
 msgid "MT-63"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5521
-msgid "64-bit (long) interleave"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5527 src/dialogs/confdialog.cxx:5650
+#: src/dialogs/confdialog.cxx:7062 src/dialogs/confdialog.cxx:7185
 msgid "8-bit extended characters (UTF-8)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5528
+#: src/dialogs/confdialog.cxx:7063
 msgid "Enable this for UTF-8 characters"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5534
+#: src/dialogs/confdialog.cxx:7069
 msgid "Long receive integration"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5535
+#: src/dialogs/confdialog.cxx:7070
 msgid "Enable for very weak signals"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5545
+#: src/dialogs/confdialog.cxx:7080
 msgid "Transmit lower start tone"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5550
+#: src/dialogs/confdialog.cxx:7085
 msgid "Transmit upper start tone"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5556
+#: src/dialogs/confdialog.cxx:7091
 msgid "Tone Duration (secs)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5572
+#: src/dialogs/confdialog.cxx:7107
 msgid "Allow manual tuning"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5581
+#: src/dialogs/confdialog.cxx:7116
 msgid "Olivia"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5586 src/dialogs/confdialog.cxx:5664
+#: src/dialogs/confdialog.cxx:7121 src/dialogs/confdialog.cxx:7199
 msgid "Select bandwidth"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5593 src/dialogs/confdialog.cxx:5671
+#: src/dialogs/confdialog.cxx:7128 src/dialogs/confdialog.cxx:7206
 msgid "Tones"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5594 src/dialogs/confdialog.cxx:5672
+#: src/dialogs/confdialog.cxx:7129 src/dialogs/confdialog.cxx:7207
 msgid "Select number of tones"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5601 src/dialogs/confdialog.cxx:5679
+#: src/dialogs/confdialog.cxx:7136 src/dialogs/confdialog.cxx:7214
 msgid "Receive synchronizer"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5604 src/dialogs/confdialog.cxx:5682
+#: src/dialogs/confdialog.cxx:7139 src/dialogs/confdialog.cxx:7217
 msgid "Tune margin (tone frequency spacing)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5605 src/dialogs/confdialog.cxx:5624
-#: src/dialogs/confdialog.cxx:5683 src/dialogs/confdialog.cxx:5702
+#: src/dialogs/confdialog.cxx:7140 src/dialogs/confdialog.cxx:7159
+#: src/dialogs/confdialog.cxx:7218 src/dialogs/confdialog.cxx:7237
 msgid "Change ONLY to experiment"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5623 src/dialogs/confdialog.cxx:5701
+#: src/dialogs/confdialog.cxx:7158 src/dialogs/confdialog.cxx:7236
 msgid "Integration period (FEC blocks)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5642
+#: src/dialogs/confdialog.cxx:7177 src/dialogs/confdialog.cxx:7255
 msgid "Reset FEC blocks when changing BW or Tones"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5643 src/dialogs/confdialog.cxx:5651
+#: src/dialogs/confdialog.cxx:7178 src/dialogs/confdialog.cxx:7186
+#: src/dialogs/confdialog.cxx:7256
 msgid "Enable this for UTF-8 character transmission"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5659
+#: src/dialogs/confdialog.cxx:7194
 msgid "Cont'"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5722
+#: src/dialogs/confdialog.cxx:7263
 msgid "8-bit extended characters"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5723
+#: src/dialogs/confdialog.cxx:7264
 msgid "Enable this for Latin-1 accented characters"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5732
+#: src/dialogs/confdialog.cxx:7273
 msgid "PSK"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5738
+#: src/dialogs/confdialog.cxx:7279
 msgid "AFC behavior"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5741
+#: src/dialogs/confdialog.cxx:7282
 msgid "Acquisition search range (Hz)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5742
+#: src/dialogs/confdialog.cxx:7283
 msgid "Capture signals within this frequency range"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5761 src/dialogs/confdialog.cxx:7390
+#: src/dialogs/confdialog.cxx:7302 src/dialogs/confdialog.cxx:8940
 msgid "Acquisition S/N (dB)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5762 src/dialogs/confdialog.cxx:7391
+#: src/dialogs/confdialog.cxx:7303 src/dialogs/confdialog.cxx:8941
 msgid "Capture signals over this threshold"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5783
+#: src/dialogs/confdialog.cxx:7324
 msgid "S/N and IMD behavior"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5786
+#: src/dialogs/confdialog.cxx:7327
 msgid "after"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5787
+#: src/dialogs/confdialog.cxx:7328
 msgid "Behavior of s/n imd"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5791
+#: src/dialogs/confdialog.cxx:7332
 msgid "Dim"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5794
+#: src/dialogs/confdialog.cxx:7335
 msgid "seconds"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5795
+#: src/dialogs/confdialog.cxx:7336
 msgid "Will occur after this time in seconds"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5815
+#: src/dialogs/confdialog.cxx:7356
 msgid "Multi-Channel Signal Processing"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5818
+#: src/dialogs/confdialog.cxx:7359
 msgid "Multi-channel detector"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5823
+#: src/dialogs/confdialog.cxx:7364
 msgid "Disable on very slow CPUs of if signal browser is not used"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5834 src/dialogs/confdialog.cxx:7540
+#: src/dialogs/confdialog.cxx:7375 src/dialogs/confdialog.cxx:9097
 msgid "RTTY"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5838
+#: src/dialogs/confdialog.cxx:7379
 msgid "Rx"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5843
-msgid "Optimum"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5844
-msgid "Reset Filter to Optimum bandwidth"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5868
-msgid "Filter Quality"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5869
-msgid ""
-"Low -> High\n"
-"DSP filter length\n"
-"Low reduces load on CPU\n"
-"High gives best performance"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5877
+#: src/dialogs/confdialog.cxx:7384
 msgid "AFC speed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5878
+#: src/dialogs/confdialog.cxx:7385
 msgid "AFC tracking speed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5885
-msgid "Demodulator"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5886
-msgid ""
-"Select demodulator type\n"
-"Kahn power detector\n"
-"Automatic Threshold Correcting"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:5893
+#: src/dialogs/confdialog.cxx:7392
 msgid "RX - unshift on space"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5894
+#: src/dialogs/confdialog.cxx:7393
 msgid "Revert to unshifted char's on a space"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5901
+#: src/dialogs/confdialog.cxx:7398
+msgid "Filter Shape Factor"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7399
+msgid ""
+"rcos timing coefficient:\n"
+"1.0 ... 2.0\n"
+"W1HKJ best 1.275\n"
+"DO2SMF best 1.500"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7411
+msgid "Decode (CWI suppression)"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7414
+msgid "Mark-Space"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7419
+msgid "Mark only"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7424
+msgid "Space only"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7431
 msgid "RTTY Scope Display"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5904
+#: src/dialogs/confdialog.cxx:7434
 msgid "Use cross hair scope"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5905
+#: src/dialogs/confdialog.cxx:7435
 msgid "Default to cross hair digiscope"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5910
+#: src/dialogs/confdialog.cxx:7440
 msgid "XY - classic scope"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5911
+#: src/dialogs/confdialog.cxx:7441
 msgid ""
 "Enabled - use Mark/Space filter outputs\n"
 "Disabled - use pseudo signals"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5918
+#: src/dialogs/confdialog.cxx:7448
 msgid "Log RTTY frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5921
+#: src/dialogs/confdialog.cxx:7451
 msgid "Use MARK freq'"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5922
+#: src/dialogs/confdialog.cxx:7452
 msgid ""
 "Enabled - log QSO using Mark frequency\n"
 "Disabled - log QSO using center frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5929
+#: src/dialogs/confdialog.cxx:7459
 msgid "track color"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5930
+#: src/dialogs/confdialog.cxx:7460
 msgid "Color of Mark Track"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5940
+#: src/dialogs/confdialog.cxx:7470
 msgid "Tx"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5943
+#: src/dialogs/confdialog.cxx:7473
 msgid "Carrier shift"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5944
+#: src/dialogs/confdialog.cxx:7474
 msgid "Select carrier shift"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5951
+#: src/dialogs/confdialog.cxx:7481
 msgid "Custom shift"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5952
+#: src/dialogs/confdialog.cxx:7482
 msgid "Input carrier shift"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5970
+#: src/dialogs/confdialog.cxx:7500
 msgid "Baud rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5971
+#: src/dialogs/confdialog.cxx:7501
 msgid "Select carrier baudrate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5978
+#: src/dialogs/confdialog.cxx:7508
 msgid "Bits per character"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5979
+#: src/dialogs/confdialog.cxx:7509
 msgid "Select # bits / char"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5986
+#: src/dialogs/confdialog.cxx:7516
 msgid "Parity"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5987
+#: src/dialogs/confdialog.cxx:7517
 msgid "Select parity"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5994
+#: src/dialogs/confdialog.cxx:7524
 msgid "Stop bits"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:5995
+#: src/dialogs/confdialog.cxx:7525
 msgid "Select # stop bits"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6002
+#: src/dialogs/confdialog.cxx:7532
 msgid "AutoCRLF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6003
+#: src/dialogs/confdialog.cxx:7533
 msgid "Add CRLF after page width characters"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6008
+#: src/dialogs/confdialog.cxx:7538
 msgid "chars"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6009
+#: src/dialogs/confdialog.cxx:7539
 msgid "Auto CRLF line length"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6027
+#: src/dialogs/confdialog.cxx:7557
 msgid "CR-CR-LF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6028
+#: src/dialogs/confdialog.cxx:7558
 msgid "Use \"cr cr lf\" for \"cr lf\""
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6034
+#: src/dialogs/confdialog.cxx:7564
 msgid "TX - unshift on space"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6035
+#: src/dialogs/confdialog.cxx:7565
 msgid "Revert to Unsifted char's on a space"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6040
+#: src/dialogs/confdialog.cxx:7570
 msgid "Pseudo-FSK - right channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6041
+#: src/dialogs/confdialog.cxx:7571
 msgid "Create keyed square wave on right audio channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6048
+#: src/dialogs/confdialog.cxx:7578
 msgid "Synop"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6051
+#: src/dialogs/confdialog.cxx:7581
 msgid "SYNOP to ADIF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6052
+#: src/dialogs/confdialog.cxx:7582
 msgid "Decodes SYNOP messages (Ex: Deutsche Wetterdienst) to ADIF log file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6058
+#: src/dialogs/confdialog.cxx:7588
 msgid "SYNOP to KML"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6059
+#: src/dialogs/confdialog.cxx:7589
 msgid ""
 "Decodes SYNOP messages (Ex: Deutsche Wetterdienst) to KML documents (Ex: "
 "Google Earth)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6066
+#: src/dialogs/confdialog.cxx:7596
 msgid "Interleave SYNOP and text"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6067
+#: src/dialogs/confdialog.cxx:7597
 msgid "Interleave text with decoded SYNOP messages, or replacement."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6079
+#: src/dialogs/confdialog.cxx:7609
 msgid "Thor"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6099
+#: src/dialogs/confdialog.cxx:7629
 msgid "Enable DSP prior to decoder"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6141
+#: src/dialogs/confdialog.cxx:7671
 msgid "Preamble Detection"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6142
+#: src/dialogs/confdialog.cxx:7672
 msgid ""
 "Detect the THOR preamble\n"
 "Clear the Rx pipeline"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6147
+#: src/dialogs/confdialog.cxx:7677
 msgid "Soft-symbol decoding"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6148
+#: src/dialogs/confdialog.cxx:7678
 msgid ""
 "Use soft-decision decoding for symbol detection\n"
 "Assists soft-bit decoding"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6153
+#: src/dialogs/confdialog.cxx:7683
 msgid "Soft-bit decoding"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6154
+#: src/dialogs/confdialog.cxx:7684
 msgid ""
 "Use soft-bit viterbi decoding for better Forward Error Correction\n"
 "Works best with soft-symbol decoding enabled"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6184
+#: src/dialogs/confdialog.cxx:7714
 msgid "Navtex"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6186
-msgid "Navtex stations file:"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6187 src/dialogs/confdialog.cxx:6384
-msgid "Use Open to select descriptor file"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6193 src/dialogs/confdialog.cxx:6259
-msgid "Directory..."
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6196
+#: src/dialogs/confdialog.cxx:7716
 msgid "Log Navtex messages to Adif file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6201
+#: src/dialogs/confdialog.cxx:7721
 msgid "Log Navtex messages to KML"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6202
+#: src/dialogs/confdialog.cxx:7722
 msgid ""
 "Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6209
+#: src/dialogs/confdialog.cxx:7729
 msgid "Wefax"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6212
-msgid "Log Wefax messages to Adif file"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6213
-msgid "Sent and received faxes are logged to Adif file."
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6218
+#: src/dialogs/confdialog.cxx:7732
 msgid "Embedded Wefax Gui"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6219
+#: src/dialogs/confdialog.cxx:7733
 msgid ""
 "Display tx and rx in main fldigi window.\n"
 "Change requires restart of fldigi"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6224
-msgid "Frequency shift (800 Hz)"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6225
-msgid "Default 800 Hz. Deutsche Wetterdienst 850Hz"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6239
-msgid "Received fax maximum rows number (5000)"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6240
-msgid "Maximum row number for a received fax image."
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6254
-msgid "Fax images destination directory"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:6262
+#: src/dialogs/confdialog.cxx:7738
 msgid "Hide Transmission window"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6263
+#: src/dialogs/confdialog.cxx:7739
 msgid "Hide transmission window by default."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6268
+#: src/dialogs/confdialog.cxx:7744
+msgid "Log Wefax messages to Adif file"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7745
+msgid "Sent and received faxes are logged to Adif file."
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7750
+msgid "Frequency shift (800 Hz)"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7751 src/dialogs/confdialog.cxx:7762
+msgid "Default 800 Hz. Deutsche Wetterdienst 850Hz"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7761
+msgid "Rx fax max rows"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7772
+msgid "Fax images destination directory"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7777
+msgid "Directory..."
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7780
 msgid "Save image as monochrome file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6269
+#: src/dialogs/confdialog.cxx:7781
 msgid "Save the fax image as a gray-level PNG file."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6282
+#: src/dialogs/confdialog.cxx:7794
 msgid "Rig"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6283
+#: src/dialogs/confdialog.cxx:7795
 msgid "Transceiver control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6287
+#: src/dialogs/confdialog.cxx:7799
 msgid "Hardware PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6290 src/dialogs/confdialog.cxx:7016
+#: src/dialogs/confdialog.cxx:7803 src/dialogs/confdialog.cxx:8530
 msgid "PTT tone on right audio channel "
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6291
+#: src/dialogs/confdialog.cxx:7804
 msgid "Can be used in lieu of or in addition to other PTT types"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6298
+#: src/dialogs/confdialog.cxx:7811
 msgid "h/w ptt device-pin"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6301 src/dialogs/confdialog.cxx:6393
-#: src/dialogs/confdialog.cxx:6566 src/dialogs/confdialog.cxx:6792
-#: src/dialogs/confdialog.cxx:6957
+#: src/dialogs/confdialog.cxx:7814 src/dialogs/confdialog.cxx:7905
+#: src/dialogs/confdialog.cxx:8079 src/dialogs/confdialog.cxx:8306
+#: src/dialogs/confdialog.cxx:8471
 msgid "Device:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6302
+#: src/dialogs/confdialog.cxx:7815
 msgid "Select serial port"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6305
+#: src/dialogs/confdialog.cxx:7818
 msgid "Use RTS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6306
+#: src/dialogs/confdialog.cxx:7819
 msgid "RTS is PTT signal line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6310
+#: src/dialogs/confdialog.cxx:7823
 msgid "RTS = +V"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6311
+#: src/dialogs/confdialog.cxx:7824
 msgid "Initial voltage on RTS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6315
+#: src/dialogs/confdialog.cxx:7828
 msgid "Use DTR"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6316
+#: src/dialogs/confdialog.cxx:7829
 msgid "DTR is PTT signal line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6320
+#: src/dialogs/confdialog.cxx:7833
 msgid "DTR = +V"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6321
+#: src/dialogs/confdialog.cxx:7834
 msgid "Initial voltage on DTR"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6325 src/dialogs/confdialog.cxx:6474
-#: src/dialogs/confdialog.cxx:6700 src/dialogs/confdialog.cxx:6766
-#: src/dialogs/confdialog.cxx:7504
+#: src/dialogs/confdialog.cxx:7838 src/dialogs/confdialog.cxx:7986
+#: src/dialogs/confdialog.cxx:8213 src/dialogs/confdialog.cxx:8280
+#: src/dialogs/confdialog.cxx:9061
 msgid "Initialize"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6326
+#: src/dialogs/confdialog.cxx:7839
 msgid "Initialize the H/W PTT interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6329
+#: src/dialogs/confdialog.cxx:7842
 msgid "Use separate serial port PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6334
+#: src/dialogs/confdialog.cxx:7847
 msgid "Use parallel port PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6339
+#: src/dialogs/confdialog.cxx:7852
 msgid "Use uHRouter PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6346
+#: src/dialogs/confdialog.cxx:7859
 msgid "PTT delays valid for all CAT/PTT types"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6349
+#: src/dialogs/confdialog.cxx:7862
 msgid "Start of transmit PTT delay"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6350
+#: src/dialogs/confdialog.cxx:7863
 msgid "Delay NN msec before starting audio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6359
+#: src/dialogs/confdialog.cxx:7872
 msgid "PTT end of transmit delay"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6360
+#: src/dialogs/confdialog.cxx:7873
 msgid "Delay NN msec before releasing PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6373
+#: src/dialogs/confdialog.cxx:7886
 msgid "RigCAT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6374
+#: src/dialogs/confdialog.cxx:7887
 msgid "Rig Control using xml spec file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6376
+#: src/dialogs/confdialog.cxx:7888
 msgid "Use RigCAT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6377
+#: src/dialogs/confdialog.cxx:7889
 msgid "RigCAT used for rig control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6383
+#: src/dialogs/confdialog.cxx:7895
 msgid "Rig description file:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6390
+#: src/dialogs/confdialog.cxx:7896
+msgid "Use Open to select descriptor file"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:7902
 msgid "Select rig descriptor file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6394
+#: src/dialogs/confdialog.cxx:7906
 msgid "Serial device"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6398 src/dialogs/confdialog.cxx:6571
+#: src/dialogs/confdialog.cxx:7910 src/dialogs/confdialog.cxx:8084
 msgid "Retries"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6399
+#: src/dialogs/confdialog.cxx:7911
 msgid "# retries before giving up"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6415 src/dialogs/confdialog.cxx:6665
+#: src/dialogs/confdialog.cxx:7927 src/dialogs/confdialog.cxx:8178
 msgid "Retry interval (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6416
+#: src/dialogs/confdialog.cxx:7928
 msgid "Time between retires in msec"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6432 src/dialogs/confdialog.cxx:6605
+#: src/dialogs/confdialog.cxx:7944 src/dialogs/confdialog.cxx:8118
 msgid "Write delay (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6448 src/dialogs/confdialog.cxx:6639
+#: src/dialogs/confdialog.cxx:7960 src/dialogs/confdialog.cxx:8152
 msgid "Baud rate:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6449
+#: src/dialogs/confdialog.cxx:7961 src/dialogs/confdialog.cxx:8556
 msgid "Pick baud rate from list"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6455 src/dialogs/confdialog.cxx:6646
+#: src/dialogs/confdialog.cxx:7967 src/dialogs/confdialog.cxx:8159
 msgid "Stopbits"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6475
+#: src/dialogs/confdialog.cxx:7987
 msgid "Initialize RigCAT interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6478
+#: src/dialogs/confdialog.cxx:7990
 msgid "Commands are echoed"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6479
+#: src/dialogs/confdialog.cxx:7991
 msgid "Rig or interface echos serial data"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6484
+#: src/dialogs/confdialog.cxx:7996
 msgid "CAT command for PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6485
+#: src/dialogs/confdialog.cxx:7997
 msgid "PTT is a CAT command (not hardware)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6491
+#: src/dialogs/confdialog.cxx:8003
 msgid "Toggle RTS for PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6492
+#: src/dialogs/confdialog.cxx:8004
 msgid "RTS is ptt line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6497
+#: src/dialogs/confdialog.cxx:8009
 msgid "Toggle DTR for PTT"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6498
+#: src/dialogs/confdialog.cxx:8010
 msgid "DTR is ptt line"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6503
+#: src/dialogs/confdialog.cxx:8015
 msgid "RTS +12 v"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6504 src/dialogs/confdialog.cxx:6724
+#: src/dialogs/confdialog.cxx:8016 src/dialogs/confdialog.cxx:8237
 msgid "Initial state of RTS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6509
+#: src/dialogs/confdialog.cxx:8021
 msgid "DTR +12 v"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6510 src/dialogs/confdialog.cxx:6718
+#: src/dialogs/confdialog.cxx:8022 src/dialogs/confdialog.cxx:8231
 msgid "Initial state of DTR"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6515 src/dialogs/confdialog.cxx:6729
+#: src/dialogs/confdialog.cxx:8027 src/dialogs/confdialog.cxx:8242
 msgid "RTS/CTS flow control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6516
+#: src/dialogs/confdialog.cxx:8028
 msgid "Rig uses RTS/CTS handshake"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6521
+#: src/dialogs/confdialog.cxx:8033
 msgid "Restore Settings on Close"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6522
+#: src/dialogs/confdialog.cxx:8034
 msgid "Restore the serial (COM) port settings"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6527 src/dialogs/confdialog.cxx:6742
+#: src/dialogs/confdialog.cxx:8039 src/dialogs/confdialog.cxx:8255
 msgid "Revert"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6528 src/dialogs/confdialog.cxx:6701
-#: src/dialogs/confdialog.cxx:6743
-msgid "Initialize hamlib interface"
+#: src/dialogs/confdialog.cxx:8040
+msgid "Reset rigCAT interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6532
+#: src/dialogs/confdialog.cxx:8045
 msgid "VSP Enable"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6533
+#: src/dialogs/confdialog.cxx:8046
 msgid "Virtual Serial Port Emulator - suppress WARNINGS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6542
+#: src/dialogs/confdialog.cxx:8055
 msgid "Hamlib"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6544
+#: src/dialogs/confdialog.cxx:8057
 msgid "Use Hamlib"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6545
+#: src/dialogs/confdialog.cxx:8058
 msgid "Hamlib used for rig control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6551
+#: src/dialogs/confdialog.cxx:8064
 msgid "Rig:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6552
+#: src/dialogs/confdialog.cxx:8065
 msgid "Select the rig by name"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6567
+#: src/dialogs/confdialog.cxx:8080
 msgid "Serial port"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6572
+#: src/dialogs/confdialog.cxx:8085
 msgid "# times to resend command before giving up"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6588
+#: src/dialogs/confdialog.cxx:8101
 msgid "Retry Interval (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6589 src/dialogs/confdialog.cxx:6666
+#: src/dialogs/confdialog.cxx:8102 src/dialogs/confdialog.cxx:8179
 msgid "Msec's between retries"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6606
+#: src/dialogs/confdialog.cxx:8119
 msgid "Msec's between sequential commands"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6622
+#: src/dialogs/confdialog.cxx:8135
 msgid "Post write delay (ms)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6623
+#: src/dialogs/confdialog.cxx:8136
 msgid "Wait interval (msecs) before reading response"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6640
+#: src/dialogs/confdialog.cxx:8153
 msgid "Serial port baud rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6685
+#: src/dialogs/confdialog.cxx:8198
 msgid "Advanced configuration:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6686
+#: src/dialogs/confdialog.cxx:8199
 msgid ""
 "Optional configuration\n"
 "in format: param=val ..."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6704
+#: src/dialogs/confdialog.cxx:8214
+msgid "Initialize hamlib interface"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8217
 msgid "Sideband:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6705
+#: src/dialogs/confdialog.cxx:8218
 msgid ""
 "Force the rig sideband. Takes\n"
 "effect when rig mode changes."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6710
+#: src/dialogs/confdialog.cxx:8223
 msgid "PTT via Hamlib command"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6711
+#: src/dialogs/confdialog.cxx:8224
 msgid "PTT is a hamlib command"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6717
+#: src/dialogs/confdialog.cxx:8230
 msgid "DTR +12"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6723
+#: src/dialogs/confdialog.cxx:8236
 msgid "RTS +12"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6730
+#: src/dialogs/confdialog.cxx:8243
 msgid "Rig requires RTS/CTS flow control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6736
+#: src/dialogs/confdialog.cxx:8249
 msgid "XON/XOFF flow control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6737
+#: src/dialogs/confdialog.cxx:8250
 msgid "Rig requires Xon/Xoff flow control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6751
+#: src/dialogs/confdialog.cxx:8256
+msgid "Reset hamlib interface"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8265
 msgid "XML-RPC"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6759
+#: src/dialogs/confdialog.cxx:8273
 msgid ""
 "Rig control via external\n"
 "program using xmlrpc\n"
 "remote calls."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6761
+#: src/dialogs/confdialog.cxx:8275
 msgid "Use XML-RPC program"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6762
+#: src/dialogs/confdialog.cxx:8276
 msgid "Experimental"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6767
+#: src/dialogs/confdialog.cxx:8281
 msgid "Initialize XML-RPC rig control"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6779
+#: src/dialogs/confdialog.cxx:8293
 msgid "Audio devices"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6783
+#: src/dialogs/confdialog.cxx:8297
 msgid "Devices"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6786
+#: src/dialogs/confdialog.cxx:8300
 msgid "OSS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6787
+#: src/dialogs/confdialog.cxx:8301
 msgid "Use OSS audio server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6793
+#: src/dialogs/confdialog.cxx:8307
 msgid "Select device"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6801
+#: src/dialogs/confdialog.cxx:8315
 msgid "PortAudio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6802
+#: src/dialogs/confdialog.cxx:8316
 msgid "Use Port Audio server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6807
+#: src/dialogs/confdialog.cxx:8321
 msgid "Capture:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6808
+#: src/dialogs/confdialog.cxx:8322
 msgid "Audio input device"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6812
+#: src/dialogs/confdialog.cxx:8326
 msgid "Playback:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6813
+#: src/dialogs/confdialog.cxx:8327
 msgid "Audio output device"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6821
+#: src/dialogs/confdialog.cxx:8335
 msgid "PulseAudio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6822
+#: src/dialogs/confdialog.cxx:8336
 msgid "Use Pulse Audio server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6827
+#: src/dialogs/confdialog.cxx:8341
 msgid "Server string:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6828
+#: src/dialogs/confdialog.cxx:8342
 msgid ""
 "Leave this blank or refer to\n"
 "http://www.pulseaudio.org/wiki/ServerStrings"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6846
+#: src/dialogs/confdialog.cxx:8360
 msgid "File I/O only"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6847
+#: src/dialogs/confdialog.cxx:8361
 msgid "NO AUDIO DEVICE AVAILABLE (or testing)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6856
+#: src/dialogs/confdialog.cxx:8370
 msgid "Settings"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6858
+#: src/dialogs/confdialog.cxx:8372
 msgid "Sample rate"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6861
+#: src/dialogs/confdialog.cxx:8375
 msgid "Capture"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6862
+#: src/dialogs/confdialog.cxx:8376
 msgid ""
 "Force a specific sample rate. Select \"Native\" if \"Auto\"\n"
 "does not work well with your audio device."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6880
+#: src/dialogs/confdialog.cxx:8394
 msgid "Converter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6881
+#: src/dialogs/confdialog.cxx:8395
 msgid "Set the type of resampler used of offset correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6888
+#: src/dialogs/confdialog.cxx:8402
 msgid "Corrections"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6891
+#: src/dialogs/confdialog.cxx:8405
 msgid "RX ppm"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6892
+#: src/dialogs/confdialog.cxx:8406
 msgid "RX sound card correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6908
+#: src/dialogs/confdialog.cxx:8422
 msgid "TX ppm"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6909
+#: src/dialogs/confdialog.cxx:8423
 msgid "TX sound card correction"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6925
+#: src/dialogs/confdialog.cxx:8439
 msgid "TX offset"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6926
+#: src/dialogs/confdialog.cxx:8440
 msgid "Difference between Rx & Tx freq (rig offset)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6946
+#: src/dialogs/confdialog.cxx:8460
 msgid "Mixer"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6948
-msgid "OSS mixer"
+#: src/dialogs/confdialog.cxx:8462
+msgid "OSS Mixer"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6951
+#: src/dialogs/confdialog.cxx:8465
 msgid "Manage mixer"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6952
+#: src/dialogs/confdialog.cxx:8466
 msgid "Add mixer controls to main dialog"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6958
+#: src/dialogs/confdialog.cxx:8472
 msgid "Select Mixer device"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6962
+#: src/dialogs/confdialog.cxx:8476
 msgid "Mic In"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6963
+#: src/dialogs/confdialog.cxx:8477
 msgid "Use microphone input"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6966
+#: src/dialogs/confdialog.cxx:8480
 msgid "Line In"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6967
+#: src/dialogs/confdialog.cxx:8481
 msgid "Use Line-In device"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6971
+#: src/dialogs/confdialog.cxx:8485
 msgid "PCM"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6972
+#: src/dialogs/confdialog.cxx:8486
 msgid "Set the sound card PCM level"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6992
+#: src/dialogs/confdialog.cxx:8506
 msgid "Right channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6994
+#: src/dialogs/confdialog.cxx:8508
 msgid "Mono audio output"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:6995
+#: src/dialogs/confdialog.cxx:8509
 msgid "Force output audio to single channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7000
+#: src/dialogs/confdialog.cxx:8514
 msgid "Modem signal on left and right channels"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7001
+#: src/dialogs/confdialog.cxx:8515
 msgid "Left and right channels both contain modem audio"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7006
+#: src/dialogs/confdialog.cxx:8520
 msgid "Reverse Left/Right channels"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7007
+#: src/dialogs/confdialog.cxx:8521
 msgid "Software reversal of left-right audio channels"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7012
+#: src/dialogs/confdialog.cxx:8526
 msgid ""
 "...\n"
 "These controls are on other tabs.\n"
@@ -4416,850 +4492,1100 @@ msgid ""
 "..."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7017
+#: src/dialogs/confdialog.cxx:8531
 msgid ""
 "1000 Hz tone when PTT enabled\n"
 "Can be used in lieu of or in addition to other PTT types"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7023
+#: src/dialogs/confdialog.cxx:8537
 msgid "CW QSK signal on right channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7024
+#: src/dialogs/confdialog.cxx:8538
 msgid "Generate 1000 Hz square wave signal on right channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7029
+#: src/dialogs/confdialog.cxx:8543
 msgid "Pseudo-FSK on right audio channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7030
+#: src/dialogs/confdialog.cxx:8544
 msgid "Create 1000 Hz square wave on right channel"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7043
+#: src/dialogs/confdialog.cxx:8553
+msgid "Wav"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8555
+msgid "Wav write sample rate"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8569
 msgid "ID"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7045
-msgid "Video Preamble ID"
+#: src/dialogs/confdialog.cxx:8572
+msgid "RsID"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7048
-msgid "Transmit mode ID"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7049
-msgid "Waterfall video ID"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7053
-msgid "Transmit video text"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7054
-msgid "Waterfall video text"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7059
-msgid ":"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7060
-msgid ""
-"Limit to a few characters,\n"
-"as in CQEM or IOTA etc."
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7074
-msgid "Use small font"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7075
-msgid ""
-"ON - small font\n"
-"OFF - large font"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7081
-msgid "Chars/Row:"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7082
-msgid "Set the number of characters per row"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7102
-msgid "500 Hz limit"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7107
-msgid "Mode width limit"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7112
-msgid "Video ID modes"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7117
-msgid "CW Postamble ID"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7120
-msgid "Transmit callsign"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7121
-msgid "Send Callsign in CW at end of every transmission"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7126
-msgid "Speed (WPM):"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7127
-msgid "Send at this WPM"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7147
-msgid "CW ID modes"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7152
+#: src/dialogs/confdialog.cxx:8573
 msgid "Reed-Solomon ID (Rx)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7155
-msgid "Detector searches entire passband"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7156
-msgid ""
-"ON - search over entire waterfall\n"
-"OFF - limit search to +/- 200 Hz"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7161
-msgid "Mark previous frequency and mode"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7162
-msgid ""
-"Insert RX text marker before\n"
-"changing frequency and modem"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7167
-msgid "Reception disables detector"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7168
-msgid "Disable further detection when RSID is received"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7175
+#: src/dialogs/confdialog.cxx:8576
 msgid "Notify only"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7176
+#: src/dialogs/confdialog.cxx:8577
 msgid ""
 "Check this to be notified when an RSID is received\n"
 "without changing modem and frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7182
+#: src/dialogs/confdialog.cxx:8583
 msgid "Receive modes"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7185
+#: src/dialogs/confdialog.cxx:8586
+msgid "Searches passband"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8587
+msgid ""
+"ON - search over entire waterfall\n"
+"OFF - limit search to +/- 200 Hz"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8592
+msgid "Mark prev freq/mode"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8593
+msgid ""
+"Insert RX text marker before\n"
+"changing frequency and modem"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8598
+msgid "Disables detector"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8599
+msgid "Disable further detection when RSID is received"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8606
+msgid "Allow errors"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8607
+msgid ""
+"Low = zero errors\n"
+"Medium = 1 error\n"
+"High = 2 errors"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8611
+msgid "Medium"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8614
 msgid "Squelch open (sec)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7186
+#: src/dialogs/confdialog.cxx:8615
 msgid "Open squelch for nn sec if RSID detected"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7204
-msgid "Sensitivity"
+#: src/dialogs/confdialog.cxx:8633
+msgid "Disable alert dialog"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7205
+#: src/dialogs/confdialog.cxx:8634
+msgid "Do not show RsID alert dialog box"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8639
+msgid "Retain tx freq lock"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8640
+msgid "Retain TX lock frequency (Lk) when changing to RX RsID frequency"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8645
+msgid "Disable freq change"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8646
+msgid "Do not automatically change to RX RsID frequency"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8651
 msgid ""
-"2 = low sensitivity / decreased false detection\n"
-"5 = high sensitivity / increased false detection"
+"The RsID notification message contents and \n"
+"display characteristics are configured on the\n"
+"\"Notifications\" configure dialog."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7228
-msgid "Reed-Solomon ID (Tx)"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7231
-msgid "Transmit modes"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7234
-msgid "End of xmt ID"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7235
-msgid "Add RsID signal to end of transmission"
-msgstr ""
-
-#: src/dialogs/confdialog.cxx:7242
+#: src/dialogs/confdialog.cxx:8659
 msgid "Pre-Signal Tone"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7245
+#: src/dialogs/confdialog.cxx:8662
 msgid "Seconds"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7246
+#: src/dialogs/confdialog.cxx:8663
 msgid "Use for triggering amplifier carrier detect"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7260
+#: src/dialogs/confdialog.cxx:8671
+msgid "Reed-Solomon ID (Tx)"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8674
+msgid "Transmit modes"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8677
+msgid "End of xmt ID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8678
+msgid "Add RsID signal to end of transmission"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8687
+msgid "Video"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8689
+msgid "Video Preamble ID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8692
+msgid "Transmit mode ID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8693
+msgid "Waterfall video ID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8697
+msgid "Transmit video text"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8698
+msgid "Waterfall video text"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8703
+msgid ":"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8704
+msgid ""
+"Limit to a few characters,\n"
+"as in CQEM or IOTA etc."
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8718
+msgid "Use small font"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8719
+msgid ""
+"ON - small font\n"
+"OFF - large font"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8725
+msgid "Chars/Row:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8726
+msgid "Set the number of characters per row"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8746
+msgid "500 Hz limit"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8751
+msgid "Mode width limit"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8756
+msgid "Video ID modes"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8765
+msgid "CW Postamble ID"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8768
+msgid "Transmit callsign"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8769
+msgid "Send Callsign in CW at end of every transmission"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8774
+msgid "Speed (WPM):"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8775
+msgid "Send at this WPM"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8795
+msgid "CW ID modes"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:8810
 msgid "CPU"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7264
+#: src/dialogs/confdialog.cxx:8814
 msgid "Slow CPU (less than 700MHz)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7265
+#: src/dialogs/confdialog.cxx:8815
 msgid "Enable if you're computer does not decode properly"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7274
+#: src/dialogs/confdialog.cxx:8824
 msgid "NBEMS"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7276
+#: src/dialogs/confdialog.cxx:8826
 msgid "NBEMS data file interface"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7279
+#: src/dialogs/confdialog.cxx:8829
 msgid "Enable"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7280
+#: src/dialogs/confdialog.cxx:8830
 msgid "Extract files for use with external \"wrap / flmsg\" program"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7285
+#: src/dialogs/confdialog.cxx:8835
 msgid "Open message folder"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7286
+#: src/dialogs/confdialog.cxx:8836
 msgid "Opens NBEMS file folder upon successful capture"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7293
+#: src/dialogs/confdialog.cxx:8843
 msgid "Reception of flmsg files"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7296
+#: src/dialogs/confdialog.cxx:8846
 msgid "Open with flmsg"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7297
+#: src/dialogs/confdialog.cxx:8847
 msgid "Open message with flmsg"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7302
+#: src/dialogs/confdialog.cxx:8852
 msgid "Open in browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7303
+#: src/dialogs/confdialog.cxx:8853
 msgid "Open file with default browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7308
+#: src/dialogs/confdialog.cxx:8858
 msgid "flmsg:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7309
+#: src/dialogs/confdialog.cxx:8859
 msgid "Enter full path-filename for flmsg"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7322
+#: src/dialogs/confdialog.cxx:8872
 msgid "Locate flmsg"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7326
+#: src/dialogs/confdialog.cxx:8876
 msgid "Timeout (secs)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7327
+#: src/dialogs/confdialog.cxx:8877
 msgid "Extract times out after NN seconds of inactivity."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7344
+#: src/dialogs/confdialog.cxx:8894
 msgid "Pskmail"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7347
+#: src/dialogs/confdialog.cxx:8897
 msgid "Mail Server Attributes"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7350
+#: src/dialogs/confdialog.cxx:8900
 msgid "Carrier frequency (Hz)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7351
+#: src/dialogs/confdialog.cxx:8901
 msgid "Default listen / transmit frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7370
+#: src/dialogs/confdialog.cxx:8920
 msgid "Search range (Hz)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7371
+#: src/dialogs/confdialog.cxx:8921
 msgid "Listen for signals within this range"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7410
+#: src/dialogs/confdialog.cxx:8960
 msgid "AFC range (Hz)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7411
+#: src/dialogs/confdialog.cxx:8961
 msgid "Limit AFC movement to this range"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7430
+#: src/dialogs/confdialog.cxx:8980
 msgid "Reset to Carrier"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7431
+#: src/dialogs/confdialog.cxx:8981
 msgid "When no signal present"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7442
+#: src/dialogs/confdialog.cxx:8992
 msgid "Report ARQ frames average S/N"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7451
+#: src/dialogs/confdialog.cxx:9001
 msgid "Spotting"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7453
+#: src/dialogs/confdialog.cxx:9003
 msgid "PSK Reporter"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7456
+#: src/dialogs/confdialog.cxx:9006
 msgid "Automatically spot callsigns in decoded text"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7457
+#: src/dialogs/confdialog.cxx:9007
 msgid "Parse all incoming text"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7462
+#: src/dialogs/confdialog.cxx:9012
 msgid "Send reception report when logging a QSO"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7463
+#: src/dialogs/confdialog.cxx:9013
 msgid "Send report only when QSO is logged"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7468
+#: src/dialogs/confdialog.cxx:9018
 msgid "Report rig frequency (enable only if you have rig control!)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7469
+#: src/dialogs/confdialog.cxx:9019
 msgid "Include the transmit frequency"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7474
+#: src/dialogs/confdialog.cxx:9024
+msgid "Disable spotting when signal browser(s) are not visible."
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9025
+msgid "Check to reduce CPU load in PSK and RTTY modes."
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9031
 msgid "Host:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7475
+#: src/dialogs/confdialog.cxx:9032
 msgid "To whom the connection is made"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7490
+#: src/dialogs/confdialog.cxx:9047
 msgid "Using UDP port #"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7505
+#: src/dialogs/confdialog.cxx:9062
 msgid "Initialize the socket client"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7508
+#: src/dialogs/confdialog.cxx:9065
 msgid "<PSK Reporter error message>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7516
+#: src/dialogs/confdialog.cxx:9073
 msgid "Sweet Spot"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7522
+#: src/dialogs/confdialog.cxx:9079
 msgid "Default CW tracking point"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7541
+#: src/dialogs/confdialog.cxx:9098
 msgid "Default RTTY tracking point"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7559
+#: src/dialogs/confdialog.cxx:9116
 msgid "PSK et al."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7560
+#: src/dialogs/confdialog.cxx:9117
 msgid "Default for all other modems"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7578
+#: src/dialogs/confdialog.cxx:9135
 msgid "Always start new modems at these frequencies"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7579
+#: src/dialogs/confdialog.cxx:9136
 msgid ""
 "ON - start at default\n"
 "OFF - keep current wf cursor position"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7587
+#: src/dialogs/confdialog.cxx:9144
 msgid "K3 A1A configuation"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7590
+#: src/dialogs/confdialog.cxx:9147
 msgid "CW is LSB"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7591
+#: src/dialogs/confdialog.cxx:9148
 msgid ""
 "Select this for Elecraft K3\n"
 "Other radios should not need it."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7600
+#: src/dialogs/confdialog.cxx:9157
 msgid "Text i/o"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7602
+#: src/dialogs/confdialog.cxx:9159
 msgid "Talker Socket (MS only)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7605
+#: src/dialogs/confdialog.cxx:9162
 msgid "Talker"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7609
+#: src/dialogs/confdialog.cxx:9166
 msgid "Connect/disconnect to Talker socket server"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7612
+#: src/dialogs/confdialog.cxx:9169
 msgid "Auto connect when fldigi opens (server must be up)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7619
+#: src/dialogs/confdialog.cxx:9176
 msgid "Capture rx text to external file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7622
+#: src/dialogs/confdialog.cxx:9179
 msgid "Enable rx text stream"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7623 src/dialogs/confdialog.cxx:7635
+#: src/dialogs/confdialog.cxx:9180 src/dialogs/confdialog.cxx:9192
 msgid "Send rx text to file: textout.txt"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7632
+#: src/dialogs/confdialog.cxx:9189
 msgid "DTMF"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7634
+#: src/dialogs/confdialog.cxx:9191
 msgid "Decode DTMF tones"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7642
+#: src/dialogs/confdialog.cxx:9199
 msgid "WX"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7644
+#: src/dialogs/confdialog.cxx:9201
 msgid "Weather query specification"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7647
+#: src/dialogs/confdialog.cxx:9204
 msgid "METAR station ID code"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7648
+#: src/dialogs/confdialog.cxx:9205
 msgid ""
 "for example KMDQ for \n"
 "Huntsville-Madison Executive Airport, AL"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7653
+#: src/dialogs/confdialog.cxx:9210
 msgid "Full report"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7654
+#: src/dialogs/confdialog.cxx:9211
 msgid "Insert full METAR report"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7659
+#: src/dialogs/confdialog.cxx:9216
+msgid "End of header string:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9217
+msgid ""
+"Text defining end of METAR header\n"
+"Typically 'Connection: close'\n"
+"Used to search for station name"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9223
 msgid "METAR station location"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7660
+#: src/dialogs/confdialog.cxx:9224
 msgid "Add geopolitical name of METAR station"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7665
+#: src/dialogs/confdialog.cxx:9229
 msgid "Conditions"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7666
+#: src/dialogs/confdialog.cxx:9230
 msgid "current wx conditions"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7671
+#: src/dialogs/confdialog.cxx:9235
 msgid "Fahrenheit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7672
+#: src/dialogs/confdialog.cxx:9236
 msgid "report Fahrenheit"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7677
+#: src/dialogs/confdialog.cxx:9241
 msgid "Celsius"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7678
+#: src/dialogs/confdialog.cxx:9242
 msgid "report Celsius"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7683
+#: src/dialogs/confdialog.cxx:9247
 msgid "Miles / Hour"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7684
+#: src/dialogs/confdialog.cxx:9248
 msgid "report miles per hour"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7689
+#: src/dialogs/confdialog.cxx:9253
 msgid "kilometers / hour"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7690
+#: src/dialogs/confdialog.cxx:9254
 msgid "report kilometers per hour"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7695
+#: src/dialogs/confdialog.cxx:9259
 msgid "Inches Mg."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7696
+#: src/dialogs/confdialog.cxx:9260
 msgid "report inches mercury"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7701
+#: src/dialogs/confdialog.cxx:9265
 msgid "mbars"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7702
+#: src/dialogs/confdialog.cxx:9266
 msgid "report millibars"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7707
+#: src/dialogs/confdialog.cxx:9271
 msgid "Temperature"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7710
+#: src/dialogs/confdialog.cxx:9274
 msgid "Wind speed/dir"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7713
+#: src/dialogs/confdialog.cxx:9277
 msgid "Barometric pressure"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7716
+#: src/dialogs/confdialog.cxx:9280
 msgid "Search on  web"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7723
+#: src/dialogs/confdialog.cxx:9287
 msgid "KML"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7725
+#: src/dialogs/confdialog.cxx:9289
 msgid "KML files directory"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7726
+#: src/dialogs/confdialog.cxx:9290
 msgid "Where generated KML documents are stored."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7731
+#: src/dialogs/confdialog.cxx:9295
 msgid "KML root file"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7735
+#: src/dialogs/confdialog.cxx:9299
 msgid "Minimum distance for splitting aliases (Meters)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7736
+#: src/dialogs/confdialog.cxx:9300
 msgid "Minimum distance for splitting alias nodes (Meters)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7746
+#: src/dialogs/confdialog.cxx:9310
 msgid "Data retention time, in hours (0 for no limit)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7747
+#: src/dialogs/confdialog.cxx:9311
 msgid ""
 "Number of hours data is kept for each node. Zero means keeping everything."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7756
+#: src/dialogs/confdialog.cxx:9320
 msgid "KML refresh interval (seconds)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7757
+#: src/dialogs/confdialog.cxx:9321
 msgid "Refresh time interval written in KML file (Seconds)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7773
+#: src/dialogs/confdialog.cxx:9337
 msgid "KML balloon display style"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7774
+#: src/dialogs/confdialog.cxx:9338
 msgid "KML balloon in plain text, or HTML, in plain tables or matrices."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7781
+#: src/dialogs/confdialog.cxx:9345
 msgid "Command run on KML creation"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7782
+#: src/dialogs/confdialog.cxx:9346
 msgid ""
 "Command started when KML files are generated. Subprocesses are started once, "
 "and restarted if needed."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7788
+#: src/dialogs/confdialog.cxx:9352
 msgid "Test command"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7789
+#: src/dialogs/confdialog.cxx:9353
 msgid "Execute command on KML files."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7792
+#: src/dialogs/confdialog.cxx:9356
 msgid "Change dir..."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7793
+#: src/dialogs/confdialog.cxx:9357
 msgid "Choose directory to store KML documents"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7796
+#: src/dialogs/confdialog.cxx:9360
 msgid "Cleanup KML data now !"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7797
+#: src/dialogs/confdialog.cxx:9361
 msgid "Cleanups KML documents, empties Google Earth display."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7800
+#: src/dialogs/confdialog.cxx:9364
 msgid "Cleanup on startup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7801
+#: src/dialogs/confdialog.cxx:9365
 msgid "Empties KML documents when starting program."
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7812
+#: src/dialogs/confdialog.cxx:9376
 msgid "Web"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7813
+#: src/dialogs/confdialog.cxx:9377
 msgid "Callsign database"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7816
+#: src/dialogs/confdialog.cxx:9380
 msgid "Call Lookup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7817
+#: src/dialogs/confdialog.cxx:9381
 msgid "Web Browser lookup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7821
+#: src/dialogs/confdialog.cxx:9385
 msgid "Do not use callsign lookup via web browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7827
+#: src/dialogs/confdialog.cxx:9391
 msgid "QRZ online via default Internet Browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7828
+#: src/dialogs/confdialog.cxx:9392
 msgid "Visit QRZ web site"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7833
+#: src/dialogs/confdialog.cxx:9397
 msgid "HamCall online via default Internet Browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7834 src/dialogs/confdialog.cxx:7882
+#: src/dialogs/confdialog.cxx:9398 src/dialogs/confdialog.cxx:9446
 msgid "Visit Hamcall web site"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7839
+#: src/dialogs/confdialog.cxx:9403
 msgid "HamQTH via default Internet Browser"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7840
+#: src/dialogs/confdialog.cxx:9404
 msgid "Visit hamQTH web site"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7847
+#: src/dialogs/confdialog.cxx:9411
 msgid "Data base lookup"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7851
+#: src/dialogs/confdialog.cxx:9415
 msgid "Do not use callsign database"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7857
+#: src/dialogs/confdialog.cxx:9421
 msgid "QRZ cdrom"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7858
+#: src/dialogs/confdialog.cxx:9422
 msgid "Use CD or hard drive CD image"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7863
+#: src/dialogs/confdialog.cxx:9427
 msgid "QRZ.com"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7864
+#: src/dialogs/confdialog.cxx:9428
 msgid ""
 "You need a paid QRZ online\n"
 "subscription to access"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7869
+#: src/dialogs/confdialog.cxx:9433
 msgid "Hamcall.net"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7870
+#: src/dialogs/confdialog.cxx:9434
 msgid ""
 "You need a paid Hamcall online\n"
 "subscription to access"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7875
+#: src/dialogs/confdialog.cxx:9439
 msgid "HamQTH.com (free service http://www.hamqth.com)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7876
+#: src/dialogs/confdialog.cxx:9440
 msgid "Free service courtesy of OK"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7881
+#: src/dialogs/confdialog.cxx:9445
 msgid "Callook.info lookup (free service US callsigns only)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7887
+#: src/dialogs/confdialog.cxx:9451
 msgid "at:"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7888
+#: src/dialogs/confdialog.cxx:9452
 msgid ""
 "ie: /home/dave/CALLBK/ or C:/CALLBK/\n"
 "Leave blank to search for database"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7902
+#: src/dialogs/confdialog.cxx:9466
 msgid "User name"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7903 src/dialogs/confdialog.cxx:7944
-#: src/dialogs/confdialog.cxx:7979
+#: src/dialogs/confdialog.cxx:9467 src/dialogs/confdialog.cxx:9508
+#: src/dialogs/confdialog.cxx:9543
 msgid "Your login name"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7917 src/dialogs/confdialog.cxx:7958
+#: src/dialogs/confdialog.cxx:9481 src/dialogs/confdialog.cxx:9522
 msgid "Password"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7918 src/dialogs/confdialog.cxx:7959
+#: src/dialogs/confdialog.cxx:9482 src/dialogs/confdialog.cxx:9523
 msgid "Your login password"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7933 src/dialogs/confdialog.cxx:7974
+#: src/dialogs/confdialog.cxx:9497 src/dialogs/confdialog.cxx:9538
 msgid "Show"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7934 src/dialogs/confdialog.cxx:7975
+#: src/dialogs/confdialog.cxx:9498 src/dialogs/confdialog.cxx:9539
 msgid "Show password in plain text"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7941
+#: src/dialogs/confdialog.cxx:9505
 msgid "eQSL"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7943
+#: src/dialogs/confdialog.cxx:9507
 msgid "User ID"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7978
+#: src/dialogs/confdialog.cxx:9542
 msgid "QTH Nickname"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7993
+#: src/dialogs/confdialog.cxx:9557
 msgid "Options"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7996
+#: src/dialogs/confdialog.cxx:9560
 msgid "send when logged (log button, <LOG>, <LNW>)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:7997
+#: src/dialogs/confdialog.cxx:9561
 msgid "automatic data upload"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8002
+#: src/dialogs/confdialog.cxx:9566
 msgid "Default message"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8003
+#: src/dialogs/confdialog.cxx:9567
 msgid "default text to send with <LOG> etc"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8017
+#: src/dialogs/confdialog.cxx:9581
 msgid "Text Tags (tags use {} delimiters)"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8020
+#: src/dialogs/confdialog.cxx:9584
 msgid "{CALL} other ops call sign"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8023
+#: src/dialogs/confdialog.cxx:9587
 msgid "{MODE} full mode / submode"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8026
+#: src/dialogs/confdialog.cxx:9590
 msgid "{NAME} other ops name"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8029
+#: src/dialogs/confdialog.cxx:9593
 msgid "These tags can also be used in <EQSL:[message]>"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8033
+#: src/dialogs/confdialog.cxx:9597
 msgid "Use date/time off for log entry"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8034
+#: src/dialogs/confdialog.cxx:9598
 msgid "default uses date/time on"
 msgstr ""
 
-#: src/dialogs/confdialog.cxx:8055
+#: src/dialogs/confdialog.cxx:9616
+msgid "Auto start programs with fldigi"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9619
+msgid "flrig:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9620 src/dialogs/confdialog.cxx:9638
+#: src/dialogs/confdialog.cxx:9656 src/dialogs/confdialog.cxx:9674
+#: src/dialogs/confdialog.cxx:9692 src/dialogs/confdialog.cxx:9710
+#: src/dialogs/confdialog.cxx:9728
+msgid ""
+"Enter full path-filename for external program\n"
+"Or simple name of program"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9633 src/dialogs/confdialog.cxx:9651
+#: src/dialogs/confdialog.cxx:9669 src/dialogs/confdialog.cxx:9687
+#: src/dialogs/confdialog.cxx:9705 src/dialogs/confdialog.cxx:9723
+#: src/dialogs/confdialog.cxx:9741
+msgid "Locate"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9634
+msgid "Locate flrig executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9637
+msgid "flamp:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9652
+msgid "Locate flamp executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9655
+msgid "flnet:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9670
+msgid "Locate flnet executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9673
+msgid "fllog:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9688
+msgid "Locate fllog executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9691
+msgid "Prog 1:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9706
+msgid "Locate program #1 executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9709
+msgid "Prog 2:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9724
+msgid "Locate program #2 executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9727
+msgid "Prog 3:"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9742
+msgid "Locate program #3 executable"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9745
+msgid ""
+"Enable\n"
+"-"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9746 src/dialogs/confdialog.cxx:9753
+#: src/dialogs/confdialog.cxx:9759 src/dialogs/confdialog.cxx:9765
+#: src/dialogs/confdialog.cxx:9771 src/dialogs/confdialog.cxx:9777
+#: src/dialogs/confdialog.cxx:9783
+msgid "Enable this entry when fldigi first starts"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9788 src/dialogs/confdialog.cxx:9792
+#: src/dialogs/confdialog.cxx:9796 src/dialogs/confdialog.cxx:9800
+#: src/dialogs/confdialog.cxx:9804 src/dialogs/confdialog.cxx:9808
+#: src/dialogs/confdialog.cxx:9812
+msgid "Test"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9789
+msgid "Start flrig"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9793
+msgid "Start flamp"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9797
+msgid "Start flnet"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9801
+msgid "Start fllog"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9805
+msgid "Start prog1"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9809
+msgid "Start prog2"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9813
+msgid "Start prog3"
+msgstr ""
+
+#: src/dialogs/confdialog.cxx:9828
 msgid "Restore defaults"
+msgstr ""
+
+#: src/dialogs/font_browser.cxx:51
+msgid "Font color"
+msgstr ""
+
+#: src/dialogs/font_browser.cxx:122
+msgid "Font:"
+msgstr ""
+
+#: src/dialogs/font_browser.cxx:127
+msgid "Size:"
+msgstr ""
+
+#: src/dialogs/font_browser.cxx:137
+msgid "&OK"
+msgstr ""
+
+#: src/dialogs/font_browser.cxx:151
+msgid ""
+"That crazy fox jumped over the dog again!\n"
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789\n"
+"!\"#$%&'()*+,-./:;<=>?@@[\\]^_`{|}~"
+msgstr ""
+
+#: src/dialogs/font_browser.cxx:287
+msgid "Reading fonts..."
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:25 src/dialogs/record_browse.cxx:30
+msgid "Data files sources"
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:27
+msgid "Data files update"
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:29
+msgid "Tabular data sources"
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:43
+msgid "Data source"
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:44
+msgid "Data files repository"
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:48
+msgid "Update selected local data files with repository content"
+msgstr ""
+
+#: src/dialogs/record_browse.cxx:52
+msgid "Delete local data files if selected."
 msgstr ""
 
 #: src/dialogs/notifydialog.cxx:106
@@ -5370,336 +5696,344 @@ msgstr ""
 msgid "Find prefix:"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:392
+#: src/logbook/lgbook.cxx:396
 msgid "Export Setup"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:393 src/logbook/lgbook.cxx:1020
+#: src/logbook/lgbook.cxx:397 src/logbook/lgbook.cxx:1039
 msgid "Select Records to Export"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:401 src/logbook/lgbook.cxx:451
-#: src/logbook/lgbook.cxx:1028 src/logbook/lgbook.cxx:1102
+#: src/logbook/lgbook.cxx:405 src/logbook/lgbook.cxx:455
+#: src/logbook/lgbook.cxx:1047 src/logbook/lgbook.cxx:1121
 msgid "Check All"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:404
+#: src/logbook/lgbook.cxx:408
 msgid "Start Date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:405
+#: src/logbook/lgbook.cxx:409
 msgid "Start date for export"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:418
+#: src/logbook/lgbook.cxx:422
 msgid "Stop Date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:419
+#: src/logbook/lgbook.cxx:423
 msgid "Inclusive stop date for export"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:432
+#: src/logbook/lgbook.cxx:436
 msgid "select by date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:433
+#: src/logbook/lgbook.cxx:437
 msgid "Enable to select date range"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:445
+#: src/logbook/lgbook.cxx:449
 msgid "Select Fields to Export"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:473
+#: src/logbook/lgbook.cxx:477
 msgid "QSO Date On"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:477
+#: src/logbook/lgbook.cxx:481
 msgid "QSO Date Off"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:481
+#: src/logbook/lgbook.cxx:485
 msgid "Time ON"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:485 src/logbook/lgbook.cxx:1071
+#: src/logbook/lgbook.cxx:489 src/logbook/lgbook.cxx:1090
 msgid "Time OFF"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:489
+#: src/logbook/lgbook.cxx:493
 msgid "TX Power"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:492 src/logbook/lgbook.cxx:1075
+#: src/logbook/lgbook.cxx:496 src/logbook/lgbook.cxx:1094
 msgid "RST sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:496 src/logbook/lgbook.cxx:1079
+#: src/logbook/lgbook.cxx:500 src/logbook/lgbook.cxx:1098
 msgid "RST rcvd"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:500 src/logbook/lgbook.cxx:723
+#: src/logbook/lgbook.cxx:504 src/logbook/lgbook.cxx:730
 msgid "Qth"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:503
+#: src/logbook/lgbook.cxx:507
 msgid "LOC"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:519
+#: src/logbook/lgbook.cxx:514 src/logbook/lgbook.cxx:875
+msgid "QSL-VIA"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:526
 msgid "QSL rcvd date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:522
+#: src/logbook/lgbook.cxx:529
 msgid "QSL sent date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:525 src/logbook/lgbook.cxx:1083
+#: src/logbook/lgbook.cxx:532 src/logbook/lgbook.cxx:1102
 msgid "Serial # in"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:528 src/logbook/lgbook.cxx:1087
+#: src/logbook/lgbook.cxx:535 src/logbook/lgbook.cxx:1106
 msgid "Serial # out"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:537 src/logbook/lgbook.cxx:796
-#: src/logbook/lgbook.cxx:797
+#: src/logbook/lgbook.cxx:544 src/logbook/lgbook.cxx:803
+#: src/logbook/lgbook.cxx:804
 msgid "County"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:543 src/logbook/lgbook.cxx:820
+#: src/logbook/lgbook.cxx:550 src/logbook/lgbook.cxx:827
 msgid "CQZ"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:546 src/logbook/lgbook.cxx:856
+#: src/logbook/lgbook.cxx:553 src/logbook/lgbook.cxx:863
 msgid "DXCC"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:549 src/logbook/lgbook.cxx:808
+#: src/logbook/lgbook.cxx:556 src/logbook/lgbook.cxx:815
 msgid "IOTA"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:552 src/logbook/lgbook.cxx:832
+#: src/logbook/lgbook.cxx:559 src/logbook/lgbook.cxx:839
 msgid "ITUZ"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:562
+#: src/logbook/lgbook.cxx:569
 msgid "Logbook"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:563
+#: src/logbook/lgbook.cxx:570
 msgid "Date On"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:564
+#: src/logbook/lgbook.cxx:571
 msgid "Date QSO started"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:577
+#: src/logbook/lgbook.cxx:584
 msgid "Time QSO started"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:589
+#: src/logbook/lgbook.cxx:596
 msgid "Call sign worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:601
+#: src/logbook/lgbook.cxx:608
 msgid "Operator worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:613
+#: src/logbook/lgbook.cxx:620
 msgid "Rst received"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:624
+#: src/logbook/lgbook.cxx:631
 msgid "QSL-rcvd"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:625
+#: src/logbook/lgbook.cxx:632
 msgid "QSL received on this date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:637
+#: src/logbook/lgbook.cxx:644
 msgid "Date Off"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:638
+#: src/logbook/lgbook.cxx:645
 msgid "Date QSO Ended"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:651
+#: src/logbook/lgbook.cxx:658
 msgid "Time QSO ended"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:662
+#: src/logbook/lgbook.cxx:669
 msgid "Freq."
 msgstr ""
 
-#: src/logbook/lgbook.cxx:663
+#: src/logbook/lgbook.cxx:670
 msgid "Frequency in MHz"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:675
+#: src/logbook/lgbook.cxx:682
 msgid "Mode in use"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:686
+#: src/logbook/lgbook.cxx:693
 msgid "Pwr"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:687
+#: src/logbook/lgbook.cxx:694
 msgid "Transmit power used"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:699
+#: src/logbook/lgbook.cxx:706
 msgid "Rst sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:710
+#: src/logbook/lgbook.cxx:717
 msgid "QSL-sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:711
+#: src/logbook/lgbook.cxx:718
 msgid "QSL sent on this date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:724
+#: src/logbook/lgbook.cxx:731
 msgid "City of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:735
+#: src/logbook/lgbook.cxx:742
 msgid "St"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:736
+#: src/logbook/lgbook.cxx:743
 msgid "US state of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:747
+#: src/logbook/lgbook.cxx:754
 msgid "Pr"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:748
+#: src/logbook/lgbook.cxx:755
 msgid "Province of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:760
+#: src/logbook/lgbook.cxx:767
 msgid "Country of station worked"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:771
+#: src/logbook/lgbook.cxx:778
 msgid "Loc"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:772
+#: src/logbook/lgbook.cxx:779
 msgid "Stations grid square"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:784
+#: src/logbook/lgbook.cxx:791
 msgid "Interesting notes"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:809
+#: src/logbook/lgbook.cxx:816
 msgid "Islands on the air"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:844
+#: src/logbook/lgbook.cxx:851
 msgid "CONT"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:857
+#: src/logbook/lgbook.cxx:864
 msgid "DXCC designator"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:868
+#: src/logbook/lgbook.cxx:876
+msgid "QSL route of contacted station"
+msgstr ""
+
+#: src/logbook/lgbook.cxx:887
 msgid "Ser out"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:869
-msgid "Contest seral # sent"
+#: src/logbook/lgbook.cxx:888
+msgid "Contest serial # sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:881
+#: src/logbook/lgbook.cxx:900
 msgid "Contest exchange sent"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:892
+#: src/logbook/lgbook.cxx:911
 msgid "Ser in"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:893
+#: src/logbook/lgbook.cxx:912
 msgid "Contest serial # received"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:905
+#: src/logbook/lgbook.cxx:924
 msgid "Contest exchange received"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:916
+#: src/logbook/lgbook.cxx:935
 msgid "Call Search"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:917
+#: src/logbook/lgbook.cxx:936
 msgid "Search for this callsign"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:928
+#: src/logbook/lgbook.cxx:947
 msgid "Recs"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:929
+#: src/logbook/lgbook.cxx:948
 msgid "# Records in logbook"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:941
+#: src/logbook/lgbook.cxx:960
 msgid "New record / Save record"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:948
+#: src/logbook/lgbook.cxx:967
 msgid "Update the current record"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:955
+#: src/logbook/lgbook.cxx:974
 msgid "Delete the current record"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:961
+#: src/logbook/lgbook.cxx:980
 msgid "Dial"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:962
+#: src/logbook/lgbook.cxx:981
 msgid "Retrieve for active modem use"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:969
+#: src/logbook/lgbook.cxx:988
 msgid "Find previous"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:977
+#: src/logbook/lgbook.cxx:996
 msgid "Find next"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:1000
+#: src/logbook/lgbook.cxx:1019
 msgid "Date"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:1002
+#: src/logbook/lgbook.cxx:1021
 msgid "Time"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:1019
+#: src/logbook/lgbook.cxx:1038
 msgid "Cabrillo Setup"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:1039
+#: src/logbook/lgbook.cxx:1058
 msgid "Select Cabrillo Contest & Fields"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:1042
+#: src/logbook/lgbook.cxx:1061
 msgid "Contest:"
 msgstr ""
 
-#: src/logbook/lgbook.cxx:1067
+#: src/logbook/lgbook.cxx:1086
 msgid "QSO Date"
 msgstr ""
