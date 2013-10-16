@@ -35,7 +35,6 @@
 
 #include "rsid.h"
 #include "filters.h"
-#include "fft.h"
 #include "misc.h"
 #include "trx.h"
 #include "fl_digi.h"

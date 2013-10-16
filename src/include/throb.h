@@ -25,7 +25,6 @@
 
 #include "modem.h"
 #include "globals.h"
-#include "fft.h"
 #include "fftfilt.h"
 #include "filters.h"
 #include "complex.h"
