@@ -9129,7 +9129,6 @@ igured on the\n\"Notifications\" configure dialog."));
         { tabsMisc = new Fl_Tabs(0, 25, 540, 345);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 540, 320, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(25, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9144,6 +9143,7 @@ igured on the\n\"Notifications\" configure dialog."));
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
           { tabNBEMS = new Fl_Group(0, 50, 540, 320, _("NBEMS"));
+            tabNBEMS->hide();
             { Fl_Group* o = new Fl_Group(20, 65, 500, 75, _("NBEMS data file interface"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9342,9 +9342,10 @@ igured on the\n\"Notifications\" configure dialog."));
                 btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
                 btnPSKRepQRG->value(progdefaults.pskrep_qrg);
               } // Fl_Check_Button* btnPSKRepQRG
-              { Fl_Check_Button* o = btn_report_when_visible = new Fl_Check_Button(40, 195, 416, 20, _("Enable spotting only when signal browser(s) are visible"));
-                btn_report_when_visible->tooltip(_("Enable to reduce CPU load"));
+              { Fl_Check_Button* o = btn_report_when_visible = new Fl_Check_Button(40, 195, 416, 20, _("Disable spotting when signal browser(s) are not visible."));
+                btn_report_when_visible->tooltip(_("Check to reduce CPU load in PSK and RTTY modes."));
                 btn_report_when_visible->down_box(FL_DOWN_BOX);
+                btn_report_when_visible->value(1);
                 btn_report_when_visible->callback((Fl_Callback*)cb_btn_report_when_visible);
                 o->value(progdefaults.report_when_visible);
               } // Fl_Check_Button* btn_report_when_visible

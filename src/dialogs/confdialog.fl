@@ -5194,7 +5194,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {open
               xywh {25 75 490 51} box ENGRAVED_FRAME align 21
@@ -5210,7 +5210,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNBEMS {
             label NBEMS open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
@@ -5372,10 +5372,10 @@ progdefaults.changed = true;}
                 code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
               }
               Fl_Check_Button btn_report_when_visible {
-                label {Enable spotting only when signal browser(s) are visible}
+                label {Disable spotting when signal browser(s) are not visible.}
                 callback {progdefaults.report_when_visible = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable to reduce CPU load} xywh {40 195 416 20} down_box DOWN_BOX
+                tooltip {Check to reduce CPU load in PSK and RTTY modes.} xywh {40 195 416 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.report_when_visible);}
               }
               Fl_Input inpPSKRepHost {
