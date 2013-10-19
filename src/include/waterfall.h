@@ -30,7 +30,7 @@
 #include <FL/Fl_Counter.H>
 #include <FL/Fl_Box.H>
 
-#include "fft.h"
+#include "gfft.h"
 #include "fldigi-config.h"
 #include "digiscope.h"
 #include "flslider2.h"
@@ -40,22 +40,9 @@ enum {
 	WF_FFT_HANNING, WF_FFT_TRIANGULAR
 };
 
-/*
-#ifdef HAVE_DFFTW_H
-#  include <dfftw.h>
-#endif
-#ifdef HAVE_FFTW_H
-#  include <fftw.h>
-#endif
-*/
-
-#define FFT_LEN		4096
-//8192
-//2048
-//4096
-
+#define FFT_LEN		8192
 #define SC_SMPLRATE	8000
-#define WFBLOCKSIZE	512
+#define WFBLOCKSIZE 512
 
 struct RGB {
 	uchar R;
@@ -70,7 +57,13 @@ struct RGBI {
 	uchar I;
 };
 
-extern 	RGBI	mag2RGBI[256];
+// you can change the basic fft processing type by a simple change in the
+// following typedef.  change to float if you need to skimp on cpu cycles.
+
+typedef double wf_fft_type;
+typedef std::complex<wf_fft_type> wf_cpx_type;
+
+extern	RGBI	mag2RGBI[256];
 extern	RGB		palette[9];
 
 enum WFmode {
@@ -149,7 +142,6 @@ public:
 
 	void initmaps();
 	void draw();
-//	void resize (int, int, int, int);
 	int handle(int event);
 	void update_sigmap();
 	void update_waterfall();
@@ -161,7 +153,7 @@ public:
 	inline void  makeNotch_(int notch_frequency);
 	inline void makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax);
 	void makeMarker();
-	void process_analog(double *sig, int len);
+	void process_analog(wf_fft_type *sig, int len);
 	void processFFT();
 	void sig_data( double *sig, int len, int sr );
 	void rfcarrier(long long f) {
@@ -172,8 +164,6 @@ public:
 	}
 	bool USB() {return usb;};
 	long long rfcarrier() { return rfc;};
-
-//	void useBands(bool b) { usebands = b;};
 
 	void updateMarker() {
 		drawMarker();};
@@ -202,7 +192,6 @@ private:
 	bool	overload;
 	bool	usb;
 	long long	rfc;
-//	bool	usebands;
 	int		offset;
 	int		sigoffset;
 	int		step;
@@ -220,24 +209,24 @@ private:
 	WFspeed	wfspeed;
 	int		srate;
 	RGBI	*fft_img;
-//	RGBI	mag2RGBI[256];
 	RGB		*markerimage;
 	RGB		RGBmarker;
 	RGB		RGBcursor;
 	RGBI		RGBInotch;
-	double	*fftout;
     double  *fftwindow;
 	uchar	*scaleimage;
 	uchar	*fft_sig_img;
 	uchar	*sig_img;
 	uchar	*scline;
 
+	wf_cpx_type *wfbuf;
+
 	short int	*fft_db;
 	int			ptrFFTbuff;
-	double	 	*circbuff;
+	wf_fft_type	*circbuff;
 	int			ptrCB;
-	double		*pwr;
-	Cfft		*wfft;
+	wf_fft_type	*pwr;
+	g_fft<wf_fft_type> *wfft;
 	int     prefilter;
 
 
@@ -271,7 +260,6 @@ public:
 
 class waterfall: public Fl_Group {
 	friend void x1_cb(Fl_Widget *w, void* v);
-//	friend void slew_cb(Fl_Widget *w, void * v);
 	friend void slew_left(Fl_Widget *w, void * v);
 	friend void slew_right(Fl_Widget *w, void * v);
 	friend void center_cb(Fl_Widget *w, void *v);
@@ -351,10 +339,6 @@ public:
 			qsy->activate();
 		else
 			qsy->deactivate();
-//		wfdisp->useBands(!on);
-	}
-	void setXMLRPC(bool on) {
-//		wfdisp->useBands(!on);
 	}
 	double Pwr(int i) { return wfdisp->Pwr(i); }
 

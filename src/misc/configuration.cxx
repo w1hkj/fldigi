@@ -787,11 +787,12 @@ void configuration::initInterface()
 		}
 #endif
 	} else if (chkUSEXMLRPCis) {
-		wf->setXMLRPC(1);
-		rigCAT_init(false);
-		wf->USB(true);
-		wf->setQSY(0);
-		riginitOK = true;
+		if (rigCAT_init(false)) {
+			LOG_VERBOSE("%s", "using XMLRPC");
+			wf->USB(true);
+			wf->setQSY(0);
+			riginitOK = true;
+		}
 	}
 
 	if (riginitOK == false) {

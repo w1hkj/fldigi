@@ -75,7 +75,7 @@ private:
 	short		*BRLow;
 
 	void fftInit();
-	int ConvertFFTSize(int N);
+	int ConvertFFTSize(int);
 
 // base fft methods
 	void riffts1(FFT_TYPE *ioptr, int M, FFT_TYPE *Utbl, short *BRLow);
