@@ -48,13 +48,14 @@
 #include "ringbuffer.h"
 #include "globals.h"
 #include "modem.h"
-#include "fft.h"
+#include "gfft.h"
 
 #define RSID_SAMPLE_RATE 11025.0
 
-#define RSID_FFT_SAMPLES 512
-#define RSID_FFT_SIZE    1024
-#define RSID_ARRAY_SIZE	 (RSID_FFT_SIZE * 2)
+#define RSID_FFT_SAMPLES 	512
+#define RSID_FFT_SIZE		1024
+#define RSID_ARRAY_SIZE	 	(RSID_FFT_SIZE * 2)
+#define RSID_BUFFER_SIZE	(RSID_ARRAY_SIZE * 2)
 
 #define RSID_NSYMBOLS    15
 #define RSID_NTIMES      (RSID_NSYMBOLS * 2)
@@ -68,6 +69,9 @@ enum {
 	RSID_BANDWIDTH_1K,
 	RSID_BANDWIDTH_WIDE,
 };
+
+typedef double rs_fft_type;
+typedef std::complex<rs_fft_type> rs_cpx_type;
 
 struct RSIDs { unsigned short rs; trx_mode mode; const char* name; };
 
@@ -99,11 +103,13 @@ private:
 // Span of FFT bins, in which the RSID will be searched for
 	int		nBinLow;
 	int		nBinHigh;
-	float	aInputSamples[RSID_ARRAY_SIZE * 2];
-	double	fftwindow[RSID_ARRAY_SIZE];
-	double  aFFTReal[RSID_ARRAY_SIZE];
-	double	aFFTAmpl[RSID_FFT_SIZE];
-	Cfft	*rsfft;
+
+	float			aInputSamples[RSID_ARRAY_SIZE * 2];
+	rs_fft_type		fftwindow[RSID_ARRAY_SIZE];
+	rs_cpx_type		aFFTcmplx[RSID_ARRAY_SIZE];
+	rs_fft_type		aFFTAmpl[RSID_FFT_SIZE];
+
+	g_fft<rs_fft_type>		*rsfft;
 
 	bool	bPrevTimeSliceValid;
 	int		iPrevDistance;
@@ -120,7 +126,7 @@ private:
 // resample
 	SRC_STATE* 	src_state;
 	SRC_DATA	src_data;
-	float*		inptr;
+	int			inptr;
 	static long	src_callback(void* cb_data, float** data);
 
 // transmit
@@ -134,7 +140,7 @@ private:
 	void	search(void);
 	void	setup_mode(int m);
 
-	void	CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd);
+	void	CalculateBuckets(const rs_fft_type *pSpectrum, int iBegin, int iEnd);
 	inline int		HammingDistance(int iBucket, unsigned char *p2);
 	bool	search_amp( int &bin_out, int &symbol_out, unsigned char *pcode_table );
 	void	apply ( int iBin, int iSymbol, int extended );

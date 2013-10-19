@@ -52,6 +52,8 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 #include "rsid_defs.cxx"
 
+#define RSWINDOW 1
+
 const int cRsId::Squares[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,
@@ -87,13 +89,17 @@ cRsId::cRsId()
 
 	reset();
 
-	rsfft = new Cfft(RSID_FFT_SIZE);
+	rsfft = new g_fft<rs_fft_type>(RSID_ARRAY_SIZE);
 
-	memset(fftwindow, 0, RSID_ARRAY_SIZE * sizeof(double));
+	memset(fftwindow, 0, sizeof(fftwindow));
 
-//	RectWindow(fftwindow, RSID_FFT_SIZE);
-//	HammingWindow(fftwindow, RSID_FFT_SIZE);
-	BlackmanWindow(fftwindow, RSID_FFT_SIZE);
+	if (RSWINDOW) {
+		for (int i = 0; i < RSID_ARRAY_SIZE; i++)
+//		fftwindow[i] = blackman ( 1.0 * i / RSID_ARRAY_SIZE );
+		fftwindow[i] = hamming ( 1.0 * i / RSID_ARRAY_SIZE );
+//		fftwindow[i] = hanning ( 1.0 * i / RSID_ARRAY_SIZE );
+//		fftwindow[i] = 1.0;
+	}
 
 	pCodes1 = new unsigned char[rsid_ids_size1 * RSID_NSYMBOLS];
 	memset(pCodes1, 0, sizeof(pCodes1) * sizeof(unsigned char));
@@ -159,16 +165,16 @@ void cRsId::reset()
 	found1 = found2 = false;
 	rsid_secondary_time_out = 0;
 
-	memset(aInputSamples, 0, sizeof(aInputSamples));
-	memset(aFFTReal, 0, sizeof(aFFTReal));
-	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
-	memset(fft_buckets, 0, sizeof(fft_buckets));
+	memset(aInputSamples, 0, (RSID_ARRAY_SIZE * 2) * sizeof(float));
+	memset(aFFTcmplx, 0, RSID_ARRAY_SIZE * sizeof(rs_cpx_type));
+	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(rs_fft_type));
+	memset(fft_buckets, 0, RSID_NTIMES * RSID_FFT_SIZE * sizeof(int));
 
 	int error = src_reset(src_state);
 	if (error)
 		LOG_ERROR("src_reset error %d: %s", error, src_strerror(error));
 	src_data.src_ratio = 0.0;
-	inptr = aInputSamples + RSID_FFT_SAMPLES;
+	inptr = RSID_FFT_SIZE;
 	hamming_resolution = progdefaults.RsID_label_type;
 }
 
@@ -186,9 +192,9 @@ void cRsId::Encode(int code, unsigned char *rsid)
 	}
 }
 
-void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
+void cRsId::CalculateBuckets(const rs_fft_type *pSpectrum, int iBegin, int iEnd)
 {
-	double Amp = 0.0, AmpMax = 0.0;
+	rs_fft_type Amp = 0.0, AmpMax = 0.0;
 	int iBucketMax = iBegin - 2;
 	int j;
 
@@ -218,8 +224,11 @@ void cRsId::CalculateBuckets(const double *pSpectrum, int iBegin, int iEnd)
 
 void cRsId::receive(const float* buf, size_t len)
 {
+
+	if (len == 0) return;
+
+	int srclen = static_cast<int>(len);
 	double src_ratio = RSID_SAMPLE_RATE / active_modem->get_samplerate();
-	size_t ns;
 
 	if (rsid_secondary_time_out > 0) {
 		rsid_secondary_time_out -= (int)(len / src_ratio);
@@ -229,31 +238,34 @@ void cRsId::receive(const float* buf, size_t len)
 		}
 	}
 
-	while (len) {
-		ns = inptr - aInputSamples;
-		if (ns >= RSID_FFT_SAMPLES) // inptr points to second half of aInputSamples
-			ns -= RSID_FFT_SAMPLES;
-		ns = RSID_FFT_SAMPLES - ns; // number of additional samples we need to call search()
+	if (src_data.src_ratio != src_ratio) {
+		src_data.src_ratio = src_ratio;
+		src_set_ratio(src_state, src_data.src_ratio);
+	}
 
-		if (src_data.src_ratio != src_ratio)
-			src_set_ratio(src_state, src_data.src_ratio = src_ratio);
+	while (srclen > 0) {
 		src_data.data_in = const_cast<float*>(buf);
-		src_data.input_frames = len;
-		src_data.data_out = inptr;
-		src_data.output_frames = ns;
+		src_data.input_frames = srclen;
+		src_data.data_out = &aInputSamples[inptr];
+		src_data.output_frames = RSID_ARRAY_SIZE * 2 - inptr;
 		src_data.input_frames_used = 0;
 		int error = src_process(src_state, &src_data);
 		if (unlikely(error)) {
 			LOG_ERROR("src_process error %d: %s", error, src_strerror(error));
 			return;
 		}
-		inptr += src_data.output_frames_gen;
-		buf += src_data.input_frames_used;
-		len -= src_data.input_frames_used;
+		size_t gend = src_data.output_frames_gen;
+		size_t used = src_data.input_frames_used;
+		inptr += gend;
+		buf += used;
+		srclen -= used;
 
-		ns = inptr - aInputSamples;
-		if (ns >= RSID_FFT_SAMPLES || ns >= RSID_FFT_SIZE)
-			search(); // will reset inptr if at end of input
+		while (inptr >= RSID_ARRAY_SIZE) {
+			search();
+			memmove(&aInputSamples[0], &aInputSamples[RSID_FFT_SAMPLES],
+					(RSID_BUFFER_SIZE - RSID_FFT_SAMPLES)*sizeof(float));
+			inptr -= RSID_FFT_SAMPLES;
+		}
 	}
 }
 
@@ -264,9 +276,10 @@ void cRsId::search(void)
 		nBinHigh = RSID_FFT_SIZE - 32;
 	}
 	else {
-		double centerfreq = active_modem->get_freq();
-		nBinLow = (int)((centerfreq  - 100.0 * 2) * 2048.0 / RSID_SAMPLE_RATE);
-		nBinHigh = (int)((centerfreq  + 100.0 * 2) * 2048.0 / RSID_SAMPLE_RATE);
+		float centerfreq = active_modem->get_freq();
+		float bpf = 1.0 * RSID_ARRAY_SIZE / RSID_SAMPLE_RATE;
+		nBinLow = (int)((centerfreq  - 100.0 * 2) * bpf);
+		nBinHigh = (int)((centerfreq  + 100.0 * 2) * bpf);
 	}
 	if (nBinLow < 3) nBinLow = 3;
 	if (nBinHigh > RSID_FFT_SIZE - 32) nBinHigh = RSID_FFT_SIZE - 32;
@@ -277,36 +290,30 @@ void cRsId::search(void)
 		nBinHigh = RSID_FFT_SIZE - nBinLow;
 	}
 
-	if (inptr == aInputSamples + RSID_FFT_SIZE) {
+	if (RSWINDOW) {
+		for (int i = 0; i < RSID_ARRAY_SIZE; i++)
+			aFFTcmplx[i] = cmplx(aInputSamples[i] * fftwindow[i], 0);
+	} else {
+		for (int i = 0; i < RSID_ARRAY_SIZE; i++)
+			aFFTcmplx[i] = cmplx(aInputSamples[i], 0);
+	}
+
+	rsfft->ComplexFFT(aFFTcmplx);
+
+	memset(aFFTAmpl, 0, sizeof(aFFTAmpl));
+
+	static const double pscale = 4.0 / (RSID_FFT_SIZE * RSID_FFT_SIZE);
+
+	if (unlikely(bReverse)) {
 		for (int i = 0; i < RSID_FFT_SIZE; i++)
-			aFFTReal[i] = aInputSamples[i];
-		inptr = aInputSamples;
-	}
-	else { // second half of aInputSamples is older
-		for (size_t i = RSID_FFT_SAMPLES; i < RSID_FFT_SIZE; i++)
-			aFFTReal[i - RSID_FFT_SAMPLES] = aInputSamples[i];
-		for (size_t i = 0; i < RSID_FFT_SAMPLES; i++)
-			aFFTReal[i + RSID_FFT_SAMPLES] = aInputSamples[i];
+			aFFTAmpl[RSID_FFT_SIZE - 1 - i] = norm(aFFTcmplx[i]) * pscale;
+	} else {
+		for (int i = 0; i < RSID_FFT_SIZE; i++)
+			aFFTAmpl[i] = norm(aFFTcmplx[i]) * pscale;
 	}
 
-	for (int i = 0; i < RSID_FFT_SIZE; i++) aFFTReal[i] *= fftwindow[i];
-	memset(aFFTReal + RSID_FFT_SIZE, 0, RSID_FFT_SIZE * sizeof(double));
-
-	rsfft->rdft(aFFTReal);
-
-	memset(aFFTAmpl, 0, RSID_FFT_SIZE * sizeof(double));
-	double Real, Imag;
-	for (int i = 0; i < RSID_FFT_SIZE; i++) {
-		Real = aFFTReal[2*i];
-		Imag = aFFTReal[2*i + 1];
-		if (unlikely(bReverse))
-			aFFTAmpl[RSID_FFT_SIZE - 1 - i] = Real * Real + Imag * Imag;
-		else
-			aFFTAmpl[i] = Real * Real + Imag * Imag;
-	}
-
-	int bucket_low =3;
-	int bucket_high = RSID_FFT_SIZE -32;
+	int bucket_low = 3;
+	int bucket_high = RSID_FFT_SIZE - 32;
 	if (bReverse) {
 		bucket_low  = RSID_FFT_SIZE - bucket_high;
 		bucket_high = RSID_FFT_SIZE - bucket_low;

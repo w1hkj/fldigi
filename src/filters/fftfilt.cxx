@@ -484,4 +484,10 @@ void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
 		//filter[(filterlen-i)%filterlen].imag() = eq*ht*0.7071;
 
 	}
+	std::fstream file1("filter_debug.csv", std::ios::out );
+	for (int i = 0; i < filterlen/2; i++)
+		file1 << filter[i].real() << "," << filter[i].imag() << ","
+			  << abs(filter[i]) << "\n";
+	file1.close();
+
 }
