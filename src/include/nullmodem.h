@@ -25,9 +25,6 @@
 
 #include "trx.h"
 #include "modem.h"
-#include "fft.h"
-#include "filters.h"
-#include "complex.h"
 
 #define	NULLMODEMSampleRate	8000
 

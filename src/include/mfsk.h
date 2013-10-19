@@ -33,7 +33,6 @@
 
 #include "globals.h"
 #include "modem.h"
-#include "fft.h"
 #include "filters.h"
 #include "interleave.h"
 #include "viterbi.h"

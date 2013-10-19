@@ -292,14 +292,12 @@ fldigi_SOURCES += \
 	dominoex/dominovar.cxx \
 	feld/feld.cxx \
 	feld/feldfonts.cxx \
-	fft/fft.cxx \
 	fileselector/FL/Native_File_Chooser.H \
 	fileselector/Native_File_Chooser.cxx \
 	fileselector/fileselect.cxx \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
-	filters/mfilt.cxx \
 	globals/globals.cxx \
 	include/htmlstrings.h \
 	include/arq_io.h \
@@ -328,10 +326,8 @@ fldigi_SOURCES += \
 	include/dominoex.h \
 	include/dominovar.h \
 	include/feld.h \
-	include/fft.h \
 	include/fftfilt.h \
 	include/filters.h \
-	include/mfilt.h \
 	include/fl_digi.h \
 	include/fl_lock.h \
 	include/fldigi-config.h \

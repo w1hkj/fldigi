@@ -30,7 +30,6 @@
 #include "complex.h"
 #include "modem.h"
 #include "globals.h"
-#include "fft.h"
 #include "filters.h"
 #include "fftfilt.h"
 #include "dominovar.h"
