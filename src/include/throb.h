@@ -80,8 +80,8 @@ protected:
 
 // receive
 	double			*scope_data;
-	complex 		*rxtone[55];
-	complex 		symbol[MAX_RX_SYMLEN];
+	cmplx 		*rxtone[55];
+	cmplx 		symbol[MAX_RX_SYMLEN];
 
 	double			syncbuf[MAX_RX_SYMLEN];
 	mbuffer<double, MAX_RX_SYMLEN, 2> dispbuf;
@@ -98,12 +98,12 @@ protected:
 	int shift;
 	int waitsync;
 	
-	complex			mixer(complex in);
-	void			sync(complex in);
-	void			rx(complex in);
+	cmplx			mixer(cmplx in);
+	void			sync(cmplx in);
+	void			rx(cmplx in);
 	void			decodechar(int tone1, int tone2);
-	int				findtones(complex *word, int &tone1, int &tone2);
-	complex			*mk_rxtone(double freq, double *pulse, int len);
+	int				findtones(cmplx *word, int &tone1, int &tone2);
+	cmplx			*mk_rxtone(double freq, double *pulse, int len);
 	void			show_char(int);
 	void			flip_syms();
 	void			reset_syms();

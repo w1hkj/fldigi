@@ -91,14 +91,14 @@ struct RTTY_CHANNEL {
 	double		avgsig;
 
 	double		prevsymbol;
-	complex		prevsmpl;
+	cmplx		prevsmpl;
 	int			counter;
 	int			bitcntr;
 	int			rxdata;
 	int			inp_ptr;
 
-	complex		mark_history[MAXPIPE];
-	complex		space_history[MAXPIPE];
+	cmplx		mark_history[MAXPIPE];
+	cmplx		space_history[MAXPIPE];
 
 	int			sigsearch;
 };
@@ -139,7 +139,7 @@ private:
 
 	void clear_syncscope();
 	void update_syncscope();
-	complex mixer(double &phase, double f, complex in);
+	cmplx mixer(double &phase, double f, cmplx in);
 
 	unsigned char bitreverse(unsigned char in, int n);
 	int decode_char(int ch);

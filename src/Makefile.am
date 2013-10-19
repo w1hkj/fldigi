@@ -353,6 +353,7 @@ fldigi_SOURCES += \
 	include/jalocha/pj_mfsk.h \
 	include/jalocha/pj_struc.h \
 	include/coordinate.h \
+	include/gfft.h \
 	include/kmlserver.h \
 	include/locator.h \
 	include/log.h \

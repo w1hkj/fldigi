@@ -15,10 +15,10 @@ protected:
 	int filterlen;
     Cfft *fft;
     Cfft *ift;
-	complex *filter;
-	complex *filtdata;
-	complex *ovlbuf;
-	complex *ht;
+	cmplx *filter;
+	cmplx *filtdata;
+	cmplx *ovlbuf;
+	cmplx *ht;
 	int inptr;
 	int pass;
 public:
@@ -30,7 +30,7 @@ public:
 	void create_rttyfilt(double f);
 	void rtty_order(double, int, double twarp = 1.275, double alpha = 1.0);
 
-	int run(const complex& in, complex **out);
+	int run(const cmplx& in, cmplx **out);
 };
 
 #endif

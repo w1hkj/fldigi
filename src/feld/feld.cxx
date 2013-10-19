@@ -208,13 +208,12 @@ feld::feld(trx_mode m)
 
 // rx section
 
-complex feld::mixer(complex in)
+cmplx feld::mixer(cmplx in)
 {
 
-	complex z;
+	cmplx z;
 
-	z.re = cos(rxphacc);
-	z.im = sin(rxphacc);
+	z = cmplx( cos(rxphacc), sin(rxphacc) );
 
 	z = z * in;
 
@@ -228,16 +227,16 @@ complex feld::mixer(complex in)
 	return z;
 }
 
-void feld::FSKHELL_rx(complex z)
+void feld::FSKHELL_rx(cmplx z)
 {
 	double f;
 	double vid;
 	double avg;
 
-	f = (prev % z).arg() * phi2freq;
+	f = arg(conj(prev) * z) * phi2freq;
 	prev = z;
 	f = bbfilt->run(f);
-	avg = average->run(z.mag());
+	avg = average->run(abs(z));
 
 	rxcounter += downsampleinc;
 	if (rxcounter < 1.0)
@@ -274,11 +273,11 @@ void feld::FSKHELL_rx(complex z)
 	}
 }
 
-void feld::rx(complex z)
+void feld::rx(cmplx z)
 {
 	double x, avg;
 
-	x = z.mag();
+	x = abs(z);
 	if (x > peakval) peakval = x;
 	avg = average->run(x);
 
@@ -325,7 +324,7 @@ void feld::rx(complex z)
 int feld::rx_process(const double *buf, int len)
 {
 
-	complex z, *zp;
+	cmplx z, *zp;
 	int i, n;
 
 	halfwidth = progdefaults.HellRcvWidth;
@@ -364,7 +363,8 @@ int feld::rx_process(const double *buf, int len)
 
 	while (len-- > 0) {
 		/* create analytic signal... */
-		z.re = z.im = *buf++;
+		z = cmplx( *buf, *buf );
+		buf++;
 
 		hilbert->run(z, z);
 

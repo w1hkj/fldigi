@@ -59,7 +59,7 @@ private:
 	bool			_qpsk;
 	bool			_pskr;
 	double			phaseacc[MAX_CARRIERS];
-	complex			prevsymbol[MAX_CARRIERS];
+	cmplx			prevsymbol[MAX_CARRIERS];
 	unsigned int		shreg;
 	//FEC: 2nd stream
 	unsigned int		shreg2;
@@ -112,13 +112,13 @@ private:
 
 	int 			dcd;
 	int				dcdbits;
-	complex			quality;
+	cmplx			quality;
 	int				acquire;
 
 	viewpsk*		pskviewer;
 	pskeval*		evalpsk;
 
-	void			rx_symbol(complex symbol, int car);
+	void			rx_symbol(cmplx symbol, int car);
 	void 			rx_bit(int bit);
 	void 			rx_bit2(int bit);
 	void			rx_qpsk(int bits);
@@ -139,7 +139,7 @@ private:
 	double			sc_bw; // single carrier bandwidth
 
 	
-//	complex thirdorder;
+//	cmplx thirdorder;
 // tx variables & functions
 	int			accumulated_bits; //JD for multiple carriers
 	int			txsymbols[MAX_CARRIERS];
@@ -159,7 +159,7 @@ private:
 
 	void			initSN_IMD();
 	void			resetSN_IMD();
-	void			calcSN_IMD(complex z);
+	void			calcSN_IMD(cmplx z);
 	//PSKR modes - for Tx interleaver priming
 	void 			clearbits();
 

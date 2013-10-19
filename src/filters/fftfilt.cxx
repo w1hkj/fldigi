@@ -46,16 +46,16 @@ fftfilt::fftfilt(double f1, double f2, int len)
 	fft = new Cfft(filterlen);
 	ift = new Cfft(filterlen);
 
-	ovlbuf		= new complex[filterlen/2];
-	filter		= new complex[filterlen];
-	filtdata	= new complex[filterlen];
-	ht			= new complex[filterlen];
+	ovlbuf		= new cmplx[filterlen/2];
+	filter		= new cmplx[filterlen];
+	filtdata	= new cmplx[filterlen];
+	ht			= new cmplx[filterlen];
 
 	for (int i = 0; i < filterlen; i++)
-		filter[i].re = filter[i].im =
-		filtdata[i].re = filtdata[i].im = 0.0;
+		filter[i].real() = filter[i].imag() =
+		filtdata[i].real() = filtdata[i].imag() = 0.0;
 	for (int i = 0; i < filterlen/2; i++)
-		ovlbuf[i].re = ovlbuf[i].im = 0.0;
+		ovlbuf[i].real() = ovlbuf[i].imag() = 0.0;
 
 	inptr = 0;
 
@@ -68,16 +68,16 @@ fftfilt::fftfilt(double f, int len)
 	fft = new Cfft(filterlen);
 	ift = new Cfft(filterlen);
 
-	ovlbuf		= new complex[filterlen/2];
-	filter		= new complex[filterlen];
-	filtdata	= new complex[filterlen];
-	ht			= new complex[filterlen];
+	ovlbuf		= new cmplx[filterlen/2];
+	filter		= new cmplx[filterlen];
+	filtdata	= new cmplx[filterlen];
+	ht			= new cmplx[filterlen];
 
 	for (int i = 0; i < filterlen; i++)
-		filter[i].re = filter[i].im =
-		filtdata[i].re = filtdata[i].im = 0.0;
+		filter[i].real() = filter[i].imag() =
+		filtdata[i].real() = filtdata[i].imag() = 0.0;
 	for (int i = 0; i < filterlen/2; i++)
-		ovlbuf[i].re = ovlbuf[i].im = 0.0;
+		ovlbuf[i].real() = ovlbuf[i].imag() = 0.0;
 
 	inptr = 0;
 
@@ -97,7 +97,7 @@ fftfilt::~fftfilt()
 /*
  * Filter with fast convolution (overlap-add algorithm).
  */
-int fftfilt::run(const complex& in, complex **out)
+int fftfilt::run(const cmplx& in, cmplx **out)
 {
 // collect filterlen/2 input samples
 	const int filterlen_div2 = filterlen / 2 ;
@@ -109,7 +109,7 @@ int fftfilt::run(const complex& in, complex **out)
 
 // zero the rest of the input data
 	for (int i = filterlen_div2 ; i < filterlen; i++)
-		filtdata[i].re = filtdata[i].im = 0.0;
+		filtdata[i].real() = filtdata[i].imag() = 0.0;
 
 // FFT transpose to the frequency domain
 	fft->cdft(filtdata);
@@ -128,7 +128,7 @@ int fftfilt::run(const complex& in, complex **out)
 	*out = filtdata;
 
 // save the second half for overlapping
-	// Memcpy is allowed because complex are POD objects.
+	// Memcpy is allowed because cmplx are POD objects.
 	memcpy( ovlbuf, filtdata + filterlen_div2, sizeof( ovlbuf[0] ) * filterlen_div2 );
 
 // clear inbuf pointer
@@ -149,7 +149,7 @@ void fftfilt::create_filter(double f1, double f2)
 	
 // initialize the filter to zero	
 	for (int i = 0; i < filterlen; i++)
-		filter[i].re   = filter[i].im   = 0.0;
+		filter[i].real()   = filter[i].imag()   = 0.0;
 
 // create the filter shape coefficients by fft
 // filter values initialized to the impulse response h(t)
@@ -163,9 +163,9 @@ void fftfilt::create_filter(double f1, double f2)
 //		x *= hanning(h);
 		x *= blackman(h);	// windowed by Blackman function
 		x *= filterlen;		// scaled for unity in passband
-		filter[i].re = x;
+		filter[i].real() = x;
 	}
-// perform the complex forward fft to obtain H(w)
+// perform the cmplx forward fft to obtain H(w)
 	tmpfft->cdft(filter);
 // start outputs after 2 full passes are complete
 	pass = 2;
@@ -181,7 +181,7 @@ void fftfilt::create_lpf(double f)
 	
 // initialize the filter to zero	
 	for (int i = 0; i < filterlen; i++)
-		filter[i].re   = filter[i].im   = 0.0;
+		filter[i].real()   = filter[i].imag()   = 0.0;
 
 // create the filter shape coefficients by fft
 // filter values initialized to the impulse response h(t)
@@ -193,9 +193,9 @@ void fftfilt::create_lpf(double f)
 		x = f * sinc(2 * f * t);
 		x *= blackman(h);	// windowed by Blackman function
 		x *= filterlen;		// scaled for unity in passband
-		filter[i].re = x;
+		filter[i].real() = x;
 	}
-// perform the complex forward fft to obtain H(w)
+// perform the cmplx forward fft to obtain H(w)
 	tmpfft->cdft(filter);
 // start outputs after 2 full passes are complete
 	pass = 2;
@@ -211,7 +211,7 @@ void fftfilt::create_rttyfilt(double f)
 	
     // initialize the filter to zero	
 	for (int i = 0; i < filterlen; i++)
-		filter[i].re   = filter[i].im   = 0.0;
+		filter[i].real()   = filter[i].imag()   = 0.0;
 
 	// get an array to hold the sinc-respose
 	double* sinc_array = new double[ len ];
@@ -250,8 +250,8 @@ void fftfilt::create_rttyfilt(double f)
 		t  = it - ( (double)len - 1.0) / 2.0;
 		h  = it / ( (double)len - 1.0);
 
-		filter[i].re = ( sinc_array[i] ) * (double)filterlen * blackman(h);
-		sinc_array[i] = filter[i].re;
+		filter[i].real() = ( sinc_array[i] ) * (double)filterlen * blackman(h);
+		sinc_array[i] = filter[i].real();
 		}
 
 /*
@@ -260,33 +260,33 @@ void fftfilt::create_rttyfilt(double f)
 // Hw is the frequency response of filter created using ht_A impulse
 // response
 	Cfft test_fft(filterlen);
-	complex ht_A[filterlen]; // original impulse response
-	complex ht_B[filterlen]; // computed impulse response
-	complex Hw[filterlen];   // computed H(w)
+	cmplx ht_A[filterlen]; // original impulse response
+	cmplx ht_B[filterlen]; // computed impulse response
+	cmplx Hw[filterlen];   // computed H(w)
 
 // ht_A retains the original normalized impulse response
 // ht_B used for forward / reverse FFT
 	for (int i = 0; i < len; ++i)
 		ht_B[i] = ht_A[i] = filter[i];
 
-// perform the complex forward fft to obtain H(w)
+// perform the cmplx forward fft to obtain H(w)
 	test_fft.cdft(ht_B);
 	for (int i = 0; i < len; ++i)
 		Hw[i] = ht_B[i];
 
-// perform the complex reverse fft to obtain h(t) again
+// perform the cmplx reverse fft to obtain h(t) again
 	test_fft.icdft(ht_B);
 
 // ht_B should be equal to ht_A
 	std::fstream file1("filter_debug.csv", std::ios::out );
 	for (int i = 0; i < len; ++i)
-		file1 << ht_A[i].re << "," << ht_A[i].im << "," << 
-				ht_B[i].re << "," << ht_B[i].im << "," <<
-				Hw[i].re << "," << Hw[i].im << "," << Hw[i].mag() << "\n";
+		file1 << ht_A[i].real() << "," << ht_A[i].imag() << "," << 
+				ht_B[i].real() << "," << ht_B[i].imag() << "," <<
+				Hw[i].real() << "," << Hw[i].imag() << "," << Hw[i].mag() << "\n";
 	file1.close();
 */
 
-// perform the complex forward fft to obtain H(w)
+// perform the cmplx forward fft to obtain H(w)
 	tmpfft->cdft(filter);
 /*
 	if (print_filter) {
@@ -344,7 +344,7 @@ void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
 	// create the impulse-response
 	for (int i = 0; i < filterlen; ++i) {
 		if (i > len) {
-			ht[i].re = ht[i].im = 0.0;
+			ht[i].real() = ht[i].imag() = 0.0;
 			continue;
 		}
 		ft = f * (1.0* i - len / 2.0);
@@ -398,10 +398,10 @@ void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
 // normalize the impulse-response
 	double sum = 0.0;
 	for (int i = 0; i <= len; ++i) {
-		sum += ht[i].re;
+		sum += ht[i].real();
 	}
 	for (int i = 0; i < filterlen; ++i) {
-		ht[i].re *= filterlen/sum;
+		ht[i].real() *= filterlen/sum;
 		filter[i] = ht[i];
 	}
 
@@ -411,33 +411,33 @@ void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
 // Hw is the frequency response of filter created using ht_A impulse
 // response
 	Cfft test_fft(filterlen);
-	complex ht_A[filterlen]; // original impulse response
-	complex ht_B[filterlen]; // computed impulse response
-	complex Hw[filterlen];   // computed H(w)
+	cmplx ht_A[filterlen]; // original impulse response
+	cmplx ht_B[filterlen]; // computed impulse response
+	cmplx Hw[filterlen];   // computed H(w)
 
 // ht_A retains the original normalized impulse response
 // ht_B used for forward / reverse FFT
 	for (int i = 0; i < filterlen; i++)
 		ht_B[i] = ht_A[i] = filter[i];
 
-// perform the complex forward fft to obtain H(w)
+// perform the cmplx forward fft to obtain H(w)
 	test_fft.cdft(ht_B);
 	for (int i = 0; i < filterlen; i++)
 		Hw[i] = ht_B[i];
 
-// perform the complex reverse fft to obtain h(t) again
+// perform the cmplx reverse fft to obtain h(t) again
 	test_fft.icdft(ht_B);
 
 // ht_B should be equal to ht_A
 	std::fstream file1("filter_debug.csv", std::ios::out );
 	for (int i = 0; i < filterlen; i++)//len; ++i)
-		file1 << ht_A[i].re << "," << ht_B[i].re << "," 
-			  << ht_A[i].re - ht_B[i].re << ","
+		file1 << ht_A[i].real() << "," << ht_B[i].real() << "," 
+			  << ht_A[i].real() - ht_B[i].real() << ","
 			  << Hw[i].mag() << "\n";
 	file1.close();
 */
 
-// perform the complex forward fft to obtain H(w)
+// perform the cmplx forward fft to obtain H(w)
 //	tmpfft->cdft(filter);
 	tmpfft.cdft(filter);
 
@@ -471,17 +471,17 @@ void fftfilt::rtty_order(double f, int N, double twarp, double alpha)
 		// compensate for "awkward" FFT-implementation. For every other imple-
 		// mentation of a FFT this would have been just...
 
-		filter[i].re = eq*ht*sin((double)i* - 0.5*M_PI);
-		filter[i].im = eq*ht*cos((double)i* - 0.5*M_PI);
+		filter[i].real() = eq*ht*sin((double)i* - 0.5*M_PI);
+		filter[i].imag() = eq*ht*cos((double)i* - 0.5*M_PI);
 
-		filter[(filterlen-i)%filterlen].re = eq*ht*sin((double)i*+0.5*M_PI);
-		filter[(filterlen-i)%filterlen].im = eq*ht*cos((double)i*+0.5*M_PI);
+		filter[(filterlen-i)%filterlen].real() = eq*ht*sin((double)i*+0.5*M_PI);
+		filter[(filterlen-i)%filterlen].imag() = eq*ht*cos((double)i*+0.5*M_PI);
 
 		// ... this (caused most headache):
-		//filter[i].re = eq*ht*0.7071;
-		//filter[i].im = eq*ht*0.7071;
-		//filter[(filterlen-i)%filterlen].re = eq*ht*0.7071;
-		//filter[(filterlen-i)%filterlen].im = eq*ht*0.7071;
+		//filter[i].real() = eq*ht*0.7071;
+		//filter[i].imag() = eq*ht*0.7071;
+		//filter[(filterlen-i)%filterlen].real() = eq*ht*0.7071;
+		//filter[(filterlen-i)%filterlen].imag() = eq*ht*0.7071;
 
 	}
 }

@@ -140,9 +140,9 @@ class pkt : public modem {
 
     void	idle_signal_power(double sample);
 
-    complex	lo_signal_energy, *lo_signal_buf;
-    complex	hi_signal_energy, *hi_signal_buf;
-    complex	mid_signal_energy, *mid_signal_buf;
+    cmplx	lo_signal_energy, *lo_signal_buf;
+    cmplx	hi_signal_energy, *hi_signal_buf;
+    cmplx	mid_signal_energy, *mid_signal_buf;
     double	lo_signal_corr, hi_signal_corr, mid_signal_corr;
     int		correlate_buf_ptr;
 
@@ -153,7 +153,7 @@ class pkt : public modem {
     int pipeptr;
 
     // SCBLOCKSIZE * 2 = 1024 ( == MAX_ZLEN )
-    complex QI[MAX_ZLEN];  // PhaseScope
+    cmplx QI[MAX_ZLEN];  // PhaseScope
     int QIptr;
 
     double yt_avg;
@@ -161,7 +161,7 @@ class pkt : public modem {
 
     double      signal_power, noise_power, power_ratio, snr_avg;
 
-    double	corr_power(complex v);
+    double	corr_power(cmplx v);
     void	correlate(double sample);
 
     int		detect_drop;
@@ -195,7 +195,7 @@ class pkt : public modem {
     void update_syncscope();
 
 
-    //    inline complex mixer(complex in);
+    //    inline cmplx mixer(cmplx in);
 
     // MicE encodings:
     //   3 char groups,

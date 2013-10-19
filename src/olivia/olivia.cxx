@@ -57,7 +57,7 @@ void olivia::tx_init(SoundBase *sc)
 {
 	scard = sc;
 	phaseacc = 0;
-	prevsymbol = complex (1.0, 0.0);
+	prevsymbol = cmplx (1.0, 0.0);
 	preamble = 32;
 	shreg = 0;
 

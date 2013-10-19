@@ -403,13 +403,13 @@ void pkt::init()
 	NCO *osc = new NCO();
 	osc->init(1200, 0, PKT_SampleRate);
 	for(int i = 0; i < 30; i++) {
-	    complex z = osc->complex_sample();
+	    cmplx z = osc->cmplx_sample();
 	    fprintf(stderr,"  %f    %f\n", z.re, z.im);
 	}
 
 	osc->init(2200, 0, PKT_SampleRate);
 	for(int i = 0; i < 30; i++) {
-	    complex z = osc->complex_sample();
+	    cmplx z = osc->cmplx_sample();
 	    fprintf(stderr,"  %f    %f\n", z.re, z.im);
 	}
 
@@ -501,9 +501,9 @@ void pkt::restart()
     for (int i = 0; i < pkt_idlelen; i++)
 	idle_signal_buf[i] = 0;
 
-    if (!lo_signal_buf)    lo_signal_buf = new complex [PKT_MaxSymbolLen];
-    if (!hi_signal_buf)    hi_signal_buf = new complex [PKT_MaxSymbolLen];
-    if (!mid_signal_buf)  mid_signal_buf = new complex [PKT_MaxSymbolLen];
+    if (!lo_signal_buf)    lo_signal_buf = new cmplx [PKT_MaxSymbolLen];
+    if (!hi_signal_buf)    hi_signal_buf = new cmplx [PKT_MaxSymbolLen];
+    if (!mid_signal_buf)  mid_signal_buf = new cmplx [PKT_MaxSymbolLen];
 
     if (!signal_buf)
 	signal_buf = new double [PKT_DetectLen*PKT_MaxSymbolLen];
@@ -515,13 +515,13 @@ void pkt::restart()
 	signal_buf[i] = 0;
 
     lo_signal_energy = hi_signal_energy =
-	mid_signal_energy = complex(0, 0);
+	mid_signal_energy = cmplx(0, 0);
 
     yt_avg = correlate_buf_ptr = 0;
 
     for(int i = 0; i < symbollen; i++)
 	lo_signal_buf[i] = hi_signal_buf[i] =
-	    mid_signal_buf[i] = complex(0, 0);
+	    mid_signal_buf[i] = cmplx(0, 0);
 
     if (!pipe)
 	pipe = new double [PKT_SyncDispLen*PKT_MaxSymbolLen];
@@ -531,7 +531,8 @@ void pkt::restart()
     QIptr = pipeptr = 0;
 
     // 1024 = 2 * SCBLOCKSIZE ( == MAX_ZLEN )
-    for (int i = 0; i < MAX_ZLEN; i++)  QI[i].re = QI[i].im = 0.0;
+    for (int i = 0; i < MAX_ZLEN; i++)  
+		QI[i] = cmplx(0,0);
 
     metric = 0.0;
     signal_power = noise_power = power_ratio = snr_avg = 1;
@@ -552,7 +553,7 @@ pkt::pkt(trx_mode md)
 
 	idle_signal_buf = (double *)0;
 
-	lo_signal_buf = hi_signal_buf = mid_signal_buf = (complex *)0;
+	lo_signal_buf = hi_signal_buf = mid_signal_buf = (cmplx *)0;
 
 	signal_buf = (double *)0;
 
@@ -587,9 +588,9 @@ void pkt::clear_syncscope()
 }
 
 /*
-complex pkt::mixer(complex in)
+cmplx pkt::mixer(cmplx in)
 {
-	complex z;
+	cmplx z;
 	z.re = cos(phaseacc);
 	z.im = sin(phaseacc);
 	z = z * in;
@@ -1867,13 +1868,13 @@ void pkt::idle_signal_power(double sample)
 }
 
 #ifndef NDEBUG
-double pkt::corr_power(complex z)
+double pkt::corr_power(cmplx z)
 #else
-inline double pkt::corr_power(complex z)
+inline double pkt::corr_power(cmplx z)
 #endif
 {
     // scaled magnitude
-    double power = z.re*z.re + z.im*z.im;
+    double power = norm(z);
     power /= 2 * symbollen;
 
     return power;
@@ -1881,9 +1882,9 @@ inline double pkt::corr_power(complex z)
 
 void pkt::correlate(double sample)
 {
-    complex yl, yh, yt;
+    cmplx yl, yh, yt;
 
-    yl = nco_lo->complex_sample();
+    yl = nco_lo->cmplx_sample();
     yl *= sample;
 
     lo_signal_energy += yl;
@@ -1891,7 +1892,7 @@ void pkt::correlate(double sample)
     lo_signal_buf[correlate_buf_ptr] = yl;
     lo_signal_corr = lo_signal_gain * corr_power(lo_signal_energy);
 
-    yh = nco_hi->complex_sample();
+    yh = nco_hi->cmplx_sample();
     yh *= sample;
 
     hi_signal_energy += yh;
@@ -1899,7 +1900,7 @@ void pkt::correlate(double sample)
     hi_signal_buf[correlate_buf_ptr] = yh;
     hi_signal_corr = hi_signal_gain * corr_power(hi_signal_energy);
 
-    yt = nco_mid->complex_sample();
+    yt = nco_mid->cmplx_sample();
     yt *= sample;
 
     mid_signal_energy += yt;
@@ -1914,24 +1915,21 @@ void pkt::correlate(double sample)
     if (abs(lo_signal_corr - hi_signal_corr) < 0.2) { // mid-symbol or noise
 	pipe[pipeptr] = 0.0;
 
-	QI[QIptr].re = yt.im;
-	QI[QIptr].im = yt.re;
+	QI[QIptr] = cmplx(yt.imag(), yt.real());
     }
     else if (lo_signal_corr > hi_signal_corr) {
 	pipe[pipeptr] = 0.5;
 
-	QI[QIptr].re = 0.125 * yt.im;
-	QI[QIptr].im = yt.re;
+	QI[QIptr] = cmplx (0.125 * yt.imag(), yt.real());
     }
     else {
 	pipe[pipeptr] = -0.5;
 
-	QI[QIptr].re = yt.re;
-	QI[QIptr].im = 0.125 * yt.im;
+	QI[QIptr] = cmplx( yt.real(), 0.125 * yt.imag());
     }
     ++pipeptr %= pkt_syncdisplen;
 
-    yt_avg = decayavg(yt_avg, yt.mag(), symbollen/2);
+    yt_avg = decayavg(yt_avg, abs(yt), symbollen/2);
 
     if (yt_avg > 0)  QI[QIptr] = QI[QIptr] / yt_avg;
 
@@ -2081,13 +2079,13 @@ int pkt::rx_process(const double *buf, int len)
 		    signal_buf[i] = 0;
 
 		lo_signal_energy = hi_signal_energy =
-		    mid_signal_energy = complex(0, 0);
+		    mid_signal_energy = cmplx(0, 0);
 
 		yt_avg = correlate_buf_ptr = 0;
 
 		for(int i = 0; i < symbollen; i++)
 		    lo_signal_buf[i] = hi_signal_buf[i] =
-			mid_signal_buf[i] = complex(0, 0);
+			mid_signal_buf[i] = cmplx(0, 0);
 	    }
 	    break;
 
@@ -2112,7 +2110,8 @@ int pkt::rx_process(const double *buf, int len)
 
     if (metric < progStatus.sldrSquelchValue && progStatus.sqlonoff) {
 	if (clear_zdata) {
-	    for (int i = 0; i < MAX_ZLEN; i++) QI[i].re = QI[i].im = 0.0;
+	    for (int i = 0; i < MAX_ZLEN; i++) 
+			QI[i] = cmplx(0,0);
 	    QIptr = 0;
 	    set_zdata(QI, MAX_ZLEN);
 	    clear_zdata = false;

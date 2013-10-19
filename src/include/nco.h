@@ -110,8 +110,8 @@ class NCO {
 	return sample;
     }
 
-    complex complex_sample() {
-	complex sample;
+    cmplx cmplx_sample() {
+	cmplx sample;
 
 	// M_PI_2 / TWOPI = M_PI / 2 / 2 / M_PI = 1 / 4
 	double t = Phase + 0.25;
@@ -121,8 +121,7 @@ class NCO {
 	    if (t < 0.0)  t = 0.0;
 	}
 
-	sample.re = interpolate(t); // cos
-	sample.im = interpolate(Phase); // sin
+	sample = cmplx(interpolate(t), interpolate(Phase));
 
 	Phase += Phase_incr;
 

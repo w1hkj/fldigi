@@ -26,7 +26,30 @@
 #define _COMPLEX_H
 
 #include <cmath>
+#include <complex>
 
+typedef std::complex<double> cmplx;
+
+inline cmplx cmac (const cmplx *a, const cmplx *b, int ptr, int len) {
+	cmplx z;
+	ptr %= len;
+	for (int i = 0; i < len; i++) {
+		z += a[i] * b[ptr];
+		ptr = (ptr + 1) % len;
+		}
+	return z;
+}
+
+// conjprod = conj(x) * y;
+// previously %
+//inline cmplx conjprod(cmplx &x, cmplx& y) {
+//	cmplx z;
+//	z = (x.real() * y.real() + x.imag() * y.imag(),
+//		 x.real() * y.imag() - x.imag() * y.real());
+//	return z;
+//}
+
+/*
 class complex {
 public:
 	double re;
@@ -142,5 +165,6 @@ inline 	complex cmac (const complex *a, const complex *b, int ptr, int len) {
 		return z;
 	}
 	
+*/
 
 #endif

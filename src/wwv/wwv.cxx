@@ -123,13 +123,15 @@ void wwv::update_syncscope()
 
 int wwv::rx_process(const double *buf, int len)
 {
-	complex z, znco;
+	cmplx z, znco;
 
 	while (len-- > 0) {
-		z.re = z.im = *buf++;
+		z = cmplx ( *buf, *buf );
+		buf++;
+
 		hilbert->run(z, z);
-		
-		znco = complex ( cos(phaseacc), sin(phaseacc) );
+
+		znco = cmplx ( cos(phaseacc), sin(phaseacc) );
 		z = znco * z;
 		
 		phaseacc += phaseincr;
@@ -137,7 +139,7 @@ int wwv::rx_process(const double *buf, int len)
 			phaseacc -= 2.0 * M_PI;
 
 		if (lpfilter->run ( z, z )) {
-			buffer[smpl_ctr % 1000] = vidfilter->run( z.mag() );		
+			buffer[smpl_ctr % 1000] = vidfilter->run( abs(z) );		
 			if (++smpl_ctr >= 1000) {
 				update_syncscope();
 				smpl_ctr = 0;

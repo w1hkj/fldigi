@@ -55,7 +55,7 @@ public:
 private:
 	scope_mode _mode;
 	double _buf[MAX_LEN];
-	complex _zdata[MAX_ZLEN];
+	cmplx _zdata[MAX_ZLEN];
 	int _zlen;
 	int _zptr;
 	unsigned char *vidbuf;
@@ -83,7 +83,7 @@ public:
 	void data(double *data, int len, bool scale = true);
 	void phase(double ph, double ql, bool hl);
 	void video(double *data, int len, bool dir );
-	void zdata(complex *z, int len);
+	void zdata(cmplx *z, int len);
 	void rtty(double flo, double fhi, double amp);
 	void mode(scope_mode md);
 	scope_mode mode() { return _mode;};

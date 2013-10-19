@@ -77,8 +77,8 @@ void viewpsk::init()
 
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		channel[i].phaseacc = 0;
-		channel[i].prevsymbol = complex (1.0, 0.0);
-		channel[i].quality = complex (0.0, 0.0);
+		channel[i].prevsymbol = cmplx (1.0, 0.0);
+		channel[i].quality = cmplx (0.0, 0.0);
 		channel[i].shreg = 0;
 		channel[i].dcdshreg = 0;
 		channel[i].dcd = false;
@@ -279,11 +279,11 @@ nexti: ;
 	}
 }
 
-void viewpsk::rx_symbol(int ch, complex symbol)
+void viewpsk::rx_symbol(int ch, cmplx symbol)
 {
 	int n;
 
-	channel[ch].phase = (channel[ch].prevsymbol % symbol).arg();
+	channel[ch].phase = arg ( conj(channel[ch].prevsymbol) * symbol );
 	channel[ch].prevsymbol = symbol;
 
 	if (channel[ch].phase < 0)
@@ -299,7 +299,7 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 		if (!channel[ch].dcd)
 			REQ(&viewaddchr, ch, (int)channel[ch].frequency, 0, viewmode);
 		channel[ch].dcd = true;
-		channel[ch].quality = complex (1.0, 0.0);
+		channel[ch].quality = cmplx (1.0, 0.0);
 		channel[ch].metric = 100;
 		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
 		channel[ch].acquire = 0;
@@ -307,18 +307,21 @@ void viewpsk::rx_symbol(int ch, complex symbol)
 
 	case 0:			/* DCD off by postamble */
 		channel[ch].dcd = false;
-		channel[ch].quality = complex (0.0, 0.0);
+		channel[ch].quality = cmplx (0.0, 0.0);
 		channel[ch].metric = 0;
 		channel[ch].acquire = 0;
 //		channel[ch].frequency = NULLFREQ;
 		break;
 
 	default:
-		channel[ch].quality.re = 
-			decayavg(channel[ch].quality.re, cos(n*channel[ch].phase), SQLDECAY);
-		channel[ch].quality.im = 
-			decayavg(channel[ch].quality.im, sin(n*channel[ch].phase), SQLDECAY);
-		channel[ch].metric = channel[ch].quality.norm();
+		channel[ch].quality = cmplx (
+			decayavg(channel[ch].quality.real(), cos(n*channel[ch].phase), SQLDECAY),
+			decayavg(channel[ch].quality.imag(), sin(n*channel[ch].phase), SQLDECAY));
+//		channel[ch].quality.re = 
+//			decayavg(channel[ch].quality.re, cos(n*channel[ch].phase), SQLDECAY);
+//		channel[ch].quality.im = 
+//			decayavg(channel[ch].quality.im, sin(n*channel[ch].phase), SQLDECAY);
+		channel[ch].metric = norm(channel[ch].quality);
 		if (channel[ch].metric > (progStatus.VIEWER_psksquelch + 6.0)/26.0) {
 			channel[ch].dcd = true;
 		} else {
@@ -338,7 +341,7 @@ int viewpsk::rx_process(const double *buf, int len)
 	double sum;
 	double ampsum;
 	int idx;
-	complex z, z2;
+	cmplx z, z2;
 
 	if (nchannels != progdefaults.VIEWERchannels || lowfreq != progdefaults.LowFreqCutoff)
 		init();
@@ -348,7 +351,7 @@ int viewpsk::rx_process(const double *buf, int len)
 		if (channel[ch].frequency == NULLFREQ) continue;
 		for (int ptr = 0; ptr < len; ptr++) {
 // Mix with the internal NCO for each channel
-			z = complex ( buf[ptr] * cos(channel[ch].phaseacc), buf[ptr] * sin(channel[ch].phaseacc) );
+			z = cmplx ( buf[ptr] * cos(channel[ch].phaseacc), buf[ptr] * sin(channel[ch].phaseacc) );
 			channel[ch].phaseacc += 2.0 * M_PI * channel[ch].frequency / VPSKSAMPLERATE;
 // filter & decimate
 			if (channel[ch].fir1->run( z, z )) {
@@ -356,7 +359,7 @@ int viewpsk::rx_process(const double *buf, int len)
 				idx = (int) channel[ch].bitclk;
 				sum = 0.0;
 				ampsum = 0.0;
-				channel[ch].syncbuf[idx] = 0.8 * channel[ch].syncbuf[idx] + 0.2 * z2.mag();
+				channel[ch].syncbuf[idx] = 0.8 * channel[ch].syncbuf[idx] + 0.2 * abs(z2);
 
 				for (int i = 0; i < 8; i++) {
 					sum += (channel[ch].syncbuf[i] - channel[ch].syncbuf[i+8]);

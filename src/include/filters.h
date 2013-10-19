@@ -51,7 +51,7 @@ private:
 	int pointer;
 	int counter;
 	
-	complex fu;
+	cmplx fu;
 
 	inline double sinc(double x) {
 		if (fabs(x) < 1e-10)
@@ -98,7 +98,7 @@ public:
 	void init_hilbert (int len, int dec);
 	double *bp_FIR(int len, int hilbert, double f1, double f2);
 	void dump();
-	int run (const complex &in, complex &out);
+	int run (const cmplx &in, cmplx &out);
 	int Irun (const double &in, double &out);
 	int Qrun (const double &in, double &out);
 };
@@ -136,12 +136,12 @@ private:
 	int ptr;
 	struct vrot_bins_pair ;
 	vrot_bins_pair * __restrict__ vrot_bins ;
-	complex * __restrict__ delay;
+	cmplx * __restrict__ delay;
 	double k2;
 public:
 	sfft(int len, int first, int last);
 	~sfft();
-	void run(const complex& input, complex * __restrict__ result, int stride );
+	void run(const cmplx& input, cmplx * __restrict__ result, int stride );
 };
 
 

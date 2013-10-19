@@ -48,15 +48,15 @@ public:
 	~Cfft();
 	void resize(int n);
 	void cdft(double *a);
-	void cdft(complex *a) { cdft( (double *) a); }
+	void cdft(cmplx *a) { cdft( (double *) a); }
 	void icdft(double *a);
-	void icdft(complex *a) { icdft( (double *) a); }
+	void icdft(cmplx *a) { icdft( (double *) a); }
 	void sifft(short int *siData, double *out);
-	void sifft(short int *siData, complex *a) { sifft(siData, (double *) a); }
+	void sifft(short int *siData, cmplx *a) { sifft(siData, (double *) a); }
 	void rdft(double *a);
-	void rdft(complex *a) { rdft( (double *) a); }
+	void rdft(cmplx *a) { rdft( (double *) a); }
 	void irdft(double *a);
-	void irdft(complex *a) { irdft( (double *) a); }
+	void irdft(cmplx *a) { irdft( (double *) a); }
 	
 	void setWindow(fftPrefilter pf);
 };

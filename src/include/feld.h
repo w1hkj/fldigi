@@ -84,7 +84,7 @@ protected:
 	int preamble;
 	int postamble;
 	int prevsymb;
-	complex prev;
+	cmplx prev;
 	
 	double OnShape[MAXLEN];
 	double OffShape[MAXLEN];
@@ -93,10 +93,10 @@ protected:
 	int col_pointer;
 	int fntnbr;
 	
-	complex mixer(complex);
+	cmplx mixer(cmplx);
 	double nco(double);
-	void	rx(complex);
-	void	FSKHELL_rx(complex);
+	void	rx(cmplx);
+	void	FSKHELL_rx(cmplx);
 	void	send_symbol(int currsymbol, int nextsymbol);
 	void	send_null_column();
 	void	tx_char(char);

@@ -40,7 +40,7 @@ private:
 	int 		txbufferlen;
 
 	double		phaseacc;
-	complex		prevsymbol;
+	cmplx		prevsymbol;
 	int			preamble;
 	unsigned int	shreg;
 

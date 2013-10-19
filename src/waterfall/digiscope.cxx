@@ -99,7 +99,7 @@ void Digiscope::video(double *data, int len , bool dir)
 	FL_AWAKE_D();
 }
 
-void Digiscope::zdata(complex *zarray, int len )
+void Digiscope::zdata(cmplx *zarray, int len )
 {
 	if (active_modem->HistoryON()) return;
 	
@@ -363,14 +363,14 @@ void Digiscope::draw_xy()
 	int xp, yp, xp1, yp1;
 	int j = _zptr;
 	if (++j == MAX_ZLEN) j = 0;
-	xp = X + (int)((_zdata[j].re + 1.0) * W);
-	yp = Y + (int)((_zdata[j].im + 1.0) * H);
+	xp = X + (int)((_zdata[j].real() + 1.0) * W);
+	yp = Y + (int)((_zdata[j].imag() + 1.0) * H);
 
 	fl_color(fl_rgb_color(0, 230,0));
 	for (int i = 0; i <  MAX_ZLEN; i++ ) {
 		if (++j == MAX_ZLEN) j = 0;
-		xp1 = X + (int)((_zdata[j].re + 1.0) * W);
-		yp1 = Y + (int)((_zdata[j].im + 1.0) * H);
+		xp1 = X + (int)((_zdata[j].real() + 1.0) * W);
+		yp1 = Y + (int)((_zdata[j].imag() + 1.0) * H);
 		fl_line(xp, yp, xp1, yp1);
 		xp = xp1; yp = yp1;
 	}
