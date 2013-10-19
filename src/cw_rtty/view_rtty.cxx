@@ -105,21 +105,19 @@ view_rtty::~view_rtty()
 
 void view_rtty::reset_filters(int ch)
 {
-// filter_length = 512 / 1024 / 2048
-// use extended rcos(0) filter implementation
 	int filter_length = 1024;
 	if (channel[ch].mark_filt) {
-		channel[ch].mark_filt->rtty_order(rtty_baud/samplerate, 0);
+		channel[ch].mark_filt->rtty_filter(rtty_baud/samplerate);
 	} else {
 		channel[ch].mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		channel[ch].mark_filt->rtty_order(rtty_baud/samplerate, 0);
+		channel[ch].mark_filt->rtty_filter(rtty_baud/samplerate);
 	}
 
 	if (channel[ch].space_filt) {
-		channel[ch].space_filt->rtty_order(rtty_baud/samplerate, 0);
+		channel[ch].space_filt->rtty_filter(rtty_baud/samplerate);
 	} else {
 		channel[ch].space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		channel[ch].space_filt->rtty_order(rtty_baud/samplerate, 0);
+		channel[ch].space_filt->rtty_filter(rtty_baud/samplerate);
 	}
 }
 
