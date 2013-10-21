@@ -100,12 +100,6 @@ public:
 	int cursorFreq(int xpos) {
 		return (offset + step * xpos);
 	}
-	void DispColor(bool Y) {
-		dispcolor = Y;
-	}
-	bool DispColor() {
-		return dispcolor;
-	}
 	void Ampspan(double AmpSpn) {
 		ampspan = (int)AmpSpn;
 	}
@@ -204,7 +198,6 @@ private:
 	int 	reflevel;
 	double	dfreq;
 	bool	centercarrier;
-	bool	dispcolor;
 	bool	cursormoved;
 	WFspeed	wfspeed;
 	int		srate;
@@ -223,7 +216,7 @@ private:
 
 	short int	*fft_db;
 	int			ptrFFTbuff;
-	wf_fft_type	*circbuff;
+	double		*circbuff;
 	int			ptrCB;
 	wf_fft_type	*pwr;
 	g_fft<wf_fft_type> *wfft;
