@@ -161,7 +161,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 
 	double bw, cf, flo, fhi;
 	mode = mfsk_mode;
-	int depth = 10;
+	depth = 10;
 
 	//VK2ETA high speed modes
 	preamble = 107;
@@ -223,6 +223,25 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		cap |= CAP_IMG;
 		preamble = 214;
 		break;
+		
+	case MODE_MFSK64L:
+		samplerate = 8000;
+		symlen =  128;
+		symbits =    4;
+		depth = 400;
+		preamble = 2500;
+		basetone = 16;
+		numtones = 16;
+		break;
+	case MODE_MFSK128L:
+		samplerate = 8000;
+		symlen =  64;
+		symbits =   4;
+		depth = 800;
+		preamble = 5000;
+		basetone = 8;
+		numtones = 16;
+		break;	
 
 	case MODE_MFSK11:
 		samplerate = 11025;
@@ -323,7 +342,6 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 //=====================================================================
 // receive processing
 //=====================================================================
-
 
 void mfsk::s2nreport(void)
 {
@@ -1033,8 +1051,11 @@ int mfsk::tx_process()
 	switch (txstate) {
 		case TX_STATE_PREAMBLE:
 			clearbits();
-			for (int i = 0; i < preamble / 3; i++)
-				sendbit(0);
+
+			if (mode != MODE_MFSK64L && mode != MODE_MFSK128L )
+				for (int i = 0; i < preamble / 3; i++)
+					sendbit(0);
+
 			txstate = TX_STATE_START;
 			break;
 		case TX_STATE_START:

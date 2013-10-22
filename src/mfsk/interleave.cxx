@@ -4,7 +4,7 @@
 // Copyright (C) 2006-2008
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -29,15 +29,16 @@
 
 #include "interleave.h"
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------
 
 interleave::interleave (int _size, int _depth, int dir)
 {
 	size = _size;
 	depth = _depth;
 	direction = dir;
-	table = new unsigned char [depth * size * size];
-	memset(table, 0, depth * size * size);
+	len = size * size * depth;
+	table = new unsigned char [len];
+	flush();
 }
 
 interleave::~interleave ()
@@ -81,5 +82,16 @@ void interleave::bits(unsigned int *pbits)
 		*pbits = (*pbits << 1) | syms[i];
 }
 
-// ---------------------------------------------------------------------- 
+void interleave::flush(void)
+{
+// Fill entire RX interleaver with punctures or 0 depending on whether
+// Rx or Tx
+	if (direction == INTERLEAVE_REV)
+		memset(table, PUNCTURE, len);
+	else
+		memset(table, 0, len);
+}
+
+
+// ----------------------------------------------------------------------
 

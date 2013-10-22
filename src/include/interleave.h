@@ -26,14 +26,16 @@
 #ifndef _INTERLEAVE_H
 #define _INTERLEAVE_H
 
-#define	INTERLEAVE_FWD	0
-#define	INTERLEAVE_REV	1
+#define INTERLEAVE_FWD  0
+#define INTERLEAVE_REV  1
+#define PUNCTURE        128
 
 class interleave 
 {
 protected:
 	int size;
 	int depth;
+	int len;
 	int direction;
 	unsigned char *table;
 	unsigned char *tab(int i, int j, int k) {
@@ -45,6 +47,7 @@ public:
 	~interleave();
 	void symbols (unsigned char *psyms);
 	void bits (unsigned int *pbits);
+	void flush();
 };
 
 // ----------------------------------------------------------------------------
