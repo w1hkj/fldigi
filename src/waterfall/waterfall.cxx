@@ -203,6 +203,7 @@ void WFdisp::initMarkers() {
 // draw a marker of specified width and colour centred at freq and clrM
 inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB* clrMin, RGB* clrM, const RGB* clrMax)
 {
+	if (!active_modem) return;
 	trx_mode marker_mode = active_modem->get_mode();
 	if (marker_mode == MODE_RTTY) {
 	// rtty has two bandwidth indicators on the waterfall
@@ -338,7 +339,6 @@ void WFdisp::makeMarker()
 				*(clrM + i + incr) = RGBcursor;
 	}
 }
-
 
 void WFdisp::makeScale() {
 	uchar *gmap = scaleimage;
@@ -623,7 +623,7 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 
 update_freq:
 	static char szFrequency[14];
-	if (rfc != 0) { // use a boolean for the waterfall
+	if (active_modem && rfc != 0) { // use a boolean for the waterfall
 		int cwoffset = 0;
 		int rttyoffset = 0;
 		trx_mode mode = active_modem->get_mode();
@@ -851,7 +851,7 @@ case Step: for (int row = 0; row < image_height; row++) { \
 	}
 #undef UPD_LOOP
 
-	if (progdefaults.UseBWTracks) {
+	if (active_modem && progdefaults.UseBWTracks) {
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
 		trx_mode mode = active_modem->get_mode();
@@ -916,7 +916,8 @@ void WFdisp::drawcolorWF() {
 
 	update_waterfall();
 
-	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine) ) {
+	if (active_modem && wantcursor && 
+		(progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine) ) {
 		trx_mode mode = active_modem->get_mode();
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
@@ -954,45 +955,6 @@ void WFdisp::drawcolorWF() {
 	drawScale();
 }
 
-/*
-// following method is not used in versions > 3.12
-void WFdisp::drawgrayWF() {
-	uchar *pixmap = (uchar*)fft_img;
-
-	update_waterfall();
-
-	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine) ) {
-		trx_mode mode = active_modem->get_mode();
-		int bw_lo = bandwidth / 2;
-		int bw_hi = bandwidth / 2;
-		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
-			bw_hi = bw_hi * 31 / 32;
-		RGBI  *pos0 = (fft_img + cursorpos);
-		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
-		RGBI  *pos2 = (fft_img + cursorpos + bw_hi/step);
-		if (pos1 >= fft_img && pos2 < fft_img + disp_width)
-			for (int y = 0; y < image_height; y ++) {
-				if (progdefaults.UseCursorLines)
-					*pos1 = *pos2 = progdefaults.cursorLineRGBI;
-				if (progdefaults.UseCursorCenterLine)
-					*pos0 = progdefaults.cursorCenterRGBI;
-				pos0 += disp_width;
-				pos1 += disp_width;
-				pos2 += disp_width;
-			}
-	}
-
-	fl_color(FL_BLACK);
-	fl_rectf(x(), y(), w(), WFSCALE + WFMARKER + WFTEXT + image_height);
-
-	fl_draw_image_mono(
-		pixmap + 3,
-		x(), y() + WFSCALE + WFMARKER + WFTEXT,
-		disp_width, image_height,
-		sizeof(RGBI), disp_width * sizeof(RGBI));
-	drawScale();
-}
-*/
 void WFdisp::drawspectrum() {
 	int sig;
 	int ynext,
@@ -1034,7 +996,8 @@ void WFdisp::drawspectrum() {
 				pos2 += IMAGE_WIDTH/step;
 			}
 	}
-	if (wantcursor && (progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine)) {
+	if (active_modem && wantcursor && 
+		(progdefaults.UseCursorLines || progdefaults.UseCursorCenterLine)) {
 		trx_mode mode = active_modem->get_mode();
 		int bw_lo = bandwidth / 2;
 		int bw_hi = bandwidth / 2;
@@ -1147,13 +1110,14 @@ void carrier_cb(Fl_Widget *w, void *v) {
 	int selfreq = (int) cntr->value();
 	if (selfreq > progdefaults.HighFreqCutoff) selfreq = progdefaults.HighFreqCutoff - wf->wfdisp->Bandwidth() / 2;
 	stopMacroTimer();
-	active_modem->set_freq(selfreq);
+	if (active_modem) active_modem->set_freq(selfreq);
 	wf->wfdisp->carrier(selfreq);
 	restoreFocus();
 }
 
 void do_qsy(bool dir)
 {
+	if (!active_modem) return;
 	static vector<qrg_mode_t> qsy_stack;
 	qrg_mode_t m;
 
@@ -1228,6 +1192,7 @@ void rate_cb(Fl_Widget *w, void *v) {
 
 void xmtrcv_cb(Fl_Widget *w, void *vi)
 {
+	if (!active_modem) return;
 	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
@@ -1261,6 +1226,7 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 
 void xmtlock_cb(Fl_Widget *w, void *vi)
 {
+	if (!active_modem) return;
 	FL_LOCK_D();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
 	int v = b->value();
@@ -1319,7 +1285,9 @@ void ampspan_cb(Fl_Widget *w, void *v) {
 	restoreFocus();
 }
 
-void btnRev_cb(Fl_Widget *w, void *v) {
+void btnRev_cb(Fl_Widget *w, void *v) 
+{
+	if (!active_modem) return;
 	FL_LOCK_D();
 	waterfall *wf = (waterfall *)w->parent();
 	Fl_Light_Button *b = (Fl_Light_Button *)w;
@@ -1333,6 +1301,7 @@ void btnRev_cb(Fl_Widget *w, void *v) {
 
 void btnMem_cb(Fl_Widget *, void *menu_event)
 {
+	if (!active_modem) return;
 	static std::vector<qrg_mode_t> qrg_list;
 	enum { SELECT, APPEND, REPLACE, REMOVE, CLEAR };
 	int op = SELECT, elem = 0;
@@ -1426,6 +1395,7 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 }
 
 void waterfall::opmode() {
+	if (!active_modem) return;
 	int val = (int)active_modem->get_bandwidth();
 
 	wfdisp->carrier((int)CLAMP(
@@ -1507,7 +1477,7 @@ int waterfall::Carrier()
 
 void waterfall::Carrier(int f)
 {
-	active_modem->set_freq(f);
+	if (active_modem) active_modem->set_freq(f);
 }
 
 void waterfall::rfcarrier(long long cf) {
@@ -1536,7 +1506,7 @@ void waterfall::USB(bool b) {
 	if (wfdisp->USB() == b)
 		return;
 	wfdisp->USB(b);
-	active_modem->set_reverse(reverse);
+	if (active_modem) active_modem->set_reverse(reverse);
 	REQ(&viewer_redraw);
 }
 
@@ -1763,7 +1733,7 @@ int waterfall::handle(int event)
 
 	// this does not belong here, but we don't have access to this widget's
 	// handle method (or its parent's)
-	if (Fl::event_inside(MODEstatus)) {
+	if (active_modem && Fl::event_inside(MODEstatus)) {
 		trx_mode mode = active_modem->get_mode();
 		for (;;) {
 			mode = WCLAMP(mode + d, 0, NUM_MODES - 1);
@@ -1803,7 +1773,7 @@ static void hide_cursor(void *w)
 
 void waterfall::insert_text(bool check)
 {
-	if (check) {
+	if (active_modem && check) {
 		qrg_mode_t m;
 		m.rfcarrier = wf->rfcarrier();
 		m.carrier = active_modem->get_freq();
@@ -1830,6 +1800,7 @@ void waterfall::insert_text(bool check)
 
 static void find_signal_text(void)
 {
+	if (!active_modem) return;
 	int freq = active_modem->get_freq();
 	trx_mode mode = active_modem->get_mode();
 
@@ -1918,7 +1889,7 @@ int WFdisp::handle(int event)
 				if (!USB())
 					newrfc = -newrfc;
 				newrfc += rfcarrier();
-				qsy(newrfc, active_modem->get_freq());
+				qsy(newrfc, active_modem ? active_modem->get_freq() : 1500);
 				pxpos = xpos;
 				return 1;
 			}
@@ -1936,14 +1907,16 @@ int WFdisp::handle(int event)
 			if (progdefaults.WaterfallHistoryDefault)
 				bHistory = true;
 			newcarrier = cursorFreq(xpos);
-			newcarrier = (int)CLAMP(
-				newcarrier, 
-				progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
-				progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
-			active_modem->set_freq(newcarrier);
-			viewer_paste_freq(newcarrier);
-			if (!(Fl::event_state() & FL_SHIFT))
-				active_modem->set_sigsearch(SIGSEARCH);
+			if (active_modem) {
+				newcarrier = (int)CLAMP(
+					newcarrier, 
+					progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
+					progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
+				active_modem->set_freq(newcarrier);
+				viewer_paste_freq(newcarrier);
+				if (!(Fl::event_state() & FL_SHIFT))
+					active_modem->set_sigsearch(SIGSEARCH);
+			}
 			redrawCursor();
 			restoreFocus();
 			break;
@@ -1962,7 +1935,7 @@ int WFdisp::handle(int event)
 		switch (eb = Fl::event_button()) {
 		case FL_RIGHT_MOUSE:
 			tmp_carrier = false;
-			active_modem->set_freq(oldcarrier);
+			if (active_modem) active_modem->set_freq(oldcarrier);
 			redrawCursor();
 			restoreFocus();
 			// fall through
@@ -2020,11 +1993,13 @@ int WFdisp::handle(int event)
 		case FL_Left: case FL_Right:
 			if (k == FL_Left)
 				d = -d;
-			oldcarrier = newcarrier = (int)CLAMP(
-				carrier() + d, 
-				progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
-				progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
-			active_modem->set_freq(newcarrier);
+			if (active_modem) {
+				oldcarrier = newcarrier = (int)CLAMP(
+					carrier() + d, 
+					progdefaults.LowFreqCutoff + active_modem->get_bandwidth() / 2, 
+					progdefaults.HighFreqCutoff - active_modem->get_bandwidth() / 2);
+				active_modem->set_freq(newcarrier);
+			}
 			redrawCursor();
 			break;
 		case FL_Tab:
@@ -2075,29 +2050,32 @@ void waterfall::handle_mouse_wheel(int what, int d)
 		return;
 	case WF_AFC_BW:
 	{
-		trx_mode m = active_modem->get_mode();
-		if (m >= MODE_PSK_FIRST && m <= MODE_PSK_LAST) {
-			val = mailserver ? cntServerOffset : cntSearchRange;
-			msg_label = "Srch Rng";
+		if (active_modem) {
+			trx_mode m = active_modem->get_mode();
+			if (m >= MODE_PSK_FIRST && m <= MODE_PSK_LAST) {
+				val = mailserver ? cntServerOffset : cntSearchRange;
+				msg_label = "Srch Rng";
+			}
+			else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST) {
+				val = sldrHellBW;
+				msg_label = "BW";
+			}
+			else if (m == MODE_CW) {
+				val = sldrCWbandwidth;
+				msg_label = "BW";
+			}
+			else
+				return;
+			msg_fmt = "%s: %2.0f Hz";
 		}
-		else if (m >= MODE_HELL_FIRST && m <= MODE_HELL_LAST) {
-			val = sldrHellBW;
-			msg_label = "BW";
-		}
-		else if (m == MODE_CW) {
-			val = sldrCWbandwidth;
-			msg_label = "BW";
-		}
-		else
-			return;
-		msg_fmt = "%s: %2.0f Hz";
 		break;
 	}
 	case WF_SIGNAL_SEARCH:
-		if (d > 0)
-			active_modem->searchDown();
-		else
-			active_modem->searchUp();
+		if (d > 0) {
+			if (active_modem) active_modem->searchDown();
+		} else {
+			if (active_modem) active_modem->searchUp();
+		}
 		return;
 	case WF_SQUELCH:
 		val = sldrSquelch;
@@ -2121,7 +2099,7 @@ void waterfall::handle_mouse_wheel(int what, int d)
 	val->do_callback();
 	progdefaults.changed = changed_save;
 	if (val == cntServerOffset || val == cntSearchRange)
-		active_modem->set_sigsearch(SIGSEARCH);
+		if (active_modem) active_modem->set_sigsearch(SIGSEARCH);
 	else if (val == sldrSquelch) // sldrSquelch gives focus to TransmitText
 		take_focus();
 
