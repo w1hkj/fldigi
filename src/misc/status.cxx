@@ -404,8 +404,9 @@ void status::loadLastState()
 {
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
 
+	int i;
+	char strbuff[1000];
 	char version[64]; version[sizeof(version)-1] = '\0';
-	char* defbuffer;
 
 	// Skip loading the rest of the status variables if we didn't read a
 	// version name/value pair; or this is not a file that supports dual
@@ -417,10 +418,9 @@ void status::loadLastState()
 	if (!bLastStateRead)
 		return;
 
-	int i;
-
-	spref.get("mode_name", defbuffer, mode_info[MODE_PSK31].sname);
-	mode_name = defbuffer;
+	memset(strbuff, 0, sizeof(strbuff));
+	spref.get("mode_name", strbuff, mode_info[MODE_PSK31].sname, sizeof(strbuff) - 1);
+	mode_name = strbuff;
 	lastmode = MODE_PSK31;
 	for (i = 0; i < NUM_MODES;i++) {
 		if (mode_name == mode_info[i].sname) {
@@ -451,12 +451,14 @@ void status::loadLastState()
 	progdefaults.wfAmpSpan = ampspan;
 	
 	spref.get("noCATfreq", noCATfreq, noCATfreq);
-	spref.get("noCATmode", defbuffer, "USB");
-	noCATmode = defbuffer;
-	free(defbuffer);
-	spref.get("noCATwidth", defbuffer, "3000");
-	noCATwidth = defbuffer;
-	free(defbuffer);
+
+	memset(strbuff, 0, sizeof(strbuff));
+	spref.get("noCATmode", strbuff, "USB", sizeof(strbuff) - 1);
+	noCATmode = strbuff;
+
+	memset(strbuff, 0, sizeof(strbuff));
+	spref.get("noCATwidth", strbuff, "3000", sizeof(strbuff) - 1);
+	noCATwidth = strbuff;
 
 	spref.get("main_x", mainX, mainX);
 	spref.get("main_y", mainY, mainY);
@@ -494,9 +496,9 @@ void status::loadLastState()
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
 
-	spref.get("last_macro_file", defbuffer, "macros.mdf");
-	LastMacroFile = defbuffer;
-	free(defbuffer);
+	memset(strbuff, 0, sizeof(strbuff));
+	spref.get("last_macro_file", strbuff, "macros.mdf", sizeof(strbuff) - 1);
+	LastMacroFile = strbuff;
 
 	spref.get("spot_recv", i, spot_recv); spot_recv = i;
 	spref.get("spot_log", i, spot_log); spot_log = i;
@@ -551,11 +553,10 @@ void status::loadLastState()
 	spref.get("uosrx", i, UOSrx); UOSrx = i;
 	spref.get("uostx", i, UOStx); UOStx = i;
 
-	spref.get("browser_search", defbuffer, browser_search.c_str());
-	browser_search = defbuffer;
+	memset(strbuff, 0, sizeof(strbuff));
+	spref.get("browser_search", strbuff, browser_search.c_str(), sizeof(strbuff) - 1);
+	browser_search = strbuff;
 	seek_re.recompile(browser_search.c_str());
-
-	free(defbuffer);
 
 //	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;
 }
