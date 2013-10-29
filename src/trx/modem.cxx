@@ -201,6 +201,8 @@ modem::modem()
 	PTTphaseacc = 0.0;
 	s2n_ncount = s2n_sum = s2n_sum2 = s2n_metric = 0.0;
 	s2n_valid = false;
+
+	bandwidth = 0.0;
 }
 
 // modem types CW and RTTY do not use the base init()
