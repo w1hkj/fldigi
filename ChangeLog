@@ -1,5 +1,47 @@
-2013-09-12  David Freese  <w1hkj@w1hkj.com>
+2013-10-30  David Freese  <w1hkj@w1hkj.com>
 
+	1cca53a: WF latency
+
+
+=Version 3.21.77=
+
+	665f195: Load preferences
+	7dcfc50: Waterfall race condition
+
+2013-10-22  John Phelps  <kl4yfd@gmail.com>
+
+	0b8143b: MFSK HF Long Modes  * Added MFSK64L and MFSL128L new modes  * 6.25 Second interleaver for very-robust HF reception  * Assigned new RSIDs   * Mode MFSK-64L : 1026   * Mode MFSK-128L : 1029
+
+2013-10-20  David Freese  <w1hkj@w1hkj.com>
+
+	e0d91cb: Waterfall improvements
+
+2013-10-19  Remi Chateauneu  <remi.chateauneu@gmail.com>
+
+	1e39501: Fix test_process on MacOS
+	fb5c891: Various speed-ups, fixes and cleanups
+
+2013-10-16  David Freese  <w1hkj@w1hkj.com>
+
+	d56a7f4: Cfft removal
+	a322875: fldigi.pot update
+	adc6128: Multi-channel decode
+	267b914: fft filter
+	1bad52f: g_fft
+	9b62e1b3: WF fft
+	6d79e55: rsid fft
+	d600d02: Wefax Config tab
+	683b364: Autostart programs
+	bb91898: RsID Error Control
+	1eaba46: Macro tag Image
+
+2013-09-17  Kamal Mostafa  <kamal@whence.com>
+
+	51ead20: Avoid-nitems-fltk-kfreebsd-collision.patch
+
+2013-09-14  David Freese  <w1hkj@w1hkj.com>
+
+	8159199: MFSKpic improvements
 	78d11dd: ADIF log database
 	dbabd63: MFSK update
 	3d400ae: Thor update
