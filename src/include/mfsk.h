@@ -151,6 +151,7 @@ protected:
 	double tonespacing;
 	double basefreq;
 	int counter;
+	int depth;
 // receive
 	int				rxstate;
 	C_FIR_filter	*hbfilt;
