@@ -132,17 +132,16 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	pwr				= new wf_fft_type[IMAGE_WIDTH];
 	fft_db			= new short int[image_area];
 	tmp_fft_db		= new short int[image_area];
-	circbuff		= new wf_fft_type[FFT_LEN];
+	circbuff		= new double[FFT_LEN];
 	wfbuf			= new wf_cpx_type[FFT_LEN];
 	wfft			= new g_fft<wf_fft_type>(FFT_LEN);
 	fftwindow		= new double[FFT_LEN];
 	setPrefilter(progdefaults.wfPreFilter);
 
-	memset(circbuff, 0, FFT_LEN * sizeof(*circbuff));
+	memset(circbuff, 0, FFT_LEN * sizeof(double));
 
 	mag = 1;
 	step = 4;
-	dispcolor = true;
 	offset = 0;
 	sigoffset = 0;
 	ampspan = 75;
@@ -534,15 +533,11 @@ FL_LOCK_D();
 FL_UNLOCK_D();
 	}
 
-	if (dispcnt == 0) {
-FL_LOCK_D();
-		if (dispcnt == 0) {
-			for (int i = 0; i < image_height; i++) {
-				int j = (i + 1 + ptrFFTbuff) % image_height;
-				memmove( (void *)(tmp_fft_db + i * IMAGE_WIDTH),
-				         (void *)(fft_db + j * IMAGE_WIDTH),
-				         IMAGE_WIDTH * sizeof(short int));
-			}
+		for (int i = 0; i < image_height; i++) {
+			int j = (i + 1 + ptrFFTbuff) % image_height;
+			memmove( (void *)(tmp_fft_db + i * IMAGE_WIDTH),
+					 (void *)(fft_db + j * IMAGE_WIDTH),
+					 IMAGE_WIDTH * sizeof(short int));
 		}
 		redraw();
 FL_UNLOCK_D();
@@ -608,20 +603,23 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 		ptrCB = 0;
 	}
 
+	memmove((void*)circbuff,
+			(void*)(circbuff + len), 
+			(size_t)((FFT_LEN - len)*sizeof(wf_fft_type)));
+	memcpy((void*)&circbuff[FFT_LEN-len], 
+			(void*)sig,
+			(size_t)(len)*sizeof(double));
+
 	{
 		overload = false;
 		double overval, peak = 0.0;
-		memmove((void*)circbuff,
-				(void*)(circbuff + len), 
-				(size_t)((FFT_LEN - len)*sizeof(wf_fft_type)));
-
 		for (int i = 0; i < len; i++) {
-			circbuff[FFT_LEN - len + i] = sig[i];
 			overval = fabs(sig[i]);
 			if (overval > peak) peak = overval;
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
+
 	if (mode == SCOPE)
 		process_analog(circbuff, FFT_LEN);
 	else
@@ -824,7 +822,7 @@ void WFdisp::update_waterfall() {
 // transfer the fft history data into the WF image
 	short int * __restrict__ p1, * __restrict__ p2;
 	RGBI * __restrict__ p3, * __restrict__ p4;
-	p1 = tmp_fft_db + offset;
+	p1 = tmp_fft_db + offset + step/2;
 	p2 = p1;
 	p3 = fft_img;
 	p4 = p3;
@@ -844,15 +842,15 @@ case Step: for (int row = 0; row < image_height; row++) { \
 
 	if (progdefaults.WFaveraging) {
 		switch(step) {
-			UPD_LOOP( 4, (*p2+ *(p2+1)+ *(p2+2)+ *(p2+3))/4 );
-			UPD_LOOP( 2, (*p2  + *(p2+1))/2 );
+			UPD_LOOP( 4, (*p2 + *(p2+1) + *(p2+2) + *(p2-1) + *(p2-1))/5 );
+			UPD_LOOP( 2, (*p2 + *(p2+1) + *(p2-1))/3 );
 			UPD_LOOP( 1, *p2 );
 			default:;
 		}
 	} else {
 		switch(step) {
-			UPD_LOOP( 4, MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2+3) ) );
-			UPD_LOOP( 2, MAX( *p2, *(p2+1) ) );
+			UPD_LOOP( 4, MAX( MAX( MAX ( MAX ( *p2, *(p2+1) ), *(p2+2) ), *(p2-2) ), *(p2-1) ) );
+			UPD_LOOP( 2, MAX( MAX( *p2, *(p2+1) ), *(p2-1) ) );
 			UPD_LOOP( 1, *p2 );
 			default:;
 		}
@@ -962,6 +960,7 @@ void WFdisp::drawcolorWF() {
 	drawScale();
 }
 
+/*
 // following method is not used in versions > 3.12
 void WFdisp::drawgrayWF() {
 	uchar *pixmap = (uchar*)fft_img;
@@ -999,7 +998,7 @@ void WFdisp::drawgrayWF() {
 		sizeof(RGBI), disp_width * sizeof(RGBI));
 	drawScale();
 }
-
+*/
 void WFdisp::drawspectrum() {
 	int sig;
 	int ynext,
@@ -1111,10 +1110,7 @@ void WFdisp::draw() {
 		break;
 	case WATERFALL :
 	default:
-		if (dispcolor)
-			drawcolorWF();
-		else
-			drawgrayWF();
+		drawcolorWF();
 		drawMarker();
 	}
 }
