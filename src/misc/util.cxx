@@ -374,15 +374,11 @@ int test_process(int pid)
 	}
 	return 0 ;
 #else
+	// This would work on Linux also.
 	int ret = kill(pid,0);
-	switch( ret ) {
-		case EINVAL: return -1 ;
-		case EPERM : return -1 ;
-		case ESRCH : return  0 ; // Process is not there.
-		case 0     : return  1 ; // Process is found.
-	}
-	fprintf(stderr,"kill failed with %s", strerror(ret) );
-
+	if(ret == 0) return 1;
+	if(errno == ESRCH) return 0;
+	fprintf(stderr,"kill pid=%d failed r=%d e=%d %s\n", pid, ret, errno, strerror(errno) );
 	return -1 ;
 #endif
 }
