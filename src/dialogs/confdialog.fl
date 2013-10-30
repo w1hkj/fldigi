@@ -2438,6 +2438,17 @@ setwfrange();}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
+              Fl_Counter wf_latency {
+                label Latency
+                callback {progdefaults.wf_latency = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {Signal averaging over time
+0 - least
+4 - greatest} xywh {295 124 95 22} type Simple align 8 minimum 1 maximum 16 step 1 value 8
+                code0 {o->value(progdefaults.wf_latency);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Counter2
+              }
             }
             Fl_Group {} {
               label {Changes take effect on next program startup} open

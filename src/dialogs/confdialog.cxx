@@ -2036,6 +2036,13 @@ progdefaults.changed = true;
 setwfrange();
 }
 
+Fl_Counter2 *wf_latency=(Fl_Counter2 *)0;
+
+static void cb_wf_latency(Fl_Counter2* o, void*) {
+  progdefaults.wf_latency = (int)o->value();
+progdefaults.changed = true;
+}
+
 Fl_Counter2 *cntrWfheight=(Fl_Counter2 *)0;
 
 static void cb_cntrWfheight(Fl_Counter2* o, void*) {
@@ -6308,6 +6315,26 @@ ab and newline are automatically included."));
                 o->value(progdefaults.HighFreqCutoff);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntrWfwidth
+              { Fl_Counter2* o = wf_latency = new Fl_Counter2(295, 124, 95, 22, _("Latency"));
+                wf_latency->tooltip(_("Signal averaging over time\n0 - least\n4 - greatest"));
+                wf_latency->type(1);
+                wf_latency->box(FL_UP_BOX);
+                wf_latency->color(FL_BACKGROUND_COLOR);
+                wf_latency->selection_color(FL_INACTIVE_COLOR);
+                wf_latency->labeltype(FL_NORMAL_LABEL);
+                wf_latency->labelfont(0);
+                wf_latency->labelsize(14);
+                wf_latency->labelcolor(FL_FOREGROUND_COLOR);
+                wf_latency->minimum(1);
+                wf_latency->maximum(16);
+                wf_latency->step(1);
+                wf_latency->value(8);
+                wf_latency->callback((Fl_Callback*)cb_wf_latency);
+                wf_latency->align(Fl_Align(FL_ALIGN_RIGHT));
+                wf_latency->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.wf_latency);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* wf_latency
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(27, 221, 490, 80, _("Changes take effect on next program startup"));

@@ -503,14 +503,19 @@ void WFdisp::processFFT() {
 
 	if (--dispcnt == 0) {
 		static const int log2disp100 = log2disp(-100);
-		static const double vscale = 2.0 / FFT_LEN;
+		double vscale = 2.0 / FFT_LEN;
 
 		memset(wfbuf, 0, FFT_LEN * sizeof(*wfbuf));
 		void *pv = static_cast<void*>(wfbuf);
 		wf_fft_type *pbuf = static_cast<wf_fft_type*>(pv);
 
-		for (int i = 0; i < FFT_LEN; i++)
-			pbuf[i] = fftwindow[i] * circbuff[i] * vscale;
+		int latency = progdefaults.wf_latency;
+		if (latency < 1) latency = 1;
+		if (latency > 16) latency = 16;
+		int nsamples = FFT_LEN * latency / 16;
+		vscale *= sqrt(16.0 / latency);
+		for (int i = 0; i < nsamples; i++)
+			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
 
 		wfft->RealFFT(wfbuf);
 

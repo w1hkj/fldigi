@@ -229,6 +229,7 @@ extern Fl_Counter2 *cntLowFreqCutoff;
 extern Fl_Check_Button *btnWFaveraging;
 extern Fl_Choice *mnuFFTPrefilter;
 extern Fl_Counter2 *cntrWfwidth;
+extern Fl_Counter2 *wf_latency;
 extern Fl_Counter2 *cntrWfheight;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
