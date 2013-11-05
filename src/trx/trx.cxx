@@ -384,6 +384,7 @@ void trx_trx_transmit_loop()
 	REQ(&waterfall::set_XmtRcvBtn, wf, false);
 	if (progStatus.timer)
 		REQ(startMacroTimer);
+	WriteARQ(0x06);
 }
 
 //=============================================================================

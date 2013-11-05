@@ -1306,28 +1306,33 @@ void init_modem_sync(trx_mode m, int f)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
-	int count = 500;
+	int count = 2000;
 	if (trx_state != STATE_RX) {
-		LOG_INFO("%s", "Waiting for STATE_RX");
+		LOG_INFO("Waiting for %s", mode_info[active_modem->get_mode()].name);
 		abort_tx();
 		while (trx_state != STATE_RX && count) {
-			LOG_VERBOSE("%d msecs remaining", count * 10);
+			LOG_DEBUG("%0.2f secs remaining", count / 100.0);
+			Fl::awake();
 			MilliSleep(10);
 			count--;
 		}
-		if (!count) LOG_ERROR("%s", "trx wait for RX timeout");
+		if (count == 0) {
+			LOG_ERROR("%s", "TIMED OUT!!");
+			return;  // abort modem selection
+		}
 	}
 
-	LOG_INFO("Call init_modem %d, %d", (int)m, f);
 	init_modem(m, f);
 
 	count = 500;
 	if (trx_state != STATE_RX) {
 		while (trx_state != STATE_RX && count) {
+			Fl::awake();
 			MilliSleep(10);
 			count--;
 		}
-		LOG_INFO("Waited %.2f sec for RX state", (500 - count) * 0.01);
+		if (count == 0)
+			LOG_ERROR("%s", "Wait for STATE_RX timed out");
 	}
 
 	REQ_FLUSH(TRX_TID);

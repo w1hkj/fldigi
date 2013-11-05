@@ -90,8 +90,6 @@ static size_t pText;         // Protected by arq_rx_mutex
 bool arq_text_available = false; // Protected by arq_rx_mutex
 // Beware 'arq_text_available' is accessed by other modules.
 
-static bool bSend0x06 = false; // Protected by arq_rx_mutex
-
 // =====================================================================
 
 static const char *asc[128] = {
@@ -246,10 +244,8 @@ static	string strSubCmd;
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
 
-	if (idxCmd != string::npos && debug_pskmail)
-		LOG_INFO("Parsing: %s", noctrl(toparse).c_str());
-
 	while ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
+		LOG_INFO("Parsing: %s", noctrl(toparse.substr(idxCmd, idxCmdEnd - idxCmd + 6)).c_str());
 
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
@@ -599,7 +595,6 @@ void arq_reset()
 	arqmode = mailserver = mailclient = false;
 	txstring.clear();
 	arqtext.clear();
-	bSend0x06 = false;
 	pText = 0;
 }
 
@@ -743,20 +738,16 @@ bool Socket_arqRx()
 
 		{
 
-		if (bSend0x06 || txstring.empty()) return false;
+		if (txstring.empty()) return false;
 
 		if (arqtext.empty()) {
 			arqtext.assign(txstring);
-//			if (debug_pskmail)
-//				LOG_INFO("Assigned tx text: %s", noctrl(txstring).c_str());
 			pText = 0;
 			if (mailserver && progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
 			start_tx();
 		} else {
 			arqtext.append(txstring);
-//			if (debug_pskmail)
-//				LOG_INFO("Appended tx text: %s", noctrl(txstring).c_str());
 			if (trx_state != STATE_TX) {
 				if (debug_pskmail)
 					LOG_INFO("%s","Restarting TX");
@@ -790,7 +781,6 @@ void WriteARQ(const char *data)
 
 static void *arq_loop(void *args)
 {
-	static unsigned char szACK = 0x06;
 	SET_THREAD_ID(ARQ_TID);
 
 	for (;;) {
@@ -813,12 +803,6 @@ static void *arq_loop(void *args)
 				WriteARQsocket((unsigned char*)enroute.c_str(), enroute.length());
 			}
 		}
-
-		if (bSend0x06) {
-			WriteARQsocket(&szACK, 1);
-			bSend0x06 = false;
-		}
-
 
 // order of precedence; Socket, Wrap autofile, TLF autofile
 		if (!Socket_arqRx())
@@ -876,7 +860,6 @@ int arq_get_char()
 		} else {
 			arqtext.clear();
 			pText = 0;
-			bSend0x06 = true;
 			arq_text_available = false;
 			c = GET_TX_CHAR_ETX;
 		}
@@ -896,7 +879,7 @@ void AbortARQ() {
 	txstring.clear();
 	pText = 0;
 	arq_text_available = false;
-	bSend0x06 = true;
+//	bSend0x06 = true;
 }
 
 //======================================================================
