@@ -393,10 +393,10 @@ Pixmap				fldigi_icon_pixmap;
 #endif
 
 // for character set conversion
-int rxtx_charset = 0;
-static CharsetDistiller rx_chd(charset_list[rxtx_charset].tiniconv_id);
-static CharsetDistiller echo_chd(charset_list[rxtx_charset].tiniconv_id);
-static OutputEncoder    tx_encoder(charset_list[rxtx_charset].tiniconv_id);
+int rxtx_charset;
+static CharsetDistiller rx_chd;
+static CharsetDistiller echo_chd;
+static OutputEncoder    tx_encoder;
 
 Fl_Menu_Item *getMenuItem(const char *caption, Fl_Menu_Item* submenu = 0);
 void UI_select();
