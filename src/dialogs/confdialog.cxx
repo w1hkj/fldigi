@@ -2014,13 +2014,6 @@ progdefaults.changed = true;
 setwfrange();
 }
 
-Fl_Counter2 *valLatency=(Fl_Counter2 *)0;
-
-static void cb_valLatency(Fl_Counter2* o, void*) {
-  progdefaults.latency = (int)o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btnWFaveraging=(Fl_Check_Button *)0;
 
 static void cb_btnWFaveraging(Fl_Check_Button* o, void*) {
@@ -2041,6 +2034,13 @@ static void cb_cntrWfwidth(Fl_Counter2* o, void*) {
   progdefaults.HighFreqCutoff = (int)o->value();
 progdefaults.changed = true;
 setwfrange();
+}
+
+Fl_Counter2 *wf_latency=(Fl_Counter2 *)0;
+
+static void cb_wf_latency(Fl_Counter2* o, void*) {
+  progdefaults.wf_latency = (int)o->value();
+progdefaults.changed = true;
 }
 
 Fl_Counter2 *cntrWfheight=(Fl_Counter2 *)0;
@@ -5064,10 +5064,10 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 540, 370);
+    { tabsConfigure = new Fl_Tabs(-2, 0, 597, 374);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
-      { tabOperator = new Fl_Group(0, 25, 540, 340, _("Operator"));
+      { tabOperator = new Fl_Group(0, 25, 540, 343, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
@@ -6203,13 +6203,12 @@ ab and newline are automatically included."));
         } // Fl_Tabs* tabsUI
         tabUI->end();
       } // Fl_Group* tabUI
-      { tabWaterfall = new Fl_Group(0, 25, 540, 340, _("Waterfall"));
+      { tabWaterfall = new Fl_Group(-2, 25, 563, 347, _("Waterfall"));
         tabWaterfall->hide();
         { tabsWaterfall = new Fl_Tabs(-2, 25, 563, 347);
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(24, 54, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6408,7 +6407,7 @@ ab and newline are automatically included."));
             o->hide();
             { Fl_Group* o = new Fl_Group(27, 71, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(72, 81, 70, 20, _("Lower limit"));
+              { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(72, 91, 100, 22, _("Lower limit"));
                 cntLowFreqCutoff->tooltip(_("Low frequency limit in Hz"));
                 cntLowFreqCutoff->type(1);
                 cntLowFreqCutoff->box(FL_UP_BOX);
@@ -6428,34 +6427,13 @@ ab and newline are automatically included."));
                 o->value(progdefaults.LowFreqCutoff);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntLowFreqCutoff
-              { Fl_Counter2* o = valLatency = new Fl_Counter2(72, 111, 70, 21, _("FFT latency (scan merging)"));
-                valLatency->tooltip(_("Latency increases frequency resolution,\ndecreases time resolution. 1 = no sc\
-an merging"));
-                valLatency->type(1);
-                valLatency->box(FL_UP_BOX);
-                valLatency->color(FL_BACKGROUND_COLOR);
-                valLatency->selection_color(FL_INACTIVE_COLOR);
-                valLatency->labeltype(FL_NORMAL_LABEL);
-                valLatency->labelfont(0);
-                valLatency->labelsize(14);
-                valLatency->labelcolor(FL_FOREGROUND_COLOR);
-                valLatency->minimum(1);
-                valLatency->maximum(8);
-                valLatency->step(1);
-                valLatency->value(4);
-                valLatency->callback((Fl_Callback*)cb_valLatency);
-                valLatency->align(Fl_Align(FL_ALIGN_RIGHT));
-                valLatency->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.latency);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valLatency
-              { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(72, 142, 120, 20, _("FFT averaging"));
+              { Fl_Check_Button* o = btnWFaveraging = new Fl_Check_Button(75, 131, 120, 20, _("FFT averaging"));
                 btnWFaveraging->tooltip(_("Use averaging to decrease waterfall noise"));
                 btnWFaveraging->down_box(FL_DOWN_BOX);
                 btnWFaveraging->callback((Fl_Callback*)cb_btnWFaveraging);
                 o->value(progdefaults.WFaveraging);
               } // Fl_Check_Button* btnWFaveraging
-              { mnuFFTPrefilter = new Fl_Choice(72, 172, 120, 25, _("FFT prefilter window function"));
+              { mnuFFTPrefilter = new Fl_Choice(72, 172, 120, 22, _("FFT prefilter window function"));
                 mnuFFTPrefilter->tooltip(_("Select the type of FFT prefilter"));
                 mnuFFTPrefilter->down_box(FL_BORDER_BOX);
                 mnuFFTPrefilter->callback((Fl_Callback*)cb_mnuFFTPrefilter);
@@ -6465,7 +6443,7 @@ an merging"));
                 mnuFFTPrefilter->add(_("Triangular"));
                 mnuFFTPrefilter->value(progdefaults.wfPreFilter);
               } // Fl_Choice* mnuFFTPrefilter
-              { Fl_Counter2* o = cntrWfwidth = new Fl_Counter2(295, 81, 95, 21, _("Upper limit"));
+              { Fl_Counter2* o = cntrWfwidth = new Fl_Counter2(295, 91, 100, 22, _("Upper limit"));
                 cntrWfwidth->tooltip(_("High frequency limit in Hz"));
                 cntrWfwidth->type(1);
                 cntrWfwidth->box(FL_UP_BOX);
@@ -6485,13 +6463,33 @@ an merging"));
                 o->value(progdefaults.HighFreqCutoff);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* cntrWfwidth
+              { Fl_Counter2* o = wf_latency = new Fl_Counter2(295, 129, 100, 22, _("Latency"));
+                wf_latency->tooltip(_("Signal averaging over time\n0 - least\n4 - greatest"));
+                wf_latency->type(1);
+                wf_latency->box(FL_UP_BOX);
+                wf_latency->color(FL_BACKGROUND_COLOR);
+                wf_latency->selection_color(FL_INACTIVE_COLOR);
+                wf_latency->labeltype(FL_NORMAL_LABEL);
+                wf_latency->labelfont(0);
+                wf_latency->labelsize(14);
+                wf_latency->labelcolor(FL_FOREGROUND_COLOR);
+                wf_latency->minimum(1);
+                wf_latency->maximum(16);
+                wf_latency->step(1);
+                wf_latency->value(8);
+                wf_latency->callback((Fl_Callback*)cb_wf_latency);
+                wf_latency->align(Fl_Align(FL_ALIGN_RIGHT));
+                wf_latency->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.wf_latency);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* wf_latency
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(27, 221, 490, 80, _("Changes take effect on next program startup"));
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-              { Fl_Counter2* o = cntrWfheight = new Fl_Counter2(72, 251, 95, 21, _("Waterfall height in pixels"));
+              { Fl_Counter2* o = cntrWfheight = new Fl_Counter2(72, 251, 95, 22, _("Waterfall height in pixels"));
                 cntrWfheight->tooltip(_("CPU usage increases with waterfall height"));
                 cntrWfheight->type(1);
                 cntrWfheight->box(FL_UP_BOX);
@@ -6516,6 +6514,7 @@ an merging"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 540, 320, _("Mouse"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(24, 73, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(34, 87, 340, 20, _("Left or right click always replays audio history"));
@@ -6565,7 +6564,7 @@ an merging"));
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 595, 347, _("Modems"));
         tabModems->hide();
-        { tabsModems = new Fl_Tabs(0, 25, 540, 340);
+        { tabsModems = new Fl_Tabs(0, 25, 540, 347);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 540, 320, _("CW"));
@@ -8083,10 +8082,10 @@ le Earth)"));
         } // Fl_Tabs* tabsModems
         tabModems->end();
       } // Fl_Group* tabModems
-      { tabRig = new Fl_Group(0, 23, 540, 345, _("Rig"));
+      { tabRig = new Fl_Group(0, 23, 540, 347, _("Rig"));
         tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
-        { tabsRig = new Fl_Tabs(0, 23, 540, 345);
+        { tabsRig = new Fl_Tabs(0, 23, 540, 347);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("Hardware PTT"));
             o->hide();
@@ -8887,7 +8886,7 @@ nce.\nYou may change the state from either location.\n..."));
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
-      { tabID = new Fl_Group(0, 25, 540, 340, _("ID"));
+      { tabID = new Fl_Group(0, 23, 540, 347, _("ID"));
         tabID->hide();
         { tabsID = new Fl_Tabs(0, 23, 540, 347);
           { tabRsID = new Fl_Group(0, 50, 540, 320, _("RsID"));
@@ -9124,7 +9123,7 @@ igured on the\n\"Notifications\" configure dialog."));
         } // Fl_Tabs* tabsID
         tabID->end();
       } // Fl_Group* tabID
-      { tabMisc = new Fl_Group(0, 25, 540, 340, _("Misc"));
+      { tabMisc = new Fl_Group(0, 25, 540, 345, _("Misc"));
         tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 540, 345);
           tabsMisc->selection_color(FL_LIGHT1);
@@ -9694,7 +9693,7 @@ and restarted if needed."));
         } // Fl_Tabs* tabsMisc
         tabMisc->end();
       } // Fl_Group* tabMisc
-      { tabQRZ = new Fl_Group(0, 25, 540, 340, _("Web"));
+      { tabQRZ = new Fl_Group(0, 25, 540, 349, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 540, 349);

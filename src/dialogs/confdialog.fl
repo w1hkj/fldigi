@@ -294,12 +294,12 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     xywh {593 32 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 540 370} color 50 selection_color 50
+      xywh {-2 0 597 374} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
         callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 540 340} when 1
+        tooltip {Operator information} xywh {0 25 540 343} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -2148,15 +2148,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall
-        xywh {0 25 540 340} hide
+        label Waterfall open
+        xywh {-2 25 563 347} hide
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {-2 25 563 347} color 50 selection_color 50
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 540 320} hide
+            xywh {0 50 540 320}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -2407,18 +2407,8 @@ progdefaults.changed = true;}
                 callback {progdefaults.LowFreqCutoff=(int)(o->value());
 progdefaults.changed = true;
 setwfrange();}
-                tooltip {Low frequency limit in Hz} xywh {72 81 70 20} type Simple align 8 minimum 0 maximum 500 step 50 value 300
+                tooltip {Low frequency limit in Hz} xywh {72 91 100 22} type Simple align 8 minimum 0 maximum 500 step 50 value 300
                 code0 {o->value(progdefaults.LowFreqCutoff);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Counter valLatency {
-                label {FFT latency (scan merging)}
-                callback {progdefaults.latency = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {Latency increases frequency resolution,
-decreases time resolution. 1 = no scan merging} xywh {72 111 70 21} type Simple align 8 minimum 1 maximum 8 step 1 value 4
-                code0 {o->value(progdefaults.latency);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
@@ -2426,14 +2416,14 @@ decreases time resolution. 1 = no scan merging} xywh {72 111 70 21} type Simple 
                 label {FFT averaging}
                 callback {progdefaults.WFaveraging = o->value();
 progdefaults.changed = true;}
-                tooltip {Use averaging to decrease waterfall noise} xywh {72 142 120 20} down_box DOWN_BOX
+                tooltip {Use averaging to decrease waterfall noise} xywh {75 131 120 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WFaveraging);}
               }
               Fl_Choice mnuFFTPrefilter {
                 label {FFT prefilter window function}
                 callback {progdefaults.wfPreFilter = o->value();
 progdefaults.changed = true;} open
-                tooltip {Select the type of FFT prefilter} xywh {72 172 120 25} down_box BORDER_BOX align 8
+                tooltip {Select the type of FFT prefilter} xywh {72 172 120 22} down_box BORDER_BOX align 8
                 code0 {mnuFFTPrefilter->add(_("Rectangular")); mnuFFTPrefilter->add("Blackman");}
                 code1 {mnuFFTPrefilter->add("Hamming"); mnuFFTPrefilter->add("Hanning");}
                 code2 {mnuFFTPrefilter->add(_("Triangular"));}
@@ -2444,8 +2434,19 @@ progdefaults.changed = true;} open
                 callback {progdefaults.HighFreqCutoff = (int)o->value();
 progdefaults.changed = true;
 setwfrange();}
-                tooltip {High frequency limit in Hz} xywh {295 81 95 21} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
+                tooltip {High frequency limit in Hz} xywh {295 91 100 22} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
                 code0 {o->value(progdefaults.HighFreqCutoff);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Counter2
+              }
+              Fl_Counter wf_latency {
+                label Latency
+                callback {progdefaults.wf_latency = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {Signal averaging over time
+0 - least
+4 - greatest} xywh {295 129 100 22} type Simple align 8 minimum 1 maximum 16 step 1 value 8
+                code0 {o->value(progdefaults.wf_latency);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
               }
@@ -2458,7 +2459,7 @@ setwfrange();}
                 label {Waterfall height in pixels}
                 callback {progdefaults.wfheight = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {72 251 95 21} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                tooltip {CPU usage increases with waterfall height} xywh {72 251 95 22} type Simple align 8 minimum 100 maximum 160 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -2467,7 +2468,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 540 320}
+            xywh {0 50 540 320} hide
           } {
             Fl_Group {} {open
               xywh {24 73 490 170} box ENGRAVED_FRAME
@@ -2521,7 +2522,7 @@ behaves inside the waterfall} xywh {34 207 150 22} down_box BORDER_BOX align 8
         xywh {0 25 595 347} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {0 25 540 340} selection_color 50 align 9
+          xywh {0 25 540 347} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW
@@ -3917,10 +3918,10 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig
-        tooltip {Transceiver control} xywh {0 23 540 345} hide
+        tooltip {Transceiver control} xywh {0 23 540 347} hide
       } {
         Fl_Tabs tabsRig {open
-          xywh {0 23 540 345} selection_color 50
+          xywh {0 23 540 347} selection_color 50
         } {
           Fl_Group {} {
             label {Hardware PTT} open
@@ -4934,7 +4935,7 @@ progdefaults.changed = true;} open
       }
       Fl_Group tabID {
         label ID open
-        xywh {0 25 540 340} hide
+        xywh {0 23 540 347} hide
       } {
         Fl_Tabs tabsID {open
           xywh {0 23 540 347}
@@ -5187,7 +5188,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc
-        xywh {0 25 540 340} hide
+        xywh {0 25 540 345} hide
       } {
         Fl_Tabs tabsMisc {
           xywh {0 25 540 345} selection_color 50
@@ -5728,7 +5729,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label Web
-        tooltip {Callsign database} xywh {0 25 540 340} hide
+        tooltip {Callsign database} xywh {0 25 540 349} hide
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 540 349}

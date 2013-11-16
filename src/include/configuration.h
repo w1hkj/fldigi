@@ -639,6 +639,9 @@
         ELEM_(bool, WFaveraging, "WFAVERAGING",                                         \
               "Use FFT averaging to decrease waterfall noise",                          \
               false)                                                                    \
+        ELEM_(int, wf_latency, "WF_LATENCY",                                            \
+              "Waterfal latency, 1...16",                                               \
+              8)                                                                        \
         ELEM_(bool, UseCursorLines, "USECURSORLINES",                                   \
               "Draw cursor with vertical lines",                                        \
               true)                                                                     \

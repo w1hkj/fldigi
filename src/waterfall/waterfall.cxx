@@ -502,18 +502,22 @@ void WFdisp::processFFT() {
 
 	wf_fft_type scale = ( 1.0 * SC_SMPLRATE / srate ) * ( FFT_LEN / 8000.0);
 
-	if (dispcnt == 0) {
-		int step = 8 / progdefaults.latency;
+	if (--dispcnt == 0) {
+		static const int log2disp100 = log2disp(-100);
+		double vscale = 2.0 / FFT_LEN;
+		static const double pscale = 4.0 / (FFT_LEN * FFT_LEN);
 
 		memset(wfbuf, 0, FFT_LEN * sizeof(*wfbuf));
-		int last_i = FFT_LEN / step;
-		for (int i = 0; i < last_i; i++)
-			wfbuf[i] = wf_cpx_type(fftwindow[i * step] * circbuff[i] * step, 0);
-		wfft->ComplexFFT(wfbuf);
+		void *pv = static_cast<void*>(wfbuf);
+		wf_fft_type *pbuf = static_cast<wf_fft_type*>(pv);
 
-FL_LOCK_D();
-		static const int log2disp100 = log2disp(-100);
-		static const double pscale = 4.0 / (FFT_LEN * FFT_LEN);
+		int latency = progdefaults.wf_latency;
+		if (latency < 1) latency = 1;
+		if (latency > 16) latency = 16;
+		int nsamples = FFT_LEN * latency / 16;
+		vscale *= sqrt(16.0 / latency);
+		for (int i = 0; i < nsamples; i++)
+			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
 
 		memset(pwr, 0, progdefaults.LowFreqCutoff * sizeof(wf_fft_type));
 		memset(&fft_db[ptrFFTbuff * IMAGE_WIDTH],
@@ -530,8 +534,6 @@ FL_LOCK_D();
 
 		ptrFFTbuff--;
 		if (ptrFFTbuff < 0) ptrFFTbuff += image_height;
-FL_UNLOCK_D();
-	}
 
 		for (int i = 0; i < image_height; i++) {
 			int j = (i + 1 + ptrFFTbuff) % image_height;
@@ -540,7 +542,6 @@ FL_UNLOCK_D();
 					 IMAGE_WIDTH * sizeof(short int));
 		}
 		redraw();
-FL_UNLOCK_D();
 	}
 
 	if (dispcnt == 0) {
@@ -2104,8 +2105,10 @@ void waterfall::handle_mouse_wheel(int what, int d)
 	bool changed_save = progdefaults.changed;
 	val->do_callback();
 	progdefaults.changed = changed_save;
-	if (val == cntServerOffset || val == cntSearchRange)
-		if (active_modem) active_modem->set_sigsearch(SIGSEARCH);
+	if (val == cntServerOffset || val == cntSearchRange) {
+		if (active_modem) 
+			active_modem->set_sigsearch(SIGSEARCH);
+	}
 	else if (val == sldrSquelch) // sldrSquelch gives focus to TransmitText
 		take_focus();
 
