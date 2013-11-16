@@ -385,7 +385,7 @@ void Wizard::create_wizard(void)
 		int align;
 	} buttons[] = {
 		{ &done, make_icon_label(_("Finish"), apply_icon), FL_ALIGN_LEFT },
-		{ &next, make_icon_label(_("Next "), right_arrow_icon), FL_ALIGN_RIGHT },
+		{ &next, make_icon_label(_("Next"), right_arrow_icon), FL_ALIGN_RIGHT },
 		{ &prev, make_icon_label(_("Back"), left_arrow_icon), FL_ALIGN_LEFT },
 		// { &cancel, make_icon_label(_("Cancel"), process_stop_icon), FL_ALIGN_LEFT }
 		{ &cancel, make_icon_label(_("Close"), close_icon), FL_ALIGN_LEFT }
@@ -535,7 +535,7 @@ Fl_Group* Wizard::make_intro(void)
 
 void show_wizard(int argc, char** argv)
 {
-	Wizard* w = new Wizard(dlgConfig->w(), dlgConfig->h(), "Fldigi configuration wizard");
+	Wizard* w = new Wizard(dlgConfig->w(), dlgConfig->h(), _("Fldigi configuration wizard"));
 
 	if (argc && argv)
 		w->show(argc, argv);
