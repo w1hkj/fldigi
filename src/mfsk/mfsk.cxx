@@ -1082,11 +1082,8 @@ int mfsk::tx_process()
 				txstate = TX_STATE_FLUSH;
 			else if (xmtbyte == GET_TX_CHAR_NODATA)
 				sendidle();
-			else {
-				if (xmtbyte & 0x8000) // UTF-8 character send two bytes
-					sendchar((xmtbyte >> 8) & 0xFF);
+			else
 				sendchar(xmtbyte);
-			}
  			break;
 
 		case TX_STATE_FLUSH:
