@@ -9509,7 +9509,7 @@ igured on the\n\"Notifications\" configure dialog."));
           { tabDTMF = new Fl_Group(0, 50, 540, 320, _("DTMF"));
             tabDTMF->hide();
             { Fl_Check_Button* o = chkDTMFdecode = new Fl_Check_Button(187, 103, 175, 20, _("Decode DTMF tones"));
-              chkDTMFdecode->tooltip(_("Send rx text to file: textout.txt"));
+              chkDTMFdecode->tooltip(_("Decode received DTMF tones"));
               chkDTMFdecode->down_box(FL_DOWN_BOX);
               chkDTMFdecode->callback((Fl_Callback*)cb_chkDTMFdecode);
               o->value(progdefaults.DTMFdecode);

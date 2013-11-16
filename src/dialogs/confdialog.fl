@@ -5526,7 +5526,7 @@ progdefaults.changed = true;}
             Fl_Check_Button chkDTMFdecode {
               label {Decode DTMF tones}
               callback {progdefaults.DTMFdecode = o->value();}
-              tooltip {Send rx text to file: textout.txt} xywh {187 103 175 20} down_box DOWN_BOX
+              tooltip {Decode received DTMF tones} xywh {187 103 175 20} down_box DOWN_BOX
               code0 {o->value(progdefaults.DTMFdecode);}
             }
           }
