@@ -29,7 +29,7 @@
 class OutputEncoder
 {
 	public:
-		OutputEncoder(const int charset_out, unsigned int buffer_size = 32);
+		OutputEncoder(const int charset_out = TINICONV_CHARSET_UTF_8, unsigned int buffer_size = 32);
 		~OutputEncoder(void);
 		void set_output_encoding(const int charset_out);
 		void push(std::string s);

@@ -81,7 +81,7 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 		bline = freqformat(i);
 		if ( i < progdefaults.VIEWERchannels) add(bline.c_str());
 		linechars[i] = 0;
-		new(&cdistiller[i]) CharsetDistiller(rxtx_charset);
+		new(&cdistiller[i]) CharsetDistiller;
 	}
 	nchars = (w - cols[0] - (sbarwidth + 2*BWSR_BORDER)) / cwidth;
 	nchars = nchars < 1 ? 1 : nchars;

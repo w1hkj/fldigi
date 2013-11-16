@@ -29,7 +29,7 @@
 class CharsetDistiller
 {
    public:
-      CharsetDistiller(const int charset_in);
+      CharsetDistiller(const int charset_in = TINICONV_CHARSET_UTF_8);
       int set_input_encoding(const int charset_in);
       void rx(const unsigned char c);
       void rx(const unsigned char *c);
