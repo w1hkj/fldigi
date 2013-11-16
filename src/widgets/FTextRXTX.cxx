@@ -613,8 +613,7 @@ void FTextRX::menu_cb(size_t item)
 		break;
 
 	case RX_MENU_WRAP:
-		set_word_wrap(!wrap);
-		restore_wrap = wrap;
+		set_word_wrap(!wrap, true);
 		break;
 
 	case RX_MENU_SCROLL_HINTS:
@@ -1269,8 +1268,7 @@ void FTextTX::menu_cb(size_t item)
 		break;
 	}
 	case TX_MENU_WRAP:
-		set_word_wrap(!wrap);
-		restore_wrap = wrap;
+		set_word_wrap(!wrap, true);
 		break;
 	}
 }

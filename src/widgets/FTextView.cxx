@@ -140,9 +140,10 @@ void FTextBase::add(unsigned char c, int attr)
 	insert(s);
 }
 
-void FTextBase::set_word_wrap(bool b)
+void FTextBase::set_word_wrap(bool b, bool b2)
 {
 	wrap_mode((wrap = b), wrap_col);
+	if (b2) restore_wrap = wrap;
 	show_insert_position();
 }
 
@@ -580,8 +581,7 @@ void FTextView::menu_cb(size_t item)
 		saveFile();
 		break;
 	case VIEW_MENU_WRAP:
-		set_word_wrap(!wrap);
-		restore_wrap = wrap;
+		set_word_wrap(!wrap, true);
 		break;
 	}
 }
@@ -854,8 +854,7 @@ void FTextEdit::menu_cb(size_t item)
 		readFile();
 		break;
 	case EDIT_MENU_WRAP:
-		set_word_wrap(!wrap);
-		restore_wrap = wrap;
+		set_word_wrap(!wrap, true);
 		break;
 	}
 }

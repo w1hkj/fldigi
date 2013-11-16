@@ -58,7 +58,7 @@ public:
 	virtual void	handle_context_menu(void) { }
 	virtual void	clear(void);//{ tbuf->text(""); sbuf->text(""); }
 
-	void		set_word_wrap(bool b);
+	void		set_word_wrap(bool b, bool b2 = false);
 	bool		get_word_wrap(void) { return wrap; }
 
 	virtual void	setFont(Fl_Font f, int attr = NATTR);
