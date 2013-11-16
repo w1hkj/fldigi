@@ -163,9 +163,6 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 	mode = mfsk_mode;
 	depth = 10;
 
-	//VK2ETA high speed modes
-	preamble = 107;
-
 // CAP_IMG is set in cap iff image transfer supported
 	switch (mode) {
 
@@ -176,6 +173,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 5;
 		basetone = 256;
 		numtones = 32;
+		preamble = 107; // original mfsk modes
 		break;
 	case MODE_MFSK8:
 		samplerate = 8000;
@@ -184,6 +182,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 5;
 		basetone = 128;
 		numtones = 32;
+		preamble = 107; // original mfsk modes
 		break;
 	case MODE_MFSK31:
 		samplerate = 8000;
@@ -192,7 +191,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 32;
 		numtones = 8;
-//		cap |= CAP_IMG;
+		preamble = 107; // original mfsk modes
 		break;
 	case MODE_MFSK32:
 		samplerate = 8000;
@@ -201,6 +200,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 32;
 		numtones = 16;
+		preamble = 107; // original mfsk modes
 		cap |= CAP_IMG;
 		break;
 	case MODE_MFSK64:
@@ -250,7 +250,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 93;
 		numtones = 16;
-//		cap |= CAP_IMG;
+		preamble = 107;
 		break;
 	case MODE_MFSK22:
 		samplerate = 11025;
@@ -259,7 +259,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 46;
 		numtones = 16;
-//		cap |= CAP_IMG;
+		preamble = 107;
 		break;
 
 	case MODE_MFSK16:
@@ -270,6 +270,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		depth = 10;
 		basetone = 64;
 		numtones = 16;
+		preamble = 107;
 		cap |= CAP_IMG;
 		break;
 	}
@@ -1093,8 +1094,6 @@ int mfsk::tx_process()
 			sendchar(4);		// EOT
 			sendchar('\r');
 			flushtx(preamble);
-//			clearbits();
-//			send_epilogue();
 			rxstate = RX_STATE_DATA;
 			txstate = TX_STATE_PREAMBLE;
 			stopflag = false;
