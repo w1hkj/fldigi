@@ -498,14 +498,13 @@ int WFdisp::log2disp(int v)
 
 void WFdisp::processFFT() {
 	if (prefilter != progdefaults.wfPreFilter)
-	    setPrefilter(progdefaults.wfPreFilter);
+		setPrefilter(progdefaults.wfPreFilter);
 
 	wf_fft_type scale = ( 1.0 * SC_SMPLRATE / srate ) * ( FFT_LEN / 8000.0);
 
 	if (--dispcnt == 0) {
 		static const int log2disp100 = log2disp(-100);
 		double vscale = 2.0 / FFT_LEN;
-		static const double pscale = 4.0 / (FFT_LEN * FFT_LEN);
 
 		memset(wfbuf, 0, FFT_LEN * sizeof(*wfbuf));
 		void *pv = static_cast<void*>(wfbuf);
@@ -519,6 +518,8 @@ void WFdisp::processFFT() {
 		for (int i = 0; i < nsamples; i++)
 			pbuf[i] = fftwindow[i * 16 / latency] * circbuff[i] * vscale;
 
+		wfft->RealFFT(wfbuf);
+
 		memset(pwr, 0, progdefaults.LowFreqCutoff * sizeof(wf_fft_type));
 		memset(&fft_db[ptrFFTbuff * IMAGE_WIDTH],
 				log2disp100,
@@ -527,7 +528,7 @@ void WFdisp::processFFT() {
 		int n = 0;
 		for (int i = progdefaults.LowFreqCutoff + 1; i < IMAGE_WIDTH; i++) {
 			n = round(scale * i);
-			pwr[i] = norm(wfbuf[n]) * pscale;;
+			pwr[i] = norm(wfbuf[n]);
 			int ffth = round(10.0 * log10(pwr[i] + 1e-10) );
 			fft_db[ptrFFTbuff * IMAGE_WIDTH + i] = log2disp(ffth);
 		}
@@ -542,9 +543,7 @@ void WFdisp::processFFT() {
 					 IMAGE_WIDTH * sizeof(short int));
 		}
 		redraw();
-	}
 
-	if (dispcnt == 0) {
 		if (srate == 8000)
 			dispcnt = wfspeed;
 		else if (srate == 11025)
@@ -553,8 +552,8 @@ void WFdisp::processFFT() {
 		else
 			dispcnt = wfspeed * 8 / 3;
 	}
-	--dispcnt;
 }
+
 void WFdisp::process_analog (wf_fft_type *sig, int len) {
 	int h1, h2, h3;
 	int sigy, sigpixel, ynext, graylevel;
