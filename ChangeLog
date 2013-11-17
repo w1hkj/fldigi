@@ -1,22 +1,27 @@
+2013-11-17  David Freese  <w1hkj@w1hkj.com>
+
+	f967edf: Waterfall correction
+
 2013-11-16  Arvo Järve  <arvo@softshark.ee>
 
-	9df0c72: RigCAT close
+	1f77efb: RigCAT close
 
 2013-11-16  Andrej Lajovic  <s57ln@hamradio.si>
 
-	154077b: CharsetDistiller
-	1ad7a3a: UTF-8
+	d903090: CharsetDistiller
+	ab0a464: UTF-8
 
 2013-11-16  Arvo Järve  <arvo@softshark.ee>
 
-	10f786d: Save Wordwrap
+	80b0902: Save Wordwrap
 
 2013-11-16  David Freese  <w1hkj@w1hkj.com>
 
-	ae17bb4: ARQ timeouts
-	3054afa: Deutsch
-	ea473bf: DTMF
-	6560ab3: WF latency
+	6313bf7: ARQ timeouts
+	37affbc: Deutsch
+	42ccd2a: fldigi.pot update
+	e4398da: DTMF
+	affa919: WF latency
 	07652b1: Load preferences
 
 2013-10-29  John Phelps  <kl4yfd@gmail.com>
