@@ -6352,7 +6352,7 @@ ab and newline are automatically included."));
                 cntrWfheight->labelsize(14);
                 cntrWfheight->labelcolor(FL_FOREGROUND_COLOR);
                 cntrWfheight->minimum(100);
-                cntrWfheight->maximum(160);
+                cntrWfheight->maximum(250);
                 cntrWfheight->step(5);
                 cntrWfheight->value(120);
                 cntrWfheight->callback((Fl_Callback*)cb_cntrWfheight);

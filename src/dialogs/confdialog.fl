@@ -2458,7 +2458,7 @@ progdefaults.changed = true;}
                 label {Waterfall height in pixels}
                 callback {progdefaults.wfheight = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {CPU usage increases with waterfall height} xywh {72 251 95 22} type Simple align 8 minimum 100 maximum 160 step 5 value 120
+                tooltip {CPU usage increases with waterfall height} xywh {72 251 95 22} type Simple align 8 minimum 100 maximum 250 step 5 value 120
                 code0 {o->value(progdefaults.wfheight);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
