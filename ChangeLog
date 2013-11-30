@@ -1,5 +1,45 @@
-2013-10-30  David Freese  <w1hkj@w1hkj.com>
+2014-01-28  Kamal Mostafa  <kamal@whence.com>
 
+	58aeb6a: Avoid nitems fltk kfreebsd collision
+
+2014-01-13  David Freese  <w1hkj@w1hkj.com>
+
+	3b9ace3: modem timing test
+	1af2407: XMLRPC seg fault
+	2817731: Mailing address
+
+2014-01-11  John Phelps  <kl4yfd@gmail.com>
+
+	aad3a84: 64 bit stacktrace
+
+2014-01-11  David Freese  <w1hkj@w1hkj.com>
+
+	b778b42: Developer update
+	440c65f: CW timing
+
+
+=Version 3.21.78=
+
+	05e0bfc: SKED macro
+	52ba259: FreeBSD issues
+	c0ba6f8: WF max size
+	4e085ba: PSKR softbits
+
+2013-11-09  Andrej Lajovic  <s57ln@hamradio.si>
+
+	0621261: CharsetDistiller
+	8f5640b: UTF-8
+
+2013-11-08  Arvo Järve  <arvo@softshark.ee>
+
+	3425ce0: RigCAT close
+	74c6533: Save Wordwrap
+
+2013-11-05  David Freese  <w1hkj@w1hkj.com>
+
+	0d1a309: ARQ timeouts
+	eeacf5e: Deutsch
+	c474790: DTMF
 	1cca53a: WF latency
 
 
