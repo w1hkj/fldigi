@@ -2174,6 +2174,7 @@ static void pSKED(std::string &s, size_t &i, size_t endbracket)
 		exec_time = data.substr(0, p);
 		exec_date = data.substr(p+1);
 	}
+	if (exec_time.length() == 4) exec_time.append("00");
 	timed_exec = true;
 	s.replace(i, endbracket - i + 1, "");
 }
