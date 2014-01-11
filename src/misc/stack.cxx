@@ -8,7 +8,7 @@
 #include <ostream>
 #include <iostream>
 #include <cassert>
-
+#include <cstring>
 #include "stack.h"
 
 #if defined(_WIN32)
@@ -37,7 +37,7 @@ namespace
         std::string ret = name;
         try { if ((d = abi::__cxa_demangle(name, 0, 0, &status))) ret = d; }
         catch(...) {  }
-        std::free(d);
+        free(d);
         return ret;
     }
 #endif
@@ -298,7 +298,7 @@ namespace
         }
     }
 #elif defined(__GNUC__)
-    #if defined(__i386__)
+    #if defined(__i386__) || defined(__x86_64__)
     
     void fill_frames(std::list<dbg::stack_frame> &frames, dbg::stack::depth_type limit)
     {
