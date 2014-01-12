@@ -4612,6 +4612,13 @@ inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");
 }
 
+Fl_Check_Button *btn_notes_address=(Fl_Check_Button *)0;
+
+static void cb_btn_notes_address(Fl_Check_Button* o, void*) {
+  progdefaults.notes_address = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Input2 *inpEQSL_id=(Fl_Input2 *)0;
 
 static void cb_inpEQSL_id(Fl_Input2* o, void*) {
@@ -5034,6 +5041,7 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 540, 346);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 540, 320, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(24, 59, 496, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(40, 69, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5421,7 +5429,6 @@ ndow decoration close button pressed."));
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 540, 320, _("Logging"));
-            tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(25, 313, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9410,7 +9417,7 @@ and restarted if needed."));
             { Fl_Group* o = new Fl_Group(27, 176, 490, 190, _("Data base lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Round_Button* o = btnQRZXMLnotavailable = new Fl_Round_Button(49, 199, 337, 20, _("None"));
+              { Fl_Round_Button* o = btnQRZXMLnotavailable = new Fl_Round_Button(49, 199, 64, 20, _("None"));
                 btnQRZXMLnotavailable->tooltip(_("Do not use callsign database"));
                 btnQRZXMLnotavailable->down_box(FL_DOWN_BOX);
                 btnQRZXMLnotavailable->value(1);
@@ -9497,6 +9504,11 @@ and restarted if needed."));
                 btnQRZpasswordShow->tooltip(_("Show password in plain text"));
                 btnQRZpasswordShow->callback((Fl_Callback*)cb_btnQRZpasswordShow);
               } // Fl_Button* btnQRZpasswordShow
+              { Fl_Check_Button* o = btn_notes_address = new Fl_Check_Button(174, 201, 207, 15, _("Add address to notes field"));
+                btn_notes_address->down_box(FL_DOWN_BOX);
+                btn_notes_address->callback((Fl_Callback*)cb_btn_notes_address);
+                o->value(progdefaults.notes_address);
+              } // Fl_Check_Button* btn_notes_address
               o->end();
             } // Fl_Group* o
             o->end();

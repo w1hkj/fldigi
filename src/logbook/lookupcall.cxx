@@ -450,16 +450,18 @@ void QRZ_CD_query()
 		lookup_qth = qCall->GetCity();
 		lookup_state = qCall->GetState();
 		lookup_grid.clear();
-		if (!notes.empty()) notes.append("\n");
-		notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
-		notes.append(lookup_addr1).append("\n");
-		notes.append(lookup_addr2);
-		if (!lookup_state.empty())
-			notes.append(", ").append(lookup_state).append("  ").append(lookup_zip);
-		else if (!lookup_province.empty())
-			notes.append(", ").append(lookup_province).append("  ").append(lookup_zip);
-		else
-			notes.append("  ").append(lookup_country);
+		if (progdefaults.notes_address) {
+			if (!notes.empty()) notes.append("\n");
+			notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
+			notes.append(lookup_addr1).append("\n");
+			notes.append(lookup_addr2);
+			if (!lookup_state.empty())
+				notes.append(", ").append(lookup_state).append("  ").append(lookup_zip);
+			else if (!lookup_province.empty())
+				notes.append(", ").append(lookup_province).append("  ").append(lookup_zip);
+			else
+				notes.append("  ").append(lookup_country);
+		}
 	} else {
 		lookup_fname.clear();
 		lookup_qth.clear();
@@ -579,16 +581,18 @@ void QRZquery()
 
 			string notes;
 			notes.assign(inpNotes->value());
-			if (!notes.empty()) notes.append("\n");
-			notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
-			notes.append(lookup_addr1).append("\n");
-			notes.append(lookup_addr2);
-			if (!lookup_state.empty())
-				notes.append(", ").append(lookup_state).append("  ").append(lookup_zip);
-			else if (!lookup_province.empty())
-				notes.append(", ").append(lookup_province).append("  ").append(lookup_zip);
-			else
-				notes.append("  ").append(lookup_country);
+			if (progdefaults.notes_address) {
+				if (!notes.empty()) notes.append("\n");
+				notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
+				notes.append(lookup_addr1).append("\n");
+				notes.append(lookup_addr2);
+				if (!lookup_state.empty())
+					notes.append(", ").append(lookup_state).append("  ").append(lookup_zip);
+				else if (!lookup_province.empty())
+					notes.append(", ").append(lookup_province).append("  ").append(lookup_zip);
+				else
+					notes.append("  ").append(lookup_country);
+			}
 			lookup_notes = notes;
 			REQ(QRZ_disp_result);
 		}
@@ -650,10 +654,12 @@ void parse_callook(string& xmlpage)
 
 	string notes;
 	notes.assign(inpNotes->value());
-	if (!notes.empty()) notes.append("\n");
-	notes.append(lookup_name).append("\n");
-	notes.append(lookup_addr1).append("\n");
-	notes.append(lookup_addr2);
+	if (progdefaults.notes_address) {
+		if (!notes.empty()) notes.append("\n");
+		notes.append(lookup_name).append("\n");
+		notes.append(lookup_addr1).append("\n");
+		notes.append(lookup_addr2);
+	}
 	lookup_notes = notes;
 
 	size_t p = lookup_addr2.find(",");
@@ -890,44 +896,46 @@ void parse_HAMQTH_html(const string& htmlpage)
 				lookup_notes.append("QSL via: ").append(tempstr).append("\n");
 		}
 	}
-	if ((p = htmlpage.find("<adr_name>")) != string::npos) {
-		p += 10;
-		p1 = htmlpage.find("</adr_name>", p);
-		if (p1 != string::npos) {
-			tempstr.assign(htmlpage.substr(p, p1 - p));
-			if (!tempstr.empty())
-				lookup_notes.append(tempstr).append("\n");
+	if (progdefaults.notes_address) {
+		if ((p = htmlpage.find("<adr_name>")) != string::npos) {
+			p += 10;
+			p1 = htmlpage.find("</adr_name>", p);
+			if (p1 != string::npos) {
+				tempstr.assign(htmlpage.substr(p, p1 - p));
+				if (!tempstr.empty())
+					lookup_notes.append(tempstr).append("\n");
+			}
 		}
-	}
-	if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
-		p += 13;
-		p1 = htmlpage.find("</adr_street1>", p);
-		if (p1 != string::npos) {
-			tempstr.assign(htmlpage.substr(p, p1 - p));
-			if (!tempstr.empty())
-				lookup_notes.append(tempstr).append("\n");
+		if ((p = htmlpage.find("<adr_street1>")) != string::npos) {
+			p += 13;
+			p1 = htmlpage.find("</adr_street1>", p);
+			if (p1 != string::npos) {
+				tempstr.assign(htmlpage.substr(p, p1 - p));
+				if (!tempstr.empty())
+					lookup_notes.append(tempstr).append("\n");
+			}
 		}
-	}
-	if ((p = htmlpage.find("<adr_city>")) != string::npos) {
-		p += 10;
-		p1 = htmlpage.find("</adr_city>", p);
-		if (p1 != string::npos) {
-			tempstr.assign(htmlpage.substr(p, p1 - p));
-			if (!tempstr.empty())
-				lookup_notes.append(tempstr);
-			if (!lookup_state.empty())
-				lookup_notes.append(", ").append(lookup_state);
-			else if (!lookup_province.empty())
-				lookup_notes.append(", ").append(lookup_province);
+		if ((p = htmlpage.find("<adr_city>")) != string::npos) {
+			p += 10;
+			p1 = htmlpage.find("</adr_city>", p);
+			if (p1 != string::npos) {
+				tempstr.assign(htmlpage.substr(p, p1 - p));
+				if (!tempstr.empty())
+					lookup_notes.append(tempstr);
+				if (!lookup_state.empty())
+					lookup_notes.append(", ").append(lookup_state);
+				else if (!lookup_province.empty())
+					lookup_notes.append(", ").append(lookup_province);
+			}
 		}
-	}
-	if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
-		p += 9;
-		p1 = htmlpage.find("</adr_zip>", p);
-		if (p1 != string::npos) {
-			tempstr.assign(htmlpage.substr(p, p1 - p));
-			if (!tempstr.empty())
-				lookup_notes.append("  ").append(tempstr);
+		if ((p = htmlpage.find("<adr_zip>")) != string::npos) {
+			p += 9;
+			p1 = htmlpage.find("</adr_zip>", p);
+			if (p1 != string::npos) {
+				tempstr.assign(htmlpage.substr(p, p1 - p));
+				if (!tempstr.empty())
+					lookup_notes.append("  ").append(tempstr);
+			}
 		}
 	}
 }
