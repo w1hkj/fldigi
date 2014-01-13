@@ -71,6 +71,7 @@
 #include "debug.h"
 #include "qrunner.h"
 #include "icons.h"
+#include "macros.h"
 
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
@@ -79,7 +80,7 @@
 // We never write duplicate/QSK/PTT tone/PseudoFSK data to the sound files
 #define SNDFILE_CHANNELS 1
 
-int sndfile_samplerate[4] = {22050, 24000, 44100, 48000};
+int sndfile_samplerate[7] = {8000, 11025, 16000, 22050, 24000, 44100, 48000};
 
 using namespace std;
 
@@ -376,7 +377,8 @@ LOG_INFO("src ratio %f", play_src_data->src_ratio);
 
 // ---------------------------------------------------------------------
 // write_file
-//   All sound buffer data is resampled to 48000 samples/sec
+// All sound buffer data is resampled to a specified sample rate
+//    progdefaults.wavSampleRate
 // resultant data (left channel only) is written to a wav file
 //----------------------------------------------------------------------
 void SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
@@ -384,7 +386,7 @@ void SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
 	int err;
 	if (modem_wr_sr != sample_frequency) {
 		modem_wr_sr = sample_frequency;
-		writ_src_data->src_ratio = sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		writ_src_data->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
 		src_set_ratio(writ_src_state, writ_src_data->src_ratio);
 	}
 	writ_src_data->data_in = buf;
@@ -742,6 +744,11 @@ size_t SoundOSS::Write(double *buf, size_t count)
 		write_file(ofGenerate, buf, count);
 #endif
 
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
+
+
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
 		tx_src_data->src_ratio = 1.0 + txppm/1e6;
@@ -805,6 +812,10 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 	if (generate)
 		write_file(ofGenerate, bufleft, count);
 #endif
+
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
 
 	if (txppm != progdefaults.TX_corr) {
 		txppm = progdefaults.TX_corr;
@@ -1241,6 +1252,10 @@ size_t SoundPort::Write(double *buf, size_t count)
 		write_file(ofGenerate, buf, count);
 #endif
 
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
+
 // copy input to both channels if right channel enabled
 	for (size_t i = 0; i < count; i++)
 		if (progdefaults.mono_audio)
@@ -1269,6 +1284,10 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 	if (generate)
 		write_file(ofCapture, bufleft, count);
 #endif
+
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
 
 // interleave into fbuf
 	for (size_t i = 0; i < count; i++) {
@@ -1895,6 +1914,10 @@ size_t SoundPulse::Write(double* buf, size_t count)
 		write_file(ofGenerate, buf, count);
 #endif
 
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
+
 // copy input to both channels
 	for (size_t i = 0; i < count; i++)
 		if (progdefaults.mono_audio)
@@ -1923,6 +1946,10 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 	if (generate)
 		write_file(ofGenerate, bufleft, count);
 #endif
+
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
 
 	for (size_t i = 0; i < count; i++) {
 		if (progdefaults.ReverseAudio) {
@@ -2060,6 +2087,10 @@ size_t SoundNull::Write(double* buf, size_t count)
 	if (generate)
 		write_file(ofGenerate, buf, count);
 #endif
+
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
+		return count;
+	}
 
 	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 

@@ -203,6 +203,16 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<COMMENT:text>\tuntransmitted comment"));
 
 	w->add(LINE_SEP);
+	w->add(_("<CPS_TEST>\tmodem timing test internal string"));
+	w->add(_("<CPS_FILE:>\tmodem timing test, spec' file"));
+	w->add(_("<CPS_STRING:s>\tmodem timing test, string 's'"));
+
+	w->add(LINE_SEP);
+	w->add(_("<WAV_TEST>\tWAV file; internal string"));
+	w->add(_("<WAV_FILE:>\tWAV file; spec' file"));
+	w->add(_("<WAV_STRING:s>\tWAV file; string 's'"));
+
+	w->add(LINE_SEP);
 	assert(MODE_CONTESTIA < MODE_OLIVIA);
 	char s[256];
 	for (trx_mode i = 0; i <= MODE_CONTESTIA; i++) {
@@ -319,6 +329,14 @@ void cbInsertMacro(Fl_Widget *, void *)
 					 "text." "txt");
 		if (p) {
 			text.insert(6, p);
+		} else
+			text = "";
+	} else if ((text == "<CPS_FILE:>") || (text == "<WAV_FILE:>")) {
+		string filters = "Text\t*." "txt";
+		const char* p = FSEL::select(_("Test text file"), filters.c_str(),
+					 "text." "txt");
+		if (p) {
+			text.insert(10, p);
 		} else
 			text = "";
 	} else if (text == "<IMAGE:>") {

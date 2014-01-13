@@ -25,6 +25,7 @@
 
 #include <config.h>
 
+#include <sys/time.h>
 #include <fcntl.h>
 #include <semaphore.h>
 #include <cstdlib>
@@ -310,6 +311,7 @@ void trx_trx_transmit_loop()
 		return;
 	}
 	if (active_modem) {
+
 		try {
 			current_samplerate = active_modem->get_samplerate();
 			scard->Open(O_WRONLY, current_samplerate);
@@ -321,7 +323,10 @@ void trx_trx_transmit_loop()
 			return;
 		}
 
-		if (active_modem != ssb_modem && active_modem != anal_modem) {
+		if ((active_modem != ssb_modem) && 
+			(active_modem != anal_modem) &&
+			!active_modem->XMLRPC_CPS_TEST &&
+			!PERFORM_CPS_TEST ) {
 			push2talk->set(true);
 			REQ(&waterfall::set_XmtRcvBtn, wf, true);
 		}
@@ -348,10 +353,17 @@ void trx_trx_transmit_loop()
 		}
 
 		if (progStatus.n_rsids >= 0) {
+
+//			if(trx_state == STATE_TX) {
+				active_modem->tx_sample_count = 0;
+				active_modem->tx_sample_rate = active_modem->get_samplerate();
+//			}
+
 			while (trx_state == STATE_TX) {
 				try {
-					if (active_modem->tx_process() < 0)
+					if (active_modem->tx_process() < 0) {
 						trx_state = STATE_RX;
+					}
 				}
 				catch (const SndException& e) {
 					scard->Close();

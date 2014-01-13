@@ -4751,7 +4751,7 @@ if (o->value()) {
               callback {progdefaults.wavSampleRate = o->value();
 progdefaults.changed = true;} open
               tooltip {Pick baud rate from list} xywh {60 96 150 24} down_box BORDER_BOX align 5
-              code0 {o->add("22050|24000|44100|48000");}
+              code0 {o->add("8000|11025|16000|22050|24000|44100|48000");}
               code1 {o->value(progdefaults.wavSampleRate);}
             } {}
           }

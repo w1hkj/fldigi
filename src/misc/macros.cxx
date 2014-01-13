@@ -25,6 +25,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <sys/time.h>
 
 #include "macros.h"
 
@@ -51,6 +52,7 @@
 #include "icons.h"
 #include "weather.h"
 #include "utf8file_io.h"
+#include "xmlrpc.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -130,6 +132,343 @@ static std::string cut_string(const char *s)
 
 static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm *tm) {
 	return strftime(s, max, fmt, tm);
+}
+
+static string CPSstring = "\
+=============================================\n\
+       ABCDEFGHIJKLMN OPQRSTUVWXYZ\n\
+       abcdefghijklmn opqrstuvwxyz\n\
+       0123456789       9876543210\n\
+      !@#$%&*()_+-=[]{}\\|;:'\",.<>/?\n\
+=============================================\n\
+\n\
+          The Jaberwocky\n\
+\n\
+'Twas brillig, and the slithy toves\n\
+Did gyre and gimble in the wabe;\n\
+All mimsy were the borogoves,\n\
+And the mome raths outgrabe.\n\
+\n\
+\"Beware the Jabberwock, my son!\n\
+The jaws that bite, the claws that catch!\n\
+Beware the Jubjub bird, and shun\n\
+The frumious Bandersnatch!\"\n\
+\n\
+He took his vorpal sword in hand:\n\
+Long time the manxome foe he sought-\n\
+So rested he by the Tumtum tree,\n\
+And stood awhile in thought.\n\
+\n\
+And as in uffish thought he stood,\n\
+The Jabberwock, with eyes of flame,\n\
+Came whiffling through the tulgey wood,\n\
+And burbled as it came!\n\
+\n\
+One, two! One, two! and through and through\n\
+The vorpal blade went snicker-snack!\n\
+He left it dead, and with its head\n\
+He went galumphing back.\n\
+\n\
+\"And hast thou slain the Jabberwock?\n\
+Come to my arms, my beamish boy!\n\
+O frabjous day! Callooh! Callay!\"\n\
+He chortled in his joy.\n\
+\n\
+'Twas brillig, and the slithy toves\n\
+Did gyre and gimble in the wabe;\n\
+All mimsy were the borogoves,\n\
+And the mome raths outgrabe.\n";
+
+bool PERFORM_CPS_TEST = false;
+int  num_cps_chars = 0;
+string testfilename;
+
+void CPS_report(int samples, int prepost)
+{
+	char results[1000];
+	double xmttime = 1.0 * samples / active_modem->get_samplerate();
+	double datatime = 1.0 * (samples - prepost) / active_modem->get_samplerate();
+	num_cps_chars--;
+	snprintf(results, sizeof(results), "\n\
+CPS test\n\
+text:         %s\n\
+mode:         %s\n\
+# chars:      %d\n\
+xmt time:     %f\n\
+data time:    %f\n\
+xmt samples:  %d\n\
+prepost:      %d\n\
+data samples: %d\n\
+sample rate:  %d\n\
+chars/sec:    %f\n\
+~WPM:         %f\n",
+testfilename.c_str(),
+mode_info[active_modem->get_mode()].name,
+num_cps_chars,
+xmttime,
+datatime,
+samples,
+prepost,
+samples - prepost,
+active_modem->get_samplerate(),
+num_cps_chars / datatime,
+10 * num_cps_chars / datatime);
+
+	ReceiveText->add(results, FTextBase::ALTR);
+	LOG_INFO("%s", results);
+	PERFORM_CPS_TEST = false;
+}
+
+static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
+{
+	s.clear();
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		return;
+	}
+	testfilename = "internal string";
+
+	stopMacroTimer();
+	active_modem->set_stopflag(false);
+	PERFORM_CPS_TEST = true;
+	trx_transmit();
+
+	int s0 = number_of_samples("");
+	int s1 = 0;
+	int start_stop_samples = 0;
+	int j = 0;
+	for(j = 1; j < 32; j++) {
+		s1 = number_of_samples(string(j, 'e'));
+		if(s1 > s0) break;
+	}
+	start_stop_samples = 2*s0 - s1;
+
+	num_cps_chars = 0;
+	CPS_report(number_of_samples(CPSstring), start_stop_samples);
+	PERFORM_CPS_TEST = false;
+
+}
+
+static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
+		return;
+	}
+
+	std::string fname = s.substr(i+10, endbracket - i - 10);
+	if (fname.length() > 0 && !within_exec) {
+		FILE *toadd = fopen(fname.c_str(), "r");
+		if (toadd) {
+			std::string buffer;
+			char c = getc(toadd);
+			while (c && !feof(toadd)) {
+				if (c != '\r') buffer += c; // damn MSDOS txt files
+				c = getc(toadd);
+				}
+			s.clear();
+			fclose(toadd);
+			TransmitText->clear();
+			testfilename = fname;
+
+			stopMacroTimer();
+			active_modem->set_stopflag(false);
+			PERFORM_CPS_TEST = true;
+			trx_transmit();
+
+			int s0 = number_of_samples("");
+			int s1 = 0;
+			int start_stop_samples = 0;
+			int j = 0;
+			for(j = 1; j < 32; j++) {
+				s1 = number_of_samples(string(j, 'e'));
+				if(s1 > s0) break;
+			}
+			start_stop_samples = 2*s0 - s1;
+
+			num_cps_chars = 0;
+			CPS_report(number_of_samples(buffer), start_stop_samples);
+			PERFORM_CPS_TEST = false;
+
+		} else {
+			string resp = "Could not locate ";
+			resp.append(fname).append("\n");
+			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+			LOG_WARN("%s not found", fname.c_str());
+			s.replace(i, endbracket - i + 1, "");
+			PERFORM_CPS_TEST = false;
+		}
+	} else {
+		PERFORM_CPS_TEST = false;
+		s.clear();
+	}
+}
+
+static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
+		return;
+	}
+
+	std::string buffer = s.substr(i+12, endbracket - i - 12);
+	std::string txtbuf = buffer;
+	s.clear();
+	size_t p = buffer.find("\\n");
+	while (p != string::npos) {
+		buffer.replace(p,2,"\n");
+		p = buffer.find("\\n");
+	}
+	if (buffer.length()) {
+		TransmitText->clear();
+
+		stopMacroTimer();
+		active_modem->set_stopflag(false);
+		PERFORM_CPS_TEST = true;
+		trx_transmit();
+
+		int s0 = number_of_samples("");
+printf("j %d: s %d\n", 0, s0);
+		int s1 = 0;
+		int start_stop_samples = 0;
+		int j = 0;
+		for(j = 1; j < 32; j++) {
+			s1 = number_of_samples(string(j, 'e'));
+printf("j %d: s %d\n", j, s1);
+			if(s1 > s0) break;
+		}
+		start_stop_samples = 2*s0 - s1;
+
+		num_cps_chars = 0;
+		testfilename = txtbuf;
+		CPS_report(number_of_samples(buffer), start_stop_samples);
+		PERFORM_CPS_TEST = false;
+	} else {
+		string resp = "Text not specified";
+		LOG_WARN("%s", resp.c_str());
+		resp.append("\n");
+		ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+		PERFORM_CPS_TEST = false;
+	}
+}
+
+static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
+{
+	s.clear();
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		return;
+	}
+	testfilename = "internal string";
+
+	stopMacroTimer();
+	active_modem->set_stopflag(false);
+
+	PERFORM_CPS_TEST = true;
+	trx_transmit();
+	number_of_samples(CPSstring);
+	PERFORM_CPS_TEST = false;
+}
+
+static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
+		return;
+	}
+
+	std::string fname = s.substr(i+10, endbracket - i - 10);
+	if (fname.length() > 0 && !within_exec) {
+		FILE *toadd = fopen(fname.c_str(), "r");
+		if (toadd) {
+			std::string buffer;
+			char c = getc(toadd);
+			while (c && !feof(toadd)) {
+				if (c != '\r') buffer += c; // damn MSDOS txt files
+				c = getc(toadd);
+				}
+			s.clear();
+			fclose(toadd);
+			TransmitText->clear();
+			testfilename = fname;
+
+			stopMacroTimer();
+			active_modem->set_stopflag(false);
+			PERFORM_CPS_TEST = true;
+			trx_transmit();
+
+			number_of_samples(buffer);
+			PERFORM_CPS_TEST = false;
+
+		} else {
+			string resp = "Could not locate ";
+			resp.append(fname).append("\n");
+			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+			LOG_WARN("%s not found", fname.c_str());
+			s.replace(i, endbracket - i + 1, "");
+			PERFORM_CPS_TEST = false;
+		}
+	} else {
+		PERFORM_CPS_TEST = false;
+		s.clear();
+	}
+}
+
+static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
+		return;
+	}
+
+	std::string buffer = s.substr(i+12, endbracket - i - 12);
+	std::string txtbuf = buffer;
+	s.clear();
+	size_t p = buffer.find("\\n");
+	while (p != string::npos) {
+		buffer.replace(p,2,"\n");
+		p = buffer.find("\\n");
+	}
+	if (buffer.length()) {
+		TransmitText->clear();
+
+		stopMacroTimer();
+		active_modem->set_stopflag(false);
+		PERFORM_CPS_TEST = true;
+		trx_transmit();
+
+		testfilename = txtbuf;
+		number_of_samples(buffer);
+		PERFORM_CPS_TEST = false;
+	} else {
+		string resp = "Text not specified";
+		LOG_WARN("%s", resp.c_str());
+		resp.append("\n");
+		ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+		PERFORM_CPS_TEST = false;
+	}
 }
 
 static void pCOMMENT(std::string &s, size_t &i, size_t endbracket)
@@ -2226,6 +2565,14 @@ static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
 struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
 
 static const MTAGS mtags[] = {
+{"<CPS_FILE:",	pCPS_FILE},
+{"<CPS_STRING:",pCPS_STRING},
+{"<CPS_TEST",	pCPS_TEST},
+
+{"<WAV_FILE:",	pWAV_FILE},
+{"<WAV_STRING:",pWAV_STRING},
+{"<WAV_TEST",	pWAV_TEST},
+
 {"<COMMENT:",	pCOMMENT},
 {"<CALL>",		pCALL},
 {"<FREQ>",		pFREQ},

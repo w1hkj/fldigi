@@ -63,8 +63,7 @@ private:
 	unsigned int		shreg;
 	//FEC: 2nd stream
 	unsigned int		shreg2;
-	int			numinterleavers; //interleaver size (speed dependant)
-	double 			numcarriers; //Number of parallel carriers for M CAR PSK and PSKR and QPSKR
+	int					numinterleavers; //interleaver size (speed dependant)
 	double 			inter_carrier; // Frequency gap betweeb carriers
 
 // rx variables & functions
@@ -141,11 +140,11 @@ private:
 	
 //	cmplx thirdorder;
 // tx variables & functions
-	int			accumulated_bits; //JD for multiple carriers
-	int			txsymbols[MAX_CARRIERS];
+	int				txsymbols[MAX_CARRIERS];
 
 	double			*tx_shape;
 	int 			preamble;
+	void			tx_carriers();
 	void 			tx_symbol(int sym);
 	void			tx_bit(int bit);
 	void			tx_char(unsigned char c);
@@ -177,6 +176,7 @@ public:
 	int tx_process();
 	void searchDown();
 	void searchUp();
+
 };
 
 #endif

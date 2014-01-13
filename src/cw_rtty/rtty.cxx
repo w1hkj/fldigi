@@ -45,6 +45,7 @@ using namespace std;
 #include "debug.h"
 #include "synop.h"
 #include "main.h"
+#include "modem.h"
 
 #define FILTER_DEBUG 0
 
@@ -85,6 +86,10 @@ void rtty::tx_init(SoundBase *sc)
 	phaseacc = 0;
 	preamble = true;
 	videoText();
+
+	symbols = 0;
+	acc_symbols = 0;
+	ovhd_symbols = 0;
 }
 
 // Customizes output of Synop decoded data.
@@ -729,10 +734,13 @@ if (mnum < 2 * filter_length)
 // this makes the scope looking a little bit nicer, too...
 // aka: less noisy...
 				if( abs(zp_mark[i]) > abs(zp_space[i]) ) {
-					xy.imag( xy.imag() * abs(zp_space[i])/abs(zp_mark[i]) );
+// note ox x complex lib does not support xy.real(double) or xy.imag(double)
+					xy = cmplx( xy.real(),
+								xy.imag() * abs(zp_space[i])/abs(zp_mark[i]) );
 //					xy.imag() *= abs(zp_space[i])/abs(zp_mark[i]);
 				} else {
-					xy.real( xy.real() / ( abs(zp_space[i])/abs(zp_mark[i]) ) );
+					xy = cmplx( xy.real() / ( abs(zp_space[i])/abs(zp_mark[i]) ),
+								xy.imag() );
 //					xy.real() /= abs(zp_space[i])/abs(zp_mark[i]);
 				}
 
@@ -855,6 +863,7 @@ double rtty::FSKnco()
 
 void rtty::send_symbol(int symbol, int len)
 {
+	acc_symbols += len;
 #if 0
 	double freq;
 
@@ -1062,7 +1071,16 @@ int rtty::tx_process()
 
 // if NOT Baudot
 	if (nbits != 5) {
+///
+		acc_symbols = 0;
 		send_char(c);
+		xmt_samples = char_samples = acc_symbols;
+
+		printf("%5s %d samples, overhead %d, %f sec's\n",
+			ascii3[c & 0xff],
+			char_samples,
+			ovhd_samples,
+			1.0 * char_samples / samplerate);
 		return 0;
 	}
 
@@ -1120,8 +1138,16 @@ int rtty::tx_process()
 			txmode = FIGURES;
 		}
 	}
-
+///
+	acc_symbols = 0;
 	send_char(c & 0x1F);
+	xmt_samples = char_samples = acc_symbols;
+
+	printf("%5s %d samples, overhead %d, %f sec's\n",
+		ascii3[c & 0xff],
+		char_samples,
+		ovhd_samples,
+		1.0 * char_samples / samplerate);
 
 	return 0;
 }

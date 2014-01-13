@@ -11,6 +11,7 @@
 #include "digiscope.h"
 #include "globals.h"
 #include "morse.h"
+#include "ascii.h"
 
 #define	OUTBUFSIZE	16384
 // Constants for signal searching & s/n threshold
@@ -23,6 +24,9 @@ public:
 	static double	frequency;
 	static double	tx_frequency;
 	static bool	freqlock;
+	static unsigned long tx_sample_count;
+	static unsigned int tx_sample_rate;
+	static bool XMLRPC_CPS_TEST;
 protected:
 	cMorse	morse;
 	trx_mode mode;
@@ -187,6 +191,20 @@ private:
 
 protected:
 	virtual void s2nreport(void);
+
+// JD & DF for multiple carriers
+public:
+	int  numcarriers; //Number of parallel carriers for M CAR PSK and PSKR and QPSKR
+	int  symbols; //JD for multiple carriers
+	int  acc_symbols;
+	int  char_symbols;
+	int  xmt_symbols;
+	int  ovhd_symbols;
+	int  acc_samples;
+	int  char_samples;
+	int  xmt_samples;
+	int  ovhd_samples;
+
 };
 
 extern modem *null_modem;

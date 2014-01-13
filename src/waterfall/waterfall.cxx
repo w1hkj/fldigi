@@ -2103,11 +2103,11 @@ void waterfall::handle_mouse_wheel(int what, int d)
 	bool changed_save = progdefaults.changed;
 	val->do_callback();
 	progdefaults.changed = changed_save;
-	if (val == cntServerOffset || val == cntSearchRange)
+	if (val == cntServerOffset || val == cntSearchRange) {
 		if (active_modem) active_modem->set_sigsearch(SIGSEARCH);
-	else if (val == sldrSquelch) // sldrSquelch gives focus to TransmitText
+	} else if (val == sldrSquelch) { // sldrSquelch gives focus to TransmitText
 		take_focus();
-
+	}
 	if (msg_fmt) {
 		char msg[60];
 		snprintf(msg, sizeof(msg), msg_fmt, msg_label, val->value());

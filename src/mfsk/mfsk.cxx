@@ -1069,6 +1069,15 @@ int mfsk::tx_process()
 		case TX_STATE_DATA:
 			xmtbyte = get_tx_char();
 
+			if(active_modem->XMLRPC_CPS_TEST) {
+				if(startpic) startpic = false;
+				if(xmtbyte == 0x05) {
+					sendchar(0x04); // 0x4 has the same symbol count as 0x5
+					break;
+				}
+			}
+
+
 			if (xmtbyte == 0x05 || startpic == true) {
 				put_status("Tx pic: start");
 				int len = (int)strlen(picheader);
