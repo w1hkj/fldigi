@@ -7,7 +7,13 @@
 #include <FL/Fl_Double_Window.H>
 extern Fl_Double_Window *wExport;
 #include <FL/Fl_Group.H>
+// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk's
+// FL/Fl_Check_Browser.H (http://www.fltk.org/str.php?L2984)
+#undef nitems
 #include <FL/Fl_Check_Browser.H>
+#define FLTK_nitems nitems
+#undef nitems
+// ^^^ Avoid 'nitems' macro collision
 extern Fl_Check_Browser *chkExportBrowser;
 #include <FL/Fl_Button.H>
 extern Fl_Button *btnClearAll;
