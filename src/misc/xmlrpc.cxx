@@ -1614,7 +1614,7 @@ public:
 		}
 
 		XMLRPC_LOCK;
-		stopMacroTimer();
+		REQ(stopMacroTimer);
 		int s0 = 0;//number_of_samples("");
 		int s1 = 0;
 
@@ -1671,7 +1671,7 @@ public:
 		}
 
 		XMLRPC_LOCK;
-		stopMacroTimer();
+		REQ(stopMacroTimer);
 
 		vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
