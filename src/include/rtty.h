@@ -3,7 +3,7 @@
 //
 // Copyright (C) 2012
 //		Dave Freese, W1HKJ
-//		Stefan Fendt, DO2SMF
+//		Stefan Fendt, DL1SMF
 //
 // This file is part of fldigi.
 //

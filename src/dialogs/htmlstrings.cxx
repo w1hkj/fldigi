@@ -49,7 +49,7 @@ There is NO WARRANTY, to the extent permitted by law.\n\
 &nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\n\
 &nbsp; &nbsp; &nbsp;Rem\355 Chateauneu, F4ECW<br>\n\
 &nbsp; &nbsp; &nbsp;John Douyere, VK2ETA<br>\n\
-&nbsp; &nbsp; &nbsp;Stefan Fendt, DO2SMF<br>\n\
+&nbsp; &nbsp; &nbsp;Stefan Fendt, DL1SMF<br>\n\
 &nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\n\
 &nbsp; &nbsp; &nbsp;John Phelps, KL4YFD<br>\n\
 &nbsp; &nbsp; &nbsp;Andrej Lajovic, S57LN\n\
