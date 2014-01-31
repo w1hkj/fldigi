@@ -1,5 +1,26 @@
-2013-11-17  David Freese  <w1hkj@w1hkj.com>
+2014-01-31  Kamal Mostafa  <kamal@whence.com>
 
+	8a1d12f: Avoid nitems fltk kfreebsd collision
+
+2014-01-31  David Freese  <w1hkj@w1hkj.com>
+
+	5f7d521: XMLRPC seg fault
+	5754566: Mailing address
+
+2014-01-31  John Phelps  <kl4yfd@gmail.com>
+
+	a1d20d5: 64 bit stacktrace
+
+2014-01-31  David Freese  <w1hkj@w1hkj.com>
+
+	86bffb9: Developer update
+	678f66b: modem timing test
+	2ca21dd: CW timing
+	1bcc31c: SKED macro
+	92ab4b6: FreeBSD issues
+	a987fe5: PSKR softbits
+	50018ff: WF max size
+	4cbabee: packet update
 	f967edf: Waterfall correction
 
 2013-11-16  Arvo Järve  <arvo@softshark.ee>
