@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iomanip>
+#include <iostream>
 
 #include "psk.h"
 #include "main.h"
@@ -1029,30 +1030,28 @@ static double averageamp;
 		// hard decode if needed
 		// softbit = (bits & 2) ? 0 : 255;  
 		// reversed as we normally pass "!bits" when hard decoding
-		// Soft decode section below
+
+// Soft decode section below
 		averageamp = decayavg(averageamp, sigamp, SQLDECAY);
 		if (sigamp > 0 && averageamp > 0) {
-			softamp = clamp( averageamp / sigamp, 1.0, 1e6);
+			if (sigamp > averageamp) {
+				softamp = clamp( sqrt(sigamp / averageamp), 1.0, 1e6);
+			} else {
+				softamp = clamp( sqrt(averageamp / sigamp), 1.0, 1e6);
+			}
 		} else {
-			softamp = 1; // arbritary number (50% impact)
+			softamp = 2; // arbritary number (50% impact)
 		}
-		// Compute values between -128 and +127 for phase value only
-		if (phase > M_PI) {
-			softangle = (127 - (((2 * M_PI - phase) / M_PI) * (double) 255));
-		} else {
-			softangle = (127 - ((phase / M_PI) * (double) 255));
-		}
-		// Then apply impact of amplitude. Fanally, re-centre on 127-128
-		// as the decoder needs values between 0-255
-		softbit = (unsigned char) ((softangle / (1 + softamp)) - 127);
+// Compute values between -128 and +127 for phase value only
+		double alpha = phase / M_PI;
+		if (alpha > 1.0) alpha = 2.0 - alpha;
+		softangle = 127.0 - 255.0 * alpha;
+		softbit = (unsigned char) ((softangle / ( 1.0 + softamp / 2.0)) + 128);
+
 		n = 2;
 	}
 
 	// simple low pass filter for quality of signal
-//	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
-//	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 5 : SQLDECAY);
-//	quality.re = decayavg(quality.re, cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
-//	quality.im = decayavg(quality.im, sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY);
 	quality = cmplx(
 		decayavg(quality.real(), cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY),
 		decayavg(quality.imag(), sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY));
