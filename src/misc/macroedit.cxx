@@ -164,7 +164,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
 	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
 	w->add(_("<REPEAT>\trepeat macro continuously"));
-	w->add(_("<SKED:hhmm[:YYYYDDMM]>\tschedule execution"));
+	w->add(_("<SKED:hhmm[ss][:YYYYMMDD]>\tschedule execution"));
 
 	w->add(LINE_SEP);
 	w->add(_("<TXATTEN:nn.n>\t set xmt attenuator"));
