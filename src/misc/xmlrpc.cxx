@@ -64,6 +64,7 @@
 #include "wefax.h"
 #include "wefax-pic.h"
 #include "navtex.h"
+#include "ascii.h"
 
 #if USE_HAMLIB
         #include "hamlib.h"
@@ -237,7 +238,7 @@ XML_RPC_Server::XML_RPC_Server()
 XML_RPC_Server::~XML_RPC_Server()
 {
 //	run = false;
-// the xmlrpc server is closed and deleted  when 
+// the xmlrpc server is closed and deleted  when
 // 	XML_RPC_Server::stop();
 // is called from main
 //	delete methods;
@@ -1565,6 +1566,207 @@ public:
 	}
 };
 
+
+static string xmlchars;
+bool xmltest_char_available;
+static size_t pxmlchar = 0;
+int xmltest_char()
+{
+	if (pxmlchar >= xmlchars.length() ) return -3;
+	return xmlchars[pxmlchar++] & 0xFF;
+}
+
+int number_of_samples( string s)
+{
+	active_modem->XMLRPC_CPS_TEST = true;
+	xmlchars = s;
+	pxmlchar = 0;
+	xmltest_char_available = true;
+
+	active_modem->set_stopflag(false);
+	trx_transmit();
+
+	MilliSleep(10);
+	while(trx_state != STATE_RX) {
+		MilliSleep(10);
+		Fl::awake();
+	}
+	xmltest_char_available = false;
+	active_modem->XMLRPC_CPS_TEST = false;
+	return active_modem->tx_sample_count;
+}
+
+class Main_get_char_rates : public xmlrpc_c::method
+{
+public:
+	Main_get_char_rates()
+	{
+		_signature = "s:n";
+		_help = "Returns table of char rates.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		trx_mode id = active_modem->get_mode();
+		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+			 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
+			*retval = xmlrpc_c::value_string("0:1:0");
+			return;
+		}
+
+		XMLRPC_LOCK;
+		stopMacroTimer();
+		int s0 = 0;//number_of_samples("");
+		int s1 = 0;
+
+		string xmlbuf;
+		static char result[100];
+		static string  line;
+		int  chsamples = 0;
+		int i = 0;
+		for (int m = 0; m < 32; m++) {
+			line.clear();
+			for (int n = 0; n < 8; n++) {
+				i = m*8+n;
+
+				if ( (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
+					 (id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
+					 id == MODE_CW || id == MODE_RTTY ) {
+					s1 = number_of_samples(string(1,i));
+					chsamples = active_modem->char_samples;
+				} else {
+					s0 = number_of_samples(string(1, i));
+					int j;
+					for(j = 2; j < 32; j++) {
+						s1 = number_of_samples(string(j, i));
+						if(s1 > s0) break;
+					}
+					chsamples = (s1 - s0) / (j-1);
+				}
+				snprintf(result, sizeof(result),
+					n == 7 ? " %.8f\n" : n == 0 ? "%.8f," : " %.8f,",
+					1.0 * chsamples / active_modem->get_samplerate());
+				line.append(result);
+			}
+			xmlbuf.append(line);
+		}
+		*retval = xmlrpc_c::value_string(xmlbuf);
+	}
+};
+
+class Main_get_char_timing : public xmlrpc_c::method
+{
+public:
+	Main_get_char_timing()
+	{
+		_signature = "n:6";
+		_help = "Input: value of character. Returns transmit duration for specified character (samples:sample rate).";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		trx_mode id = active_modem->get_mode();
+		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+			 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
+			*retval = xmlrpc_c::value_string("0,1,0,0,0.0");
+			return;
+		}
+
+		XMLRPC_LOCK;
+		stopMacroTimer();
+
+		vector<unsigned char> bytes = params.getBytestring(0);
+		bytes.push_back(0);
+		std::string totest = (const char*)&bytes[0];
+
+		if (totest.empty() || !active_modem) {
+			*retval = xmlrpc_c::value_string("0:1:0");
+			return;
+		}
+
+		static std::string xmlbuf;
+		char result[64];
+		int character = 0;
+
+		int count = sscanf(totest.c_str(), "%d", &character);
+
+		if(count != 1) {
+			*retval = xmlrpc_c::value_string("0:1:0");
+			return;
+		}
+
+		unsigned int s0 = 0, chsamples = 0, over_head = 0;
+
+		if ( (id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
+			  (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
+			  id == MODE_CW || id == MODE_RTTY ) {
+			s0 = number_of_samples(string(1,character));
+			chsamples = active_modem->char_samples;
+			over_head = active_modem->ovhd_samples;
+		} else {
+			unsigned int s1 = 0, s2 = 0;
+			unsigned int temp = 0, no_of_chars = 1, k = 0;
+			s0 = s1 = s2 = number_of_samples(string(no_of_chars, character));
+			for(int i = no_of_chars + 1; i < 32; i++) {
+				s2 = number_of_samples(string(i, character));
+				if(s2 > s1 && temp++ > 2) {
+					break;
+				}
+				s0 = s2;
+				no_of_chars++;
+			}
+			k = no_of_chars * 4;
+			s1 = number_of_samples(string(k, character));
+			chsamples = (s1 - s0) / (k - no_of_chars);
+			over_head = s1 - (chsamples * k);
+		}
+
+		snprintf(result, sizeof(result), "%5u:%6u:%6u", chsamples,  
+			active_modem->get_samplerate(),
+			over_head);
+		xmlbuf.assign(result);
+
+		*retval = xmlrpc_c::value_string(xmlbuf);
+	}
+};
+
+class Main_get_tx_timing : public xmlrpc_c::method
+{
+public:
+	Main_get_tx_timing()
+	{
+		_signature = "n:6";
+		_help = "Returns transmit duration for test string (samples:sample rate:secs).";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		trx_mode id = active_modem->get_mode();
+		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+			 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+			 id == MODE_SITORB || id == MODE_NAVTEX ) {
+			*retval = xmlrpc_c::value_string("0:1:0.0");
+			return;
+		}
+		XMLRPC_LOCK;
+		vector<unsigned char> bytes = params.getBytestring(0);
+		bytes.push_back(0);
+		std::string totest = (const char*)&bytes[0];
+		if (totest.empty() || !active_modem) {
+			*retval = xmlrpc_c::value_string("0:1:0.0");
+			return;
+		}
+
+		int chsamples = number_of_samples(totest);// - start_stop_samples;
+
+		std::string xmlbuf;
+		char buf[64];
+		memset(buf, 0, sizeof(buf));
+		snprintf(buf, sizeof(buf) - 1, "%u : %u : %.9f", \
+				chsamples,  active_modem->tx_sample_rate,
+				1.0 * chsamples / active_modem->tx_sample_rate);
+		xmlbuf.assign(buf);
+		*retval = xmlrpc_c::value_string(xmlbuf);
+	}
+};
+
 class Rig_set_name : public xmlrpc_c::method
 {
 public:
@@ -2853,46 +3055,46 @@ struct Navtex_send_message : public xmlrpc_c::method
 
 // method list: ELEM_(class_name, "method_name")
 #undef ELEM_
-#define METHOD_LIST													\
-	ELEM_(Fldigi_list, "fldigi.list")								\
-	ELEM_(Fldigi_name, "fldigi.name")								\
+#define METHOD_LIST														\
+	ELEM_(Fldigi_list, "fldigi.list")									\
+	ELEM_(Fldigi_name, "fldigi.name")									\
 	ELEM_(Fldigi_version_struct, "fldigi.version_struct")			\
 	ELEM_(Fldigi_version_string, "fldigi.version")					\
-	ELEM_(Fldigi_name_version, "fldigi.name_version")				\
-	ELEM_(Fldigi_config_dir, "fldigi.config_dir")					\
+	ELEM_(Fldigi_name_version, "fldigi.name_version")					\
+	ELEM_(Fldigi_config_dir, "fldigi.config_dir")						\
 	ELEM_(Fldigi_terminate, "fldigi.terminate")						\
-																	\
+																		\
 	ELEM_(Modem_get_name, "modem.get_name")							\
-	ELEM_(Modem_get_names, "modem.get_names")						\
+	ELEM_(Modem_get_names, "modem.get_names")							\
 	ELEM_(Modem_get_id, "modem.get_id")								\
 	ELEM_(Modem_get_max_id, "modem.get_max_id")						\
-	ELEM_(Modem_set_by_name, "modem.set_by_name")					\
-	ELEM_(Modem_set_by_id, "modem.set_by_id")						\
-																	\
-	ELEM_(Modem_set_carrier, "modem.set_carrier")					\
-	ELEM_(Modem_inc_carrier, "modem.inc_carrier")					\
-	ELEM_(Modem_get_carrier, "modem.get_carrier")					\
-																	\
-	ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")			\
-	ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")			\
-	ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")			\
-																	\
-	ELEM_(Modem_get_bw, "modem.get_bandwidth")						\
-	ELEM_(Modem_set_bw, "modem.set_bandwidth")						\
-	ELEM_(Modem_inc_bw, "modem.inc_bandwidth")						\
-																	\
-	ELEM_(Modem_get_quality, "modem.get_quality")					\
-	ELEM_(Modem_search_up, "modem.search_up")						\
-	ELEM_(Modem_search_down, "modem.search_down")					\
-																	\
+	ELEM_(Modem_set_by_name, "modem.set_by_name")						\
+	ELEM_(Modem_set_by_id, "modem.set_by_id")							\
+																		\
+	ELEM_(Modem_set_carrier, "modem.set_carrier")						\
+	ELEM_(Modem_inc_carrier, "modem.inc_carrier")						\
+	ELEM_(Modem_get_carrier, "modem.get_carrier")						\
+																		\
+	ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")				\
+	ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")				\
+	ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")				\
+																		\
+	ELEM_(Modem_get_bw, "modem.get_bandwidth")							\
+	ELEM_(Modem_set_bw, "modem.set_bandwidth")							\
+	ELEM_(Modem_inc_bw, "modem.inc_bandwidth")							\
+																		\
+	ELEM_(Modem_get_quality, "modem.get_quality")						\
+	ELEM_(Modem_search_up, "modem.search_up")							\
+	ELEM_(Modem_search_down, "modem.search_down")						\
+																		\
 	ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")	\
 	ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")	\
 	ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")			\
 	ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")			\
-																	\
+																		\
 	ELEM_(Main_get_status1, "main.get_status1")						\
 	ELEM_(Main_get_status2, "main.get_status2")						\
-																	\
+																		\
 	ELEM_(Main_get_sb, "main.get_sideband")							\
 	ELEM_(Main_set_sb, "main.set_sideband")							\
 	ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")				\
@@ -2900,124 +3102,127 @@ struct Navtex_send_message : public xmlrpc_c::method
 	ELEM_(Main_get_freq, "main.get_frequency")						\
 	ELEM_(Main_set_freq, "main.set_frequency")						\
 	ELEM_(Main_inc_freq, "main.inc_frequency")						\
-																	\
+																		\
 	ELEM_(Main_get_afc, "main.get_afc")								\
 	ELEM_(Main_set_afc, "main.set_afc")								\
-	ELEM_(Main_toggle_afc, "main.toggle_afc")						\
-																	\
+	ELEM_(Main_toggle_afc, "main.toggle_afc")							\
+																		\
 	ELEM_(Main_get_sql, "main.get_squelch")							\
 	ELEM_(Main_set_sql, "main.set_squelch")							\
-	ELEM_(Main_toggle_sql, "main.toggle_squelch")					\
-																	\
+	ELEM_(Main_toggle_sql, "main.toggle_squelch")						\
+																		\
 	ELEM_(Main_get_sql_level, "main.get_squelch_level")				\
 	ELEM_(Main_set_sql_level, "main.set_squelch_level")				\
 	ELEM_(Main_inc_sql_level, "main.inc_squelch_level")				\
-																	\
+																		\
 	ELEM_(Main_get_rev, "main.get_reverse")							\
 	ELEM_(Main_set_rev, "main.set_reverse")							\
-	ELEM_(Main_toggle_rev, "main.toggle_reverse")					\
-																	\
-	ELEM_(Main_get_lock, "main.get_lock")							\
-	ELEM_(Main_set_lock, "main.set_lock")							\
+	ELEM_(Main_toggle_rev, "main.toggle_reverse")						\
+																		\
+	ELEM_(Main_get_lock, "main.get_lock")								\
+	ELEM_(Main_set_lock, "main.set_lock")								\
 	ELEM_(Main_toggle_lock, "main.toggle_lock")						\
-																	\
-	ELEM_(Main_get_rsid, "main.get_rsid")							\
-	ELEM_(Main_set_rsid, "main.set_rsid")							\
+																		\
+	ELEM_(Main_get_rsid, "main.get_rsid")								\
+	ELEM_(Main_set_rsid, "main.set_rsid")								\
 	ELEM_(Main_toggle_rsid, "main.toggle_rsid")						\
-																	\
-	ELEM_(Main_get_trx_status, "main.get_trx_status")				\
-	ELEM_(Main_tx, "main.tx")										\
-	ELEM_(Main_tune, "main.tune")									\
-	ELEM_(Main_rsid, "main.rsid")									\
-	ELEM_(Main_rx, "main.rx")										\
+																		\
+	ELEM_(Main_get_trx_status, "main.get_trx_status")					\
+	ELEM_(Main_tx, "main.tx")											\
+	ELEM_(Main_tune, "main.tune")										\
+	ELEM_(Main_rsid, "main.rsid")										\
+	ELEM_(Main_rx, "main.rx")											\
 	ELEM_(Main_abort, "main.abort")									\
-																	\
+																		\
 	ELEM_(Main_get_trx_state, "main.get_trx_state")					\
-	ELEM_(Main_set_rig_name, "main.set_rig_name")					\
+	ELEM_(Main_get_tx_timing, "main.get_tx_timing")					\
+	ELEM_(Main_get_char_rates, "main.get_char_rates")					\
+	ELEM_(Main_get_char_timing, "main.get_char_timing")				\
+	ELEM_(Main_set_rig_name, "main.set_rig_name")						\
 	ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")			\
 	ELEM_(Main_set_rig_modes, "main.set_rig_modes")					\
-	ELEM_(Main_set_rig_mode, "main.set_rig_mode")					\
+	ELEM_(Main_set_rig_mode, "main.set_rig_mode")						\
 	ELEM_(Main_get_rig_modes, "main.get_rig_modes")					\
-	ELEM_(Main_get_rig_mode, "main.get_rig_mode")					\
+	ELEM_(Main_get_rig_mode, "main.get_rig_mode")						\
 	ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")		\
 	ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")			\
 	ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")			\
 	ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")		\
-																	\
+																		\
 	ELEM_(Main_run_macro, "main.run_macro")							\
 	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")			\
-																	\
+																		\
 	ELEM_(Rig_set_name, "rig.set_name")								\
 	ELEM_(Rig_get_name, "rig.get_name")								\
-	ELEM_(Rig_set_frequency, "rig.set_frequency")					\
-	ELEM_(Rig_set_modes, "rig.set_modes")							\
+	ELEM_(Rig_set_frequency, "rig.set_frequency")						\
+	ELEM_(Rig_set_modes, "rig.set_modes")								\
 	ELEM_(Rig_set_mode, "rig.set_mode")								\
-	ELEM_(Rig_get_modes, "rig.get_modes")							\
+	ELEM_(Rig_get_modes, "rig.get_modes")								\
 	ELEM_(Rig_get_mode, "rig.get_mode")								\
 	ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")					\
-	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")					\
-	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")					\
+	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")						\
+	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")						\
 	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
-	ELEM_(Rig_get_notch, "rig.get_notch")							\
-	ELEM_(Rig_set_notch, "rig.set_notch")							\
+	ELEM_(Rig_get_notch, "rig.get_notch")								\
+	ELEM_(Rig_set_notch, "rig.set_notch")								\
 	ELEM_(Rig_take_control, "rig.take_control")						\
-	ELEM_(Rig_release_control, "rig.release_control")				\
-																	\
-	ELEM_(Log_get_freq, "log.get_frequency")						\
-	ELEM_(Log_get_time_on, "log.get_time_on")						\
+	ELEM_(Rig_release_control, "rig.release_control")					\
+																		\
+	ELEM_(Log_get_freq, "log.get_frequency")							\
+	ELEM_(Log_get_time_on, "log.get_time_on")							\
 	ELEM_(Log_get_time_off, "log.get_time_off")						\
 	ELEM_(Log_get_call, "log.get_call")								\
 	ELEM_(Log_get_name, "log.get_name")								\
 	ELEM_(Log_get_rst_in, "log.get_rst_in")							\
-	ELEM_(Log_get_rst_out, "log.get_rst_out")						\
+	ELEM_(Log_get_rst_out, "log.get_rst_out")							\
 	ELEM_(Log_get_serial_number, "log.get_serial_number")			\
 	ELEM_(Log_set_serial_number, "log.set_serial_number")			\
 	ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
 	ELEM_(Log_get_exchange, "log.get_exchange")						\
 	ELEM_(Log_set_exchange, "log.set_exchange")						\
-	ELEM_(Log_get_state, "log.get_state")							\
+	ELEM_(Log_get_state, "log.get_state")								\
 	ELEM_(Log_get_province, "log.get_province")						\
-	ELEM_(Log_get_country, "log.get_country")						\
-	ELEM_(Log_get_qth, "log.get_qth")								\
+	ELEM_(Log_get_country, "log.get_country")							\
+	ELEM_(Log_get_qth, "log.get_qth")									\
 	ELEM_(Log_get_band, "log.get_band")								\
-	ELEM_(Log_get_sb, "log.get_sideband")							\
-	ELEM_(Log_get_notes, "log.get_notes")							\
-	ELEM_(Log_get_locator, "log.get_locator")						\
+	ELEM_(Log_get_sb, "log.get_sideband")								\
+	ELEM_(Log_get_notes, "log.get_notes")								\
+	ELEM_(Log_get_locator, "log.get_locator")							\
 	ELEM_(Log_get_az, "log.get_az")									\
-	ELEM_(Log_clear, "log.clear")									\
+	ELEM_(Log_clear, "log.clear")										\
 	ELEM_(Log_set_call, "log.set_call")								\
 	ELEM_(Log_set_name, "log.set_name")								\
-	ELEM_(Log_set_qth, "log.set_qth")								\
-	ELEM_(Log_set_locator, "log.set_locator")						\
-																	\
-	ELEM_(Text_get_rx_length, "text.get_rx_length")					\
-	ELEM_(Text_get_rx, "text.get_rx")								\
-	ELEM_(Text_clear_rx, "text.clear_rx")							\
-	ELEM_(Text_add_tx, "text.add_tx")								\
-	ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")					\
-	ELEM_(Text_clear_tx, "text.clear_tx")							\
-																	\
-	ELEM_(RXTX_get_data, "rxtx.get_data")							\
-	ELEM_(RX_get_data, "rx.get_data")								\
-	ELEM_(TX_get_data, "tx.get_data")								\
-																	\
-	ELEM_(Spot_get_auto, "spot.get_auto")							\
-	ELEM_(Spot_set_auto, "spot.set_auto")							\
-	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
-	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")				\
+	ELEM_(Log_set_qth, "log.set_qth")									\
+	ELEM_(Log_set_locator, "log.set_locator")							\
 																		\
-	ELEM_(Wefax_state_string, "wefax.state_string")						\
-	ELEM_(Wefax_skip_apt, "wefax.skip_apt")								\
-	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")						\
-	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")			\
+	ELEM_(Text_get_rx_length, "text.get_rx_length")					\
+	ELEM_(Text_get_rx, "text.get_rx")									\
+	ELEM_(Text_clear_rx, "text.clear_rx")								\
+	ELEM_(Text_add_tx, "text.add_tx")									\
+	ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")						\
+	ELEM_(Text_clear_tx, "text.clear_tx")								\
+																		\
+	ELEM_(RXTX_get_data, "rxtx.get_data")								\
+	ELEM_(RX_get_data, "rx.get_data")									\
+	ELEM_(TX_get_data, "tx.get_data")									\
+																		\
+	ELEM_(Spot_get_auto, "spot.get_auto")								\
+	ELEM_(Spot_set_auto, "spot.set_auto")								\
+	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
+	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")			\
+																		\
+	ELEM_(Wefax_state_string, "wefax.state_string")					\
+	ELEM_(Wefax_skip_apt, "wefax.skip_apt")							\
+	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")					\
+	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")		\
 	ELEM_(Wefax_end_reception, "wefax.end_reception")					\
 	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")	\
-	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")						\
+	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")					\
 	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")					\
-	ELEM_(Wefax_get_received_file, "wefax.get_received_file")			\
+	ELEM_(Wefax_get_received_file, "wefax.get_received_file")		\
 	ELEM_(Wefax_send_file, "wefax.send_file")							\
 																		\
-	ELEM_(Navtex_get_message, "navtex.get_message")						\
+	ELEM_(Navtex_get_message, "navtex.get_message")					\
 	ELEM_(Navtex_send_message, "navtex.send_message")					\
 
 struct rm_pred

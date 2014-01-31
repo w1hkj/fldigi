@@ -8877,7 +8877,7 @@ nce.\nYou may change the state from either location.\n..."));
               mnuWavSampleRate->down_box(FL_BORDER_BOX);
               mnuWavSampleRate->callback((Fl_Callback*)cb_mnuWavSampleRate);
               mnuWavSampleRate->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-              o->add("22050|24000|44100|48000");
+              o->add("8000|11025|16000|22050|24000|44100|48000");
               o->value(progdefaults.wavSampleRate);
             } // Fl_Choice* mnuWavSampleRate
             tabWavFile->end();

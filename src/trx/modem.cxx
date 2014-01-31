@@ -36,6 +36,7 @@
 #include "configuration.h"
 #include "waterfall.h"
 #include "qrunner.h"
+#include "macros.h"
 
 #include "status.h"
 #include "debug.h"
@@ -181,6 +182,11 @@ modem *ssb_modem = 0;
 double modem::frequency = 1000;
 double modem::tx_frequency = 1000;
 bool   modem::freqlock = false;
+
+// For xml socket command
+unsigned long modem::tx_sample_count = 0;
+unsigned int  modem::tx_sample_rate  = 0;
+bool modem::XMLRPC_CPS_TEST = false;
 
 modem::modem()
 {
@@ -426,6 +432,8 @@ void modem::ModulateXmtr(double *buffer, int len)
 {
 	if (unlikely(!scard)) return;
 
+	tx_sample_count += len;
+
 	if (progdefaults.PTTrightchannel) {
 		for (int i = 0; i < len; i++)
 			PTTchannel[i] = PTTnco();
@@ -433,7 +441,8 @@ void modem::ModulateXmtr(double *buffer, int len)
 		return;
 	}
 
-	if (progdefaults.viewXmtSignal)
+	if (progdefaults.viewXmtSignal &&
+		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 
 	if (withnoise && progdefaults.noise) add_noise(buffer, len);
@@ -463,7 +472,10 @@ void modem::ModulateStereo(double *left, double *right, int len)
 {
 	if (unlikely(!scard)) return;
 
-	if (progdefaults.viewXmtSignal)
+	tx_sample_count += len;
+
+	if (progdefaults.viewXmtSignal &&
+		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 
 	if (withnoise && progdefaults.noise) add_noise(left, len);
@@ -699,7 +711,7 @@ struct mfntchr  { char c; int byte[MAXROWS]; };
 extern mfntchr  idch1[]; // original id font definition
 extern mfntchr  idch2[]; // extended id font definition
 
-static int symbols[MAXCHARS];
+static int id_symbols[MAXCHARS];
 
 static C_FIR_filter vidfilt;
 
@@ -728,7 +740,7 @@ void modem::wfid_send(int numchars)
 	for (i = 0; i < IDSYMLEN; i++) {
 		val = 0.0;
 		for (k = 0; k < numchars; k++) {
-			sym = symbols[numchars - k - 1];
+			sym = id_symbols[numchars - k - 1];
 			for (j = 0; j < NUMCOLS; j++) {
 				if (sym & 1)
 					val += sin(wfid_w[j + k * NUMCOLS] * i);
@@ -764,9 +776,9 @@ void modem::wfid_sendchars(string s)
 	for (int row = 0; row < NUMROWS; row++) {
 		for (int i = 0; i < len; i++) {
 			if (useIDSMALL)
-				symbols[i] = idch1[n[i]].byte[NUMROWS - 1 - row];
+				id_symbols[i] = idch1[n[i]].byte[NUMROWS - 1 - row];
 			else
-				symbols[i] = idch2[n[i]].byte[NUMROWS - 1 - row];
+				id_symbols[i] = idch2[n[i]].byte[NUMROWS - 1 - row];
 		}
 		wfid_send(len);
 		if (stopflag)
@@ -856,7 +868,7 @@ void modem::wfid_text(const string& s)
 			break;
 	}
 // blank lines
-	for (int i = 0; i < vidwidth; i++) symbols[i] = 0;
+	for (int i = 0; i < vidwidth; i++) id_symbols[i] = 0;
 	wfid_send(vidwidth);
 	wfid_send(vidwidth);
 

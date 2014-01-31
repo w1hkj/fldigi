@@ -48,6 +48,7 @@
 #include "status.h"
 #include "debug.h"
 #include "FTextRXTX.h"
+#include "modem.h"
 
 #include "qrunner.h"
 
@@ -181,6 +182,10 @@ void cw::tx_init(SoundBase *sc)
 	phaseacc = 0;
 	lastsym = 0;
 	qskphase = 0;
+
+	symbols = 0;
+	acc_symbols = 0;
+	ovhd_symbols = 0;
 }
 
 void cw::rx_init()
@@ -952,6 +957,8 @@ void cw::send_symbol(int bits, int len)
 	float dsymlen = 0.0;
 	int currsym = bits & 1;
 
+	acc_symbols += len;
+
 	freq = get_txfreq_woffset();
 
 	delta = (int) (len * (progdefaults.CWweight - 50) / 100.0);
@@ -1193,11 +1200,20 @@ int cw::tx_process()
 
 	c = get_tx_char();
 	if (c == GET_TX_CHAR_ETX || stopflag) {
-//		send_symbol(0, symbollen);
 		stopflag = false;
 			return -1;
 	}
+	acc_symbols = 0;
 	send_ch(c);
+
+	xmt_samples = char_samples = acc_symbols;
+
+	printf("%5s %d samples, overhead %d, %f sec's\n",
+		ascii3[c & 0xff],
+		char_samples,
+		ovhd_samples,
+		1.0 * char_samples / samplerate);
+
 	return 0;
 }
 

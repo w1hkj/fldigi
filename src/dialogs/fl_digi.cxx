@@ -6522,6 +6522,11 @@ int get_tx_char(void)
 	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
 	if (idling) { return GET_TX_CHAR_NODATA; }
 
+	if (xmltest_char_available) {
+		num_cps_chars++;
+		return xmltest_char();
+	}
+
 	if (arq_text_available) {
 		char character = (arq_get_char() & 0xFF);
 		if (character == 0x03) {
@@ -6563,6 +6568,10 @@ int get_tx_char(void)
 	}
 
 	c = TransmitText->nextChar();
+
+	if (c == GET_TX_CHAR_ETX) {
+		return c;
+	}
 
 	if (c == '^' && state == STATE_CHAR) {
 		state = STATE_CTRL;
@@ -6643,7 +6652,10 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data, int style)
 {
-        trx_mode mode = active_modem->get_mode();
+// suppress print to rx widget when making timing tests
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return; 
+
+	trx_mode mode = active_modem->get_mode();
 
 	if (mode == MODE_CW && progdefaults.QSKadjust)
 		return;
@@ -6659,6 +6671,8 @@ void put_echo_char(unsigned int data, int style)
 		asc = ascii2;
 	else if (mode == MODE_RTTY || mode == MODE_CW)
 		asc = ascii;
+	else if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST)
+		asc = ascii3;
 
 	// assign a style to the data
 	if (asc == ascii2 && iscntrl(data))

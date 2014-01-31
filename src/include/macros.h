@@ -8,6 +8,12 @@
 #define MAXKEYROWS 4
 #define MAXMACROS (MAXKEYROWS * NUMMACKEYS)
 
+extern void CPS_report(int);
+extern bool PERFORM_CPS_TEST;
+extern int num_cps_chars;
+extern struct timeval tv_cps_start;
+
+
 struct CONTESTCNTR {
 	int count;
 	char   szCount[20];
