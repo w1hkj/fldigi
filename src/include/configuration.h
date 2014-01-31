@@ -810,6 +810,9 @@
         ELEM_(std::string, QRZuserpassword, "QRZPASSWORD",                              \
               "QRZ or HamCall subscriber password",                                     \
               "")                                                                       \
+        ELEM_(bool, notes_address, "NOTES_ADDRESS",                                     \
+              "Populate logbook notes (comment) field with mailing address",            \
+              false)                                                                    \
         ELEM_(bool, QRZchanged, "", "",  false)                                         \
         /* eQSL */                                                                      \
         ELEM_(std::string, eqsl_id, "EQSL_ID",                                          \

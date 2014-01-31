@@ -291,7 +291,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {593 32 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {705 69 540 400} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {-2 0 597 374} color 50 selection_color 50
@@ -835,7 +835,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLogServer {
-            label Logging open
+            label Logging
             xywh {0 50 540 320} hide
           } {
             Fl_Group {} {
@@ -5728,7 +5728,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label Web
+        label Web open
         tooltip {Callsign database} xywh {0 25 540 349} hide
       } {
         Fl_Tabs tabsQRZ {open
@@ -5784,7 +5784,7 @@ progdefaults.changed = true;}
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = QRZXMLNONE;
 progdefaults.changed = true;}
-                tooltip {Do not use callsign database} xywh {49 199 337 20} down_box DOWN_BOX value 1
+                tooltip {Do not use callsign database} xywh {49 199 64 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.QRZXML == QRZXMLNONE);}
               }
               Fl_Round_Button btnQRZcdrom {
@@ -5865,6 +5865,13 @@ progdefaults.changed = true;}
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
                 tooltip {Show password in plain text} xywh {417 281 70 20}
+              }
+              Fl_Check_Button btn_notes_address {
+                label {Add address to notes field}
+                callback {progdefaults.notes_address = o->value();
+progdefaults.changed = true;}
+                xywh {174 201 207 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.notes_address);}
               }
             }
           }
