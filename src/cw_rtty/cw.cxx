@@ -259,8 +259,8 @@ cw::cw() : modem()
 	cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
 	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
-	fsymlen = (int)(samplerate * 1.2 / progdefaults.CWfarnsworth);
+	symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
+	fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
 
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
@@ -354,8 +354,8 @@ void cw::reset_rx_filter()
 		cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
 		cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 		cw_send_dash_length = 3 * cw_send_dot_length;
-		symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
-		fsymlen = (int)(samplerate * 1.2 / progdefaults.CWfarnsworth);
+		symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
+		fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
 
 		phaseacc = 0.0;
 		FFTphase = 0.0;
@@ -400,8 +400,8 @@ void cw::sync_parameters()
 
 	cw_send_dash_length = 3 * cw_send_dot_length;
 
-	nusymbollen = (int)(samplerate * 1.2 / wpm);
-	nufsymlen = (int)(samplerate * 1.2 / fwpm);
+	nusymbollen = (int)round(samplerate * 1.2 / wpm);
+	nufsymlen = (int)round(samplerate * 1.2 / fwpm);
 
 	if (symbollen != nusymbollen ||
 		nufsymlen != fsymlen ||
@@ -1193,7 +1193,7 @@ int cw::tx_process()
 
 	c = get_tx_char();
 	if (c == GET_TX_CHAR_ETX || stopflag) {
-		send_symbol(0, symbollen);
+//		send_symbol(0, symbollen);
 		stopflag = false;
 			return -1;
 	}
