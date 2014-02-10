@@ -9,8 +9,11 @@
 // The rest:
 // Copyright (C) 2009
 //              Stelios Bounanos, M0GLD
+// ----------------------------------------------------------------------------
+// Copyright (C) 2014
+//              David Freese, W1HKJ
 //
-// This file is part of fldigi.
+// This file is part of fldigi
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +28,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
+
 
 #include <config.h>
 
