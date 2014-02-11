@@ -893,40 +893,39 @@ static ostringstream device_text[2];
 map<string, vector<double> > supported_rates[2];
 void SoundPort::initialize(void)
 {
-		if (pa_init)
-				return;
+	if (pa_init)
+		return;
 
-		init_hostapi_ext();
+	init_hostapi_ext();
 
-		int err;
+	int err;
+	if ((err = Pa_Initialize()) != paNoError) {
+		LOG_PERROR("Portaudio Initialize error");
+		throw SndPortException(err);
+	}
+	pa_init = true;
 
-		if ((err = Pa_Initialize()) != paNoError) {
-			LOG_PERROR("Portaudio Initialize error");
-			throw SndPortException(err);
-		}
-		pa_init = true;
+	PaDeviceIndex ndev;
+	if ((ndev = Pa_GetDeviceCount()) < 0) {
+		LOG_PERROR("Portaudio device count error");
+		throw SndPortException(ndev);
+	}
+	if (ndev == 0) {
+		LOG_PERROR("Portaudio, no audio devices");
+		throw SndException(ENODEV, "No available audio devices");
+	}
 
-		PaDeviceIndex ndev;
-		if ((ndev = Pa_GetDeviceCount()) < 0) {
-			LOG_PERROR("Portaudio device count error");
-			throw SndPortException(ndev);
-		}
-		if (ndev == 0) {
-			LOG_PERROR("Portaudio, no audio devices");
-			throw SndException(ENODEV, "No available audio devices");
-		}
-
-		devs.reserve(ndev);
-		for (PaDeviceIndex i = 0; i < ndev; i++)
-				devs.push_back(Pa_GetDeviceInfo(i));
+	devs.reserve(ndev);
+	for (PaDeviceIndex i = 0; i < ndev; i++)
+		devs.push_back(Pa_GetDeviceInfo(i));
 }
 void SoundPort::terminate(void)
 {
-		if (!pa_init)
-				return;
-		static_cast<void>(Pa_Terminate());
-		pa_init = false;
-		devs.clear();
+	if (!pa_init)
+		return;
+	static_cast<void>(Pa_Terminate());
+	pa_init = false;
+	devs.clear();
 	supported_rates[0].clear();
 	supported_rates[1].clear();
 }
@@ -945,8 +944,7 @@ const vector<double>& SoundPort::get_supported_rates(const string& name, unsigne
 }
 
 
-SoundPort::SoundPort(const char *in_dev, const char *out_dev)
-		: req_sample_rate(0)
+SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(0)
 {
 	sd[0].device = in_dev;
 	sd[1].device = out_dev;
@@ -964,7 +962,7 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 #if USE_NAMED_SEMAPHORES
 	char sname[32];
 #endif
-		for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
+	for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
 		snprintf(sname, sizeof(sname), "%" PRIuSZ "-%u-%s", i, getpid(), PACKAGE_TARNAME);
 		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED) {
@@ -1003,15 +1001,15 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 
 SoundPort::~SoundPort()
 {
-		Close();
+	Close();
 
-		sem_t* sems[] = { sd[0].rwsem, sd[1].rwsem };
-		for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
+	sem_t* sems[] = { sd[0].rwsem, sd[1].rwsem };
+	for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
 		if (sem_close(sems[i]) == -1)
 			LOG_PERROR("sem_close");
 #else
-				if (sem_destroy(sems[i]) == -1)
+		if (sem_destroy(sems[i]) == -1)
 			LOG_PERROR("sem_destroy");
 		delete sems[i];
 #endif
@@ -1045,8 +1043,8 @@ SoundPort::~SoundPort()
 
 int SoundPort::Open(int mode, int freq)
 {
-		int old_sample_rate = (int)req_sample_rate;
-		req_sample_rate = sample_frequency = freq;
+	int old_sample_rate = (int)req_sample_rate;
+	req_sample_rate = sample_frequency = freq;
 
 	// do we need to (re)initialise the streams?
 	int ret = 0;
@@ -1092,7 +1090,7 @@ int SoundPort::Open(int mode, int freq)
 			init_stream(i);
 			src_data_reset(i);
 
-						// reset the semaphore
+			// reset the semaphore
 			while (sem_trywait(sd[i].rwsem) == 0);
 			if (errno && errno != EAGAIN) {
 				pa_perror(errno, "open");
@@ -1102,10 +1100,10 @@ int SoundPort::Open(int mode, int freq)
 			ret = 1;
 		}
 		else {
-						pause_stream(i);
+			pause_stream(i);
 			src_data_reset(i);
-						sd[i].state = spa_continue;
-				}
+			sd[i].state = spa_continue;
+		}
 	}
 
 	return ret;
@@ -1113,8 +1111,8 @@ int SoundPort::Open(int mode, int freq)
 
 void SoundPort::pause_stream(unsigned dir)
 {
-		if (sd[dir].stream == 0 || !stream_active(dir))
-				return;
+	if (sd[dir].stream == 0 || !stream_active(dir))
+		return;
 
 	pthread_mutex_lock(sd[dir].cmutex);
 		sd[dir].state = spa_pause;
@@ -1125,79 +1123,79 @@ void SoundPort::pause_stream(unsigned dir)
 
 void SoundPort::Close(unsigned dir)
 {
-		unsigned start, end;
-		if (dir == UINT_MAX) {
-				start = 0;
-				end = 1;
-		}
-		else
-				start = end = dir;
+	unsigned start, end;
+	if (dir == UINT_MAX) {
+		start = 0;
+		end = 1;
+	}
+	else
+		start = end = dir;
 
-		for (unsigned i = start; i <= end; i++) {
-				if (!stream_active(i))
-						continue;
+	for (unsigned i = start; i <= end; i++) {
+		if (!stream_active(i))
+			continue;
 
 		pthread_mutex_lock(sd[i].cmutex);
-				sd[i].state = spa_complete;
-				// first wait for buffers to be drained and for the
-				// stop callback to signal us that the stream has
-				// been stopped
+		sd[i].state = spa_complete;
+		// first wait for buffers to be drained and for the
+		// stop callback to signal us that the stream has
+		// been stopped
 		if (pthread_cond_timedwait_rel(sd[i].ccond, sd[i].cmutex, 5.0) == -1 &&
 			errno == ETIMEDOUT)
 			LOG_ERROR("stream %u wedged", i);
 		pthread_mutex_unlock(sd[i].cmutex);
-				sd[i].state = spa_continue;
+		sd[i].state = spa_continue;
 
-				int err;
-				if ((err = Pa_CloseStream(sd[i].stream)) != paNoError)
-						pa_perror(err, "Pa_CloseStream");
+		int err;
+		if ((err = Pa_CloseStream(sd[i].stream)) != paNoError)
+			pa_perror(err, "Pa_CloseStream");
 
-				sd[i].stream = 0;
-		}
+		sd[i].stream = 0;
+	}
 }
 
 void SoundPort::Abort(unsigned dir)
 {
-		unsigned start, end;
-		if (dir == UINT_MAX) {
-				start = 0;
-				end = 1;
-		}
-		else
-				start = end = dir;
+	unsigned start, end;
+	if (dir == UINT_MAX) {
+		start = 0;
+		end = 1;
+	}
+	else
+		start = end = dir;
 
-		int err;
-		for (unsigned i = start; i <= end; i++) {
-				if (!stream_active(i))
-						continue;
-				if ((err = Pa_AbortStream(sd[i].stream)) != paNoError)
-						pa_perror(err, "Pa_AbortStream");
-				sd[i].stream = 0;
-		}
+	int err;
+	for (unsigned i = start; i <= end; i++) {
+		if (!stream_active(i))
+			continue;
+		if ((err = Pa_AbortStream(sd[i].stream)) != paNoError)
+			pa_perror(err, "Pa_AbortStream");
+		sd[i].stream = 0;
+	}
 }
 
 
-#define WAIT_FOR_COND(cond, s, t)				   \
-	do {											\
-		while (!(cond)) {						   \
-			if (sem_timedwait_rel(s, t) == -1) {	\
-				if (errno == ETIMEDOUT) {		   \
-					timeout = true;				 \
-					break;						  \
-				}								   \
-				else if (errno == EINTR)			\
-					continue;					   \
-				LOG_PERROR("sem_timedwait");		\
-				throw SndException(errno);		  \
-			}									   \
-		}										   \
-	} while (0)
+#define WAIT_FOR_COND(cond, s, t) \
+do { \
+	while (!(cond)) { \
+		if (sem_timedwait_rel(s, t) == -1) { \
+			if (errno == ETIMEDOUT) { \
+				timeout = true;	 \
+				break; \
+			} else if (errno == EINTR) { \
+				continue; \
+			} \
+			LOG_PERROR("sem_timedwait"); \
+			throw SndException(errno); \
+		} \
+	} \
+} while (0)
 
 
 size_t SoundPort::Read(float *buf, size_t count)
 {
 #if USE_SNDFILE
-		if (playback) {
+	if (playback) {
 		read_file(ifPlayback, buf, count);
 		if (progdefaults.EnableMixer)
 			for (size_t i = 0; i < count; i++)
@@ -1351,103 +1349,103 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 
 size_t SoundPort::resample_write(float* buf, size_t count)
 {
-		size_t maxframes = (size_t)floor((sd[1].rb->length() / sd[1].params.channelCount) / tx_src_data->src_ratio);
-		maxframes /= 2; // don't fill the buffer
+	size_t maxframes = (size_t)floor((sd[1].rb->length() / sd[1].params.channelCount) / tx_src_data->src_ratio);
+	maxframes /= 2; // don't fill the buffer
 
-		if (unlikely(count > maxframes)) {
-				size_t n = 0;
+	if (unlikely(count > maxframes)) {
+		size_t n = 0;
 #define PA_TIMEOUT_TRIES 10
-				int pa_timeout = PA_TIMEOUT_TRIES;
+		int pa_timeout = PA_TIMEOUT_TRIES;
 // possible to lock up in this while block if the resample_write(...) fails
-				while (count > maxframes) {
-						n += resample_write(buf, maxframes);
-						buf += sd[1].params.channelCount * maxframes;
-						count -= maxframes;
-						pa_timeout--;
-						if (pa_timeout == 0) {
-							pa_perror(1, "Portaudio write error #1");
-							throw SndException("Portaudio write error 1");
-						}
-				}
-				if (count > 0)
-						n += resample_write(buf, count);
-				return n;
+		while (count > maxframes) {
+			n += resample_write(buf, maxframes);
+			buf += sd[1].params.channelCount * maxframes;
+			count -= maxframes;
+			pa_timeout--;
+			if (pa_timeout == 0) {
+				pa_perror(1, "Portaudio write error #1");
+				throw SndException("Portaudio write error 1");
+			}
 		}
+		if (count > 0)
+			n += resample_write(buf, count);
+		return n;
+	}
 
-		assert(count * sd[1].params.channelCount * tx_src_data->src_ratio <= sd[1].rb->length());
+	assert(count * sd[1].params.channelCount * tx_src_data->src_ratio <= sd[1].rb->length());
 
-		ringbuffer<float>::vector_type vec[2];
-		sd[1].rb->get_wv(vec);
-		float* wbuf = buf;
-		if (req_sample_rate != sd[1].dev_sample_rate || progdefaults.TX_corr != 0) {
-				if (vec[0].len >= sd[1].params.channelCount * (size_t)ceil(count * tx_src_data->src_ratio))
-						wbuf = vec[0].buf; // direct write in the rb
-				else
-						wbuf = src_buffer;
+	ringbuffer<float>::vector_type vec[2];
+	sd[1].rb->get_wv(vec);
+	float* wbuf = buf;
+	if (req_sample_rate != sd[1].dev_sample_rate || progdefaults.TX_corr != 0) {
+		if (vec[0].len >= sd[1].params.channelCount * (size_t)ceil(count * tx_src_data->src_ratio))
+			wbuf = vec[0].buf; // direct write in the rb
+		else
+			wbuf = src_buffer;
 
-				if (txppm != progdefaults.TX_corr)
-					txppm = progdefaults.TX_corr;
+		if (txppm != progdefaults.TX_corr)
+			txppm = progdefaults.TX_corr;
 
-				tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
-				src_set_ratio(tx_src_state, tx_src_data->src_ratio);
+		tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+		src_set_ratio(tx_src_state, tx_src_data->src_ratio);
 
-				tx_src_data->data_in = buf;
-				tx_src_data->input_frames = count;
-				tx_src_data->data_out = wbuf;
-				tx_src_data->output_frames = (wbuf == vec[0].buf ? vec[0].len : SND_BUF_LEN);
-				tx_src_data->end_of_input = 0;
+		tx_src_data->data_in = buf;
+		tx_src_data->input_frames = count;
+		tx_src_data->data_out = wbuf;
+		tx_src_data->output_frames = (wbuf == vec[0].buf ? vec[0].len : SND_BUF_LEN);
+		tx_src_data->end_of_input = 0;
 		int r;
-				if ((r = src_process(tx_src_state, tx_src_data)) != 0) {
-					pa_perror(2, "Portaudio write error #2");
-					throw SndException("Portaudio write error 2");
-				}
+		if ((r = src_process(tx_src_state, tx_src_data)) != 0) {
+			pa_perror(2, "Portaudio write error #2");
+			throw SndException("Portaudio write error 2");
+		}
 		if (tx_src_data->output_frames_gen == 0) // input was too small
 			return count;
 
-				count = tx_src_data->output_frames_gen;
-				if (wbuf == vec[0].buf) { // advance write pointer and return
-						sd[1].rb->write_advance(sd[1].params.channelCount * count);
-						sem_trywait(sd[1].rwsem);
-						return count;
-				}
+		count = tx_src_data->output_frames_gen;
+		if (wbuf == vec[0].buf) { // advance write pointer and return
+			sd[1].rb->write_advance(sd[1].params.channelCount * count);
+			sem_trywait(sd[1].rwsem);
+			return count;
 		}
+	}
 
-		// if we didn't do a direct resample into the rb, or didn't resample at all,
-		// we must now copy buf into the ringbuffer, possibly waiting for space first
-		bool timeout = false;
-		WAIT_FOR_COND( (sd[1].rb->write_space() >= sd[1].params.channelCount * count), sd[1].rwsem,
-					   (MAX(1.0, 2 * sd[1].params.channelCount * count / sd[1].dev_sample_rate)) );
-		if (timeout) {
-			pa_perror(3, "Portaudio write error #3");
-			throw SndException("Portaudio write error 3");
-		}
-		sd[1].rb->write(wbuf, sd[1].params.channelCount * count);
+	// if we didn't do a direct resample into the rb, or didn't resample at all,
+	// we must now copy buf into the ringbuffer, possibly waiting for space first
+	bool timeout = false;
+	WAIT_FOR_COND( (sd[1].rb->write_space() >= sd[1].params.channelCount * count), sd[1].rwsem,
+				   (MAX(1.0, 2 * sd[1].params.channelCount * count / sd[1].dev_sample_rate)) );
+	if (timeout) {
+		pa_perror(3, "Portaudio write error #3");
+		throw SndException("Portaudio write error 3");
+	}
+	sd[1].rb->write(wbuf, sd[1].params.channelCount * count);
 
-		return count;
+	return count;
 }
 
 void SoundPort::flush(unsigned dir)
 {
-		unsigned start, end;
-		if (dir == UINT_MAX) {
-				start = 0;
-				end = 1;
-		}
-		else
-				start = end = dir;
+	unsigned start, end;
+	if (dir == UINT_MAX) {
+		start = 0;
+		end = 1;
+	}
+	else
+		start = end = dir;
 
-		for (unsigned i = start; i <= end; i++) {
-				if (!stream_active(i))
-						continue;
+	for (unsigned i = start; i <= end; i++) {
+		if (!stream_active(i))
+			continue;
 
 		pthread_mutex_lock(sd[i].cmutex);
-				sd[i].state = spa_drain;
+		sd[i].state = spa_drain;
 		if (pthread_cond_timedwait_rel(sd[i].ccond, sd[i].cmutex, 5.0) == -1
 			&& errno == ETIMEDOUT)
 			LOG_ERROR("stream %u wedged", i);
 		pthread_mutex_unlock(sd[i].cmutex);
 		sd[i].state = spa_continue;
-		}
+	}
 }
 
 void SoundPort::src_data_reset(unsigned dir)
@@ -1489,30 +1487,30 @@ void SoundPort::src_data_reset(unsigned dir)
 
 long SoundPort::src_read_cb(void* arg, float** data)
 {
-		struct stream_data* sd = reinterpret_cast<stream_data*>(arg);
+	struct stream_data* sd = reinterpret_cast<stream_data*>(arg);
 
-		// advance read pointer for previous read
-		if (sd->advance) {
-				sd->rb->read_advance(sd->advance);
-				sd->advance = 0;
-		}
-
-		// wait for data
-		bool timeout = false;
-		WAIT_FOR_COND( (sd->rb->read_space() >= (size_t)sd[0].params.channelCount * SCBLOCKSIZE), sd->rwsem,
-					   (MAX(1.0, 2 * sd[0].params.channelCount * SCBLOCKSIZE / sd->dev_sample_rate)) );
-		if (timeout) {
-				*data = 0;
-				return 0;
+	// advance read pointer for previous read
+	if (sd->advance) {
+		sd->rb->read_advance(sd->advance);
+		sd->advance = 0;
 	}
 
-		ringbuffer<float>::vector_type vec[2];
-		sd->rb->get_rv(vec);
+	// wait for data
+	bool timeout = false;
+	WAIT_FOR_COND( (sd->rb->read_space() >= (size_t)sd[0].params.channelCount * SCBLOCKSIZE), sd->rwsem,
+				   (MAX(1.0, 2 * sd[0].params.channelCount * SCBLOCKSIZE / sd->dev_sample_rate)) );
+	if (timeout) {
+		*data = 0;
+		return 0;
+	}
 
-		*data = vec[0].buf;
-		sd->advance = vec[0].len;
+	ringbuffer<float>::vector_type vec[2];
+	sd->rb->get_rv(vec);
 
-		return vec[0].len / sd[0].params.channelCount;
+	*data = vec[0].buf;
+	sd->advance = vec[0].len;
+
+	return vec[0].len / sd[0].params.channelCount;
 }
 
 SoundPort::device_iterator SoundPort::name_to_device(const string& name, unsigned dir)
@@ -1619,23 +1617,23 @@ void SoundPort::init_stream(unsigned dir)
 
 void SoundPort::start_stream(unsigned dir)
 {
-		int err;
+	int err;
 
-		PaStreamParameters* sp[2];
-		sp[dir] = &sd[dir].params;
-		sp[!dir] = NULL;
+	PaStreamParameters* sp[2];
+	sp[dir] = &sd[dir].params;
+	sp[!dir] = NULL;
 
-		err = Pa_OpenStream(&sd[dir].stream, sp[0], sp[1],
-							sd[dir].dev_sample_rate, sd[dir].frames_per_buffer,
-							paNoFlag,
-							stream_process, &sd[dir]);
+	err = Pa_OpenStream(&sd[dir].stream, sp[0], sp[1],
+			sd[dir].dev_sample_rate, sd[dir].frames_per_buffer,
+			paNoFlag,
+			stream_process, &sd[dir]);
 	if (err != paNoError) {
 		pa_perror(err, "Portaudio open stream error");
 		throw SndPortException(err);
 	}
 
-		if ((err = Pa_SetStreamFinishedCallback(sd[dir].stream, stream_stopped)) != paNoError)
-				throw SndPortException(err);
+	if ((err = Pa_SetStreamFinishedCallback(sd[dir].stream, stream_stopped)) != paNoError)
+		throw SndPortException(err);
 
 	if ((err = Pa_StartStream(sd[dir].stream)) != paNoError) {
 		pa_perror(err, "Portaudio stream start stream error");
@@ -1645,73 +1643,74 @@ void SoundPort::start_stream(unsigned dir)
 }
 
 
-int SoundPort::stream_process(const void* in, void* out, unsigned long nframes,
-							 const PaStreamCallbackTimeInfo *time_info,
-							 PaStreamCallbackFlags flags, void* data)
+int SoundPort::stream_process(
+			const void* in, void* out, unsigned long nframes,
+			const PaStreamCallbackTimeInfo *time_info,
+			PaStreamCallbackFlags flags, void* data)
 {
-		struct stream_data* sd = reinterpret_cast<struct stream_data*>(data);
+	struct stream_data* sd = reinterpret_cast<struct stream_data*>(data);
 
 #ifndef NDEBUG
-		struct {
-				PaStreamCallbackFlags f;
-				const char* s;
-		} fa[] = { { paInputUnderflow, "Input underflow" },
-				   { paInputOverflow,  "Input overflow" },
-				   { paOutputUnderflow, "Output underflow" },
-				   { paOutputOverflow, "Output overflow" }
-		};
-		for (size_t i = 0; i < sizeof(fa)/sizeof(*fa); i++)
-				if (flags & fa[i].f)
+	struct {
+		PaStreamCallbackFlags f;
+		const char* s;
+	} fa[] = { { paInputUnderflow, "Input underflow" },
+			   { paInputOverflow,  "Input overflow" },
+			   { paOutputUnderflow, "Output underflow" },
+			   { paOutputOverflow, "Output overflow" }
+			};
+	for (size_t i = 0; i < sizeof(fa)/sizeof(*fa); i++)
+		if (flags & fa[i].f)
 			LOG_DEBUG("%s", fa[i].s);
 #endif
 
-		if (unlikely(sd->state == spa_abort || sd->state == spa_complete)) // finished
-				return sd->state;
+	if (unlikely(sd->state == spa_abort || sd->state == spa_complete)) // finished
+		return sd->state;
 
-		if (in) {
-				switch (sd->state) {
-				case spa_continue: // write into the rb, post rwsem if we wrote anything
-						if (sd->rb->write(reinterpret_cast<const float*>(in), sd->params.channelCount * nframes))
-								sem_post(sd->rwsem);
-						break;
-				case spa_drain: case spa_pause: // signal the cv
-			pthread_mutex_lock(sd->cmutex);
-			pthread_cond_signal(sd->ccond);
-			pthread_mutex_unlock(sd->cmutex);
-				}
+	if (in) {
+		switch (sd->state) {
+			case spa_continue: // write into the rb, post rwsem if we wrote anything
+				if (sd->rb->write(reinterpret_cast<const float*>(in), sd->params.channelCount * nframes))
+					sem_post(sd->rwsem);
+				break;
+			case spa_drain: case spa_pause: // signal the cv
+				pthread_mutex_lock(sd->cmutex);
+				pthread_cond_signal(sd->ccond);
+				pthread_mutex_unlock(sd->cmutex);
 		}
-		else if (out) {
-				float* outf = reinterpret_cast<float*>(out);
-				// if we are paused just pretend that the rb was empty
-				size_t nread = (sd->state == spa_pause) ? 0 : sd->rb->read(outf, sd->params.channelCount * nframes);
-				memset(outf + nread, 0, (sd->params.channelCount * nframes - nread) * sizeof(float)); // fill rest with 0
+	}
+	else if (out) {
+		float* outf = reinterpret_cast<float*>(out);
+		// if we are paused just pretend that the rb was empty
+		size_t nread = (sd->state == spa_pause) ? 0 : sd->rb->read(outf, sd->params.channelCount * nframes);
+		memset(outf + nread, 0, (sd->params.channelCount * nframes - nread) * sizeof(float)); // fill rest with 0
 
-				switch (sd->state) {
-				case spa_continue: // post rwsem if we read anything
-						if (nread > 0)
-								sem_post(sd->rwsem);
-						break;
-				case spa_drain: // signal the cv when we have emptied the buffer
-						if (nread > 0)
-								break;
-						// else fall through
-				case spa_pause:
-			pthread_mutex_lock(sd->cmutex);
-			pthread_cond_signal(sd->ccond);
-			pthread_mutex_unlock(sd->cmutex);
-			break;
-				}
+		switch (sd->state) {
+			case spa_continue: // post rwsem if we read anything
+				if (nread > 0)
+					sem_post(sd->rwsem);
+				break;
+			case spa_drain: // signal the cv when we have emptied the buffer
+				if (nread > 0)
+					break;
+			// else fall through
+			case spa_pause:
+				pthread_mutex_lock(sd->cmutex);
+				pthread_cond_signal(sd->ccond);
+				pthread_mutex_unlock(sd->cmutex);
+				break;
 		}
+	}
 
-		return paContinue;
+	return paContinue;
 }
 
 void SoundPort::stream_stopped(void* data)
 {
-		struct stream_data* sd = reinterpret_cast<struct stream_data*>(data);
+	struct stream_data* sd = reinterpret_cast<struct stream_data*>(data);
 
-		if (sd->rb)
-				sd->rb->reset();
+	if (sd->rb)
+		sd->rb->reset();
 	pthread_mutex_lock(sd->cmutex);
 	pthread_cond_signal(sd->ccond);
 	pthread_mutex_unlock(sd->cmutex);
@@ -1720,20 +1719,20 @@ void SoundPort::stream_stopped(void* data)
 
 bool SoundPort::stream_active(unsigned dir)
 {
-		if (!sd[dir].stream)
-				return false;
+	if (!sd[dir].stream)
+		return false;
 
-		int err;
-		if ((err = Pa_IsStreamActive(sd[dir].stream)) < 0) {
-			pa_perror(err, "Portaudio stream active error");
-			throw SndPortException(err);
-		}
-		return err == 1;
+	int err;
+	if ((err = Pa_IsStreamActive(sd[dir].stream)) < 0) {
+		pa_perror(err, "Portaudio stream active error");
+		throw SndPortException(err);
+	}
+	return err == 1;
 }
 
 bool SoundPort::full_duplex_device(const PaDeviceInfo* dev)
 {
-		return dev->maxInputChannels > 0 && dev->maxOutputChannels > 0;
+	return dev->maxInputChannels > 0 && dev->maxOutputChannels > 0;
 }
 
 bool SoundPort::must_close(int dir)
@@ -1792,24 +1791,24 @@ void SoundPort::probe_supported_rates(const device_iterator& idev)
 
 void SoundPort::pa_perror(int err, const char* str)
 {
-		if (str)
-		LOG_ERROR("%s: %s", str, Pa_GetErrorText(err));
+	if (str)
+	LOG_ERROR("%s: %s", str, Pa_GetErrorText(err));
 
-		if (err == paUnanticipatedHostError) {
-				const PaHostErrorInfo* hosterr = Pa_GetLastHostErrorInfo();
-				PaHostApiIndex i = Pa_HostApiTypeIdToHostApiIndex(hosterr->hostApiType);
+	if (err == paUnanticipatedHostError) {
+		const PaHostErrorInfo* hosterr = Pa_GetLastHostErrorInfo();
+		PaHostApiIndex i = Pa_HostApiTypeIdToHostApiIndex(hosterr->hostApiType);
 
-				if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
+		if (i < 0) { // PA failed without setting its "last host error" info. Sigh...
 			LOG_ERROR("Host API error info not available");
-						if ( ((sd[0].stream && Pa_GetHostApiInfo((*sd[0].idev)->hostApi)->type == paOSS) ||
-				  (sd[1].stream && Pa_GetHostApiInfo((*sd[1].idev)->hostApi)->type == paOSS)) &&
-				 errno )
+			if ( ((sd[0].stream && Pa_GetHostApiInfo((*sd[0].idev)->hostApi)->type == paOSS) ||
+				(sd[1].stream && Pa_GetHostApiInfo((*sd[1].idev)->hostApi)->type == paOSS)) &&
+				errno )
 				LOG_ERROR("Possible OSS error %d: %s", errno, strerror(errno));
-				}
-				else
+		}
+		else
 			LOG_ERROR("%s error %ld: %s", Pa_GetHostApiInfo(i)->name,
 				  hosterr->errorCode, hosterr->errorText);
-		}
+	}
 }
 
 void SoundPort::init_hostapi_ext(void)
