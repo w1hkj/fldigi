@@ -1063,7 +1063,7 @@ int SoundPort::Open(int mode, int freq)
 		mode = O_RDWR;
 	static char pa_open_str[200];
 	snprintf(pa_open_str, sizeof(pa_open_str),
-		"Port Audio open mode = %s, device type = %s\n",
+		"Port Audio open mode = %s, device type = %s",
 		mode == O_WRONLY ? "Write" : mode == O_RDONLY ? "Read" :
 		mode == O_RDWR ? "Read/Write" : "unknown",
 		device_type == 0 ? "paInDevelopment" :
@@ -1452,48 +1452,39 @@ void SoundPort::flush(unsigned dir)
 
 void SoundPort::src_data_reset(unsigned dir)
 {
-		size_t rbsize;
+	size_t rbsize;
 
-		int err;
-		if (dir == 0) {
-				if (rx_src_state)
-						src_delete(rx_src_state);
-				rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
-												sd[0].params.channelCount, &err, &sd[0]);
-				if (!rx_src_state) {
-					pa_perror(err, src_strerror(err));
-					throw SndException(src_strerror(err));
-				}
-				sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
-		}
-		else if (dir == 1) {
-				if (tx_src_state)
-						src_delete(tx_src_state);
-				tx_src_state = src_new(progdefaults.sample_converter, sd[1].params.channelCount, &err);
-				if (!tx_src_state) {
-					pa_perror(err, src_strerror(err));
-					throw SndException(src_strerror(err));
-				}
-				tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
-		}
+	int err;
+	if (dir == 0) {
+		if (rx_src_state)
+			src_delete(rx_src_state);
+			rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
+											sd[0].params.channelCount, &err, &sd[0]);
+			if (!rx_src_state) {
+				pa_perror(err, src_strerror(err));
+				throw SndException(src_strerror(err));
+			}
+			sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
+	}
+	else if (dir == 1) {
+		if (tx_src_state)
+			src_delete(tx_src_state);
+			tx_src_state = src_new(progdefaults.sample_converter, sd[1].params.channelCount, &err);
+			if (!tx_src_state) {
+				pa_perror(err, src_strerror(err));
+				throw SndException(src_strerror(err));
+			}
+			tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+	}
 
-		rbsize = ceil2((unsigned)(2 * sd[dir].params.channelCount * SCBLOCKSIZE *
-								  MAX(req_sample_rate, sd[dir].dev_sample_rate) /
-								  MIN(req_sample_rate, sd[dir].dev_sample_rate)));
-		if (dir == 0) {
-				rbsize = 2 * MAX(rbsize, 4096);
-		LOG_DEBUG("input rbsize=%" PRIuSZ "", rbsize);
-		}
-		else if (dir == 1) {
-				if (req_sample_rate > 8000)
-						rbsize *= 2;
-				rbsize = MAX(rbsize, 2048);
-		LOG_DEBUG("output rbsize=%" PRIuSZ "", rbsize);
-		}
-		if (!sd[dir].rb || sd[dir].rb->length() != rbsize) {
-				delete sd[dir].rb;
-				sd[dir].rb = new ringbuffer<float>(rbsize);
-		}
+	rbsize = 2 * MAX(ceil2(
+					(unsigned)(2 * sd[dir].params.channelCount * SCBLOCKSIZE *
+					MAX(req_sample_rate, sd[dir].dev_sample_rate) /
+					MIN(req_sample_rate, sd[dir].dev_sample_rate))),
+					8192);
+	LOG_INFO("rbsize = %" PRIuSZ "", rbsize);
+	if (sd[dir].rb) delete sd[dir].rb;
+	sd[dir].rb = new ringbuffer<float>(rbsize);
 }
 
 long SoundPort::src_read_cb(void* arg, float** data)
