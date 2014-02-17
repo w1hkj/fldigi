@@ -447,7 +447,11 @@ void modem::ModulateXmtr(double *buffer, int len)
 	if (withnoise && progdefaults.noise) add_noise(buffer, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
-	for (int i = 0; i < len; i++) buffer[i] *= mult;
+	for (int i = 0; i < len; i++) {
+		if (buffer[i] < -1.0) buffer[i] = -1.0;
+		if (buffer[i] > 1.0) buffer[i] = 1.0;
+		buffer[i] *= mult;
+	}
 
 	try {
 		unsigned n = 4;
@@ -480,8 +484,13 @@ void modem::ModulateStereo(double *left, double *right, int len)
 	if (withnoise && progdefaults.noise) add_noise(left, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
-	for (int i = 0; i < len; i++) left[i] *= mult;
-
+	for (int i = 0; i < len; i++) {
+		if (right[i] < -1.0) right[i] = -1.0;
+		if (right[i] > 1.0) right[i] = 1.0;
+		if (left[i] < -1.0) left[i] = -1.0;
+		if (left[i] > 1.0) left[i] = 1.0;
+		left[i] *= mult;
+	}
 	try {
 		unsigned n = 4;
 		while (scard->Write_stereo(left, right, len) == 0 && --n);
