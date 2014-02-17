@@ -4,6 +4,7 @@
 #include "lgbook.h"
 #include <config.h>
 #include <FL/Fl_Pixmap.H>
+#include "flmisc.h"
 #include "logsupport.h"
 #include "pixmaps.h"
 

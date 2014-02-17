@@ -11,6 +11,9 @@ decl {\#include <config.h>} {private local
 decl {\#include <FL/Fl_Pixmap.H>} {private local
 } 
 
+decl {\#include "flmisc.h"} {selected private local
+} 
+
 decl {\#include "logsupport.h"} {private local
 } 
 
@@ -312,7 +315,7 @@ btnSelectNotes->value(0);}
   }
   Fl_Window dlgLogbook {
     label Logbook open
-    xywh {522 70 590 510} type Double resizable visible
+    xywh {885 64 590 510} type Double resizable visible
   } {
     Fl_Input inpDate_log {
       label {Date On}
@@ -510,7 +513,7 @@ btnSelectNotes->value(0);}
       tooltip {Find next} xywh {547 284 24 22} color 50 selection_color 48 align 16
       code0 {bSearchNext->image(new Fl_Pixmap(right_arrow_icon));}
     }
-    Fl_Group wBrowser {open selected
+    Fl_Group wBrowser {open
       xywh {2 315 586 195} box DOWN_FRAME color 7 selection_color 15 resizable
       code0 {\#include "table.h"}
       class Table

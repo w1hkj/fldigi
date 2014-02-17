@@ -53,6 +53,7 @@
 #include "icons.h"
 #include "gettext.h"
 #include "qrunner.h"
+#include "flmisc.h"
 
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
