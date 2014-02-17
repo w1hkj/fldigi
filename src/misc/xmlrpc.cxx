@@ -884,7 +884,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		int bw, v = mnuOlivia_Bandwidth->value();
+		int bw, v = i_listbox_olivia_bandwidth->index() + 1;
 
 		if (v == 0)
 			bw = 125;
@@ -932,7 +932,7 @@ public:
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
-		*retval = xmlrpc_c::value_int(1 << (mnuOlivia_Tones->value() + 1));
+		*retval = xmlrpc_c::value_int(1 << (i_listbox_olivia_tones->index() + 1));
 	}
 };
 

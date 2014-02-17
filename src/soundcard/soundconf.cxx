@@ -181,11 +181,11 @@ static void init_portaudio(void)
 		}
 		// add to menu
 		if (ilist->dev->maxInputChannels > 0)
-			menuPortInDev->add(menu_item.c_str(), 0, NULL,
-					   reinterpret_cast<void *>(ilist->idx), 0);
+			menuPortInDev->add(menu_item.c_str(),
+					   reinterpret_cast<void *>(ilist->idx));
 		if (ilist->dev->maxOutputChannels > 0)
-			menuPortOutDev->add(menu_item.c_str(), 0, NULL,
-					    reinterpret_cast<void *>(ilist->idx), 0);
+			menuPortOutDev->add(menu_item.c_str(),
+					    reinterpret_cast<void *>(ilist->idx));
 	}
 
 	if (progdefaults.PortInDevice.length() == 0) {
@@ -213,51 +213,30 @@ static void init_portaudio(void)
 	}
 
 	// select the correct menu items
-	const Fl_Menu_Item* menu;
-	int size;
-	int idx;
 
-	idx = -1;
-	menu = menuPortInDev->menu();
-	size = menuPortInDev->size();
-	for (int i = 0; i < size - 1; i++, menu++) {
-		if (menu->label() && progdefaults.PortInDevice == menu->label()) {
-			idx = i; // near match
-			if (reinterpret_cast<intptr_t>(menu->user_data()) == progdefaults.PortInIndex ||
-			    progdefaults.PortInIndex == -1) // exact match, or index was never saved
-				break;
-		}
-	}
-	if (idx >= 0) {
-		menuPortInDev->value(idx);
-		menuPortInDev->set_changed();
+	int size = menuPortInDev->lsize();
+	for (int i = 1; i <= size; i++) {
+		menuPortInDev->index(i);
+		if (progdefaults.PortInDevice == menuPortInDev->value())
+			break;
 	}
 
-	idx = -1;
-	menu = menuPortOutDev->menu();
-	size = menuPortOutDev->size();
-	for (int i = 0; i < size - 1; i++, menu++) {
-		if (menu->label() && progdefaults.PortOutDevice == menu->label()) {
-			idx = i;
-			if (reinterpret_cast<intptr_t>(menu->user_data()) == progdefaults.PortOutIndex ||
-			    progdefaults.PortOutIndex == -1)
-				break;
-		}
-	}
-	if (idx >= 0) {
-		menuPortOutDev->value(idx);
-		menuPortOutDev->set_changed();
+	size = menuPortOutDev->lsize();
+	for (int i = 1; i <= size; i++) {
+		menuPortOutDev->index(i);
+		if (progdefaults.PortOutDevice == menuPortOutDev->value())
+			break;
 	}
 }
 #else
 static void init_portaudio(void) { }
 #endif // USE_PORTAUDIO
 
-static void build_srate_menu(Fl_Menu_* menu, const double* rates, size_t length, double defrate = -1.0)
+static void build_srate_listbox(Fl_ListBox* lbox, const double* rates, size_t length, double defrate = -1.0)
 {
-	menu->clear();
-	menu->add("Auto");
-	menu->add("Native", 0, 0, 0, FL_MENU_DIVIDER);
+	lbox->clear();
+	lbox->add("Auto");
+	lbox->add("Native");
 
 	char s[16];
 	for (size_t i = 0; i < length; i++) {
@@ -265,7 +244,7 @@ static void build_srate_menu(Fl_Menu_* menu, const double* rates, size_t length,
 			snprintf(s, sizeof(s), "%.0f", rates[i]);
 		else
 			snprintf(s, sizeof(s), "%.0f (native)", rates[i]);
-		menu->add(s);
+		lbox->add(s);
 	}
 }
 
@@ -280,9 +259,9 @@ int sample_rate_converters[FLDIGI_NUM_SRC] = {
 
 static void sound_init_options(void)
 {
-	build_srate_menu(menuInSampleRate, std_sample_rates,
+	build_srate_listbox(menuInSampleRate, std_sample_rates,
 			 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
-	build_srate_menu(menuOutSampleRate, std_sample_rates,
+	build_srate_listbox(menuOutSampleRate, std_sample_rates,
 			 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
 
 	for (int i = 0; i < FLDIGI_NUM_SRC; i++)
@@ -303,7 +282,7 @@ static void sound_init_options(void)
 #endif
 	for (int i = 0; i < FLDIGI_NUM_SRC; i++) {
 		if (sample_rate_converters[i] == progdefaults.sample_converter) {
-			menuSampleConverter->value(i);
+			menuSampleConverter->index(i);
 			menuSampleConverter->tooltip(src_get_description(progdefaults.sample_converter));
 			break;
 		}
@@ -328,9 +307,13 @@ static void sound_init_options(void)
 	else if (progdefaults.in_sample_rate > SAMPLE_RATE_OTHER)
 		snprintf(sr, sizeof(sr), "%d", progdefaults.in_sample_rate);
 	if (progdefaults.in_sample_rate <= SAMPLE_RATE_NATIVE)
-		menuInSampleRate->value(progdefaults.in_sample_rate);
+		menuInSampleRate->index(progdefaults.in_sample_rate);
 	else
-		menuInSampleRate->value(menuInSampleRate->find_item(sr));
+		for (int i = 1; i <= menuInSampleRate->lsize(); i++) {
+			menuInSampleRate->index(i);
+			if (strstr(menuInSampleRate->value(), sr))
+				break;
+		}
 
 	if (progdefaults.out_sample_rate == SAMPLE_RATE_UNSET &&
 		(progdefaults.out_sample_rate = progdefaults.sample_rate) == SAMPLE_RATE_UNSET)
@@ -338,9 +321,13 @@ static void sound_init_options(void)
 	else if (progdefaults.out_sample_rate > SAMPLE_RATE_OTHER)
 		snprintf(sr, sizeof(sr), "%d", progdefaults.out_sample_rate);
 	if (progdefaults.out_sample_rate <= SAMPLE_RATE_NATIVE)
-		menuOutSampleRate->value(progdefaults.out_sample_rate);
+		menuOutSampleRate->index(progdefaults.out_sample_rate);
 	else
-		menuOutSampleRate->value(menuOutSampleRate->find_item(sr));
+		for (int i = 1; i <= menuOutSampleRate->lsize(); i++) {
+			menuOutSampleRate->index(i);
+			if (strstr(menuOutSampleRate->value(), sr))
+				break;
+		}
 
 	cntRxRateCorr->value(progdefaults.RX_corr);
 	cntTxRateCorr->value(progdefaults.TX_corr);
@@ -465,41 +452,40 @@ void sound_update(unsigned idx)
 	case SND_IDX_PORT:
 		menuPortInDev->activate();
 		menuPortOutDev->activate();
-		if (menuPortInDev->text())
-			scDevice[0] = menuPortInDev->text();
-		if (menuPortOutDev->text())
-			scDevice[1] = menuPortOutDev->text();
+		if (menuPortInDev->value())
+			scDevice[0] = menuPortInDev->value();
+		if (menuPortOutDev->value())
+			scDevice[1] = menuPortOutDev->value();
 
 		{
-			Fl_Menu_* menus[2] = { menuInSampleRate, menuOutSampleRate };
+			Fl_ListBox* listbox[2] = { menuInSampleRate, menuOutSampleRate };
 			for (size_t i = 0; i < 2; i++) {
-				char* label = strdup(menus[i]->text());
+				char* label = strdup(listbox[i]->value());
 				const vector<double>& srates = SoundPort::get_supported_rates(scDevice[i], i);
 
 				switch (srates.size()) {
 				case 0: // startup; no devices initialised yet
-					build_srate_menu(menus[i], std_sample_rates,
+					build_srate_listbox(listbox[i], std_sample_rates,
 							 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1);
 					break;
 				case 1: // default sample rate only, build menu with all std rates
-					build_srate_menu(menus[i], std_sample_rates,
+					build_srate_listbox(listbox[i], std_sample_rates,
 							 sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1, srates[0]);
 
 					break;
 				default: // first element is default sample rate, build menu with rest
-					build_srate_menu(menus[i], &srates[0] + 1, srates.size() - 1, srates[0]);
+					build_srate_listbox(listbox[i], &srates[0] + 1, srates.size() - 1, srates[0]);
 					break;
 				}
 
-				for (const Fl_Menu_Item* item = menus[i]->menu(); item->text; item++) {
-					if (strstr(item->text, label)) {
-						menus[i]->value(item);
+				for (int j = 1; j < listbox[i]->lsize(); j++) {
+					listbox[i]->index(j);
+					if (strstr(listbox[i]->value(), label))
 						break;
-					}
 				}
 				free(label);
 
-				menus[i]->activate();
+				listbox[i]->activate();
 			}
 		}
 		break;

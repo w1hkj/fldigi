@@ -524,11 +524,11 @@ int main(int argc, char ** argv)
 	FSEL::create();
 
 #if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR < 3
-		CHARSETstatus->hide();
+		listbox_charset_status->hide();
 #else
-		CHARSETstatus->show();
+		listbox_charset_status->show();
 #endif
-	populate_charset_menu();
+	populate_charset_listbox();
 	set_default_charset();
 	setTabColors();
 

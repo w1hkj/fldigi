@@ -385,19 +385,16 @@ bool configuration::readDefaultsXML()
 void configuration::loadDefaults()
 {
 // RTTY
-	if (rtty_shift > 0) {
-		selShift->value(rtty_shift);
+	selShift->index(rtty_shift);
+	if (progdefaults.rtty_shift == selShift->lsize() - 1)
+		selCustomShift->activate();
+	else
 		selCustomShift->deactivate();
-	}
-	else { // Custom shift
-		selShift->value(selShift->size() - 2);
-		selShift->activate();
-	}
-	selBaud->value(rtty_baud);
-	selBits->value(rtty_bits);
-	selParity->value(rtty_parity);
+	selBaud->index(rtty_baud);
+	selBits->index(rtty_bits);
+	selParity->index(rtty_parity);
 //	chkMsbFirst->value(rtty_msbfirst);
-	selStopBits->value(rtty_stop);
+	selStopBits->index(rtty_stop);
 	btnCRCRLF->value(rtty_crcrlf);
 	btnAUTOCRLF->value(rtty_autocrlf);
 	cntrAUTOCRLF->value(rtty_autocount);
@@ -405,19 +402,19 @@ void configuration::loadDefaults()
 	chkUOSrx->value(UOSrx);
 	chkUOStx->value(UOStx);
 
-	mnuRTTYAFCSpeed->value(rtty_afcspeed);
+	i_listbox_rtty_afc_speed->index(rtty_afcspeed);
 	btnPreferXhairScope->value(PreferXhairScope);
 
 // OLIVIA
-	mnuOlivia_Tones->value(oliviatones);
-	mnuOlivia_Bandwidth->value(oliviabw);
+	i_listbox_olivia_tones->index(oliviatones);
+	i_listbox_olivia_bandwidth->index(oliviabw);
 	cntOlivia_smargin->value(oliviasmargin);
 	cntOlivia_sinteg->value(oliviasinteg);
 	btnOlivia_8bit->value(olivia8bit);
 
 // CONTESTIA
-	mnuContestia_Tones->value(contestiatones);
-	mnuContestia_Bandwidth->value(contestiabw);
+	i_listbox_contestia_tones->index(contestiatones);
+	i_listbox_contestia_bandwidth->index(contestiabw);
 	cntContestia_smargin->value(contestiasmargin);
 	cntContestia_sinteg->value(contestiasinteg);
 	btnContestia_8bit->value(contestia8bit);
@@ -448,7 +445,7 @@ void configuration::saveDefaults()
 	FreqControlFontName = Fl::get_font_name(FreqControlFontnbr);
 
 #if ENABLE_NLS && defined(__WOE32__)
-	set_ui_lang(mnuLang->value());
+	set_ui_lang(listbox_language->index());
 #endif
 
 	writeDefaultsXML();
@@ -508,13 +505,13 @@ int configuration::setDefaults()
 	btnUseUHrouterPTT->value(progdefaults.UseUHrouterPTT);
 
 #if USE_HAMLIB
-	mnuSideband->add(_("Rig mode"));
-	mnuSideband->add(_("Always LSB"));
-	mnuSideband->add(_("Always USB"));
-	mnuSideband->value(HamlibSideband);
+	listbox_sideband->add(_("Rig mode"));
+	listbox_sideband->add(_("Always LSB"));
+	listbox_sideband->add(_("Always USB"));
+	listbox_sideband->index(HamlibSideband);
     btnHamlibCMDptt->value(HamlibCMDptt);
     inpRIGdev->show();
-	mnuBaudRate->show();
+	listbox_baudrate->show();
 	cboHamlibRig->show();
 	cboHamlibRig->value(HamRigName.c_str());
 #else
@@ -545,10 +542,10 @@ int configuration::setDefaults()
 	if (!XmlRigFilename.empty()) readRigXML();
 
 	inpRIGdev->value(HamRigDevice.c_str());
-	mnuBaudRate->value(HamRigBaudrate);
+	listbox_baudrate->index(HamRigBaudrate);
 
 	inpXmlRigDevice->value(XmlRigDevice.c_str());
-	mnuXmlRigBaudrate->value(XmlRigBaudrate);
+	listbox_xml_rig_baudrate->index(XmlRigBaudrate);
 
 	valCWsweetspot->value(CWsweetspot);
 	valRTTYsweetspot->value(RTTYsweetspot);
@@ -563,8 +560,8 @@ int configuration::setDefaults()
 
 	for (size_t i = 0;
 	     i < sizeof(waterfall::wf_wheel_action)/sizeof(*waterfall::wf_wheel_action); i++)
-		mnuWaterfallWheelAction->add(waterfall::wf_wheel_action[i]);
-	mnuWaterfallWheelAction->value(WaterfallWheelAction);
+		listboxWaterfallWheelAction->add(waterfall::wf_wheel_action[i]);
+	listboxWaterfallWheelAction->index(WaterfallWheelAction);
 
 	btnStartAtSweetSpot->value(StartAtSweetSpot);
 	btnPSKmailSweetSpot->value(PSKmailSweetSpot);
@@ -591,7 +588,7 @@ int configuration::setDefaults()
 	cntCWupperlimit->minimum(CWlowerlimit + 20);
 	cntCWrisetime->value(CWrisetime);
 	cntCWdash2dot->value(CWdash2dot);
-	mnuQSKshape->value(QSKshape);
+	i_listboxQSKshape->index(QSKshape);
 	sldrCWxmtWPM->minimum(CWlowerlimit);
 	sldrCWxmtWPM->maximum(CWupperlimit);
 	btnQSK->value(QSK);
@@ -599,7 +596,7 @@ int configuration::setDefaults()
 	cntPostTiming->value(CWpost);
 	btnCWID->value(CWid);
 			
-	selHellFont->value(feldfontnbr);
+	listboxHellFont->index(feldfontnbr);
 	btnFeldHellIdle->value(HellXmtIdle);
 			
 	btnTxRSID->value(TransmitRSid);
@@ -682,12 +679,12 @@ int configuration::setDefaults()
 	for (lang_def_t* p = ui_langs; p->lang; p++) {
 		ss.str("");
 		ss << p->native_name << " (" << p->percent_done << "%)";
-		mnuLang->add(ss.str().c_str());
+		listbox_language->add(ss.str().c_str());
 	}
-	mnuLang->value(get_ui_lang());
-	mnuLang->show();
+	listbox_language->index(get_ui_lang());
+	listbox_language->show();
 #else
-	mnuLang->hide();
+	listbox_language->hide();
 #endif
 
 	return 1;
@@ -748,11 +745,11 @@ void configuration::initInterface()
 	else
 		HamRigModel = hamlib_get_rig_model(cboHamlibRig->index());
 	HamRigDevice = inpRIGdev->value();
-	HamRigBaudrate = mnuBaudRate->value();
+	HamRigBaudrate = listbox_baudrate->index();
 #else
 	cboHamlibRig->hide();
 	inpRIGdev->hide();
-	mnuBaudRate->hide();
+	listbox_baudrate->hide();
 #endif
 
 	bool riginitOK = false;

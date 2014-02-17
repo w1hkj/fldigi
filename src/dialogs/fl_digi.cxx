@@ -639,8 +639,8 @@ void set_olivia_default_integ()
 
 void set_olivia_tab_widgets()
 {
-	mnuOlivia_Bandwidth->value(progdefaults.oliviabw);
-	mnuOlivia_Tones->value(progdefaults.oliviatones);
+	i_listbox_olivia_bandwidth->index(progdefaults.oliviabw+1);
+	i_listbox_olivia_tones->index(progdefaults.oliviatones+1);
 	set_olivia_default_integ();
 }
 
@@ -674,8 +674,8 @@ void set_contestia_default_integ()
 
 void set_contestia_tab_widgets()
 {
-	mnuContestia_Bandwidth->value(progdefaults.contestiabw);
-	mnuContestia_Tones->value(progdefaults.contestiatones);
+	i_listbox_contestia_bandwidth->index(progdefaults.contestiabw+1);
+	i_listbox_contestia_tones->index(progdefaults.contestiatones+1);
 	set_contestia_default_integ();
 }
 
@@ -774,12 +774,12 @@ void cb_contestiaCustom(Fl_Widget *w, void *arg)
 
 void set_rtty_tab_widgets()
 {
-	selShift->value(progdefaults.rtty_shift);
+	selShift->index(progdefaults.rtty_shift+1);
 	selCustomShift->deactivate();
-	selBits->value(progdefaults.rtty_bits);
-	selBaud->value(progdefaults.rtty_baud);
-	selParity->value(progdefaults.rtty_parity);
-	selStopBits->value(progdefaults.rtty_stop);
+	selBits->index(progdefaults.rtty_bits+1);
+	selBaud->index(progdefaults.rtty_baud+1);
+	selParity->index(progdefaults.rtty_parity+1);
+	selStopBits->index(progdefaults.rtty_stop+1);
 }
 
 void cb_rtty45(Fl_Widget *w, void *arg)
@@ -1345,9 +1345,8 @@ void cb_init_mode(Fl_Widget *, void *mode)
 
 // character set selection menu
 
-void cb_charset_menu(Fl_Widget *, void *charset)
+void set_charset_listbox(int rxtx_charset)
 {
-	rxtx_charset = reinterpret_cast<intptr_t>(charset);
 	int tiniconv_id = charset_list[rxtx_charset].tiniconv_id;
 
 	// order all converters to switch to the new encoding
@@ -1361,16 +1360,22 @@ void cb_charset_menu(Fl_Widget *, void *charset)
 		brwsViewer->set_input_encoding(tiniconv_id);
 
 	// update the button
-	CHARSETstatus->label(charset_list[rxtx_charset].name);
 	progdefaults.charset_name = charset_list[rxtx_charset].name;
+	listbox_charset_status->value(progdefaults.charset_name.c_str());
 	restoreFocus();
 }
 
-void populate_charset_menu(void)
+void cb_listbox_charset(Fl_Widget *w, void *)
+{
+	Fl_ListBox * lbox = (Fl_ListBox *)w;
+	set_charset_listbox(lbox->index());
+}
+
+void populate_charset_listbox(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++)
-		CHARSETstatus->add(charset_list[i].name, 0, cb_charset_menu, 
-		reinterpret_cast<void *>(charset_list[i].tiniconv_id));
+		listbox_charset_status->add( charset_list[i].name );
+	listbox_charset_status->value(progdefaults.charset_name.c_str());
 }
 
 // find the position of the default charset in charset_list[] and trigger the callback
@@ -1378,8 +1383,7 @@ void set_default_charset(void)
 {
 	for (unsigned int i = 0; i < number_of_charsets; i++) {
 		if (strcmp(charset_list[i].name, progdefaults.charset_name.c_str()) == 0) {
-			cb_charset_menu(0, 
-			reinterpret_cast<void *>(charset_list[i].tiniconv_id));
+			set_charset_listbox(i);
 			return;
 		}
 	}
@@ -6973,8 +6977,8 @@ void set_olivia_bw(int bw)
 	else
 		i = 4;
 	bool changed = progdefaults.changed;
-	mnuOlivia_Bandwidth->value(i);
-	mnuOlivia_Bandwidth->do_callback();
+	i_listbox_olivia_bandwidth->index(i+1);
+	i_listbox_olivia_bandwidth->do_callback();
 	progdefaults.changed = changed;
 }
 
@@ -6984,8 +6988,8 @@ void set_olivia_tones(int tones)
 	while (tones >>= 1)
 		i++;
 	bool changed = progdefaults.changed;
-	mnuOlivia_Tones->value(i - 1);
-	mnuOlivia_Tones->do_callback();
+	i_listbox_olivia_tones->index(i);// - 1);
+	i_listbox_olivia_tones->do_callback();
 	progdefaults.changed = changed;
 }
 
@@ -7004,8 +7008,8 @@ void set_contestia_bw(int bw)
 	else
 		i = 4;
 	bool changed = progdefaults.changed;
-	mnuContestia_Bandwidth->value(i);
-	mnuContestia_Bandwidth->do_callback();
+	i_listbox_contestia_bandwidth->index(i+1);
+	i_listbox_contestia_bandwidth->do_callback();
 	progdefaults.changed = changed;
 }
 
@@ -7015,8 +7019,8 @@ void set_contestia_tones(int tones)
 	while (tones >>= 1)
 		i++;
 	bool changed = progdefaults.changed;
-	mnuContestia_Tones->value(i - 1);
-	mnuContestia_Tones->do_callback();
+	i_listbox_contestia_tones->index(i);// - 1);
+	i_listbox_contestia_tones->do_callback();
 	progdefaults.changed = changed;
 }
 
@@ -7032,7 +7036,7 @@ void set_rtty_shift(int shift)
 	for (i = 0; i < sizeof(shifts)/sizeof(*shifts); i++)
 		if (shifts[i] == shift)
 			break;
-	selShift->value(i);
+	selShift->index(i+1);
 	selShift->do_callback();
 	if (i == sizeof(shifts)/sizeof(*shifts)) {
 		selCustomShift->value(shift);
@@ -7049,7 +7053,7 @@ void set_rtty_baud(float baud)
 	};
 	for (size_t i = 0; i < sizeof(bauds)/sizeof(*bauds); i++) {
 		if (bauds[i] == baud) {
-			selBaud->value(i);
+			selBaud->index(i+1);
 			selBaud->do_callback();
 			break;
 		}
@@ -7062,7 +7066,7 @@ void set_rtty_bits(int bits)
 	static const int bits_[] = { 5, 7, 8 };
 	for (size_t i = 0; i < sizeof(bits_)/sizeof(*bits_); i++) {
 		if (bits_[i] == bits) {
-			selBits->value(i);
+			selBits->index(i+1);
 			selBits->do_callback();
 			break;
 		}
