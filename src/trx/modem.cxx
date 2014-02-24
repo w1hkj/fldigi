@@ -483,7 +483,7 @@ void modem::ModulateStereo(double *left, double *right, int len)
 
 	if (withnoise && progdefaults.noise) add_noise(left, len);
 
-	double mult = pow(10, progdefaults.txlevel / 20.0);
+	double mult = 0.98 * pow(10, progdefaults.txlevel / 20.0);
 	for (int i = 0; i < len; i++) {
 		if (right[i] < -1.0) right[i] = -1.0;
 		if (right[i] > 1.0) right[i] = 1.0;
