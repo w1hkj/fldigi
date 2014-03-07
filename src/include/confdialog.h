@@ -398,6 +398,7 @@ extern Fl_Check_Button *chk_restore_tio;
 #include "rigio.h"
 extern Fl_Button *btnRevertRIGCAT;
 extern Fl_Check_Button *chkRigCatVSP;
+extern Fl_Value_Input2 *cntRigCatInitDelay;
 extern Fl_Group *tabHamlib;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_Group *grpHamlib;

@@ -3372,6 +3372,14 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();
 }
 
+Fl_Value_Input2 *cntRigCatInitDelay=(Fl_Value_Input2 *)0;
+
+static void cb_cntRigCatInitDelay(Fl_Value_Input2*, void*) {
+  btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+btnRevertRIGCAT->activate();
+}
+
 Fl_Group *tabHamlib=(Fl_Group *)0;
 
 Fl_Check_Button *chkUSEHAMLIB=(Fl_Check_Button *)0;
@@ -4716,7 +4724,7 @@ progdefaults.changed = true;
 Fl_Input2 *txt_auto_flnet_pathname=(Fl_Input2 *)0;
 
 static void cb_txt_auto_flnet_pathname(Fl_Input2* o, void*) {
-  progdefaults.flmsg_pathname = o->value();
+  progdefaults.flnet_pathname = o->value();
 progdefaults.changed = true;
 }
 
@@ -8076,6 +8084,7 @@ le Earth)"));
         { tabsRig = new Fl_Tabs(0, 23, 540, 345);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("Hardware PTT"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(26, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(45, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -8173,7 +8182,6 @@ le Earth)"));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 48, 540, 320, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(215, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -8223,7 +8231,7 @@ le Earth)"));
                 o->value(progdefaults.RigCatRetries);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntRigCatRetries
-              { Fl_Value_Input2* o = cntRigCatTimeout = new Fl_Value_Input2(168, 150, 60, 22, _("Retry interval (ms)"));
+              { Fl_Value_Input2* o = cntRigCatTimeout = new Fl_Value_Input2(180, 150, 60, 22, _("Retry interval (ms)"));
                 cntRigCatTimeout->tooltip(_("Time between retires in msec"));
                 cntRigCatTimeout->box(FL_DOWN_BOX);
                 cntRigCatTimeout->color(FL_BACKGROUND2_COLOR);
@@ -8241,6 +8249,7 @@ le Earth)"));
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntRigCatTimeout
               { Fl_Value_Input2* o = cntRigCatWait = new Fl_Value_Input2(50, 190, 60, 22, _("Write delay (ms)"));
+                cntRigCatWait->tooltip(_("Wait for response to subsequent command"));
                 cntRigCatWait->box(FL_DOWN_BOX);
                 cntRigCatWait->color(FL_BACKGROUND2_COLOR);
                 cntRigCatWait->selection_color(FL_SELECTION_COLOR);
@@ -8356,6 +8365,23 @@ le Earth)"));
                 chkRigCatVSP->callback((Fl_Callback*)cb_chkRigCatVSP);
                 o->value(progdefaults.RigCatVSP);
               } // Fl_Check_Button* chkRigCatVSP
+              { Fl_Value_Input2* o = cntRigCatInitDelay = new Fl_Value_Input2(180, 190, 75, 22, _("Init delay (ms)"));
+                cntRigCatInitDelay->tooltip(_("Wait for response to first CAT command"));
+                cntRigCatInitDelay->box(FL_DOWN_BOX);
+                cntRigCatInitDelay->color(FL_BACKGROUND2_COLOR);
+                cntRigCatInitDelay->selection_color(FL_SELECTION_COLOR);
+                cntRigCatInitDelay->labeltype(FL_NORMAL_LABEL);
+                cntRigCatInitDelay->labelfont(0);
+                cntRigCatInitDelay->labelsize(14);
+                cntRigCatInitDelay->labelcolor(FL_FOREGROUND_COLOR);
+                cntRigCatInitDelay->maximum(10000);
+                cntRigCatInitDelay->step(1);
+                cntRigCatInitDelay->callback((Fl_Callback*)cb_cntRigCatInitDelay);
+                cntRigCatInitDelay->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                cntRigCatInitDelay->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.RigCatInitDelay);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Value_Input2* cntRigCatInitDelay
               grpRigCAT->end();
             } // Fl_Group* grpRigCAT
             o->end();

@@ -1297,7 +1297,7 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 
 	LOG_INFO("cat %s", hexstr(buff).c_str());
 
-	sendCommand(buff, retnbr);
+	sendCommand(buff, retnbr, progdefaults.RigCatWait);
 
 	s.replace(i, endbracket - i + 1, "");
 }

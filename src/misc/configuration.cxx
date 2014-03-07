@@ -909,6 +909,7 @@ void configuration::testCommPorts()
 			if ( !(stat(ttyname, &st) == 0 && S_ISCHR(st.st_mode)) )
 				continue;
 #  else // __WOE32__
+			LOG_DEBUG("Testing serial port %s", ttyname);
 			if (!open_serial(ttyname))
 				continue;
 #    ifdef __CYGWIN__

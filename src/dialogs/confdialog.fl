@@ -3861,7 +3861,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 48 540 320}
+            xywh {0 48 540 320} hide
           } {
             Fl_Group {} {
               xywh {26 57 490 38} box ENGRAVED_FRAME
@@ -4000,7 +4000,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 48 540 320} hide
+            tooltip {Rig Control using xml spec file} xywh {0 48 540 320}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -4057,7 +4057,7 @@ btnRevertRIGCAT->activate();}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                tooltip {Time between retires in msec} xywh {168 150 60 22} align 5 maximum 10000 step 1
+                tooltip {Time between retires in msec} xywh {180 150 60 22} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.RigCatTimeout);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
@@ -4067,7 +4067,7 @@ btnRevertRIGCAT->activate();}
                 callback {btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
-                xywh {50 190 60 22} align 5 maximum 10000 step 1
+                tooltip {Wait for response to subsequent command} xywh {50 190 60 22} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.RigCatWait);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
@@ -4195,6 +4195,16 @@ btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();}
                 tooltip {Virtual Serial Port Emulator - suppress WARNINGS} xywh {276 300 100 25} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RigCatVSP);}
+              }
+              Fl_Value_Input cntRigCatInitDelay {
+                label {Init delay (ms)}
+                callback {btnInitRIGCAT->labelcolor(FL_RED);
+btnInitRIGCAT->redraw_label();
+btnRevertRIGCAT->activate();}
+                tooltip {Wait for response to first CAT command} xywh {180 190 75 22} align 5 maximum 10000 step 1
+                code0 {o->value(progdefaults.RigCatInitDelay);}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Input2
               }
             }
           }
@@ -5918,7 +5928,7 @@ progdefaults.changed = true;}
           }
           Fl_Input txt_auto_flnet_pathname {
             label {flnet:}
-            callback {progdefaults.flmsg_pathname = o->value();
+            callback {progdefaults.flnet_pathname = o->value();
 progdefaults.changed = true;}
             tooltip {Enter full path-filename for external program
 Or simple name of program} xywh {63 147 310 24} when 1
