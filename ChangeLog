@@ -1,3 +1,21 @@
+
+
+=Version 3.21.79=
+
+2014-03-07  David Freese  <w1hkj@w1hkj.com>
+
+	2d189bd: RigCAT initialize
+	b391b02: Modem cleanup
+	720f88d: Missing build script
+	ea4042e: Choice-->ListBox
+	632d5ae: combobox-listbox
+	3204698: FreeBSD One More Time
+	01dffcb: RTTY normalize
+	89bb26d: Sound.cxx cleanup
+	4d30c67: Portaudio ring buffer
+	0cff262: Headers update
+	4e55345: Portaudio error reporting
+
 2014-01-28  Kamal Mostafa  <kamal@whence.com>
 
 	58aeb6a: Avoid nitems fltk kfreebsd collision
