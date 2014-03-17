@@ -474,10 +474,10 @@ void sound_update(unsigned idx)
 	case SND_IDX_PORT:
 		menuPortInDev->activate();
 		menuPortOutDev->activate();
-		if (menuPortInDev->value())
-			scDevice[0] = menuPortInDev->value();
-		if (menuPortOutDev->value())
-			scDevice[1] = menuPortOutDev->value();
+		if (menuPortInDev->text())
+			scDevice[0] = menuPortInDev->text();
+		if (menuPortOutDev->text())
+			scDevice[1] = menuPortOutDev->text();
 
 		{
 			Fl_ListBox* listbox[2] = { menuInSampleRate, menuOutSampleRate };
