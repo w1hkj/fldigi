@@ -19,7 +19,7 @@
 // ----------------------------------------------------------------------------
 
 #ifndef SUPPORT_H
-#define SUPPORT_h
+#define SUPPORT_H
 
 #include <string>
 

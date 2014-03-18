@@ -1386,7 +1386,9 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 	}
 
 	if (contestnbr == BARTG_RTTY && exch_out.length() < 11) {
-		exch_out.append(rec->getField(TIME_OFF)).append(" ");
+		string toff = rec->getField(TIME_OFF);
+		toff = toff.substr(0,4).append(" ");
+		exch_out.append(toff);
 	}
 
 	if (exch_out.length() > 14) exch_out = exch_out.substr(0,14);
