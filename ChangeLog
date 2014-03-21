@@ -1,8 +1,19 @@
 
 
-=Version 3.21.79=
+=Version 3.21.80=
 
-2014-03-07  David Freese  <w1hkj@w1hkj.com>
+2014-03-19  David Freese  <w1hkj@w1hkj.com>
+
+	d3aa1cc: FreeBSD nitems
+	ca39b53: Cabrillo time off
+	819a3ee: Change Fl_ListBox
+	6baa7d1: Restore Fl_Choice
+	cee5d0e: Olivia select fix
+	0a7e37c: ComboBox
+	36da549: fluid update
+
+
+=Version 3.21.79=
 
 	2d189bd: RigCAT initialize
 	b391b02: Modem cleanup
