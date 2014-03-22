@@ -30,7 +30,6 @@
 #include <string>
 #include <list>
 #include <map>
-#include <tr1/unordered_map>
 #include <algorithm>
 
 #include <FL/filename.H>
@@ -44,8 +43,14 @@
 #include "main.h"
 
 using namespace std;
-using tr1::unordered_map;
 
+#ifdef __clang__
+#	include <unordered_map>
+	using std::unordered_map;
+#else
+#	include <tr1/unordered_map>
+	using tr1::unordered_map;
+#endif
 
 dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon, float tz)
 	: country(cn), cq_zone(cq), itu_zone(itu), latitude(lat), longitude(lon), gmt_offset(tz)

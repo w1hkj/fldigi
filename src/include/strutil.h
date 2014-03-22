@@ -207,7 +207,11 @@ inline bool read_until_delim( char delim, std::istream & istrm, double & ref )
 /// Reads a string up to the given delimiter.
 inline bool read_until_delim( char delim, std::istream & istrm, std::string & ref )
 {
-	return std::getline( istrm, ref, delim );
+	std::getline( istrm, ref, delim );
+	if ( (istrm.rdstate() & std::istream::goodbit) == 0 )
+		return true ;
+	else
+		return false ;
 }
 
 /// For reading from a string with tokens separated by a char. Used to load CSV files.
@@ -215,12 +219,13 @@ template< typename Tp >
 bool read_until_delim( char delim, std::istream & istrm, Tp & ref, typename DtTyp< Tp >::Any = typename DtTyp< Tp >::Any() )
 {
 	std::string parsed_str ;
-	if( ! std::getline( istrm, parsed_str, delim ) ) {
+	std::getline( istrm, parsed_str, delim );
+	if( ! ((istrm.rdstate() & std::istream::goodbit) == 0)) {
 		return false ;
 	}
 	imemstream sstrm( parsed_str );
 	sstrm >> ref ;
-	return sstrm ;
+	return true ;
 }
 
 /// Same, with a default value if there is nothing to read.
@@ -228,7 +233,8 @@ template< typename Tp >
 bool read_until_delim( char delim, std::istream & istrm, Tp & ref, const Tp dflt, typename DtTyp< Tp >::Any = typename DtTyp< Tp >::Any() )
 {
 	std::string parsed_str ;
-	if( ! std::getline( istrm, parsed_str, delim ) ) {
+	std::getline( istrm, parsed_str, delim ) ;
+	if( ! ((istrm.rdstate() & std::istream::goodbit) == 0) ) {
 		return false ;
 	}
 	if( parsed_str.empty() ) {
@@ -237,7 +243,7 @@ bool read_until_delim( char delim, std::istream & istrm, Tp & ref, const Tp dflt
 	}
 	imemstream sstrm( parsed_str );
 	sstrm >> ref ;
-	return sstrm ;
+	return true ;
 }
 
 /// For reading from a string with tokens separated by a char to a fixed-size array.
@@ -246,7 +252,7 @@ bool read_until_delim( char delim, std::istream & istrm, Tp & ref, typename DtTy
 {
 	istrm.getline( ref, DtTyp< Tp >::Size, delim );
 	// Should we return an error if buffer is too small?
-	return istrm ;
+	return( (istrm.rdstate() & std::istream::goodbit) == 0 );
 }
 
 /// Same, with a default value if there is nothing to read. Fixed-size array.
@@ -259,7 +265,7 @@ bool read_until_delim( char delim, std::istream & istrm, Tp & ref, const Tp dflt
 		strncpy( ref, dflt, DtTyp< Tp >::Size - 1 );
 	}
 	// Should we return an error if buffer is too small?
-	return istrm;
+	return ((istrm.rdstate() & std::istream::goodbit) == 0 );
 }
 
 // ----------------------------------------------------------------------------

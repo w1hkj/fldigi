@@ -35,21 +35,26 @@
 
 #include "timeops.h"
 
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
-#  define MAP_TYPE std::tr1::unordered_map
-#  include <tr1/unordered_map>
+#ifdef __clang__
+#  define MAP_TYPE std::unordered_map
+#  include <unordered_map>
 #else
+#	if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
+#		define MAP_TYPE std::tr1::unordered_map
+#	include <tr1/unordered_map>
+#	else
 // use the non-standard gnu hash_map on gcc <= 4.0.x,
 // which has a broken tr1::unordered_map::operator=
-#  define MAP_TYPE __gnu_cxx::hash_map
-#  include <ext/hash_map>
-namespace __gnu_cxx {
-	// define the missing hash specialisation for std::string
-	// using the 'const char*' hash function
-	template<> struct hash<std::string> {
-		size_t operator()(const std::string& s) const { return __stl_hash_string(s.c_str()); }
-	};
-}
+#	define MAP_TYPE __gnu_cxx::hash_map
+#	include <ext/hash_map>
+	namespace __gnu_cxx {
+		// define the missing hash specialisation for std::string
+		// using the 'const char*' hash function
+		template<> struct hash<std::string> {
+			size_t operator()(const std::string& s) const { return __stl_hash_string(s.c_str()); }
+		};
+	}
+#	endif
 #endif
 
 #include <unistd.h>
