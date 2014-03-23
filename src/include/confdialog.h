@@ -402,7 +402,7 @@ extern Fl_Value_Input2 *cntRigCatInitDelay;
 extern Fl_Group *tabHamlib;
 extern Fl_Check_Button *chkUSEHAMLIB;
 extern Fl_Group *grpHamlib;
-extern Fl_ComboBox *cboHamlibRig;
+extern Fl_ListBox *cboHamlibRig;
 extern Fl_ComboBox *inpRIGdev;
 extern Fl_Value_Input2 *cntHamlibRetries;
 extern Fl_Value_Input2 *cntHamlibTimeout;
