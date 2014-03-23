@@ -1316,7 +1316,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%8s|%4s|%-10s|%10s|%-s",
+		snprintf(line,sizeof(line),"%8s|%4s|%-10s|%-10s|%-s",
  			rec->getField(QSO_DATE),
  			time4(rec->getField(TIME_OFF)),
  			rec->getField(CALL),
@@ -1330,17 +1330,19 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 {
 	char freq[16] = "";
-	string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call;
+	string rst_in, rst_out, exch_in, exch_out, date, time, mode, mycall, call, exch;
 	string qsoline = "QSO: ";
-	int rst_len = 3;
 	int ifreq = 0;
 	size_t len = 0;
+	size_t p = 0;
 
 	exch_out.clear();
+	exch_in.clear();
+	exch.clear();
 
 	if (btnCabFreq->value()) {
 		ifreq = (int)(1000.0 * atof(rec->getField(FREQ)));
-		snprintf(freq, sizeof(freq), "%d", ifreq);
+		snprintf(freq, sizeof(freq), "%7d", ifreq);
 		qsoline.append(freq); qsoline.append(" ");
 	}
 
@@ -1350,7 +1352,6 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 			mode.compare("SSB") == 0 || mode.compare("PH") == 0 ) mode = "PH";
 		else if (mode.compare("FM") == 0 || mode.compare("CW") == 0 ) ;
 		else mode = "RY";
-		if (mode.compare("PH") == 0 || mode.compare("FM") == 0 ) rst_len = 2;
 		qsoline.append(mode); qsoline.append(" ");
 	}
 
@@ -1368,56 +1369,75 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 
 	mycall = progdefaults.myCall;
 	if (mycall.length() > 13) mycall = mycall.substr(0,13);
-	if ((len = mycall.length()) < 13) mycall.append(13 - len, ' ');
-	qsoline.append(mycall); qsoline.append(" ");
+	len = mycall.length();
+	if (len < 13) mycall.append(13 - len, ' ');
+	qsoline.append(mycall); qsoline.append("   ");
 
-	if (btnCabRSTsent->value()) {
+	if (btnCabRSTsent->value() || contestnbr == BARTG_RTTY) {
 		rst_out = rec->getField(RST_SENT);
-		rst_out = rst_out.substr(0,rst_len);
+		if (rst_out.length() > 3) rst_out = rst_out.substr(0, 3);
+		len = rst_out.length();
+		if (len < 3) rst_out.append(3 - len, ' ');
 		exch_out.append(rst_out).append(" ");
 	}
 
-	if (btnCabSerialOUT->value()) {
+	if (btnCabSerialOUT->value() || contestnbr == BARTG_RTTY) {
 		exch_out.append(rec->getField(STX)).append(" ");
 	}
 
 	if (btnCabMyXchg->value()) {
-		exch_out.append(rec->getField(MYXCHG)).append(" ");
+		exch = rec->getField(MYXCHG);
+		if (!exch.empty())
+			exch_out.append(rec->getField(MYXCHG)).append(" ");
 	}
 
-	if (contestnbr == BARTG_RTTY && exch_out.length() < 11) {
+	if (contestnbr == BARTG_RTTY) {
 		string toff = rec->getField(TIME_OFF);
-		toff = toff.substr(0,4).append(" ");
+		if (toff.length() > 4) toff = toff.substr(0,4);
+		toff = toff.append(" ");
 		exch_out.append(toff);
 	}
 
-	if (exch_out.length() > 14) exch_out = exch_out.substr(0,14);
-	if ((len = exch_out.length()) < 14) exch_out.append(14 - len, ' ');
+	if (exch_out.length() > 20) exch_out = exch_out.substr(0,20);
+	len = exch_out.length();
+	if (len < 20) exch_out.append(20 - len, ' ');
 
-	qsoline.append(exch_out).append(" ");
+	qsoline.append(exch_out);
 
 	if (btnCabCall->value()) {
 		call = rec->getField(CALL);
 		if (call.length() > 13) call = call.substr(0,13);
-		if ((len = call.length()) < 13) call.append(13 - len, ' ');
+		len = call.length();
+		if (len < 13) call.append(13 - len, ' ');
 		qsoline.append(call); qsoline.append(" ");
 	}
 
 	if (btnCabRSTrcvd->value()) {
 		rst_in = rec->getField(RST_RCVD);
-		rst_in = rst_in.substr(0,rst_len);
+		if (rst_in.length() > 3) rst_in = rst_in.substr(0,3);
+		len = rst_in.length();
+		if (len < 3) rst_in.append(3 - len, ' ');
 		qsoline.append(rst_in); qsoline.append(" ");
 	}
 
 	if (btnCabSerialIN->value()) {
-		exch_in = rec->getField(SRX);
+		exch_in = exch_in.append(rec->getField(SRX));
 		if (exch_in.length())
 			exch_in += ' ';
 	}
-	if (btnCabXchgIn->value())
-		exch_in.append(rec->getField(XCHG1));
+
+	if (btnCabXchgIn->value()) {
+		exch = rec->getField(XCHG1);
+		while ((p = exch.find(":")) != string::npos) exch.erase(p,1);
+		while ((p = exch.find("  ")) != string::npos) exch.erase(p,1);
+		if (exch[0] == ' ') exch.erase(0,1);
+		exch_in.append(exch);
+	}
+
 	if (exch_in.length() > 14) exch_in = exch_in.substr(0,14);
-	if ((len = exch_in.length()) < 14) exch_in.append(14 - len, ' ');
+	len = exch_in.length();
+	if (len < 14) exch_in.append(14 - len, ' ');
+
 	qsoline.append(exch_in);
 
 	fprintf (fp, "%s\n", qsoline.c_str());
@@ -1540,7 +1560,7 @@ SOAPBOX: \n\n",
     for (int i = 0; i < qsodb.nbrRecs(); i++) {
         rec = qsodb.getRec(i);
         if (rec->getField(EXPORT)[0] == 'E') {
-        	cabrillo_append_qso(cabFile, rec);
+            cabrillo_append_qso(cabFile, rec);
             rec->putField(EXPORT,"");
             qsodb.qsoUpdRec(i, rec);
         }
