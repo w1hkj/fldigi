@@ -190,6 +190,13 @@ AC_FLDIGI_TLS
 # if falling back to Boost
 AC_FLDIGI_BIND
 
+### std::hash or alternatives
+# Set ac_cv_std_hash or ac_cv_std_tr1_hash to yes/no
+# Define HAVE_STD_HASH or HAVE_STD_TR1_HASH in config.h
+# Substitute BOOST_CPPFLAGS and BOOST_LDFLAGS in Makefile
+# if falling back to Boost
+AC_FLDIGI_HASH
+
 ### FLTK
 # Substitute FLTK_CFLAGS and FLTK_LIBS in Makefile
 # Set FLUID variable
