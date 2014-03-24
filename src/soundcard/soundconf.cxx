@@ -326,30 +326,30 @@ static void sound_init_options(void)
 	if (progdefaults.in_sample_rate == SAMPLE_RATE_UNSET &&
 		(progdefaults.in_sample_rate = progdefaults.sample_rate) == SAMPLE_RATE_UNSET)
 		progdefaults.in_sample_rate = SAMPLE_RATE_NATIVE;
-	else if (progdefaults.in_sample_rate > SAMPLE_RATE_OTHER)
-		snprintf(sr, sizeof(sr), "%d", progdefaults.in_sample_rate);
-	if (progdefaults.in_sample_rate <= SAMPLE_RATE_NATIVE)
+	else if (progdefaults.in_sample_rate < SAMPLE_RATE_OTHER)
 		menuInSampleRate->index(progdefaults.in_sample_rate);
-	else
-		for (int i = 1; i <= menuInSampleRate->lsize(); i++) {
+	else {
+		snprintf(sr, sizeof(sr), "%d", progdefaults.in_sample_rate);
+		for (int i = SAMPLE_RATE_NATIVE + 1; i < menuInSampleRate->lsize(); i++) {
 			menuInSampleRate->index(i);
 			if (strstr(menuInSampleRate->value(), sr))
 				break;
 		}
+	}
 
 	if (progdefaults.out_sample_rate == SAMPLE_RATE_UNSET &&
 		(progdefaults.out_sample_rate = progdefaults.sample_rate) == SAMPLE_RATE_UNSET)
 		progdefaults.out_sample_rate = SAMPLE_RATE_NATIVE;
-	else if (progdefaults.out_sample_rate > SAMPLE_RATE_OTHER)
-		snprintf(sr, sizeof(sr), "%d", progdefaults.out_sample_rate);
-	if (progdefaults.out_sample_rate <= SAMPLE_RATE_NATIVE)
+	else if (progdefaults.out_sample_rate < SAMPLE_RATE_OTHER)
 		menuOutSampleRate->index(progdefaults.out_sample_rate);
-	else
-		for (int i = 1; i <= menuOutSampleRate->lsize(); i++) {
+	else {
+		snprintf(sr, sizeof(sr), "%d", progdefaults.out_sample_rate);
+		for (int i = SAMPLE_RATE_NATIVE + 1; i < menuOutSampleRate->lsize(); i++) {
 			menuOutSampleRate->index(i);
 			if (strstr(menuOutSampleRate->value(), sr))
 				break;
 		}
+	}
 
 	cntRxRateCorr->value(progdefaults.RX_corr);
 	cntTxRateCorr->value(progdefaults.TX_corr);
@@ -500,7 +500,7 @@ void sound_update(unsigned idx)
 					break;
 				}
 
-				for (int j = 1; j < listbox[i]->lsize(); j++) {
+				for (int j = 0; j < listbox[i]->lsize(); j++) {
 					listbox[i]->index(j);
 					if (strstr(listbox[i]->value(), label))
 						break;
