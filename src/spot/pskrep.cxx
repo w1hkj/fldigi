@@ -86,6 +86,12 @@ namespace __gnu_cxx {
 
 LOG_FILE_SOURCE(debug::LOG_SPOTTER);
 
+//------------------------------------------------------------------------------
+#include "threads.h"
+
+static pthread_mutex_t pskrep_mutex = PTHREAD_MUTEX_INITIALIZER;
+//------------------------------------------------------------------------------
+ 
 // -------------------------------------------------------------------------------------------------
 
 // Try to flush the report queue every SEND_INTERVAL seconds.
@@ -681,9 +687,9 @@ void pskrep_sender::write_preamble(void)
 	*reinterpret_cast<uint32_t*>(p) = htonl(sequence_number); p += sizeof(uint32_t);
 	memcpy(p, short_id.data(), SHORT_ID_SIZE);                p += SHORT_ID_SIZE;
 
-	const unsigned char* station_info_template;
+	const unsigned char* station_info_template(long_station_info_template);
 	size_t tlen;
-	vector<unsigned char>* station_info;
+	vector<unsigned char>* station_info(&long_station_info);
 
 	if (template_count == 0 && now - last_template >= TEMPLATE_INTERVAL)
 		template_count = TEMPLATE_THRESHOLD;
@@ -705,17 +711,22 @@ void pskrep_sender::write_preamble(void)
 	}
 
 	// station info record
-	memcpy(p, &(*station_info)[0], station_info->size());     p += station_info->size();
+	memcpy(p, &(*station_info)[0], station_info->size());
+	p += station_info->size();
 
 	report_offset = p - dgram;
 	// write report record header
-	memcpy(p, rcpt_record_template + 4, 2); p += 2; /* length written later */ p += sizeof(uint16_t);
+	memcpy(p, rcpt_record_template + 4, 2);
+	p += 2; /* length written later */
+	p += sizeof(uint16_t);
 
 	dgram_size = p - dgram;
 }
 
 bool pskrep_sender::append(const string& callsign, const band_map_t::value_type& r)
 {
+	guard_lock dsp_lock(&pskrep_mutex);
+
 	if (dgram_size == 0)
 		write_preamble();
 
