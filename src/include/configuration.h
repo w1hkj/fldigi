@@ -680,7 +680,7 @@
               4)                                                                        \
         ELEM_(bool, viewXmtSignal, "VIEWXMTSIGNAL",                                     \
               "Show transmit signal on waterfall",                                      \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, sendid, "SENDID",                                                   \
               "Send video ID containing modem name",                                    \
               false)                                                                    \
@@ -1190,7 +1190,7 @@
               true)                                                                     \
         ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL",                                 \
               "Level for monitored (on waterfall) transmit signal",                     \
-              0.5)                                                                      \
+              0.2)                                                                      \
         /* Waterfall palette */                                                         \
         ELEM_(std::string, PaletteName, "PALETTENAME",                                  \
               "Waterfall color palette file name",                                      \
