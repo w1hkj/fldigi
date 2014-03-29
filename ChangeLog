@@ -1,11 +1,27 @@
 
 
+=Version 3.21.81=
+
+2014-03-26  David Freese  <w1hkj@w1hkj.com>
+
+	134221e: TX monitor
+	922c16f: Spotter seg fault
+	dbe4181: Audio selectors for PORTAUDIO
+	9771f4b: M4 tr1 detect
+	03643a6: ttyACMxx identification
+	cfe6f87: Olivia critical section
+	a60d6f7: MT63 critical section
+	c97043c: Logbook fields
+	3bc4f31: Hamlib selector
+	d33b7e7: Combobox
+	6f71f12: RTTY macro
+	ac671da: clang compatibility
+
+
 =Version 3.21.80=
 
-2014-03-19  David Freese  <w1hkj@w1hkj.com>
-
-	d3aa1cc: FreeBSD nitems
-	ca39b53: Cabrillo time off
+	cc2eee1: FreeBSD nitems
+	c360a3f: Cabrillo time off
 	819a3ee: Change Fl_ListBox
 	6baa7d1: Restore Fl_Choice
 	cee5d0e: Olivia select fix
