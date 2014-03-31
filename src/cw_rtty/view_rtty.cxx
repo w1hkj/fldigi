@@ -60,6 +60,7 @@ static char figures[32] = {
 const double view_rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 const double view_rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
 const int    view_rtty::BITS[]  = {5, 7, 8};
+const int view_rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
 
 void view_rtty::rx_init()
 {
@@ -125,7 +126,7 @@ void view_rtty::restart()
 {
 	double stl;
 
-	rtty_shift = shift = (progdefaults.rtty_shift >= 0 ?
+	rtty_shift = shift = (progdefaults.rtty_shift < rtty::numshifts ?
 			      SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
 	rtty_baud = BAUD[progdefaults.rtty_baud];
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];

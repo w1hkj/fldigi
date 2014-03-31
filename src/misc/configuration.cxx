@@ -386,9 +386,10 @@ void configuration::loadDefaults()
 {
 // RTTY
 	selShift->index(rtty_shift);
-	if (progdefaults.rtty_shift == selShift->lsize() - 1)
+	if (progdefaults.rtty_shift == selShift->lsize() - 1) {
 		selCustomShift->activate();
-	else
+		selCustomShift->value(rtty_custom_shift);
+	} else
 		selCustomShift->deactivate();
 	selBaud->index(rtty_baud);
 	selBits->index(rtty_bits);
