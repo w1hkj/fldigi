@@ -6691,6 +6691,9 @@ void resetRTTY() {
 }
 
 void resetOLIVIA() {
+printf("reset OLIVIA : tones %d : bw %d\n",
+progdefaults.oliviatones, progdefaults.oliviabw);
+
 	trx_mode md = active_modem->get_mode();
 	if (md >= MODE_OLIVIA && md <= MODE_OLIVIA_64_2000)
 		trx_start_modem(active_modem);
@@ -6965,6 +6968,7 @@ void spot_selection_color()
 // Olivia
 void set_olivia_bw(int bw)
 {
+printf("set olivia bw %d\n", bw);
 	int i;
 	if (bw == 125)
 		i = 0;
@@ -6977,18 +6981,18 @@ void set_olivia_bw(int bw)
 	else
 		i = 4;
 	bool changed = progdefaults.changed;
-	i_listbox_olivia_bandwidth->index(i+1);
+	i_listbox_olivia_bandwidth->index(i);
 	i_listbox_olivia_bandwidth->do_callback();
 	progdefaults.changed = changed;
 }
 
 void set_olivia_tones(int tones)
 {
-	unsigned i = 0;
+	unsigned i = -1;
 	while (tones >>= 1)
 		i++;
 	bool changed = progdefaults.changed;
-	i_listbox_olivia_tones->index(i+1);
+	i_listbox_olivia_tones->index(i);//+1);
 	i_listbox_olivia_tones->do_callback();
 	progdefaults.changed = changed;
 }
@@ -7008,18 +7012,18 @@ void set_contestia_bw(int bw)
 	else
 		i = 4;
 	bool changed = progdefaults.changed;
-	i_listbox_contestia_bandwidth->index(i+1);
+	i_listbox_contestia_bandwidth->index(i);
 	i_listbox_contestia_bandwidth->do_callback();
 	progdefaults.changed = changed;
 }
 
 void set_contestia_tones(int tones)
 {
-	unsigned i = 0;
+	unsigned i = -1;
 	while (tones >>= 1)
 		i++;
 	bool changed = progdefaults.changed;
-	i_listbox_contestia_tones->index(i+1);
+	i_listbox_contestia_tones->index(i);
 	i_listbox_contestia_tones->do_callback();
 	progdefaults.changed = changed;
 }
