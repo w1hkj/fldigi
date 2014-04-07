@@ -1,8 +1,18 @@
+2014-04-22  David Freese  <w1hkj@w1hkj.com>
+
+	8113e14: 8PSK modes
+	c27322d: Phase accumulator
+	a1f586a: Base Directories
+	07076d5: WF Height/Speed
+	e50fdd3: RX Only
+	328059b: RTTY mem leak
+	1aa511f: 8psk-alpha
+	7728f15: Olivia/Contestia custom
+	814b854: ARQ abort
+	3048a0d: RTTY Custom Shift
 
 
 =Version 3.21.81=
-
-2014-03-26  David Freese  <w1hkj@w1hkj.com>
 
 	134221e: TX monitor
 	922c16f: Spotter seg fault
