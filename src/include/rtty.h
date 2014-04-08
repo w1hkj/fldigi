@@ -84,7 +84,7 @@ class SymbolShaper
 {
 public:
 	SymbolShaper(double baud = 45.45, double sr = 8000.0);
-	~SymbolShaper() {}
+	~SymbolShaper();
 	void reset();
 	void Preset(double baud, double sr);
 	void print_sinc_table();

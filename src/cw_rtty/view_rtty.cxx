@@ -101,6 +101,7 @@ view_rtty::~view_rtty()
 	for (int ch = 0; ch < MAX_CHANNELS; ch ++) {
 		if (channel[ch].mark_filt) delete channel[ch].mark_filt;
 		if (channel[ch].space_filt) delete channel[ch].space_filt;
+		if (channel[ch].bits) delete channel[ch].bits;
 	}
 }
 
