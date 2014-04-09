@@ -649,9 +649,9 @@ void status::initLastState()
 	if (mainY > Fl::h())
 		mainY = 20;
 	if (mainW < WMIN || mainW > Fl::w())
-		mainW = MAX(WMIN, Fl::w() / 2);
+		mainW = MAX(WMIN, Fl::w() -50);// / 2);
 	if (mainH < HMIN || mainH > Fl::h())
-		mainH = MAX(HMIN, Fl::h() / 2);
+		mainH = MAX(HMIN, Fl::h() -50);// / 2);
 
 	if (bWF_only) 
 		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);

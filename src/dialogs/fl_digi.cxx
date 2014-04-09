@@ -370,6 +370,8 @@ static const int w_inpAZ    	= 30;
 
 static const int qh = Hqsoframe / 2;
 
+static int main_hmin = 400;
+
 int IMAGE_WIDTH;
 int Hwfall;
 int HNOM = DEFAULT_HNOM;
@@ -4420,6 +4422,12 @@ void create_fl_digi_main_primary() {
 
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
 
+	main_hmin = 130 + Hwfall + Hmenu + Hstatus + Hmacros*4 + Hqsoframe + 4;
+	int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
+	if (Htext < 130) { // 66 : raster min height, 60 : min panel box, 4 : frame  
+		Htext = 130;
+		progStatus.mainH = main_hmin;
+	}
 	fl_digi_main = new Fl_Double_Window(progStatus.mainW, progStatus.mainH);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
@@ -5038,7 +5046,7 @@ void create_fl_digi_main_primary() {
 		macroFrame2->end();
 
 		Y += Hmacros;
-		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
+//		int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
 		int Hrcvtxt = Htext / 2;
 		int Hxmttxt = Htext - Hrcvtxt;
 
@@ -5966,6 +5974,7 @@ void create_fl_digi_main_WF_only() {
 		btnTune->deactivate();
 		wf->xmtrcv->deactivate();
 	}
+
 }
 
 
@@ -5988,9 +5997,10 @@ void create_fl_digi_main(int argc, char** argv)
 
 	fl_digi_main->xclass(PACKAGE_NAME);
 
-	fl_digi_main->size_range(
-		WMIN, bWF_only ? WF_only_height : HMIN,
-		0, bWF_only ? WF_only_height : 0);
+	if (bWF_only)
+		fl_digi_main->size_range(WMIN, WF_only_height, 0, WF_only_height);
+	else
+		fl_digi_main->size_range(WMIN, main_hmin, 0, 0);
 }
 
 void put_freq(double frequency)
@@ -6700,9 +6710,6 @@ void resetRTTY() {
 }
 
 void resetOLIVIA() {
-printf("reset OLIVIA : tones %d : bw %d\n",
-progdefaults.oliviatones, progdefaults.oliviabw);
-
 	trx_mode md = active_modem->get_mode();
 	if (md >= MODE_OLIVIA && md <= MODE_OLIVIA_64_2000)
 		trx_start_modem(active_modem);
@@ -6993,7 +7000,6 @@ void spot_selection_color()
 // Olivia
 void set_olivia_bw(int bw)
 {
-printf("set olivia bw %d\n", bw);
 	int i;
 	if (bw == 125)
 		i = 0;

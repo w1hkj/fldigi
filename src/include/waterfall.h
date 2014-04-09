@@ -77,7 +77,6 @@ enum WFmode {
 #define MAG_2 2
 #define MAG_4 3
 
-//enum WFspeed {FAST = 1, NORMAL = 2, SLOW = 8};
 enum WFspeed { PAUSE = 0, FAST = 1, NORMAL = 2, SLOW = 4 };
 
 extern void do_qsy(bool);
