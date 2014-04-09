@@ -1220,7 +1220,10 @@ static void pTX(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	s.erase(i, 4);
-	TransmitON = true;
+	if (rx_only)
+		TransmitON = false;
+	else
+		TransmitON = true;
 }
 
 static void pTXRX(std::string &s, size_t &i, size_t endbracket)
@@ -1230,7 +1233,10 @@ static void pTXRX(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	s.erase(i, 7);
-	ToggleTXRX = true;
+	if (rx_only)
+		ToggleTXRX = false;
+	else
+		ToggleTXRX = true;
 }
 
 static std::string hexstr(std::string &s)
@@ -2853,7 +2859,7 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 {
 	size_t idx = 0;
 	expand = true;
-	if (!recurse) {
+	if (!recurse || rx_only) {
 		TransmitON = false;
 		ToggleTXRX = false;
 	}
@@ -2943,7 +2949,8 @@ void idleTimer(void *)
 
 static void continueMacro(void *)
 {
-	if ( TransmitON ) {
+	if (rx_only) TransmitON = false;
+	else if ( TransmitON) {
 		active_modem->set_stopflag(false);
 		if (macro_idle_on && idleTime > 0)
 			Fl::add_timeout(idleTime, idleTimer);
@@ -2962,6 +2969,11 @@ static void finishTune(void *)
 
 static void finishWait(void *)
 {
+	if (rx_only) {
+		TransmitON = false;
+		useTune = false;
+		return;
+	}
 	if (useTune && tuneTime > 0) {
 		trx_tune();
 		Fl::add_timeout(tuneTime, finishTune);
@@ -2987,11 +2999,13 @@ void MACROTEXT::timed_execute()
 {
 	queue_reset();
 	TransmitText->clear();
-	text2send = expandMacro(exec_string);
-	TransmitText->add_text(text2send);
-	exec_string.clear();
-	active_modem->set_stopflag(false);
-	start_tx();
+	if (!rx_only) {
+		text2send = expandMacro(exec_string);
+		TransmitText->add_text(text2send);
+		exec_string.clear();
+		active_modem->set_stopflag(false);
+		start_tx();
+	}
 }
 
 void MACROTEXT::execute(int n)
@@ -3007,16 +3021,18 @@ void MACROTEXT::execute(int n)
 		return;
 	}
 
-	if (progStatus.repeatMacro == -1)
-		TransmitText->add_text( text2send );
-	else {
-		size_t p = std::string::npos;
-		text2send = text[n];
-		while ((p = text2send.find('<')) != std::string::npos)
-			text2send[p] = '[';
-		while ((p = text2send.find('>')) != std::string::npos)
-			text2send[p] = ']';
-		TransmitText->add_text( text2send );
+	if (!rx_only) {
+		if (progStatus.repeatMacro == -1)
+			TransmitText->add_text( text2send );
+		else {
+			size_t p = std::string::npos;
+			text2send = text[n];
+			while ((p = text2send.find('<')) != std::string::npos)
+				text2send[p] = '[';
+			while ((p = text2send.find('>')) != std::string::npos)
+				text2send[p] = ']';
+			TransmitText->add_text( text2send );
+		}
 	}
 	text2send.clear();
 

@@ -55,6 +55,8 @@ extern	SoundBase 	*scard;
 extern  bool bHistory;
 extern  bool bHighSpeed;
 
+extern bool rx_only;
+
 #define TRX_WAIT(s_, code_)			\
 	do {					\
 		ENSURE_NOT_THREAD(TRX_TID);	\
