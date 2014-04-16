@@ -320,12 +320,9 @@ void rx_extract_add(int c)
 
 void select_flmsg_pathname()
 {
-	if (NBEMSapps_dir) {
-		progdefaults.flmsg_pathname.assign(BaseDir).append("flmsg.exe");
-		progdefaults.changed = true;
-		txt_flmsg_pathname->value(progdefaults.flmsg_pathname.c_str());
-		return;
-	}
+	txt_flmsg_pathname->value(progdefaults.flmsg_pathname.c_str());
+	txt_flmsg_pathname->redraw();
+
 #ifdef __APPLE__
 	open_recv_folder("/Applications/");
 	return;
