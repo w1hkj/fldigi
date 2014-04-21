@@ -222,10 +222,7 @@ cmplx feld::mixer(cmplx in)
 
 	rxphacc -= 2.0 * M_PI * frequency / samplerate;
 
-	if (rxphacc > M_PI)
-		rxphacc -= 2.0 * M_PI;
-	else if (rxphacc < M_PI)
-		rxphacc += 2.0 * M_PI;
+	if (rxphacc < 0) rxphacc += TWOPI;
 
 	return z;
 }
@@ -451,8 +448,7 @@ double feld::nco(double freq)
 
 	txphacc += 2.0 * M_PI * freq / samplerate;
 
-	if (txphacc > M_PI)
-		txphacc -= 2.0 * M_PI;
+	if (txphacc > TWOPI) txphacc -= TWOPI;
 
 	return x;
 }

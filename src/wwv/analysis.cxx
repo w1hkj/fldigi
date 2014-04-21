@@ -147,10 +147,7 @@ cmplx anal::mixer(cmplx in)
 	cmplx z = cmplx( cos(phaseacc), sin(phaseacc)) * in;
 
 	phaseacc -= TWOPI * frequency / samplerate;
-	if (phaseacc > M_PI) 
-		phaseacc -= TWOPI;
-	else if (phaseacc < M_PI) 
-		phaseacc += TWOPI;
+	if (phaseacc < 0) phaseacc += TWOPI;
 
 	return z;
 }
@@ -197,7 +194,7 @@ int anal::rx_process(const double *buf, int len)
 // create analytic signal from sound card input samples
 		z = cmplx( *buf, *buf );
 		buf++;
-		hilbert->run(z, z);
+//		hilbert->run(z, z);
 // mix it with the audio carrier frequency to create a baseband signal
 		z = mixer(z);
 // low pass filter using Windowed Sinc - Overlap-Add convolution filter

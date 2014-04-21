@@ -280,10 +280,7 @@ cmplx throb::mixer(cmplx in)
 
 	phaseacc -= 2.0 * M_PI * f / THROB_SAMPLE_RATE;
 
-	if (phaseacc < -M_PI)
-		phaseacc += 2.0 * M_PI;
-	if (phaseacc >  M_PI)
-		phaseacc -= 2.0 * M_PI;
+	if (phaseacc < 0) phaseacc += TWOPI;
 
 	return z;
 }
