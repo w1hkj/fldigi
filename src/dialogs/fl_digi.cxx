@@ -449,6 +449,15 @@ static const Fl_Menu_Item quick_change_qpsk[] = {
 	{ 0 }
 };
 
+static const Fl_Menu_Item quick_change_8psk[] = {
+	{ mode_info[MODE_8PSK125].name, 0, cb_init_mode, (void *)MODE_8PSK125 },
+	{ mode_info[MODE_8PSK250].name, 0, cb_init_mode, (void *)MODE_8PSK250 },
+	{ mode_info[MODE_8PSK500].name, 0, cb_init_mode, (void *)MODE_8PSK500 },
+	{ mode_info[MODE_8PSK1000].name, 0, cb_init_mode, (void *)MODE_8PSK1000 },
+	{ mode_info[MODE_8PSK2000].name, 0, cb_init_mode, (void *)MODE_8PSK2000 },
+	{ 0 }
+};
+
 static const Fl_Menu_Item quick_change_pskr[] = {
 	{ mode_info[MODE_PSK125R].name, 0, cb_init_mode, (void *)MODE_PSK125R },
 	{ mode_info[MODE_PSK250R].name, 0, cb_init_mode, (void *)MODE_PSK250R },
@@ -1013,7 +1022,7 @@ void remove_windows()
 
 void cb_wMain(Fl_Widget*, void*)
 {
-// to prevent anything other than a File / Exit in waterfall only 
+// to prevent anything other than a File / Exit in waterfall only
 // if wf only and in transmit the escape will abort the transmit
 //	if (bWF_only) return;
 
@@ -1092,8 +1101,8 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		break;
 
 	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
-	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22: 
-	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100: 
+	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
+	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new thor(mode), freq);
 		quick_change = quick_change_thor;
@@ -1174,6 +1183,12 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_qpsk;
+		modem_config_tab = tabPSK;
+		break;
+	case MODE_8PSK125: case MODE_8PSK250: case MODE_8PSK500: case MODE_8PSK1000: case MODE_8PSK2000:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new psk(mode), freq);
+		quick_change = quick_change_8psk;
 		modem_config_tab = tabPSK;
 		break;
 	case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R:
@@ -2692,8 +2707,8 @@ int default_handler(int event)
 			TransmitText->visible_focus()))
 		return 1;
 
-	else if ( (fl_digi_main->contains(w) || dlgLogbook->contains(w)) && 
-				Fl::event_ctrl() ) 
+	else if ( (fl_digi_main->contains(w) || dlgLogbook->contains(w)) &&
+				Fl::event_ctrl() )
 			return w->handle(FL_KEYBOARD);
 
 	return 0;
@@ -2790,7 +2805,7 @@ bool save_on_exit() {
 
 bool clean_exit(bool ask) {
 
-	
+
 	if (progdefaults.confirmExit && (!(progdefaults.changed && progdefaults.SaveConfig) ||
 					 !(macros.changed && progdefaults.SaveMacros) ||
 					 !(!oktoclear && progdefaults.NagMe)))
@@ -2804,7 +2819,7 @@ bool clean_exit(bool ask) {
 			break;
 		}
 	}
-		
+
 	if (ask)
 		if (!save_on_exit()) return false;
 
@@ -3244,13 +3259,13 @@ void UI_select()
 UI_return:
 	if (progStatus.show_channels)
 		text_panel->position(
-			text_panel->orgx(), text_panel->orgy(), 
-			text_panel->x() + (int)(1.0*text_panel->w()*progStatus.tile_x/progStatus.tile_w + 0.5), 
+			text_panel->orgx(), text_panel->orgy(),
+			text_panel->x() + (int)(1.0*text_panel->w()*progStatus.tile_x/progStatus.tile_w + 0.5),
 			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
 	 else
 		text_panel->position(
-			text_panel->orgx(), text_panel->orgy(), 
-			text_panel->x(), 
+			text_panel->orgx(), text_panel->orgy(),
+			text_panel->x(),
 			text_panel->y() + (int)(1.0*text_panel->h()*progStatus.tile_y/progStatus.tile_h + 0.5));
 
 	viewer_redraw();
@@ -3439,6 +3454,15 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_QPSK500].name, 0, cb_init_mode, (void *)MODE_QPSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{"8PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK125].name, 0, cb_init_mode, (void *)MODE_8PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK250].name, 0, cb_init_mode, (void *)MODE_8PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK500].name, 0, cb_init_mode, (void *)MODE_8PSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK1000].name, 0, cb_init_mode, (void *)MODE_8PSK1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK2000].name, 0, cb_init_mode, (void *)MODE_8PSK2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+
 {"PSKR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_PSK125R].name, 0, cb_init_mode, (void *)MODE_PSK125R, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_PSK250R].name, 0, cb_init_mode, (void *)MODE_PSK250R, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3522,7 +3546,7 @@ static Fl_Menu_Item menu_[] = {
 { make_icon_label(_("Colors && Fonts")), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER, 
+{ make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER,
 _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -4187,7 +4211,7 @@ void LOGGING_colors_font()
 	}
 	input_color_font(inpNotes);
 //	inpNotes->size(inpNotes->w(), wh*2);
-	
+
 // buttons, boxes
 	Fl_Widget *wid[] = {
 		MODEstatus, Status1, Status2, StatusBar, WARNstatus };
@@ -4249,10 +4273,10 @@ void LOGBOOK_colors_font()
 	int width_loc  = fl_width("XX88XXX");
 	int width_mode = fl_width("CONTESTIA");
 
-	int dlg_width =	inpDate_log->x() + 
-					width_date + 2 + 
+	int dlg_width =	inpDate_log->x() +
+					width_date + 2 +
 					width_time + 2 +
-					width_freq + 2 + 
+					width_freq + 2 +
 					width_mode + 2 +
 					width_pwr + 2 +
 					width_rst + 2 +
@@ -4270,7 +4294,7 @@ void LOGBOOK_colors_font()
 		newheight = progStatus.logbook_h;
 
 	dlgLogbook->resize(
-		progStatus.logbook_x, progStatus.logbook_y, 
+		progStatus.logbook_x, progStatus.logbook_y,
 		progStatus.logbook_w, progStatus.logbook_h);
 
 // row1
@@ -4281,13 +4305,13 @@ void LOGBOOK_colors_font()
 	inp_font_pos(inpTimeOn_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
 	inp_font_pos(inpCall_log, xpos, ypos, width_freq, wh);
 
-	date_font_pos(inpQSLrcvddate_log, 
+	date_font_pos(inpQSLrcvddate_log,
 					dlg_width - 2 - width_date, ypos, width_date, wh);
-	inp_font_pos(inpRstR_log, 
-					inpQSLrcvddate_log->x() - 2 - width_rst, ypos, 
+	inp_font_pos(inpRstR_log,
+					inpQSLrcvddate_log->x() - 2 - width_rst, ypos,
 					width_rst, wh);
-	inp_font_pos(inpName_log, 
-					inpCall_log->x() + width_freq + 2, ypos, 
+	inp_font_pos(inpName_log,
+					inpCall_log->x() + width_freq + 2, ypos,
 					inpRstR_log->x() - 2 - (inpCall_log->x() + width_freq + 2), wh);
 // row2
 	ypos += wh + 20;
@@ -4297,16 +4321,16 @@ void LOGBOOK_colors_font()
 	inp_font_pos(inpTimeOff_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
 	inp_font_pos(inpFreq_log, xpos, ypos, width_freq, wh);
 
-	date_font_pos(inpQSLsentdate_log, 
+	date_font_pos(inpQSLsentdate_log,
 					dlg_width - 2 - width_date, ypos, width_date, wh);
-	inp_font_pos(inpRstS_log, 
-					inpQSLsentdate_log->x() - 2 - width_rst, ypos, 
+	inp_font_pos(inpRstS_log,
+					inpQSLsentdate_log->x() - 2 - width_rst, ypos,
 					width_rst, wh);
-	inp_font_pos(inpTX_pwr_log, 
-					inpRstS_log->x() - 2 - width_pwr, ypos, 
+	inp_font_pos(inpTX_pwr_log,
+					inpRstS_log->x() - 2 - width_pwr, ypos,
 					width_pwr, wh);
-	inp_font_pos(inpMode_log, 
-					inpFreq_log->x() + width_freq + 2, ypos, 
+	inp_font_pos(inpMode_log,
+					inpFreq_log->x() + width_freq + 2, ypos,
 					inpTX_pwr_log->x() - 2 - (inpFreq_log->x() + width_freq + 2), wh);
 // row 3
 	ypos += (20 + wh);
@@ -4747,12 +4771,12 @@ void create_fl_digi_main_primary() {
 				progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
 
 				inpCountry = new Fl_Input2(
-					rightof(QsoInfoFrame1) + pad, Hmenu + pad, 
+					rightof(QsoInfoFrame1) + pad, Hmenu + pad,
 					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hentry, "");
 				inpCountry->tooltip(_("Country"));
 
 				inpNotes = new Fl_Input2(
-					rightof(QsoInfoFrame1) + pad, y2, 
+					rightof(QsoInfoFrame1) + pad, y2,
 					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, "");
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->tooltip(_("Notes"));
@@ -4949,12 +4973,12 @@ void create_fl_digi_main_primary() {
 			bx7a->align(FL_ALIGN_INSIDE);
 			inpXchgIn2 = new Fl_Input2(
 				rightof(bx7a), y,
-				static_cast<int>(progStatus.mainW 
+				static_cast<int>(progStatus.mainW
 				- rightof(bx7a) - pad
 				- fl_width(label6a) - wData - pad
 				- fl_width(label5a) - wData - pad
 				- fl_width(label2a) - wData - pad
-				- fl_width(label3a) - wData - pad), 
+				- fl_width(label3a) - wData - pad),
 				h, "");
 			inpXchgIn2->tooltip(_("Contest exchange in"));
 
@@ -5030,7 +5054,7 @@ void create_fl_digi_main_primary() {
 					bx->box(FL_FLAT_BOX);
 					xpos += wBLANK;
 				}
-				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
+				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn,
 					macros.name[NUMMACKEYS + i].c_str());
 				btnMacro[NUMMACKEYS + i]->callback(macro_cb, reinterpret_cast<void *>(NUMMACKEYS + i));
 				btnMacro[NUMMACKEYS + i]->tooltip(
@@ -5117,11 +5141,11 @@ void create_fl_digi_main_primary() {
 					mvsquelch->value(progStatus.VIEWER_psksquelch);
 					mvsquelch->step(0.1);
 					mvsquelch->color( fl_rgb_color(
-						progdefaults.bwsrSliderColor.R, 
+						progdefaults.bwsrSliderColor.R,
 						progdefaults.bwsrSliderColor.G,
 						progdefaults.bwsrSliderColor.B));
 					mvsquelch->selection_color( fl_rgb_color(
-						progdefaults.bwsrSldrSelColor.R, 
+						progdefaults.bwsrSldrSelColor.R,
 						progdefaults.bwsrSldrSelColor.G,
 						progdefaults.bwsrSldrSelColor.B));
 					mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
@@ -5141,7 +5165,7 @@ void create_fl_digi_main_primary() {
 			mvgroup->end();
 
 			ReceiveText = new FTextRX(
-				text_panel->x() + mvgroup->w(), text_panel->y(), 
+				text_panel->x() + mvgroup->w(), text_panel->y(),
 				text_panel->w() - mvgroup->w(), text_panel->h()/2, "");
 			ReceiveText->color(
 				fl_rgb_color(
@@ -5158,7 +5182,7 @@ void create_fl_digi_main_primary() {
 			ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
 			FHdisp = new Raster(
-				text_panel->x() + mvgroup->w(), text_panel->y(), 
+				text_panel->x() + mvgroup->w(), text_panel->y(),
 				text_panel->w() - mvgroup->w(), text_panel->h()/2);
 			FHdisp->align(FL_ALIGN_CLIP);
 			FHdisp->hide();
@@ -5166,7 +5190,7 @@ void create_fl_digi_main_primary() {
 			wefax_pic::create_both( true );
 
 			TransmitText = new FTextTX(
-				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(), 
+				text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
 				text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
 			TransmitText->color(
 				fl_rgb_color(
@@ -5209,7 +5233,7 @@ void create_fl_digi_main_primary() {
 					bx->box(FL_FLAT_BOX);
 					xpos += wBLANK;
 				}
-				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn, 
+				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn,
 					macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i));
 				btnMacro[i]->tooltip(_("Left Click - execute\nFkey - execute\nRight Click - edit"));
@@ -5263,7 +5287,7 @@ void create_fl_digi_main_primary() {
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
-			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, 
+			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
 				Ws2n - Hstatus, Hstatus, "");
 			cntCW_WPM->callback(cb_cntCW_WPM);
 			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
@@ -5428,7 +5452,7 @@ void create_fl_digi_main_primary() {
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
 
-	clearQSO(); 
+	clearQSO();
 
 	createConfig();
 	createRecordLoader();
@@ -5542,6 +5566,14 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_QPSK125].name, 0, cb_init_mode, (void *)MODE_QPSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_QPSK500].name, 0, cb_init_mode, (void *)MODE_QPSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{"8PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK125].name, 0, cb_init_mode, (void *)MODE_8PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK250].name, 0, cb_init_mode, (void *)MODE_8PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK500].name, 0, cb_init_mode, (void *)MODE_8PSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK1000].name, 0, cb_init_mode, (void *)MODE_8PSK1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK2000].name, 0, cb_init_mode, (void *)MODE_8PSK2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"PSKR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -6238,7 +6270,7 @@ static void rx_parser(const unsigned char data, int style)
 		style = FTextBase::CTRL;
 	if (wf->tmp_carrier())
 		style = FTextBase::ALTR;
-	
+
 	// Collapse the "\r\n" sequence into "\n".
 	//
 	// The 'data' variable possibly contains only a part of a multi-byte
@@ -6247,9 +6279,9 @@ static void rx_parser(const unsigned char data, int style)
 	// the input is valid UTF-8. All bytes of a multi-byte character
 	// will therefore have the eight bit set and can not match either
 	// '\r' or '\n'.
-	
+
 	static unsigned int lastdata = 0;
-	
+
 	if (data == '\n' && lastdata == '\r');
 	else if (data == '\r') {
 		add_rx_char('\n');
@@ -6269,7 +6301,7 @@ static void rx_parser(const unsigned char data, int style)
 static void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
-	
+
 	// possible destinations for the data
 	enum dest_type {
 		DEST_RECV,	// ordinary received text
@@ -6546,7 +6578,7 @@ int get_tx_char(void)
 	}
 
 	int c;
-	
+
 	if ((c = tx_encoder.pop()) != -1)
 		return(c);
 
@@ -6575,15 +6607,15 @@ int get_tx_char(void)
 		state = STATE_CTRL;
 		c = TransmitText->nextChar();
 	}
-	
+
 	if (c == -1) {
 		queue_reset();
 		return(GET_TX_CHAR_NODATA);
 	}
-	
+
 	if (state == STATE_CTRL) {
 		state = STATE_CHAR;
-		
+
 		switch (c) {
 		case 'p': case 'P':
 			TransmitText->pause();
@@ -6633,9 +6665,9 @@ int get_tx_char(void)
 		int utf8_len = fl_utf8encode(c, utf8_char);
 		tx_encoder.push(string(utf8_char, utf8_len));
 	}
-	
+
 	transmit:
-	
+
 	c = tx_encoder.pop();
 	if (c == -1) {
 		LOG_ERROR("TX encoding conversion error: pushed content, but got nothing back");
@@ -6651,7 +6683,7 @@ int get_tx_char(void)
 void put_echo_char(unsigned int data, int style)
 {
 // suppress print to rx widget when making timing tests
-	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return; 
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return;
 
 	trx_mode mode = active_modem->get_mode();
 
@@ -6675,7 +6707,7 @@ void put_echo_char(unsigned int data, int style)
 	// assign a style to the data
 	if (asc == ascii2 && iscntrl(data))
 		style = FTextBase::CTRL;
-	
+
 	// receive and convert the data
 	static unsigned int lastdata = 0;
 
@@ -6685,7 +6717,7 @@ void put_echo_char(unsigned int data, int style)
 		echo_chd.rx((unsigned char *)asc[data & 0xFF]);
 	else
 		echo_chd.rx(data & 0xFF);
-	
+
 	lastdata = data;
 
 	if (Maillogfile) {
@@ -6699,7 +6731,7 @@ void put_echo_char(unsigned int data, int style)
 		REQ(&FTextRX::addstr, ReceiveText, echo_chd.data(), style);
 		if (progStatus.LOGenabled)
 			logfile->log_to_file(cLogfile::LOG_TX, echo_chd.data());
-		
+
 		echo_chd.clear();
 	}
 }

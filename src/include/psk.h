@@ -4,7 +4,7 @@
 // Copyright (C) 2006-2008
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //
 // Fldigi is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 #include "mfskvaricode.h"
 
 //=====================================================================
-#define	PskSampleRate	(8000)
+//#define	PskSampleRate	(8000)
 #define PipeLen			(64)
 
 #define SNTHRESHOLD 6.0
@@ -55,15 +55,25 @@
 class psk : public modem {
 private:
 // tx & rx
-	int				symbollen;
+	int			symbollen;
+	int			PskSampleRate;
+	int			symbits;
 	bool			_qpsk;
 	bool			_pskr;
+	bool			_16psk;
+	bool			_8psk;
+	bool			_xpsk;
+	bool			_disablefec;
+	int			flushlength;
+	double 			separation;
 	double			phaseacc[MAX_CARRIERS];
 	cmplx			prevsymbol[MAX_CARRIERS];
 	unsigned int		shreg;
 	//FEC: 2nd stream
 	unsigned int		shreg2;
 	int					numinterleavers; //interleaver size (speed dependant)
+	//double 			numcarriers; //Number of parallel carriers for M CAR PSK and PSKR and QPSKR
+	int 			numcarriers; //Number of parallel carriers for M CAR PSK and PSKR and QPSKR
 	double 			inter_carrier; // Frequency gap betweeb carriers
 
 // rx variables & functions
@@ -121,6 +131,7 @@ private:
 	void 			rx_bit(int bit);
 	void 			rx_bit2(int bit);
 	void			rx_qpsk(int bits);
+	void			rx_xpsk(unsigned char bit0, unsigned char bit1, unsigned char bit2, unsigned char bit3);
 	void			rx_pskr(unsigned char symbol);
 	double 			scopedata[16];
 // IMD & s/n variables
@@ -137,9 +148,10 @@ private:
 //MULTI-CARRIER
 	double			sc_bw; // single carrier bandwidth
 
-	
+
 //	cmplx thirdorder;
 // tx variables & functions
+	int			accumulated_bits; //JD for multiple carriers
 	int				txsymbols[MAX_CARRIERS];
 
 	double			*tx_shape;
@@ -147,6 +159,7 @@ private:
 	void			tx_carriers();
 	void 			tx_symbol(int sym);
 	void			tx_bit(int bit);
+	void			tx_xpsk(int bit);
 	void			tx_char(unsigned char c);
 	void			tx_flush();
 	void			update_syncscope();
@@ -176,7 +189,6 @@ public:
 	int tx_process();
 	void searchDown();
 	void searchUp();
-
 };
 
 #endif

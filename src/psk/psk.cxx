@@ -5,6 +5,8 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2009-2010
 //		John Douyere, VK2ETA
+// Copyright (C) 2014
+//		John Phelps, KL4YFD
 //
 // PSK-FEC and PSK-R modes contributed by VK2ETA
 //
@@ -66,12 +68,6 @@ extern waterfall *wf;
 #define PSKR_POLY1	0x6d
 #define PSKR_POLY2	0x4f
 
-#define SEPARATION	1.4 //separation between carriers expressed as a ratio to sc_bw
-
-#define        GALILEO_K       15
-#define        GALILEO_POLY1   046321
-#define        GALILEO_POLY2   051271
-
 char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
 
@@ -83,7 +79,7 @@ void psk::tx_init(SoundBase *sc)
 		prevsymbol[car] = cmplx (1.0, 0.0);
 	}
 	preamble = dcdbits;
-	if (_pskr) {
+	if (_pskr || _xpsk || _8psk || _16psk) {
 		// MFSK based varicode instead of psk
 		shreg = 1;
 		shreg2 = 1;
@@ -100,7 +96,7 @@ void psk::tx_init(SoundBase *sc)
 	symbols = 0;
 	acc_symbols = 0;
 	ovhd_symbols = 0;
-
+	accumulated_bits = 0;
 }
 
 void psk::rx_init()
@@ -110,7 +106,7 @@ void psk::rx_init()
 		prevsymbol[car] = cmplx (1.0, 0.0);
 	}
 	quality		= cmplx (0.0, 0.0);
-	if (_pskr) {
+	if (_pskr || _xpsk || _8psk || _16psk) {
 		// MFSK varicode instead of psk
 		shreg = 1;
 		shreg2 = 1;
@@ -190,142 +186,155 @@ psk::psk(trx_mode pskmode) : modem()
 	int  isize = 5;
 	int  idepth = 5;  // 5x5x5 interleaver
 
+	// Set the defaults that are common to most modes
+	PskSampleRate = 8000;
 	numcarriers = 1;
+	separation = 1.4;
+	_16psk = _8psk = _xpsk = _pskr = _qpsk = _disablefec = false;
+	symbits = 1;
+	flushlength = 0;
 
 	switch (mode) {
 	case MODE_PSK31:
 		symbollen = 256;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 32;
-		numcarriers = 1;
 		break;
 	case MODE_PSK63:
 		symbollen = 128;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 64;
-		numcarriers = 1;
 		break;
 	case MODE_PSK125:
 		symbollen = 64;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 128;
-		numcarriers = 1;
 		break;
 	case MODE_PSK250:
 		symbollen = 32;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 256;
-		numcarriers = 1;
 		break;
 	case MODE_PSK500:
 		symbollen = 16;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 512;
-		numcarriers = 1;
 		break;
 	case MODE_PSK1000:
 		symbollen = 8;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 128;
-		numcarriers = 1;
 		break;
 
 	case MODE_QPSK31:
 		symbollen = 256;
 		_qpsk = true;
-		_pskr = false;
 		dcdbits = 32;
 		cap |= CAP_REV;
-		numcarriers = 1;
 		break;
 	case MODE_QPSK63:
 		symbollen = 128;
 		_qpsk = true;
-		_pskr = false;
 		dcdbits = 64;
 		cap |= CAP_REV;
-		numcarriers = 1;
 		break;
 	case MODE_QPSK125:
 		symbollen = 64;
 		_qpsk = true;
-		_pskr = false;
 		dcdbits = 128;
 		cap |= CAP_REV;
-		numcarriers = 1;
 		break;
 	case MODE_QPSK250:
 		symbollen = 32;
 		_qpsk = true;
-		_pskr = false;
 		dcdbits = 256;
 		cap |= CAP_REV;
-		numcarriers = 1;
 		break;
 	case MODE_QPSK500:
 		symbollen = 16;
 		_qpsk = true;
-		_pskr = false;
 		dcdbits = 512;
 		cap |= CAP_REV;
-		numcarriers = 1;
 		break;
 	case MODE_PSK63F:  // As per Multipsk (BPSK63 + FEC + MFSK Varicode)
 		symbollen = 128;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 64;
-		numcarriers = 1;
+		break;
+
+	case MODE_8PSK125:
+		symbollen = 128;
+		PskSampleRate = 16000;
+		_8psk = true;
+		dcdbits = 128;
+		isize = 2;
+		idepth = 200; // 1600ms
+		cap |= CAP_REV;
+		break;
+	case MODE_8PSK250:
+		symbollen = 64;
+		PskSampleRate = 16000;
+		_8psk = true;
+		dcdbits = 256;
+		isize = 2;
+		idepth = 200; // 800ms
+		cap |= CAP_REV;
+		break;
+	case MODE_8PSK500:
+		symbollen = 32;
+		PskSampleRate = 16000;
+		_8psk = true;
+		dcdbits = 512;
+		isize = 2;
+		idepth = 400; // 800ms
+		cap |= CAP_REV;
+		break;
+	case MODE_8PSK1000:
+		symbollen = 16;
+		PskSampleRate = 16000;
+		_8psk = true;
+		dcdbits = 1024;
+		isize = 2;
+		idepth = 500; // 500ms
+		cap |= CAP_REV;
+		break;
+	case MODE_8PSK2000:
+		symbollen = 16;
+		PskSampleRate = 32000;
+		_8psk = true;
+		dcdbits = 2048;
+		isize = 2;
+		idepth = 1000; // 500ms
+		cap |= CAP_REV;
 		break;
 
 	case MODE_PSK125R:
 		symbollen = 64;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 128;
 		isize = 2;
 		idepth = 40;  // 2x2x40 interleaver
-		numcarriers = 1;
 		break;
 	case MODE_PSK250R:
 		symbollen = 32;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 256;
 		isize = 2;
 		idepth = 80;  // 2x2x80 interleaver
-		numcarriers = 1;
 		break;
 	case MODE_PSK500R:
 		symbollen = 16;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 512;
 		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
-		numcarriers = 1;
 		break;
 	case MODE_PSK1000R:
 		symbollen = 8;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 512;
 		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
-		numcarriers = 1;
 		break;
 
 // multi-carrier modems
 	case MODE_4X_PSK63R:
 		symbollen = 128;//PSK63
 		dcdbits = 128;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 4;
 		isize = 2;
@@ -334,7 +343,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_5X_PSK63R:
 		symbollen = 128; //PSK63
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true; //PSKR
 		numcarriers = 5;
 		isize = 2;
@@ -343,7 +351,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_10X_PSK63R:
 		symbollen = 128; //PSK63
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true; //PSKR
 		numcarriers = 10;
 		isize = 2;
@@ -352,7 +359,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_20X_PSK63R:
 		symbollen = 128; //PSK63
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true; //PSKR
 		numcarriers = 20;
 		isize = 2;
@@ -361,7 +367,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_32X_PSK63R:
 		symbollen = 128; //PSK63
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true; //PSKR
 		numcarriers = 32;
 		isize = 2;
@@ -371,7 +376,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_4X_PSK125R:
 		symbollen = 64;//PSK125
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 4;
 		isize = 2;
@@ -380,7 +384,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_5X_PSK125R:
 		symbollen = 64;//PSK125
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 5;
 		isize = 2;
@@ -389,7 +392,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_10X_PSK125R:
 		symbollen = 64;//PSK125
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 10;
 		isize = 2;
@@ -399,14 +401,11 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_12X_PSK125:
 		symbollen = 64;//PSK125
 		dcdbits = 128;//512;
-		_qpsk = false;
-		_pskr = false;
 		numcarriers = 12;
 		break;
 	case MODE_12X_PSK125R:
 		symbollen = 64;//PSK125
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 12;
 		isize = 2;
@@ -416,7 +415,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_16X_PSK125R:
 		symbollen = 64;//PSK125
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 16;
 		isize = 2;
@@ -426,7 +424,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_2X_PSK250R:
 		symbollen = 32;//PSK250
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 2;
 		isize = 2;
@@ -435,7 +432,6 @@ psk::psk(trx_mode pskmode) : modem()
 	case MODE_3X_PSK250R:
 		symbollen = 32;//PSK250
 		dcdbits = 512;
-		_qpsk = false;
 		_pskr = true;//PSKR
 		numcarriers = 3;
 		isize = 2;
@@ -443,7 +439,6 @@ psk::psk(trx_mode pskmode) : modem()
 		break;
 	case MODE_5X_PSK250R:
 		symbollen = 32;//PSK250
-		_qpsk = false;
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 5;
@@ -452,14 +447,11 @@ psk::psk(trx_mode pskmode) : modem()
 		break;
 	case MODE_6X_PSK250:
 		symbollen = 32;//PSK250
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 512;
 		numcarriers = 6;
 		break;
 	case MODE_6X_PSK250R:
 		symbollen = 32;//PSK250
-		_qpsk = false;
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 6;
@@ -468,7 +460,6 @@ psk::psk(trx_mode pskmode) : modem()
 		break;
 	case MODE_7X_PSK250R:
 		symbollen = 32;//PSK250
-		_qpsk = false;
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 7;
@@ -478,22 +469,17 @@ psk::psk(trx_mode pskmode) : modem()
 
 	case MODE_2X_PSK500:
 		symbollen = 16;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 512;
 		numcarriers = 2;
 		break;
 	case MODE_4X_PSK500:
 		symbollen = 16;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 512;
 		numcarriers = 4;
 		break;
 
 	case MODE_2X_PSK500R:
 		symbollen = 16;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 1024;
 		isize = 2;
@@ -502,7 +488,6 @@ psk::psk(trx_mode pskmode) : modem()
 		break;
 	case MODE_3X_PSK500R:
 		symbollen = 16;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 1024;
 		isize = 2;
@@ -511,7 +496,6 @@ psk::psk(trx_mode pskmode) : modem()
 		break;
 	case MODE_4X_PSK500R:
 		symbollen = 16;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 1024;
 		isize = 2;
@@ -521,14 +505,12 @@ psk::psk(trx_mode pskmode) : modem()
 
 	case MODE_2X_PSK800:
 		symbollen = 10;
-		_qpsk = false;
 		_pskr = false;
 		dcdbits = 512;
 		numcarriers = 2;
 		break;
 	case MODE_2X_PSK800R:
 		symbollen = 10;
-		_qpsk = false;
 		_pskr = true;
 		dcdbits = 1024;
 		isize = 2;
@@ -538,8 +520,6 @@ psk::psk(trx_mode pskmode) : modem()
 
 	case MODE_2X_PSK1000:
 		symbollen = 8;//PSK1000
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 1024;
 		numcarriers = 2;
 		isize = 2;
@@ -547,7 +527,6 @@ psk::psk(trx_mode pskmode) : modem()
 		break;
 	case MODE_2X_PSK1000R:
 		symbollen = 8;//PSK1000
-		_qpsk = false;
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 2;
@@ -558,15 +537,27 @@ psk::psk(trx_mode pskmode) : modem()
 	default:
 		mode = MODE_PSK31;
 		symbollen = 256;
-		_qpsk = false;
-		_pskr = false;
 		dcdbits = 32;
 		numcarriers = 1;
 	}
 
-//printf("%s: symlen %d, dcdbits %d, _qpsk %d, _pskr %d, numc %d\n",
+	// Set the number of bits-per-symbol based on the chosen constellation
+	if (_qpsk || _xpsk) symbits = 2;
+	else if (_8psk) symbits = 3;
+	else if (_16psk) symbits = 4;
+	else symbits = 1; // else BPSK / PSKR
+
+
+	/// KL4YFD
+	/// TEST CODE only until 8psk FEC implemented & fully tested
+	_disablefec = true ;
+	///
+
+//printf("%s: symlen %d, dcdbits %d, _qpsk %d, _pskr %d, numc %f\n",
 //mode_info[mode].sname,
 //symbollen, dcdbits, _qpsk, _pskr, numcarriers);
+
+
 
 	enc = (encoder *)0;
 	dec = (viterbi *)0;
@@ -646,9 +637,13 @@ psk::psk(trx_mode pskmode) : modem()
 	if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
 		dec = new viterbi(K, POLY1, POLY2);
-	}
-
-	if (_pskr) {
+	} else if (_xpsk || _8psk || _16psk) {
+		enc = new encoder(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		Txinlv = new interleave (isize, idepth, INTERLEAVE_FWD);
+		Rxinlv = new interleave (isize, idepth, INTERLEAVE_REV);
+		dec->setchunksize(4);
+	} else if (_pskr) {
 // FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
 // Set decode size to 4 since some characters can be as small
 // as 3 bits long. This minimises intercharacters decoding
@@ -686,8 +681,8 @@ psk::psk(trx_mode pskmode) : modem()
 	fragmentsize = symbollen;
 	sc_bw = samplerate / symbollen;
 	//JD added for multiple carriers
-	inter_carrier = SEPARATION * sc_bw;
-	bandwidth = sc_bw * ( 1 + SEPARATION * (numcarriers - 1));
+	inter_carrier = separation * sc_bw;
+	bandwidth = sc_bw * ( 1 + separation * (numcarriers - 1));
 
 	snratio = s2n = imdratio = imd = 0;
 
@@ -722,43 +717,43 @@ void psk::s2nreport(void)
 void psk::rx_bit(int bit)
 {
 	int c;
-
+	bool do_s2nreport = false;
 	shreg = (shreg << 1) | !!bit;
-	if (_pskr) {
+	if (_pskr || _xpsk || _8psk || _16psk) {
 		// MFSK varicode instead of PSK Varicode
 		if ((shreg & 7) == 1) {
 			c = varidec(shreg >> 1);
-			// Voting at the character level
-			if (fecmet >= fecmet2) {
+			// Voting at the character level for only PSKR modes
+			if (fecmet >= fecmet2 || _xpsk || _8psk || _16psk) {
 				if ((c != -1) && (c != 0) && (dcd == true)) {
 					put_rx_char(c);
-					if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
-						s2n_sum += s2n_metric;
-						s2n_sum2 += (s2n_metric * s2n_metric);
-						s2n_ncount ++;
-						if (c == EOT)
-							s2nreport();
-					}
+					do_s2nreport = true;
 				}
 			}
 			shreg = 1;
 		}
 	} else {
+		// PSK varicode
 		if ((shreg & 3) == 0) {
 			c = psk_varicode_decode(shreg >> 2);
 			if ((c != -1) && (dcd == true)) {
 				put_rx_char(c);
-				if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
-					s2n_sum += s2n_metric;
-					s2n_sum2 += (s2n_metric * s2n_metric);
-					s2n_ncount++;
-					if (c == EOT)
-						s2nreport();
-				}
+				do_s2nreport = true;
 			}
 			shreg = 0;
 		}
 	}
+	
+	if (do_s2nreport) {
+		if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+			s2n_sum += s2n_metric;
+			s2n_sum2 += (s2n_metric * s2n_metric);
+			s2n_ncount ++;
+			if (c == EOT)
+				s2nreport();
+		}
+	}
+
 }
 
 
@@ -767,25 +762,30 @@ void psk::rx_bit(int bit)
 void psk::rx_bit2(int bit)
 {
 	int c;
+	bool do_s2nreport = false;
 
 	shreg2 = (shreg2 << 1) | !!bit;
 	// MFSK varicode instead of PSK Varicode
 	if ((shreg2 & 7) == 1) {
 		c = varidec(shreg2 >> 1);
-		// Voting at the character level
-		if (fecmet < fecmet2) {
+		// Voting at the character level for only PSKR modes
+		if (fecmet < fecmet2 || _xpsk || _8psk || _16psk) {
 			if ((c != -1) && (c != 0) && (dcd == true)) {
 				put_rx_char(c);
-				if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
-					s2n_sum += s2n_metric;
-					s2n_sum2 += (s2n_metric * s2n_metric);
-					s2n_ncount++;
-					if (c == EOT)
-						s2nreport();
-				}
+				do_s2nreport = true;
 			}
 		}
 		shreg2 = 1;
+	}
+	
+	if (do_s2nreport) {
+		if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
+			s2n_sum += s2n_metric;
+			s2n_sum2 += (s2n_metric * s2n_metric);
+			s2n_ncount ++;
+			if (c == EOT)
+				s2nreport();
+		}
 	}
 }
 
@@ -815,6 +815,11 @@ void psk::rx_qpsk(int bits)
 		rx_bit(c & 0x02);
 		rx_bit(c & 0x01);
 	}
+}
+
+void psk::rx_xpsk(unsigned char bit0, unsigned char bit1, unsigned char bit2, unsigned char bit3)
+{
+    return; // Unfinished block of code
 }
 
 void psk::rx_pskr(unsigned char symbol)
@@ -979,9 +984,11 @@ void psk::findsignal()
 void psk::phaseafc()
 {
 	double error;
+	// Skip AFC for modes it does not work with
 	if (afcmetric < 0.05 ||
 		mode == MODE_PSK500 ||
 		mode == MODE_QPSK500 ||
+		_xpsk || _8psk || _16psk ||
 		numcarriers > 1 ) return;
 
 	error = (phase - bits * M_PI / 2.0);
@@ -1023,18 +1030,29 @@ static double averageamp;
 	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
 
+	/// KL4YFD: align the RX constellation to the TX constellation.
+	if (_16psk || _8psk|| _xpsk) phase -= M_PI;
+
 	if (phase < 0) phase += TWOPI;
 
 	if (_qpsk) {
-		bits = ((int) (phase / M_PI_2 + 0.5)) & 3;
 		n = 4;
+		bits = ((int) (phase / M_PI_2 + 0.5)) & (n-1);
+	} else if (_xpsk) {
+		n = 4;
+		bits = ((int) (phase / M_PI_2)) & (n-1);
+	} else if (_8psk) {
+		n = 8;
+		bits = ((int) (phase / (M_PI/4.0) + 0.5)) & (n-1);
+	} else if (_16psk) {
+		n = 16;
+		bits = ((int) (phase / (M_PI/8.0) + 0.5)) & (n-1);
 	} else { // bpsk and pskr
-		bits = (((int) (phase / M_PI + 0.5)) & 1) << 1;
+		n = 2;
+		bits = (((int) (phase / M_PI + 0.5)) & (n-1) ) << 1;
 		// hard decode if needed
 		// softbit = (bits & 2) ? 0 : 255;
 		// reversed as we normally pass "!bits" when hard decoding
-
-// Soft decode section below
 		averageamp = decayavg(averageamp, sigamp, SQLDECAY);
 		if (sigamp > 0 && averageamp > 0) {
 			if (sigamp > averageamp) {
@@ -1050,8 +1068,6 @@ static double averageamp;
 		if (alpha > 1.0) alpha = 2.0 - alpha;
 		softangle = 127.0 - 255.0 * alpha;
 		softbit = (unsigned char) ((softangle / ( 1.0 + softamp / 2.0)) + 128);
-
-		n = 2;
 	}
 
 	// simple low pass filter for quality of signal
@@ -1080,11 +1096,13 @@ static double averageamp;
 
 	afcmetric = decayavg(afcmetric, norm(quality), 50);
 
-	dcdshreg = (dcdshreg << 2) | bits;
+	dcdshreg = ( dcdshreg << (symbits+1) ) | bits;
 
 	imdValid = false;
 	switch (dcdshreg) {
 
+	case 0x44444444:	// DCD on preamble for 8psk modes
+	  	if (!_8psk) break;
 	case 0xAAAAAAAA:	// DCD on by preamble for psk modes
 		if (!_pskr) {
 			dcd = true;
@@ -1124,21 +1142,31 @@ static double averageamp;
 		}
 	}
 
-	if (!_pskr) {
-		set_phase(phase, norm(quality), dcd);
-
-		if (dcd == true) {
-			if (_qpsk )
-				rx_qpsk(bits);
-			else
-				rx_bit(!bits);
-		}
-	} else { // pskr processing
-		// FEC: moved below the rx_bit to use proper value for dcd
+	if (_pskr) {
 		rx_pskr(softbit);
 		set_phase(phase, norm(quality), dcd);
+	} else if (dcd == true) {
+		set_phase(phase, norm(quality), dcd);
+		
+		if (_16psk || _8psk || _xpsk) {
+			if (!_disablefec) {
+				unsigned char xsoftsymbols[4]={0};
+				rx_xpsk(xsoftsymbols[0], xsoftsymbols[1], xsoftsymbols[2], xsoftsymbols[3]);
+			} else {
+				// Decode symbol one bit at a time
+				int bitmask = 1;
+				for (int i = 0; i < symbits; i++) {
+					rx_bit( ((bits) & bitmask) );
+					bitmask = bitmask << 1;
+				}
+			}
+			
+		} else if (_qpsk)
+			rx_qpsk(bits);
+		
+		else
+			rx_bit(!bits); //default to BPSK
 	}
-
 }
 
 void psk::signalquality()
@@ -1373,6 +1401,28 @@ int psk::rx_process(const double *buf, int len)
 // transmit processes
 //=====================================================================
 
+#define SVP_MASK 0xF
+#define SVP_COUNT (SVP_MASK + 1)
+
+static cmplx sym_vec_pos[SVP_COUNT] = {
+	cmplx (-1.0, 0.0),        // 180 degrees
+	cmplx (-0.9238, -0.3826), // 202.5 degrees
+	cmplx (-0.7071, -0.7071), // 225 degrees
+	cmplx (-0.3826, -0.9238), // 247.5 degrees
+	cmplx (0.0, -1.0),        // 270 degrees
+	cmplx (0.3826, -0.9238),  // 292.5 degrees
+	cmplx (0.7071, -0.7071),  // 315 degrees
+	cmplx (0.9238, -0.3826),  // 337.5 degrees
+	cmplx (1.0, 0.0),         // 0 degrees
+	cmplx (0.9238, 0.3826),   // 22.5 degrees
+	cmplx (0.7071, 0.7071),   // 45 degrees
+	cmplx (0.3826, 0.9238),   // 67.5 degrees
+	cmplx (0.0, 1.0),         // 90 degrees
+	cmplx (-0.3826, 0.9238),  // 112.5 degrees
+	cmplx (-0.7071, 0.7071),  // 135 degrees
+	cmplx (-0.9238, 0.3826)   // 157.5 degrees
+};
+
 void psk::tx_carriers()
 {
 	double delta[MAX_CARRIERS];
@@ -1381,6 +1431,7 @@ void psk::tx_carriers()
 	double	frequencies[MAX_CARRIERS];
 
 	//Process all carrier's symbols, then submit to sound card
+	accumulated_bits = 0; //reset
 	frequencies[0] = get_txfreq_woffset() + ((-1 * numcarriers) + 1) * inter_carrier / 2;
 	delta[0] = TWOPI * frequencies[0] / samplerate;
 	for (int car = 1; car < symbols; car++) {
@@ -1396,22 +1447,14 @@ void psk::tx_carriers()
 		if (_qpsk && !reverse)
 			sym = (4 - sym) & 3;
 
-		// differential QPSK modulation - top bit flipped
-		switch (sym) {
-		case 0:
-			symbol = cmplx (-1.0, 0.0);	// 180 degrees
-			break;
-		case 1:
-			symbol = cmplx (0.0, -1.0);	// 270 degrees
-			break;
-		case 2:
-			symbol = cmplx (1.0, 0.0);		// 0 degrees
-			break;
-		case 3:
-			symbol = cmplx (0.0, 1.0);		// 90 degrees
-			break;
-		}
-		symbol = prevsymbol[car] * symbol;	// cmplx multiplication
+		// Map the incoming symbols to the underlying 16psk constellation.
+		if (_16psk) ;
+		else if (_8psk) sym *= 2;
+		else if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
+		else sym *= 4; // For BPSK and QPSK
+
+
+ 		symbol = prevsymbol[car] * sym_vec_pos[(sym & SVP_MASK)];	// complex multiplication
 
 		for (int i = 0; i < symbollen; i++) {
 
@@ -1436,9 +1479,9 @@ void psk::tx_carriers()
 
 		prevsymbol[car] = symbol;
 	}
-
 	if (maxamp)
 		for (int i = 0; i < symbollen; i++) outbuf[i] /= maxamp;
+
 	ModulateXmtr(outbuf, symbollen);
 }
 
@@ -1456,12 +1499,15 @@ void psk::tx_symbol(int sym)
 void psk::tx_bit(int bit)
 {
 	unsigned int sym;
+	static int bitcount=0;
+	static int xpsk_sym=0;
 
 	// qpsk transmission
 	if (_qpsk) {
 		sym = enc->encode(bit);
 		sym = sym & 3;//JD just to make sure
 		tx_symbol(sym);
+	// pskr (fec + interleaver) transmission
 	} else if (_pskr) {
 // Encode into two bits
 		bitshreg = enc->encode(bit);
@@ -1472,11 +1518,27 @@ void psk::tx_bit(int bit)
 		tx_symbol(sym);
 		sym = bitshreg & 2;
 		tx_symbol(sym);
-// else normal bpsk tranmission
+	} else if (_16psk || _8psk || _xpsk) {
+		if (_disablefec) {
+			//Accumulate tx bits until the correct number for symbol-size is reached
+			xpsk_sym |= bit << bitcount++ ;
+			if (bitcount == symbits) {
+				tx_symbol(xpsk_sym);
+				xpsk_sym = bitcount = 0;
+			}
+		} else
+			tx_xpsk(bit);
+ 	// else normal bpsk transmission
 	} else {
 		sym = bit << 1;
 		tx_symbol(sym);
 	}
+}
+
+void psk::tx_xpsk(int bits)
+{
+	return; // unfinished block of code
+
 }
 
 unsigned char ch;
@@ -1485,7 +1547,7 @@ void psk::tx_char(unsigned char c)
 	ch = c;
 	const char *code;
 	char_symbols = acc_symbols;
-	if (_pskr) {
+	if (_pskr || _xpsk || _8psk || _16psk) {
 //		acc_symbols = 0;
 		// ARQ varicode instead of MFSK for PSK63FEC
 		code = varienc(c);
@@ -1497,13 +1559,14 @@ void psk::tx_char(unsigned char c)
 		code++;
 	}
 
-	if (! _pskr) {
-		// MSFK varicode instead of psk varicode
+	// Insert PSK varicode character-delimiting bits
+	if (! _pskr && !_xpsk && !_8psk && !_16psk) {
 		tx_bit(0);
 		tx_bit(0);
 	}
 	char_symbols = acc_symbols - char_symbols;
 }
+
 
 void psk::tx_flush()
 {
@@ -1512,21 +1575,32 @@ void psk::tx_flush()
 //VK2ETA replace with a more effective flushing sequence (avoids cutting the last characters in low s/n)
 		for (int i = 0; i < ovhd_symbols/2; i++) tx_bit(0);
 
-		for (int i = 0; i < dcdbits; i++) tx_bit(0);
-		return;
-	}
+		for (int i = 0; i < dcdbits / 2; i++) {
+			tx_bit(1);
+			tx_bit(1);
+		}
 	// QPSK - flush the encoder
-	if (_qpsk) {
+	} else if (_qpsk) {
 		for (int i = 0; i < dcdbits; i++)
 		tx_bit(0);
-	// FEC : replace unmodulated carrier by an encoded sequence of zeros
-	}
+        // FEC : replace unmodulated carrier by an encoded sequence of zeros
+	} else if (!_disablefec && (_xpsk || _8psk || _16psk) ) {
+		for (int i = 0; i < dcdbits / 4; i++) {
+			tx_char(0);   // <NUL>
+		}
+	// FEC disabled: use unmodulated carrier
+	} else if (_disablefec && ( _xpsk || _8psk || _16psk) ) {
+		int symbol;
+		if (_16psk) symbol = 8;
+		else if (_8psk) symbol = 4;
+		else if (_xpsk) symbol = 2;
+		for (int i = 0; i < dcdbits; i++)
+			tx_symbol(symbol); // 0 degrees
 	// Standard BPSK postamble
 	// DCD off sequence (unmodulated carrier)
-	//VK2ETA remove for pskr since it is not used for DCD and only adds delay and creates TX overlaps
-	if (!_pskr) {
+	} else {
 		for (int i = 0; i < dcdbits; i++)
-			tx_symbol(2);
+			tx_symbol(2); // 0 degrees
 	}
 }
 
@@ -1539,12 +1613,14 @@ void psk::clearbits()
 	}
 }
 
+
+
 int psk::tx_process()
 {
 	int c;
 
 	if (preamble > 0) {
-		if (_pskr) {
+		if (_pskr || ((_xpsk || _8psk || _16psk) && !_disablefec) ) {
 			if (startpreamble == true) {
 				if (mode != MODE_PSK63F) clearbits();
 				startpreamble = false;
@@ -1584,7 +1660,7 @@ int psk::tx_process()
 	}
 
 	if (c == GET_TX_CHAR_NODATA) {
-		if (_pskr) {
+		if (_pskr || _xpsk || _8psk || _16psk) {
 			// MFSK varicode instead of psk
 			tx_char(0);   // <NUL>
 			tx_bit(1);
