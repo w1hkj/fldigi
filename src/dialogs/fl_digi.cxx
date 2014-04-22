@@ -5443,6 +5443,11 @@ void create_fl_digi_main_primary() {
 	}
 
 	LOGGING_colors_font();
+
+	if (rx_only) {
+		btnTune->deactivate();
+		wf->xmtrcv->deactivate();
+	}
 }
 
 void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);
@@ -5957,6 +5962,10 @@ void create_fl_digi_main_WF_only() {
 		grpNoise->show();
 	altTabs();
 
+	if (rx_only) {
+		btnTune->deactivate();
+		wf->xmtrcv->deactivate();
+	}
 }
 
 
@@ -6838,6 +6847,22 @@ void abort_tx()
 		queue_reset();
 		trx_start_modem(active_modem);
 	}
+}
+
+void set_rx_tx()
+{
+	abort_tx();
+	rx_only = false;
+	btnTune->activate();
+	wf->xmtrcv->activate();
+}
+
+void set_rx_only()
+{
+	abort_tx();
+	rx_only = true;
+	btnTune->deactivate();
+	wf->xmtrcv->deactivate();
 }
 
 void qsy(long long rfc, int fmid)
