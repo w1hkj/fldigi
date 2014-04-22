@@ -135,8 +135,7 @@ int wwv::rx_process(const double *buf, int len)
 		z = znco * z;
 		
 		phaseacc += phaseincr;
-		if (phaseacc > M_PI)
-			phaseacc -= 2.0 * M_PI;
+		if (phaseacc > TWOPI) phaseacc -= TWOPI;
 
 		if (lpfilter->run ( z, z )) {
 			buffer[smpl_ctr % 1000] = vidfilter->run( abs(z) );		

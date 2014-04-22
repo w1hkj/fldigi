@@ -1023,8 +1023,7 @@ static double averageamp;
 	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
 
-	if (phase < 0)
-		phase += TWOPI;
+	if (phase < 0) phase += TWOPI;
 
 	if (_qpsk) {
 		bits = ((int) (phase / M_PI_2 + 0.5)) & 3;
@@ -1207,8 +1206,7 @@ int psk::rx_process(const double *buf, int len)
 		z = cmplx ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
 
 		phaseacc[car] += delta[car];
-		if (phaseacc[car] > M_PI)
-			phaseacc[car] -= TWOPI;
+		if (phaseacc[car] > TWOPI) phaseacc[car] -= TWOPI;
 
 		// Filter and downsample
 		// by 16 (psk31, qpsk31)
@@ -1433,8 +1431,7 @@ void psk::tx_carriers()
 			}
 
 			phaseacc[car] += delta[car];
-			if (phaseacc[car] > M_PI)
-				phaseacc[car] -= 2.0 * M_PI;
+			if (phaseacc[car] > TWOPI) phaseacc[car] -= TWOPI;
 		}
 
 		prevsymbol[car] = symbol;
