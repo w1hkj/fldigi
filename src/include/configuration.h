@@ -144,6 +144,9 @@
         ELEM_(bool, WF_UIx1, "WF_UIX1",                                                 \
               "WF_UI - enable scale multiplication button",                             \
               false)                                                                    \
+        ELEM_(int, drop_speed, "DROP_SPEED",                                            \
+              "DROP_SPEED - slow rate waterfall drop speed",                            \
+              8)                                                                        \
         ELEM_(bool, WF_UIwfcarrier, "WF_UIWFCARRIER",                                   \
               "WF_UI - enable wf carrier button",                                       \
               false)                                                                    \
