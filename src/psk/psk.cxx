@@ -183,8 +183,6 @@ psk::psk(trx_mode pskmode) : modem()
 	cap |= CAP_AFC | CAP_AFC_SR;
 
 	mode = pskmode;
-	int  isize = 5;
-	int  idepth = 5;  // 5x5x5 interleaver
 
 	// Set the defaults that are common to most modes
 	PskSampleRate = 8000;
@@ -193,7 +191,9 @@ psk::psk(trx_mode pskmode) : modem()
 	_16psk = _8psk = _xpsk = _pskr = _qpsk = _disablefec = false;
 	symbits = 1;
 	flushlength = 0;
-
+	int  isize = 2;
+	int  idepth = 0;
+	
 	switch (mode) {
 	case MODE_PSK31:
 		symbollen = 256;
@@ -261,7 +261,6 @@ psk::psk(trx_mode pskmode) : modem()
 		PskSampleRate = 16000;
 		_8psk = true;
 		dcdbits = 128;
-		isize = 2;
 		idepth = 200; // 1600ms
 		cap |= CAP_REV;
 		break;
@@ -270,7 +269,6 @@ psk::psk(trx_mode pskmode) : modem()
 		PskSampleRate = 16000;
 		_8psk = true;
 		dcdbits = 256;
-		isize = 2;
 		idepth = 200; // 800ms
 		cap |= CAP_REV;
 		break;
@@ -279,7 +277,6 @@ psk::psk(trx_mode pskmode) : modem()
 		PskSampleRate = 16000;
 		_8psk = true;
 		dcdbits = 512;
-		isize = 2;
 		idepth = 400; // 800ms
 		cap |= CAP_REV;
 		break;
@@ -288,7 +285,6 @@ psk::psk(trx_mode pskmode) : modem()
 		PskSampleRate = 16000;
 		_8psk = true;
 		dcdbits = 1024;
-		isize = 2;
 		idepth = 500; // 500ms
 		cap |= CAP_REV;
 		break;
@@ -297,7 +293,6 @@ psk::psk(trx_mode pskmode) : modem()
 		PskSampleRate = 32000;
 		_8psk = true;
 		dcdbits = 2048;
-		isize = 2;
 		idepth = 1000; // 500ms
 		cap |= CAP_REV;
 		break;
@@ -306,28 +301,24 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 64;
 		_pskr = true;
 		dcdbits = 128;
-		isize = 2;
 		idepth = 40;  // 2x2x40 interleaver
 		break;
 	case MODE_PSK250R:
 		symbollen = 32;
 		_pskr = true;
 		dcdbits = 256;
-		isize = 2;
 		idepth = 80;  // 2x2x80 interleaver
 		break;
 	case MODE_PSK500R:
 		symbollen = 16;
 		_pskr = true;
 		dcdbits = 512;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_PSK1000R:
 		symbollen = 8;
 		_pskr = true;
 		dcdbits = 512;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -337,7 +328,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 128;
 		_pskr = true;//PSKR
 		numcarriers = 4;
-		isize = 2;
 		idepth = 80; // 2x2x80 interleaver
 		break;
 	case MODE_5X_PSK63R:
@@ -345,7 +335,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true; //PSKR
 		numcarriers = 5;
-		isize = 2;
 		idepth = 260; // 2x2x160 interleaver
 		break;
 	case MODE_10X_PSK63R:
@@ -353,7 +342,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true; //PSKR
 		numcarriers = 10;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_20X_PSK63R:
@@ -361,7 +349,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true; //PSKR
 		numcarriers = 20;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_32X_PSK63R:
@@ -369,7 +356,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true; //PSKR
 		numcarriers = 32;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -378,7 +364,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 4;
-		isize = 2;
 		idepth = 80; // 2x2x80 interleaver
 		break;
 	case MODE_5X_PSK125R:
@@ -386,7 +371,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 5;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_10X_PSK125R:
@@ -394,7 +378,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 10;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -408,7 +391,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 12;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -417,7 +399,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 16;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -426,7 +407,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 2;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_3X_PSK250R:
@@ -434,7 +414,6 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 512;
 		_pskr = true;//PSKR
 		numcarriers = 3;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_5X_PSK250R:
@@ -442,7 +421,6 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 5;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_6X_PSK250:
@@ -455,7 +433,6 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 6;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_7X_PSK250R:
@@ -463,7 +440,6 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 7;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -482,7 +458,6 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 16;
 		_pskr = true;
 		dcdbits = 1024;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		numcarriers = 2;
 		break;
@@ -490,7 +465,6 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 16;
 		_pskr = true;
 		dcdbits = 1024;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		numcarriers = 3;
 		break;
@@ -498,7 +472,6 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 16;
 		_pskr = true;
 		dcdbits = 1024;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		numcarriers = 4;
 		break;
@@ -513,7 +486,6 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 10;
 		_pskr = true;
 		dcdbits = 1024;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		numcarriers = 2;
 		break;
@@ -522,7 +494,6 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 8;//PSK1000
 		dcdbits = 1024;
 		numcarriers = 2;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 	case MODE_2X_PSK1000R:
@@ -530,7 +501,6 @@ psk::psk(trx_mode pskmode) : modem()
 		_pskr = true;//PSKR
 		dcdbits = 1024;
 		numcarriers = 2;
-		isize = 2;
 		idepth = 160; // 2x2x160 interleaver
 		break;
 
@@ -546,6 +516,12 @@ psk::psk(trx_mode pskmode) : modem()
 	else if (_8psk) symbits = 3;
 	else if (_16psk) symbits = 4;
 	else symbits = 1; // else BPSK / PSKR
+	
+	// Set the correct interleaver width for the bits-per-symbol.
+	if (_xpsk || _8psk || _16psk)
+		isize = symbits;
+	else
+		isize = 2;
 
 
 	/// KL4YFD
@@ -1030,7 +1006,7 @@ static double averageamp;
 	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
 
-	/// KL4YFD: align the RX constellation to the TX constellation.
+	/// align the RX constellation to the TX constellation.
 	if (_16psk || _8psk|| _xpsk) phase -= M_PI;
 
 	if (phase < 0) phase += TWOPI;
@@ -1098,50 +1074,92 @@ static double averageamp;
 
 	dcdshreg = ( dcdshreg << (symbits+1) ) | bits;
 
+	int set_dcdON = -1; // 1 sets DCD on ; 0 sets DCD off ; -1 does neither (no-op)
 	imdValid = false;
+	//printf("\n%.8X", dcdshreg);
 	switch (dcdshreg) {
 
-	case 0x44444444:	// DCD on preamble for 8psk modes
-	  	if (!_8psk) break;
-	case 0xAAAAAAAA:	// DCD on by preamble for psk modes
-		if (!_pskr) {
-			dcd = true;
-			acquire = 0;
-			quality = cmplx (1.0, 0.0);
-			imdValid = true;
-			if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
-				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
-		}
+	case 0xAAAAAAAA:	// bpsk DCD on
+		if ( _xpsk || _8psk || _16psk) break;
+		if (_pskr) break;
+		set_dcdON = 1;
+		break;
+		
+	// 4 possibilities of bit alignment for pskr DCD on
+	case 0x0A0A0A0A:
+	case 0x28282828:
+	case 0xA0A0A0A0:
+	case 0x82828282:
+		if ( _xpsk || _8psk || _16psk) break;
+		if (_qpsk) break;
+		if (!_pskr) break;
+		set_dcdON = 1;
+		break;
+		
+	// 4 possibilities of bit alignment for 8psk DCD on (FEC enabled)
+	case 0x00440044:
+	case 0x04400440:
+	case 0x44004400:
+	case 0x40044004:
+		if (_pskr || _xpsk || _16psk) break;
+		if (!_8psk) break;
+		if (_disablefec) break;
+		set_dcdON = 1;
 		break;
 
-	case 0xA0A0A0A0:	// DCD on by preamble for PSKR modes ("11001100" sequence sent as preamble)
-		if (_pskr) {
-			dcd = true;
-			acquire = 0;
-			quality = cmplx (1.0, 0.0);
-			imdValid = true;
-//VK2ETA added logic to prevent resetting
-//			noSOHyet = true;
-			if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
-				s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
-		}
+	case 0x92492492:	// xpsk DCD off (with FEC disabled)
+		if (_pskr) break;
+		if (_qpsk) break;
+		if (!_xpsk) break;
+		if (!_disablefec) break;
+		set_dcdON = 0;
 		break;
 
-	case 0:			// DCD off by postamble. Not for PSKR modes as this is not unique to postamble.
-		if (!_pskr) {
-			dcd = false;
-			acquire = 0;
-			quality = cmplx (0.0, 0.0);
-		}
+	case 0x44444444:	// 8psk DCD off (with FEC disabled)
+		if (_pskr) break;
+		if (!_8psk) break;
+		if (!_disablefec) break;
+		set_dcdON = 0;
 		break;
+		
+	case 0x10842108:	// 16psk DCD off (with FEC disabled)
+		if (_pskr) break;
+		if (!_16psk) break;
+		if (!_disablefec) break;
+		set_dcdON = 0;
+		break;
+		
+	case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
+		if (_pskr) break;
+		if (_xpsk || _8psk || _16psk) {
+			if (!_disablefec) break;
+			set_dcdON = 1;
+			break;
+		}
+		set_dcdON = 0;
+		break;
+		
 	default:
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
-			dcd = true;
+			set_dcdON = 1;
 		} else {
-			dcd = false;
+			set_dcdON = 0;
 		}
 	}
-
+	
+	if ( 1 == set_dcdON ) {
+		dcd = true;
+		acquire = 0;
+		quality = cmplx (1.0, 0.0);
+		imdValid = true;
+		if (progdefaults.Pskmails2nreport && (mailserver || mailclient))
+			s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+	} else if ( 0 == set_dcdON ){
+		dcd = false;
+		acquire = 0;
+		quality = cmplx (0.0, 0.0);
+	}
+	
 	if (_pskr) {
 		rx_pskr(softbit);
 		set_phase(phase, norm(quality), dcd);
@@ -1150,7 +1168,12 @@ static double averageamp;
 		
 		if (_16psk || _8psk || _xpsk) {
 			if (!_disablefec) {
-				unsigned char xsoftsymbols[4]={0};
+				int bitmask = 1;
+				unsigned char xsoftsymbols[symbits];
+				for(int i=0; i<symbits; i++) { // Hard decode bits into soft-symbols
+					xsoftsymbols[i] = (bits & bitmask) ? 255 : 0 ;
+					bitmask = bitmask << 1;
+				}
 				rx_xpsk(xsoftsymbols[0], xsoftsymbols[1], xsoftsymbols[2], xsoftsymbols[3]);
 			} else {
 				// Decode symbol one bit at a time
@@ -1535,11 +1558,65 @@ void psk::tx_bit(int bit)
 	}
 }
 
-void psk::tx_xpsk(int bits)
+void psk::tx_xpsk(int bit)
 {
-	return; // unfinished block of code
+	static int bitcount = 0;
+	static unsigned int xpsk_sym = 0;
+	int fecbits = 0;
+	
+	// Pass one bit and return two bits
+	fecbits = enc->encode(bit);
+	
+	if (_xpsk) { // 2 bits-per-symbol. Transmit every call
+		xpsk_sym = fecbits;
+		Txinlv->bits(&xpsk_sym);
+		tx_symbol(xpsk_sym);
+		xpsk_sym = bitcount = 0;
+		return;
+	}
+	
+	if (_8psk) { // 3 bits-per-symbol. Accumulate then tx.
+		if ( 0 == bitcount ) { // Empty xpsk_sym buffer: add 2 bits and return
+			xpsk_sym = fecbits;
+			bitcount = 2;
+			return ;
 
+		} else if ( 1 == bitcount ) { // xpsk_sym buffer with one bit: add 2 bits then tx and clear
+			xpsk_sym |= (fecbits & 1) << 1 ;
+			xpsk_sym |= (fecbits & 2) << 1 ;
+			Txinlv->bits(&xpsk_sym);
+			tx_symbol(xpsk_sym);
+			xpsk_sym = bitcount = 0;
+			return;
+
+		} else if ( 2 == bitcount ) { // xpsk_sym buffer with 2 bits: add 1 then tx and save next bit
+			xpsk_sym |= (fecbits & 1) << 2 ;
+			Txinlv->bits(&xpsk_sym);
+			tx_symbol(xpsk_sym);
+			xpsk_sym = 0;
+			xpsk_sym |= (fecbits & 2) >> 1 ;
+			bitcount = 1;
+			return;
+		}
+	}
+	
+	if (_16psk) { // 4 bits-per-symbol. Transmit every-other run.
+		if ( 0 == bitcount) {
+			xpsk_sym = fecbits;
+			bitcount = 2;
+			return;
+		
+		} else if ( 2 == bitcount ) {
+			xpsk_sym |= (fecbits & 1) << 2 ;
+			xpsk_sym |= (fecbits & 2) << 2 ;
+			Txinlv->bits(&xpsk_sym);
+			tx_symbol(xpsk_sym);
+			xpsk_sym = bitcount = 0;
+			return;
+		}
+	}
 }
+
 
 unsigned char ch;
 void psk::tx_char(unsigned char c)
@@ -1590,10 +1667,13 @@ void psk::tx_flush()
 		}
 	// FEC disabled: use unmodulated carrier
 	} else if (_disablefec && ( _xpsk || _8psk || _16psk) ) {
+		for (int i=0; i<symbits; i++) {
+			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
+		}
 		int symbol;
 		if (_16psk) symbol = 8;
 		else if (_8psk) symbol = 4;
-		else if (_xpsk) symbol = 2;
+		else symbol = 2;
 		for (int i = 0; i < dcdbits; i++)
 			tx_symbol(symbol); // 0 degrees
 	// Standard BPSK postamble
@@ -1632,8 +1712,10 @@ int psk::tx_process()
 			tx_bit(0);
 			// FEC: Mark start of first character with a double zero
 			// to ensure sync at end of preamble
-			if (preamble == 0)
+			if (preamble == 0) {
 				while (acc_symbols % numcarriers) tx_bit(0);
+				tx_char(0); // <NUL> 
+			}
 			return 0;
 		} else {
 			//JD for QPSK500R
