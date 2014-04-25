@@ -223,6 +223,11 @@ public:
 	int  xmt_samples;
 	int  ovhd_samples;
 
+// analysis mode
+	virtual void start_csv() {}
+	virtual void stop_csv() {}
+	virtual int is_csv() { return true;}
+	virtual double track_freq() { return 0;}
 };
 
 extern modem *null_modem;
