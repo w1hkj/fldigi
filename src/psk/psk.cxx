@@ -1065,6 +1065,8 @@ static double averageamp;
 	// Otherwise we miss good characters
 	if (_pskr) {
 		metric = metric * 4;
+	} else if ( (_xpsk || _8psk || _16psk) && !_disablefec) {
+		metric *= symbits; // scale the metric with the psk constellation density 
 	}
 
 	if (metric > 100)
@@ -1141,9 +1143,9 @@ static double averageamp;
 		
 	default:
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
-			set_dcdON = 1;
+			dcd = true;
 		} else {
-			set_dcdON = 0;
+			dcd = false;
 		}
 	}
 	
