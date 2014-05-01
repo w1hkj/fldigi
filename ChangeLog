@@ -1,8 +1,22 @@
 
 
-=Version 3.21.81=
+=Version 3.21.82=
 
-2014-03-26  David Freese  <w1hkj@w1hkj.com>
+2014-04-30  David Freese  <w1hkj@w1hkj.com>
+
+	92a7d01: hash-fix
+	b0db34c: RnA Analysis
+	fa9e10a: Phase accumulator
+	b7ce1cd: Base Directories
+	c9c6f28: WF Height/Speed
+	ca61d3f: RX Only
+	43fbe22: RTTY mem leak
+	f470ce3: Olivia/Contestia custom
+	b87e664: ARQ abort
+	a9818aa: RTTY Custom Shift
+
+
+=Version 3.21.81=
 
 	134221e: TX monitor
 	922c16f: Spotter seg fault
@@ -2167,7 +2181,7 @@
 
 2009-02-25  Stelios Bounanos  <vcs@enotty.net>
 
-	a2fc0c8db: Add better support for proportional fonts
+	a2fc0c8: Add better support for proportional fonts
 	f6466f2: Fix font name/number compatibility code
 	eb1ec8a: Fix printf format string
 
