@@ -63,6 +63,7 @@ private:
 	bool			_16psk;
 	bool			_8psk;
 	bool			_xpsk;
+	bool			_3psk;
 	bool			_disablefec;
 	int			flushlength;
 	double 			separation;
@@ -160,6 +161,7 @@ private:
 	void 			tx_symbol(int sym);
 	void			tx_bit(int bit);
 	void			tx_xpsk(int bit);
+	void			tx_3psk(int bit);
 	void			tx_char(unsigned char c);
 	void			tx_flush();
 	void			update_syncscope();

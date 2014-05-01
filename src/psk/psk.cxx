@@ -188,7 +188,7 @@ psk::psk(trx_mode pskmode) : modem()
 	PskSampleRate = 8000;
 	numcarriers = 1;
 	separation = 1.4;
-	_16psk = _8psk = _xpsk = _pskr = _qpsk = _disablefec = false;
+	_16psk = _8psk = _xpsk = _pskr = _qpsk = _3psk = _disablefec = false;
 	symbits = 1;
 	flushlength = 0;
 	int  isize = 2;
@@ -510,12 +510,21 @@ psk::psk(trx_mode pskmode) : modem()
 		dcdbits = 32;
 		numcarriers = 1;
 	}
+	
+		/// KL4YFD
+	/// TEST CODE only until/if 3psk menu items implemented
+	/// Re-Use qpsk meu items temporarily
+	if (_qpsk) {
+		_qpsk = false;
+		_3psk = true;
+	}
+	///
 
 	// Set the number of bits-per-symbol based on the chosen constellation
 	if (_qpsk || _xpsk) symbits = 2;
 	else if (_8psk) symbits = 3;
 	else if (_16psk) symbits = 4;
-	else symbits = 1; // else BPSK / PSKR
+	else symbits = 1; // else BPSK / PSKR / 3psk
 	
 	// Set the correct interleaver width for the bits-per-symbol.
 	if (_xpsk || _8psk || _16psk)
@@ -965,6 +974,7 @@ void psk::phaseafc()
 		mode == MODE_PSK500 ||
 		mode == MODE_QPSK500 ||
 		_xpsk || _8psk || _16psk ||
+		_3psk ||
 		numcarriers > 1 ) return;
 
 	error = (phase - bits * M_PI / 2.0);
@@ -995,23 +1005,60 @@ void psk::afc()
 
 void psk::rx_symbol(cmplx symbol, int car)
 {
-	int n;
+	int n, bits_3psk=1;
 	unsigned char softbit = 0;
 	double softangle;
 	double softamp;
 	double sigamp = norm(symbol);
+	static double prevphase=0;
+	static int prevbits;
 
 static double averageamp;
 
+	// TODO cleanup: kl4yfd: 3psk alpha / beta code
+	printf("\n\nsymbol=%.2f,  %.2f", symbol.real(), symbol.imag());
+	printf("\nprevsymbol=%.2f,  %.2f", prevsymbol[car].real(), prevsymbol[car].imag());
 	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
 
 	/// align the RX constellation to the TX constellation.
 	if (_16psk || _8psk|| _xpsk) phase -= M_PI;
 
+	printf("\nPrev: %.2f, Phase: %.2f",prevphase, phase);
+	prevphase = phase;
+	
 	if (phase < 0) phase += TWOPI;
+	else if (phase > TWOPI) phase -= TWOPI;
 
-	if (_qpsk) {
+	if (_3psk) {
+		n = 3;
+		bits = (int) ((phase+0.25) / (M_PI/3.0 + 0.5)) & n;
+		printf("\nBits: %d",bits);
+		// 3psk hard-decoding hack (temporary)
+		// Clockwise (decreasing degrees) indicates a ONE
+		// Counter-clockwise (increasing degrees) indicates a ZERO
+		/// TODO : Rewrite this section to be more robust
+		if (prevbits == 3) {
+			if (2 == bits) bits_3psk = 0;
+			else if (0 == bits) bits_3psk = 2;
+		
+		} else if (prevbits == 2) {
+			if (0 == bits) bits_3psk = 0;
+			else if (3 == bits) bits_3psk = 2;
+		  
+		} else if (prevbits == 1) {
+			if (0 == bits) bits_3psk = 0;
+			else if (2 == bits) bits_3psk = 2;
+		
+		} else if (prevbits == 0) {
+			if (3 == bits) bits_3psk = 0;
+			else if (2 == bits) bits_3psk = 2;
+		}
+		
+		printf("\n bits_3psk: %d", bits_3psk );
+		if (1 == bits_3psk) printf ("  PUNCTURE");
+		prevbits = bits;
+	} else if (_qpsk) {
 		n = 4;
 		bits = ((int) (phase / M_PI_2 + 0.5)) & (n-1);
 	} else if (_xpsk) {
@@ -1078,7 +1125,7 @@ static double averageamp;
 
 	int set_dcdON = -1; // 1 sets DCD on ; 0 sets DCD off ; -1 does neither (no-op)
 	imdValid = false;
-	//printf("\n%.8X", dcdshreg);
+	printf("\n%.8X", dcdshreg);
 	switch (dcdshreg) {
 
 	case 0xAAAAAAAA:	// bpsk DCD on
@@ -1188,6 +1235,9 @@ static double averageamp;
 			
 		} else if (_qpsk)
 			rx_qpsk(bits);
+		
+		else if (_3psk)
+			rx_bit(bits_3psk); // non-inverted bits for 3psk
 		
 		else
 			rx_bit(!bits); //default to BPSK
@@ -1447,6 +1497,24 @@ static cmplx sym_vec_pos[SVP_COUNT] = {
 	cmplx (-0.7071, 0.7071),  // 135 degrees
 	cmplx (-0.9238, 0.3826)   // 157.5 degrees
 };
+/*
+static cmplx sym_vec_pos_6psk[6] = {
+	cmplx (0.0, 1.0),        // 90 degrees
+	cmplx (-0.8660, 0.5),    // 150 degrees
+	cmplx (-0.8660, -0.5),   // 210 degrees
+	cmplx (0.0, -1.0),       // 270 degrees
+	cmplx (0.8660, -0.5),    // 330 degrees
+	cmplx (0.8660, 0.5)      // 30 degrees
+};
+*/
+static cmplx sym_vec_pos_6psk[6] = {
+	cmplx (-1.0, 0.0),       // 180 degrees
+	cmplx (-0.5, -0.8660),   // 240 degrees
+	cmplx (0.5, -0.8660),    // 300 degrees
+	cmplx (1.0, 0.0),        // 0 degrees
+	cmplx (0.5, 0.8660),     // 60 degrees
+	cmplx (-0.5, 0.8660)     // 120 degrees
+};
 
 void psk::tx_carriers()
 {
@@ -1510,6 +1578,83 @@ void psk::tx_carriers()
 	ModulateXmtr(outbuf, symbollen);
 }
 
+void psk::tx_3psk(int bit)
+{
+  	double delta[MAX_CARRIERS];
+	double	ival, qval, shapeA, shapeB;
+	int sym;
+	static int lastsym=0;
+	cmplx symbol;
+	int car = 0; // hardcode to single-carrier 
+	double	frequencies[MAX_CARRIERS];
+	
+	//Process all carrier's symbols, then submit to sound card
+	accumulated_bits = 0; //reset
+	frequencies[0] = get_txfreq_woffset() + ((-1 * numcarriers) + 1) * inter_carrier / 2;
+	delta[0] = TWOPI * frequencies[0] / samplerate;
+	for (int car = 1; car < symbols; car++) {
+			frequencies[car] = frequencies[car - 1] + inter_carrier;
+			delta[car] = TWOPI * frequencies[car] / samplerate;
+	}
+	
+	// Encode each bit as a phase-change
+	// Clockwise (decreasing degrees) encodes a 1
+	// Counter-clockwise (increasing degrees) encodes a 0
+	// There is always a phase change, even for extended 0 or 1 bit-streams
+	if (bit > 0)
+		sym = lastsym + 2; // Encode a ONE
+	else
+		sym = lastsym - 2; // Encode a ZERO
+	
+	// Bounds-check and wrap around
+	if (sym < 0)
+		sym += 6;
+	else if (sym > 5)
+		sym -= 6;
+	
+	// Just to be safe...
+	assert(sym >=0 && sym <=5);
+	
+	
+	symbol = prevsymbol[car] * sym_vec_pos_6psk[sym];	// complex multiplication	
+	
+	double maxamp = 0;
+	for (int i = 0; i < symbollen; i++) {
+	  
+		/// Amplitude shaped 3psk
+		/// TODO: Better symbol shaping for non-zero crossing PSK
+		shapeA = tx_shape[i];
+		shapeB = (1.0 - shapeA);
+		
+		ival = shapeA * prevsymbol[car].real() + shapeB * symbol.real();
+		qval = shapeA * prevsymbol[car].imag() + shapeB * symbol.imag();
+
+
+		if (car != 0) {
+			outbuf[i] += (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car]));// / numcarriers; 
+		} else {
+			outbuf[i] = (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car]));// / numcarriers;
+		}
+			
+		if (maxamp < fabs(outbuf[i])) {
+			maxamp = fabs(outbuf[i]);
+		}
+
+		phaseacc[car] += delta[car];
+		if (phaseacc[car] > M_PI)
+			phaseacc[car] -= 2.0 * M_PI;
+	}
+	
+	if (maxamp)
+		for (int i = 0; i < symbollen; i++) outbuf[i] /= maxamp;
+	
+	ModulateXmtr(outbuf, symbollen);
+	
+	lastsym = sym;
+
+	prevsymbol[car] = symbol;
+}
+
 void psk::tx_symbol(int sym)
 {
 	acc_symbols++;
@@ -1533,6 +1678,8 @@ void psk::tx_bit(int bit)
 		sym = sym & 3;//JD just to make sure
 		tx_symbol(sym);
 	// pskr (fec + interleaver) transmission
+	} else if (_3psk) {
+		tx_3psk(bit);
 	} else if (_pskr) {
 // Encode into two bits
 		bitshreg = enc->encode(bit);
@@ -1727,6 +1874,8 @@ int psk::tx_process()
 			tx_symbol(0);   // send phase reversals
 			return 0;
 		}
+		
+		tx_char(0); // <NUL> 
 	}
 
 	c = get_tx_char();
