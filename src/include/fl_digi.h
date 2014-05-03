@@ -52,6 +52,8 @@ extern Fl_Double_Window *scopeview;
 
 extern Fl_Double_Window *dlgRecordLoader;
 
+extern bool first_use;
+
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
 extern pskBrowser		*mainViewer;

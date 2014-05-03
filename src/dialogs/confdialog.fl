@@ -297,8 +297,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -378,14 +378,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 600 355} hide
+        tooltip {User Interface} xywh {0 25 600 355}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser open
-            xywh {0 50 600 330}
+            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -571,7 +571,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            xywh {0 50 600 330} hide
+            tooltip {User Interface - Contest} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label Exchanges open
@@ -710,8 +710,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabUserInterface {
-            label General open
-            xywh {0 50 600 330} hide
+            label General open selected
+            tooltip {User Interface - General} xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {52 62 496 76} box ENGRAVED_FRAME
@@ -787,13 +787,13 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Exit prompts} open
-              xywh {52 209 496 110} box ENGRAVED_FRAME align 21
+              xywh {52 209 496 76} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_save_config_on_exit {
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {87 272 233 20} down_box DOWN_BOX
+                xywh {87 233 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -801,7 +801,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {87 294 233 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {87 255 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -809,39 +809,34 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {331 272 166 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {331 233 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
-              }
-              Fl_Box {} {
-                label {Exit prompts active only when File/Exit menu item selected.
-Not active if window decoration close button pressed.}
-                xywh {92 226 436 40} box BORDER_BOX align 20
               }
               Fl_Check_Button btn2_confirm_exit {
                 label {Confirm exit}
                 callback {btn2_confirm_exit->value(o->value());
 progdefaults.confirmExit=o->value();
 progdefaults.changed = true;}
-                xywh {331 294 200 20} down_box DOWN_BOX
+                xywh {331 255 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
               label {Check for updates} open
-              xywh {52 321 496 54} box ENGRAVED_FRAME align 21
+              xywh {52 286 496 54} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_check_for_updates {
                 label {Check for updates when starting program}
                 callback {progdefaults.check_for_updates = o->value();
 progdefaults.changed = true;}
-                xywh {87 344 324 20} down_box DOWN_BOX
+                xywh {87 309 324 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.check_for_updates);}
               }
             }
           }
           Fl_Group tabLogServer {
             label Logging open
-            xywh {0 50 600 330} hide
+            tooltip {User Interface - Logging} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Client/Server Logbook} open
@@ -994,7 +989,7 @@ defined here. Tab and newline are automatically included.} xywh {194 260 279 24}
           }
           Fl_Group tabMBars {
             label Macros open
-            xywh {0 50 600 330} hide
+            tooltip {User Interface - Macros} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {52 257 496 40} box ENGRAVED_FRAME
@@ -1115,7 +1110,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWF_UI {
             label {WF Ctrls}
-            xywh {0 50 600 330} hide
+            tooltip {User Interface - Waterfall controls} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {52 83 496 253} box ENGRAVED_BOX
@@ -1254,7 +1249,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Colors/Fonts} open
-            xywh {0 50 600 330} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
