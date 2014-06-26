@@ -1,0 +1,199 @@
+/**
+\page  mouse_and_keyboard_shortcuts_page Mouse and Keyboard Shortcuts
+
+\tableofcontents
+
+
+Fldigi has a bewildering number of keyboard and mouse shortcuts, some
+of which may help make your particular style of operation more
+efficient.  You do not need to know them all to make effective use
+of the program!
+<br>
+
+\section main_window Main window
+<br>
+
+\subsection text_input_fields Text input fields
+<br>
+
+Most text fields use a combination of CUA (PC) and Unix-style
+keybindings.  Text can be marked, copied, pasted, saved to a file
+as well as transfer to other main panel controls.  A right click
+on any text control will open a context sensitive menu for that
+particular control.  A full list can be found on the
+<a href="http://www.fltk.org/doc-1.1/Fl_Input.html">FLTK web site</a>
+<br>
+
+The received/transmitted text widgets use CUA key bindings with some
+modifications:
+
+\subsubsection rx_text RX text
+
+This widget is read-only and ignores shortcuts that would modify its contents.
+See \ref qso_log_book_page "logbook" for details on the Rx right click
+popup menu system.
+<br>
+
+\subsubsection tx_text TX text
+
+The text that has already been sent is protected, but can be deleted one
+character at a time with the Backspace key.  Right clicking on the Tx text
+panel opens the following popup menu:
+<br>
+
+\image html menu-tx-popup.png "Fldigi Receiving Editing Tx text"
+\image latex menu-tx-popup.png "Fldigi Receiving Editing Tx text" width=1.0in
+<br>
+
+\image html menu-tx-popup2.png "Fldigi Transmitting"
+\image latex menu-tx-popup2.png "Fldigi Transmitting" width=1.0in
+<br>
+
+<ul>
+	<li>Transmit<br> put the program into the transmit operation</li><br>
+	<li>Receive<br>during a transmit or tune, end the transmit and restore
+	receive operation</li><br>
+	<li>Abort<br>during a transmit, receive without waiting for the modem to
+	finish sending</li><br>
+	<li>Send image<br>for MFSK only, send an image using MFSKpic mode</li><br>
+	<li>Clear<br>clear all of the text</li><br>
+	<li>Cut<br>delete the marked text (by left click drag over text)</li><br>
+	<li>Copy<br>copy the marked text to the clipboard</li><br>
+	<li>Paste<br>the clipboard text to the current text insertion point</li><br>
+	<li>Insert file<br>select a file from file browser to insert in text at
+	insertion point</li><br>
+	<li>Word wrap<br>turn word wrap on/off</li><br>
+</ul>
+
+The Tx panel is fully drag and drop aware.  That means you can add a
+file to the transmit text by simply opening up a file manager
+(different for different OS and choice of desktop).  Select the
+file from the manager and then drag and drop it onto the Tx panel. The mouse
+pointer will move the cursor insert point for the drop.
+<br>
+
+A number of additional shortcuts can be found in the
+\ref keyboard_operation_page "Keyboard Operation" section.
+
+
+\subsection waterfall_display Waterfall display
+<br>
+
+Most of fldigi's unusual shortcuts are specific to this widget.
+<br>
+
+
+\subsubsection waterfall_display_keyboard Waterfall display - Keyboard
+
+<ul>
+<li>Shift Left/Right - move the b/w marker by 1 Hz</li>
+<li>Ctrl  Left/Right - move the b/w marker by 10 Hz</li>
+</ul>
+
+\subsubsection waterfall_display_mouse Waterfall display - Mouse
+
+<ul>
+	<li>Left click/drag - move the b/w marker to, and start decoding at
+	the cursor frequency</li>
+	<li>Right click/drag - as above, but return to previous position on
+	release</li>
+	<li>Middle click - toggle AFC</li>
+	<li>Ctrl-Left click - replay audio history at b/w marker position</li>
+	<li>Ctrl-Right click - replay at cursor frequency and return on
+	button release</li>
+	<li>Ctrl-Middle click copy the frequency under the cursor to
+	the currently selected (or first) channel in the PSK viewer, and
+	select the next channel</li>
+	<li>Shift-Left click/drag  same as unmodified left click; no signal
+	search</li>
+	<li>Shift-Right click/drag  likewise, with a return to the previous
+	frequency when the button is released, no signal search</li>
+	<li>Shift-mouse wheel - move the squelch slider</li>
+	<li>Scroll wheel usage is dependent upon the
+	configuration (see \ref ui_configuration_waterfall_controls_page "ConfigWaterfall")</li>
+	<ul>
+		<li>None - no mouse wheel activity in waterfall panel</li>
+		<li>AFC range or BW - adjust the AFC range/BW up/down</li>
+		<li>Squelch level - adjust the squelch level up/down</li>
+		<li>Modem carrier - adjust the audio tracking point +/- Hz increments</li>
+		<li>Modem - select modem type from a full rotary of available modems</li>
+		<li>Scroll - move the waterfall left/right in 100 Hz increments
+		(for 2x, 4x expanded waterfall view)</li>
+		<li>Ctrl-mouse wheel - change the AFC search width in PSK modes,
+		or the bandwidth in CW and FeldHell</li>
+	</ul>
+    <li>Ctrl-Alt-Left click on the mouse when the mouse pointer is
+    in the waterfall - if operating with flrig and a supported transceiver
+    such as the FT-950, will set the transceiver manual notch frequency to
+    the frequency under the mouse cursor.  Repeat the Ctrl-Alt-Left click
+    to disengage the notch.  Disengagement is not dependent on where the
+    cursor is on the waterfall, just that it be in the waterfall.</li>
+</ul>
+
+\subsubsection waterfall_store_button Waterfall "Store" button
+
+<ul>
+	<li>Left click - Add a new item for the current frequency and modem</li>
+	<li>Shift-Left click - Delete all items</li>
+	<li>Middle click - Select last item in menu</li>
+</ul>
+
+<ul>
+	<li>Right click - Pop up menu</li>
+	<ul>
+		<li>Left/right click - Select item (and switch to that
+		frequency/modem)</li>
+		<li>Shift-Left/right click Delete item</li>
+		<li>Middle click - Update (replace) item</li>
+	</ul>
+</ul>
+
+\subsubsection digiscope_display Digiscope display
+
+<ul>
+	<li>Mouse wheel - Change AFC/BW, same as Ctrl-mouse wheel on the waterfall</li>
+</ul>
+
+\subsubsection rig_control_window Rig control window
+
+There are some shortcuts in addition to those described in the \ref rig_control_page "Rig Control"
+
+
+\subsubsection frequency_display Frequency display
+
+<ul>
+	<li>   Left/Right arrow key - change the frequency by one 1 Hz</li>
+	<li>   Up/Down arrow key - change the frequency by 10 Hz </li>
+</ul>
+
+\subsubsection frequency_list Frequency list
+
+<ul>
+<li>Shift-Left click - delete the line under the cursor</li>
+<li>Middle click - replace the line under the cursor with the current frequency/mode/modem</li>
+</ul>
+
+
+\subsubsection psk_viewer_window PSK viewer window
+
+<ul>
+	<li>Besides the bindings mentioned in the \ref signal_browser_page "PSK Viewer"
+	section, there are mouse shortcuts to change the nominal frequency of a
+	viewer channel:</li>
+	<ul>
+		<li> Middle click copy the current waterfall b/w marker frequency
+		to the channel under the cursor, overwriting that channel's nominal
+		frequency</li>
+		<li>Right click - restore a channel's nominal frequency</li>
+		<li>Right click on Clear - as above, for all channels</li>
+	</ul>
+</ul>
+
+
+<br>
+\ref mouse_and_keyboard_shortcuts_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

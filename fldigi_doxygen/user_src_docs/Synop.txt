@@ -1,0 +1,428 @@
+/**
+\page  synop_page SYNOP decoding
+
+\tableofcontents
+
+
+\section what_is_snyop What is Synop
+
+\subsection wether_data Weather data
+
+
+SYNOP, which stands for <a href="http://en.wikipedia.org/wiki/SYNOP">
+<b>surface synoptic observations</b></a> is a numerical code used for
+reporting weather<a href="http://en.wikipedia.org/wiki/Weather" title="Weather"></a>
+observations made by manned and automated fixed land weather stations. It
+is also called FM-12 by the
+<br>
+
+World Meteorological Organization. It is closely associated to
+FM 13-XIV SHIP, for report of surface observation from a sea station
+(Created in 1982) and FM 14-XIV SYNOP MOBIL, for reports of surface
+observation from a mobile land station.
+<br>
+
+
+Here is an example of undecoded SYNOP weather report:<br>
+
+<tt>
+13586 31530 80000 10036 20029 39821 40218 53002 71022 886//<br>
+333 20029 88715=<br>
+</tt>
+
+Many SYNOP reports are available on web sites such as
+<a href="http://www.ogimet.com/synops.phtml.en">Ogimet</a> .
+<br>
+
+\subsection synop_reports Synop reports broadcasts
+
+The most important broadcaster on SYNOP data is DWD, in RTTY mode.
+<br>
+
+\subsubsection deutsche_schedule Deutsche Wetterdienst schedule
+
+SYNOP reports are typically sent every six hours
+by <a href="http://en.wikipedia.org/wiki/Deutscher_Wetterdienst" title="Deutscher Wetterdienst">Deutscher Wetterdienst</a> on <a href="http://en.wikipedia.org/wiki/Shortwave" title="Shortwave" class="mw-redirect">shortwave</a> and <a href="http://en.wikipedia.org/wiki/Low_frequency" title="Low frequency">low frequency</a> using <a href="http://en.wikipedia.org/wiki/Radioteletype" title="Radioteletype">RTTY</a>.
+
+The baud rate must be 50 bauds.
+<br>
+
+Freq          | Station | Time        | <br>
+:-------------|:------|:--------------|:------------
+147,300 kHz   | DDH47 | 05.00 - 22.00 | + / - 42,5
+4583,000 kHz  | DDK2  | 00.00 - 24.00 | + / - 225,0
+7646,000 kHz  | DDH7  | 00.00 - 24.00 | + / - 225,0
+10100,800 kHz | DDK9  | 00.00 - 24.00 | + / - 225,0
+11039,000 kHz | DDH9  | 05.00 - 22.00 | + / - 225,0
+14467,300 kHz | DDH8  | 05.00 - 22.00 | + / - 225,0
+
+
+\subsubsection other_broadcasters Other broadcasters
+
+Until recently, many shore stations used to transmit Synop reports by
+Morse Code (\"<i>Ocean Yacht Navigator</i>\", Kenneth Wilkes, 1976 ). Still,
+according to
+<a href="http://www.wmo.int/pages/prog/www/ois/Operational_Information/VolD_en.html">
+WMO information for shipping</a>,
+a couple of maritime stations might broadcast these informations in
+different mode that RTTY, but this has not been tested yet. There are
+just anecdotically cited here.
+
+<b>Maritime Radio Station of Mumbai</b>
+
+Met codes: FM 12 - SYNOP, FM 13 - SHIP for Sea areas I.
+<br>
+
+Band     | Freq
+:--------|:--------
+WT (MF)  | 500 kHz
+WT (MF)  | 521 kHz
+WT (HF)  | 8630 kHz
+WT (HF)  | 12710 kHz
+
+<br>
+
+SYNOP decoding is not accessible fromMorse CW modem yet.
+<br>
+
+<b>Navtex station of Mumbai. COMCEN</b>
+
+FM 12 SYNOPSIS, FM 13 SHIP for sea area I (Time schedule 0900, 2100)
+<br>
+
+<br> | Freq
+:----|:---------------
+Navtex (Also called MSI as Maritime Safety Information) | 518 kHz
+
+<br>
+
+
+SYNOP decoding is not accessible from Navtex modem yet.
+<br>
+
+<b>Marine Rescue Co-ordination Centre: Guayaquil, Radio IOA (Instituto Oceanografico Armada) o Radio Naval</b>
+
+Meteorological information in process: Text, SHIP, SYNOP.
+<br>
+
+Mode | Freq
+:----|:---------------
+AM   | 1515 kHz
+
+
+<br>
+
+\section synop_parameters Parameters
+
+\image html RTTY-Config-Tab-With-Synop.png "Synop configuration in RTTY tab"
+\image latex RTTY-Config-Tab-With-Synop.png "Synop configuration in RTTY tab" width=5.0in
+<br>
+
+By default, there is not SYNOP decoding of RTTY reception, so its behavior
+does not change. However, it receives three new parameters related to
+Synop decoding.
+
+SYNOP reports can be saved to the current ADIF log file: They are visible in
+the journal of QSOs with the content of the report, the timestamp, and the
+Maidenhead locator equivalent to the geographical coordinates of the
+emitter of the report.
+
+SYNOP weather reports can also be plotted on KML files: They can then be
+visualized in KML viewers such as Google Earth.
+
+If SYNOP reports are saved either to ADIF or KML files, fldigi attempts to
+detect and decode RTTY messages. When these messages are detected, they are
+displayed in the reception window. An extra parameter allows to replace
+the coded Synop message, giving clarity at the risk of loosing
+information, or mix the decoded reports with the original group of
+digits (Interleaving of SYNOP and text).
+
+\section reception_window Reception window
+
+When SYNOP messages are detected, they are displayed in the reception
+window in \"red\" characters (depicted here in \"<i>italic</i>\"). Here are
+some examples (Interleaved text and SYNOP reports):
+<br>
+
+<tt>
+13661 16123 99276 70216 46///<br>
+<i>
+WMO Station=13661<br>
+WMO station=WMO_13661<br>
+ UTC observation time=2013-02-16 12:00<br>
+QLLLL token=Present<br>
+Longitude=-21.6<br>
+Latitude=27.6<br>
+</i>
+
+///// 40206 52011<br>
+222// 00203; <br>
+<i>
+Sea surface temperature=20.3 --C<br>
+Temperature type=Intake measurement<br>
+</i>
+<br>
+64522 16123 99591 70347 46/// <br>
+	<i>WMO Station=64522 <br>
+    WMO station=WMO_64522 <br>
+    UTC observation time=2013-02-16 12:00 <br>
+    QLLLL token=Present <br>
+    Longitude=-34.7<br>
+    Latitude=59.1 </i><br>
+    <br>
+///./ 49920 57004.<br>
+::(1056;<br>
+,
+26555 16123 998#6 <br>
+	<i>WMO Station=26555 <br>
+    WMO station=WMO_26555 <br>
+    UTC observation time=2013-02-16 12:00 </i><br>
+<br>
+70269 46/// ///// 40168 52008;  <br>
+	<i>WMO Station=70269 <br>
+    WMO station=WMO_70269 <br>
+    Precipitations=Omitted, no observation <br>
+    Station type=Automated station. No observation (No 7WW)<br>
+    Visibility=Missing <br>
+    Wind direction=No motion or no waves <br>
+    Wind speed=0 knots (Estimated)<br>
+    Sea level pressure=1016 hPa<br>
+    Pressure tendency=Increasing steadily. Raises <br>
+    Pressure change=0.8 hPa</i><br>
+<br>
+
+25617 16123 99867 1173!((6;  <br>
+	<i>WMO Station=25617 <br>
+    WMO station=WMO_25617 <br>
+    UTC observation time=2013-02-16 12:00 <br>
+    QLLLL token=Present </i><br>
+<br>
+149 52001;<br>
+<br>
+13660 16123 992!; <br>
+	<i>WMO Station=13660 <br>
+    WMO station=WMO_13660 <br>
+    UTC observation time=2013-02-16 12:00 </i><br>
+<br>
+).'/ ///// 40222 52&17<br>
+<br>
+52"// 08)02;<br>
+<br>
+44551 16123 99376 70378 46//.  <br>
+	<i>WMO Station=44551 <br>
+    WMO station=WMO_44551 <br>
+    UTC observation time=2013-02-16 12:00 <br>
+    QLLLL token=Present <br>
+    Longitude=-37.8 <br>
+    Latitude=37.6 </i><br>
+    <br>
+///// 40185 52022;   <br>
+	<i>Sea level pressure=1018 hPa<br>
+    Pressure tendency=Increasing steadily. Raises <br>
+    Pressure change=2.2 hPa</i><br>
+<br>
+
+62680 16123<br>
+9958"     <br>
+	<i>WMO Station=62680 <br>
+    WMO station=Atbara <br>
+    UTC observation time=2013-02-16 12:00 </i><br>
+<br>
+70265 66//? BMPROIIO TUPEQ<br>
+<br>
+222!/ 00078;<br>
+<br>
+64527 16123 99593 70483 46/// <br>
+	<i>WMO Station=64527 <br>
+    WMO station=WMO_64527 <br>
+    UTC observation time=2013-02-16 12:00 <br>
+    QLLLL token=Present <br>
+    Longitude=-48.3 <br>
+    Latitude=59.3 </i><br>
+///// 40095 52004<br>
+<br>
+</tt>
+
+
+\section data_files Data files
+
+Several data files containing public information are used to decrypt SYNOP
+data. They come from various places on the Internet, with redundancy.
+<br>
+
+<table style="text-align: left; width: 905px; height: 360px;" border="1" cellpadding="2" cellspacing="2">
+<tr>
+<td style="vertical-align: top;">NOAA</td>
+<td style="vertical-align: top;">WMO identifier, name and coordinates of thousands of weather stations in the world.</td>
+</tr>
+<tr style="font-family: Courier New,Courier,monospace;">
+<td colspan="2" rowspan="1">
+<a href="http://weather.noaa.gov/data/nsd_bbsss.txt">http://weather.noaa.gov/data/nsd_bbsss.txt</a>
+</td>
+</tr>
+<tr>
+<td style="vertical-align: top;">NOAA</td>
+<td style="vertical-align: top;">Weather, drifting, moored and wave riders  buoys. Oil platforms. Fixed and mobile offshore drilling unit.</td>
+</tr>
+<tr style="font-family: Courier New,Courier,monospace;">
+<td colspan="2" rowspan="1">
+<a href="ftp://tgftp.nws.noaa.gov/data/observations/marine/stations/station_table.txt">ftp://tgftp.nws.noaa.gov/data/observations/marine/stations/station_table.txt</a>
+</td>
+</tr>
+<tr>
+<td style="vertical-align: top;">UK's National Weather Service</td>
+<td style="vertical-align: top;">Name, country and description of weather ships</td>
+</tr>
+<tr style="font-family: Courier New,Courier,monospace;">
+<td colspan="2" rowspan="1">
+<a href="http://www.metoffice.gov.uk/media/csv/e/7/ToR-Stats-SHIP.csv">http://www.metoffice.gov.uk/media/csv/e/7/ToR-Stats-SHIP.csv</a>
+</td>
+</tr>
+<tr>
+<td style="vertical-align: top;">
+Joint WMO IOC Technical Commission for Oceanography and Marine Meteorology
+</td>
+<td style="vertical-align: top;">
+<a href="http://en.wikipedia.org/wiki/Argos_System">Argos</a> and <a href="http://en.wikipedia.org/wiki/Iridium_Communications">Iridium</a> buoys, with WMO identifiers.</td>
+</tr>
+<tr style="font-family: Courier New,Courier,monospace;">
+<td colspan="2" rowspan="1">
+<a href="ftp://ftp.jcommops.org/JCOMMOPS/GTS/wmo/wmo_list.txt">ftp://ftp.jcommops.org/JCOMMOPS/GTS/wmo/wmo_list.txt</a>
+</td>
+</tr>
+</table>
+
+<br>
+
+There is a specific window for downloading the latest version of these data
+files. It can be reached with the command "File/Folders":
+<br>
+
+\image html Opening-DataFiles-Menu.png "How to reach the data files sources menu"
+\image latex Opening-DataFiles-Menu.png "How to reach the data files sources menu" width=3.5in
+<br>
+
+These data files can also be found:
+<br>
+
+<ul>
+	<li>At installation time your fldigi binary comes with a package. All
+	data files are silently installed on your machine.</li>
+	<li>When building your own binary from the sources, with the
+	command <b>make install</b>. Similarly, all files are installed.</li>
+	<li>At first use and automatic installation, this opens the Data files
+	sources menus, where you can download all or some data files used by
+	fldigi.</li>
+</ul>
+
+
+\image html DataFilesSources.png "Downloading and updating data files used for various decodings"
+\image latex DataFilesSources.png "Downloading and updating data files used for various decodings" width=5.0in
+<br>
+
+
+\subsection synop_outputs Outputs
+
+
+Each message is a set of key-value pairs, associated to:
+<br>
+
+Description          | Measurement
+:--------------------|:----------------
+Wind direction       | 315 degrees
+Wind speed           | 8 m/s (Anemometer)
+Temperature          | 0.0 deg C
+Dew point temperature | -3.8 deg C
+Station pressure     | 1006 hPa
+Sea level pressure   | 1030 hPa
+
+
+\subsection output_formats Output formats
+
+\subsubsection ADIF
+
+
+When the option is ticked, SYNOP weather reports are saved in a new ADIF
+record, in the default logfile.
+<br>
+
+The report itself is saved with field <tt>\<NOTES:xx\></tt>.
+The length can be of several hundredth of chars, and accordingly to the
+ADIF standard, new-lines can appear in each report.
+<br>
+
+Example of <tt>\<NOTES\></tt> field in an ADIF record:
+
+\verbatim
+
+Header
+ICAO indicator=LOWM
+Identification and location
+Land station observation
+Land observations
+Precipitations=Precipitation omitted, no precipitation
+Station type=Manned station. 7WW omitted, not significant
+Cloud base=600 to 1000 m
+Visibility=15 km
+Cloud cover=7/8
+
+\endverbatim
+
+<br>
+
+\subsubsection KML
+
+SYNOP reports can generate \ref kml_page "KML"
+files for fixed stations, mobile weather ships, buoys etc... that is,
+every observation which can be associated to a set of coordinates.
+Several reports of the same station can be aggregated in a single
+place mark. Mobile stations have their path drawn, linking all
+coordinates spotted for a given station with an unique name.
+<br>
+
+
+KML data are are also saved in a display-independent format in
+<tt>\<description\></tt> tags, and thus can easily be reused by other
+software.
+<br>
+
+\section command_line_synop Command-line SYNOP decoder program : synop_tool
+
+
+The decoder comes with <tt>synop_tool</tt>,
+a command-line tool able to decode input text files and generate the
+same output files as fldigi. It is intended as a development for
+checking internal consistency, and accuracy of SYNOP decoding without
+the complexity of the graphical interface.
+
+It is accessible in the directory <tt>fldigi/src/synop-src</tt> and must
+be built with the command <tt>make</tt>.
+<br>
+
+Its command-line options are displayed with the option <tt>--help</tt>:
+<br>
+
+\verbatim
+
+[fldigi/src/synop-src]$ ./synop_tool --help
+
+Valid options are:
+    data_dir  # Where the data files are stored. For example /usr/local/share/fldigi/
+    kml_dir   # Out put directory of created KML files.
+    load_dir  # Input directory of KML files loaded at startup.
+    dbg       # Verbose mode.
+    usage     # Print this message.
+    test      # Decoding preceded by an internal test.
+    matrix    # KML output in aggregated matrices (See KML documentation).
+    regex     # text output of regular expressions, not decoded reports.
+    version   # Prints version number.
+    help      # Prints this messages
+
+\endverbatim
+
+<br>
+\ref synop_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

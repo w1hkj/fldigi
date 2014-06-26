@@ -1,0 +1,481 @@
+/**
+\page  contest_how_to_page Contest - How To
+
+\tableofcontents
+
+
+Fldigi supports a basic contesting format.   Select the menu item
+View/Contest fields to see how the QSO entry entry fields change for
+contest data.  You will see that fldigi has fields to support
+received and sent contest numbers as well as generic contest exchange
+information.
+<br>
+
+\section contest_fields Contest Fields
+\image html contest-fields.png "Contest Fields"
+\image latex contest-fields.png "Contest Fields" width=4.5in
+<br>
+
+The serial number out (\#Out) is automatically initialized and updated by
+the built-in serial number generator.   You can enter the
+appropriate exchange information via the keyboard or mouse.  Text
+in the Rx pane can be selected by the usual left-click-swipe of
+highlighting.  Then right click anywhere after highlighting the
+desired text and a popup menu will appear allowing you to select the
+destination QSO field.  Make your selection and the info is placed
+in the correct text box.  Note that the popup menu changes with
+the QSO logging view and also with a change in "Quick entry".  A
+full description is found in the description of operating the
+ \ref qso_log_book_page "Logbook".  The important thing to note for contest
+operation is that the Call and Serial \# are single word captures.  The Xchg
+capture can be either single word or multiple word (mark / right click).  If
+the Xchg field has text contents then the new capture is appended to
+end of the current text in that field.  That means you can point
+to the word representing the field, right click and select from the menu.
+You do not need to highlight the text for the word capture.  You can very
+rapidly fill in the serial number and the exchange data (even if multi value)
+by simply pointing and right clicking on the desired word.
+<br>
+
+\image html config-ui-contest.png "UI Contest"
+\image latex config-ui-contest.png "UI Contest" width=4.5in
+<br>
+
+To set up fldigi for contesting you will need to open configure contest.
+the 1st row contains what info you want sent with the appropriate macro
+tag. ie...if the contest requires RST and name you would fill in the
+Exchange Out box with your name.  The contents of this field are accessed from
+a macro with the \<XOUT\> tag. You will also need to check the RST
+always 599 box as this is the de-facto signal report in contests.
+<br>
+
+If you are participating in a CW contest you may want to select the "Send CW cut
+numbers", cut numbers is the norm for a CW contest.  The cut
+numbers will send N for 9 and T for zero.
+<br>
+
+The next box contains the needed requirements to use serial numbers for
+a contest. You will always want to use leading zeros, start with 1 and use 3
+digits.  Press reset to initialize the \#Out QSO field to the Start number.
+<br>
+
+Check the appropriate fields for determining if this is a duplicate call. If
+a duplicate is detected the Call entry will be highlighted as shown in
+the "Dup Color" button.  Pressing this button opens a color selector so
+you may customize the color.  There are many choices to alert you to a
+duplicate contact.  The duplicate is based on the logical AND of all of the
+fields to be checked.  The DUPE is cleared when you press the
+clear QSO log button (the brush icon).
+<br>
+
+After you have filled in all the required information, make sure you save and
+close.
+<br>
+
+Remember YOU MUST click the Reset button in the Serial number panel for the
+serial number counter to be initialized.  You should also press
+the QSO clear button (broom) in the QSO entry widget for the other
+changes to take effect.
+<br>
+
+It would be best to create a new log for each contest.  You create a new
+log by selecting the menu item File/Logs/New logbook.  The default new log
+name will be newlog.adif on Linux and newlog.adi on Windows.   You can rename
+the new log file now or later by using the system file manager or when you
+save the log.  The import/export feature of fldigi will allow you to export
+the log into your everyday logging software or the built-in fldigi logbook.
+<br>
+
+\section restarting_contest_session Restarting a contest session
+
+You might have closed down fldigi in the middle of a contest, everyone
+needs a break now and then.  You then start fldigi and want to
+continue the contest.  Here are the steps to insure that you
+continue operations with no glitches.
+<br>
+
+<ul>
+<li>Load your macro file that contains your contest macros (more on that below)</li>
+<li>Select the menu item View/Contest fields</li>
+<li>Select the menu item View/Logbook</li>
+<li>Make sure you have the contest logbook open ... if not then this is the
+time to open that logbook database.  <br>Select the menu item "File/Logs/Open
+logbook..." and find your log data file.</li>
+<li>Look at the last record and check the serial number sent.  Enter that
+number plus one in the Start entry on the config contest tab (see above).</li>
+<li>Press the Reset button in that panel.</li>
+</ul>
+
+You are ready to keep on contesting
+<br>
+
+\section remembering_a_contact Remembering a contact
+
+If you are copying a potential contact but you are not being heard you can
+save fldigi's modem state using one of two methods
+<br>
+
+<ol>
+<li>double click the signal on the waterfall</li>
+<li>right click on the Rx panel and select "Insert marker"</li>
+</ol>
+
+A line of text will be inserted at the end of the Rx text buffer.  It will
+appear similar to this:
+<br>
+
+\<\<2008-12-30T10:06Z BPSK-31 @ 3580000+0781\>\>
+<br>
+
+The date-time, the mode, the transceiver operating frequency and the audio
+offset will be recorded.  The text line is in blue and behaves in
+a way that you might expect a url reference to behave in a web browser
+window.  Work a few more contacts (even on a different band or
+frequency) and then scroll the Rx pane to that special divider.
+ Left click on the line of text and fldigi will restore the
+transceiver to its frequency, change the mode to the saved mode and put
+the waterfall cursor at the audio offset frequency.  Changing the
+transceiver frequency will only work if you are using CAT control of
+your transceiver.  If you are not using CAT control the mode and
+waterfall cursor will still be restored.
+<br>
+
+There is no limit to the number of divider lines that can be inserted into
+the Rx pane.  They will all be removed when the Rx pane is cleared.
+<br>
+
+\section saving_session Saving the entire session
+
+Select the menu item "File/Logs/Log all RX/TX text".  If this toggle menu
+is checked your entire session of received and sent text will be saved
+to a file in the fldigi default files folder.  It will be given a
+name synonymous with the date and time is is started, ie:
+fldigi20081230.log.  You can review this log by selecting the menu
+item "File/Show config" which will open your OS default file explorer
+to the fldigi files folder.  The file is an ASCII text file.
+<br>
+
+The format of the daily log is shown in Working Logs.
+<br>
+
+\section contesting_macro_tips Contesting Macro Tips
+<br>
+
+OK, now we have fldigi setup for basic contesting, lets move on to some
+ideas on macros to use.  I tend to make generic one size
+fits all macros.  I recommend that you make a new macro file, mine is
+named contest.mdf, this will give you 48 macros to use based on the
+type of contest you are entering.  Take a good look at the examples I
+have listed, you will notice there are no commas, hyphens or other
+extraneous items.  I have seen just about every example of a poorly
+thought out macro there is or has ever been dreamed up. Classic
+examples are:
+<br>
+
+<ul>
+<li>w3nr you are 599 in Alabama your serial number is 001-001-001 how copy ??</li>
+<li>hello ed thanks for the call you are 599-599-001-001-001 QTH Alabama back
+to you</li>
+</ul>
+
+The list goes on and on. Just think, you have to try and capture the
+exchange, try it and you will see what I mean.
+<br>
+
+When you enter a contest you have to decide whether you are going to sit on
+one frequency and call CQ (Run) or are you going to tune the band
+looking for stations to work (S&amp;P).  So lets set up some macros that
+should cover both cases.
+<br>
+
+Several new macro tags have been created to facilitate contesting, these
+include the following tags.
+<br>
+
+<table>
+<tr>
+<td>\<LOG\></td>
+<td>add QSO data to the logbook &amp;
+clear the QSO data fields</td>
+</tr>
+<tr>
+<td>\<CNTR\></td>
+<td>insert current contest serial number into the text stream</td>
+</tr>
+<tr>
+<td>\<INCR\></td>
+<td>increment contest serial number</td>
+</tr>
+<tr>
+<td>\<DECR\></td>
+<td>decrement contest serial number</td>
+</tr>
+<tr>
+<td>\<XOUT\></td>
+<td>contest exchange</td>
+</tr>
+<tr>
+<td>\<QSOTIME\></td>
+<td>current log time in Zulu HHMM format</td>
+</tr>
+<tr>
+<td>\<LDT\></td>
+<td>local date time</td>
+</tr>
+<tr>
+<td>\<ILDT\></td>
+<td>LDT in iso-8601 format</td>
+</tr>
+<tr>
+<td>\<ZDT\></td>
+<td>Zulu date time</td>
+</tr>
+<tr>
+<td>\<IZDT\></td>
+<td>ZDT in iso-8601 format</td>
+</tr>
+<tr>
+      <td>\<QSOTIME\><br>
+      </td>
+      <td>actual time of execution of the macro ... useful where exact times are used to match contest log submissions<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<SAVEXCHG\><br>
+      </td>
+      <td>save entire contents of the expanded macro text to the "Exchange Out" field in the logbook<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<XBEG\><br>
+      </td>
+      <td>mark the beginning of a text string that is to be saved to the "Exchange Out" field in the logbook<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<XEND\><br>
+      </td>
+      <td>mark the end of the text string that
+      is to be saved to the "Exchange Out" field in the logbook
+      <br>
+note:  \<SAVEXCHG\> and the \<XBEG\>...\<XEND\> macro tags are
+mutually exclusive
+<br>
+\<XBEG\>...\<XEND\> is given priority if both all three are specified
+in a single macro
+<br>
+      </td>
+    </tr>
+</table>
+<br>
+
+See \ref macros_sub_page "Macros" for additional information on editing
+and using the fldigi macro system.
+<br>
+
+\section run_macros RUN Macros
+
+We need just a few, starting with a CQ macro - Put this in the F1 key definition
+<br>
+
+\verbatim
+<TX>
+cq test de <MYCALL> <MYCALL> cq k
+<RX>
+\endverbatim
+<br>
+
+Notice that I left 2 spaces between my call and 3 spaces at the end before the
+k. This will make it easier for a station to grab my call and the k on
+the end eliminates garbage characters before my macro finishes. The
+tx/rx are on separate lines as I want to be sure my macro is on a line
+by itself and not mixed in with screen garbage.
+<br>
+
+Now the exchange macro - Put this in the F2 key definition<br>
+<br>
+
+\verbatim
+<TX>
+<CALL> 599  <CNTR> <CNTR>  <X1>  <X1> <CALL>  k
+<RX>
+\endverbatim
+
+Why do I have his call at the beginning as well as the end, to make sure I
+have copied his call correctly. You will also see that I have not as
+yet logged the contact,why, well are you sure he does not need to
+correct his call or ask for a repeat.
+<br>
+
+You are asked to repeat the exchange, you can just re-send the exchange macro,
+this verifies all of the information. Now he sends you his info and if you have
+copied it correctly you need a TU macro. - Put this in the F3 key definition.
+<br>
+
+\verbatim
+<TX>
+qsl tu qrz test  <MYCALL>  k
+<RX><LOG><INCR>
+\endverbatim
+
+Here we have done all the necessary items to complete the exchange. Notice
+that I did not log the contact until after everything was correct. I
+have fldigi set to clear on save, so when the \<LOG\> part of the
+macro executes the QSO area is cleared.
+<br>
+
+Thats the end of my RUN macro setup, told you it was rather simplistic and
+generic.
+<br>
+
+\section s_p_macros S \& P Macros
+
+I rarely if ever use S&amp;P, but there are times I
+need to, especially if my QSO rate drops while running.  Again the macros are
+very generic with only the needed info.  If band conditions warrant you may
+want to send your call 3 times.  Put this in the F5 key definition
+<br>
+
+\verbatim
+<TX>
+<MYCALL>  <MYCALL>  k
+<RX>
+\endverbatim
+
+Why just my call ?? Well I assume the other guy already knows his call !
+<br>
+
+The exchange macro is basically the same as the RUN macro.  Put this one in the F6 key definition<br>
+<br>
+
+\verbatim
+<TX>
+599  <CNTR>  <CNTR>  <X1>  <X1>    k
+<RX>
+\endverbatim
+
+
+As you see I have not as yet logged the QSO or incremented the serial
+number.  This is the final S&amp;P macro.  Put this one in the F7 key
+definition.
+<br>
+
+\verbatim
+<LOG><INCR>
+\endverbatim
+
+Now this is the most important macro you will ever need......trust me. Put it
+where you won't fail to find it.  How about F9 ?
+<br>
+
+\verbatim
+<TX>
+agn  agn  k
+<RX>
+\endverbatim
+
+
+You will see that it is used many times during a contest, especially with
+weak stations and heavy QRN/QRM.
+<br>
+
+\<QSOTIME\>
+
+<ul>
+<li>
+time sent in Tx stream</li>
+<li>
+repeat execution of \<QSOTIME\> before a \<LOG\> macro or a save to
+log button press will resend the original time</li>
+<li>
+\<LOG\> macro or a save-to-log button press appends the QSOTIME to
+the STX_STRING field in the adif log record and clears the QSOTIME.
+<br>
+</li>
+</ul>
+\<XBEG\>
+<ul>
+<li>
+use at end of a contest exchange to save the entire exchange string in STX_STRING</li>
+<li>
+usurps QSOTIME if both are contained in same macro text, ie:
+"\<RST\> \<CNTR\> \<QSOTIME\>\<SAVEXCHG\>" will send an
+exchange as  599 024 1125 if RST = 599, Counter = 024 and time of
+execution is 1125</li>
+<li>
+repeats the same as \<QSOTIME \></li>
+<li>
+\<LOG\> macro or a a save-to-log button press saves the associated
+macro text (after expansion).  QSOTIME and the saved exchange text
+are cleared after the save occurs.</li>
+</ul>
+
+
+An example of the SAVEXCHG macro tag<br>
+
+\verbatim
+<RST> <CNTR> <XOUT> <QSOTIME><SAVEXCHG>
+\endverbatim
+
+
+Where RST = 599, CNTR = 0125, XOUT = AL, QSOTIME = 1433<br>
+<br>
+
+Will save this string to the <i>Exchange Out</i> field in the
+logbook: "599 0125 AL 1433"
+<br>
+
+Please note that you should not include any text or macro tags that are
+not to be a part of <i>Exchange Out</i>.  If your macro had this:
+<br>
+
+\verbatim
+<TX><CALL> UR <RST> <CNTR> <XOUT> <QSOTIME> de <MYCALL> k<RX><SAVEXCHG>
+\endverbatim
+
+
+Where CALL = W3NR, MYCALL = W1HKJ<br>
+<br>
+
+the saved <i>Exchange Out</i> field would contain: "W3NR UR 599 0125 AL 1433 de W1HKJ k"
+<br>
+
+Probably not what you want.  Use separate function keys for the
+"\<TX\>CALL ..." and the "de \<MYCALL\> k\<RX\>" or use the next
+set of macro tags
+<br>
+
+\verbatim
+<XBEG>...<XEND>
+\endverbatim
+
+
+These two macro tags are delimiters for capturing the transmitted exchange
+data, for example:
+<br>
+
+\verbatim
+<TX><CALL> de <MYCALL> QSL <XBEG><RST> <CNTR> <QSOTIME><XEND> K<RX>
+\endverbatim
+
+
+Will place the expanded \<RST\> \<CNTR\> \<QSOTIME\> into the
+<i>Exchange Out</i> field of the logbook when the contact is saved.  This is
+much better illustrated with a screen shot.  This one shows the macro
+editor contents, the logbook entry in <i>Exchange Out</i>, and the transmit
+text buffer.
+<br>
+<br>
+
+\image html xbeg-xend.png "Exchange Begin-End"
+\image latex xbeg-xend.png "Exchange Begin-End" width=6.0in
+<br>
+
+<br>
+\ref contest_how_to_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+

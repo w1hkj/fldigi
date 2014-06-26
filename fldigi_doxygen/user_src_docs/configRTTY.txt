@@ -1,0 +1,95 @@
+/**
+\page rtty_fsk_configuration_page  RTTY / FSK Configuration
+
+\tableofcontents
+
+\image html config-rtty-rx.png "RTTY RX"
+\image latex config-rtty-rx.png "RTTY RX" width=5.0in
+<br>
+
+\image html config-rtty-tx.png "RTTY TX"
+\image latex config-rtty-tx.png "RTTY TX" width=5.0in
+<br>
+
+\image html config-rtty-synop.png "RTTY SYNOP"
+\image latex config-rtty-synop.png "RTTY SYNOP" width=5.0in
+<br>
+
+Fldigi operates RTTY using AFSK and the transceiver set to USB. The
+RTTY signal can be transmitted anywhere within the USB passband of the
+transceiver.
+<br>
+
+You can select from various Shifts, Bauds, Bits, Parity and Stop Bits
+for both AFSK and FSK keying of the transmitter. You can elect to
+have fldigi automatically insert a CFLF when it reaches character 72 on
+a line. You can also have it insert a CR-CR-LF sequence instead
+of the standard CR-LF sequence. This is very useful if you are
+communicating with someone using a hardware TTY printer. The
+extra carriage return will give the physical device time to move to the
+left margin before new characters arrive.
+<br>
+
+The RTTY decoder maintains an internal AFC system for tracking the
+desired signal. Depending on operating conditions you may need to
+adjust the action of the AFC loop.  Select from the Slow, Normal
+or Fast AFC loop. You can also disable AFC with the AFC button on
+the main panel.
+<br>
+
+The received signal processing consists of a tuned Raised Cosine Filter
+followed by an optimized Automatic Threshold Correcting (ATC)
+detector. The resulting bit stream is then processed to extract
+the byte data.
+<br>
+
+\image html config-rtty-classic-scope.png "Classic RTTY XY Scope"
+\image latex config-rtty-classic-scope.png "Classic RTTY XY Scope" width=1.5in
+<br>
+
+\image html config-rtty-pseudo-scope.png "Pseudo Signal XY Scope"
+\image latex config-rtty-pseudo-scope.png "Pseudo Signal XY Scope" width=1.5in
+<br>
+
+The Digiscope display can be defaulted to the X-scope or the Signal
+scope.
+<br>
+
+The classic XY-scope is similar to older hardware scopes that show
+the output of the separate Mark-Space filters, one applied to the horizontal
+and one to the vertical axis.
+<br>
+
+The Pseudo XY-scope is similar with the exception that the horizontal
+and vertical are phase related to the Mark-Space signals, but not the
+actual signal.
+<br>
+
+The Classis XY-scope will appear noisier than the Pseudo XY-scope.
+<br>
+
+PseudoFSK selection generates an additional audio signal on the right
+channel. This signal is a burst tone at the FSK keying rate.
+You can full wave rectify and filter the signal so that it can be
+used as the FSK keyline signal to a rig that supports FSK transmissions.
+See \ref pseudo_fsk_page "Pseudo FSK" for additional information and a
+suitable keying circuit.
+<br>
+
+Your log can record either the center frequency between the Mark and
+Space or the Mark frequency. You can also select the color that
+should distinguish the Mark frequency.
+
+\image html config-rtty-synop.png "RTTY SYNOP"
+\image latex config-rtty-synop.png "RTTY SYNOP" width=5.0in
+<br>
+
+See \ref synop_page "Synop" and \ref rtty_page "RTTY" for additional information.
+
+<br>
+\ref rtty_fsk_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

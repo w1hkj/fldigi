@@ -1,0 +1,87 @@
+// =====================================================================
+//  FLDIGI - Programmers Code Reference Doxygen Main Page Documentation
+//
+//  index.txt
+//
+//  Author(s):
+//		Robert Stiles, KK5VD, Copyright (C) 2013
+//
+// This is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with the program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// =====================================================================
+
+/*!
+
+\mainpage FLDIGI - Programmers Code Reference
+
+\section depLibs Dependency Libraries
+Fast Light Tool Kit Version 1.3.x:
+	http://fltk.org
+
+Libsndfile:
+	http://www.mega-nerd.com/libsndfile/
+
+Libsamplerate:
+	http://www.mega-nerd.com/SRC/
+
+Audio input/output:
+	portaudio: (Mac OSX, and ???)
+		http://www.portaudio.com
+
+	or (depends on OS type/version)
+
+	pulseaudio: (???)
+		http://www.freedesktop.org/wiki/Software/PulseAudio
+
+xmlrpc-c:
+	http://xmlrpc-c.sourceforge.net
+
+Hamlib: (optional)
+	version 1.2.12S: (needed for static linking of driver modules)
+
+	version 1.2.15.3 (latest): (does not support static linking of driver modules)
+		http://sourceforge.net/apps/mediawiki/hamlib/index.php?title=Main_Page
+
+png:
+	http://www.libpng.org
+
+pkg-config:
+	http://www.freedesktop.org/wiki/Software/pkg-config
+
+
+Possible other required libs/tools, depends on your OS vendor and development tools.
+
+libtool:
+	http://www.gnu.org/software/libtool/
+
+jpeg:
+	http://www.ijg.org
+
+zlib;
+	http://www.zlib.net
+
+gettext:
+	http://www.gnu.org/software/gettext/
+
+automake:
+	http://www.gnu.org/software/automake/
+
+autoconf:
+	http://www.gnu.org/software/autoconf/
+
+m4:
+	http://www.gnu.org/software/m4/
+
+*/
+

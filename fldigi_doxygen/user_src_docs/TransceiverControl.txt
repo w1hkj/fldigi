@@ -1,0 +1,278 @@
+/**
+\page  rig_control_page Rig Control
+
+\tableofcontents
+
+
+\image html init-rig-setup.png "Initial Rig Setup"
+\image latex init-rig-setup.png "Initial Rig Setup" width=2.0in
+<br>
+
+CAT not enabled
+<br>
+
+
+\image html docked-rig-control.png "Docked Rig Control"
+\image latex docked-rig-control.png "Docked Rig Control" width=5.0in
+<br>
+
+CAT not enabled, Manual Entry of transceiver frequency
+<br>
+
+<b>Note: </b>The same control is also used for both manual entry of the
+transceiver frequency or with full CAT control.  When no CAT is available
+the control is simply a convenient way of keeping track of the transceiver
+USB/LSB suppressed carrier frequency, the mode and the audio tracking
+point.  If fldigi is being used with an FM transceiver you probably should
+enter the simplex frequency or the input frequency of a repeater being
+used.  This frequency value is used with the waterfall audio frequency to
+compute the logged frequency.  The logged frequency value will only be
+correct for LSB and USB operation.
+<br>
+
+The frequency/mode pick list is displayed when the book button is
+pressed.  Pressing the book button a second time will restore the
+original logging panel.
+<br>
+
+The pick list buttons control selecting, adding and deleting entries in
+the frequency/mode list.
+<br>
+
+<ul>
+	<li>add the current frequency / mode / audio track point to the list</li>
+	<li>select the current list entry</li>
+	<li>delete the highlighted entry from the list</li>
+	<li>delete all entries from the list (a warning prompt will appear)</li>
+	<li>show active frequencies based on either the entry field to the
+	right or the stations locator,
+	see \ref psk_reporter_page "pskreporter/spotter".</li>
+	<li>entry field for active frequencies search, for example "EM."</li>
+</ul>
+
+
+The browser list contains frequency, sideband, modem type and audio
+frequency.  The list is saved when fldigi is shut down.
+<br>
+
+The combo box on the left will allow the selection and control of the
+operating mode of the transceiver.
+<br>
+
+The combo box on the right will allow the selection and control of the
+transceiver bandwidth.
+<br>
+
+The frequency display is in fact a set of special buttons.  Each
+digit may be left-clicked to increment in frequency by that digit
+value, or right clicked to decrement by that digit value.  The leading
+digits will follow suit if a decade rollover occurs.  You can also place the
+mouse cursor on a digit and then use the mouse wheel to roll the frequency
+up and down.
+<br>
+
+Manual entry of frequency can be accomplished by clicking on any digit and
+then entering the numeric value in KHz.  Don't forget the decimal
+point if you are entering a fractional KHz value.
+<br>
+
+The mode combobox, the bandwidth combobox and the frequency display
+also annunciate the current transceiver status.  If you change
+operating mode on the transceiver, that will be annunciated in the
+respective combobox and fldigi will adjust any internal parameters
+accordingly.  Fldigi queries the transceiver 10 times per second
+to maintain a lock step with the transceiver.
+<br>
+
+\section rig_config  Rig Configuration
+
+<b>Hardware PTT control</b>
+
+\image html config-rig-hardware.png "Hardware PTT control"
+\image latex config-rig-hardware.png "Hardware PTT control" width=5.0in
+<br>
+
+<b>Right Channel VOX Signal</b>
+
+Fldigi can generate a 1000 Hz tone for the duration of the PTT keydown period.
+ A simple tone detector/filter and transistor switch can be used to generate
+a PTT signal from this sound card output.  Jim, W5ZIT, has provided
+details on building an \ref w5zit_rt_channel_page "interface" for this
+type of PTT control.
+<br>
+
+<b>Serial Port using DTR or RTS</b>
+<br>
+
+The simplest rig control is just being able to control the push to talk via
+an external transistor switch.  You set this type of control on the first
+configuration tab for rig control.
+<br>
+
+You select this operation by checking the "Use serial port PTT".
+ Select the serial port from the list (fldigi will have searched
+for available ports).  Then specify whether the h/w uses RTS or
+DTR and whether a + or - voltage is required to toggle PTT on.
+
+You can use a serial port for control with the RTS and DTR pins
+configured for you particular interface.
+The program allows you to use RTS, DTR or BOTH for the PTT
+signal.  Press the Initialize button to start the serial port.
+<br>
+
+<b>Parallel Port (Linux and Free BSD only)</b>
+<br>
+
+Fldigi sets and clears the parallel port pin, PARPORT_CONTROL_INIT, pin 16 on
+the 25 pin parallel port connector.  Keydown sets Pin 16 to +5
+volts and keyup sets the voltage to zero.
+<br>
+
+<b>&mu;H Router (MacOS X)</b>
+<br>
+
+Simular functionality can be achieved on the Macintosh operating system using
+'&mu;H Router' by Kok Chen, W7AY.   See
+<a href="http://www.w7ay.net/site/Applications/Router/index.html">&mu;H Router Website</a>
+for specific details and requirements. A selectable (check box) option will be
+available on the Rig->Hardware PTT Configuration panel.
+<br>
+
+<b>PTT delays</b>
+<br>
+
+You can accommodate delays in transceiver switching between
+receive and transmit by adjusting the PTT delays.  The control
+values are in milliseconds.  These controls have no effect on
+external PTT circuits such as those implemented in the SignaLink
+interfaces.  They rely on detecting the audio data stream.
+You can use a combination of macro tags in a macro key definition to
+achieve a resolution.  For example try a macro definition similar
+to this to insure that the RSID is sent via a slow FM xcvr (or via a
+VHF repeater)
+<br>
+
+\verbatim
+
+<TX><MODEM:NULL><IDLE:2.5>
+<!MODEM:MT63-500>
+<TXRSID:on>
+
+\endverbatim
+
+<br>
+
+Change the idle time value (in fractional seconds) to suit your needs.
+<br>
+
+\section rig_cat_control RigCAT control
+
+\image html config-rig-rigcat.png "RigCAT control"
+\image latex config-rig-rigcat.png "RigCAT control" width=5.0in
+<br>
+
+
+RigCAT is a rig control system similar to hamlib that was developed
+specifically for fldigi.  It uses command / response definitions that
+are found in various \ref rig_xml_page "rig.xml"
+files.  You can use a rig.xml file specific for your transceiver or
+write and test one yourself.  The easiest way is to adapt an existing
+rig xml file for a rig that is similar to your own.  ICOM almost
+identical command/response strings for all of its transceiver line.
+ Yaesu rigs have nearly all used unique command/response structures
+until just recently.  The TS-450, TS-950 and others share a similar set
+of commands and responses.
+<br>
+
+RigCAT commands and responses are defined in a rig specific xml file which
+contains all of the required queries and responses in extended markup
+language format. Please read the specification
+document \ref rig_xml_page "rigxml" to learn more about this new way of
+building generic rig interface definitions and how they are used with
+fldigi.  fldigi will look for a file in the $HOME/.fldigi/rigs directory for
+all files with extension ".xml".  These contain definitions for the
+transceiver indicated by the file name, ie: FT-450.xml, IC-756PRO.xml,
+etc.  You can download the appropriate xml files from the resource directory
+tree <a href="http://www.w1hkj.com/xmls">http://www.w1hkj.com/xmls</a>
+or from the
+archives <a href="http://www.w1hkj.com/xmlarchives.html">web page</a>.  Place
+the file in your rigs directory and fldigi will find it.
+<br>
+
+You will need to specify how your PTT will be triggered.  This can be
+using a CAT command, the RTS or DTR pins or none.  None would be
+appropriate if you are using the rig's VOX or an outboard sound card
+interface such as the SignalLink SL-1+ which produces its own VOX type of
+PTT.  In that case simply leave all of the PTT options unselected.
+<br>
+
+If you are using a transceiver or a rig interface such as CI-V that echos
+all serial data you check off the "Commands are echoed" box.  That
+will suppress fldigi trying to respond to a command it just sent to the
+transceiver.
+<br>
+
+You may need to try various values of retries, retry interval, and command
+interval to achieve consistent rigcat control.
+<br>
+
+Press the Initialize button after setting all of the parameters.  If the
+settings are all correct fldigi should start receiving frequency
+information from the rig and annunciating them on the rig control
+frequency display.
+
+\section hamlib_cat_control Hamlib CAT control
+
+Hamlib is a set of standard libraries for interfacing to a large number of
+transceivers.  The hamlib library system consists of a front end
+which acts on behalf of all rigs and backends which are specific to
+each rig.
+<br>
+
+\image html config-rig-hamlib.png "Hamlib CAT Control"
+\image latex config-rig-hamlib.png "Hamlib CAT Control" width=5.0in
+<br>
+
+Select your transceiver from the list of supported units.  Then select
+the serial port and baud rate.  If you are familiar with the
+hamlib library you can send various startup sequences to the rig using
+the advanced configuration.  PTT control can be achieved using CAT
+commands or via DTR / RTS on the same port as the control comms.
+ You might also need to specifiy whether RTS/CTS flow control is
+uses (Kenwood rigs use this quite often) or if Xon/Xoff flow control is
+used.
+<br>
+
+You may need to try various values of retries, retry interval, and command
+interval to achieve consistent hamlib control.
+<br>
+
+Press the Initialize button after setting all of the parameters.  If the
+settings are all correct fldigi should start receiving frequency
+information from the rig and annunciating them on the rig control
+frequency display.
+<br>
+
+\section xml_rpc_cat Xml-Rpc CAT
+<br>
+
+\image html config-rig-xmlrpc.png "Xml-Rpc CAT Control"
+\image latex config-rig-xmlrpc.png "Xml-Rpc CAT Control" width=5.0in
+<br>
+
+
+Xml-Rpc allows third party software to control various aspects of fldigi
+operation including but not limited to rig control.  This is the data
+interface that is also used by the program <b>flrig</b>, a fldigi
+companion transceiver control program.
+<br>
+
+If you are using a third party interface such as DxKeeper Bridge you might
+be instructed to select this method of CAT.
+<br>
+
+\ref rig_control_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

@@ -1,0 +1,51 @@
+/**
+\page throb_page Throb
+
+\tableofcontents
+
+The THROB family of modes use two tones at a time. These tones are also
+amplitude modulated and can be a single tone for some symbols.
+<br>
+
+The mode has no Forward Error Correction, and is difficult to
+tune. It is fairly sensitive and moderately robust. Keyboard-to-keyboard QSOs
+are reasonably fast.
+<br>
+
+Tuning must be very accurate, and the software will not tolerate
+differences between transmit and receive frequency.
+<br>
+
+The amplitude modulation component of THROB is a raised cosine AM modulation
+of each symbol. This combined with two tones transmitted at the same time,
+means that a very linear transmitter is required. It also gives the mode its
+very unique sound. You will never mistake Throb for any other mode.
+<br>
+
+For THROB, nine tones are used, spaced 8 or 16 Hz. For THROBX, 11 tones
+are used, spaced 7.8125 or 15.625 Hz.
+<br>
+
+Fldigi supports the following:
+<br>
+
+\section throb_baud_table  Throb baud rates and tone spacings
+<br>
+
+  Mode  | Symbol Rate |   Typing Speed   | Bandwidth
+:------:|:-----------:|:----------------:|:----------------:
+THROB1  |   1.0 baud  | 1.0 cps (10 wpm) | 72 Hz
+THROB2  |   2.0 baud  | 2.0 cps (20 wpm) | 72 Hz
+THROB4  |   4.0 baud  | 4.0 cps (40 wpm) | 144 Hz
+THROBX1 |   1.0 baud  | 1.0 cps (10 wpm) | 94 Hz
+THROBX2 |   2.0 baud  | 2.0 cps (20 wpm) | 94 Hz
+THROBX4 |   4.0 baud  | 4.0 cps (40 wpm) | 188 Hz
+
+<br>
+
+
+\ref throb_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

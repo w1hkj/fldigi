@@ -1,0 +1,122 @@
+/**
+\page  signal_browser_page Signal Browser
+
+\tableofcontents
+
+<br>
+
+PSK and RTTY signals can be viewed in a multi-channel context.
+You can open an embedded or a separate dialog to access the
+browser.  These browsers can help to locate a signal of interest
+on a busy band.  The browsers can be visible at any time, but are only
+active when fldigi is in one of the PSK or RTTY modes.  Open the external
+by clicking on the <b>View/Signal browser</b> menu item.
+<br>
+
+\image html view-menu.png "View Menu"
+\image latex view-menu.png "View Menu" width=2.0in
+<br>
+
+It looks like this:
+<br>
+
+\image html browser-panel.png "Browser Panel"
+\image latex browser-panel.png "Browser Panel" width=4.25in
+<br>
+
+Toggle the visibility of the embedded viewer by selecting the
+<b><i>View/Hide Channels</i></b> on the same menu list.  Your main fldigi
+screen then opens a browser panel on the left side of the Tx/Rx panel(s).
+<br>
+
+\image html main-dialog-browser.png "Main Dialog Browser"
+\image latex main-dialog-browser.png "Main Dialog Browser" width=6.0in
+<br>
+
+This panel can be resized horizontally by dragging the interface between the
+browser and the Rx panel to the left and right.  You can drag all the way to
+the left to close the panel (or use the menu button).  The drag to the
+right is limited to prevent sizing the Rx/Tx panels below their allowable
+limits.
+<br>
+
+The browser can decode up to 30 simultaneous signals.  As each signal is
+acquired within a 100 Hz channel width it is printed on the associated
+line.  The user can elect to have each line annotated with
+<br>
+
+a channel number,<br>
+the waterfall audio frequency,<br>
+the transceiver HF frequency + waterfall, or<br>
+no annotation.<br>
+<br>
+
+Left click on a line of received text to move the waterfall frequency
+and Rx panel tracking to that signal.  The contents of the line of
+text is transferred to the Rx text widget, and the main signal processing loop
+begins to track and decode that signal.  Right click on a line of received
+text and that line is cleared and the channel reset for a new
+detection.  You may have to do this occasionally if the detector
+for that channel has locked on to a sideband of a PSK signal.
+This is most likely to occur when the received signal as a marginal or
+bad IMD.  Use the ><b>Clear</b> button to clear and reset all of the
+channels.  Channel signal detection and processing should restart
+immediately.
+<br>
+
+Configuring the browser:
+<br>
+
+\image html config-ui-browser.png "Browser Configure"
+\image latex config-ui-browser.png "Browser Configure" width=5.0in
+<br>
+
+<ol>
+	<li>select the number of 100 Hz channels you want visible</li>
+	<li>select the start frequency for the browser (your transceiver may not
+	rx signals below this value)</li>
+	<li>select the inactivity timeout for the browser.  After this
+	number of seconds the channel will be cleared and prepared for the next
+	detection cycle.</li>
+	<li>select whether you want a Marque type of continuous scrolling, or simply
+	clear the line when it is filled.</li>
+	<li>select what kind of label annotation you want on each line</li>
+	<li>select the font and font size to be used in the browser</li>
+	<li>You can enter any text you want to search for in the <b>Seek
+	Regular Expression</b> widget.
+	<br>
+	This text can be a simple text snippet such as "CQ" or any
+	regular expression.  With a regex you can specify a more generic pattern,
+	which means that you can match more things and your search is somewhat noise
+	tolerant. Here is an example for a CQ from a US station (should match most
+	callsigns):
+	<br>
+	<br>
+	cq.+[aknw][a-z]?[0-9][a-pr-z][a-z]{1,2}
+	<br>
+	<br>
+	This says "cq followed by at least one character, followed by one A,
+	K, N, or W, followed by an optional letter, followed by a digit,
+	followed by a letter that is not q, followed by one or two letters".
+	The search is case-insensitive.
+	<br>
+	All plain text is a valid regular expression, unless you really had been
+	looking for these metacharacters:
+	<br>
+	<br>
+	.[{()\*+?|^$
+	<br>
+	<br>
+	These will have to be escaped with a backslash.<br></li>
+</ol>
+
+<br>
+<br>
+\ref signal_browser_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+
+
+

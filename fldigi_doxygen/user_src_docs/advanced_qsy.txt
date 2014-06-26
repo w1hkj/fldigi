@@ -1,0 +1,128 @@
+/**
+\page advanced_qsy_page  Advanced QSY operations
+
+\tableofcontents
+
+<br>
+The&lt;QSY:FFF.F[:NNNN]&gt;
+macro tag and its delayed flavour&lt;!QSY:FFF.F[:NNNN]&gt; allows
+the user to set the transceiver frequency to FFF.F (In kHz) and optionaly set
+the audio frequency to NNNN (In Hz).<br><br>It is possible to give
+several frequencies, which specify a frequency set. When the macro is
+executed, it choses the first frequency of this set greater than the
+current one. If the current frequency is greater than any frequency of
+the set, then the macro choses the smallest, first frequency of this
+set.<br><br>The utility of this feature is to allow a scan of a range of
+frequencies by re-executing the same macro over and over. Each time the
+macro is executed, the
+next frequency of the set is selected. It can typically be used to
+iteratively try several frequency for a given test.
+<br>
+<br>
+The frequency set can be specified in two distinct ways, which can be freely
+combined together.
+<br>
+<br>
+
+\section dist_freq Distinct frequencies
+
+Several distinct separated with a
+semi-column, in increasing order.
+For example:
+<br>
+<br>
+
+&lt;QSY:2616.6;3287.6;3853.1;4608.1;4780.1;7878.1;8038.1:1900&gt;
+<br>
+<br>
+It means that the transceiver frequency will be set to 2616.6 kHz, then at
+next execution to 3853.1 kHz etc... and will loop back to 2616.6 kHz.
+Each time the same (optional) audio frequency will be set to 1900 Hz.
+In this specific case, it allows to test several Weather Fax broadcast stations,
+until the operator finds an active one.
+<br>
+<br>
+
+\section freq_inc Frequencies with increments
+
+A frequency can come with an increment: This means an implicit range of
+frequencies from this one to the next frequency. If the last frequency
+has an increment, it is never taken into account: The last frequency is
+always an upper limit. Let's consider this
+example:
+<br>
+<br>
+&lt;QSY:89000+100;102000&gt;<br><br>It is equivalent to:
+<br>
+<br>
+&lt;QSY:89000;89100;89200;89300;...;101900;102000&gt;
+<br>
+<br>
+In this case, it allows fldigi to scan all FM frequencies by clicking
+the macro button.
+<br>
+
+\section combo_with Combination with \<TIMER\> macro tag.
+
+If the macro is automatically reexecuted using the &lt;TIMER&gt;, the
+same logic applies. At each run of the macro, the next frequency is
+chosen. The following macro transmits the same message on the
+frequencies 144800 MHz, 144900 ... until 146000 then loops back,
+waiting five seconds between each transmission.
+<br>
+<br>
+&lt;TX&gt;&lt;QSY:144800.00+100;146000&gt;&lt;MODEM:NULL&gt;&lt;!MODEM:PACKET&gt;
+<br>
+&lt;FREQ&gt; CQ CQ de &lt;MYCALL&gt;&lt;RX&gt;&lt;TIMER:5&gt;
+
+<br>
+\section exec_error Execution errors.
+
+Several error messages can be displayed in the macro editor in case of a
+parameter. If this happens, the execution of the macro is stopped. Here
+is the list of possible messages:
+<br>
+
+\section invalid_freq Invalid frequency range
+There must be valid frequencies. This macro will display the
+message:<br>&lt;QSY:abcdef&gt;
+
+<br>
+
+\section inc_pos Increment must be positive
+
+The frequency increment must be positive.
+This macro will fail:
+<br>
+&lt;QSY:89000-1000;88000&gt;
+<br>
+
+\section freeq_not_pos Frequency not positive
+All frequencies must be strictly positive.
+<br>
+\section freq_inc Frequencies must be increasing
+
+The sequence of frequencies must be strictly increasing. Thus, this error
+message can appear with a macro such as:
+<br>
+<br>
+&lt;QSY:89000;88000&gt;
+
+<br>
+\section inline_marco Inline Macro Tags
+
+Unless otherwise noted all of the macro tags discussed thus far are
+meant to be executed at the time that the macro is invoked by the
+button closure. It is possible by execution of the tag to be
+delated until it appears in the transmit data stream. This
+delayed execution capability is limited to a select number of
+tags. See \ref inline_macro_page "Inline Macro Tags"
+for a list of these tags and examples.
+
+<br>
+\ref advanced_qsy_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

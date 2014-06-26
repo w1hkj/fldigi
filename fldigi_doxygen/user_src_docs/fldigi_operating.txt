@@ -1,0 +1,30 @@
+/**
+\page operating_page Operating
+
+<ul>
+	<li> \subpage contest_how_to_page </li>
+	<li> \subpage cw_keying_page </li>
+	<li> \subpage digiscope_display_page </li>
+	<li> \subpage digiscope_display_wwv_mode </li>
+	<li> \subpage dxcc_list_page </li>
+	<li> \subpage frequency_analyzer_page </li>
+	<li> \subpage keyboard_operation_page </li>
+	<li> \subpage kml_page </li>
+	<li> \subpage menus_page </li>
+	<li> \subpage mouse_and_keyboard_shortcuts_page </li>
+	<li> \subpage notifier_page </li>
+	<li> \subpage operating_controls_page </li>
+	<li> \subpage operating_multiple_copies_page </li>
+	<li> \subpage psk_reporter_page </li>
+	<li> \subpage rig_control_page </li>
+	<li> \subpage rst_rsq_page </li>
+	<li> \subpage signal_browser_page </li>
+	<li> \subpage synop_page </li>
+	<li> \subpage utf8_support_page </li>
+	<li> \subpage w5zit_rt_channel_page </li>
+	<li> \subpage wwv_tx_mode </li>
+	<li> \subpage working_logs_page </li>
+	<li> \subpage supporting_data_files_page </li>
+</ul>
+
+*/

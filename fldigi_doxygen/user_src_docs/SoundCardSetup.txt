@@ -1,0 +1,307 @@
+/**
+\page  sound_card_configuration_page Sound Card Configuration
+
+\tableofcontents
+
+A few words about sound I/O on the PC.  "You are in a maze of
+twisty little passages, all alike".
+<br>
+
+PortAudio, PulseAudio and OSS are different ways in which fldigi can
+access your sound card through the various sound systems.
+<br>
+
+OSS was the first audio backend in fldigi. It works with the Linux sound
+system of the same name, which has now been replaced by ALSA but is
+still supported via an emulation layer.  Its only advantage, as an
+audio backend, is that it's simple and doesn't require any
+external libraries.
+
+<br>
+The PortAudio backend was written subsequently to support
+<a href="http://www.opensound.com/">OSS</a> on Linux and FreeBSD,
+<a href="http://www.alsa-project.org/">ALSA</a> and
+<a href="http://jackaudio.org/">JACK</a> on Linux, CoreAudio on OS X,
+and also the various sound APIs on Windows -- all through the same
+<a href="http://www.portaudio.com/">PortAudio</a> library.
+<br>
+
+<a href="http://www.pulseaudio.org/">PulseAudio</a> is more than an
+audio hardware access layer; refer to its website for a
+summary of what it does. Fldigi supports it mainly because many Linux
+distributions are now integrating it with their desktops, but also
+because it has a few interesting features:
+
+<ul>
+	<li>it can take care of the resampling and volume control for us,</li>
+	<li>it can stream audio over the network, and </li>
+	<li>it makes it easier to run multiple fldigi instances (all
+	accessing the same sound card).</li>
+	<li>it provides mixer controls for input and output audio streams</li>
+	<li>it remembers which hardware is used for each application it
+	serves, and it remembers the mixer levels associated with that
+	application</li>
+</ul>
+
+In the future it might be possible to replace all of these with a single
+backend, without any loss of functionality, performance, sound system
+or platform support. That'll be the day! Until then:
+<br>
+
+\image html config-audio-devices.png "Audio Devices"
+\image latex config-audio-devices.png "Audio Devices" width=5.0in
+<br>
+
+<b>On Linux:</b>
+
+<ul>
+	<li>Use	PulseAudio if your Linux distro ships it, and you already have the
+	pulseaudio daemon running (this is the case with Fedora 8/9 and Ubuntu
+	8.04, probably also with openSUSE 11.0). Or if you want networked
+	audio, etc. etc.</li>
+	<li>Otherwise, use PortAudio and select a device
+	from the list(s).  PortAudio is also the best way to access JACK,
+	through which you can use other programs as audio sources/sinks --
+	particularly useful with SDR software. As with PulseAudio, you can
+	select different capture and playback audio devices.</li>
+	<li>The OSS	backend should be used only as a last resort. Note that it
+	has not been updated to support user-configurable sample rates.</li>
+</ul>
+
+<b>On Windows:</b>
+
+Use the PortAudio and select the device from the list(s).
+
+Select the <i>SndCrd</i> tab on the configuration dialog.
+<br>
+
+On Linux Fldigi can interface to the sound card using either the OSS,
+the Portaudio, or the PulseAudio.  Each of the appropriate
+libraries must be present on the computer to use that particular sound
+i/o.
+<br>
+
+On Windows Fldigi uses the Portaudio sound driver only.
+<br>
+
+It is also possible to configure Fldigi with File I/O only, which is
+useful for testing the application without an interface to the sound
+card.  In the File I/O only configuration you can record and
+playback audio files in a number of different formats including the
+"wav" format associated with the Windows operating system.
+<br>
+
+The program will find all active sound cards and the associated drivers
+for both.  Select the sound card and driver type that will be used with the
+program.  I recommend using the Pulseudio device driver if that
+is available on your Linux distribution.
+<br>
+
+\image html config-audio-settings.png "Config Audio Settings"
+\image latex config-audio-settings.png "Config Audio Settings" width=5.0in
+<br>
+
+If Pulse or Port audio is selected then you can either allow the program to
+use the auto detect to determine the best sound card sampling rate, or
+you can pick from the drop down list.  If you know your RX and TX sound card
+oscillator correction factors you can enter them now.  If not you can
+determine the RX rate correction using a special WWV modem built
+into <i>Fldigi</i>.  The decoder and encoder logic for each of the various
+modems require a specific sound card sample rate which may not be the the
+actual sound card sample rate.  The conversion between the modem sample rate
+and the sound card sample rate is accomplished by one of a set of
+sample rate converters.
+<br>
+
+Sound card oscillators may have a slight error in frequency that causes their
+sampling rate to not be the value specified.  This error is usually small
+enough to be measured in a parts per million. Fldigi uses a technique called
+rate conversion to correct the sampled waveform for this error.  The error
+can be measured and the correction factor determined by using
+the \ref digiscope_display_wwv_mode "WWV calibration"
+modem.  The supporting library used for the converter provides
+several different levels of conversion, Best, Medium, Fastest and Linear
+Interpolator.  The default, Medium interpolator, will be
+satisfactory for most sound cards.  If you
+are running fldigi on a computer with limited cpu power you might find
+it necessary to select one of the more cpu efficient converters, either
+Fastest or Linear.  Each gives progressively poorer performance
+but use fewer cpu cycles to perform the frequency conversion.  You
+should also be sure that the cpu type is set to
+\ref miscellaneous_configuration_page "Slow cpu" on the miscellaneous
+configuration tab.
+<br>
+
+\image html config-audio-mixer.png "Audio Mixer"
+\image latex config-audio-mixer.png "Audio Mixer" width=5.0in
+<br>
+
+Mixer controls are only active on Linux using OSS, ALSA backends and if the
+distribution provides application layer mixer support.  Select whether you
+will be using Line-In or Mic-In for the audio connection from the receiver
+output.  Fldigi ALWAYS expects to use the Line-Out for driving the
+transmitter audio. Set the PCM level for your sound card.  If you check
+"Manage mixer" then the Tx and Rx "volume" controls on the main fldigi
+dialog will be active.
+<br>
+
+\section right_chanel_audio Right Channel Audio Output
+
+\image html config-audio-right.png "Right Audio Channel"
+\image latex config-audio-right.png "Right Audio Channel" width=5.0in
+<br>
+
+You may elect to make the right and left channels both contain the
+modem signal.  Or, you may reverse the right and left channel
+audio signals.  These two controls only change the function of the
+audio output.
+<br>
+
+
+\image html stereo-plug.png "Stereo Plug"
+\image latex stereo-plug.png "Stereo Plug" width=3.0in
+<br>
+
+<ol>
+	<li>Sleeve: usually ground</li>
+	<li>Ring: Right-hand channel for stereo signals, negative polarity for
+	balanced mono signals.  Fldigi uses this channel for special
+	controls signals.</li>
+	<li>Tip: Left-hand channel for stereo signals, positive polarity for
+	balanced mono signals.  Fldigi uses this channel for Rx and Tx
+	audio.</li>
+</ol>
+
+<br>
+
+The PTT, CW QSK and Pseudo-FSK items are found on their respective
+configuration tabs.  They are replicated here for your convenience
+and these controls may be changed on this or the other tabs.
+<br>
+
+\section wav_file_sample_rate WAV File Sample Rate
+
+\image html SavedWAVFileSampleRate.png "Sample Rate of Saved WAV Files"
+\image latex SavedWAVFileSampleRate.png "Sample Rate of Saved WAV Files" width=2.0in
+<br>
+
+User selectable WAV file sample rate.
+<br>
+
+\section multiple_sound_cards Multiple sound cards
+
+In systems with multiple sound cards they will not always be in the
+correct sort order on boot.  This may cause problems not only with
+fldigi, but other apps that depend on a certain sound card.  The
+work around is not that difficult and will reliably place the preferred
+sound card in the correct slot. Sound cards are numbered from 0 on to
+however many cards you have in your computer. Usually its only 2.
+<br>
+
+The 1st step is to determine the correct id of the cards in your
+system.  Open a terminal and issue the following :: aplay -l
+<br>
+
+Here is an example of what you may see.<br>
+<br>
+
+\verbatim
+
+**** List of PLAYBACK Hardware Devices ****
+card 0: ICH6 [Intel ICH6], device 0: Intel ICH [Intel ICH6]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 0: ICH6 [Intel ICH6], device 4: Intel ICH - IEC958 [Intel ICH6 -
+IEC958]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: AudioPCI [Ensoniq AudioPCI], device 0: ES1371/1 [ES1371
+DAC2/ADC]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: AudioPCI [Ensoniq AudioPCI], device 1: ES1371/2 [ES1371 DAC1]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+
+\endverbatim
+
+If it does not already exist you will need to create the following file:<br>
+<br>
+
+<tt>/etc/modprobe.d/alsa-options</tt>
+<br>
+
+You will have to root privileges to create the file, so a system such
+as Ubuntu that depends on sudo you would enter
+<br>
+
+<tt>$ sudo touch /etc/modprobe.d/alsa-options</tt>
+<br>
+
+Using the above example, you edit that file so that it's contents
+contain
+<br>
+
+\# Set preferred order of the sound cards<br>
+
+<tt>
+options snd-ICH6 index=0<br>
+options snd-AudioPCI index=1
+</tt><br>
+<br>
+
+The simplest terminal editor that is on just about every distribution is<br>
+"nano" so to edit the file you just created you can again use sudo<br>
+<br>
+
+<tt>$ sudo nano /etc/modprobe.d/alsa-options</tt>
+<br>
+
+If you want to test this new file, reboot and open a terminal and again
+issue the command :: aplay -l
+<br>
+
+You will normally find that your internet browser and/or Flash want to
+use card 0, so you then may want to consider using card 1 for fldigi
+<br>
+
+Here is another example with 3 sound systems; mother board ALC1200, a
+thumb-drive audio codec, and a SignaLink USB:
+<br>
+
+\verbatim
+
+**** List of PLAYBACK Hardware Devices ****
+card 0: NVidia [HDA NVidia], device 0: ALC1200 Analog [ALC1200 Analog]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: Set [USB Headphone Set], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 2: default [USB Audio CODEC ], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+\endverbatim
+
+The /etc/modprobe.d/alsa-options contains these lines
+<br>
+
+\verbatim
+
+options snd-NVidia index=0
+options snd-Set index=1
+options snd-CODEC index=2
+
+\endverbatim
+
+Notice that each line is uniquely related to the aplay -l report
+<br>
+
+
+<br>
+\ref sound_card_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

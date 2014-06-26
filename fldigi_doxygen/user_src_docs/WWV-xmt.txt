@@ -1,0 +1,59 @@
+/**
+\page  wwv_tx_mode WWV transmit mode
+
+\tableofcontents
+
+The WWV mode is normally used to measure the offset of the sound card
+oscillator.  (see \ref digiscope_display_wwv_mode "WWV ppm measurement").
+<br>
+
+It can also be used to transmit time tick signals similar to the format
+that is used by WWV.  The WWV modem sends a time tick which is a
+200 msec wide pulse at a once per second rate when the T/R button is
+enabled.  This pulse is shaped with a 4 msec raised cosine shape
+on the leading and trailing edges to reduce key clicks.  The
+accuracy of the transmitted time tick is solely dependent on the
+accuracy with which the WWV ppm measurement was performed.
+<br>
+
+The purpose of the WWV time tick transmission is to allow other
+stations to calibrate their sound cards against your calibrated
+system.  This can be used to align all systems in a VHF/UHF net
+for example.  It is only necessary for one of the net members to
+be able to calibrate his or her sound card against WWV.  The
+other's would then be calibrated by proxy use of the WWV time tick
+transmit mode.  This can even be used in the case where no member has
+access to a HF transceiver.  The "master" station would set the Rx
+and Tx ppm settings to zero.  It would then transmit the time tick
+signal for the other stations to calibrate their sound cards against
+the master sound card.  Having all of the stations calibrated in
+this way will insure that the modem decoders will give maximum
+performance.  Here is an example of an \ref inline_macro_page "advanced macro"
+ that will send a CW announcement, 2 minutes of time ticks and end with
+another CW announcement.
+<br>
+
+\verbatim
+
+<MODEM:CW>
+<!GOFREQ:1000>
+<!WPM:24>
+QRZ QRZ de <MYCALL> <MYCALL>
+2 minute time tick cal run follows
+<IDLE:2>
+<!MODEM:WWV><!IDLE:120>
+<!MODEM:CW><!IDLE:2>
+end of time tick run
+de <MYCALL> k
+<TX><RX>
+
+\endverbatim
+
+
+<br>
+<br>
+\ref wwv_tx_mode "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

@@ -1,0 +1,127 @@
+/**
+\page  google_maps Google Maps
+
+\verbatim
+
+snip ------------ copy the following to ~/.fldigi/scripts/map.pl
+
+#!/usr/bin/perl
+
+# Author: Stelios Bounanos, M0GLD
+# Date:   20080625
+
+use warnings;
+use strict;
+use Getopt::Std;
+
+our $VERSION = "0.3141";
+our %opts = ( "e" => 0, "m" => 1, "z" => 4);
+
+cmdline();
+open(STDOUT, '>', "/dev/null");
+
+my $loc = exists($opts{'l'}) ? $opts{'l'} : $ENV{'FLDIGI_LOG_LOCATOR'};
+die "Invalid locator\n" unless ((defined($loc) && length($loc) =~ /[2-6]/));
+
+my $label = exists($opts{'t'}) ? $opts{'t'} : $ENV{'FLDIGI_LOG_CALL'};
+$label = $loc if (!defined($label) || $label eq "");
+
+my ($lon, $lat) = map { sprintf("%+.6f", $_) } mtoll($loc);
+if ($opts{'m'}) {
+    my $url = "http://maps.google.com/maps?q=${lat},${lon}(${label})&t=p&z=$opts{'z'}";
+#    $url =~ s/([(),])/sprintf("%%%02X", ord($1))/ge; # encode some chars
+    exec("xdg-open", $url);
+    die "Could not exec xdg-open: $!\n";
+}
+
+exit(0) unless ($opts{'e'});
+my $kml = (exists($ENV{'TMPDIR'}) ? $ENV{'TMPDIR'} : "/tmp") .
+    "/" . $loc . ".kml";
+open(KML, '>', $kml) or die "Could not write $kml: $!\n";
+print KML <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+  <Placemark>
+    <name>$label</name>
+    <description>
+      $label
+      $loc
+    </description>
+    <Point>
+      <coordinates>$lon,$lat,0</coordinates>
+    </Point>
+  </Placemark>
+</kml>
+EOF
+    ;
+close(KML);
+
+########################################################################
+
+sub cmdline
+{
+    $Getopt::Std::STANDARD_HELP_VERSION = 1;
+    my $old_warn_handler = $SIG{__WARN__};
+    $SIG{__WARN__} = sub { die $_[0]; };
+    getopts('t:l:mz:e', \%opts);
+    $SIG{__WARN__} = $old_warn_handler;
+}
+
+
+# Convert a 2, 4, or 6-character Maidenhead locator string
+# to decimal degrees. Return a (longitude, latitude) pair.
+sub mtoll
+{
+    my $len = length($_[0]);
+    $_[0] .= join("", ("A", "A", "0", "0", "A", "A")[$len .. 5]) if ($len < 6);
+    $_[0] = uc($_[0]);
+    die "Invalid locator\n" unless ($_[0] =~ /[A-R]{2}\d{2}[A-X]{2}/);
+
+    my @digits = split(//, $_[0]);
+    my ($lon, $lat) = (-180, -90);
+
+    $lon += (ord($digits[0]) - ord('A')) * 20 +
+            (ord($digits[2]) - ord('0')) * 2 +
+            (ord($digits[4]) - ord('A') + 0.5) / 12;
+    $lat += (ord($digits[1]) - ord('A')) * 10 +
+            (ord($digits[3]) - ord('0')) +
+            (ord($digits[5]) - ord('A') + 0.5) / 24;
+
+    return ($lon, $lat);
+}
+
+sub HELP_MESSAGE
+{
+print <<EOF
+
+Usage: $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
+
+The following single-character options are accepted:
+
+        -t LABEL  Use LABEL as the marker label
+                  The default is \$FLDIGI_LOG_CALL
+
+        -l LOC    Place marker at IARU locator LOC
+                  The default is \$FLDIGI_LOG_LOCATOR
+
+        -m        Show in Google Maps (default)
+        -z        Zoom level (Google Maps only)
+
+        -e        Write a Google Earth kml file in
+                  \$TMPDIR/LOC.kml
+EOF
+;
+}
+
+snip------------------------------------------------
+
+
+\endverbatim
+
+<br>
+\ref google_maps "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

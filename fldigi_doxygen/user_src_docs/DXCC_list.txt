@@ -1,0 +1,77 @@
+/**
+\page  dxcc_list_page DXCC List etal
+
+\tableofcontents
+
+Fldigi uses several data files that are not included with the
+distribution.  These must be downloaded from the list maintenance
+web sites for the most current data.  These lists include:
+<br>
+
+<table>
+	<tr>
+	<td>List Data<br>
+	</td>
+	<td>List Name<br>
+	</td>
+	<td>Web source<br>
+	</td>
+	</tr>
+	<tr>
+	<td>DXCC<br>
+	</td>
+	<td>cty.dat<br>
+	</td>
+	<td>
+	<a href="http://www.country-files.com/cty/">http://www.country-files.com/cty/</a>
+	<br>
+	</td>
+	</tr>
+	<tr>
+	<td>LOTW<br>
+	</td>
+	<td>lotw1.txt<br>
+	</td>
+	<td>
+	<a href="http://www.hb9bza.net/lotw/lotw1.txt">http://www.hb9bza.net/lotw/lotw1.txt</a>
+	<br>
+	</td>
+	</tr>
+	<tr>
+	<td>EQSL<br>
+	</td>
+	<td>AGMemberList.txt<br>
+	</td>
+	<td>
+	<a href="http://www.eqsl.cc/QSLcard/DownloadedFiles/AGMemberList.txt">http://www.eqsl.cc/QSLcard/DownloadedFiles/AGMemberList.txt</a>
+	<br>
+	</td>
+	</tr>
+	</table>
+<br>
+
+These files should be downloaded and placed in the fldigi files
+directory.  The most convenient way to open the fldigi files
+directory is via the menu item "File / Show config".
+<br>
+
+The DXCC list browser is shown by selecting the menu item
+"View / Countries".
+<br>
+
+\image html DXCC_list.png "DXCC List"
+\image latex DXCC_list.png "DXCC List" width=4.0in
+<br>
+
+
+You can sort the list by Country, Continent, ITU or CQ zone by clicking on
+the various column headers.
+<br>
+
+<br>
+\ref dxcc_list_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

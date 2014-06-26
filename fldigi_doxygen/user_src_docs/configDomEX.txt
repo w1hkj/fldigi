@@ -1,0 +1,49 @@
+/**
+\page domino_ex_configuration_page DominoEX Configuration
+
+\tableofcontents
+
+<br>
+\image html config-domino.png "DominoEX Configuration"
+\image latex config-domino.png "DominoEX Configuration" width=5.0in
+
+Enter the secondary text. This text will be sent during periods when
+your keyboard is inactive (between letters for slow typists). The
+default for this text will be your callsign when you have entered that
+in theOperator configuration tab.
+<br>
+<br>
+
+Set the BW factor for the decoding prefilter. 2.0 should be adequate
+unless you are experiencing nearby continuous wave interference (CWI).
+You can enable and disable the prefilter with the checkbox. Please note
+that the filter requires additional cpu cycles. Older and slower cpu
+models might give better decoding with the filter disabled.
+<br>
+<br>
+
+Fldigi can send and receive FEC in accordance with the DomEX-FEC specification
+for MultiPsk. This type of FEC is achieved by some loss of non
+printing characters in the primary character set. It is therefore
+not usable as an FEC mode for ARQ (automatic repeat request)
+transmissions.
+<br>
+<br>
+
+The DominoEX decoder can detect the presence of CWI within the passband set
+by the BW factor. Increasing the CWI threshold increases the
+sensitivity to such interference. When the interference is
+detected the associated data is culled using a technique called
+puncturing.
+<br>
+<br>
+
+DominoEX operations are described in \ref domino_ex_page .
+
+<br>
+\ref domino_ex_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

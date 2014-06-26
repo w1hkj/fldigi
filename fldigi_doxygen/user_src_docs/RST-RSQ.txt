@@ -1,0 +1,105 @@
+/**
+\page  rst_rsq_page RST and RSQ Reporting
+
+\tableofcontents
+
+
+\section rst RST
+
+Is the traditional Readability, Strength, Tone reporting system used for
+CW operations for nearly as long as amateurs have enjoyed the airwaves.
+<br>
+
+\subsection rst_readability READABILITY
+
+<ol>
+<li>Unreadable</li>
+<li>Barely readable, occasional words distinguishable</li>
+<li>Readable with considerable difficulty</li>
+<li>Readable with practically no difficulty</li>
+<li>Perfectly readable (that is 100% print in todays jargon)</li>
+</ol>
+
+\subsection rst_signal_strength SIGNAL STRENGTH
+
+<ol>
+<li>Faint signals, barely perceptible</li>
+<li>Very weak signals</li>
+<li>Weak signals</li>
+<li>Fair signals</li>
+<li>Fairly good signals</li>
+<li>Good signals</li>
+<li>Moderately strong signals</li>
+<li>Strong signals</li>
+<li>Extremely strong signals</li>
+</ol>
+
+\subsection rst_tone TONE
+
+<ol>
+<li>Sixty cycle AC or less, very rough and broad</li>
+<li>Very rough AC, very harsh and broad</li>
+<li>Rough AC tone, rectified but not filtered</li>
+<li>Rough note, some trace of filtering</li>
+<li>Filtered rectified ac, but strongly ripple modulated</li>
+<li>Filtered tone, definite trace of ripple modulation</li>
+<li>Near pure tone, trace of ripple modulation</li>
+<li>Near perfect tone, slight trac of modulation</li>
+<li>Perfect tone, no trace of ripple, or modulation of any kind</li>
+</ol>
+
+\section rsq RSQ
+
+
+Give the report as RSQ for digital modes, but especially BPSK and QPSK; see:
+<a class="moz-txt-link-freetext" href="http://www.psb-info.net/RSQ-Reporting-Table.html">
+http://www.psb-info.net/RSQ-Reporting-Table.html</a>
+<br>
+
+
+\subsection rsq_readability READABILITY
+
+<ol>
+<li>0% undecipherable</li>
+<li>20% occasional words distinguishable</li>
+<li>40% considerable difficulty, many missed characters</li>
+<li>80% practically no difficulty, occasional missed characters</li>
+<li>95%+ perfectly readable</li>
+</ol>
+
+\subsection rsq_strength STRENGTH
+
+<ol>
+<li>Barely perciptible trace </li>
+<li>n/a</li>
+<li>Weak trace</li>
+<li>n/a</li>
+<li>Moderate trace</li>
+<li>n/a</li>
+<li>Strong trace</li>
+<li>n/a</li>
+<li>Very strong trace</li>
+</ol>
+
+\subsection rsq_quality QUALITY
+
+<ol>
+<li>Splatter over much of the visible waterfall</li>
+<li>n/a</li>
+<li>Multiple visible pairs</li>
+<li>n/a</li>
+<li>One easily visible pair</li>
+<li>n/a</li>
+<li>One barely visible pair</li>
+<li>n/a</li>
+<li>Clean signal - no visible unwanted sidebar pairs</li>
+</ol>
+
+
+
+<br>
+\ref rst_rsq_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

@@ -1,0 +1,65 @@
+\documentclass{article}
+\usepackage[demo]{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\begin{document}
+
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{image1}
+  \caption{A subfigure}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{image1}
+  \caption{A subfigure}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{A figure with two subfigures}
+\label{fig:test}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{image1}
+  \captionof{figure}{A figure}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{image1}
+  \captionof{figure}{Another figure}
+  \label{fig:test2}
+\end{minipage}
+\end{figure}
+
+\end{document}
+
+\\begin{figure}
+\hfill
+\subfigure[Title A]{\includegraphics[width=5cm]{img1}}
+\hfill
+\subfigure[Title B]{\includegraphics[width=5cm]{img2}}
+\hfill
+\caption{Title for both}
+\end{figure}
+
+\begin{figure}
+\centering
+\parbox{5cm}{
+\includegraphics[width=5cm]{img1}
+\caption{First.}
+\label{fig:2figsA}}
+\qquad
+\begin{minipage}{5cm}
+\includegraphics[width=5cm]{img2}
+\caption{Second.}
+\label{fig:2figsB}
+\end{minipage}
+\end{figure}

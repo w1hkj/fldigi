@@ -1,0 +1,198 @@
+/**
+\page  inline_macro_page Inline Macros
+
+\tableofcontents
+
+
+The following macro tags will be parsed and acted upon then they occur
+during the transmission of the macro.
+<br>
+
+ Tag                       | Description
+:------------------------: | :-----------------
+\<!WPM:NN\>                | CW words per minute
+\<!POST:+/-nn.n\>	       | CW post delay
+\<!PRE:nn.n\>	           | CW pre delay
+\<RISE:nn.n\>\<RISE:nn.n\> | CW rise/decay time
+\<!MODEM: ,...\>           | Change to specified modem with parameters
+\<!GOHOME\>	               | Move audio carrier to mode sweet spot frequency
+\<!GOFREQ:NNNN\>	       | Move audio carrier to specific audio frequency
+\<!QSY:FFF.F[:NNNN]\>      | Move to specific RF and Audio frequency
+\<!IDLE:NN.nn\>	        | Transmit idle signal for specified number of seconds
+\<!WAIT:NN\>	           | Wait (no audio) for specified number of seconds
+\<!WPM:ww[:ff]\>	       | CW - ww = WPM, optional ff = Farnsworth wpm
+
+<br>
+
+Note that each of these tags is identical to their immediate mode
+counterparts.  The exception is the addition of the exclamation
+mark following the leading '\<'.  The use of these tags is best
+explained by example.
+<br>
+
+
+\section cw_code_practice CW Code Practice Transmission
+
+\verbatim
+<MODEM:CW><TX>
+<!GOFREQ:600><!WPM:10:15>
+NOW IS THE TIME - now 180 wpm
+<!IDLE:2><!RISE:1.0><!PRE:0.4><!POST:+0.2><!WPM:180>
+FOR ALL GOOD MEN TO COME TO THE AID of their country.
+now 30 wpm<!IDLE:2>
+<!WPM:30>de <MYCALL> k
+<RX>
+\endverbatim
+<br>
+
+<ul>
+  <li>Modem type is changed to CW before start of transmission (\<MODEM:CW\>)
+  does not have the addition of the ! symbol</li>
+  <li>Audio carrier is changed to 600 Hertz</li>
+  <li>Transmit WPM set to 30 words per minute, followed by text</li>
+  <li>Transmit is silent for 2 seconds</li>
+  <li>Rise time, pre and post delays are adjusted and the WPM changed to 180
+  words per minute</li>
+  <li>Text is sent at 180 WPM</li>
+  <li>WPM changed to 30 words per minute, followed by identification string
+  and signoff</li>
+  <li>Return to receive</li>
+</ul>
+
+This is a more complex macro that might be used for a code practice
+transmission such as the W1AW broadcast on 3580 KHz.<br>
+<br>
+
+\verbatim
+<MODEM:NULL>
+<!QSY:3579.200:800>
+<TX>
+<!MODEM:CW>
+<!WPM:5:15><!IDLE:2><FILE:/home/dave/fldigi.ft950/scripts/practice-5wpm.txt>
+<!WPM:10:15><!IDLE:5><FILE:/home/dave/fldigi.ft950/scripts/practice-10wpm.txt>
+<!WPM:15:15><!IDLE:5><FILE:/home/dave/fldigi.ft950/scripts/practice-15wpm.txt>
+<!WPM:18><!IDLE:10><FILE:/home/dave/fldigi.ft950/scripts/bulletin.txt>
+<!IDLE:5>end of broadcast de <MYCALL> k
+<RX>
+\endverbatim
+<br>
+
+\section qsy_test QSY:ffff.f:aaaa test
+
+\verbatim
+<MODEM:NULL><TX>
+<!QSY:3583.0:1750>
+<!MODEM:RTTY:170:45.45:5>
+RYRYRYRYRYRY de <MYCALL> k
+<RX>
+\endverbatim
+<br>
+
+<ul>
+	<li>Change modem type to NULL to suppress sending any signal when
+transmit enabled.  This is necessary to allow the transmit data
+stream to be processed.</li>
+	<li>Send frequency change command to transceiver, new frequency is 3583.0
+  		kHz.  Set audio frequency to 1750 Hz</li>
+	<li>Change modem to RTTY, 170 Hz shift, 45.45 Baud, 5 Bit code (standard
+	Baudot)</li>
+	<li>Send RY... text</li>
+	<li>Return to receive</li>
+</ul>
+
+\section advanced_qsy Advanced QSY operations
+
+Several QSY frequencies or ranges of frequencies provided by one increment,
+can be proposed, in which case the first frequency after the current
+frequency is chosen.
+
+\ref advanced_qsy_page
+<br>
+
+\section arrl_style_broadcast ARRL style broadcast in multiple modes
+
+\verbatim
+<MODEM:NULL>
+<!QSY:3594:915>
+<!MODEM:RTTY:170:45.45:5><!IDLE:2>
+<FILE:/home/dave/arrl_test/bulletin.txt>
+<!MODEM:NULL><!GOFREQ:1000><!IDLE:5><!MODEM:BPSK31><!IDLE:2>
+<FILE:/home/dave/arrl_test/bulletin.txt>
+<TX><RX>
+\endverbatim
+<br>
+
+<ul>
+  <li>Change modem type to NULL to suppress transmission and start the Tx
+  data stream processor</li>
+  <li>Send frequency change command to transceiver, new frequency is
+3594 kHz, audio frequency 915 Hz. Note that this puts the MARK tone at
+1000 Hz.</li>
+  <li>Change modem to RTTY 170 Hz shift, 45.45 baud (default is 5 bits).
+  Idle for 2 seconds.</li>
+  <li>Send the file contents of specified file</li>
+  <li>Change to NULL modem.  Turns off the RTTY diddle ... audio stream is
+  silent.</li>
+  <li>Change audio frequency to 1000 Hz.  Idle for 5 seconds (complete
+  silence of transmit)</li>
+  <li>Change modem type to BPSK-31.  Send BPSK idle for 2 seconds</li>
+  <li>Send the file contents of specified file</li>
+  <li>Return to receive (note that the \<TX\> can appear anywhere
+is the macro definition as it is executed when the macro text is
+parsed).  \<RX\> is always moved to the end of the Tx
+buffer.  It could also have appeared anywhere in the macro string.</li>
+</ul>
+
+\section appearance_tx_buffer Appearance of tx buffer
+
+\verbatim
+^!
+^!^!
+QST de W1HKJ
+Test bulletin for 9/7/2011
+QST de W1HKJ SK
+
+^!^!^!^!^!
+QST de W1HKJ
+Test bulletin for 9/7/2011
+QST de W1HKJ SK
+
+^r
+\endverbatim
+<br>
+
+This is the contents of the ARRL broadcast macro text at the time the
+macro button is pressed.  Each of the \<!... macro tags has been
+specified by the string "^!" which the Tx processor interprets as the
+command to process the top most tag in the first-in, first-out sequence
+of tags.  As each "^!" is executed the referenced tag is printed
+to the Rx buffer using color coded text.<br>
+<br>
+
+\verbatim
+<!QSY:3594:915>
+<!MODEM:RTTY:170:45.45:5>
+<!IDLE:2>
+
+QST DE W1HKJ
+TEST BULLETIN FOR 9/7/2011
+QST DE W1HKJ SK
+
+<!MODEM:NULL>
+<!GOFREQ:1000>
+<!IDLE:5>
+<!MODEM:BPSK31>
+<!IDLE:2>
+
+QST de W1HKJ
+Test bulletin for 9/7/2011
+QST de W1HKJ SK
+\endverbatim
+
+<br>
+\ref inline_macro_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

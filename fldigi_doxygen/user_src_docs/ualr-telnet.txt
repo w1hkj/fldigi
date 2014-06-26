@@ -1,0 +1,71 @@
+/**
+\page ualr_telnet_page ualr telnet
+
+\tableofcontents
+
+\verbatim
+
+snip ------------ copy the following to ~/.fldigi/scripts/ualr-telnet.pl
+
+#!/usr/bin/perl
+
+# Author: Stelios Bounanos, M0GLD
+# Date: 20090103
+#
+# ualr-telnet is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# ualr-telnetl is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ----------------------------------------------------------------------------
+
+use strict;
+use warnings;
+
+die "Usage: $0 CALLSIGN\n" unless (@ARGV == 1);
+
+use Net::Telnet ();
+
+sub error { print "\$NAME?\$QTH?\n"; exit(1); }
+my $t = new Net::Telnet( Host => "callsign.ualr.edu", Port => 2000, Timeout => 10,
+             errmode => \&error );
+$t->open();
+$t->waitfor('/LOOKUP>.*$/');
+$t->print($ARGV[0]);
+
+$_ = $t->getline();      # blank line
+$_ = $t->getline();      # call
+error() if (m/No match found/);
+
+$_ = $t->getline();      # name
+chomp; s/.+,\s+//; s/\s.+$//;
+print "\$NAME$_";
+$_ = $t->getline();      # addr
+$_ = $t->getline();      # qth
+chomp;
+$_ =~ ",";
+$_ = $`;
+
+print "\$QTH$_\n";
+
+$t->waitfor('/LOOKUP>.*$/');
+$t->print("bye");
+
+snip------------------------------------------------
+
+\endverbatim
+
+
+<br>
+\ref ualr_telnet_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

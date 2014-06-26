@@ -1,0 +1,47 @@
+/**
+\page license_page License(s)
+
+\tableofcontents
+
+<br>
+\section source_code_copyright Copyright
+
+Copyright &copy;
+<br>
+
+<ul>
+  <li>2006 through 2013 Dave Freese, W1HKJ</li>
+  <li>2007, 2008, 2009 Stelios Bounanos, M0GLD</li>
+  <li>2007, 2008, 2009 Leigh Klotz Jr., WA5ZNU</li>
+  <li>2007, 2008, 2009 Joe Veldhuis, N8FQ</li>
+  <li>2008, 2009 Stephane Fillod, F8CFE</li>
+  <li>2009 John Douyere, VK2ETA</li>
+  <li>2013 Remi Chateauneu, F4ECW</li>
+  <li>2013 Robert Stiles, KK5VD</li>
+</ul>
+
+This application and all supporting documentation is free software;
+you can redistribute it and/or modify it under the terms of the GNU
+Library General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any
+later version.
+<br>
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+<br>
+
+You should have received a copy of the GNU Library General Public
+License along with the source code for fldigi; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+<br>
+
+<br>
+\ref license_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

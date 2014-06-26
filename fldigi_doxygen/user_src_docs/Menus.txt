@@ -1,0 +1,642 @@
+/**
+\page menus_page Menus
+
+\tableofcontents
+
+\image html menu-linux.png "Menu"
+\image latex menu-linux.png "Menu" width=6.0in
+<br>
+
+\section menu_heirarchy Menu Heirarchy
+
+\subsection s_files Files
+
+\subsubsection s_folders Folders
+
+\image html menu-files-folders.png "Folders"
+\image latex menu-files-folders.png "Folders" width=2.6in
+<br>
+
+<ul>
+	<li>Fldigi config... - open the OS native file explorer to
+	the folder containing the fldigi operating  &amp; data files. </li>
+	<li> NBEMS files... - open the OS native file explorer to the folder
+	containing the NBEMS data files</li>
+</ul>
+
+\subsubsection s_macros Macros
+
+\image html menu-files-macros.png "Macros"
+\image latex menu-files-macros.png "Macros" width=2.25in
+<br>
+
+<ul>
+	<li>Open Macros - open a macro definition file ... changes the MACRO
+	keys immediately</li>
+	<li>Save Macros - save the current macro definitions to a designated
+	file </li>
+</ul>
+
+Additional information:
+<br>
+\ref macro_page
+<br>
+\ref ui_configuration_macros_page
+<br>
+
+\subsubsection s_text_capture Text Capture
+
+\image html menu-files-text.png "Text Capture"
+\image latex menu-files-text.png "Text Capture" width=2.8in
+<br>
+
+Capture all received and transmitted text to a date-time stamped file.  Each
+day's data will be stored in a single file in which the text is appended:
+fldigiYYYYMMDD.log.  This file will be in the "Fldigi config..." folder which
+can be accessed per the File/Folders menu item.  A brief example log of Rx
+data:
+<br>
+
+\verbatim
+--- Logging started at Wed Jan  5 18:42:51 2011 UTC ---
+RX 14071955 : PSK31 (2011-01-05 18:42Z): d dx sk S
+RX 14071756 : PSK31 (2011-01-05 18:42Z): PSE -lr dACQ CQ de WX1GRS WX1GRS
+RX 14071756 : PSK31 (2011-01-05 18:42Z): CQ CQ de WX1GRS WX1GRS
+RX 14071756 : PSK31 (2011-01-05 18:42Z): CQ CQ de WX1GRS WX1GRS
+RX 14071756 : PSK31 (2011-01-05 18:42Z): PSE K aie =
+--- Logging stopped at Wed Jan  5 18:43:04 2011 UTC ---
+
+Each line contains the program state, RX or TX, the frequency, the mode,
+the date-time, and the data stream.
+\endverbatim
+
+<br>
+
+\subsubsection s_audio Audio
+
+\image html menu-files-audio.png "Audio"
+\image latex menu-files-audio.png "Audio" width=2.4in
+<br>
+
+<ul>
+	<li>Rx Capture - allows capturing the incoming audio to a wav file</li>
+	<li>Tx Generate - allows capturing the generated tx audio to a wav file</li>
+	<li>Playback - playback a previously captured or generated wav file</li>
+</ul>
+
+\subsubsection s_exit Exit
+
+\image html menu-files-audio.png "Exit"
+\image latex menu-files-audio.png "Exit" width=2.4in
+<br>
+
+Exit - exit the program closing down the various interfaces in a nice
+controlled manner.
+<br>
+
+\subsection s_op_mode Op Mode
+
+Op Mode - the current operating mode will show as a highlighted menu item.
+
+\image html menu-opmode.png "Op Mode"
+\image latex menu-opmode.png "Op Mode" width=1.0in
+<br>
+
+\subsubsection s_op_mode_cw CW
+
+<br>
+CW - receive CW 5 to 200 WPM and transmit on any audio frequency using AF CW.
+<br>
+
+Additional information:
+<br>
+\ref cw_page
+<br>
+\ref cw_configuration_page
+<br>
+
+
+\subsubsection s_op_mode_contestia Contestia
+
+\image html menu-contestia.png "Contestia"
+\image latex menu-contestia.png "Contestia" width=0.75in
+<br>
+
+<ul>
+	<li>Contestia 4 tones, 125 Hz wide</li>
+	<li>Contestia 4 tones, 250 Hz wide</li>
+	<li>Contestia 8 tones, 250 Hz wide</li>
+	<li>Contestia 4 tones, 500 Hz wide</li>
+	<li>Contestia 8 tones, 500 Hz wide</li>
+	<li>Contestia 16 tones, 500 Hz wide</li>
+	<li>Contestia 8 tones, 1000 Hz wide</li>
+	<li>Contestia 16 tones, 1000 Hz wide</li>
+	<li>Contestia 32 tones, 1000 Hz wide</li>
+	<li>Custom ... set on dialog</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref contestia_page
+<br>
+\ref contestia_configuration_page
+<br>
+
+\subsubsection s_op_mode_domino_ex DominoEX
+
+\image html menu-dominoex.png "DominoEX"
+\image latex menu-dominoex.png "DominoEX" width=1.0in
+<br>
+
+<ul>
+	<li>dominoex 4</li>
+	<li>dominoex 5</li>
+	<li>dominoex 8</li>
+	<li>dominoex 11 - the default calling mode for dominoEX</li>
+	<li>dominoex 16</li>
+	<li>dominoex 22</li>
+	<li>dominoex 44</li>
+	<li>dominoex 88</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref domino_ex_page
+<br>
+\ref domino_ex_configuration_page
+<br>
+
+\subsubsection s_op_mode_hell Hell
+
+\image html menu-hell.png "Hell"
+\image latex menu-hell.png "Hell" width=1.0in
+<br>
+
+<ul>
+	<li>Feld-Hell</li>
+	<li>Slow-Hell</li>
+	<li>Feld-Hell X5</li>
+	<li>Feld-Hell X9</li>
+	<li>FSK-Hell (also called FM-Hell by some programs)</li>
+	<li>FSK-Hell105</li>
+	<li>Hell-80</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref feld_hell_page
+<br>
+\ref feld_hell_configuration_page
+<br>
+
+\subsubsection s_op_mode_msfk MSFK
+
+\image html menu-mfsk.png "MSFK"
+\image latex menu-mfsk.png "MSFK" width=0.75in
+<br>
+
+<ul>
+	<li>MSFK 4</li>
+	<li>MSFK 8</li>
+	<li>MSFK 11</li>
+	<li>MSFK 16</li>
+	<li>MSFK 22</li>
+	<li>MSFK 31</li>
+	<li>MSFK 32</li>
+	<li>MSFK 64</li>
+	<li>MSFK 64L</li>
+	<li>MSFK 128</li>
+	<li>MSFK 128L</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref mfsk_page
+<br>
+
+\subsubsection s_op_mode_mt63 MT-63
+
+\image html menu-mt63.png "MT63"
+\image latex menu-mt63.png "MT63" width=0.75in
+<br>
+
+<ul>
+	<li>MT63-500S</li>
+	<li>MT63-500L</li>
+	<li>MT63-1000S</li>
+	<li>MT63-1000S</li>
+	<li>MT63-2000S</li>
+	<li>MT63-2000L</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref mt63_page
+<br>
+\ref mt63_configuration_page
+<br>
+
+\subsubsection s_op_mode_psk PSK
+
+\image html menu-psk.png "PSK"
+\image latex menu-psk.png "PSK" width=1.75in
+<br>
+
+\image html menu-psk-multi-carrier.png "Multi Carrier PSK"
+\image latex menu-psk-multi-carrier.png "Multi Carrier PSK" width=1.75in
+<br>
+
+<ul>
+	<li>psk 31 - phase shift keying - 31.625 baud</li>
+	<li>psk 63 - phase shift keying - 63.25 baud</li>
+	<li>psk 63F - phase shift keying with FEC - 63.25 baud</li>
+	<li>psk 125 - phase shift keying - 126.5 baud</li>
+	<li>psk 250 - phase shift keying - 253 baud</li>
+	<li>psk 500 - phase shift keying - 506 baud</li>
+	<li>psk1000 - phase shift keying - 1012 baud</li>
+	<li>MultiCarrier</li>
+	<ul>
+		<li>12 x psk 125 - 12 carrier psk125 - 126.5 baud - bandwidth 2000 Hz</li>
+		<li>6 x psk 250 - 6 carrier psk 250 - 253 baud - bandwidth 2000 Hz</li>
+		<li>2 x psk 500 - 2 carrier psk 500 - 506 baud - bandwidth 1200 Hz</li>
+		<li>4 x psk 500 - 4 carrier psk 500 - 506 baud - bandwidth 2600 Hz</li>
+		<li>2 x psk 800 - 2 carrier psk 800 - ~810 baud - bandwidth 2300 Hz</li>
+		<li>2 x psk 1000 - 2 carrier psk 1000 - 1012 baud - bandwidth 3200 Hz</li>
+	</ul>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref psk_page
+<br>
+
+
+\subsubsection s_op_mode_qpsk QPSK
+
+\image html menu-qpsk.png "QPSK"
+\image latex menu-qpsk.png "QPSK" width=0.75in
+<br>
+
+<ul>
+	<li>qpsk 31 - quadrature phase shift keying - 31.25 baud</li>
+	<li>qpsk 63 - quadrature phase shift keying - 63.25 baud</li>
+	<li>qpsk 125 - quadrature phase shift keying - 126.5 baud</li>
+	<li>qpsk 250 - quadrature phase shift keying - 253 baud</li>
+	<li>qpsk 500 - quadrature phase shift keying - 506 baud</li>
+
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref psk_page
+<br>
+
+\subsubsection s_op_mode_pskr PSKR
+
+\image html menu-pskr.png "PSKR"
+\image latex menu-pskr.png "PSKR" width=1.75in
+<br>
+
+All PSKR modes are phase shift keying, with FEC and interleaving.
+<br>
+
+<ul>
+	<li>psk 125R - 126.5 baud</li>
+	<li>psk 250R - 253 baud</li>
+	<li>psk 500R - 506 baud</li>
+	<li>psk 1000R - 880 baud</li>
+	<li>MultiCarrier</li>
+	<ul>
+		<li>4 x psk 63R - 4 carrier, bandwidth 330 Hz</li>
+		<li>5 x psk 63R - 5 carrier, bandwidth 416 Hz</li>
+		<li>10 x psk 63R - 10 carrier, bandwidth 550 Hz</li>
+		<li>20 x psk 63R - 20 carrier, bandwidth 1725 Hz</li>
+		<li>32 x psk 63R - 32 carrier, bandwidth 2775 Hz</li>
+		<li>4 x psk 125R - 4 carrier, bandwidth 352 Hz</li>
+		<li>5 x psk 125R - 5 carrier, bandwidth 440 Hz</li>
+		<li>10 x psk 125R - 10 carrier, bandwidth 1100 Hz</li>
+		<li>16 x psk 125R - 16 carrier, bandwidth 1760 Hz</li>
+		<li>2 x psk 250R - 2 carrier, bandwidth 440 Hz</li>
+		<li>3 x psk 250R - 3 carrier, bandwidth 660 Hz</li>
+		<li>5 x psk 250R - 5 carrier, bandwidth 1100 Hz</li>
+		<li>6 x psk 250R - 6 carrier, bandwidth 1320 Hz</li>
+		<li>7 x psk 250R - 7 carrier, bandwidth 1540 Hz</li>
+		<li>2 x psk 500R - 2 carrier, bandwidth 880 Hz</li>
+		<li>3 x psk 500R - 3 carrier, bandwidth 1320 Hz</li>
+		<li>4 x psk 500R - 4 carrier, bandwidth 1760 Hz</li>
+		<li>2 x psk 800R - 2 carrier, baud 800, bandwidth 1280 Hz</li>
+		<li>2x psk 1000R - 2 carrier baud 1012, bandwidth 1760 Hz</li>
+	</ul>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref psk_page
+<br>
+
+
+\subsubsection s_op_mode_olivia Olivia
+
+\image html menu-olivia.png "Olivia"
+\image latex menu-olivia.png "Olivia" width=0.75in
+<br>
+
+<ul>
+	<li>8/250 8tone, 250 Hz wide signal format</li>
+	<li>8/500 8 tone, 500 Hz wide signal format</li>
+	<li>16/500 16 tone, 500 Hz wide signal format</li>
+	<li>32/1000 32 tone, 1000 Hz wide signal format</li>
+	<li>Custom - tones and bandwidth configurable on Olivia tab</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref olivia_page
+<br>
+\ref olivia_configuration_page
+<br>
+
+
+\subsubsection s_op_mode_rtty RTTY
+
+\image html menu-rtty.png "RTTY"
+\image latex menu-rtty.png "RTTY" width=0.75in
+<br>
+
+<ul>
+	<li>RTTY-45  45 Baud Baudot, 170 Hz shift, used primarily in U.S.</li>
+	<li>RTTY-50  50 Baud Baudot, 170 Hz shift, used primarily in Europe</li>
+	<li>RTTY-75N 75 Baud Baudot, 170 Hz shift</li>
+	<li>RTTY-75W 75 Baud Baudot, 800 Hz shift</li>
+	<li>Custom - Baud Rate, Baudot/ASCII, Shift etc configurable on RTTY tab</li>
+</ul>
+
+Additional information:
+<br>
+\ref rtty_page
+<br>
+\ref rtty_fsk_configuration_page
+<br>
+
+\subsubsection s_op_mode_thor THOR
+
+\image html menu-thor.png "THOR"
+\image latex menu-thor.png "THOR" width=0.75in
+<br>
+
+<ul>
+	<li>Thor-4</li>
+	<li>Thor-5</li>
+	<li>Thor-8</li>
+	<li>Thor-16</li>
+	<li>Thor-22</li>
+	<li>Thor 25 x 4 - 4 x tone spacing, 2 second interleave</li>
+	<li>Thor 50 x 1 - 1 second interleave</li>
+	<li>Thor 50 x 2 - 2 x tone spacing, 1 second interleave</li>
+	<li>Thor 100 - 0.5 second interleave</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref thor_page
+<br>
+\ref thor_configuration_page
+<br>
+
+\subsubsection s_op_mode_throb THROB
+
+\image html menu-throb.png "throb"
+\image latex menu-throb.png "throb" width=0.75in
+<br>
+
+<ul>
+	<li>Throb1</li>
+	<li>Throb2</li>
+	<li>Throb4</li>
+	<li>ThrobX-1</li>
+	<li>ThrobX-2</li>
+	<li>ThrobX-4</li>
+</ul>
+
+Additional information:
+<br>
+\ref throb_page
+<br>
+
+\subsubsection s_op_mode_wefax WEFAX
+
+\image html menu-wefax.png "WEFAX"
+\image latex menu-wefax.png "WEFAX" width=1.0in
+<br>
+
+<ul>
+	<li>WEFAX-IOC576</li>
+	<li>WEFAX-IOC288</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref wefax_page
+<br>
+
+\subsubsection s_op_mode_navtex NAVTEX / SITOR
+
+\image html menu-navtex.png "NAVTEX / SITOR"
+\image latex menu-navtex.png "NAVTEX / SITOR" width=0.6in
+<br>
+
+<ul>
+	<li>Navtex</li>
+	<li>SitorB</li>
+</ul>
+
+Additional information:
+<br>
+\ref navtex_and_sitorb_page
+<br>
+
+\subsubsection s_op_mode_other SSB, WWV, and Freq Anal
+
+<ul>
+	<li>SSB - fldigi does not transmit, but can be used for rig control,
+	signal frequency analysis and logging</li>
+	<li>WWV - special receive only modem used for calibrating sound card</li>
+	<li>Freq Anal - used for carrier detection and frequency measurement</li>
+</ul>
+<br>
+
+Additional information:
+<br>
+\ref frequency_analyzer_page
+<br>
+\ref digiscope_display_wwv_mode
+<br>
+<br>
+
+
+\subsection s_configure Configure
+
+\image html menu-configure.png "Configure"
+\image latex menu-configure.png "Configure" width=1.4in
+<br>
+
+See \ref configuration_page Page
+<br>
+
+
+\subsection s_view View
+
+\image html menu-view.png "View"
+\image latex menu-view.png "View" width=1.4in
+<br>
+
+\image html menu-view-controls.png "View Controls"
+\image latex menu-view-controls.png "View Controls" width=3.5in
+<br>
+
+\image html menu-view-waterfall.png "View Waterfall"
+\image latex menu-view-waterfall.png "View Waterfall" width=2.9in
+<br>
+
+<ul>
+	<li>View/Hide Channels - Opens / Closes muli-signal viewer, shares space
+	with Rx/Tx panels</li>
+	<li>Floating Scope - Opens up a resizable, moveable scope display</li>
+	<li>MFSK Image - Opens the MFSK picture image (if being received)</li>
+	<li>Weather Fax Image - Opens WEFAX send/receive dialog </li>
+	<li>Signal browser - open the psk/rtty viewer dialog to display up to 30
+	simultaneously decoded psk signals Dialog viewer contains shared
+	data / control with the View/Hide Channel viewer</li>
+	<li>Countries - DXCC entities</li>
+	<li>Controls</li>
+	<ul>
+		<li>Full - show all logbook and rig controls</li>
+		<li>Rig control and logging - minimizes the logging panel for
+		normal QSO entries</li>
+		<li>Rig control and contest - minimizes the logging panel for
+		Contest entries</li>
+		<li>None - removes the Rig Control / Log panel from the main
+		User Interface</li>
+		<li>Contest fields - Display alternate 2nd line in qso logging
+		area; provides access to contest logging fields</li>
+	</ul>
+	<li>Waterfall</li>
+	<ul>
+		<li>Docked scope - toggles the visibility of the docked scope
+		display to the right of the waterfall</li>
+		<li>Min WF Controls - toggles the visibility of various waterfall
+		controls as configured by the user</li>
+	</ul>
+</ul>
+<br>
+
+\subsection s_logbook Logbook
+
+\image html menu-logbook.png "Logbook"
+\image latex menu-logbook.png "Logbook" width=1.0in
+<br>
+
+\image html menu-logbook-adif.png "Logbook ADIF"
+\image latex menu-logbook-adif.png "Logbook ADIF" width=2.25in
+<br>
+
+\image html menu-logbook-reports.png "Logbook Reports"
+\image latex menu-logbook-reports.png "Logbook Reports" width=2.3in
+<br>
+
+<ul>
+	<li>View - open the logbook dialog</li>
+	<li>New - create a new logbook</li>
+	<li>Open - open an existing logbook</li>
+	<li>Save - save the current logbook</li>
+	<li>ADIF / Merge - merge adif data from an ADIF file</li>
+	<li>ADIF / Export - export selected or all logbook records to an ADIF
+	formated file - see \ref exporting_logbook_data "Log Exports".</li>
+	<li>Reports / Text ... - export selected or all logbook records to a
+	text file suitable for printing</li>
+	<li>Reports / CSV ... - export selected or all logbook records to a
+	tab delimited file</li>
+	<li>Reports / Cabrillo ... - create a Cabrillo contest report.
+	- see \ref cabrillo_report_page "Cabrillo Reports".</li>
+</ul>
+<br>
+
+\subsection s_help Help
+
+\image html menu-help.png "Help"
+\image latex menu-help.png "Help" width=2.25in
+<br>
+
+<ul>
+	<li>Beginners' Guide</li>
+	<li>On line documentation... - open up default browser to the on-line
+	Help site</li>
+	<li>Fldigi web site... - open up default browser to the www.w1hkj.com
+	primary web page</li>
+	<li>Reception reports... - open up browser to the http://pskreporter.info
+	web page preset to your callsign</li>
+	<li>Command line options - display a list of all
+	\ref command_line_switches_page "command line switches" available to the
+	fldigi user</li>
+	<li>Audio device info - displays information about all audio devices
+	detected on the computer system</li>
+	<li>Build info - displays all relevant information regarding the
+	compilation and link for the application
+	- \ref build_info_page "build info"</li>
+	<li>Event log - opens a text display window that records various events
+	depending on the level of reporting depth selected.  This is a useful
+	window for reporting problems with the program to the developers.</li>
+	<li>Check for updates... fldigi silently opens a download web site,
+	checks and reports on whether a new version is available.</li>
+	<li>About - Version number and a little about the programmers</li>
+</ul>
+
+<br>
+
+\subsection s_other Spot, Tx RSID, Rx RSID, and Tune Buttons
+
+\image html menu-linux.png "Menu"
+\image latex menu-linux.png "Menu" width=6.0in
+
+<ul>
+	<li>Spot button - The "Spot" light button is visible if callsign spotting
+	is enabled.  Use this button to toggle the callsign spotting reporter
+	on and off.  It is automatically turned off when playback is selected
+	in the Files menu.  The main window text is not searched if the viewer
+	is active, i.e., if it is displayed and the current modem is PSK.
+	See <a href="Spotter.html">PskReporter</a>
+	and <a href="Notifier.html">Notifier</a>.
+	<li>RxID button - toggles the detection
+	of \ref id_configuration_page "Reed Solomon Identification" codes.</li>
+	<li>TxID button - toggles the transmission of the RSID signal.</li>
+	<li>Tune button - toggles the "Tune" mode which causes fldigi to
+	insert a tone at the current waterfall frequency.  The peak-to-peak
+	amplitude of this tone is the standard by which you should
+	\ref tune_page "set your transmitter drive" or adjust your antenna
+	matching network.</li>
+	<li>The right most button is normally not visible.  This is the
+	count-down timer button that is enabled when a macro button has been
+	configured to repeat after a specified number of seconds.  This
+	button shows the count-down to the next transmission.  Pressing
+	the button disables the count and restores fldigi to normal keyboard
+	operation.</li>
+</ul>
+
+
+<br>
+\ref menus_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

@@ -1,0 +1,138 @@
+/**
+\page  new_installation_page New Installation
+
+\tableofcontents
+
+
+fldigi's opening screen looks like the following when starting fldigi for the
+first time or when setting up a second or subsequent instance using the
+--config-dir command line switch.  The Wizard has been completed and the
+callsign, W1HKJ, entered.
+<br>
+<br>
+
+\image html main-dialog-newinstall.png "Main Dialog New Install"
+\image latex main-dialog-newinstall.png "Main Dialog New Install" width=6.0in
+<br>
+
+
+Fldigi will create a working files folder, multiple sub folders and also
+populate them with a set of default files.  The working files folder is
+different on the different OS.
+
+<center>
+| Operating System  | Folder/Directory                                       |
+| :---------------: | :----------------------------------------------------- |
+| Windows           | C:\\Documents and Settings\\\<username\>\\fldigi.files |
+| Vista             | C:\\Users\\\<username\>\\fldigi.files                  |
+| Linux             | /home/\<username\>/.fldigi                             |
+| Macintosh         | /Users/User_Login_Name/.fldigi                         |
+</center>
+<br>
+
+After closing the application the working folder will contain the following
+folders and files:
+<br>
+
+\image html folder-working.png "Working Folder"
+\image latex folder-working.png "Working Folder" width=6.0in
+<br>
+
+The help, images, logs, scripts and temp folders will be empty.  They
+will contain program created files as you use the program or you may
+post files in those folders for use by fldigi.  Images to be sent
+with the MFSK pic mode should be placed in images.  Your logbook
+database will appear in logs.  If you are running on Linux then
+you can use various scripts to enhance the macro language that fldigi
+supports.  The temp directory holds files that are transitory and
+you can safely delete those files between sessions.  The 5 files
+that appear initially are:
+<br>
+
+
+<table>
+<tr>
+<td>fldigi.prefs</td>
+<td>contains
+variables that describe the status of fldigi when last used.  This
+is an ASCII text file that you can safely read.  You should not
+edit or change this file.</td>
+</tr>
+<tr>
+<td>fldigiYYYYMMDD.log</td>
+<td>this is an historical log of all the received and transmitted text
+during the day for which the log refers</td>
+</tr>
+<tr>
+<td>fldigi_def.xml</td>
+<td>contains
+variables that relate to all of fldigi's configurable items.  This
+is an ASCII text file that conforms with the XML specification.
+ You can safely read this file but should not edit or change it.</td>
+</tr>
+<tr>
+<td>frequencies2.txt</td>
+<td>an ASCII text file that contains the default (and / or modified)
+entries for fldigi's rig control process</td>
+</tr>
+<tr>
+<td>
+\ref working_logs_page "status_log.txt"
+</td>
+<td>a
+log of events for the most current fldigi execution.  This file
+will contain information relative to any errors that my occur and is
+important for debugging purposes.</td>
+</tr>
+</table>
+<br>
+
+The macros folder contains a single file:  macros.mdf.  This is
+an ASCII text file that contains the default macro definitions.
+ After running fldigi for a while and creating your own sets of
+macro definitions there will be additional *.mdf files located here.
+<br>
+
+The palettes folder contains the following files:
+<br>
+
+\image html folder-palettes.png "Folder Palettes"
+\image latex folder-palettes.png "Folder Palettes" width=5.0in
+<br>
+
+
+<br>Each
+of these is a palette definition file that is used to modify the
+appearance of the waterfall.  Fldigi has a palette editor that
+enables you to modify these default files or to create your own.
+ The file format of these files is identical to the palette files
+used by DigiPan.  The final color rendition might be a little
+different as a result of using different painting functions.  The
+file digipan.pal contains:<br>
+<br>
+
+<table>
+<tr>
+<td>  0;  0;  0<br>  0;  0; 62<br>  0;  0;126<br>  0;  0;214<br>145;142; 96<br>181;184; 48<br>223;226;105<br>254;254;  4<br>
+</td>
+</tr>
+</table>
+<br>
+
+Don't bother trying to modify these using an editor.  The palette editor
+is much easier to use and will keep you from wrecking havoc with the
+program.
+<br>
+
+The easiest way to find the working files folder is to start fldigi and then
+select the menu item File/Show config.
+<br>
+
+
+<br>
+\ref new_installation_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

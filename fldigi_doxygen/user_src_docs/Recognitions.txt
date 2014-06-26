@@ -1,0 +1,145 @@
+/**
+\page recognitions_page Recognitions
+
+\tableofcontents
+
+This software would not have been possible without the contribution of many
+programmers who have given their best to the open source community.  The
+application is built upon the foundation of the Fast Light Tool
+Kit (http://www.fltk.org), a wonderfully fast and efficient graphical user
+interface design library.  Many have asked what the Fast Light means.  There
+are probably as many answers as there are programmers using the toolkit. I
+prefer to think of it as lightning fast and light on the code size.  Take a
+look at the size of the executable for fldigi and then compare it with
+similar applications.  I think you will be surprised by how small it is for
+what it does.
+<br>
+
+The active current development team consists of:
+<br>
+
+<ul>
+	<li>Dave Freese - W1HKJ</li>
+	<li>Stelios Bounanos - M0GLD</li>
+	<li>Remi Chateauneu - F4ECW</li>
+	<li>Leigh Klotz - WA5ZNU</li>
+	<li>Stephane Fillod - F8CFE</li>
+	<li>John Douyere - VK2ETA</li>
+	<li>Joe Veldhuis - N8FQ</li>
+	<li>Chris Sylvain - KB3CS</li>
+	<li>Gary Robinson - WB8ROL</li>
+	<li>Stefan Fendt - DO2SMF</li>
+    <li>John Phelps - KL4YFD</li>
+    <li>Andrej Lajovic - S57LN</li>
+	<li>Robert Stiles - KK5VD</li>
+</ul>
+
+Localization files:
+<br>
+
+<ul>
+  <li>French: Stephane Fillod - F8CFE</li>
+  <li>German: Marc Richter - DF2MR </li>
+  <li>Italian: Pierfrancesco Caci - IK5PVX</li>
+  <li>Spanish: Pavel Milanes Costa - CO7WT</li>
+  <li>Polish: Roman Bagi&nacute;ski - SP4JEU</li>
+</ul>
+<br>
+
+Several authors have placed their digital modem code and signal
+processing code in the public domain and their source was either an
+inspiration or in some cases formed the backbone of the code used
+in <i>Fldigi</i>.
+<br>
+
+<ul>
+	<li>AE4JY - WinPsk - a windows application </li>
+	<li>Tomi Manninen, OH2BNS - gmfsk - a great digital modem program for Linux</li>
+	<li>Hamish Moffatt, VK3SB - dominoEX code originally for gmfsk</li>
+	<li>Dr. Steven W. Smith - author of "Digital Signal Processing", who
+	has kindly placed an entire book on digital signal processing on the
+	internet.  (http://www.dspguide.com)</li>
+</ul>
+<br>
+
+If you make a side-by-side comparison between gmfsk and fldigi source code
+you will see that they follow the same general structure.  The primary
+difference is that gmfsk is written in the C language and uses the gnome/gtk
+libraries for the user interface.  <i>Fldigi</i> is a C++ application that
+uses the Fast Light Tool Kit (Fltk) gui library.  The design
+of <i>Fldigi</i> puts emphasis on separating the user interface from the
+sound card and transceiver input/output operations. Nearly all modern
+digital modem programs use a programming paradigm called "threads."  Threads
+are light weight processes that share the same memory space, but each has
+its own stack.  The use of threads makes the program look and feel
+responsive to the user while a lot of code is being executed in the
+background.
+<br>
+
+Many of the modem source code files are C to C++ rewrites from the
+gmfsk application.  They say that copying is the best form of
+flattery and gmfsk simply had the best explanations and the easiest
+source code to read and understand.  The author had also spent
+several months creating improvements and fixing bugs in the original
+gmfsk application.  That exercise was the impetus to create <i>Fldigi</i>.
+<br>
+
+The Fast Fourier Transform used by <em>Fldigi</em> is a rewrite of John Green's
+public domain FFT code (<a href="http://download.cnet.com/FFT-for-RISC/3000-2070_4-10003778.html">FFT for RISC for MAC</a>).
+The rewrite is in C++ and is implemented as a C++ template.
+Some of the signal processing algorithms used in <i>Fldigi</i>
+are from Dr. Smith's book.  His on-line publication is sufficient
+to allow you to become fluent in FFT analysis and the creation of
+digital filters.  I printed the relevant pdf files and then
+purchased the hard bound copy.  Improvements to the original gmfsk
+signal processing algorithms can all be attributed to this excellent
+source.
+<br>
+
+And last but certainly not least, I must thank the crew who perform
+alpha testing and on-line support of the application.  These are stalwart amateurs who
+risk their operating system and radio equipment in testing, testing and
+more testing.  Their only reward is in being able to influence the
+design of the application and the fun of seeing it work and the bugs
+disappear.  Thank you to:
+<br>
+
+Call Name      | Call  Name    | Call Name       | Call Name
+:-------------:|:-------------:|:---------------:|:---------------:
+4Z5ST  Boris   | K3GAU  David  | KU1T  Zibi      | VA3DB Dianne
+AA0HW  Chuck   | K4XTT  Victor | KV9U  Rick      | VE3IXI  Dave
+AC7JN  Dave    | K6KAR  Kirk   | N0NB  Nate      | VK2TMG  Brett
+CT1DRB  David  | K7BRK  Chris  | N2AMG Rick      | VK4BDJ David
+CX7BF  Walter  | K4RE  Brian   | N4UM  Tim       | W3NR  Ed
+DF4OR  Ekki    | K9AO  Rick    | N4ZNV  Mike     | W4ROS  Ross
+DK1JBE  Tom    | KB3FN  Lynn   | N6WFL  Jason    | W6JVE  Jim
+DL6XAZ  Fred   | KD0AR  Mike   | N8FQ  Joe       | WA3VPZ  Marshal
+DL8FCL  Walter | KD4O  Phil    | NN8B  Don       | WA4SXZ  Rich
+G0UZP  Paul    | KD8DKT  Mike  | NT1G  Skip      | WB8ROL  Gary
+G3TDJ  Andy    | KE3Y  Travis  | OZ4KK  Erik     | WD4FDW  Steve
+G6CKR  Roger   | KH6TY  Skip   | PA0R  Rein      | WD4FNY  Bill
+G8SQH  David   | KL7NA  Rob    | PA3GWH  Richard | WU9Q  Bob
+
+<br>
+and many others whose names are not listed, please accept my apology.
+<br>
+
+The test team is representative of users on Windows, Linux, Free
+BSD and OS X operating systems.  They have varying interests from
+very slow speed CW to high speed keyboard full break-in CW, from RTTY
+contesters to PSK rag chewers.  They have insisted that
+fldigi perform well under all of those operations.  I have been
+amazed by the global distribution of the testing team.  It is easy
+to think that the internet will be the death of amateur radio.  On
+the contrary it opens up so many additional ways for us to be
+cooperative.
+<br>
+
+
+
+<br>
+\ref recognitions_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

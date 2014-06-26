@@ -1,0 +1,68 @@
+/**
+\page build_info_page Build Information
+
+\tableofcontents
+
+\section sub_build_info Build Info
+
+The following is obtained by executing "fldigi --version"
+
+\verbatim
+Build information:
+built :
+
+Fri Dec 25 15:57:13 CST 2009 by dave@linux-dev on i686-pc-linux-gnu for
+i686-pc-linux-gnu
+
+ configure flags: '--without-asciidoc' '--enable-optimizations=native'
+
+ compiler : gcc version 4.3.3 (Ubuntu 4.3.3-5ubuntu4)
+
+ compiler flags : -I$(srcdir) -I$(srcdir)/include
+-I$(srcdir)/irrxml -I$(srcdir)/fileselector -pthread
+-I/usr/local/include -I/usr/local/include -I/usr/include/freetype2
+-D_THREAD_SAFE -D_REENTRANT -D_REENTRANT -I/usr/local/include
+-I/usr/include/libpng12 -I/usr/local/include -pipe -Wall -fexceptions
+-O2 -ffast-math -finline-functions -fomit-frame-pointer -march=native
+-mfpmath=sse -DNDEBUG
+
+ linker flags : -L/usr/local/lib -lportaudio -lm
+-lpthread -L/usr/local/lib -lfltk_images -lpng -lz -ljpeg -lfltk -lXft
+-lpthread -ldl -lm -lXext -lX11 -lX11 -lsndfile -lsamplerate
+-lpulse-simple -lpulse -L/usr/local/lib -lhamlib -lm -lpng12
+-L/usr/local/lib -lxmlrpc_server_abyss++ -lxmlrpc_server++
+-lxmlrpc_server_abyss -lxmlrpc_server -lxmlrpc_abyss -lpthread
+-lxmlrpc++ -lxmlrpc -lxmlrpc_util -lxmlrpc_xmlparse -lxmlrpc_xmltok
+-ldl -lrt -lpthread
+
+ libraries : FLTK 1.3.2
+ libsamplerate 0.1.4
+ libsndfile 1.0.17
+ PortAudio 19
+ PulseAudio 0.9.14
+ Hamlib 1.2.10
+ XMLRPC-C 1.06.31
+
+Runtime information:
+system : Linux
+linux-dev 2.6.28-17-generic #58-Ubuntu SMP Tue Dec 1 18:57:07 UTC 2009
+i686
+
+ libraries : libsamplerate-0.1.4 (c) 2002-2008 Erik de Castro Lopo
+ libsndfile-1.0.17
+
+PortAudio V19-devel (built May 25 2009 06:36:24) 1899
+Pulseaudio 0.9.14
+
+Hamlib version 1.2.10
+
+\endverbatim
+
+
+<br>
+\ref build_info_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

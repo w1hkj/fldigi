@@ -1,0 +1,51 @@
+/**
+\page  operating_multiple_copies_page Operating Multiple Copies
+
+\tableofcontents
+
+\image html Dual-fldigi.png "Multiple Copies of FLDIGI"
+\image latex Dual-fldigi.png "Multiple Copies of FLDIGI" width=6.0in
+<br>
+
+There are times that you may need to simultaneously operate two or more
+instances of fldigi.  Or you might simply want to maintain two
+different configurations based on hardware usage.
+<br>
+
+The screen shot shows how this is done on Vista, but the process is
+nearly the same on XP, Win7 and Linux.  When you install fldigi it
+creates a desktop icon launcher.  Most of the Linux window
+managers allow you to create a desktop launch icon.  Make as many
+copies of the launcher as needed for your applications and rename them
+accordingly.  Then change the executable target entry to include
+the \ref command_line_switches_page "command line switch" '--config-dir'
+followed by the full pathname of the folder that will hold that
+particular configuration.  You do not need to create that folder
+as fldigi will do so the first time it is launched from that desktop
+icon.
+<br>
+
+If the various configurations all use independent hardware, i.e. sound
+cards and rig control ports, then you can have them operating
+simultaneously.  Each instance will have it's own configuration
+files, status file, macros, and logbook.  It is possible to have
+each instance use the same logbook, but then simultaneous operation is
+not possible as the logbook file is not currently designed to allow
+that type of sharing.
+<br>
+
+If each instance will be paired with a separate flarq (similarly set up
+for multiple operation) then you will also need to add the command line
+switch for \ref command_line_switches_page "arq-server address and port".
+The same is true for use with applications that talk to fldigi via it's
+xml-rpc socket port.  You change the address/port pairs on both
+the fldigi launcher and the paired application such as flarq or flrig.
+<br>
+
+<br>
+\ref operating_multiple_copies_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

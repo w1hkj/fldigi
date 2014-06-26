@@ -1,0 +1,202 @@
+/**
+\page miscellaneous_configuration_page  Miscellaneous Configuration
+\tableofcontents
+<br>
+
+\section subsec_sweet_spot Sweet spot
+<br>
+
+\image html config-misc-sweet.png "Misc Sweet Spot Config"
+\image latex config-misc-sweet.png "Misc Sweet Spot Config" width=5.0in
+<br>
+
+The sweet spot is the audio frequency at which your transceiver
+provides the best filtering for a particular signal type. You can
+specify the value of the sweet spot for CW, RTTY and all others.
+You can also elect to have the audio cursor placed at the sweet
+spot when changing modes. The sweet spot is used for the
+\ref operating_controls_page "QSY function".
+
+The K3 A1A lower sideband can be selected for any transceiver that only
+provides LSB in the CW mode.
+<br>
+
+\section subsec_callsig_spotting Callsign spotting
+<br>
+\image html config-misc-spotting.png "Callsign spotting"
+\image latex config-misc-spotting.png "Callsign spotting" width=5.0in
+<br>
+
+Fldigi allows you to automatically participate in a spotting network
+maintained by Philip Gladstone. You can see what the web based reporter
+looks like by visiting this web site: http://pskreporter.info/pskmap?W1HKJ
+or by simply selecting the menu item "Help / Reception reports...".
+<br>
+
+Fldigi will continuously scan for spotted callsigns in the decoded text and
+send reports in the background if you check the "Automat..." option.
+<br>
+
+Reports will also (or only) be sent when you log the QSO into the logbook.
+<br>
+
+If you have rig control enabled the reported rig frequency will also be
+sent to the spotting network. Do not change the Host and Port
+numbers unless these are changed by Philip.
+<br>
+
+You need to press the Initialize to begin reporting spot information.
+You will receive a warning message if you did not enter your antenna
+information on the Operator tab.
+<br>
+
+If your CPU performance is marginal you can disable spotting when no
+signal browser is visible.
+<br>
+
+\section subsec_cpu_performance CPU performance
+<br>
+
+\image html config-misc-cpu.png "Misc CPU"
+\image latex config-misc-cpu.png "Misc CPU" width=5.0in
+<br>
+
+When fldigi is executed for the first time it does some tests to determine
+the performance factor for your central processor unit. If it
+determines that the cpu is below a critical speed it tries to
+compensate by modifying some of its timing and algorithms. If you
+are using a "slow" cpu the "Slow cpu" check box will be enabled.
+You can also manually check this box if you find that fldigi is
+not performing well on some of the more esoteric modes such as PSK250,
+MFSK32, etc.
+<br>
+
+
+\section subsec_text_io Text i/o
+<br>
+
+\image html config-misc-textio.png "Misc Text I/O"
+\image latex config-misc-textio.png "Misc Text I/O" width=5.0in
+<br>
+
+Fldigi can perform automatic capture of the Rx text stream. The simplest
+is to simply capture all incoming text to a file. Select this
+from the lower of the two frames. The Rx file is named
+"textout.txt" and is written to the directory as shown above. The
+file can be used to review an execution session, or it can be accessed
+by an external program. For example it could be parsed to provide
+a text to speech conversion.
+<br>
+
+\section subsec_nbems_flxxx_interface NBEMS (flmsg / flwrap) interface
+<br>
+
+\image html config-misc-nbems.png "Config Misc NBEMS"
+\image latex config-misc-nbems.png "Config Misc NBEMS" width=5.0in
+<br>
+
+The NBEMS suite of programs, fldigi, flarq, flwrap and flmsg provide the
+emergency operator with a set of tools to assist in the transfer of data files
+over HF and VHF radio.Additional information on flarq is available here:
+<br>
+
+<ul>
+  <li><a href="http://www.w1hkj.com/FlarqHelpFiles/flarq.html">flarq help system</a>.</li>
+  <li><a href="http://www.w1hkj.com/Flwrap/index.html">wrap help system</a>.</li>
+  <li><a href="http://www.w1hkj.com/flmsg-help/index.html">flmsg help system</a></li>
+</ul>
+
+The reception of a flwrap and flmsg files can be automated by selecting
+the "Enable detection &amp; extraction" option. The wrap program
+can then be used to test for validity and data extraction at some later
+time. fldigi can recognize flmsg data files and automatically
+open the flmsg program with the newly received data stream. It
+can also transfer the data stream to flmsg and instruct flmsg to save
+the data file, unwrap and decode it, display the data in a fully
+formatted html page and then exit. Pressing "Locate flmsg"
+performs differently on the different OS that are supported.
+<br>
+
+<ul>
+<li>Linux - a file finder is opened to the /usr/local/bin/
+folder. Select the flmsg executable and the entry box is
+correctly populated</li>
+
+<li>Windows - a file finder is opened to the "C:\Program Files\"
+folder. Drill down to the most current flmsg folder and then
+select the flmsg.exe file. The entry box will be correctly
+populated.</li>
+
+<li>OS X - a file browser is opened to the "Applications"
+folder. Locate the flmsg icon, and right click on it.
+Select "Show Package Contents". Double click "Contents".
+Double click on "MacOS". You will be viewing an icon labeled
+"flmsg". Drag and drop the icon on to the "flmsg:" entry box and
+the the value will be correctly entered.</li>
+</ul>
+
+\section subsec_dtmf_decoding DTMF decoding
+<br>
+
+\image html config-misc-dtmf.png "Misc DTMF Decoding"
+\image latex config-misc-dtmf.png "Misc DTMF Decoding" width=5.0in
+<br>
+
+Fldigi can encode and decode DTMF tone sequences. Enable this check box
+to display the decoded tone sequence in the Rx panel. DTMF encoding is
+accomplished by a \ref macros_sub_page "MACRO" tag.<br>
+<br>
+
+\section subsec_wx_rss_xml WX rss-xml queries
+<br>
+
+\image html config-WX.png "Misc WX"
+\image latex config-WX.png "Misc WX" width=5.0in
+<br>
+
+Fldigi provides an automated query of a specified RSS-XML feed to obtain and
+format weather data. The report is added to the transmit text stream
+using the appropriate \ref macros_sub_page "MACRO" tag. The report
+for the above configuration is:
+<br>
+
+\verbatim
+Huntsville, Madison County Executive Airport, AL, United States (KMDQ) 34-51-41N 086-33-26W
+Cond: overcast
+Wind: 210 at 12 mph 19 kph
+Temp: 62 F 17 C
+Baro: 30.04 in Hg 1017 mbar
+\endverbatim
+
+The full report option creates this report:
+
+\verbatim
+Huntsville, Madison County Executive Airport, AL, United States (KMDQ) 34-51-41N 086-33-26W
+Feb 29, 2012 - 07:15 AM EST / 2012.02.29 1215 UTC
+Wind: from the SSW (210 degrees) at 12 MPH (10 KT) gusting to 17 MPH (15 KT):0
+Visibility: 10 mile(s):0
+Sky conditions: overcast
+Temperature: 62 F (17 C)
+Dew Point: 60 F (16 C)
+Relative Humidity: 93%
+Pressure (altimeter): 30.04 in. Hg (1017 hPa)
+\endverbatim
+<br>
+
+The "Search on web" button will open your browser toGreg Thompson's
+<a href="http://weather.rap.ucar.edu/surface/stations.txt">global listing</a>
+of METAR station.
+<br>
+
+RSS feeds for world wide airports can be searched here
+<a href="http://www.airrouting.com/content/AirportLocatorForm.aspx">
+http://www.airrouting.com/content/AirportLocatorForm.aspx</a>.
+<br>
+
+\ref miscellaneous_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+
+

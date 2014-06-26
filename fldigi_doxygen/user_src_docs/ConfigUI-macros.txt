@@ -1,0 +1,62 @@
+/**
+\page  ui_configuration_macros_page User Interface Configuration - Macros
+
+\tableofcontents
+
+\image html config-ui-tabs.png "UI Tabs"
+\image latex config-ui-tabs.png "UI Tabs" width=5.0in
+<br>
+
+\image html config-ui-macros.png "UI Configure - Macros"
+\image latex config-ui-macros.png "UI Configure - Macros" width=5.0in
+<br>
+
+Access to a macro is gained by pressing the associated function
+key. There are actually 48 separate macros that can be
+created. With the default configuration you rotate between the
+sub-sets of 12 using the numbered button to the right of the macro bar,
+or by selecting a set with the Alt-1, Alt-2, Alt-3 or Alt-4 key
+combination. (on OS X use the Option-1 etc.)
+<br>
+
+The default user interface is a single macro bar of 12 buttons located just
+above the waterfall panel. There are times when you need ready access
+to more than 12 macro functions. When a 2 row configuration is
+selected the original row is forced to the Alt-1, or first sub-set of
+macros, and it's numeric rotate button is disabled. The second or
+SHIFTED macro button row can be rotate through Alt-2 ... Alt-4 using
+either it's numeric button or the Alt-\#key combination. The
+fldigi macro bar positions will change immediately so you can see the
+selection.
+<br>
+
+With 2 rows shown you obtain access to the primary set with normal
+Function key press. The secondary set is accessed by a
+SHIFT-Function-key press.
+<br>
+
+You edit any macro definition by using a mouse right-click on it's button.
+<br>
+
+You can also select to use the mouse wheel to rotate through the macro
+sub-sets. When checked you simply hover the mouse over the macro
+bar and roll the mouse wheel.
+<br>
+
+Fldigi manages multiple files that contain macro definitions. You may
+want to have the last used macro file be the one available the next time you
+start fldigi. If so, simply enable the "load last used Macro file on
+startup" check box. You can also choose to display which macro file was
+loaded at startup or when a new macro file is loaded. A brief message
+indicating which file was loaded will be written to the Rx text area if
+this option is selected.
+<br>
+
+
+<br>
+\ref ui_configuration_macros_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

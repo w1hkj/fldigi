@@ -1,0 +1,77 @@
+/**
+\page callsign_db_configuration_page  Callsign DB Configuration
+\tableofcontents
+<br>
+
+\section qrz  QRZ
+<br>
+\image html config-qrz.png "QRZ"
+\image latex config-qrz.png "QRZ" width=5.0in
+<br>
+<br>
+Fldigi will open a web browser to either QRZ.com or Hamcall.net with the
+contents of the QSO Call field used as a query string to the on line
+service. You may find that your default browser needs to be
+triggered twice on the first such query. That behavior seems to
+be associated with IE7 but not IE6 for example.
+<br>
+
+If you have a CD
+with the QRZ database installed you can use that CD or its' stored
+contents on a hard drive. Simply specify where the CALLBK
+directory can be found and enable the QRZ radio button.
+<br>
+
+If you are a paid subscriber to either QRZ or Hamcall xml database service
+then you can specify that fldigi use that service for all Callsign data
+base queries.<br>
+<br>
+
+OK2CQR provides a very nice callsign lookup service on his hamqth.com
+web site. There is no subscriber fee to use this service.
+Simply register and then use your registered user name and password for
+access. You might want to provide monetary support to Petr if
+this service meets your needs.<br>
+<br>
+
+\section eqsl  EQSL
+<br>
+
+\image html config-eqsl.png "EQSL"
+\image latex config-eqsl.png "EQSL" width=5.0in
+<br>
+
+Configure the eQSL log entry upload with your user ID, password, and QTH
+nickname. See <a href="Macros.html">Macros</a> for additional
+information.<br>
+<br>
+
+\section fldigi_logging  FLdigi Logging
+<br>
+
+\image html log-it.png "Log It"
+\image latex log-it.png "Log It" width=0.5in
+<br>
+
+If you check the "send when logged" button then the logged record will be
+sent to eQSL when either the
+log it button is pressed, or when the macro tag &lt;LOG&gt; or &lt;LNW&gt;
+is executed.<br>
+<br>
+You may elect to use the default of date-time ON or date-time OFF for the
+eQSL submission.<br>
+<br>
+You may send a message with the log record. If you fill in the
+default message text then it will be used for that purpose. You
+might want to use something like:<br>
+<br>
+Tks for {MODE} qso {NAME}. 73, pse eQSL<br>
+<br>
+
+<br>
+\ref callsign_db_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

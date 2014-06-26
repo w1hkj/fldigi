@@ -1,0 +1,439 @@
+/**
+\page  macros_sub_page Macros
+
+\tableofcontents
+
+Macros are short text statements that contain imbedded references to text
+data used by the program fldigi.   Macro definition files(s) are located
+in the $HOME/.fldigi/macros/ directory and all have the extention ".mdf". The
+default set of macros are contained in the
+file $HOME/.fldigi/macros/<b>macros.mdf</b>.
+
+Fldigi will create this file with a set of default macros on its first
+execution.
+<br>
+
+Fldigi supports up to 48 macro definitions in sets of 12.  Macro
+definitions are not recursive, that is; a macro cannot reference
+another macro or itself.
+<br>
+
+The imbedded references are similar to those used by DigiPan and other
+fine modem programs.  The imbedded reference is an uppercase plain
+text descriptor contained with the \<\> brackets.
+<br>
+
+
+\section macro_tags Macro tags
+
+<center>
+
+Macro       | Description
+:---------: | :----------------------------
+\<FREQ\>    | my frequency
+\<MODE\>    | mode
+\<MYCALL\>  | configuration call
+\<MYLOC\>   | configuration locator
+\<MYNAME\>  | configuration name
+\<MYQTH\>   | configuration QTH
+\<MYRST\>   | my RST
+\<ANTENNA\> | configuration antenna
+\<VER\>     | Fldigi version
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<CALL\>    | other stations callsign
+\<INFO1\>   | S/N or other data contained in first info field of status bar
+\<INFO2\>   | IMD or other data contained in second info field of status bar
+\<LOC\>     | other stations locator
+\<NAME\>    | other stations name
+\<QTH\>     | other stations QTH
+\<RST\>     | other stations RST
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<MAPIT\>   | map other stations locator on google
+\<MAPIT:adr \| lat \| loc\> | map other stations address, latitude-longitude <br> locator as specified
+<br>        | <br>
+\<CLRRX\>   | clear RX pane
+\<CLRTX\>   | clear TX pane
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<GET\>     | text to NAME/QTH
+\<TALK:on\|off\|t\> | Digitalk On, Off, Toggle; this is a Windows only tag <br> and Digitalk must be running
+\<LOG\>     | save QSO data to logbook immediately
+\<LNW\>     | log at xmt time
+\<CLRLOG\>  | clear log fields
+\<EQSL:[message\> |submit the current log entry to www.eQSL.cc This macro tag <br> should be put before \<LOG\> or \<LNW\>
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<QSOTIME\> | insert current logbook time HHMM, ie 0919
+\<ILDT\>    | insert current local date-time in iso-8601 format, ie 2011-08-28 04:16-0500
+\<LDT\>     | insert Local date-time, ie 2011-08-28 04:16-0500
+\<IZDT\>    | insert Zulu date-time in iso-8601 format, ie 08/28/2011 04:16 CDT
+\<ZDT\>     | insert Zulu date-time, ie 2011-08-28 09:16Z
+\<LT\>      | insert local time, ie 0416
+\<ZT\>      | insert zulu time, ie 0916Z
+\<LD\>      | insert local date, ie 2011-08-28
+\<ZD\>      | insert Zulu date, ie 2011-08-28
+\<WX\> <br> \<WX:xxxx\> | insert current weather data from METAR as specified on <br> WX configuration tab. see WX configure replace xxxx with the 4 letter <br> METAR designator for a report on a station other than the one specified on <br> the weather configuration tab.
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<CNTR\>    | insert current value of contest counter
+\<DECR\>    | decrement contest counter
+\<INCR\>    | increment contest counter
+\<XIN\>     | send exchange in string
+\<XOUT\>    | send exchange out string
+\<XBEG\>    | mark exchange in start
+\<XEND\>    | mark exchange in end
+\<SAVEXCHG\> | save marked text to contest exchange in
+<br>
+
+Macro     | Description
+:-------: | :----------------------------
+\<RX\>    | receive
+\<TX\>    | transmit
+\<TX/RX\> | toggle Transmit / Receive
+<br>
+
+Macro      | Description
+:--------: | :----------------------------
+\<SRCHUP\> | search UP for next signal
+\<SRCHDN\> | search DOWN for next signal
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<GOHOME\>   | return to waterfall cursor to sweet spot
+\<GOFREQ:NNNN\>  | move waterfall cursor to freq NNNN Hz
+\<QSYTO\>        | same as left-clk on QSY button
+\<QSYFM\>        | same as right-clk QSY button
+\<QSY:FFF.F[:NNNN]\> | Qsy to transceiver frequency in kHz, optional waterfall <br> (Audio) frequency in Hz (If not specified, it i not changed). Several QSY <br> frequencies, or ranges of frequencies provided by one increment, can be <br> proposed, in which case the first frequency after the current frequency <br> is chosen.
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<RIGMODE:mode\> | send CAT command to transceiver to change to a valid mode
+\<FILWID:width\> | send CAT command to transceiver to change to a valid filter <br> width example to QSY to sweetspot (center of bandpass filter) and select <br> narrow filter
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<QSYTO><FILWID:200\> <br> \<QSYFM><FILWID:2700\> | example to restore previous waterfall cursor frequency <br> and bandwidth
+\<FILE:\>              | insert text file; a file selection box will open when this tag is <br> selected during editing
+<br>
+
+Macro                    | Description
+:----------------------: | :----------------------------
+\<IDLE:NN.nn\>           | transmit idle signal for NN.nn sec
+\<TIMER:NN\>             | repeat this macro every NN sec
+\<TUNE:NN\>              | transmit single tone tune signal for NN sec
+\<WAIT:NN\>              | insert delay of NN seconds before transmitting
+\<REPEAT\>               | repeat macro continuously
+\<SKED:hhmm[:YYYYDDMM]\> | schedule execution to begin at time and optionally <br> date specified
+<br>
+
+Macro                 | Description
+:-------------------: | :----------------------------
+\<CWID\>              | transmit a CW callsign identifier
+\<ID\>                | transmit mode ID using waterfall video text
+\<TEXT\>              | transmit video text defined on ID configuration tab
+\<TXRSID:on\|off\|t\> | transmit RSID on, off, toggle
+\<RXRSID:on\|off\|t\> | receive RSID on, off, toggle
+\<NRSID:NN\>          | transmit multiple RsID bursts <br> NN < 0 will transmit NN bursts for current modem and then return to Rx <br>    NN > 0 will transmit NN bursts for current modem and continue in Tx <br>   NN = 0 will transmit 1 bursts and continue (same as NN = 1)
+\<DTMF:[Wn:][Ln:]\>   | tones transmit DTMF tone sequence at start of <br> transmission; options W-wait n msec, default 0 L-tone symbol length n <br> in msec; default 50 msec '-', ' ' and ',' insert silence symbol <br> eg: \<DTMF:W250:L100:1-256-827-3200\>
+<br>
+
+Macro                      | Description
+:------------------------: | :----------------------------
+\<POST:+/-nn.n\>           | CW QSK post-timing in milliseconds
+\<PRE:nn.n\>               | CW QSK pre-timing in milliseconds
+\<RISE:nn.n><RISE:nn.n\>   | CW rise time in milliseconds
+\<WPM:ww[:ff]\>            | CW WPM, ww = word rate, optional ff = Farnsworth rate
+<br>
+
+Macro                      | Description
+:------------------------: | :----------------------------
+\<RIGCAT:hex hex:retnbr\>  | RigCAT user commands
+\<RIGCAT:"string":retnbr\> | hex hex ... are sequential hexadecimal values <br> string is Ascii char sequence retnbr  <br> is number of bytes in xcvr response ':retnbr'  <br> is optional; retnbr set to 0 if missing
+<br>
+
+Macro               | Description
+:-----------------: | :----------------------------
+\<AFC:on\|off\|t\>  | AFC  on, off, toggle
+\<LOCK:on\|off\|t\> | lock waterfall cursor; on, off, toggle
+\<REV:on\|off\|t\>  | Reverse on, off, toggle
+<br>
+
+Macro            | Description
+:--------------: | :----------------------------
+\<QRG:text\>     | Insert current operating info with "text" into Rx stream, ie: <br> info text <<2013-01-12T21:18Z RTTY @ 14005000+0760>> which can be used to <br>return to a mode, rf, audio frequency.
+\<PAUSE\>        | Cause transmission to pause at place of occurance in macro <br> text.  "Pause/Break" key on keyboard resumes transmission
+\<TXATTEN:nn.n\> | set fldigi tx attenuator to value -30 dB <= val <= 0
+\<COMMENT:text\> | allow macro to contain a comment field; everything <br> between \< and \> is ignored by macro parser
+\<SAVE\>         | save the current macro definitions to the current file
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<MACROS:\> | load a new macro defs file; file prompt when editing macro
+
+<br>
+
+Macro            | Description
+:--------------: | :----------------------------
+\<CPS_TEST\>     | modem timing test internal string
+\<CPS_FILE:\>    | modem timing test, spec' file
+\<CPS_STRING:s\> | modem timing test, string 's'
+
+<br>
+
+Macro            | Description
+:--------------: | :----------------------------
+\<WAV_TEST\>     | WAV file; internal string
+\<WAV_FILE:\>    | WAV file; spec' file
+\<WAV_STRING:s\> | WAV file; string 's'
+
+</center>
+
+<br>
+
+\verbatim
+  * Added macro to insert QRG text into Rx stream
+	<QRG:text to insert>
+  * Added save macro <SAVE> tag
+  * Added export strings
+	- FLDIGI_LOG_FILE - current logbook file name
+	- FLDIGI_MACRO_FILE - current macro file name
+  * Added <PAUSE> tag
+	- returns to receive, but does not clear Tx buffer
+  * Added <TXATTEN:nn.n> <!TXATTEN:nn.n> tag to control
+	transmit attenuator control from within a macro.
+  * Added <COMMENT:text> macro tag
+	a do nothing that disappears from the transmitted
+	text
+\endverbatim
+
+<br>
+
+\section modem_macro_tags Modem macro tags
+
+Macro tags are also assigned to each supported modem type and sub-modem type
+that is supported by fldigi:
+
+<br>
+
+<center>
+<small>
+<br>             |<br>             | Data Modems      |<br>             | <br>
+:--------------: | :--------------: | :-------------: | :-------------: | :-------------:
+<MODEM:BPSK1000> | <MODEM:BPSK125>  | <MODEM:BPSK250> | <MODEM:BPSK31> | <MODEM:BPSK500>
+<MODEM:BPSK63>   | <MODEM:BPSK63F>  | <MODEM:CTSTIA:1000:16> | <MODEM:CTSTIA:1000:8> | <MODEM:CTSTIA:250:8>
+<MODEM:CTSTIA:500:16> | <MODEM:CTSTIA:500:8> | <MODEM:CTSTIA> | <MODEM:CW> | <MODEM:DOMEX4>
+<MODEM:DOMEX5>   | <MODEM:DOMEX8>   | <MODEM:DOMX11>   | <MODEM:DOMX16> | <MODEM:DOMX22>
+<MODEM:DOMX44>   | <MODEM:DOMX88>   | <MODEM:FELDHELL> | <MODEM:FSKH105> | <MODEM:FSKHELL>
+<MODEM:HELL80>   | <MODEM:HELLX5>   | <MODEM:HELLX9>   | <MODEM:MFSK11> | <MODEM:MFSK128>
+<MODEM:MFSK128L> | <MODEM:MFSK16>   | <MODEM:MFSK22>   | <MODEM:MFSK31> | <MODEM:MFSK32>
+<MODEM:MFSK4>    | <MODEM:MFSK64>   | <MODEM:MFSK64L>  | <MODEM:MFSK8> | <MODEM:MT63-1KL>
+<MODEM:MT63-1KS> | <MODEM:MT63-2KL> | <MODEM:MT63-2KS> | <MODEM:MT63-500L> | <MODEM:MT63-500S>
+<MODEM:NAVTEX>   | <MODEM:Olivia-16-1K> | <MODEM:Olivia-16-500> | <MODEM:Olivia-32-1K> | <MODEM:Olivia-4-250>
+<MODEM:Olivia-4-500> | <MODEM:Olivia-64-2K> | <MODEM:Olivia-8-1K> | <MODEM:Olivia-8-250> | <MODEM:Olivia-8-500>
+<MODEM:OLIVIA:1000:32> | <MODEM:OLIVIA:1000:8> | <MODEM:OLIVIA:250:8> | <MODEM:OLIVIA:500:16> | <MODEM:OLIVIA:500:8>
+<MODEM:OLIVIA>    | <MODEM:PSK1000C2>  | <MODEM:PSK1000R>   | <MODEM:PSK1000RC2> | <MODEM:PSK125C12>
+<MODEM:PSK125R>   | <MODEM:PSK125RC10> | <MODEM:PSK125RC12> | <MODEM:PSK125RC16> | <MODEM:PSK125RC4>
+<MODEM:PSK125RC5> | <MODEM:PSK250C6>   | <MODEM:PSK250R>    | <MODEM:PSK250RC2>  | <MODEM:PSK250RC3>
+<MODEM:PSK250RC5> | <MODEM:PSK250RC6>  | <MODEM:PSK250RC7>  | <MODEM:PSK500C2>   | <MODEM:PSK500C4>
+<MODEM:PSK500R>   | <MODEM:PSK500RC2>  | <MODEM:PSK500RC3>  | <MODEM:PSK500RC4>  | <MODEM:PSK63RC10>
+<MODEM:PSK63RC20> | <MODEM:PSK63RC32>  | <MODEM:PSK63RC4>   |  <MODEM:PSK63RC5>  | <MODEM:PSK800C2>
+<MODEM:PSK800RC2> | <MODEM:QPSK125>    | <MODEM:QPSK250>    | <MODEM:QPSK31>     | <MODEM:QPSK500>
+<MODEM:QPSK63>    | <MODEM:RTTY:170:45.45:5> | <MODEM:RTTY:170:50:5> | <MODEM:RTTY:850:75:5> | <MODEM:RTTY>
+<MODEM:SITORB>    | <MODEM:SLOWHELL>   | <MODEM:THOR100>  | <MODEM:THOR11>   | <MODEM:THOR16>
+<MODEM:THOR22>    | <MODEM:THOR25x4>   | <MODEM:THOR4>    | <MODEM:THOR5>    | <MODEM:THOR50x1>
+<MODEM:THOR50x2>  | <MODEM:THOR8>      | <MODEM:THRBX1>   | <MODEM:THRBX2>   | <MODEM:THRBX4>
+<MODEM:THROB1>    | <MODEM:THROB2>     | <MODEM:THROB4>   | <MODEM:WEFAX288> | <MODEM:WEFAX576>
+</small>
+</center>
+<br>
+
+\section other_modems Other Modems
+
+The following modems perform other functions not involving data
+transportation:
+<br>
+
+<center>
+Non Data Modems  | Description
+:--------------: | :--------------:
+<MODEM:NULL>     | Null modem - Rx stream is discarded. Tx stream is silent but PTT is enabled
+<MODEM:SSB>      | SSB modem (place holder)
+<MODEM:ANALYSIS> | \ref frequency_analyzer_page "Analyze Frequency"
+<MODEM:WWV>      | \ref digiscope_display_wwv_mode "Calibrate Sound Card"
+</center>
+<br>
+
+Local references are specified during the program configuration and can
+be changed during program operation.
+<br>
+
+Remote references are all part of the qso log field definitions and are
+routinely changed from contact to contact.
+<br>
+
+Global references are for items like Greenwich Mean Time.
+<br>
+
+The macros.mdf file can be edited with any ascii text editor such as
+kedit, gedit, geany, nano etc.  But it is much easier to use the
+built-in macro editor provided in the program.
+<br>
+
+\section macro_editor Macro Editor
+
+Right click on any macro key (or the alternate set) and a macro editing
+dialog opens with the current copy of that macro and its label. This looks
+very similar to the DigiPan macro editor at the urging
+of Skip Teller, KH6TY.
+<br>
+
+\image html macro-editor.png "Macro Editor"
+\image latex macro-editor.png "Macro Editor" width=6.0in
+<br>
+
+The Text box is a mini-editor with a very limited set of control
+functions.  You can mark, bound and select text for deletion
+(ctrl-X), copy (ctrl-C), and paste (ctrl-V).  Marked text can also
+be deleted with the delete or the backspace keys.  Marked text
+modification can also be invoked by using the mouse right click after
+highlighting.
+<br>
+
+The macro reference in the pick list can be transfered to the current editing
+cursor location.  Highlight the desired macro reference and then press the
+double \<\< arrow key for each occurance of the reference to be put into
+the macro text.  You can change the label name but any more than 8
+characters may exceed the width of the button for the default sized
+main dialog.
+<br>
+
+The \<TIMER:NN\> and \<IDLE:NN\> macro tags should have the NN
+replaced with the time interval in seconds.
+<br>
+
+<div>\<TX\>\<IDLE:5\>CQ CQ de
+\<MYCALL\> \<MYCALL\> k\<RX\>\<TIMER:20\><br>
+</div>
+
+<ul>
+	<li>will enable the PTT</li>
+	<li>cause 5 seconds of idle signal</li>
+	<li>send the CQ CQ de W1HKJ W1HKJ k</li>
+	<li>disable PTT</li>
+	<li>and count down 20 seconds before repeating the macro</li>
+	<li>after sending the text the count down timer button (upper right
+	hand corner of main dialog) will display the current timer value in
+	seconds.  Press this button to disable the timer. </li>
+	<li>the timer be disabled if the Escape key is pressed, the T/R is
+	pressed, and macro key is pressed, or if a callsign is copied from the
+	Rx text area to the callsign logbook entry.</li>
+	<li>the time will be disabled if any mouse activity occurs in the
+	waterfall control.</li>
+</ul>
+<br>
+
+The label associated with each macro key can be individually annotated
+with a symbol.  Here are the symbols that are recognized by the
+button label drawing routine:
+<br>
+
+\section macro_display_symbols Macro Display Symbols
+
+<center>
+\image html symbols.png "Symbols"
+\image latex symbols.png "Symbols" width=3.0in
+<br>
+</center>
+<br>
+
+The @ sign may also be followed by the following optional
+"formatting" characters, in this order:
+<br>
+
+<ul>
+	<li>'#' forces square scaling, rather than distortion to the widget's
+	shape.</li>
+	<li>+[1-9] or -[1-9] tweaks the scaling a little bigger or smaller.</li>
+	<li>'$' flips the symbol horizontally, '%' flips it vertically.</li>
+	<li>[0-9] - rotates by a multiple of 45 degrees. '5' and '6' do no
+	rotation while the others point in the direction of that key on a
+	numeric keypad. '0', followed by four more digits rotates the symbol by
+	that amount in degrees.</li>
+</ul>
+
+Thus, to show a very large arrow pointing downward you would use the
+label string "@+92-\>".
+
+Here are my macro buttons suitably annotated:
+<br>
+
+\image html macrobuttons.png "Macro Buttons"
+\image latex macrobuttons.png "Macro Buttons" width=6.0in
+<br>
+
+There are 4 sets of 12 macro functions.  You can move between the
+4 sets using the keyboard and the mouse.
+
+<ol>
+	<li>Left click on the "1" button to move to set #2.  Right click
+	on the "1" button to move to set #4.</li>
+	<li>Move
+	the mouse to anywhere on the macro buttons.  Use the scroll wheel
+	to move forward  &amp; backward through the macro sets</li>
+	<li>Press the Alt-1, Alt-2, Alt-3 or Alt-4 to immediately change to
+	that macro set.</li>
+</ol>
+<ul>
+	<li> The label for CQ is "CQ @\>|", denoting that both
+	\<TX\> and \<RX\> are present in the macro text. </li>
+</ul>
+<ul>
+	<li> The label for QSO is "QSO @\>\>", denoting that only
+	\<TX\> is present in the macro text. </li>
+</ul>
+<ul>
+	<li> The label for KN is "KN @||", denoting that only
+	\<RX\> is present in the macro text. </li>
+</ul>
+<br>
+
+You could use any label that is symbolic to the function required.
+Refer to the
+<a href="http://www.fltk.org/doc-1.1/common.html#labels">FLTK web site</a>
+for a full list of label types.
+<br>
+
+If you modify the macros and do not save them ("Files/Save Macros" on
+the main window) fldigi will prompt you to save the macros when you
+exit the program if you have the
+\ref ui_configuration_general_page "Exit Prompts" option selected.
+<br>
+
+\section contest_macro_tags Contest macro tags
+
+Refer to \ref contest_how_to_page "Contest-How-To"
+<br>
+
+<br>
+\ref macros_sub_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

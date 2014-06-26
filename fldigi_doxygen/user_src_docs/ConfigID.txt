@@ -1,0 +1,126 @@
+/**
+\page id_configuration_page  ID Configuration
+
+\tableofcontents
+
+\image html config-id-rsid.png "RSID Config Panel"
+\image latex config-id-rsid.png "RSID Config Panel" width=5.0in
+
+Fldigi offers several ways to identify the operator or mode that is being
+used. This is particularly useful when using a hard to recognize
+mode such as \ref thor_page "Thor", \ref olivia_page "Olivia"
+or \ref mt63_page "MT63".
+<br>
+
+\section subsec_reed_solomon_id Reed Solomon Identifier
+
+<b>RSID</b>, <b>R</b>eed <b>S</b>olomon <b>ID</b>entifier
+is a special transmission designed by Patrick Lindecker, F6CTE, for the
+modem program MultiPsk. It has been adapted to other modem
+programs. Fldigi's implementation is compatible with the MultiPsk
+RSID, but provides a slight variation. You can transmit RSID at
+both the beginning and end of a transmission. The detection of
+RSID normally only occurs in the near vicinity of the current waterfall
+tracking point. This cuts down on extraneous RSID detections when the
+band is crowded and several RSID signals might be present. If you want
+fldigi to search the entire waterfall for RSID signals you can do so by
+enabling the "Detector searches entire passband". You start the
+search for a signal based on RSID by using the main panel switch.
+The RSID detector is a separate decoder that operates in parallel with all
+other modem decoders. If you select the "Mark previous frequency and
+mode" a restore link will be inserted into the RX text upon detecting
+an RSID signal. Clicking on this link restores the previous
+frequency and mode of operation. You elect to disable the RSID
+upon first detection. You also have the option of just receiving
+notification when an RSID signal is detected. The notification
+occurs with a pop-up message box.
+<br>
+
+You can select which modes will include the transmitted RS identifier,
+and which modes will react to a received and decoded RS identifier.
+<br>
+
+The mode to identifier relationships are selected by pressing the associated
+"modes" button.
+
+\image html config-id-rx-modes.png "Receive Modes"
+\image latex config-id-rx-modes.png "Receive Modes" width=2.5in
+<br>
+
+\image html config-id-xmt-modes.png "Transmit Modes"
+\image latex config-id-xmt-modes.png "Transmit Modes" width=2.5in
+
+\section subsec_video_text Video Text
+<br>
+
+Transmitted video text will appear as a sequence of characters on the
+waterfall.The text can be a brief mode identifier or some user specified
+text. You can use a small font that always appears as a 2
+character wide sequence or a larger font that can be 1 to 4 characters
+wide. You should be aware that the video signal is a constant
+energy signal and the content will be spread across multiple
+characters. The highest s/n at the receiving end will be for 1
+character wide video. Small font at 2 character width is next in
+s/n performance followed by 2 character large font etc. You can
+select which modes will include the video text preamble. You can
+limit the horizontal (frequency width) of the video signal in one of
+several inclusive ways.
+<br>
+
+<ul>
+<li>Number of characters per row of text</li>
+<li>Constrain to be less than or equal to 500 Hz</li>
+<li>Constrain to be within the bandwidth limits of the mode in use</li>
+</ul>
+
+Fldigi uses abbreviated acronyms for the mode and it's characteristics
+when you are transmitting the mode ID using a video text. Here
+are two examples, one in small and the other in large font.<br>
+
+\image html vid-small.png "Small Font"
+\image latex vid-small.png "Small Font" width=2.5in
+<br>
+
+\image html vid-large.png "Large Font"
+\image latex vid-large.png "Large Font" width=2.0in
+<br>
+
+Notice that Olivia 16-500 is abbreviated to OL-16/500 and that the
+number of characters is limited to 8 per row. You might want to
+use the large characters by default if you routinely have QSO's with
+operators using older digital mode programs or one whose waterfall
+visual is not on a par with fldigi's.
+<br>
+
+\image html config-id-video.png "Video ID Config Panel"
+\image latex config-id-video.png "Video ID Config Panel" width=5.0in
+<br>
+
+\image html config-id-video-modes.png "Video ID Modes"
+\image latex config-id-video-modes.png "Video ID Modes" width=1.8in
+
+\section subsec_cw_postamble CW Postamble
+<br>
+
+You can transmit your callsign in CW as a postamble to all modes except of
+CW (a bit redundant to do that). You can select which modes will
+include the CW postamble.
+<br>
+
+<center>
+\image html config-id-cw.png "CW Postamble ID Config Panel"
+\image latex config-id-cw.png "CW Postamble ID Config Panel" width=5.0in
+<br>
+
+\image html config-id-cw-modes.png "CW ID Modes"
+\image latex config-id-cw-modes.png "CW ID Modes" width=2.4in
+</center>
+
+<br>
+
+\ref id_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

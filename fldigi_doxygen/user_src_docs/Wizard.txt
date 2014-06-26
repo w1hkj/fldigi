@@ -1,0 +1,53 @@
+/**
+\page  wizard_page New Install Wizard
+
+\tableofcontents
+
+New Install Wizard
+
+The new installation wizard borrows from the normal configuration
+dialogs.  You will find information on setting each of the wizard dialog
+pages on the associated configuration link.
+<br>
+
+<center>
+
+\image html wizard-page_1.png "Wizard Configuration"
+\image latex wizard-page_1.png "Wizard Configuration" width=5.0in
+<br>
+
+\image html wizard-page_2-Operator-Information.png "Operator Configuration"
+\image latex wizard-page_2-Operator-Information.png "Operator Configuration" width=5.0in
+<br>
+
+See \ref operator_configuration_page "Operator Configuration"
+<br>
+
+\image html wizard-page_3-AudioDevices-Device.png "Sound Card Configuration"
+\image latex wizard-page_3-AudioDevices-Device.png "Sound Card Configuration" width=5.0in
+<br>
+
+See \ref sound_card_configuration_page "Sound Card Configuration"
+<br>
+
+\image html wizard-page_4-txControl-RigCat.png "Transceiver Configuration"
+\image latex wizard-page_4-txControl-RigCat.png "Transceiver Configuration" width=5.0in
+<br>
+
+See \ref rig_control_page "Transceiver Configuration"
+<br>
+
+\image html wizard-page_5-Tabular-Data.png "Tabular Configuration"
+\image latex wizard-page_5-Tabular-Data.png "Tabular Configuration" width=5.0in
+<br>
+
+See \ref supporting_data_files_page "Tabular Data"
+
+</center>
+
+<br>
+\ref wizard_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

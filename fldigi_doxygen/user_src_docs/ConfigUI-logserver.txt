@@ -1,0 +1,134 @@
+/**
+\page  ui_configuration_log_server_page User Interface Configuration - Log server
+
+\tableofcontents
+
+\image html config-ui-tabs.png "UI Tabs"
+\image latex config-ui-tabs.png "UI Tabs" width=5.0in
+<br>
+
+
+\image html config-ui-qso-logging.png "QSO Logging"
+\image latex config-ui-qso-logging.png "QSO Logging" width=5.0in
+<br>
+
+\section captureing_log_data Capturing Log data
+
+Fldigi has a built in logbook. You can request to be prompted whenever
+there is an unsaved entry in the qso log area. You can also elect to
+whether to clear all of the qso fields when the log is saved or to leave them
+intact.
+Auto-fill Country and Azimuth uses the data found in the file
+"cty.dat" that you should download and place in the fldigi default
+folder. You can force the callsign field to be upper case
+independent of capture or keyboard entry. You enter your default
+Transmit Power which is used for the logbook record.
+<br>
+
+Fldigi has various ways to transfer data in the Rx panel to the qso logging
+fields. The default is to use a Shift-Left-Click paradigm.
+You can also use a double click method if you prefer. The
+Shift-Left-Click will still function. Each data item is
+considered to be a single word normally delimited by the space, tab or
+end-of-line character. You can add word delimiter characters in
+the designated text box. The default is to add *-,.; to the
+normal delimiters. This is a useful tool for extracting contest
+exchange data. The exchange might be RST, STATE and NAME.
+The station being worked might send this as 599-NJ-Bozo. Double
+clicking on the 599 NJ and Bozo would treat each as a separate word.
+<br>
+
+You can elect to have the RST in/out preset to 599 after you clear the QSO
+entry fields.
+<br>
+
+If you check the "callsign tooltips in received text" then the Rx
+text area will popup an information box whenever the mouse is held over
+a callsign for more than 2 seconds. The popup will look like one
+of the following:
+<br>
+
+\section pop_ups Pop ups
+
+\image html show-popup.png "Pop ups"
+\image latex show-popup.png "Pop ups" width=2.75in
+<br>
+
+\image html show-popup2.png "Pop ups 2"
+\image latex show-popup2.png "Pop ups 2" width=2.75in
+<br>
+
+\section country_files Country Files
+
+The data is derived by parsing the callsign and referral to both the
+logbook and the "cty.dat" file. If the station was previously
+worked the operator's name and azimuth/distance will be computed from
+the logbook gridsquare entry (Loc). Otherwise the
+azimuth/distance is computed from the data in the cty.dat file.
+<br>
+
+This file is maintained by, and can be downloaded from the following web site:
+<br>
+
+<a href="http://www.country-files.com/">http://www.country-files.com/</a><br>
+
+The default location for this file is in the fldigi default files
+folder. You have the option of changing that file location by
+either entering the new folder pathname in the edit control, or by
+using the "Browse" or "Default" button. If you change the
+contents of cty.dat while fldigi is running you should force fldigi to
+reload the data from the file. This data is normally only read
+when the program starts.
+<br>
+
+\section internal_logbook Internal Logbook
+
+Fldigi has an internal logbook. That log should be used for single
+operator operations. There may be times that you need to share a
+log, either between programs on a single computer, or with other
+operators running fldigi on other computers on a LAN (or even WAN).
+<br>
+
+In lieu of the internal logbook you can elect to use a common logbook
+server. This logbook is maintained by a separate logbook program,
+<a href="http://www.w1hkj.com/fllog-help/index.html">fllog</a>. fllog
+provides access to read, query and update records via an xmlrpc socket
+interface. fllog provides the server function and connecting applications
+are clients.
+<br>
+
+You need to specify both the socket address and socket port. The
+defaults are as shown and are for the instance when both fllog and
+fldigi are on a single computer. Unless configured otherwise,
+fllog will always use the port address 8421.
+<br>
+
+\section logbook_network_address  Logbook Network Address
+<br>
+
+\image html config-ui-lan.png "Network Address"
+\image latex config-ui-lan.png "Network Address" width=2.25in
+<br>
+
+My home network has IP address assignments as shown. If fllog were
+running on the mini-mac (fl-mac) and fldigi running on the linux-dev
+machine. I would enter the server address 192.168.1.94 into the fldigi
+configuration for the Client/Server Logbook.
+<br>
+
+\image html connect-to-logserver.png "Connect to Server"
+\image latex connect-to-logserver.png "Connect to Server" width=2.25in
+<br>
+
+The "Logbook/Connect to server" menu item allows you to connect to the
+remote logbook. If successful then the toggle remains checked and
+the menu items for accessing the internal logbook are disabled.
+<br>
+
+<br>
+\ref ui_configuration_log_server_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
