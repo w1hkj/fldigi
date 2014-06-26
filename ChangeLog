@@ -1,8 +1,19 @@
 
 
-=Version 3.21.82=
+=Version 3.21.83=
 
-2014-04-30  David Freese  <w1hkj@w1hkj.com>
+2014-06-26  Robert Stiles  <kk5vd@yahoo.com>
+
+	10acfb7: Doxygen Inclusion
+
+2014-06-16  David Freese  <w1hkj@w1hkj.com>
+
+	03b141a: ARQ stx handshake
+	ba246eb: Virtual ports
+	1c38c93: New User Exit Behavior
+
+
+=Version 3.21.82=
 
 	92a7d01: hash-fix
 	b0db34c: RnA Analysis
