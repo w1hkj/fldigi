@@ -91,6 +91,7 @@ void anal::restart()
 
 	set_bandwidth(anal_BW);
 
+	sig_level = 1e-10;
 	freq_corr = 0.0;
 	restart_count = analFFT_LEN;
 
@@ -126,12 +127,13 @@ std::complex<double> anal::dft (std::complex<double> *buff, double fm, double Ts
 	val = std::complex<double>(0,0);
 
 	double factor = 2.0 / analFFT_LEN;
+//	double omega = fm * Ts + offset / (2.0 * analFFT_LEN);
 	double omega = fm * Ts + offset / (2.0 * analFFT_LEN);
 
 	for( int i = 0; i < analFFT_LEN; i++)
 		val += buff[i] * std::complex<double>(
-			cos(2*M_PI*i * omega),
-			sin(2*M_PI*i * omega) );
+			cos(2 * M_PI * i * omega),
+			sin(2 * M_PI * i * omega) );
 	val *= factor;
 	return val;
 }
@@ -143,13 +145,14 @@ void anal::start_csv()
 		LOG_PERROR("fopen");
 		return;
 	}
-	fprintf(out, "Clock,Error,-1,+1,Audio,RF\n");
+	fprintf(out, "Clock,Error,Audio,RF,Signal,Noise\n");
 	fclose(out);
 
 	put_status("writing csv file");
 
 	write_to_csv = true;
 	ticks = 0;
+	slen = 0;
 }
 
 void anal::stop_csv()
@@ -170,100 +173,95 @@ void anal::writeFile()
 		return;
 	}
 
-	double elapsed = (++ticks) * analFFT_LEN / anal_SampleRate;
-	fprintf(out, "%.1f, %.3f, -1, 1, %.3f, %12.4f\n",
+	double elapsed = ticks * slen / anal_SampleRate;
+	fprintf(out, "%.1f, %.3f, %.3f, %12.4f, %g, %g\n",
 		elapsed, freq_corr, freq_corr + wf_freq,
-		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (wf_freq + freq_corr)));
-
+		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (wf_freq + freq_corr)),
+		sig_level,
+		noise);
+//printf("fm %f, sig %f, noise %g\n", tracking_freq, sig_level, noise);
 	fclose(out);
 }
 
 int anal::rx_process(const double *buf, int len)
 {
-	std::complex<double> z, *zp;
-	int n;
+	std::complex<double> z;//, *zp;
+	double fm = wf_freq;
+	double am, bm;
+	double dm;
+	double delta = 0;
+	double Ts = 1.0 / samplerate;
 
 	if (wf_freq != frequency) {
 		restart();
 	}
 
-	while (len-- > 0) {
-// create analytic signal from sound card input samples
-		z = std::complex<double>( *buf, *buf );
-		buf++;
-		hilbert->run(z, z);
-// band pass filter using Windowed Sinc - Overlap-Add convolution filter
-		n = bpfilt->run(z, &zp);
-
-		if (n) {
-// R&A estimator
-			for (int i = 0; i < analFFT_LEN - n; i++)
-				dftbuff[i] = dftbuff[i + n];
-			size_t ptr = analFFT_LEN - n;
-			for (int i = 0; i < n; i++)
-				dftbuff[ptr + i] = zp[i];
-			restart_count -= n;
-		}
-		if (restart_count <= 0) {
-			restart_count = analFFT_LEN;
-			double fm = wf_freq;
-			double am, bm;
-			double dm;
-			double delta = 0;
-			double Ts = 1.0 / samplerate;
-
-			for (int i = 0; i < analFFT_LEN; i++)
-				fftbuff[i] = blackman(1.0 * i / analFFT_LEN) * dftbuff[i];
-
-			max = 0;
-			maxnom = wf_freq;
-			maxlower = maxnom - anal_BW;
-			maxupper = maxnom + anal_BW;
-			noise = 0;
-			snr = 0;
-			if (maxlower < 0) maxlower = 0;
-			if (maxupper > analFFT_LEN / 2 - 2) maxupper = analFFT_LEN / 2 - 2;
-
-			for (double f = maxlower; f < maxupper; f += 1) {
-				test = norm(dft(fftbuff, f, Ts, 0));
-				if (test > max) {
-					maxnom = f;
-					max = test;
-				}
-			}
-			fm = maxnom;
-
-			for (int m = 0; m < 16; m++) {
-				am = norm(dft(fftbuff, fm, Ts, -0.5));
-				bm = norm(dft(fftbuff, fm, Ts, 0.5));
-				dm = (bm - am) / (bm + am);
-				delta = (atan(dm * tan(M_PI / (2 * analFFT_LEN))) / M_PI)/Ts;
-				if (fabs(delta) < 5) fm += delta;
-			}
-			noise = (norm(dft(fftbuff, fm - anal_BW/2, Ts, 0)) +
-							norm(dft(fftbuff, fm + anal_BW/2, Ts, 0)))/2.0;
-			if (noise) {
-				snr = decayavg(snr, 10*log(max/noise) - 86, 16);
-				freq_corr = decayavg(freq_corr, fm - wf_freq, 32);
-			} else {
-				snr = -60;
-				freq_corr = 0;
-			}
-
-			tracking_freq = (wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (wf_freq + freq_corr));
-			snprintf(msg1, 
-				sizeof(msg1), 
-				"%12.1f", tracking_freq);
-			snprintf(msg2, 
-				sizeof(msg2), 
-				"%4.0f dB", snr);
-			put_Status1(msg1, 2.0);
-			put_Status2(msg2, 2.0);
-
-			writeFile();
-
-		}
+	for (int i = 0; i < analFFT_LEN - len; i++)
+		dftbuff[i] = dftbuff[i + len];
+	size_t ptr = analFFT_LEN - len;
+	for (int i = 0; i < len; i++) {
+		z = std::complex<double>(buf[i], buf[i]);
+		dftbuff[ptr + i] = z;
 	}
+
+	ticks++;
+	slen = len;
+	if (ticks % ( analFFT_LEN / len ) == 0) {
+
+		for (int i = 0; i < analFFT_LEN; i++)
+			fftbuff[i] = 2.0 * blackman(1.0 * i / analFFT_LEN) * dftbuff[i];
+
+		max = 1e-10;
+		maxnom = wf_freq;
+		maxlower = maxnom - anal_BW;
+		maxupper = maxnom + anal_BW;
+		if (maxlower < 0) maxlower = 0;
+		if (maxupper > analFFT_LEN / 2 - 2) maxupper = analFFT_LEN / 2 - 2;
+
+		for (double f = maxlower; f < maxupper; f += 1) {
+			test = norm(dft(fftbuff, f, Ts, 0));
+			if (test > max) {
+				maxnom = f;
+				max = test;
+			}
+		}
+		fm = maxnom;
+
+		for (int m = 0; m < 16; m++) {
+			am = norm(dft(fftbuff, fm, Ts, -0.5));
+			bm = norm(dft(fftbuff, fm, Ts, 0.5));
+			dm = (bm - am) / (bm + am);
+			delta = (atan(dm * tan(M_PI / (2 * analFFT_LEN))) / M_PI)/Ts;
+			if (fabs(delta) < 5) fm += delta;
+		}
+
+		sig_level = decayavg(sig_level, norm(dft(fftbuff, fm, Ts, 0)), 8);
+		noise = decayavg(
+				noise,
+				(norm(dft(fftbuff, fm - anal_BW * 2, Ts, 0)) +
+				norm(dft(fftbuff, fm + anal_BW * 2, Ts, 0))) / 2.0, 
+				8);
+
+		if (!noise) noise = 1e-8;
+		if (!sig_level) sig_level = 1e-10;
+
+		snr = 10.0 * log10(sig_level/noise) - 38.0; // 1 Hz / 3000 Hz noise bandwidth
+		freq_corr = decayavg(freq_corr, fm - wf_freq, 8);
+
+		tracking_freq = (wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (wf_freq + freq_corr));
+
+		snprintf(msg1, 
+			sizeof(msg1), 
+			"%12.1f", tracking_freq);
+		snprintf(msg2, 
+			sizeof(msg2), 
+			"%5.1f, %6.4f", snr, sig_level);
+		put_Status1(msg1, 2.0);
+		put_Status2(msg2, 2.0);
+
+		writeFile();
+	}
+
 	return 0;
 }
 

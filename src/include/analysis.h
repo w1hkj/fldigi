@@ -51,11 +51,13 @@ private:
 	double maxlower;
 	double maxupper;
 	double noise;
+	double sig_level;
 	double snr;
 	double	freq_corr;
 	double	wf_freq;
 	double	anal_squelch;
-	double ticks;
+	long  ticks;
+	int   slen;
 	double tracking_freq;
 
 	struct timespec start_time;
