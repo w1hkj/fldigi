@@ -1543,6 +1543,7 @@ void waterfall::show_scope(bool on)
 		wfdisp->size( wf->w() - 2 * BEZEL, wf_dim - 2 * BEZEL);
 		rs1->init_sizes();
 	}
+	wfscope->redraw();
 }
 
 waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :

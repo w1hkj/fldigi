@@ -3066,6 +3066,22 @@ static void cb_btnWefaxSaveMonochrome(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabDFTscan=(Fl_Group *)0;
+
+Fl_Counter *cnt_dft_scans=(Fl_Counter *)0;
+
+static void cb_cnt_dft_scans(Fl_Counter* o, void*) {
+  progdefaults.cnt_dft_scans=(int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cnt_dft_range=(Fl_Counter *)0;
+
+static void cb_cnt_dft_range(Fl_Counter* o, void*) {
+  progdefaults.cnt_dft_range=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
@@ -8101,6 +8117,28 @@ le Earth)"));
             } // Fl_Group* o
             tabWefax->end();
           } // Fl_Group* tabWefax
+          { tabDFTscan = new Fl_Group(0, 50, 600, 330, _("Scan"));
+            tabDFTscan->hide();
+            { Fl_Counter* o = cnt_dft_scans = new Fl_Counter(235, 129, 132, 21, _("# scans"));
+              cnt_dft_scans->minimum(10);
+              cnt_dft_scans->maximum(1000);
+              cnt_dft_scans->step(10);
+              cnt_dft_scans->value(60);
+              cnt_dft_scans->callback((Fl_Callback*)cb_cnt_dft_scans);
+              o->value(progdefaults.cnt_dft_scans);
+              o->lstep(100.0);
+            } // Fl_Counter* cnt_dft_scans
+            { Fl_Counter* o = cnt_dft_range = new Fl_Counter(251, 194, 100, 21, _("dB Range"));
+              cnt_dft_range->type(1);
+              cnt_dft_range->minimum(20);
+              cnt_dft_range->maximum(120);
+              cnt_dft_range->step(10);
+              cnt_dft_range->value(60);
+              cnt_dft_range->callback((Fl_Callback*)cb_cnt_dft_range);
+              o->value(progdefaults.cnt_dft_range);
+            } // Fl_Counter* cnt_dft_range
+            tabDFTscan->end();
+          } // Fl_Group* tabDFTscan
           tabsModems->end();
         } // Fl_Tabs* tabsModems
         tabModems->end();

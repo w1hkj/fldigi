@@ -1586,6 +1586,12 @@
        ELEM_(int, kml_balloon_style, "KML_BALLOON_STYLE",                               \
              "KML balloons data displayed as text, HTML tables, HTML single matrix",    \
              2)                                                                         \
+       ELEM_(double, cnt_dft_range, "cnt_dft_range",                                   \
+             "Display range in dB for dft scan modem",                                  \
+             60.0)                                                                      \
+       ELEM_(int, cnt_dft_scans, "cnt_dft_scans",                                       \
+             "Number of scans over which the average signal level is measured.",        \
+             100)                                                                       \
         ELEM_(std::string, auto_flrig_pathname, "AUTO_FLRIG_PATHNAME",                  \
               "Full pathname to the flrig executable",                                  \
               "")                                                                       \
