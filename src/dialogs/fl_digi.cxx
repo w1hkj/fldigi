@@ -93,6 +93,7 @@
 #include "throb.h"
 #include "wwv.h"
 #include "analysis.h"
+#include "fftscan.h"
 #include "ssb.h"
 
 #include "ascii.h"
@@ -1271,6 +1272,12 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 	case MODE_ANALYSIS:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new anal, freq);
+		break;
+
+	case MODE_FFTSCAN:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new fftscan, freq);
+		modem_config_tab = tabDFTscan;
 		break;
 
 	case MODE_SSB:
@@ -3512,6 +3519,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_FFTSCAN].name, 0, cb_init_mode, (void *)MODE_FFTSCAN, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_NULL].name, 0, cb_init_mode, (void *)MODE_NULL, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5591,6 +5599,7 @@ static Fl_Menu_Item alt_menu_[] = {
 
 
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_FFTSCAN].name, 0, cb_init_mode, (void *)MODE_FFTSCAN, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_NULL].name, 0, cb_init_mode, (void *)MODE_NULL, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7128,7 +7137,8 @@ void notch_off()
 
 void set_CSV(int how)
 {
-	if (active_modem->get_mode() != MODE_ANALYSIS) return;
+	if (! (active_modem->get_mode() == MODE_ANALYSIS ||
+			active_modem->get_mode() == MODE_FFTSCAN) ) return;
 	if (how == 0) active_modem->stop_csv();
 	else if (how == 1) active_modem->start_csv();
 	else if (active_modem->is_csv() == true)

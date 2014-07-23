@@ -181,7 +181,8 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_SSB, &ssb_modem, "SSB", "SSB", "", "SSB", "" },
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "", "", "" },
-	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "" }
+	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "" },
+	{ MODE_FFTSCAN, &fftscan_modem, "FFT_SCAN", "FFT scan", "", "", "" }
 
 };
 
