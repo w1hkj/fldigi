@@ -54,7 +54,7 @@ int morse::initl_(void)
 	for(int i=0;i<PATHS;i++) {
 		ilrate[i]= progdefaults.CWspeed; //((i/5+1)*10);//progdefaults.CWlowerlimit + i*delta/2;
 //		ilrate[i]=progdefaults.CWspeed;
-		printf("\nilrate[%d]:%d",i,(int)ilrate[i]);
+//		printf("\nilrate[%d]:%d",i,(int)ilrate[i]);
 	}
 	for(int i=0;i<PATHS;i++) {
 		lambda[i] = 5;

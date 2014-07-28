@@ -372,9 +372,7 @@ void view_rtty::Metric(int ch)
 {
 	double delta = rtty_baud/2.0;
 	double np = wf->powerDensity(channel[ch].frequency, delta) * 3000 / delta;
-	double sp =
-		wf->powerDensity(channel[ch].frequency - shift/2, delta) +
-		wf->powerDensity(channel[ch].frequency + shift/2, delta) + 1e-10;
+	double sp =	wf->powerDensity(channel[ch].frequency, delta) + 1e-10;
 
 	channel[ch].sigpwr = decayavg( channel[ch].sigpwr, sp, sp - channel[ch].sigpwr > 0 ? 2 : 16);
 

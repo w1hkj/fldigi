@@ -85,6 +85,7 @@ void view_cw::init()
 		channel[i].frequency = NULLFREQ;
 		channel[i].reset = false;
 		channel[i].smpl_ctr =0;
+		channel[i].spdhat = 0.;
 	}
 	for (int i = 0; i < nchannels; i++)
 		REQ(&viewclearchannel, i);
@@ -108,7 +109,7 @@ void view_cw::restart(trx_mode cwmode)
 //		channel[i].cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, progdefaults.CWspeed/(1.2 * CWSampleRate));
 	}
 
-	bandwidth = 20;  // check if need to be changed
+	bandwidth = progdefaults.CWbandwidth;  // check if need to be changed
 
 	init();
 }
@@ -117,14 +118,13 @@ void view_cw::restart(trx_mode cwmode)
 //========================= view_cw receive routines ==========================
 //=============================================================================
 
-void view_cw::decode_stream(int ch, double value)
+bool view_cw::decode_stream(int ch, double value)
 {
 
 	char *cptr;
-	float  rn,  px,  spdhat, pmax, zout;
+	float  rn,  px, pmax, zout;
 	long int  elmhat, xhat,imax;
 	double metric;
-	int cw_receive_speed;
 	char buf[12];
 
 // Compute a variable threshold value for tone detection
@@ -135,7 +135,6 @@ void view_cw::decode_stream(int ch, double value)
 		channel[ch].agc_peak = decayavg(channel[ch].agc_peak, value, 800);  // was 800 ms
 
 
-// save correlation amplitude value for the sync scope
 // normalize if possible
 	if (channel[ch].agc_peak) {
 		value /= channel[ch].agc_peak;
@@ -157,13 +156,10 @@ void view_cw::decode_stream(int ch, double value)
 //printf("\nch[%d]:%f val:%f met:%f",ch,zout,value,metric);
 			memset(buf,0,sizeof(buf));
 
-			channel[ch].mp->proces_(zout, rn, &xhat, &px, &elmhat, &spdhat, &imax, &pmax, buf);
+			channel[ch].mp->proces_(zout, rn, &xhat, &px, &elmhat, &channel[ch].spdhat, &imax, &pmax, buf);
 
-//printf("\nch[%d].spdhat:%f",ch,spdhat);
-			cw_receive_speed = spdhat;
-
-			if (cw_receive_speed < 0) {
-LOG_ERROR("Error in Bayesian decoder: speed %f should not be < 0", spdhat);
+			if (channel[ch].spdhat < 0) {
+LOG_ERROR("Error in Bayesian decoder: speed %f should not be < 0", channel[ch].spdhat);
 				//exit(1);
 			}
 			cptr = buf;
@@ -172,38 +168,50 @@ LOG_ERROR("Error in Bayesian decoder: speed %f should not be < 0", spdhat);
 
 		}
 	}
-
+	return TRUE;
 }
 
 
 
-void view_cw::clearch(int n)
+void view_cw::clearch(int ch)
 {
-	channel[n].reset = true;
-
+	channel[ch].reset = true;
+	channel[ch].state = CW_IDLE;
 }
 
 void view_cw::clear()
 {
-	struct PEAKS pks;
-
-	for (int i = 0; i < nchannels; i++)
+	for (int i = 0; i < nchannels; i++) {
 		channel[i].reset = true;
-
-	findsignals(&pks);
-//	for (int i = 0; i < pks.mxcount; i++)
-//		printf("\nmx[%d]frq[%d] val:%f",i,pks.mxpos[i],pks.mx[i]);
+		channel[i].state = CW_IDLE;
+	}
 }
 
-inline void view_cw::timeout_check()
+void view_cw::Metric(int ch)
 {
-	for (int ch = 0; ch < nchannels; ch++) {
-		if (channel[ch].timeout) channel[ch].timeout--;
-		if (channel[ch].frequency == NULLFREQ) continue;
-		if (channel[ch].reset || (!channel[ch].timeout) ||
-			(ch && (fabs(channel[ch-1].frequency - channel[ch].frequency) < bandwidth))) {
-			channel[ch].reset = false;
+	double bandwidth = 2.0 * (channel[ch].spdhat>0?channel[ch].spdhat:20) / 1.2;
+	double np = wf->powerDensity(2000, 1999);
+	double sp =	wf->powerDensity(channel[ch].frequency, bandwidth);
+
+	channel[ch].sigpwr = decayavg( channel[ch].sigpwr, sp, sp - channel[ch].sigpwr > 0 ? 2 : 16);
+	channel[ch].noisepwr = decayavg( channel[ch].noisepwr, np, 16 );
+	channel[ch].metric = CLAMP(channel[ch].sigpwr/channel[ch].noisepwr, 0.0, 100.0);
+
+
+	if (channel[ch].state == CW_RCVNG)
+
+//printf("\nMetric[%d]:%f frq:%f bw:%f sp:%E np:%E SNR:%Eh sql:%f",ch, channel[ch].metric, channel[ch].frequency, bandwidth,channel[ch].sigpwr,channel[ch].noisepwr,channel[ch].sigpwr/channel[ch].noisepwr,cw_squelch); 
+
+		if (channel[ch].metric < cw_squelch) {
+			channel[ch].timeout = progdefaults.VIEWERtimeout * CWSampleRate / WFBLOCKSIZE;
+			channel[ch].state = CW_WAITING;
+		}
+	if (channel[ch].timeout) {
+		channel[ch].timeout--;
+		if (!channel[ch].timeout) {
 			channel[ch].frequency = NULLFREQ;
+			channel[ch].metric = 0;
+			channel[ch].state = CW_IDLE;
 			REQ(&viewclearchannel, ch);
 			REQ(&viewaddchr, ch, (int)NULLFREQ, 0, viewmode);
 		}
@@ -211,67 +219,93 @@ inline void view_cw::timeout_check()
 }
 
 
-void view_cw::findsignals(struct PEAKS *p)
+
+
+
+void view_cw::found_signal(int frq)
 {
+	int chf = round(frq/100);					// try to map found signal on corresponding channel 
 
-	double delta = progStatus.VIEWER_cwsquelch; //pow(10, progStatus.VIEWER_rttysquelch / 10.0);
-	double value, mn,mx;
-	int i, lookformax, mnpos,mxpos;
-	int flower, fupper;
-	
+	for (int ch = chf; ch < chf+2; ch++) {		// check 3 next channels
+		if (channel[ch].frequency == frq) break;// we have already found this frequency before
 
-	flower = lowfreq; 		// 0 Hz min 
-	fupper = progdefaults.HighFreqCutoff; 			//IMAGE_WIDTH =  4000 Hz max 
-	p->mxcount = 0;
-	p->mncount = 0;
+		if (!ch && (channel[ch+1].state == CW_SRCHG || channel[ch+1].state == CW_RCVNG)) break;
+		if ((ch == (progdefaults.VIEWERchannels -2)) &&	(channel[ch+1].state == CW_SRCHG || channel[ch+1].state == CW_RCVNG)) break;
+		if (ch && (channel[ch-1].state == CW_SRCHG || channel[ch-1].state == CW_RCVNG)) break;
+		if (ch > 3 && (channel[ch-2].state == CW_SRCHG || channel[ch-2].state == CW_RCVNG)) break;
+
+		if (channel[ch].state == CW_IDLE) {		// if we found an idle channel - set it in SIGSEARCH mode 
+			channel[ch].frequency = frq;
+			channel[ch].sigsearch = SIGSEARCH;
+			channel[ch].state = CW_SRCHG;
+			REQ(&viewaddchr, ch, (int)channel[ch].frequency, 0, viewmode);
+		}
+	}
+}
+
+void view_cw::find_signals()
+{
+	double cwsquelch = pow(10, progStatus.VIEWER_cwsquelch / 10.0);
+	double value;
+	int mxpos = 0;
+	int lookformax = 1;
+	double mn = 1.0/0.0;
+	double mx = -1.0/0.0;
+	int	flower = lowfreq;
+	int fupper = progdefaults.HighFreqCutoff;
 
 
-	mn = 1.0/0.0;
-	mx = -1.0/0.0;
-	mnpos = -10000; mxpos = 10000;
-	lookformax = 1;
-
-	for (i=flower; i< fupper; i++) {
-		  value = (20*log10(wf->Pwr(i)+1e-12) + 100);
-
-
-		  if (value > mx) {mx = value; mxpos = i;}
-		  if (value < mn) {mn = value; mnpos = i;}
-		  if (p->mxcount > PEAKS_SIZE-1) break;
-		  if (p->mncount > PEAKS_SIZE-1) break;
+	for (int fr=flower; fr< fupper; fr++) {
+		  value = wf->Pwr(fr)*1e6;	// scale signal value by 1e6 - not sure if this is only needed in AG1LE system? 
+		  if (value > mx) {mx = value; mxpos = fr;}
+		  if (value < mn) {mn = value; }
 
 		  if (lookformax){
-				if (value < delta) {
-				  p->mx[p->mxcount] = mx;
-				  p->mxpos[p->mxcount] = mxpos;
-				  p->mxcount += 1;
-				  mn = value; mnpos = i;
+				if (value < cwsquelch) {
+				  mn = value;
 				  lookformax = 0;
 				};
 			} else {
-				if (value > delta) {
-				  p->mn[p->mncount] = mn;
-				  p->mnpos[p->mncount] = mnpos;
-				  p->mncount += 1;
-				  mx = value; mxpos = i;
+				if (value > cwsquelch) {
+				  mx = value; mxpos = fr;
+				  found_signal(mxpos);
 				  lookformax = 1;
 				};
 			}
 	}
+
+	// remove duplicates less than 20 Hz bandwidth apart
+	for (int i = 1; i < progdefaults.VIEWERchannels; i++ )
+		if (fabs(channel[i].frequency - channel[i-1].frequency) < 20)
+			clearch(i);
+
 }
 
 
 int view_cw::rx_process(const double *buf, int len)
 {
-
-	struct PEAKS pks;
+	bool  rx_ok;
+	cw_squelch = pow(10, progStatus.VIEWER_cwsquelch / 10.0);
 
 	if (nchannels != progdefaults.VIEWERchannels || lowfreq != progdefaults.LowFreqCutoff)
 		init();
 
 // process all channels that have found signal peak
-	for (int ch = 0; ch < nchannels; ch++) {
-		if (channel[ch].frequency == NULLFREQ) continue;
+	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
+		if (channel[ch].state == CW_IDLE) continue;
+		if (channel[ch].sigsearch) {
+			channel[ch].sigsearch--;
+			if (!channel[ch].sigsearch)
+				channel[ch].state = CW_RCVNG;
+				if (progdefaults.CWmfilt) { 		// use matched filter feature
+					if (channel[ch].spdhat > 0.) {  // adjust filter to speed we are receiving
+						if (channel[ch].cw_FIR_filter) delete channel[ch].cw_FIR_filter;
+						channel[ch].cw_FIR_filter = new C_FIR_filter();
+						channel[ch].cw_FIR_filter->init_lowpass (CW_FIRLEN, DECIMATE, channel[ch].spdhat/(1.2 * CWSampleRate));
+	//printf("\nChannel[%d]:spd%f filter:%f",ch,channel[ch].spdhat,2*channel[ch].spdhat/(1.2 * CWSampleRate));
+					}
+				}
+		}
 
 		for (int ptr = 0; ptr < len; ptr++) {
 
@@ -290,6 +324,8 @@ int view_cw::rx_process(const double *buf, int len)
 // filter & decimate
 			n = channel[ch].cw_FFT_filter->run(z, &zp); // n = 0 or filterlen/2
 			if (!n) continue;
+			if (n) Metric(ch);
+
 			for (int i = 0; i < n; i++) {
 // update the basic sample counter used for morse timing
 				channel[ch].smpl_ctr++;
@@ -298,34 +334,15 @@ int view_cw::rx_process(const double *buf, int len)
 // demodulate
 				FFTvalue = abs(zp[i]);
 				FFTvalue = channel[ch].bitfilter->run(FFTvalue);
-				decode_stream(ch,FFTvalue);
+				rx_ok = decode_stream(ch,FFTvalue);
+				if ((channel[ch].state == CW_RCVNG) && rx_ok ) {
+					if (channel[ch].sigsearch) channel[ch].sigsearch--;
+				}
 			}
 		}
 	}
 
-// find signal peaks
-	findsignals(&pks);
-
-//  store found signal peaks that exceed cw_squelch value to channels 0...N
-	double delta = progStatus.VIEWER_cwsquelch;
-	for (int i = 0; i < pks.mxcount; i++) {
-		if (pks.mx[i] > delta) {
-			// assumption: signals < 100 Hz apart are stored on same channel (maybe a problem?)
-			int frq = pks.mxpos[i];
-			int ch = round(frq/100);
-			if ((channel[ch].frequency == NULLFREQ)&& (ch < nchannels) ){
-				channel[ch].frequency = (double)frq;
-				channel[ch].timeout = progdefaults.VIEWERtimeout*8000;
-			}
-		}
-
-	}
-// remove signals too close to each others - min separation  20 Hz 
-	for (int i = 1; i < progdefaults.VIEWERchannels; i++ )
-		if (fabs(channel[i].frequency - channel[i-1].frequency) < 20)
-			clearch(i);
-
-	timeout_check();
+	find_signals();
 	return 0;
 }
 

@@ -39,7 +39,10 @@
 #define NULLFREQ 1e6
 //=====================================================================
 
+enum CW_CHANNEL_STATE {CW_IDLE, CW_SRCHG, CW_RCVNG, CW_WAITING};
+
 struct CW_CHANNEL {
+	int				state;
 	double			phaseacc;
 	double			frequency;
 
@@ -53,6 +56,10 @@ struct CW_CHANNEL {
 	float  			rn,  px,  spdhat, pmax, zout;
 	int				timeout;
 	bool			reset;
+	double			sigpwr;
+	double			noisepwr;
+	double			metric;
+	int				sigsearch;
 };
 
 
@@ -70,9 +77,8 @@ struct PEAKS {
 class view_cw {
 private:
 	trx_mode	viewmode;
-
-
 	double		bandwidth;
+	double		cw_squelch;
 
 /*	int			fa;
 	int			fb;
@@ -88,10 +94,8 @@ private:
 	Cmovavg		*bitfilter;
 
 
-	void 		decode_stream(int ch, double value);
-
-	inline void		timeout_check();
-
+	bool 		decode_stream(int ch, double value);
+	void		Metric(int ch);
 
 public:
 	view_cw(trx_mode mode);
@@ -104,7 +108,9 @@ public:
 	int rx_process(const double *buf, int len);
 	int get_freq(int n);
 	void set_freq(int n, double f) { channel[n].frequency = f; }
+	void found_signal(int frq);
 	void findsignals(struct PEAKS *p);
+	void find_signals();
 	void clearch(int n);
 	void clear();
 
