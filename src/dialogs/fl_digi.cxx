@@ -85,6 +85,8 @@
 #include "navtex.h"
 #include "mt63.h"
 #include "view_rtty.h"
+#include "bmorse.h"
+#include "view_cw.h"
 #include "olivia.h"
 #include "contestia.h"
 #include "thor.h"
@@ -881,7 +883,16 @@ void startup_modem(modem* m, int f)
 		wefax_pic::hide_both();
 	}
 
-	if (id == MODE_RTTY) {
+	if (id == MODE_CW) {
+		if (mvsquelch) {
+			mvsquelch->value(progStatus.VIEWER_cwsquelch);
+			mvsquelch->range(0.1, 100.0);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->value(progStatus.VIEWER_cwsquelch);
+			sldrViewerSquelch->range(0.1, 100.0);
+		}
+	} else if (id == MODE_RTTY) {
 		if (mvsquelch) {
 			mvsquelch->value(progStatus.VIEWER_rttysquelch);
 			mvsquelch->range(-12.0, 6.0);
@@ -2621,7 +2632,9 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 
 void cb_mvsquelch(Fl_Widget *w, void *d)
 {
-	if (active_modem->get_mode() == MODE_RTTY)
+	if (active_modem->get_mode() == MODE_CW)
+		progStatus.VIEWER_cwsquelch = mvsquelch->value();
+	else if (active_modem->get_mode() == MODE_RTTY)
 		progStatus.VIEWER_rttysquelch = mvsquelch->value();
 	else
 		progStatus.VIEWER_psksquelch = mvsquelch->value();
@@ -2637,6 +2650,7 @@ void cb_btnClearMViewer(Fl_Widget *w, void *d)
 	mainViewer->clear();
 	if (pskviewer) pskviewer->clear();
 	if (rttyviewer) rttyviewer->clear();
+	if (cwviewer) cwviewer->clear();
 }
 
 int default_handler(int event)
@@ -4098,7 +4112,7 @@ static void cb_cntTxLevel(Fl_Counter2* o, void*) {
 }
 
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
-	if (!pskviewer && !rttyviewer) return;
+	if (!pskviewer && !rttyviewer && !cwviewer) return;
 	int sel = mainViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
@@ -4127,6 +4141,7 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 		int ch = progdefaults.VIEWERascend ? progdefaults.VIEWERchannels - sel : sel - 1;
 		if (pskviewer) pskviewer->clearch(ch);
 		if (rttyviewer) rttyviewer->clearch(ch);
+		if (cwviewer) cwviewer->clearch(ch);
 		mainViewer->deselect();
 		if (brwsViewer) brwsViewer->deselect();
 		break;

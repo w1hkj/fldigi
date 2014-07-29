@@ -43,6 +43,9 @@
 
 #include "psk_browser.h"
 #include "view_rtty.h"
+#include "bmorse.h"
+#include "view_cw.h"
+
 
 extern pskBrowser *mainViewer;
 
@@ -79,7 +82,10 @@ void initViewer()
 		mainViewer->Background2((Fl_Color)progdefaults.bwsrBackgnd2);
 		mainViewer->makecolors();
 		mainViewer->clear();
-		if (active_modem->get_mode() == MODE_RTTY) {
+		if (active_modem->get_mode() == MODE_CW) {
+			mvsquelch->range(0.1, 100.0);
+			mvsquelch->value(progStatus.VIEWER_cwsquelch);
+		}  else if (active_modem->get_mode() == MODE_RTTY) {
 			mvsquelch->range(-12.0, 6.0);
 			mvsquelch->value(progStatus.VIEWER_rttysquelch);
 		} else {
@@ -100,7 +106,10 @@ void initViewer()
 		brwsViewer->clear();
 		dlgViewer->size(dlgViewer->w(), dlgViewer->h() - brwsViewer->h() +
 			pskBrowser::cheight * progdefaults.VIEWERchannels + 4);
-		if (active_modem->get_mode() == MODE_RTTY) {
+		if (active_modem->get_mode() == MODE_CW) {
+			sldrViewerSquelch->range(0.1, 100.0);
+			sldrViewerSquelch->value(progStatus.VIEWER_cwsquelch);
+		} else if (active_modem->get_mode() == MODE_RTTY) {
 			sldrViewerSquelch->range(-12.0, 6.0);
 			sldrViewerSquelch->value(progStatus.VIEWER_rttysquelch);
 		} else {
@@ -110,6 +119,7 @@ void initViewer()
 	}
 	if (pskviewer) pskviewer->clear();
 	if (rttyviewer) rttyviewer->clear();
+	if (cwviewer) cwviewer->clear();
 }
 
 void viewaddchr(int ch, int freq, char c, int md)
@@ -195,10 +205,12 @@ static void cb_btnClearViewer(Fl_Button*, void*) {
 		mainViewer->clear();
 	if (pskviewer) pskviewer->clear();
 	if (rttyviewer) rttyviewer->clear();
+	if (cwviewer) cwviewer->clear();
+	
 }
 
 static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
-	if (!pskviewer && !rttyviewer) return;
+	if (!pskviewer && !rttyviewer && !cwviewer) return;
 	int sel = brwsViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
@@ -228,6 +240,8 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 		int ch = progdefaults.VIEWERascend ? progdefaults.VIEWERchannels - sel : sel - 1;
 		if (pskviewer) pskviewer->clearch(ch);
 		if (rttyviewer) rttyviewer->clearch(ch);
+		if (cwviewer) cwviewer->clearch(ch);
+		
 		brwsViewer->deselect();
 		if (mainViewer) mainViewer->deselect();
 		}
@@ -238,7 +252,9 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 
 static void cb_Squelch(Fl_Slider *, void *)
 {
-	if (active_modem->get_mode() == MODE_RTTY)
+	if (active_modem->get_mode() == MODE_CW)
+		progStatus.VIEWER_cwsquelch = sldrViewerSquelch->value();
+	else if (active_modem->get_mode() == MODE_RTTY)
 		progStatus.VIEWER_rttysquelch = sldrViewerSquelch->value();
 	else
 		progStatus.VIEWER_psksquelch = sldrViewerSquelch->value();
@@ -394,6 +410,23 @@ void viewer_paste_freq(int freq)
 			}
 		}
 	}
+	if (cwviewer) {
+		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+			int ftest = cwviewer->get_freq(i);
+			if (ftest == NULLFREQ) continue;
+			if (fabs(ftest - freq) <= 50) {
+				if (progdefaults.VIEWERascend)
+					i = (progdefaults.VIEWERchannels - i);
+				else i++;
+				if (mainViewer)
+					mainViewer->select(i);
+				if (brwsViewer)
+					brwsViewer->select(i);
+				return;
+			}
+		}
+	}
+
 }
 
 

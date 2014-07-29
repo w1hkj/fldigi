@@ -6572,8 +6572,8 @@ ab and newline are automatically included."));
                 prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
                 prgsCWrcvWPM->align(Fl_Align(FL_ALIGN_CENTER));
                 } // Fl_Progress* prgsCWrcvWPM
-                { Fl_Check_Button* o = btnCWuseSOMdecoding = new Fl_Check_Button(63, 108, 125, 20, _("SOM decoding"));
-                btnCWuseSOMdecoding->tooltip(_("Self Organizing Mapping"));
+                { Fl_Check_Button* o = btnCWuseSOMdecoding = new Fl_Check_Button(63, 108, 125, 20, _("Bayesian decoding"));
+                btnCWuseSOMdecoding->tooltip(_("enable Bayesian Decoder"));
                 btnCWuseSOMdecoding->down_box(FL_DOWN_BOX);
                 btnCWuseSOMdecoding->value(1);
                 btnCWuseSOMdecoding->callback((Fl_Callback*)cb_btnCWuseSOMdecoding);

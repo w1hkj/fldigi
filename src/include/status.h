@@ -62,6 +62,7 @@ struct status {
 	unsigned int	VIEWERheight;
 	double	VIEWER_psksquelch;
 	double	VIEWER_rttysquelch;
+	double	VIEWER_cwsquelch;
 	bool	VIEWERvisible;
 	int		tile_x;
 	int		tile_w;

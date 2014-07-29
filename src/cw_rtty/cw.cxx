@@ -3,7 +3,8 @@
 //
 // Copyright (C) 2006-2010
 //		Dave Freese, W1HKJ
-//		   (C) Mauri Niininen, AG1LE
+//  Modified for Bayesian decoder 
+//		   (C) 2014 Mauri Niininen, AG1LE
 //
 // This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
@@ -36,6 +37,8 @@
 #include <fstream>
 #include <cstdlib>
 
+#include "bmorse.h"
+#include "view_cw.h"
 #include "digiscope.h"
 #include "waterfall.h"
 #include "fl_digi.h"
@@ -48,11 +51,13 @@
 #include "status.h"
 #include "debug.h"
 #include "FTextRXTX.h"
-#include "modem.h"
 
 #include "qrunner.h"
 
+
 using namespace std;
+
+
 
 const cw::SOM_TABLE cw::som_table[] = {
 	/* Prosigns */
@@ -122,6 +127,10 @@ const cw::SOM_TABLE cw::som_table[] = {
 	{0, NULL, {0.0}}
 };
 
+static float  rn,  px,  spdhat, pmax, zout;
+static long int  elmhat, xhat,imax, retstat; 
+static morse *mp = new morse();
+
 int cw::normalize(float *v, int n, int twodots)
 {
 	if( n == 0 ) return 0 ;
@@ -182,10 +191,6 @@ void cw::tx_init(SoundBase *sc)
 	phaseacc = 0;
 	lastsym = 0;
 	qskphase = 0;
-
-	symbols = 0;
-	acc_symbols = 0;
-	ovhd_symbols = 0;
 }
 
 void cw::rx_init()
@@ -204,6 +209,7 @@ void cw::rx_init()
 
 void cw::init()
 {
+
 	bool wfrev = wf->Reverse();
 	bool wfsb = wf->USB();
 	reverse = wfrev ^ !wfsb;
@@ -227,6 +233,7 @@ void cw::init()
 	use_paren = progdefaults.CW_use_paren;
 	prosigns = progdefaults.CW_prosigns;
 	stopflag = false;
+	cwviewer->restart();
 }
 
 cw::~cw() {
@@ -264,8 +271,8 @@ cw::cw() : modem()
 	cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
 	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
-	symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
-	fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
+	symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
+	fsymlen = (int)(samplerate * 1.2 / progdefaults.CWfarnsworth);
 
 	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
@@ -287,7 +294,7 @@ cw::cw() : modem()
 	lower_threshold = progdefaults.CWlower;
 	for (int i = 0; i < MAX_PIPE_SIZE; clearpipe[i++] = 0.0);
 
-	agc_peak = 1.0;
+	agc_peak = 0.0;
 	in_replay = 0;
 
 	use_fft_filter = progdefaults.CWuse_fft_filter;
@@ -319,6 +326,7 @@ cw::cw() : modem()
 	REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth), wf, (int)bandwidth);
 	REQ(static_cast<int (Fl_Value_Slider2::*)(double)>(&Fl_Value_Slider2::value), sldrCWbandwidth, (int)bandwidth);
 	update_Status();
+	::cwviewer = new view_cw(mode);
 }
 
 // SHOULD ONLY BE CALLED FROM THE rx_processing loop
@@ -358,8 +366,8 @@ void cw::reset_rx_filter()
 		cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
 		cw_send_dot_length = DOT_MAGIC / cw_send_speed;
 		cw_send_dash_length = 3 * cw_send_dot_length;
-		symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
-		fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
+		symbollen = (int)(samplerate * 1.2 / progdefaults.CWspeed);
+		fsymlen = (int)(samplerate * 1.2 / progdefaults.CWfarnsworth);
 
 		phaseacc = 0.0;
 		FFTphase = 0.0;
@@ -375,6 +383,7 @@ void cw::reset_rx_filter()
 		agc_peak = 0;
 		clear_syncscope();
 	}
+
 	if (lower_threshold != progdefaults.CWlower ||
 		upper_threshold != progdefaults.CWupper) {
 		lower_threshold = progdefaults.CWlower;
@@ -398,8 +407,8 @@ void cw::sync_parameters()
 
 	cw_send_dash_length = 3 * cw_send_dot_length;
 
-	nusymbollen = (int)round(samplerate * 1.2 / wpm);
-	nufsymlen = (int)round(samplerate * 1.2 / fwpm);
+	nusymbollen = (int)(samplerate * 1.2 / wpm);
+	nufsymlen = (int)(samplerate * 1.2 / fwpm);
 
 	if (symbollen != nusymbollen ||
 		nufsymlen != fsymlen ||
@@ -529,38 +538,87 @@ cmplx cw::mixer(cmplx in)
 	z = z * in;
 
 	phaseacc += TWOPI * frequency / samplerate;
-	if (phaseacc > TWOPI) phaseacc -= TWOPI;
+	if (phaseacc > M_PI)
+		phaseacc -= TWOPI;
+	else if (phaseacc < M_PI)
+		phaseacc += TWOPI;
 
 	return z;
 }
 
-//=====================================================================
+
+	
 // cw_rxprocess()
 // Called with a block (size SCBLOCKSIZE samples) of audio.
 //
 //======================================================================
 
+
+PARAMS params = { 
+// var 	sym   speed txtfile txt   xplot  wid  len bfv frq dur  srate delta amp  fft 	agc	spd		dec_ratio
+FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, 8192, 32, 0, 600, 5.0, 8000, 10.0, 0.0, 0, 	0,	20,		20};
+
+	
 void cw::decode_stream(double value)
 {
 	const char *c, *somc;
 	char *cptr;
+	char buf[12];
+
 
 
 // Compute a variable threshold value for tone detection
 // Fast attack and slow decay.
 	if (value > agc_peak)
-		agc_peak = decayavg(agc_peak, value, 20);
+		agc_peak = decayavg(agc_peak, value, 10);	// was 20 ms 		
 	else
-		agc_peak = decayavg(agc_peak, value, 800);
+		agc_peak = decayavg(agc_peak, value, 800);  // was 800 ms
 
 	metric = clamp(agc_peak * 2e3 , 0.0, 100.0);
 
 // save correlation amplitude value for the sync scope
 // normalize if possible
-	if (agc_peak)
+	if (agc_peak) {
 		value /= agc_peak;
+		value = clamp(value, 0.0, 1.0);
+
+		}
 	else
 		value = 0;
+
+
+
+	if (!progStatus.sqlonoff || metric > progStatus.sldrSquelchValue ) {
+		if (progdefaults.CWuseSOMdecoding) {
+	
+//			printf("\nagc:%f\tvalue:%f\tnorm:%f metric:%f sql:%f", agc_peak, value, value/agc_peak,metric,progStatus.sldrSquelchValue);
+				
+			mp->noise_(value, &rn, &zout);
+			zout = clamp(zout, 0.0, 1.0); 
+			
+			memset(buf,0,sizeof(buf));
+			
+			retstat = mp->proces_(zout, rn, &xhat, &px, &elmhat, &spdhat, &imax, &pmax, buf);
+			cw_receive_speed = spdhat; 
+		
+			if (cw_receive_speed < 0) {
+LOG_ERROR("Error in Bayesian decoder: speed %f should not be < 0", spdhat);
+//				printf("\nError in Bayesian decoder: speed %f should not be < 0", spdhat);
+				//exit(1);
+			}
+			cptr = buf;
+//			printf("\nz:%f spd%f xhat:%d pmax:%f s:%s",zout,spdhat,(int)xhat, pmax,buf);
+//			fflush(stdout);
+
+			while (*cptr != '\0')
+				put_echo_char(progdefaults.rx_lowercase ? tolower(*cptr++) : *cptr++, FTextBase::CTRL);
+
+
+
+			update_Status();
+		}
+	}
+
 
 	pipe[pipeptr] = value;
 	if (++pipeptr == pipesize) pipeptr = 0;
@@ -579,7 +637,7 @@ void cw::decode_stream(double value)
 
 	if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
 		update_syncscope();
-		if (progdefaults.CWuseSOMdecoding) {
+		if (!progdefaults.CWuseSOMdecoding) {
 			somc = find_winner(cw_buffer, cw_adaptive_receive_threshold);
 			cptr = (char*)somc;
 			if (somc != NULL) {
@@ -590,12 +648,7 @@ void cw::decode_stream(double value)
 				put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
 			cw_ptr = 0;
 			memset(cw_buffer, 0, sizeof(cw_buffer));
-		} else {
-			if (strlen(c) == 1)
-				put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
-			else while (*c)
-				put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++, FTextBase::CTRL);
-		}
+		} 
 	}
 }
 
@@ -608,7 +661,10 @@ void cw::rx_FFTprocess(const double *buf, int len)
 
 		z = cmplx ( *buf * cos(FFTphase), *buf * sin(FFTphase) );
 		FFTphase += TWOPI * frequency / samplerate;
-		if (FFTphase > TWOPI) FFTphase -= TWOPI;
+		if (FFTphase > M_PI)
+			FFTphase -= TWOPI;
+		else if (FFTphase < M_PI)
+			FFTphase += TWOPI;
 
 		buf++;
 
@@ -620,7 +676,7 @@ void cw::rx_FFTprocess(const double *buf, int len)
 // update the basic sample counter used for morse timing
 			++smpl_ctr;
 
-			if (smpl_ctr % DEC_RATIO) continue; // decimate by DEC_RATIO
+			if (smpl_ctr % DECIMATE) continue; // decimate by 40  (for Bayesian decoder - requires 200 Hz input)
 
 // demodulate
 			FFTvalue = abs(zp[i]);
@@ -642,12 +698,15 @@ void cw::rx_FIRprocess(const double *buf, int len)
 		buf++;
 
 		FIRphase += TWOPI * frequency / samplerate;
-		if (FIRphase > TWOPI) FIRphase -= TWOPI;
+		if (FIRphase > M_PI)
+			FIRphase -= TWOPI;
+		else if (FIRphase < M_PI)
+			FIRphase += TWOPI;
 
 		if (cw_FIR_filter->run ( z, z )) {
 
 // update the basic sample counter used for morse timing
-			smpl_ctr += DEC_RATIO;
+			smpl_ctr += DEC_RATIO;  // DEC_RATIO 
 // demodulate
 			FIRvalue = abs(z);
 			FIRvalue = bitfilter->run(FIRvalue);
@@ -661,6 +720,11 @@ static bool cwprocessing = false;
 
 int cw::rx_process(const double *buf, int len)
 {
+
+	if ( !progdefaults.report_when_visible ||
+		 dlgViewer->visible() || progStatus.show_channels )
+		if (cwviewer) cwviewer->rx_process(buf, len);
+
 	if (cwprocessing) return 0;
 	cwprocessing = true;
 	reset_rx_filter();
@@ -899,7 +963,8 @@ inline double cw::nco(double freq)
 {
 	phaseacc += 2.0 * M_PI * freq / samplerate;
 
-	if (phaseacc > TWOPI) phaseacc -= TWOPI;
+	if (phaseacc > M_PI)
+		phaseacc -= 2.0 * M_PI;
 
 	return sin(phaseacc);
 }
@@ -908,7 +973,8 @@ inline double cw::qsknco()
 {
 	qskphase += 2.0 * M_PI * 1000 / samplerate;
 
-	if (qskphase > TWOPI) qskphase -= TWOPI;
+	if (qskphase > M_PI)
+		qskphase -= 2.0 * M_PI;
 
 	return sin(qskphase);
 }
@@ -943,8 +1009,6 @@ void cw::send_symbol(int bits, int len)
 	int symlen = 0;
 	float dsymlen = 0.0;
 	int currsym = bits & 1;
-
-	acc_symbols += len;
 
 	freq = get_txfreq_woffset();
 
@@ -1187,20 +1251,11 @@ int cw::tx_process()
 
 	c = get_tx_char();
 	if (c == GET_TX_CHAR_ETX || stopflag) {
+		send_symbol(0, symbollen);
 		stopflag = false;
 			return -1;
 	}
-	acc_symbols = 0;
 	send_ch(c);
-
-	xmt_samples = char_samples = acc_symbols;
-
-//	printf("%5s %d samples, overhead %d, %f sec's\n",
-//		ascii3[c & 0xff],
-//		char_samples,
-//		ovhd_samples,
-//		1.0 * char_samples / samplerate);
-
 	return 0;
 }
 

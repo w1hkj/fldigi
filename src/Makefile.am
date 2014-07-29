@@ -272,10 +272,28 @@ clean-local:
 # Sources that we build. It is OK to have headers here.
 fldigi_SOURCES += \
 	combo/combo.cxx \
+	cw_rtty/bconstants.cxx \
 	cw_rtty/cw.cxx \
+	cw_rtty/initl.cxx \
+	cw_rtty/kalfil.cxx \
+	cw_rtty/likhd.cxx \
+	cw_rtty/model.cxx \
 	cw_rtty/morse.cxx \
+	cw_rtty/noise.cxx \
+	cw_rtty/proces.cxx \
+	cw_rtty/path.cxx \
+	cw_rtty/probp.cxx \
+	cw_rtty/ptrans.cxx \
 	cw_rtty/rtty.cxx \
+	cw_rtty/savep.cxx \
+	cw_rtty/spdtr.cxx \
+	cw_rtty/sprob.cxx \
+	cw_rtty/transl.cxx \
+	cw_rtty/trelis.cxx \
+	cw_rtty/trprob.cxx \
+	cw_rtty/view_cw.cxx \
 	cw_rtty/view_rtty.cxx \
+	cw_rtty/xtrans.cxx \
 	contestia/contestia.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
@@ -310,6 +328,7 @@ fldigi_SOURCES += \
 	include/analysis.h \
 	include/fftscan.h \
 	include/ascii.h \
+	include/bmorse.h \
 	include/charsetdistiller.h \
 	include/charsetlist.h \
 	include/colorbox.h \
@@ -420,6 +439,7 @@ fldigi_SOURCES += \
 	include/timeops.h \
 	include/trx.h \
 	include/util.h \
+	include/view_cw.h \
 	include/Viewer.h \
 	include/viterbi.h \
 	include/waterfall.h \

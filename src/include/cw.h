@@ -93,7 +93,8 @@ enum CW_EVENT {
 class cw : public modem {
 
 #define CLRCOUNT 16
-#define	DEC_RATIO	16
+//#define	DEC_RATIO	16		// AG1LE  original decimation ratio 8000/16
+#define	DEC_RATIO	40 			// AG1LE - DEC_RATIO for Bayeseian decoder
 #define CW_FIRLEN   512
 // Maximum number of signs (dit or dah) in a Morse char.
 #define WGT_SIZE 7

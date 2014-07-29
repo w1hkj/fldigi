@@ -3,7 +3,7 @@ const char* szBeginner = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n\
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
 <head>\n\
 <meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" />\n\
-<meta name=\"generator\" content=\"AsciiDoc 8.6.6\" />\n\
+<meta name=\"generator\" content=\"AsciiDoc 8.6.7\" />\n\
 <title>Beginners' Guide to Fldigi</title>\n\
 <style type=\"text/css\">\n\
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */\n\
@@ -349,7 +349,7 @@ div.colist td img {\n\
   margin-bottom: 0.1em;\n\
 }\n\
 \n\
-div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {\n\
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {\n\
   margin-top: 0;\n\
   margin-bottom: 0;\n\
 }\n\
@@ -407,6 +407,8 @@ span.underline { text-decoration: underline; }\n\
 span.overline { text-decoration: overline; }\n\
 span.line-through { text-decoration: line-through; }\n\
 \n\
+div.unbreakable { page-break-inside: avoid; }\n\
+\n\
 \n\
 /*\n\
  * xhtml11 specific\n\
@@ -414,7 +416,7 @@ span.line-through { text-decoration: line-through; }\n\
  * */\n\
 \n\
 tt {\n\
-  font-family: monospace;\n\
+  font-family: \"Courier New\", Courier, monospace;\n\
   font-size: inherit;\n\
   color: navy;\n\
 }\n\
@@ -453,7 +455,7 @@ div.tableblock > table[frame=\"vsides\"] {\n\
  * */\n\
 \n\
 .monospaced {\n\
-  font-family: monospace;\n\
+  font-family: \"Courier New\", Courier, monospace;\n\
   font-size: inherit;\n\
   color: navy;\n\
 }\n\
@@ -581,7 +583,7 @@ toc: function (toclevels) {\n\
 \n\
   function tocEntries(el, toclevels) {\n\
     var result = new Array;\n\
-    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');\n\
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');\n\
     // Function that scans the DOM tree for header elements (the DOM2\n\
     // nodeIterator API would be a better technique but not supported by all\n\
     // browsers).\n\
@@ -610,7 +612,7 @@ toc: function (toclevels) {\n\
   var i;\n\
   for (i = 0; i < toc.childNodes.length; i++) {\n\
     var entry = toc.childNodes[i];\n\
-    if (entry.nodeName == 'div'\n\
+    if (entry.nodeName.toLowerCase() == 'div'\n\
      && entry.getAttribute(\"class\")\n\
      && entry.getAttribute(\"class\").match(/^toclevel/))\n\
       tocEntriesToRemove.push(entry);\n\
@@ -656,7 +658,7 @@ footnotes: function () {\n\
   var entriesToRemove = [];\n\
   for (i = 0; i < noteholder.childNodes.length; i++) {\n\
     var entry = noteholder.childNodes[i];\n\
-    if (entry.nodeName == 'div' && entry.getAttribute(\"class\") == \"footnote\")\n\
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute(\"class\") == \"footnote\")\n\
       entriesToRemove.push(entry);\n\
   }\n\
   for (i = 0; i < entriesToRemove.length; i++) {\n\
@@ -2036,7 +2038,7 @@ numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
 <div id=\"footnotes\"><hr /></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
-Last updated 2014-06-23 11:09:00 CDT\n\
+Last updated 2014-07-22 19:02:52 EDT\n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\

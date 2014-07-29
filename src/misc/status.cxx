@@ -100,6 +100,7 @@ status progStatus = {
 	400,				// uint VIEDWERheight
 	3.0,				// double VIEWER_psksquelch
 	-6.0,				// double VIEWER_rttysquelch
+	1.0,				// double VIEWER_cwsquelch
 	false,				// bool VIEWERvisible
 	100,				// int		tile_x
 	200,				// int		tile_w;
