@@ -109,7 +109,7 @@ decl {Fl_Double_Window *dlgConfig;} {public local
 decl {Mode_Browser* mode_browser;} {public local
 } 
 
-Function {choose_color(Fl_Color & c)} {open private return_type void
+Function {choose_color(Fl_Color & c)} {private return_type void
 } {
   code {unsigned char r, g, b;
 Fl::get_color(c, r, g, b);
@@ -117,12 +117,7 @@ if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
 } 
 
-Function {adjust_label(Fl_Widget* w)} {open private return_type void
-} {
-  code {w->labelcolor(fl_contrast(w->labelcolor(), w->color()));} {}
-} 
-
-Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
+Function {cbRxFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -146,7 +141,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     progdefaults.changed = true;} {}
 } 
 
-Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
+Function {cbTxFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -170,7 +165,7 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     progdefaults.changed = true;} {}
 } 
 
-Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {open return_type void
+Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
   code {Fl_Font fnt = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -182,7 +177,35 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {open return_type void
     font_browser->hide();} {}
 } 
 
-Function {cbViewerFontBrowser(Fl_Widget*, void*)} {open return_type void
+Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {open private return_type void
+} {
+  code {progdefaults.MacroBtnFontnbr = font_browser->fontNumber();
+    progdefaults.MacroBtnFontsize = font_browser->fontSize();;
+    progdefaults.MacroBtnFontcolor = font_browser->fontColor();
+
+    font_browser->hide();
+    
+    btnGroup1->labelcolor(progdefaults.MacroBtnFontcolor);
+    btnGroup1->labelfont(progdefaults.MacroBtnFontnbr);
+    btnGroup1->labelsize(progdefaults.MacroBtnFontsize);
+    btnGroup1->redraw_label();
+
+    btnGroup2->labelcolor(progdefaults.MacroBtnFontcolor);
+    btnGroup2->labelfont(progdefaults.MacroBtnFontnbr);
+    btnGroup2->labelsize(progdefaults.MacroBtnFontsize);
+    btnGroup2->redraw_label();
+
+    btnGroup3->labelcolor(progdefaults.MacroBtnFontcolor);
+    btnGroup3->labelfont(progdefaults.MacroBtnFontnbr);
+    btnGroup3->labelsize(progdefaults.MacroBtnFontsize);
+    btnGroup3->redraw_label();
+
+    progdefaults.changed = true;
+    colorize_macros();} {selected
+  }
+} 
+
+Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
   code {progdefaults.ViewerFontnbr = font_browser->fontNumber();
     progdefaults.ViewerFontsize = font_browser->fontSize();
@@ -192,7 +215,7 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {open return_type void
     font_browser->hide();} {}
 } 
 
-Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {open return_type void
+Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
   code {Fl_Font fnt = font_browser->fontNumber();
     progdefaults.FreqControlFontnbr = fnt;
@@ -210,7 +233,7 @@ Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {open return_type void
     font_browser->hide();} {}
 } 
 
-Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {open private return_type void
+Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -232,7 +255,7 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {open private return_type voi
     progdefaults.changed = true;} {}
 } 
 
-Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {open private return_type void
+Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -290,15 +313,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {921 110 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {58 45 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -378,14 +401,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355} hide
+        tooltip {User Interface} xywh {0 25 600 355}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330}
+            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -710,18 +733,18 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabUserInterface {
-            label General
+            label General open
             tooltip {User Interface - General} xywh {0 50 600 330} hide
           } {
-            Fl_Group {} {open
-              xywh {52 62 496 76} box ENGRAVED_FRAME
+            Fl_Group {} {
+              xywh {60 77 496 76} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
                 callback {progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
-                tooltip {Enable / disable tooltips} xywh {87 75 120 20} down_box DOWN_BOX value 1
+                tooltip {Enable / disable tooltips} xywh {95 90 120 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
               }
               Fl_Check_Button chkMenuIcons {
@@ -729,7 +752,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.menuicons = o->value();
 toggle_icon_labels();
 progdefaults.changed = true;}
-                tooltip {Enable / disable icons on menus} xywh {231 75 150 20} down_box DOWN_BOX
+                tooltip {Enable / disable icons on menus} xywh {239 90 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}
               }
               Fl_Group listboxScheme {
@@ -738,7 +761,7 @@ progdefaults.changed = true;}
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;} open
-                tooltip {Change application look and feel} xywh {205 104 80 20} box DOWN_BOX color 7 align 8
+                tooltip {Change application look and feel} xywh {213 119 80 20} box DOWN_BOX color 7 align 8
                 code0 {listboxScheme->add("base");}
                 code1 {listboxScheme->add("gtk+");}
                 code2 {listboxScheme->add("plastic");}
@@ -752,48 +775,48 @@ progdefaults.changed = true;}
 mode_browser->callback(toggle_visible_modes);
 mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;}
-                tooltip {Select modes for menu access} xywh {70 104 110 20}
+                tooltip {Select modes for menu access} xywh {78 119 110 20}
               }
               Fl_Group listbox_language {
                 label {UI language}
                 callback {progdefaults.ui_language = o->index();
 progdefaults.changed = true;} open
-                tooltip {Changes take effect on next program startup} xywh {415 104 110 20} box DOWN_BOX color 7 labelsize 12 align 5
+                tooltip {Changes take effect on next program startup} xywh {423 119 110 20} box DOWN_BOX color 7 labelsize 12 align 5
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
             }
-            Fl_Group {} {open
-              xywh {52 139 496 34} box ENGRAVED_FRAME align 21
+            Fl_Group {} {
+              xywh {60 154 496 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_rx_lowercase {
                 label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
                 callback {progdefaults.rx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {87 146 389 20} down_box DOWN_BOX
+                xywh {95 161 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rx_lowercase);}
               }
             }
-            Fl_Group {} {open
-              xywh {52 174 496 34} box ENGRAVED_FRAME align 21
+            Fl_Group {} {
+              xywh {60 189 496 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_tx_lowercase {
                 label {Transmit all text in lower case}
                 callback {progdefaults.tx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {87 182 389 20} down_box DOWN_BOX
+                xywh {95 197 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.tx_lowercase);}
               }
             }
             Fl_Group {} {
-              label {Exit prompts} open
-              xywh {52 209 496 76} box ENGRAVED_FRAME align 21
+              label {Exit prompts}
+              xywh {60 224 496 76} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_save_config_on_exit {
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {87 233 233 20} down_box DOWN_BOX
+                xywh {95 248 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -801,7 +824,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {87 255 233 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {95 270 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -809,7 +832,7 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {331 233 166 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {339 248 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Check_Button btn2_confirm_exit {
@@ -817,19 +840,19 @@ progdefaults.changed = true;}
                 callback {btn2_confirm_exit->value(o->value());
 progdefaults.confirmExit=o->value();
 progdefaults.changed = true;}
-                xywh {331 255 200 20} down_box DOWN_BOX
+                xywh {339 270 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
               label {Check for updates} open
-              xywh {52 286 496 54} box ENGRAVED_FRAME align 21
+              xywh {60 301 496 54} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_check_for_updates {
                 label {Check for updates when starting program}
                 callback {progdefaults.check_for_updates = o->value();
 progdefaults.changed = true;}
-                xywh {87 309 324 20} down_box DOWN_BOX
+                xywh {95 324 324 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.check_for_updates);}
               }
             }
@@ -988,7 +1011,7 @@ defined here. Tab and newline are automatically included.} xywh {194 260 279 24}
             }
           }
           Fl_Group tabMBars {
-            label Macros
+            label Macros open
             tooltip {User Interface - Macros} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
@@ -1010,73 +1033,102 @@ progdefaults.changed = true;}
                 label {One bar (above waterfall)}
                 callback {progdefaults.mbar2_pos = 0;
 progdefaults.mbar1_pos = true;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 91 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 91 220 24} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_oneB {
                 label {One bar (below waterfall)}
                 callback {progdefaults.mbar2_pos = 0;
 progdefaults.mbar1_pos = false;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 121 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 121 220 24} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_oneC {
+                label {One above Rx/Tx panels}
+                callback {progdefaults.mbar2_pos = 4;
+progdefaults.mbar1_pos = false;
+btn_one_macro_row->value(1);
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                tooltip {Single macro bar below logging panel
+variable height} xywh {300 91 220 24} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Counter cnt_macro_height {
+                label {Control Height}
+                callback {progdefaults.macro_height = (int)o->value();
+cnt_macro_height2->value(progdefaults.macro_height);
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                tooltip {Height of one below logging panel} xywh {300 122 102 22} type Simple align 8 minimum 22 maximum 66 step 2 value 44
+                code0 {o->value(progdefaults.macro_height);}
               }
               Fl_Round_Button btn_twoA {
                 label {Two bars (scheme 1)}
                 callback {progdefaults.mbar2_pos = 1;
 progdefaults.mbar1_pos = true;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 151 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 151 220 24} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoB {
                 label {Two bars (scheme 2)}
                 callback {progdefaults.mbar2_pos = 2;
 progdefaults.mbar1_pos = true;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {292 151 219 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {300 151 219 24} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoC {
                 label {Two bars (scheme 3)}
                 callback {progdefaults.mbar2_pos = 3;
 progdefaults.mbar1_pos = true;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 181 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 181 220 24} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoD {
                 label {Two bars (scheme 4)}
                 callback {progdefaults.mbar2_pos = 1;
 progdefaults.mbar1_pos = false;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {292 181 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {300 181 220 24} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoE {
                 label {Two bars (scheme 5)}
                 callback {progdefaults.mbar2_pos = 2;
 progdefaults.mbar1_pos = false;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 211 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 211 220 24} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoF {
                 label {Two bars (scheme 6)}
                 callback {progdefaults.mbar2_pos = 3;
 progdefaults.mbar1_pos = false;
+btn_one_macro_row->value(0);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {292 211 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {300 211 220 24} type Radio down_box ROUND_DOWN_BOX
               }
             }
             Fl_Group {} {open
@@ -1248,8 +1300,8 @@ WF_UI();}
             }
           }
           Fl_Group tabColorsFonts {
-            label {Clrs/Fnts}
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
+            label {Clrs/Fnts} open
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -1785,7 +1837,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label F_keys open
-                xywh {0 75 600 305} hide
+                xywh {0 75 600 305}
               } {
                 Fl_Check_Button btnUseGroupColors {
                   label {Use colored buttons}
@@ -1811,9 +1863,9 @@ progdefaults.changed = true;}
     colorize_macros();
     
     progdefaults.changed = true;}
-                  tooltip {Background color for Function key group 1} xywh {135 139 75 20}
+                  tooltip {Background color for Function key group 1} xywh {103 155 90 30}
                   code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
-                  code1 {btnGroup1->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+                  code1 {btnGroup1->labelcolor(progdefaults.MacroBtnFontcolor);}
                 }
                 Fl_Button btnGroup2 {
                   label {Group 2}
@@ -1831,9 +1883,9 @@ progdefaults.changed = true;}
     colorize_macros();
 
     progdefaults.changed = true;}
-                  tooltip {Background color for Function key group 2} xywh {226 139 75 20}
+                  tooltip {Background color for Function key group 2} xywh {205 155 90 30}
                   code0 {btnGroup2->color(fl_rgb_color(progdefaults.btnGroup2.R, progdefaults.btnGroup2.G,progdefaults.btnGroup2.B));}
-                  code1 {btnGroup2->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
+                  code1 {btnGroup2->labelcolor(progdefaults.MacroBtnFontcolor);}
                 }
                 Fl_Button btnGroup3 {
                   label {Group 3}
@@ -1851,36 +1903,9 @@ progdefaults.changed = true;}
 
     colorize_macros();
     progdefaults.changed = true;}
-                  tooltip {Background color for Function key group 3} xywh {318 139 75 20}
+                  tooltip {Background color for Function key group 3} xywh {307 155 90 30}
                   code0 {btnGroup3->color(fl_rgb_color(progdefaults.btnGroup3.R, progdefaults.btnGroup3.G,progdefaults.btnGroup3.B));}
-                  code1 {btnGroup3->labelcolor(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.R));}
-                }
-                Fl_Button btnFkeyTextColor {
-                  label {Label text}
-                  callback {uchar r, g, b;
-    r = progdefaults.btnFkeyTextColor.R;
-    g = progdefaults.btnFkeyTextColor.G;
-    b = progdefaults.btnFkeyTextColor.B;
-
-    if (fl_color_chooser("Fkey Text", r, g, b) == 0)
-        return;
-
-    progdefaults.btnFkeyTextColor.R = r;
-    progdefaults.btnFkeyTextColor.G = g;
-    progdefaults.btnFkeyTextColor.B = b;
-    o->color(fl_rgb_color(r,g,b));
-    adjust_label(o);
-    btnGroup1->labelcolor(fl_rgb_color(r,g,b));
-    btnGroup2->labelcolor(fl_rgb_color(r,g,b));
-    btnGroup3->labelcolor(fl_rgb_color(r,g,b));
-    btnGroup1->redraw_label();
-    btnGroup2->redraw_label();
-    btnGroup3->redraw_label();
-    progdefaults.changed = true;
-    colorize_macros();}
-                  xywh {318 107 75 21}
-                  code0 {btnFkeyTextColor->color(fl_rgb_color(progdefaults.btnFkeyTextColor.R, progdefaults.btnFkeyTextColor.G, progdefaults.btnFkeyTextColor.B));}
-                  code1 {adjust_label(btnFkeyTextColor);}
+                  code1 {btnGroup3->labelcolor(progdefaults.MacroBtnFontcolor);}
                 }
                 Fl_Button btnFkeyDEfaults {
                   label Defaults
@@ -1908,27 +1933,38 @@ progdefaults.changed = true;}
     progdefaults.btnGroup3.G = g;
     progdefaults.btnGroup3.B = b;
 
-    r = 255; g = 255; b = 255;
-    clr = fl_rgb_color(r,g,b);
-    btnFkeyTextColor->color(clr);
-    btnFkeyTextColor->redraw_label();
-    progdefaults.btnFkeyTextColor.R = r;
-    progdefaults.btnFkeyTextColor.G = g;
-    progdefaults.btnFkeyTextColor.B = b;
+    progdefaults.MacroBtnFontcolor = FL_BLACK;
+    progdefaults.MacroBtnFontnbr = FL_COURIER;
+    progdefaults.MacroBtnFontsize = 12;
 
-    btnGroup1->labelcolor(clr);
+    btnGroup1->labelcolor(progdefaults.MacroBtnFontcolor);
+    btnGroup2->labelcolor(progdefaults.MacroBtnFontcolor);
+    btnGroup3->labelcolor(progdefaults.MacroBtnFontcolor);
+    btnGroup1->labelfont(progdefaults.MacroBtnFontnbr);
+    btnGroup2->labelfont(progdefaults.MacroBtnFontnbr);
+    btnGroup3->labelfont(progdefaults.MacroBtnFontnbr);
+    btnGroup1->labelsize(progdefaults.MacroBtnFontsize);
+    btnGroup2->labelsize(progdefaults.MacroBtnFontsize);
+    btnGroup3->labelsize(progdefaults.MacroBtnFontsize);
+
     btnGroup1->redraw_label();
-
-    btnGroup2->labelcolor(clr);
     btnGroup2->redraw_label();
-
-    btnGroup3->labelcolor(clr);
     btnGroup3->redraw_label();
 
     colorize_macros();
 
 progdefaults.changed = true;}
-                  xywh {410 139 75 20}
+                  xywh {410 155 90 30}
+                }
+                Fl_Button btnMacroBtnFont {
+                  label {Font/Color}
+                  callback {font_browser->fontNumber(progdefaults.MacroBtnFontnbr);
+    font_browser->fontSize(progdefaults.MacroBtnFontsize);
+    font_browser->fontColor(progdefaults.MacroBtnFontcolor);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbMacroBtnFontBrowser);
+font_browser->show();}
+                  xywh {307 102 90 30}
                 }
               }
               Fl_Group {} {
@@ -2091,7 +2127,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label SigLvl open
-                xywh {0 75 600 305}
+                xywh {0 75 600 305} hide
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -2148,31 +2184,113 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tab_sel_lsd {
-            label {Freq' Ctrl} open
+          Fl_Group tab_touch {
+            label Touch open
             xywh {0 50 600 330} hide
           } {
             Fl_Box {} {
-              label {Arrow Key Control of Frequency Entry
-Right/Left = x 1
-Up/Down = x 10
-Shift - key = key value x 100}
-              xywh {25 70 550 85} align 16
+              label {Note:
+These configuration items are useful for but not unique to using fldigi on a
+touch screen device such as a tablet.}
+              xywh {15 70 570 52} align 20
             }
-            Fl_Choice sel_lsd {
-              label {Select Least Signficant Digit for Right/Left}
-              callback {progdefaults.sel_lsd = o->value();
+            Fl_Group {} {
+              label {Arrow Key Control of Frequency Entry} open
+              xywh {15 145 570 102} box ENGRAVED_BOX align 21
+            } {
+              Fl_Box {} {
+                label {Right/Left = 1 x LSD
+Up/Dn= 10 x LSD
+Shift - Right/Left = 100 x LSD
+Shift - Up/Dn = 1000 x LSD}
+                xywh {30 170 290 74} align 16
+              }
+              Fl_Choice sel_lsd {
+                label {Right/Left
+Select Least Signficant Digit}
+                callback {progdefaults.sel_lsd = o->value();
 set_freq_control_lsd();
 progdefaults.changed = true;} open
-              xywh {260 190 90 24} down_box BORDER_BOX align 1
-              code0 {o->add("1 Hz|10 Hz|100 Hz|1 kHz");}
-              code1 {o->value(progdefaults.sel_lsd);}
-            } {}
+                xywh {420 206 90 24} down_box BORDER_BOX align 1
+                code0 {o->add("1 Hz|10 Hz|100 Hz|1 kHz");}
+                code1 {o->value(progdefaults.sel_lsd);}
+              } {}
+            }
+            Fl_Group {} {
+              label {Tx Panels / Macro Buttons} open
+              xywh {15 255 570 102} box ENGRAVED_BOX align 21
+            } {
+              Fl_Check_Button btn_rxtx_swap {
+                label {Tx above Rx}
+                callback {progdefaults.rxtx_swap = o->value();
+progdefaults.changed = true;
+UI_select();}
+                tooltip {Enable to put Tx panel above Rx panel} xywh {85 277 116 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rxtx_swap);}
+              }
+              Fl_Check_Button btn_one_macro_row {
+                label {One Macro Row above Rx/Tx}
+                callback {if (o->value()) {
+  progdefaults.mbar2_pos = 4;
+  progdefaults.mbar1_pos = false;
+  btn_oneA->value(0);
+  btn_oneB->value(0);
+  btn_oneC->value(1);
+  btn_twoA->value(0);
+  btn_twoB->value(0);
+  btn_twoC->value(0);
+  btn_twoD->value(0);
+  btn_twoE->value(0);
+  btn_oneA->redraw();
+  btn_oneB->redraw();
+  btn_oneC->redraw();
+  btn_twoA->redraw();
+  btn_twoB->redraw();
+  btn_twoC->redraw();
+  btn_twoD->redraw();
+  btn_twoE->redraw();
+} else {
+  progdefaults.mbar2_pos = 0;
+  progdefaults.mbar1_pos = true;
+  btn_oneA->value(1);
+  btn_oneB->value(0);
+  btn_oneC->value(0);
+  btn_twoA->value(0);
+  btn_twoB->value(0);
+  btn_twoC->value(0);
+  btn_twoD->value(0);
+  btn_twoE->value(0);
+  btn_oneA->redraw();
+  btn_oneB->redraw();
+  btn_oneC->redraw();
+  btn_twoA->redraw();
+  btn_twoB->redraw();
+  btn_twoC->redraw();
+  btn_twoD->redraw();
+  btn_twoE->redraw();
+}
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {275 277 220 30} down_box DOWN_BOX
+                code0 {o->value(progdefaults.mbar2_pos == 4);}
+              }
+              Fl_Counter cnt_macro_height2 {
+                label {Control Height}
+                callback {progdefaults.macro_height = (int)o->value();
+cnt_macro_height->value(progdefaults.macro_height);
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                tooltip {Height of one below logging panel} xywh {275 310 102 22} type Simple align 8 minimum 22 maximum 66 step 2 value 44
+                code0 {o->value(progdefaults.macro_height);}
+              }
+            }
           }
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall open
+        label Waterfall
         xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsWaterfall {open

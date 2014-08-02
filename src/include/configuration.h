@@ -1260,6 +1260,18 @@
         ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR",                                      \
               "RX text font color",                                                     \
               FL_BLACK)                                                                 \
+        ELEM_(std::string, MacroBtnFontname, "MACROBTNFONTNAME",                        \
+              "Macro Btn Font Name",                                                    \
+              "")                                                                       \
+        ELEM_(Fl_Font, MacroBtnFontnbr, "MACROBTNFONTNBR",                              \
+              "Macro Btn font index",                                                   \
+              FL_COURIER)                                                               \
+        ELEM_(int, MacroBtnFontsize, "MACROBTNFONTSIZE",                                \
+              "Macro btn font size",                                                    \
+              12)                                                                       \
+        ELEM_(Fl_Color, MacroBtnFontcolor, "MACROBTNFONTCOLOR",                         \
+              "Macro btn font color",                                                   \
+              FL_WHITE)                                                                 \
         ELEM_(Fl_Color, RxTxSelectcolor, "RXTXSELCOLOR",                                \
               "RX/TX text select color",                                                \
               FL_MAGENTA)                                                               \
@@ -1638,7 +1650,14 @@
               "Frequency control by keyboard arrow keys\n"                              \
               "Least significant digit are left/right keys\n"                           \
               "0 : 1 Hz, 1 : 10 Hz, 2 : 100 Hz, 3 : 1000 Hz",                           \
-              0)
+              0)                                                                        \
+        ELEM_(int, macro_height, "MACRO_HEIGHT",                                        \
+              "Height of buttons for one row below logging panel",                      \
+              44)                                                                       \
+        ELEM_(bool, rxtx_swap, "RXTX_SWAP",                                             \
+              "Enabled, Tx above Rx panel\n"                                            \
+              "Disable, Rx above Tx panel (default",                                    \
+              false)
 
 
 // declare the struct

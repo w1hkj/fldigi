@@ -979,6 +979,14 @@ static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 	TransmitText->clear();
 }
 
+static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
+{
+	if (!within_exec)
+		qsoFreqDisp->take_focus();
+		qsoFreqDisp->show_focus();
+	s.replace( i, 7, "" );
+}
+
 static void pCALL(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpCall->value() );
@@ -2662,6 +2670,7 @@ static const MTAGS mtags[] = {
 {"<GET>",		pGET},
 {"<CLRRX>",		pCLRRX},
 {"<CLRTX>",		pCLRTX},
+{"<FOCUS>",		pFOCUS},
 {"<FILE:",		pFILE},
 {"<WPM:",		pWPM},
 {"<RISE:",		pRISETIME},

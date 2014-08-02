@@ -112,6 +112,9 @@ extern Fl_Check_Button *btnMacroMouseWheel;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Round_Button *btn_oneA;
 extern Fl_Round_Button *btn_oneB;
+extern Fl_Round_Button *btn_oneC;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *cnt_macro_height;
 extern Fl_Round_Button *btn_twoA;
 extern Fl_Round_Button *btn_twoB;
 extern Fl_Round_Button *btn_twoC;
@@ -170,8 +173,8 @@ extern Fl_Check_Button *btnUseGroupColors;
 extern Fl_Button *btnGroup1;
 extern Fl_Button *btnGroup2;
 extern Fl_Button *btnGroup3;
-extern Fl_Button *btnFkeyTextColor;
 extern Fl_Button *btnFkeyDEfaults;
+extern Fl_Button *btnMacroBtnFont;
 extern Fl_Button *btnTabColor;
 extern Fl_Button *btnTabDefaultColor;
 extern Fl_Button *btnSpotColor;
@@ -202,9 +205,12 @@ extern Fl_Button *btnNormalSignal;
 extern Fl_Box *normalcolor;
 extern Fl_Button *btnOverSignal;
 extern Fl_Box *overcolor;
-extern Fl_Group *tab_sel_lsd;
+extern Fl_Group *tab_touch;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *sel_lsd;
+extern Fl_Check_Button *btn_rxtx_swap;
+extern Fl_Check_Button *btn_one_macro_row;
+extern Fl_Counter *cnt_macro_height2;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
@@ -231,7 +237,6 @@ extern Fl_Check_Button *btnWFaveraging;
 extern Fl_ListBox *listboxFFTPrefilter;
 extern Fl_Counter2 *cntrWfwidth;
 extern Fl_Counter2 *wf_latency;
-#include <FL/Fl_Counter.H>
 extern Fl_Counter *cntr_drop_speed;
 extern Fl_Counter2 *cntrWfheight;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;

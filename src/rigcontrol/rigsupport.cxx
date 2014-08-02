@@ -344,10 +344,11 @@ void sendFreq(long int f)
 		rigCAT_setfreq(f);
 }
 
-void qso_movFreq(Fl_Widget* w, void*)
+void qso_movFreq(Fl_Widget* w, void *data)
 {
 	cFreqControl *fc = (cFreqControl *)w;
 	long int f;
+	long restore = reinterpret_cast<long>(data);
 	f = fc->value();
 	if (fc == qsoFreqDisp1) {
 		qsoFreqDisp2->value(f);
@@ -361,6 +362,8 @@ void qso_movFreq(Fl_Widget* w, void*)
 	}
 
 	sendFreq(f);
+	if (restore == 1)
+		restoreFocus();
 	return;
 }
 
@@ -425,13 +428,9 @@ void qso_addFreq()
 
 void setTitle()
 {
-	if (windowTitle.length() > 0) {
-		txtRigName->label(windowTitle.c_str());
-		txtRigName->redraw_label();
-	} else {
-		txtRigName->label();
-		txtRigName->redraw_label();
-	}
+	if (windowTitle.empty()) return;
+	main_window_title.assign("fldigi / ").append(windowTitle);
+	update_main_title();
 }
 
 bool init_Xml_RigDialog()
@@ -466,7 +465,7 @@ bool init_NoRig_RigDialog()
 	clearList();
 	buildlist();
 
-	windowTitle = _("Enter Xcvr Freq");
+	windowTitle.clear();
 	setTitle();
 
 	return true;

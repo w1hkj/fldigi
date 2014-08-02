@@ -61,6 +61,9 @@ extern Fl_Input2		*txtInpSeek;
 extern Fl_Box			*hideViewer;
 extern Fl_Group		*mvgroup;
 
+extern Fl_Group		*text_group;
+extern Fl_Group		*wefax_group;
+
 extern Panel			*text_panel;
 extern Fl_Box			*minbox;
 extern int				oix;

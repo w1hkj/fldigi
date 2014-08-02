@@ -72,9 +72,11 @@ protected:
 		RX_MENU_SAVE, RX_MENU_WRAP, RX_MENU_QUICK_ENTRY, RX_MENU_SCROLL_HINTS
 	};
 
-	void		handle_clickable(int x, int y);
+//	void		handle_clickable(int x, int y);
+//	void		handle_qso_data(int start, int end);
+	int			handle_clickable(int x, int y);
+	int			handle_qso_data(int start, int end);
 	void		handle_qsy(int start, int end);
-	void		handle_qso_data(int start, int end);
 	void		handle_context_menu(void);
 	void		menu_cb(size_t item);
 

@@ -1818,12 +1818,15 @@ void wefax_pic::create_both(bool called_from_fl_digi)
 	if( called_from_fl_digi && progdefaults.WEFAX_EmbeddedGui )
 	{
 		int rxWinHeight = progdefaults.WEFAX_HideTx ? text_panel->h() : text_panel->h()/2 ;
+printf("wefax: x %d, y %d, w %d, h %d\n", text_panel->x(), text_panel->y(),
+	text_panel->w(), rxWinHeight);
+	
 		wefax_pic::create_rx_viewer(
-			text_panel->x() + mvgroup->w(), text_panel->y(),
-			text_panel->w() - mvgroup->w(), rxWinHeight );
+			wefax_group->x(), wefax_group->y(),
+			wefax_group->w(), rxWinHeight );
 		wefax_pic::create_tx_viewer(
-			text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
-			text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h());
+			wefax_group->x(), wefax_group->y() + rxWinHeight,//ReceiveText->h(),
+			wefax_group->w(), wefax_group->h() - rxWinHeight);//ReceiveText->h());
 	}
 	else
 	if( ! called_from_fl_digi && ! progdefaults.WEFAX_EmbeddedGui )
