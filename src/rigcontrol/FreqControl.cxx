@@ -38,7 +38,7 @@
 
 const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-	
+
 void cFreqControl::IncFreq (int nbr) {
 	long v = 1;
 	v = val + mult[nbr];
@@ -59,20 +59,14 @@ void cFreqControl::DecFreq (int nbr) {
 void cbSelectDigit (Fl_Widget *btn, void * nbr)
 {
 
-    Fl_Button *b = (Fl_Button *)btn;
-//	bool top = (Fl::event_y() < b->y() + b->h()/2);
+	Fl_Button *b = (Fl_Button *)btn;
 	int Nbr = (int)(reinterpret_cast<long> (nbr));
-	
+
 	cFreqControl *fc = (cFreqControl *)b->parent();
-/*	if (top)
+	if (Fl::event_button1())
 		fc->IncFreq(Nbr);
-	else
+	else if (Fl::event_button3())
 		fc->DecFreq(Nbr);
-*/
-    if (Fl::event_button1())
-        fc->IncFreq(Nbr);
-    else if (Fl::event_button3())
-        fc->DecFreq(Nbr);
 
 	fc->damage();
 }
@@ -86,16 +80,20 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	ILLUMCOLOR = FL_GREEN;
 	oldval = val = 0;
 	nD = 9; // nD <= MAXDIGITS
+	_dispfocus = false;
 
-	int pw = 6; // decimal width
-	int fcWidth = (w - pw - 4)/nD;
+	int fcWidth = (int)(w - 4)/(nD + 0.5);
+	int pw = fcWidth / 2;
 	int fcFirst = x;
 	int fcTop = y;
 	int fcHeight = h;
 	long int max;
 	int xpos;
 
+	lsd = 1;
+
 	box(FL_DOWN_BOX);
+	color(OFFCOLOR);
 	max = 1;
 	for (int n = 0; n < nD; n++) {
 		xpos = fcFirst + (nD - 1 - n) * fcWidth + 2;
@@ -106,7 +104,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			fcWidth,
 			fcHeight-4,
 			" ");
-		Digit[n]->box(FL_FLAT_BOX);	
+		Digit[n]->box(FL_FLAT_BOX);
 		Digit[n]->labelfont(font_number);
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR, SELCOLOR);
@@ -115,13 +113,26 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 		mult[n] = max;
 		max *= 10;
 	}
-	decbx = new Fl_Box(fcFirst + (nD - 3) * fcWidth + 2, fcTop + 2, pw, fcHeight-4,".");
+	decbx = new Fl_Box(
+				fcFirst + (nD - 3) * fcWidth + 2, fcTop + 2,
+				pw, fcHeight-4, "");
 	decbx->box(FL_FLAT_BOX);
 	decbx->labelfont(font_number);
 	decbx->labelcolor(ONCOLOR);
 	decbx->color(OFFCOLOR);
 	decbx->labelsize(fcHeight-4);
-	
+	decbx->label(".");
+
+	actbx = new Fl_Box(
+				fcFirst + (nD - 3) * fcWidth + 2, fcTop + 2,
+				pw, (fcHeight-4)/2," ");
+	actbx->box(FL_FLAT_BOX);
+	actbx->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
+	actbx->labelfont(font_number);
+	actbx->labelcolor(ONCOLOR);
+	actbx->color(OFFCOLOR);
+	actbx->labelsize((fcHeight-4)/2);
+
 	cbFunc = NULL;
 	maxVal = max * 10 - 1;
 	minVal = 0;
@@ -144,7 +155,6 @@ cFreqControl::~cFreqControl()
 	delete finp;
 }
 
-
 void cFreqControl::updatevalue()
 {
 	long v = val;
@@ -162,42 +172,53 @@ void cFreqControl::updatevalue()
 			Digit[i]->label("");
 	}
 	decbx->label(".");
+	decbx->redraw_label();
+	actbx->redraw_label();
 	damage();
 }
 
 void cFreqControl::SetONOFFCOLOR( Fl_Color ONcolor, Fl_Color OFFcolor)
 {
-    OFFCOLOR = OFFcolor;
-    ONCOLOR = ONcolor;
+	OFFCOLOR = OFFcolor;
+	ONCOLOR = ONcolor;
 
-    for (int n = 0; n < nD; n++) {
+	color(OFFCOLOR);
+
+	for (int n = 0; n < nD; n++) {
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR);
 	}
+	actbx->labelcolor(ONCOLOR);
+	actbx->color(OFFCOLOR);
 	decbx->labelcolor(ONCOLOR);
 	decbx->color(OFFCOLOR);
 	damage();
 }
 
-void cFreqControl::SetONCOLOR (uchar r, uchar g, uchar b) 
+void cFreqControl::SetONCOLOR (uchar r, uchar g, uchar b)
 {
 	ONCOLOR = fl_rgb_color (r, g, b);
-    for (int n = 0; n < nD; n++) {
+	for (int n = 0; n < nD; n++) {
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR);
 	}
+	actbx->labelcolor(ONCOLOR);
+	actbx->color(OFFCOLOR);
 	decbx->labelcolor(ONCOLOR);
 	decbx->color(OFFCOLOR);
 	damage();
 }
 
-void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b) 
+void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b)
 {
 	OFFCOLOR = fl_rgb_color (r, g, b);
-    for (int n = 0; n < nD; n++) {
+	color(OFFCOLOR);
+	for (int n = 0; n < nD; n++) {
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR);
 	}
+	actbx->labelcolor(ONCOLOR);
+	actbx->color(OFFCOLOR);
 	decbx->labelcolor(ONCOLOR);
 	decbx->color(OFFCOLOR);
 	damage();
@@ -208,35 +229,50 @@ void cFreqControl::font(Fl_Font fnt)
 	font_number = fnt;
 	for (int n = 0; n < nD; n++)
 		Digit[n]->labelfont(fnt);
+	actbx->labelfont(fnt);
 	decbx->labelfont(fnt);
 	damage();
 }
 
-static void blink_point(Fl_Widget* w)
+void blink_point(cFreqControl *fc)
 {
-	w->label(*w->label() ? "" : ".");
-	Fl::add_timeout(0.2, (Fl_Timeout_Handler)blink_point, w);
+	fc->decbx->label()[0] == '.' ? fc->decbx->label("") : fc->decbx->label(".");
+	fc->decbx->redraw_label();
+	fc->actbx->redraw_label();
+	Fl::add_timeout(0.2, (Fl_Timeout_Handler)blink_point, fc);
 }
 
 void cFreqControl::value(long lv)
 {
 	oldval = val = lv;
-	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, this);
 	REQ(&cFreqControl::updatevalue, this);
 }
 
 void cFreqControl::cancel_kb_entry(void)
 {
-	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, this);
 	val = oldval;
 	updatevalue();
 }
 
+#define KEEP_FOCUS (long)0
+#define LOSE_FOCUS (long)1
+
+void cFreqControl::show_focus()
+{
+	actbx->label("@-62->");
+	actbx->redraw_label();
+}
+
+void cFreqControl::clear_focus()
+{
+	actbx->label("");
+	actbx->redraw_label();
+}
+
 int cFreqControl::handle(int event)
 {
-	if (!Fl::event_inside(this) && event != FL_LEAVE)
-		return Fl_Group::handle(event);
-
 	static Fl_Widget* fw = NULL;
 	int d;
 
@@ -248,38 +284,64 @@ int cFreqControl::handle(int event)
 	case FL_LEAVE:
 		if (fw)
 			fw->take_focus();
-		if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, decbx))
+		if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, this))
 			cancel_kb_entry();
+		clear_focus();
+		updatevalue();
+		do_callback((Fl_Widget *)this, LOSE_FOCUS);
+		return 1;
 		break;
 	case FL_KEYBOARD:
 		switch (d = Fl::event_key()) {
-		case FL_Left:
-			d = -1;
-			break;
-		case FL_Down:
-			d = -10;
-			break;
 		case FL_Right:
-			d = 1;
+			if (Fl::event_shift())
+				d = 100 * lsd;
+			else
+				d = lsd;
+			val += d;
+			updatevalue();
+			do_callback();
+			return 1;
+			break;
+		case FL_Left:
+			if (Fl::event_shift())
+				d = -100 * lsd;
+			else
+				d = -1 * lsd;
+			val += d;
+			updatevalue();
+			do_callback();
+			return 1;
 			break;
 		case FL_Up:
-			d = 10;
+			if (Fl::event_shift())
+				d = 1000 * lsd;
+			else
+				d = 10 * lsd;
+			val += d;
+			updatevalue();
+			do_callback();
+			return 1;
 			break;
-		case FL_Page_Up:
-			d = 100;
-			break;
-		case FL_Page_Down:
-			d = -100;
+		case FL_Down:
+			if (Fl::event_shift())
+				d = -1000 * lsd;
+			else
+				d = -10 * lsd;
+			val += d;
+			updatevalue();
+			do_callback();
+			return 1;
 			break;
 		default:
 			if (Fl::event_ctrl()) {
 				if (Fl::event_key() == 'v') {
 					finp->handle(event);
-					Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
+					Fl::remove_timeout((Fl_Timeout_Handler)blink_point, this);
 					return 1;
 				}
 			}
-			if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, decbx)) {
+			if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, this)) {
 				if (d == FL_Escape) {
 					cancel_kb_entry();
 					return 1;
@@ -287,22 +349,32 @@ int cFreqControl::handle(int event)
 				else if (d == FL_Enter || d == FL_KP_Enter) { // append
 					finp->position(finp->size());
 					finp->replace(finp->position(), finp->mark(), "\n", 1);
+					clear_focus();
+					updatevalue();
+					do_callback((Fl_Widget *)this, LOSE_FOCUS);
+					return 1;
 				}
 			}
 			else {
 				if (d == FL_Escape && window() != Fl::first_window()) {
 					window()->do_callback();
 					return 1;
+				} else if (d == FL_Enter) {
+					clear_focus();
+					updatevalue();
+					do_callback((Fl_Widget *)this, LOSE_FOCUS);
+					return 1;
+				} else {
+					const char *key = Fl::event_text();
+					if ((key[0] >= '0' && key[0] <= '9') || key[0] == '.') {
+						Fl::add_timeout(0.0, (Fl_Timeout_Handler)blink_point, this);
+						finp->static_value("");
+						oldval = val;
+					}
 				}
-				Fl::add_timeout(0.0, (Fl_Timeout_Handler)blink_point, decbx);
-				finp->static_value("");
-				oldval = val;
 			}
 			return finp->handle(event);
 		}
-		val += d;
-		updatevalue();
-		do_callback();
 		break;
 	case FL_MOUSEWHEEL:
 		if ( !((d = Fl::event_dy()) || (d = Fl::event_dx())) )
@@ -344,7 +416,7 @@ void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
 		fc->val = (long)val;
 		fc->updatevalue();
 		if (fc->finp->index(fc->finp->size() - 1) == '\n' && val > 0.0) {
-			Fl::remove_timeout((Fl_Timeout_Handler)blink_point, fc->decbx);
+			Fl::remove_timeout((Fl_Timeout_Handler)blink_point, fc);
 			fc->do_callback();
 		}
 	}

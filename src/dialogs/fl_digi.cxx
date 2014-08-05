@@ -5025,6 +5025,10 @@ void create_fl_digi_main_primary() {
 		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
 
+		qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
+		qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
+		qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
+
 		Y = Hmenu + Hqsoframe + pad;
 
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
@@ -7145,4 +7149,11 @@ void set_CSV(int how)
 		active_modem->stop_csv();
 	else
 		active_modem->start_csv();
+}
+
+void set_freq_control_lsd()
+{
+	qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
+	qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
+	qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
 }

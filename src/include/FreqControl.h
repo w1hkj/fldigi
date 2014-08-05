@@ -49,12 +49,18 @@ class Fl_Float_Input;
 
 class cFreqControl : public Fl_Group {
 friend void cbSelectDigit (Fl_Widget *btn, void * nbr);
+friend void blink_point (cFreqControl *);
+
 public:
 	cFreqControl(int x, int y, int w, int h, const char *lbl = "7");
 	~cFreqControl();
 	void updatevalue();
 	void value(long lv);
-	long value(){return val;};
+	long value(){return val;}
+	int  focus() { return 1; }
+	void disp_focus(bool b) { _dispfocus = b;}
+	void show_focus();
+	void clear_focus();
 	void font(Fl_Font n);
 	void SetONCOLOR (uchar r, uchar g, uchar b);
 	void SetOFFCOLOR (uchar r, uchar g, uchar b);
@@ -68,12 +74,21 @@ public:
 //	void setCallBack (int (*cbf)(Fl_Widget *, void *) ){ cbFunc = cbf;};
 //	void do_callback() { if (cbFunc) cbFunc(this, NULL); }
 	int handle(int event);
+	void set_lsd(int val) {
+		if (val < 0) return;
+		if (val > 3) return;
+		if (val == 0) lsd = 1;
+		if (val == 1) lsd = 10;
+		if (val == 2) lsd = 100;
+		if (val == 3) lsd = 1000;
+	}
 private:
 	Fl_Repeat_Button      		*Digit[MAX_DIGITS];
 	Fl_Float_Input			*finp;
 	static const char	 	*Label[];
 	int					mult[MAX_DIGITS];
 	Fl_Box				*decbx;
+	Fl_Box				*actbx;
 	Fl_Font  font_number;
 	Fl_Color OFFCOLOR;
 	Fl_Color ONCOLOR;
@@ -90,6 +105,8 @@ private:
 	void cancel_kb_entry(void);
 protected:
 	long val, oldval;
+	int  lsd;
+	bool _dispfocus;
 };
 
 #endif 
