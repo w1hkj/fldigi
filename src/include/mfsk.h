@@ -152,6 +152,7 @@ protected:
 	double basefreq;
 	int counter;
 	int depth;
+	bool _puncturing;
 // receive
 	int				rxstate;
 	C_FIR_filter	*hbfilt;
@@ -191,6 +192,7 @@ protected:
 	double noise;
 	double afcmetric;
 	bool	staticburst;
+	int fec_confidence;
 	
 	double currfreq;
 
