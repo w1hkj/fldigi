@@ -427,6 +427,11 @@ void cb_contestiaI(Fl_Widget *w, void *arg);
 void cb_contestiaJ(Fl_Widget *w, void *arg);
 void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
+void cb_DSC_mfhf_ssb(Fl_Widget *w, void *arg);
+void cb_DSV_vhf_fm(Fl_Widget *w, void *arg);
+
+void cb_otty14(Fl_Widget *w, void *arg);
+void cb_mtty45(Fl_Widget *w, void *arg);
 void cb_rtty45(Fl_Widget *w, void *arg);
 void cb_rtty50(Fl_Widget *w, void *arg);
 void cb_rtty75N(Fl_Widget *w, void *arg);
@@ -618,6 +623,8 @@ static const Fl_Menu_Item quick_change_contestia[] = {
 };
 
 static const Fl_Menu_Item quick_change_rtty[] = {
+	{ "OTTY-14", 0, cb_otty14, (void *)MODE_RTTY },
+	{ "MTTY-45", 0, cb_mtty45, (void *)MODE_RTTY },
 	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
 	{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY },
@@ -792,38 +799,76 @@ void set_rtty_tab_widgets()
 	selStopBits->index(progdefaults.rtty_stop+1);
 }
 
+void cb_DSC_mfhf_ssb(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 6;
+	progdefaults.rtty_bits = 3;
+	progdefaults.rtty_shift = 4;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);
+	active_modem->set_freq(1700);
+}
+
+void cb_DSC_vhf_fm(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 12;
+	progdefaults.rtty_bits = 3;
+	progdefaults.rtty_shift = 11;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);
+	active_modem->set_freq(1700);
+}
+
+void cb_otty14(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 0;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 0;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_mtty45(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 2;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 1;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
 void cb_rtty45(Fl_Widget *w, void *arg)
 {
-	progdefaults.rtty_baud = 1;
+	progdefaults.rtty_baud = 2;
 	progdefaults.rtty_bits = 0;
-	progdefaults.rtty_shift = 3;
+	progdefaults.rtty_shift = 4;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
 
 void cb_rtty50(Fl_Widget *w, void *arg)
 {
-	progdefaults.rtty_baud = 2;
+	progdefaults.rtty_baud = 3;
 	progdefaults.rtty_bits = 0;
-	progdefaults.rtty_shift = 3;
+	progdefaults.rtty_shift = 4;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
 
 void cb_rtty75N(Fl_Widget *w, void *arg)
 {
-	progdefaults.rtty_baud = 4;
+	progdefaults.rtty_baud = 5;
 	progdefaults.rtty_bits = 0;
-	progdefaults.rtty_shift = 3;
+	progdefaults.rtty_shift = 4;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
 
 void cb_rtty75W(Fl_Widget *w, void *arg)
 {
-	progdefaults.rtty_baud = 4;
+	progdefaults.rtty_baud = 5;
 	progdefaults.rtty_bits = 0;
-	progdefaults.rtty_shift = 9;
+	progdefaults.rtty_shift = 12;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -3663,6 +3708,8 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { RTTY_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "OTTY-14", 0, cb_otty14, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "MTTY-45", 0, cb_mtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5775,6 +5822,8 @@ static Fl_Menu_Item alt_menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "OTTY-14", 0, cb_otty14, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "MTTY-45", 0, cb_mtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},

@@ -201,8 +201,7 @@ Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {open private return_type vo
     btnGroup3->redraw_label();
 
     progdefaults.changed = true;
-    colorize_macros();} {selected
-  }
+    colorize_macros();} {}
 } 
 
 Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
@@ -300,8 +299,8 @@ for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 Function {ConfigureDialog()} {open
 } {
   code {font_browser = new Font_Browser;} {}
-  code {static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850|Custom";
-static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
+  code {static const char szShifts[]  = "10|23|85|160|170|182|200|240|350|425|600|800|850|900|1200|Custom";
+static const char szBauds[]  = "14|45|45.45|50|56|75|100|110|150|200|300|600|1200|1800";
 static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
 static const char szParity[]  = "none|even|odd|zero|one";
 static const char szStopBits[] = "1|1.5|2";
@@ -310,10 +309,11 @@ static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
-static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
+static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {selected
+  }
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {58 45 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {373 200 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -401,7 +401,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355}
+        tooltip {User Interface} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
@@ -2677,14 +2677,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 355}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3559,7 +3559,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 600 330} selection_color 50

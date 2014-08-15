@@ -57,8 +57,8 @@ static char figures[32] = {
 	'9',	'?',	'&',	' ',	'.',	'/',	';',	' '
 };
 
-const double view_rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
-const double view_rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
+const double view_rtty::SHIFT[] = {10, 23, 85, 160, 170, 182, 200, 240, 350, 425, 600, 800, 850, 900, 1200};
+const double view_rtty::BAUD[]  = {14, 45.45, 50, 56, 75, 100, 110, 150, 200, 300, 600, 1200, 1800};
 const int    view_rtty::BITS[]  = {5, 7, 8};
 const int view_rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
 

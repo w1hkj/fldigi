@@ -5049,8 +5049,8 @@ progdefaults.changed = false;
 Fl_Double_Window* ConfigureDialog() {
   Fl_Double_Window* w;
   font_browser = new Font_Browser;
-  static const char szShifts[]  = "23|85|160|170|182|200|240|350|425|850|Custom";
-  static const char szBauds[]  = "45|45.45|50|56|75|100|110|150|200|300";
+  static const char szShifts[]  = "10|23|85|160|170|182|200|240|350|425|600|800|850|900|1200|Custom";
+  static const char szBauds[]  = "14|45|45.45|50|56|75|100|110|150|200|300|600|1200|1800";
   static const char szSelBits[] = "5 (baudot)|7 (ascii)|8 (ascii)";
   static const char szParity[]  = "none|even|odd|zero|one";
   static const char szStopBits[] = "1|1.5|2";
@@ -5182,6 +5182,7 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 355, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 355);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
@@ -6706,11 +6707,11 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 330, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 330);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
@@ -7832,7 +7833,6 @@ i on a\ntouch screen device such as a tablet."));
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 600, 330, _("RTTY"));
-            tabRTTY->hide();
             { tabsRTTY = new Fl_Tabs(0, 50, 600, 330);
               tabsRTTY->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx"));

@@ -44,6 +44,7 @@
 
 #define MAXPIPE			1024
 #define MAXBITS			(2 * RTTY_SampleRate / 23 + 1)
+#define RTTYMaxSymLen		(RTTY_SampleRate / 14) // Samplerate / Lowest baudrate from rtty::BAUD[]
 
 #define	LETTERS	0x100
 #define	FIGURES	0x200
@@ -146,6 +147,15 @@ private:
 	RTTY_PARITY	rtty_parity;
 	int			rtty_stop;
 	bool		rtty_msbfirst;
+	bool 		rtty_reverse;
+	bool		_msk;
+	bool		_hibaud;
+	
+	C_FIR_filter	*hilbert;
+	C_FIR_filter	*lpfilt;
+	Cmovavg *bitfilt;
+	fftfilt *bpfilt;
+
 
 	double		mark_noise;
 	double		space_noise;
@@ -153,6 +163,9 @@ private:
 	bool		nubit;
 	bool		bit;
 
+	int bflen;
+	double bp_filt_lo;
+	double bp_filt_hi;
 	bool		bit_buf[MAXBITS];
 
 	double mark_phase;
@@ -163,6 +176,9 @@ private:
 	double *pipe;
 	double *dsppipe;
 	int pipeptr;
+	
+	double bbfilter[MAXPIPE];
+	unsigned int filterptr;
 
 	cmplx mark_history[MAXPIPE];
 	cmplx space_history[MAXPIPE];
@@ -174,9 +190,16 @@ private:
 	int rxdata;
 	double cfreq; // center frequency between MARK/SPACE tones
 	double shift_offset; // 1/2 rtty_shift
+	
+	double posfreq, negfreq;
+	double freqerrhi, freqerrlo;
+	double poserr, negerr;
+	int poscnt, negcnt;
+	cmplx prevsmpl;
+	cmplx *samples;
+	int QIptr;
 
 	double prevsymbol;
-	cmplx prevsmpl;
 
 	double xy_phase;
 	double rotate;
@@ -206,6 +229,11 @@ private:
 	int rxmode;
 	int txmode;
 	bool preamble;
+	
+	void clear_syncscope();
+	void update_syncscope();
+	inline cmplx mixer(cmplx in);
+	unsigned char bitreverse(unsigned char in, int n);
 
 	void Clear_syncscope();
 	void Update_syncscope();
@@ -240,6 +268,7 @@ public:
 	void restart();
 	void reset_filters();
 	int rx_process(const double *buf, int len);
+	int rx_process_msk(const double *buf, int len);
 	int tx_process();
 	void flush_stream();
 
