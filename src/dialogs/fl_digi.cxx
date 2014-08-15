@@ -438,6 +438,12 @@ void cb_rtty75N(Fl_Widget *w, void *arg);
 void cb_rtty75W(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
+void cb_ASCII_7(Fl_Widget *w, void *arg);
+void cb_ASCII_8(Fl_Widget *w, void *arg);
+
+void cb_OSK600_7(Fl_Widget *w, void *arg);
+void cb_MSK1200_8(Fl_Widget *w, void *arg);
+
 static Fl_Widget *modem_config_tab;
 static const Fl_Menu_Item *quick_change;
 
@@ -824,6 +830,7 @@ void cb_otty14(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 0;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 0;
+	progdefaults.rtty_parity = 0;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -833,6 +840,7 @@ void cb_mtty45(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 2;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 1;
+	progdefaults.rtty_parity = 0;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -842,6 +850,7 @@ void cb_rtty45(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 2;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 4;
+	progdefaults.rtty_parity = 0;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -851,6 +860,7 @@ void cb_rtty50(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 3;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 4;
+	progdefaults.rtty_parity = 0;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -860,6 +870,7 @@ void cb_rtty75N(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 5;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 4;
+	progdefaults.rtty_parity = 0;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -869,8 +880,49 @@ void cb_rtty75W(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 5;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 12;
+	progdefaults.rtty_parity = 0;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
+}
+
+void cb_ASCII_7(Fl_Widget *w, void *arg)
+{
+		progdefaults.rtty_baud = 6;
+		progdefaults.rtty_bits = 1;
+		progdefaults.rtty_shift = 12;
+		progdefaults.rtty_parity = 0;
+		set_rtty_tab_widgets();
+		cb_init_mode(w, arg);
+}
+
+void cb_ASCII_8(Fl_Widget *w, void *arg)
+{
+		progdefaults.rtty_baud = 6;
+		progdefaults.rtty_bits = 2;
+		progdefaults.rtty_shift = 12;
+		progdefaults.rtty_parity = 0;
+		set_rtty_tab_widgets();
+		cb_init_mode(w, arg);
+}
+
+void cb_OSK600_7(Fl_Widget *w, void *arg)
+{
+		progdefaults.rtty_baud = 11;
+		progdefaults.rtty_bits = 1;
+		progdefaults.rtty_shift = 9;
+		progdefaults.rtty_parity = 0;
+		set_rtty_tab_widgets();
+		cb_init_mode(w, arg);
+}
+
+void cb_MSK1200_8(Fl_Widget *w, void *arg)
+{
+		progdefaults.rtty_baud = 12;
+		progdefaults.rtty_bits = 2;
+		progdefaults.rtty_shift = 10;
+		progdefaults.rtty_parity = 0;
+		set_rtty_tab_widgets();
+		cb_init_mode(w, arg);
 }
 
 void cb_rttyCustom(Fl_Widget *w, void *arg)
@@ -3714,6 +3766,10 @@ static Fl_Menu_Item menu_[] = {
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "ASCII-100:7", 0, cb_ASCII_7, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "ASCII-100:8", 0, cb_ASCII_8, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "OSK-600:7", 0, cb_OSK600_7, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "MSK-1200:8", 0, cb_MSK1200_8, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -5828,6 +5884,10 @@ static Fl_Menu_Item alt_menu_[] = {
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ "ASCII-100:7", 0, cb_ASCII_7, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "ASCII-100:8", 0, cb_ASCII_8, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "OSK-600:7", 0, cb_OSK600_7, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "MSK-1200:8", 0, cb_MSK1200_8, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 

@@ -364,33 +364,38 @@ void cRsId::setup_mode(int iSymbol)
 {
 	switch (iSymbol) {
 	case RSID_RTTY_ASCII_7:
-		progdefaults.rtty_baud = 5;
+		progdefaults.rtty_baud = 6;
 		progdefaults.rtty_bits = 1;
-		progdefaults.rtty_shift = 9;
+		progdefaults.rtty_shift = 12;
+		progdefaults.rtty_parity = 0;
 		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_ASCII_8:
-		progdefaults.rtty_baud = 5;
+		progdefaults.rtty_baud = 6;
 		progdefaults.rtty_bits = 2;
-		progdefaults.rtty_shift = 9;
+		progdefaults.rtty_shift = 12;
+		progdefaults.rtty_parity = 0;
 		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_45:
-		progdefaults.rtty_baud = 1;
+		progdefaults.rtty_baud = 2;
 		progdefaults.rtty_bits = 0;
-		progdefaults.rtty_shift = 3;
+		progdefaults.rtty_shift = 4;
+		progdefaults.rtty_parity = 0;
 		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_50:
-		progdefaults.rtty_baud = 2;
+		progdefaults.rtty_baud = 3;
 		progdefaults.rtty_bits = 0;
-		progdefaults.rtty_shift = 3;
+		progdefaults.rtty_shift = 4;
+		progdefaults.rtty_parity = 0;
 		REQ(&set_rtty_tab_widgets);
 		break;
 	case RSID_RTTY_75:
-		progdefaults.rtty_baud = 4;
+		progdefaults.rtty_baud = 5;
 		progdefaults.rtty_bits = 0;
-		progdefaults.rtty_shift = 9;
+		progdefaults.rtty_shift = 12;
+		progdefaults.rtty_parity = 0;
 		REQ(&set_rtty_tab_widgets);
 		break;
 // DominoEX / FEC
@@ -725,15 +730,15 @@ bool cRsId::assigned(trx_mode mode) {
 
 	switch (mode) {
 	case MODE_RTTY :
-		if (progdefaults.rtty_baud == 5 && progdefaults.rtty_bits == 1 && progdefaults.rtty_shift == 9)
+		if (progdefaults.rtty_baud == 6 && progdefaults.rtty_bits == 1 && progdefaults.rtty_shift == 12 && progdefaults.rtty_parity == 0)
 			rmode = RSID_RTTY_ASCII_7;
-		else if (progdefaults.rtty_baud == 5 && progdefaults.rtty_bits == 1 && progdefaults.rtty_shift == 9)
+		else if (progdefaults.rtty_baud == 6 && progdefaults.rtty_bits == 2 && progdefaults.rtty_shift == 12  && progdefaults.rtty_parity == 0)
 			rmode = RSID_RTTY_ASCII_8;
-		else if (progdefaults.rtty_baud == 1 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 3)
+		else if (progdefaults.rtty_baud == 2 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 4 && progdefaults.rtty_parity == 0)
 			rmode = RSID_RTTY_45;
-		else if (progdefaults.rtty_baud == 2 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 3)
+		else if (progdefaults.rtty_baud == 3 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 4 && progdefaults.rtty_parity == 0)
 			rmode = RSID_RTTY_50;
-		else if (progdefaults.rtty_baud == 4 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 9)
+		else if (progdefaults.rtty_baud == 5 && progdefaults.rtty_bits == 0 && progdefaults.rtty_shift == 12 && progdefaults.rtty_parity == 0)
 			rmode = RSID_RTTY_75;
 		else
 			return false;
