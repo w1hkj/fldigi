@@ -207,6 +207,14 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 		break;
 
 // 8kHz modes
+	case MODE_THORMICRO:
+		symlen = 4096;
+		doublespaced = 1;
+		samplerate = 8000;
+		idepth = 4;
+		flushlength = 12;
+		break;
+	
 	case MODE_THOR4:
 		symlen = 2048;
 		doublespaced = 2;
@@ -301,10 +309,10 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 
 	prev1symbol = prev2symbol = 0;
 
-	if ( mode == MODE_THOR100 || mode == MODE_THOR50x1 || mode == MODE_THOR50x2 || mode == MODE_THOR25x4 ) {
+	if ( mode == MODE_THORMICRO || mode == MODE_THOR100 || mode == MODE_THOR50x1 || mode == MODE_THOR50x2 || mode == MODE_THOR25x4 ) {
 		Enc = new encoder (THOR_K15, K15_POLY1, K15_POLY2);
 		Dec = new viterbi (THOR_K15, K15_POLY1, K15_POLY2);
-		Dec->settraceback (PATHMEM-1); // Long constraint length codes require longer traceback
+		Dec->settraceback (PATHMEM); // Long constraint length codes require longer traceback
 	} else {
 		Enc = new encoder (THOR_K, THOR_POLY1, THOR_POLY2);
 		Dec = new viterbi (THOR_K, THOR_POLY1, THOR_POLY2);
@@ -570,6 +578,7 @@ void thor::softdecodesymbol()
 	lastsymbols[0] = (lastc & 1) == 1 ? one : zero ; lastc /= 2;
 
 	Rxinlv->symbols(lastsymbols);
+	
 	for (int i = 0; i < 4; i++) decodePairs(lastsymbols[i]);
 
 // Since modem is differential, wait until next symbol (to detect errors)
@@ -1047,8 +1056,10 @@ int thor::tx_process()
 		break;
 	case TX_STATE_START:
 		sendchar('\r', 0);
-		sendchar(2, 0);		// STX
-		sendchar('\r', 0);
+		if (mode != MODE_THORMICRO) {
+			sendchar(2, 0);		// STX
+			sendchar('\r', 0);
+		}
 		txstate = TX_STATE_DATA;
 		break;
 	case TX_STATE_DATA:
@@ -1064,8 +1075,10 @@ int thor::tx_process()
 		break;
 	case TX_STATE_END:
 		sendchar('\r', 0);
-		sendchar(4, 0);		// EOT
-		sendchar('\r', 0);
+		if (mode != MODE_THORMICRO) {
+		      sendchar(4, 0);		// EOT
+		      sendchar('\r', 0);
+		}
 		txstate = TX_STATE_FLUSH;
 		break;
 	case TX_STATE_FLUSH:

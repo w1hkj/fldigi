@@ -6,6 +6,8 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2007-2010
 //		Stelios Bounanos, M0GLD
+// Copyright (C) 2013-2014
+//		John Phelps, KL4YFD
 //
 // This file is part of fldigi.
 //
@@ -425,6 +427,7 @@ void cb_contestiaG(Fl_Widget *w, void *arg);
 void cb_contestiaH(Fl_Widget *w, void *arg);
 void cb_contestiaI(Fl_Widget *w, void *arg);
 void cb_contestiaJ(Fl_Widget *w, void *arg);
+void cb_contestiaMICRO(Fl_Widget *w, void *arg);
 void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
 void cb_DSC_mfhf_ssb(Fl_Widget *w, void *arg);
@@ -553,6 +556,7 @@ static const Fl_Menu_Item quick_change_mt63[] = {
 };
 
 static const Fl_Menu_Item quick_change_thor[] = {
+	{ mode_info[MODE_THORMICRO].name, 0, cb_init_mode, (void *)MODE_THORMICRO },
 	{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4 },
 	{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5 },
 	{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8 },
@@ -567,6 +571,7 @@ static const Fl_Menu_Item quick_change_thor[] = {
 };
 
 static const Fl_Menu_Item quick_change_domino[] = {
+	{ mode_info[MODE_DOMINOEXMICRO].name, 0, cb_init_mode, (void *)MODE_DOMINOEXMICRO },
 	{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4 },
 	{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5 },
 	{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8 },
@@ -614,6 +619,7 @@ static const Fl_Menu_Item quick_change_olivia[] = {
 };
 
 static const Fl_Menu_Item quick_change_contestia[] = {
+	{ "Micro", 0, cb_contestiaMICRO, (void *)MODE_CONTESTIA },
 	{ "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA },
 	{ "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA },
 	{ "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA },
@@ -629,7 +635,7 @@ static const Fl_Menu_Item quick_change_contestia[] = {
 };
 
 static const Fl_Menu_Item quick_change_rtty[] = {
-	{ "OTTY-14", 0, cb_otty14, (void *)MODE_RTTY },
+	{ "RTTY-Micro", 0, cb_otty14, (void *)MODE_RTTY },
 	{ "MTTY-45", 0, cb_mtty45, (void *)MODE_RTTY },
 	{ "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY },
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
@@ -778,6 +784,14 @@ void cb_contestiaJ(Fl_Widget *w, void *arg)
 {
 	progdefaults.contestiatones = 5;
 	progdefaults.contestiabw = 3;
+	set_contestia_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_contestiaMICRO(Fl_Widget *w, void *arg)
+{
+	progdefaults.contestiatones = 4; // 32-tones
+	progdefaults.contestiabw = 0; // 125Hz
 	set_contestia_tab_widgets();
 	cb_init_mode(w, arg);
 }
@@ -1195,7 +1209,7 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		modem_config_tab = tabCW;
 		break;
 
-	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
+	case MODE_THORMICRO: case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
 	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
 	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -1204,7 +1218,7 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		modem_config_tab = tabTHOR;
 		break;
 
-	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
+	case MODE_DOMINOEXMICRO: case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
 	case MODE_DOMINOEX44: case MODE_DOMINOEX88:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -3633,6 +3647,7 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 { CONTESTIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Micro", 0, cb_contestiaMICRO, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3647,6 +3662,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEXMICRO].name, 0, cb_init_mode, (void *)MODE_DOMINOEXMICRO, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3655,6 +3671,14 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX44].name, 0,  cb_init_mode, (void *)MODE_DOMINOEX44, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX88].name, 0,  cb_init_mode, (void *)MODE_DOMINOEX88, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ "FSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "ASCII-100:7", 0, cb_ASCII_7, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "ASCII-100:8", 0, cb_ASCII_8, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "OSK-600:7", 0, cb_OSK600_7, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "MSK-1200:8", 0, cb_MSK1200_8, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"Hell", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3760,7 +3784,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 { RTTY_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "OTTY-14", 0, cb_otty14, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-Micro", 0, cb_otty14, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "MTTY-45", 0, cb_mtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -3774,6 +3798,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THORMICRO].name, 0, cb_init_mode, (void *)MODE_THORMICRO, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5796,6 +5821,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
 
 {"Contestia", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Micro", 0, cb_contestiaMICRO, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/125", 0, cb_contestiaI, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 { "4/250", 0, cb_contestiaA, (void *)MODE_CONTESTIA, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "8/250", 0, cb_contestiaB, (void *)MODE_CONTESTIA, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5810,6 +5836,7 @@ static Fl_Menu_Item alt_menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEXMICRO].name, 0, cb_init_mode, (void *)MODE_DOMINOEXMICRO, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5878,7 +5905,7 @@ static Fl_Menu_Item alt_menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"RTTY", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ "OTTY-14", 0, cb_otty14, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "RTTY-Micro", 0, cb_otty14, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "MTTY-45", 0, cb_mtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-45", 0, cb_rtty45, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5892,6 +5919,7 @@ static Fl_Menu_Item alt_menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THORMICRO].name, 0, cb_init_mode, (void *)MODE_THORMICRO, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7056,7 +7084,7 @@ void resetCONTESTIA() {
 
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
+	if (md == MODE_THORMICRO || md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
 		md == MODE_THOR11 ||
 		md == MODE_THOR16 || md == MODE_THOR22 ||
 		md == MODE_THOR25x4 || md == MODE_THOR50x1 ||
@@ -7066,7 +7094,7 @@ void resetTHOR() {
 
 void resetDOMEX() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
+	if (md == MODE_DOMINOEXMICRO || md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
 		md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
 		md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 )
 		trx_start_modem(active_modem);

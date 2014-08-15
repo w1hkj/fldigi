@@ -86,7 +86,7 @@ void contestia::rx_flush()
 	unsigned char c;
 	Rx->Flush();
 	while (Rx->GetChar(c) > 0)
-		put_rx_char(c);
+		put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
 }
 
 void contestia::send_tones()
@@ -146,7 +146,7 @@ int contestia::tx_process()
 	unsigned char ch;
 
 	if (tones	!= progdefaults.contestiatones ||
-		bw 		!= progdefaults.contestiabw ||
+		bw	!= progdefaults.contestiabw ||
 		smargin != progdefaults.contestiasmargin ||
 		sinteg	!= progdefaults.contestiasinteg )
 			restart();
@@ -212,7 +212,7 @@ int contestia::rx_process(const double *buf, int len)
 	static char msg2[20];
 
 	if (tones	!= progdefaults.contestiatones ||
-		bw 		!= progdefaults.contestiabw ||
+		bw 	!= progdefaults.contestiabw ||
 		smargin != progdefaults.contestiasmargin ||
 		sinteg	!= progdefaults.contestiasinteg )
 			restart();
@@ -231,7 +231,7 @@ int contestia::rx_process(const double *buf, int len)
 	}
 
 	Rx->SyncThreshold = progStatus.sqlonoff ? 
-		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 3.0, 90.0) : 3.0;
+		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 1.0, 90.0) : 1.0;
 
     Rx->Process(buf, len);
 	sp = 0;
@@ -246,20 +246,25 @@ int contestia::rx_process(const double *buf, int len)
 
 	metric = clamp( 5.0 * (Rx->SignalToNoiseRatio() - 3.0), 0, 100);
 	display_metric(metric);
-
-	bool gotchar = false;
+	
+	// Flush the receiver to finish decoding immediately
+	// allowing for much longer integration period and therefore much better FEC
+	// without requring excessively long wait-times before decoding begins/finishes.
+	// with this, All buffered data it processed immediately after postamble is detected.
+	if ( postambledetect() )
+		Rx->Flush();
+	
 	while (Rx->GetChar(ch) > 0) {
 		if ((c = unescape(ch)) != -1 && c > 7) {
 			put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
-			gotchar = true;
 		}
     }
-	if (gotchar) {
-		snprintf(msg1, sizeof(msg1), "s/n: %4.1f dB", 10*log10(snr) - 20);
-		put_Status1(msg1, 5, STATUS_CLEAR);
-		snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
-		put_Status2(msg2, 5, STATUS_CLEAR);
-	}
+	
+	snprintf(msg1, sizeof(msg1), "s/n: %4.1f dB", 10*log10(snr) - 20);
+	put_Status1(msg1, 5, STATUS_CLEAR);
+	snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
+	put_Status2(msg2, 5, STATUS_CLEAR);
+	
 
 	return 0;
 }
@@ -304,8 +309,10 @@ void contestia::restart()
 	Rx->SyncMargin = smargin;
 	Rx->SyncIntegLen = sinteg;
 	Rx->SyncThreshold = progStatus.sqlonoff ? 
-		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 0, 90.0) : 0.0;
-
+		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 1.0, 90.0) : 1.0;
+	
+	
+	
 	Rx->SampleRate = samplerate;
 	Rx->InputSampleRate = samplerate;
 	Rx->bContestia = true;
@@ -327,9 +334,12 @@ void contestia::restart()
 
 	put_MODEstatus("%s %" PRIuSZ "/%" PRIuSZ "", get_mode_name(), Tx->Tones, Tx->Bandwidth);
 	metric = 0;
+	
+	optimize();
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
 	LOG_DEBUG("\nContestia Rx parameters:\n%s", Rx->PrintParameters());
+	
 }
 
 void contestia::init()
@@ -337,6 +347,44 @@ void contestia::init()
 	restart();
 	modem::init();
 	set_scope_mode(Digiscope::BLANK);
+}
+
+// This function applies specifically selected & tested values
+// that scale properly for the given throughput, baudrate, and bandwidth
+bool contestia::optimize()
+{
+	// If this is the Contestia MICRO mode: 32-tones | 125Hz
+	if (progdefaults.contestiatones == 4 && progdefaults.contestiabw == 0 ) {
+		Rx->SyncMargin = 30; // Very narrow mode: Set signal-search window wide (+- 50Hz)
+		Rx->SyncIntegLen = 6; // Integrate over more blocks for more robust FEC
+		return true;
+	}
+	
+	if (progdefaults.contestiatones == 2 && progdefaults.contestiabw == 3 ) {
+		Rx->SyncMargin = 8; //  (+- 400Hz)
+		Rx->SyncIntegLen = 16; // Integrate over more blocks for more robust FEC
+		return true;
+	}
+	
+	if(progdefaults.contestiatones == 3 && progdefaults.contestiabw == 3 ) {
+		Rx->SyncMargin = 14; //  (+- 400Hz)
+		Rx->SyncIntegLen = 12; // Integrate over more blocks for more robust FEC
+		return true;
+	}
+	
+	if (progdefaults.contestiatones == 4 && progdefaults.contestiabw == 3 ) {
+		Rx->SyncMargin = 27; //  (+- 400Hz)
+		Rx->SyncIntegLen = 8; // Integrate over more blocks for more robust FEC
+		return true;
+	}
+  
+	return false; // not in list
+}
+
+bool contestia::postambledetect() 
+{
+	// Postamble detection code 
+	return false;
 }
 
 contestia::contestia()

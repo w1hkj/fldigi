@@ -148,6 +148,7 @@ modem *contestia_modem = 0;
 
 modem *rtty_modem = 0;
 
+modem *thormicro_modem = 0;
 modem *thor4_modem = 0;
 modem *thor5_modem = 0;
 modem *thor8_modem = 0;
@@ -159,6 +160,7 @@ modem *thor50x1_modem = 0;
 modem *thor50x2_modem = 0;
 modem *thor100_modem = 0;
 
+modem *dominoexmicro_modem = 0;
 modem *dominoex4_modem = 0;
 modem *dominoex5_modem = 0;
 modem *dominoex8_modem = 0;

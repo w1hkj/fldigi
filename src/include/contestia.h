@@ -68,6 +68,8 @@ private:
 	double		tonebuff[TONE_DURATION];
 
 	double		nco(double freq);
+	bool		optimize();
+	bool		postambledetect();
 	void		send_tones();
 	
 public:
