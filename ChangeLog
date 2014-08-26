@@ -1,6 +1,38 @@
+2014-09-25  David Freese  <w1hkj@w1hkj.com>
+
+	fff4c36: WF drop rate
+	f0518f0: RsID time out
+
+2014-09-25  John Phelps  <kl4yfd@gmail.com>
+
+	06ac07d: 8PSK/16PSK modes
+
+2014-09-25  David Freese  <w1hkj@w1hkj.com>
+
+	17a19dc: Wizard crash fix
+
+2014-09-25  Stelios Bounanos  <vcs@enotty.net>
+
+	dea0b9a: Build system fixes
+
+2014-09-25  David Freese  <w1hkj@w1hkj.com>
+
+	915f399: Default font
+	70d4e69: Touch Screen UI
+	bef4405: Power meter
+	69c17b5: Smeter
+	b4ec7b0: Freq Control
+	e602b44: regex.c fix
+	19fcea6: fft-scan
+	3be70d1: home directory
+	f9fb571: Analysis modem
+	9932269: TRX limit check
+	db1adf8: Win32 Socket::close
+	79f8a4a: SITORB tx issue
 
 
 =Version 3.21.83=
+
 
 2014-06-26  Robert Stiles  <kk5vd@yahoo.com>
 
