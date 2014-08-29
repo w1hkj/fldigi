@@ -4035,7 +4035,7 @@ btnInitHWPTT->redraw();
 progdefaults.changed = true;} open
                 xywh {128 151 160 22} box DOWN_BOX color 7 align 4
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
+                class Fl_ComboBox
               } {}
               Fl_Round_Button btnRTSptt {
                 label {Use RTS}
@@ -4165,7 +4165,7 @@ btnRevertRIGCAT->activate();} open
                 xywh {391 107 144 22} box DOWN_BOX color 7 align 4
                 code0 {o->value(progdefaults.XmlRigDevice.c_str());
                        o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
+                class Fl_ComboBox
               } {}
               Fl_Value_Input cntRigCatRetries {
                 label Retries
@@ -4367,7 +4367,7 @@ hamlib_get_defaults();
 \#endif} open
                 xywh {115 88 160 22} box DOWN_BOX color 7 align 4
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
+                class Fl_ComboBox
               } {}
               Fl_Group inpRIGdev {
                 label {Device:}
@@ -4377,7 +4377,7 @@ btnRevertHAMLIB->activate();} open
                 xywh {390 88 144 22} box DOWN_BOX color 7 align 4
                 code0 {o->value(progdefaults.HamRigDevice.c_str());
                        o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
+                class Fl_ComboBox
               } {}
               Fl_Value_Input cntHamlibRetries {
                 label Retries

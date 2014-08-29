@@ -3203,9 +3203,9 @@ btnInitHWPTT->redraw();
 progdefaults.changed = true;
 }
 
-Fl_ListBox *inpTTYdev=(Fl_ListBox *)0;
+Fl_ComboBox *inpTTYdev=(Fl_ComboBox *)0;
 
-static void cb_inpTTYdev(Fl_ListBox*, void*) {
+static void cb_inpTTYdev(Fl_ComboBox*, void*) {
   btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;
@@ -3325,9 +3325,9 @@ btnInitRIGCAT->redraw_label();
 selectRigXmlFilename();
 }
 
-Fl_ListBox *inpXmlRigDevice=(Fl_ListBox *)0;
+Fl_ComboBox *inpXmlRigDevice=(Fl_ComboBox *)0;
 
-static void cb_inpXmlRigDevice(Fl_ListBox*, void*) {
+static void cb_inpXmlRigDevice(Fl_ComboBox*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 btnRevertRIGCAT->activate();
@@ -3507,9 +3507,9 @@ progdefaults.changed = true;
 
 Fl_Group *grpHamlib=(Fl_Group *)0;
 
-Fl_ListBox *cboHamlibRig=(Fl_ListBox *)0;
+Fl_ComboBox *cboHamlibRig=(Fl_ComboBox *)0;
 
-static void cb_cboHamlibRig(Fl_ListBox*, void*) {
+static void cb_cboHamlibRig(Fl_ComboBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();
@@ -3518,9 +3518,9 @@ hamlib_get_defaults();
 #endif
 }
 
-Fl_ListBox *inpRIGdev=(Fl_ListBox *)0;
+Fl_ComboBox *inpRIGdev=(Fl_ComboBox *)0;
 
-static void cb_inpRIGdev(Fl_ListBox*, void*) {
+static void cb_inpRIGdev(Fl_ComboBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();
@@ -8396,7 +8396,7 @@ le Earth)"));
                 btnTTYptt->selection_color((Fl_Color)1);
                 btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
               } // Fl_Round_Button* btnTTYptt
-              { Fl_ListBox* o = inpTTYdev = new Fl_ListBox(128, 151, 160, 22, _("Device:"));
+              { Fl_ComboBox* o = inpTTYdev = new Fl_ComboBox(128, 151, 160, 22, _("Device:"));
                 inpTTYdev->box(FL_DOWN_BOX);
                 inpTTYdev->color(FL_BACKGROUND2_COLOR);
                 inpTTYdev->selection_color(FL_BACKGROUND_COLOR);
@@ -8409,7 +8409,7 @@ le Earth)"));
                 inpTTYdev->when(FL_WHEN_RELEASE);
                 o->labelsize(FL_NORMAL_SIZE);
                 inpTTYdev->end();
-              } // Fl_ListBox* inpTTYdev
+              } // Fl_ComboBox* inpTTYdev
               { btnRTSptt = new Fl_Round_Button(310, 120, 85, 20, _("Use RTS"));
                 btnRTSptt->tooltip(_("RTS is PTT signal line"));
                 btnRTSptt->down_box(FL_DOWN_BOX);
@@ -8493,7 +8493,7 @@ le Earth)"));
                 btnSelectRigXmlFile->tooltip(_("Select rig descriptor file"));
                 btnSelectRigXmlFile->callback((Fl_Callback*)cb_btnSelectRigXmlFile);
               } // Fl_Button* btnSelectRigXmlFile
-              { Fl_ListBox* o = inpXmlRigDevice = new Fl_ListBox(391, 107, 144, 22, _("Device:"));
+              { Fl_ComboBox* o = inpXmlRigDevice = new Fl_ComboBox(391, 107, 144, 22, _("Device:"));
                 inpXmlRigDevice->box(FL_DOWN_BOX);
                 inpXmlRigDevice->color(FL_BACKGROUND2_COLOR);
                 inpXmlRigDevice->selection_color(FL_BACKGROUND_COLOR);
@@ -8507,7 +8507,7 @@ le Earth)"));
                 o->value(progdefaults.XmlRigDevice.c_str());
                        o->labelsize(FL_NORMAL_SIZE);
                 inpXmlRigDevice->end();
-              } // Fl_ListBox* inpXmlRigDevice
+              } // Fl_ComboBox* inpXmlRigDevice
               { Fl_Value_Input2* o = cntRigCatRetries = new Fl_Value_Input2(80, 150, 60, 22, _("Retries"));
                 cntRigCatRetries->tooltip(_("# retries before giving up"));
                 cntRigCatRetries->box(FL_DOWN_BOX);
@@ -8689,7 +8689,7 @@ le Earth)"));
             } // Fl_Check_Button* chkUSEHAMLIB
             { grpHamlib = new Fl_Group(55, 78, 490, 277);
               grpHamlib->box(FL_ENGRAVED_FRAME);
-              { Fl_ListBox* o = cboHamlibRig = new Fl_ListBox(115, 88, 160, 22, _("Rig:"));
+              { Fl_ComboBox* o = cboHamlibRig = new Fl_ComboBox(115, 88, 160, 22, _("Rig:"));
                 cboHamlibRig->box(FL_DOWN_BOX);
                 cboHamlibRig->color(FL_BACKGROUND2_COLOR);
                 cboHamlibRig->selection_color(FL_BACKGROUND_COLOR);
@@ -8702,8 +8702,8 @@ le Earth)"));
                 cboHamlibRig->when(FL_WHEN_RELEASE);
                 o->labelsize(FL_NORMAL_SIZE);
                 cboHamlibRig->end();
-              } // Fl_ListBox* cboHamlibRig
-              { Fl_ListBox* o = inpRIGdev = new Fl_ListBox(390, 88, 144, 22, _("Device:"));
+              } // Fl_ComboBox* cboHamlibRig
+              { Fl_ComboBox* o = inpRIGdev = new Fl_ComboBox(390, 88, 144, 22, _("Device:"));
                 inpRIGdev->box(FL_DOWN_BOX);
                 inpRIGdev->color(FL_BACKGROUND2_COLOR);
                 inpRIGdev->selection_color(FL_BACKGROUND_COLOR);
@@ -8717,7 +8717,7 @@ le Earth)"));
                 o->value(progdefaults.HamRigDevice.c_str());
                        o->labelsize(FL_NORMAL_SIZE);
                 inpRIGdev->end();
-              } // Fl_ListBox* inpRIGdev
+              } // Fl_ComboBox* inpRIGdev
               { Fl_Value_Input2* o = cntHamlibRetries = new Fl_Value_Input2(80, 128, 70, 24, _("Retries"));
                 cntHamlibRetries->tooltip(_("# times to resend command before giving up"));
                 cntHamlibRetries->box(FL_DOWN_BOX);
