@@ -4352,10 +4352,10 @@ if (o->value() == 1) {
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
-              tooltip {Hamlib used for rig control} xywh {250 55 100 20} down_box DOWN_BOX
+              tooltip {Hamlib used for rig control} xywh {250 59 100 20} down_box DOWN_BOX
             }
             Fl_Group grpHamlib {open
-              xywh {55 78 490 277} box ENGRAVED_FRAME
+              xywh {5 88 585 277} box ENGRAVED_FRAME
             } {
               Fl_Group cboHamlibRig {
                 label {Rig:}
@@ -4365,16 +4365,16 @@ btnRevertHAMLIB->activate();
 \#if USE_HAMLIB
 hamlib_get_defaults();
 \#endif} open
-                xywh {115 88 160 22} box DOWN_BOX color 7 align 4
+                xywh {41 98 275 22} box DOWN_BOX color 7 align 4
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ComboBox
+                class Fl_ListBox
               } {}
               Fl_Group inpRIGdev {
                 label {Device:}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();} open
-                xywh {390 88 144 22} box DOWN_BOX color 7 align 4
+                xywh {385 98 190 22} box DOWN_BOX color 7 align 4
                 code0 {o->value(progdefaults.HamRigDevice.c_str());
                        o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ComboBox
@@ -4384,7 +4384,7 @@ btnRevertHAMLIB->activate();} open
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {\# times to resend command before giving up} xywh {80 128 70 24} align 5 maximum 1000 step 1
+                tooltip {\# times to resend command before giving up} xywh {40 138 70 24} align 5 maximum 1000 step 1
                 code0 {o->value(progdefaults.HamlibRetries);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
@@ -4394,7 +4394,7 @@ btnRevertHAMLIB->activate();}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Msec's between retries} xywh {205 128 70 24} align 5 maximum 10000 step 1
+                tooltip {Msec's between retries} xywh {165 138 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibTimeout);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
@@ -4404,7 +4404,7 @@ btnRevertHAMLIB->activate();}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Msec's between sequential commands} xywh {80 171 70 24} align 5 maximum 10000 step 1
+                tooltip {Msec's between sequential commands} xywh {40 181 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibWriteDelay);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
@@ -4414,7 +4414,7 @@ btnRevertHAMLIB->activate();}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Wait interval (msecs) before reading response} xywh {206 171 70 24} align 5 maximum 10000 step 1
+                tooltip {Wait interval (msecs) before reading response} xywh {166 181 70 24} align 5 maximum 10000 step 1
                 code0 {o->value(progdefaults.HamlibWait);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Value_Input2
@@ -4424,7 +4424,7 @@ btnRevertHAMLIB->activate();}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();} open
-                xywh {435 122 99 22} box DOWN_BOX color 7 align 4
+                xywh {476 132 99 22} box DOWN_BOX color 7 align 4
                 code0 {o->add(szBaudRates);}
                 code1 {o->index(progdefaults.HamRigBaudrate);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -4435,7 +4435,7 @@ btnRevertHAMLIB->activate();} open
                 callback {progdefaults.HamRigStopbits = (int)o->value();
 btnRevertHAMLIB->activate();
 progdefaults.changed = true;}
-                xywh {439 158 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
+                xywh {480 168 95 21} type Simple align 4 minimum 1 maximum 2 step 1 value 1
                 code0 {o->value(progdefaults.HamRigStopbits);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -4445,7 +4445,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.HamlibTimeout = (int)o->value();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();}
-                tooltip {Msec's between retries} xywh {200 135 100 20} type Simple align 5 minimum 2 maximum 20000 step 1 value 10 hide
+                tooltip {Msec's between retries} xywh {160 145 100 20} type Simple align 5 minimum 2 maximum 20000 step 1 value 10 hide
                 code0 {o->value(progdefaults.HamlibTimeout);}
                 class Fl_Counter2
               }
@@ -4455,7 +4455,7 @@ btnInitHAMLIB->redraw_label();}
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
                 tooltip {Optional configuration
-in format: param=val ...} xywh {70 321 320 22} align 5
+in format: param=val ...} xywh {30 331 425 22} align 5
                 code0 {inpHamlibConfig->value(progdefaults.HamConfig.c_str());}
                 code1 {inpHamlibConfig->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -4466,14 +4466,14 @@ in format: param=val ...} xywh {70 321 320 22} align 5
 o->labelcolor(FL_FOREGROUND_COLOR);
 //btnRevertHAMLIB->activate();
 progdefaults.changed = true;}
-                tooltip {Initialize hamlib interface} xywh {421 320 113 24}
+                tooltip {Initialize hamlib interface} xywh {462 330 113 24}
               }
               Fl_Group listbox_sideband {
                 label {Sideband:}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();} open
-                xywh {390 212 144 22} box DOWN_BOX color 7 align 5
+                xywh {431 222 144 22} box DOWN_BOX color 7 align 5
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
@@ -4482,7 +4482,7 @@ btnRevertHAMLIB->activate();} open
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {PTT is a hamlib command} xywh {95 213 200 20} down_box DOWN_BOX selection_color 1
+                tooltip {PTT is a hamlib command} xywh {55 223 200 20} down_box DOWN_BOX selection_color 1
                 code0 {o->value(progdefaults.HamlibCMDptt);}
               }
               Fl_Check_Button btnHamlibDTRplus {
@@ -4490,7 +4490,7 @@ btnRevertHAMLIB->activate();}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Initial state of DTR} xywh {95 238 90 20} down_box DOWN_BOX
+                tooltip {Initial state of DTR} xywh {55 248 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibDTRplus);}
               }
               Fl_Check_Button chkHamlibRTSplus {
@@ -4500,7 +4500,7 @@ btnRevertHAMLIB->activate();}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Initial state of RTS} xywh {319 238 85 20} down_box DOWN_BOX
+                tooltip {Initial state of RTS} xywh {345 248 85 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSplus);}
               }
               Fl_Check_Button chkHamlibRTSCTSflow {
@@ -4513,7 +4513,7 @@ btnRevertHAMLIB->activate();}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Rig requires RTS/CTS flow control} xywh {95 266 170 20} down_box DOWN_BOX
+                tooltip {Rig requires RTS/CTS flow control} xywh {55 276 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSCTSflow);}
                 code1 {if (o->value()) chkHamlibRTSplus->deactivate();}
               }
@@ -4524,7 +4524,7 @@ btnRevertHAMLIB->activate();}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Rig requires Xon/Xoff flow control} xywh {319 266 185 20} down_box DOWN_BOX
+                tooltip {Rig requires Xon/Xoff flow control} xywh {345 276 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibXONXOFFflow);}
               }
               Fl_Button btnRevertHAMLIB {
@@ -4534,7 +4534,7 @@ btnInitHAMLIB->redraw_label();
 \#if USE_HAMLIB
 hamlib_restore_defaults();
 \#endif}
-                tooltip {Reset hamlib interface} xywh {421 289 113 24} hide deactivate
+                tooltip {Reset hamlib interface} xywh {381 299 113 24} hide deactivate
               }
             }
           }
@@ -6024,7 +6024,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Text Tags (tags use {} delimiters)} open
-                xywh {33 270 510 90} box FLAT_BOX align 21
+                xywh {30 270 513 90} box FLAT_BOX align 21
               } {
                 Fl_Box eqsl_txt1 {
                   label {  {CALL} other ops call sign}
