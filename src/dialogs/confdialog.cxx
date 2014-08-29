@@ -3815,7 +3815,7 @@ Fl_Group *grpAudioSampleRate=(Fl_Group *)0;
 Fl_ListBox *menuInSampleRate=(Fl_ListBox *)0;
 
 static void cb_menuInSampleRate(Fl_ListBox* o, void*) {
-  progdefaults.in_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index()-1;
+  progdefaults.in_sample_rate = o->index() > 1 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -3823,7 +3823,7 @@ progdefaults.changed = true;
 Fl_ListBox *menuOutSampleRate=(Fl_ListBox *)0;
 
 static void cb_menuOutSampleRate(Fl_ListBox* o, void*) {
-  progdefaults.out_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index()-1;
+  progdefaults.out_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -3831,9 +3831,9 @@ progdefaults.changed = true;
 Fl_ListBox *menuSampleConverter=(Fl_ListBox *)0;
 
 static void cb_menuSampleConverter(Fl_ListBox* o, void*) {
-  if ((o->index()-1) == FLDIGI_SRC_BEST)
+  if ((o->index()) == FLDIGI_SRC_BEST)
     fl_alert2("The best quality SINC interpolator has very high CPU overhead");
-progdefaults.sample_converter = sample_rate_converters[o->index()-1];
+progdefaults.sample_converter = sample_rate_converters[o->index()];
 resetSoundCard();
 progdefaults.changed = true;
 o->tooltip(src_get_description(progdefaults.sample_converter));
@@ -9055,7 +9055,7 @@ le Earth)"));
             { grpAudioSampleRate = new Fl_Group(55, 65, 490, 90, _("Sample rate"));
               grpAudioSampleRate->box(FL_ENGRAVED_FRAME);
               grpAudioSampleRate->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_ListBox* o = menuInSampleRate = new Fl_ListBox(65, 94, 100, 20, _("Capture"));
+              { Fl_ListBox* o = menuInSampleRate = new Fl_ListBox(65, 94, 100, 22, _("Capture"));
                 menuInSampleRate->tooltip(_("Force a specific sample rate. Select \"Native\" if \"Auto\"\ndoes not work we\
 ll with your audio device."));
                 menuInSampleRate->box(FL_DOWN_BOX);
@@ -9069,10 +9069,10 @@ ll with your audio device."));
                 menuInSampleRate->align(Fl_Align(FL_ALIGN_RIGHT));
                 menuInSampleRate->when(FL_WHEN_RELEASE);
                 o->clear_changed();
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE);
                 menuInSampleRate->end();
               } // Fl_ListBox* menuInSampleRate
-              { Fl_ListBox* o = menuOutSampleRate = new Fl_ListBox(65, 124, 100, 20, _("Playback"));
+              { Fl_ListBox* o = menuOutSampleRate = new Fl_ListBox(65, 124, 100, 22, _("Playback"));
                 menuOutSampleRate->box(FL_DOWN_BOX);
                 menuOutSampleRate->color(FL_BACKGROUND2_COLOR);
                 menuOutSampleRate->selection_color(FL_BACKGROUND_COLOR);
@@ -9085,10 +9085,10 @@ ll with your audio device."));
                 menuOutSampleRate->when(FL_WHEN_RELEASE);
                 o->clear_changed();
                 o->tooltip(menuInSampleRate->tooltip());
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE);
                 menuOutSampleRate->end();
               } // Fl_ListBox* menuOutSampleRate
-              { Fl_ListBox* o = menuSampleConverter = new Fl_ListBox(319, 94, 216, 20, _("Converter"));
+              { Fl_ListBox* o = menuSampleConverter = new Fl_ListBox(319, 94, 216, 22, _("Converter"));
                 menuSampleConverter->tooltip(_("Set the type of resampler used of offset correction"));
                 menuSampleConverter->box(FL_DOWN_BOX);
                 menuSampleConverter->color(FL_BACKGROUND2_COLOR);

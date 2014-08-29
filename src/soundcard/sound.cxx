@@ -1740,9 +1740,6 @@ bool SoundPort::must_close(int dir)
 	return Pa_GetHostApiInfo((*sd[dir].idev)->hostApi)->type != paJACK;
 }
 
-// Determine the sample rate that we will use. We try the modem's rate
-// first and fall back to the device's default rate. If there is a user
-// setting we just return that without making any checks.
 double SoundPort::find_srate(unsigned dir)
 {
 	int sr = (dir == 0 ? progdefaults.in_sample_rate : progdefaults.out_sample_rate);

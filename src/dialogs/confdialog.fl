@@ -4725,35 +4725,35 @@ resetSoundCard();}
             } {
               Fl_Group menuInSampleRate {
                 label Capture
-                callback {progdefaults.in_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index()-1;
+                callback {progdefaults.in_sample_rate = o->index() > 1 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;} open
                 tooltip {Force a specific sample rate. Select "Native" if "Auto"
-does not work well with your audio device.} xywh {65 94 100 20} box DOWN_BOX color 7 align 8
-                code2 {o->clear_changed();
-                       o->labelsize(FL_NORMAL_SIZE);}
+does not work well with your audio device.} xywh {65 94 100 22} box DOWN_BOX color 7 align 8
+                code0 {o->clear_changed();}
+                code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
               Fl_Group menuOutSampleRate {
                 label Playback
-                callback {progdefaults.out_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index()-1;
+                callback {progdefaults.out_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;} open
-                xywh {65 124 100 20} box DOWN_BOX color 7 align 8
-                code2 {o->clear_changed();}
-                code3 {o->tooltip(menuInSampleRate->tooltip());
-                       o->labelsize(FL_NORMAL_SIZE);}
+                xywh {65 124 100 22} box DOWN_BOX color 7 align 8
+                code0 {o->clear_changed();}
+                code1 {o->tooltip(menuInSampleRate->tooltip());}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
               Fl_Group menuSampleConverter {
                 label Converter
-                callback {if ((o->index()-1) == FLDIGI_SRC_BEST)
+                callback {if ((o->index()) == FLDIGI_SRC_BEST)
     fl_alert2("The best quality SINC interpolator has very high CPU overhead");
-progdefaults.sample_converter = sample_rate_converters[o->index()-1];
+progdefaults.sample_converter = sample_rate_converters[o->index()];
 resetSoundCard();
 progdefaults.changed = true;
 o->tooltip(src_get_description(progdefaults.sample_converter));} open
-                tooltip {Set the type of resampler used of offset correction} xywh {319 94 216 20} box DOWN_BOX color 7 align 5
+                tooltip {Set the type of resampler used of offset correction} xywh {319 94 216 22} box DOWN_BOX color 7 align 5
                 code0 {\#include <FL/fl_ask.H>}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
