@@ -1,3 +1,53 @@
+2014-08-29  Robert Stiles  <kk5vd@yahoo.com>
+
+	67a744b: Doxygen Inclusion
+
+2014-08-29  David Freese  <w1hkj@w1hkj.com>
+
+	82aeba5: ARQ stx handshake
+	4503c99: Virtual ports
+	d40998f: New User Exit Behavior
+	7d683d3: hash-fix
+	a94a13b: RnA Analysis
+	a1c3f7a: Phase accumulator
+	947ebc9: Base Directories
+	913bb52: WF Height/Speed
+	f272e83: RX Only
+	515b54f: RTTY mem leak
+	65af716: Olivia/Contestia custom
+	4cc2ee5: ARQ abort
+	a64d623: RTTY Custom Shift
+	1ae5143: Spotter seg fault
+	129afe6: TX monitor
+	13e1cd5: Audio selectors for PORTAUDIO
+	9e555aa: M4 tr1 detect
+	bb91c8a: ttyACMxx identification
+	5ee22c8: Olivia critical section
+	5004516: MT63 critical section
+	0a79e20: Logbook fields
+	f294b58: Hamlib selector
+	0fd3cc4: Combobox Add to List
+	2efdf5c: RTTY macro
+	0421813: clang compatibility
+	ea5bcb9: FreeBSD nitems
+	da7a43a: Cabrillo time off
+	df3c010: Change Fl_ListBox
+	eaafc91: Restore Fl_Choice
+	9a7dfe5: Olivia select fix
+	4bbf427: fluid update
+	04808d2: ComboBox
+	c056cc8: RigCAT initialize
+	37bd0d2: Modem cleanup
+	e5fed09: Missing build script
+	6762423: Choice-->ListBox
+	8fef9bb: combobox-listbox
+	481be5c: FreeBSD One More Time
+	309988d: RTTY normalize
+	bd42895: Sound.cxx cleanup
+	2add988: Portaudio ring buffer
+	d244947: Headers update
+	c9f6df0: Portaudio error reporting
+
 2014-01-31  Kamal Mostafa  <kamal@whence.com>
 
 	8a1d12f: Avoid nitems fltk kfreebsd collision
@@ -1906,7 +1956,7 @@
 
 2009-02-25  Stelios Bounanos  <vcs@enotty.net>
 
-	a2fc0c8db: Add better support for proportional fonts
+	a2fc0c8: Add better support for proportional fonts
 	f6466f2: Fix font name/number compatibility code
 	eb1ec8a: Fix printf format string
 
