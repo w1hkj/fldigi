@@ -185,6 +185,7 @@ rtty::~rtty()
 	if (space_filt) delete space_filt;
 	if (pipe) delete [] pipe;
 	if (dsppipe) delete [] dsppipe;
+	if (bits) delete bits;
 	delete m_Osc1;
 	delete m_Osc2;
 	delete m_SymShaper1;
@@ -1255,6 +1256,11 @@ SymbolShaper::SymbolShaper(double baud, double sr)
 	Preset( baud, sr );
 }
 
+SymbolShaper::~SymbolShaper()
+{
+	delete [] m_sinc_table;
+}
+
 void SymbolShaper::reset()
 {
 	m_State = false;
@@ -1287,7 +1293,8 @@ void SymbolShaper::Preset(double baud, double sr)
 
 // kill old sinc-table and get memory for the new one -----------------
 
-    delete [] m_sinc_table;
+	if (m_sinc_table)
+		delete [] m_sinc_table;
     m_sinc_table = new double[m_table_size];
 
 // set up the new sinc-table based on the new parameters --------------
