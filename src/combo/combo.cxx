@@ -248,6 +248,14 @@ void btnComboBox_cb (Fl_Widget *v, void *d)
 	return;
 }
 
+void val_callback(Fl_Widget *w, void *d)
+{
+	Fl_Input *inp = (Fl_Input *)(w);
+	Fl_ComboBox *cbx = (Fl_ComboBox *)(d);
+	cbx->add(inp->value());
+	cbx->sort();
+}
+
 Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *lbl, int wtype)
  : Fl_Group (X, Y, W, H, lbl)
 {
@@ -261,6 +269,8 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *lbl, int wtype)
 	} else {
 		val = new Fl_Input (X, Y, W-H, H, "");
 		val->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
+		val->callback((Fl_Callback *)val_callback, this);
+		val->when(FL_WHEN_RELEASE);
 	}
 
 	btn = new Fl_Button (X + W - H + 1, Y, H - 1, H, "@2>");
@@ -353,6 +363,19 @@ void Fl_ComboBox::value( const char *s )
 			valbox->redraw_label();
 		} else
 			val->value(datalist[idx]->s);
+	} else {
+		insert(s, 0);
+		for (i = 0; i < listsize; i++) {
+			if (strcmp (s, datalist[i]->s) == 0) {
+				idx = i;
+				if (type_ == LISTBOX) {
+					valbox->label(datalist[idx]->s);
+					valbox->redraw_label();
+				} else
+					val->value(datalist[idx]->s);
+				break;
+			}
+		}
 	}
 }
 
