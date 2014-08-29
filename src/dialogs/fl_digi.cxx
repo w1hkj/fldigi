@@ -7155,3 +7155,14 @@ void notch_off()
 {
 	notch_frequency = 0;
 }
+
+void set_CSV(int how)
+{
+	if (active_modem->get_mode() != MODE_ANALYSIS) return;
+	if (how == 0) active_modem->stop_csv();
+	else if (how == 1) active_modem->start_csv();
+	else if (active_modem->is_csv() == true)
+		active_modem->stop_csv();
+	else
+		active_modem->start_csv();
+}

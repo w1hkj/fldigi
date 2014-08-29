@@ -651,10 +651,14 @@ update_freq:
 			cwoffset = progdefaults.CWsweetspot;
 			usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
 		}
-		if (usb)
-			dfreq = rfc + active_modem->get_txfreq() - cwoffset + rttyoffset;
-		else
-			dfreq = rfc - active_modem->get_txfreq() + cwoffset - rttyoffset;
+		if (mode == MODE_ANALYSIS) {
+			dfreq = active_modem->track_freq();
+		} else {
+			if (usb)
+				dfreq = rfc + active_modem->get_txfreq() - cwoffset + rttyoffset;
+			else
+				dfreq = rfc - active_modem->get_txfreq() + cwoffset - rttyoffset;
+		}
 		snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
 	} else {
 		dfreq = active_modem->get_txfreq();

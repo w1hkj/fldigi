@@ -1818,6 +1818,25 @@ static void pRX_RSID(std::string &s, size_t &i, size_t endbracket)
   s.replace(i, endbracket - i + 1, "");
 }
 
+static void pCSV(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+  std::string sVal = s.substr(i+5, endbracket - i - 5);
+  if (sVal.length() > 0) {
+    // sVal = on|off   [ON, OFF]
+    if (sVal.compare(0,2,"on") == 0)
+		set_CSV(1);
+    else if (sVal.compare(0,3,"off") == 0)
+		set_CSV(0);
+	else if (sVal.compare(0,1,"t") == 0)
+		set_CSV(2);
+  }
+  s.replace(i, endbracket - i + 1, "");
+}
+
 #ifdef __WIN32__
 static void pTALK(std::string &s, size_t &i, size_t endbracket)
 {
@@ -2664,6 +2683,7 @@ static const MTAGS mtags[] = {
 #ifdef __WIN32__
 {"<TALK:",		pTALK},
 #endif
+{"<CSV:",		pCSV},
 {"<WX>",		pWX},
 {"<WX:",		pWX2},
 {"<IMAGE:",		pQueIMAGE},

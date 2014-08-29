@@ -210,6 +210,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<WAV_STRING:s>\tWAV file; string 's'"));
 
 	w->add(LINE_SEP);
+	w->add(_("<CSV:on|off|t>\tAnalysis CSV on,off,toggle"));
+	w->add(LINE_SEP);
 	assert(MODE_CONTESTIA < MODE_OLIVIA);
 	char s[256];
 	for (trx_mode i = 0; i <= MODE_CONTESTIA; i++) {

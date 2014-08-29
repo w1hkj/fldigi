@@ -342,4 +342,6 @@ extern void cb_mnuCheckUpdate(Fl_Widget *, void *);
 
 bool ask_dir_creation( const std::string & dir );
 
+extern void set_CSV(int how);
+
 #endif
