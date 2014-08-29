@@ -1,0 +1,252 @@
+/**
+\page  digiscope_display_page Digiscope Display
+
+\tableofcontents
+
+Fldigi provides several different views
+of the decoded signal with its waterfall, text and a scope displays. The
+scope display is either a separate moveable, resizable dialog that is opened
+from the "View/Digiscope" menu item or a docked scope.
+<br>
+
+\section cw_scope CW
+<br>
+
+
+
+\image html digiscope-cw.png "Digiscope CW"
+\image latex digiscope-cw.png "Digiscope CW" width=1.0in
+<br>
+
+The CW signal will consist of the time domain amplitude detected signal. The
+horizontal timing is dependent on CW speed, so that the display will appear
+similar independent of CW speed.
+<br>
+
+\image html digiscope-cw.png "Digiscope CW"
+\image latex digiscope-cw.png "Digiscope CW" width=1.0in
+<br>
+
+\section domino_ex_scope DominoEX / Thor
+
+\image html digiscope-domexA.png "Digiscope DominoEX \& Thor"
+\image latex digiscope-domexA.png "Digiscope DominoEX \& Thor" width=1.0in
+<br>
+
+DominoEX and Thor have two alternate views available on the digiscope
+display.  You can toggle between the views by left clicking on the
+digiscope display area.  The triangular view shows data propogation
+through the interleave filter.  As signal s/n degrades this display
+will become more wavy.
+<br>
+
+\image html digiscope-domexB.png "Digiscope DominoEX \& Thor"
+\image latex digiscope-domexB.png "Digiscope DominoEX \& Thor" width=1.0in
+<br>
+
+The second view is the decoded data stream viewed in the frequency
+domain.  The dots will be very distinct when the signal is fully
+acquired and decoding properly.  It will be fuzzy when the decoder is
+not locked or there is interference present.
+<br>
+
+\section mfsk_scope MFSK
+
+\image html digiscope-mfsk.png "Digiscope MSFK"
+\image latex digiscope-mfsk.png "Digiscope MSFK" width=1.0in
+<br>
+
+This is what you expect to see for all of the MFSK type modes.  The
+number of steps in the slant lines will change with the various modes,
+but they will all have the same general appearance.  If the signal
+is mistuned the sloped lines will become bowed and distorted.
+<br>
+
+\section psk_scope PSK
+
+The digiscope display just to the right of the waterfall displays
+signal quality in various formats.  The display for PSK modes is
+the vector scope:
+<br>
+
+<center>
+\htmlonly
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+<tr>
+<td style="width: 5%;">
+<br>
+</td>
+<td style="text-align: center;">
+<div style="text-align: center;">
+<img style="width: 102px; height: 100px;" alt="" src="digiscope-psk-nosig.png" hspace="5">
+<br>
+</div>
+<br>
+<div style="text-align: left;">The
+display with no signal or below squelch level.  If the SQL is off
+this display will be random vectors driven by noise.</div>
+</td>
+<td style="text-align: center; vertical-align: top;">
+<img style="width: 103px; height: 99px;" alt="" src="digiscope-psk.png" hspace="5">
+<br>
+<br>
+<div style="text-align: left;">The display with a normal psk31 signal.  The vector flips between 0 and 6 o'clock</div>
+</td>
+<td style="text-align: center; vertical-align: top;">
+<img style="width: 101px; height: 96px;" alt="" src="digiscope-psk-low.png" hspace="5">
+<br>
+<br>
+<div style="text-align: left;">AFC off and receive carrier set below the center of the received signal</div>
+</td>
+<td style="width: 5%;">
+<br>
+</td>
+</tr>
+<tr>
+<td>
+<br>
+</td>
+<td style="text-align: center; vertical-align: top;">
+<img style="width: 98px; height: 99px;" alt="" src="digiscope-psk-high.png" hspace="5">
+<br>
+<br>
+<div style="text-align: left;">
+AFC off and receive carrier set above the center of the received signal.</div>
+</td>
+<td style="text-align: center; vertical-align: top;">
+<img style="width: 99px; height: 102px;" alt="" src="digiscope-psk-history.png">
+<br>
+<br>
+<div style="text-align: left;">AFC enabled, Fading History Display Mode Selected (left click on scope)</div>
+</td>
+<td style="text-align: center; vertical-align: top;">
+<img style="width: 101px; height: 99px;" alt="" src="digiscope-psk-history-amplitude.png">
+<br>
+<br>
+<div style="text-align: left;">AFC enabled, Fading History / Amplitude Display Mode Selected (2nd left click on scope)</div>
+</td>
+<td>
+<br>
+</td>
+</tr>
+</table>
+\endhtmlonly
+</center>
+
+\latexonly
+
+\begin{figure}[H]
+
+	\centering
+
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=1.0in]{digiscope-psk-nosig.png}
+		\caption{The display with no signal or below squelch level.  If the
+		SQL is off this display will be random vectors driven by noise. }
+		\label{fig:digiscope_psk_nosig}
+	\end{subfigure} ~
+    \begin{subfigure}[t]{0.3\textwidth}
+		\centering
+    	\includegraphics[width=1.0in]{digiscope-psk.png}
+        \caption{The display with a normal psk31 signal.  The vector flips between 0 and 6 o'clock}
+        \label{fig:digiscope_psk}
+	\end{subfigure} ~
+    \begin{subfigure}[t]{0.3\textwidth}
+		\centering
+    	\includegraphics[width=1.0in]{digiscope-psk-low.png}
+        \caption{AFC off and receive carrier set below the center of the received signal}
+        \label{fig:digiscope_psk_low}
+    \end{subfigure}
+
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[width=1.0in]{digiscope-psk-high.png}
+		\caption{AFC off and receive carrier set above the center of the received signal.}
+		\label{fig:digiscope_psk_high}
+	\end{subfigure} ~
+    \begin{subfigure}[t]{0.3\textwidth}
+		\centering
+    	\includegraphics[width=1.0in]{digiscope-psk-history.png}
+        \caption{AFC enabled, Fading History Display Mode Selected (left click on scope)}
+        \label{fig:digiscope_psk_history}
+	\end{subfigure} ~
+    \begin{subfigure}[t]{0.3\textwidth}
+		\centering
+    	\includegraphics[width=1.0in]{digiscope-psk-history-amplitude.png}
+        \caption{AFC enabled, Fading History / Amplitude Display Mode Selected (2nd left click on scope)}
+        \label{fig:digiscope_psk_history_amp}
+    \end{subfigure}
+
+    \caption{PSK Digiscopes}
+	\label{fig:psk_digiscopes}
+
+\end{figure}
+
+\endlatexonly
+
+<br>
+
+You can see the effect of mistuning by slewing the carrier carrier
+control moving from low to high over the signal .  You must do
+this with AFC off.  Engage the AFC and the vectors will
+immediately snap to vertical positions.
+<br>
+
+You can alter the appearance of the phase vectors by left clicking on
+the digiscope display.  One click will give you a history of phase
+vectors that fade with time.  A second click will give you a
+history of phase vectors that both fade with time and are amplitude
+significant.  The third click returns you to the original phase
+vector display.
+<br>
+
+The effect is the same with QPSK signals except you will see 4 vectors that
+are 90 degrees from each other.
+<br>
+
+\section sec_rtty RTTY
+<br>
+
+
+\image html digiscope-rtty.png "Digiscope RTTY"
+\image latex digiscope-rtty.png "Digiscope RTTY" width=1.0in
+<br>
+
+The signal can be viewed in two different ways on the digiscope.  This
+is the time domain representation of the detected FSK signal.  The
+two yellow lines represent the MARK and SPACE frequencies.  This
+display is for Baudot, 45.45 baud, 182 Hz shift.  If the
+transmitting station were transmitting at 200 Hz shift the signal
+extremes would lie above and below the yellow lines.  Try tuning
+across the RTTY signal with the AFC disabled.  You will see the
+signal move above and below the yellow lines as you tune.  Then
+enable the AFC and the signal should rapidly move into the center
+region of the display.  This signal was about 3 - 6 dB above the
+noise floor.  It looked marginal on the waterfall but still gave
+good copy.
+
+\image html digiscope-rtty-2.png "Digiscope RTTY"
+\image latex digiscope-rtty-2.png "Digiscope RTTY" width=1.0in
+<br>
+
+This is the other digiscope display for RTTY.  You obtain this view by
+left clicking anywhere in the digiscope display window.  You can
+toggle back and forth between these views.  The MARK / SPACE
+frequencies are represented by the quadrature ellipses.  When the
+RTTY signal is properly tuned in the lines will be in quadrature and
+aligned as shown.  Tune across the RTTY signal and the MARK/SPACE
+lines will rotate around the center.  If the sending station is
+using a shift that is smaller than you have the decoder setting then
+the two lines will close toward the NW/SE quadrants.  If the
+sending station is using a shift that is greater than the decoder
+setting then the two lines will close toward the NE/SW quadrants.
+
+
+<br>
+\ref digiscope_display_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

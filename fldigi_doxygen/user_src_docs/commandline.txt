@@ -1,0 +1,136 @@
+/**
+\page command_line_switches_page Command Line Switches
+
+\tableofcontents
+
+\verbatim
+
+Usage:
+    fldigi [option...]
+
+fldigi options:
+
+  --home-dir DIRECTORY
+    Set the home directory to full pathname of DIRECTORY
+    fldigi will put the file stores
+      .fldigi.files, and .nbems.files
+    in this directory
+    The default is: /Users/robert/
+
+  --config-dir DIRECTORY
+    Look for configuration files in DIRECTORY
+    The default is: /Users/robert/.fldigi/
+
+  --arq-server-address HOSTNAME
+    Set the ARQ TCP server address
+    The default is: 127.0.0.1
+
+  --arq-server-port PORT
+    Set the ARQ TCP server port
+    The default is: 7322
+
+  --flmsg-dir DIRECTORY
+    Look for flmsg files in DIRECTORY
+    The default is /Users/robert/.nbems/
+
+  --auto-dir DIRECTORY
+    Look for wrap_auto_file files in DIRECTORY
+    The default is /Users/robert/.nbems/WRAP/auto/
+
+  --xmlrpc-server-address HOSTNAME
+    Set the XML-RPC server address
+    The default is: 127.0.0.1
+
+  --xmlrpc-server-port PORT
+    Set the XML-RPC server port
+    The default is: 7362
+
+  --xmlrpc-allow REGEX
+    Allow only the methods whose names match REGEX
+
+  --xmlrpc-deny REGEX
+    Allow only the methods whose names don't match REGEX
+
+  --xmlrpc-list
+    List all available methods
+
+  --cpu-speed-test
+    Perform the CPU speed test, show results in the event log
+    and possibly change options.
+
+  --noise
+    Unhide controls for noise tests
+
+  --wfall-only
+    Hide all controls but the waterfall
+
+  --debug-level LEVEL
+    Set the event log verbosity
+
+  --debug-pskmail
+    Enable logging for pskmail / arq events
+
+  --debug-audio
+    Enable logging for sound-card events
+
+  --version
+    Print version information
+
+  --build-info
+    Print build information
+
+  --help
+    Print this option help
+
+Standard FLTK options:
+
+   -bg COLOR, -background COLOR
+    Set the background color
+   -bg2 COLOR, -background2 COLOR
+    Set the secondary (text) background color
+
+   -di DISPLAY, -display DISPLAY
+    Set the X display to use DISPLAY,
+    format is ``host:n.n''
+
+   -dn, -dnd or -nodn, -nodnd
+    Enable or disable drag and drop copy and paste in text fields
+
+   -fg COLOR, -foreground COLOR
+    Set the foreground color
+
+   -g GEOMETRY, -geometry GEOMETRY
+    Set the initial window size and position
+    GEOMETRY format is ``WxH+X+Y''
+    ** fldigi may override this setting **
+
+   -i, -iconic
+    Start fldigi in iconified state
+
+   -k, -kbd or -nok, -nokbd
+    Enable or disable visible keyboard focus in non-text widgets
+
+   -na CLASSNAME, -name CLASSNAME
+    Set the window class to CLASSNAME
+
+   -ti WINDOWTITLE, -title WINDOWTITLE
+    Set the window title
+
+Additional UI options:
+
+  --font FONT[:SIZE]
+    Set the widget font and (optionally) size
+    The default is: Arial:12
+
+
+\endverbatim
+
+
+
+<br>
+\ref command_line_switches_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

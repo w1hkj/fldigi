@@ -1,0 +1,149 @@
+/**
+\page  psk_reporter_page PSK Reporter
+
+\tableofcontents
+
+The PSK reporter can generate reception reports from three different sources:
+<br>
+
+<ul>
+	<li>The decoded text, obtained from the Rx Panel text or the multi-channel
+	browser.  Note: <b>the psk browser must be visible</b> or
+	decoding and subsequent psk reporting will not occur.  If you do
+	not want the psk browser panel visible in the main dialog then use the
+	separate browser dialog.  It can be minimized and signal decoding
+	will continue.</li>
+	<li>The log data</li>
+	<li>Data entered manually</li>
+</ul>
+
+The configuration for the PSK reporter in in Misc/Spotting. PSKR needs the
+following fields from the Oper tab to be non-empty:
+<br>
+
+<ol>
+	<li>  Callsign     (freeform because it's impossible to verify, and
+	because we need to support SWLs without callsigns)</li>
+	<li>  Locator      (standard 6 character format)</li>
+	<li>  Antenna info (freeform, should be kept reasonably short)</li>
+</ol>
+
+Sources
+(1) and (2) are configurable from Misc/Spotting configuration tab,
+while (3) is always enabled. To keep the code sane, changing the PSKR
+options (or the above station info) does not take immediate effect.
+Instead, the Initialize button changes color to indicate that the
+changes have not been applied. Clicking on the button will do so (or
+display an error) for the current and future sessions. This is similar
+to the Initialize buttons in the rig control configuration.
+<br>
+
+Here are the options in some more detail:
+<br>
+
+\section auto_spot_calls Automatically spot callsigns in decoded text
+
+The text that is sent to the main window or the PSK browser is continuously
+searched for callsigns. If this option is enabled, the main window gets
+a "Spot" light button that can toggle the auto-spotter on and off. It
+is automatically turned off when playback is selected in the Files
+menu.  The main window text is not searched if the viewer is
+active, i.e., if it is displayed and the current modem is PSK.
+<br>
+
+\section send_report_on_qso Send reception report when logging a QSO
+
+A reception report is queued for every QSO as soon as it's logged
+<br>
+
+\section report_qrg Report QRG (etc.)
+
+This makes the reception reports include the current rig frequency, adjusted
+for modem audio frequency and rig sideband. It does not need a click on
+"Initialize" to take effect. This needs to be an option because it is
+impossible to tell whether the user has real or "fake" rig control with
+100% certainty. Besides that, users may want to run a dedicated spotter
+for a narrow modes sub-band, and in that case they won't have to
+synchronise fldigi's frequency display with the rig all that often.
+<br>
+
+\section host_and_port Host and port
+
+With the port set to 14739 the reports will not be entered in the main
+database, but instead will be analysed and displayed here:
+<br>
+
+<a class="moz-txt-link-freetext" href="http://pskreporter.info/cgi-bin/psk-analysis.pl">http://pskreporter.info/cgi-bin/psk-analysis.pl</a>
+<br>
+
+Probably of no interest to anyone who is not hacking on a PSKR client but
+may be useful for debugging. The PSKR protocol uses UDP with no
+acknowledgements or retransmissions, so don't be surprised if the
+occasional report never makes it to the server.  There should be
+enough coverage overlap to make packet loss irrelevant (and save a lot
+of bandwidth and CPU cycles).
+<br>
+
+The spotter needs to see a repeated callsign within a short search window,
+but stations do not always repeat their callsigns. In addition, some
+operators like to be creative with their macros, and as a result some
+signals will decode 100% but the callsign will never be auto-captured. Such
+callsigns can be reported manually.
+<br>
+
+The manual spotting is done by right-clicking the QRZ "globe" icon. This
+will generate a report for whatever is in the Call &amp; Loc fields, so make
+sure that those are correct! You should also verify the frequency (e.g. by
+placing the waterfall marker on the signal being spotted).
+<br>
+
+There is a confirmation popup that will open when you right click the "globe"
+button.  The aim of course is to avoid accidentally sending
+rubbish reports to the PSK reporter database.
+<br>
+
+Reception reports are filtered for duplicates among all data sources: a
+report is queued only once every hour for each callsign and frequency band.
+The queue is flushed every five minutes. You can see what the spotter is
+doing in the Event Log window or on the terminal if you set the log level to
+"Info". "Debug" will show all the gory details.
+<br>
+
+\image html activity-reports.png "Activity Reports"
+\image latex activity-reports.png "Activity Reports" width=2.0in
+<br>
+
+A button and popup text field on the rig control frame give access to
+the most recent receptions reports in your geographic area.The area is
+determined by the contents of the field to the right of the button, or
+by the locator text on the operator tab if the mini field is empty.
+ The first two characters of the locator are used.  If the
+locator is not set, the pskreporter.info uses the current IP
+geolocation to approximate it.
+<br>
+
+A popup is displayed when the user clicks the button or presses the Enter
+key from within the field.  The popup shows the frequencies by
+measure of activity that gives more weight to transmissions.  If
+rig control is active, the user can click on one of the lines to go to
+that band.  Clicking on the 18100000 (1 report) line would
+immediately QSY the transceiver to 18.1 MHz.
+<br>
+
+The data is retrieved from http://pskreporter.info/cgi-bin/psk-freq.pl
+<br>
+
+or with a filled text field, http://pskreporter.info/cgi-bin/psk-freq.pl?grid=TEXT
+<br>
+
+There is a link to the pskreporter.info map page in the Help menu.
+<br>
+
+
+<br>
+\ref psk_reporter_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

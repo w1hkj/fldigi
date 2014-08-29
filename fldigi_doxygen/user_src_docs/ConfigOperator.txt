@@ -1,0 +1,29 @@
+/**
+\page operator_configuration_page  Configure Operator
+\tableofcontents
+<br>
+
+\image html config-operator.png "Operator"
+\image latex config-operator.png "Operator" width=5.0in
+
+Enter your personal information on the <b>Operator</b> tab of the
+configuration dialog. This information is used by some of
+the macro expanders.
+<br>
+
+The antenna information is required if you elect to report to the spotting web
+site, <a href="http://pskreporter.info">PSK reporter</a>.
+<br>
+
+Your locator data is also used for automatically computing Azimuth to a
+remote locator when that is available from an on-line database Call query.
+<br>
+
+<br>
+\ref operator_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+

@@ -1,0 +1,16 @@
+/**
+\page developers_page Developers
+
+<ul>
+<li> \subpage build_info_page </li>
+<li> \subpage install_fldigi_page</li>
+<li> \subpage install_from_source_page </li>
+<li> \subpage parse_ualr_page </li>
+<li> \subpage pseudo_fsk_page </li>
+<li> \subpage rig_xml_page </li>
+<li> \subpage ualr_telnet_page </li>
+<li> \subpage xmlrpc_control_page </li>
+<li> \subpage google_maps </li>
+</ul>
+
+*/

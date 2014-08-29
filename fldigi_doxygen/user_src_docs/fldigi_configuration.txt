@@ -1,0 +1,97 @@
+/**
+\page configuration_page Configuration
+
+\tableofcontents
+
+The first time you execute fldigi you should resize the main window to
+suit your screen dimensions. Then adjust the divider line
+between the Rx and Tx text widgets..
+<br>
+
+Fldigi contains many configurable items, to specify operator data, user
+interface, and modem characteristics. The application also saves
+many state variables between executions. It will start up in the
+state that it was last used.<br>
+<br>
+
+\section ui_configuation User Interface configuration
+
+You should initially configure the following:
+<br>
+
+<ul>
+	<li> \subpage operator_configuration_page </li>
+	<li> \subpage sound_card_configuration_page </li>
+	<li> \subpage rig_control_page </li>
+	<li> \subpage new_installation_page </li>
+</ul>
+
+\section windows_install_config Windows Specific Install / Config
+
+<ul>
+	<li> \subpage installing_on_windows_page </li>
+	<li> \subpage wizard_page</li>
+</ul>
+
+\section other_configuation_options Other Configuration options
+
+When the program receives and transmits digital signals and your rig control
+is satisfactory then you can continue configuring other aspects of the
+program:
+<br>
+
+<ul>
+	<li> \subpage callsign_db_configuration_page </li>
+	<li> \subpage colors_and_fonts_page </li>
+	<li> \subpage psk_mail_configuation_page </li>
+	<li> \subpage ui_configuration_broswer_page </li>
+	<li> \subpage ui_configuration_contest_page </li>
+	<li> \subpage ui_configuration_general_page </li>
+	<li> \subpage ui_configuration_macros_page </li>
+	<li> \subpage ui_configuration_waterfall_controls_page </li>
+	<li> \subpage ui_configuration_waterfall_page </li>
+	<li> \subpage working_logs_page </li>
+</ul>
+
+\section command_line_switches Command Line Switches
+
+Additional configurational items are available from the command line.
+
+See \ref command_line_switches_page "Command Line Switches" for details.
+
+\section modem_configuration_options Modem Configuration Options
+
+You can configure each modem type to suit your particular operating needs,
+but the defaults should be satisfactory for most users.
+<br>
+
+<ul>
+	<li> \subpage contestia_configuration_page </li>
+	<li> \subpage cw_configuration_page </li>
+	<li> \subpage domino_ex_configuration_page </li>
+	<li> \subpage feld_hell_configuration_page </li>
+	<li> \subpage id_configuration_page </li>
+	<li> \subpage miscellaneous_configuration_page </li>
+	<li> \subpage mt63_configuration_page </li>
+	<li> \subpage olivia_configuration_page </li>
+	<li> \subpage psk_configuration_page </li>
+	<li> \subpage rtty_fsk_configuration_page </li>
+	<li> \subpage thor_configuration_page </li>
+</ul>
+<br>
+
+
+When you have completed the configuration go to the <b>Configure</b> menu
+and select <b>Save config</b> or press the "Save Config" button on the
+configure dialog box. The program will write the
+file ~/.fldigi/fldigi_def.xml.
+<br>
+
+
+<br>
+\ref configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

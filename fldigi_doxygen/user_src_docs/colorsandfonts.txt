@@ -1,0 +1,188 @@
+/**
+\page colors_and_fonts_page Colors and Fonts
+\tableofcontents
+
+<br>
+"System colors" are set by command line switches. The default is black
+on a white background.
+<br>
+
+From the Menu <b>Configure/Defaults</b> select the menu item
+<b>Colors and Fonts</b> and then select one of the following tabs.
+<br>
+
+\section text_controls Text Ctrls
+
+\image html ColorsFonts-rxtx.png "Colors Fonts RX / TX"
+\image latex ColorsFonts-rxtx.png "Colors Fonts RX / TX" width=5.0in
+
+The initial color, font and font-size for the Rx and Tx panel are the
+default values. You can always return to these by pressing the Defaults
+button. The background color, font and font-size are independently
+selectable. The Rx panel displays text in one of 5 colors:
+<br>
+
+<ul>
+<li>normal received text - "Rx font" button</li>
+<li>transmitted text - XMIT button</li>
+<li>control characters - CTRL button</li>
+<li>skipped characters (Tx ON/OFF in Tx pane) - SKIP button</li>
+<li>quick view characters - ALTR button</li>
+<li>select text highlight - SEL button</li>
+</ul>
+
+The text widget used
+for Rx, Tx and Event log displays has been improved to give better
+performance with proportional fonts. Fixed width fonts still give
+better performance and are not as demanding on the cpu. There are
+several very good fixed width fonts that include a slashed zero which
+are available for both Windows and Linux. If you are using a
+proportional font and find that the Rx text display gets unresponsive
+with large amounts of text then you should change to a fixed width
+font. Do a search on the internet for "Andale Mono" or "Consolas".
+Both are excellent fonts for this use.
+
+
+\section character_set Character Set Selection
+
+\image html config-ui-rxtext-2.png "Character set"
+\image latex config-ui-rxtext-2.png "Character set" width=2.0in
+
+This setting affects how fldigi encodes the text that it transmits and how
+it interprets what it receives. This mainly matters if you intend to
+transmit and/or receive text containing characters that are not in the
+English alphabet (for example letters with diacritics, Cyrillic letters,
+Japanese script and similar). Successful transmission and reception of such
+symbols is only possible if both your and the correspondent's program are
+set to use the same encoding. Seeing "strange" characters instead of what
+you would expect for example "&amp;ccaron;" always turning up as
+\latexonly "\`{e}" \endlatexonly \htmlonly "&#232;" \endhtmlonly indicates
+that there is probably a mismatch between your encoding and the correspondent's.
+<br>
+
+Leaving this control set to UTF-8 (the default) is strongly recommended
+as this is a cover-all encoding that enables communication in almost
+any language and script imaginable. However, there are three cases in
+which you might want to switch encodings (at least temporarily):<br>
+
+
+<ul>
+<li>You never expect to transmit or view any character except
+for the lower 128 characters (ASCII) of the ANSI data set. This
+might be true for English to English communications in which you do not
+want to have decoded noise appear as UTF-8 character renditions.<br></li>
+<li>You want to communicate using non-English characters, but
+the correspondent's program does not support UTF-8. In such a case, you
+should find out what encoding the correspondent is using and change
+your setting accordingly.</li>
+<li>You expect to exchange a lot of traffic that mostly
+consists of non-English characters (communication in Cyrillic script
+being a notable example). UTF-8 encodes each non-English character into
+a symbol two to four bytes long. Such characters require more time to
+transmit and thus reduce the effective transmission speed. Choosing
+another encoding that requires less bytes to be sent might be
+beneficial if the transmission speed is crucial. For example, a pair of
+operators wanting to communicate in Cyrillic script might want to
+choose CP1251 to retain the maximum transmission speed.</li>
+</ul>
+
+Warning: transmission of non-English characters, regardless of the
+encoding used, requires that the digital mode used be capable of
+handling 8-bit traffic. The following modes suit this requirement:
+<br>
+
+<ul>
+<li>DominoEX</li>
+<li>MFSK</li>
+<li>MT63 (8 bit extended characters must be enabled)</li>
+<li>Olivia (8 bit extended characters must be enabled)</li>
+<li>PSK (all variants)</li>
+<li>THOR</li>
+</ul>
+
+<br>
+
+\section freq_display Frequency Display
+
+\image html ColorsFonts-dsp.png "Frequency Display"
+\image latex ColorsFonts-dsp.png "Frequency Display" width=5.0in
+
+The rig control panel uses a special button for each digit the represents
+the transceiver frequency. The buttons are responsive to mouse
+clicks on the upper and lower half with corresponding changes it that
+unit's value. Unit value is also controlled by the mouse wheel
+when the cursor is over a particular digit. Select the background
+and foreground colors to please your overall color scheme and for best
+visual acuity. The System colors are the same ones that are used
+by all input and output text controls.
+<br>
+
+\section logging_controls Logging controls
+
+\image html ColorsFonts-log.png "Logging controls"
+\image latex ColorsFonts-log.png "Logging controls" width=5.0in
+
+You can select the background color, the font, the font color and the
+font size for both the logging controls on the main dialog and the
+separate logbook dialog.
+
+\section func_keys Func keys
+
+\image html ColorsFonts-fkeys.png "Colors Fonts FKeys"
+\image latex ColorsFonts-fkeys.png "Colors Fonts FKeys" width=5.0in
+
+You can color code the macro (function key) buttons in groups of 4,
+F1-F4, F5-F8, and F9-F12. The background color for each group is
+adjusted by clicking the respective Bkgnd button. The text color
+for the button labels is adjusted by clicking on the Label Txt button.
+The colors will change on these buttons and also on the main
+dialog as you make these adjustments. The Defaults button
+restores the colors as shown in this view.
+
+\section tab_colors Tab Colors
+
+\image html ColorsFonts-tabs.png "Colors Fonts Tabs"
+\image latex ColorsFonts-tabs.png "Colors Fonts Tabs" width=5.0in
+
+Adjust the color of all tabs to suit your personal taste.
+
+\section light_botton_colors Light Buttons Colors
+
+\image html ColorsFonts-buttons.png "Colors Fonts Buttons"
+\image latex ColorsFonts-buttons.png "Colors Fonts Buttons" width=5.0in
+
+<ul>
+<li>Adjust the "on" color of Spot, RxID, TxID, Tune, Lk, Rev, T/R and AFC
+button</li>
+<li>Adjust the "enabled" and "on" colors of the Sql button</li>
+</ul>
+
+
+\section signal_level Signal Level
+
+\image html ColorsFonts-siglvl.png "Colors Fonts Signal Level"
+\image latex ColorsFonts-siglvl.png "Colors Fonts Signal Level" width=5.0in
+
+<br>
+You can select the low/normal/high/over-drive colors for the diamond signal
+level in the lower right hand corner of the main dialog.<br>.
+<br>
+\image html Level-Indicator.png "Level Indicator"
+\image latex Level-Indicator.png "Level Indicator" width=2.0in
+
+<br>
+
+Your audio Rx level should be set to allow the loudest signals to drive
+the indicator into the yellow and never into the red zone.<br>
+<br>
+
+
+
+<br>
+\ref colors_and_fonts_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+

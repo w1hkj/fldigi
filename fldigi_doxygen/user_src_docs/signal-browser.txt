@@ -1,0 +1,75 @@
+/**
+\page  signal_broswer_page Signal Browser
+
+\tableofcontents
+
+
+\image html view-menu.png "View Menu"
+\image latex view-menu.png "View Menu" width=2.0in
+<br>
+
+PSK and RTTY signals can be viewed in a multi-channel context.
+You can open an embedded or a separate dialog to access the
+browser.  These browsers can help to locate a signal of interest
+on a busy band.  The browsers can be visible at any time, but are only
+active when fldigi is in one of the PSK or RTTY modes.  Open the external
+by clicking on the <b>View/Signal browser</b> menu item.
+
+It looks like this:
+
+\image html browser-panel.png "Browser Panel"
+\image latex browser-panel.png "Browser Panel" width=4.3in
+<br>
+<br>
+
+Toggle the visibility of the embedded viewer by selecting the <b>
+View/Hide Channels</b> on the same menu list.  Your main fldigi screen
+then opens a browser panel on the left side of the Tx/Rx panel(s).  Both
+browsers can be viewed and used simultaneously.  When you click on a valid
+waterfall signal the browser will highlight the appropriate channel (if
+it is also tracking that signal).
+<br>
+
+\image html main-dialog-browser.png "Main Window"
+\image latex main-dialog-browser.png "Main Window" width=6.0in
+<br>
+
+This panel can be resized horizontally by dragging the interface between the
+browser and the Rx panel to the left and right.  You can drag all the way to
+the left to close the panel (or use the menu button).  The drag to the right
+is limited to prevent sizing the Rx/Tx panels below their allowable limits.
+<br>
+
+The browser can decode up to 30 simultaneous signals.  As each signal is
+acquired within a 100 Hz channel width it is printed on the associated
+line.  The user can elect to have each line annotated with
+<br>
+<br>
+a channel number, <br>
+the waterfall audio frequency, <br>
+the transceiver HF frequency + waterfall, or<br>
+no annotation.<br>
+
+<br>
+
+Left click on a line of received text to move the waterfall frequency
+and Rx panel tracking to that signal.  The contents of the line of
+text is transferred to the Rx text widget, and the main signal processing loop
+begins to track and decode that signal.  Right click on a line of received
+text and that line is cleared and the channel reset for a new
+detection.  You may have to do this occasionally if the detector
+for that channel has locked on to a sideband of a PSK signal.
+This is most likely to occur when the received signal as a marginal or
+bad IMD.  Use the <b>Clear</b> button to clear and reset all of the
+channels.  Channel signal detection and processing should restart immediately.
+<br>
+<br>
+\ref ui_configuration_broswer_page "Configuring the browser"
+
+<br>
+\ref signal_broswer_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

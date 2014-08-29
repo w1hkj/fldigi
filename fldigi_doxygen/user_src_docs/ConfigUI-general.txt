@@ -1,0 +1,93 @@
+/**
+\page  ui_configuration_general_page  User Interface Configuration - General
+
+\tableofcontents
+
+\image html config-ui-tabs.png "UI Tabs"
+\image latex config-ui-tabs.png "UI Tabs" width=5.0in
+<br>
+
+\image html config-ui-general.png "General UI Config Panel"
+\image latex config-ui-general.png "General UI Config Panel" width=5.0in
+<br>
+
+Fldigi offers tips on the use of nearly every aspect of its operation.
+These are particularly useful when you first use the program, but
+after you are familiar with it's operation they tend to get in the way.
+You can turn them off by de-selecting "Show tooltips"
+<br>
+
+Some users prefer to not have icons on the menu system. You can turn
+them off also.
+<br>
+
+Fldigi offers three different look and feel based on the parent Fast Light
+Toolkit graphics interface; "base", "gtk+" and "plastic". These
+can be combined with command line specifiers for the default background
+and foreground colors to create a user unique look to fldigi. You
+will probably discover that the default colors and the gtk+ UI scheme
+are to be preferred.
+<br>
+
+Fldigi has internationalization files for French, Italian and
+Spanish. These control the contents of various menu items and
+labels. Linux users should build and install fldigi from source
+to gain access to these. Windows users should select the language
+of choice from the list, press the "Save" button and then close and
+restart fldigi. The "UI language" selector is only present on the
+Windows version of fldigi. The percentage indicates the
+completeness of the translation.
+<br>
+
+CW, RTTY (baudot), THROB,
+and CONTESTIA are modes that only transmit in upper case
+characters. They also have a very limited set of non-alpha
+characters. A screen full of UPPERCASE characters can be
+stressful. Select this option to print all of this text in lower
+case
+<br>
+
+Select the configuration items to allow prompting when exiting the
+program. Note that the prompts are only active if the menu item
+File/Exit is used.
+<br>
+
+You can elect to have the program check for updates every time it is
+started. You can also manually check for updates from the "Help /
+Check for updates" menu item.
+<br>
+
+\section visible_modes Visible Modes
+
+\image html visible_modes.png "Visible Modes"
+\image latex visible_modes.png "Visible Modes" width=2.0in
+<br>
+
+You may not want to use all possible modes when operating fldigi.
+Press the "Visible modes" button and open the mode selector dialog.
+<br>
+
+The use of this dialog should be obvious after a few clicks here and there.
+<br>
+
+\section limit_modes Limit Modes
+
+\image html limited_modes.png "Limit Modes"
+\image latex limited_modes.png "Limit Modes" width=1.5in
+<br>
+
+By deselecting all but CW, PSK31, PSK63 and RTTY
+the Op_Mode menu is uncluttered of all the other modes. The WWV
+and Freq Analysis modes are always visible. When a subset of the
+entire mode bank is selected a new menu item is added to the Op_Mode
+menu, "Show all modes". This is a toggle to restore all modes to
+the menu. The inverse toggle is "Show fewer modes."
+<br>
+
+<br>
+\ref ui_configuration_general_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

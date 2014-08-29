@@ -1,0 +1,359 @@
+/**
+\page  wefax_page WEFAX
+
+\tableofcontents
+
+
+This modem is able to receive and transmit HF-Fax images, traditionally used
+for weather reports.
+<br>
+
+More technical information is available on the wikipedia
+article <a href="http://en.wikipedia.org/wiki/Radiofax">Radiofax</a>.
+<br>
+
+Two modes are implemented IOC=576 or 288. The focus is made on
+black-and-white images, color mode is still experimental.
+<br>
+
+Many frequencies are available
+at <a href="http://www.hffax.com">http://www.hffax.com/</a> for example.
+<br>
+
+When entering any Wefax mode, the reception window opens, and optionally the
+transmit window. it is always possible to bypass this with the menu
+bar:
+<br>
+
+\image html Wefax-Tab.png "WEFAX"
+\image latex Wefax-Tab.png "WEFAX" width=6.0in
+<br>
+
+\section wefax_config Configuration.
+As for any modem, weather fax has its own tab in the configuration window.
+<br>
+
+\image html Wefax-Configuration.png "WEFAX Configuration"
+\image latex Wefax-Configuration.png "WEFAX Configuration" width=6.0in
+<br>
+
+\subsection embeded_wefax Embedded vs floating display mode
+
+There are two display modes for this modem:
+<br>
+
+<ul>
+	<li>Embedded mode: This is the default mode, the normal receipt and
+	transmit windows gets graphic (Like Hellschreiber mode).</li>
+	<li>Floating mode: There are two separate windows  for transmission and
+	reception. This was the only available mode until fldigi 3.21.49.</li>
+</ul>
+
+\image html Wefax-Detached-Windows.png "Detached WEFAX Window"
+\image latex Wefax-Detached-Windows.png "Detached WEFAX Window" width=6.0in
+<br>
+
+\subsection hide_tx_window Hide transmission window.
+
+This option, allows to closed by default, the transmission window, when
+entering Wefax mode. In embedded mode, this means that the entire
+window is used for reception (Most common mode). In floating mode, this
+implies that the transmission window is not opened by default.However,
+it is always possible to manually open or close the transmission window
+at any time.
+<br>
+
+\subsection logging_adif Logging messages to ADIF file
+
+Each time an image is saved, it is possible to log this event, with the
+frequency and reception time, to the Adif file. This option is disabled by
+default.
+
+\subsection fsk_adjust Frequency shift adjustment
+
+The default frequency is 800 Hz. However, it is possible to adjust for
+example to 850 Hz for Deutsche Wetter Dienst.
+<br>
+
+\subsection max_rows Maximum rows number
+
+It non-continuous (Non non-stop) reception mode, an image is
+automatically saved when it has more than this number of lines
+(Default 2500 lines). Once this number of rows is reached, the image
+is saved and a new image is read with the same parameters. This feature
+has two applications:
+<br>
+
+<ul>
+	<li>In automatic mode (APT control), if an image end is not detected, we
+	can guarantee that the result will take no more than, for example, the
+	size of two faxes. Typical faxes have about 1300 lines, so the max lines
+	parameters can be tuned to, for example, 200 lines.</li>
+	<li>In manual mode, where images are read continuously, this cuts the
+	received images into chunks of equal size.</li>
+</ul>
+
+\subsection dest_dir Destination directory for saved images
+
+Received images are saved in the default folder
+
+<tt>$HOME/.fldigi/images (Linux) or \<defaultpath\>/fldigi.files/images</tt>
+
+(Windows).
+<br>
+
+Additionally, they can be saved manually, at any time, using the
+button 'Save'. The PNG images  received some extra text comments which can be
+displayed, for example, with GIMP.
+<br>
+
+\subsection mono_images Monochrome images
+
+Fax images are monochromes and are saved as such by default. However, it is
+possible to bypass this parameter and save them as color RGB images.
+<br>
+
+\section tx_image Transmitting an Image
+
+To open the transmit window, you must of course select one of the two
+Wefax modems, and then right-click on the transmit (blue) window:
+<br>
+
+Then, the transmit window just opens. This is the same logic as sending MFSK
+images.
+<br>
+
+Then, you must open an image file using the button "Load". The image is then
+displayed, for example like that:
+<br>
+
+\image html Transmit_A.png "Transmitting"
+\image latex Transmit_A.png "Transmitting" width=3.0in
+<br>
+
+Now, to start the transmission, you just need to click "Tx B/W" for
+black-and-white images, etc... During transmission, image reception is
+paused. The window will display each image line as it is sent. Please
+be patient, this may take a while. You might note that FlDigi status
+line displays the estimation transmit time, and the current stage
+(Start, phasing etc...); Color transmission ('<i>Tx Color</i>') is
+intentionally disabled at the moment.
+<br>
+
+\image html Wefax-Sending.png "Sending"
+\image latex Wefax-Sending.png "Sending" width=6.0in
+
+
+\section rx_image Receiving an image
+<br>
+
+\image html Reception.png "Reception"
+\image latex Reception.png "Reception" width=6.0in
+<br>
+
+
+To enter reception mode, one can click the "View" menu tab, and select
+"Weather Fax Image".
+<br>
+
+At this time, the reception window opens. A big blank picture is visible,
+this is where the received image will be displayed. Several controls
+are available:
+<br>
+
+<ul>
+	<li>Save: This allows to save the current image as a PNG file at any
+	moment.</li>
+	<li>Non-stop: At startup, the modem goes into automatic mode, and the
+	text "Abort" is displayed. When clicking "Abort", this blanks the image
+	and resets the APT detection. When "Manual mode'" is clicked, no APT
+	detection is done. The Automatic/Manual mode is displayed in the
+	reception window label.</li>
+	<li>Pause/Resume: At any moment, the image reception can be paused
+	and resumed (State is displayed in the reception window label).</li>
+	<li>Zoom: This allows to zoom in/out the image.</li>
+	<li>FIR:
+	This allows to select an input FIR (Finite Impulse Response) filter.
+	Practically, the narrow filter (Default value) gives the best results.
+	The selected value is saved in the configuration file.</li>
+	<li>Skip
+	APT/Skip phasing: When in automatic mode, this allows to skip detection
+	steps. This is often necessary when the signal is not very good.</li>
+</ul>
+
+When receiving an image, either in manual or automatic mode (APT control),
+other controls are displayed:
+<br>
+
+<ul>
+	<li>Line: The number of the line currently received.</li>
+	<li>Width: The image width in pixels. This is usually 1809, if LPM
+	is 120.</li>
+	<li>LPM:
+	Lines per minute: Typically 120, can be 60, 90, 120 or 240. This is
+	detected in automatic mode, but can be manually adjusted.</li>
+	<li>Slant:
+	This is used to adjust the slant of the image due to a clock
+	inaccuracy. This value is saved in the configuration file, so it is
+	not	needed to reenter it each time.</li>
+	<li>Center: This is used to manually adjust the horizontal center of
+	the image, if it could not be detected in the phasing step.</li>
+	<li>Auto:
+	When this button is set, the image will be automatically centered. This
+	process starts after some hundredth of lines are received, by shifting
+	left and right the image. It takes some time to converge.</li>
+</ul>
+
+<br>
+\image html Wefax-File-Received.png "Received WEFAX File"
+\image latex Wefax-File-Received.png "Received WEFAX File" width=6.0in
+<br>
+
+\subsection apt_control_mode APT control reception mode
+
+This mode uses the APT start and STOP frequencies to detect the beginning
+and end of an image. Additionally, it tries to detect the phasing
+signal - a wide black band - to detect the center of the image. This
+method is helped by the estimation of the signal power of these
+frequencies.
+<br>
+
+\subsection manual_reception Manual reception mode (Non-Stop)
+
+In this mode, the image is continuously read and displayed. When the
+maximum number of lines is reached, the image is saved and blanked, and
+the line counter returns to one.
+<br>
+
+\subsection input_fir Input FIR filters
+
+There are three input Finite Impulse Response filters available. Here
+are their frequency characteristics:
+<br>
+
+Narrow filter, the default one, give the better results.
+<br>
+
+\image html narrow.png "Narrow filter response"
+\image latex narrow.png "Narrow filter response" width=3.0in
+<br>
+
+\image html middle.png "Middle filter response"
+\image latex middle.png "Middle filter response" width=3.0in
+<br>
+
+\image html wide.png "Wide filter response"
+\image latex wide.png "Wide filter response" width=3.0in
+<br>
+
+\subsection center_image Centering an image
+
+If the phasing was not automatically detected, the modem could not deduce
+the beginning of an image. The result is an image which is horizontally
+shifted. To correct this, one can use the "Center" slider.
+<br>
+
+\subsection picture_slant Picture with a slant
+
+If either the send, receive or both ends of the transmission are using an
+uncalibrated sound card whose sampling rate is not an exact multiple of the
+sample rate the resulting picture at the receive end will appear
+slanted.  The degree of slant is directly related to the accumulation of
+the frequency error at both ends of the transfer.  Stations wishing to
+receive Weather fax pictures should calibrate their sound card.
+
+The \ref digiscope_display_wwv_mode "WWV calibration mode" is used
+to measure and set the parts per million (ppm) correction factor for the
+sound card.
+<br>
+
+Your sound system may be fully corrected, but the sending station may have
+an uncorrected sound card.  You can usually correct for small
+errors during reception by using the slant slider. Its value (Typically
+between - 0.005 and 0.005) will be stored in fldigi configuration
+parameters.
+<br>
+
+\subsection auto_center Automatic centering.
+
+If the phasing signal could not be used for centering the image, the
+program waits for a string image signal anyway to go into reception
+mode, but it sets an internal flag allowing to automatically center the
+image. This feature can be freely enabled and disabled at any moment.
+it works by detecting a wide vertical band of about hundred pixels,
+where the sum of the contrast as the lowest among the complete image
+width.
+<br>
+
+That is: It computes for each row and each pixel, the
+absolute value of the horizontal derivate. It then sums these
+derivatives pixel-wise, row by row. Then, it computes an average of
+about hundred pixels along this single row. The column which has the
+lowest averaged contrast is considered to be the image margin, which is
+then shifted on the left of the window.
+<br>
+
+This method takes some time to stabilize, because at the beginning, there
+are many areas of the image, without details. It gets stable at the end,
+when only the margin stays with few contrasted details.
+<br>
+
+\subsection image_detection Image detection based on signal power
+
+The APT control - inherited from the Hamfax signal, does not work very
+well when the image is noised. On the other hand, fldigi provides ways
+to evaluate the signal power on a given bandwith. This is used because
+APT control relies on the emission on specific frequencies.
+<br>
+
+Therefore, in the APT start and phasing loops, when check for the presence of
+strong signals associated to APT control. This information is used to
+take a decision when the traditionally method does not detect anything.
+<br>
+
+These two methods are interchangeable but used together for better detection.
+<br>
+
+\subsection afc_control AFC: Automatic Frequency Control
+
+This option controls the frequency on the complete spectrum width. After
+several hunderads of lines have been correctly loaded (That is, with a
+high line-to-line correlation), the AFC locks until the frequency or
+mode is manually changed.
+<br>
+
+\subsection noise_elimination Noise elimination
+
+This option eliminates short-lived noise, individual pixels with a different
+value from their horizontal neighbors. They are modified using median
+values. This is based on the fact that no line should be narrower than
+two pixels, otherwise such an image would not be broadcast, because not
+correctly readable. It is therefore impossible to have one single
+pixel, simultaneously very different from its left and right neighbors.
+<br>
+
+\subsection binary_images Binary images
+
+Faxes can be stored as binary or grey level images. The cutoff level between
+black and white (Default 128) can be adjusted. No information is lost
+until the image is saved, therefore this level can be freely modified
+until image end. The purpose of this option is to save disk space.
+<br>
+
+\subsection display_files Displaying received files
+
+Each time the end of an image is detected, an image file is created and its
+name appears on the file list of the reception window. By clicking on a
+file name, it is displayed in the transmit window.
+<br>
+
+\image html Wefax-Display-And-Receive.png "Received Image"
+\image latex Wefax-Display-And-Receive.png "Received Image" width=6.0in
+<br>
+
+<br>
+\ref wefax_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

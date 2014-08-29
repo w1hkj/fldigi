@@ -1,0 +1,58 @@
+/**
+\page  exporting_logbook_data Exporting Logbook Data
+
+\tableofcontents
+
+
+Fldigi provides automatic export of log records as they are recorded.  On
+Linux the data is forwarded to Xlog compatible programs using the SysV
+message queue system.  On Windows the records are exported via a temporary
+file structure and are accepted by Logger32.
+<br>
+
+The user may also export all or selected records consisting of all or
+selected fields.  Access to this export function of available from the
+menu "File/Log/Export ADIF", "File/Log/Export Text",
+and "File/Log/Export CSV".
+<br>
+
+\section export_adif Export ADIF
+
+Selecting the Export ADIF menu item opens the following dialog:<br>
+<br>
+
+\image html ExportSetup.png "Export Setup"
+\image latex ExportSetup.png "Export Setup" width=6.5in
+<br>
+
+If you want to export every record press the "Check All" in the left
+panel.  You can also select and deselect individual records. Choose which
+fields you want to export with the right panel controls.  Press the OK
+button to continue or Cancel to abort the operation.  A file chooser dialog
+will open which allows you to specify the name and location of the exported
+file.  Use the extension ".adi" on Windows and ".adif" on the other OS's.
+<br>
+
+\section export_text_csv Export Text / CSV
+
+The same Export Setup dialog is used for Text and CSV exports.
+<br>
+
+<br>The Text export produces a simple space delimited file with columns set
+at locations dictated by the field size for each field that is exported. It
+is suitable for use with a word processing program or for printing a hardcopy
+of your activities.
+<br>
+
+The CSV is a "Character Separated Value" file with the TAB character used
+as the field separator.  This type of file can be imported into nearly all
+spreadsheet programs such as Gnumeric, Open Office or MS Excel.
+<br>
+
+<br>
+\ref exporting_logbook_data "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

@@ -1,0 +1,288 @@
+/**
+\page cw_configuration_page  CW Configuration
+
+\tableofcontents
+<br>
+\image html config-cw-general.png "General CW Configuration"
+\image latex config-cw-general.png "General CW Configuration" width=5.0in
+<br>
+
+Fldigi can send and receive morse code from 5 wpm to 200 wpm. The
+operating controls for CW are found on the Config/CW tab. You can
+open that tab by selecting the "Configure/Modems" menu item and the
+clicking on the Modems/CW tab. You can also open up the CW tab by
+first selecting CW as the operating mode and then clicking on the
+left-most item "CW" on the status bar at the bottom of the fldigi main
+window. During operation the Rx and Tx WPM settings are
+annunciated on the status bar in the two boxes next to the mode
+indicator.<br>
+
+<br>The CW signals are converted to a baseband signal. It is the
+digital equivalent of tuning an analog USB transceiver so that the
+carrier is exactly at the CW carrier frequency. The CW decoder
+can use one of two different DSP filters. The Fast Fourier
+Transform (FFT) filter is implemented with a sin(x)/x
+impulse response. This is a very steep sided low pass
+filter. Unchecking the FFT filter causes the decoder to use a
+Finite Impulse Response (FIR) filter with a cutoff slope that is not as
+steep. The FFT filter is optimum when receiving CW in a white
+noise environment. The FIR filter may give better response with
+impulse noise. Selected a "Matched" filter for either the FFT or
+FIR implementation optimizes the filter bandwidth for white noise
+suppression. A lot of impuse noise (static) can cause either
+filter to ring and increasing the filter bandwidth might improve
+detection in that electrical environment.
+<br>
+<br>
+
+Fldigi can track the incoming signal. Enable Rx WPM tracking by enabling
+the check box "Enable Tx Trkg". The tracking range (+/- Hz around the
+TxWPM setting) can be set using the "Rx Trkg Rng" control. When
+tracking is enabled the tracking filter is reset every time the
+transmit WPM is adjusted.
+<br>
+<br>
+
+CW detection is basically an amplitude demodulator. You can set
+the threshold for detecting when the signal transitions from off-to-on
+and on-to-off. These signal levels are relative to the average
+signal level. The on-to-off is the "Lower" value and the
+off-to-on the "Upper." This implementation provides a hysteresis
+detector. Early fldigi CW decoders used this scheme but the
+detection levels were not adjustable.
+<br>
+<br>
+
+The RxWPM control is an indicator and is not used for setting the operation
+of the CW decoder.
+<br>
+<br>
+
+"SOM decoding" provides a fuzzy logic implementation to match the RX
+stream detected on-off sequence to a "best fit" character. It can
+increase the probability of correctly identifying the text character
+under very noisy conditions.
+<br>
+
+The TxWPM sliding controller is used to set the transmit WPM. To
+make the setting easier two additional controls are provided.
+"Lower" sets the lower limit of the slider and "Upper" sets the
+upper limit of the slider. The resolution of the TxWPM slider is
+1 WPM. The Lower/Upper controls are in in 5 WPM increments.
+<br>
+<br>
+
+The transmit encoder settings for WPM can also be adjusted with three hot
+keys:
+<br>
+
+<ul>
+<li>Numeric keypad "+" increases the TxWPM by 1</li>
+<li>Numeric keypad "-" decreases the TxWPM by 1</li>
+<li>Numeric keypad "*" toggles between the selected TxWPM and a default WPM</li>
+</ul>
+
+The "Default" control on the CW tab sets that default value. As
+shown above the TxWPM is 30 and the default is 18. If during a
+QSO you needed to slow down to give the other op a better chance to
+copy what you are sending, just hit the "*" on the numeric keypad and
+the CW code will immediately switch to sending CW at the set default
+value (18 wpm in this example). Press the "*" again to return to
+back to the CW speed that you were previously using.<br>
+
+\section subsec_timing Timing
+<br>
+
+\image html config-cw-qsk.png "Timing"
+\image latex config-cw-qsk.png "Timing" width=5.0in
+<br>
+<br>
+
+Fldigi generates CW by inserting a keyed tone at the current
+waterfall audio frequency. The transceiver should be operated in
+either USB (preferred) or LSB mode.
+The CW signal is completely generated in the software so it is possible
+to control many aspects of the CW signal. The actual transmitted
+signal will be at the USB carrier + the audio frequency, or the LSB carrier -
+the audio frequency. If fldigi is tracking and receiving a CW
+signal on the waterfall your transmitted signal will be exactly on the
+frequency of the other operator. The CW generated this way
+has a nearly ideal attack and decay time, controlled by the software modem.
+But ... a caveat ... your transmitter must never be
+overdriven and it should have excellent opposite sideband suppression.
+Overdriving the transmitter can cause multiple audio signals
+within the SSB passband, and cause unwanted interference to other ops.
+The same is true for a poorly designed or adjusted transmitter
+with bad sideband suppression. I recommend having a trusted
+and knowledgable operator assist you when first trying A2 CW.
+Have them carefully look for evidence of your signal above and below your
+primary signal (by at least +/- 3 Khz). If there is no
+evidence of extra signals then your are set to go. If there is you
+might want to have the transceiver adusted for sideband suppression, or check
+to be sure you are not over driving the audio.
+
+<ul>
+<li>Wt % control sets the weight of the CW. Normal CW is at 50%
+weight, ie: a dot is equal to the interval between dots or between code
+elements. It has a range of 20 to 80 percent.</li>
+
+<li>Dash/Dot controls the relative weight between a dash and a dot.
+The standard for CW is 3 to 1. The dash is 3 times the
+length of a dot. Some operators prefer the sound of either a
+heavier or lighter sounding CW. This control can be adjusted from
+2.5 to 4.0 in 0.1 increments.</li>
+
+<li>Edge shape provides two leading/trailing edge shapes (1) Hanning, or raised
+cosine, and (2) Blackman a modified raised cosine with a steeper attack
+and decay. Both of these edge shapes give a more narrow bandwidth
+CW signal than the traditional exponential waveform. They are
+very easy to listen to even at speeds exceeding 100 wpm.</li>
+
+<li>The Edge control sets the rise and fall times of the CW waveform.
+It can be set anywhere from 0.0 to 15.0 milliseconds in
+0.1 millisecond increments. DO NOT operate A2 CW with the control
+set below 4 msec. This is the control that sets the effective
+bandwidth and sound of your CW. If the edge is too steep you will
+have a clicky signal and be the bane of the CW bands. The
+purpose of being able to set the edge to 0.0 or a very quick rise/fall
+time is explained below. A good setting for nice sounding CW at
+40 WPM and below is 4 to 6 milliseconds.</li>
+
+<li>Edge decreases pulse width, when checked will give a slightly narrower dot
+length as the edge timing is increased. This is useful when
+operating QSK and listening between the character elements.</li>
+</ul>
+
+This is what the A2 signal should look like with various settings of
+weight, Dash/Dot and Edge. The audio frequency is 400 Hz and
+the TxWPM is 100 WPM.
+<br>
+<br>
+
+\image html cw-00-30.png "Dash/Dot = 3.0, Edge = 0.0"
+\image latex cw-00-30.png "Dash/Dot = 3.0, Edge = 0.0" width=3.0in
+<br>
+\image html cw-00-40.png "Dash/Dot = 4.0, Edge = 0.0"
+\image latex cw-00-40.png "Dash/Dot = 4.0, Edge = 0.0" width=3.0in
+<br>
+\image html cw-30-30.png "Dash/Dot = 3.0, Edge = 3 msec"
+\image latex cw-30-30.png "Dash/Dot = 3.0, Edge = 3 msec" width=3.0in
+<br>
+\image html cw-60-30.png "Dash/Dot = 3.0, Edge = 6 msec"
+\image latex cw-60-30.png "Dash/Dot = 3.0, Edge = 6 msec" width=3.0in
+<br>
+\image html cw-120-30.png "Dash/Dot = 3.0, Edge = 12 msec"
+\image latex cw-120-30.png "Dash/Dot = 3.0, Edge = 12 msec" width=3.0in
+<br>
+
+Changing the weight, dash/dot or edge of the waveform does not change
+the WPM at which the code is generated. When a conflict
+occurs between the various settings WPM takes first priority, and Edge second.
+In the above examples, the Edge setting could not exceed 12
+msec even if the control were set higher than 12.0. The figures
+were generated by capturing the output data being sent to the sound card and
+then formatting it using Gnumeric. An oscilloscope photo of
+the signal is virtually identical.<br>
+<br>
+
+The setting for inter-character and inter-word spacings are fixed at 3
+and 7 respectively. The 3 is achieved by sending a silent
+period of 1 dot (element) length at the beginning of each character and 2 at
+the end of each character (shown in the figures). This silent
+period is sufficient for most transceivers to respond to the PTT signal
+which occurs at the beginning of the transmission so that the first dit
+or dash is not lost in transmission.QRQ (high speed CW operation)<br>
+<br>
+
+You may wonder why fldigi can go as high as 200 WPM. It's hard to
+believe but there are CW operators who can decode 100+ WPM in their
+head. These operators also usually operate QSK (full
+breakin). A2 CW and PTT operation and QRQ/QSK are not a natural mix.
+But fldigi can be used for this type of operation if an
+external keyer is used. For that purpose the A2 Tx output from fldigi
+is full wave rectified and detected to create a keyline control.
+The outboard conversion from A2 to keyline requires a nearly square wave
+pulse output of audio at the CW keying rate. Setting the Edge
+control to 0.0 and then the audio frequency to about 1000 Hz provides
+the needed signal to effect this type of keyline control.<br>
+<br>
+
+If you are operating QSK with a separate receiver / transmitter you can
+very quickly stop your transmit signal with the TAB key. In
+the CW mode only the TAB key causes the program to skip over the remaining
+text in the transmit text buffer. The text that is skipped
+will be color coded blue. The program remains in the transmit mode
+(PTT enabled), but since the buffer is now empty no A2 CW signal is
+generated. Code transmission will then restart with the very
+next keyboard closure of a valid CW character. The Escape and
+Pause/Break keys still can be used to respectively abort and pause
+transmission.
+<br>
+
+\section subsec_qsk QSK
+<br>
+
+You might ask why fldigi doesn't simply provide a keyline output on
+one of the parallel port pins or on RTS or DTR via a comm port.
+The answer is quite simple. Linux is a multi-tasking
+operating system and the interaction between the OS and the application
+causes the timing to be adversely effected.  The driver
+implementation of the audio sub system must be responsive and so the OS
+gives that sub system a very high priority in its multi-tasking
+structure.
+<br>
+<br>
+
+Many QSK operators use high speed diode antenna switching between
+receiver and antenna. fldigi generates a signal that can be used
+for that purpose. The left audio channel is always theAFCW
+signal. When selected the right audio channel can be configured to
+generate a square wave signal that begins earlier and ends later than each
+of the CW elements. The square wave signal can be rectified and filtered
+to provide the diode switching signal for the Rx/Tx antenna switching.<br>
+<br>
+
+The right audio channel QSK signal is selected by checking the box and
+then adjusting the pre and post timing in millisecond increments.
+Additional information and a schematic diagram of a QSK keying circuit
+is described in \ref cw_keying_page "CW Keying". Setting
+up a QSK device can be quite difficult. Fldigi helps to ease the
+adjustment by generating a continuous series of characters. This
+allows a dual trace scope to be properly synched while making the
+adjustments to both the software and the associated QSK hardware.
+You enable continuous characters by selecting the checkbox, and
+then enabling the T/R button for transmit. The repeated character
+can be change on the fly with the pick control. It can be one of
+either E, I, S, T, M, O or V.
+<br>
+<br>
+
+\section subsec_prosigns PROSIGNS
+
+\image html config-cw-prosigns.png "CW Prosigns"
+\image latex config-cw-prosigns.png "CW Prosigns" width=3.0in
+<br>
+\image html config-cw-prosign-popup.png "Prosign Popup"
+\image latex config-cw-prosign-popup.png "Prosign Popup" width=1.0in
+
+You can assign keyboard characters to be used for Morse prosigns. The
+available characters are: ~ % &amp; + = { } &lt; &gt; [ ]
+<br>
+<br>
+
+The default assignments are shown above. You can also elect to send and
+receive the KN prosign as an open parenthesis '('. This is commonly
+used on MARS CW operations.
+<br>
+<br>
+
+See \ref cw_page "Operating CW" for additional information.
+<br>
+<br>
+
+\ref cw_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

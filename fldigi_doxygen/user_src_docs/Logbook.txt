@@ -1,0 +1,255 @@
+/**
+\page  qso_log_book_page QSO Logbook
+
+\tableofcontents
+
+
+Fldigi maintains a large set of QSO logbook fields that will probably be
+sufficient for casual operating, contesting and some certificate logging.  All
+of the fields that are captured in the logbook are maintained in an ADIF
+database that can be read by any logbook program that can read the ADIF text
+format.
+<br>
+
+\section list_of_log_fields List of Log Fields
+
+The complete set of logbook fields are:
+<br>
+
+ADIF FIELD |   | USE
+:--------- |:-:| :----------------------------------------------
+BAND       |   | QSO band (computed from frequency)
+CALL       | * | contacted stations call sign
+COMMENT    | * | comment field for QSO
+COUNTRY    | * | contacted stations DXCC entity name
+CQZ        |   | CQ zone
+DXCC       |   | contacted stations DXCC country code
+FREQ       | * | QSO frequency in MHz
+GRIDSQUARE | * | contacted stations Maidenhead Grid Square (Loc)
+IOTA       |   | Islands On The Air
+IOTA       |   | Islands-On-The-Air designator
+ITUZ       |   | ITU zone
+MODE       |   | QSO mode
+MYXCHG     |   | sent contest exchange
+NAME       | * | contacted operators name
+QSLRDATE   |   | QSL received date
+QSLSDATE   |   | QSL sent date
+QSO_DATE   | * | QSO data at start of contact
+QTH        | * | contacted stations city
+RST_RCVD   | * | received signal report
+RST_SENT   | * | sent signal report
+SRX        | * | QSO received serial number
+STATE      | * | contacted stations state
+STX        | * | QSO transmitted serial number
+TIME_OFF   | * | end time of QSO in HHMM format
+TIME_ON    | * | start time of QSO in HHMM format
+TX_PWR     | * | power transmitted by this station
+VE_PROV    | * | 2 letter abbreviation for Canadian Province
+XCHG1      | * | received contest exchange
+<br>
+
+\* - These fields are either captured on the main dialog, computed from
+internal values, or determined by configuration.
+<br>
+
+The data in the fldigi logbook can be exported to external text files;
+ADIF, text, and CSV (comma separated value).   The ADIF can be
+read by any ADIF compatible logbook program.  The text output is
+suitable for use in a wordprocessor and for printing.  The CSV can
+be read into many spreadsheet programs such as Excel, Open Office or
+Gnumeric.
+<br>
+
+\section digital_mode_signal_reports Digital Modes Signal Reports
+
+Fldigi does not enforce any rules on signal reporting.  It could very
+well do so for many of the modes in which signal quality is inherently
+measured as a part of the decoder.  Learning how to evaluate a
+signal, to properly report it, and then help in correcting deficiencies
+should be the goal of every amateur operator.  Please read further
+on using both \ref rst_rsq_page "RST and RSQ signal reports".
+<br>
+
+\section capturing_qso_data Capturing QSO Data
+
+Fldigi supports two QSO capture panels.  The first for casual QSO logging
+<br>
+
+\image html log-qso.png "QSO capture panel"
+\image latex log-qso.png "QSO capture panel" width=6.5in
+<br>
+
+and the second for contest fields
+<br>
+
+\image html log-contest.png "Contest capture panel"
+\image latex log-contest.png "Contest capture panel" width=6.5in
+<br>
+
+You might prefer a more minimal view of the logging fields.  You can select
+to completely suppress the log panel or to use a single line view as in
+either of these two:
+<br>
+
+\image html log-qso-min.png "Minimal QSO Capture Panel"
+\image latex log-qso-min.png "Minimal QSO Capture Panel" width=6.5in
+<br>
+
+\image html log-contest-min.png "Minimal Contest Capture Panel"
+\image latex log-contest-min.png "Minimal Contest Capture Panel" width=6.5in
+<br>
+
+These are selectable from the View menu:
+<br>
+
+\image html menu-view.png "View menu"
+\image latex menu-view.png "View menu" width=1.5in
+<br>
+
+These three buttons are associated with logbook entries.
+<br>
+
+<ul>
+	<li> The globe button provides access
+	to \ref callsign_db_configuration_page "QRZ queries" </li>
+	<li>The brush button clears all of the logging entries </li>
+	<li>The save-into button saves the current logging entries into the
+	logbook</li>
+</ul>
+<br>
+
+\image html log-buttons.png "Log Buttons"
+\image latex log-buttons.png "Log Butons" width=0.5in
+<br>
+
+The frequency, Off (time off), and \#Out are filled by the program. All
+the others can be populated by manual keyboard entry or by
+selection from the Rx panel.  The time off, Off, is continuously
+update with the current GMT.  The time on, On, will be filled in
+when the Call is updated, but can be modified later by the operator.
+<br>
+
+A right click on the Rx panel brings up a context sensitive menu that will
+reflect which of the two QSO capture views you have open.
+<br>
+
+\image html menu-rx-popup-short.png "Normal: Short Menu"
+\image latex menu-rx-popup-short.png "Normal: Short Menu" width=1.0in
+<br>
+
+\image html menu-rx-popup-long.png "Normal: Long Menu"
+\image latex menu-rx-popup-long.png "Normal: Long Menu" width=1.0in
+<br>
+
+\image html menu-rx-popup-contest-short.png "Contest: Short Menu"
+\image latex menu-rx-popup-contest-short.png "Contest: Short Menu" width=1.0in
+<br>
+
+\image html menu-rx-popup-contest-long.png "Contest: Long Menu"
+\image latex menu-rx-popup-contest-long.png "Contest: Long Menu" width=1.0in
+<br>
+
+\image html menu-view.png "Contest: Long Menu"
+\image latex menu-view.png "Contest: Long Menu" width=1.0in
+<br>
+
+If you highlight text in the Rx pane then the menu selection will operate
+on that text.  If you simply point to a word of text and right
+click then the menu selection will operate on the single word.
+<br>
+
+Certain fields may also be populated with automatic parsing, Call, Name, QTH
+and Loc.   You point to the Rx pane word and then either
+double-left-click or hold a shift key down and left click.  The
+program will attempt to parse the word as a regular expression to
+populate the Call, Name, QTH, and Loc fields in that order.  It
+may place some non standard calls into the Loc field if they qualify as
+a proper Maidenhead Grid Square, such as MM55CQ.  That may be a
+special event station, but it also looks like a grid square locator
+value.  You need to decide when that occurs and use the pop up
+menu for those special cases.  The first non-Call non-Loc word
+will fill the Name field and subsequent qualify words will go into the
+QTH field.
+<br>
+
+A highlighted section of text, can always be copied
+to the clipboard for subsequent pasting elsewhere.  The Copy menu
+item will be active when text in the Rx pane has been highlighted. That
+text can also be saved to a file.  Use the
+"Save <span style="text-decoration: underline;">a</span>s..."
+menu item for that purpose.  All data fields in fldigi share a
+common set of keyboard shortcuts.  Linux users will recognize
+these as familiar Emacs shortcuts.  There is also a small popup
+menu that can be opened for each field by right clicking the contents with
+the mouse:
+<br>
+
+\image html menu-popup-edit-field.png "Menu Popup Edit Field"
+\image latex menu-popup-edit-field.png "Menu Popup Edit Field" width=1.6in
+<br>
+
+Highlighted text will be overwritten when a paste is selected.  Otherwise the
+clipboard will be pasted at the current cursor position.
+<br>
+
+You can query on-line and local CD based data base systems for data
+regarding a Call.  Set up your query using
+the \ref callsign_db_configuration_page "Callsign DB configuration tab".
+You make the query by either clicking on the globe button, or
+selecing "Look up call" from the menu.  The latter will also move
+the call to the Call field and make the query.
+<br>
+
+If you have previously worked a station the logbook will be searched for the
+most recent qso and fill the Name, Qth and other fields from the logbook. If
+the logbook dialog is open that last QSO will be selected for viewing in the
+logbook.
+<br>
+
+You open the logbook by selecting from the Logbook menu; Logbook/View.  The
+logbook title bar will show you which logbook you currently have open.
+Fldigi can maintain an unlimited (except for disk space) number of logbooks.
+<br>
+
+\image html logbook.png "Log Book"
+\image latex logbook.png "Log Book" width=6.0in
+<br>
+
+<br>
+You can resize the dialog to suit your screen size and operating needs.
+Fldigi will remember the placement and size for subsequent use.
+<br>
+
+You can create new entries, update existing entries, and delete entries
+using this dialog.  You can also search for an entry by callsign.  The browser
+can be sorted by Date, Callsign, Frequency or Mode.  The sort can
+be forward or backward with the most recent being the default selected
+entry after each sort.  You execute the sort by clicking on the
+column button at the top of the column to be sorted.  Each click
+causes the sort to reverse.  I like to view my log with the most
+recent at the top.  You might want to view it with the most recent on the
+bottom.
+<br>
+
+There are no frills such as keeping track of DXCC
+worked, fancy printouts etc.  Fldigi's logbook is primarily a
+capture function.  You can export your data for use with an
+external database or for uploading to LOTW or eQSL.  Data from
+those sources can also be used for importing into the logbook.
+<br>
+
+Exporting logbook data: \ref exporting_logbook_data "Log Exports".
+<br>
+
+Cabrillo reporting: \ref cabrillo_report_page "Contest Reports".
+<br>
+
+
+<br>
+\ref qso_log_book_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+
+

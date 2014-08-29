@@ -1,0 +1,332 @@
+/**
+\page  digiscope_display_wwv_mode Digiscope Display - WWV mode
+
+\tableofcontents
+
+The WWV mode is used to measure the offset of the sound card oscillator.
+It does this by comparing the timing loop for the sound card measurements
+against the clock tick signal that is transmitted by WWV and WWVH.  The
+sampling rate for the sound card should be set to "native".  The sound card
+samples the signal and returns the values in 512 blocks.  This block
+sampling is what sets the basic timing mechanism for the thread that
+reads the sound card, sends data to the waterfall, and sends data to
+the modem signal processing functions.  A process of filtering is
+used that simultaneously reduces the sampling rate.  Most modern
+soundcards will use 44100 or 48000 as the native smampling rate.
+That sample rate in down converted to 1000 using a decimation in time
+type FIR.  The resulting signal is then power detected and
+further filtered with a filter called a moving average filter. The moving
+average is very good at detecting the edge of a pulse such as the 1 second
+tick transmitted by WWV.  This output is then displayed in a manner very
+similar to a FAX signal.  Each scan line represents the received signal
+over a 1 second interval.  The bright white line is the time tick.  You can
+see a very slight slope from left to right as the signal goes from top to
+bottom of the display.
+<br>
+
+Open the configure dialog box to the "SndCrd" tab.  You are going
+to be adjusting the "Rx corr Rate" while you observe the effect of this
+control on the slope of the time tick line.
+<br>
+
+Tune in WWV or WWVH on 2.5, 5.0, 10.0 or 15.0 MHz in the AM mode. This
+seems to give the best signal view.  Select the WWV modem and allow the data
+to begin to accumulate in the digiscope display.  When you can clearly see
+the bright tick line, move the cursor to the bottom of the line and left
+click at that position.  That will resync the digiscope display and put the
+ensuing tick marks at the center line red graticule.
+<br>
+
+Then right click anywhere in the digiscope display.  That changes
+the zoom level to show more detail regarding the slope of the time tick
+line.  The zoom level increases by a factor of 5.  Right
+clicking again restores the original zoom level.  I recommend
+making the adjustments to the Rx corr Rate control in the x5 zoom level.
+<br>
+
+If the slope of the time tick line is positive you will need to apply a
+negative value to the Rx corr Rate.  If it is negative then a
+positive correction is needed.
+<br>
+
+Start with a correction of 0 ppm and observe the slope.  Try a
+value of 1000 ppm and observe the slope.  Again, try a -1000 ppm
+correction and observe the slope.  The following are some observations
+made on 10 MHz WWV, DCF-77 and RWM under less than ideal conditions.
+<br>
+
+\image html wwv3.png "WWV corrected 20 minute trace 5x scale"
+\image latex wwv3.png "WWV corrected 20 minute trace 5x scale" width=1.25in
+
+
+\htmlonly
+
+<table style="text-align: left; width: 100px;" border="0" cellpadding="2" cellspacing="2">
+
+<tr>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 117px; height: 115px;" alt="" src="wwv1-lgneg.png">
+<br>
+
+-1000 ppm WWV<br>
+
+5x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 116px; height: 116px;" alt="" src="wwv2-000ppm.png">
+<br>
+
+0 ppm WWV<br>
+
+5x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 117px; height: 118px;" alt="" src="wwv2-lgpos.png">
+<br>
+
++1000 ppm WWV<br>
+
+5x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 117px; height: 116px;" alt="" src="wwv2-125ppm.png">
+
++120 ppm WWV<br>
+
+5x scale</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 114px; height: 115px;" alt="" src="dcf77-0.png">
+<br>
+
+0 ppm DCF-77 <br>
+
+1x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 114px; height: 114px;" alt="" src="dcf77-0zoom.png">
+<br>
+
+0 ppm DCF-77<br>
+
+5x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 115px; height: 115px;" alt="" src="dcf77-1000.png">
+<br>
+
++1000 ppm DCF-77<br>
+
+1x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 114px; height: 114px;" alt="" src="dcf77-65zoom.png">
+<br>
+
++65 ppm DCF-77<br>
+
+5x scale</td>
+</tr>
+<tr>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 121px; height: 121px;" alt="" src="RWMpre-cal.png">
+<br>
+
+RWM uncorrected<br>
+
+1x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 119px; height: 121px;" alt="" src="RWM+25361ppm.png">
+<br>
+
+RWM <br>+25361 ppm<br>
+
+1x scale</td>
+<td style="vertical-align: top; text-align: center;">
+<img style="width: 119px; height: 119px;" alt="" src="RWMpost-cal-x5.png">
+<br>
+
+RWM <br>+25361 ppm<br>
+
+5x scale</td>
+<td style="vertical-align: top;">
+<br>
+</td>
+</tr>
+</table>
+
+\endhtmlonly
+
+\latexonly
+
+\begin{figure}[H]
+
+    \centering
+
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{wwv1-lgneg.png}
+        \caption{0 ppm WWV 5x scale}
+        \label{fig:wwv1_lgneg}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{wwv2-000ppm.png}
+        \caption{+1000 ppm WWV 5x scale}
+        \label{fig:wwv2_000ppm}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{wwv2-lgpos.png}
+        \caption{-1000 ppm WWV 5x scale}
+        \label{fig:wwv2_lgpos}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{wwv2-125ppm.png}
+        \caption{+120 ppm WWV 5x scale}
+        \label{fig:wwv2_125ppm}
+    \end{subfigure}
+
+     \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{dcf77-0.png}
+        \caption{0 ppm DCF-77 1x scale}
+        \label{fig:dcf77_0}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{dcf77-0zoom.png}
+        \caption{0 ppm DCF-77 5x scale}
+        \label{fig:dcf77_0zoom}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{dcf77-1000.png}
+        \caption{+1000 ppm DCF-77 1x scale}
+        \label{fig:dcf77_1000}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{dcf77-65zoom.png}
+        \caption{+65 ppm DCF-77 5x scale}
+        \label{fig:dcf77_65zoom}
+    \end{subfigure}
+
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{RWMpre-cal.png}
+        \caption{RWM uncorrected 1x scale}
+        \label{fig:RWMpre_cal}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{RWM+25361ppm.png}
+        \caption{RWM +25361 ppm 1x scale}
+        \label{fig:RWM_25361ppm}
+    \end{subfigure} ~
+    \begin{subfigure}[t]{0.25\textwidth}
+        \centering
+        \includegraphics[width=0.75in]{RWMpost-cal-x5.png}
+        \caption{RWM +25361 ppm 5x scale}
+        \label{fig:RWMpost_cal_x5}
+    \end{subfigure}
+
+    \caption{PSK Digiscopes}
+    \label{fig:psk_digiscopes}
+\end{figure}
+
+\endlatexonly
+<br>
+
+You can see that my sound card requires a positive correction since the
+slope is negative with a 0 ppm entry.  The required correction of
++120 ppm was determined by guessing the needed correction to be close
+to 1/10 of the -1000 ppm slope and then adjusting for a steady track
+along the red graticule.  The DCF-77 images were provided by
+Walter, DL8FCL.  The RWM images were provided by Andy G3TDJ.
+<br>
+
+You can left click on the tick line anytime you want to recenter the
+signal.  That will aid in making your visual observation.
+<br>
+
+When you are finished, the Rx corr Rate entry is the correct one for
+your sound card.  Save the configuration for future fldigi use.
+<br>
+
+Andy also provided information on the RWM transmissions:
+<br>
+
+
+RWM details extracted from <a class="moz-txt-link-freetext" href="http://www.irkutsk.com/radio/tis.htm">http://www.irkutsk.com/radio/tis.htm</a>
+<br>
+
+Station RWM - Main characteristics
+<br>
+
+Location: Russia, Moscow
+<br>
+
+55 degr. 44' North , 38 degr. 12' East
+<br>
+
+Standard frequencies : 4996, 9996 and 14996 kHz
+<br>
+
+Radiated power: 5kW on 4996 and 9996 kHz; 8kW on 14996 kHz
+<br>
+
+Period of operation: 24 hours per day,  except 08.00-16.00 msk for maintenance as below:
+<br>
+
+on 4996  kHz : 1st wednesday of the 1st month of quater;
+<br>
+
+on 9996  kHz : 2nd wednesday of the 1st month of the quater;
+<br>
+
+on 14996 kHz : 3rd wednesday of each odd month;
+<br>
+
+Coverage: 20 degr. - 120 degr. East
+<br>
+
+35 degr. - 75 degr. North
+<br>
+
+Time signals A1X are given every second of 100 ms duration with a frequency
+of 1 Hz. Minute pip is extended to 500 ms.
+<br>
+
+Hourly transmission schedule
+<br>
+
+ m:s  -  m:s
+
+00:00 - 07:55   --  MON signals (no modulation)
+<br>
+08:00 - 09:00   --  transmitter is signed off
+<br>
+09:00 - 10:00   --  station's identification is sent by Morse Code
+<br>
+10:00 - 19:55   --  A1X signals and identification of DUT1+dUT1
+<br>
+20:00 - 29:55   --  DXXXW signals
+<br>
+30:00 - 37:55   --  N0N signals (no modulation)
+<br>
+38:00 - 39:00   --  transmitter is signed off
+<br>
+39:00 - 40:00   --  station's identification is sent by Morse Code
+<br>
+40:00 - 49:55   --  A1X signals and identification of DUT1+dUT1
+<br>
+50:00 - 59:55   --  DXXXW signals
+
+<br>
+See \ref wwv_tx_mode "Transmitting Simulated WWV Timing Tone"
+
+<br>
+
+\ref digiscope_display_wwv_mode "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

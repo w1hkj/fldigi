@@ -1,0 +1,1 @@
+find . -depth -type f -name "*.png.png" -exec sh -c 'mv "$1" "$(dirname "$1")/$(basename "$1" .png.png).png"' _ {} \;

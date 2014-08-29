@@ -1,0 +1,444 @@
+/**
+\page  kml_page KML
+
+\tableofcontents
+
+\image html KML-Logo.png "KML Logo"
+\image latex KML-Logo.png "KML Logo" width=1.0in
+<br>
+
+Section data_source Data sources
+<br>
+
+<a href="http://en.wikipedia.org/wiki/Keyhole_Markup_Language">Keyhole
+Markup Language</a>
+
+(KML) is an XML file format for geographic visualization in
+two-dimensional maps such as Google Maps and three-dimensional earth
+browsers such as Google Earth
+or <a href="http://en.wikipedia.org/wiki/Marble_%28software%29">Marble</a>.
+<br>
+
+Fldigi can generate data with geographical locations, which can be used to
+generate KML data. This list might expand in the future
+
+<ul>
+	<li>The emitting station of a
+	<a href="http://en.wikipedia.org/wiki/Navtex">Navtex</a> message.</li>
+	<li>The origin of a <a href="http://en.wikipedia.org/wiki/SYNOP">SYNOP</a>
+	weather report.</li>
+	<li>The Maidenhead locator of the user, as entered in fldigi user's
+	profile.</li>
+</ul>
+<br>
+
+\section kml_generation_navtex KML generation from Navtex messages
+
+\image html Navtex-Config-Tab-With-Kml.png "Navtex configuration tab with KML option"
+\image latex Navtex-Config-Tab-With-Kml.png "Navtex configuration tab with KML option" width=5.0in
+<br>
+
+Each Navtex message comes with the code of the sending station, also
+called <i>origin</i>.
+
+These messages are displayed, in KML files, at the coordinates of the
+sender. That is: KML placemarks are created or updated with these
+coordinates. Fldigi parses the Navtex reports, uses the station identifier
+to make a lookup in the Navtex stations file which contains geographical
+coordinates. These coordinates are used to create KML placemarks.
+<br>
+
+More explanation about how station coordinates are used, are given at
+the \ref navtex_and_sitorb_page "Navtex page".
+<br>
+
+Navtex messages are quite often sent with embedded coordinates of the event
+they describe (Ship wreck, oil exploration etc...). For example:
+\"<code>LIGHT BUOY MARKING DANGEROUS WRECK 58-01.2 NORTH 005-27.1 WEST</code>\"
+or \"<code>THREE MEN OVERBOARD IN PSN 39-07,7N 026-39,2E</code>\" . A
+future version will parse the content of the message, extracting raw
+coordinates, and will display a graphic entity at the location of the
+described event.
+<br>
+
+\section kml_generation_synop KML generation from SYNOP reports
+
+<a href="Synop.html">SYNOP</a> is a code used for reporting weather
+information and as such, is used to broadcast meteorological data by
+radio. One of the most important emitter is
+<a href="http://www.dwd.de/bvbw/generator/DWDWWW/Content/Schifffahrt/Sendeplan/Schedule__rtty__01,templateId%3Draw,property%3DpublicationFile.pdf/Schedule_rtty_01.pdf">Deutsche Wetterdienst which transmits them in RTTY</a>,
+and fldigi is able to decode them and generate KML placemarks at the
+location of the weather information.
+<br>
+
+
+\section kml_file_structure KML files structure
+<br>
+
+<b>The KML data are made of different files</b>
+
+<center>
+<table>
+<tr>
+<td> <b><i><code>fldigi.kml</code></i></b></td>
+<td>Entry point. Only this one has to be loaded. It never
+changes.</td>
+</tr>
+<tr>
+<td><b><i><code>styles.kml</code></i></b></td>
+<td>KML style sheet. Freely changeable by the user, for
+example to customize the icons.</td>
+</tr>
+<tr>
+<td><b><i><code>User.kml</code></i></b></td>
+<td>Location of the user based on
+his/her <a href="http://fr.wikipedia.org/wiki/Maidenhead_Locator_System">Maidenhead
+locator</a>.</td>
+</tr>
+<tr>
+<td><b><i><code>Synop.kml</code></i></b></td>
+<td>Synop weather reports displayed at the location of the
+WMO station, or ship, or buoy.</td>
+</tr>
+<tr>
+<td><b><i><code>Navtex.kml</code></i></b></td>
+<td>Navtex reports, displayed at the place of the emitting
+station. A future version will plot the position of the coordinates
+indicated in the Navtex messages themselves.</td>
+</tr>
+</table>
+</center>
+
+<br>
+\section extended_data Extended data
+
+When creating a new placemark, written in of the KML data files
+(<code>Synop.kml</code>, <code>Navtex.kml</code> etc... ) data are sent to
+the KML module in the form of key-value pairs and are written into two forms:
+<br>
+
+<ul>
+	<li>HTML content, in the <code>\<description\></code> tag,
+	surrounded by <code>CDATA</code> directives. The HTML format is chosen
+	exclusively for display purpose and might change at any new version.</li>
+	<li>Regular <code>\<ExtendedData\></code> XML tags: These data
+	are internally used by Fldigi to reload the previous session. The
+	format is stable and can be used by external applications. All useful
+	data are saved.</li>
+</ul>
+
+
+\section paramaters Parameters
+
+\image html KML-Config.png "KML configuration tab"
+\image latex KML-Config.png "KML configuration tab" width=5.0in
+<br>
+
+Fldigi maintains in a internal container, a set of placemarks which are data
+associated to geographical coordinates, an unique name, a set of
+key-value pairs and a timestamp. At regular intervals, a thread is
+woken up to save these geographical data to a KML file, in a
+specific directory. At this moment, a process can be started, running
+an external command. Depending on the type of data, a given
+file name will be used.
+<br>
+
+All KML files are accessible from an unique KML
+filename. Placemarks are identified  with an unique name, for
+example a vessel name, or their WMO identifier. Placemark with a moving
+position such as ships, can have their path visualized because they
+still cen be identified in two different reports. These reports can be
+kept as separate, or they can be merged into a single placemark: This
+depends on the distance between two placemarks with the same name,
+compared to the merging distance parameter.
+<br>
+
+Data can be kept for a given retention time,
+after which delay they are purged. At startup, former KML data can be
+reloaded, or cleaned up. Data as key-value pairs associated to a given
+placemarks can be displayed several ways.
+<br>
+
+All these parameters are controlled by the KML configuration tab.
+<br>
+
+
+\section destination_directory Destination directory
+
+\image html KML-Directory.png "Directory of generated KML files"
+\image latex KML-Directory.png "Directory of generated KML files" width=4.0in
+<br>
+
+The default destination directory where KML files are saved is a
+subdirectory called /kml in the fldigi users directory. For example on
+Linux: <code>$HOME/.fldigi/kml/</code> and
+<code>\<defaultpath\>/fldigi.files/kml</code> on Windows&trade;. This
+destination can be freely changed.
+<br>
+
+The file <code>fldigi.css</code> is created at installation, and is not changed
+later. Therefore it is possible to customize it by adding specific
+icons.
+<br>
+
+The file <code>fldigi.kml</code> is created by fldigi when it is not there,
+or when the refresh interval is changed.
+<br>
+
+If this destination directory is accessible from the internet, then it can
+be published to Google Maps.<br>
+
+<b>Note:</b>
+
+Files updates are atomic. This means that a file is not accessible by a
+reader until it is completely written and closed. This is achieved by
+writing into temporary files, which are atomically renamed (POSIX
+function <code>rename()</code> ) at the end of operation.
+<br>
+<br>
+
+Therefore, the KML destination directory can safely be accessed by one
+writer and multiple readers. Several sessions of fldigi might also updates
+different KML files, as long as the main <code>fldigi.kml</code> file is
+not changed.
+
+\section kml_root_file KML root file
+
+This is the default name of the entry file of the generated KML document,
+which by default is fldigi.kml. If it does not exist, it is generated with
+the list of possible source of KML data (Synop,
+Navtex etc...). If <a href="http://www.google.com/earth/index.html">Google
+Earth</a>  or <a href="http://marble.kde.org/">Marble</a>
+are installed on your machine, then they are associated to the file
+extension .kml and you just need to click on fldigi.kml to visualize
+it. It is automatically refreshed when fldigi adds new Synop weather
+reports or Navtex messages to it.
+<br>
+
+
+\section kml_refresh_interval KML refresh interval
+
+This delay, in seconds, is used at two places:
+<br>
+
+<ul>
+	<li>This is the frequency at
+	which new KML files are created, if new data is available</li>
+	<li>This is the refresh interval specified in the KML file with
+	tag \<refreshInterval\>.</li>
+	</ul>
+<br>
+
+This should not be too small, especially if the data files are big, otherwise
+fldigi will spend most of its time refreshing KML data, and accordingly
+Google Earth or Marble, reloading them.
+
+\section clean_up_on_startup Cleanup on startup
+
+By default, at startup, fldigi reloads the existing KML files, extracting
+the key-value pairs contained in the "ExtendedData" tags. However, it
+is possible to force fldigi to restart from scratch.
+<br>
+
+
+\section merge_distance Merging distance
+
+Different reports with the same placemark name can be merged into a
+single report if their distance is below a given threshold which is the
+merging distance. Otherwise, separate placemarks are created and joined
+by a red line, visible in the KML document.
+<br>
+
+\section kml_ballon_display_type KML balloon display type
+
+Reports are inserted in the KML document one after the other. These
+description data are visible as <i>KML balloons</i>, or when getting
+placemark properties. If they have the same name and are within the merging
+distance, they will form a single placemark. The descriptions of each
+report will be displayed and merged by three possible ways.
+<br>
+
+\subsection plain_text Plain text
+
+Description are inserted without any HTML formatting. Only special HTML
+entities such as ampersands are reformatted. This is especially useful
+if the KML document is later converted to GPX, because many GPS devices
+are not able to display HTML data.
+<br>
+
+\subsection html_tables HTML tables
+
+Each description of placemark is transformed into a HTML table labelled
+with the time stamp of the insertion. Here is an example of two Navtex
+messages from the same station at different times:
+<br>
+
+<table>
+<tr><td>2013-02-14 23:18</td></tr>
+<tr><td>Callsign</td><td>OST</td></tr>
+<tr><td>Country</td><td>Belgium</td></tr>
+<tr><td>Locator</td><td>JO11JE</td></tr>
+<tr><td>Message number</td><td>35</td></tr>
+<tr><td>Frequency</td><td>0</td></tr>
+<tr><td>Mode</td><td>TOR</td></tr>
+<tr><td>Message</td><td>191533 UTC NOV ;<br>
+WZ 1196<br>
+SELF CANCELING. CANCEL WZ 1192 (GA92) (MA33).<br>
+WALKER LIGHTBUOY NORMAL CONDITIONS RESTORED."</td></tr>
+<tr><td>2013-02-14 23:13</td></tr>
+<tr><td>Callsign</td><td>OST</td></tr>
+<tr><td>Country</td><td>Belgium</td></tr>
+<tr><td>Locator</td><td>JO11JE</td></tr>
+<tr><td>Message number</td><td>35</td></tr>
+<tr><td>Frequency</td><td>0</td></tr>
+<tr><td>Mode</td><td>TOR</td></tr>
+<tr><td>Message</td><td>... etc ...</td></tr>
+</table>
+<br>
+
+\subsection distance_html_matrix Distinct HTML matrix
+
+For the same KML placemark, the key will typically the same for all
+reports. More, some data are numeric. This is therefore convenient to
+group them in matrices:
+<br>
+
+Here is an example for SYNOP weather data, made of three reports:<br>
+<br>
+
+<table><tr><td><br></td><td>2012-12-16 00:00</td><td>2012-12-17 06:00</td><td>2012-12-18 00:00</td></tr>
+<tr><td>Dewpoint temperature</td><td><br></td><td>Undefined</td><td>Undefined</td></tr>
+<tr><td>Figure</td><td><br></td><td>11</td><td><br></td></tr>
+<tr><td>Humidity</td><td>Unspecified</td><td><br></td><td><br></td></tr>
+<tr><td>Precipitations</td><td><br></td><td>Omitted, no observation</td><td>Omitted, no observation</td></tr>
+<tr><td>Pressure change</td><td>Not specified</td><td>Not specified</td><td>Not specified</td></tr>
+<tr><td>Sea level pressure</td><td>994 hPa</td><td>1000 hPa</td><td>1013 hPa</td></tr>
+<tr><td>Ship average speed</td><td>0 knots</td><td>0 knots</td><td><br></td></tr>
+<tr><td>Ship direction</td><td>Calm</td><td>Calm</td><td><br></td></tr>
+<tr><td>Station type</td><td><br></td><td>Automated station. No observation (No 7WW)</td>
+<td>Automated station. No observation (No 7WW)</td></tr>
+<tr><td>Temperature</td><td>9.5 deg C</td><td>9.3 deg C</td><td>10.3 deg C</td></tr>
+<tr><td>Value</td><td><br></td><td>37</td><td><br></td></tr>
+<tr><td>Visibility</td><td><br></td><td>4 km</td><td>4 km</td></tr>
+<tr><td>Wave height</td><td>3.6 meters</td><td>4.7 meters</td><td><br></td></tr>
+<tr><td>Waves height</td><td>3.5 meters</td><td>4.5 meters</td><td><br></td></tr>
+<tr><td>Waves period</td><td>8 seconds</td><td>8 seconds</td><td><br></td></tr>
+<tr><td>Wind direction</td><td><br></td><td>265 degrees</td><td>275 degrees</td></tr>
+<tr><td>Wind speed</td><td><br></td><td>33 knots (Estimated)</td><td>15 knots (Estimated)</td></tr>
+</table>
+<br>
+
+
+\section data_retention_time Data Retention Time
+
+Data may be automatically purged based on their time-stamp and a maximum
+retention time in hours. If the retention time is zero, then data are kept
+for ever.
+<br>
+
+
+\section command_run_kml Command run on KML creation
+
+This command is executed at regular times, by default 180 seconds, and
+only if new data was written to any KML files. The first time this
+command is run, its process id is stored. Next time this command must
+be run, we check if this process is still running. If yes, no new
+process is created.
+
+<p>
+The intention is to handle the same way, programs
+which should always be running, for example KML visualizers, and on the
+other hand, one-shot scripts or converters. Typical situations are:
+</p>
+
+<ul>
+	<li>Starting a program such
+	as <a href="http://www.google.com/earth/index.html">Google
+	Earth</a>  or <a href="http://marble.kde.org/">Marble</a>, only once per
+	session.</li>
+	<li>They will be automatically restarted if they crash, because
+	their <a href="http://en.wikipedia.org/wiki/Process_identifier">process identifier</a>
+	is not present anymore.</li>
+	<li>Run as needed conversion programs such as GpsBabel, to
+	another format (<a href="http://en.wikipedia.org/wiki/GPS_eXchange_Format">GPX</a>). Or a <a href="http://en.wikipedia.org/wiki/FTP">FTP</a> transfer to a remote platform, for
+	inclusion of KML files in Google Maps.</li>
+	<li>Accordingly, do not restart this conversion process as long
+	it is not finished (FTP transfers might take long)</li>
+</ul>
+
+
+
+\subsection example_of_commands Example of commands
+
+\subsubsection ftp_transfer FTP Transfer
+
+A new transfer - and
+a new process - must be initiated at each KML file save. A script is
+created for this purpose, and the command can be:
+<br>
+
+<code>
+fldigi/scripts/ftp_kml_files.sh ftpperso.free.fr MyFtpUserName
+MyPassword kml</code>
+<br>
+
+\image html Google-Maps-Kml.png "KML files displayed in Google Maps"
+\image latex Google-Maps-Kml.png "KML files displayed in Google Maps" width=6.0in
+<br>
+
+
+An obvious use is to save these file to a remote machine where they
+can be accessed with a public URL. This URL can then be given as CGI
+parameter to <a href="http://maps.google.com/">Google Maps</a>
+which will display the placemarks on a map. There
+are <a href="https://developers.google.com/kml/documentation/mapsSupport">limitations</a>
+on the maximum size of KML files which have to be smaller than 10 megabytes.
+<br>
+
+Note that KML files are for the moment not compressed into KMZ files.
+<br>
+
+An FTP copy is not necessary if the destination directory for KML files
+storage is public (That is, accessible from the Internet).
+
+\subsubsection launch_google_earth Launch google-earth
+
+The program will only be launched once, because its process id is still
+present. The command can be:
+<br>
+
+<code>googleearth $HOME/.fldigi/kml/fldigi.kml</code>
+<br>
+
+It is possible to change the icons by customizing the file
+<code>styles.kml</code>.
+<br>
+
+\image html GoogleEarth.png "Google Earth"
+\image latex GoogleEarth.png "Google Earth" width=6.0in
+<br>
+
+
+\subsubsection gps_babel_conversion GPS Babel conversion
+
+The command <a href="http://www.gpsbabel.org/">GpsBabel</a>,
+for example, will selectively convert the KML file of Synop
+reports. It is generally advised to generate plain text description
+tags in the KML files, because GPS devices might not be able to
+correctly display HTML data. The command can be:
+<br>
+
+<code>gpsbabel -i kml -f $HOME/.fldigi/kml/Synop.kml -o gpx -F out.gpx</code>
+<br>
+
+The generated files can for example be fed
+into <a href="http://www.xastir.org">Xastir</a>.
+<br>
+
+<br>
+\ref kml_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

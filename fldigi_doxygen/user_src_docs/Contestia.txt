@@ -1,0 +1,68 @@
+/**
+\page contestia_page Contestia
+
+\tableofcontents
+
+Fldigi can operate on the following Contestia modes without special setup
+by the operator:
+<br>
+
+Mode  | Symbole Rate \(Baud\) | Typing speed \(WPM\) | Bandwidth \(Hz\)
+:---------------: | :-----------: | :-----------: | :---------:
+Contestia 4-250   | 62.5          | ~ 40          | 250
+Contestia 8-250   | 31.25         | ~ 30          | 250
+Contestia 4-500   | 125           | ~ 78          | 500
+Contestia 8-500   | 62.5          | ~ 60          | 500
+Contestia 16-500  | 31.25         | ~ 30          | 500
+Contestia 8-1000  | 125           | ~ 117         | 1000
+Contestia 16-1000 | 62.5          | ~ 78          | 1000
+Contestia 32-1000 | 31.25         | ~ 48          | 1000
+
+Unusual combinations of symbol rate and bandwidth can be selected
+using the \ref contestia_configuration_page tab.
+<br>
+
+Contestia is a digital mode directly derived from Olivia that is not
+quite as robust - but more of a compromise between speed and
+performance. It was developed by Nick Fedoseev, UT2UZ, in 2005. It
+sounds almost identical to Olivia, can be configured in as many ways,
+but has essentially twice the speed.
+
+Contestia has 40 formats just like Olivia - some of which are
+considered standard and they all have different characteristics. The
+formats vary in bandwidth (125,250,500,1000, and 2000hz) and number of
+tones used (2,4,8,16,32,64,128, or 256). The standard Contestia formats
+(bandwidth/tones) are 125/4, 250/8, 500/16, 1000/32, and 2000/64.
+The most commonly used formats right now seem to be 250/8, 500/16, and
+1000/32.
+<br>
+
+Contestia performs very well under weak signal conditions. It handles
+QRM, QRN, and QSB very well also. It decodes below the noise level but
+Olivia still outperforms it in this area by about 1.5 - 3db depending
+on configuration.
+
+It is twice as fast as Olivia per configuration. It is an excellent
+weak signal, ragchew, QRP, and DX digital mode. When ragchewing under
+fair or better conditions it can be more preferable to many hams than
+Olivia because of the faster speed. For contests it might also be a
+good mode IF the even faster configurations such as 1000/8 or 500/4 are
+used.
+
+Contestia get it's increased speed by using a smaller symbol block size
+(32) than Olivia (64) and by a using 6bit decimal character set rather
+than 7bit ASCII set that Olivia does. Therefore, it has a reduced
+character set and does not print out in both upper and lower case (like
+RTTY). Some traffic nets might not want to use this mode because it
+does not support upper and lower case characters and extended
+characters found in many documents and messages. For normal digital
+chats and ham communications that does not pose any problem.
+
+
+<br>
+\ref contestia_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

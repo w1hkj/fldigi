@@ -1,0 +1,188 @@
+/**
+\page  navtex_and_sitorb_page NAVTEX and SITOR-B
+
+\tableofcontents
+
+\image html Navtex-Choosing.png "Op Mode Select"
+\image latex Navtex-Choosing.png "Op Mode Select" width=1.1in
+<br>
+
+
+<b>NAVTEX</b> (Navigational Telex) is an international automated service for
+delivery of meteorological and marine safety information to ships. These
+broadcasts are sent with the
+<a href="http://en.wikipedia.org/wiki/SITOR" title="SITOR">SITOR collective B-mode</a>
+(Also known as AMTOR-B or AMTOR-FEC), using the
+<a href="http://en.wikipedia.org/w/index.php?title=CCIR_476&amp;action=edit&amp;redlink=1" class="new" title="CCIR 476 (page does not exist)">CCIR 476</a>
+ character set. SITOR-B is also used in <a href="http://en.wikipedia.org/wiki/Amateur_radio" title="Amateur radio">amateur radio</a>,
+ where it is known as <a href="http://en.wikipedia.org/wiki/AMTOR" title="AMTOR">AMTOR-B</a> or AMTOR-FEC.
+ <br>
+
+
+It transmits at 100 baud FSK modulation with a frequency shift of 170 Hz. The
+frequencies are:
+<br>
+
+<ul>
+	<li>518 kHz : International frequency, always in English.</li>
+	<li>490 kHz : Regional transmission, in local languages (Not used in the United States).</li>
+	<li>4209.5 kHz : Marine Safety Information.</li>
+</ul>
+<br>
+
+The implementation reflects this structure: The Navtex
+modem is a specialization of the SITOR-B modem. Fldigi supports
+both modes. We will specify when their behaviors are different.
+<br>
+
+\section transmitting_text Transmitting a text
+
+Transmitting a text is done with the usual GUI. The only difference
+between the SITOR-B and Navtex modes, is that data (Whether sent
+with the GUI or with XML/RPC) are untouched in SITOR-B. In Navtex,
+on the contrary:
+<br>
+
+<ul>
+	<li>They are preceded by a phasing signal of several seconds.</li>
+	<li>A \"ZCZC B<sub>1</sub>B<sub>2</sub>B<sub>3</sub>B<sub>4</sub>\"
+		preamble is sent.</li>
+	<li>Then the original message is transmitted.</li>
+	<li>... followed by the "NNNN" terminator,</li>
+	<li>... and another phasing signal.</li>
+</ul>
+
+\section receiving_text Receiving a text
+
+The only difference between the SitorB and Navtex modes, is that
+messages are processed (Parsed and optionally stored) only in Navtex
+mode. Here is a typical transmission showing:
+<br>
+
+<ul>
+	<li>The end of a previous message : "NNNN"</li>
+	<li>The preamble of a new message: "EA85": 85th
+	<i>navigational warning</i> ('A') of the Niton station in England ('E').</li>
+	<li>The message itself, without the terminator (Which should come soon). </li>
+</ul>
+<br>
+
+
+The modem has some flexibility when interpreting messages, and is able to
+deal with missing or incomplete preamble and terminator.
+<br>
+
+
+\image html Navtex-Reception.png "Navtex Reception"
+\image latex Navtex-Reception.png "Navtex Reception" width=6.0in
+<br>
+
+\section automatic_frequency_control AFC: Automatic Frequency Control
+
+As shown in the reception screen hard-copy, it is possible to tick
+"AFC". The consequence is that the frequency is continuously
+monitored.
+<br>
+
+
+\section logging_navtex_data Logging Navtex data to ADIF files
+
+
+Navtex messages are delimited with the usual separators ZCZC and NNNN.
+Their format is:
+<br>
+
+<code>
+ZCZC B<sub>1</sub>B<sub>2</sub>B<sub>3</sub>B<sub>4</sub>  <br>(message text ...)<br>NNNN<br>
+</code>
+
+These four characters are:
+<br>
+
+<ul>
+	<li>B<sub>1</sub> : The
+	station origin, used for lookups in the Navtex stations file. The same
+	character is associated to several stations. Therefore, we use other
+	criteria such as the frequency and the distance to the receiver, to
+	eliminate the ambiguity. It is therefore important to specify correctly
+	your Maidenhead locator.</li>
+	<li>B<sub>2</sub> : The subject indicator, used by the receiver to identify
+	the message class, such as ice reports or meteorological messages. </li>
+	<li>B<sub>3</sub>B<sub>4</sub>: A serial number between 00 and 99.</li>
+</ul>
+
+\section navtex_config Configuration
+
+\image html Navtex-Configuration.png "Navtex Configuration"
+\image latex Navtex-Configuration.png "Navtex Configuration" width=6.0in
+<br>
+
+As for any modem, there is a specific configuration tab for Navtex which allows:
+<br>
+
+<ul>
+	<li>To specify whether messages should be stored in the current
+	Adif log file.</li>
+	<li>To choose the Text file containing stations definitions.</li>
+</ul>
+
+\section adif_journal ADIF journal file
+
+\image html Navtex-Logged-Contacts.png "Logging Contacts"
+\image latex Navtex-Logged-Contacts.png "Logging Contacts" width=6.0in
+<br>
+
+Navtex messages can be logged to the ADIF file. This is done with other
+extra data:
+<br>
+
+<ul>
+	<li>Date and time of the contact.</li>
+	<li>Frequency and mode.</li>
+	<li>Station name, country, Maidenhead locator
+	and callsign deduced from the message header and the Navtex stations
+	file (See below). The locator is calculated using the station
+	coordinates.</li>
+	<li>The message content itself. Note that
+	carriage-returns which cannot be displayed on a single line, are
+	transformed into a tilda "~".</li>
+</ul>
+<br>
+
+\section station_file Stations file
+
+\image html Navtex-Choosing-Stations-File.png "Choosing Stations File"
+\image latex Navtex-Choosing-Stations-File.png "Choosing Stations File" width=5.0in
+<br>
+
+The emitter station is extracted from the Navtex message, and used to
+extract latitude, longitude, station name and other characteristics from
+a file containing well-known station, data/NAVTEX_Stations.csv. It is
+possible to edit this text file, or to choose another one.
+<br>
+
+\section xml_rpc_functions XML/RPC functions
+
+Two XML/RPC functions are create:
+
+<br>
+<table>
+<tr>
+<td>navtex.get_message</td>
+<td>Returns next Navtex/SitorB message with a max delay in seconds passed
+as an integer parameter. Empty string if timeout.</td>
+</tr>
+<tr>
+<td>navtex.send_message</td>
+<td>Send a Navtex/SitorB message, passed as a string. Returns an empty
+string if OK otherwise an error message</td>
+</tr>
+</table>
+
+<br>
+\ref navtex_and_sitorb_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

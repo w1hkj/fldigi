@@ -1,0 +1,86 @@
+/**
+\page ui_configuration_broswer_page  User Interface Configuration - Browser
+
+\tableofcontents
+
+\image html config-ui-browser.png "UI Browser Configuration"
+\image latex config-ui-browser.png "UI Browser Configuration" width=5.0in
+<br>
+
+\image html browser-panel.png "Browser Panel"
+\image latex browser-panel.png "Browser Panel" width=5.0in
+<br>
+
+Fldigi can display multiple decoded signals in both PSK and RTTY modes.
+The multi-channel display is either a separate dialog or an embedded resizable
+panel.
+
+1) select the number of 100 Hz channels you want visible<br>
+2) select the start frequency for the browser (your transceiver may
+not rx signals below this value)<br>
+3) select the inactivity timeout for the browser. After this
+number of seconds the channel will be cleared and prepared for the next
+detection cycle.<br>
+4) select what kind of label annotation you want on each line<br>
+5) select the font and font size to be used in the browser<br>
+6) You can enter any text you want to search for in the
+<i>Seek Regular Expression</i> widget. This text can be a simple text
+snippet such as "CQ" or any regular expression. When the regex is
+satisfied in a channel the text color for that channel is changed to
+red. With a regex you can specify a more generic pattern, which means
+that you can match more things and your search is somewhat noise tolerant.
+Here is an example for a CQ from a US station (should match most
+callsigns):
+<br>
+
+\verbatim
+>cq.+[aknw][a-z]?[0-9][a-pr-z][a-z]{1,2}
+\endverbatim
+<br>
+
+This says "cq followed by at least one character, followed by one A,
+K, N, or W, followed by an optional letter, followed by a digit,
+followed by a letter that is not q, followed by one or two letters".
+The search is case-insensitive.
+<br>
+
+All plain text is a valid regular expression, unless you really had
+been looking for these metacharacters:
+<br>
+
+\verbatim
+>.[{()\*+?|^$</span></big><br>
+\endverbatim
+<br>
+
+These will have to be escaped with a backslash.<br>
+
+7) select whether you want a marquee type of continuous scrolling, or simply
+ clear the line when it is filled.<br>
+8) select whether you want the lowest frequency at the bottom (checked) or
+ the top of browser panel<br>
+9) select whether you want the audio stream history buffer to be played back
+ when you select an active channel. The first-in first-out audio
+ history represents the previous 2 minutes of received audio.<br>
+10) Both the background and slider highlight colors can be selected for the
+signal browser detection level control. The default colors are shown
+in these images.<br>
+11) You can set the 2 levels of text hi-lighting that is used in the browser
+lines<br>
+
+<ul>
+<li>HiLite 1 - Text color when the regular expression evaluator finds the
+target text</li>
+<li>HiLite 2 - Text color when your call sign appears in that receive
+channel</li>
+</ul>
+12) You can set the background colors for the odd/even lines and the line selection color<br>
+
+<br>
+\ref ui_configuration_broswer_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+

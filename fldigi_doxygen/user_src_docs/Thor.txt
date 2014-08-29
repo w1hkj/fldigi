@@ -1,0 +1,75 @@
+/**
+\page  thor_page Thor
+
+\tableofcontents
+
+Thor is a new forward error correcting incremental frequency shift keyed
+communications mode.  It was developed specifically to meet the needs of ARQ
+transfers in the HF spectrum.  It is particularly well suited under
+conditions of atmospheric static noise.  Thor borrows from two current modem
+technologies, \ref mfsk_page "MFSK" and \ref domino_ex_page "DominoEX".
+<br>
+
+Thor emits a distinctive double rising tone sequence at the
+beginning of each transmission.  It is used to flush the receive
+decoder and also provides a visual and audible clue to its being used.
+<br>
+
+The modem code for Thor uses a wide band multiple frequency
+detector that can lock on and detect the incoming signal even when
+badly mistuned.  Frequency domain oversampling is used to allow
+proper tone detection without the need for AFC.  The AFC control does
+not alter the decoder in any way.
+<br>
+
+The waterfall and digiscope will appear as:
+<br>
+
+\image html Thor-1.png "Thor"
+\image latex Thor-1.png "Thor" width=6.0in
+<br>
+
+The text displayed in the status area is the secondary text being sent by the
+transmitting station.  When the keyboard buffer is empty the Thor modem
+transmits text from the secondary text buffer.  Your secondary text buffer
+can be edited on the Thor configuration tab.
+<br>
+
+The digiscope display is similar to the DominoEX display and represents the
+tone pairs moving through the tone filters.  You can also use an alternate
+digiscope display (left click on the digiscope display area).
+<br>
+
+
+\image html dominoex-1a.png "DominoEx"
+\image latex dominoex-1a.png "DominoEx" width=1.0in
+<br>
+
+In this display mode the red line represents the center of the multiple
+tone bins that are in the detector.  The dots will be blurry if the AFC is
+not locked on and become very distinct when AFC lock has been achieved.  The
+tone dots will move from bottom to top (opposite the direction of the
+waterfall).
+<br>
+
+This is the same signal mistuned:
+<br>
+
+\image html dominoex-2.png "DominoEx Mistuned"
+\image latex dominoex-2.png "DominoEx Mistuned" width=6.0in
+<br>
+
+and with the signal badly mistuned:
+<br>
+
+\image html dominoex-3.png "DominoEx Mistuned 2"
+\image latex dominoex-3.png "DominoEx Mistuned 2" width=6.0in
+<br>
+
+
+<br>
+\ref thor_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

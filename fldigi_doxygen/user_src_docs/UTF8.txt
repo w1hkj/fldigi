@@ -1,0 +1,44 @@
+/**
+\page  utf8_support_page UTF-8 support
+
+\tableofcontents
+
+
+Fldigi supports the UTF-8 character set in all of it's labels and
+widgets (controls).  The Rx and Tx text panels accept both keyboard
+and text stream that is in UTF-8 format.  Transmission of UTF-8
+characters is supported by these modes:
+<br>
+
+<ul>
+  <li>PSK, PSKR, and Multi-Channel PSK/PSKR</li>
+  <li>Olivia - must enable 8 bit extended characters</li>
+  <li>MT63 - must enable 8 bit extended characters</li>
+  <li>MFSK - all baudrates supported</li>
+</ul>
+<br>
+
+
+For example, the following Russian and annotated texts can be sent and
+received:
+<br>
+
+\image html UTF8-Example.png "UTF-8 Encoded Characters"
+\image latex UTF8-Example.png "UTF-8 Encoded Characters" width=3.5in
+<br>
+
+
+UTF-8 characters are represented by 2 bytes which means that a single
+character will take longer to transmit.  Transmission speed will
+be further reduced on modes like PSK where the character to bit stream
+conversion has been optimized for the English language.
+<br>
+
+
+<br>
+\ref utf8_support_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

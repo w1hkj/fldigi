@@ -1,0 +1,33 @@
+/**
+\page supporting_data_files_page  Supporting Data Files Acquisition
+
+\tableofcontents
+<br>
+
+\image html support_data_menu_item.png "Data File Menu"
+\image latex support_data_menu_item.png "Data File Menu" width=2.0in
+<br>
+
+To update support data file(s). Mouse click on the 'Data files..." menu item
+located in the above drop down menu.
+
+\image html support_data_dialog.png "Data File Source"
+\image latex support_data_dialog.png "Data File Source" width=4.5in
+<br>
+
+The dialog box contains a list of the available file(s) for downloading. Click
+on the 'Update' button to initiate the data transfer.
+
+The buttons under WWW column are direct links to the data source. Selecting
+them either displays or downloads the data from your web browser.
+
+<b>Note:</b> Data source selection contain a single entry. User selection not
+required.
+
+\ref supporting_data_files_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+

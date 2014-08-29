@@ -1,0 +1,43 @@
+/**
+\page thor_configuration_page  Thor Configuration
+
+\tableofcontents
+
+\image html config-thor.png "Modems Thor"
+\image latex config-thor.png "Modems Thor" width=5.0in
+<br>
+
+The decoder can detect and defeat a modest amount of CWI that is within the
+BW set by the BW factor. Increasing the CWI threshold increasing
+the sensitivity for this correction. The offending tones are
+punctured thereby rendering them null to the Viterbi decoder.
+<br><br>Enter the secondary text. This text will be sent during periods
+when your keyboard is inactive (between letters for slow typists). The
+default for this text will be your callsign when you have entered that
+in the Operator configuration tab.
+<br>
+
+Set the BW factor for the decoding prefilter. 2.0 should be adequate
+unless you are experiencing nearby continuous wave interference (CWI).
+You can enable and disable the prefilter with the checkbox. Please note
+that the filter requires additional cpu cycles. Older and slower cpu
+models might give better decoding with the filter disabled.
+<br>
+
+The DominoEX decoder can detect the presence of CWI within the passband set
+by the BW factor. Increasing the CWI threshold increases the
+sensitivity to such interference. When the interference is
+detected the associated data is culled using a technique called puncturing.
+<br>
+
+Thor has been specifically designed to be used with ARQ text transmissions.
+It is also an easy to use keyboard chat mode. Thor operations
+are described in \ref thor_page "Operating Thor".
+
+<br>
+\ref thor_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

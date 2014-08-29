@@ -1,0 +1,42 @@
+/**
+\page psk_configuration_page  PSK Configuration
+
+\tableofcontents
+
+\image html config-psk-general.png "Modems PSK General"
+\image latex config-psk-general.png "Modems PSK General" width=5.0in
+<br>
+
+You should set the acquisition search range for waterfall left click
+action. As you adjust this control you will see the red mode
+width change on the waterfall scale. You can also adjust this
+value by pointing the mouse to the waterfall. Hold down the
+Control key and rotate the mouse wheel. The search routine which
+finds the PSK signal operates on a s/n threshold detector as well as
+recognizing the PSK phase modulation. You can adjust the
+acquisition signal to ratio threshold for the search routine.
+<br>
+
+The PSK decoder estimates the signal to noise ratio, S/N, and the
+intermodulation distortion, IMD, of the received signal. This
+measurement is valid during periods when the other station is
+transmitting the idle signal. The estimates are displayed on the
+status bar. You can control how these values are displayed; <b>clear</b>
+or <b>dim</b> after NN seconds. Setting the seconds to 0 disables the
+clear/dim action.
+<br>
+
+Fldigi has a multi channel browser than can display simultaneous reception of
+up to 30 PSK signals. The browser is described here:
+<br>
+
+\ref signal_browser_page "Signal Browser"
+<br>
+
+<br>
+\ref psk_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

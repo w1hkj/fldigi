@@ -1,0 +1,26 @@
+/**
+\page  psk_mail_configuation_page PSKmail Configuration
+
+\tableofcontents
+
+
+Fldigi can act as both a server and a client for PskMail, a separate
+application from fldigi.  The PSKmail specific configuration
+parameters are all located on the Misc/Pskmail tab of the configuration
+dialog.
+<br>
+
+Instructions on setting these parameters are a part of the pskmail installation.
+<br>
+
+\image html config-psk-mail.png "PSK Mail Configuration"
+\image latex config-psk-mail.png "PSK Mail Configuration" width=5.0in
+<br>
+
+
+<br>
+\ref psk_mail_configuation_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

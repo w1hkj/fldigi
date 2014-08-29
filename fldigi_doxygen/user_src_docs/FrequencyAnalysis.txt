@@ -1,0 +1,54 @@
+/**
+\page  frequency_analyzer_page Frequency Analyzer
+
+\tableofcontents
+<br>
+<br>
+
+Fldigi can be used to accurately measure the frequency of a remote signal
+that is transmitting a steady carrier.
+<br>
+
+\image html FreqAnal.png "Frequency Analyzer"
+\image latex FreqAnal.png "Frequency Analyzer" width=6.5in
+<br>
+
+I have set the sound card up using the WWV modem and have it adjusted
+for the proper PPM offset on receive.  I followed the frequency calibration
+procedure that ICOM recommends for the IC-746PRO, adjusting WWV at
+10 MHz for a zero beat.
+<br>
+
+Then fldigi was used in the "Freq Analysis" mode to track the WWV carrier
+at 10 MHz.  In this mode the decoder is merely a very narrow band
+AFC tracking filter.  The filter bandwidth is set to 2 Hz and the
+tracking time constants to about 5 seconds.  Future releases will
+probably make both of these user adjustable.  When the signal is
+being tracked the digiscope (right hand display) will be a horizontal
+line.  If the signal is very noisy and tracking difficult the
+digiscope will jump and become wavy.  You can see from the above
+image that I am tracking about 0.22 Hz high on WWV.  I have
+repeated this measurement at various times during the day and on
+various days with nearly the same result.  So I am comfortable
+with knowing that my local oscillator is just a little low (that is why
+the Frequency reads high).
+<br>
+
+ARRL frequently announces a frequency measurement test (FMT) which takes
+place on 160, 80 and 40 meters.  This is a chance to test your
+skills in frequency measurement.  You should be able to make a
+submission to the FMT using this technique.  Make corrections to the FMT
+transmission based upon your WWV measurement.  You may have to adjust
+for other local oscillator effects as well.  If you have some good
+ways to measure and correct for these I would be glad to share them
+with the other fldigi users.
+<br>
+
+<br>
+\ref frequency_analyzer_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+

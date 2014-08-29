@@ -1,0 +1,53 @@
+/**
+\page feld_hell_configuration_page  Feld Hell Configuration
+\tableofcontents
+
+<br>
+\image html config-feldhell.png "Feld Hell Config Panel"
+\image latex config-feldhell.png "Feld Hell Config Panel" width=5.0in
+
+The Hellschreiber modes all use a video display that is basically a
+character-by-character facsimile. The shape of the characters is
+determined at the transmitting station. You can select from 15
+different fonts, all of which have been designed for Feld Hell use.
+In normal use each dot of the character font is transmitted
+twice. You can increase the effective video s/n by transmitting
+the dots 2 or 3 times the normal. That is controlled by the
+Transmit width. <br>
+<br>
+
+FeldHell is a pulse amplitude modulated
+signal. The shape of the pulse is a raised cosine. This
+helps to control the bandwidth of the transmitted signal. It is
+customary to use a 4 millisecond risetime for the raised cosine,
+especially on HF. You can change that to 2 milliseconds.
+The video edges will be sharper, but the bandwidth twice as
+large. You might find 2 msec a better choice for VHF and above.<br>
+<br>
+
+Fldigi provides three controls for the receive function. The video is
+normally black on white. You can change that to white on black.
+You can also compress the horizontal scan rate of the video.
+You might find this effective in displaying received fonts that
+are broad (or if the other end is using a multiple dot transmit width).<br>
+<br>
+
+As
+you change Hellschreiber modes the optimum filter bandwidth will be
+set. You can change that and might find a narrower filter
+effective if you are experiencing CWI interference. FeldHell is
+susceptible to CWI. If you narrow the filter the received video
+will become blurred.<br>
+
+<br>
+\ref feld_hell_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+
+<br>
+<br>
+
+

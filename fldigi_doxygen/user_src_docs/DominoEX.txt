@@ -1,0 +1,67 @@
+/**
+\page  domino_ex_page DominoEX
+
+\tableofcontents
+
+The modem code for dominoEX uses a wide band multiple frequency
+detector that can lock on and detect the incoming signal even when
+badly mistuned.  Frequency domain oversampling is used to allow
+proper tone detection without the need for AFC.  The AFC control does
+not alter the decoder in any way.
+<br>
+
+
+The waterfall and digiscope will appear as:
+<br>
+
+\image html dominoex-1.png "DominoEX"
+\image latex dominoex-1.png "DominoEX" width=6.5in
+<br>
+
+The text displayed in the status area is
+the secondary text being sent by the transmitting station.  When
+the keyboard buffer is empty the dominoEX modem transmits text from the
+secondary text buffer.  Your secondary text buffer can be edited
+on the DominoEX configuration tab.
+<br>
+
+The digiscope display represents the tone pairs moving through the tone
+filters. You can also use an alternate digiscope display (left click on
+the digiscope display area).
+<br>
+
+\image html dominoex-1a.png "DominoEX"
+\image latex dominoex-1a.png "DominoEX" width=1.0in
+<br>
+
+In this display mode the red line represents the center of the multiple
+tone bins that are in the detector.  The dots will be blurry if the AFC is
+not locked on and become very distinct when AFC lock has been achieved.  The
+tone dots will move from bottom to top (opposite the direction of the
+waterfall).
+<br>
+
+This is the same signal mistuned:<br>
+<br>
+
+\image html dominoex-1a.png "DominoEX Mistuned"
+\image latex dominoex-1a.png "DominoEX Mistuned" width=1.0in
+<br>
+
+and with the signal badly mistuned:
+<br>
+
+\image html dominoex-3.png "DominoEX Mistuned"
+\image latex dominoex-3.png "DominoEX Mistuned" width=6.0in
+<br>
+
+See \ref domino_ex_configuration_page "DominoEX Configuration".
+<br>
+
+<br>
+\ref domino_ex_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

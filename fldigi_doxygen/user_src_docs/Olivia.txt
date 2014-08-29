@@ -1,0 +1,197 @@
+/**
+\page  olivia_page Olivia
+
+\tableofcontents
+
+
+fldigi can operate on the following Olivia modes without special setup by the
+operator:
+<br>
+
+<center>
+
+Mode           | Symbol Rate | Typing Speed        | Bandwidth
+:-------------:|:-----------:|:-------------------:|:----------:
+Olivia 8-250   | 31.25 baud  | 1.46 cps (14.6 wpm) | 250 Hz
+Olivia 8-500   | 62.5 baud   | 2.92 cps (29.2 wpm) | 500 Hz
+Olivia 16-500  | 31.25 baud  | 1.95 cps (19.5 wpm) | 500 Hz
+Olivia 32-1000 | 31.25 baud  | 2.44 cps (24.4 wpm) | 1000 Hz
+
+</center>
+<br>
+
+Unusual combinations of symbol rate and bandwidth can be selected
+using the \ref olivia_configuration_page "Olivia configuration tab".
+<br>
+
+These are unconnected, simplex chat modes with full time Forward Error
+Correction.  Olivia is a very robust mode with low error rates,
+but the penalty can be an annoyingly slow transfer of information. If you are
+a one finger typist then Olivia is your cup of tea.  The tones are spaced the
+same as the baud rate, for example 31.25 Hz for the default baud rates.  The
+default calling mode is 32-1000.   It has the following appearance on
+fldigi's waterfall:
+<br>
+
+\image html Olivia32-1000.png "Olivia 32/1000"
+\image latex Olivia32-1000.png "Olivia 32/1000" width=3.0in
+<br>
+
+<b>Excerpts from the web pages of
+<a href="http://www.oliviamode.com/" target="_blank">Gary, WB8ROL</a>
+</b>
+<br>
+
+Oliva Mode is a little different than PSK, RTTY, and many other digital
+modes. Below are tips on how to maximize your use of this mode.
+<br>
+
+<b>Disable your software squelch or turn it down as low as you can</b>
+<br>
+
+Generally turn your squelch setting in your software off or set it as
+low as it will go. You will see some "garbage" letters get printed out
+if there is NO Olivia signal present but it doesn't harm anything. When
+an Olivia signal is there it will start decoding it and print out the
+text without garbage at that time. It doesn't do much good to use a
+digital mode like Olivia that can decode signals -14 db below the noise
+lever IF you squelch it AT the noise level!  It would be like
+getting a pair of high power binoculars and using them only in a 10x10
+room with no windows.
+<br>
+
+<b>Be Patient!</b>
+<br>
+
+When you call CQ on this mode be patient and wait at least 45-60
+seconds before you put out another call. When the other person who
+hears your CQ clicks on the waterfall it may take 4-20 seconds or even
+longer before they might actually start decoding your signal.
+That varies a lot depending on the software they are using AND value
+they have their Sync Integration Period set to.
+<br>
+
+The Sync Integration Period setting determines how "deep" the Olivia
+decoding algorithm searches in the noise to get the signal.  A
+higher settings takes longer BUT usually decodes with more accuracy -
+at least to a point.  However, a higher setting (since it does
+more work and takes longer) will increase the delay factor.  So,
+when you finish your CQ and your transmitter switches to receive - the
+station listening to you (depending on his Sync Integration Periods
+setting) MAY NOT finish decoding your CQ for another 4-20
+seconds.  The same applies during a QSO when you pass it back to
+the other guy for his turn -- be patient if he doesn't come back right
+away because his software may still be decoding your signal long after
+you stopped transmitting.
+<br>
+
+It DOES NOT PAY to be impatient on this mode and send SHORT CQ's or NOT
+wait at least 45-60 seconds between CQ's.  Generally a a 2x2 CQ
+sent at least 2 or 3 times is going to work much better for you than a
+short one. Below is the normal CQ I use though on real fast Olivia
+formats (like 500/4) I will do a 3x3 and send it 3 times.
+<br>
+
+<tt>CQ CQ de WB8ROL WB8ROL</tt>
+<br>
+<tt>CQ CQ de WB8ROL WB8ROL</tt>
+<br>
+<tt>CQ CQ de WB8ROL WB8ROL pse K</tt>
+<br>
+
+<b>Don't set your Sync Integration Period setting TOO high</b>
+<br>
+
+If you set your Sync Integration Period too high it MAY take minutes
+before your software will start decoding a signal AND there is no or
+little benefit to doing that past a certain point.  I usually set
+mine so that the delay factor is abut 15-20 seconds.  I can time
+this delay factor by sending a very short test and then when it is done
+and the software switches back to receive - time the number of seconds
+before you see random garbage start appearing on the screen (assuming
+you have your SQUELCH OFF).  For the standard Olivia modes like
+2000/64, 1000/32, 500/16, 250/8, and 125/4 that usually means my Sync
+Integration Period is set between 3-5 most of the time.  If I use
+the faster formats I set it higher often between 6-10.  As long as
+my delay factor is approx. 15-20 seconds. Any higher than that and I
+don't see any real improvement in the quality of the decoding.
+But play with your own settings and see what does best for you.
+If you leave it always on one setting, though, and use standard and non
+standard formats of Olivia you are short changing yourself.
+<br>
+
+<b>Generally keep your Search (Tune Margin) setting to about 8</b>
+<br>
+
+The setting of 8 is usually good for most situations and this setting
+is usually not all that critical.  However, under a few band
+conditions it might (or might not) help to temporarily adjust
+this.  If you find other Olivia signals very very close to you -
+almost adjacent or even overlapping it might help to reduce this
+setting to 4 or even 2.  This setting determines how far, either
+side of your center frequency, Olivia will search for a signal to
+decode.  If you reduce this when another Olivia signal is close or
+overlapping it may keep it from locking onto the other signal instead
+of yours.  Also .... if you are trying to decode an extremely weak
+signal and can't even tell exactly WHERE to click on the waterfall
+because the trace is too faint or non existent then it might help to
+increase this setting to 16 or 32 temporarily. Then it would perhaps
+decode the signal even if you were OFF his center frequency by a large
+margin.
+<br>
+
+<b>If the slow speed of Olivia bothers you some ...</b>
+<br>
+
+If you find yourself wanting things to go a little faster then start
+using more (ham) common abbreviations like "hw" for how and "ur" for
+your.  Don't waste time sending words like "the" and "and" all the
+time.  An example : The weather here is nice and sunny today and
+the high will get to 85 degrees --- instead send : Wx nice + sunny -
+high 85 deg -- No need to spell out everything and use superfluous
+words like the, and, many others.  And why use words like HERE and
+TODAY in the above context when the other station already knows you are
+telling the weather for YOUR QTH for TODAY.  You aren't writing a
+novel, an article, or in a spelling bee.  Also after you establish
+the QSO don't send BOTH calls all the time at the beginning and end of
+every transmission.  After the QSO is in progress come back to the
+station like this : .. de WB8ROL  -- instead of : W9ZZZ de
+WB8ROL  -- and when you sent it back to the other guy send : BTU -
+de WB8ROL KN  -- That will help speed things up too.  You
+don't need to send the other stations call sign continually to fulfill
+your legal obligation to identify your own station.
+<br>
+
+<b>Don't be afraid to switch to a NON standard Olivia format if
+conditions warrant it.</b>
+<br>
+
+If signals are real strong and you prefer to be sending and receiving
+at a faster speed - don't be afraid to ask the other station if they
+would like to speed things up and switch to another Olivia format -
+even a non-standard one.  If you, for instance, were talking to me
+on 500/16 Olivia format and we both had very strong signals and not
+much QRM, QRN, etc. then ask me if I would like to go to 500/8 format
+or even 500/4 format.  500/16 format is approximately 20wpm while
+500/8 is close to 30wpm and 500/4 close to 40wpm. If you do end up
+switching to the faster modes you may also want to increase your Sync
+Integration Period setting substantially too - to maintain the best
+quality decoding.  If not, you might get more errors in the
+decoded text.  And if the band conditions become worse - go back
+to the original format AND remember to reset your Sync Integration
+Period setting or the delay in decoding will be way too long!
+Also, if the band starts getting real crowded and say, for example, you
+were on 500/16 mode - you might suggest to the other station to switch
+to 250/4 mode (increase Sync Integration Period setting too) to save
+space and be a "good neighbor" to all the other operators nearby.
+250/4 is the SAME speed as 500/16 and nearly as sensitive with the
+correct settings.
+<br>
+
+
+<br>
+\ref olivia_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+*/
+

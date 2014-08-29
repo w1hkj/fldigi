@@ -1,0 +1,100 @@
+/**
+\page psk_page PSK - BPSK, BPSKR, QPSK, and Multi-Channel Modems
+
+\tableofcontents
+
+\section bpsk_modem  BPSK and QPSK modems
+
+PSK are narrow band low symbol rate modes using either single or
+multiple carrier differential Binary Phase Shift Kying, BPSK, or Quadrature
+Phase Shift Keying, QPSK.
+<br>
+
+PSK63FEC and the PSKxxxR modes are forward error correcting modes. PSK63FEC
+is compatible with the MultiPsk mode of the same name. The PSKxxxR, or
+robust, modes use both forward error correction and interleaving to achieve
+about 4 dB s/n improvement over standard PSK. These modes are use primarily
+by the PskMail user community. They are the invention of John Douyere,
+VK2ETA, a member of the fldigi development team.
+<br>
+
+In addition to the binary phase shift keying the signal is 100%
+raised-cosine amplitude modulated at the symbol rate. This reduces the power
+to zero at the phase change. Because of this amplitude modulation, the
+signal bandwidth is relatively narrow. Synchronization at the receiver
+is straight forward because it can be recovered from the amplitude
+information. Differential PSK is used to provide continuous phase changes
+when idle (to maintain sync), and by allowing the receiver to measure phase
+difference from symbol to symbol, to reduce the effects of ionospheric
+Doppler phase changes which modulate the signal. The slower modes are
+more affected by Doppler, and the QPSK modes are particularly affected.
+<br>
+
+With no interleaver and limited coding length, the QPSK mode Forward Error
+Correction coding gain is limited, and under burst noise conditions on
+HF the performance is usually worse than the BPSK option at the same
+baud rate. In general the narrow-band BPSK modes work well on a quiet
+single-hop path, but give poor performance in most other conditions.
+<br>
+
+\image html psk-signal-oscope.png "PSK63 signal transmitting text data - oscilloscope view"
+\image latex psk-signal-oscope.png "PSK63 signal transmitting text data - oscilloscope view" width=5.0in
+<br>
+
+\image html psk-signal-waterfall.png "PSK63 signal transmitting text data - waterfall view"
+\image latex psk-signal-waterfall.png "PSK63 signal transmitting text data - waterfall view" width=1.0in
+<br>
+
+\image html qpsk-signal-oscope.png "QPSK63 signal transmitting text data - oscilloscope - waterfall view"
+\image latex qpsk-signal-oscope.png "QPSK63 signal transmitting text data - oscilloscope - waterfall view" width=5.0in
+<br>
+
+\image html qpsk-signal-waterfall.png "QPSK63 signal transmitting text data - waterfall view"
+\image latex qpsk-signal-waterfall.png "QPSK63 signal transmitting text data - waterfall view" width=1.0in
+
+<br>
+
+The two oscilloscope views above clearly show the combined phase and
+amplitude modulation of these modes.<br>
+
+<br>
+
+With these modes, a very linear transmitter is required. Over-driven
+operation results in excessive bandwidth, poorer reception and
+difficult tuning. Overdrive usually occurs by having the audio
+signal much too large. These are very sensitive modes and usually very little
+power is required. QRP operation of 80, 40, 30 and 20 meters can provide
+nearly 100% copy over multi-hop paths. In many instances PSK can provide
+better decoding than CW.
+<br>
+
+Setting up for a good clean on air signal that will receive the accolades
+of your QSO partners is easy. Follow the instructions on using the
+\ref tune_page "Tune" button</a> and you will have a clean on signal.
+<br>
+
+Good reception of PSK signals requires that the demodulator be phase locked
+to the incoming signal. Fldigi has both a fast acquire / slow tracking AFC
+system. Place the red bandwidth bar (see above) so that it overlies
+the desired signal and then press the left mouse button. The signal
+should quickly lock on a decoding should commence immediately. It is
+almost impossible to visually tell whether a BPSK or QPSK signal is
+being received. Under very high s/n you might be able to hear the
+difference, but that is even difficult for most operators. If you are not
+able to decode a signal that looks like a BPSK and the bandwidth of the
+signal matches the baud rate then it might be a QPSK signal. Just change
+mode a try reacquiring the signal.
+<br>
+
+\section multi_bpsk_modem  Multi-Channel PSK modems
+
+\image html MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view"
+\image latex MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view" width=4.0in
+
+<br>
+\ref psk_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

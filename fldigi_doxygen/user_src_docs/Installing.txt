@@ -1,0 +1,30 @@
+/**
+\page  install_from_source_page Installing from Source
+
+\tableofcontents
+
+The developers recommend that you build either fldigi from source or install
+from the repository associated with your distribution.  The repository may
+not be immediately available for the most current version number.  In that
+case you can try installing the binary distribution.  Keep in mind that the
+version numbers of the dependent shared libraries must match those on the
+machine used to create the binary.
+
+The source code for fldigi is very large and has a number of dependencies
+that must be satisfied before a successful compile.  If you are not familiar
+with compiling and linking source code you should probably practice on a
+simpler package before treading these waters. Please refer to the following
+web site for information on building for
+Linux, Windows and OS X.
+<br>
+
+<a href="https://fedorahosted.org/fldigi/wiki/Documentation/HOWTO#Buildingfromsource">Fldigi WIKI - build instructions</a>
+<br>
+
+<br>
+\ref install_from_source_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

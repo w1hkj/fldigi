@@ -1,0 +1,234 @@
+/**
+\page  exec_macro_page Exec Macro
+
+\tableofcontents
+
+The \<EXEC\> ... \</EXEC\> macro is designed to be used on the
+Linux OS as it supports fully functional pipes.  Windows' version
+of file pipes is not fully POSIX compliant, but the function might work
+in the environment.  Consider all that the following allows you to
+do from within fldigi and you might want to consider changing over to
+Linux.The \<EXEC\> macro defines an external child process (or
+processes) that will be called by fldigi when the macro key is invoked.
+<br>
+
+\section export_variables Exported variables
+
+Fldigi exports a set of variables to the child process and
+adds ~/.fldigi/scripts to the PATH variable before running the shell
+code. This is the directory location for all executable scripts
+and programs which you might want to call from within the macro.  Some
+examples will be given later.  Open the macro editor for an undefined macro
+key and enter the following:
+<br>
+
+\verbatim
+<EXEC>env | grep FLDIGI</EXEC>
+\endverbatim
+<br>
+
+Save the macro; call it ENV.  Then press the newly defined macro key. All
+of the exported variables will be shown in the transmit window.
+<br>
+
+Here is an example of the results:
+<br>
+
+FLDIGI_RX_IPC_KEY=9876
+<br>
+FLDIGI_LOG_LOCATOR=FM02BT
+<br>
+FLDIGI_TX_IPC_KEY=6789
+<br>
+FLDIGI_LOG_RST_IN=
+<br>
+FLDIGI_LOG_FREQUENCY=3581.000
+<br>
+FLDIGI_AZ=108
+<br>
+FLDIGI_MY_CALL=W1HKJ
+<br>
+FLDIGI_LOG_TIME=2113
+<br>
+FLDIGI_MY_NAME=Dave
+<br>
+FLDIGI_VERSION=3.0preG
+<br>
+FLDIGI_LOG_NOTES=
+<br>
+FLDIGI_LOG_QTH=Mt Pleasant, SC
+<br>
+FLDIGI_MY_LOCATOR=EM64qv
+<br>
+FLDIGI_DIAL_FREQUENCY=3580000
+<br>
+FLDIGI_CONFIG_DIR=/home/dave/.fldigi/
+<br>
+FLDIGI_LOG_RST_OUT=
+<br>
+FLDIGI_MODEM=BPSK31
+<br>
+FLDIGI_LOG_CALL=KH6TY
+<br>
+FLDIGI_MODEM_LONG_NAME=BPSK-31
+<br>
+FLDIGI_AUDIO_FREQUENCY=1000
+<br>
+FLDIGI_LOG_NAME=Skip
+<br>
+FLDIGI_PID=14600
+<br>
+FLDIGI_FREQUENCY=3581000
+<br>
+
+All of the above envelope variables can be referenced in a shell script that
+is called from within fldigi.
+<br>
+
+\section detecton_of_scripts Detection of existing scripts
+
+In anticipation of a collection of useful "fldigi scripts", the
+macro browser contains a \<exec\> \</exec\> macro line for each
+executable file found in the scripts directory. The EXEC macro allows the
+text that is read from the child process to be
+parsed for more fldigi macros. For example, try this macro:
+<br>
+
+\verbatim
+<EXEC>cat foo</EXEC>
+\endverbatim
+
+where foo is a file that contains:
+<br>
+
+\verbatim
+<MYCALL>
+\endverbatim
+
+This may have some interesting uses but, if it is undesirable, it can be
+suppressed with an extra layer of redirection.  Instead of
+\<EXEC\>command\</EXEC\>, you would
+use \<EXEC\>noexp command\</EXEC\> where noexp is
+the following very simple script:
+
+\verbatim
+snip---------------------------------------
+#!/bin/bash
+echo -n "<STOP>"
+"$@"     # run the command
+r=$?     # save its exit code
+echo -n "<CONT>"
+exit $?
+snip---------------------------------------
+\endverbatim
+
+There are three additional MACRO definitions that expand the capability of
+the \<EXEC\> command: \<STOP\>, \<CONT\> and \<GET\>.
+The \<STOP\> and \<CONT\> macros stop and resume the expansion of all
+\<MACRO\> strings. For
+example, \<STOP\>\<MYCALL\>\<CONT\>\<MYCALL\>
+would only expand the second \<MYCALL\>.
+
+By wrapping the command output in this way we can be sure that
+no text will be expanded. You might even use
+<br>
+
+\verbatim
+"$@" | sed "s/<CONT>//g"
+\endverbatim
+<br>
+
+if you feel paranoid. You can "fork and forget" with an exec macro defined
+as: \<EXEC\>exec command -args \>/dev/null\</EXEC\>
+
+Any of the text that appears between the \<EXEC\> and \</EXEC\> can
+reference an executable program or shell command found in the
+~/.fldigi/scripts directory.
+
+Any text output that is returned by the program or script program (or the
+result of the in-line command) is always returned to the transmit
+buffer and appears as appended to the transmit window.
+
+
+\section querying_database Querying an external database
+
+The \<GET\> command captures returned text from the external process and
+parses it for the following content:
+
+$NAMEtext_name$QTHtext_qth
+
+If either $NAME or $QTH is present the trailing text is transferred to the
+LOG_NAME or LOG_QTH widgets respectively.  This means that you can create a
+script that accesses a local or net based database of callsign data and
+parse that data to form the above console output.  Fldigi will accept that
+output, parse it and populate the associated log entries. Cool!  Now
+for some examples.  Here is a perl script that performs the above for
+the University of Arkansas on-line callsign database,
+\ref ualr_telnet_page "ualr-telnet". The matching macro
+key definition for the above is:
+
+\verbatim
+<EXEC>ualr-telnet.pl $FLDIGI_LOG_CALL</EXEC><GET>
+\endverbatim
+
+which I named "ualr ?"
+
+\section google_earth_map Google Earth Map
+
+Here is a really cool perl script, \ref google_maps "Google Earth Mapping",
+that accepts the current "Loc" field in the logging area and generates
+a Google Earth map which is displayed in your default browser.
+
+The macro call is:
+
+\verbatim
+<EXEC>map.pl</EXEC>
+\endverbatim
+
+\section custom_dates_times Custom dates/times
+
+You can use \<EXEC\> to create custom date/time entries. For
+example, BARTG contesters use %H%M, but in other circumstances a user
+might prefer %H:%M or %H.%M etc.
+Create the following script file in the ~/.fldigi/scripts directory, call it mytime:
+
+\verbatim
+snip---------------------------------------
+#!/bin/sh
+date --utc "+%H:%M"
+snip---------------------------------------
+\endverbatim
+
+date calls strftime, the same C function used by fldigi for the ZDT/LDT
+expansion, so it has an equally vast number of format strings to choose
+from. Look for them in its manual page.
+
+Give "mytime" execute permissions with a file manager or with chmod:
+   chmod u+x ~/.fldigi/scripts/mytime.
+
+Test it on the command line and make sure it works correctly:
+   ~/.fldigi/scripts/mytime
+
+Restart fldigi. The mytime script will now appear at the end of the list in the
+macro browser, and can be entered with the \<\< button as usual.
+Test that macro and you will see that \<EXEC\>mytime\</EXEC\>
+inserts the datetime in the specified format.
+Of course you could have entered:
+<br>
+
+\verbatim
+<EXEC>date --utc "+%H:%M"</EXEC>
+\endverbatim
+
+in the macro body text directly Many other uses for the \<EXEC\>...\</EXEC\> macro pair
+can be imagined when used the with ENV parameters.  For example you could send
+Azimuth data to an automated antenna rotor.  The exported variables should be
+sufficient for a script writer to create custom loggers and clients.
+
+<br>
+\ref exec_macro_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

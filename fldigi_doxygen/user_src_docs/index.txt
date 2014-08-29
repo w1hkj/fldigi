@@ -1,0 +1,46 @@
+/******************************************************************************
+ * Copyright (C) 2013 Robert Stiles, KK5VD.
+ *
+ * Permission to use, copy, modify, and distribute this software and its
+ * documentation under the terms of the GNU General Public License is hereby
+ * granted. No representations are made about the suitability of this software
+ * for any purpose. It is provided "as is" without express or implied warranty.
+ * See the GNU General Public License for more details.
+ *
+ * Documents produced by Doxygen are derivative works derived from the
+ * input used in their production; they are not affected by this license.
+ *
+ * Requires Doxygen for HTML output
+ * plus LiveTeX (LaTeX) for PDF output
+ *
+ */
+
+
+/*!
+
+\mainpage FLDIGI Users Manual - Version 3.21
+\anchor main_page
+
+<center>
+\image latex FLDigiWindow.png "" width=4.0in
+\image html FLDigiWindowHtml.png ""
+</center>
+
+\section fldigi_op_ins Fldigi Configuration and Operational Instructions
+
+<ul>
+<li>\ref configuration_page </li>
+<li>\ref modems_page </li>
+<li>\ref operating_page </li>
+<li>\ref logging_page </li>
+<li>\ref macro_page </li>
+<li>\ref developers_page </li>
+<li>\ref license_page </li>
+<li>\ref recognitions_page </li>
+</ul>
+
+<br>
+\ref main_page "Return to Top of Page"
+
+*/
+

@@ -1,0 +1,11 @@
+/**
+\page logging_page Logging
+
+<ul>
+<li> \subpage cabrillo_report_page </li>
+<li> \subpage exporting_logbook_data</li>
+<li> \subpage qso_log_book_page </li>
+<li> \subpage ui_configuration_log_server_page </li>
+</ul>
+
+*/

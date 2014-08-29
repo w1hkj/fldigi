@@ -1,0 +1,44 @@
+/**
+\page  ui_configuration_contest_page  User Interface Configuration - Contest
+
+\tableofcontents
+
+
+
+\image html config-ui-tabs.png "UI Tabs"
+\image latex config-ui-tabs.png "UI Tabs" width=4.0in
+<br>
+
+
+Fldigi supports a generic but robust set of contest functions. In
+addition to serial-in and serial-out you can capture and transmit three
+exchange sequences unique to a specific contest. Enter the
+exchange you want to send for each of the three. You can force
+the RST in/out to always be 599. That seems to be a norm for many
+contests. When operating in a CW contest you can have fldigi send
+cut numbers, T for 0, N for nine.
+<br>
+
+\image html config-ui-contest.png "UI Contest"
+\image latex config-ui-contest.png "UI Contest" width=5.0in
+<br>
+
+The serial number can be set to use leading zeros.  You can specify the
+starting number for the sequence and how many digits are sent, ie:
+0024. Pressing Reset will set the starting number to the QSO logging
+serial out field. See \ref contest_how_to_page "Contest How To" for more
+info.
+<br>
+
+You can check for duplicates by any combination of the specified named
+fields. You can also specify that the duplicate had to occur with a
+given time interval. Some VHF contests allow a duplicate CALL after
+a given time interval.
+<br>
+
+\ref ui_configuration_contest_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

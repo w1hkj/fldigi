@@ -1,0 +1,113 @@
+/**
+\page keyboard_operation_page  Keyboard Operation
+
+\tableofcontents
+
+The transmit buffer for fldigi is type ahead which means that you
+can be typing text while the program is sending an earlier part of your
+transmitted message.
+
+Newly entered text appears in black and text which has been transmitted
+is changed to red.  You can backspace into the red area. When you do and
+the modem in use supports the BS character it will be sent to the receiving
+station.  If you monitor PSK and MFSK signals you will often find operators
+backspacing over previously sent text.  It's probably just as easy to just
+send XXX and retype that part of the message, but we have gotten used to
+word processors, email, etc. that allow us to send perfect (right) text, so
+we expect our digital modems to do the same.  Let's see, what was that
+prosign often used in CW for oooops.
+<br>
+
+All of the alpha numeric keys perform as you would expect, entering
+text into the transmit buffer.  There is one very important
+exception:
+<br>
+
+The caret "^" symbol.  This is used in the macro expansion routine
+and also used by the transmit buffer evaluator.  A ^r puts fldigi into
+receive mode.  So you can enter the ^r (caret followed by the r) at the end
+of your transmit buffer and when the sent character cursor (red chars) gets to
+that point the program will clear the text and return to the receive
+mode.
+<br>
+
+You can load the transmit buffer with any ASCII Text file of your
+choice.  Merely right click in the buffer window and select from
+the pop-up menu.  You can also short cut to the ^r from
+this popup.
+<br>
+
+Many ops (including me) do not like to be tied to a mouse.  The
+fldigi text widget supports some short cuts to make your life easier:
+<br>
+
+<ul>
+    <li>Pause/Break - a transmit / receive - pause button. </li>
+    <ul>
+        <li>if you are in the receive mode and press the Pause/Break key the
+        program will switch to the transmit mode.  It will begin transmitting
+        characters at the next point in the transmit buffer following the red
+        (previously sent text).  If the buffer only contains unsent text,
+        then it will begin at the first character in the buffer.  If the
+        buffer is empty, the program will switch to transmit mode and
+        depending on the mode of operation will send idle characters or
+        nothing at all until characters are entered into the buffer.</li>
+
+       <li>if you are in the transmit mode and press the Pause/Break key
+       the program will switch to the receive mode.  There may be a slight
+       delay for some modes like MFSK, PSK and others that require you to
+       send a postamble at the end of a transmission.  The transmit text
+       buffer stays intact, ready for the Pause/Break key to return you to
+       the transmit mode.</li>
+
+       <li>Think of the Pause/Break key as a software break-in capability.</li>
+  </ul>
+
+  <li>Esc - </li>
+  <ul>
+      <li>Abort transmission. - immediately returns the program to receive,
+      sending the required postamble for those modes requiring it. The
+      transmit buffer is cleared of all text.</li>
+
+      <li>Triple press on Esc - terminates the current transmission without
+      sending a postamble - The PANIC button.</li>
+  </ul>
+
+  <li>Ctrl-R will append the ^r (return to receive) at the end of the
+  current text buffer.</li>
+
+  <li>Ctrl-T will start transmitting if there is text in the transmit
+  text window.</li>
+
+  <li>Alt/Meta-R will perform the same function as the Pause/Break key</li>
+
+  <li>Tab moves the cursor to the end of the transmitted text (which
+  also pauses tx). A tab press at that position moves the cursor to the
+  character following the last one transmitted. CW operation is slightly
+  different, see the help for \ref cw_page .</li>
+
+  <li>Ctrl + three digits will insert the ASCII character designated by
+  that entry.</li>
+
+</ul>
+
+\section function_keys Function Keys
+
+Keys F1 through F12 are used to invoke the macro F1 - F12.  You
+can also just click on the macro key button associated with that
+function key.  There are 4 sets of 12 macros. If you press the numbered
+button on the macro button bar the next set of macros are referenced by
+the F1 - F12.   A right click on the numbered button provides a reverse
+rotation through the 4 sets of macro keys.  The respective macro set can be
+made available by pressing the Alt-1, Alt-2, Alt-3 or Alt-4 key
+combination.  Note that this is not Alt-F1 etc.
+<br>
+
+
+<br>
+\ref keyboard_operation_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

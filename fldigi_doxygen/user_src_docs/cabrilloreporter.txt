@@ -1,0 +1,145 @@
+/**
+\page cabrillo_report_page  Cabrillo Report
+
+\tableofcontents
+
+\image html CabrilloSetup.png "Cabrillo Report"
+\image latex CabrilloSetup.png "Cabrillo Report" width=4.0in
+<br>
+
+Fldigi can generate a basic Cabrillo report that meets most contest needs.
+<br>
+
+Selecting the "File/Log/Cabrillo report" menu item opens the following
+dialog:
+<br>
+
+If you want to export every record press the "Check All" in the left
+panel.
+<br>
+
+Select the Contest type from the pull down menu in the right panel.
+Fldigi knows how to format the various fields for each contest.
+When satisfied with the setup press OK. You will then have
+the opportunity to specify the location and name of the cabrillo output
+file.
+<br>
+
+If you use the \ref contest_how_to_page \<XBEG\>...\<XEND\> to
+capture your outgoing exchange, OR if you choose to capture all received
+exchange information in the "Exch" field on the  \ref qso_log_book_page "" panel then
+you should be careful not to duplicate the data in the Caprillo report. For
+example:
+<br>
+
+You captured outgoing exchange data as \<XBEG\>\<RST\> \<CNTR\>\<XEND\>. Do
+not enable the "RST sent" and "Serial # out" check boxes as this info is
+already contained in the "Exchange in" field.
+<br>
+
+You captured incoming exchange data into the Exch field as RST SER#
+TIME. Do not enable the "RST rcvd" or the "Serial # in" check
+boxes.
+<br>
+
+You must then open the file with a plain text editor and
+modify the appropriate entries. Check with each contest sponsor
+to see what their requirements are.
+<br>
+
+Here is an example of a generated cabrillo report format before being edited:
+
+\verbatim
+START-OF-LOG: 3.0
+CREATED-BY: fldigi 3.11
+
+# The callsign used during the contest.
+CALLSIGN: W1HKJ
+
+# ASSISTED or NON-ASSISTED
+CATEGORY-ASSISTED:
+
+# Band: ALL, 160M, 80M, 40M, 20M, 15M, 10M, 6M, 2M, 222, 432, 902, 1.2G
+CATEGORY-BAND:
+
+# Mode: SSB, CW, RTTY, MIXED
+CATEGORY-MODE:
+
+# Operator: SINGLE-OP, MULTI-OP, CHECKLOG
+CATEGORY-OPERATOR:
+
+# Power: HIGH, LOW, QRP
+CATEGORY-POWER:
+
+# Station: FIXED, MOBILE, PORTABLE, ROVER, EXPEDITION, HQ, SCHOOL
+CATEGORY-STATION:
+
+# Time: 6-HOURS, 12-HOURS, 24-HOURS
+CATEGORY-TIME:
+
+# Transmitter: ONE, TWO, LIMITED, UNLIMITED, SWL
+CATEGORY-TRANSMITTER:
+
+# Overlay: ROOKIE, TB-WIRES, NOVICE-TECH, OVER-50
+CATEGORY-OVERLAY:
+
+# Integer number
+CLAIMED-SCORE:
+
+# Name of the radio club with which the score should be aggregated.
+CLUB:
+
+# Contest: AP-SPRINT, ARRL-10, ARRL-160, ARRL-DX-CW, ARRL-DX-SSB, ARRL-SS-CW,
+# ARRL-SS-SSB, ARRL-UHF-AUG, ARRL-VHF-JAN, ARRL-VHF-JUN, ARRL-VHF-SEP,
+# ARRL-RTTY, BARTG-RTTY, CQ-160-CW, CQ-160-SSB, CQ-WPX-CW, CQ-WPX-RTTY,
+# CQ-WPX-SSB, CQ-VHF, CQ-WW-CW, CQ-WW-RTTY, CQ-WW-SSB, DARC-WAEDC-CW,
+# DARC-WAEDC-RTTY, DARC-WAEDC-SSB, FCG-FQP, IARU-HF, JIDX-CW, JIDX-SSB,
+# NAQP-CW, NAQP-RTTY, NAQP-SSB, NA-SPRINT-CW, NA-SPRINT-SSB, NCCC-CQP,
+# NEQP, OCEANIA-DX-CW, OCEANIA-DX-SSB, RDXC, RSGB-IOTA, SAC-CW, SAC-SSB,
+# STEW-PERRY, TARA-RTTY
+CONTEST: ARRL-RTTY
+
+# Optional email address
+EMAIL:
+
+LOCATION:
+
+# Operator name
+NAME:
+
+# Maximum 4 address lines.
+ADDRESS:
+ADDRESS:
+ADDRESS:
+ADDRESS:
+
+# A space-delimited list of operator callsign(s).
+OPERATORS:
+
+# Offtime yyyy-mm-dd nnnn yyyy-mm-dd nnnn
+# OFFTIME:
+
+# Soapbox comments.
+SOAPBOX:
+SOAPBOX:
+SOAPBOX:
+
+QSO: 14095 RY 2009-01-04 1952 W1HKJ 599 GA 12345   ND2T          599 CA 67890
+QSO: 14098 RY 2009-01-04 1949 W1HKJ 599 GA         W0SD          599 SD
+QSO: 14099 RY 2009-01-04 1948 W1HKJ 599 1234567890 KB7Q          599 1234567890
+QSO: 14100 RY 2009-01-04 1948 W1HKJ 599 GA         N6WS          599 CA
+QSO: 14103 RY 2009-01-04 1946 W1HKJ 599 GA         VE6AO         599 AB
+END-OF-LOG:
+
+\endverbatim
+
+<br>
+
+\ref cabrillo_report_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+
+

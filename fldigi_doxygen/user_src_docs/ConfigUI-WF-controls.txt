@@ -1,0 +1,32 @@
+/**
+\page  ui_configuration_waterfall_controls_page User Interface Configuration - WF Controls
+
+\tableofcontents
+
+\image html config-ui-tabs.png "UI Tabs"
+\image latex config-ui-tabs.png "UI Tabs" width=5.0in
+<br>
+
+\image html config-ui-wf-controls.png "UI Configure - WF Controls"
+\image latex config-ui-wf-controls.png "UI Configure - WF Controls" width=5.0in
+<br>
+
+You can configure the appearance of fldigi in a variety of ways,
+including the suppression of unused waterfall controls.
+<br>
+
+\image html config-ui-wf-controls-2.png "UI Configure - WF Controls 2"
+\image latex config-ui-wf-controls-2.png "UI Configure - WF Controls 2" width=3.0in
+<br>
+
+Before adjusting these settings it is recommended that you enable this
+menu item. You can then see the effect of enabling and disabling the
+various selection boxes.
+
+<br>
+\ref ui_configuration_waterfall_controls_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

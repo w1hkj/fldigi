@@ -1,0 +1,384 @@
+/**
+\page  rig_xml_page Rig Xml How to
+
+\tableofcontents
+
+This document describes the contents of the rig definition file \"rig.xml\".
+<br>
+
+A number of transceivers have rig definition files written and tested
+which you may use. These are found in the xmls directory on this
+site: <a href="http://www.w1hkj.com/xmlarchives.html">xml archives</a>.
+You will find subdirectories by manufacturer which contain files named
+by rig type, ie: TS-850.xml. If you create, test and verify the proper
+operation for a transceiver not yet posted please share that with
+others by sending it as an attachment to w1hkj@w1hkj.com and I will
+post it on the web site. You are encouraged to study the various rig
+definition files to learn more about how they are organized.
+
+Comments are contained within the tag pair:
+
+\<!-<br> --\>
+<br>
+
+and may appear anywhere in the rig definition file The entire rig definition
+must be contained within the tag pair
+
+\<RIGDEF\><br>\</RIGDEF\>
+
+The text within the tag pair \<RIG\>\</RIG\> specifies the transceiver to
+which this file applies, as in:
+
+\<RIG\>Icom 746 PRO\</RIG\>
+<br>
+
+The text within the tag pair \<PROGRAMMER\>\</PROGRAMMER\> is not used by the
+parser, but should as a minimum say who created and who tested the definition file, as in:
+<br>
+
+\<PROGRAMMER\>
+<br>
+
+Dave Freese W1HKJ Tested by: W1HKJ, Dave <br> \</PROGRAMMER\>
+
+The text within the tag pair
+
+\<STATUS\><br> \</STATUS\>
+
+is not used by the parser, but should as a minimum state whether the
+definition file has been \"Verified\", is \"Alpha&\", what the Version and
+Date of creation or update, as in:
+
+\<STATUS\> Verified Version: 1.0 Date: 2007 Jan 5 \</STATUS\>
+
+The \<TITLE\><br> \</TITLE\>
+
+tag pair contains the text which will be displayed on the window decoration bar, as in:
+
+\<TITLE\>Rig Control - IC-746 PRO\</TITLE\><br>
+
+The serial port parameters may be preset in the xml file and also set or
+changed on the rigcat configuration tab.
+<br>
+\<!--
+<br>
+default settings for initial setup
+<br>
+--\>
+<br>
+
+<table>
+    <tr>
+      <td>xml tag<br>
+      </td>
+      <td>parameter<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<TIMEOUT\>TT\</TIMEOUT\></td>
+      <td>TT in milliseconds<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<RETRIES\>NN\</RETRIES\></td>
+      <td>NN integer<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<WRITE_DELAY\>TT\</WRITE_DELAY\></td>
+      <td>TT in milliseconds<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<POST_WRITE_DELAY\>TT\</POST_WRITE_DELAY\></td>
+      <td>TT in milliseconds<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<BAUDRATE\>BAUD\</BAUDRATE\></td>
+      <td>BAUD = 1200, 2400, 4800, 9600, 19200, 38400 ...<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<STOPBITS\>B\</STOPBITS\></td>
+      <td>B = 1 or 2<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<RTSCTS\>BOOL\</RTSCTS\></td>
+      <td>BOOL = true, false; h/w handshake used for data flow control<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<RTSPLUS\>BOOL\</RTSPLUS\></td>
+      <td>BOOL = true, false; set RTS signal line to +12 V<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<RTSPTT\>BOOL\</RTSPTT\></td>
+      <td>BOOL = true, false; toggle RTS signal line for PTT<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<DTRPLUS\>BOOL\</DTRPLUS\></td>
+      <td>BOOL = true, false; set DTR signal line to + 12 V</td>
+    </tr>
+    <tr>
+      <td>\<DTRPTT\>BOOL\</DTRPTT\></td>
+      <td>BOOL = true, false; toggle DTR signal line for PTT<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<ECHO\>BOOL\</ECHO\></td>
+      <td>BOOL = true, false; xcvr/interface echoes all chars (typical of CI-V interface)<br>
+      </td>
+    </tr>
+    <tr>
+      <td>\<CMDPTT\>BOOL\</CMDPTT\></td>
+      <td>BOOL = true, false; use command string for PTT (not supported by all rigs)<br>
+      </td>
+    </tr>
+</table>
+<br>
+
+The transceiver modes are specified within the \<MODES\>\</MODES\> tag pair.
+Each entry or element associated with a mode has a symbol name (text) and a
+way to specify what the data transfer consists of. The data transfer might
+be a single byte, multiple bytes, or aa string
+<br>
+
+Example 1, for the Icom-746PRO
+<br>
+
+\<MODES\><br>
+      \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>RTTY\</SYMBOL\>\<BYTE\>04\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>05\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>07\</BYTE\>\</ELEMENT\><br>
+      \<ELEMENT\>\<SYMBOL\>RTTY-R\</SYMBOL\>\<BYTE\>08\</BYTE\>\</ELEMENT\><br>
+\</MODES\><br>
+<br>
+
+Example 2, for the Kenwood 850
+<br>
+
+\<MODES\><br>
+       \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>31\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>32\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>33\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>34\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>35\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>FSK\</SYMBOL\>\<BYTE\>36\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>37\</BYTE\>\</ELEMENT\><br>
+
+\<ELEMENT\>\<SYMBOL\>FSK-R\</SYMBOL\>\<BYTE\>39\</BYTE\>\</ELEMENT\><br>
+\</MODES\><br>
+<br>
+
+Example 3, for the FT-100
+<br>
+\<MODES\><br>
+       \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>04\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>DIG\</SYMBOL\>\<BYTE\>05\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>06\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>W-FM\</SYMBOL\>\<BYTE\>07\</BYTE\>\</ELEMENT\><br>
+\</MODES\><br>
+<br>
+
+The modes which are supported by lower sideband in the transceiver are
+specified in the \<LSBMODES\>\</LSBMODES\> tar pair. The string
+data for the LSB modes must match those given in the modes id specifier
+For example in the Icom 746 Pro:
+<br>
+
+\<LSBMODES\><br>
+       \<STRING\>LSB\</STRING\><br>
+       \<STRING\>RTTY\</STRING\><br>
+       \<STRING\>CW-R\</STRING\><br>
+\</LSBMODES\><br>
+<br>
+
+If the transceiver data stream uses identically the same format for the
+bandwidth data then it is specified in the \<BANDWIDTHS\>\</BANDWIDTHS\> tag
+pair
+<br>
+
+Example for the Icom 746 Pro:
+<br>
+
+\<BANDWIDTHS\><br>
+       \<ELEMENT\>\<SYMBOL\>50\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>100\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>150\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>200\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>250\</SYMBOL\>\<BYTE\>04\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>05\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>350\</SYMBOL\>\<BYTE\>06\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>400\</SYMBOL\>\<BYTE\>07\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>450\</SYMBOL\>\<BYTE\>08\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>09\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>600\</SYMBOL\>\<BYTE\>10\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>700\</SYMBOL\>\<BYTE\>11\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>800\</SYMBOL\>\<BYTE\>12\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>900\</SYMBOL\>\<BYTE\>13\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1000\</SYMBOL\>\<BYTE\>14\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1100\</SYMBOL\>\<BYTE\>15\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1200\</SYMBOL\>\<BYTE\>16\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1300\</SYMBOL\>\<BYTE\>17\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1400\</SYMBOL\>\<BYTE\>18\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1500\</SYMBOL\>\<BYTE\>19\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1600\</SYMBOL\>\<BYTE\>20\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1700\</SYMBOL\>\<BYTE\>21\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1800\</SYMBOL\>\<BYTE\>22\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>1900\</SYMBOL\>\<BYTE\>23\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2000\</SYMBOL\>\<BYTE\>24\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2100\</SYMBOL\>\<BYTE\>25\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2200\</SYMBOL\>\<BYTE\>26\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2300\</SYMBOL\>\<BYTE\>27\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>28\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2500\</SYMBOL\>\<BYTE\>29\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2600\</SYMBOL\>\<BYTE\>30\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2700\</SYMBOL\>\<BYTE\>31\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2800\</SYMBOL\>\<BYTE\>32\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2900\</SYMBOL\>\<BYTE\>33\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3000\</SYMBOL\>\<BYTE\>34\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3100\</SYMBOL\>\<BYTE\>35\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3200\</SYMBOL\>\<BYTE\>36\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3300\</SYMBOL\>\<BYTE\>37\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3400\</SYMBOL\>\<BYTE\>38\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3500\</SYMBOL\>\<BYTE\>39\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>3600\</SYMBOL\>\<BYTE\>40\</BYTE\>\</ELEMENT\><br>
+\</BANDWIDTHS\><br>
+<br>
+
+If the bandwidth data stream is unique for send and receive data streams then
+they are specified separately with the \<BW-CMD\>\</BW-CMD\> tag pair for
+data sent to the transceiver, and the \<BW-REPLY\>\</BW-REPLY\> tag pair for
+data returned to the computer.
+<br>
+
+Example: FT-100:
+<br>
+
+\<BW-CMD\><br>
+       \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>6000\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
+\</BW-CMD\><br>
+<br>
+\<BW-REPLY\><br>
+       \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
+       \<ELEMENT\>\<SYMBOL\>6000\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
+\</BW-REPLY\><br>
+<br>
+
+Fldigi can parse and decode message returned from the transceiver that define
+4 aspects of the transceiver operation:
+<br>
+
+<table>
+    <tr>
+      <td>OK</td>
+      <td>data accepted by the transceiver</td>
+    </tr>
+    <tr>
+      <td>BAD</td>
+      <td>data rejected by the transceiver</td>
+    </tr>
+    <tr>
+      <td>MODE</td>
+      <td>current operating mode of the transceiver</td>
+    </tr>
+    <tr>
+      <td>BW</td>
+      <td>current bandwidth setting of the transceiver</td>
+    </tr>
+    <tr>
+      <td>FREQ</td>
+      <td>frequency of the active VFO (might be either A or B for example)</td>
+    </tr>
+</table>
+<br>
+
+These are all contained within multiple \<REPLY\>\</REPLY\> tag pairs.  This
+is an example of a fixed format message with no variable fields. It is the
+OK message sent back by the Icom-746 PRO:
+<br>
+
+\<REPLY\><br>
+       \<SYMBOL\>OK\</SYMBOL\><br>
+       \<SIZE\>6\</SIZE\><br>
+       \<BYTES\>FE FE E0 66\</BYTES\><br>
+       \<BYTE\>FB\</BYTE\><br>
+       \<BYTE\>FD\</BYTE\><br>
+\</REPLY\><br>
+<br>
+
+The \<SYMBOL\>\</SYMBOL\> pair and the command definition are
+mandatory.  The \<SIZE\>\</SIZE\> field is mandatory and specifies the number
+of bytes contained in this reply. The above definition could also have been
+coded as:
+<br>
+
+\<REPLY\><br>
+       \<SYMBOL\>OK\</SYMBOL\><br>
+       \<SIZE\>6\</SIZE\><br>
+       \<BYTES\>FE FE E0 66 FB FD\</BYTES\><br>
+\</REPLY\><br>
+<br>
+
+When the reply contains variable data it is specified in a contained
+tag pair \<DATA\>\</DATA\>. This data field contains specifiers that describe
+the kind and size of the data. The \<DTYPE\>\</DTYPE\> tag pair may
+be one of:
+<br>
+
+BINARY or<br>
+DECIMAL<br>
+<br>
+
+This is an example for the reply to a mode query that is returned by the Icom-746 PRO:<br>
+<br>
+
+\<REPLY\><br>
+       \<SYMBOL\>MODE\</SYMBOL\>     specifies the response name<br>
+\<SIZE\>8\</SIZE\>
+8 bytes of data returned<br>
+       \<BYTES\>FE FE E0 66\</BYTES\>  4 bytes of preamble<br>
+
+\<BYTE\>04\</BYTE\>                       1
+additional byte for preample<br>
+       \<DATA\><br>
+
+\<DTYPE\>BINARY\</DTYPE\>   binary data field of
+1 byte<br>
+             \<SIZE\>1\</SIZE\><br>
+       \</DATA\><br>
+
+\<FILL\>1\</FILL\>
+a variable field (data) not used<br>
+
+\<BYTE\>FD\</BYTE\>                      1
+byte postamble<br>
+\</REPLY\><br>
+<br>
+
+Fldigi rigcat will check for both the preample and postamble to insure
+that a valid reply has been sent by the transceiver.
+<br>
+
+\ref rig_xml_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

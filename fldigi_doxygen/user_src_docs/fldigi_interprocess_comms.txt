@@ -1,0 +1,14 @@
+/**
+\page interprocess_communications_page Interprocess Communications
+
+<ul>
+<li> \subpage contest_how_to_page </li>
+<li> \subpage cw_keying_page </li>
+<li> \subpage digiscope_display_page </li>
+<li> \subpage digiscope_display_wwv_mode </li>
+<li> \subpage dxcc_list_page </li>
+<li> \subpage frequency_analyzer_page </li>
+<li> \subpage keyboard_operation_page </li>
+</ul>
+
+*/

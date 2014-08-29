@@ -1,0 +1,65 @@
+-----------------------------------------------------------------------------
+/**
+\page  ID_TAG Description
+
+\tableofcontents
+-----------------------------------------------------------------------------
+\image html filename.png "Desc"
+\image latex filename.png "Desc" width=5.0in
+<br>
+-----------------------------------------------------------------------------
+<ol>
+<li> </li>
+<li> </li>
+<li> </li>
+</ol>
+-----------------------------------------------------------------------------
+
+
+<br>
+\ref id_tag "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+-----------------------------------------------------------------------------
+\latexonly
+	\begin{figure}[H]
+
+		\centering
+
+		\begin{subfigure}[t]{0.5\textwidth}
+			\centering
+			\includegraphics[width=1.0in]{filename.png}
+			\caption{Caption}
+			\label{fig:fig_name}
+		\end{subfigure} ~
+		,...
+		\begin{subfigure}[t]{0.5\textwidth}
+			\centering
+			\includegraphics[width=1.0in]{filename.png}
+			\caption{Caption}
+			\label{fig:fig_name}
+		\end{subfigure}
+
+		\begin{subfigure}[t]{0.5\textwidth}
+			\centering
+			\includegraphics[width=1.0in]{filename.png}
+			\caption{Caption}
+			\label{fig:fig_name}
+		\end{subfigure} ~
+		,...
+		\begin{subfigure}[t]{0.5\textwidth}
+			\centering
+			\includegraphics[width=1.0in]{filename.png}
+			\caption{Caption}
+			\label{fig:fig_name}
+		\end{subfigure}
+		,...
+
+		\caption{Description}
+		\label{fig:figure_idtag}
+
+	\end{figure}
+\endlatexonly
+-----------------------------------------------------------------------------

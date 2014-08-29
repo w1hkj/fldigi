@@ -1,0 +1,129 @@
+/**
+\page cw_page CW
+
+\tableofcontents
+
+\section cw_freq Carrier Frequency
+
+Fldigi generates CW by inserting a keyed tone at the current
+waterfall audio frequency.  The CW carrier frequency is the USB
+carrier + the audio frequency, or the LSB carrier -
+the audio frequency.  If fldigi is tracking and receiving a CW
+signal on the waterfall your transmitted signal will be exactly on the
+frequency of the other operator.  You probably cannot use your
+transceivers CW filter unless that filter can be used with the SSB mode.<br>
+<br>
+
+\section qsk_tab_key QSK and the TAB KEY
+
+If you are operating QSK with a separate transmitter / receiver you can
+very quickly stop your transmit signal with the TAB key.  In
+the CW mode only the TAB key causes the program to skip over the remaining
+text in the transmit text buffer.  The text that is skipped will
+be color coded blue.  The program remains in the transmit mode
+(PTT enabled), but since the buffer is now empty no A2 CW signal is
+generated.  Code transmission will then restart with the very
+next keyboard closure of a valid CW character.
+<br>
+
+\section pause_transmit Pausing transmit
+
+The Pause/Break momentarily key stops sending text.  Pressing it again
+resumes transmission.
+<br>
+
+\section abort_transmit Aborting transmit
+
+The Escape key is used to immediately stop text transmission.  The Tx buffer
+is cleared.
+<br>
+
+\section wpm_adjustements WPM adjustment
+
+In CW mode the status bar is changed to include a transmit WPM adjuster.  Use
+the arrow buttons or the mouse. Mouse wheel up/down changes transmit WPM
+by +/- 1.  Hold the shift and mouse mouse wheel changes transmit WPM
+by +/- 10.  The "*" button immediately to the right of the WPM adjuster is
+used to toggle between the current and the default transmit WPM.
+<br>
+
+The transmit WPM can also be adjusted with three hot keys:
+<br>
+
+<ul>
+<li>Numeric keypad "+" increases the transmit WPM by 1</li>
+<li>Numeric keypad "-" decreases the transmit WPM by 1</li>
+<li>Numeric keypad "*" toggles between the selected transmit WPM and the
+default transmit WPM</li>
+</ul>
+
+The "Default" control on the CW tab sets that default value.  If during a
+QSO you needed to slow down to give the other op a better chance to
+copy what you are sending, just hit the "*" on the numeric keypad and
+the CW code will immediately switch to sending CW at the set default
+value (18 wpm in this example).  Press the "*" again to return to
+back to the CW speed that you were previously using.
+<br>
+
+Each time the transmit WPM is changed the receive decoder WPM tracking
+is reset to the new transmit WPM.  This allows you to quickly
+force the decoder to a new WPM range.
+<br>
+
+\image html cw_status_1.png "The Rx and Tx WPM are shown in the status bar."
+\image latex cw_status_1.png "The Rx and Tx WPM are shown in the status bar." width=2.2in
+
+<br>
+
+\image html cw_status_2.png "* indicates that default WPM is selected"
+\image latex cw_status_2.png "* indicates that default WPM is selected" width=3.0in
+
+\section sec_farnsworth Farnsworth keying
+
+You might want to use farnsworth keying to provide a character rate that is
+faster than the word per minute rate.<br>
+
+\image html farnsworth.png "Farnworth Timing"
+\image latex farnsworth.png "Farnworth Timing" width=5.0in
+<br>
+
+Set the F-WPM slider to tthe character rate and enable the Use
+Farnsworth timing check box.  When the TX WPM is set to a speed
+below the Farnsworth value then the character rate will be at the
+Farnsworth setting and the word rate will be at the TX WPM rate.
+You can also set the TX WPM and F-WPM from within a \ref macro_page.
+<br>
+
+\section cw_config CW configuration
+
+The \ref cw_configuration_page is easily reached from the Config menu or
+by right clicking on  the left  most entry in the status bar (CW).
+<br>
+
+\section sub_prosigns Prosigns
+
+The prosigns are configurable \(see \ref cw_configuration_page \).  The
+defaults are:
+<br>
+
+PROSIGN  | KEYBOARD  | DISPLAYED AS
+:------: | :-------: | :--------:
+BT       | =         | \<BT\>
+AA	     | ~         | \<AA\>
+AR       | >         | \<AR\>
+AS       | <         | \<AS\>
+HM       | {         | \<HM\>
+INT      | &         | \<INT\>
+SK       | %         | \<SK\>
+KN       | +         | \<KN\>
+VE       | }         | \<VE\>
+
+
+
+<br>
+\ref cw_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

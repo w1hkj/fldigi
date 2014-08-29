@@ -1,0 +1,23 @@
+/**
+\page contestia_configuration_page Contestia Configuration
+
+\tableofcontents
+
+\image html config-contestia.png "Contestia Configuration"
+\image latex config-contestia.png "Contestia Configuration" width=5.0in
+<br>
+
+Configuration of Contestia is similar to Olivia as Contestia is a
+derivative of Oliva.
+<br>
+
+See \ref contestia_page for additional information.
+<br>
+
+<br>
+\ref contestia_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

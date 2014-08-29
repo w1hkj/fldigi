@@ -1,0 +1,35 @@
+/**
+\page olivia_configuration_page  Olivia Configuration
+\tableofcontents
+<br>
+
+\image html config-olivia.png "Description"
+\image latex config-olivia.png "Description" width=5.0in
+<br>
+
+Olivia is a family of MFSK modes with a high redundancy Forward Error
+Correction system similar to MT63. The family is very large, with 40 or
+more different options, which can make it very difficult to work out which is
+which. The mode works well on poor HF paths and has good sensitivity.
+There are three popular modes, which have 8-FSK, 16-FSK and
+32-FSK, thus having three, four or five bits per symbol. These
+three modes can be selected without additional configuration. The
+tone frequency spacing and integration period should always be left at
+8 and 4 respectively unless you are experimenting with another station
+running an Olivia modem that can be changed. These must always be
+the same at both ends of the Olivia QSO. The modes have two
+serious shortcomings - excessive bandwidth combined with slow typing
+rate, and excessive latency which is the apparent typing delay caused
+by the integration period.
+<br>
+
+See \ref olivia_page "Operating Olivia" for additional information.
+<br>
+
+<br>
+\ref olivia_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/

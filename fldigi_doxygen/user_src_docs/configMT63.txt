@@ -1,0 +1,53 @@
+/**
+\page mt63_configuration_page  MT63 Configuration
+\tableofcontents
+
+\image html config-mt63.png "Modems MT63 Config Panel"
+\image latex config-mt63.png "Modems MT63 Config Panel" width=5.0in
+<br>
+
+MT63 is an orthogonal frequency division multiplexed mode consisting of 64
+parallel carriers each carrying a part of the transmitted signal.
+There are 3 bandwidths and baudrates that fldigi implements in MT-63:
+<ul>
+<li> 500 Hz - 5  baud  </li>
+<li> 1000 Hz - 10 baud </li>
+<li> 2000 Hz - 20 baud </li>
+</ul>
+
+The lowest frequency transmitted is always 500 Hz. If you have a
+scheduled MT63 qso or are trying to copy what you think is MT63 you
+should tune the signal so that the lowest observable signal is at 500
+Hz. Fldigi is capable of decoding signals that are mistuned by as much
+as +/- 100 Hz.
+<br>
+
+Selection of interleave (short/long) is made from the modem menu;
+MT63-500S, MT63-500L, MT63-1000S, MT63-1000L, MT63-2000S, MT63-2000L.
+<br>
+
+Interleave and 8-bit extended characters are usually
+agreed upon before a QSO exchange begins. The default is to use
+the long interleave. 8-bit extended characters allow the
+transmission of Latin-1 accented characters.
+<br>
+
+To assist the Rx operator you can transmit a short tone at the lowest
+(and highest) tone frequencies. You can set the tone duration.
+<br>
+
+You may also elect to use manual tuning (position on the waterfall) of
+the Tx / Rx signal. Be careful when doing this so that the signal
+does not extend beyond the limits of your transceiver SSB filters.
+<br>
+
+MT63 is used extensively in the Military Affiliate Radio System (MARS).
+<br>
+
+\ref mt63_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+
