@@ -2,7 +2,7 @@
 //
 // 	newinstall.cxx
 //
-// Copyright (C) 2007-2010 Dave Freese, W1HKJ
+// Copyright (C) 2007-2014 Dave Freese, W1HKJ
 // Copyright (C) 2010 Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
@@ -412,6 +412,7 @@ void Wizard::create_wizard(void)
 		{ tabOperator },
 		{ tabSoundCard },
 		{ tabRig },
+		{ tabUI },
 		{ tabDataFiles },
 	};
 
@@ -543,4 +544,5 @@ void show_wizard(int argc, char** argv)
 		w->show();
 		w->set_modal();
 	}
+	first_use = true;
 }

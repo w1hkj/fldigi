@@ -2764,65 +2764,68 @@ int wo_default_handler(int event)
 	return 0;
 }
 
-bool save_on_exit() {
+void save_on_exit() {
 	if (progdefaults.changed && progdefaults.SaveConfig) {
-		switch (fl_choice2(_("Save changed configuration?"),
-				_("Cancel"), _("Save"), _("Don't save"))) {
-		case 0:
-			return false;
-		case 1:
-			progdefaults.saveDefaults();
-		// fall through
-		case 2:
-			break;
+		switch (fl_choice2(_("Save changed configuration?"), NULL, _("Yes"), _("No"))) {
+			case 1:
+				progdefaults.saveDefaults();
+			default:
+				break;
 		}
 	}
 	if (macros.changed && progdefaults.SaveMacros) {
-		switch (fl_choice2(_("Save changed macros?"),
-				_("Cancel"), _("Save"), _("Don't save"))) {
-		case 0:
-			return false;
-		case 1:
-			macros.writeMacroFile();
-		// fall through
-		case 2:
-			break;
+		switch (fl_choice2(_("Save changed macros?"), NULL, _("Yes"), _("No"))) {
+			case 1:
+				macros.writeMacroFile();
+			default:
+				break;
 		}
 	}
 	if (!oktoclear && progdefaults.NagMe) {
-		switch (fl_choice2(_("Save current log entry?"),
-			  _("Cancel"), _("Save"), _("Don't save"))) {
-		case 0:
-			return false;
-		case 1:
-			qsoSave_cb(0, 0);
-		// fall through
-		case 2:
-			break;
+		switch (fl_choice2(_("Save log entry?"), NULL, _("Yes"), _("No"))) {
+			case 1:
+				qsoSave_cb(0, 0);
+			default:
+				break;
 		}
 	}
-	return true;
+	return;
 }
 
+bool first_use = false;
+
 bool clean_exit(bool ask) {
-
-
-	if (progdefaults.confirmExit && (!(progdefaults.changed && progdefaults.SaveConfig) ||
-					 !(macros.changed && progdefaults.SaveMacros) ||
-					 !(!oktoclear && progdefaults.NagMe)))
-	{
-		switch (fl_choice2(_("Really want to quit?"), NULL, _("No"), _("Yes")))
-		{
-		case 0:
-		case 1:
-			return false;
-		case 2:
+	if (first_use) {
+		switch(fl_choice2(_("Confirm Quit"), NULL, _("Yes"), _("No"))) {
+			case 2:
+				return false;
+			default:
 			break;
 		}
+		progdefaults.saveDefaults();
+		macros.writeMacroFile();
+		if (!oktoclear) {
+			switch (fl_choice2(_("Save log entry?"), NULL, _("Yes"), _("No"))) {
+				case 1:
+					qsoSave_cb(0, 0);
+				default:
+					break;
+			}
+		}
+	} else {
+		if (progdefaults.confirmExit && (!(progdefaults.changed && progdefaults.SaveConfig) ||
+				 !(macros.changed && progdefaults.SaveMacros) ||
+				 !(!oktoclear && progdefaults.NagMe))) {
+			switch (fl_choice2(_("Confirm quit?"), NULL, _("Yes"), _("No"))) {
+				case 1:
+					break;
+				default:
+					return false;
+			}
+		}
+		if (ask)
+			save_on_exit();
 	}
-
-	if (ask)
-		if (!save_on_exit()) return false;
 
 	if (Maillogfile)
 		Maillogfile->log_to_file_stop();
@@ -4449,7 +4452,7 @@ void create_fl_digi_main_primary() {
 
 	main_hmin = 130 + Hwfall + Hmenu + Hstatus + Hmacros*4 + Hqsoframe + 4;
 	int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 4;
-	if (Htext < 130) { // 66 : raster min height, 60 : min panel box, 4 : frame  
+	if (Htext < 130) { // 66 : raster min height, 60 : min panel box, 4 : frame
 		Htext = 130;
 		progStatus.mainH = main_hmin;
 	}
@@ -6676,7 +6679,7 @@ int get_tx_char(void)
 void put_echo_char(unsigned int data, int style)
 {
 // suppress print to rx widget when making timing tests
-	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return; 
+	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return;
 
 	trx_mode mode = active_modem->get_mode();
 

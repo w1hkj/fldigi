@@ -5093,6 +5093,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5202,10 +5203,12 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 355, _("UI"));
-        tabUI->hide();
+        tabUI->tooltip(_("User Interface"));
         { tabsUI = new Fl_Tabs(0, 25, 600, 355);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
+            tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5346,6 +5349,7 @@ Fl_Double_Window* ConfigureDialog() {
             tabBrowser->end();
           } // Fl_Group* tabBrowser
           { tabContest = new Fl_Group(0, 50, 600, 330, _("Contest"));
+            tabContest->tooltip(_("User Interface - Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(55, 70, 490, 80, _("Exchanges"));
               o->box(FL_ENGRAVED_FRAME);
@@ -5499,7 +5503,7 @@ Fl_Double_Window* ConfigureDialog() {
             tabContest->end();
           } // Fl_Group* tabContest
           { tabUserInterface = new Fl_Group(0, 50, 600, 330, _("General"));
-            tabUserInterface->hide();
+            tabUserInterface->tooltip(_("User Interface - General"));
             { Fl_Group* o = new Fl_Group(52, 62, 496, 76);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(87, 75, 120, 20, _("Show tooltips"));
@@ -5575,42 +5579,37 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Check_Button* btn_tx_lowercase
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 209, 496, 110, _("Exit prompts"));
+            { Fl_Group* o = new Fl_Group(52, 209, 496, 76, _("Exit prompts"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(87, 272, 233, 20, _("Prompt to save Configuration"));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(87, 233, 233, 20, _("Prompt to save Configuration"));
                 btn_save_config_on_exit->down_box(FL_DOWN_BOX);
                 btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
                 o->value(progdefaults.SaveConfig);
               } // Fl_Check_Button* btn_save_config_on_exit
-              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(87, 294, 233, 20, _("Prompt to save macro file"));
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(87, 255, 233, 20, _("Prompt to save macro file"));
                 btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
                 btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
                 btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn2_save_macros_on_exit
-              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(331, 272, 166, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(331, 233, 166, 20, _("Prompt to save log"));
                 btn2NagMe->tooltip(_("Bug me about saving log entries"));
                 btn2NagMe->down_box(FL_DOWN_BOX);
                 btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btn2NagMe
-              { Fl_Box* o = new Fl_Box(92, 226, 436, 40, _("Exit prompts active only when File/Exit menu item selected.\nNot active if wi\
-ndow decoration close button pressed."));
-                o->box(FL_BORDER_BOX);
-                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
-              } // Fl_Box* o
-              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(331, 294, 200, 20, _("Confirm exit"));
+              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(331, 255, 200, 20, _("Confirm exit"));
                 btn2_confirm_exit->down_box(FL_DOWN_BOX);
                 btn2_confirm_exit->callback((Fl_Callback*)cb_btn2_confirm_exit);
                 o->value(progdefaults.confirmExit);
               } // Fl_Check_Button* btn2_confirm_exit
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 321, 496, 54, _("Check for updates"));
+            { Fl_Group* o = new Fl_Group(52, 286, 496, 54, _("Check for updates"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(87, 344, 324, 20, _("Check for updates when starting program"));
+              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(87, 309, 324, 20, _("Check for updates when starting program"));
                 btn_check_for_updates->down_box(FL_DOWN_BOX);
                 btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
                 o->value(progdefaults.check_for_updates);
@@ -5620,6 +5619,7 @@ ndow decoration close button pressed."));
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Logging"));
+            tabLogServer->tooltip(_("User Interface - Logging"));
             tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
@@ -5770,6 +5770,7 @@ ab and newline are automatically included."));
             tabLogServer->end();
           } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 330, _("Macros"));
+            tabMBars->tooltip(_("User Interface - Macros"));
             tabMBars->hide();
             { Fl_Group* o = new Fl_Group(52, 257, 496, 40);
               o->box(FL_ENGRAVED_FRAME);
@@ -5851,6 +5852,7 @@ ab and newline are automatically included."));
             tabMBars->end();
           } // Fl_Group* tabMBars
           { tabWF_UI = new Fl_Group(0, 50, 600, 330, _("WF Ctrls"));
+            tabWF_UI->tooltip(_("User Interface - Waterfall controls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(52, 83, 496, 253);
               o->box(FL_ENGRAVED_BOX);
@@ -5935,6 +5937,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Colors/Fonts"));
+            tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
             tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));

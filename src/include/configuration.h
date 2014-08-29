@@ -73,14 +73,14 @@
 #define CONFIG_LIST                                                                     \
     ELEM_(bool, confirmExit, "CONFIRMEXIT",                                             \
           "Ensure user wants to leave flgidi",                                          \
-          false)                                                                        \
+          true)                                                                         \
         ELEM_(bool, SaveConfig, "SAVECONFIG",                                           \
               "Save current configuration on exit",                                     \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, noise, "NOISETEST",                                                 \
               "Noise test on/off",                                                      \
               false)                                                                    \
-        ELEM_(double, s2n, "SIGNAL2NOISE",                                              \
+        ELEM_(double, s2n, "SIGNAL2NOISE",                                             \
               "Signal to Noise ratio for test",                                         \
               +20.0)                                                                    \
         ELEM_(bool, rsidWideSearch, "RSIDWIDESEARCH",                                   \
@@ -731,7 +731,7 @@
               true)                                                                     \
         ELEM_(bool, NagMe, "NAGME",                                                     \
               "Prompt to save log",                                                     \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, ClearOnSave, "CLEARONSAVE",                                         \
               "Clear log fields on save",                                               \
               false)                                                                    \
@@ -1165,7 +1165,7 @@
               false)                                                                    \
         ELEM_(bool, SaveMacros, "SAVEMACROS",                                           \
               "Save current macros on exit",                                            \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, macro_wheel, "MACROWHEEL",                                          \
               "Enable mouse wheel rotation to control visible macro set",               \
               false)                                                                    \
