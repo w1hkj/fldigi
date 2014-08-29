@@ -355,7 +355,6 @@ static	string TLFlogname;
 static bool TLF_arqRx()
 {
 	/// The mutex is automatically unlocked when returning.
-	guard_lock arq_rx_lock(&arq_rx_mutex);
 #if defined(__WOE32__) || defined(__APPLE__)
 	return false;
 #else
@@ -393,6 +392,7 @@ static bool TLF_arqRx()
 		}
 
 		if (arqtext.empty() && !txstring.empty()) {
+			guard_lock arq_rx_lock(&arq_rx_mutex);
 			arqtext = txstring;
 			if (mailserver && progdefaults.PSKmailSweetSpot)
 				active_modem->set_freq(progdefaults.PSKsweetspot);
@@ -725,18 +725,17 @@ bool Socket_arqRx()
 		if (arqclient.empty()) arq_reset();
 	}
 
+	if (!txstring.empty()) parse_arqtext(txstring);
+
+	if (abort_flag) {
+		AbortARQ();
+		abort_flag = false;
+		return true;
+	}
+
 	{
 	/// Mutex is unlocked when leaving block
 		guard_lock arq_rx_lock(&arq_rx_mutex);
-		if (!txstring.empty()) parse_arqtext(txstring);
-
-		if (abort_flag) {
-			AbortARQ();
-			abort_flag = false;
-			return true;
-		}
-
-		{
 
 		if (txstring.empty()) return false;
 
@@ -758,7 +757,7 @@ bool Socket_arqRx()
 
 		arq_text_available = true;
 		active_modem->set_stopflag(false);
-		}
+
 	}
 	return true;
 }
@@ -855,7 +854,7 @@ int arq_get_char()
 	guard_lock arq_rx_lock(&arq_rx_mutex);
 	int c = 0;
 	if (arq_text_available) {
-		if (pText != arqtext.length()) {
+		if (!arqtext.empty() && pText != arqtext.length()) {
 			c = arqtext[pText++] & 0xFF;
 		} else {
 			arqtext.clear();
@@ -878,8 +877,6 @@ void AbortARQ() {
 	arqtext.clear();
 	txstring.clear();
 	pText = 0;
-	arq_text_available = false;
-//	bSend0x06 = true;
 }
 
 //======================================================================
