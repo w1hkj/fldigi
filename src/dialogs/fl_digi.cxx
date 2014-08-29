@@ -7069,7 +7069,7 @@ void set_rtty_shift(int shift)
 	for (i = 0; i < sizeof(shifts)/sizeof(*shifts); i++)
 		if (shifts[i] == shift)
 			break;
-	selShift->index(i+1);
+	selShift->index(i);
 	selShift->do_callback();
 	if (i == sizeof(shifts)/sizeof(*shifts)) {
 		selCustomShift->value(shift);
@@ -7086,7 +7086,7 @@ void set_rtty_baud(float baud)
 	};
 	for (size_t i = 0; i < sizeof(bauds)/sizeof(*bauds); i++) {
 		if (bauds[i] == baud) {
-			selBaud->index(i+1);
+			selBaud->index(i);
 			selBaud->do_callback();
 			break;
 		}
@@ -7099,7 +7099,7 @@ void set_rtty_bits(int bits)
 	static const int bits_[] = { 5, 7, 8 };
 	for (size_t i = 0; i < sizeof(bits_)/sizeof(*bits_); i++) {
 		if (bits_[i] == bits) {
-			selBits->index(i+1);
+			selBits->index(i);
 			selBits->do_callback();
 			break;
 		}
