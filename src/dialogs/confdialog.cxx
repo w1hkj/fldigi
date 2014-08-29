@@ -2580,7 +2580,7 @@ Fl_Group *tabOlivia=(Fl_Group *)0;
 Fl_ListBox *i_listbox_olivia_bandwidth=(Fl_ListBox *)0;
 
 static void cb_i_listbox_olivia_bandwidth(Fl_ListBox* o, void*) {
-  progdefaults.oliviabw = o->index()-1;
+  progdefaults.oliviabw = o->index();
 set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;
@@ -2589,7 +2589,7 @@ progdefaults.changed = true;
 Fl_ListBox *i_listbox_olivia_tones=(Fl_ListBox *)0;
 
 static void cb_i_listbox_olivia_tones(Fl_ListBox* o, void*) {
-  progdefaults.oliviatones = o->index()-1;
+  progdefaults.oliviatones = o->index();
 set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;
@@ -2630,7 +2630,7 @@ Fl_Group *tabContestia=(Fl_Group *)0;
 Fl_ListBox *i_listbox_contestia_bandwidth=(Fl_ListBox *)0;
 
 static void cb_i_listbox_contestia_bandwidth(Fl_ListBox* o, void*) {
-  progdefaults.contestiabw = o->index()-1;
+  progdefaults.contestiabw = o->index();
 set_contestia_default_integ();
 resetCONTESTIA();
 progdefaults.changed = true;
@@ -2639,7 +2639,7 @@ progdefaults.changed = true;
 Fl_ListBox *i_listbox_contestia_tones=(Fl_ListBox *)0;
 
 static void cb_i_listbox_contestia_tones(Fl_ListBox* o, void*) {
-  progdefaults.contestiatones = o->index()-1;
+  progdefaults.contestiatones = o->index();
 set_contestia_default_integ();
 resetCONTESTIA();
 progdefaults.changed = true;
@@ -7460,7 +7460,7 @@ ab and newline are automatically included."));
             tabOlivia->hide();
             { Fl_Group* o = new Fl_Group(55, 76, 490, 280);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_ListBox* o = i_listbox_olivia_bandwidth = new Fl_ListBox(110, 96, 85, 20, _("Bandwidth"));
+              { Fl_ListBox* o = i_listbox_olivia_bandwidth = new Fl_ListBox(110, 96, 85, 22, _("Bandwidth"));
                 i_listbox_olivia_bandwidth->tooltip(_("Select bandwidth"));
                 i_listbox_olivia_bandwidth->box(FL_DOWN_BOX);
                 i_listbox_olivia_bandwidth->color(FL_BACKGROUND2_COLOR);
@@ -7477,7 +7477,7 @@ ab and newline are automatically included."));
                        o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_olivia_bandwidth->end();
               } // Fl_ListBox* i_listbox_olivia_bandwidth
-              { Fl_ListBox* o = i_listbox_olivia_tones = new Fl_ListBox(371, 96, 70, 20, _("Tones"));
+              { Fl_ListBox* o = i_listbox_olivia_tones = new Fl_ListBox(371, 96, 70, 22, _("Tones"));
                 i_listbox_olivia_tones->tooltip(_("Select number of tones"));
                 i_listbox_olivia_tones->box(FL_DOWN_BOX);
                 i_listbox_olivia_tones->color(FL_BACKGROUND2_COLOR);
@@ -7497,7 +7497,7 @@ ab and newline are automatically included."));
               { Fl_Group* o = new Fl_Group(110, 135, 379, 133, _("Receive synchronizer"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Counter2* o = cntOlivia_smargin = new Fl_Counter2(125, 166, 70, 20, _("Tune margin (tone frequency spacing)"));
+                { Fl_Counter2* o = cntOlivia_smargin = new Fl_Counter2(125, 166, 70, 22, _("Tune margin (tone frequency spacing)"));
                 cntOlivia_smargin->tooltip(_("Change ONLY to experiment"));
                 cntOlivia_smargin->type(1);
                 cntOlivia_smargin->box(FL_UP_BOX);
@@ -7516,7 +7516,7 @@ ab and newline are automatically included."));
                 cntOlivia_smargin->when(FL_WHEN_CHANGED);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntOlivia_smargin
-                { Fl_Counter2* o = cntOlivia_sinteg = new Fl_Counter2(125, 198, 70, 20, _("Integration period (FEC blocks)"));
+                { Fl_Counter2* o = cntOlivia_sinteg = new Fl_Counter2(125, 198, 70, 22, _("Integration period (FEC blocks)"));
                 cntOlivia_sinteg->tooltip(_("Change ONLY to experiment"));
                 cntOlivia_sinteg->type(1);
                 cntOlivia_sinteg->box(FL_UP_BOX);
@@ -7556,7 +7556,7 @@ ab and newline are automatically included."));
             tabContestia->hide();
             { Fl_Group* o = new Fl_Group(55, 80, 490, 200);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_ListBox* o = i_listbox_contestia_bandwidth = new Fl_ListBox(110, 100, 85, 20, _("Bandwidth"));
+              { Fl_ListBox* o = i_listbox_contestia_bandwidth = new Fl_ListBox(110, 100, 85, 22, _("Bandwidth"));
                 i_listbox_contestia_bandwidth->tooltip(_("Select bandwidth"));
                 i_listbox_contestia_bandwidth->box(FL_DOWN_BOX);
                 i_listbox_contestia_bandwidth->color(FL_BACKGROUND2_COLOR);
@@ -7573,7 +7573,7 @@ ab and newline are automatically included."));
                        o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_contestia_bandwidth->end();
               } // Fl_ListBox* i_listbox_contestia_bandwidth
-              { Fl_ListBox* o = i_listbox_contestia_tones = new Fl_ListBox(371, 100, 70, 20, _("Tones"));
+              { Fl_ListBox* o = i_listbox_contestia_tones = new Fl_ListBox(371, 100, 70, 22, _("Tones"));
                 i_listbox_contestia_tones->tooltip(_("Select number of tones"));
                 i_listbox_contestia_tones->box(FL_DOWN_BOX);
                 i_listbox_contestia_tones->color(FL_BACKGROUND2_COLOR);
@@ -7593,7 +7593,7 @@ ab and newline are automatically included."));
               { Fl_Group* o = new Fl_Group(93, 139, 414, 131, _("Receive synchronizer"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Counter2* o = cntContestia_smargin = new Fl_Counter2(112, 170, 70, 20, _("Tune margin (tone frequency spacing)"));
+                { Fl_Counter2* o = cntContestia_smargin = new Fl_Counter2(112, 170, 70, 22, _("Tune margin (tone frequency spacing)"));
                 cntContestia_smargin->tooltip(_("Change ONLY to experiment"));
                 cntContestia_smargin->type(1);
                 cntContestia_smargin->box(FL_UP_BOX);
@@ -7612,7 +7612,7 @@ ab and newline are automatically included."));
                 cntContestia_smargin->when(FL_WHEN_CHANGED);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntContestia_smargin
-                { Fl_Counter2* o = cntContestia_sinteg = new Fl_Counter2(112, 202, 70, 20, _("Integration period (FEC blocks)"));
+                { Fl_Counter2* o = cntContestia_sinteg = new Fl_Counter2(112, 202, 70, 22, _("Integration period (FEC blocks)"));
                 cntContestia_sinteg->tooltip(_("Change ONLY to experiment"));
                 cntContestia_sinteg->type(1);
                 cntContestia_sinteg->box(FL_UP_BOX);

@@ -291,7 +291,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {783 32 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {57 115 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -3197,7 +3197,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia
+            label Olivia open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
@@ -3205,11 +3205,11 @@ progdefaults.changed = true;}
             } {
               Fl_Group i_listbox_olivia_bandwidth {
                 label Bandwidth
-                callback {progdefaults.oliviabw = o->index()-1;
+                callback {progdefaults.oliviabw = o->index();
 set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;} open
-                tooltip {Select bandwidth} xywh {110 96 85 20} box DOWN_BOX color 7 align 8
+                tooltip {Select bandwidth} xywh {110 96 85 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szOliviaBandwidth);}
                 code1 {o->index(progdefaults.oliviabw+1);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -3217,11 +3217,11 @@ progdefaults.changed = true;} open
               } {}
               Fl_Group i_listbox_olivia_tones {
                 label Tones
-                callback {progdefaults.oliviatones = o->index()-1;
+                callback {progdefaults.oliviatones = o->index();
 set_olivia_default_integ();
 resetOLIVIA();
 progdefaults.changed = true;} open
-                tooltip {Select number of tones} xywh {371 96 70 20} box DOWN_BOX color 7 align 8
+                tooltip {Select number of tones} xywh {371 96 70 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szOliviaTones);}
                 code1 {o->index(progdefaults.oliviatones+1);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -3236,7 +3236,7 @@ progdefaults.changed = true;} open
                   callback {progdefaults.oliviasmargin = (int)(o->value());
 resetOLIVIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {125 166 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  tooltip {Change ONLY to experiment} xywh {125 166 70 22} type Simple align 8 minimum 2 maximum 128 step 1 value 8
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
@@ -3245,7 +3245,7 @@ progdefaults.changed = true;}
                   callback {progdefaults.oliviasinteg = (int)(o->value());
 resetOLIVIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {125 198 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  tooltip {Change ONLY to experiment} xywh {125 198 70 22} type Simple align 8 minimum 2 maximum 128 step 1 value 4
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
@@ -3274,11 +3274,11 @@ progdefaults.changed = true;}
             } {
               Fl_Group i_listbox_contestia_bandwidth {
                 label Bandwidth
-                callback {progdefaults.contestiabw = o->index()-1;
+                callback {progdefaults.contestiabw = o->index();
 set_contestia_default_integ();
 resetCONTESTIA();
 progdefaults.changed = true;} open
-                tooltip {Select bandwidth} xywh {110 100 85 20} box DOWN_BOX color 7 align 8
+                tooltip {Select bandwidth} xywh {110 100 85 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szContestiaBandwidth);}
                 code1 {o->index(progdefaults.contestiabw +1);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -3286,11 +3286,11 @@ progdefaults.changed = true;} open
               } {}
               Fl_Group i_listbox_contestia_tones {
                 label Tones
-                callback {progdefaults.contestiatones = o->index()-1;
+                callback {progdefaults.contestiatones = o->index();
 set_contestia_default_integ();
 resetCONTESTIA();
 progdefaults.changed = true;} open
-                tooltip {Select number of tones} xywh {371 100 70 20} box DOWN_BOX color 7 align 8
+                tooltip {Select number of tones} xywh {371 100 70 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szContestiaTones);}
                 code1 {o->index(progdefaults.contestiatones +1);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -3305,7 +3305,7 @@ progdefaults.changed = true;} open
                   callback {progdefaults.contestiasmargin = (int)(o->value());
 resetCONTESTIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {112 170 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 8
+                  tooltip {Change ONLY to experiment} xywh {112 170 70 22} type Simple align 8 minimum 2 maximum 128 step 1 value 8
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
@@ -3314,7 +3314,7 @@ progdefaults.changed = true;}
                   callback {progdefaults.contestiasinteg = (int)(o->value());
 resetCONTESTIA();
 progdefaults.changed = true;}
-                  tooltip {Change ONLY to experiment} xywh {112 202 70 20} type Simple align 8 minimum 2 maximum 128 step 1 value 4
+                  tooltip {Change ONLY to experiment} xywh {112 202 70 22} type Simple align 8 minimum 2 maximum 128 step 1 value 4
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_Counter2
                 }
