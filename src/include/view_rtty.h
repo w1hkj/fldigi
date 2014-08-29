@@ -109,6 +109,7 @@ public:
 	static const double SHIFT[];
 	static const double BAUD[];
 	static const int    BITS[];
+	static const int numshifts;
 
 private:
 

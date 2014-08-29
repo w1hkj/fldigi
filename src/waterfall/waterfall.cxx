@@ -209,8 +209,10 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	if (marker_mode == MODE_RTTY) {
 	// rtty has two bandwidth indicators on the waterfall
 	// upper and lower frequency
-		int shift = static_cast<int>(progdefaults.rtty_shift >= 0 ?
-			     rtty::SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
+		int shift = static_cast<int>(
+			(progdefaults.rtty_shift < rtty::numshifts ?
+				rtty::SHIFT[progdefaults.rtty_shift] : 
+				progdefaults.rtty_custom_shift));
 		int bw_limit_hi = (int)(shift / 2 + progdefaults.RTTY_BW / 2.0);
 		int bw_limit_lo = (int)(shift / 2 - progdefaults.RTTY_BW / 2.0);
 		int bw_freq = static_cast<int>(freq + 0.5);
@@ -284,7 +286,9 @@ void WFdisp::makeMarker()
 	else if (mode >= MODE_FELDHELL && mode <= MODE_HELL80)
 		marker_width = (int)progdefaults.HELL_BW;
 	else if (mode == MODE_RTTY)
-		marker_width = static_cast<int>(rtty::SHIFT[progdefaults.rtty_shift]);
+		marker_width = static_cast<int>((progdefaults.rtty_shift < rtty::numshifts ?
+				  rtty::SHIFT[progdefaults.rtty_shift] : 
+				  progdefaults.rtty_custom_shift));
 	marker_width = (int)(marker_width / 2.0 + 1);
 
 	RGBmarker.R = progdefaults.bwTrackRGBI.R;
@@ -634,8 +638,9 @@ update_freq:
 		int rttyoffset = 0;
 		trx_mode mode = active_modem->get_mode();
 		if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
-			rttyoffset = (progdefaults.rtty_shift >= 0 ?
-				rtty::SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
+			rttyoffset = (progdefaults.rtty_shift < rtty::numshifts ?
+				  rtty::SHIFT[progdefaults.rtty_shift] : 
+				  progdefaults.rtty_custom_shift);
 			rttyoffset /= 2;
 			if (active_modem->get_reverse()) rttyoffset *= -1;
 		}

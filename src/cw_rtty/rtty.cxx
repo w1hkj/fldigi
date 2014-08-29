@@ -79,6 +79,7 @@ static char msg1[20];
 const double rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 const double rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
 const int	rtty::BITS[]  = {5, 7, 8};
+const int	rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
 
 void rtty::tx_init(SoundBase *sc)
 {
@@ -213,8 +214,9 @@ void rtty::restart()
 {
 	double stl;
 
-	rtty_shift = shift = (progdefaults.rtty_shift >= 0 ?
+	rtty_shift = shift = (progdefaults.rtty_shift < numshifts ?
 				  SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
+printf("rtty_shift %.1f\n", shift);
 	rtty_baud = BAUD[progdefaults.rtty_baud];
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];
 	if (rtty_bits == 5)
