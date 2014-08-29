@@ -555,6 +555,8 @@ void WFdisp::processFFT() {
 		//kl4yfd
 		else
 			dispcnt = wfspeed * 8 / 3;
+		if (wfspeed == SLOW)
+			dispcnt *= (progdefaults.drop_speed / SLOW);
 	}
 }
 

@@ -2043,6 +2043,13 @@ static void cb_wf_latency(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntr_drop_speed=(Fl_Counter *)0;
+
+static void cb_cntr_drop_speed(Fl_Counter* o, void*) {
+  progdefaults.drop_speed=(int)o->value();
+progdefaults.changed=true;
+}
+
 Fl_Counter2 *cntrWfheight=(Fl_Counter2 *)0;
 
 static void cb_cntrWfheight(Fl_Counter2* o, void*) {
@@ -6548,13 +6555,29 @@ ab and newline are automatically included."));
               } // Fl_Counter2* wf_latency
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(55, 221, 490, 80, _("Changes take effect on next program startup"));
+            { Fl_Group* o = new Fl_Group(55, 212, 490, 73);
               o->tooltip(_("Show me more or less waterfall"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-              { Fl_Counter2* o = cntrWfheight = new Fl_Counter2(100, 251, 95, 22, _("Waterfall height in pixels"));
+              { Fl_Counter* o = cntr_drop_speed = new Fl_Counter(100, 234, 95, 22, _("Slow drop rate"));
+                cntr_drop_speed->tooltip(_("Normal drop speed / value"));
+                cntr_drop_speed->type(1);
+                cntr_drop_speed->minimum(4);
+                cntr_drop_speed->maximum(32);
+                cntr_drop_speed->step(2);
+                cntr_drop_speed->value(4);
+                cntr_drop_speed->callback((Fl_Callback*)cb_cntr_drop_speed);
+                cntr_drop_speed->align(Fl_Align(FL_ALIGN_RIGHT_TOP));
+                o->value(progdefaults.drop_speed);
+              } // Fl_Counter* cntr_drop_speed
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(55, 292, 490, 73, _("Changes take effect on next program startup"));
+              o->tooltip(_("Show me more or less waterfall"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_Counter2* o = cntrWfheight = new Fl_Counter2(100, 322, 120, 22, _("Waterfall height in pixels"));
                 cntrWfheight->tooltip(_("CPU usage increases with waterfall height"));
-                cntrWfheight->type(1);
                 cntrWfheight->box(FL_UP_BOX);
                 cntrWfheight->color(FL_BACKGROUND_COLOR);
                 cntrWfheight->selection_color(FL_INACTIVE_COLOR);
@@ -6563,7 +6586,7 @@ ab and newline are automatically included."));
                 cntrWfheight->labelsize(14);
                 cntrWfheight->labelcolor(FL_FOREGROUND_COLOR);
                 cntrWfheight->minimum(100);
-                cntrWfheight->maximum(250);
+                cntrWfheight->maximum(500);
                 cntrWfheight->step(5);
                 cntrWfheight->value(120);
                 cntrWfheight->callback((Fl_Callback*)cb_cntrWfheight);
@@ -6571,6 +6594,7 @@ ab and newline are automatically included."));
                 cntrWfheight->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.wfheight);
                 o->labelsize(FL_NORMAL_SIZE);
+                o->lstep(50);
               } // Fl_Counter2* cntrWfheight
               o->end();
             } // Fl_Group* o

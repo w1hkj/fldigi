@@ -228,6 +228,8 @@ extern Fl_Check_Button *btnWFaveraging;
 extern Fl_ListBox *listboxFFTPrefilter;
 extern Fl_Counter2 *cntrWfwidth;
 extern Fl_Counter2 *wf_latency;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *cntr_drop_speed;
 extern Fl_Counter2 *cntrWfheight;
 extern Fl_Check_Button *btnWaterfallHistoryDefault;
 extern Fl_Check_Button *btnWaterfallQSY;
@@ -252,7 +254,6 @@ extern Fl_Check_Button *btnCWrcvTrack;
 extern Fl_Counter2 *cntCWrange;
 extern Fl_Value_Slider2 *sldrCWxmtWPM;
 extern Fl_Counter2 *cntCWdefWPM;
-#include <FL/Fl_Counter.H>
 extern Fl_Counter *cntCWlowerlimit;
 extern Fl_Counter *cntCWupperlimit;
 extern Fl_Value_Slider2 *sldrCWfarnsworth;
