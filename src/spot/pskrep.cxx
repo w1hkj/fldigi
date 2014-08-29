@@ -50,14 +50,10 @@
 #include <algorithm>
 #include <fstream>
 
-#if __clang__
-#  define MAP_TYPE std::unordered_map
-#define HASH_TYPE std::hash
-#  include <unordered_map>
-#elif (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
-#  define MAP_TYPE std::tr1::unordered_map
-#define HASH_TYPE std::tr1::hash
-#  include <tr1/unordered_map>
+#if HAVE_STD_HASH
+#	define MAP_TYPE std::unordered_map
+#	define HASH_TYPE std::hash
+#	include <unordered_map>
 #else
 // use the non-standard gnu hash_map on gcc <= 4.0.x,
 // which has a broken tr1::unordered_map::operator=

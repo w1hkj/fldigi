@@ -44,12 +44,14 @@
 
 using namespace std;
 
-#ifdef __clang__
+#if HAVE_STD_HASH
 #	include <unordered_map>
 	using std::unordered_map;
-#else
+#elif HAVE_STD_TR1_HASH
 #	include <tr1/unordered_map>
 	using tr1::unordered_map;
+#else
+#	error "No std::hash or std::tr1::hash support"
 #endif
 
 dxcc::dxcc(const char* cn, int cq, int itu, const char* ct, float lat, float lon, float tz)
