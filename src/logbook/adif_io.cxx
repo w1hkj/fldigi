@@ -82,14 +82,12 @@ FIELD fields[] = {
 	{ITUZ,           "ITUZ",         &btnSelectITUZ},      // ITU zone
 	{CONT,           "CONT",         &btnSelectCONT},      // contacted stations continent
 
-	{MYXCHG,         "MYXCHG",       &btnSelectMyXchg},    // contest exchange sent
-	{XCHG1,          "XCHG1",        &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
-
-	{MYXCHG,         "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
-	{XCHG1,          "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
-
 	{SRX,            "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
 	{STX,            "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
+
+	{XCHG1,          "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+	{MYXCHG,         "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
+
 	{TX_PWR,         "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
 	{NUMFIELDS,      "",             NULL}
 };
@@ -159,7 +157,9 @@ static inline int findfield( char *p )
 			*p1 = 0;
 			pos = strcasestr(fastlookup, p);
 			*p1 = ':';
-			if (pos) return fields[(pos - fastlookup) / maxlen].type;
+			if (pos) {
+				return fields[(pos - fastlookup) / maxlen].type;
+			}
 		}
 	}
 	return -2;		//search key not found
