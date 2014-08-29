@@ -777,6 +777,9 @@
         ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
               "Full pathname to the flmsg executable",                                  \
               "")                                                                       \
+        ELEM_(std::string, flnet_pathname, "FLNET_PATHNAME",                            \
+              "Full pathname to the flnet executable",                                  \
+              "")                                                                       \
         ELEM_(double, extract_timeout, "EXTRACT_TIMEOUT",                               \
               "Abort message extraction after nn.n seconds of inactivity",              \
               2.0)                                                                      \
@@ -943,6 +946,9 @@
         ELEM_(int, RigCatWait, "RIGCATWAIT",                                            \
               "Write delay (milliseconds)",                                             \
               50)                                                                       \
+        ELEM_(int, RigCatInitDelay, "RIGCATINITDELAY",                                  \
+              "Wait delay (milliseconds) on first command to serial device",            \
+              200)                                                                      \
         ELEM_(bool, RigCatECHO, "RIGCATECHO",                                           \
               "Commands are echoed",                                                    \
               false)                                                                    \
