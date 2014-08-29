@@ -877,7 +877,9 @@ void configuration::testCommPorts()
 #if defined(__linux__)
 		"/dev/ttyS%u",
 		"/dev/ttyUSB%u",
-		"/dev/usb/ttyUSB%u"
+		"/dev/usb/ttyUSB%u",
+		"/dev/ttyACM%u",
+		"/dev/usb/ttyACM%u"
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 		"/dev/tty%2.2u"
 #elif defined(__CYGWIN__)
