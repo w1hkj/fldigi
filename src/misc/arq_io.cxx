@@ -192,12 +192,11 @@ void ParseMode(string src)
 	for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
-//				while (trx_state != STATE_RX) {
-//					MilliSleep(10);
-//				}
-				if (debug_pskmail)
-					LOG_INFO("Setting modem to %s", mode_info[i].pskmail_name);
 				REQ_SYNC(init_modem_sync, mode_info[i].mode, 0);
+				AbortARQ();
+				WriteARQ('\002');
+				if (debug_pskmail)
+					LOG_INFO("Modem set to %s", mode_info[i].pskmail_name);
 				break;
 			}
 		}
@@ -627,9 +626,14 @@ void WriteARQsocket(unsigned char* data, size_t len)
 	if (arqclient.empty()) return;
 	static string instr;
 	instr.clear();
+
+	string outs = "";
+	for (unsigned int i = 0; i < len; i++)
+		outs += asc[data[i] & 0x7F];
+	LOG_INFO("%s", outs.c_str());
+
 	vector<ARQCLIENT>::iterator p;
-	p = arqclient.begin();
-	while (p != arqclient.end()) {
+	for (p = arqclient.begin(); p < arqclient.end(); p++) {
 		try {
 			(*p).sock.wait(1);
 			(*p).sock.send(data, len);
@@ -646,11 +650,6 @@ void WriteARQsocket(unsigned char* data, size_t len)
 			arqclient.erase(p);
 		}
 	}
-
-	string outs = "";
-	for (unsigned int i = 0; i < len; i++)
-		outs += asc[data[i] & 0x7F];
-	LOG_INFO("%s", outs.c_str());
 
 	if (arqclient.empty()) arq_reset();
 }
