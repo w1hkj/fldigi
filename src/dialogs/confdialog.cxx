@@ -3748,9 +3748,9 @@ progdefaults.changed = true;
 resetSoundCard();
 }
 
-Fl_ListBox *menuOSSDev=(Fl_ListBox *)0;
+Fl_Input_Choice *menuOSSDev=(Fl_Input_Choice *)0;
 
-static void cb_menuOSSDev(Fl_ListBox* o, void*) {
+static void cb_menuOSSDev(Fl_Input_Choice* o, void*) {
   scDevice[0] = scDevice[1] = progdefaults.OSSdevice = o->value();
 resetSoundCard();
 progdefaults.changed = true;
@@ -3764,20 +3764,20 @@ progdefaults.changed = true;
 resetSoundCard();
 }
 
-Fl_ListBox *menuPortInDev=(Fl_ListBox *)0;
+Fl_Choice *menuPortInDev=(Fl_Choice *)0;
 
-static void cb_menuPortInDev(Fl_ListBox* o, void*) {
-  scDevice[0] = progdefaults.PortInDevice = o->value();
-progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->data());
+static void cb_menuPortInDev(Fl_Choice* o, void*) {
+  scDevice[0] = progdefaults.PortInDevice = o->text();
+progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;
 }
 
-Fl_ListBox *menuPortOutDev=(Fl_ListBox *)0;
+Fl_Choice *menuPortOutDev=(Fl_Choice *)0;
 
-static void cb_menuPortOutDev(Fl_ListBox* o, void*) {
-  scDevice[1] = progdefaults.PortOutDevice = o->value();
-progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->data());
+static void cb_menuPortOutDev(Fl_Choice* o, void*) {
+  scDevice[1] = progdefaults.PortOutDevice = o->text();
+progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;
 }
@@ -8986,22 +8986,11 @@ le Earth)"));
                 btnAudioIO[0]->selection_color((Fl_Color)1);
                 btnAudioIO[0]->callback((Fl_Callback*)cb_btnAudioIO);
               } // Fl_Round_Button* btnAudioIO[0]
-              { Fl_ListBox* o = menuOSSDev = new Fl_ListBox(425, 75, 110, 24, _("Device:"));
+              { Fl_Input_Choice* o = menuOSSDev = new Fl_Input_Choice(424, 75, 110, 25, _("Device:"));
                 menuOSSDev->tooltip(_("Select device"));
-                menuOSSDev->box(FL_DOWN_BOX);
-                menuOSSDev->color(FL_BACKGROUND2_COLOR);
-                menuOSSDev->selection_color(FL_BACKGROUND_COLOR);
-                menuOSSDev->labeltype(FL_NORMAL_LABEL);
-                menuOSSDev->labelfont(0);
-                menuOSSDev->labelsize(14);
-                menuOSSDev->labelcolor(FL_FOREGROUND_COLOR);
                 menuOSSDev->callback((Fl_Callback*)cb_menuOSSDev);
-                menuOSSDev->align(Fl_Align(FL_ALIGN_LEFT));
-                menuOSSDev->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.OSSdevice.c_str());
-                       o->labelsize(FL_NORMAL_SIZE);
-                menuOSSDev->end();
-              } // Fl_ListBox* menuOSSDev
+              } // Fl_Input_Choice* menuOSSDev
               AudioOSS->end();
             } // Fl_Group* AudioOSS
             { AudioPort = new Fl_Group(55, 110, 490, 80);
@@ -9012,35 +9001,16 @@ le Earth)"));
                 btnAudioIO[1]->selection_color((Fl_Color)1);
                 btnAudioIO[1]->callback((Fl_Callback*)cb_btnAudioIO1);
               } // Fl_Round_Button* btnAudioIO[1]
-              { menuPortInDev = new Fl_ListBox(265, 120, 270, 24, _("Capture:"));
+              { menuPortInDev = new Fl_Choice(244, 121, 290, 25, _("Capture:"));
                 menuPortInDev->tooltip(_("Audio input device"));
-                menuPortInDev->box(FL_DOWN_BOX);
-                menuPortInDev->color(FL_BACKGROUND2_COLOR);
-                menuPortInDev->selection_color(FL_BACKGROUND_COLOR);
-                menuPortInDev->labeltype(FL_NORMAL_LABEL);
-                menuPortInDev->labelfont(0);
-                menuPortInDev->labelsize(14);
-                menuPortInDev->labelcolor(FL_FOREGROUND_COLOR);
+                menuPortInDev->down_box(FL_BORDER_BOX);
                 menuPortInDev->callback((Fl_Callback*)cb_menuPortInDev);
-                menuPortInDev->align(Fl_Align(FL_ALIGN_LEFT));
-                menuPortInDev->when(FL_WHEN_RELEASE);
-                menuPortInDev->end();
-              } // Fl_ListBox* menuPortInDev
-              { Fl_ListBox* o = menuPortOutDev = new Fl_ListBox(265, 155, 270, 24, _("Playback:"));
+              } // Fl_Choice* menuPortInDev
+              { menuPortOutDev = new Fl_Choice(244, 156, 290, 25, _("Playback:"));
                 menuPortOutDev->tooltip(_("Audio output device"));
-                menuPortOutDev->box(FL_DOWN_BOX);
-                menuPortOutDev->color(FL_BACKGROUND2_COLOR);
-                menuPortOutDev->selection_color(FL_BACKGROUND_COLOR);
-                menuPortOutDev->labeltype(FL_NORMAL_LABEL);
-                menuPortOutDev->labelfont(0);
-                menuPortOutDev->labelsize(14);
-                menuPortOutDev->labelcolor(FL_FOREGROUND_COLOR);
+                menuPortOutDev->down_box(FL_BORDER_BOX);
                 menuPortOutDev->callback((Fl_Callback*)cb_menuPortOutDev);
-                menuPortOutDev->align(Fl_Align(FL_ALIGN_LEFT));
-                menuPortOutDev->when(FL_WHEN_RELEASE);
-                o->labelsize(FL_NORMAL_SIZE);
-                menuPortOutDev->end();
-              } // Fl_ListBox* menuPortOutDev
+              } // Fl_Choice* menuPortOutDev
               AudioPort->end();
             } // Fl_Group* AudioPort
             { AudioPulse = new Fl_Group(55, 190, 490, 45);

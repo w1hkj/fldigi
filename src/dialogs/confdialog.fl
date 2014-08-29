@@ -291,7 +291,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {57 115 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {921 110 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -4625,7 +4625,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -4645,15 +4645,13 @@ progdefaults.changed = true;
 resetSoundCard();}
                 tooltip {Use OSS audio server} xywh {65 75 53 25} down_box DOWN_BOX selection_color 1
               }
-              Fl_Group menuOSSDev {
+              Fl_Input_Choice menuOSSDev {
                 label {Device:}
                 callback {scDevice[0] = scDevice[1] = progdefaults.OSSdevice = o->value();
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Select device} xywh {425 75 110 24} box DOWN_BOX color 7 align 4
-                code0 {o->value(progdefaults.OSSdevice.c_str());
-                       o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
+                tooltip {Select device} xywh {424 75 110 25}
+                code0 {o->value(progdefaults.OSSdevice.c_str());}
               } {}
             }
             Fl_Group AudioPort {open
@@ -4666,24 +4664,21 @@ progdefaults.changed = true;
 resetSoundCard();}
                 tooltip {Use Port Audio server} xywh {65 138 95 25} down_box DOWN_BOX selection_color 1
               }
-              Fl_Group menuPortInDev {
+              Fl_Choice menuPortInDev {
                 label {Capture:}
-                callback {scDevice[0] = progdefaults.PortInDevice = o->value();
-progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->data());
+                callback {scDevice[0] = progdefaults.PortInDevice = o->text();
+progdefaults.PortInIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Audio input device} xywh {265 120 270 24} box DOWN_BOX color 7 align 4
-                class Fl_ListBox
+                tooltip {Audio input device} xywh {244 121 290 25} down_box BORDER_BOX
               } {}
-              Fl_Group menuPortOutDev {
+              Fl_Choice menuPortOutDev {
                 label {Playback:}
-                callback {scDevice[1] = progdefaults.PortOutDevice = o->value();
-progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->data());
+                callback {scDevice[1] = progdefaults.PortOutDevice = o->text();
+progdefaults.PortOutIndex = reinterpret_cast<intptr_t>(o->mvalue()->user_data());
 resetSoundCard();
 progdefaults.changed = true;} open
-                tooltip {Audio output device} xywh {265 155 270 24} box DOWN_BOX color 7 align 4
-                code0 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
+                tooltip {Audio output device} xywh {244 156 290 25} down_box BORDER_BOX
               } {}
             }
             Fl_Group AudioPulse {open

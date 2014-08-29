@@ -446,10 +446,12 @@ extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;
 extern Fl_Group *AudioOSS;
-extern Fl_ListBox *menuOSSDev;
+#include <FL/Fl_Input_Choice.H>
+extern Fl_Input_Choice *menuOSSDev;
 extern Fl_Group *AudioPort;
-extern Fl_ListBox *menuPortInDev;
-extern Fl_ListBox *menuPortOutDev;
+#include <FL/Fl_Choice.H>
+extern Fl_Choice *menuPortInDev;
+extern Fl_Choice *menuPortOutDev;
 extern Fl_Group *AudioPulse;
 extern Fl_Input2 *inpPulseServer;
 extern Fl_Group *AudioNull;
