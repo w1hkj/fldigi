@@ -39,6 +39,12 @@
 #include "debug.h"
 #include "qrunner.h"
 
+//------------------------------------------------------------------------------
+#include "threads.h"
+
+static pthread_mutex_t olivia_mutex = PTHREAD_MUTEX_INITIALIZER;
+//------------------------------------------------------------------------------
+
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 using namespace std;
@@ -67,6 +73,9 @@ void olivia::tx_init(SoundBase *sc)
 
 	rx_flush();
 
+{ // critical section
+	guard_lock dsp_lock(&olivia_mutex);
+
 	double fc_offset = Tx->Bandwidth*(1.0 - 0.5/Tx->Tones)/2.0;
 	if (reverse) { 
 		Tx->FirstCarrierMultiplier = (txbasefreq + fc_offset)/500.0; 
@@ -75,22 +84,23 @@ void olivia::tx_init(SoundBase *sc)
 		Tx->FirstCarrierMultiplier = (txbasefreq - fc_offset)/500.0;
 		Tx->Reverse = 0; 
 	}
+	Tx->Preset();
+	Tx->Start();
+} // end critical section
 
 	videoText();
 
-	Tx->Preset();
-	Tx->Start();
 	escape = 0;
 }
 
 void olivia::rx_flush()
 {
+	guard_lock dsp_lock(&olivia_mutex);
+
 	unsigned char c;
-//	if(Rx) {
-		Rx->Flush();
-		while (Rx->GetChar(c) > 0)
-			put_rx_char(c);
-//	}
+	Rx->Flush();
+	while (Rx->GetChar(c) > 0)
+		put_rx_char(c);
 }
 
 void olivia::send_tones()
@@ -122,6 +132,8 @@ void olivia::send_tones()
 
 void olivia::rx_init()
 {
+	guard_lock dsp_lock(&olivia_mutex);
+
 	Rx->Reset();
 	escape = 0;
 }
@@ -154,6 +166,9 @@ int olivia::tx_process()
 		smargin != progdefaults.oliviasmargin ||
 		sinteg	!= progdefaults.oliviasinteg )
 			restart();
+
+{ // critical section
+	guard_lock dsp_lock(&olivia_mutex);
 
 	if (preamblesent != 1) { 
 		send_tones(); 
@@ -206,7 +221,7 @@ int olivia::tx_process()
 		stopflag = false;
 		return -1;
 	}
- 
+} // end critical section 
 	return 0;
 }
 
@@ -218,6 +233,12 @@ int olivia::rx_process(const double *buf, int len)
 	static double snr = 1e-3;
 	static char msg1[20];
 	static char msg2[20];
+	double rxf_offset = 0;
+	double rx_bw = 0;
+	double rx_tones = 0;
+	double rx_snr = 0;
+	int fc_offset = 0;
+	bool gotchar = false;
 
 	if ((mode == MODE_OLIVIA && 
 		(tones	!= progdefaults.oliviatones ||
@@ -226,7 +247,10 @@ int olivia::rx_process(const double *buf, int len)
 		sinteg	!= progdefaults.oliviasinteg )
 			restart();
 
-	int fc_offset = Tx->Bandwidth*(1.0 - 0.5/Tx->Tones)/2.0;
+{ // critical section
+	guard_lock dsp_lock(&olivia_mutex);
+
+	fc_offset = Tx->Bandwidth*(1.0 - 0.5/Tx->Tones)/2.0;
 
 	if ((lastfreq != frequency || Rx->Reverse) && !reverse) {
 		Rx->FirstCarrierMultiplier = (frequency - fc_offset)/500.0; 
@@ -244,32 +268,41 @@ int olivia::rx_process(const double *buf, int len)
 	Rx->SyncThreshold = progStatus.sqlonoff ? 
 		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 0, 90.0) : 0.0;
 
-    Rx->Process(buf, len);
-	sp = 0;
-//	for (int i = frequency - Rx->Bandwidth/2; i < frequency - 1 + Rx->Bandwidth/2; i++)
-	for (int i = frequency - fc_offset; i < frequency + fc_offset; i++)
-		if (wf->Pwr(i) > sp)
-			sp = wf->Pwr(i);
-	np = wf->Pwr(static_cast<int>(frequency + Rx->Bandwidth/2 + 2*Rx->Bandwidth/Rx->Tones));
-	if (np == 0) np = sp + 1e-8;
-	sigpwr = decayavg( sigpwr, sp, 10);
-	noisepwr = decayavg( noisepwr, np, 50);
-	snr = CLAMP(sigpwr / noisepwr, 0.001, 100000);
+	Rx->Process(buf, len);
 
-	metric = clamp( 5.0 * (Rx->SignalToNoiseRatio() - 3.0), 0, 100);
-	display_metric(metric);
-
-	bool gotchar = false;
 	while (Rx->GetChar(ch) > 0) {
 		if ((c = unescape(ch)) != -1 && c > 7) {
 			put_rx_char(c);
 			gotchar = true;
 		}
     }
+
+	rxf_offset = Rx->FrequencyOffset();
+	rx_bw = Rx->Bandwidth;
+	rx_tones = Rx->Tones;
+	rx_snr = Rx->SignalToNoiseRatio();
+} // end critical section
+
+	sp = 0;
+	for (int i = frequency - fc_offset; i < frequency + fc_offset; i++)
+		if (wf->Pwr(i) > sp)
+			sp = wf->Pwr(i);
+
+	np = wf->Pwr(static_cast<int>(frequency + rx_bw/2 + 2*rx_bw/rx_tones));
+
+	if (np == 0) np = sp + 1e-8;
+
+	sigpwr = decayavg( sigpwr, sp, 10);
+	noisepwr = decayavg( noisepwr, np, 50);
+	snr = CLAMP(sigpwr / noisepwr, 0.001, 100000);
+
+	metric = clamp( 5.0 * (rx_snr - 3.0), 0, 100);
+	display_metric(metric);
+
 	if (gotchar) {
 		snprintf(msg1, sizeof(msg1), "s/n: %4.1f dB", 10*log10(snr) - 20);
 		put_Status1(msg1, 5, STATUS_CLEAR);
-		snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", Rx->FrequencyOffset());
+		snprintf(msg2, sizeof(msg2), "f/o %+4.1f Hz", rxf_offset);
 		put_Status2(msg2, 5, STATUS_CLEAR);
 	}
 
@@ -293,6 +326,9 @@ void olivia::restart()
 	Tx->SampleRate = samplerate;
 	Tx->OutputSampleRate = samplerate;
 	txbasefreq = get_txfreq_woffset();
+
+{ // critical section
+	guard_lock dsp_lock(&olivia_mutex);
 
 	int fc_offset = Tx->Bandwidth * (1.0 - 0.5/Tx->Tones) / 2.0;
 	if (reverse) { 
@@ -348,6 +384,7 @@ void olivia::restart()
 
 	sigpwr = 1e-10; noisepwr = 1e-8;
 	LOG_DEBUG("\nOlivia Rx parameters:\n%s", Rx->PrintParameters());
+} // end critical section
 }
 
 void olivia::init()
@@ -436,6 +473,8 @@ olivia::olivia(trx_mode omode)
 
 olivia::~olivia()
 {
+	guard_lock dsp_lock(&olivia_mutex);
+
 	if (Tx) delete Tx;
 	if (Rx) delete Rx;
 	if (txfbuffer) delete [] txfbuffer;
