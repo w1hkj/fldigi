@@ -121,7 +121,6 @@ string appname;
 
 string scDevice[2];
 
-bool NBEMSapps_dir = false;
 string BaseDir = "";
 string HomeDir = "";
 string RigsDir = "";
@@ -299,39 +298,72 @@ void delayed_startup(void *)
 
 int main(int argc, char ** argv)
 {
-//	null_modem = new NULLMODEM;
-//	active_modem = null_modem;
 	active_modem = new NULLMODEM;
 
-	appname = argv[0];
+	char apptemp[FL_PATH_MAX + 1];
+	string appdir = appname = argv[0];
+	string test_file_name;
 	{
-		string appdir;
-		char apptemp[FL_PATH_MAX];
-		fl_filename_expand(apptemp, sizeof(apptemp), appname.c_str());
-		appdir.assign(apptemp);
-
 #ifdef __WOE32__
 		size_t p = appdir.rfind("fldigi.exe");
 		appdir.erase(p);
+		p = appdir.find("FL_APPS\\");
+		if (p != string::npos) {
+			BaseDir.assign(appdir.substr(0, p + 8));
+			progdefaults.flmsg_pathname.assign(BaseDir).append("flmsg.exe");
+		} else {
+			fl_filename_expand(apptemp, sizeof(apptemp) -1, "$USERPROFILE/");
+			BaseDir = apptemp;
+		}
 #else
+		fl_filename_absolute(apptemp, sizeof(apptemp), argv[0]);
+		appdir.assign(apptemp);
 		size_t p = appdir.rfind("fldigi");
-		if (appdir.find("./fldigi") != std::string::npos) {
-			if (getcwd(apptemp, sizeof(apptemp)))
-				appdir.assign(apptemp).append("/");
-		} else
+		if (p != string::npos)
 			appdir.erase(p);
-#endif
+		p = appdir.find("FL_APPS/");
+		if (p != string::npos) {
+			BaseDir.assign(appdir.substr(0, p + 8));
+			progdefaults.flmsg_pathname.assign(BaseDir).append("flmsg");
+		} else {
+			fl_filename_expand(apptemp, FL_PATH_MAX, "$HOME/");
+			BaseDir = apptemp;
+		}
 
-		if (p != std::string::npos) {
-			string testfile;
-			testfile.assign(appdir).append("NBEMS.DIR");
-			FILE *testdir = fopen(testfile.c_str(),"r");
-			if (testdir) {
-				fclose(testdir);
-				BaseDir = appdir;
-				NBEMSapps_dir = true;
+		string test_dir;
+		test_dir.assign(BaseDir).append("fldigi.files/");
+		DIR *isdir = opendir(test_dir.c_str());
+		if (isdir) {
+			HomeDir = test_dir;
+			closedir(isdir);
+		} else {
+			test_dir.assign(BaseDir).append(".fldigi/");
+			isdir = opendir(test_dir.c_str());
+			if (isdir) {
+				HomeDir = test_dir;
+			} else {
+				HomeDir.clear();
 			}
 		}
+
+		test_dir.assign(BaseDir).append("NBEMS.files/");
+		isdir = opendir(test_dir.c_str());
+		if (isdir) {
+			NBEMS_dir = test_dir;
+			FLMSG_dir = test_dir;
+			closedir(isdir);
+		} else {
+			test_dir.assign(BaseDir).append(".nbems/");
+			isdir = opendir(test_dir.c_str());
+			if (isdir) {
+				NBEMS_dir = test_dir;
+				FLMSG_dir = test_dir;
+			} else {
+				NBEMS_dir.clear();
+				FLMSG_dir.clear();
+			}
+		}
+#endif
 	}
 
 	debug_exec(argv);
@@ -373,15 +405,15 @@ int main(int argc, char ** argv)
 #ifdef __WOE32__
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
 		if (PskMailDir.empty()) PskMailDir = BaseDir;
-//		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
+		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
 		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append("NBEMS.files/");
-		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
+		if (FLMSG_dir.empty()) FLMSG_dir = FLMSG_dir_default = NBEMS_dir;
 #else
 		if (HomeDir.empty()) HomeDir.assign(BaseDir).append(".fldigi/");
 		if (PskMailDir.empty()) PskMailDir = BaseDir;
-//		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("data/");
+		if (DATA_dir.empty()) DATA_dir.assign(BaseDir).append("DATA.files/");
 		if (NBEMS_dir.empty()) NBEMS_dir.assign(BaseDir).append(".nbems/");
-		if (FLMSG_dir.empty()) FLMSG_dir_default = NBEMS_dir;
+		if (FLMSG_dir.empty()) FLMSG_dir = FLMSG_dir_default = NBEMS_dir;
 #endif
 	}
 	generate_option_help();
@@ -393,7 +425,7 @@ int main(int argc, char ** argv)
 	if (main_window_title.empty())
 		main_window_title = PACKAGE_TARNAME;
 
-	{
+	if (!FLMSG_dir_default.empty()) {
 		char dirbuf[FL_PATH_MAX + 1];
 		if (FLMSG_dir_default[FLMSG_dir_default.length()-1] != '/')
 			FLMSG_dir_default += '/';
@@ -1358,8 +1390,8 @@ static void checkdirectories(void)
 	for (size_t i = 0; i < sizeof(fldigi_dirs)/sizeof(*fldigi_dirs); i++) {
 		if (fldigi_dirs[i].suffix)
 			fldigi_dirs[i].dir.assign(HomeDir).append(fldigi_dirs[i].suffix).append(PATH_SEP);
-
-		if ((r = mkdir(fldigi_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
+		r  = mkdir(fldigi_dirs[i].dir.c_str(), 0777);
+		if (r == -1 && errno != EEXIST) {
 			string s = _("Could not make directory ");
 			s.append(fldigi_dirs[i].dir);
 			fatal_error(s);
@@ -1403,7 +1435,7 @@ void check_nbems_dirs(void)
 
 		if ((r = mkdir(NBEMS_dirs[i].dir.c_str(), 0777)) == -1 && errno != EEXIST) {
 			string s = _("Could not make directory ");
-			s.append(NBEMS_dirs[i].dir);
+			s.append(NBEMS_dirs[i].dir).append(", ").append(strerror(errno));
 			fatal_error(s);
 		}
 		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
