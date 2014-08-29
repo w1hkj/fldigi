@@ -120,12 +120,21 @@ void re_t::suboff(size_t n, int* start, int* end) const
 	}
 }
 
-#include <tr1/functional>
+#ifdef __clang__
+#	include <functional>
+#else
+#	include <tr1/functional>
+#endif
 
 size_t re_t::hash(void) const
 {
+#ifdef __clang__
+	size_t h = std::hash<string>()(pattern);
+	return h ^ (std::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
+#else
 	size_t h = tr1::hash<string>()(pattern);
 	return h ^ (tr1::hash<int>()(cflags) + 0x9e3779b9 + (h << 6) + (h >> 2));
+#endif
 }
 
 // ------------------------------------------------------------------------
