@@ -87,6 +87,8 @@ static  double hsbuff[SCBLOCKSIZE];
 
 static bool trxrunning = false;
 
+bool    rx_only = false;
+
 #include "tune.cxx"
 
 //=============================================================================
@@ -305,6 +307,8 @@ void trx_trx_receive_loop()
 //=============================================================================
 void trx_trx_transmit_loop()
 {
+	if (rx_only) return;
+
 	int  current_samplerate;
 	if (!scard) {
 		MilliSleep(10);
@@ -402,6 +406,8 @@ void trx_trx_transmit_loop()
 //=============================================================================
 void trx_tune_loop()
 {
+	if (rx_only) return;
+
 	int  current_samplerate;
 	if (!scard) {
 		MilliSleep(10);

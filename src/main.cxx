@@ -839,6 +839,7 @@ int parse_args(int argc, char **argv, int& idx)
 
                OPT_FONT, OPT_WFALL_HEIGHT,
                OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_WFALL_ONLY,
+               OPT_RX_ONLY,
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
@@ -887,6 +888,8 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "window-height", 1, 0, OPT_WINDOW_HEIGHT },
 		{ "wfall-only",    0, 0, OPT_WFALL_ONLY },
 		{ "wo",            0, 0, OPT_WFALL_ONLY },
+		{ "rx-only",       0, 0, OPT_RX_ONLY },
+		{ "ro",            0, 0, OPT_RX_ONLY },
 
 #if USE_PORTAUDIO
 		{ "frames-per-buffer",1, 0, OPT_FRAMES_PER_BUFFER },
@@ -1065,6 +1068,10 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_WFALL_ONLY:
 			bWF_only = true;
+			break;
+
+		case OPT_RX_ONLY:
+			rx_only = true;
 			break;
 
 		case OPT_NOISE:

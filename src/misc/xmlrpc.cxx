@@ -1494,6 +1494,46 @@ public:
 	}
 };
 
+class Main_rx_tx : public xmlrpc_c::method
+{
+public:
+	Main_rx_tx()
+	{
+		_signature = "n:n";
+		_help = "Sets normal Rx/Tx switching.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
+			REQ(abort_tx);
+			REQ(AbortARQ);
+		}
+		REQ(set_rx_tx);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Main_rx_only : public xmlrpc_c::method
+{
+public:
+	Main_rx_only()
+	{
+		_signature = "n:n";
+		_help = "Disables Tx.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
+			REQ(abort_tx);
+			REQ(AbortARQ);
+		}
+		REQ(set_rx_only);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 class Main_run_macro : public xmlrpc_c::method
 {
 public:
@@ -3132,6 +3172,8 @@ struct Navtex_send_message : public xmlrpc_c::method
 	ELEM_(Main_tune, "main.tune")										\
 	ELEM_(Main_rsid, "main.rsid")										\
 	ELEM_(Main_rx, "main.rx")											\
+	ELEM_(Main_rx_tx, "main.rx_tx")									\
+	ELEM_(Main_rx_only, "main.rx_only")								\
 	ELEM_(Main_abort, "main.abort")									\
 																		\
 	ELEM_(Main_get_trx_state, "main.get_trx_state")					\

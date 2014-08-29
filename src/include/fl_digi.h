@@ -260,6 +260,8 @@ extern void init_modem_squelch(trx_mode mode, int freq = 0);
 
 extern void start_tx();
 extern void abort_tx();
+extern void set_rx_tx();
+extern void set_rx_only();
 
 extern void LOGGING_colors_font();
 extern void LOGBOOK_colors_font();
