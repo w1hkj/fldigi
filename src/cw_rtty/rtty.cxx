@@ -834,8 +834,7 @@ if (mnum < 2 * filter_length)
 // RTTY transmit
 //=====================================================================
 //double freq1;
-double minamp = 100;
-double maxamp = -100;
+double maxamp = 0;
 
 double rtty::nco(double freq)
 {
@@ -887,20 +886,39 @@ void rtty::send_symbol(int symbol, int len)
 	double const freq1 = get_txfreq_woffset() + shift / 2.0;
 	double const freq2 = get_txfreq_woffset() - shift / 2.0;
 	double mark = 0, space = 0;
+	double signal = 0;
 
 	if (reverse)
 		symbol = !symbol;
 
+	if (maxamp == 0) {
+		int sym = 0;
+		for (int j = 0; j < 100; j++) {
+			if (sym) sym = 0;
+			else sym = 1;
+			for( int i = 0; i < 3*len; ++i ) {
+				mark  = m_SymShaper1->Update( sym) * m_Osc1->Update( freq1 );
+				space = m_SymShaper2->Update(!sym) * m_Osc2->Update( freq2 );
+				signal = mark + space;
+				if (maxamp < fabs(signal)) maxamp = fabs(signal);
+			}
+		}
+	}
+
 	for( int i = 0; i < len; ++i ) {
 		mark  = m_SymShaper1->Update( symbol) * m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(!symbol) * m_Osc2->Update( freq2 );
-		outbuf[i] = mark + space;
+
+		signal = mark + space;
+		if (maxamp < fabs(signal)) {
+			maxamp = fabs(signal);
+		}
+		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
+
 		if (symbol)
 			FSKbuf[i] = FSKnco();
 		else
 			FSKbuf[i] = 0.0 * FSKnco();
-		if (minamp > outbuf[i]) minamp = outbuf[i];
-		if (maxamp < outbuf[i]) maxamp = outbuf[i];
 	}
 #endif
 
@@ -932,7 +950,7 @@ void rtty::send_stop()
 
 	double const freq1 = get_txfreq_woffset() + shift / 2.0;
 	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0;
+	double mark = 0, space = 0, signal = 0;
 
 	bool symbol = true;
 
@@ -942,7 +960,11 @@ void rtty::send_stop()
 	for( int i = 0; i < stoplen; ++i ) {
 		mark  = m_SymShaper1->Update( symbol)*m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(!symbol)*m_Osc2->Update( freq2 );
-		outbuf[i] = mark + space;
+
+		signal = mark + space;
+		if (maxamp < fabs(signal)) maxamp = fabs(signal);
+		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
+
 		if (reverse)
 			FSKbuf[i] = 0.0 * FSKnco();
 		else
@@ -961,12 +983,16 @@ void rtty::flush_stream()
 {
 	double const freq1 = get_txfreq_woffset() + shift / 2.0;
 	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0;
+	double mark = 0, space = 0, signal = 0;
 
 	for( int i = 0; i < symbollen * 6; ++i ) {
 		mark  = m_SymShaper1->Update(0)*m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(0)*m_Osc2->Update( freq2 );
-		outbuf[i] = mark + space;
+
+		signal = mark + space;
+		if (maxamp < fabs(signal)) maxamp = fabs(signal);
+		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
+
 		FSKbuf[i] = 0.0;
 	}
 
@@ -1074,11 +1100,11 @@ int rtty::tx_process()
 		send_char(c);
 		xmt_samples = char_samples = acc_symbols;
 
-		printf("%5s %d samples, overhead %d, %f sec's\n",
-			ascii3[c & 0xff],
-			char_samples,
-			ovhd_samples,
-			1.0 * char_samples / samplerate);
+//		printf("%5s %d samples, overhead %d, %f sec's\n",
+//			ascii3[c & 0xff],
+//			char_samples,
+//			ovhd_samples,
+//			1.0 * char_samples / samplerate);
 		return 0;
 	}
 
@@ -1141,11 +1167,11 @@ int rtty::tx_process()
 	send_char(c & 0x1F);
 	xmt_samples = char_samples = acc_symbols;
 
-	printf("%5s %d samples, overhead %d, %f sec's\n",
-		ascii3[c & 0xff],
-		char_samples,
-		ovhd_samples,
-		1.0 * char_samples / samplerate);
+//	printf("%5s %d samples, overhead %d, %f sec's\n",
+//		ascii3[c & 0xff],
+//		char_samples,
+//		ovhd_samples,
+//		1.0 * char_samples / samplerate);
 
 	return 0;
 }
@@ -1286,6 +1312,7 @@ void SymbolShaper::Preset(double baud, double sr)
 
 // reset internal states
     reset();
+    maxamp = 0;
 }
 
 double SymbolShaper::Update( bool state )
