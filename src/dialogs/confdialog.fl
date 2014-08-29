@@ -571,22 +571,22 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContest {
-            label Contest
+            label Contest open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label Exchanges open
-              xywh {55 64 490 80} box ENGRAVED_FRAME align 21
+              xywh {55 70 490 80} box ENGRAVED_FRAME align 21
             } {
               Fl_Box lblSend {
                 label {Send:}
-                xywh {87 99 55 20}
+                xywh {87 105 55 20}
               }
               Fl_Input inpSend1 {
                 label {Exchange Out}
                 callback {progdefaults.myXchg=o->value();
 progdefaults.changed = true;}
-                tooltip {free form exchange} xywh {145 99 140 20} align 1
+                tooltip {free form exchange} xywh {145 105 140 20} align 1
                 code0 {o->value(progdefaults.myXchg.c_str());}
                 code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -595,32 +595,32 @@ progdefaults.changed = true;}
                 label {RST always 599}
                 callback {progdefaults.fixed599 = o->value();
 progdefaults.changed = true;}
-                tooltip {Force RST in/out to 599} xywh {360 84 130 20} down_box DOWN_BOX
+                tooltip {Force RST in/out to 599} xywh {360 90 130 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.fixed599);}
               }
               Fl_Check_Button btnCutNbrs {
                 label {Send CW cut numbers}
                 callback {progdefaults.cutnbrs=o->value();
 progdefaults.changed = true;}
-                tooltip {0 = T; 9 = N} xywh {360 114 180 20} down_box DOWN_BOX
+                tooltip {0 = T; 9 = N} xywh {360 120 180 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.cutnbrs);}
               }
             }
             Fl_Group {} {
               label {Serial number} open
-              xywh {55 154 490 65} box ENGRAVED_FRAME align 21
+              xywh {55 160 490 65} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnUseLeadingZeros {
                 label {Use leading zeros}
                 callback {progdefaults.UseLeadingZeros = o->value();
 progdefaults.changed = true;}
-                tooltip {Insert leading zeros into Xmtd serial number} xywh {76 180 154 20} down_box DOWN_BOX value 1
+                tooltip {Insert leading zeros into Xmtd serial number} xywh {76 186 154 20} down_box DOWN_BOX value 1
               }
               Fl_Value_Input nbrContestStart {
                 label Start
                 callback {progdefaults.ContestStart = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Starting number} xywh {271 180 45 20} align 1 maximum 10000 step 1
+                tooltip {Starting number} xywh {271 186 45 20} align 1 maximum 10000 step 1
                 code0 {o->value(progdefaults.ContestStart);}
                 class Fl_Value_Input2
               }
@@ -628,66 +628,66 @@ progdefaults.changed = true;}
                 label Digits
                 callback {progdefaults.ContestDigits = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Number of digits in serial number} xywh {353 179 45 20} align 1 minimum 1 maximum 5 step 1 value 3
+                tooltip {Number of digits in serial number} xywh {353 185 45 20} align 1 minimum 1 maximum 5 step 1 value 3
                 class Fl_Value_Input2
               }
               Fl_Button btnResetSerNbr {
                 label Reset
                 callback {cb_ResetSerNbr();}
-                tooltip {Initialize the QSO logging fields} xywh {445 180 70 20}
+                tooltip {Initialize the QSO logging fields} xywh {445 186 70 20}
               }
             }
             Fl_Group {} {
               label {Duplicate check, CALL plus} open
-              xywh {55 229 490 130} box ENGRAVED_FRAME align 21
+              xywh {55 235 490 130} box ENGRAVED_FRAME align 21
             } {
               Fl_Light_Button btnDupCheckOn {
                 label {On/Off}
                 callback {progdefaults.EnableDupCheck = o->value();
 progdefaults.changed = true;}
-                tooltip {Check for duplicates} xywh {65 259 74 20} selection_color 2
+                tooltip {Check for duplicates} xywh {65 265 74 20} selection_color 2
                 code0 {o->value(progdefaults.EnableDupCheck);}
               }
               Fl_Check_Button btnDupBand {
                 label Band
                 callback {progdefaults.dupband = o->value();
 progdefaults.changed = true;}
-                tooltip {Bands must match} xywh {206 259 70 20} down_box DOWN_BOX
+                tooltip {Bands must match} xywh {206 265 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupband);}
               }
               Fl_Check_Button btnDupMode {
                 label Mode
                 callback {progdefaults.dupmode = o->value();
 progdefaults.changed = true;}
-                tooltip {Mode must match} xywh {326 259 70 20} down_box DOWN_BOX
+                tooltip {Mode must match} xywh {326 265 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupmode);}
               }
               Fl_Check_Button btnDupState {
                 label State
                 callback {progdefaults.dupstate = o->value();
 progdefaults.changed = true;}
-                tooltip {State must match} xywh {445 259 70 20} down_box DOWN_BOX
+                tooltip {State must match} xywh {445 265 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupstate);}
               }
               Fl_Check_Button btnDupXchg1 {
                 label {Exchange In}
                 callback {progdefaults.dupxchg1 = o->value();
 progdefaults.changed = true;}
-                tooltip {free form 1 must match} xywh {206 287 105 20} down_box DOWN_BOX
+                tooltip {free form 1 must match} xywh {206 293 105 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.dupxchg1);}
               }
               Fl_Check_Button btnDupTimeSpan {
                 label {Time span over}
                 callback {progdefaults.duptimespan=(int)o->value();
 progdefaults.changed = true;}
-                tooltip {QSO must not occur within a time period of} xywh {206 317 129 20} down_box DOWN_BOX
+                tooltip {QSO must not occur within a time period of} xywh {206 323 129 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.duptimespan);}
               }
               Fl_Value_Input nbrTimeSpan {
                 label minutes
                 callback {progdefaults.timespan = (int)o->value();
 progdefaults.changed = true;}
-                tooltip {Enter time span in minutes} xywh {335 317 53 20} align 8 maximum 1440 step 1 value 120
+                tooltip {Enter time span in minutes} xywh {335 323 53 20} align 8 maximum 1440 step 1 value 120
                 code0 {o->value(progdefaults.timespan);}
                 class Fl_Value_Input2
               }
@@ -704,7 +704,7 @@ o->color(
     progdefaults.dup_color.B));
 o->redraw();
 progdefaults.changed = true;}
-                tooltip {Left click to select dup color} xywh {65 286 90 22} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
+                tooltip {Left click to select dup color} xywh {65 292 90 22} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
                 code0 {o->color(fl_rgb_color(progdefaults.dup_color.R, progdefaults.dup_color.G, progdefaults.dup_color.B));}
                 code1 {\#include <FL/Fl_Color_Chooser.H>}
               }
@@ -715,14 +715,14 @@ progdefaults.changed = true;}
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
-              xywh {52 55 496 76} box ENGRAVED_FRAME
+              xywh {52 62 496 76} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
                 callback {progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
-                tooltip {Enable / disable tooltips} xywh {87 68 120 20} down_box DOWN_BOX value 1
+                tooltip {Enable / disable tooltips} xywh {87 75 120 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
               }
               Fl_Check_Button chkMenuIcons {
@@ -730,7 +730,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.menuicons = o->value();
 toggle_icon_labels();
 progdefaults.changed = true;}
-                tooltip {Enable / disable icons on menus} xywh {231 68 150 20} down_box DOWN_BOX
+                tooltip {Enable / disable icons on menus} xywh {231 75 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}
               }
               Fl_Group listboxScheme {
@@ -739,7 +739,7 @@ progdefaults.changed = true;}
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;} open
-                tooltip {Change application look and feel} xywh {205 97 80 20} box DOWN_BOX color 7 align 8
+                tooltip {Change application look and feel} xywh {205 104 80 20} box DOWN_BOX color 7 align 8
                 code0 {listboxScheme->add("base");}
                 code1 {listboxScheme->add("gtk+");}
                 code2 {listboxScheme->add("plastic");}
@@ -753,48 +753,48 @@ progdefaults.changed = true;}
 mode_browser->callback(toggle_visible_modes);
 mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;}
-                tooltip {Select modes for menu access} xywh {70 97 110 20}
+                tooltip {Select modes for menu access} xywh {70 104 110 20}
               }
               Fl_Group listbox_language {
                 label {UI language}
                 callback {progdefaults.ui_language = o->index();
 progdefaults.changed = true;} open
-                tooltip {Changes take effect on next program startup} xywh {415 97 110 20} box DOWN_BOX color 7 labelsize 12 align 5
+                tooltip {Changes take effect on next program startup} xywh {415 104 110 20} box DOWN_BOX color 7 labelsize 12 align 5
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
             }
             Fl_Group {} {open
-              xywh {52 132 496 34} box ENGRAVED_FRAME align 21
+              xywh {52 139 496 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_rx_lowercase {
                 label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
                 callback {progdefaults.rx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {87 139 389 20} down_box DOWN_BOX
+                xywh {87 146 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rx_lowercase);}
               }
             }
             Fl_Group {} {open
-              xywh {52 167 496 34} box ENGRAVED_FRAME align 21
+              xywh {52 174 496 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_tx_lowercase {
                 label {Transmit all text in lower case}
                 callback {progdefaults.tx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {87 175 389 20} down_box DOWN_BOX
+                xywh {87 182 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.tx_lowercase);}
               }
             }
             Fl_Group {} {
               label {Exit prompts} open
-              xywh {52 202 496 110} box ENGRAVED_FRAME align 21
+              xywh {52 209 496 110} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_save_config_on_exit {
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {87 265 233 20} down_box DOWN_BOX
+                xywh {87 272 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -802,7 +802,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {87 287 233 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {87 294 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -810,94 +810,94 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {331 265 166 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {331 272 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Box {} {
                 label {Exit prompts active only when File/Exit menu item selected.
 Not active if window decoration close button pressed.}
-                xywh {92 219 436 40} box BORDER_BOX align 20
+                xywh {92 226 436 40} box BORDER_BOX align 20
               }
               Fl_Check_Button btn2_confirm_exit {
                 label {Confirm exit}
                 callback {btn2_confirm_exit->value(o->value());
 progdefaults.confirmExit=o->value();
 progdefaults.changed = true;}
-                xywh {331 287 200 20} down_box DOWN_BOX
+                xywh {331 294 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
               label {Check for updates} open
-              xywh {52 314 496 54} box ENGRAVED_FRAME align 21
+              xywh {52 321 496 54} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_check_for_updates {
                 label {Check for updates when starting program}
                 callback {progdefaults.check_for_updates = o->value();
 progdefaults.changed = true;}
-                xywh {87 337 324 20} down_box DOWN_BOX
+                xywh {87 344 324 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.check_for_updates);}
               }
             }
           }
           Fl_Group tabLogServer {
-            label Logging
+            label Logging open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Client/Server Logbook} open
-              xywh {52 313 496 55} box ENGRAVED_FRAME align 21
+              xywh {52 315 496 55} box ENGRAVED_FRAME align 21
             } {
               Fl_Input xmllogServerAddress {
                 label {Address:}
                 callback {progdefaults.xmllog_address = o->value();}
-                tooltip {Enter URL address of server} xywh {149 334 100 24}
+                tooltip {Enter URL address of server} xywh {149 336 100 24}
                 code0 {o->value(progdefaults.xmllog_address.c_str());}
               }
               Fl_Input xmllogServerPort {
                 label {Port:}
                 callback {progdefaults.xmllog_port = o->value();}
-                tooltip {Enter Port \# assigned to server} xywh {307 334 70 24}
+                tooltip {Enter Port \# assigned to server} xywh {307 336 70 24}
                 code0 {o->value(progdefaults.xmllog_port.c_str());}
               }
               Fl_Button btn_reconnect_log_server {
                 label Reconnect
                 callback {progdefaults.xml_logbook = true;
 connect_to_log_server();}
-                xywh {410 334 115 24}
+                xywh {410 336 115 24}
               }
             }
             Fl_Group {} {
               label {QSO logging} open
-              xywh {52 57 496 180} box ENGRAVED_FRAME align 21
+              xywh {52 59 496 180} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
                 label {Prompt to save log on exit}
                 callback {btn2NagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {69 79 236 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {69 81 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Check_Button btnClearOnSave {
                 label {Clear on save}
                 callback {progdefaults.ClearOnSave=o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log entries after saving or using macro <LOG>} xywh {69 104 236 20} down_box DOWN_BOX
+                tooltip {Clear log entries after saving or using macro <LOG>} xywh {69 106 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ClearOnSave);}
               }
               Fl_Check_Button btnCallUpperCase {
                 label {Convert callsign to upper case}
                 callback {progdefaults.calluppercase = o->value();
 progdefaults.changed = true;}
-                tooltip {Force callsign field to UPPERCASE} xywh {69 130 236 20} down_box DOWN_BOX
+                tooltip {Force callsign field to UPPERCASE} xywh {69 132 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.calluppercase);}
               }
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
 progdefaults.changed = true;}
-                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {69 155 236 20} down_box DOWN_BOX
+                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {69 157 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
               }
               Fl_Check_Button btnDateTimeSort {
@@ -905,35 +905,35 @@ progdefaults.changed = true;}
                 callback {progdefaults.sort_date_time_off = o->value();
 progdefaults.changed = true;
 reload_browser();}
-                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {322 79 190 20} down_box DOWN_BOX
+                tooltip {Sort by date/time OFF - effects all ADIF/Cabrillo reports} xywh {322 81 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.sort_date_time_off);}
               }
               Fl_Check_Button btndate_time_force {
                 label {Date time ON == OFF}
                 callback {progdefaults.force_date_time = o->value();
 progdefaults.changed = true;}
-                tooltip {Force date/time ON == date/time OFF} xywh {322 104 190 20} down_box DOWN_BOX
+                tooltip {Force date/time ON == date/time OFF} xywh {322 106 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.force_date_time);}
               }
               Fl_Check_Button btnRSTindefault {
                 label {Default RST in to 599}
                 callback {progdefaults.RSTin_default = o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log controls sets RST in to 599} xywh {322 129 186 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST in to 599} xywh {322 131 186 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTin_default);}
               }
               Fl_Check_Button btnRSTdefault {
                 label {Default RST out to 599}
                 callback {progdefaults.RSTdefault = o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log controls sets RST out to 599} xywh {322 155 184 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST out to 599} xywh {322 157 184 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTdefault);}
               }
               Fl_Input txt_cty_dat_pathname {
                 label {cty.dat pathname}
                 callback {progdefaults.cty_dat_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-filename for cty.dat} xywh {189 178 346 24} when 1
+                tooltip {Enter full path-filename for cty.dat} xywh {189 180 346 24} when 1
                 code0 {o->value(progdefaults.cty_dat_pathname.c_str());}
                 code1 {\#include "dxcc.h"}
                 class Fl_Input2
@@ -941,23 +941,23 @@ progdefaults.changed = true;}
               Fl_Button btn_select_cty_dat {
                 label Browse
                 callback {select_cty_dat_pathname();}
-                tooltip {Locate cty.dat file} xywh {70 207 75 24}
+                tooltip {Locate cty.dat file} xywh {70 209 75 24}
               }
               Fl_Button btn_default_cty_dat {
                 label Default
                 callback {default_cty_dat_pathname();}
-                tooltip {Restore cty.dat default folder} xywh {165 207 75 24}
+                tooltip {Restore cty.dat default folder} xywh {165 209 75 24}
               }
               Fl_Button btn_reload_cty_dat {
                 label Reload
                 callback {reload_cty_dat();}
-                tooltip {Reload cty.dat} xywh {260 207 75 24}
+                tooltip {Reload cty.dat} xywh {260 209 75 24}
               }
               Fl_Input inpMyPower {
                 label {Transmit Power}
                 callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-                tooltip {Tx power used for logbook entries} xywh {485 207 50 24}
+                tooltip {Tx power used for logbook entries} xywh {485 209 50 24}
                 code0 {o->value(progdefaults.mytxpower.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -965,20 +965,20 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Rx Text Capture} open
-              xywh {52 238 496 74} box ENGRAVED_FRAME align 21
+              xywh {52 240 496 74} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnRXClicks {
                 label {Double-click to capture}
                 callback {progdefaults.rxtext_clicks_qso_data = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable if you cannot use the middle mouse button} xywh {75 285 191 20} down_box DOWN_BOX
+                tooltip {Enable if you cannot use the middle mouse button} xywh {75 287 191 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
               }
               Fl_Check_Button btnRXTooltips {
                 label {callsign tooltips in received text}
                 callback {progdefaults.rxtext_tooltips = o->value();
 progdefaults.changed = true;}
-                tooltip {Popup info after a 2 second hover on a callsign} xywh {277 285 254 20} down_box DOWN_BOX
+                tooltip {Popup info after a 2 second hover on a callsign} xywh {277 287 254 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_tooltips);}
               }
               Fl_Input inpNonword {
@@ -986,7 +986,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.nonwordchars = o->value();
 progdefaults.changed = true;}
                 tooltip {RX text QSO data entry is bounded by the non-word characters
-defined here. Tab and newline are automatically included.} xywh {194 258 279 24} textfont 4
+defined here. Tab and newline are automatically included.} xywh {194 260 279 24} textfont 4
                 code0 {o->value(progdefaults.nonwordchars.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -994,23 +994,23 @@ defined here. Tab and newline are automatically included.} xywh {194 258 279 24}
             }
           }
           Fl_Group tabMBars {
-            label Macros
+            label Macros open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
-              xywh {52 250 496 40} box ENGRAVED_FRAME
+              xywh {52 257 496 40} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMacroMouseWheel {
                 label {Mouse wheel active on macro buttons}
                 callback {progdefaults.macro_wheel = o->value();
 progdefaults.changed = true;}
-                tooltip {enable mouse wheel control of macro bar} xywh {62 259 296 20} down_box DOWN_BOX
+                tooltip {enable mouse wheel control of macro bar} xywh {62 266 296 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.macro_wheel);}
               }
             }
             Fl_Group {} {
               label {Number and position of macro bars} open
-              xywh {52 54 496 195} box ENGRAVED_FRAME align 21
+              xywh {52 61 496 195} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btn_oneA {
                 label {One bar (above waterfall)}
@@ -1019,7 +1019,7 @@ progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 84 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 91 220 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_oneB {
                 label {One bar (below waterfall)}
@@ -1028,7 +1028,7 @@ progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 114 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 121 220 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoA {
                 label {Two bars (scheme 1)}
@@ -1037,7 +1037,7 @@ progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 144 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 151 220 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoB {
                 label {Two bars (scheme 2)}
@@ -1046,7 +1046,7 @@ progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {292 144 219 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {292 151 219 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoC {
                 label {Two bars (scheme 3)}
@@ -1055,7 +1055,7 @@ progdefaults.mbar1_pos = true;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 174 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 181 220 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoD {
                 label {Two bars (scheme 4)}
@@ -1064,7 +1064,7 @@ progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {292 174 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {292 181 220 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoE {
                 label {Two bars (scheme 5)}
@@ -1073,7 +1073,7 @@ progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 204 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {62 211 220 20} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_twoF {
                 label {Two bars (scheme 6)}
@@ -1082,11 +1082,11 @@ progdefaults.mbar1_pos = false;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {292 204 220 20} type Radio down_box ROUND_DOWN_BOX
+                xywh {292 211 220 20} type Radio down_box ROUND_DOWN_BOX
               }
             }
             Fl_Group {} {open
-              xywh {52 292 496 76} box ENGRAVED_FRAME
+              xywh {52 299 496 76} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnUseLastMacro {
                 label {Load last used macro file on startup}
@@ -1094,14 +1094,14 @@ UI_select();}
 update_main_title();
 progdefaults.changed = true;}
                 tooltip {ON - use last set of macros
-OFF - use default set} xywh {62 298 277 20} down_box DOWN_BOX
+OFF - use default set} xywh {62 305 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseLastMacro);}
               }
               Fl_Check_Button btnDisplayMacroFilename {
                 label {Display macro filename on startup}
                 callback {progdefaults.DisplayMacroFilename = o->value();
 progdefaults.changed = true;}
-                tooltip {The filename is written to the RX text area} xywh {62 320 277 20} down_box DOWN_BOX
+                tooltip {The filename is written to the RX text area} xywh {62 327 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.DisplayMacroFilename);}
               }
               Fl_Check_Button btn_save_macros_on_exit {
@@ -1109,7 +1109,7 @@ progdefaults.changed = true;}
                 callback {btn2_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {62 342 305 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {62 349 305 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
             }
@@ -5817,7 +5817,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label Web
+        label Web open
         tooltip {Callsign database} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsQRZ {open
@@ -5829,14 +5829,14 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
-              xywh {55 52 490 122} box ENGRAVED_FRAME align 21
+              xywh {55 56 490 122} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnQRZWEBnotavailable {
                 label None
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = QRZWEBNONE;
 progdefaults.changed = true;}
-                tooltip {Do not use callsign lookup via web browser} xywh {77 78 337 20} down_box DOWN_BOX value 1
+                tooltip {Do not use callsign lookup via web browser} xywh {77 82 337 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.QRZWEB == QRZWEBNONE);}
               }
               Fl_Round_Button btnQRZonline {
@@ -5844,7 +5844,7 @@ progdefaults.changed = true;}
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = QRZHTML;
 progdefaults.changed = true;}
-                tooltip {Visit QRZ web site} xywh {77 102 337 20} down_box DOWN_BOX
+                tooltip {Visit QRZ web site} xywh {77 106 337 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZWEB == QRZHTML);}
               }
               Fl_Round_Button btnHAMCALLonline {
@@ -5852,7 +5852,7 @@ progdefaults.changed = true;}
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = HAMCALLHTML;
 progdefaults.changed = true;}
-                tooltip {Visit Hamcall web site} xywh {77 126 337 20} down_box DOWN_BOX
+                tooltip {Visit Hamcall web site} xywh {77 130 337 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZWEB == HAMCALLHTML);}
               }
               Fl_Round_Button btnHamQTHonline {
@@ -5860,20 +5860,20 @@ progdefaults.changed = true;}
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = HAMQTHHTML;
 progdefaults.changed = true;}
-                tooltip {Visit hamQTH web site} xywh {77 150 337 20} down_box DOWN_BOX
+                tooltip {Visit hamQTH web site} xywh {77 154 337 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZWEB == HAMQTHHTML);}
               }
             }
             Fl_Group {} {
               label {Data base lookup} open
-              xywh {55 176 490 190} box ENGRAVED_FRAME align 21
+              xywh {55 180 490 190} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnQRZXMLnotavailable {
                 label None
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = QRZXMLNONE;
 progdefaults.changed = true;}
-                tooltip {Do not use callsign database} xywh {77 199 64 20} down_box DOWN_BOX value 1
+                tooltip {Do not use callsign database} xywh {77 203 64 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.QRZXML == QRZXMLNONE);}
               }
               Fl_Round_Button btnQRZcdrom {
@@ -5881,7 +5881,7 @@ progdefaults.changed = true;}
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = QRZCD;
 progdefaults.changed = true;}
-                tooltip {Use CD or hard drive CD image} xywh {77 227 70 20} down_box DOWN_BOX
+                tooltip {Use CD or hard drive CD image} xywh {77 231 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == QRZCD);}
               }
               Fl_Round_Button btnQRZsub {
@@ -5890,7 +5890,7 @@ progdefaults.changed = true;}
 progdefaults.QRZXML = QRZNET;
 progdefaults.changed = true;}
                 tooltip {You need a paid QRZ online
-subscription to access} xywh {77 255 125 20} down_box DOWN_BOX
+subscription to access} xywh {77 259 125 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == QRZNET);}
               }
               Fl_Round_Button btnHamcall {
@@ -5899,7 +5899,7 @@ subscription to access} xywh {77 255 125 20} down_box DOWN_BOX
 progdefaults.QRZXML = HAMCALLNET;
 progdefaults.changed = true;}
                 tooltip {You need a paid Hamcall online
-subscription to access} xywh {77 281 125 20} down_box DOWN_BOX
+subscription to access} xywh {77 285 125 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == HAMCALLNET);}
               }
               Fl_Round_Button btnHamQTH {
@@ -5907,7 +5907,7 @@ subscription to access} xywh {77 281 125 20} down_box DOWN_BOX
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = HAMQTH;
 progdefaults.changed = true;}
-                tooltip {Free service courtesy of OK} xywh {77 307 125 20} down_box DOWN_BOX
+                tooltip {Free service courtesy of OK} xywh {77 311 125 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == HAMQTH);}
               }
               Fl_Round_Button btnCALLOOK {
@@ -5915,7 +5915,7 @@ progdefaults.changed = true;}
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = CALLOOK;
 progdefaults.changed = true;}
-                tooltip {Visit Hamcall web site} xywh {77 334 125 20} down_box DOWN_BOX
+                tooltip {Visit Hamcall web site} xywh {77 338 125 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == CALLOOK);}
               }
               Fl_Input txtQRZpathname {
@@ -5924,7 +5924,7 @@ progdefaults.changed = true;}
 progdefaults.QRZchanged = true;
 progdefaults.changed = true;}
                 tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/
-Leave blank to search for database} xywh {202 226 300 22}
+Leave blank to search for database} xywh {202 230 300 22}
                 code0 {o->value(progdefaults.QRZpathname.c_str());}
                 code1 {txtQRZpathname->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -5933,7 +5933,7 @@ Leave blank to search for database} xywh {202 226 300 22}
                 label {User name}
                 callback {progdefaults.QRZusername = o->value();
 progdefaults.changed = true;}
-                tooltip {Your login name} xywh {285 254 150 22}
+                tooltip {Your login name} xywh {285 258 150 22}
                 code0 {o->value(progdefaults.QRZusername.c_str());}
                 code1 {inpQRZusername->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -5942,7 +5942,7 @@ progdefaults.changed = true;}
                 label Password
                 callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
-                tooltip {Your login password} xywh {285 280 150 22}
+                tooltip {Your login password} xywh {285 284 150 22}
                 code0 {o->value(progdefaults.QRZuserpassword.c_str());}
                 code1 {o->type(FL_SECRET_INPUT);}
                 code2 {inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);}
@@ -5953,13 +5953,13 @@ progdefaults.changed = true;}
                 callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-                tooltip {Show password in plain text} xywh {445 281 70 20}
+                tooltip {Show password in plain text} xywh {445 285 70 20}
               }
               Fl_Check_Button btn_notes_address {
                 label {Add address to notes field}
                 callback {progdefaults.notes_address = o->value();
 progdefaults.changed = true;}
-                xywh {202 201 207 15} down_box DOWN_BOX
+                xywh {202 205 207 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.notes_address);}
               }
             }
@@ -6024,14 +6024,14 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Text Tags (tags use {} delimiters)} open
-                xywh {30 270 512 90} box THIN_DOWN_BOX align 21
+                xywh {33 270 510 90} box FLAT_BOX align 21
               } {
                 Fl_Box eqsl_txt1 {
-                  label {{CALL} other ops call sign}
+                  label {  {CALL} other ops call sign}
                   xywh {32 317 220 17} align 20
                 }
                 Fl_Box eqsl_txt2 {
-                  label {{MODE} full mode / submode}
+                  label {  {MODE} full mode / submode}
                   xywh {30 336 220 17} align 20
                 }
                 Fl_Box eqsl_txt3 {
@@ -6040,7 +6040,7 @@ progdefaults.changed = true;}
                 }
                 Fl_Box {} {
                   label {These tags can also be used in <EQSL:[message]>}
-                  xywh {46 293 440 17}
+                  xywh {68 293 440 17}
                 }
               }
               Fl_Check_Button btn_send_datetime_off {
@@ -6056,12 +6056,12 @@ progdefaults.changed = true;}
       }
       Fl_Group tabAutoStart {
         label Autostart
-        callback {progdefaults.changed = true;}
+        callback {progdefaults.changed = true;} open
         tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label {Auto start programs with fldigi} open
-          xywh {2 32 598 330} box ENGRAVED_BOX align 17
+          xywh {2 32 596 330} box ENGRAVED_BOX align 17
         } {
           Fl_Input txt_auto_flrig_pathname {
             label {flrig:}
