@@ -249,11 +249,11 @@ void btnComboBox_cb (Fl_Widget *v, void *d)
 }
 
 Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *lbl, int wtype)
- : Fl_Group (X, Y, W, H, lbl),
- type_(wtype)
+ : Fl_Group (X, Y, W, H, lbl)
 {
 	width = W; height = H;
 
+	type_ = wtype;
 	if (type_ == LISTBOX) {
 		valbox = new Fl_Box (FL_DOWN_BOX, X, Y, W-H, H, "");
 		valbox->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
@@ -261,7 +261,6 @@ Fl_ComboBox::Fl_ComboBox (int X,int Y,int W,int H, const char *lbl, int wtype)
 	} else {
 		val = new Fl_Input (X, Y, W-H, H, "");
 		val->align(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
-		readonly();
 	}
 
 	btn = new Fl_Button (X + W - H + 1, Y, H - 1, H, "@2>");
