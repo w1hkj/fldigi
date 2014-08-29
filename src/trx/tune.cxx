@@ -79,8 +79,7 @@ double outbuf[BUFLEN];
 inline double nco()
 {
 	phaseacc += phaseincr;
-	if (phaseacc > M_PI)
-		phaseacc -= 2.0 * M_PI;
+	if (phaseacc > TWOPI) phaseacc -= TWOPI;
 	return cos(phaseacc);
 }
 

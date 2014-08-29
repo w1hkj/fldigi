@@ -843,8 +843,7 @@ double rtty::nco(double freq)
 {
 	phaseacc += TWOPI * freq / samplerate;
 
-	if (phaseacc > M_PI)
-		phaseacc -= TWOPI;
+	if (phaseacc > TWOPI) phaseacc -= TWOPI;
 
 	return cos(phaseacc);
 }
@@ -853,9 +852,7 @@ double rtty::FSKnco()
 {
 	FSKphaseacc += TWOPI * 1000 / samplerate;
 
-	if (FSKphaseacc > M_PI)
-
-		FSKphaseacc -= TWOPI;
+	if (FSKphaseacc > TWOPI) FSKphaseacc -= TWOPI;
 
 	return sin(FSKphaseacc);
 
@@ -1246,7 +1243,8 @@ Oscillator::Oscillator( double samplerate )
 double Oscillator::Update( double frequency )
 {
 	m_phase += frequency/m_samplerate * TWOPI;
-	if ( m_phase > M_PI ) m_phase -= TWOPI;
+	if ( m_phase > TWOPI ) m_phase -= TWOPI;
+
 	return ( sin( m_phase ) );
 }
 

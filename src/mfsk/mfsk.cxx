@@ -677,8 +677,7 @@ cmplx mfsk::mixer(cmplx in, double f)
 	z = in * cmplx( cos(phaseacc), sin(phaseacc) );
 
 	phaseacc -= TWOPI * f / samplerate;
-	if (phaseacc > TWOPI) phaseacc -= TWOPI;
-	if (phaseacc < -TWOPI) phaseacc += TWOPI;
+	if (phaseacc < 0) phaseacc += TWOPI;
 
 	return z;
 }
@@ -918,10 +917,7 @@ void mfsk::sendsymbol(int sym)
 	for (int i = 0; i < symlen; i++) {
 		outbuf[i] = cos(phaseacc);
 		phaseacc -= phaseincr;
-		if (phaseacc > M_PI)
-			phaseacc -= TWOPI;
-		else if (phaseacc < M_PI)
-			phaseacc += TWOPI;
+		if (phaseacc < 0) phaseacc += TWOPI;
 	}
 	transmit (outbuf, symlen);
 }
@@ -994,8 +990,7 @@ void mfsk::sendpic(unsigned char *data, int len)
 		for (j = 0; j < TXspp; j++) {
 			*ptr++ = cos(phaseacc);
 			phaseacc += TWOPI * f / samplerate;
-			if (phaseacc > M_PI)
-				phaseacc -= 2.0 * M_PI;
+			if (phaseacc > TWOPI) phaseacc -= TWOPI;
 		}
 	}
 
@@ -1011,8 +1006,7 @@ void mfsk::flush_xmt_filter(int n)
 	for (int i = 0; i < n; i++) {
 		outbuf[i] = cos(phaseacc);
 		phaseacc += TWOPI * (reverse ? f2 : f1) / samplerate;
-		if (phaseacc > M_PI)
-			phaseacc -= 2.0 * M_PI;
+		if (phaseacc > TWOPI) phaseacc -= TWOPI;
 	}
 	transmit (outbuf, tracepair.delay);
 }

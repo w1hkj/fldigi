@@ -46,8 +46,8 @@ double contestia::nco(double freq)
 {
     preamblephase += 2.0 * M_PI * freq / samplerate;
 
-	if (preamblephase > M_PI)
-		preamblephase -= 2.0 * M_PI;
+	if (preamblephase > TWOPI)
+		preamblephase -= TWOPI;
 
 	return cos(preamblephase);
 }

@@ -335,10 +335,8 @@ cmplx dominoex::mixer(int n, cmplx in)
 	z = cmplx( cos(phase[n]), sin(phase[n]));
 	z = z * in;
 	phase[n] -= TWOPI * f / samplerate;
-	if (phase[n] > M_PI)
-		phase[n] -= TWOPI;
-	else if (phase[n] < M_PI)
-		phase[n] += TWOPI;
+	if (phase[n] < 0) phase[n] += TWOPI;
+
 	return z;
 }
 
@@ -632,10 +630,7 @@ void dominoex::sendtone(int tone, int duration)
 		for (int i = 0; i < symlen; i++) {
 			outbuf[i] = cos(txphase);
 			txphase -= phaseincr;
-			if (txphase > M_PI)
-				txphase -= TWOPI;
-			else if (txphase < M_PI)
-				txphase += TWOPI;
+			if (txphase < 0) txphase += TWOPI;
 		}
 		ModulateXmtr(outbuf, symlen);
 	}

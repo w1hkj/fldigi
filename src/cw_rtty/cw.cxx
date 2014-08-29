@@ -536,10 +536,7 @@ cmplx cw::mixer(cmplx in)
 	z = z * in;
 
 	phaseacc += TWOPI * frequency / samplerate;
-	if (phaseacc > M_PI)
-		phaseacc -= TWOPI;
-	else if (phaseacc < M_PI)
-		phaseacc += TWOPI;
+	if (phaseacc > TWOPI) phaseacc -= TWOPI;
 
 	return z;
 }
@@ -618,10 +615,7 @@ void cw::rx_FFTprocess(const double *buf, int len)
 
 		z = cmplx ( *buf * cos(FFTphase), *buf * sin(FFTphase) );
 		FFTphase += TWOPI * frequency / samplerate;
-		if (FFTphase > M_PI)
-			FFTphase -= TWOPI;
-		else if (FFTphase < M_PI)
-			FFTphase += TWOPI;
+		if (FFTphase > TWOPI) FFTphase -= TWOPI;
 
 		buf++;
 
@@ -655,10 +649,7 @@ void cw::rx_FIRprocess(const double *buf, int len)
 		buf++;
 
 		FIRphase += TWOPI * frequency / samplerate;
-		if (FIRphase > M_PI)
-			FIRphase -= TWOPI;
-		else if (FIRphase < M_PI)
-			FIRphase += TWOPI;
+		if (FIRphase > TWOPI) FIRphase -= TWOPI;
 
 		if (cw_FIR_filter->run ( z, z )) {
 
@@ -910,8 +901,7 @@ inline double cw::nco(double freq)
 {
 	phaseacc += 2.0 * M_PI * freq / samplerate;
 
-	if (phaseacc > M_PI)
-		phaseacc -= 2.0 * M_PI;
+	if (phaseacc > TWOPI) phaseacc -= TWOPI;
 
 	return sin(phaseacc);
 }
@@ -920,8 +910,7 @@ inline double cw::qsknco()
 {
 	qskphase += 2.0 * M_PI * 1000 / samplerate;
 
-	if (qskphase > M_PI)
-		qskphase -= 2.0 * M_PI;
+	if (qskphase > TWOPI) qskphase -= TWOPI;
 
 	return sin(qskphase);
 }

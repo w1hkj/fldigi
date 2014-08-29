@@ -336,8 +336,7 @@ void modem::set_samplerate(int smprate)
 double modem::PTTnco()
 {
 	PTTphaseacc += TWOPI * 1000 / samplerate;
-	if (PTTphaseacc > M_PI)
-		PTTphaseacc -= TWOPI;
+	if (PTTphaseacc > TWOPI) PTTphaseacc -= TWOPI;
 	return sin(PTTphaseacc);
 }
 
@@ -579,8 +578,7 @@ double modem::cwid_nco(double freq)
 {
 	cwid_phaseacc += 2.0 * M_PI * freq / samplerate;
 
-	if (cwid_phaseacc > M_PI)
-		cwid_phaseacc -= 2.0 * M_PI;
+	if (cwid_phaseacc > TWOPI) cwid_phaseacc -= TWOPI;
 
 	return sin(cwid_phaseacc);
 }
@@ -806,7 +804,7 @@ void modem::pretone()
 	for (int j = 0; j < symlen; j++) {
 		outbuf[j] = (0.5 * (1.0 - cos (M_PI * j / symlen)))*sin(phase);
 		phase += phaseincr;
-		if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+		if (phase > TWOPI) phase -= TWOPI;
 	}
 	ModulateXmtr(outbuf, symlen);
 
@@ -814,7 +812,7 @@ void modem::pretone()
 		for (int j = 0; j < symlen; j++) {
 			outbuf[j] = sin(phase);
 			phase += phaseincr;
-			if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+			if (phase > TWOPI) phase -= TWOPI;
 		}
 		ModulateXmtr(outbuf, symlen);
 	}
@@ -822,7 +820,7 @@ void modem::pretone()
 	for (int j = 0; j < symlen; j++) {
 		outbuf[j] = (0.5 * (1.0 - cos (M_PI * (symlen - j) / symlen)))*sin(phase);
 		phase += phaseincr;
-		if (phase > 2.0 * M_PI) phase -= 2.0 * M_PI;
+		if (phase > TWOPI) phase -= TWOPI;
 	}
 	ModulateXmtr(outbuf, symlen);
 

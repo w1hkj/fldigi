@@ -335,15 +335,11 @@ cmplx thor::mixer(int n, const cmplx& in)
 	else
 		f = THORFIRSTIF - THORBASEFREQ - bandwidth*0.5 + (samplerate / symlen) * ( (double)n / paths);
 
-	double phase_n = phase[n];
-	cmplx z( cos(phase_n), sin(phase_n) );
+	cmplx z( cos(phase[n]), sin(phase[n]) );
 	z *= in;
-	phase_n -= TWOPI * f / samplerate;
-	if (phase_n > M_PI)
-		phase_n -= TWOPI;
-	else if (phase_n < M_PI)
-		phase_n += TWOPI;
-	phase[n] = phase_n;
+	phase[n] -= TWOPI * f / samplerate;
+	if (phase[n] < 0) phase[n] += TWOPI;
+
 	return z;
 }
 
@@ -957,10 +953,7 @@ void thor::sendtone(int tone, int duration)
 		for (int i = 0; i < symlen; i++) {
 			outbuf[i] = cos(txphase);
 			txphase -= phaseincr;
-			if (txphase > M_PI)
-				txphase -= TWOPI;
-			else if (txphase < M_PI)
-				txphase += TWOPI;
+			if (txphase < 0) txphase += TWOPI;
 		}
 		ModulateXmtr(outbuf, symlen);
 	}
