@@ -900,15 +900,21 @@ void SoundPort::initialize(void)
 
 		int err;
 
-		if ((err = Pa_Initialize()) != paNoError)
-				throw SndPortException(err);
+		if ((err = Pa_Initialize()) != paNoError) {
+			LOG_PERROR("Portaudio Initialize error");
+			throw SndPortException(err);
+		}
 		pa_init = true;
 
 		PaDeviceIndex ndev;
-		if ((ndev = Pa_GetDeviceCount()) < 0)
-				throw SndPortException(ndev);
-		if (ndev == 0)
-				throw SndException(ENODEV, "No available audio devices");
+		if ((ndev = Pa_GetDeviceCount()) < 0) {
+			LOG_PERROR("Portaudio device count error");
+			throw SndPortException(ndev);
+		}
+		if (ndev == 0) {
+			LOG_PERROR("Portaudio, no audio devices");
+			throw SndException(ENODEV, "No available audio devices");
+		}
 
 		devs.reserve(ndev);
 		for (PaDeviceIndex i = 0; i < ndev; i++)
@@ -961,16 +967,22 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev)
 		for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
 		snprintf(sname, sizeof(sname), "%" PRIuSZ "-%u-%s", i, getpid(), PACKAGE_TARNAME);
-		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED)
+		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED) {
+			pa_perror(errno, sname);
 			throw SndException(errno);
+		}
 #  if HAVE_SEM_UNLINK
-		if (sem_unlink(sname) == -1)
+		if (sem_unlink(sname) == -1) {
+			pa_perror(errno, sname);
 			throw SndException(errno);
+		}
 #  endif
 #else
 		*sems[i] = new sem_t;
-		if (sem_init(*sems[i], 0, 0) == -1)
+		if (sem_init(*sems[i], 0, 0) == -1) {
+			pa_perror(errno, "sem_init error");
 			throw SndException(errno);
+		}
 #endif // USE_NAMED_SEMAPHORES
 	}
 
@@ -1006,11 +1018,15 @@ SoundPort::~SoundPort()
 	}
 
 	for (size_t i = 0; i < 2; i++) {
-		if (pthread_mutex_destroy(sd[i].cmutex) == -1)
+		if (pthread_mutex_destroy(sd[i].cmutex) == -1) {
+			pa_perror(errno, "pthread mutex destroy");
 			throw SndException(errno);
+		}
 		delete sd[i].cmutex;
-		if (pthread_cond_destroy(sd[i].ccond) == -1)
+		if (pthread_cond_destroy(sd[i].ccond) == -1) {
+			pa_perror(errno, "pthread cond destroy");
 			throw SndException(errno);
+		}
 		delete sd[i].ccond;
 	}
 
@@ -1038,12 +1054,33 @@ int SoundPort::Open(int mode, int freq)
 
 	// initialize stream if it is a JACK device, regardless of mode
 	device_iterator idev;
+	int device_type = 0;
 	if (mode == O_WRONLY && (idev = name_to_device(sd[0].device, 0)) != devs.end() &&
-		Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK)
+		(device_type = Pa_GetHostApiInfo((*idev)->hostApi)->type) == paJACK)
 		mode = O_RDWR;
 	if (mode == O_RDONLY && (idev = name_to_device(sd[1].device, 1)) != devs.end() &&
-		Pa_GetHostApiInfo((*idev)->hostApi)->type == paJACK)
+		(device_type = Pa_GetHostApiInfo((*idev)->hostApi)->type) == paJACK)
 		mode = O_RDWR;
+	static char pa_open_str[200];
+	snprintf(pa_open_str, sizeof(pa_open_str),
+		"Port Audio open mode = %s, device type = %s\n",
+		mode == O_WRONLY ? "Write" : mode == O_RDONLY ? "Read" :
+		mode == O_RDWR ? "Read/Write" : "unknown",
+		device_type == 0 ? "paInDevelopment" :
+		device_type == 1 ? "paDirectSound" :
+		device_type == 2 ? "paMME" :
+		device_type == 3 ? "paASIO" :
+		device_type == 4 ? "paSoundManager" :
+		device_type == 5 ? "paCoreAudio" :
+		device_type == 7 ? "paOSS" :
+		device_type == 8 ? "paALSA" :
+		device_type == 9 ? "paAL" :
+		device_type == 10 ? "paBeOS" :
+		device_type == 11 ? "paWDMKS" :
+		device_type == 12 ? "paJACK" :
+		device_type == 13 ? "paWASAPI" :
+		device_type == 14 ? "paAudioScienceHPI" : "unknown" );
+	LOG_INFO( "%s", pa_open_str);
 
 	size_t start = (mode == O_RDONLY || mode == O_RDWR) ? 0 : 1,
 		end = (mode == O_WRONLY || mode == O_RDWR) ? 1 : 0;
@@ -1057,9 +1094,10 @@ int SoundPort::Open(int mode, int freq)
 
 						// reset the semaphore
 			while (sem_trywait(sd[i].rwsem) == 0);
-			if (errno && errno != EAGAIN)
+			if (errno && errno != EAGAIN) {
+				pa_perror(errno, "open");
 				throw SndException(errno);
-
+			}
 			start_stream(i);
 			ret = 1;
 		}
@@ -1190,7 +1228,10 @@ size_t SoundPort::Read(float *buf, size_t count)
 			buf += maxframes * sd[0].params.channelCount;
 			count -= n;//maxframes;
 			pa_timeout--;
-			if (pa_timeout == 0) throw SndException("Portaudio read error 1");
+			if (pa_timeout == 0) {
+				pa_perror(1, "Portaudio read error #1");
+				throw SndException("Portaudio read error 1");
+			}
 		}
 		if (count > 0)
 			n += Read(buf, count);
@@ -1204,8 +1245,10 @@ size_t SoundPort::Read(float *buf, size_t count)
 		sd[0].blocksize = SCBLOCKSIZE;
 		while (n < count) {
 			if  ((r = src_callback_read(rx_src_state, sd[0].src_ratio,
-							count - n, rbuf + n * sd[0].params.channelCount)) == 0)
+							count - n, rbuf + n * sd[0].params.channelCount)) == 0) {
+				pa_perror(2, "Portaudio read error #2");
 				throw SndException("Portaudio read error 2");
+			}
 			n += r;
 		}
 	}
@@ -1213,8 +1256,10 @@ size_t SoundPort::Read(float *buf, size_t count)
 		bool timeout = false;
 		WAIT_FOR_COND( (sd[0].rb->read_space() >= count * sd[0].params.channelCount / sd[0].src_ratio), sd[0].rwsem,
 				   (MAX(1.0, 2 * count * sd[0].params.channelCount / sd->dev_sample_rate)) );
-		if (timeout)
+		if (timeout) {
+			pa_perror(3, "Portaudio read error #3");
 			throw SndException("Portaudio read error 3");
+		}
 		ringbuffer<float>::vector_type vec[2];
 		sd[0].rb->get_rv(vec);
 		if (vec[0].len >= count * sd[0].params.channelCount) {
@@ -1319,7 +1364,10 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 						buf += sd[1].params.channelCount * maxframes;
 						count -= maxframes;
 						pa_timeout--;
-						if (pa_timeout == 0) throw SndException("Portaudio write error 1");
+						if (pa_timeout == 0) {
+							pa_perror(1, "Portaudio write error #1");
+							throw SndException("Portaudio write error 1");
+						}
 				}
 				if (count > 0)
 						n += resample_write(buf, count);
@@ -1349,8 +1397,10 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 				tx_src_data->output_frames = (wbuf == vec[0].buf ? vec[0].len : SND_BUF_LEN);
 				tx_src_data->end_of_input = 0;
 		int r;
-				if ((r = src_process(tx_src_state, tx_src_data)) != 0)
-					   throw SndException("Portaudio write error 2");
+				if ((r = src_process(tx_src_state, tx_src_data)) != 0) {
+					pa_perror(2, "Portaudio write error #2");
+					throw SndException("Portaudio write error 2");
+				}
 		if (tx_src_data->output_frames_gen == 0) // input was too small
 			return count;
 
@@ -1367,8 +1417,10 @@ size_t SoundPort::resample_write(float* buf, size_t count)
 		bool timeout = false;
 		WAIT_FOR_COND( (sd[1].rb->write_space() >= sd[1].params.channelCount * count), sd[1].rwsem,
 					   (MAX(1.0, 2 * sd[1].params.channelCount * count / sd[1].dev_sample_rate)) );
-		if (timeout)
-				throw SndException("Portaudio write error 3");
+		if (timeout) {
+			pa_perror(3, "Portaudio write error #3");
+			throw SndException("Portaudio write error 3");
+		}
 		sd[1].rb->write(wbuf, sd[1].params.channelCount * count);
 
 		return count;
@@ -1408,16 +1460,20 @@ void SoundPort::src_data_reset(unsigned dir)
 						src_delete(rx_src_state);
 				rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
 												sd[0].params.channelCount, &err, &sd[0]);
-				if (!rx_src_state)
-						throw SndException(src_strerror(err));
+				if (!rx_src_state) {
+					pa_perror(err, src_strerror(err));
+					throw SndException(src_strerror(err));
+				}
 				sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
 		}
 		else if (dir == 1) {
 				if (tx_src_state)
 						src_delete(tx_src_state);
 				tx_src_state = src_new(progdefaults.sample_converter, sd[1].params.channelCount, &err);
-				if (!tx_src_state)
-						throw SndException(src_strerror(err));
+				if (!tx_src_state) {
+					pa_perror(err, src_strerror(err));
+					throw SndException(src_strerror(err));
+				}
 				tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
 		}
 
@@ -1489,9 +1545,11 @@ void SoundPort::init_stream(unsigned dir)
 		if (idx == paNoDevice) { // no match
 		LOG_ERROR("Could not find device \"%s\", using default device", sd[dir].device.c_str());
 		PaDeviceIndex def = (dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
-		if (def == paNoDevice)
+		if (def == paNoDevice) {
+			pa_perror(paDeviceUnavailable, "Portaudio device unavailable");
 			throw SndPortException(paDeviceUnavailable);
-				sd[dir].idev = devs.begin() + def;
+		}
+		sd[dir].idev = devs.begin() + def;
 		idx = def;
 		}
 	else if (sd[dir].idev == devs.end()) // if we only found a near-match point the idev iterator to it
@@ -1500,8 +1558,10 @@ void SoundPort::init_stream(unsigned dir)
 	const PaHostApiInfo* host_api = Pa_GetHostApiInfo((*sd[dir].idev)->hostApi);
 	int max_channels = dir ? (*sd[dir].idev)->maxOutputChannels :
 		(*sd[dir].idev)->maxInputChannels;
-	if ((host_api->type == paALSA || host_api->type == paOSS) && max_channels == 0)
+	if ((host_api->type == paALSA || host_api->type == paOSS) && max_channels == 0) {
+		pa_perror(EBUSY, "Portaudio device busy");
 		throw SndException(EBUSY);
+	}
 
 	if (dir == 0) {
 		sd[0].params.device = idx;
@@ -1578,13 +1638,16 @@ void SoundPort::start_stream(unsigned dir)
 							sd[dir].dev_sample_rate, sd[dir].frames_per_buffer,
 							paNoFlag,
 							stream_process, &sd[dir]);
-	if (err != paNoError)
+	if (err != paNoError) {
+		pa_perror(err, "Portaudio open stream error");
 		throw SndPortException(err);
+	}
 
 		if ((err = Pa_SetStreamFinishedCallback(sd[dir].stream, stream_stopped)) != paNoError)
 				throw SndPortException(err);
 
 	if ((err = Pa_StartStream(sd[dir].stream)) != paNoError) {
+		pa_perror(err, "Portaudio stream start stream error");
 		Close();
 		throw SndPortException(err);
 	}
@@ -1670,8 +1733,10 @@ bool SoundPort::stream_active(unsigned dir)
 				return false;
 
 		int err;
-		if ((err = Pa_IsStreamActive(sd[dir].stream)) < 0)
-				throw SndPortException(err);
+		if ((err = Pa_IsStreamActive(sd[dir].stream)) < 0) {
+			pa_perror(err, "Portaudio stream active error");
+			throw SndPortException(err);
+		}
 		return err == 1;
 }
 
@@ -1705,7 +1770,8 @@ double SoundPort::find_srate(unsigned dir)
 		if (req_sample_rate == *i || (*sd[dir].idev)->defaultSampleRate == *i)
 			return *i;
 
-		throw SndException("No supported sample rate found");
+	pa_perror(0, "Portaudio - no supported sample rate found");
+	throw SndException("No supported sample rate found");
 }
 
 void SoundPort::probe_supported_rates(const device_iterator& idev)
