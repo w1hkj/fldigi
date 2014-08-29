@@ -568,19 +568,18 @@ void status::initLastState()
 
 // RTTY
 	if (lastmode == MODE_RTTY ) {
-		if (rtty_shift > 0) {
-			progdefaults.rtty_shift = rtty_shift;
-			selShift->value(rtty_shift);
+		progdefaults.rtty_shift = rtty_shift;
+		selShift->index(progdefaults.rtty_shift + 1);
+		if (rtty_shift == selShift->lsize() - 1) {
 			selCustomShift->deactivate();
 		}
 		else { // Custom shift
-			selShift->value(selShift->size() - 2);
-			selShift->activate();
+			selCustomShift->activate();
 		}
-		selBaud->value(progdefaults.rtty_baud = rtty_baud);
-		selBits->value(progdefaults.rtty_bits = rtty_bits);
-		selParity->value(progdefaults.rtty_parity = rtty_parity);
-		selStopBits->value(progdefaults.rtty_stop = rtty_stop);
+		selBaud->index((progdefaults.rtty_baud = rtty_baud) + 1);
+		selBits->index((progdefaults.rtty_bits = rtty_bits) + 1);
+		selParity->index((progdefaults.rtty_parity = rtty_parity) + 1);
+		selStopBits->index((progdefaults.rtty_stop = rtty_stop) + 1);
 		btnCRCRLF->value(progdefaults.rtty_crcrlf = rtty_crcrlf);
 		btnAUTOCRLF->value(progdefaults.rtty_autocrlf = rtty_autocrlf);
 		cntrAUTOCRLF->value(progdefaults.rtty_autocount = rtty_autocount);
@@ -588,7 +587,7 @@ void status::initLastState()
 		chkUOSrx->value(progdefaults.UOSrx = UOSrx);
 		chkUOStx->value(progdefaults.UOStx = UOStx);
 //		chkXagc->value(progdefaults.Xagc = Xagc);
-		mnuRTTYAFCSpeed->value(progdefaults.rtty_afcspeed = rtty_afcspeed);
+		i_listbox_rtty_afc_speed->index(progdefaults.rtty_afcspeed = rtty_afcspeed);
 		btnPreferXhairScope->value(progdefaults.PreferXhairScope = PreferXhairScope);
 
 		if (mvsquelch) {
@@ -617,8 +616,8 @@ printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 
 // OLIVIA
 	if (lastmode == MODE_OLIVIA) {
-		mnuOlivia_Tones->value(progdefaults.oliviatones = oliviatones);
-		mnuOlivia_Bandwidth->value(progdefaults.oliviabw = oliviabw);
+		i_listbox_olivia_tones->index(progdefaults.oliviatones = oliviatones);
+		i_listbox_olivia_bandwidth->index(progdefaults.oliviabw = oliviabw);
 		cntOlivia_smargin->value(progdefaults.oliviasmargin = oliviamargin);
 		cntOlivia_sinteg->value(progdefaults.oliviasinteg = oliviainteg);
 		btnOlivia_8bit->value(progdefaults.olivia8bit = olivia8bit);
@@ -626,8 +625,8 @@ printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 
 // CONTESTIA
 	if (lastmode == MODE_CONTESTIA) {
-		mnuContestia_Tones->value(progdefaults.contestiatones = contestiatones);
-		mnuContestia_Bandwidth->value(progdefaults.contestiabw = contestiabw);
+		i_listbox_contestia_tones->index(progdefaults.contestiatones = contestiatones);
+		i_listbox_contestia_bandwidth->index(progdefaults.contestiabw = contestiabw);
 		cntContestia_smargin->value(progdefaults.contestiasmargin = contestiamargin);
 		cntContestia_sinteg->value(progdefaults.contestiasinteg = contestiainteg);
 		btnContestia_8bit->value(progdefaults.contestia8bit = contestia8bit);

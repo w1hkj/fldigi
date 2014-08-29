@@ -996,7 +996,7 @@ void rigCAT_sendINIT(const string& icmd)
 
 void rigCAT_defaults()
 {
-	mnuXmlRigBaudrate->value(xmlrig.baud);
+	listbox_xml_rig_baudrate->index(xmlrig.baud);
 	valRigCatStopbits->value(xmlrig.stopbits);
 	btnRigCatRTSplus->value(xmlrig.rts);
 	btnRigCatDTRplus->value(xmlrig.dtr);
@@ -1014,7 +1014,7 @@ void rigCAT_defaults()
 void rigCAT_restore_defaults()
 {
 	inpXmlRigDevice->value(progdefaults.XmlRigDevice.c_str());
-	mnuXmlRigBaudrate->value(progdefaults.XmlRigBaudrate);
+	listbox_xml_rig_baudrate->index(progdefaults.XmlRigBaudrate);
 	valRigCatStopbits->value(progdefaults.RigCatStopbits);
 	btnRigCatRTSplus->value(progdefaults.RigCatRTSplus);
 	btnRigCatDTRplus->value(progdefaults.RigCatDTRplus);
@@ -1037,7 +1037,7 @@ void rigCAT_restore_defaults()
 void rigCAT_init_defaults()
 {
 	progdefaults.XmlRigDevice = inpXmlRigDevice->value();
-	progdefaults.XmlRigBaudrate = mnuXmlRigBaudrate->value();
+	progdefaults.XmlRigBaudrate = listbox_xml_rig_baudrate->index();
 	progdefaults.RigCatStopbits = static_cast<int>(valRigCatStopbits->value());
 	progdefaults.RigCatRTSplus = btnRigCatRTSplus->value();
 	progdefaults.RigCatDTRplus = btnRigCatDTRplus->value();

@@ -104,7 +104,7 @@ void hamlib_get_defaults()
 	}
 
 	testrig.getConf("serial_speed", szParam);
-	mnuBaudRate->value(progdefaults.nBaudRate(szParam));
+	listbox_baudrate->value(szParam);
 
 	testrig.getConf("post_write_delay", szParam);
 	sscanf(szParam, "%d", &i);
@@ -161,9 +161,9 @@ void hamlib_restore_defaults()
 	if (chkHamlibRTSCTSflow->value()) chkHamlibRTSplus->deactivate();
 	chkHamlibRTSplus->value(progdefaults.HamlibRTSplus);
 	chkHamlibXONXOFFflow->value(progdefaults.HamlibXONXOFFflow);
-	mnuSideband->value(progdefaults.HamlibSideband);
+	listbox_sideband->index(progdefaults.HamlibSideband);
 	valHamRigStopbits->value(progdefaults.HamRigStopbits);
-	mnuBaudRate->value(progdefaults.HamRigBaudrate);
+	listbox_baudrate->index(progdefaults.HamRigBaudrate);
 	if (xcvr && xcvr->canSetPTT()) btnHamlibCMDptt->activate();
 	else btnHamlibCMDptt->deactivate();
 	btnHamlibCMDptt->value(progdefaults.HamlibCMDptt);
@@ -188,9 +188,9 @@ void hamlib_init_defaults()
 	progdefaults.HamlibRTSCTSflow = chkHamlibRTSCTSflow->value();
 	progdefaults.HamlibRTSplus = chkHamlibRTSplus->value();
 	progdefaults.HamlibXONXOFFflow = chkHamlibXONXOFFflow->value();
-	progdefaults.HamlibSideband = mnuSideband->value();
+	progdefaults.HamlibSideband = listbox_sideband->index();
 	progdefaults.HamRigStopbits = static_cast<int>(valHamRigStopbits->value());
-	progdefaults.HamRigBaudrate = mnuBaudRate->value();
+	progdefaults.HamRigBaudrate = listbox_baudrate->index();
 	progdefaults.HamlibCMDptt = btnHamlibCMDptt->value();
 	progdefaults.HamConfig = inpHamlibConfig->value();
 }
