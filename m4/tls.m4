@@ -3,7 +3,7 @@ AC_DEFUN([CHECK_TLS], [
   AC_MSG_CHECKING([for TLS support])
   AC_LANG_PUSH(C++)
 
-  AC_RUN_IFELSE([__thread int a; int b; int main() { return a = b; }],
+  AC_RUN_IFELSE([AC_LANG_SOURCE([__thread int a; int b; int main() { return a = b; }])],
                 [chktls_save_CXXFLAGS="$CXXFLAGS"
                  thread_CXXFLAGS=failed
                  for flag in "" "-pthread" "-lpthread"; do
@@ -44,7 +44,7 @@ AC_DEFUN([CHECK_TLS], [
                      CXXFLAGS="$chktls_save_CXXFLAGS"
                  fi],
                 [ac_cv_tls=no],
-                [AC_LINK_IFELSE([__thread int a; int b; int main() { return a = b; }],
+                [AC_LINK_IFELSE([AC_LANG_SOURCE([__thread int a; int b; int main() { return a = b; }])],
 		                [ac_cv_tls=yes], [ac_cv_tls=no])]
   )
 
