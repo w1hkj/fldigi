@@ -417,7 +417,7 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 			f = fm_freqdata(rTemp.data, pData);
 			if ( f >= rTemp.data.min && f <= rTemp.data.max)
 				return f;
-			LOG_VERBOSE("freq: %" PRId64, f);
+			LOG_VERBOSE("freq: %lld", f);
 retry_get_freq: ;
 		}
 	}
