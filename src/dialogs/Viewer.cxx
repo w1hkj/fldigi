@@ -286,7 +286,7 @@ Fl_Double_Window* createViewer(void)
 	viewer_inp_seek->labelfont(FL_HELVETICA);
 	viewer_inp_seek->callback((Fl_Callback*)cb_Seek);
 	viewer_inp_seek->when(FL_WHEN_CHANGED);
-	viewer_inp_seek->textfont(FL_COURIER);
+	viewer_inp_seek->textfont(FL_HELVETICA);
 	viewer_inp_seek->value(progStatus.browser_search.c_str());
 	viewer_inp_seek->do_callback();
 	gseek->resizable(0);

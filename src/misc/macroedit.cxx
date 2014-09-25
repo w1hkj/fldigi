@@ -395,7 +395,7 @@ Fl_Double_Window* make_macroeditor(void)
 	Fl_Tile *tile = new Fl_Tile(0,22,800,140);
 	macrotext = new Fl_Input2(0, 22, 450, 140, _("Macro Text"));
 	macrotext->type(FL_MULTILINE_INPUT);
-	macrotext->textfont(FL_COURIER);
+	macrotext->textfont(FL_HELVETICA);
 	macrotext->align(FL_ALIGN_TOP);
 
 	macroDefs = new Fl_Hold_Browser(450, 22, 350, 140, _("Select Tag"));
@@ -411,7 +411,7 @@ Fl_Double_Window* make_macroeditor(void)
 	Fl_Group *grpD = new Fl_Group(0, 164, 452, 24);
 	Fl_Box *box3a = new Fl_Box(0, 164, 327, 24, "");
 	labeltext = new Fl_Input2(337, 164, 115, 24, _("Macro Button Label"));
-	labeltext->textfont(FL_COURIER);
+	labeltext->textfont(FL_HELVETICA);
 	grpD->end();
 	grpD->resizable(box3a);
 

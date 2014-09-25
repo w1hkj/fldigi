@@ -79,7 +79,7 @@ void cbSelectDigit (Fl_Widget *btn, void * nbr)
 
 cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			  Fl_Group(x,y,w,h,"") {
-	font_number = FL_COURIER;
+	font_number = FL_HELVETICA;
 	ONCOLOR = FL_YELLOW;
 	OFFCOLOR = FL_BLACK;
 	SELCOLOR = fl_rgb_color(100, 100, 100);

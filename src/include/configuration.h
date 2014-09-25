@@ -1251,7 +1251,7 @@
               true)                                                                     \
         ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR",                                          \
               "RX text font index",                                                     \
-              FL_COURIER)                                                               \
+              FL_HELVETICA)                                                             \
         ELEM_(int, RxFontsize, "RXFONTSIZE",                                            \
               "RX text font size",                                                      \
               16)                                                                       \
@@ -1263,7 +1263,7 @@
               "")                                                                       \
         ELEM_(Fl_Font, MacroBtnFontnbr, "MACROBTNFONTNBR",                              \
               "Macro Btn font index",                                                   \
-              FL_COURIER)                                                               \
+              FL_HELVETICA)                                                             \
         ELEM_(int, MacroBtnFontsize, "MACROBTNFONTSIZE",                                \
               "Macro btn font size",                                                    \
               12)                                                                       \
@@ -1281,7 +1281,7 @@
               true)                                                                     \
         ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR",                                          \
               "TX text font index",                                                     \
-              FL_COURIER)                                                               \
+              FL_HELVETICA)                                                             \
         ELEM_(int, TxFontsize, "TXFONTSIZE",                                            \
               "TX text font size",                                                      \
               16)                                                                       \
@@ -1323,7 +1323,7 @@
               "")                                                                       \
         ELEM_(Fl_Font, WaterfallFontnbr, "WATERFALLFONTNBR",                            \
               "Waterfall font number",                                                  \
-              FL_COURIER)                                                               \
+              FL_HELVETICA)                                                             \
         ELEM_(int, WaterfallFontsize, "WATERFALLFONTSIZE",                              \
               "Waterfall font size",                                                    \
               12)                                                                       \
@@ -1356,7 +1356,7 @@
               "")                                                                       \
         ELEM_(Fl_Font, FreqControlFontnbr, "FREQCONTROLFONTNBR",                        \
               "Frequency Control font number",                                          \
-              FL_COURIER)                                                               \
+              FL_HELVETICA)                                                             \
         ELEM_(std::string, ui_scheme, "UISCHEME",                                       \
               "FLTK UI scheme (none or base, gtk+, plastic)",                           \
               "gtk+")                                                                   \
@@ -1434,7 +1434,7 @@
               "")                                                                       \
         ELEM_(Fl_Font, ViewerFontnbr, "VIEWERFONTNBR",                                  \
               "Signal Viewer font index",                                               \
-              FL_COURIER)                                                               \
+              FL_HELVETICA)                                                             \
         ELEM_(int, ViewerFontsize, "VIEWERFONTSIZE",                                    \
               "Signal Viewer font size",                                                \
               FL_NORMAL_SIZE)                                                           \
