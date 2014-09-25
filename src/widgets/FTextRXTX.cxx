@@ -173,20 +173,29 @@ int FTextRX::handle(int event)
 	static Fl_Cursor cursor;
 
 	switch (event) {
+	case FL_DRAG:
+		if (Fl::event_button() != FL_LEFT_MOUSE)
+			return 1;
+		break;
 	case FL_PUSH:
 		if (!Fl::event_inside(this))
 			break;
- 		switch (Fl::event_button()) {
+		switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE:
-			if (Fl::event_shift() || (unlikely(Fl::event_clicks()) && progdefaults.rxtext_clicks_qso_data)) {
-				handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y());
-				return 1;
+			if (Fl::event_shift() || progdefaults.rxtext_clicks_qso_data) {
+				if (handle_clickable(Fl::event_x() - x(), Fl::event_y() - y()))
+					return 1;
+				if (handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y()))
+					return 1;
 			}
 			goto out;
 		case FL_MIDDLE_MOUSE:
-			if (cursor != FL_CURSOR_HAND)
-				handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y());
-			return 1;
+			if (cursor != FL_CURSOR_HAND) {
+				if (handle_qso_data(Fl::event_x() - x(), Fl::event_y() - y())) {
+					return 1;
+				}
+			}
+			goto out;
  		case FL_RIGHT_MOUSE:
 			handle_context_menu();
 			return 1;
@@ -194,19 +203,8 @@ int FTextRX::handle(int event)
  			goto out;
  		}
 		break;
-	case FL_DRAG:
-		if (Fl::event_button() != FL_LEFT_MOUSE)
-			return 1;
-		break;
 	case FL_RELEASE:
-		{	int eb = Fl::event_button();
-			if (cursor == FL_CURSOR_HAND && eb == FL_LEFT_MOUSE &&
-			    Fl::event_is_click() && !Fl::event_clicks()) {
-				handle_clickable(Fl::event_x() - x(), Fl::event_y() - y());
-				return 1;
-			}
 			break;
-		}
 	case FL_MOVE: {
 		int p = xy_to_position(Fl::event_x(), Fl::event_y(), Fl_Text_Display_mod::CURSOR_POS);
 		if ((unsigned char)sbuf->byte_at(p) >= CLICK_START + FTEXT_DEF) {
@@ -384,7 +382,7 @@ void FTextRX::setFont(Fl_Font f, int attr)
 	show_font_warning(this);
 }
 
-void FTextRX::handle_clickable(int x, int y)
+int FTextRX::handle_clickable(int x, int y)
 {
 	int pos;
 	unsigned int style;
@@ -392,7 +390,7 @@ void FTextRX::handle_clickable(int x, int y)
 	pos = xy_to_position(x + this->x(), y + this->y(), CURSOR_POS);
 	// return unless clickable style
 	if ((style = (unsigned char)sbuf->byte_at(pos)) < CLICK_START + FTEXT_DEF)
-		return;
+		return 0;
 
 	int start, end;
 	for (start = pos-1; start >= 0; start--)
@@ -412,6 +410,7 @@ void FTextRX::handle_clickable(int x, int y)
 	default:
 		break;
 	}
+	return 0;
 }
 
 void FTextRX::handle_qsy(int start, int end)
@@ -434,11 +433,11 @@ static fre_t rst("^[1-5][1-9]{2}$", REG_EXTENDED | REG_NOSUB);
 static fre_t loc("[a-r]{2}[[:digit:]]{2}([a-x]{2})?", REG_EXTENDED | REG_ICASE);
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
-void FTextRX::handle_qso_data(int start, int end)
+int FTextRX::handle_qso_data(int start, int end)
 {
 	char* s = get_word(start, end, progdefaults.nonwordchars.c_str());
 	if (!s)
-		return;
+		return 0;
 	char* p = s;
 
 	Fl_Input* target = 0;
@@ -466,17 +465,21 @@ void FTextRX::handle_qso_data(int start, int end)
 			*(s + offsets.rm_eo) = '\0';
 			target = inpCall;
 		}
-		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
-			target = inpQth;
-		else
-			target = *inpName->value() ? inpQth : inpName;
-
-		target->value(p);
-		target->do_callback();
+//		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
+//			target = inpQth;
+//		else
+//			target = *inpName->value() ? inpQth : inpName;
+		if (target) {
+			target->value(p);
+			target->do_callback();
+			free(s);
+			restoreFocus(NULL);
+			return 1;
+		}
 	}
 	free(s);
-
-	restoreFocus(NULL);
+	return 0;
+//	restoreFocus(NULL);
 }
 
 void FTextRX::handle_context_menu(void)

@@ -1260,6 +1260,18 @@
         ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR",                                      \
               "RX text font color",                                                     \
               FL_BLACK)                                                                 \
+        ELEM_(std::string, MacroBtnFontname, "MACROBTNFONTNAME",                        \
+              "Macro Btn Font Name",                                                    \
+              "")                                                                       \
+        ELEM_(Fl_Font, MacroBtnFontnbr, "MACROBTNFONTNBR",                              \
+              "Macro Btn font index",                                                   \
+              FL_COURIER)                                                               \
+        ELEM_(int, MacroBtnFontsize, "MACROBTNFONTSIZE",                                \
+              "Macro btn font size",                                                    \
+              12)                                                                       \
+        ELEM_(Fl_Color, MacroBtnFontcolor, "MACROBTNFONTCOLOR",                         \
+              "Macro btn font color",                                                   \
+              FL_WHITE)                                                                 \
         ELEM_(Fl_Color, RxTxSelectcolor, "RXTXSELCOLOR",                                \
               "RX/TX text select color",                                                \
               FL_MAGENTA)                                                               \
@@ -1359,10 +1371,33 @@
         /* Freq Display colors */                                                       \
         ELEM_(RGB, FDbackground, "FDBACKGROUND",                                        \
               "Frequency display background color",                                     \
-              { 0, 0, 0 })                                                              \
+              { 255, 253, 222 })                                                        \
         ELEM_(RGB, FDforeground, "FDFOREGROUND",                                        \
               "Frequency display foreground color",                                     \
+              { 0, 0, 0 })                                                              \
+        /* S-meter and Power-meter */                                                   \
+        ELEM_(RGB, Smeter_bg_color, "SMETERBG",                                         \
+              "S-meter background color",                                               \
+              { 255, 253, 222 })                                                        \
+        ELEM_(RGB, Smeter_scale_color, "SMETERSCALECOLOR",                              \
+              "S-meter scale color",                                                    \
+              { 0, 0, 0 })                                                              \
+        ELEM_(RGB, Smeter_meter_color, "SMETERMETERCOLOR",                              \
+              "S-meter meter color",                                                    \
               { 0, 200, 0 })                                                            \
+        ELEM_(RGB, PWRmeter_bg_color, "PWRMETERBGD",                                    \
+              "Power meter background color",                                           \
+              { 255, 253, 222 })                                                        \
+        ELEM_(RGB, PWRmeter_scale_color, "PWRMETERSCALECOLOR",                          \
+              "Power meter scale color",                                                \
+              { 0, 0, 0 })                                                              \
+        ELEM_(RGB, PWRmeter_meter_color, "PWRMETERMETERCOLOR",                          \
+              "Power meter meter color",                                                \
+              { 200, 0, 0 })                                                            \
+        ELEM_(int, PWRselect, "PWRSELECT",                                              \
+              "Power meter type:\n"                                                     \
+              " 0: 25 W, 1: 50 W, 2: 100 W, 3: 200 W, 4: AUTO",                         \
+              4)                                                                        \
         /* Tab selection color */                                                       \
         ELEM_(Fl_Color, TabsColor, "TABSCOLOR",                                         \
               "UI tabs color",                                                          \
@@ -1641,7 +1676,14 @@
               "Frequency control by keyboard arrow keys\n"                              \
               "Least significant digit are left/right keys\n"                           \
               "0 : 1 Hz, 1 : 10 Hz, 2 : 100 Hz, 3 : 1000 Hz",                           \
-              0)
+              0)                                                                        \
+        ELEM_(int, macro_height, "MACRO_HEIGHT",                                        \
+              "Height of buttons for one row below logging panel",                      \
+              44)                                                                       \
+        ELEM_(bool, rxtx_swap, "RXTX_SWAP",                                             \
+              "Enabled, Tx above Rx panel\n"                                            \
+              "Disable, Rx above Tx panel (default",                                    \
+              false)
 
 
 // declare the struct

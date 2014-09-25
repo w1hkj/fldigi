@@ -54,11 +54,15 @@ int Panel::orgy()
 }
 
 void Panel::position(int oix, int oiy, int newx, int newy) {
-//printf("oix %3d, oiy %3d, nux %3d, nuy %3d\n", oix, oiy, newx, newy);
+#ifdef DEVEL_DEBUG
+printf("oix %3d, oiy %3d, nux %3d, nuy %3d\n", oix, oiy, newx, newy);
+#endif
 	Fl_Widget* const* a = array();
 	int *p = sizes();
-//printf("p0 %3d, p1 %3d, p2 %3d, p3 %3d\n", p[0], p[1], p[2], p[3]);
-//printf("p4 %3d, p5 %3d, p6 %3d, p7 %3d\n", p[0], p[1], p[2], p[3]);
+#ifdef DEVEL_DEBUG
+printf("p0 %3d, p1 %3d, p2 %3d, p3 %3d\n", p[0], p[1], p[2], p[3]);
+printf("p4 %3d, p5 %3d, p6 %3d, p7 %3d\n", p[0], p[1], p[2], p[3]);
+#endif
 	p += 8; // skip group & resizable's saved size
 	for (int i=children(); i--; p += 4) {
 		Fl_Widget* o = *a++;

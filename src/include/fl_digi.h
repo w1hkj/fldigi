@@ -43,6 +43,8 @@
 #include "flslider2.h"
 #include "psk_browser.h"
 #include "re.h"
+#include "smeter.h"
+#include "pwrmeter.h"
 
 extern fre_t seek_re;
 
@@ -61,6 +63,9 @@ extern Fl_Input2		*txtInpSeek;
 extern Fl_Box			*hideViewer;
 extern Fl_Group		*mvgroup;
 
+extern Fl_Group		*text_group;
+extern Fl_Group		*wefax_group;
+
 extern Panel			*text_panel;
 extern Fl_Box			*minbox;
 extern int				oix;
@@ -72,6 +77,8 @@ extern Fl_Counter2		*cntTxLevel;
 extern Fl_Button		*MODEstatus;
 extern Fl_Slider2		*sldrSquelch;
 extern Progress		*pgrsSquelch;
+extern Smeter			*smeter;
+extern PWRmeter		*pwrmeter;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Button		*btnAltMacros1;
 extern Fl_Button		*btnAltMacros2;
@@ -347,5 +354,7 @@ bool ask_dir_creation( const std::string & dir );
 extern void set_CSV(int how);
 
 extern void set_freq_control_lsd();
+
+extern void set_smeter_colors();
 
 #endif
