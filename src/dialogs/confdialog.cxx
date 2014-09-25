@@ -1753,7 +1753,7 @@ static void cb_btnFkeyDEfaults(Fl_Button*, void*) {
     progdefaults.btnGroup3.B = b;
 
     progdefaults.MacroBtnFontcolor = FL_BLACK;
-    progdefaults.MacroBtnFontnbr = FL_COURIER;
+    progdefaults.MacroBtnFontnbr = FL_HELVETICA;
     progdefaults.MacroBtnFontsize = 12;
 
     btnGroup1->labelcolor(progdefaults.MacroBtnFontcolor);

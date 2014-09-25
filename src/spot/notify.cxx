@@ -585,14 +585,14 @@ static void notify_init_window(void)
 	inpNotifyDXCCSearchCountry->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY);
 	inpNotifyDXCCSearchCallsign->callback(notify_filter_dxcc_search);
 	inpNotifyDXCCSearchCallsign->when(FL_WHEN_CHANGED);
-	inpNotifyDXCCSearchCallsign->textfont(FL_COURIER);
+	inpNotifyDXCCSearchCallsign->textfont(FL_HELVETICA);
 
-	inpNotifyActionDialog->textfont(FL_COURIER);
-	inpNotifyActionRXMarker->textfont(FL_COURIER);
-	inpNotifyActionMacro->textfont(FL_COURIER);
-	inpNotifyActionProgram->textfont(FL_COURIER);
-	inpNotifyRE->textfont(FL_COURIER);
-	inpNotifyFilterCall->textfont(FL_COURIER);
+	inpNotifyActionDialog->textfont(FL_HELVETICA);
+	inpNotifyActionRXMarker->textfont(FL_HELVETICA);
+	inpNotifyActionMacro->textfont(FL_HELVETICA);
+	inpNotifyActionProgram->textfont(FL_HELVETICA);
+	inpNotifyRE->textfont(FL_HELVETICA);
+	inpNotifyFilterCall->textfont(FL_HELVETICA);
 
 	tblNotifyList->callback(notify_select_cb);
 	mnuNotifyEvent->callback(notify_event_cb, NOTIFY_SET_DUP_MENU);

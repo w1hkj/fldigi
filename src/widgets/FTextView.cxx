@@ -67,7 +67,7 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 {
 	oldw = oldh = olds = -1;
 	oldf = (Fl_Font)-1;
-	textfont(FL_COURIER);
+	textfont(FL_HELVETICA);
 	textsize(FL_NORMAL_SIZE);
 	textcolor(FL_FOREGROUND_COLOR);
 
@@ -466,11 +466,11 @@ int FTextBase::reset_wrap_col(void)
 
 void FTextBase::reset_styles(int set)
 {
-	set_style(NATTR, FL_COURIER, FL_NORMAL_SIZE, FL_FOREGROUND_COLOR, set);
-	set_style(XMIT, FL_COURIER, FL_NORMAL_SIZE, FL_RED, set);
-	set_style(CTRL, FL_COURIER, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
-	set_style(SKIP, FL_COURIER, FL_NORMAL_SIZE, FL_BLUE, set);
-	set_style(ALTR, FL_COURIER, FL_NORMAL_SIZE, FL_DARK_MAGENTA, set);
+	set_style(NATTR, FL_HELVETICA, FL_NORMAL_SIZE, FL_FOREGROUND_COLOR, set);
+	set_style(XMIT, FL_HELVETICA, FL_NORMAL_SIZE, FL_RED, set);
+	set_style(CTRL, FL_HELVETICA, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
+	set_style(SKIP, FL_HELVETICA, FL_NORMAL_SIZE, FL_BLUE, set);
+	set_style(ALTR, FL_HELVETICA, FL_NORMAL_SIZE, FL_DARK_MAGENTA, set);
 }
 
 // ----------------------------------------------------------------------------

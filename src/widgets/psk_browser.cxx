@@ -58,7 +58,7 @@ int pskBrowser::sbarwidth = 16;
 pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 	:Fl_Hold_Browser(x,y,w,h,l)
 {
-	fnt = FL_COURIER;
+	fnt = FL_HELVETICA;
 	siz = 12;
 	rfc = 0LL;
 	usb = true;

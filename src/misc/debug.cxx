@@ -155,7 +155,7 @@ void debug::start(const char* filename)
 	clearbtn->callback(clear_cb);
 
 	btext = new Fl_Browser(pad,  slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
-	btext->textfont(FL_COURIER);
+	btext->textfont(FL_HELVETICA);
 	btext->textsize(14);
 	window->resizable(btext);
 	dbg_buffer.clear();
