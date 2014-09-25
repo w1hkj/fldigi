@@ -191,7 +191,8 @@ private:
 	int		carrierfreq;
 	int		bandwidth;
 	int		wfspdcnt;
-	int		dispcnt;
+	float	dispcnt;
+	float	dispdec;
 	int 	ampspan;
     double  peakaudio;
 	int 	reflevel;
