@@ -3066,6 +3066,31 @@ static void cb_btnWefaxSaveMonochrome(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabDFTscan=(Fl_Group *)0;
+
+Fl_Counter *cnt_dft_scans=(Fl_Counter *)0;
+
+static void cb_cnt_dft_scans(Fl_Counter* o, void*) {
+  progdefaults.cnt_dft_scans=(int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cnt_dft_range=(Fl_Counter *)0;
+
+static void cb_cnt_dft_range(Fl_Counter* o, void*) {
+  progdefaults.cnt_dft_range=o->value();
+update_scope();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_use_relative_dB=(Fl_Check_Button *)0;
+
+static void cb_btn_use_relative_dB(Fl_Check_Button* o, void*) {
+  progdefaults.dft_relative=o->value();
+update_scope();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
@@ -4945,6 +4970,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6512,11 +6538,11 @@ ab and newline are automatically included."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 330, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 330);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
@@ -8101,6 +8127,32 @@ le Earth)"));
             } // Fl_Group* o
             tabWefax->end();
           } // Fl_Group* tabWefax
+          { tabDFTscan = new Fl_Group(0, 50, 600, 330, _("Scan"));
+            { Fl_Counter* o = cnt_dft_scans = new Fl_Counter(235, 129, 132, 21, _("# scans"));
+              cnt_dft_scans->minimum(10);
+              cnt_dft_scans->maximum(1000);
+              cnt_dft_scans->step(10);
+              cnt_dft_scans->value(60);
+              cnt_dft_scans->callback((Fl_Callback*)cb_cnt_dft_scans);
+              o->value(progdefaults.cnt_dft_scans);
+              o->lstep(100.0);
+            } // Fl_Counter* cnt_dft_scans
+            { Fl_Counter* o = cnt_dft_range = new Fl_Counter(251, 194, 100, 21, _("dB Range"));
+              cnt_dft_range->type(1);
+              cnt_dft_range->minimum(20);
+              cnt_dft_range->maximum(120);
+              cnt_dft_range->step(10);
+              cnt_dft_range->value(60);
+              cnt_dft_range->callback((Fl_Callback*)cb_cnt_dft_range);
+              o->value(progdefaults.cnt_dft_range);
+            } // Fl_Counter* cnt_dft_range
+            { Fl_Check_Button* o = btn_use_relative_dB = new Fl_Check_Button(275, 265, 70, 15, _("Use relative dB"));
+              btn_use_relative_dB->down_box(FL_DOWN_BOX);
+              btn_use_relative_dB->callback((Fl_Callback*)cb_btn_use_relative_dB);
+              o->value(progdefaults.dft_relative);
+            } // Fl_Check_Button* btn_use_relative_dB
+            tabDFTscan->end();
+          } // Fl_Group* tabDFTscan
           tabsModems->end();
         } // Fl_Tabs* tabsModems
         tabModems->end();

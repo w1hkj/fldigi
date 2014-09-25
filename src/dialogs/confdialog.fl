@@ -298,7 +298,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
       Fl_Group tabOperator {
         label Operator
         callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -369,7 +369,7 @@ progdefaults.changed = true;}
           }
           Fl_Counter noiseDB {
             label dB
-            callback {progdefaults.s2n = o->value();} selected
+            callback {progdefaults.s2n = o->value();}
             xywh {90 307 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
             code0 {o->value(progdefaults.s2n);}
             class Fl_Counter2
@@ -2538,14 +2538,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 355}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3206,7 +3206,7 @@ progdefaults.changed = true;}
             label Olivia open
             xywh {0 50 600 330} hide
           } {
-            Fl_Group {} {open
+            Fl_Group {} {
               xywh {55 76 490 280} box ENGRAVED_FRAME
             } {
               Fl_Group i_listbox_olivia_bandwidth {
@@ -3855,6 +3855,35 @@ progdefaults.changed = true;}
                 tooltip {Save the fax image as a gray-level PNG file.} xywh {94 320 235 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
               }
+            }
+          }
+          Fl_Group tabDFTscan {
+            label Scan open
+            xywh {0 50 600 330}
+          } {
+            Fl_Counter cnt_dft_scans {
+              label {\# scans}
+              callback {progdefaults.cnt_dft_scans=(int)o->value();
+progdefaults.changed = true;}
+              xywh {235 129 132 21} minimum 10 maximum 1000 step 10 value 60
+              code0 {o->value(progdefaults.cnt_dft_scans);}
+              code1 {o->lstep(100.0);}
+            }
+            Fl_Counter cnt_dft_range {
+              label {dB Range}
+              callback {progdefaults.cnt_dft_range=o->value();
+update_scope();
+progdefaults.changed = true;}
+              xywh {251 194 100 21} type Simple minimum 20 maximum 120 step 10 value 60
+              code0 {o->value(progdefaults.cnt_dft_range);}
+            }
+            Fl_Check_Button btn_use_relative_dB {
+              label {Use relative dB}
+              callback {progdefaults.dft_relative=o->value();
+update_scope();
+progdefaults.changed = true;} selected
+              xywh {275 265 70 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.dft_relative);}
             }
           }
         }

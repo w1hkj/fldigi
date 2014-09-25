@@ -170,6 +170,7 @@ extern void set_phase(double phase, double quality, bool highlight);
 extern void set_rtty(double, double, double);
 extern void set_video(double *, int, bool = true);
 extern void set_zdata(cmplx *, int);
+extern void update_scope();
 
 extern void set_scope_xaxis_1(double y1);
 extern void set_scope_xaxis_2(double y2);

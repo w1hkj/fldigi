@@ -36,8 +36,9 @@ class Digiscope : public Fl_Widget {
 public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100
-#define	MAX_LEN			1024
+#define	MAX_LEN			4096 //1024
 #define MAX_ZLEN		1024
+#define NUM_GRIDS		100
 	enum scope_mode {
 		SCOPE,
 		PHASE,
@@ -65,7 +66,7 @@ private:
 	double _phase;
 	double _quality;
 	double _flo, _fhi, _amp;
-	double _x1, _x2, _y1, _y2;
+	double _x[NUM_GRIDS], _y[NUM_GRIDS];
 	bool _highlight;
 	scope_mode phase_mode;
 
@@ -86,12 +87,21 @@ public:
 	void zdata(cmplx *z, int len);
 	void rtty(double flo, double fhi, double amp);
 	void mode(scope_mode md);
-	scope_mode mode() { return _mode;};
-	void xaxis_1(double y1) { _y1 = y1; }
-	void xaxis_2(double y2) { _y2 = y2; }
-	void yaxis_1(double x1) { _x1 = x1; }
-	void yaxis_2(double x2) { _x2 = x2; }
-	void clear_axis() { _x1 = _x2 = _y1 = _y2 = 0; }
+	scope_mode mode() { return _mode;};\
+	void xaxis(int n, double y1) { 
+		if (n < NUM_GRIDS) _y[n] = y1;
+	}
+	void yaxis(int n, double x1) {
+		if (n < NUM_GRIDS) _x[n] = x1;
+	}
+	void xaxis_1(double y1) { _y[1] = y1; }
+	void xaxis_2(double y2) { _y[2] = y2; }
+	void yaxis_1(double x1) { _x[1] = x1; }
+	void yaxis_2(double x2) { _x[2] = x2; }
+	void clear_axis() {
+		for (int i = 0; i < NUM_GRIDS; i++)
+			_x[i] = _y[i] = 0;
+	}
 };
 
 #endif

@@ -176,6 +176,7 @@ modem *throbx4_modem = 0;
 
 modem *wwv_modem = 0;
 modem *anal_modem = 0;
+modem *fftscan_modem = 0;
 modem *ssb_modem = 0;
 
 double modem::frequency = 1000;
