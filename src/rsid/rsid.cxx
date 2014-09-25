@@ -230,7 +230,7 @@ void cRsId::receive(const float* buf, size_t len)
 	double src_ratio = RSID_SAMPLE_RATE / active_modem->get_samplerate();
 
 	if (rsid_secondary_time_out > 0) {
-		rsid_secondary_time_out -= (int)(len / src_ratio);
+		rsid_secondary_time_out -= 1.0 * len / active_modem->get_samplerate();
 		if (rsid_secondary_time_out <= 0) {
 			LOG_INFO("%s", "Secondary RsID timed out");
 			reset();
@@ -331,7 +331,7 @@ void cRsId::search(void)
 	int symbol_out_2 = -1;
 	int bin_out_2    = -1;
 
-	if (rsid_secondary_time_out == 0) {
+	if (rsid_secondary_time_out <= 0) {
 		found1 = search_amp(bin_out_1, symbol_out_1, pCodes1);
 		if (found1) {
 			if (symbol_out_1 != RSID_ESCAPE) {
@@ -341,7 +341,8 @@ void cRsId::search(void)
 				reset();
 				return;
 			} else {
-				rsid_secondary_time_out = 3*15*1024;
+				// 10 rsid_gap + 15 symbols + 2 for timing errors
+				rsid_secondary_time_out = 27 * RSID_SYMLEN;
 				return;
 			}
 		} else
