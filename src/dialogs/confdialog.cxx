@@ -1804,6 +1804,16 @@ progdefaults.changed = true;
 
 Fl_Box *overcolor=(Fl_Box *)0;
 
+Fl_Group *tab_sel_lsd=(Fl_Group *)0;
+
+Fl_Choice *sel_lsd=(Fl_Choice *)0;
+
+static void cb_sel_lsd(Fl_Choice* o, void*) {
+  progdefaults.sel_lsd = o->value();
+set_freq_control_lsd();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWaterfall=(Fl_Group *)0;
 
 Fl_Tabs *tabsWaterfall=(Fl_Tabs *)0;
@@ -5084,7 +5094,6 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5380,6 +5389,7 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabContest
           { tabUserInterface = new Fl_Group(0, 50, 600, 330, _("General"));
             tabUserInterface->tooltip(_("User Interface - General"));
+            tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(52, 62, 496, 76);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(87, 75, 120, 20, _("Show tooltips"));
@@ -5494,7 +5504,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Logging"));
+          { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
             tabLogServer->tooltip(_("User Interface - Logging"));
             tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
@@ -5812,11 +5822,12 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
-          { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Colors/Fonts"));
+          { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
             tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));
+                o->hide();
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(99, 109, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
                 listbox_charset_status->box(FL_BORDER_BOX);
@@ -6098,7 +6109,6 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("SigLvl"));
-                o->hide();
                 { btnLowSignal = new Fl_Button(210, 142, 70, 21, _("Low"));
                 btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
                 } // Fl_Button* btnLowSignal
@@ -6139,6 +6149,21 @@ ab and newline are automatically included."));
             } // Fl_Tabs* tabsColors
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
+          { tab_sel_lsd = new Fl_Group(0, 50, 600, 330, _("Freq\' Ctrl"));
+            tab_sel_lsd->hide();
+            { Fl_Box* o = new Fl_Box(25, 70, 550, 85, _("Arrow Key Control of Frequency Entry\nRight/Left = x 1\nUp/Down = x 10\nShift\
+ - key = key value x 100"));
+              o->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
+            } // Fl_Box* o
+            { Fl_Choice* o = sel_lsd = new Fl_Choice(260, 190, 90, 24, _("Select Least Signficant Digit for Right/Left"));
+              sel_lsd->down_box(FL_BORDER_BOX);
+              sel_lsd->callback((Fl_Callback*)cb_sel_lsd);
+              sel_lsd->align(Fl_Align(FL_ALIGN_TOP));
+              o->add("1 Hz|10 Hz|100 Hz|1 kHz");
+              o->value(progdefaults.sel_lsd);
+            } // Fl_Choice* sel_lsd
+            tab_sel_lsd->end();
+          } // Fl_Group* tab_sel_lsd
           tabsUI->end();
         } // Fl_Tabs* tabsUI
         tabUI->end();
@@ -8163,6 +8188,7 @@ le Earth)"));
         { tabsRig = new Fl_Tabs(0, 23, 600, 357);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Hardware PTT"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(55, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(74, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -8702,7 +8728,6 @@ le Earth)"));
             tabHamlib->end();
           } // Fl_Group* tabHamlib
           { tabXMLRPC = new Fl_Group(0, 50, 600, 330, _("XML-RPC"));
-            tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(55, 61, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(210, 80, 190, 58);

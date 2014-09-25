@@ -5031,6 +5031,10 @@ void create_fl_digi_main_primary() {
 		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
 
+		qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
+		qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
+		qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
+
 		Y = Hmenu + Hqsoframe + pad;
 
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
@@ -5677,7 +5681,7 @@ void noop_controls() // create and then hide all controls not being used
 	qsoSave = new Fl_Button(defwidget); qsoSave->hide();
 
 	txtRigName = new Fl_Box(defwidget); txtRigName->hide();
-	qsoFreqDisp = new cFreqControl(0,0,100,10,""); qsoFreqDisp->hide();
+	qsoFreqDisp = new cFreqControl(0,0,200,80,""); qsoFreqDisp->hide();
 	qso_opMODE = new Fl_ComboBox(defwidget); qso_opMODE->hide();
 	qso_opBW = new Fl_ComboBox(defwidget); qso_opBW->hide();
 	qso_opPICK = new Fl_Button(defwidget); qso_opPICK->hide();
@@ -5702,7 +5706,7 @@ void noop_controls() // create and then hide all controls not being used
 	inpXchgIn1 = new Fl_Input2(defwidget); inpXchgIn1->hide();
 	outSerNo1 = new Fl_Input2(defwidget); outSerNo1->hide();
 	inpSerNo1 = new Fl_Input2(defwidget); inpSerNo1->hide();
-	qsoFreqDisp1 = new cFreqControl(defwidget); qsoFreqDisp1->hide();
+	qsoFreqDisp1 = new cFreqControl(0,0,200,80,""); qsoFreqDisp1->hide();
 
 	inpTimeOff2 = new Fl_Input2(defwidget); inpTimeOff2->hide();
 	inpTimeOn2 = new Fl_Input2(defwidget); inpTimeOn2->hide();
@@ -5711,7 +5715,7 @@ void noop_controls() // create and then hide all controls not being used
 	inpName2 = new Fl_Input2(defwidget); inpName2->hide();
 	inpRstIn2 = new Fl_Input2(defwidget); inpRstIn2->hide();
 	inpRstOut2 = new Fl_Input2(defwidget); inpRstOut2->hide();
-	qsoFreqDisp2 = new cFreqControl(defwidget); qsoFreqDisp2->hide();
+	qsoFreqDisp2 = new cFreqControl(0,0,200,80,""); qsoFreqDisp2->hide();
 
 	qso_opPICK2 = new Fl_Button(defwidget); qso_opPICK2->hide();
 	qsoClear2 = new Fl_Button(defwidget); qsoClear2->hide();
@@ -5725,7 +5729,7 @@ void noop_controls() // create and then hide all controls not being used
 	outSerNo2 = new Fl_Input2(defwidget); outSerNo2->hide();
 	inpSerNo2 = new Fl_Input2(defwidget); inpSerNo2->hide();
 	inpXchgIn2 = new Fl_Input2(defwidget); inpXchgIn2->hide();
-	qsoFreqDisp3 = new cFreqControl(defwidget); qsoFreqDisp3->hide();
+	qsoFreqDisp3 = new cFreqControl(0,0,200,80,""); qsoFreqDisp3->hide();
 
 	qso_opPICK3 = new Fl_Button(defwidget); qso_opPICK3->hide();
 	qsoClear3 = new Fl_Button(defwidget); qsoClear3->hide();
@@ -7151,4 +7155,11 @@ void set_CSV(int how)
 		active_modem->stop_csv();
 	else
 		active_modem->start_csv();
+}
+
+void set_freq_control_lsd()
+{
+	qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
+	qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
+	qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
 }

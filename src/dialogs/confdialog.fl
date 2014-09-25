@@ -384,8 +384,8 @@ progdefaults.changed = true;}
           xywh {0 25 600 355} selection_color 50
         } {
           Fl_Group tabBrowser {
-            label Browser open
-            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
+            label Browser
+            tooltip {User Interface - Browser} xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -570,7 +570,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContest {
-            label Contest open
+            label Contest
             tooltip {User Interface - Contest} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
@@ -710,8 +710,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabUserInterface {
-            label General open
-            tooltip {User Interface - General} xywh {0 50 600 330}
+            label General
+            tooltip {User Interface - General} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {52 62 496 76} box ENGRAVED_FRAME
@@ -835,7 +835,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLogServer {
-            label Logging open
+            label Log
             tooltip {User Interface - Logging} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
@@ -988,7 +988,7 @@ defined here. Tab and newline are automatically included.} xywh {194 260 279 24}
             }
           }
           Fl_Group tabMBars {
-            label Macros open
+            label Macros
             tooltip {User Interface - Macros} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
@@ -1248,7 +1248,7 @@ WF_UI();}
             }
           }
           Fl_Group tabColorsFonts {
-            label {Colors/Fonts} open
+            label {Clrs/Fnts}
             tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsColors {open
@@ -1256,7 +1256,7 @@ WF_UI();}
             } {
               Fl_Group {} {
                 label {Rx/Tx} open
-                xywh {0 75 600 305}
+                xywh {0 75 600 305} hide
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
@@ -2091,7 +2091,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label SigLvl open
-                xywh {0 75 600 305} hide
+                xywh {0 75 600 305}
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -2147,6 +2147,27 @@ progdefaults.changed = true;}
                 }
               }
             }
+          }
+          Fl_Group tab_sel_lsd {
+            label {Freq' Ctrl} open
+            xywh {0 50 600 330} hide
+          } {
+            Fl_Box {} {
+              label {Arrow Key Control of Frequency Entry
+Right/Left = x 1
+Up/Down = x 10
+Shift - key = key value x 100}
+              xywh {25 70 550 85} align 16
+            }
+            Fl_Choice sel_lsd {
+              label {Select Least Signficant Digit for Right/Left}
+              callback {progdefaults.sel_lsd = o->value();
+set_freq_control_lsd();
+progdefaults.changed = true;} open
+              xywh {260 190 90 24} down_box BORDER_BOX align 1
+              code0 {o->add("1 Hz|10 Hz|100 Hz|1 kHz");}
+              code1 {o->value(progdefaults.sel_lsd);}
+            } {}
           }
         }
       }
@@ -3897,7 +3918,7 @@ progdefaults.changed = true;} selected
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               xywh {55 57 490 38} box ENGRAVED_FRAME
@@ -4449,7 +4470,7 @@ hamlib_restore_defaults();
           }
           Fl_Group tabXMLRPC {
             label {XML-RPC} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Group grpXMLRPC {open
               xywh {55 61 490 160} box ENGRAVED_FRAME

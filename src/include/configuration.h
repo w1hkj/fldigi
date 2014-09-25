@@ -1637,6 +1637,11 @@
         ELEM_(bool, prog3_auto_enable, "PROG3_AUTO_ENABLE",                             \
               "Enable on program start",                                                \
               false)                                                                    \
+        ELEM_(int, sel_lsd, "SEL_LSD",                                                  \
+              "Frequency control by keyboard arrow keys\n"                              \
+              "Least significant digit are left/right keys\n"                           \
+              "0 : 1 Hz, 1 : 10 Hz, 2 : 100 Hz, 3 : 1000 Hz",                           \
+              0)
 
 
 // declare the struct
