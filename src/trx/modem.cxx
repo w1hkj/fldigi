@@ -95,6 +95,12 @@ modem *qpsk125_modem = 0;
 modem *qpsk250_modem = 0;
 modem *qpsk500_modem = 0;
 
+modem *_8psk125_modem = 0;
+modem *_8psk250_modem = 0;
+modem *_8psk500_modem = 0;
+modem *_8psk1000_modem = 0;
+modem *_8psk2000_modem = 0;
+
 modem *psk125r_modem = 0;
 modem *psk250r_modem = 0;
 modem *psk500r_modem = 0;
