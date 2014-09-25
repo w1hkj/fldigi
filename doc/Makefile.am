@@ -25,7 +25,7 @@ MOSTLYCLEANFILES = *.xml
 DISTCLEANFILES = $(ASCIIDOC_HTML)
 MAINTAINERCLEANFILES = $(ASCIIDOC_MAN_INST)
 
-A2X_ARGS = --format=manpage --destination-dir=$(builddir)/../doc
+A2X_ARGS = --format=manpage
 if HAVE_ASCIIDOC_NO_XMLLINT
     A2X_ARGS += --no-xmllint
 endif
@@ -49,8 +49,11 @@ endif
 
 # The rest of the Makefile is enabled only if we have asciidoc
 if HAVE_ASCIIDOC
-
-ASCIIDOC_ICONS_DIR ?= /usr/share/asciidoc/images/icons
+# Try to discover the correct iconsdir.  Use the first one that
+# contains an entry matching `tip.*'.
+ASCIIDOC_ICONS_DIRS := /etc/asciidoc/icons /etc/asciidoc/images /etc/asciidoc/images/icons /etc/asciidoc/images/../icons \
+                       /usr/share/asciidoc/icons /usr/share/asciidoc/images /usr/share/asciidoc/images/icons
+ASCIIDOC_ICONS_DIR ?= $(dir $(firstword $(strip $(foreach f,$(addsuffix /tip*,$(ASCIIDOC_ICONS_DIRS)),$(wildcard $(f))))))
 # Additional attributes are defined in guide.conf
 ASCIIDOC_ARGS = --unsafe -a toc -a data-uri -a badges -a icons -a iconsdir=$(ASCIIDOC_ICONS_DIR)
 
