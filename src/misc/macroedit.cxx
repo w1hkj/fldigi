@@ -298,7 +298,7 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 		macros.text[iMacro] = macrotext->value();
 		macros.name[iMacro] = labeltext->value();
 
-		if (progdefaults.mbar2_pos) {
+		if (progdefaults.mbar_scheme > 2) {
 			if (iMacro < NUMMACKEYS) {
 				btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
 				btnMacro[iMacro % NUMMACKEYS]->redraw_label();
