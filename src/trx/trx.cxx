@@ -240,6 +240,10 @@ void trx_trx_receive_loop()
 			numread = 0;
 			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
 				numread += scard->Read(fbuf + numread, SCBLOCKSIZE - numread);
+			if (numread > SCBLOCKSIZE) {
+LOG_ERROR("numread error %d", numread);
+				numread = SCBLOCKSIZE;
+			}
 			if (bHighSpeed) {
 				for (size_t i = 0; i < numread; i++)
 					hsbuff[i] = fbuf[i];
