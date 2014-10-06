@@ -41,10 +41,15 @@ notifier and are selected from the event chooser at the upper left of
 the dialog.
 <br>
 
+\image html Notification-Events.png "Notification Event Types"
+\image latex Notification-Events.png "Notification Event Types" width=2.0in
+<br>
+
 <ol>
 <li>My Callsign de CALL.  Can be used to alert you when CALL calls you.</li>
 <li>Station heard twice.  Pretty much the same search that the PSK reporter client does.</li>
 <li>Custom text search.  This reveals an input field where you type your own RE.</li>
+<li>RSID reception.</li>
 </ol>
 <br>
 

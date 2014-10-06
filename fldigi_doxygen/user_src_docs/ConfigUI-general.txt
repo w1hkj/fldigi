@@ -60,7 +60,7 @@ Check for updates" menu item.
 \section visible_modes Visible Modes
 
 \image html visible_modes.png "Visible Modes"
-\image latex visible_modes.png "Visible Modes" width=2.0in
+\image latex visible_modes.png "Visible Modes" width=1.8in
 <br>
 
 You may not want to use all possible modes when operating fldigi.
@@ -73,7 +73,7 @@ The use of this dialog should be obvious after a few clicks here and there.
 \section limit_modes Limit Modes
 
 \image html limited_modes.png "Limit Modes"
-\image latex limited_modes.png "Limit Modes" width=1.5in
+\image latex limited_modes.png "Limit Modes" width=0.96in
 <br>
 
 By deselecting all but CW, PSK31, PSK63 and RTTY

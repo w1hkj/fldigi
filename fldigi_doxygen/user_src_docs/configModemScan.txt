@@ -1,0 +1,43 @@
+/**
+\page  fft_scan_page Configure FFT Scan
+
+\tableofcontents
+
+<br>
+\image html config-modem-scan.png "Scan Configuration Panel"
+\image latex config-modem-scan.png "Scan Configuration Panel" width=5.5in
+<br>
+
+\# scans: The number of scans to perform (averaging).
+
+db Range: The dynamic range in dB (vertical scale).
+
+\section sFftScan FFT Scan
+
+Analysis tool used to evaluate Rx/Codec signal path.  Can be used to measure
+noise floor of the codec; view the transceiver passband characteristics,
+Rx signal spectrum, etc.
+
+<br>
+\image html fcfhfacc.png "Scan results"
+\image latex fcfhfacc.png "Scan results" width=5.5in
+<br>
+
+The scope shows the results, both final and during the scan averaging.
+The # of scans specifies how many scans are averaged for the display.  The
+dB range specifies the vertical scale as seen above.  "Use relative dB"
+removes the vertical offset so that a wider range can be displayed with
+more detail.
+
+Left clicking any where on the waterfall restarts the scan.  You can
+observe the effect on the scope display.  A comma separated file is
+also generated; ~/.fldigi/fftscan.csv which can be opened with any
+spread sheet program.
+
+<br>
+\ref fft_scan_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

@@ -34,8 +34,8 @@ generate KML data. This list might expand in the future
 
 \section kml_generation_navtex KML generation from Navtex messages
 
-\image html Navtex-Config-Tab-With-Kml.png "Navtex configuration tab with KML option"
-\image latex Navtex-Config-Tab-With-Kml.png "Navtex configuration tab with KML option" width=5.0in
+\image html config-modem-navtex.png "Navtex configuration tab with KML option"
+\image latex config-modem-navtex.png "Navtex configuration tab with KML option" width=5.0in
 <br>
 
 Each Navtex message comes with the code of the sending station, also
@@ -130,8 +130,8 @@ the KML module in the form of key-value pairs and are written into two forms:
 
 \section paramaters Parameters
 
-\image html KML-Config.png "KML configuration tab"
-\image latex KML-Config.png "KML configuration tab" width=5.0in
+\image html config-misc-kml.png "KML configuration tab"
+\image latex config-misc-kml.png "KML configuration tab" width=5.0in
 <br>
 
 Fldigi maintains in a internal container, a set of placemarks which are data

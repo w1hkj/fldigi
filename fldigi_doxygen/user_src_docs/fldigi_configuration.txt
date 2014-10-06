@@ -24,6 +24,7 @@ You should initially configure the following:
 	<li> \subpage sound_card_configuration_page </li>
 	<li> \subpage rig_control_page </li>
 	<li> \subpage new_installation_page </li>
+	<li> \subpage config_io_page </li>
 </ul>
 
 \section windows_install_config Windows Specific Install / Config
@@ -43,13 +44,17 @@ program:
 <ul>
 	<li> \subpage callsign_db_configuration_page </li>
 	<li> \subpage colors_and_fonts_page </li>
+	<li> \subpage fft_scan_page </li>
+	<li> \subpage id_configuration_page </li>
 	<li> \subpage psk_mail_configuation_page </li>
+	<li> \subpage touch_page </li>
 	<li> \subpage ui_configuration_broswer_page </li>
 	<li> \subpage ui_configuration_contest_page </li>
 	<li> \subpage ui_configuration_general_page </li>
 	<li> \subpage ui_configuration_macros_page </li>
 	<li> \subpage ui_configuration_waterfall_controls_page </li>
 	<li> \subpage ui_configuration_waterfall_page </li>
+	<li> \subpage wefax_page </li>
 	<li> \subpage working_logs_page </li>
 </ul>
 

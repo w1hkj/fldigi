@@ -11,6 +11,13 @@ configuration dialog. This information is used by some of
 the macro expanders.
 <br>
 
+\par NOTE:
+	Thor and DominoEX secondary text field are initially set to the
+	operator callsign. On subsequent changes to the callsign, these fields are
+	not updated. See \ref thor_configuration_page and
+	\ref domino_ex_configuration_page for the location of the secondary text
+	entry fields.
+
 The antenna information is required if you elect to report to the spotting web
 site, <a href="http://pskreporter.info">PSK reporter</a>.
 <br>

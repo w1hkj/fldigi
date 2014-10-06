@@ -21,6 +21,26 @@ fldigi options:
     Look for configuration files in DIRECTORY
     The default is: /Users/robert/.fldigi/
 
+  --enable-io-port <1|2> ARQ=1 KISS=2
+    Select the active IO Port
+    The default is: 1
+
+  --kiss-server-address HOSTNAME
+    Set the KISS UDP server address
+    The default is: 127.0.0.1
+
+  --kiss-server-port-io I/O PORT
+    Set the KISS UDP server I/O port
+    The default is: 7342
+
+  --kiss-server-port-o Output PORT
+    Set the KISS UDP server output port
+    The default is: 7343
+
+  --kiss-server-dual-port Dual Port Use (0=disable / 1=enable)
+    Set the KISS UDP server dual port flag
+    The default is: 0
+
   --arq-server-address HOSTNAME
     Set the ARQ TCP server address
     The default is: 127.0.0.1
@@ -31,11 +51,11 @@ fldigi options:
 
   --flmsg-dir DIRECTORY
     Look for flmsg files in DIRECTORY
-    The default is /Users/robert/.nbems/
+    The default is
 
   --auto-dir DIRECTORY
     Look for wrap_auto_file files in DIRECTORY
-    The default is /Users/robert/.nbems/WRAP/auto/
+    The default is WRAP/auto/
 
   --xmlrpc-server-address HOSTNAME
     Set the XML-RPC server address
@@ -120,8 +140,7 @@ Additional UI options:
 
   --font FONT[:SIZE]
     Set the widget font and (optionally) size
-    The default is: Arial:12
-
+    The default is: ArialMT:12
 
 \endverbatim
 

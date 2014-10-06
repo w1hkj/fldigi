@@ -43,7 +43,7 @@ Feld-Hell look like this when being received by fldigi:
 <br>
 
 \image html feld-hell.png "Feld-Hell, Slow Hell, Feld-Hell X5, and Feld-Hell X9 are all pulse"
-\image latex feld-hell.png "Feld-Hell, Slow Hell, Feld-Hell X5, and Feld-Hell X9 are all pulse" width=3.0in
+\image latex feld-hell.png "Feld-Hell, Slow Hell, Feld-Hell X5, and Feld-Hell X9 are all pulse" width=2.69in
 
 <p>Feld-Hell seems to be the most commonly used and use can usually be found
 on 80 and 40 meters at the high end of the digital sub bands.  Extreme

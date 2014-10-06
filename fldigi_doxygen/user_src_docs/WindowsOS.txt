@@ -41,7 +41,7 @@ not have a login name and password:
 	<tr><td>On W2K</td>
 	<td>C:\\\"Documents and Settings\\<urlogin\>\\fldigi.files\"</td></tr>
 	<tr><td>On Vista/Win7</td>
-	<td>C:\\User\\<urlogin\>\\fldigi.files\</td></tr>
+	<td>C:\\User\\<urlogin\>\\fldigi.files</td></tr>
 </table>
 
 where \<urlogin\> is the name with which you log onto the computer.

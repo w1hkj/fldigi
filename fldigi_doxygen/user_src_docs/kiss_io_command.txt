@@ -1,0 +1,192 @@
+/**
+\page kiss_command_page FLDIGI KISS Hardware Commands
+
+\tableofcontents
+
+<center>
+
+<h2>Custom Frame Extensions</h2>
+
+</center>
+
+These commands are NON-STANDARD extension(s) to the KISS interface
+specifications and designed to control/configure aspects of FLDIGI not
+normally found in Hardware TNC's. Undefined kiss frame types 6 and 7 are used
+to identify these custom frames.
+
+<center>
+Definition  | Kiss frame ID
+:---------: | :-----------------:
+HARDWARE    | 6
+RAW         | 7
+</center>
+
+External program which conform to the official KISS I/O specifications are
+expected to operate normally.
+
+UDP/IP Connectionless communications are used to transfer information between
+FLDIGI and the host program. See \ref config_io_page and
+\ref command_line_switches_page for specific address and port number
+assignments.
+
+\section sSetCommands Set Commands
+
+Command \<parameters\(s\)\>      | Use
+:------------------------------- | :----------------------------
+<b>BCHN:</b>\<ON\|OFF\>          | Busy Channel On/Off
+<b>BCHNS:</b>\<0-999\>           | Busy Channel Wait Duration (seconds)
+<b>CSMA:</b>\<ON\|OFF\>          | Enable/Disable CSMA. Used on a shared frequency
+<b>IBCHN:</b>\<N\>               | Set Inhibit busy channel duration to N seconds
+<b>IBCHN:</b>0                   | Resets temporary duration to default setting.
+<b>IBCHN:</b>S                   | Inhibit busy channel temporarily. 'S' (character) (default 5 seconds)
+<b>KISSRAW:</b>\<ON\|OFF\|ONLY\> | Pass non HDLC encoded data to the transmitter.
+\verbatim
+ON   = HDLC and Unaltered data.
+OFF  = HDLC data only.
+ONLY = Unaltered data only.
+\endverbatim
+
+Command                          | Use
+:------------------------------- |:-------------------------------------------------
+<b>KISSCRCM:</b>\<NONE\|SMACK\|CCITT\|XOR\|FCS\> | Enable KISS frame checksum type
+<b>KPSATT:</b>\<value\>          | Set the fractional ratio gain value (1/value)
+<b>KPSQL:</b>\<ON\|OFF\>         | OFF=Histogram Mode, ON=User set level
+<b>KPSQLS:</b>\<0-100\>          | Set squelch level (percent)
+<b>MODEM:</b>\<modem_id_string\> | Set modem type. Example MODEM:PSK63RC32
+<b>RSIDBCAST:</b>\<ON\|OFF\>     | Enable/disable RSID broadcast state change (default: OFF)
+<b>RSIDRX:</b>\<ON\|OFF\>        | Enable/disable RX RSID
+<b>RSIDTX:</b>\<ON\|OFF\>        | Enable/disable TX RSID
+<b>SQL:</b>\<ON\|OFF\>           | SQL On/Off
+<b>SQLS:</b>\<0-100\>            | Set SQL Level (percent)
+<b>TRXSBCAST:</b>\<ON\|OFF\>     | Enable/disable TX/RX state change broadcast (default: OFF)
+<b>TXBEBCAST:</b>\<ON\|OFF\>     | Enable/disable TX buffer empty broadcast (default: OFF)
+<b>WFF:</b>\<integer value\>     | Move TXRX cursor to frequency on waterfall.
+
+\verbatim
+NONE  = No CRC used
+SMACK = Enable CRC use for Host <-> TNC ASYNC links
+CCITT = Enable CCITT CRC
+FCS   = Enable FCS CRC
+XOR   = Enable BPQ's XOR CRC
+\endverbatim
+
+Command \<parameters\(s\)\>              | Use
+:---------------------|:-------------------------------------------------
+<b>RSIDM:</b>\<BANDPASS\|MODEM\>,\<ACTIVE\|NOTIFY\> | Set the RSID mode to,...
+\verbatim
+BANDPASS = Search entire bandpass for RSID signals
+MODEM    = Search Modem bandpass (+/- 200HZ) for RSID signals
+ACTIVE   = When RSID received, move frequency transmit/receive cursor to location.
+NOTIFY   = Report RSID when detected (Notify only).
+\endverbatim
+
+\section sQueryCommands Query Commands
+
+Command / Return Status                                   | Use
+:-------------------------------------------------------- | :-------------------------------------------------
+<b>BCHN:</b>     FLDIGI returns BCHN:\<ON\|OFF\>          | Busy Channel State On/Off Query
+<b>BCHNS:</b>    FLDIGI returns BCHNS:\<0-999\>           | Busy Channel Wait Duration Query (seconds)
+<b>BUSY:</b>     FLDIGI returns BUSY:\<Y\|N\>             | Return the state of the squelch, if there is a signal present
+<b>CSMA:</b>     FLDIGI returns CSMA:\<ON\|OFF\>          | CSMA State ON/OFF
+<b>FLSTAT:</b>   FLDIGI returns FLSTAT:\<INIT\|OK\>,\<HH:MM:SS\> | Start up State and runtime. Returns OK and after initial Query
+<b>IBCHN:</b>    FLDIGI returns IBCHN:\<SECONDS\>         | Inhibit busy channel durations in seconds.
+<b>KISSCRCM:</b> FLDIGI returns CRCMODE:\<NONE\|SMACK\>,\<CCITT\|XOR\|FCS\> | Host <-> TNC KISS CRC Types
+<b>KPSATT:</b>   FLDIGI returns KPSATT:\<value\>          | Fractional value of KPSQL ratio gain figure (1/value)
+<b>KPSQL:</b>    FLDIGI returns KPSQL:\<ON\|OFF\>         | OFF=Histogram Mode, ON=User set level
+<b>KPSQLP:</b>   FLDIGI returns KPSQLP \<0-100\>          | Current Power Level
+<b>KPSQLS:</b>   FLDIGI returns KPSQLS:\<0-100\>          | Squelch set level Query (percent)
+<b>MODEM:</b>    FLDIGI returns MODEM:\<Modem ID String\> | Current Modem
+<b>MODEMBW:</b>  FLDIGI returns MODEMBW:\<Bandwidth in Hz\> | Current Modem Bandwidth
+<b>MODEML:</b>   FLDIGI returns MODEML:Modem1,Modem2,...  | A List of comma delimited modem ID strings.
+<b>RSIDM:</b>    FLDIGI returns RSIDM:\<BANDPASS\|MODEM\>,\<ACTIVE\|NOTIFY\> | Return current RSID Mode
+<b>RSIDRX:</b>   FLDIGI returns RSIDRX:\<ON\|OFF\>        | RX RSID ON?
+<b>RSIDTX:</b>   FLDIGI returns RSIDTX:\<ON\|OFF\>        | TX RSID ON?
+<b>SQL:</b>      FLDIGI returns SQL:\<ON\|OFF\>           | SQL On/Off
+<b>SQLP:</b>     FLDIGI returns SQLP:\<0-100\>            | Current Symbol Quality Level (Currently Not returning valid data)
+<b>SQLS:</b>     FLDIGI returns SQLS:\<0-100\>            | Set SQL Level Query (percent)
+<b>TNC:</b>      FLDIGI returns TNC:FLDIGI \<Version Number\> | Returns the version number of FLDIGI
+<b>TRXS:</b>     FLDIGI returns TRXS:\<RX\|TX\>           | Returns the current RX/TX state of FLDIGI
+<b>TXBUF:</b>    FLDIGI returns TXBUF:\<count\>           | Return the number of byte in the transmit queue
+<b>WFBW:</b>     FLDIGI returns WFBW:\<LOWER HZ\>,\<UPPER HZ\> | Return the active waterfall bandwidth
+<b>WFF:</b>      FLDIGI returns WFF:\<integer value\>     |  Current modem position on waterfall (center)
+
+\subsection ssQueryCommand Query Commands (FLDIGI to HOST)
+
+Command       | Use
+:------------ |:-------------------------------------------------
+<b>HOST:</b>  | Host returns HOST:\<program_name\> \<version\>
+
+\par Note:
+	Not required
+
+\section sBroadcastCommands Broadcast Status Messages (FLDIGI to HOST)
+
+Status \<parameters\(s\)\>  | Use
+:-------------------------- |:-------------------------------------------------
+<b>RSIDN:</b>NEW_WF_OFFSET,NEW_MODEM,OLD_WF_OFFSET,OLD_MODEM,\<ACTIVE\|NOTIFY\|USER\> | RSID NOTICE
+<b>TRXS:</b>\<RX\|TX\>      | Transmitted during a state change between RX/TX or TX/RX.
+<b>TXBE:</b>                | Broadcast on emptied transmit buffer.
+
+\verbatim
+NEW_WF_OFFSET = 0-4000
+NEW_MODEM     = Modem ID string of newly switched modem.
+OLD_WF_OFFSET = 0-4000
+OLD_MODEM     = Modem ID string of modem prior to switching.
+ACTIVE        = Indicating TXRX cursor changed.
+NOTIFY        = Notice only.
+USER          = Report User or commanded via KISS interface modem change.
+\endverbatim
+
+\section sCommandFormat Format of Hardware Commands
+
+FLDIGI will only except KISS frames with a PORT ID of '0' (zero). The hardware
+frame is a kiss frame type 6.
+
+\verbatim
+MODEM:PSK125RC16
+FEND,PORT(0)|HRDW(6),'M','O',D','E','M',':','P','S','K','1',2','5','R','C','1','6',FEND
+KISS HARDWARE FRAME="MODEM:PSK63RC32"
+KISS HARDWARE FRAME="RSIDTX:ON"
+KISS HARDWARE FRAME="RSIDRX:OFF"
+\endverbatim
+
+\section sRawDataFormat Format of RAW Data
+
+To enable RAW use, issue hardware command <b>KISSRAW</b>:<ON|OFF|ONLY>. The
+encode of the raw data is the same as the encoding of normal kiss data. The
+host program is responsible for the proper protocol data syntax.
+
+<b>Format:</b><br>
+
+Dn=8 bit data (byte)
+
+\verbatim
+KISS RAW FRAME=D1,D2,D3,...
+
+FEND,PORT(0)|RAW(7),D1,D2,D3,...,FEND
+\endverbatim
+<br>
+
+---
+
+<b>Notes:</b>
+
+<ol>
+	<li>The transmit buffer has a ten minute timer association. In the
+	    event data has been retained in the transmit buffer for more then 10
+	    minutes without being transmitted in part or whole the buffer is
+	    cleared. This will prevent a build up of data and a subsequent
+	    transmit for an extended period once the frequency is clear.
+	    Consider all packets in the transmit queue lost. If enabled,
+	    TXBE will be issued when this occurs.</li>
+	<li>Both ARQ and KISS IO ports are active for the reception of data.
+		However, only the selected port will pass data to the higher functions
+		and the other port will not buffer the data for later use. Reason: see
+		note 1.</li>
+	<li>By keeping a complete ARQ (RAW) packet in one KISS frame both
+	    HDLC and ARQ (RAW) data can coexist. This allows for sequential data
+	    transmission without interleaving data at the byte level.</li>
+</ol>
+
+
+*/

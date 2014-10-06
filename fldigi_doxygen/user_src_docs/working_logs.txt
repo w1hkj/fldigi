@@ -61,7 +61,7 @@ which is opened using the menu item "Help/Event log"
 <br>
 
 \image html event-log-menu.png "Event Log Menu"
-\image latex event-log-menu.png "Event Log Menu" width=1.75in
+\image latex event-log-menu.png "Event Log Menu" width=1.39in
 
 There are six levels of event logging with increasing depth of reports:
 <br>

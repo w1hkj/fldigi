@@ -10,14 +10,15 @@ Copyright &copy;
 <br>
 
 <ul>
-  <li>2006 through 2013 Dave Freese, W1HKJ</li>
+  <li>2006 through 2014 Dave Freese, W1HKJ</li>
   <li>2007, 2008, 2009 Stelios Bounanos, M0GLD</li>
   <li>2007, 2008, 2009 Leigh Klotz Jr., WA5ZNU</li>
   <li>2007, 2008, 2009 Joe Veldhuis, N8FQ</li>
   <li>2008, 2009 Stephane Fillod, F8CFE</li>
   <li>2009 John Douyere, VK2ETA</li>
   <li>2013 Remi Chateauneu, F4ECW</li>
-  <li>2013 Robert Stiles, KK5VD</li>
+  <li>2013, 2014 Robert Stiles, KK5VD</li>
+  <li>2014, John Phelps - KL4YFD</li>
 </ul>
 
 This application and all supporting documentation is free software;

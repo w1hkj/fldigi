@@ -4,7 +4,7 @@
 \tableofcontents
 
 \image html CabrilloSetup.png "Cabrillo Report"
-\image latex CabrilloSetup.png "Cabrillo Report" width=4.0in
+\image latex CabrilloSetup.png "Cabrillo Report" width=5.5in
 <br>
 
 Fldigi can generate a basic Cabrillo report that meets most contest needs.

@@ -129,65 +129,83 @@ The green area is 400 Hz wide.
 
 <center>
 
-<br>
 \image html Icom_FSK.png "Image A"
-\image latex Icom_FSK.png "Image A" width=4.8in
+\image latex Icom_FSK.png "Image A" width=4.0in
+
+</center>
+
 Transceiver operated in FSK mode<br>
 Power: 100 W<br>
-<br>
-<br>
-<br>
+
+<center>
+
 \image html fldigi_Icom_AFSK.png "Image B"
-\image latex fldigi_Icom_AFSK.png "Image B" width=4.8in
+\image latex fldigi_Icom_AFSK.png "Image B" width=4.0in
+
+</center>
+
 Transceiver in USB, fldigi AFSK audio drive<br>
 Space at 2125, Mark at 2295 Hz<br>
 Power: 100 Watts,  ALC just extinguished<br>
-<br>
-<br>
-<br>
+
+<center>
+
 \image html fldigi_Icom_AFSK-1dB.png "Image C"
-\image latex fldigi_Icom_AFSK-1dB.png "Image C" width=4.8in
+\image latex fldigi_Icom_AFSK-1dB.png "Image C" width=4.0in
+
+</center>
+
 Transceiver in USB, fldigi AFSK audio drive<br>
 Space at 2125, Mark at 2295 Hz<br>
 Power: reduced to 80 Watts (-1 dB)<br>
-<br>
-<br>
-<br>
+
+<center>
+
 \image html fldigi_Icom_AFSK-1r5dB.png "Image D - 2 K span"
-\image latex fldigi_Icom_AFSK-1r5dB.png "Image D - 2 K span" width=4.8in
+\image latex fldigi_Icom_AFSK-1r5dB.png "Image D - 2 K span" width=4.0in
+
+</center>
+
 Transceiver in USB, fldigi AFSK audio drive<br>
 Space at 2125, Mark at 2295 Hz<br>
 Power: reduced to 70 Watts (-1.5 dB)</td>
-<br>
-<br>
-<br>
+
+<center>
+
 \image html fldigi_70W_1000Hz.png "Image F - 10 K span"
-\image latex fldigi_70W_1000Hz.png "Image F - 10 K span" width=4.8in
+\image latex fldigi_70W_1000Hz.png "Image F - 10 K span" width=4.0in
+
+</center>
+
 Transceiver in USB, fldigi AFSK audio drive<br>
 Space at 830 Hz, Mark at 1000 Hz<br>
 Power: 70 Watts.  The LSB leakage is clearly <br>
 seen at approximately -55 dB<br>
-<br>
-<br>
-<br>
+
+<center>
+
 \image html fldigi_70W_1000Hz_5K.png "Image G - 5 K span"
-\image latex fldigi_70W_1000Hz_5K.png "Image G - 5 K span" width=4.8in
+\image latex fldigi_70W_1000Hz_5K.png "Image G - 5 K span" width=4.0in
+
+</center>
+
 Transceiver in USB, fldigi AFSK audio drive<br>
 Space at 830 Hz, Mark at 1000 Hz<br>
 Power: 70 Watts.  The LSB leakage is clearly <br>
 seen at approximately -55 dB.<br>
-<br>
-<br>
-<br>
+
+<center>
+
 \image html fldigi_70W_2stop.png "Image H - 2 K span"
-\image latex fldigi_70W_2stop.png "Image H - 2 K span" width=4.8in
+\image latex fldigi_70W_2stop.png "Image H - 2 K span" width=4.0in
+
+</center>
+
 Transceiver in USB, fldigi AFSK audio drive<br>
 Space at 830 Hz, Mark at 1000 Hz<br>
 Stop Bits set to 2 vice 1.5<br>
 Power: 70 Watts.  Compare this to image D<br>
 <br>
-
-</center>
 
 \section rtty_demodulator RTTY demodulator
 

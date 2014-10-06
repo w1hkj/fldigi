@@ -7,6 +7,7 @@
 	<li> \subpage digiscope_display_page </li>
 	<li> \subpage digiscope_display_wwv_mode </li>
 	<li> \subpage dxcc_list_page </li>
+	<li> \subpage fft_scan_page </li>
 	<li> \subpage frequency_analyzer_page </li>
 	<li> \subpage keyboard_operation_page </li>
 	<li> \subpage kml_page </li>
@@ -19,12 +20,12 @@
 	<li> \subpage rig_control_page </li>
 	<li> \subpage rst_rsq_page </li>
 	<li> \subpage signal_browser_page </li>
+	<li> \subpage supporting_data_files_page </li>
 	<li> \subpage synop_page </li>
 	<li> \subpage utf8_support_page </li>
 	<li> \subpage w5zit_rt_channel_page </li>
-	<li> \subpage wwv_tx_mode </li>
 	<li> \subpage working_logs_page </li>
-	<li> \subpage supporting_data_files_page </li>
+	<li> \subpage wwv_tx_mode </li>
 </ul>
 
 */

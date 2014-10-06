@@ -110,7 +110,7 @@ doing in the Event Log window or on the terminal if you set the log level to
 <br>
 
 \image html activity-reports.png "Activity Reports"
-\image latex activity-reports.png "Activity Reports" width=2.0in
+\image latex activity-reports.png "Activity Reports" width=1.74in
 <br>
 
 A button and popup text field on the rig control frame give access to

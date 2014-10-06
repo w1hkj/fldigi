@@ -1,0 +1,45 @@
+/**
+\page touch_page Configure Touch Screen
+
+\tableofcontents
+
+<br>
+\image html config-ui-touch.png "Touch Screen Configuration Panel"
+\image latex config-ui-touch.png "Touch Screen Configuration Panel" width=5.5in
+<br>
+
+\section sTouchScreen Touch Screen
+
+Provides a few UI configurable items that improve using fldigi on a touch
+screen device, such as a Windows table, or an Android running a remote
+desktop with fldigi as the application.  These items are enhanced by the
+addition of a macro tag that allows the operator to change focus to the
+frequency input widget by pressing that macro key:
+
+<br>
+\image html fafhjagc.png "Macro Command"
+\image latex fafhjagc.png "Macro Command" width=4.4in
+<br>
+
+\<FOCUS\>
+
+Which then enables keyboard entry into the frequency widget, but more
+important also allows the cursor keys, and Shift-cursor keys to modify the
+frequency entry.
+
+Tablets usually put the on-screen keyboard at the bottom of the display
+which covers up the fldigi Tx panel.  Typing in the blind is not very
+satisfactory, so the "Tx above Rx" allows the the Rx and Tx panels to be
+swapped.  The functions keys are too small for most adult male fingers
+on a touch screen.  The "one Macro Row above Rx/Tx" and the size adjustment
+provides relief for bumbling fingers and also moves the function key bar
+from beneath that immovable tablet on screen keyboard.
+
+
+<br>
+\ref touch_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

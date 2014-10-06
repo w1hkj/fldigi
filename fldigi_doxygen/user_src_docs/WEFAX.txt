@@ -25,8 +25,8 @@ transmit window. it is always possible to bypass this with the menu
 bar:
 <br>
 
-\image html Wefax-Tab.png "WEFAX"
-\image latex Wefax-Tab.png "WEFAX" width=6.0in
+\image html FindReception.png "WEFAX"
+\image latex FindReception.png "WEFAX" width=6.0in
 <br>
 
 \section wefax_config Configuration.
@@ -128,7 +128,7 @@ displayed, for example like that:
 <br>
 
 \image html Transmit_A.png "Transmitting"
-\image latex Transmit_A.png "Transmitting" width=3.0in
+\image latex Transmit_A.png "Transmitting" width=6.0in
 <br>
 
 Now, to start the transmission, you just need to click "Tx B/W" for
@@ -147,8 +147,8 @@ intentionally disabled at the moment.
 \section rx_image Receiving an image
 <br>
 
-\image html Reception.png "Reception"
-\image latex Reception.png "Reception" width=6.0in
+\image html wefax-Receive-Embeded.png "Reception"
+\image latex wefax-Receive-Embeded.png "Reception" width=6.0in
 <br>
 
 
@@ -205,8 +205,8 @@ other controls are displayed:
 </ul>
 
 <br>
-\image html Wefax-File-Received.png "Received WEFAX File"
-\image latex Wefax-File-Received.png "Received WEFAX File" width=6.0in
+\image html wefax-rx-window-detached.png "Received WEFAX File"
+\image latex wefax-rx-window-detached.png "Received WEFAX File" width=6.0in
 <br>
 
 \subsection apt_control_mode APT control reception mode
@@ -347,8 +347,8 @@ name appears on the file list of the reception window. By clicking on a
 file name, it is displayed in the transmit window.
 <br>
 
-\image html Wefax-Display-And-Receive.png "Received Image"
-\image latex Wefax-Display-And-Receive.png "Received Image" width=6.0in
+\image html wefax-tx-rx-embeded.png "Received Image"
+\image latex wefax-tx-rx-embeded.png "Received Image" width=6.0in
 <br>
 
 <br>

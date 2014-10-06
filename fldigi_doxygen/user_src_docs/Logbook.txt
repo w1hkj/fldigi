@@ -133,24 +133,13 @@ A right click on the Rx panel brings up a context sensitive menu that will
 reflect which of the two QSO capture views you have open.
 <br>
 
-\image html menu-rx-popup-short.png "Normal: Short Menu"
-\image latex menu-rx-popup-short.png "Normal: Short Menu" width=1.0in
+
+\image html menu-rx-popup-long.png "Normal Menu"
+\image latex menu-rx-popup-long.png "Normal Menu" width=1.0in
 <br>
 
-\image html menu-rx-popup-long.png "Normal: Long Menu"
-\image latex menu-rx-popup-long.png "Normal: Long Menu" width=1.0in
-<br>
-
-\image html menu-rx-popup-contest-short.png "Contest: Short Menu"
-\image latex menu-rx-popup-contest-short.png "Contest: Short Menu" width=1.0in
-<br>
-
-\image html menu-rx-popup-contest-long.png "Contest: Long Menu"
-\image latex menu-rx-popup-contest-long.png "Contest: Long Menu" width=1.0in
-<br>
-
-\image html menu-view.png "Contest: Long Menu"
-\image latex menu-view.png "Contest: Long Menu" width=1.0in
+\image html menu-rx-popup-contest-short.png "Contest Menu"
+\image latex menu-rx-popup-contest-short.png "Contest Menu" width=1.0in
 <br>
 
 If you highlight text in the Rx pane then the menu selection will operate
@@ -175,13 +164,11 @@ QTH field.
 A highlighted section of text, can always be copied
 to the clipboard for subsequent pasting elsewhere.  The Copy menu
 item will be active when text in the Rx pane has been highlighted. That
-text can also be saved to a file.  Use the
-"Save <span style="text-decoration: underline;">a</span>s..."
-menu item for that purpose.  All data fields in fldigi share a
-common set of keyboard shortcuts.  Linux users will recognize
-these as familiar Emacs shortcuts.  There is also a small popup
-menu that can be opened for each field by right clicking the contents with
-the mouse:
+text can also be saved to a file.  Use the \"Save as...\" menu item for that
+purpose.  All data fields in fldigi share a common set of keyboard
+shortcuts.  Linux users will recognize these as familiar Emacs
+shortcuts.  There is also a small popup menu that can be opened for each
+field by right clicking the contents with the mouse:
 <br>
 
 \image html menu-popup-edit-field.png "Menu Popup Edit Field"

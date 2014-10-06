@@ -244,11 +244,11 @@ Additional information:
 \subsubsection s_op_mode_psk PSK
 
 \image html menu-psk.png "PSK"
-\image latex menu-psk.png "PSK" width=1.75in
+\image latex menu-psk.png "PSK" width=0.75in
 <br>
 
 \image html menu-psk-multi-carrier.png "Multi Carrier PSK"
-\image latex menu-psk-multi-carrier.png "Multi Carrier PSK" width=1.75in
+\image latex menu-psk-multi-carrier.png "Multi Carrier PSK" width=0.75in
 <br>
 
 <ul>
@@ -575,7 +575,7 @@ See \ref configuration_page Page
 \subsection s_help Help
 
 \image html menu-help.png "Help"
-\image latex menu-help.png "Help" width=2.25in
+\image latex menu-help.png "Help" width=1.9in
 <br>
 
 <ul>

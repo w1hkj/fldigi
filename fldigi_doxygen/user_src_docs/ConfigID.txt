@@ -1,5 +1,5 @@
 /**
-\page id_configuration_page  ID Configuration
+\page id_configuration_page  RSID / Video / ID Configuration
 
 \tableofcontents
 
@@ -44,11 +44,11 @@ The mode to identifier relationships are selected by pressing the associated
 "modes" button.
 
 \image html config-id-rx-modes.png "Receive Modes"
-\image latex config-id-rx-modes.png "Receive Modes" width=2.5in
+\image latex config-id-rx-modes.png "Receive Modes" width=2.37in
 <br>
 
 \image html config-id-xmt-modes.png "Transmit Modes"
-\image latex config-id-xmt-modes.png "Transmit Modes" width=2.5in
+\image latex config-id-xmt-modes.png "Transmit Modes" width=2.37in
 
 \section subsec_video_text Video Text
 <br>
@@ -78,11 +78,11 @@ when you are transmitting the mode ID using a video text. Here
 are two examples, one in small and the other in large font.<br>
 
 \image html vid-small.png "Small Font"
-\image latex vid-small.png "Small Font" width=2.5in
+\image latex vid-small.png "Small Font" width=1.2in
 <br>
 
 \image html vid-large.png "Large Font"
-\image latex vid-large.png "Large Font" width=2.0in
+\image latex vid-large.png "Large Font" width=2.3in
 <br>
 
 Notice that Olivia 16-500 is abbreviated to OL-16/500 and that the
@@ -113,7 +113,7 @@ include the CW postamble.
 <br>
 
 \image html config-id-cw-modes.png "CW ID Modes"
-\image latex config-id-cw-modes.png "CW ID Modes" width=2.4in
+\image latex config-id-cw-modes.png "CW ID Modes" width=1.7in
 </center>
 
 <br>

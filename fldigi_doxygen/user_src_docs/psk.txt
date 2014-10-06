@@ -1,14 +1,21 @@
 /**
-\page psk_page PSK - BPSK, BPSKR, QPSK, and Multi-Channel Modems
+\page psk_page PSK Single and Multi-Channel Modems
 
 \tableofcontents
 
-\section bpsk_modem  BPSK and QPSK modems
+\section bpsk_modem  BPSK, QPSK, and 8PSK modems
 
-PSK are narrow band low symbol rate modes using either single or
-multiple carrier differential Binary Phase Shift Kying, BPSK, or Quadrature
-Phase Shift Keying, QPSK.
-<br>
+PSK are narrow band low to moderate symbol rate modes using either single or
+multiple carrier differential <b>P</b>hase <b>S</b>hift <b>K</b>eying.
+
+Current supported variants:
+
+BPSK: Binary, 2 constellations <br>
+QPSK: Quadrature, 4 constellations <br>
+8PSK: 8 constellations <br>
+
+\par NOTE:
+	Multi-Channel PSK modems use BPSK modulation.
 
 PSK63FEC and the PSKxxxR modes are forward error correcting modes. PSK63FEC
 is compatible with the MultiPsk mode of the same name. The PSKxxxR, or
@@ -51,7 +58,14 @@ single-hop path, but give poor performance in most other conditions.
 
 \image html qpsk-signal-waterfall.png "QPSK63 signal transmitting text data - waterfall view"
 \image latex qpsk-signal-waterfall.png "QPSK63 signal transmitting text data - waterfall view" width=1.0in
+<br>
 
+\image html eight-psk-signal-oscope.png "8PSK125 signal transmitting text data - oscilloscope - waterfall view"
+\image latex eight-psk-signal-oscope.png "8PSK125 signal transmitting text data - oscilloscope - waterfall view" width=5.0in
+<br>
+
+\image html eight-psk-signal-waterfall.png "8PSK125 signal transmitting text data - waterfall view"
+\image latex eight-psk-signal-waterfall.png "8PSK125 signal transmitting text data - waterfall view" width=1.0in
 <br>
 
 The two oscilloscope views above clearly show the combined phase and
@@ -86,12 +100,20 @@ signal matches the baud rate then it might be a QPSK signal. Just change
 mode a try reacquiring the signal.
 <br>
 
-\section multi_bpsk_modem  Multi-Channel PSK modems
+\section multi_bpsk_modem  Multi-Channel BPSK modems
 
 \image html MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view"
 \image latex MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view" width=4.0in
-
 <br>
+
+\image html MultiChannelBPSKOScope.png "PSK63R20C signal transmitting text data - oscilloscope view"
+\image latex MultiChannelBPSKOScope.png "PSK63R20C signal transmitting text data - oscilloscope view" width=4.0in
+<br>
+
+For further information about <a href="http://en.wikipedia.org/wiki/Phase-shift_keying">Phase Shift Keying</a>
+<br>
+
+
 \ref psk_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

@@ -18,7 +18,7 @@
 
 /*!
 
-\mainpage FLDIGI Users Manual - Version 3.21
+\mainpage FLDIGI Users Manual - Version 3.22
 \anchor main_page
 
 <center>
@@ -40,6 +40,7 @@
 </ul>
 
 <br>
+
 \ref main_page "Return to Top of Page"
 
 */

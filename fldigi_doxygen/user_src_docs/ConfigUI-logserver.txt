@@ -117,7 +117,7 @@ configuration for the Client/Server Logbook.
 <br>
 
 \image html connect-to-logserver.png "Connect to Server"
-\image latex connect-to-logserver.png "Connect to Server" width=2.25in
+\image latex connect-to-logserver.png "Connect to Server" width=1.36in
 <br>
 
 The "Logbook/Connect to server" menu item allows you to connect to the

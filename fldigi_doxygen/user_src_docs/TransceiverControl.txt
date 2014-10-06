@@ -64,8 +64,8 @@ transceiver bandwidth.
 <br>
 
 The frequency display is in fact a set of special buttons.  Each
-digit may be left-clicked to increment in frequency by that digit
-value, or right clicked to decrement by that digit value.  The leading
+digit may be increment by clicking/pressing on the upper half of the digit and
+decrement by clicking/pressing the lower half of the digit.  The leading
 digits will follow suit if a decade rollover occurs.  You can also place the
 mouse cursor on a digit and then use the mouse wheel to roll the frequency
 up and down.

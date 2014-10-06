@@ -1,0 +1,139 @@
+/**
+\page  config_io_page Configure ARQ/KISS I/O
+
+\tableofcontents
+
+<br>
+\image html config-io.png "ARQ/KISS IO Configuration Panel"
+\image latex config-io.png "ARQ/KISS IO Configuration Panel" width=5.5in
+<br>
+
+<br>
+\image html config-io-locked.png "Locked IO Configuration Panel"
+\image latex config-io-locked.png "Locked IO Configuration Panel" width=5.5in
+<br>
+
+\section sConfigIO I/O Configuration
+
+I/O configuration panel as seen above allows the user to select one of the IO
+interfaces.  Each of the two interface options are used for different
+purpose(s). ARQ is selected when the user requires the use of the
+FLDIGI suite of programs (FLARQ, FLMSG, FLAMP, etc). The KISS interface
+is used with Ax25/ARQ networking software.  Currently the only
+software tested and verified to work with FLDIGI's KISS interface is
+BPQ32. See \ref bpq32_page "Using BPQ32 with FLDIGI"
+
+\par Note:
+Any changes to the IP Address and/or port numbers requires FLDIGI restart.
+
+<br>
+
+\subsection ssArqIO ARQ I/O
+
+<br>
+\image html config-io-arq.png "ARQ IO Panel Options"
+\image latex config-io-arq.png "ARQ IO Panel Options" width=5.5in
+<br>
+
+To select ARQ I/O, mouse click on the [ ] Enable ARQ check box. If the
+checkbox is grayed out, this indicated the panel is locked. Deselect the
+[ ] Lock checkbox to gain access.
+
+The ARQ section of the configuration panel allow the user to set the
+IP address and port number.  Pressing the [Default] button set the fields
+to their startup values. In order for communications to occur both FLDIGI
+and the FLDIGI suite of program must be assign the same IP address and port
+number if the programs are used on the same computer. If the program are
+running on different machines then the IP Address must be set accordingly
+while maintaining the same port number. The IP Address entered is the
+destination Address for the recipiente program/host computer.
+
+\subsection ssKissIO KISS I/O
+
+\image html config-io-kiss.png "KISS IO Panel Options"
+\image latex config-io-kiss.png "KISS IO Panel Options" width=5.5in
+<br>
+
+To select KISS I/O, mouse click on the [ ] Enable KISS check box.
+
+Setting and configuring IP address and ports numbers are described in the ARQ
+section.
+
+\subsubsection ssDualPort Dual Port
+
+Since the data exchange protocol is based on UDP/IP (connectionless) loopback
+issues can arise if the two programs are hosted on the same machine. By
+allowing more then one port number. The loopback condition can be
+avoided.  Both programs must support dual port for proper communications.
+
+\subsubsection ssKISSCsma KISS I/O CSMA
+
+Selecting this option enables Carrier Sense Multiple Access. Basically in
+conjunction with KPSQL it monitors for busy signals. When the frequency is
+clear a small variable delay is initiated preventing the transmitter from
+transmitting. This variance allows other CSMA stations time to monitor
+the frequency in an attempt to prevent/limit packet collisions. Only available
+when KISS I/O selected.
+
+\subsubsection ssAx25Decode Ax25 Decoding
+
+If the data received is using Ax25 protocol enabling this option translates
+the protocol into human readable form. Only available when KISS I/O selected.
+
+\par NOTE:
+	When actived, only valid ax25 data will be displayed to the receive
+	panel. No un-squelched random characters will be seen.
+
+\subsubsection ssBusyChannel Busy Channel
+
+Busy Channel when enabled and with the properly set threshold of the KPSQL
+squelch. Frequencies that are intermittently present within the bandwidth of
+the modem will inhibit the transmitter for the specified duration. This is a
+useful feature to prevent your station from capitalizing the frequency,
+allowing casual users to continue without interruptions from "BBS/Email"
+type operation.
+
+To prevent your station from transmitting between the grap of the RSID and
+the data stream. Enable Busy Channel with a 1~2 second inhibit period.
+
+\subsubsection ssKpsqlAttenuation KPSQL Attenuation.
+
+Reduces the sensitivity of the KPSQL squelch.  Useful when a direct audio
+card to audio card connection.
+
+KPSQL monitors for differences in the signal strength within the bandpass
+of the modem. Making it tolerant to AGC variations from the radio.
+
+\subsubsection ssModemSelection  Modem Selection Kiss I/O
+
+Use of the KISS I/O places a limit on the number of available modems. These
+modems support 8 bit transfers. The slowest of these modems have been omitted
+and generally comprise of the BPSK, 8PSK, MFSK, THOR, Contestia, Olivia and
+MT63 at various baud rates. Any attempt to select a modem not supported FLDIGI
+will ignore the request. If you are unsure, open the event log under the Help
+menu and note a message indicating that particular modem is not supported.
+
+<br>
+\image html invalid_kiss_io_modem.png "Invalid Modem for KISS I/O"
+\image latex invalid_kiss_io_modem.png "Invalid Modem for KISS I/O" width=5.5in
+<br>
+
+\subsection ssXmlRpcIO XMLRPC I/O
+
+<br>
+\image html config-io-xmlrpc.png "XMLRPC IO Panel Options"
+\image latex config-io-xmlrpc.png "XMLRPC IO Panel Options" width=5.5in
+<br>
+
+Setting and configuring IP address and ports numbers are described in the ARQ
+section.
+
+
+
+<br>
+\ref config_io_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

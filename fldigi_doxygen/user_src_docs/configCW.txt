@@ -160,19 +160,19 @@ the TxWPM is 100 WPM.
 <br>
 
 \image html cw-00-30.png "Dash/Dot = 3.0, Edge = 0.0"
-\image latex cw-00-30.png "Dash/Dot = 3.0, Edge = 0.0" width=3.0in
+\image latex cw-00-30.png "Dash/Dot = 3.0, Edge = 0.0" width=2.8in
 <br>
 \image html cw-00-40.png "Dash/Dot = 4.0, Edge = 0.0"
-\image latex cw-00-40.png "Dash/Dot = 4.0, Edge = 0.0" width=3.0in
+\image latex cw-00-40.png "Dash/Dot = 4.0, Edge = 0.0" width=2.8in
 <br>
 \image html cw-30-30.png "Dash/Dot = 3.0, Edge = 3 msec"
-\image latex cw-30-30.png "Dash/Dot = 3.0, Edge = 3 msec" width=3.0in
+\image latex cw-30-30.png "Dash/Dot = 3.0, Edge = 3 msec" width=2.8in
 <br>
 \image html cw-60-30.png "Dash/Dot = 3.0, Edge = 6 msec"
-\image latex cw-60-30.png "Dash/Dot = 3.0, Edge = 6 msec" width=3.0in
+\image latex cw-60-30.png "Dash/Dot = 3.0, Edge = 6 msec" width=2.8in
 <br>
 \image html cw-120-30.png "Dash/Dot = 3.0, Edge = 12 msec"
-\image latex cw-120-30.png "Dash/Dot = 3.0, Edge = 12 msec" width=3.0in
+\image latex cw-120-30.png "Dash/Dot = 3.0, Edge = 12 msec" width=2.8in
 <br>
 
 Changing the weight, dash/dot or edge of the waveform does not change
@@ -260,7 +260,7 @@ either E, I, S, T, M, O or V.
 \section subsec_prosigns PROSIGNS
 
 \image html config-cw-prosigns.png "CW Prosigns"
-\image latex config-cw-prosigns.png "CW Prosigns" width=3.0in
+\image latex config-cw-prosigns.png "CW Prosigns" width=5.7in
 <br>
 \image html config-cw-prosign-popup.png "Prosign Popup"
 \image latex config-cw-prosign-popup.png "Prosign Popup" width=1.0in

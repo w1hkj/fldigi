@@ -13,7 +13,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "FLDIGI Users Manual"
-PROJECT_NUMBER       = 3.21
+PROJECT_NUMBER       = 3.22
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
@@ -43,11 +43,13 @@ INPUT                = index.txt \
 	fldigi-static.txt fldigi_developer.txt \
 	New-Install.txt colorsandfonts.txt \
 	configcallsigndb.txt configContestia.txt configCW.txt \
-	configDomEX.txt configFH.txt ConfigID.txt ConfigMisc.txt \
-	configMT63.txt configOlivia.txt ConfigOperator.txt configPSK.txt \
+	configDomEX.txt configFH.txt ConfigID.txt configIO.txt ConfigMisc.txt \
+	configModemScan.txt configMT63.txt configOlivia.txt ConfigOperator.txt \
+	configPSK.txt \
 	configRTTY.txt configThor.txt ConfigUI-browser.txt \
 	ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logserver.txt \
-	ConfigUI-macros.txt ConfigUI-WF-controls.txt ConfigWaterfall.txt \
+	ConfigUI-macros.txt configUITouch.txt ConfigUI-WF-controls.txt \
+	ConfigWaterfall.txt kiss_io_command.txt \
 	SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \
 	Logbook.txt LogExports.txt working_logs.txt Macros.txt \
 	InlineMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \
@@ -62,7 +64,7 @@ INPUT                = index.txt \
 	Wizard.txt Menus.txt ModeTable.txt CWkeying.txt  \
 	PseudoFSK.txt w5zit-interface.txt rigxml.txt commandline.txt \
 	buildinfo.txt xmlrpc-control.txt parseUALR.txt ualr-telnet.txt \
-	map.txt License.txt Recognitions.txt
+	map.txt License.txt Recognitions.txt bpq32.txt
 INCLUDE_PATH         = .
 EXAMPLE_PATH         = .
 OUTPUT_DIRECTORY     = ../user_docs

@@ -114,8 +114,8 @@ AM   | 1515 kHz
 
 \section synop_parameters Parameters
 
-\image html RTTY-Config-Tab-With-Synop.png "Synop configuration in RTTY tab"
-\image latex RTTY-Config-Tab-With-Synop.png "Synop configuration in RTTY tab" width=5.0in
+\image html  config-rtty-synop.png "Synop configuration in RTTY tab"
+\image latex  config-rtty-synop.png "Synop configuration in RTTY tab" width=5.0in
 <br>
 
 By default, there is not SYNOP decoding of RTTY reception, so its behavior
@@ -299,7 +299,7 @@ files. It can be reached with the command "File/Folders":
 <br>
 
 \image html Opening-DataFiles-Menu.png "How to reach the data files sources menu"
-\image latex Opening-DataFiles-Menu.png "How to reach the data files sources menu" width=3.5in
+\image latex Opening-DataFiles-Menu.png "How to reach the data files sources menu" width=3.48in
 <br>
 
 These data files can also be found:

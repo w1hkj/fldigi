@@ -63,6 +63,11 @@ Macro       | Description
 
 Macro       | Description
 :---------: | :----------------------------
+\<FOCUS\>   | rig freq has keyboard focus
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
 \<GET\>     | text to NAME/QTH
 \<TALK:on\|off\|t\> | Digitalk On, Off, Toggle; this is a Windows only tag <br> and Digitalk must be running
 \<LOG\>     | save QSO data to logbook immediately
@@ -233,32 +238,33 @@ that is supported by fldigi:
 
 <center>
 <small>
-<br>             |<br>             | Data Modems      |<br>             | <br>
-:--------------: | :--------------: | :-------------: | :-------------: | :-------------:
-<MODEM:BPSK1000> | <MODEM:BPSK125>  | <MODEM:BPSK250> | <MODEM:BPSK31> | <MODEM:BPSK500>
-<MODEM:BPSK63>   | <MODEM:BPSK63F>  | <MODEM:CTSTIA:1000:16> | <MODEM:CTSTIA:1000:8> | <MODEM:CTSTIA:250:8>
-<MODEM:CTSTIA:500:16> | <MODEM:CTSTIA:500:8> | <MODEM:CTSTIA> | <MODEM:CW> | <MODEM:DOMEX4>
-<MODEM:DOMEX5>   | <MODEM:DOMEX8>   | <MODEM:DOMX11>   | <MODEM:DOMX16> | <MODEM:DOMX22>
-<MODEM:DOMX44>   | <MODEM:DOMX88>   | <MODEM:FELDHELL> | <MODEM:FSKH105> | <MODEM:FSKHELL>
-<MODEM:HELL80>   | <MODEM:HELLX5>   | <MODEM:HELLX9>   | <MODEM:MFSK11> | <MODEM:MFSK128>
-<MODEM:MFSK128L> | <MODEM:MFSK16>   | <MODEM:MFSK22>   | <MODEM:MFSK31> | <MODEM:MFSK32>
-<MODEM:MFSK4>    | <MODEM:MFSK64>   | <MODEM:MFSK64L>  | <MODEM:MFSK8> | <MODEM:MT63-1KL>
-<MODEM:MT63-1KS> | <MODEM:MT63-2KL> | <MODEM:MT63-2KS> | <MODEM:MT63-500L> | <MODEM:MT63-500S>
-<MODEM:NAVTEX>   | <MODEM:Olivia-16-1K> | <MODEM:Olivia-16-500> | <MODEM:Olivia-32-1K> | <MODEM:Olivia-4-250>
-<MODEM:Olivia-4-500> | <MODEM:Olivia-64-2K> | <MODEM:Olivia-8-1K> | <MODEM:Olivia-8-250> | <MODEM:Olivia-8-500>
-<MODEM:OLIVIA:1000:32> | <MODEM:OLIVIA:1000:8> | <MODEM:OLIVIA:250:8> | <MODEM:OLIVIA:500:16> | <MODEM:OLIVIA:500:8>
-<MODEM:OLIVIA>    | <MODEM:PSK1000C2>  | <MODEM:PSK1000R>   | <MODEM:PSK1000RC2> | <MODEM:PSK125C12>
-<MODEM:PSK125R>   | <MODEM:PSK125RC10> | <MODEM:PSK125RC12> | <MODEM:PSK125RC16> | <MODEM:PSK125RC4>
-<MODEM:PSK125RC5> | <MODEM:PSK250C6>   | <MODEM:PSK250R>    | <MODEM:PSK250RC2>  | <MODEM:PSK250RC3>
-<MODEM:PSK250RC5> | <MODEM:PSK250RC6>  | <MODEM:PSK250RC7>  | <MODEM:PSK500C2>   | <MODEM:PSK500C4>
-<MODEM:PSK500R>   | <MODEM:PSK500RC2>  | <MODEM:PSK500RC3>  | <MODEM:PSK500RC4>  | <MODEM:PSK63RC10>
-<MODEM:PSK63RC20> | <MODEM:PSK63RC32>  | <MODEM:PSK63RC4>   |  <MODEM:PSK63RC5>  | <MODEM:PSK800C2>
-<MODEM:PSK800RC2> | <MODEM:QPSK125>    | <MODEM:QPSK250>    | <MODEM:QPSK31>     | <MODEM:QPSK500>
-<MODEM:QPSK63>    | <MODEM:RTTY:170:45.45:5> | <MODEM:RTTY:170:50:5> | <MODEM:RTTY:850:75:5> | <MODEM:RTTY>
-<MODEM:SITORB>    | <MODEM:SLOWHELL>   | <MODEM:THOR100>  | <MODEM:THOR11>   | <MODEM:THOR16>
-<MODEM:THOR22>    | <MODEM:THOR25x4>   | <MODEM:THOR4>    | <MODEM:THOR5>    | <MODEM:THOR50x1>
-<MODEM:THOR50x2>  | <MODEM:THOR8>      | <MODEM:THRBX1>   | <MODEM:THRBX2>   | <MODEM:THRBX4>
-<MODEM:THROB1>    | <MODEM:THROB2>     | <MODEM:THROB4>   | <MODEM:WEFAX288> | <MODEM:WEFAX576>
+<br>                     |<br>                    | Data Modems           |<br>                  | <br>
+:--------------------- : | :--------------------: | :-------------:       | :------------------: | :------------------:
+<MODEM:8PSK1000>         | <MODEM:8PSK125>        | <MODEM:8PSK250>       | <MODEM:8PSK500>      | <MODEM:BPSK1000>
+<MODEM:BPSK125>          | <MODEM:BPSK250>        | <MODEM:BPSK31>        | <MODEM:BPSK500>      | <MODEM:BPSK63>
+<MODEM:BPSK63F>          | <MODEM:CTSTIA:1000:16> | <MODEM:CTSTIA:1000:8> | <MODEM:CTSTIA:250:8> | <MODEM:CTSTIA:500:16>
+<MODEM:CTSTIA:500:8>     | <MODEM:CTSTIA>         | <MODEM:CW>            | <MODEM:DOMEX4>       | <MODEM:DOMEX5>
+<MODEM:DOMEX8>           | <MODEM:DOMX11>         | <MODEM:DOMX16>        | <MODEM:DOMX22>       | <MODEM:DOMX44>
+<MODEM:DOMX88>           | <MODEM:FELDHELL>       | <MODEM:FSKH105>       | <MODEM:FSKHELL>      | <MODEM:HELL80>
+<MODEM:HELLX5>           | <MODEM:HELLX9>         | <MODEM:MFSK11>        | <MODEM:MFSK128>      | <MODEM:MFSK128L>
+<MODEM:MFSK16>           | <MODEM:MFSK22>         | <MODEM:MFSK31>        | <MODEM:MFSK32>       | <MODEM:MFSK4>
+<MODEM:MFSK64>           | <MODEM:MFSK64L>        | <MODEM:MFSK8>         | <MODEM:MT63-1KL>     | <MODEM:MT63-1KS>
+<MODEM:MT63-2KL>         | <MODEM:MT63-2KS>       | <MODEM:MT63-500L>     | <MODEM:MT63-500S>    | <MODEM:NAVTEX>
+<MODEM:Olivia-16-1K>     | <MODEM:Olivia-16-500>  | <MODEM:Olivia-32-1K>  | <MODEM:Olivia-4-250> | <MODEM:Olivia-4-500>
+<MODEM:Olivia-64-2K>     | <MODEM:Olivia-8-1K>    | <MODEM:Olivia-8-250>  | <MODEM:Olivia-8-500> | <MODEM:OLIVIA:1000:32>
+<MODEM:OLIVIA:1000:8>    | <MODEM:OLIVIA:250:8>   | <MODEM:OLIVIA:500:16> | <MODEM:OLIVIA:500:8> | <MODEM:OLIVIA>
+<MODEM:PSK1000C2>        | <MODEM:PSK1000R>       | <MODEM:PSK1000RC2>    | <MODEM:PSK125C12>    | <MODEM:PSK125R>
+<MODEM:PSK125RC10>       | <MODEM:PSK125RC12>     | <MODEM:PSK125RC16>    | <MODEM:PSK125RC4>    | <MODEM:PSK125RC5>
+<MODEM:PSK250C6>         | <MODEM:PSK250R>        | <MODEM:PSK250RC2>     | <MODEM:PSK250RC3>    | <MODEM:PSK250RC5>
+<MODEM:PSK250RC6>        | <MODEM:PSK250RC7>      | <MODEM:PSK500C2>      | <MODEM:PSK500C4>     | <MODEM:PSK500R>
+<MODEM:PSK500RC2>        | <MODEM:PSK500RC3>      | <MODEM:PSK500RC4>     | <MODEM:PSK63RC10>    | <MODEM:PSK63RC20>
+<MODEM:PSK63RC32>        | <MODEM:PSK63RC4>       | <MODEM:PSK63RC5>      | <MODEM:PSK800C2>     | <MODEM:PSK800RC2>
+<MODEM:QPSK125>          | <MODEM:QPSK250>        | <MODEM:QPSK31>        | <MODEM:QPSK500>      | <MODEM:QPSK63>
+<MODEM:RTTY:170:45.45:5> | <MODEM:RTTY:170:50:5>  | <MODEM:RTTY:850:75:5> | <MODEM:RTTY>         | <MODEM:SITORB>
+<MODEM:SLOWHELL>         | <MODEM:THOR100>        | <MODEM:THOR11>        | <MODEM:THOR16>       | <MODEM:THOR22>
+<MODEM:THOR25x4>         | <MODEM:THOR4>          | <MODEM:THOR5>         | <MODEM:THOR50x1>     | <MODEM:THOR50x2>
+<MODEM:THOR8>            | <MODEM:THRBX1>         | <MODEM:THRBX2>        | <MODEM:THRBX4>       | <MODEM:THROB1>
+<MODEM:THROB2>           | <MODEM:THROB4>         | <MODEM:WEFAX288>      | <MODEM:WEFAX576>     | <br>
 </small>
 </center>
 <br>
@@ -275,6 +281,7 @@ Non Data Modems  | Description
 <MODEM:NULL>     | Null modem - Rx stream is discarded. Tx stream is silent but PTT is enabled
 <MODEM:SSB>      | SSB modem (place holder)
 <MODEM:ANALYSIS> | \ref frequency_analyzer_page "Analyze Frequency"
+<MODEM:FREQSCAN> | \ref fft_scan_page "Waterfall Power Measurement Frequency Scan"
 <MODEM:WWV>      | \ref digiscope_display_wwv_mode "Calibrate Sound Card"
 </center>
 <br>
@@ -357,7 +364,7 @@ button label drawing routine:
 
 <center>
 \image html symbols.png "Symbols"
-\image latex symbols.png "Symbols" width=3.0in
+\image latex symbols.png "Symbols" width=2.5in
 <br>
 </center>
 <br>
