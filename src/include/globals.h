@@ -170,7 +170,7 @@ enum {
 	MODE_THROB_FIRST = MODE_THROB1,
 	MODE_THROB_LAST = MODE_THROBX4,
 
-	MODE_PACKET,
+//	MODE_PACKET,
 // high speed && multiple carrier modes
 
 	MODE_4X_PSK63R,

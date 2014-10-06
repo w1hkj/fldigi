@@ -2854,112 +2854,6 @@ static void cb_btnContestia_8bit(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabPacket=(Fl_Group *)0;
-
-Fl_Choice *selPacket_Baud=(Fl_Choice *)0;
-
-static void cb_selPacket_Baud(Fl_Choice* o, void*) {
-  progdefaults.PKT_BAUD_SELECT = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_LoSig_RXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_LoSig_RXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_LOSIG_RXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_HiSig_RXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_HiSig_RXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_HISIG_RXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_LoSig_TXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_LoSig_TXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_LOSIG_TXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *valPacket_HiSig_TXGain=(Fl_Counter2 *)0;
-
-static void cb_valPacket_HiSig_TXGain(Fl_Counter2* o, void*) {
-  progdefaults.PKT_HISIG_TXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktRXTimestamp=(Fl_Check_Button *)0;
-
-static void cb_btnPktRXTimestamp(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_RXTimestamp=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktexpandCmp=(Fl_Check_Button *)0;
-
-static void cb_btnPktexpandCmp(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_expandCmp=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktexpandMicE=(Fl_Check_Button *)0;
-
-static void cb_btnPktexpandMicE(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_expandMicE=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktexpandPHG=(Fl_Check_Button *)0;
-
-static void cb_btnPktexpandPHG(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_expandPHG=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktunitsSI=(Fl_Check_Button *)0;
-
-static void cb_btnPktunitsSI(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_unitsSI=o->value();
-if (progdefaults.PKT_unitsSI) {
- progdefaults.PKT_unitsEnglish=false;
- btnPktunitsEnglish->value(false);
-}
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktunitsEnglish=(Fl_Check_Button *)0;
-
-static void cb_btnPktunitsEnglish(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_unitsEnglish=o->value();
-if (progdefaults.PKT_unitsSI) {
- progdefaults.PKT_unitsSI=false;
- btnPktunitsSI->value(false);
-}
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktPreferXhairScope=(Fl_Check_Button *)0;
-
-static void cb_btnPktPreferXhairScope(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_PreferXhairScope=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnPktAudioBoost=(Fl_Check_Button *)0;
-
-static void cb_btnPktAudioBoost(Fl_Check_Button* o, void*) {
-  progdefaults.PKT_AudioBoost=o->value();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabPSK=(Fl_Group *)0;
 
 Fl_Tabs *tabsPSK=(Fl_Tabs *)0;
@@ -5237,7 +5131,6 @@ Fl_Double_Window* ConfigureDialog() {
   static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
   static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
   static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
-  static const char szPktBauds[]  = "1200|300|2400";
   static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
   static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
   { Fl_Double_Window* o = new Fl_Double_Window(600, 415, _("Fldigi configuration"));
@@ -5253,6 +5146,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6925,7 +6819,6 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -7933,148 +7826,6 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
-          { tabPacket = new Fl_Group(0, 50, 600, 330, _("Pkt"));
-            tabPacket->hide();
-            { Fl_Group* o = new Fl_Group(4, 61, 592, 242, _("Packet"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Choice* o = selPacket_Baud = new Fl_Choice(72, 84, 99, 22, _("Baud rate"));
-                selPacket_Baud->tooltip(_("Select packet baudrate"));
-                selPacket_Baud->down_box(FL_BORDER_BOX);
-                selPacket_Baud->callback((Fl_Callback*)cb_selPacket_Baud);
-                selPacket_Baud->align(Fl_Align(FL_ALIGN_RIGHT));
-                selPacket_Baud->when(FL_WHEN_CHANGED);
-                o->add(szPktBauds);
-                o->value(progdefaults.PKT_BAUD_SELECT);
-              } // Fl_Choice* selPacket_Baud
-              { Fl_Counter2* o = valPacket_LoSig_RXGain = new Fl_Counter2(72, 115, 62, 20, _("RX Low Freq Gain"));
-                valPacket_LoSig_RXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
-                valPacket_LoSig_RXGain->type(1);
-                valPacket_LoSig_RXGain->box(FL_UP_BOX);
-                valPacket_LoSig_RXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_LoSig_RXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_LoSig_RXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_LoSig_RXGain->labelfont(0);
-                valPacket_LoSig_RXGain->labelsize(14);
-                valPacket_LoSig_RXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_LoSig_RXGain->minimum(-6);
-                valPacket_LoSig_RXGain->maximum(6);
-                valPacket_LoSig_RXGain->step(0.5);
-                valPacket_LoSig_RXGain->callback((Fl_Callback*)cb_valPacket_LoSig_RXGain);
-                valPacket_LoSig_RXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_LoSig_RXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_LOSIG_RXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_LoSig_RXGain
-              { Fl_Counter2* o = valPacket_HiSig_RXGain = new Fl_Counter2(72, 144, 62, 20, _("RX High Freq Gain"));
-                valPacket_HiSig_RXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
-                valPacket_HiSig_RXGain->type(1);
-                valPacket_HiSig_RXGain->box(FL_UP_BOX);
-                valPacket_HiSig_RXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_HiSig_RXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_HiSig_RXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_HiSig_RXGain->labelfont(0);
-                valPacket_HiSig_RXGain->labelsize(14);
-                valPacket_HiSig_RXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_HiSig_RXGain->minimum(-6);
-                valPacket_HiSig_RXGain->maximum(6);
-                valPacket_HiSig_RXGain->step(0.5);
-                valPacket_HiSig_RXGain->callback((Fl_Callback*)cb_valPacket_HiSig_RXGain);
-                valPacket_HiSig_RXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_HiSig_RXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_HISIG_RXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_HiSig_RXGain
-              { Fl_Counter2* o = valPacket_LoSig_TXGain = new Fl_Counter2(289, 115, 63, 20, _("TX Low Freq Gain"));
-                valPacket_LoSig_TXGain->tooltip(_("Processing gain to apply to lower tone (in dB)"));
-                valPacket_LoSig_TXGain->type(1);
-                valPacket_LoSig_TXGain->box(FL_UP_BOX);
-                valPacket_LoSig_TXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_LoSig_TXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_LoSig_TXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_LoSig_TXGain->labelfont(0);
-                valPacket_LoSig_TXGain->labelsize(14);
-                valPacket_LoSig_TXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_LoSig_TXGain->minimum(-6);
-                valPacket_LoSig_TXGain->maximum(6);
-                valPacket_LoSig_TXGain->step(0.5);
-                valPacket_LoSig_TXGain->callback((Fl_Callback*)cb_valPacket_LoSig_TXGain);
-                valPacket_LoSig_TXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_LoSig_TXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_LOSIG_TXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_LoSig_TXGain
-              { Fl_Counter2* o = valPacket_HiSig_TXGain = new Fl_Counter2(289, 144, 63, 20, _("TX High Freq Gain"));
-                valPacket_HiSig_TXGain->tooltip(_("Processing gain to apply to higher tone (in dB)"));
-                valPacket_HiSig_TXGain->type(1);
-                valPacket_HiSig_TXGain->box(FL_UP_BOX);
-                valPacket_HiSig_TXGain->color(FL_BACKGROUND_COLOR);
-                valPacket_HiSig_TXGain->selection_color(FL_INACTIVE_COLOR);
-                valPacket_HiSig_TXGain->labeltype(FL_NORMAL_LABEL);
-                valPacket_HiSig_TXGain->labelfont(0);
-                valPacket_HiSig_TXGain->labelsize(14);
-                valPacket_HiSig_TXGain->labelcolor(FL_FOREGROUND_COLOR);
-                valPacket_HiSig_TXGain->minimum(-6);
-                valPacket_HiSig_TXGain->maximum(6);
-                valPacket_HiSig_TXGain->step(0.5);
-                valPacket_HiSig_TXGain->callback((Fl_Callback*)cb_valPacket_HiSig_TXGain);
-                valPacket_HiSig_TXGain->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPacket_HiSig_TXGain->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.PKT_HISIG_TXGAIN);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Counter2* valPacket_HiSig_TXGain
-              { Fl_Check_Button* o = btnPktRXTimestamp = new Fl_Check_Button(72, 173, 164, 20, _("add RX timestamps"));
-                btnPktRXTimestamp->tooltip(_("Prepend timestamp to each RX packet"));
-                btnPktRXTimestamp->down_box(FL_DOWN_BOX);
-                btnPktRXTimestamp->callback((Fl_Callback*)cb_btnPktRXTimestamp);
-                o->value(progdefaults.PKT_RXTimestamp);
-              } // Fl_Check_Button* btnPktRXTimestamp
-              { Fl_Check_Button* o = btnPktexpandCmp = new Fl_Check_Button(289, 173, 189, 20, _("decode Compressed data"));
-                btnPktexpandCmp->tooltip(_("Decode received Compressed Position data"));
-                btnPktexpandCmp->down_box(FL_DOWN_BOX);
-                btnPktexpandCmp->callback((Fl_Callback*)cb_btnPktexpandCmp);
-                o->value(progdefaults.PKT_expandCmp);
-              } // Fl_Check_Button* btnPktexpandCmp
-              { Fl_Check_Button* o = btnPktexpandMicE = new Fl_Check_Button(289, 233, 164, 20, _("decode Mic-E data"));
-                btnPktexpandMicE->tooltip(_("Decode received Mic-E data"));
-                btnPktexpandMicE->down_box(FL_DOWN_BOX);
-                btnPktexpandMicE->callback((Fl_Callback*)cb_btnPktexpandMicE);
-                o->value(progdefaults.PKT_expandMicE);
-              } // Fl_Check_Button* btnPktexpandMicE
-              { Fl_Check_Button* o = btnPktexpandPHG = new Fl_Check_Button(289, 262, 164, 20, _("decode PHG data"));
-                btnPktexpandPHG->tooltip(_("Decode received PHG data"));
-                btnPktexpandPHG->down_box(FL_DOWN_BOX);
-                btnPktexpandPHG->callback((Fl_Callback*)cb_btnPktexpandPHG);
-                o->value(progdefaults.PKT_expandPHG);
-              } // Fl_Check_Button* btnPktexpandPHG
-              { Fl_Check_Button* o = btnPktunitsSI = new Fl_Check_Button(72, 202, 164, 20, _("use SI units"));
-                btnPktunitsSI->tooltip(_("Display decoded data values in SI units"));
-                btnPktunitsSI->down_box(FL_DOWN_BOX);
-                btnPktunitsSI->callback((Fl_Callback*)cb_btnPktunitsSI);
-                o->value(progdefaults.PKT_unitsSI);
-              } // Fl_Check_Button* btnPktunitsSI
-              { Fl_Check_Button* o = btnPktunitsEnglish = new Fl_Check_Button(72, 233, 164, 20, _("use English units"));
-                btnPktunitsEnglish->tooltip(_("Display decoded data in English units"));
-                btnPktunitsEnglish->down_box(FL_DOWN_BOX);
-                btnPktunitsEnglish->callback((Fl_Callback*)cb_btnPktunitsEnglish);
-                o->value(progdefaults.PKT_unitsEnglish);
-              } // Fl_Check_Button* btnPktunitsEnglish
-              { Fl_Check_Button* o = btnPktPreferXhairScope = new Fl_Check_Button(289, 202, 164, 20, _("Use cross-hair scope"));
-                btnPktPreferXhairScope->tooltip(_("Defaults to syncscope instead of phase (cross-hair) scope"));
-                btnPktPreferXhairScope->down_box(FL_DOWN_BOX);
-                btnPktPreferXhairScope->callback((Fl_Callback*)cb_btnPktPreferXhairScope);
-                o->value(progdefaults.PKT_PreferXhairScope);
-              } // Fl_Check_Button* btnPktPreferXhairScope
-              { Fl_Check_Button* o = btnPktAudioBoost = new Fl_Check_Button(289, 85, 164, 20, _("boost Audio input"));
-                btnPktAudioBoost->tooltip(_("add additional gain to audio input for low-output interfaces"));
-                btnPktAudioBoost->down_box(FL_DOWN_BOX);
-                btnPktAudioBoost->callback((Fl_Callback*)cb_btnPktAudioBoost);
-                o->value(progdefaults.PKT_AudioBoost);
-              } // Fl_Check_Button* btnPktAudioBoost
-              o->end();
-            } // Fl_Group* o
-            tabPacket->end();
-          } // Fl_Group* tabPacket
           { tabPSK = new Fl_Group(0, 50, 600, 330, _("PSK"));
             tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 600, 330);

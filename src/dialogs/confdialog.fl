@@ -308,7 +308,6 @@ static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
-static const char szPktBauds[]  = "1200|300|2400";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
@@ -320,8 +319,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -2749,13 +2748,13 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 355}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open
+            label CW open selected
             xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
@@ -3541,129 +3540,6 @@ progdefaults.changed = true;}
                 callback {progdefaults.contestia8bit = o->value();
 progdefaults.changed = true;}
                 tooltip {Enable this for Latin-1 accented characters} xywh {79 249 200 20} down_box DOWN_BOX hide
-              }
-            }
-          }
-          Fl_Group tabPacket {
-            label Pkt open
-            xywh {0 50 600 330} hide
-          } {
-            Fl_Group {} {
-              label Packet open
-              xywh {4 61 592 242} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Choice selPacket_Baud {
-                label {Baud rate}
-                callback {progdefaults.PKT_BAUD_SELECT = o->value();
-updatePACKET();
-progdefaults.changed = true;} open
-                tooltip {Select packet baudrate} xywh {72 84 99 22} down_box BORDER_BOX align 8 when 1
-                code0 {o->add(szPktBauds);}
-                code1 {o->value(progdefaults.PKT_BAUD_SELECT);}
-              } {}
-              Fl_Counter valPacket_LoSig_RXGain {
-                label {RX Low Freq Gain}
-                callback {progdefaults.PKT_LOSIG_RXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;}
-                tooltip {Processing gain to apply to lower tone (in dB)} xywh {72 115 62 20} type Simple align 8 minimum -6 maximum 6 step 0.5
-                code0 {o->value(progdefaults.PKT_LOSIG_RXGAIN);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Counter valPacket_HiSig_RXGain {
-                label {RX High Freq Gain}
-                callback {progdefaults.PKT_HISIG_RXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;}
-                tooltip {Processing gain to apply to higher tone (in dB)} xywh {72 144 62 20} type Simple align 8 minimum -6 maximum 6 step 0.5
-                code0 {o->value(progdefaults.PKT_HISIG_RXGAIN);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Counter valPacket_LoSig_TXGain {
-                label {TX Low Freq Gain}
-                callback {progdefaults.PKT_LOSIG_TXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;}
-                tooltip {Processing gain to apply to lower tone (in dB)} xywh {289 115 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
-                code0 {o->value(progdefaults.PKT_LOSIG_TXGAIN);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Counter valPacket_HiSig_TXGain {
-                label {TX High Freq Gain}
-                callback {progdefaults.PKT_HISIG_TXGAIN = o->value();
-updatePACKET();
-progdefaults.changed = true;}
-                tooltip {Processing gain to apply to higher tone (in dB)} xywh {289 144 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
-                code0 {o->value(progdefaults.PKT_HISIG_TXGAIN);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Counter2
-              }
-              Fl_Check_Button btnPktRXTimestamp {
-                label {add RX timestamps}
-                callback {progdefaults.PKT_RXTimestamp=o->value();
-progdefaults.changed = true;}
-                tooltip {Prepend timestamp to each RX packet} xywh {72 173 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_RXTimestamp);}
-              }
-              Fl_Check_Button btnPktexpandCmp {
-                label {decode Compressed data}
-                callback {progdefaults.PKT_expandCmp=o->value();
-progdefaults.changed = true;}
-                tooltip {Decode received Compressed Position data} xywh {289 173 189 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_expandCmp);}
-              }
-              Fl_Check_Button btnPktexpandMicE {
-                label {decode Mic-E data}
-                callback {progdefaults.PKT_expandMicE=o->value();
-progdefaults.changed = true;}
-                tooltip {Decode received Mic-E data} xywh {289 233 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_expandMicE);}
-              }
-              Fl_Check_Button btnPktexpandPHG {
-                label {decode PHG data}
-                callback {progdefaults.PKT_expandPHG=o->value();
-progdefaults.changed = true;}
-                tooltip {Decode received PHG data} xywh {289 262 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_expandPHG);}
-              }
-              Fl_Check_Button btnPktunitsSI {
-                label {use SI units}
-                callback {progdefaults.PKT_unitsSI=o->value();
-if (progdefaults.PKT_unitsSI) {
- progdefaults.PKT_unitsEnglish=false;
- btnPktunitsEnglish->value(false);
-}
-progdefaults.changed = true;}
-                tooltip {Display decoded data values in SI units} xywh {72 202 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_unitsSI);}
-              }
-              Fl_Check_Button btnPktunitsEnglish {
-                label {use English units}
-                callback {progdefaults.PKT_unitsEnglish=o->value();
-if (progdefaults.PKT_unitsSI) {
- progdefaults.PKT_unitsSI=false;
- btnPktunitsSI->value(false);
-}
-progdefaults.changed = true;}
-                tooltip {Display decoded data in English units} xywh {72 233 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_unitsEnglish);}
-              }
-              Fl_Check_Button btnPktPreferXhairScope {
-                label {Use cross-hair scope}
-                callback {progdefaults.PKT_PreferXhairScope=o->value();
-progdefaults.changed = true;}
-                tooltip {Defaults to syncscope instead of phase (cross-hair) scope} xywh {289 202 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_PreferXhairScope);}
-              }
-              Fl_Check_Button btnPktAudioBoost {
-                label {boost Audio input}
-                callback {progdefaults.PKT_AudioBoost=o->value();
-progdefaults.changed = true;}
-                tooltip {add additional gain to audio input for low-output interfaces} xywh {289 85 164 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PKT_AudioBoost);}
               }
             }
           }

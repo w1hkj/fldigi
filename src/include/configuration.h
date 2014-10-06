@@ -549,29 +549,6 @@
         ELEM_(bool, THOR_SOFTBITS, "THORSOFTBITS",                                      \
               "Enable Soft-bit decoding",                                               \
               true)                                                                     \
-        /* PACKET */                                                                    \
-        ELEM_(int, PKT_BAUD_SELECT, "PKTBAUDSELECT",                                    \
-              "Packet baud rate. Values are as follows:\n"                              \
-              "  0: 1200 (V/UHF); 1: 300 (HF); 2: 2400 (V/UHF)",                        \
-              0)   /* 1200 baud (V/UHF) default. */                                     \
-        ELEM_(double, PKT_LOSIG_RXGAIN, "LOSIGRXGAIN",                                  \
-              "Signal gain for lower frequency (Mark) tone (in dB)",                    \
-              0.0)                                                                      \
-        ELEM_(double, PKT_HISIG_RXGAIN, "HISIGRXGAIN",                                  \
-              "Signal gain for higher frequency (Space) tone (in dB)",                  \
-              0.0)                                                                      \
-        ELEM_(double, PKT_LOSIG_TXGAIN, "LOSIGTXGAIN",                                  \
-              "Signal gain for Mark (lower frequency) tone (in dB)",                    \
-              0.0)                                                                      \
-        ELEM_(double, PKT_HISIG_TXGAIN, "HISIGTXGAIN",                                  \
-              "Signal gain for Space (higher frequency) tone (in dB)",                  \
-              0.0)                                                                      \
-        ELEM_(bool, PKT_PreferXhairScope, "PKTPREFERXHAIRSCOPE",                        \
-              "Default to syncscope (detected symbol scope)",                           \
-              false)                                                                    \
-        ELEM_(bool, PKT_AudioBoost, "PKTAUDIOBOOST",                                    \
-              "No extra input gain (similar to Mic Boost) by default",                  \
-              false)                                                                    \
                                                                                         \
         ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
               "No timestamps on RX packets by default",                                 \
