@@ -4781,10 +4781,10 @@ void create_fl_digi_main_primary() {
 			qso_opBrowser->labelfont(4);
 			qso_opBrowser->labelsize(12);
 #ifdef __APPLE__
-			qso_opBrowser->textfont(FL_COURIER_BOLD);
+			qso_opBrowser->textfont(FL_HELVETICA_BOLD);
 			qso_opBrowser->textsize(16);
 #else
-			qso_opBrowser->textfont(FL_COURIER);
+			qso_opBrowser->textfont(FL_HELVETICA);
 			qso_opBrowser->textsize(14);
 #endif
 			RigViewerFrame->resizable(NULL);
@@ -5268,7 +5268,7 @@ void create_fl_digi_main_primary() {
 					txtInpSeek = new Fl_Input2( seek_x, seek_y, seek_w, gseek->h(), "");
 					txtInpSeek->callback((Fl_Callback*)cb_mainViewer_Seek);
 					txtInpSeek->when(FL_WHEN_CHANGED);
-					txtInpSeek->textfont(FL_COURIER);
+					txtInpSeek->textfont(FL_HELVETICA);
 					txtInpSeek->value(progStatus.browser_search.c_str());
 					txtInpSeek->do_callback();
 					txtInpSeek->tooltip(_("seek - regular expression"));

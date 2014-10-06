@@ -535,7 +535,7 @@ void cb_Export_log() {
 	cQsoRec *rec;
 	char line[80];
 	chkExportBrowser->clear();
-	chkExportBrowser->textfont(FL_COURIER);
+	chkExportBrowser->textfont(FL_HELVETICA);
 	chkExportBrowser->textsize(12);
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
@@ -1309,7 +1309,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	}
 	cboContest->index(0);
 	chkCabBrowser->clear();
-	chkCabBrowser->textfont(FL_COURIER);
+	chkCabBrowser->textfont(FL_HELVETICA);
 	chkCabBrowser->textsize(12);
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);

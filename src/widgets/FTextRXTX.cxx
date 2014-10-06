@@ -98,8 +98,6 @@ private:
 	bool draw_marks;
 };
 
-static void show_font_warning(FTextBase* w);
-
 Fl_Menu_Item FTextRX::menu[] = {
 	{ make_icon_label(_("Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -379,7 +377,6 @@ void FTextRX::clear(void)
 void FTextRX::setFont(Fl_Font f, int attr)
 {
 	FTextBase::setFont(f, attr);
-	show_font_warning(this);
 }
 
 int FTextRX::handle_clickable(int x, int y)
@@ -907,7 +904,6 @@ void FTextTX::add_text(string s)
 void FTextTX::setFont(Fl_Font f, int attr)
 {
 	FTextBase::setFont(f, attr);
-	show_font_warning(this);
 }
 
 /// Handles keyboard shorcuts
@@ -1359,36 +1355,6 @@ int FTextTX::kf_paste(int c, Fl_Text_Editor_mod* e)
 {
 	return e->insert_position() < *ptxpos ? 1 : Fl_Text_Editor_mod::kf_paste(c, e);
 }
-
-static void show_font_warning(FTextBase* w)
-{
-	Fl_Font f = w->textfont();
-
-	if (Font_Browser::fixed_width(f))
-		return;
-
-	// Check if we should generate a warning message
-	bool* warn = 0;
-	const char* fn = Fl::get_font_name(f);
-	if (w == ReceiveText) {
-		warn = &progdefaults.RxFontWarn;
-		if (progdefaults.RxFontName != fn)
-			*warn = true;
-	}
-	else if (w == TransmitText) {
-		warn = &progdefaults.TxFontWarn;
-		if (progdefaults.TxFontName != fn)
-			*warn = true;
-	}
-	if (warn && *warn) {
-		w->add(Fl::get_font_name(f), FTextBase::XMIT);
-		w->add(" is a variable width font.\n", FTextBase::XMIT);
-		w->add("Line wrapping with a variable width font may be\n"
-		       "too slow. Consider using a fixed width font.\n\n", FTextBase::XMIT);
-		*warn = false;
-	}
-}
-
 
 // ----------------------------------------------------------------------------
 
