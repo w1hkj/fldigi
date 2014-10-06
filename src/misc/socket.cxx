@@ -546,7 +546,12 @@ void Socket::open(const Address& addr)
 ///
 void Socket::close(void)
 {
+#ifdef __WIN32__
+	closesocket(sockfd);
+#else
 	::close(sockfd);
+#endif
+	sockfd = -1;
 }
 
 ///
