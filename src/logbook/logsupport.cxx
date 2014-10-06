@@ -542,11 +542,9 @@ void cb_Export_log() {
 	chkExportBrowser->textfont(FL_SCREEN);
 	chkExportBrowser->textsize(12);
 #endif
-
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		snprintf(line,sizeof(line),"%8s %4s %-10s %-10s %-s",
-//		snprintf(line,sizeof(line),"%8s|%6s|%-10s|%10s|%-s",
  			rec->getField(QSO_DATE),
  			rec->getField(TIME_OFF),
  			rec->getField(CALL),
@@ -1316,12 +1314,12 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	}
 	cboContest->index(0);
 	chkCabBrowser->clear();
-	chkCabBrowser->textfont(FL_HELVETICA);
+	chkCabBrowser->textfont(FL_SCREEN_BOLD);
 	chkCabBrowser->textsize(12);
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
-		snprintf(line,sizeof(line),"%8s|%4s|%-10s|%-10s|%-s",
+		snprintf(line,sizeof(line),"%8s %4s %-10s %-10s %-s",
  			rec->getField(QSO_DATE),
  			time4(rec->getField(TIME_OFF)),
  			rec->getField(CALL),

@@ -1568,6 +1568,10 @@ void colorize_macros()
 		colorize_macro(i);
 		btnMacro[i]->redraw_label();
 	}
+	btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
+	btnAltMacros1->redraw_label();
+	btnAltMacros2->labelsize(progdefaults.MacroBtnFontsize);
+	btnAltMacros2->redraw_label();
 	FL_UNLOCK_D();
 }
 
@@ -4891,6 +4895,7 @@ void create_fl_digi_main_primary() {
 			qso_opBrowser->labelsize(12);
 #ifdef __APPLE__
 			qso_opBrowser->textfont(FL_SCREEN_BOLD);
+			qso_opBrowser->textsize(13);
 #else
 			qso_opBrowser->textfont(FL_HELVETICA);
 			qso_opBrowser->textsize(13);
@@ -5000,7 +5005,7 @@ void create_fl_digi_main_primary() {
 					inpSerNo1->tooltip(_("Received serial number"));
 
 					inpXchgIn1 = new Fl_Input2(
-						rightof(inpSerNo1) + pad, y3, 247, Hentry, "Xch");
+						rightof(inpSerNo1) + pad + 10, y3, 237, Hentry, "Xch");
 					inpXchgIn1->align(FL_ALIGN_LEFT);
 					inpXchgIn1->tooltip(_("Contest exchange in"));
 
@@ -5309,7 +5314,6 @@ void create_fl_digi_main_primary() {
 				btnMacro[NUMMACKEYS + i]->callback(macro_cb, reinterpret_cast<void *>(NUMMACKEYS + i));
 				btnMacro[NUMMACKEYS + i]->tooltip(
 					_("Left Click - execute\nShift-Fkey - execute\nRight Click - edit"));
-				colorize_macro(NUMMACKEYS + i);
 				xpos += Wmacrobtn;
 			}
 			mf_group2->end();
@@ -5502,12 +5506,12 @@ void create_fl_digi_main_primary() {
 					macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i));
 				btnMacro[i]->tooltip(_("Left Click - execute\nFkey - execute\nRight Click - edit"));
-				colorize_macro(i);
 				xpos += Wmacrobtn;
 			}
 			mf_group1->end();
 			btnAltMacros1 = new Fl_Button(progStatus.mainW - Hmacrobtn, ypos, Hmacrobtn, Hmacrobtn, "1");
 			btnAltMacros1->callback(altmacro_cb, 0);
+			btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
 			btnAltMacros1->tooltip(_("Primary macro set"));
 			macroFrame1->resizable(mf_group1);
 		macroFrame1->end();
@@ -5756,6 +5760,8 @@ void create_fl_digi_main_primary() {
 		case 8: btn_scheme_8->setonly(); break;
 		case 9: btn_scheme_9->setonly(); break;
 	}
+
+	colorize_macros();
 
 	LOGGING_colors_font();
 
