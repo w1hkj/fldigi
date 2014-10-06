@@ -1455,14 +1455,17 @@ public:
 		}
 	}
 
+// REMI : Note change to send_sine
 	void send_sine( double seconds, double freq )
 	{
+		static double phase = 0;
 		int nb_samples = seconds * m_ptr_navtex->get_samplerate();
-		double max_level = 0.99 ; // Between -1.0 and 1.0
+		double max_level = 0.9;//0.99 ; // Between -1.0 and 1.0
 		double ratio = 2.0 * M_PI * (double)freq / (double)m_ptr_navtex->get_samplerate() ;
 		for (int i = 0; i < nb_samples ; ++i )
 		{
-			add_sample( max_level * sin( i * ratio ) );
+			add_sample( max_level * sin( phase += ratio));//i * ratio ) );
+			if (phase > 2.0 * M_PI) phase -= 2.0*M_PI;
 		}
 	}
 
