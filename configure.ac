@@ -58,7 +58,7 @@ FLDIGI_AUTHORS="Dave Freese, Stelios Bounanos, Leigh Klotz, Remi Chateauneu, and
 FLARQ_AUTHORS="Dave Freese"
 PACKAGE_HOME="http://www.w1hkj.com/Fldigi.html"
 PACKAGE_DL="http://www.w1hkj.com/download.html"
-PACKAGE_PROJ="http://developer.berlios.de/project/showfiles.php?group_id=9149"
+PACKAGE_PROJ="http://sourceforge.net/projects/fldigi/files/"
 PACKAGE_NEWBUG="https://fedorahosted.org/fldigi/newticket"
 PACKAGE_DOCS="http://www.w1hkj.com/FldigiHelp/index.html"
 PACKAGE_GUIDE="http://www.w1hkj.com/beginners.html"
