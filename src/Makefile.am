@@ -411,6 +411,7 @@ fldigi_SOURCES += \
 	include/rx_extract.h \
 	include/speak.h \
 	include/serial.h \
+	include/smeter.h \
 	include/socket.h \
 	include/sound.h \
 	include/soundconf.h \
@@ -553,6 +554,7 @@ fldigi_SOURCES += \
 	widgets/picture.cxx \
 	widgets/progress.cxx \
 	widgets/psk_browser.cxx \
+	widgets/smeter.cxx \
 	wwv/analysis.cxx \
 	wwv/fftscan.cxx \
 	wwv/wwv.cxx \
