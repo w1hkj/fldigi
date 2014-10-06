@@ -162,6 +162,7 @@ public:
 	double		get_cwXmtWPM();
 	void		set_cwXmtWPM(double);
 	double		get_cwRcvWPM();
+
 	virtual	void		incWPM() {};
 	virtual void		decWPM() {};
 	virtual void		toggleWPM() {};
@@ -200,6 +201,10 @@ public:
 	void	cwid_send_ch(int ch);
 	void	cwid_sendtext (const std::string& s);
 	void	cwid();
+
+// for fft scan modem
+public:
+	virtual void	refresh_scope() {}
 
 // for noise tests
 private:
@@ -366,6 +371,7 @@ extern modem *throbx4_modem;
 
 extern modem *wwv_modem;
 extern modem *anal_modem;
+extern modem *fftscan_modem;
 extern modem *ssb_modem;
 
 

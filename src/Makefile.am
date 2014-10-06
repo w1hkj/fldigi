@@ -309,6 +309,7 @@ fldigi_SOURCES += \
 	include/Panel.h \
 	include/FreqControl.h \
 	include/analysis.h \
+	include/fftscan.h \
 	include/ascii.h \
 	include/charsetdistiller.h \
 	include/charsetlist.h \
@@ -553,6 +554,7 @@ fldigi_SOURCES += \
 	widgets/progress.cxx \
 	widgets/psk_browser.cxx \
 	wwv/analysis.cxx \
+	wwv/fftscan.cxx \
 	wwv/wwv.cxx \
 	logbook/xmlrpc_log.cxx \
 	xmlrpcpp/XmlRpc.h \
