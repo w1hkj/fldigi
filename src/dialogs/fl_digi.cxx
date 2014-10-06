@@ -4879,6 +4879,10 @@ void create_fl_digi_main_primary() {
 			qso_opBrowser = new Fl_Browser(
 				rightof(qso_btnDelFreq) + pad,  Hmenu + pad,
 				opB_w, Hqsoframe - 2 * pad );
+			// use fixed column widths of 28%, 20%, 30% ... remainder is 4th column
+			static int opB_widths[] = {28*opB_w/100, 20*opB_w/100, 30*opB_w/100};
+			qso_opBrowser->column_widths(opB_widths);
+			qso_opBrowser->column_char('|');
 			qso_opBrowser->tooltip(_("Select operating parameters"));
 			qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
 			qso_opBrowser->type(FL_MULTI_BROWSER);
@@ -4886,11 +4890,10 @@ void create_fl_digi_main_primary() {
 			qso_opBrowser->labelfont(4);
 			qso_opBrowser->labelsize(12);
 #ifdef __APPLE__
-			qso_opBrowser->textfont(FL_HELVETICA_BOLD);
-			qso_opBrowser->textsize(16);
+			qso_opBrowser->textfont(FL_SCREEN_BOLD);
 #else
 			qso_opBrowser->textfont(FL_HELVETICA);
-			qso_opBrowser->textsize(14);
+			qso_opBrowser->textsize(13);
 #endif
 			RigViewerFrame->resizable(NULL);
 

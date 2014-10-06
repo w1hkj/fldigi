@@ -535,11 +535,18 @@ void cb_Export_log() {
 	cQsoRec *rec;
 	char line[80];
 	chkExportBrowser->clear();
-	chkExportBrowser->textfont(FL_HELVETICA);
+#ifdef __APPLE__
+	chkExportBrowser->textfont(FL_SCREEN_BOLD);
 	chkExportBrowser->textsize(12);
+#else
+	chkExportBrowser->textfont(FL_SCREEN);
+	chkExportBrowser->textsize(12);
+#endif
+
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
-		snprintf(line,sizeof(line),"%8s|%6s|%-10s|%10s|%-s",
+		snprintf(line,sizeof(line),"%8s %4s %-10s %-10s %-s",
+//		snprintf(line,sizeof(line),"%8s|%6s|%-10s|%10s|%-s",
  			rec->getField(QSO_DATE),
  			rec->getField(TIME_OFF),
  			rec->getField(CALL),

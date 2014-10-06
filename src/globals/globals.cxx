@@ -223,14 +223,13 @@ std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 std::string qrg_mode_t::str(void)
 {
 	ostringstream s;
-	s << setiosflags(ios::left | ios::fixed)
-	  << setw(12) << setprecision(3) << rfcarrier/1000.0
-	  << setw(8) << rmode
-	  << setw(10) << (mode < NUM_MODES ? mode_info[mode].sname : "NONE")
+	s << setiosflags(ios::fixed)
+	  << setprecision(3) << rfcarrier/1000.0 << '|'
+	  << rmode << '|'
+	  << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << '|'
 	  << carrier;
 	return s.str();
 }
-
 
 band_t band(long long freq_hz)
 {
