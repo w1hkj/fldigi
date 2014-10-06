@@ -1197,11 +1197,11 @@ int cw::tx_process()
 
 	xmt_samples = char_samples = acc_symbols;
 
-	printf("%5s %d samples, overhead %d, %f sec's\n",
-		ascii3[c & 0xff],
-		char_samples,
-		ovhd_samples,
-		1.0 * char_samples / samplerate);
+//	printf("%5s %d samples, overhead %d, %f sec's\n",
+//		ascii3[c & 0xff],
+//		char_samples,
+//		ovhd_samples,
+//		1.0 * char_samples / samplerate);
 
 	return 0;
 }

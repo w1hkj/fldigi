@@ -5093,7 +5093,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5176,7 +5175,6 @@ Fl_Double_Window* ConfigureDialog() {
           { Fl_Check_Button* o = btnNoiseOn = new Fl_Check_Button(93, 269, 70, 15, _("Noise on"));
             btnNoiseOn->down_box(FL_DOWN_BOX);
             btnNoiseOn->callback((Fl_Callback*)cb_btnNoiseOn);
-            btnNoiseOn->deactivate();
             o->value(progdefaults.noise);
           } // Fl_Check_Button* btnNoiseOn
           { Fl_Counter2* o = noiseDB = new Fl_Counter2(90, 307, 89, 21, _("dB"));
@@ -5195,7 +5193,6 @@ Fl_Double_Window* ConfigureDialog() {
             noiseDB->callback((Fl_Callback*)cb_noiseDB);
             noiseDB->align(Fl_Align(FL_ALIGN_LEFT));
             noiseDB->when(FL_WHEN_CHANGED);
-            noiseDB->deactivate();
             o->value(progdefaults.s2n);
           } // Fl_Counter2* noiseDB
           grpNoise->end();
@@ -5204,6 +5201,7 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 355, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 355);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
