@@ -163,7 +163,8 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	wfspeed = NORMAL;
 	srate = 8000;
 	wfspdcnt = 0;
-	dispcnt = 4;
+	dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE;
+	dispdec = 1.0 * WFBLOCKSIZE / srate;
 	wantcursor = false;
 	cursormoved = false;
 //	usebands = false;
@@ -506,7 +507,7 @@ void WFdisp::processFFT() {
 
 	wf_fft_type scale = ( 1.0 * SC_SMPLRATE / srate ) * ( FFT_LEN / 8000.0);
 
-	if (--dispcnt == 0) {
+	if ((dispcnt -= dispdec) <= 0) {
 		static const int log2disp100 = log2disp(-100);
 		double vscale = 2.0 / FFT_LEN;
 
@@ -548,16 +549,12 @@ void WFdisp::processFFT() {
 		}
 		redraw();
 
-		if (srate == 8000)
-			dispcnt = wfspeed;
-		else if (srate == 11025)
-			dispcnt = wfspeed * 4 / 3;
-		//kl4yfd
-		else
-			dispcnt = wfspeed * 8 / 3;
-		if (wfspeed == SLOW)
-			dispcnt *= (progdefaults.drop_speed / SLOW);
+		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE; // FAST
+		if (wfspeed == NORMAL) dispcnt *= NORMAL;
+		if (wfspeed == SLOW) dispcnt *= progdefaults.drop_speed;
 	}
+	dispdec = 1.0 * WFBLOCKSIZE / srate;
+	if (wfspeed == PAUSE) dispdec = 0;
 }
 
 void WFdisp::process_analog (wf_fft_type *sig, int len) {
