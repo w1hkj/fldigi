@@ -995,6 +995,29 @@ static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 7, "" );
 }
 
+static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	int rf = 0;
+	float rfd = 0;
+	std::string sIncrFreq = s.substr(i+6, endbracket - i - 6);
+	// no frequency(s) specified
+	if (sIncrFreq.length() == 0) {
+		s.replace(i, endbracket-i+1, "");
+		return;
+	}
+	// rf first value
+	sscanf(sIncrFreq.c_str(), "%f", &rfd);
+	if (rfd != 0) {
+		rf = wf->rfcarrier() + (int)(1000*rfd);
+		qsy(rf, active_modem ? active_modem->get_freq() : 1500);
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void pCALL(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpCall->value() );
@@ -2668,6 +2691,7 @@ static const MTAGS mtags[] = {
 {"<CLRRX>",		pCLRRX},
 {"<CLRTX>",		pCLRTX},
 {"<FOCUS>",		pFOCUS},
+{"<QSY+:",		pQSYPLUS},
 {"<FILE:",		pFILE},
 {"<WPM:",		pWPM},
 {"<RISE:",		pRISETIME},

@@ -95,9 +95,6 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<CLRTX>\tclear TX pane"));
 
 	w->add(LINE_SEP);
-	w->add(_("<FOCUS>\trig freq has kbd focus"));
-
-	w->add(LINE_SEP);
 	w->add(_("<GET>\ttext to NAME/QTH"));
 
 #ifdef __WIN32__
@@ -147,14 +144,14 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<GOFREQ:NNNN>\tmove to freq NNNN Hz"));
 	w->add(_("<QSYTO>\tleft-clk QSY button"));
 	w->add(_("<QSYFM>\tright-clk QSY button"));
+	w->add(_("<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"));
+	w->add(_("<QSY+:+/-n.nnn>\tincr/decr xcvr freq"));
+	w->add(_("<RIGMODE:mode>\tvalid xcvr mode"));
+	w->add(_("<FILWID:width>\tvalid xcvr filter width"));
+	w->add(_("<FOCUS>\trig freq has kbd focus"));
 
 	w->add(LINE_SEP);
 	w->add(_("<QRG:text>\tinsert QRG into Rx text"));
-
-	w->add(LINE_SEP);
-	w->add(_("<QSY:FFF.F[:NNNN]>\tqsy to kHz, Hz"));
-	w->add(_("<RIGMODE:mode>\tvalid xcvr mode"));
-	w->add(_("<FILWID:width>\tvalid xcvr filter width"));
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));
