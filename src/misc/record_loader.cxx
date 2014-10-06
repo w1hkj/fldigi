@@ -93,8 +93,8 @@ int RecordLoaderInterface::LoadAndRegister()
 		}
 	}
 	ifs.close();
-	LOG_INFO( "Read:%s with %d records in %d seconds",
-		filnam.c_str(), nbRec, static_cast<int>( time(NULL) - cntTim ) );
+	LOG_INFO( "Read:%s with %zu records in %jd seconds",
+		filnam.c_str(), nbRec, time(NULL) - cntTim);
 	return nbRec ;
 }
 
