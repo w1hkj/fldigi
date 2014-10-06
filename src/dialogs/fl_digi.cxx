@@ -76,7 +76,6 @@
 #endif
 #include "timeops.h"
 #include "rigio.h"
-#include "rigMEM.h"
 #include "nullmodem.h"
 #include "psk.h"
 #include "cw.h"
@@ -2905,8 +2904,6 @@ bool clean_exit(bool ask) {
 	hamlib_close();
 #endif
 	rigCAT_close();
-	rigMEM_close();
-
 
 	ADIF_RW_close();
 
@@ -7121,8 +7118,6 @@ void qsy(long long rfc, int fmid)
 
 	if (progdefaults.chkUSERIGCATis)
 		REQ(rigCAT_set_qsy, rfc);
-	else if (progdefaults.chkUSEMEMMAPis)
-		REQ(rigMEM_set_qsy, rfc);
 #if USE_HAMLIB
 	else if (progdefaults.chkUSEHAMLIBis)
 		REQ(hamlib_set_qsy, rfc);

@@ -54,7 +54,6 @@ extern void saveFreqList();
 extern bool readRigXML();
 extern bool init_Xml_RigDialog();
 extern bool init_NoRig_RigDialog();
-extern bool init_rigMEM_RigDialog();
 
 #if USE_HAMLIB
 extern bool init_Hamlib_RigDialog();
