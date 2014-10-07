@@ -24,6 +24,10 @@ flarq_CFLAGS = $(flarq_CXXFLAGS)
 flarq_LDFLAGS = @FLARQ_BUILD_LDFLAGS@
 flarq_LDADD = @FLARQ_BUILD_LDADD@
 
+if WIN32
+fldigi_CPPFLAGS += -fno-var-tracking
+fldigi_CXXFLAGS += -fno-var-tracking
+endif
 
 HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
 XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
