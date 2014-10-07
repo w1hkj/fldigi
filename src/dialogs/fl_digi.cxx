@@ -4921,8 +4921,8 @@ void create_fl_digi_main_primary() {
 			qso_opBrowser->labelfont(4);
 			qso_opBrowser->labelsize(12);
 #ifdef __APPLE__
-			qso_opBrowser->textfont(FL_HELVETICA_BOLD);
-			qso_opBrowser->textsize(16);
+			qso_opBrowser->textfont(FL_SCREEN_BOLD);
+			qso_opBrowser->textsize(13);
 #else
 			qso_opBrowser->textfont(FL_HELVETICA);
 			qso_opBrowser->textsize(14);
@@ -5032,7 +5032,7 @@ void create_fl_digi_main_primary() {
 					inpSerNo1->tooltip(_("Received serial number"));
 
 					inpXchgIn1 = new Fl_Input2(
-						rightof(inpSerNo1) + pad, y3, 247, Hentry, "Xch");
+						rightof(inpSerNo1) + pad + 10, y3, 237, Hentry, "Xch");
 					inpXchgIn1->align(FL_ALIGN_LEFT);
 					inpXchgIn1->tooltip(_("Contest exchange in"));
 
