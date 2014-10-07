@@ -1934,7 +1934,7 @@ void cb_mnuCheckUpdate(Fl_Widget*, void*)
 		unsigned long version;
 	} sites[] = {
 		{ PACKAGE_DL, "downloads/fldigi/fldigi-([0-9.]+).tar.gz", "", 0 },
-		{ PACKAGE_PROJ, "fldigi/fldigi-([0-9.]+).tar.gz", "", 0 }
+		{ PACKAGE_PROJ, "fldigi-([0-9.]+).tar.gz", "", 0 }
 	}, *latest;
 	string reply;
 
