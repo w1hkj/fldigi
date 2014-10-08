@@ -78,6 +78,7 @@ void parseRTSPTT(size_t &);
 void parseDTRPTT(size_t &);
 void parseRESTORE_TIO(size_t &);
 void parseECHO(size_t &);
+void parseVSP(size_t &);
 
 void parseIOSsymbol(size_t &);
 void parseIOSsize(size_t &);
@@ -148,6 +149,7 @@ TAGS rigdeftags[] = {
 	{"<ECHO", parseECHO},
 	{"<CMDPTT", parseCMDPTT},
 	{"<STOPBITS", parseSTOPBITS},
+	{"<VSP", parseVSP},
 	{0, 0} 
 };
 
@@ -260,6 +262,7 @@ bool getBool( size_t p0)
 		return false;
 	if (strcasecmp(stemp.c_str(), "true") == 0)
 		return true;
+	if (stemp == "1") return true;
 	return false;
 }
 
@@ -629,6 +632,14 @@ void parseCMDPTT(size_t &p0) {
 void parseECHO(size_t &p0) {
 	bool val = getBool(p0);
 	xmlrig.echo = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseVSP(size_t &p0)
+{
+	bool val = getBool(p0);
+	xmlrig.vsp = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
