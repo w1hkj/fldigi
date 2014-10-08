@@ -109,18 +109,20 @@ extern Fl_Check_Button *btnRXTooltips;
 extern Fl_Input2 *inpNonword;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
-#include <FL/Fl_Round_Button.H>
-extern Fl_Round_Button *btn_oneA;
-extern Fl_Round_Button *btn_oneB;
-extern Fl_Round_Button *btn_oneC;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *cnt_macro_height;
-extern Fl_Round_Button *btn_twoA;
-extern Fl_Round_Button *btn_twoB;
-extern Fl_Round_Button *btn_twoC;
-extern Fl_Round_Button *btn_twoD;
-extern Fl_Round_Button *btn_twoE;
-extern Fl_Round_Button *btn_twoF;
+#include <FL/Fl_Round_Button.H>
+extern Fl_Round_Button *btn_scheme_0;
+extern Fl_Round_Button *btn_scheme_1;
+extern Fl_Round_Button *btn_scheme_2;
+extern Fl_Round_Button *btn_scheme_3;
+extern Fl_Round_Button *btn_scheme_4;
+extern Fl_Round_Button *btn_scheme_5;
+extern Fl_Round_Button *btn_scheme_6;
+extern Fl_Round_Button *btn_scheme_7;
+extern Fl_Round_Button *btn_scheme_8;
+extern Fl_Round_Button *btn_scheme_9;
+extern Fl_Round_Button *btn_scheme_10;
 extern Fl_Check_Button *btnUseLastMacro;
 extern Fl_Check_Button *btnDisplayMacroFilename;
 extern Fl_Check_Button *btn_save_macros_on_exit;
@@ -216,8 +218,6 @@ extern Fl_Group *tab_touch;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *sel_lsd;
 extern Fl_Check_Button *btn_rxtx_swap;
-extern Fl_Check_Button *btn_one_macro_row;
-extern Fl_Counter *cnt_macro_height2;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
@@ -324,7 +324,6 @@ extern Fl_Counter2 *cntContestia_smargin;
 extern Fl_Counter2 *cntContestia_sinteg;
 extern Fl_Check_Button *btnContestia_8bit;
 extern Fl_Group *tabPacket;
-#include <FL/Fl_Choice.H>
 extern Fl_Choice *selPacket_Baud;
 extern Fl_Counter2 *valPacket_LoSig_RXGain;
 extern Fl_Counter2 *valPacket_HiSig_RXGain;

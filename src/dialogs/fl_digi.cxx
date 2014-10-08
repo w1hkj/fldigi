@@ -1467,17 +1467,10 @@ void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
 
-//	if (progdefaults.mbar2_pos && progdefaults.mbar2_pos < 4 && b >= NUMMACKEYS)
-//		b += (altMacros - 1) * NUMMACKEYS;
-//	if (progdefaults.mbar2_pos == 0 || progdefaults.mbar2_pos == 4)
-//		b += altMacros * NUMMACKEYS;
-
-	switch (progdefaults.mbar2_pos) {
-		case 1 : case 2: case 3:
-			if (b >= NUMMACKEYS) b += (altMacros -1) * NUMMACKEYS;
-			break;
-		default :
-			b += altMacros * NUMMACKEYS;
+	if (progdefaults.mbar_scheme > 2) {
+		if (b >= NUMMACKEYS) b += (altMacros - 1) * NUMMACKEYS;
+	} else {
+		b += altMacros * NUMMACKEYS;
 	}
 
 	int mouse = Fl::event_button();
@@ -1548,8 +1541,7 @@ void altmacro_cb(Fl_Widget *w, void *v)
 	else
 		altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
 
-	if (progdefaults.mbar2_pos > 0 && progdefaults.mbar2_pos < 4) {
-// alternate set
+	if (progdefaults.mbar_scheme > 2) { // alternate set
 		altMacros = WCLAMP(altMacros, 1, 3);
 		alt_text[0] = '1' + altMacros;
 		for (int i = 0; i < NUMMACKEYS; i++) {
@@ -1558,8 +1550,7 @@ void altmacro_cb(Fl_Widget *w, void *v)
 		}
 		btnAltMacros2->label(alt_text);
 		btnAltMacros2->redraw_label();
-	} else {
-// primary set
+	} else { // primary set
 		altMacros = WCLAMP(altMacros, 0, 3);
 		alt_text[0] = '1' + altMacros;
 		for (int i = 0; i < NUMMACKEYS; i++) {
@@ -2202,9 +2193,11 @@ void cb_mnuContest(Fl_Menu_ *m, void *) {
 
 void set_macroLabels()
 {
-	if (progdefaults.mbar2_pos > 0 && progdefaults.mbar2_pos < 4) {
+	if (progdefaults.mbar_scheme > 2) {
 		altMacros = 1;
 		for (int i = 0; i < NUMMACKEYS; i++) {
+			btnMacro[i]->label(macros.name[i].c_str());
+			btnMacro[i]->redraw_label();
 			btnMacro[NUMMACKEYS + i]->label(
 				macros.name[(altMacros * NUMMACKEYS) + i].c_str());
 			btnMacro[NUMMACKEYS + i]->redraw_label();
@@ -2217,10 +2210,10 @@ void set_macroLabels()
 		altMacros = 0;
 		btnAltMacros1->label("1");
 		btnAltMacros1->redraw_label();
-	}
-	for (int i = 0; i < NUMMACKEYS; i++) {
-		btnMacro[i]->label(macros.name[i].c_str());
-		btnMacro[i]->redraw_label();
+		for (int i = 0; i < NUMMACKEYS; i++) {
+			btnMacro[i]->label(macros.name[i].c_str());
+			btnMacro[i]->redraw_label();
+		}
 	}
 }
 
@@ -3029,13 +3022,196 @@ void UI_select_central_frame(int y, int ht)
 
 void resize_macroframe1(int x, int y, int w, int h)
 {
-	macroFrame1->position(x, y);
-	macroFrame1->size(w, h);
-	mf_group1->size(w - h, h);
-	mf_group1->position(x, y);
-	btnAltMacros1->size( h, h);
-	btnAltMacros1->position(w - h, y);
+	macroFrame1->resize(x, y, w, h);
 	macroFrame1->init_sizes();
+}
+
+void resize_macroframe2(int x, int y, int w, int h)
+{
+	macroFrame2->resize(x, y, w, h);
+	macroFrame2->init_sizes();
+}
+
+int UI_position_macros(int x, int y1, int w, int HTh)
+{
+	int mh = progdefaults.macro_height;
+	int mh2 = progdefaults.macro_height / 2;
+
+	switch (progdefaults.mbar_scheme) { // 0, 1, 2 one bar schema
+		case 0:
+			macroFrame2->size(macroFrame2->w(), 0);
+			macroFrame2->hide();
+			btnAltMacros2->deactivate();
+			resize_macroframe1(0, y1, w, mh);
+			btnAltMacros1->activate();
+			y1 += mh;
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		default:
+		case 1:
+			macroFrame2->size(macroFrame2->w(), 0);
+			macroFrame2->hide();
+			btnAltMacros2->deactivate();
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe1(0, y1, w, mh);
+			btnAltMacros1->activate();
+			y1 += mh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 2:
+			macroFrame2->size(macroFrame2->w(), 0);
+			macroFrame2->hide();
+			btnAltMacros2->deactivate();
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			resize_macroframe1(0, y1, w, mh);
+			btnAltMacros1->activate();
+			y1 += mh;
+			hpack->position(x, y1);
+			break;
+		case 3:
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 4:
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 5:
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 6:
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 7:
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			y1 += mh2;
+			hpack->position(x, y1);
+			break;
+		case 8:
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			y1 += mh2;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			hpack->position(x, y1);
+			break;
+		case 9:
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			hpack->position(x, y1);
+			break;
+		case 10:
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			hpack->position(x, y1);
+			break;
+	}
+	return y1;
 }
 
 void UI_select()
@@ -3059,124 +3235,29 @@ void UI_select()
 	int x = macroFrame1->x();
 	int y1 = TopFrame1->y();
 	int w = fl_digi_main->w();
-	int HTh = fl_digi_main->h() - wfpack->h() - hpack->h() - Hmacros - Hstatus;
+	int HTh;
+
+	if (cnt_macro_height) {
+		if (progdefaults.mbar_scheme > 2) { // 2 bars
+			cnt_macro_height->minimum(44);
+			if (progdefaults.macro_height < 44) progdefaults.macro_height = 44;
+		} else {
+			cnt_macro_height->minimum(22);
+			if (progdefaults.macro_height < 22) progdefaults.macro_height = 22;
+		}
+		cnt_macro_height->maximum(66);
+		if (progdefaults.macro_height > 66) progdefaults.macro_height = 66;
+		cnt_macro_height->value(progdefaults.macro_height);
+	}
+
+	HTh = fl_digi_main->h();
+	HTh -= wfpack->h();
+	HTh -= hpack->h();
+	HTh -= Hstatus;
+	HTh -= progdefaults.macro_height;
 
 	if (progStatus.NO_RIGLOG && !restore_minimize) {
-		switch (progdefaults.mbar2_pos) {
-		case 1:
-			HTh -= Hmacros;
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			btnAltMacros1->deactivate();
-			y1 += Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		case 2:
-			HTh -= Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			btnAltMacros1->deactivate();
-			y1 += Hmacros;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		case 3:
-			HTh -= Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			y1 += Hmacros;
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			y1 += hpack->h();
-			break;
-		case 4:
-			HTh += Hmacros;
-			HTh -= progdefaults.macro_height;
-			if (HTh < minhtext) {
-				progdefaults.macro_height -= (minhtext - HTh);
-				HTh = minhtext;
-			}
-			macroFrame1->size(w, progdefaults.macro_height);
-			macroFrame1->position(x, y1);
-			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->hide();
-			resize_macroframe1(0, y1, w, progdefaults.macro_height);
-			btnAltMacros1->activate();
-			y1 += progdefaults.macro_height;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			hpack->position(x, y1);
-			break;
-		case 0:
-		default:
-			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame1->size(macroFrame1->w(), Hmacros);
-			macroFrame2->hide();
-			btnAltMacros1->activate();
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		}
+		y1 = UI_position_macros(x, y1, w, HTh);
 		TopFrame1->hide();
 		TopFrame2->hide();
 		TopFrame3->hide();
@@ -3190,124 +3271,7 @@ void UI_select()
 			restore_minimize) {
 		y1 += (TopFrame1->h());
 		HTh -= (TopFrame1->h());
-		switch (progdefaults.mbar2_pos) {
-		case 1:
-			HTh -= Hmacros;
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			btnAltMacros1->deactivate();
-			y1 += Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		case 2:
-			HTh -= Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			btnAltMacros1->deactivate();
-			y1 += Hmacros;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		case 3:
-			HTh -= Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			y1 += Hmacros;
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			btnAltMacros1->deactivate();
-			break;
-		case 4:
-			HTh += Hmacros;
-			HTh -= progdefaults.macro_height;
-			if (HTh < minhtext) {
-				progdefaults.macro_height -= (minhtext - HTh);
-				HTh = minhtext;
-			}
-			macroFrame1->size(w, progdefaults.macro_height);
-			macroFrame1->position(x, y1);
-			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->hide();
-			resize_macroframe1(0, y1, w, progdefaults.macro_height);
-			btnAltMacros1->activate();
-			y1 += progdefaults.macro_height;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			hpack->position(x, y1);
-			break;
-		case 0:
-		default:
-			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->hide();
-			btnAltMacros1->activate();
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		}
-		inpNotes->resize(
-			inpNotes->x(), inpNotes->y(),
-			inpNotes->w(), 2*Hentry + pad);
-		inpNotes->redraw();
+		y1 = UI_position_macros(x, y1, w, HTh);
 		TopFrame2->hide();
 		TopFrame3->hide();
 		TopFrame1->show();
@@ -3323,122 +3287,12 @@ void UI_select()
 		inpXchgIn = inpXchgIn1;
 		qsoFreqDisp = qsoFreqDisp1;
 		goto UI_return;
+	}
 
-	}  else if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
+	if (progStatus.Rig_Log_UI || progStatus.Rig_Contest_UI) {
 		y1 += TopFrame2->h();
 		HTh -= TopFrame2->h();
-		switch (progdefaults.mbar2_pos) {
-		case 1:
-			HTh -= Hmacros;
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			btnAltMacros1->deactivate();
-			y1 += Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += macroFrame1->h();
-			}
-			hpack->position(x, y1);
-			break;
-		case 2:
-			HTh -= Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			btnAltMacros1->deactivate();
-			y1 += Hmacros;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		case 3:
-			HTh -= Hmacros;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			macroFrame2->size(w, Hmacros);
-			macroFrame2->position(x, y1);
-			macroFrame2->show();
-			y1 += Hmacros;
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			btnAltMacros1->deactivate();
-			break;
-		case 4:
-			HTh += Hmacros;
-			HTh -= progdefaults.macro_height;;
-			macroFrame1->size(w, progdefaults.macro_height);
-			macroFrame1->position(x, y1);
-			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->hide();
-
-			resize_macroframe1(0, y1, w, progdefaults.macro_height);
-
-			btnAltMacros1->activate();
-			y1 += progdefaults.macro_height;
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			hpack->position(x, y1);
-			break;
-		case 0:
-		default:
-			macroFrame2->size(macroFrame2->w(), 0);
-			macroFrame2->hide();
-			btnAltMacros1->activate();
-			center_group->resize(0, y1, w, HTh);
-			wefax_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
-			y1 += HTh;
-			if (progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			wfpack->position(x, y1);
-			y1 += wfpack->h();
-			if (!progdefaults.mbar1_pos) {
-				resize_macroframe1(0, y1, w, Hmacros);
-				y1 += Hmacros;
-			}
-			hpack->position(x, y1);
-			break;
-		}
+		y1 = UI_position_macros(x, y1, w, HTh);
 		if (progStatus.Rig_Log_UI) {
 			TopFrame1->hide();
 			TopFrame3->hide();
@@ -5330,9 +5184,9 @@ void create_fl_digi_main_primary() {
 
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame2->box(FL_FLAT_BOX);
-			mf_group2 = new Fl_Group(0, Y + 1, progStatus.mainW - Hmacros, Hmacros - 1);
+			mf_group2 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
 			Wmacrobtn = (mf_group2->w()) / NUMMACKEYS;
-			Hmacrobtn = mf_group2->h() - 1;
+			Hmacrobtn = mf_group2->h();
 			wBLANK = (mf_group2->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = mf_group2->y();
@@ -5526,7 +5380,7 @@ void create_fl_digi_main_primary() {
 			macroFrame1->box(FL_FLAT_BOX);
 			mf_group1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
 			Wmacrobtn = (mf_group1->w()) / NUMMACKEYS;
-			Hmacrobtn = mf_group1->h() - 1;
+			Hmacrobtn = mf_group1->h();
 			wBLANK = (mf_group1->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = mf_group1->y();
@@ -5766,19 +5620,17 @@ void create_fl_digi_main_primary() {
 	if (withnoise)
 		grpNoise->show();
 
-	if (!progdefaults.mbar2_pos) {
-		if (progdefaults.mbar1_pos)
-			btn_oneA->setonly();
-		else
-			btn_oneB->setonly();
-	}
-	else if (progdefaults.mbar1_pos) {
-		Fl_Button* b[] = { btn_twoA, btn_twoB, btn_twoC, btn_twoD, btn_twoE, btn_twoF };
-		b[progdefaults.mbar2_pos - 1]->setonly();
-	}
-	else {
-		Fl_Button* b[] = { btn_twoD, btn_twoE, btn_twoF, btn_oneC };
-		b[progdefaults.mbar2_pos - 1]->setonly();
+	switch (progdefaults.mbar_scheme) {
+		case 0: btn_scheme_0->setonly(); break;
+		case 1: btn_scheme_1->setonly(); break;
+		case 2: btn_scheme_2->setonly(); break;
+		case 3: btn_scheme_3->setonly(); break;
+		case 4: btn_scheme_4->setonly(); break;
+		case 5: btn_scheme_5->setonly(); break;
+		case 6: btn_scheme_6->setonly(); break;
+		case 7: btn_scheme_7->setonly(); break;
+		case 8: btn_scheme_8->setonly(); break;
+		case 9: btn_scheme_9->setonly(); break;
 	}
 
 	LOGGING_colors_font();

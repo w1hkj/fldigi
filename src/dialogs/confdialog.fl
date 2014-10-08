@@ -313,7 +313,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {827 38 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {813 47 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -1015,120 +1015,117 @@ defined here. Tab and newline are automatically included.} xywh {194 260 279 24}
             tooltip {User Interface - Macros} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
-              xywh {52 257 496 40} box ENGRAVED_FRAME
+              xywh {52 263 496 35} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMacroMouseWheel {
                 label {Mouse wheel active on macro buttons}
                 callback {progdefaults.macro_wheel = o->value();
 progdefaults.changed = true;}
-                tooltip {enable mouse wheel control of macro bar} xywh {62 266 296 20} down_box DOWN_BOX
+                tooltip {enable mouse wheel control of macro bar} xywh {62 271 296 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.macro_wheel);}
               }
             }
             Fl_Group {} {
               label {Number and position of macro bars} open
-              xywh {52 61 496 195} box ENGRAVED_FRAME align 21
+              xywh {52 61 496 200} box ENGRAVED_FRAME align 21
             } {
-              Fl_Round_Button btn_oneA {
-                label {One bar (above waterfall)}
-                callback {progdefaults.mbar2_pos = 0;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+              Fl_Counter cnt_macro_height {
+                label {Button Height}
+                callback {progdefaults.macro_height = (int)o->value();
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 91 220 24} type Radio down_box ROUND_DOWN_BOX
+                tooltip {Height of macro bar} xywh {215 93 89 22} type Simple align 8 minimum 22 maximum 66 step 2 value 22
+                code0 {o->value(progdefaults.macro_height);}
               }
-              Fl_Round_Button btn_oneB {
-                label {One bar (below waterfall)}
-                callback {progdefaults.mbar2_pos = 0;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                xywh {62 121 220 24} type Radio down_box ROUND_DOWN_BOX
-              }
-              Fl_Round_Button btn_oneC {
-                label {One above Rx/Tx panels}
-                callback {progdefaults.mbar2_pos = 4;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(1);
+              Fl_Round_Button btn_scheme_0 {
+                label {One above Rx/Tx}
+                callback {progdefaults.mbar_scheme = 0;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
                 tooltip {Single macro bar below logging panel
-variable height} xywh {300 91 220 24} type Radio down_box ROUND_DOWN_BOX
+variable height} xywh {61 130 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Counter cnt_macro_height {
-                label {Control Height}
-                callback {progdefaults.macro_height = (int)o->value();
-cnt_macro_height2->value(progdefaults.macro_height);
+              Fl_Round_Button btn_scheme_1 {
+                label {One above waterfall}
+                callback {progdefaults.mbar_scheme = 1;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                tooltip {Height of one below logging panel} xywh {300 122 102 22} type Simple align 8 minimum 22 maximum 66 step 2 value 44
-                code0 {o->value(progdefaults.macro_height);}
+                xywh {61 155 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_twoA {
-                label {Two bars (scheme 1)}
-                callback {progdefaults.mbar2_pos = 1;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+              Fl_Round_Button btn_scheme_2 {
+                label {One below waterfall}
+                callback {progdefaults.mbar_scheme = 2;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 151 220 24} type Radio down_box ROUND_DOWN_BOX
+                xywh {61 180 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_twoB {
-                label {Two bars (scheme 2)}
-                callback {progdefaults.mbar2_pos = 2;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+              Fl_Round_Button btn_scheme_3 {
+                label {Two scheme 1}
+                callback {progdefaults.mbar_scheme = 3;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {300 151 219 24} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 130 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_twoC {
-                label {Two bars (scheme 3)}
-                callback {progdefaults.mbar2_pos = 3;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+              Fl_Round_Button btn_scheme_4 {
+                label {Two scheme 2}
+                callback {progdefaults.mbar_scheme = 4;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 181 220 24} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 155 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_twoD {
-                label {Two bars (scheme 4)}
-                callback {progdefaults.mbar2_pos = 1;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
+              Fl_Round_Button btn_scheme_5 {
+                label {Two scheme 3}
+                callback {progdefaults.mbar_scheme = 5;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {300 181 220 24} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 180 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_twoE {
-                label {Two bars (scheme 5)}
-                callback {progdefaults.mbar2_pos = 2;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
+              Fl_Round_Button btn_scheme_6 {
+                label {Two scheme 4}
+                callback {progdefaults.mbar_scheme = 6;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {62 211 220 24} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 205 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_twoF {
-                label {Two bars (scheme 6)}
-                callback {progdefaults.mbar2_pos = 3;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
+              Fl_Round_Button btn_scheme_7 {
+                label {Two scheme 5}
+                callback {progdefaults.mbar_scheme = 7;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {300 211 220 24} type Radio down_box ROUND_DOWN_BOX
+                xywh {396 130 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_8 {
+                label {Two scheme 6}
+                callback {progdefaults.mbar_scheme = 8;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {396 155 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_9 {
+                label {Two scheme 7}
+                callback {progdefaults.mbar_scheme = 9;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {396 180 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_10 {
+                label {Two scheme 8}
+                callback {progdefaults.mbar_scheme = 10;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {396 205 144 22} type Radio down_box ROUND_DOWN_BOX
               }
             }
             Fl_Group {} {open
@@ -2349,73 +2346,16 @@ progdefaults.changed = true;} open
               } {}
             }
             Fl_Group {} {
-              label {Tx Panels / Macro Buttons} open
-              xywh {15 255 570 102} box ENGRAVED_BOX align 21
+              label {Rx / Tx Panels} open
+              xywh {15 256 570 64} box ENGRAVED_BOX align 21
             } {
               Fl_Check_Button btn_rxtx_swap {
                 label {Tx above Rx}
                 callback {progdefaults.rxtx_swap = o->value();
 progdefaults.changed = true;
 UI_select();}
-                tooltip {Enable to put Tx panel above Rx panel} xywh {85 277 116 30} down_box DOWN_BOX
+                tooltip {Enable to put Tx panel above Rx panel} xywh {145 276 116 30} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtx_swap);}
-              }
-              Fl_Check_Button btn_one_macro_row {
-                label {One Macro Row above Rx/Tx}
-                callback {if (o->value()) {
-  progdefaults.mbar2_pos = 4;
-  progdefaults.mbar1_pos = false;
-  btn_oneA->value(0);
-  btn_oneB->value(0);
-  btn_oneC->value(1);
-  btn_twoA->value(0);
-  btn_twoB->value(0);
-  btn_twoC->value(0);
-  btn_twoD->value(0);
-  btn_twoE->value(0);
-  btn_oneA->redraw();
-  btn_oneB->redraw();
-  btn_oneC->redraw();
-  btn_twoA->redraw();
-  btn_twoB->redraw();
-  btn_twoC->redraw();
-  btn_twoD->redraw();
-  btn_twoE->redraw();
-} else {
-  progdefaults.mbar2_pos = 0;
-  progdefaults.mbar1_pos = true;
-  btn_oneA->value(1);
-  btn_oneB->value(0);
-  btn_oneC->value(0);
-  btn_twoA->value(0);
-  btn_twoB->value(0);
-  btn_twoC->value(0);
-  btn_twoD->value(0);
-  btn_twoE->value(0);
-  btn_oneA->redraw();
-  btn_oneB->redraw();
-  btn_oneC->redraw();
-  btn_twoA->redraw();
-  btn_twoB->redraw();
-  btn_twoC->redraw();
-  btn_twoD->redraw();
-  btn_twoE->redraw();
-}
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                xywh {275 277 220 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.mbar2_pos == 4);}
-              }
-              Fl_Counter cnt_macro_height2 {
-                label {Control Height}
-                callback {progdefaults.macro_height = (int)o->value();
-cnt_macro_height->value(progdefaults.macro_height);
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                tooltip {Height of one below logging panel} xywh {275 310 102 22} type Simple align 8 minimum 22 maximum 66 step 2 value 44
-                code0 {o->value(progdefaults.macro_height);}
               }
             }
           }

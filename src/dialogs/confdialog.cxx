@@ -790,110 +790,109 @@ static void cb_btnMacroMouseWheel(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Round_Button *btn_oneA=(Fl_Round_Button *)0;
-
-static void cb_btn_oneA(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 0;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_oneB=(Fl_Round_Button *)0;
-
-static void cb_btn_oneB(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 0;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_oneC=(Fl_Round_Button *)0;
-
-static void cb_btn_oneC(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 4;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(1);
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
 Fl_Counter *cnt_macro_height=(Fl_Counter *)0;
 
 static void cb_cnt_macro_height(Fl_Counter* o, void*) {
   progdefaults.macro_height = (int)o->value();
-cnt_macro_height2->value(progdefaults.macro_height);
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_twoA=(Fl_Round_Button *)0;
+Fl_Round_Button *btn_scheme_0=(Fl_Round_Button *)0;
 
-static void cb_btn_twoA(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 1;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+static void cb_btn_scheme_0(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 0;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_twoB=(Fl_Round_Button *)0;
+Fl_Round_Button *btn_scheme_1=(Fl_Round_Button *)0;
 
-static void cb_btn_twoB(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 2;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+static void cb_btn_scheme_1(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 1;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_twoC=(Fl_Round_Button *)0;
+Fl_Round_Button *btn_scheme_2=(Fl_Round_Button *)0;
 
-static void cb_btn_twoC(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 3;
-progdefaults.mbar1_pos = true;
-btn_one_macro_row->value(0);
+static void cb_btn_scheme_2(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 2;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_twoD=(Fl_Round_Button *)0;
+Fl_Round_Button *btn_scheme_3=(Fl_Round_Button *)0;
 
-static void cb_btn_twoD(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 1;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
+static void cb_btn_scheme_3(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 3;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_twoE=(Fl_Round_Button *)0;
+Fl_Round_Button *btn_scheme_4=(Fl_Round_Button *)0;
 
-static void cb_btn_twoE(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 2;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
+static void cb_btn_scheme_4(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 4;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_twoF=(Fl_Round_Button *)0;
+Fl_Round_Button *btn_scheme_5=(Fl_Round_Button *)0;
 
-static void cb_btn_twoF(Fl_Round_Button*, void*) {
-  progdefaults.mbar2_pos = 3;
-progdefaults.mbar1_pos = false;
-btn_one_macro_row->value(0);
+static void cb_btn_scheme_5(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 5;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_6=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_6(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 6;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_7=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_7(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 7;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_8=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_8(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 8;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_9=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_9(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 9;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_10=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_10(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 10;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
@@ -1981,63 +1980,6 @@ Fl_Check_Button *btn_rxtx_swap=(Fl_Check_Button *)0;
 static void cb_btn_rxtx_swap(Fl_Check_Button* o, void*) {
   progdefaults.rxtx_swap = o->value();
 progdefaults.changed = true;
-UI_select();
-}
-
-Fl_Check_Button *btn_one_macro_row=(Fl_Check_Button *)0;
-
-static void cb_btn_one_macro_row(Fl_Check_Button* o, void*) {
-  if (o->value()) {
-  progdefaults.mbar2_pos = 4;
-  progdefaults.mbar1_pos = false;
-  btn_oneA->value(0);
-  btn_oneB->value(0);
-  btn_oneC->value(1);
-  btn_twoA->value(0);
-  btn_twoB->value(0);
-  btn_twoC->value(0);
-  btn_twoD->value(0);
-  btn_twoE->value(0);
-  btn_oneA->redraw();
-  btn_oneB->redraw();
-  btn_oneC->redraw();
-  btn_twoA->redraw();
-  btn_twoB->redraw();
-  btn_twoC->redraw();
-  btn_twoD->redraw();
-  btn_twoE->redraw();
-} else {
-  progdefaults.mbar2_pos = 0;
-  progdefaults.mbar1_pos = true;
-  btn_oneA->value(1);
-  btn_oneB->value(0);
-  btn_oneC->value(0);
-  btn_twoA->value(0);
-  btn_twoB->value(0);
-  btn_twoC->value(0);
-  btn_twoD->value(0);
-  btn_twoE->value(0);
-  btn_oneA->redraw();
-  btn_oneB->redraw();
-  btn_oneC->redraw();
-  btn_twoA->redraw();
-  btn_twoB->redraw();
-  btn_twoC->redraw();
-  btn_twoD->redraw();
-  btn_twoE->redraw();
-}
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Counter *cnt_macro_height2=(Fl_Counter *)0;
-
-static void cb_cnt_macro_height2(Fl_Counter* o, void*) {
-  progdefaults.macro_height = (int)o->value();
-cnt_macro_height->value(progdefaults.macro_height);
-progdefaults.changed = true;
-set_macroLabels();
 UI_select();
 }
 
@@ -6032,9 +5974,9 @@ ab and newline are automatically included."));
           { tabMBars = new Fl_Group(0, 50, 600, 330, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
             tabMBars->hide();
-            { Fl_Group* o = new Fl_Group(52, 257, 496, 40);
+            { Fl_Group* o = new Fl_Group(52, 263, 496, 35);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 266, 296, 20, _("Mouse wheel active on macro buttons"));
+              { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 271, 296, 20, _("Mouse wheel active on macro buttons"));
                 btnMacroMouseWheel->tooltip(_("enable mouse wheel control of macro bar"));
                 btnMacroMouseWheel->down_box(FL_DOWN_BOX);
                 btnMacroMouseWheel->callback((Fl_Callback*)cb_btnMacroMouseWheel);
@@ -6042,66 +5984,76 @@ ab and newline are automatically included."));
               } // Fl_Check_Button* btnMacroMouseWheel
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 61, 496, 195, _("Number and position of macro bars"));
+            { Fl_Group* o = new Fl_Group(52, 61, 496, 200, _("Number and position of macro bars"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { btn_oneA = new Fl_Round_Button(62, 91, 220, 24, _("One bar (above waterfall)"));
-                btn_oneA->type(102);
-                btn_oneA->down_box(FL_ROUND_DOWN_BOX);
-                btn_oneA->callback((Fl_Callback*)cb_btn_oneA);
-              } // Fl_Round_Button* btn_oneA
-              { btn_oneB = new Fl_Round_Button(62, 121, 220, 24, _("One bar (below waterfall)"));
-                btn_oneB->type(102);
-                btn_oneB->down_box(FL_ROUND_DOWN_BOX);
-                btn_oneB->callback((Fl_Callback*)cb_btn_oneB);
-              } // Fl_Round_Button* btn_oneB
-              { btn_oneC = new Fl_Round_Button(300, 91, 220, 24, _("One above Rx/Tx panels"));
-                btn_oneC->tooltip(_("Single macro bar below logging panel\nvariable height"));
-                btn_oneC->type(102);
-                btn_oneC->down_box(FL_ROUND_DOWN_BOX);
-                btn_oneC->callback((Fl_Callback*)cb_btn_oneC);
-              } // Fl_Round_Button* btn_oneC
-              { Fl_Counter* o = cnt_macro_height = new Fl_Counter(300, 122, 102, 22, _("Control Height"));
-                cnt_macro_height->tooltip(_("Height of one below logging panel"));
+              { Fl_Counter* o = cnt_macro_height = new Fl_Counter(215, 93, 89, 22, _("Button Height"));
+                cnt_macro_height->tooltip(_("Height of macro bar"));
                 cnt_macro_height->type(1);
                 cnt_macro_height->minimum(22);
                 cnt_macro_height->maximum(66);
                 cnt_macro_height->step(2);
-                cnt_macro_height->value(44);
+                cnt_macro_height->value(22);
                 cnt_macro_height->callback((Fl_Callback*)cb_cnt_macro_height);
                 cnt_macro_height->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.macro_height);
               } // Fl_Counter* cnt_macro_height
-              { btn_twoA = new Fl_Round_Button(62, 151, 220, 24, _("Two bars (scheme 1)"));
-                btn_twoA->type(102);
-                btn_twoA->down_box(FL_ROUND_DOWN_BOX);
-                btn_twoA->callback((Fl_Callback*)cb_btn_twoA);
-              } // Fl_Round_Button* btn_twoA
-              { btn_twoB = new Fl_Round_Button(300, 151, 219, 24, _("Two bars (scheme 2)"));
-                btn_twoB->type(102);
-                btn_twoB->down_box(FL_ROUND_DOWN_BOX);
-                btn_twoB->callback((Fl_Callback*)cb_btn_twoB);
-              } // Fl_Round_Button* btn_twoB
-              { btn_twoC = new Fl_Round_Button(62, 181, 220, 24, _("Two bars (scheme 3)"));
-                btn_twoC->type(102);
-                btn_twoC->down_box(FL_ROUND_DOWN_BOX);
-                btn_twoC->callback((Fl_Callback*)cb_btn_twoC);
-              } // Fl_Round_Button* btn_twoC
-              { btn_twoD = new Fl_Round_Button(300, 181, 220, 24, _("Two bars (scheme 4)"));
-                btn_twoD->type(102);
-                btn_twoD->down_box(FL_ROUND_DOWN_BOX);
-                btn_twoD->callback((Fl_Callback*)cb_btn_twoD);
-              } // Fl_Round_Button* btn_twoD
-              { btn_twoE = new Fl_Round_Button(62, 211, 220, 24, _("Two bars (scheme 5)"));
-                btn_twoE->type(102);
-                btn_twoE->down_box(FL_ROUND_DOWN_BOX);
-                btn_twoE->callback((Fl_Callback*)cb_btn_twoE);
-              } // Fl_Round_Button* btn_twoE
-              { btn_twoF = new Fl_Round_Button(300, 211, 220, 24, _("Two bars (scheme 6)"));
-                btn_twoF->type(102);
-                btn_twoF->down_box(FL_ROUND_DOWN_BOX);
-                btn_twoF->callback((Fl_Callback*)cb_btn_twoF);
-              } // Fl_Round_Button* btn_twoF
+              { btn_scheme_0 = new Fl_Round_Button(61, 130, 144, 22, _("One above Rx/Tx"));
+                btn_scheme_0->tooltip(_("Single macro bar below logging panel\nvariable height"));
+                btn_scheme_0->type(102);
+                btn_scheme_0->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_0->callback((Fl_Callback*)cb_btn_scheme_0);
+              } // Fl_Round_Button* btn_scheme_0
+              { btn_scheme_1 = new Fl_Round_Button(61, 155, 144, 22, _("One above waterfall"));
+                btn_scheme_1->type(102);
+                btn_scheme_1->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_1->callback((Fl_Callback*)cb_btn_scheme_1);
+              } // Fl_Round_Button* btn_scheme_1
+              { btn_scheme_2 = new Fl_Round_Button(61, 180, 144, 22, _("One below waterfall"));
+                btn_scheme_2->type(102);
+                btn_scheme_2->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_2->callback((Fl_Callback*)cb_btn_scheme_2);
+              } // Fl_Round_Button* btn_scheme_2
+              { btn_scheme_3 = new Fl_Round_Button(228, 130, 144, 22, _("Two scheme 1"));
+                btn_scheme_3->type(102);
+                btn_scheme_3->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_3->callback((Fl_Callback*)cb_btn_scheme_3);
+              } // Fl_Round_Button* btn_scheme_3
+              { btn_scheme_4 = new Fl_Round_Button(228, 155, 144, 22, _("Two scheme 2"));
+                btn_scheme_4->type(102);
+                btn_scheme_4->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_4->callback((Fl_Callback*)cb_btn_scheme_4);
+              } // Fl_Round_Button* btn_scheme_4
+              { btn_scheme_5 = new Fl_Round_Button(228, 180, 144, 22, _("Two scheme 3"));
+                btn_scheme_5->type(102);
+                btn_scheme_5->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_5->callback((Fl_Callback*)cb_btn_scheme_5);
+              } // Fl_Round_Button* btn_scheme_5
+              { btn_scheme_6 = new Fl_Round_Button(228, 205, 144, 22, _("Two scheme 4"));
+                btn_scheme_6->type(102);
+                btn_scheme_6->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_6->callback((Fl_Callback*)cb_btn_scheme_6);
+              } // Fl_Round_Button* btn_scheme_6
+              { btn_scheme_7 = new Fl_Round_Button(396, 130, 144, 22, _("Two scheme 5"));
+                btn_scheme_7->type(102);
+                btn_scheme_7->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_7->callback((Fl_Callback*)cb_btn_scheme_7);
+              } // Fl_Round_Button* btn_scheme_7
+              { btn_scheme_8 = new Fl_Round_Button(396, 155, 144, 22, _("Two scheme 6"));
+                btn_scheme_8->type(102);
+                btn_scheme_8->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_8->callback((Fl_Callback*)cb_btn_scheme_8);
+              } // Fl_Round_Button* btn_scheme_8
+              { btn_scheme_9 = new Fl_Round_Button(396, 180, 144, 22, _("Two scheme 7"));
+                btn_scheme_9->type(102);
+                btn_scheme_9->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_9->callback((Fl_Callback*)cb_btn_scheme_9);
+              } // Fl_Round_Button* btn_scheme_9
+              { btn_scheme_10 = new Fl_Round_Button(396, 205, 144, 22, _("Two scheme 8"));
+                btn_scheme_10->type(102);
+                btn_scheme_10->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_10->callback((Fl_Callback*)cb_btn_scheme_10);
+              } // Fl_Round_Button* btn_scheme_10
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(52, 299, 496, 76);
@@ -6605,31 +6557,15 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Choice* sel_lsd
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(15, 255, 570, 102, _("Tx Panels / Macro Buttons"));
+            { Fl_Group* o = new Fl_Group(15, 256, 570, 64, _("Rx / Tx Panels"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_rxtx_swap = new Fl_Check_Button(85, 277, 116, 30, _("Tx above Rx"));
+              { Fl_Check_Button* o = btn_rxtx_swap = new Fl_Check_Button(145, 276, 116, 30, _("Tx above Rx"));
                 btn_rxtx_swap->tooltip(_("Enable to put Tx panel above Rx panel"));
                 btn_rxtx_swap->down_box(FL_DOWN_BOX);
                 btn_rxtx_swap->callback((Fl_Callback*)cb_btn_rxtx_swap);
                 o->value(progdefaults.rxtx_swap);
               } // Fl_Check_Button* btn_rxtx_swap
-              { Fl_Check_Button* o = btn_one_macro_row = new Fl_Check_Button(275, 277, 220, 30, _("One Macro Row above Rx/Tx"));
-                btn_one_macro_row->down_box(FL_DOWN_BOX);
-                btn_one_macro_row->callback((Fl_Callback*)cb_btn_one_macro_row);
-                o->value(progdefaults.mbar2_pos == 4);
-              } // Fl_Check_Button* btn_one_macro_row
-              { Fl_Counter* o = cnt_macro_height2 = new Fl_Counter(275, 310, 102, 22, _("Control Height"));
-                cnt_macro_height2->tooltip(_("Height of one below logging panel"));
-                cnt_macro_height2->type(1);
-                cnt_macro_height2->minimum(22);
-                cnt_macro_height2->maximum(66);
-                cnt_macro_height2->step(2);
-                cnt_macro_height2->value(44);
-                cnt_macro_height2->callback((Fl_Callback*)cb_cnt_macro_height2);
-                cnt_macro_height2->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.macro_height);
-              } // Fl_Counter* cnt_macro_height2
               o->end();
             } // Fl_Group* o
             tab_touch->end();
