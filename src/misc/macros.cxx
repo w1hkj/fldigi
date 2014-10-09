@@ -981,6 +981,20 @@ static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 	TransmitText->clear();
 }
 
+static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
+{
+	if (!within_exec) {
+		if (qsoFreqDisp->is_reversed_colors()) {
+			qsoFreqDisp->restore_colors();
+			TransmitText->take_focus();
+		} else {
+			qsoFreqDisp->take_focus();
+			qsoFreqDisp->reverse_colors();
+		}
+	}
+	s.replace( i, 7, "" );
+}
+
 static void pCALL(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 6, inpCall->value() );
@@ -2653,6 +2667,7 @@ static const MTAGS mtags[] = {
 {"<GET>",		pGET},
 {"<CLRRX>",		pCLRRX},
 {"<CLRTX>",		pCLRTX},
+{"<FOCUS>",		pFOCUS},
 {"<FILE:",		pFILE},
 {"<WPM:",		pWPM},
 {"<RISE:",		pRISETIME},

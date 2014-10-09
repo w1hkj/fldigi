@@ -1864,6 +1864,54 @@ public:
 	}
 };
 
+class Rig_set_smeter : public xmlrpc_c::method
+{
+public:
+	Rig_set_smeter()
+	{
+		_signature = "n:i";
+		_help = "Sets the smeter returns null.";
+	}
+	static void set_smeter(int rfc)
+	{
+		if (smeter && pwrmeter) {
+			smeter->value(rfc);
+			pwrmeter->hide();
+			smeter->show();
+		}
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		REQ(set_smeter, params.getInt(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Rig_set_pwrmeter : public xmlrpc_c::method
+{
+public:
+	Rig_set_pwrmeter()
+	{
+		_signature = "n:i";
+		_help = "Sets the power meter returns null.";
+	}
+	static void set_pwrmeter(int rfc)
+	{
+		if (pwrmeter && smeter) {
+			pwrmeter->value(rfc);
+			smeter->hide();
+			pwrmeter->show();
+		}
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+        {
+		XMLRPC_LOCK;
+		REQ(set_pwrmeter, params.getInt(0));
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 class Rig_set_modes : public xmlrpc_c::method
 {
 public:
@@ -3197,6 +3245,8 @@ struct Navtex_send_message : public xmlrpc_c::method
 	ELEM_(Rig_set_name, "rig.set_name")								\
 	ELEM_(Rig_get_name, "rig.get_name")								\
 	ELEM_(Rig_set_frequency, "rig.set_frequency")						\
+	ELEM_(Rig_set_smeter, "rig.set_smeter")							\
+	ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")							\
 	ELEM_(Rig_set_modes, "rig.set_modes")								\
 	ELEM_(Rig_set_mode, "rig.set_mode")								\
 	ELEM_(Rig_get_modes, "rig.get_modes")								\

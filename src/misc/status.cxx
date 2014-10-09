@@ -70,22 +70,22 @@ status progStatus = {
 	mode_info[MODE_PSK31].sname,	// lastmode_name
 	50,					// int mainX;
 	50,					// int mainY;
-	WNOM,				// int mainW;
-	HNOM,				// int mainH;
+	WMIN, 				// int mainW;
+	HMIN, 				// int mainH;
 	false,				// bool WF_UI;
 	false,				// bool NO_RIGLOG;
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
 	50,					// int RxTextHeight;
-	WNOM / 2,			// int tiled_group_x;
+	WMIN/2,				// int tiled_group_x;
 	false,				// bool show_channels;
 	50,					// int rigX;
 	50,					// int rigY;
 	560,				// int rigW
 	80,					// int rigH
 	1000,				// int carrier;
-	0,					// int noCATfreq;
+	14070000,			// int noCATfreq;
 	"USB",				// string noCATmode;
 	"3000",				// string noCATwidth;
 	1,					// int mag;
@@ -220,7 +220,7 @@ void status::saveLastState()
 		tx_word_wrap = TransmitText->get_word_wrap();
 
 		tile_w = text_panel->w();
-		tile_y = ReceiveText->h();
+		tile_y = progdefaults.rxtx_swap ? TransmitText->h() : ReceiveText->h();
 		tile_h = text_panel->h();
 		if (text_panel->w() != ReceiveText->w())
 			tile_x = mvgroup->w();
@@ -648,16 +648,16 @@ printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 	valXmtMixer->value(XmtMixer * 100.0);
 
 	if (mainX > Fl::w())
-		mainX = 20;
+		mainX = 0;
 	if (mainY > Fl::h())
-		mainY = 20;
-	if (mainW < WMIN || mainW > Fl::w())
-		mainW = MAX(WMIN, Fl::w() -50);// / 2);
-	if (mainH < HMIN || mainH > Fl::h())
-		mainH = MAX(HMIN, Fl::h() -50);// / 2);
+		mainY = 0;
+	if (mainW < WMIN) mainW = WMIN;
+	if (mainW > Fl::w()) mainW = Fl::w();
+	if (mainH < HMIN) mainH = HMIN;
+	if (mainH > Fl::w()) mainH = Fl::h();
 
 	if (bWF_only) 
-		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus + 4);
+		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus);// + 4);
 	else {
 		fl_digi_main->resize(mainX, mainY, mainW, mainH);
 

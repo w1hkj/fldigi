@@ -95,6 +95,9 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<CLRTX>\tclear TX pane"));
 
 	w->add(LINE_SEP);
+	w->add(_("<FOCUS>\trig freq has kbd focus"));
+
+	w->add(LINE_SEP);
 	w->add(_("<GET>\ttext to NAME/QTH"));
 
 #ifdef __WIN32__
