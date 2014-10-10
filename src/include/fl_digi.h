@@ -36,7 +36,6 @@
 #include "waterfall.h"
 #include "digiscope.h"
 #include "globals.h"
-#include "mixer.h"
 #include "progress.h"
 #include "FreqControl.h"
 #include "flinput2.h"
@@ -125,8 +124,6 @@ extern Fl_Button		*qso_opPICK;
 extern Fl_Browser		*qso_opBrowser;
 
 extern Fl_Value_Slider2	*mvsquelch;
-extern Fl_Value_Slider2	*valRcvMixer;
-extern Fl_Value_Slider2	*valXmtMixer;
 extern Fl_Light_Button		*btnAFC;
 extern Fl_Light_Button		*btnSQL;
 extern Fl_Light_Button		*btnPSQL;

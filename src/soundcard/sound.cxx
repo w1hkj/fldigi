@@ -697,9 +697,6 @@ size_t SoundOSS::Read(float *buffer, size_t buffersize)
 		write_file(ofCapture, buffer, buffersize);
 	if (playback) {
 		read_file(ifPlayback, buffer, buffersize);
-		if (progdefaults.EnableMixer)
-			for (size_t i = 0; i < buffersize; i++)
-				buffer[i] *= progStatus.RcvMixer;
 		return buffersize;
 	}
 #endif
@@ -1197,9 +1194,6 @@ size_t SoundPort::Read(float *buf, size_t count)
 #if USE_SNDFILE
 	if (playback) {
 		read_file(ifPlayback, buf, count);
-		if (progdefaults.EnableMixer)
-			for (size_t i = 0; i < count; i++)
-				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
 			if (!bHighSpeed)
 				MilliSleep((long)ceil((1e3 * count) / req_sample_rate));
@@ -2068,9 +2062,6 @@ size_t SoundPulse::Read(float *buf, size_t count)
 #if USE_SNDFILE
 	if (playback) {
 		read_file(ifPlayback, buf, count);
-		if (progdefaults.EnableMixer)
-			for (size_t i = 0; i < count; i++)
-				buf[i] *= progStatus.RcvMixer;
 		if (!capture) {
 			flush(0);
 			if (!bHighSpeed)
@@ -2167,9 +2158,6 @@ size_t SoundNull::Read(float *buf, size_t count)
 #if USE_SNDFILE
 	if (playback) {
 		read_file(ifPlayback, buf, count);
-		if (progdefaults.EnableMixer)
-			for (size_t i = 0; i < count; i++)
-				buf[i] *= progStatus.RcvMixer;
 	}
 	else
 #endif

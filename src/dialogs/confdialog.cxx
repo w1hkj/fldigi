@@ -3922,61 +3922,6 @@ static void cb_cntTxOffset(Fl_Spinner2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabMixer=(Fl_Group *)0;
-
-Fl_Check_Button *btnMixer=(Fl_Check_Button *)0;
-
-static void cb_btnMixer(Fl_Check_Button* o, void*) {
-  enableMixer(o->value());
-progdefaults.changed = true;
-}
-
-Fl_ListBox *menuMix=(Fl_ListBox *)0;
-
-static void cb_menuMix(Fl_ListBox* o, void*) {
-  progdefaults.MXdevice = o->value();
-enableMixer(false);
-enableMixer(true);
-progdefaults.changed = true;
-}
-
-Fl_Light_Button *btnMicIn=(Fl_Light_Button *)0;
-
-static void cb_btnMicIn(Fl_Light_Button* o, void*) {
-  if (o->value() == 1) {
-    btnLineIn->value(0);
-    progdefaults.LineIn = false;
-    progdefaults.MicIn = true;
-    setMixerInput(2);
-} else {
-    setMixerInput(0);
-    progdefaults.MicIn = false;
-}
-progdefaults.changed = true;
-}
-
-Fl_Light_Button *btnLineIn=(Fl_Light_Button *)0;
-
-static void cb_btnLineIn(Fl_Light_Button* o, void*) {
-  if (o->value() == 1) {
-    btnMicIn->value(0);
-    progdefaults.LineIn = true;
-    progdefaults.MicIn = false;
-    setMixerInput(1);
-} else {
-    setMixerInput(0);
-    progdefaults.LineIn = false;
-}
-progdefaults.changed = true;
-}
-
-Fl_Value_Slider2 *valPCMvolume=(Fl_Value_Slider2 *)0;
-
-static void cb_valPCMvolume(Fl_Value_Slider2* o, void*) {
-  setPCMvolume(o->value());
-progdefaults.changed = true;
-}
-
 Fl_Group *tabAudioRightChannel=(Fl_Group *)0;
 
 Fl_Check_Button *chkForceMono=(Fl_Check_Button *)0;
@@ -5314,7 +5259,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6987,6 +6931,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -9370,63 +9315,6 @@ ll with your audio device."));
             } // Fl_Group* o
             tabAudioOpt->end();
           } // Fl_Group* tabAudioOpt
-          { tabMixer = new Fl_Group(0, 50, 600, 330, _("Mixer"));
-            tabMixer->hide();
-            { Fl_Group* o = new Fl_Group(55, 69, 490, 145, _("OSS Mixer"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnMixer = new Fl_Check_Button(65, 98, 125, 25, _("Manage mixer"));
-                btnMixer->tooltip(_("Add mixer controls to main dialog"));
-                btnMixer->down_box(FL_DOWN_BOX);
-                btnMixer->callback((Fl_Callback*)cb_btnMixer);
-                o->value(progdefaults.EnableMixer);
-              } // Fl_Check_Button* btnMixer
-              { Fl_ListBox* o = menuMix = new Fl_ListBox(152, 141, 170, 24, _("Device:"));
-                menuMix->tooltip(_("Select Mixer device"));
-                menuMix->box(FL_DOWN_BOX);
-                menuMix->color(FL_BACKGROUND2_COLOR);
-                menuMix->selection_color(FL_BACKGROUND_COLOR);
-                menuMix->labeltype(FL_NORMAL_LABEL);
-                menuMix->labelfont(0);
-                menuMix->labelsize(14);
-                menuMix->labelcolor(FL_FOREGROUND_COLOR);
-                menuMix->callback((Fl_Callback*)cb_menuMix);
-                menuMix->align(Fl_Align(FL_ALIGN_TOP));
-                menuMix->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.MXdevice.c_str());
-                o->labelsize(FL_NORMAL_SIZE);
-                menuMix->end();
-              } // Fl_ListBox* menuMix
-              { btnMicIn = new Fl_Light_Button(331, 102, 74, 25, _("Mic In"));
-                btnMicIn->tooltip(_("Use microphone input"));
-                btnMicIn->callback((Fl_Callback*)cb_btnMicIn);
-              } // Fl_Light_Button* btnMicIn
-              { btnLineIn = new Fl_Light_Button(331, 141, 74, 25, _("Line In"));
-                btnLineIn->tooltip(_("Use Line-In device"));
-                btnLineIn->selection_color((Fl_Color)3);
-                btnLineIn->callback((Fl_Callback*)cb_btnLineIn);
-              } // Fl_Light_Button* btnLineIn
-              { Fl_Value_Slider2* o = valPCMvolume = new Fl_Value_Slider2(65, 176, 340, 20, _("PCM"));
-                valPCMvolume->tooltip(_("Set the sound card PCM level"));
-                valPCMvolume->type(1);
-                valPCMvolume->box(FL_DOWN_BOX);
-                valPCMvolume->color(FL_BACKGROUND_COLOR);
-                valPCMvolume->selection_color(FL_SELECTION_COLOR);
-                valPCMvolume->labeltype(FL_NORMAL_LABEL);
-                valPCMvolume->labelfont(0);
-                valPCMvolume->labelsize(14);
-                valPCMvolume->labelcolor(FL_FOREGROUND_COLOR);
-                valPCMvolume->value(0.8);
-                valPCMvolume->textsize(14);
-                valPCMvolume->callback((Fl_Callback*)cb_valPCMvolume);
-                valPCMvolume->align(Fl_Align(FL_ALIGN_RIGHT));
-                valPCMvolume->when(FL_WHEN_CHANGED);
-                o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
-              } // Fl_Value_Slider2* valPCMvolume
-              o->end();
-            } // Fl_Group* o
-            tabMixer->end();
-          } // Fl_Group* tabMixer
           { tabAudioRightChannel = new Fl_Group(0, 50, 600, 330, _("Right channel"));
             tabAudioRightChannel->hide();
             { chkForceMono = new Fl_Check_Button(160, 63, 280, 20, _("Mono audio output"));

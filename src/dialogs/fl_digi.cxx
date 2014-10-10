@@ -196,8 +196,6 @@ Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
 Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
-MixerBase* mixer = 0;
-
 static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
 
@@ -210,6 +208,7 @@ static Fl_Button	*btnMacroTimer = (Fl_Button *)0;
 Fl_Group			*center_group = (Fl_Group *)0;
 Fl_Group			*wefax_group = 0;
 Fl_Group			*mvgroup = 0;
+
 Panel				*text_panel = 0;
 
 Fl_Group			*macroFrame1 = 0;
@@ -326,10 +325,6 @@ static Fl_Button		*qso_btnDelFreq = (Fl_Button *)0;
 static Fl_Button		*qso_btnClearList = (Fl_Button *)0;
 static Fl_Button		*qso_btnAct = 0;
 static Fl_Input2		*qso_inpAct = 0;
-
-static Fl_Group		*MixerFrame;
-Fl_Value_Slider2		*valRcvMixer = (Fl_Value_Slider2 *)0;
-Fl_Value_Slider2		*valXmtMixer = (Fl_Value_Slider2 *)0;
 
 static Fl_Pack 		*wfpack = (Fl_Pack *)0;
 static Fl_Pack			*hpack = (Fl_Pack *)0;
@@ -2756,18 +2751,6 @@ void cbMacroTimerButton(Fl_Widget*, void*)
 	restoreFocus();
 }
 
-void cb_RcvMixer(Fl_Widget *w, void *d)
-{
-	progStatus.RcvMixer = valRcvMixer->value() / 100.0;
-	mixer->setRcvGain(progStatus.RcvMixer);
-}
-
-void cb_XmtMixer(Fl_Widget *w, void *d)
-{
-	progStatus.XmtMixer = valXmtMixer->value() / 100.0;
-	mixer->setXmtLevel(progStatus.XmtMixer);
-}
-
 void cb_mvsquelch(Fl_Widget *w, void *d)
 {
 	progStatus.squelch_value = mvsquelch->value();
@@ -2990,9 +2973,6 @@ bool clean_exit(bool ask) {
 
 	ADIF_RW_close();
 
-	if (mixer)
-		mixer->closeMixer();
-
 	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
 		trx_state = STATE_ABORT;
 	else {
@@ -3061,7 +3041,6 @@ void UI_check_swap()
 		text_panel->resizable(minbox);
 		progStatus.tile_y = TransmitText->h();
 	}
-
 	if (!progdefaults.rxtx_swap && ReceiveText->y() > TransmitText->y()) {
 		rx_y = TransmitText->y();
 		rx_h = first_check ? progStatus.tile_y : ReceiveText->h();
@@ -3102,17 +3081,7 @@ static bool restore_minimize = false;
 
 void UI_select_central_frame(int y, int ht)
 {
-	if (progdefaults.EnableMixer) {
-		MixerFrame->resize(0, y, sw, ht);
-		valRcvMixer->resize(0, y, sw, valRcvMixer->h());
-		valXmtMixer->resize(0, y+valRcvMixer->h(), sw, ht - valRcvMixer->h());
-		text_panel->resize(MixerFrame->w(), y, fl_digi_main->w() - sw, ht);
-	} else {
-		MixerFrame->resize(0, y, 0, ht);
-		valRcvMixer->resize(0, y, 0, valRcvMixer->h());
-		valXmtMixer->resize(0, y+valRcvMixer->h(), 0, ht - valRcvMixer->h());
-		text_panel->resize(0, y, fl_digi_main->w(), ht);
-	}
+	text_panel->resize(0, y, fl_digi_main->w(), ht);
 	center_group->init_sizes();
 }
 
@@ -5330,34 +5299,9 @@ void create_fl_digi_main_primary() {
 
 		center_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
 
-			MixerFrame = new Fl_Group(0, Y, sw, Htext);
-				int Hrcvmixer = Htext / 2;
-				int Hxmtmixer = Htext - Hrcvmixer;
+			int HTwidth = progStatus.mainW;
 
-				valRcvMixer = new Fl_Value_Slider2(MixerFrame->x(), Y, sw, Hrcvmixer, "");
-				valRcvMixer->type(FL_VERT_NICE_SLIDER);
-				valRcvMixer->color(fl_rgb_color(0,110,30));
-				valRcvMixer->selection_color(fl_rgb_color(255,255,0));
-				valRcvMixer->textcolor(FL_WHITE);
-				valRcvMixer->range(100.0,0.0);
-				valRcvMixer->value(100.0);
-				valRcvMixer->step(1.0);
-				valRcvMixer->callback( (Fl_Callback *)cb_RcvMixer);
-
-				valXmtMixer = new Fl_Value_Slider2(MixerFrame->x(), Y + Hrcvmixer, sw, Hxmtmixer, "");
-				valXmtMixer->type(FL_VERT_NICE_SLIDER);
-				valXmtMixer->color(fl_rgb_color(110,0,30));
-				valXmtMixer->selection_color(fl_rgb_color(255,255,0));
-				valXmtMixer->textcolor(FL_WHITE);
-				valXmtMixer->range(100.0,0.0);
-				valXmtMixer->value(100.0);
-				valXmtMixer->step(1.0);
-				valXmtMixer->callback( (Fl_Callback *)cb_XmtMixer);
-			MixerFrame->end();
-
-			int HTwidth = progStatus.mainW - sw;
-
-			text_panel = new Panel(sw, Y, HTwidth, Htext);
+			text_panel = new Panel(0, Y, HTwidth, Htext);
 				mvgroup = new Fl_Group(
 					text_panel->x(), text_panel->y(),
 					text_panel->w()/2, Htext, "");
@@ -6042,9 +5986,6 @@ void noop_controls() // create and then hide all controls not being used
 	qso_btnClearList = new Fl_Button(defwidget); qso_btnClearList->hide();
 	qso_btnAct = new Fl_Button(defwidget); qso_btnAct->hide();
 	qso_inpAct = new Fl_Input2(defwidget); qso_inpAct->hide();
-
-	valRcvMixer = new Fl_Value_Slider2(defwidget); valRcvMixer->hide();
-	valXmtMixer = new Fl_Value_Slider2(defwidget); valXmtMixer->hide();
 
 	dummywindow->end();
 	dummywindow->hide();
@@ -7143,98 +7084,9 @@ void resetDOMEX() {
 		trx_start_modem(active_modem);
 }
 
-void enableMixer(bool on)
-{
-#if !USE_OSS
-	on = false;
-#endif
-
-	FL_LOCK_D();
-	if (on) {
-		progdefaults.EnableMixer = true;
-#if USE_OSS
-		mixer = new MixerOSS;
-#else
-		mixer = new MixerBase;
-#endif
-		try {
-			mixer->openMixer(progdefaults.MXdevice.c_str());
-		}
-		catch (const MixerException& e) {
-			put_status(e.what(), 5);
-			goto ret;
-		}
-
-		mixer->PCMVolume(progdefaults.PCMvolume);
-		mixer->setXmtLevel(progStatus.XmtMixer); //valXmtMixer->value());
-		mixer->setRcvGain(progStatus.RcvMixer); //valRcvMixer->value());
-		if (progdefaults.LineIn == true)
-			setMixerInput(1);
-		else if (progdefaults.MicIn == true)
-			setMixerInput(2);
-		else
-			setMixerInput(0);
-	}else{
-		progdefaults.EnableMixer = false;
-		if (mixer)
-			mixer->closeMixer();
-		delete mixer;
-                mixer = 0;
-	}
-ret:
-        resetMixerControls();
-	FL_UNLOCK_D();
-}
-
-void resetMixerControls()
-{
-	if (bWF_only) return;
-	if (progdefaults.EnableMixer) {
-		menuMix->activate();
-		btnLineIn->activate();
-		btnMicIn->activate();
-		btnMixer->value(1);
-		valPCMvolume->activate();
-	}
-	else {
-		menuMix->deactivate();
-		btnLineIn->deactivate();
-		btnMicIn->deactivate();
-		btnMixer->value(0);
-		valPCMvolume->deactivate();
-	}
-	UI_select();
-}
-
-void setPCMvolume(double vol)
-{
-	mixer->PCMVolume(vol);
-	progdefaults.PCMvolume = vol;
-}
-
-void setMixerInput(int dev)
-{
-	int n= -1;
-	switch (dev) {
-		case 0: n = mixer->InputSourceNbr("Vol");
-				break;
-		case 1: n = mixer->InputSourceNbr("Line");
-				break;
-		case 2: n = mixer->InputSourceNbr("Mic");
-				break;
-		default: n = mixer->InputSourceNbr("Vol");
-	}
-	if (n != -1)
-		mixer->SetCurrentInputSource(n);
-}
-
 void resetSoundCard()
 {
-    bool mixer_enabled = progdefaults.EnableMixer;
-	enableMixer(false);
 	trx_reset();
-    if (mixer_enabled)
-        enableMixer(true);
 }
 
 void setReverse(int rev) {

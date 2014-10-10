@@ -372,7 +372,6 @@ fldigi_SOURCES += \
 	include/wefax-pic.h \
 	include/navtex.h \
 	include/misc.h \
-	include/mixer.h \
 	include/modem.h \
 	include/morse.h \
 	include/mt63base.h \
@@ -532,7 +531,6 @@ fldigi_SOURCES += \
 	rigcontrol/rigxml.cxx \
 	rigcontrol/serial.cxx \
 	rsid/rsid.cxx \
-	soundcard/mixer.cxx \
 	soundcard/sound.cxx \
 	soundcard/soundconf.cxx \
 	spot/notify.cxx \

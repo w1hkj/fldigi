@@ -112,8 +112,6 @@ status progStatus = {
 	true,				// bool afconoff
 	true,				// bool sqlonoff
 	true,				// bool pwrsqlonoff
-	1.0,				// double	RcvMixer;
-	1.0,				// double	XmtMixer;
 	50,					// int	scopeX;
 	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
@@ -321,8 +319,6 @@ void status::saveLastState()
 	spref.set("squelch_level", sldrSquelchValue);
 	spref.set("pwr_squelch_level", sldrPwrSquelchValue);
 	spref.set("afc_enabled", afconoff);
-	spref.set("rx_mixer_level", RcvMixer);
-	spref.set("tx_mixer_level", XmtMixer);
 
 	spref.set("log_enabled", LOGenabled);
 
@@ -497,8 +493,6 @@ void status::loadLastState()
 	spref.get("squelch_level", i, sldrSquelchValue); sldrSquelchValue = i;
 	spref.get("pwr_squelch_level", i, sldrPwrSquelchValue); sldrPwrSquelchValue = i;
 	spref.get("afc_enabled", i, afconoff); afconoff = i;
-	spref.get("rx_mixer_level", RcvMixer, RcvMixer);
-	spref.get("tx_mixer_level", XmtMixer, XmtMixer);
 
 	spref.get("rx_text_height", RxTextHeight, RxTextHeight);
 	spref.get("tiled_group_x", tiled_group_x, tiled_group_x);
@@ -818,9 +812,6 @@ printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 		sldrSquelch->value(sldrPwrSquelchValue);
 	else
 		sldrSquelch->value(sldrSquelchValue);
-
-	valRcvMixer->value(RcvMixer * 100.0);
-	valXmtMixer->value(XmtMixer * 100.0);
 
 	if (mainX > Fl::w())
 		mainX = 0;

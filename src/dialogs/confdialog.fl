@@ -322,8 +322,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -2751,13 +2751,13 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355}
+        xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open selected
+            label CW open
             xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
@@ -4867,73 +4867,6 @@ progdefaults.changed = true;}
                 code2 {o->minimum(-50); o->maximum(50);}
                 code3 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Spinner2
-              }
-            }
-          }
-          Fl_Group tabMixer {
-            label Mixer open
-            xywh {0 50 600 330} hide
-          } {
-            Fl_Group {} {
-              label {OSS Mixer} open
-              xywh {55 69 490 145} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Check_Button btnMixer {
-                label {Manage mixer}
-                callback {enableMixer(o->value());
-progdefaults.changed = true;}
-                tooltip {Add mixer controls to main dialog} xywh {65 98 125 25} down_box DOWN_BOX
-                code0 {extern void resetMixerControls();}
-                code1 {o->value(progdefaults.EnableMixer);}
-              }
-              Fl_Group menuMix {
-                label {Device:}
-                callback {progdefaults.MXdevice = o->value();
-enableMixer(false);
-enableMixer(true);
-progdefaults.changed = true;} open
-                tooltip {Select Mixer device} xywh {152 141 170 24} box DOWN_BOX color 7
-                code0 {o->value(progdefaults.MXdevice.c_str());}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ListBox
-              } {}
-              Fl_Light_Button btnMicIn {
-                label {Mic In}
-                callback {if (o->value() == 1) {
-    btnLineIn->value(0);
-    progdefaults.LineIn = false;
-    progdefaults.MicIn = true;
-    setMixerInput(2);
-} else {
-    setMixerInput(0);
-    progdefaults.MicIn = false;
-}
-progdefaults.changed = true;}
-                tooltip {Use microphone input} xywh {331 102 74 25}
-              }
-              Fl_Light_Button btnLineIn {
-                label {Line In}
-                callback {if (o->value() == 1) {
-    btnMicIn->value(0);
-    progdefaults.LineIn = true;
-    progdefaults.MicIn = false;
-    setMixerInput(1);
-} else {
-    setMixerInput(0);
-    progdefaults.LineIn = false;
-}
-progdefaults.changed = true;}
-                tooltip {Use Line-In device} xywh {331 141 74 25} selection_color 3
-                code0 {extern void setMixerInput(int);}
-              }
-              Fl_Value_Slider valPCMvolume {
-                label PCM
-                callback {setPCMvolume(o->value());
-progdefaults.changed = true;}
-                tooltip {Set the sound card PCM level} xywh {65 176 340 20} type Horizontal selection_color 15 align 8 value 0.8 textsize 14
-                code0 {extern void setPCMvolume(double);}
-                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                class Fl_Value_Slider2
               }
             }
           }

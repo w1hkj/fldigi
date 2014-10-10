@@ -58,17 +58,6 @@ static void init_oss(void)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
-
-	glob("/dev/mixer*", 0, NULL, &gbuf);
-	for (size_t i = 0; i < gbuf.gl_pathc; i++)
-		menuMix->add(gbuf.gl_pathv[i]);
-	if (progdefaults.MXdevice.length() == 0 && gbuf.gl_pathc)
-		progdefaults.MXdevice = gbuf.gl_pathv[0];
-	globfree(&gbuf);
-	menuMix->value(progdefaults.MXdevice.c_str());
-#else
-	progdefaults.EnableMixer = false;
-	tabMixer->parent()->remove(*tabMixer);
 #endif // USE_OSS
 }
 
@@ -310,17 +299,8 @@ static void sound_init_options(void)
 		}
 	}
 
-	valPCMvolume->value(progdefaults.PCMvolume);
-	btnMicIn->value(progdefaults.MicIn);
-	btnLineIn->value(progdefaults.LineIn);
-
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	inpPulseServer->value(progdefaults.PulseServer.c_str());
-
-	btnMixer->value(progdefaults.EnableMixer);
-	menuMix->value(progdefaults.MXdevice.c_str());
-
-	enableMixer(progdefaults.EnableMixer);
 
 	char sr[6+1];
 	if (progdefaults.in_sample_rate == SAMPLE_RATE_UNSET &&
@@ -435,7 +415,6 @@ void sound_init(void)
 
 	sound_update(progdefaults.btnAudioIOis);
 
-	resetMixerControls();
 }
 
 void sound_close(void)

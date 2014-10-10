@@ -73,8 +73,6 @@ struct status {
 	bool	afconoff;
 	bool	sqlonoff;
 	bool	pwrsqlonoff;
-	double	RcvMixer;
-	double	XmtMixer;
 	int		scopeX;
 	int		scopeY;
 	bool	scopeVisible;

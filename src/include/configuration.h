@@ -1144,28 +1144,9 @@
               "# and position of macro bars\n"                                          \
               "0..9, 1 = default",                                                      \
               1)                                                                        \
-        /* Mixer */                                                                     \
-        ELEM_(std::string, MXdevice, "MXDEVICE",                                        \
-              "Mixer device",                                                           \
-              "")                                                                       \
-        ELEM_(bool, MicIn, "MICIN",                                                     \
-              "Control the microphone mixer channel",                                   \
-              false)                                                                    \
-        ELEM_(bool, LineIn, "LINEIN",                                                   \
-              "Control the line-in mixer channel",                                      \
-              true)                                                                     \
-        ELEM_(bool, EnableMixer, "ENABLEMIXER",                                         \
-              "Enable mixer controls",                                                  \
-              false)                                                                    \
-        ELEM_(double, PCMvolume, "PCMVOLUME",                                           \
-              "PCM channel level",                                                      \
-              0.8)                                                                      \
         ELEM_(double, txlevel, "TXATTEN",                                               \
               "TX attenuator (db) -30 .. 0",                                            \
               -3.0)                                                                     \
-        ELEM_(bool, MuteInput, "MUTEINPUT",                                             \
-              "This setting is currently unused",                                       \
-              true)                                                                     \
         ELEM_(double, TxMonitorLevel, "TXMONITORLEVEL",                                 \
               "Level for monitored (on waterfall) transmit signal",                     \
               0.2)                                                                      \
@@ -1718,7 +1699,6 @@ struct configuration
 	static void reset(void);
 
 	void initInterface();
-	void initMixerDevices();
 	void testCommPorts();
 	const char* strBaudRate();
 	int  BaudRate(size_t);
@@ -1728,8 +1708,6 @@ struct configuration
 
 extern configuration progdefaults;
 
-extern void mixerInputs();
-extern void enableMixer(bool);
 extern Fl_Font font_number(const char* name);
 
 enum { SAMPLE_RATE_UNSET = -1, SAMPLE_RATE_AUTO, SAMPLE_RATE_NATIVE, SAMPLE_RATE_OTHER };
