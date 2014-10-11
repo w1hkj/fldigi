@@ -1,3 +1,67 @@
+
+
+=Version 3.22.00=
+
+2014-10-11  David Freese  <w1hkj@w1hkj.com>
+
+	15fd825: KISS_IO not enabled
+	c9b7ff1: Remove Mixer controls
+	d02acf0: FTextDisplay
+	674da9c: Freq Control
+	bfb001b: Touch Screen UI
+	d7bb247: UI macrobars
+	cad1c86: VSP boolean
+
+2014-10-06  Robert Stiles  <kk5vd@yahoo.com>
+
+	ae3bbf2: Tabulated Widgets Font/Font Size Changes
+	25e1778: Documentation
+
+2014-10-06  David Freese  <w1hkj@w1hkj.com>
+
+	ebd4b2c: PACKAGE_PROJ
+	bae1971: Win32 warnings
+	f9c00f1: UI tweaks
+
+2014-10-06  Robert Stiles  <kk5vd@yahoo.com>
+
+	545c00e: KISS interface
+
+2014-10-06  David Freese  <w1hkj@w1hkj.com>
+
+	4cf8a08: Hide Packet Modem
+	a3d2380: Record loader
+	ed2a465: Delta macro
+	cce79d8: MEMMAP
+	11657a6: WF drop rate
+	988f489: RsID time out
+
+2014-10-06  John Phelps  <kl4yfd@gmail.com>
+
+	0516f19: 8PSK/16PSK modes
+
+2014-10-06  David Freese  <w1hkj@w1hkj.com>
+
+	03ef903: Wizard crash fix
+
+2014-10-06  Stelios Bounanos  <vcs@enotty.net>
+
+	d7fe297: Fix log format string warnings
+	382452a: Build system fixes
+
+2014-10-06  David Freese  <w1hkj@w1hkj.com>
+
+	4ad7967: Default font
+	632eb8a: Power meter
+	1bf6f49: Smeter
+	73cdc07: regex.c fix
+	eb3eb25: fft-scan
+	5176ffb: home directory
+	830a1cb: Analysis modem
+	38d1589: TRX limit check
+	a0f43c9: Win32 Socket::close
+	cf16c3a: SITORB tx issue
+
 2014-08-29  Robert Stiles  <kk5vd@yahoo.com>
 
 	67a744b: Doxygen Inclusion
