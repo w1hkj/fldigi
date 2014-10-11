@@ -347,4 +347,6 @@ bool ask_dir_creation( const std::string & dir );
 
 extern void set_CSV(int how);
 
+extern void set_freq_control_lsd();
+
 #endif

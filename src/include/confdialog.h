@@ -202,6 +202,9 @@ extern Fl_Button *btnNormalSignal;
 extern Fl_Box *normalcolor;
 extern Fl_Button *btnOverSignal;
 extern Fl_Box *overcolor;
+extern Fl_Group *tab_sel_lsd;
+#include <FL/Fl_Choice.H>
+extern Fl_Choice *sel_lsd;
 extern Fl_Group *tabWaterfall;
 extern Fl_Tabs *tabsWaterfall;
 #include "colorbox.h"
@@ -454,7 +457,6 @@ extern Fl_Group *AudioOSS;
 #include <FL/Fl_Input_Choice.H>
 extern Fl_Input_Choice *menuOSSDev;
 extern Fl_Group *AudioPort;
-#include <FL/Fl_Choice.H>
 extern Fl_Choice *menuPortInDev;
 extern Fl_Choice *menuPortOutDev;
 extern Fl_Group *AudioPulse;
