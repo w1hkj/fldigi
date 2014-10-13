@@ -13,7 +13,7 @@
 
 template <class Type>
 class Cmpx
-{ 
+{
   public:
    Type Re,Im;
 
@@ -47,7 +47,7 @@ class Cmpx
    // { Re*=Mult; Im*=Mult; }
    template <class Type2>
     double VectDotProd(Cmpx<Type2> X)  { return Re*X.Re+Im*X.Im; }
-   void Print(char *Form="%+6.3f")
+   void Print(char *Form=(char *)"%+6.3f")
    { printf("["); printf(Form,Re); printf(","); printf(Form,Im); printf("]"); }
 } ;
 

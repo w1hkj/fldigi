@@ -37,6 +37,10 @@ typedef long suseconds_t;
 #  define SIGUSR2 100
 #endif
 
+extern void was_init(void);
+extern int was_init_state(void);
+extern WSADATA * was_data(void);
+
 /*
  * simple adaptors
  */

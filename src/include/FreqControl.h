@@ -133,7 +133,7 @@ private:
 	Fl_Color REVONCOLOR;
 	Fl_Color REVOFFCOLOR;
 	int nD;
-	int active;
+	//int active;
 	long maxVal;
 	long minVal;
 
@@ -162,4 +162,4 @@ protected:
 	bool enable_arrow_keys;
 };
 
-#endif 
+#endif

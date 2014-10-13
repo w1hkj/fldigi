@@ -69,13 +69,13 @@ BLANK::BLANK(trx_mode BLANK_mode) : modem()
 	symlen = SYMLEN;
 	bandwidth = BLANK_BW;
 	samplerate = BLANKSampleRate;
-	
-	flo = LP_F1 / corrRxSampleRate();	
+
+	flo = LP_F1 / corrRxSampleRate();
 	lowpass		= new C_FIR_filter();
 	lowpass->init_lowpass (LP_FIRLEN, LP_DEC, flo );
-	
-	flo = BP_F1 / corrRxSampleRate();	
-	fhi = BP_F2 / corrRxSampleRate();	
+
+	flo = BP_F1 / corrRxSampleRate();
+	fhi = BP_F2 / corrRxSampleRate();
 	bandpass	= new C_FIR_filter();
 	bandpass->init_bandpass (BP_FIRLEN, BP_DEC, flo, fhi );
 
@@ -153,9 +153,9 @@ int BLANK::rx_process(const double *buf, int len)
 // shift in frequency to the base freq of 1000 hz
 		z = mixer(z, frequency);
 // bandpass filter around the shifted center frequency
-// with required bandwidth 
+// with required bandwidth
 		bandpass->run ( z, z );
-		
+
 // binsfft->run(z) copies frequencies of interest
 		complex dummy ;
 		sliding->run (z, &dummy, 0 );

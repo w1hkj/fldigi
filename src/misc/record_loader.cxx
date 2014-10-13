@@ -355,7 +355,7 @@ DerivedRecordLst::~DerivedRecordLst()
 }
 
 // Handle drawing all cells in table
-void DerivedRecordLst::draw_cell(TableContext context, 
+void DerivedRecordLst::draw_cell(TableContext context,
 			  int R, int C, int X, int Y, int W, int H)
 {
 	switch ( context )
@@ -558,7 +558,7 @@ static void fl_input_add( const char * str )
 
 void createRecordLoader()
 {
-	if (dlgRecordLoader) return; 
+	if (dlgRecordLoader) return;
 	dlgRecordLoader = make_record_loader_window();
 	fl_input_add("http://www.w1hkj.com/support_files/");
 	fl_input_add("http://primhillcomputers.com/fldigi/data");

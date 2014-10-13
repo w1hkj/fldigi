@@ -127,8 +127,9 @@ extern Fl_Browser		*qso_opBrowser;
 extern Fl_Value_Slider2	*mvsquelch;
 extern Fl_Value_Slider2	*valRcvMixer;
 extern Fl_Value_Slider2	*valXmtMixer;
-extern Fl_Button			*btnAFC;
-extern Fl_Button			*btnSQL;
+extern Fl_Light_Button		*btnAFC;
+extern Fl_Light_Button		*btnSQL;
+extern Fl_Light_Button		*btnPSQL;
 extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
@@ -144,6 +145,7 @@ extern std::string		main_window_title;
 
 extern int Qwait_time;
 extern int Qidle_time;
+extern bool idling;
 
 extern void toggleRSID();
 
@@ -187,6 +189,7 @@ extern void set_scope_clear_axis();
 
 extern void set_CWwpm();
 extern void put_rx_char(unsigned int data, int style = FTextBase::RECV);
+extern void put_rx_processed_char(unsigned int data, int style = FTextBase::RECV);
 extern void put_sec_char( char chr );
 
 enum status_timeout {
@@ -227,6 +230,21 @@ extern bool que_ok;
 extern void post_queue_execute(void*);
 extern void queue_execute_after_rx(void*);
 
+extern time_t program_start_time;
+
+extern bool xmlrpc_address_override_flag;
+extern bool arq_address_override_flag;
+extern bool kiss_address_override_flag;
+extern std::string override_xmlrpc_address;
+extern std::string override_xmlrpc_port;
+extern std::string override_arq_address;
+extern std::string override_arq_port;
+extern std::string override_kiss_address;
+extern std::string override_kiss_io_port;
+extern std::string override_kiss_out_port;
+extern int override_kiss_dual_port_enabled;
+extern int override_data_io_enabled;
+
 extern int rxtx_charset;
 extern void put_rx_data(int *data, int len);
 
@@ -242,7 +260,7 @@ extern int  get_secondary_char();
 extern void put_echo_char(unsigned int data, int style = FTextBase::XMIT);
 extern char *get_rxtx_data();
 extern char *get_rx_data();
-extern char *get_tx_data(); 
+extern char *get_tx_data();
 
 extern void resetRTTY();
 extern void resetOLIVIA();
@@ -339,6 +357,10 @@ extern void set_default_charset(void);
 extern int  notch_frequency;
 extern void notch_on(int);
 extern void notch_off();
+
+// Set IO port
+extern void enable_kiss(void);
+extern void enable_arq(void);
 
 // thread terminators
 extern void ADIF_RW_close(void);

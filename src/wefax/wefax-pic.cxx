@@ -156,7 +156,7 @@ static double slant_factor_with_ratio( double ratio_percent )
 }
 
 /// Minimum fax number of rows should be at least this size.
-static const int mini_max_fax_lines = 1000 ;
+//static const int mini_max_fax_lines = 1000 ;
 
 /// When set by the user, no new pixel is added or printed.
 /// However, when the printing resumes, the position is not altered.

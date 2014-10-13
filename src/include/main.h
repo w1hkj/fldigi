@@ -27,6 +27,7 @@
 
 #include "ptt.h"
 #include "log.h"
+#include "data_io.h"
 
 #if USE_HAMLIB
 #  include "rigclass.h"

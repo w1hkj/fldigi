@@ -4,7 +4,7 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted in part from code contained in 
+// This file is part of fldigi.  Adapted in part from code contained in
 // gmfsk source code distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -32,7 +32,7 @@
 
 #include "complex.h"
 
-class Digiscope : public Fl_Widget { 
+class Digiscope : public Fl_Widget {
 public:
 #define DEFAULT_WIDTH	100
 #define DEFAULT_HEIGHT	100
@@ -57,7 +57,7 @@ private:
 	scope_mode _mode;
 	double _buf[MAX_LEN];
 	cmplx _zdata[MAX_ZLEN];
-	int _zlen;
+	//int _zlen;
 	int _zptr;
 	unsigned char *vidbuf;
 	unsigned char *vidline;
@@ -88,7 +88,7 @@ public:
 	void rtty(double flo, double fhi, double amp);
 	void mode(scope_mode md);
 	scope_mode mode() { return _mode;};\
-	void xaxis(int n, double y1) { 
+	void xaxis(int n, double y1) {
 		if (n < NUM_GRIDS) _y[n] = y1;
 	}
 	void yaxis(int n, double x1) {

@@ -8,10 +8,10 @@
 // This file is part of fldigi.
 //
 // This code bears some resemblance to code contained in gmfsk from which
-// it originated.  Much has been changed, but credit should still be 
+// it originated.  Much has been changed, but credit should still be
 // given to Tomi Manninen (oh2bns@sral.fi), who so graciously distributed
 // his gmfsk modem under the GPL.
-// 
+//
 // Fldigi is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or

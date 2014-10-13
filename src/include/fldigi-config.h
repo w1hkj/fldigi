@@ -84,8 +84,9 @@ extern int Hmacros;
 #define bwTxLevel	120
 #define bwAfcOnOff	(Hwfall -22)/2
 #define bwSqlOnOff	(Hwfall -22)/2
+#define bwPwrSqlOnOff	(Hwfall -8)/2
 
-#define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - Wwarn)
+#define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - bwPwrSqlOnOff - Wwarn)
 
 #define SCOPEWIN_MIN_WIDTH 48
 #define SCOPEWIN_MIN_HEIGHT 48

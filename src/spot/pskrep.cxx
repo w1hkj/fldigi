@@ -99,7 +99,7 @@ LOG_FILE_SOURCE(debug::LOG_SPOTTER);
 
 static pthread_mutex_t pskrep_mutex = PTHREAD_MUTEX_INITIALIZER;
 //------------------------------------------------------------------------------
- 
+
 // -------------------------------------------------------------------------------------------------
 
 // Try to flush the report queue every SEND_INTERVAL seconds.
@@ -178,7 +178,7 @@ private:
 	vector<unsigned char> long_station_info;
 	vector<unsigned char> short_station_info;
 
-	uint32_t identifier;
+	//uint32_t identifier;
 	uint32_t sequence_number;
 
 	unsigned template_count;
@@ -419,7 +419,7 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 	if (bandq.empty() || rtime - bandq.back().rtime >= DUP_INTERVAL) { // add new
 		bandq.push_back(rcpt_report_t(mode, freq, rtime, rtype, loc));
 		LOG_VERBOSE("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%d, time=%" PRIdMAX ", type=%u)",
-			 call.c_str(), loc, mode_info[mode].adif_name, 
+			 call.c_str(), loc, mode_info[mode].adif_name,
 			 static_cast<int>(freq), (intmax_t)rtime, rtype);
 		new_count++;
 		save_queue();
@@ -430,8 +430,8 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 			r.locator = loc;
 			r.rtype = rtype;
 			LOG_VERBOSE("Updated (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%d, time=%d, type=%u)",
-				 call.c_str(), loc, mode_info[r.mode].adif_name, 
-				 static_cast<int>(r.freq), 
+				 call.c_str(), loc, mode_info[r.mode].adif_name,
+				 static_cast<int>(r.freq),
 				 static_cast<int>(r.rtime), rtype);
 			save_queue();
 		}
@@ -755,8 +755,8 @@ bool pskrep_sender::append(const string& callsign, const band_map_t::value_type&
 
 
 	LOG_INFO("Appending report (call=%s mode=%s freq=%d time=%d type=%u)",
-		 callsign.c_str(), mode_info[r.mode].adif_name, 
-		 static_cast<int>(r.freq), 
+		 callsign.c_str(), mode_info[r.mode].adif_name,
+		 static_cast<int>(r.freq),
 		 static_cast<int>(r.rtime), r.rtype);
 
 	unsigned char* start = dgram + dgram_size;

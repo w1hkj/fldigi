@@ -67,7 +67,7 @@
 #include "ascii.h"
 
 #if USE_HAMLIB
-        #include "hamlib.h"
+#include "hamlib.h"
 #endif
 #include "rigio.h"
 #include "debug.h"
@@ -183,7 +183,7 @@ struct XmlRpcImpl : public XmlRpcServer
 {
 	void open(const char * port)
 	{
-  		bindAndListen( atoi( port ) );
+		bindAndListen( atoi( port ) );
 
 		enableIntrospection(true);
 	}
@@ -231,16 +231,16 @@ XML_RPC_Server::XML_RPC_Server()
 	server_thread = new pthread_t;
 	server_mutex = new pthread_mutex_t;
 	pthread_mutex_init(server_mutex, NULL);
-//	run = true;
+	//	run = true;
 }
 
 XML_RPC_Server::~XML_RPC_Server()
 {
-//	run = false;
-// the xmlrpc server is closed and deleted  when
-// 	XML_RPC_Server::stop();
-// is called from main
-//	delete methods;
+	//	run = false;
+	// the xmlrpc server is closed and deleted  when
+	// 	XML_RPC_Server::stop();
+	// is called from main
+	//	delete methods;
 }
 
 void XML_RPC_Server::start(const char* node, const char* service)
@@ -268,7 +268,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 /// BEWARE IT IS CALLED FROM ANOTHER THREAD.
 void XML_RPC_Server::stop(void)
 {
-// FIXME: uncomment when we have an xmlrpc server that can be interrupted
+	// FIXME: uncomment when we have an xmlrpc server that can be interrupted
 	// if (!inst)
 	//	return;
 	inst->server_impl->close();
@@ -295,7 +295,7 @@ ostream& XML_RPC_Server::list_methods(ostream& out)
 	ios_base::fmtflags f = out.flags(ios::left);
 	for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i)
 		out << setw(32) << i->name << setw(8) << i->method->signature()
-		    << i->method->help() << '\n';
+		<< i->method->help() << '\n';
 
 	return out << setiosflags(f);
 }
@@ -320,6 +320,12 @@ static void set_valuator(Fl_Valuator* valuator, double value)
 	valuator->do_callback();
 }
 static void set_text(Fl_Input* textw, string& value)
+{
+	textw->value(value.c_str());
+	textw->do_callback();
+}
+
+static void set_text2(Fl_Input2* textw, string& value)
 {
 	textw->value(value.c_str());
 	textw->do_callback();
@@ -376,7 +382,7 @@ public:
 		_help = "Returns the list of methods.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		vector<xmlrpc_c::value> help;
 		for (methods_t::const_iterator i = methods->begin(); i != methods->end(); ++i) {
 			map<string, xmlrpc_c::value> item;
@@ -399,7 +405,7 @@ public:
 		_help = "Returns the program name.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(PACKAGE_TARNAME);
 	}
 };
@@ -413,7 +419,7 @@ public:
 		_help = "Returns the program version as a struct.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		map<string, xmlrpc_c::value> vstruct;
 		vstruct["major"] = xmlrpc_c::value_int(FLDIGI_VERSION_MAJOR);
 		vstruct["minor"] = xmlrpc_c::value_int(FLDIGI_VERSION_MINOR);
@@ -431,7 +437,7 @@ public:
 		_help = "Returns the program version as a string.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(PACKAGE_VERSION);
 	}
 };
@@ -445,7 +451,7 @@ public:
 		_help = "Returns the program name and version.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(PACKAGE_STRING);
 	}
 };
@@ -459,7 +465,7 @@ public:
 		_help = "Returns the name of the configuration directory.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(HomeDir);
 	}
 };
@@ -514,7 +520,7 @@ public:
 		_help = "Returns the name of the current modem.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		const char* cur = mode_info[active_modem->get_mode()].sname;
 		*retval = xmlrpc_c::value_string(cur);
 	}
@@ -529,7 +535,7 @@ public:
 		_help = "Returns all modem names.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		vector<xmlrpc_c::value> names;
 		names.reserve(NUM_MODES);
 		for (size_t i = 0; i < NUM_MODES; i++)
@@ -547,8 +553,8 @@ public:
 		_help = "Returns the ID of the current modem.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
-        int md = active_modem->get_mode();
+	{
+		int md = active_modem->get_mode();
 		*retval = xmlrpc_c::value_int(md);
 	}
 };
@@ -562,7 +568,7 @@ public:
 		_help = "Returns the maximum modem ID number.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_int(NUM_MODES - 1);
 	}
 };
@@ -576,7 +582,7 @@ public:
 		_help = "Sets the current modem. Returns old name.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		const char* cur = mode_info[active_modem->get_mode()].sname;
 
@@ -602,7 +608,7 @@ public:
 		_help = "Sets the current modem. Returns old ID.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		int cur = active_modem->get_mode();
 
@@ -624,7 +630,7 @@ public:
 		_help = "Sets modem carrier. Returns old carrier.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		int cur = active_modem->get_freq();
 		active_modem->set_freq(params.getInt(0, 1));
@@ -641,7 +647,7 @@ public:
 		_help = "Increments the modem carrier frequency. Returns the new carrier.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		int cur = active_modem->get_freq();
 		active_modem->set_freq(cur + params.getInt(0));
@@ -658,7 +664,7 @@ public:
 		_help = "Returns the modem carrier frequency.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_int(active_modem->get_freq());
 	}
 };
@@ -674,7 +680,7 @@ public:
 		_help = "Returns the modem AFC search range.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR))
 			*retval = "Operation not supported by modem";
 		else
@@ -691,7 +697,7 @@ public:
 		_help = "Sets the modem AFC search range. Returns the old value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
 			*retval = "Operation not supported by modem";
@@ -713,7 +719,7 @@ public:
 		_help = "Increments the modem AFC search range. Returns the new value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (!(active_modem->get_cap() & modem::CAP_AFC_SR)) {
 			*retval = "Operation not supported by modem";
@@ -750,12 +756,12 @@ public:
 		_help = "Returns the modem bandwidth.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
-			Fl_Valuator* val = get_bw_val();
-			if (val)
-				*retval = xmlrpc_c::value_int((int)get_bw_val()->value());
-			else
-				*retval = xmlrpc_c::value_int(0);
+	{
+		Fl_Valuator* val = get_bw_val();
+		if (val)
+			*retval = xmlrpc_c::value_int((int)get_bw_val()->value());
+		else
+			*retval = xmlrpc_c::value_int(0);
 	}
 };
 
@@ -768,7 +774,7 @@ public:
 		_help = "Sets the modem bandwidth. Returns the old value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		Fl_Valuator* val = get_bw_val();
 		if (val) {
@@ -789,7 +795,7 @@ public:
 		_help = "Increments the modem bandwidth. Returns the new value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		Fl_Valuator* val = get_bw_val();
 		if (val) {
@@ -812,7 +818,7 @@ public:
 		_help = "Returns the modem signal quality in the range [0:100].";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_double(pgrsSquelch->value());
 	}
 };
@@ -826,7 +832,7 @@ public:
 		_help = "Searches upward in frequency.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(&modem::searchUp, active_modem);
 		*retval = xmlrpc_c::value_nil();
@@ -842,7 +848,7 @@ public:
 		_help = "Searches downward in frequency.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(&modem::searchDown, active_modem);
 		*retval = xmlrpc_c::value_nil();
@@ -861,15 +867,15 @@ public:
 	{
 		int bw;
 		switch (bw = params.getInt(0)) {
-		case 125: case 250: case 500: case 1000: case 2000:
-		{
-			XMLRPC_LOCK;
-			REQ_SYNC(set_olivia_bw, bw);
-			*retval = xmlrpc_c::value_nil();
-		}
-			break;
-		default:
-			*retval = "Invalid Olivia bandwidth";
+			case 125: case 250: case 500: case 1000: case 2000:
+			{
+				XMLRPC_LOCK;
+				REQ_SYNC(set_olivia_bw, bw);
+				*retval = xmlrpc_c::value_nil();
+			}
+				break;
+			default:
+				*retval = "Invalid Olivia bandwidth";
 		}
 	}
 };
@@ -947,7 +953,7 @@ public:
 		_help = "Returns the contents of the first status field (typically s/n).";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(Status1->label());
 	}
 };
@@ -961,7 +967,7 @@ public:
 		_help = "Returns the contents of the second status field.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(Status2->label());
 	}
 };
@@ -975,7 +981,7 @@ public:
 		_help = "[DEPRECATED; use main.get_wf_sideband and/or rig.get_mode]";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
 	}
 };
@@ -989,7 +995,7 @@ public:
 		_help = "[DEPRECATED; use main.set_wf_sideband and/or rig.set_mode]";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		string s = params.getString(0);
 		if (s != "LSB" && s != "USB") {
@@ -1019,7 +1025,7 @@ public:
 		_help = "Returns the current waterfall sideband.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(wf->USB() ? "USB" : "LSB");
 	}
 };
@@ -1033,13 +1039,13 @@ public:
 		_help = "Sets the waterfall sideband to USB or LSB.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		string s = params.getString(0);
 		if (s != "USB" && s != "LSB")
 			*retval = "Invalid argument";
 		else
-		REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
+			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();
 	}
@@ -1055,8 +1061,8 @@ public:
 		_help = "Returns the RF carrier frequency.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
-        double rfc = wf->rfcarrier();
+	{
+		double rfc = wf->rfcarrier();
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -1077,7 +1083,7 @@ public:
 		_help = "Sets the RF carrier frequency. Returns the old value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
 		qsy((long long int)params.getDouble(0, 0.0));
@@ -1094,7 +1100,7 @@ public:
 		_help = "Increments the RF carrier frequency. Returns the new value.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier() + params.getDouble(0);
 		qsy((long long int)rfc);
@@ -1113,7 +1119,7 @@ public:
 		_help = "Returns the AFC state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_boolean(btnAFC->value());
 	}
 };
@@ -1127,7 +1133,7 @@ public:
 		_help = "Sets the AFC state. Returns the old state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = btnAFC->value();
 		REQ(set_button, btnAFC, params.getBoolean(0));
@@ -1144,7 +1150,7 @@ public:
 		_help = "Toggles the AFC state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = !btnAFC->value();
 		REQ(set_button, btnAFC, v);
@@ -1163,7 +1169,7 @@ public:
 		_help = "Returns the squelch state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_boolean(btnSQL->value());
 	}
 };
@@ -1177,7 +1183,7 @@ public:
 		_help = "Sets the squelch state. Returns the old state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = btnSQL->value();
 		REQ(set_button, btnSQL, params.getBoolean(0));
@@ -1194,7 +1200,7 @@ public:
 		_help = "Toggles the squelch state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = !btnSQL->value();
 		REQ(set_button, btnSQL, v);
@@ -1213,7 +1219,7 @@ public:
 		_help = "Returns the squelch level.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_double(sldrSquelch->value());
 	}
 };
@@ -1227,7 +1233,7 @@ public:
 		_help = "Sets the squelch level. Returns the old level.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		double v = sldrSquelch->value();
 		REQ(set_valuator, sldrSquelch, params.getDouble(0, sldrSquelch->maximum(), sldrSquelch->minimum()));
@@ -1244,7 +1250,7 @@ public:
 		_help = "Increments the squelch level. Returns the new level.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		double v = sldrSquelch->value();
 		REQ(set_valuator, sldrSquelch, v + params.getDouble(0)); // FIXME: check range
@@ -1263,7 +1269,7 @@ public:
 		_help = "Returns the Reverse Sideband state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_boolean(wf->btnRev->value());
 	}
 };
@@ -1277,7 +1283,7 @@ public:
 		_help = "Sets the Reverse Sideband state. Returns the old state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = wf->btnRev->value();
 		REQ(set_button, wf->btnRev, params.getBoolean(0));
@@ -1294,7 +1300,7 @@ public:
 		_help = "Toggles the Reverse Sideband state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = !wf->btnRev->value();
 		REQ(set_button, wf->btnRev, v);
@@ -1313,7 +1319,7 @@ public:
 		_help = "Returns the Transmit Lock state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_boolean(wf->xmtlock->value());
 	}
 };
@@ -1327,7 +1333,7 @@ public:
 		_help = "Sets the Transmit Lock state. Returns the old state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = wf->xmtlock->value();
 		REQ(set_button, wf->xmtlock, params.getBoolean(0));
@@ -1344,7 +1350,7 @@ public:
 		_help = "Toggles the Transmit Lock state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = !wf->xmtlock->value();
 		REQ(set_button, wf->xmtlock, v);
@@ -1363,7 +1369,7 @@ public:
 		_help = "Returns the RSID state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_boolean(btnRSID->value());
 	}
 };
@@ -1377,7 +1383,7 @@ public:
 		_help = "Sets the RSID state. Returns the old state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = btnRSID->value();
 		REQ(set_button, btnRSID, params.getBoolean(0));
@@ -1394,7 +1400,7 @@ public:
 		_help = "Toggles the RSID state. Returns the new state.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		bool v = !btnRSID->value();
 		REQ(set_button, btnRSID, v);
@@ -1413,7 +1419,7 @@ public:
 		_help = "Returns transmit/tune/receive status.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		if (btnTune->value())
 			*retval = xmlrpc_c::value_string("tune");
 		else if (wf->xmtrcv->value())
@@ -1432,7 +1438,7 @@ public:
 		_help = "Transmits.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (!wf->xmtrcv->value())
 			REQ(set_button, wf->xmtrcv, true);
@@ -1449,7 +1455,7 @@ public:
 		_help = "Tunes.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (!btnTune->value())
 			REQ(set_button, btnTune, !btnTune->value());
@@ -1466,7 +1472,7 @@ public:
 		_help = "Receives.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (wf->xmtrcv->value())
 			REQ(set_button, wf->xmtrcv, false);
@@ -1483,7 +1489,7 @@ public:
 		_help = "Aborts a transmit or tune.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
 			REQ(abort_tx);
@@ -1502,7 +1508,7 @@ public:
 		_help = "Sets normal Rx/Tx switching.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
 			REQ(abort_tx);
@@ -1522,7 +1528,7 @@ public:
 		_help = "Disables Tx.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (trx_state == STATE_TX || trx_state == STATE_TUNE) {
 			REQ(abort_tx);
@@ -1542,7 +1548,7 @@ public:
 		_help = "Runs a macro.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(&Main_run_macro::run_macro, params.getInt(0, 0, MAXMACROS-1));
 		*retval = xmlrpc_c::value_nil();
@@ -1559,7 +1565,7 @@ public:
 		_help = "Returns the maximum macro ID number.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_int(MAXMACROS - 1);
 	}
 };
@@ -1573,7 +1579,7 @@ public:
 		_help = "[DEPRECATED; use main.{get,set,toggle}_rsid]";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		if (!(wf->xmtrcv->value() || btnTune->value() || btnRSID->value()))
 			REQ(set_button, btnRSID, true);
@@ -1647,7 +1653,7 @@ public:
 	{
 		trx_mode id = active_modem->get_mode();
 		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-			 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
+			id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
 			*retval = xmlrpc_c::value_string("0:1:0");
 			return;
 		}
@@ -1668,8 +1674,8 @@ public:
 				i = m*8+n;
 
 				if ( (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
-					 (id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
-					 id == MODE_CW || id == MODE_RTTY ) {
+					(id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
+					id == MODE_CW || id == MODE_RTTY ) {
 					s1 = number_of_samples(string(1,i));
 					chsamples = active_modem->char_samples;
 				} else {
@@ -1682,8 +1688,8 @@ public:
 					chsamples = (s1 - s0) / (j-1);
 				}
 				snprintf(result, sizeof(result),
-					n == 7 ? " %.8f\n" : n == 0 ? "%.8f," : " %.8f,",
-					1.0 * chsamples / active_modem->get_samplerate());
+						 n == 7 ? " %.8f\n" : n == 0 ? "%.8f," : " %.8f,",
+						 1.0 * chsamples / active_modem->get_samplerate());
 				line.append(result);
 			}
 			xmlbuf.append(line);
@@ -1704,7 +1710,7 @@ public:
 	{
 		trx_mode id = active_modem->get_mode();
 		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-			 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
+			id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
 			*retval = xmlrpc_c::value_string("0,1,0,0,0.0");
 			return;
 		}
@@ -1735,8 +1741,8 @@ public:
 		unsigned int s0 = 0, chsamples = 0, over_head = 0;
 
 		if ( (id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
-			  (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
-			  id == MODE_CW || id == MODE_RTTY ) {
+			(id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
+			id == MODE_CW || id == MODE_RTTY ) {
 			s0 = number_of_samples(string(1,character));
 			chsamples = active_modem->char_samples;
 			over_head = active_modem->ovhd_samples;
@@ -1758,9 +1764,9 @@ public:
 			over_head = s1 - (chsamples * k);
 		}
 
-		snprintf(result, sizeof(result), "%5u:%6u:%6u", chsamples,  
-			active_modem->get_samplerate(),
-			over_head);
+		snprintf(result, sizeof(result), "%5u:%6u:%6u", chsamples,
+				 active_modem->get_samplerate(),
+				 over_head);
 		xmlbuf.assign(result);
 
 		*retval = xmlrpc_c::value_string(xmlbuf);
@@ -1779,8 +1785,8 @@ public:
 	{
 		trx_mode id = active_modem->get_mode();
 		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-			 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-			 id == MODE_SITORB || id == MODE_NAVTEX ) {
+			id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+			id == MODE_SITORB || id == MODE_NAVTEX ) {
 			*retval = xmlrpc_c::value_string("0:1:0.0");
 			return;
 		}
@@ -1799,8 +1805,8 @@ public:
 		char buf[64];
 		memset(buf, 0, sizeof(buf));
 		snprintf(buf, sizeof(buf) - 1, "%u : %u : %.9f", \
-				chsamples,  active_modem->tx_sample_rate,
-				1.0 * chsamples / active_modem->tx_sample_rate);
+				 chsamples,  active_modem->tx_sample_rate,
+				 1.0 * chsamples / active_modem->tx_sample_rate);
 		xmlbuf.assign(buf);
 		*retval = xmlrpc_c::value_string(xmlbuf);
 	}
@@ -1855,7 +1861,7 @@ public:
 		show_frequency(rfc);
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
 		REQ(set_frequency, (long long int)params.getDouble(0, 0.0));
@@ -1880,7 +1886,7 @@ public:
 		}
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(set_smeter, params.getInt(0));
 		*retval = xmlrpc_c::value_nil();
@@ -1904,7 +1910,7 @@ public:
 		}
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(set_pwrmeter, params.getInt(0));
 		*retval = xmlrpc_c::value_nil();
@@ -2231,7 +2237,7 @@ public:
 		_help = "Returns the Frequency field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpFreq->value());
 	}
 };
@@ -2245,7 +2251,7 @@ public:
 		_help = "Returns the Time-On field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpTimeOn->value());
 	}
 };
@@ -2259,7 +2265,7 @@ public:
 		_help = "Returns the Time-Off field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpTimeOff->value());
 	}
 };
@@ -2273,7 +2279,7 @@ public:
 		_help = "Returns the Call field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpCall->value());
 	}
 };
@@ -2287,7 +2293,7 @@ public:
 		_help = "Sets the Call field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(set_text, inpCall, params.getString(0));
 
@@ -2304,7 +2310,7 @@ public:
 		_help = "Returns the Name field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpName->value());
 	}
 };
@@ -2318,7 +2324,7 @@ public:
 		_help = "Sets the Name field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(set_text, inpName, params.getString(0));
 
@@ -2369,8 +2375,25 @@ public:
 		_help = "Returns the RST(r) field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpRstIn->value());
+	}
+};
+
+class Log_set_rst_in : public xmlrpc_c::method
+{
+public:
+	Log_set_rst_in()
+	{
+		_signature = "s:n";
+		_help = "Sets the RST(r) field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		REQ(set_text2, inpRstIn, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -2383,8 +2406,25 @@ public:
 		_help = "Returns the RST(s) field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpRstOut->value());
+	}
+};
+
+class Log_set_rst_out : public xmlrpc_c::method
+{
+public:
+	Log_set_rst_out()
+	{
+		_signature = "s:n";
+		_help = "Sets the RST(s) field contents.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		REQ(set_text2, inpRstOut, params.getString(0));
+
+		*retval = xmlrpc_c::value_nil();
 	}
 };
 
@@ -2397,7 +2437,7 @@ public:
 		_help = "Returns the serial number field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpSerNo->value());
 	}
 };
@@ -2411,7 +2451,7 @@ public:
 		_help = "Sets the serial number field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(set_text, inpSerNo, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
@@ -2427,7 +2467,7 @@ public:
 		_help = "Returns the serial number (sent) field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(outSerNo->value());
 	}
 };
@@ -2441,7 +2481,7 @@ public:
 		_help = "Returns the contest exchange field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpXchgIn->value());
 	}
 };
@@ -2455,7 +2495,7 @@ public:
 		_help = "Sets the contest exchange field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(set_text, inpXchgIn, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
@@ -2471,7 +2511,7 @@ public:
 		_help = "Returns the State field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpState->value());
 	}
 };
@@ -2485,7 +2525,7 @@ public:
 		_help = "Returns the Province field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpVEprov->value());
 	}
 };
@@ -2499,7 +2539,7 @@ public:
 		_help = "Returns the Country field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpCountry->value());
 	}
 };
@@ -2513,7 +2553,7 @@ public:
 		_help = "Returns the QTH field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpQth->value());
 	}
 };
@@ -2527,7 +2567,7 @@ public:
 		_help = "Returns the current band name.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(band_name(band(wf->rfcarrier())));
 	}
 };
@@ -2547,7 +2587,7 @@ public:
 		_help = "Returns the Notes field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpNotes->value());
 	}
 };
@@ -2561,7 +2601,7 @@ public:
 		_help = "Returns the Locator field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpLoc->value());
 	}
 };
@@ -2575,7 +2615,7 @@ public:
 		_help = "Returns the AZ field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_string(inpAZ->value());
 	}
 };
@@ -2598,6 +2638,59 @@ public:
 
 // =============================================================================
 
+class Io_in_use : public xmlrpc_c::method
+{
+public:
+	Io_in_use()
+	{
+		_signature = "s:n";
+		_help = "Returns the IO port in use (ARQ/KISS).";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		if(data_io_enabled == KISS_IO)
+			*retval = xmlrpc_c::value_string("KISS");
+		else if(data_io_enabled == ARQ_IO)
+			*retval = xmlrpc_c::value_string("ARQ");
+		else
+			*retval = xmlrpc_c::value_string(" ");
+	}
+};
+
+class Io_enable_kiss : public xmlrpc_c::method
+{
+public:
+	Io_enable_kiss()
+	{
+		_signature = "n:n";
+		_help = "Switch to KISS I/O";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		REQ(enable_kiss);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+class Io_enable_arq : public xmlrpc_c::method
+{
+public:
+	Io_enable_arq()
+	{
+		_signature = "n:n";
+		_help = "Switch to ARQ I/O";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		REQ(enable_arq);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+// =============================================================================
+
 class Text_get_rx_length : public xmlrpc_c::method
 {
 public:
@@ -2607,7 +2700,7 @@ public:
 		_help = "Returns the number of characters in the RX widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		*retval = xmlrpc_c::value_int(ReceiveText->buffer()->length());
 	}
 };
@@ -2621,7 +2714,7 @@ public:
 		_help = "Returns a range of characters (start, length) from the RX text widget.";
 	}
 	static void get_rx_text_range(const xmlrpc_c::paramList* params, xmlrpc_c::fault** err,
-				      char** text, int* size)
+								  char** text, int* size)
 	{
 		// the get* methods may throw but this function is not allowed to do so
 		try {
@@ -2645,7 +2738,7 @@ public:
 		}
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		xmlrpc_c::fault* err = NULL;
 		char* text;
@@ -2678,7 +2771,7 @@ public:
 		_help = "Clears the RX text widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(&FTextBase::clear, ReceiveText);
 		*retval = xmlrpc_c::value_nil();
@@ -2694,7 +2787,7 @@ public:
 		_help = "Adds a string to the TX text widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
@@ -2710,7 +2803,7 @@ public:
 		_help = "Adds a byte string to the TX text widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		vector<unsigned char> bytes = params.getBytestring(0);
 		bytes.push_back(0);
@@ -2729,7 +2822,7 @@ public:
 		_help = "Clears the TX text widget.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		REQ(&FTextBase::clear, TransmitText);
 		*retval = xmlrpc_c::value_nil();
@@ -2753,7 +2846,7 @@ public:
 		*size = strlen(*text);
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		char *text;
 		int size;
@@ -2782,7 +2875,7 @@ public:
 		*size = strlen(*text);
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		char *text;
 		int size;
@@ -2811,7 +2904,7 @@ public:
 		*size = strlen(*text);
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-        {
+	{
 		XMLRPC_LOCK;
 		char *text;
 		int size;
@@ -2895,7 +2988,7 @@ public:
 static wefax * get_wefax(void)
 {
 	if( ( active_modem->get_mode() >= MODE_WEFAX_FIRST )
- 	 && ( active_modem->get_mode() <= MODE_WEFAX_LAST ) )
+	   && ( active_modem->get_mode() <= MODE_WEFAX_LAST ) )
 	{
 		wefax * ptr = dynamic_cast<wefax *>( active_modem );
 		if( ptr == NULL ) throw runtime_error("Inconsistent wefax object");
@@ -3094,7 +3187,7 @@ struct Wefax_send_file : public xmlrpc_c::method
 static navtex * get_navtex(void)
 {
 	if( ( active_modem->get_mode() != MODE_NAVTEX )
-	 && ( active_modem->get_mode() != MODE_SITORB ) )
+	   && ( active_modem->get_mode() != MODE_SITORB ) )
 	{
 		navtex * ptr = dynamic_cast<navtex *>( active_modem );
 		if( ptr == NULL ) throw runtime_error("Inconsistent navtex object");
@@ -3144,185 +3237,191 @@ struct Navtex_send_message : public xmlrpc_c::method
 // method list: ELEM_(class_name, "method_name")
 #undef ELEM_
 #define METHOD_LIST														\
-	ELEM_(Fldigi_list, "fldigi.list")									\
-	ELEM_(Fldigi_name, "fldigi.name")									\
-	ELEM_(Fldigi_version_struct, "fldigi.version_struct")			\
-	ELEM_(Fldigi_version_string, "fldigi.version")					\
-	ELEM_(Fldigi_name_version, "fldigi.name_version")					\
-	ELEM_(Fldigi_config_dir, "fldigi.config_dir")						\
-	ELEM_(Fldigi_terminate, "fldigi.terminate")						\
-																		\
-	ELEM_(Modem_get_name, "modem.get_name")							\
-	ELEM_(Modem_get_names, "modem.get_names")							\
-	ELEM_(Modem_get_id, "modem.get_id")								\
-	ELEM_(Modem_get_max_id, "modem.get_max_id")						\
-	ELEM_(Modem_set_by_name, "modem.set_by_name")						\
-	ELEM_(Modem_set_by_id, "modem.set_by_id")							\
-																		\
-	ELEM_(Modem_set_carrier, "modem.set_carrier")						\
-	ELEM_(Modem_inc_carrier, "modem.inc_carrier")						\
-	ELEM_(Modem_get_carrier, "modem.get_carrier")						\
-																		\
-	ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")				\
-	ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")				\
-	ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")				\
-																		\
-	ELEM_(Modem_get_bw, "modem.get_bandwidth")							\
-	ELEM_(Modem_set_bw, "modem.set_bandwidth")							\
-	ELEM_(Modem_inc_bw, "modem.inc_bandwidth")							\
-																		\
-	ELEM_(Modem_get_quality, "modem.get_quality")						\
-	ELEM_(Modem_search_up, "modem.search_up")							\
-	ELEM_(Modem_search_down, "modem.search_down")						\
-																		\
-	ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")	\
-	ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")	\
-	ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")			\
-	ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")			\
-																		\
-	ELEM_(Main_get_status1, "main.get_status1")						\
-	ELEM_(Main_get_status2, "main.get_status2")						\
-																		\
-	ELEM_(Main_get_sb, "main.get_sideband")							\
-	ELEM_(Main_set_sb, "main.set_sideband")							\
-	ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")				\
-	ELEM_(Main_set_wf_sideband, "main.set_wf_sideband")				\
-	ELEM_(Main_get_freq, "main.get_frequency")						\
-	ELEM_(Main_set_freq, "main.set_frequency")						\
-	ELEM_(Main_inc_freq, "main.inc_frequency")						\
-																		\
-	ELEM_(Main_get_afc, "main.get_afc")								\
-	ELEM_(Main_set_afc, "main.set_afc")								\
-	ELEM_(Main_toggle_afc, "main.toggle_afc")							\
-																		\
-	ELEM_(Main_get_sql, "main.get_squelch")							\
-	ELEM_(Main_set_sql, "main.set_squelch")							\
-	ELEM_(Main_toggle_sql, "main.toggle_squelch")						\
-																		\
-	ELEM_(Main_get_sql_level, "main.get_squelch_level")				\
-	ELEM_(Main_set_sql_level, "main.set_squelch_level")				\
-	ELEM_(Main_inc_sql_level, "main.inc_squelch_level")				\
-																		\
-	ELEM_(Main_get_rev, "main.get_reverse")							\
-	ELEM_(Main_set_rev, "main.set_reverse")							\
-	ELEM_(Main_toggle_rev, "main.toggle_reverse")						\
-																		\
-	ELEM_(Main_get_lock, "main.get_lock")								\
-	ELEM_(Main_set_lock, "main.set_lock")								\
-	ELEM_(Main_toggle_lock, "main.toggle_lock")						\
-																		\
-	ELEM_(Main_get_rsid, "main.get_rsid")								\
-	ELEM_(Main_set_rsid, "main.set_rsid")								\
-	ELEM_(Main_toggle_rsid, "main.toggle_rsid")						\
-																		\
-	ELEM_(Main_get_trx_status, "main.get_trx_status")					\
-	ELEM_(Main_tx, "main.tx")											\
-	ELEM_(Main_tune, "main.tune")										\
-	ELEM_(Main_rsid, "main.rsid")										\
-	ELEM_(Main_rx, "main.rx")											\
-	ELEM_(Main_rx_tx, "main.rx_tx")									\
-	ELEM_(Main_rx_only, "main.rx_only")								\
-	ELEM_(Main_abort, "main.abort")									\
-																		\
-	ELEM_(Main_get_trx_state, "main.get_trx_state")					\
-	ELEM_(Main_get_tx_timing, "main.get_tx_timing")					\
-	ELEM_(Main_get_char_rates, "main.get_char_rates")					\
-	ELEM_(Main_get_char_timing, "main.get_char_timing")				\
-	ELEM_(Main_set_rig_name, "main.set_rig_name")						\
-	ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")			\
-	ELEM_(Main_set_rig_modes, "main.set_rig_modes")					\
-	ELEM_(Main_set_rig_mode, "main.set_rig_mode")						\
-	ELEM_(Main_get_rig_modes, "main.get_rig_modes")					\
-	ELEM_(Main_get_rig_mode, "main.get_rig_mode")						\
-	ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")		\
-	ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")			\
-	ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")			\
-	ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")		\
-																		\
-	ELEM_(Main_run_macro, "main.run_macro")							\
-	ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")			\
-																		\
-	ELEM_(Rig_set_name, "rig.set_name")								\
-	ELEM_(Rig_get_name, "rig.get_name")								\
-	ELEM_(Rig_set_frequency, "rig.set_frequency")						\
-	ELEM_(Rig_set_smeter, "rig.set_smeter")							\
-	ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")							\
-	ELEM_(Rig_set_modes, "rig.set_modes")								\
-	ELEM_(Rig_set_mode, "rig.set_mode")								\
-	ELEM_(Rig_get_modes, "rig.get_modes")								\
-	ELEM_(Rig_get_mode, "rig.get_mode")								\
-	ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")					\
-	ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")						\
-	ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")						\
-	ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
-	ELEM_(Rig_get_notch, "rig.get_notch")								\
-	ELEM_(Rig_set_notch, "rig.set_notch")								\
-	ELEM_(Rig_take_control, "rig.take_control")						\
-	ELEM_(Rig_release_control, "rig.release_control")					\
-																		\
-	ELEM_(Log_get_freq, "log.get_frequency")							\
-	ELEM_(Log_get_time_on, "log.get_time_on")							\
-	ELEM_(Log_get_time_off, "log.get_time_off")						\
-	ELEM_(Log_get_call, "log.get_call")								\
-	ELEM_(Log_get_name, "log.get_name")								\
-	ELEM_(Log_get_rst_in, "log.get_rst_in")							\
-	ELEM_(Log_get_rst_out, "log.get_rst_out")							\
-	ELEM_(Log_get_serial_number, "log.get_serial_number")			\
-	ELEM_(Log_set_serial_number, "log.set_serial_number")			\
-	ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
-	ELEM_(Log_get_exchange, "log.get_exchange")						\
-	ELEM_(Log_set_exchange, "log.set_exchange")						\
-	ELEM_(Log_get_state, "log.get_state")								\
-	ELEM_(Log_get_province, "log.get_province")						\
-	ELEM_(Log_get_country, "log.get_country")							\
-	ELEM_(Log_get_qth, "log.get_qth")									\
-	ELEM_(Log_get_band, "log.get_band")								\
-	ELEM_(Log_get_sb, "log.get_sideband")								\
-	ELEM_(Log_get_notes, "log.get_notes")								\
-	ELEM_(Log_get_locator, "log.get_locator")							\
-	ELEM_(Log_get_az, "log.get_az")									\
-	ELEM_(Log_clear, "log.clear")										\
-	ELEM_(Log_set_call, "log.set_call")								\
-	ELEM_(Log_set_name, "log.set_name")								\
-	ELEM_(Log_set_qth, "log.set_qth")									\
-	ELEM_(Log_set_locator, "log.set_locator")							\
-																		\
-	ELEM_(Text_get_rx_length, "text.get_rx_length")					\
-	ELEM_(Text_get_rx, "text.get_rx")									\
-	ELEM_(Text_clear_rx, "text.clear_rx")								\
-	ELEM_(Text_add_tx, "text.add_tx")									\
-	ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")						\
-	ELEM_(Text_clear_tx, "text.clear_tx")								\
-																		\
-	ELEM_(RXTX_get_data, "rxtx.get_data")								\
-	ELEM_(RX_get_data, "rx.get_data")									\
-	ELEM_(TX_get_data, "tx.get_data")									\
-																		\
-	ELEM_(Spot_get_auto, "spot.get_auto")								\
-	ELEM_(Spot_set_auto, "spot.set_auto")								\
-	ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
-	ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")			\
-																		\
-	ELEM_(Wefax_state_string, "wefax.state_string")					\
-	ELEM_(Wefax_skip_apt, "wefax.skip_apt")							\
-	ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")					\
-	ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")		\
-	ELEM_(Wefax_end_reception, "wefax.end_reception")					\
-	ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")	\
-	ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")					\
-	ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")					\
-	ELEM_(Wefax_get_received_file, "wefax.get_received_file")		\
-	ELEM_(Wefax_send_file, "wefax.send_file")							\
-																		\
-	ELEM_(Navtex_get_message, "navtex.get_message")					\
-	ELEM_(Navtex_send_message, "navtex.send_message")					\
+ELEM_(Fldigi_list, "fldigi.list")									\
+ELEM_(Fldigi_name, "fldigi.name")									\
+ELEM_(Fldigi_version_struct, "fldigi.version_struct")			\
+ELEM_(Fldigi_version_string, "fldigi.version")					\
+ELEM_(Fldigi_name_version, "fldigi.name_version")					\
+ELEM_(Fldigi_config_dir, "fldigi.config_dir")						\
+ELEM_(Fldigi_terminate, "fldigi.terminate")						\
+\
+ELEM_(Modem_get_name, "modem.get_name")							\
+ELEM_(Modem_get_names, "modem.get_names")							\
+ELEM_(Modem_get_id, "modem.get_id")								\
+ELEM_(Modem_get_max_id, "modem.get_max_id")						\
+ELEM_(Modem_set_by_name, "modem.set_by_name")						\
+ELEM_(Modem_set_by_id, "modem.set_by_id")							\
+\
+ELEM_(Modem_set_carrier, "modem.set_carrier")						\
+ELEM_(Modem_inc_carrier, "modem.inc_carrier")						\
+ELEM_(Modem_get_carrier, "modem.get_carrier")						\
+\
+ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")				\
+ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")				\
+ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")				\
+\
+ELEM_(Modem_get_bw, "modem.get_bandwidth")							\
+ELEM_(Modem_set_bw, "modem.set_bandwidth")							\
+ELEM_(Modem_inc_bw, "modem.inc_bandwidth")							\
+\
+ELEM_(Modem_get_quality, "modem.get_quality")						\
+ELEM_(Modem_search_up, "modem.search_up")							\
+ELEM_(Modem_search_down, "modem.search_down")						\
+\
+ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")	\
+ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")	\
+ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")			\
+ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")			\
+\
+ELEM_(Main_get_status1, "main.get_status1")						\
+ELEM_(Main_get_status2, "main.get_status2")						\
+\
+ELEM_(Main_get_sb, "main.get_sideband")							\
+ELEM_(Main_set_sb, "main.set_sideband")							\
+ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")				\
+ELEM_(Main_set_wf_sideband, "main.set_wf_sideband")				\
+ELEM_(Main_get_freq, "main.get_frequency")						\
+ELEM_(Main_set_freq, "main.set_frequency")						\
+ELEM_(Main_inc_freq, "main.inc_frequency")						\
+\
+ELEM_(Main_get_afc, "main.get_afc")								\
+ELEM_(Main_set_afc, "main.set_afc")								\
+ELEM_(Main_toggle_afc, "main.toggle_afc")							\
+\
+ELEM_(Main_get_sql, "main.get_squelch")							\
+ELEM_(Main_set_sql, "main.set_squelch")							\
+ELEM_(Main_toggle_sql, "main.toggle_squelch")						\
+\
+ELEM_(Main_get_sql_level, "main.get_squelch_level")				\
+ELEM_(Main_set_sql_level, "main.set_squelch_level")				\
+ELEM_(Main_inc_sql_level, "main.inc_squelch_level")				\
+\
+ELEM_(Main_get_rev, "main.get_reverse")							\
+ELEM_(Main_set_rev, "main.set_reverse")							\
+ELEM_(Main_toggle_rev, "main.toggle_reverse")						\
+\
+ELEM_(Main_get_lock, "main.get_lock")								\
+ELEM_(Main_set_lock, "main.set_lock")								\
+ELEM_(Main_toggle_lock, "main.toggle_lock")						\
+\
+ELEM_(Main_get_rsid, "main.get_rsid")								\
+ELEM_(Main_set_rsid, "main.set_rsid")								\
+ELEM_(Main_toggle_rsid, "main.toggle_rsid")						\
+\
+ELEM_(Main_get_trx_status, "main.get_trx_status")					\
+ELEM_(Main_tx, "main.tx")											\
+ELEM_(Main_tune, "main.tune")										\
+ELEM_(Main_rsid, "main.rsid")										\
+ELEM_(Main_rx, "main.rx")											\
+ELEM_(Main_rx_tx, "main.rx_tx")									\
+ELEM_(Main_rx_only, "main.rx_only")								\
+ELEM_(Main_abort, "main.abort")									\
+\
+ELEM_(Main_get_trx_state, "main.get_trx_state")					\
+ELEM_(Main_get_tx_timing, "main.get_tx_timing")					\
+ELEM_(Main_get_char_rates, "main.get_char_rates")					\
+ELEM_(Main_get_char_timing, "main.get_char_timing")				\
+ELEM_(Main_set_rig_name, "main.set_rig_name")						\
+ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")			\
+ELEM_(Main_set_rig_modes, "main.set_rig_modes")					\
+ELEM_(Main_set_rig_mode, "main.set_rig_mode")						\
+ELEM_(Main_get_rig_modes, "main.get_rig_modes")					\
+ELEM_(Main_get_rig_mode, "main.get_rig_mode")						\
+ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")		\
+ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")			\
+ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")			\
+ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")		\
+\
+ELEM_(Main_run_macro, "main.run_macro")							\
+ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")			\
+\
+ELEM_(Rig_set_name, "rig.set_name")								\
+ELEM_(Rig_get_name, "rig.get_name")								\
+ELEM_(Rig_set_frequency, "rig.set_frequency")						\
+ELEM_(Rig_set_smeter, "rig.set_smeter")							\
+ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")							\
+ELEM_(Rig_set_modes, "rig.set_modes")								\
+ELEM_(Rig_set_mode, "rig.set_mode")								\
+ELEM_(Rig_get_modes, "rig.get_modes")								\
+ELEM_(Rig_get_mode, "rig.get_mode")								\
+ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")					\
+ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")						\
+ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")						\
+ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
+ELEM_(Rig_get_notch, "rig.get_notch")								\
+ELEM_(Rig_set_notch, "rig.set_notch")								\
+ELEM_(Rig_take_control, "rig.take_control")						\
+ELEM_(Rig_release_control, "rig.release_control")					\
+\
+ELEM_(Log_get_freq, "log.get_frequency")							\
+ELEM_(Log_get_time_on, "log.get_time_on")							\
+ELEM_(Log_get_time_off, "log.get_time_off")						\
+ELEM_(Log_get_call, "log.get_call")								\
+ELEM_(Log_get_name, "log.get_name")								\
+ELEM_(Log_get_rst_in, "log.get_rst_in")							\
+ELEM_(Log_get_rst_out, "log.get_rst_out")							\
+ELEM_(Log_set_rst_in, "log.set_rst_in")							\
+ELEM_(Log_set_rst_out, "log.set_rst_out")						\
+ELEM_(Log_get_serial_number, "log.get_serial_number")			\
+ELEM_(Log_set_serial_number, "log.set_serial_number")			\
+ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
+ELEM_(Log_get_exchange, "log.get_exchange")						\
+ELEM_(Log_set_exchange, "log.set_exchange")						\
+ELEM_(Log_get_state, "log.get_state")								\
+ELEM_(Log_get_province, "log.get_province")						\
+ELEM_(Log_get_country, "log.get_country")							\
+ELEM_(Log_get_qth, "log.get_qth")									\
+ELEM_(Log_get_band, "log.get_band")								\
+ELEM_(Log_get_sb, "log.get_sideband")								\
+ELEM_(Log_get_notes, "log.get_notes")								\
+ELEM_(Log_get_locator, "log.get_locator")							\
+ELEM_(Log_get_az, "log.get_az")									\
+ELEM_(Log_clear, "log.clear")										\
+ELEM_(Log_set_call, "log.set_call")								\
+ELEM_(Log_set_name, "log.set_name")								\
+ELEM_(Log_set_qth, "log.set_qth")									\
+ELEM_(Log_set_locator, "log.set_locator")							\
+\
+ELEM_(Io_in_use, "io.in_use")	          						\
+ELEM_(Io_enable_kiss, "io.enable_kiss")							\
+ELEM_(Io_enable_arq, "io.enable_arq")							\
+\
+ELEM_(Text_get_rx_length, "text.get_rx_length")					\
+ELEM_(Text_get_rx, "text.get_rx")								\
+ELEM_(Text_clear_rx, "text.clear_rx")							\
+ELEM_(Text_add_tx, "text.add_tx")								\
+ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")					\
+ELEM_(Text_clear_tx, "text.clear_tx")							\
+\
+ELEM_(RXTX_get_data, "rxtx.get_data")							\
+ELEM_(RX_get_data, "rx.get_data")								\
+ELEM_(TX_get_data, "tx.get_data")								\
+\
+ELEM_(Spot_get_auto, "spot.get_auto")								\
+ELEM_(Spot_set_auto, "spot.set_auto")								\
+ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
+ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")			\
+\
+ELEM_(Wefax_state_string, "wefax.state_string")					\
+ELEM_(Wefax_skip_apt, "wefax.skip_apt")							\
+ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")					\
+ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")		\
+ELEM_(Wefax_end_reception, "wefax.end_reception")					\
+ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")	\
+ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")					\
+ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")					\
+ELEM_(Wefax_get_received_file, "wefax.get_received_file")		\
+ELEM_(Wefax_send_file, "wefax.send_file")							\
+\
+ELEM_(Navtex_get_message, "navtex.get_message")					\
+ELEM_(Navtex_send_message, "navtex.send_message")					\
 
 struct rm_pred
 {
 	re_t filter;
 	bool allow;
 	rm_pred(const char* re, bool allow_)
-		: filter(re, REG_EXTENDED | REG_NOSUB), allow(allow_) { }
+	: filter(re, REG_EXTENDED | REG_NOSUB), allow(allow_) { }
 	bool operator()(const methods_t::value_type& v)
 	{
 		return filter.match(v.name) ^ allow && !strstr(v.name, "fldigi.");

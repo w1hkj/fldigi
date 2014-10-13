@@ -31,6 +31,9 @@
 // #include <cstdio>
 // #include <stacktrace.h>
 
+#define FQUEUE_SIZE 2048
+#define FIFO_SIZE (FQUEUE_SIZE * 4)
+
 class func_base
 {
 public:
@@ -58,7 +61,7 @@ class fqueue
         typedef ringbuffer<char> fqueue_ringbuffer_t;
 
 public:
-        fqueue(size_t count = 2048, size_t blocksize_ = 128)
+        fqueue(size_t count = FQUEUE_SIZE, size_t blocksize_ = 128)
                 : blocksize(blocksize_)
         {
 		rb = new fqueue_ringbuffer_t(blocksize * count);

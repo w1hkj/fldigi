@@ -29,7 +29,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-
 #include <config.h>
 
 #include <ctype.h>
@@ -87,13 +86,13 @@ int mingw_rename(const char *pold, const char *pnew)
 		return 0;
 	/* TODO: translate more errors */
 	if (GetLastError() == ERROR_ACCESS_DENIED &&
-	    (attrs = GetFileAttributes(pnew)) != INVALID_FILE_ATTRIBUTES) {
+		(attrs = GetFileAttributes(pnew)) != INVALID_FILE_ATTRIBUTES) {
 		if (attrs & FILE_ATTRIBUTE_DIRECTORY) {
 			errno = EISDIR;
 			return -1;
 		}
 		if ((attrs & FILE_ATTRIBUTE_READONLY) &&
-		    SetFileAttributes(pnew, attrs & ~FILE_ATTRIBUTE_READONLY)) {
+			SetFileAttributes(pnew, attrs & ~FILE_ATTRIBUTE_READONLY)) {
 			if (MoveFileEx(pold, pnew, MOVEFILE_REPLACE_EXISTING))
 				return 0;
 			/* revert file attributes on failure */
@@ -109,18 +108,20 @@ int mingw_rename(const char *pold, const char *pnew)
 __attribute__((constructor))
 static void wsa_init(void)
 {
-	WSADATA wsa;
-
+	static WSADATA wsaData;
 	static int wsa_init_ = 0;
+
 	if (wsa_init_)
 		return;
 
-	if (WSAStartup(MAKEWORD(2, 2), &wsa)) {
+	wsa_init_ = 1;
+
+	if (WSAStartup(MAKEWORD(WSA_MAJOR, WSA_MINOR), &wsaData)) {
 		fprintf(stderr, "unable to initialize winsock: error %d", WSAGetLastError());
 		exit(EXIT_FAILURE);
 	}
+
 	atexit((void(*)(void)) WSACleanup);
-	wsa_init_ = 1;
 }
 
 int socketpair(int family, int type, int protocol, int *sv)
@@ -218,7 +219,7 @@ int uname(struct utsname *name)
 		strncpy (name->version, "unknown", sizeof (name->version));
 	}
 	/* "windows32" is as yet the only universal windows description allowed
-	   by config.guess and config.sub */
+	 by config.guess and config.sub */
 	strncpy(name->sysname, "windows32", sizeof (name->sysname));
 	if (!GetMachInfo(name->machine, processor))
 		strncpy(name->machine, "i386", sizeof (name->machine));

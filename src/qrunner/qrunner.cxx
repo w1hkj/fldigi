@@ -38,7 +38,8 @@
 #include "qrunner.h"
 
 //Remi's advice for FIFO full issue #define FIFO_SIZE 2048
-#define FIFO_SIZE 8192
+//moved to fqueue.h
+//#define FIFO_SIZE 8192
 
 #ifndef __MINGW32__
 #  define QRUNNER_EAGAIN() (errno == EAGAIN)
@@ -73,6 +74,14 @@ qrunner::~qrunner()
         delete fifo;
 }
 
+void qrunner::attach(int id_no, std::string id_string)
+{
+        Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
+        attached = true;
+        _id_no = id_no;
+        _id_string.assign(id_string);
+}
+
 void qrunner::attach(void)
 {
         Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
@@ -88,7 +97,7 @@ static unsigned char rbuf[FIFO_SIZE];
 
 void qrunner::execute(int fd, void *arg)
 {
-        qrunner *qr = reinterpret_cast<qrunner *>(arg);
+	qrunner *qr = reinterpret_cast<qrunner *>(arg);
 
 	if (qr->inprog)
 		return;
@@ -97,8 +106,9 @@ void qrunner::execute(int fd, void *arg)
 	size_t n = QRUNNER_READ(fd, rbuf, FIFO_SIZE);
 	switch (n) {
 	case -1:
-		if (!QRUNNER_EAGAIN())
+		if (!QRUNNER_EAGAIN()) {
 			throw qexception(errno);
+		}
 		// else fall through
 	case 0:
 		break;
@@ -114,3 +124,17 @@ void qrunner::flush(void)
 {
         execute(pfd[0], this);
 }
+/*
+static pthread_mutex_t mlog = PTHREAD_MUTEX_INITIALIZER;
+void write_message(int line, const char *func, const char *msg)
+{
+	pthread_mutex_lock(&mlog);
+	FILE *fd = (FILE *)0;
+	fd = fopen("qrunner.txt", "a");
+	if(fd) {
+		fprintf(fd, "L:%d F:%s %s\n", line, func, msg);
+		fclose(fd);
+	}
+	pthread_mutex_unlock(&mlog);
+}
+*/

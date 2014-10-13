@@ -46,6 +46,7 @@
 
 #include "main.h"
 #include "arq_io.h"
+#include "data_io.h"
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
@@ -642,7 +643,13 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 	if (!progdefaults.disable_rsid_warning_dialog_box)
 		REQ(notify_rsid, mbin, rsidfreq);
 
-	if (progdefaults.rsid_notify_only) return;
+	if (progdefaults.rsid_notify_only) {
+		if (data_io_enabled == KISS_IO) {
+			bcast_rsid_kiss_frame(rsidfreq, mbin, (int) active_modem->get_txfreq(),
+								  active_modem->get_mode(), RSID_KISS_NOTIFY);
+		}
+		return;
+	}
 
 	if (progdefaults.rsid_mark) // mark current modem & freq
 		REQ(note_qrg, false, "\nBefore RSID: ", "\n",

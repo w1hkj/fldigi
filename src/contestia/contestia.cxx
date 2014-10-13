@@ -4,7 +4,7 @@
 // Copyright (C) 2006-2010
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //	Copyright (C) 2005
 //	Tomi Manninen (oh2bns@sral.fi)
@@ -66,12 +66,12 @@ void contestia::tx_init(SoundBase *sc)
 
 	rx_flush();
 
-	if (reverse) { 
-		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500; 
-		Tx->Reverse = 1; 
+	if (reverse) {
+		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500;
+		Tx->Reverse = 1;
 	} else {
 		Tx->FirstCarrierMultiplier = (txbasefreq - (Tx->Bandwidth / 2)) / 500;
-		Tx->Reverse = 0; 
+		Tx->Reverse = 0;
 	}
 
 	videoText();
@@ -95,12 +95,12 @@ void contestia::send_tones()
 	tone_bw = bandwidth;
 	tone_midfreq = txbasefreq;
 
-	if (reverse) { 
-		freqa = tone_midfreq + (tone_bw / 2.0); 
-		freqb = tone_midfreq - (tone_bw / 2.0); 
-	} else { 
-		freqa = tone_midfreq - (tone_bw / 2.0); 
-		freqb = tone_midfreq + (tone_bw / 2.0); 
+	if (reverse) {
+		freqa = tone_midfreq + (tone_bw / 2.0);
+		freqb = tone_midfreq - (tone_bw / 2.0);
+	} else {
+		freqa = tone_midfreq - (tone_bw / 2.0);
+		freqb = tone_midfreq + (tone_bw / 2.0);
 	}
 
 	preamblephase = 0;
@@ -151,8 +151,8 @@ int contestia::tx_process()
 		sinteg	!= progdefaults.contestiasinteg )
 			restart();
 
-	if (preamblesent != 1) { 
-		send_tones(); 
+	if (preamblesent != 1) {
+		send_tones();
 		preamblesent = 1;
 		// Olivia Transmitter class requires at least character
 		Tx->PutChar(0);
@@ -160,7 +160,7 @@ int contestia::tx_process()
 
 // The encoder works with BitsPerSymbol length blocks. If the
 // modem already has that many characters buffered, don't try
-// to read any more. If stopflag is set, we will always read 
+// to read any more. If stopflag is set, we will always read
 // whatever there is.
 	if (stopflag || (Tx->GetReadReady() < Tx->BitsPerSymbol)) {
 		if (!stopflag && (c = get_tx_char()) == GET_TX_CHAR_ETX)
@@ -189,7 +189,7 @@ int contestia::tx_process()
 		ModulateXmtr(txfbuffer, len);
 
 	if (stopflag && Tx->DoPostambleYet() == 1 && postamblesent != 1) {
-		postamblesent = 1; 
+		postamblesent = 1;
 		send_tones();
 	}
 
@@ -198,7 +198,7 @@ int contestia::tx_process()
 		stopflag = false;
 		return -1;
 	}
- 
+
 	return 0;
 }
 
@@ -218,19 +218,19 @@ int contestia::rx_process(const double *buf, int len)
 			restart();
 
 	if ((lastfreq != frequency || Rx->Reverse) && !reverse) {
-		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth / 2)) / 500; 
+		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth / 2)) / 500;
 		Rx->Reverse = 0;
 		lastfreq = frequency;
 		Rx->Preset();
 	}
 	else if ((lastfreq != frequency || !Rx->Reverse) && reverse) {
-		Rx->FirstCarrierMultiplier = (frequency + (Rx->Bandwidth / 2)) / 500; 
+		Rx->FirstCarrierMultiplier = (frequency + (Rx->Bandwidth / 2)) / 500;
 		Rx->Reverse = 1;
 		lastfreq = frequency;
 		Rx->Preset();
 	}
 
-	Rx->SyncThreshold = progStatus.sqlonoff ? 
+	Rx->SyncThreshold = progStatus.sqlonoff ?
 		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 3.0, 90.0) : 3.0;
 
     Rx->Process(buf, len);
@@ -270,7 +270,7 @@ void contestia::restart()
 	bw 		= progdefaults.contestiabw;
 	smargin = progdefaults.contestiasmargin;
 	sinteg	= progdefaults.contestiasinteg;
-	
+
 	samplerate = 8000;
 	bandwidth = 125 * (1 << bw);
 
@@ -281,21 +281,21 @@ void contestia::restart()
     txbasefreq = get_txfreq_woffset();
 	Tx->bContestia = true;
 
-	if (reverse) { 
-		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500; 
-		Tx->Reverse = 1; 
-	} else { 
-		Tx->FirstCarrierMultiplier = (txbasefreq - (Tx->Bandwidth / 2)) / 500; 
-		Tx->Reverse = 0; 
+	if (reverse) {
+		Tx->FirstCarrierMultiplier = (txbasefreq + (Tx->Bandwidth / 2)) / 500;
+		Tx->Reverse = 1;
+	} else {
+		Tx->FirstCarrierMultiplier = (txbasefreq - (Tx->Bandwidth / 2)) / 500;
+		Tx->Reverse = 0;
 	}
 
 	if (Tx->Preset() < 0) {
 		LOG_ERROR("contestia: transmitter preset failed!");
 		return;
 	}
-		
+
 	txbufferlen = Tx->MaxOutputLen;
-	
+
 	if (txfbuffer) delete [] txfbuffer;
 	txfbuffer = new double[txbufferlen];
 
@@ -303,19 +303,19 @@ void contestia::restart()
 	Rx->Bandwidth = bandwidth;
 	Rx->SyncMargin = smargin;
 	Rx->SyncIntegLen = sinteg;
-	Rx->SyncThreshold = progStatus.sqlonoff ? 
+	Rx->SyncThreshold = progStatus.sqlonoff ?
 		clamp(progStatus.sldrSquelchValue / 5.0 + 3.0, 0, 90.0) : 0.0;
 
 	Rx->SampleRate = samplerate;
 	Rx->InputSampleRate = samplerate;
 	Rx->bContestia = true;
 
-	if (reverse) { 
-		Rx->FirstCarrierMultiplier = (frequency + (Rx->Bandwidth / 2)) / 500; 
-		Rx->Reverse = 1; 
-	} else { 
-		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth /2)) / 500; 
-		Rx->Reverse = 0; 
+	if (reverse) {
+		Rx->FirstCarrierMultiplier = (frequency + (Rx->Bandwidth / 2)) / 500;
+		Rx->Reverse = 1;
+	} else {
+		Rx->FirstCarrierMultiplier = (frequency - (Rx->Bandwidth /2)) / 500;
+		Rx->Reverse = 0;
 	}
 
 	if (Rx->Preset() < 0) {

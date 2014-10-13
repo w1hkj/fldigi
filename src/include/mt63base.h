@@ -191,8 +191,8 @@ private:
 	double	*TxWindow;			// The shape of the FFT window (=symbol shape)
 
 	int		AliasFilterLen;		// anti-alias filter length
-	double	*AliasShapeI,
-			*AliasShapeQ;		// and shapes (for fixed lower freq of 500 Hz)
+	//double	*AliasShapeI,
+	//		*AliasShapeQ;		// and shapes (for fixed lower freq of 500 Hz)
 	int		DecimateRatio;		// decimation/interpolation after/before filter
 	int		*InterleavePattern; // how the bits of one block are placed on data carriers
 	double	TxAmpl;				// Amplitude applied to generate a carrier (before IFFT)
@@ -278,8 +278,8 @@ private:
 	double *SpectradspPower;
 
 	int	 AliasFilterLen; // anti-alias filter length
-	double  *AliasShapeI,
-			*AliasShapeQ;   // and shapes
+	//double  *AliasShapeI,
+	//		*AliasShapeQ;   // and shapes
 	int	 DecimateRatio;	// decimation/interpolation after/before filter
 
 // how the bits of one block are placed on data carriers

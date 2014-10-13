@@ -89,7 +89,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<NXTNBR>\tnext QSO rec #"));
 	w->add(_("<MAPIT>\tmap on google"));
 	w->add(_("<MAPIT:adr/lat/loc>\tmap by value"));
- 
+
 	w->add(LINE_SEP);
 	w->add(_("<CLRRX>\tclear RX pane"));
 	w->add(_("<CLRTX>\tclear TX pane"));

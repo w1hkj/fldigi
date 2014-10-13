@@ -59,6 +59,8 @@
 #	else
 #		include <dirent.h>
 #	endif
+#define WSA_MAJOR 2
+#define WSA_MINOR 0
 #else
 #	include <dirent.h>
 #endif

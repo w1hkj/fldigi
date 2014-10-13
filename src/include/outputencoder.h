@@ -34,13 +34,13 @@ class OutputEncoder
 		void set_output_encoding(const int charset_out);
 		void push(std::string s);
 		const unsigned int pop(void);
-		
+
 	private:
 		unsigned int buffer_size;
 		unsigned char *buffer;
 		unsigned char *encoding_ptr;
 		unsigned char *pop_ptr;
-		unsigned int data_length;
+		//unsigned int data_length;
 		tiniconv_ctx_s ctx;
 };
 

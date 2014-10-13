@@ -50,6 +50,8 @@ namespace qrbind {
 #include "threads.h"
 #include "qrunner/fqueue.h"
 
+extern void write_message(int line_no, const char *func, const char *msg);
+
 #ifndef __MINGW32__
 #  define QRUNNER_READ(fd__, buf__, len__) read(fd__, buf__, len__)
 #  define QRUNNER_WRITE(fd__, buf__, len__) write(fd__, buf__, len__)
@@ -64,7 +66,7 @@ public:
         qexception(const char *msg_) : msg(msg_) { }
         qexception(int e) : msg(strerror(e)) { }
         ~qexception() throw() { }
-        const char *what(void) const throw() { return msg.c_str(); }
+        const char *what(void) const throw() { perror(msg.c_str()); return msg.c_str(); }
 private:
         std::string msg;
 };
@@ -97,6 +99,7 @@ public:
         ~qrunner();
 
         void attach(void);
+        void attach(int, std::string);
         void detach(void);
 
         template <typename F>
@@ -104,8 +107,9 @@ public:
         {
                 if (fifo->push(f)) {
 #ifdef NDEBUG
-                        if (unlikely(QRUNNER_WRITE(pfd[1], "", 1) != 1))
-                                throw qexception(errno);
+                        if (unlikely(QRUNNER_WRITE(pfd[1], "", 1) != 1)) {
+							throw qexception(errno);
+                        }
 #else
                         assert(QRUNNER_WRITE(pfd[1], "", 1) == 1);
 #endif
@@ -151,12 +155,15 @@ public:
 
         void drop(void) { fifo->drop(); }
         size_t size(void) { return fifo->size(); }
+		std::string id_str(void) { return _id_string; }
 
 protected:
         fqueue *fifo;
         int pfd[2];
         bool attached;
-	bool inprog;
+        int _id_no;
+        std::string _id_string;
+		bool inprog;
 public:
 	bool drop_flag;
 };
@@ -175,13 +182,14 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
 #define REQ REQ_ASYNC
 #define REQ_DROP REQ_ASYNC_DROP
 
-#define REQ_ASYNC(...)							\
+#define REQ_ASYNC(...)						\
 	do {								\
 		if (GET_THREAD_ID() != FLMAIN_TID)			\
 			cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__)); \
 		else							\
-			qrbind::bind(__VA_ARGS__)();			\
+			qrbind::bind(__VA_ARGS__)(); \
 	} while (0)
+
 #define REQ_SYNC(...)							\
 	do {								\
 		if (GET_THREAD_ID() != FLMAIN_TID)			\

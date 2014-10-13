@@ -46,7 +46,7 @@ friend std::istream &operator>>( std::istream &, cQsoRec & );
 
 private:
 	string qsofield[NUMFIELDS];
-	bool normal; // sort ordering
+	//bool normal; // sort ordering
 public:
 	cQsoRec ();
 	~cQsoRec ();
@@ -75,7 +75,7 @@ public:
 	}
 	bool operator>(const cQsoRec &right) const {
 		return !(*this <= right);
-	}  
+	}
 };
 
 class cQsoDb {
@@ -84,7 +84,7 @@ private:
 	int maxrecs;
 	int nbrrecs;
 	int dirty;
-	
+
 	static const int jdays[][13];
 	bool isleapyear( int y ) const;
 	int dayofyear (int year, int mon, int mday);
@@ -114,9 +114,9 @@ public:
 	void SortByFreq ();
 	void sort_reverse(bool rev) { reverse = rev;}
 	const cQsoRec *recarray() { return qsorec; }
-  
+
 	bool duplicate(
-		const char *callsign, 
+		const char *callsign,
 		const char *date, const char *time, unsigned int interval, bool chkdatetime,
 		const char *freq, bool chkfreq,
 		const char *state, bool chkstate,

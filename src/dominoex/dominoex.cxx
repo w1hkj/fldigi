@@ -243,7 +243,7 @@ dominoex::dominoex(trx_mode md)
 		doublespaced = 1;
 		samplerate = 8000;
 		break;
-// experimental 
+// experimental
 	case MODE_DOMINOEX44:
 		symlen = 256;
 		doublespaced = 2;
@@ -536,7 +536,7 @@ void dominoex::eval_s2n()
 
 //	metric = 4 * s2n;
 	// To partially offset the increase of noise by (THORNUMTONES -1)
-	// in the noise calculation above, 
+	// in the noise calculation above,
 	// add 15*log10(THORNUMTONES -1) = 18.4, and multiply by 6
 	metric = 6 * (s2n + 18.4);
 

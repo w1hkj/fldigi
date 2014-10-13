@@ -37,7 +37,7 @@
 
 void Tile_::position(int oix, int oiy, int newx, int newy) {
 	Fl_Widget* const* a = array();
-	short* p = sizes();
+	short* p = (short *)sizes();
 //int gX = x(), gW = w();
 //printf("gX %d, gW %d\n", gX, gW);
 //printf("oix %d, oiy %d, newx %d, newy %d\n", oix, oiy, newx, newy);
@@ -78,7 +78,7 @@ void Tile_::position(int oix, int oiy, int newx, int newy) {
 void Tile_::newx( int oix, int newx )
 {
 //	Fl_Widget* const* a = array();
-	short* p = sizes();
+	short* p = (short *)sizes();
 	int gX = x(), gW = w();
 printf("gX %d, gW %d; newx %d\n", gX, gW, newx);
 	if (newx > p[5]) {
@@ -91,7 +91,7 @@ printf("p[5] = %d\n", p[5]);
 // move the lower-right corner (sort of):
 void Tile_::resize(int X,int Y,int W,int H) {
 	// remember how much to move the child widgets:
-	short* p = sizes();
+	short* p = (short *)sizes();
 	int dx = X-x();
 	int dy = Y-y();
 	int dw = W-w();
@@ -126,7 +126,7 @@ void Tile_::resize(int X,int Y,int W,int H) {
 		if (p[3] >= OB) B += dh; else if (B > NB) B = NB;
 		o->resize(xx,yy,R-xx,B-yy);
 		p += 4; // next child sizes array
-		// do *not* call o->redraw() here! If you do, and the tile is inside a 
+		// do *not* call o->redraw() here! If you do, and the tile is inside a
 		// scroll, it'll set the damage areas wrong for all children!
 	}
 }
@@ -165,7 +165,7 @@ int Tile_::handle(int event) {
 		int oldx = 0;
 		int oldy = 0;
 		Fl_Widget*const* a = array();
-		short* q = sizes();
+			short* q = (short *)sizes();
 		short* p = q+8;
 		for (int i=children(); i--; p += 4) {
 			Fl_Widget* o = *a++;

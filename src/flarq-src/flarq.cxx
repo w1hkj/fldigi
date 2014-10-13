@@ -1109,7 +1109,7 @@ void payloadText(string s)
 					sscanf(sizechars.c_str(), "%" PRIuSZ, &arqPayloadSize);
 					rxARQhavesize = true;
 					char statusmsg[40];
-					snprintf(statusmsg, sizeof(statusmsg), "Rcvg: %d", 
+					snprintf(statusmsg, sizeof(statusmsg), "Rcvg: %d",
 						static_cast<int>(arqPayloadSize));
 					txtStatus->value(statusmsg);
 				}
@@ -1260,7 +1260,7 @@ void sendEmailFile()
 		txtsize = textin.length();
 		arqPayloadSize = txtsize;
 		blocksSent = 0;
-		snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+		snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n",
 			static_cast<int>(txtsize));
 		TX.append(sizemsg);
 		TX.append(arqstart);
@@ -1315,7 +1315,7 @@ void sendAsciiFile()
 			txtsize = textin.length();
 			arqPayloadSize = txtsize;
 			blocksSent = 0;
-			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n",
 				static_cast<int>(txtsize));
 			TX.append(sizemsg);
 			TX.append(arqstart);
@@ -1362,7 +1362,7 @@ void sendImageFile()
 			textfile.close();
 			b64text = b64.encode(textin);
 			b64size = b64text.length();
-			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n",
 				static_cast<int>(b64size));
 			arqPayloadSize = b64size;
 			blocksSent = 0;
@@ -1411,7 +1411,7 @@ void sendBinaryFile()
 			textfile.close();
 			b64text = b64.encode(textin);
 			b64size = b64text.length();
-			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+			snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n",
 				static_cast<int>(b64size));
 			arqPayloadSize = b64size;
 			blocksSent = 0;

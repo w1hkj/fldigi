@@ -96,7 +96,7 @@ private:
 	bool	rtscts;
 	bool	restore_tio;
 	int		stopbits;
-	char	bfr[2048];
+	//char	bfr[2048];
 //Methods
 	bool	IOselect();
 };

@@ -82,11 +82,11 @@ using namespace std;
 
 
 const char *szBaudRates[] = {
-	"", 
+	"",
 	"300","600","1200","2400",
 	"4800","9600","19200","38400",
 	"57600","115200","230400","460800"};
-	
+
 const char *szBands[] = {
 	"",
 	"1830", "3580", "7030", "7070", "10138",
@@ -561,14 +561,14 @@ int configuration::setDefaults()
 	cntSearchRange->value(SearchRange);
 	cntServerOffset->value(ServerOffset);
 	cntACQsn->value(ACQsn);
-			
+
 	btnCursorBWcolor->color(
 		fl_rgb_color(cursorLineRGBI.R, cursorLineRGBI.G, cursorLineRGBI.B) );
 	btnCursorCenterLineColor->color(
 		fl_rgb_color(cursorCenterRGBI.R, cursorCenterRGBI.G, cursorCenterRGBI.B) );
 	btnBwTracksColor->color(
 		fl_rgb_color(bwTrackRGBI.R, bwTrackRGBI.G, bwTrackRGBI.B) );
-				
+
 	cntCWweight->value(CWweight);
 	sldrCWxmtWPM->value(CWspeed);
 	cntCWdefWPM->value(defCWspeed);
@@ -588,10 +588,10 @@ int configuration::setDefaults()
 	cntPreTiming->value(CWpre);
 	cntPostTiming->value(CWpost);
 	btnCWID->value(CWid);
-			
+
 	listboxHellFont->index(feldfontnbr);
 	btnFeldHellIdle->value(HellXmtIdle);
-			
+
 	btnTxRSID->value(TransmitRSid);
 	btnRSID->value(rsid);
 	chkRSidWideSearch->value(rsidWideSearch);
@@ -690,7 +690,7 @@ Reset all options to their default values?\n\n\
 Reset options will take effect at the next start\n\
 Files: fldigi_def.xml and fldigi.prefs will be deleted!\n"), _("OK"), _("Cancel"), NULL) &&
 			Fl::event_key() != FL_Escape) {
-		if (!fl_choice2(_("Confirm RESET"), _("Yes"), _("No"), NULL) && 
+		if (!fl_choice2(_("Confirm RESET"), _("Yes"), _("No"), NULL) &&
 			Fl::event_key() != FL_Escape) {
 			reset();
 			atexit(reset);

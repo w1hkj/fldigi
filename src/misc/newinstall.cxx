@@ -287,7 +287,7 @@ paldata palfiles[] = {
 		0,0,0,0
 	}
 };
-	
+
 void create_new_palettes()
 {
 	paldata *pd = palfiles;
@@ -412,6 +412,7 @@ void Wizard::create_wizard(void)
 		{ tabOperator },
 		{ tabSoundCard },
 		{ tabRig },
+		{ tabUI },
 		{ tabDataFiles },
 	};
 

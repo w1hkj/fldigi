@@ -29,6 +29,9 @@ decl {\#include "main.h"} {private local
 decl {\#include "fl_digi.h"} {private local
 } 
 
+decl {\#include "data_io.h"} {private local
+} 
+
 decl {\#include "Viewer.h"} {private global
 } 
 
@@ -228,7 +231,7 @@ Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {open return_type void
     qsoFreqDisp1->redraw();
     qsoFreqDisp2->redraw();
     qsoFreqDisp3->redraw();
-    
+
     font_browser->hide();} {}
 } 
 
@@ -246,7 +249,7 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
     LOGGINGdisplay->textcolor(color);
     LOGGINGdisplay->textfont(font);
     LOGGINGdisplay->redraw();
-    
+
     LOGGING_colors_font();
 
     font_browser->hide();
@@ -268,7 +271,7 @@ Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
     LOGBOOKdisplay->textcolor(color);
     LOGBOOKdisplay->textfont(font);
     LOGBOOKdisplay->redraw();
-    
+
     LOGBOOK_colors_font();
 
     font_browser->hide();
@@ -509,7 +512,7 @@ progdefaults.changed = true;}
     sldrViewerSquelch->redraw();
     mvsquelch->color(fl_rgb_color(r,g,b));
     mvsquelch->redraw();
-    
+
     progdefaults.changed = true;}
                   tooltip {Background color of signal viewer squelch control} xywh {47 310 60 24} align 1
                   code0 {bwsrSliderColor->color(fl_rgb_color(progdefaults.bwsrSliderColor.R, progdefaults.bwsrSliderColor.G,progdefaults.bwsrSliderColor.B));}
@@ -532,7 +535,7 @@ progdefaults.changed = true;}
     sldrViewerSquelch->redraw();
     mvsquelch->selection_color(fl_rgb_color(r,g,b));
     mvsquelch->redraw();
-    
+
     progdefaults.changed = true;}
                   tooltip {Slider hilite color of signal viewer squelch control} xywh {115 310 60 24} align 1
                   code0 {bwsrSldrSelColor->color(fl_rgb_color(progdefaults.bwsrSldrSelColor.R, progdefaults.bwsrSldrSelColor.G,progdefaults.bwsrSliderColor.B));}
@@ -714,9 +717,9 @@ progdefaults.changed = true;}
               }
               Fl_Button btnDupColor {
                 label {Dup Color}
-                callback {fl_color_chooser("Dup Check", 
-  progdefaults.dup_color.R, 
-  progdefaults.dup_color.G, 
+                callback {fl_color_chooser("Dup Check",
+  progdefaults.dup_color.R,
+  progdefaults.dup_color.G,
   progdefaults.dup_color.B);
 o->color(
   fl_rgb_color(
@@ -1460,7 +1463,7 @@ TransmitText->color(
     progdefaults.TxColor.G,
     progdefaults.TxColor.B),
     progdefaults.RxTxSelectcolor);
-    
+
 progdefaults.changed = true;}
                     tooltip {Selection background color in Rx Tx panels} xywh {263 263 39 21} align 2
                     code0 {btnSEL->color(progdefaults.RxTxSelectcolor);}
@@ -1622,10 +1625,10 @@ font_browser->show();}
     progdefaults.FDbackground.R = r;
     progdefaults.FDbackground.G = g;
     progdefaults.FDbackground.B = b;
-    
+
     FDdisplay->color(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
-    
+
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -1652,10 +1655,10 @@ font_browser->show();}
     progdefaults.FDforeground.R = r;
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
-    
+
     FDdisplay->labelcolor(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
-    
+
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -1679,15 +1682,15 @@ font_browser->show();}
     progdefaults.FDbackground.R = r;
     progdefaults.FDbackground.G = g;
     progdefaults.FDbackground.B = b;
-   
+
     FDdisplay->color(clr);
-    
+
     clr = FL_FOREGROUND_COLOR;
     Fl::get_color(clr, r, g, b);
-    
+
     FDdisplay->labelcolor(clr);
     FDdisplay->redraw();
-    
+
     progdefaults.FDforeground.R = r;
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
@@ -1866,12 +1869,12 @@ progdefaults.changed = true;} open
         return;
 
     progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
-    
+
     LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
     LOGGINGdisplay->redraw();
 
     LOGGING_colors_font();
-    
+
     progdefaults.changed = true;}
                     xywh {240 125 80 25}
                   }
@@ -1897,9 +1900,9 @@ LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
 LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
 LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
 LOGGINGdisplay->redraw();
-    
+
 LOGGING_colors_font();
-    
+
 progdefaults.changed = true;}
                     xywh {396 125 80 25}
                   }
@@ -1924,12 +1927,12 @@ progdefaults.changed = true;}
         return;
 
     progdefaults.LOGBOOKcolor = fl_rgb_color(r, g, b);
-    
+
     LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
     LOGBOOKdisplay->redraw();
 
     LOGBOOK_colors_font();
-    
+
     progdefaults.changed = true;}
                     xywh {239 200 80 25}
                   }
@@ -1955,9 +1958,9 @@ LOGBOOKdisplay->textsize(progdefaults.LOGBOOKtextsize);
 LOGBOOKdisplay->textcolor(progdefaults.LOGBOOKtextcolor);
 LOGBOOKdisplay->textfont(progdefaults.LOGBOOKtextfont);
 LOGBOOKdisplay->redraw();
-    
+
 LOGBOOK_colors_font();
-    
+
 progdefaults.changed = true;}
                     xywh {395 200 80 25}
                   }
@@ -1989,7 +1992,7 @@ progdefaults.changed = true;}
     progdefaults.btnGroup1.B = b;
     o->color(fl_rgb_color(r,g,b));
     colorize_macros();
-    
+
     progdefaults.changed = true;}
                   tooltip {Background color for Function key group 1} xywh {103 155 90 30}
                   code0 {btnGroup1->color(fl_rgb_color(progdefaults.btnGroup1.R, progdefaults.btnGroup1.G,progdefaults.btnGroup1.B));}
@@ -2109,7 +2112,7 @@ progdefaults.changed = true;}
                 Fl_Button btnTabDefaultColor {
                   label System
                   callback {progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
-setTabColors();    
+setTabColors();
 progdefaults.changed = true;}
                   xywh {330 113 75 21}
                 }
@@ -2369,7 +2372,7 @@ UI_select();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -2460,8 +2463,8 @@ progdefaults.changed = true;}
                 Fl_Button btnCursorBWcolor {
                   label Color
                   callback {if (fl_color_chooser("Cursor BW Lines",
-  progdefaults.cursorLineRGBI.R, 
-  progdefaults.cursorLineRGBI.G, 
+  progdefaults.cursorLineRGBI.R,
+  progdefaults.cursorLineRGBI.G,
   progdefaults.cursorLineRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));
 o->redraw();
@@ -2493,8 +2496,8 @@ progdefaults.changed = true;}
                 Fl_Button btnCursorCenterLineColor {
                   label Color
                   callback {if (fl_color_chooser("Cursor Center Line",
-  progdefaults.cursorCenterRGBI.R, 
-  progdefaults.cursorCenterRGBI.G, 
+  progdefaults.cursorCenterRGBI.R,
+  progdefaults.cursorCenterRGBI.G,
   progdefaults.cursorCenterRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));
 o->redraw();
@@ -2525,8 +2528,8 @@ progdefaults.changed = true;}
                 Fl_Button btnBwTracksColor {
                   label Color
                   callback {if (fl_color_chooser("Track Lines",
-  progdefaults.bwTrackRGBI.R, 
-  progdefaults.bwTrackRGBI.G, 
+  progdefaults.bwTrackRGBI.R,
+  progdefaults.bwTrackRGBI.G,
   progdefaults.bwTrackRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
 o->redraw();
@@ -2551,8 +2554,8 @@ progdefaults.changed = true;}
                 Fl_Button btnNotchColor {
                   label Color
                   callback {if (fl_color_chooser("Notch Indicator",
-  progdefaults.notchRGBI.R, 
-  progdefaults.notchRGBI.G, 
+  progdefaults.notchRGBI.R,
+  progdefaults.notchRGBI.G,
   progdefaults.notchRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.notchRGBI.R,progdefaults.notchRGBI.G,progdefaults.notchRGBI.B));
 o->redraw();
@@ -2610,7 +2613,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {55 71 490 135} box ENGRAVED_FRAME
@@ -3735,8 +3738,8 @@ Disabled - log QSO using center frequency} xywh {120 311 146 22} down_box DOWN_B
                   Fl_Button btnRTTY_mark_color {
                     label {track color}
                     callback {if (fl_color_chooser("MARK freq track",
-  progdefaults.rttymarkRGBI.R, 
-  progdefaults.rttymarkRGBI.G, 
+  progdefaults.rttymarkRGBI.R,
+  progdefaults.rttymarkRGBI.G,
   progdefaults.rttymarkRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
 o->redraw();
@@ -4106,7 +4109,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group {} {
             label {Hardware PTT} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Group {} {
               xywh {55 57 490 38} box ENGRAVED_FRAME
@@ -4360,7 +4363,7 @@ btnRevertRIGCAT->activate();}
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
-  
+
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
 btnRevertRIGCAT->activate();}
@@ -4466,7 +4469,7 @@ if (o->value() == 1) {
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
 }
-  
+
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw();
 progdefaults.changed = true;}
@@ -4658,7 +4661,7 @@ hamlib_restore_defaults();
           }
           Fl_Group tabXMLRPC {
             label {XML-RPC} open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group grpXMLRPC {open
               xywh {55 61 490 160} box ENGRAVED_FRAME
@@ -4676,7 +4679,7 @@ if(o->value() == 1){
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
 }
-  
+
 btnInitXMLRPC->labelcolor(FL_RED);
 btnInitXMLRPC->redraw_label();
 progdefaults.changed = true;}
@@ -4951,7 +4954,7 @@ if (o->value()) {
   chkPseudoFSK2->value(0);
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
-  btnPTTrightchannel2->value(0);  
+  btnPTTrightchannel2->value(0);
   progdefaults.sig_on_right_channel = false;
   chkAudioStereoOut->value(0);
   progdefaults.ReverseAudio = false;
@@ -4974,7 +4977,7 @@ if (o->value()) {
   chkPseudoFSK2->value(0);
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
-  btnPTTrightchannel2->value(0);  
+  btnPTTrightchannel2->value(0);
   if (progdefaults.mono_audio) {
     progdefaults.mono_audio = false;
     chkForceMono->value(0);
@@ -5195,7 +5198,7 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.disable_rsid_freq_change);}
               }
               Fl_Group {} {
-                label {The RsID notification message contents and 
+                label {The RsID notification message contents and
 display characteristics are configured on the
 "Notifications" configure dialog.} open
                 xywh {216 74 330 60} box BORDER_BOX align 21
@@ -5698,7 +5701,7 @@ progdefaults.changed = true;}
                 label {METAR station ID code}
                 callback {progdefaults.wx_sta = o->value();
 progdefaults.changed = true;}
-                tooltip {for example KMDQ for 
+                tooltip {for example KMDQ for
 Huntsville-Madison Executive Airport, AL} xywh {94 92 43 24} align 8
                 code0 {o->value(progdefaults.wx_sta.c_str());}
               }
@@ -6323,6 +6326,215 @@ progdefaults.changed = true;}
             callback {start_process(progdefaults.auto_prog3_pathname);}
             tooltip {Start prog3} xywh {505 301 70 24}
           }
+        }
+      }
+      Fl_Group tabIO {
+        label IO
+        callback {btnDisable_p2p_io_widgets->value(1);} open
+        tooltip {Program to Program Communications} xywh {0 25 600 355} hide
+        code0 {btnDisable_p2p_io_widgets->value(1);}
+      } {
+        Fl_Group {} {
+          label ARQ open
+          xywh {15 260 570 55} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Input txtArq_ip_address {
+            label {IP Address}
+            callback {progdefaults.arq_address = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address format: nnn.nnn.nnn.nnn} xywh {20 280 205 25} align 8 when 1
+            code0 {txtArq_ip_address->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.arq_address.c_str());}
+            class Fl_Input2
+          }
+          Fl_Input txtArq_ip_port_no {
+            label Port
+            callback {progdefaults.arq_port = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address Port Number} xywh {329 280 80 25} align 8 when 1
+            code0 {txtArq_ip_port_no->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.arq_port.c_str());}
+            class Fl_Input2
+          }
+          Fl_Button btnDefault_arq_ip {
+            label Default
+            callback {set_ip_to_default(ARQ_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {470 279 105 27}
+          }
+        }
+        Fl_Group {} {
+          label {Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.
+Enable KISS for programs that supports UDP and TNC-2 KISS protocol.
+Only one interface (ARQ/KISS) can be active at any given time.
+IP address and port number changes require FLDIGI restart.} open
+          xywh {15 42 570 75} box BORDER_BOX align 21
+        } {}
+        Fl_Check_Button btnEnable_arq {
+          label {Enable ARQ}
+          callback {if(o->value()) {
+        progdefaults.changed = true;
+	progdefaults.data_io_enabled = ARQ_IO;
+	data_io_enabled = ARQ_IO;
+	enable_disable_kpsql();
+}
+
+progdefaults.changed = true;}
+          tooltip {Used For PSKMail and FLDIGI Suite of Programs} xywh {130 122 110 20} type Radio down_box DOWN_BOX
+          code0 {if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);}
+        }
+        Fl_Check_Button btnEnable_kiss {
+          label {Enable KISS}
+          callback {if(o->value()) {
+	progdefaults.data_io_enabled = KISS_IO;
+	data_io_enabled = KISS_IO;
+	enable_disable_kpsql();
+}
+progdefaults.changed = true;}
+          tooltip {Used for BPQ32} xywh {245 122 110 20} type Radio down_box DOWN_BOX
+          code0 {if(progdefaults.data_io_enabled == KISS_IO) o->value(true);}
+        }
+        Fl_Group {} {
+          label XMLRPC open
+          xywh {15 318 570 55} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Button btnDefault_xmlrpc_ip {
+            label Default
+            callback {set_ip_to_default(XMLRPC_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {470 337 105 27}
+          }
+          Fl_Input txtXmlrpc_ip_address {
+            label {IP Address}
+            callback {progdefaults.xmlrpc_address = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address format: nnn.nnn.nnn.nnn} xywh {20 338 205 25} align 8 when 1
+            code0 {txtXmlrpc_ip_address->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.xmlrpc_address.c_str());}
+            class Fl_Input2
+          }
+          Fl_Input txtXmlrpc_ip_port_no {
+            label Port
+            callback {progdefaults.xmlrpc_port = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address Port Number} xywh {329 338 80 25} align 8 when 1
+            code0 {txtXmlrpc_ip_port_no->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.xmlrpc_port.c_str());}
+            class Fl_Input2
+          }
+        }
+        Fl_Group {} {
+          label KISS open
+          xywh {15 145 570 112} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Button btnDefault_kiss_ip {
+            label Default
+            callback {set_ip_to_default(KISS_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {470 207 105 26}
+          }
+          Fl_Input txtKiss_ip_address {
+            label {IP Address}
+            callback {progdefaults.kiss_address = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address for KISS interface} xywh {20 164 185 25} align 8 when 1
+            code0 {txtKiss_ip_address->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.kiss_address.c_str());}
+            class Fl_Input2
+          }
+          Fl_Input txtKiss_ip_io_port_no {
+            label {I/O}
+            callback {progdefaults.kiss_io_port = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address Port Number} xywh {298 164 55 25} align 8 when 1
+            code0 {txtKiss_ip_io_port_no->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.kiss_io_port.c_str());}
+            class Fl_Input2
+          }
+          Fl_Check_Button btnEnableBusyChannel {
+            label {Enable Busy Channel}
+            callback {if(o->value())
+	progdefaults.enableBusyChannel = true;
+else
+	progdefaults.enableBusyChannel = false;
+progdefaults.changed = true;}
+            xywh {20 201 160 15} down_box DOWN_BOX
+            code0 {if(progdefaults.enableBusyChannel) o->value(true);}
+            code1 {else o->value(false);}
+          }
+          Fl_Counter cntBusyChannelSeconds {
+            label {Continue After (sec)}
+            callback {progdefaults.busyChannelSeconds = (int) o->value();
+progdefaults.changed = true;}
+            xywh {200 198 130 20} align 8 minimum 1 maximum 999 step 1 value 1
+            code0 {o->value(progdefaults.busyChannelSeconds);}
+            code1 {o->step(1,10);}
+          }
+          Fl_Input txtKiss_ip_out_port_no {
+            label O
+            callback {progdefaults.kiss_out_port = o->value();
+progdefaults.changed = true;}
+            tooltip {Output port number when same IP address used} xywh {392 164 55 25} align 8 when 1
+            code0 {txtKiss_ip_out_port_no->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.kiss_out_port.c_str());}
+            class Fl_Input2
+          }
+          Fl_Check_Button btnEnable_dual_port {
+            label {Dual Port}
+            callback {if(o->value())
+	progdefaults.kiss_dual_port_enabled = true;
+else
+	progdefaults.kiss_dual_port_enabled = false;
+
+progdefaults.changed = true;}
+            tooltip {Enable when both programs are using the same IP address} xywh {480 168 90 16} down_box DOWN_BOX
+            code0 {if(progdefaults.kiss_dual_port_enabled) o->value(true); else o->value(false);}
+          }
+          Fl_Counter cntKPSQLAttenuation {
+            label {KPSQL Attenuation}
+            callback {progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+progdefaults.changed = true;}
+            xywh {20 225 130 20} align 8 minimum 1 maximum 999 step 1 value 1
+            code0 {o->value(progdefaults.kpsql_attenuation);}
+            code1 {o->step(1,10);}
+            code2 {update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);}
+          }
+        }
+        Fl_Check_Button btnDisable_p2p_io_widgets {
+          label Lock user_data_type long
+          callback {if(o->value())
+	disable_config_p2p_io_widgets();
+else
+	enable_config_p2p_io_widgets();}
+          tooltip {Allow/Disallow Changes} xywh {15 122 110 20} down_box DOWN_BOX
+          code0 {o->value(1);}
+          code1 {disable_config_p2p_io_widgets();}
+        }
+        Fl_Check_Button btnEnable_ax25_decode {
+          label {AX25 Decode}
+          callback {if(o->value())
+	progdefaults.ax25_decode_enabled = true;
+else
+	progdefaults.ax25_decode_enabled = false;
+
+progdefaults.changed = true;}
+          tooltip {Decode AX25 Packets into human readable form} xywh {360 122 110 20} down_box DOWN_BOX
+          code0 {if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);}
+        }
+        Fl_Check_Button btnEnable_csma {
+          label {Enable CSMA}
+          callback {if(o->value()) {
+	progdefaults.csma_enabled = true;
+} else {
+	progdefaults.csma_enabled = false;
+}
+progdefaults.changed = true;}
+          tooltip {Used for BPQ32} xywh {474 122 110 20} down_box DOWN_BOX
+          code0 {if(progdefaults.csma_enabled) o->value(true);}
         }
       }
     }

@@ -31,7 +31,7 @@
 /*
  * Hamming weight (number of bits that are ones).
  */
-unsigned long hweight32(unsigned long w) 
+unsigned long hweight32(unsigned long w)
 {
 	w = (w & 0x55555555) + ((w >>  1) & 0x55555555);
 	w = (w & 0x33333333) + ((w >>  2) & 0x33333333);
@@ -195,12 +195,12 @@ void TriangularWindow(double *array, int n) {
 	for (int i = 0; i < n; i++) array[i] = 1.0;
 	double inv_n = 1.0 / (double)n;
 	for (int i = 0; i < n / 4; i++) {
-			array[i] = 4.0 * (double)i * inv_n ;
-			array[n-i] = array[i];
+		array[i] = 4.0 * (double)i * inv_n ;
+		array[n-i] = array[i];
 	}
 	for (int i = 0; i < n; i++)	pwr += array[i] * array[i];
 	pwr = sqrt((double)n/pwr);
 	for (int i = 0; i < n; i++)
 		array[i] *= pwr;
 }
-	
+

@@ -145,6 +145,7 @@
 #include "flmisc.h"
 
 #include "arq_io.h"
+#include "data_io.h"
 #include "kmlserver.h"
 
 #include "notifydialog.h"
@@ -235,8 +236,9 @@ Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS * NUMKEYROWS];
 Fl_Button			*btnAltMacros1 = (Fl_Button *)0;
 Fl_Button			*btnAltMacros2 = (Fl_Button *)0;
-Fl_Button			*btnAFC;
-Fl_Button			*btnSQL;
+Fl_Light_Button		*btnAFC;
+Fl_Light_Button		*btnSQL;
+Fl_Light_Button		*btnPSQL;
 Fl_Input2			*inpQth;
 Fl_Input2			*inpLoc;
 Fl_Input2			*inpState;
@@ -343,44 +345,59 @@ int Hmenu		= 22;
 static const int Hqsoframe	= pad + 3 * (Hentry + pad);
 int Hstatus	= 22;
 int Hmacros	= 22;
-static const int w_inpFreq	= 80;
-static const int w_inpTime	= 40;
-static const int w_inpCall	= 120;
-static const int w_inpName  	= 90;
-static const int w_inpRstIn	= 30;
-static const int w_inpRstOut	= 30;
-static const int w_SerNo	= 40;
+//static const int w_inpFreq	= 80;
+//static const int w_inpTime	= 40;
+//static const int w_inpCall	= 120;
+//static const int w_inpName  	= 90;
+//static const int w_inpRstIn	= 30;
+//static const int w_inpRstOut	= 30;
+//static const int w_SerNo	= 40;
 static const int sw		= 22;
 
-static const int wlabel		= 30;
+//static const int wlabel		= 30;
 
 static const int wf1			= 30+80+6+4*Hentry+4*40;
 
 static const int w_inpTime2	= 40;
 static const int w_inpCall2	= 100;
-static const int w_inpName2	= 80;
+//static const int w_inpName2	= 80;
 static const int w_inpRstIn2	= 30;
 static const int w_inpRstOut2	= 30;
 
-static const int w_fm1 		= 25;
-static const int w_fm2 		= 15;
-static const int w_fm3 		= 15;
-static const int w_fm4 		= 25;
-static const int w_fm5 		= 25;
-static const int w_fm6		= 30;
-static const int w_fm7		= 35;
-static const int w_inpState 	= 25;
-static const int w_inpProv	= 25;
-static const int w_inpCountry	= 60;
-static const int w_inpLOC   	= 55;
-static const int w_inpAZ    	= 30;
+//static const int w_fm1 		= 25;
+//static const int w_fm2 		= 15;
+//static const int w_fm3 		= 15;
+//static const int w_fm4 		= 25;
+//static const int w_fm5 		= 25;
+//static const int w_fm6		= 30;
+//static const int w_fm7		= 35;
+//static const int w_inpState 	= 25;
+//static const int w_inpProv	= 25;
+//static const int w_inpCountry	= 60;
+//static const int w_inpLOC   	= 55;
+//static const int w_inpAZ    	= 30;
 
 // minimum height for raster display, FeldHell, is 66 pixels
 static const int minhtext = 66*2+4; // 66 : raster min height x 2 : min panel box, 4 : frame
 
-static const int qh = Hqsoframe / 2;
+//static const int qh = Hqsoframe / 2;
 
 static int main_hmin = HMIN;  //500;//450;
+
+time_t program_start_time = 0;
+
+bool xmlrpc_address_override_flag   = false;
+bool arq_address_override_flag      = false;
+bool kiss_address_override_flag     = false;
+std::string override_xmlrpc_address = "";
+std::string override_xmlrpc_port    = "";
+std::string override_arq_address    = "";
+std::string override_arq_port       = "";
+std::string override_kiss_address   = "";
+std::string override_kiss_io_port   = "";
+std::string override_kiss_out_port  = "";
+int override_kiss_dual_port_enabled = -1;          // Ensure this remains negative until assigned
+int override_data_io_enabled        = DISABLED_IO;
 
 int IMAGE_WIDTH;
 int Hwfall;
@@ -1118,6 +1135,14 @@ void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
+	if (data_io_enabled == KISS_IO) {
+		if(!bcast_rsid_kiss_frame(freq, mode, (int) active_modem->get_txfreq(), active_modem->get_mode(),
+								  progdefaults.rsid_notify_only ? RSID_KISS_NOTIFY : RSID_KISS_ACTIVE)) {
+			LOG_INFO("Invaild Modem for KISS I/O (%s)",  mode_info[mode].sname);
+			return;
+		}
+	}
+
 LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 
 #if !BENCHMARK_MODE
@@ -1625,6 +1650,28 @@ void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
+}
+
+void cb_mnuConfigAutostart(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabAutoStart);
+#if USE_HAMLIB
+	hamlib_restore_defaults();
+#endif
+	rigCAT_restore_defaults();
+	dlgConfig->show();
+
+}
+
+void cb_mnuConfigIO(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabIO);
 #if USE_HAMLIB
 	hamlib_restore_defaults();
 #endif
@@ -2240,7 +2287,13 @@ void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 }
 
 void cb_sldrSquelch(Fl_Slider* o, void*) {
-	progStatus.sldrSquelchValue = o->value();
+
+	if(progStatus.pwrsqlonoff) {
+		progStatus.sldrPwrSquelchValue = o->value();
+	} else {
+	    progStatus.sldrSquelchValue = o->value();
+	}
+
 	restoreFocus();
 }
 
@@ -2608,6 +2661,28 @@ void cbSQL(Fl_Widget *w, void *vi)
 	progStatus.sqlonoff = v ? true : false;
 }
 
+void cbPwrSQL(Fl_Widget *w, void *vi)
+{
+	if(data_io_enabled == KISS_IO) {
+		FL_LOCK_D();
+		Fl_Button *b = (Fl_Button *)w;
+		b->activate();
+		int v = b->value();
+		if(!v)
+			sldrSquelch->value(progStatus.sldrSquelchValue);
+		else
+			sldrSquelch->value(progStatus.sldrPwrSquelchValue);
+
+		FL_UNLOCK_D();
+		progStatus.pwrsqlonoff = v ? true : false;
+	} else {
+		FL_LOCK_D();
+		Fl_Button *b = (Fl_Button *)w;
+		b->deactivate();
+		FL_UNLOCK_D();
+	}
+}
+
 void startMacroTimer()
 {
 	ENSURE_THREAD(FLMAIN_TID);
@@ -2691,13 +2766,16 @@ void cb_XmtMixer(Fl_Widget *w, void *d)
 
 void cb_mvsquelch(Fl_Widget *w, void *d)
 {
+	progStatus.squelch_value = mvsquelch->value();
+
 	if (active_modem->get_mode() == MODE_RTTY)
-		progStatus.VIEWER_rttysquelch = mvsquelch->value();
+		progStatus.VIEWER_rttysquelch = progStatus.squelch_value;
 	else
-		progStatus.VIEWER_psksquelch = mvsquelch->value();
+		progStatus.VIEWER_psksquelch = progStatus.squelch_value;
 
 	if (sldrViewerSquelch)
-		sldrViewerSquelch->value(mvsquelch->value());
+		sldrViewerSquelch->value(progStatus.squelch_value);
+
 }
 
 void cb_btnClearMViewer(Fl_Widget *w, void *d)
@@ -2807,10 +2885,11 @@ int wo_default_handler(int event)
 			return 1;
 		}
 #ifdef __APPLE__
-		if ((key == '-') && (Fl::event_state() == FL_COMMAND)) {
+		if ((key == '-') && (Fl::event_state() == FL_COMMAND))
 #else
-		if (key == '-' && Fl::event_alt()) {
+		if (key == '-' && Fl::event_alt())
 #endif
+		{
 			progdefaults.txlevel -= 0.1;
 			if (progdefaults.txlevel < -30) progdefaults.txlevel = -30;
 			cntTxLevel->value(progdefaults.txlevel);
@@ -3644,6 +3723,8 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("Autostart")), 0,  (Fl_Callback*)cb_mnuConfigAutostart, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(_("QRZ/eQSL"), net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -5300,7 +5381,7 @@ void create_fl_digi_main_primary() {
 				gseek->end();
 
 				Fl_Group *g = new Fl_Group(
-								mvgroup->x(), mvgroup->y() + Htext - 22, 
+								mvgroup->x(), mvgroup->y() + Htext - 22,
 								mvgroup->w(), 22);
 					g->box(FL_DOWN_BOX);
 				// squelch
@@ -5322,7 +5403,7 @@ void create_fl_digi_main_primary() {
 
 					// clear button
 					btnClearMViewer = new Fl_Button(
-										mvsquelch->x() + mvsquelch->w(), g->y(), 
+										mvsquelch->x() + mvsquelch->w(), g->y(),
 										75, g->h(),
 										make_icon_label(_("Clear"), edit_clear_icon));
 					btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
@@ -5504,7 +5585,7 @@ void create_fl_digi_main_primary() {
 
 			StatusBar = new Fl_Box(
 				rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-				progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
+						   progStatus.mainW - bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
 				- 2 * DEFAULT_SW - rightof(Status2),
                 Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
@@ -5531,25 +5612,41 @@ void create_fl_digi_main_primary() {
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
-			int sql_width = bwSqlOnOff;
+//			int sql_width = bwSqlOnOff;
 			btnAFC = new Fl_Light_Button(
-							progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
-							Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-							bwAfcOnOff, Hstatus, "AFC");
-			btnAFC->selection_color(progdefaults.AfcColor);
+						 progStatus.mainW - bwSqlOnOff - bwAfcOnOff - bwPwrSqlOnOff,
+						 Y,
+						 bwAfcOnOff, Hstatus, "AFC");
+
 			btnSQL = new Fl_Light_Button(
-							progStatus.mainW - bwSqlOnOff,
-							Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-							sql_width, Hstatus, "SQL");
+						 progStatus.mainW - bwSqlOnOff - bwPwrSqlOnOff,
+						 Y,
+						 bwSqlOnOff, Hstatus, "SQL");
+
+			btnPSQL = new Fl_Light_Button(
+						  progStatus.mainW - bwPwrSqlOnOff,
+						  Y,
+						  bwPwrSqlOnOff, Hstatus, "KPSQL");
+
 			btnSQL->selection_color(progdefaults.Sql1Color);
 
 			btnAFC->callback(cbAFC, 0);
 			btnAFC->value(1);
 			btnAFC->tooltip(_("Automatic Frequency Control"));
+
 			btnSQL->callback(cbSQL, 0);
 			btnSQL->value(1);
 			btnSQL->tooltip(_("Squelch"));
 
+			btnPSQL->selection_color(progdefaults.Sql1Color);
+			btnPSQL->callback(cbPwrSQL, 0);
+			btnPSQL->value(1);
+			btnPSQL->tooltip(_("Monitor KISS Pwr Squelch"));
+
+			if(progdefaults.data_io_enabled == KISS_IO)
+				btnPSQL->activate();
+			else
+				btnPSQL->deactivate();
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -6092,7 +6189,7 @@ void create_fl_digi_main_WF_only() {
 
 			StatusBar = new Fl_Box(
 				rightof(Status2), Y,
-					progStatus.mainW - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
+						   progStatus.mainW - bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
 					- 2 * DEFAULT_SW - rightof(Status2),
 					Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
@@ -6121,14 +6218,20 @@ void create_fl_digi_main_WF_only() {
 
 			int sql_width = bwSqlOnOff;
 			btnAFC = new Fl_Light_Button(
-				progStatus.mainW - bwSqlOnOff - bwAfcOnOff,
+								 progStatus.mainW - bwSqlOnOff - bwAfcOnOff - bwPwrSqlOnOff,
 				Y,
 				bwAfcOnOff, Hstatus, "AFC");
 			btnAFC->selection_color(progdefaults.AfcColor);
 			btnSQL = new Fl_Light_Button(
-				progStatus.mainW - bwSqlOnOff,
+				progStatus.mainW - bwSqlOnOff - bwPwrSqlOnOff,
 				Y,
 				sql_width, Hstatus, "SQL");
+
+		btnPSQL = new Fl_Light_Button(
+								  progStatus.mainW - bwPwrSqlOnOff,
+								  Y,
+								  bwPwrSqlOnOff, Hstatus, "KPSQL");
+
 			btnSQL->selection_color(progdefaults.Sql1Color);
 			btnAFC->callback(cbAFC, 0);
 			btnAFC->value(1);
@@ -6136,6 +6239,15 @@ void create_fl_digi_main_WF_only() {
 			btnSQL->callback(cbSQL, 0);
 			btnSQL->value(1);
 			btnSQL->tooltip(_("Squelch"));
+	btnPSQL->selection_color(progdefaults.Sql1Color);
+	btnPSQL->callback(cbPwrSQL, 0);
+	btnPSQL->value(1);
+	btnPSQL->tooltip(_("Monitor KISS Pwr Squelch"));
+
+	if(progdefaults.data_io_enabled == KISS_IO)
+		btnPSQL->activate();
+	else
+		btnPSQL->deactivate();
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -6231,13 +6343,22 @@ void put_Bandwidth(int bandwidth)
 static void callback_set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
-	if (!progStatus.sqlonoff)
-		return;
-	if (metric < progStatus.sldrSquelchValue)
-		btnSQL->selection_color(progdefaults.Sql1Color);
-	else
-		btnSQL->selection_color(progdefaults.Sql2Color);
-	btnSQL->redraw_label();
+
+	if(progStatus.pwrsqlonoff) {
+		if ((metric >= progStatus.sldrPwrSquelchValue) || inhibit_tx_seconds)
+			btnPSQL->selection_color(progdefaults.Sql2Color);
+		else
+			btnPSQL->selection_color(progdefaults.Sql1Color);
+
+		btnPSQL->redraw_label();
+
+	} else if(progStatus.sqlonoff) {
+		if (metric < progStatus.sldrSquelchValue)
+			btnSQL->selection_color(progdefaults.Sql1Color);
+		else
+			btnSQL->selection_color(progdefaults.Sql2Color);
+		btnSQL->redraw_label();
+	}
 }
 
 void global_display_metric(double metric)
@@ -6523,6 +6644,41 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	}
 }
 
+static std::string rx_process_buf = "";
+static std::string tx_process_buf = "";
+static pthread_mutex_t rx_proc_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void put_rx_processed_char(unsigned int data, int style)
+{
+	guard_lock rx_proc_lock(&rx_proc_mutex);
+
+	if(style == FTextBase::XMIT) {
+		tx_process_buf += (char) (data & 0xff);
+	} else if(style == FTextBase::RECV) {
+		rx_process_buf += (char) (data & 0xff);
+	}
+}
+
+void disp_rx_processed_char(void)
+{
+	guard_lock rx_proc_lock(&rx_proc_mutex);
+	unsigned int index = 0;
+
+	if(!rx_process_buf.empty()) {
+		unsigned int count = rx_process_buf.size();
+		for(index = 0; index < count; index++)
+			REQ(put_rx_char_flmain, rx_process_buf[index], FTextBase::RECV);
+		rx_process_buf.clear();
+	}
+
+	if(!tx_process_buf.empty()) {
+		unsigned int count = tx_process_buf.size();
+		for(index = 0; index < count; index++)
+			REQ(put_rx_char_flmain, tx_process_buf[index], FTextBase::XMIT);
+		tx_process_buf.clear();
+	}
+}
+
 void put_rx_char(unsigned int data, int style)
 {
 #if BENCHMARK_MODE
@@ -6534,8 +6690,20 @@ void put_rx_char(unsigned int data, int style)
 #else
 	if (progdefaults.autoextract == true)
 		rx_extract_add(data);
-	WriteARQ(data);
-	REQ(put_rx_char_flmain, data, style);
+
+	switch(data_io_enabled) {
+		case ARQ_IO:
+			WriteARQ(data);
+			break;
+		case KISS_IO:
+			WriteKISS(data);
+			break;
+	}
+
+	if(progdefaults.ax25_decode_enabled && data_io_enabled == KISS_IO)
+		disp_rx_processed_char();
+	else
+		REQ(put_rx_char_flmain, data, style);
 #endif
 }
 
@@ -6746,14 +6914,10 @@ int get_tx_char(void)
 		return xmltest_char();
 	}
 
-	if (arq_text_available) {
-		char character = (arq_get_char() & 0xFF);
-		if (character == 0x03) {
-			// ETX (0x03) in ARQ data means "stop transmitting" not "send ETX"
-			return(GET_TX_CHAR_ETX);
-		}
-		else
-			return(character);
+	if (data_io_enabled == ARQ_IO && arq_text_available) {
+		return arq_get_char();
+	} else if (data_io_enabled == KISS_IO && kiss_text_available) {
+		return kiss_get_char();
 	}
 
 	if (active_modem == cw_modem && progdefaults.QSKadjust)
@@ -6873,6 +7037,11 @@ void put_echo_char(unsigned int data, int style)
 {
 // suppress print to rx widget when making timing tests
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return;
+
+	if(progdefaults.ax25_decode_enabled && data_io_enabled == KISS_IO) {
+		disp_rx_processed_char();
+		return;
+	}
 
 	trx_mode mode = active_modem->get_mode();
 
@@ -7348,6 +7517,119 @@ void notch_on(int freq)
 void notch_off()
 {
 	notch_frequency = 0;
+}
+
+void enable_kiss(void)
+{
+	progdefaults.changed = true;
+	progdefaults.data_io_enabled = KISS_IO;
+	data_io_enabled = KISS_IO;
+	btnEnable_kiss->value(true);
+	btnEnable_arq->value(false);
+	enable_disable_kpsql();
+}
+
+void enable_arq(void)
+{
+	progdefaults.changed = true;
+	progdefaults.data_io_enabled = ARQ_IO;
+	data_io_enabled = ARQ_IO;
+	btnEnable_arq->value(true);
+	btnEnable_kiss->value(false);
+	enable_disable_kpsql();
+}
+
+void enable_disable_kpsql(void)
+{
+	if(progdefaults.data_io_enabled == KISS_IO) {
+		check_kiss_modem();
+		btnPSQL->activate();
+	} else {
+		sldrSquelch->value(progStatus.sldrSquelchValue);
+		progStatus.pwrsqlonoff = false;
+		btnPSQL->value(0);
+		btnPSQL->deactivate();
+	}
+	progStatus.data_io_enabled = progdefaults.data_io_enabled;
+}
+
+void disable_config_p2p_io_widgets(void)
+{
+	btnEnable_arq->deactivate();
+	btnEnable_kiss->deactivate();
+
+	txtArq_ip_address->deactivate();
+	txtArq_ip_port_no->deactivate();
+	btnDefault_arq_ip->deactivate();
+
+	txtKiss_ip_address->deactivate();
+	txtKiss_ip_io_port_no->deactivate();
+	txtKiss_ip_out_port_no->deactivate();
+	btnEnable_dual_port->deactivate();
+
+	btnDefault_kiss_ip->deactivate();
+
+	txtXmlrpc_ip_address->deactivate();
+	txtXmlrpc_ip_port_no->deactivate();
+	btnDefault_xmlrpc_ip->deactivate();
+
+	//btnEnableBusyChannel->deactivate();
+	//cntBusyChannelSeconds->deactivate();
+}
+
+void enable_config_p2p_io_widgets(void)
+{
+	btnEnable_arq->activate();
+	btnEnable_kiss->activate();
+
+	txtArq_ip_address->activate();
+	txtArq_ip_port_no->activate();
+	btnDefault_arq_ip->activate();
+
+	txtKiss_ip_address->activate();
+	txtKiss_ip_io_port_no->activate();
+	txtKiss_ip_out_port_no->activate();
+	btnEnable_dual_port->activate();
+
+	btnDefault_kiss_ip->activate();
+
+	txtXmlrpc_ip_address->activate();
+	txtXmlrpc_ip_port_no->activate();
+	btnDefault_xmlrpc_ip->activate();
+
+	//btnEnableBusyChannel->activate();
+	//cntBusyChannelSeconds->activate();
+}
+
+void set_ip_to_default(int which_io)
+{
+
+	switch(which_io) {
+		case ARQ_IO:
+			txtArq_ip_address->value(DEFAULT_ARQ_IP_ADDRESS);
+			txtArq_ip_port_no->value(DEFAULT_ARQ_IP_PORT);
+			txtArq_ip_address->do_callback();
+			txtArq_ip_port_no->do_callback();
+			break;
+
+		case KISS_IO:
+			txtKiss_ip_address->value(DEFAULT_KISS_IP_ADDRESS);
+			txtKiss_ip_io_port_no->value(DEFAULT_KISS_IP_IO_PORT);
+			txtKiss_ip_out_port_no->value(DEFAULT_KISS_IP_OUT_PORT);
+			btnEnable_dual_port->value(false);
+			txtKiss_ip_address->do_callback();
+			txtKiss_ip_io_port_no->do_callback();
+			txtKiss_ip_out_port_no->do_callback();
+			btnEnable_dual_port->do_callback();
+			break;
+
+		case XMLRPC_IO:
+			txtXmlrpc_ip_address->value(DEFAULT_XMLPRC_IP_ADDRESS);
+			txtXmlrpc_ip_port_no->value(DEFAULT_XMLRPC_IP_PORT);
+			txtXmlrpc_ip_address->do_callback();
+			txtXmlrpc_ip_port_no->do_callback();
+			break;
+	}
 }
 
 void set_CSV(int how)

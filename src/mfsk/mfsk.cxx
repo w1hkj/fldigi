@@ -223,7 +223,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		cap |= CAP_IMG;
 		preamble = 214;
 		break;
-		
+
 	case MODE_MFSK64L:
 		samplerate = 8000;
 		symlen =  128;
@@ -241,7 +241,7 @@ mfsk::mfsk(trx_mode mfsk_mode) : modem()
 		preamble = 5000;
 		basetone = 8;
 		numtones = 16;
-		break;	
+		break;
 
 	case MODE_MFSK11:
 		samplerate = 11025;

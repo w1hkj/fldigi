@@ -94,6 +94,7 @@
 #include "newinstall.h"
 #include "Viewer.h"
 #include "kmlserver.h"
+#include "data_io.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -206,31 +207,30 @@ static void fatal_error(string);
 void start_process(string executable)
 {
 	if (!executable.empty()) {
-#ifndef __MINGW32__
-		switch (fork()) {
-		case -1:
-			LOG_PERROR("fork");
-			// fall through
-		default:
-			break;
-		case 0:
-#endif
 #ifdef __MINGW32__
-			char* cmd = strdup(executable.c_str());
-			STARTUPINFO si;
-			PROCESS_INFORMATION pi;
-			memset(&si, 0, sizeof(si));
-			si.cb = sizeof(si);
-			memset(&pi, 0, sizeof(pi));
-			if (!CreateProcess(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
-				LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
-			CloseHandle(pi.hProcess);
-			CloseHandle(pi.hThread);
-			free(cmd);
+		char* cmd = strdup(executable.c_str());
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+		memset(&si, 0, sizeof(si));
+		si.cb = sizeof(si);
+		memset(&pi, 0, sizeof(pi));
+		if (!CreateProcess(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+			LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+		free(cmd);
 #else
-			execl("/bin/sh", "sh", "-c", executable.c_str(), (char *)NULL);
-			perror("execl");
-			exit(EXIT_FAILURE);
+		switch (fork()) {
+			case -1:
+				LOG_PERROR("fork");
+				// fall through
+			default:
+				break;
+
+			case 0:
+				execl("/bin/sh", "sh", "-c", executable.c_str(), (char *)NULL);
+				perror("execl");
+				exit(EXIT_FAILURE);
 		}
 #endif
 	}
@@ -241,27 +241,27 @@ static void auto_start()
 	if (!progdefaults.auto_flrig_pathname.empty() &&
 		 progdefaults.flrig_auto_enable)
 		start_process(progdefaults.auto_flrig_pathname);
-		
+
 	if (!progdefaults.auto_flamp_pathname.empty() &&
 		 progdefaults.flamp_auto_enable)
 		start_process(progdefaults.auto_flamp_pathname);
-		
+
 	if (!progdefaults.auto_fllog_pathname.empty() &&
 		 progdefaults.fllog_auto_enable)
 		start_process(progdefaults.auto_fllog_pathname);
-		
+
 	if (!progdefaults.auto_flnet_pathname.empty() &&
 		 progdefaults.flnet_auto_enable)
 		start_process(progdefaults.auto_flnet_pathname);
-		
+
 	if (!progdefaults.auto_prog1_pathname.empty() &&
 		 progdefaults.prog1_auto_enable)
 		start_process(progdefaults.auto_prog1_pathname);
-		
+
 	if (!progdefaults.auto_prog2_pathname.empty() &&
 		 progdefaults.prog2_auto_enable)
 		start_process(progdefaults.auto_prog2_pathname);
-		
+
 	if (!progdefaults.auto_prog3_pathname.empty() &&
 		 progdefaults.prog3_auto_enable)
 		start_process(progdefaults.auto_prog3_pathname);
@@ -270,10 +270,7 @@ static void auto_start()
 // these functions are all started after Fl::run() is executing
 void delayed_startup(void *)
 {
-
 	connect_to_log_server();
-
-	arq_init();
 
 #ifdef __WIN32__
 	if (progdefaults.auto_talk) open_talker();
@@ -282,6 +279,11 @@ void delayed_startup(void *)
 #endif
 
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
+
+	data_io_enabled = DISABLED_IO;
+	arq_init();
+	kiss_init();
+	data_io_enabled = progdefaults.data_io_enabled;
 
 	notify_start();
 
@@ -293,11 +295,13 @@ void delayed_startup(void *)
 
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
-
 }
 
 int main(int argc, char ** argv)
 {
+	// for KISS_IO status information
+	program_start_time = time(0);
+
 	active_modem = new NULLMODEM;
 
 	string appdir = appname = argv[0];
@@ -380,7 +384,58 @@ int main(int argc, char ** argv)
 
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
 		cbq[i] = new qrunner;
-		cbq[i]->attach();
+		switch(i) {
+			case TRX_TID:
+				cbq[i]->attach(i, "TRX_TID");
+				break;
+
+			case QRZ_TID:
+				cbq[i]->attach(i, "QRZ_TID");
+				break;
+
+			case RIGCTL_TID:
+				cbq[i]->attach(i, "RIGCTL_TID");
+				break;
+
+			case NORIGCTL_TID:
+				cbq[i]->attach(i, "NORIGCTL_TID");
+				break;
+
+			case EQSL_TID:
+				cbq[i]->attach(i, "EQSL_TID");
+				break;
+
+			case ADIF_RW_TID:
+				cbq[i]->attach(i, "ADIF_RW_TID");
+				break;
+
+			case XMLRPC_TID:
+				cbq[i]->attach(i, "XMLRPC_TID");
+				break;
+
+			case ARQ_TID:
+				cbq[i]->attach(i, "ARQ_TID");
+				break;
+
+			case ARQSOCKET_TID:
+				cbq[i]->attach(i, "ARQSOCKET_TID");
+				break;
+
+			case KISS_TID:
+				cbq[i]->attach(i, "KISS_TID");
+				break;
+
+			case KISSSOCKET_TID:
+				cbq[i]->attach(i, "KISSSOCKET_TID");
+				break;
+
+			case FLMAIN_TID:
+				cbq[i]->attach(i, "FLMAIN_TID");
+				break;
+
+		    default:
+		    	break;
+		}
 	}
 
 	set_unexpected(handle_unexpected);
@@ -633,6 +688,7 @@ void exit_process() {
 
 	KmlServer::Exit();
 	arq_close();
+	kiss_close();
 	XML_RPC_Server::stop();
 
 	if (progdefaults.usepskrep)
@@ -697,6 +753,23 @@ void generate_option_help(void) {
 	     << "    The default is: " << progdefaults.tx_msgid
 	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
+
+		 << "  --enable-io-port <" << ARQ_IO << "|" << KISS_IO << "> ARQ=" << ARQ_IO << " KISS=" << KISS_IO << "\n"
+         << "    Select the active IO Port\n"
+         << "    The default is: " << progdefaults.data_io_enabled << "\n\n"
+
+         << "  --kiss-server-address HOSTNAME\n"
+         << "    Set the KISS UDP server address\n"
+         << "    The default is: " << progdefaults.kiss_address << "\n\n"
+         << "  --kiss-server-port-io I/O PORT\n"
+         << "    Set the KISS UDP server I/O port\n"
+         << "    The default is: " << progdefaults.kiss_io_port << "\n\n"
+         << "  --kiss-server-port-o Output PORT\n"
+         << "    Set the KISS UDP server output port\n"
+         << "    The default is: " << progdefaults.kiss_out_port << "\n\n"
+         << "  --kiss-server-dual-port Dual Port Use (0=disable / 1=enable)\n"
+         << "    Set the KISS UDP server dual port flag\n"
+         << "    The default is: " << progdefaults.kiss_dual_port_enabled << "\n\n"
 
 	     << "  --arq-server-address HOSTNAME\n"
 	     << "    Set the ARQ TCP server address\n"
@@ -869,6 +942,8 @@ int parse_args(int argc, char **argv, int& idx)
 
 	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
 	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
+		   OPT_CONFIG_KISS_ADDRESS, OPT_CONFIG_KISS_PORT_IO, OPT_CONFIG_KISS_PORT_O,
+		   OPT_CONFIG_KISS_DUAL_PORT, OPT_ENABLE_IO_PORT,
 
 #if BENCHMARK_MODE
 	       OPT_BENCHMARK_MODEM, OPT_BENCHMARK_AFC, OPT_BENCHMARK_SQL, OPT_BENCHMARK_SQLEVEL,
@@ -901,6 +976,13 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "auto-dir", 1, 0, OPT_AUTOSEND_DIR },
 
 		{ "cpu-speed-test", 0, 0, OPT_SHOW_CPU_CHECK },
+
+		{ "enable-io-port",   1, 0, OPT_ENABLE_IO_PORT },
+
+		{ "kiss-server-address",   1, 0, OPT_CONFIG_KISS_ADDRESS },
+		{ "kiss-server-port-io",   1, 0, OPT_CONFIG_KISS_PORT_IO },
+		{ "kiss-server-port-o",    1, 0, OPT_CONFIG_KISS_PORT_O },
+		{ "kiss-server-dual-port", 1, 0, OPT_CONFIG_KISS_DUAL_PORT },
 
 		{ "xmlrpc-server-address", 1, 0, OPT_CONFIG_XMLRPC_ADDRESS },
 		{ "xmlrpc-server-port",    1, 0, OPT_CONFIG_XMLRPC_PORT },
@@ -993,9 +1075,13 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_ARQ_ADDRESS:
 			progdefaults.arq_address = optarg;
+			override_arq_address = optarg;
+			arq_address_override_flag = true;
 			break;
 		case OPT_ARQ_PORT:
 			progdefaults.arq_port = optarg;
+			override_arq_port = optarg;
+			arq_address_override_flag = true;
 			break;
 
 		case OPT_FLMSG_DIR:
@@ -1006,11 +1092,60 @@ int parse_args(int argc, char **argv, int& idx)
 			FLMSG_WRAP_auto_dir = optarg;
 			break;
 
+		case OPT_ENABLE_IO_PORT:
+			if(optarg) {
+				switch(atoi(optarg)) {
+					case ARQ_IO:
+						progdefaults.data_io_enabled = ARQ_IO;
+						override_data_io_enabled = ARQ_IO;
+						arq_address_override_flag = true;
+						break;
+
+					case KISS_IO:
+						progdefaults.data_io_enabled = KISS_IO;
+						override_data_io_enabled = KISS_IO;
+						kiss_address_override_flag = true;
+						break;
+				}
+			}
+			break;
+
+		case OPT_CONFIG_KISS_ADDRESS:
+			progdefaults.kiss_address = optarg;
+			override_kiss_address = optarg;
+			kiss_address_override_flag = true;
+			break;
+		case OPT_CONFIG_KISS_PORT_IO:
+			progdefaults.kiss_io_port = optarg;
+			override_kiss_io_port = optarg;
+			kiss_address_override_flag = true;
+			break;
+		case OPT_CONFIG_KISS_PORT_O:
+			progdefaults.kiss_out_port = optarg;
+			override_kiss_out_port = optarg;
+			kiss_address_override_flag = true;
+			break;
+		case OPT_CONFIG_KISS_DUAL_PORT:
+			if((optarg) && atoi(optarg)) {
+				progdefaults.kiss_dual_port_enabled = true;
+				override_kiss_dual_port_enabled = true;
+				kiss_address_override_flag = true;
+			} else {
+				progdefaults.kiss_dual_port_enabled = false;
+				override_kiss_dual_port_enabled = false;
+				kiss_address_override_flag = true;
+			}
+			break;
+
 		case OPT_CONFIG_XMLRPC_ADDRESS:
 			progdefaults.xmlrpc_address = optarg;
+			override_xmlrpc_address = optarg;
+			xmlrpc_address_override_flag = true;
 			break;
 		case OPT_CONFIG_XMLRPC_PORT:
 			progdefaults.xmlrpc_port = optarg;
+			override_xmlrpc_port = optarg;
+			xmlrpc_address_override_flag = true;
 			break;
 		case OPT_CONFIG_XMLRPC_ALLOW:
 			progdefaults.xmlrpc_allow = optarg;

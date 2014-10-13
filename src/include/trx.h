@@ -6,7 +6,7 @@
 // Copyright (C) 2008-2009
 //		Stelios Bounanos, M0GLD
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //
 // Fldigi is free software: you can redistribute it and/or modify

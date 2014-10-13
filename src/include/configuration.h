@@ -1461,15 +1461,53 @@
         ELEM_(bool, check_for_updates, "CHECK_FOR_UPDATES",                             \
               "Check for updates when starting program",                                \
               false)                                                                    \
-        /* XML-RPC/ARQ servers */                                                       \
-        ELEM_(std::string, xmlrpc_address, "", "",  "127.0.0.1")                        \
-        ELEM_(std::string, xmlrpc_port, "", "",  "7362")                                \
+        /* XML-RPC/ARQ/KISS servers */                                                  \
+        ELEM_(std::string, xmlrpc_address, "XMLRPC_ADDRESS",                            \
+		      "IP Address of XMLRPC Socket",                                            \
+			  DEFAULT_XMLPRC_IP_ADDRESS)                                                \
+        ELEM_(std::string, xmlrpc_port,    "XMLRPC_PORT",                               \
+			  "IP port number of XMLRPC socket",                                        \
+			  DEFAULT_XMLRPC_IP_PORT)                                                   \
         ELEM_(std::string, xmlrpc_allow, "", "",  "")                                   \
         ELEM_(std::string, xmlrpc_deny, "", "",  "")                                    \
         ELEM_(int, rx_msgid, "", "",  9876)                                             \
         ELEM_(int, tx_msgid, "", "",  6789)                                             \
-        ELEM_(std::string, arq_address, "", "",  "127.0.0.1")                           \
-        ELEM_(std::string, arq_port, "", "",  "7322")                                   \
+        ELEM_(std::string, arq_address, "ARQ_ADDRESS",                                  \
+		      "IP Address of ARQ socket",                                               \
+			  DEFAULT_ARQ_IP_ADDRESS)                                                   \
+        ELEM_(std::string, arq_port, "ARQ_PORT",                                        \
+              "IP port number of ARQ socket",                                           \
+			  DEFAULT_ARQ_IP_PORT)                                                      \
+		ELEM_(std::string, kiss_address, "KISS_ADDRESS",                                \
+		      "IP Address of KISS socket",                                              \
+		      DEFAULT_KISS_IP_ADDRESS)                                                  \
+		ELEM_(std::string, kiss_io_port, "KISS_IO_PORT",                                \
+		      "IP port number of KISS socket",                                          \
+		      DEFAULT_KISS_IP_IO_PORT)                                                  \
+		ELEM_(std::string, kiss_out_port, "KISS_OUT_PORT",                              \
+			  "Out udp port used when ip address is the same",                          \
+			  DEFAULT_KISS_IP_OUT_PORT)                                                 \
+		ELEM_(int, kiss_dual_port_enabled, "KISS_DUAL_PORT_ENABLED",                    \
+			  "Required when same IP address is used.",                                 \
+			  0)                                                                        \
+		ELEM_(int, data_io_enabled, "DATA_IO_ENABLED",                                  \
+			  "Disabled (0) ARQ socket enabled (1) KISS socket enabled (2)",            \
+			  1)                                                                        \
+		ELEM_(bool, ax25_decode_enabled, "AX25_DECODE_ENABLED",                         \
+			  "Dissasemble AX25 packet into human readable form",                       \
+			  false)                                                                    \
+		ELEM_(bool, enableBusyChannel, "ENABLE_BUSY_CHANNEL",                           \
+			  "Detect busy channel and wait for a period of time before txing",         \
+			  false)                                                                    \
+		ELEM_(int, busyChannelSeconds, "BUSY_CHANNEL_SECONDS",                          \
+			  "Number of seconds to wait before transmit resume",                       \
+			  3)                                                                        \
+		ELEM_(int, kpsql_attenuation, "KPSQL_ATTENUATION",                              \
+		"KPSQL Attenuation in 1/n of 1:1 Gain",                                         \
+		2)                                                                              \
+		ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
+			  "Use CSMA on heavy traffic channels (AX25)",                              \
+              true)                                                                     \
         /* PSK reporter */                                                              \
         ELEM_(bool, usepskrep, "USEPSKREP",                                             \
               "(Set by fldigi)",                                                        \

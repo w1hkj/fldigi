@@ -469,7 +469,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 		switch (mode) {
 			ncoval = nco(tone);
 			case MODE_FSKHELL : case MODE_FSKH105 : case MODE_HELL80 :
-				if ((tone2 != tone) && ((1.0 - fabs(ncoval)) < .001)) 
+				if ((tone2 != tone) && ((1.0 - fabs(ncoval)) < .001))
 					tone = tone2;
 				break;
 			case MODE_HELLX5 : case MODE_HELLX9 :

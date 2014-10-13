@@ -83,7 +83,7 @@ void view_rtty::rx_init()
 		channel[ch].inp_ptr = 0;
 
 		for (int i = 0; i < MAXPIPE; i++)
-			channel[ch].mark_history[i] = 
+			channel[ch].mark_history[i] =
 			channel[ch].space_history[i] = cmplx(0,0);
 	}
 }
@@ -187,7 +187,7 @@ void view_rtty::restart()
 
 		for (int i = 0; i < VIEW_RTTY_MAXBITS; i++) channel[ch].bit_buf[i] = 0.0;
 
-		for (int i = 0; i < MAXPIPE; i++) 
+		for (int i = 0; i < MAXPIPE; i++)
 			channel[ch].mark_history[i] = channel[ch].space_history[i] = cmplx(0,0);
 	}
 
@@ -415,7 +415,7 @@ void view_rtty::find_signals()
 			npwr = (wf->powerDensity(chf, delta) * 3000 / rtty_baud) + 1e-10;
 			if ((spwrlo / npwr > rtty_squelch) && (spwrhi / npwr > rtty_squelch)) {
 				if (!i && (channel[i+1].state == SRCHG || channel[i+1].state == RCVNG)) break;
-				if ((i == (progdefaults.VIEWERchannels -2)) && 
+				if ((i == (progdefaults.VIEWERchannels -2)) &&
 					(channel[i+1].state == SRCHG || channel[i+1].state == RCVNG)) break;
 				if (i && (channel[i-1].state == SRCHG || channel[i-1].state == RCVNG)) break;
 				if (i > 3 && (channel[i-2].state == SRCHG || channel[i-2].state == RCVNG)) break;
@@ -501,9 +501,9 @@ int view_rtty::rx_process(const double *buf, int buflen)
 
 // clipped if clipped decoder selected
 				double mclipped = 0, sclipped = 0;
-				mclipped = channel[ch].mark_mag > channel[ch].mark_env ? 
+				mclipped = channel[ch].mark_mag > channel[ch].mark_env ?
 							channel[ch].mark_env : channel[ch].mark_mag;
-				sclipped = channel[ch].space_mag > channel[ch].space_env ? 
+				sclipped = channel[ch].space_mag > channel[ch].space_env ?
 							channel[ch].space_env : channel[ch].space_mag;
 				if (mclipped < channel[ch].noise_floor) mclipped = channel[ch].noise_floor;
 				if (sclipped < channel[ch].noise_floor) sclipped = channel[ch].noise_floor;
@@ -511,9 +511,9 @@ int view_rtty::rx_process(const double *buf, int buflen)
 // Optimal ATC
 //				int v = (((mclipped - channel[ch].noise_floor) * (channel[ch].mark_env - channel[ch].noise_floor) -
 //						(sclipped - channel[ch].noise_floor) * (channel[ch].space_env - channel[ch].noise_floor)) -
-//				0.25 * ((channel[ch].mark_env - channel[ch].noise_floor) * 
+//				0.25 * ((channel[ch].mark_env - channel[ch].noise_floor) *
 //						(channel[ch].mark_env - channel[ch].noise_floor) -
-//						(channel[ch].space_env - channel[ch].noise_floor) * 
+//						(channel[ch].space_env - channel[ch].noise_floor) *
 //						(channel[ch].space_env - channel[ch].noise_floor)));
 //				bit = (v > 0);
 // Kahn Square Law demodulator
@@ -530,7 +530,7 @@ int view_rtty::rx_process(const double *buf, int buflen)
 					if (mp0 < 0) mp0 += MAXPIPE;
 					if (mp1 < 0) mp1 += MAXPIPE;
 					double ferr = (TWOPI * samplerate / rtty_baud) *
-						(!reverse ? 
+						(!reverse ?
 						arg(conj(channel[ch].mark_history[mp1]) * channel[ch].mark_history[mp0]) :
 						arg(conj(channel[ch].space_history[mp1]) * channel[ch].space_history[mp0]));
 					if (fabs(ferr) > rtty_baud / 2) ferr = 0;

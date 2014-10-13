@@ -10,6 +10,7 @@
 #include <FL/fl_show_colormap.H>
 #include "main.h"
 #include "fl_digi.h"
+#include "data_io.h"
 #include "Viewer.h"
 #include "soundconf.h"
 #include "waterfall.h"
@@ -143,7 +144,7 @@ void cbFreqControlFontBrowser(Fl_Widget*, void*) {
       qsoFreqDisp1->redraw();
       qsoFreqDisp2->redraw();
       qsoFreqDisp3->redraw();
-      
+  
       font_browser->hide();
 }
 
@@ -160,7 +161,7 @@ static void cbLOGGINGFontBrowser(Fl_Widget*, void*) {
       LOGGINGdisplay->textcolor(color);
       LOGGINGdisplay->textfont(font);
       LOGGINGdisplay->redraw();
-      
+  
       LOGGING_colors_font();
   
       font_browser->hide();
@@ -181,7 +182,7 @@ static void cbLOGBOOKFontBrowser(Fl_Widget*, void*) {
       LOGBOOKdisplay->textcolor(color);
       LOGBOOKdisplay->textfont(font);
       LOGBOOKdisplay->redraw();
-      
+  
       LOGBOOK_colors_font();
   
       font_browser->hide();
@@ -365,7 +366,7 @@ static void cb_bwsrSliderColor(Fl_Button* o, void*) {
     sldrViewerSquelch->redraw();
     mvsquelch->color(fl_rgb_color(r,g,b));
     mvsquelch->redraw();
-    
+
     progdefaults.changed = true;
 }
 
@@ -388,7 +389,7 @@ static void cb_bwsrSldrSelColor(Fl_Button* o, void*) {
     sldrViewerSquelch->redraw();
     mvsquelch->selection_color(fl_rgb_color(r,g,b));
     mvsquelch->redraw();
-    
+
     progdefaults.changed = true;
 }
 
@@ -541,9 +542,9 @@ progdefaults.changed = true;
 Fl_Button *btnDupColor=(Fl_Button *)0;
 
 static void cb_btnDupColor(Fl_Button* o, void*) {
-  fl_color_chooser("Dup Check", 
-  progdefaults.dup_color.R, 
-  progdefaults.dup_color.G, 
+  fl_color_chooser("Dup Check",
+  progdefaults.dup_color.R,
+  progdefaults.dup_color.G,
   progdefaults.dup_color.B);
 o->color(
   fl_rgb_color(
@@ -1193,7 +1194,7 @@ TransmitText->color(
     progdefaults.TxColor.G,
     progdefaults.TxColor.B),
     progdefaults.RxTxSelectcolor);
-    
+
 progdefaults.changed = true;
 }
 
@@ -1344,10 +1345,10 @@ static void cb_btnBackgroundColor(Fl_Button*, void*) {
     progdefaults.FDbackground.R = r;
     progdefaults.FDbackground.G = g;
     progdefaults.FDbackground.B = b;
-    
+
     FDdisplay->color(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
-    
+
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -1375,10 +1376,10 @@ static void cb_btnForegroundColor(Fl_Button*, void*) {
     progdefaults.FDforeground.R = r;
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
-    
+
     FDdisplay->labelcolor(fl_rgb_color(r,g,b));
     FDdisplay->redraw();
-    
+
     if (qsoFreqDisp) {
         qsoFreqDisp->SetONOFFCOLOR(
           fl_rgb_color(	progdefaults.FDforeground.R,
@@ -1403,15 +1404,15 @@ static void cb_btnFD_SystemColor(Fl_Button*, void*) {
     progdefaults.FDbackground.R = r;
     progdefaults.FDbackground.G = g;
     progdefaults.FDbackground.B = b;
-   
+
     FDdisplay->color(clr);
-    
+
     clr = FL_FOREGROUND_COLOR;
     Fl::get_color(clr, r, g, b);
-    
+
     FDdisplay->labelcolor(clr);
     FDdisplay->redraw();
-    
+
     progdefaults.FDforeground.R = r;
     progdefaults.FDforeground.G = g;
     progdefaults.FDforeground.B = b;
@@ -1569,12 +1570,12 @@ static void cb_btnLOGGING_color(Fl_Button*, void*) {
         return;
 
     progdefaults.LOGGINGcolor = fl_rgb_color(r, g, b);
-    
+
     LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
     LOGGINGdisplay->redraw();
 
     LOGGING_colors_font();
-    
+
     progdefaults.changed = true;
 }
 
@@ -1602,9 +1603,9 @@ LOGGINGdisplay->textsize(progdefaults.LOGGINGtextsize);
 LOGGINGdisplay->textcolor(progdefaults.LOGGINGtextcolor);
 LOGGINGdisplay->textfont(progdefaults.LOGGINGtextfont);
 LOGGINGdisplay->redraw();
-    
+
 LOGGING_colors_font();
-    
+
 progdefaults.changed = true;
 }
 
@@ -1620,12 +1621,12 @@ static void cb_btnLOGBOOK_color(Fl_Button*, void*) {
         return;
 
     progdefaults.LOGBOOKcolor = fl_rgb_color(r, g, b);
-    
+
     LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
     LOGBOOKdisplay->redraw();
 
     LOGBOOK_colors_font();
-    
+
     progdefaults.changed = true;
 }
 
@@ -1653,9 +1654,9 @@ LOGBOOKdisplay->textsize(progdefaults.LOGBOOKtextsize);
 LOGBOOKdisplay->textcolor(progdefaults.LOGBOOKtextcolor);
 LOGBOOKdisplay->textfont(progdefaults.LOGBOOKtextfont);
 LOGBOOKdisplay->redraw();
-    
+
 LOGBOOK_colors_font();
-    
+
 progdefaults.changed = true;
 }
 
@@ -1682,7 +1683,7 @@ static void cb_btnGroup1(Fl_Button* o, void*) {
     progdefaults.btnGroup1.B = b;
     o->color(fl_rgb_color(r,g,b));
     colorize_macros();
-    
+
     progdefaults.changed = true;
 }
 
@@ -1797,7 +1798,7 @@ Fl_Button *btnTabDefaultColor=(Fl_Button *)0;
 
 static void cb_btnTabDefaultColor(Fl_Button*, void*) {
   progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
-setTabColors();    
+setTabColors();
 progdefaults.changed = true;
 }
 
@@ -2068,8 +2069,8 @@ Fl_Button *btnCursorBWcolor=(Fl_Button *)0;
 
 static void cb_btnCursorBWcolor(Fl_Button* o, void*) {
   if (fl_color_chooser("Cursor BW Lines",
-  progdefaults.cursorLineRGBI.R, 
-  progdefaults.cursorLineRGBI.G, 
+  progdefaults.cursorLineRGBI.R,
+  progdefaults.cursorLineRGBI.G,
   progdefaults.cursorLineRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.cursorLineRGBI.R,progdefaults.cursorLineRGBI.G,progdefaults.cursorLineRGBI.B));
 o->redraw();
@@ -2095,8 +2096,8 @@ Fl_Button *btnCursorCenterLineColor=(Fl_Button *)0;
 
 static void cb_btnCursorCenterLineColor(Fl_Button* o, void*) {
   if (fl_color_chooser("Cursor Center Line",
-  progdefaults.cursorCenterRGBI.R, 
-  progdefaults.cursorCenterRGBI.G, 
+  progdefaults.cursorCenterRGBI.R,
+  progdefaults.cursorCenterRGBI.G,
   progdefaults.cursorCenterRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.cursorCenterRGBI.R,progdefaults.cursorCenterRGBI.G,progdefaults.cursorCenterRGBI.B));
 o->redraw();
@@ -2122,8 +2123,8 @@ Fl_Button *btnBwTracksColor=(Fl_Button *)0;
 
 static void cb_btnBwTracksColor(Fl_Button* o, void*) {
   if (fl_color_chooser("Track Lines",
-  progdefaults.bwTrackRGBI.R, 
-  progdefaults.bwTrackRGBI.G, 
+  progdefaults.bwTrackRGBI.R,
+  progdefaults.bwTrackRGBI.G,
   progdefaults.bwTrackRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.bwTrackRGBI.R,progdefaults.bwTrackRGBI.G,progdefaults.bwTrackRGBI.B));
 o->redraw();
@@ -2143,8 +2144,8 @@ Fl_Button *btnNotchColor=(Fl_Button *)0;
 
 static void cb_btnNotchColor(Fl_Button* o, void*) {
   if (fl_color_chooser("Notch Indicator",
-  progdefaults.notchRGBI.R, 
-  progdefaults.notchRGBI.G, 
+  progdefaults.notchRGBI.R,
+  progdefaults.notchRGBI.G,
   progdefaults.notchRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.notchRGBI.R,progdefaults.notchRGBI.G,progdefaults.notchRGBI.B));
 o->redraw();
@@ -2969,8 +2970,8 @@ Fl_Button *btnRTTY_mark_color=(Fl_Button *)0;
 
 static void cb_btnRTTY_mark_color(Fl_Button* o, void*) {
   if (fl_color_chooser("MARK freq track",
-  progdefaults.rttymarkRGBI.R, 
-  progdefaults.rttymarkRGBI.G, 
+  progdefaults.rttymarkRGBI.R,
+  progdefaults.rttymarkRGBI.G,
   progdefaults.rttymarkRGBI.B) ) {
 o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));
 o->redraw();
@@ -3500,7 +3501,7 @@ static void cb_btnRigCatCMDptt(Fl_Round_Button* o, void*) {
   btnRigCatRTSptt->value(0);
   btnRigCatDTRptt->value(0);
 }
-  
+
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
 btnRevertRIGCAT->activate();
@@ -3600,7 +3601,7 @@ if (o->value() == 1) {
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
 }
-  
+
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw();
 progdefaults.changed = true;
@@ -3781,7 +3782,7 @@ if(o->value() == 1){
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
 }
-  
+
 btnInitXMLRPC->labelcolor(FL_RED);
 btnInitXMLRPC->redraw_label();
 progdefaults.changed = true;
@@ -3992,7 +3993,7 @@ if (o->value()) {
   chkPseudoFSK2->value(0);
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
-  btnPTTrightchannel2->value(0);  
+  btnPTTrightchannel2->value(0);
   progdefaults.sig_on_right_channel = false;
   chkAudioStereoOut->value(0);
   progdefaults.ReverseAudio = false;
@@ -4015,7 +4016,7 @@ if (o->value()) {
   chkPseudoFSK2->value(0);
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
-  btnPTTrightchannel2->value(0);  
+  btnPTTrightchannel2->value(0);
   if (progdefaults.mono_audio) {
     progdefaults.mono_audio = false;
     chkForceMono->value(0);
@@ -5098,6 +5099,173 @@ Fl_Button *btn_test_prog3=(Fl_Button *)0;
 
 static void cb_btn_test_prog3(Fl_Button*, void*) {
   start_process(progdefaults.auto_prog3_pathname);
+}
+
+Fl_Group *tabIO=(Fl_Group *)0;
+
+static void cb_tabIO(Fl_Group*, void*) {
+  btnDisable_p2p_io_widgets->value(1);
+}
+
+Fl_Input2 *txtArq_ip_address=(Fl_Input2 *)0;
+
+static void cb_txtArq_ip_address(Fl_Input2* o, void*) {
+  progdefaults.arq_address = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtArq_ip_port_no=(Fl_Input2 *)0;
+
+static void cb_txtArq_ip_port_no(Fl_Input2* o, void*) {
+  progdefaults.arq_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnDefault_arq_ip=(Fl_Button *)0;
+
+static void cb_btnDefault_arq_ip(Fl_Button*, void*) {
+  set_ip_to_default(ARQ_IO);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_arq=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_arq(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+        progdefaults.changed = true;
+	progdefaults.data_io_enabled = ARQ_IO;
+	data_io_enabled = ARQ_IO;
+	enable_disable_kpsql();
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_kiss=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_kiss(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progdefaults.data_io_enabled = KISS_IO;
+	data_io_enabled = KISS_IO;
+	enable_disable_kpsql();
+}
+progdefaults.changed = true;
+}
+
+Fl_Button *btnDefault_xmlrpc_ip=(Fl_Button *)0;
+
+static void cb_btnDefault_xmlrpc_ip(Fl_Button*, void*) {
+  set_ip_to_default(XMLRPC_IO);
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtXmlrpc_ip_address=(Fl_Input2 *)0;
+
+static void cb_txtXmlrpc_ip_address(Fl_Input2* o, void*) {
+  progdefaults.xmlrpc_address = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtXmlrpc_ip_port_no=(Fl_Input2 *)0;
+
+static void cb_txtXmlrpc_ip_port_no(Fl_Input2* o, void*) {
+  progdefaults.xmlrpc_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnDefault_kiss_ip=(Fl_Button *)0;
+
+static void cb_btnDefault_kiss_ip(Fl_Button*, void*) {
+  set_ip_to_default(KISS_IO);
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtKiss_ip_address=(Fl_Input2 *)0;
+
+static void cb_txtKiss_ip_address(Fl_Input2* o, void*) {
+  progdefaults.kiss_address = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtKiss_ip_io_port_no=(Fl_Input2 *)0;
+
+static void cb_txtKiss_ip_io_port_no(Fl_Input2* o, void*) {
+  progdefaults.kiss_io_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnableBusyChannel=(Fl_Check_Button *)0;
+
+static void cb_btnEnableBusyChannel(Fl_Check_Button* o, void*) {
+  if(o->value())
+	progdefaults.enableBusyChannel = true;
+else
+	progdefaults.enableBusyChannel = false;
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntBusyChannelSeconds=(Fl_Counter *)0;
+
+static void cb_cntBusyChannelSeconds(Fl_Counter* o, void*) {
+  progdefaults.busyChannelSeconds = (int) o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtKiss_ip_out_port_no=(Fl_Input2 *)0;
+
+static void cb_txtKiss_ip_out_port_no(Fl_Input2* o, void*) {
+  progdefaults.kiss_out_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_dual_port=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_dual_port(Fl_Check_Button* o, void*) {
+  if(o->value())
+	progdefaults.kiss_dual_port_enabled = true;
+else
+	progdefaults.kiss_dual_port_enabled = false;
+
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntKPSQLAttenuation=(Fl_Counter *)0;
+
+static void cb_cntKPSQLAttenuation(Fl_Counter* o, void*) {
+  progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDisable_p2p_io_widgets=(Fl_Check_Button *)0;
+
+static void cb_btnDisable_p2p_io_widgets(Fl_Check_Button* o, long) {
+  if(o->value())
+	disable_config_p2p_io_widgets();
+else
+	enable_config_p2p_io_widgets();
+}
+
+Fl_Check_Button *btnEnable_ax25_decode=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_ax25_decode(Fl_Check_Button* o, void*) {
+  if(o->value())
+	progdefaults.ax25_decode_enabled = true;
+else
+	progdefaults.ax25_decode_enabled = false;
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_csma=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_csma(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progdefaults.csma_enabled = true;
+} else {
+	progdefaults.csma_enabled = false;
+}
+progdefaults.changed = true;
 }
 
 Fl_Button *btnSaveConfig=(Fl_Button *)0;
@@ -6430,7 +6598,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6626,6 +6793,7 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("FFT Processing"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(55, 71, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(100, 89, 70, 22, _("Lower limit"));
@@ -8446,7 +8614,6 @@ le Earth)"));
         { tabsRig = new Fl_Tabs(0, 23, 600, 357);
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Hardware PTT"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(55, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(74, 66, 250, 20, _("PTT tone on right audio channel "));
@@ -8986,6 +9153,7 @@ le Earth)"));
             tabHamlib->end();
           } // Fl_Group* tabHamlib
           { tabXMLRPC = new Fl_Group(0, 50, 600, 330, _("XML-RPC"));
+            tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(55, 61, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
               { Fl_Output* o = new Fl_Output(210, 80, 190, 58);
@@ -9422,8 +9590,8 @@ d frequency"));
                 chkDisableFreqChange->callback((Fl_Callback*)cb_chkDisableFreqChange);
                 o->value(progdefaults.disable_rsid_freq_change);
               } // Fl_Check_Button* chkDisableFreqChange
-              { Fl_Group* o = new Fl_Group(216, 74, 330, 60, _("The RsID notification message contents and \ndisplay characteristics are conf\
-igured on the\n\"Notifications\" configure dialog."));
+              { Fl_Group* o = new Fl_Group(216, 74, 330, 60, _("The RsID notification message contents and\ndisplay characteristics are confi\
+gured on the\n\"Notifications\" configure dialog."));
                 o->box(FL_BORDER_BOX);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 o->end();
@@ -9976,7 +10144,7 @@ igured on the\n\"Notifications\" configure dialog."));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Input* o = inpWXsta = new Fl_Input(94, 92, 43, 24, _("METAR station ID code"));
-                inpWXsta->tooltip(_("for example KMDQ for \nHuntsville-Madison Executive Airport, AL"));
+                inpWXsta->tooltip(_("for example KMDQ for\nHuntsville-Madison Executive Airport, AL"));
                 inpWXsta->callback((Fl_Callback*)cb_inpWXsta);
                 inpWXsta->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.wx_sta.c_str());
@@ -10604,6 +10772,219 @@ and restarted if needed."));
         } // Fl_Group* o
         tabAutoStart->end();
       } // Fl_Group* tabAutoStart
+      { tabIO = new Fl_Group(0, 25, 600, 355, _("IO"));
+        tabIO->tooltip(_("Program to Program Communications"));
+        tabIO->callback((Fl_Callback*)cb_tabIO);
+        tabIO->hide();
+        { Fl_Group* o = new Fl_Group(15, 260, 570, 55, _("ARQ"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Input2* o = txtArq_ip_address = new Fl_Input2(20, 280, 205, 25, _("IP Address"));
+            txtArq_ip_address->tooltip(_("IP Address format: nnn.nnn.nnn.nnn"));
+            txtArq_ip_address->box(FL_DOWN_BOX);
+            txtArq_ip_address->color(FL_BACKGROUND2_COLOR);
+            txtArq_ip_address->selection_color(FL_SELECTION_COLOR);
+            txtArq_ip_address->labeltype(FL_NORMAL_LABEL);
+            txtArq_ip_address->labelfont(0);
+            txtArq_ip_address->labelsize(14);
+            txtArq_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+            txtArq_ip_address->callback((Fl_Callback*)cb_txtArq_ip_address);
+            txtArq_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtArq_ip_address->when(FL_WHEN_CHANGED);
+            txtArq_ip_address->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.arq_address.c_str());
+          } // Fl_Input2* txtArq_ip_address
+          { Fl_Input2* o = txtArq_ip_port_no = new Fl_Input2(329, 280, 80, 25, _("Port"));
+            txtArq_ip_port_no->tooltip(_("IP Address Port Number"));
+            txtArq_ip_port_no->box(FL_DOWN_BOX);
+            txtArq_ip_port_no->color(FL_BACKGROUND2_COLOR);
+            txtArq_ip_port_no->selection_color(FL_SELECTION_COLOR);
+            txtArq_ip_port_no->labeltype(FL_NORMAL_LABEL);
+            txtArq_ip_port_no->labelfont(0);
+            txtArq_ip_port_no->labelsize(14);
+            txtArq_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
+            txtArq_ip_port_no->callback((Fl_Callback*)cb_txtArq_ip_port_no);
+            txtArq_ip_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtArq_ip_port_no->when(FL_WHEN_CHANGED);
+            txtArq_ip_port_no->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.arq_port.c_str());
+          } // Fl_Input2* txtArq_ip_port_no
+          { btnDefault_arq_ip = new Fl_Button(470, 279, 105, 27, _("Default"));
+            btnDefault_arq_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_arq_ip->callback((Fl_Callback*)cb_btnDefault_arq_ip);
+          } // Fl_Button* btnDefault_arq_ip
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(15, 42, 570, 75, _("Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.\nEnable KIS\
+S for programs that supports UDP and TNC-2 KISS protocol.\nOnly one interface \
+(ARQ/KISS) can be active at any given time.\nIP address and port number change\
+s require FLDIGI restart."));
+          o->box(FL_BORDER_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          o->end();
+        } // Fl_Group* o
+        { Fl_Check_Button* o = btnEnable_arq = new Fl_Check_Button(130, 122, 110, 20, _("Enable ARQ"));
+          btnEnable_arq->tooltip(_("Used For PSKMail and FLDIGI Suite of Programs"));
+          btnEnable_arq->type(102);
+          btnEnable_arq->down_box(FL_DOWN_BOX);
+          btnEnable_arq->callback((Fl_Callback*)cb_btnEnable_arq);
+          if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);
+        } // Fl_Check_Button* btnEnable_arq
+        { Fl_Check_Button* o = btnEnable_kiss = new Fl_Check_Button(245, 122, 110, 20, _("Enable KISS"));
+          btnEnable_kiss->tooltip(_("Used for BPQ32"));
+          btnEnable_kiss->type(102);
+          btnEnable_kiss->down_box(FL_DOWN_BOX);
+          btnEnable_kiss->callback((Fl_Callback*)cb_btnEnable_kiss);
+          if(progdefaults.data_io_enabled == KISS_IO) o->value(true);
+        } // Fl_Check_Button* btnEnable_kiss
+        { Fl_Group* o = new Fl_Group(15, 318, 570, 55, _("XMLRPC"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { btnDefault_xmlrpc_ip = new Fl_Button(470, 337, 105, 27, _("Default"));
+            btnDefault_xmlrpc_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_xmlrpc_ip->callback((Fl_Callback*)cb_btnDefault_xmlrpc_ip);
+          } // Fl_Button* btnDefault_xmlrpc_ip
+          { Fl_Input2* o = txtXmlrpc_ip_address = new Fl_Input2(20, 338, 205, 25, _("IP Address"));
+            txtXmlrpc_ip_address->tooltip(_("IP Address format: nnn.nnn.nnn.nnn"));
+            txtXmlrpc_ip_address->box(FL_DOWN_BOX);
+            txtXmlrpc_ip_address->color(FL_BACKGROUND2_COLOR);
+            txtXmlrpc_ip_address->selection_color(FL_SELECTION_COLOR);
+            txtXmlrpc_ip_address->labeltype(FL_NORMAL_LABEL);
+            txtXmlrpc_ip_address->labelfont(0);
+            txtXmlrpc_ip_address->labelsize(14);
+            txtXmlrpc_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+            txtXmlrpc_ip_address->callback((Fl_Callback*)cb_txtXmlrpc_ip_address);
+            txtXmlrpc_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtXmlrpc_ip_address->when(FL_WHEN_CHANGED);
+            txtXmlrpc_ip_address->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.xmlrpc_address.c_str());
+          } // Fl_Input2* txtXmlrpc_ip_address
+          { Fl_Input2* o = txtXmlrpc_ip_port_no = new Fl_Input2(329, 338, 80, 25, _("Port"));
+            txtXmlrpc_ip_port_no->tooltip(_("IP Address Port Number"));
+            txtXmlrpc_ip_port_no->box(FL_DOWN_BOX);
+            txtXmlrpc_ip_port_no->color(FL_BACKGROUND2_COLOR);
+            txtXmlrpc_ip_port_no->selection_color(FL_SELECTION_COLOR);
+            txtXmlrpc_ip_port_no->labeltype(FL_NORMAL_LABEL);
+            txtXmlrpc_ip_port_no->labelfont(0);
+            txtXmlrpc_ip_port_no->labelsize(14);
+            txtXmlrpc_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
+            txtXmlrpc_ip_port_no->callback((Fl_Callback*)cb_txtXmlrpc_ip_port_no);
+            txtXmlrpc_ip_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtXmlrpc_ip_port_no->when(FL_WHEN_CHANGED);
+            txtXmlrpc_ip_port_no->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.xmlrpc_port.c_str());
+          } // Fl_Input2* txtXmlrpc_ip_port_no
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(15, 145, 570, 112, _("KISS"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { btnDefault_kiss_ip = new Fl_Button(470, 207, 105, 26, _("Default"));
+            btnDefault_kiss_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_kiss_ip->callback((Fl_Callback*)cb_btnDefault_kiss_ip);
+          } // Fl_Button* btnDefault_kiss_ip
+          { Fl_Input2* o = txtKiss_ip_address = new Fl_Input2(20, 164, 185, 25, _("IP Address"));
+            txtKiss_ip_address->tooltip(_("IP Address for KISS interface"));
+            txtKiss_ip_address->box(FL_DOWN_BOX);
+            txtKiss_ip_address->color(FL_BACKGROUND2_COLOR);
+            txtKiss_ip_address->selection_color(FL_SELECTION_COLOR);
+            txtKiss_ip_address->labeltype(FL_NORMAL_LABEL);
+            txtKiss_ip_address->labelfont(0);
+            txtKiss_ip_address->labelsize(14);
+            txtKiss_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+            txtKiss_ip_address->callback((Fl_Callback*)cb_txtKiss_ip_address);
+            txtKiss_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtKiss_ip_address->when(FL_WHEN_CHANGED);
+            txtKiss_ip_address->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.kiss_address.c_str());
+          } // Fl_Input2* txtKiss_ip_address
+          { Fl_Input2* o = txtKiss_ip_io_port_no = new Fl_Input2(298, 164, 55, 25, _("I/O"));
+            txtKiss_ip_io_port_no->tooltip(_("IP Address Port Number"));
+            txtKiss_ip_io_port_no->box(FL_DOWN_BOX);
+            txtKiss_ip_io_port_no->color(FL_BACKGROUND2_COLOR);
+            txtKiss_ip_io_port_no->selection_color(FL_SELECTION_COLOR);
+            txtKiss_ip_io_port_no->labeltype(FL_NORMAL_LABEL);
+            txtKiss_ip_io_port_no->labelfont(0);
+            txtKiss_ip_io_port_no->labelsize(14);
+            txtKiss_ip_io_port_no->labelcolor(FL_FOREGROUND_COLOR);
+            txtKiss_ip_io_port_no->callback((Fl_Callback*)cb_txtKiss_ip_io_port_no);
+            txtKiss_ip_io_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtKiss_ip_io_port_no->when(FL_WHEN_CHANGED);
+            txtKiss_ip_io_port_no->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.kiss_io_port.c_str());
+          } // Fl_Input2* txtKiss_ip_io_port_no
+          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(20, 201, 160, 15, _("Enable Busy Channel"));
+            btnEnableBusyChannel->down_box(FL_DOWN_BOX);
+            btnEnableBusyChannel->callback((Fl_Callback*)cb_btnEnableBusyChannel);
+            if(progdefaults.enableBusyChannel) o->value(true);
+            else o->value(false);
+          } // Fl_Check_Button* btnEnableBusyChannel
+          { Fl_Counter* o = cntBusyChannelSeconds = new Fl_Counter(200, 198, 130, 20, _("Continue After (sec)"));
+            cntBusyChannelSeconds->minimum(1);
+            cntBusyChannelSeconds->maximum(999);
+            cntBusyChannelSeconds->step(1);
+            cntBusyChannelSeconds->value(1);
+            cntBusyChannelSeconds->callback((Fl_Callback*)cb_cntBusyChannelSeconds);
+            cntBusyChannelSeconds->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.busyChannelSeconds);
+            o->step(1,10);
+          } // Fl_Counter* cntBusyChannelSeconds
+          { Fl_Input2* o = txtKiss_ip_out_port_no = new Fl_Input2(392, 164, 55, 25, _("O"));
+            txtKiss_ip_out_port_no->tooltip(_("Output port number when same IP address used"));
+            txtKiss_ip_out_port_no->box(FL_DOWN_BOX);
+            txtKiss_ip_out_port_no->color(FL_BACKGROUND2_COLOR);
+            txtKiss_ip_out_port_no->selection_color(FL_SELECTION_COLOR);
+            txtKiss_ip_out_port_no->labeltype(FL_NORMAL_LABEL);
+            txtKiss_ip_out_port_no->labelfont(0);
+            txtKiss_ip_out_port_no->labelsize(14);
+            txtKiss_ip_out_port_no->labelcolor(FL_FOREGROUND_COLOR);
+            txtKiss_ip_out_port_no->callback((Fl_Callback*)cb_txtKiss_ip_out_port_no);
+            txtKiss_ip_out_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtKiss_ip_out_port_no->when(FL_WHEN_CHANGED);
+            txtKiss_ip_out_port_no->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.kiss_out_port.c_str());
+          } // Fl_Input2* txtKiss_ip_out_port_no
+          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(480, 168, 90, 16, _("Dual Port"));
+            btnEnable_dual_port->tooltip(_("Enable when both programs are using the same IP address"));
+            btnEnable_dual_port->down_box(FL_DOWN_BOX);
+            btnEnable_dual_port->callback((Fl_Callback*)cb_btnEnable_dual_port);
+            if(progdefaults.kiss_dual_port_enabled) o->value(true); else o->value(false);
+          } // Fl_Check_Button* btnEnable_dual_port
+          { Fl_Counter* o = cntKPSQLAttenuation = new Fl_Counter(20, 225, 130, 20, _("KPSQL Attenuation"));
+            cntKPSQLAttenuation->minimum(1);
+            cntKPSQLAttenuation->maximum(999);
+            cntKPSQLAttenuation->step(1);
+            cntKPSQLAttenuation->value(1);
+            cntKPSQLAttenuation->callback((Fl_Callback*)cb_cntKPSQLAttenuation);
+            cntKPSQLAttenuation->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.kpsql_attenuation);
+            o->step(1,10);
+            update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+          } // Fl_Counter* cntKPSQLAttenuation
+          o->end();
+        } // Fl_Group* o
+        { Fl_Check_Button* o = btnDisable_p2p_io_widgets = new Fl_Check_Button(15, 122, 110, 20, _("Lock"));
+          btnDisable_p2p_io_widgets->tooltip(_("Allow/Disallow Changes"));
+          btnDisable_p2p_io_widgets->down_box(FL_DOWN_BOX);
+          btnDisable_p2p_io_widgets->callback((Fl_Callback*)cb_btnDisable_p2p_io_widgets);
+          o->value(1);
+          disable_config_p2p_io_widgets();
+        } // Fl_Check_Button* btnDisable_p2p_io_widgets
+        { Fl_Check_Button* o = btnEnable_ax25_decode = new Fl_Check_Button(360, 122, 110, 20, _("AX25 Decode"));
+          btnEnable_ax25_decode->tooltip(_("Decode AX25 Packets into human readable form"));
+          btnEnable_ax25_decode->down_box(FL_DOWN_BOX);
+          btnEnable_ax25_decode->callback((Fl_Callback*)cb_btnEnable_ax25_decode);
+          if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);
+        } // Fl_Check_Button* btnEnable_ax25_decode
+        { Fl_Check_Button* o = btnEnable_csma = new Fl_Check_Button(474, 122, 110, 20, _("Enable CSMA"));
+          btnEnable_csma->tooltip(_("Used for BPQ32"));
+          btnEnable_csma->down_box(FL_DOWN_BOX);
+          btnEnable_csma->callback((Fl_Callback*)cb_btnEnable_csma);
+          if(progdefaults.csma_enabled) o->value(true);
+        } // Fl_Check_Button* btnEnable_csma
+        btnDisable_p2p_io_widgets->value(1);
+        tabIO->end();
+      } // Fl_Group* tabIO
       tabsConfigure->end();
     } // Fl_Tabs* tabsConfigure
     { btnSaveConfig = new Fl_Button(330, 388, 130, 22, _("Save"));

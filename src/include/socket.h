@@ -76,7 +76,7 @@ struct addr_info_t {
 	int ai_socktype;
 	int ai_protocol;
 	int ai_addrlen;
-	struct sockaddr* ai_addr;
+	struct sockaddr * ai_addr;
 };
 #endif
 
@@ -92,14 +92,20 @@ public:
 
 	size_t size(void) const;
 	const addr_info_t* get(size_t n = 0) const;
+	const addr_info_t* udp_get_recv_addr(void);
 	static std::string get_str(const addr_info_t* addr);
+	unsigned int get_udp_io_port() {return port_io;};
+	unsigned int get_udp_o_port() {return port_out;};
+	std::string get_service() {return service;};
+	std::string get_node() {return node;};
 
 private:
 	void lookup(const char* proto_name);
 
 	std::string node;
 	std::string service;
-	int port;
+	unsigned int port_io;
+	unsigned int port_out;
 
 #if HAVE_GETADDRINFO
 	struct addrinfo* info;
@@ -127,6 +133,7 @@ public:
 
 	// Server
         void bind(void);
+	void bindUDP(void);
 	void listen(int backlog = SOMAXCONN);
 	Socket accept(void);
 	Socket accept1(void);
@@ -142,6 +149,13 @@ public:
 	size_t recv(void* buf, size_t len);
 	size_t recv(std::string& buf);
 
+	// Unconnected Data Transmission
+	size_t sendTo(const void* buf, size_t len);
+	size_t sendTo(const std::string& buf);
+
+	size_t recvFrom(void* buf, size_t len);
+	size_t recvFrom(std::string& buf);
+
 	// Options
 	int get_bufsize(int dir);
 	void set_bufsize(int dir, int len);
@@ -151,8 +165,22 @@ public:
 	void set_timeout(double t);
 	void set_autoclose(bool v) const;
 	void set_close_on_exec(bool v, int fd = -1);
+	void broadcast(bool flag);
+
+	// Other
+	unsigned int get_port(struct sockaddr *sa);
+	void set_port(struct sockaddr *sa, unsigned int port);
+	unsigned long get_address4(struct sockaddr *sa);
+	void dual_port(int * dual_port);
+	void set_dual_port_number(unsigned int dual_port_number);
+	void set_dual_port_number(std::string port);
+	unsigned int get_dual_port_number(void) { return dual_port_number; };
+	unsigned int get_local_port() { return (unsigned int) atoi(address.get_service().c_str()); };
+	unsigned long get_to_address(void);
+	int use_dual_port(void) { if(use_kiss_dual_port) return *use_kiss_dual_port; else return 0; };
 
 	int fd(void);
+	void shut_down(void);
 
 private:
 	int sockfd;
@@ -163,6 +191,11 @@ private:
 	struct timeval timeout;
 	bool nonblocking;
 	mutable bool autoclose;
+	struct sockaddr_storage saddr;
+	struct sockaddr_storage saddr_dp;
+	unsigned int saddr_size;
+	int *use_kiss_dual_port;
+	unsigned int dual_port_number;
 };
 
 #endif // SOCKET_H_

@@ -128,7 +128,7 @@ void invoke_flmsg()
 	if (progdefaults.open_nbems_folder)
 		open_recv_folder(FLMSG_WRAP_recv_dir.c_str());
 
-	if ((progdefaults.open_flmsg || progdefaults.open_flmsg_print) && 
+	if ((progdefaults.open_flmsg || progdefaults.open_flmsg_print) &&
 		(rx_buff.find(flmsg) != string::npos) &&
 		!progdefaults.flmsg_pathname.empty()) {
 
@@ -147,8 +147,8 @@ void invoke_flmsg()
 		memset(&si, 0, sizeof(si));
 		si.cb = sizeof(si);
 		memset(&pi, 0, sizeof(pi));
-		if (!CreateProcess( NULL, cmdstr, 
-			NULL, NULL, FALSE, 
+		if (!CreateProcess( NULL, cmdstr,
+			NULL, NULL, FALSE,
 			CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
 			LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
 		CloseHandle(pi.hProcess);
@@ -173,7 +173,7 @@ void invoke_flmsg()
 			ap[n++] = " --b";//params = " --b";
 		else if (progdefaults.open_flmsg_print)
 			ap[n++] = " --p";//params = " --p";
-		ap[n++] = outfilename; 
+		ap[n++] = outfilename;
 
 		switch (fork()) {
 		case 0:
@@ -341,6 +341,60 @@ void select_flmsg_pathname()
 		txt_flmsg_pathname->value(p);
 	}
 #endif
+}
+
+// this only works on Linux and Unix
+// not Windoze or
+// OS X to find binaries in the /Applications/ directory structure
+
+bool find_pathto_exectable(string &binpath, string executable)
+{
+	size_t endindex = 0;
+
+	binpath.clear();
+
+// Get the PATH environment variable as pointer to string
+// The strings in the environment list are of the form name=value.
+// As  typically  implemented, getenv() returns a pointer to a string within
+// the environment list.  The caller must take care not to modify this string,
+// since that would  change the environment of the process.
+//
+// The  implementation of getenv() is not required to be reentrant.  The string
+// pointed to by the return value of getenv() may be statically allocated, and
+// can be modified by a  subsequent call to getenv(), putenv(3), setenv(3), or
+// unsetenv(3).
+
+	char *environment = getenv("PATH");
+
+	if (environment == NULL) return false;
+
+	string env = environment;
+	string testpath = "";
+
+	char endchar = ':';
+
+	// Parse single PATH string into directories
+	while (!env.empty()) {
+		endindex = env.find(endchar);
+		testpath = env.substr(0, endindex);
+
+		testpath.append("/"); // insert linux, unix, osx OS-correct delimiter
+		testpath.append(executable); // append executable name
+
+		// Most portable way to check if a file exists: Try to open it.
+		FILE *checkexists = NULL;
+		checkexists = fopen( testpath.c_str(), "r" ); // try to open file readonly
+		if (checkexists) { // if the file successfully opened, it exists.
+			fclose(checkexists);
+			binpath = testpath;
+			return true;
+		}
+		if (endindex == string::npos)
+			env.clear();
+		else
+			env.erase(0, endindex + 1);
+	}
+	return false;
 }
 
 string select_binary_pathname(string deffilename)

@@ -357,11 +357,11 @@ public:
 	Digiscope	*wfscope;
 
 private:
-	bool		ishidden;
+	//bool		ishidden;
 	int			wf_dim;
-	Fl_Box		*bezel;
+	//Fl_Box		*bezel;
 	WFdisp		*wfdisp;
-	Fl_Group	*rs1, *rs2, *hidden;
+	Fl_Group	*rs1; //, *rs2, *hidden;
 	Fl_Button	*mode;
 	Fl_Button	*x1;
 	Fl_Button	*left;

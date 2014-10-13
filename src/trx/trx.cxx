@@ -6,7 +6,7 @@
 // Copyright (C) 2007-2010
 //		Stelios Bounanos, M0GLD
 //
-// This file is part of fldigi.  Adapted in part from code contained in gmfsk 
+// This file is part of fldigi.  Adapted in part from code contained in gmfsk
 // source code distribution.
 //
 // Fldigi is free software: you can redistribute it and/or modify
@@ -241,7 +241,7 @@ void trx_trx_receive_loop()
 			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
 				numread += scard->Read(fbuf + numread, SCBLOCKSIZE - numread);
 			if (numread > SCBLOCKSIZE) {
-LOG_ERROR("numread error %d", numread);
+				LOG_ERROR("numread error %lu", (unsigned long) numread);
 				numread = SCBLOCKSIZE;
 			}
 			if (bHighSpeed) {
@@ -331,7 +331,7 @@ void trx_trx_transmit_loop()
 		    return;
 		}
 
-		if ((active_modem != ssb_modem) && 
+		if ((active_modem != ssb_modem) &&
 			(active_modem != anal_modem) &&
 			!active_modem->XMLRPC_CPS_TEST &&
 			!PERFORM_CPS_TEST ) {
@@ -342,7 +342,7 @@ void trx_trx_transmit_loop()
 
 		if (!progdefaults.DTMFstr.empty()) dtmf->send();
 
-		if ( ReedSolomon->assigned(active_modem->get_mode()) && 
+		if ( ReedSolomon->assigned(active_modem->get_mode()) &&
 			 (progdefaults.TransmitRSid || progStatus.n_rsids != 0)) {
 			if (progStatus.n_rsids < 0) {
 				for (int i = 0; i > progStatus.n_rsids; i--) {
@@ -384,7 +384,7 @@ void trx_trx_transmit_loop()
 		} else
 			trx_state = STATE_RX;
 
-		if (ReedSolomon->assigned(active_modem->get_mode()) && 
+		if (ReedSolomon->assigned(active_modem->get_mode()) &&
 			progdefaults.TransmitRSid &&
 			progdefaults.rsid_post &&
 			progStatus.n_rsids >= 0) ReedSolomon->send(false);
@@ -585,7 +585,7 @@ void trx_reset_loop()
 		abort();
 	}
 
-	trx_state = STATE_RX;	
+	trx_state = STATE_RX;
 }
 
 //=============================================================================
@@ -604,7 +604,7 @@ void trx_start(void)
 		LOG(debug::ERROR_LEVEL, debug::LOG_MODEM, "trx already running!");
 		return;
 	}
-	
+
 	if (scard) delete scard;
 	if (ReedSolomon) delete ReedSolomon;
 	if (dtmf) delete dtmf;
@@ -666,7 +666,7 @@ void trx_start(void)
 		LOG(debug::ERROR_LEVEL, debug::LOG_MODEM, "pthread_create failed");
 		trxrunning = false;
 		exit(1);
-	} 
+	}
 	trxrunning = true;
 }
 

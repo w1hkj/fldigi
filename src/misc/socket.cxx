@@ -36,7 +36,18 @@
 #  include <sys/select.h>
 #else
 #  include "compat.h"
+#define socklen_t int
+/*
+//#define _WIN32_WINNT    0x0501
+#define NI_NOFQDN       0x01
+#define NI_NUMERICHOST  0x02
+#define NI_NAMEREQD	    0x04
+#define NI_NUMERICSERV  0x08
+#define NI_DGRAM        0x10
+*/
 #endif
+
+#define DEFAULT_BUFFER_SIZE 1024
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -49,9 +60,8 @@
 #include <cmath>
 #include <cstdio>
 
-#ifndef NDEBUG
-  #include "debug.h"
-#endif
+//#undef NDEBUG
+#include "debug.h"
 
 #include "socket.h"
 
@@ -59,8 +69,9 @@
 #  define AI_NUMERICSERV 0
 #endif
 
-
 using namespace std;
+
+static int dummy_value = 0;
 
 //
 // utility functions
@@ -211,7 +222,7 @@ Address::Address(const char* host, int port, const char* proto_name)
 	memset(&service_entry, 0, sizeof(service_entry));
 #endif
 
-	if (node.empty() && port == 0)
+	if (node.empty() && (port == 0))
 		return;
 
 	ostringstream s;
@@ -434,6 +445,27 @@ string Address::get_str(const addr_info_t* addr)
 // Socket class
 //
 
+
+#ifdef __MINGW32__
+void windows_init(void)
+{
+	static WSADATA wsaData;
+	static int wsa_init_ = 0;
+
+	if (wsa_init_) return;
+
+	wsa_init_ = 1;
+
+	if (WSAStartup(MAKEWORD(WSA_MAJOR, WSA_MINOR), &wsaData)) {
+		fprintf(stderr, "unable to initialize winsock: error %d", WSAGetLastError());
+		exit(EXIT_FAILURE);
+	}
+
+	atexit((void(*)(void)) WSACleanup);
+}
+#endif
+
+
 /// Constructs a Socket object and associates the address addr with it.
 /// This address will be used by subsequent calls to the bind() or connect()
 /// methods
@@ -442,11 +474,19 @@ string Address::get_str(const addr_info_t* addr)
 ///
 Socket::Socket(const Address& addr)
 {
+#ifdef __MINGW32__
+	windows_init();
+#endif
+
 	buffer = new char[BUFSIZ];
+
 	memset(&timeout, 0, sizeof(timeout));
 	anum = 0;
 	nonblocking = false;
 	autoclose = true;
+	saddr_size = sizeof(saddr);
+	use_kiss_dual_port = &dummy_value;
+
 	open(addr);
 }
 
@@ -457,6 +497,9 @@ Socket::Socket(const Address& addr)
 Socket::Socket(int fd)
 	: sockfd(fd)
 {
+#ifdef __MINGW32__
+	windows_init();
+#endif
 	buffer = new char[BUFSIZ];
 	anum = 0;
 	memset(&timeout, 0, sizeof(timeout));
@@ -483,6 +526,9 @@ Socket::Socket(const Socket& s)
 	: sockfd(s.sockfd), address(s.address), anum(s.anum),
 	  nonblocking(s.nonblocking), autoclose(true)
 {
+#ifdef __MINGW32__
+	windows_init();
+#endif
 	buffer = new char[BUFSIZ];
 	ainfo = address.get(anum);
 	memcpy(&timeout, &s.timeout, sizeof(timeout));
@@ -491,7 +537,8 @@ Socket::Socket(const Socket& s)
 
 Socket::~Socket()
 {
-	delete [] buffer;
+	if(buffer) delete [] buffer;
+
 	if (autoclose)
 		close();
 }
@@ -512,6 +559,30 @@ Socket& Socket::operator=(const Socket& rhs)
 	rhs.set_autoclose(false);
 
 	return *this;
+}
+
+void Socket::dual_port(int * dual_port)
+{
+
+	if(dual_port)
+		use_kiss_dual_port = dual_port;
+	else
+		use_kiss_dual_port = &dummy_value;
+
+}
+
+void Socket::set_dual_port_number(unsigned int port)
+{
+	dual_port_number = port;
+}
+
+void Socket::set_dual_port_number(std::string port)
+{
+	if(!port.empty()) {
+		dual_port_number = (unsigned int) atoi(port.c_str());
+	} else {
+		use_kiss_dual_port = &dummy_value;
+	}
 }
 
 ///
@@ -546,12 +617,11 @@ void Socket::open(const Address& addr)
 ///
 void Socket::close(void)
 {
-#ifdef __WIN32__
-	closesocket(sockfd);
+#ifdef __MINGW32__
+	::closesocket(sockfd);
 #else
 	::close(sockfd);
 #endif
-	sockfd = -1;
 }
 
 ///
@@ -589,6 +659,7 @@ void Socket::bind(void)
 {
 	int r = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&r, sizeof(r)) == -1)
+
 #ifndef NDEBUG
 		perror("setsockopt SO_REUSEADDR");
 #else
@@ -597,6 +668,84 @@ void Socket::bind(void)
 	if (::bind(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
 		throw SocketException(errno, "bind");
 }
+
+///
+/// Binds the socket to the address associated with the object
+/// @see Socket::open
+///
+
+void Socket::bindUDP(void)
+{
+
+#ifdef HAVE_GETADDRINFO
+	struct addrinfo hints;
+	struct addrinfo *res = NULL;
+	struct addrinfo *ai_p = NULL;
+	struct sockaddr_in *addr_in = NULL;
+	struct sockaddr addr;
+
+	int r = 1;
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&r, sizeof(r)) == -1)
+		throw SocketException(r, "setsockopt SO_REUSEADDR");
+
+	memset(&hints, 0, sizeof(hints));
+
+#  ifdef AI_ADDRCONFIG
+	hints.ai_flags = AI_ADDRCONFIG;
+#  endif
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;
+	//hints.ai_protocol = ainfo->ai_protocol;
+	hints.ai_flags |= AI_NUMERICSERV;
+
+	std::string port_io = address.get_service();
+	std::string addrStr = address.get_node();
+
+	if ((r = getaddrinfo(NULL, port_io.c_str(), &hints, &res)) < 0)
+		throw SocketException(r, "getaddrinfo");
+
+	memset(&addr, 0, sizeof(addr));
+	addr_in = (sockaddr_in *) &addr;
+
+	for(ai_p = res; ai_p != NULL; ai_p = ai_p->ai_next) {
+        if (ai_p->ai_family == AF_INET) {
+			memcpy(addr_in, ai_p->ai_addr, sizeof(addr));
+			break;
+        }
+	}
+
+	addr_in->sin_addr.s_addr = INADDR_ANY;
+
+	if (::bind(sockfd, (const struct sockaddr *)&addr, sizeof(struct sockaddr)) == -1) {
+		freeaddrinfo(res);
+		throw SocketException(errno, "bind");
+	}
+
+	freeaddrinfo(res);
+#else
+	int r = 1;
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&r, sizeof(r)) == -1)
+
+#ifndef NDEBUG
+		perror("setsockopt SO_REUSEADDR");
+#else
+	;
+#endif
+
+	struct sockaddr_in *addr;
+	struct sockaddr_storage store_addr;
+
+	memset(&store_addr, 0, sizeof(store_addr));
+	memcpy(&store_addr, ainfo->ai_addr, sizeof(struct sockaddr_in));
+
+	addr = (struct sockaddr_in *) &store_addr;
+	addr->sin_addr.s_addr = INADDR_ANY;
+
+	if (::bind(sockfd, (const struct sockaddr *)addr, sizeof(struct sockaddr)) == -1)
+		throw SocketException(errno, "bind");
+#endif
+}
+
 
 ///
 /// Calls listen(2) on the socket file desriptor
@@ -625,7 +774,7 @@ Socket Socket::accept(void)
 	listen();
 
 	// wait for fd to become readable
-	if (nonblocking && (timeout.tv_sec > 0 || timeout.tv_usec > 0))
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
 		if (!wait(0))
 			throw SocketException(ETIMEDOUT, "select");
 
@@ -666,6 +815,19 @@ void Socket::connect(void)
 }
 
 ///
+/// Set socket to allow for broadcasting.
+///
+void Socket::broadcast(bool flag)
+{
+	int option = 0;
+
+	if(flag)
+		option = 1;
+
+	setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST,(char *) &option, sizeof(option));
+}
+
+///
 /// Connects the socket to an address
 ///
 /// @param addr The address to connect to
@@ -690,7 +852,7 @@ size_t Socket::send(const void* buf, size_t len)
 {
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
-	if (nonblocking && (timeout.tv_sec > 0 || timeout.tv_usec > 0))
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
 		if (!wait(1))
 			return 0;
 
@@ -748,7 +910,7 @@ size_t Socket::recv(void* buf, size_t len)
 {
 	// if we have a nonblocking socket and a nonzero timeout,
 	// wait for fd to become writeable
-	if (nonblocking && (timeout.tv_sec > 0 || timeout.tv_usec > 0))
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
 		if (!wait(0))
 			return 0;
 
@@ -786,6 +948,284 @@ size_t Socket::recv(string& buf)
 	}
 
 	return n;
+}
+
+///
+/// Sends a buffer (UDP)
+///
+/// @param buf
+/// @param len
+///
+/// @return The amount of data that was sent. This may be less than len
+///         if the socket is non-blocking.
+///
+size_t Socket::sendTo(const void* buf, size_t len)
+{
+	struct sockaddr * useAddr = (struct sockaddr *)0;
+//	struct sockaddr dup_addr;
+	size_t addr_size = 0;
+
+	if(use_kiss_dual_port && *use_kiss_dual_port) {
+		memset(&saddr_dp, 0, sizeof(saddr_dp));
+		memcpy(&saddr_dp, ainfo->ai_addr, ainfo->ai_addrlen);
+		set_port((struct sockaddr *) &saddr_dp, dual_port_number);
+		useAddr = (struct sockaddr * ) &saddr_dp;
+		addr_size = ainfo->ai_addrlen;
+	} else {
+		useAddr = (struct sockaddr *) ainfo->ai_addr;
+		addr_size = ainfo->ai_addrlen;
+	}
+
+#ifndef NDEBUG
+	{
+		unsigned long host_addr = get_address4((struct sockaddr *)useAddr);
+		unsigned int  host_port = get_port((struct sockaddr *) useAddr);
+
+		LOG_INFO("HAP:%lX:%d count=%d buf=%s", host_addr, host_port, len, buf);
+	}
+#endif
+
+	// if we have a nonblocking socket and a nonzero timeout,
+	// wait for fd to become writeable
+	if (nonblocking && ((timeout.tv_sec > 0) || (timeout.tv_usec > 0)))
+		if (!wait(1))
+			return 0;
+
+	size_t nToWrite = len;
+	int r = 0;
+	const char *sp = (const char *)buf;
+
+
+	while ( nToWrite > 0) {
+		try {
+			r = ::sendto(sockfd, sp, nToWrite, 0, useAddr, addr_size);
+		}
+		catch (...) {
+			throw;
+		}
+
+		if (r > 0) {
+			sp += r;
+			nToWrite -= r;
+		} else {
+			if (r == 0) {
+				shutdown(sockfd, SHUT_WR);
+				throw SocketException(errno, "send");
+			} else if (r == -1) {
+				if (errno != EAGAIN) {
+					LOG_INFO("errno = %d (%s) r %d buff %s", errno, strerror(errno), r, sp);
+				}
+				r = 0;
+			}
+		}
+	}
+
+	return r;
+
+}
+
+///
+/// Sends a string
+///
+/// @param buf
+///
+/// @return The amount of data that was sent. This may be less than len
+///         if the socket is non-blocking.
+///
+size_t Socket::sendTo(const std::string& buf)
+{
+	return sendTo(buf.data(), buf.length());
+}
+
+//
+// Get the port number from a sockaddr pointer
+//
+void Socket::set_port(struct sockaddr *sa, unsigned int port)
+{
+//	unsigned short int port_number = 0;
+
+	if (sa->sa_family == AF_INET) {
+		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
+        saddr_in->sin_port = htons(port);
+	}
+}
+
+//
+// Get the port number from a sockaddr pointer
+//
+unsigned int Socket::get_port(struct sockaddr *sa)
+{
+	unsigned short int port_number = 0;
+
+	if (sa->sa_family == AF_INET) {
+		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
+        port_number = (unsigned short int) saddr_in->sin_port;
+	}
+
+	return (unsigned int) ntohs(port_number);
+}
+
+//
+// Get the IP Address number from a sockaddr pointer
+//
+unsigned long Socket::get_address4(struct sockaddr *sa)
+{
+	unsigned long IPAddr = 0;
+
+	if (sa->sa_family == AF_INET) {
+		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
+		IPAddr = saddr_in->sin_addr.s_addr;
+	}
+
+	return (unsigned long) ntohl(IPAddr);
+}
+
+unsigned long Socket::get_to_address(void)
+{
+	return (unsigned long) ntohl(inet_addr(address.get_node().c_str()));
+};
+
+
+///
+/// Receives data into a buffer (UDP)
+///
+/// @arg buf
+/// @arg len The maximum number of bytes to write to buf.
+///
+/// @return The amount of data that was received. This may be less than len
+///         if the socket is non-blocking.
+size_t Socket::recvFrom(void* buf, size_t len)
+{
+	// if we have a nonblocking socket and a nonzero timeout,
+	// wait for fd to become writeable
+	if (nonblocking && (timeout.tv_sec > 0 || timeout.tv_usec > 0))
+		if (!wait(0))
+			return 0;
+
+	struct sockaddr_storage temp_saddr;
+	unsigned int temp_saddr_size;
+
+	temp_saddr_size = sizeof(temp_saddr);
+	memset(&temp_saddr, 0, temp_saddr_size);
+
+	int r = 0;
+
+	try {
+
+		r = ::recvfrom(sockfd, (char *)buf, len, 0, (struct sockaddr *)&temp_saddr, (socklen_t *)&temp_saddr_size);
+
+		if (r == 0)
+			shutdown(sockfd, SHUT_RD);
+		else if (r < 0) {
+			if((errno == EAGAIN) || (errno == 0)) {
+				LOG_INFO("ErrorNo: %d (%s)", errno, strerror(errno));
+				memset(buf, 0, len);
+				return 0;
+			}
+			else {
+				LOG_INFO("ErrorNo: %d (%s)", errno, strerror(errno));
+				throw SocketException(errno, "recv");
+			}
+		}
+	}
+	catch (...) {
+		throw;
+	}
+
+	if(r > 0) { // To prevent loop back and except only from address x
+		unsigned long srvr_addr    = 0x7F000001L;
+		unsigned long srvr_to_addr = get_to_address();
+		unsigned int  srvr_dp_port = get_dual_port_number();
+		unsigned int  srvr_port    = get_local_port();
+		unsigned int  local_port   = get_local_port();
+		unsigned long host_addr    = get_address4((struct sockaddr *)&temp_saddr);
+		unsigned int  host_port    = get_port((struct sockaddr *)&temp_saddr);
+
+		if(use_dual_port()) {
+			srvr_port = srvr_dp_port;
+		}
+
+		if((srvr_port == host_port) && (srvr_to_addr == host_addr)) {
+			if((srvr_addr == host_addr) && (local_port == host_port)) {
+				LOG_INFO("Loopback Warning: %X:%u", (unsigned int)host_addr, host_port);
+				memset(buf, 0, len);
+				return 0;
+			}
+		}
+	}
+
+	return r;
+}
+
+#ifdef USE_ME_ONCE_I_WORK
+///
+/// Return the local Ip Address
+///
+///
+sockaddr_in * Socket::localIPAddress(void)
+{
+	char buf[512];
+	static struct sockaddr_in localaddr;
+	struct msghdr hmsg;
+	struct cmsghdr *cmsg;
+	struct in_pktinfo *pkt = 0;
+	unsigned char *cdat = 0;
+
+	memset(&hmsg, 0, sizeof(hmsg));
+	memset(&cmsg, 0, sizeof(cmsg));
+
+	hmsg.msg_name = &localaddr;
+	hmsg.msg_namelen = sizeof(localaddr);
+	hmsg.msg_control = buf;
+	hmsg.msg_controllen = sizeof(buf);
+
+	size_t st = ::recvmsg(sockfd, &hmsg, 0);
+
+	if(CMSG_FIRSTHDR(&hmsg)) {
+		cmsg = CMSG_FIRSTHDR(&hmsg);
+		for (; cmsg != NULL; cmsg = CMSG_NXTHDR(&hmsg, cmsg)) {
+			if (cmsg->cmsg_level != IPPROTO_IP ||
+				cmsg->cmsg_type != IP_PKTINFO)	{
+				continue;
+			}
+			cdat = CMSG_DATA(cmsg);
+			pkt = (struct in_pktinfo *) cdat;
+		}
+	}
+}
+#endif
+
+///
+/// Receives all available data and appends it to a string.
+///
+/// @arg buf
+///
+/// @return The amount of data that was received.
+///
+size_t Socket::recvFrom(std::string& buf)
+{
+	size_t n = 0;
+	ssize_t r;
+	try {
+		while ((r = recvFrom(buffer, BUFSIZ)) > 0) {
+			buf.reserve(buf.length() + r);
+			buf.append(buffer, r);
+			n += r;
+		}
+	} catch (...) {
+		throw;
+	}
+
+	return n;
+}
+
+///
+/// Signal to unblock sockets
+///
+///
+void Socket::shut_down(void)
+{
+	::shutdown(sockfd, SHUT_RD);
 }
 
 ///

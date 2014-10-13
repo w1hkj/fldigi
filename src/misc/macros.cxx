@@ -136,13 +136,13 @@ static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm 
 
 static string CPSstring = "\
 =============================================\n\
-       ABCDEFGHIJKLMN OPQRSTUVWXYZ\n\
-       abcdefghijklmn opqrstuvwxyz\n\
-       0123456789       9876543210\n\
-      !@#$%&*()_+-=[]{}\\|;:'\",.<>/?\n\
+ABCDEFGHIJKLMN OPQRSTUVWXYZ\n\
+abcdefghijklmn opqrstuvwxyz\n\
+0123456789       9876543210\n\
+!@#$%&*()_+-=[]{}\\|;:'\",.<>/?\n\
 =============================================\n\
 \n\
-          The Jaberwocky\n\
+The Jaberwocky\n\
 \n\
 'Twas brillig, and the slithy toves\n\
 Did gyre and gimble in the wabe;\n\
@@ -190,29 +190,29 @@ void CPS_report(int samples, int prepost)
 	double datatime = 1.0 * (samples - prepost) / active_modem->get_samplerate();
 	num_cps_chars--;
 	snprintf(results, sizeof(results), "\n\
-CPS test\n\
-text:         %s\n\
-mode:         %s\n\
-# chars:      %d\n\
-xmt time:     %f\n\
-data time:    %f\n\
-xmt samples:  %d\n\
-prepost:      %d\n\
-data samples: %d\n\
-sample rate:  %d\n\
-chars/sec:    %f\n\
-~WPM:         %f\n",
-testfilename.c_str(),
-mode_info[active_modem->get_mode()].name,
-num_cps_chars,
-xmttime,
-datatime,
-samples,
-prepost,
-samples - prepost,
-active_modem->get_samplerate(),
-num_cps_chars / datatime,
-10 * num_cps_chars / datatime);
+			 CPS test\n\
+			 text:         %s\n\
+			 mode:         %s\n\
+			 # chars:      %d\n\
+			 xmt time:     %f\n\
+			 data time:    %f\n\
+			 xmt samples:  %d\n\
+			 prepost:      %d\n\
+			 data samples: %d\n\
+			 sample rate:  %d\n\
+			 chars/sec:    %f\n\
+			 ~WPM:         %f\n",
+			 testfilename.c_str(),
+			 mode_info[active_modem->get_mode()].name,
+			 num_cps_chars,
+			 xmttime,
+			 datatime,
+			 samples,
+			 prepost,
+			 samples - prepost,
+			 active_modem->get_samplerate(),
+			 num_cps_chars / datatime,
+			 10 * num_cps_chars / datatime);
 
 	ReceiveText->add(results, FTextBase::ALTR);
 	LOG_INFO("%s", results);
@@ -224,8 +224,8 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 	s.clear();
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		return;
 	}
@@ -256,8 +256,8 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
@@ -272,7 +272,7 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			while (c && !feof(toadd)) {
 				if (c != '\r') buffer += c; // damn MSDOS txt files
 				c = getc(toadd);
-				}
+			}
 			s.clear();
 			fclose(toadd);
 			TransmitText->clear();
@@ -315,8 +315,8 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
@@ -339,13 +339,13 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		trx_transmit();
 
 		int s0 = number_of_samples("");
-printf("j %d: s %d\n", 0, s0);
+		printf("j %d: s %d\n", 0, s0);
 		int s1 = 0;
 		int start_stop_samples = 0;
 		int j = 0;
 		for(j = 1; j < 32; j++) {
 			s1 = number_of_samples(string(j, 'e'));
-printf("j %d: s %d\n", j, s1);
+			printf("j %d: s %d\n", j, s1);
 			if(s1 > s0) break;
 		}
 		start_stop_samples = 2*s0 - s1;
@@ -368,8 +368,8 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 	s.clear();
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		return;
 	}
@@ -388,8 +388,8 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
@@ -404,7 +404,7 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 			while (c && !feof(toadd)) {
 				if (c != '\r') buffer += c; // damn MSDOS txt files
 				c = getc(toadd);
-				}
+			}
 			s.clear();
 			fclose(toadd);
 			TransmitText->clear();
@@ -436,8 +436,8 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
-		 id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
-		 id == MODE_SITORB || id == MODE_NAVTEX ) {
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
@@ -488,7 +488,7 @@ static void pFILE(std::string &s, size_t &i, size_t endbracket)
 			while (c && !feof(toadd)) {
 				if (c != '\r') buffer += c; // damn MSDOS txt files
 				c = getc(toadd);
-				}
+			}
 			s.replace(i, endbracket - i + 1, buffer);
 			fclose(toadd);
 		} else {
@@ -535,7 +535,7 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 
 	if (snumber.length() > 0) {
 
-// first value = WPM
+		// first value = WPM
 		sscanf(snumber.c_str(), "%d", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
@@ -543,7 +543,7 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 		sldrCWxmtWPM->value(number);
 printf("wpm %d\n", number);
 
-// second value = Farnsworth WPM
+		// second value = Farnsworth WPM
 		size_t pos;
 		if ((pos = snumber.find(":")) != std::string::npos) {
 			snumber.erase(0, pos+1);
@@ -634,14 +634,14 @@ static void doWPM(std::string s)
 
 	if (snumber.length() > 0) {
 
-// first value = WPM
+		// first value = WPM
 		sscanf(snumber.c_str(), "%d", &number);
 		if (number < 5) number = 5;
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
 		REQ(setwpm, number);
 
-// second value = Farnsworth WPM
+		// second value = Farnsworth WPM
 		size_t pos;
 		if ((pos = snumber.find(":")) != std::string::npos) {
 			snumber.erase(0, pos+1);
@@ -1304,19 +1304,19 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 			asciisw = !asciisw;
 			continue;
 		}
-// accumulate ascii string
+		// accumulate ascii string
 		if (asciisw) {
 			if (isprint(ch)) buff += ch;
 			continue;
 		}
-// following digits is expected size of CAT response from xcvr
+		// following digits is expected size of CAT response from xcvr
 		if (ch == ':' && s[j+1] != '>') {
 			sscanf(&s[j+1], "%d", &retnbr);
 		}
-// accumulate hex string values
+		// accumulate hex string values
 		if ((ch == ' ' || ch == '>' || ch == ':') && valsw) {
 			c = char(val);
-//			LOG_INFO("c=%02x, val=%d", c, val);
+			//			LOG_INFO("c=%02x, val=%d", c, val);
 			buff += c;
 			val = 0;
 			valsw = false;
@@ -1474,16 +1474,16 @@ static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	size_t	j, k,
-			len = s.length();
+	len = s.length();
 	std::string name;
 
 	if ((j = s.find('>', i)) == std::string::npos)
 		return;
 	while (++j < len)
-	    if (!isspace(s[j])) break;
+		if (!isspace(s[j])) break;
 	k = j;
 	while (++k < len)
-	    if (isspace(s[k])  || s[k] == '<') break;
+		if (isspace(s[k])  || s[k] == '<') break;
 	name = s.substr(j, k - j);
 	for (int m = 0; m < NUM_MODES; m++) {
 		if (name == mode_info[m].sname) {
@@ -1505,7 +1505,7 @@ static void doIMAGE(std::string s)
 			 active_mode == MODE_MFSK32 ||
 			 active_mode == MODE_MFSK64 ||
 			 active_mode == MODE_MFSK128) &&
-			 active_modem->get_cap() & modem::CAP_IMG) {
+			active_modem->get_cap() & modem::CAP_IMG) {
 			active_modem->send_image(fname);
 		}
 	}
@@ -1567,41 +1567,41 @@ static void doMODEM(std::string s)
 
 	try {
 		switch (m) {
-		case MODE_RTTY: // carrier shift, baud rate, bits per char
-			if (args.at(0) != DBL_MIN)
-				set_rtty_shift((int)args[0]);
-			if (args.at(1) != DBL_MIN)
-				set_rtty_baud((float)args[1]);
-			if (args.at(2) != DBL_MIN)
-				set_rtty_bits((int)args[2]);
-			break;
-		case MODE_CONTESTIA: // bandwidth, tones
-			if (args.at(0) != DBL_MIN)
-				set_contestia_bw((int)args[0]);
-			if (args.at(1) != DBL_MIN)
-				set_contestia_tones((int)args[1]);
-			break;
-		case MODE_OLIVIA: // bandwidth, tones
-			if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
-				int bw = (int)args[0];
-				int tones = (int)args[1];
-				if (bw == 250 && tones == 4) m = MODE_OLIVIA_4_250;
-				else if (bw == 250 && tones == 8) m = MODE_OLIVIA_8_250;
-				else if (bw == 500 && tones == 4) m = MODE_OLIVIA_4_500;
-				else if (bw == 500 && tones == 8) m = MODE_OLIVIA_8_500;
-				else if (bw == 500 && tones == 16) m = MODE_OLIVIA_16_500;
-				else if (bw == 1000 && tones == 8) m = MODE_OLIVIA_8_1000;
-				else if (bw == 1000 && tones == 16) m = MODE_OLIVIA_16_1000;
-				else if (bw == 1000 && tones == 32) m = MODE_OLIVIA_32_1000;
-				else if (bw == 2000 && tones == 64) m = MODE_OLIVIA_64_2000;
-				else {
-					set_olivia_bw(bw);
-					set_olivia_tones(tones);
+			case MODE_RTTY: // carrier shift, baud rate, bits per char
+				if (args.at(0) != DBL_MIN)
+					set_rtty_shift((int)args[0]);
+				if (args.at(1) != DBL_MIN)
+					set_rtty_baud((float)args[1]);
+				if (args.at(2) != DBL_MIN)
+					set_rtty_bits((int)args[2]);
+				break;
+			case MODE_CONTESTIA: // bandwidth, tones
+				if (args.at(0) != DBL_MIN)
+					set_contestia_bw((int)args[0]);
+				if (args.at(1) != DBL_MIN)
+					set_contestia_tones((int)args[1]);
+				break;
+			case MODE_OLIVIA: // bandwidth, tones
+				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
+					int bw = (int)args[0];
+					int tones = (int)args[1];
+					if (bw == 250 && tones == 4) m = MODE_OLIVIA_4_250;
+					else if (bw == 250 && tones == 8) m = MODE_OLIVIA_8_250;
+					else if (bw == 500 && tones == 4) m = MODE_OLIVIA_4_500;
+					else if (bw == 500 && tones == 8) m = MODE_OLIVIA_8_500;
+					else if (bw == 500 && tones == 16) m = MODE_OLIVIA_16_500;
+					else if (bw == 1000 && tones == 8) m = MODE_OLIVIA_8_1000;
+					else if (bw == 1000 && tones == 16) m = MODE_OLIVIA_16_1000;
+					else if (bw == 1000 && tones == 32) m = MODE_OLIVIA_32_1000;
+					else if (bw == 2000 && tones == 64) m = MODE_OLIVIA_64_2000;
+					else {
+						set_olivia_bw(bw);
+						set_olivia_tones(tones);
+					}
 				}
-			}
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 	}
 	catch (const exception& e) { }
@@ -1625,7 +1625,7 @@ static void pQueMODEM(std::string &s, size_t &i, size_t endbracket)
 		if (nextbracket != string::npos)
 			s.erase(i, nextbracket - i - 1);
 		else
-			s.clear(); 
+			s.clear();
 	} else {
 		pushcmd(cmd);
 		s.replace(i, endbracket - i + 1, "^!");
@@ -1679,41 +1679,41 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 
 	try {
 		switch (m) {
-		case MODE_RTTY: // carrier shift, baud rate, bits per char
-			if (args.at(0) != DBL_MIN)
-				set_rtty_shift((int)args[0]);
-			if (args.at(1) != DBL_MIN)
-				set_rtty_baud((float)args[1]);
-			if (args.at(2) != DBL_MIN)
-				set_rtty_bits((int)args[2]);
-			break;
-		case MODE_CONTESTIA: // bandwidth, tones
-			if (args.at(0) != DBL_MIN)
-				set_contestia_bw((int)args[0]);
-			if (args.at(1) != DBL_MIN)
-				set_contestia_tones((int)args[1]);
-			break;
-		case MODE_OLIVIA: // bandwidth, tones
-			if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
-				int bw = (int)args[0];
-				int tones = (int)args[1];
-				if (bw == 250 && tones == 4) m = MODE_OLIVIA_4_250;
-				else if (bw == 250 && tones == 8) m = MODE_OLIVIA_8_250;
-				else if (bw == 500 && tones == 4) m = MODE_OLIVIA_4_500;
-				else if (bw == 500 && tones == 8) m = MODE_OLIVIA_8_500;
-				else if (bw == 500 && tones == 16) m = MODE_OLIVIA_16_500;
-				else if (bw == 1000 && tones == 8) m = MODE_OLIVIA_8_1000;
-				else if (bw == 1000 && tones == 16) m = MODE_OLIVIA_16_1000;
-				else if (bw == 1000 && tones == 32) m = MODE_OLIVIA_32_1000;
-				else if (bw == 2000 && tones == 64) m = MODE_OLIVIA_64_2000;
-				else {
-					set_olivia_bw(bw);
-					set_olivia_tones(tones);
+			case MODE_RTTY: // carrier shift, baud rate, bits per char
+				if (args.at(0) != DBL_MIN)
+					set_rtty_shift((int)args[0]);
+				if (args.at(1) != DBL_MIN)
+					set_rtty_baud((float)args[1]);
+				if (args.at(2) != DBL_MIN)
+					set_rtty_bits((int)args[2]);
+				break;
+			case MODE_CONTESTIA: // bandwidth, tones
+				if (args.at(0) != DBL_MIN)
+					set_contestia_bw((int)args[0]);
+				if (args.at(1) != DBL_MIN)
+					set_contestia_tones((int)args[1]);
+				break;
+			case MODE_OLIVIA: // bandwidth, tones
+				if (args.at(0) != DBL_MIN && args.at(1) != DBL_MIN) {
+					int bw = (int)args[0];
+					int tones = (int)args[1];
+					if (bw == 250 && tones == 4) m = MODE_OLIVIA_4_250;
+					else if (bw == 250 && tones == 8) m = MODE_OLIVIA_8_250;
+					else if (bw == 500 && tones == 4) m = MODE_OLIVIA_4_500;
+					else if (bw == 500 && tones == 8) m = MODE_OLIVIA_8_500;
+					else if (bw == 500 && tones == 16) m = MODE_OLIVIA_16_500;
+					else if (bw == 1000 && tones == 8) m = MODE_OLIVIA_8_1000;
+					else if (bw == 1000 && tones == 16) m = MODE_OLIVIA_16_1000;
+					else if (bw == 1000 && tones == 32) m = MODE_OLIVIA_32_1000;
+					else if (bw == 2000 && tones == 64) m = MODE_OLIVIA_64_2000;
+					else {
+						set_olivia_bw(bw);
+						set_olivia_tones(tones);
+					}
 				}
-			}
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 	}
 	catch (const exception& e) { }
@@ -1734,19 +1734,19 @@ static void pAFC(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+5, endbracket - i - 5);
-  if (sVal.length() > 0) {
-// sVal = on|off|t   [ON, OFF or Toggle]
-    if (sVal.compare(0,2,"on") == 0)
-      btnAFC->value(1);
-    else if (sVal.compare(0,3,"off") == 0)
-      btnAFC->value(0);
-    else if (sVal.compare(0,1,"t") == 0)
-      btnAFC->value(!btnAFC->value());
+	std::string sVal = s.substr(i+5, endbracket - i - 5);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			btnAFC->value(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			btnAFC->value(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			btnAFC->value(!btnAFC->value());
 
-    btnAFC->do_callback();
-  }
-  s.replace(i, endbracket - i + 1, "");
+		btnAFC->do_callback();
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pREV(std::string &s, size_t &i, size_t endbracket)
@@ -1755,19 +1755,19 @@ static void pREV(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+5, endbracket - i - 5);
-  if (sVal.length() > 0) {
-// sVal = on|off|t   [ON, OFF or Toggle]
-    if (sVal.compare(0,2,"on") == 0)
-      wf->btnRev->value(1);
-    else if (sVal.compare(0,3,"off") == 0)
-      wf->btnRev->value(0);
-    else if (sVal.compare(0,1,"t") == 0)
-      wf->btnRev->value(!wf->btnRev->value());
+	std::string sVal = s.substr(i+5, endbracket - i - 5);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			wf->btnRev->value(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			wf->btnRev->value(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			wf->btnRev->value(!wf->btnRev->value());
 
-    wf->btnRev->do_callback();
-  }
-  s.replace(i, endbracket - i + 1, "");
+		wf->btnRev->do_callback();
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 // <HS:on|off|t>
@@ -1777,17 +1777,17 @@ static void pHS(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+4, endbracket - i - 4);
-  if (sVal.length() > 0) {
-// sVal = on|off|t   [ON, OFF or Toggle]
-    if (sVal.compare(0,2,"on") == 0)
-      bHighSpeed = 1;
-    else if (sVal.compare(0,3,"off") == 0)
-      bHighSpeed = 0;
-    else if (sVal.compare(0,1,"t") == 0)
-      bHighSpeed = !bHighSpeed;
-  }
-  s.replace(i, endbracket - i + 1, "");
+	std::string sVal = s.substr(i+4, endbracket - i - 4);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			bHighSpeed = 1;
+		else if (sVal.compare(0,3,"off") == 0)
+			bHighSpeed = 0;
+		else if (sVal.compare(0,1,"t") == 0)
+			bHighSpeed = !bHighSpeed;
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 
@@ -1797,20 +1797,20 @@ static void pLOCK(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+6, endbracket - i - 6);
-  if (sVal.length() > 0) {
-// sVal = on|off|t   [ON, OFF or Toggle]
-    if (sVal.compare(0,2,"on") == 0)
-      wf->xmtlock->value(1);
-    else if (sVal.compare(0,3,"off") == 0)
-      wf->xmtlock->value(0);
-    else if (sVal.compare(0,1,"t") == 0)
-      wf->xmtlock->value(!wf->xmtlock->value());
+	std::string sVal = s.substr(i+6, endbracket - i - 6);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			wf->xmtlock->value(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			wf->xmtlock->value(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			wf->xmtlock->value(!wf->xmtlock->value());
 
-    wf->xmtlock->damage();
-    wf->xmtlock->do_callback();
-  }
-  s.replace(i, endbracket - i + 1, "");
+		wf->xmtlock->damage();
+		wf->xmtlock->do_callback();
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
@@ -1819,19 +1819,19 @@ static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+8, endbracket - i - 8);
-  if (sVal.length() > 0) {
-    // sVal = on|off|t   [ON, OFF or Toggle]
-    if (sVal.compare(0,2,"on") == 0)
-      btnTxRSID->value(1);
-    else if (sVal.compare(0,3,"off") == 0)
-      btnTxRSID->value(0);
-    else if (sVal.compare(0,1,"t") == 0)
-      btnTxRSID->value(!btnTxRSID->value());
+	std::string sVal = s.substr(i+8, endbracket - i - 8);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			btnTxRSID->value(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			btnTxRSID->value(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			btnTxRSID->value(!btnTxRSID->value());
 
-    btnTxRSID->do_callback();
-  }
-  s.replace(i, endbracket - i + 1, "");
+		btnTxRSID->do_callback();
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pRX_RSID(std::string &s, size_t &i, size_t endbracket)
@@ -1840,19 +1840,19 @@ static void pRX_RSID(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+8, endbracket - i - 8);
-  if (sVal.length() > 0) {
-    // sVal = on|off|t   [ON, OFF or Toggle]
-    if (sVal.compare(0,2,"on") == 0)
-      btnRSID->value(1);
-    else if (sVal.compare(0,3,"off") == 0)
-      btnRSID->value(0);
-    else if (sVal.compare(0,1,"t") == 0)
-      btnRSID->value(!btnRSID->value());
+	std::string sVal = s.substr(i+8, endbracket - i - 8);
+	if (sVal.length() > 0) {
+		// sVal = on|off|t   [ON, OFF or Toggle]
+		if (sVal.compare(0,2,"on") == 0)
+			btnRSID->value(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			btnRSID->value(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			btnRSID->value(!btnRSID->value());
 
-    btnRSID->do_callback();
-  }
-  s.replace(i, endbracket - i + 1, "");
+		btnRSID->do_callback();
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pCSV(std::string &s, size_t &i, size_t endbracket)
@@ -1861,17 +1861,17 @@ static void pCSV(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+5, endbracket - i - 5);
-  if (sVal.length() > 0) {
-    // sVal = on|off   [ON, OFF]
-    if (sVal.compare(0,2,"on") == 0)
-		set_CSV(1);
-    else if (sVal.compare(0,3,"off") == 0)
-		set_CSV(0);
-	else if (sVal.compare(0,1,"t") == 0)
-		set_CSV(2);
-  }
-  s.replace(i, endbracket - i + 1, "");
+	std::string sVal = s.substr(i+5, endbracket - i - 5);
+	if (sVal.length() > 0) {
+		// sVal = on|off   [ON, OFF]
+		if (sVal.compare(0,2,"on") == 0)
+			set_CSV(1);
+		else if (sVal.compare(0,3,"off") == 0)
+			set_CSV(0);
+		else if (sVal.compare(0,1,"t") == 0)
+			set_CSV(2);
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 #ifdef __WIN32__
@@ -1881,17 +1881,17 @@ static void pTALK(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-  std::string sVal = s.substr(i+6, endbracket - i - 6);
-  if (sVal.length() > 0) {
-    // sVal = on|off   [ON, OFF]
-    if (sVal.compare(0,2,"on") == 0)
-		open_talker();
-    else if (sVal.compare(0,3,"off") == 0)
-		close_talker();
-    else if (sVal.compare(0,1,"t") == 0)
-		toggle_talker();
-  }
-  s.replace(i, endbracket - i + 1, "");
+	std::string sVal = s.substr(i+6, endbracket - i - 6);
+	if (sVal.length() > 0) {
+		// sVal = on|off   [ON, OFF]
+		if (sVal.compare(0,2,"on") == 0)
+			open_talker();
+		else if (sVal.compare(0,3,"off") == 0)
+			close_talker();
+		else if (sVal.compare(0,1,"t") == 0)
+			toggle_talker();
+	}
+	s.replace(i, endbracket - i + 1, "");
 }
 #endif
 
@@ -1904,7 +1904,7 @@ static void pSRCHUP(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 8, "");
 	active_modem->searchUp();
 	if (progdefaults.WaterfallClickInsert)
-	        wf->insert_text(true);
+		wf->insert_text(true);
 }
 
 static void pSRCHDN(std::string &s, size_t &i, size_t endbracket)
@@ -1916,7 +1916,7 @@ static void pSRCHDN(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 8, "");
 	active_modem->searchDown();
 	if (progdefaults.WaterfallClickInsert)
-	         wf->insert_text(true);
+		wf->insert_text(true);
 }
 
 static void pGOHOME(std::string &s, size_t &i, size_t endbracket)
@@ -2200,23 +2200,23 @@ void set_macro_env(void)
 {
 	enum {
 #ifndef __WOE32__
-	       pSKEDH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
+		pSKEDH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
 #endif
-	       FLDIGI_XMLRPC_ADDRESS, FLDIGI_XMLRPC_PORT,
-	       FLDIGI_ARQ_ADDRESS, FLDIGI_ARQ_PORT,
+		FLDIGI_XMLRPC_ADDRESS, FLDIGI_XMLRPC_PORT,
+		FLDIGI_ARQ_ADDRESS, FLDIGI_ARQ_PORT,
 
-	       FLDIGI_VERSION_ENVVAR, FLDIGI_PID, FLDIGI_CONFIG_DIR,
+		FLDIGI_VERSION_ENVVAR, FLDIGI_PID, FLDIGI_CONFIG_DIR,
 
-	       FLDIGI_MY_CALL, FLDIGI_MY_NAME, FLDIGI_MY_LOCATOR,
+		FLDIGI_MY_CALL, FLDIGI_MY_NAME, FLDIGI_MY_LOCATOR,
 
-	       FLDIGI_MODEM, FLDIGI_MODEM_LONG_NAME, FLDIGI_DIAL_FREQUENCY,
-	       FLDIGI_AUDIO_FREQUENCY, FLDIGI_FREQUENCY,
+		FLDIGI_MODEM, FLDIGI_MODEM_LONG_NAME, FLDIGI_DIAL_FREQUENCY,
+		FLDIGI_AUDIO_FREQUENCY, FLDIGI_FREQUENCY,
 
-	       FLDIGI_MACRO_FILE,
-	       FLDIGI_LOG_FILE,
-	       FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME_ON, FLDIGI_LOG_TIME_OFF, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
-	       FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
-	       FLDIGI_LOG_NOTES, FLDIGI_AZ, ENV_SIZE
+		FLDIGI_MACRO_FILE,
+		FLDIGI_LOG_FILE,
+		FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME_ON, FLDIGI_LOG_TIME_OFF, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
+		FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
+		FLDIGI_LOG_NOTES, FLDIGI_AZ, ENV_SIZE
 	};
 
 	struct {
@@ -2274,7 +2274,7 @@ void set_macro_env(void)
 	env[pSKEDH].val = pSKEDh.c_str();
 
 	// IPC keys
-        char key[2][8];
+	char key[2][8];
 	snprintf(key[0], sizeof(key[0]), "%d", progdefaults.rx_msgid);
 	env[FLDIGI_RX_IPC_KEY].val = key[0];
 	snprintf(key[1], sizeof(key[1]), "%d", progdefaults.tx_msgid);
@@ -2295,8 +2295,8 @@ void set_macro_env(void)
 	env[FLDIGI_AUDIO_FREQUENCY].val = audio_freq;
 	char freq[20];
 	snprintf(freq, sizeof(freq), "%ld", (long)(wf->rfcarrier() + (wf->USB()
-								? active_modem->get_freq()
-								: -active_modem->get_freq())));
+																  ? active_modem->get_freq()
+																  : -active_modem->get_freq())));
 	env[FLDIGI_FREQUENCY].val = freq;
 
 	// debugging vars
@@ -2359,26 +2359,26 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 	}
 	pid_t pid;
 	switch (pid = fork()) {
-	case -1:
-		LOG_PERROR("fork");
-		return;
-	case 0: // child
-		close(pfd[0]);
-		if (dup2(pfd[1], STDOUT_FILENO) != STDOUT_FILENO) {
-			LOG_PERROR("dup2");
+		case -1:
+			LOG_PERROR("fork");
+			return;
+		case 0: // child
+			close(pfd[0]);
+			if (dup2(pfd[1], STDOUT_FILENO) != STDOUT_FILENO) {
+				LOG_PERROR("dup2");
+				exit(EXIT_FAILURE);
+			}
+			close(pfd[1]);
+			set_macro_env();
+			execl("/bin/sh", "sh", "-c", execstr.c_str(), (char *)NULL);
+			perror("execl");
 			exit(EXIT_FAILURE);
-		}
-		close(pfd[1]);
-		set_macro_env();
-		execl("/bin/sh", "sh", "-c", execstr.c_str(), (char *)NULL);
-		perror("execl");
-		exit(EXIT_FAILURE);
 	}
 
-// parent
+	// parent
 	close(pfd[1]);
 
-// give child process time to complete
+	// give child process time to complete
 	MilliSleep(50);
 	FILE* fp = fdopen(pfd[0], "r");
 	if (!fp) {
@@ -2394,7 +2394,7 @@ static void pEXEC(std::string &s, size_t &i, size_t endbracket)
 	while (fgets(ln, sizeof(ln), fp)) {
 		lnbuff.append(ln);
 	}
-// remove all trailing end-of-lines
+	// remove all trailing end-of-lines
 	while (lnbuff[lnbuff.length()-1] == '\n')
 		lnbuff.erase(lnbuff.length()-1,1);
 
@@ -2490,13 +2490,13 @@ static void MAPIT(int how)
 				sLOC[1] -'A' > 17 || sLOC[5] - 'A' > 23 ||
 				!isdigit(sLOC[2]) || !isdigit(sLOC[3])) return;
 			lon =	-180.0 +
-					(sLOC[0] - 'A') * 20 +
-					(sLOC[2] - '0') * 2 +
-					(sLOC[4] - 'A' + 0.5) / 12;
+			(sLOC[0] - 'A') * 20 +
+			(sLOC[2] - '0') * 2 +
+			(sLOC[4] - 'A' + 0.5) / 12;
 			lat = -90.0 +
-					(sLOC[1] - 'A') * 10 +
-					(sLOC[3] - '0') +
-					(sLOC[5] - 'A' + 0.5) / 24;
+			(sLOC[1] - 'A') * 10 +
+			(sLOC[3] - '0') +
+			(sLOC[5] - 'A' + 0.5) / 24;
 			char sdata[20];
 			snprintf(sdata, sizeof(sdata),"%10.6f", lat);
 			url.append(sdata).append(",");
@@ -2610,7 +2610,7 @@ void queue_execute()
 
 bool queue_must_rx()
 {
-static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
+	static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
 	if (cmds.empty()) return false;
 	CMDS cmd = cmds.front();
 	bool ret = (rxcmds.find(cmd.cmd.substr(0,5)) != std::string::npos);
@@ -2720,26 +2720,26 @@ static const MTAGS mtags[] = {
 {"<SKED:",		pSKED},
 {"<TXATTEN:",	pTXATTEN},
 #ifdef __WIN32__
-{"<TALK:",		pTALK},
+	{"<TALK:",		pTALK},
 #endif
-{"<CSV:",		pCSV},
-{"<WX>",		pWX},
-{"<WX:",		pWX2},
-{"<IMAGE:",		pQueIMAGE},
-{"<!WPM:",		pQueWPM},
-{"<!RISE:",		pQueRISETIME},
-{"<!PRE:",		pQuePRE},
-{"<!POST:",		pQuePOST},
-{"<!GOHOME>",	pQueGOHOME},
-{"<!GOFREQ:",	pQueGOFREQ},
-{"<!QSY:",		pQueQSY},
-{"<!IDLE:",		pQueIDLE},
-{"<!WAIT:",		pQueWAIT},
-{"<!MODEM:",	pQueMODEM},
-{"<!RIGMODE:",	pQueRIGMODE},
-{"<!FILWID:",	pQueFILWID},
-{"<!TXATTEN:",	pQueTXATTEN},
-{0, 0}
+	{"<CSV:",		pCSV},
+	{"<WX>",		pWX},
+	{"<WX:",		pWX2},
+	{"<IMAGE:",		pQueIMAGE},
+	{"<!WPM:",		pQueWPM},
+	{"<!RISE:",		pQueRISETIME},
+	{"<!PRE:",		pQuePRE},
+	{"<!POST:",		pQuePOST},
+	{"<!GOHOME>",	pQueGOHOME},
+	{"<!GOFREQ:",	pQueGOFREQ},
+	{"<!QSY:",		pQueQSY},
+	{"<!IDLE:",		pQueIDLE},
+	{"<!WAIT:",		pQueWAIT},
+	{"<!MODEM:",	pQueMODEM},
+	{"<!RIGMODE:",	pQueRIGMODE},
+	{"<!FILWID:",	pQueFILWID},
+	{"<!TXATTEN:",	pQueTXATTEN},
+	{0, 0}
 };
 
 int MACROTEXT::loadMacros(const std::string& filename)
@@ -2758,43 +2758,43 @@ int MACROTEXT::loadMacros(const std::string& filename)
 		create_new_macros();
 	} else {
 
-	mFile.getline(szLine, 4095);
-	mLine = szLine;
-	if (mLine.find("//fldigi macro definition file") != 0) {
-		mFile.close();
-		return -2;
-	}
-	if (mLine.find("extended") == std::string::npos) {
-		convert = true;
-		changed = true;
-	}
-// clear all of the macros
-	for (int i = 0; i < MAXMACROS; i++) {
-		name[i] = "";
-		text[i] = "";
-	}
-	while (!mFile.eof()) {
-		mFile.getline(szLine,4095);
+		mFile.getline(szLine, 4095);
 		mLine = szLine;
-		if (mLine.find("//") == 0) // skip over all comment lines
-			continue;
-		if (mLine.find("/$") == 0) {
-			int idx = mLine.find_first_not_of("0123456789", 3);
-			sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
-			if (mNumber < 0 || mNumber > (MAXMACROS - 1))
-				break;
-			if (convert && mNumber > 9) mNumber += 2;
-            name[mNumber] = mLine.substr(idx+1);
-			continue;
+		if (mLine.find("//fldigi macro definition file") != 0) {
+			mFile.close();
+			return -2;
 		}
-		while ((crlf = mLine.find("\\n")) != std::string::npos) {
-			mLine.erase(crlf, 2);
-			mLine.append("\n");
+		if (mLine.find("extended") == std::string::npos) {
+			convert = true;
+			changed = true;
 		}
-		text[mNumber] = text[mNumber] + mLine;
+		// clear all of the macros
+		for (int i = 0; i < MAXMACROS; i++) {
+			name[i] = "";
+			text[i] = "";
+		}
+		while (!mFile.eof()) {
+			mFile.getline(szLine,4095);
+			mLine = szLine;
+			if (mLine.find("//") == 0) // skip over all comment lines
+				continue;
+			if (mLine.find("/$") == 0) {
+				int idx = mLine.find_first_not_of("0123456789", 3);
+				sscanf((mLine.substr(3, idx - 3)).c_str(), "%d", &mNumber);
+				if (mNumber < 0 || mNumber > (MAXMACROS - 1))
+					break;
+				if (convert && mNumber > 9) mNumber += 2;
+				name[mNumber] = mLine.substr(idx+1);
+				continue;
+			}
+			while ((crlf = mLine.find("\\n")) != std::string::npos) {
+				mLine.erase(crlf, 2);
+				mLine.append("\n");
+			}
+			text[mNumber] = text[mNumber] + mLine;
+		}
+		mFile.close();
 	}
-	mFile.close();
-}
 
 	return 0;
 }
@@ -2804,7 +2804,7 @@ void MACROTEXT::loadDefault()
 	int erc;
 	std::string Filename = MacrosDir;
 	Filename.append("macros.mdf");
-LOG_INFO("macro file name: %s", progStatus.LastMacroFile.c_str());
+	LOG_INFO("macro file name: %s", progStatus.LastMacroFile.c_str());
 	if (progdefaults.UseLastMacro == true) {
 		if (progStatus.LastMacroFile.find("/") != string::npos ||
 			progStatus.LastMacroFile.find("\\") != string::npos)
@@ -2812,7 +2812,7 @@ LOG_INFO("macro file name: %s", progStatus.LastMacroFile.c_str());
 		else
 			Filename.assign(MacrosDir).append(progStatus.LastMacroFile);
 	}
-LOG_INFO("loading: %s", Filename.c_str());
+	LOG_INFO("loading: %s", Filename.c_str());
 	progStatus.LastMacroFile = Filename;
 
 	if ((erc = loadMacros(Filename)) != 0)
@@ -2839,10 +2839,10 @@ void MACROTEXT::openMacroFile()
 		deffilename.append(progStatus.LastMacroFile);
 
 	const char *p = FSEL::select(
-			_("Open macro file"),
-			_("Fldigi macro definition file\t*.{mdf}"),
-			deffilename.c_str());
-    if (p) {
+								 _("Open macro file"),
+								 _("Fldigi macro definition file\t*.{mdf}"),
+								 deffilename.c_str());
+	if (p) {
 		loadMacros(p);
 		progStatus.LastMacroFile = p;
 	}
@@ -2877,10 +2877,10 @@ void MACROTEXT::saveMacroFile()
 		deffilename.append(progStatus.LastMacroFile);
 
 	const char *p = FSEL::saveas(
-			_("Save macro file"),
-			_("Fldigi macro definition file\t*.{mdf}"),
-			deffilename.c_str());
-    if (p) {
+								 _("Save macro file"),
+								 _("Fldigi macro definition file\t*.{mdf}"),
+								 deffilename.c_str());
+	if (p) {
 		string sp = p;
 		if (sp.rfind(".mdf") == string::npos) sp.append(".mdf");
 		saveMacros(sp.c_str());
@@ -2913,8 +2913,7 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 		TransmitON = false;
 		ToggleTXRX = false;
 	}
-//	mNbr = n;
-	expanded = s;//text[n];
+	expanded = s;
 	const MTAGS *pMtags;
 
 	xbeg = xend = -1;
@@ -2932,7 +2931,7 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 			idx++;
 			continue;
 		}
- 		if (expanded.find("<MACROS:",idx) == idx) {
+		if (expanded.find("<MACROS:",idx) == idx) {
 			loadnewMACROS(expanded, idx, endbracket);
 			idx++;
 			continue;
@@ -2983,12 +2982,12 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 		save_xchg = false;
 	}
 
-// force "^r" to be last tag in the expanded std::string
+	// force "^r" to be last tag in the expanded std::string
 	if ((idx = expanded.find("^r")) != std::string::npos) {
 		expanded.erase(idx, 2);
 		expanded.append("^r");
 	}
-
+	
 	return expanded;
 }
 
@@ -3013,7 +3012,7 @@ static void continueMacro(void *)
 static void finishTune(void *)
 {
 	trx_receive();
-// delay to allow tx/rx loop to change state
+	// delay to allow tx/rx loop to change state
 	Fl::add_timeout(0.5, continueMacro);
 }
 
@@ -3062,7 +3061,7 @@ void MACROTEXT::execute(int n)
 {
 	mNbr = n;
 	text2send = expandMacro(text[n]);
-
+	
 	if (timed_exec) {
 		progStatus.repeatMacro = -1;
 		exec_string = text[n];
@@ -3070,7 +3069,7 @@ void MACROTEXT::execute(int n)
 		startTimedExecute(name[n]);
 		return;
 	}
-
+	
 	if (!rx_only) {
 		if (progStatus.repeatMacro == -1)
 			TransmitText->add_text( text2send );
@@ -3085,7 +3084,7 @@ void MACROTEXT::execute(int n)
 		}
 	}
 	text2send.clear();
-
+	
 	if (ToggleTXRX) {
 		text2send.clear();
 		if (!wf->xmtrcv->value()) {
@@ -3110,7 +3109,7 @@ void MACROTEXT::execute(int n)
 	if ( TransmitON ) {
 		if (macro_idle_on && idleTime > 0)
 			Fl::add_timeout(idleTime, idleTimer);
-
+		
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
@@ -3148,14 +3147,14 @@ static std::string mtext =
 ";
 
 void MACROTEXT::saveMacros(const std::string& fname) {
-
+	
 	std::string work;
 	std::string output;
 	char temp[200];
 	output.assign(mtext);
 	for (int i = 0; i < MAXMACROS; i++) {
 		snprintf(temp, sizeof(temp), "\n//\n// Macro # %d\n/$ %d %s\n",
-			i+1, i, macros.name[i].c_str());
+				 i+1, i, macros.name[i].c_str());
 		output.append(temp);
 		work = macros.text[i];
 		size_t pos;
@@ -3167,7 +3166,7 @@ void MACROTEXT::saveMacros(const std::string& fname) {
 		output.append(work).append("\n");
 	}
 	UTF8_writefile(fname.c_str(), output);
-
+	
 	changed = false;
 }
 

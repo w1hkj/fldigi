@@ -37,10 +37,11 @@ public:
 	enum source_e {
 		LOG_ARQCONTROL = 1 << 0, LOG_AUDIO = 1 << 1, LOG_MODEM = 1 << 2,
 		LOG_RIGCONTROL = 1 << 3, LOG_RPC = 1 << 4, LOG_SPOTTER = 1 << 5,
-		LOG_OTHER = 1 << 6
+		LOG_KISSCONTROL = 1 << 6, LOG_OTHER = 1 << 7
 	};
 	static void start(const char* filename);
 	static void stop(void);
+	static void hex_dump(const char * func, const char * data, int len);
 	static void log(level_e level, const char* func, const char* srcf, int line,
 			const char* format, ...) format__(printf, 5, 6);
 	static void elog(const char* func, const char* srcf, int line, const char* text);
@@ -57,17 +58,26 @@ private:
 	static debug* inst;
 };
 
-#define LOG(level__, source__, ...)							\
-	do {										\
-		if (level__ <= debug::level && source__ & debug::mask)			\
+#define LOG(level__, source__, ...)							                \
+	do {										                            \
+		if (level__ <= debug::level && source__ & debug::mask)			    \
 			debug::log(level__, __func__, __FILE__, __LINE__, __VA_ARGS__); \
 	} while (0)
+
 
 #define LOG_DEBUG(...) LOG(debug::DEBUG_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_VERBOSE(...) LOG(debug::VERBOSE_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_INFO(...) LOG(debug::INFO_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_WARN(...) LOG(debug::WARN_LEVEL, log_source_, __VA_ARGS__)
 #define LOG_ERROR(...) LOG(debug::ERROR_LEVEL, log_source_, __VA_ARGS__)
+
+#define LOG_HD(source__, a, b)               \
+	do {									 \
+		if (source__ & debug::mask)          \
+			debug::hex_dump(__func__, a, b); \
+	} while (0)
+
+#define LOG_HEX(a,b) LOG_HD(log_source_, a, b)
 
 #define LOG_PERROR(msg__)								\
 	do {										\

@@ -44,8 +44,8 @@ private:
 	double_buff     *InpBuff;
 	double_buff     *emptyBuff;
 	bool            flushbuffer;
-	double          FEC_offset;
-	double          FEC_snr;
+	//double          FEC_offset;
+	//double          FEC_snr;
 
 public:
 	mt63(trx_mode mode);

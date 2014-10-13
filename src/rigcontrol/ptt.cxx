@@ -9,7 +9,7 @@
 // Copyright (C) 2009
 //		Diane Bruce, VA3DB
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -471,37 +471,40 @@ static bool get_fifos(const int fd[2], const unsigned char* msg, size_t msglen, 
 }
 
 #ifdef __APPLE__
-#  include <ApplicationServices/ApplicationServices.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #endif
 
 static bool start_uhrouter(void)
 {
+	bool found = false;
 #ifdef __APPLE__
-	int err;
-	FSRef fsr;
-	if ((err = FSPathMakeRef((const UInt8*)"/Applications/µH Router.app", &fsr, NULL)) != noErr) {
-		LOG_ERROR("FSPathMakeRef failed for /Applications/\265H Router.app: error %d", err);
-		return false;
+	FILE *fd = (FILE *)0;
+	std::string appPath;
+	std::string buffer;
+
+	appPath.assign("/Applications/µH Router.app/Contents/MacOS/µH Router");
+
+	fd = fopen(appPath.c_str(), "r");
+	if(fd) {
+		found = true;
+		fclose(fd);
 	}
 
-	LSApplicationParameters lsap;
-	memset(&lsap, 0, sizeof(lsap));
-	lsap.version = 0;
-	lsap.flags = kLSLaunchDontAddToRecents | kLSLaunchDontSwitch |
-		     kLSLaunchNoParams | kLSLaunchStartClassic;
-	lsap.application = &fsr;
-	lsap.asyncLaunchRefCon = NULL;
-	lsap.environment = NULL;
-	lsap.argv = NULL;
-	lsap.initialEvent = NULL;
+	if(found) {
+		buffer.clear();
+		buffer.assign("\"");
+		buffer.append(appPath);
+		buffer.append("\" & ");
+		system(buffer.c_str());
+	} else {
+		LOG_ERROR("File: /Applications/\265H Router.app Not Found!");
+	}
 
-	if ((err = LSOpenApplication(&lsap, NULL)) != noErr)
-		LOG_ERROR("LSOpenApplication failed for /Applications/\265H Router.app: error %d", err);
-
-	return err == noErr;
-#else
-	return false;
 #endif // __APPLE__
+
+	return found;
 }
 
 void PTT::open_uhrouter(void)

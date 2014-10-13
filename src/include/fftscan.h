@@ -53,9 +53,9 @@ private:
 
 	g_fft<double>	*scanfft;
 
-	int restart_count;
+	// int restart_count;
 
-	double sig_level;
+	//double sig_level;
 	double	wf_freq;
 	long  ticks;
 	double  scans;

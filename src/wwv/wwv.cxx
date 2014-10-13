@@ -44,8 +44,8 @@ void wwv::tx_init(SoundBase *sc)
 void wwv::rx_init()
 {
 	phaseacc = 0.0;
-	smpl_ctr = 0;		// sample counter for timing wwv rx 
-	agc = 0.0;			// threshold for tick detection 
+	smpl_ctr = 0;		// sample counter for timing wwv rx
+	agc = 0.0;			// threshold for tick detection
 	ticks = 0;
 	calc = false;
 	zoom = false;
@@ -72,9 +72,9 @@ wwv::wwv() : modem()
 	mode = MODE_WWV;
 	frequency = 1000;
 	bandwidth = 200;
-	samplerate = 8000;	
+	samplerate = 8000;
 
-// phase increment expected at the tick freq 
+// phase increment expected at the tick freq
 	phaseincr = 2.0 * M_PI * frequency / samplerate;
 
 	hilbert = new C_FIR_filter();
@@ -83,7 +83,7 @@ wwv::wwv() : modem()
 	lp = 0.5 * bandwidth / samplerate;
 	lpfilter = new C_FIR_filter();
 	lpfilter->init_lowpass (FIRLEN_1, DEC_1, lp);
-	
+
 	vidfilter = new Cmovavg(16);
 
 	makeaudio();
@@ -133,12 +133,12 @@ int wwv::rx_process(const double *buf, int len)
 
 		znco = cmplx ( cos(phaseacc), sin(phaseacc) );
 		z = znco * z;
-		
+
 		phaseacc += phaseincr;
 		if (phaseacc > TWOPI) phaseacc -= TWOPI;
 
 		if (lpfilter->run ( z, z )) {
-			buffer[smpl_ctr % 1000] = vidfilter->run( abs(z) );		
+			buffer[smpl_ctr % 1000] = vidfilter->run( abs(z) );
 			if (++smpl_ctr >= 1000) {
 				update_syncscope();
 				smpl_ctr = 0;
@@ -198,7 +198,7 @@ void wwv::makeaudio()
 	}
 }
 
-int wwv::tx_process() 
+int wwv::tx_process()
 {
 	static int cycle = 4;
 	int c = get_tx_char();

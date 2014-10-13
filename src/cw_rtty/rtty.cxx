@@ -270,7 +270,7 @@ printf("rtty_shift %.1f\n", shift);
 		snprintf(msg1, sizeof(msg1), "%-4.2f/%-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
 	put_MODEstatus(mode);
-	for (int i = 0; i < MAXPIPE; i++) 
+	for (int i = 0; i < MAXPIPE; i++)
 		QI[i] = cmplx(0.0, 0.0);
 	sigpwr = 0.0;
 	noisepwr = 0.0;
@@ -820,7 +820,7 @@ if (mnum < 2 * filter_length)
 				if (clear_zdata) {
 					clear_zdata = false;
 					Clear_syncscope();
-					for (int i = 0; i < MAXPIPE; i++) 
+					for (int i = 0; i < MAXPIPE; i++)
 						QI[i] = cmplx(0.0, 0.0);
 				}
 			}
@@ -1303,9 +1303,9 @@ void SymbolShaper::Preset(double baud, double sr)
         int const offset = m_table_size/2;
         double const T = sample_rate / (baud_rate*2.0); // symbol-length in samples
         double const t = (x-offset); // symbol-time relative to zero
-       
+
         m_sinc_table[x] = rcos( t, T, 1.0 );
-   
+
 // calculate integral
         sum += m_sinc_table[x];
     }

@@ -226,6 +226,7 @@ struct mode_info_t {
 	const char *pskmail_name;
 	const char *adif_name;
 	const char *vid_name;
+	const unsigned int iface_io; // Some modes are not usable for a given interface.
 };
 extern const struct mode_info_t mode_info[NUM_MODES];
 

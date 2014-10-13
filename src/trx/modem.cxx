@@ -297,6 +297,7 @@ void modem::set_metric(double m)
 void modem::display_metric(double m)
 {
 	set_metric(m);
+	if(!progStatus.pwrsqlonoff)
 	::global_display_metric(m);
 }
 

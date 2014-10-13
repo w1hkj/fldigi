@@ -319,6 +319,7 @@ fldigi_SOURCES += \
 	include/configuration.h \
 	include/contestia.h \
 	include/cw.h \
+	include/data_io.h \
 	include/debug.h \
 	include/digiscope.h \
 	include/dxcc.h \
@@ -349,6 +350,8 @@ fldigi_SOURCES += \
 	include/jalocha/pj_lowpass3.h \
 	include/jalocha/pj_mfsk.h \
 	include/jalocha/pj_struc.h \
+	include/kiss_io.h \
+	include/ax25_decode.h \
 	include/coordinate.h \
 	include/gfft.h \
 	include/kmlserver.h \
@@ -475,6 +478,7 @@ fldigi_SOURCES += \
 	wefax/wefax-pic.cxx \
 	navtex/navtex.cxx \
 	misc/ascii.cxx \
+	misc/ax25_decode.cxx \
 	misc/charsetdistiller.cxx \
 	misc/charsetlist.cxx \
 	misc/configuration.cxx \
@@ -482,6 +486,7 @@ fldigi_SOURCES += \
 	misc/debug.cxx \
 	misc/dxcc.cxx \
 	misc/icons.cxx \
+	misc/kiss_io.cxx \
 	misc/kmlserver.cxx \
 	misc/log.cxx \
 	misc/macroedit.cxx \

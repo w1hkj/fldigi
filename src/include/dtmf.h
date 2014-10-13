@@ -34,7 +34,7 @@ private:
 
 private:
 	double power[NUMTONES];
-	double thresh;
+	//double thresh;
 	double maxpower;
 	double minpower;
 	double data[350];

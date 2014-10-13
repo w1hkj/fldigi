@@ -59,6 +59,7 @@
 #endif
 
 static pthread_mutex_t debug_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t debug_hd_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 extern Fl_Double_Window *fl_digi_main;
 extern void update_main_title();
@@ -101,7 +102,8 @@ Fl_Menu_Item src_menu[] = {
 	{ _("Modem"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Rig control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("RPC"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
-	{ _("Spotter"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE | FL_MENU_DIVIDER },
+	{ _("Spotter"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("KISS control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE | FL_MENU_DIVIDER  },
 	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ 0 }
 };
@@ -188,7 +190,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 		struct tm stm;
 		(void)localtime_r(&t, &stm);
 		snprintf(fmt, sizeof(fmt), "%c: [%02d:%02d:%02d] %s:%d: %s\n",
-			 *prefix[level], stm.tm_hour, stm.tm_min, stm.tm_sec, srcf, line, format);
+				 *prefix[level], stm.tm_hour, stm.tm_min, stm.tm_sec, srcf, line, format);
 	}
 	else
 		snprintf(fmt, sizeof(fmt), "%c: %s: %s\n", *prefix[level], func, format);
@@ -209,6 +211,52 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 #endif
 
 	Fl::awake(sync_text, (void*)nw);
+}
+
+void debug::hex_dump(const char* func, const char * data, int length)
+{
+	guard_lock debug_lock(&debug_hd_mutex);
+
+	char cbuff[32];
+	char hbuff[64];
+	char tbuff[32];
+	int index = 0;
+	int data_index = 0;
+	int count = length;
+	unsigned int c = 0;
+	int hi = 0;
+	int step = 16;
+
+	if(!func)
+		func = "Unassigned";
+
+	if(!data || length < 0) return;
+
+	while(count > 0) {
+		memset(cbuff, 0, sizeof(cbuff));
+		memset(hbuff, 0, sizeof(hbuff));
+		memset(tbuff, 0, sizeof(tbuff));
+		hi = 0;
+		for(index = 0; index < step; index++) {
+			if(data_index < length) {
+				c = ((unsigned int) data[data_index]) & 0xFF;
+				if(c >= ' ' && c <= 0xff) {
+					cbuff[index] = c;
+				} else {
+					cbuff[index] = '.';
+				}
+				snprintf(tbuff, sizeof(tbuff) - 1, "%02X", c);
+				hbuff[hi++] = tbuff[0];
+				hbuff[hi++] = tbuff[1];
+				hbuff[hi++] = ' ';
+			} else {
+				break;
+			}
+			data_index++;
+		}
+		LOG_DEBUG("%s: %s %s", func, cbuff, hbuff);
+		count -= step;
+	}
 }
 
 void debug::elog(const char* func, const char* srcf, int line, const char* text)

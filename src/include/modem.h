@@ -116,6 +116,7 @@ public:
 	/// Inlined const getters are faster and smaller.
 	trx_mode	get_mode() const { return mode; };
 	const char	*get_mode_name() const { return mode_info[get_mode()].sname;}
+	unsigned int iface_io() const { return mode_info[get_mode()].iface_io;}
 	virtual void	set_freq(double);
 	/// Inlining small formulas is still faster and shorter.
 	int		get_freq() const { return (int)( frequency + 0.5 ); }

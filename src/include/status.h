@@ -69,8 +69,10 @@ struct status {
 	int		tile_h;
 	bool	LOGenabled;
 	double  sldrSquelchValue;
+	double  sldrPwrSquelchValue;
 	bool	afconoff;
 	bool	sqlonoff;
+	bool	pwrsqlonoff;
 	double	RcvMixer;
 	double	XmtMixer;
 	int		scopeX;
@@ -105,7 +107,7 @@ struct status {
 	int		logbook_col_3;
 	int		logbook_col_4;
 	int		logbook_col_5;
-	
+
 // Contestia, Olivia, RTTY state values
 	int		contestiatones;
 	int		contestiabw;
@@ -140,6 +142,22 @@ struct status {
 	bool	UOSrx;
 	bool	UOStx;
 // end Contestia, Olivia, RTTY state values
+
+	std::string xmlrpc_address;
+	std::string xmlrpc_port;
+	std::string arq_address;
+	std::string arq_port;
+	std::string kiss_address;
+	std::string kiss_io_port;
+	std::string kiss_out_port;
+	int kiss_dual_port_enabled;
+	int data_io_enabled;
+	bool ax25_decode_enabled;
+	bool enableBusyChannel;
+	int busyChannelSeconds;
+	int kpsql_attenuation;
+	bool csma_enabled;
+	double squelch_value;
 
 	std::string	browser_search;
 

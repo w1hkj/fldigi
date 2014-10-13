@@ -56,7 +56,7 @@ template <class type>
 
 template <class type>
  void PrintArray(type *Array, size_t Size,
-                 char *ValueFormat, char *IndexFormat="%3d", size_t Columns=10)
+                 char *ValueFormat, char *IndexFormat=(char *)"%3d", size_t Columns=10)
 { size_t Idx,Col;
   for(Col=0,Idx=0; Idx<Size; Idx++)
   { if(Col==0)
@@ -323,7 +323,7 @@ template <class type> int Seq2d<type>::EnsureSpace(size_t rows, size_t cols)
 // - data before "Read" has been read-out and is thus obsolete
 // As more data comes the samples must be shifted and the obsolete data removed:
 // this is done by: RemovePastData()
-   
+
 template <class Type>
  class SampleBuffer
 { public:
@@ -357,7 +357,7 @@ template <class Type>
      { return Write-Read; }
    Type *ReadPtr(void)                  // get pointer to read data
      { return Sample+Read; }
-   size_t WriteLen(void)                // length of data that can be written   
+   size_t WriteLen(void)                // length of data that can be written
      { return Size-Write; }
    Type *WritePtr(void)                 // get pointer to write data
      { return Sample+Write; }

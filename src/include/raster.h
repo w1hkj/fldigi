@@ -25,18 +25,18 @@
 
 #include <FL/Fl_Widget.H>
 
-class Raster : public Fl_Widget { 
+class Raster : public Fl_Widget {
 public:
 private:
 	unsigned char *vidbuf;
 	int		width;
 	int		height;
 	int		col;
-	int		row;
+	//int		row;
 	int		Nrows;
 	int		rowheight;
 	int		space;
-	int		vidpos;	 // column start position 
+	int		vidpos;	 // column start position
 	int		numcols; // number of columns to redraw
 	int		yp;
 public:
