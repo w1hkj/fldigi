@@ -288,6 +288,12 @@ extern modem *qpsk125_modem;
 extern modem *qpsk250_modem;
 extern modem *qpsk500_modem;
 
+extern modem *_8psk125_modem;
+extern modem *_8psk250_modem;
+extern modem *_8psk500_modem;
+extern modem *_8psk1000_modem;
+extern modem *_8psk2000_modem;
+
 extern modem *psk125r_modem;
 extern modem *psk250r_modem;
 extern modem *psk500r_modem;
