@@ -309,7 +309,7 @@ cw::cw() : modem()
 	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), FilterFFTLen);
 
 // bit filter based on 10 msec rise time of CW waveform
-int bfv = (int)(samplerate * .010 / DEC_RATIO);
+	int bfv = (int)(samplerate * .010 / DEC_RATIO);
 	bitfilter = new Cmovavg(bfv);
 
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
@@ -322,13 +322,12 @@ int bfv = (int)(samplerate * .010 / DEC_RATIO);
 }
 
 // SHOULD ONLY BE CALLED FROM THE rx_processing loop
-// MUST FIX
 void cw::reset_rx_filter()
 {
 	if (use_fft_filter != progdefaults.CWuse_fft_filter ||
 		use_matched_filter != progdefaults.CWmfilt ||
 		cw_speed != progdefaults.CWspeed ||
-		bandwidth != progdefaults.CWbandwidth ) {
+		(bandwidth != progdefaults.CWbandwidth && !use_matched_filter)) {
 
 		use_fft_filter = progdefaults.CWuse_fft_filter;
 		use_matched_filter = progdefaults.CWmfilt;
@@ -374,13 +373,7 @@ void cw::reset_rx_filter()
 		memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
 		agc_peak = 0;
-/*
-printf("%s%s, %3.0f Hz, %d wpm\n",
-	use_fft_filter ? "FFT" : "FIR",
-	use_matched_filter ? ", Matched" : "",
-	bandwidth,
-	cw_speed);
-*/
+		clear_syncscope();
 	}
 	if (lower_threshold != progdefaults.CWlower ||
 		upper_threshold != progdefaults.CWupper) {
@@ -564,7 +557,7 @@ void cw::decode_stream(double value)
 
 // save correlation amplitude value for the sync scope
 // normalize if possible
-	if (agc_peak) 
+	if (agc_peak)
 		value /= agc_peak;
 	else
 		value = 0;
@@ -664,8 +657,12 @@ void cw::rx_FIRprocess(const double *buf, int len)
 	}
 }
 
+static bool cwprocessing = false;
+
 int cw::rx_process(const double *buf, int len)
 {
+	if (cwprocessing) return 0;
+	cwprocessing = true;
 	reset_rx_filter();
 
 	if (use_fft_filter)
@@ -676,6 +673,7 @@ int cw::rx_process(const double *buf, int len)
 	if (!clrcount--) clear_syncscope();
 
 	display_metric(metric);
+	cwprocessing = false;
 
 	return 0;
 }
