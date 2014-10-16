@@ -134,8 +134,8 @@ private:
 	Fl_Color REVOFFCOLOR;
 	int nD;
 	//int active;
-	long maxVal;
-	long minVal;
+	unsigned long maxVal;
+	unsigned long minVal;
 
 	int pw; // decimal width
 	int wfill;
@@ -152,7 +152,7 @@ private:
 	void cancel_kb_entry(void);
 
 protected:
-	long val, oldval;
+	unsigned long val, oldval;
 	int  precision;
 	int  dpoint;
 

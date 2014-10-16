@@ -1678,6 +1678,10 @@
         ELEM_(bool, rxtx_swap, "RXTX_SWAP",                                             \
               "Enabled, Tx above Rx panel\n"                                            \
               "Disable, Rx above Tx panel (default",                                    \
+              false)                                                                    \
+        ELEM_(bool, view_smeter, "VIEW_SMETER",                                         \
+              "Enabled, View smeter & power meter\n"                                    \
+              "Disable, (default)",                                                     \
               false)
 
 

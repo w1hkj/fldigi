@@ -1785,20 +1785,20 @@ void set_server_label(bool val)
 	else m->clear();
 }
 
-int save_mvx = 1;
+int save_mvx = 0;
 
 void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 {
-	if (!progStatus.show_channels && mvgroup->w() > 1) {
+	if (!progStatus.show_channels && mvgroup->w() > 0) {
 		progStatus.show_channels = true;
 		progStatus.tile_x = save_mvx = mvgroup->w();
 	} else 	if (progStatus.show_channels) {
 		save_mvx = mvgroup->w();
 		progStatus.show_channels = false;
-		progStatus.tile_x = 1;
+		progStatus.tile_x = 0;
 	} else {
 		progStatus.show_channels = true;
-		if (save_mvx == 1) save_mvx = progStatus.tile_x = text_panel->w()/2;
+		if (save_mvx == 0) save_mvx = progStatus.tile_x = text_panel->w()/2;
 		else
 			progStatus.tile_x = save_mvx;
 	}
@@ -3030,7 +3030,7 @@ void UI_check_swap()
 		ReceiveText->resize(rx_x, rx_y, rx_w, rx_h);
 		FHdisp->resize(rx_x, rx_y, rx_w, rx_h);
 		minbox->resize(
-				text_panel->x() + 1, text_panel->y() + 66,
+				text_panel->x(), text_panel->y() + 66,
 				text_panel->w() - 100, text_panel->h() - 2 * 66);
 
 		text_panel->add(mvgroup);
@@ -3063,7 +3063,7 @@ void UI_check_swap()
 		ReceiveText->resize(rx_x, rx_y, rx_w, rx_h);
 		FHdisp->resize(rx_x, rx_y, rx_w, rx_h);
 		minbox->resize(
-				text_panel->x() + 1, text_panel->y() + 66,
+				text_panel->x(), text_panel->y() + 66,
 				text_panel->w() - 100, text_panel->h() - 2 * 66);
 
 		text_panel->add(mvgroup);
@@ -3458,6 +3458,26 @@ void WF_UI()
 	wf->UI_select(progStatus.WF_UI);
 }
 
+void toggle_smeter()
+{
+	if (progdefaults.view_smeter && !smeter->visible()) {
+		qsoFreqDisp1->position(qsoFreqDisp1->x(), qsoFreqDisp1->y() - Hentry/2);
+		pwrmeter->show();
+		smeter->show();
+	} else if (!progdefaults.view_smeter && smeter->visible()) {
+		pwrmeter->hide();
+		smeter->hide();
+		qsoFreqDisp1->position(qsoFreqDisp1->x(), qsoFreqDisp1->y() + Hentry/2);
+	}
+	RigControlFrame->redraw();
+}
+
+void cb_toggle_smeter(Fl_Widget *w, void *v)
+{
+	progdefaults.view_smeter = !progdefaults.view_smeter;
+	toggle_smeter();
+}
+
 static void cb_opmode_show(Fl_Widget* w, void*);
 
 static Fl_Menu_Item menu_[] = {
@@ -3707,6 +3727,8 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+
+{ make_icon_label(_("View/Hide Smeter")), 0, (Fl_Callback*)cb_toggle_smeter, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -4701,8 +4723,8 @@ void create_fl_digi_main_primary() {
 
 		int fnt1 = progdefaults.FreqControlFontnbr;
 		int freqheight1 = 2 * Hentry + pad;
-		fl_font(fnt1, freqheight1);
-		int freqwidth1 = (int)fl_width("9999999.999");
+		fl_font(fnt1, freqheight1  - 4);
+		int freqwidth1 = (int)fl_width("1296999.999");
 		int rig_cbo_w = 4 * Wbtn + 3 * pad;
 		int rig_cbo_x = pad + freqwidth1 + pad;
 		int rig_control_frame_width = pad + freqwidth1 + pad + rig_cbo_w + pad;
@@ -4710,8 +4732,10 @@ void create_fl_digi_main_primary() {
 		RigControlFrame = new Fl_Group(
 			0, Hmenu, rig_control_frame_width, Hqsoframe);
 
+			RigControlFrame->box(FL_FLAT_BOX);
+
 			qsoFreqDisp1 = new cFreqControl(
-				pad, Hmenu + pad, freqwidth1, freqheight1);
+				pad, Hmenu + pad, freqwidth1, freqheight1, "10");
 			qsoFreqDisp1->box(FL_DOWN_BOX);
 			qsoFreqDisp1->color(FL_BACKGROUND_COLOR);
 			qsoFreqDisp1->selection_color(FL_BACKGROUND_COLOR);
@@ -4796,7 +4820,6 @@ void create_fl_digi_main_primary() {
 			qsoSave->image(new Fl_Pixmap(save_icon));
 			qsoSave->callback(qsoSave_cb, 0);
 			qsoSave->tooltip(_("Save"));
-
 		RigControlFrame->resizable(NULL);
 
 		RigControlFrame->end();
@@ -5302,6 +5325,8 @@ void create_fl_digi_main_primary() {
 			int HTwidth = progStatus.mainW;
 
 			text_panel = new Panel(0, Y, HTwidth, Htext);
+				text_panel->box(FL_FLAT_BOX);
+
 				mvgroup = new Fl_Group(
 					text_panel->x(), text_panel->y(),
 					text_panel->w()/2, Htext, "");
@@ -5318,6 +5343,8 @@ void create_fl_digi_main_primary() {
 
 				Fl_Group* gseek = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 42, mvgroup->w(), 20);
 // search field
+					gseek->box(FL_FLAT_BOX);
+
 					int seek_x = mvgroup->x();
 					int seek_y = mvgroup->y() + Htext - 42;
 					int seek_w = mvgroup->w();
@@ -5410,7 +5437,7 @@ void create_fl_digi_main_primary() {
 				TransmitText->align(FL_ALIGN_CLIP);
 
 				minbox = new Fl_Box(
-					text_panel->x() + 1, text_panel->y() + 66, // fixed by Raster min height
+					text_panel->x(), text_panel->y() + 66, // fixed by Raster min height
 					text_panel->w() - 100, text_panel->h() - 2 * 66); // fixed by HMIN & Hwfall max
 				minbox->hide();
 
@@ -5680,7 +5707,7 @@ void create_fl_digi_main_primary() {
 
 	save_mvx = mvgroup->w();
 	progStatus.show_channels = false;
-	progStatus.tile_x = 1;
+	progStatus.tile_x = 0;
 
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
@@ -5704,6 +5731,8 @@ void create_fl_digi_main_primary() {
 		case 8: btn_scheme_8->setonly(); break;
 		case 9: btn_scheme_9->setonly(); break;
 	}
+
+	toggle_smeter();
 
 	colorize_macros();
 

@@ -41,14 +41,14 @@ const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 void cFreqControl::IncFreq (int nbr) {
-	long v = val + mult[nbr] * precision;
+	unsigned long v = val + mult[nbr] * precision;
 	if (v <= maxVal) val = v;
 	updatevalue();
 	do_callback();
 }
 
 void cFreqControl::DecFreq (int nbr) {
-	long v = val - mult[nbr] * precision;
+	unsigned long v = val - mult[nbr] * precision;
 	if (v >= minVal) val = v;
 	updatevalue();
 	do_callback();
@@ -129,7 +129,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	color(OFFCOLOR);
 
 	minVal = 0;
-	maxVal = (long int)(pow(10, nD) - 1) * precision;
+	maxVal = (unsigned long int)(pow(10, nD) - 1) * precision;
 	double fmaxval = maxVal / 1000.0;
 
 	static char tt[100];
@@ -535,7 +535,7 @@ void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
 {
 	cFreqControl* fc = reinterpret_cast<cFreqControl*>(arg);
 	double val = strtod(fc->finp->value(), NULL);
-	long lval;
+	unsigned long lval;
 	val *= 1e3;
 	val += 0.5;
 	lval = (long)val;

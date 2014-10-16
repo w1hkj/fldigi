@@ -1879,7 +1879,7 @@ public:
 	}
 	static void set_smeter(int rfc)
 	{
-		if (smeter && pwrmeter) {
+		if (smeter && pwrmeter && progdefaults.view_smeter) {
 			smeter->value(rfc);
 			pwrmeter->hide();
 			smeter->show();
@@ -1903,7 +1903,7 @@ public:
 	}
 	static void set_pwrmeter(int rfc)
 	{
-		if (pwrmeter && smeter) {
+		if (pwrmeter && smeter && progdefaults.view_smeter) {
 			pwrmeter->value(rfc);
 			smeter->hide();
 			pwrmeter->show();
