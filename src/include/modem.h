@@ -139,7 +139,7 @@ public:
 	void		init_queues();
 
 	void		ModulateXmtr(double *, int);
-	void		ModulateStereo(double *, double *, int);
+	void		ModulateStereo(double *, double *, int, bool sample_flag = true);
 
 	void		videoText();
 	void		pretone();

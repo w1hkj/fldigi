@@ -444,7 +444,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 	if (progdefaults.PTTrightchannel) {
 		for (int i = 0; i < len; i++)
 			PTTchannel[i] = PTTnco();
-			ModulateStereo( buffer, PTTchannel, len);
+			ModulateStereo( buffer, PTTchannel, len, false);
 		return;
 	}
 
@@ -479,11 +479,12 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 #include <iostream>
 using namespace std;
-void modem::ModulateStereo(double *left, double *right, int len)
+void modem::ModulateStereo(double *left, double *right, int len, bool sample_flag)
 {
 	if (unlikely(!scard)) return;
 
-	tx_sample_count += len;
+	if(sample_flag)
+		tx_sample_count += len;
 
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))

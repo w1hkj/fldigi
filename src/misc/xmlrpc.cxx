@@ -1739,10 +1739,24 @@ public:
 		}
 
 		unsigned int s0 = 0, chsamples = 0, over_head = 0;
+		unsigned int factor = 4;
+		unsigned int min_char = 2;
+		bool quick_timing = false;
 
 		if ( (id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
-			(id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
-			id == MODE_CW || id == MODE_RTTY ) {
+			 (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
+			  id == MODE_CW || id == MODE_RTTY ) {
+				quick_timing = true;
+		}
+
+		if((id >= MODE_8PSK_FIRST) && (id <= MODE_8PSK_LAST)) {
+			quick_timing = false;
+			// bit/symbol alignment
+			min_char = 3;
+			factor = min_char * 2;
+		}
+
+		if (quick_timing) {
 			s0 = number_of_samples(string(1,character));
 			chsamples = active_modem->char_samples;
 			over_head = active_modem->ovhd_samples;
@@ -1752,13 +1766,13 @@ public:
 			s0 = s1 = s2 = number_of_samples(string(no_of_chars, character));
 			for(int i = no_of_chars + 1; i < 32; i++) {
 				s2 = number_of_samples(string(i, character));
-				if(s2 > s1 && temp++ > 2) {
+				if(s2 > s1 && temp++ > min_char) {
 					break;
 				}
 				s0 = s2;
 				no_of_chars++;
 			}
-			k = no_of_chars * 4;
+			k = no_of_chars * factor;
 			s1 = number_of_samples(string(k, character));
 			chsamples = (s1 - s0) / (k - no_of_chars);
 			over_head = s1 - (chsamples * k);
