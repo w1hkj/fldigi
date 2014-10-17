@@ -96,6 +96,35 @@ extern waterfall *wf;
 #define	K16_POLY1	0152711
 #define	K16_POLY2	0126723
 
+// For Gray-mapped 8PSK:
+// Even when the received phase is distorted by +- 1 phase-position:
+//  - One of the bits is still known with 100% certianty.
+//  - Only up to 1 bit can be in error
+static cmplx graymapped_8psk_pos[] = {
+//				 Degrees  Bits In  Mapped Soft-Symbol
+	cmplx (1.0, 0.0),         // 0   | 0b000  | 025,000,025
+	cmplx (0.7071, 0.7071),   // 45  | 0b001  | 000,025,230 
+	cmplx (-0.7071, 0.7071),  // 135 | 0b010  | 025,255,025
+	cmplx (0.0, 1.0),         // 90  | 0b011  | 000,230,230
+	cmplx (0.7071, -0.7071),  // 315 | 0b100  | 230,000,025
+	cmplx (0.0, -1.0),        // 270 | 0b101  | 255,025,230
+	cmplx (-1.0, 0.0),        // 180 | 0b110  | 230,255,025
+	cmplx (-0.7071, -0.7071)  // 225 | 0b111  | 255,230,230
+};
+
+// Associated soft-symbols to be used with graymapped_8psk_pos[] constellation
+// These softbits have precalculated (a-priori) probabilities applied
+static unsigned char graymapped_softbits[8][3] =  {
+	{25,0,25},
+	{0,25,230},
+	{25,255,25},
+	{0,230,230},
+	{230,0,25},
+	{255,25,230},
+	{230,255,25},
+	{255,230,230}
+};
+
 
 char pskmsg[80];
 viewpsk *pskviewer = (viewpsk *)0;
@@ -1048,7 +1077,7 @@ static double averageamp;
 	prevsymbol[car] = symbol;
 
 	/// align the RX constellation to the TX constellation.
-	if (_16psk || _8psk|| _xpsk) phase -= M_PI;
+	if (_16psk || _xpsk) phase -= M_PI;
 
 	if (phase < 0) phase += TWOPI;
 
@@ -1061,6 +1090,13 @@ static double averageamp;
 	} else if (_8psk) {
 		n = 8;
 		bits = ((int) (phase / (M_PI/4.0) + 0.5)) & (n-1);
+		// Un Gray-map the 8PSK constellation
+		if (3 == bits) bits = 2;
+		else if (2 == bits) bits = 3;
+		else if (7 == bits) bits = 4;
+		else if (6 == bits) bits = 5;
+		else if (4 == bits) bits = 6;
+		else if (5 == bits) bits = 7;
 	} else if (_16psk) {
 		n = 16;
 		bits = ((int) (phase / (M_PI/8.0) + 0.5)) & (n-1);
@@ -1137,8 +1173,9 @@ static double averageamp;
 		set_dcdON = 1;
 		break;
 		
-	// 8psk DCD on (FEC enabled)
-	case 0x44444444:
+	// 8psk DCD on (FEC enabled, with Gray-mapped constellation)
+	case 0x25252525: // UN-punctured
+	case 0x22222222: // punctured
 		if (_pskr || _xpsk || _16psk) break;
 		if (!_8psk) break;
 		if (_disablefec) break;
@@ -1200,21 +1237,31 @@ static double averageamp;
 	} else if (dcd == true) {
 		set_phase(phase, norm(quality), dcd);
 		
-		if (!_disablefec && (_16psk || _8psk || _xpsk) ) {		
+		if (!_disablefec && (_16psk || _8psk || _xpsk) ) {
 			int bitmask = 1;
 			unsigned char xsoftsymbols[symbits];
 		
 			//printf("\n");
 			if (_puncturing && _16psk) rx_pskr(128); // 16psk: recover punctured low bit
+			
+			// Soft-decode of Gray-mapped 8psk
+			if (_8psk) {
+				int bitindex = static_cast<int>(bits);
+				for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
+					///printf("\nBits: %u | %.3u ", bits, graymapped_softbits[bitindex][i]);
+					rx_pskr(graymapped_softbits[bitindex][i]); // Feed to the PSKR FEC decoder, one bit at a time.
+				}
+			} else {
+			//Hard Decode Section
 				for(int i=0; i<symbits; i++) { // Hard decode symbits into soft-symbols
 					xsoftsymbols[i] = (bits & bitmask) ? 255 : 0 ;
 					//printf(" %.3u ", xsoftsymbols[i]);
 					rx_pskr(xsoftsymbols[i]); // Feed to the PSKR FEC decoder, one bit at a time.
 					bitmask = bitmask << 1;
+				}
 			}
 			if (_puncturing) rx_pskr(128); // x/8/16psk: Recover punctured high bit
-		 
-		
+			
 		} else if (_16psk || _8psk || _xpsk) {
 			// Decode symbol one bit at a time
 			int bitmask = 1;
@@ -1509,14 +1556,15 @@ void psk::tx_carriers()
 		if (_qpsk && !reverse)
 			sym = (4 - sym) & 3;
 
-		// Map the incoming symbols to the underlying 16psk constellation.
-		if (_16psk) ;
-		else if (_8psk) sym *= 2;
-		else if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
-		else sym *= 4; // For BPSK and QPSK
-
-
- 		symbol = prevsymbol[car] * sym_vec_pos[(sym & SVP_MASK)];	// complex multiplication
+		if (_8psk)
+			symbol = prevsymbol[car] * graymapped_8psk_pos[(sym & 7)];	// complex multiplication
+		
+		else { 		// Map the incoming symbols to the underlying 16psk constellation.
+			if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
+			else sym *= 4; // For BPSK and QPSK
+			symbol = prevsymbol[car] * sym_vec_pos[(sym & SVP_MASK)];	// complex multiplication
+		}
+ 
 
 		for (int i = 0; i < symbollen; i++) {
 
