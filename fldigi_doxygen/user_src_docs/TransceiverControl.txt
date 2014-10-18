@@ -76,6 +76,14 @@ then entering the numeric value in KHz.  Don't forget the decimal
 point if you are entering a fractional KHz value.
 <br>
 
+The Smeter / Power-meter display is only active if fldigi is configured for xmlrpc
+control with flrig.  The transceiver must support the smeter and power out CAT query.
+fldigi does not try to estimate the smeter reading based on the audio stream.
+You can toggle viewing the Smeter / Power-meter display using the View menu item
+"View/Hide Smeter."  Be sure to save the configuration for this to persist the next
+time fldigi is executed.
+<br>
+
 The mode combobox, the bandwidth combobox and the frequency display
 also annunciate the current transceiver status.  If you change
 operating mode on the transceiver, that will be annunciated in the

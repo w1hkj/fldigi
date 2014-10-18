@@ -119,6 +119,7 @@ main.get_lock              | b:n | Returns the Transmit Lock state
 main.get_max_macro_id      | i:n | Returns the maximum macro ID number
 main.get_reverse           | b:n | Returns the Reverse Sideband state
 main.get_rsid              | b:n | Returns the RSID state
+main.get_txid              | b:n | Returns the TxRSID state
 main.get_squelch           | b:n | Returns the squelch state
 main.get_squelch_level     | d:n | Returns the squelch level
 main.get_status1           | s:n | Returns the contents of the first status field (typically s/n)
@@ -138,6 +139,7 @@ main.set_frequency         | d:d | Sets the RF carrier frequency. Returns the ol
 main.set_lock              | b:b | Sets the Transmit Lock state. Returns the old state
 main.set_reverse           | b:b | Sets the Reverse Sideband state. Returns the old state
 main.set_rsid              | b:b | Sets the RSID state. Returns the old state
+mmain.set_txid             | b:b | Sets the TxRSID state. Returns the old state
 main.set_squelch           | b:b | Sets the squelch state. Returns the old state
 main.set_squelch_level     | d:d | Sets the squelch level. Returns the old level
 main.set_wf_sideband       | n:s | Sets the waterfall sideband to USB or LSB
@@ -145,6 +147,7 @@ main.toggle_afc            | b:n | Toggles the AFC state. Returns the new state
 main.toggle_lock           | b:n | Toggles the Transmit Lock state. Returns the new state
 main.toggle_reverse        | b:n | Toggles the Reverse Sideband state. Returns the new state
 main.toggle_rsid           | b:n | Toggles the RSID state. Returns the new state
+main.toggle_txid           | b:n | Toggles the TxRSID state. Returns the new state
 main.toggle_squelch        | b:n | Toggles the squelch state. Returns the new state
 main.tune                  | n:n | Tunes
 main.tx                    | n:n | Transmits
