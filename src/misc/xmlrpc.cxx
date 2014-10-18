@@ -1359,6 +1359,53 @@ public:
 };
 
 // =============================================================================
+class Main_get_txid : public xmlrpc_c::method
+{
+public:
+	Main_get_txid()
+	{
+		_signature = "b:n";
+		_help = "Returns the TXID state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_boolean(btnTxRSID->value());
+	}
+};
+
+class Main_set_txid : public xmlrpc_c::method
+{
+public:
+	Main_set_txid()
+	{
+		_signature = "b:b";
+		_help = "Sets the TXID state. Returns the old state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		bool v = btnTxRSID->value();
+		REQ(set_button, btnTxRSID, params.getBoolean(0));
+		*retval = xmlrpc_c::value_boolean(v);
+	}
+};
+
+class Main_toggle_txid : public xmlrpc_c::method
+{
+public:
+	Main_toggle_txid()
+	{
+		_signature = "b:n";
+		_help = "Toggles the TXID state. Returns the new state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		bool v = !btnTxRSID->value();
+		REQ(set_button, btnTxRSID, v);
+		*retval = xmlrpc_c::value_boolean(v);
+	}
+};
 
 class Main_get_rsid : public xmlrpc_c::method
 {
@@ -3317,6 +3364,10 @@ ELEM_(Main_toggle_rev, "main.toggle_reverse")						\
 ELEM_(Main_get_lock, "main.get_lock")								\
 ELEM_(Main_set_lock, "main.set_lock")								\
 ELEM_(Main_toggle_lock, "main.toggle_lock")						\
+\
+ELEM_(Main_get_txid, "main.get_txid")								\
+ELEM_(Main_set_txid, "main.set_txid")								\
+ELEM_(Main_toggle_txid, "main.toggle_txid")						\
 \
 ELEM_(Main_get_rsid, "main.get_rsid")								\
 ELEM_(Main_set_rsid, "main.set_rsid")								\
