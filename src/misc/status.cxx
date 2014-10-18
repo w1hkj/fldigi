@@ -111,7 +111,7 @@ status progStatus = {
 	5.0,				// double sldrPwrSquelchValue
 	true,				// bool afconoff
 	true,				// bool sqlonoff
-	true,				// bool pwrsqlonoff
+	false,				// bool pwrsqlonoff
 	50,					// int	scopeX;
 	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
