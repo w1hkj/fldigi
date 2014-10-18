@@ -185,6 +185,8 @@ void anal::writeFile()
 
 int anal::rx_process(const double *buf, int len)
 {
+	if (len > analFFT_LEN) return 0;
+
 	std::complex<double> z;//, *zp;
 	double fm = wf_freq;
 	double am, bm;
