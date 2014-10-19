@@ -100,45 +100,6 @@ device actually plugged into the 8 mm audio jack before the sound
 driver reports that there is an audio capture device.
 <br>
 
-\section install_on_thumb_drive Installing fldigi programs on thumb drive
-
-Create a folder on a USB drive (any removable read/writable media).  Suggest
-using the folder name NBEMSapps.  Then copy the following files to
-that folder.
-<br>
-
-<ul>
-	<li>fldigi.exe</li>
-	<li>flarq.exe</li>
-	<li>flmsg.exe</li>
-	<li>flamp.exe</li>
-</ul>
-
-Optional installs are the remaining suite of FLDIGI programs.
-<br>
-
-<b>Note</b>: Dynamic libraries (mingwm10.dll, pthreadGC2.dll) are no longer
-required on current versions of the FLDIGI suite of programs.
-<br>
-
-Create a file in that folder named NBEMS.DIR.
-<br>
-
-Then start fldigi etc, from within that folder.  Double clicking
-on the executable from the File Explorer is probably the easiest way to
-do that.  The standard data folders for each application will be
-created and used from within this folder, for example if the thumb
-drive were mounted as drive E:
-<br>
-
-<tt>
-E:\\NBEMSapps\\fldigi.files<br>
-E:\\NBEMSapps\\NBEMS.files<br>
-</tt>
-<br>
-
-
-<br>
 \ref installing_on_windows_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

@@ -1,0 +1,57 @@
+/**
+\page  installing_on_thumb_drive_page Installing fldigi on a thumb drive
+
+Installing fldigi (and any of the other NBEMS flxxxx applications) on a thumb
+drive is very simple.  Create a folder on the thumb drive named FL_APPS.  Then
+copy the fldigi executable to that folder.  Note that folder FL_APPS may reside
+on any hard drive, or removable drive (including a rewritable CD/DVD) on your
+system.  Copy the executable for flarq, flrig, flmsg, flamp, etc to that same
+folder if you want to have a complete NBEMS installation on that device:
+
+<ul>
+	<li>fldigi.exe</li>
+	<li>flarq.exe</li>
+	<li>flmsg.exe</li>
+	<li>flamp.exe</li>
+	<li>flrig.exe</li>
+</ul>
+
+The key to using the applications thus installed is to execute the program from
+that folder.  This is best accomplished by opening the FL_APPS folder using the
+system files explorer.  Then start the application by double clicking on it's
+icon.
+
+You will be guided through the new install wizard the first time you do this and
+fldigi will place all of it's configuration folders in the same folder from which
+it was started.  For example, if the thumb drive were on an XP system and the
+drive was system device "H:"
+
+<ul>
+	<li>H:\\FL_APPS\\fldigi.exe</li>
+	<li>H:\\FL_APPS\\fldigi.files</li>
+	<li>H:\\FL_APPS\\fldigi.files\\fldigi_def.xml</li>
+	<li>etc ...</li>
+</ul>
+
+If this removable drive installation is to be used on several computers or you
+expect that the hardware configuration might change then you should follow these
+steps each and every time that you exit the program.  This will insure that
+fldigi will restart correctly.
+
+<ul>
+	<li>select sound card as \"File I/O only\"</li>
+	<li>deselect all transceiver control (be sure to Initialize any changes)</li>
+	<li>   note: you do not have to disable xmlrpc rig control
+	<li>save the configuration</li>
+</ul>
+
+<br>
+You will follow a similar procedure when you shut down flrig.  The purpose is to
+remove all configuration items which are hardware specific.  Reconfiguring the
+sound card and transceiver control only takes a few steps the next time fldigi is
+executed.
+
+<br>
+\ref main_page "Return to Main Page"
+
+*/
