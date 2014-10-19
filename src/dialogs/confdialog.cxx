@@ -836,28 +836,10 @@ set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_scheme_4=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_4(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 4;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
 Fl_Round_Button *btn_scheme_5=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_5(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 5;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_scheme_6=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_6(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 6;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
@@ -872,15 +854,6 @@ set_macroLabels();
 UI_select();
 }
 
-Fl_Round_Button *btn_scheme_8=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_8(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 8;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
 Fl_Round_Button *btn_scheme_9=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_9(Fl_Round_Button*, void*) {
@@ -890,10 +863,55 @@ set_macroLabels();
 UI_select();
 }
 
+Fl_Round_Button *btn_scheme_11=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_11(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 11;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_4=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_4(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 4;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_6=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_6(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 6;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_8=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_8(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 8;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
 Fl_Round_Button *btn_scheme_10=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_10(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 10;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_12=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_12(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 12;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
@@ -5981,41 +5999,51 @@ ab and newline are automatically included."));
                 btn_scheme_3->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_3->callback((Fl_Callback*)cb_btn_scheme_3);
               } // Fl_Round_Button* btn_scheme_3
-              { btn_scheme_4 = new Fl_Round_Button(228, 155, 144, 22, _("Two scheme 2"));
-                btn_scheme_4->type(102);
-                btn_scheme_4->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_4->callback((Fl_Callback*)cb_btn_scheme_4);
-              } // Fl_Round_Button* btn_scheme_4
-              { btn_scheme_5 = new Fl_Round_Button(228, 180, 144, 22, _("Two scheme 3"));
+              { btn_scheme_5 = new Fl_Round_Button(228, 155, 144, 22, _("Two scheme 3"));
                 btn_scheme_5->type(102);
                 btn_scheme_5->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_5->callback((Fl_Callback*)cb_btn_scheme_5);
               } // Fl_Round_Button* btn_scheme_5
-              { btn_scheme_6 = new Fl_Round_Button(228, 205, 144, 22, _("Two scheme 4"));
-                btn_scheme_6->type(102);
-                btn_scheme_6->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_6->callback((Fl_Callback*)cb_btn_scheme_6);
-              } // Fl_Round_Button* btn_scheme_6
-              { btn_scheme_7 = new Fl_Round_Button(396, 130, 144, 22, _("Two scheme 5"));
+              { btn_scheme_7 = new Fl_Round_Button(228, 180, 144, 22, _("Two scheme 5"));
                 btn_scheme_7->type(102);
                 btn_scheme_7->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_7->callback((Fl_Callback*)cb_btn_scheme_7);
               } // Fl_Round_Button* btn_scheme_7
-              { btn_scheme_8 = new Fl_Round_Button(396, 155, 144, 22, _("Two scheme 6"));
-                btn_scheme_8->type(102);
-                btn_scheme_8->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_8->callback((Fl_Callback*)cb_btn_scheme_8);
-              } // Fl_Round_Button* btn_scheme_8
-              { btn_scheme_9 = new Fl_Round_Button(396, 180, 144, 22, _("Two scheme 7"));
+              { btn_scheme_9 = new Fl_Round_Button(228, 205, 144, 22, _("Two scheme 7"));
                 btn_scheme_9->type(102);
                 btn_scheme_9->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_9->callback((Fl_Callback*)cb_btn_scheme_9);
               } // Fl_Round_Button* btn_scheme_9
+              { btn_scheme_11 = new Fl_Round_Button(228, 230, 144, 22, _("Two scheme 9"));
+                btn_scheme_11->type(102);
+                btn_scheme_11->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_11->callback((Fl_Callback*)cb_btn_scheme_11);
+              } // Fl_Round_Button* btn_scheme_11
+              { btn_scheme_4 = new Fl_Round_Button(396, 130, 144, 22, _("Two scheme 2"));
+                btn_scheme_4->type(102);
+                btn_scheme_4->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_4->callback((Fl_Callback*)cb_btn_scheme_4);
+              } // Fl_Round_Button* btn_scheme_4
+              { btn_scheme_6 = new Fl_Round_Button(396, 155, 144, 22, _("Two scheme 4"));
+                btn_scheme_6->type(102);
+                btn_scheme_6->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_6->callback((Fl_Callback*)cb_btn_scheme_6);
+              } // Fl_Round_Button* btn_scheme_6
+              { btn_scheme_8 = new Fl_Round_Button(396, 180, 144, 22, _("Two scheme 6"));
+                btn_scheme_8->type(102);
+                btn_scheme_8->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_8->callback((Fl_Callback*)cb_btn_scheme_8);
+              } // Fl_Round_Button* btn_scheme_8
               { btn_scheme_10 = new Fl_Round_Button(396, 205, 144, 22, _("Two scheme 8"));
                 btn_scheme_10->type(102);
                 btn_scheme_10->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_10->callback((Fl_Callback*)cb_btn_scheme_10);
               } // Fl_Round_Button* btn_scheme_10
+              { btn_scheme_12 = new Fl_Round_Button(396, 230, 144, 22, _("Two scheme 10"));
+                btn_scheme_12->type(102);
+                btn_scheme_12->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_12->callback((Fl_Callback*)cb_btn_scheme_12);
+              } // Fl_Round_Button* btn_scheme_12
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(52, 299, 496, 76);

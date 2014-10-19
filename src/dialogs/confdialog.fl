@@ -1073,29 +1073,13 @@ set_macroLabels();
 UI_select();}
                 xywh {228 130 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_scheme_4 {
-                label {Two scheme 2}
-                callback {progdefaults.mbar_scheme = 4;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                xywh {228 155 144 22} type Radio down_box ROUND_DOWN_BOX
-              }
               Fl_Round_Button btn_scheme_5 {
                 label {Two scheme 3}
                 callback {progdefaults.mbar_scheme = 5;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {228 180 144 22} type Radio down_box ROUND_DOWN_BOX
-              }
-              Fl_Round_Button btn_scheme_6 {
-                label {Two scheme 4}
-                callback {progdefaults.mbar_scheme = 6;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();}
-                xywh {228 205 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 155 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_7 {
                 label {Two scheme 5}
@@ -1103,19 +1087,43 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
+                xywh {228 180 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_9 {
+                label {Two scheme 7}
+                callback {progdefaults.mbar_scheme = 9;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {228 205 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_11 {
+                label {Two scheme 9}
+                callback {progdefaults.mbar_scheme = 11;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {228 230 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_4 {
+                label {Two scheme 2}
+                callback {progdefaults.mbar_scheme = 4;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
                 xywh {396 130 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_scheme_8 {
-                label {Two scheme 6}
-                callback {progdefaults.mbar_scheme = 8;
+              Fl_Round_Button btn_scheme_6 {
+                label {Two scheme 4}
+                callback {progdefaults.mbar_scheme = 6;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
                 xywh {396 155 144 22} type Radio down_box ROUND_DOWN_BOX
               }
-              Fl_Round_Button btn_scheme_9 {
-                label {Two scheme 7}
-                callback {progdefaults.mbar_scheme = 9;
+              Fl_Round_Button btn_scheme_8 {
+                label {Two scheme 6}
+                callback {progdefaults.mbar_scheme = 8;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
@@ -1128,6 +1136,14 @@ progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
                 xywh {396 205 144 22} type Radio down_box ROUND_DOWN_BOX
+              }
+              Fl_Round_Button btn_scheme_12 {
+                label {Two scheme 10}
+                callback {progdefaults.mbar_scheme = 12;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();}
+                xywh {396 230 144 22} type Radio down_box ROUND_DOWN_BOX
               }
             }
             Fl_Group {} {open

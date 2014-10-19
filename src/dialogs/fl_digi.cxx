@@ -3275,6 +3275,38 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += mh2;
 			hpack->position(x, y1);
 			break;
+		case 11:
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
+		case 12:
+			resize_macroframe1(0, y1, w, mh2);
+			btnAltMacros1->deactivate();
+			y1 += mh2;
+			center_group->resize(0, y1, w, HTh);
+			wefax_group->resize(0, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			resize_macroframe2(0, y1, w, mh2);
+			macroFrame2->show();
+			btnAltMacros2->activate();
+			y1 += mh2;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+			break;
 	}
 	return y1;
 }
@@ -5287,9 +5319,10 @@ void create_fl_digi_main_primary() {
 
 		Y = Hmenu + Hqsoframe + pad;
 
+int alt_btn_width = 2 * DEFAULT_SW;
 		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame2->box(FL_FLAT_BOX);
-			mf_group2 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
+			mf_group2 = new Fl_Group(0, Y, progStatus.mainW - alt_btn_width, Hmacros);
 			Wmacrobtn = (mf_group2->w()) / NUMMACKEYS;
 			Hmacrobtn = mf_group2->h();
 			wBLANK = (mf_group2->w() - NUMMACKEYS * Wmacrobtn) / 2;
@@ -5309,7 +5342,9 @@ void create_fl_digi_main_primary() {
 				xpos += Wmacrobtn;
 			}
 			mf_group2->end();
-			btnAltMacros2 = new Fl_Button(progStatus.mainW - Hmacrobtn, ypos, Hmacrobtn, Hmacrobtn, "2");
+			btnAltMacros2 = new Fl_Button(
+					progStatus.mainW - alt_btn_width, ypos,
+					alt_btn_width, Hmacrobtn, "2");
 			btnAltMacros2->callback(altmacro_cb, 0);
 			btnAltMacros2->tooltip(_("Shift-key macro set"));
 			macroFrame2->resizable(mf_group2);
@@ -5461,7 +5496,7 @@ void create_fl_digi_main_primary() {
 
 		macroFrame1 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
 			macroFrame1->box(FL_FLAT_BOX);
-			mf_group1 = new Fl_Group(0, Y, progStatus.mainW - Hmacros, Hmacros);
+			mf_group1 = new Fl_Group(0, Y, progStatus.mainW - alt_btn_width, Hmacros);
 			Wmacrobtn = (mf_group1->w()) / NUMMACKEYS;
 			Hmacrobtn = mf_group1->h();
 			wBLANK = (mf_group1->w() - NUMMACKEYS * Wmacrobtn) / 2;
@@ -5480,7 +5515,9 @@ void create_fl_digi_main_primary() {
 				xpos += Wmacrobtn;
 			}
 			mf_group1->end();
-			btnAltMacros1 = new Fl_Button(progStatus.mainW - Hmacrobtn, ypos, Hmacrobtn, Hmacrobtn, "1");
+			btnAltMacros1 = new Fl_Button(
+					progStatus.mainW - alt_btn_width, ypos,
+					alt_btn_width, Hmacrobtn, "1");
 			btnAltMacros1->callback(altmacro_cb, 0);
 			btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
 			btnAltMacros1->tooltip(_("Primary macro set"));

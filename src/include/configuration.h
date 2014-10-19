@@ -1142,7 +1142,7 @@
               false)                                                                    \
         ELEM_(int, mbar_scheme, "MBARSCHEME",                                           \
               "# and position of macro bars\n"                                          \
-              "0..9, 1 = default",                                                      \
+              "0..12, 1 = default",                                                     \
               1)                                                                        \
         ELEM_(double, txlevel, "TXATTEN",                                               \
               "TX attenuator (db) -30 .. 0",                                            \
