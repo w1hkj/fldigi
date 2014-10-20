@@ -860,7 +860,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLogServer {
-            label Log
+            label Log open
             tooltip {User Interface - Logging} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
@@ -987,10 +987,10 @@ progdefaults.changed = true;}
               xywh {52 240 496 74} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnRXClicks {
-                label {Double-click to capture}
+                label {Single-click to capture}
                 callback {progdefaults.rxtext_clicks_qso_data = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable if you cannot use the middle mouse button} xywh {75 287 191 20} down_box DOWN_BOX
+                tooltip {Enable for single click capure of text in Rx panel} xywh {75 287 191 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
               }
               Fl_Check_Button btnRXTooltips {

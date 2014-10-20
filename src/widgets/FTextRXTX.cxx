@@ -462,10 +462,10 @@ int FTextRX::handle_qso_data(int start, int end)
 			*(s + offsets.rm_eo) = '\0';
 			target = inpCall;
 		}
-//		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
-//			target = inpQth;
-//		else
-//			target = *inpName->value() ? inpQth : inpName;
+		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
+			target = inpQth;
+		else
+			target = *inpName->value() ? inpQth : inpName;
 		if (target) {
 			target->value(p);
 			target->do_callback();

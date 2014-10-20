@@ -47,7 +47,7 @@ INPUT                = index.txt \
 	configModemScan.txt configMT63.txt configOlivia.txt ConfigOperator.txt \
 	configPSK.txt \
 	configRTTY.txt configThor.txt ConfigUI-browser.txt \
-	ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logserver.txt \
+	ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logging.txt \
 	ConfigUI-macros.txt configUITouch.txt ConfigUI-WF-controls.txt \
 	ConfigWaterfall.txt kiss_io_command.txt \
 	SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \

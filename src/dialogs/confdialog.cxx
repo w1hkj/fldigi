@@ -5918,8 +5918,8 @@ Fl_Double_Window* ConfigureDialog() {
             { Fl_Group* o = new Fl_Group(52, 240, 496, 74, _("Rx Text Capture"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(75, 287, 191, 20, _("Double-click to capture"));
-                btnRXClicks->tooltip(_("Enable if you cannot use the middle mouse button"));
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(75, 287, 191, 20, _("Single-click to capture"));
+                btnRXClicks->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
