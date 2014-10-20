@@ -1,12 +1,33 @@
+2014-10-19  David Freese  <w1hkj@w1hkj.com>
+
+	9bbef87: Macro Buttons
+	b123fc1: Thumb drive
+	01bc010: Power Squelch
+	e7de40b: Documentation update
+	287e692: TxID control via xmlrpc
+	880df3d: Analysis modem
+
+2014-10-17  John Phelps  <kl4yfd@gmail.com>
+
+	91bda2b: Gray-mapped 8PSK and soft-decision  - Upgraded 8psk to Gray mapped constellation  - Implemented Soft-Decision decoder based on Gray constellation  - Even when the received phase is distorted by +- 1 phase-position:     - One of the bits is still known with 100% certianty.     - Only up to 1 bit can be in error.  - Increased gain for noisy/weak/HF channels
+
+2014-10-16  Robert Stiles  <kk5vd@yahoo.com>
+
+	60c78c0: XMLRPC Character measurement issues with 8PSK modems
+
+2014-10-16  David Freese  <w1hkj@w1hkj.com>
+
+	5040224: View/Hide Smeter
+	d103209: CW matched filter
+	ea853a8: flarq update
+	e7d9cc4: 8PSK/16PSK modes
+	6fcf11d: KISS interface
 
 
 =Version 3.22.00=
 
-2014-10-11  David Freese  <w1hkj@w1hkj.com>
-
-	15fd825: KISS_IO not enabled
-	c9b7ff1: Remove Mixer controls
-	d02acf0: FTextDisplay
+	a798037: Remove Mixer controls
+	f3f8c9a: FTextDisplay
 	674da9c: Freq Control
 	bfb001b: Touch Screen UI
 	d7bb247: UI macrobars
@@ -14,34 +35,20 @@
 
 2014-10-06  Robert Stiles  <kk5vd@yahoo.com>
 
-	ae3bbf2: Tabulated Widgets Font/Font Size Changes
-	25e1778: Documentation
+	c4bfed9: Tabulated Widgets Font/Font Size Changes
+	80dc81b: Documentation
 
 2014-10-06  David Freese  <w1hkj@w1hkj.com>
 
-	ebd4b2c: PACKAGE_PROJ
-	bae1971: Win32 warnings
-	f9c00f1: UI tweaks
-
-2014-10-06  Robert Stiles  <kk5vd@yahoo.com>
-
-	545c00e: KISS interface
-
-2014-10-06  David Freese  <w1hkj@w1hkj.com>
-
-	4cf8a08: Hide Packet Modem
-	a3d2380: Record loader
-	ed2a465: Delta macro
-	cce79d8: MEMMAP
-	11657a6: WF drop rate
-	988f489: RsID time out
-
-2014-10-06  John Phelps  <kl4yfd@gmail.com>
-
-	0516f19: 8PSK/16PSK modes
-
-2014-10-06  David Freese  <w1hkj@w1hkj.com>
-
+	1dd39cc: PACKAGE_PROJ
+	98cd7af: Win32 warnings
+	93b76d4: UI tweaks
+	ec3177b: Hide Packet Modem
+	9f2b358: Record loader
+	bbce20e: Delta macro
+	38d9bab: MEMMAP
+	3ef0433: WF drop rate
+	7448535: RsID time out
 	03ef903: Wizard crash fix
 
 2014-10-06  Stelios Bounanos  <vcs@enotty.net>
