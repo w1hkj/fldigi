@@ -65,6 +65,7 @@
 //
 // No preprocessor directives or C++ comments inside this macro!
 // Indent with spaces only.
+// The 'comments' field should not contain either '<' or '>' characters!
 
 #ifdef ELEM_
 #  error ELEM_ should not be defined at this point
@@ -1131,6 +1132,11 @@
         ELEM_(bool, UseLastMacro, "USELASTMACRO",                                       \
               "Load last used macro file on startup",                                   \
               false)                                                                    \
+        ELEM_(double, mbw, "MBW",                                                      \
+              "Delay between execution of RIGMODE and FILWID\n"                         \
+              "when in the same macro definition\n"                                     \
+              "range 0.1 to 2.0, default = 0.5",                                        \
+              0.5)                                                                      \
         ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME",                       \
               "Display macro filename on startup",                                      \
               false)                                                                    \

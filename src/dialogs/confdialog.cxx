@@ -3814,6 +3814,13 @@ o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
+Fl_Counter *mbw_delay=(Fl_Counter *)0;
+
+static void cb_mbw_delay(Fl_Counter* o, void*) {
+  progdefaults.mbw=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabSoundCard=(Fl_Group *)0;
 
 Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
@@ -9146,6 +9153,22 @@ le Earth)"));
               } // Fl_Button* btnInitXMLRPC
               grpXMLRPC->end();
             } // Fl_Group* grpXMLRPC
+            { Fl_Group* o = new Fl_Group(55, 225, 490, 50);
+              o->box(FL_ENGRAVED_BOX);
+              { Fl_Counter* o = mbw_delay = new Fl_Counter(210, 239, 90, 21, _("Mode/BW delay"));
+                mbw_delay->tooltip(_("Delay in seconds between <RIGMODE... and <FILWID...\nwhen both in same macro \
+definition"));
+                mbw_delay->type(1);
+                mbw_delay->minimum(0.1);
+                mbw_delay->maximum(2);
+                mbw_delay->step(0.05);
+                mbw_delay->value(0.1);
+                mbw_delay->callback((Fl_Callback*)cb_mbw_delay);
+                mbw_delay->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.mbw);
+              } // Fl_Counter* mbw_delay
+              o->end();
+            } // Fl_Group* o
             tabXMLRPC->end();
           } // Fl_Group* tabXMLRPC
           tabsRig->end();

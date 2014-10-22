@@ -2118,6 +2118,15 @@ static void pQueQSY(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+float  waitFILWID = 0.0;
+static string sFILWID;
+static void delayedFILWID(void *)
+{
+	qso_opBW->value(sFILWID.c_str());
+	cb_qso_opBW();
+	waitFILWID = 0.0;
+}
+
 static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
@@ -2128,6 +2137,8 @@ static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
 	s.replace(i, endbracket - i + 1, "");
+	if (s.find("FILWID") != string::npos)
+		waitFILWID = progdefaults.mbw;
 }
 
 static void doRIGMODE(std::string s)
@@ -2156,8 +2167,10 @@ static void pFILWID(std::string& s, size_t& i, size_t endbracket)
 		return;
 	}
 	std::string sWidth = s.substr(i+8, endbracket - i - 8);
-	qso_opBW->value(sWidth.c_str());
-	cb_qso_opBW();
+//	qso_opBW->value(sWidth.c_str());
+//	cb_qso_opBW();
+	sFILWID = sWidth;
+	Fl::add_timeout(waitFILWID, delayedFILWID);
 	s.replace(i, endbracket - i + 1, "");
 }
 

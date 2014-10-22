@@ -4709,6 +4709,18 @@ progdefaults.changed = true;}
                 tooltip {Initialize XML-RPC rig control} xywh {251 184 113 24}
               }
             }
+            Fl_Group {} {open
+              xywh {55 225 490 50} box ENGRAVED_BOX
+            } {
+              Fl_Counter mbw_delay {
+                label {Mode/BW delay}
+                callback {progdefaults.mbw=o->value();
+progdefaults.changed=true;}
+                tooltip {Delay in seconds between <RIGMODE... and <FILWID...
+when both in same macro definition} xywh {210 239 90 21} type Simple align 8 minimum 0.1 maximum 2 step 0.05 value 0.1
+                code0 {o->value(progdefaults.mbw);}
+              }
+            }
           }
         }
       }
