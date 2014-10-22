@@ -5742,10 +5742,6 @@ int alt_btn_width = 2 * DEFAULT_SW;
 	if (!dxcc_is_open())
 		getMenuItem(COUNTRIES_MLABEL)->hide();
 
-	save_mvx = mvgroup->w();
-	progStatus.show_channels = false;
-	progStatus.tile_x = 0;
-
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
 
