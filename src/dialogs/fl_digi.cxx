@@ -1729,13 +1729,13 @@ int save_mvx = 1;
 
 void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 {
-	if (!progStatus.show_channels && mvgroup->w() > 1) {
+	if (!progStatus.show_channels && mvgroup->w() > 0) {
 		progStatus.show_channels = true;
 		progStatus.tile_x = save_mvx = mvgroup->w();
 	} else 	if (progStatus.show_channels) {
 		save_mvx = mvgroup->w();
 		progStatus.show_channels = false;
-		progStatus.tile_x = 1;
+		progStatus.tile_x = 0;
 	} else {
 		progStatus.show_channels = true;
 		if (save_mvx == 1) save_mvx = progStatus.tile_x = text_panel->w()/2;
