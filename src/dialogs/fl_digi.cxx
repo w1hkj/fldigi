@@ -451,6 +451,8 @@ void cb_rtty75N(Fl_Widget *w, void *arg);
 void cb_rtty75W(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
+void set_colors();
+
 //void cb_pkt1200(Fl_Widget *w, void *arg);
 //void cb_pkt300(Fl_Widget *w, void *arg);
 //void cb_pkt2400(Fl_Widget *w, void *arg);
@@ -6341,7 +6343,8 @@ void create_fl_digi_main(int argc, char** argv)
 		fl_digi_main->size_range(WMIN, WF_only_height, 0, WF_only_height);
 	else
 		fl_digi_main->size_range(WMIN, main_hmin, 0, 0);
-printf("w min %d, h min %d\n", WMIN, main_hmin);
+
+	set_colors();
 }
 
 void put_freq(double frequency)
@@ -7284,38 +7287,56 @@ void xmtlock_selection_color()
 
 void sql_selection_color()
 {
+	if (!btnSQL) return;
 	btnSQL->selection_color(progdefaults.Sql1Color);
 	btnSQL->redraw();
 }
 
 void afc_selection_color()
 {
+	if (!btnAFC) return;
 	btnAFC->selection_color(progdefaults.AfcColor);
 	btnAFC->redraw();
 }
 
 void rxid_selection_color()
 {
+	if (!btnRSID) return;
 	btnRSID->selection_color(progdefaults.RxIDColor);
 	btnRSID->redraw();
 }
 
 void txid_selection_color()
 {
+	if (!btnTxRSID) return;
 	btnTxRSID->selection_color(progdefaults.TxIDColor);
 	btnTxRSID->redraw();
 }
 
 void tune_selection_color()
 {
+	if (!btnTune) return;
 	btnTune->selection_color(progdefaults.TuneColor);
 	btnTune->redraw();
 }
 
 void spot_selection_color()
 {
+	if (!btnAutoSpot) return;
 	btnAutoSpot->selection_color(progdefaults.SpotColor);
 	btnAutoSpot->redraw();
+}
+
+void set_colors()
+{
+	spot_selection_color();
+	tune_selection_color();
+	txid_selection_color();
+	rxid_selection_color();
+	sql_selection_color();
+	afc_selection_color();
+	xmtlock_selection_color();
+	tune_selection_color();
 }
 
 // Olivia
