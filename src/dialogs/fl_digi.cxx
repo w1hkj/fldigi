@@ -3834,8 +3834,10 @@ static int count_visible_items(Fl_Menu_Item* menu)
 	if (menu->flags & FL_SUBMENU)
 		menu++;
 	while (menu->label()) {
-		if (menu->visible())
+		if (!(menu->flags & FL_SUBMENU) && menu->visible())
 			n++;
+//		if (menu->visible())
+//			n++;
 		menu++;
 	}
 	return n;
