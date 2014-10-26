@@ -200,12 +200,14 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<COMMENT:comment text>\tignore all comment text"));
 
 	w->add(LINE_SEP);
-	w->add(_("<CPS_TEST>\tmodem timing test internal string"));
+	w->add(_("<CPS_TEST:nn>\tmodem char/sec test on nn chars"));
+	w->add(_("<CPS_N:n>\tmodem timing test, 'n' random 5 char groups"));
 	w->add(_("<CPS_FILE:>\tmodem timing test, spec' file"));
 	w->add(_("<CPS_STRING:s>\tmodem timing test, string 's'"));
 
 	w->add(LINE_SEP);
 	w->add(_("<WAV_TEST>\tWAV file; internal string"));
+	w->add(_("<WAV_N:n>\tWAV file; 'n' random 5 char groups"));
 	w->add(_("<WAV_FILE:>\tWAV file; spec' file"));
 	w->add(_("<WAV_STRING:s>\tWAV file; string 's'"));
 

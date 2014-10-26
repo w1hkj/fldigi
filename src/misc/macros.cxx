@@ -26,6 +26,7 @@
 
 #include <config.h>
 #include <sys/time.h>
+#include <ctime>
 
 #include "macros.h"
 
@@ -134,7 +135,7 @@ static size_t mystrftime( char *s, size_t max, const char *fmt, const struct tm 
 	return strftime(s, max, fmt, tm);
 }
 
-static string CPSstring = "\
+static std::string CPSstring = "\
 =============================================\n\
 ABCDEFGHIJKLMN OPQRSTUVWXYZ\n\
 abcdefghijklmn opqrstuvwxyz\n\
@@ -179,6 +180,8 @@ Did gyre and gimble in the wabe;\n\
 All mimsy were the borogoves,\n\
 And the mome raths outgrabe.\n";
 
+static std::string ccode = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 bool PERFORM_CPS_TEST = false;
 int  num_cps_chars = 0;
 string testfilename;
@@ -186,76 +189,100 @@ string testfilename;
 void CPS_report(int samples, int prepost)
 {
 	char results[1000];
+	string strout;
 	double xmttime = 1.0 * samples / active_modem->get_samplerate();
-	double datatime = 1.0 * (samples - prepost) / active_modem->get_samplerate();
+	double overhead = 1.0 * prepost / active_modem->get_samplerate();
 	num_cps_chars--;
 	snprintf(results, sizeof(results), "\n\
-			 CPS test\n\
-			 text:         %s\n\
-			 mode:         %s\n\
-			 # chars:      %d\n\
-			 xmt time:     %f\n\
-			 data time:    %f\n\
-			 xmt samples:  %d\n\
-			 prepost:      %d\n\
-			 data samples: %d\n\
-			 sample rate:  %d\n\
-			 chars/sec:    %f\n\
-			 ~WPM:         %f\n",
-			 testfilename.c_str(),
-			 mode_info[active_modem->get_mode()].name,
-			 num_cps_chars,
-			 xmttime,
-			 datatime,
-			 samples,
-			 prepost,
-			 samples - prepost,
-			 active_modem->get_samplerate(),
-			 num_cps_chars / datatime,
-			 10 * num_cps_chars / datatime);
-
-	ReceiveText->add(results, FTextBase::ALTR);
+CPS test\n\
+text:         %s\n\
+mode:         %s\n\
+# chars:      %d\n\
+overhead:     %f sec\n\
+xmt time:     %f sec\n\
+xmt samples:  %d\n\
+sample rate:  %d\n\
+chars/sec:    %f",
+			testfilename.c_str(),
+			mode_info[active_modem->get_mode()].name,
+			num_cps_chars,
+			overhead,
+			xmttime - overhead,
+			samples,
+			active_modem->get_samplerate(),
+			num_cps_chars / (xmttime - overhead));
 	LOG_INFO("%s", results);
+	strcat(results, "\n");
+	ReceiveText->add(results, FTextBase::ALTR);
 	PERFORM_CPS_TEST = false;
 }
 
 static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 {
-	s.clear();
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
 		return;
 	}
-	testfilename = "internal string";
+
+	std::string buffer = s.substr(i+10, endbracket - i - 10);
+	s.clear();
+
+	int n;
+	if (buffer.empty()) n = 10;
+	sscanf(buffer.c_str(), "%d", &n);
+	if (n <= 0) n = 10;
+	if (n > 100) n = 100;
+
+// sample count with 'n' characters 
+	int s1[256];
+	for (int i = 0; i < 256; i++) s1[i] = 0;
+// converstion from sample count to milliseconds
+	double k = 1000.0 / (active_modem->get_samplerate() * n);
 
 	stopMacroTimer();
 	active_modem->set_stopflag(false);
 	PERFORM_CPS_TEST = true;
 	trx_transmit();
-
 	int s0 = number_of_samples("");
-	int s1 = 0;
-	int start_stop_samples = 0;
-	int j = 0;
-	for(j = 1; j < 32; j++) {
-		s1 = number_of_samples(string(j, 'e'));
-		if(s1 > s0) break;
+// sample count for characters ' ' through '~'
+	for(int j = 0; j < 256; j++) {
+		s1[j] = number_of_samples(string(n, j)) - s0;
 	}
-	start_stop_samples = 2*s0 - s1;
-
-	num_cps_chars = 0;
-	CPS_report(number_of_samples(CPSstring), start_stop_samples);
 	PERFORM_CPS_TEST = false;
 
+// report generator
+	char results[200];
+	string line_out;
+	snprintf(results, sizeof(results), "\nCPS test\nMode : %s\n", mode_info[active_modem->get_mode()].name);
+	line_out = results;
+	snprintf(results, sizeof(results), "Based on %d character string\n", n);
+	line_out.append(results);
+	snprintf(results, sizeof(results), "Overhead = %.3f msec\n", 1000.0 * s0 / active_modem->get_samplerate());
+	line_out.append(results);
+	for (int j = 0, ln = 0; j < 256; j++ ) {
+		snprintf(results, sizeof(results), "%2x%8.2f", j, k * s1[j]);
+		line_out.append(results);
+		ln++;
+		if (ln && (ln % 4 == 0)) line_out.append("\n");
+		else line_out.append(" | ");
+	}
+	if (!line_out.empty()) {
+		LOG_INFO("%s", line_out.c_str());
+		ReceiveText->add(line_out.c_str(), FTextBase::ALTR);
+	}
+	return;
 }
 
 static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
@@ -284,17 +311,9 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			trx_transmit();
 
 			int s0 = number_of_samples("");
-			int s1 = 0;
-			int start_stop_samples = 0;
-			int j = 0;
-			for(j = 1; j < 32; j++) {
-				s1 = number_of_samples(string(j, 'e'));
-				if(s1 > s0) break;
-			}
-			start_stop_samples = 2*s0 - s1;
 
 			num_cps_chars = 0;
-			CPS_report(number_of_samples(buffer), start_stop_samples);
+			CPS_report(number_of_samples(buffer), s0);
 			PERFORM_CPS_TEST = false;
 
 		} else {
@@ -314,7 +333,8 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
@@ -339,20 +359,10 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		trx_transmit();
 
 		int s0 = number_of_samples("");
-		printf("j %d: s %d\n", 0, s0);
-		int s1 = 0;
-		int start_stop_samples = 0;
-		int j = 0;
-		for(j = 1; j < 32; j++) {
-			s1 = number_of_samples(string(j, 'e'));
-			printf("j %d: s %d\n", j, s1);
-			if(s1 > s0) break;
-		}
-		start_stop_samples = 2*s0 - s1;
 
 		num_cps_chars = 0;
 		testfilename = txtbuf;
-		CPS_report(number_of_samples(buffer), start_stop_samples);
+		CPS_report(number_of_samples(buffer), s0);
 		PERFORM_CPS_TEST = false;
 	} else {
 		string resp = "Text not specified";
@@ -363,11 +373,61 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 	}
 }
 
+static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
+		return;
+	}
+
+	std::string buffer = s.substr(i+7, endbracket - i - 7);
+	s.clear();
+
+	if (buffer.empty()) return;
+
+	int numgroups, wc, cc, cl;
+	cl = ccode.length();
+
+	sscanf(buffer.c_str(), "%d", &numgroups);
+	if (numgroups <= 0 || numgroups > 100000) numgroups = 100;
+
+	srand(time(0));
+	buffer.clear();
+	for (wc = 1; wc <= numgroups; wc++) {
+		for (cc = 0; cc < 5; cc++) {
+			buffer += ccode[ rand() % cl ];
+		}
+		if (wc % 10 == 0) buffer += '\n';
+		else buffer += ' ';
+	}
+
+	TransmitText->clear();
+
+	stopMacroTimer();
+	active_modem->set_stopflag(false);
+	PERFORM_CPS_TEST = true;
+	trx_transmit();
+
+	int s0 = number_of_samples("");
+
+	num_cps_chars = 0;
+	testfilename = "Random group test";
+	CPS_report(number_of_samples(buffer), s0);
+	PERFORM_CPS_TEST = false;
+	return;
+}
+
 static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 {
 	s.clear();
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
@@ -384,10 +444,56 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 	PERFORM_CPS_TEST = false;
 }
 
+static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
+		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		s.clear();
+		return;
+	}
+
+	std::string buffer = s.substr(i+7, endbracket - i - 7);
+	s.clear();
+
+	if (buffer.empty()) return;
+
+	int numgroups, wc, cc, cl;
+	cl = ccode.length();
+
+	sscanf(buffer.c_str(), "%d", &numgroups);
+	if (numgroups <= 0 || numgroups > 100000) numgroups = 100;
+
+	srand(time(0));
+	buffer.clear();
+	for (wc = 1; wc <= numgroups; wc++) {
+		for (cc = 0; cc < 5; cc++) {
+			buffer += ccode[ rand() % cl ];
+		}
+		if (wc % 10 == 0) buffer += '\n';
+		else buffer += ' ';
+	}
+
+	TransmitText->clear();
+
+	stopMacroTimer();
+	active_modem->set_stopflag(false);
+	PERFORM_CPS_TEST = true;
+	trx_transmit();
+	number_of_samples(buffer);
+	PERFORM_CPS_TEST = false;
+	return;
+
+}
+
 static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
@@ -435,7 +541,8 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
+	if ( id == MODE_SSB || id == MODE_WWV || 
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
@@ -2634,10 +2741,12 @@ struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
 
 static const MTAGS mtags[] = {
 {"<CPS_FILE:",	pCPS_FILE},
+{"<CPS_N:",		pCPS_N},
 {"<CPS_STRING:",pCPS_STRING},
 {"<CPS_TEST",	pCPS_TEST},
 
 {"<WAV_FILE:",	pWAV_FILE},
+{"<WAV_N:",		pWAV_N},
 {"<WAV_STRING:",pWAV_STRING},
 {"<WAV_TEST",	pWAV_TEST},
 
