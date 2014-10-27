@@ -140,11 +140,9 @@ void Digiscope::data(double *data, int len, bool scale)
 			max = MAX(max, _buf[i]);
 			min = MIN(min, _buf[i]);
 		}
+		if (max == min) max *= 1.001;
 		for (int i = 0; i < _len; i++)
-			if (_buf[i] > 0.001) // threshold
-				_buf[i] = (_buf[i] - min) / (max - min);
-			else
-				_buf[i] = 0.0;
+			_buf[i] = (_buf[i] - min) / (max - min);
 	}
 	REQ_DROP(&Digiscope::redraw, this);
 	FL_UNLOCK_D();

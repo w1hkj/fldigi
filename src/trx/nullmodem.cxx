@@ -33,7 +33,6 @@
 #include "ascii.h"
 
 #define null_bw 1
-#define null_symbol_len 256
 
 // a NULLMODEM and will be instantiated before the dynamic member wf, 
 // digiscope, and fl_digi_main, the main dialog
@@ -95,7 +94,6 @@ int NULLMODEM::tx_process()
 		stopflag = false;
 		return -1;
 	}
-	ModulateXmtr(outbuf, null_symbol_len);
 	return 0;
 }
 
