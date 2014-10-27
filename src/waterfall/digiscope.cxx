@@ -386,12 +386,19 @@ void Digiscope::draw_rtty()
 		fl_vertex( 0.0, 0.1);
 		fl_vertex( 1.0, 0.1);
 	fl_end_line();
+	fl_color(FL_WHITE);
+	fl_begin_line();
+		fl_vertex( 0.0, 0.5);
+		fl_vertex( 1.0, 0.5);
+	fl_end_line();
 	fl_color(FL_GREEN);
 	fl_begin_line();
+	double value = 0.0;
 	for (int i = 0; i < npts; i++) {
-		np = i * _len / npts;
-		np = np < MAX_LEN ? np : MAX_LEN - 1;
-		fl_vertex( (double)i / npts, 0.5 + 0.75 * _buf[np] );
+		np = round(1.0 * i * _len / npts);
+		if (np >= MAX_LEN) np = MAX_LEN - 1;
+		value = _buf[np];
+		fl_vertex( 1.0 * i / (npts - 1), 0.5 + 0.75 * value );
 	}
 	fl_end_line();
 	fl_pop_matrix();

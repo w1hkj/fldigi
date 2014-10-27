@@ -23,54 +23,52 @@
 #ifndef _anal_H
 #define _anal_H
 
-#include <stdio.h>
-
 #include <string>
 #include <ctime>
-#include <complex>
 
+#include "complex.h"
 #include "filters.h"
 #include "fftfilt.h"
 #include "modem.h"
-#include "mbuffer.h"
+
+#define ANAL_SAMPLERATE	8000
+#define FILT_LEN        4		//seconds
+#define PIPE_LEN		120
+#define DSP_CNT			1		//seconds
+#define ANAL_BW			4
 
 class anal : public modem {
 private:
 
-	std::string	analysisFilename;
-	bool write_to_csv;
-
-	std::complex<double> *fftbuff;
-	std::complex<double> *dftbuff;
-
-	int restart_count;
-
-	double max;
-	double test;
-	double maxnom;
-	double maxlower;
-	double maxupper;
-	double noise;
-	double sig_level;
-	double snr;
-	double	freq_corr;
-	double	wf_freq;
-	double	anal_squelch;
-	long  ticks;
-	int   slen;
-	double tracking_freq;
-
-	struct timespec start_time;
+	double		phaseacc;
 
 	C_FIR_filter	*hilbert;
 	fftfilt *bpfilt;
+	Cmovavg *ffilt;
+	Cmovavg *favg;
 
+	double pipe[PIPE_LEN];
+
+	double prevsymbol;
+	cmplx prevsmpl;
+
+	double		fout;
+	long int	wf_freq;
+	double      dspcnt;
+	long int	passno;
+
+	struct timespec start_time;
+
+	double elapsed;
+
+	void clear_syncscope();
+	inline cmplx mixer(cmplx in);
 	int rx(bool bit);
+
+	double nco(double freq);
 	void writeFile();
-	std::complex<double> dft (std::complex<double> *buff, double fm, double Ts, double offset);
-	inline double blackman(double x) {
-		return (0.42 - 0.50 * cos(2 * M_PI * x) + 0.08 * cos(4 * M_PI * x));
-	}
+
+	std::string	analysisFilename;
 
 public:
 	anal();
@@ -80,11 +78,8 @@ public:
 	void tx_init(SoundBase *sc);
 	void restart();
 	void start_csv();
-	void stop_csv();
-	int  is_csv() { return write_to_csv;}
-	int  rx_process(const double *buf, int len);
+	int rx_process(const double *buf, int len);
 	int tx_process();
-	double track_freq() { return tracking_freq; }
 
 };
 
