@@ -1124,9 +1124,28 @@ static double averageamp;
 	}
 
 	// simple low pass filter for quality of signal
+// ***********************************************************
+// **** dhf - added fast attack, slow decay algorithm
+// **** JD & JP - please test with your R and 8psk modem types
+// ****
+// ***********************************************************
+	double decay = SQLDECAY;
+	double attack = SQLDECAY;
+	if (_8psk) {
+		attack *= 2;
+		decay *= 4;
+	}
+	if (_pskr) {
+		attack *= 2;
+		decay *= 10;
+	}
+
+	double cval = cos(n*phase);
+	double sval = sin(n*phase);
+
 	quality = cmplx(
-		decayavg(quality.real(), cos(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY),
-		decayavg(quality.imag(), sin(n*phase), _pskr ? SQLDECAY * 10 : SQLDECAY));
+		decayavg(quality.real(), cval, cval > quality.real() ? attack : decay),
+		decayavg(quality.imag(), sval, sval > quality.real() ? attack : decay));
 	metric = 100.0 * norm(quality);
 
 	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
@@ -1140,11 +1159,15 @@ static double averageamp;
 
 	// FEC: adjust squelch for extra sensitivity.
 	// Otherwise we miss good characters
-	if (_pskr) {
-		metric = metric * 4;
-	} else if ( (_xpsk || _8psk || _16psk) && !_disablefec) {
-		metric *= 2 * symbits; /// @TODO scale the metric with the psk constellation density 
-	}
+// ***********************************************************
+// **** DHF still needed with attack/decay filtering?
+// ***********************************************************
+//	if (_pskr) {
+//		metric = metric * 4;
+//	} 
+//	else if ( (_xpsk || _8psk || _16psk) && !_disablefec) {
+//		metric *= 2 * symbits; /// @TODO scale the metric with the psk constellation density
+//	}
 
 	if (metric > 100)
 		metric = 100;
