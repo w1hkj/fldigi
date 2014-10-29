@@ -322,8 +322,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -2767,14 +2767,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 355}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3446,7 +3446,7 @@ resetOLIVIA();
 progdefaults.changed = true;} open
                 tooltip {Select bandwidth} xywh {110 96 85 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szOliviaBandwidth);}
-                code1 {o->index(progdefaults.oliviabw+1);
+                code1 {o->index(progdefaults.oliviabw);
                        o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
@@ -3458,7 +3458,7 @@ resetOLIVIA();
 progdefaults.changed = true;} open
                 tooltip {Select number of tones} xywh {371 96 70 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szOliviaTones);}
-                code1 {o->index(progdefaults.oliviatones+1);
+                code1 {o->index(progdefaults.oliviatones);
                        o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
@@ -3502,7 +3502,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContestia {
             label {Cont'} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {55 80 490 200} box ENGRAVED_FRAME
@@ -3515,8 +3515,8 @@ resetCONTESTIA();
 progdefaults.changed = true;} open
                 tooltip {Select bandwidth} xywh {110 100 85 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szContestiaBandwidth);}
-                code1 {o->index(progdefaults.contestiabw +1);
-                       o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->index(progdefaults.contestiabw);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
               Fl_Group i_listbox_contestia_tones {
@@ -3524,11 +3524,11 @@ progdefaults.changed = true;} open
                 callback {progdefaults.contestiatones = o->index();
 set_contestia_default_integ();
 resetCONTESTIA();
-progdefaults.changed = true;} open
+progdefaults.changed = true;} open selected
                 tooltip {Select number of tones} xywh {371 100 70 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szContestiaTones);}
-                code1 {o->index(progdefaults.contestiatones +1);
-                       o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->index(progdefaults.contestiatones);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
               Fl_Group {} {
@@ -3657,12 +3657,12 @@ progdefaults.changed = true;}
                 } {
                   Fl_Group i_listbox_rtty_afc_speed {
                     label {AFC speed}
-                    callback {progdefaults.rtty_afcspeed = o->index()-1;
+                    callback {progdefaults.rtty_afcspeed = o->index();
 progdefaults.changed = true;} open
                     tooltip {AFC tracking speed} xywh {107 128 90 22} box DOWN_BOX color 7
                     code0 {o->add("Slow"); o->add("Normal"); o->add("Fast");}
-                    code1 {o->index(progdefaults.rtty_afcspeed+1);
-                       o->labelsize(FL_NORMAL_SIZE);}
+                    code1 {o->index(progdefaults.rtty_afcspeed);}
+                    code2 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_ListBox
                   } {}
                   Fl_Check_Button chkUOSrx {

@@ -2918,7 +2918,7 @@ Fl_Tabs *tabsRTTY=(Fl_Tabs *)0;
 Fl_ListBox *i_listbox_rtty_afc_speed=(Fl_ListBox *)0;
 
 static void cb_i_listbox_rtty_afc_speed(Fl_ListBox* o, void*) {
-  progdefaults.rtty_afcspeed = o->index()-1;
+  progdefaults.rtty_afcspeed = o->index();
 progdefaults.changed = true;
 }
 
@@ -5284,6 +5284,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6966,11 +6967,11 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 330, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 330);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
@@ -7804,7 +7805,7 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_olivia_bandwidth->align(Fl_Align(FL_ALIGN_RIGHT));
                 i_listbox_olivia_bandwidth->when(FL_WHEN_RELEASE);
                 o->add(szOliviaBandwidth);
-                o->index(progdefaults.oliviabw+1);
+                o->index(progdefaults.oliviabw);
                        o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_olivia_bandwidth->end();
               } // Fl_ListBox* i_listbox_olivia_bandwidth
@@ -7821,7 +7822,7 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_olivia_tones->align(Fl_Align(FL_ALIGN_RIGHT));
                 i_listbox_olivia_tones->when(FL_WHEN_RELEASE);
                 o->add(szOliviaTones);
-                o->index(progdefaults.oliviatones+1);
+                o->index(progdefaults.oliviatones);
                        o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_olivia_tones->end();
               } // Fl_ListBox* i_listbox_olivia_tones
@@ -7884,7 +7885,6 @@ i on a\ntouch screen device such as a tablet."));
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabContestia = new Fl_Group(0, 50, 600, 330, _("Cont\'"));
-            tabContestia->hide();
             { Fl_Group* o = new Fl_Group(55, 80, 490, 200);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_ListBox* o = i_listbox_contestia_bandwidth = new Fl_ListBox(110, 100, 85, 22, _("Bandwidth"));
@@ -7900,8 +7900,8 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_contestia_bandwidth->align(Fl_Align(FL_ALIGN_RIGHT));
                 i_listbox_contestia_bandwidth->when(FL_WHEN_RELEASE);
                 o->add(szContestiaBandwidth);
-                o->index(progdefaults.contestiabw +1);
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->index(progdefaults.contestiabw);
+                o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_contestia_bandwidth->end();
               } // Fl_ListBox* i_listbox_contestia_bandwidth
               { Fl_ListBox* o = i_listbox_contestia_tones = new Fl_ListBox(371, 100, 70, 22, _("Tones"));
@@ -7917,8 +7917,8 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_contestia_tones->align(Fl_Align(FL_ALIGN_RIGHT));
                 i_listbox_contestia_tones->when(FL_WHEN_RELEASE);
                 o->add(szContestiaTones);
-                o->index(progdefaults.contestiatones +1);
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->index(progdefaults.contestiatones);
+                o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_contestia_tones->end();
               } // Fl_ListBox* i_listbox_contestia_tones
               { Fl_Group* o = new Fl_Group(93, 139, 414, 131, _("Receive synchronizer"));
@@ -8107,8 +8107,8 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_rtty_afc_speed->align(Fl_Align(FL_ALIGN_TOP));
                 i_listbox_rtty_afc_speed->when(FL_WHEN_RELEASE);
                 o->add("Slow"); o->add("Normal"); o->add("Fast");
-                o->index(progdefaults.rtty_afcspeed+1);
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->index(progdefaults.rtty_afcspeed);
+                o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_rtty_afc_speed->end();
                 } // Fl_ListBox* i_listbox_rtty_afc_speed
                 { Fl_Check_Button* o = chkUOSrx = new Fl_Check_Button(211, 128, 63, 22, _("RX - unshift on space"));
