@@ -1141,6 +1141,11 @@ static void pFREQ(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 6, inpFreq->value() );
 }
 
+static void pBAND(std::string &s, size_t &i, size_t endbracket)
+{ 
+        s.replace( i, 6, band_name( band( wf->rfcarrier() ) ) );
+}
+
 static void pLOC(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 5, inpLoc->value() );
@@ -1195,6 +1200,11 @@ static void pMYQTH(std::string &s, size_t &i, size_t endbracket)
 static void pMYRST(std::string &s, size_t &i, size_t endbracket)
 {
 	s.replace( i, 7, inpRstIn->value() );
+}
+
+static void pANTENNA(std::string &s, size_t &i, size_t endbracket)
+{ 
+        s.replace( i, 9, progdefaults.myAntenna.c_str() );  
 }
 
 static void pLDT(std::string &s, size_t &i, size_t endbracket)
@@ -2753,6 +2763,7 @@ static const MTAGS mtags[] = {
 {"<COMMENT:",	pCOMMENT},
 {"<CALL>",		pCALL},
 {"<FREQ>",		pFREQ},
+{"<BAND>",              pBAND},
 {"<LOC>",		pLOC},
 {"<MODE>",		pMODE},
 {"<NAME>",		pNAME},
@@ -2763,6 +2774,7 @@ static const MTAGS mtags[] = {
 {"<MYNAME>",	pMYNAME},
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
+{"<ANTENNA>",   pANTENNA},
 {"<QSOTIME>",	pQSOTIME},
 {"<QSONBR>",	pQSONBR},
 {"<NXTNBR>",	pNXTNBR},
