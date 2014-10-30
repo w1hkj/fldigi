@@ -39,7 +39,6 @@
 #include "mfskvaricode.h"
 
 //=====================================================================
-//#define	PskSampleRate	(8000)
 #define PipeLen			(64)
 
 #define SNTHRESHOLD 6.0
@@ -56,7 +55,6 @@ class psk : public modem {
 private:
 // tx & rx
 	int			symbollen;
-	int			PskSampleRate;
 	int			symbits;
 	bool			_qpsk;
 	bool			_pskr;

@@ -103,7 +103,7 @@ extern waterfall *wf;
 static cmplx graymapped_8psk_pos[] = {
 //				 Degrees  Bits In  Mapped Soft-Symbol
 	cmplx (1.0, 0.0),         // 0   | 0b000  | 025,000,025
-	cmplx (0.7071, 0.7071),   // 45  | 0b001  | 000,025,230 
+	cmplx (0.7071, 0.7071),   // 45  | 0b001  | 000,025,230
 	cmplx (-0.7071, 0.7071),  // 135 | 0b010  | 025,255,025
 	cmplx (0.0, 1.0),         // 90  | 0b011  | 000,230,230
 	cmplx (0.7071, -0.7071),  // 315 | 0b100  | 230,000,025
@@ -241,8 +241,8 @@ psk::psk(trx_mode pskmode) : modem()
 
 	mode = pskmode;
 
-	// Set the defaults that are common to most modes 
-	PskSampleRate = 8000;
+	// Set the defaults that are common to most modes
+	samplerate = 8000;
 	numcarriers = 1;
 	separation = 1.4;
 	_16psk = _8psk = _xpsk = _pskr = _qpsk = _disablefec = _puncturing = false;
@@ -250,7 +250,7 @@ psk::psk(trx_mode pskmode) : modem()
 	flushlength = 0;
 	int  isize = 2;
 	int  idepth = 2;
-	
+
 	switch (mode) {
 	case MODE_PSK31:
 		symbollen = 256;
@@ -317,49 +317,59 @@ psk::psk(trx_mode pskmode) : modem()
 		symbollen = 128;
 		idepth = 384; // 1024 milliseconds
 		flushlength = 38;
-		PskSampleRate = 16000;
+		samplerate = 16000;
 		_8psk = true;
 		dcdbits = 128;
 		cap |= CAP_REV;
 		break;
-	case MODE_8PSK250:
+	case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
 		symbollen = 64;
 		idepth = 512; // 682 milliseconds
-		flushlength = 45;
-		PskSampleRate = 16000;
+		flushlength = 47;
+		samplerate = 16000;
 		_8psk = true;
 		dcdbits = 256;
 		cap |= CAP_REV;
 		break;
-	case MODE_8PSK500:
+	case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
 		symbollen = 32;
 		idepth = 640; // 426 milliseconds
 		flushlength = 62;
-		PskSampleRate = 16000;
+		samplerate = 16000;
 		_8psk = true;
 		_puncturing = true;
 		dcdbits = 512;
 		cap |= CAP_REV;
 		break;
-	case MODE_8PSK1000:
+
+	case MODE_8PSK1000: // 1000 baud | 3000 bits/sec  No FEC
 		symbollen = 16;
-		idepth = 1024; // 341 milliseconds
-		flushlength = 104;
-		PskSampleRate = 16000;
+		samplerate = 16000;
 		_8psk = true;
-		_puncturing = true;
+		_disablefec = true;
 		dcdbits = 1024;
 		cap |= CAP_REV;
 		break;
-// Should 2000baud mode be kept? Too fast?
-//	case MODE_8PSK2000:
-//		symbollen = 16;
-//		PskSampleRate = 32000;
-//		_8psk = true;
-//		_puncturing = true;
-//		dcdbits = 2048;
-//		cap |= CAP_REV;
-//		break;
+
+	case MODE_8PSK1200: // 1200 baud | 1800 bits/sec @ 2/3 rate FEC
+		symbollen = 13;
+		idepth = 512;
+		flushlength = 56;
+		samplerate = 16000;
+		_8psk = true;
+		_puncturing = true;
+		dcdbits = 2048;
+		cap |= CAP_REV;
+		break;
+
+	case MODE_8PSK1333: // 1333 baud | 4000 bits/sec  No FEC
+		symbollen = 16; // 1333 baud | 4kbps  No FEC
+		samplerate = 16000;
+		_8psk = true;
+		_disablefec = true;
+		dcdbits = 1024;
+		cap |= CAP_REV;
+		break;
 
 	case MODE_PSK125R:
 		symbollen = 64;
@@ -580,19 +590,7 @@ psk::psk(trx_mode pskmode) : modem()
 	else if (_8psk) symbits = 3;
 	else if (_16psk) symbits = 4;
 	else symbits = 1; // else BPSK / PSKR
-	
 
-	/// KL4YFD
-	/// TEST CODE only until 8psk FEC implemented & fully tested
-	/// _disablefec = true ;
-	///
-	///
-	
-	// KL4YFD Puncturing:
-	// xpsk = ??? (unfinished)
-	// 8psk = 2/3 rate
-	// 16psk = 3/4 rate 
-	///
 
 //printf("%s: symlen %d, dcdbits %d, _qpsk %d, _pskr %d, numc %f\n",
 //mode_info[mode].sname,
@@ -621,7 +619,7 @@ psk::psk(trx_mode pskmode) : modem()
 			fir2[i] = (C_FIR_filter *)0;
 		}
 	}
-	
+
 	switch (progdefaults.PSK_filter) {
 		case 1:
 		// use the original gmfsk matched filters
@@ -671,13 +669,29 @@ psk::psk(trx_mode pskmode) : modem()
 				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
 			}
 	}
-	
+
 	snfilt = new Cmovavg(16);
 	imdfilt = new Cmovavg(16);
 
-	if (_qpsk) {
+	if (_disablefec) {
+		enc = NULL;
+		dec = dec2 = NULL;
+
+	} else if (_qpsk) {
 		enc = new encoder(K, POLY1, POLY2);
 		dec = new viterbi(K, POLY1, POLY2);
+
+	} else if (_pskr || mode == MODE_8PSK1200) {
+// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
+// Set decode size to 4 since some characters can be as small
+// as 3 bits long. This minimises intercharacters decoding
+// interactions.
+		enc = new encoder(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		dec->setchunksize(4);
+		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+		dec2->setchunksize(4);
+
 	} else if (_puncturing) { // Use the FEC code best suited for puncturing
 		enc = new encoder(K13, K13_POLY1, K13_POLY2);
 		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
@@ -705,8 +719,8 @@ psk::psk(trx_mode pskmode) : modem()
 		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec2->setchunksize(4);
 	}
-	
-	
+
+
 // Interleaver. For PSKR to maintain constant time delay between bits,
 // we double the number of concatenated square iterleavers for
 // each doubling of speed: 2x2x20 for BSK63+FEC, 2x2x40 for
@@ -726,7 +740,6 @@ psk::psk(trx_mode pskmode) : modem()
 	for ( int i = 0; i < symbollen; i++)
 		tx_shape[i] = 0.5 * cos(i * M_PI / symbollen) + 0.5;
 
-	samplerate = PskSampleRate;
 	fragmentsize = symbollen;
 	sc_bw = samplerate / symbollen;
 	//JD added for multiple carriers
@@ -793,7 +806,7 @@ void psk::rx_bit(int bit)
 			shreg = 0;
 		}
 	}
-	
+
 	if (do_s2nreport) {
 		if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 			s2n_sum += s2n_metric;
@@ -827,7 +840,7 @@ void psk::rx_bit2(int bit)
 		}
 		shreg2 = 1;
 	}
-	
+
 	if (do_s2nreport) {
 		if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 			s2n_sum += s2n_metric;
@@ -1076,8 +1089,8 @@ static double averageamp;
 	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
 
-	/// align the RX constellation to the TX constellation.
-	if (_16psk || _xpsk) phase -= M_PI;
+	/// align the RX constellation to the TX constellation, for Non-FEC modes
+	if (_disablefec && (_16psk || _8psk || _xpsk )) phase -= M_PI;
 
 	if (phase < 0) phase += TWOPI;
 
@@ -1090,13 +1103,15 @@ static double averageamp;
 	} else if (_8psk) {
 		n = 8;
 		bits = ((int) (phase / (M_PI/4.0) + 0.5)) & (n-1);
-		// Un Gray-map the 8PSK constellation
-		if (3 == bits) bits = 2;
-		else if (2 == bits) bits = 3;
-		else if (7 == bits) bits = 4;
-		else if (6 == bits) bits = 5;
-		else if (4 == bits) bits = 6;
-		else if (5 == bits) bits = 7;
+		if (!_disablefec) {
+			// Un Gray-map the 8PSK constellation
+			if (3 == bits) bits = 2;
+			else if (2 == bits) bits = 3;
+			else if (7 == bits) bits = 4;
+			else if (6 == bits) bits = 5;
+			else if (4 == bits) bits = 6;
+			else if (5 == bits) bits = 7;
+		}
 	} else if (_16psk) {
 		n = 16;
 		bits = ((int) (phase / (M_PI/8.0) + 0.5)) & (n-1);
@@ -1187,7 +1202,7 @@ static double averageamp;
 		if (_pskr) break;
 		set_dcdON = 1;
 		break;
-		
+
 	// pskr DCD on
 	case 0x0A0A0A0A:
 		if ( _xpsk || _8psk || _16psk) break;
@@ -1195,7 +1210,7 @@ static double averageamp;
 		if (!_pskr) break;
 		set_dcdON = 1;
 		break;
-		
+
 	// 8psk DCD on (FEC enabled, with Gray-mapped constellation)
 	case 0x25252525: // UN-punctured
 	case 0x22222222: // punctured @ 2/3 rate
@@ -1212,14 +1227,20 @@ static double averageamp;
 		if (!_disablefec) break;
 		set_dcdON = 0;
 		break;
-		
+
 	case 0x10842108:	// 16psk DCD off (with FEC disabled)
 		if (_pskr) break;
 		if (!_16psk) break;
 		if (!_disablefec) break;
 		set_dcdON = 0;
 		break;
-		
+
+	case 0x44444444:	// 8psk DCD off (with FEC disabled)
+		if (!_8psk) break;
+		if (!_disablefec) break;
+		set_dcdON = 0;
+		break;
+
 	case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
 		if (_pskr) break;
 		if (_xpsk || _8psk || _16psk) {
@@ -1229,7 +1250,7 @@ static double averageamp;
 		}
 		set_dcdON = 0;
 		break;
-		
+
 	default:
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
 			dcd = true;
@@ -1237,7 +1258,7 @@ static double averageamp;
 			dcd = false;
 		}
 	}
-	
+
 	if ( 1 == set_dcdON ) {
 		dcd = true;
 		acquire = 0;
@@ -1252,21 +1273,21 @@ static double averageamp;
 		quality = cmplx (0.0, 0.0);
 		//printf("\n DCD OFF!!!!!!!!!");
 	}
-	
+
 	if (_pskr) {
 		rx_pskr(softbit);
 		set_phase(phase, norm(quality), dcd);
-	
+
 	} else if (dcd == true) {
 		set_phase(phase, norm(quality), dcd);
-		
+
 		if (!_disablefec && (_16psk || _8psk || _xpsk) ) {
 			int bitmask = 1;
 			unsigned char xsoftsymbols[symbits];
-		
+
 			//printf("\n");
-			if (_puncturing && _16psk) rx_pskr(128); // 16psk: recover punctured low bit
-			
+			if ( (_puncturing && _16psk) ) rx_pskr(128); // 16psk: recover punctured low bit
+
 			// Soft-decode of Gray-mapped 8psk
 			if (_8psk) {
 				int bitindex = static_cast<int>(bits);
@@ -1284,7 +1305,7 @@ static double averageamp;
 				}
 			}
 			if (_puncturing) rx_pskr(128); // x/8/16psk: Recover punctured high bit
-			
+
 		} else if (_16psk || _8psk || _xpsk) {
 			// Decode symbol one bit at a time
 			int bitmask = 1;
@@ -1292,10 +1313,10 @@ static double averageamp;
 				rx_bit( ((bits) & bitmask) );
 				bitmask = bitmask << 1;
 			}
-			
+
 		} else if (_qpsk)
 			rx_qpsk(bits);
-		
+
 		else
 			rx_bit(!bits); //default to BPSK
 	}
@@ -1579,15 +1600,16 @@ void psk::tx_carriers()
 		if (_qpsk && !reverse)
 			sym = (4 - sym) & 3;
 
-		if (_8psk)
+		if (_8psk && !_disablefec) // Use Gray-mapped 8psk constellation
 			symbol = prevsymbol[car] * graymapped_8psk_pos[(sym & 7)];	// complex multiplication
-		
-		else { 		// Map the incoming symbols to the underlying 16psk constellation.
+
+		else { // Map the incoming symbols to the underlying 16psk constellation.
 			if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
+			else if (_8psk) sym *= 2; // Map 8psk to 16psk
 			else sym *= 4; // For BPSK and QPSK
 			symbol = prevsymbol[car] * sym_vec_pos[(sym & SVP_MASK)];	// complex multiplication
 		}
- 
+
 
 		for (int i = 0; i < symbollen; i++) {
 
@@ -1673,21 +1695,21 @@ void psk::tx_xpsk(int bit)
 	static int bitcount = 0;
 	static unsigned int xpsk_sym = 0;
 	int fecbits = 0;
-	
+
 	// If invalid value of bitcount, reset to 0
 	if (_puncturing || _xpsk || _16psk)
 		if ( (bitcount & 0x1) )
 			bitcount = 0;
-	
+
 	//printf("\n\n bit: %d", bit);
-	
+
 	// Pass one bit and return two bits
 	bitshreg = enc->encode(bit);
 	// Interleave
 	Txinlv->bits(&bitshreg); // Bit-interleave
 	fecbits = bitshreg;
 
-	
+
 	/// DEBUG
 	/*
 	 * 	static bool flip;
@@ -1699,16 +1721,16 @@ void psk::tx_xpsk(int bit)
 		fecbits = 3;
 	}
 	*/
-	
+
 	//printf("\nfecbits: %u", fecbits);
 	//printf("\nbitcount: %d", bitcount);
-	
+
 	if (_xpsk) { // 2 bits-per-symbol. Transmit every call
 		xpsk_sym = static_cast<unsigned int>(fecbits);
 		tx_symbol(xpsk_sym);
 		return;
 	}
-	
+
 	// DEBUG
 	/*
 	if (_8psk) {
@@ -1717,7 +1739,7 @@ void psk::tx_xpsk(int bit)
 		return;
 	}
 	*/
-	
+
 	// DEBUG, send a known pattern of symbols / bits
 	/*
 	 * 	static int counter = 0;
@@ -1726,14 +1748,36 @@ void psk::tx_xpsk(int bit)
 	tx_symbol(1);
 	return;
 	*/
-	
+
+	/*
+	else if (mode == MODE_8PSK ???) { // Puncture @ 5/6 rate | tx 3bits/symbol (8psk)
+		// Collect up to 8 bits
+		if ( x_bitcount < 8 ) {
+			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
+			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
+			x_bitcount += 2;
+			return;
+
+		// When 10 bits are buffered,
+		//	drop 4 bits then transmit 6 bits (2-symbols)
+		} else {
+			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
+			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
+			tx_symbol( (x_xpsk_sym & 14) >> 1);
+			tx_symbol( (x_xpsk_sym & 448) >> 6);
+			x_xpsk_sym = x_bitcount = 0;
+			return;
+		}
+	}
+	*/
+
 	else if (_8psk && _puncturing) { // @ 2/3 rate
-	  
+
 		if ( 0 == bitcount) {
 			xpsk_sym = static_cast<unsigned int>(fecbits);
 			bitcount = 2;
 			return;
-		
+
 		} else if ( 2 == bitcount ) {
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			/// Puncture -> //xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
@@ -1742,12 +1786,12 @@ void psk::tx_xpsk(int bit)
 			return;
 		}
 	}
-	
-	
+
+
 	else if (_8psk) { // 3 bits-per-symbol. Accumulate then tx.
-	  
+
 		if ( 0 == bitcount ) { // Empty xpsk_sym buffer: add 2 bits and return
-			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);	
+			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym = static_cast<unsigned int>(fecbits);
 			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
 			bitcount = 2;
@@ -1755,12 +1799,12 @@ void psk::tx_xpsk(int bit)
 
 		} else if ( 1 == bitcount ) { // xpsk_sym buffer with one bit: add 2 bits then tx and clear
 			//xpsk_sym <<= 2; // shift left 2 bits
-		  		  
+
 			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 1 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 1 ;
 			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
-			
+
 			//printf("\nxpsk_sym|postinlv: %u", xpsk_sym);
 			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
@@ -1770,25 +1814,25 @@ void psk::tx_xpsk(int bit)
 			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
-			
+
 			//printf("\nxpsk_sym|postinlv: %u", xpsk_sym);
-			
+
 			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
-			
+
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) >> 1 ;
 			bitcount = 1;
 			return;
 		}
 	}
-	
-	else if (_puncturing && _16psk) { // @ 3/4 Rate   
-	  
+
+	else if (_puncturing && _16psk) { // @ 3/4 Rate
+
 		if ( 0 == bitcount) {
 			xpsk_sym = static_cast<unsigned int>(fecbits);
 			bitcount = 2;
 			return;
-		
+
 		} else if ( 2 == bitcount ) {
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
@@ -1803,15 +1847,15 @@ void psk::tx_xpsk(int bit)
 			xpsk_sym = bitcount = 0;
 			return;
 		}
-	}	
-	
+	}
+
 	else if (_16psk) { // 4 bits-per-symbol. Transmit every-other run.
-		
+
 		if ( 0 == bitcount) {
 			xpsk_sym = static_cast<unsigned int>(fecbits);
 			bitcount = 2;
 			return;
-		
+
 		} else if ( 2 == bitcount ) {
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
@@ -1920,7 +1964,7 @@ int psk::tx_process()
 			// to ensure sync at end of preamble
 			if (preamble == 0) {
 				while (acc_symbols % numcarriers) tx_bit(0);
-				tx_char(0); // <NUL> 
+				tx_char(0); // <NUL>
 			}
 			return 0;
 		} else {

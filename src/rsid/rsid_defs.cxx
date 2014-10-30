@@ -281,6 +281,8 @@ const int cRsId::rsid_ids_size1 = sizeof(rsid_ids_1)/sizeof(*rsid_ids_1) - 1;
         ELEM2_(1038, PSK8P250, MODE_8PSK250)            \
         ELEM2_(1043, PSK8P500, MODE_8PSK500)            \
         ELEM2_(1047, PSK8P1000, MODE_8PSK1000)          \
+        ELEM2_(1058, PSK8P1200, MODE_8PSK1200)          \
+        ELEM2_(1059, PSK8P1333, MODE_8PSK1333)          \
                                                         \
         ELEM2_(0, NONE2, NUM_MODES)
 

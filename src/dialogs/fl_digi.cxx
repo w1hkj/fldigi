@@ -485,7 +485,8 @@ static const Fl_Menu_Item quick_change_8psk[] = {
 	{ mode_info[MODE_8PSK250].name, 0, cb_init_mode, (void *)MODE_8PSK250 },
 	{ mode_info[MODE_8PSK500].name, 0, cb_init_mode, (void *)MODE_8PSK500 },
 	{ mode_info[MODE_8PSK1000].name, 0, cb_init_mode, (void *)MODE_8PSK1000 },
-//	{ mode_info[MODE_8PSK2000].name, 0, cb_init_mode, (void *)MODE_8PSK2000 },
+	{ mode_info[MODE_8PSK1200].name, 0, cb_init_mode, (void *)MODE_8PSK1200 },
+	{ mode_info[MODE_8PSK1333].name, 0, cb_init_mode, (void *)MODE_8PSK1333 },
 	{ 0 }
 };
 
@@ -1253,8 +1254,12 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		quick_change = quick_change_qpsk;
 		modem_config_tab = tabPSK;
 		break;
-	case MODE_8PSK125: case MODE_8PSK250: case MODE_8PSK500: case MODE_8PSK1000:
-//	case MODE_8PSK2000:
+	case MODE_8PSK125:
+	case MODE_8PSK250:
+	case MODE_8PSK500:
+	case MODE_8PSK1000:
+	case MODE_8PSK1200:
+	case MODE_8PSK1333:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_8psk;
@@ -3648,9 +3653,9 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_8PSK250].name, 0, cb_init_mode, (void *)MODE_8PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_8PSK500].name, 0, cb_init_mode, (void *)MODE_8PSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_8PSK1000].name, 0, cb_init_mode, (void *)MODE_8PSK1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{ mode_info[MODE_8PSK2000].name, 0, cb_init_mode, (void *)MODE_8PSK2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK1200].name, 0, cb_init_mode, (void *)MODE_8PSK1200, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK1333].name, 0, cb_init_mode, (void *)MODE_8PSK1333, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
-
 
 {"PSKR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_PSK125R].name, 0, cb_init_mode, (void *)MODE_PSK125R, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5869,7 +5874,8 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_8PSK250].name, 0, cb_init_mode, (void *)MODE_8PSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_8PSK500].name, 0, cb_init_mode, (void *)MODE_8PSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_8PSK1000].name, 0, cb_init_mode, (void *)MODE_8PSK1000, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{ mode_info[MODE_8PSK2000].name, 0, cb_init_mode, (void *)MODE_8PSK2000, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK1200].name, 0, cb_init_mode, (void *)MODE_8PSK1200, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_8PSK1333].name, 0, cb_init_mode, (void *)MODE_8PSK1333, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"PSKR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
