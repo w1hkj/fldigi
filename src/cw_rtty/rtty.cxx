@@ -32,6 +32,7 @@
 
 using namespace std;
 
+//#include "rtty.h"
 #include "view_rtty.h"
 #include "fl_digi.h"
 #include "digiscope.h"
@@ -47,9 +48,9 @@ using namespace std;
 #include "main.h"
 #include "modem.h"
 
-#define FILTER_DEBUG 0
+#include "rtty.h"
 
-view_rtty *rttyviewer = (view_rtty *)0;
+#define FILTER_DEBUG 0
 
 //=====================================================================
 // Baudot support
@@ -181,6 +182,8 @@ void rtty::init()
 
 rtty::~rtty()
 {
+	if (rttyviewer) delete rttyviewer;
+
 	if (mark_filt) delete mark_filt;
 	if (space_filt) delete space_filt;
 	if (pipe) delete [] pipe;
@@ -217,7 +220,6 @@ void rtty::restart()
 
 	rtty_shift = shift = (progdefaults.rtty_shift < numshifts ?
 				  SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
-printf("rtty_shift %.1f\n", shift);
 	rtty_baud = BAUD[progdefaults.rtty_baud];
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];
 	if (rtty_bits == 5)
@@ -296,7 +298,9 @@ printf("rtty_shift %.1f\n", shift);
 
 	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = cmplx(0,0);
 
-	rttyviewer->restart();
+//	if (::rttyviewer) ::rttyviewer->restart();
+	if (rttyviewer) rttyviewer->restart();
+
 	progStatus.rtty_filter_changed = false;
 
 }
@@ -317,7 +321,9 @@ rtty::rtty(trx_mode tty_mode)
 	pipe = new double[MAXPIPE];
 	dsppipe = new double [MAXPIPE];
 
-	::rttyviewer = new view_rtty(mode);
+//	if (::rttyviewer == 0) ::rttyviewer = new view_rtty(mode);
+
+	rttyviewer = new view_rtty(mode);
 
 	m_Osc1 = new Oscillator( samplerate );
 	m_Osc2 = new Oscillator( samplerate );
@@ -1100,11 +1106,6 @@ int rtty::tx_process()
 		send_char(c);
 		xmt_samples = char_samples = acc_symbols;
 
-//		printf("%5s %d samples, overhead %d, %f sec's\n",
-//			ascii3[c & 0xff],
-//			char_samples,
-//			ovhd_samples,
-//			1.0 * char_samples / samplerate);
 		return 0;
 	}
 
@@ -1166,12 +1167,6 @@ int rtty::tx_process()
 	acc_symbols = 0;
 	send_char(c & 0x1F);
 	xmt_samples = char_samples = acc_symbols;
-
-//	printf("%5s %d samples, overhead %d, %f sec's\n",
-//		ascii3[c & 0xff],
-//		char_samples,
-//		ovhd_samples,
-//		1.0 * char_samples / samplerate);
 
 	return 0;
 }
@@ -1237,7 +1232,7 @@ Oscillator::Oscillator( double samplerate )
 {
 	m_phase = 0;
 	m_samplerate = samplerate;
-	std::cerr << "samplerate for Oscillator:"<<m_samplerate<<"\n";
+//	std::cerr << "samplerate for Oscillator:"<<m_samplerate<<"\n";
 }
 
 double Oscillator::Update( double frequency )

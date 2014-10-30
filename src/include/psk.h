@@ -189,6 +189,14 @@ public:
 	int tx_process();
 	void searchDown();
 	void searchUp();
+
+	void clear_viewer() { pskviewer->clear(); }
+	void clear_ch(int n) { pskviewer->clearch(n); }
+	int  viewer_get_freq(int n) {
+		if (pskviewer) pskviewer->get_freq(n);
+		return 0;
+	}
+
 };
 
 #endif

@@ -207,6 +207,12 @@ public:
 public:
 	virtual void	refresh_scope() {}
 
+// for multi-channel modems
+public:
+	virtual void clear_viewer() {}
+	virtual void clear_ch(int n) {}
+	virtual int  viewer_get_freq(int n) {return 0; }
+
 // for noise tests
 private:
 	void	add_noise(double *, int);

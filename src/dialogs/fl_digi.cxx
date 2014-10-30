@@ -2772,8 +2772,7 @@ void cb_btnClearMViewer(Fl_Widget *w, void *d)
 	if (brwsViewer)
 		brwsViewer->clear();
 	mainViewer->clear();
-	if (pskviewer) pskviewer->clear();
-	if (rttyviewer) rttyviewer->clear();
+	active_modem->clear_viewer();
 }
 
 int default_handler(int event)
@@ -4313,7 +4312,6 @@ static void cb_cntTxLevel(Fl_Counter2* o, void*) {
 }
 
 static void cb_mainViewer(Fl_Hold_Browser*, void*) {
-	if (!pskviewer && !rttyviewer) return;
 	int sel = mainViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
@@ -4340,8 +4338,7 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 	case FL_RIGHT_MOUSE: // reset
 		{
 		int ch = progdefaults.VIEWERascend ? progdefaults.VIEWERchannels - sel : sel - 1;
-		if (pskviewer) pskviewer->clearch(ch);
-		if (rttyviewer) rttyviewer->clearch(ch);
+		active_modem->clear_ch(ch);
 		mainViewer->deselect();
 		if (brwsViewer) brwsViewer->deselect();
 		break;

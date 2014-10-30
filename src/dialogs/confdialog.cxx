@@ -3038,7 +3038,7 @@ Fl_ListBox *selParity=(Fl_ListBox *)0;
 
 static void cb_selParity(Fl_ListBox* o, void*) {
   if (progdefaults.rtty_bits == 0) {
-  progdefaults.rtty_parity = RTTY_PARITY_NONE;
+  progdefaults.rtty_parity = rtty::RTTY_PARITY_NONE;
   o->index(progdefaults.rtty_parity);
 } else
   progdefaults.rtty_parity = o->index();

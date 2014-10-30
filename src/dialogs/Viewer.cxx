@@ -108,8 +108,7 @@ void initViewer()
 			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
 		}
 	}
-	if (pskviewer) pskviewer->clear();
-	if (rttyviewer) rttyviewer->clear();
+	active_modem->clear_viewer();
 }
 
 void viewaddchr(int ch, int freq, char c, int md)
@@ -193,12 +192,10 @@ static void cb_btnClearViewer(Fl_Button*, void*) {
 	brwsViewer->clear();
 	if (mainViewer)
 		mainViewer->clear();
-	if (pskviewer) pskviewer->clear();
-	if (rttyviewer) rttyviewer->clear();
+	active_modem->clear_viewer();
 }
 
 static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
-	if (!pskviewer && !rttyviewer) return;
 	int sel = brwsViewer->value();
 	if (sel == 0 || sel > progdefaults.VIEWERchannels)
 		return;
@@ -226,8 +223,7 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 	case FL_RIGHT_MOUSE: // reset
 		{
 		int ch = progdefaults.VIEWERascend ? progdefaults.VIEWERchannels - sel : sel - 1;
-		if (pskviewer) pskviewer->clearch(ch);
-		if (rttyviewer) rttyviewer->clearch(ch);
+		active_modem->clear_ch(ch);
 		brwsViewer->deselect();
 		if (mainViewer) mainViewer->deselect();
 		}
@@ -362,9 +358,9 @@ void openViewer()
 
 void viewer_paste_freq(int freq)
 {
-	if (pskviewer) {
+//	if (pskviewer) {
 		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-			int ftest = pskviewer->get_freq(i);
+			int ftest = active_modem->viewer_get_freq(i);
 			if (ftest == NULLFREQ) continue;
 			if (fabs(ftest - freq) <= 50) {
 				if (progdefaults.VIEWERascend)
@@ -377,23 +373,23 @@ void viewer_paste_freq(int freq)
 				return;
 			}
 		}
-	}
-	if (rttyviewer) {
-		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-			int ftest = rttyviewer->get_freq(i);
-			if (ftest == NULLFREQ) continue;
-			if (fabs(ftest - freq) <= 50) {
-				if (progdefaults.VIEWERascend)
-					i = (progdefaults.VIEWERchannels - i);
-				else i++;
-				if (mainViewer)
-					mainViewer->select(i);
-				if (brwsViewer)
-					brwsViewer->select(i);
-				return;
-			}
-		}
-	}
+//	}
+//	if (rttyviewer) {
+//		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+//			int ftest = rttyviewer->get_freq(i);
+//			if (ftest == NULLFREQ) continue;
+//			if (fabs(ftest - freq) <= 50) {
+//				if (progdefaults.VIEWERascend)
+//					i = (progdefaults.VIEWERchannels - i);
+//				else i++;
+//				if (mainViewer)
+//					mainViewer->select(i);
+//				if (brwsViewer)
+//					brwsViewer->select(i);
+//				return;
+//			}
+//		}
+//	}
 }
 
 

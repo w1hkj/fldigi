@@ -127,7 +127,6 @@ static unsigned char graymapped_softbits[8][3] =  {
 
 
 char pskmsg[80];
-viewpsk *pskviewer = (viewpsk *)0;
 
 void psk::tx_init(SoundBase *sc)
 {
@@ -194,7 +193,8 @@ void psk::rx_init()
 
 void psk::restart()
 {
-	if (numcarriers == 1)
+	if ((mode >= MODE_PSK31 && mode <= MODE_PSK125) ||
+		(mode >= MODE_QPSK31 && mode <= MODE_QPSK125))
 		pskviewer->restart(mode);
 	evalpsk->setbw(sc_bw);
 }
@@ -224,10 +224,9 @@ psk::~psk()
 	}
 	if (snfilt) delete snfilt;
 	if (imdfilt) delete imdfilt;
-	if (::pskviewer == pskviewer)
-		::pskviewer = 0;
-	delete pskviewer;
-	delete evalpsk;
+
+	if (pskviewer) delete pskviewer;
+	if (evalpsk) delete evalpsk;
 
 	// Interleaver
 	if (Rxinlv) delete Rxinlv;
@@ -746,10 +745,11 @@ psk::psk(trx_mode pskmode) : modem()
 	acquire = 0;
 
 	evalpsk = new pskeval;
-	if (numcarriers == 1) {
-		::pskviewer = pskviewer = new viewpsk(evalpsk, mode);
-	} else
-		::pskviewer = pskviewer = 0;
+	if ((mode >= MODE_PSK31 && mode <= MODE_PSK125) ||
+		(mode >= MODE_QPSK31 && mode <= MODE_QPSK125))
+		pskviewer = new viewpsk(evalpsk, mode);
+	else
+		pskviewer = 0;
 
 }
 
@@ -1175,7 +1175,7 @@ static double averageamp;
 		
 	// 8psk DCD on (FEC enabled, with Gray-mapped constellation)
 	case 0x25252525: // UN-punctured
-	case 0x22222222: // punctured
+	case 0x22222222: // punctured @ 2/3 rate
 		if (_pskr || _xpsk || _16psk) break;
 		if (!_8psk) break;
 		if (_disablefec) break;
@@ -1320,7 +1320,7 @@ int psk::rx_process(const double *buf, int len)
 	cmplx z, z2[MAX_CARRIERS];
 	bool can_rx_symbol = false;
 
-	if (numcarriers == 1) {
+	if (mode >= MODE_PSK31 && mode <= MODE_PSK125) {
 		if (!progdefaults.report_when_visible ||
 			 dlgViewer->visible() || progStatus.show_channels )
 			if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);

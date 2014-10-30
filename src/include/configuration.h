@@ -311,7 +311,7 @@
         ELEM_(int, rtty_parity, "RTTYPARITY",                                           \
               "Parity. Values are as folows:\n"                                         \
               "  0: none; 1: even; 2: odd: 3: zero; 4: one",                            \
-              RTTY_PARITY_NONE)                                                         \
+              rtty::RTTY_PARITY_NONE)                                                   \
         ELEM_(int, rtty_stop, "RTTYSTOP",                                               \
               "Stop bits. Values are as folows:\n"                                      \
               "  0: 1; 1: 1.5; 2: 2",                                                   \

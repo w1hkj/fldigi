@@ -37,6 +37,7 @@
 #include "filters.h"
 #include "fftfilt.h"
 #include "digiscope.h"
+#include "view_rtty.h"
 
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025
@@ -49,23 +50,6 @@
 #define	FIGURES	0x200
 
 #define dispwidth 100
-
-enum RTTY_RX_STATE {
-	RTTY_RX_STATE_IDLE = 0,
-	RTTY_RX_STATE_START,
-	RTTY_RX_STATE_DATA,
-	RTTY_RX_STATE_PARITY,
-	RTTY_RX_STATE_STOP,
-	RTTY_RX_STATE_STOP2
-};
-
-enum RTTY_PARITY {
-	RTTY_PARITY_NONE = 0,
-	RTTY_PARITY_EVEN,
-	RTTY_PARITY_ODD,
-	RTTY_PARITY_ZERO,
-	RTTY_PARITY_ONE
-};
 
 // simple oscillator-class
 class Oscillator
@@ -118,6 +102,22 @@ private:
 
 class rtty : public modem {
 public:
+enum RTTY_RX_STATE {
+	RTTY_RX_STATE_IDLE = 0,
+	RTTY_RX_STATE_START,
+	RTTY_RX_STATE_DATA,
+	RTTY_RX_STATE_PARITY,
+	RTTY_RX_STATE_STOP,
+	RTTY_RX_STATE_STOP2
+};
+enum RTTY_PARITY {
+	RTTY_PARITY_NONE = 0,
+	RTTY_PARITY_EVEN,
+	RTTY_PARITY_ODD,
+	RTTY_PARITY_ZERO,
+	RTTY_PARITY_ONE
+};
+
 	static const double SHIFT[];
 	static const double BAUD[];
 	static const int	BITS[];
@@ -217,6 +217,9 @@ private:
 	int decode_char();
 	int rttyparity(unsigned int);
 	bool rx(bool bit);
+
+	view_rtty *rttyviewer;
+
 // transmit
 	double nco(double freq);
 	void send_symbol(int symbol, int len);
@@ -242,6 +245,10 @@ public:
 	int rx_process(const double *buf, int len);
 	int tx_process();
 	void flush_stream();
+
+	void clear_viewer() { rttyviewer->clear(); }
+	void clear_ch(int n) { rttyviewer->clearch(n); }
+	int  viewer_get_freq(int n) { return rttyviewer->get_freq(n); }
 
 	void searchDown();
 	void searchUp();

@@ -25,7 +25,7 @@
 #include <iostream>
 using namespace std;
 
-#include "rtty.h"
+//#include "rtty.h"
 #include "view_rtty.h"
 #include "fl_digi.h"
 #include "digiscope.h"
@@ -82,7 +82,7 @@ void view_rtty::rx_init()
 
 		channel[ch].inp_ptr = 0;
 
-		for (int i = 0; i < MAXPIPE; i++)
+		for (int i = 0; i < VIEW_MAXPIPE; i++)
 			channel[ch].mark_history[i] =
 			channel[ch].space_history[i] = cmplx(0,0);
 	}
@@ -187,7 +187,7 @@ void view_rtty::restart()
 
 		for (int i = 0; i < VIEW_RTTY_MAXBITS; i++) channel[ch].bit_buf[i] = 0.0;
 
-		for (int i = 0; i < MAXPIPE; i++)
+		for (int i = 0; i < VIEW_MAXPIPE; i++)
 			channel[ch].mark_history[i] = channel[ch].space_history[i] = cmplx(0,0);
 	}
 
@@ -521,14 +521,14 @@ int view_rtty::rx_process(const double *buf, int buflen)
 
 				channel[ch].mark_history[channel[ch].inp_ptr] = zp_mark[i];
 				channel[ch].space_history[channel[ch].inp_ptr] = zp_space[i];
-				channel[ch].inp_ptr = (channel[ch].inp_ptr + 1) % MAXPIPE;
+				channel[ch].inp_ptr = (channel[ch].inp_ptr + 1) % VIEW_MAXPIPE;
 
 				if (channel[ch].state == RCVNG && rx( ch, reverse ? !bit : bit ) ) {
 					if (channel[ch].sigsearch) channel[ch].sigsearch--;
 					int mp0 = channel[ch].inp_ptr - 2;
 					int mp1 = mp0 + 1;
-					if (mp0 < 0) mp0 += MAXPIPE;
-					if (mp1 < 0) mp1 += MAXPIPE;
+					if (mp0 < 0) mp0 += VIEW_MAXPIPE;
+					if (mp1 < 0) mp1 += VIEW_MAXPIPE;
 					double ferr = (TWOPI * samplerate / rtty_baud) *
 						(!reverse ?
 						arg(conj(channel[ch].mark_history[mp1]) * channel[ch].mark_history[mp0]) :
