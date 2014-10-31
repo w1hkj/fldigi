@@ -121,7 +121,19 @@ accuracy. The modem will tell the actual frequency offset
 after it is synchronized. The operator <b>should not</b> try to correct
 this offset unless he is able to tune the radio receiver very slowly,
 because MT63 as a low rate phase modulated system cannot tolerate sudden
-frequency changes.
+frequency changes.  Signal synchronization is improved by filtering the timing
+measurement of the received signal.  For very low signal to noise ratios you
+can improve the synchronization by selecting "Long Receive Integration" factor.
+Think of the process as a digital AFC.  PSK31 does something very similar.  One 
+would expect there to be some correlation since mt63 is the equivalent of 64 
+simultaneous binary phase shift signals.  The synchronizer filtering can be 
+reduced to 1/2 it's normal value by selecting "Long Receive Integration".  It 
+takes twice as long for decoding to begin and the synchronizer is more immune 
+to noise.
+<br>
+
+You probably never need to enable "Long Receive Integration" unless you are 
+trying to receive an mt63 signal buried in the noise.
 <br>
 
 The MT63 is a synchronous system and it relies on the sampling rate to
