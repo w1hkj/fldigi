@@ -1118,7 +1118,7 @@ size_t Socket::recvFrom(void* buf, size_t len)
 			shutdown(sockfd, SHUT_RD);
 		else if (r < 0) {
 			if((errno == EAGAIN) || (errno == 0)) {
-				LOG_INFO("ErrorNo: %d (%s)", errno, strerror(errno));
+				if (errno) LOG_INFO("ErrorNo: %d (%s)", errno, strerror(errno));
 				memset(buf, 0, len);
 				return 0;
 			}

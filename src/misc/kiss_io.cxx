@@ -3373,7 +3373,7 @@ static void *ReadFromHostSocket(void *args)
 		try {
 			count = kiss_socket->recvFrom((void *) buffer, sizeof(buffer) - 1);
 		} catch (...) {
-			LOG_INFO("recvFrom Socket Error %d", errno);
+			if (errno) LOG_INFO("recvFrom Socket Error %d", errno);
 			count = 0;
 		}
 
