@@ -412,7 +412,6 @@ void Wizard::create_wizard(void)
 		{ tabOperator },
 		{ tabSoundCard },
 		{ tabRig },
-		{ tabUI },
 		{ tabDataFiles },
 	};
 

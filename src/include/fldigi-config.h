@@ -53,11 +53,11 @@
 #define DEFAULT_SW 16
 //#define DEFAULT_HWFALL 144
 #define DEFAULT_HWFALL 124
-#define DEFAULT_HNOM 500
-#define WMIN 750
-#define HMIN 450
+//#define DEFAULT_HNOM 500
+#define WMIN 800
+#define HMIN 460 //500
 //#define Wwfall		(DEFAULT_HNOM + 2 * BEZEL)
-#define DEFAULT_WNOM (Wwfall + 2* DEFAULT_SW)
+//#define DEFAULT_WNOM (Wwfall + 2* DEFAULT_SW)
 
 //#define EMC_HWFALL 144
 //#define EMC_HNOM 500

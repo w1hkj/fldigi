@@ -104,8 +104,8 @@ status progStatus = {
 	false,				// bool VIEWERvisible
 	100,				// int		tile_x
 	200,				// int		tile_w;
-	50,					// int		tile_y;
-	100,				// int		tile_h;
+	90,					// int		tile_y;
+	150,				// int		tile_h;
 	false,				// bool LOGenabled
 	5.0,				// double sldrSquelchValue
 	5.0,				// double sldrPwrSquelchValue
@@ -520,9 +520,21 @@ void status::loadLastState()
 	noCATwidth = strbuff;
 
 	spref.get("main_x", mainX, mainX);
+	if (mainX > Fl::w())
+		mainX = 0;
+
 	spref.get("main_y", mainY, mainY);
+	if (mainY > Fl::h())
+		mainY = 0;
+
 	spref.get("main_w", mainW, mainW);
+	if (mainW < WMIN) mainW = WMIN;
+	if (mainW > Fl::w()) mainW = Fl::w();
+
 	spref.get("main_h", mainH, mainH);
+	if (mainH < HMIN) mainH = HMIN;
+	if (mainH > Fl::w()) mainH = Fl::h();
+
 	spref.get("wf_ui", i, WF_UI); WF_UI = i;
 	spref.get("riglog_ui", i, Rig_Log_UI); Rig_Log_UI = i;
 	spref.get("rigcontest_ui", i, Rig_Contest_UI); Rig_Contest_UI = i;
@@ -696,9 +708,7 @@ void status::initLastState()
 		btnPreferXhairScope->value(progdefaults.PreferXhairScope = PreferXhairScope);
 
 		if (mvsquelch) {
-
-printf("init rtty squelch %f\n", VIEWER_rttysquelch);
-
+//printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 			mvsquelch->range(-12.0, 6.0);
 			mvsquelch->value(VIEWER_rttysquelch);
 		}
@@ -813,17 +823,8 @@ printf("init rtty squelch %f\n", VIEWER_rttysquelch);
 	else
 		sldrSquelch->value(sldrSquelchValue);
 
-	if (mainX > Fl::w())
-		mainX = 0;
-	if (mainY > Fl::h())
-		mainY = 0;
-	if (mainW < WMIN) mainW = WMIN;
-	if (mainW > Fl::w()) mainW = Fl::w();
-	if (mainH < HMIN) mainH = HMIN;
-	if (mainH > Fl::w()) mainH = Fl::h();
-
 	if (bWF_only) 
-		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus);// + 4);
+		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus);
 	else {
 		fl_digi_main->resize(mainX, mainY, mainW, mainH);
 

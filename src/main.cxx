@@ -1218,17 +1218,17 @@ int parse_args(int argc, char **argv, int& idx)
 			Fl::set_font(FL_HELVETICA, optarg);
 			break;
 
-		case OPT_WFALL_HEIGHT:
-			progdefaults.wfheight = strtol(optarg, NULL, 10);
-			break;
+//		case OPT_WFALL_HEIGHT:
+//			progdefaults.wfheight = strtol(optarg, NULL, 10);
+//			break;
 
-		case OPT_WINDOW_WIDTH:
-			WNOM = strtol(optarg, NULL, 10);
-			break;
+//		case OPT_WINDOW_WIDTH:
+//			WNOM = strtol(optarg, NULL, 10);
+//			break;
 
-		case OPT_WINDOW_HEIGHT:
-			HNOM = strtol(optarg, NULL, 10);
-			break;
+//		case OPT_WINDOW_HEIGHT:
+//			HNOM = strtol(optarg, NULL, 10);
+//			break;
 
 #if USE_PORTAUDIO
 		case OPT_FRAMES_PER_BUFFER:

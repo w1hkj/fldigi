@@ -396,11 +396,13 @@ int override_data_io_enabled        = DISABLED_IO;
 
 int IMAGE_WIDTH;
 int Hwfall;
-int HNOM = DEFAULT_HNOM;
+int Wwfall;
+
+// The following are deprecated and should be removed after thorough testing
+//int HNOM = DEFAULT_HNOM;
 // WNOM must be large enough to contain ALL of the horizontal widgets
 // when the main dialog is initially created.
-int WNOM = 	WMIN;//progStatus.mainW ? progStatus.mainW : WMIN;
-int Wwfall;
+//int WNOM = 	WMIN;//progStatus.mainW ? progStatus.mainW : WMIN;
 
 int					altMacros = 0;
 
@@ -3445,6 +3447,7 @@ UI_return:
 	fl_digi_main->init_sizes();
 
 	fl_digi_main->redraw();
+
 }
 
 void cb_mnu_wf_all(Fl_Menu_* w, void *d)
@@ -3483,6 +3486,7 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d)
 	progStatus.NO_RIGLOG = true;
 	progStatus.Rig_Log_UI = false;
 	progStatus.Rig_Contest_UI = false;
+printf("none\n");
 	UI_select();
 }
 
@@ -5362,125 +5366,124 @@ int alt_btn_width = 2 * DEFAULT_SW;
 		int Hxmttxt = Htext - Hrcvtxt;
 
 		center_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+			center_group->box(FL_FLAT_BOX);
 
-			int HTwidth = progStatus.mainW;
-
-			text_panel = new Panel(0, Y, HTwidth, Htext);
+			text_panel = new Panel(0, Y, progStatus.mainW, Htext);
 				text_panel->box(FL_FLAT_BOX);
 
 				mvgroup = new Fl_Group(
 					text_panel->x(), text_panel->y(),
 					text_panel->w()/2, Htext, "");
 
-				mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-42, "");
-				mainViewer->box(FL_DOWN_BOX);
-				mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);
-				mainViewer->callback((Fl_Callback*)cb_mainViewer);
-				mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
-				mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
+					mainViewer = new pskBrowser(mvgroup->x(), mvgroup->y(), mvgroup->w(), Htext-42, "");
+					mainViewer->box(FL_DOWN_BOX);
+					mainViewer->has_scrollbar(Fl_Browser_::VERTICAL);
+					mainViewer->callback((Fl_Callback*)cb_mainViewer);
+					mainViewer->setfont(progdefaults.ViewerFontnbr, progdefaults.ViewerFontsize);
+					mainViewer->tooltip(_("Left click - select\nRight click - clear line"));
 
 // mainViewer uses same regular expression evaluator as Viewer
-				mainViewer->seek_re = &seek_re;
+					mainViewer->seek_re = &seek_re;
 
-				Fl_Group* gseek = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 42, mvgroup->w(), 20);
+					Fl_Group* gseek = new Fl_Group(mvgroup->x(), mvgroup->y() + Htext - 42, mvgroup->w(), 20);
 // search field
-					gseek->box(FL_FLAT_BOX);
+						gseek->box(FL_FLAT_BOX);
 
-					int seek_x = mvgroup->x();
-					int seek_y = mvgroup->y() + Htext - 42;
-					int seek_w = mvgroup->w();
-					txtInpSeek = new Fl_Input2( seek_x, seek_y, seek_w, gseek->h(), "");
-					txtInpSeek->callback((Fl_Callback*)cb_mainViewer_Seek);
-					txtInpSeek->when(FL_WHEN_CHANGED);
-					txtInpSeek->textfont(FL_HELVETICA);
-					txtInpSeek->value(progStatus.browser_search.c_str());
-					txtInpSeek->do_callback();
-					txtInpSeek->tooltip(_("seek - regular expression"));
-					gseek->resizable(txtInpSeek);
-				gseek->end();
+						int seek_x = mvgroup->x();
+						int seek_y = mvgroup->y() + Htext - 42;
+						int seek_w = mvgroup->w();
+						txtInpSeek = new Fl_Input2( seek_x, seek_y, seek_w, gseek->h(), "");
+						txtInpSeek->callback((Fl_Callback*)cb_mainViewer_Seek);
+						txtInpSeek->when(FL_WHEN_CHANGED);
+						txtInpSeek->textfont(FL_HELVETICA);
+						txtInpSeek->value(progStatus.browser_search.c_str());
+						txtInpSeek->do_callback();
+						txtInpSeek->tooltip(_("seek - regular expression"));
+						gseek->resizable(txtInpSeek);
+					gseek->end();
 
-				Fl_Group *g = new Fl_Group(
+					Fl_Group *g = new Fl_Group(
 								mvgroup->x(), mvgroup->y() + Htext - 22,
 								mvgroup->w(), 22);
-					g->box(FL_DOWN_BOX);
+						g->box(FL_DOWN_BOX);
 				// squelch
-					mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 75, g->h());
-					mvsquelch->type(FL_HOR_NICE_SLIDER);
-					mvsquelch->range(-3.0, 6.0);
-					mvsquelch->value(progStatus.VIEWER_psksquelch);
-					mvsquelch->step(0.1);
-					mvsquelch->color( fl_rgb_color(
-						progdefaults.bwsrSliderColor.R,
-						progdefaults.bwsrSliderColor.G,
-						progdefaults.bwsrSliderColor.B));
-					mvsquelch->selection_color( fl_rgb_color(
-						progdefaults.bwsrSldrSelColor.R,
-						progdefaults.bwsrSldrSelColor.G,
-						progdefaults.bwsrSldrSelColor.B));
-					mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
-					mvsquelch->tooltip(_("Set Viewer Squelch"));
+						mvsquelch = new Fl_Value_Slider2(g->x(), g->y(), g->w() - 75, g->h());
+						mvsquelch->type(FL_HOR_NICE_SLIDER);
+						mvsquelch->range(-3.0, 6.0);
+						mvsquelch->value(progStatus.VIEWER_psksquelch);
+						mvsquelch->step(0.1);
+						mvsquelch->color( fl_rgb_color(
+							progdefaults.bwsrSliderColor.R,
+							progdefaults.bwsrSliderColor.G,
+							progdefaults.bwsrSliderColor.B));
+						mvsquelch->selection_color( fl_rgb_color(
+							progdefaults.bwsrSldrSelColor.R,
+							progdefaults.bwsrSldrSelColor.G,
+							progdefaults.bwsrSldrSelColor.B));
+						mvsquelch->callback( (Fl_Callback *)cb_mvsquelch);
+						mvsquelch->tooltip(_("Set Viewer Squelch"));
 
 					// clear button
-					btnClearMViewer = new Fl_Button(
+						btnClearMViewer = new Fl_Button(
 										mvsquelch->x() + mvsquelch->w(), g->y(),
 										75, g->h(),
 										make_icon_label(_("Clear"), edit_clear_icon));
-					btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
-					set_icon_label(btnClearMViewer);
-					btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
+						btnClearMViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
+						set_icon_label(btnClearMViewer);
+						btnClearMViewer->callback((Fl_Callback*)cb_btnClearMViewer);
 
-					g->resizable(mvsquelch);
-				g->end();
+						g->resizable(mvsquelch);
+					g->end();
 
-				mvgroup->resizable(mainViewer);
-			mvgroup->end();
+					mvgroup->resizable(mainViewer);
+				mvgroup->end();
 
-			int rh = text_panel->h() / 2 + 0.5;
-			ReceiveText = new FTextRX(
-							text_panel->x() + mvgroup->w(), text_panel->y(),
-							text_panel->w() - mvgroup->w(), rh, "" );
-				ReceiveText->color(
-					fl_rgb_color(
-					progdefaults.RxColor.R,
-					progdefaults.RxColor.G,
-					progdefaults.RxColor.B),
-					progdefaults.RxTxSelectcolor);
-				ReceiveText->setFont(progdefaults.RxFontnbr);
-				ReceiveText->setFontSize(progdefaults.RxFontsize);
-				ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-				ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
-				ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
-				ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
-				ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+				int rh = text_panel->h() / 2 + 0.5;
+				ReceiveText = new FTextRX(
+								text_panel->x() + mvgroup->w(), text_panel->y(),
+								text_panel->w() - mvgroup->w(), rh, "" );
+					ReceiveText->color(
+						fl_rgb_color(
+							progdefaults.RxColor.R,
+							progdefaults.RxColor.G,
+							progdefaults.RxColor.B),
+							progdefaults.RxTxSelectcolor);
+					ReceiveText->setFont(progdefaults.RxFontnbr);
+					ReceiveText->setFontSize(progdefaults.RxFontsize);
+					ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+					ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+					ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+					ReceiveText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+					ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
 				FHdisp = new Raster(
-					text_panel->x() + mvgroup->w(), text_panel->y(),
-					text_panel->w() - mvgroup->w(), rh);
-				FHdisp->align(FL_ALIGN_CLIP);
-				FHdisp->hide();
+						text_panel->x() + mvgroup->w(), text_panel->y(),
+						text_panel->w() - mvgroup->w(), rh);
+					FHdisp->align(FL_ALIGN_CLIP);
+					FHdisp->hide();
 
 				TransmitText = new FTextTX(
-					text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
-					text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h() );
-				TransmitText->color(
-					fl_rgb_color(
-						progdefaults.TxColor.R,
-						progdefaults.TxColor.G,
-						progdefaults.TxColor.B),
-					progdefaults.RxTxSelectcolor);
-				TransmitText->setFont(progdefaults.TxFontnbr);
-				TransmitText->setFontSize(progdefaults.TxFontsize);
-				TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
-				TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
-				TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
-				TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
-				TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
-				TransmitText->align(FL_ALIGN_CLIP);
+						text_panel->x() + mvgroup->w(), text_panel->y() + ReceiveText->h(),
+						text_panel->w() - mvgroup->w(), text_panel->h() - ReceiveText->h() );
+					TransmitText->color(
+						fl_rgb_color(
+							progdefaults.TxColor.R,
+							progdefaults.TxColor.G,
+							progdefaults.TxColor.B),
+							progdefaults.RxTxSelectcolor);
+					TransmitText->setFont(progdefaults.TxFontnbr);
+					TransmitText->setFontSize(progdefaults.TxFontsize);
+					TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+					TransmitText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+					TransmitText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+					TransmitText->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+					TransmitText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+					TransmitText->align(FL_ALIGN_CLIP);
 
 				minbox = new Fl_Box(
-					text_panel->x(), text_panel->y() + 66, // fixed by Raster min height
-					text_panel->w() - 100, text_panel->h() - 2 * 66); // fixed by HMIN & Hwfall max
-				minbox->hide();
+						text_panel->x(), text_panel->y() + 66, // fixed by Raster min height
+						text_panel->w() - 100, text_panel->h() - 2 * 66); // fixed by HMIN & Hwfall max
+					minbox->hide();
 
 				text_panel->resizable(minbox);
 			text_panel->end();
@@ -6345,7 +6348,7 @@ void create_fl_digi_main(int argc, char** argv)
 	if (bWF_only)
 		fl_digi_main->size_range(WMIN, WF_only_height, 0, WF_only_height);
 	else
-		fl_digi_main->size_range(WMIN, main_hmin, 0, 0);
+		fl_digi_main->size_range(WMIN, HMIN, 0, 0);
 
 	set_colors();
 }
