@@ -329,9 +329,16 @@ void default_cty_dat_pathname()
 void select_cty_dat_pathname()
 {
 	string deffilename = progdefaults.cty_dat_pathname;
-	const char *p = FSEL::select(_("Locate cty.dat"), _("cty.dat\t*"), deffilename.c_str());
+	const char *p = FSEL::select(_("Locate cty.dat folder"), _("cty.dat\t*"), deffilename.c_str());
 	if (p) {
 		string nupath = p;
+		size_t ptr;
+//crappy win32 again
+		ptr = nupath.find("\\");
+		while (ptr != string::npos) {
+			nupath[ptr] = '/';
+			ptr = nupath.find("\\");
+		}
 		size_t endslash = nupath.rfind("/");
 		if ((endslash != string::npos) && (endslash != (nupath.length()-1)))
 			nupath.erase(endslash + 1);

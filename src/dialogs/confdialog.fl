@@ -949,10 +949,10 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.RSTdefault);}
               }
               Fl_Input txt_cty_dat_pathname {
-                label {cty.dat pathname}
+                label {cty.dat folder}
                 callback {progdefaults.cty_dat_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-filename for cty.dat} xywh {189 180 346 24} when 1
+                tooltip {Enter full path-name for cty.dat folder} xywh {189 180 346 24} when 1
                 code0 {o->value(progdefaults.cty_dat_pathname.c_str());}
                 code1 {\#include "dxcc.h"}
                 class Fl_Input2

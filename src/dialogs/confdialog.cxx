@@ -5880,8 +5880,8 @@ Fl_Double_Window* ConfigureDialog() {
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
               } // Fl_Check_Button* btnRSTdefault
-              { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(189, 180, 346, 24, _("cty.dat pathname"));
-                txt_cty_dat_pathname->tooltip(_("Enter full path-filename for cty.dat"));
+              { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(189, 180, 346, 24, _("cty.dat folder"));
+                txt_cty_dat_pathname->tooltip(_("Enter full path-name for cty.dat folder"));
                 txt_cty_dat_pathname->box(FL_DOWN_BOX);
                 txt_cty_dat_pathname->color(FL_BACKGROUND2_COLOR);
                 txt_cty_dat_pathname->selection_color(FL_SELECTION_COLOR);
