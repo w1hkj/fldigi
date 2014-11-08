@@ -57,10 +57,13 @@ static char figures[32] = {
 	'9',	'?',	'&',	' ',	'.',	'/',	';',	' '
 };
 
-const double view_rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
-const double view_rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
-const int    view_rtty::BITS[]  = {5, 7, 8};
-const int view_rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
+const double	view_rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
+// FILTLEN must be same size as BAUD
+const double	view_rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
+const int		view_rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 128, 64};
+const int		view_rtty::BITS[]  = {5, 7, 8};
+const int		view_rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
+const int		view_rtty::numbauds = (int)(sizeof(BAUD) / sizeof(*BAUD));
 
 void view_rtty::rx_init()
 {
@@ -107,20 +110,12 @@ view_rtty::~view_rtty()
 
 void view_rtty::reset_filters(int ch)
 {
-	int filter_length = 1024;
-	if (channel[ch].mark_filt) {
-		channel[ch].mark_filt->rtty_filter(rtty_baud/samplerate);
-	} else {
-		channel[ch].mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		channel[ch].mark_filt->rtty_filter(rtty_baud/samplerate);
-	}
-
-	if (channel[ch].space_filt) {
-		channel[ch].space_filt->rtty_filter(rtty_baud/samplerate);
-	} else {
-		channel[ch].space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		channel[ch].space_filt->rtty_filter(rtty_baud/samplerate);
-	}
+	delete channel[ch].mark_filt;
+	channel[ch].mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
+	channel[ch].mark_filt->rtty_filter(rtty_baud/samplerate);
+	delete channel[ch].space_filt;
+	channel[ch].space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
+	channel[ch].space_filt->rtty_filter(rtty_baud/samplerate);
 }
 
 void view_rtty::restart()
@@ -130,6 +125,8 @@ void view_rtty::restart()
 	rtty_shift = shift = (progdefaults.rtty_shift < rtty::numshifts ?
 			      SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
 	rtty_baud = BAUD[progdefaults.rtty_baud];
+	filter_length = FILTLEN[progdefaults.rtty_baud];
+
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];
 	if (rtty_bits == 5)
 		rtty_parity = RTTY_PARITY_NONE;

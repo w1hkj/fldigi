@@ -52,6 +52,8 @@ using namespace std;
 
 #define FILTER_DEBUG 0
 
+#define SHAPER_BAUD 150
+
 //=====================================================================
 // Baudot support
 //=====================================================================
@@ -77,10 +79,13 @@ int dspcnt = 0;
 
 static char msg1[20];
 
-const double rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
-const double rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
-const int	rtty::BITS[]  = {5, 7, 8};
-const int	rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
+const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
+// FILTLEN must be same size as BAUD
+const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
+const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 128, 64};
+const int		rtty::BITS[]  = {5, 7, 8};
+const int		rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
+const int		rtty::numbauds = (int)(sizeof(BAUD) / sizeof(*BAUD));
 
 void rtty::tx_init(SoundBase *sc)
 {
@@ -197,21 +202,12 @@ rtty::~rtty()
 
 void rtty::reset_filters()
 {
-	int filter_length = 1024;
-
-	if (mark_filt) {
-		mark_filt->rtty_filter(rtty_baud/samplerate);
-	} else {
-		mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		mark_filt->rtty_filter(rtty_baud/samplerate);
-     }
-
-	if (space_filt) {
-		space_filt->rtty_filter(rtty_baud/samplerate);
-	} else {
-		space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
-		space_filt->rtty_filter(rtty_baud/samplerate);
-     }
+	delete mark_filt;
+	mark_filt = new fftfilt(rtty_baud/samplerate, filter_length);
+	mark_filt->rtty_filter(rtty_baud/samplerate);
+	delete space_filt;
+	space_filt = new fftfilt(rtty_baud/samplerate, filter_length);
+	space_filt->rtty_filter(rtty_baud/samplerate);
 }
 
 void rtty::restart()
@@ -220,7 +216,10 @@ void rtty::restart()
 
 	rtty_shift = shift = (progdefaults.rtty_shift < numshifts ?
 				  SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
+	if (progdefaults.rtty_baud > numbauds - 1) progdefaults.rtty_baud = numbauds - 1;
 	rtty_baud = BAUD[progdefaults.rtty_baud];
+	filter_length = FILTLEN[progdefaults.rtty_baud];
+
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];
 	if (rtty_bits == 5)
 		rtty_parity = RTTY_PARITY_NONE;
@@ -615,7 +614,7 @@ double value;
 if (snum < 2 * filter_length) {
 	frequency = 1000.0;
 	ook(snum);
-	z = complex(value, value);
+	z = cmplx(value, value);
 	ook_signal << snum << "," << z.real() << ",";
 //	snum++;
 } else {
@@ -680,6 +679,7 @@ if (mnum < 2 * filter_length)
 
 //			double v0, v1, v2, v3, v4, v5;
 			double v3;
+
 // no ATC
 //			v0 = mark_mag - space_mag;
 // Linear ATC
@@ -702,7 +702,6 @@ if (mnum < 2 * filter_length)
 //					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
 //					(mark_env - noise_floor) * (mark_env - noise_floor) -
 //					(space_env - noise_floor) * (space_env - noise_floor));
-
 //				switch (progdefaults.rtty_demodulator) {
 //			switch (2) { // Optimal ATC
 //			case 0: // linear ATC
@@ -868,11 +867,13 @@ double rtty::FSKnco()
 void rtty::send_symbol(int symbol, int len)
 {
 	acc_symbols += len;
-#if 0
+
+//#if !SHAPER_BAUD
+if (!progStatus.shaped_rtty) {
+//if (rtty_baud > SHAPER_BAUD) {
 	double freq;
 
-	if (reverse)
-		symbol = !symbol;
+	if (reverse) symbol = !symbol;
 
 	if (symbol)
 		freq = get_txfreq_woffset() + shift / 2.0;
@@ -886,8 +887,8 @@ void rtty::send_symbol(int symbol, int len)
 		else
 			FSKbuf[i] = 0.0 * FSKnco();
 	}
-
-#else
+} else {
+//#else
 
 	double const freq1 = get_txfreq_woffset() + shift / 2.0;
 	double const freq2 = get_txfreq_woffset() - shift / 2.0;
@@ -926,8 +927,8 @@ void rtty::send_symbol(int symbol, int len)
 		else
 			FSKbuf[i] = 0.0 * FSKnco();
 	}
-#endif
-
+}
+//#endif
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, symbollen);
 	else
@@ -936,7 +937,9 @@ void rtty::send_symbol(int symbol, int len)
 
 void rtty::send_stop()
 {
-#if 0
+//#if !SHAPER_BAUD
+if (!progStatus.shaped_rtty) {
+//if (rtty_baud >= SHAPER_BAUD) {
 	double freq;
 	bool invert = reverse;
 
@@ -952,7 +955,8 @@ void rtty::send_stop()
 		else
 			FSKbuf[i] = FSKnco();
 	}
-#else
+} else {
+//#else
 
 	double const freq1 = get_txfreq_woffset() + shift / 2.0;
 	double const freq2 = get_txfreq_woffset() - shift / 2.0;
@@ -976,13 +980,12 @@ void rtty::send_stop()
 		else
 			FSKbuf[i] = FSKnco();
 	}
-#endif
-
+}
+//#endif
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, stoplen);
 	else
 		ModulateXmtr(outbuf, stoplen);
-
 }
 
 void rtty::flush_stream()
@@ -1042,6 +1045,8 @@ void rtty::send_char(int c)
 		if (c)
 			put_echo_char(progdefaults.rx_lowercase ? tolower(c) : c);
 	}
+	else
+		put_echo_char(c);
 }
 
 void rtty::send_idle()
@@ -1085,10 +1090,11 @@ int rtty::tx_process()
 			send_char(0x08);
 			send_char(0x02);
 		}
-#if 1
-// if (progdefaults.rtty_shaper)
-		flush_stream();
-#endif
+	if (progStatus.shaped_rtty) flush_stream();
+//	if (rtty_baud <= SHAPER_BAUD) flush_stream();
+//#if SHAPER_BAUD
+//	flush_stream();
+//#endif
 		cwid();
 		return -1;
 	}

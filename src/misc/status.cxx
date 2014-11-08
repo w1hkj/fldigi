@@ -174,6 +174,7 @@ status progStatus = {
 	progdefaults.useUART,
 	progdefaults.PreferXhairScope,
 	progdefaults.PseudoFSK,
+	true,						// bool shaped_rtty
 	progdefaults.UOSrx,
 	progdefaults.UOStx,
     DEFAULT_XMLPRC_IP_ADDRESS,
@@ -428,6 +429,7 @@ if (!bWF_only) {
 	spref.set("rtty_useUART", useUART);
 	spref.set("preferxhairscope", PreferXhairScope);
 	spref.set("psaudofsk", PseudoFSK);
+	spref.set("shaped_rtty", shaped_rtty);
 	spref.set("uosrx", UOSrx);
 	spref.set("uostx", UOStx);
 
@@ -625,6 +627,7 @@ void status::loadLastState()
 	spref.get("rtty_useUART", i, useUART); useUART = i;
 	spref.get("preferxhairscope", i, PreferXhairScope); PreferXhairScope = i;
 	spref.get("psaudofsk", i, PseudoFSK); PseudoFSK = i;
+	spref.get("shaped_rtty", i, shaped_rtty); shaped_rtty = i;
 	spref.get("uosrx", i, UOSrx); UOSrx = i;
 	spref.get("uostx", i, UOStx); UOStx = i;
 

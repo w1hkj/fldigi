@@ -137,6 +137,7 @@ struct status {
 	bool	useUART;
 	bool	PreferXhairScope;
 	bool	PseudoFSK;
+	bool	shaped_rtty;
 	bool	UOSrx;
 	bool	UOStx;
 // end Contestia, Olivia, RTTY state values

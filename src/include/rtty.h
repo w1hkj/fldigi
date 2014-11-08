@@ -118,10 +118,12 @@ enum RTTY_PARITY {
 	RTTY_PARITY_ONE
 };
 
-	static const double SHIFT[];
-	static const double BAUD[];
-	static const int	BITS[];
-	static const int numshifts;
+	static const double	SHIFT[];
+	static const double	BAUD[];
+	static const int		BITS[];
+	static const int		FILTLEN[];
+	static const int		numshifts;
+	static const int		numbauds;
 
 private:
 
@@ -159,6 +161,7 @@ private:
 	double space_phase;
 	fftfilt *mark_filt;
 	fftfilt *space_filt;
+	int filter_length;
 
 	double *pipe;
 	double *dsppipe;

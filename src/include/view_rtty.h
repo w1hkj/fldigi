@@ -60,10 +60,13 @@ enum RTTY_PARITY {
 	RTTY_PARITY_ONE
 };
 
-	static const double SHIFT[];
-	static const double BAUD[];
-	static const int    BITS[];
-	static const int numshifts;
+	static const double	SHIFT[];
+	static const double	BAUD[];
+	static const int		BITS[];
+	static const int		FILTLEN[];
+	static const int		numshifts;
+	static const int		numbauds;
+	int		filter_length;
 
 private:
 

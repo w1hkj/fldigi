@@ -322,8 +322,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -2767,14 +2767,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355}
+        xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3502,7 +3502,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContestia {
             label {Cont'} open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {55 80 490 200} box ENGRAVED_FRAME
@@ -3524,7 +3524,7 @@ progdefaults.changed = true;} open
                 callback {progdefaults.contestiatones = o->index();
 set_contestia_default_integ();
 resetCONTESTIA();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
                 tooltip {Select number of tones} xywh {371 100 70 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szContestiaTones);}
                 code1 {o->index(progdefaults.contestiatones);}
@@ -3648,8 +3648,136 @@ progdefaults.changed = true;}
               xywh {0 50 600 330} selection_color 50
             } {
               Fl_Group {} {
-                label Rx open
+                label Tx open
                 xywh {0 75 600 305} align 5
+              } {
+                Fl_Group selShift {
+                  label {Carrier shift}
+                  callback {progdefaults.rtty_shift = o->index();
+if (progdefaults.rtty_shift == o->lsize() - 1)
+    selCustomShift->activate();
+else
+    selCustomShift->deactivate();
+selCustomShift->redraw();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select carrier shift} xywh {65 104 100 20} box DOWN_BOX color 7 align 8 when 1
+                  code0 {o->add(szShifts);o->index(progdefaults.rtty_shift);
+                       o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_ListBox
+                } {}
+                Fl_Counter selCustomShift {
+                  label {Custom shift}
+                  callback {progdefaults.rtty_custom_shift = o->value();
+resetRTTY();
+progdefaults.changed = true;}
+                  tooltip {Input carrier shift} xywh {65 137 100 20} align 8 minimum 10 maximum 1200 step 10 value 450
+                  code0 {o->lstep(100.0);}
+                  code1 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Group selBaud {
+                  label {Baud rate}
+                  callback {progdefaults.rtty_baud = o->index();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select carrier baudrate} xywh {65 170 100 20} box DOWN_BOX color 7 align 8 when 1
+                  code0 {o->add(szBauds);}
+                  code1 {o->index(progdefaults.rtty_baud);}
+                  code2 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_ListBox
+                } {}
+                Fl_Group selBits {
+                  label {Bits per character}
+                  callback {progdefaults.rtty_bits = o->index();
+selParity->do_callback();} open
+                  tooltip {Select \# bits / char} xywh {65 203 100 20} box DOWN_BOX color 7 align 8 when 1
+                  code0 {o->add(szSelBits);o->index(progdefaults.rtty_bits);
+                       o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_ListBox
+                } {}
+                Fl_Group selParity {
+                  label Parity
+                  callback {if (progdefaults.rtty_bits == 0) {
+  progdefaults.rtty_parity = rtty::RTTY_PARITY_NONE;
+  o->index(progdefaults.rtty_parity);
+} else
+  progdefaults.rtty_parity = o->index();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select parity} xywh {65 236 100 20} box DOWN_BOX color 7 align 8 when 1
+                  code0 {o->add(szParity);o->index(progdefaults.rtty_parity);
+                       o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_ListBox
+                } {}
+                Fl_Group selStopBits {
+                  label {Stop bits}
+                  callback {progdefaults.rtty_stop = o->index();
+resetRTTY();
+progdefaults.changed = true;} open
+                  tooltip {Select \# stop bits} xywh {65 270 100 20} box DOWN_BOX color 7 align 8 when 1
+                  code0 {o->add(szStopBits);o->index(progdefaults.rtty_stop);
+                       o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_ListBox
+                } {}
+                Fl_Check_Button btnAUTOCRLF {
+                  label AutoCRLF
+                  callback {progdefaults.rtty_autocrlf = o->value();
+progdefaults.changed = true;}
+                  tooltip {Add CRLF after page width characters} xywh {316 103 90 22} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.rtty_autocrlf);}
+                }
+                Fl_Counter cntrAUTOCRLF {
+                  label chars
+                  callback {progdefaults.rtty_autocount = (int)o->value();
+progdefaults.changed = true;}
+                  tooltip {Auto CRLF line length} xywh {427 104 65 20} type Simple align 8 minimum 68 maximum 80 step 1 value 72
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+                Fl_Check_Button btnCRCRLF {
+                  label {CR-CR-LF}
+                  callback {progdefaults.rtty_crcrlf = o->value();
+progdefaults.changed = true;}
+                  tooltip {Use "cr cr lf" for "cr lf"} xywh {316 136 90 22} down_box DOWN_BOX when 6
+                  code0 {o->value(progdefaults.rtty_crcrlf);}
+                }
+                Fl_Check_Button chkUOStx {
+                  label {TX - unshift on space}
+                  callback {progdefaults.UOStx=o->value();
+progdefaults.changed = true;}
+                  tooltip {Revert to Unsifted char's on a space} xywh {316 169 63 22} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.UOStx);}
+                }
+                Fl_Check_Button chk_shaped_rtty {
+                  label {Shaped Tx}
+                  callback {progStatus.shaped_rtty = o->value();}
+                  tooltip {Use wave shaping on Tx signal} xywh {316 235 212 22} down_box DOWN_BOX value 1
+                  code0 {o->value(progStatus.shaped_rtty);}
+                }
+                Fl_Check_Button chkPseudoFSK {
+                  label {Pseudo-FSK - right channel}
+                  callback {progdefaults.PseudoFSK = o->value();
+chkPseudoFSK2->value(o->value());
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  if (progdefaults.mono_audio) {
+    progdefaults.mono_audio = false;
+    chkForceMono->value(0);
+    resetSoundCard();
+  }
+}}
+                  tooltip {Create keyed square wave on right audio channel} xywh {316 202 212 22} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PseudoFSK);}
+                }
+              }
+              Fl_Group {} {
+                label Rx open
+                xywh {0 75 600 305} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -3765,127 +3893,6 @@ progdefaults.changed = true;
                     tooltip {Color of Mark Track} xywh {340 311 41 18} color 2 align 8
                     code0 {o->color(fl_rgb_color(progdefaults.rttymarkRGBI.R,progdefaults.rttymarkRGBI.G,progdefaults.rttymarkRGBI.B));}
                   }
-                }
-              }
-              Fl_Group {} {
-                label Tx open
-                xywh {0 75 600 305} align 5 hide
-              } {
-                Fl_Group selShift {
-                  label {Carrier shift}
-                  callback {progdefaults.rtty_shift = o->index();
-if (progdefaults.rtty_shift == o->lsize() - 1)
-    selCustomShift->activate();
-else
-    selCustomShift->deactivate();
-selCustomShift->redraw();
-resetRTTY();
-progdefaults.changed = true;} open
-                  tooltip {Select carrier shift} xywh {65 104 100 20} box DOWN_BOX color 7 align 8 when 1
-                  code0 {o->add(szShifts);o->index(progdefaults.rtty_shift);
-                       o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Counter selCustomShift {
-                  label {Custom shift}
-                  callback {progdefaults.rtty_custom_shift = o->value();
-resetRTTY();
-progdefaults.changed = true;}
-                  tooltip {Input carrier shift} xywh {65 137 100 20} align 8 minimum 10 maximum 1000 step 1 value 450
-                  code0 {o->lstep(10.0);}
-                  code1 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Counter2
-                }
-                Fl_Group selBaud {
-                  label {Baud rate}
-                  callback {progdefaults.rtty_baud = o->index();
-resetRTTY();
-progdefaults.changed = true;} open
-                  tooltip {Select carrier baudrate} xywh {65 170 100 20} box DOWN_BOX color 7 align 8 when 1
-                  code0 {o->add(szBauds);o->index(progdefaults.rtty_baud);
-                       o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group selBits {
-                  label {Bits per character}
-                  callback {progdefaults.rtty_bits = o->index();
-selParity->do_callback();} open
-                  tooltip {Select \# bits / char} xywh {65 203 100 20} box DOWN_BOX color 7 align 8 when 1
-                  code0 {o->add(szSelBits);o->index(progdefaults.rtty_bits);
-                       o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group selParity {
-                  label Parity
-                  callback {if (progdefaults.rtty_bits == 0) {
-  progdefaults.rtty_parity = rtty::RTTY_PARITY_NONE;
-  o->index(progdefaults.rtty_parity);
-} else
-  progdefaults.rtty_parity = o->index();
-resetRTTY();
-progdefaults.changed = true;} open
-                  tooltip {Select parity} xywh {65 236 100 20} box DOWN_BOX color 7 align 8 when 1
-                  code0 {o->add(szParity);o->index(progdefaults.rtty_parity);
-                       o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Group selStopBits {
-                  label {Stop bits}
-                  callback {progdefaults.rtty_stop = o->index();
-resetRTTY();
-progdefaults.changed = true;} open
-                  tooltip {Select \# stop bits} xywh {65 270 100 20} box DOWN_BOX color 7 align 8 when 1
-                  code0 {o->add(szStopBits);o->index(progdefaults.rtty_stop);
-                       o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_ListBox
-                } {}
-                Fl_Check_Button btnAUTOCRLF {
-                  label AutoCRLF
-                  callback {progdefaults.rtty_autocrlf = o->value();
-progdefaults.changed = true;}
-                  tooltip {Add CRLF after page width characters} xywh {316 103 90 22} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.rtty_autocrlf);}
-                }
-                Fl_Counter cntrAUTOCRLF {
-                  label chars
-                  callback {progdefaults.rtty_autocount = (int)o->value();
-progdefaults.changed = true;}
-                  tooltip {Auto CRLF line length} xywh {427 104 65 20} type Simple align 8 minimum 68 maximum 80 step 1 value 72
-                  code0 {o->labelsize(FL_NORMAL_SIZE);}
-                  class Fl_Counter2
-                }
-                Fl_Check_Button btnCRCRLF {
-                  label {CR-CR-LF}
-                  callback {progdefaults.rtty_crcrlf = o->value();
-progdefaults.changed = true;}
-                  tooltip {Use "cr cr lf" for "cr lf"} xywh {316 136 90 22} down_box DOWN_BOX when 6
-                  code0 {o->value(progdefaults.rtty_crcrlf);}
-                }
-                Fl_Check_Button chkUOStx {
-                  label {TX - unshift on space}
-                  callback {progdefaults.UOStx=o->value();
-progdefaults.changed = true;}
-                  tooltip {Revert to Unsifted char's on a space} xywh {316 169 63 22} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.UOStx);}
-                }
-                Fl_Check_Button chkPseudoFSK {
-                  label {Pseudo-FSK - right channel}
-                  callback {progdefaults.PseudoFSK = o->value();
-chkPseudoFSK2->value(o->value());
-progdefaults.changed = true;
-if (o->value()) {
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
-  progdefaults.PTTrightchannel = false;
-  btnPTTrightchannel->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
-}}
-                  tooltip {Create keyed square wave on right audio channel} xywh {316 202 212 22} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.PseudoFSK);}
                 }
               }
               Fl_Group {} {
