@@ -419,7 +419,7 @@ void FTextBase::init_context_menu(void)
 	for (int i = 0; i < context_menu->size() - 1; i++) {
 		if (context_menu[i].user_data() == 0 &&
 		    context_menu[i].labeltype() == _FL_MULTI_LABEL) {
-			set_icon_label(&context_menu[i]);
+			icons::set_icon_label(&context_menu[i]);
 			context_menu[i].user_data(this);
 		}
 	}
@@ -476,10 +476,10 @@ void FTextBase::reset_styles(int set)
 // ----------------------------------------------------------------------------
 
 Fl_Menu_Item FTextView::menu[] = {
-	{ make_icon_label(_("Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Select All"), edit_select_all_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Save as..."), save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Select All"), edit_select_all_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Save as..."), save_as_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ _("Word wrap"),       0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
@@ -549,10 +549,10 @@ int FTextView::handle(int event)
 
 void FTextView::handle_context_menu(void)
 {
-	set_active(&menu[VIEW_MENU_COPY], tbuf->selected());
-	set_active(&menu[VIEW_MENU_CLEAR], tbuf->length());
-	set_active(&menu[VIEW_MENU_SELECT_ALL], tbuf->length());
-	set_active(&menu[VIEW_MENU_SAVE], tbuf->length());
+	icons::set_active(&menu[VIEW_MENU_COPY], tbuf->selected());
+	icons::set_active(&menu[VIEW_MENU_CLEAR], tbuf->length());
+	icons::set_active(&menu[VIEW_MENU_SELECT_ALL], tbuf->length());
+	icons::set_active(&menu[VIEW_MENU_SAVE], tbuf->length());
 	if (wrap)
 		menu[VIEW_MENU_WRAP].set();
 	else
@@ -639,11 +639,11 @@ loop:
 
 
 Fl_Menu_Item FTextEdit::menu[] = {
-	{ make_icon_label(_("Cut"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Paste"), edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Insert file..."), file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Cut"), edit_cut_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Copy"), edit_copy_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Paste"), edit_paste_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Insert file..."), file_open_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ _("Word wrap"), 0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL } ,
 	{ 0 }
 };
@@ -819,9 +819,9 @@ LOG_INFO("DnD file %s", text.c_str());
 void FTextEdit::handle_context_menu(void)
 {
 	bool selected = tbuf->selected();
-	set_active(&menu[EDIT_MENU_CUT], selected);
-	set_active(&menu[EDIT_MENU_COPY], selected);
-	set_active(&menu[EDIT_MENU_CLEAR], tbuf->length());
+	icons::set_active(&menu[EDIT_MENU_CUT], selected);
+	icons::set_active(&menu[EDIT_MENU_COPY], selected);
+	icons::set_active(&menu[EDIT_MENU_CLEAR], tbuf->length());
 
 	if (wrap)
 		menu[EDIT_MENU_WRAP].set();

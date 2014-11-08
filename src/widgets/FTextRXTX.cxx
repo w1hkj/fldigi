@@ -99,18 +99,18 @@ private:
 };
 
 Fl_Menu_Item FTextRX::menu[] = {
-	{ make_icon_label(_("Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("QTH"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Country"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("QTH"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Country"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 
 	{ 0 }, // VIEW_MENU_COPY
 	{ 0 }, // VIEW_MENU_CLEAR
@@ -531,10 +531,10 @@ void FTextRX::handle_context_menu(void)
 #undef test_item
 
 	// availability of editing items depend on buffer state
-	set_active(&menu[RX_MENU_COPY], tbuf->selected());
-	set_active(&menu[RX_MENU_CLEAR], tbuf->length());
-	set_active(&menu[RX_MENU_SELECT_ALL], tbuf->length());
-	set_active(&menu[RX_MENU_SAVE], tbuf->length());
+	icons::set_active(&menu[RX_MENU_COPY], tbuf->selected());
+	icons::set_active(&menu[RX_MENU_CLEAR], tbuf->length());
+	icons::set_active(&menu[RX_MENU_SELECT_ALL], tbuf->length());
+	icons::set_active(&menu[RX_MENU_SAVE], tbuf->length());
 
 	if (wrap)
 		menu[RX_MENU_WRAP].set();
@@ -748,10 +748,10 @@ void FTextRX::dxcc_tooltip(void* obj)
 
 
 Fl_Menu_Item FTextTX::menu[] = {
-	{ make_icon_label(_("Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ make_icon_label(_("Send image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Send image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 
 	{ 0 }, // EDIT_MENU_CUT
 	{ 0 }, // EDIT_MENU_COPY
@@ -1210,12 +1210,12 @@ void FTextTX::handle_context_menu(void)
 
 	bool modify_text_ok = insert_position() >= txpos;
 	bool selected = tbuf->selected();
- 	set_active(&menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
-	set_active(&menu[TX_MENU_CLEAR], tbuf->length());
-	set_active(&menu[TX_MENU_CUT], selected && modify_text_ok);
-	set_active(&menu[TX_MENU_COPY], selected);
-	set_active(&menu[TX_MENU_PASTE], modify_text_ok);
-	set_active(&menu[TX_MENU_READ], modify_text_ok);
+ 	icons::set_active(&menu[TX_MENU_MFSK16_IMG], active_modem->get_cap() & modem::CAP_IMG);
+	icons::set_active(&menu[TX_MENU_CLEAR], tbuf->length());
+	icons::set_active(&menu[TX_MENU_CUT], selected && modify_text_ok);
+	icons::set_active(&menu[TX_MENU_COPY], selected);
+	icons::set_active(&menu[TX_MENU_PASTE], modify_text_ok);
+	icons::set_active(&menu[TX_MENU_READ], modify_text_ok);
 
 	if (wrap)
 		menu[TX_MENU_WRAP].set();

@@ -738,7 +738,7 @@ progdefaults.changed = true;}
             label General open
             tooltip {User Interface - General} xywh {0 50 600 330} hide
           } {
-            Fl_Group {} {
+            Fl_Group {} {open
               xywh {60 77 496 76} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
@@ -752,7 +752,7 @@ progdefaults.changed = true;}
               Fl_Check_Button chkMenuIcons {
                 label {Show menu icons}
                 callback {progdefaults.menuicons = o->value();
-toggle_icon_labels();
+icons::toggle_icon_labels();
 progdefaults.changed = true;}
                 tooltip {Enable / disable icons on menus} xywh {239 90 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}

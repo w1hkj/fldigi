@@ -384,21 +384,21 @@ void Wizard::create_wizard(void)
 		const char* label;
 		int align;
 	} buttons[] = {
-		{ &done, make_icon_label(_("Finish"), apply_icon), FL_ALIGN_LEFT },
-		{ &next, make_icon_label(_("Next"), right_arrow_icon), FL_ALIGN_RIGHT },
-		{ &prev, make_icon_label(_("Back"), left_arrow_icon), FL_ALIGN_LEFT },
-		// { &cancel, make_icon_label(_("Cancel"), process_stop_icon), FL_ALIGN_LEFT }
-		{ &cancel, make_icon_label(_("Close"), close_icon), FL_ALIGN_LEFT }
+		{ &done, icons::make_icon_label(_("Finish"), apply_icon), FL_ALIGN_LEFT },
+		{ &next, icons::make_icon_label(_("Next"), right_arrow_icon), FL_ALIGN_RIGHT },
+		{ &prev, icons::make_icon_label(_("Back"), left_arrow_icon), FL_ALIGN_LEFT },
+		// { &cancel, icons::make_icon_label(_("Cancel"), process_stop_icon), FL_ALIGN_LEFT }
+		{ &cancel, icons::make_icon_label(_("Close"), close_icon), FL_ALIGN_LEFT }
 	};
 	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
 		Fl_Button* b = *buttons[i].button = new Fl_Button(0, wizard->y() + wizard->h() + pad,
 								  btn_w, btn_h, buttons[i].label);
 		b->callback(wizard_cb, this);
-		set_icon_label(b);
+		icons::set_icon_label(b);
 		b->align(buttons[i].align | FL_ALIGN_INSIDE);
-		b->size(static_cast<int>(fl_width(get_icon_label_text(b)) + icon_pad * 2), b->h());
+		b->size(static_cast<int>(fl_width(icons::get_icon_label_text(b)) + icon_pad * 2), b->h());
 	}
-	set_active(prev, false);
+	icons::set_active(prev, false);
 	done->hide();
 	place_buttons();
 
@@ -444,7 +444,7 @@ void Wizard::destroy_wizard(void)
 
 	Fl_Button* b[] = { cancel, prev, next, done };
 	for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++)
-		free_icon_label(b[i]);
+		icons::free_icon_label(b[i]);
 
 	header->parent()->remove(header);
 	delete header;
@@ -485,9 +485,9 @@ void Wizard::wizard_cb(Fl_Widget* w, void* arg)
 
 	// modify buttons
 	if (cur == wiz->tabs[0].tab)
-		set_active(wiz->prev, false);
+		icons::set_active(wiz->prev, false);
 	else if (cur == wiz->tabs[1].tab)
-		set_active(wiz->prev, true);
+		icons::set_active(wiz->prev, true);
 	else if (cur == wiz->tabs.back().tab) {
 		wiz->done->show();
 		wiz->next->hide();

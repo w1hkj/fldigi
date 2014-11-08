@@ -569,7 +569,7 @@ Fl_Check_Button *chkMenuIcons=(Fl_Check_Button *)0;
 
 static void cb_chkMenuIcons(Fl_Check_Button* o, void*) {
   progdefaults.menuicons = o->value();
-toggle_icon_labels();
+icons::toggle_icon_labels();
 progdefaults.changed = true;
 }
 

@@ -297,17 +297,17 @@ Fl_Double_Window* createViewer(void)
 	Fl_Group *g = new Fl_Group(BWSR_BORDER, brwsViewer->y() + brwsViewer->h() + pad, viewerwidth, 20);
 	// close button
 	btnCloseViewer = new Fl_Button(g->w() + BWSR_BORDER - 75, g->y(), 75, g->h(),
-				       make_icon_label(_("Close"), close_icon));
+				icons::make_icon_label(_("Close"), close_icon));
 	btnCloseViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
-	set_icon_label(btnCloseViewer);
+	icons::set_icon_label(btnCloseViewer);
 	btnCloseViewer->callback((Fl_Callback*)cb_btnCloseViewer);
 
 	// clear button
 	btnClearViewer = new Fl_Button(btnCloseViewer->x() - btnCloseViewer->w() - pad,
-				       btnCloseViewer->y(), btnCloseViewer->w(), btnCloseViewer->h(),
-				       make_icon_label(_("Clear"), edit_clear_icon));
+				btnCloseViewer->y(), btnCloseViewer->w(), btnCloseViewer->h(),
+				icons::make_icon_label(_("Clear"), edit_clear_icon));
 	btnClearViewer->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
-	set_icon_label(btnClearViewer);
+	icons::set_icon_label(btnClearViewer);
 	btnClearViewer->callback((Fl_Callback*)cb_btnClearViewer);
 	btnClearViewer->tooltip(_("Left click to clear text\nRight click to reset frequencies"));
 

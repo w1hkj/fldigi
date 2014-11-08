@@ -267,9 +267,9 @@ Mode_Browser::Mode_Browser(void)
 	none_button->callback(button_cb, this);
 
 	close_button = new Fl_Button(w() - none_button->w() - pad, none_button->y(),
-				     none_button->w(), none_button->h(),
-				     make_icon_label(_("Close"), close_icon));
-	set_icon_label(close_button);
+				none_button->w(), none_button->h(),
+				icons::make_icon_label(_("Close"), close_icon));
+	icons::set_icon_label(close_button);
 	close_button->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 	close_button->callback(button_cb, this);
 
@@ -280,7 +280,7 @@ Mode_Browser::Mode_Browser(void)
 
 Mode_Browser::~Mode_Browser(void)
 {
-	free_icon_label(close_button);
+	icons::free_icon_label(close_button);
 	delete close_button;
 	delete all_button;
 	delete none_button;

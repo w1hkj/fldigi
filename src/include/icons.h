@@ -30,6 +30,8 @@
 #include <FL/fl_ask.H>
 #include "pixmaps.h"
 
+namespace icons {
+
 const char* make_icon_label(const char* text, const char** pixmap = 0);
 
 void set_icon_label(Fl_Menu_Item* item);
@@ -48,10 +50,12 @@ void set_active(Fl_Widget* w, bool v);
 
 // fltk message dialogs with nicer icons
 void set_message_icon(const char** pixmap);
-#define fl_input2(...) ({ set_message_icon(dialog_question_48_icon); fl_input(__VA_ARGS__); })
-#define fl_choice2(...) ({ set_message_icon(dialog_question_48_icon); fl_choice(__VA_ARGS__); })
-#define fl_message2(...) ({ set_message_icon(dialog_information_48_icon); fl_message(__VA_ARGS__); })
-#define fl_alert2(...) ({ set_message_icon(dialog_warning_48_icon); fl_alert(__VA_ARGS__); })
-#define fl_warn_choice2(...) ({ set_message_icon(dialog_warning_48_icon); fl_choice(__VA_ARGS__); })
+
+}
+#define fl_input2(...) ({ icons::set_message_icon(dialog_question_48_icon); fl_input(__VA_ARGS__); })
+#define fl_choice2(...) ({ icons::set_message_icon(dialog_question_48_icon); fl_choice(__VA_ARGS__); })
+#define fl_message2(...) ({ icons::set_message_icon(dialog_information_48_icon); fl_message(__VA_ARGS__); })
+#define fl_alert2(...) ({ icons::set_message_icon(dialog_warning_48_icon); fl_alert(__VA_ARGS__); })
+#define fl_warn_choice2(...) ({ icons::set_message_icon(dialog_warning_48_icon); fl_choice(__VA_ARGS__); })
 
 #endif // ICONS_H_

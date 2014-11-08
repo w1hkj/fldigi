@@ -1759,7 +1759,7 @@ public:
 		trx_mode id = active_modem->get_mode();
 		if ( id == MODE_SSB || id == MODE_WWV || id == MODE_ANALYSIS ||
 			id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ) {
-			*retval = xmlrpc_c::value_string("0,1,0,0,0.0");
+			*retval = xmlrpc_c::value_string("0:1:0");
 			return;
 		}
 
@@ -1787,28 +1787,82 @@ public:
 		}
 
 		unsigned int s0 = 0, chsamples = 0, over_head = 0;
-		unsigned int factor = 4;
+		int factor = 4;
 		unsigned int min_char = 2;
-		bool quick_timing = false;
 
-		if ( (id >= MODE_4X_PSK63R && id <= MODE_2X_PSK1000R) ||
-			 (id >= MODE_PSK31 && id <= MODE_PSK1000R) ||
-			  id == MODE_CW || id == MODE_RTTY ) {
-				quick_timing = true;
+		bool psk_8_flag = false;
+		bool fast_flag  = false;
+
+		if((id >= MODE_8PSK_FIRST) && (id <= MODE_8PSK_LAST))
+		   psk_8_flag = true;
+
+		if (((id >= MODE_4X_PSK63R) && (id <= MODE_2X_PSK1000R)) ||
+			((id >= MODE_PSK31)     && (id <= MODE_PSK1000R))    ||
+			 (id == MODE_CW)        || (id == MODE_RTTY)) {
+			if(psk_8_flag) fast_flag = false;
+			else fast_flag = true;
 		}
 
-		if((id >= MODE_8PSK_FIRST) && (id <= MODE_8PSK_LAST)) {
-			quick_timing = false;
-			// bit/symbol alignment
-			min_char = 3;
-			factor = min_char * 2;
+		if(((id >= MODE_THOR_FIRST)   && (id <= MODE_THOR_LAST))   ||
+		   ((id >= MODE_OLIVIA_FIRST) && (id <= MODE_OLIVIA_LAST))) {
+			fast_flag = false;
+			psk_8_flag = false;
 		}
 
-		if (quick_timing) {
+		if(fast_flag) {
 			s0 = number_of_samples(string(1,character));
 			chsamples = active_modem->char_samples;
 			over_head = active_modem->ovhd_samples;
-		} else {
+		} else if(psk_8_flag) { // This doens't seem to work with the MFSK modes
+#if 0
+			int n = progdefaults.busyChannelSeconds;
+			int sr = active_modem->get_samplerate();
+			int index = 0;
+			int count = 0;
+			int test_array[] = { 2, 8, 40, 64, 104, 112, 0 };
+
+            over_head = number_of_samples("");
+
+			for(index = 0; index < 6; index++) {
+				chsamples = number_of_samples(string(n, test_array[index])) - over_head;
+				chsamples /= n;
+				printf("%c = %3.8f ", test_array[index], (float)((float) chsamples / (float) sr));
+			}
+			printf("\n");
+
+#else
+			int n = 16;
+
+			switch(id) {
+				case MODE_8PSK250:
+					n = 16;
+					break;
+
+				case MODE_8PSK500:
+					n = 33;
+					break;
+
+				case MODE_8PSK1000:
+					n = 21;
+					break;
+
+				case MODE_8PSK1200:
+					n = 18;
+					break;
+
+				case MODE_8PSK1333:
+					n = 12;
+					break;
+
+				default:
+					n = 16;
+			}
+
+#endif
+            over_head = number_of_samples("");
+			chsamples = number_of_samples(string(n, character)) - over_head;
+			chsamples /= n;
+		} else { // This works for all of the remaining modes.
 			unsigned int s1 = 0, s2 = 0;
 			unsigned int temp = 0, no_of_chars = 1, k = 0;
 			s0 = s1 = s2 = number_of_samples(string(no_of_chars, character));

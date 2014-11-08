@@ -200,9 +200,9 @@ static Fl_Menu_Item notify_event_menu[] = {
 
 enum { NOTIFY_LIST_MENU_TOGGLE, NOTIFY_LIST_MENU_UPDATE, NOTIFY_LIST_MENU_REMOVE };
 static Fl_Menu_Item notify_list_context_menu[] = {
-	{ make_icon_label(_("Toggle"), shutdown_icon), 0, notify_update_cb, (void*)NOTIFY_LIST_MENU_TOGGLE },
-	{ make_icon_label(_("Update"), refresh_icon), 0, notify_update_cb, (void*)NOTIFY_LIST_MENU_UPDATE },
-	{ make_icon_label(_("Remove"), minus_icon), 0, notify_remove_cb, (void*)NOTIFY_LIST_MENU_REMOVE },
+	{ icons::make_icon_label(_("Toggle"), shutdown_icon), 0, notify_update_cb, (void*)NOTIFY_LIST_MENU_TOGGLE },
+	{ icons::make_icon_label(_("Update"), refresh_icon), 0, notify_update_cb, (void*)NOTIFY_LIST_MENU_UPDATE },
+	{ icons::make_icon_label(_("Remove"), minus_icon), 0, notify_remove_cb, (void*)NOTIFY_LIST_MENU_REMOVE },
 	{ 0 }
 };
 
@@ -513,19 +513,19 @@ static void notify_init_window(void)
 	dxcc_window->xclass(PACKAGE_TARNAME);
 
 	struct { Fl_Button* button; const char* label; } buttons[] = {
-		{ btnNotifyAdd, make_icon_label(_("Add"), plus_icon) },
-		{ btnNotifyRemove, make_icon_label(_("Remove"), minus_icon) },
-		{ btnNotifyUpdate, make_icon_label(_("Update"), refresh_icon) },
-		{ btnNotifyTest, make_icon_label(_("Test..."), applications_system_icon) },
-		{ btnNotifyClose, make_icon_label(_("Close"), close_icon) },
+		{ btnNotifyAdd, icons::make_icon_label(_("Add"), plus_icon) },
+		{ btnNotifyRemove, icons::make_icon_label(_("Remove"), minus_icon) },
+		{ btnNotifyUpdate, icons::make_icon_label(_("Update"), refresh_icon) },
+		{ btnNotifyTest, icons::make_icon_label(_("Test..."), applications_system_icon) },
+		{ btnNotifyClose, icons::make_icon_label(_("Close"), close_icon) },
 
-		{ btnNotifyDXCCSelect, make_icon_label(_("Select All"), edit_select_all_icon) },
-		{ btnNotifyDXCCDeselect, make_icon_label(_("Clear All"), edit_clear_icon) },
-		{ btnNotifyDXCCClose, make_icon_label(_("Close"), close_icon) },
+		{ btnNotifyDXCCSelect, icons::make_icon_label(_("Select All"), edit_select_all_icon) },
+		{ btnNotifyDXCCDeselect, icons::make_icon_label(_("Clear All"), edit_clear_icon) },
+		{ btnNotifyDXCCClose, icons::make_icon_label(_("Close"), close_icon) },
 	};
 	for (size_t i = 0; i < sizeof(buttons)/sizeof(*buttons); i++) {
 		buttons[i].button->label(buttons[i].label);
-		set_icon_label(buttons[i].button);
+		icons::set_icon_label(buttons[i].button);
 		buttons[i].button->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 	}
 	struct { Fl_Button* button; const char** icon; } buttons2[] = {
@@ -562,7 +562,7 @@ static void notify_init_window(void)
 	tblNotifyList->when(FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED);
 	tblNotifyList->menu(notify_list_context_menu);
 	for (int i = 0; i < notify_list_context_menu->size(); i++)
-		set_icon_label(&notify_list_context_menu[i]);
+		icons::set_icon_label(&notify_list_context_menu[i]);
 
 	w = (tblNotifyFilterDXCC->w() - Fl::box_dw(tblNotifyFilterDXCC->box()) -
 	     tblNotifyFilterDXCC->scrollbSize()) / NOTIFY_DXCC_NUMCOL;
