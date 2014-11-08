@@ -194,6 +194,8 @@ status progStatus = {
 
 	"CQ",				// string browser_search;
 
+	false,				// meters
+
 	false				// bool bLastStateRead;
 };
 
@@ -456,6 +458,8 @@ if (!bWF_only) {
 	spref.set("csma_enabled", csma_enabled);
 	spref.set("browser_search", browser_search.c_str());
 
+	spref.set("meters", meters);
+
 //	spref.set("xml_logbook", xml_logbook);
 }
 
@@ -674,6 +678,8 @@ void status::loadLastState()
 	spref.get("browser_search", strbuff, browser_search.c_str(), sizeof(strbuff) - 1);
 	browser_search = strbuff;
 	seek_re.recompile(browser_search.c_str());
+
+	spref.get("meters",  i, meters); meters = i;
 
 //	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;
 }

@@ -80,6 +80,7 @@
 
 #include "confdialog.h"
 #include "arq_io.h"
+#include "status.h"
 
 LOG_FILE_SOURCE(debug::LOG_RPC);
 
@@ -1940,7 +1941,7 @@ public:
 	}
 	static void set_smeter(int rfc)
 	{
-		if (smeter && pwrmeter && progdefaults.view_smeter) {
+		if (smeter && pwrmeter && progStatus.meters) {
 			smeter->value(rfc);
 			pwrmeter->hide();
 			smeter->show();
@@ -1964,7 +1965,7 @@ public:
 	}
 	static void set_pwrmeter(int rfc)
 	{
-		if (pwrmeter && smeter && progdefaults.view_smeter) {
+		if (pwrmeter && smeter && progStatus.meters) {
 			pwrmeter->value(rfc);
 			smeter->hide();
 			pwrmeter->show();

@@ -117,6 +117,7 @@
 #include "font_browser.h"
 
 #include "icons.h"
+#include "pixmaps.h"
 
 #include "rigsupport.h"
 
@@ -340,44 +341,19 @@ int Hmenu		= 22;
 static const int Hqsoframe	= pad + 3 * (Hentry + pad);
 int Hstatus	= 22;
 int Hmacros	= 22;
-//static const int w_inpFreq	= 80;
-//static const int w_inpTime	= 40;
-//static const int w_inpCall	= 120;
-//static const int w_inpName  	= 90;
-//static const int w_inpRstIn	= 30;
-//static const int w_inpRstOut	= 30;
-//static const int w_SerNo	= 40;
+
 static const int sw		= 22;
-
-//static const int wlabel		= 30;
-
-static const int wf1			= 30+80+6+4*Hentry+4*40;
+static const int wf1			= 395;
 
 static const int w_inpTime2	= 40;
 static const int w_inpCall2	= 100;
-//static const int w_inpName2	= 80;
 static const int w_inpRstIn2	= 30;
 static const int w_inpRstOut2	= 30;
-
-//static const int w_fm1 		= 25;
-//static const int w_fm2 		= 15;
-//static const int w_fm3 		= 15;
-//static const int w_fm4 		= 25;
-//static const int w_fm5 		= 25;
-//static const int w_fm6		= 30;
-//static const int w_fm7		= 35;
-//static const int w_inpState 	= 25;
-//static const int w_inpProv	= 25;
-//static const int w_inpCountry	= 60;
-//static const int w_inpLOC   	= 55;
-//static const int w_inpAZ    	= 30;
 
 // minimum height for raster display, FeldHell, is 66 pixels
 static const int minhtext = 66*2+4; // 66 : raster min height x 2 : min panel box, 4 : frame
 
-//static const int qh = Hqsoframe / 2;
-
-static int main_hmin = HMIN;  //500;//450;
+static int main_hmin = HMIN;
 
 time_t program_start_time = 0;
 
@@ -1807,19 +1783,6 @@ void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 		progStatus.tile_x = save_mvx;
 	}
 
-//	if (!progStatus.show_channels && mvgroup->w() > 0) {
-//		progStatus.show_channels = true;
-//		progStatus.tile_x = save_mvx = mvgroup->w();
-//	} else 	if (progStatus.show_channels) {
-//		save_mvx = mvgroup->w();
-//		progStatus.show_channels = false;
-//		progStatus.tile_x = 0;
-//	} else {
-//		progStatus.show_channels = true;
-//		if (save_mvx == 0) save_mvx = progStatus.tile_x = text_panel->w()/2;
-//		else
-//			progStatus.tile_x = save_mvx;
-//	}
 	if (progdefaults.rxtx_swap) progStatus.tile_y = TransmitText->h();
 	else progStatus.tile_y = ReceiveText->h();
 
@@ -3511,21 +3474,23 @@ void WF_UI()
 
 void toggle_smeter()
 {
-	if (progdefaults.view_smeter && !smeter->visible()) {
-		qsoFreqDisp1->position(qsoFreqDisp1->x(), qsoFreqDisp1->y() - Hentry/2);
-		pwrmeter->show();
+	if (progStatus.meters && !smeter->visible()) {
+		pwrmeter->hide();
 		smeter->show();
-	} else if (!progdefaults.view_smeter && smeter->visible()) {
+		qso_opMODE->hide();
+		qso_opBW->hide();
+	} else if (!progStatus.meters && smeter->visible()) {
 		pwrmeter->hide();
 		smeter->hide();
-		qsoFreqDisp1->position(qsoFreqDisp1->x(), qsoFreqDisp1->y() + Hentry/2);
+		qso_opMODE->show();
+		qso_opBW->show();
 	}
 	RigControlFrame->redraw();
 }
 
 void cb_toggle_smeter(Fl_Widget *w, void *v)
 {
-	progdefaults.view_smeter = !progdefaults.view_smeter;
+	progStatus.meters = !progStatus.meters;
 	toggle_smeter();
 }
 
@@ -3778,8 +3743,6 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-
-{ make_icon_label(_("View/Hide Smeter")), 0, (Fl_Callback*)cb_toggle_smeter, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 
 { make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -4776,9 +4739,10 @@ void create_fl_digi_main_primary() {
 		int freqheight1 = 2 * Hentry + pad;
 		fl_font(fnt1, freqheight1  - 4);
 		int freqwidth1 = (int)fl_width("1296999.999");
-		int rig_cbo_w = 4 * Wbtn + 3 * pad;
-		int rig_cbo_x = pad + freqwidth1 + pad;
-		int rig_control_frame_width = pad + freqwidth1 + pad + rig_cbo_w + pad;
+		int mode_cbo_w = (freqwidth1 - 2 * Wbtn - 3 * pad) / 2;
+		int bw_cbo_w = freqwidth1 - 2 * Wbtn - 3 * pad - mode_cbo_w;
+		int smeter_w = mode_cbo_w + bw_cbo_w + pad;
+		int rig_control_frame_width = freqwidth1 + 3 * pad + Wbtn;
 
 		RigControlFrame = new Fl_Group(
 			0, Hmenu, rig_control_frame_width, Hqsoframe);
@@ -4808,19 +4772,18 @@ void create_fl_digi_main_primary() {
 
 			pwrmeter = new PWRmeter(
 				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
-				qsoFreqDisp1->w(), Hentry);
+				smeter_w, Hentry);
 			pwrmeter->select(progdefaults.PWRselect);
 			pwrmeter->hide();
 
 			smeter = new Smeter(
 				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
-				qsoFreqDisp1->w(), Hentry);
+				smeter_w, Hentry);
 			set_smeter_colors();
-
-			Y = Hmenu + pad;
+			smeter->hide();
 
 			qso_opMODE = new Fl_ComboBox(
-				rig_cbo_x, Y, rig_cbo_w, Hentry);
+				smeter->x(), smeter->y(), mode_cbo_w, Hentry);
 			qso_opMODE->box(FL_DOWN_BOX);
 			qso_opMODE->color(FL_BACKGROUND2_COLOR);
 			qso_opMODE->selection_color(FL_BACKGROUND_COLOR);
@@ -4834,7 +4797,7 @@ void create_fl_digi_main_primary() {
 			qso_opMODE->end();
 
 			qso_opBW = new Fl_ComboBox(
-				rig_cbo_x, Y + pad + Hentry, rig_cbo_w, Hentry);
+				qso_opMODE->x() + mode_cbo_w + pad, smeter->y(), bw_cbo_w, Hentry);
 			qso_opBW->box(FL_DOWN_BOX);
 			qso_opBW->color(FL_BACKGROUND2_COLOR);
 			qso_opBW->selection_color(FL_BACKGROUND_COLOR);
@@ -4847,30 +4810,37 @@ void create_fl_digi_main_primary() {
 			qso_opBW->when(FL_WHEN_RELEASE);
 			qso_opBW->end();
 
+			Fl_Button *smeter_toggle = new Fl_Button(
+					qso_opBW->x() + qso_opBW->w() + pad, smeter->y(), Wbtn, Hentry);
+			smeter_toggle->callback(cb_toggle_smeter, 0);
+			smeter_toggle->tooltip(_("Toggle smeter / combo controls"));
+			smeter_toggle->image(new Fl_Pixmap(tango_view_refresh));
+
 			qso_opPICK = new Fl_Button(
-				rig_cbo_x, Y + 2*pad + 2*Hentry, Wbtn, Hentry);
+					smeter_toggle->x() + Wbtn + pad, smeter->y(), Wbtn, Hentry);
 			addrbookpixmap = new Fl_Pixmap(address_book_icon);
 			qso_opPICK->image(addrbookpixmap);
 			qso_opPICK->callback(showOpBrowserView, 0);
 			qso_opPICK->tooltip(_("Open List"));
 
 			btnQRZ = new Fl_Button(
-					rightof(qso_opPICK) + pad, qso_opPICK->y(), Wbtn, Hentry);
+					rightof(qsoFreqDisp1) + pad, qsoFreqDisp1->y(), Wbtn, Hentry);
 			btnQRZ->image(new Fl_Pixmap(net_icon));
 			btnQRZ->callback(cb_QRZ, 0);
 			btnQRZ->tooltip(_("QRZ"));
 
 			qsoClear = new Fl_Button(
-					rightof(btnQRZ) + pad, qso_opPICK->y(), Wbtn, Hentry);
+					rightof(qsoFreqDisp1) + pad, btnQRZ->y() + pad + Wbtn, Wbtn, Hentry);
 			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
 			qsoClear->callback(qsoClear_cb, 0);
 			qsoClear->tooltip(_("Clear"));
 
 			qsoSave = new Fl_Button(
-					rightof(qsoClear) + pad, qso_opPICK->y(), Wbtn, Hentry);
+					rightof(qsoFreqDisp1) + pad, qsoClear->y() + pad + Wbtn, Wbtn, Hentry);
 			qsoSave->image(new Fl_Pixmap(save_icon));
 			qsoSave->callback(qsoSave_cb, 0);
 			qsoSave->tooltip(_("Save"));
+
 		RigControlFrame->resizable(NULL);
 
 		RigControlFrame->end();
@@ -4960,7 +4930,7 @@ void create_fl_digi_main_primary() {
 			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe);
 
 				inpFreq1 = new Fl_Input2(
-					x_qsoframe + 30, Hmenu + pad, 80, Hentry, _("Freq"));
+					x_qsoframe + 25, Hmenu + pad, 90, Hentry, _("Frq"));
 				inpFreq1->type(FL_NORMAL_OUTPUT);
 				inpFreq1->tooltip(_("frequency kHz"));
 				inpFreq1->align(FL_ALIGN_LEFT);
@@ -4978,28 +4948,32 @@ void create_fl_digi_main_primary() {
 				inpTimeOn1->type(FL_INT_INPUT);
 
 				inpTimeOff1 = new Fl_Input2(
-					next_to(inpTimeOn1) + Hentry, Hmenu + pad, 40, Hentry, _("Off"));
+					next_to(inpTimeOn1) + 20, Hmenu + pad, 40, Hentry, _("Off"));
 				inpTimeOff1->tooltip(_("QSO end time"));
 				inpTimeOff1->align(FL_ALIGN_LEFT);
 				inpTimeOff1->type(FL_NORMAL_OUTPUT);
 
 				inpRstIn1 = new Fl_Input2(
-					next_to(inpTimeOff1) + Hentry, Hmenu + pad, 40, Hentry, _("In"));
+					next_to(inpTimeOff1) + 40, Hmenu + pad, 40, Hentry, _("In"));
 				inpRstIn1->tooltip("RST in");
 				inpRstIn1->align(FL_ALIGN_LEFT);
 
 				inpRstOut1 = new Fl_Input2(
-					next_to(inpRstIn1) + Hentry, Hmenu + pad, 40, Hentry, _("Out"));
+					next_to(inpRstIn1) + 30, Hmenu + pad, 40, Hentry, _("Out"));
 				inpRstOut1->tooltip("RST out");
 				inpRstOut1->align(FL_ALIGN_LEFT);
 
 				inpCall1 = new Fl_Input2(
-					inpFreq1->x(), y2, 120, Hentry, _("Call"));
+					inpFreq1->x(), y2, 
+					inpTimeOn1->x() + inpTimeOn1->w() - inpFreq1->x(),
+					Hentry, _("Call"));
 				inpCall1->tooltip(_("call sign"));
 				inpCall1->align(FL_ALIGN_LEFT);
 
 				inpName1 = new Fl_Input2(
-					rightof(inpTimeOn1), y2, 130, Hentry, _("Op"));
+					next_to(inpCall1) + 20, y2, 
+					130, 
+					Hentry, _("Op"));
 				inpName1->tooltip(_("Operator name"));
 				inpName1->align(FL_ALIGN_LEFT);
 
@@ -5011,7 +4985,7 @@ void create_fl_digi_main_primary() {
 				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3, wf1, Hentry + pad);
 
 					inpQth = new Fl_Input2(
-						inpFreq1->x(), y3, 155, Hentry, "Qth");
+						inpFreq1->x(), y3, inpName1->x() - inpFreq1->x(), Hentry, "Qth");
 					inpQth->tooltip(_("City"));
 					inpQth->align(FL_ALIGN_LEFT);
 
@@ -5026,7 +5000,7 @@ void create_fl_digi_main_primary() {
 					inpVEprov->align(FL_ALIGN_LEFT);
 
 					inpLoc = new Fl_Input2(
-						inpAZ->x() + inpAZ->w() -60, y3, 60, Hentry, "Loc");
+						next_to(inpAZ) - 60, y3, 60, Hentry, "Loc");
 					inpLoc->tooltip(_("Maidenhead Locator"));
 					inpLoc->align(FL_ALIGN_LEFT);
 

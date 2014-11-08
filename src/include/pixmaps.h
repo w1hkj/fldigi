@@ -87,5 +87,7 @@ extern const char *flarq_icon[];
 extern const char *waterfall_icon[];
 extern const char *dice_icon[];
 extern const char *pskr_icon[];
+extern const char *tango_view_refresh[];
+
 
 #endif // PIXMAPS_H_

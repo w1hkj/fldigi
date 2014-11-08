@@ -159,6 +159,8 @@ struct status {
 
 	std::string	browser_search;
 
+	bool	meters;
+
 	bool	bLastStateRead;
 
 	void initLastState();
