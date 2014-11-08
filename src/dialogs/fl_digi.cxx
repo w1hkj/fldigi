@@ -1794,23 +1794,32 @@ void set_server_label(bool val)
 	else m->clear();
 }
 
-int save_mvx = 0;
+static int save_mvx = 0;
 
 void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 {
-	if (!progStatus.show_channels && mvgroup->w() > 0) {
-		progStatus.show_channels = true;
-		progStatus.tile_x = save_mvx = mvgroup->w();
-	} else 	if (progStatus.show_channels) {
+	progStatus.show_channels = !(mvgroup->w() > 0);
+
+	if (!progStatus.show_channels) {
 		save_mvx = mvgroup->w();
-		progStatus.show_channels = false;
 		progStatus.tile_x = 0;
 	} else {
-		progStatus.show_channels = true;
-		if (save_mvx == 0) save_mvx = progStatus.tile_x = text_panel->w()/2;
-		else
-			progStatus.tile_x = save_mvx;
+		progStatus.tile_x = save_mvx;
 	}
+
+//	if (!progStatus.show_channels && mvgroup->w() > 0) {
+//		progStatus.show_channels = true;
+//		progStatus.tile_x = save_mvx = mvgroup->w();
+//	} else 	if (progStatus.show_channels) {
+//		save_mvx = mvgroup->w();
+//		progStatus.show_channels = false;
+//		progStatus.tile_x = 0;
+//	} else {
+//		progStatus.show_channels = true;
+//		if (save_mvx == 0) save_mvx = progStatus.tile_x = text_panel->w()/2;
+//		else
+//			progStatus.tile_x = save_mvx;
+//	}
 	if (progdefaults.rxtx_swap) progStatus.tile_y = TransmitText->h();
 	else progStatus.tile_y = ReceiveText->h();
 
@@ -5437,6 +5446,7 @@ int alt_btn_width = 2 * DEFAULT_SW;
 
 					mvgroup->resizable(mainViewer);
 				mvgroup->end();
+				save_mvx = mvgroup->w();
 
 				int rh = text_panel->h() / 2 + 0.5;
 				ReceiveText = new FTextRX(
@@ -5751,6 +5761,8 @@ int alt_btn_width = 2 * DEFAULT_SW;
 	if (!dxcc_is_open())
 		getMenuItem(COUNTRIES_MLABEL)->hide();
 
+	toggle_smeter();
+
 	UI_select();
 	wf->UI_select(progStatus.WF_UI);
 
@@ -5773,8 +5785,6 @@ int alt_btn_width = 2 * DEFAULT_SW;
 		case 8: btn_scheme_8->setonly(); break;
 		case 9: btn_scheme_9->setonly(); break;
 	}
-
-	toggle_smeter();
 
 	colorize_macros();
 
