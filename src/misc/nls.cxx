@@ -48,9 +48,10 @@ using namespace std;
 struct lang_def_t ui_langs[] = {
 	{ "en", "en_US", "English",     100 },
 	{ "de", "de_DE", "Deutsch", 99 },
+	{ "nl", "nl_NL", "Dutch", 99},
+	{ "es", "es_ES", "Espa\361ol",  99 },
 	{ "fr", "fr_FR", "Fran\347ais", 38 },
 	{ "it", "it_IT", "Italiano",    99 },
-	{ "es", "es_ES", "Espa\361ol",  99 },
 	{ "pl", "pl_PL", "Polish", 90},
 	{ NULL, NULL, NULL, 0 }
 };

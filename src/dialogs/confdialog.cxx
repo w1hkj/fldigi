@@ -4831,7 +4831,7 @@ Fl_Button *btnEQSL_pwd_show=(Fl_Button *)0;
 static void cb_btnEQSL_pwd_show(Fl_Button* o, void*) {
   inpEQSL_pwd->type(inpEQSL_pwd->type() ^ FL_SECRET_INPUT);
 inpEQSL_pwd->redraw();
-o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? "Show" : "Hide");
+o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));
 }
 
 Fl_Input2 *inpEQSL_nick=(Fl_Input2 *)0;
@@ -5290,6 +5290,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5403,6 +5404,7 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5815,7 +5817,6 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
             tabLogServer->tooltip(_("User Interface - Logging"));
-            tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10278,9 +10279,9 @@ and restarted if needed."));
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 600, 355, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
-        tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 355);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Call Lookup"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(55, 56, 490, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10411,7 +10412,6 @@ and restarted if needed."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("eQSL"));
-            o->hide();
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(225, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);
