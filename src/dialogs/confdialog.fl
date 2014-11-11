@@ -322,8 +322,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -3030,12 +3030,12 @@ progdefaults.changed = true;}
                   }
                   Fl_Group i_listbox_test_char {
                     label {Test char}
-                    callback {progdefaults.TestChar = o->index()-1;} open
+                    callback {progdefaults.TestChar = o->index();} open
                     tooltip {Test character for QSK adjustment} xywh {320 245 41 20} box DOWN_BOX color 7 align 8
                     code0 {extern char szTestChar[];}
                     code1 {o->add(szTestChar);}
-                    code2 {o->index(progdefaults.TestChar+1);
-                       o->labelsize(FL_NORMAL_SIZE);}
+                    code2 {o->index(progdefaults.TestChar);}
+                    code3 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_ListBox
                   } {}
                 }
@@ -5858,7 +5858,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabQRZ {
         label Web open
-        tooltip {Callsign database} xywh {0 25 600 355}
+        tooltip {Callsign database} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 600 355}
@@ -6031,7 +6031,7 @@ progdefaults.changed = true;}
               label Show
               callback {inpEQSL_pwd->type(inpEQSL_pwd->type() ^ FL_SECRET_INPUT);
 inpEQSL_pwd->redraw();
-o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));} selected
+o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
               tooltip {Show password in plain text} xywh {395 85 70 20}
             }
             Fl_Input inpEQSL_nick {

@@ -2497,7 +2497,7 @@ static void cb_btnQSKadjust(Fl_Check_Button* o, void*) {
 Fl_ListBox *i_listbox_test_char=(Fl_ListBox *)0;
 
 static void cb_i_listbox_test_char(Fl_ListBox* o, void*) {
-  progdefaults.TestChar = o->index()-1;
+  progdefaults.TestChar = o->index();
 }
 
 Fl_Check_Button *btnCW_use_paren=(Fl_Check_Button *)0;
@@ -5290,7 +5290,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7360,8 +7359,8 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_test_char->align(Fl_Align(FL_ALIGN_RIGHT));
                 i_listbox_test_char->when(FL_WHEN_RELEASE);
                 o->add(szTestChar);
-                o->index(progdefaults.TestChar+1);
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->index(progdefaults.TestChar);
+                o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_test_char->end();
                 } // Fl_ListBox* i_listbox_test_char
                 o->end();
@@ -10279,6 +10278,7 @@ and restarted if needed."));
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 600, 355, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
+        tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 355);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Call Lookup"));
             o->hide();

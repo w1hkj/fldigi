@@ -182,6 +182,7 @@ void cw::tx_init(SoundBase *sc)
 	phaseacc = 0;
 	lastsym = 0;
 	qskphase = 0;
+	if (progdefaults.pretone) pretone();
 
 	symbols = 0;
 	acc_symbols = 0;
