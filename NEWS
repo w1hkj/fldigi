@@ -1,3 +1,138 @@
+= Fldigi 3.22 release notes =
+
+== Modems ==
+
+  * RTTY 
+    - Fixed decoder for baud rate > 110
+    - modified DSP filter; filter length dependent on baud rate
+
+  * EmComm 8PSK modes
+        Mode   Baud  WPM  BW   FEC     ITU    RSID-1 RSID-2
+      8PSK125   125  310  125   Y    125HG1B    56    1037
+      8PSK250   250  620  250   Y    250HG1B    56    1038
+      8PSK500   500 1650  500   Y    500HG1B    56    1043
+      8PSK1000 1000 3300 1000   N    1000HG1B   56    1047
+      8PSK1200 1200 3540 1200   Y    1200HG1B   56    1058
+      8PSK1333 1333 4300 1333   N    1333HG1B   56    1059
+
+  * PSK/PSKR squelch changed to fast attack / slow decay processing
+
+  * fft-scan - used to measure transceiver filter characteristics.
+    - preferred noise source is wide band noise bridge.
+    - open circuit antenna will suffice
+
+  * Analysis modem
+    - added signal level to display and text file
+    - removed debugging printf statement in cw.cxx file
+    - restored "noise" controls to active state
+
+== Macros ==
+
+  * Added information macro tags
+    - <ANTENNA> my antenna
+    - <BAND>    current operating band
+  * New modem tests based on a specified number of 5 letter code groups
+    - <CPS_N:nnn>
+    - <WAV_N:nnn>
+  * <DELTA:+/-n.nnn> increment/decrement xcvr carrier
+  * <FOCUS> force keyboard focus to frequency control.
+
+
+== User interface ==
+
+  * Added Dutch translation
+  * Updated Polish translation
+  * Touch Screen UI
+    - user selectable macro button bar height
+    - allow swapping Rx and Tx panels.
+    - larger frequency control with max range into GHz values
+    - modified single left click behavior.  Single left click either
+      . grabs QSO data
+      . acts on "clickable" item.
+      . starts drag sequence
+  * Smeter / Power meter, added new meter viewers
+    - annunciates values received from flrig / xmlrpc values
+    - button to toggle between meter(s) and xvcr mode/bw controls
+  * Freq Control
+    - Modified keyboard events:
+      . added progdefaults.sel_lsd
+        selection of Right / Left arrow least significant digit
+          Right Arrow     +      1 LSD
+          Left  Arrow     -      1 LSD
+          Up Arrow        +     10 * LSD
+          Dn Arrow        -     10 * LSD
+          Shft Rt Arrow   +    100 * LSD
+          Shft Lft Arrow  -    100 * LSD
+          Shft Up Arrow   +   1000 * LSD
+          Shft Dn Arrow   -   1000 * LSD
+      . Added OFFCOLOR to background of group box to insure that all digit areas
+        are contiguous with digit backgrounds.
+      . added "focus" indicator that is more visible than the default fltk 
+        dotted line
+  * Signal browsers
+    - modified rtty and psk viewers to eliminate modem specific code in the 
+      UI elements
+    - restricted psk multichannel viewer to modes
+      . PSK31, PSK63, PSK63F and PSK125
+      . QPSK31, QPSK63 and QPSK125
+  * Removed Mixer controls and supporting code
+  * Macro Buttons
+    - Increase width of alternate macro button(s)
+    - Added 2 row scheme, one above, one below text panel
+    - Macro row(s) button height user adjustable
+  * New User Exit Behavior - changed defaults for new user to force
+    - confirm exit, save configuration & macros on first use
+    - prompt dialogs thereafter until user changes configuration dialog selections
+    - added UI configuration to new install Wizard
+
+== XMLRPC control language ==
+
+  * Added xmlrpc commands
+    - main.get_txid    get state of txid switch
+    - main.set_txid    set state of txid switch
+    - main.toggle_txid toggle state of txid switch
+    - main.rx_only     disables Tx.
+    - main.rx_tx       enables normal Rx/Tx operation
+  * KISS/ARQ specific commands
+    - io.in_use        Returns the IO port in use (ARQ/KISS).
+    - io.enable_kiss   Switch to KISS I/O
+    - io.enable_arq    Switch to ARQ I/O
+
+
+== Other changes ==
+
+  * Thumb drive - updated documentation on thumb drive installation
+    in folder FL_APPS
+  * KISS interface
+    - query and Set Kiss hardware commands
+    - support bcast rsid over kiss socket
+    - selectable modem options limited to 8 bit versions only (kiss i/o mode)
+    - simple HDLC encapsulation frame for transmit/receive CRC data verification.
+    - histogram based threshold detection.
+    - user configurable inhibit transmit on busy frequencies for nn seconds
+    - imposes transmit wait on valid frame reception
+    - dual UDP ports for concurrent operation of programs using the same IP address.
+    - transmit buffer cleared when data is available for more then 10 mins and 
+      has not been transmitted.
+    - AX-25 decoding.
+    - user configuration item to disable CSMA from config panel and kiss
+      hardware frame.
+    - KISS command to adjust KPSQL detection gain (for testing).
+    - new xmlrpc command 'BUSY:<T|F>'
+      * Waterfall display gain adjusted based on sample rate changes.
+    - added DEBUG Logging command LOG_HEX(const char *buf, int len);
+      D:,... ReadFromHostSocket: ..BUSY:. C0 06 42 55 53 59 3A C0
+  * MEMMAP removed old Kachina rig control code
+  * RsID time out Changed secondary time out to use real time vice RsID symbols
+  * Documentation change to doxygen and included in repository.
+  * Virtual serial ports - added /opt/vttySn usage for Linux
+    - create a linked name to a virtual port (socat) with link defined as 
+    /opt/vttyS0 ...
+
+== Bug fixes ==
+
+  * too numerous to list
+
 = Fldigi 3.21 release notes =
 
 == Modems ==
