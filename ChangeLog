@@ -1,5 +1,44 @@
-2014-10-19  David Freese  <w1hkj@w1hkj.com>
 
+
+=Version 3.22.02=
+
+2014-11-11  David Freese  <iam_w1hkj@w1hkj.com>
+
+	d84edfd: Freq Control
+	aba750e: HTML strings
+	aa0bc26: CW
+	990e546: PO files
+	8b81020: Clang globals fix
+	068f030: RTTY
+	75c2f79: nu rigctl area
+	2e2ce97: channel width
+	1fb74a1: cty.dat confusion
+	ac1befb: KISS log overflow
+	8c49c64: New install crash
+	4371ed3: EmComm 8PSK modes
+	bf41f90: MT63 doc
+	55ff390: viewers
+	91674b8: psk pskr squelch
+	3dfbfba: Listbox initializers
+
+2014-10-29  Arvo Järve  <arvo@softshark.ee>
+
+	4118783: Info Macro Tags
+
+2014-10-27  David Freese  <iam_w1hkj@w1hkj.com>
+
+	9293e55: Analysis update
+	90dd8f1: v21 v22 synch
+	10cc3c5: Modem tests
+	da27f0b: Button colors
+	b16672f: Modes Menu
+	cba4a01: Delayed Bandwidth
+	29af73c: embedded browser
+
+
+=Version 3.22.01=
+
+	263257a: RX single click
 	9bbef87: Macro Buttons
 	b123fc1: Thumb drive
 	01bc010: Power Squelch
