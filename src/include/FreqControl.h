@@ -121,7 +121,7 @@ private:
 	Fl_Repeat_Button	  	*Digit[MAX_DIGITS];
 	Fl_Float_Input			*finp;
 	static const char	 	*Label[];
-	int					mult[MAX_DIGITS];
+	long int		mult[MAX_DIGITS];
 	Fl_Box				*decbx;
 	Fl_Box				*hfill1;
 	Fl_Box				*hfill2;
@@ -134,8 +134,8 @@ private:
 	Fl_Color REVOFFCOLOR;
 	int nD;
 	//int active;
-	unsigned long maxVal;
-	unsigned long minVal;
+	long int maxVal;
+	long int minVal;
 
 	int pw; // decimal width
 	int wfill;
@@ -152,7 +152,7 @@ private:
 	void cancel_kb_entry(void);
 
 protected:
-	unsigned long val, oldval;
+	long int val, oldval;
 	int  precision;
 	int  dpoint;
 

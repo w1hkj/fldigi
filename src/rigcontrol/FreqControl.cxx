@@ -41,15 +41,15 @@ const char *cFreqControl::Label[10] = {
 	"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 void cFreqControl::IncFreq (int nbr) {
-	unsigned long v = val + mult[nbr] * precision;
-	if (v <= maxVal) val = v;
+	double v = (double)val + (double)mult[nbr] * precision;
+	if (v <= maxVal) val = (long int)v;
 	updatevalue();
 	do_callback();
 }
 
 void cFreqControl::DecFreq (int nbr) {
-	unsigned long v = val - mult[nbr] * precision;
-	if (v >= minVal) val = v;
+	double v = (double)val - (double)mult[nbr] * precision;
+	if (v >= minVal) val = (long int)v;
 	updatevalue();
 	do_callback();
 }
@@ -129,8 +129,11 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 	color(OFFCOLOR);
 
 	minVal = 0;
-	maxVal = (unsigned long int)(pow(10, nD) - 1) * precision;
-	double fmaxval = maxVal / 1000.0;
+	double fmaxval = (pow(10, nD) - 1) * precision;
+	long int UMAX = (long int)(pow(2, 31) - 1);
+	if (fmaxval > UMAX) fmaxval = UMAX;
+	maxVal = fmaxval;
+	fmaxval /= 1000.0;
 
 	static char tt[100];
 	snprintf(tt, sizeof(tt), "Enter frequency (max %.3f) or\nLeft/Right/Up/Down/Pg_Up/Pg_Down", fmaxval);
@@ -217,7 +220,7 @@ cFreqControl::~cFreqControl()
 
 void cFreqControl::updatevalue()
 {
-	long v = val / precision;
+	long int v = val / precision;
 	int i;
 	if (likely(v > 0L)) {
 		for (i = 0; i < nD; i++) {
@@ -535,7 +538,7 @@ void cFreqControl::freq_input_cb(Fl_Widget*, void* arg)
 {
 	cFreqControl* fc = reinterpret_cast<cFreqControl*>(arg);
 	double val = strtod(fc->finp->value(), NULL);
-	unsigned long lval;
+	long int lval;
 	val *= 1e3;
 	val += 0.5;
 	lval = (long)val;
@@ -602,8 +605,11 @@ void cFreqControl::set_ndigits(int nbr)
 	int xpos;
 
 	minVal = 0;
-	maxVal = (long int)(pow(10, nD) - 1) * precision;
-	double fmaxval = maxVal / 1000.0;
+	double fmaxval = (pow(10, nD) - 1) * precision;
+	long int UMAX = (long int)(pow(2, 31) - 1);
+	if (fmaxval > UMAX) fmaxval = UMAX;
+	maxVal = fmaxval;
+	fmaxval /= 1000.0;
 
 	static char tt[100];
 	snprintf(tt, sizeof(tt), "Enter frequency (max %.3f) or\nLeft/Right/Up/Down/Pg_Up/Pg_Down", fmaxval);
