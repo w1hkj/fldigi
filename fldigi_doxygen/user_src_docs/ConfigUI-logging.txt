@@ -26,19 +26,19 @@ Transmit Power which is used for the logbook record.
 <br>
 
 Fldigi has various ways to transfer data in the Rx panel to the qso logging
-fields. The default is to use a Shift-Left-Click paradigm.  You can also  
+fields. The default is to use a Shift-Left-Click paradigm.  You can also
 elect to use a single left click method if you prefer. The word pointed to by
-the cursor is parsed to determine it's intended field use; call, RSQ, operator 
-name, and QTH.  The call will be overwritten, but the other log fields need to 
-be blank for the data transfer to be accomplished.  Each data item is considered 
-to be a single word normally delimited by the space, tab or end-of-line character. 
-You can add word delimiter characters in the designated text box. The default is 
-to add *-,.; to the normal delimiters. This is a useful tool for extracting 
-contest exchange data.  The exchange might be RST, STATE and NAME.  The station 
-being worked might send this as 599-NJ-Bozo. Clicking on the 599 NJ and Bozo 
-would treat each as a separate word.  You may also right click on a word (or a 
-phrase that has been highlighted by dragging the cursor over the text).  That 
-will open a pop-up menu with selections to transfer the data into a number of 
+the cursor is parsed to determine it's intended field use; call, RSQ, operator
+name, and QTH.  The call will be overwritten, but the other log fields need to
+be blank for the data transfer to be accomplished.  Each data item is considered
+to be a single word normally delimited by the space, tab or end-of-line character.
+You can add word delimiter characters in the designated text box. The default is
+to add *-,.; to the normal delimiters. This is a useful tool for extracting
+contest exchange data.  The exchange might be RST, STATE and NAME.  The station
+being worked might send this as 599-NJ-Bozo. Clicking on the 599 NJ and Bozo
+would treat each as a separate word.  You may also right click on a word (or a
+phrase that has been highlighted by dragging the cursor over the text).  That
+will open a pop-up menu with selections to transfer the data into a number of
 different log fields.
 <br>
 
@@ -130,7 +130,7 @@ the menu items for accessing the internal logbook are disabled.
 <br>
 
 <br>
-\ref ui_configuration_log_server_page "Return to Top of Page"
+\ref ui_configuration_logging_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
 

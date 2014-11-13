@@ -240,7 +240,7 @@ that is supported by fldigi:
 <small>
 <br>                     |<br>                    | Data Modems           |<br>                  | <br>
 :--------------------- : | :--------------------: | :-------------:       | :------------------: | :------------------:
-<MODEM:8PSK1000>         | <MODEM:8PSK125>        | <MODEM:8PSK250>       | <MODEM:8PSK500>      | <MODEM:BPSK1000>
+<MODEM:8PSK250>          | <MODEM:8PSK500>        | <MODEM:8PSK1000>      | <MODEM:8PSK1333>     | <MODEM:BPSK1000>
 <MODEM:BPSK125>          | <MODEM:BPSK250>        | <MODEM:BPSK31>        | <MODEM:BPSK500>      | <MODEM:BPSK63>
 <MODEM:BPSK63F>          | <MODEM:CTSTIA:1000:16> | <MODEM:CTSTIA:1000:8> | <MODEM:CTSTIA:250:8> | <MODEM:CTSTIA:500:16>
 <MODEM:CTSTIA:500:8>     | <MODEM:CTSTIA>         | <MODEM:CW>            | <MODEM:DOMEX4>       | <MODEM:DOMEX5>

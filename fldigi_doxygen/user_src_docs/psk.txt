@@ -10,9 +10,14 @@ multiple carrier differential <b>P</b>hase <b>S</b>hift <b>K</b>eying.
 
 Current supported variants:
 
-BPSK: Binary, 2 constellations <br>
+BPSK: Binary, 2 constellations (1) <br>
 QPSK: Quadrature, 4 constellations <br>
 8PSK: 8 constellations <br>
+\par (1) 
+	A convenient way to represent PSK schemes is on a constellation diagram.
+This shows the points in the complex plane where, in this context, the real and 
+imaginary axes are termed the in-phase and quadrature axes respectively due to 
+their 90° separation.<br>
 
 \par NOTE:
 	Multi-Channel PSK modems use BPSK modulation.
@@ -20,7 +25,7 @@ QPSK: Quadrature, 4 constellations <br>
 PSK63FEC and the PSKxxxR modes are forward error correcting modes. PSK63FEC
 is compatible with the MultiPsk mode of the same name. The PSKxxxR, or
 robust, modes use both forward error correction and interleaving to achieve
-about 4 dB s/n improvement over standard PSK. These modes are use primarily
+about 4 dB s/n improvement over standard PSK. These modes are used primarily
 by the PskMail user community. They are the invention of John Douyere,
 VK2ETA, a member of the fldigi development team.
 <br>
@@ -34,7 +39,7 @@ information. Differential PSK is used to provide continuous phase changes
 when idle (to maintain sync), and by allowing the receiver to measure phase
 difference from symbol to symbol, to reduce the effects of ionospheric
 Doppler phase changes which modulate the signal. The slower modes are
-more affected by Doppler, and the QPSK modes are particularly affected.
+more affected by Doppler, and the QPSK and 8PSK modes are particularly affected.
 <br>
 
 With no interleaver and limited coding length, the QPSK mode Forward Error
@@ -42,6 +47,11 @@ Correction coding gain is limited, and under burst noise conditions on
 HF the performance is usually worse than the BPSK option at the same
 baud rate. In general the narrow-band BPSK modes work well on a quiet
 single-hop path, but give poor performance in most other conditions.
+<br>
+
+Many of the multi-carrier and 8PSK modes exceed the baud and bandwidth limitations
+imposed by the FCC (US operators only).  These modes are intended for use on VHF/UHF
+and have proven to be very robust on FM even when used with repeaters.
 <br>
 
 \image html psk-signal-oscope.png "PSK63 signal transmitting text data - oscilloscope view"

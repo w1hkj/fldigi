@@ -3,14 +3,17 @@
 
 \tableofcontents
 
-\image html menu-linux.png "Menu"
-\image latex menu-linux.png "Menu" width=6.0in
-<br>
 
 \section menu_heirarchy Menu Heirarchy
 
+\image html menu-linux.png "Menu"
+\image latex menu-linux.png "Menu" width=5.5in
+<br>
+
+<HR>
 \subsection s_files Files
 
+<HR>
 \subsubsection s_folders Folders
 
 \image html menu-files-folders.png "Folders"
@@ -22,8 +25,12 @@
 	the folder containing the fldigi operating  &amp; data files. </li>
 	<li> NBEMS files... - open the OS native file explorer to the folder
 	containing the NBEMS data files</li>
+	<li> FLMSG files... - open the OS native file explorer to the folder
+	containing the NBEMS/FLAMP data files</li>
+	<li> Data files. See \ref supporting_data_files_page</li>
 </ul>
 
+<HR>
 \subsubsection s_macros Macros
 
 \image html menu-files-macros.png "Macros"
@@ -44,6 +51,7 @@ Additional information:
 \ref ui_configuration_macros_page
 <br>
 
+<HR>
 \subsubsection s_text_capture Text Capture
 
 \image html menu-files-text.png "Text Capture"
@@ -72,6 +80,7 @@ the date-time, and the data stream.
 
 <br>
 
+<HR>
 \subsubsection s_audio Audio
 
 \image html menu-files-audio.png "Audio"
@@ -84,6 +93,7 @@ the date-time, and the data stream.
 	<li>Playback - playback a previously captured or generated wav file</li>
 </ul>
 
+<HR>
 \subsubsection s_exit Exit
 
 \image html menu-files-audio.png "Exit"
@@ -94,6 +104,7 @@ Exit - exit the program closing down the various interfaces in a nice
 controlled manner.
 <br>
 
+<HR>
 \subsection s_op_mode Op Mode
 
 Op Mode - the current operating mode will show as a highlighted menu item.
@@ -102,6 +113,7 @@ Op Mode - the current operating mode will show as a highlighted menu item.
 \image latex menu-opmode.png "Op Mode" width=1.0in
 <br>
 
+<HR>
 \subsubsection s_op_mode_cw CW
 
 <br>
@@ -116,49 +128,26 @@ Additional information:
 <br>
 
 
+<HR>
 \subsubsection s_op_mode_contestia Contestia
 
 \image html menu-contestia.png "Contestia"
 \image latex menu-contestia.png "Contestia" width=0.75in
 <br>
-
-<ul>
-	<li>Contestia 4 tones, 125 Hz wide</li>
-	<li>Contestia 4 tones, 250 Hz wide</li>
-	<li>Contestia 8 tones, 250 Hz wide</li>
-	<li>Contestia 4 tones, 500 Hz wide</li>
-	<li>Contestia 8 tones, 500 Hz wide</li>
-	<li>Contestia 16 tones, 500 Hz wide</li>
-	<li>Contestia 8 tones, 1000 Hz wide</li>
-	<li>Contestia 16 tones, 1000 Hz wide</li>
-	<li>Contestia 32 tones, 1000 Hz wide</li>
-	<li>Custom ... set on dialog</li>
-</ul>
-<br>
-
 Additional information:
 <br>
 \ref contestia_page
 <br>
 \ref contestia_configuration_page
 <br>
+\ref contestia_table "Contestia Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_domino_ex DominoEX
 
 \image html menu-dominoex.png "DominoEX"
 \image latex menu-dominoex.png "DominoEX" width=1.0in
-<br>
-
-<ul>
-	<li>dominoex 4</li>
-	<li>dominoex 5</li>
-	<li>dominoex 8</li>
-	<li>dominoex 11 - the default calling mode for dominoEX</li>
-	<li>dominoex 16</li>
-	<li>dominoex 22</li>
-	<li>dominoex 44</li>
-	<li>dominoex 88</li>
-</ul>
 <br>
 
 Additional information:
@@ -167,22 +156,14 @@ Additional information:
 <br>
 \ref domino_ex_configuration_page
 <br>
+\ref domino_ex_table "DominoEX Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_hell Hell
 
 \image html menu-hell.png "Hell"
 \image latex menu-hell.png "Hell" width=1.0in
-<br>
-
-<ul>
-	<li>Feld-Hell</li>
-	<li>Slow-Hell</li>
-	<li>Feld-Hell X5</li>
-	<li>Feld-Hell X9</li>
-	<li>FSK-Hell (also called FM-Hell by some programs)</li>
-	<li>FSK-Hell105</li>
-	<li>Hell-80</li>
-</ul>
 <br>
 
 Additional information:
@@ -191,47 +172,28 @@ Additional information:
 <br>
 \ref feld_hell_configuration_page
 <br>
+\ref hell_modes "Hell Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_msfk MSFK
 
 \image html menu-mfsk.png "MSFK"
 \image latex menu-mfsk.png "MSFK" width=0.75in
 <br>
 
-<ul>
-	<li>MSFK 4</li>
-	<li>MSFK 8</li>
-	<li>MSFK 11</li>
-	<li>MSFK 16</li>
-	<li>MSFK 22</li>
-	<li>MSFK 31</li>
-	<li>MSFK 32</li>
-	<li>MSFK 64</li>
-	<li>MSFK 64L</li>
-	<li>MSFK 128</li>
-	<li>MSFK 128L</li>
-</ul>
-<br>
-
 Additional information:
 <br>
 \ref mfsk_page
 <br>
+\ref mfsk_table "MSFK Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_mt63 MT-63
 
 \image html menu-mt63.png "MT63"
 \image latex menu-mt63.png "MT63" width=0.75in
-<br>
-
-<ul>
-	<li>MT63-500S</li>
-	<li>MT63-500L</li>
-	<li>MT63-1000S</li>
-	<li>MT63-1000S</li>
-	<li>MT63-2000S</li>
-	<li>MT63-2000L</li>
-</ul>
 <br>
 
 Additional information:
@@ -240,7 +202,10 @@ Additional information:
 <br>
 \ref mt63_configuration_page
 <br>
+\ref mt63_table "MT-63 Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_psk PSK
 
 \image html menu-psk.png "PSK"
@@ -251,53 +216,14 @@ Additional information:
 \image latex menu-psk-multi-carrier.png "Multi Carrier PSK" width=0.75in
 <br>
 
-<ul>
-	<li>psk 31 - phase shift keying - 31.625 baud</li>
-	<li>psk 63 - phase shift keying - 63.25 baud</li>
-	<li>psk 63F - phase shift keying with FEC - 63.25 baud</li>
-	<li>psk 125 - phase shift keying - 126.5 baud</li>
-	<li>psk 250 - phase shift keying - 253 baud</li>
-	<li>psk 500 - phase shift keying - 506 baud</li>
-	<li>psk1000 - phase shift keying - 1012 baud</li>
-	<li>MultiCarrier</li>
-	<ul>
-		<li>12 x psk 125 - 12 carrier psk125 - 126.5 baud - bandwidth 2000 Hz</li>
-		<li>6 x psk 250 - 6 carrier psk 250 - 253 baud - bandwidth 2000 Hz</li>
-		<li>2 x psk 500 - 2 carrier psk 500 - 506 baud - bandwidth 1200 Hz</li>
-		<li>4 x psk 500 - 4 carrier psk 500 - 506 baud - bandwidth 2600 Hz</li>
-		<li>2 x psk 800 - 2 carrier psk 800 - ~810 baud - bandwidth 2300 Hz</li>
-		<li>2 x psk 1000 - 2 carrier psk 1000 - 1012 baud - bandwidth 3200 Hz</li>
-	</ul>
-</ul>
-<br>
-
 Additional information:
 <br>
 \ref psk_page
 <br>
-
-
-\subsubsection s_op_mode_qpsk QPSK
-
-\image html menu-qpsk.png "QPSK"
-\image latex menu-qpsk.png "QPSK" width=0.75in
+\ref psk_table "PSK Mode Table"
 <br>
 
-<ul>
-	<li>qpsk 31 - quadrature phase shift keying - 31.25 baud</li>
-	<li>qpsk 63 - quadrature phase shift keying - 63.25 baud</li>
-	<li>qpsk 125 - quadrature phase shift keying - 126.5 baud</li>
-	<li>qpsk 250 - quadrature phase shift keying - 253 baud</li>
-	<li>qpsk 500 - quadrature phase shift keying - 506 baud</li>
-
-</ul>
-<br>
-
-Additional information:
-<br>
-\ref psk_page
-<br>
-
+<HR>
 \subsubsection s_op_mode_pskr PSKR
 
 \image html menu-pskr.png "PSKR"
@@ -307,55 +233,46 @@ Additional information:
 All PSKR modes are phase shift keying, with FEC and interleaving.
 <br>
 
-<ul>
-	<li>psk 125R - 126.5 baud</li>
-	<li>psk 250R - 253 baud</li>
-	<li>psk 500R - 506 baud</li>
-	<li>psk 1000R - 880 baud</li>
-	<li>MultiCarrier</li>
-	<ul>
-		<li>4 x psk 63R - 4 carrier, bandwidth 330 Hz</li>
-		<li>5 x psk 63R - 5 carrier, bandwidth 416 Hz</li>
-		<li>10 x psk 63R - 10 carrier, bandwidth 550 Hz</li>
-		<li>20 x psk 63R - 20 carrier, bandwidth 1725 Hz</li>
-		<li>32 x psk 63R - 32 carrier, bandwidth 2775 Hz</li>
-		<li>4 x psk 125R - 4 carrier, bandwidth 352 Hz</li>
-		<li>5 x psk 125R - 5 carrier, bandwidth 440 Hz</li>
-		<li>10 x psk 125R - 10 carrier, bandwidth 1100 Hz</li>
-		<li>16 x psk 125R - 16 carrier, bandwidth 1760 Hz</li>
-		<li>2 x psk 250R - 2 carrier, bandwidth 440 Hz</li>
-		<li>3 x psk 250R - 3 carrier, bandwidth 660 Hz</li>
-		<li>5 x psk 250R - 5 carrier, bandwidth 1100 Hz</li>
-		<li>6 x psk 250R - 6 carrier, bandwidth 1320 Hz</li>
-		<li>7 x psk 250R - 7 carrier, bandwidth 1540 Hz</li>
-		<li>2 x psk 500R - 2 carrier, bandwidth 880 Hz</li>
-		<li>3 x psk 500R - 3 carrier, bandwidth 1320 Hz</li>
-		<li>4 x psk 500R - 4 carrier, bandwidth 1760 Hz</li>
-		<li>2 x psk 800R - 2 carrier, baud 800, bandwidth 1280 Hz</li>
-		<li>2x psk 1000R - 2 carrier baud 1012, bandwidth 1760 Hz</li>
-	</ul>
-</ul>
+Additional information:
+<br>
+\ref psk_page
+<br>
+\ref pskr_table "PSK/PSKR Mode Table"
+<br>
+
+<HR>
+\subsubsection s_op_mode_qpsk QPSK
+
+\image html menu-qpsk.png "QPSK"
+\image latex menu-qpsk.png "QPSK" width=0.75in
 <br>
 
 Additional information:
 <br>
 \ref psk_page
 <br>
+\ref qpsk_table "QPSK Mode Table"
+<br>
 
+<HR>
+\subsubsection s_op_mode_8psk 8PSK
 
+\image html menu-8psk.png "8PSK"
+\image latex menu-8psk.png "8PSK" width=0.75in
+<br>
+
+Additional information:
+<br>
+\ref psk_page
+<br>
+\ref eight_psk_table "8PSK Mode Table"
+<br>
+
+<HR>
 \subsubsection s_op_mode_olivia Olivia
 
 \image html menu-olivia.png "Olivia"
 \image latex menu-olivia.png "Olivia" width=0.75in
-<br>
-
-<ul>
-	<li>8/250 8tone, 250 Hz wide signal format</li>
-	<li>8/500 8 tone, 500 Hz wide signal format</li>
-	<li>16/500 16 tone, 500 Hz wide signal format</li>
-	<li>32/1000 32 tone, 1000 Hz wide signal format</li>
-	<li>Custom - tones and bandwidth configurable on Olivia tab</li>
-</ul>
 <br>
 
 Additional information:
@@ -364,21 +281,16 @@ Additional information:
 <br>
 \ref olivia_configuration_page
 <br>
+\ref olivia_table "Olivia Mode Table"
+<br>
 
 
+<HR>
 \subsubsection s_op_mode_rtty RTTY
 
 \image html menu-rtty.png "RTTY"
 \image latex menu-rtty.png "RTTY" width=0.75in
 <br>
-
-<ul>
-	<li>RTTY-45  45 Baud Baudot, 170 Hz shift, used primarily in U.S.</li>
-	<li>RTTY-50  50 Baud Baudot, 170 Hz shift, used primarily in Europe</li>
-	<li>RTTY-75N 75 Baud Baudot, 170 Hz shift</li>
-	<li>RTTY-75W 75 Baud Baudot, 800 Hz shift</li>
-	<li>Custom - Baud Rate, Baudot/ASCII, Shift etc configurable on RTTY tab</li>
-</ul>
 
 Additional information:
 <br>
@@ -386,24 +298,15 @@ Additional information:
 <br>
 \ref rtty_fsk_configuration_page
 <br>
+\ref rtty_table "RTTY Mode Table"
+<br>
 
+
+<HR>
 \subsubsection s_op_mode_thor THOR
 
 \image html menu-thor.png "THOR"
 \image latex menu-thor.png "THOR" width=0.75in
-<br>
-
-<ul>
-	<li>Thor-4</li>
-	<li>Thor-5</li>
-	<li>Thor-8</li>
-	<li>Thor-16</li>
-	<li>Thor-22</li>
-	<li>Thor 25 x 4 - 4 x tone spacing, 2 second interleave</li>
-	<li>Thor 50 x 1 - 1 second interleave</li>
-	<li>Thor 50 x 2 - 2 x tone spacing, 1 second interleave</li>
-	<li>Thor 100 - 0.5 second interleave</li>
-</ul>
 <br>
 
 Additional information:
@@ -412,37 +315,28 @@ Additional information:
 <br>
 \ref thor_configuration_page
 <br>
+\ref thor_table "Thor Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_throb THROB
 
 \image html menu-throb.png "throb"
 \image latex menu-throb.png "throb" width=0.75in
 <br>
 
-<ul>
-	<li>Throb1</li>
-	<li>Throb2</li>
-	<li>Throb4</li>
-	<li>ThrobX-1</li>
-	<li>ThrobX-2</li>
-	<li>ThrobX-4</li>
-</ul>
-
 Additional information:
 <br>
 \ref throb_page
 <br>
+\ref throb_table "Throb Mode Table"
+<br>
 
+<HR>
 \subsubsection s_op_mode_wefax WEFAX
 
 \image html menu-wefax.png "WEFAX"
 \image latex menu-wefax.png "WEFAX" width=1.0in
-<br>
-
-<ul>
-	<li>WEFAX-IOC576</li>
-	<li>WEFAX-IOC288</li>
-</ul>
 <br>
 
 Additional information:
@@ -450,28 +344,29 @@ Additional information:
 \ref wefax_page
 <br>
 
+<HR>
 \subsubsection s_op_mode_navtex NAVTEX / SITOR
 
 \image html menu-navtex.png "NAVTEX / SITOR"
 \image latex menu-navtex.png "NAVTEX / SITOR" width=0.6in
 <br>
 
-<ul>
-	<li>Navtex</li>
-	<li>SitorB</li>
-</ul>
-
 Additional information:
 <br>
 \ref navtex_and_sitorb_page
 <br>
 
-\subsubsection s_op_mode_other SSB, WWV, and Freq Anal
+<HR>
+\subsubsection s_op_mode_other SSB, WWV, Freq Anal, and Freq Scan
+
+\image html  menu-scan.png "Analysis / Scan"
+\image latex menu-scan.png "Analysis / Scan" width=0.6in
 
 <ul>
 	<li>SSB - fldigi does not transmit, but can be used for rig control,
 	signal frequency analysis and logging</li>
 	<li>WWV - special receive only modem used for calibrating sound card</li>
+	<li>Freq Scan - Evaluate Rx/Codec Signal Path</li>
 	<li>Freq Anal - used for carrier detection and frequency measurement</li>
 </ul>
 <br>
@@ -482,9 +377,10 @@ Additional information:
 <br>
 \ref digiscope_display_wwv_mode
 <br>
+\ref fft_scan_page
 <br>
 
-
+<HR>
 \subsection s_configure Configure
 
 \image html menu-configure.png "Configure"
@@ -494,7 +390,7 @@ Additional information:
 See \ref configuration_page Page
 <br>
 
-
+<HR>
 \subsection s_view View
 
 \image html menu-view.png "View"
@@ -541,6 +437,7 @@ See \ref configuration_page Page
 </ul>
 <br>
 
+<HR>
 \subsection s_logbook Logbook
 
 \image html menu-logbook.png "Logbook"
@@ -572,6 +469,7 @@ See \ref configuration_page Page
 </ul>
 <br>
 
+<HR>
 \subsection s_help Help
 
 \image html menu-help.png "Help"
@@ -604,6 +502,7 @@ See \ref configuration_page Page
 
 <br>
 
+<HR>
 \subsection s_other Spot, Tx RSID, Rx RSID, and Tune Buttons
 
 \image html menu-linux.png "Menu"
