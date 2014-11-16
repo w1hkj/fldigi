@@ -415,6 +415,7 @@ fldigi_SOURCES += \
 	include/rx_extract.h \
 	include/speak.h \
 	include/serial.h \
+	include/estrings.h \
 	include/smeter.h \
 	include/pwrmeter.h \
 	include/socket.h \
@@ -530,6 +531,7 @@ fldigi_SOURCES += \
 	rigcontrol/rigsupport.cxx \
 	rigcontrol/rigxml.cxx \
 	rigcontrol/serial.cxx \
+	misc/estrings.cxx \
 	rsid/rsid.cxx \
 	soundcard/sound.cxx \
 	soundcard/soundconf.cxx \

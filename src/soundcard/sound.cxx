@@ -73,6 +73,8 @@
 #include "icons.h"
 #include "macros.h"
 
+#include "estrings.h"
+
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
 // #define  SRC_BUF_LEN	 (8*SND_BUF_LEN)
@@ -897,7 +899,11 @@ void SoundPort::initialize(void)
 
 	int err;
 	if ((err = Pa_Initialize()) != paNoError) {
+#if __WIN32__
+		LOG_PERROR(win_error_string(err).c_str());
+#else
 		LOG_PERROR("Portaudio Initialize error");
+#endif
 		throw SndPortException(err);
 	}
 	pa_init = true;
@@ -975,6 +981,10 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(
 #else
 		*sems[i] = new sem_t;
 		if (sem_init(*sems[i], 0, 0) == -1) {
+#if __WIN32__
+		int err = GetLastError();
+		LOG_PERROR(win_error_string(err).c_str());
+#endif
 			pa_perror(errno, "sem_init error");
 			throw SndException(errno);
 		}
@@ -1166,6 +1176,9 @@ void SoundPort::Abort(unsigned dir)
 		if (!stream_active(i))
 			continue;
 		if ((err = Pa_AbortStream(sd[i].stream)) != paNoError)
+#if __WIN32__
+		LOG_PERROR(win_error_string(err).c_str());
+#endif
 			pa_perror(err, "Pa_AbortStream");
 		sd[i].stream = 0;
 	}
@@ -1221,6 +1234,10 @@ size_t SoundPort::Read(float *buf, size_t count)
 			count -= n;//maxframes;
 			pa_timeout--;
 			if (pa_timeout == 0) {
+#if __WIN32__
+				int err = GetLastError();
+				LOG_PERROR(win_error_string(err).c_str());
+#endif
 				pa_perror(1, "Portaudio read error #1");
 				throw SndException("Portaudio read error 1");
 			}

@@ -293,6 +293,8 @@ void Cserial::FlushBuffer()
 
 #else // __MINGW32__
 
+#include "estrings.h"
+
 using namespace std;
 
 ///////////////////////////////////////////////////////
@@ -317,14 +319,16 @@ BOOL Cserial::OpenPort()
 			  0);
 
 	if(hComm == INVALID_HANDLE_VALUE) {
-		LOG_ERROR("Invalid handle");
+		errno = GetLastError();
+		LOG_PERROR(win_error_string(errno).c_str());
 		return FALSE;
 	}
 
 	if (!ConfigurePort( baud, 8, FALSE, NOPARITY, stopbits)) {
+		errno = GetLastError();
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
-		LOG_ERROR("Could not configure port");
+		LOG_PERROR(win_error_string(errno).c_str());
 		return FALSE;
 	}
 
@@ -353,11 +357,16 @@ void Cserial::ClosePort()
 int  Cserial::ReadData (unsigned char *buf, int nchars)
 {
 	if (!hComm)
-	return FALSE;
+	return 0;
 
 	DWORD dwRead = 0;
-	ReadFile(hComm, buf, nchars, &dwRead, NULL);
-	return (int) dwRead;
+	if (ReadFile(hComm, buf, nchars, &dwRead, NULL))
+		return static_cast<int>(dwRead);
+	if (dwRead == 0) return 0;
+
+	errno = GetLastError();
+	LOG_PERROR(win_error_string(errno).c_str());
+	return 0;
 }
 
 BOOL Cserial::ReadByte(unsigned char & by)
@@ -388,8 +397,11 @@ BOOL Cserial::WriteByte(UCHAR by)
 		return FALSE;
 
 	nBytesWritten = 0;
-	if (WriteFile(hComm,&by,1,&nBytesWritten,NULL)==0)
+	if (WriteFile(hComm,&by,1,&nBytesWritten,NULL)==0) {
+		errno = GetLastError();
+		LOG_PERROR(win_error_string(errno).c_str());
 		return FALSE;
+	}
 	return TRUE;
 }
 
@@ -402,14 +414,19 @@ BOOL Cserial::WriteByte(UCHAR by)
 int Cserial::WriteBuffer(unsigned char *buff, int n)
 {
 	if (!hComm)
-		return -1;
+		return 0;
 
-	WriteFile (hComm, buff, n, &nBytesWritten, NULL);
-	if (!nBytesWritten) {
-		LOG_DEBUG("Reopening comm port");
+	if (WriteFile (hComm, buff, n, &nBytesWritten, NULL) == 0) {
+		errno = GetLastError();
+		LOG_PERROR(win_error_string(errno).c_str());
 		ClosePort();
 		OpenPort();
-		WriteFile (hComm, buff, n, &nBytesWritten, NULL);
+		if (WriteFile (hComm, buff, n, &nBytesWritten, NULL) == 0) {
+			errno = GetLastError();
+			LOG_PERROR(win_error_string(errno).c_str());
+			ClosePort();
+			return 0;
+		}
 	}
 
 	return nBytesWritten;
@@ -460,6 +477,7 @@ Write Total Timeout Multiplier...... %8ld %8ld",
 	bPortReady = SetCommTimeouts (hComm, &CommTimeouts);
 
 	if(bPortReady ==0) {
+		LOG_PERROR(win_error_string(GetLastError()).c_str());
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
 		return FALSE;
@@ -559,7 +577,8 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 				BYTE	StopBits)
 {
 	if((bPortReady = GetCommState(hComm, &dcb))==0) {
-		LOG_ERROR("GetCommState error on %s", device.c_str());
+		errno = GetLastError();
+		LOG_PERROR(win_error_string(errno).c_str());
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
 		return FALSE;
@@ -599,7 +618,7 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 	if(bPortReady == 0) {
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
-		LOG_ERROR("Port not available");
+		LOG_PERROR("Port not available");
 		return FALSE;
 	}
 
@@ -618,7 +637,7 @@ void Cserial::SetPTT(bool b)
 	if ( !(dtrptt || rtsptt) )
 		return;
 	if(hComm == INVALID_HANDLE_VALUE) {
-		LOG_ERROR("Invalid handle");
+		LOG_PERROR("Invalid handle");
 		return;
 	}
 	LOG_DEBUG("PTT = %d, DTRptt = %d, DTR = %d, RTSptt = %d, RTS = %d",
