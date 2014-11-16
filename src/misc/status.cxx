@@ -766,19 +766,23 @@ void status::initLastState()
 	wf->setAmpSpan();
 
 	btnAFC->value(afconoff);
-	btnSQL->value(sqlonoff);
-	btnPSQL->value(pwrsqlonoff);
 
 	if(override_data_io_enabled != DISABLED_IO) {
 		data_io_enabled = override_data_io_enabled;
-		if(data_io_enabled == ARQ_IO) {
-			btnEnable_arq->value(true);
-			btnEnable_kiss->value(false);
-		} else {
-			btnEnable_arq->value(false);
-			btnEnable_kiss->value(true);
-		}
 	}
+
+	if(data_io_enabled == ARQ_IO) {
+		pwrsqlonoff = false;
+		progdefaults.data_io_enabled = data_io_enabled;
+	}
+
+	btnSQL->value(sqlonoff);
+	btnPSQL->value(pwrsqlonoff);
+
+	if(pwrsqlonoff)
+		sldrSquelch->value(sldrPwrSquelchValue);
+	else
+		sldrSquelch->value(sldrSquelchValue);
 
 	if(arq_address_override_flag) {
 		if(!override_arq_address.empty())
@@ -827,12 +831,7 @@ void status::initLastState()
 	cntKPSQLAttenuation->value(kpsql_attenuation);
 	progdefaults.kpsql_attenuation = kpsql_attenuation;
 
-	if(pwrsqlonoff)
-		sldrSquelch->value(sldrPwrSquelchValue);
-	else
-		sldrSquelch->value(sldrSquelchValue);
-
-	if (bWF_only) 
+	if (bWF_only)
 		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus);
 	else {
 		fl_digi_main->resize(mainX, mainY, mainW, mainH);
