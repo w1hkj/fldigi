@@ -907,6 +907,7 @@ if (!progStatus.shaped_rtty) {
 				mark  = m_SymShaper1->Update( sym) * m_Osc1->Update( freq1 );
 				space = m_SymShaper2->Update(!sym) * m_Osc2->Update( freq2 );
 				signal = mark + space;
+
 				if (maxamp < fabs(signal)) maxamp = fabs(signal);
 			}
 		}
@@ -915,8 +916,8 @@ if (!progStatus.shaped_rtty) {
 	for( int i = 0; i < len; ++i ) {
 		mark  = m_SymShaper1->Update( symbol) * m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(!symbol) * m_Osc2->Update( freq2 );
-
 		signal = mark + space;
+
 		if (maxamp < fabs(signal)) {
 			maxamp = fabs(signal);
 		}
@@ -970,8 +971,8 @@ if (!progStatus.shaped_rtty) {
 	for( int i = 0; i < stoplen; ++i ) {
 		mark  = m_SymShaper1->Update( symbol)*m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(!symbol)*m_Osc2->Update( freq2 );
-
 		signal = mark + space;
+
 		if (maxamp < fabs(signal)) maxamp = fabs(signal);
 		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
 
@@ -997,8 +998,8 @@ void rtty::flush_stream()
 	for( int i = 0; i < symbollen * 6; ++i ) {
 		mark  = m_SymShaper1->Update(0)*m_Osc1->Update( freq1 );
 		space = m_SymShaper2->Update(0)*m_Osc2->Update( freq2 );
-
 		signal = mark + space;
+
 		if (maxamp < fabs(signal)) maxamp = fabs(signal);
 		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
 
@@ -1302,8 +1303,11 @@ void SymbolShaper::Preset(double baud, double sr)
 
     for( int x=0; x<m_table_size; ++x ) {
         int const offset = m_table_size/2;
-        double const T = sample_rate / (baud_rate*2.0); // symbol-length in samples
-        double const t = (x-offset); // symbol-time relative to zero
+        double wfactor = 1.0 / 1.568; // optimal
+// symbol-length in samples if wmultiple = 1.0
+        double const T = wfactor * sample_rate / (baud_rate*2.0); 
+// symbol-time relative to zero
+        double const t = (x-offset);
 
         m_sinc_table[x] = rcos( t, T, 1.0 );
 
