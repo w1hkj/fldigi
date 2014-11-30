@@ -23,7 +23,7 @@ The active current development team consists of:
 	<li>Stelios Bounanos - M0GLD</li>
 	<li>Remi Chateauneu - F4ECW</li>
 	<li>Leigh Klotz - WA5ZNU</li>
-	<li>Stephane Fillod - F8CFE</li>
+	<li>Stéphane Fillod - F8CFE</li>
 	<li>John Douyere - VK2ETA</li>
 	<li>Joe Veldhuis - N8FQ</li>
 	<li>Chris Sylvain - KB3CS</li>
@@ -35,16 +35,17 @@ The active current development team consists of:
 </ul>
 
 Localization files:
-<br>
+<pre>
 
-<ul>
-  <li>French: Stephane Fillod - F8CFE</li>
-  <li>German: Marc Richter - DF2MR </li>
-  <li>Italian: Pierfrancesco Caci - IK5PVX</li>
-  <li>Spanish: Pavel Milanes Costa - CO7WT</li>
-  <li>Polish: Roman Bagi&nacute;ski - SP4JEU</li>
-</ul>
-<br>
+   Español    Spanish   Pavel Milanes Costa CO7WT
+                        Christian W. Correa HK4QWC
+   Deutsch    German    Marc Richter        DF2MR
+   Français   French    Stéphane Fillod     F8CFE
+   Italiano   Italian   Pierfrancesco Caci  IK5PVX
+   Język      Polish    Roman Bagiński      SP4JEU
+   Nederlands Dutch     Peter van der Post  PA1POS
+
+</pre>
 
 Several authors have placed their digital modem code and signal
 processing code in the public domain and their source was either an

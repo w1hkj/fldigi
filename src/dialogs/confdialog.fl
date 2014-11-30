@@ -410,7 +410,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
+            tooltip {User Interface - Browser} xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -739,14 +739,14 @@ progdefaults.changed = true;}
             tooltip {User Interface - General} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
-              xywh {60 77 496 76} box ENGRAVED_FRAME
+              xywh {40 77 520 76} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnShowTooltips {
                 label {Show tooltips}
                 callback {progdefaults.tooltips = o->value();
 Fl_Tooltip::enable(progdefaults.tooltips);
 progdefaults.changed = true;}
-                tooltip {Enable / disable tooltips} xywh {95 90 120 20} down_box DOWN_BOX value 1
+                tooltip {Enable / disable tooltips} xywh {75 90 120 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.tooltips);}
               }
               Fl_Check_Button chkMenuIcons {
@@ -754,7 +754,7 @@ progdefaults.changed = true;}
                 callback {progdefaults.menuicons = o->value();
 icons::toggle_icon_labels();
 progdefaults.changed = true;}
-                tooltip {Enable / disable icons on menus} xywh {239 90 150 20} down_box DOWN_BOX
+                tooltip {Enable / disable icons on menus} xywh {219 90 150 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.menuicons);}
               }
               Fl_Group listboxScheme {
@@ -763,7 +763,7 @@ progdefaults.changed = true;}
     Fl::scheme(progdefaults.ui_scheme.c_str());
 
     progdefaults.changed = true;} open
-                tooltip {Change application look and feel} xywh {213 119 80 20} box DOWN_BOX color 7 align 8
+                tooltip {Change application look and feel} xywh {193 119 80 20} box DOWN_BOX color 7 align 8
                 code0 {listboxScheme->add("base");}
                 code1 {listboxScheme->add("gtk+");}
                 code2 {listboxScheme->add("plastic");}
@@ -777,48 +777,48 @@ progdefaults.changed = true;}
 mode_browser->callback(toggle_visible_modes);
 mode_browser->show(&progdefaults.visible_modes);
 progdefaults.changed = true;}
-                tooltip {Select modes for menu access} xywh {78 119 110 20}
+                tooltip {Select modes for menu access} xywh {58 119 110 20}
               }
               Fl_Group listbox_language {
                 label {UI language}
                 callback {progdefaults.ui_language = o->index();
 progdefaults.changed = true;} open
-                tooltip {Changes take effect on next program startup} xywh {423 119 110 20} box DOWN_BOX color 7 labelsize 12 align 5
+                tooltip {Changes take effect on next program startup} xywh {375 119 170 20} box DOWN_BOX color 7 labelsize 12 align 5
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
             }
             Fl_Group {} {
-              xywh {60 154 496 34} box ENGRAVED_FRAME align 21
+              xywh {40 154 520 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_rx_lowercase {
                 label {Print CW / RTTY / THROB / CONTESTIA in lowercase}
                 callback {progdefaults.rx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {95 161 389 20} down_box DOWN_BOX
+                xywh {75 161 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rx_lowercase);}
               }
             }
             Fl_Group {} {
-              xywh {60 189 496 34} box ENGRAVED_FRAME align 21
+              xywh {40 189 520 34} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_tx_lowercase {
                 label {Transmit all text in lower case}
                 callback {progdefaults.tx_lowercase = o->value();
 progdefaults.changed = true;}
-                xywh {95 197 389 20} down_box DOWN_BOX
+                xywh {75 197 389 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.tx_lowercase);}
               }
             }
             Fl_Group {} {
               label {Exit prompts}
-              xywh {60 224 496 76} box ENGRAVED_FRAME align 21
+              xywh {40 224 520 76} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_save_config_on_exit {
                 label {Prompt to save Configuration}
                 callback {progdefaults.SaveConfig = o->value();
 progdefaults.changed = true;}
-                xywh {95 248 233 20} down_box DOWN_BOX
+                xywh {75 248 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveConfig);}
               }
               Fl_Check_Button btn2_save_macros_on_exit {
@@ -826,7 +826,7 @@ progdefaults.changed = true;}
                 callback {btn_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {95 270 233 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {75 270 233 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
               }
               Fl_Check_Button btn2NagMe {
@@ -834,7 +834,7 @@ progdefaults.changed = true;}
                 callback {btnNagMe->value(o->value());
 progdefaults.NagMe=o->value();
 progdefaults.changed = true;}
-                tooltip {Bug me about saving log entries} xywh {339 248 166 20} down_box DOWN_BOX
+                tooltip {Bug me about saving log entries} xywh {319 248 166 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.NagMe);}
               }
               Fl_Check_Button btn2_confirm_exit {
@@ -842,26 +842,26 @@ progdefaults.changed = true;}
                 callback {btn2_confirm_exit->value(o->value());
 progdefaults.confirmExit=o->value();
 progdefaults.changed = true;}
-                xywh {339 270 200 20} down_box DOWN_BOX
+                xywh {319 270 200 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.confirmExit);}
               }
             }
             Fl_Group {} {
               label {Check for updates} open
-              xywh {60 301 496 54} box ENGRAVED_FRAME align 21
+              xywh {40 301 520 52} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_check_for_updates {
                 label {Check for updates when starting program}
                 callback {progdefaults.check_for_updates = o->value();
 progdefaults.changed = true;}
-                xywh {95 324 324 20} down_box DOWN_BOX
+                xywh {75 324 324 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.check_for_updates);}
               }
             }
           }
           Fl_Group tabLogServer {
             label Log open
-            tooltip {User Interface - Logging} xywh {0 50 600 330}
+            tooltip {User Interface - Logging} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Client/Server Logbook} open

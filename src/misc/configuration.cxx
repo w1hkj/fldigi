@@ -671,7 +671,7 @@ int configuration::setDefaults()
 	ostringstream ss;
 	for (lang_def_t* p = ui_langs; p->lang; p++) {
 		ss.str("");
-		ss << p->native_name << " (" << p->percent_done << "%)";
+		ss << p->native_name;
 		listbox_language->add(ss.str().c_str());
 	}
 	listbox_language->index(get_ui_lang());
