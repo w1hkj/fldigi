@@ -455,12 +455,9 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 	if (withnoise && progdefaults.noise) add_noise(buffer, len);
 
-	double mult = pow(10, progdefaults.txlevel / 20.0);
-	for (int i = 0; i < len; i++) {
-		if (buffer[i] < -1.0) buffer[i] = -1.0;
-		if (buffer[i] > 1.0) buffer[i] = 1.0;
+	double mult = 0.98 * pow(10, progdefaults.txlevel / 20.0);
+	for (int i = 0; i < len; i++)
 		buffer[i] *= mult;
-	}
 
 	try {
 		unsigned n = 4;

@@ -123,7 +123,7 @@ int MT63tx::Preset(double freq, int BandWidth, int LongInterleave)
 
 	WindowLen = SymbolLen;
 	TxWindow = SymbolShape;
-	TxAmpl = 4.0 / DataCarriers; // for maximum output level we can set TxAmpl=4.0/DataCarriers
+	TxAmpl = 4.0 / DataCarriers; // for maximum undistorted output
 	CarrMarkCode = 0x16918BBEL;
 	CarrMarkAmpl = 0;
 

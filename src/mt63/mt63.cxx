@@ -69,19 +69,12 @@ int mt63::tx_process()
 	guard_lock dsp_lock(&mt63_mutex);
 
 	int c;
-	double maxval = 0;
 
     if (startflag == true) {
         startflag = false;
         if (progdefaults.mt63_usetones) {
-            double maxval = 0.0;
             for (int i = 0; i < (bandwidth * progdefaults.mt63_tone_duration / 96); i++) {
                 Tx->SendTune( progdefaults.mt63_twotones );
-                for (int i = 0; i < Tx->Comb.Output.Len; i++)
-                    if (fabs(Tx->Comb.Output.Data[i]) > maxval)
-                        maxval = fabs(Tx->Comb.Output.Data[i]);
-                for (int i = 0; i < Tx->Comb.Output.Len; i++)
-                    Tx->Comb.Output.Data[i] /= maxval;
                 ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
             }
         }
@@ -100,20 +93,9 @@ int mt63::tx_process()
 		stopflag = false;
 		while (--flush) {
 			Tx->SendChar(0);
-			for (int i = 0; i < Tx->Comb.Output.Len; i++)
-				if (fabs(Tx->Comb.Output.Data[i]) > maxval)
-					maxval = fabs(Tx->Comb.Output.Data[i]);
-			for (int i = 0; i < Tx->Comb.Output.Len; i++) {
-				Tx->Comb.Output.Data[i] /= maxval;
-			}
 			ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 		}
 		Tx->SendJam();
-		for (int i = 0; i < Tx->Comb.Output.Len; i++)
-			if (fabs(Tx->Comb.Output.Data[i]) > maxval)
-				maxval = fabs(Tx->Comb.Output.Data[i]);
-		for (int i = 0; i < Tx->Comb.Output.Len; i++)
-			Tx->Comb.Output.Data[i] /= maxval;
 		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 		cwid();
 		return -1;	/* we're done */
@@ -127,21 +109,10 @@ int mt63::tx_process()
 	if (sendc > 127) {
 		sendc &= 127;
 		Tx->SendChar(127);
-		for (int i = 0; i < Tx->Comb.Output.Len; i++)
-			if (fabs(Tx->Comb.Output.Data[i]) > maxval)
-				maxval = fabs(Tx->Comb.Output.Data[i]);
-		for (int i = 0; i < Tx->Comb.Output.Len; i++)
-			Tx->Comb.Output.Data[i] /= maxval;
 		ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 	}
 
 	Tx->SendChar(sendc);
-	for (int i = 0; i < Tx->Comb.Output.Len; i++)
-		if (fabs(Tx->Comb.Output.Data[i]) > maxval)
-			maxval = fabs(Tx->Comb.Output.Data[i]);
-	for (int i = 0; i < Tx->Comb.Output.Len; i++) {
-		Tx->Comb.Output.Data[i] /= maxval;
-	}
 	ModulateXmtr((Tx->Comb.Output.Data), Tx->Comb.Output.Len);
 
 	put_echo_char(c);
