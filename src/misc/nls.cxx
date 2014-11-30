@@ -46,14 +46,14 @@ using namespace std;
 
 // TODO: figure out the percentage automatically; hopefully not in a horribly kludgy way
 struct lang_def_t ui_langs[] = {
-	{ "en", "en_US", "English",     100 },
-	{ "de", "de_DE", "Deutsch", 99 },
-	{ "nl", "nl_NL", "Dutch", 99},
-	{ "es", "es_ES", "Espa\361ol",  99 },
-	{ "fr", "fr_FR", "Fran\347ais", 38 },
-	{ "it", "it_IT", "Italiano",    99 },
-	{ "pl", "pl_PL", "Polish", 90},
-	{ NULL, NULL, NULL, 0 }
+	{ "en", "en_US", "English"},
+	{ "de", "de_DE", "Deutsch (German)"},
+	{ "nl", "nl_NL", "Nederlands (Dutch)"},
+	{ "es", "es_ES", "Espa\361ol (Spanish)"},
+	{ "fr", "fr_FR", "Fran\347ais (French)"},
+	{ "it", "it_IT", "Italiano (Italian)"},
+	{ "pl", "pl_PL", "Język (Polish)"},
+	{ NULL, NULL, NULL }
 };
 
 static string get_win32_lang_dir(const char* homedir = NULL)

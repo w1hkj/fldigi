@@ -36,32 +36,40 @@ const char* szAbout =
 <CENTER>\n\
 <H3><I>Fldigi " PACKAGE_VERSION "</I></H3>\n\
 <br>\n\
-Fast and Light Digital modem program\n\
+Fast and Light DIGItal modem program\n\
 </CENTER>\n\
 <P>\n\
-Copyright \251 2008-2014 " FLDIGI_AUTHORS ".\n\
+Copyright \251 2008-2014\n\
 <P>\n\
 Distributed under the GNU General Public License version 3 or later.<br>\n\
 This is free software: you are free to change and redistribute it.<br>\n\
 There is NO WARRANTY, to the extent permitted by law.\n\
 <H4>Programmers:</H4>\n\
-&nbsp; &nbsp; &nbsp;Dave Freese, W1HKJ<br>\n\
-&nbsp; &nbsp; &nbsp;Stelios Bounanos, M0GLD<br>\n\
-&nbsp; &nbsp; &nbsp;Rem\355 Chateauneu, F4ECW<br>\n\
-&nbsp; &nbsp; &nbsp;John Douyere, VK2ETA<br>\n\
-&nbsp; &nbsp; &nbsp;Stefan Fendt, DL1SMF<br>\n\
-&nbsp; &nbsp; &nbsp;Leigh Klotz, WA5ZNU<br>\n\
-&nbsp; &nbsp; &nbsp;John Phelps, KL4YFD<br>\n\
-&nbsp; &nbsp; &nbsp;Andrej Lajovic, S57LN\n\
-<H4>Localization:</H4>\n\
-&nbsp; &nbsp; &nbsp;Dutch:   Peter van der Post,  PA1POS<br>\n\
-&nbsp; &nbsp; &nbsp;French:  St\351phane Fillod,     F8CFE<br>\n\
-&nbsp; &nbsp; &nbsp;German:  Marc Richter,        DF2MR<br>\n\
-&nbsp; &nbsp; &nbsp;Italian: Pierfrancesco Caci,  IK5PVX<br>\n\
-&nbsp; &nbsp; &nbsp;Polish:  Roman Bagiński,      SP4JEU<br>\n\
-&nbsp; &nbsp; &nbsp;Spanish: Pavel Milanes Costa, CO7WT<br>\n\
+<pre>\
+Dave Freese        W1HKJ\n\
+Stelios Bounanos   M0GLD\n\
+Rem\355 Chateauneu    F4ECW\n\
+John Douyere       VK2ETA\n\
+Stefan Fendt       DL1SMF\n\
+Leigh Klotz        WA5ZNU\n\
+John Phelps        KL4YFD\n\
+Andrej Lajovic     S57LN\n\
+Robert Stiles      KK5VD\n\
+</pre>\
 <H4>Beginners' Guide:</H4>\n\
-&nbsp; &nbsp; &nbsp;Murray Greenman, ZL1BPU<br>\n\
+<pre>\
+Murray Greenman      ZL1BPU<br>\n\
+</pre>\
+<H4>Localization:</H4>\n\
+<pre>\
+Espa\361ol     Spanish      Pavel Milanes Costa CO7WT\n\
+                         Christian W. Correa HK4QWC\n\
+Deutsch     German       Marc Richter        DF2MR\n\
+Fran\347ais    French       St\351phane Fillod     F8CFE\n\
+Italiano    Italian      Pierfrancesco Caci  IK5PVX\n\
+Język       Polish       Roman Bagiński      SP4JEU\n\
+Nederlands  Dutch        Peter van der Post  PA1POS\n\
+</pre>\
 </body>\n\
 </html>\n\
 ";

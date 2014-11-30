@@ -28,7 +28,6 @@ struct lang_def_t {
 	const char* lang;
 	const char* lang_region;
 	const char* native_name;
-	int percent_done;
 };
 
 extern struct lang_def_t ui_langs[];

@@ -5403,7 +5403,6 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5700,22 +5699,22 @@ Fl_Double_Window* ConfigureDialog() {
           { tabUserInterface = new Fl_Group(0, 50, 600, 330, _("General"));
             tabUserInterface->tooltip(_("User Interface - General"));
             tabUserInterface->hide();
-            { Fl_Group* o = new Fl_Group(60, 77, 496, 76);
+            { Fl_Group* o = new Fl_Group(40, 77, 520, 76);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(95, 90, 120, 20, _("Show tooltips"));
+              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(75, 90, 120, 20, _("Show tooltips"));
                 btnShowTooltips->tooltip(_("Enable / disable tooltips"));
                 btnShowTooltips->down_box(FL_DOWN_BOX);
                 btnShowTooltips->value(1);
                 btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
                 o->value(progdefaults.tooltips);
               } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(239, 90, 150, 20, _("Show menu icons"));
+              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(219, 90, 150, 20, _("Show menu icons"));
                 chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
                 chkMenuIcons->down_box(FL_DOWN_BOX);
                 chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
                 o->value(progdefaults.menuicons);
               } // Fl_Check_Button* chkMenuIcons
-              { Fl_ListBox* o = listboxScheme = new Fl_ListBox(213, 119, 80, 20, _("UI scheme"));
+              { Fl_ListBox* o = listboxScheme = new Fl_ListBox(193, 119, 80, 20, _("UI scheme"));
                 listboxScheme->tooltip(_("Change application look and feel"));
                 listboxScheme->box(FL_DOWN_BOX);
                 listboxScheme->color(FL_BACKGROUND2_COLOR);
@@ -5734,11 +5733,11 @@ Fl_Double_Window* ConfigureDialog() {
                        o->labelsize(FL_NORMAL_SIZE);
                 listboxScheme->end();
               } // Fl_ListBox* listboxScheme
-              { bVisibleModes = new Fl_Button(78, 119, 110, 20, _("Visible modes"));
+              { bVisibleModes = new Fl_Button(58, 119, 110, 20, _("Visible modes"));
                 bVisibleModes->tooltip(_("Select modes for menu access"));
                 bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
               } // Fl_Button* bVisibleModes
-              { Fl_ListBox* o = listbox_language = new Fl_ListBox(423, 119, 110, 20, _("UI language"));
+              { Fl_ListBox* o = listbox_language = new Fl_ListBox(375, 119, 170, 20, _("UI language"));
                 listbox_language->tooltip(_("Changes take effect on next program startup"));
                 listbox_language->box(FL_DOWN_BOX);
                 listbox_language->color(FL_BACKGROUND2_COLOR);
@@ -5755,57 +5754,57 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_ListBox* listbox_language
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(60, 154, 496, 34);
+            { Fl_Group* o = new Fl_Group(40, 154, 520, 34);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(95, 161, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
+              { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(75, 161, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
                 btn_rx_lowercase->down_box(FL_DOWN_BOX);
                 btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
                 o->value(progdefaults.rx_lowercase);
               } // Fl_Check_Button* btn_rx_lowercase
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(60, 189, 496, 34);
+            { Fl_Group* o = new Fl_Group(40, 189, 520, 34);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_tx_lowercase = new Fl_Check_Button(95, 197, 389, 20, _("Transmit all text in lower case"));
+              { Fl_Check_Button* o = btn_tx_lowercase = new Fl_Check_Button(75, 197, 389, 20, _("Transmit all text in lower case"));
                 btn_tx_lowercase->down_box(FL_DOWN_BOX);
                 btn_tx_lowercase->callback((Fl_Callback*)cb_btn_tx_lowercase);
                 o->value(progdefaults.tx_lowercase);
               } // Fl_Check_Button* btn_tx_lowercase
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(60, 224, 496, 76, _("Exit prompts"));
+            { Fl_Group* o = new Fl_Group(40, 224, 520, 76, _("Exit prompts"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(95, 248, 233, 20, _("Prompt to save Configuration"));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(75, 248, 233, 20, _("Prompt to save Configuration"));
                 btn_save_config_on_exit->down_box(FL_DOWN_BOX);
                 btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
                 o->value(progdefaults.SaveConfig);
               } // Fl_Check_Button* btn_save_config_on_exit
-              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(95, 270, 233, 20, _("Prompt to save macro file"));
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(75, 270, 233, 20, _("Prompt to save macro file"));
                 btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
                 btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
                 btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn2_save_macros_on_exit
-              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(339, 248, 166, 20, _("Prompt to save log"));
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(319, 248, 166, 20, _("Prompt to save log"));
                 btn2NagMe->tooltip(_("Bug me about saving log entries"));
                 btn2NagMe->down_box(FL_DOWN_BOX);
                 btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btn2NagMe
-              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(339, 270, 200, 20, _("Confirm exit"));
+              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(319, 270, 200, 20, _("Confirm exit"));
                 btn2_confirm_exit->down_box(FL_DOWN_BOX);
                 btn2_confirm_exit->callback((Fl_Callback*)cb_btn2_confirm_exit);
                 o->value(progdefaults.confirmExit);
               } // Fl_Check_Button* btn2_confirm_exit
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(60, 301, 496, 54, _("Check for updates"));
+            { Fl_Group* o = new Fl_Group(40, 301, 520, 52, _("Check for updates"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(95, 324, 324, 20, _("Check for updates when starting program"));
+              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(75, 324, 324, 20, _("Check for updates when starting program"));
                 btn_check_for_updates->down_box(FL_DOWN_BOX);
                 btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
                 o->value(progdefaults.check_for_updates);
@@ -5816,6 +5815,7 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
             tabLogServer->tooltip(_("User Interface - Logging"));
+            tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
