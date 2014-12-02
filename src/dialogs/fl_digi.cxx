@@ -1060,18 +1060,15 @@ void remove_windows()
 void cb_wMain(Fl_Widget*, void*)
 {
 #ifdef __APPLE__
-	bool ret = false;
-	if (((Fl::event_state() & FL_COMMAND) == FL_COMMAND) && (Fl::event_key() == 'q'))
-		ret = clean_exit(true);
-	else
-		ret = clean_exit(false);
-	if (!ret) return;
+	if (((Fl::event_state() & FL_COMMAND) == FL_COMMAND) && (Fl::event_key() == 'q')) {
+		if (!clean_exit(true)) return;
+	} else {
+		clean_exit(false);
+	}
 #else
-	if (!clean_exit(true))
-		return;
+	if (!clean_exit(true)) return;
 #endif
 	remove_windows();  // more Apple Lion madness
-// this will make Fl::run return
 	fl_digi_main->hide();
 }
 
@@ -2900,7 +2897,7 @@ void save_on_exit() {
 bool first_use = false;
 
 bool clean_exit(bool ask) {
-	if (first_use) {
+	if (ask && first_use) {
 		switch(fl_choice2(_("Confirm Quit"), NULL, _("Yes"), _("No"))) {
 			case 2:
 				return false;
@@ -2918,9 +2915,11 @@ bool clean_exit(bool ask) {
 			}
 		}
 	} else {
-		if (progdefaults.confirmExit && (!(progdefaults.changed && progdefaults.SaveConfig) ||
-				 !(macros.changed && progdefaults.SaveMacros) ||
-				 !(!oktoclear && progdefaults.NagMe))) {
+		if (ask && 
+			progdefaults.confirmExit && 
+			(!(progdefaults.changed && progdefaults.SaveConfig) ||
+			 !(macros.changed && progdefaults.SaveMacros) ||
+			 !(!oktoclear && progdefaults.NagMe))) {
 			switch (fl_choice2(_("Confirm quit?"), NULL, _("Yes"), _("No"))) {
 				case 1:
 					break;
