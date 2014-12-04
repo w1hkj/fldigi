@@ -124,11 +124,11 @@ QRZ *qCall = 0;
 
 void print_query(const string &name, const string &s)
 {
-	LOG_DEBUG("%s query:\n%s\n", name.c_str(), s.c_str());
+	LOG_VERBOSE("%s query:\n%s\n", name.c_str(), s.c_str());
 }
 
 void print_data(const string &name, const string &s) {
-	LOG_DEBUG("%s data:\n%s\n", name.c_str(), s.c_str());
+	LOG_VERBOSE("%s data:\n%s\n", name.c_str(), s.c_str());
 }
 
 void clear_Lookup()
@@ -359,7 +359,7 @@ bool QRZGetXML(string& xmlpage)
 	print_query("QRZ data", detail);
 
 	bool res = request_reply(qrzhost, "http", detail, xmlpage, 5.0);
-	LOG_DEBUG("result = %d", res);
+	LOG_VERBOSE("result = %d", res);
 	return res;
 }
 
@@ -543,7 +543,7 @@ bool QRZLogin(string& sessionpage)
 		if (ok) ok = parseSessionKey(sessionpage);
 	}
 	if (!ok) {
-		LOG_DEBUG("failed");
+		LOG_VERBOSE("failed");
 		REQ(QRZAlert);
 	}
 
@@ -677,7 +677,7 @@ bool CALLOOKGetXML(string& xmlpage)
 {
 	string url = string("http://callook.info/").append(callsign).append("/xml");
 	bool res = fetch_http(url, xmlpage, 5.0);
-	LOG_DEBUG("result = %d", res);
+	LOG_VERBOSE("result = %d", res);
 	return res;
 }
 
