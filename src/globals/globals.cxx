@@ -155,7 +155,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_THROBX2, &throbx2_modem, "THRBX2", "ThrobX 2", "", "THRBX", "TX2", DISABLED_IO },
 	{ MODE_THROBX4, &throbx4_modem, "THRBX4", "ThrobX 4", "", "THRBX", "TX4", DISABLED_IO },
 
-//	{ MODE_PACKET, &pkt_modem, "PACKET", "Packet", "", "PKT", "PKT", ARQ_IO | KISS_IO },
+	{ MODE_PACKET, &pkt_modem, "PACKET", "Packet", "", "PKT", "PKT", ARQ_IO | KISS_IO },
 
 	{ MODE_PSK125R, &psk125r_modem, "PSK125R", "PSK-125R", "PSK125R", "PSK125R", "P125R",  ARQ_IO | KISS_IO  },
 	{ MODE_PSK250R, &psk250r_modem, "PSK250R", "PSK-250R", "PSK250R", "PSK250R", "P250R",  ARQ_IO | KISS_IO  },

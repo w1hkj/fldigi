@@ -407,6 +407,7 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/view_rtty.h \
+	include/pkt.h \
 	include/nco.h \
 	include/synop.h \
 	include/nullmodem.h \
@@ -541,6 +542,7 @@ fldigi_SOURCES += \
 	ssb/ssb.cxx \
 	synop-src/synop.cxx \
 	throb/throb.cxx \
+	packet/pkt.cxx \
 	trx/modem.cxx \
 	trx/nullmodem.cxx \
 	trx/trx.cxx \
@@ -595,9 +597,6 @@ fldigi_SOURCES += \
 	xmlrpcpp/base64.h \
 	libtiniconv/tiniconv.c \
 	libtiniconv/tiniconv_desc.c
-
-#	packet/pkt.cxx
-#	include/pkt.h
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \

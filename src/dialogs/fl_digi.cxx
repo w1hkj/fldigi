@@ -91,7 +91,7 @@
 #include "dominoex.h"
 #include "feld.h"
 #include "throb.h"
-//#include "pkt.h"
+#include "pkt.h"
 #include "wwv.h"
 #include "analysis.h"
 #include "fftscan.h"
@@ -431,9 +431,9 @@ void cb_rttyCustom(Fl_Widget *w, void *arg);
 
 void set_colors();
 
-//void cb_pkt1200(Fl_Widget *w, void *arg);
-//void cb_pkt300(Fl_Widget *w, void *arg);
-//void cb_pkt2400(Fl_Widget *w, void *arg);
+void cb_pkt1200(Fl_Widget *w, void *arg);
+void cb_pkt300(Fl_Widget *w, void *arg);
+void cb_pkt2400(Fl_Widget *w, void *arg);
 
 Fl_Widget *modem_config_tab;
 static const Fl_Menu_Item *quick_change;
@@ -637,12 +637,12 @@ static const Fl_Menu_Item quick_change_rtty[] = {
 	{ 0 }
 };
 
-//Fl_Menu_Item quick_change_pkt[] = {
-//    { " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET },
-//    { "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET },
-//    { "2400 baud", 0, cb_pkt2400, (void *)MODE_PACKET },
-//    { 0 }
-//};
+Fl_Menu_Item quick_change_pkt[] = {
+    { "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET },
+    { " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET },
+    { "2400 baud", 0, cb_pkt2400, (void *)MODE_PACKET },
+    { 0 }
+};
 
 inline int minmax(int val, int min, int max)
 {
@@ -865,26 +865,26 @@ void set_dominoex_tab_widgets()
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
 }
 
-//void cb_pkt1200(Fl_Widget *w, void *arg)
-//{
-//    progdefaults.PKT_BAUD_SELECT = 0;
-//    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
-//    cb_init_mode(w, arg);
-//}
+void cb_pkt1200(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 0;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
 
-//void cb_pkt300(Fl_Widget *w, void *arg)
-//{
-//    progdefaults.PKT_BAUD_SELECT = 1;
-//    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
-//    cb_init_mode(w, arg);
-//}
+void cb_pkt300(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 1;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
 
-//void cb_pkt2400(Fl_Widget *w, void *arg)
-//{
-//    progdefaults.PKT_BAUD_SELECT = 2;
-//    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
-//    cb_init_mode(w, arg);
-//}
+void cb_pkt2400(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 2;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
 
 void startup_modem(modem* m, int f)
 {
@@ -1328,12 +1328,12 @@ LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 		quick_change = quick_change_throb;
 		break;
 
-//	case MODE_PACKET:
-//		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-//			      *mode_info[mode].modem = new pkt(mode), freq);
-//		modem_config_tab = tabNavtex;
-//		quick_change = quick_change_pkt;
-//		break;
+	case MODE_PACKET:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new pkt(mode), freq);
+		modem_config_tab = tabNavtex;
+		quick_change = quick_change_pkt;
+		break;
 
 	case MODE_WWV:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -3695,9 +3695,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 //{ "Packet", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-//{ " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{ "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{ "2400 baud", 0, cb_pkt2400, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Packet", 0, cb_init_mode, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
 //{0,0,0,0,0,0,0,0,0},
 
 {"WEFAX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7117,10 +7115,10 @@ void resetCONTESTIA() {
 		trx_start_modem(active_modem);
 }
 
-//void updatePACKET() {
-//    if (active_modem->get_mode() == MODE_PACKET)
-//	trx_start_modem(active_modem);
-//}
+void updatePACKET() {
+    if (active_modem->get_mode() == MODE_PACKET)
+	trx_start_modem(active_modem);
+}
 
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
