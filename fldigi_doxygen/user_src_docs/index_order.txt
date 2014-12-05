@@ -1,6 +1,6 @@
 fldigi_configuration.txt fldigi_developer.txt fldigi_logging.txt \
 fldigi_macros.txt fldigi_modems.txt fldigi_operating.txt \
-fldigi-static.txt New-Install.txt thumb_drive.txt colorsandfonts.txt \
+New-Install.txt thumb_drive.txt colorsandfonts.txt \
 configcallsigndb.txt configContestia.txt configCW.txt \
 configDomEX.txt configFH.txt ConfigID.txt ConfigMisc.txt \
 configMT63.txt configOlivia.txt ConfigOperator.txt configPSK.txt \
