@@ -3,6 +3,8 @@
 
 \tableofcontents
 
+\section sTerminal Linux Terminal
+
 \verbatim
 
 Usage:
@@ -144,7 +146,52 @@ Additional UI options:
 
 \endverbatim
 
+\section sWindows Windows Icon Properties
 
+Setting command line parameters on all versions of Windows is accomplished by
+modifying the parameters of fldigi's desktop icon.  Open the icon by right clicking
+on the icon.  This is an example of modifying the font size:
+
+<br>
+\image html properties-win8.png "Windows 8.1 Properties"
+\image latex properties-win8.png "Windows 8.1 Properties" width=3in
+<br>
+
+The before and after for changing the font size:
+<br>
+\image html properties-win8-1.png "Windows 8.1 Original Font"
+\image latex properties-win8-1.png "Windows 8.1 Original Font" width=3in
+<br>
+\image html properties-win8-2.png "Windows 8.1 Larger Font"
+\image latex properties-win8-2.png "Windows 8.1 Larger Font" width=3in
+<br>
+
+Note the space between the location of the executable and the command line parameter.
+Multiple parameters can be entered.  Each parameter must be exactly as shown in the
+list and separated from it's neighbors by at least 1 space.  If the parameter has spaces
+in the value then it must be enclosed in quotations.  For example:
+<br>
+
+--home-dir "C:\Documents and Settings\dave\fldigi-vhf.files"
+<br>
+
+For --home-dir I would also recommend changing the name of the launcher icon.
+
+\section sMint Mint Launcher Properties
+
+Linux users may also change the command line parameters.  Here is an example of 
+modifying the fldigi icon that was added to a Mint-17 launch bar:
+<br>
+\image html properties-mint.png "Mint Launch Bar Icon Properties"
+\image latex properties-mint.png "Mint Launch Bar Icon Properties" width=3in
+<br>
+\image html properties-mint-1.png "Mint Larger Font"
+\image latex properties-mint-1.png "Mint Larger Font" width=3in
+<br>
+
+Changing the font or font size can result in some loss of text on a control label.
+The size of a control and it's label space do not change when the font is modified
+on the command line.
 
 <br>
 \ref command_line_switches_page "Return to Top of Page"
