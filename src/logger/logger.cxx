@@ -61,7 +61,7 @@ static string notes;
 
 //=============================================================================
 
-#if defined(__WOE32__) || defined(__APPLE__)
+//#if defined(__WOE32__) || defined(__APPLE__)
 
 static string adif;
 
@@ -89,7 +89,7 @@ void putadif(int num, const char *s)
 		LOG_PERROR("snprintf");
 		return;
 	}
-	adif.append(tempstr).append(s);
+	adif.append(tempstr).append(s).append("\n");
 }
 
 void submit_ADIF(cQsoRec &rec)
@@ -131,7 +131,7 @@ void submit_ADIF(cQsoRec &rec)
 	writeADIF();
 }
 
-#endif
+//#endif
 
 //---------------------------------------------------------------------
 // the following IPC message is compatible with xlog remote data spec.
@@ -209,6 +209,7 @@ void submit_record(cQsoRec &rec)
 #else
 	submit_ADIF(rec);
 #endif
+submit_ADIF(rec);
 }
 
 //---------------------------------------------------------------------

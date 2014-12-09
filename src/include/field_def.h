@@ -24,6 +24,8 @@
 // removed unused fields to reduce size of each record and speed up
 // record processing
 
+// field position should correspond with fields[] in adif_io.cxx
+
 enum ADIF_FIELD_POS {
 FREQ = 0,
 CALL,
@@ -47,6 +49,7 @@ CNTY,
 COUNTRY,
 CQZ,
 DXCC,
+QSL_VIA,
 IOTA,
 ITUZ,
 CONT,
@@ -54,9 +57,8 @@ SRX,
 STX,
 XCHG1,
 MYXCHG,
-TX_PWR,
+TX_PWR, // do not add fields below this line; EXPORT must be last field in struc
 EXPORT, // flag used internally in fldigi's logbook
-QSL_VIA,
 NUMFIELDS };
 
 // ADIF multiline string is a sequence of Characters and line-breaks,
