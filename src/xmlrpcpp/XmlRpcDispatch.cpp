@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <math.h>
 
-#if defined(__FreeBSD__) 
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
 #	ifdef USE_FTIME
 #		include <sys/timeb.h>
 #	endif

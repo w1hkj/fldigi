@@ -4,7 +4,7 @@
 
 r=0
 for f in $fldigi_SOURCES $flarq_SOURCES $EXTRA_fldigi_SOURCES $EXTRA_DIST; do
-    base=$(echo $f | sed -n '/\.[cC][cCpPxX]\{1,\}/ { s!.*/\(.*\)\.[^.]*$!\1!; p }')
+    base=$(echo $f | sed -n '/\.[cC][cCpPxX]\{1,\}/ { s!.*/\(.*\)\.[^.]*$!\1!p; }')
     if test "x$base" != "x" && grep "" "${srcdir}/${f}" >/dev/null; then
         echo "E: $f has CRLF line terminators" >&2
         r=1
