@@ -527,6 +527,8 @@ int FTextView::handle(int event)
 			handle_context_menu();
 			return 1;
  		}
+		if (Fl::event_button() == FL_MIDDLE_MOUSE)
+			return 1; // ignore mouse2 text pastes inside the received text
 		break;
 	case FL_DRAG:
 		if (Fl::event_button() != FL_LEFT_MOUSE)
