@@ -31,6 +31,8 @@
 #include "modem.h"
 
 class mt63 : public modem {
+#define TONE_AMP 0.8
+
 private:
 	int     Interleave;
 	int     flush;
@@ -44,8 +46,7 @@ private:
 	double_buff     *InpBuff;
 	double_buff     *emptyBuff;
 	bool            flushbuffer;
-	//double          FEC_offset;
-	//double          FEC_snr;
+	double         maxval;
 
 public:
 	mt63(trx_mode mode);
