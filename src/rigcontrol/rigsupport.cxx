@@ -429,7 +429,7 @@ void qso_addFreq()
 void setTitle()
 {
 	if (windowTitle.empty()) return;
-	main_window_title.assign("fldigi / ").append(windowTitle);
+	main_window_title.append(" / ").append(windowTitle);
 	update_main_title();
 }
 
