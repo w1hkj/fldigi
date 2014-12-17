@@ -769,11 +769,18 @@ void status::initLastState()
 
 	if(override_data_io_enabled != DISABLED_IO) {
 		data_io_enabled = override_data_io_enabled;
+		progdefaults.data_io_enabled = data_io_enabled;
+		progStatus.data_io_enabled = data_io_enabled;
 	}
 
-	if(data_io_enabled == ARQ_IO) {
+	if(progStatus.data_io_enabled == KISS_IO) {
+		data_io_enabled = KISS_IO;
+		progdefaults.data_io_enabled = KISS_IO;
+	} else {
+		data_io_enabled = ARQ_IO;
+		progdefaults.data_io_enabled = ARQ_IO;
+		progStatus.data_io_enabled = ARQ_IO;
 		pwrsqlonoff = false;
-		progdefaults.data_io_enabled = data_io_enabled;
 	}
 
 	btnSQL->value(sqlonoff);

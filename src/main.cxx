@@ -267,6 +267,26 @@ static void auto_start()
 		start_process(progdefaults.auto_prog3_pathname);
 }
 
+void toggle_io_port_selection(int io_mode)
+{
+	switch(io_mode) {
+		case ARQ_IO:
+			btnEnable_kiss->do_callback();
+			btnEnable_arq->do_callback();
+			progdefaults.changed = false;
+			break;
+
+		case KISS_IO:
+			btnEnable_arq->do_callback();
+			btnEnable_kiss->do_callback();
+			progdefaults.changed = false;
+			break;
+
+		default:
+			LOG_INFO("Unknown data io mode");
+	}
+}
+
 // these functions are all started after Fl::run() is executing
 void delayed_startup(void *)
 {
@@ -283,7 +303,9 @@ void delayed_startup(void *)
 	data_io_enabled = DISABLED_IO;
 	arq_init();
 	kiss_init();
-	data_io_enabled = progdefaults.data_io_enabled;
+	data_io_enabled = progStatus.data_io_enabled;
+
+	toggle_io_port_selection(data_io_enabled);
 
 	notify_start();
 
