@@ -414,9 +414,6 @@
         ELEM_(int, CWupperlimit, "CWUPPERLIMIT",                                        \
               "Upper TX limit (WPM)",                                                   \
               50)                                                                       \
-        ELEM_(double, CWrisetime, "CWRISETIME",                                         \
-              "Leading and trailing edge rise times (milliseconds)",                    \
-              4.0)                                                                      \
         ELEM_(double, CWdash2dot, "CWDASH2DOT",                                         \
               "Dash to dot ratio",                                                      \
               3.0)                                                                      \
@@ -446,9 +443,19 @@
               0)                                                                        \
         ELEM_(int, QSKshape, "QSKSHAPE",                                                \
               "QSK edge shape. Values are as follows:\n"                                \
-              "  0: Hanning; 1: Blackman.\n"                                            \
-              "Raised cosine = Hanning.\n",                                             \
+              "  0: Hanning; 1: Blackman;"                                              \
+              "Raised cosine = Hanning.",                                               \
               0)   /* Hanning */                                                        \
+        ELEM_(double, CWrisetime, "CWRISETIME",                                        \
+              "Leading and trailing edge rise times (milliseconds)",                    \
+              4.0)                                                                      \
+        ELEM_(bool, CW_bpf_on, "CW_BPF_ON",                                             \
+              "Enable filtering of transmit audio",                                     \
+              false)                                                                    \
+        ELEM_(double, CW_bpf, "CW_BPF",                                                \
+              "Transmit filter hi cutoff frequency\n"                                   \
+              "f0 +/- CW_bpf/2",                                                        \
+              100.0)                                                                    \
         ELEM_(bool, CWnarrow, "CWNARROW",                                               \
               "Weight decreases with increasing edge timing",                           \
               false)                                                                    \

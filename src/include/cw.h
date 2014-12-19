@@ -39,7 +39,7 @@
 
 #define	CWSampleRate	8000
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
-#define KNUM 			122
+#define KNUM 			640			// 1/2 dot length at 5 wpm
 
 // decimation ratio for the receiver 
 //#define	DEC_RATIO	8
@@ -201,17 +201,38 @@ protected:
 	bool 	tables_init();
 	unsigned int tokenize_representation(char *representation);
 	void	update_tracking(int dot, int dash);
-	
-	void	makeshape();
-	cmplx mixer(cmplx in);
 
 	static const SOM_TABLE som_table[];
 	float cw_buffer[512];
 	int cw_ptr;
 	int clrcount;
 
+	double lowerwpm;
+	double upperwpm;
+
 	bool use_paren;
 	std::string prosigns;
+
+	cmplx mixer(cmplx in);
+
+// transmit wave shaping
+	int		nusymbollen;
+	int		nufsymlen;
+	int		wpm;
+	int		fwpm;
+
+	void	makeshape();
+	void	sync_transmit_parameters();
+
+	fftfilt	*cw_xmt_filter;
+	double	nbfreq;
+	double	nbpf;
+	double lwr;
+	double upr;
+	double	*xmt_signal;
+	double	*qsk_signal;
+	int		qsk_ptr;
+	void nb_filter(double *output, double *qsk, int len);
 
 public:
 	cw();

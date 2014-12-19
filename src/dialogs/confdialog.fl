@@ -322,8 +322,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -2767,7 +2767,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 355}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
@@ -2781,7 +2781,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 600 305} align 5
+                xywh {0 75 600 305} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -2930,26 +2930,26 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 305} align 5
               } {
                 Fl_Group {} {
                   label Timing open
-                  xywh {35 85 530 120} box ENGRAVED_FRAME align 21
+                  xywh {5 85 585 120} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Counter cntCWweight {
                     label {Weight (%)}
                     callback {progdefaults.CWweight=(int)o->value();
 progdefaults.changed = true;}
-                    tooltip {Dot to dot-space ratio} xywh {45 114 65 20} type Simple align 8 minimum 20 maximum 80 step 1 value 50
+                    tooltip {Dot to dot-space ratio} xywh {20 110 65 20} type Simple align 8 minimum 20 maximum 80 step 1 value 50
                     code0 {o->value(progdefaults.CWweight);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Counter cntCWdash2dot {
-                    label {Dash to dot ratio}
+                    label {Dash/Dot}
                     callback {progdefaults.CWdash2dot=o->value();
 progdefaults.changed = true;}
-                    tooltip {Dash to dot ratio} xywh {270 114 64 20} type Simple align 8 minimum 2.5 maximum 4 value 3
+                    tooltip {Dash to dot ratio} xywh {245 110 80 20} type Simple align 8 minimum 2.5 maximum 4 value 3
                     code0 {o->value(progdefaults.CWdash2dot);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -2958,32 +2958,50 @@ progdefaults.changed = true;}
                     label {Edge timing}
                     callback {progdefaults.CWrisetime=o->value();
 progdefaults.changed = true;}
-                    tooltip {Leading and Trailing edge risetimes (msec)} xywh {270 145 65 20} type Simple align 8 minimum 0 maximum 15 value 4
+                    tooltip {Leading and Trailing edge risetimes (msec)} xywh {245 143 80 20} type Simple align 8 minimum 0 maximum 15 value 4
                     code0 {o->value(progdefaults.CWrisetime);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
                   }
                   Fl_Group i_listboxQSKshape {
                     label {Edge shape}
-                    callback {progdefaults.QSKshape = o->index()-1;
-progdefaults.changed = true;} open
-                    tooltip {Raised cosine = Hanning} xywh {45 144 112 20} box DOWN_BOX color 7 align 8
+                    callback {progdefaults.QSKshape = o->index();
+progdefaults.changed = true;} open selected
+                    tooltip {Hanning/Blackman - use edge timing
+BPF - use BPF bandwidth} xywh {20 143 112 20} box DOWN_BOX color 7 align 8
                     code0 {o->add("Hanning|Blackman");}
-                    code1 {o->index(progdefaults.QSKshape+1);}
+                    code1 {o->index(progdefaults.QSKshape);}
                     code2 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_ListBox
                   } {}
                   Fl_Check_Button btnCWnarrow {
-                    label {Edge decreases pulse width}
+                    label {Edge decrease}
                     callback {progdefaults.CWnarrow = o->value();
 progdefaults.changed = true;}
-                    tooltip {Weight decreases with increasing edge timing} xywh {45 175 225 15} down_box DOWN_BOX
+                    tooltip {Weight decreases with increasing edge timing} xywh {450 145 131 15} down_box DOWN_BOX
                     code0 {o->value(progdefaults.CWnarrow);}
+                  }
+                  Fl_Check_Button btnCW_bpf_on {
+                    label {BPF transmit audio}
+                    callback {progdefaults.CW_bpf_on = o->value();
+progdefaults.changed = true;}
+                    tooltip {Enable LO/HI bfp of transmit audio} xywh {20 180 167 15} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.CW_bpf_on);}
+                  }
+                  Fl_Counter cntCW_hpf {
+                    label {BPF bw}
+                    callback {progdefaults.CW_bpf=o->value();
+progdefaults.changed = true;}
+                    tooltip {Low filter cutoff} xywh {235 177 100 20} align 8 minimum 10 maximum 1000 step 1 value 100
+                    code0 {o->value(progdefaults.CW_bpf);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    code2 {o->lstep(10.0);}
+                    class Fl_Counter2
                   }
                 }
                 Fl_Group {} {
                   label QSK open
-                  xywh {35 217 530 118} box ENGRAVED_FRAME align 21
+                  xywh {5 217 585 118} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnQSK {
                     label {QSK on right audio channel}
@@ -3001,14 +3019,14 @@ if (o->value()) {
     resetSoundCard();
   }
 }}
-                    tooltip {Generate square wave signal on right channel} xywh {45 245 211 20} down_box DOWN_BOX
+                    tooltip {Generate square wave signal on right channel} xywh {16 245 233 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.QSK);}
                   }
                   Fl_Counter cntPreTiming {
                     label {Pre-keydown timing (ms)}
                     callback {progdefaults.CWpre=o->value();
 progdefaults.changed = true;}
-                    tooltip {Msec pre-keydown (+ is earlier in time)} xywh {45 275 64 20} type Simple align 8 minimum 0 maximum 20 step 0.5
+                    tooltip {Msec pre-keydown (+ is earlier in time)} xywh {16 275 71 20} type Simple align 8 minimum 0 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3017,7 +3035,7 @@ progdefaults.changed = true;}
                     label {Post-keydown timing (ms)}
                     callback {progdefaults.CWpost=o->value();
 progdefaults.changed = true;}
-                    tooltip {Msec post-keydown (+ is earlier in time)} xywh {45 305 64 20} type Simple align 8 minimum -20 maximum 20 step 0.5
+                    tooltip {Msec post-keydown (+ is earlier in time)} xywh {16 305 71 20} type Simple align 8 minimum -20 maximum 20 step 0.5
                     code0 {o->value(progdefaults.CWpre);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3025,13 +3043,13 @@ progdefaults.changed = true;}
                   Fl_Check_Button btnQSKadjust {
                     label {Send continuously}
                     callback {progdefaults.QSKadjust = o->value();}
-                    tooltip {Send a continuous stream of test characters} xywh {320 275 160 20} down_box DOWN_BOX
+                    tooltip {Send a continuous stream of test characters} xywh {320 275 176 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.QSKadjust);}
                   }
                   Fl_Group i_listbox_test_char {
                     label {Test char}
                     callback {progdefaults.TestChar = o->index();} open
-                    tooltip {Test character for QSK adjustment} xywh {320 245 41 20} box DOWN_BOX color 7 align 8
+                    tooltip {Test character for QSK adjustment} xywh {320 245 45 20} box DOWN_BOX color 7 align 8
                     code0 {extern char szTestChar[];}
                     code1 {o->add(szTestChar);}
                     code2 {o->index(progdefaults.TestChar);}

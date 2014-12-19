@@ -2444,7 +2444,7 @@ progdefaults.changed = true;
 Fl_ListBox *i_listboxQSKshape=(Fl_ListBox *)0;
 
 static void cb_i_listboxQSKshape(Fl_ListBox* o, void*) {
-  progdefaults.QSKshape = o->index()-1;
+  progdefaults.QSKshape = o->index();
 progdefaults.changed = true;
 }
 
@@ -2452,6 +2452,20 @@ Fl_Check_Button *btnCWnarrow=(Fl_Check_Button *)0;
 
 static void cb_btnCWnarrow(Fl_Check_Button* o, void*) {
   progdefaults.CWnarrow = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCW_bpf_on=(Fl_Check_Button *)0;
+
+static void cb_btnCW_bpf_on(Fl_Check_Button* o, void*) {
+  progdefaults.CW_bpf_on = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cntCW_hpf=(Fl_Counter2 *)0;
+
+static void cb_cntCW_hpf(Fl_Counter2* o, void*) {
+  progdefaults.CW_bpf=o->value();
 progdefaults.changed = true;
 }
 
@@ -5290,6 +5304,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6972,7 +6987,6 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -6981,6 +6995,7 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7206,11 +7221,10 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Timing and QSK"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->hide();
-                { Fl_Group* o = new Fl_Group(35, 85, 530, 120, _("Timing"));
+                { Fl_Group* o = new Fl_Group(5, 85, 585, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Counter2* o = cntCWweight = new Fl_Counter2(45, 114, 65, 20, _("Weight (%)"));
+                { Fl_Counter2* o = cntCWweight = new Fl_Counter2(20, 110, 65, 20, _("Weight (%)"));
                 cntCWweight->tooltip(_("Dot to dot-space ratio"));
                 cntCWweight->type(1);
                 cntCWweight->box(FL_UP_BOX);
@@ -7230,7 +7244,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWweight);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWweight
-                { Fl_Counter2* o = cntCWdash2dot = new Fl_Counter2(270, 114, 64, 20, _("Dash to dot ratio"));
+                { Fl_Counter2* o = cntCWdash2dot = new Fl_Counter2(245, 110, 80, 20, _("Dash/Dot"));
                 cntCWdash2dot->tooltip(_("Dash to dot ratio"));
                 cntCWdash2dot->type(1);
                 cntCWdash2dot->box(FL_UP_BOX);
@@ -7249,7 +7263,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWdash2dot);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWdash2dot
-                { Fl_Counter2* o = cntCWrisetime = new Fl_Counter2(270, 145, 65, 20, _("Edge timing"));
+                { Fl_Counter2* o = cntCWrisetime = new Fl_Counter2(245, 143, 80, 20, _("Edge timing"));
                 cntCWrisetime->tooltip(_("Leading and Trailing edge risetimes (msec)"));
                 cntCWrisetime->type(1);
                 cntCWrisetime->box(FL_UP_BOX);
@@ -7268,8 +7282,8 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWrisetime);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWrisetime
-                { Fl_ListBox* o = i_listboxQSKshape = new Fl_ListBox(45, 144, 112, 20, _("Edge shape"));
-                i_listboxQSKshape->tooltip(_("Raised cosine = Hanning"));
+                { Fl_ListBox* o = i_listboxQSKshape = new Fl_ListBox(20, 143, 112, 20, _("Edge shape"));
+                i_listboxQSKshape->tooltip(_("Hanning/Blackman - use edge timing\nBPF - use BPF bandwidth"));
                 i_listboxQSKshape->box(FL_DOWN_BOX);
                 i_listboxQSKshape->color(FL_BACKGROUND2_COLOR);
                 i_listboxQSKshape->selection_color(FL_BACKGROUND_COLOR);
@@ -7281,28 +7295,54 @@ i on a\ntouch screen device such as a tablet."));
                 i_listboxQSKshape->align(Fl_Align(FL_ALIGN_RIGHT));
                 i_listboxQSKshape->when(FL_WHEN_RELEASE);
                 o->add("Hanning|Blackman");
-                o->index(progdefaults.QSKshape+1);
+                o->index(progdefaults.QSKshape);
                 o->labelsize(FL_NORMAL_SIZE);
                 i_listboxQSKshape->end();
                 } // Fl_ListBox* i_listboxQSKshape
-                { Fl_Check_Button* o = btnCWnarrow = new Fl_Check_Button(45, 175, 225, 15, _("Edge decreases pulse width"));
+                { Fl_Check_Button* o = btnCWnarrow = new Fl_Check_Button(450, 145, 131, 15, _("Edge decrease"));
                 btnCWnarrow->tooltip(_("Weight decreases with increasing edge timing"));
                 btnCWnarrow->down_box(FL_DOWN_BOX);
                 btnCWnarrow->callback((Fl_Callback*)cb_btnCWnarrow);
                 o->value(progdefaults.CWnarrow);
                 } // Fl_Check_Button* btnCWnarrow
+                { Fl_Check_Button* o = btnCW_bpf_on = new Fl_Check_Button(20, 180, 167, 15, _("BPF transmit audio"));
+                btnCW_bpf_on->tooltip(_("Enable LO/HI bfp of transmit audio"));
+                btnCW_bpf_on->down_box(FL_DOWN_BOX);
+                btnCW_bpf_on->callback((Fl_Callback*)cb_btnCW_bpf_on);
+                o->value(progdefaults.CW_bpf_on);
+                } // Fl_Check_Button* btnCW_bpf_on
+                { Fl_Counter2* o = cntCW_hpf = new Fl_Counter2(235, 177, 100, 20, _("BPF bw"));
+                cntCW_hpf->tooltip(_("Low filter cutoff"));
+                cntCW_hpf->box(FL_UP_BOX);
+                cntCW_hpf->color(FL_BACKGROUND_COLOR);
+                cntCW_hpf->selection_color(FL_INACTIVE_COLOR);
+                cntCW_hpf->labeltype(FL_NORMAL_LABEL);
+                cntCW_hpf->labelfont(0);
+                cntCW_hpf->labelsize(14);
+                cntCW_hpf->labelcolor(FL_FOREGROUND_COLOR);
+                cntCW_hpf->minimum(10);
+                cntCW_hpf->maximum(1000);
+                cntCW_hpf->step(1);
+                cntCW_hpf->value(100);
+                cntCW_hpf->callback((Fl_Callback*)cb_cntCW_hpf);
+                cntCW_hpf->align(Fl_Align(FL_ALIGN_RIGHT));
+                cntCW_hpf->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.CW_bpf);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->lstep(10.0);
+                } // Fl_Counter2* cntCW_hpf
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(35, 217, 530, 118, _("QSK"));
+                { Fl_Group* o = new Fl_Group(5, 217, 585, 118, _("QSK"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(45, 245, 211, 20, _("QSK on right audio channel"));
+                { Fl_Check_Button* o = btnQSK = new Fl_Check_Button(16, 245, 233, 20, _("QSK on right audio channel"));
                 btnQSK->tooltip(_("Generate square wave signal on right channel"));
                 btnQSK->down_box(FL_DOWN_BOX);
                 btnQSK->callback((Fl_Callback*)cb_btnQSK);
                 o->value(progdefaults.QSK);
                 } // Fl_Check_Button* btnQSK
-                { Fl_Counter2* o = cntPreTiming = new Fl_Counter2(45, 275, 64, 20, _("Pre-keydown timing (ms)"));
+                { Fl_Counter2* o = cntPreTiming = new Fl_Counter2(16, 275, 71, 20, _("Pre-keydown timing (ms)"));
                 cntPreTiming->tooltip(_("Msec pre-keydown (+ is earlier in time)"));
                 cntPreTiming->type(1);
                 cntPreTiming->box(FL_UP_BOX);
@@ -7321,7 +7361,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWpre);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntPreTiming
-                { Fl_Counter2* o = cntPostTiming = new Fl_Counter2(45, 305, 64, 20, _("Post-keydown timing (ms)"));
+                { Fl_Counter2* o = cntPostTiming = new Fl_Counter2(16, 305, 71, 20, _("Post-keydown timing (ms)"));
                 cntPostTiming->tooltip(_("Msec post-keydown (+ is earlier in time)"));
                 cntPostTiming->type(1);
                 cntPostTiming->box(FL_UP_BOX);
@@ -7340,13 +7380,13 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWpre);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntPostTiming
-                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(320, 275, 160, 20, _("Send continuously"));
+                { Fl_Check_Button* o = btnQSKadjust = new Fl_Check_Button(320, 275, 176, 20, _("Send continuously"));
                 btnQSKadjust->tooltip(_("Send a continuous stream of test characters"));
                 btnQSKadjust->down_box(FL_DOWN_BOX);
                 btnQSKadjust->callback((Fl_Callback*)cb_btnQSKadjust);
                 o->value(progdefaults.QSKadjust);
                 } // Fl_Check_Button* btnQSKadjust
-                { Fl_ListBox* o = i_listbox_test_char = new Fl_ListBox(320, 245, 41, 20, _("Test char"));
+                { Fl_ListBox* o = i_listbox_test_char = new Fl_ListBox(320, 245, 45, 20, _("Test char"));
                 i_listbox_test_char->tooltip(_("Test character for QSK adjustment"));
                 i_listbox_test_char->box(FL_DOWN_BOX);
                 i_listbox_test_char->color(FL_BACKGROUND2_COLOR);

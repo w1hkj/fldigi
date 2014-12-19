@@ -280,6 +280,8 @@ extern Fl_Counter2 *cntCWdash2dot;
 extern Fl_Counter2 *cntCWrisetime;
 extern Fl_ListBox *i_listboxQSKshape;
 extern Fl_Check_Button *btnCWnarrow;
+extern Fl_Check_Button *btnCW_bpf_on;
+extern Fl_Counter2 *cntCW_hpf;
 extern Fl_Check_Button *btnQSK;
 extern Fl_Counter2 *cntPreTiming;
 extern Fl_Counter2 *cntPostTiming;
