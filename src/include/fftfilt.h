@@ -54,6 +54,7 @@ protected:
 				 0.08 * cos(4.0 * M_PI * i / len));
 	}
 	void init_filter();
+	void clear_filter();
 
 public:
 	fftfilt(double f1, double f2, int len);
@@ -71,6 +72,7 @@ public:
 	void rtty_filter(double);
 
 	int run(const cmplx& in, cmplx **out);
+	int flush_size();
 };
 
 #endif

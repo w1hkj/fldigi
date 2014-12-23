@@ -52,6 +52,17 @@
 // probably only need a single instance of g_fft !!
 // use for both forward and reverse
 
+void fftfilt::clear_filter()
+{
+	memset(filter, 0, flen * sizeof(cmplx));
+	memset(timedata, 0, flen * sizeof(cmplx));
+	memset(freqdata, 0, flen * sizeof(cmplx));
+	memset(output, 0, flen * sizeof(cmplx));
+	memset(ovlbuf, 0, flen2 * sizeof(cmplx));
+	memset(ht, 0, flen * sizeof(cmplx));
+	inptr = 0;
+}
+
 void fftfilt::init_filter()
 {
 	flen2 = flen >> 1;
@@ -63,15 +74,12 @@ void fftfilt::init_filter()
 	output		= new cmplx[flen];
 	ovlbuf		= new cmplx[flen2];
 	ht			= new cmplx[flen];
+}
 
-	memset(filter, 0, flen * sizeof(cmplx));
-	memset(timedata, 0, flen * sizeof(cmplx));
-	memset(freqdata, 0, flen * sizeof(cmplx));
-	memset(output, 0, flen * sizeof(cmplx));
-	memset(ovlbuf, 0, flen2 * sizeof(cmplx));
-	memset(ht, 0, flen * sizeof(cmplx));
-
-	inptr = 0;
+// number of samples needed to completely flush the filter
+int fftfilt::flush_size()
+{
+	return flen - inptr;
 }
 
 //------------------------------------------------------------------------------
@@ -112,6 +120,7 @@ fftfilt::~fftfilt()
 
 void fftfilt::create_filter(double f1, double f2)
 {
+	clear_filter();
 // initialize the filter to zero
 	memset(ht, 0, flen * sizeof(cmplx));
 
@@ -179,7 +188,7 @@ void fftfilt::create_filter(double f1, double f2)
 	fspec.close();
 	delete [] revht;
 */
-	pass = 2;
+	pass = 1;//2;  oh wow ... been wrong for years!
 }
 
 /*
