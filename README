@@ -34,16 +34,9 @@ resources:
 
   https://fedorahosted.org/fldigi/
 
-
-Fldigi's BerliOS project page can be found at:
-
-  http://developer.berlios.de/projects/fldigi/
-
-
 The GIT repository can be found at:
 
-  http://git.berlios.de/cgi-bin/gitweb.cgi?p=fldigi;a=summary
-
+  https://sourceforge.net/p/fldigi/fldigi/ci/master/tree/
 
 For support, news and updates, join one or more of the following mailing lists
 and Yahoo groups.  Stable releases are announced to all lists and groups; test
@@ -63,12 +56,8 @@ and Yahoo groups.  Stable releases are announced to all lists and groups; test
 
   * fldigi-alpha list
     Discussion of fldigi testing and related subjects
-    http://lists.berlios.de/mailman/listinfo/fldigi-alpha
+    https://sourceforge.net/p/fldigi/mailman/fldigi-alpha/
 
   * fldigi-devel list
     Fldigi development topics
-    http://lists.berlios.de/mailman/listinfo/fldigi-devel
-
-  * fldigi-announce list
-    Fldigi announcements
-    http://lists.berlios.de/mailman/listinfo/fldigi-announce
+    https://sourceforge.net/p/fldigi/mailman/fldigi-devel/

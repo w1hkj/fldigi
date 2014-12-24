@@ -19,7 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Please report all bugs and problems to fldigi-devel@lists.berlios.de.
+// Please report all bugs and problems to fldigi-devel@lists.sourceforge.net.
 // ----------------------------------------------------------------------------
 
 #include <config.h>
