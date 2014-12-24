@@ -340,8 +340,6 @@ void trx_trx_transmit_loop()
 		}
 		active_modem->tx_init(scard);
 
-		if (!progdefaults.DTMFstr.empty()) dtmf->send();
-
 		if ( ReedSolomon->assigned(active_modem->get_mode()) &&
 			 (progdefaults.TransmitRSid || progStatus.n_rsids != 0)) {
 			if (progStatus.n_rsids < 0) {
@@ -362,16 +360,15 @@ void trx_trx_transmit_loop()
 
 		if (progStatus.n_rsids >= 0) {
 
-//			if(trx_state == STATE_TX) {
-				active_modem->tx_sample_count = 0;
-				active_modem->tx_sample_rate = active_modem->get_samplerate();
-//			}
+			active_modem->tx_sample_count = 0;
+			active_modem->tx_sample_rate = active_modem->get_samplerate();
 
 			while (trx_state == STATE_TX) {
 				try {
-					if (active_modem->tx_process() < 0) {
+					if (!progdefaults.DTMFstr.empty())
+						dtmf->send();
+					if (active_modem->tx_process() < 0)
 						trx_state = STATE_RX;
-					}
 				}
 				catch (const SndException& e) {
 					scard->Close();
