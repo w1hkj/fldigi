@@ -1,14 +1,50 @@
 
 
+=Version 3.22.03=
+
+2014-12-24  David Freese  <iam_w1hkj@w1hkj.com>
+
+	d47ef8a: Berlios
+	b986d9d: CW configuration
+	3ff2301: DTMF
+	0a8f4a3: FFT filter
+	3c7b69e: CW xmt filter
+
+2014-12-17  Robert Stiles  <kk5vd@yahoo.com>
+
+	5dc3851: ARQ/KISS IO state conflict (part 2) 	* Ensure all state flags reflect selected mode. 	* Toggle IO mode in software.
+
+2014-12-17  David Freese  <iam_w1hkj@w1hkj.com>
+
+	fa582c9: Window title
+	103c039: Xmt Audio Stream
+	6947d33: RX Text
+	0612ec9: OpenBSD
+	d344fac: LOGGER EXPORT
+	d5e257d: Documentation
+	b767b48: LOG lookup
+	1359a59: Lion/Yosemite madness
+	e77aafe: MT63 Olivia Peak signal
+	3a00dfc: HTML strings
+	311925b: rtty xmt shape
+	4298f2d: es nl pl files
+	54917d2: WIN32 error reports
+
+2014-11-15  Robert Stiles  <kk5vd@yahoo.com>
+
+	c3e87f0: KPQSL / SQL state conflict
+	a488e72: Documentation Update
+
+
 =Version 3.22.02=
+
 
 2014-11-11  David Freese  <iam_w1hkj@w1hkj.com>
 
-	d84edfd: Freq Control
-	aba750e: HTML strings
-	aa0bc26: CW
-	990e546: PO files
-	8b81020: Clang globals fix
+	18c20d7: Freq Control
+	36ba341: CW
+	68ba89b: PO files
+	3060d42: fltk-1.3.3 compatibility
 	068f030: RTTY
 	75c2f79: nu rigctl area
 	2e2ce97: channel width
