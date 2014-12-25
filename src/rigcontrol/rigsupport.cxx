@@ -429,6 +429,8 @@ void qso_addFreq()
 void setTitle()
 {
 	if (windowTitle.empty()) return;
+	size_t p = main_window_title.find(" / ");
+	if (p != string::npos) main_window_title.erase(p);
 	main_window_title.append(" / ").append(windowTitle);
 	update_main_title();
 }
