@@ -1,8 +1,13 @@
 
 
-=Version 3.22.03=
+=Version 3.22.04=
 
-2014-12-24  David Freese  <iam_w1hkj@w1hkj.com>
+2014-12-25  David Freese  <iam_w1hkj@w1hkj.com>
+
+	2c3b965: xmlrpc
+
+
+=Version 3.22.03=
 
 	d47ef8a: Berlios
 	b986d9d: CW configuration
