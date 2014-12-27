@@ -209,7 +209,6 @@ void submit_record(cQsoRec &rec)
 #else
 	submit_ADIF(rec);
 #endif
-submit_ADIF(rec);
 }
 
 //---------------------------------------------------------------------
