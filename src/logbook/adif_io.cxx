@@ -214,6 +214,7 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	long filesize = 0;
 	char *buff;
 	int found;
+	static char szmsg[200];
 
 // open the adif file
 	FILE *adiFile = fopen (fname, "r");
@@ -225,36 +226,37 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	filesize = ftell (adiFile);
 
 	if (filesize == 0) {
-		LOG_INFO(_("Empty ADIF logbook file %s"), fl_filename_name(fname));
+		snprintf(szmsg, sizeof(szmsg), _("Empty ADIF logbook file %s"), fname);
+		REQ(write_rxtext, "\n");
+		REQ(write_rxtext, szmsg);
+		REQ(write_rxtext, "\n");
+		LOG_ERROR("%s", szmsg);
 		return;
 	}
 
 	buff = new char[filesize + 1];
 
-	static char szmsg[100];
-	static char szmsg2[100];
-	snprintf(szmsg, sizeof(szmsg), "Reading %ld bytes from %s",
-		filesize, fl_filename_name(fname));
-	REQ(write_rxtext, "\n*** ");
-	REQ(write_rxtext, szmsg);
-	LOG_INFO("%s", szmsg);
 // read the entire file into the buffer
 
 	fseek (adiFile, 0, SEEK_SET);
 	int retval = fread (buff, filesize, 1, adiFile);
 	fclose (adiFile);
 	if (retval != 1) {
-		LOG_ERROR(_("Error reading %s"), fl_filename_name(fname));
+		snprintf(szmsg, sizeof(szmsg), _("Error reading %s"), fname);
+		REQ(write_rxtext, "\n");
+		REQ(write_rxtext, szmsg);
+		REQ(write_rxtext, "\n");
+		LOG_ERROR("%s", szmsg);
 		return;
 	}
 
 // relaxed file integrity test to all importing from non conforming log programs
 	if (strcasestr(buff, "<CALL:") == 0) {
-		strcpy(szmsg2, "NO RECORDS IN FILE");
-		REQ(write_rxtext, "\n*** ");
-		REQ(write_rxtext, szmsg2);
+		snprintf(szmsg, sizeof(szmsg), "NO RECORDS IN FILE: %s", fname);
 		REQ(write_rxtext, "\n");
-		LOG_INFO("%s", szmsg2);
+		REQ(write_rxtext, szmsg);
+		REQ(write_rxtext, "\n");
+		LOG_INFO("%s", szmsg);
 		delete [] buff;
 		db->clearDatabase();
 		return;
@@ -275,11 +277,11 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		}
 		if (!p1) {
 			delete [] buff;
-			strcpy(szmsg2, "Corrupt ADIF file ***");
-			REQ(write_rxtext, "\n*** ");
-			REQ(write_rxtext, szmsg2);
+			snprintf(szmsg, sizeof(szmsg), "Corrupt logbook file: %s", fname);
 			REQ(write_rxtext, "\n");
-			LOG_ERROR("%s", szmsg2);
+			REQ(write_rxtext, szmsg);
+			REQ(write_rxtext, "\n");
+			LOG_ERROR("%s", szmsg);
 			return;	 // must not be an ADIF compliant file
 		}
 		p1 += 1;
@@ -311,11 +313,14 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	t0 = t1 - t0;
 	float t = (t0.tv_sec + t0.tv_nsec/1e9);
 
-	snprintf(szmsg2, sizeof(szmsg2), "Read %d records in %4.2f seconds", db->nbrRecs(), t);
-	REQ(write_rxtext, "\n*** ");
-	REQ(write_rxtext, szmsg2);
+	snprintf(szmsg, sizeof(szmsg), "\
+Loaded logbook: %s\n\
+                %d records in %4.2f seconds",
+fname, db->nbrRecs(), t);
 	REQ(write_rxtext, "\n");
-	LOG_INFO("%s", szmsg2);
+	REQ(write_rxtext, szmsg);
+	REQ(write_rxtext, "\n");
+	LOG_INFO("%s", szmsg);
 
 	if (db == &qsodb)
 		REQ(adif_read_OK);

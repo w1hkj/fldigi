@@ -296,8 +296,6 @@ fldigi_SOURCES += \
 	dominoex/dominovar.cxx \
 	feld/feld.cxx \
 	feld/feldfonts.cxx \
-	fileselector/FL/Native_File_Chooser.H \
-	fileselector/Native_File_Chooser.cxx \
 	fileselector/fileselect.cxx \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
@@ -715,8 +713,6 @@ flarq_SOURCES += \
 	include/table.h \
 	include/util.h \
 	combo/combo.cxx \
-	fileselector/FL/Native_File_Chooser.H \
-	fileselector/Native_File_Chooser.cxx \
 	fileselector/fileselect.cxx \
 	logbook/table.cxx \
 	misc/ascii.cxx \

@@ -2957,7 +2957,15 @@ void MACROTEXT::loadDefault()
 #endif
 	if (progdefaults.DisplayMacroFilename) {
 		string Macroset;
-		Macroset.assign("\nMacros: ").append(progStatus.LastMacroFile).append("\n");
+		Macroset.assign("Read macro file: ").append(progStatus.LastMacroFile);
+#ifdef __WOE32__
+		size_t p = string::npos;
+		while ( (p = Macroset.find("/")) != string::npos)
+			Macroset[p] = '\\';
+#endif
+		LOG_INFO("%s", Macroset.c_str());
+		Macroset.insert(0, "\n");
+		Macroset.append("\n");
 		ReceiveText->addstr(Macroset);
 	}
 }
@@ -2979,12 +2987,13 @@ void MACROTEXT::openMacroFile()
 	if (p) {
 		loadMacros(p);
 		progStatus.LastMacroFile = p;
-	}
-	showMacroSet();
-	if (progdefaults.DisplayMacroFilename) {
-		string Macroset;
-		Macroset.assign("\nMacros: ").append(progStatus.LastMacroFile).append("\n");
-		ReceiveText->addstr(Macroset);
+//	}
+		showMacroSet();
+		if (progdefaults.DisplayMacroFilename) {
+			string Macroset;
+			Macroset.assign("\nLoaded macros: ").append(progStatus.LastMacroFile).append("\n");
+			ReceiveText->addstr(Macroset);
+		}
 	}
 }
 

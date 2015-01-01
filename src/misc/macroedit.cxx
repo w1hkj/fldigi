@@ -327,32 +327,41 @@ void cbInsertMacro(Fl_Widget *, void *)
 	if (text == LINE_SEP)
 		return;
 	if (text == "<FILE:>") {
-		string filters = "Text\t*." "txt";
-		const char* p = FSEL::select(_("Text file to insert"), filters.c_str(),
-					 "text." "txt");
+		string filters = "Text\t*.txt";
+		const char* p = FSEL::select(
+			_("Text file to insert"),
+			filters.c_str(),
+			HomeDir.c_str());
 		if (p) {
 			text.insert(6, p);
 		} else
 			text = "";
 	} else if ((text == "<CPS_FILE:>") || (text == "<WAV_FILE:>")) {
-		string filters = "Text\t*." "txt";
-		const char* p = FSEL::select(_("Test text file"), filters.c_str(),
-					 "text." "txt");
+		string filters = "Text\t*.txt";
+		const char* p = FSEL::select(
+			_("Test text file"),
+			filters.c_str(),
+			HomeDir.c_str());
 		if (p) {
 			text.insert(10, p);
 		} else
 			text = "";
 	} else if (text == "<IMAGE:>") {
-		string filters = "Text\t*." "txt";
-		const char *p = FSEL::select(_("MFSK image file"), "*.{png,jpg,bmp}\t*", "");
+		string filters = "*.{png,jpg,bmp}\t*.png";
+		const char *p = FSEL::select(
+			_("MFSK image file"),
+			filters.c_str(),
+			PicsDir.c_str());
 		if (p) {
 			text.insert(7, p);
 		} else
 			text = "";
 	} else if (text == "<MACROS:>") {
-		string filters = "Macrost\t*." "mdf";
-		const char* p = FSEL::select(_("Change to Macro file"), filters.c_str(),
-					 "macros." "mdf");
+		string filters = "Macrost\t*.mdf";
+		const char* p = FSEL::select(
+			_("Change to Macro file"),
+			filters.c_str(),
+			MacrosDir.c_str());
 		if (p) {
 			text.insert(8, p);
 		} else
@@ -360,9 +369,11 @@ void cbInsertMacro(Fl_Widget *, void *)
 	}
 #ifdef __MINGW32__
 	else if (text == "<EXEC>") {
-		string filters = "Exe\t*." "exe";
-		const char* p = FSEL::select(_("Executable file to insert"), filters.c_str(),
-					"WordPad.exe");
+		string filters = "Exe\t*.exe";
+		const char* p = FSEL::select(
+			_("Executable file to insert"),
+			filters.c_str(),
+			HomeDir.c_str());
 		if (p) {
 			string exefile = p;
 			exefile.append("</EXEC>");
