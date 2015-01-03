@@ -536,35 +536,37 @@ void mfsk::decodesymbol(unsigned char symbol)
 		if (symcounter) {
 			if ((c = dec1->decode(symbolpair, &met)) == -1)
 				return;
-			met1 = decayavg(met1, met, 32);
+			met1 = decayavg(met1, met, 50);//32);
 			if (met1 < met2)
 				return;
-			metric = met1 / 1.5;
+			metric = met1;
 		} else {
 			if ((c = dec2->decode(symbolpair, &met)) == -1)
 				return;
-			met2 = decayavg(met2, met, 32);
+			met2 = decayavg(met2, met, 50);//32);
 			if (met2 < met1)
 				return;
-			metric = met2 / 1.5;
+			metric = met2;
 		}
 	} else {
 		if (symcounter) return;
 		if ((c = dec2->decode(symbolpair, &met)) == -1)
 			return;
-		met2 = decayavg(met2, met, 32);
-		metric = met2 / 1.5;
+		met2 = decayavg(met2, met, 50);//32);
+		metric = met2;
 	}
 
 	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 		// s2n reporting: re-calibrate
-		s2n_metric = metric * 3 - 42;
+		s2n_metric = metric * 4.5 - 42;
 		s2n_metric = CLAMP(s2n_metric, 0.0, 100.0);
 	}
 
 	// Re-scale the metric and update main window
-	metric -= 32.0;
-	if (metric <= 5.0) metric = 5.0;
+	metric -= 60.0;
+	metric *= 0.5;
+
+	metric = CLAMP(metric, 0.0, 100.0);
 	display_metric(metric);
 
 	if (progStatus.sqlonoff && metric < progStatus.sldrSquelchValue)
