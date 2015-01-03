@@ -1984,6 +1984,13 @@ progdefaults.changed = true;
 
 Fl_Box *overcolor=(Fl_Box *)0;
 
+Fl_Check_Button *btn_show_all_codes=(Fl_Check_Button *)0;
+
+static void cb_btn_show_all_codes(Fl_Check_Button* o, void*) {
+  progdefaults.show_all_codes=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tab_touch=(Fl_Group *)0;
 
 Fl_Choice *sel_lsd=(Fl_Choice *)0;
@@ -5304,7 +5311,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5418,6 +5424,7 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6185,7 +6192,6 @@ ab and newline are automatically included."));
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
-            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(99, 109, 165, 24, _("Rx/Tx Character set"));
@@ -6551,6 +6557,11 @@ ab and newline are automatically included."));
               } // Fl_Group* o
               tabsColors->end();
             } // Fl_Tabs* tabsColors
+            { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(105, 325, 25, 25, _("display Rx control chars as ascii string"));
+              btn_show_all_codes->down_box(FL_DOWN_BOX);
+              btn_show_all_codes->callback((Fl_Callback*)cb_btn_show_all_codes);
+              o->value(progdefaults.show_all_codes);
+            } // Fl_Check_Button* btn_show_all_codes
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
           { tab_touch = new Fl_Group(0, 50, 600, 330, _("Touch"));
@@ -6987,6 +6998,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));

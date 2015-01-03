@@ -6805,11 +6805,18 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
 
-	if (mode == MODE_RTTY || mode == MODE_CW)
+	if (mailclient || mailserver)
+		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
+
+	else if (progdefaults.show_all_codes)
+		rx_chd.rx((unsigned char *)ascii3[data & 0xFF]);
+
+	else if (mode == MODE_RTTY || mode == MODE_CW)
 		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
 
-	else if (mailclient || mailserver || (data > 0 && data < 0x20))
-		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
+	else if ((data > 0 && data < 0x20) | (data > 0x7E))
+		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
+
 	else
 		rx_chd.rx(data);
 
@@ -7230,14 +7237,11 @@ void put_echo_char(unsigned int data, int style)
 	REQ(&add_tx_char, data);
 
 	// select a byte translation table
-	const char **asc = NULL;
-
-	if (mailclient || mailserver)
+	const char **asc = ascii;
+	if (mailclient || mailserver || arq_text_available)
 		asc = ascii2;
-	else if (arq_text_available)
-		asc = ascii2;
-	else if (mode == MODE_RTTY || mode == MODE_CW)
-		asc = ascii;
+	else if (progdefaults.show_all_codes)
+		asc = ascii3;
 	else if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST)
 		asc = ascii3;
 
@@ -7250,10 +7254,8 @@ void put_echo_char(unsigned int data, int style)
 
 	if (data == '\r' && lastdata == '\r') // reject multiple CRs
 		return;
-	if (asc != NULL) // MAIL / ARQ / RTTY / CW
-		echo_chd.rx((unsigned char *)asc[data & 0xFF]);
-	else
-		echo_chd.rx(data & 0xFF);
+
+	echo_chd.rx((unsigned char *)asc[data & 0xFF]);
 
 	lastdata = data;
 

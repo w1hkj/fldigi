@@ -216,6 +216,7 @@ extern Fl_Button *btnNormalSignal;
 extern Fl_Box *normalcolor;
 extern Fl_Button *btnOverSignal;
 extern Fl_Box *overcolor;
+extern Fl_Check_Button *btn_show_all_codes;
 extern Fl_Group *tab_touch;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *sel_lsd;

@@ -1502,6 +1502,9 @@
 		ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
 			  "Use CSMA on heavy traffic channels (AX25)",                              \
               true)                                                                     \
+        ELEM_(bool, show_all_codes, "SHOW_ALL_CODES",                                   \
+              "Display all rx char's using ascii3 table",                               \
+              false)                                                                    \
         /* PSK reporter */                                                              \
         ELEM_(bool, usepskrep, "USEPSKREP",                                             \
               "(Set by fldigi)",                                                        \

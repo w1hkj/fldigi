@@ -322,8 +322,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -410,7 +410,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330}
+            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1316,7 +1316,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -2330,6 +2330,13 @@ progdefaults.changed = true;}
                 }
               }
             }
+            Fl_Check_Button btn_show_all_codes {
+              label {display Rx control chars as ascii string}
+              callback {progdefaults.show_all_codes=o->value();
+progdefaults.changed = true;}
+              xywh {105 325 25 25} down_box DOWN_BOX
+              code0 {o->value(progdefaults.show_all_codes);}
+            }
           }
           Fl_Group tab_touch {
             label Touch open
@@ -2767,7 +2774,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355}
+        xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
@@ -2966,7 +2973,7 @@ progdefaults.changed = true;}
                   Fl_Group i_listboxQSKshape {
                     label {Edge shape}
                     callback {progdefaults.QSKshape = o->index();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
                     tooltip {Hanning/Blackman - use edge timing
 BPF - use BPF bandwidth} xywh {20 143 112 20} box DOWN_BOX color 7 align 8
                     code0 {o->add("Hanning|Blackman");}
