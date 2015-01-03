@@ -159,6 +159,8 @@
 #include "record_loader.h"
 #include "record_browse.h"
 
+#define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE
+
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
 #define RIGCONTROL_MLABEL      _("Rig control")
 #define OPMODES_MLABEL         _("Op &Mode")
@@ -184,6 +186,21 @@
 #define SHOW_CHANNELS          _("Show channels")
 
 #define LOG_CONNECT_SERVER     _("Connect to server")
+
+// MAXIMUM allowable string lengths in log fields
+#define MAX_FREQ 14
+#define MAX_TIME 4
+#define MAX_RST 3
+#define MAX_CALL 15
+#define MAX_NAME 30
+#define MAX_AZ 3
+#define MAX_QTH 50
+#define MAX_STATE 2
+#define MAX_LOC 8
+#define MAX_SERNO 10
+#define MAX_XCHG_IN 50
+#define MAX_COUNTRY 50
+#define MAX_NOTES 400
 
 using namespace std;
 
@@ -2387,19 +2404,52 @@ void cb_loc(Fl_Widget* w, void*)
 		return restoreFocus(w);
 
 	double lon[2], lat[2], distance, azimuth;
+	std::string s;
+	s = inpLoc->value();
+	int len = static_cast<int>(s.length());
+	if (len > MAX_LOC) {
+		s.erase(MAX_LOC);
+		len = MAX_LOC;
+	}
+	bool ok = true;
+	for (int i = 0; i < len; i++) {
+		if (ok)
+		switch (i) {
+			case 0 : 
+			case 1 :
+			case 4 :
+			case 5 :
+				ok = isalpha(s[i]);
+				break;
+			case 2 :
+			case 3 :
+			case 6 :
+			case 7 :
+				ok = (s[i] >= '0' && s[i] <= '9');
+		}
+	}
+	if ( !ok) {
+		inpLoc->value("");
+		restoreFocus();
+		return;
+	}
+	inpLoc->value(s.c_str());
+
 	if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
-	    locator2longlat(&lon[1], &lat[1], inpLoc->value()) == RIG_OK &&
+		locator2longlat(&lon[1], &lat[1], s.c_str()) == RIG_OK &&
 	    qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == RIG_OK) {
 		char az[4];
 		snprintf(az, sizeof(az), "%3.0f", azimuth);
 		inpAZ->value(az);
-	}
+	} else 
+		inpAZ->value("");
 	restoreFocus(w);
 }
 
 void cb_call(Fl_Widget* w, void*)
 {
 if (bWF_only) return;
+
 	if (progdefaults.calluppercase) {
 		int pos = inpCall->position();
 		char* uc = new char[inpCall->size()];
@@ -2411,6 +2461,10 @@ if (bWF_only) return;
 	}
 
 	new_call = inpCall->value();
+	if (new_call.length() > MAX_CALL) {
+		new_call.erase(MAX_CALL);
+		inpCall->value(new_call.c_str());
+	}
 
 	if (inpCall == inpCall1) {
 		inpCall2->value(new_call.c_str());
@@ -3457,7 +3511,6 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d)
 	progStatus.NO_RIGLOG = true;
 	progStatus.Rig_Log_UI = false;
 	progStatus.Rig_Contest_UI = false;
-printf("none\n");
 	UI_select();
 }
 
@@ -4640,6 +4693,128 @@ void set_smeter_colors()
 	pwrmeter->redraw();
 }
 
+void FREQ_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_FREQ) s.erase(MAX_FREQ);
+	w->value(s.c_str());
+}
+
+void TIME_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_TIME) s.erase(MAX_TIME);
+	w->value(s.c_str());
+}
+
+void RST_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_RST) s.erase(MAX_RST);
+	w->value(s.c_str());
+}
+
+void CALL_callback(Fl_Input2 *w) {
+	cb_call(w, NULL);
+}
+
+void NAME_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_NAME) s.erase(MAX_NAME);
+	w->value(s.c_str());
+}
+
+void AZ_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_AZ) s.erase(MAX_AZ);
+	w->value(s.c_str());
+}
+
+void QTH_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_QTH) s.erase(MAX_QTH);
+	w->value(s.c_str());
+}
+
+void STATE_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_STATE) s.erase(MAX_STATE);
+	w->value(s.c_str());
+}
+
+void VEPROV_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_STATE) s.erase(MAX_STATE);
+	w->value(s.c_str());
+}
+
+void LOC_callback(Fl_Input2 *w) {
+	cb_loc(w, NULL);
+}
+
+void SERNO_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_SERNO) s.erase(MAX_SERNO);
+	w->value(s.c_str());
+}
+
+void XCHG_IN_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_XCHG_IN) s.erase(MAX_XCHG_IN);
+	w->value(s.c_str());
+}
+
+void COUNTRY_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_COUNTRY) s.erase(MAX_COUNTRY);
+	w->value(s.c_str());
+}
+
+void NOTES_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_NOTES) s.erase(MAX_NOTES);
+	w->value(s.c_str());
+}
+
+void log_callback(Fl_Input2 *w) {
+	if (w == inpCall1 || w == inpCall2 || w == inpCall3 || w == inpCall4)
+		CALL_callback(w);
+	else if (w ==  inpName1 || w == inpName2)
+		NAME_callback(w);
+	else if (w == inpCountry)
+		COUNTRY_callback(w);
+	else if (w == inpNotes)
+		NOTES_callback(w);
+	else if (w == inpLoc)
+		LOC_callback(w);
+	else if (w == inpXchgIn1 || w == inpXchgIn2)
+		XCHG_IN_callback(w);
+	else if (w == inpSerNo1 || w == inpSerNo2)
+		SERNO_callback(w);
+	else if (w == inpState || w == inpVEprov)
+		STATE_callback(w);
+	else if (w == inpQth)
+		QTH_callback(w);
+	else if (w == inpAZ)
+		AZ_callback(w);
+	else if (w ==  inpRstIn1 || w == inpRstIn2 || w == inpRstOut1 || w == inpRstOut2)
+		RST_callback(w);
+	else if (w == inpTimeOff1 || w == inpTimeOff2 || w == inpTimeOff3 ||
+			 w == inpTimeOn1  || w == inpTimeOn2 || w == inpTimeOn3)
+		TIME_callback(w);
+	else
+		LOG_ERROR("unknown widget %p", w);
+}
+
 inline int next_to(Fl_Widget* w)
 {
 	return w->x() + w->w() + pad;
@@ -4937,7 +5112,6 @@ void create_fl_digi_main_primary() {
 				btnTimeOn = new Fl_Button(
 					next_to(inpFreq1), Hmenu + pad, Hentry, Hentry, _("On"));
 				btnTimeOn->tooltip(_("Press to update QSO start time"));
-				btnTimeOn->callback(cb_btnTimeOn);
 
 				inpTimeOn1 = new Fl_Input2(
 					next_to(btnTimeOn), Hmenu + pad,
@@ -5661,7 +5835,6 @@ int alt_btn_width = 2 * DEFAULT_SW;
 
 		showMacroSet();
 
-#define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE
 		Fl_Widget* logfields[] = {
 			inpName1, inpName1,
 			inpTimeOn1, inpTimeOn2, inpTimeOn3,

@@ -377,4 +377,6 @@ extern void set_freq_control_lsd();
 
 extern void set_smeter_colors();
 
+extern void log_callback(Fl_Input2 *);
+
 #endif

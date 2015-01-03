@@ -437,7 +437,7 @@ int FTextRX::handle_qso_data(int start, int end)
 		return 0;
 	char* p = s;
 
-	Fl_Input* target = 0;
+	Fl_Input2* target = 0;
 
 	if (QsoInfoFrame1B->visible()) {
 		if (call.match(s)) { // point p to substring
@@ -445,11 +445,12 @@ int FTextRX::handle_qso_data(int start, int end)
 			p = s + offsets.rm_so;
 			*(s + offsets.rm_eo) = '\0';
 			inpCall->value(p);
-			inpCall->do_callback();
+			log_callback(inpCall);
 		} else {
 			inpXchgIn->position(inpXchgIn->size());
 			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
 			inpXchgIn->insert(s);
+			log_callback(inpXchgIn);
 		}
 	} else {
 		if (rst.match(s))
@@ -468,7 +469,7 @@ int FTextRX::handle_qso_data(int start, int end)
 			target = *inpName->value() ? inpQth : inpName;
 		if (target) {
 			target->value(p);
-			target->do_callback();
+			log_callback(target);
 			free(s);
 			restoreFocus(NULL);
 			return 1;
@@ -550,7 +551,7 @@ void FTextRX::handle_context_menu(void)
 ///
 void FTextRX::menu_cb(size_t item)
 {
-	Fl_Input* input = 0;
+	Fl_Input2* input = 0;
 	switch (item) {
 	case RX_MENU_QRZ_THIS:
 		menu_cb(RX_MENU_CALL);
@@ -638,7 +639,7 @@ void FTextRX::menu_cb(size_t item)
 	}
 	else
 		input->value(s);
-	input->do_callback();
+	log_callback(input);
 	free(s);
 }
 
