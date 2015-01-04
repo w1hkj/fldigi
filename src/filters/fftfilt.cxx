@@ -188,7 +188,8 @@ void fftfilt::create_filter(double f1, double f2)
 	fspec.close();
 	delete [] revht;
 */
-	pass = 1;//2;  oh wow ... been wrong for years!
+// start output after 2 full passes are complete
+	pass = 1;
 }
 
 /*
@@ -305,7 +306,7 @@ void fftfilt::rtty_filter(double f)
 	fspec.close();
 	delete [] revht;
 */
-// start outputs after 2 full passes are complete
-	pass = 2;
+// start output after 2 full passes are complete
+	pass = 1;
 }
 
