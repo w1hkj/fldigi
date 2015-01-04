@@ -193,6 +193,7 @@ void cw::tx_init(SoundBase *sc)
 
 	cw_xmt_filter->create_filter(lwr, upr);
 	qsk_ptr = XMT_FILT_LEN / 2;
+	maxval = 0.0;
 }
 
 void cw::rx_init()
@@ -234,6 +235,7 @@ void cw::init()
 	use_paren = progdefaults.CW_use_paren;
 	prosigns = progdefaults.CW_prosigns;
 	stopflag = false;
+	maxval = 0;
 }
 
 cw::~cw() {
@@ -987,7 +989,10 @@ void cw::nb_filter(double *output, double *qsk, int len)
 					cmplx(output[i], output[i]), 
 					&zp)) > 0) {
 			for (int k = 0; k < n; k++)
-				xmt_signal[k] = zp[k].real();
+				if (abs(zp[k].real()) > maxval) maxval = abs(zp[k].real());
+			if (maxval == 0) maxval = 1.0;
+			for (int k = 0; k < n; k++)
+				xmt_signal[k] = 0.95 * zp[k].real() / maxval;
 
 //			appendfile(xmt_signal, qsk_signal, n);
 

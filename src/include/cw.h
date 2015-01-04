@@ -166,7 +166,8 @@ protected:
 	double qskbuf[OUTBUFSIZE];			// signal array for qsk drive
 	double qskphase;				//
 	bool firstelement;
-	
+	double maxval;
+
 //	double *keyshape;				// array defining leading edge
 	
 // Receiving parameters: 
