@@ -3937,7 +3937,7 @@ progdefaults.changed = true;
 Fl_ListBox *menuOutSampleRate=(Fl_ListBox *)0;
 
 static void cb_menuOutSampleRate(Fl_ListBox* o, void*) {
-  progdefaults.out_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index();
+  progdefaults.out_sample_rate = o->index() > 1 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;
 }

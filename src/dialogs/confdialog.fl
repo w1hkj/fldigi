@@ -4868,7 +4868,7 @@ does not work well with your audio device.} xywh {65 94 100 22} box DOWN_BOX col
               } {}
               Fl_Group menuOutSampleRate {
                 label Playback
-                callback {progdefaults.out_sample_rate = o->index() > 2 ? strtol(o->value(), 0, 10) : o->index();
+                callback {progdefaults.out_sample_rate = o->index() > 1 ? strtol(o->value(), 0, 10) : o->index();
 resetSoundCard();
 progdefaults.changed = true;} open
                 xywh {65 124 100 22} box DOWN_BOX color 7 align 8
