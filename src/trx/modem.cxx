@@ -737,7 +737,7 @@ void modem::wfid_make_tones(int numchars)
 {
 	double f, flo, fhi;
 	int vwidth = (numchars*NUMCOLS + (numchars-1)*CHARSPACE - 1);
-	f = frequency + TONESPACING * vwidth/2.0;
+	f = tx_frequency + TONESPACING * vwidth/2.0;
 	fhi = f + TONESPACING;
 	flo = fhi - (vwidth + 2) * TONESPACING;
 	for (int i = 1; i <= NUMCOLS * numchars; i++) {
