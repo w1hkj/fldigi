@@ -80,9 +80,9 @@ void  mfsk::tx_init(SoundBase *sc)
 	bitstate = 0;
 
 	double bw2 = (numtones + 1) * samplerate / symlen / 2.0;
-	double flo = (frequency - bw2) / samplerate;
+	double flo = (get_txfreq_woffset() - bw2) / samplerate;
 	if (flo <= 0) flo = 0;
-	double fhi = (frequency + bw2) / samplerate;
+	double fhi = (get_txfreq_woffset() + bw2) / samplerate;
 	xmtfilt->init_bandpass (127, 1, flo, fhi);
 
 	videoText();

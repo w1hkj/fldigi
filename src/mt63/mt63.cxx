@@ -41,7 +41,7 @@ void mt63::tx_init(SoundBase *sb)
 	guard_lock dsp_lock(&mt63_mutex);
 
 	scard = sb;
-	Tx->Preset(frequency, (int)bandwidth, Interleave == 64 ? 1 : 0);
+	Tx->Preset(get_txfreq_woffset(), (int)bandwidth, Interleave == 64 ? 1 : 0);
 	flush = Tx->DataInterleave;
 	videoText();
 	startflag = true;
@@ -72,8 +72,8 @@ int mt63::tx_process()
 		startflag = false;
 		maxval = 0.0;
 		if (progdefaults.mt63_usetones) {
-			double w1 = 2.0 * M_PI * (frequency - bandwidth / 2.0) / samplerate;
-			double w2 = 2.0 * M_PI * (frequency + 31.0 * bandwidth / 64.0) / samplerate;
+			double w1 = 2.0 * M_PI * (get_txfreq_woffset() - bandwidth / 2.0) / samplerate;
+			double w2 = 2.0 * M_PI * (get_txfreq_woffset() + 31.0 * bandwidth / 64.0) / samplerate;
 			double phi1 = 0.0;
 			double phi2 = 0.0;
 			double buff[samplerate];
@@ -304,7 +304,7 @@ void mt63::restart()
 	{ // critical section
 		guard_lock dsp_lock(&mt63_mutex);
 
-		err = Tx->Preset(frequency, (int)bandwidth, Interleave == 64 ? 1 : 0);
+		err = Tx->Preset(get_txfreq_woffset(), (int)bandwidth, Interleave == 64 ? 1 : 0);
 		if (err)
 			fprintf(stderr, "mt63_txinit: init failed\n");
 		flush = Tx->DataInterleave;
