@@ -1,8 +1,19 @@
+2015-01-08  David Freese  <iam_w1hkj@w1hkj.com>
+
+	2c9b493: TX Lock
+	7c95822: video ID
+	b93ea4e: fftfilt
+	ed4f49d: Port audio index
+	645e7f9: CW output level
+	7cc119d: Documentation
+	93d2da8: MFSK squelch
+	9c8d515: Rx display
+	b1ac562: Log fields
+	d67d1ab: Native file chooser
+	6d11c02: ADIF temp log
 
 
 =Version 3.22.04=
-
-2014-12-25  David Freese  <iam_w1hkj@w1hkj.com>
 
 	2c3b965: xmlrpc
 
