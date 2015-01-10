@@ -402,6 +402,7 @@ int FTextRX::handle_clickable(int x, int y)
 	switch (style - FTEXT_DEF) {
 	case QSY:
 		handle_qsy(start, end);
+		return 1;
 		break;
 	// ...
 	default:
