@@ -5112,6 +5112,7 @@ void create_fl_digi_main_primary() {
 				btnTimeOn = new Fl_Button(
 					next_to(inpFreq1), Hmenu + pad, Hentry, Hentry, _("On"));
 				btnTimeOn->tooltip(_("Press to update QSO start time"));
+				btnTimeOn->callback(cb_btnTimeOn);
 
 				inpTimeOn1 = new Fl_Input2(
 					next_to(btnTimeOn), Hmenu + pad,
