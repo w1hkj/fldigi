@@ -300,6 +300,8 @@ void delayed_startup(void *)
 
 	XML_RPC_Server::start(progdefaults.xmlrpc_address.c_str(), progdefaults.xmlrpc_port.c_str());
 
+	FLRIG_start_flrig_thread();
+
 	data_io_enabled = DISABLED_IO;
 	arq_init();
 	kiss_init();

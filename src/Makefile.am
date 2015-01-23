@@ -529,6 +529,7 @@ fldigi_SOURCES += \
 	rigcontrol/rigsupport.cxx \
 	rigcontrol/rigxml.cxx \
 	rigcontrol/serial.cxx \
+	rigcontrol/xmlrpc_rig.cxx \
 	misc/estrings.cxx \
 	rsid/rsid.cxx \
 	soundcard/sound.cxx \

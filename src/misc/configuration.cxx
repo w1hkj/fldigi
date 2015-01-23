@@ -37,6 +37,7 @@
 #include "gettext.h"
 #include "nls.h"
 #include "icons.h"
+#include "rigsupport.h"
 
 #if USE_HAMLIB
 	#include "hamlib.h"
@@ -777,6 +778,8 @@ void configuration::initInterface()
 		wf->USB(true);
 		wf->setQSY(0);
 	}
+
+	if (connected_to_flrig) wf->setQSY(1);
 
 	if (HamlibCMDptt && chkUSEHAMLIBis)
 		push2talk->reset(PTT::PTT_HAMLIB);
