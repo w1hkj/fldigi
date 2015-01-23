@@ -3024,6 +3024,8 @@ bool clean_exit(bool ask) {
 	close_logbook();
 	MilliSleep(50);
 
+	stop_flrig_thread();
+
 	exit_process();
 
 	return true;
@@ -7380,11 +7382,12 @@ void qsy(long long rfc, int fmid)
 		if (adj)
 			rfc += (wf->USB() ? adj : -adj);
 	}
-
 	if (rfc == wf->rfcarrier())
 		return;
 
-	if (progdefaults.chkUSERIGCATis)
+	if (connected_to_flrig)
+		REQ(xmlrpc_rig_set_qsy, rfc);
+	else if (progdefaults.chkUSERIGCATis)
 		REQ(rigCAT_set_qsy, rfc);
 #if USE_HAMLIB
 	else if (progdefaults.chkUSEHAMLIBis)
@@ -7393,6 +7396,7 @@ void qsy(long long rfc, int fmid)
 	else if (progdefaults.chkUSEXMLRPCis)
 		REQ(xmlrpc_set_qsy, rfc);
 	else
+
 		LOG_VERBOSE("Ignoring rfcarrier change request (no rig control)");
 }
 
@@ -7627,11 +7631,13 @@ int notch_frequency = 0;
 void notch_on(int freq)
 {
 	notch_frequency = freq;
+	set_flrig_notch();
 }
 
 void notch_off()
 {
 	notch_frequency = 0;
+	set_flrig_notch();
 }
 
 void enable_kiss(void)

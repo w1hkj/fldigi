@@ -69,7 +69,12 @@ public:
 	void	minimum(double v) { minimum_ = v; redraw(); }
 	double	minimum() const { return (minimum_); }
 
-	void	value(double v) { value_ = v; redraw(); }
+	void	value(double v) { 
+		value_ = v;
+		if (value_ < minimum_) value_ = minimum_;
+		if (value_ > maximum_) value_ = maximum_;
+		redraw();
+	}
 	double	value() const { return (value_); }
 
 	void	set_background(Fl_Color c1) { bgnd_ = c1; redraw(); }

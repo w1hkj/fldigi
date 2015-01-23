@@ -72,9 +72,9 @@ public:
 
   void error(const char* msg) {
 #ifdef USE_WINDOWS_DEBUG
-    OutputDebugString(msg); OutputDebugString("\n");
+//    OutputDebugString(msg); OutputDebugString("\n");
 #else
-    std::cerr << msg << std::endl; 
+//    std::cerr << msg << std::endl; 
 #endif  
   }
 } defaultErrorHandler;

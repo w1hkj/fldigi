@@ -323,6 +323,7 @@ int cb_qso_opMODE()
 	else
 #endif
 		rigCAT_setmode(qso_opMODE->value());
+	set_flrig_mode(qso_opMODE->value());
 	return 0;
 }
 
@@ -331,6 +332,7 @@ int cb_qso_opBW()
 	if (progdefaults.chkUSERIGCATis)
 //    if (!progdefaults.chkUSEXMLRPCis)
 		rigCAT_setwidth(qso_opBW->value());
+	set_flrig_bw(qso_opBW->index());
 	return 0;
 }
 
@@ -342,6 +344,7 @@ void sendFreq(long int f)
 	else
 #endif
 		rigCAT_setfreq(f);
+	set_flrig_freq(f);
 }
 
 void qso_movFreq(Fl_Widget* w, void *data)

@@ -1224,8 +1224,7 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 	FL_UNLOCK_D();
 	if (!(active_modem->get_cap() & modem::CAP_TX)) {
 		b->value(0);
-		restoreFocus();
-		return;
+		restoreFocus();		return;
 	}
 	if (v == 1) {
 		stopMacroTimer();

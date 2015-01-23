@@ -26,9 +26,13 @@
 #include <string>
 
 #include "serial.h"
+
 #if USE_HAMLIB
 	#include "hamlib.h"
 #endif
+
+#include "xmlrpcpp/XmlRpc.h"
+#include "xmlrpcpp/XmlRpcValue.h"
 
 extern std::string windowTitle;
 extern Cserial rigio;
@@ -60,5 +64,45 @@ extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
 extern std::string modeString(rmode_t m);
 #endif
+
+// xmlrpc_rig specific
+
+extern bool connected_to_flrig;
+extern void xmlrpc_rig_set_qsy(long long rfc);
+
+using namespace XmlRpc;
+using namespace std;
+
+extern bool bws_posted;
+extern bool FLRIG_bw_posted;
+extern bool FLRIG_mode_posted;
+extern bool modes_posted;
+extern bool FLRIG_freq_posted;
+
+extern long int FLRIG_xcvr_freq;
+extern string   xcvr_name;
+extern string   posted_mode;
+extern string   posted_bw1;
+extern string   posted_bw2;
+
+extern XmlRpcValue modes_result;
+extern XmlRpcValue bws_result;
+extern XmlRpcValue FLRIG_bw_result;
+
+extern void FLRIG_start_flrig_thread();
+extern void stop_flrig_thread();
+extern void set_flrig_ptt(int on);
+extern void set_flrig_freq(long int fr);
+extern void set_flrig_mode(const char *md);
+extern void set_flrig_bw(int bw1, int bw2 = 0);
+extern void set_flrig_notch();
+extern void FLRIG_set_flrig_ab(int n);
+
+
+//------------------------------------------------------------------------------
+// flrig xmlrpc client support
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 
 #endif

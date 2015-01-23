@@ -46,6 +46,7 @@
 #include "debug.h"
 #include "nullmodem.h"
 #include "macros.h"
+#include "rigsupport.h"
 
 #if BENCHMARK_MODE
 #  include "benchmark.h"
@@ -493,20 +494,26 @@ void *trx_loop(void *args)
 			trx_state = STATE_ENDED;
 			// fall through
 		case STATE_ENDED:
+			REQ(set_flrig_ptt, 0);
 			return 0;
 		case STATE_RESTART:
+			REQ(set_flrig_ptt, 0);
 			trx_reset_loop();
 			break;
 		case STATE_NEW_MODEM:
+			REQ(set_flrig_ptt, 0);
 			trx_start_modem_loop();
 			break;
 		case STATE_TX:
+			REQ(set_flrig_ptt, 1);
 			trx_trx_transmit_loop();
 			break;
 		case STATE_TUNE:
+			REQ(set_flrig_ptt, 1);
 			trx_tune_loop();
 			break;
 		case STATE_RX:
+			REQ(set_flrig_ptt, 0);
 			trx_trx_receive_loop();
 			break;
 		default:

@@ -37,6 +37,7 @@ void Smeter::draw()
 		sval = round(meter_width * (value_ - minimum_) / (maximum_ - minimum_));
 	else
 		sval = 0;
+
 // Draw the box and label...
 	draw_box();
 	draw_box(box(), tx, ty, tw, th, bgnd_);
@@ -61,9 +62,9 @@ Smeter::Smeter(int X, int Y, int W, int H, const char* l)
 	fgnd_ = FL_GREEN;
 	scale_color = FL_BLACK;
 
-	minimum(0.0f);
-	maximum(100.0f);
-	value(0.0f);
+	minimum_ = 0.0;
+	maximum_ = 100.0;
+	value_ = 0;
 
   // Get the box borders...
 	bx = Fl::box_dx(box());
