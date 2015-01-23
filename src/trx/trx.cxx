@@ -81,13 +81,13 @@ static int	_trx_tune;
 #define NUMMEMBUFS 1024
 static ringbuffer<double> trxrb(ceil2(NUMMEMBUFS * SCBLOCKSIZE));
 static float fbuf[SCBLOCKSIZE];
-bool    bHistory = false;
-bool    bHighSpeed = false;
+bool	bHistory = false;
+bool	bHighSpeed = false;
 static  double hsbuff[SCBLOCKSIZE];
 
 static bool trxrunning = false;
 
-bool    rx_only = false;
+bool	rx_only = false;
 
 #include "tune.cxx"
 
@@ -194,46 +194,48 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 
 void trx_trx_receive_loop()
 {
-    size_t  numread;
-    int  current_samplerate;
-    assert(powerof2(SCBLOCKSIZE));
+	size_t  numread;
+	int  current_samplerate;
+	assert(powerof2(SCBLOCKSIZE));
 
-    if (unlikely(!active_modem)) {
+	if (unlikely(!active_modem)) {
 	MilliSleep(10);
 	return;
-    }
+	}
 
 #if BENCHMARK_MODE
-    do_benchmark();
-    trx_state = STATE_ENDED;
-    return;
+	do_benchmark();
+	trx_state = STATE_ENDED;
+	return;
 #endif
 
-    if (unlikely(!scard)) {
+	if (unlikely(!scard)) {
 	MilliSleep(10);
 	return;
-    }
-
-    try {
-	current_samplerate = active_modem->get_samplerate();
-	if (scard->Open(O_RDONLY, current_samplerate))
-	    REQ(sound_update, progdefaults.btnAudioIOis);
-    }
-    catch (const SndException& e) {
-	LOG_ERROR("%s. line: %i", e.what(), __LINE__);
-	put_status(e.what(), 5);
-	scard->Close();
-	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
-	    sound_close();
-	    sound_init();
 	}
-	MilliSleep(1000);
-	return;
-    }
-    active_modem->rx_init();
 
-    ringbuffer<double>::vector_type rbvec[2];
-    rbvec[0].buf = rbvec[1].buf = 0;
+	try {
+		current_samplerate = active_modem->get_samplerate();
+		if (scard->Open(O_RDONLY, current_samplerate))
+			REQ(sound_update, progdefaults.btnAudioIOis);
+	}
+	catch (const SndException& e) {
+		LOG_ERROR("%s. line: %i", e.what(), __LINE__);
+		put_status(e.what(), 5);
+		scard->Close();
+//	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
+		if (progdefaults.btnAudioIOis == SND_IDX_PORT) {
+			sound_close();
+			sound_init();
+		}
+
+		MilliSleep(1000);
+		return;
+	}
+	active_modem->rx_init();
+
+	ringbuffer<double>::vector_type rbvec[2];
+	rbvec[0].buf = rbvec[1].buf = 0;
 
 	while (1) {
 		try {
@@ -321,14 +323,14 @@ void trx_trx_transmit_loop()
 	if (active_modem) {
 
 		try {
-		    current_samplerate = active_modem->get_samplerate();
-		    scard->Open(O_WRONLY, current_samplerate);
+			current_samplerate = active_modem->get_samplerate();
+			scard->Open(O_WRONLY, current_samplerate);
 		}
 		catch (const SndException& e) {
-		    LOG_ERROR("%s. line: %i", e.what(), __LINE__);
-		    put_status(e.what(), 1);
-		    MilliSleep(10);
-		    return;
+			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
+			put_status(e.what(), 1);
+			MilliSleep(10);
+			return;
 		}
 
 		if ((active_modem != ssb_modem) &&
@@ -416,14 +418,14 @@ void trx_tune_loop()
 	}
 	if (active_modem) {
 		try {
-		    current_samplerate = active_modem->get_samplerate();
-		    scard->Open(O_WRONLY, current_samplerate);
+			current_samplerate = active_modem->get_samplerate();
+			scard->Open(O_WRONLY, current_samplerate);
 		}
 		catch (const SndException& e) {
-		    LOG_ERROR("%s. line: %i", e.what(), __LINE__);
-		    put_status(e.what(), 1);
-		    MilliSleep(10);
-		    return;
+			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
+			put_status(e.what(), 1);
+			MilliSleep(10);
+			return;
 		}
 
 		push2talk->set(true);
@@ -567,7 +569,7 @@ void trx_reset_loop()
 #endif
 #if USE_PORTAUDIO
 	case SND_IDX_PORT:
-	    scard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		scard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
 		break;
 #endif
 #if USE_PULSEAUDIO

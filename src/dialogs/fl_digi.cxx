@@ -7074,13 +7074,15 @@ void queue_execute_after_rx(void*)
 	que_ok = false;
 	que_timeout = 100; // 5 seconds
 	Fl::add_timeout(0.05, post_queue_execute);
-	queue_execute();
+	Tx_queue_execute();
 }
 
 void do_que_execute(void *)
 {
+	que_ok = false;
+	Tx_queue_execute();
+	while(!que_ok) MilliSleep(1);
 	que_waiting = false;
-	queue_execute();
 }
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
@@ -7162,11 +7164,13 @@ int get_tx_char(void)
 			break;
 		case 'r':
 			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+			REQ(Rx_queue_execute);
 			return(GET_TX_CHAR_ETX);
 			break;
 		case 'R':
 			if (TransmitText->eot()) {
 				REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+				REQ(Rx_queue_execute);
 				return(GET_TX_CHAR_ETX);
 			} else
 				return(GET_TX_CHAR_NODATA);

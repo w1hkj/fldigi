@@ -93,7 +93,8 @@ extern size_t repeatchar;
 void set_macro_env(void);
 
 void queue_reset();
-void queue_execute();
+void Tx_queue_execute();
+void Rx_queue_execute();
 bool queue_must_rx();
 void idleTimer(void *);
 

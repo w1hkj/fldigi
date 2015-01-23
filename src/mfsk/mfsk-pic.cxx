@@ -83,10 +83,12 @@ void showRxViewer(int W, int H)
 	FL_UNLOCK_E();
 }
 
-void load_image(const char *n) {
+int load_image(const char *n) {
 	
-	if (serviceme != active_modem) return;
-	
+	if (serviceme != active_modem) {
+		return 0;
+	}
+
 	int W, H, D;
 	unsigned char *img_data;
 	
@@ -95,13 +97,16 @@ void load_image(const char *n) {
 		TxImg = 0;
 	}
 	TxImg = Fl_Shared_Image::get(n);
+
 	if (!TxImg)
-		return;
+		return 0;
+
 	if (TxImg->count() > 1) {
 		TxImg->release();
 		TxImg = 0;
-		return;
+		return 0;
 	}
+
 	img_data = (unsigned char *)TxImg->data()[0];
 	W = TxImg->w();
 	H = TxImg->h();
@@ -125,7 +130,7 @@ void load_image(const char *n) {
 			xmtimg[j] = xmtimg[j+1] = xmtimg[j+2] = img_data[i];
 		}
 	} else
-		return;
+		return 0;
 
 	TxViewerResize(W, H);
 	char* label = strdup(n);
@@ -147,6 +152,7 @@ void load_image(const char *n) {
 		btnpicTxSendGrey->tooltip(txgry_tooltip);
 	btnpicTxSendGrey->activate();
 	FL_UNLOCK_D();
+	return 1;
 }
 
 void updateTxPic(unsigned char data)
@@ -223,8 +229,6 @@ void pic_TxSendColor()
 	FL_UNLOCK_D();
 	if (!picTxWin->visible())
 		picTxWin->show();
-;
-
 // start the transmission
 	start_tx();
 	serviceme->startpic = true;
@@ -232,13 +236,12 @@ void pic_TxSendColor()
 
 void cb_picTxSendColor( Fl_Widget *w, void *)
 {
+	if (serviceme != active_modem) return;
 	pic_TxSendColor();
 }
 
-void cb_picTxSendGrey( Fl_Widget *w, void *)
+void pic_TxSendGrey()
 {
-	if (serviceme != active_modem) return;
-
 	int W, H;
 	W = TxImg->w();
 	H = TxImg->h();
@@ -267,10 +270,17 @@ void cb_picTxSendGrey( Fl_Widget *w, void *)
 	picTx->clear();
 	FL_UNLOCK_D();
 // start the transmission
+	if (!picTxWin->visible())
+		picTxWin->show();
 	start_tx();
 	serviceme->startpic = true;
 }
 
+void cb_picTxSendGrey( Fl_Widget *w, void *)
+{
+	if (serviceme != active_modem) return;
+	pic_TxSendGrey();
+}
 
 void cb_picTxSendAbort( Fl_Widget *w, void *)
 {

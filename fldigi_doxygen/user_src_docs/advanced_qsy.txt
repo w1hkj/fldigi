@@ -109,15 +109,24 @@ message can appear with a macro such as:
 &lt;QSY:89000;88000&gt;
 
 <br>
-\section inline_marco Inline Macro Tags
+\section inline_macro Inline Macro Tags
 
 Unless otherwise noted all of the macro tags discussed thus far are
 meant to be executed at the time that the macro is invoked by the
 button closure. It is possible by execution of the tag to be
-delated until it appears in the transmit data stream. This
+delayed until it appears in the transmit data stream. This
 delayed execution capability is limited to a select number of
 tags. See \ref inline_macro_page "Inline Macro Tags"
 for a list of these tags and examples.
+
+<br>
+\section at_macro Delayed Execution Macro Tags
+
+It is possible for the execution of the tag to be
+delayed until after the macro execution returns to the recieve state. This
+delayed execution capability is limited to a select number of
+tags. See \ref at_macro_page "Delayed Execution Macro Tags"
+for a list of these tags and example.
 
 <br>
 \ref advanced_qsy_page "Return to Top of Page"

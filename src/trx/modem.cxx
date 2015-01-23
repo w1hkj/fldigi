@@ -436,9 +436,12 @@ void modem::s2nreport(void)
 	pskmail_notify_s2n(s2n_ncount, s2n_avg, s2n_stddev);
 }
 
+bool disable_modem = false;
+
 void modem::ModulateXmtr(double *buffer, int len)
 {
 	if (unlikely(!scard)) return;
+	if (disable_modem) return;
 
 	tx_sample_count += len;
 
@@ -475,7 +478,6 @@ void modem::ModulateXmtr(double *buffer, int len)
 		}
 		return;
 	}
-
 }
 
 #include <iostream>
@@ -483,6 +485,7 @@ using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len, bool sample_flag)
 {
 	if (unlikely(!scard)) return;
+	if (disable_modem) return;
 
 	if(sample_flag)
 		tx_sample_count += len;
@@ -518,7 +521,86 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 
 }
 
+//------------------------------------------------------------------------------
+// modulate video signal
+//------------------------------------------------------------------------------
+void modem::ModulateVideoStereo(double *left, double *right, int len, bool sample_flag)
+{
+	if (unlikely(!scard)) return;
 
+	if(sample_flag)
+		tx_sample_count += len;
+
+	if (progdefaults.viewXmtSignal &&
+		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
+		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
+
+	if (withnoise && progdefaults.noise) add_noise(left, len);
+
+	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
+
+	for (int i = 0; i < len; i++) {
+		if (right[i] < -1.0) right[i] = -1.0;
+		if (right[i] >  1.0) right[i] = 1.0;
+		left[i] *= mult;
+		if (left[i] < -1.0) left[i] = -1.0;
+		if (left[i] >  1.0) left[i] = 1.0;
+	}
+	try {
+		unsigned n = 4;
+		while (scard->Write_stereo(left, right, len) == 0 && --n);
+		if (n == 0)
+			throw SndException(-99, "Sound write failed");
+	}
+	catch (const SndException& e) {
+		if(e.error() < 0) {
+ 			LOG_ERROR("%s", e.what());
+ 			throw;
+		}
+		return;
+	}
+}
+
+void modem::ModulateVideo(double *buffer, int len)
+{
+	if (unlikely(!scard)) return;
+
+	tx_sample_count += len;
+
+	if (progdefaults.PTTrightchannel) {
+		for (int i = 0; i < len; i++)
+			PTTchannel[i] = PTTnco();
+			ModulateVideoStereo( buffer, PTTchannel, len, false);
+		return;
+	}
+
+	if (progdefaults.viewXmtSignal &&
+		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
+		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
+
+	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
+	for (int i = 0; i < len; i++) {
+		buffer[i] *= mult;
+		if (buffer[i] < -1.0) buffer[i] = -1.0;
+		if (buffer[i] >  1.0) buffer[i] = 1.0;
+	}
+
+	try {
+		unsigned n = 4;
+		while (scard->Write(buffer, len) == 0 && --n);
+		if (n == 0)
+			throw SndException(-99, "Sound write failed");
+	}
+	catch (const SndException& e) {
+		if(e.error() < 0) {
+ 			LOG_ERROR("%s", e.what());
+ 			throw;
+		}
+		return;
+	}
+}
+
+//------------------------------------------------------------------------------
 void modem::videoText()
 {
 	if (trx_state == STATE_TUNE)
@@ -771,7 +853,7 @@ void modem::wfid_send(int numchars)
 		vidfilt.Irun( val, val );
 		wfid_outbuf[i] = val;
 	}
-	ModulateXmtr(wfid_outbuf, IDSYMLEN);
+	ModulateVideo(wfid_outbuf, IDSYMLEN);
 }
 
 void modem::wfid_sendchars(string s)
@@ -874,6 +956,8 @@ void modem::wfid_text(const string& s)
 
 	put_status(video.c_str());
 
+	disable_modem = true;
+
 	int numlines = 0;
 	string tosend;
 	while (numlines < len) numlines += vidwidth;
@@ -891,6 +975,7 @@ void modem::wfid_text(const string& s)
 	wfid_send(vidwidth);
 
 	put_status("");
+	disable_modem = false;
 }
 
 double	modem::wfid_outbuf[MAXIDSYMLEN];

@@ -556,6 +556,7 @@ void WFdisp::processFFT() {
 					 IMAGE_WIDTH * sizeof(short int));
 		}
 		redraw();
+		Fl::flush();
 
 		dispcnt = 1.0 * WFBLOCKSIZE / SC_SMPLRATE; // FAST
 		if (wfspeed == NORMAL) dispcnt *= NORMAL;
@@ -601,6 +602,8 @@ void WFdisp::redrawCursor()
 	redraw();
 //	cursormoved = true;
 }
+
+extern state_t trx_state;
 
 void WFdisp::sig_data( double *sig, int len, int sr )
 {

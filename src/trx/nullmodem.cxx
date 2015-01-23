@@ -88,9 +88,16 @@ int NULLMODEM::rx_process(const double *buf, int len)
 int NULLMODEM::tx_process()
 {
 	MilliSleep(10);
-	if (!fl_digi_main) return 0;
+	if (!fl_digi_main) {
+		return 0;
+	}
 
-	if ( get_tx_char() == GET_TX_CHAR_ETX || stopflag) {
+	int c = get_tx_char();
+	if (c == GET_TX_CHAR_ETX) {
+		stopflag = false;
+		return -1;
+	}
+	if ( stopflag ) {
 		stopflag = false;
 		return -1;
 	}
