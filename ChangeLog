@@ -1,4 +1,21 @@
-2015-01-08  David Freese  <iam_w1hkj@w1hkj.com>
+2015-02-07  Robert Stiles  <kk5vd@yahoo.com>
+
+	617cad9: Code merge/PortAudio Script return error
+	f17c27d: Documentation Update
+	0d8f51e: Configure Script Engine
+
+2015-02-06  David Freese  <iam_w1hkj@w1hkj.com>
+
+	0486698: French po
+	9923f00: CW QSK Tune
+	d0d3471: 22alpha
+	e9a41f4: flrig xml client
+	80e1a08: Macros
+	423ac70: TimeOn button
+	3041a20: QSY clickable
+
+
+=Version 3.22.05=
 
 	2c9b493: TX Lock
 	7c95822: video ID
