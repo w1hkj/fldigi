@@ -72,7 +72,9 @@ double kushape[KNUM] = {
 #define BUFLEN 512
 double phaseacc = 0.0;
 double phaseincr = 0.0;
+double pttacc = 0.0;
 double outbuf[BUFLEN];
+double pttbuf[BUFLEN];
 
 //===========================================================================
 
@@ -83,6 +85,14 @@ inline double nco()
 	return cos(phaseacc);
 }
 
+inline double pttnco()
+{
+	pttacc += TWOPI * 1000 / active_modem->get_samplerate();
+	if (pttacc > TWOPI) pttacc -= TWOPI;
+	return sin(pttacc);
+}
+
+
 //=====================================================================
 
 
@@ -92,11 +102,21 @@ void keydown(double freq, SoundBase *scard)
 {
 	int i;
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
-	for (i = 0; i < KNUM; i++)
+	for (i = 0; i < KNUM; i++){
 		outbuf[i] = nco() * kdshape[i];
-	for (; i < BUFLEN; i++)
+		pttbuf[i] = pttnco();
+	}
+	for (; i < BUFLEN; i++) {
 		outbuf[i] = nco();
-	active_modem->ModulateXmtr(outbuf, BUFLEN);
+		pttbuf[i] = pttnco();
+	}
+	if ((active_modem == cw_modem) && progdefaults.QSK) {
+		active_modem->ModulateStereo( 
+			outbuf, pttbuf, 
+			BUFLEN, false);
+	} else {
+		active_modem->ModulateXmtr(outbuf, BUFLEN);
+	}
 }
 
 //=====================================================================
@@ -105,11 +125,21 @@ void keyup(double freq, SoundBase *scard)
 {
 	int i;
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
-	for (i = 0; i < KNUM; i++)
+	for (i = 0; i < KNUM; i++) {
 		outbuf[i] = nco() * kushape[i];
-	for (; i < BUFLEN; i++)
+		pttbuf[i] = pttnco();
+	}
+	for (; i < BUFLEN; i++) {
 		outbuf[i] = 0.0;
-	active_modem->ModulateXmtr(outbuf, BUFLEN);
+		pttbuf[i] = pttnco();
+	}
+	if ((active_modem == cw_modem) && progdefaults.QSK) {
+		active_modem->ModulateStereo( 
+			outbuf, pttbuf,
+			BUFLEN, false);
+	} else {
+		active_modem->ModulateXmtr(outbuf, BUFLEN);
+	}
 }
 
 //=====================================================================
@@ -118,9 +148,18 @@ void tune(double freq, SoundBase *scard)
 {
 	int i;
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
-	for (i = 0; i < BUFLEN; i++)
+
+	for (i = 0; i < BUFLEN; i++) {
 		outbuf[i] = nco();
-	active_modem->ModulateXmtr(outbuf, BUFLEN);
+		pttbuf[i] = pttnco();
+	}
+	if ((active_modem == cw_modem) && progdefaults.QSK) {
+		active_modem->ModulateStereo( 
+			outbuf, pttbuf,
+			BUFLEN, false);
+	} else {
+		active_modem->ModulateXmtr(outbuf, BUFLEN);
+	}
 }
 
-}  // namespace tune
+};  // namespace tune
