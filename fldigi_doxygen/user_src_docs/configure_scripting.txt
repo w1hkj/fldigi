@@ -1,0 +1,1406 @@
+/**
+\page configure_script_page Configure Scripting
+
+\tableofcontents
+<br>
+
+\section sConfigScript Configure Scripting
+
+\image html menu_script.png "Scripts"
+\image latex menu_script.png "Scripts" width=1.25in
+
+\par WARNING:
+If you do anything with this option, ensure FLDIGI is configured to your
+preferences. Then generate a restore script. In doing so, any alterations
+performed below can be returned to it's intended state.
+
+\par NOTICE:
+Because of different hardware and Operating Systems it's advisable to avoid
+commands that are hardware/OS dependent when creating standard
+configuration scripts.
+
+
+<b>Configure scripting uses:</b>
+<ul>
+<li>Configuring FLDigi to support a specific net operation.</li>
+<li>Restore user data when issues with FLdigi requires the deletion or
+reset of fldigi.prefs and fldigi_def.xml files.</li>
+</ul>
+
+\par Net Operations
+A script can be created for setting the rig frequency, waterfall offset, modem,
+rig mode, and custom macros. See \ref sConfigScriptCmds for other available
+options.
+
+\par Configuration Reset
+After reset, a configure script can be executed to restore <b>User Data</b>.
+The commands available do not support a full restore. Some option may need
+manual entry. See \ref sConfigScriptCmds for limits.
+
+
+\subsection ss_exec_script Executing Scripts
+
+From FLDigi's main window select menu item Scripts->Execute Script. This will
+bring up a file browser. Search and select the file in question, then
+press [Open]. At this point the script will execute.
+
+<br>
+\image html script_warning_dialogbox.png "Warning Report Dialog Box"
+\image latex script_warning_dialogbox.png "Warning Report Dialog Box" width=2.3in
+
+If problems are encountered the above dialog box is used to inform the user.
+To ascertain the extent of the issue(s), select menu item Help->Event Log. The
+log entires will contain the reason and line number for each reported error.
+
+Some issues reported are the result of preset data that is specific to a
+particular operating system. These can be safely ignored until configured
+to operate on your system.
+
+<br>
+\image html script_error_log_entry.png "Error Report Log Entry"
+\image latex script_error_log_entry.png "Error Report Log Entry" width=2.92in
+
+Some configuration options will required FLDigi restart. Ensure configuration
+is saved prior to restarting.
+
+<br>
+\image html script_restart_notice.png "Restart FLDIGI notice"
+\image latex script_restart_notice.png "Restart FLDIGI notice" width=2.92in
+
+\par NOTE:
+	Some script commands are specific to operating system and hardware
+	combination. If your system does not support these commands, they
+	will be ignored. The easiest way to determine what your system
+	supports is to generate a script and note it's content.
+
+\subsection ss_gen_script Generating Scripts
+
+To generate a script the operator selects FLdigi's menu items
+Scripts->Generate Script.  A file save dialog box is opened for the user to
+select a name and where the file is saved. Pressing [Save] initiates
+the process.
+
+To create custom scripts there are two ways of doing this. With a Text editor
+(see \ref sScriptSyntax) or changing the content/settings of FLDigi prior to
+the script generation.
+
+If the latter is used, your are advised to generate a script prior to
+changing any of FLDigi's settings. Just in case restoration is needed.
+
+Prior to editing any script file, take the time to read the relavent sections
+of this document.
+
+\par NOTE:
+	Generated script contents are specific to the operating system and
+	hardware available on the host machine. If a device is not supported on
+	your system, script code will not be generated for it.
+
+See \ref sScriptSyntax and \ref sExampleScript
+
+<hr>
+<br><br>
+\section sConfigScriptCmds Configure Script Commands
+
+\ref ss_fldigi "FLDIGI"<br>
+\par
+\ref sss_freq  "FREQ"  &nbsp; \| &nbsp;
+\ref sss_mode  "MODE"  &nbsp; \| &nbsp;
+\ref sss_wfhz  "WFHZ"  &nbsp; \| &nbsp;
+\ref sss_rxid  "RXID"  &nbsp; \| &nbsp;
+\ref sss_txid  "TXID"  &nbsp; \| &nbsp;
+\ref sss_spot  "SPOT"  &nbsp; \| &nbsp;
+\ref sss_rev   "REV"   &nbsp; \| &nbsp;
+\ref sss_afc   "AFC"   &nbsp; \| &nbsp;
+\ref sss_lock  "LOCK"  &nbsp; \| &nbsp;
+\ref sss_sql   "SQL"   &nbsp; \| &nbsp;
+\ref sss_kpsql "KPSQL" &nbsp; \| &nbsp;
+\ref sss_modem "MODEM"
+
+\ref ss_operator "OPERATOR"<br>
+\par
+\ref sss_callsign "CALLSIGN" &nbsp; \| &nbsp;
+\ref sss_name     "NAME"     &nbsp; \| &nbsp;
+\ref sss_qth      "QTH"      &nbsp; \| &nbsp;
+\ref sss_loc      "LOC"      &nbsp; \| &nbsp;
+\ref sss_ant      "ANT"
+
+\ref ss_audio_device "AUDIO DEVICE"<br>
+\par
+\ref sss_oss                "OSS"         &nbsp; \| &nbsp;
+\ref sss_dev_path           "OSS DEV"     &nbsp; \| &nbsp;
+\ref sss_portaudio          "PA"          &nbsp; \| &nbsp;
+\ref sss_portaudio_playback "PA PLAYBACK" &nbsp; \| &nbsp;
+\ref sss_portaudio_capture  "PA CAPTURE"  &nbsp; \| &nbsp;
+\ref sss_pua                "PUA"         &nbsp; \| &nbsp;
+\ref sss_pua_srvr           "PUA SERVER"
+
+\ref ss_audio_settings "AUDIO SETTINGS"<br>
+\par
+\ref sss_audio_capture_sample_rate  "CAPTURE"   &nbsp; \| &nbsp;
+\ref sss_audio_playback_sample_rate "PLAYBACK"  &nbsp; \| &nbsp;
+\ref sss_audio_converter            "CONVERTER" &nbsp; \| &nbsp;
+\ref sss_rx_ppm                     "RX PPM"    &nbsp; \| &nbsp;
+\ref sss_tx_ppm                     "TX PPM"    &nbsp; \| &nbsp;
+\ref sss_tx_offset                  "TX OFFSET"
+
+\ref ss_audio_rt_channel "AUDIO RT CHANNEL"<br>
+\par
+\ref sss_rt_mono     "MONO AUDIO"  &nbsp; \| &nbsp;
+\ref sss_rt_mono_lr  "MODEM LR"    &nbsp; \| &nbsp;
+\ref sss_rt_mono_rev "REV LR"      &nbsp; \| &nbsp;
+\ref sss_rt_mono_ptt "PTT RT CHAN" &nbsp; \| &nbsp;
+\ref sss_rt_mono_qsk "QSK RT CHAN" &nbsp; \| &nbsp;
+\ref sss_rt_mono_fsk "FSK RT CHAN"
+
+\ref ss_audio_wave_sr "AUDIO WAVE.SRATE"
+
+\ref ss_rig_hrdwr_ptt "RIG HRDWR PTT"
+\par
+\ref ss_hrdwr_ptt    "PTT RT CHAN"     &nbsp; \| &nbsp;
+\ref ss_hrdwr_serial "SERIAL PORT"     &nbsp; \| &nbsp;
+\ref ss_hrdwr_device "DEVICE"          &nbsp; \| &nbsp;
+\ref ss_hrdwr_rts    "RTS"             &nbsp; \| &nbsp;
+\ref ss_hrdwr_dtr    "DTR"             &nbsp; \| &nbsp;
+\ref ss_hrdwr_rtsv   "RTSV"            &nbsp; \| &nbsp;
+\ref ss_hrdwr_dtrv   "DTRV"            &nbsp; \| &nbsp;
+\ref ss_hrdwr_spttd  "START PTT DELAY" &nbsp; \| &nbsp;
+\ref ss_hrdwr_epttd  "END PTT DELAY"   &nbsp; \| &nbsp;
+\ref ss_hrdwr_uhr    "UHROUTER"        &nbsp; \| &nbsp;
+\ref ss_hrdwr_pp     "PARALLEL"        &nbsp; \| &nbsp;
+\ref ss_hrdwr_init   "INIT"
+
+\ref ss_rigcat "RIGCAT"
+\par
+\ref ss_rigcat_state   "STATE"          &nbsp; \| &nbsp;
+\ref ss_rigcat_df      "DESC FILE"      &nbsp; \| &nbsp;
+\ref ss_rigcat_dp      "DEV PATH"       &nbsp; \| &nbsp;
+\ref ss_rigcat_retry   "RETRIES"        &nbsp; \| &nbsp;
+\ref ss_rigcat_rint    "RETRY INT"      &nbsp; \| &nbsp;
+\ref ss_rigcat_wd      "WDELAY"         &nbsp; \| &nbsp;
+\ref ss_rigcat_id      "IDELAY"         &nbsp; \| &nbsp;
+\ref ss_rigcat_br      "BRATE"          &nbsp; \| &nbsp;
+\ref ss_rigcat_sb      "SBITS"          &nbsp; \| &nbsp;
+\ref ss_rigcat_echo    "ECHO"           &nbsp; \| &nbsp;
+\ref ss_rigcat_trts    "TOGGLE RTS PTT" &nbsp; \| &nbsp;
+\ref ss_rigcat_tdtr    "TOGGLE DTR PTT" &nbsp; \| &nbsp;
+\ref ss_rigcat_restore "RESTORE"        &nbsp; \| &nbsp;
+\ref ss_rigcat_pttc    "PTT COMMAND"    &nbsp; \| &nbsp;
+\ref ss_rigcat_rtsv    "RTS 12V"        &nbsp; \| &nbsp;
+\ref ss_rigcat_dtrv    "DTR 12V"        &nbsp; \| &nbsp;
+\ref ss_rigcat_hfc     "HRDWR FC"       &nbsp; \| &nbsp;
+\ref ss_rigcat_vsp     "VSP"            &nbsp; \| &nbsp;
+\ref ss_rigcat_init    "INIT"
+
+\ref ss_hamlib "HAMLIB"
+\par
+\ref ss_hamlib_s     "STATE"       &nbsp; \| &nbsp;
+\ref ss_hamlib_r     "RIG"         &nbsp; \| &nbsp;
+\ref ss_hamlib_dp    "DEV PATH"    &nbsp; \| &nbsp;
+\ref ss_hamlib_r     "RETRIES"     &nbsp; \| &nbsp;
+\ref ss_hamlib_ri    "RETRY INT"   &nbsp; \| &nbsp;
+\ref ss_hamlib_wd    "WDELAY"      &nbsp; \| &nbsp;
+\ref ss_hamlib_pwd   "PWDELAY"     &nbsp; \| &nbsp;
+\ref ss_hamlib_br    "BRATE"       &nbsp; \| &nbsp;
+\ref ss_hamlib_sbits "SBITS"       &nbsp; \| &nbsp;
+\ref ss_hamlib_sband "SBAND"       &nbsp; \| &nbsp;
+\ref ss_hamlib_pttc  "PTT COMMAND" &nbsp; \| &nbsp;
+\ref ss_hamlib_dtrv  "DTR 12V"     &nbsp; \| &nbsp;
+\ref ss_hamlib_rtsv  "RTS 12V"     &nbsp; \| &nbsp;
+\ref ss_hamlib_hfc   "HRDWR FC"    &nbsp; \| &nbsp;
+\ref ss_hamlib_sfc   "SFTWR FC"    &nbsp; \| &nbsp;
+\ref ss_hamlib_ac    "ADV CONF"    &nbsp; \| &nbsp;
+\ref ss_hamlib_init  "INIT"
+
+\ref ss_xmlrpc_rc "XMLRPC RC"
+\par
+\ref ss_xmlrpc_s     "STATE"   &nbsp; \| &nbsp;
+\ref ss_xmlrpc_bwd   "BWDELAY" &nbsp; \| &nbsp;
+\ref ss_xmlrpc_init  "INIT"
+
+\ref ss_io  "IO"
+\par
+\ref ss_io_lock         "LOCK"        &nbsp; \| &nbsp;
+\ref ss_io_port         "PORT"        &nbsp; \| &nbsp;
+\ref ss_io_csma         "CSMA"        &nbsp; \| &nbsp;
+\ref ss_io_kiss         "KISS"        &nbsp; \| &nbsp;
+\ref sss_io_kiss_ipa    "KISS.IPA"    &nbsp; \| &nbsp;
+\ref sss_io_kiss_iopa   "KISS.IOPN"   &nbsp; \| &nbsp;
+\ref sss_io_kiss_opn    "KISS.OPN"    &nbsp; \| &nbsp;
+\ref sss_io_kiss_dp     "KISS.DP"     &nbsp; \| &nbsp;
+\ref sss_io_kiss_busy   "KISS.BUSY"   &nbsp; \| &nbsp;
+\ref sss_io_kiss_cont   "KISS.CONT"   &nbsp; \| &nbsp;
+\ref sss_io_kiss_atten  "KISS.ATTEN"  &nbsp; \| &nbsp;
+\ref ss_io_arq          "ARQ"         &nbsp; \| &nbsp;
+\ref sss_io_arq_ipa     "ARQ.IPA"     &nbsp; \| &nbsp;
+\ref sss_io_arq_iopn    "ARQ.IOPN"    &nbsp; \| &nbsp;
+\ref ss_io_xmlrpc       "XMLRPC"      &nbsp; \| &nbsp;
+\ref sss_io_xmlrpc_ipa  "XMLRPC.IPA"  &nbsp; \| &nbsp;
+\ref sss_io_xmlrpc_iopn "XMLRPC.IOPN"
+
+\ref s_nbems  "MISC NBEMS"
+\par
+\ref ss_nbems_timeout    "TIMEOUT"    &nbsp; \| &nbsp;
+\ref ss_nbems_open_brwsr "OPEN BRWSR" &nbsp; \| &nbsp;
+\ref ss_nbems_state      "STATE"      &nbsp; \| &nbsp;
+\ref ss_nbems_open_msg   "OPEN MSG"   &nbsp; \| &nbsp;
+\ref ss_nbems_open_flmsg "OPEN FLMSG" &nbsp; \| &nbsp;
+\ref ss_nbems_flmsg_path "PATH"
+
+
+
+\ref ss_load_macro "MACRO"
+
+<hr>
+<br><br>
+\section sScriptSyntax Scripting Syntax
+
+The script syntax is formated into a multi tier system using two variations.
+The first is a structured syntax. The second uses a hierarchy
+system employing dot '.' notation.  The command text used closely mimics the
+GUI configuration panel tabs hierarchy and contents to easily discern the
+connection between commands and the effected settings.
+
+\subsection ssStucturedCommands Structured Commands
+
+Each command ends with a colon (':'). This separates the command section
+with the paramater section. A command may or may not contain a paramater. The
+structure statements are terminated using "END:" statement.
+
+<tt>
+\<TOP_TIER\>:<br>
+&nbsp;&nbsp;&nbsp;\<SUB_TIER\>:\<Parameter\><br>
+&nbsp;&nbsp;&nbsp;\<SUB_TIER\>:\<No Parameter\><br>
+END:<br>
+</tt>
+
+\subsection ssHierarchyCommands Dot Notation Commands
+
+Each command ends with a colon (':'). This separates the command section
+with the paramater section. A command may or may not contain a paramater. The
+inclusion of a period ('.') within the command section denotes the separation
+of upper and lower tier segments.
+
+<tt>
+\<TOP_TIER\>.\<SUB_TIER\>,...:\<Parameter\><br>
+\<TOP_TIER\>.\<SUB_TIER\>,...:\<No Parameter\><br>
+</tt>
+
+\subsection ssParameters Parameters
+
+Parameter content varies on the command used. The various parameters types are:
+<br>
+<ul>
+<li><tt>Integers</tt> (whole numbers, ie 0, 10, 100, 234).</li>
+<li><tt>Real Numbers</tt> (floating point numbers, ie 1.2, 10.3).<br></li>
+<li><tt>Characters Strings</tt> (one or more words, "Madison, AL", "Toney, AL").<br></li>
+</ul>
+
+\subsection ssScriptFiles Script Files
+
+The script file name is expected to contain a .txt extension. The editing of
+these files must utilize a true text editor&sup1;. Preferably one that understands
+the various line ending sequences used between the different Operating
+Systems.
+
+<ul>
+<li>The first line in the script file must contain \"<b>FLDIGI_CONFIG</b>\" tag.
+This is used to verify the "text" file is a configuration script for
+FLDIGI. If it's not present the file will not be processed.</li>
+
+<li>One command : parameter pair per line.</li>
+
+<li>Command indentations with spaces or tabs are not required (cosmetic).</li>
+
+<li>Parameters are separated by a comma ','.</li>
+
+<li>Parameters regardless of type can be encapsulated in quotes \(\" \"\). However,
+	if a parameter contains spaces or commas it must be encapsulated.</li>
+
+<li>One or more commands per file.</li>
+
+<li>One or more empty lines per file.</li>.
+
+<li>Any text entry after the '#' pound sign is considered a 'comment' and will be
+	ignored.</li>
+</ul>
+
+\par Note: 1
+Windows: Notepad++, Geany <br>
+Macintosh: TextWrangler <br>
+Linux: Geany, Gedit, Pluma <br>
+
+http://en.wikipedia.org/wiki/Category:Windows_text_editors<br>
+http://en.wikipedia.org/wiki/Category:Linux_text_editors<br>
+
+<br>
+\section ss_fldigi FLDigi Commands
+
+See \ref operating_controls_page
+
+\subsection sss_freq  Frequency Control
+
+Sets the RF Carrier frequency (effects rig control).
+
+FREQ:\<Real Number\>
+
+\<Real Number\> values are entered directly or as exponential notation. The
+following frequencies represent the same frequency value.
+
+Frequency Value = Parameter Syntax
+
+<ul>
+<li>14.070 MHz = 14.070e+06</li>
+<li>14070.00 KHz = 14070.0e+03 - Using this exponent magnitude represents the
+    scale of the frequency display</li>
+<li>14070000 Hz = 14070000 - Directly in Hz</li>
+</ul>
+
+\subsection sss_mode  Mode
+
+Sets the rig modulation mode (ie. USB, LSB, FM, etc). The actual values are
+dependent on the rig and the interface used.
+
+MODE:\<Character String\>
+
+\subsection sss_wfhz  Waterfall Offset (Hz)
+
+Sets the audio tone offset in the waterfall.
+
+WFHZ:\<Integer\>
+
+Valid values range from 0 - 4000 +/- 50% of the bandwidth needed for the
+selected modem.
+
+\subsection sss_rxid  RxID
+
+Enable or disable the use of RSID reception.
+
+RXID:\<ENABLE | DISABLE\>
+
+\subsection sss_txid  TxID
+
+Enable or disable the use of RSID transmission.
+
+TXID:\<ENABLE | DISABLE\>
+
+\subsection sss_spot  Spot
+
+Enable or disable the use of the PSKreporter mechanism.
+
+SPOT:\<ENABLE | DISABLE\>
+
+\subsection sss_rev   Rev
+
+Enable or disable the use of upper and lower tone reversal. Allowing modems
+like MFSK to receive/transmit LSB signal while the rig is in USB. RSID will
+not decode when this option is selected and not all modems are supported.
+
+REV:\<ENABLE | DISABLE\>
+
+\subsection sss_afc   AFC
+
+Enable or disable the use of Automatic Frequency Control.
+
+AFC:\<ENABLE | DISABLE\>
+
+\subsection sss_lock  Lk
+
+Enable or disable the use of frequency lock. The behavior of this feature
+can be altered depending on the settings of the \ref id_configuration_page
+panel.
+
+LOCK:\<ENABLE | DISABLE\>
+
+\subsection sss_sql   SQL
+
+Enable or disable the use of the squelch.
+
+SQL:\<ENABLE | DISABLE\>
+
+\subsection sss_kpsql KPSQL
+
+Enable or disable the use of the KISS power squelch. This option is only
+available when KISS IO interface option is selected.
+
+See \ref config_io_page
+
+KPSQL:\<ENABLE | DISABLE\>
+
+\subsection sss_modem MODEM Control
+
+Sets the desired modem to receive and transmit from. Some modems will not be
+available if KISS IO interface option is selected. See \ref mode_table_page
+under 'mode' column for proper modem parameter syntax.
+
+MODEM:\<Character String\>
+
+\subsection sss_fldigi_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>FLDIGI:<br>FREQ:14.070e+06 <br>END:</tt>  | <tt>FLDIGI.FREQ:3853.0e+03</tt> |
+| <tt>FLDIGI:<br>MODE:DIG <br>END:</tt>         | <tt>FLDIGI.MODE:DIG</tt>        |
+| <tt>FLDIGI:<br>WFHZ:1500 <br>END:</tt>        | <tt>FLDIGI.WFHZ:700</tt>        |
+| <tt>FLDIGI:<br>RXID:ENABLE <br>END:</tt>      | <tt>FLDIGI.RXID:DISABLE</tt>    |
+| <tt>FLDIGI:<br>TXID:DISABLE <br>END:</tt>     | <tt>FLDIGI.TXID:DISABLE</tt>    |
+| <tt>FLDIGI:<br>SPOT:DISABLE <br>END:</tt>     | <tt>FLDIGI.SPOT:ENABLE</tt>     |
+| <tt>FLDIGI:<br>REV:DISABLE <br>END:</tt>      | <tt>FLDIGI.REV:ENABLE</tt>      |
+| <tt>FLDIGI:<br>AFC:DISABLE <br>END:</tt>      | <tt>FLDIGI.AFC:DISABLE</tt>     |
+| <tt>FLDIGI:<br>LOCK:DISABLE <br>END:</tt>     | <tt>FLDIGI.LOCK:ENABLE</tt>     |
+| <tt>FLDIGI:<br>SQL:DISABLE <br>END:</tt>      | <tt>FLDIGI.SQL:ENABLE</tt>      |
+| <tt>FLDIGI:<br>KPSQL:DISABLE <br>END:</tt>    | <tt>FLDIGI.KPSQL:DISABLE</tt>   |
+| <tt>FLDIGI:<br>MODEM:BPSK31 <br>END:</tt>     | <tt>FLDIGI.MODEM:BPSK63</tt>    |
+
+<br>
+\section ss_operator Operator Commands
+
+See \ref operator_configuration_page
+
+\subsection sss_callsign Callsign:
+
+OPERATOR.CALLSIGN:\<Region Specific\>
+
+\subsection sss_name Name:
+
+OPERATOR.NAME:\<Your Name\>
+
+\subsection sss_qth QTH:
+
+OPERATOR.QTH:\<City, State, Country, etc\>
+
+\subsection sss_loc Locator:
+
+Maidenhead Grid Locator. A series of alpha
+numerical characters representing a position on earth.
+
+OPERATOR.LOC:\<AAnnaann\>
+
+A: Uppercase characters <br>
+n: Numerical data (0-9) <br>
+a: Lowercase characters <br>
+
+Additional Information: http://www.arrl.org/grid-squares, or http://en.wikipedia.org/wiki/Maidenhead_Locator_System
+
+\subsection sss_ant Operators Antenna Description
+
+OPERATOR.ANT:\<Antenna type, height, etc\>
+
+\subsection sss_op_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>OPERATOR:<br>CALLSIGN:KK5VD<br>END:</tt>                 | <tt>OPERATOR.CALLSIGN:w1hkj</tt>              |
+| <tt>OPERATOR:<br>NAME:Robert<br>END:</tt>                    | <tt>OPERATOR.NAME:Dave</tt>                   |
+| <tt>OPERATOR:<br>QTH:"Madison, AL" <br>END:</tt>             | <tt>OPERATOR.QTH:"Toney, AL"</tt>             |
+| <tt>OPERATOR:<br>LOC:EM64pr <br>END:</tt>                    | <tt>OPERATOR.LOC:EM64</tt>                    |
+| <tt>OPERATOR:<br>ANT:"Inverted 'V' @22FT AGL" <br>END:</tt>  | <tt>OPERATOR.ANT:"15 EL LP @ 200 FT AGL"</tt> |
+
+<br>
+\section ss_audio_device Audio Device Commands
+
+See \ref sound_card_configuration_page
+
+\subsection sss_oss OSS
+
+Enable or disable OSS. This option is not available on all operating systems.
+
+OSS:\<ENABLE \| DISABLE\>
+
+\subsection sss_dev_path Device:
+
+OSS DEV:\<Character String\>
+
+Parameter:/dev/path
+
+\subsection sss_portaudio PortAudio
+
+Enable or disable Port Audio. This option may or may not be available to all
+operating systems.
+
+PA:\<ENABLE \| DISABLE\>
+
+\subsection sss_portaudio_playback Playback:
+
+The device name is specific to the hardware installed.
+
+PA PLAYBACK:\<Integer\>,\<Character String\>
+
+Parameter:Menu Index, Device Name
+
+\par Note:
+Parameter Menu Index is specific to the fldigi/hardware combination. If the
+device name is available on other systems it will be set to the first
+occurrence of that device name.
+
+\subsection sss_portaudio_capture  Capture:
+
+The device name is specific to the hardware installed.
+
+PA CAPTURE:\<Integer\>,\<Character String\>
+
+\par Note:
+Parameter Menu Index is specific to the fldigi/hardware combination. If the
+device name is available on other systems it will be set to the first
+occurrence of that device name.
+
+Parameter:Menu Index, Device Name
+
+\subsection sss_pua PulseAudio
+
+Enable or disable Pulse Audio. This option is not available on all operating systems.
+
+PUA:\<ENABLE \| DISABLE\>
+
+\subsection sss_pua_srvr Server string:
+
+PUA SERVER:\<Character String\>
+
+Parameter: See Note: &dagger; below.
+
+\subsection sss_ad_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>AUDIO DEVICE:<br> OSS:ENABLE<br>END:</tt>                      | <tt>AUDIO DEVICE.OSS:ENABLE</tt>                   |
+| <tt>AUDIO DEVICE:<br> OSS DEV:/dev/path<br>END:</tt>               | <tt>AUDIO DEVICE.OSS DEV:/dev/path</tt>                 |
+| <tt>AUDIO DEVICE:<br> PA:ENABLE<br>END:</tt>                       | <tt>AUDIO DEVICE.PA:ENABLE</tt>                    |
+| <tt>AUDIO DEVICE:<br> PA CAPTURE:2,"USB Audio CODEC"<br>END:</tt>  | <tt>AUDIO DEVICE.PA CAPTURE:2,"USB Audio CODEC"</tt> |
+| <tt>AUDIO DEVICE:<br> PA PLAYBACK:3,"USB Audio CODEC"<br>END:</tt> | <tt>AUDIO DEVICE.PA CAPTURE:3,"USB Audio CODEC"</tt> |
+| <tt>AUDIO DEVICE:<br> PUA:ENABLE<br>END:</tt>                      | <tt>AUDIO DEVICE.PUA:ENABLE</tt>                   |
+| <tt>AUDIO DEVICE:<br> PUA SERVER:&dagger;<br>END:</tt>             | <tt>AUDIO DEVICE.PUA SERVER:&dagger;</tt>          |
+
+\par Note: &dagger; Pulse Audio Server Strings
+Pulse audio server string information can be found here:
+<br>
+http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/ServerStrings/
+
+<br>
+\section ss_audio_settings Audio Settings
+
+See \ref sound_card_configuration_page
+
+\subsection sss_audio_capture_sample_rate Capture Audio Sample Rate
+
+Set the input signal sample rate. The sample rate availability is dependent
+on the ADC hardware.
+
+Auto, Native, 8000,...
+
+CAPTURE:\<Character String\>
+
+\subsection sss_audio_playback_sample_rate Playback Audio Sample Rate
+
+Set the output signal sample rate. The sample rate availability is dependent
+on the DAC hardware.
+
+Auto, Native, 8000,...
+
+PLAYBACK:\<Character String\>
+
+\subsection sss_audio_converter Converter
+
+CONVERTER:\<Character String\> Best, Medium, Fastest, Linear
+
+\subsection sss_rx_ppm Receive Audio PPM Correction
+
+RX PPM:\<Integer\> negative, 0, positive values
+
+\subsection sss_tx_ppm Transmit Audio PPM Correction
+
+TX PPM:\<Integer\> negative, 0, positive values
+
+\subsection sss_tx_offset Transmit Audio Hertz Offset Correction
+
+TX OFFSET:\<Integer\> negative, 0, positive values (Hertz)
+
+\subsection sss_as_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>AUDIO SETTINGS:<br> CAPTURE:48000<br>END:</tt>    | <tt>AUDIO SETTINGS.CAPTURE:Auto</tt> |
+| <tt>AUDIO SETTINGS:<br> PLAYBACK:8000<br>END:</tt>    | <tt>AUDIO SETTINGS.PLAYBACK:Native</tt> |
+| <tt>AUDIO SETTINGS:<br> CONVERTER:"Best"<br>END:</tt> | <tt>AUDIO SETTINGS.CONVERTER:"Fastest"</tt> |
+| <tt>AUDIO SETTINGS:<br> RX PPM:17<br>END:</tt>        | <tt>AUDIO SETTINGS.RX PPM:17</tt> |
+| <tt>AUDIO SETTINGS:<br> TX PPM:17<br>END:</tt>        | <tt>AUDIO SETTINGS.TX PPM:17</tt> |
+| <tt>AUDIO SETTINGS:<br> TX OFFSET:17<br>END:</tt>     | <tt>AUDIO SETTINGS.TX OFFSET:17</tt> |
+
+<br>
+\section ss_audio_rt_channel Audio Right Channel Commands
+
+See \ref right_chanel_audio
+
+\subsection sss_rt_mono Mono audio output
+
+Enable or disable monophonic signal output.
+
+MONO AUDIO:\<ENABLE | DISABLE\>
+
+\subsection sss_rt_mono_lr Modem signal on left and right channels
+
+Enable or disable audio signal to both left and right channels
+
+MODEM LR:\<ENABLE | DISABLE\>
+
+\subsection sss_rt_mono_rev Reverse Left/Right channels
+
+Enable or disable audio signal reversal on Left/Right channels.
+
+REV LR:\<ENABLE | DISABLE\>
+
+\subsection sss_rt_mono_ptt PTT tone on right audio channel
+
+Enable or disable PTT use by suppling a signal on the right channel.
+
+PTT RT CHAN:\<ENABLE | DISABLE\>
+
+\subsection sss_rt_mono_qsk CW QSK signal on right channel
+
+QSK RT CHAN:\<ENABLE | DISABLE\>
+
+\subsection sss_rt_mono_fsk Pseudo-FSK on right audio channel
+
+FSK RT CHAN:\<ENABLE | DISABLE\>
+
+\subsection sss_rtch_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>AUDIO RT CHANNEL:<br> MONO AUDIO:DISABLE<br>END:</tt>  | <tt>AUDIO RT CHANNEL.MONO AUDIO:DISABLE</tt>  |
+| <tt>AUDIO RT CHANNEL:<br> MODEM LR:DISABLE<br>END:</tt>    | <tt>AUDIO RT CHANNEL.MODEM LR:DISABLE</tt>    |
+| <tt>AUDIO RT CHANNEL:<br> CONVERTER:"Best"<br>END:</tt>    | <tt>AUDIO RT CHANNEL.CONVERTER:"Fastest"</tt> |
+| <tt>AUDIO RT CHANNEL:<br> REV LR:DISABLE<br>END:</tt>      | <tt>AUDIO RT CHANNEL.REV LR:DISABLE</tt>      |
+| <tt>AUDIO RT CHANNEL:<br> PTT RT CHAN:DISABLE<br>END:</tt> | <tt>AUDIO RT CHANNEL.PTT RT CHAN:DISABLE</tt> |
+| <tt>AUDIO RT CHANNEL:<br> QSK RT CHAN:DISABLE<br>END:</tt> | <tt>AUDIO RT CHANNEL.QSK RT CHAN:DISABLE</tt> |
+| <tt>AUDIO RT CHANNEL:<br> FSK RT CHAN:DISABLE<br>END:</tt> | <tt>AUDIO RT CHANNEL.FSK RT CHAN:DISABLE</tt> |
+
+<br>
+\section ss_audio_wave_sr Wav write sample rate
+
+See \ref wav_file_sample_rate
+
+Sets the record wave file sample rate.
+
+AUDIO WAVE.SRATE:\<Integer\>
+
+Available Parameters: 8000, 11025, 16000, 22050, 24000, 44100, 48000
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>AUDIO WAVE:<br> SRATE:16000<br>END:</tt>  | <tt>AUDIO WAVE.SRATE:16000</tt>  |
+
+<br>
+\section ss_rig_hrdwr_ptt Hardware PTT Option Commands
+
+See \ref rig_config
+
+\subsection ss_hrdwr_ptt PTT tone on right audio channel
+
+PTT RT CHAN:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_serial Use separate serial port PTT
+
+SERIAL PORT:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_device Device:
+
+DEVICE:\<Character String\>
+
+Parameter: A device path (/dev/ptt)
+
+\subsection ss_hrdwr_rts Use RTS
+
+RTS:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_dtr Use DTR
+
+DTR:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_rtsv RTS = +V
+
+RTSV:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_dtrv DTR = +V
+
+DTRV:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_spttd PTT delays valid for all CAT/PTT types
+
+START PTT DELAY:\<Integer\>
+
+\subsection ss_hrdwr_epttd PTT delays valid for all CAT/PTT types
+
+END PTT DELAY:\<Integer\>
+
+\subsection ss_hrdwr_uhr  Use uHRouter PTT
+
+UHROUTER:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_pp Use parallel port PTT
+
+PARALLEL:\<ENABLE | DISABLE\>
+
+\subsection ss_hrdwr_init Initialize Changes
+
+INIT:
+
+\subsection ss_hrdwr_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>RIG HRDWR PTT:<br> PTT RT CHAN:DISABLE<br>END:</tt> | <tt>RIG HRDWR PTT.PTT RT CHAN:DISABLE</tt> |
+| <tt>RIG HRDWR PTT:<br> SERIAL PORT:DISABLE<br>END:</tt> | <tt>RIG HRDWR PTT.SERIAL PORT:DISABLE</tt> |
+| <tt>RIG HRDWR PTT:<br> DEVICE:/dev/ptt<br>END:</tt>     | <tt>RIG HRDWR PTT.DEVICE:COM1</tt>         |
+| <tt>RIG HRDWR PTT:<br> RTS:DISABLE<br>END:</tt>         | <tt>RIG HRDWR PTT.RTS:DISABLE</tt>         |
+| <tt>RIG HRDWR PTT:<br> RTSV:DISABLE<br>END:</tt>        | <tt>RIG HRDWR PTT.RTSV:DISABLE</tt>        |
+| <tt>RIG HRDWR PTT:<br> DTR:DISABLE<br>END:</tt>         | <tt>RIG HRDWR PTT.DTR:DISABLE</tt>         |
+| <tt>RIG HRDWR PTT:<br> DTRV:DISABLE<br>END:</tt>        | <tt>RIG HRDWR PTT.DTRV:DISABLE</tt>        |
+| <tt>RIG HRDWR PTT:<br> PARALLEL:DISABLE<br>END:</tt>    | <tt>RIG HRDWR PTT.PARALLEL:DISABLE</tt>    |
+| <tt>RIG HRDWR PTT:<br> UHROUTER:DISABLE<br>END:</tt>    | <tt>RIG HRDWR PTT.UHROUTER:DISABLE</tt>    |
+| <tt>RIG HRDWR PTT:<br> START PTT DELAY:1<br>END:</tt>   | <tt>RIG HRDWR PTT.START PTT DELAY:1</tt>   |
+| <tt>RIG HRDWR PTT:<br> END PTT DELAY:1<br>END:</tt>     | <tt>RIG HRDWR PTT.END PTT DELAY:1</tt>     |
+| <tt>RIG HRDWR PTT:<br> INIT:<br>END:</tt>               | <tt>RIG HRDWR PTT.INIT:</tt>               |
+
+<br>
+\section ss_rigcat RIGCAT Commands
+
+See \ref rig_cat_control
+
+\subsection ss_rigcat_state Use RigCAT
+
+STATE:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_df Rig description file:
+
+DESC FILE:\<Character String\>
+
+Parameter:/directory/path/file.xml
+
+\subsection ss_rigcat_dp Device:
+
+DEV PATH:\<Character String\>
+
+Parameter:/dev/path
+
+\subsection ss_rigcat_retry Retries
+
+RETRIES:\<integer\>
+
+\subsection ss_rigcat_rint Retry interval (ms)
+
+RETRY INT:\<integer\>
+
+\subsection ss_rigcat_wd Write delay (ms)
+
+WDELAY:\<integer\>
+
+\subsection ss_rigcat_id Init delay (ms)
+
+IDELAY:\<integer\>
+
+\subsection ss_rigcat_br Baud rate:
+
+BRATE:\<integer\>
+
+\subsection ss_rigcat_sb Stopbits
+
+SBITS:\<integer\>
+
+\subsection ss_rigcat_echo Commands are echoed
+
+ECHO:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_trts Toggle RTS for PTT
+
+TOGGLE RTS PTT:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_tdtr Toggle DTR for PTT
+
+TOGGLE DTR PTT:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_restore Restore Settings on Close
+
+RESTORE:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_pttc CAT command for PTT
+
+PTT COMMAND:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_rtsv RTS +12 v
+
+RTS 12V:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_dtrv DTR +12 v
+
+DTR 12V:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_hfc RTS/CTS flow control
+
+HRDWR FC:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_vsp VSP Enable
+
+VSP:\<ENABLE | DISABLE\>
+
+\subsection ss_rigcat_init Initialize Changes
+
+INIT:
+
+\subsection ss_rigcat_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>RIGCAT:<br> STATE:ENABLE<br>END:</tt>           | <tt>RIG HRDWR PTT.STATE:ENABLE</tt> |
+| <tt>RIGCAT:<br> DEV PATH:/dev/tty.usbserial-RT071600<br>END:</tt>     | <tt>RIGCAT.DEV PATH:COM1</tt> |
+| <tt>RIGCAT:<br> DESC FILE:/Users/.fldigi/rigs/FT-817.xml<br>END:</tt> | <tt>RIGCAT.DESC FILE:/Users/.fldigi/rigs/FT-817.xml</tt> |
+| <tt>RIGCAT:<br> RETRIES:2<br>END:</tt>              | <tt>RIGCAT.RETRIES:2</tt> |
+| <tt>RIGCAT:<br> RETRY INT:500<br>END:</tt>          | <tt>RIGCAT.RETRY INT:500</tt> |
+| <tt>RIGCAT:<br> WDELAY:5<br>END:</tt>               | <tt>RIGCAT.WDELAY:5</tt> |
+| <tt>RIGCAT:<br> IDELAY:0<br>END:</tt>               | <tt>RIGCAT.IDELAY:0</tt> |
+| <tt>RIGCAT:<br> BRATE:4800<br>END:</tt>             | <tt>RIGCAT.BRATE:4800</tt> |
+| <tt>RIGCAT:<br> SBITS:1<br>END:</tt>                | <tt>RIGCAT.SBITS:1</tt> |
+| <tt>RIGCAT:<br> ECHO:DISABLE<br>END:</tt>           | <tt>RIGCAT.ECHO:DISABLE</tt> |
+| <tt>RIGCAT:<br> TOGGLE RTS PTT:DISABLE<br>END:</tt> | <tt>RIGCAT.TOGGLE RTS PTT:DISABLE</tt> |
+| <tt>RIGCAT:<br> RESTORE:DISABLE<br>END:</tt>        | <tt>RIGCAT.RESTORE:DISABLE</tt> |
+| <tt>RIGCAT:<br> PTT COMMAND:DISABLE<br>END:</tt>    | <tt>RIGCAT.PTT COMMAND:DISABLE</tt> |
+| <tt>RIGCAT:<br> TOGGLE DTR PTT<br>END:</tt>         | <tt>RIGCAT.TOGGLE DTR PTT</tt> |
+| <tt>RIGCAT:<br> TOGGLE RTS PTT:DISABLE<br>END:</tt> | <tt>RIGCAT.TOGGLE RTS PTT:DISABLE</tt> |
+| <tt>RIGCAT:<br> RTS 12V:DISABLE<br>END:</tt>        | <tt>RIGCAT.RTS 12V:DISABLE</tt>  |
+| <tt>RIGCAT:<br> DTR 12V:DISABLE<br>END:</tt>        | <tt>RIGCAT.DTR 12V:DISABLE</tt>  |
+| <tt>RIGCAT:<br> HRDWR FC:DISABLE<br>END:</tt>       | <tt>RIGCAT.HRDWR FC:DISABLE</tt> |
+| <tt>RIGCAT:<br> VSP:DISABLE<br>END:</tt>            | <tt>RIGCAT.VSP:DISABLE</tt> |
+| <tt>RIGCAT:<br> INIT:<br>END:</tt>                  | <tt>RIGCAT.INIT:</tt> |
+
+<br>
+\section ss_hamlib HAMLIB Commands
+
+See \ref hamlib_cat_control
+
+\subsection ss_hamlib_s  Use Hamlib
+
+Enable to disable Hamlib Rig Control interface.
+
+STATE:\<ENABLE | DISABLE\>
+
+\subsection ss_hamlib_r  Rig:
+
+Set the rig to control. The list of Rigs are derived from internal list
+provided by HAMLIB.
+
+RIG:\<Character String\>
+
+Parameter: HAMLIB Device Names
+
+\subsection ss_hamlib_dp Device:
+
+The device path for controlling the Rig.
+
+DEV PATH:\<Character String\>
+
+Parameter:Device path
+
+\subsection ss_hamlib_retries   Retries
+
+The number of tries at sending commands to the Rig
+
+RETRIES:\<Interger\>
+
+\subsection ss_hamlib_ri  Retry Interval (ms)
+
+RETRY INT:\<Interger\>
+
+\subsection ss_hamlib_wd  Write delay (ms)
+
+WDELAY:\<Interger\>
+
+\subsection ss_hamlib_pwd Post write delay (ms)
+
+PWDELAY:\<Interger\>
+
+\subsection ss_hamlib_br  Baud rate:
+
+BRATE:\<Interger\>
+
+\subsection ss_hamlib_sbits Stopbits
+
+SBITS:\<Interger\>
+
+\subsection ss_hamlib_sband Sideband:
+
+SBAND:\<Character String\>
+
+\subsection ss_hamlib_pttc PTT via Hamlib command
+
+PTT COMMAND:\<ENABLE | DISABLE\>
+
+\subsection ss_hamlib_dtrv DTR +12
+
+DTR 12V:\<ENABLE | DISABLE\>
+
+\subsection ss_hamlib_rtsv RTS +12
+
+RTS 12V:\<ENABLE | DISABLE\>
+
+\subsection ss_hamlib_hfc RTS/CTS flow control
+
+HRDWR FC:\<ENABLE | DISABLE\>
+
+\subsection ss_hamlib_sfc XON/XOFF flow control
+
+SFTWR FC:\<ENABLE | DISABLE\>
+
+\subsection ss_hamlib_ac  Advanced configuration:
+
+ADV CONF:\<Character String\>
+
+\subsection ss_hamlib_init Initialize Changes
+
+INIT:
+
+Parameters: None
+
+\subsection ss_hamlib_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>HAMLIB:<br> STATE:DISABLE<br>END:</tt>       | <tt>HAMLIB.STATE:DISABLE</tt> |
+| <tt>HAMLIB:<br> RIG:"Yaesu FT-817  (Beta)"<br>END:</tt>           | <tt>HAMLIB.RIG:"Yaesu FT-817  (Beta)"</tt>
+| <tt>HAMLIB:<br> DEV PATH:/dev/tty.usbserial-RT071600<br>END:</tt> | <tt>HAMLIB.DEV PATH:COM1</tt>
+| <tt>HAMLIB:<br> RETRIES:2<br>END:</tt>           | <tt>HAMLIB.RETRIES:2</tt> |
+| <tt>HAMLIB:<br> RETRY INT:10<br>END:</tt>        | <tt>HAMLIB.RETRY INT:10</tt> |
+| <tt>HAMLIB:<br> WDELAY:0<br>END:</tt>            | <tt>HAMLIB.WDELAY:0 </tt> |
+| <tt>HAMLIB:<br> PWDELAY:5<br>END:</tt>           | <tt>HAMLIB.PWDELAY:5</tt> |
+| <tt>HAMLIB:<br> BRATE:4800<br>END:</tt>          | <tt>HAMLIB.BRATE:4800</tt> |
+| <tt>HAMLIB:<br> SBITS:1<br>END:</tt>             | <tt>HAMLIB.SBITS:1</tt> |
+| <tt>HAMLIB:<br> SBAND:"Rig mode"<br>END:</tt>    | <tt>HAMLIB.SBAND:"Rig mode"</tt> |
+| <tt>HAMLIB:<br> PTT COMMAND:DISABLE<br>END:</tt> | <tt>HAMLIB.PTT COMMAND:DISABLE</tt> |
+| <tt>HAMLIB:<br> DTR 12V:DISABLE<br>END:</tt>     | <tt>HAMLIB.DTR 12V:DISABLE</tt> |
+| <tt>HAMLIB:<br> RTS 12V:DISABLE<br>END:</tt>     | <tt>HAMLIB.RTS 12V:DISABLE</tt> |
+| <tt>HAMLIB:<br> HRDWR FC:DISABLE<br>END:</tt>    | <tt>HAMLIB.HRDWR FC:DISABLE</tt> |
+| <tt>HAMLIB:<br> SFTWR FC:DISABLE<br>END:</tt>    | <tt>HAMLIB.SFTWR FC:DISABLE</tt> |
+| <tt>HAMLIB:<br> ADV CONF:<br>END:</tt>           | <tt>HAMLIB.ADV CONF:</tt> |
+| <tt>HAMLIB:<br> INIT:<br>END:</tt>               | <tt>HAMLIB.INIT:</tt> |
+
+
+<br>
+\section ss_xmlrpc_rc XMLRPC Rig Control Commands
+
+See \ref xml_rpc_cat
+
+\subsection  ss_xmlrpc_s Use XML-RPC program
+
+STATE:\<ENABLE | DISABLE\>
+
+\subsection ss_xmlrpc_bwd  Mode/BW delay
+
+BWDELAY:\<Real Number\>
+
+\subsection ss_xmlrpc_init  Initialize Changes
+
+INIT:
+
+Parameters: None
+
+\subsection ss_xmlrpc_example  Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>XMLRPC RC:<br> STATE:DISABLE<br>END:</tt> | <tt>XMLRPC RC.STATE:DISABLE</tt> |
+| <tt>XMLRPC RC:<br> BWDELAY:0.5<br>END:</tt>   | <tt>XMLRPC RC.BWDELAY:0.5</tt> |
+| <tt>XMLRPC RC:<br> INIT:<br>END:</tt>         | <tt>XMLRPC RC.INIT:</tt> |
+
+
+<br>
+\section ss_io IO
+
+See \ref config_io_page
+
+\subsection ss_io_lock Lock
+
+Used to lock the panel from user GUI access. Has no effect on script commands.
+
+LOCK:\<ENABLE | DISABLE\>
+
+\subsection ss_io_port    Enable ARQ or KISS IO Access
+
+Select the active IO port for data operation between programs.
+
+PORT:\<Character String\>
+
+Parameters:
+
+ARQ: Used to control the FL Suite of auxiliary programs.
+
+KISS: KISS protocol over UDP/IP interface
+
+\subsection ss_io_ax25d       AX25 Decode
+
+Enable or disable Ax25 decoding. Only available when the KISS IO port is
+active.
+
+AX25D:\<ENABLE | DISABLE\>
+
+\subsection ss_io_csma        Enable CSMA
+
+Enable or disable Carrier Sense Multiple Access. Only available when the
+KISS IO port is active.
+
+CSMA:\<ENABLE | DISABLE\>
+
+\subsection ss_io_kiss        KISS Sub Command
+
+KISS related sub commands.
+
+\subsubsection sss_io_kiss_ipa   IP Address
+
+IP address for program to program communication
+
+IPA:\<Character String\>
+
+\subsubsection sss_io_kiss_iopa  I/O
+
+IP address I/O port number for program to program communication
+
+IOPN:\<Integer\>
+
+\subsubsection sss_io_kiss_opn   O
+
+IP address Output port number for program to program communication. Required
+when FLDigi and auxiliary programs reside on the same host.
+
+OPN:\<Integer\>
+
+\subsubsection sss_io_kiss_dp    Dual Port
+
+Enable or disable the use of dual port io.
+
+DP:\<ENABLE | DISABLE\>
+
+\subsubsection sss_io_kiss_busy  Enable Busy Channel
+
+Enable or disable busy channel. Allows for the cooperative use of the
+frequency.
+
+BUSY:\<ENABLE | DISABLE\>
+
+\subsubsection sss_io_kiss_cont   Continue After (sec)
+
+The number of seconds the frequency must be clean clear before transmissions
+resume. Enabled by busy channel activation.
+
+CONT:\<Integer\>
+
+\subsubsection sss_io_kiss_atten  KPSQL Attenuation
+
+Controls the gain sensitivity of the KISS Power Squelch (KPSQL). The
+attenuation is measure in fractions. If the value is '4' then the gain is
+reduced to 1/4th. Maximum gain (sensitivity) requires a value of 1.
+
+ATTEN:\<Integer\>
+
+\subsection ss_io_arq             ARQ Sub Command
+
+ARQ sub commands
+
+\subsubsection sss_io_arq_ipa     IP Address
+
+IP address for program to program communication
+
+IPA:\<Character String\>
+
+\subsubsection sss_io_arq_iopn    Port
+
+IP address I/O port number for program to program communication
+
+IOPN:\<Integer\>
+
+\subsection ss_io_xmlrpc          XMLRPC Sub Command
+
+\subsubsection sss_io_xmlrpc_ipa  IP Address
+
+IP address for program to program communication
+
+IPA:\<Character String\>
+
+\subsubsection sss_io_xmlrpc_iopn Port
+
+IP address I/O port number for program to program communication
+
+IOPN:\<Integer\>
+
+\subsection sss_io_example  Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>IO:<br> LOCK:ENABLE<br>END:</tt>   | <tt>IO.LOCK:ENABLE</tt>   |
+| <tt>IO:<br> PORT:ARQ<br>END:</tt>      | <tt>IO.PORT:ARQ</tt>      |
+| <tt>IO:<br> AX25D:DISABLE<br>END:</tt> | <tt>IO.AX25D:DISABLE</tt> |
+| <tt>IO:<br> CSMA:DISABLE<br>END:</tt>  | <tt>IO.CSMA:DISABLE</tt>  |
+
+<br>
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>IO:<br>KISS:<br>IPA:127.0.0.1<br>END:<br>END:</tt>   | <tt>IO.KISS.IPA:127.0.0.1</tt> |
+| <tt>IO:<br>KISS:<br>IOPN:7342<br>END:<br>END:</tt>       | <tt>IO.KISS.IOPN:7342</tt> |
+| <tt>IO:<br>KISS:<br>OPN:7343<br>END:<br>END:</tt>        | <tt>IO.KISS.OPN:7343</tt> |
+| <tt>IO:<br>KISS:<br>DP:DISABLE<br>END:<br>END:</tt>      | <tt>IO.KISS.DP:DISABLE</tt> |
+| <tt>IO:<br>KISS:<br>BUSY:DISABLE<br>END:<br>END:</tt>    | <tt>IO.KISS.BUSY:DISABLE</tt> |
+| <tt>IO:<br>KISS:<br>CONT:3<br>END:<br>END:</tt>          | <tt>IO.KISS.CONT:3</tt> |
+| <tt>IO:<br>KISS:<br>ATTEN:2<br>END:<br>END:</tt>         | <tt>IO.KISS.ATTEN:2</tt> |
+
+<br>
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>IO:<br>ARQ:<br>IPA:127.0.0.1<br>END:<br>END:</tt>    | <tt>IO.ARQ.IPA:127.0.0.1</tt> |
+| <tt>IO:<br>ARQ:<br>IOPN:7322<br>END:<br>END:</tt>        | <tt>IO.ARQ.IOPN:7322</tt> |
+
+<br>
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>IO:<br>XMLRPC:<br>IPA:127.0.0.1<br>END:<br>END:</tt> | <tt>IO.XMLRPC.IPA:127.0.0.1</tt> |
+| <tt>IO:<br>XMLRPC:<br>IOPN:7362<br>END:<br>END:</tt>     | <tt>IO.XMLRPC.IOPN:7362</tt> |
+
+<br>
+\section s_nbems Misc NBEMS Commands
+
+See \ref subsec_nbems_flxxx_interface
+
+\subsection ss_nbems_state Enable
+
+NBEMS data file interface
+
+STATE:\<ENABLE | DISABLE\>
+
+\subsection ss_nbems_open_msg Open message folder
+
+OPEN MSG:\<ENABLE | DISABLE\>
+
+\subsection ss_nbems_open_flmsg Open with flmsg
+
+OPEN FLMSG:\<ENABLE | DISABLE\>
+
+\subsection ss_nbems_flmsg_path FLMsg executable path
+
+PATH:\<Character String\>
+
+Parameter: Directory and file name to the executable file location.
+
+\subsection ss_nbems_open_brwsr Open in browser
+
+OPEN BRWSR:\<ENABLE | DISABLE\>
+
+\subsection ss_nbems_timeout Timeout (secs)
+
+TIMEOUT:\<Character String\>
+
+\subsection ss_nbems_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>MISC NBEMS:<br> STATE:DISABLE<br>END:</tt>                    | <tt>MISC NBEMS.STATE:DISABLE</tt> |
+| <tt>MISC NBEMS:<br> OPEN MSG:DISABLE<br>END:</tt>                 | <tt>MISC NBEMS.OPEN MSG:DISABLE</tt> |
+| <tt>MISC NBEMS:<br> OPEN FLMSG:ENABLE<br>END:</tt>                | <tt>MISC NBEMS.OPEN FLMSG:ENABLE</tt> |
+| <tt>MISC NBEMS:<br> OPEN BRWSR:DISABLE<br>END:</tt>               | <tt>MISC NBEMS.OPEN BRWSR:DISABLE</tt> |
+| <tt>MISC NBEMS:<br> TIMEOUT:4.0<br>END:</tt>                      | <tt>MISC NBEMS.TIMEOUT:4.0</tt> |
+| <tt>MISC NBEMS:<br> PATH:c:/applications/nbems/flmsg<br>END:</tt> | <tt>MISC PATH:c:/applications/nbems/flmsg</tt> |
+
+<br>
+\section ss_load_macro Load Macro Command
+
+See \ref macro_page
+
+The Macro command is a structured command only, dot notation is not supported.
+
+<tt>
+MACRO,row,column,label<br>
+\<Macro Content\><br>
+END:<br>
+</tt>
+
+Parameters:<br>
+row - This is the macro bar number seen to the right of the macro buttons (1-4)<br>
+column - The physical macro button position from left to right (1-12).<br>
+label - The marco buttons label. See \ref macro_display_symbols for special
+label glyphs.
+
+No syntax checking is performed for the macro content. User responsibility.
+
+\image html macrobuttons.png "Macro Bar"
+\image latex macrobuttons.png "Macro Bar" width=4.0in
+
+The following example sets the first button in the first macro bar as seen above.
+
+\verbatim
+MACRO:1,1,"CQ @>|"
+<TXRSID:on><TX>
+cq cq cq de <MYCALL> <MYCALL> <MYCALL> pse k
+<RX>
+END:
+\endverbatim
+
+<br>
+\section sExampleScript Example Script
+
+\par NOTE:
+This example script may report errors if used as is. Modification is required
+to meet your particular setup.
+
+\verbatim
+FLDIGI_CONFIG
+# Fldigi Generated Config Script
+# Created: Wed Jan 21 15:44:14 2015
+
+FLDIGI:
+   FREQ:1.407000000e+07
+   MODE:USB
+   WFHZ:1500
+   RXID:DISABLE
+   TXID:DISABLE
+   SPOT:ENABLE
+   REV:DISABLE
+   AFC:DISABLE
+   LOCK:DISABLE
+   SQL:DISABLE
+   KPSQL:DISABLE
+   MODEM:BPSK31
+END:
+OPERATOR:
+   CALLSIGN:kk5vd
+   QTH:Robert
+   NAME:"Madison, AL"
+   LOC:EM64or
+   ANT:"Invert 'V' @ 22FT AGL"
+END:
+AUDIO DEVICE:
+   PA:ENABLE
+   PA CAPTURE:2,"USB Audio CODEC"
+   PA PLAYBACK:3,"USB Audio CODEC"
+END:
+AUDIO SETTINGS:
+   CAPTURE:Auto
+   PLAYBACK:Auto
+   CONVERTER:"Medium Sinc Interpolator"
+   RX PPM:17
+   TX PPM:17
+   TX OFFSET:0
+END:
+AUDIO RT CHANNEL:
+   MONO AUDIO:DISABLE
+   MODEM LR:DISABLE
+   REV LR:DISABLE
+   PTT RT CHAN:DISABLE
+   QSK RT CHAN:DISABLE
+   FSK RT CHAN:DISABLE
+END:
+AUDIO WAVE:
+   SRATE:16000
+END:
+RIG HRDWR PTT:
+   PTT RT CHAN:DISABLE
+   SERIAL PORT:DISABLE
+   DEVICE:/dev/ptt
+   RTS:DISABLE
+   RTSV:DISABLE
+   DTR:DISABLE
+   DTRV:DISABLE
+   PARALLEL:DISABLE
+   UHROUTER:DISABLE
+   START PTT DELAY:1
+   END PTT DELAY:1
+   INIT:
+END:
+RIGCAT:
+   STATE:ENABLE
+   DEV PATH:/dev/tty.usbserial-RT071600
+   DESC FILE:/Users/.fldigi/rigs/FT-817.xml
+   RETRIES:2
+   RETRY INT:500
+   WDELAY:5
+   IDELAY:0
+   BRATE:4800
+   SBITS:1
+   ECHO:DISABLE
+   TOGGLE RTS PTT:DISABLE
+   RESTORE:DISABLE
+   PTT COMMAND:DISABLE
+   TOGGLE DTR PTT:DISABLE
+   TOGGLE RTS PTT:DISABLE
+   RTS 12V:DISABLE
+   DTR 12V:DISABLE
+   HRDWR FC:DISABLE
+   VSP:DISABLE
+   INIT:
+END:
+HAMLIB:
+   STATE:DISABLE
+   RIG:"Yaesu FT-817  (Beta)"
+   DEV PATH:/dev/tty.usbserial-RT071600
+   RETRIES:2
+   RETRY INT:10
+   WDELAY:0
+   PWDELAY:5
+   BRATE:4800
+   SBITS:1
+   SBAND:"Rig mode"
+   PTT COMMAND:DISABLE
+   DTR 12V:DISABLE
+   RTS 12V:DISABLE
+   HRDWR FC:DISABLE
+   SFTWR FC:DISABLE
+   ADV CONF:
+   INIT:
+END:
+XMLRPC RC:
+   STATE:DISABLE
+   BWDELAY:0.500
+   INIT:
+END:
+IO:
+   LOCK:ENABLE
+   PORT:ARQ
+   AX25D:DISABLE
+   CSMA:DISABLE
+   KISS:
+      IPA:127.0.0.1
+      IOPN:7342
+      OPN:7343
+      DP:DISABLE
+      BUSY:DISABLE
+      CONT:3
+      ATTEN:2
+   END:
+   ARQ:
+      IPA:127.0.0.1
+      IOPN:7322
+   END:
+   XMLRPC:
+      IPA:127.0.0.1
+      IOPN:7362
+   END:
+END:
+MISC NBEMS:
+   STATE:ENABLE
+   OPEN MSG:DISABLE
+   OPEN FLMSG:ENABLE
+   PATH:/Applications/flmsg-2.0.6AB.app/Contents/MacOS/flmsg
+   OPEN BRWSR:ENABLE
+   TIMEOUT:2.000
+END:
+
+MACRO:1,1,"CQ"
+<TXRSID:on><TX>
+cq cq cq de <MYCALL> <MYCALL> <MYCALL>/qrp pse k
+<RX>
+END:
+
+MACRO:1,2,"ANSWER"
+<TX><CALL> <CALL> de <MYCALL> <MYCALL> <MYCALL> kn
+<RX>
+END:
+\endverbatim
+
+<br>
+\ref configure_script_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

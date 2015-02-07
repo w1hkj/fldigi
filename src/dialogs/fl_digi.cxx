@@ -1501,7 +1501,7 @@ void macro_cb(Fl_Widget *w, void *v)
 {
 	int b = (int)(reinterpret_cast<long> (v));
 
-	if (progdefaults.mbar_scheme > 2) {
+	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
 		if (b >= NUMMACKEYS) b += (altMacros - 1) * NUMMACKEYS;
 	} else {
 		b += altMacros * NUMMACKEYS;
@@ -1579,7 +1579,7 @@ void altmacro_cb(Fl_Widget *w, void *v)
 	else
 		altMacros = altMacros + (Fl::event_button() == FL_RIGHT_MOUSE ? -1 : 1);
 
-	if (progdefaults.mbar_scheme > 2) { // alternate set
+	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) { // alternate set
 		altMacros = WCLAMP(altMacros, 1, 3);
 		alt_text[0] = '1' + altMacros;
 		for (int i = 0; i < NUMMACKEYS; i++) {
@@ -2249,7 +2249,7 @@ void cb_mnuContest(Fl_Menu_ *m, void *) {
 
 void set_macroLabels()
 {
-	if (progdefaults.mbar_scheme > 2) {
+	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
 		altMacros = 1;
 		for (int i = 0; i < NUMMACKEYS; i++) {
 			btnMacro[i]->label(macros.name[i].c_str());
@@ -2415,7 +2415,7 @@ void cb_loc(Fl_Widget* w, void*)
 	for (int i = 0; i < len; i++) {
 		if (ok)
 		switch (i) {
-			case 0 : 
+			case 0 :
 			case 1 :
 			case 4 :
 			case 5 :
@@ -2441,7 +2441,7 @@ void cb_loc(Fl_Widget* w, void*)
 		char az[4];
 		snprintf(az, sizeof(az), "%3.0f", azimuth);
 		inpAZ->value(az);
-	} else 
+	} else
 		inpAZ->value("");
 	restoreFocus(w);
 }
@@ -2969,8 +2969,8 @@ bool clean_exit(bool ask) {
 			}
 		}
 	} else {
-		if (ask && 
-			progdefaults.confirmExit && 
+		if (ask &&
+			progdefaults.confirmExit &&
 			(!(progdefaults.changed && progdefaults.SaveConfig) ||
 			 !(macros.changed && progdefaults.SaveMacros) ||
 			 !(!oktoclear && progdefaults.NagMe))) {
@@ -3370,7 +3370,7 @@ void UI_select()
 	int HTh;
 
 	if (cnt_macro_height) {
-		if (progdefaults.mbar_scheme > 2) { // 2 bars
+		if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) { // 2 bars
 			cnt_macro_height->minimum(44);
 			if (progdefaults.macro_height < 44) progdefaults.macro_height = 44;
 		} else {
@@ -3548,6 +3548,21 @@ void cb_toggle_smeter(Fl_Widget *w, void *v)
 	toggle_smeter();
 }
 
+extern void cb_scripts(bool);
+
+void cb_menu_scripts(Fl_Widget*, void*)
+{
+	cb_scripts(false);
+}
+
+extern void cb_create_default_script(void);
+
+void cb_menu_make_default_scripts(Fl_Widget*, void*)
+{
+	cb_create_default_script();
+}
+
+
 static void cb_opmode_show(Fl_Widget* w, void*);
 
 static Fl_Menu_Item menu_[] = {
@@ -3565,6 +3580,11 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(_("Save ..."), save_as_icon), 0,  (Fl_Callback*)cb_mnuSaveMacro, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
+{ icons::make_icon_label(_("Config Scripts")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{ _("Execute"),  0, (Fl_Callback*)cb_menu_scripts,  0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ _("Generate"), 0, (Fl_Callback*)cb_menu_make_default_scripts,  0, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+{ 0,0,0,0,0,0,0,0,0},
+
 { icons::make_icon_label(_("Text Capture")), 0, 0, 0, FL_MENU_DIVIDER | FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { LOG_TO_FILE_MLABEL, 0, cb_logfile, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -3579,6 +3599,7 @@ static Fl_Menu_Item menu_[] = {
 
 { icons::make_icon_label(_("Exit"), log_out_icon), 'x',  (Fl_Callback*)cb_E, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+
 { OPMODES_MLABEL, 0,  0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { mode_info[MODE_CW].name, 0, cb_init_mode, (void *)MODE_CW, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5140,15 +5161,15 @@ void create_fl_digi_main_primary() {
 				inpRstOut1->align(FL_ALIGN_LEFT);
 
 				inpCall1 = new Fl_Input2(
-					inpFreq1->x(), y2, 
+					inpFreq1->x(), y2,
 					inpTimeOn1->x() + inpTimeOn1->w() - inpFreq1->x(),
 					Hentry, _("Call"));
 				inpCall1->tooltip(_("call sign"));
 				inpCall1->align(FL_ALIGN_LEFT);
 
 				inpName1 = new Fl_Input2(
-					next_to(inpCall1) + 20, y2, 
-					130, 
+					next_to(inpCall1) + 20, y2,
+					130,
 					Hentry, _("Op"));
 				inpName1->tooltip(_("Operator name"));
 				inpName1->align(FL_ALIGN_LEFT);
@@ -7396,8 +7417,8 @@ void qsy(long long rfc, int fmid)
 	else if (progdefaults.chkUSEXMLRPCis)
 		REQ(xmlrpc_set_qsy, rfc);
 	else
-
-		LOG_VERBOSE("Ignoring rfcarrier change request (no rig control)");
+		qso_selectFreq((long int) rfc, fmid);
+		//LOG_VERBOSE("Ignoring rfcarrier change request (no rig control)");
 }
 
 map<string, qrg_mode_t> qrg_marks;

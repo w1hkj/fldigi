@@ -87,11 +87,11 @@ int Fl_PopBrowser::handle(int event)
 		if (key == 0x1b || kbd == FL_Escape) { // kbd test for OS X
 			pophide();
 			return 0;
-		} 
+		}
 		if (key >= ' ' || key <= 0x7f) {
 			keystrokes += key;
 			for (int i = 0; i < cbx->listsize; i++) {
-				if (strncasecmp(keystrokes.c_str(), 
+				if (strncasecmp(keystrokes.c_str(),
 					cbx->datalist[i]->s,
 					keystrokes.length()) == 0) {
 					popbrwsr->select(i+1);
@@ -198,7 +198,7 @@ void Fl_PopBrowser::pophide ()
 
 	Fl::grab(0);
 	Fl::focus(((Fl_ComboBox*)parent())->btn);
-}   
+}
 
 void Fl_PopBrowser::popbrwsr_cb_i (Fl_Widget *v, long d)
 {
@@ -401,7 +401,7 @@ int Fl_ComboBox::index() {
 }
 
 void * Fl_ComboBox::data() {
-	return retdata; 
+	return retdata;
 }
 
 void Fl_ComboBox::insert(const char *str, void *d)
@@ -448,7 +448,7 @@ void Fl_ComboBox::add( const char *s, void * d)
 			str.erase(0, p+1);
 			p = str.find("|");
 		}
-		if (str.length()) 
+		if (str.length())
 			insert(str.c_str(), 0);
 	} else
 		insert( s, d );
@@ -457,7 +457,7 @@ void Fl_ComboBox::add( const char *s, void * d)
 void Fl_ComboBox::clear()
 {
 	Brwsr->clear();
-	
+
 	if (listsize == 0) return;
 	for (int i = 0; i < listsize; i++) {
 		delete [] datalist[i]->s;
@@ -522,4 +522,18 @@ void Fl_ComboBox::color(Fl_Color c)
 	else
 		val->color(c);
 	if (Brwsr) Brwsr->color(c);
+}
+
+int Fl_ComboBox::find_index(const char *str)
+{
+	if((listsize < 1) || !str)
+		return -1;
+
+	for (int i = 0; i < listsize; i++) {
+		if(datalist[i]->s)
+			if(strncmp(datalist[i]->s, str, FILENAME_MAX) == 0)
+				return i;
+	}
+
+	return -1;
 }

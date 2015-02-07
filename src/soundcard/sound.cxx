@@ -72,8 +72,15 @@
 #include "qrunner.h"
 #include "icons.h"
 #include "macros.h"
+#include "util.h"
 
 #include "estrings.h"
+
+inline void trim_white_spaces(std::string &s)
+{
+	while (s[0] == ' ') s.erase(0,1);
+	while (s[s.length() -1] == ' ') s.erase(s.length() - 1);
+}
 
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
@@ -422,7 +429,7 @@ void SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
 
 bool SoundBase::format_supported(int format)
 {
-	SF_INFO info = { 
+	SF_INFO info = {
 		0,
 		sndfile_samplerate[progdefaults.wavSampleRate],
 		SNDFILE_CHANNELS,
@@ -1524,12 +1531,25 @@ long SoundPort::src_read_cb(void* arg, float** data)
 	return vec[0].len / sd[0].params.channelCount;
 }
 
-SoundPort::device_iterator SoundPort::name_to_device(const string& name, unsigned dir)
+SoundPort::device_iterator SoundPort::name_to_device(std::string &name, unsigned dir)
 {
 	device_iterator i;
-	for (i = devs.begin(); i != devs.end(); ++i)
-		if (name == (*i)->name && (dir ? (*i)->maxOutputChannels : (*i)->maxInputChannels))
+	std::string device_name;
+	bool match_found = false;
+
+	trim_white_spaces(name);
+
+	for (i = devs.begin(); i != devs.end(); ++i) {
+
+		device_name.assign((*i)->name);
+		trim_white_spaces(device_name);
+
+		if(strncmp(device_name.c_str(), name.c_str(), 32) == 0)
+			match_found = true;
+
+		if (match_found && (dir ? (*i)->maxOutputChannels : (*i)->maxInputChannels))
 			break;
+	}
 	return i;
 }
 

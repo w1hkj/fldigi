@@ -150,7 +150,7 @@ TAGS rigdeftags[] = {
 	{"<CMDPTT", parseCMDPTT},
 	{"<STOPBITS", parseSTOPBITS},
 	{"<VSP", parseVSP},
-	{0, 0} 
+	{0, 0}
 };
 
 TAGS commandtags[] = {
@@ -947,9 +947,13 @@ void selectRigXmlFilename()
 	if (p) {
 		progdefaults.XmlRigFilename = p;
 		txtXmlRigFilename->value(fl_filename_name(p));
-		rigCAT_close();
-		readRigXML();
-		rigCAT_defaults();
+		loadRigXmlFile();
 	}
 }
 
+void loadRigXmlFile(void)
+{
+	rigCAT_close();
+	readRigXML();
+	rigCAT_defaults();
+}

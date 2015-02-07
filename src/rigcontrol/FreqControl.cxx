@@ -130,7 +130,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 
 	minVal = 0;
 	double fmaxval = (pow(10, nD) - 1) * precision;
-	long int UMAX = (long int)(pow(2, 31) - 1);
+	long int UMAX = maximum();
 	if (fmaxval > UMAX) fmaxval = UMAX;
 	maxVal = fmaxval;
 	fmaxval /= 1000.0;
@@ -153,7 +153,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			fcWidth,
 			fcHeight,
 			" ");
-		Digit[n]->box(FL_FLAT_BOX); 
+		Digit[n]->box(FL_FLAT_BOX);
 		Digit[n]->labelfont(font_number);
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR, SELCOLOR);
@@ -179,7 +179,7 @@ cFreqControl::cFreqControl(int x, int y, int w, int h, const char *lbl):
 			fcWidth,
 			fcHeight,
 			" ");
-		Digit[n]->box(FL_FLAT_BOX); 
+		Digit[n]->box(FL_FLAT_BOX);
 		Digit[n]->labelfont(font_number);
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR, SELCOLOR);
@@ -273,7 +273,7 @@ void cFreqControl::SetONOFFCOLOR( Fl_Color ONcolor, Fl_Color OFFcolor)
 	redraw();
 }
 
-void cFreqControl::SetONCOLOR (uchar r, uchar g, uchar b) 
+void cFreqControl::SetONCOLOR (uchar r, uchar g, uchar b)
 {
 	ONCOLOR = fl_rgb_color (r, g, b);
 	REVOFFCOLOR = ONCOLOR;
@@ -299,7 +299,7 @@ void cFreqControl::SetONCOLOR (uchar r, uchar g, uchar b)
 	redraw();
 }
 
-void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b) 
+void cFreqControl::SetOFFCOLOR (uchar r, uchar g, uchar b)
 {
 	OFFCOLOR = fl_rgb_color (r, g, b);
 	REVONCOLOR = OFFCOLOR;
@@ -336,6 +336,12 @@ void cFreqControl::value(long lv)
 	Fl::remove_timeout((Fl_Timeout_Handler)blink_point, decbx);
 	updatevalue();
 }
+
+long int cFreqControl::maximum(void)
+{
+	return (long int)(pow(2, 31) - 1);
+}
+
 
 void cFreqControl::restore_colors()
 {
@@ -626,7 +632,7 @@ void cFreqControl::set_ndigits(int nbr)
 			fcWidth,
 			fcHeight,
 			" ");
-		Digit[n]->box(FL_FLAT_BOX); 
+		Digit[n]->box(FL_FLAT_BOX);
 		Digit[n]->labelfont(font_number);
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR, SELCOLOR);
@@ -654,7 +660,7 @@ void cFreqControl::set_ndigits(int nbr)
 			fcWidth,
 			fcHeight,
 			" ");
-		Digit[n]->box(FL_FLAT_BOX); 
+		Digit[n]->box(FL_FLAT_BOX);
 		Digit[n]->labelfont(font_number);
 		Digit[n]->labelcolor(ONCOLOR);
 		Digit[n]->color(OFFCOLOR, SELCOLOR);

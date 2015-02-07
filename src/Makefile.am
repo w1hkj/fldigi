@@ -301,6 +301,11 @@ fldigi_SOURCES += \
 	filters/filters.cxx \
 	filters/viterbi.cxx \
 	globals/globals.cxx \
+	config_script/create_default_script.cxx \
+	config_script/run_scripts.cxx \
+	config_script/run_script.h \
+	config_script/script_parsing.cxx \
+	config_script/script_parsing.h \
 	include/htmlstrings.h \
 	include/arq_io.h \
 	include/confdialog.h \

@@ -105,6 +105,20 @@ controlled manner.
 <br>
 
 <HR>
+\subsection s_scripts Scripts
+
+Executing and Generating Scripts
+
+\image html menu_script.png "Scripts"
+\image latex menu_script.png "Scripts" width=2.0in
+<br>
+
+Additional information:
+<br>
+\ref configure_script_page
+<br>
+
+<HR>
 \subsection s_op_mode Op Mode
 
 Op Mode - the current operating mode will show as a highlighted menu item.

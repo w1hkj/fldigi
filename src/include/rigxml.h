@@ -72,13 +72,13 @@ struct XMLIOS {
 	std::string	info;
 	std::string	ok;
 	std::string	bad;
-	void clear() { 
+	void clear() {
 		SYMBOL.clear();
 		str1.clear();
 		str2.clear();
 		info.clear();
 		ok.clear();
-		bad.clear(); 
+		bad.clear();
 		size = fill1 = fill2 = 0;
 		data.clear();
 	};
@@ -126,7 +126,7 @@ struct XMLRIG {
 		rigTitle = "";
 	}
 };
-	
+
 extern std::list<XMLIOS> commands;
 extern std::list<XMLIOS> reply;
 extern std::list<MODE> lmodes;
@@ -140,6 +140,6 @@ extern XMLRIG xmlrig;
 
 extern bool readRigXML();
 extern void	selectRigXmlFilename();
-
+extern void loadRigXmlFile(void);
 #endif
 

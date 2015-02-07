@@ -78,6 +78,15 @@ unsigned long ver2int(const char* version)
 	return v;
 }
 
+#if !HAVE_STRNLEN
+size_t strnlen(const char* str, size_t len)
+{
+	size_t n = strlen(str);
+	if (n > len) n = len;
+	return n;
+}
+#endif
+
 #if !HAVE_STRCASESTR
 #  include <ctype.h>
 // from git 1.6.1.2 compat/strcasestr.c

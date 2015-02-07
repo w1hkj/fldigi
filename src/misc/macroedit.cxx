@@ -294,26 +294,31 @@ void cbMacroEditOK(Fl_Widget *w, void *)
 	}
 
 	if (iType == MACRO_EDIT_BUTTON) {
-		macros.text[iMacro] = macrotext->value();
-		macros.name[iMacro] = labeltext->value();
-
-		if (progdefaults.mbar_scheme > 2) {
-			if (iMacro < NUMMACKEYS) {
-				btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
-				btnMacro[iMacro % NUMMACKEYS]->redraw_label();
-			} else {
-				btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->label( macros.name[iMacro].c_str() );
-				btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->redraw_label();
-			}
-		} else {
-			btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
-			btnMacro[iMacro % NUMMACKEYS]->redraw_label();
-		}
-
-		macros.changed = true;
+		update_macro_button(iMacro, macrotext->value(), labeltext->value());
 	}
 	else if (iType == MACRO_EDIT_INPUT)
 		iInput->value(macrotext->value());
+}
+
+void update_macro_button(int iMacro, const char *text, const char *name)
+{
+	macros.text[iMacro].assign(text);
+	macros.name[iMacro].assign(name);
+
+	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
+		if (iMacro < NUMMACKEYS) {
+			btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
+			btnMacro[iMacro % NUMMACKEYS]->redraw_label();
+		} else {
+			btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->label( macros.name[iMacro].c_str() );
+			btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->redraw_label();
+		}
+	} else {
+		btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
+		btnMacro[iMacro % NUMMACKEYS]->redraw_label();
+	}
+
+	macros.changed = true;
 }
 
 void cbInsertMacro(Fl_Widget *, void *)
