@@ -6,8 +6,8 @@
 
 \section sConfigScript Configure Scripting
 
-\image html menu_script.png "Scripts"
-\image latex menu_script.png "Scripts" width=1.25in
+\image html menu-files-config-scripts.png "Scripts"
+\image latex menu-files-config-scripts.png "Scripts" width=1.25in
 
 \par WARNING:
 If you do anything with this option, ensure FLDIGI is configured to your
@@ -40,8 +40,8 @@ manual entry. See \ref sConfigScriptCmds for limits.
 
 \subsection ss_exec_script Executing Scripts
 
-From FLDigi's main window select menu item Scripts->Execute Script. This will
-bring up a file browser. Search and select the file in question, then
+From FLDigi's main window select menu item File->Config Scripts->Execute. This
+will bring up a file browser. Search and select the file in question, then
 press [Open]. At this point the script will execute.
 
 <br>
@@ -76,7 +76,7 @@ is saved prior to restarting.
 \subsection ss_gen_script Generating Scripts
 
 To generate a script the operator selects FLdigi's menu items
-Scripts->Generate Script.  A file save dialog box is opened for the user to
+File->Config Scripts->Generate.  A file save dialog box is opened for the user to
 select a name and where the file is saved. Pressing [Save] initiates
 the process.
 
@@ -88,14 +88,12 @@ If the latter is used, your are advised to generate a script prior to
 changing any of FLDigi's settings. Just in case restoration is needed.
 
 Prior to editing any script file, take the time to read the relavent sections
-of this document.
+of this document. See \ref sScriptSyntax and \ref sExampleScript
 
 \par NOTE:
 	Generated script contents are specific to the operating system and
 	hardware available on the host machine. If a device is not supported on
 	your system, script code will not be generated for it.
-
-See \ref sScriptSyntax and \ref sExampleScript
 
 <hr>
 <br><br>
@@ -246,6 +244,29 @@ See \ref sScriptSyntax and \ref sExampleScript
 \ref ss_nbems_open_flmsg "OPEN FLMSG" &nbsp; \| &nbsp;
 \ref ss_nbems_flmsg_path "PATH"
 
+\ref s_id "ID"
+\par
+\ref sss_notify              "RSID.NOTIFY"         &nbsp; \| &nbsp;
+\ref sss_search_bandpass     "RSID.SRCH BP"        &nbsp; \| &nbsp;
+\ref sss_mark_prev_mode      "RSID.MARK PREV"      &nbsp; \| &nbsp;
+\ref sss_detector            "RSID.DETECTOR"       &nbsp; \| &nbsp;
+\ref sss_dialog_box          "RSID.ALRT DIALOG"    &nbsp; \| &nbsp;
+\ref sss_tx_freq_lock        "RSID.TX FREQ LOCK"   &nbsp; \| &nbsp;
+\ref sss_disable_freq_change "RSID.FREQ CHANGE"    &nbsp; \| &nbsp;
+\ref sss_rsid_error_level    "RSID.ALLOW ERRORS"   &nbsp; \| &nbsp;
+\ref sss_open_squelch        "RSID.SQL OPEN"       &nbsp; \| &nbsp;
+\ref sss_pretone             "RSID.PRETONE"        &nbsp; \| &nbsp;
+\ref sss_end_of_xmit_id      "RSID.END XMT ID"     &nbsp; \| &nbsp;
+\ref sss_id_mode             "VIDEO.ID MODE"       &nbsp; \| &nbsp;
+\ref sss_ed_video_text       "VIDEO.VIDEO TXT"     &nbsp; \| &nbsp;
+\ref sss_input_video_text    "VIDEO.TEXT INPUT"    &nbsp; \| &nbsp;
+\ref sss_small_font          "VIDEO.SMALL FONT"    &nbsp; \| &nbsp;
+\ref sss_500hz_limit         "VIDEO.500HZ"         &nbsp; \| &nbsp;
+\ref sss_mode_limit          "VIDEO.WIDTH LIMIT"   &nbsp; \| &nbsp;
+\ref sss_char_row            "VIDEO.CHAR ROW"      &nbsp; \| &nbsp;
+\ref sss_cw_id               "CW.TX CALL"          &nbsp; \| &nbsp;
+\ref sss_id_mode             "CW.DETECTOR"         &nbsp; \| &nbsp;
+\ref sss_cw_id_speed         "CW.SPEED"            &nbsp; \| &nbsp;
 
 
 \ref ss_load_macro "MACRO"
@@ -263,8 +284,8 @@ connection between commands and the effected settings.
 \subsection ssStucturedCommands Structured Commands
 
 Each command ends with a colon (':'). This separates the command section
-with the paramater section. A command may or may not contain a paramater. The
-structure statements are terminated using "END:" statement.
+with the paramater section. A command may or may not contain a paramater.
+Structured statements are terminated using "END:" statement.
 
 <tt>
 \<TOP_TIER\>:<br>
@@ -1203,6 +1224,185 @@ TIMEOUT:\<Character String\>
 | <tt>MISC NBEMS:<br> TIMEOUT:4.0<br>END:</tt>                      | <tt>MISC NBEMS.TIMEOUT:4.0</tt> |
 | <tt>MISC NBEMS:<br> PATH:c:/applications/nbems/flmsg<br>END:</tt> | <tt>MISC PATH:c:/applications/nbems/flmsg</tt> |
 
+\section s_id ID
+
+See \ref id_configuration_page
+
+\subsection ss_id_rsid RsID
+
+\subsubsection sss_notify Notify only
+
+Notify operator of RSID reception, disabling waterfall, frequency, and
+modem changes.
+
+NOTIFY:\<ENABLE | DISABLE\>
+
+\subsubsection sss_search_bandpass Searches passband
+
+Search the entire band pass for RSID signatures (Enabled). Otherwise search
+center frequency +/- 200Hz
+
+SRCH BP:\<ENABLE | DISABLE\>
+
+\subsubsection sss_mark_prev_mode Mark prev freq/mode
+
+Annotate on receive panel previous frequency and modem on RSID reception.
+
+MARK PREV:\<ENABLE | DISABLE\>
+
+\subsubsection sss_detector Disables detector
+
+Ignore RSID tone sequence.
+
+DETECTOR:\<ENABLE | DISABLE\>
+
+\subsubsection sss_dialog_box Disable alert dialog
+
+Display Dialog box indicating reception of RSID tone sequence (Enabled).
+
+ALRT DIALOG:\<ENABLE | DISABLE\>
+
+\subsubsection sss_tx_freq_lock Retain tx freq lock
+
+Retain frequency/waterfall transmit position on modem switches (enabled).
+
+TX FREQ LOCK:\<ENABLE | DISABLE\>
+
+\subsubsection sss_disable_freq_change Disable freq change
+
+Do not change frequency when RSID tones received.
+
+FREQ CHANGE:\<ENABLE | DISABLE\>
+
+\subsubsection sss_rsid_error_level Allow errors
+
+Adjust RSID reception accuracy at the expense of sensitivity.
+
+ALLOW ERRORS:\<Character String\>
+
+Parameters: Low, Medium, High
+
+\subsubsection sss_open_squelch Squelch open (sec)
+
+On RSID reception disable squelch for n seconds.
+
+SQL OPEN:\<Integer\>
+
+Parameters: 0 - 20
+
+\subsubsection sss_pretone Pre-Signal Tone Seconds
+
+On RSID reception disable squelch for n seconds.
+
+PRETONE:\<Real Number\>
+
+Parameters: 0.0 - 10.0 in 0.1/1.0 increments
+
+\subsubsection sss_end_of_xmit_id End of xmt ID
+
+Transmit an RSID tone sequence at the end of the data transmission.
+
+END XMT ID:\<ENABLE | DISABLE\>
+
+\subsection ss_id_video Video
+
+\subsubsection sss_id_mode Transmit mode ID
+
+Enable/Disable the transmission of video text modem name.
+
+ID MODE:\<ENABLE | DISABLE\>
+
+\subsubsection sss_ed_video_text Transmit video text
+
+Enable/Disable the transmission of custom video text.
+
+VIDEO TXT:\<ENABLE | DISABLE\>
+
+\subsubsection sss_input_video_text Custom Video Text Input
+
+Enable/Disable the transmission of custom video text.
+
+TEXT INPUT:\<Character String\>
+
+\subsubsection sss_small_font Use small font
+
+Enable/Disable the of small font for video text.
+
+SMALL FONT:\<ENABLE | DISABLE\>
+
+\subsubsection sss_500hz_limit 500 Hz limit
+
+Enable/Disable 500 Hz video width limit
+
+500HZ:\<ENABLE | DISABLE\>
+
+\subsubsection sss_mode_limit Mode width limit
+
+Enable/Disable video width limit based on modem bandwidth use.
+
+WIDTH LIMIT:\<ENABLE | DISABLE\>
+
+\subsubsection sss_char_row Chars/Row:
+
+Maximum number of video text character per "line"
+
+CHAR ROW:\<Integer\>
+
+Parmeters: 1 - 8 Characters
+
+\subsection ss_id_cw CW
+
+\subsubsection sss_cw_id Transmit callsign
+
+Enable/Disable post callsign CW ID
+
+TX CALL:\<ENABLE | DISABLE\>
+
+\subsubsection sss_cw_id_speed Speed (WPM):
+
+Enable/Disable post callsign CW ID transmit speed
+
+SPEED:\<Integer\>
+
+Parameters: 15 - 40 WPM
+
+\par NOTE:
+Check the specifications imposed by your country on the maximum
+speed allowing for CW identifing.
+
+\subsection ss_id_rsid_examples Examples
+
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>ID:<br>RSID:<br>NOTIFY:DISABLE<br>END:<br>END:</tt>       | <tt>ID.RSID.NOTIFY:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>SRCH BP:DISABLE<br>END:<br>END:</tt>      | <tt>ID.RSID.SRCH BP:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>MARK PREV:DISABLE<br>END:<br>END:</tt>    | <tt>ID.RSID.MARK PREV:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>DETECTOR:DISABLE<br>END:<br>END:</tt>     | <tt>ID.RSID.DETECTOR:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>ALRT DIALOG:DISABLE<br>END:<br>END:</tt>  | <tt>ID.RSID.ALRT DIALOG:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>TX FREQ LOCK:DISABLE<br>END:<br>END:</tt> | <tt>ID.RSID.TX FREQ LOCK:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>FREQ CHANGE:DISABLE<br>END:<br>END:</tt>  | <tt>ID.RSID.FREQ CHANGE:DISABLE</tt> |
+| <tt>ID:<br>RSID:<br>ALLOW ERRORS:Medium<br>END:<br>END:</tt>  | <tt>ID.RSID.ALLOW ERRORS:Medium</tt> |
+| <tt>ID:<br>RSID:<br>SQL OPEN:5<br>END:<br>END:</tt>           | <tt>ID.RSID.SQL OPEN:5</tt> |
+| <tt>ID:<br>RSID:<br>PRETONE:0.000<br>END:<br>END:</tt>        | <tt>ID.RSID.PRETONE:0.000</tt> |
+| <tt>ID:<br>RSID:<br>END XMT ID:DISABLE<br>END:<br>END:</tt>   | <tt>ID.RSID.END XMT ID:DISABLE</tt> |
+
+<br>
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>ID:<br>VIDEO:<br>ID MODE:DISABLE<br>END:<br>END:</tt>    | <tt>ID.VIDEO.ID MODE:DISABLE</tt> |
+| <tt>ID:<br>VIDEO:<br>VIDEO TXT:DISABLE<br>END:<br>END:</tt>  | <tt>ID.VIDEO.VIDEO TXT:DISABLE</tt> |
+| <tt>ID:<br>VIDEO:<br>TEXT INPUT:CQ<br>END:<br>END:</tt>      | <tt>ID.VIDEO.TEXT INPUT:CQ</tt> |
+| <tt>ID:<br>VIDEO:<br>SMALL FONT:ENABLE<br>END:<br>END:</tt>  | <tt>ID.VIDEO.SMALL FONT:ENABLE</tt> |
+| <tt>ID:<br>VIDEO:<br>500HZ:ENABLE<br>END:<br>END:</tt>       | <tt>ID.VIDEO.500HZ:ENABLE</tt> |
+| <tt>ID:<br>VIDEO:<br>WIDTH LIMIT:ENABLE<br>END:<br>END:</tt> | <tt>ID.VIDEO.WIDTH LIMIT:ENABLE</tt> |
+| <tt>ID:<br>VIDEO:<br>CHAR ROW:8<br>END:<br>END:</tt>         | <tt>ID.VIDEO.CHAR ROW:8</tt> |
+
+<br>
+| Structured | Dot Notation |
+|:-----------|:-------------|
+| <tt>ID:<br>CW:<br>TX CALL:DISABLE<br>END:<br>END:</tt> | <tt>ID.CW.TX CALL:DISABLE</tt> |
+| <tt>ID:<br>CW:<br>SPEED:18<br>END:<br>END:</tt>        | <tt>ID.CW.SPEED:18</tt> |
+
 <br>
 \section ss_load_macro Load Macro Command
 
@@ -1384,6 +1584,34 @@ MISC NBEMS:
    PATH:/Applications/flmsg-2.0.6AB.app/Contents/MacOS/flmsg
    OPEN BRWSR:ENABLE
    TIMEOUT:2.000
+END:
+ID:
+   RSID:
+      NOTIFY:DISABLE
+      SRCH BP:DISABLE
+      MARK PREV:ENABLE
+      DETECTOR:DISABLE
+      ALRT DIALOG:DISABLE
+      TX FREQ LOCK:DISABLE
+      FREQ CHANGE:DISABLE
+      ALLOW ERRORS:Medium
+      SQL OPEN:5
+      PRETONE:0.000
+      END XMT ID:DISABLE
+   END:
+   VIDEO:
+      ID MODE:DISABLE
+      VIDEO TXT:DISABLE
+      TEXT INPUT:CQ
+      SMALL FONT:ENABLE
+      500HZ:ENABLE
+      WIDTH LIMIT:ENABLE
+      CHAR ROW:8
+   END:
+   CW:
+      TX CALL:DISABLE
+      SPEED:18
+   END:
 END:
 
 MACRO:1,1,"CQ"
