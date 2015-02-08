@@ -34,6 +34,8 @@
 #include "xmlrpcpp/XmlRpc.h"
 #include "xmlrpcpp/XmlRpcValue.h"
 
+#define DEFAULT_RIGXML_FILENAME "rig-not-assigned.xml"
+
 extern std::string windowTitle;
 extern Cserial rigio;
 
@@ -51,7 +53,9 @@ extern void setTitle();
 extern void qso_addFreq();
 extern void qso_delFreq();
 extern void qso_selectFreq();
+extern void qso_selectFreq(long int rfcarrier, int carrier);
 extern void qso_setFreq();
+extern void qso_setFreq(long int f);
 extern void qso_clearList();
 extern void saveFreqList();
 

@@ -151,17 +151,17 @@ time is explained below. A good setting for nice sounding CW at
 <li>Edge decreases pulse width, when checked will give a slightly narrower dot
 length as the edge timing is increased. This is useful when
 operating QSK and listening between the character elements.</li>
-</ul>
 
 <li>The transmitted signal can be further wave shaped using a "Windowed-sinc"
 bandpass filter.  It is enabled by checking the "BPF transmit audio" check box.
 The bandwidth of the filter can be adjusted from 10 to 1000 Hertz with the BPF bw
-control.  The filter will always be centered on the AFCW injection frequency 
-(waterfall TX cursor position).  You should both visually observe and listen to 
+control.  The filter will always be centered on the AFCW injection frequency
+(waterfall TX cursor position).  You should both visually observe and listen to
 the resulting CW signal.  The easiest way to do this is to enable the "Send continuously",
 select a test character and then press the TX button on the main dialog.  The
-weight, dash/dot, edge shape selection, edge timing, BPF and bandwidth can be 
-changed with immediate effect.
+weight, dash/dot, edge shape selection, edge timing, BPF and bandwidth can be
+changed with immediate effect.</li>
+</ul>
 
 This is what the A2 signal should look like with various settings of
 weight, Dash/Dot and Edge. The audio frequency is 400 Hz and

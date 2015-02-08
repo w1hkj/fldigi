@@ -3035,8 +3035,6 @@ public:
 
 // =============================================================================
 
-extern Fl_Button* btnAutoSpot; // FIXME: export in fl_digi.h
-
 class Spot_get_auto : public xmlrpc_c::method
 {
 public:

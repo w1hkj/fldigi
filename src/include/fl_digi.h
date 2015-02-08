@@ -130,6 +130,7 @@ extern Fl_Light_Button		*btnPSQL;
 extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
+extern Fl_Light_Button		*btnAutoSpot;
 
 extern bool			bWF_only;
 extern bool			withnoise;
@@ -251,6 +252,9 @@ extern void put_rx_data(int *data, int len);
 
 #define GET_TX_CHAR_NODATA -1	// no data available
 #define GET_TX_CHAR_ETX -3	// end of transmission requested
+
+// Last single macro bar option index
+#define MACRO_SINGLE_BAR_MAX 2
 
 extern int get_tx_char();
 extern int  get_secondary_char();

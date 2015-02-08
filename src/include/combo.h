@@ -110,6 +110,7 @@ public:
 	void sort ();
 	int  index ();
 	void index (int i);
+	int  find_index(const char *str);
 	void *data ();
 	void textfont (int);
 	void textsize (uchar);

@@ -71,9 +71,11 @@ mouse cursor on a digit and then use the mouse wheel to roll the frequency
 up and down.
 <br>
 
-Manual entry of frequency can be accomplished by clicking on any digit and
-then entering the numeric value in KHz.  Don't forget the decimal
-point if you are entering a fractional KHz value.
+Manual entry of frequency can be accomplished by hovering the mouse pointer
+over the frequency display and entering the desired frequency (in Khz) via
+the keyboard. Pressing \<return\> or \<enter\> on completion sets the
+frequency to an active state, effecting rig control and future log entires.
+Don't forget the decimal point if you are entering a fractional KHz value.
 <br>
 
 The Smeter / Power-meter display is only active if fldigi is configured for xmlrpc
@@ -88,8 +90,8 @@ time fldigi is executed.
 The mode combobox, the bandwidth combobox and the frequency display
 also annunciate the current transceiver status.  If you change
 operating mode on the transceiver, that will be annunciated in the
-respective combobox and fldigi will adjust any internal parameters
-accordingly.  Fldigi queries the transceiver 10 times per second
+respective combobox and FLDigi will adjust any internal parameters
+accordingly.  FLDigi queries the transceiver 10 times per second
 to maintain a lock step with the transceiver.
 <br>
 

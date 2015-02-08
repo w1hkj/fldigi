@@ -576,7 +576,7 @@ int main(int argc, char ** argv)
 	bool have_config = progdefaults.readDefaultsXML();
 
 	xmlfname = HomeDir;
-	xmlfname.append("rig.xml");
+	xmlfname.append(DEFAULT_RIGXML_FILENAME);
 
 	checkTLF();
 

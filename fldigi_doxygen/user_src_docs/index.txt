@@ -34,6 +34,7 @@
 <li>\ref operating_page </li>
 <li>\ref logging_page </li>
 <li>\ref macro_page </li>
+<li>\ref configure_script_page </li>
 <li>\ref developers_page </li>
 <li>\ref license_page </li>
 <li>\ref recognitions_page </li>

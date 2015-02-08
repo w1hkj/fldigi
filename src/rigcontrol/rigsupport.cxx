@@ -370,6 +370,20 @@ void qso_movFreq(Fl_Widget* w, void *data)
 	return;
 }
 
+void qso_selectFreq(long int rfcarrier, int carrier)
+{
+	if (rfcarrier > 0) {
+		qsoFreqDisp1->value(rfcarrier);
+		qsoFreqDisp2->value(rfcarrier);
+		qsoFreqDisp3->value(rfcarrier);
+		sendFreq(rfcarrier);
+	}
+
+	if (carrier > 0) {
+		active_modem->set_freq(carrier);
+	}
+}
+
 void qso_selectFreq()
 {
 	int n = qso_opBrowser->value();
@@ -397,6 +411,15 @@ void qso_selectFreq()
 	}
 }
 
+void qso_setFreq(long int f)
+{
+	// transceiver frequency
+	if (f > 0) {
+		qsoFreqDisp->value(f);
+		sendFreq(f);
+	}
+}
+
 void qso_setFreq()
 {
 	int n = qso_opBrowser->value();
@@ -404,10 +427,7 @@ void qso_setFreq()
 
 	n -= 1;
 // transceiver frequency
-	if (freqlist[n].rfcarrier > 0) {
-		qsoFreqDisp->value(freqlist[n].rfcarrier);
-		sendFreq(freqlist[n].rfcarrier);
-	}
+ 	qso_setFreq(freqlist[n].rfcarrier);
 }
 
 void qso_delFreq()

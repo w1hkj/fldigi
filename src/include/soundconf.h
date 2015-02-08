@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
-// Copyright (C) 2014
-//              David Freese, W1HKJ
+// Copyright (C) 2014 David Freese, W1HKJ
+// Copyright (C) 2015 Robert Stiles, KK5VD
 //
 // This file is part of fldigi
 //
@@ -34,10 +34,21 @@ enum {
 #endif
 	FLDIGI_NUM_SRC
 };
+
+enum {
+	PA_DEV_NOT_FOUND = 0,
+	PA_DEV_FOUND,
+	PA_EXACT_DEV_FOUND
+};
+
 extern int sample_rate_converters[FLDIGI_NUM_SRC];
 
 void sound_init(void);
 void sound_close(void);
 void sound_update(unsigned idx);
+
+#include <string>
+class Fl_Choice;
+int pa_set_dev(Fl_Choice *choice, std::string dev_name, int dev_index);
 
 #endif // SOUNDCONF_H

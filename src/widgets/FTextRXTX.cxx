@@ -337,7 +337,7 @@ void FTextRX::add(unsigned int c, int attr)
 	}
 
 // test for bottom of text visibility
-	if (// !mFastDisplay && 
+	if (// !mFastDisplay &&
 		(mVScrollBar->value() >= mNBufferLines - mNVisibleLines + mVScrollBar->linesize() - 1))
 		show_insert_position();
 }
@@ -959,15 +959,15 @@ int FTextTX::handle_key_shortcuts(int key)
 			default:
 				break;
 			}
-			
+
 			// Add text + space if length is > 0
 			if (etag.length())
 				add_text(etag + std::string(" "));
-			
+
 			return 1;
 		}
 		break;
-		
+
 	default:
 		break;
 	}
@@ -1031,7 +1031,7 @@ int FTextTX::handle_key(int key)
 		else if (!(Fl::event_state() & (FL_META | FL_ALT)))
 			break;
 		// fall through to (un)pause for M-r or A-r
-	
+
 	case FL_Pause:
 		if (trx_state != STATE_TX) {
 			start_tx();
@@ -1106,7 +1106,7 @@ int FTextTX::handle_key(int key)
 		if (Fl::event_state() & FL_ALT) {
 			static char lbl[2] = "1";
 			altMacros = key - '1';
-			if (progdefaults.mbar_scheme > 2) {
+			if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
 				if (!altMacros) altMacros = 1;
 				for (int i = 0; i < NUMMACKEYS; i++) {
 					btnMacro[NUMMACKEYS + i]->label(
@@ -1164,7 +1164,7 @@ int FTextTX::handle_key_macro(int key)
 	if (key > 11)
 		return 0;
 
-	if (progdefaults.mbar_scheme > 2) {
+	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
 		if (Fl::event_state(FL_SHIFT))
 			key += altMacros * NUMMACKEYS;
 	} else {

@@ -43,7 +43,7 @@ until the operator finds an active one.
 <br>
 <br>
 
-\section freq_inc Frequencies with increments
+\section s_freq_inc Frequencies with increments
 
 A frequency can come with an increment: This means an implicit range of
 frequencies from this one to the next frequency. If the last frequency

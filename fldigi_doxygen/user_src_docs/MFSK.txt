@@ -98,7 +98,7 @@ Received images are saved in the default folder $HOME/.fldigi/images
 (Linux) or \<defaultpath\>/fldigi.files/images (Windows).
 <br>
 
-\section tx_image Transmitting an Image
+\section mfsk_tx_image Transmitting an Image
 
 
 \image html Xmt-Pix.png "Xmit Picture Dialog box"
@@ -183,7 +183,7 @@ waterfall clearly shows that the image transmission is within the bandwidth
 occupied by MFSK-16.
 <br>
 
-\section picture_slant Picture with a slant
+\section mfsk_picture_slant Picture with a slant
 
 If either the send, receive or both ends of the transmission are using an
 uncalibrated sound card whose sampling rate is not an exact multiple of
