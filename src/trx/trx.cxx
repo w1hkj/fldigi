@@ -680,7 +680,8 @@ void trx_start(void)
 void trx_close()
 {
 	trx_state = STATE_ABORT;
-	while (trx_state != STATE_ENDED)
+	int count = 10;
+	while (trx_state != STATE_ENDED && count--)
 		MilliSleep(100);
 
 #if USE_NAMED_SEMAPHORES

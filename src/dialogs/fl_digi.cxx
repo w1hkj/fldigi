@@ -3006,16 +3006,7 @@ bool clean_exit(bool ask) {
 
 	ADIF_RW_close();
 
-	if (trx_state == STATE_RX || trx_state == STATE_TX || trx_state == STATE_TUNE)
-		trx_state = STATE_ABORT;
-	else {
-		LOG_ERROR("trx in unexpected state %d", trx_state);
-		exit(1);
-	}
-	while (trx_state != STATE_ENDED) {
-		REQ_FLUSH(GET_THREAD_ID());
-		MilliSleep(10);
-	}
+	trx_close();
 
 #if USE_HAMLIB
 	if (xcvr) delete xcvr;
