@@ -1456,9 +1456,9 @@ int process_capture_path(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 	if(cnt == PA_DEV_NOT_FOUND)
 		return script_invalid_parameter;
 
-#else
-	return script_no_errors;
 #endif // USE_PORTAUDIO
+
+	return script_no_errors;
 }
 
 /** ********************************************************
@@ -1498,9 +1498,9 @@ int process_playback_path(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 	if(cnt == PA_DEV_NOT_FOUND)
 		return script_invalid_parameter;
 
-#else
+#endif
+
 	return script_no_errors;
-#endif // USE_PORTAUDIO
 }
 
 /** ********************************************************

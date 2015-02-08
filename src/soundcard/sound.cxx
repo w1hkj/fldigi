@@ -76,10 +76,11 @@
 
 #include "estrings.h"
 
+// Remove all white spaces include tabs, cr, lf, bell, etc
 inline void trim_white_spaces(std::string &s)
 {
-	while (s[0] == ' ') s.erase(0,1);
-	while (s[s.length() -1] == ' ') s.erase(s.length() - 1);
+	while (s[0] <= ' ' && s[0]) s.erase(0,1);
+	while (s[s.length() - 1] <= ' ') s.erase(s.length() - 1);
 }
 
 #define SND_BUF_LEN	 65536

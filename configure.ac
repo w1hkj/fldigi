@@ -121,7 +121,7 @@ AC_FUNC_SELECT_ARGTYPES
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([getaddrinfo gethostbyname hstrerror gmtime_r localtime_r memmove memset mkdir select setenv snprintf socket socketpair strcasecmp strcasestr strchr strdup strerror strlcpy strnlen strncasecmp strrchr strstr strtol uname unsetenv vsnprintf])
+AC_CHECK_FUNCS([getaddrinfo gethostbyname hstrerror gmtime_r localtime_r memmove memset mkdir select setenv snprintf socket socketpair strcasecmp strcasestr strchr strdup strerror strlcpy strncpy strncmp strnlen strncasecmp strrchr strstr strtol uname unsetenv vsnprintf])
 
 # Check for O_CLOEXEC
 AC_FCNTL_FLAGS

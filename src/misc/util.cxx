@@ -7,6 +7,8 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2013
 //		Remi Chateauneu, F4ECW
+// Copyright (C) 2015
+//		Robert Stiles, KK5VD
 //
 // This file is part of fldigi.
 //
@@ -30,6 +32,7 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <cstdlib>
+#include <string>
 
 #include "config.h"
 #include "util.h"
@@ -78,15 +81,6 @@ unsigned long ver2int(const char* version)
 	return v;
 }
 
-#if !HAVE_STRNLEN
-size_t strnlen(const char* str, size_t len)
-{
-	size_t n = strlen(str);
-	if (n > len) n = len;
-	return n;
-}
-#endif
-
 #if !HAVE_STRCASESTR
 #  include <ctype.h>
 // from git 1.6.1.2 compat/strcasestr.c
@@ -126,6 +120,51 @@ size_t strlcpy(char *dest, const char *src, size_t size)
 	return ret;
 }
 #endif // !HAVE_STRLCPY
+
+#if !HAVE_STRNLEN
+size_t strnlen(const char *s, size_t maxlen)
+{
+	if((!s) || (maxlen < 1))
+		return 0;
+	size_t count = 0;
+	while(*s++ && (maxlen-- > 0))
+		count++;
+	return count;
+}
+#endif // !HAVE_STRNLEN
+
+#if !HAVE_STRNCPY
+char * strncpy(char *dst, const char *src, size_t maxlen)
+{
+	if((!dst) || (!src) || (maxlen < 1))
+		return dst;
+
+	char *_dst = dst;
+	while(*src && *_dst && (--maxlen > 0))
+		*_dst++ = *src++;
+	*_dst = 0;
+
+	return dst;
+}
+#endif // !HAVE_STRNCPY
+
+#if !HAVE_STRNCMP
+int strncmp(const char *s1, const char *s2, size_t maxlen)
+{
+	if((!s1) || (!s2) || (maxlen < 1))
+		return 0;
+
+	unsigned char *u1 = (unsigned char *)s1;
+	unsigned char *u2 = (unsigned char *)s2;
+	int dif = 0;
+
+	while(*u1 && *u2 && (maxlen-- > 0)) {
+		dif = *u1++ - *u2++;
+		if(dif) break;
+	}
+	return dif;
+}
+#endif // !HAVE_STRNCMP
 
 #if !HAVE_SETENV
 // from git 1.6.3.1 compat/setenv.c
@@ -191,6 +230,7 @@ int unsetenv(const char *name)
 	return 0;
 }
 #endif
+
 
 #ifdef __MINGW32__
 int set_cloexec(int fd, unsigned char v) { return 0; }
@@ -397,12 +437,12 @@ int test_process(int pid)
 #include <winbase.h>
 
 /// Retrieve the system error message for the last-error code
-static const char * WindowsError(DWORD dw) 
-{ 
+static const char * WindowsError(DWORD dw)
+{
     LPVOID lpMsgBuf;
 
     FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
