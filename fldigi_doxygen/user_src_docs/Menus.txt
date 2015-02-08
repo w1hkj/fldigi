@@ -105,17 +105,19 @@ controlled manner.
 <br>
 
 <HR>
-\subsection s_scripts Scripts
+\subsection s_scripts Configure Scripts
 
 Executing and Generating Scripts
 
-\image html menu_script.png "Scripts"
-\image latex menu_script.png "Scripts" width=2.0in
+\image html menu-files-config-scripts.png "Config Scripts"
+\image latex menu-files-config-scripts.png "Config Scripts" width=2.0in
 <br>
 
 Additional information:
 <br>
 \ref configure_script_page
+<br>
+\ref sConfigScriptCmds
 <br>
 
 <HR>
