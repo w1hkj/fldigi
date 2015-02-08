@@ -317,6 +317,7 @@ void delayed_startup(void *)
 
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
+
 }
 
 int main(int argc, char ** argv)

@@ -141,10 +141,14 @@ public:
 	void		ModulateXmtr(double *, int);
 	void		ModulateStereo(double *, double *, int, bool sample_flag = true);
 
+	void		ModulateVideo(double *, int);
+	void		ModulateVideoStereo(double *, double *, int, bool sample_flag = true);
+
 	void		videoText();
 	void		pretone();
 
-	virtual void		send_image(std::string) {}
+	virtual void		send_color_image(std::string) {}
+	virtual void		send_Grey_image(std::string) {}
 
 	void		set_stopflag(bool b) { stopflag = b;};
 	bool		get_stopflag() const { return stopflag; };

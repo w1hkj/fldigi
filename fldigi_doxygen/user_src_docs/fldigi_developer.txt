@@ -4,7 +4,6 @@
 <ul>
 <li> \subpage build_info_page </li>
 <li> \subpage google_maps </li>
-<li> \subpage install_fldigi_page</li>
 <li> \subpage install_from_source_page </li>
 <li> \subpage kiss_command_page </li>
 <li> \subpage parse_ualr_page </li>

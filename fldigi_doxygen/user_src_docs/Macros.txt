@@ -132,8 +132,10 @@ Macro       | Description
 
 Macro       | Description
 :---------: | :----------------------------
-\<QSYTO><FILWID:200\> <br> \<QSYFM><FILWID:2700\> | example to restore previous waterfall cursor frequency <br> and bandwidth
 \<FILE:\>              | insert text file; a file selection box will open when this tag is <br> selected during editing
+\<IMAGE:\>             | insert image file; a file selection box will open when this <br> tag is selected during editing
+\<IMAGE:G,\>           | insert image file; transmit in grey scale
+\<VIDEO:text\>         | transmit video text
 <br>
 
 Macro                    | Description

@@ -622,7 +622,7 @@ void mfsk::softdecode(cmplx *bins)
 	          if (CWIcounter[k] > CWI_MAXCOUNT) CWIcounter[k] = CWI_MAXCOUNT + 1;
 	}
 
-// gray decode and form soft decision samples
+// Grey decode and form soft decision samples
 	for (i = 0; i < numtones; i++) {
 		j = graydecode(i);
 
@@ -1149,10 +1149,18 @@ int mfsk::tx_process()
 	return 0;
 }
 
-void mfsk::send_image(std::string s)
+void mfsk::send_color_image(std::string s)
 {
-	load_image(s.c_str());
-	pic_TxSendColor();
+	if (load_image(s.c_str())) {
+		pic_TxSendColor();
+	}
+}
+
+void mfsk::send_Grey_image(std::string s)
+{
+	if (load_image(s.c_str())) {
+		pic_TxSendGrey();
+	}
 }
 
 

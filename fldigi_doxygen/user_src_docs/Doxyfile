@@ -52,7 +52,7 @@ INPUT                = index.txt \
 	ConfigWaterfall.txt kiss_io_command.txt \
 	SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \
 	Logbook.txt LogExports.txt working_logs.txt Macros.txt \
-	InlineMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \
+	InlineMacroTags.txt atMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \
 	DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt \
 	Navtex.txt psk.txt Olivia.txt RTTYFSK.txt Thor.txt \
 	throb.txt tune.txt WEFAX.txt WWV-xmt.txt FrequencyAnalysis.txt \

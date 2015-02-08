@@ -74,13 +74,20 @@
 //using namespace std;
 
 struct CMDS { std::string cmd; void (*fp)(std::string); };
-static queue<CMDS> cmds;
+static queue<CMDS> Tx_cmds;
+static queue<CMDS> Rx_cmds;
 
 // following used for debugging and development
-void pushcmd(CMDS cmd)
+void push_txcmd(CMDS cmd)
 {
-	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)cmds.size());
-	cmds.push(cmd);
+	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)Tx_cmds.size());
+	Tx_cmds.push(cmd);
+}
+
+void push_rxcmd(CMDS cmd)
+{
+	LOG_INFO("%s, # = %d", cmd.cmd.c_str(), (int)Rx_cmds.size());
+	Rx_cmds.push(cmd);
 }
 
 // these variables are referenced outside of this file
@@ -763,14 +770,14 @@ static void doWPM(std::string s)
 
 }
 
-static void pQueWPM(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueWPM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -792,14 +799,14 @@ static void doRISETIME(std::string s)
 	}
 }
 
-static void pQueRISETIME(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueRISETIME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRISETIME };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -821,14 +828,14 @@ static void doPRE(std::string s)
 	}
 }
 
-static void pQuePRE(std::string &s, size_t &i, size_t endbracket)
+static void pTxQuePRE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPRE };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -850,14 +857,14 @@ static void doPOST(std::string s)
 	}
 }
 
-static void pQuePOST(std::string &s, size_t &i, size_t endbracket)
+static void pTxQuePOST(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOST };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -895,14 +902,14 @@ static void doTXATTEN(std::string s)
 	}
 }
 
-static void pQueTXATTEN(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueTXATTEN(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTXATTEN };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -940,14 +947,14 @@ static void doIDLE(std::string s)
 	}
 }
 
-static void pQueIDLE(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueIDLE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doIDLE };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1045,14 +1052,14 @@ static void doWAIT(std::string s)
 	que_ok = true;
 }
 
-static void pQueWAIT(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueWAIT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWAIT };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1327,7 +1334,8 @@ static void pCWID(std::string &s, size_t &i, size_t endbracket)
 
 static void doDTMF(std::string s)
 {
-	progdefaults.DTMFstr = s.substr(6, s.length() - 7);
+	progdefaults.DTMFstr = s.substr(6, s.length() - 8);
+	que_ok = true;
 }
 
 static void pDTMF(std::string &s, size_t &i, size_t endbracket)
@@ -1337,7 +1345,7 @@ static void pDTMF(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1397,6 +1405,78 @@ static std::string hexstr(std::string &s)
 	return hex;
 }
 
+static void doRIGCAT(std::string s)
+{
+	size_t start = s.find(':');
+	std::string buff;
+
+	LOG_INFO("!RIGCAT %s", s.substr(start + 1, s.length() - start + 1).c_str());
+
+	size_t val = 0;
+	int retnbr = 0;
+	char c, ch;
+	bool asciisw = false;
+	bool valsw = false;
+
+	for (size_t j = start+1 ; j <= s.length() ; j++) {
+		ch = s[j];
+		if (ch == '\"') {
+			asciisw = !asciisw;
+			continue;
+		}
+		// accumulate ascii string
+		if (asciisw) {
+			if (isprint(ch)) buff += ch;
+			continue;
+		}
+		// following digits is expected size of CAT response from xcvr
+		if (ch == ':' && s[j+1] != '>') {
+			sscanf(&s[j+1], "%d", &retnbr);
+		}
+		// accumulate hex string values
+		if ((ch == ' ' || ch == '>' || ch == ':') && valsw) {
+			c = char(val);
+			//			LOG_INFO("c=%02x, val=%d", c, val);
+			buff += c;
+			val = 0;
+			valsw = false;
+		} else {
+			val *= 16;
+			ch = toupper(ch);
+			if (isdigit(ch)) val += ch - '0';
+			else if (ch >= 'A' && ch <= 'F') val += ch - 'A' + 10;
+			valsw = true;
+		}
+		if (ch == ':') break;
+	}
+
+	sendCommand(buff, retnbr, progdefaults.RigCatWait);
+
+	que_ok = true;
+}
+
+static void pTxQueRIGCAT(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGCAT };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueRIGCAT(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGCAT };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
 static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -1404,7 +1484,7 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 
-	LOG_INFO("cat cmd:retnbr %s", s.c_str());
+	LOG_INFO("cat cmd:retnbr %s", s.substr(i, endbracket - i + 1).c_str());
 
 	size_t start = s.find(':', i);
 	std::basic_string<char> buff;
@@ -1452,6 +1532,34 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 	sendCommand(buff, retnbr, progdefaults.RigCatWait);
 
 	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doVIDEO(string s)
+{
+	trx_mode id = active_modem->get_mode();
+	if ( id == MODE_SSB ||
+		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
+		id == MODE_SITORB || id == MODE_NAVTEX ) {
+		return;
+	}
+	size_t start = s.find(':') + 1;
+	size_t end = s.find('>');
+	std::string buff = s.substr(start, end - start);
+	if (buff.empty()) return;
+	active_modem->wfid_text(buff);
+	que_ok = true;
+}
+
+static void pVIDEO(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doVIDEO };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
 }
 
 
@@ -1615,29 +1723,43 @@ static void pMODEM_compSKED(std::string &s, size_t &i, size_t endbracket)
 static void doIMAGE(std::string s)
 {
 	if (s.length() > 0) {
+
+		bool Greyscale = false;
+		size_t p = string::npos;
 		string fname = s.substr(7);
-		fname.erase(fname.length() - 1);
+		p = fname.find(">");
+		fname.erase(p);
+		p = fname.find("G,");
+		if (p == string::npos) p = fname.find("g,");
+		if (p != string::npos) {
+			Greyscale = true;
+			fname.erase(p,2);
+		}
+		while (fname[0] == ' ') fname.erase(0,1);
+
 		trx_mode active_mode = active_modem->get_mode();
 		if ((active_mode == MODE_MFSK16 ||
 			 active_mode == MODE_MFSK32 ||
 			 active_mode == MODE_MFSK64 ||
 			 active_mode == MODE_MFSK128) &&
 			active_modem->get_cap() & modem::CAP_IMG) {
-			active_modem->send_image(fname);
+				Greyscale ?
+					active_modem->send_Grey_image(fname) :
+					active_modem->send_color_image(fname);
 		}
 	}
 	que_ok = true;
 }
 
-static void pQueIMAGE(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueIMAGE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	string cmdstr = s.substr(i, endbracket - i + 1);
-	struct CMDS cmd = { cmdstr, doIMAGE };
-	pushcmd(cmd);
+	string Tx_cmdstr = s.substr(i, endbracket - i + 1);
+	struct CMDS cmd = { Tx_cmdstr, doIMAGE };
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -1723,30 +1845,43 @@ static void doMODEM(std::string s)
 	}
 	catch (const exception& e) { }
 
-	if (active_modem->get_mode() != mode_info[m].mode)
+	if (active_modem->get_mode() != mode_info[m].mode) {
 		init_modem_sync(mode_info[m].mode);
+	}
 	que_ok = true;
 }
 
-static void pQueMODEM(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueMODEM(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	string cmdstr = s.substr(i, endbracket - i + 1);
-	struct CMDS cmd = { cmdstr, doMODEM };
-	if (cmdstr.find("SSB") != string::npos || cmdstr.find("ANALYSIS") != string::npos) {
-		LOG_ERROR("Disallowed: %s", cmdstr.c_str());
+	string Tx_cmdstr = s.substr(i, endbracket - i + 1);
+	struct CMDS cmd = { Tx_cmdstr, doMODEM };
+	if (Tx_cmdstr.find("SSB") != string::npos || Tx_cmdstr.find("ANALYSIS") != string::npos) {
+		LOG_ERROR("Disallowed: %s", Tx_cmdstr.c_str());
 		size_t nextbracket = s.find('<', endbracket);
 		if (nextbracket != string::npos)
 			s.erase(i, nextbracket - i - 1);
 		else
 			s.clear();
 	} else {
-		pushcmd(cmd);
+		push_txcmd(cmd);
 		s.replace(i, endbracket - i + 1, "^!");
 	}
+}
+
+static void pRxQueMODEM(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	string rx_cmdstr = s.substr(i, endbracket - i + 1);
+	struct CMDS cmd = { rx_cmdstr, doMODEM };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pMODEM(std::string &s, size_t &i, size_t endbracket)
@@ -1757,15 +1892,15 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 	}
 	static fre_t re("<MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
 
-	if (!re.match(s.c_str() + i)) {
-		size_t end = s.find('>', i);
-		if (end != std::string::npos)
-			s.erase(i, end - i);
+	std::string testmode = s.substr(i, endbracket - i + 1);
+
+	if (!re.match(testmode.c_str())) {
+		s.erase(i, endbracket - i + 1);
 		return;
 	}
 
 	const std::vector<regmatch_t>& o = re.suboff();
-	std::string name = s.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
+	std::string name = testmode.substr(o[1].rm_so, o[1].rm_eo - o[1].rm_so);
 	trx_mode m;
 	for (m = 0; m < NUM_MODES; m++)
 		if (name == mode_info[m].sname)
@@ -1783,7 +1918,7 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 	args.reserve(8);
 	char* end;
 	double d;
-	for (const char* p = s.c_str() + o[2].rm_so + 1; *p; p++) {
+	for (const char* p = testmode.c_str() + o[2].rm_so + 1; *p; p++) {
 		errno = 0;
 		d = strtod(p, &end);
 		if (!errno && p != end) {
@@ -1837,7 +1972,7 @@ static void pMODEM(std::string &s, size_t &i, size_t endbracket)
 
 	if (active_modem->get_mode() != mode_info[m].mode) {
 		init_modem(mode_info[m].mode);
-		int count = 100;
+		int count = 500;
 		while ((active_modem->get_mode() != mode_info[m].mode) && --count)
 			MilliSleep(10);
 	}
@@ -1945,9 +2080,37 @@ static void pTX_RSID(std::string &s, size_t &i, size_t endbracket)
 			btnTxRSID->value(0);
 		else if (sVal.compare(0,1,"t") == 0)
 			btnTxRSID->value(!btnTxRSID->value());
-
 		btnTxRSID->do_callback();
 	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doTXRSID(std::string s)
+{
+	if (s.find("on") != std::string::npos) {
+		btnTxRSID->value(1);
+		btnTxRSID->do_callback();
+		return;
+	}
+	if (s.find("off") != std::string::npos) {
+		btnTxRSID->value(0);
+		btnTxRSID->do_callback();
+		return;
+	}
+	if (s.find("t") != std::string::npos) {
+		btnTxRSID->value(!btnTxRSID->value());
+		btnTxRSID->do_callback();
+	}
+}
+
+static void pRxQueTXRSID(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTXRSID };
+	push_rxcmd(cmd);
 	s.replace(i, endbracket - i + 1, "");
 }
 
@@ -2062,15 +2225,26 @@ static void doGOHOME(std::string s)
 	que_ok = true;
 }
 
-static void pQueGOHOME(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueGOHOME(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueGOHOME(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOHOME };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pGOFREQ(std::string &s, size_t &i, size_t endbracket)
@@ -2107,15 +2281,26 @@ static void doGOFREQ(std::string s)
 	que_ok = true;
 }
 
-static void pQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueGOFREQ(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doGOFREQ };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pQRG(std::string &s, size_t &i, size_t endbracket)
@@ -2224,14 +2409,14 @@ static void doQSY(std::string s)
 	que_ok = true;
 }
 
-static void pQueQSY(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doQSY };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
@@ -2266,15 +2451,26 @@ static void doRIGMODE(std::string s)
 	que_ok = true;
 }
 
-static void pQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGMODE };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGMODE };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pFILWID(std::string& s, size_t& i, size_t endbracket)
@@ -2299,15 +2495,26 @@ static void doFILWID(std::string s)
 	que_ok = true;
 }
 
-static void pQueFILWID(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueFILWID(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
-	pushcmd(cmd);
+	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueFILWID(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pWX(std::string &s, size_t &i, size_t endbracket)
@@ -2705,13 +2912,14 @@ static void pSKED(std::string &s, size_t &i, size_t endbracket)
 
 void queue_reset()
 {
-	if (!cmds.empty()) {
+	if (!Tx_cmds.empty()) {
 		Fl::remove_timeout(post_queue_execute);
 		Fl::remove_timeout(queue_execute_after_rx);
 		Fl::remove_timeout(doneIDLE);
 		Fl::remove_timeout(doneWAIT);
-		while (!cmds.empty()) cmds.pop();
+		while (!Tx_cmds.empty()) Tx_cmds.pop();
 	}
+	while (!Rx_cmds.empty()) Rx_cmds.pop();
 	Qwait_time = 0;
 	Qidle_time = 0;
 	que_ok = true;
@@ -2722,29 +2930,50 @@ static void postQueue(std::string s)
 	ReceiveText->addstr(s, FTextBase::CTRL);
 }
 
-void queue_execute()
+// execute an in-line macro tag
+// occurs during the Tx state
+void Tx_queue_execute()
 {
-	if (cmds.empty()) {
+	if (Tx_cmds.empty()) {
 		Qwait_time = 0;
 		Qidle_time = 0;
 		que_ok = true;
 		return;
 	}
-	CMDS cmd = cmds.front();
-	cmds.pop();
-	cmd.fp(cmd.cmd);
+	CMDS cmd = Tx_cmds.front();
+	Tx_cmds.pop();
 	LOG_INFO("%s", cmd.cmd.c_str());
 	REQ(postQueue, cmd.cmd.append("\n"));
+	cmd.fp(cmd.cmd);
 	return;
 }
 
 bool queue_must_rx()
 {
-	static std::string rxcmds = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
-	if (cmds.empty()) return false;
-	CMDS cmd = cmds.front();
-	bool ret = (rxcmds.find(cmd.cmd.substr(0,5)) != std::string::npos);
-	return ret;
+	static std::string must_rx = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
+	if (Tx_cmds.empty()) return false;
+	CMDS cmd = Tx_cmds.front();
+	return (must_rx.find(cmd.cmd.substr(0,5)) != std::string::npos);
+}
+
+// execute all post Tx macros in the Rx_cmds queu
+// occurs immediately after the ^r execution
+// ^r is the control string substitute for the <RX> macro tag
+void Rx_queue_execute()
+{
+	if (Rx_cmds.empty()) return;
+
+	CMDS cmd;
+	while (!Rx_cmds.empty()) {
+		cmd = Rx_cmds.front();
+		Rx_cmds.pop();
+		LOG_INFO("%s", cmd.cmd.c_str());
+		REQ(postQueue, cmd.cmd.append("\n"));
+		cmd.cmd.erase(0,2);
+		cmd.cmd.insert(0,"<!");
+		cmd.fp(cmd.cmd);
+	}
+	return;
 }
 
 struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
@@ -2790,6 +3019,7 @@ static const MTAGS mtags[] = {
 {"<ZD>",		pZD},
 {"<ID>",		p_ID},
 {"<TEXT>",		pTEXT},
+{"<VIDEO:",		pVIDEO},
 {"<CWID>",		pCWID},
 {"<RX>",		pRX},
 {"<TX>",		pTX},
@@ -2859,20 +3089,30 @@ static const MTAGS mtags[] = {
 	{"<CSV:",		pCSV},
 	{"<WX>",		pWX},
 	{"<WX:",		pWX2},
-	{"<IMAGE:",		pQueIMAGE},
-	{"<!WPM:",		pQueWPM},
-	{"<!RISE:",		pQueRISETIME},
-	{"<!PRE:",		pQuePRE},
-	{"<!POST:",		pQuePOST},
-	{"<!GOHOME>",	pQueGOHOME},
-	{"<!GOFREQ:",	pQueGOFREQ},
-	{"<!QSY:",		pQueQSY},
-	{"<!IDLE:",		pQueIDLE},
-	{"<!WAIT:",		pQueWAIT},
-	{"<!MODEM:",	pQueMODEM},
-	{"<!RIGMODE:",	pQueRIGMODE},
-	{"<!FILWID:",	pQueFILWID},
-	{"<!TXATTEN:",	pQueTXATTEN},
+	{"<IMAGE:",		pTxQueIMAGE},
+	{"<!WPM:",		pTxQueWPM},
+	{"<!RISE:",		pTxQueRISETIME},
+	{"<!PRE:",		pTxQuePRE},
+	{"<!POST:",		pTxQuePOST},
+	{"<!GOHOME>",	pTxQueGOHOME},
+	{"<!GOFREQ:",	pTxQueGOFREQ},
+	{"<!QSY:",		pTxQueQSY},
+	{"<!IDLE:",		pTxQueIDLE},
+	{"<!WAIT:",		pTxQueWAIT},
+	{"<!MODEM:",	pTxQueMODEM},
+	{"<!RIGMODE:",	pTxQueRIGMODE},
+	{"<!FILWID:",	pTxQueFILWID},
+	{"<!TXATTEN:",	pTxQueTXATTEN},
+	{"<!RIGCAT:",	pTxQueRIGCAT},
+
+	{"<@MODEM:",	pRxQueMODEM},
+	{"<@RIGCAT:",	pRxQueRIGCAT},
+	{"<@GOFREQ:",	pRxQueGOFREQ},
+	{"<@GOHOME>",	pRxQueGOHOME},
+	{"<@RIGMODE:",	pRxQueRIGMODE},
+	{"<@FILWID:",	pRxQueFILWID},
+	{"<@TXRSID:",	pRxQueTXRSID},
+
 	{0, 0}
 };
 

@@ -1,0 +1,57 @@
+/**
+\page  at_macro_page Delayed Execution Macro Tags
+
+\tableofcontents
+
+
+The following macro tags will be parsed and qued for action after fldigi returns
+to the receive mode, i.e. after the \<RX\> tag (^r) is executed.
+<br>
+
+ Tag                         | Description
+:--------------------------: | :-----------------
+\<\@MODEM: , ... \>          | Change to specified modem with parameters
+\<\@RIGCAT:hex hex:retnbr\>  | RigCAT user commands
+\<\@RIGCAT:"string":retnbr\> | hex hex ... are sequential hexadecimal values <br> string is Ascii char sequence retnbr  <br> is number of bytes in xcvr response ':retnbr'  <br> is optional; retnbr set to 0 if missing
+\<\@GOHOME\>                 | return waterfall cursor to sweet spot
+\<\@GOFREQ:NNNN\>            | move waterfall cursor to freq NNNN Hz
+\<\@RIGMODE:mode\>           | send CAT command to transceiver to change to a valid mode
+\<\@FILWID:width\>           | send CAT command to transceiver to change to a valid filter <br> width example to QSY to sweetspot (center of bandpass filter) and select <br> narrow filter
+\<\@TXRSID:on\|off\|t\>      | transmit RSID on, off, toggle
+<br>
+
+Note that each of these tags is identical to their immediate mode
+counterparts.  The exception is the addition of the \@ symbol following the
+leading '\<'.  The use of these tags is best explained by example.
+<br>
+
+\section video_checkin Check in to a net with video ID
+
+\verbatim
+<TXRSID:off>
+<MODEM:NULL>
+<TX>
+<!GOFREQ:2200>
+<VIDEO:K7KY>
+<@GOFREQ:1200>
+<@MODEM:MFSK32>
+<@TXRSID:on>
+<RX>\n
+\endverbatim
+<ul>
+  <li>TxRSID is disabled before any other action</li>
+  <li>modem is changed to NULL to prevent anything but VIDEO transmission</li>
+  <li>Audio carrier is changed to 2200 Hertz</li>
+  <li>The callsign K7KY is transmitted as video text at 2200 Hertz</li>
+  <li>Return to receive</li>
+  <li>Waterfall carrier is set to 1200 Hertz</li>
+  <li>Modem is changed to MFSK-32</li>
+  <li>TxRSID is enabled</li>
+</ul>
+<br>
+\ref at_macro_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
