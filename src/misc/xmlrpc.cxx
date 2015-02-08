@@ -3061,7 +3061,7 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = btnAutoSpot->value();
-		REQ(set_button, btnAutoSpot, params.getBoolean(0));
+		REQ(set_button, (Fl_Button *) btnAutoSpot, params.getBoolean(0));
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };
@@ -3078,7 +3078,7 @@ public:
 	{
 		XMLRPC_LOCK;
 		bool v = !btnAutoSpot->value();
-		REQ(set_button, btnAutoSpot, v);
+		REQ(set_button, (Fl_Button *) btnAutoSpot, v);
 		*retval = xmlrpc_c::value_boolean(v);
 	}
 };

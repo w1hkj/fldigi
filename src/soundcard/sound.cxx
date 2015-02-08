@@ -76,12 +76,6 @@
 
 #include "estrings.h"
 
-inline void trim_white_spaces(std::string &s)
-{
-	while (s[0] == ' ') s.erase(0,1);
-	while (s[s.length() -1] == ' ') s.erase(s.length() - 1);
-}
-
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
 // #define  SRC_BUF_LEN	 (8*SND_BUF_LEN)
@@ -1537,12 +1531,9 @@ SoundPort::device_iterator SoundPort::name_to_device(std::string &name, unsigned
 	std::string device_name;
 	bool match_found = false;
 
-	trim_white_spaces(name);
-
 	for (i = devs.begin(); i != devs.end(); ++i) {
 
 		device_name.assign((*i)->name);
-		trim_white_spaces(device_name);
 
 		if(strncmp(device_name.c_str(), name.c_str(), 32) == 0)
 			match_found = true;

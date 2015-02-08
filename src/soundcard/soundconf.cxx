@@ -47,12 +47,6 @@ LOG_FILE_SOURCE(debug::LOG_AUDIO);
 
 using namespace std;
 
-inline void trim_white_spaces(std::string &s)
-{
-	while (s[0] == ' ') s.erase(0,1);
-	while (s[s.length() -1] == ' ') s.erase(s.length() - 1);
-}
-
 double std_sample_rates[] = { 8000.0, 9600.0, 11025.0, 12000.0, 16000.0, 22050.0, 24000.0,
 	32000.0, 44100.0, 48000.0, 88200.0, 96000.0, 192000.0, -1.0 };
 
@@ -179,14 +173,12 @@ static void init_portaudio(void)
 		}
 		// add to menu
 		if (ilist->dev->maxInputChannels > 0) {
-			trim_white_spaces(menu_item);
 			menu_item.assign(menu_item);
 			menuPortInDev->add(menu_item.c_str(), 0, NULL,
 							   reinterpret_cast<void *>(ilist->idx), 0);
 		}
 
 		if (ilist->dev->maxOutputChannels > 0) {
-			trim_white_spaces(menu_item);
 			menu_item.assign(menu_item);
 			menuPortOutDev->add(menu_item.c_str(), 0, NULL,
 								reinterpret_cast<void *>(ilist->idx), 0);
