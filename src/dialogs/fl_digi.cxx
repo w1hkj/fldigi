@@ -4116,9 +4116,8 @@ void showOpBrowserView(Fl_Widget *, void *)
 {
 	if (RigViewerFrame->visible())
 		return CloseQsoView();
-	QsoInfoFrame1->hide();
-	QsoInfoFrame2->hide();
-//	QsoButtonFrame->hide();
+
+	QsoInfoFrame->hide();
 	RigViewerFrame->show();
 	qso_opPICK->box(FL_DOWN_BOX);
 	qso_opBrowser->take_focus();
@@ -4128,9 +4127,7 @@ void showOpBrowserView(Fl_Widget *, void *)
 void CloseQsoView()
 {
 	RigViewerFrame->hide();
-	QsoInfoFrame1->show();
-	QsoInfoFrame2->show();
-//	QsoButtonFrame->show();
+	QsoInfoFrame->show();
 	qso_opPICK->box(FL_UP_BOX);
 	qso_opPICK->tooltip(_("Open List"));
 	if (restore_minimize) {
@@ -4930,7 +4927,7 @@ void create_fl_digi_main_primary() {
 		int mode_cbo_w = (freqwidth1 - 2 * Wbtn - 3 * pad) / 2;
 		int bw_cbo_w = freqwidth1 - 2 * Wbtn - 3 * pad - mode_cbo_w;
 		int smeter_w = mode_cbo_w + bw_cbo_w + pad;
-		int rig_control_frame_width = freqwidth1 + 3 * pad + Wbtn;
+		int rig_control_frame_width = freqwidth1 + 3 * pad;
 
 		RigControlFrame = new Fl_Group(
 			0, Hmenu, rig_control_frame_width, Hqsoframe);
@@ -5010,24 +5007,6 @@ void create_fl_digi_main_primary() {
 			qso_opPICK->image(addrbookpixmap);
 			qso_opPICK->callback(showOpBrowserView, 0);
 			qso_opPICK->tooltip(_("Open List"));
-
-			btnQRZ = new Fl_Button(
-					rightof(qsoFreqDisp1) + pad, qsoFreqDisp1->y(), Wbtn, Hentry);
-			btnQRZ->image(new Fl_Pixmap(net_icon));
-			btnQRZ->callback(cb_QRZ, 0);
-			btnQRZ->tooltip(_("QRZ"));
-
-			qsoClear = new Fl_Button(
-					rightof(qsoFreqDisp1) + pad, btnQRZ->y() + pad + Wbtn, Wbtn, Hentry);
-			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
-			qsoClear->callback(qsoClear_cb, 0);
-			qsoClear->tooltip(_("Clear"));
-
-			qsoSave = new Fl_Button(
-					rightof(qsoFreqDisp1) + pad, qsoClear->y() + pad + Wbtn, Wbtn, Hentry);
-			qsoSave->image(new Fl_Pixmap(save_icon));
-			qsoSave->callback(qsoSave_cb, 0);
-			qsoSave->tooltip(_("Save"));
 
 		RigControlFrame->resizable(NULL);
 
@@ -5109,16 +5088,37 @@ void create_fl_digi_main_primary() {
 		int y2 = Hmenu + Hentry + 2 * pad;
 		int y3 = Hmenu + 2 * (Hentry + pad) + pad;
 
-		x_qsoframe = rightof(RigControlFrame) + pad;
+		x_qsoframe = RigViewerFrame->x();
 
 		QsoInfoFrame = new Fl_Group(
 					x_qsoframe, Hmenu,
-					progStatus.mainW - rightof(RigControlFrame) - pad, Hqsoframe);
+					progStatus.mainW - x_qsoframe - pad, Hqsoframe);
 
-			QsoInfoFrame1 = new Fl_Group(x_qsoframe, Hmenu, wf1, Hqsoframe);
+			btnQRZ = new Fl_Button(
+					x_qsoframe, qsoFreqDisp1->y(), Wbtn, Hentry);
+			btnQRZ->image(new Fl_Pixmap(net_icon));
+			btnQRZ->callback(cb_QRZ, 0);
+			btnQRZ->tooltip(_("QRZ"));
+
+			qsoClear = new Fl_Button(
+					x_qsoframe, btnQRZ->y() + pad + Wbtn, Wbtn, Hentry);
+			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
+			qsoClear->callback(qsoClear_cb, 0);
+			qsoClear->tooltip(_("Clear"));
+
+			qsoSave = new Fl_Button(
+					x_qsoframe, qsoClear->y() + pad + Wbtn, Wbtn, Hentry);
+			qsoSave->image(new Fl_Pixmap(save_icon));
+			qsoSave->callback(qsoSave_cb, 0);
+			qsoSave->tooltip(_("Save"));
+
+			QsoInfoFrame1 = new Fl_Group(
+				rightof(btnQRZ) + pad,
+				Hmenu, wf1, Hqsoframe);
 
 				inpFreq1 = new Fl_Input2(
-					x_qsoframe + 25, Hmenu + pad, 90, Hentry, _("Frq"));
+					QsoInfoFrame1->x() + 25,
+					Hmenu + pad, 90, Hentry, _("Frq"));
 				inpFreq1->type(FL_NORMAL_OUTPUT);
 				inpFreq1->tooltip(_("frequency kHz"));
 				inpFreq1->align(FL_ALIGN_LEFT);
@@ -5195,7 +5195,8 @@ void create_fl_digi_main_primary() {
 				QsoInfoFrame1A->end();
 
 				QsoInfoFrame1B = new Fl_Group (
-						x_qsoframe, y3,
+						rightof(btnQRZ) + pad,
+						y3,
 						wf1, Hentry + pad);
 
 					outSerNo1 = new Fl_Input2(
