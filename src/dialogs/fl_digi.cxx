@@ -4859,12 +4859,10 @@ void create_fl_digi_main_primary() {
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
 
 	main_hmin = minhtext + Hwfall + Hmenu + Hstatus + Hmacros*3 + Hqsoframe + 3;
-	int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 3;
+	if (progStatus.mainH < main_hmin) progStatus.mainH = main_hmin;
 
-	if (Htext < minhtext) {
-		Htext = minhtext;
-		progStatus.mainH = main_hmin;
-	}
+	int Htext = progStatus.mainH - Hwfall - Hmenu - Hstatus - Hmacros*NUMKEYROWS - Hqsoframe - 3;
+	if (progStatus.tile_y > Htext) progStatus.tile_y = Htext / 2;
 
 	fl_digi_main = new Fl_Double_Window(progStatus.mainW, progStatus.mainH);
 
@@ -5746,7 +5744,7 @@ int alt_btn_width = 2 * DEFAULT_SW;
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
-			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Y,
 				Ws2n - Hstatus, Hstatus, "");
 			cntCW_WPM->callback(cb_cntCW_WPM);
 			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
@@ -5757,40 +5755,57 @@ int alt_btn_width = 2 * DEFAULT_SW;
 			cntCW_WPM->tooltip(_("CW transmit WPM"));
 			cntCW_WPM->hide();
 
-			btnCW_Default = new Fl_Button(rightof(cntCW_WPM), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+			btnCW_Default = new Fl_Button(rightof(cntCW_WPM), Y,
 				Hstatus, Hstatus, "*");
 			btnCW_Default->callback(cb_btnCW_Default);
 			btnCW_Default->tooltip(_("Default WPM"));
 			btnCW_Default->hide();
 
-			Status1 = new Fl_Box(rightof(MODEstatus), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Ws2n, Hstatus, "");
+			Status1 = new Fl_Box(rightof(MODEstatus), Y,
+				Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
-			Status2 = new Fl_Box(rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall, Wimd, Hstatus, "");
+			Status2 = new Fl_Box(rightof(Status1), Y,
+				Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			inpCall4 = new Fl_Input2(
-				rightof(Status1), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				rightof(Status1), Y,
 				Wimd, Hstatus, "");
 			inpCall4->align(FL_ALIGN_LEFT);
 			inpCall4->tooltip(_("Other call"));
 			inpCall4->hide();
 
+// see corner_box below
+// corner_box used to leave room for OS X corner drag handle
+
+#ifdef __APPLE__  
 			StatusBar = new Fl_Box(
-				rightof(Status2), Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
-						   progStatus.mainW - bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
-				- 2 * DEFAULT_SW - rightof(Status2),
-                Hstatus, "");
+				rightof(Status2), Y,
+						fl_digi_main->w()
+						- bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff
+						- Wwarn - bwTxLevel
+						- rightof(Status2) + 2 * pad - Hstatus,
+						Hstatus, "");
+#else
+			StatusBar = new Fl_Box(
+				rightof(Status2), Y,
+						fl_digi_main->w()
+						- bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff
+						- Wwarn - bwTxLevel
+						- rightof(Status2) + 2 * pad,
+						Hstatus, "");
+#endif
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			cntTxLevel = new Fl_Counter2(
-				rightof(StatusBar) + 2 * pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				rightof(StatusBar) + 2 * pad, Y,
 				bwTxLevel - 4 * pad,
 				Hstatus, "");
 			cntTxLevel->minimum(-30);
@@ -5802,28 +5817,27 @@ int alt_btn_width = 2 * DEFAULT_SW;
 			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 
 			WARNstatus = new Fl_Box(
-				rightof(StatusBar) + pad, Hmenu+Hrcvtxt+Hxmttxt+Hwfall,
+				rightof(StatusBar) + pad, Y,
                 Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
-//			int sql_width = bwSqlOnOff;
 			btnAFC = new Fl_Light_Button(
-						 progStatus.mainW - bwSqlOnOff - bwAfcOnOff - bwPwrSqlOnOff,
-						 Y,
-						 bwAfcOnOff, Hstatus, "AFC");
+						fl_digi_main->w() - bwSqlOnOff - bwAfcOnOff - bwPwrSqlOnOff,
+						Y,
+						bwAfcOnOff, Hstatus, "AFC");
 
 			btnSQL = new Fl_Light_Button(
-						 progStatus.mainW - bwSqlOnOff - bwPwrSqlOnOff,
-						 Y,
-						 bwSqlOnOff, Hstatus, "SQL");
+						fl_digi_main->w() - bwSqlOnOff - bwPwrSqlOnOff,
+						Y,
+						bwSqlOnOff, Hstatus, "SQL");
 
 			btnPSQL = new Fl_Light_Button(
-						  progStatus.mainW - bwPwrSqlOnOff,
-						  Y,
-						  bwPwrSqlOnOff, Hstatus, "KPSQL");
+						fl_digi_main->w() - bwPwrSqlOnOff,
+						Y,
+						bwPwrSqlOnOff, Hstatus, "KPSQL");
 
 			btnSQL->selection_color(progdefaults.Sql1Color);
 
@@ -5844,6 +5858,12 @@ int alt_btn_width = 2 * DEFAULT_SW;
 				btnPSQL->activate();
 			else
 				btnPSQL->deactivate();
+
+#ifdef __APPLE__
+			Fl_Box *corner_box = new Fl_Box(fl_digi_main->w() - Hstatus, Y,
+						Hstatus, Hstatus, "");
+			corner_box->box(FL_FLAT_BOX);
+#endif
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -6520,7 +6540,7 @@ void create_fl_digi_main(int argc, char** argv)
 	if (bWF_only)
 		fl_digi_main->size_range(WMIN, WF_only_height, 0, WF_only_height);
 	else
-		fl_digi_main->size_range(WMIN, HMIN, 0, 0);
+		fl_digi_main->size_range(WMIN, main_hmin, 0, 0);//HMIN, 0, 0);
 
 	set_colors();
 }

@@ -82,9 +82,9 @@ extern int Hmacros;
 #define Wimd  		120
 #define Wwarn 		16
 #define bwTxLevel	120
-#define bwAfcOnOff	(Hwfall -22)/2
-#define bwSqlOnOff	(Hwfall -22)/2
-#define bwPwrSqlOnOff	(Hwfall -8)/2
+#define bwAfcOnOff	60
+#define bwSqlOnOff	60
+#define bwPwrSqlOnOff	60
 
 #define Wstatus (WNOM - Wmode - Ws2n - Wimd - bwAfcOnOff - bwSqlOnOff - bwPwrSqlOnOff - Wwarn)
 
