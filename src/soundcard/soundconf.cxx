@@ -182,6 +182,7 @@ static void init_portaudio(void)
 			menu_item.assign(menu_item);
 			menuPortOutDev->add(menu_item.c_str(), 0, NULL,
 								reinterpret_cast<void *>(ilist->idx), 0);
+LOG_INFO("%s", menu_item.c_str());
 		}
 	}
 

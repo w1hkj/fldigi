@@ -78,7 +78,6 @@
 
 #define SND_BUF_LEN	 65536
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
-// #define  SRC_BUF_LEN	 (8*SND_BUF_LEN)
 
 // We never write duplicate/QSK/PTT tone/PseudoFSK data to the sound files
 #define SNDFILE_CHANNELS 1
@@ -199,7 +198,6 @@ int SoundBase::Capture(bool val)
 		return 0;
 
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
-//  SF_INFO info = { 0, sample_frequency, SNDFILE_CHANNELS, format, 0, 0 };
 	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], SNDFILE_CHANNELS, format, 0, 0 };
 	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
 		LOG_ERROR("Could not write %s:%s", fname, sf_strerror(NULL) );
@@ -208,9 +206,6 @@ int SoundBase::Capture(bool val)
 	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
 		LOG_ERROR("ofCapture update header command failed: %s", sf_strerror(ofCapture));
 	tag_file(ofCapture, "Captured audio");
-
-//	memset(src_inp_buffer, 0, 512 * sizeof(float));
-//	write_file(ofCapture, src_inp_buffer, 512);
 
 	capture = true;
 	return 1;
@@ -243,9 +238,6 @@ int SoundBase::Generate(bool val)
 	if (sf_command(ofGenerate, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
 		LOG_ERROR("ofGenerate update header command failed: %s", sf_strerror(ofGenerate));
 	tag_file(ofGenerate, "Generated audio");
-
-//	memset(src_inp_buffer, 0, 512 * sizeof(float));
-//	write_file(ofGenerate, src_inp_buffer, 512);
 
 	generate = true;
 	return 1;
@@ -353,9 +345,7 @@ LOG_INFO("src ratio %f", play_src_data->src_ratio);
 			throw SndException(src_strerror(err));
 
 		inp_pointer += play_src_data->output_frames_gen;
-//LOG_INFO("read: %d, conversion %d", (int)rd_count, (int)(play_src_data->output_frames_gen));
 	}
-//LOG_INFO("available: %d", (int)(inp_pointer - src_out_buffer));
 	if ( static_cast<size_t>(inp_pointer - src_out_buffer) >= count) {
 		memcpy(buf, src_out_buffer, count * sizeof(float));
 		memmove(src_out_buffer, src_out_buffer + count, (SND_RW_LEN - count) * sizeof(float));
@@ -1069,7 +1059,7 @@ int SoundPort::Open(int mode, int freq)
 		mode = O_RDWR;
 	static char pa_open_str[200];
 	snprintf(pa_open_str, sizeof(pa_open_str),
-		"Port Audio open mode = %s, device type = %s",
+		"Port Audio open mode = %s, device type = %s, device name = %s",
 		mode == O_WRONLY ? "Write" : mode == O_RDONLY ? "Read" :
 		mode == O_RDWR ? "Read/Write" : "unknown",
 		device_type == 0 ? "paInDevelopment" :
@@ -1085,7 +1075,9 @@ int SoundPort::Open(int mode, int freq)
 		device_type == 11 ? "paWDMKS" :
 		device_type == 12 ? "paJACK" :
 		device_type == 13 ? "paWASAPI" :
-		device_type == 14 ? "paAudioScienceHPI" : "unknown" );
+		device_type == 14 ? "paAudioScienceHPI" : "unknown",
+		mode == O_WRONLY ? sd[1].device.c_str() :
+		mode == O_RDONLY ? sd[0].device.c_str() : "unknown" );
 	LOG_INFO( "%s", pa_open_str);
 
 	size_t start = (mode == O_RDONLY || mode == O_RDWR) ? 0 : 1,
@@ -1528,19 +1520,9 @@ long SoundPort::src_read_cb(void* arg, float** data)
 SoundPort::device_iterator SoundPort::name_to_device(std::string &name, unsigned dir)
 {
 	device_iterator i;
-	std::string device_name;
-	bool match_found = false;
-
-	for (i = devs.begin(); i != devs.end(); ++i) {
-
-		device_name.assign((*i)->name);
-
-		if(strncmp(device_name.c_str(), name.c_str(), 32) == 0)
-			match_found = true;
-
-		if (match_found && (dir ? (*i)->maxOutputChannels : (*i)->maxInputChannels))
+	for (i = devs.begin(); i != devs.end(); ++i)
+		if (name == (*i)->name && (dir ? (*i)->maxOutputChannels : (*i)->maxInputChannels))
 			break;
-	}
 	return i;
 }
 
@@ -1622,9 +1604,8 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\ndefault high output latency: " << (*sd[dir].idev)->defaultHighOutputLatency
 		<< "\n";
 
-//  LOG_DEBUG("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
+//	LOG_INFO("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
 //		sd[dir].device.c_str(), device_text[dir].str().c_str());
-
 
 		sd[dir].dev_sample_rate = find_srate(dir);
 		if (sd[dir].dev_sample_rate != req_sample_rate)
