@@ -878,8 +878,12 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 
 bool SoundPort::pa_init = false;
 std::vector<const PaDeviceInfo*> SoundPort::devs;
+
 static ostringstream device_text[2];
+static pthread_mutex_t device_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 map<string, vector<double> > supported_rates[2];
+
 void SoundPort::initialize(void)
 {
 	if (pa_init)
@@ -928,9 +932,11 @@ const std::vector<const PaDeviceInfo*>& SoundPort::devices(void)
 }
 void SoundPort::devices_info(string& in, string& out)
 {
+	guard_lock devices_lock(&device_mutex);
 	in = device_text[0].str();
 	out = device_text[1].str();
 }
+
 const vector<double>& SoundPort::get_supported_rates(const string& name, unsigned dir)
 {
 	return supported_rates[dir][name];
@@ -1580,6 +1586,9 @@ void SoundPort::init_stream(unsigned dir)
 	else
 		ss << "Unknown";
 
+	{
+	guard_lock devices_lock(&device_mutex);
+
 	device_text[dir].str("");
 		device_text[dir]
 		<< "index: " << idx
@@ -1602,6 +1611,7 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\ndefault low output latency: " << (*sd[dir].idev)->defaultLowOutputLatency
 		<< "\ndefault high output latency: " << (*sd[dir].idev)->defaultHighOutputLatency
 		<< "\n";
+	}
 
 //	LOG_INFO("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
 //		sd[dir].device.c_str(), device_text[dir].str().c_str());
