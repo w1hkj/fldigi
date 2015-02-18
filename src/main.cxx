@@ -236,14 +236,51 @@ void start_process(string executable)
 	}
 }
 
+void toggle_io_port_selection(int io_mode)
+{
+	switch(io_mode) {
+		case ARQ_IO:
+			btnEnable_kiss->do_callback();
+			btnEnable_arq->do_callback();
+			progdefaults.changed = false;
+			break;
+
+		case KISS_IO:
+			btnEnable_arq->do_callback();
+			btnEnable_kiss->do_callback();
+			progdefaults.changed = false;
+			break;
+
+		default:
+			LOG_INFO("Unknown data io mode");
+	}
+}
+
 static void auto_start()
 {
+	bool run_flamp = false;
+
+	// Make sure we are in ARQ_IO mode if executing FLAMP
+	if (!progdefaults.auto_flamp_pathname.empty() &&
+		 progdefaults.flamp_auto_enable) {
+		 toggle_io_port_selection(ARQ_IO);
+		 run_flamp = true;
+	}
+
+	// A general wait to ensure FLDIGI initialization of
+	// io ports. 1/4 to 3/4 second delay.
+	int nloops = 0;
+	while(nloops++ < 3) {
+		MilliSleep(250);
+		if(arq_state() && data_io_enabled == ARQ_IO)
+			break; // Exit early if verified.
+	}
+
 	if (!progdefaults.auto_flrig_pathname.empty() &&
 		 progdefaults.flrig_auto_enable)
 		start_process(progdefaults.auto_flrig_pathname);
 
-	if (!progdefaults.auto_flamp_pathname.empty() &&
-		 progdefaults.flamp_auto_enable)
+	if (run_flamp)
 		start_process(progdefaults.auto_flamp_pathname);
 
 	if (!progdefaults.auto_fllog_pathname.empty() &&
@@ -265,26 +302,6 @@ static void auto_start()
 	if (!progdefaults.auto_prog3_pathname.empty() &&
 		 progdefaults.prog3_auto_enable)
 		start_process(progdefaults.auto_prog3_pathname);
-}
-
-void toggle_io_port_selection(int io_mode)
-{
-	switch(io_mode) {
-		case ARQ_IO:
-			btnEnable_kiss->do_callback();
-			btnEnable_arq->do_callback();
-			progdefaults.changed = false;
-			break;
-
-		case KISS_IO:
-			btnEnable_arq->do_callback();
-			btnEnable_kiss->do_callback();
-			progdefaults.changed = false;
-			break;
-
-		default:
-			LOG_INFO("Unknown data io mode");
-	}
 }
 
 // these functions are all started after Fl::run() is executing

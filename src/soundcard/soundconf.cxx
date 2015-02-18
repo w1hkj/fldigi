@@ -173,13 +173,11 @@ static void init_portaudio(void)
 		}
 		// add to menu
 		if (ilist->dev->maxInputChannels > 0) {
-			menu_item.assign(menu_item);
 			menuPortInDev->add(menu_item.c_str(), 0, NULL,
 							   reinterpret_cast<void *>(ilist->idx), 0);
 		}
 
 		if (ilist->dev->maxOutputChannels > 0) {
-			menu_item.assign(menu_item);
 			menuPortOutDev->add(menu_item.c_str(), 0, NULL,
 								reinterpret_cast<void *>(ilist->idx), 0);
 LOG_INFO("%s", menu_item.c_str());

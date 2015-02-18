@@ -833,6 +833,11 @@ static void *arq_loop(void *args)
 	return NULL;
 }
 
+bool arq_state(void)
+{
+	return arq_enabled;
+}
+
 void arq_init()
 {
 	arq_enabled = false;

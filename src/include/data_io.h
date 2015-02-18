@@ -80,6 +80,7 @@ extern void update_kpsql_fractional_gain(int value);
 // ARQ implementation
 extern void	arq_init(void);
 extern void	arq_close(void);
+extern bool arq_state(void);
 extern void	WriteARQ(unsigned char);
 extern void	checkTLF(void);
 extern int  arq_get_char(void);
