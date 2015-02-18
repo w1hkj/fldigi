@@ -320,13 +320,17 @@ static int create_default_script(char *file_name)
 
 	if(menuPortInDev->value() > -1) {
 		memset(buffer, 0, sizeof(buffer));
-		snprintf(buffer, sizeof(buffer)-1, "%s:%d,\"%s\"", CMD_PORTA_CAP, menuPortInDev->value(), menuPortInDev->text());
+		// Invalid warning issued (clang-600.0.56 [3.5] MacOSX) if index is replaced with reinterpret_cast<intptr_t>(x) in snprintf() routine.
+		int index = reinterpret_cast<intptr_t>(menuPortInDev->mvalue()->user_data());
+		snprintf(buffer, sizeof(buffer)-1, "%s:%d,\"%s\"", CMD_PORTA_CAP, index, menuPortInDev->text());
 		if(add_string(fd, (char *)buffer,  1)) return fclose(fd);
 	}
 
 	if(menuPortOutDev->value() > -1) {
 		memset(buffer, 0, sizeof(buffer));
-		snprintf(buffer, sizeof(buffer)-1, "%s:%d,\"%s\"", CMD_PORTA_PLAY, menuPortOutDev->value(), menuPortOutDev->text());
+		// Invalid warning issued (clang-600.0.56 [3.5] MacOSX) if index is replaced with reinterpret_cast<intptr_t>(x) in snprintf() routine.
+		int index = reinterpret_cast<intptr_t>(menuPortOutDev->mvalue()->user_data());
+		snprintf(buffer, sizeof(buffer)-1, "%s:%d,\"%s\"", CMD_PORTA_PLAY, index, menuPortOutDev->text());
 		if(add_string(fd, (char *)buffer, 1)) return fclose(fd);
 	}
 #endif // USE_PORTAUDIO
@@ -669,9 +673,9 @@ static int add_command(FILE *fd, char *cmd, int indent_level)
 	std::string indent = "";
 	for(int i = 0; i < indent_level; i++)
 		indent.append("   ");
-	
+
 	fprintf(fd, "%s%s:\n", indent.c_str(), cmd);
-	
+
 	return ferror(fd);
 }
 

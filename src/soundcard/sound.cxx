@@ -88,7 +88,6 @@ using namespace std;
 
 LOG_FILE_SOURCE(debug::LOG_AUDIO);
 
-
 SoundBase::SoundBase()
 		: sample_frequency(0),
 	  txppm(progdefaults.TX_corr), rxppm(progdefaults.RX_corr),

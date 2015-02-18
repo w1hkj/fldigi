@@ -1102,7 +1102,7 @@ SCRIPT_CODES ScriptParsing::parse_single_command(FILE *fd, SCRIPT_COMMANDS *cur_
 		return error;
 	}
 
-	int str_count = str_cnt(buffer, allocated_buffer_size);
+	int str_count = (int) strnlen(buffer, allocated_buffer_size);
 	trim(buffer, (size_t) str_count);
 
 
@@ -2063,7 +2063,7 @@ ScriptParsing::~ScriptParsing()
 void ScriptParsing::add_to_delete_list(SCRIPT_COMMANDS *ptr)
 {
 	if(!ptr) return;
-	
+
 	if(delete_list_count < MAX_DELETE_LIST_COUNT) {
 		memory_delete_list[delete_list_count] = ptr;
 		delete_list_count++;
@@ -2093,14 +2093,14 @@ int ScriptParsing::str_cnt(char * str, int count_limit)
 {
 	if(!str || (count_limit < 1))
 		return 0;
-	
+
 	int value = 0;
-	
+
 	for(int index = 0; index < count_limit; index++) {
 		if(str[index] == 0) break;
 		value++;
 	}
-	
+
 	return value;
 }
 
@@ -2115,36 +2115,36 @@ std::string &ScriptParsing::trim(std::string &s) {
 	char *end    = (char *)0;
 	char *src    = (char *)0;
 	long count   = s.size();
-	
+
 	buffer = new char[count + 1];
 	if(!buffer) return s;
-	
+
 	memcpy(buffer, s.c_str(), count);
 	buffer[count] = 0;
-	
+
 	dst = src = buffer;
 	end = &buffer[count];
-	
+
 	while(src < end) {
 		if(*src > ' ') break;
 		src++;
 	}
-	
+
 	if(src > dst) {
 		while((dst < end) && (src < end))
 			*dst++ = *src++;
 		*dst = 0;
 	}
-	
+
 	while(end >= buffer) {
 		if(*end > ' ') break;
 		*end-- = 0;
 	}
-	
+
 	s.assign(buffer);
-	
+
 	delete [] buffer;
-	
+
 	return s;
 }
 
@@ -2160,35 +2160,34 @@ void ScriptParsing::trim(char *buffer, size_t limit)
 	char *e      = (char *)0;
 	char *dst    = (char *)0;
 	size_t count = 0;
-	
+
 	if(!buffer || limit < 1) {
 		return;
 	}
-	
+
 	for(count = 0; count < limit; count++)
 		if(buffer[count] == 0) break;
-	
+
 	if(count < 1) return;
-	
+
 	s = buffer;
 	e = &buffer[count-1];
-	
+
 	for(size_t i = 0; i < count; i++) {
 		if((*s <= ' ') || (*s == '"')) s++;
 		else break;
 	}
-	
+
 	while(e > s) {
-		if((*e <= ' ') || (*e == '"'))
-			*e = 0;
-		else
-			break;
+		if(*e == '"') {	*e-- = 0; break; }
+		if(*e > ' ') break;
+		if(*e <= ' ') *e = 0;
 		e--;
 	}
-	
+
 	dst = buffer;
-	for(; s <= e; s++) {
-		*dst++ = *s;
+	while(s <= e) {
+		*dst++ = *s++;
 	}
 	*dst = 0;
 }

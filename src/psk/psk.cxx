@@ -1179,7 +1179,7 @@ static double averageamp;
 // ***********************************************************
 //	if (_pskr) {
 //		metric = metric * 4;
-//	} 
+//	}
 //	else if ( (_xpsk || _8psk || _16psk) && !_disablefec) {
 //		metric *= 2 * symbits; /// @TODO scale the metric with the psk constellation density
 //	}
@@ -1339,16 +1339,19 @@ void psk::signalquality()
 
 void psk::update_syncscope()
 {
-	static char msg1[15];
-	static char msg2[15];
+	static char msg1[16];
+	static char msg2[16];
 
 	display_metric(metric);
 
+	memset(msg1, 0, sizeof(msg1));
+	memset(msg2, 0, sizeof(msg2));
+
 	s2n = 10.0*log10( snratio );
-	snprintf(msg1, sizeof(msg1), "s/n %2d dB", (int)(floor(s2n)));
+	snprintf(msg1, sizeof(msg1)-1, "s/n %2d dB", (int)(floor(s2n)));
 
 	imd = 10.0*log10( imdratio );
-	snprintf(msg2, sizeof(msg2), "imd %3d dB", (int)(floor(imd)));
+	snprintf(msg2, sizeof(msg2)-1, "imd %3d dB", (int)(floor(imd)));
 
 	if (imdValid) {
 		put_Status1(msg1, progdefaults.StatusTimeout, progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
