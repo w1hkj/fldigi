@@ -215,35 +215,35 @@ LOG_INFO("%s", menu_item.c_str());
 	pa_set_dev(menuPortOutDev, progdefaults.PortOutDevice, progdefaults.PortOutIndex);
 }
 
-int pa_set_dev(Fl_Choice *choice, std::string dev_name, int dev_index)
+int pa_set_dev(Fl_Choice *loc_choice, std::string loc_dev_name, int loc_dev_index)
 {
-	const Fl_Menu_Item *menu = (Fl_Menu_Item *)0;
-	int size = 0;
-	int dev_found = PA_DEV_NOT_FOUND;
-	int idx = -1;
+	const Fl_Menu_Item *loc_menu = (Fl_Menu_Item *)0;
+	int loc_size = 0;
+	int loc_dev_found = PA_DEV_NOT_FOUND;
+	int loc_idx = -1;
 
-	if(!choice) return dev_found;
+	if(!loc_choice) return loc_dev_found;
 
-	menu = choice->menu();
-	size = choice->size();
+	loc_menu = loc_choice->menu();
+	loc_size = loc_choice->size();
 
-	for (int i = 0; i < size - 1; i++, menu++) {
-		if (menu->label() && dev_name == menu->label()) {
-			idx = i;
-			dev_found = PA_DEV_FOUND;
-			if (reinterpret_cast<intptr_t>(menu->user_data()) == dev_index ||
-				dev_index == -1) { // exact match, or index was never saved
-				dev_found = PA_EXACT_DEV_FOUND;
+	for (int loc_i = 0; loc_i < loc_size - 1; loc_i++, loc_menu++) {
+		if (loc_menu->label() && loc_dev_name == loc_menu->label()) {
+			loc_idx = loc_i;
+			loc_dev_found = PA_DEV_FOUND;
+			if (reinterpret_cast<intptr_t>(loc_menu->user_data()) == loc_dev_index ||
+				loc_dev_found == -1) { // exact match, or index was never saved
+				loc_dev_found = PA_EXACT_DEV_FOUND;
 			}
 		}
 	}
 
-	if (idx > 0) {
-		choice->value(idx);
-		choice->set_changed();
+	if (loc_idx > 0) {
+		loc_choice->value(loc_idx);
+		loc_choice->set_changed();
 	}
 
-	return dev_found;
+	return loc_dev_found;
 }
 
 #else
@@ -479,33 +479,33 @@ void sound_update(unsigned idx)
 					case 1: // default sample rate only, build menu with all std rates
 						build_srate_listbox(listbox[i], std_sample_rates,
 											sizeof(std_sample_rates)/sizeof(*std_sample_rates) - 1, srates[0]);
-						
+
 						break;
 					default: // first element is default sample rate, build menu with rest
 						build_srate_listbox(listbox[i], &srates[0] + 1, srates.size() - 1, srates[0]);
 						break;
 				}
-				
+
 				for (int j = 0; j < listbox[i]->lsize(); j++) {
 					listbox[i]->index(j);
 					if (strstr(listbox[i]->value(), label))
 						break;
 				}
 				free(label);
-				
+
 				listbox[i]->activate();
 			}
 		}
 			break;
 #endif
-			
+
 #if USE_PULSEAUDIO
 		case SND_IDX_PULSE:
 			inpPulseServer->activate();
 			scDevice[0] = scDevice[1] = inpPulseServer->value();
 			break;
 #endif
-			
+
 		case SND_IDX_NULL:
 			scDevice[0] = scDevice[1] = "";
 			break;
