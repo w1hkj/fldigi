@@ -472,6 +472,8 @@ void editMacro(int n, int t, Fl_Input* in)
 		macrotext->value(in->value());
 		labeltext->hide();
 	}
+	macrotext->textfont(progdefaults.MacroEditFontnbr);
+	macrotext->textsize(progdefaults.MacroEditFontsize);
 	iMacro = n;
 	iType = t;
 	iInput = in;

@@ -85,6 +85,25 @@ static void cbTxFontBrowser(Fl_Widget*, void*) {
       progdefaults.changed = true;
 }
 
+static void cbMacroEditFontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+  
+      MacroText->textfont(font);
+      MacroText->textsize(size);
+      MacroText->redraw();
+  
+      progdefaults.MacroEditFontnbr = font;
+      progdefaults.MacroEditFontsize = size;
+  
+      MacroText->textfont(font);
+      MacroText->textsize(size);
+      
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
+
 void cbWaterfallFontBrowser(Fl_Widget*, void*) {
   Fl_Font fnt = font_browser->fontNumber();
       int size = font_browser->fontSize();
@@ -1143,6 +1162,18 @@ static void cb_btnTxFont(Fl_Button*, void*) {
     font_browser->fontColor(progdefaults.TxFontcolor);
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbTxFontBrowser);
+    font_browser->show();
+}
+
+Fl_Input *MacroText=(Fl_Input *)0;
+
+Fl_Button *btnMacroEditFont=(Fl_Button *)0;
+
+static void cb_btnMacroEditFont(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.MacroEditFontnbr);
+    font_browser->fontSize(progdefaults.MacroEditFontsize);
+    font_browser->fontFilter(Font_Browser::ALL_TYPES);
+    font_browser->callback(cbMacroEditFontBrowser);
     font_browser->show();
 }
 
@@ -5424,7 +5455,6 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6192,9 +6222,10 @@ ab and newline are automatically included."));
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));
-                { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(99, 109, 165, 24, _("Rx/Tx Character set"));
+                { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 85, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
                 listbox_charset_status->box(FL_BORDER_BOX);
                 listbox_charset_status->color((Fl_Color)55);
@@ -6209,67 +6240,75 @@ ab and newline are automatically included."));
                   listbox_charset_status->callback(cb_listbox_charset, 0);
                 listbox_charset_status->end();
                 } // Fl_ListBox* listbox_charset_status
-                { RxText = new Fl_Input(99, 143, 165, 36);
+                { RxText = new Fl_Input(96, 116, 220, 36);
                 RxText->value("Receive Text");
                 RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));
                 RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);
                 RxText->type(FL_MULTILINE_INPUT_WRAP);
                 } // Fl_Input* RxText
-                { btnRxColor = new Fl_Button(273, 150, 75, 21, _("Rx bkgnd"));
+                { btnRxColor = new Fl_Button(326, 123, 75, 21, _("Rx bkgnd"));
                 btnRxColor->callback((Fl_Callback*)cb_btnRxColor);
                 } // Fl_Button* btnRxColor
-                { btnTxColor = new Fl_Button(273, 191, 75, 21, _("Tx bkgnd"));
+                { btnTxColor = new Fl_Button(326, 166, 75, 21, _("Tx bkgnd"));
                 btnTxColor->callback((Fl_Callback*)cb_btnTxColor);
                 } // Fl_Button* btnTxColor
-                { TxText = new Fl_Input(99, 186, 165, 37);
+                { TxText = new Fl_Input(96, 158, 220, 37);
                 TxText->value("Transmit Text");
                 TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));
                 TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);
                 TxText->type(FL_MULTILINE_INPUT_WRAP);
                 } // Fl_Input* TxText
-                { btnRxFont = new Fl_Button(358, 150, 75, 21, _("Rx font"));
+                { btnRxFont = new Fl_Button(411, 123, 75, 21, _("Rx font"));
                 btnRxFont->callback((Fl_Callback*)cb_btnRxFont);
                 } // Fl_Button* btnRxFont
-                { btnTxFont = new Fl_Button(358, 191, 75, 21, _("Tx font"));
+                { btnTxFont = new Fl_Button(411, 166, 75, 21, _("Tx font"));
                 btnTxFont->callback((Fl_Callback*)cb_btnTxFont);
                 } // Fl_Button* btnTxFont
-                { Fl_Group* o = new Fl_Group(71, 235, 404, 81, _("Text Highlighting"));
+                { MacroText = new Fl_Input(96, 201, 220, 37);
+                MacroText->value("Macro editor text");
+                MacroText->textfont(progdefaults.MacroEditFontnbr); TxText->textsize(progdefaults.MacroEditFontsize);
+                MacroText->type(FL_MULTILINE_INPUT_WRAP);
+                } // Fl_Input* MacroText
+                { btnMacroEditFont = new Fl_Button(326, 209, 120, 21, _("Macro Edit Font"));
+                btnMacroEditFont->callback((Fl_Callback*)cb_btnMacroEditFont);
+                } // Fl_Button* btnMacroEditFont
+                { Fl_Group* o = new Fl_Group(86, 248, 404, 81, _("Text Highlighting"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-                { btnXMIT = new Fl_Button(89, 263, 40, 21, _("XMIT"));
+                { btnXMIT = new Fl_Button(104, 276, 40, 21, _("XMIT"));
                 btnXMIT->tooltip(_("Sent chars in Rx/Tx pane"));
                 btnXMIT->callback((Fl_Callback*)cb_btnXMIT);
                 btnXMIT->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnXMIT->color(progdefaults.XMITcolor);
                 } // Fl_Button* btnXMIT
-                { btnCTRL = new Fl_Button(132, 263, 40, 21, _("CTRL"));
+                { btnCTRL = new Fl_Button(147, 276, 40, 21, _("CTRL"));
                 btnCTRL->tooltip(_("Control chars in Rx/Tx pane"));
                 btnCTRL->callback((Fl_Callback*)cb_btnCTRL);
                 btnCTRL->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnCTRL->color(progdefaults.CTRLcolor);
                 } // Fl_Button* btnCTRL
-                { btnSKIP = new Fl_Button(176, 263, 40, 21, _("SKIP"));
+                { btnSKIP = new Fl_Button(191, 276, 40, 21, _("SKIP"));
                 btnSKIP->tooltip(_("Skipped chars in Tx pane\n(Tx on/off in CW)"));
                 btnSKIP->callback((Fl_Callback*)cb_btnSKIP);
                 btnSKIP->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnSKIP->color(progdefaults.SKIPcolor);
                 } // Fl_Button* btnSKIP
-                { btnALTR = new Fl_Button(219, 263, 40, 21, _("ALTR"));
+                { btnALTR = new Fl_Button(234, 276, 40, 21, _("ALTR"));
                 btnALTR->tooltip(_("Alternate character color in Rx panelr"));
                 btnALTR->callback((Fl_Callback*)cb_btnALTR);
                 btnALTR->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnALTR->color(progdefaults.ALTRcolor);
                 } // Fl_Button* btnALTR
-                { btnSEL = new Fl_Button(263, 263, 39, 21, _("SEL"));
+                { btnSEL = new Fl_Button(278, 276, 39, 21, _("SEL"));
                 btnSEL->tooltip(_("Selection background color in Rx Tx panels"));
                 btnSEL->callback((Fl_Callback*)cb_btnSEL);
                 btnSEL->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnSEL->color(progdefaults.RxTxSelectcolor);
                 } // Fl_Button* btnSEL
-                { btnNoTextColor = new Fl_Button(310, 263, 70, 21, _("System"));
+                { btnNoTextColor = new Fl_Button(325, 276, 70, 21, _("System"));
                 btnNoTextColor->callback((Fl_Callback*)cb_btnNoTextColor);
                 } // Fl_Button* btnNoTextColor
-                { btnTextDefaults = new Fl_Button(384, 263, 70, 21, _("Defaults"));
+                { btnTextDefaults = new Fl_Button(399, 276, 70, 21, _("Defaults"));
                 btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
                 } // Fl_Button* btnTextDefaults
                 o->end();
@@ -6557,7 +6596,7 @@ ab and newline are automatically included."));
               } // Fl_Group* o
               tabsColors->end();
             } // Fl_Tabs* tabsColors
-            { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(105, 325, 25, 25, _("display Rx control chars as ascii string"));
+            { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(105, 335, 25, 25, _("display Rx control chars as ascii string"));
               btn_show_all_codes->down_box(FL_DOWN_BOX);
               btn_show_all_codes->callback((Fl_Callback*)cb_btn_show_all_codes);
               o->value(progdefaults.show_all_codes);
