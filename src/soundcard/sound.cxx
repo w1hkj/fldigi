@@ -239,6 +239,11 @@ int SoundBase::Generate(bool val)
 	tag_file(ofGenerate, "Generated audio");
 
 	generate = true;
+
+	modem_wr_sr = sample_frequency;
+	writ_src_data->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+	src_set_ratio(writ_src_state, writ_src_data->src_ratio);
+
 	return 1;
 }
 
@@ -393,9 +398,11 @@ void SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
 
 	size_t output_size = writ_src_data->output_frames_gen;
 
-	if (output_size)
+	if (output_size) {
+		for (size_t i = 0; i < output_size; i++)
+			writ_src_data->data_out[i] *= 0.9;
 		sf_writef_float(file, writ_src_data->data_out, output_size);
-
+	}
 	return;
 
 }
