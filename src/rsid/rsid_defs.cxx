@@ -277,12 +277,19 @@ const int cRsId::rsid_ids_size1 = sizeof(rsid_ids_1)/sizeof(*rsid_ids_1) - 1;
         ELEM2_(1026, MFSK64L, MODE_MFSK64L)             \
         ELEM2_(1029, MFSK128L, MODE_MFSK128L)           \
                                                         \
-        ELEM2_(1037, PSK8P125, MODE_8PSK125)            \
-        ELEM2_(1038, PSK8P250, MODE_8PSK250)            \
-        ELEM2_(1043, PSK8P500, MODE_8PSK500)            \
+        ELEM2_(1066, PSK8P125, MODE_8PSK125)            \
+        ELEM2_(1071, PSK8P250, MODE_8PSK250)            \
+        ELEM2_(1076, PSK8P500, MODE_8PSK500)            \
         ELEM2_(1047, PSK8P1000, MODE_8PSK1000)          \
-        ELEM2_(1058, PSK8P1200, MODE_8PSK1200)          \
+        ELEM2_(1082, PSK8P1200, MODE_8PSK1200)          \
         ELEM2_(1059, PSK8P1333, MODE_8PSK1333)          \
+                                                        \
+        ELEM2_(1037, PSK8P125F, MODE_8PSK125F)          \
+        ELEM2_(1038, PSK8P250F, MODE_8PSK250F)          \
+        ELEM2_(1043, PSK8P500F, MODE_8PSK500F)          \
+        ELEM2_(1078, PSK8P1000F, MODE_8PSK1000F)        \
+        ELEM2_(1058, PSK8P1200F, MODE_8PSK1200F)        \
+        ELEM2_(1084, PSK8P1333F, MODE_8PSK1333F)        \
                                                         \
         ELEM2_(0, NONE2, NUM_MODES)
 

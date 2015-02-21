@@ -4,7 +4,7 @@
 // Copyright (C) 2006
 //		Dave Freese, W1HKJ
 //
-// This file is part of fldigi.  Adapted from code contained in gmfsk source code 
+// This file is part of fldigi.  Adapted from code contained in gmfsk source code
 // distribution.
 //  gmfsk Copyright (C) 2001, 2002, 2003
 //  Tomi Manninen (oh2bns@sral.fi)
@@ -30,7 +30,7 @@
 #define INTERLEAVE_REV  1
 #define PUNCTURE        128
 
-class interleave 
+class interleave
 {
 protected:
 	int size;
@@ -48,6 +48,7 @@ public:
 	void symbols (unsigned char *psyms);
 	void bits (unsigned int *pbits);
 	void flush();
+	void init();
 };
 
 // ----------------------------------------------------------------------------

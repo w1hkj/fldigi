@@ -107,6 +107,7 @@ private:
 	double			fecmet;
 	double			fecmet2;
 
+
 	double			phase;
 	double			freqerr;
 	int				bits;
@@ -122,6 +123,7 @@ private:
 	int				dcdbits;
 	cmplx			quality;
 	int				acquire;
+	int             idepth;
 
 	viewpsk*		pskviewer;
 	pskeval*		evalpsk;
@@ -142,6 +144,9 @@ private:
 //PSKR modes
 	bool			firstbit;
 	bool			startpreamble;
+
+//PSKR & 8PSK modes
+	bool			PSKviterbi;
 
 //MULTI-CARRIER
 	double			sc_bw; // single carrier bandwidth

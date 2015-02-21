@@ -35,29 +35,20 @@
 /* ---------------------------------------------------------------------- */
 viterbi::viterbi(int k, int poly1, int poly2)
 {
-	int outsize = 1 << k;
-	_traceback = PATHMEM - 1;
-	_chunksize = 8;
+	outsize = 1 << k;
 	nstates = 1 << (k - 1);
-	
+	_k = k;
+	_poly1 = poly1;
+	_poly2 = poly2;
+
 	output = new int[outsize];
-	
-	for (int i = 0; i < outsize; i++) {
-		output[i] = parity(poly1 & i) | (parity(poly2 & i) << 1);
-	}
-	
+
 	for (int i = 0; i < PATHMEM; i++) {
 		metrics[i] = new int[nstates];
 		history[i] = new int[nstates];
-		sequence[i] = 0;
-		for (int j = 0; j < nstates; j++)
-			metrics[i][j] = history[i][j] = 0;
 	}
-	for (int i = 0; i < 256; i++) {
-		mettab[0][i] = 128 - i;
-		mettab[1][i] = i - 128;
-	}
-	reset();
+
+	init();
 }
 
 viterbi::~viterbi()
@@ -69,6 +60,28 @@ viterbi::~viterbi()
 	}
 }
 
+void viterbi::init(void)
+{
+	if(output) {
+		_traceback = PATHMEM - 1;
+		_chunksize = 8;
+
+		for (int i = 0; i < outsize; i++) {
+			output[i] = parity(_poly1 & i) | (parity(_poly2 & i) << 1);
+		}
+
+		for (int i = 0; i < 256; i++) {
+			mettab[0][i] = 128 - i;
+			mettab[1][i] = i - 128;
+		}
+
+		memset(sequence, 0, sizeof(sequence));
+
+		reset();
+	}
+}
+
+
 void viterbi::reset()
 {
 	for (int i = 0; i < PATHMEM; i++) {
@@ -78,16 +91,18 @@ void viterbi::reset()
 	ptr = 0;
 }
 
-int viterbi::settraceback(int trace) {
+int viterbi::settraceback(int trace)
+{
 	if (trace < 0 || trace > PATHMEM - 1)
-	return -1;
+		return -1;
 	_traceback = trace;
 	return 0;
 }
 
-int viterbi::setchunksize(int chunk) {
+int viterbi::setchunksize(int chunk)
+{
 	if (chunk < 1 || chunk > _traceback)
-	return -1;
+		return -1;
 	_chunksize = chunk;
 	return 0;
 }
@@ -99,7 +114,7 @@ int viterbi::traceback(int *metric)
 
 	p = (ptr - 1) % PATHMEM;
 
-// Find the state with the best metric
+	// Find the state with the best metric
 	bestmetric = INT_MIN;
 	beststate = 0;
 
@@ -110,7 +125,7 @@ int viterbi::traceback(int *metric)
 		}
 	}
 
-// Trace back 'traceback' steps, starting from the best state
+	// Trace back 'traceback' steps, starting from the best state
 	sequence[p] = beststate;
 
 	for (int i = 0; i < _traceback; i++) {
@@ -123,9 +138,9 @@ int viterbi::traceback(int *metric)
 	if (metric)
 		*metric = metrics[p][sequence[p]];
 
-// Decode 'chunksize' bits
+	// Decode 'chunksize' bits
 	for (int i = 0; i < _chunksize; i++) {
-// low bit of state is the previous input bit
+		// low bit of state is the previous input bit
 		c = (c << 1) | (sequence[p] & 1);
 		p = (p + 1) % PATHMEM;
 	}
@@ -140,20 +155,20 @@ int viterbi::decode(unsigned char *sym, int *metric)
 {
 	unsigned int currptr, prevptr;
 	int met[4];
-	
+
 	currptr = ptr;
 	prevptr = (currptr - 1) % PATHMEM;
-//	if (prevptr < 0) prevptr = PATHMEM - 1;
+	//	if (prevptr < 0) prevptr = PATHMEM - 1;
 
 	met[0] = mettab[0][sym[1]] + mettab[0][sym[0]];
 	met[1] = mettab[0][sym[1]] + mettab[1][sym[0]];
 	met[2] = mettab[1][sym[1]] + mettab[0][sym[0]];
 	met[3] = mettab[1][sym[1]] + mettab[1][sym[0]];
 
-//	met[0] = 256 - sym[1] - sym[0];
-//	met[1] = sym[0] - sym[1];
-//	met[2] = sym[1] - sym[0];
-//	met[3] = sym[0] + sym[1] - 256;
+	//	met[0] = 256 - sym[1] - sym[0];
+	//	met[1] = sym[0] - sym[1];
+	//	met[2] = sym[1] - sym[0];
+	//	met[3] = sym[0] + sym[1] - 256;
 
 	for (int n = 0; n < nstates; n++) {
 		int p0, p1, s0, s1, m0, m1;
@@ -188,6 +203,7 @@ int viterbi::decode(unsigned char *sym, int *metric)
 			for (int j = 0; j < nstates; j++)
 				metrics[i][j] -= INT_MAX / 2;
 	}
+
 	if (metrics[currptr][0] < INT_MIN / 2) {
 		for (int i = 0; i < PATHMEM; i++)
 			for (int j = 0; j < nstates; j++)
@@ -202,18 +218,12 @@ int viterbi::decode(unsigned char *sym, int *metric)
 encoder::encoder(int k, int poly1, int poly2)
 {
 	int size = 1 << k;	/* size of the output table */
-
 	output = new int[size];
-// output contains 2 bits in positions 0 and 1 describing the state machine
-// for each bit delay, ie: for k = 7 there are 128 possible state pairs.
-// the modulo-2 addition for polynomial 1 is in bit 0
-// the modulo-2 addition for polynomial 2 is in bit 1
-// the allowable state outputs are 0, 1, 2 and 3
-	for (int i = 0; i < size; i++) {
-		output[i] = parity(poly1 & i) | (parity(poly2 & i) << 1);
-	}
-	shreg = 0;
-	shregmask = size - 1;
+	_k = k;
+	_poly1 = poly1;
+	_poly2 = poly2;
+
+	init();
 }
 
 encoder::~encoder()
@@ -227,4 +237,23 @@ int encoder::encode(int bit)
 
 	return output[shreg & shregmask];
 }
+
+void encoder::init(void)
+{
+	if(output) {
+		int size = 1 << _k;	/* size of the output table */
+
+		// output contains 2 bits in positions 0 and 1 describing the state machine
+		// for each bit delay, ie: for k = 7 there are 128 possible state pairs.
+		// the modulo-2 addition for polynomial 1 is in bit 0
+		// the modulo-2 addition for polynomial 2 is in bit 1
+		// the allowable state outputs are 0, 1, 2 and 3
+		for (int i = 0; i < size; i++) {
+			output[i] = parity(_poly1 & i) | (parity(_poly2 & i) << 1);
+		}
+		shreg = 0;
+		shregmask = size - 1;
+	}
+}
+
 

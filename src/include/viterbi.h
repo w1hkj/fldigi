@@ -33,16 +33,21 @@ private:
 	int _chunksize;
 	int nstates;
 	int *output;
+	int outsize;
 	int *metrics[PATHMEM];
 	int *history[PATHMEM];
 	int sequence[PATHMEM];
 	int mettab[2][256];
 	unsigned int ptr;
 	int traceback(int *metric);
+	int _k;
+	int _poly1;
+	int _poly2;
 public:
 	viterbi(int k, int poly1, int poly2);
 	~viterbi();
 	void reset();
+	void init();
 	int settraceback(int trace);
 	int setchunksize(int chunk);
 	int decode(unsigned char *sym, int *metric);
@@ -55,10 +60,14 @@ private:
 	int *output;
 	unsigned int shreg;
 	unsigned int shregmask;
+	int _k;
+	int _poly1;
+	int _poly2;
 public:
 	encoder(int k, int poly1, int poly2);
 	~encoder();
 	int encode(int bit);
+	void init(void);
 };
 
 #endif

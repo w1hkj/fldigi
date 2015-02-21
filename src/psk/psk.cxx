@@ -101,7 +101,7 @@ extern waterfall *wf;
 //  - One of the bits is still known with 100% certianty.
 //  - Only up to 1 bit can be in error
 static cmplx graymapped_8psk_pos[] = {
-//				 Degrees  Bits In  Mapped Soft-Symbol
+	//				 Degrees  Bits In  Mapped Soft-Symbol
 	cmplx (1.0, 0.0),         // 0   | 0b000  | 025,000,025
 	cmplx (0.7071, 0.7071),   // 45  | 0b001  | 000,025,230
 	cmplx (-0.7071, 0.7071),  // 135 | 0b010  | 025,255,025
@@ -146,7 +146,7 @@ void psk::tx_init(SoundBase *sc)
 	}
 	videoText();
 
-// interleaver
+	// interleaver
 	bitshreg = 0;
 	startpreamble = true;
 
@@ -154,6 +154,11 @@ void psk::tx_init(SoundBase *sc)
 	acc_symbols = 0;
 	ovhd_symbols = 0;
 	accumulated_bits = 0;
+
+	if(_8psk && _puncturing) {
+		enc->init();
+		Txinlv->flush();
+	}
 }
 
 void psk::rx_init()
@@ -249,340 +254,398 @@ psk::psk(trx_mode pskmode) : modem()
 	symbits = 1;
 	flushlength = 0;
 	int  isize = 2;
-	int  idepth = 2;
+	idepth = 2;
+	PSKviterbi = false;
 
 	switch (mode) {
-	case MODE_PSK31:
-		symbollen = 256;
-		dcdbits = 32;
-		break;
-	case MODE_PSK63:
-		symbollen = 128;
-		dcdbits = 64;
-		break;
-	case MODE_PSK125:
-		symbollen = 64;
-		dcdbits = 128;
-		break;
-	case MODE_PSK250:
-		symbollen = 32;
-		dcdbits = 256;
-		break;
-	case MODE_PSK500:
-		symbollen = 16;
-		dcdbits = 512;
-		break;
-	case MODE_PSK1000:
-		symbollen = 8;
-		dcdbits = 128;
-		break;
+		case MODE_PSK31:
+			symbollen = 256;
+			dcdbits = 32;
+			break;
+		case MODE_PSK63:
+			symbollen = 128;
+			dcdbits = 64;
+			break;
+		case MODE_PSK125:
+			symbollen = 64;
+			dcdbits = 128;
+			break;
+		case MODE_PSK250:
+			symbollen = 32;
+			dcdbits = 256;
+			break;
+		case MODE_PSK500:
+			symbollen = 16;
+			dcdbits = 512;
+			break;
+		case MODE_PSK1000:
+			symbollen = 8;
+			dcdbits = 128;
+			break;
 
-	case MODE_QPSK31:
-		symbollen = 256;
-		_qpsk = true;
-		dcdbits = 32;
-		cap |= CAP_REV;
-		break;
-	case MODE_QPSK63:
-		symbollen = 128;
-		_qpsk = true;
-		dcdbits = 64;
-		cap |= CAP_REV;
-		break;
-	case MODE_QPSK125:
-		symbollen = 64;
-		_qpsk = true;
-		dcdbits = 128;
-		cap |= CAP_REV;
-		break;
-	case MODE_QPSK250:
-		symbollen = 32;
-		_qpsk = true;
-		dcdbits = 256;
-		cap |= CAP_REV;
-		break;
-	case MODE_QPSK500:
-		symbollen = 16;
-		_qpsk = true;
-		dcdbits = 512;
-		cap |= CAP_REV;
-		break;
-	case MODE_PSK63F:  // As per Multipsk (BPSK63 + FEC + MFSK Varicode)
-		symbollen = 128;
-		_pskr = true;
-		dcdbits = 64;
-		break;
+		case MODE_QPSK31:
+			symbollen = 256;
+			_qpsk = true;
+			dcdbits = 32;
+			cap |= CAP_REV;
+			break;
+		case MODE_QPSK63:
+			symbollen = 128;
+			_qpsk = true;
+			dcdbits = 64;
+			cap |= CAP_REV;
+			break;
+		case MODE_QPSK125:
+			symbollen = 64;
+			_qpsk = true;
+			dcdbits = 128;
+			cap |= CAP_REV;
+			break;
+		case MODE_QPSK250:
+			symbollen = 32;
+			_qpsk = true;
+			dcdbits = 256;
+			cap |= CAP_REV;
+			break;
+		case MODE_QPSK500:
+			symbollen = 16;
+			_qpsk = true;
+			dcdbits = 512;
+			cap |= CAP_REV;
+			break;
+		case MODE_PSK63F:  // As per Multipsk (BPSK63 + FEC + MFSK Varicode)
+			symbollen = 128;
+			_pskr = true;
+			dcdbits = 64;
+			break;
 
-	case MODE_8PSK125:
-		symbollen = 128;
-		idepth = 384; // 1024 milliseconds
-		flushlength = 38;
-		samplerate = 16000;
-		_8psk = true;
-		dcdbits = 128;
-		cap |= CAP_REV;
-		break;
-	case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
-		symbollen = 64;
-		idepth = 512; // 682 milliseconds
-		flushlength = 47;
-		samplerate = 16000;
-		_8psk = true;
-		dcdbits = 256;
-		cap |= CAP_REV;
-		break;
-	case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
-		symbollen = 32;
-		idepth = 640; // 426 milliseconds
-		flushlength = 62;
-		samplerate = 16000;
-		_8psk = true;
-		_puncturing = true;
-		dcdbits = 512;
-		cap |= CAP_REV;
-		break;
+	// 8psk modes without FEC
+		case MODE_8PSK125:
+			symbollen = 128;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			dcdbits = 128;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+			symbollen = 64;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			dcdbits = 256;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
+			symbollen = 32;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			dcdbits = 512;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK1000: // 1000 baud | 3000 bits/sec  No FEC
+			symbollen = 16;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			dcdbits = 1024;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK1200: // 1200 baud | 1800 bits/sec @ 2/3 rate FEC
+			symbollen = 13;
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			dcdbits = 2048;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK1333: // 1333 baud | 4000 bits/sec  No FEC
+			symbollen = 12; // 1333 baud | 4kbps  No FEC
+			samplerate = 16000;
+			_8psk = true;
+			_disablefec = true;
+			dcdbits = 2048;
+			PSKviterbi = true;
+			cap |= CAP_REV;
+			break;
 
-	case MODE_8PSK1000: // 1000 baud | 3000 bits/sec  No FEC
-		symbollen = 16;
-		samplerate = 16000;
-		_8psk = true;
-		_disablefec = true;
-		dcdbits = 1024;
-		cap |= CAP_REV;
-		break;
+	// 8psk modes with FEC
+		case MODE_8PSK125F:
+			symbollen = 128;
+			idepth = 384; // 1024 milliseconds
+			flushlength = 38;
+			samplerate = 16000;
+			_8psk = true;
+			dcdbits = 128;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK250F: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+			symbollen = 64;
+			idepth = 512; // 682 milliseconds
+			flushlength = 47;
+			samplerate = 16000;
+			_8psk = true;
+			dcdbits = 256;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK500F: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
+			symbollen = 32;
+			idepth = 640; // 426 milliseconds
+			flushlength = 62;
+			samplerate = 16000;
+			_8psk = true;
+			_puncturing = true;
+			dcdbits = 512;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK1000F: // 1000 baud | 3000 bits/sec
+			symbollen = 16;
+			idepth = 512;
+			flushlength = 56;
+			samplerate = 16000;
+			_8psk = true;
+			dcdbits = 1024;
+			cap |= CAP_REV;
+			_puncturing = true;
+			PSKviterbi = true;
+			break;
+		case MODE_8PSK1200F: // 1200 baud | 1800 bits/sec
+			symbollen = 13;
+			idepth = 512;
+			flushlength = 56;
+			samplerate = 16000;
+			_8psk = true;
+			_puncturing = true;
+			dcdbits = 2048;
+			cap |= CAP_REV;
+			PSKviterbi = true;
+			break;
+		case MODE_8PSK1333F: // 1333 baud | 4000 bits/sec
+			symbollen = 12;
+			idepth = 512;
+			flushlength = 56;
+			samplerate = 16000;
+			_8psk = true;
+			dcdbits = 2048;
+			cap |= CAP_REV;
+			_puncturing = true;
+			PSKviterbi = true;
+			break;
+			// end 8psk modes
 
-	case MODE_8PSK1200: // 1200 baud | 1800 bits/sec @ 2/3 rate FEC
-		symbollen = 13;
-		idepth = 512;
-		flushlength = 56;
-		samplerate = 16000;
-		_8psk = true;
-		_puncturing = true;
-		dcdbits = 2048;
-		cap |= CAP_REV;
-		break;
+		case MODE_PSK125R:
+			symbollen = 64;
+			_pskr = true;
+			dcdbits = 128;
+			idepth = 40;  // 2x2x40 interleaver
+			break;
+		case MODE_PSK250R:
+			symbollen = 32;
+			_pskr = true;
+			dcdbits = 256;
+			idepth = 80;  // 2x2x80 interleaver
+			break;
+		case MODE_PSK500R:
+			symbollen = 16;
+			_pskr = true;
+			dcdbits = 512;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_PSK1000R:
+			symbollen = 8;
+			_pskr = true;
+			dcdbits = 512;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-	case MODE_8PSK1333: // 1333 baud | 4000 bits/sec  No FEC
-		symbollen = 16; // 1333 baud | 4kbps  No FEC
-		samplerate = 16000;
-		_8psk = true;
-		_disablefec = true;
-		dcdbits = 1024;
-		cap |= CAP_REV;
-		break;
+			// multi-carrier modems
+		case MODE_4X_PSK63R:
+			symbollen = 128;//PSK63
+			dcdbits = 128;
+			_pskr = true;//PSKR
+			numcarriers = 4;
+			idepth = 80; // 2x2x80 interleaver
+			break;
+		case MODE_5X_PSK63R:
+			symbollen = 128; //PSK63
+			dcdbits = 512;
+			_pskr = true; //PSKR
+			numcarriers = 5;
+			idepth = 260; // 2x2x160 interleaver
+			break;
+		case MODE_10X_PSK63R:
+			symbollen = 128; //PSK63
+			dcdbits = 512;
+			_pskr = true; //PSKR
+			numcarriers = 10;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_20X_PSK63R:
+			symbollen = 128; //PSK63
+			dcdbits = 512;
+			_pskr = true; //PSKR
+			numcarriers = 20;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_32X_PSK63R:
+			symbollen = 128; //PSK63
+			dcdbits = 512;
+			_pskr = true; //PSKR
+			numcarriers = 32;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-	case MODE_PSK125R:
-		symbollen = 64;
-		_pskr = true;
-		dcdbits = 128;
-		idepth = 40;  // 2x2x40 interleaver
-		break;
-	case MODE_PSK250R:
-		symbollen = 32;
-		_pskr = true;
-		dcdbits = 256;
-		idepth = 80;  // 2x2x80 interleaver
-		break;
-	case MODE_PSK500R:
-		symbollen = 16;
-		_pskr = true;
-		dcdbits = 512;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_PSK1000R:
-		symbollen = 8;
-		_pskr = true;
-		dcdbits = 512;
-		idepth = 160; // 2x2x160 interleaver
-		break;
+		case MODE_4X_PSK125R:
+			symbollen = 64;//PSK125
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 4;
+			idepth = 80; // 2x2x80 interleaver
+			break;
+		case MODE_5X_PSK125R:
+			symbollen = 64;//PSK125
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 5;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_10X_PSK125R:
+			symbollen = 64;//PSK125
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 10;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-// multi-carrier modems
-	case MODE_4X_PSK63R:
-		symbollen = 128;//PSK63
-		dcdbits = 128;
-		_pskr = true;//PSKR
-		numcarriers = 4;
-		idepth = 80; // 2x2x80 interleaver
-		break;
-	case MODE_5X_PSK63R:
-		symbollen = 128; //PSK63
-		dcdbits = 512;
-		_pskr = true; //PSKR
-		numcarriers = 5;
-		idepth = 260; // 2x2x160 interleaver
-		break;
-	case MODE_10X_PSK63R:
-		symbollen = 128; //PSK63
-		dcdbits = 512;
-		_pskr = true; //PSKR
-		numcarriers = 10;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_20X_PSK63R:
-		symbollen = 128; //PSK63
-		dcdbits = 512;
-		_pskr = true; //PSKR
-		numcarriers = 20;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_32X_PSK63R:
-		symbollen = 128; //PSK63
-		dcdbits = 512;
-		_pskr = true; //PSKR
-		numcarriers = 32;
-		idepth = 160; // 2x2x160 interleaver
-		break;
+		case MODE_12X_PSK125:
+			symbollen = 64;//PSK125
+			dcdbits = 128;//512;
+			numcarriers = 12;
+			break;
+		case MODE_12X_PSK125R:
+			symbollen = 64;//PSK125
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 12;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-	case MODE_4X_PSK125R:
-		symbollen = 64;//PSK125
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 4;
-		idepth = 80; // 2x2x80 interleaver
-		break;
-	case MODE_5X_PSK125R:
-		symbollen = 64;//PSK125
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 5;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_10X_PSK125R:
-		symbollen = 64;//PSK125
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 10;
-		idepth = 160; // 2x2x160 interleaver
-		break;
+		case MODE_16X_PSK125R:
+			symbollen = 64;//PSK125
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 16;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-	case MODE_12X_PSK125:
-		symbollen = 64;//PSK125
-		dcdbits = 128;//512;
-		numcarriers = 12;
-		break;
-	case MODE_12X_PSK125R:
-		symbollen = 64;//PSK125
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 12;
-		idepth = 160; // 2x2x160 interleaver
-		break;
+		case MODE_2X_PSK250R:
+			symbollen = 32;//PSK250
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 2;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_3X_PSK250R:
+			symbollen = 32;//PSK250
+			dcdbits = 512;
+			_pskr = true;//PSKR
+			numcarriers = 3;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_5X_PSK250R:
+			symbollen = 32;//PSK250
+			_pskr = true;//PSKR
+			dcdbits = 1024;
+			numcarriers = 5;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_6X_PSK250:
+			symbollen = 32;//PSK250
+			dcdbits = 512;
+			numcarriers = 6;
+			break;
+		case MODE_6X_PSK250R:
+			symbollen = 32;//PSK250
+			_pskr = true;//PSKR
+			dcdbits = 1024;
+			numcarriers = 6;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_7X_PSK250R:
+			symbollen = 32;//PSK250
+			_pskr = true;//PSKR
+			dcdbits = 1024;
+			numcarriers = 7;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-	case MODE_16X_PSK125R:
-		symbollen = 64;//PSK125
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 16;
-		idepth = 160; // 2x2x160 interleaver
-		break;
+		case MODE_2X_PSK500:
+			symbollen = 16;
+			dcdbits = 512;
+			numcarriers = 2;
+			break;
+		case MODE_4X_PSK500:
+			symbollen = 16;
+			dcdbits = 512;
+			numcarriers = 4;
+			break;
 
-	case MODE_2X_PSK250R:
-		symbollen = 32;//PSK250
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 2;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_3X_PSK250R:
-		symbollen = 32;//PSK250
-		dcdbits = 512;
-		_pskr = true;//PSKR
-		numcarriers = 3;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_5X_PSK250R:
-		symbollen = 32;//PSK250
-		_pskr = true;//PSKR
-		dcdbits = 1024;
-		numcarriers = 5;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_6X_PSK250:
-		symbollen = 32;//PSK250
-		dcdbits = 512;
-		numcarriers = 6;
-		break;
-	case MODE_6X_PSK250R:
-		symbollen = 32;//PSK250
-		_pskr = true;//PSKR
-		dcdbits = 1024;
-		numcarriers = 6;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_7X_PSK250R:
-		symbollen = 32;//PSK250
-		_pskr = true;//PSKR
-		dcdbits = 1024;
-		numcarriers = 7;
-		idepth = 160; // 2x2x160 interleaver
-		break;
+		case MODE_2X_PSK500R:
+			symbollen = 16;
+			_pskr = true;
+			dcdbits = 1024;
+			idepth = 160; // 2x2x160 interleaver
+			numcarriers = 2;
+			break;
+		case MODE_3X_PSK500R:
+			symbollen = 16;
+			_pskr = true;
+			dcdbits = 1024;
+			idepth = 160; // 2x2x160 interleaver
+			numcarriers = 3;
+			break;
+		case MODE_4X_PSK500R:
+			symbollen = 16;
+			_pskr = true;
+			dcdbits = 1024;
+			idepth = 160; // 2x2x160 interleaver
+			numcarriers = 4;
+			break;
 
-	case MODE_2X_PSK500:
-		symbollen = 16;
-		dcdbits = 512;
-		numcarriers = 2;
-		break;
-	case MODE_4X_PSK500:
-		symbollen = 16;
-		dcdbits = 512;
-		numcarriers = 4;
-		break;
+		case MODE_2X_PSK800:
+			symbollen = 10;
+			_pskr = false;
+			dcdbits = 512;
+			numcarriers = 2;
+			break;
+		case MODE_2X_PSK800R:
+			symbollen = 10;
+			_pskr = true;
+			dcdbits = 1024;
+			idepth = 160; // 2x2x160 interleaver
+			numcarriers = 2;
+			break;
 
-	case MODE_2X_PSK500R:
-		symbollen = 16;
-		_pskr = true;
-		dcdbits = 1024;
-		idepth = 160; // 2x2x160 interleaver
-		numcarriers = 2;
-		break;
-	case MODE_3X_PSK500R:
-		symbollen = 16;
-		_pskr = true;
-		dcdbits = 1024;
-		idepth = 160; // 2x2x160 interleaver
-		numcarriers = 3;
-		break;
-	case MODE_4X_PSK500R:
-		symbollen = 16;
-		_pskr = true;
-		dcdbits = 1024;
-		idepth = 160; // 2x2x160 interleaver
-		numcarriers = 4;
-		break;
+		case MODE_2X_PSK1000:
+			symbollen = 8;//PSK1000
+			dcdbits = 1024;
+			numcarriers = 2;
+			idepth = 160; // 2x2x160 interleaver
+			break;
+		case MODE_2X_PSK1000R:
+			symbollen = 8;//PSK1000
+			_pskr = true;//PSKR
+			dcdbits = 1024;
+			numcarriers = 2;
+			idepth = 160; // 2x2x160 interleaver
+			break;
 
-	case MODE_2X_PSK800:
-		symbollen = 10;
-		_pskr = false;
-		dcdbits = 512;
-		numcarriers = 2;
-		break;
-	case MODE_2X_PSK800R:
-		symbollen = 10;
-		_pskr = true;
-		dcdbits = 1024;
-		idepth = 160; // 2x2x160 interleaver
-		numcarriers = 2;
-		break;
-
-	case MODE_2X_PSK1000:
-		symbollen = 8;//PSK1000
-		dcdbits = 1024;
-		numcarriers = 2;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-	case MODE_2X_PSK1000R:
-		symbollen = 8;//PSK1000
-		_pskr = true;//PSKR
-		dcdbits = 1024;
-		numcarriers = 2;
-		idepth = 160; // 2x2x160 interleaver
-		break;
-
-	default:
-		mode = MODE_PSK31;
-		symbollen = 256;
-		dcdbits = 32;
-		numcarriers = 1;
+		default:
+			mode = MODE_PSK31;
+			symbollen = 256;
+			dcdbits = 32;
+			numcarriers = 1;
 	}
 
 	// Set the number of bits-per-symbol based on the chosen constellation
@@ -592,9 +655,9 @@ psk::psk(trx_mode pskmode) : modem()
 	else symbits = 1; // else BPSK / PSKR
 
 
-//printf("%s: symlen %d, dcdbits %d, _qpsk %d, _pskr %d, numc %f\n",
-//mode_info[mode].sname,
-//symbollen, dcdbits, _qpsk, _pskr, numcarriers);
+	//printf("%s: symlen %d, dcdbits %d, _qpsk %d, _pskr %d, numc %f\n",
+	//mode_info[mode].sname,
+	//symbollen, dcdbits, _qpsk, _pskr, numcarriers);
 
 
 	enc = (encoder *)0;
@@ -622,7 +685,7 @@ psk::psk(trx_mode pskmode) : modem()
 
 	switch (progdefaults.PSK_filter) {
 		case 1:
-		// use the original gmfsk matched filters
+			// use the original gmfsk matched filters
 			for (int i = 0; i < 64; i++) {
 				fir1c[i] = gmfir1c[i];
 				fir2c[i] = gmfir2c[i];
@@ -633,9 +696,9 @@ psk::psk(trx_mode pskmode) : modem()
 			}
 			break;
 		case 2:
-		// creates fir1c matched sin(x)/x filter w hamming
+			// creates fir1c matched sin(x)/x filter w hamming
 			wsincfilt(fir1c, 1.0 / symbollen, false);
-		// creates fir2c matched sin(x)/x filter w hamming
+			// creates fir2c matched sin(x)/x filter w hamming
 			wsincfilt(fir2c, 1.0 / 16.0, false);
 			for (int i = 0; i < numcarriers; i++) {
 				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
@@ -643,9 +706,9 @@ psk::psk(trx_mode pskmode) : modem()
 			}
 			break;
 		case 3:
-		// creates fir1c matched sin(x)/x filter w hamming
+			// creates fir1c matched sin(x)/x filter w hamming
 			wsincfilt(fir1c, 1.0 / symbollen, false);
-		// 1/22 with Hamming window nearly identical to gmfir2c
+			// 1/22 with Hamming window nearly identical to gmfir2c
 			wsincfilt(fir2c, 1.0 / 22.0, false);
 			for (int i = 0; i < numcarriers; i++) {
 				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
@@ -660,9 +723,9 @@ psk::psk(trx_mode pskmode) : modem()
 			}
 		case 0:
 		default :
-		// creates fir1c matched sin(x)/x filter w blackman
+			// creates fir1c matched sin(x)/x filter w blackman
 			wsincfilt(fir1c, 1.0 / symbollen, true);
-		// creates fir2c matched sin(x)/x filter w blackman
+			// creates fir2c matched sin(x)/x filter w blackman
 			wsincfilt(fir2c, 1.0 / 16.0, true);
 			for (int i = 0; i < numcarriers; i++) {
 				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
@@ -681,54 +744,48 @@ psk::psk(trx_mode pskmode) : modem()
 		enc = new encoder(K, POLY1, POLY2);
 		dec = new viterbi(K, POLY1, POLY2);
 
-	} else if (_pskr || mode == MODE_8PSK1200) {
-// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
-// Set decode size to 4 since some characters can be as small
-// as 3 bits long. This minimises intercharacters decoding
-// interactions.
+	} else if (_pskr || mode == MODE_8PSK1200F || PSKviterbi) {
+		// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
+		// Set decode size to 4 since some characters can be as small
+		// as 3 bits long. This minimises intercharacters decoding
+		// interactions.
 		enc = new encoder(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec->setchunksize(4);
 		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec2->setchunksize(4);
 
-	} else if (_puncturing) { // Use the FEC code best suited for puncturing
+	} else if (_puncturing) { 
+		// Use the FEC code best suited for puncturing
 		enc = new encoder(K13, K13_POLY1, K13_POLY2);
 		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
-		dec->settraceback (PATHMEM); // Set traceback to maximum: long constraint length codes require long traceback
+		// long constraint length codes require long traceback
+		dec->settraceback (PATHMEM); 
 		dec->setchunksize(4);
 		dec2 = new viterbi(K13, K13_POLY1, K13_POLY2);
 		dec2->settraceback (PATHMEM);
 		dec2->setchunksize(4);
-	} else if (_xpsk || _8psk || _16psk) { // Use the code with the best FEC capabilities
+
+	} else if (_xpsk || _8psk || _16psk) { 
+		// Use the code with the best FEC capabilities
 		enc = new encoder(K16, K16_POLY1, K16_POLY2);
 		dec = new viterbi(K16, K16_POLY1, K16_POLY2);
-		dec->settraceback (PATHMEM); // long constraint length codes require long traceback
+		// long constraint length codes require long traceback
+		dec->settraceback (PATHMEM); 
 		dec->setchunksize(4);
 		dec2 = new viterbi(K16, K16_POLY1, K16_POLY2);
 		dec2->settraceback (PATHMEM);
 		dec2->setchunksize(4);
-	} else if (_pskr) {
-// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
-// Set decode size to 4 since some characters can be as small
-// as 3 bits long. This minimises intercharacters decoding
-// interactions.
-		enc = new encoder(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec->setchunksize(4);
-		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
-		dec2->setchunksize(4);
 	}
 
+	// Interleaver. For PSKR to maintain constant time delay between bits,
+	// we double the number of concatenated square iterleavers for
+	// each doubling of speed: 2x2x20 for BSK63+FEC, 2x2x40 for
+	// BPSK125+FEC, etc..
 
-// Interleaver. For PSKR to maintain constant time delay between bits,
-// we double the number of concatenated square iterleavers for
-// each doubling of speed: 2x2x20 for BSK63+FEC, 2x2x40 for
-// BPSK125+FEC, etc..
-
-	Txinlv = new interleave (isize, idepth, INTERLEAVE_FWD);//numinterleavers, INTERLEAVE_FWD);
-	Rxinlv = new interleave (isize, idepth, INTERLEAVE_REV);//numinterleavers, INTERLEAVE_REV);
-	Rxinlv2 = new interleave (isize, idepth, INTERLEAVE_REV);//numinterleavers, INTERLEAVE_REV);
+	Txinlv = new interleave (isize, idepth, INTERLEAVE_FWD);
+	Rxinlv = new interleave (isize, idepth, INTERLEAVE_REV);
+	Rxinlv2 = new interleave (isize, idepth, INTERLEAVE_REV);
 
 	bitshreg = 0;
 	rxbitstate = 0;
@@ -774,7 +831,7 @@ psk::psk(trx_mode pskmode) : modem()
 void psk::s2nreport(void)
 {
 	modem::s2nreport();
- 	s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
+	s2n_sum = s2n_sum2 = s2n_ncount = 0.0;
 }
 
 void psk::rx_bit(int bit)
@@ -864,7 +921,7 @@ void psk::rx_qpsk(int bits)
 	sym[1] = (bits & 2) ? 0 : 255;	// top bit is flipped
 
 	//JD added de-interleaver
-//	Rxinlv->symbols(sym);
+	//	Rxinlv->symbols(sym);
 
 	c = dec->decode(sym, NULL);
 
@@ -903,10 +960,10 @@ void psk::rx_pskr(unsigned char symbol)
 	if (rxbitstate == 0) {
 		rxbitstate++;
 		//Only use one decoder is using even carriers (we know the bits order)
-//		if (((int)numcarriers) % 2 == 0) {
-//			fecmet2 = -9999.0;
-//			return;
-//		}
+		//		if (((int)numcarriers) % 2 == 0) {
+		//			fecmet2 = -9999.0;
+		//			return;
+		//		}
 		// copy to avoid scrambling symbolpair for the next bit
 		twosym[0] = symbolpair[0];
 		twosym[1] = symbolpair[1];
@@ -1084,7 +1141,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 	double softamp;
 	double sigamp = norm(symbol);
 
-static double averageamp;
+	static double averageamp;
 
 	phase = arg ( conj(prevsymbol[car]) * symbol );
 	prevsymbol[car] = symbol;
@@ -1131,7 +1188,7 @@ static double averageamp;
 		} else {
 			softamp = 2; // arbritary number (50% impact)
 		}
-// Compute values between -128 and +127 for phase value only
+		// Compute values between -128 and +127 for phase value only
 		double alpha = phase / M_PI;
 		if (alpha > 1.0) alpha = 2.0 - alpha;
 		softangle = 127.0 - 255.0 * alpha;
@@ -1139,11 +1196,6 @@ static double averageamp;
 	}
 
 	// simple low pass filter for quality of signal
-// ***********************************************************
-// **** dhf - added fast attack, slow decay algorithm
-// **** JD & JP - please test with your R and 8psk modem types
-// ****
-// ***********************************************************
 	double decay = SQLDECAY;
 	double attack = SQLDECAY;
 	if (_8psk) {
@@ -1159,8 +1211,8 @@ static double averageamp;
 	double sval = sin(n*phase);
 
 	quality = cmplx(
-		decayavg(quality.real(), cval, cval > quality.real() ? attack : decay),
-		decayavg(quality.imag(), sval, sval > quality.real() ? attack : decay));
+					decayavg(quality.real(), cval, cval > quality.real() ? attack : decay),
+					decayavg(quality.imag(), sval, sval > quality.real() ? attack : decay));
 	metric = 100.0 * norm(quality);
 
 	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
@@ -1174,15 +1226,15 @@ static double averageamp;
 
 	// FEC: adjust squelch for extra sensitivity.
 	// Otherwise we miss good characters
-// ***********************************************************
-// **** DHF still needed with attack/decay filtering?
-// ***********************************************************
-//	if (_pskr) {
-//		metric = metric * 4;
-//	}
-//	else if ( (_xpsk || _8psk || _16psk) && !_disablefec) {
-//		metric *= 2 * symbits; /// @TODO scale the metric with the psk constellation density
-//	}
+	// ***********************************************************
+	// **** DHF still needed with attack/decay filtering?
+	// ***********************************************************
+	//	if (_pskr) {
+	//		metric = metric * 4;
+	//	}
+	//	else if ( (_xpsk || _8psk || _16psk) && !_disablefec) {
+	//		metric *= 2 * symbits; /// @TODO scale the metric with the psk constellation density
+	//	}
 
 	if (metric > 100)
 		metric = 100;
@@ -1196,67 +1248,72 @@ static double averageamp;
 	//printf("\n%.8X", dcdshreg);
 	switch (dcdshreg) {
 
-	// bpsk DCD on
-	case 0xAAAAAAAA:
-		if ( _xpsk || _8psk || _16psk) break;
-		if (_pskr) break;
-		set_dcdON = 1;
-		break;
-
-	// pskr DCD on
-	case 0x0A0A0A0A:
-		if ( _xpsk || _8psk || _16psk) break;
-		if (_qpsk) break;
-		if (!_pskr) break;
-		set_dcdON = 1;
-		break;
-
-	// 8psk DCD on (FEC enabled, with Gray-mapped constellation)
-	case 0x25252525: // UN-punctured
-	case 0x22222222: // punctured @ 2/3 rate
-		if (_pskr || _xpsk || _16psk) break;
-		if (!_8psk) break;
-		if (_disablefec) break;
-		set_dcdON = 1;
-		break;
-
-	case 0x92492492:	// xpsk DCD off (with FEC disabled)
-		if (_pskr) break;
-		if (_qpsk) break;
-		if (!_xpsk) break;
-		if (!_disablefec) break;
-		set_dcdON = 0;
-		break;
-
-	case 0x10842108:	// 16psk DCD off (with FEC disabled)
-		if (_pskr) break;
-		if (!_16psk) break;
-		if (!_disablefec) break;
-		set_dcdON = 0;
-		break;
-
-	case 0x44444444:	// 8psk DCD off (with FEC disabled)
-		if (!_8psk) break;
-		if (!_disablefec) break;
-		set_dcdON = 0;
-		break;
-
-	case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
-		if (_pskr) break;
-		if (_xpsk || _8psk || _16psk) {
-			if (!_disablefec) break;
+			// bpsk DCD on
+		case 0xAAAAAAAA:
+			if ( _xpsk || _8psk || _16psk) break;
+			if (_pskr) break;
 			set_dcdON = 1;
 			break;
-		}
-		set_dcdON = 0;
-		break;
 
-	default:
-		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
-			dcd = true;
-		} else {
-			dcd = false;
-		}
+			// pskr DCD on
+		case 0x0A0A0A0A:
+			if ( _xpsk || _8psk || _16psk) break;
+			if (_qpsk) break;
+			if (!_pskr) break;
+			set_dcdON = 1;
+			break;
+
+			// 8psk DCD on (FEC enabled, with Gray-mapped constellation)
+		case 0x25252525: // UN-punctured
+			if (_pskr || _xpsk || _16psk) break;
+			if (!_8psk) break;
+			if (_disablefec) break;
+			set_dcdON = 1;
+			break;
+		case 0x22222222: // punctured @ 2/3 rate
+			if (_pskr || _xpsk || _16psk) break;
+			if (!_8psk) break;
+			if (_disablefec) break;
+			set_dcdON = 1;
+			break;
+
+		case 0x92492492:	// xpsk DCD off (with FEC disabled)
+			if (_pskr) break;
+			if (_qpsk) break;
+			if (!_xpsk) break;
+			if (!_disablefec) break;
+			set_dcdON = 0;
+			break;
+
+		case 0x10842108:	// 16psk DCD off (with FEC disabled)
+			if (_pskr) break;
+			if (!_16psk) break;
+			if (!_disablefec) break;
+			set_dcdON = 0;
+			break;
+
+		case 0x44444444:	// 8psk DCD off (with FEC disabled)
+			if (!_8psk) break;
+			if (!_disablefec) break;
+			set_dcdON = 0;
+			break;
+
+		case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
+			if (_pskr) break;
+			if (_xpsk || _8psk || _16psk) {
+				if (!_disablefec) break;
+				set_dcdON = 1;
+				break;
+			}
+			set_dcdON = 0;
+			break;
+
+		default:
+			if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
+				dcd = true;
+			} else {
+				dcd = false;
+			}
 	}
 
 	if ( 1 == set_dcdON ) {
@@ -1292,11 +1349,11 @@ static double averageamp;
 			if (_8psk) {
 				int bitindex = static_cast<int>(bits);
 				for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
-					///printf("\nBits: %u | %.3u ", bits, graymapped_softbits[bitindex][i]);
+												  ///printf("\nBits: %u | %.3u ", bits, graymapped_softbits[bitindex][i]);
 					rx_pskr(graymapped_softbits[bitindex][i]); // Feed to the PSKR FEC decoder, one bit at a time.
 				}
 			} else {
-			//Hard Decode Section
+				//Hard Decode Section
 				for(int i=0; i<symbits; i++) { // Hard decode symbits into soft-symbols
 					xsoftsymbols[i] = (bits & bitmask) ? 255 : 0 ;
 					//printf(" %.3u ", xsoftsymbols[i]);
@@ -1369,7 +1426,7 @@ int psk::rx_process(const double *buf, int len)
 
 	if (mode >= MODE_PSK31 && mode <= MODE_PSK125) {
 		if (!progdefaults.report_when_visible ||
-			 dlgViewer->visible() || progStatus.show_channels )
+			dlgViewer->visible() || progStatus.show_channels )
 			if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
 		if (evalpsk)
 			evalpsk->sigdensity();
@@ -1378,158 +1435,146 @@ int psk::rx_process(const double *buf, int len)
 	frequencies[0] = frequency + ((-1 * numcarriers) + 1) * inter_carrier / 2;
 	delta[0] = TWOPI * frequencies[0] / samplerate;
 	for (int car = 1; car < numcarriers; car++) {
-			frequencies[car] = frequencies[car - 1] + inter_carrier;
-			delta[car] = TWOPI * frequencies[car] / samplerate;
+		frequencies[car] = frequencies[car - 1] + inter_carrier;
+		delta[car] = TWOPI * frequencies[car] / samplerate;
 	}
 
 	while (len-- > 0) {
 
-	   for (int car = 0; car < numcarriers; car++) {
-
-		// Mix with the internal NCO
-		z = cmplx ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
-
-		phaseacc[car] += delta[car];
-		if (phaseacc[car] > TWOPI) phaseacc[car] -= TWOPI;
-
-		// Filter and downsample
-		// by 16 (psk31, qpsk31)
-		// by  8 (psk63, qpsk63)
-		// by  4 (psk125, qpsk125)
-		// by  2 (psk250, qpsk250)
-		// by  1 (psk500, qpsk500) = no down sampling
-		// first filter
-		if (fir1[car]->run( z, z )) { // fir1 returns true every Nth sample
-		    // final filter
-		    fir2[car]->run( z, z2[car] ); // fir2 returns value on every sample
-
-		    //On last carrier processing
-		    if (car == numcarriers - 1) {
-
-			calcSN_IMD(z); //JD OR all carriers together check logic???
-
-/**
-* This is the symbol timing recovery mechanism.  After the demodulated
-* signal is processed by the matched filters, the signal lobes are
-* expected to have been modified to a fairly symmetric shape.  The
-* magnitude of the samples are taken, thus rectifying the signal to
-* positive values. "bitclk" is a counter that is very close in rate to
-* (samples / symbol).  Its purpose is to repeatedly "draw" one symbol
-* waveform in the syncbuf array, according to its amplitude (not phase).
-*/
-
-			int idx = (int) bitclk;
-			double sum = 0.0;
-			double ampsum = 0.0;
-			for (int ii = 0; ii < numcarriers; ii++) {
-				sum += abs(z2[ii])/numcarriers;
-			}
-//			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2[car].mag();
-			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * sum;
-			sum = 0.0;
-
-			//Handling of modes faster than PSK500/PSK500R
-
-/*			for (int i = 0; i < 8; i++) {
-				sum += (syncbuf[i] - syncbuf[i+8]);
-				ampsum += (syncbuf[i] + syncbuf[i+8]);
-			}
-*/
-//			double bitsteps = (symbollen >= 16 ? 16 : 8);
-			double bitsteps = (symbollen >= 16 ? 16 : symbollen);
-			int symsteps = (int) (bitsteps / 2);
-
-/**
-* Here we sum up the difference between each sample's magnitude in the
-* lower half of the array with its counterpart on the upper half of the
-* array, or the other side of the waveform.  Each pair's difference is
-* divided by their sum, scaling it so that the signal amplitude does not
-* affect the result.  When the differences are summed, it gives an
-* indication of which side is larger than the other.
-*/
-
-			for (int i = 0; i < symsteps; i++) {
-				sum += (syncbuf[i] - syncbuf[i+symsteps]);
-				ampsum += (syncbuf[i] + syncbuf[i+symsteps]);
-			}
-			// added correction as per PocketDigi
-			sum = (ampsum == 0 ? 0 : sum / ampsum);
-
-/**
-* If the lower side is larger (meaning that the waveform is shifted in that
-* direction), then the sum is negative, and bitclk needs to be adjusted to
-* be a little faster, so that the next drawing of the waveform in syncbuf
-* will be shifted right. Conversely, if the sum is positive, then it needs
-* to slow down bitclk so that the waveform is shifted left.  Thus the
-* error is subtracted from bitclk, rather than added.  The goal is to
-* get the error as close to zero as possible, so that the receiver is
-* exactly synced with the transmitter and the waveform is exactly in
-* the middle of syncbuf.
-*/
-
-//			bitclk -= sum / 5.0;
-			bitclk -= sum / (5.0 * 16 / bitsteps);
-			bitclk += 1;
-
-/**
-* When bitclock reaches the end of the buffer, then a complete waveform
-* has been received.  It is time to output the current sample and wrap
-* around to the next cycle.
-*
-* There is a complete symbol waveform in syncbuf, so that each
-* sample[0..N/2-1] is very close in amplitude with the corresponding
-* sample in [N/2..N-1].
-*
-*     |            ********                       ********            |
-*     |        ****        ****               ****        ****        |
-*     |     ***                ***         ***                ***     |
-*     |   **                      **     **                      **   |
-*     |  *                          *   *                          *  |
-*     | *                            * *                            * |
-*     |*                              *                              *|
-*     |_______________________________________________________________|
-*     0                              N/2                             N-1
-*
-*     === or some variation of it .... ===
-*
-*     |****                       ********                       *****|
-*     |    ****               ****        ****               ****     |
-*     |        ***         ***                ***         ***         |
-*     |           **     **                      **     **            |
-*     |             *   *                          *   *              |
-*     |              * *                            * *               |
-*     |               *                              *                |
-*     |_______________________________________________________________|
-*     0                              N/2                             N-1
-*
-* At the end of this cycle, bitclk is pointing at a sample which will
-* have the maximum phase difference, if any, from the previous symbol's
-* phase.
-*
-*/
-
-//			if (bitclk < 0) bitclk += 16.0;
-//			if (bitclk >= 16.0) {
-//				bitclk -= 16.0;
-
-			if (bitclk < 0) bitclk += bitsteps;
-			if (bitclk >= bitsteps) {
-				bitclk -= bitsteps;
-				can_rx_symbol = true;
-				update_syncscope();
-				afc();
-			}
-		    }
-
-		}
-	   }
-	   if (can_rx_symbol) {
 		for (int car = 0; car < numcarriers; car++) {
-			rx_symbol(z2[car], car);
+
+			// Mix with the internal NCO
+			z = cmplx ( *buf * cos(phaseacc[car]), *buf * sin(phaseacc[car]) );
+
+			phaseacc[car] += delta[car];
+			if (phaseacc[car] > TWOPI) phaseacc[car] -= TWOPI;
+
+			// Filter and downsample
+			// by 16 (psk31, qpsk31)
+			// by  8 (psk63, qpsk63)
+			// by  4 (psk125, qpsk125)
+			// by  2 (psk250, qpsk250)
+			// by  1 (psk500, qpsk500) = no down sampling
+			// first filter
+			if (fir1[car]->run( z, z )) { // fir1 returns true every Nth sample
+										  // final filter
+				fir2[car]->run( z, z2[car] ); // fir2 returns value on every sample
+
+				//On last carrier processing
+				if (car == numcarriers - 1) {
+
+					calcSN_IMD(z); //JD OR all carriers together check logic???
+
+	/**
+	* This is the symbol timing recovery mechanism.  After the demodulated
+	* signal is processed by the matched filters, the signal lobes are
+	* expected to have been modified to a fairly symmetric shape.  The
+	* magnitude of the samples are taken, thus rectifying the signal to
+	* positive values. "bitclk" is a counter that is very close in rate to
+	* (samples / symbol).  Its purpose is to repeatedly "draw" one symbol
+	* waveform in the syncbuf array, according to its amplitude (not phase).
+	*/
+
+					int idx = (int) bitclk;
+					double sum = 0.0;
+					double ampsum = 0.0;
+					for (int ii = 0; ii < numcarriers; ii++) {
+						sum += abs(z2[ii])/numcarriers;
+					}
+					//			syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * z2[car].mag();
+					syncbuf[idx] = 0.8 * syncbuf[idx] + 0.2 * sum;
+					sum = 0.0;
+
+					double bitsteps = (symbollen >= 16 ? 16 : symbollen);
+					int symsteps = (int) (bitsteps / 2);
+
+	/**
+	* Here we sum up the difference between each sample's magnitude in the
+	* lower half of the array with its counterpart on the upper half of the
+	* array, or the other side of the waveform.  Each pair's difference is
+	* divided by their sum, scaling it so that the signal amplitude does not
+	* affect the result.  When the differences are summed, it gives an
+	* indication of which side is larger than the other.
+	*/
+
+					for (int i = 0; i < symsteps; i++) {
+						sum += (syncbuf[i] - syncbuf[i+symsteps]);
+						ampsum += (syncbuf[i] + syncbuf[i+symsteps]);
+					}
+					// added correction as per PocketDigi
+					sum = (ampsum == 0 ? 0 : sum / ampsum);
+
+	/**
+	* If the lower side is larger (meaning that the waveform is shifted in that
+	* direction), then the sum is negative, and bitclk needs to be adjusted to
+	* be a little faster, so that the next drawing of the waveform in syncbuf
+	* will be shifted right. Conversely, if the sum is positive, then it needs
+	* to slow down bitclk so that the waveform is shifted left.  Thus the
+	* error is subtracted from bitclk, rather than added.  The goal is to
+	* get the error as close to zero as possible, so that the receiver is
+	* exactly synced with the transmitter and the waveform is exactly in
+	* the middle of syncbuf.
+	*/
+
+					//			bitclk -= sum / 5.0;
+					bitclk -= sum / (5.0 * 16 / bitsteps);
+					bitclk += 1;
+
+	/**
+	* When bitclock reaches the end of the buffer, then a complete waveform
+	* has been received.  It is time to output the current sample and wrap
+	* around to the next cycle.
+	*
+	* There is a complete symbol waveform in syncbuf, so that each
+	* sample[0..N/2-1] is very close in amplitude with the corresponding
+	* sample in [N/2..N-1].
+	*
+	*     |            ********                       ********            |
+	*     |        ****        ****               ****        ****        |
+	*     |     ***                ***         ***                ***     |
+	*     |   **                      **     **                      **   |
+	*     |  *                          *   *                          *  |
+	*     | *                            * *                            * |
+	*     |*                              *                              *|
+	*     |_______________________________________________________________|
+	*     0                              N/2                             N-1
+	*
+	*     === or some variation of it .... ===
+	*
+	*     |****                       ********                       *****|
+	*     |    ****               ****        ****               ****     |
+	*     |        ***         ***                ***         ***         |
+	*     |           **     **                      **     **            |
+	*     |             *   *                          *   *              |
+	*     |              * *                            * *               |
+	*     |               *                              *                |
+	*     |_______________________________________________________________|
+	*     0                              N/2                             N-1
+	*
+	* A	t the end of this cycle, bitclk is pointing at a sample which will
+	* have the maximum phase difference, if any, from the previous symbol's
+	* phase.
+	*
+	*/
+
+					if (bitclk < 0) bitclk += bitsteps;
+					if (bitclk >= bitsteps) {
+						bitclk -= bitsteps;
+						can_rx_symbol = true;
+						update_syncscope();
+						afc();
+					}
+				}
+
+			}
 		}
-	   	can_rx_symbol = false;
-	   }
- 	   buf++;
+		if (can_rx_symbol) {
+			for (int car = 0; car < numcarriers; car++) {
+				rx_symbol(z2[car], car);
+			}
+			can_rx_symbol = false;
+		}
+		buf++;
 	}
 
 	if (sigsearch)
@@ -1591,8 +1636,8 @@ void psk::tx_carriers()
 	frequencies[0] = get_txfreq_woffset() + ((-1 * numcarriers) + 1) * inter_carrier / 2;
 	delta[0] = TWOPI * frequencies[0] / samplerate;
 	for (int car = 1; car < symbols; car++) {
-			frequencies[car] = frequencies[car - 1] + inter_carrier;
-			delta[car] = TWOPI * frequencies[car] / samplerate;
+		frequencies[car] = frequencies[car - 1] + inter_carrier;
+		delta[car] = TWOPI * frequencies[car] / samplerate;
 	}
 
 	double maxamp = 0;
@@ -1665,13 +1710,13 @@ void psk::tx_bit(int bit)
 		sym = enc->encode(bit);
 		sym = sym & 3;//JD just to make sure
 		tx_symbol(sym);
-	// pskr (fec + interleaver) transmission
+		// pskr (fec + interleaver) transmission
 	} else if (_pskr) {
-// Encode into two bits
+		// Encode into two bits
 		bitshreg = enc->encode(bit);
-// pass through interleaver
+		// pass through interleaver
 		if (mode != MODE_PSK63F) Txinlv->bits(&bitshreg);
-// Send low bit first. tx_symbol expects 0 or 2 for BPSK
+		// Send low bit first. tx_symbol expects 0 or 2 for BPSK
 		sym = (bitshreg & 1) << 1;
 		tx_symbol(sym);
 		sym = bitshreg & 2;
@@ -1686,7 +1731,7 @@ void psk::tx_bit(int bit)
 			}
 		} else
 			tx_xpsk(bit);
- 	// else normal bpsk transmission
+		// else normal bpsk transmission
 	} else {
 		sym = bit << 1;
 		tx_symbol(sym);
@@ -1716,14 +1761,14 @@ void psk::tx_xpsk(int bit)
 	/// DEBUG
 	/*
 	 * 	static bool flip;
-	if (flip) {
-		flip = false;
-		fecbits = 0;
-	} else {
-		flip = true;
-		fecbits = 3;
-	}
-	*/
+	 if (flip) {
+	 flip = false;
+	 fecbits = 0;
+	 } else {
+	 flip = true;
+	 fecbits = 3;
+	 }
+	 */
 
 	//printf("\nfecbits: %u", fecbits);
 	//printf("\nbitcount: %d", bitcount);
@@ -1736,43 +1781,43 @@ void psk::tx_xpsk(int bit)
 
 	// DEBUG
 	/*
-	if (_8psk) {
-		tx_symbol(0);
-		tx_symbol(7);
-		return;
-	}
-	*/
+	 if (_8psk) {
+	 tx_symbol(0);
+	 tx_symbol(7);
+	 return;
+	 }
+	 */
 
 	// DEBUG, send a known pattern of symbols / bits
 	/*
 	 * 	static int counter = 0;
-	counter++;
-	if ( counter > 7 ) counter = 0;
-	tx_symbol(1);
-	return;
-	*/
+	 counter++;
+	 if ( counter > 7 ) counter = 0;
+	 tx_symbol(1);
+	 return;
+	 */
 
 	/*
-	else if (mode == MODE_8PSK ???) { // Puncture @ 5/6 rate | tx 3bits/symbol (8psk)
-		// Collect up to 8 bits
-		if ( x_bitcount < 8 ) {
-			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
-			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
-			x_bitcount += 2;
-			return;
+	 else if (mode == MODE_8PSK ???) { // Puncture @ 5/6 rate | tx 3bits/symbol (8psk)
+	 // Collect up to 8 bits
+	 if ( x_bitcount < 8 ) {
+	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
+	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
+	 x_bitcount += 2;
+	 return;
 
-		// When 10 bits are buffered,
-		//	drop 4 bits then transmit 6 bits (2-symbols)
-		} else {
-			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
-			x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
-			tx_symbol( (x_xpsk_sym & 14) >> 1);
-			tx_symbol( (x_xpsk_sym & 448) >> 6);
-			x_xpsk_sym = x_bitcount = 0;
-			return;
-		}
-	}
-	*/
+	 // When 10 bits are buffered,
+	 //	drop 4 bits then transmit 6 bits (2-symbols)
+	 } else {
+	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
+	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
+	 tx_symbol( (x_xpsk_sym & 14) >> 1);
+	 tx_symbol( (x_xpsk_sym & 448) >> 6);
+	 x_xpsk_sym = x_bitcount = 0;
+	 return;
+	 }
+	 }
+	 */
 
 	else if (_8psk && _puncturing) { // @ 2/3 rate
 
@@ -1794,14 +1839,14 @@ void psk::tx_xpsk(int bit)
 	else if (_8psk) { // 3 bits-per-symbol. Accumulate then tx.
 
 		if ( 0 == bitcount ) { // Empty xpsk_sym buffer: add 2 bits and return
-			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
+							   //printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym = static_cast<unsigned int>(fecbits);
 			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
 			bitcount = 2;
 			return ;
 
 		} else if ( 1 == bitcount ) { // xpsk_sym buffer with one bit: add 2 bits then tx and clear
-			//xpsk_sym <<= 2; // shift left 2 bits
+									  //xpsk_sym <<= 2; // shift left 2 bits
 
 			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 1 ;
@@ -1814,7 +1859,7 @@ void psk::tx_xpsk(int bit)
 			return;
 
 		} else if ( 2 == bitcount ) { // xpsk_sym buffer with 2 bits: add 1 then tx and save next bit
-			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
+									  //printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
 
@@ -1878,7 +1923,7 @@ void psk::tx_char(unsigned char c)
 	const char *code;
 	char_symbols = acc_symbols;
 	if (_pskr || _xpsk || _8psk || _16psk) {
-//		acc_symbols = 0;
+		//		acc_symbols = 0;
 		// ARQ varicode instead of MFSK for PSK63FEC
 		code = varienc(c);
 	} else {
@@ -1902,23 +1947,23 @@ void psk::tx_flush()
 {
 	if (_pskr) {
 		ovhd_symbols = ((numcarriers - symbols) % numcarriers);
-//VK2ETA replace with a more effective flushing sequence (avoids cutting the last characters in low s/n)
+		//VK2ETA replace with a more effective flushing sequence (avoids cutting the last characters in low s/n)
 		for (int i = 0; i < ovhd_symbols/2; i++) tx_bit(0);
 
 		for (int i = 0; i < dcdbits / 2; i++) {
 			tx_bit(1);
 			tx_bit(1);
 		}
-	// QPSK - flush the encoder
+		// QPSK - flush the encoder
 	} else if (_qpsk) {
 		for (int i = 0; i < dcdbits; i++)
-		tx_bit(0);
-        // FEC : replace unmodulated carrier by an encoded sequence of zeros
+			tx_bit(0);
+		// FEC : replace unmodulated carrier by an encoded sequence of zeros
 	} else if (!_disablefec && (_xpsk || _8psk || _16psk) ) {
 		for (int i = 0; i < flushlength; i++) {
 			tx_char(0);   // <NUL>
 		}
-	// FEC disabled: use unmodulated carrier
+		// FEC disabled: use unmodulated carrier
 	} else if (_disablefec && ( _xpsk || _8psk || _16psk) ) {
 		for (int i=0; i<symbits; i++) {
 			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
@@ -1929,8 +1974,8 @@ void psk::tx_flush()
 		else symbol = 2;
 		for (int i = 0; i < dcdbits; i++)
 			tx_symbol(symbol); // 0 degrees
-	// Standard BPSK postamble
-	// DCD off sequence (unmodulated carrier)
+							   // Standard BPSK postamble
+							   // DCD off sequence (unmodulated carrier)
 	} else {
 		for (int i = 0; i < dcdbits; i++)
 			tx_symbol(2); // 0 degrees
@@ -1940,13 +1985,10 @@ void psk::tx_flush()
 // Necessary to clear the interleaver before we start sending
 void psk::clearbits()
 {
-	bitshreg = enc->encode(0);
-	for (int k = 0; k < 160; k++) {
-		Txinlv->bits(&bitshreg);
-	}
+	bitshreg = 0;
+	enc->init();
+	Txinlv->flush();
 }
-
-
 
 int psk::tx_process()
 {
@@ -1972,7 +2014,7 @@ int psk::tx_process()
 			return 0;
 		} else {
 			//JD for QPSK500R
-//			if (mode == MODE_QPSK500) clearbits();
+			//			if (mode == MODE_QPSK500) clearbits();
 			// Standard BPSK/QPSK preamble
 			preamble--;
 			tx_symbol(0);   // send phase reversals
@@ -2065,9 +2107,9 @@ void psk::calcSN_IMD(cmplx z)
 		m_NCount = 0;
 		for(i = 0; i < NUM_FILTERS; i++) {
 			m_Energy[i] =   I1[i]*I1[i] + Q1[i]*Q1[i]
-						  + I2[i]*I2[i] + Q2[i]*Q2[i]
-						  - I1[i]*I2[i]*COEF[i]
-						  - Q1[i]*Q2[i]*COEF[i];
+			+ I2[i]*I2[i] + Q2[i]*Q2[i]
+			- I1[i]*I2[i]*COEF[i]
+			- Q1[i]*Q2[i]*COEF[i];
 			I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
 		}
 		signalquality();

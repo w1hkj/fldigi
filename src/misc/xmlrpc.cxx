@@ -1814,51 +1814,7 @@ public:
 			chsamples = active_modem->char_samples;
 			over_head = active_modem->ovhd_samples;
 		} else if(psk_8_flag) { // This doens't seem to work with the MFSK modes
-#if 0
-			int n = progdefaults.busyChannelSeconds;
-			int sr = active_modem->get_samplerate();
-			int index = 0;
-			int count = 0;
-			int test_array[] = { 2, 8, 40, 64, 104, 112, 0 };
-
-            over_head = number_of_samples("");
-
-			for(index = 0; index < 6; index++) {
-				chsamples = number_of_samples(string(n, test_array[index])) - over_head;
-				chsamples /= n;
-				printf("%c = %3.8f ", test_array[index], (float)((float) chsamples / (float) sr));
-			}
-			printf("\n");
-
-#else
 			int n = 16;
-
-			switch(id) {
-				case MODE_8PSK250:
-					n = 16;
-					break;
-
-				case MODE_8PSK500:
-					n = 33;
-					break;
-
-				case MODE_8PSK1000:
-					n = 21;
-					break;
-
-				case MODE_8PSK1200:
-					n = 18;
-					break;
-
-				case MODE_8PSK1333:
-					n = 12;
-					break;
-
-				default:
-					n = 16;
-			}
-
-#endif
             over_head = number_of_samples("");
 			chsamples = number_of_samples(string(n, character)) - over_head;
 			chsamples /= n;
