@@ -111,21 +111,31 @@ waterfall.  You do not have to wait for new signal data to observe
 the affect.
 <br>
 
-The <b>QSY</b> button is very specific to rigs
-interfaced with either hamlib or the memory mapped i/o.  Each rig has a
-sweet spot associated with its bandwidth controller.  For the Argonaut
-V this is 1100 Hz.  For the the Kachina it is 1000 Hz.  As the
-transceivers bandwidth is changed the changes occur centered at this
-frequency.  So ....  let's say that I just started copying a rare dx at
-1758 Hz and I wanted to put the signal at the sweet spot so I could
-easily narrow the receiver bandwidth.  Click on the signal on the
-waterfall.  Let the AFC capture and then press the QSY button.  The
-tranceiver frequency will be shifted and the fldigi audio tracking
-point shifted in unison such that the signal is now at the receivers
-sweet spot.  Very fast and very convenient!  If you do not have hamlib
-enabled for your transceiver this button will be dimmed and not
-activated.
+The <b>QSY</b> button is very specific to transceivers interfaced with either 
+hamlib, rigcat or when fldigi is used with flrig.  Each transceiver has a sweet 
+spot associated with its bandwidth controller.  For the FT950 is 1500 when the 
+transceiver is set to PKT-U.  As the transceivers bandwidth is changed the 
+changes occur centered at this frequency.  Set the "Sweet spot" frequency 
+(Config / Misc / Sweet Spot) to 1500.  Let's say that I just started copying a 
+rare dx at 1758 Hz and I wanted to put the signal at the sweet spot so I could 
+easily narrow the receiver bandwidth.  Click on the signal on the waterfall. 
+Let the AFC capture and then press the QSY button. The tranceiver frequency 
+will be shifted and the fldigi audio tracking point shifted in unison such 
+that the signal is now at the receivers sweet spot. Very fast and very 
+convenient! The QSY button will be dimmed and not activated if you do not have 
+a method of transceiver control enabled for your transceiver.  Right click on 
+the QSY button to undo the action.
 <br>
+
+This can also be achieved with the \<QSYTO\> and \<QSYFM\> macro tags.  If  you 
+combine these two with the \<FILWID:nnn\> command you can center the signal in 
+the passband and also narrow the transceiver passband, i.e. when used with the
+FT950
+<br>
+<ul>
+<li>\<QSYTO\>\<FILWID:200\></li>
+<li>\<QSYFM\>\<FILWID:2400\></li>
+</ul>
 
 The <b>M\></b> button allows you to
 store, recall and manage mode/frequency pairs.  If you want to
