@@ -42,7 +42,6 @@ extern int process_rx_ppm(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_tx_ppm(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_tx_offset(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 
-extern int process_mono_audio_output(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_modem_signal_left_right(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_reverse_left_right(ScriptParsing *sp, SCRIPT_COMMANDS *sc);
 extern int process_ptt_tone_right_channel(ScriptParsing *sp, SCRIPT_COMMANDS *sc);

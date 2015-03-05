@@ -238,7 +238,7 @@ private:
 	static std::vector<const PaDeviceInfo*> devs;
         double	 				req_sample_rate;
         float* 					fbuf;
-	float*					src_buffer;
+		float*					src_buffer;
 	SRC_DATA	*tx_src_data;
 
         enum {
@@ -317,6 +317,7 @@ private:
 
 	SRC_DATA* tx_src_data;
 	float* fbuf;
+	float* rbuf;
 	float* snd_buffer;
 	float* src_buffer;
 };

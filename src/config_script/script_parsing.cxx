@@ -71,7 +71,6 @@ static const SCRIPT_COMMANDS default_audio_settings_command_table[] = {
 };
 
 static const SCRIPT_COMMANDS default_audio_rt_channel_command_table[] = {
-	{ CMD_MONO_AUDIO,              SCRIPT_COMMAND, 0,  1, {0}, { p_bool }, 0, 0, 0, process_mono_audio_output,        0, 0},
 	{ CMD_AUDIO_L_R,               SCRIPT_COMMAND, 0,  1, {0}, { p_bool }, 0, 0, 0, process_modem_signal_left_right,  0, 0},
 	{ CMD_AUDIO_REV_L_R,           SCRIPT_COMMAND, 0,  1, {0}, { p_bool }, 0, 0, 0, process_reverse_left_right,       0, 0},
 	{ CMD_PTT_RIGHT_CHAN,          SCRIPT_COMMAND, 0,  1, {0}, { p_bool }, 0, 0, 0, process_ptt_tone_right_channel,   0, 0},

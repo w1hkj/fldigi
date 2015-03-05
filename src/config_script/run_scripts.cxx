@@ -1399,6 +1399,7 @@ int process_oss_audio_device_path(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 
 	menuOSSDev->value(index);
 	menuOSSDev->do_callback();
+	return script_no_errors;
 
 #else
 	return script_no_errors;
@@ -1688,17 +1689,6 @@ int process_tx_ppm(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 int process_tx_offset(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 {
 	return assign_integer(cntTxOffset, sp, sc);
-}
-
-/** ********************************************************
- * \brief
- * \param sp Access to ScritpParsing members.
- * \param sc Access to SCRIPT_COMMANDS structure variables.
- * \return 0 (no error) Other (error)
- ***********************************************************/
-int process_mono_audio_output(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
-{
-	return assign_bool(chkForceMono, sp, sc);
 }
 
 /** ********************************************************

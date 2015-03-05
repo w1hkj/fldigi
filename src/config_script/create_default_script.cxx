@@ -356,7 +356,6 @@ static int create_default_script(char *file_name)
 
 	// AUDIO RIGHT CHANNEL
 	if(add_command(fd, (char *)CMD_AUDIO_RT_CHANNEL,     0)) return fclose(fd);
-	if(add_command(fd, (char *)CMD_MONO_AUDIO,           (bool)   chkForceMono->value(),        1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_AUDIO_L_R,            (bool)   chkAudioStereoOut->value(),   1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_AUDIO_REV_L_R,        (bool)   chkReverseAudio->value(),     1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_PTT_RIGHT_CHAN,       (bool)   btnPTTrightchannel2->value(), 1)) return fclose(fd);
