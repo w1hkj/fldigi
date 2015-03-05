@@ -2821,7 +2821,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3060,11 +3060,6 @@ if (o->value()) {
   chkAudioStereoOut->value(0);
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
 }}
                     tooltip {Generate square wave signal on right channel} xywh {16 245 233 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.QSK);}
@@ -3707,7 +3702,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 600 330} selection_color 50
@@ -3830,11 +3825,6 @@ if (o->value()) {
   chkAudioStereoOut->value(0);
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
 }}
                   tooltip {Create keyed square wave on right audio channel} xywh {316 202 212 22} down_box DOWN_BOX
                   code0 {o->value(progdefaults.PseudoFSK);}
@@ -4199,7 +4189,7 @@ progdefaults.changed = true;}
             label {Hardware PTT} open
             xywh {0 50 600 330}
           } {
-            Fl_Group {} {
+            Fl_Group {} {open
               xywh {55 57 490 38} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnPTTrightchannel {
@@ -4213,11 +4203,6 @@ if (o->value()) {
   chkPseudoFSK->value(0);
   progdefaults.sig_on_right_channel = false;
   chkAudioStereoOut->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
 }
 progdefaults.changed = true;}
                 tooltip {Can be used in lieu of or in addition to other PTT types} xywh {74 66 250 20} down_box DOWN_BOX
@@ -4974,75 +4959,46 @@ progdefaults.changed = true;}
             label {Right channel} open
             xywh {0 50 600 330} hide
           } {
-            Fl_Check_Button chkForceMono {
-              label {Mono audio output}
-              callback {progdefaults.mono_audio = o->value();
-progdefaults.changed = true;
-if (o->value()) {
-  progdefaults.QSK = false;
-  btnQSK->value(0);
-  btnQSK2->value(0);
-  progdefaults.PseudoFSK = false;
-  chkPseudoFSK->value(0);
-  chkPseudoFSK2->value(0);
-  progdefaults.PTTrightchannel = false;
-  btnPTTrightchannel->value(0);
-  btnPTTrightchannel2->value(0);
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
-  progdefaults.ReverseAudio = false;
-  chkReverseAudio->value(0);
-}
-resetSoundCard();}
-              tooltip {Force output audio to single channel} xywh {160 63 280 20} down_box DOWN_BOX
-              code0 {chkForceMono->value(progdefaults.mono_audio);}
-            }
-            Fl_Check_Button chkAudioStereoOut {
-              label {Modem signal on left and right channels}
-              callback {progdefaults.sig_on_right_channel = o->value();
-progdefaults.changed = true;
-if (o->value()) {
-  progdefaults.QSK = false;
-  btnQSK->value(0);
-  btnQSK2->value(0);
-  progdefaults.PseudoFSK = false;
-  chkPseudoFSK->value(0);
-  chkPseudoFSK2->value(0);
-  progdefaults.PTTrightchannel = false;
-  btnPTTrightchannel->value(0);
-  btnPTTrightchannel2->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
-}}
-              tooltip {Left and right channels both contain modem audio} xywh {160 95 280 20} down_box DOWN_BOX
-              code0 {chkAudioStereoOut->value(progdefaults.sig_on_right_channel);}
-            }
-            Fl_Check_Button chkReverseAudio {
-              label {Reverse Left/Right channels}
-              callback {progdefaults.ReverseAudio = o->value();
-progdefaults.changed = true;
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }}
-              tooltip {Software reversal of left-right audio channels} xywh {160 127 270 20} down_box DOWN_BOX
-              code0 {o->value(progdefaults.ReverseAudio);}
-            }
             Fl_Group {} {
-              label {...
+              label {Transmit Usage} open
+              xywh {25 61 550 246} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkAudioStereoOut {
+                label {Modem signal on left and right channels}
+                callback {progdefaults.sig_on_right_channel = o->value();
+progdefaults.changed = true;
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  btnQSK2->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  chkPseudoFSK2->value(0);
+  progdefaults.PTTrightchannel = false;
+  btnPTTrightchannel->value(0);
+  btnPTTrightchannel2->value(0);
+}}
+                tooltip {Left and right channels both contain modem audio} xywh {165 82 280 20} down_box DOWN_BOX
+                code0 {chkAudioStereoOut->value(progdefaults.sig_on_right_channel);}
+              }
+              Fl_Check_Button chkReverseAudio {
+                label {Reverse Left/Right channels}
+                callback {progdefaults.ReverseAudio = o->value();
+progdefaults.changed = true;}
+                tooltip {Software reversal of left-right audio channels} xywh {165 112 270 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.ReverseAudio);}
+              }
+              Fl_Group {} {
+                label {...
 These controls are on other tabs.
 They are replicated here for convenience.
 You may change the state from either location.
 ...} open
-              xywh {73 165 454 187} box ENGRAVED_FRAME align 18
-            } {
-              Fl_Check_Button btnPTTrightchannel2 {
-                label {PTT tone on right audio channel }
-                callback {progdefaults.PTTrightchannel = o->value();
+                xywh {75 135 454 162} box ENGRAVED_FRAME align 18
+              } {
+                Fl_Check_Button btnPTTrightchannel2 {
+                  label {PTT tone on right audio channel }
+                  callback {progdefaults.PTTrightchannel = o->value();
 btnPTTrightchannel->value(o->value());
 progdefaults.changed = true;
 if (o->value()) {
@@ -5054,19 +5010,14 @@ if (o->value()) {
   chkPseudoFSK2->value(0);
   progdefaults.sig_on_right_channel = false;
   chkAudioStereoOut->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
 }}
-                tooltip {1000 Hz tone when PTT enabled
-Can be used in lieu of or in addition to other PTT types} xywh {146 175 250 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PTTrightchannel);}
-              }
-              Fl_Check_Button btnQSK2 {
-                label {CW QSK signal on right channel}
-                callback {progdefaults.QSK = o->value();
+                  tooltip {1000 Hz tone when PTT enabled
+Can be used in lieu of or in addition to other PTT types} xywh {165 142 250 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PTTrightchannel);}
+                }
+                Fl_Check_Button btnQSK2 {
+                  label {CW QSK signal on right channel}
+                  callback {progdefaults.QSK = o->value();
 btnQSK->value(o->value());
 progdefaults.changed = true;
 if (o->value()) {
@@ -5075,18 +5026,13 @@ if (o->value()) {
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
   btnPTTrightchannel2->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
 }}
-                tooltip {Generate 1000 Hz square wave signal on right channel} xywh {146 213 211 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.QSK);}
-              }
-              Fl_Check_Button chkPseudoFSK2 {
-                label {Pseudo-FSK on right audio channel}
-                callback {progdefaults.PseudoFSK = o->value();
+                  tooltip {Generate 1000 Hz square wave signal on right channel} xywh {165 172 211 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.QSK);}
+                }
+                Fl_Check_Button chkPseudoFSK2 {
+                  label {Pseudo-FSK on right audio channel}
+                  callback {progdefaults.PseudoFSK = o->value();
 chkPseudoFSK->value(o->value());
 progdefaults.changed = true;
 if (o->value()) {
@@ -5095,14 +5041,22 @@ if (o->value()) {
   progdefaults.PTTrightchannel = false;
   btnPTTrightchannel->value(0);
   btnPTTrightchannel2->value(0);
-  if (progdefaults.mono_audio) {
-    progdefaults.mono_audio = false;
-    chkForceMono->value(0);
-    resetSoundCard();
-  }
 }}
-                tooltip {Create 1000 Hz square wave on right channel} xywh {146 251 270 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PseudoFSK);}
+                  tooltip {Create 1000 Hz square wave on right channel} xywh {165 203 270 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PseudoFSK);}
+                }
+              }
+            }
+            Fl_Group {} {
+              label {Receive Usage} open
+              xywh {25 310 550 60} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Check_Button chkReverseRxAudio {
+                label {Reverse Left/Right channels}
+                callback {progdefaults.ReverseRxAudio = o->value();
+progdefaults.changed = true;}
+                tooltip {Software reversal of left-right audio channels} xywh {165 328 270 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.ReverseRxAudio);}
               }
             }
           }

@@ -557,7 +557,6 @@ int SoundOSS::Open(int md, int freq)
 		if (device_fd == -1)
 			throw SndException(errno);
 		Format(AFMT_S16_LE);	// default: 16 bit little endian
-//	  Channels(1);			//		1 channel
 		Channels(2);			//		2 channels
 		Frequency(freq);
 		setfragsize();
@@ -689,7 +688,8 @@ size_t SoundOSS::Read(float *buffer, size_t buffersize)
 		src_buffer[i] = ibuff[i] / MAXSC;
 
 	for (size_t i = 0; i < buffersize; i++)
-		buffer[i] = src_buffer[2*i];
+		buffer[i] = src_buffer[2*i + 
+							   progdefaults.ReverseRxAudio ? 1 : 0];
 
 #if USE_SNDFILE
 	if (capture)
@@ -723,7 +723,8 @@ size_t SoundOSS::Read(float *buffer, size_t buffersize)
 	numread = rx_src_data->output_frames_gen;
 
 	for (int i = 0; i < numread; i++)
-		buffer[i] = snd_buffer[2*i];
+		buffer[i] = snd_buffer[2*i +
+							   progdefaults.sig_on_right_channel ? 1 : 0];
 
 	return numread;
 
@@ -953,16 +954,22 @@ const vector<double>& SoundPort::get_supported_rates(const string& name, unsigne
 SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(0)
 {
 	sd[0].device = in_dev;
+	sd[0].params.channelCount = 2;
+	sd[0].stream = 0;
+	sd[0].frames_per_buffer = paFramesPerBufferUnspecified;
+	sd[0].dev_sample_rate = 0;
+	sd[0].state = spa_continue;
+	sd[0].rb = 0;
+	sd[0].advance = 0;
+
 	sd[1].device = out_dev;
-	sd[0].params.channelCount = progdefaults.in_channels;
-// # write channels always 2 unless mono output is selected
-	sd[1].params.channelCount = progdefaults.mono_audio ? 1 : 2;
-	sd[0].stream = sd[1].stream = 0;
-	sd[0].frames_per_buffer = sd[1].frames_per_buffer = paFramesPerBufferUnspecified;
-	sd[0].dev_sample_rate = sd[1].dev_sample_rate = 0;
-	sd[0].state = sd[1].state = spa_continue;
-	sd[0].rb = sd[1].rb = 0;
-	sd[0].advance = sd[1].advance = 0;
+	sd[1].params.channelCount = 2;
+	sd[1].stream = 0;
+	sd[1].frames_per_buffer = paFramesPerBufferUnspecified;
+	sd[1].dev_sample_rate = 0;
+	sd[1].state = spa_continue;
+	sd[1].rb = 0;
+	sd[1].advance = 0;
 
 	sem_t** sems[] = { &sd[0].rwsem, &sd[1].rwsem };
 #if USE_NAMED_SEMAPHORES
@@ -1003,10 +1010,10 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(
 
 	tx_src_data = new SRC_DATA;
 	src_buffer = new float[sd[1].params.channelCount * SND_BUF_LEN];
-	fbuf = new float[MAX(sd[0].params.channelCount, sd[1].params.channelCount) * SND_BUF_LEN];
+	fbuf = new float[2 * SND_BUF_LEN];
 
 	memset(src_buffer, 0, sd[1].params.channelCount * SND_BUF_LEN * sizeof(*src_buffer));
-	memset(fbuf, 0, MAX(sd[0].params.channelCount, sd[1].params.channelCount) * SND_BUF_LEN * sizeof(*fbuf));
+	memset(fbuf, 0, 2 * SND_BUF_LEN * sizeof(*fbuf));
 }
 
 SoundPort::~SoundPort()
@@ -1048,7 +1055,7 @@ SoundPort::~SoundPort()
 
 	delete tx_src_data;
 	delete [] src_buffer;
-		delete [] fbuf;
+	delete [] fbuf;
 }
 
 int SoundPort::Open(int mode, int freq)
@@ -1069,9 +1076,9 @@ int SoundPort::Open(int mode, int freq)
 	if (mode == O_RDONLY && (idev = name_to_device(sd[1].device, 1)) != devs.end() &&
 		(device_type = Pa_GetHostApiInfo((*idev)->hostApi)->type) == paJACK)
 		mode = O_RDWR;
-	static char pa_open_str[200];
+	static char pa_open_str[500];
 	snprintf(pa_open_str, sizeof(pa_open_str),
-		"Port Audio open mode = %s, device type = %s, device name = %s",
+		"Port Audio open mode = %s\ndevice type = %s\ndevice name = %s\n# input channels %d\n# output channels %d",
 		mode == O_WRONLY ? "Write" : mode == O_RDONLY ? "Read" :
 		mode == O_RDWR ? "Read/Write" : "unknown",
 		device_type == 0 ? "paInDevelopment" :
@@ -1089,7 +1096,9 @@ int SoundPort::Open(int mode, int freq)
 		device_type == 13 ? "paWASAPI" :
 		device_type == 14 ? "paAudioScienceHPI" : "unknown",
 		mode == O_WRONLY ? sd[1].device.c_str() :
-		mode == O_RDONLY ? sd[0].device.c_str() : "unknown" );
+		mode == O_RDONLY ? sd[0].device.c_str() : "unknown",
+		sd[0].params.channelCount,
+		sd[1].params.channelCount );
 	LOG_INFO( "%s", pa_open_str);
 
 	size_t start = (mode == O_RDONLY || mode == O_RDWR) ? 0 : 1,
@@ -1281,19 +1290,19 @@ size_t SoundPort::Read(float *buf, size_t count)
 			sd[0].advance = vec[0].len;
 		}
 		else
-			sd[0].rb->read(fbuf, count * sd[0].params.channelCount);
+			sd[0].rb->read(rbuf, count * sd[0].params.channelCount);
 	}
 	if (sd[0].advance) {
 		sd[0].rb->read_advance(sd[0].advance);
 		sd[0].advance = 0;
 	}
 
-	if (sd[0].params.channelCount == 1)
-		memcpy(buf, rbuf, count * sizeof(float));
-	else {
-		// write first channel
-		for (size_t i = 0; i < count; i++)
-			buf[i] = rbuf[sd[0].params.channelCount * i];
+	// transfer active input channel; left == 0, right == 1
+	size_t n;
+	for (size_t i = 0; i < count; i++) {
+		n = sd[0].params.channelCount * i;
+		n += progdefaults.ReverseRxAudio;
+		buf[i] = rbuf[n];
 	}
 
 #if USE_SNDFILE
@@ -1317,18 +1326,14 @@ size_t SoundPort::Write(double *buf, size_t count)
 
 // copy input to both channels if right channel enabled
 	for (size_t i = 0; i < count; i++)
-		if (progdefaults.mono_audio)
-			fbuf[i] = buf[i];
-		else if (progdefaults.sig_on_right_channel)
+		if (progdefaults.sig_on_right_channel)
 			fbuf[sd[1].params.channelCount * i] = fbuf[sd[1].params.channelCount * i + 1] = buf[i];
-		else {
-			if (progdefaults.ReverseAudio) {
+		else if (progdefaults.ReverseAudio) {
 				fbuf[sd[1].params.channelCount * i + 1] = buf[i];
 				fbuf[sd[1].params.channelCount * i] = 0;
-			} else {
+		} else {
 				fbuf[sd[1].params.channelCount * i] = buf[i];
 				fbuf[sd[1].params.channelCount * i + 1] = 0;
-			}
 		}
 
 	return resample_write(fbuf, count);
@@ -1620,8 +1625,8 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\n";
 	}
 
-//	LOG_INFO("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
-//		sd[dir].device.c_str(), device_text[dir].str().c_str());
+	LOG_INFO("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
+		sd[dir].device.c_str(), device_text[dir].str().c_str());
 
 		sd[dir].dev_sample_rate = find_srate(dir);
 		if (sd[dir].dev_sample_rate != req_sample_rate)
@@ -1784,9 +1789,8 @@ void SoundPort::probe_supported_rates(const device_iterator& idev)
 {
 	PaStreamParameters params[2];
 	params[0].device = params[1].device = idev - devs.begin();
-	params[0].channelCount = progdefaults.in_channels;
-// # output channels always 2 unless mono audio is selected
-	params[1].channelCount = progdefaults.mono_audio ? 1 : 2;
+	params[0].channelCount = 2;
+	params[1].channelCount = 2;
 	params[0].sampleFormat = params[1].sampleFormat = paFloat32;
 	params[0].suggestedLatency = (*idev)->defaultHighInputLatency;
 	params[1].suggestedLatency = (*idev)->defaultHighOutputLatency;
@@ -1853,28 +1857,39 @@ void SoundPort::init_hostapi_ext(void)
 
 SoundPulse::SoundPulse(const char *dev)
 {
-	sd[0].stream = sd[1].stream = 0;
-	sd[0].dir = PA_STREAM_RECORD; sd[1].dir = PA_STREAM_PLAYBACK;
-	sd[0].stream_params.format = sd[1].stream_params.format = PA_SAMPLE_FLOAT32LE;
-	sd[0].stream_params.channels = progdefaults.in_channels;
-// # output channels always 2 unless mono audio is selected
-	sd[1].stream_params.channels = progdefaults.mono_audio ? 1 : 2;
-	sd[0].buffer_attrs.maxlength = sd[0].buffer_attrs.minreq = sd[0].buffer_attrs.prebuf =
-		sd[0].buffer_attrs.tlength = (uint32_t)-1;
-	sd[1].buffer_attrs.fragsize = sd[1].buffer_attrs.maxlength = sd[1].buffer_attrs.minreq =
-		sd[1].buffer_attrs.prebuf = (uint32_t)-1;
+	sd[0].stream = 0;
+	sd[0].stream_params.channels = 2;
+	sd[0].dir = PA_STREAM_RECORD; 
+	sd[0].stream_params.format = PA_SAMPLE_FLOAT32LE;
+	sd[0].buffer_attrs.maxlength = (uint32_t)-1;
+	sd[0].buffer_attrs.minreq = (uint32_t)-1;
+	sd[0].buffer_attrs.prebuf = (uint32_t)-1;
 	sd[0].buffer_attrs.fragsize = SCBLOCKSIZE * sizeof(float);
+	sd[0].buffer_attrs.tlength = (uint32_t)-1;
+
+	sd[1].stream = 0;
+	sd[1].dir = PA_STREAM_PLAYBACK;
+	sd[1].stream_params.format = PA_SAMPLE_FLOAT32LE;
+	sd[1].stream_params.channels = 2;
+	sd[1].buffer_attrs.maxlength = (uint32_t)-1;
+	sd[1].buffer_attrs.minreq = (uint32_t)-1;
+	sd[1].buffer_attrs.prebuf = (uint32_t)-1;
+	sd[1].buffer_attrs.fragsize = (uint32_t)-1;
 	sd[1].buffer_attrs.tlength = SCBLOCKSIZE * sizeof(float);
 
 	tx_src_data = new SRC_DATA;
 
 	snd_buffer = new float[sd[0].stream_params.channels * SND_BUF_LEN];
+	rbuf       = new float[sd[0].stream_params.channels * SND_BUF_LEN];
+
 	src_buffer = new float[sd[1].stream_params.channels * SND_BUF_LEN];
-	fbuf = new float[MAX(sd[0].stream_params.channels, sd[1].stream_params.channels) * SND_BUF_LEN];
+	fbuf       = new float[sd[1].stream_params.channels * SND_BUF_LEN];
 
 	memset(snd_buffer, 0, sd[0].stream_params.channels * SND_BUF_LEN * sizeof(*snd_buffer));
+	memset(rbuf,       0, sd[0].stream_params.channels * SND_BUF_LEN * sizeof(*rbuf));
+
 	memset(src_buffer, 0, sd[1].stream_params.channels * SND_BUF_LEN * sizeof(*src_buffer));
-	memset(fbuf, 0, MAX(sd[0].stream_params.channels, sd[1].stream_params.channels) * SND_BUF_LEN * sizeof(*fbuf));
+	memset(fbuf,       0, sd[1].stream_params.channels * SND_BUF_LEN * sizeof(*fbuf));
 }
 
 SoundPulse::~SoundPulse()
@@ -1890,6 +1905,7 @@ SoundPulse::~SoundPulse()
 	delete [] snd_buffer;
 	delete [] src_buffer;
 	delete [] fbuf;
+	delete [] rbuf;
 }
 
 int SoundPulse::Open(int mode, int freq)
@@ -1992,18 +2008,14 @@ size_t SoundPulse::Write(double* buf, size_t count)
 
 // copy input to both channels
 	for (size_t i = 0; i < count; i++)
-		if (progdefaults.mono_audio)
-			fbuf[i] = buf[i];
-		else if (progdefaults.sig_on_right_channel)
+		if (progdefaults.sig_on_right_channel)
 			fbuf[sd[1].stream_params.channels * i] = fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
-		else {
-			if (progdefaults.ReverseAudio) {
-				fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
-				fbuf[sd[1].stream_params.channels * i] = 0;
-			} else {
-				fbuf[sd[1].stream_params.channels * i] = buf[i];
-				fbuf[sd[1].stream_params.channels * i + 1] = 0;
-			}
+		else if (progdefaults.ReverseAudio) {
+			fbuf[sd[1].stream_params.channels * i + 1] = buf[i];
+			fbuf[sd[1].stream_params.channels * i] = 0;
+		} else {
+			fbuf[sd[1].stream_params.channels * i] = buf[i];
+			fbuf[sd[1].stream_params.channels * i + 1] = 0;
 		}
 
 	return resample_write(fbuf, count);
@@ -2072,7 +2084,9 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 		SoundPulse* p = reinterpret_cast<SoundPulse*>(arg);
 
 	int err;
-	if (pa_simple_read(p->sd[0].stream, p->snd_buffer, sizeof(float) * p->sd[0].blocksize, &err) == -1) {
+	int nread = 0;
+	if ((nread = pa_simple_read(p->sd[0].stream, p->snd_buffer, 
+			p->sd[0].stream_params.channels * sizeof(float) * p->sd[0].blocksize, &err)) == -1) {
 		LOG_ERROR("%s", pa_strerror(err));
 		*data = 0;
 		return 0;
@@ -2096,25 +2110,37 @@ size_t SoundPulse::Read(float *buf, size_t count)
 	}
 #endif
 
+	size_t n = 0;
+	long r = 0;
+
 	if (progdefaults.RX_corr != 0) {
 		if (rxppm != progdefaults.RX_corr) {
 			rxppm = progdefaults.RX_corr;
 			sd[0].src_ratio = 1.0 / (1.0 + rxppm / 1e6);
 			src_set_ratio(rx_src_state, sd[0].src_ratio);
 		}
-		long r;
-		size_t n = 0;
 		sd[0].blocksize = SCBLOCKSIZE;
 		while (n < count) {
-			if ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, buf + n)) == 0)
-				return n;
+			if ((r = src_callback_read(rx_src_state, sd[0].src_ratio, count - n, rbuf + n)) == 0)
+				break;
 			n += r;
 		}
 	}
 	else {
 		int err;
-		if (pa_simple_read(sd[0].stream, buf, sizeof(float) * count, &err) == -1)
+		if ((r = pa_simple_read(sd[0].stream, rbuf, 
+				sd[0].stream_params.channels * sizeof(float) * count, &err)) == -1)
 			throw SndPulseException(err);
+	}
+
+	// transfer active input channel; left == 0, right == 1
+	size_t i = 0;
+	if (sd[0].stream_params.channels == 2) n = progdefaults.ReverseRxAudio;
+	else n = 0;
+	while (i < count) {
+		buf[i] = rbuf[n];
+		i++;
+		n += sd[0].stream_params.channels;
 	}
 
 #if USE_SNDFILE

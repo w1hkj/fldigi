@@ -1012,17 +1012,14 @@
         ELEM_(std::string, PulseServer, "PULSESERVER",                                  \
               "PulseAudio server string",                                               \
               "")                                                                       \
-        ELEM_(int, in_channels, "INCHANNELS",                                           \
-              "Number of audio input channels",                                         \
-              1)                                                                        \
-        ELEM_(bool, mono_audio, "MONOAUDIO",                                            \
-              "Force use of mono audio output",                                         \
-              false)                                                                    \
         ELEM_(bool, sig_on_right_channel, "SIGONRIGHTCHANNEL",                          \
               "Duplicate modem signal on left & right",                                 \
               false)                                                                    \
         ELEM_(bool, ReverseAudio, "REVERSEAUDIO",                                       \
-              "Reverse left-right audio channels",                                      \
+              "Reverse left-right rx audio channels",                                   \
+              false)                                                                    \
+        ELEM_(bool, ReverseRxAudio, "REVERSERXAUDIO",                                   \
+              "Reverse left-right rx audio channels",                                   \
               false)                                                                    \
         ELEM_(int, sample_rate, "SAMPLERATE",                                           \
               "For compatibility with older versions",                                  \
