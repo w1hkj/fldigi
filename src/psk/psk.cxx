@@ -114,15 +114,16 @@ static cmplx graymapped_8psk_pos[] = {
 
 // Associated soft-symbols to be used with graymapped_8psk_pos[] constellation
 // These softbits have precalculated (a-priori) probabilities applied
-static unsigned char graymapped_softbits[8][3] =  {
-	{25,0,25},
-	{0,25,230},
-	{25,255,25},
-	{0,230,230},
-	{230,0,25},
-	{255,25,230},
-	{230,255,25},
-	{255,230,230}
+// Use of this table automatically Gray-decodes incoming symbols.
+static unsigned char graymapped_8psk_softbits[8][3] =  {
+	{25,0,25}, // 0
+	{0,25,230}, // 1
+	{0,230,230}, // 3
+	{25,255,25}, // 2
+	{230,255,25}, // 6
+	{255,230,230}, // 7
+	{255,25,230}, // 5
+	{230,0,25} // 4
 };
 
 
@@ -1160,15 +1161,6 @@ void psk::rx_symbol(cmplx symbol, int car)
 	} else if (_8psk) {
 		n = 8;
 		bits = ((int) (phase / (M_PI/4.0) + 0.5)) & (n-1);
-		if (!_disablefec) {
-			// Un Gray-map the 8PSK constellation
-			if (3 == bits) bits = 2;
-			else if (2 == bits) bits = 3;
-			else if (7 == bits) bits = 4;
-			else if (6 == bits) bits = 5;
-			else if (4 == bits) bits = 6;
-			else if (5 == bits) bits = 7;
-		}
 	} else if (_16psk) {
 		n = 16;
 		bits = ((int) (phase / (M_PI/8.0) + 0.5)) & (n-1);
@@ -1297,7 +1289,17 @@ void psk::rx_symbol(cmplx symbol, int car)
 			if (!_disablefec) break;
 			set_dcdON = 0;
 			break;
-
+		
+		case 0x10410410:	// xpsk DCD on (with FEC enabled)
+			if (_pskr) break;
+			if (_qpsk) break;
+			if (_8psk) break;
+			if (_16psk) break;
+			if (!_xpsk) break;
+			if (_disablefec) break;
+			set_dcdON = 1;
+			break;
+ 
 		case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
 			if (_pskr) break;
 			if (_xpsk || _8psk || _16psk) {
@@ -1347,11 +1349,35 @@ void psk::rx_symbol(cmplx symbol, int car)
 
 			// Soft-decode of Gray-mapped 8psk
 			if (_8psk) {
-				int bitindex = static_cast<int>(bits);
-				for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
-												  ///printf("\nBits: %u | %.3u ", bits, graymapped_softbits[bitindex][i]);
-					rx_pskr(graymapped_softbits[bitindex][i]); // Feed to the PSKR FEC decoder, one bit at a time.
+				bool softpuncture = false;
+				static double lastphasequality=0;
+				double phasequality = fabs(cos( n/2 * phase));
+				phasequality = (phasequality + lastphasequality) / 2; // Differential modem: average probabilities between current and previous symbols
+				lastphasequality = phasequality;
+				int soft_qualityerror = static_cast<int>(128 - (128 * phasequality)) ;
+				
+				if (soft_qualityerror > 255-25) // Prevent soft-bit wrap-around (crossing of value 128)
+					softpuncture = true;
+				else if (soft_qualityerror < 128/3) // First 1/3 of phase delta is considered a perfect signal
+					soft_qualityerror = 0;
+				else if (soft_qualityerror > 128 - (128/8) ) // Last 1/8 of phase delta triggers a puncture
+					softpuncture = true;
+				else
+					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff 
+			
+
+				if (softpuncture) {
+					for(int i=0; i<symbits; i++) rx_pskr(128);
+				} else {
+					int bitindex = static_cast<int>(bits);
+					for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
+						if (graymapped_8psk_softbits[bitindex][i] > 128) // Soft-One
+							rx_pskr( (graymapped_8psk_softbits[bitindex][i]) - soft_qualityerror );
+						else // Soft-Zero
+							rx_pskr( (graymapped_8psk_softbits[bitindex][i]) + soft_qualityerror  );
+					} 
 				}
+
 			} else {
 				//Hard Decode Section
 				for(int i=0; i<symbits; i++) { // Hard decode symbits into soft-symbols
