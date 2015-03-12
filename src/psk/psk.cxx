@@ -126,6 +126,72 @@ static unsigned char graymapped_8psk_softbits[8][3] =  {
 	{230,0,25} // 4
 };
 
+// For Gray-mapped xPSK:
+// Even when the received phase is distorted by +- 1 phase-position:
+//  - Only up to 1 bit can be in error
+static cmplx graymapped_xpsk_pos[] = {
+//				 Degrees  Bits In 
+	cmplx (0.7071, 0.7071),   // 45  | 0b00
+	cmplx (-0.7071, 0.7071),  // 135 | 0b01
+	cmplx (0.7071, -0.7071),  // 315 | 0b10
+	cmplx (-0.7071, -0.7071)  // 225 | 0b11
+};
+
+// Associated soft-symbols to be used with graymapped_xpsk_pos[] constellation
+// These softbits have precalculated (a-priori) probabilities applied
+// Use of this table automatically Gray-decodes incoming symbols.
+static unsigned char graymapped_xpsk_softbits[4][2] = {
+	{12,12}, // 0
+	{12,242}, // 1
+	{242,242}, // 3
+	{242,12}, // 2
+};
+
+
+// For Gray-mapped 16PSK:
+// Even when the received phase is distorted by +- 1 phase-position:
+//  - Two of the bits are still known with 100% certianty.
+//  - Only up to 1 bit can be in error
+static cmplx graymapped_16psk_pos[] = {
+	cmplx (1.0, 0.0),         // 0 degrees		0b0000	| 025,000,000,025
+	cmplx (0.9238, 0.3826),   // 22.5 degrees	0b0001	| 000,000,025,230
+	cmplx (0.3826, 0.9238),   // 67.5 degrees	0b0010	| 000,025,255,025
+	cmplx (0.7071, 0.7071),   // 45 degrees		0b0011	| 000,000,230,230
+	cmplx (-0.9238, 0.3826),  // 157.5 degrees	0b0100	| 025,255,000,025
+	cmplx (-0.7071, 0.7071),  // 135 degrees	0b0101	| 000,255,025,230
+	cmplx (0.0, 1.0),         // 90 degrees		0b0110	| 000,230,255,025
+	cmplx (-0.3826, 0.9238),  // 112.5 degrees	0b0111	| 000,255,230,230
+	cmplx (0.9238, -0.3826),  // 337.5 degrees	0b1000	| 230,000,000,025
+	cmplx (0.7071, -0.7071),  // 315 degrees	0b1001	| 255,000,025,230
+	cmplx (0.0, -1.0),        // 270 degrees	0b1010	| 255,025,255,025
+	cmplx (0.3826, -0.9238),  // 292.5 degrees	0b1011	| 255,000,230,230
+	cmplx (-1.0, 0.0),        // 180 degrees	0b1100	| 230,255,000,025
+	cmplx (-0.9238, -0.3826), // 202.5 degrees	0b1101	| 255,255,025,230
+	cmplx (-0.3826, -0.9238), // 247.5 degrees	0b1110	| 255,230,255,000
+	cmplx (-0.7071, -0.7071)  // 225 degrees	0b1111	| 255,255,025,025
+};
+
+// Associated soft-symbols to be used with graymapped_16psk_pos[] constellation
+// These softbits have precalculated (a-priori) probabilities applied
+// Use of this table automatically Gray-decodes incoming symbols.
+static unsigned char graymapped_16psk_softbits[16][4] = {
+	{025,000,000,025}, // 0
+	{000,000,025,230}, // 1
+	{000,000,230,230}, // 3
+	{000,025,255,025}, // 2
+	{000,230,255,025}, // 6
+	{000,255,230,230}, // 7
+	{000,255,025,230}, // 5
+	{025,255,000,025}, // 4
+	{230,255,000,025}, // 12
+	{255,255,025,230}, // 13
+	{255,255,025,025}, // 15
+	{255,230,255,000}, // 14
+	{255,025,255,025}, // 10
+	{255,000,230,230}, // 11
+	{255,000,025,230}, // 9
+	{230,000,000,025} // 8
+};
 
 char pskmsg[80];
 
@@ -353,14 +419,18 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK1200: // 1200 baud | 1800 bits/sec @ 2/3 rate FEC
-			symbollen = 13;
-			samplerate = 16000;
-			_8psk = true;
-			_disablefec = true;
-			dcdbits = 2048;
+		case MODE_8PSK1200: // 31.25 baud | 36 carriers | 16PSK | 2250bps | 2250HZ BW
+			symbollen = 256;
+			numcarriers = 36;
+			separation = 2.0;
+			samplerate = 8000;
+			idepth = 2500;
+			flushlength = 500;
+			_16psk = true;
+			dcdbits = 512;
 			cap |= CAP_REV;
 			break;
+/*
 		case MODE_8PSK1333: // 1333 baud | 4000 bits/sec  No FEC
 			symbollen = 12; // 1333 baud | 4kbps  No FEC
 			samplerate = 16000;
@@ -370,6 +440,19 @@ psk::psk(trx_mode pskmode) : modem()
 			PSKviterbi = true;
 			cap |= CAP_REV;
 			break;
+*/
+		case MODE_8PSK1333: // 64 baud | 18 carriers | 8PSK | 1687bps | 2250hz BW
+			symbollen = 128;
+			numcarriers = 18;
+			separation = 1.95f;
+			idepth = 2500;
+			flushlength = 500;
+			samplerate = 8000;
+			_8psk = true;
+			dcdbits = 768;
+			cap |= CAP_REV;
+			break;
+		
 
 	// 8psk modes with FEC
 		case MODE_8PSK125F:
@@ -422,6 +505,7 @@ psk::psk(trx_mode pskmode) : modem()
 			cap |= CAP_REV;
 			PSKviterbi = true;
 			break;
+/*
 		case MODE_8PSK1333F: // 1333 baud | 4000 bits/sec
 			symbollen = 12;
 			idepth = 512;
@@ -432,6 +516,19 @@ psk::psk(trx_mode pskmode) : modem()
 			cap |= CAP_REV;
 			_puncturing = true;
 			PSKviterbi = true;
+			break;
+			// end 8psk modes
+*/
+		case MODE_8PSK1333F: // 125 baud | 10 carriers | 1250 bits/sec | 2200Hz BW
+			symbollen = 64;
+			numcarriers = 10;
+			separation = 1.8f;
+			idepth = 2500;
+			flushlength = 500;
+			samplerate = 8000;
+			_xpsk = true;
+			dcdbits = 1024;
+			cap |= CAP_REV;
 			break;
 			// end 8psk modes
 
@@ -1343,17 +1440,19 @@ void psk::rx_symbol(cmplx symbol, int car)
 		if (!_disablefec && (_16psk || _8psk || _xpsk) ) {
 			int bitmask = 1;
 			unsigned char xsoftsymbols[symbits];
-
+			bool softpuncture = false;
+			static double lastphasequality=0;
+			double phasequality = fabs(cos( n/2 * phase));
+			phasequality = (phasequality + lastphasequality) / 2; // Differential modem: average probabilities between current and previous symbols				lastphasequality = phasequality;
+			
+			// Index used to lookup the soft-bits in the a-priori gray-mapped symbols table
+			int bitindex = static_cast<int>(bits);
+			
 			//printf("\n");
 			if ( (_puncturing && _16psk) ) rx_pskr(128); // 16psk: recover punctured low bit
 
 			// Soft-decode of Gray-mapped 8psk
 			if (_8psk) {
-				bool softpuncture = false;
-				static double lastphasequality=0;
-				double phasequality = fabs(cos( n/2 * phase));
-				phasequality = (phasequality + lastphasequality) / 2; // Differential modem: average probabilities between current and previous symbols
-				lastphasequality = phasequality;
 				int soft_qualityerror = static_cast<int>(128 - (128 * phasequality)) ;
 				
 				if (soft_qualityerror > 255-25) // Prevent soft-bit wrap-around (crossing of value 128)
@@ -1369,7 +1468,6 @@ void psk::rx_symbol(cmplx symbol, int car)
 				if (softpuncture) {
 					for(int i=0; i<symbits; i++) rx_pskr(128);
 				} else {
-					int bitindex = static_cast<int>(bits);
 					for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
 						if (graymapped_8psk_softbits[bitindex][i] > 128) // Soft-One
 							rx_pskr( (graymapped_8psk_softbits[bitindex][i]) - soft_qualityerror );
@@ -1378,6 +1476,52 @@ void psk::rx_symbol(cmplx symbol, int car)
 					} 
 				}
 
+			} else if (_xpsk) {
+				int soft_qualityerror = static_cast<int>(128 * phasequality);
+				
+				if (soft_qualityerror > 255-12) // Prevent soft-bit wrap-around (crossing of value 128)
+					softpuncture = true;
+				else if (soft_qualityerror < 128/3) // First 1/3 of phase delta is considered a perfect signal
+					soft_qualityerror = 0;
+				else if (soft_qualityerror > 128 - (128/8) ) // Last 1/8 of phase delta triggers a puncture
+					softpuncture = true;
+				else
+					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff 
+				
+				if (softpuncture) {
+					for(int i=0; i<symbits; i++) rx_pskr(128);
+				} else {
+					for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
+						if (graymapped_xpsk_softbits[bitindex][i] > 128)
+							rx_pskr(graymapped_xpsk_softbits[bitindex][i] - soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+						else
+							rx_pskr(graymapped_xpsk_softbits[bitindex][i] + soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+					}
+				}
+					
+			} else if (_16psk) {
+				int soft_qualityerror = static_cast<int>(128 - (128 * phasequality)) ; 
+				
+				if (soft_qualityerror > 255-25) // Prevent soft-bit wrap-around (crossing of value 128)
+					softpuncture = true;
+				else if (soft_qualityerror < 128/3) // First 1/3 of phase delta is considered a perfect signal
+					soft_qualityerror = 0;
+				else if (soft_qualityerror > 128 - (128/14) ) // Last 1/14 of phase delta triggers a puncture
+					softpuncture = true;
+				else
+					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff 
+				
+				if (softpuncture) {
+					for(int i=0; i<symbits; i++) rx_pskr(128);
+				} else {
+					for(int i=symbits-1; i>=0; i--) { // Use predefined Gray-mapped softbits for soft-decoding
+						if (graymapped_16psk_softbits[bitindex][i] > 128)
+							rx_pskr(graymapped_16psk_softbits[bitindex][i] - soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+						else
+							rx_pskr(graymapped_16psk_softbits[bitindex][i] + soft_qualityerror); // Feed to the PSKR FEC decoder, one bit at a time.
+					}
+				}
+				
 			} else {
 				//Hard Decode Section
 				for(int i=0; i<symbits; i++) { // Hard decode symbits into soft-symbols
@@ -1676,6 +1820,10 @@ void psk::tx_carriers()
 
 		if (_8psk && !_disablefec) // Use Gray-mapped 8psk constellation
 			symbol = prevsymbol[car] * graymapped_8psk_pos[(sym & 7)];	// complex multiplication
+		else if (_xpsk && !_disablefec) // Use Gray-mapped xpsk constellation
+			symbol = prevsymbol[car] * graymapped_xpsk_pos[(sym & 3)];	// complex multiplication
+		else if (_16psk && !_disablefec) // Use Gray-mapped 16psk constellation
+			symbol = prevsymbol[car] * graymapped_16psk_pos[(sym & 15)];	// complex multiplication
 
 		else { // Map the incoming symbols to the underlying 16psk constellation.
 			if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
@@ -1934,7 +2082,7 @@ void psk::tx_xpsk(int bit)
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
 			//Txinlv->bits(&xpsk_sym);
-			tx_symbol(xpsk_sym & 7);
+			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
 			return;
 		}

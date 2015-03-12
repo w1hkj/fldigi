@@ -47,7 +47,7 @@
 #define NUM_FILTERS 3
 #define GOERTZEL 288		//96 x 2 must be an integer value
 
-#define MAX_CARRIERS 32
+#define MAX_CARRIERS 36
 
 //=====================================================================
 
