@@ -1698,7 +1698,13 @@
         ELEM_(bool, view_smeter, "VIEW_SMETER",                                         \
               "Enabled, View smeter & power meter\n"                                    \
               "Disable, (default)",                                                     \
-              false)
+              false)                                                                    \
+        ELEM_(Fl_Font, MacroEditFontnbr, "MACROEDITFONTNBR",                            \
+              "RX text font index",                                                     \
+              FL_HELVETICA)                                                             \
+        ELEM_(int, MacroEditFontsize, "MACROEDITFONTSIZE",                             \
+              "RX text font size",                                                      \
+              16)
 
 
 // declare the struct

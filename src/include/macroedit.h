@@ -47,5 +47,6 @@ extern Fl_Double_Window* make_macroeditor();
 enum { MACRO_EDIT_BUTTON, MACRO_EDIT_INPUT };
 extern void editMacro(int b, int t = MACRO_EDIT_BUTTON, Fl_Input* in = 0);
 extern void update_macro_button(int iMacro, const char *text, const char *name);
+extern void update_macroedit_font();
 
 #endif

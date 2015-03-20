@@ -152,6 +152,8 @@ extern Fl_Button *btnTxColor;
 extern Fl_Input *TxText;
 extern Fl_Button *btnRxFont;
 extern Fl_Button *btnTxFont;
+extern Fl_Input *MacroText;
+extern Fl_Button *btnMacroEditFont;
 extern Fl_Button *btnXMIT;
 extern Fl_Button *btnCTRL;
 extern Fl_Button *btnSKIP;

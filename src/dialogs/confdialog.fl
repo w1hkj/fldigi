@@ -98,6 +98,9 @@ decl {\#include "rx_extract.h"} {private local
 decl {\#include "kmlserver.h"} {private local
 } 
 
+decl {\#include "macroedit.h"} {selected private local
+} 
+
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
 } 
 
@@ -168,6 +171,28 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {private return_type void
     progdefaults.changed = true;} {}
 } 
 
+Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {open private return_type void
+} {
+  code {Fl_Font font = font_browser->fontNumber();
+    int size = font_browser->fontSize();
+
+    MacroText->textfont(font);
+    MacroText->textsize(size);
+    MacroText->redraw();
+
+    progdefaults.MacroEditFontnbr = font;
+    progdefaults.MacroEditFontsize = size;
+    
+    update_macroedit_font();
+
+    MacroText->textfont(font);
+    MacroText->textsize(size);
+    
+    font_browser->hide();
+
+    progdefaults.changed = true;} {}
+} 
+
 Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
   code {Fl_Font fnt = font_browser->fontNumber();
@@ -180,7 +205,7 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
     font_browser->hide();} {}
 } 
 
-Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {open private return_type void
+Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
   code {progdefaults.MacroBtnFontnbr = font_browser->fontNumber();
     progdefaults.MacroBtnFontsize = font_browser->fontSize();;
@@ -217,7 +242,7 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
     font_browser->hide();} {}
 } 
 
-Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {open return_type void
+Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
   code {Fl_Font fnt = font_browser->fontNumber();
     progdefaults.FreqControlFontnbr = fnt;
@@ -322,8 +347,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -403,7 +428,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355} hide
+        tooltip {User Interface} xywh {0 25 600 355}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
@@ -1327,14 +1352,14 @@ WF_UI();}
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
-                  tooltip {Select Rx/Tx Character Set} xywh {99 109 165 24} box BORDER_BOX color 55 align 8
+                  tooltip {Select Rx/Tx Character Set} xywh {96 85 165 24} box BORDER_BOX color 55 align 8
                   code0 {\#include "fl_digi.h"}
                   code1 {o->labelsize(FL_NORMAL_SIZE);
                   listbox_charset_status->callback(cb_listbox_charset, 0);}
                   class Fl_ListBox
                 } {}
                 Fl_Input RxText {
-                  xywh {99 143 165 36}
+                  xywh {96 116 220 36}
                   code0 {RxText->value("Receive Text");}
                   code1 {RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));}
                   code2 {RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);}
@@ -1359,7 +1384,7 @@ WF_UI();}
     ReceiveText->redraw();
 
     progdefaults.changed = true;}
-                  xywh {273 150 75 21}
+                  xywh {326 123 75 21}
                 }
                 Fl_Button btnTxColor {
                   label {Tx bkgnd}
@@ -1380,10 +1405,10 @@ WF_UI();}
     TransmitText->redraw();
 
 progdefaults.changed = true;}
-                  xywh {273 191 75 21}
+                  xywh {326 166 75 21}
                 }
                 Fl_Input TxText {
-                  xywh {99 186 165 37}
+                  xywh {96 158 220 37}
                   code0 {TxText->value("Transmit Text");}
                   code1 {TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));}
                   code2 {TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);}
@@ -1397,7 +1422,7 @@ progdefaults.changed = true;}
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbRxFontBrowser);
 font_browser->show();}
-                  xywh {358 150 75 21}
+                  xywh {411 123 75 21}
                 }
                 Fl_Button btnTxFont {
                   label {Tx font}
@@ -1407,11 +1432,26 @@ font_browser->show();}
     font_browser->fontFilter(Font_Browser::ALL_TYPES);
     font_browser->callback(cbTxFontBrowser);
     font_browser->show();}
-                  xywh {358 191 75 21}
+                  xywh {411 166 75 21}
+                }
+                Fl_Input MacroText {
+                  xywh {96 201 220 37}
+                  code0 {MacroText->value("Macro editor text");}
+                  code1 {MacroText->textfont(progdefaults.MacroEditFontnbr); TxText->textsize(progdefaults.MacroEditFontsize);}
+                  code2 {MacroText->type(FL_MULTILINE_INPUT_WRAP);}
+                }
+                Fl_Button btnMacroEditFont {
+                  label {Macro Edit Font}
+                  callback {font_browser->fontNumber(progdefaults.MacroEditFontnbr);
+font_browser->fontSize(progdefaults.MacroEditFontsize);
+font_browser->fontFilter(Font_Browser::ALL_TYPES);
+font_browser->callback(cbMacroEditFontBrowser);
+font_browser->show();}
+                  xywh {326 209 120 21}
                 }
                 Fl_Group {} {
                   label {Text Highlighting} open
-                  xywh {71 235 404 81} box ENGRAVED_FRAME align 17
+                  xywh {86 248 404 81} box ENGRAVED_FRAME align 17
                 } {
                   Fl_Button btnXMIT {
                     label XMIT
@@ -1422,7 +1462,7 @@ font_browser->show();}
     ReceiveText->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
 
     progdefaults.changed = true;}
-                    tooltip {Sent chars in Rx/Tx pane} xywh {89 263 40 21} align 2
+                    tooltip {Sent chars in Rx/Tx pane} xywh {104 276 40 21} align 2
                     code0 {btnXMIT->color(progdefaults.XMITcolor);}
                   }
                   Fl_Button btnCTRL {
@@ -1434,7 +1474,7 @@ font_browser->show();}
     ReceiveText->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 
     progdefaults.changed = true;}
-                    tooltip {Control chars in Rx/Tx pane} xywh {132 263 40 21} align 2
+                    tooltip {Control chars in Rx/Tx pane} xywh {147 276 40 21} align 2
                     code0 {btnCTRL->color(progdefaults.CTRLcolor);}
                   }
                   Fl_Button btnSKIP {
@@ -1447,7 +1487,7 @@ font_browser->show();}
 
     progdefaults.changed = true;}
                     tooltip {Skipped chars in Tx pane
-(Tx on/off in CW)} xywh {176 263 40 21} align 2
+(Tx on/off in CW)} xywh {191 276 40 21} align 2
                     code0 {btnSKIP->color(progdefaults.SKIPcolor);}
                   }
                   Fl_Button btnALTR {
@@ -1459,7 +1499,7 @@ font_browser->show();}
     ReceiveText->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
 
     progdefaults.changed = true;}
-                    tooltip {Alternate character color in Rx panelr} xywh {219 263 40 21} align 2
+                    tooltip {Alternate character color in Rx panelr} xywh {234 276 40 21} align 2
                     code0 {btnALTR->color(progdefaults.ALTRcolor);}
                   }
                   Fl_Button btnSEL {
@@ -1481,7 +1521,7 @@ TransmitText->color(
     progdefaults.RxTxSelectcolor);
 
 progdefaults.changed = true;}
-                    tooltip {Selection background color in Rx Tx panels} xywh {263 263 39 21} align 2
+                    tooltip {Selection background color in Rx Tx panels} xywh {278 276 39 21} align 2
                     code0 {btnSEL->color(progdefaults.RxTxSelectcolor);}
                   }
                   Fl_Button btnNoTextColor {
@@ -1540,7 +1580,7 @@ progdefaults.changed = true;}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-                    xywh {310 263 70 21}
+                    xywh {325 276 70 21}
                   }
                   Fl_Button btnTextDefaults {
                     label Defaults
@@ -1599,7 +1639,7 @@ progdefaults.changed = true;}
     TransmitText->redraw();
 
     progdefaults.changed = true;}
-                    xywh {384 263 70 21}
+                    xywh {399 276 70 21}
                   }
                 }
               }
@@ -2334,7 +2374,7 @@ progdefaults.changed = true;}
               label {display Rx control chars as ascii string}
               callback {progdefaults.show_all_codes=o->value();
 progdefaults.changed = true;}
-              xywh {105 325 25 25} down_box DOWN_BOX
+              xywh {105 335 25 25} down_box DOWN_BOX
               code0 {o->value(progdefaults.show_all_codes);}
             }
           }
