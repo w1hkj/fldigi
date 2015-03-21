@@ -1,4 +1,51 @@
-2015-01-08  David Freese  <iam_w1hkj@w1hkj.com>
+
+
+=Version 3.22.06=
+
+2015-03-21  Robert Stiles  <kk5vd@yahoo.com>
+
+	a36bd6d: UTF-8 Rx display
+
+2015-03-21  David Freese  <iam_w1hkj@w1hkj.com>
+
+	a14b825: 8psk modes
+	e48c2fe: Macro Editor Fonts
+	2424904: R-L channel input
+	e5148c0: QSY documentation
+	f219812: Sound File Generate
+	35ef2ed: devices_text mutex
+
+2015-02-18  Robert Stiles  <kk5vd@yahoo.com>
+
+	aedc628: Bug fixes/Comments
+	cbc9975: Check IO and delay prior to autoexec prgs
+	003707f: Rename local variables
+
+2015-02-17  David Freese  <iam_w1hkj@w1hkj.com>
+
+	edee64a: pa names
+	4ba7b78: Main dialog resize
+	279115c: Rig Viewer Frame
+	3eb8e41: Code merge/PortAudio Script return error
+	b15f5d9: Update translation files
+	31e231b: Exit trx loop
+
+2015-02-08  Robert Stiles  <kk5vd@yahoo.com>
+
+	1155d8d: Documentation Update
+	814bed3: Configure Script Engine
+
+2015-02-08  David Freese  <iam_w1hkj@w1hkj.com>
+
+	ad52857: Macros
+	fffc57c: French po
+	375e98f: CW QSK Tune
+	3ebf3db: flrig xml client
+	423ac70: TimeOn button
+	3041a20: QSY clickable
+
+
+=Version 3.22.05=
 
 	2c9b493: TX Lock
 	7c95822: video ID
