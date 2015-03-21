@@ -6862,9 +6862,6 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	else if (mode == MODE_RTTY || mode == MODE_CW)
 		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
 
-	else if ((data > 0 && data < 0x20) | (data > 0x7E))
-		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
-
 	else
 		rx_chd.rx(data);
 
@@ -7289,7 +7286,7 @@ void put_echo_char(unsigned int data, int style)
 	REQ(&add_tx_char, data);
 
 	// select a byte translation table
-	const char **asc = ascii;
+	const char **asc = NULL;//ascii;
 	if (mailclient || mailserver || arq_text_available)
 		asc = ascii2;
 	else if (progdefaults.show_all_codes)
@@ -7307,7 +7304,10 @@ void put_echo_char(unsigned int data, int style)
 	if (data == '\r' && lastdata == '\r') // reject multiple CRs
 		return;
 
-	echo_chd.rx((unsigned char *)asc[data & 0xFF]);
+	if (asc == NULL)
+		echo_chd.rx(data);
+	else
+		echo_chd.rx((unsigned char *)asc[data & 0xFF]);
 
 	lastdata = data;
 
