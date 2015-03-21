@@ -2927,6 +2927,8 @@ Fl_Group *tabPSK=(Fl_Group *)0;
 
 Fl_Tabs *tabsPSK=(Fl_Tabs *)0;
 
+Fl_Group *grpPSK=(Fl_Group *)0;
+
 Fl_Counter2 *cntSearchRange=(Fl_Counter2 *)0;
 
 static void cb_cntSearchRange(Fl_Counter2* o, void*) {
@@ -2958,6 +2960,20 @@ Fl_Check_Button *btnEnablePSKbrowsing=(Fl_Check_Button *)0;
 
 static void cb_btnEnablePSKbrowsing(Fl_Check_Button* o, void*) {
   progdefaults.pskbrowser_on = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnPSKpilot=(Fl_Check_Button *)0;
+
+static void cb_btnPSKpilot(Fl_Check_Button* o, void*) {
+  progdefaults.pskpilot = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *cnt_pilot_power=(Fl_Counter2 *)0;
+
+static void cb_cnt_pilot_power(Fl_Counter2* o, void*) {
+  progdefaults.pilot_power = o->value();
 progdefaults.changed = true;
 }
 
@@ -6989,7 +7005,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 330, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 330);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
@@ -8023,12 +8038,12 @@ i on a\ntouch screen device such as a tablet."));
             tabPSK->hide();
             { tabsPSK = new Fl_Tabs(0, 50, 600, 330);
               tabsPSK->selection_color(FL_LIGHT1);
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                { Fl_Group* o = new Fl_Group(55, 93, 490, 98, _("AFC behavior"));
+              { grpPSK = new Fl_Group(0, 75, 600, 305, _("General"));
+                grpPSK->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                { Fl_Group* o = new Fl_Group(55, 87, 490, 86, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Counter2* o = cntSearchRange = new Fl_Counter2(65, 125, 75, 20, _("Acquisition search range (Hz)"));
+                { Fl_Counter2* o = cntSearchRange = new Fl_Counter2(200, 111, 75, 20, _("Acquisition search range (Hz)"));
                 cntSearchRange->tooltip(_("Capture signals within this frequency range"));
                 cntSearchRange->type(1);
                 cntSearchRange->box(FL_UP_BOX);
@@ -8048,7 +8063,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.SearchRange);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntSearchRange
-                { Fl_Counter2* o = cntACQsn = new Fl_Counter2(65, 154, 75, 20, _("Acquisition S/N (dB)"));
+                { Fl_Counter2* o = cntACQsn = new Fl_Counter2(200, 140, 75, 20, _("Acquisition S/N (dB)"));
                 cntACQsn->tooltip(_("Capture signals over this threshold"));
                 cntACQsn->type(1);
                 cntACQsn->box(FL_UP_BOX);
@@ -8070,10 +8085,10 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Counter2* cntACQsn
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(55, 191, 490, 65, _("S/N and IMD behavior"));
+                { Fl_Group* o = new Fl_Group(55, 175, 490, 65, _("S/N and IMD behavior"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_ListBox* o = listbox_psk_status_timeout = new Fl_ListBox(65, 222, 80, 20, _("after"));
+                { Fl_ListBox* o = listbox_psk_status_timeout = new Fl_ListBox(180, 206, 80, 20, _("after"));
                 listbox_psk_status_timeout->tooltip(_("Behavior of s/n imd"));
                 listbox_psk_status_timeout->box(FL_DOWN_BOX);
                 listbox_psk_status_timeout->color(FL_BACKGROUND2_COLOR);
@@ -8090,7 +8105,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_psk_status_timeout->end();
                 } // Fl_ListBox* listbox_psk_status_timeout
-                { Fl_Counter2* o = new Fl_Counter2(206, 222, 75, 20, _("seconds"));
+                { Fl_Counter2* o = new Fl_Counter2(321, 206, 75, 20, _("seconds"));
                 o->tooltip(_("Will occur after this time in seconds"));
                 o->type(1);
                 o->box(FL_UP_BOX);
@@ -8111,26 +8126,58 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Counter2* o
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(55, 258, 490, 98, _("Multi-Channel Signal Processing"));
+                { Fl_Group* o = new Fl_Group(55, 245, 490, 80, _("Multi-Channel Signal Processing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnEnablePSKbrowsing = new Fl_Check_Button(65, 315, 180, 20, _("Multi-channel detector"));
+                { Fl_Check_Button* o = btnEnablePSKbrowsing = new Fl_Check_Button(225, 295, 180, 20, _("Multi-channel detector"));
                 btnEnablePSKbrowsing->down_box(FL_DOWN_BOX);
                 btnEnablePSKbrowsing->callback((Fl_Callback*)cb_btnEnablePSKbrowsing);
                 o->value(progdefaults.pskbrowser_on);
                 } // Fl_Check_Button* btnEnablePSKbrowsing
-                { Fl_Box* o = new Fl_Box(65, 285, 440, 20, _("Disable on very slow CPUs of if signal browser is not used"));
+                { Fl_Box* o = new Fl_Box(65, 272, 440, 20, _("Disable on very slow CPUs of if signal browser is not used"));
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
                 } // Fl_Box* o
                 o->end();
                 } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(55, 327, 490, 47, _("8 psk"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnPSKpilot = new Fl_Check_Button(141, 342, 113, 20, _("Pilot tone"));
+                btnPSKpilot->tooltip(_("Enable encode/decode vestigial pilot tone"));
+                btnPSKpilot->down_box(FL_DOWN_BOX);
+                btnPSKpilot->callback((Fl_Callback*)cb_btnPSKpilot);
+                o->value(progdefaults.pskpilot);
+                } // Fl_Check_Button* btnPSKpilot
+                { Fl_Counter2* o = cnt_pilot_power = new Fl_Counter2(305, 342, 75, 20, _("pilot power (dB)"));
+                cnt_pilot_power->tooltip(_("Pilot tone power relative to signal"));
+                cnt_pilot_power->type(1);
+                cnt_pilot_power->box(FL_UP_BOX);
+                cnt_pilot_power->color(FL_BACKGROUND_COLOR);
+                cnt_pilot_power->selection_color(FL_INACTIVE_COLOR);
+                cnt_pilot_power->labeltype(FL_NORMAL_LABEL);
+                cnt_pilot_power->labelfont(0);
+                cnt_pilot_power->labelsize(14);
+                cnt_pilot_power->labelcolor(FL_FOREGROUND_COLOR);
+                cnt_pilot_power->minimum(-60);
+                cnt_pilot_power->maximum(-20);
+                cnt_pilot_power->step(1);
+                cnt_pilot_power->value(-30);
+                cnt_pilot_power->callback((Fl_Callback*)cb_cnt_pilot_power);
+                cnt_pilot_power->align(Fl_Align(FL_ALIGN_RIGHT));
+                cnt_pilot_power->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.pilot_power);
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Counter2* cnt_pilot_power
                 o->end();
-              } // Fl_Group* o
+                } // Fl_Group* o
+                grpPSK->end();
+              } // Fl_Group* grpPSK
               tabsPSK->end();
             } // Fl_Tabs* tabsPSK
             tabPSK->end();
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(0, 50, 600, 330, _("RTTY"));
+            tabRTTY->hide();
             { tabsRTTY = new Fl_Tabs(0, 50, 600, 330);
               tabsRTTY->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Tx"));

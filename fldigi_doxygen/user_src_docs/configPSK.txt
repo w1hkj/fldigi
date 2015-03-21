@@ -30,6 +30,21 @@ Fldigi has a multi channel browser than can display simultaneous reception of
 up to 30 PSK signals. The browser is described here:
 <br>
 
+8psk (8 phase states) does not use AFC for signal acquistion or tracking.  RsID
+or operator adjustment of tracking point is necessary to align the decoder with
+the received signal.  This mode includes the optional use of a pilot tone.  The
+level of the pilot tone can be set relative to the total signal power.
+<br>
+
+This table shows the amount of transmit power used by the pilot tone
+<br>
+
+<center>
+dB      | -20  | -26  | -29  | -32  | -36  | -40
+:------:|:----:|:----:|:----:|:----:|:----:|:----
+Pwr Lvl | 10%  |  5%  | 3.5% | 2.5% | 1.6% | 1.0%
+<br>
+
 \ref signal_browser_page "Signal Browser"
 <br>
 

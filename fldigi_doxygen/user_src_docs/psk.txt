@@ -3,7 +3,7 @@
 
 \tableofcontents
 
-\section bpsk_modem  BPSK, QPSK, and 8PSK modems
+\section bpsk_modem  BPSK, QPSK, 8PSK modems
 
 PSK are narrow band low to moderate symbol rate modes using either single or
 multiple carrier differential <b>P</b>hase <b>S</b>hift <b>K</b>eying.
@@ -12,7 +12,7 @@ Current supported variants:
 
 BPSK: Binary, 2 constellations (1) <br>
 QPSK: Quadrature, 4 constellations <br>
-8PSK: 8 constellations <br>
+8PSK: Octal, 8 constellations <br>
 \par (1) 
 	A convenient way to represent PSK schemes is on a constellation diagram.
 This shows the points in the complex plane where, in this context, the real and 
@@ -70,17 +70,106 @@ and have proven to be very robust on FM even when used with repeaters.
 \image latex qpsk-signal-waterfall.png "QPSK63 signal transmitting text data - waterfall view" width=1.0in
 <br>
 
+\section multi_bpsk_modem  Multi-Channel BPSK modems
+
+\image html MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view"
+\image latex MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view" width=4.0in
+<br>
+
+\image html MultiChannelBPSKOScope.png "PSK63R20C signal transmitting text data - oscilloscope view"
+\image latex MultiChannelBPSKOScope.png "PSK63R20C signal transmitting text data - oscilloscope view" width=4.0in
+<br>
+
+\section eight_psk_modems  8PSK modems
+
+The 8 PSK modes are intended for use on VHF/UHF FM systems.  They provide a very 
+high data rate suitable for use with both flmsg and flamp and the transfer of 
+digital data.
+<br>
+
+<center>
+Mode      | Baud  | WPM  | Mode-FEC  | Baud  | WPM
+:--------:|:-----:|:----:|:---------:|:-----:|:----
+8PSK125   | 125   | 635  | 8PSK125F  | 125   | 317
+8PSK250   | 250   | 1270 | 8PSK250F  | 250   | 635
+8PSK500   | 500   | 2540 | 8PSK500F  | 500   | 1690
+8PSK1000  | 1000  | 5080 | 8PSK1000F | 1000  | 3386
+----------|-------|------| 8PSK1200F | 1200  | 4170
+</center>
+<br>
+
+The FEC modes do not all use the same Viterbi polynomials to achieve the forward 
+error correction.  That is why the WPM rates for the FEC modes are not multiples 
+of the base 125 baud.  The WPM rates are only an indication of relative rates.  
+The actual transfer rate is highly dependent on the data content.  This is always 
+true for modes which use a VARICODE.
+<br>
+
+The 8psk signal is similar to both bpsk and qpsk, but with 8 possible phase states 
+instead of the 2 and 4 associated with bpsk, qpsk.  The format of the signal does 
+not lend itself easily to a conventional AFC.  Instead, the modes should be used 
+with RsID enabled.  The RsID signal will both determine the mode and the mode 
+center frequency (to the nearest 2.6 Hz).  A finer resolution of the mode center 
+frequency can be made using the optional pilot carrier.  This pilot carrier is 
+placed at the frequency
+<br>
+
+f0 – samplerate / symbollen, f0 is modem center frequency
+<br>
+
+samplerate / symbollen is the same as the mode bandwidth.  The waterfall and 
+spectrum signature for the 8psk500 mode is shown here with and without the 
+pilot carrier:
+<br>
+
 \image html eight-psk-signal-oscope.png "8PSK125 signal transmitting text data - oscilloscope - waterfall view"
 \image latex eight-psk-signal-oscope.png "8PSK125 signal transmitting text data - oscilloscope - waterfall view" width=5.0in
 <br>
 
 \image html eight-psk-signal-waterfall.png "8PSK125 signal transmitting text data - waterfall view"
-\image latex eight-psk-signal-waterfall.png "8PSK125 signal transmitting text data - waterfall view" width=1.0in
+\image latex eight-psk-signal-waterfall.png "8PSK125 signal transmitting text data - waterfall view" width=1.5in
 <br>
 
 The two oscilloscope views above clearly show the combined phase and
-amplitude modulation of these modes.<br>
+amplitude modulation of these modes.
+<br>
 
+\image html 8psk500f.png "8PSK500F idle signal without pilot"
+\image latex 8psk500f.png "8PSK500F idle signal without pilot" width=3.0in
+<br>
+
+\image html 8psk500f-pilot.png "8PSK500F idle signal with pilot"
+\image latex 8psk500f-pilot.png "8PSK500F idle signal with pilot" width=3.0in
+<br>
+
+\image html 8psk500f-spectrum.png "8PSK500F idle signal without pilot"
+\image latex 8psk500f-spectrum.png "8PSK500F idle signal without pilot" width=1.5in
+<br>
+
+\image html 8psk500f-spectrum-pilot.png "8PSK500F idle signal with pilot"
+\image latex 8psk500f-spectrum-pilot.png "8PSK500F idle signal with pilot" width=1.5in
+<br>
+
+Decoding errors are reduced as the tracking point nears the actual transmit center 
+frequency.  The loss of signal power is more than offset by the decoder improvement.  
+Field testing has shown that the pilot tone needs to be at -40 dB or greater 
+(less negative).
+<br>
+
+Pilot tone detection does require a bit more cpu power.  The pilot tone is detected 
+using a sliding fast Fourier transform, sfft, which computes the frequency of 
+the pilot to approximately 1 Hz resolution.   The sfft only evaluates the signal 
+at 11 discrete frequencies, so it is necessary that either the RsID, or manual 
+tuning is used for the initial signal acquisition.  The detector is set to provide 
+lock when the pilot s/n is 2:1 or better.  The signal tracking point is then 
+adjusted to place the pilot tone at the correct frequency location.  For example, 
+if the RsID put the tracking point at 1502 Hz, the pilot would then adjust for 
+1500 (if that is the correct tracking frequency).  The adjustment is made once 
+per second.  Unlike AFC, which is continuous, the pilot adjustment is discrete 
+and occurs in 1 Hz steps.  If the pilot s/n is less than 2:1 then no adjustment 
+is made to the tracking point.  The pilot tone is transmitted during the 8psk 
+preamble as well as during the data transmission.  You should see the tracking 
+point adjust once at the beginning of the transmission and then stay fixed.
 <br>
 
 With these modes, a very linear transmitter is required. Over-driven
@@ -110,19 +199,8 @@ signal matches the baud rate then it might be a QPSK signal. Just change
 mode a try reacquiring the signal.
 <br>
 
-\section multi_bpsk_modem  Multi-Channel BPSK modems
-
-\image html MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view"
-\image latex MultiChannelBPSKWaterfall.png "PSK63R20C signal transmitting text data - waterfall view" width=4.0in
-<br>
-
-\image html MultiChannelBPSKOScope.png "PSK63R20C signal transmitting text data - oscilloscope view"
-\image latex MultiChannelBPSKOScope.png "PSK63R20C signal transmitting text data - oscilloscope view" width=4.0in
-<br>
-
 For further information about <a href="http://en.wikipedia.org/wiki/Phase-shift_keying">Phase Shift Keying</a>
 <br>
-
 
 \ref psk_page "Return to Top of Page"
 <br>

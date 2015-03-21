@@ -413,18 +413,30 @@ sfft::sfft(int len, int _first, int _last)
 	ptr = 0;
 	double phi = 0.0, tau = 2.0 * M_PI/ len;
 	k2 = 1.0;
-	for (int i = 0; i < len; i++) {
+	for (int i = 0; i < fftlen; i++) {
 		vrot_bins[i].vrot = cmplx( K1 * cos (phi), K1 * sin (phi) );
 		phi += tau;
 		delay[i] = vrot_bins[i].bins = 0.0;
 		k2 *= K1;
 	}
+	count = 0;
 }
 
 sfft::~sfft()
 {
 	delete [] vrot_bins;
 	delete [] delay;
+}
+
+void sfft::reset()
+{
+	for (int i = 0; i < fftlen; i++) delay[i] = vrot_bins[i].bins = 0.0;
+	count = 0;
+}
+
+bool sfft::is_stable()
+{
+	return (count >= fftlen);
 }
 
 // Sliding FFT, cmplx input, cmplx output
@@ -448,6 +460,7 @@ void sfft::run(const cmplx& input, cmplx * __restrict__ result, int stride )
 		++itr, result += stride ) {
 		*result = itr->bins = itr->bins * itr->vrot + z * itr->vrot;
 	}
+	if (count < fftlen) count++;
 }
 
 // ============================================================================

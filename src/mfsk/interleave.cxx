@@ -46,6 +46,13 @@ interleave::~interleave ()
 	delete [] table;
 }
 
+void interleave::init()
+{
+	if(table) {
+		len = size * size * depth;
+		flush();
+	}
+}
 
 void interleave::symbols(unsigned char *psyms)
 {

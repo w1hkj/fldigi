@@ -2821,7 +2821,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3629,20 +3629,20 @@ progdefaults.changed = true;}
             Fl_Tabs tabsPSK {open
               xywh {0 50 600 330} selection_color 50
             } {
-              Fl_Group {} {
+              Fl_Group grpPSK {
                 label General open
                 xywh {0 75 600 305} align 5
               } {
                 Fl_Group {} {
                   label {AFC behavior} open
-                  xywh {55 93 490 98} box ENGRAVED_FRAME align 21
+                  xywh {55 87 490 86} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Counter cntSearchRange {
                     label {Acquisition search range (Hz)}
                     callback {progdefaults.SearchRange = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-                    tooltip {Capture signals within this frequency range} xywh {65 125 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+                    tooltip {Capture signals within this frequency range} xywh {200 111 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
                     code0 {o->value(progdefaults.SearchRange);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3651,7 +3651,7 @@ progdefaults.changed = true;}
                     label {Acquisition S/N (dB)}
                     callback {progdefaults.ACQsn = o->value();
 progdefaults.changed = true;}
-                    tooltip {Capture signals over this threshold} xywh {65 154 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
+                    tooltip {Capture signals over this threshold} xywh {200 140 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
                     code0 {o->value(progdefaults.ACQsn);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3659,13 +3659,13 @@ progdefaults.changed = true;}
                 }
                 Fl_Group {} {
                   label {S/N and IMD behavior} open
-                  xywh {55 191 490 65} box ENGRAVED_FRAME align 21
+                  xywh {55 175 490 65} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Group listbox_psk_status_timeout {
                     label after
                     callback {progdefaults.StatusDim = o->index();
 progdefaults.changed = true;} open
-                    tooltip {Behavior of s/n imd} xywh {65 222 80 20} box DOWN_BOX color 7 align 8
+                    tooltip {Behavior of s/n imd} xywh {180 206 80 20} box DOWN_BOX color 7 align 8
                     code0 {o->add(_("Clear")); o->add(_("Dim"));}
                     code1 {o->index(progdefaults.StatusDim);
                        o->labelsize(FL_NORMAL_SIZE);}
@@ -3675,7 +3675,7 @@ progdefaults.changed = true;} open
                     label seconds
                     callback {progdefaults.StatusTimeout = (int)(o->value());
 progdefaults.changed = true;}
-                    tooltip {Will occur after this time in seconds} xywh {206 222 75 20} type Simple align 8 minimum 0 maximum 30 step 1
+                    tooltip {Will occur after this time in seconds} xywh {321 206 75 20} type Simple align 8 minimum 0 maximum 30 step 1
                     code0 {o->value(progdefaults.StatusTimeout);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3683,18 +3683,39 @@ progdefaults.changed = true;}
                 }
                 Fl_Group {} {
                   label {Multi-Channel Signal Processing} open
-                  xywh {55 258 490 98} box ENGRAVED_FRAME align 21
+                  xywh {55 245 490 80} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnEnablePSKbrowsing {
                     label {Multi-channel detector}
                     callback {progdefaults.pskbrowser_on = o->value();
 progdefaults.changed = true;}
-                    xywh {65 315 180 20} down_box DOWN_BOX
+                    xywh {225 295 180 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.pskbrowser_on);}
                   }
                   Fl_Box {} {
                     label {Disable on very slow CPUs of if signal browser is not used}
-                    xywh {65 285 440 20} align 20
+                    xywh {65 272 440 20} align 20
+                  }
+                }
+                Fl_Group {} {
+                  label {8 psk} open
+                  xywh {55 327 490 47} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Check_Button btnPSKpilot {
+                    label {Pilot tone}
+                    callback {progdefaults.pskpilot = o->value();
+progdefaults.changed = true;}
+                    tooltip {Enable encode/decode vestigial pilot tone} xywh {141 342 113 20} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.pskpilot);}
+                  }
+                  Fl_Counter cnt_pilot_power {
+                    label {pilot power (dB)}
+                    callback {progdefaults.pilot_power = o->value();
+progdefaults.changed = true;}
+                    tooltip {Pilot tone power relative to signal} xywh {305 342 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
+                    code0 {o->value(progdefaults.pilot_power);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
                   }
                 }
               }
@@ -3702,7 +3723,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabRTTY {
             label RTTY open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsRTTY {open
               xywh {0 50 600 330} selection_color 50
@@ -6587,3 +6608,6 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 } 
 
 Function {make_window()} {} {} 
+
+Function {make_window()} {open
+} {} 

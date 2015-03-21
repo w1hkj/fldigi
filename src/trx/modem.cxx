@@ -102,6 +102,13 @@ modem *_8psk1000_modem = 0;
 modem *_8psk1200_modem = 0;
 modem *_8psk1333_modem = 0;
 
+modem *_8psk125f_modem = 0;
+modem *_8psk250f_modem = 0;
+modem *_8psk500f_modem = 0;
+modem *_8psk1000f_modem = 0;
+modem *_8psk1200f_modem = 0;
+modem *_8psk1333f_modem = 0;
+
 modem *psk125r_modem = 0;
 modem *psk250r_modem = 0;
 modem *psk500r_modem = 0;
@@ -458,11 +465,12 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 	if (withnoise && progdefaults.noise) add_noise(buffer, len);
 
-	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
+	double mult = pow(10, progdefaults.txlevel / 20.0);
+	if (mult > 0.99) mult = 0.99;
 	for (int i = 0; i < len; i++) {
 		buffer[i] *= mult;
-		if (buffer[i] < -1.0) buffer[i] = -1.0;
-		if (buffer[i] >  1.0) buffer[i] = 1.0;
+		if (buffer[i] < -0.99) buffer[i] = -0.99;
+		if (buffer[i] >  0.99) buffer[i] = 0.99;
 	}
 
 	try {
@@ -496,14 +504,15 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 
 	if (withnoise && progdefaults.noise) add_noise(left, len);
 
-	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
+	double mult = pow(10, progdefaults.txlevel / 20.0);
+	if (mult > 0.99) mult = 0.99;
 
 	for (int i = 0; i < len; i++) {
-		if (right[i] < -1.0) right[i] = -1.0;
-		if (right[i] >  1.0) right[i] = 1.0;
+		if (right[i] < -0.99) right[i] = -0.99;
+		if (right[i] >  0.99) right[i] = 0.99;
 		left[i] *= mult;
-		if (left[i] < -1.0) left[i] = -1.0;
-		if (left[i] >  1.0) left[i] = 1.0;
+		if (left[i] < -0.99) left[i] = -0.99;
+		if (left[i] >  0.99) left[i] = 0.99;
 	}
 	try {
 		unsigned n = 4;

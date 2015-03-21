@@ -107,6 +107,11 @@ private:
 	double			fecmet;
 	double			fecmet2;
 
+	bool			vestigial;
+	int				sfft_size;
+	sfft			*vestigial_sfft;
+	cmplx			sfft_bins[11];
+
 	double			phase;
 	double			freqerr;
 	int				bits;
@@ -122,6 +127,7 @@ private:
 	int				dcdbits;
 	cmplx			quality;
 	int				acquire;
+	int             idepth;
 
 	viewpsk*		pskviewer;
 	pskeval*		evalpsk;
@@ -142,6 +148,12 @@ private:
 //PSKR modes
 	bool			firstbit;
 	bool			startpreamble;
+
+//PSKR & 8PSK modes
+	bool			PSKviterbi;
+	double			vphase;
+	double			maxamp;
+
 
 //MULTI-CARRIER
 	double			sc_bw; // single carrier bandwidth
@@ -166,6 +178,7 @@ private:
 	void			phaseafc();
 	void			afc();
 	void			coreafc();
+	void			vestigial_afc();
 
 	void			initSN_IMD();
 	void			resetSN_IMD();

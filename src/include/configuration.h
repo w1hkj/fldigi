@@ -237,7 +237,13 @@
         ELEM_(int, SearchRange, "PSKSEARCHRANGE",                                       \
               "PSK signal acquisition search range (Hz)",                               \
               50)                                                                       \
-        ELEM_(double, ACQsn, "ACQSN",                                                   \
+        ELEM_(bool, pskpilot, "PSKPILOT",                                               \
+              "Vestigial pilot tone on = 1, off = 0",                                   \
+              false)                                                                    \
+        ELEM_(double, pilot_power, "PILOT_POWER",                                      \
+              "Pilot tone relative power level",                                        \
+              -30.0)                                                                    \
+        ELEM_(double, ACQsn, "ACQSN",                                                  \
               "PSK signal acquisition S/N (dB)",                                        \
               9.0)                                                                      \
         ELEM_(bool, Pskmails2nreport, "PSKMAILS2NREPORT",                               \
