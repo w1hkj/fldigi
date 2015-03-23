@@ -49,6 +49,8 @@ Digiscope::Digiscope (int X, int Y, int W, int H) :
 	box(FL_DOWN_BOX);
 	vidbuf = new unsigned char[ 3 * (W-4) * (H-4)];
 	vidline = new unsigned char[ 3 * (W-4)];
+	memset(vidbuf, 0, 3*(W-4)*(H-4) * sizeof(unsigned char));
+	memset(vidline, 0, 3 * (W-4) * sizeof(unsigned char));
 	_highlight = false;
 	_len = MAX_LEN;
 	_zptr = 0;
@@ -190,8 +192,8 @@ void Digiscope::mode(scope_mode md)
 	_mode = md;
 	memset(_buf, 0, MAX_LEN * sizeof(double));
 	linecnt = 0;
-	memset (vidbuf, 0, 3*W*H * sizeof (unsigned char) );
-	memset (vidline, 0, 3*W*sizeof(unsigned char) );
+	memset(vidbuf, 0, 3*W*H * sizeof(unsigned char));
+	memset(vidline, 0, 3 * W * sizeof(unsigned char));
 	vidline[3*W/2] = 255;
 	vidline[3*W/2+1] = 0;
 	vidline[3*W/2+2] = 0;
@@ -502,6 +504,8 @@ void Digiscope::resize(int x, int y, int w, int h)
 	delete [] vidline;
 	vidbuf = new unsigned char[ 3 * (w-4) * (h-4)];
 	vidline = new unsigned char[ 3 * (w-4)];
+	memset(vidbuf, 0, 3*(w-4)*(h-4) * sizeof(unsigned char));
+	memset(vidline, 0, 3*(w-4) * sizeof(unsigned char));
 
 	Fl_Widget::resize(x, y, w, h);
 }
