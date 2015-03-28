@@ -641,10 +641,10 @@ progdefaults.changed = true;}
                 class Fl_Input2
               }
               Fl_Check_Button btn599 {
-                label {RST always 599}
+                label {RST always 599/59}
                 callback {progdefaults.fixed599 = o->value();
 progdefaults.changed = true;}
-                tooltip {Force RST in/out to 599} xywh {360 90 130 20} down_box DOWN_BOX
+                tooltip {Force RST in/out to 599/59} xywh {360 90 130 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.fixed599);}
               }
               Fl_Check_Button btnCutNbrs {
@@ -960,17 +960,17 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.force_date_time);}
               }
               Fl_Check_Button btnRSTindefault {
-                label {Default RST in to 599}
+                label {Default RST in to 599/59}
                 callback {progdefaults.RSTin_default = o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log controls sets RST in to 599} xywh {322 131 186 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST in to 599/59} xywh {322 131 186 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTin_default);}
               }
               Fl_Check_Button btnRSTdefault {
-                label {Default RST out to 599}
+                label {Default RST out to 599/59}
                 callback {progdefaults.RSTdefault = o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log controls sets RST out to 599} xywh {322 157 184 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST out to 599/59} xywh {322 157 184 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTdefault);}
               }
               Fl_Input txt_cty_dat_pathname {

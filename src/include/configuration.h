@@ -751,10 +751,10 @@
               "Convert callsign field to upper case",                                   \
               true)                                                                     \
         ELEM_(bool, RSTdefault, "RSTDEFAULT",                                           \
-              "Default outgoing RST to 599",                                            \
+              "Default outgoing RST to 599/59",                                         \
               false)                                                                    \
         ELEM_(bool, RSTin_default, "RSTINDEFAULT",                                      \
-              "Default incoming RST to 599",                                            \
+              "Default incoming RST to 599/59",                                         \
               false)                                                                    \
         ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
               "Enable detection and extraction of \"wrapped\" text",                    \

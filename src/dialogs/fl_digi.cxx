@@ -2370,14 +2370,15 @@ if (bWF_only) return;
 		inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
+	string defrst = (active_modem->get_mode() == MODE_SSB) ? "59" : "599";
 	if (progdefaults.fixed599 && progStatus.contest) {
-		inpRstIn1->value("599"); inpRstIn2->value("599");
-		inpRstOut1->value("599"); inpRstOut2->value("599");
+		inpRstIn1->value(defrst.c_str()); inpRstIn2->value(defrst.c_str());
+		inpRstOut1->value(defrst.c_str()); inpRstOut2->value(defrst.c_str());
 	} else {
 		if (progdefaults.RSTdefault)
-			inpRstOut1->value("599");
+			inpRstOut1->value(defrst.c_str());
 		if (progdefaults.RSTin_default)
-			inpRstIn1->value("599");
+			inpRstIn1->value(defrst.c_str());
 	}
 	updateOutSerNo();
 	if (inpSearchString)

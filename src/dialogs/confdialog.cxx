@@ -5581,8 +5581,8 @@ Fl_Double_Window* ConfigureDialog() {
                 o->value(progdefaults.myXchg.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpSend1
-              { Fl_Check_Button* o = btn599 = new Fl_Check_Button(360, 90, 130, 20, _("RST always 599"));
-                btn599->tooltip(_("Force RST in/out to 599"));
+              { Fl_Check_Button* o = btn599 = new Fl_Check_Button(360, 90, 130, 20, _("RST always 599/59"));
+                btn599->tooltip(_("Force RST in/out to 599/59"));
                 btn599->down_box(FL_DOWN_BOX);
                 btn599->callback((Fl_Callback*)cb_btn599);
                 o->value(progdefaults.fixed599);
@@ -5889,14 +5889,14 @@ Fl_Double_Window* ConfigureDialog() {
                 btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
                 o->value(progdefaults.force_date_time);
               } // Fl_Check_Button* btndate_time_force
-              { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(322, 131, 186, 20, _("Default RST in to 599"));
-                btnRSTindefault->tooltip(_("Clear log controls sets RST in to 599"));
+              { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(322, 131, 186, 20, _("Default RST in to 599/59"));
+                btnRSTindefault->tooltip(_("Clear log controls sets RST in to 599/59"));
                 btnRSTindefault->down_box(FL_DOWN_BOX);
                 btnRSTindefault->callback((Fl_Callback*)cb_btnRSTindefault);
                 o->value(progdefaults.RSTin_default);
               } // Fl_Check_Button* btnRSTindefault
-              { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(322, 157, 184, 20, _("Default RST out to 599"));
-                btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599"));
+              { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(322, 157, 184, 20, _("Default RST out to 599/59"));
+                btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599/59"));
                 btnRSTdefault->down_box(FL_DOWN_BOX);
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
