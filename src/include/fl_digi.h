@@ -231,7 +231,11 @@ extern void queue_execute_after_rx(void*);
 extern time_t program_start_time;
 
 extern bool xmlrpc_address_override_flag;
+extern bool xmlrpc_port_override_flag;
+
 extern bool arq_address_override_flag;
+extern bool arq_port_override_flag;
+
 extern bool kiss_address_override_flag;
 extern std::string override_xmlrpc_address;
 extern std::string override_xmlrpc_port;

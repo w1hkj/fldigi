@@ -98,7 +98,7 @@ decl {\#include "rx_extract.h"} {private local
 decl {\#include "kmlserver.h"} {private local
 } 
 
-decl {\#include "macroedit.h"} {selected private local
+decl {\#include "macroedit.h"} {private local
 } 
 
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
@@ -340,15 +340,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {813 47 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {942 44 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -428,7 +428,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355}
+        tooltip {User Interface} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
@@ -886,30 +886,16 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log open
-            tooltip {User Interface - Logging} xywh {0 50 600 330} hide
+            tooltip {User Interface - Logging} xywh {0 50 600 330}
           } {
             Fl_Group {} {
               label {Client/Server Logbook} open
               xywh {52 315 496 55} box ENGRAVED_FRAME align 21
             } {
-              Fl_Input xmllogServerAddress {
-                label {Address:}
-                callback {progdefaults.xmllog_address = o->value();}
-                tooltip {Enter URL address of server} xywh {149 336 100 24}
-                code0 {o->value(progdefaults.xmllog_address.c_str());}
-              }
-              Fl_Input xmllogServerPort {
-                label {Port:}
-                callback {progdefaults.xmllog_port = o->value();}
-                tooltip {Enter Port \# assigned to server} xywh {307 336 70 24}
-                code0 {o->value(progdefaults.xmllog_port.c_str());}
-              }
-              Fl_Button btn_reconnect_log_server {
-                label Reconnect
-                callback {progdefaults.xml_logbook = true;
-connect_to_log_server();}
-                xywh {410 336 115 24}
-              }
+              Fl_Group {} {
+                label {Server IP Address/Port configured on IO tab} open
+                xywh {75 335 468 25} box FLAT_BOX align 20
+              } {}
             }
             Fl_Group {} {
               label {QSO logging} open
@@ -1341,7 +1327,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -6342,46 +6328,22 @@ progdefaults.changed = true;}
         tooltip {Program to Program Communications} xywh {0 25 600 355} hide
         code0 {btnDisable_p2p_io_widgets->value(1);}
       } {
-        Fl_Group {} {
-          label ARQ open
-          xywh {15 260 570 55} box ENGRAVED_FRAME align 21
+        Fl_Group {} {open
+          xywh {6 34 588 102} box ENGRAVED_BOX align 21
         } {
-          Fl_Input txtArq_ip_address {
-            label {IP Address}
-            callback {progdefaults.arq_address = o->value();
-progdefaults.changed = true;}
-            tooltip {IP Address format: nnn.nnn.nnn.nnn} xywh {20 280 205 25} align 8 when 1
-            code0 {txtArq_ip_address->labelsize(FL_NORMAL_SIZE);}
-            code1 {o->value(progdefaults.arq_address.c_str());}
-            class Fl_Input2
+          Fl_Check_Button btnDisable_p2p_io_widgets {
+            label Lock user_data_type long
+            callback {progStatus.ip_lock = o->value();
+if(o->value())
+	disable_config_p2p_io_widgets();
+else
+	enable_config_p2p_io_widgets();}
+            tooltip {Allow/Disallow Changes} xywh {12 112 85 20} down_box DOWN_BOX
+            code0 {o->value(progStatus.ip_lock);}
           }
-          Fl_Input txtArq_ip_port_no {
-            label Port
-            callback {progdefaults.arq_port = o->value();
-progdefaults.changed = true;}
-            tooltip {IP Address Port Number} xywh {329 280 80 25} align 8 when 1
-            code0 {txtArq_ip_port_no->labelsize(FL_NORMAL_SIZE);}
-            code1 {o->value(progdefaults.arq_port.c_str());}
-            class Fl_Input2
-          }
-          Fl_Button btnDefault_arq_ip {
-            label Default
-            callback {set_ip_to_default(ARQ_IO);
-progdefaults.changed = true;}
-            tooltip {Returns IP Address and port
-number to the default value.} xywh {470 279 105 27}
-          }
-        }
-        Fl_Group {} {
-          label {Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.
-Enable KISS for programs that supports UDP and TNC-2 KISS protocol.
-Only one interface (ARQ/KISS) can be active at any given time.
-IP address and port number changes require FLDIGI restart.} open
-          xywh {15 42 570 75} box BORDER_BOX align 21
-        } {}
-        Fl_Check_Button btnEnable_arq {
-          label {Enable ARQ}
-          callback {if(o->value()) {
+          Fl_Check_Button btnEnable_arq {
+            label {Enable ARQ}
+            callback {if(o->value()) {
         progdefaults.changed = true;
 	progdefaults.data_io_enabled = ARQ_IO;
 	data_io_enabled = ARQ_IO;
@@ -6389,105 +6351,128 @@ IP address and port number changes require FLDIGI restart.} open
 }
 
 progdefaults.changed = true;}
-          tooltip {Used For PSKMail and FLDIGI Suite of Programs} xywh {130 122 110 20} type Radio down_box DOWN_BOX
-          code0 {if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);}
-        }
-        Fl_Check_Button btnEnable_kiss {
-          label {Enable KISS}
-          callback {if(o->value()) {
+            tooltip {Used For PSKMail and FLDIGI Suite of Programs} xywh {96 112 115 20} type Radio down_box DOWN_BOX
+            code0 {if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Check_Button btnEnable_kiss {
+            label {Enable KISS}
+            callback {if(o->value()) {
 	progdefaults.data_io_enabled = KISS_IO;
 	data_io_enabled = KISS_IO;
 	enable_disable_kpsql();
 }
 progdefaults.changed = true;}
-          tooltip {Used for BPQ32} xywh {245 122 110 20} type Radio down_box DOWN_BOX
-          code0 {if(progdefaults.data_io_enabled == KISS_IO) o->value(true);}
-        }
-        Fl_Group {} {
-          label XMLRPC open
-          xywh {15 318 570 55} box ENGRAVED_FRAME align 21
-        } {
-          Fl_Button btnDefault_xmlrpc_ip {
-            label Default
-            callback {set_ip_to_default(XMLRPC_IO);
-progdefaults.changed = true;}
-            tooltip {Returns IP Address and port
-number to the default value.} xywh {470 337 105 27}
+            tooltip {Used for BPQ32} xywh {221 112 115 20} type Radio down_box DOWN_BOX
+            code0 {if(progdefaults.data_io_enabled == KISS_IO) o->value(true);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
-          Fl_Input txtXmlrpc_ip_address {
-            label {IP Address}
-            callback {progdefaults.xmlrpc_address = o->value();
+          Fl_Check_Button btnEnable_ax25_decode {
+            label {AX25 Decode}
+            callback {if(o->value())
+	progdefaults.ax25_decode_enabled = true;
+else
+	progdefaults.ax25_decode_enabled = false;
+
 progdefaults.changed = true;}
-            tooltip {IP Address format: nnn.nnn.nnn.nnn} xywh {20 338 205 25} align 8 when 1
-            code0 {txtXmlrpc_ip_address->labelsize(FL_NORMAL_SIZE);}
-            code1 {o->value(progdefaults.xmlrpc_address.c_str());}
-            class Fl_Input2
+            tooltip {Decode AX25 Packets into human readable form} xywh {346 112 115 20} down_box DOWN_BOX
+            code0 {if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
-          Fl_Input txtXmlrpc_ip_port_no {
-            label Port
-            callback {progdefaults.xmlrpc_port = o->value();
+          Fl_Check_Button btnEnable_csma {
+            label {Enable CSMA}
+            callback {if(o->value()) {
+	progdefaults.csma_enabled = true;
+} else {
+	progdefaults.csma_enabled = false;
+}
 progdefaults.changed = true;}
-            tooltip {IP Address Port Number} xywh {329 338 80 25} align 8 when 1
-            code0 {txtXmlrpc_ip_port_no->labelsize(FL_NORMAL_SIZE);}
-            code1 {o->value(progdefaults.xmlrpc_port.c_str());}
-            class Fl_Input2
+            tooltip {Used for BPQ32} xywh {471 112 115 20} down_box DOWN_BOX
+            code0 {if(progdefaults.csma_enabled) o->value(true);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Box {} {
+            label {Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.
+Enable KISS for programs that supports UDP and TNC-2 KISS protocol.
+Only one interface (ARQ/KISS) can be active at any given time.
+KISS/ARQ/XML Addr/Port changes require program restart.}
+            xywh {8 37 582 72}
           }
         }
         Fl_Group {} {
           label KISS open
-          xywh {15 145 570 112} box ENGRAVED_FRAME align 21
+          xywh {6 138 588 85} box ENGRAVED_FRAME align 21
         } {
           Fl_Button btnDefault_kiss_ip {
             label Default
             callback {set_ip_to_default(KISS_IO);
 progdefaults.changed = true;}
             tooltip {Returns IP Address and port
-number to the default value.} xywh {470 207 105 26}
+number to the default value.} xywh {425 193 73 25}
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
           Fl_Input txtKiss_ip_address {
-            label {IP Address}
+            label Addr
             callback {progdefaults.kiss_address = o->value();
 progdefaults.changed = true;}
-            tooltip {IP Address for KISS interface} xywh {20 164 185 25} align 8 when 1
+            tooltip {IP Address for KISS interface
+IP Address format: nnn.nnn.nnn.nnn
+or name: i.e. localhost} xywh {56 193 230 25} align 8 when 1
             code0 {txtKiss_ip_address->labelsize(FL_NORMAL_SIZE);}
             code1 {o->value(progdefaults.kiss_address.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
             class Fl_Input2
+          }
+          Fl_Counter cntKPSQLAttenuation {
+            label {KPSQL Attenuate}
+            callback {progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+progdefaults.changed = true;}
+            tooltip Attenuation xywh {56 169 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+            code0 {o->value(progdefaults.kpsql_attenuation);}
+            code1 {o->step(1,10);}
+            code2 {update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);}
+            code3 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
           Fl_Input txtKiss_ip_io_port_no {
             label {I/O}
             callback {progdefaults.kiss_io_port = o->value();
 progdefaults.changed = true;}
-            tooltip {IP Address Port Number} xywh {298 164 55 25} align 8 when 1
+            tooltip {IP Address Port Number} xywh {333 164 55 25} align 8 when 1
             code0 {txtKiss_ip_io_port_no->labelsize(FL_NORMAL_SIZE);}
             code1 {o->value(progdefaults.kiss_io_port.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
             class Fl_Input2
           }
+          Fl_Counter cntBusyChannelSeconds {
+            label Continue
+            callback {progdefaults.busyChannelSeconds = (int) o->value();
+progdefaults.changed = true;}
+            tooltip {Continue after in seconds} xywh {56 145 110 20} align 8 minimum 1 maximum 999 step 1 value 1
+            code0 {o->value(progdefaults.busyChannelSeconds);}
+            code1 {o->step(1,10);}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
           Fl_Check_Button btnEnableBusyChannel {
-            label {Enable Busy Channel}
+            label Busy
             callback {if(o->value())
 	progdefaults.enableBusyChannel = true;
 else
 	progdefaults.enableBusyChannel = false;
 progdefaults.changed = true;}
-            xywh {20 201 160 15} down_box DOWN_BOX
+            tooltip {Enable Busy Channel} xywh {425 147 65 15} down_box DOWN_BOX
             code0 {if(progdefaults.enableBusyChannel) o->value(true);}
             code1 {else o->value(false);}
-          }
-          Fl_Counter cntBusyChannelSeconds {
-            label {Continue After (sec)}
-            callback {progdefaults.busyChannelSeconds = (int) o->value();
-progdefaults.changed = true;}
-            xywh {200 198 130 20} align 8 minimum 1 maximum 999 step 1 value 1
-            code0 {o->value(progdefaults.busyChannelSeconds);}
-            code1 {o->step(1,10);}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
           Fl_Input txtKiss_ip_out_port_no {
             label O
             callback {progdefaults.kiss_out_port = o->value();
 progdefaults.changed = true;}
-            tooltip {Output port number when same IP address used} xywh {392 164 55 25} align 8 when 1
+            tooltip {Output port number when same IP address used} xywh {333 193 55 25} align 8 when 1
             code0 {txtKiss_ip_out_port_no->labelsize(FL_NORMAL_SIZE);}
             code1 {o->value(progdefaults.kiss_out_port.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
             class Fl_Input2
           }
           Fl_Check_Button btnEnable_dual_port {
@@ -6498,51 +6483,180 @@ else
 	progdefaults.kiss_dual_port_enabled = false;
 
 progdefaults.changed = true;}
-            tooltip {Enable when both programs are using the same IP address} xywh {480 168 90 16} down_box DOWN_BOX
+            tooltip {Enable when both programs are using the same IP address} xywh {425 168 90 16} down_box DOWN_BOX
             code0 {if(progdefaults.kiss_dual_port_enabled) o->value(true); else o->value(false);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
-          Fl_Counter cntKPSQLAttenuation {
-            label {KPSQL Attenuation}
-            callback {progdefaults.kpsql_attenuation = (int) o->value();
-update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
-progdefaults.changed = true;}
-            xywh {20 225 130 20} align 8 minimum 1 maximum 999 step 1 value 1
-            code0 {o->value(progdefaults.kpsql_attenuation);}
-            code1 {o->step(1,10);}
-            code2 {update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);}
+          Fl_Button btn_restart_kiss {
+            label Restart
+            callback {//restart_kiss_server();}
+            xywh {505 193 82 25} hide
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
         }
-        Fl_Check_Button btnDisable_p2p_io_widgets {
-          label Lock user_data_type long
-          callback {if(o->value())
-	disable_config_p2p_io_widgets();
-else
-	enable_config_p2p_io_widgets();}
-          tooltip {Allow/Disallow Changes} xywh {15 122 110 20} down_box DOWN_BOX
-          code0 {o->value(1);}
-          code1 {disable_config_p2p_io_widgets();}
-        }
-        Fl_Check_Button btnEnable_ax25_decode {
-          label {AX25 Decode}
-          callback {if(o->value())
-	progdefaults.ax25_decode_enabled = true;
-else
-	progdefaults.ax25_decode_enabled = false;
-
+        Fl_Group {} {
+          label ARQ open
+          xywh {6 225 588 35} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Input txtArq_ip_address {
+            label Addr
+            callback {progdefaults.arq_address = o->value();
 progdefaults.changed = true;}
-          tooltip {Decode AX25 Packets into human readable form} xywh {360 122 110 20} down_box DOWN_BOX
-          code0 {if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);}
-        }
-        Fl_Check_Button btnEnable_csma {
-          label {Enable CSMA}
-          callback {if(o->value()) {
-	progdefaults.csma_enabled = true;
-} else {
-	progdefaults.csma_enabled = false;
-}
+            tooltip {IP Address for ARQ interface
+IP Address format: nnn.nnn.nnn.nnn
+or name: i.e. localhost} xywh {56 229 230 25} align 8 when 1
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.arq_address.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+            class Fl_Input2
+          }
+          Fl_Input txtArq_ip_port_no {
+            label Port
+            callback {progdefaults.arq_port = o->value();
 progdefaults.changed = true;}
-          tooltip {Used for BPQ32} xywh {474 122 110 20} down_box DOWN_BOX
-          code0 {if(progdefaults.csma_enabled) o->value(true);}
+            tooltip {IP Address Port Number} xywh {333 229 55 25} align 8 when 1
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.arq_port.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+            class Fl_Input2
+          }
+          Fl_Button btnDefault_arq_ip {
+            label Default
+            callback {set_ip_to_default(ARQ_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {425 229 73 25}
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Button btn_restart_arq {
+            label Restart
+            callback {//arq_restart();}
+            xywh {505 229 82 25} hide
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+        }
+        Fl_Box {} {
+          xywh {6 262 588 1} box BORDER_BOX
+        }
+        Fl_Group {} {
+          label XML open
+          xywh {6 266 588 35} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Button btnDefault_xmlrpc_ip {
+            label Default
+            callback {set_ip_to_default(XMLRPC_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {425 270 73 25}
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Input txtXmlrpc_ip_address {
+            label Addr
+            callback {progdefaults.xmlrpc_address = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address for XMLRPC interface
+IP Address format: nnn.nnn.nnn.nnn
+or name: i.e. localhost} xywh {56 270 230 25} align 8 when 1
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.xmlrpc_address.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+            class Fl_Input2
+          }
+          Fl_Input txtXmlrpc_ip_port_no {
+            label Port
+            callback {progdefaults.xmlrpc_port = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address Port Number} xywh {333 270 55 25} align 8 when 1
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.xmlrpc_port.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+            class Fl_Input2
+          }
+          Fl_Button btn_restart_xml {
+            label Restart
+            callback {//restart_xml_server();}
+            xywh {505 270 82 25} hide
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+        }
+        Fl_Group {} {
+          label flrig open
+          xywh {6 304 588 35} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Button btnDefault_flrig_ip {
+            label Default
+            callback {set_ip_to_default(FLRIG_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {425 309 73 25}
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Input txt_flrig_ip_address {
+            label Addr
+            callback {progdefaults.flrig_ip_address = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address for flrig interface
+IP Address format: nnn.nnn.nnn.nnn
+or name: i.e. localhost} xywh {56 309 230 25} align 8 when 1
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.flrig_ip_address.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+            class Fl_Input2
+          }
+          Fl_Input txt_flrig_ip_port {
+            label Port
+            callback {progdefaults.flrig_ip_port = o->value();
+progdefaults.changed = true;}
+            tooltip {IP Address Port Number} xywh {333 309 55 25} align 8 when 1
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.flrig_ip_port.c_str());}
+            code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+            class Fl_Input2
+          }
+          Fl_Button btn_reconnect_flrig_server {
+            label Reconnect
+            callback {reconnect_to_flrig();}
+            xywh {505 309 82 25}
+            code0 {\#include "rigsupport.h"}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+        }
+        Fl_Group {} {
+          label fllog open
+          xywh {6 340 588 36} box ENGRAVED_FRAME align 21
+        } {
+          Fl_Input txt_fllog_ip_address {
+            label Addr
+            callback {progdefaults.xmllog_address = o->value();}
+            tooltip {IP Address for fllog interface
+IP Address format: nnn.nnn.nnn.nnn
+or name: i.e. localhost} xywh {56 345 230 25} align 8
+            code0 {o->value(progdefaults.xmllog_address.c_str());}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Input txt_fllog_ip_port {
+            label Port
+            callback {progdefaults.xmllog_port = o->value();}
+            tooltip {IP Address Port Number} xywh {333 345 55 25} align 8
+            code0 {o->value(progdefaults.xmllog_port.c_str());}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Button btn_reconnect_log_server {
+            label Reconnect
+            callback {progdefaults.xml_logbook = true;
+progdefaults.changed = true;
+connect_to_log_server();}
+            xywh {505 345 82 25}
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Button btnDefault_fllog_ip {
+            label Default
+            callback {set_ip_to_default(FLLOG_IO);
+progdefaults.changed = true;}
+            tooltip {Returns IP Address and port
+number to the default value.} xywh {425 345 73 25}
+            code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
         }
       }
     }

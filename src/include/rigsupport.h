@@ -95,6 +95,7 @@ extern XmlRpcValue FLRIG_bw_result;
 
 extern void FLRIG_start_flrig_thread();
 extern void stop_flrig_thread();
+extern void reconnect_to_flrig();
 extern void set_flrig_ptt(int on);
 extern void set_flrig_freq(long int fr);
 extern void set_flrig_mode(const char *md);

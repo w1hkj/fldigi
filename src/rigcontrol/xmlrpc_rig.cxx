@@ -722,13 +722,13 @@ void connect_to_flrig()
 	}
 	try {
 		flrig_client = new XmlRpcClient(
-				"localhost",
-				atol("12345"));
+				progdefaults.flrig_ip_address.c_str(),
+				atol(progdefaults.flrig_ip_port.c_str()));
 		flrig_connection();
 	} catch (...) {
 			LOG_ERROR("Cannot connect to %s, %s",
-						"localhost",
-						"12345");
+						progdefaults.flrig_ip_address.c_str(),
+						progdefaults.flrig_ip_port.c_str());
 	}
 }
 
@@ -775,5 +775,15 @@ void stop_flrig_thread()
 		run_flrig_thread = false;
 	pthread_mutex_unlock(&mutex_flrig);
 	pthread_join(*flrig_thread, NULL);
+}
+
+void reconnect_to_flrig()
+{
+	flrig_client->close();
+	pthread_mutex_lock(&mutex_flrig);
+	delete flrig_client;
+	flrig_client = (XmlRpcClient *)0;
+	connected_to_flrig = false;
+	pthread_mutex_unlock(&mutex_flrig);
 }
 

@@ -37,15 +37,17 @@
 #define DEFAULT_XMLPRC_IP_ADDRESS "127.0.0.1"
 #define DEFAULT_XMLRPC_IP_PORT    "7362"
 
-#define DISABLED_IO   0x00
-#define ARQ_IO        0x01
-#define KISS_IO       0x02
-#define XMLRPC_IO     0x04
+#define DEFAULT_FLRIG_IP_ADDRESS  "127.0.0.1"
+#define DEFAULT_FLRIG_IP_PORT     "12345"
+
+#define DEFAULT_FLLOG_IP_ADDRESS  "127.0.0.1"
+#define DEFAULT_FLLOG_IP_PORT     "8421"
+
+enum {DISABLED_IO, ARQ_IO, KISS_IO, XMLRPC_IO, FLRIG_IO, FLLOG_IO};
 
 #define RSID_KISS_NOTIFY    0x01
 #define RSID_KISS_ACTIVE    0x02
 #define RSID_KISS_USER      0x03
-
 
 // This variable indepent of progdefaults.data_io_enabled
 // and progStatus.data_io_enabled

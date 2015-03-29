@@ -375,7 +375,11 @@ static int main_hmin = HMIN;
 time_t program_start_time = 0;
 
 bool xmlrpc_address_override_flag   = false;
+bool xmlrpc_port_override_flag      = false;
+
 bool arq_address_override_flag      = false;
+bool arq_port_override_flag         = false;
+
 bool kiss_address_override_flag     = false;
 std::string override_xmlrpc_address = "";
 std::string override_xmlrpc_port    = "";
@@ -7724,48 +7728,76 @@ void disable_config_p2p_io_widgets(void)
 {
 	btnEnable_arq->deactivate();
 	btnEnable_kiss->deactivate();
-
-	txtArq_ip_address->deactivate();
-	txtArq_ip_port_no->deactivate();
-	btnDefault_arq_ip->deactivate();
+	btnEnable_ax25_decode->deactivate();
+	btnEnable_csma->deactivate();
 
 	txtKiss_ip_address->deactivate();
 	txtKiss_ip_io_port_no->deactivate();
 	txtKiss_ip_out_port_no->deactivate();
 	btnEnable_dual_port->deactivate();
-
+	btnEnableBusyChannel->deactivate();
+	cntKPSQLAttenuation->deactivate();
+	cntBusyChannelSeconds->deactivate();
 	btnDefault_kiss_ip->deactivate();
+	btn_restart_kiss->deactivate();
+
+	txtArq_ip_address->deactivate();
+	txtArq_ip_port_no->deactivate();
+	btnDefault_arq_ip->deactivate();
+	btn_restart_arq->deactivate();
 
 	txtXmlrpc_ip_address->deactivate();
 	txtXmlrpc_ip_port_no->deactivate();
 	btnDefault_xmlrpc_ip->deactivate();
+	btn_restart_xml->deactivate();
 
-	//btnEnableBusyChannel->deactivate();
-	//cntBusyChannelSeconds->deactivate();
+	txt_flrig_ip_address->deactivate();
+	txt_flrig_ip_port->deactivate();
+	btnDefault_flrig_ip->deactivate();
+	btn_reconnect_flrig_server->deactivate();
+
+	txt_fllog_ip_address->deactivate();
+	txt_fllog_ip_port->deactivate();
+	btnDefault_fllog_ip->deactivate();
+	btn_reconnect_log_server->deactivate();
 }
 
 void enable_config_p2p_io_widgets(void)
 {
 	btnEnable_arq->activate();
 	btnEnable_kiss->activate();
-
-	txtArq_ip_address->activate();
-	txtArq_ip_port_no->activate();
-	btnDefault_arq_ip->activate();
+	btnEnable_ax25_decode->activate();
+	btnEnable_csma->activate();
 
 	txtKiss_ip_address->activate();
 	txtKiss_ip_io_port_no->activate();
 	txtKiss_ip_out_port_no->activate();
 	btnEnable_dual_port->activate();
-
+	btnEnableBusyChannel->activate();
+	cntKPSQLAttenuation->activate();
+	cntBusyChannelSeconds->activate();
 	btnDefault_kiss_ip->activate();
+	btn_restart_kiss->activate();
+
+	txtArq_ip_address->activate();
+	txtArq_ip_port_no->activate();
+	btnDefault_arq_ip->activate();
+	btn_restart_arq->activate();
 
 	txtXmlrpc_ip_address->activate();
 	txtXmlrpc_ip_port_no->activate();
 	btnDefault_xmlrpc_ip->activate();
+	btn_restart_xml->activate();
 
-	//btnEnableBusyChannel->activate();
-	//cntBusyChannelSeconds->activate();
+	txt_flrig_ip_address->activate();
+	txt_flrig_ip_port->activate();
+	btnDefault_flrig_ip->activate();
+	btn_reconnect_flrig_server->activate();
+
+	txt_fllog_ip_address->activate();
+	txt_fllog_ip_port->activate();
+	btnDefault_fllog_ip->activate();
+	btn_reconnect_log_server->activate();
 }
 
 void set_ip_to_default(int which_io)
@@ -7795,6 +7827,20 @@ void set_ip_to_default(int which_io)
 			txtXmlrpc_ip_port_no->value(DEFAULT_XMLRPC_IP_PORT);
 			txtXmlrpc_ip_address->do_callback();
 			txtXmlrpc_ip_port_no->do_callback();
+			break;
+
+		case FLRIG_IO:
+			txt_flrig_ip_address->value(DEFAULT_FLRIG_IP_ADDRESS);
+			txt_flrig_ip_port->value(DEFAULT_FLRIG_IP_PORT);
+			txt_flrig_ip_address->do_callback();
+			txt_flrig_ip_port->do_callback();
+			break;
+
+		case FLLOG_IO:
+			txt_fllog_ip_address->value(DEFAULT_FLLOG_IP_ADDRESS);
+			txt_fllog_ip_port->value(DEFAULT_FLLOG_IP_PORT);
+			txt_fllog_ip_address->do_callback();
+			txt_fllog_ip_port->do_callback();
 			break;
 	}
 }

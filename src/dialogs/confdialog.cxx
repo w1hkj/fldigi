@@ -674,25 +674,6 @@ progdefaults.changed = true;
 
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
-Fl_Input *xmllogServerAddress=(Fl_Input *)0;
-
-static void cb_xmllogServerAddress(Fl_Input* o, void*) {
-  progdefaults.xmllog_address = o->value();
-}
-
-Fl_Input *xmllogServerPort=(Fl_Input *)0;
-
-static void cb_xmllogServerPort(Fl_Input* o, void*) {
-  progdefaults.xmllog_port = o->value();
-}
-
-Fl_Button *btn_reconnect_log_server=(Fl_Button *)0;
-
-static void cb_btn_reconnect_log_server(Fl_Button*, void*) {
-  progdefaults.xml_logbook = true;
-connect_to_log_server();
-}
-
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -5098,25 +5079,14 @@ static void cb_tabIO(Fl_Group*, void*) {
   btnDisable_p2p_io_widgets->value(1);
 }
 
-Fl_Input2 *txtArq_ip_address=(Fl_Input2 *)0;
+Fl_Check_Button *btnDisable_p2p_io_widgets=(Fl_Check_Button *)0;
 
-static void cb_txtArq_ip_address(Fl_Input2* o, void*) {
-  progdefaults.arq_address = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *txtArq_ip_port_no=(Fl_Input2 *)0;
-
-static void cb_txtArq_ip_port_no(Fl_Input2* o, void*) {
-  progdefaults.arq_port = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Button *btnDefault_arq_ip=(Fl_Button *)0;
-
-static void cb_btnDefault_arq_ip(Fl_Button*, void*) {
-  set_ip_to_default(ARQ_IO);
-progdefaults.changed = true;
+static void cb_btnDisable_p2p_io_widgets(Fl_Check_Button* o, long) {
+  progStatus.ip_lock = o->value();
+if(o->value())
+	disable_config_p2p_io_widgets();
+else
+	enable_config_p2p_io_widgets();
 }
 
 Fl_Check_Button *btnEnable_arq=(Fl_Check_Button *)0;
@@ -5143,24 +5113,25 @@ static void cb_btnEnable_kiss(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Button *btnDefault_xmlrpc_ip=(Fl_Button *)0;
+Fl_Check_Button *btnEnable_ax25_decode=(Fl_Check_Button *)0;
 
-static void cb_btnDefault_xmlrpc_ip(Fl_Button*, void*) {
-  set_ip_to_default(XMLRPC_IO);
+static void cb_btnEnable_ax25_decode(Fl_Check_Button* o, void*) {
+  if(o->value())
+	progdefaults.ax25_decode_enabled = true;
+else
+	progdefaults.ax25_decode_enabled = false;
+
 progdefaults.changed = true;
 }
 
-Fl_Input2 *txtXmlrpc_ip_address=(Fl_Input2 *)0;
+Fl_Check_Button *btnEnable_csma=(Fl_Check_Button *)0;
 
-static void cb_txtXmlrpc_ip_address(Fl_Input2* o, void*) {
-  progdefaults.xmlrpc_address = o->value();
-progdefaults.changed = true;
+static void cb_btnEnable_csma(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progdefaults.csma_enabled = true;
+} else {
+	progdefaults.csma_enabled = false;
 }
-
-Fl_Input2 *txtXmlrpc_ip_port_no=(Fl_Input2 *)0;
-
-static void cb_txtXmlrpc_ip_port_no(Fl_Input2* o, void*) {
-  progdefaults.xmlrpc_port = o->value();
 progdefaults.changed = true;
 }
 
@@ -5178,10 +5149,25 @@ static void cb_txtKiss_ip_address(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Counter *cntKPSQLAttenuation=(Fl_Counter *)0;
+
+static void cb_cntKPSQLAttenuation(Fl_Counter* o, void*) {
+  progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+progdefaults.changed = true;
+}
+
 Fl_Input2 *txtKiss_ip_io_port_no=(Fl_Input2 *)0;
 
 static void cb_txtKiss_ip_io_port_no(Fl_Input2* o, void*) {
   progdefaults.kiss_io_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntBusyChannelSeconds=(Fl_Counter *)0;
+
+static void cb_cntBusyChannelSeconds(Fl_Counter* o, void*) {
+  progdefaults.busyChannelSeconds = (int) o->value();
 progdefaults.changed = true;
 }
 
@@ -5192,13 +5178,6 @@ static void cb_btnEnableBusyChannel(Fl_Check_Button* o, void*) {
 	progdefaults.enableBusyChannel = true;
 else
 	progdefaults.enableBusyChannel = false;
-progdefaults.changed = true;
-}
-
-Fl_Counter *cntBusyChannelSeconds=(Fl_Counter *)0;
-
-static void cb_cntBusyChannelSeconds(Fl_Counter* o, void*) {
-  progdefaults.busyChannelSeconds = (int) o->value();
 progdefaults.changed = true;
 }
 
@@ -5220,42 +5199,117 @@ else
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntKPSQLAttenuation=(Fl_Counter *)0;
+Fl_Button *btn_restart_kiss=(Fl_Button *)0;
 
-static void cb_cntKPSQLAttenuation(Fl_Counter* o, void*) {
-  progdefaults.kpsql_attenuation = (int) o->value();
-update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+static void cb_btn_restart_kiss(Fl_Button*, void*) {
+  //restart_kiss_server();
+}
+
+Fl_Input2 *txtArq_ip_address=(Fl_Input2 *)0;
+
+static void cb_txtArq_ip_address(Fl_Input2* o, void*) {
+  progdefaults.arq_address = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnDisable_p2p_io_widgets=(Fl_Check_Button *)0;
+Fl_Input2 *txtArq_ip_port_no=(Fl_Input2 *)0;
 
-static void cb_btnDisable_p2p_io_widgets(Fl_Check_Button* o, long) {
-  if(o->value())
-	disable_config_p2p_io_widgets();
-else
-	enable_config_p2p_io_widgets();
-}
-
-Fl_Check_Button *btnEnable_ax25_decode=(Fl_Check_Button *)0;
-
-static void cb_btnEnable_ax25_decode(Fl_Check_Button* o, void*) {
-  if(o->value())
-	progdefaults.ax25_decode_enabled = true;
-else
-	progdefaults.ax25_decode_enabled = false;
-
+static void cb_txtArq_ip_port_no(Fl_Input2* o, void*) {
+  progdefaults.arq_port = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnEnable_csma=(Fl_Check_Button *)0;
+Fl_Button *btnDefault_arq_ip=(Fl_Button *)0;
 
-static void cb_btnEnable_csma(Fl_Check_Button* o, void*) {
-  if(o->value()) {
-	progdefaults.csma_enabled = true;
-} else {
-	progdefaults.csma_enabled = false;
+static void cb_btnDefault_arq_ip(Fl_Button*, void*) {
+  set_ip_to_default(ARQ_IO);
+progdefaults.changed = true;
 }
+
+Fl_Button *btn_restart_arq=(Fl_Button *)0;
+
+static void cb_btn_restart_arq(Fl_Button*, void*) {
+  //arq_restart();
+}
+
+Fl_Button *btnDefault_xmlrpc_ip=(Fl_Button *)0;
+
+static void cb_btnDefault_xmlrpc_ip(Fl_Button*, void*) {
+  set_ip_to_default(XMLRPC_IO);
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtXmlrpc_ip_address=(Fl_Input2 *)0;
+
+static void cb_txtXmlrpc_ip_address(Fl_Input2* o, void*) {
+  progdefaults.xmlrpc_address = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txtXmlrpc_ip_port_no=(Fl_Input2 *)0;
+
+static void cb_txtXmlrpc_ip_port_no(Fl_Input2* o, void*) {
+  progdefaults.xmlrpc_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_restart_xml=(Fl_Button *)0;
+
+static void cb_btn_restart_xml(Fl_Button*, void*) {
+  //restart_xml_server();
+}
+
+Fl_Button *btnDefault_flrig_ip=(Fl_Button *)0;
+
+static void cb_btnDefault_flrig_ip(Fl_Button*, void*) {
+  set_ip_to_default(FLRIG_IO);
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_flrig_ip_address=(Fl_Input2 *)0;
+
+static void cb_txt_flrig_ip_address(Fl_Input2* o, void*) {
+  progdefaults.flrig_ip_address = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_flrig_ip_port=(Fl_Input2 *)0;
+
+static void cb_txt_flrig_ip_port(Fl_Input2* o, void*) {
+  progdefaults.flrig_ip_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_reconnect_flrig_server=(Fl_Button *)0;
+
+static void cb_btn_reconnect_flrig_server(Fl_Button*, void*) {
+  reconnect_to_flrig();
+}
+
+Fl_Input *txt_fllog_ip_address=(Fl_Input *)0;
+
+static void cb_txt_fllog_ip_address(Fl_Input* o, void*) {
+  progdefaults.xmllog_address = o->value();
+}
+
+Fl_Input *txt_fllog_ip_port=(Fl_Input *)0;
+
+static void cb_txt_fllog_ip_port(Fl_Input* o, void*) {
+  progdefaults.xmllog_port = o->value();
+}
+
+Fl_Button *btn_reconnect_log_server=(Fl_Button *)0;
+
+static void cb_btn_reconnect_log_server(Fl_Button*, void*) {
+  progdefaults.xml_logbook = true;
+progdefaults.changed = true;
+connect_to_log_server();
+}
+
+Fl_Button *btnDefault_fllog_ip=(Fl_Button *)0;
+
+static void cb_btnDefault_fllog_ip(Fl_Button*, void*) {
+  set_ip_to_default(FLLOG_IO);
 progdefaults.changed = true;
 }
 
@@ -5305,7 +5359,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5414,6 +5467,7 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 355, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 355);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
@@ -5831,23 +5885,14 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
             tabLogServer->tooltip(_("User Interface - Logging"));
-            tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input* o = xmllogServerAddress = new Fl_Input(149, 336, 100, 24, _("Address:"));
-                xmllogServerAddress->tooltip(_("Enter URL address of server"));
-                xmllogServerAddress->callback((Fl_Callback*)cb_xmllogServerAddress);
-                o->value(progdefaults.xmllog_address.c_str());
-              } // Fl_Input* xmllogServerAddress
-              { Fl_Input* o = xmllogServerPort = new Fl_Input(307, 336, 70, 24, _("Port:"));
-                xmllogServerPort->tooltip(_("Enter Port # assigned to server"));
-                xmllogServerPort->callback((Fl_Callback*)cb_xmllogServerPort);
-                o->value(progdefaults.xmllog_port.c_str());
-              } // Fl_Input* xmllogServerPort
-              { btn_reconnect_log_server = new Fl_Button(410, 336, 115, 24, _("Reconnect"));
-                btn_reconnect_log_server->callback((Fl_Callback*)cb_btn_reconnect_log_server);
-              } // Fl_Button* btn_reconnect_log_server
+              { Fl_Group* o = new Fl_Group(75, 335, 468, 25, _("Server IP Address/Port configured on IO tab"));
+                o->box(FL_FLAT_BOX);
+                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(52, 59, 496, 180, _("QSO logging"));
@@ -6186,6 +6231,7 @@ ab and newline are automatically included."));
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 85, 165, 24, _("Rx/Tx Character set"));
@@ -10824,115 +10870,63 @@ and restarted if needed."));
         tabIO->tooltip(_("Program to Program Communications"));
         tabIO->callback((Fl_Callback*)cb_tabIO);
         tabIO->hide();
-        { Fl_Group* o = new Fl_Group(15, 260, 570, 55, _("ARQ"));
-          o->box(FL_ENGRAVED_FRAME);
+        { Fl_Group* o = new Fl_Group(6, 34, 588, 102);
+          o->box(FL_ENGRAVED_BOX);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { Fl_Input2* o = txtArq_ip_address = new Fl_Input2(20, 280, 205, 25, _("IP Address"));
-            txtArq_ip_address->tooltip(_("IP Address format: nnn.nnn.nnn.nnn"));
-            txtArq_ip_address->box(FL_DOWN_BOX);
-            txtArq_ip_address->color(FL_BACKGROUND2_COLOR);
-            txtArq_ip_address->selection_color(FL_SELECTION_COLOR);
-            txtArq_ip_address->labeltype(FL_NORMAL_LABEL);
-            txtArq_ip_address->labelfont(0);
-            txtArq_ip_address->labelsize(14);
-            txtArq_ip_address->labelcolor(FL_FOREGROUND_COLOR);
-            txtArq_ip_address->callback((Fl_Callback*)cb_txtArq_ip_address);
-            txtArq_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
-            txtArq_ip_address->when(FL_WHEN_CHANGED);
-            txtArq_ip_address->labelsize(FL_NORMAL_SIZE);
-            o->value(progdefaults.arq_address.c_str());
-          } // Fl_Input2* txtArq_ip_address
-          { Fl_Input2* o = txtArq_ip_port_no = new Fl_Input2(329, 280, 80, 25, _("Port"));
-            txtArq_ip_port_no->tooltip(_("IP Address Port Number"));
-            txtArq_ip_port_no->box(FL_DOWN_BOX);
-            txtArq_ip_port_no->color(FL_BACKGROUND2_COLOR);
-            txtArq_ip_port_no->selection_color(FL_SELECTION_COLOR);
-            txtArq_ip_port_no->labeltype(FL_NORMAL_LABEL);
-            txtArq_ip_port_no->labelfont(0);
-            txtArq_ip_port_no->labelsize(14);
-            txtArq_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
-            txtArq_ip_port_no->callback((Fl_Callback*)cb_txtArq_ip_port_no);
-            txtArq_ip_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
-            txtArq_ip_port_no->when(FL_WHEN_CHANGED);
-            txtArq_ip_port_no->labelsize(FL_NORMAL_SIZE);
-            o->value(progdefaults.arq_port.c_str());
-          } // Fl_Input2* txtArq_ip_port_no
-          { btnDefault_arq_ip = new Fl_Button(470, 279, 105, 27, _("Default"));
-            btnDefault_arq_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
-            btnDefault_arq_ip->callback((Fl_Callback*)cb_btnDefault_arq_ip);
-          } // Fl_Button* btnDefault_arq_ip
-          o->end();
-        } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(15, 42, 570, 75, _("Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.\nEnable KIS\
+          { Fl_Check_Button* o = btnDisable_p2p_io_widgets = new Fl_Check_Button(12, 112, 85, 20, _("Lock"));
+            btnDisable_p2p_io_widgets->tooltip(_("Allow/Disallow Changes"));
+            btnDisable_p2p_io_widgets->down_box(FL_DOWN_BOX);
+            btnDisable_p2p_io_widgets->callback((Fl_Callback*)cb_btnDisable_p2p_io_widgets);
+            o->value(progStatus.ip_lock);
+          } // Fl_Check_Button* btnDisable_p2p_io_widgets
+          { Fl_Check_Button* o = btnEnable_arq = new Fl_Check_Button(96, 112, 115, 20, _("Enable ARQ"));
+            btnEnable_arq->tooltip(_("Used For PSKMail and FLDIGI Suite of Programs"));
+            btnEnable_arq->type(102);
+            btnEnable_arq->down_box(FL_DOWN_BOX);
+            btnEnable_arq->callback((Fl_Callback*)cb_btnEnable_arq);
+            if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_arq
+          { Fl_Check_Button* o = btnEnable_kiss = new Fl_Check_Button(221, 112, 115, 20, _("Enable KISS"));
+            btnEnable_kiss->tooltip(_("Used for BPQ32"));
+            btnEnable_kiss->type(102);
+            btnEnable_kiss->down_box(FL_DOWN_BOX);
+            btnEnable_kiss->callback((Fl_Callback*)cb_btnEnable_kiss);
+            if(progdefaults.data_io_enabled == KISS_IO) o->value(true);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_kiss
+          { Fl_Check_Button* o = btnEnable_ax25_decode = new Fl_Check_Button(346, 112, 115, 20, _("AX25 Decode"));
+            btnEnable_ax25_decode->tooltip(_("Decode AX25 Packets into human readable form"));
+            btnEnable_ax25_decode->down_box(FL_DOWN_BOX);
+            btnEnable_ax25_decode->callback((Fl_Callback*)cb_btnEnable_ax25_decode);
+            if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_ax25_decode
+          { Fl_Check_Button* o = btnEnable_csma = new Fl_Check_Button(471, 112, 115, 20, _("Enable CSMA"));
+            btnEnable_csma->tooltip(_("Used for BPQ32"));
+            btnEnable_csma->down_box(FL_DOWN_BOX);
+            btnEnable_csma->callback((Fl_Callback*)cb_btnEnable_csma);
+            if(progdefaults.csma_enabled) o->value(true);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_csma
+          { new Fl_Box(8, 37, 582, 72, _("Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.\nEnable KIS\
 S for programs that supports UDP and TNC-2 KISS protocol.\nOnly one interface \
-(ARQ/KISS) can be active at any given time.\nIP address and port number change\
-s require FLDIGI restart."));
-          o->box(FL_BORDER_BOX);
-          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+(ARQ/KISS) can be active at any given time.\nKISS/ARQ/XML Addr/Port changes re\
+quire program restart."));
+          } // Fl_Box* o
           o->end();
         } // Fl_Group* o
-        { Fl_Check_Button* o = btnEnable_arq = new Fl_Check_Button(130, 122, 110, 20, _("Enable ARQ"));
-          btnEnable_arq->tooltip(_("Used For PSKMail and FLDIGI Suite of Programs"));
-          btnEnable_arq->type(102);
-          btnEnable_arq->down_box(FL_DOWN_BOX);
-          btnEnable_arq->callback((Fl_Callback*)cb_btnEnable_arq);
-          if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);
-        } // Fl_Check_Button* btnEnable_arq
-        { Fl_Check_Button* o = btnEnable_kiss = new Fl_Check_Button(245, 122, 110, 20, _("Enable KISS"));
-          btnEnable_kiss->tooltip(_("Used for BPQ32"));
-          btnEnable_kiss->type(102);
-          btnEnable_kiss->down_box(FL_DOWN_BOX);
-          btnEnable_kiss->callback((Fl_Callback*)cb_btnEnable_kiss);
-          if(progdefaults.data_io_enabled == KISS_IO) o->value(true);
-        } // Fl_Check_Button* btnEnable_kiss
-        { Fl_Group* o = new Fl_Group(15, 318, 570, 55, _("XMLRPC"));
+        { Fl_Group* o = new Fl_Group(6, 138, 588, 85, _("KISS"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { btnDefault_xmlrpc_ip = new Fl_Button(470, 337, 105, 27, _("Default"));
-            btnDefault_xmlrpc_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
-            btnDefault_xmlrpc_ip->callback((Fl_Callback*)cb_btnDefault_xmlrpc_ip);
-          } // Fl_Button* btnDefault_xmlrpc_ip
-          { Fl_Input2* o = txtXmlrpc_ip_address = new Fl_Input2(20, 338, 205, 25, _("IP Address"));
-            txtXmlrpc_ip_address->tooltip(_("IP Address format: nnn.nnn.nnn.nnn"));
-            txtXmlrpc_ip_address->box(FL_DOWN_BOX);
-            txtXmlrpc_ip_address->color(FL_BACKGROUND2_COLOR);
-            txtXmlrpc_ip_address->selection_color(FL_SELECTION_COLOR);
-            txtXmlrpc_ip_address->labeltype(FL_NORMAL_LABEL);
-            txtXmlrpc_ip_address->labelfont(0);
-            txtXmlrpc_ip_address->labelsize(14);
-            txtXmlrpc_ip_address->labelcolor(FL_FOREGROUND_COLOR);
-            txtXmlrpc_ip_address->callback((Fl_Callback*)cb_txtXmlrpc_ip_address);
-            txtXmlrpc_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
-            txtXmlrpc_ip_address->when(FL_WHEN_CHANGED);
-            txtXmlrpc_ip_address->labelsize(FL_NORMAL_SIZE);
-            o->value(progdefaults.xmlrpc_address.c_str());
-          } // Fl_Input2* txtXmlrpc_ip_address
-          { Fl_Input2* o = txtXmlrpc_ip_port_no = new Fl_Input2(329, 338, 80, 25, _("Port"));
-            txtXmlrpc_ip_port_no->tooltip(_("IP Address Port Number"));
-            txtXmlrpc_ip_port_no->box(FL_DOWN_BOX);
-            txtXmlrpc_ip_port_no->color(FL_BACKGROUND2_COLOR);
-            txtXmlrpc_ip_port_no->selection_color(FL_SELECTION_COLOR);
-            txtXmlrpc_ip_port_no->labeltype(FL_NORMAL_LABEL);
-            txtXmlrpc_ip_port_no->labelfont(0);
-            txtXmlrpc_ip_port_no->labelsize(14);
-            txtXmlrpc_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
-            txtXmlrpc_ip_port_no->callback((Fl_Callback*)cb_txtXmlrpc_ip_port_no);
-            txtXmlrpc_ip_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
-            txtXmlrpc_ip_port_no->when(FL_WHEN_CHANGED);
-            txtXmlrpc_ip_port_no->labelsize(FL_NORMAL_SIZE);
-            o->value(progdefaults.xmlrpc_port.c_str());
-          } // Fl_Input2* txtXmlrpc_ip_port_no
-          o->end();
-        } // Fl_Group* o
-        { Fl_Group* o = new Fl_Group(15, 145, 570, 112, _("KISS"));
-          o->box(FL_ENGRAVED_FRAME);
-          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { btnDefault_kiss_ip = new Fl_Button(470, 207, 105, 26, _("Default"));
+          { Fl_Button* o = btnDefault_kiss_ip = new Fl_Button(425, 193, 73, 25, _("Default"));
             btnDefault_kiss_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
             btnDefault_kiss_ip->callback((Fl_Callback*)cb_btnDefault_kiss_ip);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Button* btnDefault_kiss_ip
-          { Fl_Input2* o = txtKiss_ip_address = new Fl_Input2(20, 164, 185, 25, _("IP Address"));
-            txtKiss_ip_address->tooltip(_("IP Address for KISS interface"));
+          { Fl_Input2* o = txtKiss_ip_address = new Fl_Input2(56, 193, 230, 25, _("Addr"));
+            txtKiss_ip_address->tooltip(_("IP Address for KISS interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: i\
+.e. localhost"));
             txtKiss_ip_address->box(FL_DOWN_BOX);
             txtKiss_ip_address->color(FL_BACKGROUND2_COLOR);
             txtKiss_ip_address->selection_color(FL_SELECTION_COLOR);
@@ -10945,8 +10939,22 @@ s require FLDIGI restart."));
             txtKiss_ip_address->when(FL_WHEN_CHANGED);
             txtKiss_ip_address->labelsize(FL_NORMAL_SIZE);
             o->value(progdefaults.kiss_address.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_address
-          { Fl_Input2* o = txtKiss_ip_io_port_no = new Fl_Input2(298, 164, 55, 25, _("I/O"));
+          { Fl_Counter* o = cntKPSQLAttenuation = new Fl_Counter(56, 169, 110, 20, _("KPSQL Attenuate"));
+            cntKPSQLAttenuation->tooltip(_("Attenuation"));
+            cntKPSQLAttenuation->minimum(1);
+            cntKPSQLAttenuation->maximum(999);
+            cntKPSQLAttenuation->step(1);
+            cntKPSQLAttenuation->value(1);
+            cntKPSQLAttenuation->callback((Fl_Callback*)cb_cntKPSQLAttenuation);
+            cntKPSQLAttenuation->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.kpsql_attenuation);
+            o->step(1,10);
+            update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Counter* cntKPSQLAttenuation
+          { Fl_Input2* o = txtKiss_ip_io_port_no = new Fl_Input2(333, 164, 55, 25, _("I/O"));
             txtKiss_ip_io_port_no->tooltip(_("IP Address Port Number"));
             txtKiss_ip_io_port_no->box(FL_DOWN_BOX);
             txtKiss_ip_io_port_no->color(FL_BACKGROUND2_COLOR);
@@ -10960,14 +10968,10 @@ s require FLDIGI restart."));
             txtKiss_ip_io_port_no->when(FL_WHEN_CHANGED);
             txtKiss_ip_io_port_no->labelsize(FL_NORMAL_SIZE);
             o->value(progdefaults.kiss_io_port.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_io_port_no
-          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(20, 201, 160, 15, _("Enable Busy Channel"));
-            btnEnableBusyChannel->down_box(FL_DOWN_BOX);
-            btnEnableBusyChannel->callback((Fl_Callback*)cb_btnEnableBusyChannel);
-            if(progdefaults.enableBusyChannel) o->value(true);
-            else o->value(false);
-          } // Fl_Check_Button* btnEnableBusyChannel
-          { Fl_Counter* o = cntBusyChannelSeconds = new Fl_Counter(200, 198, 130, 20, _("Continue After (sec)"));
+          { Fl_Counter* o = cntBusyChannelSeconds = new Fl_Counter(56, 145, 110, 20, _("Continue"));
+            cntBusyChannelSeconds->tooltip(_("Continue after in seconds"));
             cntBusyChannelSeconds->minimum(1);
             cntBusyChannelSeconds->maximum(999);
             cntBusyChannelSeconds->step(1);
@@ -10976,8 +10980,17 @@ s require FLDIGI restart."));
             cntBusyChannelSeconds->align(Fl_Align(FL_ALIGN_RIGHT));
             o->value(progdefaults.busyChannelSeconds);
             o->step(1,10);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Counter* cntBusyChannelSeconds
-          { Fl_Input2* o = txtKiss_ip_out_port_no = new Fl_Input2(392, 164, 55, 25, _("O"));
+          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(425, 147, 65, 15, _("Busy"));
+            btnEnableBusyChannel->tooltip(_("Enable Busy Channel"));
+            btnEnableBusyChannel->down_box(FL_DOWN_BOX);
+            btnEnableBusyChannel->callback((Fl_Callback*)cb_btnEnableBusyChannel);
+            if(progdefaults.enableBusyChannel) o->value(true);
+            else o->value(false);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnableBusyChannel
+          { Fl_Input2* o = txtKiss_ip_out_port_no = new Fl_Input2(333, 193, 55, 25, _("O"));
             txtKiss_ip_out_port_no->tooltip(_("Output port number when same IP address used"));
             txtKiss_ip_out_port_no->box(FL_DOWN_BOX);
             txtKiss_ip_out_port_no->color(FL_BACKGROUND2_COLOR);
@@ -10991,45 +11004,197 @@ s require FLDIGI restart."));
             txtKiss_ip_out_port_no->when(FL_WHEN_CHANGED);
             txtKiss_ip_out_port_no->labelsize(FL_NORMAL_SIZE);
             o->value(progdefaults.kiss_out_port.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_out_port_no
-          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(480, 168, 90, 16, _("Dual Port"));
+          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(425, 168, 90, 16, _("Dual Port"));
             btnEnable_dual_port->tooltip(_("Enable when both programs are using the same IP address"));
             btnEnable_dual_port->down_box(FL_DOWN_BOX);
             btnEnable_dual_port->callback((Fl_Callback*)cb_btnEnable_dual_port);
             if(progdefaults.kiss_dual_port_enabled) o->value(true); else o->value(false);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_dual_port
-          { Fl_Counter* o = cntKPSQLAttenuation = new Fl_Counter(20, 225, 130, 20, _("KPSQL Attenuation"));
-            cntKPSQLAttenuation->minimum(1);
-            cntKPSQLAttenuation->maximum(999);
-            cntKPSQLAttenuation->step(1);
-            cntKPSQLAttenuation->value(1);
-            cntKPSQLAttenuation->callback((Fl_Callback*)cb_cntKPSQLAttenuation);
-            cntKPSQLAttenuation->align(Fl_Align(FL_ALIGN_RIGHT));
-            o->value(progdefaults.kpsql_attenuation);
-            o->step(1,10);
-            update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
-          } // Fl_Counter* cntKPSQLAttenuation
+          { Fl_Button* o = btn_restart_kiss = new Fl_Button(505, 193, 82, 25, _("Restart"));
+            btn_restart_kiss->callback((Fl_Callback*)cb_btn_restart_kiss);
+            btn_restart_kiss->hide();
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btn_restart_kiss
           o->end();
         } // Fl_Group* o
-        { Fl_Check_Button* o = btnDisable_p2p_io_widgets = new Fl_Check_Button(15, 122, 110, 20, _("Lock"));
-          btnDisable_p2p_io_widgets->tooltip(_("Allow/Disallow Changes"));
-          btnDisable_p2p_io_widgets->down_box(FL_DOWN_BOX);
-          btnDisable_p2p_io_widgets->callback((Fl_Callback*)cb_btnDisable_p2p_io_widgets);
-          o->value(1);
-          disable_config_p2p_io_widgets();
-        } // Fl_Check_Button* btnDisable_p2p_io_widgets
-        { Fl_Check_Button* o = btnEnable_ax25_decode = new Fl_Check_Button(360, 122, 110, 20, _("AX25 Decode"));
-          btnEnable_ax25_decode->tooltip(_("Decode AX25 Packets into human readable form"));
-          btnEnable_ax25_decode->down_box(FL_DOWN_BOX);
-          btnEnable_ax25_decode->callback((Fl_Callback*)cb_btnEnable_ax25_decode);
-          if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);
-        } // Fl_Check_Button* btnEnable_ax25_decode
-        { Fl_Check_Button* o = btnEnable_csma = new Fl_Check_Button(474, 122, 110, 20, _("Enable CSMA"));
-          btnEnable_csma->tooltip(_("Used for BPQ32"));
-          btnEnable_csma->down_box(FL_DOWN_BOX);
-          btnEnable_csma->callback((Fl_Callback*)cb_btnEnable_csma);
-          if(progdefaults.csma_enabled) o->value(true);
-        } // Fl_Check_Button* btnEnable_csma
+        { Fl_Group* o = new Fl_Group(6, 225, 588, 35, _("ARQ"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Input2* o = txtArq_ip_address = new Fl_Input2(56, 229, 230, 25, _("Addr"));
+            txtArq_ip_address->tooltip(_("IP Address for ARQ interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: i.\
+e. localhost"));
+            txtArq_ip_address->box(FL_DOWN_BOX);
+            txtArq_ip_address->color(FL_BACKGROUND2_COLOR);
+            txtArq_ip_address->selection_color(FL_SELECTION_COLOR);
+            txtArq_ip_address->labeltype(FL_NORMAL_LABEL);
+            txtArq_ip_address->labelfont(0);
+            txtArq_ip_address->labelsize(14);
+            txtArq_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+            txtArq_ip_address->callback((Fl_Callback*)cb_txtArq_ip_address);
+            txtArq_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtArq_ip_address->when(FL_WHEN_CHANGED);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.arq_address.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input2* txtArq_ip_address
+          { Fl_Input2* o = txtArq_ip_port_no = new Fl_Input2(333, 229, 55, 25, _("Port"));
+            txtArq_ip_port_no->tooltip(_("IP Address Port Number"));
+            txtArq_ip_port_no->box(FL_DOWN_BOX);
+            txtArq_ip_port_no->color(FL_BACKGROUND2_COLOR);
+            txtArq_ip_port_no->selection_color(FL_SELECTION_COLOR);
+            txtArq_ip_port_no->labeltype(FL_NORMAL_LABEL);
+            txtArq_ip_port_no->labelfont(0);
+            txtArq_ip_port_no->labelsize(14);
+            txtArq_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
+            txtArq_ip_port_no->callback((Fl_Callback*)cb_txtArq_ip_port_no);
+            txtArq_ip_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtArq_ip_port_no->when(FL_WHEN_CHANGED);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.arq_port.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input2* txtArq_ip_port_no
+          { Fl_Button* o = btnDefault_arq_ip = new Fl_Button(425, 229, 73, 25, _("Default"));
+            btnDefault_arq_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_arq_ip->callback((Fl_Callback*)cb_btnDefault_arq_ip);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btnDefault_arq_ip
+          { Fl_Button* o = btn_restart_arq = new Fl_Button(505, 229, 82, 25, _("Restart"));
+            btn_restart_arq->callback((Fl_Callback*)cb_btn_restart_arq);
+            btn_restart_arq->hide();
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btn_restart_arq
+          o->end();
+        } // Fl_Group* o
+        { Fl_Box* o = new Fl_Box(6, 262, 588, 1);
+          o->box(FL_BORDER_BOX);
+        } // Fl_Box* o
+        { Fl_Group* o = new Fl_Group(6, 266, 588, 35, _("XML"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Button* o = btnDefault_xmlrpc_ip = new Fl_Button(425, 270, 73, 25, _("Default"));
+            btnDefault_xmlrpc_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_xmlrpc_ip->callback((Fl_Callback*)cb_btnDefault_xmlrpc_ip);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btnDefault_xmlrpc_ip
+          { Fl_Input2* o = txtXmlrpc_ip_address = new Fl_Input2(56, 270, 230, 25, _("Addr"));
+            txtXmlrpc_ip_address->tooltip(_("IP Address for XMLRPC interface\nIP Address format: nnn.nnn.nnn.nnn\nor name:\
+ i.e. localhost"));
+            txtXmlrpc_ip_address->box(FL_DOWN_BOX);
+            txtXmlrpc_ip_address->color(FL_BACKGROUND2_COLOR);
+            txtXmlrpc_ip_address->selection_color(FL_SELECTION_COLOR);
+            txtXmlrpc_ip_address->labeltype(FL_NORMAL_LABEL);
+            txtXmlrpc_ip_address->labelfont(0);
+            txtXmlrpc_ip_address->labelsize(14);
+            txtXmlrpc_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+            txtXmlrpc_ip_address->callback((Fl_Callback*)cb_txtXmlrpc_ip_address);
+            txtXmlrpc_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtXmlrpc_ip_address->when(FL_WHEN_CHANGED);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.xmlrpc_address.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input2* txtXmlrpc_ip_address
+          { Fl_Input2* o = txtXmlrpc_ip_port_no = new Fl_Input2(333, 270, 55, 25, _("Port"));
+            txtXmlrpc_ip_port_no->tooltip(_("IP Address Port Number"));
+            txtXmlrpc_ip_port_no->box(FL_DOWN_BOX);
+            txtXmlrpc_ip_port_no->color(FL_BACKGROUND2_COLOR);
+            txtXmlrpc_ip_port_no->selection_color(FL_SELECTION_COLOR);
+            txtXmlrpc_ip_port_no->labeltype(FL_NORMAL_LABEL);
+            txtXmlrpc_ip_port_no->labelfont(0);
+            txtXmlrpc_ip_port_no->labelsize(14);
+            txtXmlrpc_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
+            txtXmlrpc_ip_port_no->callback((Fl_Callback*)cb_txtXmlrpc_ip_port_no);
+            txtXmlrpc_ip_port_no->align(Fl_Align(FL_ALIGN_RIGHT));
+            txtXmlrpc_ip_port_no->when(FL_WHEN_CHANGED);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.xmlrpc_port.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input2* txtXmlrpc_ip_port_no
+          { Fl_Button* o = btn_restart_xml = new Fl_Button(505, 270, 82, 25, _("Restart"));
+            btn_restart_xml->callback((Fl_Callback*)cb_btn_restart_xml);
+            btn_restart_xml->hide();
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btn_restart_xml
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(6, 304, 588, 35, _("flrig"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Button* o = btnDefault_flrig_ip = new Fl_Button(425, 309, 73, 25, _("Default"));
+            btnDefault_flrig_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_flrig_ip->callback((Fl_Callback*)cb_btnDefault_flrig_ip);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btnDefault_flrig_ip
+          { Fl_Input2* o = txt_flrig_ip_address = new Fl_Input2(56, 309, 230, 25, _("Addr"));
+            txt_flrig_ip_address->tooltip(_("IP Address for flrig interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: \
+i.e. localhost"));
+            txt_flrig_ip_address->box(FL_DOWN_BOX);
+            txt_flrig_ip_address->color(FL_BACKGROUND2_COLOR);
+            txt_flrig_ip_address->selection_color(FL_SELECTION_COLOR);
+            txt_flrig_ip_address->labeltype(FL_NORMAL_LABEL);
+            txt_flrig_ip_address->labelfont(0);
+            txt_flrig_ip_address->labelsize(14);
+            txt_flrig_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+            txt_flrig_ip_address->callback((Fl_Callback*)cb_txt_flrig_ip_address);
+            txt_flrig_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            txt_flrig_ip_address->when(FL_WHEN_CHANGED);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.flrig_ip_address.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input2* txt_flrig_ip_address
+          { Fl_Input2* o = txt_flrig_ip_port = new Fl_Input2(333, 309, 55, 25, _("Port"));
+            txt_flrig_ip_port->tooltip(_("IP Address Port Number"));
+            txt_flrig_ip_port->box(FL_DOWN_BOX);
+            txt_flrig_ip_port->color(FL_BACKGROUND2_COLOR);
+            txt_flrig_ip_port->selection_color(FL_SELECTION_COLOR);
+            txt_flrig_ip_port->labeltype(FL_NORMAL_LABEL);
+            txt_flrig_ip_port->labelfont(0);
+            txt_flrig_ip_port->labelsize(14);
+            txt_flrig_ip_port->labelcolor(FL_FOREGROUND_COLOR);
+            txt_flrig_ip_port->callback((Fl_Callback*)cb_txt_flrig_ip_port);
+            txt_flrig_ip_port->align(Fl_Align(FL_ALIGN_RIGHT));
+            txt_flrig_ip_port->when(FL_WHEN_CHANGED);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.flrig_ip_port.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input2* txt_flrig_ip_port
+          { Fl_Button* o = btn_reconnect_flrig_server = new Fl_Button(505, 309, 82, 25, _("Reconnect"));
+            btn_reconnect_flrig_server->callback((Fl_Callback*)cb_btn_reconnect_flrig_server);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btn_reconnect_flrig_server
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(6, 340, 588, 36, _("fllog"));
+          o->box(FL_ENGRAVED_FRAME);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Input* o = txt_fllog_ip_address = new Fl_Input(56, 345, 230, 25, _("Addr"));
+            txt_fllog_ip_address->tooltip(_("IP Address for fllog interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: \
+i.e. localhost"));
+            txt_fllog_ip_address->callback((Fl_Callback*)cb_txt_fllog_ip_address);
+            txt_fllog_ip_address->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.xmllog_address.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input* txt_fllog_ip_address
+          { Fl_Input* o = txt_fllog_ip_port = new Fl_Input(333, 345, 55, 25, _("Port"));
+            txt_fllog_ip_port->tooltip(_("IP Address Port Number"));
+            txt_fllog_ip_port->callback((Fl_Callback*)cb_txt_fllog_ip_port);
+            txt_fllog_ip_port->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.xmllog_port.c_str());
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Input* txt_fllog_ip_port
+          { Fl_Button* o = btn_reconnect_log_server = new Fl_Button(505, 345, 82, 25, _("Reconnect"));
+            btn_reconnect_log_server->callback((Fl_Callback*)cb_btn_reconnect_log_server);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btn_reconnect_log_server
+          { Fl_Button* o = btnDefault_fllog_ip = new Fl_Button(425, 345, 73, 25, _("Default"));
+            btnDefault_fllog_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+            btnDefault_fllog_ip->callback((Fl_Callback*)cb_btnDefault_fllog_ip);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Button* btnDefault_fllog_ip
+          o->end();
+        } // Fl_Group* o
         btnDisable_p2p_io_widgets->value(1);
         tabIO->end();
       } // Fl_Group* tabIO

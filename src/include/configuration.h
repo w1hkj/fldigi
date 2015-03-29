@@ -1505,6 +1505,12 @@
 		ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
 			  "Use CSMA on heavy traffic channels (AX25)",                              \
               true)                                                                     \
+        ELEM_(std::string, flrig_ip_address, "FLRIG_IP_ADDRESS",                        \
+              "IP Address of flrig server",                                             \
+			  DEFAULT_FLRIG_IP_ADDRESS)                                                 \
+        ELEM_(std::string, flrig_ip_port,    "FLRIG_IP_PORT",                           \
+			  "IP port number of flrig server",                                         \
+			  DEFAULT_FLRIG_IP_PORT)                                                    \
         ELEM_(bool, show_all_codes, "SHOW_ALL_CODES",                                   \
               "Display all rx char's using ascii3 table",                               \
               false)                                                                    \

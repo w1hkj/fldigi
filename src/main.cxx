@@ -304,6 +304,19 @@ static void auto_start()
 		start_process(progdefaults.auto_prog3_pathname);
 }
 
+// reset those default values that have been overriden by a command line parameter
+void check_overrides()
+{
+	if (xmlrpc_address_override_flag) 
+		progdefaults.xmlrpc_address = override_xmlrpc_address;
+	if (xmlrpc_port_override_flag)
+		progdefaults.xmlrpc_port = override_xmlrpc_port;
+	if (arq_address_override_flag)
+		progdefaults.arq_address = override_arq_address;
+	if (arq_port_override_flag)
+		progdefaults.arq_port = override_arq_port;
+}
+
 // these functions are all started after Fl::run() is executing
 void delayed_startup(void *)
 {
@@ -591,6 +604,7 @@ int main(int argc, char ** argv)
 	LOG_INFO("FLMSG_ICS_tmp_dir: %s", FLMSG_ICS_tmp_dir.c_str());
 
 	bool have_config = progdefaults.readDefaultsXML();
+	check_overrides();
 
 	xmlfname = HomeDir;
 	xmlfname.append(DEFAULT_RIGXML_FILENAME);
@@ -1116,12 +1130,10 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_ARQ_ADDRESS:
-			progdefaults.arq_address = optarg;
 			override_arq_address = optarg;
 			arq_address_override_flag = true;
 			break;
 		case OPT_ARQ_PORT:
-			progdefaults.arq_port = optarg;
 			override_arq_port = optarg;
 			arq_address_override_flag = true;
 			break;
@@ -1180,14 +1192,12 @@ int parse_args(int argc, char **argv, int& idx)
 			break;
 
 		case OPT_CONFIG_XMLRPC_ADDRESS:
-			progdefaults.xmlrpc_address = optarg;
 			override_xmlrpc_address = optarg;
 			xmlrpc_address_override_flag = true;
 			break;
 		case OPT_CONFIG_XMLRPC_PORT:
-			progdefaults.xmlrpc_port = optarg;
 			override_xmlrpc_port = optarg;
-			xmlrpc_address_override_flag = true;
+			xmlrpc_port_override_flag = true;
 			break;
 		case OPT_CONFIG_XMLRPC_ALLOW:
 			progdefaults.xmlrpc_allow = optarg;

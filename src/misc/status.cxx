@@ -191,6 +191,7 @@ status progStatus = {
 	progdefaults.busyChannelSeconds,
 	progdefaults.kpsql_attenuation,
 	progdefaults.csma_enabled,
+	true,
 	0.0,
 
 	"CQ",				// string browser_search;
@@ -635,7 +636,8 @@ void status::loadLastState()
 		memset(strbuff, 0, sizeof(strbuff));
 		spref.get("xmlrpc_address", strbuff, xmlrpc_address.c_str(), sizeof(strbuff) - 1);
 		xmlrpc_address = strbuff;
-
+	}
+	if (!xmlrpc_port_override_flag) {
 		memset(strbuff, 0, sizeof(strbuff));
 		spref.get("xmlrpc_port", strbuff, xmlrpc_port.c_str(), sizeof(strbuff) - 1);
 		xmlrpc_port = strbuff;
@@ -645,7 +647,8 @@ void status::loadLastState()
 		memset(strbuff, 0, sizeof(strbuff));
 		spref.get("arq_address", strbuff, arq_address.c_str(), sizeof(strbuff) - 1);
 		arq_address = strbuff;
-
+	}
+	if(!arq_port_override_flag) {
 		memset(strbuff, 0, sizeof(strbuff));
 		spref.get("arq_port", strbuff, arq_port.c_str(), sizeof(strbuff) - 1);
 		arq_port = strbuff;
@@ -791,12 +794,10 @@ void status::initLastState()
 	else
 		sldrSquelch->value(sldrSquelchValue);
 
-	if(arq_address_override_flag) {
-		if(!override_arq_address.empty())
-			arq_address = progdefaults.arq_address = override_arq_address;
-		if(!override_arq_port.empty())
-			arq_port = progdefaults.arq_port = override_arq_port;
-	}
+	if (arq_address_override_flag)
+		arq_address = progdefaults.arq_address = override_arq_address;
+	if (arq_port_override_flag)
+		arq_port = progdefaults.arq_port = override_arq_port;
 
 	if(kiss_address_override_flag) {
 		if(!override_kiss_address.empty())
@@ -809,12 +810,10 @@ void status::initLastState()
 			kiss_dual_port_enabled = progdefaults.kiss_dual_port_enabled = override_kiss_dual_port_enabled;
 	}
 
-	if(xmlrpc_address_override_flag) {
-		if(!override_xmlrpc_address.empty())
-			xmlrpc_address = progdefaults.xmlrpc_address = override_xmlrpc_address;
-		if(!override_kiss_out_port.empty())
-			xmlrpc_port = progdefaults.xmlrpc_port = override_xmlrpc_port;
-	}
+	if (xmlrpc_address_override_flag)
+		xmlrpc_address = progdefaults.xmlrpc_address = override_xmlrpc_address;
+	if (xmlrpc_port_override_flag)
+		xmlrpc_port = progdefaults.xmlrpc_port = override_xmlrpc_port;
 
 	txtArq_ip_address->value(arq_address.c_str());
 	txtArq_ip_port_no->value(arq_port.c_str());

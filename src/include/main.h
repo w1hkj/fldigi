@@ -98,6 +98,7 @@ extern int			arq_get_char();
 // ARQ mail implementation
 extern void			arq_init();
 extern void			arq_close();
+extern void			arq_restart();
 extern void			WriteARQ(unsigned char);
 extern void			checkTLF();
 

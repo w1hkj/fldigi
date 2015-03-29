@@ -156,6 +156,7 @@ struct status {
 	int busyChannelSeconds;
 	int kpsql_attenuation;
 	bool csma_enabled;
+	bool ip_lock;
 	double squelch_value;
 
 	std::string	browser_search;
