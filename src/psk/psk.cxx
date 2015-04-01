@@ -1721,9 +1721,9 @@ void psk::tx_carriers()
 			qval = shapeA * prevsymbol[car].imag() + shapeB * symbol.imag();
 
 			if (car != 0) {
-				outbuf[i] += (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car]));// / numcarriers;
+				outbuf[i] += (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car])) / numcarriers;
 			} else {
-				outbuf[i] = (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car]));// / numcarriers;
+				outbuf[i] = (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car])) / numcarriers;
 			}
 			if (maxamp < fabs(outbuf[i]))
 				maxamp = fabs(outbuf[i]);
