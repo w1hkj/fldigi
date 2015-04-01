@@ -1,14 +1,29 @@
 
 
+=Version 3.22.07=
+
+2015-04-01  David Freese  <iam_w1hkj@w1hkj.com>
+
+	b3dea10: Macro edit
+	97d02a7: Multi-psk
+	9942993: Vista SignaLink driver
+	c79bfd7: Image update
+	3c264e2: Command line
+	68f88ee: SSB default signal
+	5ca7182: Digiscope resize
+	b522d83: FSF address
+
+
 =Version 3.22.06=
+
 
 2015-03-21  Robert Stiles  <kk5vd@yahoo.com>
 
-	a36bd6d: UTF-8 Rx display
+	fe27da9: UTF-8 Rx display
 
 2015-03-21  David Freese  <iam_w1hkj@w1hkj.com>
 
-	a14b825: 8psk modes
+	15ca512: 8psk modes
 	e48c2fe: Macro Editor Fonts
 	2424904: R-L channel input
 	e5148c0: QSY documentation
