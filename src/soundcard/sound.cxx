@@ -277,7 +277,7 @@ int SoundBase::Playback(bool val)
 		LOG_ERROR("Could not read %s:%s", fname, sf_strerror(NULL) );
 		return -2;
 	}
-LOG_INFO("wav file stats:\n\
+LOG_VERBOSE("wav file stats:\n\
 frames     : %d\n\
 samplerate : %d\n\
 channels   : %d\n\
@@ -300,7 +300,7 @@ play_info.seekable);
 	modem_play_sr = sample_frequency;
 	play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
 	src_set_ratio(play_src_state, play_src_data->src_ratio);
-LOG_INFO("src ratio %f", play_src_data->src_ratio);
+LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 
 	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
 
@@ -327,7 +327,7 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 		modem_play_sr = sample_frequency;
 		play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
 		src_set_ratio(play_src_state, play_src_data->src_ratio);
-LOG_INFO("src ratio %f", play_src_data->src_ratio);
+LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 		new_playback = true;
 	}
 
@@ -440,7 +440,7 @@ void SoundBase::tag_file(SNDFILE *sndfile, const char *title)
 {
 	int err;
 	if ((err = sf_set_string(sndfile, SF_STR_TITLE, title)) != 0) {
-		LOG_INFO("sf_set_string STR_TITLE: %s", sf_error_number(err));
+		LOG_VERBOSE("sf_set_string STR_TITLE: %s", sf_error_number(err));
 		return;
 	}
 
@@ -954,7 +954,7 @@ const vector<double>& SoundPort::get_supported_rates(const string& name, unsigne
 SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(0)
 {
 	sd[0].device = in_dev;
-	sd[0].params.channelCount = 2;
+	sd[0].params.channelCount = 2; // init_stream can change this to 0 or 1
 	sd[0].stream = 0;
 	sd[0].frames_per_buffer = paFramesPerBufferUnspecified;
 	sd[0].dev_sample_rate = 0;
@@ -1076,10 +1076,44 @@ int SoundPort::Open(int mode, int freq)
 	if (mode == O_RDONLY && (idev = name_to_device(sd[1].device, 1)) != devs.end() &&
 		(device_type = Pa_GetHostApiInfo((*idev)->hostApi)->type) == paJACK)
 		mode = O_RDWR;
+
+	size_t start = (mode == O_RDONLY || mode == O_RDWR) ? 0 : 1,
+		end = (mode == O_WRONLY || mode == O_RDWR) ? 1 : 0;
+	for (size_t i = start; i <= end; i++) {
+		if ( !(stream_active(i) && (Pa_GetHostApiInfo((*sd[i].idev)->hostApi)->type == paJACK ||
+						old_sample_rate == freq ||
+						sr[i] != SAMPLE_RATE_AUTO)) ) {
+			Close(i);
+			init_stream(i);
+			src_data_reset(i);
+
+			// reset the semaphore
+			while (sem_trywait(sd[i].rwsem) == 0);
+			if (errno && errno != EAGAIN) {
+				pa_perror(errno, "open");
+				throw SndException(errno);
+			}
+			start_stream(i);
+
+			ret = 1;
+		}
+		else {
+			pause_stream(i);
+			src_data_reset(i);
+			sd[i].state = spa_continue;
+		}
+	}
+
 	static char pa_open_str[500];
 	snprintf(pa_open_str, sizeof(pa_open_str),
-		"Port Audio open mode = %s\ndevice type = %s\ndevice name = %s\n# input channels %d\n# output channels %d",
-		mode == O_WRONLY ? "Write" : mode == O_RDONLY ? "Read" :
+"\
+Port Audio open mode = %s\n\
+device type = %s\n\
+device name = %s\n\
+# input channels %d\n\
+# output channels %d",
+		mode == O_WRONLY ? "Write" : 
+		mode == O_RDONLY ? "Read" : 
 		mode == O_RDWR ? "Read/Write" : "unknown",
 		device_type == 0 ? "paInDevelopment" :
 		device_type == 1 ? "paDirectSound" :
@@ -1099,33 +1133,7 @@ int SoundPort::Open(int mode, int freq)
 		mode == O_RDONLY ? sd[0].device.c_str() : "unknown",
 		sd[0].params.channelCount,
 		sd[1].params.channelCount );
-	LOG_INFO( "%s", pa_open_str);
-
-	size_t start = (mode == O_RDONLY || mode == O_RDWR) ? 0 : 1,
-		end = (mode == O_WRONLY || mode == O_RDWR) ? 1 : 0;
-	for (size_t i = start; i <= end; i++) {
-		if ( !(stream_active(i) && (Pa_GetHostApiInfo((*sd[i].idev)->hostApi)->type == paJACK ||
-						old_sample_rate == freq ||
-						sr[i] != SAMPLE_RATE_AUTO)) ) {
-			Close(i);
-			init_stream(i);
-			src_data_reset(i);
-
-			// reset the semaphore
-			while (sem_trywait(sd[i].rwsem) == 0);
-			if (errno && errno != EAGAIN) {
-				pa_perror(errno, "open");
-				throw SndException(errno);
-			}
-			start_stream(i);
-			ret = 1;
-		}
-		else {
-			pause_stream(i);
-			src_data_reset(i);
-			sd[i].state = spa_continue;
-		}
-	}
+	LOG_VERBOSE( "%s", pa_open_str);
 
 	return ret;
 }
@@ -1301,7 +1309,8 @@ size_t SoundPort::Read(float *buf, size_t count)
 	size_t n;
 	for (size_t i = 0; i < count; i++) {
 		n = sd[0].params.channelCount * i;
-		n += progdefaults.ReverseRxAudio;
+		if (sd[0].params.channelCount == 2)
+			n += progdefaults.ReverseRxAudio;
 		buf[i] = rbuf[n];
 	}
 
@@ -1501,7 +1510,7 @@ void SoundPort::src_data_reset(unsigned dir)
 					MAX(req_sample_rate, sd[dir].dev_sample_rate) /
 					MIN(req_sample_rate, sd[dir].dev_sample_rate))),
 					8192);
-	LOG_INFO("rbsize = %" PRIuSZ "", rbsize);
+	LOG_VERBOSE("rbsize = %" PRIuSZ "", rbsize);
 	if (sd[dir].rb) delete sd[dir].rb;
 	sd[dir].rb = new ringbuffer<float>(rbsize);
 }
@@ -1578,6 +1587,12 @@ void SoundPort::init_stream(unsigned dir)
 		sd[0].params.sampleFormat = paFloat32;
 		sd[0].params.suggestedLatency = (*sd[dir].idev)->defaultHighInputLatency;
 		sd[0].params.hostApiSpecificStreamInfo = NULL;
+		if (max_channels < 2)
+				sd[0].params.channelCount = max_channels;
+		if (max_channels == 0) {
+			pa_perror(EBUSY, "Portaudio device cannot open for read");
+			throw SndException(EBUSY);
+		}
 	}
 	else {
 		sd[1].params.device = idx;
@@ -1625,7 +1640,7 @@ void SoundPort::init_stream(unsigned dir)
 		<< "\n";
 	}
 
-	LOG_INFO("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
+	LOG_VERBOSE("using %s (%d ch) device \"%s\":\n%s", dir_str[dir], sd[dir].params.channelCount,
 		sd[dir].device.c_str(), device_text[dir].str().c_str());
 
 		sd[dir].dev_sample_rate = find_srate(dir);
