@@ -435,7 +435,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
+            tooltip {User Interface - Browser} xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -886,7 +886,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log open
-            tooltip {User Interface - Logging} xywh {0 50 600 330}
+            tooltip {User Interface - Logging} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Client/Server Logbook} open
@@ -1423,8 +1423,9 @@ font_browser->show();}
                 Fl_Input MacroText {
                   xywh {96 201 220 37}
                   code0 {MacroText->value("Macro editor text");}
-                  code1 {MacroText->textfont(progdefaults.MacroEditFontnbr); TxText->textsize(progdefaults.MacroEditFontsize);}
-                  code2 {MacroText->type(FL_MULTILINE_INPUT_WRAP);}
+                  code1 {MacroText->textfont(progdefaults.MacroEditFontnbr);}
+                  code2 {MacroText->textsize(progdefaults.MacroEditFontsize);}
+                  code3 {MacroText->type(FL_MULTILINE_INPUT_WRAP);}
                 }
                 Fl_Button btnMacroEditFont {
                   label {Macro Edit Font}

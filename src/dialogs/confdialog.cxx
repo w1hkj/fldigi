@@ -5472,7 +5472,6 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -5885,6 +5884,7 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
             tabLogServer->tooltip(_("User Interface - Logging"));
+            tabLogServer->hide();
             { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6275,7 +6275,8 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnTxFont
                 { MacroText = new Fl_Input(96, 201, 220, 37);
                 MacroText->value("Macro editor text");
-                MacroText->textfont(progdefaults.MacroEditFontnbr); TxText->textsize(progdefaults.MacroEditFontsize);
+                MacroText->textfont(progdefaults.MacroEditFontnbr);
+                MacroText->textsize(progdefaults.MacroEditFontsize);
                 MacroText->type(FL_MULTILINE_INPUT_WRAP);
                 } // Fl_Input* MacroText
                 { btnMacroEditFont = new Fl_Button(326, 209, 120, 21, _("Macro Edit Font"));
