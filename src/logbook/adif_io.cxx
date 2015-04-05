@@ -547,6 +547,9 @@ void cAdifIO::do_writelog()
 	snprintf(szmsg, sizeof(szmsg), "%d records in %4.2f seconds", adifdb->nbrRecs(), t);
 	LOG_INFO("%s", szmsg);
 
+	snprintf(szmsg, sizeof(szmsg), "Wrote log %d recs", adifdb->nbrRecs());
+	put_status(szmsg, 5.0);
+
 	return;
 }
 
