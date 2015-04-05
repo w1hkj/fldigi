@@ -158,6 +158,7 @@ extern Fl_Button *btnALTR;
 extern Fl_Button *btnSEL;
 extern Fl_Button *btnNoTextColor;
 extern Fl_Button *btnTextDefaults;
+extern Fl_Check_Button *btn_show_all_codes;
 extern Fl_Box *FDdisplay;
 extern Fl_Button *btn_freq_control_font;
 extern Fl_Button *btnBackgroundColor;
@@ -215,7 +216,6 @@ extern Fl_Button *btnNormalSignal;
 extern Fl_Box *normalcolor;
 extern Fl_Button *btnOverSignal;
 extern Fl_Box *overcolor;
-extern Fl_Check_Button *btn_show_all_codes;
 extern Fl_Group *tab_touch;
 #include <FL/Fl_Choice.H>
 extern Fl_Choice *sel_lsd;

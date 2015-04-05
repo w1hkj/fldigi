@@ -1629,6 +1629,13 @@ progdefaults.changed = true;}
                     xywh {399 276 70 21}
                   }
                 }
+                Fl_Check_Button btn_show_all_codes {
+                  label {display Rx control chars as ascii string}
+                  callback {progdefaults.show_all_codes=o->value();
+progdefaults.changed = true;}
+                  xywh {110 340 25 25} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.show_all_codes);}
+                }
               }
               Fl_Group {} {
                 label {FreqDisp / Meters} open
@@ -2356,13 +2363,6 @@ progdefaults.changed = true;}
                   xywh {135 110 316 21}
                 }
               }
-            }
-            Fl_Check_Button btn_show_all_codes {
-              label {display Rx control chars as ascii string}
-              callback {progdefaults.show_all_codes=o->value();
-progdefaults.changed = true;}
-              xywh {105 335 25 25} down_box DOWN_BOX
-              code0 {o->value(progdefaults.show_all_codes);}
             }
           }
           Fl_Group tab_touch {

@@ -1350,6 +1350,13 @@ static void cb_btnTextDefaults(Fl_Button*, void*) {
     progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_show_all_codes=(Fl_Check_Button *)0;
+
+static void cb_btn_show_all_codes(Fl_Check_Button* o, void*) {
+  progdefaults.show_all_codes=o->value();
+progdefaults.changed = true;
+}
+
 Fl_Box *FDdisplay=(Fl_Box *)0;
 
 Fl_Button *btn_freq_control_font=(Fl_Button *)0;
@@ -1998,13 +2005,6 @@ progdefaults.changed = true;
 }
 
 Fl_Box *overcolor=(Fl_Box *)0;
-
-Fl_Check_Button *btn_show_all_codes=(Fl_Check_Button *)0;
-
-static void cb_btn_show_all_codes(Fl_Check_Button* o, void*) {
-  progdefaults.show_all_codes=o->value();
-progdefaults.changed = true;
-}
 
 Fl_Group *tab_touch=(Fl_Group *)0;
 
@@ -6323,6 +6323,11 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnTextDefaults
                 o->end();
                 } // Fl_Group* o
+                { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(110, 340, 25, 25, _("display Rx control chars as ascii string"));
+                btn_show_all_codes->down_box(FL_DOWN_BOX);
+                btn_show_all_codes->callback((Fl_Callback*)cb_btn_show_all_codes);
+                o->value(progdefaults.show_all_codes);
+                } // Fl_Check_Button* btn_show_all_codes
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("FreqDisp / Meters"));
@@ -6606,11 +6611,6 @@ ab and newline are automatically included."));
               } // Fl_Group* o
               tabsColors->end();
             } // Fl_Tabs* tabsColors
-            { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(105, 335, 25, 25, _("display Rx control chars as ascii string"));
-              btn_show_all_codes->down_box(FL_DOWN_BOX);
-              btn_show_all_codes->callback((Fl_Callback*)cb_btn_show_all_codes);
-              o->value(progdefaults.show_all_codes);
-            } // Fl_Check_Button* btn_show_all_codes
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
           { tab_touch = new Fl_Group(0, 50, 600, 330, _("Touch"));
