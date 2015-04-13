@@ -202,8 +202,8 @@ CoordinateT::Pair::Pair( double lon, double lat )
 CoordinateT::Pair::Pair( const std::string & locator )
 {
 	double lon, lat ;
-	int res = locator2longlat( &lon, &lat, locator.c_str() );
-	if( res != RIG_OK ) {
+	int res = QRB::locator2longlat( &lon, &lat, locator.c_str() );
+	if( res != QRB::QRB_OK ) {
 		throw std::runtime_error("Cannot decode Maidenhead locator:" + locator );
 	};
 	m_lon = CoordinateT( lon, true  );
@@ -213,11 +213,11 @@ CoordinateT::Pair::Pair( const std::string & locator )
 double CoordinateT::Pair::distance( const Pair & a ) const
 {
 	double dist, azimuth ;
-	int res = qrb(
+	int res = QRB::qrb(
 		longitude().angle(), latitude().angle(),
 		a.longitude().angle(), a.latitude().angle(),
 		&dist, &azimuth );
-	if( res != RIG_OK) {
+	if( res != QRB::QRB_OK) {
 		std::stringstream sstrm ;
 		sstrm << "Bad qrb result:" << *this << " <-> " << a ;
 		throw std::runtime_error(sstrm.str());
@@ -228,13 +228,13 @@ double CoordinateT::Pair::distance( const Pair & a ) const
 std::string CoordinateT::Pair::locator(void) const
 {
 	char buf[64];
-	int ret = longlat2locator(
+	int ret = QRB::longlat2locator(
 			longitude().angle(),
 			latitude().angle(),
 			buf,
 			3 );
 
-	if( ret == RIG_OK ) {
+	if( ret == QRB::QRB_OK ) {
 		return buf ;
 	}
 	return std::string();

@@ -2,9 +2,9 @@
 // configuration.h
 //
 // Copyright (C) 2006-2010
-//		Dave Freese, W1HKJ
+//      Dave Freese, W1HKJ
 // Copyright (C) 2008-2010
-//		Stelios Bounanos, M0GLD
+//      Stelios Bounanos, M0GLD
 //
 // This file is part of fldigi.
 //
@@ -128,9 +128,9 @@
         ELEM_(bool, disable_rsid_freq_change, "DISABLERSIDFREQCHANGE",                  \
               "disable changing frequency on rsid modem change/reset",                  \
               false)                                                                    \
-		ELEM_(bool, retain_freq_lock, "RETAINFREQLOCK",                                 \
-			 "retain frequency lock on rsid modem change/reset",                   \
-			 false)                                                                     \
+        ELEM_(bool, retain_freq_lock, "RETAINFREQLOCK",                                 \
+             "retain frequency lock on rsid modem change/reset",                   \
+             false)                                                                     \
         ELEM_(bool, changed, "", "",  false)                                            \
                                                                                         \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
@@ -535,9 +535,9 @@
         ELEM_(bool, contestia8bit, "CONTESTIA8BIT",                                     \
               "8-bit extended characters",                                              \
               true)                                                                     \
-		ELEM_(bool, contestia_reset_fec, "CONTESTIARESETFEC",                           \
-		      "Force Integration (FEC) depth to be reset when new BW/Tones selected",   \
-			  false)                                                                    \
+        ELEM_(bool, contestia_reset_fec, "CONTESTIARESETFEC",                           \
+              "Force Integration (FEC) depth to be reset when new BW/Tones selected",   \
+              false)                                                                    \
         /* THOR */                                                                      \
         ELEM_(double, THOR_BW, "THORBW",                                                \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \
@@ -1460,57 +1460,57 @@
               false)                                                                    \
         /* XML-RPC/ARQ/KISS servers */                                                  \
         ELEM_(std::string, xmlrpc_address, "XMLRPC_ADDRESS",                            \
-		      "IP Address of XMLRPC Socket",                                            \
-			  DEFAULT_XMLPRC_IP_ADDRESS)                                                \
+              "IP Address of XMLRPC Socket",                                            \
+              DEFAULT_XMLPRC_IP_ADDRESS)                                                \
         ELEM_(std::string, xmlrpc_port,    "XMLRPC_PORT",                               \
-			  "IP port number of XMLRPC socket",                                        \
-			  DEFAULT_XMLRPC_IP_PORT)                                                   \
+              "IP port number of XMLRPC socket",                                        \
+              DEFAULT_XMLRPC_IP_PORT)                                                   \
         ELEM_(std::string, xmlrpc_allow, "", "",  "")                                   \
         ELEM_(std::string, xmlrpc_deny, "", "",  "")                                    \
         ELEM_(int, rx_msgid, "", "",  9876)                                             \
         ELEM_(int, tx_msgid, "", "",  6789)                                             \
         ELEM_(std::string, arq_address, "ARQ_ADDRESS",                                  \
-		      "IP Address of ARQ socket",                                               \
-			  DEFAULT_ARQ_IP_ADDRESS)                                                   \
+              "IP Address of ARQ socket",                                               \
+              DEFAULT_ARQ_IP_ADDRESS)                                                   \
         ELEM_(std::string, arq_port, "ARQ_PORT",                                        \
               "IP port number of ARQ socket",                                           \
-			  DEFAULT_ARQ_IP_PORT)                                                      \
-		ELEM_(std::string, kiss_address, "KISS_ADDRESS",                                \
-		      "IP Address of KISS socket",                                              \
-		      DEFAULT_KISS_IP_ADDRESS)                                                  \
-		ELEM_(std::string, kiss_io_port, "KISS_IO_PORT",                                \
-		      "IP port number of KISS socket",                                          \
-		      DEFAULT_KISS_IP_IO_PORT)                                                  \
-		ELEM_(std::string, kiss_out_port, "KISS_OUT_PORT",                              \
-			  "Out udp port used when ip address is the same",                          \
-			  DEFAULT_KISS_IP_OUT_PORT)                                                 \
-		ELEM_(int, kiss_dual_port_enabled, "KISS_DUAL_PORT_ENABLED",                    \
-			  "Required when same IP address is used.",                                 \
-			  0)                                                                        \
-		ELEM_(int, data_io_enabled, "DATA_IO_ENABLED",                                  \
-			  "Disabled (0) ARQ socket enabled (1) KISS socket enabled (2)",            \
-			  1)                                                                        \
-		ELEM_(bool, ax25_decode_enabled, "AX25_DECODE_ENABLED",                         \
-			  "Dissasemble AX25 packet into human readable form",                       \
-			  false)                                                                    \
-		ELEM_(bool, enableBusyChannel, "ENABLE_BUSY_CHANNEL",                           \
-			  "Detect busy channel and wait for a period of time before txing",         \
-			  false)                                                                    \
-		ELEM_(int, busyChannelSeconds, "BUSY_CHANNEL_SECONDS",                          \
-			  "Number of seconds to wait before transmit resume",                       \
-			  3)                                                                        \
-		ELEM_(int, kpsql_attenuation, "KPSQL_ATTENUATION",                              \
-		"KPSQL Attenuation in 1/n of 1:1 Gain",                                         \
-		2)                                                                              \
-		ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
-			  "Use CSMA on heavy traffic channels (AX25)",                              \
+              DEFAULT_ARQ_IP_PORT)                                                      \
+        ELEM_(std::string, kiss_address, "KISS_ADDRESS",                                \
+              "IP Address of KISS socket",                                              \
+              DEFAULT_KISS_IP_ADDRESS)                                                  \
+        ELEM_(std::string, kiss_io_port, "KISS_IO_PORT",                                \
+              "IP port number of KISS socket",                                          \
+              DEFAULT_KISS_IP_IO_PORT)                                                  \
+        ELEM_(std::string, kiss_out_port, "KISS_OUT_PORT",                              \
+              "Out udp port used when ip address is the same",                          \
+              DEFAULT_KISS_IP_OUT_PORT)                                                 \
+        ELEM_(int, kiss_dual_port_enabled, "KISS_DUAL_PORT_ENABLED",                    \
+              "Required when same IP address is used.",                                 \
+              0)                                                                        \
+        ELEM_(int, data_io_enabled, "DATA_IO_ENABLED",                                  \
+              "Disabled (0) ARQ socket enabled (1) KISS socket enabled (2)",            \
+              1)                                                                        \
+        ELEM_(bool, ax25_decode_enabled, "AX25_DECODE_ENABLED",                         \
+              "Dissasemble AX25 packet into human readable form",                       \
+              false)                                                                    \
+        ELEM_(bool, enableBusyChannel, "ENABLE_BUSY_CHANNEL",                           \
+              "Detect busy channel and wait for a period of time before txing",         \
+              false)                                                                    \
+        ELEM_(int, busyChannelSeconds, "BUSY_CHANNEL_SECONDS",                          \
+              "Number of seconds to wait before transmit resume",                       \
+              3)                                                                        \
+        ELEM_(int, kpsql_attenuation, "KPSQL_ATTENUATION",                              \
+        "KPSQL Attenuation in 1/n of 1:1 Gain",                                         \
+        2)                                                                              \
+        ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
+              "Use CSMA on heavy traffic channels (AX25)",                              \
               true)                                                                     \
         ELEM_(std::string, flrig_ip_address, "FLRIG_IP_ADDRESS",                        \
               "IP Address of flrig server",                                             \
-			  DEFAULT_FLRIG_IP_ADDRESS)                                                 \
+              DEFAULT_FLRIG_IP_ADDRESS)                                                 \
         ELEM_(std::string, flrig_ip_port,    "FLRIG_IP_PORT",                           \
-			  "IP port number of flrig server",                                         \
-			  DEFAULT_FLRIG_IP_PORT)                                                    \
+              "IP port number of flrig server",                                         \
+              DEFAULT_FLRIG_IP_PORT)                                                    \
         ELEM_(bool, show_all_codes, "SHOW_ALL_CODES",                                   \
               "Display all rx char's using ascii3 table",                               \
               false)                                                                    \
@@ -1618,7 +1618,7 @@
         ELEM_(bool, wx_station_name, "WX_STATION_NAME",                                 \
               "Report station noun name",                                               \
               true)                                                                     \
-	/* KML Keyhole Markup Language */                                               \
+    /* KML Keyhole Markup Language */                                               \
         ELEM_(bool, kml_purge_on_startup, "KML_PURGE_ON_STARTUP",                       \
               "Purge KML data at startup",                                              \
               false)                                                                    \
@@ -1711,6 +1711,9 @@
         ELEM_(Fl_Font, MacroEditFontnbr, "MACROEDITFONTNBR",                            \
               "RX text font index",                                                     \
               FL_HELVETICA)                                                             \
+        ELEM_(bool, us_units, "US_UNITS",                                               \
+              "Use US units of distance for QRB",                                       \
+              false)                                                                    \
         ELEM_(int, MacroEditFontsize, "MACROEDITFONTSIZE",                             \
               "RX text font size",                                                      \
               16)
@@ -1722,23 +1725,23 @@
 #define ELEM_ ELEM_DECLARE_CONFIGURATION
 struct configuration
 {
-	CONFIG_LIST
+    CONFIG_LIST
 
-	void writeDefaultsXML();
-	void storeDefaults();
-	bool readDefaultsXML();
-	void loadDefaults();
-	void saveDefaults();
-	int  setDefaults();
-	void resetDefaults(void);
-	static void reset(void);
+    void writeDefaultsXML();
+    void storeDefaults();
+    bool readDefaultsXML();
+    void loadDefaults();
+    void saveDefaults();
+    int  setDefaults();
+    void resetDefaults(void);
+    static void reset(void);
 
-	void initInterface();
-	void testCommPorts();
-	const char* strBaudRate();
-	int  BaudRate(size_t);
-	int  nBaudRate(const char *);
-	void initFonts(void);
+    void initInterface();
+    void testCommPorts();
+    const char* strBaudRate();
+    int  BaudRate(size_t);
+    int  nBaudRate(const char *);
+    void initFonts(void);
 };
 
 extern configuration progdefaults;

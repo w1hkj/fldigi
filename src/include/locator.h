@@ -23,32 +23,24 @@
 
 #include <config.h>
 
-#if USE_HAMLIB
-#  include <hamlib/rotator.h>
-#else
-#  ifdef __cplusplus
-extern "C" {
-#  endif
+namespace QRB {
 
-extern int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, double *azimuth);
+	enum {QRB_OK, QRB_EINVAL};
 
-extern double distance_long_path(double distance);
-extern double azimuth_long_path(double azimuth);
+	int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, double *azimuth);
 
-extern int longlat2locator(double longitude, double latitude, char *locator_res, int pair_count);
-extern int locator2longlat(double *longitude, double *latitude, const char *locator);
+	double distance_long_path(double distance);
+	double azimuth_long_path(double azimuth);
 
-extern double dms2dec(int degrees, int minutes, double seconds, int sw);
-extern int dec2dms(double dec, int *degrees, int *minutes, double *seconds, int *sw);
+	int longlat2locator(double longitude, double latitude, char *locator_res, int pair_count);
+	int locator2longlat(double *longitude, double *latitude, const char *locator);
 
-extern int dec2dmmm(double dec, int *degrees, double *minutes, int *sw);
-extern double dmmm2dec(int degrees, double minutes, int sw);
-#  define HAMLIB_API /* empty */
-enum rig_errcode_e { RIG_OK = 0, RIG_EINVAL };
+	double dms2dec(int degrees, int minutes, double seconds, int sw);
+	int dec2dms(double dec, int *degrees, int *minutes, double *seconds, int *sw);
 
-#  ifdef __cplusplus
+	int dec2dmmm(double dec, int *degrees, double *minutes, int *sw);
+	double dmmm2dec(int degrees, double minutes, int sw);
+
 }
-#  endif
-#endif /* USE_HAMLIB */
 
 #endif /* LOCATOR_H_ */

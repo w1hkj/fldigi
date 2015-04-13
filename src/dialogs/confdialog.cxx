@@ -785,6 +785,13 @@ static void cb_inpNonword(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnUSunits=(Fl_Check_Button *)0;
+
+static void cb_btnUSunits(Fl_Check_Button* o, void*) {
+  progdefaults.us_units = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabMBars=(Fl_Group *)0;
 
 Fl_Check_Button *btnMacroMouseWheel=(Fl_Check_Button *)0;
@@ -5885,17 +5892,7 @@ Fl_Double_Window* ConfigureDialog() {
           { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
             tabLogServer->tooltip(_("User Interface - Logging"));
             tabLogServer->hide();
-            { Fl_Group* o = new Fl_Group(52, 315, 496, 55, _("Client/Server Logbook"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Group* o = new Fl_Group(75, 335, 468, 25, _("Server IP Address/Port configured on IO tab"));
-                o->box(FL_FLAT_BOX);
-                o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
-                o->end();
-              } // Fl_Group* o
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 59, 496, 180, _("QSO logging"));
+            { Fl_Group* o = new Fl_Group(52, 59, 496, 198, _("QSO logging"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(69, 81, 236, 20, _("Prompt to save log on exit"));
@@ -5904,19 +5901,19 @@ Fl_Double_Window* ConfigureDialog() {
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
               } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(69, 106, 236, 20, _("Clear on save"));
+              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(69, 110, 236, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
               } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(69, 132, 236, 20, _("Convert callsign to upper case"));
+              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(69, 139, 236, 20, _("Convert callsign to upper case"));
                 btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
               } // Fl_Check_Button* btnCallUpperCase
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(69, 157, 236, 20, _("Auto-fill Country and Azimuth"));
+              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(69, 169, 236, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
@@ -5928,25 +5925,25 @@ Fl_Double_Window* ConfigureDialog() {
                 btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
                 o->value(progdefaults.sort_date_time_off);
               } // Fl_Check_Button* btnDateTimeSort
-              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(322, 106, 190, 20, _("Date time ON == OFF"));
+              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(322, 110, 190, 20, _("Date time ON == OFF"));
                 btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
                 btndate_time_force->down_box(FL_DOWN_BOX);
                 btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
                 o->value(progdefaults.force_date_time);
               } // Fl_Check_Button* btndate_time_force
-              { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(322, 131, 186, 20, _("Default RST in to 599/59"));
+              { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(322, 139, 213, 20, _("Default RST in to 599/59"));
                 btnRSTindefault->tooltip(_("Clear log controls sets RST in to 599/59"));
                 btnRSTindefault->down_box(FL_DOWN_BOX);
                 btnRSTindefault->callback((Fl_Callback*)cb_btnRSTindefault);
                 o->value(progdefaults.RSTin_default);
               } // Fl_Check_Button* btnRSTindefault
-              { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(322, 157, 184, 20, _("Default RST out to 599/59"));
+              { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(322, 169, 216, 20, _("Default RST out to 599/59"));
                 btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599/59"));
                 btnRSTdefault->down_box(FL_DOWN_BOX);
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
               } // Fl_Check_Button* btnRSTdefault
-              { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(189, 180, 346, 24, _("cty.dat folder"));
+              { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(189, 196, 346, 24, _("cty.dat folder"));
                 txt_cty_dat_pathname->tooltip(_("Enter full path-name for cty.dat folder"));
                 txt_cty_dat_pathname->box(FL_DOWN_BOX);
                 txt_cty_dat_pathname->color(FL_BACKGROUND2_COLOR);
@@ -5960,19 +5957,19 @@ Fl_Double_Window* ConfigureDialog() {
                 txt_cty_dat_pathname->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.cty_dat_pathname.c_str());
               } // Fl_Input2* txt_cty_dat_pathname
-              { btn_select_cty_dat = new Fl_Button(70, 209, 75, 24, _("Browse"));
+              { btn_select_cty_dat = new Fl_Button(70, 225, 75, 24, _("Browse"));
                 btn_select_cty_dat->tooltip(_("Locate cty.dat file"));
                 btn_select_cty_dat->callback((Fl_Callback*)cb_btn_select_cty_dat);
               } // Fl_Button* btn_select_cty_dat
-              { btn_default_cty_dat = new Fl_Button(165, 209, 75, 24, _("Default"));
+              { btn_default_cty_dat = new Fl_Button(165, 225, 75, 24, _("Default"));
                 btn_default_cty_dat->tooltip(_("Restore cty.dat default folder"));
                 btn_default_cty_dat->callback((Fl_Callback*)cb_btn_default_cty_dat);
               } // Fl_Button* btn_default_cty_dat
-              { btn_reload_cty_dat = new Fl_Button(260, 209, 75, 24, _("Reload"));
+              { btn_reload_cty_dat = new Fl_Button(260, 225, 75, 24, _("Reload"));
                 btn_reload_cty_dat->tooltip(_("Reload cty.dat"));
                 btn_reload_cty_dat->callback((Fl_Callback*)cb_btn_reload_cty_dat);
               } // Fl_Button* btn_reload_cty_dat
-              { Fl_Input2* o = inpMyPower = new Fl_Input2(485, 209, 50, 24, _("Transmit Power"));
+              { Fl_Input2* o = inpMyPower = new Fl_Input2(485, 225, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color(FL_BACKGROUND2_COLOR);
@@ -5989,22 +5986,22 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Input2* inpMyPower
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 240, 496, 74, _("Rx Text Capture"));
+            { Fl_Group* o = new Fl_Group(52, 263, 496, 110, _("Rx Text"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(75, 287, 191, 20, _("Single-click to capture"));
+              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(75, 318, 191, 20, _("Single-click to capture"));
                 btnRXClicks->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
               } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(277, 287, 254, 20, _("callsign tooltips in received text"));
+              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(277, 318, 254, 20, _("callsign tooltips in received text"));
                 btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
               } // Fl_Check_Button* btnRXTooltips
-              { Fl_Input2* o = inpNonword = new Fl_Input2(194, 260, 279, 24, _("Word delimiters"));
+              { Fl_Input2* o = inpNonword = new Fl_Input2(194, 288, 279, 24, _("Word delimiters"));
                 inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
 ab and newline are automatically included."));
                 inpNonword->box(FL_DOWN_BOX);
@@ -6021,6 +6018,12 @@ ab and newline are automatically included."));
                 o->value(progdefaults.nonwordchars.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpNonword
+              { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(277, 343, 220, 20, _("US units of distance (QRB)"));
+                btnUSunits->tooltip(_("Enable for single click capure of text in Rx panel"));
+                btnUSunits->down_box(FL_DOWN_BOX);
+                btnUSunits->callback((Fl_Callback*)cb_btnUSunits);
+                o->value(progdefaults.us_units);
+              } // Fl_Check_Button* btnUSunits
               o->end();
             } // Fl_Group* o
             tabLogServer->end();

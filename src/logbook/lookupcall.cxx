@@ -417,9 +417,9 @@ void QRZ_disp_result()
 		char buf[10];
 		buf[0] = '\0';
 		double distance, azimuth, lon[2], lat[2];
-		if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
-		    locator2longlat(&lon[1], &lat[1], lookup_grid.c_str()) == RIG_OK &&
-		    qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == RIG_OK)
+		if (QRB::locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
+		    QRB::locator2longlat(&lon[1], &lat[1], lookup_grid.c_str()) == QRB::QRB_OK &&
+		    QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK)
 			snprintf(buf, sizeof(buf), "%03.0f", round(azimuth));
 		inpAZ->value(buf);
 	}

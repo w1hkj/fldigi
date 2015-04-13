@@ -103,6 +103,7 @@ extern Fl_Input2 *inpMyPower;
 extern Fl_Check_Button *btnRXClicks;
 extern Fl_Check_Button *btnRXTooltips;
 extern Fl_Input2 *inpNonword;
+extern Fl_Check_Button *btnUSunits;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
 #include <FL/Fl_Counter.H>

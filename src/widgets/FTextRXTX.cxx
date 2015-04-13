@@ -665,7 +665,7 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		const vector<regmatch_t>& v = loc.suboff();
 		s += v[0].rm_so;
 		*(s + v[0].rm_eo) = '\0';
-		if (locator2longlat(&lon2, &lat2, s) != RIG_OK)
+		if (QRB::locator2longlat(&lon2, &lat2, s) != QRB::QRB_OK)
 			goto ret;
 		e = 0; qsl = 0; qso = 0;
 	}
@@ -675,7 +675,7 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		qso = SearchLog(s);
 	}
 
-	if (qso && locator2longlat(&lon2, &lat2, qso->getField(GRIDSQUARE)) != RIG_OK)
+	if (qso && QRB::locator2longlat(&lon2, &lat2, qso->getField(GRIDSQUARE)) != QRB::QRB_OK)
 		lon2 = lat2 = 360.0;
 
 	if (e) {
@@ -689,11 +689,21 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 		     << ") CQ-" << e->cq_zone << " ITU-" << e->itu_zone << '\n';
 	}
 
-	if (locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
-	    qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK) {
-		stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
-		     << azimuth_long_path(azimuth) << '\260' << ")  QRB " << distance << "km ("
-		     << distance_long_path(distance) << "km)\n";
+	if (QRB::locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
+	    QRB::qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == QRB::QRB_OK) {
+			if (progdefaults.us_units) {
+				stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
+					<< QRB::azimuth_long_path(azimuth) << '\260' << ")  QRB " 
+					<< distance * 0.62168188 << "mi"<< " (" <<
+					QRB::distance_long_path(distance) * 0.62168188 << 
+					"mi)\n";
+			}
+			else {
+				stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
+					<< QRB::azimuth_long_path(azimuth) << '\260' << ")  QRB "
+					<< distance << "km(" <<
+					QRB::distance_long_path(distance) << "km)\n";
+			}
 	}
 
 	if (qso) {

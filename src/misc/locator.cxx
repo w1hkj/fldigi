@@ -4,7 +4,7 @@
  */
 
 /**
- * \file src/locator.c
+ * \file src/locator.cxx
  * \brief locator and bearing conversion interface
  * \author Stephane Fillod and the Hamlib Group
  * \date 2000-2006
@@ -68,16 +68,23 @@
 #include <ctype.h>
 #include <math.h>
 
-
+#include "configuration.h"
 #include "locator.h"
 
-
-#ifndef DOC_HIDDEN
+namespace QRB {
 
 #define RADIAN  (180.0 / M_PI)
 
-/* arc length for 1 degree, 60 Nautical Miles */
-#define ARC_IN_KM 111.2
+/* arc length for 1 degree,  60 Nautical Miles
+ *                          109.728 Kilometers
+ *                          68.182 statute miles
+ * arc length for 1 radian, 6286.951 Km
+ *                          3437.746 Nm
+ *                          3906.41 Sm
+*/
+#define ARC_IN_KM 6372.5639
+#define ARC_IN_NM 3484.5603
+#define ARC_IN_SM 3959.7276
 
 /* The following is contributed by Dave Hines M1CXW
  *
@@ -118,10 +125,6 @@ const static int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
 #define MAX_LOCATOR_PAIRS       6
 #define MIN_LOCATOR_PAIRS       1
 
-/* end dph */
-
-#endif	/* !DOC_HIDDEN */
-
 /**
  * \brief Convert DMS to decimal degrees
  * \param degrees	Degrees, whole degrees
@@ -143,7 +146,7 @@ const static int loc_char_range[] = { 18, 10, 24, 10, 24, 10 };
  * \sa dec2dms()
  */
 
-double HAMLIB_API dms2dec(int degrees, int minutes, double seconds, int sw) {
+double dms2dec(int degrees, int minutes, double seconds, int sw) {
 	double st;
 
 	if (degrees < 0)
@@ -183,7 +186,7 @@ double HAMLIB_API dms2dec(int degrees, int minutes, double seconds, int sw) {
  * \sa dec2dmmm()
  */
 
-double HAMLIB_API dmmm2dec(int degrees, double minutes, int sw) {
+double dmmm2dec(int degrees, double minutes, int sw) {
 	double st;
 
 	if (degrees < 0)
@@ -221,19 +224,19 @@ double HAMLIB_API dmmm2dec(int degrees, double minutes, int sw) {
  *  to determine whether the DMS angle should be treated as negative
  *  (south or west).
  *
- * \retval -RIG_EINVAL if any of the pointers are NULL.
- * \retval RIG_OK if conversion went OK.
+ * \retval -QRB_EINVAL if any of the pointers are NULL.
+ * \retval QRB_OK if conversion went OK.
  *
  * \sa dms2dec()
  */
 
-int HAMLIB_API dec2dms(double dec, int *degrees, int *minutes, double *seconds, int *sw) {
+int dec2dms(double dec, int *degrees, int *minutes, double *seconds, int *sw) {
 	int deg, min;
 	double st;
 
 	/* bail if NULL pointers passed */
 	if (!degrees || !minutes || !seconds || !sw)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	/* reverse the sign if dec has a magnitude greater
 	 * than 180 and factor out multiples of 360.
@@ -273,7 +276,7 @@ int HAMLIB_API dec2dms(double dec, int *degrees, int *minutes, double *seconds, 
 	*minutes = min;
 	*seconds = st;
 
-	return RIG_OK;
+	return QRB_OK;
 }
 
 /**
@@ -297,27 +300,27 @@ int HAMLIB_API dec2dms(double dec, int *degrees, int *minutes, double *seconds, 
  *  to determine whether the D M.MMM angle should be treated as negative
  *  (south or west).
  *
- * \retval -RIG_EINVAL if any of the pointers are NULL.
- * \retval RIG_OK if conversion went OK.
+ * \retval -QRB_EINVAL if any of the pointers are NULL.
+ * \retval QRB_OK if conversion went OK.
  *
  * \sa dmmm2dec()
  */
 
-int HAMLIB_API dec2dmmm(double dec, int *degrees, double *minutes, int *sw) {
+int dec2dmmm(double dec, int *degrees, double *minutes, int *sw) {
 	int r, min;
 	double sec;
 
 	/* bail if NULL pointers passed */
 	if (!degrees || !minutes || !sw)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	r = dec2dms(dec, degrees, &min, &sec, sw);
-	if (r != RIG_OK)
+	if (r != QRB_OK)
 		return r;
 
 	*minutes = (double)min + sec / 60;
 
-	return RIG_OK;
+	return QRB_OK;
 }
 
 /**
@@ -335,9 +338,9 @@ int HAMLIB_API dec2dmmm(double dec, int *degrees, double *minutes, int *sw) {
  *  EM19 will return coordinates equivalent to the southwest corner
  *  of EM19mm.
  *
- * \retval -RIG_EINVAL if locator exceeds RR99xx99xx99 or exceeds length
+ * \retval -QRB_EINVAL if locator exceeds RR99xx99xx99 or exceeds length
  *  limit--currently 1 to 6 lon/lat pairs.
- * \retval RIG_OK if conversion went OK.
+ * \retval QRB_OK if conversion went OK.
  *
  * \bug The fifth pair ranges from aa to xx, there is another convention
  *  that ranges from aa to yy.  At some point both conventions should be
@@ -348,7 +351,7 @@ int HAMLIB_API dec2dmmm(double dec, int *degrees, double *minutes, int *sw) {
 
 /* begin dph */
 
-int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *locator) {
+int locator2longlat(double *longitude, double *latitude, const char *locator) {
 	int x_or_y, paircount;
 	int locvalue, pair;
 	int divisions;
@@ -356,7 +359,7 @@ int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *
 
 	/* bail if NULL pointers passed */
 	if (!longitude || !latitude)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	paircount = strlen(locator) / 2;
 
@@ -364,7 +367,7 @@ int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *
 	if (paircount > MAX_LOCATOR_PAIRS)
 		paircount = MAX_LOCATOR_PAIRS;
 	else if (paircount < MIN_LOCATOR_PAIRS)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	/* For x(=longitude) and y(=latitude) */
 	for (x_or_y = 0;  x_or_y < 2;  ++x_or_y) {
@@ -380,7 +383,7 @@ int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *
 
 			/* Check range for non-letter/digit or out of range */
 			if ((locvalue < 0) || (locvalue >= loc_char_range[pair]))
-				return -RIG_EINVAL;
+				return -QRB_EINVAL;
 
 			divisions *= loc_char_range[pair];
 			ordinate += locvalue * 180.0 / divisions;
@@ -394,7 +397,7 @@ int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *
 	*longitude = xy[0] * 2.0;
 	*latitude = xy[1];
 
-	return RIG_OK;
+	return QRB_OK;
 }
 /* end dph */
 
@@ -408,9 +411,9 @@ int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *
  *  Convert longitude/latitude (decimal degrees) to Maidenhead grid locator.
  *  \a locator must point to an array at least \a pair_count * 2 char + '\\0'.
  *
- * \retval -RIG_EINVAL if \a locator is NULL or \a pair_count exceeds
+ * \retval -QRB_EINVAL if \a locator is NULL or \a pair_count exceeds
  *  length limit.  Currently 1 to 6 lon/lat pairs.
- * \retval RIG_OK if conversion went OK.
+ * \retval QRB_OK if conversion went OK.
  *
  * \bug \a locator is not tested for overflow.
  * \bug The fifth pair ranges from aa to yy, there is another convention
@@ -422,15 +425,15 @@ int HAMLIB_API locator2longlat(double *longitude, double *latitude, const char *
 
 /* begin dph */
 
-int HAMLIB_API longlat2locator(double longitude, double latitude, char *locator, int pair_count) {
+int longlat2locator(double longitude, double latitude, char *locator, int pair_count) {
 	int x_or_y, pair, locvalue, divisions;
 	double square_size, ordinate;
 
 	if (!locator)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	if (pair_count < MIN_LOCATOR_PAIRS || pair_count > MAX_LOCATOR_PAIRS)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	for (x_or_y = 0;  x_or_y < 2;  ++x_or_y) {
 		ordinate = (x_or_y == 0) ? longitude / 2.0 : latitude;
@@ -450,7 +453,7 @@ int HAMLIB_API longlat2locator(double longitude, double latitude, char *locator,
 	}
 	locator[pair_count * 2] = '\0';
 
-	return RIG_OK;
+	return QRB_OK;
 }
 
 /* end dph */
@@ -471,9 +474,9 @@ int HAMLIB_API longlat2locator(double longitude, double latitude, char *locator,
  *	calculated, are considered equidistant and the bearing is
  *	simply resolved to be true north (0.0°).
  *
- * \retval -RIG_EINVAL if NULL pointer passed or lat and lon values
+ * \retval -QRB_EINVAL if NULL pointer passed or lat and lon values
  * exceed -90 to 90 or -180 to 180.
- * \retval RIG_OK if calculations are successful.
+ * \retval QRB_OK if calculations are successful.
  *
  * \return The distance in kilometers and azimuth in decimal degrees
  *  for the short path are stored in \a distance and \a azimuth.
@@ -481,18 +484,18 @@ int HAMLIB_API longlat2locator(double longitude, double latitude, char *locator,
  * \sa distance_long_path(), azimuth_long_path()
  */
 
-int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *distance, double *azimuth) {
+int qrb(double lon1, double lat1, double lon2, double lat2, double *distance, double *azimuth) {
 	double delta_long, tmp, arc, az;
 
 	/* bail if NULL pointers passed */
 	if (!distance || !azimuth)
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	if ((lat1 > 90.0 || lat1 < -90.0) || (lat2 > 90.0 || lat2 < -90.0))
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	if ((lon1 > 180.0 || lon1 < -180.0) || (lon2 > 180.0 || lon2 < -180.0))
-		return -RIG_EINVAL;
+		return -QRB_EINVAL;
 
 	/* Prevent ACOS() Domain Error */
 	if (lat1 == 90.0)
@@ -519,7 +522,7 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 		/* Station points coincide, use an Omni! */
 		*distance = 0.0;
 		*azimuth = 0.0;
-		return RIG_OK;
+		return QRB_OK;
 	}
 
 	if (tmp < -.999999) {
@@ -529,9 +532,9 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 		 * So take 180 Degrees of arc times 60 nm,
 		 * and you get 10800 nm, or whatever units...
 		 */
-		*distance = 180.0 * ARC_IN_KM;
+		*distance = M_PI * ARC_IN_KM;
 		*azimuth = 0.0;
-		return RIG_OK;
+		return QRB_OK;
 	}
 
 	arc = acos(tmp);
@@ -543,7 +546,7 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 	 */
 
 	
-	*distance = ARC_IN_KM * RADIAN * arc;
+	*distance = arc * ARC_IN_KM;
 
 	/* Short Path */
 	/* Change to azimuth computation by Dave Freese, W1HKJ */
@@ -558,7 +561,7 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
 		az -= 360.0;
 
 	*azimuth = floor(az + 0.5);
-	return RIG_OK;
+	return QRB_OK;
 }
 
 /**
@@ -573,8 +576,8 @@ int HAMLIB_API qrb(double lon1, double lat1, double lon2, double lat2, double *d
  * \sa qrb()
  */
 
-double HAMLIB_API distance_long_path(double distance) {
-	 return (ARC_IN_KM * 360.0) - distance;
+double distance_long_path(double distance) {
+	 return (ARC_IN_KM * 2.0 * M_PI) - distance;
 }
 
 /**
@@ -589,8 +592,10 @@ double HAMLIB_API distance_long_path(double distance) {
  * \sa qrb()
  */
 
-double HAMLIB_API azimuth_long_path(double azimuth) {
+double azimuth_long_path(double azimuth) {
 	return azimuth + (azimuth <= 180.0 ? 180.0 : -180.0);
 }
+
+} // namespace QRB
 
 /*! @} */

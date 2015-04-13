@@ -340,7 +340,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {942 44 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {666 113 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -889,17 +889,8 @@ progdefaults.changed = true;}
             tooltip {User Interface - Logging} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
-              label {Client/Server Logbook} open
-              xywh {52 315 496 55} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Group {} {
-                label {Server IP Address/Port configured on IO tab} open
-                xywh {75 335 468 25} box FLAT_BOX align 20
-              } {}
-            }
-            Fl_Group {} {
               label {QSO logging} open
-              xywh {52 59 496 180} box ENGRAVED_FRAME align 21
+              xywh {52 59 496 198} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnNagMe {
                 label {Prompt to save log on exit}
@@ -913,21 +904,21 @@ progdefaults.changed = true;}
                 label {Clear on save}
                 callback {progdefaults.ClearOnSave=o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log entries after saving or using macro <LOG>} xywh {69 106 236 20} down_box DOWN_BOX
+                tooltip {Clear log entries after saving or using macro <LOG>} xywh {69 110 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.ClearOnSave);}
               }
               Fl_Check_Button btnCallUpperCase {
                 label {Convert callsign to upper case}
                 callback {progdefaults.calluppercase = o->value();
 progdefaults.changed = true;}
-                tooltip {Force callsign field to UPPERCASE} xywh {69 132 236 20} down_box DOWN_BOX
+                tooltip {Force callsign field to UPPERCASE} xywh {69 139 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.calluppercase);}
               }
               Fl_Check_Button btnAutoFillQSO {
                 label {Auto-fill Country and Azimuth}
                 callback {progdefaults.autofill_qso_fields = o->value();
 progdefaults.changed = true;}
-                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {69 157 236 20} down_box DOWN_BOX
+                tooltip {Fill in Country / Azimuth using cty.dat information} xywh {69 169 236 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.autofill_qso_fields);}
               }
               Fl_Check_Button btnDateTimeSort {
@@ -942,28 +933,28 @@ reload_browser();}
                 label {Date time ON == OFF}
                 callback {progdefaults.force_date_time = o->value();
 progdefaults.changed = true;}
-                tooltip {Force date/time ON == date/time OFF} xywh {322 106 190 20} down_box DOWN_BOX
+                tooltip {Force date/time ON == date/time OFF} xywh {322 110 190 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.force_date_time);}
               }
               Fl_Check_Button btnRSTindefault {
                 label {Default RST in to 599/59}
                 callback {progdefaults.RSTin_default = o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log controls sets RST in to 599/59} xywh {322 131 186 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST in to 599/59} xywh {322 139 213 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTin_default);}
               }
               Fl_Check_Button btnRSTdefault {
                 label {Default RST out to 599/59}
                 callback {progdefaults.RSTdefault = o->value();
 progdefaults.changed = true;}
-                tooltip {Clear log controls sets RST out to 599/59} xywh {322 157 184 20} down_box DOWN_BOX
+                tooltip {Clear log controls sets RST out to 599/59} xywh {322 169 216 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.RSTdefault);}
               }
               Fl_Input txt_cty_dat_pathname {
                 label {cty.dat folder}
                 callback {progdefaults.cty_dat_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-name for cty.dat folder} xywh {189 180 346 24} when 1
+                tooltip {Enter full path-name for cty.dat folder} xywh {189 196 346 24} when 1
                 code0 {o->value(progdefaults.cty_dat_pathname.c_str());}
                 code1 {\#include "dxcc.h"}
                 class Fl_Input2
@@ -971,44 +962,44 @@ progdefaults.changed = true;}
               Fl_Button btn_select_cty_dat {
                 label Browse
                 callback {select_cty_dat_pathname();}
-                tooltip {Locate cty.dat file} xywh {70 209 75 24}
+                tooltip {Locate cty.dat file} xywh {70 225 75 24}
               }
               Fl_Button btn_default_cty_dat {
                 label Default
                 callback {default_cty_dat_pathname();}
-                tooltip {Restore cty.dat default folder} xywh {165 209 75 24}
+                tooltip {Restore cty.dat default folder} xywh {165 225 75 24}
               }
               Fl_Button btn_reload_cty_dat {
                 label Reload
                 callback {reload_cty_dat();}
-                tooltip {Reload cty.dat} xywh {260 209 75 24}
+                tooltip {Reload cty.dat} xywh {260 225 75 24}
               }
               Fl_Input inpMyPower {
                 label {Transmit Power}
                 callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-                tooltip {Tx power used for logbook entries} xywh {485 209 50 24}
+                tooltip {Tx power used for logbook entries} xywh {485 225 50 24}
                 code0 {o->value(progdefaults.mytxpower.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
               }
             }
             Fl_Group {} {
-              label {Rx Text Capture} open
-              xywh {52 240 496 74} box ENGRAVED_FRAME align 21
+              label {Rx Text} open
+              xywh {52 263 496 110} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnRXClicks {
                 label {Single-click to capture}
                 callback {progdefaults.rxtext_clicks_qso_data = o->value();
 progdefaults.changed = true;}
-                tooltip {Enable for single click capure of text in Rx panel} xywh {75 287 191 20} down_box DOWN_BOX
+                tooltip {Enable for single click capure of text in Rx panel} xywh {75 318 191 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
               }
               Fl_Check_Button btnRXTooltips {
                 label {callsign tooltips in received text}
                 callback {progdefaults.rxtext_tooltips = o->value();
 progdefaults.changed = true;}
-                tooltip {Popup info after a 2 second hover on a callsign} xywh {277 287 254 20} down_box DOWN_BOX
+                tooltip {Popup info after a 2 second hover on a callsign} xywh {277 318 254 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.rxtext_tooltips);}
               }
               Fl_Input inpNonword {
@@ -1016,10 +1007,17 @@ progdefaults.changed = true;}
                 callback {progdefaults.nonwordchars = o->value();
 progdefaults.changed = true;}
                 tooltip {RX text QSO data entry is bounded by the non-word characters
-defined here. Tab and newline are automatically included.} xywh {194 260 279 24} textfont 4
+defined here. Tab and newline are automatically included.} xywh {194 288 279 24} textfont 4
                 code0 {o->value(progdefaults.nonwordchars.c_str());}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
+              }
+              Fl_Check_Button btnUSunits {
+                label {US units of distance (QRB)}
+                callback {progdefaults.us_units = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable for single click capure of text in Rx panel} xywh {277 343 220 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.us_units);}
               }
             }
           }

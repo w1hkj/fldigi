@@ -2446,9 +2446,9 @@ void cb_loc(Fl_Widget* w, void*)
 	}
 	inpLoc->value(s.c_str());
 
-	if (locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == RIG_OK &&
-		locator2longlat(&lon[1], &lat[1], s.c_str()) == RIG_OK &&
-	    qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == RIG_OK) {
+	if (QRB::locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
+		QRB::locator2longlat(&lon[1], &lat[1], s.c_str()) == QRB::QRB_OK &&
+	    QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK) {
 		char az[4];
 		snprintf(az, sizeof(az), "%3.0f", azimuth);
 		inpAZ->value(az);
@@ -2517,8 +2517,8 @@ if (bWF_only) return;
 		const struct dxcc* e = dxcc_lookup(inpCall->value());
 		if (e) {
 			double lon, lat, distance, azimuth;
-			if (locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == RIG_OK &&
-				qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == RIG_OK) {
+			if (QRB::locator2longlat(&lon, &lat, progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
+				QRB::qrb(lon, lat, -e->longitude, e->latitude, &distance, &azimuth) == QRB::QRB_OK) {
 				char az[4];
 				snprintf(az, sizeof(az), "%3.0f", azimuth);
 				inpAZ->value(az, sizeof(az) - 1);

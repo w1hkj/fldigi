@@ -35,7 +35,6 @@ XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
 FLDIGI_WIN32_RES_SRC = fldigirc.rc
 FLARQ_WIN32_RES_SRC = flarq-src/flarqrc.rc
 COMMON_WIN32_RES_SRC = common.rc
-LOCATOR_SRC = misc/locator.c
 BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
 REGEX_SRC = compat/regex.h compat/regex.c
 STACK_SRC = include/stack.h misc/stack.cxx
@@ -44,7 +43,7 @@ NLS_SRC = misc/nls.cxx include/nls.h
 
 # We distribute these but do not always compile them
 EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(FLDIGI_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) \
-	$(LOCATOR_SRC) $(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC)
+	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC)
 EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC)
 
 fldigi_SOURCES =
@@ -474,6 +473,7 @@ fldigi_SOURCES += \
 	logger/speak.cxx \
 	main.cxx \
 	mfsk/interleave.cxx \
+	misc/locator.cxx \
 	mfsk/mfsk.cxx \
 	mfsk/mfskvaricode.cxx \
 	wefax/wefax.cxx \

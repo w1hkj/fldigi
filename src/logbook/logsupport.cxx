@@ -799,9 +799,9 @@ void SearchLastQSO(const char *callsign)
 			double lon1, lat1, lon2, lat2;
 			double azimuth, distance;
 			char szAZ[4];
-			if ( locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == RIG_OK &&
-				 locator2longlat(&lon2, &lat2, inpLoc->value()) == RIG_OK &&
-				 qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == RIG_OK ) {
+			if ( QRB::locator2longlat(&lon1, &lat1, progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
+				 QRB::locator2longlat(&lon2, &lat2, inpLoc->value()) == QRB::QRB_OK &&
+				 QRB::qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == QRB::QRB_OK ) {
 				snprintf(szAZ,sizeof(szAZ),"%0.f", azimuth);
 				inpAZ->value(szAZ);
 			} else
