@@ -119,10 +119,6 @@ endif
 
 install-exec-local:
 if WANT_FLDIGI
-	if test -f $(srcdir)/../scripts/fldigi-shell; then \
-	    $(mkinstalldirs) $(DESTDIR)/$(bindir); \
-            $(INSTALL_SCRIPT) $(srcdir)/../scripts/fldigi-shell $(DESTDIR)/$(bindir); \
-        fi
 	if test -f $(srcdir)/../scripts/ftp_kml_files.sh; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(bindir); \
         $(INSTALL_SCRIPT) $(srcdir)/../scripts/ftp_kml_files.sh $(DESTDIR)/$(bindir); \
@@ -179,7 +175,6 @@ endif
 
 uninstall-local:
 if WANT_FLDIGI
-	rm -f $(DESTDIR)$(bindir)/fldigi-shell
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 	rm -fr $(DESTDIR)/$(datadir)/fldigi
@@ -745,7 +740,6 @@ EXTRA_DIST = \
 	$(srcdir)/../scripts/mkappbundle.sh \
 	$(srcdir)/../scripts/mkhamlibstatic.sh \
 	$(srcdir)/../scripts/mknsisinst.sh \
-	$(srcdir)/../scripts/fldigi-shell \
 	$(srcdir)/../scripts/tests/cr.sh \
 	$(srcdir)/../scripts/tests/config-h.sh \
 	$(srcdir)/../data/fldigi-psk.png \

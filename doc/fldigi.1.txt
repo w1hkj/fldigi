@@ -420,7 +420,7 @@ AGMemberList.txt or eqsl.txt::
 +ssh -L 7362:localhost:7362 remote-host xvfb-run fldigi -display :99+::
   Start fldigi on 'remote-host' under a ``fake'' X server.  (The +xvfb-run(1)+
   utility is available on Debian systems).  The remote ``headless'' fldigi is
-  then controlled via XML-RPC on port 7362, e.g. using +fldigi-shell(1)+.
+  then controlled via XML-RPC on port 7362, i.e from flrig, flamp etc.
 
 +fldigi --benchmark-input 480000 --benchmark-modem 1+::
   Benchmark the DominoEX-4 modem with 480K audio samples.
