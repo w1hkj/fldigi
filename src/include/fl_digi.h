@@ -388,4 +388,6 @@ extern void set_smeter_colors();
 
 extern void log_callback(Fl_Input2 *);
 
+extern void set599();
+
 #endif

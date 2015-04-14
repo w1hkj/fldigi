@@ -204,6 +204,8 @@
 
 using namespace std;
 
+void set599();
+
 //regular expression parser using by mainViewer (pskbrowser)
 fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
@@ -1140,7 +1142,7 @@ void init_modem(trx_mode mode, int freq)
 		}
 	}
 
-LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
+	//LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 
 #if !BENCHMARK_MODE
        quick_change = 0;
@@ -2358,6 +2360,22 @@ void updateOutSerNo()
 static string old_call;
 static string new_call;
 
+void set599()
+{
+	if (!active_modem) return;
+	string defrst = (active_modem->get_mode() == MODE_SSB) ? "59" : "599";
+	if (progdefaults.RSTdefault) {
+		inpRstOut1->value(defrst.c_str());
+		if (progStatus.contest)
+			inpRstOut2->value(defrst.c_str());
+	}
+	if (progdefaults.RSTin_default) {
+		inpRstIn1->value(defrst.c_str());
+		if (progStatus.contest)
+		inpRstIn2->value(defrst.c_str());
+	}
+}
+
 void clearQSO()
 {
 if (bWF_only) return;
@@ -2374,16 +2392,7 @@ if (bWF_only) return;
 		inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
-	string defrst = (active_modem->get_mode() == MODE_SSB) ? "59" : "599";
-	if (progdefaults.fixed599 && progStatus.contest) {
-		inpRstIn1->value(defrst.c_str()); inpRstIn2->value(defrst.c_str());
-		inpRstOut1->value(defrst.c_str()); inpRstOut2->value(defrst.c_str());
-	} else {
-		if (progdefaults.RSTdefault)
-			inpRstOut1->value(defrst.c_str());
-		if (progdefaults.RSTin_default)
-			inpRstIn1->value(defrst.c_str());
-	}
+	set599();
 	updateOutSerNo();
 	if (inpSearchString)
 		inpSearchString->value ("");

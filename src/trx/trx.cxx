@@ -545,6 +545,7 @@ void trx_start_modem_loop()
 		active_modem->set_freq(new_freq);
 	trx_state = STATE_RX;
 	REQ(&waterfall::opmode, wf);
+	REQ(set599);
 
 	if (old_modem) {
 		*mode_info[old_modem->get_mode()].modem = 0;
