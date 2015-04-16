@@ -919,7 +919,7 @@ void startup_modem(modem* m, int f)
 	return;
 #endif
 
-	restoreFocus();
+	restoreFocus(1);
 
 	trx_mode id = m->get_mode();
 
@@ -1006,12 +1006,12 @@ void cb_mnuOpenMacro(Fl_Menu_*, void*) {
 	}
 	macros.openMacroFile();
 	macros.changed = false;
-	restoreFocus();
+	restoreFocus(2);
 }
 
 void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 	macros.saveMacroFile();
-	restoreFocus();
+	restoreFocus(3);
 }
 
 void remove_windows()
@@ -1470,7 +1470,7 @@ void set_charset_listbox(int rxtx_charset)
 	// update the button
 	progdefaults.charset_name = charset_list[rxtx_charset].name;
 	listbox_charset_status->value(progdefaults.charset_name.c_str());
-	restoreFocus();
+	restoreFocus(4);
 }
 
 void cb_listbox_charset(Fl_Widget *w, void *)
@@ -1498,15 +1498,10 @@ void set_default_charset(void)
 }
 
 // if w is not NULL, give focus to TransmitText only if the last event was an Enter keypress
-void restoreFocus(Fl_Widget* w)
+void restoreFocus(int n)
 {
-	if (!w)
-		TransmitText->take_focus();
-	else if (Fl::event() == FL_KEYBOARD) {
-		int k = Fl::event_key();
-		if (k == FL_Enter || k == FL_KP_Enter)
-			TransmitText->take_focus();
-	}
+// printf("from %d\n", n);
+	TransmitText->take_focus();
 }
 
 void macro_cb(Fl_Widget *w, void *v)
@@ -1527,7 +1522,7 @@ void macro_cb(Fl_Widget *w, void *v)
 	else if (mouse == FL_RIGHT_MOUSE)
 		editMacro(b);
 	if (Fl::focus() != qsoFreqDisp)
-		restoreFocus();
+		restoreFocus(5);
 }
 
 void colorize_macro(int i)
@@ -1610,7 +1605,7 @@ void altmacro_cb(Fl_Widget *w, void *v)
 		btnAltMacros1->label(alt_text);
 		btnAltMacros1->redraw_label();
 	}
-	restoreFocus();
+	restoreFocus(6);
 }
 
 void cb_mnuConfigOperator(Fl_Menu_*, void*) {
@@ -1908,7 +1903,7 @@ void cb_mnuConfigFonts(Fl_Menu_*, void *) {
 
 void cb_mnuSaveConfig(Fl_Menu_ *, void *) {
 	progdefaults.saveDefaults();
-	restoreFocus();
+	restoreFocus(7);
 }
 
 // This function may be called by the QRZ thread
@@ -2085,14 +2080,14 @@ void cb_mnuCmdLineHelp(Fl_Widget*, void*)
 {
 	extern string option_help;
 	fldigi_help(option_help);
-	restoreFocus();
+	restoreFocus(8);
 }
 
 void cb_mnuBuildInfo(Fl_Widget*, void*)
 {
 	extern string build_text;
 	fldigi_help(build_text);
-	restoreFocus();
+	restoreFocus(9);
 }
 
 void cb_mnuDebug(Fl_Widget*, void*)
@@ -2206,21 +2201,21 @@ void cbTune(Fl_Widget *w, void *) {
 		b->labelcolor(FL_FOREGROUND_COLOR);
 		trx_receive();
 	}
-	restoreFocus();
+	restoreFocus(10);
 }
 
 void cbRSID(Fl_Widget *w, void *)
 {
 	progdefaults.rsid = btnRSID->value();
 	progdefaults.changed = true;
-	restoreFocus();
+	restoreFocus(11);
 }
 
 void cbTxRSID(Fl_Widget *w, void*)
 {
 	progdefaults.TransmitRSid = btnTxRSID->value();
 	progdefaults.changed = true;
-	restoreFocus();
+	restoreFocus(12);
 }
 
 void cbAutoSpot(Fl_Widget* w, void*)
@@ -2300,7 +2295,7 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	    progStatus.sldrSquelchValue = o->value();
 	}
 
-	restoreFocus();
+	restoreFocus(13);
 }
 
 static char ztbuf[20] = "20120602 123000";
@@ -2402,6 +2397,7 @@ if (bWF_only) return;
 	qso_exchange.clear();
 	oktoclear = true;
 	LOGGING_colors_font();
+	inpCall1->take_focus();
 }
 
 void cb_ResetSerNbr()
@@ -2415,13 +2411,13 @@ void cb_btnTimeOn(Fl_Widget* w, void*)
 	inpTimeOn->value(inpTimeOff->value(), inpTimeOff->size());
 	sTime_on = sTime_off = ztime();
 	sDate_on = sDate_off = zdate();
-	restoreFocus();
+	restoreFocus(14);
 }
 
 void cb_loc(Fl_Widget* w, void*)
 {
 	if ((oktoclear = !inpLoc->size()) || !progdefaults.autofill_qso_fields)
-		return restoreFocus(w);
+		return;
 
 	double lon[2], lat[2], distance, azimuth;
 	std::string s;
@@ -2450,7 +2446,6 @@ void cb_loc(Fl_Widget* w, void*)
 	}
 	if ( !ok) {
 		inpLoc->value("");
-		restoreFocus();
 		return;
 	}
 	inpLoc->value(s.c_str());
@@ -2463,7 +2458,12 @@ void cb_loc(Fl_Widget* w, void*)
 		inpAZ->value(az);
 	} else
 		inpAZ->value("");
-	restoreFocus(w);
+
+	if (Fl::event() == FL_KEYBOARD) {
+		int k = Fl::event_key();
+		if (k == FL_Enter || k == FL_KP_Enter)
+			restoreFocus(15);
+	}
 }
 
 void cb_call(Fl_Widget* w, void*)
@@ -2506,8 +2506,14 @@ if (bWF_only) return;
 	if (progStatus.timer && (Fl::event() != FL_HIDE))
 		stopMacroTimer();
 
+	if (Fl::event() == FL_KEYBOARD) {
+		int k = Fl::event_key();
+		if (k == FL_Enter || k == FL_KP_Enter)
+			restoreFocus(16);
+	}
+
 	if (old_call == new_call || new_call.empty())
-		return restoreFocus(w);
+		return;
 
 	old_call = new_call;
 	oktoclear = false;
@@ -2540,7 +2546,8 @@ if (bWF_only) return;
 	if (progdefaults.EnableDupCheck)
 		DupCheck();
 
-	restoreFocus(w);
+	if (w != inpCall)
+		restoreFocus(17);
 }
 
 void cb_log(Fl_Widget* w, void*)
@@ -2582,13 +2589,17 @@ void cb_log(Fl_Widget* w, void*)
 	if (progdefaults.EnableDupCheck) {
 		DupCheck();
 	}
-	restoreFocus(w);
+
+	if (Fl::event() == FL_KEYBOARD) {
+		int k = Fl::event_key();
+		if (k == FL_Enter || k == FL_KP_Enter)
+			restoreFocus(18);
+	}
 }
 
 void cbClearCall(Fl_Widget *b, void *)
 {
 	clearQSO();
-	restoreFocus();
 }
 
 void qsoClear_cb(Fl_Widget *b, void *)
@@ -2600,7 +2611,6 @@ void qsoClear_cb(Fl_Widget *b, void *)
 		clearQSO();
 	}
 	clear_Lookup();
-	restoreFocus();
 }
 
 void qsoSave_cb(Fl_Widget *b, void *)
@@ -2611,7 +2621,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
 	if (havecall.empty()) {
 		fl_message2(_("Enter a CALL !"));
-		restoreFocus();
+		restoreFocus(19);
 		return;
 	}
 	sDate_off = zdate();
@@ -2626,7 +2636,7 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	if (progdefaults.ClearOnSave)
 		clearQSO();
 	ReceiveText->mark(FTextBase::XMIT);
-	restoreFocus();
+	restoreFocus(20);
 }
 
 void qso_save_now()
@@ -2648,7 +2658,7 @@ void qso_save_now()
 void cb_QRZ(Fl_Widget *b, void *)
 {
 	if (!*inpCall->value())
-		return restoreFocus();
+		return restoreFocus(21);
 
 	switch (Fl::event_button()) {
 	case FL_LEFT_MOUSE:
@@ -2663,7 +2673,7 @@ void cb_QRZ(Fl_Widget *b, void *)
 	default:
 		break;
 	}
-	restoreFocus();
+	restoreFocus(22);
 }
 
 void status_cb(Fl_Widget *b, void *arg)
@@ -2691,7 +2701,7 @@ void status_cb(Fl_Widget *b, void *arg)
 		m->do_callback(0);
 	}
 	static_cast<Fl_Button*>(b)->clear();
-	restoreFocus();
+	restoreFocus(23);
 }
 
 void cbAFC(Fl_Widget *w, void *vi)
@@ -2800,7 +2810,7 @@ void startTimedExecute(std::string &title)
 void cbMacroTimerButton(Fl_Widget*, void*)
 {
 	stopMacroTimer();
-	restoreFocus();
+	restoreFocus(24);
 }
 
 void cb_mvsquelch(Fl_Widget *w, void *d)
@@ -4351,13 +4361,13 @@ void cb_cntCW_WPM(Fl_Widget * w, void *v)
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	progdefaults.changed = true;
 	sync_cw_parameters();
-	restoreFocus();
+	restoreFocus(25);
 }
 
 void cb_btnCW_Default(Fl_Widget *w, void *v)
 {
 	active_modem->toggleWPM();
-	restoreFocus();
+	restoreFocus(26);
 }
 
 static void cb_mainViewer_Seek(Fl_Input *, void *)

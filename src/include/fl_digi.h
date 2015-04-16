@@ -275,7 +275,7 @@ extern void resetTHOR();
 extern void resetDOMEX();
 extern void updatePACKET();
 extern void resetSoundCard();
-extern void restoreFocus(Fl_Widget* w = 0);
+extern void restoreFocus(int n = 0);
 extern void setReverse(int);
 extern void clearQSO();
 extern void closeRigDialog();

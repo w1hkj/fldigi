@@ -472,13 +472,12 @@ int FTextRX::handle_qso_data(int start, int end)
 			target->value(p);
 			log_callback(target);
 			free(s);
-			restoreFocus(NULL);
+			restoreFocus(91);
 			return 1;
 		}
 	}
 	free(s);
 	return 0;
-//	restoreFocus(NULL);
 }
 
 void FTextRX::handle_context_menu(void)
@@ -624,7 +623,7 @@ void FTextRX::menu_cb(size_t item)
 		break;
 	}
 
-	restoreFocus(NULL);
+	restoreFocus(92);
 
 	if (!input)
 		return;
