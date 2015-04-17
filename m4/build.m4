@@ -8,14 +8,19 @@ AC_DEFUN([AC_FLDIGI_BUILD_INFO], [
   FLDIGI_BUILD_CPPFLAGS="-I\$(srcdir) -I\$(srcdir)/include \
 -I\$(srcdir)/irrxml \
 -I\$(srcdir)/libtiniconv \
--I\$(srcdir)/fileselector \
--I\$(srcdir)/xmlrpcpp"
+-I\$(srcdir)/fileselector"
+  if test "x$ac_cv_flxmlrpc" != "xyes"; then
+    FLDIGI_BUILD_CPPFLAGS="$FLDIGI_BUILD_CPPFLAGS -I\$(srcdir)/xmlrpcpp"
+  fi
 # CXXFLAGS
   FLDIGI_BUILD_CXXFLAGS="$PORTAUDIO_CFLAGS $FLTK_CFLAGS $X_CFLAGS $SNDFILE_CFLAGS $SAMPLERATE_CFLAGS \
 $PULSEAUDIO_CFLAGS $HAMLIB_CFLAGS $PNG_CFLAGS $XMLRPC_CFLAGS $MAC_UNIVERSAL_CFLAGS \
 $INTL_CFLAGS $PTW32_CFLAGS $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
   if test "x$target_mingw32" = "xyes"; then
       FLDIGI_BUILD_CXXFLAGS="-mthreads $FLDIGI_BUILD_CXXFLAGS"
+  fi
+  if test "x$ac_cv_flxmlrpc" != "xyes"; then
+    FLDIGI_BUILD_CXXFLAGS="$FLDIGI_BUILD_CXXFLAGS -I\$(srcdir)/xmlrpcpp"
   fi
 # LDFLAGS
   FLDIGI_BUILD_LDFLAGS="$MAC_UNIVERSAL_LDFLAGS"
@@ -24,7 +29,8 @@ $INTL_CFLAGS $PTW32_CFLAGS $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEB
   fi
 # LDADD
   FLDIGI_BUILD_LDADD="$PORTAUDIO_LIBS $FLTK_LIBS $X_LIBS $SNDFILE_LIBS $SAMPLERATE_LIBS \
-$PULSEAUDIO_LIBS $HAMLIB_LIBS $PNG_LIBS $XMLRPC_LIBS $INTL_LIBS $PTW32_LIBS $BFD_LIBS $EXTRA_LIBS"
+$PULSEAUDIO_LIBS $HAMLIB_LIBS $PNG_LIBS $XMLRPC_LIBS $INTL_LIBS $PTW32_LIBS $BFD_LIBS \
+$EXTRA_LIBS $FLXMLRPC_LIBS"
 
 # CPPFLAGS
   FLARQ_BUILD_CPPFLAGS="-I\$(srcdir) -I\$(srcdir)/include -I\$(srcdir)/fileselector \

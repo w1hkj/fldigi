@@ -1,29 +1,19 @@
-//  base64.hpp 
-//  Autor Konstantin Pilipchuk
-//  mailto:lostd@ukr.net
 // ----------------------------------------------------------------------------
 //
+// flxmlrpc Copyright (c) 2015 by W1HKJ, Dave Freese <iam_w1hkj@w1hkj.com>
+//    
 // XmlRpc++ Copyright (c) 2002-2008 by Chris Morley
-//
-// Copyright (C) 2014
-//              David Freese, W1HKJ
 //
 // This file is part of fldigi
 //
-// fldigi is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
+// flxmlrpc is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation; either version 3 of the License, or
 // (at your option) any later version.
-//
-// fldigi is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
-
 
 #if !defined(__BASE64_H_INCLUDED__)
 #define __BASE64_H_INCLUDED__ 1
@@ -31,7 +21,7 @@
 #include <iterator>
 
 static
-int _base64Chars[]= {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+int _xmlrpc_base64Chars[]= {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 				     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
 			         '0','1','2','3','4','5','6','7','8','9',
 			         '+','/' };
@@ -54,9 +44,9 @@ int _base64Chars[]= {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'
 #define _IOS_BADBIT    std::ios_base::badbit
 #define _IOS_GOODBIT   std::ios_base::goodbit
 
-// TEMPLATE CLASS base64_put
+// TEMPLATE CLASS xmlrpc_base64_put
 template<class _E = char, class _Tr = std::char_traits<_E> >
-class base64
+class xmlrpc_base64
 {
 public:
 
@@ -64,7 +54,7 @@ public:
 	typedef _E            char_type;
 	typedef _Tr           traits_type; 
 
-	// base64 requires max line length <= 72 characters
+	// xmlrpc_base64 requires max line length <= 72 characters
 	// you can fill end of line
 	// it may be crlf, crlfsp, noline or other class like it
 
@@ -184,8 +174,8 @@ public:
 
 			if(_First == _Last)
 			{
-				*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_0()]); ++_To;
-				*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_1()]); ++_To;
+				*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_0()]); ++_To;
+				*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_1()]); ++_To;
 				*_To = _Tr::to_char_type('='); ++_To;
 				*_To = _Tr::to_char_type('='); ++_To;
 				goto __end;
@@ -196,9 +186,9 @@ public:
 
 			if(_First == _Last)
 			{
-				*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_0()]); ++_To;
-				*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_1()]); ++_To;
-				*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_2()]); ++_To;
+				*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_0()]); ++_To;
+				*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_1()]); ++_To;
+				*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_2()]); ++_To;
 				*_To = _Tr::to_char_type('='); ++_To;
 				goto __end;
 			}
@@ -206,12 +196,12 @@ public:
 			_3to4.set_2(*_First);
 			_First++;
 
-			*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_0()]); ++_To;
-			*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_1()]); ++_To;
-			*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_2()]); ++_To;
-			*_To = _Tr::to_char_type(_base64Chars[_3to4.b64_3()]); ++_To;
+			*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_0()]); ++_To;
+			*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_1()]); ++_To;
+			*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_2()]); ++_To;
+			*_To = _Tr::to_char_type(_xmlrpc_base64Chars[_3to4.b64_3()]); ++_To;
 
-			if(line_octets == 17) // base64 позволяет длину строки не более 72 символов
+			if(line_octets == 17) // xmlrpc_base64 позволяет длину строки не более 72 символов
 			{
 				//_To = _Endl(_To);
         *_To = '\n'; ++_To;
@@ -286,7 +276,7 @@ public:
 					break;
 
 			if(_First == _Last)	{
-				// Error! Unexpected EOF. Must be '=' or base64 character
+				// Error! Unexpected EOF. Must be '=' or xmlrpc_base64 character
 				_St |= _IOS_FAILBIT|_IOS_EOFBIT; 
 				return _First; 
 			}
@@ -368,20 +358,20 @@ protected:
 	
 	int _getCharType(int _Ch) const
 	{
-		if(_base64Chars[62] == _Ch)
+		if(_xmlrpc_base64Chars[62] == _Ch)
 			return 62;
 
-		if(_base64Chars[63] == _Ch)
+		if(_xmlrpc_base64Chars[63] == _Ch)
 			return 63;
 
-		if((_base64Chars[0] <= _Ch) && (_base64Chars[25] >= _Ch))
-			return _Ch - _base64Chars[0];
+		if((_xmlrpc_base64Chars[0] <= _Ch) && (_xmlrpc_base64Chars[25] >= _Ch))
+			return _Ch - _xmlrpc_base64Chars[0];
 
-		if((_base64Chars[26] <= _Ch) && (_base64Chars[51] >= _Ch))
-			return _Ch - _base64Chars[26] + 26;
+		if((_xmlrpc_base64Chars[26] <= _Ch) && (_xmlrpc_base64Chars[51] >= _Ch))
+			return _Ch - _xmlrpc_base64Chars[26] + 26;
 
-		if((_base64Chars[52] <= _Ch) && (_base64Chars[61] >= _Ch))
-			return _Ch - _base64Chars[52] + 52;
+		if((_xmlrpc_base64Chars[52] <= _Ch) && (_xmlrpc_base64Chars[61] >= _Ch))
+			return _Ch - _xmlrpc_base64Chars[52] + 52;
 
 		if(_Ch == _Tr::to_int_type('='))
 			return _EQUAL_CHAR;

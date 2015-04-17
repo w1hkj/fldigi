@@ -30,8 +30,14 @@ fldigi_CPPFLAGS += -fno-var-tracking
 fldigi_CXXFLAGS += -fno-var-tracking
 endif
 
-HAMLIB_SRC = include/hamlib.h rigcontrol/hamlib.cxx include/rigclass.h rigcontrol/rigclass.cxx
-XMLRPC_SRC = include/xmlrpc.h misc/xmlrpc.cxx
+HAMLIB_SRC = \
+include/hamlib.h \
+rigcontrol/hamlib.cxx \
+include/rigclass.h \
+rigcontrol/rigclass.cxx
+XMLRPC_SRC = \
+include/xmlrpc.h \
+misc/xmlrpc.cxx
 FLDIGI_WIN32_RES_SRC = fldigirc.rc
 FLARQ_WIN32_RES_SRC = flarq-src/flarqrc.rc
 COMMON_WIN32_RES_SRC = common.rc
@@ -42,14 +48,50 @@ MINGW32_SRC = include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
 NLS_SRC = misc/nls.cxx include/nls.h
 
 # We distribute these but do not always compile them
+# Build the xmlrpcpp source if libflxmlrpc is not found
+XMLRPCPP_SRC = \
+	xmlrpcpp/XmlRpcBase64.h \
+	xmlrpcpp/XmlRpcClient.cpp \
+	xmlrpcpp/XmlRpcClient.h \
+	xmlrpcpp/XmlRpcDispatch.cpp \
+	xmlrpcpp/XmlRpcDispatch.h \
+	xmlrpcpp/XmlRpcException.h \
+	xmlrpcpp/XmlRpc.h \
+	xmlrpcpp/XmlRpcMutex.cpp \
+	xmlrpcpp/XmlRpcMutex.h \
+	xmlrpcpp/XmlRpcServerConnection.cpp \
+	xmlrpcpp/XmlRpcServerConnection.h \
+	xmlrpcpp/XmlRpcServer.cpp \
+	xmlrpcpp/XmlRpcServer.h \
+	xmlrpcpp/XmlRpcServerMethod.cpp \
+	xmlrpcpp/XmlRpcServerMethod.h \
+	xmlrpcpp/XmlRpcSocket.cpp \
+	xmlrpcpp/XmlRpcSocket.h \
+	xmlrpcpp/XmlRpcSource.cpp \
+	xmlrpcpp/XmlRpcSource.h \
+	xmlrpcpp/XmlRpcUtil.cpp \
+	xmlrpcpp/XmlRpcUtil.h \
+	xmlrpcpp/XmlRpcValue.cpp \
+	xmlrpcpp/XmlRpcValue.h
+
 EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(FLDIGI_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) \
-	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC)
+	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC) $(XMLRPCPP_SRC)
+
 EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC)
 
 fldigi_SOURCES =
 flarq_SOURCES =
 
 fldigi_SOURCES += $(XMLRPC_SRC)
+
+if !ENABLE_FLXMLRPC
+fldigi_SOURCES += $(XMLRPCPP_SRC)
+else
+fldigi_CPPFLAGS += @FLXMLRPC_CFLAGS@
+fldigi_CXXFLAGS += @FLXMLRPC_CFLAGS@
+fldigi_CFLAGS   += @FLXMLRPC_CFLAGS@
+fldigi_LDFLAGS  += @FLXMLRPC_LIBS@
+endif
 
 if ENABLE_HAMLIB
   fldigi_SOURCES += $(HAMLIB_SRC)
@@ -565,33 +607,6 @@ fldigi_SOURCES += \
 	wwv/fftscan.cxx \
 	wwv/wwv.cxx \
 	logbook/xmlrpc_log.cxx \
-	xmlrpcpp/XmlRpc.h \
-	xmlrpcpp/XmlRpcClient.cpp \
-	xmlrpcpp/XmlRpcClient.h \
-	xmlrpcpp/XmlRpcDispatch.cpp \
-	xmlrpcpp/XmlRpcDispatch.h \
-	xmlrpcpp/XmlRpcException.h \
-	xmlrpcpp/XmlRpcMutex.cpp \
-	xmlrpcpp/XmlRpcMutex.h \
-	xmlrpcpp/XmlRpcServer.cpp \
-	xmlrpcpp/XmlRpcServer.h \
-	xmlrpcpp/XmlRpcServerConnection.cpp \
-	xmlrpcpp/XmlRpcServerConnection.h \
-	xmlrpcpp/XmlRpcServerMethod.cpp \
-	xmlrpcpp/XmlRpcServerMethod.h \
-	xmlrpcpp/XmlRpcSocket.cpp \
-	xmlrpcpp/XmlRpcSocket.h \
-	xmlrpcpp/XmlRpcSource.cpp \
-	xmlrpcpp/XmlRpcSource.h \
-	xmlrpcpp/XmlRpcThread.cpp \
-	xmlrpcpp/XmlRpcThread.h \
-	xmlrpcpp/XmlRpcThreadedServer.cpp \
-	xmlrpcpp/XmlRpcThreadedServer.h \
-	xmlrpcpp/XmlRpcUtil.cpp \
-	xmlrpcpp/XmlRpcUtil.h \
-	xmlrpcpp/XmlRpcValue.cpp \
-	xmlrpcpp/XmlRpcValue.h \
-	xmlrpcpp/base64.h \
 	libtiniconv/tiniconv.c \
 	libtiniconv/tiniconv_desc.c
 

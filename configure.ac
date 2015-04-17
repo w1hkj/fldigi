@@ -274,6 +274,15 @@ if test "x$target_darwin" = "xno" && test "x$target_win32" = "xno"; then
     AC_FLDIGI_PKG_CHECK([x], [x11], [no], [yes])
 fi
 
+### libflxmlrpc
+# Set ac_cv_flxmlrpc to yes/no
+# Define USE_FLXMLRPC in config.h
+# Substitute FLXMLRPC_CFLAGS and FLXMLRPC_LIBS in Makefile
+
+AC_FLDIGI_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0], 
+  [yes], [yes], [use external flxmlrpc library @<:@autodetect@:>@],
+  [ENABLE_FLXMLRPC])
+
 ### libintl
 # Substitute INTL_CFLAGS in Makefile
 # Substitute INTL_LIBS in Makefile
@@ -329,6 +338,8 @@ if test "x$ac_cv_want_fldigi" = "xyes"; then
   oss ......................... $ac_cv_oss
   portaudio ................... $ac_cv_portaudio
   pulseaudio .................. $ac_cv_pulseaudio
+
+  flxmlrpc .................... $ac_cv_flxmlrpc
 
   hamlib ...................... $ac_cv_hamlib
 ])
