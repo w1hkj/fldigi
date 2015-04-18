@@ -7093,6 +7093,7 @@ int Qidle_time = 0;
 
 static int que_timeout = 0;
 bool que_ok = true;
+bool tx_queue_done = true;
 bool que_waiting = true;
 
 void post_queue_execute(void*)
@@ -7104,6 +7105,7 @@ void post_queue_execute(void*)
 	while (!que_ok && trx_state != STATE_RX) {
 		que_timeout--;
 		Fl::repeat_timeout(0.05, post_queue_execute);
+		Fl::awake();
 	}
 	trx_transmit();
 }
@@ -7118,28 +7120,45 @@ void queue_execute_after_rx(void*)
 	while (trx_state == STATE_TX) {
 		que_timeout--;
 		Fl::repeat_timeout(0.05, queue_execute_after_rx);
+		Fl::awake();
 		return;
 	}
-	que_ok = false;
 	que_timeout = 100; // 5 seconds
 	Fl::add_timeout(0.05, post_queue_execute);
+	que_ok = false;
+	tx_queue_done = false;
 	Tx_queue_execute();
 }
 
 void do_que_execute(void *)
 {
+	tx_queue_done = false;
 	que_ok = false;
 	Tx_queue_execute();
-	while(!que_ok) MilliSleep(1);
 	que_waiting = false;
 }
 
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 
+string bools = "------";
+char testbools[7];
+
 int get_tx_char(void)
 {
 	enum { STATE_CHAR, STATE_CTRL };
 	static int state = STATE_CHAR;
+
+	snprintf(testbools, sizeof(testbools), "%c%c%c%c%c%c",
+		(tx_queue_done ? '1' : '0'),
+		(que_ok ? '1' : '0'),
+		(Qwait_time ? '1' : '0'),
+		(Qidle_time ? '1' : '0'),
+		(macro_idle_on ? '1' : '0'),
+		(idling ? '1' : '0' ) );
+	if (bools != testbools) {
+		bools = testbools;
+		std::cout << bools << "\n";
+	}
 
 	if (!que_ok) { return GET_TX_CHAR_NODATA; }
 	if (Qwait_time) { return GET_TX_CHAR_NODATA; }
@@ -7236,11 +7255,11 @@ int get_tx_char(void)
 			if (queue_must_rx()) {
 				que_timeout = 400; // 20 seconds
 				REQ(queue_execute_after_rx, (void *)0);
-				while(que_waiting) MilliSleep(1);
+				while(que_waiting) { MilliSleep(100); Fl::awake(); }
 				return(GET_TX_CHAR_ETX);
 			} else {
 				REQ(do_que_execute, (void*)0);
-				while(que_waiting) MilliSleep(1);
+				while(que_waiting) { MilliSleep(100); Fl::awake(); }
 				return(GET_TX_CHAR_NODATA);
 			}
 			break;

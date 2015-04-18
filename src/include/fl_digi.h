@@ -225,6 +225,7 @@ extern void put_WARNstatus(double);
 extern void qsoSave_cb(Fl_Widget *b, void *);
 
 extern bool que_ok;
+extern bool tx_queue_done;
 extern void post_queue_execute(void*);
 extern void queue_execute_after_rx(void*);
 

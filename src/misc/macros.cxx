@@ -122,6 +122,11 @@ static bool GET = false;
 static bool timed_exec = false;
 static bool within_exec = false;
 
+static void postQueue(std::string s)
+{
+	ReceiveText->addstr(s, FTextBase::CTRL);
+}
+
 static const char cutnumbers[] = "T12345678N";
 static std::string cutstr;
 
@@ -732,6 +737,7 @@ static void setwpm(int d)
 {
 	sldrCWxmtWPM->value(d);
 	cntCW_WPM->value(d);
+	que_ok = true;
 }
 
 static void setfwpm(int d)
@@ -739,6 +745,7 @@ static void setfwpm(int d)
 	sldrCWfarnsworth->value(d);
 	progdefaults.CWusefarnsworth = true;
 	btnCWusefarnsworth->value(1);
+	que_ok = true;
 }
 
 static void doWPM(std::string s)
@@ -784,6 +791,7 @@ static void pTxQueWPM(std::string &s, size_t &i, size_t endbracket)
 static void setRISETIME(int d)
 {
 	cntCWrisetime->value(d);
+	que_ok = true;
 }
 
 static void doRISETIME(std::string s)
@@ -813,6 +821,7 @@ static void pTxQueRISETIME(std::string &s, size_t &i, size_t endbracket)
 static void setPRE(int d)
 {
 	cntPreTiming->value(d);
+	que_ok = true;
 }
 
 static void doPRE(std::string s)
@@ -842,6 +851,7 @@ static void pTxQuePRE(std::string &s, size_t &i, size_t endbracket)
 static void setPOST(int d)
 {
 	cntPostTiming->value(d);
+	que_ok = true;
 }
 
 static void doPOST(std::string s)
@@ -875,6 +885,7 @@ static void setTXATTEN(float v)
 	v = clamp(v, -30.0, 0.0);
 	progdefaults.txlevel = v;
 	cntTxLevel->value(progdefaults.txlevel);;
+	que_ok = true;
 }
 
 static void pTXATTEN(std::string &s, size_t &i, size_t endbracket)
@@ -929,19 +940,37 @@ static void pIDLE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
+static int idle_time = 0; // in 0.1 second increments
+static int idle_count = 0;
 static void doneIDLE(void *)
 {
-	Qidle_time = 0;
+	idle_count++;
+	if ((idle_count % 100) == 0)
+		REQ(postQueue, "|");
+	else if ((idle_count % 50) == 0)
+		REQ(postQueue, ":");
+	else if ((idle_count % 10) == 0)
+		REQ(postQueue, ".");
+	if (idle_count == idle_time) {
+		Qidle_time = 0;
+		que_ok = true;
+		idle_time = idle_count = 0;
+		REQ(postQueue, " done\n");
+		return;
+	}
+	Fl::repeat_timeout(0.1, doneIDLE);
 }
 
 static void doIDLE(std::string s)
 {
-	float number;
 	std::string sTime = s.substr(7, s.length() - 8);
 	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%f", &number);
+		float ftime;
+		if (sscanf(sTime.c_str(), "%f", &ftime) != 1)
+			ftime = 1.0;
+		idle_time = 10 * ftime;
 		Qidle_time = 1;
-		Fl::add_timeout(number, doneIDLE);
+		Fl::add_timeout(0.1, doneIDLE);
 	} else {
 		Qidle_time = 0;
 	}
@@ -1037,6 +1066,7 @@ static void doneWAIT(void *)
 {
 	Qwait_time = 0;
 	start_tx();
+	que_ok = true;
 }
 
 static void doWAIT(std::string s)
@@ -1049,7 +1079,6 @@ static void doWAIT(std::string s)
 		Fl::add_timeout (number * 1.0, doneWAIT);
 	} else
 		Qwait_time = 0;
-	que_ok = true;
 }
 
 static void pTxQueWAIT(std::string &s, size_t &i, size_t endbracket)
@@ -2090,17 +2119,16 @@ static void doTXRSID(std::string s)
 	if (s.find("on") != std::string::npos) {
 		btnTxRSID->value(1);
 		btnTxRSID->do_callback();
-		return;
 	}
-	if (s.find("off") != std::string::npos) {
+	else if (s.find("off") != std::string::npos) {
 		btnTxRSID->value(0);
 		btnTxRSID->do_callback();
-		return;
 	}
-	if (s.find("t") != std::string::npos) {
+	else if (s.find("t") != std::string::npos) {
 		btnTxRSID->value(!btnTxRSID->value());
 		btnTxRSID->do_callback();
 	}
+	que_ok = true;
 }
 
 static void pRxQueTXRSID(std::string &s, size_t &i, size_t endbracket)
@@ -2923,11 +2951,7 @@ void queue_reset()
 	Qwait_time = 0;
 	Qidle_time = 0;
 	que_ok = true;
-}
-
-static void postQueue(std::string s)
-{
-	ReceiveText->addstr(s, FTextBase::CTRL);
+	tx_queue_done = true;
 }
 
 // execute an in-line macro tag
@@ -2937,7 +2961,7 @@ void Tx_queue_execute()
 	if (Tx_cmds.empty()) {
 		Qwait_time = 0;
 		Qidle_time = 0;
-		que_ok = true;
+		tx_queue_done = true;
 		return;
 	}
 	CMDS cmd = Tx_cmds.front();
@@ -2958,10 +2982,22 @@ bool queue_must_rx()
 
 // execute all post Tx macros in the Rx_cmds queu
 // occurs immediately after the ^r execution
+// AND after TX_STATE returns to Rx
 // ^r is the control string substitute for the <RX> macro tag
 void Rx_queue_execute()
 {
 	if (Rx_cmds.empty()) return;
+
+	int time_out = 100; // force return after ten seconds
+	while (trx_state != STATE_RX && time_out) {
+		time_out--;
+		Fl::awake();
+		MilliSleep(100);
+	}
+	if (!time_out) {
+		while (!Rx_cmds.empty()) Rx_cmds.pop();
+		return;
+	}
 
 	CMDS cmd;
 	while (!Rx_cmds.empty()) {
