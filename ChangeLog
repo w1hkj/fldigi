@@ -1,12 +1,32 @@
 
 
+=Version 3.22.08=
+
+2015-04-23  David Freese  <iam_w1hkj@w1hkj.com>
+
+	2bda963: Analysis
+	967e7c5: rx/tx queues
+	b5aa6a3: flxmlrpc
+
+2015-04-16  Dave Freese  <w1hkj@bellsouth.net>
+
+	28839d7: call focus
+
+2015-04-14  David Freese  <iam_w1hkj@w1hkj.com>
+
+	a4d4faa: 599 update
+	41beca0: US units
+	91ab73f: olivia cxx
+	a45006d: fldigi-shell
+	ee19668: Write log
+	8d4f0ef: Config dialog
+
+
 =Version 3.22.07=
 
-2015-04-01  David Freese  <iam_w1hkj@w1hkj.com>
-
-	b3dea10: Macro edit
-	97d02a7: Multi-psk
-	9942993: Vista SignaLink driver
+	b78b683: Macro edit
+	06515a8: Multi-psk
+	ae560e7: Vista SignaLink driver
 	c79bfd7: Image update
 	3c264e2: Command line
 	68f88ee: SSB default signal
