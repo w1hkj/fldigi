@@ -203,7 +203,7 @@ int anal::rx_process(const double *buf, int len)
 		dspcnt -= (1.0 * n / samplerate);
 
 		if (dspcnt <= 0) {
-			for (int i = 0; i < PIPE_LEN; i++)
+			for (int i = 0; i < PIPE_LEN -1; i++)
 				pipe[i] = pipe[i+1];
 
 			double fdsp = fout / 4.0;
