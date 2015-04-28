@@ -551,7 +551,7 @@ void cb_Export_log() {
 	chkExportBrowser->textfont(FL_SCREEN_BOLD);
 	chkExportBrowser->textsize(12);
 #else
-	chkExportBrowser->textfont(FL_SCREEN);
+	chkExportBrowser->textfont(FL_COURIER);
 	chkExportBrowser->textsize(12);
 #endif
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
@@ -1326,8 +1326,13 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
 	}
 	cboContest->index(0);
 	chkCabBrowser->clear();
+#ifdef __APPLE__
 	chkCabBrowser->textfont(FL_SCREEN_BOLD);
 	chkCabBrowser->textsize(12);
+#else
+	chkCabBrowser->textfont(FL_COURIER);
+	chkCabBrowser->textsize(12);
+#endif
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		memset(line, 0, sizeof(line));
@@ -1337,6 +1342,7 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
  			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
 			rec->getField(MODE) );
+std::cout << line << "\n";
         chkCabBrowser->add(line);
 	}
 	wCabrillo->show();
