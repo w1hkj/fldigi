@@ -300,6 +300,7 @@ void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
 #endif // DEBUG
   Fl_Widget::resize(X,Y,W,H);
   if (!buffer()) return;
+  if (!textfont()) return;
   X += Fl::box_dx(box());
   Y += Fl::box_dy(box());
   W -= Fl::box_dw(box());
