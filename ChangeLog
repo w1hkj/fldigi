@@ -1,8 +1,17 @@
 
 
-=Version 3.22.08=
+=Version 3.22.09=
 
-2015-04-23  David Freese  <iam_w1hkj@w1hkj.com>
+2015-05-28  Kamal Mostafa  <kamal@whence.com>
+
+	dac5bf4: Fl_Text_Display
+
+2015-04-28  David Freese  <iam_w1hkj@w1hkj.com>
+
+	c34a613: Cabrillo/Export dialogs
+
+
+=Version 3.22.08=
 
 	2bda963: Analysis
 	967e7c5: rx/tx queues
