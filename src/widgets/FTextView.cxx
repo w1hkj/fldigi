@@ -78,14 +78,12 @@ FTextBase::FTextBase(int x, int y, int w, int h, const char *l)
 	highlight_data(sbuf, styles, NATTR, FTEXT_DEF, 0, 0);
 	cursor_style(Fl_Text_Editor_mod::NORMAL_CURSOR);
 
-	wrap_mode(wrap, wrap_col);
-	restore_wrap = wrap;
-//	wrap_restore = true;
-
-	// Do we want narrower scrollbars? The default width is 16.
-	// scrollbar_width((int)floor(scrollbar_width() * 3.0/4.0));
+// reset_styles MUST before the call to wrap_mode or mStyleTable will have
+// garbage values!
 
 	reset_styles(SET_FONT | SET_SIZE | SET_COLOR);
+	wrap_mode(wrap, wrap_col);
+	restore_wrap = wrap;
 }
 
 void FTextBase::clear()

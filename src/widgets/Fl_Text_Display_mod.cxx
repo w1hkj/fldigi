@@ -290,6 +290,7 @@ int Fl_Text_Display_mod::longest_vline() const {
  of all scrollbar sizes.
  \param X, Y, W, H new position and size of this widget
  */
+ 
 void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
 #ifdef DEBUG
   printf("Fl_Text_Display_mod::resize(X=%d, Y=%d, W=%d, H=%d)\n", X, Y, W, H);
@@ -300,7 +301,7 @@ void Fl_Text_Display_mod::resize(int X, int Y, int W, int H) {
 #endif // DEBUG
   Fl_Widget::resize(X,Y,W,H);
   if (!buffer()) return;
-  if (!textfont()) return;
+
   X += Fl::box_dx(box());
   Y += Fl::box_dy(box());
   W -= Fl::box_dw(box());
