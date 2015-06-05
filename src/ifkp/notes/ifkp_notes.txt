@@ -1,0 +1,211 @@
+﻿Varicode IFKP.V1
+
+Incremental Frequency Keying Plus
+======================
+
+
+Copyright D.Freese, W1HKJ @2015
+
+Notes:
+
+A. IFKP borrows heavily from Murray Greenman's (ZL1BPU) FSQ varicode implementation.
+
+1. IFKP is an MFSK mode with an offset of +1.  It is designed for very high 
+   coding efficiency. It is intended for use on 10 meters HF, VHF and UHF medium 
+   symbol rates (typ 5.4). This version uses 33 tones (32 differences), a mildly 
+   Varicoded Alphabet, with a rotating difference frequency.  It's bandwidth is 
+   approximately 796 Hz.  Each frequency tone is 2048 samples at 16000 samples/sec.
+   Tones are spaced by 3x and centered at 1500 Hz.
+
+2. Tone differences are expressed as decimal numbers 0 - 31. This alphabet is 
+   called IFKP.V1.
+
+3. The design uses single-symbol and two-symbol character codes. The character 
+   set does not include much extended ASCII, and has only 116 different codes. 
+   It is a strongly 'unsquare' design (29 x 3), which restricts the number
+   of codes, but we don't need the maximum anyway. This 'unsquare' code maximizes 
+   the single-symbol set to 29, so will fit all lower case in one symbol. 
+
+4. 'Ham speak' doesn't follow standard text for letter frequency, having a higher 
+   incidence of letters such as Q, X and Z (in Q codes and callsigns).  Lower case
+   letters are more common than upper case.  Numbers are considered equal in frequency
+   of occurance as upper case characters.
+
+   This character set has been designed for one set of 29 single-symbol characters, 
+   and three two-symbol sets of upper case letters, number and punctuation. There 
+   is some spare space, and a few popular extended ASCII characters have been 
+   included (± ÷ ° £ ×).  
+
+5. Unlike 'conventional' DominoEX, the design does not use a single-bit as the 
+   continuation flag. Using 29 initials means using a comparison process to 
+   discover where the initial symbols are. 
+
+6. There are 29 single-symbol characters, 87 two-symbol codes, and a total 
+   alphabet of 116 codes. This allows coding all upper case, lower case and 
+   punctuation. There is no Secondary Text or Lexicon in this version.  The 
+   symbol set differs principally from WSQ / FSQ in that the most common symbol
+   is the NULL, a non printing character and is assigned a single symbol entry
+   in the table.  
+
+7. The nomenclature used for the character symbol numbers in the tables is 
+   [1st_symbol],([2nd_symbol]), expressed in decimal, where the [1st_symbol] 
+   always has values < 29, while [2nd_symbol] will have a value 
+   29 < [2nd_symbol] < 32.
+
+8. The IFKP.V1 alphabet is defined by two Varicode Tables (Table 1 and Table 2).
+
+Table 1. Characters in ASCII order
+
++-----------------------+-----------------------+-----------------------+
+| CHAR    ASCII    VAR  | CHAR    ASCII    VAR  | CHAR    ASCII    VAR  |
++-----------------------+-----------------------+-----------------------+
+| IDLE      0        0  | @        64     0,29  | `        96     9,31  |
+| !        33    11,30  | A        65     1,29  | a        97        1  |
+| "        34    12,30  | B        66     2,29  | b        98        2  | 
+| #        35    13,30  | C        67     3,29  | c        99        3  | 
+| $        36    14,30  | D        68     4,29  | d       100        4  | 
+| %        37    15,30  | E        69     5,29  | e       101        5  | 
+| &        38    16,30  | F        70     6,29  | f       102        6  |
+| '        39    17,30  | G        71     7,29  | g       103        7  |
+| (        40    18,30  | H        72     8,29  | h       104        8  |
+| )        41    19,30  | I        73     9,29  | i       105        9  | 
+| *        42    20,30  | J        74    10,29  | j       106       10  | 
+| +        43    21,30  | K        75    11,29  | k       107       11  | 
+| ,        44    27,29  | L        76    12,29  | l       108       12  | 
+| -        45    22,30  | M        77    13,29  | m       109       13  | 
+| .        46       27  | N        78    14,29  | n       110       14  | 
+| /        47    23,30  | O        79    15,29  | o       111       15  | 
+|                       |                       |                       | 
+| 0        48    10,30  | P        80    16,29  | p       112       16  | 
+| 1        49     1,30  | Q        81    17,29  | q       113       17  | 
+| 2        50     2,30  | R        82    18,29  | r       114       18  | 
+| 3        51     3,30  | S        83    19,29  | s       115       19  | 
+| 4        52     4,30  | T        84    20,29  | t       116       20  | 
+| 5        53     5,30  | U        85    21,29  | u       117       21  | 
+| 6        54     6,30  | V        86    22,29  | v       118       22  | 
+| 7        55     7,30  | W        87    23,29  | w       119       23  | 
+| 8        56     8,30  | X        88    24,29  | x       120       24  | 
+| 9        57     9,30  | Y        89    25,29  | y       121       25  | 
+| :        58    24,30  | Z        90    26,29  | z       122       26  | 
+| ;        59    25,30  | [        91     1,31  | {       123     6,31  | 
+| <        60    26,30  | \        92     2,31  | |       124     7,31  | 
+| =        61     0,31  | ]        93     3,31  | }       125     8,31  | 
+| >        62    27,30  | ^        94     4,31  | ~       126     0,30  | 
+| ?        63    28,29  | _        95     5,31  | DEL     127    28,31  | 
++-----------------------+-----------------------+-----------------------+
+| CRLF    13/10  28,30  | 
+| SPACE      32     28  | 
+| ±         241  10,31  |
+| ÷         246  11,31  |
+| °         248  12,31  |
+| ×         158  13,31  |
+| £         156  14,31  | 
+| BS          8  27,31  |
++-----------------------+
+    
+Table 2. Characters in Symbol Varicode order
+
++---------------+---------------+---------------+---------------+
+| SYMS    CHAR  | SYMS    CHAR  | SYMS    CHAR  | SYMS    CHAR  | 
++---------------+---------------+---------------+---------------+
+|   0     NULL  |  0,29     @   |  0,30     ~   |  0,31     =   | 
+|   1       a   |  1,29     A   |  1,30     1   |  1,31     [   | 
+|   2       b   |  2,29     B   |  2,30     2   |  2,31     \   | 
+|   3       c   |  3,29     C   |  3,30     3   |  3,31     ]   | 
+|   4       d   |  4,29     D   |  4,30     4   |  4,31     ^   | 
+|   5       e   |  5,29     E   |  5,30     5   |  5,31     _   | 
+|   6       f   |  6,29     F   |  6,30     6   |  6,31     {   | 
+|   7       g   |  7,29     G   |  7,30     7   |  7,31     |   | 
+|   8       h   |  8,29     H   |  8,30     8   |  8,31     }   | 
+|   9       i   |  9,29     I   |  9,30     9   |  9,31     `   | 
+|  10       j   |  10,29    J   |  10,30    0   |  10,31    ±   | 
+|  11       k   |  11,29    K   |  11,30    !   |  11,31    ÷   | 
+|  12       l   |  12,29    L   |  12,30    "   |  12,31    °   | 
+|  13       m   |  13,29    M   |  13,30    #   |  13,31    ×   | 
+|  14       n   |  14,29    N   |  14,30    $   |  14,31    £   | 
+|  15       o   |  15,29    O   |  15,30    %   |  15,31        | 
+|               |               |               |               | 
+|  16       p   |  16,29    P   |  16,30    &   |  16,31        | 
+|  17       q   |  17,29    Q   |  17,30    '   |  17,31        | 
+|  18       r   |  18,29    R   |  18,30    (   |  18,31        | 
+|  19       s   |  19,29    S   |  19,30    )   |  19,31        | 
+|  20       t   |  20,29    T   |  20,30    *   |  20,31        | 
+|  21       u   |  21,29    U   |  21,30    +   |  21,31        | 
+|  22       v   |  22,29    V   |  22,30    -   |  22,31        | 
+|  23       w   |  23,29    W   |  23,30    /   |  23,31        | 
+|  24       x   |  24,29    X   |  24,30    :   |  24,31        | 
+|  25       y   |  25,29    Y   |  25,30    ;   |  25,31        | 
+|  26       z   |  26,29    Z   |  26,30    <   |  26,31        | 
+|  27       .   |  27,29    ,   |  27,30    >   |  27,31   BS   | 
+|  28   SPACE   |  28,29    ?   |  28,30 CRLF   |  28,31  DEL   | 
+|  29  (cont)   |               |               |               | 
+|  30  (cont)   |               |               |               | 
+|  31  (cont)   |               |               |               | 
++---------------+---------------+---------------+---------------+
+
+
+9. Here is a simple analysis of projected text efficiency compared with 
+'conventional' DominoEX:
+
+Message:    The Quick Brown Fox jumps over the lazy dog 1234567890.
+DominoEX    2211221221211211212122222112111121121221212122222222222 = 88 symbols
+IFKP.V1     2111211111211111211111111111111111111111111122222222221 = 69 symbols
+
+Message:    vk2abc de zl1xyz ge om ur rst529 name fred. hw? kkk
+DominoEX    222121111122222212111211111112221112112111212221222     = 75 symbols
+IFKP.V1     112111111111211111111111111112221111111111111121111     = 57 symbols
+
+It is about 27% more efficient than DominoEX. Note especially the score sending 
+typical 'ham speak' - some 30% more efficient than DominoEX. The typing speed at 
+7 cps is about 70 WPM.  Q codes and callsigns should be sent in lower case when
+possible.
+
+Character rate statistics for various character sets when sent using IFKP-1.0,
+the base rate:
+
+text: . abcdefghijklmn opqrstuvwxyz
+chars/sec: 7.812500
+
+text: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+chars/sec: 3.906250
+
+text: 0123456789
+chars/sec: 3.906250
+
+text: !@#$%&*()_+-=[]{}\|;:'",<>/?<bs><lf>
+chars/sec: 3.906250
+
+text: kh6ty de w1hkj ge om ur rst 529 name dave hw? kkk
+chars/sec:    6.96
+
+IFKP-0.5, IFKP-1.5 and IFKP-2.0 use a transmit symbol length with a factor of
+2.0, 0.6665, and 0.5 respectively.
+
+================================================================================
+
+10.
+
+static unsigned char ifkp_varicode[][2] = {
+    /* Primary alphabet */
+    { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
+    {27,31}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 28,0}, { 0, 0}, { 0, 0},
+    { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
+    { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0}, { 0, 0},
+    { 0, 0}, {11,30}, {12,30}, {13,30}, {14,30}, {15,30}, {16,30}, {17,30},
+    {18,30}, {19,30}, {20,30}, {21,30}, {27,29}, {22,30}, {27, 0}, {23,30},
+    {10,30}, { 1,30}, { 2,30}, { 3,30}, { 4,30}, { 5,30}, { 6,30}, { 7,30},
+    { 8,30}, { 9,30}, {24,30}, {25,30}, {26,30}, { 0,31}, {27,30}, {28,30},
+    { 0,29}, { 1,29}, { 2,29}, { 3,29}, { 4,29}, { 5,29}, { 6,29}, { 7,29},
+    { 8,29}, { 9,29}, {10,29}, {11,29}, {12,29}, {13,29}, {14,29}, {15,29},
+    {16,29}, {17,29}, {18,29}, {19,29}, {20,29}, {21,29}, {22,29}, {23,29},
+    {24,29}, {25,29}, {26,29}, { 1,31}, { 2,31}, { 3,31}, { 4,31}, { 5,31},
+    { 9,31}, { 1, 0}, { 2, 0}, { 3, 0}, { 4, 0}, { 5, 0}, { 6, 0}, { 7, 0},
+    { 8, 0}, { 9, 0}, {10, 0}, {10, 0}, {12, 0}, {13, 0}, {14, 0}, {15, 0},
+    {16, 0}, {17, 0}, {18, 0}, {19, 0}, {20, 0}, {21, 0}, {22, 0}, {23, 0},
+    {24, 0}, {25, 0}, {26, 0}, { 6,31}, { 7,31}, { 8,31}, { 0,31}, {28,31},
+
+11. IFKP transmits and receives in image mode.  The image mode is nearly identical
+to the FSQ image mode with the exception of the RGB transmission sequence.  FSQ
+transmits in Blue-Green-Red order, whereas IFKP transmits in Red-Green-Blue order.
+The IFKP image bandwidth is 800 Hz.
+

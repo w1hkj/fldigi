@@ -253,7 +253,7 @@ inline void WFdisp::makeMarker_(int width, const RGB* color, int freq, const RGB
 	if (marker_mode >= MODE_MT63_500S && marker_mode <= MODE_MT63_2000L)
 			bw_upper = (int)(width * 31 / 32);
 
-	if (marker_mode == MODE_FSQ)
+	if (marker_mode == MODE_FSQ || marker_mode == MODE_IFKP)
 			bw_upper = (int)(width * 32 / 33);
 
 	if (bw_lower + static_cast<int>(freq+0.5) < 0)
@@ -333,7 +333,7 @@ void WFdisp::makeMarker()
 	int bw_hi = marker_width;
 	if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 		bw_hi = bw_hi * 31 / 32;
-	if (mode == MODE_FSQ) bw_hi = bw_hi * 32 / 33;
+	if (mode == MODE_FSQ || mode == MODE_IFKP) bw_hi = bw_hi * 32 / 33;
 
 	for (int y = 0; y < WFMARKER - 2; y++) {
 		int incr = y * scale_width;
@@ -886,7 +886,7 @@ case Step: for (int row = 0; row < image_height; row++) { \
 		trx_mode mode = active_modem->get_mode();
 		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
-		if (mode == MODE_FSQ) {
+		if (mode == MODE_FSQ || mode == MODE_IFKP) {
 			bw_hi = bw_lo = 69 * bandwidth / 100;
 		}
 		RGBI  *pos1 = fft_img + (carrierfreq - offset - bw_lo) / step;
@@ -955,7 +955,7 @@ void WFdisp::drawcolorWF() {
 		int bw_hi = bandwidth / 2;
 		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
-		if (mode == MODE_FSQ) bw_hi = bw_hi * 32 / 33;
+		if (mode == MODE_FSQ || mode == MODE_IFKP) bw_hi = bw_hi * 32 / 33;
 		RGBI  *pos0 = (fft_img + cursorpos);
 		RGBI  *pos1 = (fft_img + cursorpos - bw_lo/step);
 		RGBI  *pos2 = (fft_img + cursorpos + bw_hi/step);
@@ -1036,7 +1036,7 @@ void WFdisp::drawspectrum() {
 		int bw_hi = bandwidth / 2;
 		if (mode >= MODE_MT63_500S && mode <= MODE_MT63_2000L)
 			bw_hi = bw_hi * 31 / 32;
-		if (mode == MODE_FSQ) bw_hi = bw_hi * 32 / 33;
+		if (mode == MODE_FSQ || mode == MODE_IFKP) bw_hi = bw_hi * 32 / 33;
 		uchar  *pos0 = pixmap + cursorpos;
 		uchar  *pos1 = (pixmap + cursorpos - bw_lo/step);
 		uchar  *pos2 = (pixmap + cursorpos + bw_hi/step);

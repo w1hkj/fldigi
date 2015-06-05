@@ -228,6 +228,8 @@ enum {
 
 	MODE_FSQ,
 
+	MODE_IFKP,
+
 	NUM_MODES,
 	NUM_RXTX_MODES = NUM_MODES - 2
 };

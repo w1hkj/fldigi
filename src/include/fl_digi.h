@@ -196,6 +196,10 @@ extern void			cbMONITOR(Fl_Widget *w, void *d);
 extern void			cbSELCAL(Fl_Widget *w, void *d);
 extern void			cbFSQCALL(Fl_Widget *w, void *d);
 
+extern void			ifkp_showTxViewer(char C = 'L');
+extern Fl_Double_Window	*ifkppicRxWin;
+extern Fl_Double_Window	*ifkppicTxWin;
+
 #include <FL/Fl_Bitmap.H>
 extern Fl_Bitmap image_s2n;
 

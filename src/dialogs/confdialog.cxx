@@ -300,6 +300,10 @@ static void cb_noiseDB(Fl_Counter2* o, void*) {
   progdefaults.s2n = o->value();
 }
 
+Fl_Counter *ctrl_freq_offset=(Fl_Counter *)0;
+
+Fl_Check_Button *btnOffsetOn=(Fl_Check_Button *)0;
+
 Fl_Group *tabUI=(Fl_Group *)0;
 
 Fl_Tabs *tabsUI=(Fl_Tabs *)0;
@@ -2865,10 +2869,6 @@ static void cb_btn_fsq_lowercase(Fl_Check_Button* o, void*) {
   progdefaults.fsq_lowercase=o->value();
 progdefaults.changed = true;
 }
-
-Fl_Group *grpFSQtest=(Fl_Group *)0;
-
-Fl_Counter *ctrl_freq_offset=(Fl_Counter *)0;
 
 Fl_Output *txtAuditLog=(Fl_Output *)0;
 
@@ -5514,7 +5514,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -5599,8 +5598,7 @@ Fl_Double_Window* ConfigureDialog() {
             btnNoiseOn->callback((Fl_Callback*)cb_btnNoiseOn);
             o->value(progdefaults.noise);
           } // Fl_Check_Button* btnNoiseOn
-          { Fl_Counter2* o = noiseDB = new Fl_Counter2(90, 307, 89, 21, _("dB"));
-            noiseDB->type(1);
+          { Fl_Counter2* o = noiseDB = new Fl_Counter2(312, 264, 130, 21, _("dB"));
             noiseDB->box(FL_UP_BOX);
             noiseDB->color(FL_BACKGROUND_COLOR);
             noiseDB->selection_color(FL_INACTIVE_COLOR);
@@ -5610,13 +5608,23 @@ Fl_Double_Window* ConfigureDialog() {
             noiseDB->labelcolor(FL_FOREGROUND_COLOR);
             noiseDB->minimum(-18);
             noiseDB->maximum(60);
-            noiseDB->step(1);
             noiseDB->value(20);
             noiseDB->callback((Fl_Callback*)cb_noiseDB);
             noiseDB->align(Fl_Align(FL_ALIGN_LEFT));
             noiseDB->when(FL_WHEN_CHANGED);
             o->value(progdefaults.s2n);
+            o->lstep(1);
           } // Fl_Counter2* noiseDB
+          { Fl_Counter* o = ctrl_freq_offset = new Fl_Counter(312, 304, 130, 21, _("freq-offset"));
+            ctrl_freq_offset->tooltip(_("ONLY FOR TESTING !"));
+            ctrl_freq_offset->minimum(-250);
+            ctrl_freq_offset->maximum(250);
+            ctrl_freq_offset->align(Fl_Align(FL_ALIGN_LEFT));
+            o->lstep(10);
+          } // Fl_Counter* ctrl_freq_offset
+          { btnOffsetOn = new Fl_Check_Button(93, 307, 70, 15, _("Offset on"));
+            btnOffsetOn->down_box(FL_DOWN_BOX);
+          } // Fl_Check_Button* btnOffsetOn
           grpNoise->end();
         } // Fl_Group* grpNoise
         tabOperator->end();
@@ -7199,6 +7207,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 355);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -8082,19 +8091,6 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Check_Button* btn_fsq_lowercase
               o->end();
             } // Fl_Group* o
-            { grpFSQtest = new Fl_Group(5, 295, 585, 70, _("Testing"));
-              grpFSQtest->box(FL_ENGRAVED_BOX);
-              grpFSQtest->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              grpFSQtest->hide();
-              { Fl_Counter* o = ctrl_freq_offset = new Fl_Counter(75, 324, 122, 21, _("freq-offset"));
-                ctrl_freq_offset->tooltip(_("ONLY FOR TESTING !"));
-                ctrl_freq_offset->minimum(-25);
-                ctrl_freq_offset->maximum(25);
-                ctrl_freq_offset->align(Fl_Align(FL_ALIGN_TOP));
-                o->lstep(1);
-              } // Fl_Counter* ctrl_freq_offset
-              grpFSQtest->end();
-            } // Fl_Group* grpFSQtest
             { Fl_Group* o = new Fl_Group(5, 291, 585, 80, _("Logging"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));

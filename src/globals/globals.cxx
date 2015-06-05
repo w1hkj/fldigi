@@ -196,8 +196,9 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "", DISABLED_IO },
 	{ MODE_FFTSCAN, &fftscan_modem, "FREQSCAN", "Freq Scan", "", "", "", DISABLED_IO },
 
-	{ MODE_FSQ, &fsq_modem, "FSQ", "FSQ", "", "", "", DISABLED_IO }
+	{ MODE_FSQ, &fsq_modem, "FSQ", "FSQ", "FSQ", "FSQ", "FSQ", DISABLED_IO },
 
+	{ MODE_IFKP, &ifkp_modem, "IFKP", "IFKP", "IFKP", "IFKP", "IFKP", DISABLED_IO }
 };
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)

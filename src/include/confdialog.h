@@ -32,6 +32,9 @@ extern Fl_Group *grpNoise;
 #include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnNoiseOn;
 extern Fl_Counter2 *noiseDB;
+#include <FL/Fl_Counter.H>
+extern Fl_Counter *ctrl_freq_offset;
+extern Fl_Check_Button *btnOffsetOn;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
 extern Fl_Group *tabBrowser;
@@ -106,7 +109,6 @@ extern Fl_Input2 *inpNonword;
 extern Fl_Check_Button *btnUSunits;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
-#include <FL/Fl_Counter.H>
 extern Fl_Counter *cnt_macro_height;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Round_Button *btn_scheme_0;
@@ -318,8 +320,6 @@ extern Fl_Round_Button *btn_fsqbaud[4];
 extern Fl_Choice *sel_fsq_frequency;
 extern Fl_Choice *sel_fsq_sounder;
 extern Fl_Check_Button *btn_fsq_lowercase;
-extern Fl_Group *grpFSQtest;
-extern Fl_Counter *ctrl_freq_offset;
 extern Fl_Output *txtAuditLog;
 extern Fl_Light_Button *btn_enable_auditlog;
 extern Fl_Button *btn_select_auditlog;

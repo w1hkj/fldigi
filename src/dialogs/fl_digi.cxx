@@ -93,6 +93,7 @@
 #include "throb.h"
 //#include "pkt.h"
 #include "fsq.h"
+#include "ifkp.h"
 #include "wwv.h"
 #include "analysis.h"
 #include "fftscan.h"
@@ -485,6 +486,15 @@ void cb_fsq3(Fl_Widget *w, void *arg);
 void cb_fsq4p5(Fl_Widget *w, void *arg);
 void cb_fsq6(Fl_Widget *w, void *arg);
 
+void cb_ifkp0p5(Fl_Widget *w, void *arg);
+void cb_ifkp1p0(Fl_Widget *w, void *arg);
+void cb_ifkp1p5(Fl_Widget *w, void *arg);
+void cb_ifkp2p0(Fl_Widget *w, void *arg);
+void cb_ifkp0p5a(Fl_Widget *w, void *arg);
+void cb_ifkp1p0a(Fl_Widget *w, void *arg);
+void cb_ifkp1p5a(Fl_Widget *w, void *arg);
+void cb_ifkp2p0a(Fl_Widget *w, void *arg);
+
 void set_colors();
 
 //void cb_pkt1200(Fl_Widget *w, void *arg);
@@ -701,6 +711,14 @@ static const Fl_Menu_Item quick_change_fsq[] = {
 	{ "FSQ3", 0, cb_fsq3, (void *)MODE_FSQ },
 	{ "FSQ4.5", 0, cb_fsq4p5, (void *)MODE_FSQ },
 	{ "FSQ6", 0, cb_fsq6, (void *)MODE_FSQ },
+	{ 0 }
+};
+
+static const Fl_Menu_Item quick_change_ifkp[] = {
+	{ "IFKP 0.5", 0, cb_ifkp0p5a, (void *)MODE_IFKP },
+	{ "IFKP 1.0", 0, cb_ifkp1p0a, (void *)MODE_IFKP },
+	{ "IFKP 1.5", 0, cb_ifkp1p5a, (void *)MODE_IFKP },
+	{ "IFKP 2.0", 0, cb_ifkp2p0a, (void *)MODE_IFKP },
 	{ 0 }
 };
 
@@ -967,6 +985,50 @@ void cb_fsq6(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
+void cb_ifkp0p5(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 0.5;
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp0p5a(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 0.5;
+}
+
+void cb_ifkp1p0(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 1;
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp1p0a(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 1;
+}
+
+void cb_ifkp1p5(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 1.5;
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp1p5a(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 1.5;
+}
+
+void cb_ifkp2p0(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 2;
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp2p0a(Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkpbaud = 2;
+}
+
 void set_dominoex_tab_widgets()
 {
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
@@ -1148,6 +1210,14 @@ void remove_windows()
 	if (fsqpicTxWin){
 		fsqpicTxWin->hide();
 		delete fsqpicTxWin;
+	}
+	if (ifkppicRxWin){
+		ifkppicRxWin->hide();
+		delete ifkppicRxWin;
+	}
+	if (ifkppicTxWin){
+		ifkppicTxWin->hide();
+		delete ifkppicTxWin;
 	}
 	if (wefax_pic_rx_win) {
 		wefax_pic_rx_win->hide();
@@ -1453,6 +1523,12 @@ void init_modem(trx_mode mode, int freq)
 			      *mode_info[mode].modem = new fsq(mode), freq);
 		modem_config_tab = tabFSQ;
 		quick_change = quick_change_fsq;
+		break;
+
+	case MODE_IFKP:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new ifkp(mode), freq);
+		quick_change = quick_change_ifkp;
 		break;
 
 	case MODE_RTTY:
@@ -3801,6 +3877,13 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_HELL80].name, 0, cb_init_mode, (void *)MODE_HELL80, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ "IFKP", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 0.5", 0, cb_ifkp0p5, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 1.0", 0, cb_ifkp1p0, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 1.5", 0, cb_ifkp1p5, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 2.0", 0, cb_ifkp2p0, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -6311,7 +6394,6 @@ int alt_btn_width = 2 * DEFAULT_SW;
 	createRecordLoader();
 	if (withnoise) {
 		grpNoise->show();
-		grpFSQtest->show();
 	}
 
 	switch (progdefaults.mbar_scheme) {
@@ -6870,7 +6952,6 @@ void create_fl_digi_main_WF_only() {
 	createRecordLoader();
 	if (withnoise) {
 		grpNoise->show();
-		grpFSQtest->show();
 	}
 	altTabs();
 

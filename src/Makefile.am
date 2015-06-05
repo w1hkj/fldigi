@@ -475,6 +475,7 @@ fldigi_SOURCES += \
 	include/viterbi.h \
 	include/waterfall.h \
 	include/fsq.h \
+	include/ifkp.h \
 	include/wwv.h \
 	include/xmlreader.h \
 	include/adif_def.h \
@@ -605,6 +606,7 @@ fldigi_SOURCES += \
 	widgets/smeter.cxx \
 	widgets/pwrmeter.cxx \
 	fsq/fsq.cxx \
+	ifkp/ifkp.cxx \
 	fsq/fsq_monitor.cxx \
 	wwv/analysis.cxx \
 	wwv/fftscan.cxx \
@@ -643,6 +645,9 @@ EXTRA_fldigi_SOURCES += \
 	include/Fl_Text_Editor_mod.H \
 	fsq/fsq-pic.cxx \
 	fsq/bitmaps.cxx \
+	ifkp/ifkp_bitmaps.cxx \
+	ifkp/ifkp_varicode.cxx \
+	ifkp/ifkp-pic.cxx \
 	mfsk/mfsk-pic.cxx \
 	mt63/alias_1k.dat \
 	mt63/alias_2k.dat \

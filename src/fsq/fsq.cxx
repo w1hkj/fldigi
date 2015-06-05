@@ -1228,6 +1228,8 @@ void fsq::send_tone(int tone)
 	if (speed != progdefaults.fsqbaud) restart();
 
 	frequency = (basetone + tone * spacing) * samplerate / FSQ_SYMLEN;
+	if (grpNoise->visible() && btnOffsetOn->value()==true)
+		frequency += ctrl_freq_offset->value();
 	phaseincr = 2.0 * M_PI * frequency / samplerate;
 	prevtone = tone;
 

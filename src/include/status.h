@@ -168,6 +168,7 @@ struct status {
 	bool	meters;
 
 	bool	fsq_rx_abort;
+	bool	ifkp_rx_abort;
 
 	bool	bLastStateRead;
 

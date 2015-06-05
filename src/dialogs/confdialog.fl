@@ -351,7 +351,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
       Fl_Group tabOperator {
         label Operator
         callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -411,7 +411,7 @@ progdefaults.changed = true;}
           class Fl_Input2
         }
         Fl_Group grpNoise {
-          label {Test Signal - Do NOT use with transmitter} open
+          label {Test Signal - Do NOT use with transmitter} open selected
           xywh {55 231 490 114} box ENGRAVED_FRAME align 21 hide
         } {
           Fl_Check_Button btnNoiseOn {
@@ -423,9 +423,19 @@ progdefaults.changed = true;}
           Fl_Counter noiseDB {
             label dB
             callback {progdefaults.s2n = o->value();}
-            xywh {90 307 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
+            xywh {312 264 130 21} align 4 minimum -18 maximum 60 value 20
             code0 {o->value(progdefaults.s2n);}
+            code1 {o->lstep(1);}
             class Fl_Counter2
+          }
+          Fl_Counter ctrl_freq_offset {
+            label {freq-offset}
+            tooltip {ONLY FOR TESTING !} xywh {312 304 130 21} align 4 minimum -250 maximum 250
+            code0 {o->lstep(10);}
+          }
+          Fl_Check_Button btnOffsetOn {
+            label {Offset on}
+            xywh {93 307 70 15} down_box DOWN_BOX
           }
         }
       }
@@ -2802,7 +2812,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355}
+        xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
@@ -3531,19 +3541,9 @@ progdefaults.changed = true;} open
               Fl_Check_Button btn_fsq_lowercase {
                 label {MYCALL always lower case}
                 callback {progdefaults.fsq_lowercase=o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {convert operator callsign to lower case} xywh {306 217 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.fsq_lowercase);}
-              }
-            }
-            Fl_Group grpFSQtest {
-              label Testing open
-              xywh {5 295 585 70} box ENGRAVED_BOX align 21 hide
-            } {
-              Fl_Counter ctrl_freq_offset {
-                label {freq-offset}
-                tooltip {ONLY FOR TESTING !} xywh {75 324 122 21} align 1 minimum -25 maximum 25
-                code0 {o->lstep(1);}
               }
             }
             Fl_Group {} {
