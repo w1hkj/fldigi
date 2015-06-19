@@ -92,10 +92,13 @@
 #include "feld.h"
 #include "throb.h"
 //#include "pkt.h"
+#include "fsq.h"
 #include "wwv.h"
 #include "analysis.h"
 #include "fftscan.h"
 #include "ssb.h"
+
+#include "fileselect.h"
 
 #include "smeter.h"
 #include "pwrmeter.h"
@@ -230,6 +233,31 @@ Fl_Group			*wefax_group = 0;
 Fl_Group			*mvgroup = 0;
 
 Panel				*text_panel = 0;
+
+//------------------------------------------------------------------------------
+// groups and widgets used exclusively for FSQCALL
+
+Fl_Group			*fsq_group = 0;
+Fl_Group			*fsq_upper = 0;
+Fl_Group			*fsq_lower = 0;
+Fl_Group			*fsq_upper_left = 0;
+Fl_Group			*fsq_upper_right = 0;
+Fl_Group			*fsq_lower_left = 0;
+Fl_Group			*fsq_lower_right = 0;
+
+FTextRX				*fsq_rx_text = 0;
+FTextTX				*fsq_tx_text = 0;
+Fl_Browser			*fsq_heard = (Fl_Browser *)0;
+
+Fl_Light_Button		*btn_FSQCALL = (Fl_Light_Button *)0;
+Fl_Light_Button		*btn_SELCAL = (Fl_Light_Button *)0;
+Fl_Light_Button		*btn_MONITOR = (Fl_Light_Button *)0;
+Fl_Button			*btn_FSQQTH = (Fl_Button *)0;
+Fl_Button			*btn_FSQQTC = (Fl_Button *)0;
+Progress			*ind_fsq_speed = (Progress *)0;
+Progress			*ind_fsq_s2n = (Progress *)0;
+
+//------------------------------------------------------------------------------
 
 Fl_Group			*macroFrame1 = 0;
 Fl_Group			*macroFrame2 = 0;
@@ -452,6 +480,11 @@ void cb_rtty75N(Fl_Widget *w, void *arg);
 void cb_rtty75W(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
+void cb_fsq2(Fl_Widget *w, void *arg);
+void cb_fsq3(Fl_Widget *w, void *arg);
+void cb_fsq4p5(Fl_Widget *w, void *arg);
+void cb_fsq6(Fl_Widget *w, void *arg);
+
 void set_colors();
 
 //void cb_pkt1200(Fl_Widget *w, void *arg);
@@ -660,6 +693,14 @@ static const Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY },
 	{ "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY },
 	{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY },
+	{ 0 }
+};
+
+static const Fl_Menu_Item quick_change_fsq[] = {
+	{ "FSQ2", 0, cb_fsq2, (void *)MODE_FSQ },
+	{ "FSQ3", 0, cb_fsq3, (void *)MODE_FSQ },
+	{ "FSQ4.5", 0, cb_fsq4p5, (void *)MODE_FSQ },
+	{ "FSQ6", 0, cb_fsq6, (void *)MODE_FSQ },
 	{ 0 }
 };
 
@@ -886,6 +927,46 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
+void set_fsq_tab_widgets()
+{
+	btn_fsqbaud[0]->value(0);
+	btn_fsqbaud[1]->value(0);
+	btn_fsqbaud[2]->value(0);
+	btn_fsqbaud[3]->value(0);
+	if (progdefaults.fsqbaud == 2.0) btn_fsqbaud[0]->value(1);
+	else if (progdefaults.fsqbaud == 3.0) btn_fsqbaud[1]->value(1);
+	else if (progdefaults.fsqbaud == 4.5) btn_fsqbaud[2]->value(1);
+	else btn_fsqbaud[3]->value(1);
+}
+
+void cb_fsq2(Fl_Widget *w, void *arg)
+{
+	progdefaults.fsqbaud = 2.0;
+	set_fsq_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_fsq3(Fl_Widget *w, void *arg)
+{
+	progdefaults.fsqbaud = 3.0;
+	set_fsq_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_fsq4p5(Fl_Widget *w, void *arg)
+{
+	progdefaults.fsqbaud = 4.5;
+	set_fsq_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_fsq6(Fl_Widget *w, void *arg)
+{
+	progdefaults.fsqbaud = 6.0;
+	set_fsq_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
 void set_dominoex_tab_widgets()
 {
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
@@ -936,11 +1017,18 @@ void startup_modem(modem* m, int f)
 	if (!bWF_only) {
 		if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
 			center_group->hide();
+			fsq_group->hide();
 			wefax_group->show();
 			wefax_group->redraw();
+		} else if (id == MODE_FSQ) {
+			center_group->hide();
+			wefax_group->hide();
+			fsq_group->show();
+			fsq_group->redraw();
 		} else {
 			center_group->show();
 			wefax_group->hide();
+			fsq_group->hide();
 			if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 				ReceiveText->hide();
 				FHdisp->show();
@@ -1053,6 +1141,14 @@ void remove_windows()
 		picTxWin->hide();
 		delete picTxWin;
 	}
+	if (fsqpicRxWin){
+		fsqpicRxWin->hide();
+		delete fsqpicRxWin;
+	}
+	if (fsqpicTxWin){
+		fsqpicTxWin->hide();
+		delete fsqpicTxWin;
+	}
 	if (wefax_pic_rx_win) {
 		wefax_pic_rx_win->hide();
 		delete wefax_pic_rx_win;
@@ -1073,6 +1169,16 @@ void remove_windows()
 		MacroEditDialog->hide();
 		delete MacroEditDialog;
 	}
+	if (fsqMonitor) {
+		fsqMonitor->hide();
+		delete fsqMonitor;
+	}
+
+//	if (fsqDebug) {
+//		fsqDebug->hide();
+//		delete fsqDebug;
+//	}
+
 	debug::stop();
 }
 
@@ -1342,6 +1448,13 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_contestia;
 		break;
 
+	case MODE_FSQ:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new fsq(mode), freq);
+		modem_config_tab = tabFSQ;
+		quick_change = quick_change_fsq;
+		break;
+
 	case MODE_RTTY:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new rtty(mode), freq);
@@ -1500,12 +1613,21 @@ void set_default_charset(void)
 // if w is not NULL, give focus to TransmitText only if the last event was an Enter keypress
 void restoreFocus(int n)
 {
-// printf("from %d\n", n);
-	TransmitText->take_focus();
+	if (!active_modem) {
+		TransmitText->take_focus();
+		return;
+	}
+	if (active_modem->get_mode() == MODE_FSQ && fsq_tx_text)
+		fsq_tx_text->take_focus();
+	else if (TransmitText)
+		TransmitText->take_focus();
 }
 
 void macro_cb(Fl_Widget *w, void *v)
 {
+	if (active_modem->get_mode() == MODE_FSQ)
+		return;
+
 	int b = (int)(reinterpret_cast<long> (v));
 
 	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
@@ -3168,6 +3290,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += mh;
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3181,6 +3304,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			btnAltMacros2->deactivate();
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh);
@@ -3196,6 +3320,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			btnAltMacros2->deactivate();
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3215,6 +3340,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += mh2;
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3231,6 +3357,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += mh2;
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3240,6 +3367,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 		case 5:
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh2);
@@ -3256,6 +3384,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 		case 6:
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe2(0, y1, w, mh2);
@@ -3272,6 +3401,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 		case 7:
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh2);
@@ -3287,6 +3417,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 		case 8:
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe2(0, y1, w, mh2);
@@ -3302,6 +3433,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 		case 9:
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3318,6 +3450,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 		case 10:
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3338,6 +3471,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += mh2;
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh2);
@@ -3353,6 +3487,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += mh2;
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
+			fsq_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe2(0, y1, w, mh2);
@@ -3488,6 +3623,7 @@ UI_return:
 
 	center_group->redraw();
 	wefax_group->redraw();
+	fsq_group->redraw();
 	macroFrame1->redraw();
 	macroFrame2->redraw();
 	viewer_redraw();
@@ -3648,6 +3784,13 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_DOMINOEX22].name, 0, cb_init_mode, (void *)MODE_DOMINOEX22, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX44].name, 0,  cb_init_mode, (void *)MODE_DOMINOEX44, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX88].name, 0,  cb_init_mode, (void *)MODE_DOMINOEX88, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ "FSQ", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "FSQ-6", 0, cb_fsq6, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "FSQ-4.5", 0, cb_fsq4p5, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "FSQ-3", 0, cb_fsq3, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "FSQ-2", 0, cb_fsq2, (void *)MODE_FSQ, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"Hell", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5095,7 +5238,7 @@ void create_fl_digi_main_primary() {
 				rightof(qso_btnDelFreq) + pad,  Hmenu + pad,
 				opB_w, Hqsoframe - 2 * pad );
 			// use fixed column widths of 28%, 20%, 30% ... remainder is 4th column
-			static int opB_widths[] = {28*opB_w/100, 20*opB_w/100, 30*opB_w/100};
+			static int opB_widths[] = {28*opB_w/100, 20*opB_w/100, 30*opB_w/100, 0};
 			qso_opBrowser->column_widths(opB_widths);
 			qso_opBrowser->column_char('|');
 			qso_opBrowser->tooltip(_("Select operating parameters"));
@@ -5700,8 +5843,186 @@ int alt_btn_width = 2 * DEFAULT_SW;
 			wefax_pic::create_both( true );
 		wefax_group->end();
 
+		fsq_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+			fsq_group->box(FL_FLAT_BOX);
+// upper, receive fsq widgets
+				fsq_upper = new Fl_Group(
+							0, Y, 
+							progStatus.mainW, Htext - 66);
+				fsq_upper->box(FL_FLAT_BOX);
+					fsq_upper_left = new Fl_Group(
+							0, Y, fsq_upper->w() - 160, fsq_upper->h());
+					fsq_upper_left->box(FL_FLAT_BOX);
+					// add rx & monitor
+						fsq_rx_text = new FTextRX(
+								0, Y,
+								fsq_upper_left->w(), fsq_upper_left->h());
+						fsq_rx_text->color(
+							fl_rgb_color(
+								progdefaults.RxColor.R,
+								progdefaults.RxColor.G,
+								progdefaults.RxColor.B),
+								progdefaults.RxTxSelectcolor);
+						fsq_rx_text->setFont(progdefaults.RxFontnbr);
+						fsq_rx_text->setFontSize(progdefaults.RxFontsize);
+						fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+						fsq_rx_text->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+						fsq_rx_text->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+						fsq_rx_text->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+						fsq_rx_text->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+
+						fsq_upper_left->resizable(fsq_rx_text);
+					fsq_upper_left->end();
+					
+					fsq_upper_right = new Fl_Group(
+							fsq_upper_left->w(), Y, 160, fsq_upper->h());
+						fsq_upper_right->box(FL_FLAT_BOX);
+
+						static int heard_widths[] = 
+							{ 35*fsq_upper_right->w()/100, 
+							  30*fsq_upper_right->w()/100, 
+							  0 };
+						fsq_heard = new Fl_Browser(
+								fsq_upper_right->x(), fsq_upper_right->y(),
+								fsq_upper_right->w(), fsq_upper_right->h());
+						fsq_heard->column_widths(heard_widths);
+						fsq_heard->column_char(',');
+						fsq_heard->tooltip(_("Select FSQ station"));
+						fsq_heard->callback((Fl_Callback*)cb_fsq_heard);
+						fsq_heard->type(FL_MULTI_BROWSER);
+						fsq_heard->box(FL_DOWN_BOX);
+						fsq_heard->add("allcall");
+						fsq_heard->labelfont(4);
+						fsq_heard->labelsize(12);
+#ifdef __APPLE__
+						fsq_heard->textfont(FL_SCREEN_BOLD);
+						fsq_heard->textsize(13);
+#else
+						fsq_heard->textfont(FL_HELVETICA);
+						fsq_heard->textsize(13);
+#endif
+
+					fsq_upper_right->end();
+
+					fsq_upper->resizable(fsq_upper_left);
+				fsq_upper->end();
+
+// lower, transmit fsq widgets
+				fsq_lower = new Fl_Group(
+							0, Y + fsq_upper->h(), 
+							progStatus.mainW, 66);
+				fsq_lower->box(FL_FLAT_BOX);
+
+					fsq_tx_text = new FTextTX(
+									0, fsq_lower->y(), 
+									fsq_upper_left->w(), fsq_lower->h());
+					fsq_tx_text->color(
+						fl_rgb_color(
+							progdefaults.TxColor.R,
+							progdefaults.TxColor.G,
+							progdefaults.TxColor.B),
+							progdefaults.RxTxSelectcolor);
+					fsq_tx_text->setFont(progdefaults.TxFontnbr);
+					fsq_tx_text->setFontSize(progdefaults.TxFontsize);
+					fsq_tx_text->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+					fsq_tx_text->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+					fsq_tx_text->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+					fsq_tx_text->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+					fsq_tx_text->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+					fsq_tx_text->align(FL_ALIGN_CLIP);
+
+					int qw = 160;
+					int gh = fsq_lower->h();
+					int bw2 = qw / 2;
+					int bw3 = qw / 3;
+					int bh = 20;
+					fsq_lower_right = new Fl_Group(
+									fsq_tx_text->w(), fsq_tx_text->y(),
+									qw, gh);
+					fsq_lower_right->box(FL_FLAT_BOX);
+					fsq_lower_right->color(FL_WHITE);
+
+						int _yp = fsq_lower_right->y();
+						int _xp = fsq_lower_right->x();
+
+						btn_FSQCALL = new Fl_Light_Button(
+							_xp, _yp, bw2, bh, "FSQCALL");
+						btn_FSQCALL->value(progdefaults.fsq_directed);
+						btn_FSQCALL->selection_color(FL_DARK_GREEN);
+						btn_FSQCALL->callback(cbFSQCALL, 0);
+						btn_FSQCALL->tooltip("Left click - on/off\nRight click - debug on/off");
+
+						_xp += bw2;
+
+						btn_SELCAL = new Fl_Light_Button(
+							_xp, _yp, bw2, bh, "SELCAL");
+						btn_SELCAL->selection_color(FL_DARK_RED);
+						btn_SELCAL->value(1);
+						btn_SELCAL->callback(cbSELCAL, 0);
+						btn_SELCAL->tooltip("Sleep / Active");
+
+						_xp = fsq_lower_right->x();
+						_yp += bh;
+
+						btn_MONITOR = new Fl_Light_Button(
+							_xp, _yp, bw3, bh, "MON");
+						btn_MONITOR->selection_color(FL_DARK_GREEN);
+						btn_MONITOR->value(progdefaults.fsq_show_monitor = false);
+						btn_MONITOR->callback(cbMONITOR, 0);
+						btn_MONITOR->tooltip("Monitor Open/Close");
+
+						_xp += bw3;
+
+						btn_FSQQTH = new Fl_Button(
+							_xp, _yp, bw3, bh, "QTH");
+						btn_FSQQTH->callback(cbFSQQTH, 0);
+
+						_xp += bw3;
+
+						btn_FSQQTC  = new Fl_Button(
+							_xp, _yp, bw3 + 1, bh, "QTC");
+						btn_FSQQTC->callback(cbFSQQTC, 0);
+
+						_xp = fsq_lower_right->x();
+						_yp += (bh + 1);
+
+						ind_fsq_s2n = new Progress(
+							_xp + 2, _yp, qw - 4, 8, "");
+						ind_fsq_s2n->color(FL_WHITE, FL_DARK_GREEN);
+						ind_fsq_s2n->type(Progress::HORIZONTAL);
+						ind_fsq_s2n->value(40);
+
+						_yp += 8;
+						int th = fsq_tx_text->y() + fsq_tx_text->h();
+						th = (th - _yp);
+
+// Clear remainder of area if needed.
+						if(th > image_s2n.h()) {
+							Fl_Box *_nA = new Fl_Box(_xp, _yp, qw, th, "");
+							_nA->box(FL_FLAT_BOX);
+							_nA->color(FL_WHITE);
+						}
+
+// Add S/N rule
+						Fl_Box *s2n = new Fl_Box(
+							_xp, _yp, qw, image_s2n.h(), "");
+						s2n->box(FL_FLAT_BOX);
+						s2n->color(FL_WHITE);
+						s2n->align(FL_ALIGN_INSIDE | FL_ALIGN_TOP | FL_ALIGN_CENTER | FL_ALIGN_CLIP);
+						s2n->image(image_s2n);
+
+					fsq_lower_right->end();
+
+					fsq_lower->resizable(fsq_tx_text);
+
+				fsq_lower->end();
+
+			fsq_group->resizable(fsq_upper);
+		fsq_group->end();
+
 		center_group->show();
 		wefax_group->hide();
+		fsq_group->hide();
 
 		Y += Htext;
 
@@ -5983,10 +6304,15 @@ int alt_btn_width = 2 * DEFAULT_SW;
 
 	clearQSO();
 
+	fsqMonitor = create_fsqMonitor();
+//	fsqDebug = create_fsqDebug();
+
 	createConfig();
 	createRecordLoader();
-	if (withnoise)
+	if (withnoise) {
 		grpNoise->show();
+		grpFSQtest->show();
+	}
 
 	switch (progdefaults.mbar_scheme) {
 		case 0: btn_scheme_0->setonly(); break;
@@ -6542,8 +6868,10 @@ void create_fl_digi_main_WF_only() {
 
 	createConfig();
 	createRecordLoader();
-	if (withnoise)
+	if (withnoise) {
 		grpNoise->show();
+		grpFSQtest->show();
+	}
 	altTabs();
 
 	if (rx_only) {
@@ -6594,6 +6922,9 @@ void put_Bandwidth(int bandwidth)
 static void callback_set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
+
+	if (active_modem->get_mode() == MODE_FSQ)
+		ind_fsq_s2n->value(metric);
 
 	if(progStatus.pwrsqlonoff) {
 		if ((metric >= progStatus.sldrPwrSquelchValue) || inhibit_tx_seconds)
@@ -6803,7 +7134,10 @@ void add_tx_char(int data)
 
 //======================================================================
 static void display_rx_data(const unsigned char data, int style) {
-	ReceiveText->add(data, style);
+	if (active_modem->get_mode() == MODE_FSQ)
+		fsq_rx_text->add(data,style);
+	else
+		ReceiveText->add(data, style);
 
 	if (bWF_only) return;
 
@@ -7036,7 +7370,7 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 	m[sizeof(m) - 1] = '\0';
 
 	info1msg = msg;
-	if (progStatus.NO_RIGLOG) return;
+	if (progStatus.NO_RIGLOG && !(active_modem->get_mode() == MODE_FSQ)) return;
 	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
@@ -7157,27 +7491,75 @@ void do_que_execute(void *)
 	que_waiting = false;
 }
 
+int get_fsq_tx_char(void)
+{
+	int c = fsq_tx_text->nextChar();
+
+	if (c == GET_TX_CHAR_ETX) {
+		return c;
+	}
+	if (c == -1)
+		return(GET_TX_CHAR_NODATA);
+
+	if (c == '^') {
+		c = fsq_tx_text->nextChar();
+		if (c == -1)
+		return(GET_TX_CHAR_NODATA);
+		switch (c) {
+			case 'p': case 'P':
+				fsq_tx_text->pause();
+				break;
+			case 'r':
+				REQ_SYNC(&FTextTX::clear_sent, fsq_tx_text);
+				REQ(Rx_queue_execute);
+				return(GET_TX_CHAR_ETX);
+				break;
+			case 'R':
+				if (fsq_tx_text->eot()) {
+					REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+					REQ(Rx_queue_execute);
+					return(GET_TX_CHAR_ETX);
+				} else
+					return(GET_TX_CHAR_NODATA);
+				break;
+			case 'L':
+				REQ(qso_save_now);
+				return(GET_TX_CHAR_NODATA);
+				break;
+			case 'C':
+				REQ(clearQSO);
+				return(GET_TX_CHAR_NODATA);
+				break;
+			default: ;
+		}
+	}
+
+	return(c);
+}
+
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 
-string bools = "------";
-char testbools[7];
+//string bools = "------";
+//char testbools[7];
 
 int get_tx_char(void)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return get_fsq_tx_char();
+
 	enum { STATE_CHAR, STATE_CTRL };
 	static int state = STATE_CHAR;
 
-	snprintf(testbools, sizeof(testbools), "%c%c%c%c%c%c",
-		(tx_queue_done ? '1' : '0'),
-		(que_ok ? '1' : '0'),
-		(Qwait_time ? '1' : '0'),
-		(Qidle_time ? '1' : '0'),
-		(macro_idle_on ? '1' : '0'),
-		(idling ? '1' : '0' ) );
-	if (bools != testbools) {
-		bools = testbools;
-		std::cout << bools << "\n";
-	}
+//	snprintf(testbools, sizeof(testbools), "%c%c%c%c%c%c",
+//		(tx_queue_done ? '1' : '0'),
+//		(que_ok ? '1' : '0'),
+//		(Qwait_time ? '1' : '0'),
+//		(Qidle_time ? '1' : '0'),
+//		(macro_idle_on ? '1' : '0'),
+//		(idling ? '1' : '0' ) );
+//	if (bools != testbools) {
+//		bools = testbools;
+//		std::cout << bools << "\n";
+//	}
 
 	if (!que_ok) { return GET_TX_CHAR_NODATA; }
 	if (Qwait_time) { return GET_TX_CHAR_NODATA; }
@@ -7362,7 +7744,10 @@ void put_echo_char(unsigned int data, int style)
 
 	if (echo_chd.data_length() > 0)
 	{
-		REQ(&FTextRX::addstr, ReceiveText, echo_chd.data(), style);
+		if (active_modem->get_mode() == MODE_FSQ)
+			REQ(&FTextRX::addstr, fsq_rx_text, echo_chd.data(), style);
+		else
+			REQ(&FTextRX::addstr, ReceiveText, echo_chd.data(), style);
 		if (progStatus.LOGenabled)
 			logfile->log_to_file(cLogfile::LOG_TX, echo_chd.data());
 
@@ -7900,4 +8285,404 @@ void set_freq_control_lsd()
 	qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
 	qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
 	qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
+}
+
+//------------------------------------------------------------------------------
+// FSQ mode control interface functions
+//------------------------------------------------------------------------------
+std::string fsq_selected_call = "allcall";
+static int heard_picked;
+
+void clear_heard_list();
+
+void cb_heard_delete(Fl_Widget *w, void *)
+{
+	int sel = fl_choice2(_("Delete entry?"), _("All"), _("No"), _("Yes"));
+	if (sel == 2) {
+		fsq_heard->remove(heard_picked);
+		fsq_heard->redraw();
+	}
+	if (sel == 0) clear_heard_list();
+}
+
+void cb_heard_copy(Fl_Widget *w, void *)
+{
+// copy to clipboard
+	Fl::copy(fsq_selected_call.c_str(), fsq_selected_call.length(), 1);
+}
+
+void cb_heard_copy_all(Fl_Widget *w, void *)
+{
+	if (fsq_heard->size() < 2) return;
+	for (int i = 2; i <= fsq_heard->size(); i++) {
+		fsq_selected_call = fsq_heard->text(i);
+		size_t p = fsq_selected_call.find(',');
+		if (p != std::string::npos) fsq_selected_call.erase(p);
+		if ( i < fsq_heard->size()) fsq_selected_call.append(" ");
+		Fl::copy(fsq_selected_call.c_str(), fsq_selected_call.length(), 1);
+	}
+}
+
+void cb_heard_query_snr(Fl_Widget *w, void *)
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("?");
+	fsq_tx_text->add("^r");
+	start_tx();
+}
+
+void cb_heard_query_heard(Fl_Widget *w, void *)
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("$");
+	fsq_tx_text->add("^r");
+	start_tx();
+}
+
+void cb_heard_query_at(Fl_Widget *w, void *)
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("@");
+	fsq_tx_text->add("^r");
+	start_tx();
+}
+
+void cb_heard_query_carat(Fl_Widget *w, void *)
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("^^^r");
+	start_tx();
+}
+
+void cb_heard_query_amp(Fl_Widget *w, void *)
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("&");
+	fsq_tx_text->add("^r");
+	start_tx();
+}
+
+void cb_heard_send_file(Fl_Widget *w, void *)
+{
+	std::string deffilename = TempDir;
+	deffilename.append("fsq.txt");
+
+	const char* p = FSEL::select( "Select send file", "*.txt", deffilename.c_str());
+
+	if (p) {
+		std::string fname = fl_filename_name(p);
+		ifstream txfile(p);
+		if (!txfile) return;
+		stringstream text;
+		char ch = txfile.get();
+		while (!txfile.eof()) {
+			text << ch;
+			ch = txfile.get();
+		}
+		txfile.close();
+		fsq_tx_text->add(fsq_selected_call.c_str());
+		fsq_tx_text->add("#[");
+		fsq_tx_text->add(fname.c_str());
+		fsq_tx_text->add("]\n");
+		fsq_tx_text->add(text.str().c_str());
+		fsq_tx_text->add("^r");
+		start_tx();
+	}
+}
+
+void cb_heard_read_file(Fl_Widget *w, void*)
+{
+	const char *p = fl_input2("File name");
+	if (p == NULL) return;
+	string fname = p;
+	if (fname.empty()) return;
+
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("+[");
+	fsq_tx_text->add(fname.c_str());
+	fsq_tx_text->add("]^r");
+	start_tx();
+
+}
+
+void cb_heard_query_plus(Fl_Widget *w, void *)
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("+");
+	fsq_tx_text->add("^r");
+	start_tx();
+}
+
+void cb_heard_send_msg(Fl_Widget *w, void*)
+{
+	const char *p = fl_input2("Send message");
+	if (p == NULL) return;
+	string msg = p;
+	if (msg.empty()) return;
+
+	fsq_tx_text->add(fsq_selected_call.c_str());
+	fsq_tx_text->add("#[");
+	fsq_tx_text->add(active_modem->fsq_mycall());
+	fsq_tx_text->add("] ");
+	fsq_tx_text->add(msg.c_str());
+	fsq_tx_text->add("^r");
+	start_tx();
+
+}
+
+void cb_heard_send_image(Fl_Widget *w, void *)
+{
+	fsq_showTxViewer('L');
+}
+
+static const Fl_Menu_Item *heard_popup;
+
+static const Fl_Menu_Item all_popup[] = {
+	{ "Copy", 0, cb_heard_copy, 0 },
+	{ "Copy All", 0, cb_heard_copy_all, 0 , FL_MENU_DIVIDER },
+	{ "Send File To... (#)", 0, 0, 0, FL_MENU_DIVIDER },
+	{ "Send Image To... (%)", 0, cb_heard_send_image, 0 },
+	{ 0, 0, 0, 0 }
+};
+
+static const Fl_Menu_Item directed_popup[] = {
+	{ "Copy", 0, cb_heard_copy, 0 },
+	{ "Copy All", 0, cb_heard_copy_all, 0 },
+	{ "Delete", 0, cb_heard_delete, 0, FL_MENU_DIVIDER },
+	{ "Query SNR (?)", 0, cb_heard_query_snr, 0 },
+	{ "Query Heard ($)", 0, cb_heard_query_heard, 0 },
+	{ "Query Location (@@)", 0, cb_heard_query_at, 0 },
+	{ "Query Station Msg (&&)", 0, cb_heard_query_amp, 0 },
+	{ "Query program version (^)", 0, cb_heard_query_carat, 0, FL_MENU_DIVIDER },
+	{ "Send Message To... (#)", 0, cb_heard_send_msg, 0 },
+	{ "Read Messages From  (+)", 0, cb_heard_query_plus, 0,  FL_MENU_DIVIDER },
+	{ "Send File To... (#)", 0, cb_heard_send_file, 0 },
+	{ "Read File From... (+)", 0, cb_heard_read_file, 0, FL_MENU_DIVIDER },
+	{ "Send Image To... (%)", 0, cb_heard_send_image, 0 },
+	{ 0, 0, 0, 0 }
+};
+
+std::string heard_list()
+{
+	string heard;
+	if (fsq_heard->size() < 2) return heard;
+
+	for (int i = 2; i <= fsq_heard->size(); i++)
+		heard.append(fsq_heard->text(i)).append("\n");
+	heard.erase(heard.length() - 1);  // remove last LF
+	size_t p = heard.find(",");
+	while (p != std::string::npos) {
+		heard.insert(p+1," ");
+		p = heard.find(",", p+2);
+	}
+	return heard;
+}
+
+void clear_heard_list()
+{
+	fsq_heard->clear();
+	fsq_heard->add("allcall");
+	fsq_heard->redraw();
+}
+
+int tm2int(string s)
+{
+	int t = (s[2]-'0')*10 + s[3] - '0';
+	t += 60*((s[0] - '0')*10 + s[1] - '0');
+	return t * 60;
+}
+
+void age_heard_list()
+{
+	string entry;
+	string now = ztime(); now.erase(4);
+	int tnow = tm2int(now);
+	string tm;
+	int aging_secs;
+	switch (progdefaults.fsq_heard_aging) {
+		case 1: aging_secs = 60; break;   // 1 minute
+		case 2: aging_secs = 300; break;  // 5 minutes
+		case 3: aging_secs = 600; break;  // 10 minutes
+		case 4: aging_secs = 1200; break; // 20 minutes
+		case 5: aging_secs = 1800; break; // 30 minutes
+		case 0:
+		default: return;
+	}
+	if (fsq_heard->size() < 2) return;
+	for (int i = fsq_heard->size(); i > 1; i--) {
+		entry = fsq_heard->text(i);
+		size_t pos = entry.find(",");
+		tm = entry.substr(pos+1,5);
+		tm.erase(2,1);
+		int tdiff = tnow - tm2int(tm);
+		if (tdiff < 0) tdiff += 24*60*60;
+		if (tdiff >= aging_secs)
+			fsq_heard->remove(i);
+	}
+	fsq_heard->redraw();
+}
+
+void add_to_heard_list(const char *szcall, const char *szdb)
+{
+	std::string time = inpTimeOff->value();
+
+	std::string str = szcall;
+	str.append(",");
+	str += time[0]; str += time[1]; str += ':'; str += time[2]; str += time[3];
+	str.append(",").append(szdb);
+
+	if (fsq_heard->size() < 2) {
+		fsq_heard->add(str.c_str());
+	} else {
+		int found = 0;
+		std::string line;
+		for (int i = 2; i <= fsq_heard->size(); i++) {
+			line = fsq_heard->text(i);
+			if (line.find(szcall) == 0) {
+				found = i;
+				break;
+			}
+		}
+		if (found) {
+			fsq_heard->text(found, str.c_str());
+		} else {
+			fsq_heard->add(str.c_str());
+		}
+	}
+	fsq_heard->redraw();
+}
+
+bool in_heard(string call)
+{
+	std::string line;
+	for (int i = 1; i <= fsq_heard->size(); i++) {
+		line = fsq_heard->text(i);
+		if (line.find(call) == 0) return true;
+	}
+	return false;
+}
+
+void fsq_repeat_last_heard()
+{
+	fsq_tx_text->add(fsq_selected_call.c_str());
+}
+
+void cb_fsq_heard(Fl_Browser*, void*)
+{
+	heard_picked = fsq_heard->value();
+	if (!heard_picked)
+		return;
+	int k = Fl::event_key();
+	fsq_selected_call = fsq_heard->text(heard_picked);
+	size_t p = fsq_selected_call.find(',');
+	if (p != std::string::npos) fsq_selected_call.erase(p);
+
+	switch (k) {
+		case FL_Button + FL_LEFT_MOUSE:
+			if (Fl::event_clicks()) {
+				if (!fsq_tx_text->eot()) fsq_tx_text->add(" ");
+				fsq_tx_text->add(fsq_selected_call.c_str());
+			}
+			break;
+		case FL_Button + FL_RIGHT_MOUSE:
+			if (heard_picked == 1)
+				heard_popup = all_popup;
+			else
+				heard_popup = directed_popup;
+			const Fl_Menu_Item *m = heard_popup->popup(Fl::event_x(), Fl::event_y());
+			if (m && m->callback())
+				m->do_callback(0);
+			break;
+	}
+	restoreFocus();
+}
+
+void display_fsq_rx_text(std::string text, int style)
+{
+	REQ(&FTextRX::addstr, fsq_rx_text, text, style);
+}
+
+void display_fsq_mon_text(std::string text, int style)
+{
+	REQ(&FTextRX::addstr, fsq_monitor, text, style);
+}
+
+void cbFSQQTC(Fl_Widget *w, void *d)
+{
+	fsq_tx_text->add(progdefaults.fsqQTCtext.c_str());
+	restoreFocus();
+}
+
+void cbFSQQTH(Fl_Widget *w, void *d)
+{
+	fsq_tx_text->add(progdefaults.myQth.c_str());
+	restoreFocus();
+}
+
+void cbMONITOR(Fl_Widget *w, void *d)
+{
+	Fl_Light_Button *btn = (Fl_Light_Button *)w;
+	if (btn->value() == 1)
+		open_fsqMonitor();
+	else {
+		progStatus.fsqMONITORxpos = fsqMonitor->x();
+		progStatus.fsqMONITORypos = fsqMonitor->y();
+		progStatus.fsqMONITORwidth = fsqMonitor->w();
+		progStatus.fsqMONITORheight = fsqMonitor->h();
+		fsqMonitor->hide();
+	}
+}
+
+void close_fsqMonitor()
+{
+	if (!fsqMonitor) return;
+	btn_MONITOR->value(0);
+	progStatus.fsqMONITORxpos = fsqMonitor->x();
+	progStatus.fsqMONITORypos = fsqMonitor->y();
+	progStatus.fsqMONITORwidth = fsqMonitor->w();
+	progStatus.fsqMONITORheight = fsqMonitor->h();
+	fsqMonitor->hide();
+}
+
+void cbSELCAL(Fl_Widget *w, void *d)
+{
+	Fl_Light_Button *btn = (Fl_Light_Button *)w;
+	int val = btn->value();
+	if (val) {
+		btn->label("SELCAL");
+	} else {
+		btn->label("sleep");
+	}
+	btn->redraw_label();
+	restoreFocus();
+}
+
+void enableSELCAL()
+{
+	btn_SELCAL->value(1);
+	cbSELCAL(btn_SELCAL, (void *)0);
+}
+
+void cbFSQCALL(Fl_Widget *w, void *d)
+{
+	Fl_Light_Button *btn = (Fl_Light_Button *)w;
+	int mouse = Fl::event_button();
+	int val = btn->value();
+	if (mouse == FL_LEFT_MOUSE) {
+		progdefaults.fsq_directed = val;
+		progdefaults.changed = true;
+		if (val == 0) {
+			btn_SELCAL->value(0);
+			btn_SELCAL->deactivate();
+			btn->label("FSQ-OFF");
+			btn->redraw_label();
+		} else {
+			btn_SELCAL->activate();
+			btn_SELCAL->value(1);
+			cbSELCAL(btn_SELCAL, 0);
+			btn->label("FSQ-ON");
+			btn->redraw_label();
+		}
+	} 
+	restoreFocus();
 }

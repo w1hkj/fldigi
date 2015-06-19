@@ -44,6 +44,7 @@
 #include "re.h"
 #include "smeter.h"
 #include "pwrmeter.h"
+#include "picture.h"
 
 extern fre_t seek_re;
 
@@ -123,6 +124,100 @@ extern Fl_ComboBox		*qso_opBW;
 extern Fl_Button		*qso_opPICK;
 extern Fl_Browser		*qso_opBrowser;
 
+extern Fl_Browser		*fsq_heard;
+extern FTextRX			*fsq_rx_text;
+extern FTextRX			*fsq_monitor;
+extern FTextTX			*fsq_tx_text;
+
+extern Fl_Double_Window	*fsqMonitor;
+extern Fl_Double_Window	*create_fsqMonitor();
+extern void				open_fsqMonitor();
+extern void				close_fsqMonitor();
+
+extern Fl_Double_Window	*fsqDebug;
+extern Fl_Double_Window	*create_fsqDebug();
+extern void				open_fsqDebug();
+extern void				close_fsqDebug();
+extern void				write_fsqDebug(int ch, int style = FTextBase::RECV);
+extern void				write_fsqDebug(std::string s, int style = FTextBase::RECV);
+
+extern void fsq_disableshift();
+extern void fsq_enableshift();
+extern void fsq_updateRxPic(unsigned char data, int pos);
+extern void fsq_createRxViewer();
+extern void fsq_showRxViewer(int W, int H, char c);
+extern int  fsq_load_image(const char *n, int W = 320, int H = 240);
+extern void fsq_updateTxPic(unsigned char data, int pos);
+extern void cb_fsqpicTxLoad(Fl_Widget *, void *);
+extern void cb_fsqpicTxClose( Fl_Widget *w, void *);
+extern int  fsqpic_TxGetPixel(int pos, int color);
+extern void cb_fsqpicTxSendColor( Fl_Widget *w, void *);
+extern void cb_fsqpicTxSendGrey( Fl_Widget *w, void *);
+extern void cb_fsqpicTxSendAbort( Fl_Widget *w, void *);
+extern void cb_fsqpicTxSPP( Fl_Widget *w, void *);
+extern void fsq_createTxViewer();
+extern void fsq_TxViewerResize(int W, int H);
+extern void fsq_showTxViewer(char c);
+extern void fsq_deleteTxViewer();
+extern void fsq_deleteRxViewer();
+extern int  fsq_print_time_left(float time_sec, char *str, size_t len,
+				const char *prefix, const char *suffix);
+extern void fsq_transmit(void *);
+
+extern Fl_Light_Button		*btn_FSQCALL;
+extern Fl_Light_Button		*btn_SELCAL;
+extern Fl_Light_Button		*btn_MONITOR;
+extern Fl_Button			*btn_FSQQTH;
+extern Fl_Button			*btn_FSQQTC;
+extern Progress			*ind_fsq_speed;
+extern Progress			*ind_fsq_s2n;
+
+extern Fl_Double_Window	*fsqpicRxWin;
+extern Fl_Double_Window	*fsqpicTxWin;
+
+extern std::string		fsq_selected_call;
+extern bool			in_heard(std::string);
+extern void			cb_fsq_heard(Fl_Browser*, void*);
+extern std::string		heard_list();
+extern void			clear_heard_list();
+extern void			age_heard_list();
+extern void			add_to_heard_list(const char *, const char *);
+extern void			fsq_transmit_string(std::string s);
+extern void			fsq_repeat_last_heard();
+extern void			fsq_repeat_last_command();
+extern void 			display_fsq_rx_text(std::string text, int style = FTextBase::SKIP);
+extern void			display_fsq_mon_text(std::string text, int style = FTextBase::SKIP);
+
+extern void			enableSELCAL();
+
+extern void			cbFSQQTC(Fl_Widget *w, void *d);
+extern void			cbFSQQTH(Fl_Widget *w, void *d);
+extern void			cbMONITOR(Fl_Widget *w, void *d);
+extern void			cbSELCAL(Fl_Widget *w, void *d);
+extern void			cbFSQCALL(Fl_Widget *w, void *d);
+
+#include <FL/Fl_Bitmap.H>
+extern Fl_Bitmap image_s2n;
+
+//------------------------------------------------------------------------------
+// fsq images
+//------------------------------------------------------------------------------
+extern	Fl_Double_Window	*picRxWin;
+extern	picture				*picRx;
+extern	Fl_Button			*btnpicRxSave;
+extern	Fl_Button			*btnpicRxAbort;
+extern	Fl_Button			*btnpicRxClose;
+
+extern	Fl_Double_Window	*picTxWin;
+extern	picture				*picTx;
+extern	Fl_Button			*btnpicTxSPP;
+extern	Fl_Button			*btnpicTxSendColor;
+extern	Fl_Button			*btnpicTxSendGrey;
+extern	Fl_Button			*btnpicTxSendAbort;
+extern	Fl_Button			*btnpicTxLoad;
+extern	Fl_Button			*btnpicTxClose;
+
+//------------------------------------------------------------------------------
 extern Fl_Value_Slider2	*mvsquelch;
 extern Fl_Light_Button		*btnAFC;
 extern Fl_Light_Button		*btnSQL;
@@ -195,6 +290,9 @@ enum status_timeout {
 	STATUS_DIM,
 	STATUS_NUM
 };
+
+extern const char *zshowtime();
+
 extern void put_status(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 extern void clear_StatusMessages();
 extern void put_MODEstatus(const char* fmt, ...) format__(printf, 1, 2);

@@ -660,7 +660,6 @@ static void pWPM(std::string &s, size_t &i, size_t endbracket)
 		if (number > 200) number = 200;
 		progdefaults.CWspeed = number;
 		sldrCWxmtWPM->value(number);
-printf("wpm %d\n", number);
 
 		// second value = Farnsworth WPM
 		size_t pos;
@@ -672,7 +671,6 @@ printf("wpm %d\n", number);
 			if (number > 200) number = 200;
 			progdefaults.CWfarnsworth = number;
 			sldrCWfarnsworth->value(number);
-printf("fwpm %d\n", number);
 		}
 	}
 

@@ -66,6 +66,7 @@
 #include "status.h"
 #include "gettext.h"
 #include "arq_io.h"
+#include "fl_digi.h"
 
 #include "debug.h"
 
@@ -808,6 +809,12 @@ int FTextTX::handle(int event)
 
 	switch (event) {
 	case FL_KEYBOARD:
+		if (active_modem->get_mode() == MODE_FSQ) {
+			if (Fl::event_key() == FL_Enter || Fl::event_key() == FL_KP_Enter) {
+				fsq_transmit(active_modem);
+				return 1;
+			}
+		}
 		return handle_key(Fl::event_key()) ? 1 : FTextEdit::handle(event);
 	case FL_PUSH:
 		if (Fl::event_button() == FL_MIDDLE_MOUSE &&
@@ -1061,6 +1068,7 @@ int FTextTX::handle_key(int key)
 			active_modem->toggleWPM();
 		return 1;
 	case FL_Tab:
+		if (active_modem == fsq_modem) return 1;
 		// In non-CW modes: Tab and Ctrl-tab both pause until user moves the
 		// cursor to let some more text through. Another (ctrl-)tab goes back to
 		// the end of the buffer and resumes sending.
@@ -1086,12 +1094,14 @@ int FTextTX::handle_key(int key)
 	// Move cursor, or search up/down with the Meta/Alt modifiers
 	case FL_Left:
 		if (Fl::event_state() & (FL_META | FL_ALT)) {
+			if (active_modem == fsq_modem) return 1;
 			active_modem->searchDown();
 			return 1;
 		}
 		return 0;
 	case FL_Right:
 		if (Fl::event_state() & (FL_META | FL_ALT)) {
+			if (active_modem == fsq_modem) return 1;
 			active_modem->searchUp();
 			return 1;
 		}
@@ -1113,6 +1123,7 @@ int FTextTX::handle_key(int key)
 	case '3':
 	case '4':
 		if (Fl::event_state() & FL_ALT) {
+			if (active_modem == fsq_modem) return 1;
 			static char lbl[2] = "1";
 			altMacros = key - '1';
 			if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
@@ -1146,9 +1157,9 @@ int FTextTX::handle_key(int key)
 		return 1;
 
 // insert a macro
-	if (key >= FL_F && key <= FL_F_Last)
+	if (key >= FL_F && key <= FL_F_Last) {
 		return handle_key_macro(key);
-
+	}
 // read ctl-ddd, where d is a digit, as ascii characters (in base 10)
 // and insert verbatim; e.g. ctl-001 inserts a <soh>
 	if (Fl::event_state() & FL_CTRL && (key >= FL_KP) && (key <= FL_KP + '9'))
@@ -1170,6 +1181,12 @@ int FTextTX::handle_key(int key)
 int FTextTX::handle_key_macro(int key)
 {
 	key -= FL_F + 1;
+
+	if (active_modem == fsq_modem) {
+		if (key == 0) fsq_repeat_last_heard();
+		if (key == 1) fsq_repeat_last_command();
+		return 1;
+	}
 	if (key > 11)
 		return 0;
 

@@ -76,6 +76,7 @@ but the defaults should be satisfactory for most users.
 	<li> \subpage cw_configuration_page </li>
 	<li> \subpage domino_ex_configuration_page </li>
 	<li> \subpage feld_hell_configuration_page </li>
+	<li> \subpage fsq_configuration_page </li>
 	<li> \subpage id_configuration_page </li>
 	<li> \subpage miscellaneous_configuration_page </li>
 	<li> \subpage mt63_configuration_page </li>

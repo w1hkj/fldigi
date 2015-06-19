@@ -46,7 +46,7 @@
 #include "debug.h"
 #include "status.h"
 
-static bool XMLRPC_DEBUG = 1;
+static bool XMLRPC_DEBUG = 0;
 
 using namespace XmlRpc;
 using namespace std;

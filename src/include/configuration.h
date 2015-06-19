@@ -621,6 +621,63 @@
         ELEM_(bool, mt63_at500, "MT63AT500",                                            \
               "Always transmit lowest tone at 500 Hz",                                  \
               false)                                                                    \
+        /* FSQ */                                                                       \
+        ELEM_(int, fsq_frequency, "FSQFREQUENCY",                                       \
+              "0 - 1150 Hz, 1 - 1500 Hz, 2 - Variable",                                 \
+              1)                                                                        \
+        ELEM_(int, fsq_movavg, "FSQMOVAVG",                                             \
+              "size of moving average filter for bin filtering\n"                       \
+              "value 2 to 8",                                                           \
+              4)                                                                        \
+        ELEM_(double, fsq_img_filter, "FSQIMGFILTER",                                  \
+              "0 - 300 Hz, 1 - 400 Hz, 2 - 500 Hz (default)",                           \
+              2)                                                                        \
+        ELEM_(bool, fsq_xmtfilter, "FSQXMTFILTER",                                      \
+              "BPF the transmitted signal, 1000 Hz wide sync filter",                   \
+              false)                                                                    \
+        ELEM_(double, fsqbaud, "FSQBAUD",                                              \
+              "6, 4.5, 3 or 2 baud",                                                    \
+              4.5)                                                                      \
+        ELEM_(int, fsqhits, "FSQHITS",                                                  \
+              "3 / 6",                                                                  \
+              3)                                                                        \
+        ELEM_(bool, fsq_directed, "FSQDIRECTED",                                        \
+              "FSQCALL directed mode",                                                  \
+              false)                                                                    \
+        ELEM_(bool, fsq_show_monitor, "FSQSHOWMONITOR",                                 \
+              "Show fsq monitor text panel",                                            \
+              false)                                                                    \
+        ELEM_(bool, fsq_fastavg, "FSQFASTAVG",                                          \
+              "Symbol averaging: true = fast, false = slow",                            \
+              true)                                                                     \
+        ELEM_(std::string, fsqQTCtext, "FSQQTCTEXT",                                    \
+              "QTC text string",                                                        \
+              "cq cq cq de nocall")                                                     \
+        ELEM_(int, fsq_heard_aging, "FSQHEARDAGING",                                   \
+              "0 - NEVER (default)\n"                                                   \
+              "1 - 1 minute, 2 - 5 minutes, 3 - 10 minutes\n"                           \
+              "4 - 20 minutes, 5 - 30 minutes",                                         \
+              0)                                                                        \
+        ELEM_(int, fsq_sounder, "FSQSOUNDER",                                           \
+              "0 - OFF (default)\n"                                                     \
+              "1 - 1 minute, 2 - 10 minutes, 3 - 30 minutes",                           \
+              0)                                                                        \
+        ELEM_(bool, fsq_lowercase, "FSQLOWERCASE",                                      \
+              "0 - NO, 1 - YES\n"                                                       \
+              "convert operator MYCALL to lower case for directed call triggers",       \
+              0)                                                                        \
+        ELEM_(bool, fsq_enable_heard_log, "FSQ_ENABLE_HEARD_LOG",                       \
+              "FSQ enable heard log file",                                              \
+              1)                                                                        \
+        ELEM_(std::string, fsq_heard_log, "FSQ_HEARD_LOG",                              \
+              "FSQ heard log pathname",                                                 \
+              "fsq_heard_log.txt")                                                      \
+        ELEM_(bool, fsq_enable_audit_log, "FSQ_ENABLE_AUDIT_LOG",                       \
+              "FSQ enable audit log file",                                              \
+              1)                                                                        \
+        ELEM_(std::string, fsq_audit_log, "FSQ_AUDIT_LOG",                              \
+              "FSQ audit log pathname",                                                 \
+              "fsq_audit_log.txt")                                                      \
         /* Waterfall & UI */                                                            \
         ELEM_(uchar, red, "", "",  0)                                                   \
         ELEM_(uchar, green, "", "",  255)                                               \
