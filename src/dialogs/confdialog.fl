@@ -350,7 +350,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;} open selected
         tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
@@ -411,7 +411,7 @@ progdefaults.changed = true;}
           class Fl_Input2
         }
         Fl_Group grpNoise {
-          label {Test Signal - Do NOT use with transmitter} open selected
+          label {Test Signal - Do NOT use with transmitter} open
           xywh {55 231 490 114} box ENGRAVED_FRAME align 21 hide
         } {
           Fl_Check_Button btnNoiseOn {
@@ -2819,7 +2819,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3426,7 +3426,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFSQ {
             label FSQ open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Rx Parameters} open
@@ -3880,17 +3880,25 @@ progdefaults.changed = true;}
                     label {Pilot tone}
                     callback {progdefaults.pskpilot = o->value();
 progdefaults.changed = true;}
-                    tooltip {Enable encode/decode vestigial pilot tone} xywh {141 342 113 20} down_box DOWN_BOX
+                    tooltip {Enable encode/decode vestigial pilot tone} xywh {100 342 91 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.pskpilot);}
                   }
                   Fl_Counter cnt_pilot_power {
                     label {pilot power (dB)}
                     callback {progdefaults.pilot_power = o->value();
 progdefaults.changed = true;}
-                    tooltip {Pilot tone power relative to signal} xywh {305 342 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
+                    tooltip {Pilot tone power relative to signal} xywh {195 342 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
                     code0 {o->value(progdefaults.pilot_power);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
+                  }
+                  Fl_Check_Button btnPSK8Preamble {
+                    label {Short Preamble}
+                    callback {progdefaults.psk8_dcd_short_flag = o->value();
+progdefaults.changed=true;}
+                    tooltip {Increase data throughput by reducing preamble to a minimum.
+Short preamble: for simplex links with open-squelch. Long preamble: for repeater usage} xywh {405 342 113 20} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.psk8_dcd_short_flag);}
                   }
                 }
               }

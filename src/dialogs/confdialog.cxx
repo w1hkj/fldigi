@@ -3113,6 +3113,13 @@ static void cb_cnt_pilot_power(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnPSK8Preamble=(Fl_Check_Button *)0;
+
+static void cb_btnPSK8Preamble(Fl_Check_Button* o, void*) {
+  progdefaults.psk8_dcd_short_flag = o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabRTTY=(Fl_Group *)0;
 
 Fl_Tabs *tabsRTTY=(Fl_Tabs *)0;
@@ -7212,7 +7219,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 330, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 330);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
@@ -7997,6 +8003,7 @@ i on a\ntouch screen device such as a tablet."));
             tabFeld->end();
           } // Fl_Group* tabFeld
           { tabFSQ = new Fl_Group(0, 50, 600, 330, _("FSQ"));
+            tabFSQ->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 585, 80, _("Rx Parameters"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8474,13 +8481,13 @@ i on a\ntouch screen device such as a tablet."));
                 { Fl_Group* o = new Fl_Group(55, 327, 490, 47, _("8 psk"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnPSKpilot = new Fl_Check_Button(141, 342, 113, 20, _("Pilot tone"));
+                { Fl_Check_Button* o = btnPSKpilot = new Fl_Check_Button(100, 342, 91, 20, _("Pilot tone"));
                 btnPSKpilot->tooltip(_("Enable encode/decode vestigial pilot tone"));
                 btnPSKpilot->down_box(FL_DOWN_BOX);
                 btnPSKpilot->callback((Fl_Callback*)cb_btnPSKpilot);
                 o->value(progdefaults.pskpilot);
                 } // Fl_Check_Button* btnPSKpilot
-                { Fl_Counter2* o = cnt_pilot_power = new Fl_Counter2(305, 342, 75, 20, _("pilot power (dB)"));
+                { Fl_Counter2* o = cnt_pilot_power = new Fl_Counter2(195, 342, 75, 20, _("pilot power (dB)"));
                 cnt_pilot_power->tooltip(_("Pilot tone power relative to signal"));
                 cnt_pilot_power->type(1);
                 cnt_pilot_power->box(FL_UP_BOX);
@@ -8500,6 +8507,13 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.pilot_power);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cnt_pilot_power
+                { Fl_Check_Button* o = btnPSK8Preamble = new Fl_Check_Button(405, 342, 113, 20, _("Short Preamble"));
+                btnPSK8Preamble->tooltip(_("Increase data throughput by reducing preamble to a minimum.\nShort preamble: \
+for simplex links with open-squelch. Long preamble: for repeater usage"));
+                btnPSK8Preamble->down_box(FL_DOWN_BOX);
+                btnPSK8Preamble->callback((Fl_Callback*)cb_btnPSK8Preamble);
+                o->value(progdefaults.psk8_dcd_short_flag);
+                } // Fl_Check_Button* btnPSK8Preamble
                 o->end();
                 } // Fl_Group* o
                 grpPSK->end();

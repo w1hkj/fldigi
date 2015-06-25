@@ -355,6 +355,7 @@ extern Fl_ListBox *listbox_psk_status_timeout;
 extern Fl_Check_Button *btnEnablePSKbrowsing;
 extern Fl_Check_Button *btnPSKpilot;
 extern Fl_Counter2 *cnt_pilot_power;
+extern Fl_Check_Button *btnPSK8Preamble;
 extern Fl_Group *tabRTTY;
 extern Fl_Tabs *tabsRTTY;
 extern Fl_ListBox *selShift;

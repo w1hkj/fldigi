@@ -243,6 +243,9 @@
         ELEM_(double, pilot_power, "PILOT_POWER",                                      \
               "Pilot tone relative power level",                                        \
               -30.0)                                                                    \
+        ELEM_(bool, psk8_dcd_short_flag, "PSK8DCDSHORTFLAG",                            \
+              "Use short DCD for 8psk modem",                                           \
+              true)                                                                     \
         ELEM_(double, ACQsn, "ACQSN",                                                  \
               "PSK signal acquisition S/N (dB)",                                        \
               9.0)                                                                      \

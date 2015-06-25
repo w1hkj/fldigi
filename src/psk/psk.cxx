@@ -327,7 +327,7 @@ psk::psk(trx_mode pskmode) : modem()
 			break;
 
 	// 8psk modes without FEC
-		case MODE_8PSK125:
+		case MODE_8PSK125: // 125 baud | 375 bits/sec  No FEC
 			symbollen = 128;
 			samplerate = 16000;
 			_8psk = true;
@@ -336,7 +336,7 @@ psk::psk(trx_mode pskmode) : modem()
 			vestigial = true;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+		case MODE_8PSK250: // 250 baud | 750 bits/sec  No FEC
 			symbollen = 64;
 			samplerate = 16000;
 			_8psk = true;
@@ -345,7 +345,7 @@ psk::psk(trx_mode pskmode) : modem()
 			vestigial = true;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
+		case MODE_8PSK500: // 500 baud | 1500 bits/sec  No FEC
 			symbollen = 32;
 			samplerate = 16000;
 			_8psk = true;
@@ -365,30 +365,30 @@ psk::psk(trx_mode pskmode) : modem()
 			break;
 
 	// 8psk modes with FEC
-		case MODE_8PSK125F:
+		case MODE_8PSK125F: // 125 baud | 187 bits/sec @ 1/2 Rate, constraint length 16 FEC
 			symbollen = 128;
 			idepth = 384; // 1024 milliseconds
-			flushlength = 38;
+			flushlength = 45;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 128;
 			vestigial = true;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK250F: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+		case MODE_8PSK250F: // 250 baud | 375 bits/sec @ 1/2 Rate, constraint length 16 FEC
 			symbollen = 64;
 			idepth = 512; // 682 milliseconds
-			flushlength = 47;
+			flushlength = 50;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 256;
 			vestigial = true;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK500F: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
+		case MODE_8PSK500F: // 500 baud | 1000 bits/sec @ 2/3 rate, constraint length 13 FEC
 			symbollen = 32;
 			idepth = 640; // 426 milliseconds
-			flushlength = 62;
+			flushlength = 75;
 			samplerate = 16000;
 			_8psk = true;
 			_puncturing = true;
@@ -396,10 +396,10 @@ psk::psk(trx_mode pskmode) : modem()
 			vestigial = true;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK1000F: // 1000 baud | 3000 bits/sec
+		case MODE_8PSK1000F: // 1000 baud | 2000 bits/sec @ 2/3 Rate, constraint length 7 FEC
 			symbollen = 16;
-			idepth = 512;
-			flushlength = 56;
+			idepth = 512; // 170 milliseconds
+			flushlength = 65;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 1024;
@@ -408,10 +408,10 @@ psk::psk(trx_mode pskmode) : modem()
 			vestigial = true;
 			PSKviterbi = true;
 			break;
-		case MODE_8PSK1200F: // 1200 baud | 1800 bits/sec
+		case MODE_8PSK1200F: // 1200 baud | 2400 bits/sec @ 2/3 Rate, constraint length 7 FEC
 			symbollen = 13;
-			idepth = 512;
-			flushlength = 56;
+			idepth = 512; // 138 milliseconds
+			flushlength = 65;
 			samplerate = 16000;
 			_8psk = true;
 			_puncturing = true;
@@ -732,7 +732,7 @@ psk::psk(trx_mode pskmode) : modem()
 		enc = new encoder(K, POLY1, POLY2);
 		dec = new viterbi(K, POLY1, POLY2);
 
-	} else if (_pskr || mode == MODE_8PSK1200F || PSKviterbi) {
+	} else if (_pskr || PSKviterbi) {
 		// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
 		// Set decode size to 4 since some characters can be as small
 		// as 3 bits long. This minimises intercharacters decoding
@@ -742,16 +742,18 @@ psk::psk(trx_mode pskmode) : modem()
 		dec->setchunksize(4);
 		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec2->setchunksize(4);
+		if (_puncturing)
+			dec2->settraceback(PSKR_K*16); // constraint length times 16
 
 	} else if (_puncturing) { 
 		// Use the FEC code best suited for puncturing
 		enc = new encoder(K13, K13_POLY1, K13_POLY2);
 		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
 		// long constraint length codes require long traceback
-		dec->settraceback (PATHMEM); 
+		dec->settraceback (K13*16); // constraint length times 16
 		dec->setchunksize(4);
 		dec2 = new viterbi(K13, K13_POLY1, K13_POLY2);
-		dec2->settraceback (PATHMEM);
+		dec2->settraceback (K13*16);
 		dec2->setchunksize(4);
 
 	} else if (_xpsk || _8psk || _16psk) { 
@@ -759,10 +761,10 @@ psk::psk(trx_mode pskmode) : modem()
 		enc = new encoder(K16, K16_POLY1, K16_POLY2);
 		dec = new viterbi(K16, K16_POLY1, K16_POLY2);
 		// long constraint length codes require long traceback
-		dec->settraceback (PATHMEM); 
+		dec->settraceback (K16*10);
 		dec->setchunksize(4);
 		dec2 = new viterbi(K16, K16_POLY1, K16_POLY2);
-		dec2->settraceback (PATHMEM);
+		dec2->settraceback (K16*10);
 		dec2->setchunksize(4);
 	}
 
@@ -962,6 +964,13 @@ void psk::rx_pskr(unsigned char symbol)
 		//			fecmet2 = -9999.0;
 		//			return;
 		//		}
+		//
+		// Use only 1 Viterbi decoder and interleaver to reduce FEC CPU load ~ 40%
+		// The punctured 8PSK modem has an even number of bits/symbol: (3-real + 1-punctured)
+		if ( _8psk && _puncturing) { // for 8psk: 500F, 1000F, and 1200F
+			fecmet2 = -9999.0;
+				return;
+		}
 		// copy to avoid scrambling symbolpair for the next bit
 		twosym[0] = symbolpair[0];
 		twosym[1] = symbolpair[1];
@@ -1814,8 +1823,6 @@ void psk::tx_xpsk(int bit)
 		if ( (bitcount & 0x1) )
 			bitcount = 0;
 
-	//printf("\n\n bit: %d", bit);
-
 	// Pass one bit and return two bits
 	bitshreg = enc->encode(bit);
 	// Interleave
@@ -1823,44 +1830,12 @@ void psk::tx_xpsk(int bit)
 	fecbits = bitshreg;
 
 
-	/// DEBUG
-	/*
-	 * 	static bool flip;
-	 if (flip) {
-	 flip = false;
-	 fecbits = 0;
-	 } else {
-	 flip = true;
-	 fecbits = 3;
-	 }
-	 */
-
-	//printf("\nfecbits: %u", fecbits);
-	//printf("\nbitcount: %d", bitcount);
-
 	if (_xpsk) { // 2 bits-per-symbol. Transmit every call
 		xpsk_sym = static_cast<unsigned int>(fecbits);
 		tx_symbol(xpsk_sym);
 		return;
 	}
 
-	// DEBUG
-	/*
-	 if (_8psk) {
-	 tx_symbol(0);
-	 tx_symbol(7);
-	 return;
-	 }
-	 */
-
-	// DEBUG, send a known pattern of symbols / bits
-	/*
-	 * 	static int counter = 0;
-	 counter++;
-	 if ( counter > 7 ) counter = 0;
-	 tx_symbol(1);
-	 return;
-	 */
 
 	/*
 	 else if (mode == MODE_8PSK ???) { // Puncture @ 5/6 rate | tx 3bits/symbol (8psk)
@@ -1886,15 +1861,15 @@ void psk::tx_xpsk(int bit)
 
 	else if (_8psk && _puncturing) { // @ 2/3 rate
 
-		if ( 0 == bitcount) {
+		if ( 0 == bitcount) { /// Empty xpsk_sym buffer: add 2 bits and return
 			xpsk_sym = static_cast<unsigned int>(fecbits);
 			bitcount = 2;
 			return;
 
-		} else if ( 2 == bitcount ) {
+		} else if ( 2 == bitcount ) { /// xpsk_sym buffer with 2 bits: add 1 bit and drop/puncture 1 bit, then tx
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			/// Puncture -> //xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
-			tx_symbol(xpsk_sym & 7);
+			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
 			return;
 		}
@@ -1904,35 +1879,21 @@ void psk::tx_xpsk(int bit)
 	else if (_8psk) { // 3 bits-per-symbol. Accumulate then tx.
 
 		if ( 0 == bitcount ) { // Empty xpsk_sym buffer: add 2 bits and return
-							   //printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym = static_cast<unsigned int>(fecbits);
-			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
 			bitcount = 2;
 			return ;
 
 		} else if ( 1 == bitcount ) { // xpsk_sym buffer with one bit: add 2 bits then tx and clear
-									  //xpsk_sym <<= 2; // shift left 2 bits
-
-			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 1 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 1 ;
-			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
-
-			//printf("\nxpsk_sym|postinlv: %u", xpsk_sym);
 			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
 			return;
 
 		} else if ( 2 == bitcount ) { // xpsk_sym buffer with 2 bits: add 1 then tx and save next bit
-									  //printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
-			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
-
-			//printf("\nxpsk_sym|postinlv: %u", xpsk_sym);
-
 			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
-
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) >> 1 ;
 			bitcount = 1;
 			return;
@@ -1954,9 +1915,8 @@ void psk::tx_xpsk(int bit)
 		} else if ( 4 == bitcount ) {
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 4 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 4 ;
-			xpsk_sym >>= 1; // Shift right to drop the lowest bit
-			xpsk_sym &= 15; // Drop the highest bit
-			tx_symbol(xpsk_sym);
+			xpsk_sym >>= 1; /// Shift right to puncture the lowest bit
+			tx_symbol(xpsk_sym & 15); /// Tx and drop/puncture the highest bit
 			xpsk_sym = bitcount = 0;
 			return;
 		}
@@ -1972,8 +1932,7 @@ void psk::tx_xpsk(int bit)
 		} else if ( 2 == bitcount ) {
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
-			//Txinlv->bits(&xpsk_sym);
-			tx_symbol(xpsk_sym & 7);
+			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
 			return;
 		}
@@ -2030,17 +1989,19 @@ void psk::tx_flush()
 		}
 		// FEC disabled: use unmodulated carrier
 	} else if (_disablefec && ( _xpsk || _8psk || _16psk) ) {
-		for (int i=0; i<symbits; i++) {
-			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
+		for (int i=0; i<6; i++) {
+			tx_char(0); // Send 6 <NUL>'s to push final characters through Tx and Rx encoders/decoders
 		}
 		int symbol;
 		if (_16psk) symbol = 8;
 		else if (_8psk) symbol = 4;
 		else symbol = 2;
-		for (int i = 0; i < dcdbits; i++)
+
+		for (int i = 0; i <= (64/symbits)+1 ; i++) // DCD window is only 32-bits wide: send twice
 			tx_symbol(symbol); // 0 degrees
-							   // Standard BPSK postamble
-							   // DCD off sequence (unmodulated carrier)
+
+	// Standard BPSK postamble
+	// DCD off sequence (unmodulated carrier)
 	} else {
 		for (int i = 0; i < dcdbits; i++)
 			tx_symbol(2); // 0 degrees
@@ -2058,6 +2019,12 @@ void psk::clearbits()
 int psk::tx_process()
 {
 	int c;
+
+	// DCD window is only 32 bits, send twice.
+	if(progdefaults.psk8_dcd_short_flag) {
+		if ( (_8psk || _xpsk || _16psk) && preamble > 64)
+			preamble = 64;
+	}
 
 	if (preamble > 0) {
 		if (_pskr || ((_xpsk || _8psk || _16psk) && !_disablefec) ) {
