@@ -63,6 +63,10 @@ static void cbRxFontBrowser(Fl_Widget*, void*) {
       fsq_rx_text->setFontSize(size);
       fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
   
+      ifkp_rx_text->setFont(font);
+      ifkp_rx_text->setFontSize(size);
+      ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+  
       font_browser->hide();
   
       progdefaults.changed = true;
@@ -90,7 +94,11 @@ static void cbTxFontBrowser(Fl_Widget*, void*) {
       fsq_tx_text->setFontSize(size);
       fsq_tx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
   
-      font_browser->hide();
+      ifkp_rx_text->setFont(font);
+      ifkp_rx_text->setFontSize(size);
+      ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+  
+       font_browser->hide();
   
       progdefaults.changed = true;
 }
@@ -5640,6 +5648,7 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 355, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 355);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));

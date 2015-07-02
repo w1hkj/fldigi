@@ -189,6 +189,18 @@ extern void			fsq_repeat_last_command();
 extern void 			display_fsq_rx_text(std::string text, int style = FTextBase::SKIP);
 extern void			display_fsq_mon_text(std::string text, int style = FTextBase::SKIP);
 
+extern Fl_Group		*ifkp_group;
+extern Fl_Group		*ifkp_upper;
+extern Fl_Group		*ifkp_upper_left;
+extern FTextRX			*ifkp_rx_text;
+extern Fl_Group		*ifkp_upper_right;
+extern Fl_Browser		*ifkp_heard;
+extern Progress		*ifkp_s2n_progress;
+extern Fl_Group		*ifkp_lower;
+extern FTextTX			*ifkp_tx_text;
+extern Fl_Box			*ifkp_thumbnail;
+extern void			cb_ifkp_heard(Fl_Browser*, void*);
+
 extern void			enableSELCAL();
 
 extern void			cbFSQQTC(Fl_Widget *w, void *d);
@@ -196,6 +208,10 @@ extern void			cbFSQQTH(Fl_Widget *w, void *d);
 extern void			cbMONITOR(Fl_Widget *w, void *d);
 extern void			cbSELCAL(Fl_Widget *w, void *d);
 extern void			cbFSQCALL(Fl_Widget *w, void *d);
+
+extern void			ifkp_showTxViewer(char C = 'T');
+extern Fl_Double_Window	*ifkppicRxWin;
+extern Fl_Double_Window	*ifkppicTxWin;
 
 #include <FL/Fl_Bitmap.H>
 extern Fl_Bitmap image_s2n;

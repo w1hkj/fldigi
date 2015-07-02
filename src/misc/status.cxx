@@ -204,6 +204,7 @@ status progStatus = {
 	false,				// meters
 
 	false,				// fsq_rx_abort
+	false,				// ifkp_rx_abort
 
 	false				// bool bLastStateRead;
 };

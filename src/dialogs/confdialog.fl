@@ -149,6 +149,10 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     fsq_rx_text->setFontSize(size);
     fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
+    ifkp_rx_text->setFont(font);
+    ifkp_rx_text->setFontSize(size);
+    ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
     font_browser->hide();
 
     progdefaults.changed = true;} {selected
@@ -178,7 +182,11 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     fsq_tx_text->setFontSize(size);
     fsq_tx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
-    font_browser->hide();
+    ifkp_rx_text->setFont(font);
+    ifkp_rx_text->setFontSize(size);
+    ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
+     font_browser->hide();
 
     progdefaults.changed = true;} {}
 } 
@@ -450,7 +458,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355}
+        tooltip {User Interface} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50

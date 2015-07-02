@@ -675,6 +675,9 @@
         ELEM_(std::string, fsq_audit_log, "FSQ_AUDIT_LOG",                              \
               "FSQ audit log pathname",                                                 \
               "fsq_audit_log.txt")                                                      \
+        ELEM_(int, ifkpbaud, "IFKPBAUD",                                                \
+              "1, 2, 3",                                                                \
+              1)                                                                        \
         /* Waterfall & UI */                                                            \
         ELEM_(uchar, red, "", "",  0)                                                   \
         ELEM_(uchar, green, "", "",  255)                                               \
