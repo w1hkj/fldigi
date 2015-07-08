@@ -1,6 +1,20 @@
+2015-07-10  David Freese  <iam_w1hkj@w1hkj.com>
+
+	d9dec44: fsq modem
+	e477621: trx exit
+
+
+=Version 3.22.11=
+
+	7d881bf: flrig xmlrpc update
+
+2015-06-07  Kamal Mostafa  <kamal@whence.com>
+
+	40a6dcb: BUILD_{DATE,USER,HOST}
 
 
 =Version 3.22.10=
+
 
 2015-06-01  David Freese  <iam_w1hkj@w1hkj.com>
 
