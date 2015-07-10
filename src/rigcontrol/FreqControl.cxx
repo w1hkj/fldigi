@@ -409,13 +409,15 @@ int cFreqControl::handle(int event)
 	int d;
 
 	switch (event) {
+
 	case FL_FOCUS:
 		return 1;
 	case FL_UNFOCUS:
 		return 1;
 	case FL_ENTER:
 		fw = Fl::focus();
-		take_focus();
+		if (fw != NULL) // if NULL then fldigi did not have focus
+			take_focus();
 		break;
 	case FL_LEAVE:
 		if (fw)
@@ -426,6 +428,7 @@ int cFreqControl::handle(int event)
 		updatevalue();
 		return 1;
 		break;
+
 	case FL_KEYBOARD:
 		switch (d = Fl::event_key()) {
 		case FL_Right:
