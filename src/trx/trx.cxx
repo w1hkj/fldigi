@@ -371,7 +371,8 @@ void trx_trx_transmit_loop()
 					if (!progdefaults.DTMFstr.empty())
 						dtmf->send();
 					if (active_modem->tx_process() < 0)
-						trx_state = STATE_RX;
+						if (trx_state != STATE_ABORT)
+							trx_state = STATE_RX;
 				}
 				catch (const SndException& e) {
 					scard->Close();
@@ -382,7 +383,8 @@ void trx_trx_transmit_loop()
 				}
 			}
 		} else
-			trx_state = STATE_RX;
+			if (trx_state != STATE_ABORT)
+				trx_state = STATE_RX;
 
 		if (ReedSolomon->assigned(active_modem->get_mode()) &&
 			progdefaults.TransmitRSid &&
@@ -680,11 +682,20 @@ void trx_start(void)
 //=============================================================================
 void trx_close()
 {
+	int count = 1000;
+	active_modem->set_stopflag(true);
+	while (trx_state != STATE_RX && count--)
+		MilliSleep(10);
+	if (trx_state != STATE_RX) {
+		exit(1);
+	}
+	count = 1000;
 	trx_state = STATE_ABORT;
-	int count = 10;
 	while (trx_state != STATE_ENDED && count--)
-		MilliSleep(100);
-
+		MilliSleep(10);
+	if (trx_state != STATE_ENDED) {
+		exit(2);
+	}
 #if USE_NAMED_SEMAPHORES
 	if (sem_close(trx_sem) == -1)
 		LOG_PERROR("sem_close");
