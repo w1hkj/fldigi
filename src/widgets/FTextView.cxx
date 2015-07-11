@@ -745,8 +745,12 @@ int FTextEdit::handle_key_ascii(int key)
 		key *= 10;
 	ascii_chr += key;
 	if (ascii_cnt == 3) {
-		if (ascii_chr < 0x100) //0x7F)
-			add(ascii_chr, (iscntrl(ascii_chr) ? CTRL : RECV));
+		if (ascii_chr < 0x100) {
+			char buff[fl_utf8bytes(ascii_chr) + 1];
+			int utf8cnt = fl_utf8encode(ascii_chr, buff);
+			for ( int i = 0; i < utf8cnt; i++)
+				add(buff[i], (iscntrl(ascii_chr) ? CTRL : RECV));
+		}
 		ascii_cnt = ascii_chr = 0;
 	}
 

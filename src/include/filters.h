@@ -120,6 +120,7 @@ public:
 	double run(double a);
 	void setLength(int filtlen);
 	void reset();
+	double value() { return out / (len > 0 ? len : 1); }
 };
 
 

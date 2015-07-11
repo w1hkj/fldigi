@@ -22,6 +22,7 @@
 
 #include <math.h>
 #include "sound.h"
+#include "confdialog.h"
 
 namespace xmttune {
 
@@ -147,6 +148,7 @@ void keyup(double freq, SoundBase *scard)
 void tune(double freq, SoundBase *scard)
 {
 	int i;
+	freq += ctrl_freq_offset->value();
 	phaseincr = 2.0 * M_PI * freq / active_modem->get_samplerate();
 
 	for (i = 0; i < BUFLEN; i++) {

@@ -455,7 +455,6 @@ void mfsk::recvchar(int c)
 
 	if (check_picture_header(c) == true) {
 		counter = tracepair.delay;
-printf("symbolbit = %d, symbits = %d\n", symbolbit, symbits);
 		switch (mode) {
 			case MODE_MFSK16:
 				if (symbolbit == symbits) counter += symlen;

@@ -7,6 +7,7 @@
 	<li> \subpage cw_page </li>
 	<li> \subpage domino_ex_page </li>
 	<li> \subpage feld_hell_page </li>
+	<li> \subpage fsq_page </li>
 	<li> \subpage mfsk_page </li>
 	<li> \subpage mt63_page </li>
 	<li> \subpage navtex_and_sitorb_page </li>

@@ -173,6 +173,8 @@ modem *thor50x1_modem = 0;
 modem *thor50x2_modem = 0;
 modem *thor100_modem = 0;
 
+modem *fsq_modem = 0;
+
 modem *dominoex4_modem = 0;
 modem *dominoex5_modem = 0;
 modem *dominoex8_modem = 0;

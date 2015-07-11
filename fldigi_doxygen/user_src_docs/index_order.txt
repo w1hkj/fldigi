@@ -2,7 +2,7 @@ fldigi_configuration.txt fldigi_developer.txt fldigi_logging.txt \
 fldigi_macros.txt fldigi_modems.txt fldigi_operating.txt \
 New-Install.txt thumb_drive.txt colorsandfonts.txt \
 configcallsigndb.txt configContestia.txt configCW.txt \
-configDomEX.txt configFH.txt ConfigID.txt ConfigMisc.txt \
+configDomEX.txt configFSQ.txt configFH.txt ConfigID.txt ConfigMisc.txt \
 configMT63.txt configOlivia.txt ConfigOperator.txt configPSK.txt \
 configRTTY.txt configThor.txt ConfigUI-browser.txt \
 ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logging.txt \
@@ -10,7 +10,7 @@ ConfigUI-macros.txt ConfigUI-WF-controls.txt ConfigWaterfall.txt \
 SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \
 Logbook.txt LogExports.txt working_logs.txt Macros.txt \
 InlineMacroTags.txt atMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \
-DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt \
+DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt FSQ.txt \
 Navtex.txt psk.txt Olivia.txt RTTYFSK.txt Thor.txt \
 throb.txt tune.txt WEFAX.txt WWV-xmt.txt FrequencyAnalysis.txt \
 DigiscopeDisplay.txt DigiWWV.txt map.txt MousingKeyboardShortcuts.txt \

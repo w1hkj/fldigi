@@ -1,0 +1,103 @@
+/**
+\page fsq_configuration_page  FSQ Configuration
+
+\tableofcontents
+
+\image html config-fsq.png ""
+\image latex config-fsq.png "" width=5.0in
+<br>
+\section fsq_rx_parameters Rx Parameters
+
+The FSQ decoder is essential a set of single frequency filters spaced by the interval
+samplerate / symbol_length, 2.93 Hz.  The filters are achieved using a Fast Fourier Transform.
+Each spectral line (or bin) of the FFT is then filtered using a time domain filter called a
+moving average (boxcar) filter.  The moving average filter is the optimum filter
+for locating a signal transition in the time domain.  The moving average filter can
+be adjusted to average 1 to 4 samples.  A setting of 1 disables the filter.  The
+default value for the moving average filter is 3.
+
+The filtered spectral lines are then tested for maximum value.  The Min Hits adjustment sets
+the number of consecutive times a spectral line is the maximum before being designated as
+a detected signal.  Min Hits can be set over the range 3 to 6.  The default value is 3.
+
+Images are detected by first converting the signal to a base band.  This is accomplished
+by mixing a 1500 Hz sine wave with the rx stream.  This is equivalent to an analog receiver
+that using direct conversion.  The down converted signal can be filtered to reduce the
+effect of noise.  Your choice is NONE, 300, 400 or 500 Hz for the low pass filter 6 dB
+cutoff frequency.  Use the narrower filters for noisy conditions, but remember that filtering
+will both reduce the image noise and also blur the image.
+
+Callsigns that satisfy the parsing requirements will be added to the FSQ heard list.
+You can elect to have the heard list periodically managed so that older entries are removed or aged.
+The user can elect no aging, Never; or 1, 5 10, 20 minutes intervals for aging.
+
+\section fsq_tx_parameters Tx Parameters
+
+FSQ transmissions can occur ar 2, 3, 4.5, or 6 baud.  The default rate is 4.5.  The baud
+rate can be selected on the fsq configuration tab, or by left clicking on the left
+most entry on the fldigi main dialog status bar.
+
+FSQ "Sounding" is a periodic transmission of your call sign followed by a colon.  The
+Sounding signal is a way of announcing your presence on the channel with the smallest 
+possible data stream.  Other FSQ stations will add you to their Heard list if they detect
+your Sounding signal.  You set the Sounding interval to OFF, 1, 10 or 30 minutes.
+
+Your QTC text can be sent using the "QTC" button on the main dialog.  It can also be
+requested for auto reply by another FSQ station.
+
+All FSQ transmissions are designed to be inhibited so long as the software detects 
+a received signal (open squelch).
+
+\section fsq_logging Logging
+
+Any of the text in the Rx Panel or the Monitor Panel can be captured for copy, and 
+saving to a file.  Simply right click on the panel for a pop menu.
+
+Fldigi's FSQ also saves a continuous log of all Heard stations, and an Audit log that
+includes all received data.  These logs are named fsq_heard_log.txt and fsq_audit_log.txt
+respectively.  The logs are never cleared unless the operator does so using the operating
+system file handling facilities.  Data is appended to each log as it occurs.  These logs
+are located in the fldigi temp folder:
+<br>
+<center>
+<table>
+<tr>
+  <td><kbd>XP</kbd></td>
+  <td><kbd>C:\\Documents and Settings\\<username>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Vista</kbd></td>
+  <td><kbd>C:\\Users\\<username>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Win7</kbd></td>
+  <td><kbd>C:\\Users\\<username>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Win8</kbd></td>
+  <td>C:\\Users\\<username>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Linux</kbd></td>
+  <td><kbd>/home/\<user\>/.fldigi/temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>OS X</kbd></td>
+  <td><kbd>/home/\<user\>/.fldigi/temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Unix</kbd></td>
+  <td><kbd>/home/\<user\>/.fldigi/temp</kbd></td>
+</tr>
+</table>
+</center>
+
+You can elect to disable the logging functions.  You may also rename the log to suit
+your particular operations.
+
+<br>
+\ref fsq_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

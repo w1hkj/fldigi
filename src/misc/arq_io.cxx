@@ -772,12 +772,14 @@ bool Socket_arqRx()
 
 void WriteARQ(unsigned char data)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return;
 	guard_lock tosend_lock(&tosend_mutex);
 	tosend += data;
 }
 
 void WriteARQ(const char *data)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return;
 	guard_lock tosend_lock(&tosend_mutex);
 	tosend.append(data);
 }

@@ -102,10 +102,15 @@ status progStatus = {
 	3.0,				// double VIEWER_psksquelch
 	-6.0,				// double VIEWER_rttysquelch
 	false,				// bool VIEWERvisible
+	50,					// unsigned int	fsqMONITORxpos;
+	50,					// unsigned int	fsqMONITORypos;
+	600,				// unsigned int	fsqMONITORwidth;
+	400,				// unsigned int	fsqMONITORheight;
 	100,				// int		tile_x
 	200,				// int		tile_w;
 	90,					// int		tile_y;
 	150,				// int		tile_h;
+	0.5,				// double	fsq_ratio;
 	false,				// bool LOGenabled
 	5.0,				// double sldrSquelchValue
 	5.0,				// double sldrPwrSquelchValue
@@ -198,6 +203,8 @@ status progStatus = {
 
 	false,				// meters
 
+	false,				// fsq_rx_abort
+
 	false				// bool bLastStateRead;
 };
 
@@ -244,6 +251,7 @@ void status::saveLastState()
 		tile_h = text_panel->h();
 		if (text_panel->w() != ReceiveText->w())
 			tile_x = mvgroup->w();
+		fsq_ratio = 1.0 * fsq_rx_text->h() / fsq_group->h();
 	}
 
 	VIEWERvisible = dlgViewer->visible();
@@ -367,10 +375,16 @@ if (!bWF_only) {
 	spref.set("viewer_rttysq", VIEWER_rttysquelch);
 	spref.set("viewer_nchars", static_cast<int>(VIEWERnchars));
 
+	spref.set("fsq_monitor_x", static_cast<int>(fsqMONITORxpos));
+	spref.set("fsq_monitor_y", static_cast<int>(fsqMONITORypos));
+	spref.set("fsq_monitor_w", static_cast<int>(fsqMONITORwidth));
+	spref.set("fsq_monitor_h", static_cast<int>(fsqMONITORheight));
+
 	spref.set("tile_x", tile_x);
 	spref.set("tile_y", tile_y);
 	spref.set("tile_w", tile_w);
 	spref.set("tile_h", tile_h);
+	spref.set("fsq_ratio", fsq_ratio);
 
 	spref.set("scope_visible", scopeVisible);
 	spref.set("scope_x", scopeX);
@@ -562,11 +576,16 @@ void status::loadLastState()
 	spref.get("viewer_rttysq", VIEWER_rttysquelch, VIEWER_rttysquelch);
 	spref.get("viewer_nchars", i, VIEWERnchars); VIEWERnchars = i;
 
+	spref.get("fsq_monitor_x", i, fsqMONITORxpos); fsqMONITORxpos = i;
+	spref.get("fsq_monitor_y", i, fsqMONITORypos); fsqMONITORypos = i;
+	spref.get("fsq_monitor_w", i, fsqMONITORwidth); fsqMONITORwidth = i;
+	spref.get("fsq_monitor_h", i, fsqMONITORheight); fsqMONITORheight = i;
 
 	spref.get("tile_x", tile_x, tile_x);
 	spref.get("tile_y", tile_y, tile_y);
 	spref.get("tile_w", tile_w, tile_w);
 	spref.get("tile_h", tile_h, tile_h);
+	spref.get("fsq_ratio", fsq_ratio, fsq_ratio);
 
 	spref.get("scope_visible", i, scopeVisible); scopeVisible = i;
 	spref.get("scope_x", scopeX, scopeX);

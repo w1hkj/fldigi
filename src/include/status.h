@@ -63,10 +63,15 @@ struct status {
 	double	VIEWER_psksquelch;
 	double	VIEWER_rttysquelch;
 	bool	VIEWERvisible;
+	unsigned int	fsqMONITORxpos;
+	unsigned int	fsqMONITORypos;
+	unsigned int	fsqMONITORwidth;
+	unsigned int	fsqMONITORheight;
 	int		tile_x;
 	int		tile_w;
 	int		tile_y;
 	int		tile_h;
+	double	fsq_ratio;
 	bool	LOGenabled;
 	double  sldrSquelchValue;
 	double  sldrPwrSquelchValue;
@@ -162,6 +167,8 @@ struct status {
 	std::string	browser_search;
 
 	bool	meters;
+
+	bool	fsq_rx_abort;
 
 	bool	bLastStateRead;
 

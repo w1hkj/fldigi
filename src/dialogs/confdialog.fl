@@ -101,6 +101,9 @@ decl {\#include "kmlserver.h"} {private local
 decl {\#include "macroedit.h"} {private local
 } 
 
+decl {\#include "fileselect.h"} {private local
+} 
+
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
 } 
 
@@ -115,7 +118,7 @@ decl {Fl_Double_Window *dlgConfig;} {public local
 decl {Mode_Browser* mode_browser;} {public local
 } 
 
-Function {choose_color(Fl_Color & c)} {open private return_type void
+Function {choose_color(Fl_Color & c)} {private return_type void
 } {
   code {unsigned char r, g, b;
 Fl::get_color(c, r, g, b);
@@ -123,7 +126,7 @@ if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
 } 
 
-Function {cbRxFontBrowser(Fl_Widget*, void*)} {private return_type void
+Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -141,13 +144,18 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {private return_type void
     ReceiveText->setFont(font);
     ReceiveText->setFontSize(size);
     ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+    
+    fsq_rx_text->setFont(font);
+    fsq_rx_text->setFontSize(size);
+    fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
     font_browser->hide();
 
-    progdefaults.changed = true;} {}
+    progdefaults.changed = true;} {selected
+  }
 } 
 
-Function {cbTxFontBrowser(Fl_Widget*, void*)} {private return_type void
+Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -166,12 +174,16 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {private return_type void
     TransmitText->setFontSize(size);
     TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
 
+    fsq_tx_text->setFont(font);
+    fsq_tx_text->setFontSize(size);
+    fsq_tx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
     font_browser->hide();
 
     progdefaults.changed = true;} {}
 } 
 
-Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {open private return_type void
+Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
   code {Fl_Font font = font_browser->fontNumber();
     int size = font_browser->fontSize();
@@ -340,15 +352,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {666 113 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {996 32 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -420,22 +432,32 @@ progdefaults.changed = true;}
           Fl_Counter noiseDB {
             label dB
             callback {progdefaults.s2n = o->value();}
-            xywh {90 307 89 21} type Simple align 4 minimum -18 maximum 60 step 1 value 20
+            xywh {312 264 130 21} align 4 minimum -18 maximum 60 value 20
             code0 {o->value(progdefaults.s2n);}
+            code1 {o->lstep(1);}
             class Fl_Counter2
+          }
+          Fl_Counter ctrl_freq_offset {
+            label {freq-offset}
+            tooltip {ONLY FOR TESTING !} xywh {312 304 130 21} align 4 minimum -250 maximum 250
+            code0 {o->lstep(10);}
+          }
+          Fl_Check_Button btnOffsetOn {
+            label {Offset on}
+            xywh {93 307 70 15} down_box DOWN_BOX
           }
         }
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355} hide
+        tooltip {User Interface} xywh {0 25 600 355}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330}
+            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1325,7 +1347,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -2806,7 +2828,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3274,7 +3296,7 @@ progdefaults.changed = true;} open
             }
           }
           Fl_Group tabDomEX {
-            label Dom
+            label Dom open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
@@ -3408,6 +3430,183 @@ progdefaults.changed = true;}
                 xywh {355 187 113 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HellXmtWidth);}
                 code1 {o->hide();}
+              }
+            }
+          }
+          Fl_Group tabFSQ {
+            label FSQ open
+            xywh {0 50 600 330}
+          } {
+            Fl_Group {} {
+              label {Rx Parameters} open
+              xywh {5 60 585 80} box ENGRAVED_BOX align 21
+            } {
+              Fl_Value_Slider valhits {
+                label {Min Hits}
+                callback {progdefaults.fsqhits=(int)o->value();
+progdefaults.changed = true;}
+                tooltip {Minimum \# hits in tone detector} xywh {140 72 125 21} type {Horz Knob} align 8 minimum 3 maximum 6 step 1 value 3 textsize 14
+                code0 {o->value(progdefaults.fsqhits);}
+              }
+              Fl_Choice sel_fsq_lpf {
+                label {Image LPF}
+                callback {progdefaults.fsq_img_filter=o->value();
+progdefaults.changed = true;} open
+                tooltip {Narrow LPF if image noisy} xywh {163 104 102 21} down_box BORDER_BOX
+                code0 {o->add("None"); o->add("300 Hz"); o->add("400 Hz"); o->add("500 Hz");}
+                code1 {o->value(progdefaults.fsq_img_filter);}
+              } {}
+              Fl_Value_Slider sldrMovAvg {
+                label {MovAvg:}
+                callback {progdefaults.fsq_movavg = o->value();
+progdefaults.changed = true;}
+                tooltip {Filter FFT output} xywh {410 72 125 21} type Horizontal align 4 minimum 1 maximum 4 step 1 value 4 textsize 14
+                code0 {o->value(progdefaults.fsq_movavg);}
+              }
+              Fl_Choice sel_fsq_heard_aging {
+                label {Heard aging}
+                callback {progdefaults.fsq_heard_aging=o->value();
+progdefaults.changed = true;} open
+                tooltip {Remove call after ...} xywh {433 104 102 21} down_box BORDER_BOX
+                code0 {o->add("Never"); o->add("1 min"); o->add("5 min");o->add("10 min"); o->add("20 min"); o->add("20 min");}
+                code1 {o->value(progdefaults.fsq_heard_aging);}
+              } {}
+            }
+            Fl_Group {} {
+              label {Tx Parameters} open
+              xywh {5 150 585 135} box ENGRAVED_BOX align 21
+            } {
+              Fl_Round_Button {btn_fsqbaud[0]} {
+                label {2 baud}
+                callback {if (o->value() == 1) {
+progdefaults.fsqbaud = 2;
+btn_fsqbaud[1]->value(0);
+btn_fsqbaud[2]->value(0);
+btn_fsqbaud[3]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {90 180 55 15} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.fsqbaud == 2);}
+              }
+              Fl_Round_Button {btn_fsqbaud[1]} {
+                label {3 baud}
+                callback {if (o->value() == 1) {
+progdefaults.fsqbaud = 3;
+btn_fsqbaud[0]->value(0);
+btn_fsqbaud[2]->value(0);
+btn_fsqbaud[3]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {198 180 55 15} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.fsqbaud == 3);}
+              }
+              Fl_Round_Button {btn_fsqbaud[2]} {
+                label {4.5 baud}
+                callback {if (o->value() == 1) {
+progdefaults.fsqbaud = 4.5;
+btn_fsqbaud[0]->value(0);
+btn_fsqbaud[1]->value(0);
+btn_fsqbaud[3]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {306 180 55 15} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.fsqbaud == 4.5);}
+              }
+              Fl_Round_Button {btn_fsqbaud[3]} {
+                label {6 baud}
+                callback {if (o->value() == 1) {
+progdefaults.fsqbaud = 6;
+btn_fsqbaud[0]->value(0);
+btn_fsqbaud[1]->value(0);
+btn_fsqbaud[2]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {415 180 55 15} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.fsqbaud == 6);}
+              }
+              Fl_Input {} {
+                label {QTC:}
+                callback {progdefaults.fsqQTCtext = o->value();
+progdefaults.changed = true;}
+                tooltip {Enter QTC text} xywh {90 253 456 23}
+                code0 {o->value(progdefaults.fsqQTCtext.c_str());}
+              }
+              Fl_Choice sel_fsq_frequency {
+                label {Center freq}
+                callback {progdefaults.fsq_frequency=o->value();
+progdefaults.changed = true;} open
+                xywh {250 219 102 21} down_box BORDER_BOX align 1 hide
+                code0 {o->add("1150"); o->add("1500"); o->add("Variable");}
+                code1 {o->value(progdefaults.fsq_frequency);}
+              } {}
+              Fl_Choice sel_fsq_sounder {
+                label Sounder
+                callback {progdefaults.fsq_sounder=o->value();
+progdefaults.changed = true;} open
+                tooltip {Send beacon every ...} xywh {90 214 102 21} down_box BORDER_BOX
+                code0 {o->add("OFF"); o->add("1 min"); o->add("10 min"); o->add("30 min");}
+                code1 {o->value(progdefaults.fsq_sounder);}
+              } {}
+              Fl_Check_Button btn_fsq_lowercase {
+                label {MYCALL always lower case}
+                callback {progdefaults.fsq_lowercase=o->value();
+progdefaults.changed = true;}
+                tooltip {convert operator callsign to lower case} xywh {306 217 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.fsq_lowercase);}
+              }
+            }
+            Fl_Group {} {
+              label Logging open
+              xywh {5 291 585 80} box ENGRAVED_BOX align 21
+            } {
+              Fl_Output txtAuditLog {
+                label {Audit log}
+                xywh {82 311 325 25}
+                code0 {o->value(progdefaults.fsq_audit_log.c_str());}
+              }
+              Fl_Light_Button btn_enable_auditlog {
+                label Enable
+                callback {progdefaults.fsq_enable_audit_log = o->value();
+progdefaults.changed = true;}
+                xywh {421 313 74 20} selection_color 2
+                code0 {o->value(progdefaults.fsq_enable_audit_log);}
+              }
+              Fl_Button btn_select_auditlog {
+                label Select
+                callback {std::string str = std::string(TempDir);
+str.append(progdefaults.fsq_audit_log);
+const char *fname = FSEL::saveas("Audit log", "*.txt\\t*", str.c_str());
+
+if (fname) {
+  progdefaults.fsq_audit_log = fl_filename_name(fname);
+  txtAuditLog->value(progdefaults.fsq_audit_log.c_str());
+  progdefaults.changed = true;
+}}
+                xywh {509 313 70 20}
+              }
+              Fl_Output txtHeardLog {
+                label {Heard log}
+                xywh {80 340 325 25}
+                code0 {o->value(progdefaults.fsq_heard_log.c_str());}
+              }
+              Fl_Light_Button btn_enable_fsq_heard_log {
+                label Enable
+                callback {progdefaults.fsq_enable_heard_log = o->value();
+progdefaults.changed = true;}
+                xywh {419 342 74 20} selection_color 2
+                code0 {o->value(progdefaults.fsq_enable_heard_log);}
+              }
+              Fl_Button btn_select_fsq_heard_log {
+                label Select
+                callback {std::string str = std::string(TempDir);
+str.append(progdefaults.fsq_heard_log);
+const char *fname = FSEL::saveas("Heard log", "*.txt\\t*", str.c_str());
+if (fname) {
+  progdefaults.fsq_heard_log = fl_filename_name(fname);
+  txtHeardLog->value(progdefaults.fsq_heard_log.c_str());
+  progdefaults.changed = true;
+}}
+                xywh {507 342 70 20}
               }
             }
           }
@@ -4063,7 +4262,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabNavtex {
-            label Navtex
+            label Nav
             xywh {0 50 600 330} hide
           } {
             Fl_Check_Button btnNvtxAdifLog {
@@ -4082,7 +4281,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWefax {
-            label Wefax open
+            label WFax open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open

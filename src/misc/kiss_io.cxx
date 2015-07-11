@@ -3493,6 +3493,8 @@ static void *kiss_loop(void *args)
  **********************************************************************************/
 void WriteKISS(const char data)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return;
+
 	if(kiss_reset_flag) return;
 
 	{
@@ -3511,6 +3513,8 @@ void WriteKISS(const char data)
  **********************************************************************************/
 void WriteKISS(const char *data)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return;
+
 	if(kiss_reset_flag) return;
 
 	{
@@ -3531,6 +3535,8 @@ void WriteKISS(const char *data)
  **********************************************************************************/
 void WriteKISS(const char *data, size_t size)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return;
+
 	if(kiss_reset_flag) return;
 
 	{
@@ -3553,6 +3559,8 @@ void WriteKISS(const char *data, size_t size)
  **********************************************************************************/
 void WriteKISS(std::string data)
 {
+	if (active_modem->get_mode() == MODE_FSQ) return;
+
 	if(kiss_reset_flag) return;
 
 	{

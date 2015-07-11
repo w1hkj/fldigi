@@ -8,7 +8,7 @@
 // Copyright (C) 2010
 //		Remi Chateauneu, F4ECW
 //
-// This file is part of fldigi.  
+// This file is part of fldigi.
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@
 using namespace std;
 
 picture::picture (int X, int Y, int W, int H, int bg_col) :
-	Fl_Widget (X, Y, W, H) 
+	Fl_Widget (X, Y, W, H)
 {
 	width = W;
 	height = H;
@@ -67,10 +67,11 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 	slantdir = 0;
 	vidbuf = new unsigned char[bufsize];
 	background = bg_col ;
-	memset( vidbuf, background, bufsize );	
+	memset( vidbuf, background, bufsize );
 	zoom = 0 ;
 	binary = false ;
 	binary_threshold = 128 ;
+	slantcorr = true;
 }
 
 picture::~picture()
@@ -81,10 +82,8 @@ picture::~picture()
 void picture::video(unsigned char const *data, int len )
 {
 	if (len > bufsize) return;
-	FL_LOCK_D();
 	memcpy( vidbuf, data, len );
 	redraw();
-	FL_UNLOCK_D();
 }
 
 unsigned char picture::pixel(int pos)
@@ -95,10 +94,8 @@ unsigned char picture::pixel(int pos)
 
 void picture::clear()
 {
-	FL_LOCK_D();
 	memset(vidbuf, background, bufsize);
 	redraw();
-	FL_UNLOCK_D();
 }
 
 
@@ -117,7 +114,6 @@ void picture::resize_zoom(int x, int y, int w, int h)
 
 void picture::resize(int x, int y, int w, int h)
 {
-	FL_LOCK_D();
 	width = w;
 	height = h;
 	delete [] vidbuf;
@@ -125,8 +121,6 @@ void picture::resize(int x, int y, int w, int h)
 	vidbuf = new unsigned char[bufsize];
 	memset( vidbuf, background, bufsize );
 	resize_zoom(x,y,w,h);
-
-	FL_UNLOCK_D();
 }
 
 /// No data destruction. Used when the received image grows more than expected.
@@ -201,26 +195,72 @@ void picture::stretch(double the_ratio)
 }
 
 /// Change the horizontal center of the image by shifting the pixels.
-/// Beware that it is not protected by FL_LOCK_D/FL_UNLOCK_D
+// Beware that it is not protected by a mutex
 void picture::shift_horizontal_center(int horizontal_shift)
 {
 	/// This is a number of pixels.
-	horizontal_shift *= depth ;
-	if( horizontal_shift < -bufsize ) {
-		horizontal_shift = -bufsize ;
+	int shift = horizontal_shift * depth;
+	if( shift < -bufsize ) {
+		shift = -bufsize ;
 	}
 
 	if( horizontal_shift > 0 ) {
-		/// Here we lose a couple of pixels at the end of the buffer 
+		/// Here we lose a couple of pixels at the end of the buffer
 		/// if there is not a line enough. It should not be a lot.
-		memmove( vidbuf + horizontal_shift, vidbuf, bufsize - horizontal_shift );
-		memset( vidbuf, background, horizontal_shift );
+		int tmp, n;
+		memmove( vidbuf + shift, vidbuf, bufsize - shift );
+		memcpy(vidbuf, vidbuf + width*depth, shift);
+		for (int row = 0; row < height; row ++) {
+			for (int col = 0; col < shift; col++) {
+				n = (row * width + col) * depth;
+				tmp = vidbuf[n];
+				vidbuf[n] = vidbuf[n+2];
+				vidbuf[n+2] = tmp;
+			}
+		}
+//		memset( vidbuf, background, horizontal_shift );
 	} else {
-		/// Here, it is not necessary to reduce the buffer'size.
-		memmove( vidbuf, vidbuf - horizontal_shift, bufsize + horizontal_shift );
-		memset( vidbuf + bufsize + horizontal_shift, background, -horizontal_shift );
+//		shift *= -1;
+		/// Here, it is not necessary to reduce the buffer's size.
+//		memmove( vidbuf, vidbuf + shift, bufsize - shift );
+//		memcpy( vidbuf + bufsize - shift - 1,
+//				vidbuf + bufsize - width * depth - 1, shift);
+//		memset( vidbuf + bufsize + horizontal_shift, background, -horizontal_shift );
 	}
 
+	redraw();
+}
+
+/// Shift the center by 1 rgb value
+// not protected by a mutex
+void picture::shift_center(int dir)
+{
+	if( dir > 0 ) {
+		memmove( vidbuf + 1, vidbuf, bufsize - 1 );
+		vidbuf[0] = 0;
+	} else {
+		memmove( vidbuf, vidbuf + 1, bufsize - 1 );
+		vidbuf[bufsize-1] = 0;
+	}
+	redraw();
+}
+
+/// rotate rgb pixel ordering in the image to the right of
+/// and including grp pixels from the left
+// not protected by a mutex
+void picture::rotate()
+{
+	unsigned char tmp;
+	int n;
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			n = (row * width + col) * depth;
+			tmp = vidbuf[n];
+			vidbuf[n] = vidbuf[n+1];
+			vidbuf[n+1] = vidbuf[n+2];
+			vidbuf[n+2] = tmp;
+		}
+	}
 	redraw();
 }
 
@@ -234,8 +274,8 @@ void picture::set_zoom( int the_zoom )
 // in 	data 	                     user data passed to function
 // in 	x_screen,y_screen,wid_screen position and width of scan line in image
 // out 	buf 	                     buffer for generated image data.
-// Must copy wid_screen pixels from scanline y_screen, starting at pixel x_screen to this buffer. 
-void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar * __restrict__ buf) 
+// Must copy wid_screen pixels from scanline y_screen, starting at pixel x_screen to this buffer.
+void picture::draw_cb( void *data, int x_screen, int y_screen, int wid_screen, uchar * __restrict__ buf)
 {
 	const picture * __restrict__ ptr_pic = ( const picture * ) data ;
 	const int img_width = ptr_pic->width ;
@@ -355,14 +395,14 @@ void picture::slant_undo()
 		for (row = 0; row < height; row++) {
 			col = numcol * row / (height - 1);
 			if (col > 0) {
-				memmove(	temp, 
-							&vidbuf[(row * width + width - col) * depth], 
+				memmove(	temp,
+							&vidbuf[(row * width + width - col) * depth],
 							(width - col) * depth );
-				memmove(	&vidbuf[(row * width + col)*depth], 
-							&vidbuf[row * width *depth], 
+				memmove(	&vidbuf[(row * width + col)*depth],
+							&vidbuf[row * width *depth],
 							(width - col) * depth );
-				memmove(	&vidbuf[row * width * depth], 
-							temp, 
+				memmove(	&vidbuf[row * width * depth],
+							temp,
 							col * depth );
  			}
 		}
@@ -370,14 +410,14 @@ void picture::slant_undo()
 		for (row = 0; row < height; row++) {
 			col = numcol * row / (height - 1);
 			if (col > 0) {
-				memmove(	temp, 
-							&vidbuf[row * width * depth], 
+				memmove(	temp,
+							&vidbuf[row * width * depth],
 							col * depth );
-				memmove(	&vidbuf[row * width * depth], 
-							&vidbuf[(row * width + col) * depth], 
+				memmove(	&vidbuf[row * width * depth],
+							&vidbuf[(row * width + col) * depth],
 							(width - col) * depth );
-				memmove(	&vidbuf[(row * width + width - col) * depth], 
-							temp, 
+				memmove(	&vidbuf[(row * width + width - col) * depth],
+							temp,
 							col *depth );
 			}
 		}
@@ -397,14 +437,14 @@ void picture::slant_corr(int x, int y)
 		for (row = 0; row < height; row++) {
 			col = numcol * row / (height - 1);
 			if (col > 0) {
-				memmove(	temp, 
-							&vidbuf[(row * width + width - col) * depth], 
+				memmove(	temp,
+							&vidbuf[(row * width + width - col) * depth],
 							(width - col) * depth );
-				memmove(	&vidbuf[(row * width + col)*depth], 
-							&vidbuf[row * width *depth], 
+				memmove(	&vidbuf[(row * width + col)*depth],
+							&vidbuf[row * width *depth],
 							(width - col) * depth );
-				memmove(	&vidbuf[row * width * depth], 
-							temp, 
+				memmove(	&vidbuf[row * width * depth],
+							temp,
 							col * depth );
  			}
 		}
@@ -415,14 +455,14 @@ void picture::slant_corr(int x, int y)
 		for (row = 0; row < height; row++) {
 			col = numcol * row / (height - 1);
 			if (col > 0) {
-				memmove(	temp, 
-							&vidbuf[row * width * depth], 
+				memmove(	temp,
+							&vidbuf[row * width * depth],
 							col * depth );
-				memmove(	&vidbuf[row * width * depth], 
-							&vidbuf[(row * width + col) * depth], 
+				memmove(	&vidbuf[row * width * depth],
+							&vidbuf[(row * width + col) * depth],
 							(width - col) * depth );
-				memmove(	&vidbuf[(row * width + width - col) * depth], 
-							temp, 
+				memmove(	&vidbuf[(row * width + width - col) * depth],
+							temp,
 							col *depth );
 			}
 		}
@@ -431,8 +471,13 @@ void picture::slant_corr(int x, int y)
 	redraw();
 }
 
+void picture::slant(int dir)
+{
+}
+
 int picture::handle(int event)
 {
+	if (!slantcorr) return 0;
 	if (Fl::event_inside( this )) {
 		if (event == FL_RELEASE) {
 			int xpos = Fl::event_x() - x();
@@ -442,6 +487,7 @@ int picture::handle(int event)
 				slant_corr(xpos, ypos);
 			else if (evb == 3)
 				slant_undo();
+LOG_WARN("xpos, ypos %d, %d", xpos, ypos);
 			LOG_DEBUG("#2 %d, %d", xpos, ypos);
 			return 1;
 		}
@@ -505,11 +551,11 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 		fclose(fp);
 		return -1;
 	}
-	/* png_set_compression_level() shall set the compression level to "level". 
-	 * The valid values for "level" range from [0,9], corresponding directly 
-	 * to compression levels for zlib. The value 0 implies no compression 
-	 * and 9 implies maximal compression. Note: Tests have shown that zlib 
-	 * compression levels 3-6 usually perform as well as level 9 for PNG images, 
+	/* png_set_compression_level() shall set the compression level to "level".
+	 * The valid values for "level" range from [0,9], corresponding directly
+	 * to compression levels for zlib. The value 0 implies no compression
+	 * and 9 implies maximal compression. Note: Tests have shown that zlib
+	 * compression levels 3-6 usually perform as well as level 9 for PNG images,
 	 * and do considerably fewer calculations. */
 	png_set_compression_level(png, Z_BEST_COMPRESSION);
 

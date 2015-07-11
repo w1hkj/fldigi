@@ -43,7 +43,7 @@ INPUT                = index.txt \
 	fldigi_developer.txt \
 	New-Install.txt thumb_drive.txt colorsandfonts.txt \
 	configcallsigndb.txt configContestia.txt configCW.txt \
-	configDomEX.txt configFH.txt ConfigID.txt configIO.txt ConfigMisc.txt \
+	configDomEX.txt configFH.txt configFSQ.txt ConfigID.txt configIO.txt ConfigMisc.txt \
 	configModemScan.txt configMT63.txt configOlivia.txt ConfigOperator.txt \
 	configPSK.txt \
 	configRTTY.txt configThor.txt ConfigUI-browser.txt \
@@ -53,7 +53,7 @@ INPUT                = index.txt \
 	SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \
 	Logbook.txt LogExports.txt working_logs.txt Macros.txt \
 	InlineMacroTags.txt atMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \
-	DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt \
+	DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt FSQ.txt \
 	Navtex.txt psk.txt Olivia.txt RTTYFSK.txt Thor.txt \
 	throb.txt tune.txt WEFAX.txt WWV-xmt.txt FrequencyAnalysis.txt \
 	DigiscopeDisplay.txt DigiWWV.txt MousingKeyboardShortcuts.txt \
