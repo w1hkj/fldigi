@@ -11,8 +11,7 @@ Notes:
 A. IFKP borrows heavily from Murray Greenman's (ZL1BPU) FSQ varicode implementation.
 
 1. IFKP is an MFSK mode with an offset of +1.  It is designed for very high 
-   coding efficiency. It is intended for use on 10 meters HF, VHF and UHF medium 
-   symbol rates (typ 5.4). This version uses 33 tones (32 differences), a mildly 
+   coding efficiency. This version uses 33 tones (32 differences), a mildly 
    Varicoded Alphabet, with a rotating difference frequency.  Modem statistics:
 
    Samplerate...... 16000

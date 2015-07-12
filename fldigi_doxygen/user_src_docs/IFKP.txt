@@ -1,0 +1,333 @@
+/**
+\page  ifkp_page IFKP
+
+\tableofcontents
+
+\section IFKPplus Incremental Frequency Keying Plus
+
+<br>
+<center>
+\image html ifkp-rx-tx.png "ifkp main dialog"
+\image latex ifkp-rx-tx.png "ifkp main dialog" width=4.0in
+</center>
+<br>
+
+The main dialog ifkp user interface provides an Rx-text panel, a Tx-text panel, 
+a "Heard" list, and an ifkp signal to noise indicator.
+
+Keyboard operation in ifkp is identical to other digital modes such as PSK, MFSK,
+DominoEX, etc. with a primary difference; the alphabet is a truncated version of
+the MicroSoft Code Page 1250, CP1250.  This alphabet is described in the ifkp varicode
+section.
+
+Unlike IFKP, which uses a similar incremental frequency keying technique, IFKP does
+not employ any special protocols.  The exception to this rule is for the transmission
+and reception of IFKP images.
+
+\section IFKPheard IFKP heard list
+
+The IFKP decoder includes a parser which continuously examines the received text
+stream looking for a sequence of characters which begins with <SP>de<SP>, independent
+of case.  <SP> is the space character.  The ensuing word is then tested for validity
+as a callsign.  The following examples would all be qualified as a valid callsign:
+<pre>
+" DE W1HKJ "
+" de kl7cgf "
+" de     W3FQN "
+" de K2LBM<LF>"
+"<LF>de N2IKY<LF>"
+</pre>
+Note that the white space can be extended between the "de" and the callsign.  The
+callsign can be terminated with either a space character or a new line character.
+
+When a valid callsign is discovered it is added to the heard list along with the time
+and detected signal to noise ratio.  New callsigns are always prepended to the top of
+the heard list.  Any older heard list entries with the same callsign are purged.
+
+Left clicking on a heard list entry inserts that callsign in the Tx panel at the
+cursor position.  Right clicking on a heard list entry deletes that entry from
+the list.
+
+\section IFKPspec IFKP specification
+
+IFKP is an MFSK mode with an offset of +1.  It is designed for very high 
+coding efficiency. This version uses 33 tones (32 differences), a Varicoded 
+Alphabet, with a rotating difference frequency.  Modem statistics:
+<br>
+<center>
+|  Parameter   | Value
+:--------------|-------:
+Samplerate     | 16000 |
+Bandwidth      | 386   |
+Center freq    | 1500  |
+Symbol length  | 4096  |
+Lower case cps | 3.65  |
+</center>
+<br>
+Tone differences are expressed as decimal numbers 0 - 31.  The alphabet design
+uses single-symbol and two-symbol character codes. The character set does not 
+include much extended ASCII, and has only 116 different codes.  It is a strongly 
+'unsquare' design (29 x 3), which restricts the number of codes, but we don't 
+need the maximum anyway. This 'unsquare' code maximizes the single-symbol set to 
+29, so will fit all lower case in one symbol. 
+<br>
+
+'Ham speak' doesn't follow standard text for letter frequency, having a higher 
+incidence of letters such as Q, X and Z (in Q codes and callsigns).  Lower case
+letters are more common than upper case.  Numbers are considered equal in frequency
+of occurance as upper case characters.
+<br>
+This character set has been designed for one set of 29 single-symbol characters, 
+and three two-symbol sets of upper case letters, number and punctuation. There 
+is some spare space, and a few popular extended ASCII characters have been 
+included (± ÷ ° £ ×).  
+<br>
+
+Unlike DominoEX and Thor, the design does not use a single-bit as the continuation 
+flag. Using 29 initials means using a comparison process to discover where the 
+initial symbols are. 
+<br>
+
+There are 29 single-symbol characters, 87 two-symbol codes, and a total 
+alphabet of 116 codes. This allows coding all upper case, lower case and 
+punctuation.  The most common symbol is the NULL, a non printing character 
+and is assigned a single symbol entry in the table.  
+<br>
+
+The nomenclature used for the character symbol numbers in the tables is 
+<pre>
+[1st_symbol], ([2nd_symbol])
+</pre>
+expressed in decimal, where the [1st_symbol] always has values less than 29, 
+and the [2nd_symbol] will have a value of 30 or 31.
+<br>
+\section IFKPvaricode IFKP Varicode
+
+The IFKP varicode table is defined as shown in the following tables:
+<center>
+| CHAR  | ASCII |  VAR   | CHAR  | ASCII |  VAR   | CHAR  | ASCII |  VAR   
+:------:|------:|-------:|:-----:|------:|-------:|:-----:|------:|-------:
+| IDLE  |   0   |     0  | \@     |  64   |  0,29  | `     |  96   |  9,31  
+| !     |  33   | 11,30  | A     |  65   |  1,29  | a     |  97   |     1  
+| \"     |  34   | 12,30  | B     |  66   |  2,29  | b     |  98   |     2   
+| #     |  35   | 13,30  | C     |  67   |  3,29  | c     |  99   |     3   
+| $     |  36   | 14,30  | D     |  68   |  4,29  | d     | 100   |     4   
+| %     |  37   | 15,30  | E     |  69   |  5,29  | e     | 101   |     5   
+| &     |  38   | 16,30  | F     |  70   |  6,29  | f     | 102   |     6  
+| '     |  39   | 17,30  | G     |  71   |  7,29  | g     | 103   |     7  
+| (     |  40   | 18,30  | H     |  72   |  8,29  | h     | 104   |     8  
+| )     |  41   | 19,30  | I     |  73   |  9,29  | i     | 105   |     9   
+| *     |  42   | 20,30  | J     |  74   | 10,29  | j     | 106   |    10   
+| +     |  43   | 21,30  | K     |  75   | 11,29  | k     | 107   |    11   
+| ,     |  44   | 27,29  | L     |  76   | 12,29  | l     | 108   |    12   
+| -     |  45   | 22,30  | M     |  77   | 13,29  | m     | 109   |    13   
+| .     |  46   |    27  | N     |  78   | 14,29  | n     | 110   |    14   
+| /     |  47   | 23,30  | O     |  79   | 15,29  | o     | 111   |    15   
+| 0     |  48   | 10,30  | P     |  80   | 16,29  | p     | 112   |    16   
+| 1     |  49   |  1,30  | Q     |  81   | 17,29  | q     | 113   |    17   
+| 2     |  50   |  2,30  | R     |  82   | 18,29  | r     | 114   |    18   
+| 3     |  51   |  3,30  | S     |  83   | 19,29  | s     | 115   |    19   
+| 4     |  52   |  4,30  | T     |  84   | 20,29  | t     | 116   |    20   
+| 5     |  53   |  5,30  | U     |  85   | 21,29  | u     | 117   |    21   
+| 6     |  54   |  6,30  | V     |  86   | 22,29  | v     | 118   |    22   
+| 7     |  55   |  7,30  | W     |  87   | 23,29  | w     | 119   |    23   
+| 8     |  56   |  8,30  | X     |  88   | 24,29  | x     | 120   |    24   
+| 9     |  57   |  9,30  | Y     |  89   | 25,29  | y     | 121   |    25   
+| :     |  58   | 24,30  | Z     |  90   | 26,29  | z     | 122   |    26   
+| ;     |  59   | 25,30  | [     |  91   |  1,31  | {     | 123   |  6,31   
+| <     |  60   | 26,30  | \\     |  92   |  2,31  | \|     | 124   |  7,31   
+| =     |  61   |  0,31  | ]     |  93   |  3,31  | }     | 125   |  8,31   
+| >     |  62   | 27,30  | ^     |  94   |  4,31  | ~     | 126   |  0,30   
+| ?     |  63   | 28,29  | _     |  95   |  5,31  | DEL   | 127   | 28,31   
+| CHAR  | ASCII |  VAR   
+:------:|------:|-------:
+| CRLF  | 13/10 | 28,30   
+| SPACE |    32 |    28   
+| ±     |   241 | 10,31  
+| ÷     |   246 | 11,31  
+| °     |   248 | 12,31  
+| ×     |   158 | 13,31  
+| £     |   156 | 14,31   
+| BS    |     8 | 27,31  
+</center>
+<br>
+
+Here is a simple analysis of projected text efficiency compared with DominoEX:
+<br>
+<pre>
+          |                       Symbols                         | Nbr
+Message   |The Quick Brown Fox jumps over the lazy dog 1234567890.|     
+DominoEX  |2211221221211211212122222112111121121221212122222222222|88   
+IFKP      |2111211111211111211111111111111111111111111122222222221|69   
+Message   |vk2abc de zl1xyz ge om ur rst529 name fred. hw? kkk    |     
+DominoEX  |222121111122222212111211111112221112112111212221222    |75   
+IFKP      |112111111111211111111111111112221111111111111121111    |57   
+</pre>
+<br>
+It is about 27% more efficient than DominoEX. Note especially the score sending 
+typical 'ham speak' - some 30% more efficient than DominoEX. The typing speed at 
+3.65 cps is about 37 WPM.  Q codes and callsigns should be sent in lower case when
+possible.
+<br>
+
+Character rate statistics for various character sets when sent using IFKP,
+<br>
+<pre>
+text: abcdefghijklmnopqrstuvwxyz
+chars/sec: 3.65
+
+text: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+chars/sec: 1.84
+
+text: 0123456789
+chars/sec: 1.84
+
+text: !@#$%&*()_+-=[]{}\|;:'",<>/?<bs><lf>
+chars/sec: 1.84
+</pre>
+\section IFKPimage IFKP Image Mode
+
+fldigi-ifkp has the ability to transmit and receive small digital images selected
+from those stored on the disk.  The image transmission is similar to but not
+compatible with the MFSKpic modes.  IFKP images are always transmitted in a fixed
+width to height ratio.  The W x H format is not limited to a single ratio, nor is
+it limited to just color, or just gray scale.  The image mode is nearly identical
+to the FSQ image mode with the exception of the RGB transmission sequence.  IFKP
+transmits in Blue-Green-Red order, whereas IFKP transmits in Red-Green-Blue order.
+The IFKP image bandwidth is less than 400 Hz.
+
+The start of the picture is signalled digitally, and the receiver simply captures 
+data continuously for W lines of H pixels, as requested, resulting in a WxH pixel 
+image, then reception stops.
+
+IFKP Image Mode was designed for NVIS propagation on the lower HF bands. 
+Unlike SSTV, the pictures are sent relatively slowly, in a narrow bandwidth 
+(1/4 of SSTV), and as a result the picture signal to noise ratio is generally 
+better than SSTV for the same transmission power. As a guideline, IFKP signals 
+(before the picture is started) need to be about +10dB SNR for relatively 
+noise-free picture reception.
+
+IFKP pictures also offer significantly better reception than SSTV under NVIS 
+conditions. Because there is no picture sync, there is no risk of the picture 
+tearing due to timing changes, or breaking up during selective fades. All that 
+happens is that the image may noise up momentarily, but will stay correctly 
+aligned. The mode is also significantly less affected by ghosting.
+
+<b>Image Format</b>
+
+The images are approximately in 4:3 or 3:4 aspect ratio.  IFKP images can be received
+by any IFKP capable decoder.
+
+Available image aspect ratios / formats include:
+
+<ul>
+<li>48x64   color
+<li>160x120 color
+<li>320x240 color
+<li>640x480 grey scale
+<li>640x480 color
+<li>240x300 color
+<li>240x300 grey scale
+<li>120x150 color
+<li>120x150 grey scale
+</ul>
+
+These formats correspond roughly to a portrait (3x4) and landscape (4x3) photo.
+fldigi will scale any computer stored image to the target image.  You should
+edit the images off line to be at least close to the 3x4 or 4x3 ratio.  That will
+prevent the fldigi loader from distorting the loaded image.
+
+The image mode sampling rate is 16,000 samples/sec, the same as the text mode. 
+Each pixel consists of 16 samples, and there are P pixels/line. Therefore the 
+line period is 16 x P/16000 seconds, or the line rate 16000/(16 x P) lines/sec. 
+In colour, each line is sent three times, in Red-Green-Blue (RGB) order.
+
+As an example, if there were 320 pixels per line, and 240 lines, the line rate 
+would be 3.125 lines/sec, and 240 x 3 (for RGB) lines would take 230.4 seconds, or 
+3.84 minutes for a colour picture containing 76,800 pixels.
+
+There is a single sync signal sent at the beginning of each image. This sync signal
+is a tone placed 186 Hz below the center frequency, or at 1384 Hertz. The sync signal
+is 1.5 symbol lengths in duration, or 5.8 seconds.
+
+If the sound cards in the transmitting and receiving computers differ markedly 
+in sample rate, the resulting picture can also be skewed. A small timing 
+difference is enough to cause a noticeable slant in the picture. This is easily 
+fixed after reception using the Slant control. High quality sound cards should 
+be better than 5ppm, and result in barely noticeable slant, but some cheaper 
+computer built-in sound modules may be rather worse.  If you plan to send IFKP
+images you should calibrate your sound card to WWV.
+
+<b>Transmit Image</b>
+
+Transmitting an image in IFKP is initiated by selecting the "Send image" menu item
+from the pop up Tx menu.  Right click on the Tx panel
+
+<center>
+\image html ifkp-send-image.png "Send Image"
+\image latex ifkp-send-image.png "Send Image" width=2in
+</center>
+
+This selection opens up the Send Image dialog
+
+<center>
+\image html ifkp-image-xmt.png "Send Image Dialog"
+\image latex ifkp-image-xmt.png "Send Image Dialog" width=3.5in
+</center>
+
+shown with a 48 x 64 color image loaded and ready to transmit.  The 48 x 64 format
+is sized to be a thumbnail photo with a transmit time of 9.2 seconds.  It is adequate
+for sending your mug shot.
+
+Transmission begins when you press the "Xmt" button.  fldigi will insert the text
+preamble and immediately begin the image transmission.  fldigi returns to the receive
+mode when the image transmission is completed.
+
+<center>
+\image html ifkp-WF-image-mode.png "Image Mode Waterfall"
+\image latex ifkp-WF-image-mode.png "Image Mode Waterfall" width=3.5in
+</center>
+
+<b>Receive Image</b>
+
+Reception is completely automatic.  The decoder will identify the picture start, 
+and record the picture. In doing so, it automatically opens a separate "IFKP Rx Image" dialog.
+
+<center>
+\image html ifkp-image-partial.png "Image Reception"
+\image latex ifkp-image-partial.png "Image Reception" width=3.5in
+</center>
+
+Demodulation uses a phase detection algorithm based on quadrature demodulation 
+using the current and previous samples at 16000 samples/sec. All the samples are 
+converted to pixels and stored, but only the average over every 16 samples is 
+displayed.
+
+The raw image is stored in a temporary buffer of expanded size, which allows 
+fine adjustment of the slant and phase to be made before the image is sampled 
+and displayed.
+
+If the transmitting station goes off the air or reception is lost during 
+recording of a picture, the recording will continue until the necessary number 
+of samples has been made, then reception stops.
+
+<center>
+\image html ifkp-image-completed.png "Image Reception Completed"
+\image latex ifkp-image-completed.png "Image Reception Completed" width=3.5in
+</center>
+
+The Rx Image dialog controls from left to right are:
+- Reset: clears all rx data
+- Phase adjustment: moves image left and right
+- Slant adjustment: slews image diagonally
+- Save: saves the image to the fldigi image folder with a date-time stamped file name
+- Close: closes the image dialog
+
+Image phase and slant should not be adjusted before the picture reception has 
+finished, as then only part of the image will be corrected.
+
+\ref ifkp_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+*/
+
