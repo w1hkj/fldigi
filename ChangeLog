@@ -1,6 +1,12 @@
-2015-07-10  David Freese  <iam_w1hkj@w1hkj.com>
 
-	d9dec44: fsq modem
+
+=Version 3.22.12=
+
+2015-07-18  David Freese  <iam_w1hkj@w1hkj.com>
+
+	1579ef6: FSQ heard parser
+	f61f7d7: fsq modem
+	dfb9318: FreqControl focus
 	e477621: trx exit
 
 
