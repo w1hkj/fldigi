@@ -8447,7 +8447,7 @@ void cb_heard_send_msg(Fl_Widget *w, void*)
 	fsq_tx_text->add(fsq_selected_call.c_str());
 	fsq_tx_text->add("#[");
 	fsq_tx_text->add(active_modem->fsq_mycall());
-	fsq_tx_text->add("] ");
+	fsq_tx_text->add("]");
 	fsq_tx_text->add(msg.c_str());
 	fsq_tx_text->add("^r");
 	start_tx();

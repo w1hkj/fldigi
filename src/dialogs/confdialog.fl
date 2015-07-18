@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0302 
+version 1.0303 
 i18n_type 1 
 i18n_include "gettext.h" 
 i18n_function _ 
@@ -151,8 +151,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 
     font_browser->hide();
 
-    progdefaults.changed = true;} {selected
-  }
+    progdefaults.changed = true;} {}
 } 
 
 Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
@@ -359,8 +358,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -450,7 +449,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 355}
+        tooltip {User Interface} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 355} selection_color 50
@@ -2828,7 +2827,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3435,7 +3434,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFSQ {
             label FSQ open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Rx Parameters} open
@@ -3445,7 +3444,7 @@ progdefaults.changed = true;}
                 label {Min Hits}
                 callback {progdefaults.fsqhits=(int)o->value();
 progdefaults.changed = true;}
-                tooltip {Minimum \# hits in tone detector} xywh {140 72 125 21} type {Horz Knob} align 8 minimum 3 maximum 6 step 1 value 3 textsize 14
+                tooltip {Minimum \# hits in tone detector} xywh {140 72 125 22} type {Horz Knob} align 8 minimum 3 maximum 6 step 1 value 3 textsize 14
                 code0 {o->value(progdefaults.fsqhits);}
               }
               Fl_Choice sel_fsq_lpf {
@@ -3460,7 +3459,7 @@ progdefaults.changed = true;} open
                 label {MovAvg:}
                 callback {progdefaults.fsq_movavg = o->value();
 progdefaults.changed = true;}
-                tooltip {Filter FFT output} xywh {410 72 125 21} type Horizontal align 4 minimum 1 maximum 4 step 1 value 4 textsize 14
+                tooltip {Filter FFT output} xywh {410 72 125 22} type Horizontal align 4 minimum 1 maximum 4 step 1 value 4 textsize 14
                 code0 {o->value(progdefaults.fsq_movavg);}
               }
               Fl_Choice sel_fsq_heard_aging {
@@ -3485,7 +3484,7 @@ btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {90 180 55 15} down_box ROUND_DOWN_BOX
+                xywh {90 173 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 2);}
               }
               Fl_Round_Button {btn_fsqbaud[1]} {
@@ -3497,7 +3496,7 @@ btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {198 180 55 15} down_box ROUND_DOWN_BOX
+                xywh {198 173 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 3);}
               }
               Fl_Round_Button {btn_fsqbaud[2]} {
@@ -3509,7 +3508,7 @@ btn_fsqbaud[1]->value(0);
 btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {306 180 55 15} down_box ROUND_DOWN_BOX
+                xywh {306 173 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 4.5);}
               }
               Fl_Round_Button {btn_fsqbaud[3]} {
@@ -3521,15 +3520,8 @@ btn_fsqbaud[1]->value(0);
 btn_fsqbaud[2]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {415 180 55 15} down_box ROUND_DOWN_BOX
+                xywh {415 173 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 6);}
-              }
-              Fl_Input {} {
-                label {QTC:}
-                callback {progdefaults.fsqQTCtext = o->value();
-progdefaults.changed = true;}
-                tooltip {Enter QTC text} xywh {90 253 456 23}
-                code0 {o->value(progdefaults.fsqQTCtext.c_str());}
               }
               Fl_Choice sel_fsq_frequency {
                 label {Center freq}
@@ -3543,7 +3535,7 @@ progdefaults.changed = true;} open
                 label Sounder
                 callback {progdefaults.fsq_sounder=o->value();
 progdefaults.changed = true;} open
-                tooltip {Send beacon every ...} xywh {90 214 102 21} down_box BORDER_BOX
+                tooltip {Send beacon every ...} xywh {90 195 102 21} down_box BORDER_BOX
                 code0 {o->add("OFF"); o->add("1 min"); o->add("10 min"); o->add("30 min");}
                 code1 {o->value(progdefaults.fsq_sounder);}
               } {}
@@ -3551,8 +3543,22 @@ progdefaults.changed = true;} open
                 label {MYCALL always lower case}
                 callback {progdefaults.fsq_lowercase=o->value();
 progdefaults.changed = true;}
-                tooltip {convert operator callsign to lower case} xywh {306 217 70 15} down_box DOWN_BOX
+                tooltip {convert operator callsign to lower case} xywh {306 198 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.fsq_lowercase);}
+              }
+              Fl_Counter cntr_FSQ_time_out {
+                label {Time out}
+                callback {progdefaults.fsq_time_out = o->value();
+progdefaults.changed = true;}
+                tooltip {Time out xmt attempt in XX seconds} xywh {90 223 102 22} type Simple align 4 minimum 2 maximum 20 step 1 value 6
+                code0 {o->value(progdefaults.fsq_time_out);}
+              }
+              Fl_Input {} {
+                label {QTC:}
+                callback {progdefaults.fsqQTCtext = o->value();
+progdefaults.changed = true;}
+                tooltip {Enter QTC text} xywh {90 253 456 23}
+                code0 {o->value(progdefaults.fsqQTCtext.c_str());}
               }
             }
             Fl_Group {} {

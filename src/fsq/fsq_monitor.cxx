@@ -44,11 +44,12 @@ using namespace std;
 
 //
 // External fsq monitor dialog
-// 
+//
 
 Fl_Double_Window  *fsqMonitor = 0;
 static Fl_Button *btnCloseMonitor;
 FTextRX           *fsq_monitor = 0;
+FTextRX           *fsq_que = 0;
 
 static void cb_btnCloseMonitor(Fl_Button*, void*) {
 	progStatus.fsqMONITORxpos = fsqMonitor->x();
@@ -67,22 +68,47 @@ Fl_Double_Window* create_fsqMonitor(void)
 							progStatus.fsqMONITORwidth, progStatus.fsqMONITORheight,
 							_("FSQ monitor"));
 
-	fsq_monitor = new FTextRX(
+	Panel *monitor_panel = new Panel(
 			2, 2,
 			w->w() - 4, w->h() - 28);
-		fsq_monitor->color(
-		fl_rgb_color(
-			0.98*progdefaults.RxColor.R,
-			0.98*progdefaults.RxColor.G,
-			0.98*progdefaults.RxColor.B),
-			progdefaults.RxTxSelectcolor);
-		fsq_monitor->setFont(progdefaults.RxFontnbr);
-		fsq_monitor->setFontSize(progdefaults.RxFontsize);
-		fsq_monitor->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
+		fsq_monitor = new FTextRX(
+				monitor_panel->x(), monitor_panel->y(),
+				monitor_panel->w(), 7*monitor_panel->h()/8);
+			fsq_monitor->color(
+			fl_rgb_color(
+				0.98*progdefaults.RxColor.R,
+				0.98*progdefaults.RxColor.G,
+				0.98*progdefaults.RxColor.B),
+				progdefaults.RxTxSelectcolor);
+			fsq_monitor->setFont(progdefaults.RxFontnbr);
+			fsq_monitor->setFontSize(progdefaults.RxFontsize);
+			fsq_monitor->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
+		fsq_que = new FTextRX(
+				fsq_monitor->x(), fsq_monitor->y() + fsq_monitor->h(),
+				fsq_monitor->w(), monitor_panel->h() - fsq_monitor->h());
+			fsq_que->color(
+			fl_rgb_color(
+				0.98*progdefaults.RxColor.R,
+				0.98*progdefaults.RxColor.G,
+				0.98*progdefaults.RxColor.B),
+				progdefaults.RxTxSelectcolor);
+			fsq_que->setFont(progdefaults.RxFontnbr);
+			fsq_que->setFontSize(progdefaults.RxFontsize);
+			fsq_que->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
+		Fl_Box *minbox = new Fl_Box(
+			monitor_panel->x(), monitor_panel->y() + 66,
+			monitor_panel->w(), monitor_panel->h() - 132);
+		minbox->hide();
+
+		monitor_panel->resizable(minbox);
+	monitor_panel->end();
 
 	Fl_Group *g = new Fl_Group(
-					fsq_monitor->x(), fsq_monitor->y() + fsq_monitor->h() + 2,
-					fsq_monitor->w(), 22);
+		fsq_monitor->x(), monitor_panel->y() + monitor_panel->h() + 2,
+		fsq_monitor->w(), 22);
 		Fl_Group *g1 = new Fl_Group(
 					g->x(), g->y() + 2, g->w() - 80, g->h());
 			g1->box(FL_FLAT_BOX);
@@ -99,7 +125,7 @@ Fl_Double_Window* create_fsqMonitor(void)
 
 	w->end();
 	w->callback((Fl_Callback*)cb_btnCloseMonitor);
-	w->resizable(fsq_monitor);
+	w->resizable(monitor_panel);
 	w->size_range( 300, 200 );
 	w->xclass(PACKAGE_NAME);
 
@@ -167,3 +193,15 @@ void write_fsqDebug(string s, int style)
 	REQ(&FTextRX::addstr, fsq_debug, s, style);
 }
 #endif
+
+void fsq_que_clear()
+{
+	REQ(&FTextRX::clear, fsq_que);
+}
+
+void write_fsq_que(std::string s)
+{
+	if (!fsq_que) return;
+	REQ(&FTextRX::clear, fsq_que);
+	REQ(&FTextRX::addstr, fsq_que, s, FTextBase::ALTR);
+}

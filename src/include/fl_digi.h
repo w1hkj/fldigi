@@ -27,6 +27,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Pack.H>
+#include <string>
 
 #include "combo.h"
 //#include "Fl_Tile_Check.h"
@@ -130,7 +131,8 @@ extern FTextTX			*fsq_tx_text;
 extern Fl_Browser		*fsq_heard;
 
 extern Fl_Double_Window	*fsqMonitor;
-extern FTextRX			*fsq_monitor;
+extern FTextRX				*fsq_monitor;
+extern FTextRX				*fsq_que;
 extern Fl_Double_Window	*create_fsqMonitor();
 extern void				open_fsqMonitor();
 extern void				close_fsqMonitor();
@@ -141,6 +143,8 @@ extern void				open_fsqDebug();
 extern void				close_fsqDebug();
 extern void				write_fsqDebug(int ch, int style = FTextBase::RECV);
 extern void				write_fsqDebug(std::string s, int style = FTextBase::RECV);
+extern void				fsq_que_clear();
+extern void				write_fsq_que(std::string s);
 
 extern void fsq_disableshift();
 extern void fsq_enableshift();
