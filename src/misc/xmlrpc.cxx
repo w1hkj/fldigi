@@ -1052,22 +1052,6 @@ public:
 	}
 };
 
-
-class Main_get_freq : public xmlrpc_c::method
-{
-public:
-	Main_get_freq()
-	{
-		_signature = "d:n";
-		_help = "Returns the RF carrier frequency.";
-	}
-	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
-	{
-		double rfc = wf->rfcarrier();
-		*retval = xmlrpc_c::value_double(rfc);
-	}
-};
-
 void xmlrpc_set_qsy(long long rfc)
 {
 	wf->rfcarrier(rfc);
@@ -1751,7 +1735,7 @@ class Main_get_char_timing : public xmlrpc_c::method
 public:
 	Main_get_char_timing()
 	{
-		_signature = "n:6";
+		_signature = "n:i";
 		_help = "Input: value of character. Returns transmit duration for specified character (samples:sample rate).";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -1850,7 +1834,7 @@ class Main_get_tx_timing : public xmlrpc_c::method
 public:
 	Main_get_tx_timing()
 	{
-		_signature = "n:6";
+		_signature = "n:s";
 		_help = "Returns transmit duration for test string (samples:sample rate:secs).";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -1938,6 +1922,21 @@ public:
 		XMLRPC_LOCK;
 		double rfc = wf->rfcarrier();
 		REQ(set_frequency, (long long int)params.getDouble(0, 0.0));
+		*retval = xmlrpc_c::value_double(rfc);
+	}
+};
+
+class Rig_get_freq : public xmlrpc_c::method
+{
+public:
+	Rig_get_freq()
+	{
+		_signature = "d:n";
+		_help = "Returns the RF carrier frequency.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		double rfc = wf->rfcarrier();
 		*retval = xmlrpc_c::value_double(rfc);
 	}
 };
@@ -2268,6 +2267,11 @@ class Main_set_rig_mode : public Rig_set_mode
 public:
 	Main_set_rig_mode() { _help = "[DEPRECATED; use rig.set_mode"; }
 };
+class Main_get_freq : public Rig_get_freq
+{
+public:
+	Main_get_freq() {_help = "[DEPRECATED; use rig.get_frequency"; }
+};
 class Main_get_rig_modes : public Rig_get_modes
 {
 public:
@@ -2458,7 +2462,7 @@ class Log_set_rst_in : public xmlrpc_c::method
 public:
 	Log_set_rst_in()
 	{
-		_signature = "s:n";
+		_signature = "n:s";
 		_help = "Sets the RST(r) field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -2489,7 +2493,7 @@ class Log_set_rst_out : public xmlrpc_c::method
 public:
 	Log_set_rst_out()
 	{
-		_signature = "s:n";
+		_signature = "n:s";
 		_help = "Sets the RST(s) field contents.";
 	}
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
@@ -3414,13 +3418,14 @@ ELEM_(Rig_set_name, "rig.set_name")								\
 ELEM_(Rig_get_name, "rig.get_name")								\
 ELEM_(Rig_set_frequency, "rig.set_frequency")						\
 ELEM_(Rig_set_smeter, "rig.set_smeter")							\
-ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")							\
+ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")						\
 ELEM_(Rig_set_modes, "rig.set_modes")								\
 ELEM_(Rig_set_mode, "rig.set_mode")								\
 ELEM_(Rig_get_modes, "rig.get_modes")								\
 ELEM_(Rig_get_mode, "rig.get_mode")								\
 ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")					\
 ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")						\
+ELEM_(Rig_get_freq, "rig.get_frequency")							\
 ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")						\
 ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
 ELEM_(Rig_get_notch, "rig.get_notch")								\
@@ -3436,7 +3441,7 @@ ELEM_(Log_get_name, "log.get_name")								\
 ELEM_(Log_get_rst_in, "log.get_rst_in")							\
 ELEM_(Log_get_rst_out, "log.get_rst_out")							\
 ELEM_(Log_set_rst_in, "log.set_rst_in")							\
-ELEM_(Log_set_rst_out, "log.set_rst_out")						\
+ELEM_(Log_set_rst_out, "log.set_rst_out")							\
 ELEM_(Log_get_serial_number, "log.get_serial_number")			\
 ELEM_(Log_set_serial_number, "log.set_serial_number")			\
 ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
@@ -3456,6 +3461,8 @@ ELEM_(Log_set_call, "log.set_call")								\
 ELEM_(Log_set_name, "log.set_name")								\
 ELEM_(Log_set_qth, "log.set_qth")									\
 ELEM_(Log_set_locator, "log.set_locator")							\
+ELEM_(Log_set_rst_in, "log.set_rst_in")							\
+ELEM_(Log_set_rst_out, "log.set_rst_out")							\
 \
 ELEM_(Io_in_use, "io.in_use")	          						\
 ELEM_(Io_enable_kiss, "io.enable_kiss")							\
