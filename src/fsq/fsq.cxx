@@ -376,14 +376,15 @@ static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EX
 
 bool fsq::valid_callsign(std::string s)
 {
-	static char sz[21];
-	if (s.empty()) return false;
+	if (s.length() < 3) return false;
 	if (s.length() > 20) return false;
+//	if (s.find(' ') != std::string::npos) return false;
+
 	if (s == allcall) return true;
 	if (s == cqcqcq) return true;
 	if (s == mycall) return true;
-	if (s.find(' ') != std::string::npos) return false;
 
+	static char sz[21];
 	memset(sz, 0, 21);
 	strcpy(sz, s.c_str());
 	bool matches = call.match(sz);
@@ -423,13 +424,15 @@ void fsq::parse_rx_text()
 	station_calling.clear();
 
 	int max = p+1;
+	std::string substr;
 	for (int i = 1; (i < 10) && (i < max); i++) {
 		if (rx_text[p-i] <= ' ' || rx_text[p-i] > 'z') {
 			rx_text.clear();
 			return;
 		}
-		if (crc.sval(rx_text.substr(p-i, i)) == rxcrc) {
-			station_calling = rx_text.substr(p-i, i);
+		substr = rx_text.substr(p-i, i);
+		if ((crc.sval(substr) == rxcrc) && valid_callsign(substr)) {
+			station_calling = substr;
 			break;
 		}
 	}
