@@ -1,8 +1,14 @@
 
 
-=Version 3.22.12=
+=Version 3.22.13=
 
 2015-07-18  David Freese  <iam_w1hkj@w1hkj.com>
+
+	7bdf051: FSQ bug fix
+	9319676: XMLRPC commands
+
+
+=Version 3.22.12=
 
 	1579ef6: FSQ heard parser
 	f61f7d7: fsq modem
