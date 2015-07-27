@@ -10579,6 +10579,7 @@ gured on the\n\"Notifications\" configure dialog."));
             { Fl_Group* o = new Fl_Group(55, 151, 490, 60, _("K3 A1A configuation"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              o->hide();
               { Fl_Check_Button* o = btnCWIsLSB = new Fl_Check_Button(270, 172, 70, 15, _("CW is LSB"));
                 btnCWIsLSB->tooltip(_("Select this for Elecraft K3\nOther radios should not need it."));
                 btnCWIsLSB->down_box(FL_DOWN_BOX);

@@ -1271,13 +1271,8 @@ void rigCAT_set_qsy(long long f)
 }
 #endif
 
-bool ModeIsLSB(const string& s)
+bool ModeIsLSB(string s)
 {
-	if (nonCATrig) {
-		if (s == "LSB" || s == "PKTLSB" || s == "CW" || s == "RTTY")
-			return true;
-		return false;
-	}
 	list<string>::iterator pM = LSBmodes.begin();
 	while (pM != LSBmodes.end() ) {
 		if (*pM == s)

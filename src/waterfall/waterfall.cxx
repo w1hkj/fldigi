@@ -70,6 +70,7 @@
 #include "rtty.h"
 #include "flslider2.h"
 #include "debug.h"
+#include "rigsupport.h"
 
 using namespace std;
 
@@ -648,28 +649,27 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 update_freq:
 	static char szFrequency[14];
 	if (active_modem && rfc != 0) { // use a boolean for the waterfall
-		int cwoffset = 0;
-		int rttyoffset = 0;
+		int offset = 0;
+		double afreq = active_modem->get_txfreq();
 		trx_mode mode = active_modem->get_mode();
 		if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
-			rttyoffset = (progdefaults.rtty_shift < rtty::numshifts ?
+			offset = (progdefaults.rtty_shift < rtty::numshifts ?
 				  rtty::SHIFT[progdefaults.rtty_shift] :
 				  progdefaults.rtty_custom_shift);
-			rttyoffset /= 2;
-			if (active_modem->get_reverse()) rttyoffset *= -1;
+			offset /= 2;
+			if (active_modem->get_reverse()) offset *= -1;
 		}
 		string testmode = qso_opMODE->value();
-		if (testmode == "CW" or testmode == "CWR") {
-			cwoffset = progdefaults.CWsweetspot;
-			usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
-		}
+		usb = !ModeIsLSB(testmode);
+		if (testmode.find("CW") != string::npos)
+			afreq = 0;//-progdefaults.CWsweetspot;
 		if (mode == MODE_ANALYSIS) {
 			dfreq = active_modem->track_freq();
 		} else {
 			if (usb)
-				dfreq = rfc + active_modem->get_txfreq() - cwoffset + rttyoffset;
+				dfreq = rfc + afreq + offset;
 			else
-				dfreq = rfc - active_modem->get_txfreq() + cwoffset - rttyoffset;
+				dfreq = rfc - afreq - offset;
 		}
 		snprintf(szFrequency, sizeof(szFrequency), "%-.3f", dfreq / 1000.0);
 	} else {
@@ -803,10 +803,9 @@ void WFdisp::drawScale() {
 		else {
 		    int cwoffset = 0;
 		    string testmode = qso_opMODE->value();
-		    if (testmode == "CW" or testmode == "CWR") {
-				cwoffset = ( progdefaults.CWOffset ? progdefaults.CWsweetspot : 0 );
-				usb = ! (progdefaults.CWIsLSB ^ (testmode == "CWR"));
-		    }
+		    usb = !ModeIsLSB(testmode);
+			if (testmode.find("CW") != string::npos)
+				cwoffset = progdefaults.CWsweetspot;
 			if (usb)
 				fr = (rfc - (rfc%500))/1000.0 + 0.5*i - cwoffset/1000.0;
 			else

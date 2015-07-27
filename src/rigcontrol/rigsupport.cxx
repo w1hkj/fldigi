@@ -478,11 +478,25 @@ bool init_NoRig_RigDialog()
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
 		qso_opMODE->add(modes[i].name);
 	}
+// list of LSB type modes that various xcvrs report via flrig
 	LSBmodes.clear();
 	LSBmodes.push_back("LSB");
-	LSBmodes.push_back("CWR");
+	LSBmodes.push_back("LSB-D");
+	LSBmodes.push_back("LSB-D1");
+	LSBmodes.push_back("LSB-D2");
+	LSBmodes.push_back("LSB-D3");
+	LSBmodes.push_back("CW");
+	LSBmodes.push_back("LCW");
+	LSBmodes.push_back("CW-N");
+	LSBmodes.push_back("CWL");
 	LSBmodes.push_back("RTTY");
+	LSBmodes.push_back("RTTY-L");
 	LSBmodes.push_back("PKTLSB");
+	LSBmodes.push_back("PKT-L");
+	LSBmodes.push_back("USER-L");
+	LSBmodes.push_back("DATA-L");
+	LSBmodes.push_back("DATA");
+	LSBmodes.push_back("D-LSB");
 
 	qso_opMODE->index(0);
 	qso_opMODE->activate();
