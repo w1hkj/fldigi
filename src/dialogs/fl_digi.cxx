@@ -303,8 +303,14 @@ Fl_Button			*btnQRZ;
 static Fl_Button		*qsoClear;
 Fl_Button			*qsoSave;
 cFreqControl 		*qsoFreqDisp = (cFreqControl *)0;
+Fl_Group			*qso_combos = (Fl_Group *)0;
 Fl_ComboBox			*qso_opMODE = (Fl_ComboBox *)0;
+Fl_Group			*qso_opGROUP = (Fl_Group *)0;
 Fl_ComboBox			*qso_opBW = (Fl_ComboBox *)0;
+Fl_Button			*qso_btnBW1 = (Fl_Button *)0;
+Fl_ComboBox			*qso_opBW1 = (Fl_ComboBox *)0;
+Fl_Button			*qso_btnBW2 = (Fl_Button *)0;
+Fl_ComboBox			*qso_opBW2 = (Fl_ComboBox *)0;
 Fl_Button			*qso_opPICK = (Fl_Button *)0;
 
 Fl_Input2			*inpFreq;
@@ -3716,13 +3722,11 @@ void toggle_smeter()
 	if (progStatus.meters && !smeter->visible()) {
 		pwrmeter->hide();
 		smeter->show();
-		qso_opMODE->hide();
-		qso_opBW->hide();
+		qso_combos->hide();
 	} else if (!progStatus.meters && smeter->visible()) {
 		pwrmeter->hide();
 		smeter->hide();
-		qso_opMODE->show();
-		qso_opBW->show();
+		qso_combos->show();
 	}
 	RigControlFrame->redraw();
 }
@@ -4457,16 +4461,25 @@ void show_frequency(long long freq)
 	REQ(_show_frequency, freq);
 }
 
-void show_mode(const string& sMode)
+void show_mode(const string sMode)
 {
 	REQ(&Fl_ComboBox::put_value, qso_opMODE, sMode.c_str());
 }
 
-void show_bw(const string& sWidth)
+void show_bw(const string sWidth)
 {
 	REQ(&Fl_ComboBox::put_value, qso_opBW, sWidth.c_str());
 }
 
+void show_bw1(const string sVal)
+{
+	REQ(&Fl_ComboBox::put_value, qso_opBW1, sVal.c_str());
+}
+
+void show_bw2(const string sVal)
+{
+	REQ(&Fl_ComboBox::put_value, qso_opBW2, sVal.c_str());
+}
 
 void show_spot(bool v)
 {
@@ -4675,6 +4688,8 @@ void LOGGING_colors_font()
 // combo boxes
 	combo_color_font(qso_opMODE);
 	combo_color_font(qso_opBW);
+	combo_color_font(qso_opBW1);
+	combo_color_font(qso_opBW2);
 
 	fl_digi_main->redraw();
 
@@ -5169,33 +5184,94 @@ void create_fl_digi_main_primary() {
 			set_smeter_colors();
 			smeter->hide();
 
-			qso_opMODE = new Fl_ComboBox(
-				smeter->x(), smeter->y(), mode_cbo_w, Hentry);
-			qso_opMODE->box(FL_DOWN_BOX);
-			qso_opMODE->color(FL_BACKGROUND2_COLOR);
-			qso_opMODE->selection_color(FL_BACKGROUND_COLOR);
-			qso_opMODE->labeltype(FL_NORMAL_LABEL);
-			qso_opMODE->labelfont(0);
-			qso_opMODE->labelsize(14);
-			qso_opMODE->labelcolor(FL_FOREGROUND_COLOR);
-			qso_opMODE->callback((Fl_Callback*)cb_qso_opMODE);
-			qso_opMODE->align(FL_ALIGN_TOP);
-			qso_opMODE->when(FL_WHEN_RELEASE);
-			qso_opMODE->end();
+			qso_combos = new Fl_Group(
+				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
+				smeter_w, Hentry);
+			qso_combos->box(FL_FLAT_BOX);
 
-			qso_opBW = new Fl_ComboBox(
-				qso_opMODE->x() + mode_cbo_w + pad, smeter->y(), bw_cbo_w, Hentry);
-			qso_opBW->box(FL_DOWN_BOX);
-			qso_opBW->color(FL_BACKGROUND2_COLOR);
-			qso_opBW->selection_color(FL_BACKGROUND_COLOR);
-			qso_opBW->labeltype(FL_NORMAL_LABEL);
-			qso_opBW->labelfont(0);
-			qso_opBW->labelsize(14);
-			qso_opBW->labelcolor(FL_FOREGROUND_COLOR);
-			qso_opBW->callback((Fl_Callback*)cb_qso_opBW);
-			qso_opBW->align(FL_ALIGN_TOP);
-			qso_opBW->when(FL_WHEN_RELEASE);
-			qso_opBW->end();
+				qso_opMODE = new Fl_ComboBox(
+					smeter->x(), smeter->y(), mode_cbo_w, Hentry);
+				qso_opMODE->box(FL_DOWN_BOX);
+				qso_opMODE->color(FL_BACKGROUND2_COLOR);
+				qso_opMODE->selection_color(FL_BACKGROUND_COLOR);
+				qso_opMODE->labeltype(FL_NORMAL_LABEL);
+				qso_opMODE->labelfont(0);
+				qso_opMODE->labelsize(14);
+				qso_opMODE->labelcolor(FL_FOREGROUND_COLOR);
+				qso_opMODE->callback((Fl_Callback*)cb_qso_opMODE);
+				qso_opMODE->align(FL_ALIGN_TOP);
+				qso_opMODE->when(FL_WHEN_RELEASE);
+				qso_opMODE->end();
+
+				qso_opBW = new Fl_ComboBox(
+							qso_opMODE->x() + mode_cbo_w + pad, 
+							smeter->y(), 
+							bw_cbo_w, Hentry);
+				qso_opBW->box(FL_DOWN_BOX);
+				qso_opBW->color(FL_BACKGROUND2_COLOR);
+				qso_opBW->selection_color(FL_BACKGROUND_COLOR);
+				qso_opBW->labeltype(FL_NORMAL_LABEL);
+				qso_opBW->labelfont(0);
+				qso_opBW->labelsize(14);
+				qso_opBW->labelcolor(FL_FOREGROUND_COLOR);
+				qso_opBW->callback((Fl_Callback*)cb_qso_opBW);
+				qso_opBW->align(FL_ALIGN_TOP);
+				qso_opBW->when(FL_WHEN_RELEASE);
+				qso_opBW->end();
+
+				qso_opGROUP = new Fl_Group(
+								qso_opMODE->x() + mode_cbo_w + pad, 
+								smeter->y(), 
+								bw_cbo_w, Hentry);
+					qso_opGROUP->box(FL_FLAT_BOX);
+
+					qso_btnBW1 = new Fl_Button(
+								qso_opGROUP->x(), qso_opGROUP->y(),
+								qso_opGROUP->h() * 3 / 4, qso_opGROUP->h());
+					qso_btnBW1->callback((Fl_Callback*)cb_qso_btnBW1);
+
+					qso_opBW1 = new Fl_ComboBox(
+								qso_btnBW1->x()+qso_btnBW1->w(), qso_btnBW1->y(),
+								qso_opGROUP->w() - qso_btnBW1->w(), qso_btnBW1->h());
+						qso_opBW1->box(FL_DOWN_BOX);
+						qso_opBW1->color(FL_BACKGROUND2_COLOR);
+						qso_opBW1->selection_color(FL_BACKGROUND_COLOR);
+						qso_opBW1->labeltype(FL_NORMAL_LABEL);
+						qso_opBW1->labelfont(0);
+						qso_opBW1->labelsize(14);
+						qso_opBW1->labelcolor(FL_FOREGROUND_COLOR);
+						qso_opBW1->callback((Fl_Callback*)cb_qso_opBW1);
+						qso_opBW1->align(FL_ALIGN_TOP);
+						qso_opBW1->when(FL_WHEN_RELEASE);
+					qso_opBW1->end();
+
+					qso_btnBW1->hide();
+					qso_opBW1->hide();
+
+					qso_btnBW2 = new Fl_Button(
+								qso_opGROUP->x(), qso_opGROUP->y(),
+								qso_opGROUP->h() * 3 / 4, qso_opGROUP->h());
+					qso_btnBW2->callback((Fl_Callback*)cb_qso_btnBW2);
+
+					qso_opBW2 = new Fl_ComboBox(
+								qso_btnBW2->x()+qso_btnBW2->w(), qso_btnBW2->y(),
+								qso_opGROUP->w() - qso_btnBW2->w(), qso_btnBW2->h());
+						qso_opBW2->box(FL_DOWN_BOX);
+						qso_opBW2->color(FL_BACKGROUND2_COLOR);
+						qso_opBW2->selection_color(FL_BACKGROUND_COLOR);
+						qso_opBW2->labeltype(FL_NORMAL_LABEL);
+						qso_opBW2->labelfont(0);
+						qso_opBW2->labelsize(14);
+						qso_opBW2->labelcolor(FL_FOREGROUND_COLOR);
+						qso_opBW2->callback((Fl_Callback*)cb_qso_opBW2);
+						qso_opBW2->align(FL_ALIGN_TOP);
+						qso_opBW2->when(FL_WHEN_RELEASE);
+					qso_opBW2->end();
+
+				qso_opGROUP->end();
+				qso_opGROUP->hide();
+
+			qso_combos->end();
 
 			Fl_Button *smeter_toggle = new Fl_Button(
 					qso_opBW->x() + qso_opBW->w() + pad, smeter->y(), Wbtn, Hentry);

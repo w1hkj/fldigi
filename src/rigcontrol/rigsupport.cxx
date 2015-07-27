@@ -330,9 +330,38 @@ int cb_qso_opMODE()
 int cb_qso_opBW()
 {
 	if (progdefaults.chkUSERIGCATis)
-//    if (!progdefaults.chkUSEXMLRPCis)
 		rigCAT_setwidth(qso_opBW->value());
-	set_flrig_bw(qso_opBW->index());
+	set_flrig_bw(qso_opBW->index(), -1);
+	return 0;
+}
+
+int  cb_qso_btnBW1()
+{
+	qso_btnBW1->hide();
+	qso_opBW1->hide();
+	qso_btnBW2->show();
+	qso_opBW2->show();
+	return 0;
+}
+
+int cb_qso_btnBW2()
+{
+	qso_btnBW2->hide();
+	qso_opBW2->hide();
+	qso_btnBW1->show();
+	qso_opBW1->show();
+	return 0;
+}
+
+int cb_qso_opBW1()
+{
+	set_flrig_bw(qso_opBW2->index(), qso_opBW1->index());
+	return 0;
+}
+
+int cb_qso_opBW2()
+{
+	set_flrig_bw(qso_opBW2->index(), qso_opBW1->index());
 	return 0;
 }
 

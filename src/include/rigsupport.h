@@ -47,6 +47,10 @@ extern void buildlist();
 extern void qso_movFreq(Fl_Widget* w, void*);
 extern int	cb_qso_opMODE();
 extern int  cb_qso_opBW();
+extern int  cb_qso_btnBW1();
+extern int  cb_qso_opBW1();
+extern int  cb_qso_btnBW2();
+extern int  cb_qso_opBW2();
 extern void qso_setMode();
 extern void setTitle();
 

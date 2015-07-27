@@ -120,8 +120,14 @@ extern Fl_Group		*QsoInfoFrame1B;
 extern Fl_Group		*qsoFrameView;
 extern Fl_Group		*QsoInfoFrame;
 extern cFreqControl	*qsoFreqDisp;
+extern Fl_Group		*qso_combos;
 extern Fl_ComboBox		*qso_opMODE;
+extern Fl_Group		*qso_opGROUP;
 extern Fl_ComboBox		*qso_opBW;
+extern Fl_Button		*qso_btnBW1;
+extern Fl_ComboBox		*qso_opBW1;
+extern Fl_Button		*qso_btnBW2;
+extern Fl_ComboBox		*qso_opBW2;
 extern Fl_Button		*qso_opPICK;
 extern Fl_Browser		*qso_opBrowser;
 
@@ -308,8 +314,12 @@ extern void put_Status1(const char *msg, double timeout = 0.0, status_timeout ac
 extern void put_Status2(const char *msg, double timeout = 0.0, status_timeout action = STATUS_CLEAR);
 
 extern void show_frequency(long long);
-extern void show_mode(const std::string& mode);
-extern void show_bw(const std::string& sWidth);
+
+extern void show_mode(const std::string sMode);
+extern void show_bw(const std::string sWidth);
+extern void show_bw1(const std::string sVal);
+extern void show_bw2(const std::string sVal);
+
 extern void show_spot(bool v);
 extern void showMacroSet();
 extern void setwfrange();
