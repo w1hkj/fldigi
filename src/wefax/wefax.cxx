@@ -1129,7 +1129,7 @@ public:
 				// So we trash the image.
 				// TODO: It is done too many times: SOMETIMES THE MESSAGE IS REPEATED HUNDREDTH.
 				// crr8row continues to grow although it makes no sense.
-				LOG_INFO("Flushing dummy image m_imag_corr_max=%f crr_row=%d 200 lines.",
+				LOG_DEBUG("Flushing dummy image m_imag_corr_max=%f crr_row=%d 200 lines.",
 					m_imag_corr_max, crr_row );
 				static const char * garbage_200 = GARBAGE_STR ".200";
 				*stop_code = garbage_200;
@@ -1137,7 +1137,7 @@ public:
 				stable_state = RXAPTSTOP ;
 			} else if( ( m_imag_corr_max < 0.20 ) && ( crr_row > 500 ) ) {
 				// If the max line-to-line correlation still low for a bigger image.
-				LOG_INFO("Flushing dummy image m_imag_corr_max=%f crr_row=%d 500 lines.",
+				LOG_DEBUG("Flushing dummy image m_imag_corr_max=%f crr_row=%d 500 lines.",
 					m_imag_corr_max, crr_row );
 				static const char * garbage_500 = GARBAGE_STR ".500";
 				*stop_code = garbage_500;
@@ -1207,7 +1207,7 @@ public:
 		if( reset_afc ) {
 			/// Displays the message only once.
 			if( prev_row != -1 ) {
-				LOG_INFO("Resetting AFC total_img_rows=%d",total_img_rows);
+				LOG_DEBUG("Resetting AFC total_img_rows=%d",total_img_rows);
 			}
 			prev_row = -1 ;
 			total_img_rows = 0 ;
