@@ -161,8 +161,10 @@ void cQsoRec::trimFields () {
 	}
 }
 
+static const char *empty_field = "";
+
 const char * cQsoRec::getField (int n) const {
-	if (n < 0 || n >= NUMFIELDS) return 0;
+	if (n < 0 || n >= NUMFIELDS) return empty_field;
 	return (qsofield[n].c_str());
 }
 
@@ -387,22 +389,22 @@ void cQsoDb::qsoUpdRec (int rnbr, cQsoRec *updrec) {
 void cQsoDb::SortByDate (bool how) {
   date_off = how;
   compby = COMPDATE;
-  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+//  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 void cQsoDb::SortByCall () {
   compby = COMPCALL;
-  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+//  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 void cQsoDb::SortByMode () {
   compby = COMPMODE;
-  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+//  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 void cQsoDb::SortByFreq () {
 	compby = COMPFREQ;
-	qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+//	qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 bool cQsoDb::qsoIsValidFile(const char *fname) {

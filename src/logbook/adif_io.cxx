@@ -185,7 +185,9 @@ void cAdifIO::fillfield (int fieldnum, char *buff)
 {
 	char *p1 = strchr(buff, ':');
 	char *p2 = strchr(buff, '>');
-	if (!p1 || !p2 || p2 < p1) return; // bad ADIF specifier ---> no ':' after field name
+	if (!p1 || !p2 || p2 < p1) {
+		return; // bad ADIF specifier ---> no ':' after field name
+	}
 
 	p1++;
 	int fldsize = 0;
@@ -195,13 +197,14 @@ void cAdifIO::fillfield (int fieldnum, char *buff)
 		}
 		p1++;
 	}
+	string tmp = "";
+	tmp.assign(p2+1, fldsize);
 	if ((fieldnum == TIME_ON || fieldnum == TIME_OFF) && fldsize < 6) {
-		string tmp = "";
-		tmp.assign(p2+1, fldsize);
 		while (tmp.length() < 6) tmp += '0';
 		adifqso->putField(fieldnum, tmp.c_str(), 6);
-	} else
+	} else {
 		adifqso->putField (fieldnum, p2+1, fldsize);
+	}
 }
 
 static void write_rxtext(const char *s)
@@ -212,12 +215,11 @@ static void write_rxtext(const char *s)
 void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 {
 	long filesize = 0;
-	char *buff;
 	int found;
 	static char szmsg[200];
 
 // open the adif file
-	FILE *adiFile = fopen (fname, "r");
+	FILE *adiFile = fopen (fname, "rb");
 
 	if (adiFile == NULL)
 		return;
@@ -234,14 +236,16 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		return;
 	}
 
-	buff = new char[filesize + 1];
+	char buff[filesize + 1];
 
 // read the entire file into the buffer
 
 	fseek (adiFile, 0, SEEK_SET);
-	int retval = fread (buff, filesize, 1, adiFile);
+	int retval = fread (buff, 1, filesize, adiFile);
+	
 	fclose (adiFile);
-	if (retval != 1) {
+
+	if (retval != filesize) {
 		snprintf(szmsg, sizeof(szmsg), _("Error reading %s"), fname);
 		REQ(write_rxtext, "\n");
 		REQ(write_rxtext, szmsg);
@@ -257,7 +261,6 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		REQ(write_rxtext, szmsg);
 		REQ(write_rxtext, "\n");
 		LOG_INFO("%s", szmsg);
-		delete [] buff;
 		db->clearDatabase();
 		return;
 	}
@@ -276,7 +279,6 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 			p1 = strchr(p1+1, '<'); // find next <> field
 		}
 		if (!p1) {
-			delete [] buff;
 			snprintf(szmsg, sizeof(szmsg), "Corrupt logbook file: %s", fname);
 			REQ(write_rxtext, "\n");
 			REQ(write_rxtext, szmsg);
@@ -288,7 +290,6 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	}
 
 	p2 = strchr(p1,'<'); // find first ADIF specifier
-//	adifqso.clearRec();
 
 	adifqso = 0;
 	while (p2) {
@@ -302,7 +303,6 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		p1 = p2 + 1;
 		p2 = strchr(p1,'<');
 	}
-	delete [] buff;
 
 #ifdef _POSIX_MONOTONIC_CLOCK
 	clock_gettime(CLOCK_MONOTONIC, &t1);
@@ -346,7 +346,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 // open the adif file
 	cQsoRec *rec;
 	string sFld;
-	adiFile = fopen (fname, "w");
+	adiFile = fopen (fname, "wb");
 	if (!adiFile)
 		return 1;
 
@@ -483,7 +483,7 @@ void cAdifIO::do_writelog()
 	Ccrc16 checksum;
 	string s_checksum;
 
-	adiFile = fopen (adif_file_name.c_str(), "w");
+	adiFile = fopen (adif_file_name.c_str(), "wb");
 
 	if (!adiFile) {
 		LOG_ERROR("Cannot write to %s", adif_file_name.c_str());
