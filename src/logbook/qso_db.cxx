@@ -42,16 +42,20 @@ static bool date_off = true;
 bool cQsoDb::reverse = false;
 
 cQsoRec::cQsoRec() {
-	for (int i=0;i < NUMFIELDS; i++)
-		qsofield[i] = "";
+	for (int i=0;i < NUMFIELDS; i++) {
+		qsofield[i] = new string;
+		qsofield[i]->clear();
+	}
 }
 
 cQsoRec::~cQsoRec () {
+	for (int i = 0; i < NUMFIELDS; i++)
+		delete qsofield[i];
 }
 
 void cQsoRec::clearRec () {
 	for (int i = 0; i < NUMFIELDS; i++)
-		qsofield[i].clear();
+		qsofield[i]->clear();
 }
 
 int cQsoRec::validRec() {
@@ -59,27 +63,27 @@ int cQsoRec::validRec() {
 }
 
 void cQsoRec::checkBand() {
-	size_t flen = qsofield[FREQ].length(), blen = qsofield[BAND].length();
+	size_t flen = qsofield[FREQ]->length(), blen = qsofield[BAND]->length();
 	if (flen == 0 && blen != 0) {
 		for (size_t n = 0; n < blen; n++)
-			qsofield[BAND][n] = tolower(qsofield[BAND][n]);
-		qsofield[FREQ] =  band_freq(qsofield[BAND].c_str());
+			(*qsofield[BAND])[n] = tolower((*qsofield[BAND])[n]);
+		*qsofield[FREQ] =  band_freq((*qsofield[BAND]).c_str());
 	} else if (blen == 0 && flen != 0)
-		qsofield[BAND] =  band_name(qsofield[FREQ].c_str());
+		*qsofield[BAND] =  band_name((*qsofield[FREQ]).c_str());
 }
 
 void cQsoRec::checkDateTimes() {
-	size_t len1 = qsofield[TIME_ON].length(), len2 = qsofield[TIME_OFF].length();
+	size_t len1 = qsofield[TIME_ON]->length(), len2 = qsofield[TIME_OFF]->length();
 	if (len1 == 0 && len2 != 0)
-		qsofield[TIME_ON] = qsofield[TIME_OFF];
+		*qsofield[TIME_ON] = *qsofield[TIME_OFF];
 	else if (len1 != 0 && len2 == 0)
-		qsofield[TIME_OFF] = qsofield[TIME_ON];
-	len1 = qsofield[QSO_DATE].length();
-	len2 = qsofield[QSO_DATE_OFF].length();
+		*qsofield[TIME_OFF] = *qsofield[TIME_ON];
+	len1 = qsofield[QSO_DATE]->length();
+	len2 = qsofield[QSO_DATE_OFF]->length();
 	if (len1 == 0 && len2 != 0)
-		qsofield[QSO_DATE] = qsofield[QSO_DATE_OFF];
+		*qsofield[QSO_DATE] = *qsofield[QSO_DATE_OFF];
 	else if (len1 != 0 && len2 == 0)
-		qsofield[QSO_DATE_OFF] = qsofield[QSO_DATE];
+		*qsofield[QSO_DATE_OFF] = *qsofield[QSO_DATE];
 }
 
 // Sets the current time, with the right format.
@@ -122,24 +126,24 @@ void cQsoRec::setFrequency(long long freq) {
 
 void cQsoRec::putField (int n, const char *s){
 	if (n < 0 || n >= NUMFIELDS) return;
-	qsofield[n] = s;
+	qsofield[n]->assign(s);// = s;
 }
 
 void cQsoRec::putField (int n, const char *s, int len) {
 	if (n < 0 || n >= NUMFIELDS) return;
-	qsofield[n].assign(s, len);
+	qsofield[n]->assign(s, len);
 }
 
 void cQsoRec::addtoField (int n, const char *s){
 	if (n < 0 || n >= NUMFIELDS) return;
-	qsofield[n].append(s);
+	qsofield[n]->append(s);
 }
 
 void cQsoRec::trimFields () {
 	size_t p;
 	string s;
 	for (int i = 0; i < NUMFIELDS; i++) {
-		s = qsofield[i];
+		s = *qsofield[i];
 //right trim string
 		p = s.length();
 		while (p && s[p-1] == ' ') {
@@ -157,7 +161,7 @@ void cQsoRec::trimFields () {
 			for (p = 0; p < s.length(); p++)
 				s[p] = toupper(s[p]);
 		}
-		qsofield[i] = s;
+		*qsofield[i] = s;
 	}
 }
 
@@ -165,33 +169,33 @@ static const char *empty_field = "";
 
 const char * cQsoRec::getField (int n) const {
 	if (n < 0 || n >= NUMFIELDS) return empty_field;
-	return (qsofield[n].c_str());
+	return (qsofield[n]->c_str());
 }
 
 const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 	if (this != &right) {
 		for (int i = 0; i < NUMFIELDS; i++)
-			this->qsofield[i] = right.qsofield[i];
+			(this->qsofield[i])->assign(*(right.qsofield[i]));
 	}
 	return *this;
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
 	if (date_off)
-		return r1.qsofield[TIME_OFF].compare( r2.qsofield[TIME_OFF] );
-	return r1.qsofield[TIME_ON].compare( r2.qsofield[TIME_ON] );
+		return (*r1.qsofield[TIME_OFF]).compare( (*r2.qsofield[TIME_OFF]) );
+	return (*r1.qsofield[TIME_ON]).compare( (*r2.qsofield[TIME_ON]) );
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
 	if (date_off)
-		return r1.qsofield[QSO_DATE_OFF].compare( r2.qsofield[QSO_DATE_OFF] );
-	return r1.qsofield[QSO_DATE].compare( r2.qsofield[QSO_DATE] );
+		return (*r1.qsofield[QSO_DATE_OFF]).compare( (*r2.qsofield[QSO_DATE_OFF]) );
+	return (*r1.qsofield[QSO_DATE]).compare( (*r2.qsofield[QSO_DATE]) );
 }
 
 int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 	int cmp = 0;
-	const char * s1 = r1.qsofield[CALL].c_str();
-	const char * s2 = r2.qsofield[CALL].c_str();
+	const char * s1 = (*r1.qsofield[CALL]).c_str();
+	const char * s2 = (*r2.qsofield[CALL]).c_str();
 	const char * p1 = strpbrk (s1+1, "0123456789");
 	const char * p2 = strpbrk (s2+1, "0123456789");
 
@@ -208,13 +212,13 @@ int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 }
 
 int compareModes (const cQsoRec &r1, const cQsoRec &r2) {
-	return r1.qsofield[MODE].compare( r2.qsofield[MODE] );
+	return (r1.qsofield[MODE])->compare( *r2.qsofield[MODE] );
 }
 
 int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
 	double f1, f2;
-	f1 = atof(r1.qsofield[FREQ].c_str());
-	f2 = atof(r2.qsofield[FREQ].c_str());
+	f1 = atof(r1.qsofield[FREQ]->c_str());
+	f2 = atof(r2.qsofield[FREQ]->c_str());
 	return (f1 == f2 ? 0 : f1 < f2 ? -1 : 1);
 }
 
@@ -280,7 +284,7 @@ static bool isVer3 = false;
 
 ostream &operator<< (ostream &output, const cQsoRec &rec) {
 	for (int i = 0; i < EXPORT; i++)
-		output << rec.qsofield[i].c_str() << delim_out;
+		output << rec.qsofield[i]->c_str() << delim_out;
 	return output;
 }
 
@@ -288,7 +292,7 @@ istream &operator>> (istream &input, cQsoRec &rec ) {
 	static char buf[1024]; // Must be big enough for a field.
 	for (int i = 0; i < NUMFIELDS; i++) {
 		input.getline( buf, sizeof(buf), delim_in );
-		rec.qsofield[i] = buf ;
+		*rec.qsofield[i] = buf ;
 	}
 	return input;
 }
@@ -389,22 +393,22 @@ void cQsoDb::qsoUpdRec (int rnbr, cQsoRec *updrec) {
 void cQsoDb::SortByDate (bool how) {
   date_off = how;
   compby = COMPDATE;
-//  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 void cQsoDb::SortByCall () {
   compby = COMPCALL;
-//  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 void cQsoDb::SortByMode () {
   compby = COMPMODE;
-//  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 void cQsoDb::SortByFreq () {
 	compby = COMPFREQ;
-//	qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
 }
 
 bool cQsoDb::qsoIsValidFile(const char *fname) {
