@@ -58,12 +58,13 @@ can be resized vertically by dragging the dividing bar which separates them.
       \image latex fsq-undirected-mode.png "Undirected Mode" width=1.5in
     </td>
   </tr>
+  <tr>
     <td>
       \image html fsq-directed-mode.png "Directed Mode"
       \image latex fsq-directed-mode.png "Directed Mode" width=1.5in
     </td>
-  <tr>
   </tr>
+</table>
 </center>
 
 The Rx-text panel displays only recognized text in the Directed Mode.  The text
@@ -73,8 +74,8 @@ and your sending case must match the senders case, i.e. w1hkj and W1HKJ are not
 the same for the purposes of FSQ Directed Mode.
 
 fldigi-FSQ is active and will respond to directed triggers when the SELCAL button is lit.  
-Toggling the SELCAL button to "sleep" causes the FSQ parser to only respond to the 
-&lowast; trigger.  When the &lowast; trigger is received the program will return to
+Toggling the SELCAL button to "sleep" causes the FSQ parser to only respond to the *
+trigger.  When the * trigger is received the program will return to
 the active SELCAL state.
 
 <center>
@@ -391,7 +392,6 @@ This list shows all the reserved characters, and their current or planned use.
 Blank entries are reserved, with no currently planned application.
 
 <center>
-
 CHAR   | ASCII | USE
 :-----:|:-----:|:-------------------------------------------:
 Space  |   32  | Directed chat
@@ -426,8 +426,8 @@ _      |   95  | Report the squelch setting in dB (1)
 \|      |  124  | Send Alert
 }      |  125  | --
 ~      |  126  | Delayed Repeat command
-</center>
 (1) not supported
+</center>
 
 \section fsq_commands Commands
 
@@ -445,13 +445,13 @@ The syntax for currently defined commands is listed below.
 <ul>
 <li><b>callsign</b>  <i>text</i> Addressee station starts to print text. No trigger character used except space following callsign. You MUST use a space or the trigger will not be recognised.
 <li><b>callsign?</b> <i>text</i> (Is station hearing me?) Addressee station starts to print text. When squelch closes, station responds: origin_callsign snr=xxdB
-<li><b>callsign\*</b> Switches station to ACTIVE if FSQSEL is in SLEEP. Addressee station starts to print. When squelch closes, station responds: callsign:<crc> Active
-<li><b>callsign!</b> <i>message</i> (Repeat my message) Addressee station starts to print. When squelch closes, station responds: callsign:<crc> message. This is a simple relay mechanism. message may contain further trigger commands.
-<li><b>callsign~</b> <i>message</i> (Repeat my message later) Addressee station starts to print. When squelch closes, after a delay of about 15 seconds, station responds: callsign:<crc> message This delayed relay is useful when stations mentioned in message can hear and respond to the original message.
+<li><b>callsign\*</b> Switches station to ACTIVE if FSQSEL is in SLEEP. Addressee station starts to print. When squelch closes, station responds: callsign:CRC-VAL Active
+<li><b>callsign!</b> <i>message</i> (Repeat my message) Addressee station starts to print. When squelch closes, station responds: callsign:CRC-VAL message. This is a simple relay mechanism. message may contain further trigger commands.
+<li><b>callsign~</b> <i>message</i> (Repeat my message later) Addressee station starts to print. When squelch closes, after a delay of about 15 seconds, station responds: callsign:CRC-VAL message This delayed relay is useful when stations mentioned in message can hear and respond to the original message.
 <li><b>callsign;</b> <i> [relay_to]{trigger}{message}</i> Relay my message to the 'relay_to' station.  See Relay section for details.
 <li><b>callsign!sendto</b><i> message</i> Relay message to the 'sendto' station.  Addressee station starts to print.  When squelch closes, station relays the message.
-<li><b>callsign#[nnn]</b> (Send file to station) Addressee station starts to print. Text following [nnn] will be saved in or appended to text file nnn.txt in the same folder as the log/audit files. When squelch closes, station responds callsign:<crc> Ack if the message stored OK. There is no  response if the message was not received. [nnn] can be alpha, numeric or mixed.
-<li><b>callsign#[filename.txt]</b> (Send file to station) Addressee station starts to print. File is opened from menu, and filename appended to message before file body text, File will be saved in or appended to text file filename.txt in the same folder as the log/audit files. When squelch closes, station responds callsign:<crc> if the message stored OK. There is no  response if the message was not received. [nnn] can be alpha, numeric or mixed.
+<li><b>callsign#[nnn]</b> (Send file to station) Addressee station starts to print. Text following [nnn] will be saved in or appended to text file nnn.txt in the same folder as the log/audit files. When squelch closes, station responds callsign:CRC-VAL Ack if the message stored OK. There is no  response if the message was not received. [nnn] can be alpha, numeric or mixed.
+<li><b>callsign#[filename.txt]</b> (Send file to station) Addressee station starts to print. File is opened from menu, and filename appended to message before file body text, File will be saved in or appended to text file filename.txt in the same folder as the log/audit files. When squelch closes, station responds callsign:CRC-VAL if the message stored OK. There is no  response if the message was not received. [nnn] can be alpha, numeric or mixed.
 <li><b>callsign\@</b> (Request station position or location information) Addressee station starts to print. When squelch closes, station responds with pre-recorded sentence, typically containing QTH information. This could be GPS position, locator, or physical address. This is the message stored and retreived by the QTH button.
 <li><b>callsign&</b> (Request station message) Addressee station starts to print. When squelch closes, station responds with pre-recorded sentence, typically containing station information or an 'Out to Lunch' message. This is the message stored by the QTC button.
 <li><b>callsign^</b> (Request Software Version) Addressee station starts to print. When squelch closes, station  responds with current FSQCALL software version.
@@ -469,7 +469,7 @@ If the speed is already at the maximum or minimum speed, the response is the sam
 and there is no speed change.
 <li><b>allcall#[nnn]</b> (Send file to all stations) All stations within range start to print. 
 Text following [nnn] will be saved in or appended to text file nnn.txt. When 
-squelch closes, station responds callsign:<crc> Ack if the message stored OK. There 
+squelch closes, station responds callsign:CRC-VAL Ack if the message stored OK. There 
 is no response if the message was not received. allcall#[filename.txt] works the 
 same as callsign#[filename.txt].
 </ul>

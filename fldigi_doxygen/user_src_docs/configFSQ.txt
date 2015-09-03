@@ -63,19 +63,19 @@ are located in the fldigi temp folder:
 <table>
 <tr>
   <td><kbd>XP</kbd></td>
-  <td><kbd>C:\\Documents and Settings\\<username>\\fldigi.files\\temp</kbd></td>
+  <td><kbd>C:\\Documents and Settings\\\<username\>\\fldigi.files\\temp</kbd></td>
 </tr>
 <tr>
   <td><kbd>Vista</kbd></td>
-  <td><kbd>C:\\Users\\<username>\\fldigi.files\\temp</kbd></td>
+  <td><kbd>C:\\Users\\\<username\>\\fldigi.files\\temp</kbd></td>
 </tr>
 <tr>
   <td><kbd>Win7</kbd></td>
-  <td><kbd>C:\\Users\\<username>\\fldigi.files\\temp</kbd></td>
+  <td><kbd>C:\\Users\\\<username\>\\fldigi.files\\temp</kbd></td>
 </tr>
 <tr>
   <td><kbd>Win8</kbd></td>
-  <td>C:\\Users\\<username>\\fldigi.files\\temp</kbd></td>
+  <td><kbd>C:\\Users\\\<username\>\\fldigi.files\\temp</kbd></td>
 </tr>
 <tr>
   <td><kbd>Linux</kbd></td>

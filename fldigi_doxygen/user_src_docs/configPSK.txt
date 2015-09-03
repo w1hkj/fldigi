@@ -43,6 +43,7 @@ This table shows the amount of transmit power used by the pilot tone
 dB      | -20  | -26  | -29  | -32  | -36  | -40
 :------:|:----:|:----:|:----:|:----:|:----:|:----
 Pwr Lvl | 10%  |  5%  | 3.5% | 2.5% | 1.6% | 1.0%
+</center>
 <br>
 
 \ref signal_browser_page "Signal Browser"
