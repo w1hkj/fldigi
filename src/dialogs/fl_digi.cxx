@@ -1247,6 +1247,7 @@ void update_scope()
 void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);
+	stopMacroTimer();
 
 	if (data_io_enabled == KISS_IO) {
 		if(!bcast_rsid_kiss_frame(freq, mode, (int) active_modem->get_txfreq(), active_modem->get_mode(),

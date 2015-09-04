@@ -106,6 +106,7 @@ std::string text2repeat = "";
 size_t repeatchar = 0;
 
 bool macro_idle_on = false;
+bool macro_rx_wait = false;
 
 static float  idleTime = 0;
 static bool TransmitON = false;
@@ -121,6 +122,8 @@ static bool expand;
 static bool GET = false;
 static bool timed_exec = false;
 static bool within_exec = false;
+
+void rx_que_continue(void *);
 
 static void postQueue(std::string s)
 {
@@ -986,7 +989,7 @@ static void pTxQueIDLE(std::string &s, size_t &i, size_t endbracket)
 }
 
 static bool useTune = false;
-static int  tuneTime = 0;
+static float  tuneTime = 0;
 
 static void pTUNE(std::string &s, size_t &i, size_t endbracket)
 {
@@ -1042,7 +1045,7 @@ static void pNRSID(std::string &s, size_t &i, size_t endbracket)
 }
 
 static bool useWait = false;
-static int  waitTime = 0;
+static float  waitTime = 0;
 
 static void pWAIT(std::string &s, size_t &i, size_t endbracket)
 {
@@ -1050,10 +1053,10 @@ static void pWAIT(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	int number;
+	float number;
 	std::string sTime = s.substr(i+6, endbracket - i - 6);
 	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
+		sscanf(sTime.c_str(), "%f", &number);
 		useWait = true;
 		waitTime = number;
 	}
@@ -1069,12 +1072,12 @@ static void doneWAIT(void *)
 
 static void doWAIT(std::string s)
 {
-	int number;
+	float number;
 	std::string sTime = s.substr(7, s.length() - 8);
 	if (sTime.length() > 0) {
-		sscanf(sTime.c_str(), "%d", &number);
+		sscanf(sTime.c_str(), "%f", &number);
 		Qwait_time = number;
-		Fl::add_timeout (number * 1.0, doneWAIT);
+		Fl::add_timeout (number, doneWAIT);
 	} else
 		Qwait_time = 0;
 }
@@ -1090,6 +1093,27 @@ static void pTxQueWAIT(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+static void doRxWAIT(std::string s)
+{
+	float number = 0;
+	std::string sTime = s.substr(7, s.length() - 8);
+	if (sTime.length() > 0) {
+		sscanf(sTime.c_str(), "%f", &number);
+		macro_rx_wait = true;
+		Fl::add_timeout(number, rx_que_continue);
+	}
+}
+
+static void pRxQueWAIT(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRxWAIT };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
 
 static void pINFO1(std::string &s, size_t &i, size_t endbracket)
 {
@@ -2303,6 +2327,7 @@ static void doGOFREQ(std::string s)
 		if (number > progdefaults.HighFreqCutoff)
 			number = progdefaults.HighFreqCutoff;
 		active_modem->set_freq(number);
+		wf->redraw();
 	}
 	que_ok = true;
 }
@@ -3006,8 +3031,15 @@ void Rx_queue_execute()
 		cmd.cmd.erase(0,2);
 		cmd.cmd.insert(0,"<!");
 		cmd.fp(cmd.cmd);
+		if (macro_rx_wait) return;
 	}
 	return;
+}
+
+void rx_que_continue(void *)
+{
+	macro_rx_wait = false;
+	Rx_queue_execute();
 }
 
 struct MTAGS { const char *mTAG; void (*fp)(std::string &, size_t&, size_t );};
@@ -3124,6 +3156,7 @@ static const MTAGS mtags[] = {
 	{"<WX>",		pWX},
 	{"<WX:",		pWX2},
 	{"<IMAGE:",		pTxQueIMAGE},
+// Tx Delayed action
 	{"<!WPM:",		pTxQueWPM},
 	{"<!RISE:",		pTxQueRISETIME},
 	{"<!PRE:",		pTxQuePRE},
@@ -3138,7 +3171,7 @@ static const MTAGS mtags[] = {
 	{"<!FILWID:",	pTxQueFILWID},
 	{"<!TXATTEN:",	pTxQueTXATTEN},
 	{"<!RIGCAT:",	pTxQueRIGCAT},
-
+// Rx After action
 	{"<@MODEM:",	pRxQueMODEM},
 	{"<@RIGCAT:",	pRxQueRIGCAT},
 	{"<@GOFREQ:",	pRxQueGOFREQ},
@@ -3146,6 +3179,7 @@ static const MTAGS mtags[] = {
 	{"<@RIGMODE:",	pRxQueRIGMODE},
 	{"<@FILWID:",	pRxQueFILWID},
 	{"<@TXRSID:",	pRxQueTXRSID},
+	{"<@WAIT:",     pRxQueWAIT},
 
 	{0, 0}
 };
@@ -3404,7 +3438,10 @@ std::string MACROTEXT::expandMacro(std::string &s, bool recurse = false)
 		expanded.erase(idx, 2);
 		expanded.append("^r");
 	}
-	
+
+	if (!TransmitON && !Rx_cmds.empty())
+		Fl::add_timeout(0, rx_que_continue);
+
 	return expanded;
 }
 

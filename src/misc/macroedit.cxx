@@ -164,7 +164,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<IDLE:NN.nn>\tidle signal for NN.nn sec"));
 	w->add(_("<TIMER:NN>\trepeat every NN sec"));
 	w->add(_("<TUNE:NN>\ttune signal for NN sec"));
-	w->add(_("<WAIT:NN>\tdelay xmt for NN sec"));
+	w->add(_("<WAIT:NN.n>\tdelay xmt for NN.n sec"));
 	w->add(_("<REPEAT>\trepeat macro continuously"));
 	w->add(_("<SKED:hhmm[ss][:YYYYMMDD]>\tschedule execution"));
 
@@ -216,6 +216,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<CSV:on|off|t>\tAnalysis CSV on,off,toggle"));
+
 	w->add(LINE_SEP);
 	assert(MODE_CONTESTIA < MODE_OLIVIA);
 	char s[256];
