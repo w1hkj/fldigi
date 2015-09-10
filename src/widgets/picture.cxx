@@ -24,6 +24,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <zlib.h>
 #include <config.h>
 
 #ifdef __MINGW32__
@@ -45,7 +46,7 @@
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 
-#include <zlib.h>
+//#include <zlib.h>
 #include <png.h>
 
 #include "fl_digi.h"
@@ -72,6 +73,7 @@ picture::picture (int X, int Y, int W, int H, int bg_col) :
 	binary = false ;
 	binary_threshold = 128 ;
 	slantcorr = true;
+	cbFunc = NULL;
 }
 
 picture::~picture()
@@ -110,16 +112,19 @@ void picture::resize_zoom(int x, int y, int w, int h)
 	} else {
 		Fl_Widget::resize(x,y,w,h);
 	}
+	redraw();
 }
 
 void picture::resize(int x, int y, int w, int h)
 {
-	width = w;
-	height = h;
-	delete [] vidbuf;
-	bufsize = depth * w * h;
-	vidbuf = new unsigned char[bufsize];
-	memset( vidbuf, background, bufsize );
+	if (w != width || h != height) {
+		width = w;
+		height = h;
+		delete [] vidbuf;
+		bufsize = depth * w * h;
+		vidbuf = new unsigned char[bufsize];
+		memset( vidbuf, background, bufsize );
+	}
 	resize_zoom(x,y,w,h);
 }
 
@@ -382,7 +387,6 @@ void picture::draw()
 		fl_draw_image( vidbuf, x(), y(), w(), h() );
 	} else {
 		fl_draw_image( draw_cb, this, x(), y(), w(), h() );
-		// redraw();
 	}
 }
 
@@ -477,9 +481,12 @@ void picture::slant(int dir)
 
 int picture::handle(int event)
 {
-	if (!slantcorr) return 0;
 	if (Fl::event_inside( this )) {
 		if (event == FL_RELEASE) {
+			if (!slantcorr) {
+				do_callback();
+				return 1;
+			}
 			int xpos = Fl::event_x() - x();
 			int ypos = Fl::event_y() - y();
 			int evb = Fl::event_button();
@@ -487,7 +494,6 @@ int picture::handle(int event)
 				slant_corr(xpos, ypos);
 			else if (evb == 3)
 				slant_undo();
-LOG_WARN("xpos, ypos %d, %d", xpos, ypos);
 			LOG_DEBUG("#2 %d, %d", xpos, ypos);
 			return 1;
 		}
@@ -527,9 +533,29 @@ static FILE* open_file(const char* name, const char* suffix)
 			fp = NULL;
 		delete [] newfn;
 	}
-	else
-		fp = fopen(name, "wb");
+	else {
+		fp = fopen(name, "rb");
+		if (fp) {
+			fclose(fp);
+			const int n = 5; // rename existing image files to keep up to 5 old versions
+			ostringstream oldfn, newfn;
+			ostringstream::streampos p;
 
+			oldfn << name << '.';
+			newfn << name << '.';
+			p = oldfn.tellp();
+
+			for (int i = n - 1; i > 0; i--) {
+				oldfn.seekp(p);
+				newfn.seekp(p);
+				oldfn << i;
+				newfn << i + 1;
+				rename(oldfn.str().c_str(), newfn.str().c_str());
+			}
+			rename(name, oldfn.str().c_str());
+		}
+		fp = fopen(name, "wb");
+	}
 	return fp;
 }
 
@@ -668,6 +694,10 @@ int picture::save_png(const char* filename, bool monochrome, const char *extra_c
 	free(text.key);
 	free(text.text);
 	png_destroy_write_struct(&png, &info);
+
+	fflush(fp);
+	fsync(fileno(fp));
+
 	fclose(fp);
 
 	return 0;

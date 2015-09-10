@@ -1,0 +1,74 @@
+/**
+\page ifkp_configuration_page  IFKP Configuration
+
+\tableofcontents
+\image html config-ifkp.png ""
+\image latex config-ifkp.png "" width=5.0in
+<br>
+
+\section IFKP_tx_parameters Tx Parameters
+
+IFKP transmissions can occur ar 0.5, 1, or 2 times the nominal baud rate.  The
+baud rate can be selected on the IFKP configuration tab, or by left clicking on the left
+most entry on the fldigi main dialog status bar.
+
+Lower case letters are transmitted within a single symbol length, while 
+upper case letters require two symbols.  You may configure IFKP to always
+transmit your own call sign, MYCALL, and the other call, CALLSIGN, using
+lower case letters.
+
+The transmit center frequency can be locked to 1500 Hertz.
+
+\section IFKP_logging Logging
+
+Any of the text in the Rx Panel for copy, and saving to a file.  Simply 
+right click on the panel for a pop menu.
+
+Fldigi's IFKP can save a continuous record of all received date to
+an audit log.  The heard list can also save a record of all stations
+added to the IFKP heard list.  These logs are named IFKP_audit_log.txt and
+IFKP_heard_log.txt respectively.  The logs are never cleared unless the operator 
+does so using the operating system file handling facilities.  Data is 
+appended to each log as it occurs.  These logs are located in the fldigi temp folder:
+<br>
+<center>
+<table>
+<tr>
+  <td><kbd>XP</kbd></td>
+  <td><kbd>C:\\Documents and Settings\\\<username\>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Vista</kbd></td>
+  <td><kbd>C:\\Users\\\<username\>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Win7</kbd></td>
+  <td><kbd>C:\\Users\\\<username\>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Win8</kbd></td>
+  <td><kbd>C:\\Users\\\<username\>\\fldigi.files\\temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Linux</kbd></td>
+  <td><kbd>/home/\<user\>/.fldigi/temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>OS X</kbd></td>
+  <td><kbd>/home/\<user\>/.fldigi/temp</kbd></td>
+</tr>
+<tr>
+  <td><kbd>Unix</kbd></td>
+  <td><kbd>/home/\<user\>/.fldigi/temp</kbd></td>
+</tr>
+</table>
+</center>
+
+You can change the name of each log and elect to disable the logging functions.  
+
+<br>
+\ref ifkp_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

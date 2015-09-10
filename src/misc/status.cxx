@@ -111,6 +111,7 @@ status progStatus = {
 	90,					// int		tile_y;
 	150,				// int		tile_h;
 	0.5,				// double	fsq_ratio;
+	0.5,				// double	ifkp_ratio;
 	false,				// bool LOGenabled
 	5.0,				// double sldrSquelchValue
 	5.0,				// double sldrPwrSquelchValue
@@ -204,6 +205,7 @@ status progStatus = {
 	false,				// meters
 
 	false,				// fsq_rx_abort
+	false,				// ifkp_rx_abort
 
 	false				// bool bLastStateRead;
 };
@@ -252,6 +254,7 @@ void status::saveLastState()
 		if (text_panel->w() != ReceiveText->w())
 			tile_x = mvgroup->w();
 		fsq_ratio = 1.0 * fsq_rx_text->h() / fsq_group->h();
+		ifkp_ratio = 1.0 * ifkp_rx_text->h() / ifkp_group->h();
 	}
 
 	VIEWERvisible = dlgViewer->visible();
@@ -385,6 +388,7 @@ if (!bWF_only) {
 	spref.set("tile_w", tile_w);
 	spref.set("tile_h", tile_h);
 	spref.set("fsq_ratio", fsq_ratio);
+	spref.set("ifkp_ratio", ifkp_ratio);
 
 	spref.set("scope_visible", scopeVisible);
 	spref.set("scope_x", scopeX);
@@ -586,6 +590,7 @@ void status::loadLastState()
 	spref.get("tile_w", tile_w, tile_w);
 	spref.get("tile_h", tile_h, tile_h);
 	spref.get("fsq_ratio", fsq_ratio, fsq_ratio);
+	spref.get("ifkp_ratio", ifkp_ratio, ifkp_ratio);
 
 	spref.get("scope_visible", i, scopeVisible); scopeVisible = i;
 	spref.get("scope_x", scopeX, scopeX);

@@ -129,6 +129,7 @@ string ScriptsDir = "";
 string PalettesDir = "";
 string LogsDir = "";
 string PicsDir = "";
+string AvatarDir = "";
 string HelpDir = "";
 string MacrosDir = "";
 string WrapDir = "";
@@ -1574,6 +1575,7 @@ static void checkdirectories(void)
 		{ PalettesDir, "palettes", create_new_palettes },
 		{ LogsDir, "logs", 0 },
 		{ PicsDir, "images", 0 },
+		{ AvatarDir, "avatars", 0},
 		{ HelpDir, "help", 0 },
 		{ MacrosDir, "macros", create_new_macros },
 		{ WrapDir, "wrap", 0 },

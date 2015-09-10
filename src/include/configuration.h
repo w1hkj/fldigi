@@ -687,7 +687,35 @@
         ELEM_(Fl_Color, fsq_undirected_color, "FSQUNDIRECTEDCOLOR",                     \
               "Color for FSQ undirected text",                                          \
               FL_DARK_GREEN)                                                            \
-        /* Waterfall & UI */                                                            \
+        /* IFKP */                                                                      \
+        ELEM_(int, ifkp_baud, "IFKPBAUD",                                               \
+              "1, 2, 3",                                                                \
+              1)                                                                        \
+         ELEM_(bool, ifkp_enable_heard_log, "IFKP_ENABLE_HEARD_LOG",                    \
+              "IFKP enable heard log file",                                             \
+              1)                                                                        \
+        ELEM_(std::string, ifkp_heard_log, "IFKP_HEARD_LOG",                            \
+              "IFKP heard log pathname",                                                \
+              "ifkp_heard_log.txt")                                                     \
+        ELEM_(bool, ifkp_enable_audit_log, "IFKP_ENABLE_AUDIT_LOG",                     \
+              "IFKP enable audit log file",                                             \
+              1)                                                                        \
+        ELEM_(std::string, ifkp_audit_log, "IFKP_AUDIT_LOG",                            \
+              "IFKP audit log pathname",                                                \
+              "ifkp_audit_log.txt")                                                     \
+        ELEM_(bool, ifkp_lowercase, "IFKPLOWERCASE",                                    \
+              "0 - NO, 1 - YES\n"                                                       \
+              "convert operator MYCALL to lower case for all IFKP macros",              \
+              1)                                                                        \
+        ELEM_(bool, ifkp_lowercase_call, "IFKPCALLLOWERCASE",                           \
+              "0 - NO, 1 - YES\n"                                                       \
+              "convert other CALLSIGN to lower case for all IFKP macros",               \
+              1)                                                                        \
+        ELEM_(bool, ifkp_freqlock, "IFKPFREQLOCK",                                      \
+              "0 - NO, 1 - YES\n"                                                       \
+              "Always t/r at 1500 Hz",                                                  \
+              1)                                                                        \
+       /* Waterfall & UI */                                                             \
         ELEM_(uchar, red, "", "",  0)                                                   \
         ELEM_(uchar, green, "", "",  255)                                               \
         ELEM_(uchar, blue, "", "",  255)                                                \

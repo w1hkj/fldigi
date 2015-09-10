@@ -50,6 +50,9 @@ private:
 
 	static void draw_cb(void *data, int x, int y, int w, uchar *buf);
 	void	resize_zoom(int, int, int, int);
+
+	void (*cbFunc)(Fl_Widget *, void *);
+
 public:
 	picture(int, int, int, int, int bg_col = 0);
 	~picture();
@@ -90,6 +93,11 @@ public:
 	static const int noise_height_margin = 5 ;
 	void remove_noise( int row, int half_len, int noise_margin );
 	static const int depth = 3;
+
+	void callback (void (*cbf)(Fl_Widget *, void *) ){ cbFunc = cbf;}
+	void do_callback() { 
+		if (cbFunc) cbFunc(this, (void*)0);
+	}
 
 private:
 	bool restore( int row, int margin );

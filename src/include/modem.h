@@ -150,6 +150,9 @@ public:
 	virtual void		send_color_image(std::string) {}
 	virtual void		send_Grey_image(std::string) {}
 
+	virtual void		ifkp_send_image(){}
+	virtual void		ifkp_send_avatar(){}
+
 	void		set_stopflag(bool b) { stopflag = b;};
 	bool		get_stopflag() const { return stopflag; };
 
@@ -411,5 +414,7 @@ extern modem *fftscan_modem;
 extern modem *ssb_modem;
 
 extern modem *fsq_modem;
+
+extern modem *ifkp_modem;
 
 #endif

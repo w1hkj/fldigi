@@ -127,7 +127,10 @@ void rx_que_continue(void *);
 
 static void postQueue(std::string s)
 {
-	ReceiveText->addstr(s, FTextBase::CTRL);
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_rx_text->addstr(s, FTextBase::CTRL);
+	else
+		ReceiveText->addstr(s, FTextBase::CTRL);
 }
 
 static const char cutnumbers[] = "T12345678N";
@@ -228,7 +231,10 @@ chars/sec:    %f",
 			num_cps_chars / (xmttime - overhead));
 	LOG_INFO("%s", results);
 	strcat(results, "\n");
-	ReceiveText->add(results, FTextBase::ALTR);
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_rx_text->add(results, FTextBase::ALTR);
+	else
+		ReceiveText->add(results, FTextBase::ALTR);
 	PERFORM_CPS_TEST = false;
 }
 
@@ -239,7 +245,10 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_tx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -288,7 +297,10 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 	}
 	if (!line_out.empty()) {
 		LOG_INFO("%s", line_out.c_str());
-		ReceiveText->add(line_out.c_str(), FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add(line_out.c_str(), FTextBase::ALTR);
+		else
+			ReceiveText->add(line_out.c_str(), FTextBase::ALTR);
 	}
 	return;
 }
@@ -300,7 +312,10 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -317,7 +332,10 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			}
 			s.clear();
 			fclose(toadd);
-			TransmitText->clear();
+			if (active_modem->get_mode() == MODE_IFKP)
+				ifkp_tx_text->clear();
+			else
+				TransmitText->clear();
 			testfilename = fname;
 
 			stopMacroTimer();
@@ -334,7 +352,10 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 		} else {
 			string resp = "Could not locate ";
 			resp.append(fname).append("\n");
-			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+			if (active_modem->get_mode() == MODE_IFKP)
+				ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+			else
+				ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 			LOG_WARN("%s not found", fname.c_str());
 			s.replace(i, endbracket - i + 1, "");
 			PERFORM_CPS_TEST = false;
@@ -352,7 +373,10 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -366,7 +390,10 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		p = buffer.find("\\n");
 	}
 	if (buffer.length()) {
-		TransmitText->clear();
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_tx_text->clear();
+		else
+			TransmitText->clear();
 
 		stopMacroTimer();
 		active_modem->set_stopflag(false);
@@ -383,7 +410,10 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		string resp = "Text not specified";
 		LOG_WARN("%s", resp.c_str());
 		resp.append("\n");
-		ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+		else
+			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 		PERFORM_CPS_TEST = false;
 	}
 }
@@ -395,7 +425,10 @@ static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -421,7 +454,10 @@ static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 		else buffer += ' ';
 	}
 
-	TransmitText->clear();
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_tx_text->clear();
+	else
+		TransmitText->clear();
 
 	stopMacroTimer();
 	active_modem->set_stopflag(false);
@@ -445,7 +481,10 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		return;
 	}
 	testfilename = "internal string";
@@ -466,7 +505,10 @@ static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -492,7 +534,10 @@ static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 		else buffer += ' ';
 	}
 
-	TransmitText->clear();
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_tx_text->clear();
+	else
+		TransmitText->clear();
 
 	stopMacroTimer();
 	active_modem->set_stopflag(false);
@@ -511,7 +556,10 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -528,7 +576,10 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 			}
 			s.clear();
 			fclose(toadd);
-			TransmitText->clear();
+			if (active_modem->get_mode() == MODE_IFKP)
+				ifkp_tx_text->clear();
+			else
+				TransmitText->clear();
 			testfilename = fname;
 
 			stopMacroTimer();
@@ -542,7 +593,10 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 		} else {
 			string resp = "Could not locate ";
 			resp.append(fname).append("\n");
-			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+			if (active_modem->get_mode() == MODE_IFKP)
+				ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+			else
+				ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 			LOG_WARN("%s not found", fname.c_str());
 			s.replace(i, endbracket - i + 1, "");
 			PERFORM_CPS_TEST = false;
@@ -560,7 +614,10 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
-		ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else
+			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
 		return;
 	}
@@ -574,7 +631,10 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 		p = buffer.find("\\n");
 	}
 	if (buffer.length()) {
-		TransmitText->clear();
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_tx_text->clear();
+		else
+			TransmitText->clear();
 
 		stopMacroTimer();
 		active_modem->set_stopflag(false);
@@ -588,7 +648,10 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 		string resp = "Text not specified";
 		LOG_WARN("%s", resp.c_str());
 		resp.append("\n");
-		ReceiveText->add(resp.c_str(), FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+		else
+			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 		PERFORM_CPS_TEST = false;
 	}
 }
@@ -1132,7 +1195,10 @@ static void pCLRRX(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	s.replace( i, 7, "" );
-	ReceiveText->clear();
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_rx_text->clear();
+	else
+		ReceiveText->clear();
 }
 
 static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
@@ -1143,7 +1209,10 @@ static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 	}
 	s.replace( i, 7, "" );
 	queue_reset();
-	TransmitText->clear();
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_tx_text->clear();
+	else
+		TransmitText->clear();
 }
 
 static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
@@ -1151,7 +1220,10 @@ static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
 	if (!within_exec) {
 		if (qsoFreqDisp->is_reversed_colors()) {
 			qsoFreqDisp->restore_colors();
-			TransmitText->take_focus();
+			if (active_modem->get_mode() == MODE_IFKP)
+				ifkp_tx_text->take_focus();
+			else
+				TransmitText->take_focus();
 		} else {
 			qsoFreqDisp->take_focus();
 			qsoFreqDisp->reverse_colors();
@@ -1185,7 +1257,10 @@ static void pQSYPLUS(std::string &s, size_t &i, size_t endbracket)
 
 static void pCALL(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 6, inpCall->value() );
+	string call = inpCall->value();
+	if (active_modem->get_mode() == MODE_IFKP && progdefaults.ifkp_lowercase_call)
+		for (size_t n = 0; n < call.length(); n++) call[n] = tolower(call[n]);
+	s.replace( i, 6, call );
 }
 
 static void pGET(std::string &s, size_t &i, size_t endbracket)
@@ -1237,7 +1312,10 @@ static void pRST(std::string &s, size_t &i, size_t endbracket)
 
 static void pMYCALL(std::string &s, size_t &i, size_t endbracket)
 {
-	s.replace( i, 8, inpMyCallsign->value() );
+	string call = inpMyCallsign->value();
+	if (active_modem->get_mode() == MODE_IFKP && progdefaults.ifkp_lowercase)
+		for (size_t n = 0; n < call.length(); n++) call[n] = tolower(call[n]);
+	s.replace( i, 8, call );
 }
 
 static void pMYLOC(std::string &s, size_t &i, size_t endbracket)
@@ -3274,7 +3352,10 @@ void MACROTEXT::loadDefault()
 		LOG_INFO("%s", Macroset.c_str());
 		Macroset.insert(0, "\n");
 		Macroset.append("\n");
-		ReceiveText->addstr(Macroset);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_rx_text->addstr(Macroset);
+		else
+			ReceiveText->addstr(Macroset);
 	}
 }
 
@@ -3300,7 +3381,10 @@ void MACROTEXT::openMacroFile()
 		if (progdefaults.DisplayMacroFilename) {
 			string Macroset;
 			Macroset.assign("\nLoaded macros: ").append(progStatus.LastMacroFile).append("\n");
-			ReceiveText->addstr(Macroset);
+			if (active_modem->get_mode() == MODE_IFKP)
+				ifkp_rx_text->addstr(Macroset);
+			else
+				ReceiveText->addstr(Macroset);
 		}
 	}
 }
@@ -3501,10 +3585,16 @@ static void set_button(Fl_Button* button, bool value)
 void MACROTEXT::timed_execute()
 {
 	queue_reset();
-	TransmitText->clear();
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_tx_text->clear();
+	else
+		TransmitText->clear();
 	if (!rx_only) {
 		text2send = expandMacro(exec_string);
-		TransmitText->add_text(text2send);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_tx_text->add_text(text2send);
+		else
+			TransmitText->add_text(text2send);
 		exec_string.clear();
 		active_modem->set_stopflag(false);
 		start_tx();
@@ -3523,10 +3613,15 @@ void MACROTEXT::execute(int n)
 		startTimedExecute(name[n]);
 		return;
 	}
-	
+
+	trx_mode mode = active_modem->get_mode();
+
 	if (!rx_only) {
 		if (progStatus.repeatMacro == -1)
-			TransmitText->add_text( text2send );
+			if (mode == MODE_IFKP)
+				ifkp_tx_text->add_text( text2send );
+			else
+				TransmitText->add_text( text2send );
 		else {
 			size_t p = std::string::npos;
 			text2send = text[n];
@@ -3534,7 +3629,10 @@ void MACROTEXT::execute(int n)
 				text2send[p] = '[';
 			while ((p = text2send.find('>')) != std::string::npos)
 				text2send[p] = ']';
-			TransmitText->add_text( text2send );
+			if (mode == MODE_IFKP)
+				ifkp_tx_text->add_text( text2send );
+			else
+				TransmitText->add_text( text2send );
 		}
 	}
 	text2send.clear();

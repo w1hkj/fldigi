@@ -191,13 +191,13 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_2X_PSK1000R, &psk1000r_c2_modem, "PSK1000RC2", "2xPSK1000R", "PSK1000RC2", "PSK1000RC2", "P1KRC2", ARQ_IO | KISS_IO },
 
+	{ MODE_FSQ, &fsq_modem, "FSQ", "FSQ", "FSQ", "FSQ", "FSQ", DISABLED_IO },
+	{ MODE_IFKP, &ifkp_modem, "IFKP", "IFKP", "IFKP", "IFKP", "IFKP", DISABLED_IO },
+
 	{ MODE_SSB, &ssb_modem, "SSB", "SSB", "", "SSB", "", DISABLED_IO },
 	{ MODE_WWV, &wwv_modem, "WWV", "WWV", "", "", "", DISABLED_IO },
 	{ MODE_ANALYSIS, &anal_modem, "ANALYSIS", "Freq Analysis", "", "", "", DISABLED_IO },
-	{ MODE_FFTSCAN, &fftscan_modem, "FREQSCAN", "Freq Scan", "", "", "", DISABLED_IO },
-
-	{ MODE_FSQ, &fsq_modem, "FSQ", "FSQ", "", "", "", DISABLED_IO }
-
+	{ MODE_FFTSCAN, &fftscan_modem, "FREQSCAN", "Freq Scan", "", "", "", DISABLED_IO }
 };
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)

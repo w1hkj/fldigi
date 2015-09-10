@@ -93,6 +93,7 @@
 #include "throb.h"
 //#include "pkt.h"
 #include "fsq.h"
+#include "ifkp.h"
 #include "wwv.h"
 #include "analysis.h"
 #include "fftscan.h"
@@ -258,6 +259,18 @@ Fl_Button			*btn_FSQQTH = (Fl_Button *)0;
 Fl_Button			*btn_FSQQTC = (Fl_Button *)0;
 Progress			*ind_fsq_speed = (Progress *)0;
 Progress			*ind_fsq_s2n = (Progress *)0;
+
+//------------------------------------------------------------------------------
+// groups and widgets used exclusively for IFKP
+Fl_Group		*ifkp_group = (Fl_Group *)0;
+Fl_Box			*ifkp_minbox = (Fl_Box *)0;
+Fl_Group		*ifkp_left = (Fl_Group *)0;
+FTextRX			*ifkp_rx_text = (FTextRX *)0;
+FTextTX			*ifkp_tx_text = (FTextTX *)0;
+Fl_Group		*ifkp_right = (Fl_Group *)0;
+Fl_Browser		*ifkp_heard = (Fl_Browser *)0;
+Progress		*ifkp_s2n_progress = (Progress *)0;
+picture			*ifkp_avatar = (picture *)0;
 
 //------------------------------------------------------------------------------
 
@@ -493,6 +506,14 @@ void cb_fsq3(Fl_Widget *w, void *arg);
 void cb_fsq4p5(Fl_Widget *w, void *arg);
 void cb_fsq6(Fl_Widget *w, void *arg);
 
+void cb_ifkp0p5(Fl_Widget *w, void *arg);
+void cb_ifkp1p0(Fl_Widget *w, void *arg);
+void cb_ifkp2p0(Fl_Widget *w, void *arg);
+
+void cb_ifkp0p5a(Fl_Widget *w, void *arg);
+void cb_ifkp1p0a(Fl_Widget *w, void *arg);
+void cb_ifkp2p0a(Fl_Widget *w, void *arg);
+
 void set_colors();
 
 //void cb_pkt1200(Fl_Widget *w, void *arg);
@@ -710,6 +731,13 @@ static const Fl_Menu_Item quick_change_fsq[] = {
 	{ "FSQ4.5", 0, cb_fsq4p5, (void *)MODE_FSQ },
 	{ "FSQ6", 0, cb_fsq6, (void *)MODE_FSQ },
 	{ 0 }
+};
+
+static const Fl_Menu_Item quick_change_ifkp[] = {
+	{ "IFKP 0.5", 0, cb_ifkp0p5a, (void *)MODE_IFKP },
+	{ "IFKP 1.0", 0, cb_ifkp1p0a, (void *)MODE_IFKP },
+	{ "IFKP 2.0", 0, cb_ifkp2p0a, (void *)MODE_IFKP },
+	{ 0}
 };
 
 //Fl_Menu_Item quick_change_pkt[] = {
@@ -975,6 +1003,63 @@ void cb_fsq6(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
+void set_ifkp_tab_widgets()
+{
+	btn_ifkpbaud[0]->value(0);
+	btn_ifkpbaud[1]->value(0);
+	btn_ifkpbaud[2]->value(0);
+	if (progdefaults.ifkp_baud == 0) {
+		btn_ifkpbaud[0]->value(1);
+		put_MODEstatus("IFKP 0.5");
+	} else if (progdefaults.ifkp_baud == 1) {
+		btn_ifkpbaud[1]->value(1);
+		put_MODEstatus("IFKP 1.0");
+	}
+	else {
+		btn_ifkpbaud[2]->value(1);
+		put_MODEstatus("IFKP 2.0");
+	}
+}
+
+void cb_ifkp0p5 (Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkp_baud = 0;
+	set_ifkp_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp0p5a (Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkp_baud = 0;
+	set_ifkp_tab_widgets();
+}
+
+void cb_ifkp1p0 (Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkp_baud = 1;
+	set_ifkp_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp1p0a (Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkp_baud = 1;
+	set_ifkp_tab_widgets();
+}
+
+void cb_ifkp2p0 (Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkp_baud = 2;
+	set_ifkp_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_ifkp2p0a (Fl_Widget *w, void *arg)
+{
+	progdefaults.ifkp_baud = 2;
+	set_ifkp_tab_widgets();
+}
+
 void set_dominoex_tab_widgets()
 {
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
@@ -1026,17 +1111,26 @@ void startup_modem(modem* m, int f)
 		if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
 			center_group->hide();
 			fsq_group->hide();
+			ifkp_group->hide();
 			wefax_group->show();
 			wefax_group->redraw();
 		} else if (id == MODE_FSQ) {
 			center_group->hide();
 			wefax_group->hide();
+			ifkp_group->hide();
 			fsq_group->show();
 			fsq_group->redraw();
+		} else if (id == MODE_IFKP) {
+			center_group->hide();
+			wefax_group->hide();
+			fsq_group->hide();
+			ifkp_group->show();
+			ifkp_group->redraw();
 		} else {
 			center_group->show();
 			wefax_group->hide();
 			fsq_group->hide();
+			ifkp_group->hide();
 			if (id >= MODE_HELL_FIRST && id <= MODE_HELL_LAST) {
 				ReceiveText->hide();
 				FHdisp->show();
@@ -1046,6 +1140,17 @@ void startup_modem(modem* m, int f)
 			}
 			center_group->redraw();
 		}
+	}
+	if (id == MODE_IFKP && !ifkp_avatar->visible()) {
+		QsoInfoFrame2->size(QsoInfoFrame2->w() - 60, QsoInfoFrame2->h());
+		ifkp_load_avatar(inpCall->value());
+		ifkp_avatar->show();
+		ifkp_avatar->redraw();
+		QsoInfoFrame->redraw();
+	} else if (id != MODE_IFKP && ifkp_avatar->visible()) {
+		QsoInfoFrame2->size(QsoInfoFrame2->w() + 60, QsoInfoFrame2->h());
+		ifkp_avatar->hide();
+		QsoInfoFrame->redraw();
 	}
 
 	if (id == MODE_RTTY) {
@@ -1156,6 +1261,14 @@ void remove_windows()
 	if (fsqpicTxWin){
 		fsqpicTxWin->hide();
 		delete fsqpicTxWin;
+	}
+	if (ifkppicRxWin){
+		ifkppicRxWin->hide();
+		delete ifkppicRxWin;
+	}
+	if (ifkppicTxWin){
+		ifkppicTxWin->hide();
+		delete ifkppicTxWin;
 	}
 	if (wefax_pic_rx_win) {
 		wefax_pic_rx_win->hide();
@@ -1464,6 +1577,13 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_fsq;
 		break;
 
+	case MODE_IFKP:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new ifkp(mode), freq);
+		modem_config_tab = tabIFKP;
+		quick_change = quick_change_ifkp;
+		break;
+
 	case MODE_RTTY:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 			      *mode_info[mode].modem = new rtty(mode), freq);
@@ -1628,6 +1748,8 @@ void restoreFocus(int n)
 	}
 	if (active_modem->get_mode() == MODE_FSQ && fsq_tx_text)
 		fsq_tx_text->take_focus();
+	else if (active_modem->get_mode() == MODE_IFKP && ifkp_tx_text)
+		ifkp_tx_text->take_focus();
 	else if (TransmitText)
 		TransmitText->take_focus();
 }
@@ -2645,8 +2767,12 @@ if (bWF_only) return;
 			restoreFocus(16);
 	}
 
-	if (old_call == new_call || new_call.empty())
+	if (old_call == new_call) return;
+
+	if (new_call.empty()) {
+		ifkp_load_avatar();
 		return;
+	}
 
 	old_call = new_call;
 	oktoclear = false;
@@ -2660,6 +2786,9 @@ if (bWF_only) return;
 	else inpTimeOn1->value(inpTimeOn->value());
 
 	SearchLastQSO(inpCall->value());
+
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_load_avatar(inpCall->value());
 
 	if (!inpAZ->value()[0] && progdefaults.autofill_qso_fields) {
 		const struct dxcc* e = dxcc_lookup(inpCall->value());
@@ -2744,6 +2873,8 @@ void qsoClear_cb(Fl_Widget *b, void *)
 		clearQSO();
 	}
 	clear_Lookup();
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_clear_avatar();
 }
 
 void qsoSave_cb(Fl_Widget *b, void *)
@@ -3264,6 +3395,7 @@ void UI_check_swap()
 		progStatus.tile_y = ReceiveText->h();
 	}
 
+// resize fsq UI
 	int fsq_rx_h = text_panel->h() * progStatus.fsq_ratio;
 	if (fsq_rx_h < 66) fsq_rx_h = 66;
 	int fsq_tx_h = text_panel->h() - fsq_rx_h;
@@ -3286,6 +3418,34 @@ void UI_check_swap()
 	fsq_left->add(fsq_tx_text);
 	fsq_left->add(fsq_minbox);
 	fsq_left->resizable(fsq_minbox);
+
+// resize IFKP UI
+	int ifkp_rx_h = text_panel->h() * progStatus.ifkp_ratio;
+	if (ifkp_rx_h < 66) ifkp_rx_h = 66;
+	int ifkp_tx_h = text_panel->h() - ifkp_rx_h;
+	if (ifkp_tx_h < 66) {
+		ifkp_tx_h = 66;
+		ifkp_rx_h = text_panel->h() - ifkp_tx_h;
+	}
+
+	ifkp_left->remove(ifkp_minbox);
+	ifkp_left->remove(ifkp_rx_text);
+	ifkp_left->remove(ifkp_tx_text);
+
+	ifkp_rx_text->resize(
+		ifkp_left->x(), ifkp_left->y(),
+		ifkp_left->w(), ifkp_rx_h);
+	ifkp_tx_text->resize(
+		ifkp_left->x(), ifkp_left->y() + ifkp_rx_text->h(),
+		ifkp_left->w(), ifkp_tx_h);
+	ifkp_minbox->resize(
+		text_panel->x(), text_panel->y() + 66,
+		text_panel->w(), text_panel->h() - 2 * 66);
+
+	ifkp_left->add(ifkp_rx_text);
+	ifkp_left->add(ifkp_tx_text);
+	ifkp_left->add(ifkp_minbox);
+	ifkp_left->resizable(ifkp_minbox);
 
 	first_check = false;
 }
@@ -3326,6 +3486,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3340,6 +3501,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh);
@@ -3356,6 +3518,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3376,6 +3539,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3393,6 +3557,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3403,6 +3568,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh2);
@@ -3420,7 +3586,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			y1 += HTh;
 			resize_macroframe2(0, y1, w, mh2);
 			macroFrame2->show();
@@ -3437,6 +3603,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh2);
@@ -3453,7 +3620,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
-			UI_select_central_frame(y1, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			y1 += HTh;
 			resize_macroframe2(0, y1, w, mh2);
 			macroFrame2->show();
@@ -3469,6 +3636,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3486,6 +3654,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			wfpack->position(x, y1);
@@ -3507,6 +3676,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe1(0, y1, w, mh2);
@@ -3523,6 +3693,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			center_group->resize(0, y1, w, HTh);
 			wefax_group->resize(0, y1, w, HTh);
 			fsq_group->resize(0, y1, w, HTh);
+			ifkp_group->resize(0, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
 			resize_macroframe2(0, y1, w, mh2);
@@ -3659,6 +3830,7 @@ UI_return:
 	center_group->redraw();
 	wefax_group->redraw();
 	fsq_group->redraw();
+	ifkp_group->redraw();
 	macroFrame1->redraw();
 	macroFrame2->redraw();
 	viewer_redraw();
@@ -3834,6 +4006,12 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_FSKHELL].name, 0, cb_init_mode, (void *)MODE_FSKHELL, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_FSKH105].name, 0, cb_init_mode, (void *)MODE_FSKH105, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_HELL80].name, 0, cb_init_mode, (void *)MODE_HELL80, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ "IFKP", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 0.5", 0, cb_ifkp0p5, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 1.0", 0, cb_ifkp1p0, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "IFKP 2.0", 0, cb_ifkp2p0, (void *)MODE_IFKP, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 {"MFSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -5506,18 +5684,27 @@ void create_fl_digi_main_primary() {
 
 				inpCountry = new Fl_Input2(
 					rightof(QsoInfoFrame1) + pad, Hmenu + pad,
-					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hentry, "");
+					QsoInfoFrame2->w(), Hentry, "");
 				inpCountry->tooltip(_("Country"));
 
 				inpNotes = new Fl_Input2(
 					rightof(QsoInfoFrame1) + pad, y2,
-					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, 2*Hentry + pad, "");
+					QsoInfoFrame2->w(), 2*Hentry + pad, "");
 				inpNotes->type(FL_MULTILINE_INPUT);
 				inpNotes->tooltip(_("Notes"));
 
 			QsoInfoFrame2->end();
 
 			QsoInfoFrame->resizable(QsoInfoFrame2);
+
+			ifkp_avatar = new picture(
+				QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, Hmenu + pad, 59, 74);
+			ifkp_avatar->box(FL_FLAT_BOX);
+			ifkp_avatar->noslant();
+			ifkp_avatar->callback(cb_ifkp_send_avatar);
+			ifkp_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
+			ifkp_load_avatar();
+			ifkp_avatar->hide();
 
 		QsoInfoFrame->end();
 
@@ -6122,9 +6309,125 @@ int alt_btn_width = 2 * DEFAULT_SW;
 
 		fsq_group->end();
 
+		ifkp_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+			ifkp_group->box(FL_FLAT_BOX);
+// upper, receive ifkp widgets
+				ifkp_left = new Panel(
+							0, Y, 
+							progStatus.mainW - (image_s2n.w()+4), Htext);
+// add rx & tx
+				ifkp_rx_text = new FTextRX(
+							0, Y,
+							ifkp_left->w(), ifkp_group->h() / 2);
+				ifkp_rx_text->color(
+					fl_rgb_color(
+						progdefaults.RxColor.R,
+						progdefaults.RxColor.G,
+						progdefaults.RxColor.B),
+						progdefaults.RxTxSelectcolor);
+				ifkp_rx_text->setFont(progdefaults.RxFontnbr);
+				ifkp_rx_text->setFontSize(progdefaults.RxFontsize);
+				ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+				ifkp_rx_text->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+				ifkp_rx_text->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+				ifkp_rx_text->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+				ifkp_rx_text->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+
+				ifkp_tx_text = new FTextTX(
+						0, Y + ifkp_rx_text->h(), 
+						ifkp_rx_text->w(), ifkp_group->h() - ifkp_rx_text->h());
+				ifkp_tx_text->color(
+					fl_rgb_color(
+						progdefaults.TxColor.R,
+						progdefaults.TxColor.G,
+						progdefaults.TxColor.B),
+						progdefaults.RxTxSelectcolor);
+				ifkp_tx_text->setFont(progdefaults.TxFontnbr);
+				ifkp_tx_text->setFontSize(progdefaults.TxFontsize);
+				ifkp_tx_text->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
+				ifkp_tx_text->setFontColor(progdefaults.XMITcolor, FTextBase::XMIT);
+				ifkp_tx_text->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
+				ifkp_tx_text->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
+				ifkp_tx_text->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+				ifkp_tx_text->align(FL_ALIGN_CLIP);
+
+				ifkp_minbox = new Fl_Box(
+						0, Y + 66,
+						ifkp_tx_text->w(), ifkp_left->h() - 2 * 66);
+				ifkp_minbox->hide();
+
+				ifkp_left->resizable(ifkp_minbox);
+			ifkp_left->end();
+
+			ifkp_right = new Fl_Group(
+							ifkp_left->w(), Y, 
+							image_s2n.w()+4, ifkp_group->h());
+			ifkp_right->box(FL_FLAT_BOX);
+
+			static int ifkp_heard_widths[] = 
+				{ 40*ifkp_right->w()/100, 
+				  30*ifkp_right->w()/100, 
+				  0 };
+				ifkp_heard = new Fl_Browser(
+								ifkp_right->x(), ifkp_right->y(),
+								image_s2n.w()+4, ifkp_right->h() - (14 + image_s2n.h()));
+				ifkp_heard->column_widths(ifkp_heard_widths);
+				ifkp_heard->type(FL_MULTI_BROWSER);
+				ifkp_heard->callback((Fl_Callback*)cb_ifkp_heard);
+				ifkp_heard->column_char(',');
+				ifkp_heard->tooltip(_("Stations Heard"));
+				ifkp_heard->box(FL_DOWN_BOX);
+				ifkp_heard->labelfont(progdefaults.RxFontnbr);
+				ifkp_heard->labelsize(11);
+#ifdef __APPLE__
+				ifkp_heard->textfont(FL_SCREEN_BOLD);
+				ifkp_heard->textsize(13);
+#else
+				ifkp_heard->textfont(FL_HELVETICA);
+				ifkp_heard->textsize(13);
+#endif
+				Fl_Group *ifkp_sn_box = new Fl_Group(
+					ifkp_heard->x(), ifkp_heard->y() + ifkp_heard->h(),
+					ifkp_heard->w(), 14 + image_s2n.h(), "");
+				ifkp_sn_box->box(FL_DOWN_BOX);
+
+					ifkp_sn_box->color(FL_WHITE);
+					ifkp_s2n_progress = new Progress(
+						ifkp_sn_box->x() + 2, ifkp_sn_box->y() + 2,
+						image_s2n.w(), 10, "");
+					ifkp_s2n_progress->color(FL_WHITE, FL_DARK_GREEN);
+					ifkp_s2n_progress->type(Progress::HORIZONTAL);
+					ifkp_s2n_progress->value(40);
+
+					Fl_Box *ifkp_s2n = new Fl_Box(
+						ifkp_s2n_progress->x(), ifkp_s2n_progress->y() + ifkp_s2n_progress->h(),
+						image_s2n.w(), image_s2n.h(), "");
+					ifkp_s2n->box(FL_FLAT_BOX);
+					ifkp_s2n->color(FL_WHITE);
+					ifkp_s2n->align(FL_ALIGN_INSIDE | FL_ALIGN_TOP | FL_ALIGN_CENTER | FL_ALIGN_CLIP);
+					ifkp_s2n->image(image_s2n);
+
+					ifkp_sn_box->end();
+//						ifkp_thumbnail = new Fl_Box(
+//										ifkp_heard->x(), ifkp_s2n->y() + ifkp_s2n->h(),
+//										48,64);
+//						ifkp_thumbnail->box(FL_FLAT_BOX);
+//						ifkp_thumbnail->color(FL_BLACK);
+
+				ifkp_right->end();
+				ifkp_right->resizable(ifkp_heard);
+
+			ifkp_right->end();
+
+// lower, transmit ifkp widgets
+			ifkp_group->resizable(ifkp_left);
+
+		ifkp_group->end();
+
 		center_group->show();
 		wefax_group->hide();
 		fsq_group->hide();
+		ifkp_group->hide();
 
 		Y += Htext;
 
@@ -7024,6 +7327,9 @@ static void callback_set_metric(double metric)
 	if (active_modem->get_mode() == MODE_FSQ)
 		ind_fsq_s2n->value(metric);
 
+	if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_s2n_progress->value(metric);
+
 	if(progStatus.pwrsqlonoff) {
 		if ((metric >= progStatus.sldrPwrSquelchValue) || inhibit_tx_seconds)
 			btnPSQL->selection_color(progdefaults.Sql2Color);
@@ -7234,6 +7540,8 @@ void add_tx_char(int data)
 static void display_rx_data(const unsigned char data, int style) {
 	if (active_modem->get_mode() == MODE_FSQ)
 		fsq_rx_text->add(data,style);
+	else if (active_modem->get_mode() == MODE_IFKP)
+		ifkp_rx_text->add(data,style);
 	else
 		ReceiveText->add(data, style);
 
@@ -7668,7 +7976,10 @@ int get_tx_char(void)
 		goto transmit;
 	}
 
-	c = TransmitText->nextChar();
+	if (active_modem->get_mode() == MODE_IFKP)
+		c = ifkp_tx_text->nextChar();
+	else
+		c = TransmitText->nextChar();
 
 	if (c == GET_TX_CHAR_ETX) {
 		return c;
@@ -7676,7 +7987,10 @@ int get_tx_char(void)
 
 	if (c == '^' && state == STATE_CHAR) {
 		state = STATE_CTRL;
-		c = TransmitText->nextChar();
+		if (active_modem->get_mode() == MODE_IFKP)
+			c = ifkp_tx_text->nextChar();
+		else
+			c = TransmitText->nextChar();
 	}
 
 	if (c == -1) {
@@ -7692,17 +8006,29 @@ int get_tx_char(void)
 			TransmitText->pause();
 			break;
 		case 'r':
-			REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+			if (active_modem->get_mode() == MODE_IFKP)
+				REQ_SYNC(&FTextTX::clear_sent, ifkp_tx_text);
+			else
+				REQ_SYNC(&FTextTX::clear_sent, TransmitText);
 			REQ(Rx_queue_execute);
 			return(GET_TX_CHAR_ETX);
 			break;
 		case 'R':
-			if (TransmitText->eot()) {
-				REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-				REQ(Rx_queue_execute);
-				return(GET_TX_CHAR_ETX);
-			} else
-				return(GET_TX_CHAR_NODATA);
+			if (active_modem->get_mode() == MODE_IFKP) {
+				if (ifkp_tx_text->eot()) {
+					REQ_SYNC(&FTextTX::clear_sent, ifkp_tx_text);
+					REQ(Rx_queue_execute);
+					return(GET_TX_CHAR_ETX);
+				} else
+					return(GET_TX_CHAR_NODATA);
+			} else {
+				if (TransmitText->eot()) {
+					REQ_SYNC(&FTextTX::clear_sent, TransmitText);
+					REQ(Rx_queue_execute);
+					return(GET_TX_CHAR_ETX);
+				} else
+					return(GET_TX_CHAR_NODATA);
+			}
 			break;
 		case 'L':
 			REQ(qso_save_now);
@@ -7806,6 +8132,8 @@ void put_echo_char(unsigned int data, int style)
 	{
 		if (active_modem->get_mode() == MODE_FSQ)
 			REQ(&FTextRX::addstr, fsq_rx_text, echo_chd.data(), style);
+		else if (active_modem->get_mode() == MODE_IFKP)
+			REQ(&FTextRX::addstr, ifkp_rx_text, echo_chd.data(), style);
 		else
 			REQ(&FTextRX::addstr, ReceiveText, echo_chd.data(), style);
 		if (progStatus.LOGenabled)
@@ -8539,9 +8867,14 @@ std::string heard_list()
 
 void clear_heard_list()
 {
-	fsq_heard->clear();
-	fsq_heard->add("allcall");
-	fsq_heard->redraw();
+	if (active_modem->get_mode() == MODE_FSQ) {
+		fsq_heard->clear();
+		fsq_heard->add("allcall");
+		fsq_heard->redraw();
+	} else {
+		ifkp_heard->clear();
+		ifkp_heard->redraw();
+	}
 }
 
 int tm2int(string s)
@@ -8565,20 +8898,35 @@ void age_heard_list()
 		case 4: aging_secs = 1200; break; // 20 minutes
 		case 5: aging_secs = 1800; break; // 30 minutes
 		case 0:
-		default: return;
+		default: return; // no aging
 	}
-	if (fsq_heard->size() < 2) return;
-	for (int i = fsq_heard->size(); i > 1; i--) {
-		entry = fsq_heard->text(i);
-		size_t pos = entry.find(",");
-		tm = entry.substr(pos+1,5);
-		tm.erase(2,1);
-		int tdiff = tnow - tm2int(tm);
-		if (tdiff < 0) tdiff += 24*60*60;
-		if (tdiff >= aging_secs)
-			fsq_heard->remove(i);
+	if (active_modem->get_mode() == MODE_FSQ) {
+		if (fsq_heard->size() < 2) return;
+		for (int i = fsq_heard->size(); i > 1; i--) {
+			entry = fsq_heard->text(i);
+			size_t pos = entry.find(",");
+			tm = entry.substr(pos+1,5);
+			tm.erase(2,1);
+			int tdiff = tnow - tm2int(tm);
+			if (tdiff < 0) tdiff += 24*60*60;
+			if (tdiff >= aging_secs)
+				fsq_heard->remove(i);
+		}
+		fsq_heard->redraw();
+	} else {
+		if (ifkp_heard->size() == 0) return;
+		for (int i = ifkp_heard->size(); i > 0; i--) {
+			entry = ifkp_heard->text(i);
+			size_t pos = entry.find(",");
+			tm = entry.substr(pos+1,5);
+			tm.erase(2,1);
+			int tdiff = tnow - tm2int(tm);
+			if (tdiff < 0) tdiff += 24*60*60;
+			if (tdiff >= aging_secs)
+				ifkp_heard->remove(i);
+		}
+		ifkp_heard->redraw();
 	}
-	fsq_heard->redraw();
 }
 
 void add_to_heard_list(string szcall, string szdb)
@@ -8590,23 +8938,43 @@ void add_to_heard_list(string szcall, string szdb)
 	str += time[0]; str += time[1]; str += ':'; str += time[2]; str += time[3];
 	str.append(",").append(szdb);
 
-	if (fsq_heard->size() < 2) {
-		fsq_heard->add(str.c_str());
-	} else {
-		int found = 0;
-		std::string line;
-		for (int i = 2; i <= fsq_heard->size(); i++) {
-			line = fsq_heard->text(i);
-			if (line.find(szcall) == 0) {
-				found = i;
-				break;
+	if (active_modem->get_mode() == MODE_FSQ) {
+		if (fsq_heard->size() < 2) {
+			fsq_heard->add(str.c_str());
+		} else {
+			int found = 0;
+			std::string line;
+			for (int i = 2; i <= fsq_heard->size(); i++) {
+				line = fsq_heard->text(i);
+				if (line.find(szcall) == 0) {
+					found = i;
+					break;
+				}
 			}
+			if (found)
+				fsq_heard->remove(found);
+			fsq_heard->insert(2, str.c_str());
 		}
-		if (found)
-			fsq_heard->remove(found);
-		fsq_heard->insert(2, str.c_str());
+		fsq_heard->redraw();
+	} else {
+		if (ifkp_heard->size() == 0) {
+			ifkp_heard->add(str.c_str());
+		} else {
+			int found = 0;
+			std::string line;
+			for (int i = 1; i <= ifkp_heard->size(); i++) {
+				line = ifkp_heard->text(i);
+				if (line.find(szcall) == 0) {
+					found = i;
+					break;
+				}
+			}
+			if (found)
+				ifkp_heard->remove(found);
+			ifkp_heard->insert(1, str.c_str());
+		}
+		ifkp_heard->redraw();
 	}
-	fsq_heard->redraw();
 }
 
 bool in_heard(string call)
@@ -8649,6 +9017,31 @@ void cb_fsq_heard(Fl_Browser*, void*)
 			const Fl_Menu_Item *m = heard_popup->popup(Fl::event_x(), Fl::event_y());
 			if (m && m->callback())
 				m->do_callback(0);
+			break;
+	}
+	restoreFocus();
+}
+
+void cb_ifkp_heard(Fl_Browser*, void*)
+{
+	heard_picked = ifkp_heard->value();
+	if (!heard_picked)
+		return;
+
+	int k = Fl::event_key();
+	std::string selected_call = ifkp_heard->text(heard_picked);
+	size_t p = selected_call.find(',');
+	if (p != std::string::npos) selected_call.erase(p);
+
+	switch (k) {
+		case FL_Button + FL_LEFT_MOUSE:
+			if (Fl::event_clicks()) {
+				ifkp_tx_text->add(" ");
+				ifkp_tx_text->add(selected_call.c_str());
+			}
+			break;
+		case FL_Button + FL_RIGHT_MOUSE:
+			ifkp_heard->remove(heard_picked);
 			break;
 	}
 	restoreFocus();

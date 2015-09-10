@@ -201,6 +201,24 @@ extern void			fsq_repeat_last_command();
 extern void 			display_fsq_rx_text(std::string text, int style = FTextBase::SKIP);
 extern void			display_fsq_mon_text(std::string text, int style = FTextBase::SKIP);
 
+extern Fl_Group		*ifkp_group;
+extern Fl_Group		*ifkp_upper;
+extern Fl_Group		*ifkp_upper_left;
+extern FTextRX			*ifkp_rx_text;
+extern Fl_Group		*ifkp_upper_right;
+extern Fl_Browser		*ifkp_heard;
+extern Progress		*ifkp_s2n_progress;
+extern Fl_Group		*ifkp_lower;
+extern FTextTX			*ifkp_tx_text;
+extern picture			*ifkp_avatar;
+int						ifkp_load_avatar(std::string image_fname = "", int W=59, int H=74);
+extern					void ifkp_clear_avatar();
+extern					void ifkp_update_avatar(unsigned char data, int pos);
+extern					int ifkp_get_avatar_pixel(int pos, int color);
+extern					void cb_ifkp_send_avatar( Fl_Widget *w, void *);
+
+extern void			cb_ifkp_heard(Fl_Browser*, void*);
+
 extern void			enableSELCAL();
 
 extern void			cbFSQQTC(Fl_Widget *w, void *d);
@@ -208,6 +226,10 @@ extern void			cbFSQQTH(Fl_Widget *w, void *d);
 extern void			cbMONITOR(Fl_Widget *w, void *d);
 extern void			cbSELCAL(Fl_Widget *w, void *d);
 extern void			cbFSQCALL(Fl_Widget *w, void *d);
+
+extern void			ifkp_showTxViewer(char C = 'T');
+extern Fl_Double_Window	*ifkppicRxWin;
+extern Fl_Double_Window	*ifkppicTxWin;
 
 #include <FL/Fl_Bitmap.H>
 extern Fl_Bitmap image_s2n;

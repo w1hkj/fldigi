@@ -149,6 +149,10 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     fsq_rx_text->setFontSize(size);
     fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
+    ifkp_rx_text->setFont(font);
+    ifkp_rx_text->setFontSize(size);
+    ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
     font_browser->hide();
 
     progdefaults.changed = true;} {}
@@ -177,7 +181,11 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     fsq_tx_text->setFontSize(size);
     fsq_tx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
 
-    font_browser->hide();
+    ifkp_rx_text->setFont(font);
+    ifkp_rx_text->setFontSize(size);
+    ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
+
+     font_browser->hide();
 
     progdefaults.changed = true;} {}
 } 
@@ -358,8 +366,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -2820,14 +2828,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355}
+        xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3434,7 +3442,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFSQ {
             label FSQ open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
               label {Rx Parameters} open
@@ -3616,7 +3624,7 @@ if (fname) {
               }
             }
             Fl_Group {} {
-              label {Text Colors} open selected
+              label {Text Colors} open
               xywh {5 318 585 55} box ENGRAVED_BOX align 21
             } {
               Fl_Button btn_fsq_xmt_color {
@@ -3678,6 +3686,128 @@ fsq_rx_text->setFontColor(progdefaults.fsq_undirected_color, FTextBase::FSQ_UND)
 
 progdefaults.changed = true;}
                 xywh {507 339 74 24}
+              }
+            }
+          }
+          Fl_Group tabIFKP {
+            label IFKP open
+            xywh {0 50 600 330} hide
+          } {
+            Fl_Group {} {
+              label {Tx Parameters} open
+              xywh {5 65 587 120} box ENGRAVED_BOX align 21
+            } {
+              Fl_Round_Button {btn_ifkpbaud[0]} {
+                label {1/2 speed}
+                callback {if (o->value() == 1) {
+progdefaults.ifkp_baud = 0;
+btn_ifkpbaud[1]->value(0);
+btn_ifkpbaud[2]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {100 93 100 17} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.ifkp_baud == 0);}
+              }
+              Fl_Round_Button {btn_ifkpbaud[1]} {
+                label {1x speed}
+                callback {if (o->value() == 1) {
+progdefaults.ifkp_baud = 1;
+btn_ifkpbaud[0]->value(0);
+btn_ifkpbaud[2]->value(0);
+}
+progdefaults.changed = true;}
+                tooltip default xywh {208 93 100 17} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.ifkp_baud == 1);}
+              }
+              Fl_Round_Button {btn_ifkpbaud[2]} {
+                label {2x speed}
+                callback {if (o->value() == 1) {
+progdefaults.ifkp_baud = 2;
+btn_ifkpbaud[0]->value(0);
+btn_ifkpbaud[1]->value(0);
+}
+progdefaults.changed = true;}
+                xywh {316 93 100 17} down_box ROUND_DOWN_BOX
+                code0 {o->value(progdefaults.ifkp_baud == 2);}
+              }
+              Fl_Check_Button btn_ifkp_lowercase {
+                label {MYCALL always lower case}
+                callback {progdefaults.ifkp_lowercase=o->value();
+progdefaults.changed = true;}
+                tooltip {convert operator callsign to lower case} xywh {100 125 220 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.ifkp_lowercase);}
+              }
+              Fl_Check_Button btn_ifkp_lowercase_call {
+                label {CALLSIGN always lower case}
+                callback {progdefaults.ifkp_lowercase_call=o->value();
+progdefaults.changed = true;}
+                tooltip {convert other callsign to lower case} xywh {325 125 220 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.ifkp_lowercase_call);}
+              }
+              Fl_Check_Button btn_ifkp_freqlock {
+                label {lock WF at 1500 Hz}
+                callback {progdefaults.ifkp_freqlock=o->value();
+if (active_modem == ifkp_modem &&
+  o->value() )
+  active_modem->set_freq(1500);
+progdefaults.changed = true;}
+                tooltip {Always transmit at 1500 Hertz center freq.} xywh {100 155 220 15} down_box DOWN_BOX
+                code0 {\#include "trx.h"}
+                code1 {o->value(progdefaults.ifkp_freqlock);}
+              }
+            }
+            Fl_Group {} {
+              label Logging open
+              xywh {5 190 587 100} box ENGRAVED_BOX align 21
+            } {
+              Fl_Output txt_ifkp_audit_log {
+                label {Audit log}
+                xywh {92 220 323 25}
+                code0 {o->value(progdefaults.ifkp_audit_log.c_str());}
+              }
+              Fl_Light_Button btn_enable_ifkp_audit_log {
+                label Enable
+                callback {progdefaults.ifkp_enable_audit_log = o->value();
+progdefaults.changed = true;}
+                xywh {429 220 73 25} selection_color 2
+                code0 {o->value(progdefaults.ifkp_enable_audit_log);}
+              }
+              Fl_Button btn_ifkp_select_auditlog {
+                label Select
+                callback {std::string str = std::string(TempDir);
+str.append(progdefaults.ifkp_audit_log);
+const char *fname = FSEL::saveas("Audit log", "*.txt\\t*", str.c_str());
+
+if (fname) {
+  progdefaults.ifkp_audit_log = fl_filename_name(fname);
+  txt_ifkp_audit_log->value(progdefaults.ifkp_audit_log.c_str());
+  progdefaults.changed = true;
+}}
+                xywh {510 220 70 25}
+              }
+              Fl_Output txt_ifkp_heard_log {
+                label {Heard log}
+                xywh {92 249 323 25}
+                code0 {o->value(progdefaults.ifkp_heard_log.c_str());}
+              }
+              Fl_Light_Button btn_enable_ifkp_heard_log {
+                label Enable
+                callback {progdefaults.ifkp_enable_heard_log = o->value();
+progdefaults.changed = true;}
+                xywh {429 249 73 25} selection_color 2
+                code0 {o->value(progdefaults.ifkp_enable_heard_log);}
+              }
+              Fl_Button btn_select_ifkp_heard_log {
+                label Select
+                callback {std::string str = std::string(TempDir);
+str.append(progdefaults.ifkp_heard_log);
+const char *fname = FSEL::saveas("Heard log", "*.txt\\t*", str.c_str());
+if (fname) {
+  progdefaults.ifkp_heard_log = fl_filename_name(fname);
+  txt_ifkp_heard_log->value(progdefaults.ifkp_heard_log.c_str());
+  progdefaults.changed = true;
+}}
+                xywh {510 249 70 25}
               }
             }
           }
@@ -3747,7 +3877,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Olivia open
+            label Oliv open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {
@@ -3816,7 +3946,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContestia {
-            label {Cont'} open
+            label Cont open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
@@ -3977,7 +4107,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label RTTY open
+            label TTY open
             xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsRTTY {open
@@ -4352,7 +4482,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabWefax {
-            label WFax open
+            label WFx open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open

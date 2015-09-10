@@ -331,6 +331,18 @@ extern Fl_Button *btn_fsq_xmt_color;
 extern Fl_Button *btn_fsq_directed_color;
 extern Fl_Button *btn_fsq_undirected_color;
 extern Fl_Button *btn_fsq_color_defaults;
+extern Fl_Group *tabIFKP;
+extern Fl_Round_Button *btn_ifkpbaud[3];
+extern Fl_Check_Button *btn_ifkp_lowercase;
+extern Fl_Check_Button *btn_ifkp_lowercase_call;
+#include "trx.h"
+extern Fl_Check_Button *btn_ifkp_freqlock;
+extern Fl_Output *txt_ifkp_audit_log;
+extern Fl_Light_Button *btn_enable_ifkp_audit_log;
+extern Fl_Button *btn_ifkp_select_auditlog;
+extern Fl_Output *txt_ifkp_heard_log;
+extern Fl_Light_Button *btn_enable_ifkp_heard_log;
+extern Fl_Button *btn_select_ifkp_heard_log;
 extern Fl_Group *tabMT63;
 extern Fl_Check_Button *btnMT63_8bit;
 extern Fl_Check_Button *btnMT63_rx_integration;

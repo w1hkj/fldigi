@@ -41,6 +41,7 @@ extern std::string		ScriptsDir;
 extern std::string		PalettesDir;
 extern std::string		LogsDir;
 extern std::string		PicsDir;
+extern std::string		AvatarDir;
 extern std::string		HelpDir;
 extern std::string		MacrosDir;
 extern std::string		WrapDir;

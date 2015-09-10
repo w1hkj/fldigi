@@ -72,6 +72,7 @@ struct status {
 	int		tile_y;
 	int		tile_h;
 	double	fsq_ratio;
+	double	ifkp_ratio;
 	bool	LOGenabled;
 	double  sldrSquelchValue;
 	double  sldrPwrSquelchValue;
@@ -169,6 +170,7 @@ struct status {
 	bool	meters;
 
 	bool	fsq_rx_abort;
+	bool	ifkp_rx_abort;
 
 	bool	bLastStateRead;
 

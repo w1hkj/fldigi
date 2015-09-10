@@ -1279,7 +1279,10 @@ void FTextTX::menu_cb(size_t item)
  			abort_tx();
   		break;
 	case TX_MENU_MFSK16_IMG:
-		showTxViewer(0, 0);
+		if (active_modem->get_mode() == MODE_IFKP)
+			ifkp_showTxViewer();
+		else
+			showTxViewer(0, 0);
 		break;
 	case TX_MENU_CLEAR:
 		clear();
