@@ -819,6 +819,7 @@ void flrig_connection()
 		bool ret;
 		{
 			guard_lock flrig_lock(&mutex_flrig);
+//LOG_WARN("%s", "checking flrig listMethods");
 			ret = flrig_client->execute("system.listMethods", noArgs, result, timeout);
 		}
 //		if (flrig_client->execute("system.listMethods", noArgs, result, timeout)) {
@@ -833,10 +834,13 @@ void flrig_connection()
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
+//LOG_WARN("%s", "not able to connect");
 			connected_to_flrig = false;
 			poll_interval = 1000;//500;
 		}
-	} catch (...) {}
+	} catch (...) {
+//LOG_WARN("%s", "failure in flrig_client");
+	}
 }
 
 void connect_to_flrig()
@@ -847,6 +851,9 @@ void connect_to_flrig()
 		flrig_client = (XmlRpcClient *)0;
 	}
 	try {
+//LOG_WARN("creating flrig client %s, %d",
+//	progdefaults.flrig_ip_address.c_str(),
+//	atol(progdefaults.flrig_ip_port.c_str()));
 		flrig_client = new XmlRpcClient(
 				progdefaults.flrig_ip_address.c_str(),
 				atol(progdefaults.flrig_ip_port.c_str()));

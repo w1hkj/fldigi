@@ -1654,9 +1654,9 @@ void Table::calcDimensions() {
   hideV = (tableHeight <= iH),
   hideH = (tableWidth <= iW);
 
-  if (!hideH & hideV)
+  if (!hideH && hideV)
     hideV = (tableHeight - iH - scrollbarSize) <= 0;
-  if (!hideV & hideH)
+  if (!hideV && hideH)
     hideH = (tableWidth - iW + scrollbarSize) <= 0;
 
   if (Vscroll == always) {

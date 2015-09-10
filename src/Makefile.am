@@ -759,9 +759,12 @@ flarq_SOURCES += \
 
 # Additional files that we distribute
 EXTRA_DIST = \
+    $(srcdir)/../build-aux/config.rpath \
 	$(srcdir)/../scripts/mkappbundle.sh \
 	$(srcdir)/../scripts/mkhamlibstatic.sh \
 	$(srcdir)/../scripts/mknsisinst.sh \
+	$(srcdir)/../scripts/buildmxe.sh \
+	$(srcdir)/../scripts/builddist.sh \
 	$(srcdir)/../scripts/tests/cr.sh \
 	$(srcdir)/../scripts/tests/config-h.sh \
 	$(srcdir)/../data/fldigi-psk.png \
@@ -775,6 +778,7 @@ EXTRA_DIST = \
 	$(srcdir)/../data/mac/Info.plist.in \
 	$(srcdir)/../data/mac/fldigi.icns \
 	$(srcdir)/../data/win32/fldigi.ico \
+	$(srcdir)/../data/win32/fldigi.nsi \
 	$(srcdir)/../data/flarq.desktop \
 	$(srcdir)/../data/flarq.xpm \
 	$(srcdir)/../data/mac/flarq.icns \

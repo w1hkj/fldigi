@@ -29,9 +29,13 @@
 #include <stdint.h>
 
 #include <semaphore.h>
+#ifndef WIN32
 #if !HAVE_SEM_TIMEDWAIT
 #  include <time.h>
 int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout);
+#endif
+#else
+#include <time.h>
 #endif
 
 int sem_timedwait_rel(sem_t* sem, double rel_timeout);

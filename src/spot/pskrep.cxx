@@ -418,9 +418,10 @@ void pskrep::append(string call, const char* loc, long long freq, trx_mode mode,
 	band_map_t& bandq = queue[call][band(freq)];
 	if (bandq.empty() || rtime - bandq.back().rtime >= DUP_INTERVAL) { // add new
 		bandq.push_back(rcpt_report_t(mode, freq, rtime, rtype, loc));
-		LOG_VERBOSE("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%d, time=%" PRIdMAX ", type=%u)",
+		LOG_VERBOSE("Added (call=\"%s\", loc=\"%s\", mode=\"%s\", freq=%d, time=%d, type=%u)",
 			 call.c_str(), loc, mode_info[mode].adif_name,
-			 static_cast<int>(freq), (intmax_t)rtime, rtype);
+			 static_cast<int>(freq), 
+			 static_cast<int>(rtime), rtype);
 		new_count++;
 		save_queue();
 	}

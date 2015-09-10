@@ -24,6 +24,8 @@
 #define DXCC_H_
 
 #include <vector>
+#include <string>
+#include <iostream>
 
 struct dxcc {
 	const char* country;
@@ -35,6 +37,15 @@ struct dxcc {
 	float gmt_offset;
 	dxcc(const char* cn = "", int cq = 0, int itu = 0, const char* ct = "",
 	     float lat = 0.0f, float lon = 0.0f, float tz = 0.0f);
+	void print() {
+std::cout << country << ", "
+		  << cq_zone << ", " 
+		  << itu_zone << ", " 
+		  << continent << ", "
+		  << latitude << ", "
+		  << longitude << ", " 
+		  << gmt_offset << "\n";
+	  }
 };
 
 enum qsl_t { QSL_LOTW, QSL_EQSL, QSL_END };

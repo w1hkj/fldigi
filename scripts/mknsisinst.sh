@@ -42,11 +42,11 @@ if test "x$WANT_FLDIGI" != "xyes" && test "x$WANT_FLARQ" != "xyes"; then
     exit 1
 fi
 if test "x$WANT_FLDIGI" = "xyes"; then
-    test "x$NOSTRIP" = "x" && $STRIP -S "$fldigi_bin"
+#    test "x$NOSTRIP" = "x" && $STRIP -S "$fldigi_bin"
     def="$def -DHAVE_FLDIGI -DFLDIGI_NAME=$fldigi_name -DFLDIGI_BINARY=$fldigi_bin -DFLDIGI_VERSION=$PACKAGE_VERSION"
 fi
 if test "x$WANT_FLARQ" = "xyes"; then
-    test "x$NOSTRIP" = "x" && $STRIP -S "$flarq_bin"
+#    test "x$NOSTRIP" = "x" && $STRIP -S "$flarq_bin"
     def="$def -DHAVE_FLARQ -DFLARQ_NAME=$flarq_name -DFLARQ_BINARY=$flarq_bin -DFLARQ_VERSION=$FLARQ_VERSION"
 fi
 

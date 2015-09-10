@@ -35,6 +35,7 @@
 #  include <netinet/in.h>
 #else
 #  include <winsock2.h>
+#  include <windows.h>
 #endif
 
 #include <string>

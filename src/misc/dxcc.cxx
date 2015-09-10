@@ -85,9 +85,16 @@ bool dxcc_open(const char* filename)
 
 	cmap = new dxcc_map_t;
 	cnames = new vector<string>;
-	cnames->reserve(345); // approximate number of dxcc entities
+
+// this MUST be greater than the actual number of dcxx entities or
+// the Windows gcc string library will move all of the strings and
+// destroy the integrity of the cmap c_str() pointer to the country
+// string in cnames
+
+	cnames->reserve(500); // approximate number of dxcc entities
+	
 	clist = new dxcc_list_t;
-	clist->reserve(345);
+	clist->reserve(500);
 
 	dxcc* entry;
 	string record;
@@ -175,9 +182,9 @@ const dxcc* dxcc_lookup(const char* callsign)
 	// first look for a full callsign (prefixed with '=')
 	sstr[0] = '=';
 	dxcc_map_t::const_iterator entry = cmap->find(sstr);
-	if (entry != cmap->end())
+	if (entry != cmap->end()) {
 		return entry->second;
-
+}
 	// erase the '=' and do a longest prefix search
 	sstr.erase(0, 1);
 	size_t len = sstr.length();
@@ -192,8 +199,9 @@ const dxcc* dxcc_lookup(const char* callsign)
 	}
 	do {
 		sstr.resize(len--);
-		if ((entry = cmap->find(sstr)) != cmap->end())
+		if ((entry = cmap->find(sstr)) != cmap->end()) {
 			return entry->second;
+		}
 	} while (len);
 
 	return NULL;
