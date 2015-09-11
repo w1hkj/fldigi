@@ -351,15 +351,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {996 32 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {677 32 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -2820,14 +2820,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 355}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 355} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -3434,24 +3434,24 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFSQ {
             label FSQ open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Group {} {
               label {Rx Parameters} open
-              xywh {5 60 585 80} box ENGRAVED_BOX align 21
+              xywh {5 60 585 66} box ENGRAVED_BOX align 21
             } {
               Fl_Value_Slider valhits {
                 label {Min Hits}
                 callback {progdefaults.fsqhits=(int)o->value();
 progdefaults.changed = true;}
-                tooltip {Minimum \# hits in tone detector} xywh {140 72 125 22} type {Horz Knob} align 8 minimum 3 maximum 6 step 1 value 3 textsize 14
+                tooltip {Minimum \# hits in tone detector} xywh {140 65 125 22} type {Horz Knob} align 8 minimum 3 maximum 6 step 1 value 3 textsize 14
                 code0 {o->value(progdefaults.fsqhits);}
               }
               Fl_Choice sel_fsq_lpf {
                 label {Image LPF}
                 callback {progdefaults.fsq_img_filter=o->value();
 progdefaults.changed = true;} open
-                tooltip {Narrow LPF if image noisy} xywh {163 104 102 21} down_box BORDER_BOX
+                tooltip {Narrow LPF if image noisy} xywh {163 94 102 22} down_box BORDER_BOX
                 code0 {o->add("None"); o->add("300 Hz"); o->add("400 Hz"); o->add("500 Hz");}
                 code1 {o->value(progdefaults.fsq_img_filter);}
               } {}
@@ -3459,21 +3459,21 @@ progdefaults.changed = true;} open
                 label {MovAvg:}
                 callback {progdefaults.fsq_movavg = o->value();
 progdefaults.changed = true;}
-                tooltip {Filter FFT output} xywh {410 72 125 22} type Horizontal align 4 minimum 1 maximum 4 step 1 value 4 textsize 14
+                tooltip {Filter FFT output} xywh {410 65 125 22} type Horizontal align 4 minimum 1 maximum 4 step 1 value 4 textsize 14
                 code0 {o->value(progdefaults.fsq_movavg);}
               }
               Fl_Choice sel_fsq_heard_aging {
                 label {Heard aging}
                 callback {progdefaults.fsq_heard_aging=o->value();
 progdefaults.changed = true;} open
-                tooltip {Remove call after ...} xywh {433 104 102 21} down_box BORDER_BOX
+                tooltip {Remove call after ...} xywh {433 94 102 22} down_box BORDER_BOX
                 code0 {o->add("Never"); o->add("1 min"); o->add("5 min");o->add("10 min"); o->add("20 min"); o->add("20 min");}
                 code1 {o->value(progdefaults.fsq_heard_aging);}
               } {}
             }
             Fl_Group {} {
               label {Tx Parameters} open
-              xywh {5 150 585 135} box ENGRAVED_BOX align 21
+              xywh {5 130 585 102} box ENGRAVED_BOX align 21
             } {
               Fl_Round_Button {btn_fsqbaud[0]} {
                 label {2 baud}
@@ -3484,7 +3484,7 @@ btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {90 173 55 15} down_box ROUND_DOWN_BOX
+                xywh {150 139 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 2);}
               }
               Fl_Round_Button {btn_fsqbaud[1]} {
@@ -3496,7 +3496,7 @@ btn_fsqbaud[2]->value(0);
 btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {198 173 55 15} down_box ROUND_DOWN_BOX
+                xywh {258 139 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 3);}
               }
               Fl_Round_Button {btn_fsqbaud[2]} {
@@ -3508,7 +3508,7 @@ btn_fsqbaud[1]->value(0);
 btn_fsqbaud[3]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {306 173 55 15} down_box ROUND_DOWN_BOX
+                xywh {366 139 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 4.5);}
               }
               Fl_Round_Button {btn_fsqbaud[3]} {
@@ -3520,14 +3520,14 @@ btn_fsqbaud[1]->value(0);
 btn_fsqbaud[2]->value(0);
 }
 progdefaults.changed = true;}
-                xywh {415 173 55 15} down_box ROUND_DOWN_BOX
+                xywh {475 139 55 15} down_box ROUND_DOWN_BOX
                 code0 {o->value(progdefaults.fsqbaud == 6);}
               }
               Fl_Choice sel_fsq_frequency {
                 label {Center freq}
                 callback {progdefaults.fsq_frequency=o->value();
 progdefaults.changed = true;} open
-                xywh {250 219 102 21} down_box BORDER_BOX align 1 hide
+                xywh {250 199 102 21} down_box BORDER_BOX align 1 hide
                 code0 {o->add("1150"); o->add("1500"); o->add("Variable");}
                 code1 {o->value(progdefaults.fsq_frequency);}
               } {}
@@ -3535,7 +3535,7 @@ progdefaults.changed = true;} open
                 label Sounder
                 callback {progdefaults.fsq_sounder=o->value();
 progdefaults.changed = true;} open
-                tooltip {Send beacon every ...} xywh {90 195 102 21} down_box BORDER_BOX
+                tooltip {Send beacon every ...} xywh {80 163 100 22} down_box BORDER_BOX
                 code0 {o->add("OFF"); o->add("1 min"); o->add("10 min"); o->add("30 min");}
                 code1 {o->value(progdefaults.fsq_sounder);}
               } {}
@@ -3543,38 +3543,38 @@ progdefaults.changed = true;} open
                 label {MYCALL always lower case}
                 callback {progdefaults.fsq_lowercase=o->value();
 progdefaults.changed = true;}
-                tooltip {convert operator callsign to lower case} xywh {306 198 70 15} down_box DOWN_BOX
+                tooltip {convert operator callsign to lower case} xywh {366 166 214 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.fsq_lowercase);}
               }
               Fl_Counter cntr_FSQ_time_out {
                 label {Time out}
                 callback {progdefaults.fsq_time_out = o->value();
 progdefaults.changed = true;}
-                tooltip {Time out xmt attempt in XX seconds} xywh {90 223 102 22} type Simple align 4 minimum 2 maximum 20 step 1 value 6
+                tooltip {Time out xmt attempt in XX seconds} xywh {254 163 80 22} type Simple align 4 minimum 2 maximum 20 step 1 value 6
                 code0 {o->value(progdefaults.fsq_time_out);}
               }
               Fl_Input {} {
                 label {QTC:}
                 callback {progdefaults.fsqQTCtext = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter QTC text} xywh {90 253 456 23}
+                tooltip {Enter QTC text} xywh {80 199 456 22}
                 code0 {o->value(progdefaults.fsqQTCtext.c_str());}
               }
             }
             Fl_Group {} {
               label Logging open
-              xywh {5 291 585 80} box ENGRAVED_BOX align 21
+              xywh {5 235 585 80} box ENGRAVED_BOX align 21
             } {
               Fl_Output txtAuditLog {
                 label {Audit log}
-                xywh {82 311 325 25}
+                xywh {82 255 325 22}
                 code0 {o->value(progdefaults.fsq_audit_log.c_str());}
               }
               Fl_Light_Button btn_enable_auditlog {
                 label Enable
                 callback {progdefaults.fsq_enable_audit_log = o->value();
 progdefaults.changed = true;}
-                xywh {421 313 74 20} selection_color 2
+                xywh {421 256 74 20} selection_color 2
                 code0 {o->value(progdefaults.fsq_enable_audit_log);}
               }
               Fl_Button btn_select_auditlog {
@@ -3588,18 +3588,18 @@ if (fname) {
   txtAuditLog->value(progdefaults.fsq_audit_log.c_str());
   progdefaults.changed = true;
 }}
-                xywh {509 313 70 20}
+                xywh {509 256 70 20}
               }
               Fl_Output txtHeardLog {
                 label {Heard log}
-                xywh {80 340 325 25}
+                xywh {82 284 325 22}
                 code0 {o->value(progdefaults.fsq_heard_log.c_str());}
               }
               Fl_Light_Button btn_enable_fsq_heard_log {
                 label Enable
                 callback {progdefaults.fsq_enable_heard_log = o->value();
 progdefaults.changed = true;}
-                xywh {419 342 74 20} selection_color 2
+                xywh {421 285 74 20} selection_color 2
                 code0 {o->value(progdefaults.fsq_enable_heard_log);}
               }
               Fl_Button btn_select_fsq_heard_log {
@@ -3612,7 +3612,72 @@ if (fname) {
   txtHeardLog->value(progdefaults.fsq_heard_log.c_str());
   progdefaults.changed = true;
 }}
-                xywh {507 342 70 20}
+                xywh {509 285 70 20}
+              }
+            }
+            Fl_Group {} {
+              label {Text Colors} open selected
+              xywh {5 318 585 55} box ENGRAVED_BOX align 21
+            } {
+              Fl_Button btn_fsq_xmt_color {
+                label XMIT
+                callback {choose_color(progdefaults.fsq_xmt_color);
+
+btn_fsq_xmt_color->color( progdefaults.fsq_xmt_color );
+btn_fsq_xmt_color->redraw();
+
+fsq_rx_text->setFontColor(progdefaults.fsq_xmt_color, FTextBase::FSQ_TX);
+
+progdefaults.changed = true;}
+                tooltip {Transmit text} xywh {82 339 65 24} align 4
+                code0 {btn_fsq_xmt_color->color(progdefaults.fsq_xmt_color);}
+              }
+              Fl_Button btn_fsq_directed_color {
+                label DIRECTED
+                callback {choose_color(progdefaults.fsq_directed_color);
+
+btn_fsq_directed_color->color( progdefaults.fsq_directed_color );
+btn_fsq_directed_color->redraw();
+
+fsq_rx_text->setFontColor(progdefaults.fsq_directed_color, FTextBase::FSQ_DIR);
+
+progdefaults.changed = true;}
+                tooltip {Directed received text} xywh {253 339 65 24} align 4
+                code0 {btn_fsq_directed_color->color(progdefaults.fsq_directed_color);}
+              }
+              Fl_Button btn_fsq_undirected_color {
+                label UNDIRECTED
+                callback {choose_color(progdefaults.fsq_undirected_color);
+
+btn_fsq_undirected_color->color( progdefaults.fsq_undirected_color);
+btn_fsq_undirected_color->redraw();
+
+fsq_rx_text->setFontColor(progdefaults.fsq_undirected_color, FTextBase::FSQ_UND);
+
+progdefaults.changed = true;}
+                tooltip {Undirected received text} xywh {425 339 65 24} align 4
+                code0 {btn_fsq_undirected_color->color(progdefaults.fsq_undirected_color);}
+              }
+              Fl_Button btn_fsq_color_defaults {
+                label Defaults
+                callback {progdefaults.fsq_xmt_color = FL_RED;
+btn_fsq_xmt_color->color(progdefaults.fsq_xmt_color);
+btn_fsq_xmt_color->redraw();
+
+progdefaults.fsq_directed_color = FL_BLUE;
+btn_fsq_directed_color->color(progdefaults.fsq_directed_color);
+btn_fsq_directed_color->redraw();
+
+progdefaults.fsq_undirected_color = FL_DARK_GREEN;
+btn_fsq_undirected_color->color(progdefaults.fsq_undirected_color);
+btn_fsq_undirected_color->redraw();
+
+fsq_rx_text->setFontColor(progdefaults.fsq_xmt_color, FTextBase::FSQ_TX);
+fsq_rx_text->setFontColor(progdefaults.fsq_directed_color, FTextBase::FSQ_DIR);
+fsq_rx_text->setFontColor(progdefaults.fsq_undirected_color, FTextBase::FSQ_UND);
+
+progdefaults.changed = true;}
+                xywh {507 339 74 24}
               }
             }
           }

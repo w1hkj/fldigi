@@ -188,6 +188,8 @@ extern void			clear_heard_list();
 extern void			age_heard_list();
 extern void			add_to_heard_list(std::string, std::string);
 extern void			fsq_transmit_string(std::string s);
+extern void			fsq_xmt_mt(void *s);
+extern void			fsq_xmt(std::string s);
 extern void			fsq_repeat_last_heard();
 extern void			fsq_repeat_last_command();
 extern void 			display_fsq_rx_text(std::string text, int style = FTextBase::SKIP);
@@ -429,6 +431,7 @@ extern bool xml_get_record(const char *);
 
 extern const char* zdate(void);
 extern const char* ztime(void);
+extern void ztimer(void* first_call);
 
 extern void setTabColors();
 

@@ -693,9 +693,9 @@ const char* FTextRX::dxcc_lookup_call(int x, int y)
 	    QRB::qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == QRB::QRB_OK) {
 			if (progdefaults.us_units) {
 				stip << "QTE " << fixed << setprecision(0) << azimuth << '\260' << " ("
-					<< QRB::azimuth_long_path(azimuth) << '\260' << ")  QRB " 
+					<< QRB::azimuth_long_path(azimuth) << '\260' << ")  QRB "
 					<< distance * 0.62168188 << "mi"<< " (" <<
-					QRB::distance_long_path(distance) * 0.62168188 << 
+					QRB::distance_long_path(distance) * 0.62168188 <<
 					"mi)\n";
 			}
 			else {
@@ -811,7 +811,7 @@ int FTextTX::handle(int event)
 	case FL_KEYBOARD:
 		if (active_modem->get_mode() == MODE_FSQ) {
 			if (Fl::event_key() == FL_Enter || Fl::event_key() == FL_KP_Enter) {
-				fsq_transmit(active_modem);
+				fsq_transmit(0);
 				return 1;
 			}
 		}

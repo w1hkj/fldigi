@@ -371,27 +371,24 @@ int fsqpic_TxGetPixel(int pos, int color)
 
 void cb_fsqpicTransmit( Fl_Widget *w, void *)
 {
-
-	fsq_tx_text->add(fsq_selected_call.c_str());
+	std::string image_txt;
+	image_txt.assign(fsq_selected_call.c_str());
 	switch (selfsqpicSize->value()) {
-		case 0: fsq_tx_text->add("% S"); break;
-		case 1: fsq_tx_text->add("% L"); break;
-		case 2: fsq_tx_text->add("% F"); break;
-		case 3: fsq_tx_text->add("% V"); break;
-		case 4: fsq_tx_text->add("% P"); break;
-		case 5: fsq_tx_text->add("% p"); break;
-		case 6: fsq_tx_text->add("% M"); break;
-		case 7: fsq_tx_text->add("% m"); break;
+		case 0: image_txt.append("% S"); break;
+		case 1: image_txt.append("% L"); break;
+		case 2: image_txt.append("% F"); break;
+		case 3: image_txt.append("% V"); break;
+		case 4: image_txt.append("% P"); break;
+		case 5: image_txt.append("% p"); break;
+		case 6: image_txt.append("% M"); break;
+		case 7: image_txt.append("% m"); break;
 	}
-	fsq_tx_text->add("^r");
-	active_modem->fsq_send_image();
-
+	active_modem->fsq_send_image(image_txt);
 }
 
 void cb_fsqpicTxSendAbort( Fl_Widget *w, void *)
 {
 }
-
 
 void cb_selfsqpicSize( Fl_Widget *w, void *)
 {

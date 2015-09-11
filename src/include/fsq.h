@@ -45,9 +45,7 @@ class fsq : public modem {
 #define SHIFT_SIZE	(FSQ_SYMLEN / 16)
 
 #define NUMBINS		142
-//#define FSQBOL " \n"
-//#define FSQEOL "\n "
-//#define FSQEOT "  \b  "
+
 enum STATE {TEXT, IMAGE};
 
 friend void timed_xmt(void *);
@@ -55,13 +53,10 @@ friend void sounder(void *);
 friend void aging(void *);
 friend void fsq_add_tx_timeout(void *);
 friend void fsq_stop_aging();
-friend void fsq_start_sounder(void *);
-friend void fsq_stop_sounder();
 friend void try_transmit(void *);
 friend void fsq_transmit(void *);
 
 public:
-static int			symlen;
 
 protected:
 // Rx
@@ -130,8 +125,6 @@ protected:
 	void			send_idle ();
 	void			send_symbol(int sym);
 	void			send_tone(int tone);
-	std::string		xmt_string;
-	double			xmtdelay();
 	void			reply(std::string);
 	void			delayed_reply(std::string, int delay);
 	void			send_ack(std::string relay = "");
@@ -168,10 +161,6 @@ protected:
 
 	bool			valid_char(int);
 
-	static const char *FSQBOL;
-	static const char *FSQEOL;
-	static const char *FSQEOT;
-
 	STATE			state;
 
 public:
@@ -185,7 +174,7 @@ public:
 
 	int		tx_process ();
 
-	const char *fsq_mycall() { return mycall.c_str(); }
+	std::string fsq_mycall() { return mycall; }
 
 	bool	fsq_squelch_open();
 
@@ -193,7 +182,6 @@ public:
 private:
 	double amplitude;
 	double pixel;
-	bool    TX_IMAGE;
 	unsigned char tx_pixel;
 	int tx_pixelnbr;
 	int image_mode;
@@ -221,7 +209,7 @@ public:
 	int		TXspp;
 	void	recvpic(double smpl);
 	void	send_image();
-	void	fsq_send_image();
+	void	fsq_send_image(std::string s);
 
 };
 

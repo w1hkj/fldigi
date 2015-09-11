@@ -175,7 +175,7 @@
 #define VIEW_MLABEL            _("&View")
 #define MFSK_IMAGE_MLABEL      _("&MFSK Image")
 #define WEFAX_RX_IMAGE_MLABEL  _("&Weather Fax Image RX")
-#define WEFAX_TX_IMAGE_MLABEL  _("&Weather Fax Image TX")
+#define WEFAX_fsq_tx_image_MLABEL  _("&Weather Fax Image TX")
 #define CONTEST_MLABEL         _("Contest")
 #define CONTEST_FIELDS_MLABEL  _("&Contest fields")
 #define COUNTRIES_MLABEL       _("C&ountries")
@@ -2454,6 +2454,8 @@ void ztimer(void* first_call)
 	else
 		ztbuf[8] = '\0';
 
+	if (!inpTimeOff1) return;
+
 	inpTimeOff1->value(zshowtime());
 	inpTimeOff2->value(zshowtime());
 	inpTimeOff3->value(zshowtime());
@@ -4015,7 +4017,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 't', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(WEFAX_fsq_tx_image_MLABEL, image_icon), 't', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
@@ -4218,7 +4220,7 @@ void activate_wefax_image_item(bool b)
 	Fl_Menu_Item *wefax_rx_item = getMenuItem(WEFAX_RX_IMAGE_MLABEL);
 	if (wefax_rx_item)
 		icons::set_active(wefax_rx_item, b);
-	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_TX_IMAGE_MLABEL);
+	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_fsq_tx_image_MLABEL);
 	if (wefax_tx_item)
 		icons::set_active(wefax_tx_item, b);
 }
@@ -5894,6 +5896,9 @@ int alt_btn_width = 2 * DEFAULT_SW;
 					fsq_rx_text->setFontColor(progdefaults.CTRLcolor, FTextBase::CTRL);
 					fsq_rx_text->setFontColor(progdefaults.SKIPcolor, FTextBase::SKIP);
 					fsq_rx_text->setFontColor(progdefaults.ALTRcolor, FTextBase::ALTR);
+					fsq_rx_text->setFontColor(progdefaults.fsq_xmt_color, FTextBase::FSQ_TX);
+					fsq_rx_text->setFontColor(progdefaults.fsq_directed_color, FTextBase::FSQ_DIR);
+					fsq_rx_text->setFontColor(progdefaults.fsq_undirected_color, FTextBase::FSQ_UND);
 
 					fsq_tx_text = new FTextTX(
 									0, Y + fsq_rx_text->h(), 
@@ -5965,11 +5970,11 @@ int alt_btn_width = 2 * DEFAULT_SW;
 						int _xp = fsq_lower_right->x();
 
 						btn_FSQCALL = new Fl_Light_Button(
-							_xp, _yp, bw2, bh, "FSQCALL");
+							_xp, _yp, bw2, bh, "FSQ-ON");
 						btn_FSQCALL->value(progdefaults.fsq_directed);
 						btn_FSQCALL->selection_color(FL_DARK_GREEN);
 						btn_FSQCALL->callback(cbFSQCALL, 0);
-						btn_FSQCALL->tooltip("Left click - on/off\nRight click - debug on/off");
+						btn_FSQCALL->tooltip("Left click - on/off");
 
 						_xp += bw2;
 
@@ -6289,9 +6294,6 @@ int alt_btn_width = 2 * DEFAULT_SW;
 	if (!progdefaults.menuicons)
 		icons::toggle_icon_labels();
 
-	// ztimer must be run by FLTK's timeout handler
-	Fl::add_timeout(0.0, ztimer, (void*)true);
-
 	// Set the state of checked toggle menu items. Never changes.
 	const struct {
 		bool var; const char* label;
@@ -6520,7 +6522,7 @@ static Fl_Menu_Item alt_menu_[] = {
 //{ make_icon_label(_("Extern Scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(WEFAX_fsq_tx_image_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Signal Browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
@@ -7394,7 +7396,8 @@ void put_Status1(const char *msg, double timeout, status_timeout action)
 	m[sizeof(m) - 1] = '\0';
 
 	info1msg = msg;
-	if (progStatus.NO_RIGLOG && !(active_modem->get_mode() == MODE_FSQ)) return;
+	if (!active_modem) return;
+	if (progStatus.NO_RIGLOG && active_modem->get_mode() != MODE_FSQ) return;
 	REQ(put_status_msg, Status1, m, timeout, action);
 }
 
@@ -7515,56 +7518,12 @@ void do_que_execute(void *)
 	que_waiting = false;
 }
 
-int get_fsq_tx_char(void)
-{
-	int c = fsq_tx_text->nextChar();
-
-	if (c == GET_TX_CHAR_ETX) {
-		return c;
-	}
-	if (c == -1)
-		return(GET_TX_CHAR_NODATA);
-
-	if (c == '^') {
-		c = fsq_tx_text->nextChar();
-		if (c == -1)
-		return(GET_TX_CHAR_NODATA);
-		switch (c) {
-			case 'p': case 'P':
-				fsq_tx_text->pause();
-				break;
-			case 'r':
-				REQ_SYNC(&FTextTX::clear_sent, fsq_tx_text);
-				REQ(Rx_queue_execute);
-				return(GET_TX_CHAR_ETX);
-				break;
-			case 'R':
-				if (fsq_tx_text->eot()) {
-					REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-					REQ(Rx_queue_execute);
-					return(GET_TX_CHAR_ETX);
-				} else
-					return(GET_TX_CHAR_NODATA);
-				break;
-			case 'L':
-				REQ(qso_save_now);
-				return(GET_TX_CHAR_NODATA);
-				break;
-			case 'C':
-				REQ(clearQSO);
-				return(GET_TX_CHAR_NODATA);
-				break;
-			default: ;
-		}
-	}
-
-	return(c);
-}
-
 char szTestChar[] = "E|I|S|T|M|O|A|V";
 
 //string bools = "------";
 //char testbools[7];
+
+extern int get_fsq_tx_char();
 
 int get_tx_char(void)
 {
@@ -8335,55 +8294,58 @@ void cb_heard_copy(Fl_Widget *w, void *)
 	Fl::copy(fsq_selected_call.c_str(), fsq_selected_call.length(), 1);
 }
 
+void cb_heard_copy_to_log(Fl_Widget *w, void *)
+{
+	inpCall->value(fsq_selected_call.c_str());
+	cb_call(inpCall, (void *)0);
+}
+
 void cb_heard_copy_all(Fl_Widget *w, void *)
 {
 	if (fsq_heard->size() < 2) return;
+	fsq_selected_call.clear();
 	for (int i = 2; i <= fsq_heard->size(); i++) {
-		fsq_selected_call = fsq_heard->text(i);
+		fsq_selected_call.append(fsq_heard->text(i));
 		size_t p = fsq_selected_call.find(',');
 		if (p != std::string::npos) fsq_selected_call.erase(p);
-		if ( i < fsq_heard->size()) fsq_selected_call.append(" ");
-		Fl::copy(fsq_selected_call.c_str(), fsq_selected_call.length(), 1);
+		fsq_selected_call.append(" ");
 	}
+	Fl::copy(fsq_selected_call.c_str(), fsq_selected_call.length(), 1);
 }
 
 void cb_heard_query_snr(Fl_Widget *w, void *)
 {
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("?");
-	fsq_tx_text->add("^r");
-	start_tx();
+	std::string s = fsq_selected_call.c_str();
+	s.append("?");
+	fsq_xmt(s);
 }
 
 void cb_heard_query_heard(Fl_Widget *w, void *)
 {
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("$");
-	fsq_tx_text->add("^r");
-	start_tx();
+	std::string s = fsq_selected_call.c_str();
+	s.append("$");
+	fsq_xmt(s);
 }
 
 void cb_heard_query_at(Fl_Widget *w, void *)
 {
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("@");
-	fsq_tx_text->add("^r");
-	start_tx();
+	std::string s = fsq_selected_call.c_str();
+	s.append("@");
+	fsq_xmt(s);
 }
 
 void cb_heard_query_carat(Fl_Widget *w, void *)
 {
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("^^^r");
-	start_tx();
+	std::string s = fsq_selected_call.c_str();
+	s.append("^^");
+	fsq_xmt(s);
 }
 
 void cb_heard_query_amp(Fl_Widget *w, void *)
 {
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("&");
-	fsq_tx_text->add("^r");
-	start_tx();
+	std::string s = fsq_selected_call.c_str();
+	s.append("&");
+	fsq_xmt(s);
 }
 
 void cb_heard_send_file(Fl_Widget *w, void *)
@@ -8404,13 +8366,12 @@ void cb_heard_send_file(Fl_Widget *w, void *)
 			ch = txfile.get();
 		}
 		txfile.close();
-		fsq_tx_text->add(fsq_selected_call.c_str());
-		fsq_tx_text->add("#[");
-		fsq_tx_text->add(fname.c_str());
-		fsq_tx_text->add("]\n");
-		fsq_tx_text->add(text.str().c_str());
-		fsq_tx_text->add("^r");
-		start_tx();
+		std::string s = fsq_selected_call.c_str();
+		s.append("#[");
+		s.append(fname.c_str());
+		s.append("]\n");
+		s.append(text.str().c_str());
+		fsq_xmt(s);
 	}
 }
 
@@ -8421,20 +8382,18 @@ void cb_heard_read_file(Fl_Widget *w, void*)
 	string fname = p;
 	if (fname.empty()) return;
 
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("+[");
-	fsq_tx_text->add(fname.c_str());
-	fsq_tx_text->add("]^r");
-	start_tx();
-
+	std::string s = fsq_selected_call.c_str();
+	s.append("+[");
+	s.append(fname.c_str());
+	s.append("]^r");
+	fsq_xmt(s);
 }
 
 void cb_heard_query_plus(Fl_Widget *w, void *)
 {
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("+");
-	fsq_tx_text->add("^r");
-	start_tx();
+	std::string s = fsq_selected_call.c_str();
+	s.append("+");
+	fsq_xmt(s);
 }
 
 void cb_heard_send_msg(Fl_Widget *w, void*)
@@ -8444,14 +8403,12 @@ void cb_heard_send_msg(Fl_Widget *w, void*)
 	string msg = p;
 	if (msg.empty()) return;
 
-	fsq_tx_text->add(fsq_selected_call.c_str());
-	fsq_tx_text->add("#[");
-	fsq_tx_text->add(active_modem->fsq_mycall());
-	fsq_tx_text->add("]");
-	fsq_tx_text->add(msg.c_str());
-	fsq_tx_text->add("^r");
-	start_tx();
-
+	std::string s = fsq_selected_call.c_str();
+	s.append("#[");
+	s.append(active_modem->fsq_mycall());
+	s.append("]");
+	s.append(msg.c_str());
+	fsq_xmt(s);
 }
 
 void cb_heard_send_image(Fl_Widget *w, void *)
@@ -8471,6 +8428,7 @@ static const Fl_Menu_Item all_popup[] = {
 
 static const Fl_Menu_Item directed_popup[] = {
 	{ "Copy", 0, cb_heard_copy, 0 },
+	{ "Log call", 0, cb_heard_copy_to_log, 0 },
 	{ "Copy All", 0, cb_heard_copy_all, 0 },
 	{ "Delete", 0, cb_heard_delete, 0, FL_MENU_DIVIDER },
 	{ "Query SNR (?)", 0, cb_heard_query_snr, 0 },

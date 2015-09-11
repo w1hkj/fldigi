@@ -202,6 +202,6 @@ void fsq_que_clear()
 void write_fsq_que(std::string s)
 {
 	if (!fsq_que) return;
-	REQ(&FTextRX::clear, fsq_que);
+//	REQ(&FTextRX::clear, fsq_que);
 	REQ(&FTextRX::addstr, fsq_que, s, FTextBase::ALTR);
 }

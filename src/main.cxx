@@ -357,6 +357,9 @@ int main(int argc, char ** argv)
 	// for KISS_IO status information
 	program_start_time = time(0);
 
+	// ztimer must be run by FLTK's timeout handler
+	ztimer((void*)true);
+
 	active_modem = new NULLMODEM;
 
 	string appdir = appname = argv[0];

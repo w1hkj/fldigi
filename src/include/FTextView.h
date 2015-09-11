@@ -43,6 +43,7 @@ public:
 	// CLICK_START: same as first clickable style
 	// NATTR: number of styles (last style + 1)
 	enum TEXT_ATTR { RECV, XMIT, CTRL, SKIP, ALTR,
+			 FSQ_TX, FSQ_DIR, FSQ_UND,
 			 CLICK_START, QSY = CLICK_START, /* FOO, BAR, ..., */
 			 NATTR };
 

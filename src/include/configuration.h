@@ -678,6 +678,15 @@
         ELEM_(std::string, fsq_audit_log, "FSQ_AUDIT_LOG",                              \
               "FSQ audit log pathname",                                                 \
               "fsq_audit_log.txt")                                                      \
+        ELEM_(Fl_Color, fsq_xmt_color, "FSQXMTCOLOR",                                   \
+              "Color for FSQ xmt text",                                                 \
+              FL_RED)                                                                   \
+        ELEM_(Fl_Color, fsq_directed_color, "FSQDIRECTEDCOLOR",                         \
+              "Color for FSQ directed text",                                            \
+              FL_BLUE)                                                                  \
+        ELEM_(Fl_Color, fsq_undirected_color, "FSQUNDIRECTEDCOLOR",                     \
+              "Color for FSQ undirected text",                                          \
+              FL_DARK_GREEN)                                                            \
         /* Waterfall & UI */                                                            \
         ELEM_(uchar, red, "", "",  0)                                                   \
         ELEM_(uchar, green, "", "",  255)                                               \

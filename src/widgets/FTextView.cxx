@@ -469,6 +469,10 @@ void FTextBase::reset_styles(int set)
 	set_style(CTRL, FL_HELVETICA, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
 	set_style(SKIP, FL_HELVETICA, FL_NORMAL_SIZE, FL_BLUE, set);
 	set_style(ALTR, FL_HELVETICA, FL_NORMAL_SIZE, FL_DARK_MAGENTA, set);
+	set_style(FSQ_TX, FL_HELVETICA, FL_NORMAL_SIZE, FL_RED, set);
+	set_style(FSQ_DIR, FL_HELVETICA, FL_NORMAL_SIZE, FL_BLUE, set);
+	set_style(FSQ_UND, FL_HELVETICA, FL_NORMAL_SIZE, FL_DARK_GREEN, set);
+
 }
 
 // ----------------------------------------------------------------------------
