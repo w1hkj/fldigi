@@ -241,7 +241,7 @@ chars/sec:    %f",
 static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -262,7 +262,7 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 	if (n <= 0) n = 10;
 	if (n > 100) n = 100;
 
-// sample count with 'n' characters 
+// sample count with 'n' characters
 	int s1[256];
 	for (int i = 0; i < 256; i++) s1[i] = 0;
 // converstion from sample count to milliseconds
@@ -308,7 +308,7 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -369,7 +369,7 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -421,7 +421,7 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -477,7 +477,7 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 {
 	s.clear();
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -501,7 +501,7 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -552,7 +552,7 @@ static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -610,7 +610,7 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
-	if ( id == MODE_SSB || id == MODE_WWV || 
+	if ( id == MODE_SSB || id == MODE_WWV ||
 		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
@@ -1275,7 +1275,7 @@ static void pFREQ(std::string &s, size_t &i, size_t endbracket)
 }
 
 static void pBAND(std::string &s, size_t &i, size_t endbracket)
-{ 
+{
         s.replace( i, 6, band_name( band( wf->rfcarrier() ) ) );
 }
 
@@ -1339,8 +1339,8 @@ static void pMYRST(std::string &s, size_t &i, size_t endbracket)
 }
 
 static void pANTENNA(std::string &s, size_t &i, size_t endbracket)
-{ 
-        s.replace( i, 9, progdefaults.myAntenna.c_str() );  
+{
+        s.replace( i, 9, progdefaults.myAntenna.c_str() );
 }
 
 static void pLDT(std::string &s, size_t &i, size_t endbracket)
@@ -3601,42 +3601,50 @@ void MACROTEXT::timed_execute()
 	}
 }
 
+bool wait_execute = false;
+
 void MACROTEXT::execute(int n)
 {
+	while (wait_execute) { MilliSleep(10); }
+	wait_execute = true;
+
 	mNbr = n;
 	text2send = expandMacro(text[n]);
-	
+
 	if (timed_exec) {
 		progStatus.repeatMacro = -1;
 		exec_string = text[n];
 		timed_exec = false;
 		startTimedExecute(name[n]);
+		wait_execute = false;
 		return;
 	}
 
 	trx_mode mode = active_modem->get_mode();
 
 	if (!rx_only) {
-		if (progStatus.repeatMacro == -1)
-			if (mode == MODE_IFKP)
+		if (progStatus.repeatMacro == -1) {
+			if (mode == MODE_IFKP) {
 				ifkp_tx_text->add_text( text2send );
-			else
+			} else {
 				TransmitText->add_text( text2send );
-		else {
+			}
+		} else {
 			size_t p = std::string::npos;
 			text2send = text[n];
 			while ((p = text2send.find('<')) != std::string::npos)
 				text2send[p] = '[';
 			while ((p = text2send.find('>')) != std::string::npos)
 				text2send[p] = ']';
-			if (mode == MODE_IFKP)
+			if (mode == MODE_IFKP) {
 				ifkp_tx_text->add_text( text2send );
-			else
+			} else {
 				TransmitText->add_text( text2send );
+			}
 		}
 	}
 	text2send.clear();
-	
+
 	if (ToggleTXRX) {
 		text2send.clear();
 		if (!wf->xmtrcv->value()) {
@@ -3645,27 +3653,31 @@ void MACROTEXT::execute(int n)
 				Fl::add_timeout(idleTime, idleTimer);
 		} else
 			REQ(set_button, wf->xmtrcv, false);
+		wait_execute = false;
 		return;
 	}
 	if (useWait && waitTime > 0) {
 		Fl::add_timeout(waitTime, finishWait);
 		useWait = false;
+		wait_execute = false;
 		return;
 	}
 	if (useTune && tuneTime > 0) {
 		trx_tune();
 		Fl::add_timeout(tuneTime, finishTune);
 		useTune = false;
+		wait_execute = false;
 		return;
 	}
 	if ( TransmitON ) {
 		if (macro_idle_on && idleTime > 0)
 			Fl::add_timeout(idleTime, idleTimer);
-		
+
 		active_modem->set_stopflag(false);
 		start_tx();
 		TransmitON = false;
 	}
+	wait_execute = false;
 }
 
 void MACROTEXT::repeat(int n)
@@ -3699,7 +3711,7 @@ static std::string mtext =
 ";
 
 void MACROTEXT::saveMacros(const std::string& fname) {
-	
+
 	std::string work;
 	std::string output;
 	char temp[200];
@@ -3718,7 +3730,7 @@ void MACROTEXT::saveMacros(const std::string& fname) {
 		output.append(work).append("\n");
 	}
 	UTF8_writefile(fname.c_str(), output);
-	
+
 	changed = false;
 }
 

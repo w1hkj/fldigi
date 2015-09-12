@@ -1769,6 +1769,7 @@ void macro_cb(Fl_Widget *w, void *v)
 
 	int mouse = Fl::event_button();
 	if (mouse == FL_LEFT_MOUSE && !macros.text[b].empty()) {
+		if (progStatus.timer) return;
 		stopMacroTimer();
 		macros.execute(b);
 	}
@@ -3039,6 +3040,11 @@ void macro_timer(void*)
 
 	if (progStatus.timer-- == 0) {
 		stopMacroTimer();
+		if (active_modem->get_mode() == MODE_IFKP) {
+			ifkp_tx_text->clear();
+		} else {
+			TransmitText->clear();
+		}
 		macros.execute(progStatus.timerMacro);
 	}
 	else
