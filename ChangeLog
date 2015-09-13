@@ -1,8 +1,25 @@
 
 
-=Version 3.22.13=
+=Version 3.23.00=
 
-2015-07-18  David Freese  <iam_w1hkj@w1hkj.com>
+2015-09-13  David Freese  <iam_w1hkj@w1hkj.com>
+
+	f78aa38: Clear Tx Panel
+	cbff7c3: Olivia/Contestia start stop tones
+	37175e2: macro bug
+	3d6e0b9: FSQ updates
+	ed3b09d: ifkp modem
+	c82de8e: MXE update
+	7b42e01: Macros
+	0606d1a: Doxygen help
+	d4b6308: QSO rec
+	2df24b8: MS Read logbook
+	30ad2a9: WEFAX hang on INFO
+	6704797: Nu opBW combos
+	db69617: LSB modes
+
+
+=Version 3.22.13=
 
 	7bdf051: FSQ bug fix
 	9319676: XMLRPC commands

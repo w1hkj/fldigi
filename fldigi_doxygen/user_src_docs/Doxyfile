@@ -13,7 +13,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "FLDIGI Users Manual"
-PROJECT_NUMBER       = 3.22
+PROJECT_NUMBER       = 3.23
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
