@@ -3880,7 +3880,7 @@ progdefaults.changed = true;}
             label Oliv open
             xywh {0 50 600 330} hide
           } {
-            Fl_Group {} {
+            Fl_Group {} {open
               xywh {55 76 490 280} box ENGRAVED_FRAME
             } {
               Fl_Group i_listbox_olivia_bandwidth {
@@ -3891,8 +3891,8 @@ resetOLIVIA();
 progdefaults.changed = true;} open
                 tooltip {Select bandwidth} xywh {110 96 85 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szOliviaBandwidth);}
-                code1 {o->index(progdefaults.oliviabw);
-                       o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->index(progdefaults.oliviabw);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
               Fl_Group i_listbox_olivia_tones {
@@ -3903,8 +3903,8 @@ resetOLIVIA();
 progdefaults.changed = true;} open
                 tooltip {Select number of tones} xywh {371 96 70 22} box DOWN_BOX color 7 align 8
                 code0 {o->add(szOliviaTones);}
-                code1 {o->index(progdefaults.oliviatones);
-                       o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->index(progdefaults.oliviatones);}
+                code2 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
               Fl_Group {} {
@@ -3918,6 +3918,7 @@ resetOLIVIA();
 progdefaults.changed = true;}
                   tooltip {Change ONLY to experiment} xywh {125 166 70 22} type Simple align 8 minimum 2 maximum 128 step 1 value 8
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  code1 {o->value(progdefaults.oliviasmargin);}
                   class Fl_Counter2
                 }
                 Fl_Counter cntOlivia_sinteg {
@@ -3927,6 +3928,7 @@ resetOLIVIA();
 progdefaults.changed = true;}
                   tooltip {Change ONLY to experiment} xywh {125 198 70 22} type Simple align 8 minimum 2 maximum 128 step 1 value 4
                   code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  code1 {o->value(progdefaults.oliviasinteg);}
                   class Fl_Counter2
                 }
                 Fl_Check_Button btn_olivia_reset_fec {
@@ -3942,6 +3944,14 @@ progdefaults.changed = true;}
                 callback {progdefaults.olivia8bit = o->value();
 progdefaults.changed = true;}
                 tooltip {Enable this for UTF-8 character transmission} xywh {131 291 265 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.olivia8bit);}
+              }
+              Fl_Check_Button btnOlivia_start_stop_tones {
+                label {xmt start/stop tones}
+                callback {progdefaults.olivia_start_tones = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable this to send start/stop tones} xywh {131 315 265 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.olivia_start_tones);}
               }
             }
           }
@@ -3950,7 +3960,7 @@ progdefaults.changed = true;}
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
-              xywh {55 80 490 200} box ENGRAVED_FRAME
+              xywh {55 80 490 235} box ENGRAVED_FRAME
             } {
               Fl_Group i_listbox_contestia_bandwidth {
                 label Bandwidth
@@ -4004,6 +4014,13 @@ progdefaults.changed = true;}
                 callback {progdefaults.contestia8bit = o->value();
 progdefaults.changed = true;}
                 tooltip {Enable this for Latin-1 accented characters} xywh {79 249 200 20} down_box DOWN_BOX hide
+              }
+              Fl_Check_Button btnContestia_start_stop_tones {
+                label {xmt start/stop tones}
+                callback {progdefaults.contestia_start_tones = o->value();
+progdefaults.changed = true;}
+                tooltip {Enable this to send start/stop tones} xywh {141 280 265 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.contestia_start_tones);}
               }
             }
           }

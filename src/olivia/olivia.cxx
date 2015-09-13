@@ -105,6 +105,8 @@ void olivia::rx_flush()
 
 void olivia::send_tones()
 {
+	if (!progdefaults.olivia_start_tones) return;
+
 	double freqa, freqb;
 	tone_bw = bandwidth;
 	tone_midfreq = txbasefreq;

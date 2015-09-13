@@ -3200,6 +3200,13 @@ static void cb_btnOlivia_8bit(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnOlivia_start_stop_tones=(Fl_Check_Button *)0;
+
+static void cb_btnOlivia_start_stop_tones(Fl_Check_Button* o, void*) {
+  progdefaults.olivia_start_tones = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabContestia=(Fl_Group *)0;
 
 Fl_ListBox *i_listbox_contestia_bandwidth=(Fl_ListBox *)0;
@@ -3240,6 +3247,13 @@ Fl_Check_Button *btnContestia_8bit=(Fl_Check_Button *)0;
 
 static void cb_btnContestia_8bit(Fl_Check_Button* o, void*) {
   progdefaults.contestia8bit = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnContestia_start_stop_tones=(Fl_Check_Button *)0;
+
+static void cb_btnContestia_start_stop_tones(Fl_Check_Button* o, void*) {
+  progdefaults.contestia_start_tones = o->value();
 progdefaults.changed = true;
 }
 
@@ -8488,7 +8502,7 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_olivia_bandwidth->when(FL_WHEN_RELEASE);
                 o->add(szOliviaBandwidth);
                 o->index(progdefaults.oliviabw);
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_olivia_bandwidth->end();
               } // Fl_ListBox* i_listbox_olivia_bandwidth
               { Fl_ListBox* o = i_listbox_olivia_tones = new Fl_ListBox(371, 96, 70, 22, _("Tones"));
@@ -8505,7 +8519,7 @@ i on a\ntouch screen device such as a tablet."));
                 i_listbox_olivia_tones->when(FL_WHEN_RELEASE);
                 o->add(szOliviaTones);
                 o->index(progdefaults.oliviatones);
-                       o->labelsize(FL_NORMAL_SIZE);
+                o->labelsize(FL_NORMAL_SIZE);
                 i_listbox_olivia_tones->end();
               } // Fl_ListBox* i_listbox_olivia_tones
               { Fl_Group* o = new Fl_Group(110, 135, 379, 133, _("Receive synchronizer"));
@@ -8529,6 +8543,7 @@ i on a\ntouch screen device such as a tablet."));
                 cntOlivia_smargin->align(Fl_Align(FL_ALIGN_RIGHT));
                 cntOlivia_smargin->when(FL_WHEN_CHANGED);
                 o->labelsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.oliviasmargin);
                 } // Fl_Counter2* cntOlivia_smargin
                 { Fl_Counter2* o = cntOlivia_sinteg = new Fl_Counter2(125, 198, 70, 22, _("Integration period (FEC blocks)"));
                 cntOlivia_sinteg->tooltip(_("Change ONLY to experiment"));
@@ -8548,6 +8563,7 @@ i on a\ntouch screen device such as a tablet."));
                 cntOlivia_sinteg->align(Fl_Align(FL_ALIGN_RIGHT));
                 cntOlivia_sinteg->when(FL_WHEN_CHANGED);
                 o->labelsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.oliviasinteg);
                 } // Fl_Counter2* cntOlivia_sinteg
                 { Fl_Check_Button* o = btn_olivia_reset_fec = new Fl_Check_Button(126, 230, 349, 20, _("Reset FEC blocks when changing BW or Tones"));
                 btn_olivia_reset_fec->tooltip(_("Enable this for UTF-8 character transmission"));
@@ -8557,18 +8573,25 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Check_Button* btn_olivia_reset_fec
                 o->end();
               } // Fl_Group* o
-              { btnOlivia_8bit = new Fl_Check_Button(131, 291, 265, 20, _("8-bit extended characters (UTF-8)"));
+              { Fl_Check_Button* o = btnOlivia_8bit = new Fl_Check_Button(131, 291, 265, 20, _("8-bit extended characters (UTF-8)"));
                 btnOlivia_8bit->tooltip(_("Enable this for UTF-8 character transmission"));
                 btnOlivia_8bit->down_box(FL_DOWN_BOX);
                 btnOlivia_8bit->callback((Fl_Callback*)cb_btnOlivia_8bit);
+                o->value(progdefaults.olivia8bit);
               } // Fl_Check_Button* btnOlivia_8bit
+              { Fl_Check_Button* o = btnOlivia_start_stop_tones = new Fl_Check_Button(131, 315, 265, 20, _("xmt start/stop tones"));
+                btnOlivia_start_stop_tones->tooltip(_("Enable this to send start/stop tones"));
+                btnOlivia_start_stop_tones->down_box(FL_DOWN_BOX);
+                btnOlivia_start_stop_tones->callback((Fl_Callback*)cb_btnOlivia_start_stop_tones);
+                o->value(progdefaults.olivia_start_tones);
+              } // Fl_Check_Button* btnOlivia_start_stop_tones
               o->end();
             } // Fl_Group* o
             tabOlivia->end();
           } // Fl_Group* tabOlivia
           { tabContestia = new Fl_Group(0, 50, 600, 330, _("Cont"));
             tabContestia->hide();
-            { Fl_Group* o = new Fl_Group(55, 80, 490, 200);
+            { Fl_Group* o = new Fl_Group(55, 80, 490, 235);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_ListBox* o = i_listbox_contestia_bandwidth = new Fl_ListBox(110, 100, 85, 22, _("Bandwidth"));
                 i_listbox_contestia_bandwidth->tooltip(_("Select bandwidth"));
@@ -8653,6 +8676,12 @@ i on a\ntouch screen device such as a tablet."));
                 btnContestia_8bit->callback((Fl_Callback*)cb_btnContestia_8bit);
                 btnContestia_8bit->hide();
               } // Fl_Check_Button* btnContestia_8bit
+              { Fl_Check_Button* o = btnContestia_start_stop_tones = new Fl_Check_Button(141, 280, 265, 20, _("xmt start/stop tones"));
+                btnContestia_start_stop_tones->tooltip(_("Enable this to send start/stop tones"));
+                btnContestia_start_stop_tones->down_box(FL_DOWN_BOX);
+                btnContestia_start_stop_tones->callback((Fl_Callback*)cb_btnContestia_start_stop_tones);
+                o->value(progdefaults.contestia_start_tones);
+              } // Fl_Check_Button* btnContestia_start_stop_tones
               o->end();
             } // Fl_Group* o
             tabContestia->end();

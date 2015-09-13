@@ -517,6 +517,9 @@
         ELEM_(bool, olivia8bit, "OLIVIA8BIT",                                           \
               "8-bit extended characters",                                              \
               true)                                                                     \
+        ELEM_(bool, olivia_start_tones, "OLIVIASTARTTONES",                             \
+              "Send start/stop tones",                                                  \
+              true)                                                                     \
         /* CONTESTIA */                                                                 \
         ELEM_(int, contestiatones, "CONTESTIATONES",                                    \
               "Number of tones. Values are as follows:\n"                               \
@@ -538,6 +541,9 @@
         ELEM_(bool, contestia_reset_fec, "CONTESTIARESETFEC",                           \
               "Force Integration (FEC) depth to be reset when new BW/Tones selected",   \
               false)                                                                    \
+        ELEM_(bool, contestia_start_tones, "CONTESTIASTARTTONES",                       \
+              "Send start/stop tones",                                                  \
+              true)                                                                     \
         /* THOR */                                                                      \
         ELEM_(double, THOR_BW, "THORBW",                                                \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \

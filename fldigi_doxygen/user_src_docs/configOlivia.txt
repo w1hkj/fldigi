@@ -23,6 +23,12 @@ rate, and excessive latency which is the apparent typing delay caused
 by the integration period.
 <br>
 
+Each Olivia transmission can start and end with two distinctive tones.  These tones
+are exactly at the lowest and uppermost tones for the selection of tones and bandwidth.
+They can assist the receiving station in tuning the Olivia signal on the waterfall.
+
+The start/stop tones can be disabled.
+
 See \ref olivia_page "Operating Olivia" for additional information.
 <br>
 

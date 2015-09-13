@@ -91,6 +91,8 @@ void contestia::rx_flush()
 
 void contestia::send_tones()
 {
+	if (!progdefaults.contestia_start_tones) return;
+
 	double freqa, freqb;
 	tone_bw = bandwidth;
 	tone_midfreq = txbasefreq;
