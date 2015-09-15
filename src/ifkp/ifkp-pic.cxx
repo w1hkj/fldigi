@@ -81,7 +81,7 @@ void ifkp_correct_video()
 		for (int col = 0; col < W; col++) {
 			colptr = ifkp::IMAGEspp*col;
 			for (int rgb = 0; rgb < 3; rgb++) {
-				index = ratio*(rowptr + colptr + 10*W*rgb);
+				index = ratio*(rowptr + colptr + ifkp::IMAGEspp*W*rgb);
 				index += RAWSTART - ifkp::IMAGEspp*ifkp_pixelptr;
 				if (index < 2) index = 2;
 				if (index > RAWSIZE - 2) index = RAWSIZE - 2;
