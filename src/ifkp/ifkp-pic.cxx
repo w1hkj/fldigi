@@ -594,12 +594,10 @@ int ifkp_print_time_left(float time_sec, char *str, size_t len,
 #include "tux.cxx"
 
 static Fl_Shared_Image	*shared_avatar_img = (Fl_Shared_Image *)0;
-
 static unsigned char *avatar_img = (unsigned char *)0;
-
 static Fl_Shared_Image	*my_avatar_img = (Fl_Shared_Image *)0;
-
 static int avatar_phase_correction = 0;
+static unsigned char avatar[59 * 74 * 3];
 
 void ifkp_clear_avatar()
 {
@@ -742,7 +740,9 @@ void ifkp_update_avatar(unsigned char data, int pos)
 
 int ifkp_get_avatar_pixel(int pos, int color)
 {
-	return (int)my_avatar_img->data()[0][3*pos + color]; // color = {RED, GREEN, BLUE}
+// color = {RED, GREEN, BLUE}
+	return (int)avatar[3*pos + color];
+
 }
 
 // ADD CALLBACK HANDLING OF PHASE CORRECTIONS
@@ -769,8 +769,29 @@ void cb_ifkp_send_avatar( Fl_Widget *w, void *)
 		fname.append(mycall).append(".png");
 
 		my_avatar_img = Fl_Shared_Image::get(fname.c_str(), 59, 74);
-
 		if (!my_avatar_img) return;
+		unsigned char *img_data = (unsigned char *)my_avatar_img->data()[0];
+		memset(avatar, 0, sizeof(avatar));
+		int D = my_avatar_img->d();
+
+		if (D == 3)
+			memcpy(avatar, img_data, 59*74*3);
+		else if (D == 4) {
+			int i, j, k;
+			for (i = 0; i < 59*74; i++) {
+				j = i*3; k = i*4;
+				avatar[j] = img_data[k];
+				avatar[j+1] = img_data[k+1];
+				avatar[j+2] = img_data[k+2];
+			}
+		} else if (D == 1) {
+			int i, j;
+			for (i = 0; i < 59*74; i++) {
+				j = i * 3;
+				avatar[j] = avatar[j+1] = avatar[j+2] = img_data[i];
+			}
+		} else
+			return;
 
 		string picmode = "\npic%A\n^r";
 		ifkp_tx_text->add(picmode.c_str());
