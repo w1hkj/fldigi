@@ -1140,17 +1140,17 @@ void startup_modem(modem* m, int f)
 			}
 			center_group->redraw();
 		}
-	}
-	if (id == MODE_IFKP && !ifkp_avatar->visible()) {
-		QsoInfoFrame2->size(QsoInfoFrame2->w() - 60, QsoInfoFrame2->h());
-		ifkp_load_avatar(inpCall->value());
-		ifkp_avatar->show();
-		ifkp_avatar->redraw();
-		QsoInfoFrame->redraw();
-	} else if (id != MODE_IFKP && ifkp_avatar->visible()) {
-		QsoInfoFrame2->size(QsoInfoFrame2->w() + 60, QsoInfoFrame2->h());
-		ifkp_avatar->hide();
-		QsoInfoFrame->redraw();
+		if (id == MODE_IFKP && !ifkp_avatar->visible()) {
+			QsoInfoFrame2->size(QsoInfoFrame2->w() - 60, QsoInfoFrame2->h());
+			ifkp_load_avatar(inpCall->value());
+			ifkp_avatar->show();
+			ifkp_avatar->redraw();
+			QsoInfoFrame->redraw();
+		} else if (id != MODE_IFKP && ifkp_avatar->visible()) {
+			QsoInfoFrame2->size(QsoInfoFrame2->w() + 60, QsoInfoFrame2->h());
+			ifkp_avatar->hide();
+			QsoInfoFrame->redraw();
+		}
 	}
 
 	if (id == MODE_RTTY) {
@@ -1360,6 +1360,23 @@ void update_scope()
 void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);
+
+	if (bWF_only)
+		if (mode == MODE_FSQ ||
+			mode == MODE_IFKP ||
+			mode == MODE_FELDHELL ||
+			mode == MODE_SLOWHELL ||
+			mode == MODE_HELLX5 ||
+			mode == MODE_HELLX9 ||
+			mode == MODE_FSKHELL ||
+			mode == MODE_FSKH105 ||
+			mode == MODE_HELL80 ||
+			mode == MODE_WEFAX_576 ||
+			mode == MODE_WEFAX_288 ||
+			mode == MODE_NAVTEX ||
+			mode == MODE_SITORB )
+		mode = MODE_PSK31;
+
 	stopMacroTimer();
 
 	if (data_io_enabled == KISS_IO) {
@@ -6875,16 +6892,6 @@ static Fl_Menu_Item alt_menu_[] = {
 { mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-{"WEFAX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_WEFAX_576].name, 0,  cb_init_mode, (void *)MODE_WEFAX_576, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_WEFAX_288].name, 0,  cb_init_mode, (void *)MODE_WEFAX_288, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
-{"Navtex/SitorB", 0, 0, 0, FL_SUBMENU | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_NAVTEX].name, 0,  cb_init_mode, (void *)MODE_NAVTEX, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ mode_info[MODE_SITORB].name, 0,  cb_init_mode, (void *)MODE_SITORB, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{0,0,0,0,0,0,0,0,0},
-
 { mode_info[MODE_WWV].name, 0, cb_init_mode, (void *)MODE_WWV, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_FFTSCAN].name, 0, cb_init_mode, (void *)MODE_FFTSCAN, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_ANALYSIS].name, 0, cb_init_mode, (void *)MODE_ANALYSIS, FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
@@ -6961,6 +6968,7 @@ void noop_controls() // create and then hide all controls not being used
 	qso_opMODE = new Fl_ComboBox(defwidget); qso_opMODE->hide();
 	qso_opBW = new Fl_ComboBox(defwidget); qso_opBW->hide();
 	qso_opPICK = new Fl_Button(defwidget); qso_opPICK->hide();
+	qso_opGROUP = new Fl_Group(defwidget); qso_opGROUP->hide();
 
 	inpFreq = new Fl_Input2(defwidget); inpFreq->hide();
 	inpTimeOff = new Fl_Input2(defwidget); inpTimeOff->hide();
