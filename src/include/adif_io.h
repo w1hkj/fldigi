@@ -33,7 +33,7 @@ private:
 	bool write_all;
 	cQsoRec *adifqso;
 	FILE *adiFile;
-	void fillfield(int, char *);
+	char *fillfield(int, char *);
 	static int instances;
 public:
 	cAdifIO ();

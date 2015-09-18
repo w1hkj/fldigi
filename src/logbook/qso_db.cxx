@@ -300,8 +300,8 @@ istream &operator>> (istream &input, cQsoRec &rec ) {
 //======================================================================
 // class cQsoDb
 
-#define MAXRECS 32768
-#define INCRRECS 8192
+#define MAXRECS 100000
+#define INCRRECS 10000
 
 cQsoDb::cQsoDb() {
   nbrrecs = 0;

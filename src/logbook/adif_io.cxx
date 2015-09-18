@@ -181,12 +181,12 @@ cAdifIO::~cAdifIO()
 	}
 }
 
-void cAdifIO::fillfield (int fieldnum, char *buff)
+char * cAdifIO::fillfield (int fieldnum, char *buff)
 {
 	char *p1 = strchr(buff, ':');
 	char *p2 = strchr(buff, '>');
 	if (!p1 || !p2 || p2 < p1) {
-		return; // bad ADIF specifier ---> no ':' after field name
+		return 0; // bad ADIF specifier ---> no ':' after field name
 	}
 
 	p1++;
@@ -205,6 +205,7 @@ void cAdifIO::fillfield (int fieldnum, char *buff)
 	} else {
 		adifqso->putField (fieldnum, p2+1, fldsize);
 	}
+	return p2 + fldsize + 1;
 }
 
 static void write_rxtext(const char *s)
@@ -214,54 +215,14 @@ static void write_rxtext(const char *s)
 
 void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 {
-	long filesize = 0;
 	int found;
 	static char szmsg[200];
 
 // open the adif file
 	FILE *adiFile = fopen (fname, "rb");
 
-	if (adiFile == NULL)
-		return;
-// determine its size for buffer creation
-	fseek (adiFile, 0, SEEK_END);
-	filesize = ftell (adiFile);
-
-	if (filesize == 0) {
-		snprintf(szmsg, sizeof(szmsg), _("Empty ADIF logbook file %s"), fname);
-		REQ(write_rxtext, "\n");
-		REQ(write_rxtext, szmsg);
-		REQ(write_rxtext, "\n");
-		LOG_ERROR("%s", szmsg);
-		return;
-	}
-
-	char buff[filesize + 1];
-
-// read the entire file into the buffer
-
-	fseek (adiFile, 0, SEEK_SET);
-	int retval = fread (buff, 1, filesize, adiFile);
-	
-	fclose (adiFile);
-
-	if (retval != filesize) {
-		snprintf(szmsg, sizeof(szmsg), _("Error reading %s"), fname);
-		REQ(write_rxtext, "\n");
-		REQ(write_rxtext, szmsg);
-		REQ(write_rxtext, "\n");
-		LOG_ERROR("%s", szmsg);
-		return;
-	}
-
-// relaxed file integrity test to all importing from non conforming log programs
-	if (strcasestr(buff, "<CALL:") == 0) {
-		snprintf(szmsg, sizeof(szmsg), "NO RECORDS IN FILE: %s", fname);
-		REQ(write_rxtext, "\n");
-		REQ(write_rxtext, szmsg);
-		REQ(write_rxtext, "\n");
-		LOG_INFO("%s", szmsg);
-		db->clearDatabase();
+	if (adiFile == NULL) {
+		LOG_ERROR("Could not open %s", fname);
 		return;
 	}
 
@@ -272,36 +233,64 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	clock_gettime(CLOCK_REALTIME, &t0);
 #endif
 
-	char *p1 = buff, *p2;
-	if (*p1 != '<') { // yes, skip over header to start of records
-		p1 = strchr(buff, '<');
-		while (strncasecmp (p1+1,"EOH>", 4) != 0) {
-			p1 = strchr(p1+1, '<'); // find next <> field
-		}
-		if (!p1) {
-			snprintf(szmsg, sizeof(szmsg), "Corrupt logbook file: %s", fname);
-			REQ(write_rxtext, "\n");
-			REQ(write_rxtext, szmsg);
-			REQ(write_rxtext, "\n");
-			LOG_ERROR("%s", szmsg);
-			return;	 // must not be an ADIF compliant file
-		}
-		p1 += 1;
+	char buff[8192];
+	string sbuff;
+	memset(buff, 0, 8192);
+	int retnbr = fread(buff, 1, 8192, adiFile);
+	if (retnbr) sbuff.assign(buff, retnbr);
+	size_t p = sbuff.find("<EOH>");
+
+	if (p == std::string::npos) p = sbuff.find("<eoh>");
+	if (p == std::string::npos) {
+		return;
 	}
 
-	p2 = strchr(p1,'<'); // find first ADIF specifier
+	sbuff.erase(0, p + 5);
+// skip over cr/lf pairs
+	while (sbuff.length() && (sbuff[0] == '\r' || sbuff[0] == '\n'))
+		sbuff.erase(0,1);
+	retnbr = fread(buff, 1, 8192, adiFile);
+	if (retnbr) sbuff.append(buff, retnbr);
 
-	adifqso = 0;
-	while (p2) {
-		found = findfield(p2+1);
-		if (found > -1) {
-			if (!adifqso) adifqso = db->newrec(); // need new record in db
-			fillfield (found, p2+1);
-		} else if (found == -1) { // <eor> reached;
-			adifqso = 0;
+	p = sbuff.find("<EOR>");
+	if (p == std::string::npos) p = sbuff.find("<eor>");
+
+	char *ptr = 0, *ptr2 = 0;
+	int recnbr = 0;
+
+	while (p != std::string::npos) {
+
+		ptr = strchr((char *)sbuff.c_str(),'<');
+
+		adifqso = 0;
+		while (ptr) {
+			found = findfield(ptr+1);
+			if (found > -1) {
+				if (!adifqso) adifqso = db->newrec(); // need new record in db
+				ptr2 = fillfield (found, ptr+1);
+			} else { // <eor> reached;
+				break;
+			}
+			if ((ptr2) > 0 && (unsigned)(ptr2 - ptr) <= p)
+				ptr = strchr(ptr2,'<');
+			else
+				break; // corrupt record
 		}
-		p1 = p2 + 1;
-		p2 = strchr(p1,'<');
+		recnbr++;
+
+		sbuff.erase(0, p + 5);
+		while (sbuff.length() && (sbuff[0] == '\r' || sbuff[0] == '\n'))
+			sbuff.erase(0,1);
+
+		p = sbuff.find("<EOR>");
+		if (p == std::string::npos) p = sbuff.find("<eor>");
+		if (p == std::string::npos) {
+			memset(buff, 0, 8192);
+			retnbr = fread(buff, 1, 8192, adiFile);
+			if (retnbr) sbuff.append(buff, retnbr);
+			p = sbuff.find("<EOR>");
+			if (p == std::string::npos) p = sbuff.find("<eor>");
+		}
 	}
 
 #ifdef _POSIX_MONOTONIC_CLOCK
@@ -313,10 +302,15 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	t0 = t1 - t0;
 	float t = (t0.tv_sec + t0.tv_nsec/1e9);
 
-	snprintf(szmsg, sizeof(szmsg), "\
-Loaded logbook: %s\n\
-                %d records in %4.2f seconds",
-fname, db->nbrRecs(), t);
+	if (!feof(adiFile))
+		snprintf(szmsg, sizeof(szmsg), "\
+ERROR reading logbook %s\n\
+      read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
+	else
+		snprintf(szmsg, sizeof(szmsg), "\
+Loaded logbook %s\n\
+       read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
+
 	REQ(write_rxtext, "\n");
 	REQ(write_rxtext, szmsg);
 	REQ(write_rxtext, "\n");
@@ -324,6 +318,8 @@ fname, db->nbrRecs(), t);
 
 	if (db == &qsodb)
 		REQ(adif_read_OK);
+
+	fclose(adiFile);
 }
 
 static const char *adifmt = "<%s:%d>";
@@ -410,7 +406,7 @@ static cQsoDb *adif_db;
 
 static cAdifIO *adifIO = 0;
 
-void cAdifIO::readFile (const char *fname, cQsoDb *db) 
+void cAdifIO::readFile (const char *fname, cQsoDb *db)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
