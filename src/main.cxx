@@ -351,6 +351,9 @@ void delayed_startup(void *)
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
 
+#if USE_PORTAUDIO
+	LOG_INFO("%s", str_pa_devices.c_str());
+#endif
 }
 
 int main(int argc, char ** argv)

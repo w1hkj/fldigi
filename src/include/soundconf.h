@@ -48,7 +48,9 @@ void sound_close(void);
 void sound_update(unsigned idx);
 
 #include <string>
+
 class Fl_Choice;
 int pa_set_dev(Fl_Choice *choice, std::string dev_name, int dev_index);
+extern std::string str_pa_devices;
 
 #endif // SOUNDCONF_H

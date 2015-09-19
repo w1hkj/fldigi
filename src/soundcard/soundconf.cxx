@@ -118,15 +118,18 @@ ret_def:
 
 #include <cerrno>
 
+std::string str_pa_devices;
+
 static void init_portaudio(void)
 {
 	try {
 		SoundPort::initialize();
 	}
 	catch (const SndException& e) {
-		if (e.error() == ENODEV) // don't complain if there are no devices
-			return;
-		LOG_ERROR("%s", e.what());
+//		if (e.error() == ENODEV) // don't complain if there are no devices
+//			return;
+		str_pa_devices.assign("\nPortaudio devices init failure:");
+		str_pa_devices.assign(e.what());
 		AudioPort->deactivate();
 		btnAudioIO[SND_IDX_PORT]->deactivate();
 		if (progdefaults.btnAudioIOis == SND_IDX_PORT)
@@ -150,12 +153,16 @@ static void init_portaudio(void)
 #endif
 
 	list<padev> devlist;
+	int devnbr = 0;
 	for (SoundPort::device_iterator idev = SoundPort::devices().begin();
-		 idev != SoundPort::devices().end(); ++idev)
+		 idev != SoundPort::devices().end(); ++idev) {
 		devlist.push_back( padev(*idev, idev - SoundPort::devices().begin(),
 								 Pa_GetHostApiInfo((*idev)->hostApi)->type) );
+		devnbr++;
+	}
 	devlist.sort();
 
+	str_pa_devices.assign("\nPortaudio devices:\n");
 	PaHostApiTypeId first_api = devlist.begin()->api;
 	for (list<padev>::const_iterator ilist = devlist.begin();
 		 ilist != devlist.end(); ilist++) {
@@ -166,22 +173,24 @@ static void init_portaudio(void)
 			i = menu_item.length();
 		}
 		menu_item.append(ilist->dev->name);
+
+		str_pa_devices.append(menu_item).append("\n");
+
 		// backslash-escape any slashes in the device name
 		while ((i = menu_item.find('/', i)) != string::npos) {
 			menu_item.insert(i, 1, '\\');
 			i += 2;
 		}
+
 		// add to menu
-		if (ilist->dev->maxInputChannels > 0) {
+		if (ilist->dev->maxInputChannels > 0)
 			menuPortInDev->add(menu_item.c_str(), 0, NULL,
 							   reinterpret_cast<void *>(ilist->idx), 0);
-		}
 
-		if (ilist->dev->maxOutputChannels > 0) {
+		if (ilist->dev->maxOutputChannels > 0)
 			menuPortOutDev->add(menu_item.c_str(), 0, NULL,
 								reinterpret_cast<void *>(ilist->idx), 0);
-LOG_INFO("%s", menu_item.c_str());
-		}
+
 	}
 
 	if (progdefaults.PortInDevice.length() == 0) {

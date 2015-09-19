@@ -135,7 +135,7 @@ void debug::start(const char* filename)
 	rotate_log(filename);
 	inst = new debug(filename);
 
-	window = new Fl_Double_Window(600, 200, _("Event log"));
+	window = new Fl_Double_Window(800, 400, _("Event log"));
 	window->xclass(PACKAGE_TARNAME);
 
 	int pad = 2;
@@ -266,6 +266,7 @@ void debug::elog(const char* func, const char* srcf, int line, const char* text)
 
 void debug::show(void)
 {
+	btext->bottomline(btext->size());
 	window->show();
 }
 
@@ -290,8 +291,9 @@ void debug::sync_text(void* arg)
 			linebuf += '\n';
 		size_t p1 = 0, p2 = linebuf.find("\n");
 		while( p2 != string::npos) {
-			btext->insert(1, linebuf.substr(p1, p2 - p1).c_str());
-			dbg_buffer.append(linebuf.substr(p1, p2 - p1)).append("\n");
+			btext->add(linebuf.substr(p1, p2 - p1).c_str());
+			btext->redraw();
+			dbg_buffer.append(linebuf.substr(p1, p2 - p1 + 1));//.append("\n");
 			p1 = p2 + 1;
 			p2 = linebuf.find("\n", p1);
 		}
