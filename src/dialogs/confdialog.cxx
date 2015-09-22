@@ -10899,7 +10899,7 @@ earch for station name"));
                 btn_wx_kph->callback((Fl_Callback*)cb_btn_wx_kph);
                 o->value(progdefaults.wx_kph);
               } // Fl_Check_Button* btn_wx_kph
-              { Fl_Check_Button* o = btn_wx_inches = new Fl_Check_Button(258, 298, 70, 15, _("Inches Mg."));
+              { Fl_Check_Button* o = btn_wx_inches = new Fl_Check_Button(258, 298, 70, 15, _("Inches Hg."));
                 btn_wx_inches->tooltip(_("report inches mercury"));
                 btn_wx_inches->down_box(FL_DOWN_BOX);
                 btn_wx_inches->callback((Fl_Callback*)cb_btn_wx_inches);

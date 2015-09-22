@@ -6174,7 +6174,7 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.wx_kph);}
               }
               Fl_Check_Button btn_wx_inches {
-                label {Inches Mg.}
+                label {Inches Hg.}
                 callback {progdefaults.wx_inches=o->value();
 progdefaults.changed = true;}
                 tooltip {report inches mercury} xywh {258 298 70 15} down_box DOWN_BOX
