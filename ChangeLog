@@ -1,8 +1,18 @@
 
 
-=Version 3.23.00=
+=Version 3.23.01=
 
-2015-09-13  David Freese  <iam_w1hkj@w1hkj.com>
+2015-09-22  David Freese  <iam_w1hkj@w1hkj.com>
+
+	8ad0a8b: WX configure
+	0caa5ea: PA debug
+	838e112: WFALL-ONLY
+	f472a17: Logbook read
+	7cb4c66: ifkp avatar depth
+	ea18942: IFKP image slant
+
+
+=Version 3.23.00=
 
 	f78aa38: Clear Tx Panel
 	cbff7c3: Olivia/Contestia start stop tones
