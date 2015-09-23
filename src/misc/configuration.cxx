@@ -929,11 +929,19 @@ void configuration::testCommPorts()
 		glob_t gbuf;
 		glob(tty_fmt[i], 0, NULL, &gbuf);
 		for (size_t j = 0; j < gbuf.gl_pathc; j++) {
-			if ( !(stat(gbuf.gl_pathv[j], &st) == 0 && S_ISCHR(st.st_mode)) ||
-			     strstr(gbuf.gl_pathv[j], "modem") )
+			int ret1 = !stat(gbuf.gl_pathv[j], &st);
+			int ret2 = S_ISCHR(st.st_mode);
+			if (ret1) {
+				LOG_INFO("Serial port %s", gbuf.gl_pathv[j]);
+				LOG_INFO("  device mode:     %X", st.st_mode);
+				LOG_INFO("  char device?     %s", ret2 ? "Y" : "N");
+			} else
+				LOG_INFO("%s does not return stat query", gbuf.gl_pathv[j]);
+
+			if ( (ret1 && ret2 ) || strstr(gbuf.gl_pathv[j], "modem") )
+				inpTTYdev->add(gbuf.gl_pathv[j]);
+			else
 				continue;
-			LOG_VERBOSE("Found serial port %s", gbuf.gl_pathv[j]);
-			inpTTYdev->add(gbuf.gl_pathv[j]);
 #  if USE_HAMLIB
 			inpRIGdev->add(gbuf.gl_pathv[j]);
 #  endif
