@@ -36,7 +36,7 @@ endif
 
 %.1: $$@.txt $(ASCIIDOC_CONF)
 if HAVE_ASCIIDOC
-	$(call silent,ADOC  ,$@)$(A2X) $(A2X_ARGS) $<
+	$(call silent,ADOC  ,$@)TZ=0 $(A2X) $(A2X_ARGS) $<
 else
 	$(call silent,ADOC  ,$@)echo '.TH "NOT-BUILT" "1" "" "" ""' > $@
 endif
@@ -62,7 +62,7 @@ ASCIIDOC_ARGS = --unsafe -a toc -a data-uri -a badges -a icons -a iconsdir=$(ASC
 	    echo "  ***   make ASCIIDOC_ICONS_DIR=/path/to/icons" >&2; \
 	    false; \
 	fi
-	$(call silent,ADOC  ,$@)$(ASCIIDOC) $(ASCIIDOC_ARGS) --out-file $@ $<
+	$(call silent,ADOC  ,$@)TZ=0 $(ASCIIDOC) $(ASCIIDOC_ARGS) --out-file $@ $<
 
 all-local: $(ASCIIDOC_MAN_DIST) $(ASCIIDOC_HTML)
 
