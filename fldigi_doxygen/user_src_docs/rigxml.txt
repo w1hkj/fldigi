@@ -138,6 +138,11 @@ default settings for initial setup
       <td>BOOL = true, false; use command string for PTT (not supported by all rigs)<br>
       </td>
     </tr>
+    <tr>
+      <td>\<WAIT_FOR_DEVICE\>nnn\</WAIT_FOR_DEVICE\></td>
+      <td>nnnn in milliseconds, used for correct startup of K9MJ CI-V router<br>
+      </td>
+    </tr>
 </table>
 <br>
 

@@ -99,6 +99,7 @@ struct XMLRIG {
 	bool	restore_tio;
 	int     write_delay;
 	int		init_delay;
+	int		wait_for_device;
 	int     post_write_delay;
 	int     timeout;
 	int     retries;
@@ -120,6 +121,7 @@ struct XMLRIG {
 		vsp = false;
 		write_delay = 0;
 		init_delay = 0;
+		wait_for_device = 0;
 		post_write_delay = 50;
 		timeout = 200;
 		retries = 5;

@@ -1054,6 +1054,7 @@ void rigCAT_defaults()
 	cntRigCatTimeout->value(xmlrig.timeout);
 	cntRigCatWait->value(xmlrig.write_delay);
 	cntRigCatInitDelay->value(xmlrig.init_delay);
+//	cntRigCatWaitForDevice->value(xmlrig.wait_for_device);
 	btnRigCatEcho->value(xmlrig.echo);
 	btnRigCatCMDptt->value(xmlrig.cmdptt);
 	chkRigCatVSP->value(xmlrig.vsp);
@@ -1074,6 +1075,7 @@ void rigCAT_restore_defaults()
 	cntRigCatTimeout->value(progdefaults.RigCatTimeout);
 	cntRigCatWait->value(progdefaults.RigCatWait);
 	cntRigCatInitDelay->value(progdefaults.RigCatInitDelay);
+//	cntRigCatWaitForDevice->value(progdefaults.RicCatWaitForDevice);
 	btnRigCatEcho->value(progdefaults.RigCatECHO);
 	btnRigCatCMDptt->value(progdefaults.RigCatCMDptt);
 	chkRigCatVSP->value(progdefaults.RigCatVSP);
@@ -1161,6 +1163,15 @@ echo	   : %c\n",
 		}
 		sRigMode = "";
 		sRigWidth = "";
+
+		if (xmlrig.wait_for_device) {
+			int delay = xmlrig.wait_for_device / 10;
+			while (delay) {
+				MilliSleep(10);
+				if (delay % 10) Fl::awake();
+				delay--;
+			}
+		}
 
 		nonCATrig = false;
 		rigCAT_sendINIT("INIT", progdefaults.RigCatInitDelay);

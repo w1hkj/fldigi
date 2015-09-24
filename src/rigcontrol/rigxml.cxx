@@ -65,6 +65,7 @@ void parseDISCARD(size_t &);
 
 void parseWRITE_DELAY(size_t &);
 void parseINIT_DELAY(size_t &);
+void parseWAIT_FOR_DEVICE(size_t &);
 void parsePOST_WRITE_DELAY(size_t &);
 void parseRETRIES(size_t &);
 void parseTIMEOUT(size_t &);
@@ -145,6 +146,7 @@ TAGS rigdeftags[] = {
 	{"<DTRPLUS", parseDTRPLUS},
 	{"<RTSPTT", parseRTSPTT},
 	{"<DTRPTT", parseDTRPTT},
+	{"<WAIT_FOR_DEVICE", parseWAIT_FOR_DEVICE},
 	{"<RESTORE_TIO", parseRESTORE_TIO},
 	{"<ECHO", parseECHO},
 	{"<CMDPTT", parseCMDPTT},
@@ -550,6 +552,13 @@ void parseWRITE_DELAY(size_t &p0){
 void parseINIT_DELAY(size_t &p0){
 	int val = getInt(p0);
 	xmlrig.init_delay = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseWAIT_FOR_DEVICE(size_t &p0){
+	int val = getInt(p0);
+	xmlrig.wait_for_device = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
 }
