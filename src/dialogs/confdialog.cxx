@@ -8233,7 +8233,7 @@ i on a\ntouch screen device such as a tablet."));
                 sel_fsq_heard_aging->tooltip(_("Remove call after ..."));
                 sel_fsq_heard_aging->down_box(FL_BORDER_BOX);
                 sel_fsq_heard_aging->callback((Fl_Callback*)cb_sel_fsq_heard_aging);
-                o->add("Never"); o->add("1 min"); o->add("5 min");o->add("10 min"); o->add("20 min"); o->add("20 min");
+                o->add("Never"); o->add("1 min"); o->add("5 min");o->add("10 min"); o->add("20 min"); o->add("20 min"); o->add("30 min"); o->add("60 min"); o->add("90 min"); o->add("120 min");
                 o->value(progdefaults.fsq_heard_aging);
               } // Fl_Choice* sel_fsq_heard_aging
               o->end();
@@ -8273,7 +8273,7 @@ i on a\ntouch screen device such as a tablet."));
                 sel_fsq_sounder->tooltip(_("Send beacon every ..."));
                 sel_fsq_sounder->down_box(FL_BORDER_BOX);
                 sel_fsq_sounder->callback((Fl_Callback*)cb_sel_fsq_sounder);
-                o->add("OFF"); o->add("1 min"); o->add("10 min"); o->add("30 min");
+                o->add("OFF"); o->add("1 min"); o->add("10 min"); o->add("30 min"); o->add("60 min");
                 o->value(progdefaults.fsq_sounder);
               } // Fl_Choice* sel_fsq_sounder
               { Fl_Check_Button* o = btn_fsq_lowercase = new Fl_Check_Button(366, 166, 214, 15, _("MYCALL always lower case"));

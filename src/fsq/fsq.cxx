@@ -1681,6 +1681,7 @@ void sounder(void *)
 		Fl::repeat_timeout(10, sounder); // retry in 10 seconds
 		return;
 	}
+	sounder_tries = 10;
 	std::string xmtstr = FSQBOL;
 	xmtstr.append(active_modem->fsq_mycall()).append(":").append(FSQEOT);
 	int numsymbols = xmtstr.length();
@@ -1726,6 +1727,7 @@ void fsq::start_sounder(int interval)
 		case 1: sounder_secs = 60; break;   // 1 minute
 		case 2: sounder_secs = 600; break;  // 10 minutes
 		case 3: sounder_secs = 1800; break; // 30 minutes
+		case 4: sounder_secs = 3600; break; // 60 minutes
 		default: sounder_secs = 600;
 	}
 	REQ(fsq_start_sounder);

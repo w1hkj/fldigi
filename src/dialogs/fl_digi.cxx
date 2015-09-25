@@ -8915,6 +8915,9 @@ void age_heard_list()
 		case 3: aging_secs = 600; break;  // 10 minutes
 		case 4: aging_secs = 1200; break; // 20 minutes
 		case 5: aging_secs = 1800; break; // 30 minutes
+		case 6: aging_secs = 3600; break; // 60 minutes
+		case 7: aging_secs = 5400; break; // 90 minutes
+		case 8: aging_secs = 7200; break; // 120 minutes
 		case 0:
 		default: return; // no aging
 	}
