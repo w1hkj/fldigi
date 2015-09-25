@@ -88,7 +88,7 @@ protected:
 	char			szestimate[40];
 	std::string		rx_text;
 	std::string		toprint;
-	bool			valid_callsign(std::string s);
+	int				valid_callsign(std::string s);
 	void			parse_rx_text();
 	void			parse_space(bool);
 	void			parse_qmark(std::string relay = "");

@@ -344,21 +344,28 @@ static string cqcqcq = "cqcqcq";
 
 static fre_t call("([[:alnum:]]?[[:alpha:]/]+[[:digit:]]+[[:alnum:]/]+)", REG_EXTENDED);
 
-bool fsq::valid_callsign(std::string s)
-{
-	if (s.length() < 3) return false;
-	if (s.length() > 20) return false;
-//	if (s.find(' ') != std::string::npos) return false;
+// test for valid callsign
+// returns:
+// 0 - not a callsign
+// 1 - mycall
+// 2 - allcall
+// 4 - cqcqcq
+// 8 - any other valid call
 
-	if (s == allcall) return true;
-	if (s == cqcqcq) return true;
-	if (s == mycall) return true;
+int fsq::valid_callsign(std::string s)
+{
+	if (s.length() < 3) return 0;
+	if (s.length() > 20) return 0;
+
+	if (s == allcall) return 2;
+	if (s == cqcqcq) return 4;
+	if (s == mycall) return 1;
 
 	static char sz[21];
 	memset(sz, 0, 21);
 	strcpy(sz, s.c_str());
 	bool matches = call.match(sz);
-	return matches;
+	return (matches ? 8 : 0);
 }
 
 void fsq::parse_rx_text()
@@ -431,22 +438,44 @@ void fsq::parse_rx_text()
 	bool all = false;
 	bool directed = false;
 
-	p = 0;
+// test next word in string
+	size_t tr_pos = 0;
+	char tr = rx_text[tr_pos];
+	size_t trigger = triggers.find(tr);
+// strip any leading spaces before either text or first directed callsign
+	while (rx_text.length() > 1 &&
+		triggers.find(rx_text[0]) != std::string::npos)
+		rx_text.erase(0,1);
+// find first word
+	while ( tr_pos < rx_text.length()
+			&& ((trigger = triggers.find(rx_text[tr_pos])) == std::string::npos) ) {
+		tr_pos++;
+	}
 
-	if (rx_text.find(allcall) == 0) {
-		all = true;
-		rx_text.erase(0, 7);
-	}
-	else if (rx_text.find(cqcqcq) == 0) {
-		all = true;
-		rx_text.erase(0,6);
-	}
-// this next test does not allow for :othercall mycall othercallT where T is trigger
-// only :mycallT
-// but it does provide for the MONITOR of the transmission in next test
-	else if (rx_text.find(mycall) == 0) {
-		directed = true;
-		rx_text.erase(0, mycall.length());
+	while (trigger != std::string::npos && tr_pos < rx_text.length()) {
+		int word_is = valid_callsign(rx_text.substr(0, tr_pos));
+
+		if (word_is == 0) break; // not a callsign
+		if (word_is == 1) directed = true; // mycall
+		// test for cqcqcq and allcall
+		else if (word_is != 8) all = true;
+
+		rx_text.erase(0, tr_pos);
+		while (rx_text.length() > 2 &&
+			triggers.find(rx_text[0]) != std::string::npos &&
+			triggers.find(rx_text[1]) != std::string::npos)
+			rx_text.erase(0,1);
+
+		if (rx_text[0] != ' ') break;
+		rx_text.erase(0, 1);
+		tr_pos = 0;
+		tr = rx_text[tr_pos];
+		trigger = triggers.find(tr);
+		while ( tr_pos < rx_text.length() && (trigger == std::string::npos) ) {
+			tr_pos++;
+			tr = rx_text[tr_pos];
+			trigger = triggers.find(tr);
+		}
 	}
 
 	if ( (all == false) && (directed == false)) {
@@ -454,14 +483,14 @@ void fsq::parse_rx_text()
 		return;
 	}
 
-// remove eot
-	rx_text.erase(rx_text.length() - 3);
+// remove eot if present
+	if (rx_text.length() > 3) rx_text.erase(rx_text.length() - 3);
 
 	toprint.assign(station_calling).append(":");
 
 // test for trigger
-	char tr = rx_text[0];
-	size_t trigger = triggers.find(tr);
+	tr = rx_text[0];
+	trigger = triggers.find(tr);
 
 	if (trigger == NIT) {
 		tr = ' '; // force to be text line
@@ -476,38 +505,38 @@ void fsq::parse_rx_text()
 		return;
 	}
 
+// now process own call triggers
+	if (directed) {
+		switch (tr) {
+			case ' ': parse_space(false);   break;
+			case '?': parse_qmark();   break;
+			case '*': parse_star();    break;
+			case '+': parse_plus();    break;
+			case '-': break;//parse_minus();   break;
+			case ';': parse_relay();    break;
+			case '!': parse_repeat();    break;
+			case '~': parse_delayed_repeat();   break;
+			case '#': parse_pound();   break;
+			case '$': parse_dollar();  break;
+			case '@': parse_at();      break;
+			case '&': parse_amp();     break;
+			case '^': parse_carat();   break;
+			case '%': parse_pcnt();    break;
+			case '|': parse_vline();   break;
+			case '>': parse_greater(); break;
+			case '<': parse_less();    break;
+			case '[': parse_relayed(); break;
+		}
+	}
+
 // if allcall; only respond to the ' ', '*', '#', and '%' triggers
-	if (all) {
+	else {
 		switch (tr) {
 			case ' ': parse_space(true);   break;
 			case '*': parse_star();    break;
 			case '#': parse_pound();   break;
 			case '%': parse_pcnt();    break;
 		}
-		rx_text.clear();
-		return;
-	}
-
-// now process own call triggers
-	switch (tr) {
-		case ' ': parse_space(false);   break;
-		case '?': parse_qmark();   break;
-		case '*': parse_star();    break;
-		case '+': parse_plus();    break;
-		case '-': break;//parse_minus();   break;
-		case ';': parse_relay();    break;
-		case '!': parse_repeat();    break;
-		case '~': parse_delayed_repeat();   break;
-		case '#': parse_pound();   break;
-		case '$': parse_dollar();  break;
-		case '@': parse_at();      break;
-		case '&': parse_amp();     break;
-		case '^': parse_carat();   break;
-		case '%': parse_pcnt();    break;
-		case '|': parse_vline();   break;
-		case '>': parse_greater(); break;
-		case '<': parse_less();    break;
-		case '[': parse_relayed(); break;
 	}
 
 	rx_text.clear();
