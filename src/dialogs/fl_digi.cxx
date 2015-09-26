@@ -257,6 +257,7 @@ Fl_Light_Button		*btn_SELCAL = (Fl_Light_Button *)0;
 Fl_Light_Button		*btn_MONITOR = (Fl_Light_Button *)0;
 Fl_Button			*btn_FSQQTH = (Fl_Button *)0;
 Fl_Button			*btn_FSQQTC = (Fl_Button *)0;
+Fl_Button			*btn_FSQCQ = (Fl_Button *)0;
 Progress			*ind_fsq_speed = (Progress *)0;
 Progress			*ind_fsq_s2n = (Progress *)0;
 
@@ -6163,7 +6164,7 @@ int alt_btn_width = 2 * DEFAULT_SW;
 // left, resizable rx/tx widgets
 				fsq_left = new Panel(
 							0, Y, 
-							progStatus.mainW - 160, Htext);
+							progStatus.mainW - 180, Htext);
 
 				fsq_left->box(FL_FLAT_BOX);
 					// add rx & monitor
@@ -6215,7 +6216,7 @@ int alt_btn_width = 2 * DEFAULT_SW;
 
 // right, heard list, special fsq controls, s/n indicator
 				Fl_Group *fsq_right = new Fl_Group(
-							fsq_left->w(), Y, 160, fsq_left->h());
+							fsq_left->w(), Y, 180, fsq_left->h());
 					fsq_right->box(FL_FLAT_BOX);
 
 				static int heard_widths[] = 
@@ -6242,10 +6243,10 @@ int alt_btn_width = 2 * DEFAULT_SW;
 					fsq_heard->textsize(13);
 #endif
 
-					int qw = 160;
+					int qw = fsq_right->w();
 					int gh = fsq_right->h() - fsq_heard->h();
 					int bw2 = qw / 2;
-					int bw3 = qw / 3;
+					int bw4 = qw / 4;
 					int bh = 20;
 					fsq_lower_right = new Fl_Group(
 							fsq_right->x(), fsq_heard->y() + fsq_heard->h(),
@@ -6266,7 +6267,7 @@ int alt_btn_width = 2 * DEFAULT_SW;
 						_xp += bw2;
 
 						btn_SELCAL = new Fl_Light_Button(
-							_xp, _yp, bw2, bh, "SELCAL");
+							_xp, _yp, bw2, bh, "ACTIVE");
 						btn_SELCAL->selection_color(FL_DARK_RED);
 						btn_SELCAL->value(1);
 						btn_SELCAL->callback(cbSELCAL, 0);
@@ -6276,29 +6277,38 @@ int alt_btn_width = 2 * DEFAULT_SW;
 						_yp += bh;
 
 						btn_MONITOR = new Fl_Light_Button(
-							_xp, _yp, bw3, bh, "MON");
+							_xp, _yp, bw4, bh, "MON");
 						btn_MONITOR->selection_color(FL_DARK_GREEN);
 						btn_MONITOR->value(progdefaults.fsq_show_monitor = false);
 						btn_MONITOR->callback(cbMONITOR, 0);
 						btn_MONITOR->tooltip("Monitor Open/Close");
 
-						_xp += bw3;
+						_xp += bw4;
 
 						btn_FSQQTH = new Fl_Button(
-							_xp, _yp, bw3, bh, "QTH");
+							_xp, _yp, bw4, bh, "QTH");
 						btn_FSQQTH->callback(cbFSQQTH, 0);
+						btn_FSQQTH->tooltip("QTH->tx panel");
 
-						_xp += bw3;
+						_xp += bw4;
 
 						btn_FSQQTC  = new Fl_Button(
-							_xp, _yp, bw3 + 1, bh, "QTC");
+							_xp, _yp, bw4, bh, "QTC");
 						btn_FSQQTC->callback(cbFSQQTC, 0);
+						btn_FSQQTC->tooltip("QTC->tx panel");
+
+						_xp += bw4;
+
+						btn_FSQCQ  = new Fl_Button(
+							_xp, _yp, bw4, bh, "CQ");
+						btn_FSQCQ->callback(cbFSQCQ, 0);
+						btn_FSQCQ->tooltip("Xmt cqcqcq");
 
 						_xp = fsq_lower_right->x();
 						_yp += (bh + 1);
 
 						ind_fsq_s2n = new Progress(
-							_xp + 2, _yp, qw - 4, 8, "");
+							_xp + 10, _yp, qw - 20, 8, "");
 						ind_fsq_s2n->color(FL_WHITE, FL_DARK_GREEN);
 						ind_fsq_s2n->type(Progress::HORIZONTAL);
 						ind_fsq_s2n->value(40);
@@ -6316,7 +6326,7 @@ int alt_btn_width = 2 * DEFAULT_SW;
 
 // Add S/N rule
 						Fl_Box *s2n = new Fl_Box(
-							_xp, _yp, qw, image_s2n.h(), "");
+							_xp + 10, _yp, qw - 20, image_s2n.h(), "");
 						s2n->box(FL_FLAT_BOX);
 						s2n->color(FL_WHITE);
 						s2n->align(FL_ALIGN_INSIDE | FL_ALIGN_TOP | FL_ALIGN_CENTER | FL_ALIGN_CLIP);
@@ -9084,6 +9094,12 @@ void cbFSQQTC(Fl_Widget *w, void *d)
 	restoreFocus();
 }
 
+void cbFSQCQ(Fl_Widget *w, void *d)
+{
+	fsq_xmt("cqcqcq");
+	restoreFocus();
+}
+
 void cbFSQQTH(Fl_Widget *w, void *d)
 {
 	fsq_tx_text->add(progdefaults.myQth.c_str());
@@ -9120,9 +9136,9 @@ void cbSELCAL(Fl_Widget *w, void *d)
 	Fl_Light_Button *btn = (Fl_Light_Button *)w;
 	int val = btn->value();
 	if (val) {
-		btn->label("SELCAL");
+		btn->label("ACTIVE");
 	} else {
-		btn->label("sleep");
+		btn->label("ASLEEP");
 	}
 	btn->redraw_label();
 	restoreFocus();

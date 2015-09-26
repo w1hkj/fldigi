@@ -223,6 +223,7 @@ extern void			enableSELCAL();
 
 extern void			cbFSQQTC(Fl_Widget *w, void *d);
 extern void			cbFSQQTH(Fl_Widget *w, void *d);
+extern void			cbFSQCQ(Fl_Widget *w, void *d);
 extern void			cbMONITOR(Fl_Widget *w, void *d);
 extern void			cbSELCAL(Fl_Widget *w, void *d);
 extern void			cbFSQCALL(Fl_Widget *w, void *d);

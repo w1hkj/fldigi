@@ -73,10 +73,22 @@ the directed station callsign is your own or "allcall".  FSQ is case sensitive,
 and your sending case must match the senders case, i.e. w1hkj and W1HKJ are not
 the same for the purposes of FSQ Directed Mode.
 
-fldigi-FSQ is active and will respond to directed triggers when the SELCAL button is lit.  
-Toggling the SELCAL button to "sleep" causes the FSQ parser to only respond to the *
-trigger.  When the * trigger is received the program will return to
-the active SELCAL state.
+<ul>
+  <li>FSQ-ON<br>
+      when on the xmt and rcv are in FSQ directed mode<br>
+      when off the xmt and rcv are in FSQ undirected mode</li>
+  <li>ACTIVE<br>
+      when on the decoder will accept all incoming directed traffic<br>
+      when off the decocer will only respond to the wake-up * trigger</li>
+  <li>MON<br>
+      when on the monitor panel is visible</li>
+  <li>QTH<br>
+      appends the myQTH text to the tx panel</li>
+  <li>QTC<br>
+      appends the myQTC text to the tx panel</li>
+  <li>CQ<br>
+       sends the FSQ cq call 'cqcqcq'</li>
+</ul>
 
 <center>
 \image html fsq-heard-list.png "Heard List Panel"
@@ -85,6 +97,8 @@ the active SELCAL state.
 
 The "Heard" list displays the callsign, s/n, and time of reception of all correctly
 decoded transmissions.
+
+NOTE: fldigi function keys are inoperative in the FSQ mode!
 
 <br>
 \section coding_and_modulation Modulation Scheme
@@ -268,11 +282,11 @@ Directed Mode.  In Directed Mode, only text directed to your callsign will print
 in the Rx panel, and only commands directed to your station will be responded to.
 
 <center>
-\image html fsq-mon-dialog.png "FSQ Monitor Panel - a Directed Mode Sentence"
-\image latex fsq-mon-dialog.png "FSQ Monitor Panel - a Directed Mode Sentence" width=3.5in
+\image html fsq-mon-dialog.png "FSQ Monitor Panel"
+\image latex fsq-mon-dialog.png "FSQ Monitor Panel" width=3.5in
 </center>
 
-The Monitor Panel is only shown during Directed Mode operation.  It is minimized
+The Monitor Panel is only shown during Directed Mode operation.  It is hidden
 when Undirected Mode is in use.  All incoming traffic is printed on the Monitor 
 Panel.  This includes both Directed and Undirected traffic.  The decoding is 
 affected by the fldigi squelch setting.
@@ -286,6 +300,10 @@ failed to parse correctly:
 <li>the EOT is missing or corrupt,
 <li>or it is not directed to your callsign or allcall.
 </ol>
+
+The lower half of the monitor panel displays text that is queued for transmission, 
+for example the response to a ? or a $ trigger.  Automated responses are not sent 
+immediately, but after a small random delay AND when the squelch is not open.
 
 <b>FSQCall Preamble</b>
 
