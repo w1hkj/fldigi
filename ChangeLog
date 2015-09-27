@@ -1,6 +1,22 @@
 
 
+=Version 3.23.02=
+
+2015-09-26  David Freese  <iam_w1hkj@w1hkj.com>
+
+	0424764: fsq cqcqcq
+	198c5a0: fsq sounder/heard-aging
+	dbb169b: FSQ directive
+	d47b1e3: rigcat delayed startup
+	e6ebe70: OS-X serial
+
+2015-09-23  Kamal Mostafa  <kamal@whence.com>
+
+	f75b92a: asciidoc timezone
+
+
 =Version 3.23.01=
+
 
 2015-09-22  David Freese  <iam_w1hkj@w1hkj.com>
 
