@@ -455,18 +455,21 @@ void fsq::parse_rx_text()
 	while (trigger != std::string::npos && tr_pos < rx_text.length()) {
 		int word_is = valid_callsign(rx_text.substr(0, tr_pos));
 
-		if (word_is == 0) break; // not a callsign
+		if (word_is == 0) {
+			rx_text.insert(0," ");
+			break; // not a callsign
+		}
 		if (word_is == 1) directed = true; // mycall
 		// test for cqcqcq and allcall
 		else if (word_is != 8) all = true;
 
 		rx_text.erase(0, tr_pos);
-		while (rx_text.length() > 2 &&
-			triggers.find(rx_text[0]) != std::string::npos &&
-			triggers.find(rx_text[1]) != std::string::npos)
+		if (rx_text[0] != ' ') break;
+
+		while (rx_text.length() > 1 &&
+			(rx_text[0] == ' ' && rx_text[1] == ' '))
 			rx_text.erase(0,1);
 
-		if (rx_text[0] != ' ') break;
 		rx_text.erase(0, 1);
 		tr_pos = 0;
 		tr = rx_text[tr_pos];
