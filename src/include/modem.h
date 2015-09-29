@@ -153,6 +153,9 @@ public:
 	virtual void		ifkp_send_image(){}
 	virtual void		ifkp_send_avatar(){}
 
+	virtual void		thor_send_image(){}
+	virtual void		thor_send_avatar(){}
+
 	void		set_stopflag(bool b) { stopflag = b;};
 	bool		get_stopflag() const { return stopflag; };
 

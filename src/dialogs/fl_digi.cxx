@@ -274,6 +274,10 @@ Progress		*ifkp_s2n_progress = (Progress *)0;
 picture			*ifkp_avatar = (picture *)0;
 
 //------------------------------------------------------------------------------
+// thor avatar
+picture			*thor_avatar = (picture *)0;
+
+//------------------------------------------------------------------------------
 
 Fl_Group			*macroFrame1 = 0;
 Fl_Group			*macroFrame2 = 0;
@@ -1152,6 +1156,18 @@ void startup_modem(modem* m, int f)
 			ifkp_avatar->hide();
 			QsoInfoFrame->redraw();
 		}
+		if ( ((id >= MODE_THOR11) && (id <= MODE_THOR22)) &&
+			!thor_avatar->visible()) {
+			QsoInfoFrame2->size(QsoInfoFrame2->w() - 60, QsoInfoFrame2->h());
+			thor_load_avatar(inpCall->value());
+			thor_avatar->show();
+			thor_avatar->redraw();
+			QsoInfoFrame->redraw();
+		} else if (((id < MODE_THOR11) || (id > MODE_THOR22)) && thor_avatar->visible()) {
+			QsoInfoFrame2->size(QsoInfoFrame2->w() + 60, QsoInfoFrame2->h());
+			thor_avatar->hide();
+			QsoInfoFrame->redraw();
+		}
 	}
 
 	if (id == MODE_RTTY) {
@@ -1270,6 +1286,14 @@ void remove_windows()
 	if (ifkppicTxWin){
 		ifkppicTxWin->hide();
 		delete ifkppicTxWin;
+	}
+	if (thorpicRxWin){
+		thorpicRxWin->hide();
+		delete thorpicRxWin;
+	}
+	if (thorpicTxWin){
+		thorpicTxWin->hide();
+		delete thorpicTxWin;
 	}
 	if (wefax_pic_rx_win) {
 		wefax_pic_rx_win->hide();
@@ -2789,6 +2813,7 @@ if (bWF_only) return;
 
 	if (new_call.empty()) {
 		ifkp_load_avatar();
+		thor_load_avatar();
 		return;
 	}
 
@@ -2807,6 +2832,10 @@ if (bWF_only) return;
 
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_load_avatar(inpCall->value());
+
+	if (active_modem->get_mode() >= MODE_THOR11 && 
+		active_modem->get_mode() <= MODE_THOR22)
+		thor_load_avatar(inpCall->value());
 
 	if (!inpAZ->value()[0] && progdefaults.autofill_qso_fields) {
 		const struct dxcc* e = dxcc_lookup(inpCall->value());
@@ -2893,6 +2922,9 @@ void qsoClear_cb(Fl_Widget *b, void *)
 	clear_Lookup();
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_clear_avatar();
+	if (active_modem->get_mode() >= MODE_THOR11 &&
+		active_modem->get_mode() <= MODE_THOR22)
+		thor_clear_avatar();
 }
 
 void qsoSave_cb(Fl_Widget *b, void *)
@@ -5728,6 +5760,15 @@ void create_fl_digi_main_primary() {
 			ifkp_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
 			ifkp_load_avatar();
 			ifkp_avatar->hide();
+
+			thor_avatar = new picture(
+				QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, Hmenu + pad, 59, 74);
+			thor_avatar->box(FL_FLAT_BOX);
+			thor_avatar->noslant();
+			thor_avatar->callback(cb_thor_send_avatar);
+			thor_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
+			thor_load_avatar();
+			thor_avatar->hide();
 
 		QsoInfoFrame->end();
 

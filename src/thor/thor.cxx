@@ -22,11 +22,19 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+
 #include <config.h>
 
 #include <stdlib.h>
-
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <cmath>
+#include <libgen.h>
+
+#include <FL/filename.H>
 
 #include "confdialog.h"
 #include "status.h"
@@ -51,6 +59,8 @@ using namespace std;
 
 char thormsg[80];
 char confidence[80];
+
+#include "thor-pic.cxx"
 
 void thor::tx_init(SoundBase *sc)
 {
@@ -88,6 +98,11 @@ void thor::rx_init()
 	fec_confidence = 0;
 
 	s2n_valid = false;
+	txstate = TX_STATE_RECEIVE;
+
+	state = TEXT;
+	pic_str = "     ";
+	img_phase = 0.0;
 }
 
 void thor::reset_filters()
@@ -149,6 +164,8 @@ void thor::init()
 	modem::init();
 //	reset_filters();
 	rx_init();
+	imageheader.clear();
+	avatarheader.clear();
 
 	set_scope_mode(Digiscope::DOMDATA);
 }
@@ -174,6 +191,9 @@ thor::~thor()
 	if (Dec) delete Dec;
 	if (Enc) delete Enc;
 
+	delete picfilter;
+	delete pixfilter;
+	delete pixsyncfilter;
 }
 
 thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
@@ -195,12 +215,14 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 		break;
 
 	case MODE_THOR11:
+		cap |= CAP_IMG;
 		symlen = 1024;
 		doublespaced = 1;
 		samplerate = 11025;
 		break;
 
 	case MODE_THOR22:
+		cap |= CAP_IMG;
 		symlen = 512;
 		doublespaced = 1;
 		samplerate = 11025;
@@ -253,6 +275,7 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 
 	case MODE_THOR16:
 	default:
+		cap |= CAP_IMG;
 		symlen = 512;
 		doublespaced = 1;
 		samplerate = 8000;
@@ -318,6 +341,13 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 	symbolpair[0] = symbolpair[1] = 0;
 	datashreg = 1;
 
+	picfilter = new C_FIR_filter();
+	picfilter->init_lowpass(257, 1, 1.0 * bandwidth / samplerate);
+
+	IMAGEspp = THOR_IMAGESPP;
+	pixfilter = new Cmovavg(IMAGEspp);
+	pixsyncfilter = new Cmovavg(3*IMAGEspp);
+
 	init();
 }
 
@@ -349,6 +379,41 @@ void thor::s2nreport(void)
 	s2n_valid = false;
 }
 
+void thor::parse_pic(int ch)
+{
+	pic_str.erase(0,1);
+	pic_str += ch;
+	b_ava = false;
+	image_mode = 0;
+	if (pic_str.find("pic%") == 0) {
+		switch (pic_str[4]) {
+			case 'A':	picW = 59; picH = 74; b_ava = true; break;
+			case 'T':	picW = 59; picH = 74; break;
+			case 'S':	picW = 160; picH = 120; break;
+			case 'L':	picW = 320; picH = 240; break;
+			case 'F':	picW = 640; picH = 480; break;
+			case 'V':	picW = 640; picH = 480; break;
+			case 'P':	picW = 240; picH = 300; break;
+			case 'p':	picW = 240; picH = 300; image_mode = 1; break;
+			case 'M':	picW = 120; picH = 150; break;
+			case 'm':	picW = 120; picH = 150; image_mode = 1; break;
+			default: return;
+		}
+	} else
+		return;
+
+	if (b_ava)
+		REQ( thor_clear_avatar );
+	else
+		REQ( thor_showRxViewer, pic_str[4]);
+
+	image_counter = -symlen / 2;
+	col = row = rgb = 0;
+	pixsyncfilter->reset();
+	pixfilter->reset();
+	state = IMAGE_START;
+}
+
 void thor::recvchar(int c)
 {
 	if (c == -1)
@@ -356,6 +421,7 @@ void thor::recvchar(int c)
 	if (c & 0x100)
 		put_sec_char(c & 0xFF);
 	else {
+		parse_pic(c);
 		put_rx_char(c & 0xFF);
 		if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 			if (((c & 0xFF) == SOH) && !s2n_valid) {
@@ -857,6 +923,93 @@ void thor::eval_s2n()
 	put_Status2(confidence);
 }
 
+void thor::recvpic(double smpl)
+{
+	phidiff = 2.0 * M_PI * frequency / samplerate;
+	img_phase -= phidiff;
+	if (img_phase < 0) img_phase += 2.0 * M_PI;
+
+	cmplx z = smpl * cmplx( cos(img_phase), sin(img_phase ) );
+	picfilter->run( z, currz);
+	double dphase = arg(conj(prevz) * currz);
+	pixel = (samplerate / TWOPI) * pixfilter->run(dphase);
+	sync = (samplerate / TWOPI) * pixsyncfilter->run(dphase);
+	prevz = currz;
+
+//if (image_counter == - (symlen / 2)) std::cout << "IMAGE START\n";
+
+	image_counter++;
+	if (image_counter < 0)
+		return;
+
+	if (state == IMAGE_START) {
+		if (sync < -0.59 * bandwidth) {
+			state = IMAGE_SYNC;
+//std::cout << "IMAGE SYNC " << image_counter << "\n";
+		}
+		return;
+	}
+	if (state == IMAGE_SYNC) {
+		if (sync > -0.51 * bandwidth) {
+			state = IMAGE;
+//std::cout << "IMAGE RECV " << image_counter << "\n";
+		}
+		return;
+	}
+
+	if ((image_counter % IMAGEspp) == 0) {
+		byte = pixel * 256.0 / bandwidth + 128;
+		byte = (int)CLAMP( byte, 0.0, 255.0);
+
+		if (image_mode == 1) { // bw transmission
+			pixelnbr = 3 * (col + row * picW);
+			if (b_ava) {
+				REQ(thor_update_avatar, byte, pixelnbr);
+				REQ(thor_update_avatar, byte, pixelnbr + 1);
+				REQ(thor_update_avatar, byte, pixelnbr + 2);
+			} else {
+				REQ(thor_updateRxPic, byte, pixelnbr);
+				REQ(thor_updateRxPic, byte, pixelnbr + 1);
+				REQ(thor_updateRxPic, byte, pixelnbr + 2);
+			}
+			if (++ col == picW) {
+				col = 0;
+				row++;
+				if (row >= picH) {
+					state = TEXT;
+					REQ(thor_enableshift);
+				}
+			}
+		} else { // color transmission
+			pixelnbr = rgb + 3 * (col + row * picW);
+			if (b_ava)
+				REQ(thor_update_avatar, byte, pixelnbr);
+			else
+				REQ(thor_updateRxPic, byte, pixelnbr);
+			if (++col == picW) {
+				col = 0;
+				if (++rgb == 3) {
+					rgb = 0;
+					++row;
+				}
+			}
+			if (row > picH) {
+				state = TEXT;
+				REQ(thor_enableshift);
+			}
+		}
+/*
+		amplitude *= (samplerate/2)*(.734); // sqrt(3000 / (11025/2))
+		s2n = 10 * log10(snfilt->run( amplitude * amplitude / noise));
+
+		metric = 2 * (s2n + 20);
+		metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
+		display_metric(metric);
+		amplitude = 0;
+*/
+	}
+}
+
 int thor::rx_process(const double *buf, int len)
 {
 	cmplx zref, *zp;
@@ -871,60 +1024,65 @@ int thor::rx_process(const double *buf, int len)
 	if (filter_reset) reset_filters();
 
 	while (len) {
-// create analytic signal at first IF
-		zref = cmplx( *buf, *buf );
-		buf++;
-		hilbert->run(zref, zref);
-		zref = mixer(0, zref);
-
-		if (progdefaults.THOR_FILTER && fft) {
-// filter using fft convolution
-			n = fft->run(zref, &zp);
+		if (state != TEXT) {
+			recvpic(*buf);
 		} else {
-			zarray[0] = zref;
-			zp = zarray;
-			n = 1;
-		}
 
-		if (n) {
-			for (int i = 0; i < n; i++) {
-				cmplx * pipe_pipeptr_vector = pipe[pipeptr].vector ;
-				const cmplx zp_i = zp[i];
+// create analytic signal at first IF
+			zref = cmplx( *buf, *buf );
+			hilbert->run(zref, zref);
+			zref = mixer(0, zref);
+
+			if (progdefaults.THOR_FILTER && fft) {
+// filter using fft convolution
+				n = fft->run(zref, &zp);
+			} else {
+				zarray[0] = zref;
+				zp = zarray;
+				n = 1;
+			}
+
+			if (n) {
+				for (int i = 0; i < n; i++) {
+					cmplx * pipe_pipeptr_vector = pipe[pipeptr].vector ;
+					const cmplx zp_i = zp[i];
 // process THORMAXFFTS sets of sliding FFTs spaced at 1/THORMAXFFTS bin intervals each of which
 // is a matched filter for the current symbol length
-				for (int k = 0; k < paths; k++) {
+					for (int k = 0; k < paths; k++) {
 // shift in frequency to base band for the sliding DFTs
-					const cmplx z = mixer(k + 1, zp_i );
+						const cmplx z = mixer(k + 1, zp_i );
 // copy current vector to the pipe interleaving the FFT vectors
-					binsfft[k]->run(z, pipe_pipeptr_vector + k, paths );
+						binsfft[k]->run(z, pipe_pipeptr_vector + k, paths );
+					}
+					if (--synccounter <= 0) {
+						synccounter = symlen;
+
+						if (progdefaults.THOR_SOFTSYMBOLS)
+							currsymbol = softdecode();
+						else
+							currsymbol = harddecode();
+
+						currmag = abs(pipe_pipeptr_vector[currsymbol]);
+						eval_s2n();
+
+						if (progdefaults.THOR_SOFTBITS)
+							softdecodesymbol();
+						else
+							decodesymbol();
+
+						synchronize();
+						prev2symbol = prev1symbol;
+						prev1symbol = currsymbol;
+						prev2mag = prev1mag;
+						prev1mag = currmag;
+					}
+					pipeptr++;
+					if (pipeptr >= twosym)
+						pipeptr = 0;
 				}
-				if (--synccounter <= 0) {
-					synccounter = symlen;
-
-					if (progdefaults.THOR_SOFTSYMBOLS)
-						currsymbol = softdecode();
-					else
-						currsymbol = harddecode();
-
-					currmag = abs(pipe_pipeptr_vector[currsymbol]);
-					eval_s2n();
-
-					if (progdefaults.THOR_SOFTBITS)
-						softdecodesymbol();
-					else
-						decodesymbol();
-
-					synchronize();
-					prev2symbol = prev1symbol;
-					prev1symbol = currsymbol;
-					prev2mag = prev1mag;
-					prev1mag = currmag;
-				}
-				pipeptr++;
-				if (pipeptr >= twosym)
-					pipeptr = 0;
 			}
 		}
+		buf++;
 		--len;
 	}
 
@@ -1042,16 +1200,24 @@ int thor::tx_process()
 
 		for (int j = 0; j < 16; j++) sendsymbol(0);
 
-	sendidle();
+		sendidle();
 		txstate = TX_STATE_START;
 		break;
 	case TX_STATE_START:
 		sendchar('\r', 0);
 		sendchar(2, 0);		// STX
 		sendchar('\r', 0);
-		txstate = TX_STATE_DATA;
+			txstate = TX_STATE_DATA;
 		break;
 	case TX_STATE_DATA:
+		if (imageheader.length()) {
+			txstate = TX_STATE_IMAGE;
+			break;
+		}
+		if (avatarheader.length()) {
+			txstate = TX_STATE_AVATAR;
+			break;
+		}
 		i = get_tx_char();
 		if (i == GET_TX_CHAR_NODATA)
 			sendsecondary();
@@ -1059,8 +1225,10 @@ int thor::tx_process()
 			txstate = TX_STATE_END;
 		else
 			sendchar(i, 0);
-		if (stopflag)
+		if (stopflag) {
 			txstate = TX_STATE_END;
+			stopflag = false;
+		}
 		break;
 	case TX_STATE_END:
 		sendchar('\r', 0);
@@ -1071,8 +1239,174 @@ int thor::tx_process()
 	case TX_STATE_FLUSH:
 		flushtx();
 		cwid();
+		txstate = TX_STATE_RECEIVE;
 		return -1;
+	case TX_STATE_IMAGE:
+		for (size_t n = 0; n < imageheader.length(); n++)
+			sendchar(imageheader[n], 0);
+		flushtx();
+		send_image();
+		txstate = TX_STATE_DATA;
+		break;
+	case TX_STATE_AVATAR:
+		for (size_t n = 0; n < avatarheader.length(); n++)
+			sendchar(avatarheader[n], 0);
+		flushtx();
+		send_avatar();
+		txstate = TX_STATE_DATA;
+		break;
 	}
 	return 0;
 }
 
+// image support
+
+#define PHASE_CORR  20
+
+void thor::send_image() {
+	int W = 640, H = 480;  // grey scale transfer (FAX)
+	bool color = true;
+	float freq, phaseincr;
+	float radians = 2.0 * M_PI / samplerate;
+
+	imageheader.clear();
+
+	if (!thorpicTxWin || !thorpicTxWin->visible()) {
+		return;
+	}
+
+	switch (selthorpicSize->value()) {
+		case 0 : W = 59; H = 74; break;
+		case 1 : W = 160; H = 120; break;
+		case 2 : W = 320; H = 240; break;
+		case 3 : W = 640; H = 480; color = false; break;
+		case 4 : W = 640; H = 480; break;
+		case 5 : W = 240; H = 300; break;
+		case 6 : W = 240; H = 300; color = false; break;
+		case 7 : W = 120; H = 150; break;
+		case 8 : W = 120; H = 150; color = false; break;
+	}
+
+	REQ(thor_clear_tximage);
+
+	double black[symlen];
+
+	memset(black, 0, sizeof(*black) * symlen);
+	for (int i = 0; i < PHASE_CORR; i++) ModulateXmtr(black, symlen);
+
+	freq = frequency - 0.6 * bandwidth;
+	phaseincr = radians * freq;
+	for (int i = 0; i < PHASE_CORR; i++) {
+		for (int n = 0; n < symlen; n++) {
+			black[n] = cos(txphase);
+			txphase -= phaseincr;
+			if (txphase < 0) txphase += TWOPI;
+		}
+		ModulateXmtr(black, symlen);
+	}
+
+	if (color == false) {  // grey scale image
+		for (int row = 0; row < H; row++) {
+			memset(outbuf, 0, IMAGEspp * sizeof(*outbuf));
+			for (int col = 0; col < W; col++) {
+				if (stopflag) return;
+				tx_pixelnbr = col + row * W;
+				tx_pixel =	0.3 * thorpic_TxGetPixel(tx_pixelnbr, 0) +   // red
+							0.6 * thorpic_TxGetPixel(tx_pixelnbr, 1) +   // green
+							0.1 * thorpic_TxGetPixel(tx_pixelnbr, 2);    // blue
+				REQ(thor_updateTxPic, tx_pixel, tx_pixelnbr*3 + 0);
+				REQ(thor_updateTxPic, tx_pixel, tx_pixelnbr*3 + 1);
+				REQ(thor_updateTxPic, tx_pixel, tx_pixelnbr*3 + 2);
+				freq = frequency + (tx_pixel - 128) * bandwidth / 256.0;
+				phaseincr = radians * freq;
+				for (int n = 0; n < IMAGEspp; n++) {
+					outbuf[n] = cos(txphase);
+					txphase -= phaseincr;
+					if (txphase < 0) txphase += TWOPI;
+				}
+				ModulateXmtr(outbuf, IMAGEspp);
+				Fl::awake();
+			}
+		}
+	} else {
+		for (int row = 0; row < H; row++) {
+			for (int color = 0; color < 3; color++) {
+				memset(outbuf, 0, IMAGEspp * sizeof(*outbuf));
+				for (int col = 0; col < W; col++) {
+					if (stopflag) return;
+					tx_pixelnbr = col + row * W;
+					tx_pixel = thorpic_TxGetPixel(tx_pixelnbr, color);
+					REQ(thor_updateTxPic, tx_pixel, tx_pixelnbr*3 + color);
+					freq = frequency + (tx_pixel - 128) * bandwidth / 256.0;
+					phaseincr = radians * freq;
+					for (int n = 0; n < IMAGEspp; n++) {
+						outbuf[n] = cos(txphase);
+						txphase -= phaseincr;
+						if (txphase < 0) txphase += TWOPI;
+					}
+					ModulateXmtr(outbuf, IMAGEspp);
+				}
+				Fl::awake();
+			}
+		}
+	}
+
+}
+
+void thor::thor_send_image() {
+	if (txstate == TX_STATE_RECEIVE) {
+		start_tx();
+	}
+}
+
+void thor::send_avatar()
+{
+	int W = 59, H = 74;
+	float freq, phaseincr;
+	float radians = 2.0 * M_PI / samplerate;
+
+	avatarheader.clear();
+
+	double black[symlen];
+
+	memset(black, 0, sizeof(*black) * symlen);
+
+	freq = frequency - 0.6 * bandwidth;
+	phaseincr = radians * freq;
+	for (int i = 0; i < PHASE_CORR; i++) ModulateXmtr(black, symlen);
+
+	for (int i = 0; i < PHASE_CORR; i++) {
+		for (int n = 0; n < symlen; n++) {
+			black[n] = cos(txphase);
+			txphase -= phaseincr;
+			if (txphase < 0) txphase += TWOPI;
+		}
+		ModulateXmtr(black, symlen);
+	}
+
+	for (int row = 0; row < H; row++) {
+		for (int color = 0; color < 3; color++) {
+			memset(outbuf, 0, IMAGEspp * sizeof(*outbuf));
+			for (int col = 0; col < W; col++) {
+				if (stopflag) return;
+				tx_pixelnbr = col + row * W;
+				tx_pixel = thor_get_avatar_pixel(tx_pixelnbr, color);
+				freq = frequency + (tx_pixel - 128) * bandwidth / 256.0;
+				phaseincr = radians * freq;
+				for (int n = 0; n < IMAGEspp; n++) {
+					outbuf[n] = cos(txphase);
+					txphase -= phaseincr;
+					if (txphase < 0) txphase += TWOPI;
+				}
+				ModulateXmtr(outbuf, IMAGEspp);
+			}
+			Fl::awake();
+		}
+	}
+}
+
+void thor::thor_send_avatar() {
+	if (txstate == TX_STATE_RECEIVE) {
+		start_tx();
+	}
+}

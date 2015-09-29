@@ -1279,11 +1279,16 @@ void FTextTX::menu_cb(size_t item)
  			abort_tx();
   		break;
 	case TX_MENU_MFSK16_IMG:
-		if (active_modem->get_mode() == MODE_IFKP)
+		{
+			trx_mode md = active_modem->get_mode();
+		if (md == MODE_IFKP)
 			ifkp_showTxViewer();
+		else if (md >= MODE_THOR_FIRST && md <= MODE_THOR_LAST)
+			thor_showTxViewer();
 		else
 			showTxViewer(0, 0);
 		break;
+		}
 	case TX_MENU_CLEAR:
 		clear();
 		break;

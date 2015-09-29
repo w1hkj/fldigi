@@ -35,6 +35,9 @@
 #include "dominovar.h"
 #include "mbuffer.h"
 
+#include "picture.h"
+#include <FL/Fl_Shared_Image.H>
+
 // NASA coefficients for viterbi encode/decode algorithms
 #define	THOR_K	7
 #define	THOR_POLY1	0x6d
@@ -62,6 +65,8 @@
 #define THORSLOWPATHS 3
 #define THORFASTPATHS 5
 
+#define THOR_IMAGESPP			10
+
 // the following constant changes if a mode with more tones than 25x4 is
 // created
 #define MAXPATHS (8 * THORFASTPATHS * THORNUMTONES )
@@ -77,7 +82,16 @@ public:
 		TX_STATE_START,
 		TX_STATE_DATA,
 		TX_STATE_END,
-		TX_STATE_FLUSH
+		TX_STATE_IMAGE,
+		TX_STATE_AVATAR,
+		TX_STATE_FLUSH,
+		TX_STATE_RECEIVE
+	};
+	enum THOR_STATE {
+		TEXT,
+		IMAGE_START,
+		IMAGE_SYNC,
+		IMAGE
 	};
 protected:
 // common variables
@@ -173,6 +187,8 @@ private:
 	bool	preambledetect(int c);
 	void	softflushrx();
 
+	void	parse_pic(int);
+
 // Tx
 	void	sendtone(int tone, int duration);
 	void	sendsymbol(int sym);
@@ -194,6 +210,49 @@ public:
 	void	restart();
 	int		rx_process(const double *buf, int len);
 	int		tx_process();
+
+// support for thor image transfers
+private:
+	double amplitude;
+	double pixel;
+	double sync;
+	double img_phase;
+	unsigned char tx_pixel;
+	int tx_pixelnbr;
+	int image_mode;
+public:
+	int				byte;
+	double			picf;
+	double			picpeak;
+	C_FIR_filter	*picfilter;
+	Cmovavg 		*pixfilter;
+	Cmovavg			*pixsyncfilter;
+	double			phidiff;
+	double			pic_phase;
+	cmplx			prevz;
+	cmplx			currz;
+	double			image_freq[10];
+	int				image_counter;
+	int				picW;
+	int				picH;
+	int				row;
+	int				col;
+	int				rgb;
+	int				pixelnbr;
+	static int		IMAGEspp;
+	int				TXspp;
+	static std::string		imageheader;
+	static std::string		avatarheader;
+	std::string		pic_str;
+	THOR_STATE		state;
+	bool			b_ava;
+
+	void			recvpic(double smpl);
+	void			send_image();
+	void			send_avatar();
+	void			thor_send_avatar();
+	void			thor_send_image();
+
 };
 
 #endif

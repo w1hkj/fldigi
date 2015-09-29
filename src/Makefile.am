@@ -607,6 +607,7 @@ fldigi_SOURCES += \
 	widgets/pwrmeter.cxx \
 	fsq/fsq.cxx \
 	ifkp/ifkp.cxx \
+	ifkp/tux.cxx \
 	fsq/fsq_monitor.cxx \
 	wwv/analysis.cxx \
 	wwv/fftscan.cxx \
@@ -648,7 +649,6 @@ EXTRA_fldigi_SOURCES += \
 	ifkp/ifkp_bitmaps.cxx \
 	ifkp/ifkp_varicode.cxx \
 	ifkp/ifkp-pic.cxx \
-	ifkp/tux.cxx \
 	mfsk/mfsk-pic.cxx \
 	mt63/alias_1k.dat \
 	mt63/alias_2k.dat \
@@ -657,6 +657,7 @@ EXTRA_fldigi_SOURCES += \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
 	rsid/rsid_defs.cxx \
+	thor/thor-pic.cxx \
 	trx/tune.cxx \
 	dialogs/guide.cxx \
 	libtiniconv/tiniconv.h \

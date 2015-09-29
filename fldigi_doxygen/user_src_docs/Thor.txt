@@ -20,6 +20,10 @@ detector that can lock on and detect the incoming signal even when
 badly mistuned.  Frequency domain oversampling is used to allow
 proper tone detection without the need for AFC.  The AFC control does
 not alter the decoder in any way.
+
+The fldigi implementation of the Thor modem includes the ability to send and
+receive images and avatars.  The default avatar is the "Tux" logo.  
+Sending, receiving and saving avatars is discussed in the avatar section.
 <br>
 
 The waterfall and digiscope will appear as:
@@ -40,11 +44,6 @@ tone pairs moving through the tone filters.  You can also use an alternate
 digiscope display (left click on the digiscope display area).
 <br>
 
-
-\image html dominoex-1a.png "DominoEx"
-\image latex dominoex-1a.png "DominoEx" width=1.0in
-<br>
-
 In this display mode the red line represents the center of the multiple
 tone bins that are in the detector.  The dots will be blurry if the AFC is
 not locked on and become very distinct when AFC lock has been achieved.  The
@@ -52,22 +51,207 @@ tone dots will move from bottom to top (opposite the direction of the
 waterfall).
 <br>
 
-This is the same signal mistuned:
+\section THORimage Thor Image Mode
+
+fldigi-thor can send and receive images and avatars when the modem is set to 11, 16 or 22 baud.
+
+Small digital images are selected from those stored on the disk.  The image 
+transmission is similar to but not compatible with the IFKP image mode.  
+Thor images are always transmitted in a fixed width to height ratio.  
+The W x H format is not limited to a single ratio, nor is it limited to just 
+color, or just gray scale.  Thor transmits the image in Blue-Green-Red
+order.  The thor image bandwidth is the same as the signal bandwidth for
+for Thor mode in use.
+
+The start of the picture is signalled digitally, and the receiver simply captures 
+data continuously for W lines of H pixels, as requested, resulting in a WxH pixel 
+image, then reception stops.
+
+A brief period of silence, followed by a sync signal will be transmitted at the
+beginning of each image or avatar.  The sync signal is used to align the start of
+the received image.  This is the equivalent of a vertical sync signal in an
+analog television signal.  There is no equivalent of horizontal sync, therefore
+there is no risk of the picture tearing due to timing changes, or breaking up 
+during selective fades. All that happens is that the image may noise up momentarily, 
+but will stay correctly aligned.
+
+<b>Image Format</b>
+
+The images are approximately in 4:3 or 3:4 aspect ratio.  thor images can be received
+by any thor capable decoder.
+
+Available image aspect ratios / formats include:
+
+<ul>
+<li>59x74   color
+<li>160x120 color
+<li>320x240 color
+<li>640x480 grey scale
+<li>640x480 color
+<li>240x300 color
+<li>240x300 grey scale
+<li>120x150 color
+<li>120x150 grey scale
+</ul>
+
+These formats correspond roughly to a portrait (3x4) and landscape (4x3) photo.
+fldigi will scale any computer stored image to the target image.  You should
+edit the images off line to be at least close to the 3x4 or 4x3 ratio.  That will
+prevent the fldigi loader from distorting the loaded image.
+
+The image mode sampling rate is the same as the base baud samplerate:
+<ul>
+<li>Thor-11  11025 samples/sec</li>
+<li>Thor-16   8000 sampels/sec</li>
+<li>Thor-22  11025 sampels/sec</li>
+</ul>
+
+Each pixel consists of 10 samples, and there are P pixels/line. Therefore the 
+line period is 10 x P/sample-rate seconds, or the line rate sample-rate/(10 x P) lines/sec. 
+In colour, each line is sent three times, in Red-Green-Blue (RGB) order.
+
+The is a single sync signal sent at the beginning of each image is a tone placed 186 Hz 
+below the center frequency. The sync signal is 20 symbol lengths of silence followed by
+20 symbol lengths of the tone.
+
+If the sound cards in the transmitting and receiving computers differ markedly 
+in sample rate, the resulting picture can be skewed. A small timing 
+difference is enough to cause a noticeable slant in the picture. This is easily 
+fixed after reception using the Slant control. High quality sound cards should 
+be better than 5ppm, and result in barely noticeable slant, but some cheaper 
+computer built-in sound modules may be rather worse.  If you plan to send thor
+images you should calibrate your sound card to WWV.  There should be no slant if 
+both the transmit and receive sound cards are calibrated to WWV
+
+<b>Transmit Image</b>
+
+Transmitting an image in thor is initiated by selecting the "Send image" menu item
+from the pop up Tx menu.  Right click on the Tx panel
+
+<center>
+\image html thor-send-image.png "Send Image"
+\image latex thor-send-image.png "Send Image" width=2in
+</center>
+
+This selection opens up the Send Image dialog
+
+<center>
+\image html thor-image-xmt.png "Send Image Dialog"
+\image latex thor-image-xmt.png "Send Image Dialog" width=3.5in
+</center>
+
+shown with a 160x120 color image loaded and ready to transmit.
+
+Transmission begins when you press the "Xmt" button.  fldigi will insert the text
+preamble and immediately begin the image transmission.  fldigi returns to the receive
+mode when the image transmission is completed.
+
+<b>Receive Image</b>
+
+Reception is completely automatic.  The decoder will identify the picture start, 
+and record the picture. In doing so, it automatically opens a separate "thor Rx Image" dialog.
+
+<center>
+\image html thor-image-partial.png "Image Reception"
+\image latex thor-image-partial.png "Image Reception" width=3.5in
+</center>
+
+Demodulation uses a phase detection algorithm based on quadrature demodulation 
+using the current and previous samples. All the samples are converted to pixels and stored, 
+but only the average over every 10 samples is displayed.
+
+The raw image is stored in a temporary buffer of expanded size, which allows 
+fine adjustment of the slant and phase to be made before the image is sampled 
+and displayed.
+
+If the transmitting station goes off the air or reception is lost during 
+recording of a picture, the recording will continue until the necessary number 
+of samples has been made, then reception stops.
+
+<center>
+\image html thor-image-completed.png "Image Reception Completed"
+\image latex thor-image-completed.png "Image Reception Completed" width=3.5in
+</center>
+
+The Rx Image dialog controls from left to right are:
+- Reset: clears all rx data
+- Phase adjustment: moves image left and right
+- Slant adjustment: slews image diagonally
+- Save: saves the image to the fldigi image folder with a date-time stamped file name
+- Close: closes the image dialog
+
+Image phase and slant should not be adjusted before the picture reception has 
+finished, as then only part of the image will be corrected.
+
+\section thor_avatars Avatars
+
+Avatar images are 59 x 74 (width x height) color images that are associated with
+a call sign.  The avatar images are stored in the folder
+
+<pre>
+C:\\Documents and Settings\\\<user\>\\fldigi.files\\avatars\\
+C:\\Users\\\<user\>\\fldigi.files\\avatars\\
+/home/\<user\>/.fldigi/avatars/
+</pre>
+
+as "png" images.
+
+You should prepare an image file for your own call sign, in lower case.  For example
+
+<pre>
+/home/dave/.fldigi/avatars/w1hkj.png
+</pre>
+
+in a 4x5 aspect ratio, preferably in the 59x74 format, but any larger 4x5 image can be used.
+fldigi will scale the image to 59x74 when it is read from the file.
+
+You can send your avatar very simply by right clicking on the thor avatar.
+
+If you receive an avatar from another station it will automatically be displayed in
+the avatar box.  You should have previously entered the call sign of the other station in
+the Call logging control.  Left clicking on the avatar will then save the image in the
+avatars folder with the appropriate callsign.  The correct avatar will then be displayed
+the next time you enter that call sign in the Call logging control.  This is an example
+of a received avatar with timing misalignment.
+
+<br>
+<center>
+\image html thor-avatar-1.png "received avatar"
+\image latex thor-avatar-1.png "received avatar" width=1.0in
+</center>
 <br>
 
-\image html dominoex-2.png "DominoEx Mistuned"
-\image latex dominoex-2.png "DominoEx Mistuned" width=6.0in
+The received image may be misaligned left or right in the image box.  This is caused
+by an error in the start timing of the reception.  You can realign the image using a
+combination of SHIFT, CONTROL and LEFT/RIGHT mouse clicks on the image.  Be careful
+to use either the SHIFT or CONTROL in combination with the mouse button.  Mouse left
+and right click without the SHIFT/CONTROL will cause either a save or an own avatar
+transmit to occur.
+
+<pre>
+CONTROL LEFT click  - move image left by 1 pixel
+SHIFT   LEFT click  - move image left by 5 pixels
+
+CONTROL RIGHT click - move image right by 1 pixel
+SHIFT   RIGHT click - move image right by 5 pixels
+</pre>
+
+The same image after alignment.
+
+<br>
+<center>
+\image html thor-avatar-2.png "received avatar"
+\image latex thor-avatar-2.png "received avatar" width=1.0in
+</center>
 <br>
 
-and with the signal badly mistuned:
-<br>
+You will probably need to manage the avatar images using your OS file explorer.  Easy
+access to the image folder is obtained by the menu item File/Folders.
 
-\image html dominoex-3.png "DominoEx Mistuned 2"
-\image latex dominoex-3.png "DominoEx Mistuned 2" width=6.0in
-<br>
+The avatar image format is identical to the thor image 59x74 format.  If you receive
+and save a 59x74 image you can always rename the saved image (date-time-stamped) to
+a \"callsign.png\" in the avatar folder.
 
-
-<br>
 \ref thor_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

@@ -591,7 +591,6 @@ int ifkp_print_time_left(float time_sec, char *str, size_t len,
 // -----------------------------------------------------------------------------
 // avatar send/recv
 // -----------------------------------------------------------------------------
-#include "tux.cxx"
 
 static Fl_Shared_Image	*shared_avatar_img = (Fl_Shared_Image *)0;
 static unsigned char *avatar_img = (unsigned char *)0;
