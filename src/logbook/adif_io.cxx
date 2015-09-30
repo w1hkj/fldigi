@@ -268,8 +268,10 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 			if (found > -1) {
 				if (!adifqso) adifqso = db->newrec(); // need new record in db
 				ptr2 = fillfield (found, ptr+1);
-			} else { // <eor> reached;
+			} else if (found == -1) { // <eor> reached;
 				break;
+			} else {
+				ptr2 = ptr + 1;
 			}
 			if ((ptr2) > 0 && (unsigned)(ptr2 - ptr) <= p)
 				ptr = strchr(ptr2,'<');
