@@ -56,6 +56,8 @@ using namespace std;
 
 #include "fsq_varicode.cxx"
 
+void  clear_xmt_arrays();
+
 static int symlen = 4096; // nominal symbol length; 3 baud
 #define SQLFILT_SIZE 200
 #define NIT std::string::npos
@@ -1407,6 +1409,7 @@ int fsq::tx_process()
 			put_echo_char(aborted[n]);
 		fsq_tx_image = false;
 		stopflag = false;
+		clear_xmt_arrays();
 		return -1;
 	}
 	send_char(c);
@@ -1424,6 +1427,13 @@ static string tx_text_queue = "";
 static vector<string> commands;
 #define NUMCOMMANDS 10
 static size_t next = 0;
+
+void  clear_xmt_arrays()
+{
+	commands.erase(commands.begin(), commands.begin());
+	tx_text_queue.clear();
+	fsq_tx_text->clear();
+}
 
 double fsq_xmtdelay() // in seconds
 {
