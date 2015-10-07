@@ -47,6 +47,7 @@ using namespace std;
 #include "synop.h"
 #include "main.h"
 #include "modem.h"
+#include "mfskvaricode.h"
 
 #include "rtty.h"
 
@@ -81,8 +82,8 @@ static char msg1[20];
 
 const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 // FILTLEN must be same size as BAUD
-const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 200, 300};
-const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 128, 64};
+const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 25, 50};
+const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 512, 512};
 const int		rtty::BITS[]  = {5, 7, 8};
 const int		rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
 const int		rtty::numbauds = (int)(sizeof(BAUD) / sizeof(*BAUD));
@@ -446,6 +447,38 @@ bool rtty::rx(bool bit) // original modified for probability test
 	bool flag = false;
 	unsigned char c = 0;
 	int correction;
+	
+	// kl4yfd
+	// temp hard-decode solution
+	static int onescount = 0;
+	static int zeroscount = 0;
+	static int bitcounter = 0;
+	
+	static unsigned int datashreg = 1;
+	
+	// count the passed bits for a vote
+	if (bit) onescount++;
+	else zeroscount++;
+	
+	if (++bitcounter == symbollen) {
+		int hardbit = -1;
+		if (onescount > zeroscount)
+			hardbit = 1;
+		else
+			hardbit = 0;		
+		
+		int c;
+		datashreg = (datashreg << 1) | !!hardbit;
+		if ((datashreg & 7) == 1) {
+			c = varidec(datashreg >> 1);
+			put_rx_char(c);
+			datashreg = 1;
+		}
+		bitcounter = onescount = zeroscount = 0;
+		return true;
+	} else {
+		return false;
+	}
 
 	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
 	bit_buf[symbollen - 1] = bit;
@@ -873,6 +906,8 @@ if (!progStatus.shaped_rtty) {
 //if (rtty_baud > SHAPER_BAUD) {
 	double freq;
 
+	/// kl4yfd
+	/*
 	if (reverse) symbol = !symbol;
 
 	if (symbol)
@@ -886,7 +921,20 @@ if (!progStatus.shaped_rtty) {
 			FSKbuf[i] = FSKnco();
 		else
 			FSKbuf[i] = 0.0 * FSKnco();
+	*/
+	// transmit mark-only
+	freq = get_txfreq_woffset() + shift / 2.0;
+
+	for (int i = 0; i < len; i++) {
+		if (symbol) {
+		  	outbuf[i] = nco(freq);
+			FSKbuf[i] = FSKnco();
+		} else {
+			outbuf[i] = 0.0 * nco(freq); // phase-coherent:keep 0 deg phase difference between symbols
+			FSKbuf[i] = 0.0 * FSKnco();
+		}
 	}
+	
 } else {
 //#else
 
@@ -1022,6 +1070,13 @@ void rtty::send_char(int c)
 			c = 0x1F;
 		if (c == FIGURES)
 			c = 0x1B;
+	/// kl4yfd
+	} else if (nbits == 8) { // tmp re-use for mfsk varicode
+	  	const char *code = varienc(c);
+		while (*code)
+			send_symbol( (*code++ - '0'), symbollen);
+		put_echo_char(c);
+		return;
 	}
 
 // start bit
