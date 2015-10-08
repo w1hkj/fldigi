@@ -82,7 +82,7 @@ static char msg1[20];
 
 const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 // FILTLEN must be same size as BAUD
-const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 25, 50};
+const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 25, 40};
 const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 512, 512};
 const int		rtty::BITS[]  = {5, 7, 8};
 const int		rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
@@ -171,12 +171,20 @@ void rtty::init()
 		set_freq(wf->Carrier());
 
 	rx_init();
+	
+	/// kl4yfd
+	/*
 	put_MODEstatus(mode);
 	if ((rtty_baud - (int)rtty_baud) == 0)
 		snprintf(msg1, sizeof(msg1), "%-3.0f/%-4.0f", rtty_baud, rtty_shift);
 	else
 		snprintf(msg1, sizeof(msg1), "%-4.2f/%-4.0f", rtty_baud, rtty_shift);
+	*/
+	
+	if (rtty_baud == 25) snprintf(msg1, sizeof(msg1), " CW 2.0 ");
+	else if (rtty_baud == 40) snprintf(msg1, sizeof(msg1), "CW 2.0 FEC ");
 	put_Status1(msg1);
+	
 	if (progdefaults.PreferXhairScope)
 		set_scope_mode(Digiscope::XHAIRS);
 	else
@@ -266,12 +274,19 @@ void rtty::restart()
 
 	metric = 0.0;
 
+	// KL4YFD
+	/*
 	if ((rtty_baud - (int)rtty_baud) == 0)
 		snprintf(msg1, sizeof(msg1), "%-3.0f/%-4.0f", rtty_baud, rtty_shift);
 	else
 		snprintf(msg1, sizeof(msg1), "%-4.2f/%-4.0f", rtty_baud, rtty_shift);
 	put_Status1(msg1);
-	put_MODEstatus(mode);
+	*/
+	if (rtty_baud == 25) snprintf(msg1, sizeof(msg1), " CW 2.0 ");
+	else if (rtty_baud == 40) snprintf(msg1, sizeof(msg1), "CW 2.0 FEC ");
+	put_Status1(msg1);
+	///put_MODEstatus(mode);
+	
 	for (int i = 0; i < MAXPIPE; i++)
 		QI[i] = cmplx(0.0, 0.0);
 	sigpwr = 0.0;
@@ -456,11 +471,24 @@ bool rtty::rx(bool bit) // original modified for probability test
 	
 	static unsigned int datashreg = 1;
 	
+	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
+	bit_buf[symbollen - 1] = bit;
+	
 	// count the passed bits for a vote
 	if (bit) onescount++;
 	else zeroscount++;
 	
-	if (++bitcounter == symbollen) {
+	
+	// kl4yfd
+	// a very crude alignment/correction algorithm
+	/*
+	if (onescount + zeroscount > 2*symbollen/3) {
+		if (onescount == zeroscount)
+		      bitcounter += symbollen/3;
+	}
+	*/
+	
+	if (bitcounter++ >= symbollen-1) {
 		int hardbit = -1;
 		if (onescount > zeroscount)
 			hardbit = 1;
@@ -479,9 +507,7 @@ bool rtty::rx(bool bit) // original modified for probability test
 	} else {
 		return false;
 	}
-
-	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
-	bit_buf[symbollen - 1] = bit;
+	
 
 	switch (rxstate) {
 	case RTTY_RX_STATE_IDLE:
@@ -902,7 +928,8 @@ void rtty::send_symbol(int symbol, int len)
 	acc_symbols += len;
 
 //#if !SHAPER_BAUD
-if (!progStatus.shaped_rtty) {
+///if (!progStatus.shaped_rtty) {
+if (true) {
 //if (rtty_baud > SHAPER_BAUD) {
 	double freq;
 
