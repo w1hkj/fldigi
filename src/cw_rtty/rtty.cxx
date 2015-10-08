@@ -47,7 +47,6 @@ using namespace std;
 #include "synop.h"
 #include "main.h"
 #include "modem.h"
-#include "mfskvaricode.h"
 
 #include "rtty.h"
 
@@ -55,26 +54,11 @@ using namespace std;
 
 #define SHAPER_BAUD 150
 
-//=====================================================================
-// Baudot support
-//=====================================================================
-
-static char letters[32] = {
-	'\0',	'E',	'\n',	'A',	' ',	'S',	'I',	'U',
-	'\r',	'D',	'R',	'J',	'N',	'F',	'C',	'K',
-	'T',	'Z',	'L',	'W',	'H',	'Y',	'P',	'Q',
-	'O',	'B',	'G',	' ',	'M',	'X',	'V',	' '
-};
-
-/*
- * U.S. version of the figures case.
- */
-static char figures[32] = {
-	'\0',	'3',	'\n',	'-',	' ',	'\a',	'8',	'7',
-	'\r',	'$',	'4',	'\'',	',',	'!',	':',	'(',
-	'5',	'"',	')',	'2',	'#',	'6',	'0',	'1',
-	'9',	'?',	'&',	' ',	'.',	'/',	';',	' '
-};
+// df=16 : correct up to 7 bits
+// Code has good ac(df) and bc(df) parameters for puncturing
+#define K13		13
+#define K13_POLY1	016461 // 7473
+#define K13_POLY2	012767 // 5623
 
 int dspcnt = 0;
 
@@ -203,6 +187,11 @@ rtty::~rtty()
 	if (pipe) delete [] pipe;
 	if (dsppipe) delete [] dsppipe;
 	if (bits) delete bits;
+	if (rxinlv) delete rxinlv;
+	if (txinlv) delete txinlv;
+	if (dec2) delete dec2;
+	if (dec1) delete dec1;
+	if (enc) delete enc;
 	delete m_Osc1;
 	delete m_Osc2;
 	delete m_SymShaper1;
@@ -345,7 +334,13 @@ rtty::rtty(trx_mode tty_mode)
 
 	m_SymShaper1 = new SymbolShaper( 45, samplerate );
 	m_SymShaper2 = new SymbolShaper( 45, samplerate );
-
+	
+	enc = new encoder (K13, K13_POLY1, K13_POLY2);
+	dec1 = new viterbi (K13, K13_POLY1, K13_POLY2);
+	dec2 = new viterbi (K13, K13_POLY1, K13_POLY2);
+	dec1->setchunksize (1);
+	dec2->setchunksize (1);
+	
 	restart();
 
 }
@@ -457,6 +452,53 @@ bool rtty::is_mark()
 	return bit_buf[symbollen / 2];
 }
 
+
+
+int rtty::decodesymbol(unsigned char symbol)
+{
+	int c, met;
+	static unsigned char symbolpair[2];
+	static int symcounter, met1, met2;
+	
+	symbolpair[0] = symbolpair[1];
+	symbolpair[1] = symbol;
+
+	symcounter = symcounter ? 0 : 1;
+
+// only modes with odd number of symbits need a vote
+	if (true) { // could use symbits % 2 == 0
+		if (symcounter) {
+			if ((c = dec1->decode(symbolpair, &met)) == -1)
+				return -1;
+			met1 = decayavg(met1, met, 50);//32);
+			if (met1 < met2)
+				return -1;
+			metric = met1;
+		} else {
+			if ((c = dec2->decode(symbolpair, &met)) == -1)
+				return -1;
+			met2 = decayavg(met2, met, 50);//32);
+			if (met2 < met1)
+				return -1;
+			metric = met2;
+		}
+	}
+
+	// Re-scale the metric and update main window
+	metric -= 60.0;
+	metric *= 0.5;
+
+	metric = CLAMP(metric, 0.0, 100.0);
+
+	return(c &1);
+
+}
+
+
+
+
+
+
 bool rtty::rx(bool bit) // original modified for probability test
 {
 	bool flag = false;
@@ -488,12 +530,26 @@ bool rtty::rx(bool bit) // original modified for probability test
 	}
 	*/
 	
-	if (bitcounter++ >= symbollen-1) {
+	if (++bitcounter == symbollen) {
 		int hardbit = -1;
-		if (onescount > zeroscount)
+		int softbit = 128;
+		
+		if (onescount > zeroscount) {
 			hardbit = 1;
-		else
-			hardbit = 0;		
+			softbit = 255;
+		} else {
+			hardbit = 0;
+			softbit = 0;
+		}
+		bitcounter = onescount = zeroscount = 0;
+		
+		/// rxinlv->(&softbit);
+		
+		if (rtty_baud == 40) {
+			hardbit = decodesymbol(softbit);
+			if (hardbit == -1)
+				return false;
+		}
 		
 		int c;
 		datashreg = (datashreg << 1) | !!hardbit;
@@ -502,7 +558,6 @@ bool rtty::rx(bool bit) // original modified for probability test
 			put_rx_char(c);
 			datashreg = 1;
 		}
-		bitcounter = onescount = zeroscount = 0;
 		return true;
 	} else {
 		return false;
@@ -1090,46 +1145,23 @@ void rtty::flush_stream()
 
 void rtty::send_char(int c)
 {
-	int i;
-
-	if (nbits == 5) {
-		if (c == LETTERS)
-			c = 0x1F;
-		if (c == FIGURES)
-			c = 0x1B;
-	/// kl4yfd
-	} else if (nbits == 8) { // tmp re-use for mfsk varicode
+	if (rtty_baud == 25) { // Non FEC mode
 	  	const char *code = varienc(c);
 		while (*code)
 			send_symbol( (*code++ - '0'), symbollen);
-		put_echo_char(c);
-		return;
+		
+	} else if (rtty_baud == 40) { // FEC MODE
+	  	const char *code = varienc(c);
+		while (*code) {
+		  	int data = enc->encode( (*code++ - '0') );
+			///txinlv->bits(&bitshreg);
+			send_symbol(data &1 , symbollen);
+			send_symbol(data &2 , symbollen);
+		}
 	}
 
-// start bit
-	send_symbol(0, symbollen);
-// data bits
-	for (i = 0; i < nbits; i++) {
-		send_symbol((c >> i) & 1, symbollen);
-	}
-// parity bit
-	if (rtty_parity != RTTY_PARITY_NONE)
-		send_symbol(rttyparity(c), symbollen);
-// stop bit(s)
-	send_stop();
-
-	if (nbits == 5) {
-		if (c == 0x1F || c == 0x1B)
-			return;
-		if (txmode == LETTERS)
-			c = letters[c];
-		else
-			c = figures[c];
-		if (c)
-			put_echo_char(progdefaults.rx_lowercase ? tolower(c) : c);
-	}
-	else
-		put_echo_char(c);
+	put_echo_char(c);
+	return;
 }
 
 void rtty::send_idle()
@@ -1148,15 +1180,10 @@ int rtty::tx_process()
 	int c;
 
 	if (preamble) {
-		m_SymShaper1->reset();
-		m_SymShaper2->reset();
-		for (int i = 0; i < nbits + 1; i++) send_symbol(0, symbollen);
-		send_stop();
-		for (int i = 0; i < nbits + 1; i++) send_symbol(1, symbollen);
-		send_stop();
-		send_idle();
+		send_char(32); // Space
+		send_char(0); // DLE
+		send_char(0); // DLE
 		preamble = false;
-//		freq1 = get_txfreq_woffset() + shift / 2.0;
 	}
 	c = get_tx_char();
 
@@ -1262,6 +1289,7 @@ int rtty::tx_process()
 
 int rtty::baudot_enc(unsigned char data)
 {
+  /*
 	int i, c, mode;
 
 	mode = 0;
@@ -1282,22 +1310,23 @@ int rtty::baudot_enc(unsigned char data)
 		if (c != -1)
 			return (mode | c);
 	}
-
+*/
 	return -1;
 }
 
 char rtty::baudot_dec(unsigned char data)
 {
+  /*
 	int out = 0;
 
 	switch (data) {
-	case 0x1F:		/* letters */
+	case 0x1F:		// letters 
 		rxmode = LETTERS;
 		break;
-	case 0x1B:		/* figures */
+	case 0x1B:		// figures 
 		rxmode = FIGURES;
 		break;
-	case 0x04:		/* unshift-on-space */
+	case 0x04:		// unshift-on-space
 		if (progdefaults.UOSrx)
 			rxmode = LETTERS;
 		return ' ';
@@ -1309,8 +1338,8 @@ char rtty::baudot_dec(unsigned char data)
 			out = figures[data];
 		break;
 	}
-
-	return out;
+*/
+	return 0;
 }
 
 //======================================================================

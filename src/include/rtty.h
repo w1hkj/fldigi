@@ -38,6 +38,10 @@
 #include "fftfilt.h"
 #include "digiscope.h"
 #include "view_rtty.h"
+#include "viterbi.h"
+#include "interleave.h"
+#include "mfskvaricode.h"
+
 
 #define	RTTY_SampleRate	8000
 //#define RTTY_SampleRate 11025
@@ -138,6 +142,9 @@ private:
 	int stoplen;
 	int msb;
 	bool useFSK;
+	
+	interleave	*rxinlv;
+	interleave	*txinlv;
 
 	double		phaseacc;
 	double		rtty_squelch;
@@ -219,11 +226,15 @@ private:
 	unsigned char Bit_reverse(unsigned char in, int n);
 	int decode_char();
 	int rttyparity(unsigned int);
+	int decodesymbol(unsigned char symbol);
+	viterbi		*dec1;
+	viterbi		*dec2;
 	bool rx(bool bit);
 
 	view_rtty *rttyviewer;
 
 // transmit
+	encoder		*enc;
 	double nco(double freq);
 	void send_symbol(int symbol, int len);
 	void send_stop();
