@@ -2259,52 +2259,51 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 #endif
 }
 
-void cb_mnuCheckUpdate(Fl_Widget*, void*)
+void cb_mnuCheckUpdate(Fl_Widget *, void *)
 {
-	struct {
-		const char* url;
-		const char* re;
-		string version_str;
-		unsigned long version;
-	} sites[] = {
-		{ PACKAGE_DL, "downloads/fldigi/fldigi-([0-9.]+).tar.gz", "", 0 },
-		{ PACKAGE_PROJ, "fldigi-([0-9.]+).tar.gz", "", 0 }
-	}, *latest;
+	const char* url = "http://sourceforge.net/projects/fldigi/files/fldigi/";
+	string version_str;
 	string reply;
 
 	put_status(_("Checking for updates..."));
-	for (size_t i = 0; i < sizeof(sites)/sizeof(*sites); i++) { // fetch .url, grep for .re
-		reply.clear();
-		if (!fetch_http_gui(sites[i].url, reply, 20.0))
-			continue;
-		re_t re(sites[i].re, REG_EXTENDED | REG_ICASE | REG_NEWLINE);
-		if (!re.match(reply.c_str()) || re.nsub() != 2)
-			continue;
 
-		sites[i].version = ver2int((sites[i].version_str = re.submatch(1)).c_str());
-	}
-	put_status("");
-
-	latest = sites[1].version > sites[0].version ? &sites[1] : &sites[0];
-	if (sites[0].version == 0 && sites[1].version == 0) {
-		fl_alert2(_("Could not check for updates:\n%s"), reply.c_str());
+	int ret = fetch_http_gui(url, reply, 20.0);
+	if (!ret) {
+		put_status(_("Update site not available"), 10);
 		return;
 	}
-	if (latest->version > ver2int(PACKAGE_VERSION)) {
-		switch (fl_choice2(_("Version %s is available at\n\n%s\n\nWhat would you like to do?"),
+
+	size_t p = reply.find("_setup.exe");
+	size_t p2 = reply.rfind("fldigi", p);
+	p2 += 7;
+	version_str = reply.substr(p2, p - p2);
+
+	bool is_ok = string(PACKAGE_VERSION) >= version_str;
+
+	if (is_ok)
+		fl_message2(_("You are running the latest version"));
+	else {
+		int choice = 
+				fl_choice2(_("Version %s is available at Source Forge\n\nWhat would you like to do?"),
 				  _("Close"), _("Visit URL"), _("Copy URL"),
-				  latest->version_str.c_str(), latest->url)) {
-		case 1:
-			cb_mnuVisitURL(NULL, (void*)latest->url);
-			break;
-		case 2:
-			size_t n = strlen(latest->url);
-			Fl::copy(latest->url, n, 0);
-			Fl::copy(latest->url, n, 1);
+				  version_str.c_str());
+		switch (choice) {
+			case 1:
+				cb_mnuVisitURL(NULL, (void*)url);
+				break;
+			case 2: {
+				size_t n = strlen(url);
+				Fl::copy(url, n, 0);
+				Fl::copy(url, n, 1);
+				break;
+			}
+			default:
+			case 0:
+				break;
 		}
 	}
-	else
-		fl_message2(_("You are running the latest version"));
+
+	put_status("");
 }
 
 void cb_mnuAboutURL(Fl_Widget*, void*)
