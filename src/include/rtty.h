@@ -142,9 +142,6 @@ private:
 	int stoplen;
 	int msb;
 	bool useFSK;
-	
-	interleave	*rxinlv;
-	interleave	*txinlv;
 
 	double		phaseacc;
 	double		rtty_squelch;
@@ -181,7 +178,6 @@ private:
 
 	int counter;
 	int bitcntr;
-	int rxdata;
 	double cfreq; // center frequency between MARK/SPACE tones
 	double shift_offset; // 1/2 rtty_shift
 
@@ -223,10 +219,9 @@ private:
 	double IF_freq;
 	inline cmplx mixer(double &phase, double f, cmplx in);
 
-	unsigned char Bit_reverse(unsigned char in, int n);
-	int decode_char();
-	int rttyparity(unsigned int);
 	int decodesymbol(unsigned char symbol);
+	unsigned char		symbolpair[2];
+
 	viterbi		*dec1;
 	viterbi		*dec2;
 	bool rx(bool bit);
@@ -236,18 +231,25 @@ private:
 // transmit
 	encoder		*enc;
 	double nco(double freq);
-	void send_symbol(int symbol, int len);
+	void send_symbol(unsigned int symbol, int len);
 	void send_stop();
 	void send_char(int c);
 	void send_idle();
 	int rttyxprocess();
-	int baudot_enc(unsigned char data);
-	char baudot_dec(unsigned char data);
 	void Metric();
 
 	bool is_mark_space(int &);
 	bool is_mark();
+	
+	
+protected:
+  	interleave	*rxinlv;
+  	interleave	*rxinlv2;
+	interleave	*txinlv;
+	unsigned int 	txdata;
+	unsigned int 	rxdata;
 
+	
 public:
 	rtty(trx_mode mode);
 	~rtty();

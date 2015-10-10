@@ -4,6 +4,9 @@
 // Copyright (C) 2012
 //		Dave Freese, W1HKJ
 //		Stefan Fendt, DL1SMF
+// 
+// Copyright (C) 2015
+//		John Phelps, KL4YFD
 //
 // This file is part of fldigi.
 //
@@ -155,16 +158,7 @@ void rtty::init()
 		set_freq(wf->Carrier());
 
 	rx_init();
-	
-	/// kl4yfd
-	/*
-	put_MODEstatus(mode);
-	if ((rtty_baud - (int)rtty_baud) == 0)
-		snprintf(msg1, sizeof(msg1), "%-3.0f/%-4.0f", rtty_baud, rtty_shift);
-	else
-		snprintf(msg1, sizeof(msg1), "%-4.2f/%-4.0f", rtty_baud, rtty_shift);
-	*/
-	
+
 	if (rtty_baud == 25) snprintf(msg1, sizeof(msg1), " CW 2.0 ");
 	else if (rtty_baud == 40) snprintf(msg1, sizeof(msg1), "CW 2.0 FEC ");
 	put_Status1(msg1);
@@ -188,6 +182,7 @@ rtty::~rtty()
 	if (dsppipe) delete [] dsppipe;
 	if (bits) delete bits;
 	if (rxinlv) delete rxinlv;
+	if (rxinlv2) delete rxinlv2;
 	if (txinlv) delete txinlv;
 	if (dec2) delete dec2;
 	if (dec1) delete dec1;
@@ -219,17 +214,8 @@ void rtty::restart()
 	filter_length = FILTLEN[progdefaults.rtty_baud];
 
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];
-	if (rtty_bits == 5)
-		rtty_parity = RTTY_PARITY_NONE;
-	else
-		switch (progdefaults.rtty_parity) {
-			case 0 : rtty_parity = RTTY_PARITY_NONE; break;
-			case 1 : rtty_parity = RTTY_PARITY_EVEN; break;
-			case 2 : rtty_parity = RTTY_PARITY_ODD; break;
-			case 3 : rtty_parity = RTTY_PARITY_ZERO; break;
-			case 4 : rtty_parity = RTTY_PARITY_ONE; break;
-			default : rtty_parity = RTTY_PARITY_NONE; break;
-		}
+	rtty_parity = RTTY_PARITY_NONE;
+
 	// (exists below already)  rtty_stop = progdefaults.rtty_stop;
 
 	txmode = LETTERS;
@@ -264,17 +250,10 @@ void rtty::restart()
 	metric = 0.0;
 
 	// KL4YFD
-	/*
-	if ((rtty_baud - (int)rtty_baud) == 0)
-		snprintf(msg1, sizeof(msg1), "%-3.0f/%-4.0f", rtty_baud, rtty_shift);
-	else
-		snprintf(msg1, sizeof(msg1), "%-4.2f/%-4.0f", rtty_baud, rtty_shift);
-	put_Status1(msg1);
-	*/
 	if (rtty_baud == 25) snprintf(msg1, sizeof(msg1), " CW 2.0 ");
 	else if (rtty_baud == 40) snprintf(msg1, sizeof(msg1), "CW 2.0 FEC ");
 	put_Status1(msg1);
-	///put_MODEstatus(mode);
+	put_MODEstatus(" CW 2.0 ");
 	
 	for (int i = 0; i < MAXPIPE; i++)
 		QI[i] = cmplx(0.0, 0.0);
@@ -341,6 +320,11 @@ rtty::rtty(trx_mode tty_mode)
 	dec1->setchunksize (1);
 	dec2->setchunksize (1);
 	
+	/// KL4YFD  temp/testing values for inlv
+	txinlv = new interleave (2, 10, INTERLEAVE_FWD);
+	rxinlv = new interleave (2, 10, INTERLEAVE_REV);
+	rxinlv = new interleave (2, 10, INTERLEAVE_REV);
+	
 	restart();
 
 }
@@ -371,67 +355,6 @@ cmplx rtty::mixer(double &phase, double f, cmplx in)
 	return z;
 }
 
-unsigned char rtty::Bit_reverse(unsigned char in, int n)
-{
-	unsigned char out = 0;
-
-	for (int i = 0; i < n; i++)
-		out = (out << 1) | ((in >> i) & 1);
-
-	return out;
-}
-
-static int rparity(int c)
-{
-	int w = c;
-	int p = 0;
-	while (w) {
-		p += (w & 1);
-		w >>= 1;
-	}
-	return p & 1;
-}
-
-int rtty::rttyparity(unsigned int c)
-{
-	c &= (1 << nbits) - 1;
-
-	switch (rtty_parity) {
-	default:
-	case RTTY_PARITY_NONE:
-		return 0;
-
-	case RTTY_PARITY_ODD:
-		return rparity(c);
-
-	case RTTY_PARITY_EVEN:
-		return !rparity(c);
-
-	case RTTY_PARITY_ZERO:
-		return 0;
-
-	case RTTY_PARITY_ONE:
-		return 1;
-	}
-}
-
-int rtty::decode_char()
-{
-	unsigned int parbit, par, data;
-
-	parbit = (rxdata >> nbits) & 1;
-	par = rttyparity(rxdata);
-
-	if (rtty_parity != RTTY_PARITY_NONE && parbit != par)
-		return 0;
-
-	data = rxdata & ((1 << nbits) - 1);
-
-	if (nbits == 5)
-		return baudot_dec(data);
-
-	return data;
-}
 
 bool rtty::is_mark_space( int &correction)
 {
@@ -465,23 +388,21 @@ int rtty::decodesymbol(unsigned char symbol)
 
 	symcounter = symcounter ? 0 : 1;
 
-// only modes with odd number of symbits need a vote
-	if (true) { // could use symbits % 2 == 0
-		if (symcounter) {
-			if ((c = dec1->decode(symbolpair, &met)) == -1)
-				return -1;
-			met1 = decayavg(met1, met, 50);//32);
-			if (met1 < met2)
-				return -1;
-			metric = met1;
-		} else {
-			if ((c = dec2->decode(symbolpair, &met)) == -1)
-				return -1;
-			met2 = decayavg(met2, met, 50);//32);
-			if (met2 < met1)
-				return -1;
-			metric = met2;
-		}
+	if (symcounter) {
+		if ((c = dec1->decode(symbolpair, &met)) == -1)
+			return -1;
+		met1 = decayavg(met1, met, 50);
+		if (met1 < met2)
+			return -1;
+		metric = met1;
+	
+	} else {
+		if ((c = dec2->decode(symbolpair, &met)) == -1)
+			return -1;
+		met2 = decayavg(met2, met, 50);
+		if (met2 < met1)
+			return -1;
+		 metric = met2;
 	}
 
 	// Re-scale the metric and update main window
@@ -495,16 +416,13 @@ int rtty::decodesymbol(unsigned char symbol)
 }
 
 
-
-
-
-
 bool rtty::rx(bool bit) // original modified for probability test
 {
+  /*
 	bool flag = false;
 	unsigned char c = 0;
 	int correction;
-	
+  */	
 	// kl4yfd
 	// temp hard-decode solution
 	static int onescount = 0;
@@ -522,7 +440,7 @@ bool rtty::rx(bool bit) // original modified for probability test
 	
 	
 	// kl4yfd
-	// a very crude alignment/correction algorithm
+	// BUG: need a working alignment/correction algorithm
 	/*
 	if (onescount + zeroscount > 2*symbollen/3) {
 		if (onescount == zeroscount)
@@ -543,10 +461,11 @@ bool rtty::rx(bool bit) // original modified for probability test
 		}
 		bitcounter = onescount = zeroscount = 0;
 		
-		/// rxinlv->(&softbit);
 		
 		if (rtty_baud == 40) {
-			hardbit = decodesymbol(softbit);
+			rxdata = softbit;
+			/// rxinlv->bits(&rxdata); /// BUG: Interleaver not implemented for CW 2.0 FEC
+			hardbit = decodesymbol(rxdata);
 			if (hardbit == -1)
 				return false;
 		}
@@ -559,70 +478,10 @@ bool rtty::rx(bool bit) // original modified for probability test
 			datashreg = 1;
 		}
 		return true;
-	} else {
-		return false;
 	}
 	
-
-	switch (rxstate) {
-	case RTTY_RX_STATE_IDLE:
-		if ( is_mark_space(correction)) {
-			rxstate = RTTY_RX_STATE_START;
-			counter = correction;
-		}
-		break;
-	case RTTY_RX_STATE_START:
-		if (--counter == 0) {
-			if (!is_mark()) {
-				rxstate = RTTY_RX_STATE_DATA;
-				counter = symbollen;
-				bitcntr = 0;
-				rxdata = 0;
-			} else {
-				rxstate = RTTY_RX_STATE_IDLE;
-			}
-		}
-		break;
-	case RTTY_RX_STATE_DATA:
-		if (--counter == 0) {
-			rxdata |= is_mark() << bitcntr++;
-			counter = symbollen;
-		}
-		if (bitcntr == nbits + (rtty_parity != RTTY_PARITY_NONE ? 1 : 0))
-			rxstate = RTTY_RX_STATE_STOP;
-		break;
-	case RTTY_RX_STATE_STOP:
-		if (--counter == 0) {
-			if (is_mark()) {
-				if ((metric >= progStatus.sldrSquelchValue && progStatus.sqlonoff) || !progStatus.sqlonoff) {
-					c = decode_char();
-					if( progdefaults.SynopAdifDecoding || progdefaults.SynopKmlDecoding ) {
-						if (c != 0 && c != '\r')  {
-							synop::instance()->add(c);
-						} else {
-							if( synop::instance()->enabled() )
-								synop::instance()->flush(false);
-							put_rx_char(c);
-						}
-					} else if ( c != 0 ) {
-// supress <CR><CR> and <LF><LF> sequences
-// these were observed during the RTTY contest 2/9/2013
-						if (c == '\r' && lastchar == '\r');
-						else if (c == '\n' && lastchar == '\n');
-						else
-							put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c);
-						lastchar = c;
-					}
-					flag = true;
-				}
-			}
-			rxstate = RTTY_RX_STATE_IDLE;
-		}
-		break;
-	default : break;
-	}
-
-	return flag;
+	return false;
+	
 }
 
 char snrmsg[80];
@@ -978,32 +837,12 @@ double rtty::FSKnco()
 }
 
 
-void rtty::send_symbol(int symbol, int len)
+void rtty::send_symbol(unsigned int symbol, int len)
 {
 	acc_symbols += len;
 
-//#if !SHAPER_BAUD
-///if (!progStatus.shaped_rtty) {
-if (true) {
-//if (rtty_baud > SHAPER_BAUD) {
 	double freq;
 
-	/// kl4yfd
-	/*
-	if (reverse) symbol = !symbol;
-
-	if (symbol)
-		freq = get_txfreq_woffset() + shift / 2.0;
-	else
-		freq = get_txfreq_woffset() - shift / 2.0;
-
-	for (int i = 0; i < len; i++) {
-		outbuf[i] = nco(freq);
-		if (symbol)
-			FSKbuf[i] = FSKnco();
-		else
-			FSKbuf[i] = 0.0 * FSKnco();
-	*/
 	// transmit mark-only
 	freq = get_txfreq_woffset() + shift / 2.0;
 
@@ -1016,107 +855,11 @@ if (true) {
 			FSKbuf[i] = 0.0 * FSKnco();
 		}
 	}
-	
-} else {
-//#else
 
-	double const freq1 = get_txfreq_woffset() + shift / 2.0;
-	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0;
-	double signal = 0;
-
-	if (reverse)
-		symbol = !symbol;
-
-	if (maxamp == 0) {
-		int sym = 0;
-		for (int j = 0; j < 100; j++) {
-			if (sym) sym = 0;
-			else sym = 1;
-			for( int i = 0; i < 3*len; ++i ) {
-				mark  = m_SymShaper1->Update( sym) * m_Osc1->Update( freq1 );
-				space = m_SymShaper2->Update(!sym) * m_Osc2->Update( freq2 );
-				signal = mark + space;
-
-				if (maxamp < fabs(signal)) maxamp = fabs(signal);
-			}
-		}
-	}
-
-	for( int i = 0; i < len; ++i ) {
-		mark  = m_SymShaper1->Update( symbol) * m_Osc1->Update( freq1 );
-		space = m_SymShaper2->Update(!symbol) * m_Osc2->Update( freq2 );
-		signal = mark + space;
-
-		if (maxamp < fabs(signal)) {
-			maxamp = fabs(signal);
-		}
-		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
-
-		if (symbol)
-			FSKbuf[i] = FSKnco();
-		else
-			FSKbuf[i] = 0.0 * FSKnco();
-	}
-}
-//#endif
 	if (progdefaults.PseudoFSK)
 		ModulateStereo(outbuf, FSKbuf, symbollen);
 	else
 		ModulateXmtr(outbuf, symbollen);
-}
-
-void rtty::send_stop()
-{
-//#if !SHAPER_BAUD
-if (!progStatus.shaped_rtty) {
-//if (rtty_baud >= SHAPER_BAUD) {
-	double freq;
-	bool invert = reverse;
-
-	if (invert)
-		freq = get_txfreq_woffset() - shift / 2.0;
-	else
-		freq = get_txfreq_woffset() + shift / 2.0;
-
-	for (int i = 0; i < stoplen; i++) {
-		outbuf[i] = nco(freq);
-		if (invert)
-			FSKbuf[i] = 0.0 * FSKnco();
-		else
-			FSKbuf[i] = FSKnco();
-	}
-} else {
-//#else
-
-	double const freq1 = get_txfreq_woffset() + shift / 2.0;
-	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0, signal = 0;
-
-	bool symbol = true;
-
-	if (reverse)
-		symbol = !symbol;
-
-	for( int i = 0; i < stoplen; ++i ) {
-		mark  = m_SymShaper1->Update( symbol)*m_Osc1->Update( freq1 );
-		space = m_SymShaper2->Update(!symbol)*m_Osc2->Update( freq2 );
-		signal = mark + space;
-
-		if (maxamp < fabs(signal)) maxamp = fabs(signal);
-		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
-
-		if (reverse)
-			FSKbuf[i] = 0.0 * FSKnco();
-		else
-			FSKbuf[i] = FSKnco();
-	}
-}
-//#endif
-	if (progdefaults.PseudoFSK)
-		ModulateStereo(outbuf, FSKbuf, stoplen);
-	else
-		ModulateXmtr(outbuf, stoplen);
 }
 
 void rtty::flush_stream()
@@ -1153,10 +896,10 @@ void rtty::send_char(int c)
 	} else if (rtty_baud == 40) { // FEC MODE
 	  	const char *code = varienc(c);
 		while (*code) {
-		  	int data = enc->encode( (*code++ - '0') );
-			///txinlv->bits(&bitshreg);
-			send_symbol(data &1 , symbollen);
-			send_symbol(data &2 , symbollen);
+		  	txdata = enc->encode( (*code++ - '0') );
+			//txinlv->bits(&txdata); /// BUG: Interleaver unimplemented
+			send_symbol(txdata &1 , symbollen);
+			send_symbol(txdata &2 , symbollen);
 		}
 	}
 
@@ -1166,11 +909,7 @@ void rtty::send_char(int c)
 
 void rtty::send_idle()
 {
-	if (nbits == 5) {
-		send_char(LETTERS);
-		txmode = LETTERS;
-	} else
-		send_char(0);
+	send_char(0);
 }
 
 static int line_char_count = 0;
@@ -1191,21 +930,15 @@ int rtty::tx_process()
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		line_char_count = 0;
-		if (nbits != 5) {
-			if (progdefaults.rtty_crcrlf) send_char('\r');
-			send_char('\r');
-			send_char('\n');
-		} else {
-			if (progdefaults.rtty_crcrlf) send_char(0x08);
-			send_char(0x08);
-			send_char(0x02);
-		}
+		if (progdefaults.rtty_crcrlf) send_char('\r');
+		send_char('\r');
+		send_char('\n');
 	if (progStatus.shaped_rtty) flush_stream();
 //	if (rtty_baud <= SHAPER_BAUD) flush_stream();
 //#if SHAPER_BAUD
 //	flush_stream();
 //#endif
-		cwid();
+		cwid(); /// send callsign in Morse code
 		return -1;
 	}
 
@@ -1215,133 +948,14 @@ int rtty::tx_process()
 		return 0;
 	}
 
-// if NOT Baudot
-	if (nbits != 5) {
-///
-		acc_symbols = 0;
-		send_char(c);
-		xmt_samples = char_samples = acc_symbols;
 
-		return 0;
-	}
-
-	if (isalpha(c) || isdigit(c) || isblank(c) || ispunct(c)) {
-		++line_char_count;
-	}
-
-	if (progdefaults.rtty_autocrlf && (c != '\n' && c != '\r') &&
-		(line_char_count == progdefaults.rtty_autocount ||
-		 (line_char_count > progdefaults.rtty_autocount - 5 && c == ' '))) {
-		line_char_count = 0;
-		if (progdefaults.rtty_crcrlf)
-			send_char(0x08); // CR-CR-LF triplet
-		send_char(0x08);
-		send_char(0x02);
-		if (c == ' ')
-			return 0;
-	}
-	if (c == '\r') {
-		line_char_count = 0;
-		send_char(0x08);
-		return 0;
-	}
-	if (c == '\n') {
-		line_char_count = 0;
-		if (progdefaults.rtty_crcrlf)
-			send_char(0x08); // CR-CR-LF triplet
-		send_char(0x02);
-		return 0;
-	}
-
-
-/* unshift-on-space */
-	if (c == ' ') {
-		if (progdefaults.UOStx) {
-			send_char(LETTERS);
-			send_char(0x04); // coded value for a space
-			txmode = LETTERS;
-		} else
-			send_char(0x04);
-		return 0;
-	}
-
-	if ((c = baudot_enc(c)) < 0)
-		return 0;
-
-// switch case if necessary
-
-	if ((c & 0x300) != txmode) {
-		if (txmode == FIGURES) {
-			send_char(LETTERS);
-			txmode = LETTERS;
-		} else {
-			send_char(FIGURES);
-			txmode = FIGURES;
-		}
-	}
-///
 	acc_symbols = 0;
-	send_char(c & 0x1F);
+	send_char(c);
 	xmt_samples = char_samples = acc_symbols;
 
 	return 0;
 }
-
-int rtty::baudot_enc(unsigned char data)
-{
-  /*
-	int i, c, mode;
-
-	mode = 0;
-	c = -1;
-
-	if (islower(data))
-		data = toupper(data);
-
-	for (i = 0; i < 32; i++) {
-		if (data == letters[i]) {
-			mode |= LETTERS;
-			c = i;
-		}
-		if (data == figures[i]) {
-			mode |= FIGURES;
-			c = i;
-		}
-		if (c != -1)
-			return (mode | c);
-	}
-*/
-	return -1;
-}
-
-char rtty::baudot_dec(unsigned char data)
-{
-  /*
-	int out = 0;
-
-	switch (data) {
-	case 0x1F:		// letters 
-		rxmode = LETTERS;
-		break;
-	case 0x1B:		// figures 
-		rxmode = FIGURES;
-		break;
-	case 0x04:		// unshift-on-space
-		if (progdefaults.UOSrx)
-			rxmode = LETTERS;
-		return ' ';
-		break;
-	default:
-		if (rxmode == LETTERS)
-			out = letters[data];
-		else
-			out = figures[data];
-		break;
-	}
-*/
-	return 0;
-}
-
+  
 //======================================================================
 // methods for class Oscillator and class SymbolShaper
 //======================================================================
