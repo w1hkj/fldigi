@@ -5,7 +5,7 @@
 //		Dave Freese, W1HKJ
 //		Stefan Fendt, DL1SMF
 // 
-// Copyright (C) 2015
+// CW 2.0 Copyright (C) 2015
 //		John Phelps, KL4YFD
 //
 // This file is part of fldigi.
@@ -69,7 +69,7 @@ static char msg1[20];
 
 const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 // FILTLEN must be same size as BAUD
-const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 25, 40};
+const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 20, 40};
 const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 512, 512};
 const int		rtty::BITS[]  = {5, 7, 8};
 const int		rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
@@ -159,9 +159,8 @@ void rtty::init()
 
 	rx_init();
 
-	if (rtty_baud == 25) snprintf(msg1, sizeof(msg1), " CW 2.0 ");
-	else if (rtty_baud == 40) snprintf(msg1, sizeof(msg1), "CW 2.0 FEC ");
-	put_Status1(msg1);
+	if (rtty_baud == 20) put_MODEstatus(" CW 2.0 ");
+	else if (rtty_baud == 40) put_MODEstatus("CW 2.0 FEC");
 	
 	if (progdefaults.PreferXhairScope)
 		set_scope_mode(Digiscope::XHAIRS);
@@ -181,16 +180,12 @@ rtty::~rtty()
 	if (pipe) delete [] pipe;
 	if (dsppipe) delete [] dsppipe;
 	if (bits) delete bits;
-	if (rxinlv) delete rxinlv;
+	if (rxinlv1) delete rxinlv1;
 	if (rxinlv2) delete rxinlv2;
 	if (txinlv) delete txinlv;
 	if (dec2) delete dec2;
 	if (dec1) delete dec1;
 	if (enc) delete enc;
-	delete m_Osc1;
-	delete m_Osc2;
-	delete m_SymShaper1;
-	delete m_SymShaper2;
 }
 
 void rtty::reset_filters()
@@ -250,10 +245,10 @@ void rtty::restart()
 	metric = 0.0;
 
 	// KL4YFD
-	if (rtty_baud == 25) snprintf(msg1, sizeof(msg1), " CW 2.0 ");
-	else if (rtty_baud == 40) snprintf(msg1, sizeof(msg1), "CW 2.0 FEC ");
-	put_Status1(msg1);
-	put_MODEstatus(" CW 2.0 ");
+	if (rtty_baud == 20) put_MODEstatus(" CW 2.0 ");
+	else if (rtty_baud == 40) put_MODEstatus("CW 2.0 FEC");
+	//put_Status1(msg1);
+	
 	
 	for (int i = 0; i < MAXPIPE; i++)
 		QI[i] = cmplx(0.0, 0.0);
@@ -263,10 +258,6 @@ void rtty::restart()
 	dspcnt = 2*(nbits + 2);
 
 	clear_zdata = true;
-
-	// restart symbol-rtty_shaper
-	m_SymShaper1->Preset(rtty_baud, samplerate);
-	m_SymShaper2->Preset(rtty_baud, samplerate);
 
 	mark_phase = 0;
 	space_phase = 0;
@@ -281,7 +272,6 @@ void rtty::restart()
 
 	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = cmplx(0,0);
 
-//	if (::rttyviewer) ::rttyviewer->restart();
 	if (rttyviewer) rttyviewer->restart();
 
 	progStatus.rtty_filter_changed = false;
@@ -304,15 +294,7 @@ rtty::rtty(trx_mode tty_mode)
 	pipe = new double[MAXPIPE];
 	dsppipe = new double [MAXPIPE];
 
-//	if (::rttyviewer == 0) ::rttyviewer = new view_rtty(mode);
-
 	rttyviewer = new view_rtty(mode);
-
-	m_Osc1 = new Oscillator( samplerate );
-	m_Osc2 = new Oscillator( samplerate );
-
-	m_SymShaper1 = new SymbolShaper( 45, samplerate );
-	m_SymShaper2 = new SymbolShaper( 45, samplerate );
 	
 	enc = new encoder (K13, K13_POLY1, K13_POLY2);
 	dec1 = new viterbi (K13, K13_POLY1, K13_POLY2);
@@ -321,9 +303,9 @@ rtty::rtty(trx_mode tty_mode)
 	dec2->setchunksize (1);
 	
 	/// KL4YFD  temp/testing values for inlv
-	txinlv = new interleave (2, 10, INTERLEAVE_FWD);
-	rxinlv = new interleave (2, 10, INTERLEAVE_REV);
-	rxinlv = new interleave (2, 10, INTERLEAVE_REV);
+	txinlv = new interleave (2, 20, INTERLEAVE_FWD);
+	rxinlv1 = new interleave (2, 20, INTERLEAVE_REV);
+	rxinlv2 = new interleave (2, 20, INTERLEAVE_REV);
 	
 	restart();
 
@@ -463,6 +445,8 @@ bool rtty::rx(bool bit) // original modified for probability test
 		
 		
 		if (rtty_baud == 40) {
+			///rx_pskr(softbit);
+			///return false;
 			rxdata = softbit;
 			/// rxinlv->bits(&rxdata); /// BUG: Interleaver not implemented for CW 2.0 FEC
 			hardbit = decodesymbol(rxdata);
@@ -483,6 +467,110 @@ bool rtty::rx(bool bit) // original modified for probability test
 	return false;
 	
 }
+
+
+void rtty::rx_pskr(unsigned char symbol)
+{
+	int met;
+	unsigned char twosym[2];
+	unsigned char tempc;
+	int c;
+	
+	static int rxbitstate=0;
+
+	// we accumulate the soft bits for the interleaver THEN submit to Viterbi
+	// decoder in alternance so that each one is processed one bit later.
+	// Only two possibilities for sync: current bit or previous one since
+	// we encode with R = 1/2 and send encoded bits one after the other
+	// through the interleaver.
+
+	symbolpair[1] = symbolpair[0];
+	symbolpair[0] = symbol;
+
+
+	if (rxbitstate == 0) {
+		rxbitstate++;
+		// copy to avoid scrambling symbolpair for the next bit
+		twosym[0] = symbolpair[0];
+		twosym[1] = symbolpair[1];
+		// De-interleave
+		rxinlv2->symbols(twosym);
+		// pass de-interleaved bits pair to the decoder, reversed
+		tempc = twosym[1];
+		twosym[1] = twosym[0];
+		twosym[0] = tempc;
+		// Then viterbi decoder
+		c = dec2->decode(twosym, &met);
+		if (c != -1) {
+			// FEC only take metric measurement after backtrace
+			// Will be used for voting between the two decoded streams
+			fecmet2 = decayavg(fecmet2, met, 20);
+			rx_bit2(c & 0x08);
+			rx_bit2(c & 0x04);
+			rx_bit2(c & 0x02);
+			rx_bit2(c & 0x01);
+		}
+	} else {
+		// Again for the same stream shifted by one bit
+		rxbitstate = 0;
+		twosym[0] = symbolpair[0];
+		twosym[1] = symbolpair[1];
+		// De-interleave
+		rxinlv1->symbols(twosym);
+		tempc = twosym[1];
+		twosym[1] = twosym[0];
+		twosym[0] = tempc;
+		// Then viterbi decoder
+		c = dec1->decode(twosym, &met);
+		if (c != -1) {
+			fecmet = decayavg(fecmet, met, 20);
+			rx_bit(c & 0x08);
+			rx_bit(c & 0x04);
+			rx_bit(c & 0x02);
+			rx_bit(c & 0x01);
+		}
+	}
+}
+
+
+
+
+void rtty::rx_bit(int bit)
+{
+	int c;
+	static unsigned int shreg = 1;
+
+	shreg = (shreg << 1) | !!bit;
+	if ((shreg & 7) == 1) {
+		c = varidec(shreg >> 1);
+		// Voting at the character level for only PSKR modes
+		if (fecmet >= fecmet2) {
+			if ((c != -1) && (c != 0))
+				put_rx_char(c);
+		}
+		shreg = 1;
+	}
+}
+
+
+void rtty::rx_bit2(int bit)
+{
+	int c;
+	static unsigned int shreg2 = 1;
+	
+	shreg2 = (shreg2 << 1) | !!bit;
+	// MFSK varicode instead of PSK Varicode
+	if ((shreg2 & 7) == 1) {
+		c = varidec(shreg2 >> 1);
+		// Voting at the character level for only PSKR modes
+		if (fecmet < fecmet2) {
+			if ((c != -1) && (c != 0))
+				put_rx_char(c);
+		}
+		shreg2 = 1;
+	}
+}
+
 
 char snrmsg[80];
 void rtty::Metric()
@@ -542,19 +630,6 @@ void rtty::searchUp()
 	}
 }
 
-#if FILTER_DEBUG == 1
-int snum = 0;
-int mnum = 0;
-#define ook(sp) \
-{ \
-	value = sin(2.0*M_PI*( \
-		(((sp / symbollen) % 2 == 0) ? (frequency + shift/2.0) : (frequency - shift/2.0))\
-		/samplerate)*sp); \
-}
-
-std::fstream ook_signal("ook_signal.csv", std::ios::out );
-#endif
-
 int rtty::rx_process(const double *buf, int len)
 {
 	const double *buffer = buf;
@@ -576,26 +651,13 @@ int rtty::rx_process(const double *buf, int len)
 	}
 
 	Metric();
-#if FILTER_DEBUG == 1
-double value;
-#endif
+
 	while (length-- > 0) {
 
 // Create analytic signal from sound card input samples
 
-#if FILTER_DEBUG == 1
-if (snum < 2 * filter_length) {
-	frequency = 1000.0;
-	ook(snum);
-	z = cmplx(value, value);
-	ook_signal << snum << "," << z.real() << ",";
-//	snum++;
-} else {
+
 	z = cmplx(*buffer, *buffer);
-}
-#else
-	z = cmplx(*buffer, *buffer);
-#endif
 	buffer++;
 
 // Mix it with the audio carrier frequency to create two baseband signals
@@ -610,12 +672,7 @@ if (snum < 2 * filter_length) {
 
 		zspace = mixer(space_phase, frequency - shift/2.0, z);
 		n_out = space_filt->run(zspace, &zp_space);
-#if FILTER_DEBUG == 1
-if (snum < 2 * filter_length) {
-	ook_signal << abs(zmark) <<"\n";
-	snum++;
-}
-#endif
+
 		for (int i = 0; i < n_out; i++) {
 
 			mark_mag = abs(zp_mark[i]);
@@ -628,10 +685,7 @@ if (snum < 2 * filter_length) {
 						(space_mag > space_env) ? symbollen / 4 : symbollen * 16);
 			space_noise = decayavg (space_noise, space_mag,
 						(space_mag < space_noise) ? symbollen / 4 : symbollen * 48);
-#if FILTER_DEBUG == 1
-if (mnum < 2 * filter_length)
-	ook_signal << ",,," << mnum++ + filter_length / 2 << "," << mark_mag << "," << space_mag << "\n";
-#endif
+
 			noise_floor = min(space_noise, mark_noise);
 
 // clipped if clipped decoder selected
@@ -641,14 +695,9 @@ if (mnum < 2 * filter_length)
 			if (mclipped < noise_floor) mclipped = noise_floor;
 			if (sclipped < noise_floor) sclipped = noise_floor;
 
-			switch (progdefaults.rtty_cwi) {
-				case 1 : // mark only decode
-					space_env = sclipped = noise_floor;
-					break;
-				case 2: // space only decode
-					mark_env = mclipped = noise_floor;
-				default : ;
-			}
+			/// KL4YFD  CW 2.0 mark only decode
+			space_env = sclipped = noise_floor;
+
 
 //			double v0, v1, v2, v3, v4, v5;
 			double v3;
@@ -844,6 +893,8 @@ void rtty::send_symbol(unsigned int symbol, int len)
 	double freq;
 
 	// transmit mark-only
+	// TODO : Tx audio is only for testing:
+	// Final mode will hard-key the transmitters CW key.
 	freq = get_txfreq_woffset() + shift / 2.0;
 
 	for (int i = 0; i < len; i++) {
@@ -862,33 +913,22 @@ void rtty::send_symbol(unsigned int symbol, int len)
 		ModulateXmtr(outbuf, symbollen);
 }
 
-void rtty::flush_stream()
-{
-	double const freq1 = get_txfreq_woffset() + shift / 2.0;
-	double const freq2 = get_txfreq_woffset() - shift / 2.0;
-	double mark = 0, space = 0, signal = 0;
-
-	for( int i = 0; i < symbollen * 6; ++i ) {
-		mark  = m_SymShaper1->Update(0)*m_Osc1->Update( freq1 );
-		space = m_SymShaper2->Update(0)*m_Osc2->Update( freq2 );
-		signal = mark + space;
-
-		if (maxamp < fabs(signal)) maxamp = fabs(signal);
-		outbuf[i] = maxamp ? (0.99 * signal / maxamp) : 0.0;
-
-		FSKbuf[i] = 0.0;
-	}
-
-	if (progdefaults.PseudoFSK)
-		ModulateStereo(outbuf, FSKbuf, symbollen * 6);
-	else
-		ModulateXmtr(outbuf, symbollen * 6);
-
-}
-
 void rtty::send_char(int c)
 {
-	if (rtty_baud == 25) { // Non FEC mode
+	if (restartchar) { // Send a NULL char to re-synchronize the receiver
+		const char *code = varienc(0);
+		while (*code)
+			send_symbol( (*code++ - '0'), symbollen);
+		if (rtty_baud == 40) { // send twice for fec mode
+			code = varienc(0);	
+			while (*code)
+				send_symbol( (*code++ - '0'), symbollen);
+		}
+		  
+		restartchar = false;
+	}
+  
+	if (rtty_baud == 20) { // Non FEC mode
 	  	const char *code = varienc(c);
 		while (*code)
 			send_symbol( (*code++ - '0'), symbollen);
@@ -900,16 +940,23 @@ void rtty::send_char(int c)
 			//txinlv->bits(&txdata); /// BUG: Interleaver unimplemented
 			send_symbol(txdata &1 , symbollen);
 			send_symbol(txdata &2 , symbollen);
-		}
+		}	
 	}
 
 	put_echo_char(c);
 	return;
 }
 
+/// kl4yfd
+/// send idle in a way that both keeps FEC synch and decodes to nothing in MFSK varicode
+// After a few 0's as input, the FEC will output a string of 0's (key-ups)
 void rtty::send_idle()
 {
-	send_char(0);
+	///send_char(0);
+  	txdata = enc->encode( 0 ); // Keep synchronization with string of 0 bits
+	//txinlv->bits(&txdata); /// BUG: Interleaver unimplemented
+	send_symbol(txdata &1 , symbollen);
+	send_symbol(txdata &2 , symbollen);
 }
 
 static int line_char_count = 0;
@@ -918,10 +965,10 @@ int rtty::tx_process()
 {
 	int c;
 
+	/// CW 2.0 feature: The Non-FEC preamble is heard as the letter "N" twice in Morse code
 	if (preamble) {
-		send_char(32); // Space
-		send_char(0); // DLE
-		send_char(0); // DLE
+		send_char('\n'); // CR : enter
+		send_char('\n');
 		preamble = false;
 	}
 	c = get_tx_char();
@@ -930,21 +977,28 @@ int rtty::tx_process()
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		line_char_count = 0;
-		if (progdefaults.rtty_crcrlf) send_char('\r');
-		send_char('\r');
+		/// CW 2.0 feature: The Non-FEC postamble is heard as the letter "N" twice in Morse code
+		send_char('\n'); // CR : enter
 		send_char('\n');
-	if (progStatus.shaped_rtty) flush_stream();
-//	if (rtty_baud <= SHAPER_BAUD) flush_stream();
-//#if SHAPER_BAUD
-//	flush_stream();
-//#endif
-		cwid(); /// send callsign in Morse code
+		cwid(); /// send callsign in Morse code 
 		return -1;
 	}
 
-// send idle character if c == -1
+	/// CW 2.0 Feature: 
+	/// When there is no character to send, mode becomes RF silent.
+	// (sends a constant stream of "key-up" or 0 values)
 	if (c == GET_TX_CHAR_NODATA) {
-		send_idle();
+		if (!restartchar) {
+			send_char(0); // when NODATA idle starts: send a NULL to flush the last-sent character through Rx
+			if (rtty_baud == 40)
+				send_char(0); // send twice for FEC mode
+		}
+	  	restartchar = true; // Request need for a buffer/restart NULL character (to re-synchronize)
+		
+		if (rtty_baud != 20)
+			send_idle(); /// FEC requires synchronization to be kept...
+		else
+			send_symbol(0, symbollen); // nothing to send: don't waste the RF power with an idle signal
 		return 0;
 	}
 
@@ -956,149 +1010,3 @@ int rtty::tx_process()
 	return 0;
 }
   
-//======================================================================
-// methods for class Oscillator and class SymbolShaper
-//======================================================================
-
-Oscillator::Oscillator( double samplerate )
-{
-	m_phase = 0;
-	m_samplerate = samplerate;
-//	std::cerr << "samplerate for Oscillator:"<<m_samplerate<<"\n";
-}
-
-double Oscillator::Update( double frequency )
-{
-	m_phase += frequency/m_samplerate * TWOPI;
-	if ( m_phase > TWOPI ) m_phase -= TWOPI;
-
-	return ( sin( m_phase ) );
-}
-
-SymbolShaper::SymbolShaper(double baud, double sr)
-{
-	m_sinc_table = 0;
-	Preset( baud, sr );
-}
-
-SymbolShaper::~SymbolShaper()
-{
-	delete [] m_sinc_table;
-}
-
-void SymbolShaper::reset()
-{
-	m_State = false;
-	m_Accumulator = 0.0;
-	m_Counter0 = 1024;
-	m_Counter1 = 1024;
-	m_Counter2 = 1024;
-	m_Counter3 = 1024;
-	m_Counter4 = 1024;
-	m_Counter5 = 1024;
-	m_Factor0 = 0.0;
-	m_Factor1 = 0.0;
-	m_Factor2 = 0.0;
-	m_Factor3 = 0.0;
-	m_Factor4 = 0.0;
-	m_Factor5 = 0.0;
-}
-
-void SymbolShaper::Preset(double baud, double sr)
-{
-    double baud_rate = baud;
-    double sample_rate = sr;
-
-    LOG_INFO("Shaper::reset( %f, %f )",  baud_rate, sample_rate);
-
-// calculate new table-size for six integrators ----------------------
-
-    m_table_size = sample_rate / baud_rate * 5.49;
-    LOG_INFO("Shaper::m_table_size = %d", m_table_size);
-
-// kill old sinc-table and get memory for the new one -----------------
-
-	if (m_sinc_table)
-		delete [] m_sinc_table;
-    m_sinc_table = new double[m_table_size];
-
-// set up the new sinc-table based on the new parameters --------------
-
-    long double sum = 0.0;
-
-    for( int x=0; x<m_table_size; ++x ) {
-        int const offset = m_table_size/2;
-        double wfactor = 1.0 / 1.568; // optimal
-// symbol-length in samples if wmultiple = 1.0
-        double const T = wfactor * sample_rate / (baud_rate*2.0); 
-// symbol-time relative to zero
-        double const t = (x-offset);
-
-        m_sinc_table[x] = rcos( t, T, 1.0 );
-
-// calculate integral
-        sum += m_sinc_table[x];
-    }
-
-// scale the values in the table so that the integral over it is as
-// exactly 1.0000000 as we can do this...
-
-    for( int x=0; x<m_table_size; ++x ) {
-        m_sinc_table[x] *= 1.0 / sum;
-    }
-
-// reset internal states
-    reset();
-    maxamp = 0;
-}
-
-double SymbolShaper::Update( bool state )
-{
-	if( m_State != state ) {
-		m_State = state;
-		if( m_Counter0 >= m_table_size ) {
-			m_Counter0 = 0;
-			m_Factor0 = (state)? +1.0 : -1.0;
-		} else if( m_Counter1 >= m_table_size ) {
-			m_Counter1 = 0;
-			m_Factor1 = (state)? +1.0 : -1.0;
-		} else if( m_Counter2 >= m_table_size ) {
-			m_Counter2 = 0;
-			m_Factor2 = (state)? +1.0 : -1.0;
-		} else if( m_Counter3 >= m_table_size ) {
-			m_Counter3 = 0;
-			m_Factor3 = (state)? +1.0 : -1.0;
-		} else if( m_Counter4 >= m_table_size ) {
-			m_Counter4 = 0;
-			m_Factor4 = (state)? +1.0 : -1.0;
-		} else  if( m_Counter5 >= m_table_size ) {
-			m_Counter5 = 0;
-			m_Factor5 = (state)? +1.0 : -1.0;
-		}
-	}
-
-	if( m_Counter0 < m_table_size )
-		m_Accumulator += m_Factor0 * m_sinc_table[m_Counter0++];
-
-	if( m_Counter1 < m_table_size )
-		m_Accumulator += m_Factor1 * m_sinc_table[m_Counter1++];
-
-	if( m_Counter2 < m_table_size )
-		m_Accumulator += m_Factor2 * m_sinc_table[m_Counter2++];
-
-	if( m_Counter3 < m_table_size )
-		m_Accumulator += m_Factor3 * m_sinc_table[m_Counter3++];
-
-	if( m_Counter4 < m_table_size )
-		m_Accumulator += m_Factor4 * m_sinc_table[m_Counter4++];
-
-	if( m_Counter5 < m_table_size )
-		m_Accumulator += m_Factor5 * m_sinc_table[m_Counter5++];
-
-	return ( m_Accumulator / sqrt(2) );
-}
-
-void SymbolShaper::print_sinc_table()
-{
-	for (int i = 0; i < 1024; i++) printf("%f\n", m_SincTable[i]);
-}

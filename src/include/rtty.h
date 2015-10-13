@@ -221,9 +221,16 @@ private:
 
 	int decodesymbol(unsigned char symbol);
 	unsigned char		symbolpair[2];
-
+	void rx_bit(int bit);
+	void rx_bit2(int bit);
+	void rx_pskr(unsigned char symbol);
+	
+	double			fecmet;
+	double			fecmet2;
+	
 	viterbi		*dec1;
 	viterbi		*dec2;
+	
 	bool rx(bool bit);
 
 	view_rtty *rttyviewer;
@@ -237,13 +244,14 @@ private:
 	void send_idle();
 	int rttyxprocess();
 	void Metric();
+	bool restartchar;
 
 	bool is_mark_space(int &);
 	bool is_mark();
 	
 	
 protected:
-  	interleave	*rxinlv;
+  	interleave	*rxinlv1;
   	interleave	*rxinlv2;
 	interleave	*txinlv;
 	unsigned int 	txdata;
