@@ -1,9 +1,18 @@
 
 
+=Version 3.23.04=
+
+2015-10-15  David Freese  <iam_w1hkj@w1hkj.com>
+
+	345e7c0: CW filter
+	7f23f3f: Update Check
+	4862141: fsq abort
+	3bed0e3: log merge
+
+
 =Version 3.23.03=
 
-2015-09-28  David Freese  <iam_w1hkj@w1hkj.com>
-
+	004c1e7: thor-image
 	c3b610b: FSQ trigger bug
 
 
