@@ -365,11 +365,12 @@ void cw::reset_rx_filter()
 		else
 			bandwidth = progdefaults.CWbandwidth;
 
+		double fbw = 0.5 * bandwidth / samplerate;
 		if (use_fft_filter) { // FFT filter
-			cw_FFT_filter->create_lpf(progdefaults.CWspeed/(1.2 * samplerate));
+			cw_FFT_filter->create_lpf(fbw);
 			FFTphase = 0;
 		} else { // FIR filter
-			cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, progdefaults.CWspeed/(1.2 * samplerate));
+			cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, fbw);
 			FIRphase = 0;
 		}
 		REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth),
