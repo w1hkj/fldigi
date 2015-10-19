@@ -63,7 +63,7 @@ viterbi::~viterbi()
 void viterbi::init(void)
 {
 	if(output) {
-		_traceback = PATHMEM - 1;
+		_traceback = _k * 12; // takes >= 12 constraint lengths to calculate from an arbitrary state, when punctured
 		_chunksize = 8;
 
 		for (int i = 0; i < outsize; i++) {

@@ -80,17 +80,6 @@ extern waterfall *wf;
 #define K13_POLY1	016461 // 7473
 #define K13_POLY2	012767 // 5623
 
-// Poorly performing code: Do not use
-#define K9		9
-#define K9_POLY1	0677 // 447
-#define K9_POLY2	0515 // 333
-
-// df=18 : correct up to 8 bits
-#define	K15		15
-#define	K15_POLY1	044735 // 18909
-#define	K15_POLY2	063057 // 26159
-
-
 // df=19 : correct up to 9 bits
 #define	K16		16
 #define	K16_POLY1	0152711 // 54729
@@ -101,7 +90,7 @@ extern waterfall *wf;
 //  - One of the bits is still known with 100% certianty.
 //  - Only up to 1 bit can be in error
 static cmplx graymapped_8psk_pos[] = {
-	//				 Degrees  Bits In  Mapped Soft-Symbol
+	//			Degrees  Bits In  Mapped Soft-Symbol
 	cmplx (1.0, 0.0),         // 0   | 0b000  | 025,000,025
 	cmplx (0.7071, 0.7071),   // 45  | 0b001  | 000,025,230
 	cmplx (-0.7071, 0.7071),  // 135 | 0b010  | 025,255,025
@@ -365,6 +354,26 @@ psk::psk(trx_mode pskmode) : modem()
 			break;
 
 	// 8psk modes with FEC
+		case MODE_8PSK125FL:
+			symbollen = 128;
+			idepth = 384; // 1024 milliseconds
+			flushlength = 38;
+			samplerate = 16000;
+			_8psk = true;
+			dcdbits = 128;
+			vestigial = true;
+			cap |= CAP_REV;
+			break;
+		case MODE_8PSK250FL: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+			symbollen = 64;
+			idepth = 512; // 682 milliseconds
+			flushlength = 47;
+			samplerate = 16000;
+			_8psk = true;
+			dcdbits = 256;
+			vestigial = true;
+			cap |= CAP_REV;
+			break;
 		case MODE_8PSK125F:
 			symbollen = 128;
 			idepth = 384; // 1024 milliseconds
@@ -732,7 +741,7 @@ psk::psk(trx_mode pskmode) : modem()
 		enc = new encoder(K, POLY1, POLY2);
 		dec = new viterbi(K, POLY1, POLY2);
 
-	} else if (_pskr || mode == MODE_8PSK1200F || PSKviterbi) {
+	} else if (_pskr || PSKviterbi) {
 		// FEC for BPSK. Use a 2nd Viterbi decoder for comparison.
 		// Set decode size to 4 since some characters can be as small
 		// as 3 bits long. This minimises intercharacters decoding
@@ -743,27 +752,26 @@ psk::psk(trx_mode pskmode) : modem()
 		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec2->setchunksize(4);
 
-	} else if (_puncturing) { 
-		// Use the FEC code best suited for puncturing
-		enc = new encoder(K13, K13_POLY1, K13_POLY2);
-		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
-		// long constraint length codes require long traceback
-		dec->settraceback (PATHMEM); 
-		dec->setchunksize(4);
-		dec2 = new viterbi(K13, K13_POLY1, K13_POLY2);
-		dec2->settraceback (PATHMEM);
-		dec2->setchunksize(4);
-
-	} else if (_xpsk || _8psk || _16psk) { 
-		// Use the code with the best FEC capabilities
+	} else if (mode == MODE_8PSK125F || mode == MODE_8PSK250F) {
 		enc = new encoder(K16, K16_POLY1, K16_POLY2);
 		dec = new viterbi(K16, K16_POLY1, K16_POLY2);
-		// long constraint length codes require long traceback
-		dec->settraceback (PATHMEM); 
 		dec->setchunksize(4);
-		dec2 = new viterbi(K16, K16_POLY1, K16_POLY2);
-		dec2->settraceback (PATHMEM);
+		dec2 = new viterbi(K13, K16_POLY1, K16_POLY2);
 		dec2->setchunksize(4);
+	
+	} else if (_xpsk || _8psk || _16psk) {
+		enc = new encoder(K13, K13_POLY1, K13_POLY2);
+		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
+		dec->setchunksize(4);
+		// Second viterbi decoder is only needed when modem has an odd number of bits/symbol.
+		if ( _8psk && !_puncturing ) { // (punctured 8psk has 3-real bits + 1-punctured bit per transmitted symbol)
+			dec2 = new viterbi(K13, K13_POLY1, K13_POLY2);
+			dec2->setchunksize(4);
+		}
+		if (_puncturing) { // punctured codes benefit from a longer traceback
+			dec->settraceback(K13 * 16);
+			if (dec2) dec2->settraceback(K13 * 16);
+		}
 	}
 
 	// Interleaver. For PSKR to maintain constant time delay between bits,
@@ -773,7 +781,7 @@ psk::psk(trx_mode pskmode) : modem()
 
 	Txinlv = new interleave (isize, idepth, INTERLEAVE_FWD);
 	Rxinlv = new interleave (isize, idepth, INTERLEAVE_REV);
-	Rxinlv2 = new interleave (isize, idepth, INTERLEAVE_REV);
+	if (dec2) Rxinlv2 = new interleave (isize, idepth, INTERLEAVE_REV);
 
 	bitshreg = 0;
 	rxbitstate = 0;
@@ -962,6 +970,13 @@ void psk::rx_pskr(unsigned char symbol)
 		//			fecmet2 = -9999.0;
 		//			return;
 		//		}
+		// XPSK and 16PSK have even number of bits/symbol
+		// Punctured 8PSK has even number of bits/symbol (3 real + 1 punctured)
+		// so bit order known: can use only one decoder to reduce CPU usage
+		if ( _xpsk || _16psk || (_8psk && _puncturing) ) {
+			fecmet2 = -9999.0;
+			return;
+		}
 		// copy to avoid scrambling symbolpair for the next bit
 		twosym[0] = symbolpair[0];
 		twosym[1] = symbolpair[1];

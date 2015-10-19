@@ -25,7 +25,7 @@
 #ifndef VITERBI_H
 #define VITERBI_H
 
-#define PATHMEM 128
+#define PATHMEM 256
 
 class viterbi  {
 private:

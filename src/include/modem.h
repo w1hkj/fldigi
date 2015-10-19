@@ -323,7 +323,9 @@ extern modem *_8psk1000_modem;
 extern modem *_8psk1200_modem;
 extern modem *_8psk1333_modem;
 
+extern modem *_8psk125fl_modem;
 extern modem *_8psk125f_modem;
+extern modem *_8psk250fl_modem;
 extern modem *_8psk250f_modem;
 extern modem *_8psk500f_modem;
 extern modem *_8psk1000f_modem;
