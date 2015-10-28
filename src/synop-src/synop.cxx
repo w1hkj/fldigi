@@ -113,7 +113,7 @@ static int diffTm( time_t tim1, time_t tim2 )
 static std::string Tm2SynopTime( time_t tim ) {
 	return KmlServer::Tm2Time( tim );
 }
-	
+
 // ----------------------------------------------------------------------------
 
 /// Base class for displaying the key-value pairs read from Synop broadcast.
@@ -219,7 +219,7 @@ class RecordWmoStation
 
 	// WMO Region :digits 1 through 6 representing the corresponding WMO region, 7 stands for the WMO Antarctic region.
 
-	// Station Latitude or Latitude :DD-MM-SSH where DD is degrees, MM is minutes, SS is seconds 
+	// Station Latitude or Latitude :DD-MM-SSH where DD is degrees, MM is minutes, SS is seconds
 	// and H is N for northern hemisphere or S for southern hemisphere or
 	// E for eastern hemisphere or W for western hemisphere.
 	// The seconds value is omitted for those stations where the seconds value is unknown.
@@ -253,7 +253,8 @@ public:
 	/// This garantees an unique name.
 	const std::string & station_name() const { return m_name; }
 	void rename_station( const std::string & nam ) {
-		// LOG_INFO("Renaming %s to %s", m_name.c_str(), nam.c_str() );
+		if (bMOREINFO)
+			LOG_INFO("Renaming %s to %s", m_name.c_str(), nam.c_str() );
 		m_name = nam;
 	}
 
@@ -280,7 +281,7 @@ public:
 
 		&& ( rec.m_station_coordinates.latitude().is_lon() == false    )
 		&& ( rec.m_station_coordinates.longitude().is_lon() == true    )
-		) 
+		)
 		{
 			strtrim( rec.m_name );
 			return istrm ;
@@ -362,7 +363,7 @@ public:
 		&&  read_until_delim( m_delim, istrm, rec.m_timezone  )
 		&&  read_until_delim( m_delim, istrm, rec.m_forecast  )
 		&&  read_until_delim( m_delim, istrm, rec.m_note      )
-		) 
+		)
 		{
 			// std::cout << "id=" << rec.m_id << " name=" << rec.m_name << "\n";
 			return istrm ;
@@ -403,7 +404,7 @@ public:
 		&&  read_until_delim( m_delim, istrm                  )
 		&&  read_until_delim( m_delim, istrm                  )
 		&&  read_until_delim( m_delim, istrm                  )
-		) 
+		)
 		{
 			strtrim( rec.m_country );
 			strtrim( rec.m_callsign );
@@ -478,7 +479,7 @@ public:
 		&&  read_until_delim( m_delim, istrm  /* Alloc Date */     )
 		&&  read_until_delim( m_delim, istrm  /* Dealloc Date */   )
 		&&  read_until_delim( m_delim, istrm  /* Argos Prog */     )
-		) 
+		)
 		{
 			return istrm ;
 		}
@@ -537,7 +538,8 @@ protected:
 			return false ;
 		}
 		else {
-			LOG_INFO("record=%s nb_recs=%d", typeid(Record).name(), nbRec );
+			if (bMOREINFO)
+				LOG_INFO("record=%s nb_recs=%d", typeid(Record).name(), nbRec );
 			return true ;
 		}
 	}
@@ -587,8 +589,9 @@ public:
 		typedef std::multimap< std::string, IteratorType > HashT ;
 		HashT allNames ;
 
-		// First take the names 
-		// LOG_INFO("Eliminating duplicates out of %d elements",m_catalog.size());
+		// First take the names
+		if (bMOREINFO)
+			LOG_INFO("Eliminating duplicates out of %d elements",m_catalog.size());
 		for( IteratorType it = m_catalog.begin(), en = m_catalog.end(); it != en; ++it )
 		{
 			RecordWmoStation & refWmo = it->second ;
@@ -600,7 +603,8 @@ public:
 		// Iterates on all names, take only the duplicates.
 		for( HashT::iterator itH = allNames.begin(), itNextH = itH, enH = allNames.end(); itH != enH; itH = itNextH )
 		{
-			// LOG_INFO("Name=%s", itH->first.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("Name=%s", itH->first.c_str() );
 			size_t nbKeys = 1 ;
 			for(;;) {
 				++itNextH;
@@ -608,13 +612,15 @@ public:
 				if( itNextH->first != itH->first ) break ;
 				++nbKeys;
 			}
-			// LOG_INFO("Name=%s nb=%d", itH->first.c_str(), nbKeys );
+			if (bMOREINFO)
+				LOG_INFO("Name=%s nb=%d", itH->first.c_str(), nbKeys );
 
 			// If no duplicates, then try next one.
 			if( nbKeys == 1 ) continue ;
 
 			++nbDupl ;
-			// LOG_INFO("%d: Name %s %d occurrences", nbDupl, itH->first.c_str(), nbKeys );
+			if (bMOREINFO)
+				LOG_INFO("%d: Name %s %d occurrences", nbDupl, itH->first.c_str(), nbKeys );
 
 			// There should not be many elements, two or three duplicates, maximum five apparently.
 			typedef std::set< std::string > DiffNamesT ;
@@ -622,7 +628,8 @@ public:
 			// Check that all countries are different.
 			for( HashT::iterator itSubH = itH; itSubH != itNextH; ++itSubH ) {
 				RecordWmoStation & refWmo = itSubH->second->second ;
-				// LOG_INFO("Trying %s", refWmo.station_name().c_str() );
+				if (bMOREINFO)
+					LOG_INFO("Trying %s", refWmo.station_name().c_str() );
 				// Appends the country.
 				refWmo.rename_station( refWmo.station_name() + "," + refWmo.country() );
 				std::pair< DiffNamesT::iterator, bool > tmpPair = differentNames.insert( refWmo.station_name() );
@@ -637,7 +644,9 @@ public:
 		}
 
 		if(nbDupl) {
-			LOG_INFO("Eliminated %d duplicates out of %d elements", (int)nbDupl, (int)m_catalog.size());
+			if (bMOREINFO)
+				LOG_INFO("Eliminated %d duplicates out of %d elements",
+					(int)nbDupl, (int)m_catalog.size());
 		}
 		return true ;
 	}
@@ -668,9 +677,10 @@ public:
 		typedef std::multimap< std::string, IteratorType > HashT ;
 		HashT allNames ;
 
-		// LOG_INFO("Eliminating duplicates out of %d elements",m_catalog.size());
+		if (bMOREINFO)
+			LOG_INFO("Eliminating duplicates out of %d elements",m_catalog.size());
 
-		/// First take the names 
+		/// First take the names
 		for( IteratorType it = m_catalog.begin(), en = m_catalog.end(); it != en; ++it )
 		{
 			RecordBuoy & refWmo = it->second ;
@@ -682,7 +692,8 @@ public:
 		/// Iterates on all names, take only the duplicates.
 		for( HashT::iterator itH = allNames.begin(), itNextH = itH, enH = allNames.end(); itH != enH; itH = itNextH )
 		{
-			// LOG_INFO("Name=%s", itH->first.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("Name=%s", itH->first.c_str() );
 			size_t nbKeys = 1 ;
 			for(;;) {
 				++itNextH;
@@ -690,13 +701,16 @@ public:
 				if( itNextH->first != itH->first ) break ;
 				++nbKeys;
 			}
-			// LOG_INFO("Name=%s nb=%d", itH->first.c_str(), nbKeys );
+			if (bMOREINFO)
+				LOG_INFO("Name=%s nb=%d", itH->first.c_str(), nbKeys );
 
 			// If no duplicates, then try next one.
 			if( nbKeys == 1 ) continue ;
 
 			++nbDupl ;
-			// LOG_INFO("%d: Buoy name %s %d occurrences", nbDupl, itH->first.c_str(), nbKeys );
+			if (bMOREINFO)
+				LOG_INFO("%d: Buoy name %s %d occurrences",
+					nbDupl, itH->first.c_str(), nbKeys );
 
 			// There should not be many elements, two or three duplicates, maximum five apparently.
 			typedef std::set< std::string > DiffNamesT ;
@@ -710,7 +724,8 @@ public:
 				else
 					refBuoy.rename_buoy( strformat( "%s-%s", refBuoy.buoy_name().c_str(), refBuoy.id().c_str() ) );
 				std::pair< DiffNamesT::iterator, bool > tmpPair = differentNames.insert( refBuoy.buoy_name() );
-				// LOG_INFO("Buoy set to %s", refBuoy.buoy_name().c_str() );
+				if (bMOREINFO)
+					LOG_INFO("Buoy set to %s", refBuoy.buoy_name().c_str() );
 				if( tmpPair.second ) continue ;
 				LOG_ERROR("This should never happen because buoy id is unique");
 				return false ;
@@ -718,7 +733,9 @@ public:
 		}
 
 		if(nbDupl) {
-			LOG_INFO("Eliminated %d duplicates out of %d elements", (int)nbDupl, (int)m_catalog.size());
+			if (bMOREINFO)
+				LOG_INFO("Eliminated %d duplicates out of %d elements",
+					(int)nbDupl, (int)m_catalog.size());
 		}
 		return true ;
 	}
@@ -1098,7 +1115,7 @@ public:
 		strm << val ;
 		ItemAdd( key, strm.str().c_str(), unit );
 	}
- 
+
 	void Append( const char * key, const std::string & val, const char * unit = NULL ) const
 	{
 		ItemAdd( key, val.c_str(), unit );
@@ -1108,14 +1125,14 @@ public:
 	{
 		ItemAdd( key, val, unit );
 	}
- 
+
 	void Append( const char * key, double val, const char * unit = NULL ) const
 	{
 		char buf[20];
 		sprintf( buf, "%.1lf", val );
 		ItemAdd( key, buf, unit );
 	}
- 
+
 	void Append( const char * key, int val, const char * unit = NULL ) const
 	{
 		char buf[12];
@@ -1193,7 +1210,7 @@ public:
 	}
 
 	/// Returns the regular expression given its index.
-	static const RegexT * Find(size_t idx ) { 
+	static const RegexT * Find(size_t idx ) {
 		assert( idx < Nb() );
 		return storage()[ idx ];
 	}
@@ -1230,7 +1247,7 @@ public:
 
 	// If two different tokens, with different regular expressions, match for the
 	// same word, the priority tells which one to take. Default value is one.
-	static priority_t Priority( size_t idx ) { 
+	static priority_t Priority( size_t idx ) {
 		assert( idx < Nb() );
 		return storage()[ idx ]->m_priority;
 	}
@@ -1278,7 +1295,7 @@ public:
 
 /// Loops in the tokens held by the container, for a precise type.
 template< class TokenDerived >
-const TokenDerived * TokenProxy::get_ptr(bool previous_chains) const  
+const TokenDerived * TokenProxy::get_ptr(bool previous_chains) const
 {
 	for(
 		TokVec::Ptr curr_container = m_container ;
@@ -1571,7 +1588,7 @@ public:
 /// http://weather.unisys.com/wxp/Appendices/Formats/SYNOP.html
 
 /// 000 Group - Identification and Location
-/// 
+///
 /// IIiii The WMO number of the station.
 HEADTK(IIiii) {
 	int          m_wmo_indicator ;
@@ -1612,7 +1629,7 @@ public:
 	{
 		// std::cout << "wmo=" << str << "\n";
 
-		/* Station index numbers consisting of one figure repeated five times, e.g. 55555, 77777, etc., 
+		/* Station index numbers consisting of one figure repeated five times, e.g. 55555, 77777, etc.,
 		or ending with 0000 or 9999, or duplicating special code indicators, e.g. 10001, 77744, 19191,
 		89998, etc., are not assigned to meteorological stations. We might check if the code exists or not. */
 		if( 1 != sscanf( str, "%d", &m_wmo_indicator ) ) return false ;
@@ -1895,7 +1912,7 @@ public:
 		}
 
 		/// Due to parsing error, we might take the next group header (333 or 555) as a ship name.
-		bool resu = 
+		bool resu =
 			( 1 == sscanf( str, "%9s", m_ship_buoy_identifier ) )
 		&&	( strcmp( m_ship_buoy_identifier, "333" ) )
 		&&	( strcmp( m_ship_buoy_identifier, "555" ) );
@@ -1926,7 +1943,7 @@ public:
 	const char * ShipIdentifier(void) const { return m_ship_buoy_identifier; }
 };
 
-/// ff -- wind speed in units determined by wind type indicator (see above) 
+/// ff -- wind speed in units determined by wind type indicator (see above)
 static const choice< char > wind_speed_units[] = {
 	{ '0',_("m/s (Estimated)") },
 	{ '1',_("m/s (Anemometer)") },
@@ -1977,7 +1994,7 @@ public:
 
 		// No need to display it twice because it will appear after the speed value.
 		if( tstDisp ) {
-			Append( _("Wind type indicator"), 
+			Append( _("Wind type indicator"),
 				choice_map( wind_speed_units, G_N_ELEMENTS( wind_speed_units ),
 					m_wind_type_indicator, _("Unknown speed unit type") ) );
 		}
@@ -2021,7 +2038,7 @@ public:
 	friend class CLASSTK(QLLLL);
 };
 
-/// LLLL -- Longitude of  observation to .1 degrees 
+/// LLLL -- Longitude of  observation to .1 degrees
 HEADTK(QLLLL) {
 	char           m_quadrant ;
 	int            m_longit_10deg ;
@@ -2246,13 +2263,13 @@ public:
 
 		const char * wind_speed_title = _("Wind speed");
 		if( ptr_YYGGi ) {
-			Append( wind_speed_title, m_wind_speed, 
+			Append( wind_speed_title, m_wind_speed,
 				choice_map( wind_speed_units, G_N_ELEMENTS( wind_speed_units ),
 					ptr_YYGGi->m_wind_type_indicator, _("Unknown speed unit type") ) );
 		} else {
-			Append( wind_speed_title, m_wind_speed, _("No unit (YYGGi missing)") ); 
+			Append( wind_speed_title, m_wind_speed, _("No unit (YYGGi missing)") );
 		}
-	       
+
 	}
 
 	bool CanComeFirst(void) const { return false ; }
@@ -2272,7 +2289,7 @@ public:
 
 	void Print() const {
 		// fff -- wind speed if value greater than 100
-		Append( _("Wind speed"), m_wind_speed ); 
+		Append( _("Wind speed"), m_wind_speed );
 	}
 };
 
@@ -2293,14 +2310,14 @@ static void AppCelsius( const TokenProxy * ptrTok, const char * title, char sign
 	if( title == NULL ) title = "No title";
 
 	switch( sign ) {
-		case '1' : temperature_tenth = -temperature_tenth ; 
-		case '0' : ptrTok->Append( title, temperature_tenth * 0.10, Unit_Celsius ); 
+		case '1' : temperature_tenth = -temperature_tenth ;
+		case '0' : ptrTok->Append( title, temperature_tenth * 0.10, Unit_Celsius );
 			   break;
 		case '9' : ptrTok->Append( _("Relative humidity"), (double)temperature_tenth * 0.10 , "%" );
 			   break;
-		case '/' : ptrTok->Append( title, _("Undefined") ); 
+		case '/' : ptrTok->Append( title, _("Undefined") );
 			   break;
-		default  : ptrTok->Append( title, _("Unexpected case") ); 
+		default  : ptrTok->Append( title, _("Unexpected case") );
 			   break;
 	}
 }
@@ -2367,7 +2384,7 @@ static void thousands_omitted( const TokenProxy * ptrTok, const char * pressure,
 	double tmpPres ;
 	// Checks reasonable values for a pressure.
 	if( ( 1 != sscanf( buf, "%lf", &tmpPres ) )
-		|| ( tmpPres > 12000 ) 
+		|| ( tmpPres > 12000 )
 		|| ( tmpPres <  7000 ) ) {
 		ptrTok->Append( title, _("Inconsistent:") + std::string(pressure) );
 	} else {
@@ -2392,7 +2409,7 @@ public:
 };
 
 /** 4PPPP -- Sea level pressure in 0.1 mb (thousandths digit omitted, last digit can be slash, then pressure in full mb)
-Can be as well 4ahhh http://metaf2xml.sourceforge.net/parser.pm.html : 
+Can be as well 4ahhh http://metaf2xml.sourceforge.net/parser.pm.html :
 a3 Isobaric surface (CT 0264), hhh Geopotential of isobaric surface
 */
 HEADTK(4PPPP) {
@@ -2965,7 +2982,7 @@ public:
 	}
 };
 
-/// 9GGgg -- Time of observation in hours and minutes 
+/// 9GGgg -- Time of observation in hours and minutes
 HEADTK(9GGgg) {
 	int m_hours;
 	int m_minutes;
@@ -2983,7 +3000,7 @@ public:
 };
 
 /// 222 Group - Sea Surface Observations
-/// 
+///
 ///       222Dv
 HEADTK(222Dv) {
 	char m_ship_direction;
@@ -3088,9 +3105,9 @@ public:
 			Append( _("Sea surface temperature"), _("Unspecified") );
 
 		if( m_temperature_type == NULL )
-			Append( _("Temperature type"), _("Unspecified") ); 
+			Append( _("Temperature type"), _("Unspecified") );
 		else
-			Append( _("Temperature type"), m_temperature_type ); 
+			Append( _("Temperature type"), m_temperature_type );
 	}
 };
 
@@ -3194,7 +3211,7 @@ public:
 		m_swell_waves_period = -1;
 		m_swell_waves_height = -1;
 		if( 0 == strcmp( str, "4////") ) return true;
-		return ( 2 == sscanf( str, "4%2d%2d", &m_swell_waves_period, &m_swell_waves_height ) ) 
+		return ( 2 == sscanf( str, "4%2d%2d", &m_swell_waves_period, &m_swell_waves_height ) )
 		||     ( 1 == sscanf( str, "4%2d//", &m_swell_waves_period ) );
 	}
 
@@ -3300,7 +3317,7 @@ public:
 	}
 };
 
-/// 8aTTT -- Wet bulb temperature 
+/// 8aTTT -- Wet bulb temperature
 HEADTK(8aTTT) {
 	char         m_wet_bulb_sign_type ;
 	char         m_temperature_sign ;
@@ -3362,7 +3379,7 @@ public:
 	}
 };
 
-/// Separator for ice detection. 
+/// Separator for ice detection.
 HEADTK(ICE) {
 public:
 	// TODO: It is possible to have free text after the string ICE.
@@ -3394,7 +3411,7 @@ public:
 
 	bool Parse( const char * str )
 	{
-		return ( 5 == sscanf( str, "%c%c%c%c%c", 
+		return ( 5 == sscanf( str, "%c%c%c%c%c",
 			&m_sea_ice_arrangement,
 			&m_sea_ice_development_stage,
 			&m_ice_of_land_origin,
@@ -3419,7 +3436,7 @@ public:
 			_("Concentration or arrangement of Sea Ice") );
 
 		/// Si = Sea Ice Stage of Development
-		static const char * sea_ice_development_stages[] = { 
+		static const char * sea_ice_development_stages[] = {
 			_("New ice only (frail ice, grease ice, slush ice, shuga)"),
 			_("Nilas or ice rind, less than 10 cm thick"),
 			_("Young ice (grey ice, grey-white ice), 10-30 cm thick"),
@@ -3669,19 +3686,19 @@ public:
 
 		/// sss -- snow depth in cm: Code table 3889 sss : Total depth of snow
 		switch( m_snow_depth ) {
-			case 0 : 
+			case 0 :
 				Append( _("Snow depth"), _("Not used") );
 				break;
 			default :
 				Append( _("Snow depth"), m_snow_depth, Unit_centimeters );
 				break;
-			case 997 : 
+			case 997 :
 				Append( _("Snow depth"), _("Less than 0.5 cm") );
 				break;
-			case 998 : 
+			case 998 :
 				Append( _("Snow depth"), _("Snow cover, not continuous") );
 				break;
-			case 999 : 
+			case 999 :
 				Append( _("Snow depth"), _("Measurement impossible or inaccurate") );
 				break;
 		}
@@ -3880,7 +3897,7 @@ public:
 		m_cloud_base_height = 0 ;
 		return ( 3 == sscanf( str, "8%c%c%2d", &m_cloud_cover, &m_cloud_genus, &m_cloud_base_height ) )
 		||     ( 2 == sscanf( str, "8%c%c//", &m_cloud_cover, &m_cloud_genus ) )
-		|| ( 0 == strncmp( str, "80///", 5 ) );	
+		|| ( 0 == strncmp( str, "80///", 5 ) );
 	}
 
 	void Print() const {
@@ -3896,9 +3913,9 @@ public:
 		switch( m_cloud_base_height ) {
 			case  0        : Append( title, _("Less than 30 meters") ); break;
 			case  1 ... 50 : Append( title, m_cloud_base_height * 30, Unit_meters ); break;
-			case 51 ... 56 : Append( title, 1500 + ( m_cloud_base_height - 50 ) *   50, Unit_meters ); break; 
-			case 57 ... 80 : Append( title, 1800 + ( m_cloud_base_height - 56 ) *  300, Unit_meters ); break; 
-			case 81 ... 88 : Append( title, 9000 + ( m_cloud_base_height - 80 ) * 1500, Unit_meters ); break; 
+			case 51 ... 56 : Append( title, 1500 + ( m_cloud_base_height - 50 ) *   50, Unit_meters ); break;
+			case 57 ... 80 : Append( title, 1800 + ( m_cloud_base_height - 56 ) *  300, Unit_meters ); break;
+			case 81 ... 88 : Append( title, 9000 + ( m_cloud_base_height - 80 ) * 1500, Unit_meters ); break;
 			case 89        : Append( title, _("Greater than 21000 m") ); break;
 			case 90 ... 99 : disp_arr(cloud_bases,G_N_ELEMENTS(cloud_bases),m_cloud_base_height,90,title );
 					break;
@@ -3907,7 +3924,7 @@ public:
 	}
 };
 
-/// 9SSss -- Supplementary information 
+/// 9SSss -- Supplementary information
 /// http://www.met.fu-berlin.de/~stefan/fm12.html#32
 /// 9SPSPspsp -- Besondere Wettererscheinungen und zusätzliche Informationen (Gruppe kann mehrmals verschlüsselt werden)
 HEADTK(9SSss) {
@@ -4454,7 +4471,7 @@ public:
     * 9snTgTgTgsTg -- Minimumtemperatur des Vortags (00 - 24 UTC) 5 cm über dem Erdboden bzw. der Schneedecke (wird um 06 UTC gemeldet)
       sn -- Vorzeichen der Temperatur (0 = positiv, 1 = negativ)
       Tg Tg Tg -- Erdbodenminimumtemperatur in 1/10 Grad Celsius
-      sTg -- Bedeckung des Temperaturmeßfühlers 5 cm über dem Erdboden mit Schnee oder Eis am Vortag (0 = nein, 1 = ja, / = Angabe nicht möglich) 
+      sTg -- Bedeckung des Temperaturmeßfühlers 5 cm über dem Erdboden mit Schnee oder Eis am Vortag (0 = nein, 1 = ja, / = Angabe nicht möglich)
 */
 
 /// Abschnitt 6 - Automatisch erzeugte Daten
@@ -4923,43 +4940,43 @@ static const void init_patterns(void)
 
 	// http://metaf2xml.sourceforge.net/parser.pm.html
 	// AT: 1snTxTxTx 6RRR/
-	//    1snTxTxTx : maximum temperature on the previous day from 06:00 to 18:00 UTC 
-	//    6RRR/ : amount of precipitation on the previous day from 06:00 to 18:00 UTC 
+	//    1snTxTxTx : maximum temperature on the previous day from 06:00 to 18:00 UTC
+	//    6RRR/ : amount of precipitation on the previous day from 06:00 to 18:00 UTC
  	// BE: 1snTxTxTx 2snTnTnTn
-	//    1snTxTxTx : maximum temperature on the next day from 00:00 to 24:00 UTC 
-	//    2snTnTnTn : minimum temperature on the next day from 00:00 to 24:00 UTC 
+	//    1snTxTxTx : maximum temperature on the next day from 00:00 to 24:00 UTC
+	//    2snTnTnTn : minimum temperature on the next day from 00:00 to 24:00 UTC
  	// CA: 1ssss 2swswswsw 3dmdmfmfm 4fhftftfi
-	//    1ssss : amount of snowfall, in tenths of a centimeter, for the 24-hour period ending at 06:00 UTC 
-	//    2swswswsw : amount of water equivalent, in tenths of a millimeter, for the 24-hour snowfall ending at 06:00 UTC 
-	//    3dmdmfmfm : maximum (mean or gust) wind speed, in knots, for the 24-hour period ending at 06:00 UTC and its direction 
+	//    1ssss : amount of snowfall, in tenths of a centimeter, for the 24-hour period ending at 06:00 UTC
+	//    2swswswsw : amount of water equivalent, in tenths of a millimeter, for the 24-hour snowfall ending at 06:00 UTC
+	//    3dmdmfmfm : maximum (mean or gust) wind speed, in knots, for the 24-hour period ending at 06:00 UTC and its direction
 	//    4fhftftfi : together with the previous group, the hundreds digit of the maximum wind speed (in knots),
 	//                the time of occurrence of the maximum wind speed, and the speed range
-	//                of the maximum two-minute mean wind speed, for the 24-hour period ending at 06:00 UTC and its direction 
+	//                of the maximum two-minute mean wind speed, for the 24-hour period ending at 06:00 UTC and its direction
  	// US land: RECORD* 0ittDtDtD 1snTT snTxTxsnTnTn RECORD* 2R24R24R24R24 44snTwTw 9YYGG
-	//    RECORD : indicator for temperature record(s) 
-	//    0ittDtDtD : tide data 
+	//    RECORD : indicator for temperature record(s)
+	//    0ittDtDtD : tide data
 	//    1snTT snTxTxsnTnTn RECORD* 2R24R24R24R24 : city data: temperature, maximum and minimum temperature,
-	//                indicator for temperature record(s), precipitation last 24 hours 
-	//    44snTwTw : water temperature 
-	//    9YYGG : additional day and hour of observation (repeated from Section 0) 
+	//                indicator for temperature record(s), precipitation last 24 hours
+	//    44snTwTw : water temperature
+	//    9YYGG : additional day and hour of observation (repeated from Section 0)
  	// US sea: 11fff 22fff 3GGgg 4ddfmfm 6GGgg dddfff dddfff dddfff dddfff dddfff dddfff 8ddfmfm 9GGgg
-	//    11fff 22fff : equivalent wind speeds at 10 and 20 meters 
-	//    3GGgg 4ddfmfm : maximum wind speed since the last observation and the time when it occurred 
-	//    6GGgg : end time of the latest 10-minute continuous wind measurements 
-	//    6 x dddfff : 6 10-minute continuous wind measurements 
-	//    8ddfmfm 9GGgg : highest 1-minute wind speed and the time when it occurred 
+	//    11fff 22fff : equivalent wind speeds at 10 and 20 meters
+	//    3GGgg 4ddfmfm : maximum wind speed since the last observation and the time when it occurred
+	//    6GGgg : end time of the latest 10-minute continuous wind measurements
+	//    6 x dddfff : 6 10-minute continuous wind measurements
+	//    8ddfmfm 9GGgg : highest 1-minute wind speed and the time when it occurred
  	// CZ: 1dsdsfsfs 2fsmfsmfsxfsx 3UU// 5snT5T5T5 6snT10T10T10 7snT20T20T20 8snT50T50T50 9snT100T100T100
-	//    1dsdsfsfs : wind direction and speed from tower measurement 
-	//    2fsmfsmfsxfsx : maximum wind gust speed over 10 minute period and the period W1W2 
-	//    3UU// : relative humidity 
-	//    5snT5T5T5 6snT10T10T10 7snT20T20T20 8snT50T50T50 9snT100T100T100 : soil temperature at the depths of 5, 10, 20, 50, and 100 cm 
+	//    1dsdsfsfs : wind direction and speed from tower measurement
+	//    2fsmfsmfsxfsx : maximum wind gust speed over 10 minute period and the period W1W2
+	//    3UU// : relative humidity
+	//    5snT5T5T5 6snT10T10T10 7snT20T20T20 8snT50T50T50 9snT100T100T100 : soil temperature at the depths of 5, 10, 20, 50, and 100 cm
  	// RU: 1EsnT'gT'g 2snTnTnTn 3EsnTgTg 4E'sss 52snT2T2 6RRRtR 7R24R24R24/ 88R24R24R24
-	//    1EsnT'gT'g : state of the ground without snow or measurable ice cover, temperature of the ground surface 
-	//    2snTnTnTn : minimum temperature last night 
-	//    3EsnTgTg : state of the ground without snow or measurable ice cover, minimum temperature of the ground surface last night 
-	//    4E'sss : state of the ground if covered with snow or ice, snow depth 
-	//    6RRRtR : amount of precipitation for given period 
-	//    7R24R24R24/ : amount of daily precipitation 
+	//    1EsnT'gT'g : state of the ground without snow or measurable ice cover, temperature of the ground surface
+	//    2snTnTnTn : minimum temperature last night
+	//    3EsnTgTg : state of the ground without snow or measurable ice cover, minimum temperature of the ground surface last night
+	//    4E'sss : state of the ground if covered with snow or ice, snow depth
+	//    6RRRtR : amount of precipitation for given period
+	//    7R24R24R24/ : amount of daily precipitation
 	//    88R24R24R24 : amount of daily precipitation if 30 mm or more
 
 
@@ -5070,7 +5087,7 @@ class synop_impl
 						std::cout << "DEBUG:" << __FUNCTION__
 							<< " m_idxGroup=" <<  m_idxGroup << " m_idxTok=" << m_idxTok
 							<< " reg=" << reg.Name() << " str=" << str
-							<< " m_nxtTok=" << m_nxtTok 
+							<< " m_nxtTok=" << m_nxtTok
 							<< " priority=" << m_sum_prios << "\n" ;
 						*/
 						return tp ;
@@ -5093,8 +5110,8 @@ class synop_impl
 						std::cout << "DEBUG:" << __FUNCTION__
 							<< " REPET m_idxGroup=" <<  m_idxGroup << " m_idxTok=" << m_idxTok
 							<< " reg=" << reg.Name() << " str=" << str
-							<< " m_nxtTok=" << m_nxtTok 
-							<< " m_idxTok=" << m_idxTok 
+							<< " m_nxtTok=" << m_nxtTok
+							<< " m_idxTok=" << m_idxTok
 							<< " maxTks=" << ptrSynopGroup->m_nb_toks
 							<< " priority=" << m_sum_prios << "\n" ;
 						*/
@@ -5200,7 +5217,7 @@ class synop_impl
 				LOG_DEBUG("No publish0 empty message");
 				return;
 			}
-	
+
 			// Quick check if the message is very short. Beware, it it the total
 			// number of tokens, not the number of sections.
 			if(m_nbTokens <= 2 ) {
@@ -5211,7 +5228,7 @@ class synop_impl
 
 			// We eliminate this kind of message which is not SYNOP although the beginning is similar.
 			// Other simple combinations might be eliminated but they are rarer.
-			// ZCZC 603     
+			// ZCZC 603
 			// WWXX60 EDZW 201700
 			const_iterator it1 = it0;
 			++it1 ;
@@ -5220,7 +5237,8 @@ class synop_impl
 			&&  ( it1            != end()            )
 			&&  ( it1->section() == SECTION_IDENTLOC ) ) {
 				if( m_nbTokens <= 3 ) {
-					LOG_INFO("No publish3 %s", TstToStr().c_str() );
+					if (bMOREINFO)
+						LOG_INFO("No publish3 %s", TstToStr().c_str() );
 					return ;
 				}
 				// TODO: Store these for next run if their are missing.
@@ -5230,7 +5248,8 @@ class synop_impl
 				// For example, receiving only the following line makes no sense:
 				// Climatological data=6RRRt#69907+8NChh#81822+9SSss#91113+9SSss#96480;+;
 				if( it0->section() != SECTION_LAND_OBS ) {
-					LOG_INFO("No publish2 %s", TstToStr().c_str() );
+					if (bMOREINFO)
+						LOG_INFO("No publish2 %s", TstToStr().c_str() );
 					return ;
 				}
 				// TODO: We should use the header SECTION_IDENTLOC of the previous message:
@@ -5307,7 +5326,8 @@ class synop_impl
 									<< " IIiii:" << newCoo
 									<< " Against:" << tmpCoo
 									<< " Dist:" << dist ;
-								LOG_INFO("%s", strm.str().c_str() );
+								if (bMOREINFO)
+									LOG_INFO("%s", strm.str().c_str() );
 							}
 						} else {
 							foundCoo = true ;
@@ -5344,7 +5364,8 @@ class synop_impl
 									<< " IIiii:" << newCoo
 									<< " Against:" << tmpCoo
 									<< " Dist:" << dist ;
-								LOG_INFO("%s", strm.str().c_str() );
+								if (bMOREINFO)
+									LOG_INFO("%s", strm.str().c_str() );
 							}
 						} else {
 							foundCoo = true ;
@@ -5359,7 +5380,8 @@ class synop_impl
 							ptrJComm_Tok->SetJCommFields( kmlNam, iconNam );
 							if( stationCountry.empty() ) stationCountry = ptrJComm_Tok->country();
 						} else {
-							LOG_INFO("Cannot find WMO station:%s", wmoIndicStr.c_str() );
+							if (bMOREINFO)
+								LOG_INFO("Cannot find WMO station:%s", wmoIndicStr.c_str() );
 							kmlNam = "WMO:" + wmoIndicStr ;
 						}
 					}
@@ -5711,7 +5733,7 @@ private:
 		const size_t buf_sz = m_buf.size();
 
 		// The same list can appear in several chains, this is intended.
-		for( int i = 0, nbSynGrp = arrSynopGroups.size(); i < nbSynGrp; ++i )	
+		for( int i = 0, nbSynGrp = arrSynopGroups.size(); i < nbSynGrp; ++i )
 		{
 			for( size_t j = 0, nbToks = arrSynopGroups[i].m_nb_toks; j < nbToks; ++j )
 			{
@@ -5800,7 +5822,7 @@ private:
 
 		/// What happens if it matches the beginning if a chain
 		// NOTE: We suppose that the beginning is never multiple ("Many").
-		for( int idxGrp = 0, nbSynGrp = arrSynopGroups.size(); idxGrp < nbSynGrp; ++idxGrp )	
+		for( int idxGrp = 0, nbSynGrp = arrSynopGroups.size(); idxGrp < nbSynGrp; ++idxGrp )
 		{
 			const synop_group * ptrSynopGroup = &arrSynopGroups[idxGrp];
 			assert( ptrSynopGroup->m_nb_toks > 0 );
@@ -5839,7 +5861,7 @@ private:
 
 		if( nbInserts != 0 ) {
 			/// Removes the chains which cannot possibly match the current suite of tokens.
-			for( ChainsNoInsrtsT::iterator it = chainsNoInsrts.begin(), en = chainsNoInsrts.end(); it != en; ++it ) 
+			for( ChainsNoInsrtsT::iterator it = chainsNoInsrts.begin(), en = chainsNoInsrts.end(); it != en; ++it )
 			{
 				m_chains.erase( *it );
 			}
@@ -5954,7 +5976,7 @@ public:
 					{
 						// -1, no display of '=', whose length is one.
 						decode_then_flush(-1);
-					} else if( nbInserts == 0 ) 
+					} else if( nbInserts == 0 )
 					{
 						if( noChains ) {
 							/// There was no chains before.
@@ -6022,7 +6044,7 @@ void synop::regex_usage(void) {
 		if( ptrSynopGroup-> m_usage_counter > 0 ) continue ;
 
 		std::cout << "DEBUG:" << "Unused:"
-			<< " idxGrp=" <<  idxGrp 
+			<< " idxGrp=" <<  idxGrp
 			<< ' ' << *ptrSynopGroup
 			<< '\n' ;
 	}

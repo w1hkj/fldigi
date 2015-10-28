@@ -179,6 +179,7 @@ FILE	*client;
 bool	mailserver = false, mailclient = false, arqmode = false;
 static bool show_cpucheck = false;
 static bool iconified = false;
+bool	bMOREINFO = false;
 
 string option_help, version_text, build_text;
 
@@ -308,7 +309,7 @@ static void auto_start()
 // reset those default values that have been overriden by a command line parameter
 void check_overrides()
 {
-	if (xmlrpc_address_override_flag) 
+	if (xmlrpc_address_override_flag)
 		progdefaults.xmlrpc_address = override_xmlrpc_address;
 	if (xmlrpc_port_override_flag)
 		progdefaults.xmlrpc_port = override_xmlrpc_port;
@@ -1020,6 +1021,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
                OPT_FRAMES_PER_BUFFER,
 #endif
+           OPT_MORE_INFO,
 	       OPT_NOISE, OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL, OPT_DEBUG_AUDIO,
                OPT_EXIT_AFTER,
                OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
@@ -1078,6 +1080,7 @@ int parse_args(int argc, char **argv, int& idx)
 #if USE_PORTAUDIO
 		{ "frames-per-buffer",1, 0, OPT_FRAMES_PER_BUFFER },
 #endif
+		{ "more-info",     1, 0, OPT_MORE_INFO },
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
 		{ "noise", 0, 0, OPT_NOISE },
@@ -1294,6 +1297,10 @@ int parse_args(int argc, char **argv, int& idx)
 			progdefaults.PortFramesPerBuffer = strtol(optarg, 0, 10);
 			break;
 #endif // USE_PORTAUDIO
+
+		case OPT_MORE_INFO:
+			bMOREINFO = true;
+			break;
 
 		case OPT_EXIT_AFTER:
 			Fl::add_timeout(strtod(optarg, 0), exit_cb);
@@ -1737,7 +1744,8 @@ void kml_init(bool load_files)
 			custData );
 	}
 	catch( const std::exception & exc ) {
-		LOG_WARN("Cannot publish user position:%s", exc.what() );
+
+;//		LOG_WARN("Cannot publish user position:%s", exc.what() );
 	}
 }
 

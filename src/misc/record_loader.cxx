@@ -60,7 +60,8 @@ int RecordLoaderInterface::LoadAndRegister()
 	std::string filnam = storage_filename().first;
 
 	time_t cntTim = time(NULL);
-	LOG_INFO("Opening:%s", filnam.c_str());
+	if (bMOREINFO)
+		LOG_INFO("Opening:%s", filnam.c_str());
 
 	std::ifstream ifs( filnam.c_str() );
 
@@ -93,8 +94,10 @@ int RecordLoaderInterface::LoadAndRegister()
 		}
 	}
 	ifs.close();
-	LOG_INFO( "Read:%s with %d records in %d seconds",
-		filnam.c_str(), static_cast<int>(nbRec), static_cast<int>( time(NULL) - cntTim ) );
+	if (bMOREINFO)
+		LOG_INFO( "Read:%s with %d records in %d seconds",
+			filnam.c_str(), static_cast<int>(nbRec),
+			static_cast<int>( time(NULL) - cntTim ) );
 	return nbRec ;
 }
 
@@ -219,7 +222,9 @@ std::pair< std::string, bool > RecordLoaderInterface::storage_filename(bool crea
 
 	// Second try with a file maybe installed by "make install".
 	std::string filnam_inst = PKGDATADIR "/" + base_filename();
-	LOG_INFO("Errno=%s with %s. Trying %s", strerror(errno), filnam_data.c_str(), filnam_inst.c_str() );
+	if (bMOREINFO)
+		LOG_INFO("Errno=%s with %s. Trying %s",
+			strerror(errno), filnam_data.c_str(), filnam_inst.c_str() );
 	ifs.open( filnam_inst.c_str() );
 	if( ifs )
 	{
@@ -449,7 +454,9 @@ void DerivedRecordLst::cbGuiUpdate()
 		double timeout=600.0;
 		// Consider truncating the HTTP header.
 		int res = fetch_http_gui(url, reply, timeout );
-		LOG_INFO("Loaded %s : %d chars. res=%d", url.c_str(), (int)reply.size(), res );
+		if (bMOREINFO)
+			LOG_INFO("Loaded %s : %d chars. res=%d",
+				url.c_str(), (int)reply.size(), res );
 		if( ! res )
 		{
 			int ok = fl_choice2(
@@ -526,7 +533,8 @@ void DerivedRecordLst::cbGuiReset()
 			fl_alert("Cannot erase installed data file %s", stofil );
 			continue ;
 		} else {
-			LOG_INFO("Erasing %s", stofil );
+			if (bMOREINFO)
+				LOG_INFO("Erasing %s", stofil );
 			int res = ::remove( stofil );
 			if( ( res != 0 ) && ( res != ENOENT ) ) {
 				fl_alert("Error erasing data file %s:%s", stofil, strerror(errno) );

@@ -45,6 +45,7 @@
 #include "threads.h"
 #include "strutil.h"
 #include "configuration.h"
+#include "fl_digi.h"
 
 #include "irrXML.h"
 
@@ -100,7 +101,7 @@ static time_t KmlFromTimestamp( const char * ts ) {
 
 	/// So all fields are initialised with correct default values.
 	time_t timNow = time(NULL);
-	tm objTm = *gmtime( &timNow ); 
+	tm objTm = *gmtime( &timNow );
 
 	int r = sscanf( ts, "%4d-%02d-%02dT%02d:%02dZ",
 			&objTm.tm_year,
@@ -203,7 +204,7 @@ static void KmlHeader( std::ostream & ostrm, const std::string & title ) {
 }
 
 /// Appended at the end of each KML document.
-static const char KmlFooter[] = 
+static const char KmlFooter[] =
 	"</Document>\n"
 	"</kml>\n" ;
 
@@ -260,7 +261,7 @@ class  KmlSrvImpl : public KmlServer {
 					ostrm << "<" FLDIGI_TAG_ITM " " FLDIGI_TAG_KEY "=\"" << it->first
 						<< "\" " FLDIGI_TAG_VAL "=\"";
 					StripHtmlTags(ostrm,it->second);
-					ostrm << "\" />"; 
+					ostrm << "\" />";
 				}
 				ostrm << "</" FLDIGI_TAG_EVT ">\n" ;
 			}
@@ -320,7 +321,8 @@ class  KmlSrvImpl : public KmlServer {
 			if( ( 0 == strncmp( str, namStyles.c_str(), sz ) ) && ( str[sz] == '#' ) ) {
 				m_styleNam = str + sz + 1;
 			} else {
-				LOG_INFO("Inconsistent URL style:%s",str );
+				if (bMOREINFO)
+					LOG_INFO("Inconsistent URL style:%s",str );
 				m_styleNam = str ;
 			}
 		}
@@ -410,7 +412,8 @@ class  KmlSrvImpl : public KmlServer {
 
 			// There should be at least one event.
 			if( beEvt == enEvt ) {
-				LOG_WARN("Inconsistency: No event kmlId=%s",m_kmlId.c_str() );
+				if (bMOREINFO)
+					LOG_WARN("Inconsistency: No event kmlId=%s",m_kmlId.c_str() );
 				return ;
 			}
 
@@ -611,7 +614,8 @@ class  KmlSrvImpl : public KmlServer {
 			/// this key, and this iterator is forward_iterator only.
 			iterator it = find( refVL.first ), en = end() ;
 			if( it == en ) {
-				// LOG_INFO("Cannot find '%s'", refVL.first.c_str() );
+				if (bMOREINFO)
+					LOG_INFO("Cannot find '%s'", refVL.first.c_str() );
 				it = insert( end(), refVL );
 				return;
 			}
@@ -639,7 +643,8 @@ class  KmlSrvImpl : public KmlServer {
 				return ;
 			}
 
-			// LOG_INFO("Inserted '%s' merge_dist=%lf", refVL.first.c_str(), dist );
+			if (bMOREINFO)
+				LOG_INFO("Inserted '%s' merge_dist=%lf", refVL.first.c_str(), dist );
 
 			/// The object is inserted at the end of all elements with the same key.
 			iterator ret = insert( next, refVL );
@@ -677,7 +682,8 @@ class  KmlSrvImpl : public KmlServer {
 		/// Called by the subthread. It can merge data of placemarks with the same name
 		/// and different positions due to a move. This has to be very fast because under lock protection.
 		void FlushQueue(double merge_dist) {
-			// LOG_INFO("FlushQueue nbelts %d sz=%d", m_queue_to_insert.size(), size() );
+			if (bMOREINFO)
+				LOG_INFO("FlushQueue nbelts %d sz=%d", m_queue_to_insert.size(), size() );
 
 			if( m_queue_to_insert.empty() ) return ;
 
@@ -685,7 +691,8 @@ class  KmlSrvImpl : public KmlServer {
 			{
 				DirectInsert( *itPL, merge_dist );
 			}
-			// LOG_INFO("Flushed into sz=%d", size() );
+			if (bMOREINFO)
+				LOG_INFO("Flushed into sz=%d", size() );
 
 			// TODO: If lock contention problems, we might swap this list with another one owned by this
 			// objet. This would later be merged into the container before saving data to disk.
@@ -715,8 +722,10 @@ class  KmlSrvImpl : public KmlServer {
 			/// Cleanup all data older than this.
 			time_t limit_time = now - retention_delay * seconds_per_hour ;
 
-			LOG_INFO("sz=%d retention=%d hours now=%s limit=%s",
-				(int)size(), retention_delay, KmlTimestamp(now).c_str(), KmlTimestamp(limit_time).c_str() );
+			if (bMOREINFO)
+				LOG_INFO("sz=%d retention=%d hours now=%s limit=%s",
+					(int)size(), retention_delay,
+					KmlTimestamp(now).c_str(), KmlTimestamp(limit_time).c_str() );
 
 			size_t nbFullErased = 0 ;
 			size_t nbPartErased = 0 ;
@@ -737,8 +746,9 @@ class  KmlSrvImpl : public KmlServer {
 
 			// Maybe the container only lost data because of data expiration, so it must be saved.
 			bool must_save_now = m_must_save || ( nbFullErased > 0 ) || ( nbPartErased > 0 ) ;
-			LOG_INFO("Sz=%d FullyErased=%d PartialErased=%d m_must_save=%d must_save_now=%d",
-					(int)size(), (int)nbFullErased, (int)nbPartErased, m_must_save, must_save_now );
+			if (bMOREINFO)
+				LOG_INFO("Sz=%d FullyErased=%d PartialErased=%d m_must_save=%d must_save_now=%d",
+						(int)size(), (int)nbFullErased, (int)nbPartErased, m_must_save, must_save_now );
 			m_must_save = must_save_now ;
 		}
 
@@ -758,7 +768,8 @@ class  KmlSrvImpl : public KmlServer {
 
 			/// For safety purpose, we do not empty the file. It might be an error.
 			if( empty() ) {
-				LOG_INFO("Should empty KML file %s. Grace period.", kmlFilNam.c_str() );
+				if (bMOREINFO)
+					LOG_INFO("Should empty KML file %s. Grace period.", kmlFilNam.c_str() );
 				return false ;
 			}
 
@@ -822,7 +833,9 @@ class  KmlSrvImpl : public KmlServer {
 
 			ar << KmlFooter ;
 
-			LOG_INFO("Saved %s: %d placemarks to %s", category.c_str(), nbPlacemarks, kmlFilNam.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("Saved %s: %d placemarks to %s",
+						category.c_str(), nbPlacemarks, kmlFilNam.c_str() );
 			return true ;
 		} // KmlSrvImpl::PlacesMapT::RewriteKmlFileOneCategory
 
@@ -855,7 +868,7 @@ class  KmlSrvImpl : public KmlServer {
 	/// This points to the specific KML file of the category.
 	void CategoryNetworkLink( std::ostream & strm, const std::string & category ) const
 	{
-		strm << 
+		strm <<
 			"<NetworkLink>\n"
 			"	<name>" << category << "</name>\n"
 			"	<Link>\n"
@@ -880,17 +893,20 @@ class  KmlSrvImpl : public KmlServer {
 
 		/// If the file is there, leave as it is because it is maybe customize.
 		if( filDst ) {
-			LOG_INFO("Style file %s not altered", namDst.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("Style file %s not altered", namDst.c_str() );
 			goto close_and_quit ;
 		}
 		filDst = fopen( namDst.c_str(), "w" );
 		if( filDst == NULL ) {
-			LOG_INFO("Cannot open destination style file %s", namDst.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("Cannot open destination style file %s", namDst.c_str() );
 			goto close_and_quit ;
 		}
 		filSrc = fopen( namSrc.c_str(), "r" );
 		if( filSrc == NULL ) {
-			LOG_INFO("Cannot open source style file %s", namSrc.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("Cannot open source style file %s", namSrc.c_str() );
 			goto close_and_quit ;
 		}
 
@@ -905,7 +921,8 @@ class  KmlSrvImpl : public KmlServer {
 				goto close_and_quit ;
 			}
     		}
-		LOG_INFO("Style file %s copied to %s", namSrc.c_str(), namDst.c_str() );
+		if (bMOREINFO)
+			LOG_INFO("Style file %s copied to %s", namSrc.c_str(), namDst.c_str() );
 	close_and_quit:
 		if( filDst ) fclose(filDst);
 		if( filSrc ) fclose(filSrc);
@@ -916,7 +933,8 @@ class  KmlSrvImpl : public KmlServer {
 		// This is the file, that the user must click on.
 		std::string baseFil = m_kml_dir + "fldigi.kml" ;
 
-		LOG_INFO("Creating baseFil=%s", baseFil.c_str() );
+		if (bMOREINFO)
+			LOG_INFO("Creating baseFil=%s", baseFil.c_str() );
 
 		/// We do not need to make this file atomic because it is read once only.
 		AtomicRenamer ar( baseFil );
@@ -947,7 +965,7 @@ class  KmlSrvImpl : public KmlServer {
 			"<coordinates>\n";
 		double dist = 0.0 ;
 		int nbStops = 0 ;
-		// "135.2, 35.4, 0. 
+		// "135.2, 35.4, 0.
 		for(;;) {
 			beg->second.WriteCooSub( ostrm );
 			ostrm << "\n";
@@ -980,7 +998,8 @@ class  KmlSrvImpl : public KmlServer {
 		: m_filnam( filnam )
 		, m_filtmp( filnam + ".tmp" )
 		{
-			// LOG_INFO("AtomicRenamer opening tmp %s", filnam.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("AtomicRenamer opening tmp %s", filnam.c_str() );
 			open( m_filtmp.c_str() );
 			if( bad() ) {
 				LOG_WARN("Cannot open %s", m_filtmp.c_str() );
@@ -1069,7 +1088,8 @@ class  KmlSrvImpl : public KmlServer {
 	void ReloadSingleKmlFile( const std::string & category ) {
 		std::string kmlFilNam = CategFile( category );
 
-		LOG_INFO("kmlFilNam=%s m_merge_dist=%lf", kmlFilNam.c_str(), m_merge_dist );
+		if (bMOREINFO)
+			LOG_INFO("kmlFilNam=%s m_merge_dist=%lf", kmlFilNam.c_str(), m_merge_dist );
 
 		PlacesMapT *ptrMap = m_placemarks.FindCategory( category );
 
@@ -1124,19 +1144,19 @@ class  KmlSrvImpl : public KmlServer {
 				const char * msgTxt = xml->getNodeData();
 				LOG_DEBUG( "getNodeData=%s currState=%s", msgTxt, KmlRdToStr(currState) );
 				switch(currState) {
-					case KMLRD_FOLDER_NAME : 
+					case KMLRD_FOLDER_NAME :
 					       currFolderName = msgTxt ? msgTxt : "NullFolder";
 					       break;
-					case KMLRD_FOLDER_PLACEMARK_POINT_COORDINATES : 
+					case KMLRD_FOLDER_PLACEMARK_POINT_COORDINATES :
 					       currPM.SetCoordinates(msgTxt);
 					       break;
-					case KMLRD_FOLDER_PLACEMARK_NAME : 
+					case KMLRD_FOLDER_PLACEMARK_NAME :
 					       currPlcmrkName = msgTxt ? msgTxt : "NullPlacemarkName";
 					       break;
-					case KMLRD_FOLDER_PLACEMARK_SNIPPET : 
+					case KMLRD_FOLDER_PLACEMARK_SNIPPET :
 					       currPlacemarkDescr = msgTxt ? msgTxt : "NullSnippet";
 					       break;
-					case KMLRD_FOLDER_PLACEMARK_STYLEURL : 
+					case KMLRD_FOLDER_PLACEMARK_STYLEURL :
 					       currPM.SetStyle(msgTxt);
 					       break;
 					default:
@@ -1148,7 +1168,8 @@ class  KmlSrvImpl : public KmlServer {
 				if( ! avoidNode.empty() ) break ;
 
 				const char *nodeName = xml->getNodeName();
-				// LOG_INFO( "getNodeName=%s currState=%s", nodeName, KmlRdToStr(currState) );
+				if (bMOREINFO)
+					LOG_INFO( "getNodeName=%s currState=%s", nodeName, KmlRdToStr(currState) );
 				// TODO: Have a hashmap for each case.
 				switch(currState) {
 					case KMLRD_NONE :
@@ -1160,12 +1181,13 @@ class  KmlSrvImpl : public KmlServer {
 								strcmp( "Document", nodeName ) &&
 								strcmp( "name", nodeName ) )
 							{
+						if (bMOREINFO)
 							LOG_INFO("Unexpected %s in document %s. currState=%s",
-								nodeName, category.c_str(), KmlRdToStr(currState) );
+									nodeName, category.c_str(), KmlRdToStr(currState) );
 							}
 						}
 						break;
-					case KMLRD_FOLDER : 
+					case KMLRD_FOLDER :
 						if (!strcmp("name", nodeName)) {
 							currState = KMLRD_FOLDER_NAME ;
 						}
@@ -1178,11 +1200,12 @@ class  KmlSrvImpl : public KmlServer {
 						else {
 							avoidNode = nodeName ;
 							currState = KMLRD_FOLDER_UNDEFINED ;
-							LOG_INFO("Unexpected %s in folder %s. currState=%s",
-								nodeName, currFolderName.c_str(), KmlRdToStr(currState) );
+							if (bMOREINFO)
+								LOG_INFO("Unexpected %s in folder %s. currState=%s",
+									nodeName, currFolderName.c_str(), KmlRdToStr(currState) );
 						}
 						break;
-					case KMLRD_FOLDER_PLACEMARK : 
+					case KMLRD_FOLDER_PLACEMARK :
 						// There are different sorts of Placemark such as Point or LineString.
 						if (!strcmp("Point", nodeName)) {
 							currState = KMLRD_FOLDER_PLACEMARK_POINT ;
@@ -1214,18 +1237,20 @@ class  KmlSrvImpl : public KmlServer {
 
 							// Other occurences of the same nodes will not be signaled.
 							if( pr.second ) {
-								LOG_INFO("Unexpected %s in placemark id=%s name=%s. currState=%s",
+								if (bMOREINFO)
+									LOG_INFO("Unexpected %s in placemark id=%s name=%s. currState=%s",
 									nodeName, currPM.KmlId().c_str(),
 									currPlcmrkName.c_str(), KmlRdToStr(currState) );
 							}
 						}
 						break;
-					case KMLRD_FOLDER_PLACEMARK_POINT : 
+					case KMLRD_FOLDER_PLACEMARK_POINT :
 						if (!strcmp("coordinates", nodeName)) {
 							currState = KMLRD_FOLDER_PLACEMARK_POINT_COORDINATES ;
 						}
 						else {
-							LOG_INFO("Unexpected %s in coordinates. currState=%s",
+							if (bMOREINFO)
+								LOG_INFO("Unexpected %s in coordinates. currState=%s",
 								nodeName, KmlRdToStr(currState) );
 						}
 						break;
@@ -1235,7 +1260,10 @@ class  KmlSrvImpl : public KmlServer {
 							currTimestamp = KmlFromTimestamp( xml->getAttributeValue(FLDIGI_TIMESTAMP) );
 							currCustData.clear();
 						}
-						else LOG_INFO("Unexpected %s in extended data. currState=%s", nodeName, KmlRdToStr(currState) );
+						else
+							if (bMOREINFO)
+								LOG_INFO("Unexpected %s in extended data. currState=%s",
+										nodeName, KmlRdToStr(currState) );
 						break;
 					case KMLRD_FOLDER_PLACEMARK_EXTENDEDDATA_FLDIGIEVENT:
 						// http://irrlicht.sourceforge.net/forum/viewtopic.php?t=10532
@@ -1246,17 +1274,22 @@ class  KmlSrvImpl : public KmlServer {
 							assert( xml->isEmptyElement() );
 							const char * strKey = xml->getAttributeValue(FLDIGI_TAG_KEY);
 							if(strKey == NULL ) {
-								LOG_INFO("Null item key");
+								if (bMOREINFO)
+									LOG_INFO("Null item key");
 								break ;
 							}
 							const char * strVal = xml->getAttributeValue(FLDIGI_TAG_VAL);
 							if(strVal == NULL ) {
-								LOG_INFO("Null item value");
+								if (bMOREINFO)
+									LOG_INFO("Null item value");
 								break ;
 							}
 							currCustData.Push( strKey, strVal );
 						}
-						else LOG_INFO("Unexpected %s in event. currState=%s", nodeName, KmlRdToStr(currState) );
+						else
+							if (bMOREINFO)
+								LOG_INFO("Unexpected %s in event. currState=%s",
+										nodeName, KmlRdToStr(currState) );
 						break;
 					default:
 						break;
@@ -1267,19 +1300,23 @@ class  KmlSrvImpl : public KmlServer {
 				if( ! avoidNode.empty() ) {
 					const char * msgTxt = xml->getNodeData();
 					if( avoidNode == msgTxt ) {
-						// LOG_INFO("Leaving forbidden element %s. currState=%s", avoidNode.c_str(), KmlRdToStr(currState) );
+						if (bMOREINFO)
+							LOG_INFO("Leaving forbidden element %s. currState=%s", avoidNode.c_str(), KmlRdToStr(currState) );
 						// We can leave the quarantine.
 						avoidNode.clear();
 					} else {
-						// LOG_INFO("Still in forbidden element %s, leaving %s. currState=%s",
-						// 		avoidNode.c_str(), msgTxt, KmlRdToStr(currState) );
+						if (bMOREINFO)
+							LOG_INFO("Still in forbidden element %s, leaving %s. currState=%s",
+									avoidNode.c_str(), msgTxt, KmlRdToStr(currState) );
 						break ;
 					}
 				}
 
 				// We should check that this string matches wuth the state expects, but this is much
 				// faster to use only integers.
-				// LOG_INFO("End of %s currState=%s", xml->getNodeData(), KmlRdToStr(currState) );
+				if (bMOREINFO)
+					LOG_INFO("End of %s currState=%s",
+						xml->getNodeData(), KmlRdToStr(currState) );
 				switch(currState) {
 					case KMLRD_FOLDER :
 						currState = KMLRD_NONE ;
@@ -1323,7 +1360,8 @@ class  KmlSrvImpl : public KmlServer {
 						LOG_ERROR("Should not happen %s", KmlRdToStr(currState));
 						break;
 					}
-				// LOG_INFO("currState=%s", KmlRdToStr(currState) );
+				if (bMOREINFO)
+					LOG_INFO("currState=%s", KmlRdToStr(currState) );
 				break;
 			}
 			case EXN_NONE:
@@ -1337,18 +1375,22 @@ class  KmlSrvImpl : public KmlServer {
 			}
 		}
 
-		LOG_INFO("kmlFilNam=%s loaded sz=%d", kmlFilNam.c_str(), (int)ptrMap->size() );
+		if (bMOREINFO)
+			LOG_INFO("kmlFilNam=%s loaded sz=%d",
+					kmlFilNam.c_str(), (int)ptrMap->size() );
 	} // KmlSrvImpl::ReloadSingleKmlFile
 
 	/// Rewrites only the categories which have changed.
 	bool RewriteKmlFileFull(void) {
 		bool wasSaved = false ;
-		// LOG_INFO("nb_categories=%d", nb_categories );
+		if (bMOREINFO)
+			LOG_INFO("nb_categories=%d", nb_categories );
 		for( size_t i = 0; i < nb_categories; ++i ) {
 			const char * category = categories[i];
 			PlacesMapT *ptrMap = m_placemarks.FindCategory( category );
 			if( ptrMap == NULL ) {
-				LOG_INFO("Category %s undefined", category );
+				if (bMOREINFO)
+					LOG_INFO("Category %s undefined", category );
 				continue;
 			}
 			ptrMap->PruneKmlFile( m_retention_delay );
@@ -1403,7 +1445,7 @@ class  KmlSrvImpl : public KmlServer {
 				tmp_tim.tv_sec = time(NULL) + refresh_delay;
 				tmp_tim.tv_nsec = 0 ;
 
-				// LOG_INFO("About to wait %d seconds", refresh );
+				//LOG_INFO("About to wait %d seconds", refresh );
 				r = pthread_cond_timedwait( &m_cond_queue, &m_mutex_write, &tmp_tim );
 				if( ( r != ETIMEDOUT ) && ( r != 0 ) ) {
 					LOG_ERROR("pthread_cond_timedwait %s d=%d", strerror(errno), m_refresh_interval );
@@ -1417,7 +1459,8 @@ class  KmlSrvImpl : public KmlServer {
 				MilliSleep( 1000 );
 				if( m_kml_must_leave )
 				{
-					LOG_INFO("Exit flag detected. Leaving");
+					if (bMOREINFO)
+						LOG_INFO("Exit flag detected. Leaving");
 					return (void *)"Exit flag detected";
 				}
 			}
@@ -1436,7 +1479,8 @@ class  KmlSrvImpl : public KmlServer {
 						return (void *)error_message ;
 					}
 					--nb_retries ;
-					LOG_INFO("KML server not ready yet. Cnt=%d. Restarting.",nb_retries);
+					if (bMOREINFO)
+						LOG_INFO("KML server not ready yet. Cnt=%d. Restarting.",nb_retries);
 					MilliSleep(1000); // Give time to load data.
 					continue ;
 				}
@@ -1446,18 +1490,20 @@ class  KmlSrvImpl : public KmlServer {
 				{
 					PlacesMapT *ptrMap = m_placemarks.FindCategory( categories[i] );
 					if( ptrMap == NULL ) {
-						LOG_INFO("Category %s undefined", categories[i] );
+						if (bMOREINFO)
+							LOG_INFO("Category %s undefined", categories[i] );
 						continue;
 					}
 					// TODO: If there are contention problems, internally swap the queue
 					// with a fresh empty one.
 					ptrMap->FlushQueue( m_merge_dist );
 				}
-				// LOG_INFO("Releasing lock" );
+				if (bMOREINFO)
+					LOG_INFO("Releasing lock" );
 			}
 			if( r == ETIMEDOUT )
 			{
-				// LOG_INFO("Saving after wait=%d", refresh );
+				//LOG_INFO("Saving after wait=%d", refresh );
 				bool wasSaved = RewriteKmlFileFull();
 
 				// Maybe a user process must be created to process these KML files.
@@ -1471,7 +1517,7 @@ class  KmlSrvImpl : public KmlServer {
 			} else {
 				refresh_delay = tmp_tim.tv_sec - time(NULL);
 				if( refresh_delay <= 0 ) refresh_delay = 1 ;
-				// LOG_INFO("Interrupted when waiting. Restart with wait=%d", refresh );
+				//LOG_INFO("Interrupted when waiting. Restart with wait=%d", refresh );
 #endif
 			}
 		} // Endless loop.
@@ -1512,8 +1558,10 @@ public:
 		m_refresh_interval = kml_refresh_interval ;
 		m_balloon_style = kml_balloon_style ;
 
-		LOG_INFO("dir=%s merge_distance=%lf retention_delay=%d refresh_interval=%d balloon_style=%d",
-			kml_dir.c_str(), kml_merge_distance, kml_retention_delay, kml_refresh_interval, kml_balloon_style );
+		if (bMOREINFO)
+			LOG_INFO("dir=%s merge_distance=%lf retention_delay=%d refresh_interval=%d balloon_style=%d",
+				kml_dir.c_str(), kml_merge_distance,
+				kml_retention_delay, kml_refresh_interval, kml_balloon_style );
 
 		m_kml_dir = kml_dir ;
 
@@ -1544,14 +1592,14 @@ public:
 			try {
 				ReloadSingleKmlFile( categories[i] );
 			} catch( const std::exception & exc ) {
-				LOG_INFO("Category %s. Caught %s", categories[i], exc.what() );
+				LOG_ERROR("Category %s. Caught %s", categories[i], exc.what() );
 			}
 		}
 
 		// Now the object is usable. Theoretically should be protected by a mutex.
 		LOG_DEBUG("Object ready");
 
-		/// Even if an exception was thrown when loading the previous file, it does not 
+		/// Even if an exception was thrown when loading the previous file, it does not
 		/// prevent to overwrite the old files with new and clean ones.
 		m_loaded = true ;
 	}
@@ -1618,32 +1666,38 @@ public:
 #else
 		m_bool_queue = true;
 #endif
-		LOG_INFO("'%s' sz=%d time=%s nb_broad=%d m_merge_dist=%lf",
-			descrTxt.c_str(), (int)ptrMap->size(),
-			KmlTimestamp(evtTim).c_str(),
-			KmlServer::m_nb_broadcasts,m_merge_dist );
+		if (bMOREINFO)
+			LOG_INFO("'%s' sz=%d time=%s nb_broad=%d m_merge_dist=%lf",
+				descrTxt.c_str(), (int)ptrMap->size(),
+				KmlTimestamp(evtTim).c_str(),
+				KmlServer::m_nb_broadcasts,m_merge_dist );
 	}
 
 	/// It flushes the content to disk.
 	~KmlSrvImpl() {
 		{
 			/// This will not be killed in the middle of the writing.
-			LOG_INFO("Cancelling writer thread");
+			if (bMOREINFO)
+				LOG_INFO("Cancelling writer thread");
 			guard_lock myGuard( &m_mutex_write );
 
 #ifdef FLDIGI_KML_CONDITION_VARIABLE
-			LOG_INFO("Cancelling subthread");
+			if (bMOREINFO)
+				LOG_INFO("Cancelling subthread");
 			int r = pthread_cancel( m_writer_thread );
 			if( r ) {
-				LOG_ERROR("pthread_cancel %s", strerror(errno) );
+				if (bMOREINFO)
+					LOG_ERROR("pthread_cancel %s", strerror(errno) );
 				return ;
 			}
 #else
-			LOG_INFO("Setting exit flag.");
+			if (bMOREINFO)
+				LOG_INFO("Setting exit flag.");
 			m_kml_must_leave = true ;
 #endif
 		}
-		// LOG_INFO("Joining subthread");
+		if (bMOREINFO)
+			LOG_INFO("Joining subthread");
 		void * retPtr;
 		int r = pthread_join( m_writer_thread, &retPtr );
 		if( r ) {
@@ -1656,7 +1710,8 @@ public:
 				: (retPtr == PTHREAD_CANCELED)
 					? "Canceled thread"
 					: static_cast<const char *>(retPtr);
-		LOG_INFO("Thread stopped. Message:%s", msg );
+		if (bMOREINFO)
+			LOG_INFO("Thread stopped. Message:%s", msg );
 
 		/// Here we are sure that the subthread is stopped. The subprocess is not called.
 		RewriteKmlFileFull();
@@ -1687,7 +1742,9 @@ public:
 		if( is_proc_still_running == -1 ) return ;
 		if( ( m_pid_command <= 0 ) || ( is_proc_still_running == 0 ) ) {
 			m_pid_command = fork_process( m_command.c_str() );
-			LOG_INFO("%s: Pid=%d Command=%s", __FUNCTION__, m_pid_command, m_command.c_str() );
+			if (bMOREINFO)
+				LOG_INFO("%s: Pid=%d Command=%s",
+						__FUNCTION__, m_pid_command, m_command.c_str() );
 		}
 	}
 
@@ -1741,7 +1798,8 @@ void KmlServer::SpawnProcess() {
 /// Called by thr main program, clean exit.
 void KmlServer::Exit(void) {
 	// We assume that the calling program has no try/catch handler.
-	// LOG_INFO("Exiting");
+	if (bMOREINFO)
+		LOG_INFO("Exiting");
 	try {
 		KmlServer * pKml = Pointer();
 		if( pKml ) {

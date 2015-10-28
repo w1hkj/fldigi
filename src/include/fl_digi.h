@@ -57,6 +57,8 @@ extern Fl_Double_Window *dlgRecordLoader;
 
 extern bool first_use;
 
+extern bool		bMOREINFO;
+
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
 extern pskBrowser		*mainViewer;
