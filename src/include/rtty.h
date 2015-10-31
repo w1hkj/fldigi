@@ -240,14 +240,14 @@ private:
 	double nco(double freq);
 	void send_symbol(unsigned int symbol, int len);
 	void send_stop();
-	void send_char(int c);
+	void send_char(unsigned char c);
 	void send_idle();
 	int rttyxprocess();
 	void Metric();
 	bool restartchar;
 
 	bool is_mark_space(int &);
-	bool is_mark();
+	bool is_mark(int offset);
 	
 	
 protected:

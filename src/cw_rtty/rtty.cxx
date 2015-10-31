@@ -1,12 +1,23 @@
 // ----------------------------------------------------------------------------
-// rtty.cxx  --  RTTY modem
+// cw20.cxx  --  CW 2.0 modem
 //
-// Copyright (C) 2012
-//		Dave Freese, W1HKJ
-//		Stefan Fendt, DL1SMF
-// 
 // CW 2.0 Copyright (C) 2015
 //		John Phelps, KL4YFD
+//
+// Most functions for this modem were borrowed from
+// the following Fldigi files: psk.cxx. mfsk.cxx, & rtty.cxx
+// Many thanks to the following authors for the re-use of this code.
+//		Dave Freese,  W1HKJ
+//		John Douyere, VK2ETA
+//		Stefan Fendt, DL1SMF
+// 
+
+///
+/// Major Bugs:
+/// Does not Tx/Rx UTF8
+/// Rx loses bit-alignment and stops decoding
+/// 
+
 //
 // This file is part of fldigi.
 //
@@ -35,7 +46,6 @@
 
 using namespace std;
 
-//#include "rtty.h"
 #include "view_rtty.h"
 #include "fl_digi.h"
 #include "digiscope.h"
@@ -50,7 +60,6 @@ using namespace std;
 #include "synop.h"
 #include "main.h"
 #include "modem.h"
-
 #include "rtty.h"
 
 #define FILTER_DEBUG 0
@@ -58,14 +67,13 @@ using namespace std;
 #define SHAPER_BAUD 150
 
 // df=16 : correct up to 7 bits
-// Code has good ac(df) and bc(df) parameters for puncturing
 #define K13		13
 #define K13_POLY1	016461 // 7473
 #define K13_POLY2	012767 // 5623
 
 int dspcnt = 0;
 
-static char msg1[20];
+//static char msg1[20];
 
 const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 // FILTLEN must be same size as BAUD
@@ -87,24 +95,6 @@ void rtty::tx_init(SoundBase *sc)
 	ovhd_symbols = 0;
 }
 
-// Customizes output of Synop decoded data.
-struct rtty_callback : public synop_callback {
-	// Callback for writing decoded synop messages.
-	void print(const char * str, size_t nb, bool bold ) const {
-		// Could choose: FTextBase::CTRL,XMIT,RECV
-		int style = bold ? FTextBase::XMIT : FTextBase::RECV;
-		for( size_t i = 0; i < nb; ++i ) {
-			unsigned char c = str[i];
-			put_rx_char(progdefaults.rx_lowercase ? tolower(c) : c, style );
-		}
-	}
-	// Should we log new Synop messages to the current Adif log file ?
-	bool log_adif(void) const { return progdefaults.SynopAdifDecoding ;}
-	// Should we log new Synop messages to KML file ?
-	bool log_kml(void) const { return progdefaults.SynopKmlDecoding ;}
-
-	bool interleaved(void) const { return progdefaults.SynopInterleaved ;}
-};
 
 void rtty::rx_init()
 {
@@ -127,35 +117,15 @@ void rtty::rx_init()
 	inp_ptr = 0;
 
 	lastchar = 0;
-
-	// Synop file is reloaded each time we enter this modem. Ideally do that when the file is changed.
-	static bool wmo_loaded = false ;
-	if( wmo_loaded == false ) {
-		wmo_loaded = true ;
-		SynopDB::Init(PKGDATADIR);
-	}
-	/// Used by weather reports decoding.
-	synop::setup<rtty_callback>();
-	synop::instance()->init();
 }
 
 void rtty::init()
 {
-	bool wfrev = wf->Reverse();
-	bool wfsb = wf->USB();
-	// Probably not necessary because similar to modem::set_reverse
-	reverse = wfrev ^ !wfsb;
+
 	stopflag = false;
 
-	if (progdefaults.StartAtSweetSpot)
-		set_freq(progdefaults.RTTYsweetspot);
-	else if (progStatus.carrier != 0) {
-		set_freq(progStatus.carrier);
-#if !BENCHMARK_MODE
-		progStatus.carrier = 0;
-#endif
-	} else
-		set_freq(wf->Carrier());
+	/// CW 2.0: set center freq to propbable CW center
+	set_freq(750);
 
 	rx_init();
 
@@ -200,8 +170,6 @@ void rtty::reset_filters()
 
 void rtty::restart()
 {
-	double stl;
-
 	rtty_shift = shift = (progdefaults.rtty_shift < numshifts ?
 				  SHIFT[progdefaults.rtty_shift] : progdefaults.rtty_custom_shift);
 	if (progdefaults.rtty_baud > numbauds - 1) progdefaults.rtty_baud = numbauds - 1;
@@ -209,12 +177,8 @@ void rtty::restart()
 	filter_length = FILTLEN[progdefaults.rtty_baud];
 
 	nbits = rtty_bits = BITS[progdefaults.rtty_bits];
-	rtty_parity = RTTY_PARITY_NONE;
 
-	// (exists below already)  rtty_stop = progdefaults.rtty_stop;
 
-	txmode = LETTERS;
-	rxmode = LETTERS;
 	symbollen = (int) (samplerate / rtty_baud + 0.5);
 	set_bandwidth(shift);
 
@@ -231,12 +195,7 @@ void rtty::restart()
 	mark_noise = space_noise = 0;
 	bit = nubit = true;
 
-// stop length = 1, 1.5 or 2 bits
-	rtty_stop = progdefaults.rtty_stop;
-	if (rtty_stop == 0) stl = 1.0;
-	else if (rtty_stop == 1) stl = 1.5;
-	else stl = 2.0;
-	stoplen = (int) (stl * samplerate / rtty_baud + 0.5);
+
 	freqerr = 0.0;
 	pipeptr = 0;
 
@@ -296,13 +255,14 @@ rtty::rtty(trx_mode tty_mode)
 
 	rttyviewer = new view_rtty(mode);
 	
+	/// CW 2.0 Feature: 9+ db gain FEC
 	enc = new encoder (K13, K13_POLY1, K13_POLY2);
 	dec1 = new viterbi (K13, K13_POLY1, K13_POLY2);
 	dec2 = new viterbi (K13, K13_POLY1, K13_POLY2);
-	dec1->setchunksize (1);
-	dec2->setchunksize (1);
+	dec1->setchunksize (4);
+	dec2->setchunksize (4);
 	
-	/// KL4YFD  temp/testing values for inlv
+	///CW 2.0 Feature: 500 ms interleave
 	txinlv = new interleave (2, 20, INTERLEAVE_FWD);
 	rxinlv1 = new interleave (2, 20, INTERLEAVE_REV);
 	rxinlv2 = new interleave (2, 20, INTERLEAVE_REV);
@@ -346,120 +306,136 @@ bool rtty::is_mark_space( int &correction)
 // test for mark/space straddle point
 		for (int i = 0; i < symbollen; i++)
 			correction += bit_buf[i];
-		if (abs(symbollen/2 - correction) < 6) // too small & bad signals are not decoded
+		if (abs(symbollen/2 - correction) < 2) // too small & bad signals are not decoded
 			return true;
 	}
 	return false;
 }
 
-bool rtty::is_mark()
+bool rtty::is_mark(int offset)
 {
-	return bit_buf[symbollen / 2];
-}
-
-
-
-int rtty::decodesymbol(unsigned char symbol)
-{
-	int c, met;
-	static unsigned char symbolpair[2];
-	static int symcounter, met1, met2;
+	int onescount = 0;
+	int zeroscount = 0;
+	int centerpoint = symbollen/2; // default to center
 	
-	symbolpair[0] = symbolpair[1];
-	symbolpair[1] = symbol;
-
-	symcounter = symcounter ? 0 : 1;
-
-	if (symcounter) {
-		if ((c = dec1->decode(symbolpair, &met)) == -1)
-			return -1;
-		met1 = decayavg(met1, met, 50);
-		if (met1 < met2)
-			return -1;
-		metric = met1;
-	
-	} else {
-		if ((c = dec2->decode(symbolpair, &met)) == -1)
-			return -1;
-		met2 = decayavg(met2, met, 50);
-		if (met2 < met1)
-			return -1;
-		 metric = met2;
+	int front_ones, end_ones;
+	// auto-calculate the symbol-offset
+	for (int i=0; i<symbollen/4; i++) {
+		if (bit_buf[i]) front_ones++;
+		if (bit_buf[symbollen-i]) end_ones++;
 	}
-
-	// Re-scale the metric and update main window
-	metric -= 60.0;
-	metric *= 0.5;
-
-	metric = CLAMP(metric, 0.0, 100.0);
-
-	return(c &1);
-
+	
+	if (front_ones == end_ones) { // perfectley aligned symbol
+		  if (end_ones) return true;
+		  else return false;
+	
+	} else if (front_ones && !end_ones) { // perfectley MIS-aligned symbol
+		return false;
+	
+	} else if (!front_ones && end_ones) { // perfectley MIS-aligned symbol
+		return true;
+	
+	} else { // mis-aligned symbol: calc offset by ratio of front_ones to end_ones
+		offset = abs(front_ones - end_ones) / 2;
+	}
+	
+	
+  
+	if ( symbollen/2 + offset > symbollen ) // bounds checking
+		centerpoint = (symbollen/2) - 5;
+	else
+		centerpoint = offset;
+	  
+	
+	// Do a bit-count to decode from bit buffer
+	for (int i=0; i<5; i++) {
+		if (bit_buf[centerpoint+i]) onescount++;
+		else zeroscount++;
+		
+		if (bit_buf[centerpoint-i]) onescount++;
+		else zeroscount++;
+	}
+	
+	if (onescount > zeroscount)
+		return true;
+	else
+		return false;
+	
+	///return bit_buf[symbollen / 2];
 }
 
 
-bool rtty::rx(bool bit) // original modified for probability test
+
+bool rtty::rx(bool bit)
 {
   /*
 	bool flag = false;
 	unsigned char c = 0;
-	int correction;
   */	
-	// kl4yfd
-	// temp hard-decode solution
+	/// kl4yfd
+	/// temp hard-decode solution: just count bits passed & return largest count
 	static int onescount = 0;
 	static int zeroscount = 0;
 	static int bitcounter = 0;
 	
-	static unsigned int datashreg = 1;
 	
+	static unsigned int hardshreg = 1;
+	
+	// BUG: alignable soft-decision decoder code is currently unused
 	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
 	bit_buf[symbollen - 1] = bit;
+	// kl4yfd
+	// BUG: need a working alignment/correction algorithm
+	static int correction=0;
+
 	
 	// count the passed bits for a vote
 	if (bit) onescount++;
 	else zeroscount++;
 	
+	/// kl4yfd debug
+	///printf("%d",bit);
 	
-	// kl4yfd
-	// BUG: need a working alignment/correction algorithm
-	/*
-	if (onescount + zeroscount > 2*symbollen/3) {
-		if (onescount == zeroscount)
-		      bitcounter += symbollen/3;
-	}
-	*/
-	
-	if (++bitcounter == symbollen) {
+
+
+	if (bitcounter++ >= symbollen) {
+		/// kl4yfd debug
+		//printf("\n\n");
+		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
+		
+		/// TODO alignment algorithm
+		/// ???
+			///is_mark_space(correction); ???
+
+		
+		bitcounter = 0;
+	  
 		int hardbit = -1;
 		int softbit = 128;
 		
 		if (onescount > zeroscount) {
+		///if ( is_mark(correction) ) {
 			hardbit = 1;
 			softbit = 255;
 		} else {
 			hardbit = 0;
 			softbit = 0;
 		}
-		bitcounter = onescount = zeroscount = 0;
+		onescount = zeroscount = 0;
 		
-		
+		// If FEC mode, soft-decode and return
 		if (rtty_baud == 40) {
-			///rx_pskr(softbit);
-			///return false;
-			rxdata = softbit;
-			/// rxinlv->bits(&rxdata); /// BUG: Interleaver not implemented for CW 2.0 FEC
-			hardbit = decodesymbol(rxdata);
-			if (hardbit == -1)
-				return false;
+			rx_pskr(softbit);
+			return false;
 		}
 		
+		// implied else Non FEC mode: decode hard-bits to character 
 		int c;
-		datashreg = (datashreg << 1) | !!hardbit;
-		if ((datashreg & 7) == 1) {
-			c = varidec(datashreg >> 1);
+		hardshreg = (hardshreg << 1) | !!hardbit;
+		if ((hardshreg & 7) == 1) {
+			c = varidec(hardshreg >> 1);
 			put_rx_char(c);
-			datashreg = 1;
+			hardshreg = 1;
 		}
 		return true;
 	}
@@ -543,8 +519,8 @@ void rtty::rx_bit(int bit)
 	shreg = (shreg << 1) | !!bit;
 	if ((shreg & 7) == 1) {
 		c = varidec(shreg >> 1);
-		// Voting at the character level for only PSKR modes
-		if (fecmet >= fecmet2) {
+		// Voting at the character level
+		if (fecmet > fecmet2) {
 			if ((c != -1) && (c != 0))
 				put_rx_char(c);
 		}
@@ -562,7 +538,7 @@ void rtty::rx_bit2(int bit)
 	// MFSK varicode instead of PSK Varicode
 	if ((shreg2 & 7) == 1) {
 		c = varidec(shreg2 >> 1);
-		// Voting at the character level for only PSKR modes
+		// Voting at the character level
 		if (fecmet < fecmet2) {
 			if ((c != -1) && (c != 0))
 				put_rx_char(c);
@@ -700,7 +676,7 @@ int rtty::rx_process(const double *buf, int len)
 
 
 //			double v0, v1, v2, v3, v4, v5;
-			double v3;
+			double v5;
 
 // no ATC
 //			v0 = mark_mag - space_mag;
@@ -710,20 +686,20 @@ int rtty::rx_process(const double *buf, int len)
 //			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
 //					(mark_env - noise_floor) - (space_env - noise_floor));
 // Optimal ATC
-			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
-					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
-					(mark_env - noise_floor) * (mark_env - noise_floor) -
-					(space_env - noise_floor) * (space_env - noise_floor));
+//			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
+//					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
+//					(mark_env - noise_floor) * (mark_env - noise_floor) -
+//					(space_env - noise_floor) * (space_env - noise_floor));
 // Kahn Squarer with Linear ATC
 //			v4 =  (mark_mag - noise_floor) * (mark_mag - noise_floor) -
 //					(space_mag - noise_floor) * (space_mag - noise_floor) - 0.25 * (
 //					(mark_env - noise_floor) * (mark_env - noise_floor) -
 //					(space_env - noise_floor) * (space_env - noise_floor));
 // Kahn Squarer with Clipped ATC
-//			v5 =  (mclipped - noise_floor) * (mclipped - noise_floor) -
-//					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
-//					(mark_env - noise_floor) * (mark_env - noise_floor) -
-//					(space_env - noise_floor) * (space_env - noise_floor));
+			v5 =  (mclipped - noise_floor) * (mclipped - noise_floor) -
+					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
+					(mark_env - noise_floor) * (mark_env - noise_floor) -
+					(space_env - noise_floor) * (space_env - noise_floor));
 //				switch (progdefaults.rtty_demodulator) {
 //			switch (2) { // Optimal ATC
 //			case 0: // linear ATC
@@ -733,13 +709,13 @@ int rtty::rx_process(const double *buf, int len)
 //				bit = v2 > 0;
 //				break;
 //			case 2: // optimal ATC
-				bit = v3 > 0;
+//				bit = v3 > 0;
 //				break;
 //			case 3: // Kahn linear ATC
 //				bit = v4 > 0;
 //				break;
 //			case 4: // Kahn clipped
-//				bit = v5 > 0;
+				bit = v5 > 0;
 //				break;
 //			case 5: // No ATC
 //			default :
@@ -818,7 +794,7 @@ int rtty::rx_process(const double *buf, int len)
 // detect TTY signal transitions
 // rx(...) returns true if valid TTY bit stream detected
 // either character or idle signal
-			if ( rx( reverse ? !bit : bit ) ) {
+			if ( rx( bit ) ) {
 				dspcnt = symbollen * (nbits + 2);
 				if (!bHighSpeed) Update_syncscope();
 				clear_zdata = true;
@@ -828,10 +804,7 @@ int rtty::rx_process(const double *buf, int len)
 				int mp1 = mp0 + 1;
 				if (mp0 < 0) mp0 += MAXPIPE;
 				if (mp1 < 0) mp1 += MAXPIPE;
-				double ferr = (TWOPI * samplerate / rtty_baud) *
-						(!reverse ?
-							arg(conj(mark_history[mp1]) * mark_history[mp0]) :
-							arg(conj(space_history[mp1]) * space_history[mp0]));
+				double ferr = (TWOPI * samplerate / rtty_baud) * arg(conj(mark_history[mp1]) * mark_history[mp0]);
 				if (fabs(ferr) > rtty_baud / 2) ferr = 0;
 				freqerr = decayavg ( freqerr, ferr / 8,
 					progdefaults.rtty_afcspeed == 0 ? 8 :
@@ -895,6 +868,7 @@ void rtty::send_symbol(unsigned int symbol, int len)
 	// transmit mark-only
 	// TODO : Tx audio is only for testing:
 	// Final mode will hard-key the transmitters CW key.
+	// BUG: Rx and Tx center freq is offset by + shift/2
 	freq = get_txfreq_woffset() + shift / 2.0;
 
 	for (int i = 0; i < len; i++) {
@@ -913,23 +887,24 @@ void rtty::send_symbol(unsigned int symbol, int len)
 		ModulateXmtr(outbuf, symbollen);
 }
 
-void rtty::send_char(int c)
+void rtty::send_char(unsigned char  c)
 {
-	if (restartchar) { // Send a NULL char to re-synchronize the receiver
-		const char *code = varienc(0);
+  
+  /// kl4yfd debug
+  ///send_symbol(0, symbollen);
+  ///send_symbol(1, symbollen);
+  ///return;
+  
+	if (restartchar) { // Send a SPACE character to re-synchronize the receiver
+		const char *code = varienc(32);
 		while (*code)
 			send_symbol( (*code++ - '0'), symbollen);
-		if (rtty_baud == 40) { // send twice for fec mode
-			code = varienc(0);	
-			while (*code)
-				send_symbol( (*code++ - '0'), symbollen);
-		}
-		  
+		
 		restartchar = false;
 	}
-  
+	
 	if (rtty_baud == 20) { // Non FEC mode
-	  	const char *code = varienc(c);
+		const char *code = varienc(c);
 		while (*code)
 			send_symbol( (*code++ - '0'), symbollen);
 		
@@ -937,7 +912,7 @@ void rtty::send_char(int c)
 	  	const char *code = varienc(c);
 		while (*code) {
 		  	txdata = enc->encode( (*code++ - '0') );
-			//txinlv->bits(&txdata); /// BUG: Interleaver unimplemented
+			txinlv->bits(&txdata);
 			send_symbol(txdata &1 , symbollen);
 			send_symbol(txdata &2 , symbollen);
 		}	
@@ -947,14 +922,12 @@ void rtty::send_char(int c)
 	return;
 }
 
-/// kl4yfd
-/// send idle in a way that both keeps FEC synch and decodes to nothing in MFSK varicode
-// After a few 0's as input, the FEC will output a string of 0's (key-ups)
+// send idle in a way that both keeps FEC synchronized and decodes to nothing in MFSK varicode
+// After a few 0's as input, the FEC will output a constant string of 0's (key-ups)
 void rtty::send_idle()
 {
-	///send_char(0);
   	txdata = enc->encode( 0 ); // Keep synchronization with string of 0 bits
-	//txinlv->bits(&txdata); /// BUG: Interleaver unimplemented
+	txinlv->bits(&txdata);
 	send_symbol(txdata &1 , symbollen);
 	send_symbol(txdata &2 , symbollen);
 }
@@ -973,30 +946,30 @@ int rtty::tx_process()
 	}
 	c = get_tx_char();
 
-// TX buffer empty
+// Stop or end of transmission
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		line_char_count = 0;
 		/// CW 2.0 feature: The Non-FEC postamble is heard as the letter "N" twice in Morse code
 		send_char('\n'); // CR : enter
 		send_char('\n');
+		for (int i=0; i<25; i++) send_idle(); // flush the Rx pipeline
 		cwid(); /// send callsign in Morse code 
 		return -1;
 	}
 
+// TX buffer empty
 	/// CW 2.0 Feature: 
 	/// When there is no character to send, mode becomes RF silent.
-	// (sends a constant stream of "key-up" or 0 values)
 	if (c == GET_TX_CHAR_NODATA) {
 		if (!restartchar) {
-			send_char(0); // when NODATA idle starts: send a NULL to flush the last-sent character through Rx
-			if (rtty_baud == 40)
-				send_char(0); // send twice for FEC mode
+			send_char(32); // when NODATA idle starts: send a SPACE to flush the last-sent character through Rx
+			if (rtty_baud == 40) send_char(0); // for FEC: send also a NULL to flush last characters through Rx pipeline
 		}
-	  	restartchar = true; // Request need for a buffer/restart NULL character (to re-synchronize)
+	  	restartchar = true; // Request need for a buffer/restart character (to re-synchronize)
 		
 		if (rtty_baud != 20)
-			send_idle(); /// FEC requires synchronization to be kept...
+			send_idle(); // FEC requires synchronization to be kept...
 		else
 			send_symbol(0, symbollen); // nothing to send: don't waste the RF power with an idle signal
 		return 0;
