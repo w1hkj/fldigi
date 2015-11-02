@@ -91,7 +91,7 @@
 #include "dominoex.h"
 #include "feld.h"
 #include "throb.h"
-//#include "pkt.h"
+#include "pkt.h"
 #include "fsq.h"
 #include "ifkp.h"
 #include "wwv.h"
@@ -521,9 +521,9 @@ void cb_ifkp2p0a(Fl_Widget *w, void *arg);
 
 void set_colors();
 
-//void cb_pkt1200(Fl_Widget *w, void *arg);
-//void cb_pkt300(Fl_Widget *w, void *arg);
-//void cb_pkt2400(Fl_Widget *w, void *arg);
+void cb_pkt1200(Fl_Widget *w, void *arg);
+void cb_pkt300(Fl_Widget *w, void *arg);
+void cb_pkt2400(Fl_Widget *w, void *arg);
 
 Fl_Widget *modem_config_tab;
 static const Fl_Menu_Item *quick_change;
@@ -747,12 +747,12 @@ static const Fl_Menu_Item quick_change_ifkp[] = {
 	{ 0}
 };
 
-//Fl_Menu_Item quick_change_pkt[] = {
-//    { " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET },
-//    { "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET },
+Fl_Menu_Item quick_change_pkt[] = {
+    { " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET300 },
+    { "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET1200 },
 //    { "2400 baud", 0, cb_pkt2400, (void *)MODE_PACKET },
-//    { 0 }
-//};
+    { 0 }
+};
 
 inline int minmax(int val, int min, int max)
 {
@@ -1072,26 +1072,26 @@ void set_dominoex_tab_widgets()
 	chkDominoEX_FEC->value(progdefaults.DOMINOEX_FEC);
 }
 
-//void cb_pkt1200(Fl_Widget *w, void *arg)
-//{
-//    progdefaults.PKT_BAUD_SELECT = 0;
-//    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
-//    cb_init_mode(w, arg);
-//}
+void cb_pkt300(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 0;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
 
-//void cb_pkt300(Fl_Widget *w, void *arg)
-//{
-//    progdefaults.PKT_BAUD_SELECT = 1;
-//    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
-//    cb_init_mode(w, arg);
-//}
+void cb_pkt1200(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 1;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
 
-//void cb_pkt2400(Fl_Widget *w, void *arg)
-//{
-//    progdefaults.PKT_BAUD_SELECT = 2;
-//    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
-//    cb_init_mode(w, arg);
-//}
+void cb_pkt2400(Fl_Widget *w, void *arg)
+{
+    progdefaults.PKT_BAUD_SELECT = 2;
+    selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+    cb_init_mode(w, arg);
+}
 
 void startup_modem(modem* m, int f)
 {
@@ -1644,12 +1644,13 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_throb;
 		break;
 
-//	case MODE_PACKET:
-//		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-//			      *mode_info[mode].modem = new pkt(mode), freq);
-//		modem_config_tab = tabNavtex;
-//		quick_change = quick_change_pkt;
-//		break;
+	case MODE_PACKET300:
+	case MODE_PACKET1200:
+		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
+			      *mode_info[mode].modem = new pkt(mode), freq);
+		modem_config_tab = tabPacket;
+		quick_change = quick_change_pkt;
+		break;
 
 	case MODE_WWV:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -2393,13 +2394,6 @@ void cb_mnuDebug(Fl_Widget*, void*)
 {
 	debug::show();
 }
-
-#ifndef NDEBUG
-void cb_mnuFun(Fl_Widget*, void*)
-{
-        fl_message2(_("Sunspot creation underway!"));
-}
-#endif
 
 void cb_mnuAudioInfo(Fl_Widget*, void*)
 {
@@ -4208,11 +4202,11 @@ static Fl_Menu_Item menu_[] = {
 { mode_info[MODE_THROBX4].name, 0, cb_init_mode, (void *)MODE_THROBX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
-//{ "Packet", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-//{ " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{ "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "Packet", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ " 300 baud", 0, cb_pkt300, (void *)MODE_PACKET300, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "1200 baud", 0, cb_pkt1200, (void *)MODE_PACKET1200, 0, FL_NORMAL_LABEL, 0, 14, 0},
 //{ "2400 baud", 0, cb_pkt2400, (void *)MODE_PACKET, 0, FL_NORMAL_LABEL, 0, 14, 0},
-//{0,0,0,0,0,0,0,0,0},
+{0,0,0,0,0,0,0,0,0},
 
 {"WEFAX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_WEFAX_576].name, 0,  cb_init_mode, (void *)MODE_WEFAX_576, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -4239,8 +4233,7 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(_("Colors && Fonts")), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER,
-_FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER,_FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -4304,10 +4297,6 @@ _FL_MULTI_LABEL, 0, 14, 0},
 
 {"     ", 0, 0, 0, FL_MENU_INACTIVE, FL_NORMAL_LABEL, 0, 14, 0},
 {_("&Help"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-#ifndef NDEBUG
-// settle the gmfsk vs fldigi argument once and for all
-{ icons::make_icon_label(_("Create sunspots"), weather_clear_icon), 0, cb_mnuFun, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-#endif
 { icons::make_icon_label(_("Beginners' Guide"), start_here_icon), 0, cb_mnuBeginnersURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Online documentation..."), help_browser_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Fldigi web site..."), net_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, 0, _FL_MULTI_LABEL, 0, 14, 0},
@@ -7692,6 +7681,13 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	if (mailclient || mailserver)
 		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
 
+	else if (mode == MODE_PACKET300 || mode == MODE_PACKET1200) {
+		if (progdefaults.SHOW_PACKET_CODES)
+			rx_chd.rx((unsigned char *)ascii4[data & 0xFF]);
+		else
+			rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
+	}
+
 	else if (progdefaults.show_all_codes)
 		rx_chd.rx((unsigned char *)ascii3[data & 0xFF]);
 
@@ -8176,6 +8172,13 @@ void put_echo_char(unsigned int data, int style)
 	const char **asc = NULL;//ascii;
 	if (mailclient || mailserver || arq_text_available)
 		asc = ascii2;
+	else if (mode == MODE_PACKET300 || mode == MODE_PACKET1200) {
+		if (iscntrl(data) || data > 0x7F) style = FTextBase::CTRL;
+		if (progdefaults.SHOW_PACKET_CODES)
+			asc = ascii4;
+		else
+			asc = ascii2;
+	}
 	else if (progdefaults.show_all_codes)
 		asc = ascii3;
 	else if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST)
@@ -8235,10 +8238,11 @@ void resetCONTESTIA() {
 		trx_start_modem(active_modem);
 }
 
-//void updatePACKET() {
-//    if (active_modem->get_mode() == MODE_PACKET)
-//	trx_start_modem(active_modem);
-//}
+void updatePACKET() {
+	if (active_modem->get_mode() == MODE_PACKET300 ||
+		active_modem->get_mode() == MODE_PACKET1200) 
+		trx_start_modem(active_modem);
+}
 
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();

@@ -33,6 +33,8 @@
 #include <float.h>
 #include <samplerate.h>
 
+#include <FL/Fl_Choice.H>
+
 #include "rsid.h"
 #include "filters.h"
 #include "misc.h"
@@ -362,6 +364,11 @@ void cRsId::search(void)
 
 }
 
+static void set_pkt_baud()
+{
+	selPacket_Baud->value(progdefaults.PKT_BAUD_SELECT);
+}
+
 void cRsId::setup_mode(int iSymbol)
 {
 	switch (iSymbol) {
@@ -577,6 +584,14 @@ void cRsId::setup_mode(int iSymbol)
 		progdefaults.contestiatones = 5;
 		progdefaults.contestiabw = 4;
 		REQ(&set_contestia_tab_widgets);
+		break;
+	case RSID_PACKET_300:
+		progdefaults.PKT_BAUD_SELECT = 0;
+		REQ(set_pkt_baud);
+		break;
+	case RSID_PACKET_1200:
+		progdefaults.PKT_BAUD_SELECT = 1;
+		REQ(set_pkt_baud);
 		break;
 	default:
 		break;
@@ -890,6 +905,12 @@ bool cRsId::assigned(trx_mode mode) {
 		break;
 	case MODE_MT63_2000L:
 		rmode = RSID_MT63_2000_LG;
+		break;
+	case MODE_PACKET300:
+		rmode = RSID_PACKET_300;
+		break;
+	case MODE_PACKET1200:
+		rmode = RSID_PACKET_1200;
 		break;
 	}
 

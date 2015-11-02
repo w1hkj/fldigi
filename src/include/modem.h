@@ -261,6 +261,9 @@ public:
 	virtual bool		fsq_squelch_open() {return false;}
 	virtual void		fsq_transmit(void *) {}
 
+// packet mode
+	virtual int			baud() { return 0;}
+
 };
 
 extern modem *null_modem;
@@ -371,7 +374,7 @@ extern modem *psk500r_c3_modem;
 extern modem *psk500r_c4_modem;
 
 extern modem *rtty_modem;
-//extern modem *pkt_modem;
+extern modem *pkt_modem;
 
 extern modem *olivia_modem;
 extern modem *olivia_4_250_modem;

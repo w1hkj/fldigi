@@ -355,14 +355,15 @@ static const char szOliviaTones[] = "2|4|8|16|32|64|128|256";
 static const char szOliviaBandwidth[] = "125|250|500|1000|2000";
 static const char szContestiaTones[] = "2|4|8|16|32|64|128|256";
 static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
+static const char szPktBauds[]  = "300|1200";//|2400";
 static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {434 227 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {1007 170 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 600 380} color 50 selection_color 50
+      xywh {0 0 600 385} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -456,7 +457,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
+        label UI
         tooltip {User Interface} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsUI {open
@@ -464,7 +465,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
+            tooltip {User Interface - Browser} xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1354,7 +1355,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -2828,10 +2829,10 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {0 25 600 355} selection_color 50 align 9
+          xywh {0 25 600 360} selection_color 50 align 9
         } {
           Fl_Group tabCW {
             label CW open
@@ -2991,7 +2992,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 600 305} align 5
+                xywh {0 75 600 305} align 5 hide
               } {
                 Fl_Group {} {
                   label Timing open
@@ -3116,7 +3117,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Prosigns open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 305} align 5
               } {
                 Fl_Group {} {open
                   xywh {35 85 530 283} box ENGRAVED_FRAME
@@ -3956,7 +3957,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContestia {
-            label Cont open
+            label {Cont'} open
             xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
@@ -4024,101 +4025,338 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabPacket {
+            label Packet open
+            xywh {0 50 600 335} hide
+          } {
+            Fl_Tabs {} {open
+              xywh {0 55 600 330}
+            } {
+              Fl_Group tabPKT {
+                label Packet open
+                xywh {0 75 600 305}
+              } {
+                Fl_Choice selPacket_Baud {
+                  label {Baud rate}
+                  callback {progdefaults.PKT_BAUD_SELECT = o->value();
+updatePACKET();
+progdefaults.changed = true;} open
+                  tooltip {Select packet baudrate} xywh {250 90 99 24} down_box BORDER_BOX align 8 when 1
+                  code0 {o->add(szPktBauds);}
+                  code1 {o->value(progdefaults.PKT_BAUD_SELECT);}
+                } {}
+                Fl_Check_Button btn_pkt_manual_tune {
+                  label {Allow manual tuning}
+                  callback {progdefaults.PKT_MANUAL_TUNE = o->value();
+if (active_modem->get_mode() == MODE_PACKET300 ||
+active_modem->get_mode() == MODE_PACKET1200)
+  active_modem->set_freq(active_modem->get_freq());
+progdefaults.changed = true;}
+                  xywh {100 125 200 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_MANUAL_TUNE);}
+                }
+                Fl_Check_Button btnPktPreferXhairScope {
+                  label {Use cross-hair scope}
+                  callback {progdefaults.PKT_PreferXhairScope=o->value();
+progdefaults.changed = true;}
+                  tooltip {Defaults to syncscope instead of phase (cross-hair) scope} xywh {324 125 177 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_PreferXhairScope);}
+                }
+                Fl_Group {} {
+                  label {FM Compensation} open
+                  xywh {45 165 245 190} box ENGRAVED_FRAME align 17
+                } {
+                  Fl_Counter valPacket_LoSig_RXGain {
+                    label {RX Low Freq Gain}
+                    callback {progdefaults.PKT_LOSIG_RXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;}
+                    tooltip {Processing gain to apply to lower tone (in dB)} xywh {80 201 62 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                    code0 {o->value(progdefaults.PKT_LOSIG_RXGAIN);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Counter valPacket_HiSig_RXGain {
+                    label {RX High Freq Gain}
+                    callback {progdefaults.PKT_HISIG_RXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;}
+                    tooltip {Processing gain to apply to higher tone (in dB)} xywh {80 238 62 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                    code0 {o->value(progdefaults.PKT_HISIG_RXGAIN);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Counter valPacket_LoSig_TXGain {
+                    label {TX Low Freq Gain}
+                    callback {progdefaults.PKT_LOSIG_TXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;}
+                    tooltip {Processing gain to apply to lower tone (in dB)} xywh {80 275 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                    code0 {o->value(progdefaults.PKT_LOSIG_TXGAIN);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                  Fl_Counter valPacket_HiSig_TXGain {
+                    label {TX High Freq Gain}
+                    callback {progdefaults.PKT_HISIG_TXGAIN = o->value();
+updatePACKET();
+progdefaults.changed = true;}
+                    tooltip {Processing gain to apply to higher tone (in dB)} xywh {80 312 63 20} type Simple align 8 minimum -6 maximum 6 step 0.5
+                    code0 {o->value(progdefaults.PKT_HISIG_TXGAIN);}
+                    code1 {o->labelsize(FL_NORMAL_SIZE);}
+                    class Fl_Counter2
+                  }
+                }
+                Fl_Group {} {open
+                  xywh {310 165 245 190} box ENGRAVED_FRAME
+                } {
+                  Fl_Box {} {
+                    label CALL
+                    xywh {392 173 86 19}
+                  }
+                  Fl_Input txt_pkt_own_call {
+                    label {Own Call}
+                    callback {progdefaults.pkt_own_call = o->value();
+progdefaults.changed = true;}
+                    tooltip {Destination call sign} xywh {392 193 88 23}
+                    code0 {o->value(progdefaults.pkt_own_call.c_str());}
+                    class Fl_Input2
+                  }
+                  Fl_Input txt_pkt_dest_call {
+                    label {Dest Call}
+                    callback {progdefaults.pkt_dest_call = o->value();
+progdefaults.changed = true;}
+                    tooltip {Destination call sign} xywh {392 225 88 24}
+                    code0 {o->value(progdefaults.pkt_dest_call.c_str());}
+                    class Fl_Input2
+                  }
+                  Fl_Input txt_pkt_digi_1 {
+                    label {Digi\#1}
+                    callback {progdefaults.pkt_digi_1 = o->value();
+progdefaults.changed = true;}
+                    tooltip {Digipeater call/designator} xywh {392 258 88 24}
+                    code0 {o->value(progdefaults.pkt_digi_1.c_str());}
+                    class Fl_Input2
+                  }
+                  Fl_Input txt_pkt_digi_2 {
+                    label {Digi\#2}
+                    callback {progdefaults.pkt_digi_2 = o->value();
+progdefaults.changed = true;}
+                    tooltip {Digipeater call/designator} xywh {392 292 88 23}
+                    code0 {o->value(progdefaults.pkt_digi_2.c_str());}
+                    class Fl_Input2
+                  }
+                  Fl_Box {} {
+                    label ID
+                    xywh {488 173 53 19}
+                  }
+                  Fl_Choice sel_pkt_own_id {
+                    callback {progdefaults.pkt_own_id = o->value();
+progdefaults.changed = true;} open
+                    tooltip {Own station ID (0 is default)} xywh {488 193 53 23} down_box BORDER_BOX when 1
+                    code0 {o->add("0|1|2|3|4|5|6|7|8|9");}
+                    code1 {o->value(progdefaults.pkt_own_id);}
+                  } {}
+                  Fl_Choice sel_pkt_dest_id {
+                    callback {progdefaults.pkt_dest_id = o->value();
+progdefaults.changed = true;} open
+                    tooltip {Own station ID (0 is default)} xywh {488 225 53 24} down_box BORDER_BOX when 1
+                    code0 {o->add("0|1|2|3|4|5|6|7|8|9");}
+                    code1 {o->value(progdefaults.pkt_dest_id);}
+                  } {}
+                  Fl_Choice sel_pkt_digi_1_id {
+                    callback {progdefaults.pkt_digi_1_id = o->value();
+progdefaults.changed = true;} open
+                    tooltip {Own station ID (0 is default)} xywh {488 258 53 24} down_box BORDER_BOX when 1
+                    code0 {o->add("0|1|2|3|4|5|6|7|8|9");}
+                    code1 {o->value(progdefaults.pkt_digi_1_id);}
+                  } {}
+                  Fl_Choice sel_pkt_digi_2_id {
+                    callback {progdefaults.pkt_digi_2_id = o->value();
+progdefaults.changed = true;} open
+                    tooltip {Own station ID (0 is default)} xywh {488 292 53 23} down_box BORDER_BOX when 1
+                    code0 {o->add("0|1|2|3|4|5|6|7|8|9");}
+                    code1 {o->value(progdefaults.pkt_digi_2_id);}
+                  } {}
+                  Fl_Button btn_pkt_defaults {
+                    label Defaults
+                    callback {txt_pkt_own_call->value(progdefaults.myCall.c_str());
+progdefaults.pkt_own_call = progdefaults.myCall;
+progdefaults.pkt_own_id = 0;
+sel_pkt_own_id->value(0);
+
+progdefaults.pkt_dest_call = "";
+txt_pkt_dest_call->value("");
+progdefaults.pkt_dest_id = 0;
+sel_pkt_dest_id->value(0);
+
+progdefaults.pkt_digi_1 = "";
+txt_pkt_digi_1->value("");
+progdefaults.pkt_digi_1_id = 0;
+sel_pkt_digi_1_id->value(0);
+
+progdefaults.pkt_digi_2 = "";
+txt_pkt_digi_2->value("");
+progdefaults.pkt_digi_2_id = 0;
+sel_pkt_digi_2_id->value(0);}
+                    xywh {436 321 74 24}
+                  }
+                }
+              }
+              Fl_Group tabAX25 {
+                label {AX25 Params} open
+                xywh {0 75 600 305} hide
+              } {
+                Fl_Check_Button btnPktRXTimestamp {
+                  label {add RX timestamps}
+                  callback {progdefaults.PKT_RXTimestamp=o->value();
+progdefaults.changed = true;}
+                  tooltip {Prepend timestamp to each RX packet} xywh {80 93 164 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_RXTimestamp);}
+                }
+                Fl_Check_Button btnPktexpandCmp {
+                  label {decode Compressed data}
+                  callback {progdefaults.PKT_expandCmp=o->value();
+progdefaults.changed = true;}
+                  tooltip {Decode received Compressed Position data} xywh {80 121 222 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_expandCmp);}
+                }
+                Fl_Check_Button btnPktexpandMicE {
+                  label {decode Mic-E data}
+                  callback {progdefaults.PKT_expandMicE=o->value();
+progdefaults.changed = true;}
+                  tooltip {Decode received Mic-E data} xywh {80 150 164 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_expandMicE);}
+                }
+                Fl_Check_Button btnPktexpandPHG {
+                  label {decode PHG data}
+                  callback {progdefaults.PKT_expandPHG=o->value();
+progdefaults.changed = true;}
+                  tooltip {Decode received PHG data} xywh {80 179 164 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_expandPHG);}
+                }
+                Fl_Check_Button btnPktunitsSI {
+                  label {use SI units}
+                  callback {progdefaults.PKT_unitsSI=o->value();
+if (progdefaults.PKT_unitsSI) {
+ progdefaults.PKT_unitsEnglish=false;
+ btnPktunitsEnglish->value(false);
+}
+progdefaults.changed = true;}
+                  tooltip {Display decoded data values in SI units} xywh {80 207 164 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_unitsSI);}
+                }
+                Fl_Check_Button btnPktunitsEnglish {
+                  label {use English units}
+                  callback {progdefaults.PKT_unitsEnglish=o->value();
+if (progdefaults.PKT_unitsSI) {
+ progdefaults.PKT_unitsSI=false;
+ btnPktunitsSI->value(false);
+}
+progdefaults.changed = true;}
+                  tooltip {Display decoded data in English units} xywh {80 236 164 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.PKT_unitsEnglish);}
+                }
+                Fl_Check_Button btn_pkt_show_codes {
+                  label {Show AX25 codes}
+                  callback {progdefaults.SHOW_PACKET_CODES = o->value();
+progdefaults.changed = true;}
+                  tooltip {display packet control codes} xywh {80 265 200 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.SHOW_PACKET_CODES);}
+                }
+              }
+            }
+          }
           Fl_Group tabPSK {
             label PSK open
             xywh {0 50 600 330} hide
           } {
-            Fl_Tabs tabsPSK {open
-              xywh {0 50 600 330} selection_color 50
+            Fl_Group grpPSK {open
+              xywh {4 61 592 311} align 5
             } {
-              Fl_Group grpPSK {
-                label General open
-                xywh {0 75 600 305} align 5
+              Fl_Group {} {
+                label {AFC behavior} open
+                xywh {57 69 484 71} box ENGRAVED_FRAME align 21
               } {
-                Fl_Group {} {
-                  label {AFC behavior} open
-                  xywh {55 87 490 86} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Counter cntSearchRange {
-                    label {Acquisition search range (Hz)}
-                    callback {progdefaults.SearchRange = (int)o->value();
+                Fl_Counter cntSearchRange {
+                  label {Acquisition search range (Hz)}
+                  callback {progdefaults.SearchRange = (int)o->value();
 wf->redraw_marker();
 progdefaults.changed = true;}
-                    tooltip {Capture signals within this frequency range} xywh {200 111 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
-                    code0 {o->value(progdefaults.SearchRange);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
-                  Fl_Counter cntACQsn {
-                    label {Acquisition S/N (dB)}
-                    callback {progdefaults.ACQsn = o->value();
-progdefaults.changed = true;}
-                    tooltip {Capture signals over this threshold} xywh {200 140 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
-                    code0 {o->value(progdefaults.ACQsn);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
+                  tooltip {Capture signals within this frequency range} xywh {204 84 75 20} type Simple align 8 minimum 10 maximum 500 step 10 value 200
+                  code0 {o->value(progdefaults.SearchRange);}
+                  code1 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
                 }
-                Fl_Group {} {
-                  label {S/N and IMD behavior} open
-                  xywh {55 175 490 65} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Group listbox_psk_status_timeout {
-                    label after
-                    callback {progdefaults.StatusDim = o->index();
+                Fl_Counter cntACQsn {
+                  label {Acquisition S/N (dB)}
+                  callback {progdefaults.ACQsn = o->value();
+progdefaults.changed = true;}
+                  tooltip {Capture signals over this threshold} xywh {204 111 75 20} type Simple align 8 minimum 3 maximum 20 step 1 value 6
+                  code0 {o->value(progdefaults.ACQsn);}
+                  code1 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
+                }
+              }
+              Fl_Group {} {
+                label {S/N and IMD behavior} open
+                xywh {58 142 484 53} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Group listbox_psk_status_timeout {
+                  label after
+                  callback {progdefaults.StatusDim = o->index();
 progdefaults.changed = true;} open
-                    tooltip {Behavior of s/n imd} xywh {180 206 80 20} box DOWN_BOX color 7 align 8
-                    code0 {o->add(_("Clear")); o->add(_("Dim"));}
-                    code1 {o->index(progdefaults.StatusDim);
+                  tooltip {Behavior of s/n imd} xywh {185 165 80 20} box DOWN_BOX color 7 align 8
+                  code0 {o->add(_("Clear")); o->add(_("Dim"));}
+                  code1 {o->index(progdefaults.StatusDim);
                        o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_ListBox
-                  } {}
-                  Fl_Counter {} {
-                    label seconds
-                    callback {progdefaults.StatusTimeout = (int)(o->value());
+                  class Fl_ListBox
+                } {}
+                Fl_Counter {} {
+                  label seconds
+                  callback {progdefaults.StatusTimeout = (int)(o->value());
 progdefaults.changed = true;}
-                    tooltip {Will occur after this time in seconds} xywh {321 206 75 20} type Simple align 8 minimum 0 maximum 30 step 1
-                    code0 {o->value(progdefaults.StatusTimeout);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
+                  tooltip {Will occur after this time in seconds} xywh {326 165 75 20} type Simple align 8 minimum 0 maximum 30 step 1
+                  code0 {o->value(progdefaults.StatusTimeout);}
+                  code1 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
                 }
-                Fl_Group {} {
-                  label {Multi-Channel Signal Processing} open
-                  xywh {55 245 490 80} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Check_Button btnEnablePSKbrowsing {
-                    label {Multi-channel detector}
-                    callback {progdefaults.pskbrowser_on = o->value();
+              }
+              Fl_Group {} {
+                label {Multi-Channel Signal Processing} open
+                xywh {58 196 484 70} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Check_Button btnEnablePSKbrowsing {
+                  label {Multi-channel detector}
+                  callback {progdefaults.pskbrowser_on = o->value();
 progdefaults.changed = true;}
-                    xywh {225 295 180 20} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.pskbrowser_on);}
-                  }
-                  Fl_Box {} {
-                    label {Disable on very slow CPUs of if signal browser is not used}
-                    xywh {65 272 440 20} align 20
-                  }
+                  xywh {235 240 180 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.pskbrowser_on);}
                 }
-                Fl_Group {} {
-                  label {8 psk} open
-                  xywh {55 327 490 47} box ENGRAVED_FRAME align 21
-                } {
-                  Fl_Check_Button btnPSKpilot {
-                    label {Pilot tone}
-                    callback {progdefaults.pskpilot = o->value();
+                Fl_Box {} {
+                  label {Disable on very slow CPUs of if signal browser is not used}
+                  xywh {75 217 440 20} align 20
+                }
+              }
+              Fl_Group {} {
+                label {8 psk} open
+                xywh {58 269 484 43} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Check_Button btnPSKpilot {
+                  label {Pilot tone}
+                  callback {progdefaults.pskpilot = o->value();
 progdefaults.changed = true;}
-                    tooltip {Enable encode/decode vestigial pilot tone} xywh {141 342 113 20} down_box DOWN_BOX
-                    code0 {o->value(progdefaults.pskpilot);}
-                  }
-                  Fl_Counter cnt_pilot_power {
-                    label {pilot power (dB)}
-                    callback {progdefaults.pilot_power = o->value();
+                  tooltip {Enable encode/decode vestigial pilot tone} xywh {135 280 113 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.pskpilot);}
+                }
+                Fl_Counter cnt_pilot_power {
+                  label {pilot power (dB)}
+                  callback {progdefaults.pilot_power = o->value();
 progdefaults.changed = true;}
-                    tooltip {Pilot tone power relative to signal} xywh {305 342 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
-                    code0 {o->value(progdefaults.pilot_power);}
-                    code1 {o->labelsize(FL_NORMAL_SIZE);}
-                    class Fl_Counter2
-                  }
+                  tooltip {Pilot tone power relative to signal} xywh {299 280 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
+                  code0 {o->value(progdefaults.pilot_power);}
+                  code1 {o->labelsize(FL_NORMAL_SIZE);}
+                  class Fl_Counter2
                 }
               }
             }
@@ -4132,7 +4370,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group {} {
                 label Tx open
-                xywh {0 75 600 305} align 5
+                xywh {0 75 600 305} align 5 hide
               } {
                 Fl_Group selShift {
                   label {Carrier shift}
@@ -4375,7 +4613,7 @@ progdefaults.changed = true;
               }
               Fl_Group {} {
                 label Synop open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 305} align 5
               } {
                 Fl_Check_Button btnSynopAdifDecoding {
                   label {SYNOP to ADIF}
@@ -4479,130 +4717,139 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tabNavtex {
-            label Nav
+          Fl_Group tabOther {
+            label Other open
             xywh {0 50 600 330} hide
           } {
-            Fl_Check_Button btnNvtxAdifLog {
-              label {Log Navtex messages to Adif file}
-              callback {progdefaults.NVTX_AdifLog=o->value();
-progdefaults.changed = true;}
-              xywh {171 79 235 30} down_box DOWN_BOX
-              code0 {o->value(progdefaults.NVTX_AdifLog);}
-            }
-            Fl_Check_Button btnNvtxKmlLog {
-              label {Log Navtex messages to KML}
-              callback {progdefaults.NVTX_KmlLog=o->value();
-progdefaults.changed = true;}
-              tooltip {Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)} xywh {170 125 270 30} down_box DOWN_BOX
-              code0 {o->value(progdefaults.NVTX_KmlLog);}
-            }
-          }
-          Fl_Group tabWefax {
-            label WFx open
-            xywh {0 50 600 330} hide
-          } {
-            Fl_Group {} {open
-              xywh {2 63 598 300}
+            Fl_Tabs {} {open
+              xywh {0 50 600 330}
             } {
-              Fl_Check_Button btnWefaxAdifLog {
-                label {Log Wefax messages to Adif file}
-                callback {progdefaults.WEFAX_AdifLog=o->value();
+              Fl_Group tabNavtex {
+                label Nav
+                xywh {0 75 600 305}
+              } {
+                Fl_Check_Button btnNvtxAdifLog {
+                  label {Log Navtex messages to Adif file}
+                  callback {progdefaults.NVTX_AdifLog=o->value();
 progdefaults.changed = true;}
-                tooltip {Sent and received faxes are logged to Adif file.} xywh {94 137 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_AdifLog);}
-              }
-              Fl_Check_Button btnWefaxEmbeddedGui {
-                label {Embedded Wefax Gui}
-                callback {progdefaults.WEFAX_EmbeddedGui=o->value();
+                  xywh {171 102 235 28} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.NVTX_AdifLog);}
+                }
+                Fl_Check_Button btnNvtxKmlLog {
+                  label {Log Navtex messages to KML}
+                  callback {progdefaults.NVTX_KmlLog=o->value();
 progdefaults.changed = true;}
-                tooltip {Display tx and rx in main fldigi window.
-Change requires restart of fldigi} xywh {94 74 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
+                  tooltip {Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)} xywh {170 144 270 28} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.NVTX_KmlLog);}
+                }
               }
-              Fl_Input btnWefaxShift {
-                label {Frequency shift (800 Hz)}
-                callback {if( o->value() > 900 ) { o->value(900); return; }
+              Fl_Group tabWefax {
+                label WFx
+                xywh {0 75 600 305} hide
+              } {
+                Fl_Group {} {open
+                  xywh {2 79 598 285}
+                } {
+                  Fl_Check_Button btnWefaxAdifLog {
+                    label {Log Wefax messages to Adif file}
+                    callback {progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;}
+                    tooltip {Sent and received faxes are logged to Adif file.} xywh {99 142 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_AdifLog);}
+                  }
+                  Fl_Check_Button btnWefaxEmbeddedGui {
+                    label {Embedded Wefax Gui}
+                    callback {progdefaults.WEFAX_EmbeddedGui=o->value();
+progdefaults.changed = true;}
+                    tooltip {Display tx and rx in main fldigi window.
+Change requires restart of fldigi} xywh {99 79 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
+                  }
+                  Fl_Input btnWefaxShift {
+                    label {Frequency shift (800 Hz)}
+                    callback {if( o->value() > 900 ) { o->value(900); return; }
 if( o->value() < 750 ) { o->value(750); return; }
 progdefaults.WEFAX_Shift=o->value();
 progdefaults.changed = true;}
-                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {94 177 80 20} type Int align 8
-                code0 {o->value(progdefaults.WEFAX_Shift);}
-                class Fl_Value_Input2
-              }
-              Fl_Input btnWefaxMaxRows {
-                label {Received fax maximum rows number (5000)}
-                callback {if(o->value() > 10000 ) { o->value(10000); return ; }
+                    tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {99 182 80 20} type Int align 8
+                    code0 {o->value(progdefaults.WEFAX_Shift);}
+                    class Fl_Value_Input2
+                  }
+                  Fl_Input btnWefaxMaxRows {
+                    label {Received fax maximum rows number (5000)}
+                    callback {if(o->value() > 10000 ) { o->value(10000); return ; }
 if(o->value() < 1000 ) { o->value(1000); return ; }
 progdefaults.WEFAX_MaxRows=o->value();
 progdefaults.changed = true;}
-                tooltip {Maximum row number for a received fax image.} xywh {94 217 85 20} type Int align 8
-                code0 {o->value(progdefaults.WEFAX_MaxRows);}
-                class Fl_Value_Input2
-              }
-              Fl_Input btnWefaxSaveDir {
-                label {Fax images destination directory}
-                callback {progdefaults.wefax_save_dir=o->value();
+                    tooltip {Maximum row number for a received fax image.} xywh {99 222 85 20} type Int align 8
+                    code0 {o->value(progdefaults.WEFAX_MaxRows);}
+                    class Fl_Value_Input2
+                  }
+                  Fl_Input btnWefaxSaveDir {
+                    label {Fax images destination directory}
+                    callback {progdefaults.wefax_save_dir=o->value();
 progdefaults.changed = true;}
-                xywh {94 267 310 20} align 5
-                code0 {o->value(progdefaults.wefax_save_dir.c_str());}
-              }
-              Fl_Button btnSelectFaxDestDir {
-                label {Directory...}
-                callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+                    xywh {99 272 310 20} align 5
+                    code0 {o->value(progdefaults.wefax_save_dir.c_str());}
+                  }
+                  Fl_Button btnSelectFaxDestDir {
+                    label {Directory...}
+                    callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
 fc->callback(WefaxDestDirSet);
 fc->show();}
-                xywh {424 267 80 20}
-              }
-              Fl_Check_Button btnWefaxHideTx {
-                label {Hide Transmission window}
-                callback {progdefaults.WEFAX_HideTx=o->value();
+                    xywh {429 272 80 20}
+                  }
+                  Fl_Check_Button btnWefaxHideTx {
+                    label {Hide Transmission window}
+                    callback {progdefaults.WEFAX_HideTx=o->value();
 progdefaults.changed = true;}
-                tooltip {Hide transmission window by default.} xywh {94 107 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_HideTx);}
-              }
-              Fl_Check_Button btnWefaxSaveMonochrome {
-                label {Save image as monochrome file}
-                callback {progdefaults.WEFAX_SaveMonochrome=o->value();
+                    tooltip {Hide transmission window by default.} xywh {99 112 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_HideTx);}
+                  }
+                  Fl_Check_Button btnWefaxSaveMonochrome {
+                    label {Save image as monochrome file}
+                    callback {progdefaults.WEFAX_SaveMonochrome=o->value();
 progdefaults.changed = true;}
-                tooltip {Save the fax image as a gray-level PNG file.} xywh {94 297 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+                    tooltip {Save the fax image as a gray-level PNG file.} xywh {99 302 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+                  }
+                }
               }
-            }
-          }
-          Fl_Group tabDFTscan {
-            label Scan open
-            xywh {0 50 600 330} hide
-          } {
-            Fl_Counter cnt_dft_scans {
-              label {\# scans}
-              callback {progdefaults.cnt_dft_scans=(int)o->value();
+              Fl_Group tabDFTscan {
+                label Scan open
+                xywh {0 75 600 305} hide
+              } {
+                Fl_Counter cnt_dft_scans {
+                  label {\# scans}
+                  callback {progdefaults.cnt_dft_scans=(int)o->value();
 progdefaults.changed = true;}
-              xywh {235 129 132 21} minimum 10 maximum 1000 step 10 value 60
-              code0 {o->value(progdefaults.cnt_dft_scans);}
-              code1 {o->lstep(100.0);}
-            }
-            Fl_Counter cnt_dft_range {
-              label {dB Range}
-              callback {progdefaults.cnt_dft_range=o->value();
+                  xywh {235 148 132 19} minimum 10 maximum 1000 step 10 value 60
+                  code0 {o->value(progdefaults.cnt_dft_scans);}
+                  code1 {o->lstep(100.0);}
+                }
+                Fl_Counter cnt_dft_range {
+                  label {dB Range}
+                  callback {progdefaults.cnt_dft_range=o->value();
 update_scope();
 progdefaults.changed = true;}
-              xywh {251 194 100 21} type Simple minimum 20 maximum 120 step 10 value 60
-              code0 {o->value(progdefaults.cnt_dft_range);}
-            }
-            Fl_Check_Button btn_use_relative_dB {
-              label {Use relative dB}
-              callback {progdefaults.dft_relative=o->value();
+                  xywh {251 208 100 20} type Simple minimum 20 maximum 120 step 10 value 60
+                  code0 {o->value(progdefaults.cnt_dft_range);}
+                }
+                Fl_Check_Button btn_use_relative_dB {
+                  label {Use relative dB}
+                  callback {progdefaults.dft_relative=o->value();
 update_scope();
 progdefaults.changed = true;}
-              xywh {275 265 70 15} down_box DOWN_BOX
-              code0 {o->value(progdefaults.dft_relative);}
+                  xywh {275 274 70 14} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.dft_relative);}
+                }
+              }
             }
           }
         }
       }
       Fl_Group tabRig {
-        label Rig open
+        label Rig
         tooltip {Transceiver control} xywh {0 23 600 357} hide
       } {
         Fl_Tabs tabsRig {open
@@ -5205,7 +5452,7 @@ when both in same macro definition} xywh {210 239 90 21} type Simple align 8 min
         }
       }
       Fl_Group tabSoundCard {
-        label Audio open
+        label Audio
         tooltip {Audio devices} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -5501,7 +5748,7 @@ progdefaults.changed = true;} open
         }
       }
       Fl_Group tabID {
-        label ID open
+        label ID
         xywh {0 23 600 357} hide
       } {
         Fl_Tabs tabsID {open
@@ -5756,7 +6003,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc open
+        label Misc
         xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -6299,7 +6546,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabQRZ {
-        label Web open
+        label Web
         tooltip {Callsign database} xywh {0 25 600 355} hide
       } {
         Fl_Tabs tabsQRZ {open
@@ -6538,7 +6785,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabAutoStart {
         label Autostart
-        callback {progdefaults.changed = true;} open
+        callback {progdefaults.changed = true;}
         tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
@@ -6740,7 +6987,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabIO {
         label IO
-        callback {btnDisable_p2p_io_widgets->value(1);} open
+        callback {btnDisable_p2p_io_widgets->value(1);}
         tooltip {Program to Program Communications} xywh {0 25 600 355} hide
         code0 {btnDisable_p2p_io_widgets->value(1);}
       } {

@@ -569,6 +569,29 @@
         ELEM_(bool, THOR_SOFTBITS, "THORSOFTBITS",                                      \
               "Enable Soft-bit decoding",                                               \
               true)                                                                     \
+        /* PACKET */                                                                    \
+        ELEM_(int, PKT_BAUD_SELECT, "PKTBAUDSELECT",                                    \
+              "Packet baud rate. Values are as follows:\n"                              \
+              "  0: 1200 (V/UHF); 1: 300 (HF); 2: 2400 (V/UHF)",                        \
+              0)   /* 1200 baud (V/UHF) default. */                                     \
+        ELEM_(double, PKT_LOSIG_RXGAIN, "LOSIGRXGAIN",                                  \
+              "Signal gain for lower frequency (Mark) tone (in dB)",                    \
+              0.0)                                                                      \
+        ELEM_(double, PKT_HISIG_RXGAIN, "HISIGRXGAIN",                                  \
+              "Signal gain for higher frequency (Space) tone (in dB)",                  \
+              0.0)                                                                      \
+        ELEM_(double, PKT_LOSIG_TXGAIN, "LOSIGTXGAIN",                                  \
+              "Signal gain for Mark (lower frequency) tone (in dB)",                    \
+              0.0)                                                                      \
+        ELEM_(double, PKT_HISIG_TXGAIN, "HISIGTXGAIN",                                  \
+              "Signal gain for Space (higher frequency) tone (in dB)",                  \
+              0.0)                                                                      \
+        ELEM_(bool, PKT_PreferXhairScope, "PKTPREFERXHAIRSCOPE",                        \
+              "Default to syncscope (detected symbol scope)",                           \
+              false)                                                                    \
+        ELEM_(bool, PKT_AudioBoost, "PKTAUDIOBOOST",                                    \
+              "No extra input gain (similar to Mic Boost) by default",                  \
+              false)                                                                    \
                                                                                         \
         ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
               "No timestamps on RX packets by default",                                 \
@@ -589,6 +612,36 @@
         ELEM_(bool, PKT_unitsEnglish, "PKTUNITSENGLISH",                                \
               "display decoded data in English units",                                  \
               false)                                                                    \
+        ELEM_(bool, PKT_MANUAL_TUNE, "PKTMANUALTUNE",                                   \
+              "allow manual tuning of packet center freq",                              \
+              false)                                                                    \
+        ELEM_(bool, SHOW_PACKET_CODES, "SHOWPACKETCODES",                               \
+              "display rx/tx packet control codes",                                     \
+              true)                                                                     \
+        ELEM_(std::string, pkt_own_call, "PACKET_OWN_CALL",                             \
+              "Packet own call (defaults to operator call)",                            \
+              "")                                                                       \
+        ELEM_(int, pkt_own_id, "PACKET_OWN_ID",                                         \
+              "Your call packet ID, ie: 0...9",                                         \
+              0)                                                                        \
+        ELEM_(std::string, pkt_dest_call, "PACKET_DEST_CALL",                           \
+              "Packet destination call sign/ID",                                        \
+              "")                                                                       \
+        ELEM_(int, pkt_dest_id, "PACKET_DEST_ID",                                       \
+              "Destination station packet ID, ie: 0...9",                               \
+              0)                                                                        \
+        ELEM_(std::string, pkt_digi_1, "PACKET_DIGI_1_CALL",                            \
+              "Packet digipeater #1 call sign/ID",                                      \
+              "")                                                                       \
+        ELEM_(int, pkt_digi_1_id, "PACKET_DIGI_1_ID",                                   \
+              "Digipeater station ID, ie: 0...9",                                       \
+              0)                                                                        \
+        ELEM_(std::string, pkt_digi_2, "PACKET_DIGI_2_CALL",                            \
+              "Packet digipeater #2 call sign/ID",                                      \
+              "")                                                                       \
+        ELEM_(int, pkt_digi_2_id, "PACKET_DIGI_2_ID",                                   \
+              "Digipeater station ID, ie: 0...9",                                       \
+              0)                                                                        \
         /* DOMINOEX */                                                                  \
         ELEM_(double, DOMINOEX_BW, "DOMINOEXBW",                                        \
               "Filter bandwidth factor (bandwidth relative to signal width)",           \

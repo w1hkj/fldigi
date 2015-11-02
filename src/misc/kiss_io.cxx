@@ -64,6 +64,7 @@
 
 #include "confdialog.h"
 
+#include "ax25.h"
 
 LOG_FILE_SOURCE(debug::LOG_KISSCONTROL);
 
@@ -71,6 +72,11 @@ LOG_FILE_SOURCE(debug::LOG_KISSCONTROL);
 //#undef EXTENED_DEBUG_INFO
 
 using namespace std;
+//======================================================================
+// AX25 decoder interface
+//======================================================================
+ax25 KX25;
+
 //======================================================================
 // Socket KISS i/o used on all platforms
 //======================================================================
@@ -163,8 +169,6 @@ extern void abort_tx();
 
 // Storage for modem list allowed for KISS use.
 static std::vector<std::string> availabe_kiss_modems;
-
-extern void ax25_decode(unsigned char *buffer, size_t count, bool pad, bool tx_flag);
 
 static int kiss_raw_enabled = KISS_RAW_DISABLED;
 
@@ -2222,7 +2226,7 @@ static size_t encap_hdlc_frame(char *buffer, size_t data_count)
 	char *kiss_encap = (char *)0;
 
 	if(progdefaults.ax25_decode_enabled) {
-		ax25_decode((unsigned char *) buffer, data_count, true, true);
+		KX25.decode((unsigned char *) buffer, data_count, true, true);
 	}
 
 	crc_value = calc_fcs_crc(buffer, (int) data_count);
@@ -2307,7 +2311,7 @@ static size_t decap_hdlc_frame(char *buffer, size_t data_count)
 		memcpy(buffer, kiss_decap, count);
 
 		if(progdefaults.ax25_decode_enabled) {
-			ax25_decode((unsigned char *) buffer, count, true, false);
+			KX25.decode((unsigned char *) buffer, count, true, false);
 		}
 
 		break;

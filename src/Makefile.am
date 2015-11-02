@@ -394,7 +394,6 @@ fldigi_SOURCES += \
 	include/jalocha/pj_mfsk.h \
 	include/jalocha/pj_struc.h \
 	include/kiss_io.h \
-	include/ax25_decode.h \
 	include/coordinate.h \
 	include/gfft.h \
 	include/kmlserver.h \
@@ -446,6 +445,8 @@ fldigi_SOURCES += \
 	include/rsid.h \
 	include/rtty.h \
 	include/view_rtty.h \
+	include/ax25.h \
+	include/pkt.h \
 	include/nco.h \
 	include/synop.h \
 	include/nullmodem.h \
@@ -524,7 +525,6 @@ fldigi_SOURCES += \
 	wefax/wefax-pic.cxx \
 	navtex/navtex.cxx \
 	misc/ascii.cxx \
-	misc/ax25_decode.cxx \
 	misc/charsetdistiller.cxx \
 	misc/charsetlist.cxx \
 	misc/configuration.cxx \
@@ -584,6 +584,8 @@ fldigi_SOURCES += \
 	ssb/ssb.cxx \
 	synop-src/synop.cxx \
 	throb/throb.cxx \
+	packet/pkt.cxx \
+	packet/ax25.cxx \
 	trx/modem.cxx \
 	trx/nullmodem.cxx \
 	trx/trx.cxx \
@@ -615,9 +617,6 @@ fldigi_SOURCES += \
 	logbook/xmlrpc_log.cxx \
 	libtiniconv/tiniconv.c \
 	libtiniconv/tiniconv_desc.c
-
-#	packet/pkt.cxx
-#	include/pkt.h
 
 # Sources that are part of the distribution but are not compiled directly
 EXTRA_fldigi_SOURCES += \
@@ -656,6 +655,9 @@ EXTRA_fldigi_SOURCES += \
 	mt63/symbol.dat \
 	mt63/alias_k5.dat \
 	mt63/mt63intl.dat \
+	packet/ax25.cxx \
+	packet/pkt_receive.cxx \
+	packet/pkt_transmit.cxx \
 	rsid/rsid_defs.cxx \
 	thor/thor-pic.cxx \
 	trx/tune.cxx \

@@ -815,6 +815,14 @@ int FTextTX::handle(int event)
 				return 1;
 			}
 		}
+		if (active_modem->get_mode() == MODE_PACKET300 ||
+			active_modem->get_mode() == MODE_PACKET1200) {
+			if (Fl::event_key() == FL_Enter || Fl::event_key() == FL_KP_Enter) {
+				add_text("^r");
+				start_tx();
+				return 1;
+			}
+		}
 		return handle_key(Fl::event_key()) ? 1 : FTextEdit::handle(event);
 	case FL_PUSH:
 		if (Fl::event_button() == FL_MIDDLE_MOUSE &&
