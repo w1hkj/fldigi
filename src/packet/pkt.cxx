@@ -8,9 +8,10 @@
 // Bartek Kania (bk.gnarf.org) whose 'aprs.c' expository coding style helped
 // shape this implementation.
 //
-// Copyright (C) 2010
+// Copyright (C) 2010, 2015
 //	Dave Freese, W1HKJ
 //	Chris Sylvain, KB3CS
+//  Robert Stiles, KK5VD
 //
 // fldigi is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,8 +46,13 @@ using namespace std;
 #include "status.h"
 #include "qrunner.h"
 #include "globals.h"
+#include "data_io.h"
 
 #include "timeops.h"
+#include "threads.h"
+
+static pthread_mutex_t send_data_mutex = PTHREAD_MUTEX_INITIALIZER;
+extern void put_rx_char_flmain(unsigned int data, int style);
 
 /***********************************************************************
  * these are static members of the class pkt in the pkt.h file
@@ -63,18 +69,30 @@ const int		pkt::BAUD[]		= { 300, 1200};//, 2400};
 const int		pkt::BITS[]		= {   8,    8};//,    8};
 const int		pkt::FLEN[]		= { 512,   64};//,   32};
 
-void pkt::tx_init(SoundBase *sc)
+void pkt::set_pretone(void)
 {
-	scard = sc;
-
 	int scale_factor = (pkt_baud > 1200 ? 2 : 1); // baud rate proportional
-
 	// start each new transmission with MARK tone
 	pretone = PKT_MarkBits * scale_factor;
+}
+
+void pkt::set_prepostamble(void)
+{
+	int scale_factor = (pkt_baud > 1200 ? 2 : 1); // baud rate proportional
 	// number of flags to begin frame
 	preamble = PKT_StartFlags * scale_factor;
 	// number of flags to end frame
 	postamble = PKT_EndFlags * scale_factor;
+}
+
+void pkt::tx_init(SoundBase *sc)
+{
+	scard = sc;
+
+	set_pretone();
+	set_prepostamble();
+
+	src_flag = old_src_flag = 0;
 
 	if (!lo_tone)  lo_tone = new NCO();
 	if (!hi_tone)  hi_tone = new NCO();
@@ -122,6 +140,8 @@ void pkt::set_freq(double f)
 
 void pkt::init()
 {
+	clear_frame_data();
+
 	restart();
 
 	modem::init();
@@ -159,6 +179,8 @@ void pkt::init()
 	lo_txgain *= 0.9;
 	hi_txgain *= 0.9;
 
+	if (!lo_tone)  lo_tone = new NCO();
+	if (!hi_tone)  hi_tone = new NCO();
 }
 
 pkt::~pkt()
@@ -184,6 +206,7 @@ pkt::~pkt()
 	delete lo_filt;
 	delete hi_filt;
 	delete mid_filt;
+
 }
 
 void pkt::set_pkt_modem_params(int i)
@@ -296,6 +319,8 @@ void pkt::restart()
 	signal_power = noise_power = power_ratio = 0;
 
 	clear_zdata = true;
+
+	clear_frame_data();
 }
 
 pkt::pkt(trx_mode md)
@@ -326,8 +351,6 @@ pkt::pkt(trx_mode md)
 //	restart();
 
 	lo_tone = hi_tone = (NCO *)0;
-	tx_char_count = MAXOCTETS-3; // leave room for FCS and end-flag
-
 }
 
 #include "pkt_receive.cxx"

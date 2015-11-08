@@ -7654,7 +7654,7 @@ static void rx_parser(const unsigned char data, int style)
 }
 
 
-static void put_rx_char_flmain(unsigned int data, int style)
+void put_rx_char_flmain(unsigned int data, int style)
 {
 	ENSURE_THREAD(FLMAIN_TID);
 
@@ -7707,41 +7707,6 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	}
 }
 
-static std::string rx_process_buf = "";
-static std::string tx_process_buf = "";
-static pthread_mutex_t rx_proc_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-void put_rx_processed_char(unsigned int data, int style)
-{
-	guard_lock rx_proc_lock(&rx_proc_mutex);
-
-	if(style == FTextBase::XMIT) {
-		tx_process_buf += (char) (data & 0xff);
-	} else if(style == FTextBase::RECV) {
-		rx_process_buf += (char) (data & 0xff);
-	}
-}
-
-void disp_rx_processed_char(void)
-{
-	guard_lock rx_proc_lock(&rx_proc_mutex);
-	unsigned int index = 0;
-
-	if(!rx_process_buf.empty()) {
-		unsigned int count = rx_process_buf.size();
-		for(index = 0; index < count; index++)
-			REQ(put_rx_char_flmain, rx_process_buf[index], FTextBase::RECV);
-		rx_process_buf.clear();
-	}
-
-	if(!tx_process_buf.empty()) {
-		unsigned int count = tx_process_buf.size();
-		for(index = 0; index < count; index++)
-			REQ(put_rx_char_flmain, tx_process_buf[index], FTextBase::XMIT);
-		tx_process_buf.clear();
-	}
-}
-
 void put_rx_char(unsigned int data, int style)
 {
 #if BENCHMARK_MODE
@@ -7767,11 +7732,7 @@ void put_rx_char(unsigned int data, int style)
 			WriteKISS(data);
 			break;
 	}
-
-	if(progdefaults.ax25_decode_enabled && data_io_enabled == KISS_IO)
-		disp_rx_processed_char();
-	else
-		REQ(put_rx_char_flmain, data, style);
+	REQ(put_rx_char_flmain, data, style);
 #endif
 }
 
@@ -8044,10 +8005,11 @@ int get_tx_char(void)
 		goto transmit;
 	}
 
-	if (active_modem->get_mode() == MODE_IFKP)
+	if (active_modem->get_mode() == MODE_IFKP) {
 		c = ifkp_tx_text->nextChar();
-	else
+	} else {
 		c = TransmitText->nextChar();
+	}
 
 	if (c == GET_TX_CHAR_ETX) {
 		return c;
@@ -8156,9 +8118,9 @@ void put_echo_char(unsigned int data, int style)
 // suppress print to rx widget when making timing tests
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return;
 
-	if(progdefaults.ax25_decode_enabled && data_io_enabled == KISS_IO) {
-		disp_rx_processed_char();
-		return;
+	if(progdefaults.ax25_decode_enabled && progdefaults.data_io_enabled == KISS_IO) {
+	    //disp_rx_processed_char();
+        return;
 	}
 
 	trx_mode mode = active_modem->get_mode();

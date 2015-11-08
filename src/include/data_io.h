@@ -68,6 +68,7 @@ extern void WriteKISS(const char data);
 extern void WriteKISS(const char *data);
 extern void WriteKISS(const char *data, size_t size);
 extern void WriteKISS(std::string data);
+extern void WriteKissFrame(unsigned char *head, unsigned char *tail);
 
 extern void check_kiss_modem(void);
 extern int  kiss_get_char(void);

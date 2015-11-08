@@ -46,54 +46,54 @@ using namespace std;
 #include "threads.h"
 #include "data_io.h"
 #include "timeops.h"
-
+#include "kiss_io.h"
 #include "ax25.h"
 
 /***********************************************************************
  * these are static members of the class AX25
-***********************************************************************/
+ ***********************************************************************/
 AX25_MicE_field	ax25::MicE_table[][12][5] =  {
 	{
-	{ Zero,  Zero, South, P0, East },
-	{ One,   Zero, South, P0, East },
-	{ Two,   Zero, South, P0, East },
-	{ Three, Zero, South, P0, East },
-	{ Four,  Zero, South, P0, East },
-	{ Five,  Zero, South, P0, East },
-	{ Six,   Zero, South, P0, East },
-	{ Seven, Zero, South, P0, East },
-	{ Eight, Zero, South, P0, East },
-	{ Nine,  Zero, South, P0, East },
-	{ Invalid, Null, Null, Null, Null },
-	{ Invalid, Null, Null, Null, Null }
+		{ Zero,  Zero, South, P0, East },
+		{ One,   Zero, South, P0, East },
+		{ Two,   Zero, South, P0, East },
+		{ Three, Zero, South, P0, East },
+		{ Four,  Zero, South, P0, East },
+		{ Five,  Zero, South, P0, East },
+		{ Six,   Zero, South, P0, East },
+		{ Seven, Zero, South, P0, East },
+		{ Eight, Zero, South, P0, East },
+		{ Nine,  Zero, South, P0, East },
+		{ Invalid, Null, Null, Null, Null },
+		{ Invalid, Null, Null, Null, Null }
 	},
 	{ // ['A'..'K'] + 'L'
-	{ Zero,  One,  Null, Null, Null }, // custom A/B/C msg codes
-	{ One,   One,  Null, Null, Null },
-	{ Two,   One,  Null, Null, Null },
-	{ Three, One,  Null, Null, Null },
-	{ Four,  One,  Null, Null, Null },
-	{ Five,  One,  Null, Null, Null },
-	{ Six,   One,  Null, Null, Null },
-	{ Seven, One,  Null, Null, Null },
-	{ Eight, One,  Null, Null, Null },
-	{ Nine,  One,  Null, Null, Null },
-	{ Space, One,  Null, Null, Null },
-	{ Space, Zero, South, P0, East }
+		{ Zero,  One,  Null, Null, Null }, // custom A/B/C msg codes
+		{ One,   One,  Null, Null, Null },
+		{ Two,   One,  Null, Null, Null },
+		{ Three, One,  Null, Null, Null },
+		{ Four,  One,  Null, Null, Null },
+		{ Five,  One,  Null, Null, Null },
+		{ Six,   One,  Null, Null, Null },
+		{ Seven, One,  Null, Null, Null },
+		{ Eight, One,  Null, Null, Null },
+		{ Nine,  One,  Null, Null, Null },
+		{ Space, One,  Null, Null, Null },
+		{ Space, Zero, South, P0, East }
 	},
 	{ // ['P'..'Z']
-	{ Zero,  One,  North, P100, West }, // standard A/B/C msg codes
-	{ One,   One,  North, P100, West },
-	{ Two,   One,  North, P100, West },
-	{ Three, One,  North, P100, West },
-	{ Four,  One,  North, P100, West },
-	{ Five,  One,  North, P100, West },
-	{ Six,   One,  North, P100, West },
-	{ Seven, One,  North, P100, West },
-	{ Eight, One,  North, P100, West },
-	{ Nine,  One,  North, P100, West },
-	{ Space, One,  North, P100, West },
-	{ Invalid, Null, Null, Null, Null }
+		{ Zero,  One,  North, P100, West }, // standard A/B/C msg codes
+		{ One,   One,  North, P100, West },
+		{ Two,   One,  North, P100, West },
+		{ Three, One,  North, P100, West },
+		{ Four,  One,  North, P100, West },
+		{ Five,  One,  North, P100, West },
+		{ Six,   One,  North, P100, West },
+		{ Seven, One,  North, P100, West },
+		{ Eight, One,  North, P100, West },
+		{ Nine,  One,  North, P100, West },
+		{ Space, One,  North, P100, West },
+		{ Invalid, Null, Null, Null, Null }
 	} };
 
 AX25_PHG_table	ax25::PHG_table[] = {
@@ -106,7 +106,43 @@ AX25_PHG_table	ax25::PHG_table[] = {
 	{ "W",  1 },
 	{ "NW", 2 },
 	{ "N",  1 }
-	};
+};
+
+static std::string rx_process_buf = "";
+static std::string tx_process_buf = "";
+static pthread_mutex_t rx_proc_mutex = PTHREAD_MUTEX_INITIALIZER;
+extern void put_rx_char_flmain(unsigned int data, int style);
+
+void put_rx_processed_char(unsigned int data, int style)
+{
+	guard_lock rx_proc_lock(&rx_proc_mutex);
+
+	if(style == FTextBase::XMIT) {
+		tx_process_buf += (char) (data & 0xff);
+	} else if(style == FTextBase::RECV) {
+		rx_process_buf += (char) (data & 0xff);
+	}
+}
+
+void disp_rx_processed_char(void)
+{
+	guard_lock rx_proc_lock(&rx_proc_mutex);
+	unsigned int index = 0;
+
+	if(!rx_process_buf.empty()) {
+		unsigned int count = rx_process_buf.size();
+		for(index = 0; index < count; index++)
+			REQ(put_rx_char_flmain, rx_process_buf[index], FTextBase::RECV);
+		rx_process_buf.clear();
+	}
+
+	if(!tx_process_buf.empty()) {
+		unsigned int count = tx_process_buf.size();
+		for(index = 0; index < count; index++)
+			REQ(put_rx_char_flmain, tx_process_buf[index], FTextBase::XMIT);
+		tx_process_buf.clear();
+	}
+}
 
 ax25::ax25() {
 	mode = FTextBase::RECV;
@@ -120,9 +156,8 @@ void ax25::clear_rxbuf()
 
 inline void ax25::put_ax25_char(unsigned char c)
 {
-//	if (progdefaults.data_io_enabled == KISS_IO)
-//		put_rx_processed_char(c, mode);
-//	else
+	if(active_modem == pkt_modem || progdefaults.ax25_decode_enabled)
+		//put_rx_processed_char(c, mode);
 		put_rx_char(c, mode);
 }
 
@@ -144,17 +179,17 @@ unsigned int ax25::computeFCS(unsigned char *head, unsigned char *tail)
 
 	for(c = head; c < tail; c++) {
 
-	fcsv ^= *c;
+		fcsv ^= *c;
 
-	for(b = 0; b < 8; b++) {
+		for(b = 0; b < 8; b++) {
 
-		if (fcsv & 0x0001)
-		fcsv = (fcsv >> 1) ^ 0x8408;
-		else
-		fcsv >>= 1;
+			if (fcsv & 0x0001)
+				fcsv = (fcsv >> 1) ^ 0x8408;
+			else
+				fcsv >>= 1;
 
-		fcsv &= 0xFFFF;
-	}
+			fcsv &= 0xFFFF;
+		}
 	}
 	fcsv ^= 0xFFFF;
 	// fcsv is now (lo,hi)
@@ -176,37 +211,41 @@ bool ax25::checkFCS(unsigned char *cp)
 
 	/* http://www.tapr.org/pub_ax25.html
 
-	   transmitted AX.25 FCS is big endian (high byte first)
-	   and bit-wise reversed for each byte versus the rest of the frame.
+	 transmitted AX.25 FCS is big endian (high byte first)
+	 and bit-wise reversed for each byte versus the rest of the frame.
 
-	   because we traverse each byte from lsb->msb
-	   while receiving or transmitting
-	   -- and --
-	   the FCS is transmitted msb->lsb per specification, therefore:
+	 because we traverse each byte from lsb->msb
+	 while receiving or transmitting
+	 -- and --
+	 the FCS is transmitted msb->lsb per specification, therefore:
 
-	   >>	the FCS must be in the buffer big endian
-	   >>	with a byte-wise bit-reversed ("reflected") order.
+	 >>	the FCS must be in the buffer big endian
+	 >>	with a byte-wise bit-reversed ("reflected") order.
 
-	   ... really.
-	*/
+	 ... really.
+	 */
 	/* with more investigating I learn:
 
-	   AX.25 FCS is big endian and bit-wise lsb->msb like all the rest
-	   of the octets.
+	 AX.25 FCS is big endian and bit-wise lsb->msb like all the rest
+	 of the octets.
 
-	   so therefore:  the FCS goes in the buffer big endian order.
+	 so therefore:  the FCS goes in the buffer big endian order.
 
-	   ... just that and no more.
-	*/
+	 ... just that and no more.
+	 */
 
 	unsigned int fcsv_rcvd = (unsigned int)(cp[0] << 8) | cp[1];
 	unsigned int fcsv = computeFCS(&rxbuf[1], cp); // begin after leading flag
 
 	LOG_DEBUG("FCS computed %04X %s received %04X", fcsv,
-		 (fcsv_rcvd == fcsv ? "==" : "<>"), fcsv_rcvd);
+			  (fcsv_rcvd == fcsv ? "==" : "<>"), fcsv_rcvd);
 
-	if (fcsv_rcvd == fcsv)
-	return true;
+	if (fcsv_rcvd == fcsv) {
+		if(data_io_enabled == KISS_IO) {
+			WriteKissFrame(&rxbuf[1], cp);
+		}
+		return true;
+	}
 
 	return false;
 }
@@ -984,7 +1023,7 @@ void ax25::do_put_rx_char(unsigned char *cp, size_t count)
 		struct tm stm;
 		(void)gmtime_r(&t, &stm);
 		snprintf(ts, sizeof(ts), "[%02d:%02d:%02d] ",
-			 stm.tm_hour, stm.tm_min, stm.tm_sec);
+				 stm.tm_hour, stm.tm_min, stm.tm_sec);
 		for (unsigned int i = 0; i < strlen(ts); i++)
 			put_ax25_char(ts[i]);
 	}
@@ -1129,36 +1168,36 @@ void ax25::do_put_rx_char(unsigned char *cp, size_t count)
 				case 0xF0:
 					put_rx_const("NO-L3");
 					break;
-
+					
 				case 0xFF:
 					put_rx_const("L3ESC=");
 					put_rx_hex(rxbuf[++j]);
 					break;
-
+					
 				default:
 					if ((p & 0x30) == 0x10)  put_rx_const("L3V1");
 					else if ((p & 0x30) == 0x20)  put_rx_const("L3V2");
 					else  put_rx_const("L3-RSVD");
-
+					
 					put_ax25_char('=');
 					put_rx_hex(p);
 					break;
 			}
 		}
 		else if ((c & 0x03) == 0x01) { // S_FRAME
-
+			
 			if (debug::level == debug::DEBUG_LEVEL) {
 				put_rx_hex(c);
 				put_ax25_char(';');
 			}
-
+			
 			put_rx_const("S/");
-
+			
 			put_rx_hex( (c & 0xE0) >> 5 );
 			if (c & 0x10)  put_ax25_char('*');
 			else  put_ax25_char('.');
 			put_ax25_char('/');
-
+			
 			switch (c & 0x0C) { // AX.25 v2.2 para 2.3.4.2
 				case 0x00:
 					put_rx_const("RR");
@@ -1176,17 +1215,17 @@ void ax25::do_put_rx_char(unsigned char *cp, size_t count)
 			}
 		}
 		else if ((c & 0x03) == 0x03) { // U_FRAME
-
+			
 			if (debug::level == debug::DEBUG_LEVEL) {
 				put_rx_hex(c);
 				put_ax25_char(';');
 			}
-
+			
 			put_ax25_char('U');
-
+			
 			if (c & 0x10)  put_ax25_char('*');
 			else  put_ax25_char('.');
-
+			
 			switch (c & 0xEC) { // AX.25 v2.2 para 2.3.4.3
 				case 0x00:
 					put_rx_const("UI");
@@ -1214,10 +1253,10 @@ void ax25::do_put_rx_char(unsigned char *cp, size_t count)
 		j+=2;
 	}
 	put_ax25_char(':');
-
+	
 	// ptr to first info field char
 	cpInfo = &rxbuf[j];
-
+	
 	if ((c & 0x03) == 0x03 && (c & 0xEC) == 0x00
 		&& (*cpInfo == '\'' || *cpInfo == '`'
 			|| *cpInfo == 0x1C || *cpInfo == 0x1D)
@@ -1229,36 +1268,36 @@ void ax25::do_put_rx_char(unsigned char *cp, size_t count)
 		// this is very probably a Mic-E encoded packet
 		isMicE = true;
 	}
-
+	
 	// offset between last info char (not FCS) and bufhead
 	if (count == 0)
 		i = (cp - &rxbuf[0]); // (cp - &rxbuf[1]) + 1 ==> (cp - &rxbuf[0])
 	else
 		i = count;
-
+	
 	while (j < i)  put_ax25_char(rxbuf[j++]);
-
-// <cr> only for packets not ending with <cr/lf>
+	
+	// <cr> only for packets not ending with <cr/lf>
 	if ( !(rxbuf[j-1] == '\n' || rxbuf[j-1] == '\r'))
 		put_ax25_char('\n');
-
+	
 	// cp points to FCS, so (cp-X) is last info field char
 	if ((progdefaults.PKT_expandMicE || debug::level >= debug::VERBOSE_LEVEL)
 		&& isMicE)
 		expand_MicE(cpInfo, (*(cp-1) == '\r' ? cp-2 : cp-1));
-
+	
 	// need to deal with posits having timestamps ('/' and '@' leading char)
 	if (*cpInfo == '!' || *cpInfo == '=') {
 		if ((progdefaults.PKT_expandCmp || debug::level >= debug::VERBOSE_LEVEL)
 			&& (*(cpInfo + 1) == '/' || *(cpInfo + 1) == '\\'))
 			// compressed posit
 			expand_Cmp(cpInfo+1);
-
+		
 		if (progdefaults.PKT_expandPHG
 			|| debug::level >= debug::VERBOSE_LEVEL) // look for PHG data
 			expand_PHG(cpInfo);
 	}
-
+	
 }
 
 extern bool PERFORM_CPS_TEST;
@@ -1267,14 +1306,11 @@ static pthread_mutex_t decode_lock_mutex = PTHREAD_MUTEX_INITIALIZER;
 void ax25::decode(unsigned char *buffer, size_t count, bool pad, bool tx_flag)
 {
 	guard_lock decode_lock(&decode_lock_mutex);
-
+	
 	if(!buffer && !count) return;
-
-	if(count > MAXOCTETS)
-		count = MAXOCTETS;
-
+	
 	memset(rxbuf, 0, sizeof(rxbuf));
-
+	
 	if(pad) {
 		rxbuf[0] = 0xfe;
 		memcpy(&rxbuf[1], buffer, count);
@@ -1282,12 +1318,15 @@ void ax25::decode(unsigned char *buffer, size_t count, bool pad, bool tx_flag)
 	} else {
 		memcpy(rxbuf, buffer, count);
 	}
-
+	
 	if(tx_flag) {
 		mode = FTextBase::XMIT;
 	} else {
 		mode = FTextBase::RECV;
 	}
-
-	do_put_rx_char(&rxbuf[count], count);
+	
+	do_put_rx_char(&rxbuf[0], count);
+	
+	disp_rx_processed_char();
 }
+

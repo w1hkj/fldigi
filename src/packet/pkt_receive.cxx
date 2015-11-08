@@ -7,9 +7,9 @@ void pkt::update_syncscope()
 	int j, len = pkt_syncdisplen;
 
 	for (int i = 0; i < len; i++) {
-	j = pipeptr - i;
-	if (j < 0) j += len;
-	dsppipe[i] = pipe[j];
+		j = pipeptr - i;
+		if (j < 0) j += len;
+		dsppipe[i] = pipe[j];
 	}
 	set_scope(dsppipe, len, false);
 }
@@ -27,94 +27,94 @@ void pkt::rx(bool bit)
 	++bcounter;
 
 	if (bit == false) {
-	c &= ~(1 << (pkt_nbits-1)); // bits are sent lsb first
+		c &= ~(1 << (pkt_nbits-1)); // bits are sent lsb first
 
-	if (seq_ones == 6) { // flag byte found
-		bcounter = 0;
+		if (seq_ones == 6) { // flag byte found
+			bcounter = 0;
 
-		if (cbuf >= &x25.rxbuf[MINOCTETS]) { // flag at end of frame
+			if (cbuf >= &x25.rxbuf[MINOCTETS]) { // flag at end of frame
 
-		*cbuf = PKT_Flag; // == 0x7e
+				*cbuf = PKT_Flag; // == 0x7e
 
-		if (debug::level == debug::DEBUG_LEVEL)
-			fprintf(stderr,"7e\n");
+				if (debug::level == debug::DEBUG_LEVEL)
+					fprintf(stderr,"7e\n");
 
-		//   monitor Metric and Squelch Level
-		if ( !progStatus.sqlonoff ||
-			 metric >= progStatus.sldrSquelchValue ) { // lazy eval
-			/*
-			// check FCS at end of frame
-			// if FCS is OK - packet is in rxbuffer,
-			//		  put_rx_char() for each byte in rxbuffer
-			*/
-			if (x25.checkFCS((cbuf - 2)) == true) {
-//			if (progdefaults.PKT_RXTimestamp) {
-//				unsigned char ts[16], *tc = &ts[0];
-//				time_t t = time(NULL);
-//				struct tm stm;
-//				(void)gmtime_r(&t, &stm);
-//				snprintf((char *)ts, sizeof(ts),
-//					 "[%02d:%02d:%02d] ",
-//					 stm.tm_hour, stm.tm_min, stm.tm_sec);
-//				while (*tc)  put_rx_char(*tc++);
-//			}
-			x25.mode = FTextBase::RECV;
-			x25.do_put_rx_char((cbuf - 2));
+				//   monitor Metric and Squelch Level
+				if ( !progStatus.sqlonoff ||
+					metric >= progStatus.sldrSquelchValue ) { // lazy eval
+					/*
+					 // check FCS at end of frame
+					 // if FCS is OK - packet is in rxbuffer,
+					 //		  put_rx_char() for each byte in rxbuffer
+					 */
+					if (x25.checkFCS((cbuf - 2)) == true) {
+						//			if (progdefaults.PKT_RXTimestamp) {
+						//				unsigned char ts[16], *tc = &ts[0];
+						//				time_t t = time(NULL);
+						//				struct tm stm;
+						//				(void)gmtime_r(&t, &stm);
+						//				snprintf((char *)ts, sizeof(ts),
+						//					 "[%02d:%02d:%02d] ",
+						//					 stm.tm_hour, stm.tm_min, stm.tm_sec);
+						//				while (*tc)  put_rx_char(*tc++);
+						//			}
+						x25.mode = FTextBase::RECV;
+						x25.do_put_rx_char((cbuf - 2));
+					}
+				}
+
+				cbuf = &x25.rxbuf[0]; // reset after first end frame flag
+				x25.clear_rxbuf();
+			}
+			else {
+				// packet too short if cbuf < &rxbuf[MINOCTETS]
+
+				// put only one beginning flag into buffer
+				x25.rxbuf[0] = PKT_Flag;
+				cbuf = &x25.rxbuf[1];
+
+				if (debug::level == debug::DEBUG_LEVEL)
+					fprintf(stderr,"7e ");
 			}
 		}
-
-		cbuf = &x25.rxbuf[0]; // reset after first end frame flag
-		x25.clear_rxbuf();
+		else if (seq_ones == 5) { // need bit un-stuffing
+			c <<= 1;  // shift c back to skip stuffed bit
+			--bcounter;
 		}
-		else {
-		// packet too short if cbuf < &rxbuf[MINOCTETS]
 
-		// put only one beginning flag into buffer
-		x25.rxbuf[0] = PKT_Flag;
-		cbuf = &x25.rxbuf[1];
-
-		if (debug::level == debug::DEBUG_LEVEL)
-			fprintf(stderr,"7e ");
-		}
-	}
-	else if (seq_ones == 5) { // need bit un-stuffing
-		c <<= 1;  // shift c back to skip stuffed bit
-		--bcounter;
-	}
-
-	seq_ones = 0;
+		seq_ones = 0;
 	}
 	else {
-	c |= (1 << (pkt_nbits-1)); // bits are sent lsb first
-	++seq_ones;
+		c |= (1 << (pkt_nbits-1)); // bits are sent lsb first
+		++seq_ones;
 
-	//if (seq_ones > 6) { // something is wrong
-	//}
+		//if (seq_ones > 6) { // something is wrong
+		//}
 	}
 
 	if (bcounter == pkt_nbits) {
-	bcounter = 0;
-	if (cbuf < &x25.rxbuf[MAXOCTETS]) {
-		*cbuf++ = c;
+		bcounter = 0;
+		if (cbuf < &x25.rxbuf[MAXOCTETS]) {
+			*cbuf++ = c;
 
-		if (debug::level == debug::DEBUG_LEVEL)
-		fprintf(stderr,"%02x ",c);
-	}
-	else
-		// else complain: cbuf is at MAXOCTETS
-		LOG_WARN("Long input packet, %d octets!",(int)(cbuf - &x25.rxbuf[0]));
+			if (debug::level == debug::DEBUG_LEVEL)
+				fprintf(stderr,"%02x ",c);
+		}
+		else
+			// else complain: cbuf is at MAXOCTETS
+			LOG_WARN("Long input packet, %d octets!",(int)(cbuf - &x25.rxbuf[0]));
 	}
 
 	/*
-	//   when flag found: keep collecting flags (0x7e) until !(0x7e) found
-	//   (first non-0x7e begins DATA)
+	 //   when flag found: keep collecting flags (0x7e) until !(0x7e) found
+	 //   (first non-0x7e begins DATA)
 
-	//   keep collecting bits in DATA, 8 at-a-time, until 0x7e found
-	//   while collecting bits, perform bit-unstuffing so we place in
-	//   databuffer exactly 8 bits at-a-time
-	//   (at times more than 8 bits in to 8 bits out)
-	//   first trailing 0x7e ends DATA and begins STOP
-	*/
+	 //   keep collecting bits in DATA, 8 at-a-time, until 0x7e found
+	 //   while collecting bits, perform bit-unstuffing so we place in
+	 //   databuffer exactly 8 bits at-a-time
+	 //   (at times more than 8 bits in to 8 bits out)
+	 //   first trailing 0x7e ends DATA and begins STOP
+	 */
 }
 
 char pkt::msg[20];
@@ -138,8 +138,8 @@ void pkt::Metric()
 	metric = CLAMP(snr + 30, 0.0, 100.0);
 	display_metric(metric);
 
-//if (signal_power > 1e-4)
-//std::cout << signal_power << "," << noise_power << "," << snr << "\n";
+	//if (signal_power > 1e-4)
+	//std::cout << signal_power << "," << noise_power << "," << snr << "\n";
 
 }
 
@@ -148,10 +148,10 @@ void pkt::idle_signal_power(cmplx sample)
 	// average of signal energy over PKT_IdleLen duration
 	double pwr = norm(sample);
 	idle_signal_pwr += pwr;
-//	idle_signal_pwr -= idle_signal_buf[idle_signal_buf_ptr];
-//	idle_signal_buf[idle_signal_buf_ptr] = pwr;
+	//	idle_signal_pwr -= idle_signal_buf[idle_signal_buf_ptr];
+	//	idle_signal_buf[idle_signal_buf_ptr] = pwr;
 
-//	++idle_signal_buf_ptr %= pkt_idlelen; // circular buffer
+	//	++idle_signal_buf_ptr %= pkt_idlelen; // circular buffer
 }
 
 #ifndef NDEBUG
@@ -224,13 +224,13 @@ void pkt::detect_signal()
 
 	// allow lazy eval
 	if (signal_power > PKT_MinSignalPwr && signal_power > noise_power) {
-	// lo+hi freq signals are present
+		// lo+hi freq signals are present
 		detect_drop = pkt_detectlen; // reset signal drop counter
 
 		if (rxstate == PKT_RX_STATE_DROP) {
 			rxstate = PKT_RX_STATE_START;
 
-		// init STATE_START
+			// init STATE_START
 			signal_gain = 1.0; // 5.0
 			scounter = pkt_detectlen; //(was) 9 * symbollen;//11 instead of 9?
 			lo_sync = 100.0;
@@ -238,7 +238,7 @@ void pkt::detect_signal()
 		}
 	}
 	else if (--detect_drop < 1 && rxstate == PKT_RX_STATE_DATA) { // lazy eval
-	// give up on signals - gone,gone.
+																  // give up on signals - gone,gone.
 		rxstate = PKT_RX_STATE_STOP;
 		scounter = 0; // (scounter is signed int)
 
@@ -254,32 +254,32 @@ void pkt::do_sync()
 	lo_sync_ptr--; hi_sync_ptr--;
 
 	if (lo_sync > power_delta && power_delta < 0) {
-	lo_sync_ptr = 0;
-	lo_sync = power_delta;
+		lo_sync_ptr = 0;
+		lo_sync = power_delta;
 	}
 
 	if (hi_sync < power_delta && power_delta > 0) {
-	hi_sync_ptr = 0;
-	hi_sync = power_delta;
+		hi_sync_ptr = 0;
+		hi_sync = power_delta;
 	}
 
 	if (--scounter < 1) {
-	int offset;
+		int offset;
 
-	if (fabs(hi_sync) > fabs(lo_sync))
-		offset = -hi_sync_ptr;
-	else
-		offset = -lo_sync_ptr;
+		if (fabs(hi_sync) > fabs(lo_sync))
+			offset = -hi_sync_ptr;
+		else
+			offset = -lo_sync_ptr;
 
-	offset %= symbollen; // clamp offset to +/- one symbol
+		offset %= symbollen; // clamp offset to +/- one symbol
 
-	mid_symbol = symbollen - offset;
-	prev_symbol = pll_symbol = hi_signal_corr < lo_signal_corr;
+		mid_symbol = symbollen - offset;
+		prev_symbol = pll_symbol = hi_signal_corr < lo_signal_corr;
 
-	rxstate = PKT_RX_STATE_DATA;
-	seq_ones = 0;	 // reset once on transition to STATE_DATA
-	cbuf = &x25.rxbuf[0]; // and reset packet buffer ptr
-	x25.clear_rxbuf();
+		rxstate = PKT_RX_STATE_DATA;
+		seq_ones = 0;	 // reset once on transition to STATE_DATA
+		cbuf = &x25.rxbuf[0]; // and reset packet buffer ptr
+		x25.clear_rxbuf();
 	}
 }
 
@@ -299,7 +299,7 @@ void pkt::rx_data()
 		bool bit = prev_symbol == tbit; // detect symbol change
 		prev_symbol = pll_symbol = tbit;
 		mid_symbol += symbollen; // advance to middle of next symbol
-	// remember to check value of reverse here to determine symbol
+								 // remember to check value of reverse here to determine symbol
 		rx(reverse ? !bit : bit);
 	}
 	else if (tbit != pll_symbol) { // update PLL
@@ -340,68 +340,68 @@ void pkt::hard_decode(double smpl)
 	for (int snbr = 0; snbr < num; snbr++) {
 		switch (rxstate) {
 
-		case PKT_RX_STATE_STOP:
-		default:
-			rxstate = PKT_RX_STATE_IDLE;
+			case PKT_RX_STATE_STOP:
+			default:
+				rxstate = PKT_RX_STATE_IDLE;
 
-		case PKT_RX_STATE_IDLE:
-			idle_signal_power(zpmid[snbr]);
+			case PKT_RX_STATE_IDLE:
+				idle_signal_power(zpmid[snbr]);
 
-			if (--scounter < 1) {
-			rxstate = PKT_RX_STATE_DROP;
+				if (--scounter < 1) {
+					rxstate = PKT_RX_STATE_DROP;
 
-			scounter = pkt_idlelen;
-			signal_gain = 1.0;
+					scounter = pkt_idlelen;
+					signal_gain = 1.0;
 
-			signal_pwr = signal_buf_ptr = 0;
+					signal_pwr = signal_buf_ptr = 0;
 
-			for(int i = 0; i < pkt_detectlen; i++)
-				signal_buf[i] = 0;
+					for(int i = 0; i < pkt_detectlen; i++)
+						signal_buf[i] = 0;
 
-			lo_signal_energy = hi_signal_energy =
-				mid_signal_energy = cmplx(0, 0);
+					lo_signal_energy = hi_signal_energy =
+					mid_signal_energy = cmplx(0, 0);
 
-			yt_avg = correlate_buf_ptr = 0;
+					yt_avg = correlate_buf_ptr = 0;
 
-			for(int i = 0; i < symbollen; i++)
-				lo_signal_buf[i] = hi_signal_buf[i] =
-				mid_signal_buf[i] = cmplx(0, 0);
-			}
-			break;
+					for(int i = 0; i < symbollen; i++)
+						lo_signal_buf[i] = hi_signal_buf[i] =
+						mid_signal_buf[i] = cmplx(0, 0);
+				}
+				break;
 
-		case PKT_RX_STATE_DROP:
-			idle_signal_power(zpmid[snbr]);
-			correlate(zplo[snbr], zphi[snbr], zpmid[snbr]);
-			detect_signal();
-			break;
+			case PKT_RX_STATE_DROP:
+				idle_signal_power(zpmid[snbr]);
+				correlate(zplo[snbr], zphi[snbr], zpmid[snbr]);
+				detect_signal();
+				break;
 
-		case PKT_RX_STATE_START:
-			correlate(zplo[snbr], zphi[snbr], zpmid[snbr]);
-			do_sync();
-			break;
-
-		case PKT_RX_STATE_DATA:
-			correlate(zplo[snbr], zphi[snbr], zpmid[snbr]);
-			rx_data();
-			detect_signal();
-			break;
+			case PKT_RX_STATE_START:
+				correlate(zplo[snbr], zphi[snbr], zpmid[snbr]);
+				do_sync();
+				break;
+				
+			case PKT_RX_STATE_DATA:
+				correlate(zplo[snbr], zphi[snbr], zpmid[snbr]);
+				rx_data();
+				detect_signal();
+				break;
 		}
 	}
 }
 
 int pkt::rx_process(const double *buf, int len)
 {
-
+	
 	if (select_val != progdefaults.PKT_BAUD_SELECT ||
 		(pkt_ctrfreq != frequency && progdefaults.PKT_MANUAL_TUNE)) {
-	// need to re-init modem
+		// need to re-init modem
 		restart();
 	}
-
+	
 	Metric();
-
+	
 	while (len-- > 0) hard_decode(*buf++);
-
+	
 	if (metric < progStatus.sldrSquelchValue && progStatus.sqlonoff) {
 		if (clear_zdata) {
 			for (int i = 0; i < MAX_ZLEN; i++)
@@ -416,6 +416,6 @@ int pkt::rx_process(const double *buf, int len)
 		update_syncscope();
 		set_zdata(QI, MAX_ZLEN);
 	}
-
+	
 	return 0;
 }

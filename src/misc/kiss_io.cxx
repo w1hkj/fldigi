@@ -65,10 +65,11 @@
 #include "confdialog.h"
 
 #include "ax25.h"
+#include "pkt.h"
 
 LOG_FILE_SOURCE(debug::LOG_KISSCONTROL);
 
-//#define EXTENED_DEBUG_INFO
+#define EXTENED_DEBUG_INFO
 //#undef EXTENED_DEBUG_INFO
 
 using namespace std;
@@ -2058,6 +2059,41 @@ std::string kiss_encode(std::string frame)
 	return ret_str;
 }
 
+/**********************************************************************************
+ * Pad frame markers
+ **********************************************************************************/
+size_t afsk_hdlc_encode(char *src, size_t src_size, char **dst)
+{
+	if(!src || !dst || src_size < 1) return 0;
+
+	size_t index = 0;
+	int count = 0;
+	int buffer_size = 0;
+	int byte = 0;
+	char *buffer = (char *)0;
+
+	buffer_size = (src_size * HDLC_BUFFER_FACTOR) + BUFFER_PADDING;
+	buffer = new char[buffer_size];
+
+	if(!buffer) {
+		LOG_DEBUG("Memory allocation error near line %d", __LINE__);
+		*dst = (char *)0;
+		return 0;
+	}
+
+	memset(buffer, 0, buffer_size);
+
+	buffer[count++] = 0x7e;
+	int i = 0;
+	while(i < src_size)
+		buffer[count++] = src[i++];
+
+	buffer[count] = 0x7e;
+
+	*dst = (char *) buffer;
+	
+	return count;
+}
 
 /**********************************************************************************
  *
@@ -2208,6 +2244,42 @@ size_t hdlc_decode(char *src, size_t src_size, char **dst)
 	return count;
 
 }
+/**********************************************************************************
+ *  Buffer must be at least twice the size of the data provided + BUFFER_PADDING
+ *  data_count: Number of bytes in the buffer to be converted.
+ *  Return is the converted byte count. Buffer is overwritten with converted data.
+ **********************************************************************************/
+static size_t encap_afsk_hdlc_frame(char *buffer, size_t data_count)
+{
+	if(!buffer || !data_count) {
+		LOG_DEBUG("%s", "Parameter Data Error [NULL]");
+		return false;
+	}
+
+	size_t count = 0;
+	unsigned int crc_value = 0;
+	char *hdlc_encap = (char *)0;
+
+	crc_value = calc_fcs_crc(buffer, (int) data_count);
+
+	buffer[data_count++] = CRC_LOW(crc_value);
+	buffer[data_count++] = CRC_HIGH(crc_value);
+
+	count = afsk_hdlc_encode(buffer, data_count, &hdlc_encap);
+
+	if(hdlc_encap && count) {
+		memcpy(buffer, hdlc_encap, count);
+#ifdef EXTENED_DEBUG_INFO
+		LOG_HEX(buffer, count);
+#endif
+		delete [] hdlc_encap;
+	} else {
+		LOG_DEBUG("%s", "HDLC Encode Memory Allocation Error");
+		return 0;
+	}
+
+	return count;
+}
 
 /**********************************************************************************
  *  Buffer must be at least twice the size of the data provided + BUFFER_PADDING
@@ -2224,11 +2296,11 @@ static size_t encap_hdlc_frame(char *buffer, size_t data_count)
 	size_t count = 0;
 	unsigned int crc_value = 0;
 	char *kiss_encap = (char *)0;
-
+/*
 	if(progdefaults.ax25_decode_enabled) {
 		KX25.decode((unsigned char *) buffer, data_count, true, true);
 	}
-
+*/
 	crc_value = calc_fcs_crc(buffer, (int) data_count);
 
 	buffer[data_count++] = CRC_LOW(crc_value);
@@ -2268,7 +2340,7 @@ static size_t decap_hdlc_frame(char *buffer, size_t data_count)
 	unsigned int calc_crc_value = 0;
 	char *kiss_decap = (char *)0;
 
-	count = hdlc_decode(buffer, data_count, &kiss_decap);
+    count = hdlc_decode(buffer, data_count, &kiss_decap);
 
 #ifdef EXTENED_DEBUG_INFO
 	if(data_count && buffer)
@@ -2737,9 +2809,21 @@ static void parse_kiss_frame(std::string frame_segment)
 				memset(buffer, 0, buffer_size);
 				memcpy(buffer, kiss_one_frame.c_str(), data_count);
 
-				data_count = encap_hdlc_frame(buffer, data_count);
-
-				WriteToRadioBuffered((const char *) buffer, (size_t) data_count);
+				if(active_modem != pkt_modem) {
+					data_count = encap_hdlc_frame(buffer, data_count);
+					WriteToRadioBuffered((const char *) buffer, (size_t) data_count);
+					if(progdefaults.ax25_decode_enabled)
+						KX25.decode((unsigned char *) buffer, data_count, true, true);
+				} else  {
+					char b[] = " \0";
+					unsigned int fcs = KX25.computeFCS((unsigned char *)buffer, (unsigned char *)&buffer[data_count]);
+					unsigned char tc = (fcs & 0xFF00) >> 8; // msB
+					buffer[data_count++] = tc;
+					tc = (unsigned char)(fcs & 0x00FF); // lsB
+					buffer[data_count++] = tc;
+					pkt_modem->write_packet_data((unsigned char *) buffer, data_count, FROM_KISS);
+					WriteToRadioBuffered((const char *) b, (size_t) 1);
+				}
 
 				buffer[0] = 0;
 				delete [] buffer;
@@ -3333,15 +3417,17 @@ static void TransmitCSMA(void)
 		delay_time = (tx_delay * 10);
 		idling = true;
 
-		if(trx_state == STATE_RX)
+		if(trx_state == STATE_RX) {
 			trx_transmit();
+		}
 
 		if(delay_time > 0)
 			MilliSleep(delay_time);
 
 	} else {
-		if(trx_state == STATE_RX)
+		if(trx_state == STATE_RX) {
 			trx_transmit();
+		}
 	}
 
 	{
@@ -3495,9 +3581,59 @@ static void *kiss_loop(void *args)
 /**********************************************************************************
  *
  **********************************************************************************/
+void WriteKissFrame(unsigned char *head, unsigned char *tail)
+{
+	guard_lock from_radio_lock(&from_radio_mutex);
+
+	char *buffer = 0;
+	KISS_QUEUE_FRAME *frame = (KISS_QUEUE_FRAME *)0;
+
+	if(!head || !tail) return;
+
+	int size = (int) (tail - head);
+	int i = 0;
+	if(size < 1) return;
+
+	buffer = new char[size + 2];
+	if(!buffer) return;
+
+	for(i = 0; i < size; i++)
+		buffer[i] = *head++;
+	buffer[i] = 0;
+
+	if(kiss_raw_enabled != KISS_RAW_ONLY) {
+		frame = encap_kiss_frame(buffer, size, KISS_DATA, kiss_port_no);
+
+		if(!frame || !frame->data) {
+			LOG_DEBUG("Frame Allocation Error Near Line %d", __LINE__);
+		} else {
+           WriteToHostBuffered((const char *) frame->data, (size_t) frame->size);
+		}
+	}
+
+EXIT:;
+
+	if(buffer) delete [] buffer;
+	if(frame) {
+		if(frame->data) {
+			frame->data[0] = 0;
+			delete [] frame->data;
+		}
+		delete frame;
+	}
+}
+
+/**********************************************************************************
+ *
+ **********************************************************************************/
 void WriteKISS(const char data)
 {
-	if (active_modem->get_mode() == MODE_FSQ) return;
+	switch(active_modem->get_mode()) {
+		case MODE_PACKET1200:
+		case MODE_PACKET300:
+		case MODE_FSQ:
+			return;
+	}
 
 	if(kiss_reset_flag) return;
 
@@ -3517,7 +3653,12 @@ void WriteKISS(const char data)
  **********************************************************************************/
 void WriteKISS(const char *data)
 {
-	if (active_modem->get_mode() == MODE_FSQ) return;
+	switch(active_modem->get_mode()) {
+		case MODE_PACKET1200:
+		case MODE_PACKET300:
+		case MODE_FSQ:
+			return;
+	}
 
 	if(kiss_reset_flag) return;
 
@@ -3539,7 +3680,12 @@ void WriteKISS(const char *data)
  **********************************************************************************/
 void WriteKISS(const char *data, size_t size)
 {
-	if (active_modem->get_mode() == MODE_FSQ) return;
+	switch(active_modem->get_mode()) {
+		case MODE_PACKET1200:
+		case MODE_PACKET300:
+		case MODE_FSQ:
+			return;
+	}
 
 	if(kiss_reset_flag) return;
 
@@ -3563,7 +3709,12 @@ void WriteKISS(const char *data, size_t size)
  **********************************************************************************/
 void WriteKISS(std::string data)
 {
-	if (active_modem->get_mode() == MODE_FSQ) return;
+	switch(active_modem->get_mode()) {
+		case MODE_PACKET1200:
+		case MODE_PACKET300:
+		case MODE_FSQ:
+			return;
+	}
 
 	if(kiss_reset_flag) return;
 
@@ -3924,6 +4075,9 @@ int kiss_get_char(void)
 	static bool toggle_flag = 0;
 
 	if (kiss_text_available) {
+		if(active_modem == pkt_modem)
+			pkt_modem->set_kiss_data_flag(true);
+
 		if (pText != (int)to_radio.length()) {
 			c = to_radio[pText++] & 0xFF;
 			toggle_flag = true;

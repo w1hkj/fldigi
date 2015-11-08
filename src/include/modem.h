@@ -263,7 +263,8 @@ public:
 
 // packet mode
 	virtual int			baud() { return 0;}
-
+	virtual void        set_kiss_data_flag(bool value) { }
+	virtual bool        write_packet_data(unsigned char *data, int count, int src) { return false;}
 };
 
 extern modem *null_modem;

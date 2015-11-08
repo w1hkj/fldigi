@@ -47,6 +47,17 @@
 
 #include "ax25.h"
 
+// Maximum number of transmitted frames in one episode.
+#define PKT_MaxTXFrames   7
+
+// Maximun number if buffered frames,
+#define PKT_MaxPackets    (PKT_MaxTXFrames + PKT_MaxTXFrames)
+
+// KISS can use a larger frame size then what is allowed for the
+// terminal interface (MAXOCTETS). This is about 2x the size allowed
+// by the Ax25 specs.
+#define PKT_MaxPacketSize 2048
+
 #define	PKT_SampleRate 12000
 
 #define PKT_MinBaudRate  300
@@ -76,6 +87,15 @@ enum PKT_RX_STATE {
 	PKT_RX_STATE_DATA,
 	PKT_RX_STATE_STOP
 };
+
+#define FROM_KISS     0x1
+#define FROM_TERMINAL 0x2
+
+typedef struct kiss_packet_frames {
+	int from;
+	int count;
+	unsigned char data[PKT_MaxPacketSize+OCTETS_PAD];
+} KPF;
 
 class pkt : public modem {
  public:
@@ -171,7 +191,7 @@ class pkt : public modem {
 
 	ax25	x25;
 
-// transmit	
+// transmit
 
 	int		preamble, pretone, postamble;
 	double	lo_txgain, hi_txgain;
@@ -181,9 +201,11 @@ class pkt : public modem {
 
 	int		tx_char_count, nr_ones;
 	bool	currbit, nostuff, did_pkt_head;
-	void	send_octet(unsigned char c);
+	inline void	send_octet(unsigned char c);
 
-	unsigned char txbuf[MAXOCTETS+4], *tx_cbuf;
+	// This buffer is used for ternimal ops. Do not use if
+	// KISS ops are reauired (buffer to small).
+	unsigned char txbuf[MAXOCTETS+OCTETS_PAD], *tx_cbuf;
 	void	send_msg(unsigned char c);
 
  public:
@@ -192,12 +214,40 @@ class pkt : public modem {
 	void init();
 	void rx_init();
 	void tx_init(SoundBase *sc);
+	void set_prepostamble(void);
+	void set_pretone(void);
 	void restart();
 	int rx_process(const double *buf, int len);
 	int tx_process();
 	int baud() {return pkt_baud;}
-
 	void set_freq(double);
+	void tx_packet_data(void);
+	void tx_octet(unsigned char c);
+
+// Packet Frames
+private:
+	pthread_mutex_t packet_data_mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t packet_c_data_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+	bool kiss_data_flag;
+	int frame_head;
+	int frame_tail;
+	int frame_count;
+	KPF pkt_data[PKT_MaxPackets];
+	unsigned char tmp_data[PKT_MaxPacketSize+OCTETS_PAD];
+	unsigned char tmp_tx_data[PKT_MaxPacketSize+OCTETS_PAD];
+	int tmp_data_count;
+	int src_flag;
+	int old_src_flag;
+	int kiss_stopflag;
+
+public:
+	void set_kiss_data_flag(bool value);
+	bool read_packet_data(unsigned char *data, int &size, int limit, int &src);
+	bool write_packet_data(unsigned char *data, int count, int src);
+	bool write_format_packet_data(unsigned char *data, int count, int src);
+	bool write_terminal_data(unsigned char data, int completion_flag);
+	void clear_frame_data(void);
 };
 
 #endif

@@ -3,9 +3,9 @@
 //
 //
 // This file is a part of fldigi.
-// Adapted very liberally from rtty.h, with many thanks to John Hansen, 
-// W2FS, who wrote 'dcc.doc' and 'dcc2.doc', GNU Octave, GNU Radio 
-// Companion, and finally Bartek Kania (bk.gnarf.org) whose 'aprs.c' 
+// Adapted very liberally from rtty.h, with many thanks to John Hansen,
+// W2FS, who wrote 'dcc.doc' and 'dcc2.doc', GNU Octave, GNU Radio
+// Companion, and finally Bartek Kania (bk.gnarf.org) whose 'aprs.c'
 // expository coding style helped shape this implementation.
 //
 // Copyright (C) 2010
@@ -43,6 +43,8 @@
 
 // 70 bytes addr + 256 payload + 2 FCS + 1 Control + 1 Protocol ID
 #define MAXOCTETS 340
+#define MAXPAYLOADBYTES 256
+#define OCTETS_PAD 4
 // 136 bits minimum (including start and end flags) - AX.25 v2.2 section 3.9
 //  == 15 octets.  we count only one of the two flags, though.
 #define MINOCTETS  14
@@ -78,7 +80,7 @@ class ax25 {
 public:
 
 	int mode;
-	unsigned char rxbuf[MAXOCTETS+4];
+	unsigned char rxbuf[MAXOCTETS+OCTETS_PAD];
 
 	ax25();
 	~ax25() {}
@@ -106,5 +108,8 @@ public:
 
 	void decode(unsigned char *buffer, size_t count, bool pad, bool tx_flag);
 };
+
+void put_rx_processed_char(unsigned int data, int style);
+void disp_rx_processed_char(void);
 
 #endif

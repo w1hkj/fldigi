@@ -810,6 +810,7 @@ void Socket::connect(void)
 #ifndef NDEBUG
 	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
 #endif
+	if(!ainfo) return;
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
 		throw SocketException(errno, "connect");
 }
