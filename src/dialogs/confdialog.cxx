@@ -3799,6 +3799,31 @@ btnInitHWPTT->redraw();
 progdefaults.changed = true;
 }
 
+Fl_Round_Button *btnUseGPIOPTT=(Fl_Round_Button *)0;
+
+static void cb_btnUseGPIOPTT(Fl_Round_Button* o, void*) {
+  btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+progdefaults.UseGPIOPTT = o->value();
+
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *inpGPIOPort=(Fl_Counter2 *)0;
+
+static void cb_inpGPIOPort(Fl_Counter2*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
 Fl_Group *grpPTTdelays=(Fl_Group *)0;
 
 Fl_Counter *cntPTT_on_delay=(Fl_Counter *)0;
@@ -9355,7 +9380,7 @@ le Earth)"));
               } // Fl_Check_Button* btnPTTrightchannel
               o->end();
             } // Fl_Group* o
-            { grpHWPTT = new Fl_Group(55, 97, 490, 171, _("h/w ptt device-pin"));
+            { grpHWPTT = new Fl_Group(55, 97, 490, 184, _("h/w ptt device-pin"));
               grpHWPTT->box(FL_ENGRAVED_FRAME);
               grpHWPTT->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { btnTTYptt = new Fl_Round_Button(74, 121, 220, 20, _("Use separate serial port PTT"));
@@ -9401,22 +9426,45 @@ le Earth)"));
                 btnInitHWPTT->tooltip(_("Initialize the H/W PTT interface"));
                 btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
               } // Fl_Button* btnInitHWPTT
-              { btnUsePPortPTT = new Fl_Round_Button(74, 197, 170, 20, _("Use parallel port PTT"));
+              { btnUsePPortPTT = new Fl_Round_Button(74, 191, 170, 20, _("Use parallel port PTT"));
                 btnUsePPortPTT->down_box(FL_DOWN_BOX);
                 btnUsePPortPTT->selection_color((Fl_Color)1);
                 btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
               } // Fl_Round_Button* btnUsePPortPTT
-              { btnUseUHrouterPTT = new Fl_Round_Button(74, 227, 170, 20, _("Use uHRouter PTT"));
+              { btnUseUHrouterPTT = new Fl_Round_Button(74, 221, 170, 20, _("Use uHRouter PTT"));
                 btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
                 btnUseUHrouterPTT->selection_color((Fl_Color)1);
                 btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
               } // Fl_Round_Button* btnUseUHrouterPTT
+              { btnUseGPIOPTT = new Fl_Round_Button(74, 252, 170, 20, _("Use GPIO PTT"));
+                btnUseGPIOPTT->down_box(FL_DOWN_BOX);
+                btnUseGPIOPTT->selection_color((Fl_Color)1);
+                btnUseGPIOPTT->callback((Fl_Callback*)cb_btnUseGPIOPTT);
+              } // Fl_Round_Button* btnUseGPIOPTT
+              { inpGPIOPort = new Fl_Counter2(286, 252, 65, 20, _("GPIO:"));
+                inpGPIOPort->tooltip(_("Select GPIO port"));
+                inpGPIOPort->type(1);
+                inpGPIOPort->box(FL_UP_BOX);
+                inpGPIOPort->color(FL_BACKGROUND_COLOR);
+                inpGPIOPort->selection_color(FL_INACTIVE_COLOR);
+                inpGPIOPort->labeltype(FL_NORMAL_LABEL);
+                inpGPIOPort->labelfont(0);
+                inpGPIOPort->labelsize(14);
+                inpGPIOPort->labelcolor(FL_FOREGROUND_COLOR);
+                inpGPIOPort->minimum(0);
+                inpGPIOPort->maximum(31);
+                inpGPIOPort->step(1);
+                inpGPIOPort->value(17);
+                inpGPIOPort->callback((Fl_Callback*)cb_inpGPIOPort);
+                inpGPIOPort->align(Fl_Align(FL_ALIGN_LEFT));
+                inpGPIOPort->when(FL_WHEN_CHANGED);
+              } // Fl_Counter2* inpGPIOPort
               grpHWPTT->end();
             } // Fl_Group* grpHWPTT
-            { grpPTTdelays = new Fl_Group(55, 270, 490, 91, _("PTT delays valid for all CAT/PTT types"));
+            { grpPTTdelays = new Fl_Group(55, 284, 490, 91, _("PTT delays valid for all CAT/PTT types"));
               grpPTTdelays->box(FL_ENGRAVED_FRAME);
               grpPTTdelays->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Counter* o = cntPTT_on_delay = new Fl_Counter(74, 297, 100, 21, _("Start of transmit PTT delay"));
+              { Fl_Counter* o = cntPTT_on_delay = new Fl_Counter(74, 311, 100, 21, _("Start of transmit PTT delay"));
                 cntPTT_on_delay->tooltip(_("Delay NN msec before starting audio"));
                 cntPTT_on_delay->minimum(0);
                 cntPTT_on_delay->maximum(500);
@@ -9426,7 +9474,7 @@ le Earth)"));
                 o->value(progdefaults.PTT_on_delay);
                 o->lstep(10);
               } // Fl_Counter* cntPTT_on_delay
-              { Fl_Counter* o = cntPTT_off_delay = new Fl_Counter(74, 327, 100, 21, _("PTT end of transmit delay"));
+              { Fl_Counter* o = cntPTT_off_delay = new Fl_Counter(74, 341, 100, 21, _("PTT end of transmit delay"));
                 cntPTT_off_delay->tooltip(_("Delay NN msec before releasing PTT"));
                 cntPTT_off_delay->minimum(0);
                 cntPTT_off_delay->maximum(500);

@@ -66,7 +66,7 @@ public:
 	// code is not compiled.  New tags go to the end of the list.
 	enum ptt_t {
 		PTT_INVALID = -1, PTT_NONE, PTT_HAMLIB,
-		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER
+		PTT_RIGCAT, PTT_TTY, PTT_PARPORT, PTT_UHROUTER, PTT_GPIO
 	};
 
 	PTT(ptt_t dev = PTT_NONE);
@@ -95,6 +95,10 @@ private:
 	void open_tty(void);
 	void set_tty(bool ptt);
 	void close_tty(void);
+
+	void open_gpio(void);
+	void set_gpio(bool ptt);
+	void close_gpio(void);
 
 #if HAVE_PARPORT
 	void open_parport(void);

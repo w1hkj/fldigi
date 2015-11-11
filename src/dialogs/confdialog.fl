@@ -359,7 +359,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {434 227 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {610 168 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -4634,7 +4634,7 @@ progdefaults.changed = true;}
             }
             Fl_Group grpHWPTT {
               label {h/w ptt device-pin} open
-              xywh {55 97 490 171} box ENGRAVED_FRAME align 21
+              xywh {55 97 490 184} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnTTYptt {
                 label {Use separate serial port PTT}
@@ -4704,7 +4704,7 @@ progdefaults.UseUHrouterPTT = false;
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {74 197 170 20} down_box DOWN_BOX selection_color 1
+                xywh {74 191 170 20} down_box DOWN_BOX selection_color 1
               }
               Fl_Round_Button btnUseUHrouterPTT {
                 label {Use uHRouter PTT}
@@ -4717,18 +4717,42 @@ progdefaults.UseUHrouterPTT = o->value();
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {74 227 170 20} down_box DOWN_BOX selection_color 1
+                xywh {74 221 170 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Round_Button btnUseGPIOPTT {
+                label {Use GPIO PTT}
+                callback {btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+progdefaults.UseGPIOPTT = o->value();
+
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                xywh {74 252 170 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Counter inpGPIOPort {
+                label {GPIO:}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {Select GPIO port} xywh {286 252 65 20} type Simple align 4 minimum 0 maximum 31 step 1 value 17
+                class Fl_Counter2
               }
             }
             Fl_Group grpPTTdelays {
               label {PTT delays valid for all CAT/PTT types}
-              xywh {55 270 490 91} box ENGRAVED_FRAME align 21
+              xywh {55 284 490 91} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter cntPTT_on_delay {
                 label {Start of transmit PTT delay}
                 callback {progdefaults.PTT_on_delay = o->value();
 progdefaults.changed = true;}
-                tooltip {Delay NN msec before starting audio} xywh {74 297 100 21} align 8 minimum 0 maximum 500 step 1
+                tooltip {Delay NN msec before starting audio} xywh {74 311 100 21} align 8 minimum 0 maximum 500 step 1
                 code0 {o->value(progdefaults.PTT_on_delay);}
                 code1 {o->lstep(10);}
               }
@@ -4736,7 +4760,7 @@ progdefaults.changed = true;}
                 label {PTT end of transmit delay}
                 callback {progdefaults.PTT_off_delay = o->value();
 progdefaults.changed = true;}
-                tooltip {Delay NN msec before releasing PTT} xywh {74 327 100 21} align 8 minimum 0 maximum 500 step 1
+                tooltip {Delay NN msec before releasing PTT} xywh {74 341 100 21} align 8 minimum 0 maximum 500 step 1
                 code0 {o->value(progdefaults.PTT_off_delay);}
                 code1 {o->lstep(10);}
               }

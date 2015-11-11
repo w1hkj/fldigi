@@ -438,6 +438,8 @@ extern Fl_Round_Button *btnDTRplusV;
 extern Fl_Button *btnInitHWPTT;
 extern Fl_Round_Button *btnUsePPortPTT;
 extern Fl_Round_Button *btnUseUHrouterPTT;
+extern Fl_Round_Button *btnUseGPIOPTT;
+extern Fl_Counter2 *inpGPIOPort;
 extern Fl_Group *grpPTTdelays;
 extern Fl_Counter *cntPTT_on_delay;
 extern Fl_Counter *cntPTT_off_delay;

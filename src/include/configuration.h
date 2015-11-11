@@ -59,6 +59,7 @@
 #  define DEFAULT_HAMRIGDEVICE "/dev/rig"
 #endif
 
+#define DEFAULT_GPIO_PORT 17
 
 // Format: ELEM_(TYPE, VARIABLE-NAME, TAG-STRING, DOC-STRING, DEFAULT-VALUE)
 // Variables that are not saved to the xml file have empty TAG-STRINGs and DOC-STRINGs
@@ -961,6 +962,9 @@
         ELEM_(std::string, PTTdev, "PTTDEV",                                            \
               "PTT device",                                                             \
               DEFAULT_PTTDEV)                                                           \
+        ELEM_(int, GPIOPort, "GPIOPORT",                                                \
+              "PTT GPIO Port",                                                          \
+              DEFAULT_GPIO_PORT)                                                        \
         ELEM_(std::string, CWFSKport, "", "",  DEFAULT_CWFSKPORT)                       \
         ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE",                                \
               "Hamlib rig device",                                                      \
@@ -1007,6 +1011,9 @@
               "Use uHRouter PTT (OS X only)",                                           \
               false)                                                                    \
         ELEM_(bool, UsePPortPTT, "USEPPORTPTT",                                         \
+              "Use parallel port PTT",                                                  \
+              false)                                                                    \
+        ELEM_(bool, UseGPIOPTT, "USEGPIOPTT",                                           \
               "Use parallel port PTT",                                                  \
               false)                                                                    \
         /* RigCAT parameters */                                                         \
