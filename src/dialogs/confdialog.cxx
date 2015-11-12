@@ -5065,6 +5065,18 @@ static void cb_btnKmlPurgeOnStartup(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_kml_enabled=(Fl_Check_Button *)0;
+
+static void cb_btn_kml_enabled(Fl_Check_Button* o, void*) {
+  progdefaults.kml_enabled = o->value();
+if (progdefaults.kml_enabled) {
+  kml_init(true);
+  progdefaults.changed = true;
+} else {
+  KmlServer::Exit();
+};
+}
+
 Fl_Group *tabQRZ=(Fl_Group *)0;
 
 Fl_Tabs *tabsQRZ=(Fl_Tabs *)0;
@@ -11066,6 +11078,16 @@ and restarted if needed."));
               btnKmlPurgeOnStartup->callback((Fl_Callback*)cb_btnKmlPurgeOnStartup);
               o->value(progdefaults.kml_purge_on_startup);
             } // Fl_Check_Button* btnKmlPurgeOnStartup
+            { Fl_Group* o = new Fl_Group(283, 327, 310, 40);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btn_kml_enabled = new Fl_Check_Button(305, 337, 242, 19, _("KML server enabled (On / Off)"));
+                btn_kml_enabled->tooltip(_("Uncheck if KML is never used"));
+                btn_kml_enabled->down_box(FL_DOWN_BOX);
+                btn_kml_enabled->callback((Fl_Callback*)cb_btn_kml_enabled);
+                o->value(progdefaults.kml_enabled);
+              } // Fl_Check_Button* btn_kml_enabled
+              o->end();
+            } // Fl_Group* o
             tabKML->end();
           } // Fl_Group* tabKML
           tabsMisc->end();

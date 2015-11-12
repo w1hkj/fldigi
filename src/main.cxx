@@ -750,7 +750,8 @@ int main(int argc, char ** argv)
 
 void exit_process() {
 
-	KmlServer::Exit();
+	if (progdefaults.kml_enabled)
+		KmlServer::Exit();
 	arq_close();
 	kiss_close();
 	XML_RPC_Server::stop();
@@ -1709,6 +1710,8 @@ static void arg_error(const char* name, const char* arg, bool missing)
 /// Sets or resets the KML parameters, and loads existing files.
 void kml_init(bool load_files)
 {
+	if (progdefaults.kml_enabled == false) return; // disabled kml service
+
 	KmlServer::GetInstance()->InitParams(
 			progdefaults.kml_command,
 			progdefaults.kml_save_dir,

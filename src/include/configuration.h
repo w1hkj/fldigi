@@ -352,6 +352,9 @@
         ELEM_(bool, PseudoFSK, "PSEUDOFSK",                                             \
               "Generate Pseudo-FSK signal on right audio channel",                      \
               false)                                                                    \
+        ELEM_(bool, kml_enabled, "KMLSERVER_ENABLED",                                   \
+              "Enable kml server threads",                                              \
+              true)                                                                     \
         ELEM_(bool, SynopAdifDecoding, "SYNOPADIFDECODING",                             \
               "Decoding of Synop weather information on RTTY to ADIF log",              \
               false)                                                                    \

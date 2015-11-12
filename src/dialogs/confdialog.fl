@@ -359,7 +359,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {610 168 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {611 168 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -6318,6 +6318,22 @@ fc->show();}
 progdefaults.changed = true;}
               tooltip {Empties KML documents when starting program.} xywh {322 231 172 15} down_box DOWN_BOX
               code0 {o->value(progdefaults.kml_purge_on_startup);}
+            }
+            Fl_Group {} {open
+              xywh {283 327 310 40} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btn_kml_enabled {
+                label {KML server enabled (On / Off)}
+                callback {progdefaults.kml_enabled = o->value();
+if (progdefaults.kml_enabled) {
+  kml_init(true);
+  progdefaults.changed = true;
+} else {
+  KmlServer::Exit();
+}}
+                tooltip {Uncheck if KML is never used} xywh {305 337 242 19} down_box DOWN_BOX
+                code0 {o->value(progdefaults.kml_enabled);}
+              }
             }
           }
         }

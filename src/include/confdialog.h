@@ -621,6 +621,7 @@ extern Fl_Button *btlTestKmlCommand;
 extern Fl_Button *btnSelectKmlDestDir;
 extern Fl_Button *btlPurge;
 extern Fl_Check_Button *btnKmlPurgeOnStartup;
+extern Fl_Check_Button *btn_kml_enabled;
 extern Fl_Group *tabQRZ;
 extern Fl_Tabs *tabsQRZ;
 extern Fl_Round_Button *btnQRZWEBnotavailable;
