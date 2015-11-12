@@ -276,7 +276,7 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 {
 	string title = _("Open logbook file");
 	string filter;
-	filter.assign("ADIF file\t*.").append(ADIF_SUFFIX);
+	filter.assign("ADIF file\t*.{adi,adif}");
 #ifdef __APPLE__
 	filter.append("\n");
 #endif
@@ -503,7 +503,7 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 }
 
 void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
-	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*." ADIF_SUFFIX, LogsDir.c_str());
+	const char* p = FSEL::select(_("Merge ADIF file"), "ADIF\t*.{adi,adif}", LogsDir.c_str());
 	Fl::wait();
 	fl_digi_main->redraw();
 	Fl::awake();

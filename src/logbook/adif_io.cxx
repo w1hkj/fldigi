@@ -54,69 +54,77 @@ static const char *szEOR = "<EOR>";
 
 // These ADIF fields define the ADIF database
 FIELD fields[] = {
-//  TYPE,            NAME,           WIDGET
-	{FREQ,           "FREQ",         &btnSelectFreq},      // QSO frequency in Mhz
-	{CALL,           "CALL",         &btnSelectCall},      // contacted stations CALLSIGN
-	{MODE,           "MODE",         &btnSelectMode},      // QSO mode
-	{NAME,           "NAME",         &btnSelectName},      // contacted operators NAME
-	{QSO_DATE,       "QSO_DATE",     &btnSelectQSOdateOn}, // QSO data
-	{QSO_DATE_OFF,   "QSO_DATE_OFF", &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
-	{TIME_OFF,       "TIME_OFF",     &btnSelectTimeOFF},   // HHMM or HHMMSS in UTC
-	{TIME_ON,        "TIME_ON",      &btnSelectTimeON},    // HHMM or HHMMSS in UTC
-	{QTH,            "QTH",          &btnSelectQth},       // contacted stations city
-	{RST_RCVD,       "RST_RCVD",     &btnSelectRSTrcvd},   // received signal report
-	{RST_SENT,       "RST_SENT",     &btnSelectRSTsent},   // sent signal report
-	{STATE,          "STATE",        &btnSelectState},     // contacted stations STATE
-	{VE_PROV,        "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
-	{NOTES,          "NOTES",        &btnSelectNotes},     // QSO notes
-	{QSLRDATE,       "QSLRDATE",     &btnSelectQSLrcvd},   // QSL received date
-	{QSLSDATE,       "QSLSDATE",     &btnSelectQSLsent},   // QSL sent date
-	{GRIDSQUARE,     "GRIDSQUARE",   &btnSelectLOC},       // contacted stations Maidenhead Grid Square
-	{BAND,           "BAND",         &btnSelectBand},      // QSO band
-	{CNTY,           "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county
-	{COUNTRY,        "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
-	{CQZ,            "CQZ",          &btnSelectCQZ},       // contacted stations CQ Zone
-	{DXCC,           "DXCC",         &btnSelectDXCC},      // contacted stations Country Code
-	{QSL_VIA,        "QSL_VIA",      &btnSelectQSL_VIA},   // contacted stations path
-	{IOTA,           "IOTA",         &btnSelectIOTA},      // Islands on the air
-	{ITUZ,           "ITUZ",         &btnSelectITUZ},      // ITU zone
-	{CONT,           "CONT",         &btnSelectCONT},      // contacted stations continent
+//  TYPE,          FSIZE, NAME,           WIDGET
+	{FREQ,         12,    "FREQ",         &btnSelectFreq},      // QSO frequency in Mhz
+	{CALL,         15,    "CALL",         &btnSelectCall},      // contacted stations CALLSIGN
+	{MODE,         10,    "MODE",         &btnSelectMode},      // QSO mode
+	{NAME,         80,    "NAME",         &btnSelectName},      // contacted operators NAME
+	{QSO_DATE,     8,     "QSO_DATE",     &btnSelectQSOdateOn}, // QSO data
+	{QSO_DATE_OFF, 8,     "QSO_DATE_OFF", &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
+	{TIME_OFF,     6,     "TIME_OFF",     &btnSelectTimeOFF},   // HHMM or HHMMSS in UTC
+	{TIME_ON,      6,     "TIME_ON",      &btnSelectTimeON},    // HHMM or HHMMSS in UTC
+	{QTH,          100,   "QTH",          &btnSelectQth},       // contacted stations city
+	{RST_RCVD,     3,     "RST_RCVD",     &btnSelectRSTrcvd},   // received signal report
+	{RST_SENT,     3,     "RST_SENT",     &btnSelectRSTsent},   // sent signal report
+	{STATE,        4,     "STATE",        &btnSelectState},     // contacted stations STATE
+	{VE_PROV,      4,     "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
+	{NOTES,        256,   "NOTES",        &btnSelectNotes},     // QSO notes
+	{QSLRDATE,     8,     "QSLRDATE",     &btnSelectQSLrcvd},   // QSL received date
+	{QSLSDATE,     8,     "QSLSDATE",     &btnSelectQSLsent},   // QSL sent date
+	{GRIDSQUARE,   8,     "GRIDSQUARE",   &btnSelectLOC},       // contacted stations Maidenhead Grid Square
+	{BAND,         8,     "BAND",         &btnSelectBand},      // QSO band
+	{CNTY,         20,    "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county
+	{COUNTRY,      40,    "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
+	{CQZ,          8,     "CQZ",          &btnSelectCQZ},       // contacted stations CQ Zone
+	{DXCC,         8,     "DXCC",         &btnSelectDXCC},      // contacted stations Country Code
+	{QSL_VIA,      50,    "QSL_VIA",      &btnSelectQSL_VIA},   // contacted stations path
+	{IOTA,         20,    "IOTA",         &btnSelectIOTA},      // Islands on the air
+	{ITUZ,         20,    "ITUZ",         &btnSelectITUZ},      // ITU zone
+	{CONT,         20,    "CONT",         &btnSelectCONT},      // contacted stations continent
 
-	{SRX,            "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
-	{STX,            "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
+	{SRX,          50,    "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
+	{STX,          50,    "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
 
-	{XCHG1,          "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
-	{MYXCHG,         "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
+	{XCHG1,        100,   "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+	{MYXCHG,       100,   "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
 
-	{TX_PWR,         "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
-	{NUMFIELDS,      "",             NULL}
+	{TX_PWR,       8,     "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
+	{NUMFIELDS,    0,     "",             NULL}
 };
 
 // This ADIF fields is in the fldigi QSO database, but not saved in the ADIF file
 /*
-	{EXPORT,         "EXPORT",       NULL},                // used to indicate record is to be exported
+	{EXPORT,       0,     "EXPORT",       NULL},                // used to indicate record is to be exported
 */
 
 // These ADIF fields are not in the fldigi QSO database
 /*
-	{COMMENT,        "COMMENT",      NULL},                // comment field for QSO
-	{ADDRESS,        "ADDRESS",      NULL},                // contacted stations mailing address
-	{AGE,            "AGE",          NULL},                // contacted operators age in years
-	{ARRL_SECT,      "ARRL_SECT",    NULL},                // contacted stations ARRL section
-	{CONTEST_ID,     "CONTEST_ID",   NULL},                // QSO contest identifier
-	{OPERATOR,       "OPERATOR",     NULL},                // Callsign of person logging the QSO
-	{PFX,            "PFX",          NULL},                // WPA prefix
-	{PROP_MODE,      "PROP_MODE",    NULL},                // propogation mode
-	{QSL_MSG,        "QSL_MSG",      NULL},                // personal message to appear on qsl card
-	{QSL_RCVD,       "QSL_RCVD",     NULL},                // QSL received status
-	{QSL_SENT,       "QSL_SENT",     NULL},                // QSL sent status
-	{QSL_VIA,        "QSL_VIA",      NULL},                // QSL via this person
-	{RX_PWR,         "RX_PWR",       NULL},                // power of other station in watts
-	{SAT_MODE,       "SAT_MODE",     NULL},                // satellite mode
-	{SAT_NAME,       "SAT_NAME",     NULL},                // satellite name
-	{TEN_TEN,        "TEN_TEN",      NULL}                 // ten ten # of other station
+	{COMMENT,      256,   "COMMENT",      NULL},                // comment field for QSO
+	{ADDRESS,      256,   "ADDRESS",      NULL},                // contacted stations mailing address
+	{AGE,          2,     "AGE",          NULL},                // contacted operators age in years
+	{ARRL_SECT,    20,    "ARRL_SECT",    NULL},                // contacted stations ARRL section
+	{CONTEST_ID,   20,    "CONTEST_ID",   NULL},                // QSO contest identifier
+	{OPERATOR,     20,    "OPERATOR",     NULL},                // Callsign of person logging the QSO
+	{PFX,          20,    "PFX",          NULL},                // WPA prefix
+	{PROP_MODE,    100,   "PROP_MODE",    NULL},                // propogation mode
+	{QSL_MSG,      256,   "QSL_MSG",      NULL},                // personal message to appear on qsl card
+	{QSL_RCVD,     4,     "QSL_RCVD",     NULL},                // QSL received status
+	{QSL_SENT,     4,     "QSL_SENT",     NULL},                // QSL sent status
+	{QSL_VIA,      20,    "QSL_VIA",      NULL},                // QSL via this person
+	{RX_PWR,       8,     "RX_PWR",       NULL},                // power of other station in watts
+	{SAT_MODE,     20,    "SAT_MODE",     NULL},                // satellite mode
+	{SAT_NAME,     20,    "SAT_NAME",     NULL},                // satellite name
+	{TEN_TEN,      10,    "TEN_TEN",      NULL}                 // ten ten # of other station
 };
 */
+
+static string read_errors;
+static int    num_read_errors;
+
+static void write_rxtext(const char *s)
+{
+	ReceiveText->addstr(s);
+}
 
 static char *fastlookup = 0;
 
@@ -181,7 +189,7 @@ cAdifIO::~cAdifIO()
 	}
 }
 
-char * cAdifIO::fillfield (int fieldnum, char *buff)
+char * cAdifIO::fillfield (int recnbr, int fieldnum, char *buff)
 {
 	char *p1 = strchr(buff, ':');
 	char *p2 = strchr(buff, '>');
@@ -197,26 +205,39 @@ char * cAdifIO::fillfield (int fieldnum, char *buff)
 		}
 		p1++;
 	}
+
 	string tmp = "";
 	tmp.assign(p2+1, fldsize);
-	if ((fieldnum == TIME_ON || fieldnum == TIME_OFF) && fldsize < 6) {
-		while (tmp.length() < 6) tmp += '0';
-		adifqso->putField(fieldnum, tmp.c_str(), 6);
-	} else {
-		adifqso->putField (fieldnum, p2+1, fldsize);
-	}
-	return p2 + fldsize + 1;
-}
 
-static void write_rxtext(const char *s)
-{
-	ReceiveText->addstr(s);
+// added to disallow very large corrupted adif fields
+	if (fldsize > fields[fieldnum].fsize) {
+		string bfr = buff;
+		tmp.erase(fields[fieldnum].fsize);
+		static char szmsg[1000];
+		snprintf(szmsg, sizeof(szmsg), 
+			"In record # %d, <%s, too large, saving first %d characters\n", 
+			recnbr+1,
+			bfr.substr(0, (int)(p2+1 - buff)).c_str(),
+			fields[fieldnum].fsize );
+		read_errors.append(szmsg);
+		num_read_errors++;
+	}
+
+	if ((fieldnum == TIME_ON || fieldnum == TIME_OFF) && fldsize < 6)
+		while (tmp.length() < 6) tmp += '0';
+
+	adifqso->putField( fieldnum, tmp.c_str(), tmp.length() );
+
+	return p2 + fldsize + 1;
 }
 
 void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 {
 	int found;
 	static char szmsg[200];
+
+	read_errors.clear();
+	num_read_errors = 0;
 
 // open the adif file
 	FILE *adiFile = fopen (fname, "rb");
@@ -233,13 +254,13 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	clock_gettime(CLOCK_REALTIME, &t0);
 #endif
 
-	char buff[8192];
+	char buff[16384];
 	string sbuff;
-	memset(buff, 0, 8192);
-	int retnbr = fread(buff, 1, 8192, adiFile);
+	memset(buff, 0, 16384);
+	int retnbr = fread(buff, 1, 16384, adiFile);
 	if (retnbr) sbuff.assign(buff, retnbr);
-	size_t p = sbuff.find("<EOH>");
 
+	size_t p = sbuff.find("<EOH>");
 	if (p == std::string::npos) p = sbuff.find("<eoh>");
 	if (p == std::string::npos) {
 		return;
@@ -249,11 +270,17 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 // skip over cr/lf pairs
 	while (sbuff.length() && (sbuff[0] == '\r' || sbuff[0] == '\n'))
 		sbuff.erase(0,1);
-	retnbr = fread(buff, 1, 8192, adiFile);
-	if (retnbr) sbuff.append(buff, retnbr);
 
 	p = sbuff.find("<EOR>");
 	if (p == std::string::npos) p = sbuff.find("<eor>");
+
+	while (!feof(adiFile) && (p == std::string::npos)) {
+		retnbr = fread(buff, 1, 16384, adiFile);
+		if (retnbr) sbuff.append(buff, retnbr);
+		p = sbuff.find("<EOR>");
+		if (p == std::string::npos) p = sbuff.find("<eor>");
+	}
+	if (p == std::string::npos) return;
 
 	char *ptr = 0, *ptr2 = 0;
 	int recnbr = 0;
@@ -267,7 +294,7 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 			found = findfield(ptr+1);
 			if (found > -1) {
 				if (!adifqso) adifqso = db->newrec(); // need new record in db
-				ptr2 = fillfield (found, ptr+1);
+				ptr2 = fillfield (recnbr, found, ptr+1);
 			} else if (found == -1) { // <eor> reached;
 				break;
 			} else {
@@ -286,9 +313,9 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 
 		p = sbuff.find("<EOR>");
 		if (p == std::string::npos) p = sbuff.find("<eor>");
-		if (p == std::string::npos) {
-			memset(buff, 0, 8192);
-			retnbr = fread(buff, 1, 8192, adiFile);
+
+		while (!feof(adiFile) && (p == std::string::npos)) {
+			retnbr = fread(buff, 1, 16384, adiFile);
 			if (retnbr) sbuff.append(buff, retnbr);
 			p = sbuff.find("<EOR>");
 			if (p == std::string::npos) p = sbuff.find("<eor>");
@@ -308,15 +335,21 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 		snprintf(szmsg, sizeof(szmsg), "\
 ERROR reading logbook %s\n\
       read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
-	else
+	else {
 		snprintf(szmsg, sizeof(szmsg), "\
 Loaded logbook %s\n\
-       read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
-
-	REQ(write_rxtext, "\n");
-	REQ(write_rxtext, szmsg);
-	REQ(write_rxtext, "\n");
-	LOG_INFO("%s", szmsg);
+       read %d records in %4.2f seconds\n", fname, db->nbrRecs(), t);
+		LOG_INFO("%s", szmsg);
+		if (num_read_errors) {
+			read_errors.insert(0, szmsg);
+			snprintf(szmsg, sizeof(szmsg),
+				"Corrected %d errors\nSave logbook and then reload",
+				num_read_errors);
+			read_errors.append(szmsg);
+			REQ(write_rxtext, read_errors.c_str());
+		} else
+			REQ(write_rxtext, szmsg);
+	}
 
 	if (db == &qsodb)
 		REQ(adif_read_OK);

@@ -32,6 +32,7 @@ using namespace std;
 
 struct FIELD {
   int  type;
+  int  fsize;
   const char *name;
   Fl_Check_Button **btn;
 };
