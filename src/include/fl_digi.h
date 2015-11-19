@@ -46,10 +46,13 @@
 #include "smeter.h"
 #include "pwrmeter.h"
 #include "picture.h"
+#include "dropwin.h"
 
 extern fre_t seek_re;
 
-extern Fl_Double_Window *fl_digi_main;
+//extern Fl_Double_Window *fl_digi_main;
+extern dropwin			*fl_digi_main;
+
 extern Fl_Double_Window *scopeview;
 //extern Fl_Double_Window *opBrowserView;
 

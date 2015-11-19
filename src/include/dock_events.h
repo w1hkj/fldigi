@@ -1,0 +1,9 @@
+#ifndef _HAVE_DOCK_EVENTS_HDR_
+#define _HAVE_DOCK_EVENTS_HDR_
+
+#  define FX_DROP_EVENT	(FL_DND_RELEASE + 100)
+
+#  define DROP_REGION_HEIGHT 60
+
+#endif
+

@@ -37,15 +37,15 @@
 #define	FeldSampleRate	8000
 #define FeldMaxSymLen	1024
 
-#define	RxColumnLen	30
-#define	TxColumnLen	14
-
-#define	PIXMAP_W	14
-#define	PIXMAP_H	(TxColumnLen)
 #define MAXLEN 512
+
+#define FELD_RX_COLUMN_LEN 20
 
 class feld : public modem {
 enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};
+public:
+static	int    RxColumnLen;
+static	int    TxColumnLen;
 protected:
 //rx
 	double rxphacc;
@@ -55,7 +55,7 @@ protected:
 	double peakval;
 	double peakhold;
 	double minhold;
-	
+
 	double rxpixrate;
 	double txpixrate;
 	double downsampleinc;
@@ -89,7 +89,7 @@ protected:
 	double OnShape[MAXLEN];
 	double OffShape[MAXLEN];
 	
-	mbuffer<int, 2*RxColumnLen> col_data;
+	mbuffer<int, 2*FELD_RX_COLUMN_LEN> col_data;
 	int col_pointer;
 	int fntnbr;
 	

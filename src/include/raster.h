@@ -24,6 +24,7 @@
 #define _RASTER_H
 
 #include <FL/Fl_Widget.H>
+#include "feld.h"
 
 class Raster : public Fl_Widget {
 public:

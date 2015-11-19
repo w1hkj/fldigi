@@ -40,7 +40,7 @@ Raster::Raster (int X, int Y, int W, int H) :
 	width = W - 4;
 	height = H - 4;
 	space = 2;
-	rowheight = 60;
+	rowheight = 2 * FELD_RX_COLUMN_LEN;//40;//60;
 	Nrows = (int)(height / (rowheight + space) - 0.5);
 	vidbuf = new unsigned char[width * height];
 	memset(vidbuf, 255, width * height);

@@ -37,6 +37,7 @@ struct status {
 	bool	Rig_Log_UI;
 	bool	Rig_Contest_UI;
 	bool	DOCKEDSCOPE;
+	bool	tbar_is_docked;
 
 	int		RxTextHeight;
 	int		tiled_group_x;
@@ -71,6 +72,7 @@ struct status {
 	int		tile_w;
 	int		tile_y;
 	int		tile_h;
+	double	tile_y_ratio;
 	double	fsq_ratio;
 	double	ifkp_ratio;
 	bool	LOGenabled;

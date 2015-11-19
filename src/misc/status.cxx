@@ -78,6 +78,7 @@ status progStatus = {
 	false,				// bool Rig_Log_UI;
 	false,				// bool Rig_Contest_UI;
 	false,				// bool DOCKEDSCOPE;
+	false,				// bool tbar_is_docked;
 	50,					// int RxTextHeight;
 	WMIN/2,				// int tiled_group_x;
 	false,				// bool show_channels;
@@ -110,6 +111,7 @@ status progStatus = {
 	200,				// int		tile_w;
 	90,					// int		tile_y;
 	150,				// int		tile_h;
+	0.5,				// double	tile_y_ratio;
 	0.5,				// double	fsq_ratio;
 	0.5,				// double	ifkp_ratio;
 	false,				// bool LOGenabled
@@ -251,6 +253,7 @@ void status::saveLastState()
 		tile_w = text_panel->w();
 		tile_y = progdefaults.rxtx_swap ? TransmitText->h() : ReceiveText->h();
 		tile_h = text_panel->h();
+		tile_y_ratio = 1.0 * tile_y / text_group->h();
 		if (text_panel->w() != ReceiveText->w())
 			tile_x = mvgroup->w();
 		fsq_ratio = 1.0 * fsq_rx_text->h() / fsq_group->h();
@@ -363,6 +366,7 @@ if (!bWF_only) {
 	spref.set("rigcontest_ui", Rig_Contest_UI);
 	spref.set("noriglog", NO_RIGLOG);
 	spref.set("docked_scope", DOCKEDSCOPE);
+	spref.set("tbar_is_docked", tbar_is_docked);
 
 	spref.set("rigctl_x", rigX);
 	spref.set("rigctl_y", rigY);
@@ -387,6 +391,7 @@ if (!bWF_only) {
 	spref.set("tile_y", tile_y);
 	spref.set("tile_w", tile_w);
 	spref.set("tile_h", tile_h);
+	spref.set("tile_y_ratio", tile_y_ratio);
 	spref.set("fsq_ratio", fsq_ratio);
 	spref.set("ifkp_ratio", ifkp_ratio);
 
@@ -565,6 +570,7 @@ void status::loadLastState()
 	spref.get("rigcontest_ui", i, Rig_Contest_UI); Rig_Contest_UI = i;
 	spref.get("noriglog", i, NO_RIGLOG); NO_RIGLOG = i;
 	spref.get("docked_scope", i, DOCKEDSCOPE); DOCKEDSCOPE = i;
+	spref.get("tbar_is_docked", i, tbar_is_docked); tbar_is_docked = i;
 
 	spref.get("rigctl_x", rigX, rigX);
 	spref.get("rigctl_y", rigY, rigY);
@@ -589,6 +595,7 @@ void status::loadLastState()
 	spref.get("tile_y", tile_y, tile_y);
 	spref.get("tile_w", tile_w, tile_w);
 	spref.get("tile_h", tile_h, tile_h);
+	spref.get("tile_y_ratio", tile_y_ratio, tile_y_ratio);
 	spref.get("fsq_ratio", fsq_ratio, fsq_ratio);
 	spref.get("ifkp_ratio", ifkp_ratio, ifkp_ratio);
 

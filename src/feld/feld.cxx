@@ -55,6 +55,9 @@ LOG_FILE_SOURCE(debug::LOG_MODEM);
 
 char feldmsg[80];
 
+int feld::RxColumnLen = FELD_RX_COLUMN_LEN;
+int feld::TxColumnLen = 14;
+
 void feld::tx_init(SoundBase *sc)
 {
 	scard = sc;

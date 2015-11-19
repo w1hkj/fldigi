@@ -493,6 +493,12 @@ fldigi_SOURCES += \
 	include/psk_browser.h \
 	include/utf8file_io.h \
 	include/weather.h \
+	include/dock_events.h \
+	include/dock_gp.h \
+	include/drag_btn.h \
+	include/dropwin.h \
+	include/toolgrp.h \
+	include/toolwin.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -605,6 +611,11 @@ fldigi_SOURCES += \
 	widgets/psk_browser.cxx \
 	widgets/smeter.cxx \
 	widgets/pwrmeter.cxx \
+	widgets/dock_gp.cxx \
+	widgets/drag_btn.cxx \
+	widgets/dropwin.cxx \
+	widgets/toolgrp.cxx \
+	widgets/toolwin.cxx \
 	fsq/fsq.cxx \
 	ifkp/ifkp.cxx \
 	ifkp/tux.cxx \

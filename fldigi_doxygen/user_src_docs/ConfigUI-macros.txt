@@ -30,9 +30,16 @@ fldigi macro bar positions will change immediately so you can see the
 selection.
 <br>
 
-With 2 rows shown you obtain access to the primary set with normal
-Function key press. The secondary set is accessed by a
-SHIFT-Function-key press.
+<center>
+\image html macrobuttons.png "Macro Buttons"
+\image latex macrobuttons.png "Macro Buttons" width=6.0in
+</center>
+<br>
+
+<center>
+\image html macro-scheme-4.png "Macro Buttons - Scheme 4"
+\image latex macro-scheme-4.png "Macro Buttons - Scheme 4" width=6.0in
+</center>
 <br>
 
 You edit any macro definition by using a mouse right-click on it's button.
@@ -41,6 +48,25 @@ You edit any macro definition by using a mouse right-click on it's button.
 You can also select to use the mouse wheel to rotate through the macro
 sub-sets. When checked you simply hover the mouse over the macro
 bar and roll the mouse wheel.
+<br>
+
+All 48 macro buttons can be displayed in a matrix.
+
+\image html macro-matrix.png "Macro Buttons Matrix"
+\image latex macro-matrix.png "Macro Buttons Matrix" width=6.0in
+<br>
+
+The matrix display is toggled on and off using the menu item
+<center>
+\image html view-hide-48.png ""
+\image latex view-hide-48.png "" width=1.0in
+</center>
+<br>
+
+The matrix display can be dragged off and restored to it's position below
+the main menu.  The drag button is the knurled vertical button on the left
+edge of the matrix.  Left click on the drag button and drag the matrix with
+the mouse.
 <br>
 
 Fldigi manages multiple files that contain macro definitions. You may

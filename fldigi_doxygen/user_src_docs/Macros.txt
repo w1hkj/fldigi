@@ -4,9 +4,17 @@
 \tableofcontents
 
 Macros are short text statements that contain imbedded references to text
-data used by the program fldigi.   Macro definition files(s) are located
-in the $HOME/.fldigi/macros/ directory and all have the extention ".mdf". The
-default set of macros are contained in the
+data used by the program fldigi.  A macro is accessed via the macro button
+bar or function key.
+
+<center>
+\image html macrobuttons.png "Macro Buttons"
+\image latex macrobuttons.png "Macro Buttons" width=6.0in
+</center>
+<br>
+
+Macro definition files(s) are located in the $HOME/.fldigi/macros/ directory
+and all have the extention ".mdf". The default set of macros are contained in the
 file $HOME/.fldigi/macros/<b>macros.mdf</b>.
 
 Fldigi will create this file with a set of default macros on its first
@@ -15,7 +23,23 @@ execution.
 
 Fldigi supports up to 48 macro definitions in sets of 12.  Macro
 definitions are not recursive, that is; a macro cannot reference
-another macro or itself.
+another macro or itself.  All 48 macro buttons can be displayed in a matrix.
+
+\image html macro-matrix.png "Macro Buttons Matrix"
+\image latex macro-matrix.png "Macro Buttons Matrix" width=6.0in
+<br>
+
+The matrix display is toggled on and off using the menu item
+<center>
+\image html view-hide-48.png ""
+\image latex view-hide-48.png "" width=1.0in
+</center>
+<br>
+
+The matrix display can be dragged off and restored to it's position below
+the main menu.  The drag button is the knurled vertical button on the left
+edge of the matrix.  Left click on the drag button and drag the matrix with
+the mouse.
 <br>
 
 The imbedded references are similar to those used by DigiPan and other
