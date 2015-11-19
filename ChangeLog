@@ -1,10 +1,26 @@
 
 
+=Version 3.23.05=
+
+2015-11-14  David Freese  <iam_w1hkj@w1hkj.com>
+
+	cf7a199: dock macros
+	30e6eda: kml disable
+	2e2c9e9: ADIF record repairs
+	93342e4: gpio ptt
+	d6a34a4: NAVTEX/SYNOP/KML
+
+2015-10-19  John Phelps  <kl4yfd@gmail.com>
+
+	51535ff: Add 8PSK 125FL 250FL
+
+
 =Version 3.23.04=
+
 
 2015-10-15  David Freese  <iam_w1hkj@w1hkj.com>
 
-	345e7c0: CW filter
+	2516356: CW filter
 	7f23f3f: Update Check
 	4862141: fsq abort
 	3bed0e3: log merge
@@ -12,7 +28,7 @@
 
 =Version 3.23.03=
 
-	004c1e7: thor-image
+	551d105: thor-image
 	c3b610b: FSQ trigger bug
 
 
