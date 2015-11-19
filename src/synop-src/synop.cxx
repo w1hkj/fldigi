@@ -591,7 +591,8 @@ public:
 
 		// First take the names
 		if (bMOREINFO)
-			LOG_INFO("Eliminating duplicates out of %d elements",m_catalog.size());
+			LOG_INFO("Eliminating duplicates out of %d elements",
+				static_cast<int>(m_catalog.size()));
 		for( IteratorType it = m_catalog.begin(), en = m_catalog.end(); it != en; ++it )
 		{
 			RecordWmoStation & refWmo = it->second ;
@@ -613,14 +614,19 @@ public:
 				++nbKeys;
 			}
 			if (bMOREINFO)
-				LOG_INFO("Name=%s nb=%d", itH->first.c_str(), nbKeys );
+				LOG_INFO("Name=%s nb=%d", 
+					itH->first.c_str(),
+					static_cast<int>(nbKeys) );
 
 			// If no duplicates, then try next one.
 			if( nbKeys == 1 ) continue ;
 
 			++nbDupl ;
 			if (bMOREINFO)
-				LOG_INFO("%d: Name %s %d occurrences", nbDupl, itH->first.c_str(), nbKeys );
+				LOG_INFO("%d: Name %s %d occurrences", 
+					static_cast<int>(nbDupl),
+					itH->first.c_str(),
+					static_cast<int>(nbKeys) );
 
 			// There should not be many elements, two or three duplicates, maximum five apparently.
 			typedef std::set< std::string > DiffNamesT ;
@@ -678,7 +684,8 @@ public:
 		HashT allNames ;
 
 		if (bMOREINFO)
-			LOG_INFO("Eliminating duplicates out of %d elements",m_catalog.size());
+			LOG_INFO("Eliminating duplicates out of %d elements",
+				static_cast<int>(m_catalog.size()));
 
 		/// First take the names
 		for( IteratorType it = m_catalog.begin(), en = m_catalog.end(); it != en; ++it )
@@ -702,7 +709,9 @@ public:
 				++nbKeys;
 			}
 			if (bMOREINFO)
-				LOG_INFO("Name=%s nb=%d", itH->first.c_str(), nbKeys );
+				LOG_INFO("Name=%s nb=%d",
+					itH->first.c_str(),
+					static_cast<int>(nbKeys) );
 
 			// If no duplicates, then try next one.
 			if( nbKeys == 1 ) continue ;
@@ -710,7 +719,9 @@ public:
 			++nbDupl ;
 			if (bMOREINFO)
 				LOG_INFO("%d: Buoy name %s %d occurrences",
-					nbDupl, itH->first.c_str(), nbKeys );
+					static_cast<int>(nbDupl),
+					itH->first.c_str(),
+					static_cast<int>(nbKeys) );
 
 			// There should not be many elements, two or three duplicates, maximum five apparently.
 			typedef std::set< std::string > DiffNamesT ;

@@ -683,7 +683,9 @@ class  KmlSrvImpl : public KmlServer {
 		/// and different positions due to a move. This has to be very fast because under lock protection.
 		void FlushQueue(double merge_dist) {
 			if (bMOREINFO)
-				LOG_INFO("FlushQueue nbelts %d sz=%d", m_queue_to_insert.size(), size() );
+				LOG_INFO("FlushQueue nbelts %d sz=%d", 
+					static_cast<int>(m_queue_to_insert.size()),
+					static_cast<int>(size()) );
 
 			if( m_queue_to_insert.empty() ) return ;
 
@@ -692,7 +694,7 @@ class  KmlSrvImpl : public KmlServer {
 				DirectInsert( *itPL, merge_dist );
 			}
 			if (bMOREINFO)
-				LOG_INFO("Flushed into sz=%d", size() );
+				LOG_INFO("Flushed into sz=%d", static_cast<int>(size()) );
 
 			// TODO: If lock contention problems, we might swap this list with another one owned by this
 			// objet. This would later be merged into the container before saving data to disk.
@@ -1384,7 +1386,7 @@ class  KmlSrvImpl : public KmlServer {
 	bool RewriteKmlFileFull(void) {
 		bool wasSaved = false ;
 		if (bMOREINFO)
-			LOG_INFO("nb_categories=%d", nb_categories );
+			LOG_INFO("nb_categories=%d", static_cast<int>(nb_categories) );
 		for( size_t i = 0; i < nb_categories; ++i ) {
 			const char * category = categories[i];
 			PlacesMapT *ptrMap = m_placemarks.FindCategory( category );
