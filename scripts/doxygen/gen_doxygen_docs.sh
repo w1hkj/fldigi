@@ -1,6 +1,6 @@
 #! /bin/bash -e
 #
-# KL4YFD 2013
+# Copyright (C) KL4YFD 2013-2015
 # Released under GNU GPL
 #
 
@@ -12,19 +12,21 @@ cd $( dirname ${BASH_SOURCE[0]} )
 function usage
 {
 	printf "\n\nThis script generates Doxygen documentation from the "
-	printf "\nfldigi sourcecode. By default, the tool \"cppcheck\" is also called. \nNote: This analysis takes longer than compilation and produces about 1.8GiB of data."
+	printf "\nfldigi sourcecode. Unless disabled, the tool \"cppcheck\" is also called. \nNote: This analysis takes longer than compilation and produces about 2000 MiB of data on-disk."
 	printf "\n\nUsage:"
 	printf "\n\tGenerate Doxygen documentation:\t ./gen_doxygen_docs.sh run"
+	printf "\n\tGenerate Doxygen documentation without Cppcheck:\t ./gen_doxygen_docs.sh nocppcheck"
 	printf "\n\tClean up after Doxygen run:\t ./gen_doxygen_docs.sh clean"
-	printf "\n\tClean up after Doxygen run:\t ./gen_doxygen_docs.sh nocppcheck"
 	printf "\n\tPrint this usage summary:\t ./gen_doxygen_docs.sh help \n\n"
 }
 
 function doxygen_clean {
 	rm -Rf HTML
-	printf "\ndoxygen documentation deleted!\n"
+	printf "\n\nDoxygen documentation deleted!\n\n"
 }
 
+# set defaults
+nocppcheck_flag=false
 
 case "$1" in
 "run")
@@ -34,11 +36,11 @@ case "$1" in
   break
     ;;
 "nocppcheck")
-   cppcheck_clean
-   exit
+  ../tests/cppcheck/gen_cppcheck_results.sh clean
+   nocppcheck_flag=true
     ;;
 "clean")
-  doxygen_clean
+  doxygen_clean # this auto-catches the gitstats files also
   ../tests/cppcheck/gen_cppcheck_results.sh clean
    exit
     ;;
@@ -79,6 +81,14 @@ if ! which mscgen ; then
 	exit 1
 fi
 
+# Ensure the binary "gitstats" is on the system
+if ! which gitstats ; then
+	printf "\n\nERROR: Generating the Fldigi Doxygen documents requires the program: gitstats"
+	printf "\n\tPlease install this program to continue."
+	printf "\n\n === ABORTING === \n\n"
+	exit 1
+fi
+
 # Ensure the Doxygen config file exists
 if [ ! -e ./fldigi_doxyfile.txt ]; then
 	printf "\n\nERROR: Doxygen configuration file: \"fldigi_doxyfile.txt\" not found."
@@ -86,13 +96,19 @@ if [ ! -e ./fldigi_doxyfile.txt ]; then
 	exit 1
 fi
 
-doxygen fldigi_doxyfile.txt 
+
+mkdir HTML # just in case
+
+doxygen fldigi_doxyfile.txt 	# this takes a while
+
+gitstats ../../ ./HTML/GITSTATS	# this is pretty fast
+
 
 # Go create some really useful information using git
 cd HTML
 	mkdir __git; cd __git
-		git format-patch --summary -n HEAD~125 # Create patches for the last 125 commits
-		git log --stat -n 125 > gitlog.txt # Dump the history of the last 125 commits
+		git format-patch --summary -n HEAD~100 # Create patches for the last 100 commits
+		git log --stat -n 100 > gitlog.txt # Dump the history of the last 100 commits
 	cd ..
 cd ..
 
@@ -100,7 +116,9 @@ if ! which cppcheck ; then
 	printf "\n\nWARNING: Binary \"cppcheck\" not found."
 	printf "\n\n\t Skipping sourcecode analysis. Install cppcheck and re-run.\n\n"
 else
-	../tests/cppcheck/gen_cppcheck_results.sh run
+	if [ "$nocppcheck_flag" != true  ];then
+		../tests/cppcheck/gen_cppcheck_results.sh run
+	fi
 fi
 
 printf "\n\n === DOXYGEN documentation generation complete. ==="

@@ -443,7 +443,7 @@ getaddrinfo(3), getopt(3), regex(7), X(7)
 == RESOURCES ==
 Main web site: http://www.w1hkj.com/Fldigi.html
 
-BerliOS project page: http://developer.berlios.de/projects/fldigi/
+Sourceforge project page: http://sourceforge.net/projects/fldigi/
 
 Wiki and bug tracker: https://fedorahosted.org/fldigi/
 

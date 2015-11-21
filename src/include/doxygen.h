@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //      doxygen.h
 //
-// Copyright (C) 2013
+// Copyright (C) 2013-2015
 //              John Phelps, KL4YFD
 //
 // This file is part of fldigi.
@@ -27,7 +27,7 @@
 */
 
 
-/** \mainpage Fldigi 3.21 doxygen documentation
+/** \mainpage Fldigi Developer Doxygen Documentation
  <div align="center"><img src="../../../data/fldigi-psk.png" ></div>
 
  \section intro Introduction
@@ -48,13 +48,14 @@
   
   \section download To Download Fldigi :
   <UL> 
-  <LI> latest release version at: <A HREF="http://www.w1hkj.com/download.html">http://www.w1hkj.com/download.html</A></LI>
-  <LI> beta versions at: <A HREF="http://www.w1hkj.com/beta">http://www.w1hkj.com/beta</A></LI>
-  <LI> alpha versions at: <A HREF="http://www.w1hkj.com/alpha">http://www.w1hkj.com/alpha</A></LI>
-  <LI> pre-alpha & test versions at: <A HREF="http://www.w1hkj.com/temp">http://www.w1hkj.com/temp</A></LI>
-  <LI> To pull latest source from main repository: <B>git clone git://git.berlios.de/fldigi</B></LI>
+  <LI> Latest release version at: <A HREF="https://sourceforge.net/projects/fldigi/files/fldigi/">https://sourceforge.net/projects/fldigi/files/fldigi/</A></LI>
+  <LI> Alpha versions at: <A HREF="https://sourceforge.net/projects/fldigi/files/alpha_tests/">https://sourceforge.net/projects/fldigi/files/alpha_tests/</A></LI>
+  <LI> Test suite available at: <A HREF="https://sourceforge.net/projects/fldigi/files/test_suite/">https://sourceforge.net/projects/fldigi/files/test_suite/</A></LI>
+  <LI> To pull latest source with developer access: <B> git clone ssh://<I>YOUR-LOGIN</I>@git.code.sf.net/p/fldigi/fldigi fldigi-fldigi</B></LI>
+  <LI> To pull latest source with developer access behind proxy/firewall: <B> git clone https://<I>YOUR-LOGIN</I>@git.code.sf.net/p/fldigi/fldigi fldigi-fldigi</B></LI>
+  <LI> To pull latest source with no account, read-only: <B> git clone git://git.code.sf.net/p/fldigi/fldigi fldigi-fldigi</B></LI>
   </UL>
-  
+ 
   
   \section entry Good Entry-Points for Navigating the Doxygen Documentation :
   <UL>
@@ -85,8 +86,14 @@
   
   \section git Information from git :
   <UL>
-  <LI><A HREF="__git/">Patches for the last 125 commits</A></LI>
-  <LI><A HREF="__git/gitlog.txt">git-log for the last 125 commits</A></LI>
+  <LI><A HREF="__git/">Patches for the last 100 commits</A></LI>
+  <LI><A HREF="__git/gitlog.txt">git-log for the last 100 commits</A></LI>
+  <LI><A HREF="GITSTATS/index.html">General GIT Statistics for the project</A></LI>
+  <LI><A HREF="GITSTATS/activity.html">Project Activity Log</A></LI>
+  <LI><A HREF="GITSTATS/authors.html">Author Statistics</A></LI>
+  <LI><A HREF="GITSTATS/files.html">File Statistics</A></LI>
+  <LI><A HREF="GITSTATS/lines.html">Lines of Code Graph</A></LI>
+  <LI><A HREF="GITSTATS/tags.html">Tags List</A></LI>
   </UL>
 
   \section license License

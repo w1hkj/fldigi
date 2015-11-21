@@ -126,7 +126,7 @@ Flarq web site: http://www.w1hkj.com/flarq_main.html
 
 Fldigi web site: http://www.w1hkj.com/Fldigi.html
 
-BerliOS project page: http://developer.berlios.de/projects/fldigi/
+Sourceforge project page: http://sourceforge.net/projects/fldigi/
 
 ARQ specification by Paul Schmidt, K9PS: http://www.w1hkj.com/FlarqHelpFiles/ARQ2.pdf
 
