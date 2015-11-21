@@ -235,26 +235,6 @@ Macro            | Description
 
 </center>
 
-<br>
-
-\verbatim
-  * Added macro to insert QRG text into Rx stream
-	<QRG:text to insert>
-  * Added save macro <SAVE> tag
-  * Added export strings
-	- FLDIGI_LOG_FILE - current logbook file name
-	- FLDIGI_MACRO_FILE - current macro file name
-  * Added <PAUSE> tag
-	- returns to receive, but does not clear Tx buffer
-  * Added <TXATTEN:nn.n> <!TXATTEN:nn.n> tag to control
-	transmit attenuator control from within a macro.
-  * Added <COMMENT:text> macro tag
-	a do nothing that disappears from the transmitted
-	text
-\endverbatim
-
-<br>
-
 \section modem_macro_tags Modem macro tags
 
 Macro tags are also assigned to each supported modem type and sub-modem type

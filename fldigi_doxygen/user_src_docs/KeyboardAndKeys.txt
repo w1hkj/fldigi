@@ -23,12 +23,20 @@ text into the transmit buffer.  There is one very important
 exception:
 <br>
 
-The caret "^" symbol.  This is used in the macro expansion routine
-and also used by the transmit buffer evaluator.  A ^r puts fldigi into
-receive mode.  So you can enter the ^r (caret followed by the r) at the end
-of your transmit buffer and when the sent character cursor (red chars) gets to
-that point the program will clear the text and return to the receive
-mode.
+The caret "^" symbol, which fldigi uses as a meta character.  The ^ is 
+used in the macro expansion routine and also used by the transmit buffer 
+evaluator.  A ^r puts fldigi into receive mode.  So you can enter the ^r 
+(caret followed by the r) at the end of your transmit buffer and when 
+the sent character cursor (red chars) gets to that point the program will 
+clear the text and return to the receive mode.
+<br>
+
+Other useful meta combinations:
+<ul>
+<li>^l ^L - save the log entry when meta combination parsed</li>
+<li>^p ^P - pause transmission at this point in transmit text</li>
+<li>^r ^R - return to receive clear all transmit text</li>
+</ul>
 <br>
 
 You can load the transmit buffer with any ASCII Text file of your
