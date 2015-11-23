@@ -872,6 +872,7 @@ void arq_close(void)
 	// and then wait for it to die
 	pthread_join(arq_thread, NULL);
 	arq_enabled = false;
+	LOG_INFO("ARQ closed");
 	if(data_io_enabled == ARQ_IO)
 		data_io_enabled = DISABLED_IO ;
 	arq_exit = false;
