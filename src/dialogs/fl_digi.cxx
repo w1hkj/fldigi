@@ -3990,6 +3990,11 @@ UI_return:
 
 	text_panel->position( orgx, orgy, nux, nuy);
 
+	RigControlFrame->init_sizes();
+	RigControlFrame->redraw();
+	smeter->redraw();
+	pwrmeter->redraw();
+
 	center_group->redraw();
 	wefax_group->redraw();
 	fsq_group->redraw();

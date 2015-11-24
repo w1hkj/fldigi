@@ -69,6 +69,7 @@ public:
 
 	void	value(double v) { value_ = v; redraw(); }
 	double	value() const { return (value_); }
+	void	resize(int x, int y, int w, int h);
 
 	void	set_background(Fl_Color c1) { bgnd_ = c1; redraw(); }
 	void	set_metercolor(Fl_Color c2) { fgnd_ = c2; redraw(); }
@@ -82,6 +83,7 @@ private:
 	void	select_100W();
 	void	select_200W();
 };
+
 
 #endif // !pwrmeter
 

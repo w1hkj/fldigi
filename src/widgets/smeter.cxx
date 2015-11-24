@@ -98,6 +98,40 @@ Smeter::Smeter(int X, int Y, int W, int H, const char* l)
 	sx = (tw - meter_width) / 2;
 }
 
+void Smeter::resize(int X, int Y, int W, int H) {
+	Fl_Widget::resize(X,Y,W,H);
+
+	bx = Fl::box_dx(box());
+	by = Fl::box_dy(box());
+	bw = Fl::box_dw(box());
+	bh = Fl::box_dh(box());
+
+	tx = X + bx;
+	tw = W - bw;
+	ty = Y + by;
+	th = H - bh;
+
+	static int fsize = 6;
+	fl_font(FL_HELVETICA, fsize);
+	meter_width = fl_width(meter_face);
+	while ((meter_width < tw) && (fl_height() < th)) {
+		fsize++;
+		fl_font(FL_HELVETICA, fsize);
+		meter_width = fl_width(meter_face);
+	}
+	fsize--;
+	fl_font(FL_HELVETICA, fsize);
+	meter_width = fl_width(meter_face);
+	meter_height = fl_height();
+	label(meter_face);
+	labelfont(FL_HELVETICA);
+	labelsize(fsize);
+	labelcolor(scale_color);
+
+	meter_width -= fl_width("|");
+	sx = (tw - meter_width) / 2;
+}
+
 //
 // End of Smeter.cxx
 //
