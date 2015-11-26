@@ -1,11 +1,28 @@
+2015-11-26  David Freese  <iam_w1hkj@w1hkj.com>
+
+	16ede08: flrig xmlrpc
+
+
+=Version 3.23.06=
+
+	3f577d9: WO woes
+	482d060: Smeter PWRmeter
+	e08e403: ARQ shutdown
+
+2015-11-20  John Phelps  <kl4yfd@gmail.com>
+
+	0b5b329: Developer Doxygen and BerliOS clean  - Cleaned and Fixed developer Doxygen files  - Added GitStats to the Dev Doxygen info    -- run ./scripts/doxygen/gen_doxygen_docs.sh
+
+2015-11-20  David Freese  <iam_w1hkj@w1hkj.com>
+
+	b19fff8: Documentation
+	55e0d31: Compiler warnings
 
 
 =Version 3.23.05=
 
-2015-11-14  David Freese  <iam_w1hkj@w1hkj.com>
-
-	cf7a199: dock macros
-	30e6eda: kml disable
+	c86ec80: dock macros
+	9b210f7: kml disable
 	2e2c9e9: ADIF record repairs
 	93342e4: gpio ptt
 	d6a34a4: NAVTEX/SYNOP/KML
