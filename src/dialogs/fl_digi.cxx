@@ -7218,7 +7218,7 @@ void noop_controls() // create and then hide all controls not being used
 		btnMacro[i] = new Fl_Button(defwidget); btnMacro[i]->hide();
 	}
 	for (int i = 0; i < 48; i++) {
-		btnDockMacro[i] = new Fl_Button(defwidget); btnMacro[i]->hide();
+		btnDockMacro[i] = new Fl_Button(defwidget); btnDockMacro[i]->hide();
 	}
 
 	inpQth = new Fl_Input2(defwidget); inpQth->hide();
@@ -7342,17 +7342,16 @@ void create_fl_digi_main_WF_only() {
 	fl_font(fnt, fsize);
 
 
-	IMAGE_WIDTH = 4000;//progdefaults.HighFreqCutoff;
+	IMAGE_WIDTH = 4000;
 	Hwfall = progdefaults.wfheight;
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
-	WF_only_height = fl_digi_main->workspace->y() + Hwfall + Hstatus + 4 * pad;
+	WF_only_height = Hmenu + Hwfall + Hstatus + 4 * pad;
 
-//	fl_digi_main = new Fl_Double_Window(progStatus.mainW, WF_only_height);
 	fl_digi_main = new dropwin(progStatus.mainW, WF_only_height);
 
-		mnuFrame = new Fl_Group(0,0,progStatus.mainW, fl_digi_main->workspace->y());
+		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 
-			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 200 - pad, fl_digi_main->workspace->y());
+			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 200 - pad, Hmenu);
 // do some more work on the menu
 			for (size_t i = 0; i < sizeof(alt_menu_)/sizeof(alt_menu_[0]); i++) {
 // FL_NORMAL_SIZE may have changed; update the menu items
@@ -7365,29 +7364,29 @@ void create_fl_digi_main_WF_only() {
 			}
 			mnu->menu(alt_menu_);
 
-			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, fl_digi_main->workspace->y(), "Spot");
+			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(progdefaults.SpotColor);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, fl_digi_main->workspace->y(), "RxID");
+			btnRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "RxID");
 			btnRSID->selection_color(progdefaults.RxIDColor);
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
-			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, fl_digi_main->workspace->y(), "TxID");
+			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TxID");
 			btnTxRSID->selection_color(progdefaults.TxIDColor);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
-			btnTune = new Fl_Light_Button(progStatus.mainW - 50 - pad, 0, 50, fl_digi_main->workspace->y(), "TUNE");
+			btnTune = new Fl_Light_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu, "TUNE");
 			btnTune->selection_color(progdefaults.TuneColor);
 			btnTune->callback(cbTune, 0);
 
 		mnuFrame->resizable(mnu);
 		mnuFrame->end();
 
-		Y = fl_digi_main->workspace->y() + pad;
+		Y = Hmenu + pad;
 
 		Fl_Pack *wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
 			wfpack->type(1);
