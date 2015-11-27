@@ -35,9 +35,15 @@ public:
 		VERBOSE_LEVEL, DEBUG_LEVEL, LOG_NLEVELS
 	};
 	enum source_e {
-		LOG_ARQCONTROL = 1 << 0, LOG_AUDIO = 1 << 1, LOG_MODEM = 1 << 2,
-		LOG_RIGCONTROL = 1 << 3, LOG_RPC = 1 << 4, LOG_SPOTTER = 1 << 5,
-		LOG_KISSCONTROL = 1 << 6, LOG_OTHER = 1 << 7
+		LOG_ARQCONTROL = 1 << 0,
+		LOG_AUDIO = 1 << 1,
+		LOG_MODEM = 1 << 2,
+		LOG_RIGCONTROL = 1 << 3,
+		LOG_XMLRPC_RIG = 1 << 4,
+		LOG_RPC = 1 << 5,
+		LOG_SPOTTER = 1 << 6,
+		LOG_KISSCONTROL = 1 << 7,
+		LOG_OTHER = 1 << 8
 	};
 	static void start(const char* filename);
 	static void stop(void);

@@ -317,21 +317,25 @@ void buildlist()
 
 int cb_qso_opMODE()
 {
+	if (connected_to_flrig) {
+		set_flrig_mode(qso_opMODE->value());
+		return 0;
+	}
 #if USE_HAMLIB
 	if (progdefaults.chkUSEHAMLIBis)
 		hamlib_setmode(mode_nums[qso_opMODE->value()]);
 	else
 #endif
 		rigCAT_setmode(qso_opMODE->value());
-	set_flrig_mode(qso_opMODE->value());
 	return 0;
 }
 
 int cb_qso_opBW()
 {
-	if (progdefaults.chkUSERIGCATis)
+	if (connected_to_flrig)
+		set_flrig_bw(qso_opBW->index(), -1);
+	else if (progdefaults.chkUSERIGCATis)
 		rigCAT_setwidth(qso_opBW->value());
-	set_flrig_bw(qso_opBW->index(), -1);
 	return 0;
 }
 
@@ -367,13 +371,16 @@ int cb_qso_opBW2()
 
 void sendFreq(long int f)
 {
+	if (connected_to_flrig)
+		set_flrig_freq(f);
+	else {
 #if USE_HAMLIB
-	if (progdefaults.chkUSEHAMLIBis)
-		hamlib_setfreq(f);
-	else
+		if (progdefaults.chkUSEHAMLIBis)
+			hamlib_setfreq(f);
+		else
 #endif
-		rigCAT_setfreq(f);
-	set_flrig_freq(f);
+			rigCAT_setfreq(f);
+	}
 }
 
 void qso_movFreq(Fl_Widget* w, void *data)

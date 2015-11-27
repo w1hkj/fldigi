@@ -45,8 +45,9 @@
 #include "qrunner.h"
 #include "debug.h"
 #include "status.h"
+#include "icons.h"
 
-static bool XMLRPC_DEBUG = 0;
+LOG_FILE_SOURCE(debug::debug::LOG_XMLRPC_RIG);
 
 using namespace XmlRpc;
 using namespace std;
@@ -107,8 +108,7 @@ void xmlrpc_rig_set_qsy(long long rfc)
 	wf->rfcarrier(rfc);
 	wf->movetocenter();
 	show_frequency(rfc);
-	if (XMLRPC_DEBUG) 
-		LOG_INFO("set qsy: %d", (int)rfc);
+	LOG_INFO("set qsy: %d", (int)rfc);
 }
 
 //======================================================================
@@ -126,29 +126,52 @@ void set_flrig_ptt(int on) {
 	if (!connected_to_flrig) return;
 
 	XmlRpcValue val, result;
+	int resp, res;
 	val = int(on);
 
 	guard_lock flrig_lock(&mutex_flrig);
-	if (flrig_client->execute("rig.set_ptt", val, result, timeout)) {
-		wait_ptt = true;
-		wait_ptt_timeout = 10;
-		ptt_state = on;
-		if (XMLRPC_DEBUG) 
-			LOG_INFO("ptt: %s", on ? "ON" : "OFF");
-	} else {
-		wait_ptt = false;
-		wait_ptt_timeout = 0;
-		LOG_ERROR("%s", "rig.set_vfo failed");
+// PTT on/off is critical 5 attempts with 10 verify reads per attempt
+	for (int i = 0; i < 5; i++) {
+		res = flrig_client->execute("rig.set_ptt", val, result, timeout);
+		if (res) {
+			for (int j = 0; j < 10; j++) {
+				MilliSleep(20);
+				Fl::awake();
+				res = flrig_client->execute("rig.get_ptt", XmlRpcValue(), result, 10);
+				if (res) {
+					resp = (int)result;
+					if (resp == on) {
+						wait_ptt = true;
+						wait_ptt_timeout = 10;
+						ptt_state = on;
+						LOG_INFO("ptt %s in %d msec", 
+							on ? "ON" : "OFF",
+							i*50 + (j + 1)*20);
+						return;
+					}
+				}
+			}
+		}
+		MilliSleep(50);
+		Fl::awake();
 	}
+	wait_ptt = false;
+	wait_ptt_timeout = 0;
+	LOG_ERROR("%s", "rig.set_ptt failed (3)");
+	fl_alert2("fldigi/flrig PTT %s failure", on ? "ON" : "OFF");
 	return;
 }
 
 pthread_mutex_t mutex_flrig_ptt = PTHREAD_MUTEX_INITIALIZER;
+
 void xmlrpc_rig_show_ptt(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_ptt);
 	int on = reinterpret_cast<long>(data);
-	if (wf) wf->xmtrcv->value(on);
+	if (wf) {
+		wf->xmtrcv->value(on);
+		wf->xmtrcv->do_callback();
+	}
 }
 
 void flrig_get_ptt()
@@ -161,8 +184,7 @@ void flrig_get_ptt()
 			ptt_state = val;
 			guard_lock flrig_lock(&mutex_flrig_ptt);
 			Fl::awake(xmlrpc_rig_show_ptt, reinterpret_cast<void*>(val) );
-			if (XMLRPC_DEBUG) 
-				LOG_INFO("get_ptt: %s", ptt_state ? "ON" : "OFF");
+			LOG_INFO("get_ptt: %s", ptt_state ? "ON" : "OFF");
 		} else if (wait_ptt && (val == ptt_state)) {
 			wait_ptt = false;
 			wait_ptt_timeout = 0;
@@ -203,8 +225,7 @@ void set_flrig_freq(long int fr)
 		wait_freq = true;
 		wait_freq_timeout = 5;
 		xcvr_freq = fr;
-		if (XMLRPC_DEBUG)
-			LOG_INFO("set freq: %d", (int)fr);
+		LOG_INFO("set freq: %d", (int)fr);
 	}
 }
 
@@ -232,8 +253,7 @@ void flrig_get_frequency()
 			xcvr_freq = fr;
 			guard_lock flrig_lock(&mutex_flrig_freq);
 			Fl::awake(xmlrpc_rig_show_freq, reinterpret_cast<void*>(fr));
-			if (XMLRPC_DEBUG) 
-				LOG_INFO("get freq: %d", fr);
+			LOG_INFO("get freq: %d", fr);
 		} else if (wait_freq && (fr == xcvr_freq)) {
 			wait_freq = false;
 			wait_freq_timeout = 0;
@@ -281,7 +301,7 @@ void set_flrig_mode(const char *md)
 		bws_posted = false;
 		wait_mode = true;
 		wait_mode_timeout = 5;
-		if (XMLRPC_DEBUG) LOG_INFO("set mode: %s", md);
+		LOG_INFO("set mode: %s", md);
 	}
 }
 
@@ -307,8 +327,7 @@ void flrig_get_mode()
 			posted_mode = md;
 			guard_lock flrig_lock(&mutex_flrig_mode);
 			Fl::awake(xmlrpc_rig_post_mode, reinterpret_cast<void*>(&md));
-			if (XMLRPC_DEBUG) 
-				LOG_INFO("get mode: %s", md.c_str());
+			LOG_INFO("get mode: %s", md.c_str());
 		} else if (wait_mode && posted) {
 			wait_mode = false;
 			wait_mode_timeout = 0;
@@ -341,11 +360,8 @@ void xmlrpc_rig_post_modes(void *)
 		return;
 	}
 
-	for (int i = 0; i < nargs; i++) {
+	for (int i = 0; i < nargs; i++)
 		qso_opMODE->add(string(modes_result[i]).c_str());
-		if (XMLRPC_DEBUG) 
-			LOG_INFO("post mode: %s", string(modes_result[i]).c_str());
-}
 
 	qso_opMODE->index(0);
 	qso_opMODE->activate();
@@ -361,8 +377,17 @@ void flrig_get_modes()
 		guard_lock flrig_lock(&mutex_flrig_modes);
 		Fl::awake(xmlrpc_rig_post_modes);
 		posted_mode = posted_bw = posted_bw1 = posted_bw2 = "GETME";
-		if (XMLRPC_DEBUG) 
-			LOG_INFO("%s", "get modes");
+		{
+			int nargs = modes_result.size();
+			static string debugstr;
+			debugstr.assign("Mode table: ");
+			for (int i = 0; i < nargs - 1; i++)
+				debugstr.append(modes_result[i]).append(",");
+			debugstr.append(modes_result[nargs-1]);
+			LOG_INFO("%s", debugstr.c_str());
+		}
+	} else {
+		LOG_ERROR("%s", "get modes failed");
 	}
 }
 
@@ -381,8 +406,7 @@ void set_flrig_bw(int bw2, int bw1)
 	val = ival;
 
 	guard_lock flrig_lock(&mutex_flrig);
-	if (XMLRPC_DEBUG)
-		LOG_INFO("set_flrig_bw %04X", ival);
+	LOG_INFO("set_flrig_bw %04X", ival);
 	if (!flrig_client->execute("rig.set_bw", val, result, timeout)) {
 		LOG_ERROR("%s", "rig.set_bw failed");
 		wait_bw = false;
@@ -399,8 +423,11 @@ void xmlrpc_rig_post_bw(void *)
 	guard_lock flrig_lock(&mutex_flrig_bw);
 	if (!qso_opBW) return;
 
-	qso_opBW->value(posted_bw.c_str());
-	qso_opBW->redraw();
+	if (posted_bw != (std::string)(qso_opBW->value())) {
+		qso_opBW->value(posted_bw.c_str());
+		qso_opBW->redraw();
+		LOG_INFO("Update BW %s", posted_bw.c_str());
+	}
 }
 
 void xmlrpc_rig_post_bw1(void *)
@@ -408,17 +435,22 @@ void xmlrpc_rig_post_bw1(void *)
 	guard_lock flrig_lock(&mutex_flrig_bw);
 	if (!qso_opBW1) return;
 
-	qso_opBW1->value(posted_bw1.c_str());
-	qso_opBW1->redraw();
+	if (posted_bw1 != (std::string)(qso_opBW1->value())) {
+		qso_opBW1->value(posted_bw1.c_str());
+		qso_opBW1->redraw();
+		LOG_INFO("Update combo BW1 %s", posted_bw1.c_str());
+	}
 }
 
 void xmlrpc_rig_post_bw2(void *)
 {
 	guard_lock flrig_lock(&mutex_flrig_bw);
 	if (!qso_opBW2) return;
-
-	qso_opBW2->value(posted_bw2.c_str());
-	qso_opBW2->redraw();
+	if (posted_bw2 != (std::string)(qso_opBW2->value())) {
+		qso_opBW2->value(posted_bw2.c_str());
+		qso_opBW2->redraw();
+		LOG_INFO("Update combo BW2 %s", posted_bw2.c_str());
+	}
 }
 
 void flrig_get_bw()
@@ -436,8 +468,6 @@ void flrig_get_bw()
 
 		s2 = string(res[0]);
 		s1 = string(res[1]);
-		if (XMLRPC_DEBUG)
-			LOG_INFO("s1 %s, s2 %s", s1.c_str(), s2.c_str());
 		if (!s1.empty())  {
 			posted_bw1 = s1;
 			Fl::awake(xmlrpc_rig_post_bw1);
@@ -460,7 +490,6 @@ void flrig_get_bw()
 pthread_mutex_t mutex_flrig_bws = PTHREAD_MUTEX_INITIALIZER;
 void xmlrpc_rig_post_bws(void *)
 {
-//	guard_lock flrig_lock(&mutex_flrig_bws);
 	if (!qso_opBW) return;
 
 	int nargs;
@@ -487,14 +516,13 @@ void xmlrpc_rig_post_bws(void *)
 		qso_opBW1->index(0);
 		qso_opBW1->redraw();
 
-		if (XMLRPC_DEBUG) {
-			static string debugstr = "opBW1:\n";
-			for (int i = 0; i < nargs-1; i++)
+		{
+			static string debugstr;
+			debugstr.assign("\nBW1 table: ");
+			for (int i = 1; i < nargs-1; i++)
 				debugstr.append(string(bws_result[1][i])).append(", ");
 			debugstr.append(string(bws_result[1][nargs - 1])).append("\n");
-			debugstr.append(labels1).append("\n");
-			debugstr.append("btn1 '").append(btn1_label);
-			debugstr.append("' tip '").append(tooltip1);
+			debugstr.append(labels1);
 			LOG_INFO("%s", debugstr.c_str());
 		}
 
@@ -516,18 +544,17 @@ void xmlrpc_rig_post_bws(void *)
 			qso_btnBW2->redraw();
 			static char tooltip2[20];
 			snprintf(tooltip2,sizeof(tooltip2),"%s",labels2.substr(2).c_str());
-			qso_opBW2->tooltip(tooltip1);
+			qso_opBW2->tooltip(tooltip2);
 			qso_opBW2->index(0);
 			qso_opBW2->redraw();
 
-			if (XMLRPC_DEBUG) {
-				static string debugstr = "opBW2:\n";
-				for (int i = 0; i < nargs-1; i++)
+			{
+				static string debugstr;
+				debugstr.assign("\nBW2 table: ");
+				for (int i = 1; i < nargs-1; i++)
 					debugstr.append(string(bws_result[0][i])).append(", ");
 				debugstr.append(string(bws_result[0][nargs - 1])).append("\n");
-				debugstr.append(labels2).append("\n");
-				debugstr.append("btn2 '").append(btn2_label);
-				debugstr.append("' tip '").append(tooltip2);
+				debugstr.append(labels2);
 				LOG_INFO("%s", debugstr.c_str());
 			}
 
@@ -554,9 +581,10 @@ void xmlrpc_rig_post_bws(void *)
 			qso_opBW->show();
 			qso_opGROUP->hide();
 
-			if (XMLRPC_DEBUG) {
-				static string debugstr = "BW:\n";
-				for (int i = 0; i < nargs-1; i++)
+			{
+				static string debugstr;
+				debugstr.assign("BW table: ");
+				for (int i = 1; i < nargs-1; i++)
 					debugstr.append(string(bws_result[0][i])).append(", ");
 				debugstr.append(string(bws_result[0][nargs - 1]));
 				LOG_INFO("%s", debugstr.c_str());
@@ -582,12 +610,9 @@ void flrig_get_bws()
 		wait_bw = true;
 		wait_bw_timeout = 5;
 		posted_bw.clear();
-//		guard_lock flrig_lock(&mutex_flrig_bws);
 		Fl::awake(xmlrpc_rig_post_bws);
-		if (XMLRPC_DEBUG) 
-			LOG_INFO("%s", "get bws");
 	} else {
-			LOG_ERROR("%s", "get bws failed");
+		LOG_ERROR("%s", "get bws failed");
 	}
 }
 
@@ -813,16 +838,13 @@ void flrig_setQSY(void *)
 
 void flrig_connection()
 {
-//	guard_lock flrig_lock(&mutex_flrig);
 	XmlRpcValue noArgs, result;
 	try {
 		bool ret;
 		{
 			guard_lock flrig_lock(&mutex_flrig);
-//LOG_WARN("%s", "checking flrig listMethods");
 			ret = flrig_client->execute("system.listMethods", noArgs, result, timeout);
 		}
-//		if (flrig_client->execute("system.listMethods", noArgs, result, timeout)) {
 		if (ret) {
 			int nargs = result.size();
 			string method_str = "\nMethods:\n";
@@ -834,12 +856,12 @@ void flrig_connection()
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
-//LOG_WARN("%s", "not able to connect");
+			LOG_INFO("%s", "Waiting for flrig");
 			connected_to_flrig = false;
-			poll_interval = 1000;//500;
+			poll_interval = 5000;
 		}
 	} catch (...) {
-//LOG_WARN("%s", "failure in flrig_client");
+//		LOG_ERROR("%s", "failure in flrig_client");
 	}
 }
 
@@ -851,17 +873,17 @@ void connect_to_flrig()
 		flrig_client = (XmlRpcClient *)0;
 	}
 	try {
-//LOG_WARN("creating flrig client %s, %d",
-//	progdefaults.flrig_ip_address.c_str(),
-//	atol(progdefaults.flrig_ip_port.c_str()));
 		flrig_client = new XmlRpcClient(
+				progdefaults.flrig_ip_address.c_str(),
+				atol(progdefaults.flrig_ip_port.c_str()));
+		LOG_WARN("created flrig client %s, %ld",
 				progdefaults.flrig_ip_address.c_str(),
 				atol(progdefaults.flrig_ip_port.c_str()));
 		flrig_connection();
 	} catch (...) {
-			LOG_ERROR("Cannot connect to %s, %s",
-						progdefaults.flrig_ip_address.c_str(),
-						progdefaults.flrig_ip_port.c_str());
+		LOG_ERROR("Cannot create client %s, %s",
+					progdefaults.flrig_ip_address.c_str(),
+					progdefaults.flrig_ip_port.c_str());
 	}
 }
 

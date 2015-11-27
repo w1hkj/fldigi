@@ -70,14 +70,12 @@ using namespace std;
 
 static FILE* wfile = 0;
 static FILE* rfile = 0;
-static size_t nlines = 0;
 static int rfd;
 static bool tty;
 
 static Fl_Double_Window* window;
+static Fl_Browser*  btext;
 
-static Fl_Browser*			btext;
-static string dbg_buffer;
 static string linebuf;
 
 debug* debug::inst = 0;
@@ -101,6 +99,7 @@ Fl_Menu_Item src_menu[] = {
 	{ _("Audio"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Modem"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Rig control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("Flrig I/O"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("RPC"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Spotter"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("KISS control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE | FL_MENU_DIVIDER  },
@@ -139,11 +138,11 @@ void debug::start(const char* filename)
 	window->xclass(PACKAGE_TARNAME);
 
 	int pad = 2;
-	Fl_Menu_Button* button = new Fl_Menu_Button(pad, pad, 128, 20, _("Log sources"));
+	Fl_Menu_Button* button = new Fl_Menu_Button(pad, pad, 128, 22, _("Log sources"));
 	button->menu(src_menu);
 	button->callback(src_menu_cb);
 
-	Fl_Slider* slider = new Fl_Slider(button->x() + button->w() + pad, pad, 128, 20, prefix[level]);
+	Fl_Slider* slider = new Fl_Slider(button->x() + button->w() + pad, pad, 128, 22, prefix[level]);
 	slider->tooltip(_("Change log level"));
 	slider->align(FL_ALIGN_RIGHT);
 	slider->type(FL_HOR_NICE_SLIDER);
@@ -152,14 +151,13 @@ void debug::start(const char* filename)
 	slider->value(level);
 	slider->callback(slider_cb);
 
-	Fl_Button* clearbtn = new Fl_Button(window->w() - 64, pad, 60, 20, "clear");
+	Fl_Button* clearbtn = new Fl_Button(window->w() - 64, pad, 60, 22, "clear");
 	clearbtn->callback(clear_cb);
 
 	btext = new Fl_Browser(pad,  slider->h()+pad, window->w()-2*pad, window->h()-slider->h()-2*pad, 0);
 	btext->textfont(FL_HELVETICA);
 	btext->textsize(14);
 	window->resizable(btext);
-	dbg_buffer.clear();
 
 	window->end();
 }
@@ -178,6 +176,7 @@ void debug::stop(void)
 }
 
 static char fmt[1024];
+static char dtext[16384];
 
 void debug::log(level_e level, const char* func, const char* srcf, int line, const char* format, ...)
 {
@@ -185,7 +184,8 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 
 	if (!inst)
 		return;
-	if (unlikely(debug::level == DEBUG_LEVEL) || debug_pskmail || debug_audio) {
+	if (unlikely(debug::level == DEBUG_LEVEL) || 
+		debug_pskmail || debug_audio) {
 		time_t t = time(NULL);
 		struct tm stm;
 		(void)localtime_r(&t, &stm);
@@ -196,13 +196,13 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 		snprintf(fmt, sizeof(fmt), "%c: %s: %s\n", *prefix[level], func, format);
 	va_list args;
 	va_start(args, format);
-	intptr_t nw = vfprintf(wfile, fmt, args);
+	intptr_t nt = vsnprintf(dtext, sizeof(dtext), fmt, args);
 	va_end(args);
+
+	fprintf(wfile, "%s", dtext);
 	if (tty) {
 		if (level <= DEBUG_LEVEL && level > QUIET_LEVEL) {
-			va_start(args, format);
-			vfprintf(stderr, fmt, args);
-			va_end(args);
+			fprintf(stderr, "%s", dtext);
 		}
 	}
 
@@ -210,7 +210,8 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 	fflush(wfile);
 #endif
 
-	Fl::awake(sync_text, (void*)nw);
+	linebuf.append(dtext);
+	Fl::awake(sync_text, (void*)nt);
 }
 
 void debug::hex_dump(const char* func, const char * data, int length)
@@ -270,35 +271,20 @@ void debug::show(void)
 	window->show();
 }
 
-static char buf[BUFSIZ+1];
-
 void debug::sync_text(void* arg)
 {
-	intptr_t toread = (intptr_t)arg;
-	size_t block = MIN((size_t)toread, sizeof(buf) - 1);
-	ssize_t n;
+	guard_lock debug_lock(&debug_mutex);
 
-	while (toread > 0) {
-		if ((n = read(rfd, buf, block)) <= 0)
-			break;
-		if (unlikely(++nlines > MAX_LINES)) {
-			btext->clear();
-			nlines = 0;
-		}
-		buf[n] = '\0';
-		linebuf = buf;
-		if (linebuf[linebuf.length() - 1] != '\n')
-			linebuf += '\n';
-		size_t p1 = 0, p2 = linebuf.find("\n");
-		while( p2 != string::npos) {
-			btext->add(linebuf.substr(p1, p2 - p1).c_str());
-			btext->redraw();
-			dbg_buffer.append(linebuf.substr(p1, p2 - p1 + 1));//.append("\n");
-			p1 = p2 + 1;
-			p2 = linebuf.find("\n", p1);
-		}
-		toread -= n;
+	size_t p1 = 0, p2 = linebuf.find("\n");
+	while (p2 != string::npos) {
+		btext->add(linebuf.substr(p1, p2 - p1).c_str());
+		p1 = p2 + 1;
+		p2 = linebuf.find("\n", p1);
 	}
+	btext->redraw();
+	btext->bottomline(btext->size());
+	linebuf.clear();
+	return;
 }
 
 debug::debug(const char* filename)
@@ -320,6 +306,7 @@ debug::debug(const char* filename)
 		throw strerror(errno);
 #endif
 	tty = isatty(fileno(stderr));
+	linebuf.clear();
 }
 
 debug::~debug()
@@ -342,7 +329,8 @@ static void src_menu_cb(Fl_Widget* w, void*)
 
 static void clear_cb(Fl_Widget* w, void*)
 {
+	guard_lock debug_lock(&debug_mutex);
 	btext->clear();
-	dbg_buffer.clear();
+	linebuf.clear();
 }
 
