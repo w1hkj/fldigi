@@ -355,7 +355,7 @@ void FTextBase::saveFile(void)
 
 		char *p1, *p2, *text = tbuf->text();
 		for (p1 = p2 = text; *p1; p1 = p2) {
-			while (*p2 != '\0' && *p2 != '\n')
+			while (*p2 != '\0' && *p2 != '\r')
 				p2++;
 			if (*p2 == '\n') {
 				*p2 = '\0';
