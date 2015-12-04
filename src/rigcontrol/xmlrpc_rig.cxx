@@ -209,6 +209,18 @@ bool wait_freq = false; // wait for transceiver to respond
 int  wait_freq_timeout = 5; // 5 polls and then disable wait
 long int  xcvr_freq = 0;
 
+pthread_mutex_t mutex_flrig_freq = PTHREAD_MUTEX_INITIALIZER;
+
+void xmlrpc_rig_show_freq(void * fr)
+{
+	guard_lock flrig_lock(&mutex_flrig_freq);
+	if (!wf) return;
+	long freq = reinterpret_cast<long>(fr);
+	wf->rfcarrier(freq);
+	wf->movetocenter();
+	show_frequency(freq);
+}
+
 void set_flrig_freq(long int fr)
 {
 	if (!connected_to_flrig) return;
@@ -225,19 +237,9 @@ void set_flrig_freq(long int fr)
 		wait_freq = true;
 		wait_freq_timeout = 5;
 		xcvr_freq = fr;
+		Fl::awake(xmlrpc_rig_show_freq, reinterpret_cast<void*>(fr));
 		LOG_INFO("set freq: %d", (int)fr);
 	}
-}
-
-pthread_mutex_t mutex_flrig_freq = PTHREAD_MUTEX_INITIALIZER;
-void xmlrpc_rig_show_freq(void * fr)
-{
-	guard_lock flrig_lock(&mutex_flrig_freq);
-	if (!wf) return;
-	long freq = reinterpret_cast<long>(fr);
-	wf->rfcarrier(freq);
-	wf->movetocenter();
-	show_frequency(freq);
 }
 
 void flrig_get_frequency()
