@@ -1,0 +1,67 @@
+/**
+\page  xchar_page Extended Characters
+
+Extended UTF-8 characters can be entered into all text entry controls
+using Ctrl + three digits.  These characters can also be entered using
+the right-click pop-up menu item \"Spec Char \".  The extended character 
+transmitted by fldigi will actually be a 2 byte UTF-8 string.
+
+<center>
+<b>Extended character set</b>
+</center>
+<center>
+-      |-      |-      |-      |-      |-      |-      |-
+:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:
+  161  |  162  |  163  |  164  |  165  |  166  |  167  |  168
+ iexcl | cent  | pound | curren|  yen  | brvbar| sect  |  uml
+   ¡   |   ¢   |   £   |   ¤   |   ¥   |   ¦   |   §   |   ¨
+-      |-      |-      |-      |-      |-      |-      |-
+  169  |  170  |  171  |  172  |  173  |  174  |  176  |  177
+  copy | ordf  | laquo |  not  |  shy  |  reg  |  macr |  deg
+   ©   |   ª   |   «   |   ¬   |       |   ®   |   ¯   |   °
+-      |-      |-      |-      |-      |-      |-      |-
+  177  |  178  |  179  |  180  |  181  |  182  |  183  |  184
+plusmn | sup2  | sup3  | acute | micro | para  | midot | cedil
+   ±   |   ²   |   ³   |   ´   |   µ   |   ¶   |   ·   |   ¸
+-      |-      |-      |-      |-      |-      |-      |-
+  185  |  186  |  187  |  188  |  189  |  190  |  191  |  192
+ sup1  | ordm  | raquo |frac14 |frac12 |frac34 |iquest |Agrave
+   ¹   |   º   |   »   |   ¼   |   ½   |   ¾   |   ¿   |   À
+-      |-      |-      |-      |-      |-      |-      |-
+  193  |  194  |  195  |  196  |  197  |  198  |  199  |  200
+ Acute | Acirc |Atilde | Auml  | Aring | AElig |Ccedil |Egrave
+   Á   |   Â   |   Ã   |   Ä   |   Å   |   Æ   |   Ç   |   È
+-      |-      |-      |-      |-      |-      |-      |-
+  201  |  202  |  203  |  204  |  205  |  206  |  207  |  208
+Eacute | Ecirc | Euml  |Igrave |Iacute | Icirc | Iuml  |  ETH
+   É   |   Ê   |   Ë   |   Ì   |   Í   |   Î   |   Ï   |   Ð
+-      |-      |-      |-      |-      |-      |-      |-
+  209  |  210  |  211  |  212  |  213  |  214  |  215  |  216
+Ntilde |Ograve |Oacute |Ocirc  |Otilde | Ouml  | times |Oslash
+   Ñ   |   Ò   |   Ó   |   Ô   |   Õ   |   Ö   |   ×   |   Ø
+-      |-      |-      |-      |-      |-      |-      |-
+  217  |  218  |  219  |  220  |  221  |  222  |  223  |  224
+Ugrave |Uacute | Ucirc | Uuml  |Yacute | THORN | szlig |agrave
+   Ù   |   Ú   |   Û   |   Ü   |   Ý   |   Þ   |    ß  |    à
+-      |-      |-      |-      |-      |-      |-      |-
+  225  |  226  |  227  |  228  |  229  |  230  |  231  |  232
+aacute | acirc |atilde | auml  | aring | aelig |ccedil |egrave
+   á   |   â   |   ã   |   ä   |   å   |   æ   |   ç   |   è
+-      |-      |-      |-      |-      |-      |-      |-
+  233  |  234  |  235  |  236  |  237  |  238  |  239  |  240
+eacute |ecirc  | euml  |igrave |iacute | icirc | iuml  |  eth
+   é   |   ê   |   ë   |   ì   |   í   |   î   |   ï   |   ð
+-      |-      |-      |-      |-      |-      |-      |-
+  241  |  242  |  243  |  244  |  245  |  246  |  247  |  248
+ntilde |ograve |oacute | ocirc |otilde | ouml  |divide |oslash
+   ñ   |   ò   |   ó   |   ô   |   õ   |   ö   |   ÷   |   ø
+-      |-      |-      |-      |-      |-      |-      |-
+  249  |  250  |  251  |  252  |  253  |  254  |  255  |   -
+ugrave |uacute | ucirc | uuml  |yacute | thorn | yuml  |   -
+   ù   |   ú   |   û   |   ü   |   ý   |   þ   |   ÿ   |   -
+</center>
+
+\ref xchar_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+*/

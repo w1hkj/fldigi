@@ -3085,21 +3085,22 @@ bool queue_must_rx()
 // occurs immediately after the ^r execution
 // AND after TX_STATE returns to Rx
 // ^r is the control string substitute for the <RX> macro tag
-void Rx_queue_execute()
+int time_out = 400;
+void Rx_queue_execution(void *)
 {
-	if (Rx_cmds.empty()) return;
-
-	int time_out = 100; // force return after ten seconds
-	while (trx_state != STATE_RX && time_out) {
-		time_out--;
-		Fl::awake();
-		MilliSleep(100);
-	}
-	if (!time_out) {
-		while (!Rx_cmds.empty()) Rx_cmds.pop();
+	if (trx_state != STATE_RX) {
+		if (time_out-- == 0) {
+			while (!Rx_cmds.empty()) Rx_cmds.pop();
+			LOG_ERROR("%s", "failed");
+			time_out = 200;
+			return;
+		}
+		Fl::repeat_timeout( .050, Rx_queue_execution );
 		return;
 	}
+	LOG_INFO("action delayed by %4.2f seconds", (400 - time_out)*.050);
 
+	time_out = 400;
 	CMDS cmd;
 	while (!Rx_cmds.empty()) {
 		cmd = Rx_cmds.front();
@@ -3109,9 +3110,16 @@ void Rx_queue_execute()
 		cmd.cmd.erase(0,2);
 		cmd.cmd.insert(0,"<!");
 		cmd.fp(cmd.cmd);
+		Fl::awake();
 		if (macro_rx_wait) return;
 	}
 	return;
+}
+
+void Rx_queue_execute()
+{
+	if (Rx_cmds.empty()) return;
+	Fl::add_timeout(0, Rx_queue_execution);
 }
 
 void rx_que_continue(void *)

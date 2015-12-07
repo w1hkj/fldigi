@@ -25,6 +25,13 @@
 
 class Fl_Input2 : public Fl_Input
 {
+private:
+	int 	ascii_cnt; // restart the numeric keypad entries.
+	int		ascii_chr; // character value of ASCII > 0x80
+	int		handle_key_ascii(int key);
+	char	*utf8text;
+	int		utf8cnt;
+
 public:
 	Fl_Input2(int x, int y, int w, int h, const char* l = 0);
 	int handle(int event);

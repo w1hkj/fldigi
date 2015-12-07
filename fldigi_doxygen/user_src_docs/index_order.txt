@@ -19,7 +19,7 @@ DigiscopeDisplay.txt DigiWWV.txt map.txt MousingKeyboardShortcuts.txt \
 Multiples.txt Notifier.txt OperatingControls.txt RST-RSQ.txt \
 Spotter.txt Synop.txt TransceiverControl.txt UTF8.txt \
 pskmail_config.txt PskViewer.txt DXCC_list.txt \
-KeyboardAndKeys.txt KML.txt Installing.txt WindowsOS.txt \
+KeyboardAndKeys.txt xchar.txt KML.txt Installing.txt WindowsOS.txt \
 Wizard.txt Menus.txt ModeTable.txt CWkeying.txt PseudoFSK.txt \
 w5zit-interface.txt rigxml.txt commandline.txt \
 buildinfo.txt xmlrpc-control.txt parseUALR.txt ualr-telnet.txt \

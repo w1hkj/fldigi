@@ -76,9 +76,10 @@ int mt63::tx_process()
 			double w2 = 2.0 * M_PI * (get_txfreq_woffset() + 31.0 * bandwidth / 64.0) / samplerate;
 			double phi1 = 0.0;
 			double phi2 = 0.0;
-			double buff[samplerate];
-			for (int i = 0; i < progdefaults.mt63_tone_duration; i++) {
-				for (int j = 0; j < samplerate; j++) {
+			double buff[512];
+			int numsmpls = samplerate * progdefaults.mt63_tone_duration / 512;
+			for (int i = 0; i < numsmpls; i++) {
+				for (int j = 0; j < 512; j++) {
 					buff[j] = TONE_AMP * (progdefaults.mt63_twotones ? 0.5 : 1.0) * cos(phi1) +
 							  TONE_AMP * (progdefaults.mt63_twotones ? 0.5 : 0.0) * cos(phi2);
 					phi1 += w1;
@@ -88,7 +89,7 @@ int mt63::tx_process()
 						buff[j] *= (1.0 - exp(-1.0 * (samplerate - j) / 40.0));
 				}
 				Fl::awake();
-				ModulateXmtr(buff, samplerate);
+				ModulateXmtr(buff, 512);
 			}
 		}
 		for (int i = 0; i < Tx->DataInterleave; i++) {

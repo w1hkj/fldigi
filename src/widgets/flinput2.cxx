@@ -34,6 +34,7 @@
 #include "icons.h"
 #include "flinput2.h"
 #include "gettext.h"
+#include "debug.h"
 
 
 enum { OP_UNDO, OP_CUT, OP_COPY, OP_PASTE, OP_DELETE, OP_CLEAR, OP_SELECT_ALL };
@@ -46,10 +47,95 @@ static Fl_Menu_Item cmenu[] = {
 	{ icons::make_icon_label(_("Delete"), trash_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Clear"), edit_clear_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Select All"), edit_select_all_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ 0 }
+	{ _("Spec Char"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+		{ "¢ - cent", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ "£ - pound", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ "µ - micro", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ "° - degree", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ "¿ - iques", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ "× - times", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ "÷ - divide", 0, 0, 0, 0, FL_NORMAL_LABEL },
+		{ _("A"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "À - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "à - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Á - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "á - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Â - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "â - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ã - tilde", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ã - tilde", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ä - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ä - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Å - ring", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "å - ring", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Æ - aelig", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "æ - aelig", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("E"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "È - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "è - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "É - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "é - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ê - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ê - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ë - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ë - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("I"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "Ì - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ì - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Í - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "í - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Î - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "î - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ï - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ï - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("N"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "Ñ - tilde", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ñ - tilde", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("O"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "Ò - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ò - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ó - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ó - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ô - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ô - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Õ - tilde", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "õ - tilde", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ö - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ö - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ø - slash", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ø - slash", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("U"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "Ù - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ù - grave", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ú - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ú - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Û - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "û - circ", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ü - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ü - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("Y"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "Ý - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ý - acute", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ÿ - umlaut", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{ _("Other"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL },
+			{ "ß - szlig", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ç - cedil", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ç - cedil", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Ð - eth", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "ð - eth", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{ "Þ - thorn", 0, 0, 0, 0, FL_NORMAL_LABEL },
+			{0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0}
 };
 static bool cmenu_init = false;
-
 
 Fl_Input2::Fl_Input2(int x, int y, int w, int h, const char* l)
 	: Fl_Input(x, y, w, h, l)
@@ -60,13 +146,60 @@ Fl_Input2::Fl_Input2(int x, int y, int w, int h, const char* l)
 				icons::set_icon_label(&cmenu[i]);
 		cmenu_init = true;
 	}
+	ascii_cnt = 0; // restart the numeric keypad entries.
+	ascii_chr = 0;
+	utf8text = NULL;
 }
 
+//----------------------------------------------------------------------
+/// Composes ascii characters and adds them to the Fl_Input2 buffer.
+/// Control characters are inserted with the CTRL style. Values larger than 127
+/// (0x7f) are ignored. We cannot really add NULs for the time being.
+/// 
+/// @param key A digit character
+///
+/// @return 1
+///
+int Fl_Input2::handle_key_ascii(int key)
+{
+	if (key >= FL_KP) key -= FL_KP;
+	key -= '0';
+	ascii_cnt++;
+	ascii_chr *= 10;
+	ascii_chr += key;
+	if (ascii_cnt == 3) {
+		if (ascii_chr < 0x100) {
+			utf8text = new char[fl_utf8bytes(ascii_chr) + 1];
+			utf8cnt = fl_utf8encode(ascii_chr, utf8text);
+			return 1;
+		}
+		ascii_cnt = ascii_chr = 0;
+	}
+
+	return 0;
+}
+
+//----------------------------------------------------------------------
 int Fl_Input2::handle(int event)
 {
 	switch (event) {
 	case FL_KEYBOARD: {
 		int b = Fl::event_key();
+
+		if ((Fl::event_state() & FL_CTRL) && (isdigit(b) || isdigit(b - FL_KP))) {
+			if (handle_key_ascii(b)) {
+				if (utf8text) {
+					insert(utf8text, utf8cnt);
+					delete utf8text;
+				}
+				ascii_cnt = 0;
+				ascii_chr = 0;
+			}
+			return 1;
+		}
+		ascii_cnt = 0;
+		ascii_chr = 0;
+
 		int p = position();
 		// stop the move-to-next-field madness, we have Tab for that!
 		if (unlikely((b == FL_Left && p == 0) || (b == FL_Right && p == size()) ||
@@ -176,6 +309,8 @@ int Fl_Input2::handle(int event)
 	case OP_SELECT_ALL:
 		position(0, size());
 		break;
+	default:
+		insert(m->text, 1);
 	}
 
 	return 1;

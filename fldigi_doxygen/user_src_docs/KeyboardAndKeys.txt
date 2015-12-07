@@ -94,9 +94,13 @@ fldigi text widget supports some short cuts to make your life easier:
   character following the last one transmitted. CW operation is slightly
   different, see the help for \ref cw_page .</li>
 
-  <li>Ctrl + three digits will insert the ASCII character designated by
-  that entry.</li>
-
+  <li>Extended UTF-8 characters can be entered into all text entry controls
+  using Ctrl + three digits.  These characters can also be entered using
+  the right-click pop-up menu item \"Spec Char \".  The extended character 
+  transmitted by fldigi will actually be a 2 byte UTF-8 string.
+  
+  see \ref xchar_page "Extended Characters"
+</li>
 </ul>
 
 \section function_keys Function Keys

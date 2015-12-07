@@ -122,44 +122,51 @@ bool wait_ptt = false; // wait for transceiver to respond
 int  wait_ptt_timeout = 5; // 5 polls and then disable wait
 int  ptt_state = 0;
 
-void set_flrig_ptt(int on) {
-	if (!connected_to_flrig) return;
+int  new_ptt = -1;
+
+void exec_flrig_ptt() {
+	if (!connected_to_flrig) {
+		new_ptt = -1;
+		return;
+	}
 
 	XmlRpcValue val, result;
 	int resp, res;
-	val = int(on);
 
-	guard_lock flrig_lock(&mutex_flrig);
 // PTT on/off is critical 5 attempts with 10 verify reads per attempt
 	for (int i = 0; i < 5; i++) {
-		res = flrig_client->execute("rig.set_ptt", val, result, timeout);
+		res = flrig_client->execute("rig.set_ptt", new_ptt, result, timeout);
 		if (res) {
 			for (int j = 0; j < 10; j++) {
 				MilliSleep(20);
-				Fl::awake();
 				res = flrig_client->execute("rig.get_ptt", XmlRpcValue(), result, 10);
 				if (res) {
 					resp = (int)result;
-					if (resp == on) {
+					if (resp == new_ptt) {
 						wait_ptt = true;
 						wait_ptt_timeout = 10;
-						ptt_state = on;
+						ptt_state = new_ptt;
 						LOG_INFO("ptt %s in %d msec", 
-							on ? "ON" : "OFF",
+							ptt_state ? "ON" : "OFF",
 							i*50 + (j + 1)*20);
+						new_ptt = -1;
 						return;
 					}
 				}
 			}
 		}
-		MilliSleep(50);
-		Fl::awake();
 	}
 	wait_ptt = false;
 	wait_ptt_timeout = 0;
 	LOG_ERROR("%s", "rig.set_ptt failed (3)");
-	fl_alert2("fldigi/flrig PTT %s failure", on ? "ON" : "OFF");
+	fl_alert2("fldigi/flrig PTT %s failure", new_ptt ? "ON" : "OFF");
+	new_ptt = -1;
 	return;
+}
+
+void set_flrig_ptt(int on) {
+	guard_lock flrig_lock(&mutex_flrig);
+	new_ptt = on;
 }
 
 pthread_mutex_t mutex_flrig_ptt = PTHREAD_MUTEX_INITIALIZER;
@@ -858,7 +865,7 @@ void flrig_connection()
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
-			LOG_INFO("%s", "Waiting for flrig");
+			LOG_VERBOSE("%s", "Waiting for flrig");
 			connected_to_flrig = false;
 			poll_interval = 5000;
 		}
@@ -900,6 +907,10 @@ void * flrig_thread_loop(void *d)
 			connect_to_flrig();
 		if (!connected_to_flrig) flrig_connection();
 		else if (flrig_get_xcvr()) {
+			if (new_ptt > -1) {
+				exec_flrig_ptt();
+				continue;
+			}
 			flrig_get_ptt();
 			if (trx_state == STATE_RX) {
 				flrig_get_frequency();

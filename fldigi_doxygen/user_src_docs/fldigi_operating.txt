@@ -10,6 +10,7 @@
 	<li> \subpage fft_scan_page </li>
 	<li> \subpage frequency_analyzer_page </li>
 	<li> \subpage keyboard_operation_page </li>
+	<li> \subpage xchar_page </li>
 	<li> \subpage kml_page </li>
 	<li> \subpage menus_page </li>
 	<li> \subpage mouse_and_keyboard_shortcuts_page </li>
