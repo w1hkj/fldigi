@@ -77,7 +77,7 @@ int dspcnt = 0;
 
 const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 // FILTLEN must be same size as BAUD
-const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 150, 20, 40};
+const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 100, 20, 40};
 const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 512, 512};
 const int		rtty::BITS[]  = {5, 7, 8};
 const int		rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
@@ -131,6 +131,7 @@ void rtty::init()
 
 	if (rtty_baud == 20) put_MODEstatus(" CW 2.0 ");
 	else if (rtty_baud == 40) put_MODEstatus("CW 2.0 FEC");
+	else if (rtty_baud == 80) put_MODEstatus("CW 2.0 FAST");
 	
 	if (progdefaults.PreferXhairScope)
 		set_scope_mode(Digiscope::XHAIRS);
@@ -373,32 +374,29 @@ bool rtty::rx(bool bit)
 	unsigned char c = 0;
   */	
 	/// kl4yfd
-	/// temp hard-decode solution: just count bits passed & return largest count
-	static int onescount = 0;
-	static int zeroscount = 0;
+	int onescount = 0;
+	int zeroscount = 0;
 	static int bitcounter = 0;
 	
 	
 	static unsigned int hardshreg = 1;
 	
-	// BUG: alignable soft-decision decoder code is currently unused
 	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
 	bit_buf[symbollen - 1] = bit;
-	// kl4yfd
-	// BUG: need a working alignment/correction algorithm
-	static int correction=0;
-
 	
-	// count the passed bits for a vote
-	if (bit) onescount++;
-	else zeroscount++;
+	// ALPHA CODE: count the passed bits for a vote
+	///if (bit) onescount++;
+	///else zeroscount++;
+	
+	
 	
 	/// kl4yfd debug
 	///printf("%d",bit);
 	
 
 
-	if (bitcounter++ >= symbollen) {
+	if (bitcounter++ >= symbollen-1) {
+		bitcounter = 0;
 		/// kl4yfd debug
 		//printf("\n\n");
 		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
@@ -406,22 +404,28 @@ bool rtty::rx(bool bit)
 		/// TODO alignment algorithm
 		/// ???
 			///is_mark_space(correction); ???
-
 		
-		bitcounter = 0;
-	  
+		// Count center bits in the bit_buf to produce a hard / soft bit. Ignore first & last 1/3 of symbol
+		for (int i = symbollen/3; i < symbollen-(symbollen/3); i++) {
+			if (bit_buf[i]) onescount++;
+			else zeroscount++;
+		}
+			  
 		int hardbit = -1;
 		int softbit = 128;
 		
 		if (onescount > zeroscount) {
-		///if ( is_mark(correction) ) {
 			hardbit = 1;
-			softbit = 255;
+			softbit = 255 - zeroscount * 1.4;
 		} else {
 			hardbit = 0;
-			softbit = 0;
+			softbit = 0 + onescount * 1.4;
 		}
 		onescount = zeroscount = 0;
+		
+		// debug
+		//if (hardbit) printf("1");
+		//else printf("0");
 		
 		// If FEC mode, soft-decode and return
 		if (rtty_baud == 40) {
@@ -440,7 +444,9 @@ bool rtty::rx(bool bit)
 		return true;
 	}
 	
-	return false;
+	/// Sync Fix
+	/// return false;
+	return true;
 	
 }
 
@@ -451,6 +457,8 @@ void rtty::rx_pskr(unsigned char symbol)
 	unsigned char twosym[2];
 	unsigned char tempc;
 	int c;
+	
+	printf("\n %d", symbol);
 	
 	static int rxbitstate=0;
 
@@ -675,26 +683,25 @@ int rtty::rx_process(const double *buf, int len)
 			space_env = sclipped = noise_floor;
 
 
-//			double v0, v1, v2, v3, v4, v5;
-			double v5;
+			double v0, v1, v2, v3, v4, v5;
 
 // no ATC
-//			v0 = mark_mag - space_mag;
+			v0 = mark_mag - space_mag;
 // Linear ATC
-//			v1 = mark_mag - space_mag - 0.5 * (mark_env - space_env);
+			v1 = mark_mag - space_mag - 0.5 * (mark_env - space_env);
 // Clipped ATC
-//			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
-//					(mark_env - noise_floor) - (space_env - noise_floor));
+			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
+					(mark_env - noise_floor) - (space_env - noise_floor));
 // Optimal ATC
-//			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
-//					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
-//					(mark_env - noise_floor) * (mark_env - noise_floor) -
-//					(space_env - noise_floor) * (space_env - noise_floor));
+			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
+					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
+					(mark_env - noise_floor) * (mark_env - noise_floor) -
+					(space_env - noise_floor) * (space_env - noise_floor));
 // Kahn Squarer with Linear ATC
-//			v4 =  (mark_mag - noise_floor) * (mark_mag - noise_floor) -
-//					(space_mag - noise_floor) * (space_mag - noise_floor) - 0.25 * (
-//					(mark_env - noise_floor) * (mark_env - noise_floor) -
-//					(space_env - noise_floor) * (space_env - noise_floor));
+			v4 =  (mark_mag - noise_floor) * (mark_mag - noise_floor) -
+					(space_mag - noise_floor) * (space_mag - noise_floor) - 0.25 * (
+					(mark_env - noise_floor) * (mark_env - noise_floor) -
+					(space_env - noise_floor) * (space_env - noise_floor));
 // Kahn Squarer with Clipped ATC
 			v5 =  (mclipped - noise_floor) * (mclipped - noise_floor) -
 					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
@@ -703,7 +710,7 @@ int rtty::rx_process(const double *buf, int len)
 //				switch (progdefaults.rtty_demodulator) {
 //			switch (2) { // Optimal ATC
 //			case 0: // linear ATC
-//				bit = v1 > 0;
+				bit = v1 > 0;
 //				break;
 //			case 1: // clipped ATC
 //				bit = v2 > 0;
@@ -715,7 +722,7 @@ int rtty::rx_process(const double *buf, int len)
 //				bit = v4 > 0;
 //				break;
 //			case 4: // Kahn clipped
-				bit = v5 > 0;
+				//bit = v5 > 0;
 //				break;
 //			case 5: // No ATC
 //			default :
@@ -891,9 +898,9 @@ void rtty::send_char(unsigned char  c)
 {
   
   /// kl4yfd debug
-  ///send_symbol(0, symbollen);
-  ///send_symbol(1, symbollen);
-  ///return;
+  //send_symbol(0, symbollen);
+  //send_symbol(1, symbollen);
+  //return;
   
 	if (restartchar) { // Send a SPACE character to re-synchronize the receiver
 		const char *code = varienc(32);
@@ -903,12 +910,12 @@ void rtty::send_char(unsigned char  c)
 		restartchar = false;
 	}
 	
-	if (rtty_baud == 20) { // Non FEC mode
+	if (rtty_baud != 40) { // Non FEC mode
 		const char *code = varienc(c);
 		while (*code)
 			send_symbol( (*code++ - '0'), symbollen);
 		
-	} else if (rtty_baud == 40) { // FEC MODE
+	} else { // FEC MODE
 	  	const char *code = varienc(c);
 		while (*code) {
 		  	txdata = enc->encode( (*code++ - '0') );
