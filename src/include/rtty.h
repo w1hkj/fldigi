@@ -245,9 +245,6 @@ private:
 	int rttyxprocess();
 	void Metric();
 	bool restartchar;
-
-	bool is_mark_space(int &);
-	bool is_mark(int offset);
 	
 	
 protected:

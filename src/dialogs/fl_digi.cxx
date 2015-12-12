@@ -497,8 +497,8 @@ void cb_contestiaJ(Fl_Widget *w, void *arg);
 void cb_contestiaCustom(Fl_Widget *w, void *arg);
 
 void cb_cw20(Fl_Widget *w, void *arg);
-void cb_cw20fast(Fl_Widget *w, void *arg);
 void cb_cw20fec(Fl_Widget *w, void *arg);
+void cb_cw20fast(Fl_Widget *w, void *arg);
 
 void cb_rtty45(Fl_Widget *w, void *arg);
 void cb_rtty50(Fl_Widget *w, void *arg);
@@ -927,18 +927,18 @@ void cb_cw20(Fl_Widget *w, void *arg)
 	cb_init_mode(w, arg);
 }
 
-void cb_cw20fast(Fl_Widget *w, void *arg)
+void cb_cw20fec(Fl_Widget *w, void *arg)
 {
-	progdefaults.rtty_baud = 7;
+	progdefaults.rtty_baud = 9;
 	progdefaults.rtty_bits = 2;
 	progdefaults.rtty_shift = 3;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
 
-void cb_cw20fec(Fl_Widget *w, void *arg)
+void cb_cw20fast(Fl_Widget *w, void *arg)
 {
-	progdefaults.rtty_baud = 9;
+	progdefaults.rtty_baud = 7;
 	progdefaults.rtty_bits = 2;
 	progdefaults.rtty_shift = 3;
 	set_rtty_tab_widgets();
@@ -4023,8 +4023,8 @@ static Fl_Menu_Item menu_[] = {
 
 { "CW 2.0", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "CW 2.0", 0, cb_cw20, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
-{ "CW 2.0 FAST", 0, cb_cw20fast, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "CW 2.0 FEC", 0, cb_cw20fec, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
+{ "CW 2.0 FAST", 0, cb_cw20fast, (void *)MODE_RTTY, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { CONTESTIA_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},

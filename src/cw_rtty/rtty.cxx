@@ -77,7 +77,7 @@ int dspcnt = 0;
 
 const double	rtty::SHIFT[] = {23, 85, 160, 170, 182, 200, 240, 350, 425, 850};
 // FILTLEN must be same size as BAUD
-const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 100, 20, 40};
+const double	rtty::BAUD[]  = {45, 45.45, 50, 56, 75, 100, 110, 80, 20, 40};
 const int		rtty::FILTLEN[] = { 512, 512, 512, 512, 512, 512, 512, 256, 512, 512};
 const int		rtty::BITS[]  = {5, 7, 8};
 const int		rtty::numshifts = (int)(sizeof(SHIFT) / sizeof(*SHIFT));
@@ -123,9 +123,6 @@ void rtty::init()
 {
 
 	stopflag = false;
-
-	/// CW 2.0: set center freq to propbable CW center
-	set_freq(750);
 
 	rx_init();
 
@@ -204,9 +201,9 @@ void rtty::restart()
 
 	metric = 0.0;
 
-	// KL4YFD
 	if (rtty_baud == 20) put_MODEstatus(" CW 2.0 ");
 	else if (rtty_baud == 40) put_MODEstatus("CW 2.0 FEC");
+	else if (rtty_baud == 80) put_MODEstatus("CW 2.0 FAST");
 	//put_Status1(msg1);
 	
 	
@@ -299,74 +296,6 @@ cmplx rtty::mixer(double &phase, double f, cmplx in)
 }
 
 
-bool rtty::is_mark_space( int &correction)
-{
-	correction = 0;
-// test for rough bit position
-	if (bit_buf[0] && !bit_buf[symbollen-1]) {
-// test for mark/space straddle point
-		for (int i = 0; i < symbollen; i++)
-			correction += bit_buf[i];
-		if (abs(symbollen/2 - correction) < 2) // too small & bad signals are not decoded
-			return true;
-	}
-	return false;
-}
-
-bool rtty::is_mark(int offset)
-{
-	int onescount = 0;
-	int zeroscount = 0;
-	int centerpoint = symbollen/2; // default to center
-	
-	int front_ones, end_ones;
-	// auto-calculate the symbol-offset
-	for (int i=0; i<symbollen/4; i++) {
-		if (bit_buf[i]) front_ones++;
-		if (bit_buf[symbollen-i]) end_ones++;
-	}
-	
-	if (front_ones == end_ones) { // perfectley aligned symbol
-		  if (end_ones) return true;
-		  else return false;
-	
-	} else if (front_ones && !end_ones) { // perfectley MIS-aligned symbol
-		return false;
-	
-	} else if (!front_ones && end_ones) { // perfectley MIS-aligned symbol
-		return true;
-	
-	} else { // mis-aligned symbol: calc offset by ratio of front_ones to end_ones
-		offset = abs(front_ones - end_ones) / 2;
-	}
-	
-	
-  
-	if ( symbollen/2 + offset > symbollen ) // bounds checking
-		centerpoint = (symbollen/2) - 5;
-	else
-		centerpoint = offset;
-	  
-	
-	// Do a bit-count to decode from bit buffer
-	for (int i=0; i<5; i++) {
-		if (bit_buf[centerpoint+i]) onescount++;
-		else zeroscount++;
-		
-		if (bit_buf[centerpoint-i]) onescount++;
-		else zeroscount++;
-	}
-	
-	if (onescount > zeroscount)
-		return true;
-	else
-		return false;
-	
-	///return bit_buf[symbollen / 2];
-}
-
-
-
 bool rtty::rx(bool bit)
 {
   /*
@@ -384,12 +313,6 @@ bool rtty::rx(bool bit)
 	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
 	bit_buf[symbollen - 1] = bit;
 	
-	// ALPHA CODE: count the passed bits for a vote
-	///if (bit) onescount++;
-	///else zeroscount++;
-	
-	
-	
 	/// kl4yfd debug
 	///printf("%d",bit);
 	
@@ -400,10 +323,8 @@ bool rtty::rx(bool bit)
 		/// kl4yfd debug
 		//printf("\n\n");
 		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
-		
-		/// TODO alignment algorithm
-		/// ???
-			///is_mark_space(correction); ???
+		/// TODO alignment algorithm ??
+
 		
 		// Count center bits in the bit_buf to produce a hard / soft bit. Ignore first & last 1/3 of symbol
 		for (int i = symbollen/3; i < symbollen-(symbollen/3); i++) {
@@ -443,11 +364,7 @@ bool rtty::rx(bool bit)
 		}
 		return true;
 	}
-	
-	/// Sync Fix
-	/// return false;
-	return true;
-	
+	return true;	
 }
 
 
@@ -846,18 +763,24 @@ int rtty::rx_process(const double *buf, int len)
 //double freq1;
 double maxamp = 0;
 
+// Left channel audio signal
+// Is only generated for testing when starting Fldigi with parameter:  --noise
 double rtty::nco(double freq)
 {
+	if (progdefaults.noise) return 0.0f; // No Audio: CW 2.0 Transmits by the radio's CW key
+	
+	// audio signal for testing only. DO NOT USE ON-AIR!
 	phaseacc += TWOPI * freq / samplerate;
-
 	if (phaseacc > TWOPI) phaseacc -= TWOPI;
-
 	return cos(phaseacc);
 }
 
+// Right channel PTT signal at 3.2Khz
+// 3.2Khz is outside of normal SSB audio passband in case of incorrect connections
+// but well within the 4Khz Nyquist limit
 double rtty::FSKnco()
 {
-	FSKphaseacc += TWOPI * 1000 / samplerate;
+	FSKphaseacc += TWOPI * 3200 / samplerate;
 
 	if (FSKphaseacc > TWOPI) FSKphaseacc -= TWOPI;
 
@@ -873,8 +796,6 @@ void rtty::send_symbol(unsigned int symbol, int len)
 	double freq;
 
 	// transmit mark-only
-	// TODO : Tx audio is only for testing:
-	// Final mode will hard-key the transmitters CW key.
 	// BUG: Rx and Tx center freq is offset by + shift/2
 	freq = get_txfreq_woffset() + shift / 2.0;
 
@@ -901,21 +822,31 @@ void rtty::send_char(unsigned char  c)
   //send_symbol(0, symbollen);
   //send_symbol(1, symbollen);
   //return;
-  
-	if (restartchar) { // Send a SPACE character to re-synchronize the receiver
-		const char *code = varienc(32);
-		while (*code)
-			send_symbol( (*code++ - '0'), symbollen);
-		
-		restartchar = false;
-	}
 	
 	if (rtty_baud != 40) { // Non FEC mode
+	  	if (restartchar) { // Send a NULL character to re-synchronize the receiver
+			const char *code = varienc(0);
+			while (*code)
+				send_symbol( (*code++ - '0'), symbollen);
+			restartchar = false;
+		}
+		
 		const char *code = varienc(c);
 		while (*code)
 			send_symbol( (*code++ - '0'), symbollen);
 		
 	} else { // FEC MODE
+	  	if (restartchar) { // Send a NULL character to re-synchronize the receiver
+			const char *code = varienc(0);
+			while (*code) {
+				txdata = enc->encode( (*code++ - '0') );
+				txinlv->bits(&txdata);
+				send_symbol(txdata &1 , symbollen);
+				send_symbol(txdata &2 , symbollen);
+			}
+			restartchar = false;
+		}
+		
 	  	const char *code = varienc(c);
 		while (*code) {
 		  	txdata = enc->encode( (*code++ - '0') );
@@ -933,7 +864,7 @@ void rtty::send_char(unsigned char  c)
 // After a few 0's as input, the FEC will output a constant string of 0's (key-ups)
 void rtty::send_idle()
 {
-  	txdata = enc->encode( 0 ); // Keep synchronization with string of 0 bits
+	txdata = enc->encode( 0 ); // Keep synchronization with string of 0 bits
 	txinlv->bits(&txdata);
 	send_symbol(txdata &1 , symbollen);
 	send_symbol(txdata &2 , symbollen);
@@ -947,8 +878,12 @@ int rtty::tx_process()
 
 	/// CW 2.0 feature: The Non-FEC preamble is heard as the letter "N" twice in Morse code
 	if (preamble) {
-		send_char('\n'); // CR : enter
-		send_char('\n');
+		if (rtty_baud != 40) { // Non FEC
+			send_char('\n'); // CR : enter
+			send_char('\n');
+		} else { // FEC
+			send_char(0); // NULL
+		}
 		preamble = false;
 	}
 	c = get_tx_char();
@@ -957,10 +892,12 @@ int rtty::tx_process()
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		line_char_count = 0;
-		/// CW 2.0 feature: The Non-FEC postamble is heard as the letter "N" twice in Morse code
-		send_char('\n'); // CR : enter
-		send_char('\n');
-		for (int i=0; i<25; i++) send_idle(); // flush the Rx pipeline
+		if (rtty_baud == 40) { // FEC
+			for (int i=0; i<4; i++) send_char(0); // flush the FEC TR & Rx pipelines with NULLs
+		} else { // CW 2.0 feature: The Non-FEC postamble is heard as the letter "N" twice in Morse code
+			send_char('\n'); // CR : enter
+			send_char('\n');
+		}
 		cwid(); /// send callsign in Morse code 
 		return -1;
 	}
@@ -970,12 +907,12 @@ int rtty::tx_process()
 	/// When there is no character to send, mode becomes RF silent.
 	if (c == GET_TX_CHAR_NODATA) {
 		if (!restartchar) {
-			send_char(32); // when NODATA idle starts: send a SPACE to flush the last-sent character through Rx
-			if (rtty_baud == 40) send_char(0); // for FEC: send also a NULL to flush last characters through Rx pipeline
+			send_char(0); // send a NULL to flush last characters through Rx pipeline
+			if (rtty_baud == 40) send_char(0); // for FEC: send a second NULL to flush last characters through FEC pipeline
 		}
-	  	restartchar = true; // Request need for a buffer/restart character (to re-synchronize)
+	  	restartchar = true; // Request later need for a buffer/restart character (to re-synchronize)
 		
-		if (rtty_baud != 20)
+		if (rtty_baud == 40)
 			send_idle(); // FEC requires synchronization to be kept...
 		else
 			send_symbol(0, symbollen); // nothing to send: don't waste the RF power with an idle signal
