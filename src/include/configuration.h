@@ -914,6 +914,9 @@
         ELEM_(bool, notes_address, "NOTES_ADDRESS",                                     \
               "Populate logbook notes (comment) field with mailing address",            \
               false)                                                                    \
+        ELEM_(bool, clear_notes, "CLEAR_NOTES",                                         \
+              "Clear notes control when making a new QRZ query",                        \
+              true)                                                                     \
         ELEM_(bool, QRZchanged, "", "",  false)                                         \
         /* eQSL */                                                                      \
         ELEM_(std::string, eqsl_id, "EQSL_ID",                                          \

@@ -639,6 +639,7 @@ extern Fl_Input2 *inpQRZusername;
 extern Fl_Input2 *inpQRZuserpassword;
 extern Fl_Button *btnQRZpasswordShow;
 extern Fl_Check_Button *btn_notes_address;
+extern Fl_Check_Button *btn_clear_notes;
 extern Fl_Input2 *inpEQSL_id;
 extern Fl_Input2 *inpEQSL_pwd;
 extern Fl_Button *btnEQSL_pwd_show;

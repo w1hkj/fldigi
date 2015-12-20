@@ -5198,6 +5198,13 @@ static void cb_btn_notes_address(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_clear_notes=(Fl_Check_Button *)0;
+
+static void cb_btn_clear_notes(Fl_Check_Button* o, void*) {
+  progdefaults.clear_notes = o->value();
+progdefaults.changed= true;
+}
+
 Fl_Input2 *inpEQSL_id=(Fl_Input2 *)0;
 
 static void cb_inpEQSL_id(Fl_Input2* o, void*) {
@@ -5871,7 +5878,6 @@ Fl_Double_Window* ConfigureDialog() {
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6627,6 +6633,7 @@ ab and newline are automatically included."));
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 85, 165, 24, _("Rx/Tx Character set"));
@@ -11099,8 +11106,7 @@ and restarted if needed."));
         tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 355);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Call Lookup"));
-            o->hide();
-            { Fl_Group* o = new Fl_Group(55, 56, 490, 122, _("Web Browser lookup"));
+            { Fl_Group* o = new Fl_Group(34, 56, 538, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Round_Button* o = btnQRZWEBnotavailable = new Fl_Round_Button(77, 82, 337, 20, _("None"));
@@ -11130,7 +11136,7 @@ and restarted if needed."));
               } // Fl_Round_Button* btnHamQTHonline
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(55, 180, 490, 190, _("Data base lookup"));
+            { Fl_Group* o = new Fl_Group(34, 180, 538, 195, _("Data base lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Round_Button* o = btnQRZXMLnotavailable = new Fl_Round_Button(77, 203, 64, 20, _("None"));
@@ -11140,37 +11146,37 @@ and restarted if needed."));
                 btnQRZXMLnotavailable->callback((Fl_Callback*)cb_btnQRZXMLnotavailable);
                 o->value(progdefaults.QRZXML == QRZXMLNONE);
               } // Fl_Round_Button* btnQRZXMLnotavailable
-              { Fl_Round_Button* o = btnQRZcdrom = new Fl_Round_Button(77, 231, 70, 20, _("QRZ cdrom"));
+              { Fl_Round_Button* o = btnQRZcdrom = new Fl_Round_Button(77, 238, 70, 20, _("QRZ cdrom"));
                 btnQRZcdrom->tooltip(_("Use CD or hard drive CD image"));
                 btnQRZcdrom->down_box(FL_DOWN_BOX);
                 btnQRZcdrom->callback((Fl_Callback*)cb_btnQRZcdrom);
                 o->value(progdefaults.QRZXML == QRZCD);
               } // Fl_Round_Button* btnQRZcdrom
-              { Fl_Round_Button* o = btnQRZsub = new Fl_Round_Button(77, 259, 125, 20, _("QRZ.com"));
+              { Fl_Round_Button* o = btnQRZsub = new Fl_Round_Button(77, 266, 126, 20, _("QRZ.com"));
                 btnQRZsub->tooltip(_("You need a paid QRZ online\nsubscription to access"));
                 btnQRZsub->down_box(FL_DOWN_BOX);
                 btnQRZsub->callback((Fl_Callback*)cb_btnQRZsub);
                 o->value(progdefaults.QRZXML == QRZNET);
               } // Fl_Round_Button* btnQRZsub
-              { Fl_Round_Button* o = btnHamcall = new Fl_Round_Button(77, 285, 125, 20, _("Hamcall.net"));
+              { Fl_Round_Button* o = btnHamcall = new Fl_Round_Button(77, 292, 126, 20, _("Hamcall.net"));
                 btnHamcall->tooltip(_("You need a paid Hamcall online\nsubscription to access"));
                 btnHamcall->down_box(FL_DOWN_BOX);
                 btnHamcall->callback((Fl_Callback*)cb_btnHamcall);
                 o->value(progdefaults.QRZXML == HAMCALLNET);
               } // Fl_Round_Button* btnHamcall
-              { Fl_Round_Button* o = btnHamQTH = new Fl_Round_Button(77, 311, 125, 20, _("HamQTH.com (free service http://www.hamqth.com)"));
+              { Fl_Round_Button* o = btnHamQTH = new Fl_Round_Button(77, 318, 126, 20, _("HamQTH.com (free service http://www.hamqth.com)"));
                 btnHamQTH->tooltip(_("Free service courtesy of OK"));
                 btnHamQTH->down_box(FL_DOWN_BOX);
                 btnHamQTH->callback((Fl_Callback*)cb_btnHamQTH);
                 o->value(progdefaults.QRZXML == HAMQTH);
               } // Fl_Round_Button* btnHamQTH
-              { Fl_Round_Button* o = btnCALLOOK = new Fl_Round_Button(77, 338, 125, 20, _("Callook.info lookup (free service US callsigns only)"));
+              { Fl_Round_Button* o = btnCALLOOK = new Fl_Round_Button(77, 345, 126, 20, _("Callook.info lookup (free service US callsigns only)"));
                 btnCALLOOK->tooltip(_("Visit Hamcall web site"));
                 btnCALLOOK->down_box(FL_DOWN_BOX);
                 btnCALLOOK->callback((Fl_Callback*)cb_btnCALLOOK);
                 o->value(progdefaults.QRZXML == CALLOOK);
               } // Fl_Round_Button* btnCALLOOK
-              { Fl_Input2* o = txtQRZpathname = new Fl_Input2(202, 230, 300, 22, _("at:"));
+              { Fl_Input2* o = txtQRZpathname = new Fl_Input2(203, 237, 301, 22, _("at:"));
                 txtQRZpathname->tooltip(_("ie: /home/dave/CALLBK/ or C:/CALLBK/\nLeave blank to search for database"));
                 txtQRZpathname->box(FL_DOWN_BOX);
                 txtQRZpathname->color(FL_BACKGROUND2_COLOR);
@@ -11185,7 +11191,7 @@ and restarted if needed."));
                 o->value(progdefaults.QRZpathname.c_str());
                 txtQRZpathname->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* txtQRZpathname
-              { Fl_Input2* o = inpQRZusername = new Fl_Input2(285, 258, 150, 22, _("User name"));
+              { Fl_Input2* o = inpQRZusername = new Fl_Input2(286, 265, 150, 22, _("User name"));
                 inpQRZusername->tooltip(_("Your login name"));
                 inpQRZusername->box(FL_DOWN_BOX);
                 inpQRZusername->color(FL_BACKGROUND2_COLOR);
@@ -11200,7 +11206,7 @@ and restarted if needed."));
                 o->value(progdefaults.QRZusername.c_str());
                 inpQRZusername->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpQRZusername
-              { Fl_Input2* o = inpQRZuserpassword = new Fl_Input2(285, 284, 150, 22, _("Password"));
+              { Fl_Input2* o = inpQRZuserpassword = new Fl_Input2(286, 291, 150, 22, _("Password"));
                 inpQRZuserpassword->tooltip(_("Your login password"));
                 inpQRZuserpassword->box(FL_DOWN_BOX);
                 inpQRZuserpassword->color(FL_BACKGROUND2_COLOR);
@@ -11216,20 +11222,30 @@ and restarted if needed."));
                 o->type(FL_SECRET_INPUT);
                 inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpQRZuserpassword
-              { btnQRZpasswordShow = new Fl_Button(445, 285, 70, 20, _("Show"));
+              { btnQRZpasswordShow = new Fl_Button(447, 292, 70, 20, _("Show"));
                 btnQRZpasswordShow->tooltip(_("Show password in plain text"));
                 btnQRZpasswordShow->callback((Fl_Callback*)cb_btnQRZpasswordShow);
               } // Fl_Button* btnQRZpasswordShow
-              { Fl_Check_Button* o = btn_notes_address = new Fl_Check_Button(202, 205, 207, 15, _("Add address to notes field"));
+              { Fl_Group* o = new Fl_Group(195, 203, 371, 27);
+                o->box(FL_ENGRAVED_FRAME);
+                { Fl_Check_Button* o = btn_notes_address = new Fl_Check_Button(207, 210, 207, 15, _("Add address to notes field"));
                 btn_notes_address->down_box(FL_DOWN_BOX);
                 btn_notes_address->callback((Fl_Callback*)cb_btn_notes_address);
                 o->value(progdefaults.notes_address);
-              } // Fl_Check_Button* btn_notes_address
+                } // Fl_Check_Button* btn_notes_address
+                { Fl_Check_Button* o = btn_clear_notes = new Fl_Check_Button(434, 210, 122, 15, _("clear old data"));
+                btn_clear_notes->down_box(FL_DOWN_BOX);
+                btn_clear_notes->callback((Fl_Callback*)cb_btn_clear_notes);
+                o->value(progdefaults.clear_notes);
+                } // Fl_Check_Button* btn_clear_notes
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("eQSL"));
+            o->hide();
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(225, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);

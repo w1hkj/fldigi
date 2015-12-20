@@ -464,7 +464,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
+            tooltip {User Interface - Browser} xywh {0 50 600 330}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1354,7 +1354,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -6347,11 +6347,11 @@ if (progdefaults.kml_enabled) {
         } {
           Fl_Group {} {
             label {Call Lookup} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
-              xywh {55 56 490 122} box ENGRAVED_FRAME align 21
+              xywh {34 56 538 122} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnQRZWEBnotavailable {
                 label None
@@ -6388,7 +6388,7 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Data base lookup} open
-              xywh {55 180 490 190} box ENGRAVED_FRAME align 21
+              xywh {34 180 538 195} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnQRZXMLnotavailable {
                 label None
@@ -6403,7 +6403,7 @@ progdefaults.changed = true;}
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = QRZCD;
 progdefaults.changed = true;}
-                tooltip {Use CD or hard drive CD image} xywh {77 231 70 20} down_box DOWN_BOX
+                tooltip {Use CD or hard drive CD image} xywh {77 238 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == QRZCD);}
               }
               Fl_Round_Button btnQRZsub {
@@ -6412,7 +6412,7 @@ progdefaults.changed = true;}
 progdefaults.QRZXML = QRZNET;
 progdefaults.changed = true;}
                 tooltip {You need a paid QRZ online
-subscription to access} xywh {77 259 125 20} down_box DOWN_BOX
+subscription to access} xywh {77 266 126 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == QRZNET);}
               }
               Fl_Round_Button btnHamcall {
@@ -6421,7 +6421,7 @@ subscription to access} xywh {77 259 125 20} down_box DOWN_BOX
 progdefaults.QRZXML = HAMCALLNET;
 progdefaults.changed = true;}
                 tooltip {You need a paid Hamcall online
-subscription to access} xywh {77 285 125 20} down_box DOWN_BOX
+subscription to access} xywh {77 292 126 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == HAMCALLNET);}
               }
               Fl_Round_Button btnHamQTH {
@@ -6429,7 +6429,7 @@ subscription to access} xywh {77 285 125 20} down_box DOWN_BOX
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = HAMQTH;
 progdefaults.changed = true;}
-                tooltip {Free service courtesy of OK} xywh {77 311 125 20} down_box DOWN_BOX
+                tooltip {Free service courtesy of OK} xywh {77 318 126 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == HAMQTH);}
               }
               Fl_Round_Button btnCALLOOK {
@@ -6437,7 +6437,7 @@ progdefaults.changed = true;}
                 callback {set_qrzxml_buttons(o);
 progdefaults.QRZXML = CALLOOK;
 progdefaults.changed = true;}
-                tooltip {Visit Hamcall web site} xywh {77 338 125 20} down_box DOWN_BOX
+                tooltip {Visit Hamcall web site} xywh {77 345 126 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZXML == CALLOOK);}
               }
               Fl_Input txtQRZpathname {
@@ -6446,7 +6446,7 @@ progdefaults.changed = true;}
 progdefaults.QRZchanged = true;
 progdefaults.changed = true;}
                 tooltip {ie: /home/dave/CALLBK/ or C:/CALLBK/
-Leave blank to search for database} xywh {202 230 300 22}
+Leave blank to search for database} xywh {203 237 301 22}
                 code0 {o->value(progdefaults.QRZpathname.c_str());}
                 code1 {txtQRZpathname->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -6455,7 +6455,7 @@ Leave blank to search for database} xywh {202 230 300 22}
                 label {User name}
                 callback {progdefaults.QRZusername = o->value();
 progdefaults.changed = true;}
-                tooltip {Your login name} xywh {285 258 150 22}
+                tooltip {Your login name} xywh {286 265 150 22}
                 code0 {o->value(progdefaults.QRZusername.c_str());}
                 code1 {inpQRZusername->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -6464,7 +6464,7 @@ progdefaults.changed = true;}
                 label Password
                 callback {progdefaults.QRZuserpassword = o->value();
 progdefaults.changed = true;}
-                tooltip {Your login password} xywh {285 284 150 22}
+                tooltip {Your login password} xywh {286 291 150 22}
                 code0 {o->value(progdefaults.QRZuserpassword.c_str());}
                 code1 {o->type(FL_SECRET_INPUT);}
                 code2 {inpQRZuserpassword->labelsize(FL_NORMAL_SIZE);}
@@ -6475,20 +6475,31 @@ progdefaults.changed = true;}
                 callback {inpQRZuserpassword->type(inpQRZuserpassword->type() ^ FL_SECRET_INPUT);
 inpQRZuserpassword->redraw();
 o->label((inpQRZuserpassword->type() & FL_SECRET_INPUT) ? "Show" : "Hide");}
-                tooltip {Show password in plain text} xywh {445 285 70 20}
+                tooltip {Show password in plain text} xywh {447 292 70 20}
               }
-              Fl_Check_Button btn_notes_address {
-                label {Add address to notes field}
-                callback {progdefaults.notes_address = o->value();
+              Fl_Group {} {open
+                xywh {195 203 371 27} box ENGRAVED_FRAME
+              } {
+                Fl_Check_Button btn_notes_address {
+                  label {Add address to notes field}
+                  callback {progdefaults.notes_address = o->value();
 progdefaults.changed = true;}
-                xywh {202 205 207 15} down_box DOWN_BOX
-                code0 {o->value(progdefaults.notes_address);}
+                  xywh {207 210 207 15} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.notes_address);}
+                }
+                Fl_Check_Button btn_clear_notes {
+                  label {clear old data}
+                  callback {progdefaults.clear_notes = o->value();
+progdefaults.changed= true;}
+                  xywh {434 210 122 15} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.clear_notes);}
+                }
               }
             }
           }
           Fl_Group {} {
             label eQSL open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Input inpEQSL_id {
               label {User ID}

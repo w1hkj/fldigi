@@ -440,7 +440,9 @@ void QRZ_CD_query()
 		srch[i] = toupper(srch[i]);
 
 	string notes;
-	notes.assign(inpNotes->value());
+	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
+	else notes.clear();
+
 	if( qCall->FindRecord( srch ) == 1) {
 		lookup_fname = qCall->GetFname();
 		camel_case(lookup_fname);
@@ -530,7 +532,9 @@ void QRZAlert()
 		qrzerror.clear();
 	}
 	string notes;
-	notes.assign(inpNotes->value());
+	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
+	else notes.clear();
+
 	if (!qrznote.empty()) notes.append("\n").append(qrznote);
 	inpNotes->value(notes.c_str());
 }
@@ -580,7 +584,9 @@ void QRZquery()
 			}
 
 			string notes;
-			notes.assign(inpNotes->value());
+			if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
+			else notes.clear();
+
 			if (progdefaults.notes_address) {
 				if (!notes.empty()) notes.append("\n");
 				notes.append(lookup_fname).append(" ").append(lookup_name).append("\n");
@@ -653,7 +659,9 @@ void parse_callook(string& xmlpage)
 	}
 
 	string notes;
-	notes.assign(inpNotes->value());
+	if (!progdefaults.clear_notes) notes.assign(inpNotes->value());
+	else notes.clear();
+
 	if (progdefaults.notes_address) {
 		if (!notes.empty()) notes.append("\n");
 		notes.append(lookup_name).append("\n");
