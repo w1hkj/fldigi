@@ -71,6 +71,10 @@ using namespace std;
 #define K13_POLY1	016461 // 7473
 #define K13_POLY2	012767 // 5623
 
+
+// From:  fl_digi.cxx
+extern bool withnoise;
+
 int dspcnt = 0;
 
 //static char msg1[20];
@@ -187,9 +191,9 @@ void rtty::restart()
 	reset_filters();
 
 	if (bits)
-		bits->setLength(symbollen / 8);//2);
+		bits->setLength(symbollen / 8);
 	else
-		bits = new Cmovavg(symbollen / 8);//2);
+		bits = new Cmovavg(symbollen / 8);
 	mark_noise = space_noise = 0;
 	bit = nubit = true;
 
@@ -298,11 +302,6 @@ cmplx rtty::mixer(double &phase, double f, cmplx in)
 
 bool rtty::rx(bool bit)
 {
-  /*
-	bool flag = false;
-	unsigned char c = 0;
-  */	
-	/// kl4yfd
 	int onescount = 0;
 	int zeroscount = 0;
 	static int bitcounter = 0;
@@ -313,11 +312,6 @@ bool rtty::rx(bool bit)
 	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
 	bit_buf[symbollen - 1] = bit;
 	
-	/// kl4yfd debug
-	///printf("%d",bit);
-	
-
-
 	if (bitcounter++ >= symbollen-1) {
 		bitcounter = 0;
 		/// kl4yfd debug
@@ -344,10 +338,6 @@ bool rtty::rx(bool bit)
 		}
 		onescount = zeroscount = 0;
 		
-		// debug
-		//if (hardbit) printf("1");
-		//else printf("0");
-		
 		// If FEC mode, soft-decode and return
 		if (rtty_baud == 40) {
 			rx_pskr(softbit);
@@ -367,16 +357,14 @@ bool rtty::rx(bool bit)
 	return true;	
 }
 
-
+// One bit/baud modem: so need a pair of decoders / interleavers.
 void rtty::rx_pskr(unsigned char symbol)
 {
 	int met;
 	unsigned char twosym[2];
 	unsigned char tempc;
 	int c;
-	
-	printf("\n %d", symbol);
-	
+		
 	static int rxbitstate=0;
 
 	// we accumulate the soft bits for the interleaver THEN submit to Viterbi
@@ -493,44 +481,6 @@ void rtty::Metric()
 	display_metric(metric);
 }
 
-void rtty::searchDown()
-{
-	double srchfreq = frequency - shift -100;
-	double minfreq = shift * 2 + 100;
-	double spwrlo, spwrhi, npwr;
-	while (srchfreq > minfreq) {
-		spwrlo = wf->powerDensity(srchfreq - shift/2, 2*rtty_baud);
-		spwrhi = wf->powerDensity(srchfreq + shift/2, 2*rtty_baud);
-		npwr = wf->powerDensity(srchfreq + shift, 2*rtty_baud) + 1e-10;
-		if ((spwrlo / npwr > 10.0) && (spwrhi / npwr > 10.0)) {
-			frequency = srchfreq;
-			set_freq(frequency);
-			sigsearch = SIGSEARCH;
-			break;
-		}
-		srchfreq -= 5.0;
-	}
-}
-
-void rtty::searchUp()
-{
-	double srchfreq = frequency + shift +100;
-	double maxfreq = IMAGE_WIDTH - shift * 2 - 100;
-	double spwrhi, spwrlo, npwr;
-	while (srchfreq < maxfreq) {
-		spwrlo = wf->powerDensity(srchfreq - shift/2, 2*rtty_baud);
-		spwrhi = wf->powerDensity(srchfreq + shift/2, 2*rtty_baud);
-		npwr = wf->powerDensity(srchfreq - shift, 2*rtty_baud) + 1e-10;
-		if ((spwrlo / npwr > 10.0) && (spwrhi / npwr > 10.0)) {
-			frequency = srchfreq;
-			set_freq(frequency);
-			sigsearch = SIGSEARCH;
-			break;
-		}
-		srchfreq += 5.0;
-	}
-}
-
 int rtty::rx_process(const double *buf, int len)
 {
 	const double *buffer = buf;
@@ -600,12 +550,16 @@ int rtty::rx_process(const double *buf, int len)
 			space_env = sclipped = noise_floor;
 
 
-			double v0, v1, v2, v3, v4, v5;
+//			double v0, v1, v2, v3, v4, v5;
 
 // no ATC
-			v0 = mark_mag - space_mag;
+//			v0 = mark_mag - space_mag;
 // Linear ATC
-			v1 = mark_mag - space_mag - 0.5 * (mark_env - space_env);
+			// This decoding has a bias towards producing more zeros on a pure noise signal.
+			// Since transmitting a string of zeros produces no signal, this is a correct behavior,
+			// but does cause some losses in gain. Room for improvement here.
+			double v1 = mark_mag - space_mag - 0.5 * (mark_env - space_env);
+/*
 // Clipped ATC
 			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
 					(mark_env - noise_floor) - (space_env - noise_floor));
@@ -624,6 +578,9 @@ int rtty::rx_process(const double *buf, int len)
 					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
 					(mark_env - noise_floor) * (mark_env - noise_floor) -
 					(space_env - noise_floor) * (space_env - noise_floor));
+					
+*/
+
 //				switch (progdefaults.rtty_demodulator) {
 //			switch (2) { // Optimal ATC
 //			case 0: // linear ATC
@@ -767,7 +724,7 @@ double maxamp = 0;
 // Is only generated for testing when starting Fldigi with parameter:  --noise
 double rtty::nco(double freq)
 {
-	if (progdefaults.noise) return 0.0f; // No Audio: CW 2.0 Transmits by the radio's CW key
+	if (!withnoise) return 0.0f; // No Audio: CW 2.0 Transmits by the radio's CW key
 	
 	// audio signal for testing only. DO NOT USE ON-AIR!
 	phaseacc += TWOPI * freq / samplerate;
@@ -780,6 +737,8 @@ double rtty::nco(double freq)
 // but well within the 4Khz Nyquist limit
 double rtty::FSKnco()
 {
+  	if (withnoise) return 0.0f; // No Audio in Noise / Testing mode
+  
 	FSKphaseacc += TWOPI * 3200 / samplerate;
 
 	if (FSKphaseacc > TWOPI) FSKphaseacc -= TWOPI;
@@ -809,10 +768,9 @@ void rtty::send_symbol(unsigned int symbol, int len)
 		}
 	}
 
-	if (progdefaults.PseudoFSK)
-		ModulateStereo(outbuf, FSKbuf, symbollen);
-	else
-		ModulateXmtr(outbuf, symbollen);
+	// CW 2.0 always generates a right-channel audio PTT signal, ignoring the GUI setting 
+	ModulateStereo(outbuf, FSKbuf, symbollen);
+
 }
 
 void rtty::send_char(unsigned char  c)

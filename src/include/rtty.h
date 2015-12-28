@@ -271,8 +271,6 @@ public:
 	void clear_ch(int n) { rttyviewer->clearch(n); }
 	int  viewer_get_freq(int n) { return rttyviewer->get_freq(n); }
 
-	void searchDown();
-	void searchUp();
 
 };
 
