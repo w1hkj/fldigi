@@ -14,7 +14,6 @@
 
 ///
 /// Major Bugs:
-/// Does not Tx/Rx UTF8
 /// Rx loses symbol alignment and stops decoding
 /// 
 
@@ -321,7 +320,7 @@ bool rtty::rx(bool bit)
 		bitcounter = 0;
 
 		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
-		/// TODO alignment algorithm ??
+		/// MAJOR BUG : need alignment algorithm !!
 
 		
 		// Count center bits in the bit_buf to produce a hard / soft bit. Ignore first & last 1/3 of symbol
@@ -825,13 +824,13 @@ static int line_char_count = 0;
 int rtty::tx_process()
 {
 	int c;
-	
-	// Clear the bits in Viterbi encoder and TX interleaver
-	enc->init();
-	txinlv->flush();
 
 	/// CW 2.0 feature: The Non-FEC preamble is heard as the letter "N" twice in Morse code
 	if (preamble) {
+	  	// Clear the bits in Viterbi encoder and TX interleaver
+		enc->init();
+		txinlv->flush();
+		
 		if (rtty_baud != 40) { // Non FEC
 			send_char('\n'); // CR : enter
 			send_char('\n');

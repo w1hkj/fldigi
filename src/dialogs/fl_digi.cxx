@@ -7684,9 +7684,10 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	else if (progdefaults.show_all_codes)
 		rx_chd.rx((unsigned char *)ascii3[data & 0xFF]);
 
-	else if (mode == MODE_RTTY || mode == MODE_CW)
+	/// KL4YFD CW 2.0 UTF8 HACK
+	///else if (mode == MODE_RTTY || mode == MODE_CW)
+	else if (mode == MODE_CW)
 		rx_chd.rx((unsigned char *)ascii[data & 0xFF]);
-
 	else
 		rx_chd.rx(data);
 
