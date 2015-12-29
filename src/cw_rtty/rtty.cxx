@@ -15,7 +15,7 @@
 ///
 /// Major Bugs:
 /// Does not Tx/Rx UTF8
-/// Rx loses bit-alignment and stops decoding
+/// Rx loses symbol alignment and stops decoding
 /// 
 
 //
@@ -71,9 +71,8 @@ using namespace std;
 #define K13_POLY1	016461 // 7473
 #define K13_POLY2	012767 // 5623
 
-
-// From:  fl_digi.cxx
 extern bool withnoise;
+
 
 int dspcnt = 0;
 
@@ -191,9 +190,9 @@ void rtty::restart()
 	reset_filters();
 
 	if (bits)
-		bits->setLength(symbollen / 8);
+		bits->setLength(symbollen / 8);//2);
 	else
-		bits = new Cmovavg(symbollen / 8);
+		bits = new Cmovavg(symbollen / 8);//2);
 	mark_noise = space_noise = 0;
 	bit = nubit = true;
 
@@ -230,12 +229,18 @@ void rtty::restart()
 	space_env = 0;
 
 	inp_ptr = 0;
+	
+	txinlv->flush();
+	rxinlv1->flush();
+	rxinlv2->flush();
+
 
 	for (int i = 0; i < MAXPIPE; i++) mark_history[i] = space_history[i] = cmplx(0,0);
 
 	if (rttyviewer) rttyviewer->restart();
 
 	progStatus.rtty_filter_changed = false;
+	
 
 }
 
@@ -311,11 +316,10 @@ bool rtty::rx(bool bit)
 	
 	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
 	bit_buf[symbollen - 1] = bit;
-	
+
 	if (bitcounter++ >= symbollen-1) {
 		bitcounter = 0;
-		/// kl4yfd debug
-		//printf("\n\n");
+
 		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
 		/// TODO alignment algorithm ??
 
@@ -357,14 +361,14 @@ bool rtty::rx(bool bit)
 	return true;	
 }
 
-// One bit/baud modem: so need a pair of decoders / interleavers.
+
 void rtty::rx_pskr(unsigned char symbol)
 {
 	int met;
 	unsigned char twosym[2];
 	unsigned char tempc;
 	int c;
-		
+	
 	static int rxbitstate=0;
 
 	// we accumulate the soft bits for the interleaver THEN submit to Viterbi
@@ -555,32 +559,25 @@ int rtty::rx_process(const double *buf, int len)
 // no ATC
 //			v0 = mark_mag - space_mag;
 // Linear ATC
-			// This decoding has a bias towards producing more zeros on a pure noise signal.
-			// Since transmitting a string of zeros produces no signal, this is a correct behavior,
-			// but does cause some losses in gain. Room for improvement here.
 			double v1 = mark_mag - space_mag - 0.5 * (mark_env - space_env);
-/*
 // Clipped ATC
-			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
-					(mark_env - noise_floor) - (space_env - noise_floor));
+//			v2  = (mclipped - noise_floor) - (sclipped - noise_floor) - 0.5 * (
+//					(mark_env - noise_floor) - (space_env - noise_floor));
 // Optimal ATC
-			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
-					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
-					(mark_env - noise_floor) * (mark_env - noise_floor) -
-					(space_env - noise_floor) * (space_env - noise_floor));
+//			v3  = (mclipped - noise_floor) * (mark_env - noise_floor) -
+//					(sclipped - noise_floor) * (space_env - noise_floor) - 0.25 * (
+//					(mark_env - noise_floor) * (mark_env - noise_floor) -
+//					(space_env - noise_floor) * (space_env - noise_floor));
 // Kahn Squarer with Linear ATC
-			v4 =  (mark_mag - noise_floor) * (mark_mag - noise_floor) -
-					(space_mag - noise_floor) * (space_mag - noise_floor) - 0.25 * (
-					(mark_env - noise_floor) * (mark_env - noise_floor) -
-					(space_env - noise_floor) * (space_env - noise_floor));
+//			v4 =  (mark_mag - noise_floor) * (mark_mag - noise_floor) -
+//					(space_mag - noise_floor) * (space_mag - noise_floor) - 0.25 * (
+//					(mark_env - noise_floor) * (mark_env - noise_floor) -
+//					(space_env - noise_floor) * (space_env - noise_floor));
 // Kahn Squarer with Clipped ATC
-			v5 =  (mclipped - noise_floor) * (mclipped - noise_floor) -
-					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
-					(mark_env - noise_floor) * (mark_env - noise_floor) -
-					(space_env - noise_floor) * (space_env - noise_floor));
-					
-*/
-
+//			v5 =  (mclipped - noise_floor) * (mclipped - noise_floor) -
+//					(sclipped - noise_floor) * (sclipped - noise_floor) - 0.25 * (
+//					(mark_env - noise_floor) * (mark_env - noise_floor) -
+//					(space_env - noise_floor) * (space_env - noise_floor));
 //				switch (progdefaults.rtty_demodulator) {
 //			switch (2) { // Optimal ATC
 //			case 0: // linear ATC
@@ -724,8 +721,8 @@ double maxamp = 0;
 // Is only generated for testing when starting Fldigi with parameter:  --noise
 double rtty::nco(double freq)
 {
-	if (!withnoise) return 0.0f; // No Audio: CW 2.0 Transmits by the radio's CW key
-	
+	if (!withnoise) return 0.0f; // No Left-channel / Mic-input Audio unless testing: CW 2.0 Transmits by keying the radio's CW key
+
 	// audio signal for testing only. DO NOT USE ON-AIR!
 	phaseacc += TWOPI * freq / samplerate;
 	if (phaseacc > TWOPI) phaseacc -= TWOPI;
@@ -737,8 +734,6 @@ double rtty::nco(double freq)
 // but well within the 4Khz Nyquist limit
 double rtty::FSKnco()
 {
-  	if (withnoise) return 0.0f; // No Audio in Noise / Testing mode
-  
 	FSKphaseacc += TWOPI * 3200 / samplerate;
 
 	if (FSKphaseacc > TWOPI) FSKphaseacc -= TWOPI;
@@ -768,19 +763,16 @@ void rtty::send_symbol(unsigned int symbol, int len)
 		}
 	}
 
-	// CW 2.0 always generates a right-channel audio PTT signal, ignoring the GUI setting 
-	ModulateStereo(outbuf, FSKbuf, symbollen);
-
+	/// With --noise commandline parameter: only generate the Audio / Left channel
+	/// Without --noise: only generate the CW-KEY-PTT / Right channel
+	if (!withnoise)
+		ModulateStereo(outbuf, FSKbuf, symbollen);
+	else
+		ModulateXmtr(outbuf, symbollen);
 }
 
 void rtty::send_char(unsigned char  c)
 {
-  
-  /// kl4yfd debug
-  //send_symbol(0, symbollen);
-  //send_symbol(1, symbollen);
-  //return;
-	
 	if (rtty_baud != 40) { // Non FEC mode
 	  	if (restartchar) { // Send a NULL character to re-synchronize the receiver
 			const char *code = varienc(0);
@@ -833,6 +825,10 @@ static int line_char_count = 0;
 int rtty::tx_process()
 {
 	int c;
+	
+	// Clear the bits in Viterbi encoder and TX interleaver
+	enc->init();
+	txinlv->flush();
 
 	/// CW 2.0 feature: The Non-FEC preamble is heard as the letter "N" twice in Morse code
 	if (preamble) {
