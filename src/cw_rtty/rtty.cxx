@@ -309,6 +309,7 @@ bool rtty::rx(bool bit)
 {
 	static int bitcounter = 0;
 	static unsigned int hardshreg = 1;
+ 	static int runningscore[3] = {0};
 	
 	// Shift contents of the the bit buffer and add the passed bit
 	for (int i = 1; i < symbollen*SYMBLOCK; i++) bit_buf[i-1] = bit_buf[i];
@@ -334,20 +335,45 @@ bool rtty::rx(bool bit)
 			else softzeros[1]++;
 		}
 		// Count bits in the bit_buf to produce a soft symbol from last 1/3 of symbol
-		for (int i = 2 * symbollen/3; i < symbollen; i++) {
+		for (int i = 2 * symbollen/3; i < symbollen-1; i++) {
 			if (bit_buf[i]) softones[2]++;
 			else softzeros[2]++;
 		}
 		
-		int votescore[3] = {-1}; // Preload with invalid value 
-		int vote = -1; // Preload with invalid value 
 		// Calculate the vote on which 1/3 of the symbol has the greatest difference of ones to zeros
 		for (int i=0; i<3; i++) {
-			votescore[i] = abs(softones[i] - softzeros[i]);
-			if (votescore[i] > vote)
-				vote = i;
+			/// BUG : KL4YFD magic numbers tuned ONLY for Cw 2.0 Fast @ 80 baud
+			runningscore[i] += abs(softones[i] - softzeros[i]);
+			
+			if (runningscore[i] > 33333) { // Bounds checking that preserves the statistical ratios
+				runningscore[0] /= 25;
+				runningscore[1] /= 25;
+				runningscore[2] /= 25;
+			}
 		}
 		
+		int max = -1;
+		int vote = -1; // Preload with invalid value 
+		// Choose symbol by highest runningscore value
+		for (int i=0; i<3; i++) {
+			if (runningscore[i] > max) {
+				max = runningscore[i];
+				vote = i;
+			}
+		}
+
+		/// SHOW DECODER RUNNING SCORES AND WHICH DECODER IS CURRENT RX
+		printf("\n %8d : %8d : %8d", runningscore[0], runningscore[1], runningscore[2]);
+		printf("\n");
+		if (0 == vote)
+			printf("     Rx");
+		else if (1 == vote)
+			printf("                Rx");
+		else
+			printf("                           Rx");
+
+		///printf("\n Curr Decoder = %d", vote);
+
 		int ones = softones[vote];
 		int zeros = softzeros[vote];
 			  
@@ -361,7 +387,7 @@ bool rtty::rx(bool bit)
 			hardbit = 0;
 			softbit = 0 + ones * 1.4; // 1.4 is a magic number specific to 40 baud
 		}
-		
+				
 		// If FEC mode, soft-decode and return
 		if (rtty_baud == 40) {
 			rx_pskr(softbit);
