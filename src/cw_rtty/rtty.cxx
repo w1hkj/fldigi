@@ -381,69 +381,6 @@ bool rtty::rx(bool bit)
 	return true;	
 }
 
-
-
-/*
-
-bool rtty::rx(bool bit)
-{
-	int onescount = 0;
-	int zeroscount = 0;
-	static int bitcounter = 0;
-	
-	
-	static unsigned int hardshreg = 1;
-	
-	for (int i = 1; i < symbollen; i++) bit_buf[i-1] = bit_buf[i];
-	bit_buf[symbollen - 1] = bit;
-
-	if (bitcounter++ >= symbollen-1) {
-		bitcounter = 0;
-
-		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
-		/// MAJOR BUG : need alignment algorithm !!
-
-		
-		// Count center bits in the bit_buf to produce a hard / soft bit. Ignore first & last 1/3 of symbol
-		for (int i = symbollen/3; i < symbollen-(symbollen/3); i++) {
-			if (bit_buf[i]) onescount++;
-			else zeroscount++;
-		}
-			  
-		int hardbit = -1;
-		int softbit = 128;
-		
-		if (onescount > zeroscount) {
-			hardbit = 1;
-			softbit = 255 - zeroscount * 1.4;
-		} else {
-			hardbit = 0;
-			softbit = 0 + onescount * 1.4;
-		}
-		onescount = zeroscount = 0;
-		
-		// If FEC mode, soft-decode and return
-		if (rtty_baud == 40) {
-			rx_pskr(softbit);
-			return false;
-		}
-		
-		// implied else Non FEC mode: decode hard-bits to character 
-		int c;
-		hardshreg = (hardshreg << 1) | !!hardbit;
-		if ((hardshreg & 7) == 1) {
-			c = varidec(hardshreg >> 1);
-			put_rx_char(c);
-			hardshreg = 1;
-		}
-		return true;
-	}
-	return true;	
-}
-
-*/
-
-
 void rtty::rx_pskr(unsigned char symbol)
 {
 	int met;
