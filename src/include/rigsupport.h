@@ -80,24 +80,8 @@ extern std::string modeString(rmode_t m);
 extern bool connected_to_flrig;
 extern void xmlrpc_rig_set_qsy(long long rfc);
 
-using namespace XmlRpc;
-using namespace std;
-
-extern bool bws_posted;
-extern bool FLRIG_bw_posted;
-extern bool FLRIG_mode_posted;
-extern bool modes_posted;
-extern bool FLRIG_freq_posted;
-
-extern long int FLRIG_xcvr_freq;
-extern string   xcvr_name;
-extern string   posted_mode;
-extern string   posted_bw1;
-extern string   posted_bw2;
-
-extern XmlRpcValue modes_result;
-extern XmlRpcValue bws_result;
-extern XmlRpcValue FLRIG_bw_result;
+//using namespace XmlRpc;
+//using namespace std;
 
 extern void FLRIG_start_flrig_thread();
 extern void stop_flrig_thread();
@@ -107,6 +91,7 @@ extern void set_flrig_freq(long int fr);
 extern void set_flrig_mode(const char *md);
 extern void set_flrig_bw(int bw1, int bw2 = 0);
 extern void set_flrig_notch();
+extern bool xmlrpc_USB();
 extern void FLRIG_set_flrig_ab(int n);
 
 

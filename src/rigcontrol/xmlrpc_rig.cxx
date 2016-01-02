@@ -52,7 +52,7 @@ LOG_FILE_SOURCE(debug::debug::LOG_XMLRPC_RIG);
 using namespace XmlRpc;
 using namespace std;
 
-int xmlrpc_verbosity = 0;
+static int xmlrpc_verbosity = 0;
 
 //======================================================================
 // flrig xmlrpc client
@@ -84,21 +84,24 @@ void connect_to_flrig();
 
 XmlRpcClient *flrig_client = (XmlRpcClient *)0;
 
-bool bws_posted = false;
-bool bw_posted = false;
-bool mode_posted = false;
-bool modes_posted = false;
-bool freq_posted = true;
-
-string xcvr_name;
-string str_freq;
-string mode_result;
-XmlRpcValue modes_result;
-XmlRpcValue bws_result;
-XmlRpcValue bw_result;
-XmlRpcValue notch_result;
-
+//----------------------------------------------------------------------
+// declared as extern in rigsupport.h
+//----------------------------------------------------------------------
 bool connected_to_flrig = false;
+//----------------------------------------------------------------------
+
+static bool bws_posted = false;
+static bool modes_posted = false;
+static bool freq_posted = true;
+
+static string xcvr_name;
+static string str_freq;
+static string mode_result;
+static XmlRpcValue modes_result;
+static XmlRpcValue bws_result;
+static XmlRpcValue bw_result;
+static XmlRpcValue notch_result;
+
 static double timeout = 2.0;
 //======================================================================
 
@@ -118,11 +121,11 @@ void xmlrpc_rig_set_qsy(long long rfc)
 //----------------------------------------------------------------------
 // push to talk
 //----------------------------------------------------------------------
-bool wait_ptt = false; // wait for transceiver to respond
-int  wait_ptt_timeout = 5; // 5 polls and then disable wait
-int  ptt_state = 0;
+static bool wait_ptt = false; // wait for transceiver to respond
+static int  wait_ptt_timeout = 5; // 5 polls and then disable wait
+static int  ptt_state = 0;
 
-int  new_ptt = -1;
+static int  new_ptt = -1;
 
 void exec_flrig_ptt() {
 	if (!connected_to_flrig) {
@@ -212,9 +215,9 @@ void flrig_get_ptt()
 // transceiver radio frequency
 //----------------------------------------------------------------------
 
-bool wait_freq = false; // wait for transceiver to respond
-int  wait_freq_timeout = 5; // 5 polls and then disable wait
-long int  xcvr_freq = 0;
+static bool wait_freq = false; // wait for transceiver to respond
+static int  wait_freq_timeout = 5; // 5 polls and then disable wait
+static long int  xcvr_freq = 0;
 
 pthread_mutex_t mutex_flrig_freq = PTHREAD_MUTEX_INITIALIZER;
 
@@ -283,15 +286,16 @@ void flrig_get_frequency()
 // transceiver get modes (mode table)
 //----------------------------------------------------------------------
 
-bool wait_mode = false; // wait for transceiver to respond
-int  wait_mode_timeout = 5; // 5 polls and then disable wait
-string posted_mode = "";
+static bool wait_mode = false; // wait for transceiver to respond
+static int  wait_mode_timeout = 5; // 5 polls and then disable wait
+static string posted_mode = "";
 
-bool wait_bw = false; // wait for transceiver to respond
-int  wait_bw_timeout = 5; // 5 polls and then disable wait
-string  posted_bw = "";
-string  posted_bw1 = "";
-string  posted_bw2 = "";
+static bool wait_bw = false; // wait for transceiver to respond
+static int  wait_bw_timeout = 5; // 5 polls and then disable wait
+static bool need_sideband = false;
+static string  posted_bw = "";
+static string  posted_bw1 = "";
+static string  posted_bw2 = "";
 
 void set_flrig_mode(const char *md)
 {
@@ -307,6 +311,7 @@ void set_flrig_mode(const char *md)
 		wait_mode_timeout = 5;
 	} else {
 		posted_mode = md;
+		need_sideband = true;
 		bws_posted = false;
 		wait_mode = true;
 		wait_mode_timeout = 5;
@@ -315,6 +320,13 @@ void set_flrig_mode(const char *md)
 }
 
 pthread_mutex_t mutex_flrig_mode = PTHREAD_MUTEX_INITIALIZER;
+static bool xml_USB = true;
+
+bool xmlrpc_USB()
+{
+	return xml_USB;
+}
+
 void xmlrpc_rig_post_mode(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_mode);
@@ -322,6 +334,7 @@ void xmlrpc_rig_post_mode(void *data)
 	string *s = reinterpret_cast<string *>(data);
 	qso_opMODE->value(s->c_str());
 	bws_posted = false;
+	need_sideband = false;
 }
 
 void flrig_get_mode()
@@ -332,11 +345,18 @@ void flrig_get_mode()
 		static string md;
 		md = string(res);
 		bool posted = (md == posted_mode);
-		if (!wait_mode && !posted) {
+		if (!wait_mode && (!posted || need_sideband)) {
 			posted_mode = md;
-			guard_lock flrig_lock(&mutex_flrig_mode);
+			guard_lock flrig_modelock(&mutex_flrig_mode);
+			if (flrig_client->execute("rig.get_sideband", XmlRpcValue(), res, timeout) ) {
+				static string sb;
+				sb = string(res);
+				xml_USB = (sb[0] == 'U');
+			} else {
+				xml_USB = true;
+			}
 			Fl::awake(xmlrpc_rig_post_mode, reinterpret_cast<void*>(&md));
-			LOG_INFO("get mode: %s", md.c_str());
+			LOG_INFO("get mode: %s:%s", md.c_str(), xml_USB ? "USB" : "LSB");
 		} else if (wait_mode && posted) {
 			wait_mode = false;
 			wait_mode_timeout = 0;
@@ -411,7 +431,7 @@ void set_flrig_bw(int bw2, int bw1)
 
 	XmlRpcValue val, result;
 	int ival = bw2;
-	if (bw1 > 0) ival = 256*(bw1+128) + bw2;
+	if (bw1 > -1) ival = 256*(bw1+128) + bw2;
 	val = ival;
 
 	guard_lock flrig_lock(&mutex_flrig);
@@ -676,9 +696,9 @@ void flrig_get_vfo()
 //==============================================================================
 // transceiver set / get notch
 //==============================================================================
-bool wait_notch = false; // wait for transceiver to respond
-int  wait_notch_timeout = 5; // 5 polls and then disable wait
-int  xcvr_notch = 0;
+static bool wait_notch = false; // wait for transceiver to respond
+static int  wait_notch_timeout = 5; // 5 polls and then disable wait
+static int  xcvr_notch = 0;
 
 void set_flrig_notch()
 {
@@ -832,8 +852,8 @@ bool flrig_get_xcvr()
 //======================================================================
 // xmlrpc read polling thread
 //======================================================================
-bool run_flrig_thread = true;
-int poll_interval = 1000; // 100 // milliseconds
+static bool run_flrig_thread = true;
+static int poll_interval = 1000; // 100 // milliseconds
 
 //----------------------------------------------------------------------
 // Set QSY to true if xmlrpc client connection is OK

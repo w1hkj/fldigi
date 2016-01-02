@@ -2549,13 +2549,55 @@ static void pTxQueQSY(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-float  waitFILWID = 0.0;
+float  wait_after_mode_change = 0.0;
 static string sFILWID;
 static void delayedFILWID(void *)
 {
 	qso_opBW->value(sFILWID.c_str());
 	cb_qso_opBW();
-	waitFILWID = 0.0;
+	wait_after_mode_change = 0.0;
+}
+
+static void pFILWID(std::string& s, size_t& i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string sWidth = s.substr(i+8, endbracket - i - 8);
+	sFILWID = sWidth;
+	Fl::add_timeout(wait_after_mode_change, delayedFILWID);
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doFILWID(std::string s)
+{
+	std::string sWID = s.substr(9, s.length() - 10);
+	qso_opBW->value(sWID.c_str());
+	cb_qso_opBW();
+	que_ok = true;
+}
+
+static void pTxQueFILWID(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueFILWID(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
@@ -2568,8 +2610,12 @@ static void pRIGMODE(std::string& s, size_t& i, size_t endbracket)
 	qso_opMODE->value(sMode.c_str());
 	cb_qso_opMODE();
 	s.replace(i, endbracket - i + 1, "");
-	if (s.find("FILWID") != string::npos)
-		waitFILWID = progdefaults.mbw;
+	if ((s.find("FILWID") != string::npos) ||
+		(s.find("RIGLO") != string::npos) ||
+		(s.find("RIGHI") != string::npos) )
+		wait_after_mode_change = progdefaults.mbw;
+	else
+		wait_after_mode_change = 0;
 }
 
 static void doRIGMODE(std::string s)
@@ -2602,46 +2648,114 @@ static void pRxQueRIGMODE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void pFILWID(std::string& s, size_t& i, size_t endbracket)
+static string sRIGLO;
+
+static void delayedRIGLO(void *)
+{
+	qso_opBW2->value(sRIGLO.c_str());
+	cb_qso_opBW2();
+	wait_after_mode_change = 0.0;
+}
+
+static void pRIGLO(std::string& s, size_t& i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	std::string sWidth = s.substr(i+8, endbracket - i - 8);
-//	qso_opBW->value(sWidth.c_str());
-//	cb_qso_opBW();
-	sFILWID = sWidth;
-	Fl::add_timeout(waitFILWID, delayedFILWID);
+	std::string sLO = s.substr(i+7, endbracket - i - 7);
+	sRIGLO = sLO;
+	if (wait_after_mode_change)
+		Fl::add_timeout(wait_after_mode_change, delayedRIGLO);
+	else {
+		qso_opBW2->value(sLO.c_str());
+		cb_qso_opBW2();
+	}
 	s.replace(i, endbracket - i + 1, "");
 }
 
-static void doFILWID(std::string s)
+static void doRIGLO(std::string s)
 {
-	std::string sWID = s.substr(9, s.length() - 10);
-	qso_opBW->value(sWID.c_str());
-	cb_qso_opBW();
+	std::string sLO = s.substr(8, s.length() - 9);
+	qso_opBW2->value(sLO.c_str());
+	cb_qso_opBW2();
 	que_ok = true;
 }
 
-static void pTxQueFILWID(std::string &s, size_t &i, size_t endbracket)
+static void pTxQueRIGLO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGLO };
 	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
-static void pRxQueFILWID(std::string &s, size_t &i, size_t endbracket)
+static void pRxQueRIGLO(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
-	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doFILWID };
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGLO };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static string sRIGHI;
+
+static void delayedRIGHI(void *)
+{
+	qso_opBW1->value(sRIGHI.c_str());
+	cb_qso_opBW1();
+	wait_after_mode_change = 0.0;
+}
+
+static void pRIGHI(std::string& s, size_t& i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string sHI = s.substr(i+7, endbracket - i - 7);
+	sRIGHI = sHI;
+	if (wait_after_mode_change)
+		Fl::add_timeout(wait_after_mode_change, delayedRIGHI);
+	else {
+		qso_opBW1->value(sHI.c_str());
+		cb_qso_opBW1();
+	}
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doRIGHI(std::string s)
+{
+	std::string sHI = s.substr(8, s.length() - 9);
+	qso_opBW1->value(sHI.c_str());
+	cb_qso_opBW1();
+	que_ok = true;
+}
+
+static void pTxQueRIGHI(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGHI };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQueRIGHI(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doRIGHI };
 	push_rxcmd(cmd);
 	s.replace(i, endbracket - i + 1, "");
 }
@@ -3230,6 +3344,8 @@ static const MTAGS mtags[] = {
 {"<QSYFM>",		pQSYFM},
 {"<RIGMODE:",	pRIGMODE},
 {"<FILWID:",	pFILWID},
+{"<RIGHI:",     pRIGHI},
+{"<RIGLO:",     pRIGLO},
 {"<MAPIT:",		pMAPIT},
 {"<MAPIT>",		pMAPIT},
 {"<REPEAT>",	pREPEAT},
@@ -3255,6 +3371,8 @@ static const MTAGS mtags[] = {
 	{"<!MODEM:",	pTxQueMODEM},
 	{"<!RIGMODE:",	pTxQueRIGMODE},
 	{"<!FILWID:",	pTxQueFILWID},
+    {"<!RIGHI:",    pTxQueRIGHI},
+    {"<!RIGLO:",    pTxQueRIGLO},
 	{"<!TXATTEN:",	pTxQueTXATTEN},
 	{"<!RIGCAT:",	pTxQueRIGCAT},
 // Rx After action
@@ -3264,6 +3382,8 @@ static const MTAGS mtags[] = {
 	{"<@GOHOME>",	pRxQueGOHOME},
 	{"<@RIGMODE:",	pRxQueRIGMODE},
 	{"<@FILWID:",	pRxQueFILWID},
+    {"<@RIGHI:",    pRxQueRIGHI},
+    {"<@RIGLO:",    pRxQueRIGLO},
 	{"<@TXRSID:",	pRxQueTXRSID},
 	{"<@WAIT:",     pRxQueWAIT},
 

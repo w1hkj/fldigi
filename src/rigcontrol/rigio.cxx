@@ -1284,6 +1284,8 @@ void rigCAT_set_qsy(long long f)
 
 bool ModeIsLSB(string s)
 {
+	if (connected_to_flrig) return !xmlrpc_USB();
+
 	list<string>::iterator pM = LSBmodes.begin();
 	while (pM != LSBmodes.end() ) {
 		if (*pM == s)

@@ -359,12 +359,14 @@ int cb_qso_btnBW2()
 
 int cb_qso_opBW1()
 {
+//printf("opBW1 %d:%s\n", qso_opBW1->index(), qso_opBW1->value());
 	set_flrig_bw(qso_opBW2->index(), qso_opBW1->index());
 	return 0;
 }
 
 int cb_qso_opBW2()
 {
+//printf("opBW2 %d:%s\n", qso_opBW2->index(), qso_opBW2->value());
 	set_flrig_bw(qso_opBW2->index(), qso_opBW1->index());
 	return 0;
 }

@@ -150,6 +150,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<QSY+:+/-n.nnn>\tincr/decr xcvr freq"));
 	w->add(_("<RIGMODE:mode>\tvalid xcvr mode"));
 	w->add(_("<FILWID:width>\tvalid xcvr filter width"));
+	w->add(_("<RIGLO:lowcut>\tvalid xcvr low cutoff filter"));
+	w->add(_("<RIGHI:hicut>\tvalid xcvr hi cutoff filter"));
 	w->add(_("<FOCUS>\trig freq has kbd focus"));
 
 	w->add(LINE_SEP);
