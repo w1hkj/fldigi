@@ -304,6 +304,87 @@ cmplx rtty::mixer(double &phase, double f, cmplx in)
 }
 
 
+
+bool rtty::rx(bool bit)
+{
+	static int bitcounter = 0;
+	static unsigned int hardshreg = 1;
+	
+	// Shift contents of the the bit buffer and add the passed bit
+	for (int i = 1; i < symbollen*SYMBLOCK; i++) bit_buf[i-1] = bit_buf[i];
+	bit_buf[symbollen*SYMBLOCK - 1] = bit;
+
+	if (bitcounter++ >= symbollen-1) {
+		bitcounter = 0;
+
+		// debugging:
+		//for (int i = 1; i < symbollen; i++) printf( "%d", bit_buf[i] );
+
+		int softzeros[3] = {0};
+		int  softones[3] = {0};
+		
+		// Count bits in the bit_buf to produce a soft symbol from first 1/3 of symbol
+		for (int i = 0; i < symbollen/3; i++) {
+			if (bit_buf[i]) softones[0]++;
+			else softzeros[0]++;
+		}
+		// Count bits in the bit_buf to produce a soft symbol from middle 1/3 of symbol
+		for (int i = symbollen/3; i < 2 * symbollen/3; i++) {
+			if (bit_buf[i]) softones[1]++;
+			else softzeros[1]++;
+		}
+		// Count bits in the bit_buf to produce a soft symbol from last 1/3 of symbol
+		for (int i = 2 * symbollen/3; i < symbollen; i++) {
+			if (bit_buf[i]) softones[2]++;
+			else softzeros[2]++;
+		}
+		
+		int votescore[3] = {-1}; // Preload with invalid value 
+		int vote = -1; // Preload with invalid value 
+		// Calculate the vote on which 1/3 of the symbol has the greatest difference of ones to zeros
+		for (int i=0; i<3; i++) {
+			votescore[i] = abs(softones[i] - softzeros[i]);
+			if (votescore[i] > vote)
+				vote = i;
+		}
+		
+		int ones = softones[vote];
+		int zeros = softzeros[vote];
+			  
+		int hardbit = -1;
+		int softbit = 128;
+		// Both hard and soft decode here
+		if (ones > zeros) {
+			hardbit = 1;
+			softbit = 255 - zeros * 1.4; // 1.4 is a magic number specific to 40 baud
+		} else {
+			hardbit = 0;
+			softbit = 0 + ones * 1.4; // 1.4 is a magic number specific to 40 baud
+		}
+		
+		// If FEC mode, soft-decode and return
+		if (rtty_baud == 40) {
+			rx_pskr(softbit);
+			return false;
+		}
+		
+		// Implied else Non FEC mode: decode hard-bits to character 
+		int c;
+		hardshreg = (hardshreg << 1) | !!hardbit;
+		if ((hardshreg & 7) == 1) {
+			c = varidec(hardshreg >> 1);
+			put_rx_char(c);
+			hardshreg = 1;
+		}
+		return true;
+	}
+	return true;	
+}
+
+
+
+/*
+
 bool rtty::rx(bool bit)
 {
 	int onescount = 0;
@@ -359,6 +440,8 @@ bool rtty::rx(bool bit)
 	}
 	return true;	
 }
+
+*/
 
 
 void rtty::rx_pskr(unsigned char symbol)
@@ -671,6 +754,9 @@ int rtty::rx_process(const double *buf, int len)
 // detect TTY signal transitions
 // rx(...) returns true if valid TTY bit stream detected
 // either character or idle signal
+			
+			rx(bit);
+/*
 			if ( rx( bit ) ) {
 				dspcnt = symbollen * (nbits + 2);
 				if (!bHighSpeed) Update_syncscope();
@@ -691,6 +777,8 @@ int rtty::rx_process(const double *buf, int len)
 					set_freq(frequency - freqerr);
 			} else
 				if (bitcount) --bitcount;
+				
+*/
 		}
 		if (!bHighSpeed) {
 			if (!bitcount) {
