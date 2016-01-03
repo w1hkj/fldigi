@@ -310,9 +310,9 @@ void update_macro_button(int iMacro, const char *text, const char *name)
 
 	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
 		if (iMacro < NUMMACKEYS) {
-			btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
-			btnMacro[iMacro % NUMMACKEYS]->redraw_label();
-		} else {
+			btnMacro[iMacro]->label( macros.name[iMacro].c_str() );
+			btnMacro[iMacro]->redraw_label();
+		} else if ((iMacro / NUMMACKEYS) == altMacros) {
 			btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->label( macros.name[iMacro].c_str() );
 			btnMacro[(iMacro % NUMMACKEYS) + NUMMACKEYS]->redraw_label();
 		}
@@ -320,6 +320,8 @@ void update_macro_button(int iMacro, const char *text, const char *name)
 		btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
 		btnMacro[iMacro % NUMMACKEYS]->redraw_label();
 	}
+	btnDockMacro[iMacro]->label(macros.name[iMacro].c_str());
+	btnDockMacro[iMacro]->redraw_label();
 
 	macros.changed = true;
 }

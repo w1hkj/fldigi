@@ -88,6 +88,7 @@ extern PWRmeter		*pwrmeter;
 extern Fl_Button 		*btnMacro[];
 extern Fl_Button		*btnAltMacros1;
 extern Fl_Button		*btnAltMacros2;
+extern Fl_Button		*btnDockMacro[];
 extern Fl_Group		*macroFrame1;
 extern Fl_Group		*macroFrame2;
 extern Fl_Input2		*inpFreq;

@@ -1831,10 +1831,14 @@ void macro_cb(Fl_Widget *w, void *v)
 
 	int b = (int)(reinterpret_cast<long> (v));
 
-	if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
-		if (b >= NUMMACKEYS) b += (altMacros - 1) * NUMMACKEYS;
+	if (b & 0x80) { // 4 bar docked macros
+		b &= 0x7F;
 	} else {
-		b += altMacros * NUMMACKEYS;
+		if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) {
+			if (b >= NUMMACKEYS) b += (altMacros - 1) * NUMMACKEYS;
+		} else {
+			b += altMacros * NUMMACKEYS;
+		}
 	}
 
 	int mouse = Fl::event_button();
@@ -5431,7 +5435,7 @@ static void add_docked(dockgroup *dock)
 				((i % 12) == 11) ? w - xpos - 4 : Wbtn, Hbtn, "");
 			btnDockMacro[i]->box(FL_THIN_UP_BOX);
 			btnDockMacro[i]->tooltip(_("Left Click - execute\nRight Click - edit"));
-			btnDockMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i));
+			btnDockMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i | 0x80));
 
 			xpos += Wbtn;
 			if (i == 11 || i == 23 || i == 35) {
