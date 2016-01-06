@@ -3691,155 +3691,6 @@ Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
 
-Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
-
-static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
-  progdefaults.PTTrightchannel = o->value();
-btnPTTrightchannel2->value(o->value());
-if (o->value()) {
-  progdefaults.QSK = false;
-  btnQSK->value(0);
-  progdefaults.PseudoFSK = false;
-  chkPseudoFSK->value(0);
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
-}
-progdefaults.changed = true;
-}
-
-Fl_Group *grpHWPTT=(Fl_Group *)0;
-
-Fl_Round_Button *btnTTYptt=(Fl_Round_Button *)0;
-
-static void cb_btnTTYptt(Fl_Round_Button* o, void*) {
-  btnUsePPortPTT->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = o->value();
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = false;
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_ComboBox *inpTTYdev=(Fl_ComboBox *)0;
-
-static void cb_inpTTYdev(Fl_ComboBox*, void*) {
-  btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnRTSptt=(Fl_Round_Button *)0;
-
-static void cb_btnRTSptt(Fl_Round_Button*, void*) {
-  btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnRTSplusV=(Fl_Round_Button *)0;
-
-static void cb_btnRTSplusV(Fl_Round_Button*, void*) {
-  btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnDTRptt=(Fl_Round_Button *)0;
-
-static void cb_btnDTRptt(Fl_Round_Button*, void*) {
-  btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnDTRplusV=(Fl_Round_Button *)0;
-
-static void cb_btnDTRplusV(Fl_Round_Button*, void*) {
-  btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Button *btnInitHWPTT=(Fl_Button *)0;
-
-static void cb_btnInitHWPTT(Fl_Button* o, void*) {
-  progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnUsePPortPTT=(Fl_Round_Button *)0;
-
-static void cb_btnUsePPortPTT(Fl_Round_Button* o, void*) {
-  btnTTYptt->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = o->value();
-progdefaults.UseUHrouterPTT = false;
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnUseUHrouterPTT=(Fl_Round_Button *)0;
-
-static void cb_btnUseUHrouterPTT(Fl_Round_Button* o, void*) {
-  btnTTYptt->value(false);
-btnUsePPortPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = o->value();
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Round_Button *btnUseGPIOPTT=(Fl_Round_Button *)0;
-
-static void cb_btnUseGPIOPTT(Fl_Round_Button* o, void*) {
-  btnTTYptt->value(false);
-btnUsePPortPTT->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = false;
-progdefaults.UseGPIOPTT = o->value();
-
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Counter2 *inpGPIOPort=(Fl_Counter2 *)0;
-
-static void cb_inpGPIOPort(Fl_Counter2*, void*) {
-  btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;
-}
-
-Fl_Group *grpPTTdelays=(Fl_Group *)0;
-
-Fl_Counter *cntPTT_on_delay=(Fl_Counter *)0;
-
-static void cb_cntPTT_on_delay(Fl_Counter* o, void*) {
-  progdefaults.PTT_on_delay = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter *cntPTT_off_delay=(Fl_Counter *)0;
-
-static void cb_cntPTT_off_delay(Fl_Counter* o, void*) {
-  progdefaults.PTT_off_delay = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
@@ -4142,18 +3993,18 @@ progdefaults.changed = true;
 
 Fl_ListBox *listbox_sideband=(Fl_ListBox *)0;
 
-static void cb_listbox_sideband(Fl_ListBox*, void*) {
+Fl_Check_Button *btnHamlibCMDptt=(Fl_Check_Button *)0;
+
+static void cb_btnHamlibCMDptt(Fl_Check_Button*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();
 }
 
-Fl_Round_Button *btnHamlibCMDptt=(Fl_Round_Button *)0;
+Fl_Check_Button *btnHamlibPTT_ON_DATA=(Fl_Check_Button *)0;
 
-static void cb_btnHamlibCMDptt(Fl_Round_Button*, void*) {
-  btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
+static void cb_btnHamlibPTT_ON_DATA(Fl_Check_Button* o, void*) {
+  progdefaults.hamlib_ptt_on_data = o->value();
 }
 
 Fl_Check_Button *btnHamlibDTRplus=(Fl_Check_Button *)0;
@@ -4205,6 +4056,155 @@ btnInitHAMLIB->redraw_label();
 #if USE_HAMLIB
 hamlib_restore_defaults();
 #endif
+}
+
+Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
+
+static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
+  progdefaults.PTTrightchannel = o->value();
+btnPTTrightchannel2->value(o->value());
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+}
+progdefaults.changed = true;
+}
+
+Fl_Group *grpHWPTT=(Fl_Group *)0;
+
+Fl_Round_Button *btnTTYptt=(Fl_Round_Button *)0;
+
+static void cb_btnTTYptt(Fl_Round_Button* o, void*) {
+  btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = o->value();
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_ComboBox *inpTTYdev=(Fl_ComboBox *)0;
+
+static void cb_inpTTYdev(Fl_ComboBox*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnRTSptt=(Fl_Round_Button *)0;
+
+static void cb_btnRTSptt(Fl_Round_Button*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnRTSplusV=(Fl_Round_Button *)0;
+
+static void cb_btnRTSplusV(Fl_Round_Button*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnDTRptt=(Fl_Round_Button *)0;
+
+static void cb_btnDTRptt(Fl_Round_Button*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnDTRplusV=(Fl_Round_Button *)0;
+
+static void cb_btnDTRplusV(Fl_Round_Button*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnInitHWPTT=(Fl_Button *)0;
+
+static void cb_btnInitHWPTT(Fl_Button* o, void*) {
+  progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnUsePPortPTT=(Fl_Round_Button *)0;
+
+static void cb_btnUsePPortPTT(Fl_Round_Button* o, void*) {
+  btnTTYptt->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = o->value();
+progdefaults.UseUHrouterPTT = false;
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnUseUHrouterPTT=(Fl_Round_Button *)0;
+
+static void cb_btnUseUHrouterPTT(Fl_Round_Button* o, void*) {
+  btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = o->value();
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Round_Button *btnUseGPIOPTT=(Fl_Round_Button *)0;
+
+static void cb_btnUseGPIOPTT(Fl_Round_Button* o, void*) {
+  btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+progdefaults.UseGPIOPTT = o->value();
+
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Counter2 *inpGPIOPort=(Fl_Counter2 *)0;
+
+static void cb_inpGPIOPort(Fl_Counter2*, void*) {
+  btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Group *grpPTTdelays=(Fl_Group *)0;
+
+Fl_Counter *cntPTT_on_delay=(Fl_Counter *)0;
+
+static void cb_cntPTT_on_delay(Fl_Counter* o, void*) {
+  progdefaults.PTT_on_delay = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPTT_off_delay=(Fl_Counter *)0;
+
+static void cb_cntPTT_off_delay(Fl_Counter* o, void*) {
+  progdefaults.PTT_off_delay = o->value();
+progdefaults.changed = true;
 }
 
 Fl_Group *tabXMLRPC=(Fl_Group *)0;
@@ -9388,128 +9388,8 @@ le Earth)"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 23, 600, 357);
           tabsRig->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Hardware PTT"));
-            { Fl_Group* o = new Fl_Group(55, 57, 490, 38);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(74, 66, 250, 20, _("PTT tone on right audio channel "));
-                btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
-                btnPTTrightchannel->down_box(FL_DOWN_BOX);
-                btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
-                o->value(progdefaults.PTTrightchannel);
-              } // Fl_Check_Button* btnPTTrightchannel
-              o->end();
-            } // Fl_Group* o
-            { grpHWPTT = new Fl_Group(55, 97, 490, 184, _("h/w ptt device-pin"));
-              grpHWPTT->box(FL_ENGRAVED_FRAME);
-              grpHWPTT->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { btnTTYptt = new Fl_Round_Button(74, 121, 220, 20, _("Use separate serial port PTT"));
-                btnTTYptt->down_box(FL_DOWN_BOX);
-                btnTTYptt->selection_color((Fl_Color)1);
-                btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
-              } // Fl_Round_Button* btnTTYptt
-              { Fl_ComboBox* o = inpTTYdev = new Fl_ComboBox(128, 151, 160, 22, _("Device:"));
-                inpTTYdev->box(FL_DOWN_BOX);
-                inpTTYdev->color(FL_BACKGROUND2_COLOR);
-                inpTTYdev->selection_color(FL_BACKGROUND_COLOR);
-                inpTTYdev->labeltype(FL_NORMAL_LABEL);
-                inpTTYdev->labelfont(0);
-                inpTTYdev->labelsize(14);
-                inpTTYdev->labelcolor(FL_FOREGROUND_COLOR);
-                inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
-                inpTTYdev->align(Fl_Align(FL_ALIGN_LEFT));
-                inpTTYdev->when(FL_WHEN_RELEASE);
-                o->labelsize(FL_NORMAL_SIZE);
-                inpTTYdev->end();
-              } // Fl_ComboBox* inpTTYdev
-              { btnRTSptt = new Fl_Round_Button(310, 120, 85, 20, _("Use RTS"));
-                btnRTSptt->tooltip(_("RTS is PTT signal line"));
-                btnRTSptt->down_box(FL_DOWN_BOX);
-                btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
-              } // Fl_Round_Button* btnRTSptt
-              { btnRTSplusV = new Fl_Round_Button(407, 120, 100, 20, _("RTS = +V"));
-                btnRTSplusV->tooltip(_("Initial voltage on RTS"));
-                btnRTSplusV->down_box(FL_DOWN_BOX);
-                btnRTSplusV->callback((Fl_Callback*)cb_btnRTSplusV);
-              } // Fl_Round_Button* btnRTSplusV
-              { btnDTRptt = new Fl_Round_Button(310, 150, 85, 20, _("Use DTR"));
-                btnDTRptt->tooltip(_("DTR is PTT signal line"));
-                btnDTRptt->down_box(FL_DOWN_BOX);
-                btnDTRptt->callback((Fl_Callback*)cb_btnDTRptt);
-              } // Fl_Round_Button* btnDTRptt
-              { btnDTRplusV = new Fl_Round_Button(407, 150, 100, 20, _("DTR = +V"));
-                btnDTRplusV->tooltip(_("Initial voltage on DTR"));
-                btnDTRplusV->down_box(FL_DOWN_BOX);
-                btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
-              } // Fl_Round_Button* btnDTRplusV
-              { btnInitHWPTT = new Fl_Button(411, 217, 113, 24, _("Initialize"));
-                btnInitHWPTT->tooltip(_("Initialize the H/W PTT interface"));
-                btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
-              } // Fl_Button* btnInitHWPTT
-              { btnUsePPortPTT = new Fl_Round_Button(74, 191, 170, 20, _("Use parallel port PTT"));
-                btnUsePPortPTT->down_box(FL_DOWN_BOX);
-                btnUsePPortPTT->selection_color((Fl_Color)1);
-                btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
-              } // Fl_Round_Button* btnUsePPortPTT
-              { btnUseUHrouterPTT = new Fl_Round_Button(74, 221, 170, 20, _("Use uHRouter PTT"));
-                btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
-                btnUseUHrouterPTT->selection_color((Fl_Color)1);
-                btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
-              } // Fl_Round_Button* btnUseUHrouterPTT
-              { btnUseGPIOPTT = new Fl_Round_Button(74, 252, 170, 20, _("Use GPIO PTT"));
-                btnUseGPIOPTT->down_box(FL_DOWN_BOX);
-                btnUseGPIOPTT->selection_color((Fl_Color)1);
-                btnUseGPIOPTT->callback((Fl_Callback*)cb_btnUseGPIOPTT);
-              } // Fl_Round_Button* btnUseGPIOPTT
-              { inpGPIOPort = new Fl_Counter2(286, 252, 65, 20, _("GPIO:"));
-                inpGPIOPort->tooltip(_("Select GPIO port"));
-                inpGPIOPort->type(1);
-                inpGPIOPort->box(FL_UP_BOX);
-                inpGPIOPort->color(FL_BACKGROUND_COLOR);
-                inpGPIOPort->selection_color(FL_INACTIVE_COLOR);
-                inpGPIOPort->labeltype(FL_NORMAL_LABEL);
-                inpGPIOPort->labelfont(0);
-                inpGPIOPort->labelsize(14);
-                inpGPIOPort->labelcolor(FL_FOREGROUND_COLOR);
-                inpGPIOPort->minimum(0);
-                inpGPIOPort->maximum(31);
-                inpGPIOPort->step(1);
-                inpGPIOPort->value(17);
-                inpGPIOPort->callback((Fl_Callback*)cb_inpGPIOPort);
-                inpGPIOPort->align(Fl_Align(FL_ALIGN_LEFT));
-                inpGPIOPort->when(FL_WHEN_CHANGED);
-              } // Fl_Counter2* inpGPIOPort
-              grpHWPTT->end();
-            } // Fl_Group* grpHWPTT
-            { grpPTTdelays = new Fl_Group(55, 284, 490, 91, _("PTT delays valid for all CAT/PTT types"));
-              grpPTTdelays->box(FL_ENGRAVED_FRAME);
-              grpPTTdelays->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Counter* o = cntPTT_on_delay = new Fl_Counter(74, 311, 100, 21, _("Start of transmit PTT delay"));
-                cntPTT_on_delay->tooltip(_("Delay NN msec before starting audio"));
-                cntPTT_on_delay->minimum(0);
-                cntPTT_on_delay->maximum(500);
-                cntPTT_on_delay->step(1);
-                cntPTT_on_delay->callback((Fl_Callback*)cb_cntPTT_on_delay);
-                cntPTT_on_delay->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.PTT_on_delay);
-                o->lstep(10);
-              } // Fl_Counter* cntPTT_on_delay
-              { Fl_Counter* o = cntPTT_off_delay = new Fl_Counter(74, 341, 100, 21, _("PTT end of transmit delay"));
-                cntPTT_off_delay->tooltip(_("Delay NN msec before releasing PTT"));
-                cntPTT_off_delay->minimum(0);
-                cntPTT_off_delay->maximum(500);
-                cntPTT_off_delay->step(1);
-                cntPTT_off_delay->callback((Fl_Callback*)cb_cntPTT_off_delay);
-                cntPTT_off_delay->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.PTT_off_delay);
-                o->lstep(10);
-              } // Fl_Counter* cntPTT_off_delay
-              grpPTTdelays->end();
-            } // Fl_Group* grpPTTdelays
-            o->end();
-          } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -9894,7 +9774,7 @@ le Earth)"));
                 btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
                 btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
               } // Fl_Button* btnInitHAMLIB
-              { Fl_ListBox* o = listbox_sideband = new Fl_ListBox(431, 222, 144, 22, _("Sideband:"));
+              { Fl_ListBox* o = listbox_sideband = new Fl_ListBox(431, 210, 144, 22, _("Sideband:"));
                 listbox_sideband->box(FL_DOWN_BOX);
                 listbox_sideband->color(FL_BACKGROUND2_COLOR);
                 listbox_sideband->selection_color(FL_BACKGROUND_COLOR);
@@ -9902,39 +9782,43 @@ le Earth)"));
                 listbox_sideband->labelfont(0);
                 listbox_sideband->labelsize(14);
                 listbox_sideband->labelcolor(FL_FOREGROUND_COLOR);
-                listbox_sideband->callback((Fl_Callback*)cb_listbox_sideband);
-                listbox_sideband->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                listbox_sideband->align(Fl_Align(FL_ALIGN_LEFT));
                 listbox_sideband->when(FL_WHEN_RELEASE);
                 o->labelsize(FL_NORMAL_SIZE);
                 listbox_sideband->end();
               } // Fl_ListBox* listbox_sideband
-              { Fl_Round_Button* o = btnHamlibCMDptt = new Fl_Round_Button(55, 223, 200, 20, _("PTT via Hamlib command"));
-                btnHamlibCMDptt->tooltip(_("PTT is a hamlib command"));
+              { Fl_Check_Button* o = btnHamlibCMDptt = new Fl_Check_Button(55, 211, 215, 20, _("PTT via Hamlib command"));
+                btnHamlibCMDptt->tooltip(_("PTT using hamlib command"));
                 btnHamlibCMDptt->down_box(FL_DOWN_BOX);
-                btnHamlibCMDptt->selection_color((Fl_Color)1);
                 btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
                 o->value(progdefaults.HamlibCMDptt);
-              } // Fl_Round_Button* btnHamlibCMDptt
-              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(55, 248, 90, 20, _("DTR +12"));
+              } // Fl_Check_Button* btnHamlibCMDptt
+              { Fl_Check_Button* o = btnHamlibPTT_ON_DATA = new Fl_Check_Button(55, 234, 215, 20, _("Audio on Auxiliary Port"));
+                btnHamlibPTT_ON_DATA->tooltip(_("PTT enables auxiliary audio source"));
+                btnHamlibPTT_ON_DATA->down_box(FL_DOWN_BOX);
+                btnHamlibPTT_ON_DATA->callback((Fl_Callback*)cb_btnHamlibPTT_ON_DATA);
+                o->value(progdefaults.hamlib_ptt_on_data);
+              } // Fl_Check_Button* btnHamlibPTT_ON_DATA
+              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(55, 257, 90, 20, _("DTR +12"));
                 btnHamlibDTRplus->tooltip(_("Initial state of DTR"));
                 btnHamlibDTRplus->down_box(FL_DOWN_BOX);
                 btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
                 o->value(progdefaults.HamlibDTRplus);
               } // Fl_Check_Button* btnHamlibDTRplus
-              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(345, 248, 85, 20, _("RTS +12"));
+              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(345, 257, 85, 20, _("RTS +12"));
                 chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
                 chkHamlibRTSplus->down_box(FL_DOWN_BOX);
                 chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
                 o->value(progdefaults.HamlibRTSplus);
               } // Fl_Check_Button* chkHamlibRTSplus
-              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(55, 276, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(55, 280, 170, 20, _("RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
                 o->value(progdefaults.HamlibRTSCTSflow);
                 if (o->value()) chkHamlibRTSplus->deactivate();
               } // Fl_Check_Button* chkHamlibRTSCTSflow
-              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(345, 276, 185, 20, _("XON/XOFF flow control"));
+              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(345, 280, 185, 20, _("XON/XOFF flow control"));
                 chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
                 chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
@@ -9950,6 +9834,126 @@ le Earth)"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Hardware PTT"));
+            o->hide();
+            { Fl_Group* o = new Fl_Group(55, 57, 490, 38);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnPTTrightchannel = new Fl_Check_Button(74, 66, 250, 20, _("PTT tone on right audio channel "));
+                btnPTTrightchannel->tooltip(_("Can be used in lieu of or in addition to other PTT types"));
+                btnPTTrightchannel->down_box(FL_DOWN_BOX);
+                btnPTTrightchannel->callback((Fl_Callback*)cb_btnPTTrightchannel);
+                o->value(progdefaults.PTTrightchannel);
+              } // Fl_Check_Button* btnPTTrightchannel
+              o->end();
+            } // Fl_Group* o
+            { grpHWPTT = new Fl_Group(55, 97, 490, 184, _("h/w ptt device-pin"));
+              grpHWPTT->box(FL_ENGRAVED_FRAME);
+              grpHWPTT->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { btnTTYptt = new Fl_Round_Button(74, 121, 220, 20, _("Use separate serial port PTT"));
+                btnTTYptt->down_box(FL_DOWN_BOX);
+                btnTTYptt->selection_color((Fl_Color)1);
+                btnTTYptt->callback((Fl_Callback*)cb_btnTTYptt);
+              } // Fl_Round_Button* btnTTYptt
+              { Fl_ComboBox* o = inpTTYdev = new Fl_ComboBox(128, 151, 160, 22, _("Device:"));
+                inpTTYdev->box(FL_DOWN_BOX);
+                inpTTYdev->color(FL_BACKGROUND2_COLOR);
+                inpTTYdev->selection_color(FL_BACKGROUND_COLOR);
+                inpTTYdev->labeltype(FL_NORMAL_LABEL);
+                inpTTYdev->labelfont(0);
+                inpTTYdev->labelsize(14);
+                inpTTYdev->labelcolor(FL_FOREGROUND_COLOR);
+                inpTTYdev->callback((Fl_Callback*)cb_inpTTYdev);
+                inpTTYdev->align(Fl_Align(FL_ALIGN_LEFT));
+                inpTTYdev->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                inpTTYdev->end();
+              } // Fl_ComboBox* inpTTYdev
+              { btnRTSptt = new Fl_Round_Button(310, 120, 85, 20, _("Use RTS"));
+                btnRTSptt->tooltip(_("RTS is PTT signal line"));
+                btnRTSptt->down_box(FL_DOWN_BOX);
+                btnRTSptt->callback((Fl_Callback*)cb_btnRTSptt);
+              } // Fl_Round_Button* btnRTSptt
+              { btnRTSplusV = new Fl_Round_Button(407, 120, 100, 20, _("RTS = +V"));
+                btnRTSplusV->tooltip(_("Initial voltage on RTS"));
+                btnRTSplusV->down_box(FL_DOWN_BOX);
+                btnRTSplusV->callback((Fl_Callback*)cb_btnRTSplusV);
+              } // Fl_Round_Button* btnRTSplusV
+              { btnDTRptt = new Fl_Round_Button(310, 150, 85, 20, _("Use DTR"));
+                btnDTRptt->tooltip(_("DTR is PTT signal line"));
+                btnDTRptt->down_box(FL_DOWN_BOX);
+                btnDTRptt->callback((Fl_Callback*)cb_btnDTRptt);
+              } // Fl_Round_Button* btnDTRptt
+              { btnDTRplusV = new Fl_Round_Button(407, 150, 100, 20, _("DTR = +V"));
+                btnDTRplusV->tooltip(_("Initial voltage on DTR"));
+                btnDTRplusV->down_box(FL_DOWN_BOX);
+                btnDTRplusV->callback((Fl_Callback*)cb_btnDTRplusV);
+              } // Fl_Round_Button* btnDTRplusV
+              { btnInitHWPTT = new Fl_Button(411, 217, 113, 24, _("Initialize"));
+                btnInitHWPTT->tooltip(_("Initialize the H/W PTT interface"));
+                btnInitHWPTT->callback((Fl_Callback*)cb_btnInitHWPTT);
+              } // Fl_Button* btnInitHWPTT
+              { btnUsePPortPTT = new Fl_Round_Button(74, 191, 170, 20, _("Use parallel port PTT"));
+                btnUsePPortPTT->down_box(FL_DOWN_BOX);
+                btnUsePPortPTT->selection_color((Fl_Color)1);
+                btnUsePPortPTT->callback((Fl_Callback*)cb_btnUsePPortPTT);
+              } // Fl_Round_Button* btnUsePPortPTT
+              { btnUseUHrouterPTT = new Fl_Round_Button(74, 221, 170, 20, _("Use uHRouter PTT"));
+                btnUseUHrouterPTT->down_box(FL_DOWN_BOX);
+                btnUseUHrouterPTT->selection_color((Fl_Color)1);
+                btnUseUHrouterPTT->callback((Fl_Callback*)cb_btnUseUHrouterPTT);
+              } // Fl_Round_Button* btnUseUHrouterPTT
+              { btnUseGPIOPTT = new Fl_Round_Button(74, 252, 170, 20, _("Use GPIO PTT"));
+                btnUseGPIOPTT->down_box(FL_DOWN_BOX);
+                btnUseGPIOPTT->selection_color((Fl_Color)1);
+                btnUseGPIOPTT->callback((Fl_Callback*)cb_btnUseGPIOPTT);
+              } // Fl_Round_Button* btnUseGPIOPTT
+              { inpGPIOPort = new Fl_Counter2(286, 252, 65, 20, _("GPIO:"));
+                inpGPIOPort->tooltip(_("Select GPIO port"));
+                inpGPIOPort->type(1);
+                inpGPIOPort->box(FL_UP_BOX);
+                inpGPIOPort->color(FL_BACKGROUND_COLOR);
+                inpGPIOPort->selection_color(FL_INACTIVE_COLOR);
+                inpGPIOPort->labeltype(FL_NORMAL_LABEL);
+                inpGPIOPort->labelfont(0);
+                inpGPIOPort->labelsize(14);
+                inpGPIOPort->labelcolor(FL_FOREGROUND_COLOR);
+                inpGPIOPort->minimum(0);
+                inpGPIOPort->maximum(31);
+                inpGPIOPort->step(1);
+                inpGPIOPort->value(17);
+                inpGPIOPort->callback((Fl_Callback*)cb_inpGPIOPort);
+                inpGPIOPort->align(Fl_Align(FL_ALIGN_LEFT));
+                inpGPIOPort->when(FL_WHEN_CHANGED);
+              } // Fl_Counter2* inpGPIOPort
+              grpHWPTT->end();
+            } // Fl_Group* grpHWPTT
+            { grpPTTdelays = new Fl_Group(55, 284, 490, 91, _("PTT delays valid for all CAT/PTT types"));
+              grpPTTdelays->box(FL_ENGRAVED_FRAME);
+              grpPTTdelays->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Counter* o = cntPTT_on_delay = new Fl_Counter(74, 311, 100, 21, _("Start of transmit PTT delay"));
+                cntPTT_on_delay->tooltip(_("Delay NN msec before starting audio"));
+                cntPTT_on_delay->minimum(0);
+                cntPTT_on_delay->maximum(500);
+                cntPTT_on_delay->step(1);
+                cntPTT_on_delay->callback((Fl_Callback*)cb_cntPTT_on_delay);
+                cntPTT_on_delay->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.PTT_on_delay);
+                o->lstep(10);
+              } // Fl_Counter* cntPTT_on_delay
+              { Fl_Counter* o = cntPTT_off_delay = new Fl_Counter(74, 341, 100, 21, _("PTT end of transmit delay"));
+                cntPTT_off_delay->tooltip(_("Delay NN msec before releasing PTT"));
+                cntPTT_off_delay->minimum(0);
+                cntPTT_off_delay->maximum(500);
+                cntPTT_off_delay->step(1);
+                cntPTT_off_delay->callback((Fl_Callback*)cb_cntPTT_off_delay);
+                cntPTT_off_delay->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.PTT_off_delay);
+                o->lstep(10);
+              } // Fl_Counter* cntPTT_off_delay
+              grpPTTdelays->end();
+            } // Fl_Group* grpPTTdelays
+            o->end();
+          } // Fl_Group* o
           { tabXMLRPC = new Fl_Group(0, 50, 600, 330, _("XML-RPC"));
             tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(55, 61, 490, 160);

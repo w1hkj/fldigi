@@ -387,7 +387,9 @@ void hamlib_set_ptt(int ptt)
 		return;
 	pthread_mutex_lock(&hamlib_mutex);
 		try {
-			xcvr->setPTT(ptt ? RIG_PTT_ON : RIG_PTT_OFF);
+			xcvr->setPTT( ptt ? 
+				(progdefaults.hamlib_ptt_on_data ? RIG_PTT_ON_DATA : RIG_PTT_ON_MIC) :
+				RIG_PTT_OFF );
 			hamlib_bypass = ptt ? true : false;
 		}
 		catch (const RigException& Ex) {

@@ -4609,166 +4609,8 @@ progdefaults.changed = true;}
           xywh {0 23 600 357} selection_color 50
         } {
           Fl_Group {} {
-            label {Hardware PTT} open
-            xywh {0 50 600 330}
-          } {
-            Fl_Group {} {open
-              xywh {55 57 490 38} box ENGRAVED_FRAME
-            } {
-              Fl_Check_Button btnPTTrightchannel {
-                label {PTT tone on right audio channel }
-                callback {progdefaults.PTTrightchannel = o->value();
-btnPTTrightchannel2->value(o->value());
-if (o->value()) {
-  progdefaults.QSK = false;
-  btnQSK->value(0);
-  progdefaults.PseudoFSK = false;
-  chkPseudoFSK->value(0);
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
-}
-progdefaults.changed = true;}
-                tooltip {Can be used in lieu of or in addition to other PTT types} xywh {74 66 250 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.PTTrightchannel);}
-              }
-            }
-            Fl_Group grpHWPTT {
-              label {h/w ptt device-pin} open
-              xywh {55 97 490 184} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Round_Button btnTTYptt {
-                label {Use separate serial port PTT}
-                callback {btnUsePPortPTT->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = o->value();
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = false;
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                xywh {74 121 220 20} down_box DOWN_BOX selection_color 1
-              }
-              Fl_Group inpTTYdev {
-                label {Device:}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;} open
-                xywh {128 151 160 22} box DOWN_BOX color 7 align 4
-                code0 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_ComboBox
-              } {}
-              Fl_Round_Button btnRTSptt {
-                label {Use RTS}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {RTS is PTT signal line} xywh {310 120 85 20} down_box DOWN_BOX
-              }
-              Fl_Round_Button btnRTSplusV {
-                label {RTS = +V}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {Initial voltage on RTS} xywh {407 120 100 20} down_box DOWN_BOX
-              }
-              Fl_Round_Button btnDTRptt {
-                label {Use DTR}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {DTR is PTT signal line} xywh {310 150 85 20} down_box DOWN_BOX
-              }
-              Fl_Round_Button btnDTRplusV {
-                label {DTR = +V}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {Initial voltage on DTR} xywh {407 150 100 20} down_box DOWN_BOX
-              }
-              Fl_Button btnInitHWPTT {
-                label Initialize
-                callback {progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;}
-                tooltip {Initialize the H/W PTT interface} xywh {411 217 113 24}
-              }
-              Fl_Round_Button btnUsePPortPTT {
-                label {Use parallel port PTT}
-                callback {btnTTYptt->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = o->value();
-progdefaults.UseUHrouterPTT = false;
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                xywh {74 191 170 20} down_box DOWN_BOX selection_color 1
-              }
-              Fl_Round_Button btnUseUHrouterPTT {
-                label {Use uHRouter PTT}
-                callback {btnTTYptt->value(false);
-btnUsePPortPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = o->value();
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                xywh {74 221 170 20} down_box DOWN_BOX selection_color 1
-              }
-              Fl_Round_Button btnUseGPIOPTT {
-                label {Use GPIO PTT}
-                callback {btnTTYptt->value(false);
-btnUsePPortPTT->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = false;
-progdefaults.UseGPIOPTT = o->value();
-
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                xywh {74 252 170 20} down_box DOWN_BOX selection_color 1
-              }
-              Fl_Counter inpGPIOPort {
-                label {GPIO:}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {Select GPIO port} xywh {286 252 65 20} type Simple align 4 minimum 0 maximum 31 step 1 value 17
-                class Fl_Counter2
-              }
-            }
-            Fl_Group grpPTTdelays {
-              label {PTT delays valid for all CAT/PTT types}
-              xywh {55 284 490 91} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Counter cntPTT_on_delay {
-                label {Start of transmit PTT delay}
-                callback {progdefaults.PTT_on_delay = o->value();
-progdefaults.changed = true;}
-                tooltip {Delay NN msec before starting audio} xywh {74 311 100 21} align 8 minimum 0 maximum 500 step 1
-                code0 {o->value(progdefaults.PTT_on_delay);}
-                code1 {o->lstep(10);}
-              }
-              Fl_Counter cntPTT_off_delay {
-                label {PTT end of transmit delay}
-                callback {progdefaults.PTT_off_delay = o->value();
-progdefaults.changed = true;}
-                tooltip {Delay NN msec before releasing PTT} xywh {74 341 100 21} align 8 minimum 0 maximum 500 step 1
-                code0 {o->value(progdefaults.PTT_off_delay);}
-                code1 {o->lstep(10);}
-              }
-            }
-          }
-          Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 600 330} hide
+            tooltip {Rig Control using xml spec file} xywh {0 50 600 330}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -5110,28 +4952,31 @@ progdefaults.changed = true;}
                 tooltip {Initialize hamlib interface} xywh {462 330 113 24}
               }
               Fl_Group listbox_sideband {
-                label {Sideband:}
-                callback {btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();} open
-                xywh {431 222 144 22} box DOWN_BOX color 7 align 5
+                label {Sideband:} open
+                xywh {431 210 144 22} box DOWN_BOX color 7 align 4
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
-              Fl_Round_Button btnHamlibCMDptt {
+              Fl_Check_Button btnHamlibCMDptt {
                 label {PTT via Hamlib command}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {PTT is a hamlib command} xywh {55 223 200 20} down_box DOWN_BOX selection_color 1
+                tooltip {PTT using hamlib command} xywh {55 211 215 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibCMDptt);}
+              }
+              Fl_Check_Button btnHamlibPTT_ON_DATA {
+                label {Audio on Auxiliary Port}
+                callback {progdefaults.hamlib_ptt_on_data = o->value();}
+                tooltip {PTT enables auxiliary audio source} xywh {55 234 215 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.hamlib_ptt_on_data);}
               }
               Fl_Check_Button btnHamlibDTRplus {
                 label {DTR +12}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Initial state of DTR} xywh {55 248 90 20} down_box DOWN_BOX
+                tooltip {Initial state of DTR} xywh {55 257 90 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibDTRplus);}
               }
               Fl_Check_Button chkHamlibRTSplus {
@@ -5141,7 +4986,7 @@ btnRevertHAMLIB->activate();}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Initial state of RTS} xywh {345 248 85 20} down_box DOWN_BOX
+                tooltip {Initial state of RTS} xywh {345 257 85 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSplus);}
               }
               Fl_Check_Button chkHamlibRTSCTSflow {
@@ -5154,7 +4999,7 @@ btnRevertHAMLIB->activate();}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Rig requires RTS/CTS flow control} xywh {55 276 170 20} down_box DOWN_BOX
+                tooltip {Rig requires RTS/CTS flow control} xywh {55 280 170 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibRTSCTSflow);}
                 code1 {if (o->value()) chkHamlibRTSplus->deactivate();}
               }
@@ -5165,7 +5010,7 @@ btnRevertHAMLIB->activate();}
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
 btnRevertHAMLIB->activate();}
-                tooltip {Rig requires Xon/Xoff flow control} xywh {345 276 185 20} down_box DOWN_BOX
+                tooltip {Rig requires Xon/Xoff flow control} xywh {345 280 185 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibXONXOFFflow);}
               }
               Fl_Button btnRevertHAMLIB {
@@ -5176,6 +5021,164 @@ btnInitHAMLIB->redraw_label();
 hamlib_restore_defaults();
 \#endif}
                 tooltip {Reset hamlib interface} xywh {381 299 113 24} hide deactivate
+              }
+            }
+          }
+          Fl_Group {} {
+            label {Hardware PTT} open
+            xywh {0 50 600 330} hide
+          } {
+            Fl_Group {} {open
+              xywh {55 57 490 38} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btnPTTrightchannel {
+                label {PTT tone on right audio channel }
+                callback {progdefaults.PTTrightchannel = o->value();
+btnPTTrightchannel2->value(o->value());
+if (o->value()) {
+  progdefaults.QSK = false;
+  btnQSK->value(0);
+  progdefaults.PseudoFSK = false;
+  chkPseudoFSK->value(0);
+  progdefaults.sig_on_right_channel = false;
+  chkAudioStereoOut->value(0);
+}
+progdefaults.changed = true;}
+                tooltip {Can be used in lieu of or in addition to other PTT types} xywh {74 66 250 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.PTTrightchannel);}
+              }
+            }
+            Fl_Group grpHWPTT {
+              label {h/w ptt device-pin} open
+              xywh {55 97 490 184} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Round_Button btnTTYptt {
+                label {Use separate serial port PTT}
+                callback {btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = o->value();
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                xywh {74 121 220 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Group inpTTYdev {
+                label {Device:}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;} open
+                xywh {128 151 160 22} box DOWN_BOX color 7 align 4
+                code0 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_ComboBox
+              } {}
+              Fl_Round_Button btnRTSptt {
+                label {Use RTS}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {RTS is PTT signal line} xywh {310 120 85 20} down_box DOWN_BOX
+              }
+              Fl_Round_Button btnRTSplusV {
+                label {RTS = +V}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {Initial voltage on RTS} xywh {407 120 100 20} down_box DOWN_BOX
+              }
+              Fl_Round_Button btnDTRptt {
+                label {Use DTR}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {DTR is PTT signal line} xywh {310 150 85 20} down_box DOWN_BOX
+              }
+              Fl_Round_Button btnDTRplusV {
+                label {DTR = +V}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {Initial voltage on DTR} xywh {407 150 100 20} down_box DOWN_BOX
+              }
+              Fl_Button btnInitHWPTT {
+                label Initialize
+                callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;}
+                tooltip {Initialize the H/W PTT interface} xywh {411 217 113 24}
+              }
+              Fl_Round_Button btnUsePPortPTT {
+                label {Use parallel port PTT}
+                callback {btnTTYptt->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = o->value();
+progdefaults.UseUHrouterPTT = false;
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                xywh {74 191 170 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Round_Button btnUseUHrouterPTT {
+                label {Use uHRouter PTT}
+                callback {btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = o->value();
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                xywh {74 221 170 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Round_Button btnUseGPIOPTT {
+                label {Use GPIO PTT}
+                callback {btnTTYptt->value(false);
+btnUsePPortPTT->value(false);
+btnUseUHrouterPTT->value(false);
+
+progdefaults.TTYptt = false;
+progdefaults.UsePPortPTT = false;
+progdefaults.UseUHrouterPTT = false;
+progdefaults.UseGPIOPTT = o->value();
+
+btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                xywh {74 252 170 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Counter inpGPIOPort {
+                label {GPIO:}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {Select GPIO port} xywh {286 252 65 20} type Simple align 4 minimum 0 maximum 31 step 1 value 17
+                class Fl_Counter2
+              }
+            }
+            Fl_Group grpPTTdelays {
+              label {PTT delays valid for all CAT/PTT types}
+              xywh {55 284 490 91} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Counter cntPTT_on_delay {
+                label {Start of transmit PTT delay}
+                callback {progdefaults.PTT_on_delay = o->value();
+progdefaults.changed = true;}
+                tooltip {Delay NN msec before starting audio} xywh {74 311 100 21} align 8 minimum 0 maximum 500 step 1
+                code0 {o->value(progdefaults.PTT_on_delay);}
+                code1 {o->lstep(10);}
+              }
+              Fl_Counter cntPTT_off_delay {
+                label {PTT end of transmit delay}
+                callback {progdefaults.PTT_off_delay = o->value();
+progdefaults.changed = true;}
+                tooltip {Delay NN msec before releasing PTT} xywh {74 341 100 21} align 8 minimum 0 maximum 500 step 1
+                code0 {o->value(progdefaults.PTT_off_delay);}
+                code1 {o->lstep(10);}
               }
             }
           }

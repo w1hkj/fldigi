@@ -992,6 +992,9 @@
         ELEM_(int, HamRigStopbits, "HAMRIGSTOPBITS",                                    \
               "Hamlib stopbits <1/2>.",                                                 \
               2)   /* 600 baud */                                                       \
+        ELEM_(int, hamlib_ptt_on_data, "HAMLIBPTTONDATA",                               \
+              "Hamlib PTT for xmt audio on data port",                                  \
+              1)                                                                        \
         ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME",                            \
               "RigCAT XML file name",                                                   \
               "")                                                                       \
