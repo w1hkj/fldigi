@@ -89,10 +89,25 @@ fldigi text widget supports some short cuts to make your life easier:
 
   <li>Alt/Meta-R will perform the same function as the Pause/Break key</li>
 
-  <li>Tab moves the cursor to the end of the transmitted text (which
-  also pauses tx). A tab press at that position moves the cursor to the
-  character following the last one transmitted. CW operation is slightly
-  different, see the help for \ref cw_page .</li>
+  <li>Tab moves the text insert cursor to the end of the transmitted text 
+  (which also pauses tx).   Characters entered from the keyboard will be 
+  transmitted as entered until the tx text entry point is returned to the 
+  end of the tx buffer.  A tab press at that position returns the cursor 
+  to the end of the text buffer. Transmitted text and text pending transmit 
+  are color coded red and black respectively (default colors):
+  
+  <center>
+  \image html TxCursor.png "Tx Cursor Position"
+  \image latex TxCursor.png "Tx Cursor Position" width=2.5in
+  </center>
+  
+  Be aware that fldigi will NEVER transmit past the text insert cursor!  You
+  may be caught by that behavior if you are modifying the buffer and transmitting
+  at the same time.  Or you may have accidentally mouse clicked in the middle of 
+  the Tx text with the result that fldigi suddenly stops transmitting.  In either
+  case the Tab key will return the text insert cursor to the end of the tx buffer.
+  
+  CW operation is slightly different, see the help for \ref cw_page .</li>
 
   <li>Extended UTF-8 characters can be entered into all text entry controls
   using Ctrl + three digits.  These characters can also be entered using
