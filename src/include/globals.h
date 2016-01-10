@@ -275,7 +275,7 @@ std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
 std::istream& operator>>(std::istream& s, qrg_mode_t& m);
 
 #include <bitset>
-class mode_set_t : public std::bitset<NUM_RXTX_MODES> { };
+class mode_set_t : public std::bitset<NUM_MODES> {};
 
 enum band_t {
 	BAND_160M, BAND_80M, BAND_75M, BAND_60M, BAND_40M, BAND_30M, BAND_20M,

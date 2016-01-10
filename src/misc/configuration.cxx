@@ -207,26 +207,29 @@ public:
 	void write(ostream& out) const
         {
 		out << "<!-- " << doc << " -->\n" << '<' << tag << '>';
-		for (size_t i = 0; i < modes.size(); i++)
+		for (size_t i = 0; i < modes.size(); i++) {
 			if (!modes.test(i))
 				out << mode_info[i].name << ',';
+		}
 		out << ",</" << tag << ">\n\n";
 	}
 	void read(const char* data)
 	{
+		string sdata = data, smode, tstmode;
 		modes.set();
-		for( ; data ; )
-		{
-			const char * comma = strchr( data, ',' );
-			size_t tok_len = comma ? comma - data : strlen(data);
+		size_t p = sdata.find(",");
+		while ((p != string::npos) && (p != 0)) {
+			smode = sdata.substr(0, p);
 
 			for (size_t i = 0; i < modes.size(); i++) {
-				if (!strncmp(mode_info[i].name, data, tok_len )) {
-					modes.set(i, 0);
+				tstmode = mode_info[i].name;
+				if (smode == tstmode) {
+					modes.set(i,0);
 					break;
 				}
 			}
-			data = comma ? comma + 1 : NULL ;
+			sdata.erase(0, p+1);
+			p = sdata.find(",");
 		}
 	}
 	mode_set_t& modes;

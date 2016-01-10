@@ -253,7 +253,7 @@ Mode_Browser::Mode_Browser(void)
 	int bw = 80, bh = 20, pad = 2;
 
 	modes = new Fl_Check_Browser(pad, pad, w() - pad, h() - 2 * (bh + 2 * pad));
-	for (int i = 0; i < NUM_RXTX_MODES; i++)
+	for (int i = 0; i < NUM_MODES; i++)
 		modes->add(mode_info[i].name);
 	modes->callback(modes_cb, this);
 	modes->when(FL_WHEN_CHANGED);

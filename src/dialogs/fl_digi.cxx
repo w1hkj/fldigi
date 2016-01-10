@@ -4490,7 +4490,7 @@ static void cb_opmode_show(Fl_Widget* w, void*)
 		while (item != last) {
 			if (item->label() && item->callback() == cb_init_mode) {
 				intptr_t mode = (intptr_t)item->user_data();
-				if (mode < NUM_RXTX_MODES) {
+				if (mode < NUM_MODES) {
 					if (progdefaults.visible_modes.test(mode))
 						item->show();
 					else
@@ -4513,14 +4513,27 @@ static void cb_opmode_show(Fl_Widget* w, void*)
 			getMenuItem("Olivia")->show();
 		else
 			getMenuItem("Olivia")->hide();
+
 		if (progdefaults.visible_modes.test(MODE_CONTESTIA))
 			getMenuItem("Contestia")->show();
 		else
 			getMenuItem("Contestia")->hide();
+
 		if (progdefaults.visible_modes.test(MODE_RTTY))
 			getMenuItem("RTTY")->show();
 		else
 			getMenuItem("RTTY")->hide();
+
+		if (progdefaults.visible_modes.test(MODE_IFKP))
+			getMenuItem("IFKP")->show();
+		else
+			getMenuItem("IFKP")->hide();
+
+		if (progdefaults.visible_modes.test(MODE_FSQ))
+			getMenuItem("FSQ")->show();
+		else
+			getMenuItem("FSQ")->hide();
+
 		menu_[m->value()].label(OPMODES_ALL);
 		modes_hidden = true;
 	}
