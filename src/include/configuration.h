@@ -897,6 +897,18 @@
               "  4: callook free US calls xml service; 5: hamQTH free xml service.\n"   \
               "  The default is none.",                                                 \
               QRZXMLNONE)                                                               \
+        ELEM_(std::string, hamcallurl, "HAMCALLURL",                                    \
+              "web address of hamcall",                                                 \
+              "http://www.hamcall.net/")                                                \
+        ELEM_(std::string, hamqthurl, "HAMQTHURL",                                      \
+              "web address of hamqth",                                                  \
+              "https://www.hamqth.com/")                                                \
+        ELEM_(std::string, qrzurl, "QRZURL",                                            \
+              "web address of QRZ.com",                                                 \
+              "http://www.qrz.com/")                                                    \
+        ELEM_(std::string, callookurl, "CALLOOKURL",                                    \
+              "web address of callook",                                                 \
+              "http://callook.info/")                                                \
         ELEM_(int, QRZWEB, "QRZWEBTYPE",                                                \
               "Callsign browser query type.  Values are as follows:\n"                  \
               "  0: none; 1: QRZ web browser; 2: HamCall web browser\n"                 \

@@ -5113,6 +5113,27 @@ progdefaults.QRZWEB = HAMQTHHTML;
 progdefaults.changed = true;
 }
 
+Fl_Input2 *inp_qrzurl=(Fl_Input2 *)0;
+
+static void cb_inp_qrzurl(Fl_Input2* o, void*) {
+  progdefaults.qrzurl = o->value();
+progdefaults.changed=true;
+}
+
+Fl_Input2 *inp_hamcallurl=(Fl_Input2 *)0;
+
+static void cb_inp_hamcallurl(Fl_Input2* o, void*) {
+  progdefaults.hamcallurl = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inp_hamqthurl=(Fl_Input2 *)0;
+
+static void cb_inp_hamqthurl(Fl_Input2* o, void*) {
+  progdefaults.hamqthurl = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Round_Button *btnQRZXMLnotavailable=(Fl_Round_Button *)0;
 
 static void cb_btnQRZXMLnotavailable(Fl_Round_Button* o, void*) {
@@ -11113,31 +11134,70 @@ and restarted if needed."));
             { Fl_Group* o = new Fl_Group(34, 56, 538, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Round_Button* o = btnQRZWEBnotavailable = new Fl_Round_Button(77, 82, 337, 20, _("None"));
+              { Fl_Round_Button* o = btnQRZWEBnotavailable = new Fl_Round_Button(77, 79, 337, 20, _("None"));
                 btnQRZWEBnotavailable->tooltip(_("Do not use callsign lookup via web browser"));
                 btnQRZWEBnotavailable->down_box(FL_DOWN_BOX);
                 btnQRZWEBnotavailable->value(1);
                 btnQRZWEBnotavailable->callback((Fl_Callback*)cb_btnQRZWEBnotavailable);
                 o->value(progdefaults.QRZWEB == QRZWEBNONE);
               } // Fl_Round_Button* btnQRZWEBnotavailable
-              { Fl_Round_Button* o = btnQRZonline = new Fl_Round_Button(77, 106, 337, 20, _("QRZ online via default Internet Browser"));
+              { Fl_Round_Button* o = btnQRZonline = new Fl_Round_Button(77, 103, 337, 20, _("QRZ.............."));
                 btnQRZonline->tooltip(_("Visit QRZ web site"));
                 btnQRZonline->down_box(FL_DOWN_BOX);
                 btnQRZonline->callback((Fl_Callback*)cb_btnQRZonline);
                 o->value(progdefaults.QRZWEB == QRZHTML);
               } // Fl_Round_Button* btnQRZonline
-              { Fl_Round_Button* o = btnHAMCALLonline = new Fl_Round_Button(77, 130, 337, 20, _("HamCall online via default Internet Browser"));
+              { Fl_Round_Button* o = btnHAMCALLonline = new Fl_Round_Button(77, 127, 337, 20, _("HamCall......"));
                 btnHAMCALLonline->tooltip(_("Visit Hamcall web site"));
                 btnHAMCALLonline->down_box(FL_DOWN_BOX);
                 btnHAMCALLonline->callback((Fl_Callback*)cb_btnHAMCALLonline);
                 o->value(progdefaults.QRZWEB == HAMCALLHTML);
               } // Fl_Round_Button* btnHAMCALLonline
-              { Fl_Round_Button* o = btnHamQTHonline = new Fl_Round_Button(77, 154, 337, 20, _("HamQTH via default Internet Browser"));
+              { Fl_Round_Button* o = btnHamQTHonline = new Fl_Round_Button(77, 151, 337, 20, _("HamQTH....."));
                 btnHamQTHonline->tooltip(_("Visit hamQTH web site"));
                 btnHamQTHonline->down_box(FL_DOWN_BOX);
                 btnHamQTHonline->callback((Fl_Callback*)cb_btnHamQTHonline);
                 o->value(progdefaults.QRZWEB == HAMQTHHTML);
               } // Fl_Round_Button* btnHamQTHonline
+              { Fl_Input2* o = inp_qrzurl = new Fl_Input2(185, 102, 369, 22);
+                inp_qrzurl->box(FL_DOWN_BOX);
+                inp_qrzurl->color(FL_BACKGROUND2_COLOR);
+                inp_qrzurl->selection_color(FL_SELECTION_COLOR);
+                inp_qrzurl->labeltype(FL_NORMAL_LABEL);
+                inp_qrzurl->labelfont(0);
+                inp_qrzurl->labelsize(14);
+                inp_qrzurl->labelcolor(FL_FOREGROUND_COLOR);
+                inp_qrzurl->callback((Fl_Callback*)cb_inp_qrzurl);
+                inp_qrzurl->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_qrzurl->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.qrzurl.c_str());
+              } // Fl_Input2* inp_qrzurl
+              { Fl_Input2* o = inp_hamcallurl = new Fl_Input2(185, 126, 369, 22);
+                inp_hamcallurl->box(FL_DOWN_BOX);
+                inp_hamcallurl->color(FL_BACKGROUND2_COLOR);
+                inp_hamcallurl->selection_color(FL_SELECTION_COLOR);
+                inp_hamcallurl->labeltype(FL_NORMAL_LABEL);
+                inp_hamcallurl->labelfont(0);
+                inp_hamcallurl->labelsize(14);
+                inp_hamcallurl->labelcolor(FL_FOREGROUND_COLOR);
+                inp_hamcallurl->callback((Fl_Callback*)cb_inp_hamcallurl);
+                inp_hamcallurl->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_hamcallurl->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.hamcallurl.c_str());
+              } // Fl_Input2* inp_hamcallurl
+              { Fl_Input2* o = inp_hamqthurl = new Fl_Input2(185, 150, 369, 22);
+                inp_hamqthurl->box(FL_DOWN_BOX);
+                inp_hamqthurl->color(FL_BACKGROUND2_COLOR);
+                inp_hamqthurl->selection_color(FL_SELECTION_COLOR);
+                inp_hamqthurl->labeltype(FL_NORMAL_LABEL);
+                inp_hamqthurl->labelfont(0);
+                inp_hamqthurl->labelsize(14);
+                inp_hamqthurl->labelcolor(FL_FOREGROUND_COLOR);
+                inp_hamqthurl->callback((Fl_Callback*)cb_inp_hamqthurl);
+                inp_hamqthurl->align(Fl_Align(FL_ALIGN_LEFT));
+                inp_hamqthurl->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.hamqthurl.c_str());
+              } // Fl_Input2* inp_hamqthurl
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(34, 180, 538, 195, _("Data base lookup"));

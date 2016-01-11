@@ -683,7 +683,8 @@ void parse_callook(string& xmlpage)
 
 bool CALLOOKGetXML(string& xmlpage)
 {
-	string url = string("http://callook.info/").append(callsign).append("/xml");
+	string url = progdefaults.callookurl;
+	url.append(callsign).append("/xml");
 	bool res = fetch_http(url, xmlpage, 5.0);
 	LOG_VERBOSE("result = %d", res);
 	return res;
@@ -769,7 +770,14 @@ bool HAMCALLget(string& htmlpage)
 
 	print_query("hamcall", url_detail);
 
-	return request_reply("www.hamcall.net", "http", url_detail, htmlpage, 5.0);
+	string url = progdefaults.hamcallurl;
+	size_t p = url.find("//");
+	string service = url.substr(0, p);
+	url.erase(0, p+2);
+	size_t len = url.length();
+	if (url[len-1]=='/') url.erase(len-1, 1);
+	return request_reply(url, service, url_detail, htmlpage, 5.0);
+//	return request_reply("www.hamcall.net", "http", url_detail, htmlpage, 5.0);
 }
 
 void HAMCALLquery()
@@ -797,18 +805,21 @@ static string HAMQTH_reply = "";
 
 bool HAMQTH_get_session_id()
 {
-	string url = "";
+	string url = progdefaults.hamqthurl;
 	string retstr = "";
 	size_t p1 = string::npos;
 	size_t p2 = string::npos;
 
-	url.append("http://www.hamqth.com/xml.php?u=").append(progdefaults.QRZusername);
+	if (url.find("https") == 0) url.erase(4,1); // change to http
+	url.append("xml.php?u=").append(progdefaults.QRZusername);
 	url.append("&p=").append(progdefaults.QRZuserpassword);
 
 	HAMQTH_session_id.clear();
 	if (!fetch_http(url, retstr, 5.0)) {
+printf("fetch_http( %s, retstr, 5.0) failed\n", url.c_str());
 		return false;
 	}
+printf("%s\n", retstr.c_str());
 	p1 = retstr.find("<error>");
 	if (p1 != string::npos) {
 		p2 = retstr.find("</error>");
@@ -950,7 +961,7 @@ void parse_HAMQTH_html(const string& htmlpage)
 
 bool HAMQTHget(string& htmlpage)
 {
-	string url = "";
+	string url = progdefaults.hamqthurl;
 	bool ret;
 	if (HAMQTH_session_id.empty()) {
 		if (!HAMQTH_get_session_id()) {
@@ -959,7 +970,8 @@ bool HAMQTHget(string& htmlpage)
 			return false;
 		}
 	}
-	url.append("http://www.hamqth.com/xml.php?id=").append(HAMQTH_session_id);
+	if (url.find("https") == 0) url.erase(4,1); // change to http
+	url.append("xml.php?id=").append(HAMQTH_session_id);
 	url.append("&callsign=").append(callsign);
 	url.append("&prg=FLDIGI");
 
@@ -1017,26 +1029,23 @@ void HAMQTHquery()
 
 void QRZ_DETAILS_query()
 {
-	string qrzurl = "http://www.qrz.com/db/";
-	qrzurl.append(callsign);
-
-	cb_mnuVisitURL(0, (void*)qrzurl.c_str());
+	string qrz = progdefaults.qrzurl;
+	qrz.append("db/").append(callsign);
+	cb_mnuVisitURL(0, (void*)qrz.c_str());
 }
 
 void HAMCALL_DETAILS_query()
 {
-	string hamcallurl = "http://www.hamcall.net/call?callsign=";
-	hamcallurl.append(callsign);
-
-	cb_mnuVisitURL(0, (void*)hamcallurl.c_str());
+	string hamcall = progdefaults.hamcallurl;
+	hamcall.append("call?callsign=").append(callsign);
+	cb_mnuVisitURL(0, (void*)hamcall.c_str());
 }
 
 void HAMQTH_DETAILS_query()
 {
-	string hamqthurl = "http://www.hamQTH.com/";
-	hamqthurl.append(callsign);
-
-	cb_mnuVisitURL(0, (void*)hamqthurl.c_str());
+	string hamqth = progdefaults.hamqthurl;
+	hamqth.append(callsign);
+	cb_mnuVisitURL(0, (void*)hamqth.c_str());
 }
 
 
@@ -1142,10 +1151,10 @@ void CALLSIGNquery()
 		}
 		break;
 	case CALLOOK:
-		LOG_INFO("%s","Request sent to\nhttp://callook.info...");
+		LOG_INFO("Request sent to %s", progdefaults.hamcallurl.c_str());
 		break;
 	case HAMQTH:
-		LOG_INFO("%s","Request sent to \nhttp://hamqth.com...");
+		LOG_INFO("Request sent to %s", progdefaults.hamqthurl.c_str());
 		break;
 	case QRZXMLNONE:
 		break;

@@ -359,7 +359,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {611 168 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {958 64 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 380} color 50 selection_color 50
@@ -6361,32 +6361,53 @@ if (progdefaults.kml_enabled) {
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = QRZWEBNONE;
 progdefaults.changed = true;}
-                tooltip {Do not use callsign lookup via web browser} xywh {77 82 337 20} down_box DOWN_BOX value 1
+                tooltip {Do not use callsign lookup via web browser} xywh {77 79 337 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.QRZWEB == QRZWEBNONE);}
               }
               Fl_Round_Button btnQRZonline {
-                label {QRZ online via default Internet Browser}
+                label {QRZ..............}
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = QRZHTML;
 progdefaults.changed = true;}
-                tooltip {Visit QRZ web site} xywh {77 106 337 20} down_box DOWN_BOX
+                tooltip {Visit QRZ web site} xywh {77 103 337 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZWEB == QRZHTML);}
               }
               Fl_Round_Button btnHAMCALLonline {
-                label {HamCall online via default Internet Browser}
+                label {HamCall......}
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = HAMCALLHTML;
 progdefaults.changed = true;}
-                tooltip {Visit Hamcall web site} xywh {77 130 337 20} down_box DOWN_BOX
+                tooltip {Visit Hamcall web site} xywh {77 127 337 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZWEB == HAMCALLHTML);}
               }
               Fl_Round_Button btnHamQTHonline {
-                label {HamQTH via default Internet Browser}
+                label {HamQTH.....}
                 callback {set_qrzweb_buttons(o);
 progdefaults.QRZWEB = HAMQTHHTML;
 progdefaults.changed = true;}
-                tooltip {Visit hamQTH web site} xywh {77 154 337 20} down_box DOWN_BOX
+                tooltip {Visit hamQTH web site} xywh {77 151 337 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.QRZWEB == HAMQTHHTML);}
+              }
+              Fl_Input inp_qrzurl {
+                callback {progdefaults.qrzurl = o->value();
+progdefaults.changed=true;}
+                xywh {185 102 369 22}
+                code0 {o->value(progdefaults.qrzurl.c_str());}
+                class Fl_Input2
+              }
+              Fl_Input inp_hamcallurl {
+                callback {progdefaults.hamcallurl = o->value();
+progdefaults.changed = true;}
+                xywh {185 126 369 22}
+                code0 {o->value(progdefaults.hamcallurl.c_str());}
+                class Fl_Input2
+              }
+              Fl_Input inp_hamqthurl {
+                callback {progdefaults.hamqthurl = o->value();
+progdefaults.changed = true;}
+                xywh {185 150 369 22}
+                code0 {o->value(progdefaults.hamqthurl.c_str());}
+                class Fl_Input2
               }
             }
             Fl_Group {} {
