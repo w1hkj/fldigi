@@ -42,6 +42,7 @@ INPUT                = index.txt \
 	fldigi_macros.txt fldigi_modems.txt fldigi_operating.txt \
 	fldigi_developer.txt \
 	New-Install.txt thumb_drive.txt colorsandfonts.txt \
+	audio-adjust.txt \
 	configcallsigndb.txt configContestia.txt configCW.txt \
 	configDomEX.txt configFH.txt \
 	configFSQ.txt configIFKP.txt \
@@ -58,7 +59,7 @@ INPUT                = index.txt \
 	DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt \
 	FSQ.txt IFKP.txt \
 	Navtex.txt psk.txt Olivia.txt RTTYFSK.txt Thor.txt \
-	throb.txt tune.txt WEFAX.txt WWV-xmt.txt FrequencyAnalysis.txt \
+	throb.txt WEFAX.txt WWV-xmt.txt FrequencyAnalysis.txt \
 	DigiscopeDisplay.txt DigiWWV.txt MousingKeyboardShortcuts.txt \
 	Multiples.txt Notifier.txt OperatingControls.txt RST-RSQ.txt \
 	Spotter.txt Synop.txt TransceiverControl.txt UTF8.txt \

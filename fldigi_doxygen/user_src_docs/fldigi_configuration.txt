@@ -23,6 +23,7 @@ You should initially configure the following:
 	<li> \subpage operator_configuration_page </li>
 	<li> \subpage sound_card_configuration_page </li>
 	<li> \subpage rig_control_page </li>
+	<li> \subpage audio_adjust_page </li>
 	<li> \subpage new_installation_page </li>
 	<li> \subpage config_io_page </li>
 </ul>

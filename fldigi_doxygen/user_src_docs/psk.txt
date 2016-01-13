@@ -183,7 +183,7 @@ better decoding than CW.
 
 Setting up for a good clean on air signal that will receive the accolades
 of your QSO partners is easy. Follow the instructions on using the
-\ref tune_page "Tune" button</a> and you will have a clean on signal.
+\ref audio_adjust_page "Tune" button</a> and you will have a clean on signal.
 <br>
 
 Good reception of PSK signals requires that the demodulator be phase locked

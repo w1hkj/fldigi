@@ -17,7 +17,6 @@
 	<li> \subpage rtty_page </li>
 	<li> \subpage thor_page </li>
 	<li> \subpage throb_page </li>
-	<li> \subpage tune_page </li>
 	<li> \subpage wefax_page </li>
 	<li> \subpage wwv_tx_mode </li>
 	<li> \subpage mode_table_page </li>

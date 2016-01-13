@@ -538,7 +538,7 @@ See \ref configuration_page Page
 	<li>Tune button - toggles the "Tune" mode which causes fldigi to
 	insert a tone at the current waterfall frequency.  The peak-to-peak
 	amplitude of this tone is the standard by which you should
-	\ref tune_page "set your transmitter drive" or adjust your antenna
+	\ref audio_adjust_page "set your transmitter drive" or adjust your antenna
 	matching network.</li>
 	<li>The right most button is normally not visible.  This is the
 	count-down timer button that is enabled when a macro button has been
