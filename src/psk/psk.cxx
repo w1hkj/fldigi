@@ -1228,22 +1228,26 @@ void psk::rx_symbol(cmplx symbol, int car)
 	// simple low pass filter for quality of signal
 	double decay = SQLDECAY;
 	double attack = SQLDECAY;
+	double cval = cos(n*phase);
+	double sval = sin(n*phase);
+
 	if (_8psk) {
 		attack *= 2;
 		decay *= 4;
 	}
+
 	if (_pskr) {
-		attack *= 2;
 		decay *= 10;
-	}
+		quality = cmplx(
+			decayavg(quality.real(), cval, decay),
+			decayavg(quality.imag(), sval, decay));
+	} else
+		quality = cmplx(
+			decayavg(quality.real(), cval, cval > quality.real() ? attack : decay),
+			decayavg(quality.imag(), sval, sval > quality.real() ? attack : decay));
 
-	double cval = cos(n*phase);
-	double sval = sin(n*phase);
-
-	quality = cmplx(
-					decayavg(quality.real(), cval, cval > quality.real() ? attack : decay),
-					decayavg(quality.imag(), sval, sval > quality.real() ? attack : decay));
 	metric = 100.0 * norm(quality);
+	if (_pskr && (averageamp < 3e-5)) metric = 0;
 
 	if (progdefaults.Pskmails2nreport && (mailserver || mailclient)) {
 		//s2n reporting: rescale depending on mode, clip after scaling
