@@ -201,7 +201,11 @@ public:
 	void searchDown();
 	void searchUp();
 
-	void clear_viewer() { pskviewer->clear(); }
+	void clear_viewer() { 
+		if (pskviewer) pskviewer->clear();
+//		if ((mode >= MODE_PSK31 && mode <= MODE_PSK125) ||
+//			(mode >= MODE_QPSK31 && mode <= MODE_QPSK125)) pskviewer->clear(); 
+	}
 	void clear_ch(int n) { pskviewer->clearch(n); }
 	int  viewer_get_freq(int n) {
 		if (pskviewer) pskviewer->get_freq(n);
