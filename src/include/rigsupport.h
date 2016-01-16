@@ -73,17 +73,20 @@ extern bool ModeIsLSB(std::string);
 extern bool init_Hamlib_RigDialog();
 extern void selMode(rmode_t m);
 extern std::string modeString(rmode_t m);
+extern bool hamlib_USB();
+extern bool hamlib_active();
 #endif
 
 // xmlrpc_rig specific
 
 extern bool connected_to_flrig;
+
 extern void xmlrpc_rig_set_qsy(long long rfc);
+extern bool xmlrpc_USB();
 
-//using namespace XmlRpc;
-//using namespace std;
-
+extern void FLRIG_set_flrig_ab(int n);
 extern void FLRIG_start_flrig_thread();
+
 extern void stop_flrig_thread();
 extern void reconnect_to_flrig();
 extern void set_flrig_ptt(int on);
@@ -91,14 +94,7 @@ extern void set_flrig_freq(long int fr);
 extern void set_flrig_mode(const char *md);
 extern void set_flrig_bw(int bw1, int bw2 = 0);
 extern void set_flrig_notch();
-extern bool xmlrpc_USB();
-extern void FLRIG_set_flrig_ab(int n);
 
-
-//------------------------------------------------------------------------------
-// flrig xmlrpc client support
-//------------------------------------------------------------------------------
-extern bool connected_to_flrig;
 //------------------------------------------------------------------------------
 
 #endif

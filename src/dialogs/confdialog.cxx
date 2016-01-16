@@ -3991,8 +3991,6 @@ o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
-Fl_ListBox *listbox_sideband=(Fl_ListBox *)0;
-
 Fl_Check_Button *btnHamlibCMDptt=(Fl_Check_Button *)0;
 
 static void cb_btnHamlibCMDptt(Fl_Check_Button*, void*) {
@@ -4056,6 +4054,27 @@ btnInitHAMLIB->redraw_label();
 #if USE_HAMLIB
 hamlib_restore_defaults();
 #endif
+}
+
+Fl_Check_Button *chk_hamlib_cw_is_lsb=(Fl_Check_Button *)0;
+
+static void cb_chk_hamlib_cw_is_lsb(Fl_Check_Button* o, void*) {
+  progdefaults.hamlib_cw_islsb = o->value();
+}
+
+Fl_Check_Button *chk_hamlib_rtty_is_usb=(Fl_Check_Button *)0;
+
+static void cb_chk_hamlib_rtty_is_usb(Fl_Check_Button* o, void*) {
+  progdefaults.hamlib_rtty_isusb = o->value();
+}
+
+Fl_ListBox *listbox_sideband=(Fl_ListBox *)0;
+
+Fl_Counter2 *val_hamlib_mode_delay=(Fl_Counter2 *)0;
+
+static void cb_val_hamlib_mode_delay(Fl_Counter2* o, void*) {
+  progdefaults.hamlib_mode_delay = (int)o->value();
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
@@ -9721,7 +9740,7 @@ le Earth)"));
                 o->value(progdefaults.HamlibWait);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibWait
-              { Fl_ListBox* o = listbox_baudrate = new Fl_ListBox(476, 132, 99, 22, _("Baud rate:"));
+              { Fl_ListBox* o = listbox_baudrate = new Fl_ListBox(476, 123, 99, 22, _("Baud rate:"));
                 listbox_baudrate->box(FL_DOWN_BOX);
                 listbox_baudrate->color(FL_BACKGROUND2_COLOR);
                 listbox_baudrate->selection_color(FL_BACKGROUND_COLOR);
@@ -9737,7 +9756,7 @@ le Earth)"));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_baudrate->end();
               } // Fl_ListBox* listbox_baudrate
-              { Fl_Counter2* o = valHamRigStopbits = new Fl_Counter2(480, 168, 95, 21, _("Stopbits"));
+              { Fl_Counter2* o = valHamRigStopbits = new Fl_Counter2(480, 148, 95, 21, _("Stopbits"));
                 valHamRigStopbits->type(1);
                 valHamRigStopbits->box(FL_UP_BOX);
                 valHamRigStopbits->color(FL_BACKGROUND_COLOR);
@@ -9795,7 +9814,62 @@ le Earth)"));
                 btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
                 btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
               } // Fl_Button* btnInitHAMLIB
-              { Fl_ListBox* o = listbox_sideband = new Fl_ListBox(431, 210, 144, 22, _("Sideband:"));
+              { Fl_Check_Button* o = btnHamlibCMDptt = new Fl_Check_Button(55, 211, 215, 20, _("PTT via Hamlib command"));
+                btnHamlibCMDptt->tooltip(_("PTT using hamlib command"));
+                btnHamlibCMDptt->down_box(FL_DOWN_BOX);
+                btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
+                o->value(progdefaults.HamlibCMDptt);
+              } // Fl_Check_Button* btnHamlibCMDptt
+              { Fl_Check_Button* o = btnHamlibPTT_ON_DATA = new Fl_Check_Button(55, 236, 215, 20, _("Audio on Auxiliary Port"));
+                btnHamlibPTT_ON_DATA->tooltip(_("PTT enables auxiliary audio source"));
+                btnHamlibPTT_ON_DATA->down_box(FL_DOWN_BOX);
+                btnHamlibPTT_ON_DATA->callback((Fl_Callback*)cb_btnHamlibPTT_ON_DATA);
+                o->value(progdefaults.hamlib_ptt_on_data);
+              } // Fl_Check_Button* btnHamlibPTT_ON_DATA
+              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(55, 261, 90, 20, _("DTR +12"));
+                btnHamlibDTRplus->tooltip(_("Initial state of DTR"));
+                btnHamlibDTRplus->down_box(FL_DOWN_BOX);
+                btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
+                o->value(progdefaults.HamlibDTRplus);
+              } // Fl_Check_Button* btnHamlibDTRplus
+              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(245, 261, 85, 20, _("RTS +12"));
+                chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
+                chkHamlibRTSplus->down_box(FL_DOWN_BOX);
+                chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
+                o->value(progdefaults.HamlibRTSplus);
+              } // Fl_Check_Button* chkHamlibRTSplus
+              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(55, 287, 170, 20, _("RTS/CTS flow control"));
+                chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
+                chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
+                chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
+                o->value(progdefaults.HamlibRTSCTSflow);
+                if (o->value()) chkHamlibRTSplus->deactivate();
+              } // Fl_Check_Button* chkHamlibRTSCTSflow
+              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(245, 287, 185, 20, _("XON/XOFF flow control"));
+                chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
+                chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
+                chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
+                o->value(progdefaults.HamlibXONXOFFflow);
+              } // Fl_Check_Button* chkHamlibXONXOFFflow
+              { btnRevertHAMLIB = new Fl_Button(381, 299, 113, 24, _("Revert"));
+                btnRevertHAMLIB->tooltip(_("Reset hamlib interface"));
+                btnRevertHAMLIB->callback((Fl_Callback*)cb_btnRevertHAMLIB);
+                btnRevertHAMLIB->hide();
+                btnRevertHAMLIB->deactivate();
+              } // Fl_Button* btnRevertHAMLIB
+              { Fl_Check_Button* o = chk_hamlib_cw_is_lsb = new Fl_Check_Button(435, 261, 142, 20, _("CW is LSB mode"));
+                chk_hamlib_cw_is_lsb->tooltip(_("Check if xcvr uses LSB for CW"));
+                chk_hamlib_cw_is_lsb->down_box(FL_DOWN_BOX);
+                chk_hamlib_cw_is_lsb->callback((Fl_Callback*)cb_chk_hamlib_cw_is_lsb);
+                o->value(progdefaults.hamlib_cw_islsb);
+              } // Fl_Check_Button* chk_hamlib_cw_is_lsb
+              { Fl_Check_Button* o = chk_hamlib_rtty_is_usb = new Fl_Check_Button(435, 287, 152, 20, _("RTTY is USB mode"));
+                chk_hamlib_rtty_is_usb->tooltip(_("Check if xcvr uses USB for RTTY"));
+                chk_hamlib_rtty_is_usb->down_box(FL_DOWN_BOX);
+                chk_hamlib_rtty_is_usb->callback((Fl_Callback*)cb_chk_hamlib_rtty_is_usb);
+                o->value(progdefaults.hamlib_rtty_isusb);
+              } // Fl_Check_Button* chk_hamlib_rtty_is_usb
+              { Fl_ListBox* o = listbox_sideband = new Fl_ListBox(431, 235, 144, 22, _("Sideband:"));
                 listbox_sideband->box(FL_DOWN_BOX);
                 listbox_sideband->color(FL_BACKGROUND2_COLOR);
                 listbox_sideband->selection_color(FL_BACKGROUND_COLOR);
@@ -9808,49 +9882,26 @@ le Earth)"));
                 o->labelsize(FL_NORMAL_SIZE);
                 listbox_sideband->end();
               } // Fl_ListBox* listbox_sideband
-              { Fl_Check_Button* o = btnHamlibCMDptt = new Fl_Check_Button(55, 211, 215, 20, _("PTT via Hamlib command"));
-                btnHamlibCMDptt->tooltip(_("PTT using hamlib command"));
-                btnHamlibCMDptt->down_box(FL_DOWN_BOX);
-                btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
-                o->value(progdefaults.HamlibCMDptt);
-              } // Fl_Check_Button* btnHamlibCMDptt
-              { Fl_Check_Button* o = btnHamlibPTT_ON_DATA = new Fl_Check_Button(55, 234, 215, 20, _("Audio on Auxiliary Port"));
-                btnHamlibPTT_ON_DATA->tooltip(_("PTT enables auxiliary audio source"));
-                btnHamlibPTT_ON_DATA->down_box(FL_DOWN_BOX);
-                btnHamlibPTT_ON_DATA->callback((Fl_Callback*)cb_btnHamlibPTT_ON_DATA);
-                o->value(progdefaults.hamlib_ptt_on_data);
-              } // Fl_Check_Button* btnHamlibPTT_ON_DATA
-              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(55, 257, 90, 20, _("DTR +12"));
-                btnHamlibDTRplus->tooltip(_("Initial state of DTR"));
-                btnHamlibDTRplus->down_box(FL_DOWN_BOX);
-                btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
-                o->value(progdefaults.HamlibDTRplus);
-              } // Fl_Check_Button* btnHamlibDTRplus
-              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(345, 257, 85, 20, _("RTS +12"));
-                chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
-                chkHamlibRTSplus->down_box(FL_DOWN_BOX);
-                chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
-                o->value(progdefaults.HamlibRTSplus);
-              } // Fl_Check_Button* chkHamlibRTSplus
-              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(55, 280, 170, 20, _("RTS/CTS flow control"));
-                chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
-                chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
-                chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
-                o->value(progdefaults.HamlibRTSCTSflow);
-                if (o->value()) chkHamlibRTSplus->deactivate();
-              } // Fl_Check_Button* chkHamlibRTSCTSflow
-              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(345, 280, 185, 20, _("XON/XOFF flow control"));
-                chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
-                chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
-                chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
-                o->value(progdefaults.HamlibXONXOFFflow);
-              } // Fl_Check_Button* chkHamlibXONXOFFflow
-              { btnRevertHAMLIB = new Fl_Button(381, 299, 113, 24, _("Revert"));
-                btnRevertHAMLIB->tooltip(_("Reset hamlib interface"));
-                btnRevertHAMLIB->callback((Fl_Callback*)cb_btnRevertHAMLIB);
-                btnRevertHAMLIB->hide();
-                btnRevertHAMLIB->deactivate();
-              } // Fl_Button* btnRevertHAMLIB
+              { Fl_Counter2* o = val_hamlib_mode_delay = new Fl_Counter2(480, 210, 95, 21, _("Mode delay"));
+                val_hamlib_mode_delay->tooltip(_("Delay NN msec after executing mode change"));
+                val_hamlib_mode_delay->type(1);
+                val_hamlib_mode_delay->box(FL_UP_BOX);
+                val_hamlib_mode_delay->color(FL_BACKGROUND_COLOR);
+                val_hamlib_mode_delay->selection_color(FL_INACTIVE_COLOR);
+                val_hamlib_mode_delay->labeltype(FL_NORMAL_LABEL);
+                val_hamlib_mode_delay->labelfont(0);
+                val_hamlib_mode_delay->labelsize(14);
+                val_hamlib_mode_delay->labelcolor(FL_FOREGROUND_COLOR);
+                val_hamlib_mode_delay->minimum(0);
+                val_hamlib_mode_delay->maximum(2000);
+                val_hamlib_mode_delay->step(100);
+                val_hamlib_mode_delay->value(200);
+                val_hamlib_mode_delay->callback((Fl_Callback*)cb_val_hamlib_mode_delay);
+                val_hamlib_mode_delay->align(Fl_Align(FL_ALIGN_LEFT));
+                val_hamlib_mode_delay->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.hamlib_mode_delay);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* val_hamlib_mode_delay
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             tabHamlib->end();

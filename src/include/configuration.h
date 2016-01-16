@@ -1007,6 +1007,17 @@
         ELEM_(int, hamlib_ptt_on_data, "HAMLIBPTTONDATA",                               \
               "Hamlib PTT for xmt audio on data port",                                  \
               1)                                                                        \
+        ELEM_(bool, hamlib_cw_islsb, "HAMLIB_CW_ISLSB",                                 \
+              "Hamlib xcvr uses LSB for CW",                                            \
+              false)                                                                    \
+        ELEM_(bool, hamlib_rtty_isusb, "HAMLIB_RTTY_ISUSB",                             \
+              "Hamlib xcvr uses USB for RTTY",                                          \
+              false)                                                                    \
+        ELEM_(int, hamlib_mode_delay, "HAMRIG_MODE_DELAY",                              \
+              "wait NN msec after sending mode change\n"                                \
+              "before next transceiver CAT query\n"                                     \
+              "0 - 2000 in 100 msec increments",                                        \
+              200)                                                                      \
         ELEM_(std::string, XmlRigFilename, "XMLRIGFILENAME",                            \
               "RigCAT XML file name",                                                   \
               "")                                                                       \

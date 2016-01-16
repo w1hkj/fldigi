@@ -376,6 +376,7 @@ void hamlib_close(void)
 
 bool hamlib_active(void)
 {
+	if (!xcvr) return false;
 	return (xcvr->isOnLine());
 }
 
@@ -385,25 +386,24 @@ void hamlib_set_ptt(int ptt)
 		return;
 	if (!hamlib_ptt)
 		return;
-	pthread_mutex_lock(&hamlib_mutex);
-		try {
-			xcvr->setPTT( ptt ? 
-				(progdefaults.hamlib_ptt_on_data ? RIG_PTT_ON_DATA : RIG_PTT_ON_MIC) :
-				RIG_PTT_OFF );
-			hamlib_bypass = ptt ? true : false;
-		}
-		catch (const RigException& Ex) {
-			show_error("Rig PTT", Ex.what());
-			hamlib_ptt = false;
-		}
-	pthread_mutex_unlock(&hamlib_mutex);
+	guard_lock hamlib(&hamlib_mutex);
+	try {
+		xcvr->setPTT( ptt ? 
+			(progdefaults.hamlib_ptt_on_data ? RIG_PTT_ON_DATA : RIG_PTT_ON_MIC) :
+			RIG_PTT_OFF );
+		hamlib_bypass = ptt ? true : false;
+	}
+	catch (const RigException& Ex) {
+		show_error("Rig PTT", Ex.what());
+		hamlib_ptt = false;
+	}
 }
 
 void hamlib_set_qsy(long long f)
 {
 	if (xcvr->isOnLine() == false)
 		return;
-	pthread_mutex_lock(&hamlib_mutex);
+	guard_lock hamlib(&hamlib_mutex);
 	double fdbl = f;
 	hamlib_qsy = false;
 	try {
@@ -415,25 +415,25 @@ void hamlib_set_qsy(long long f)
 		show_error("QSY", Ex.what());
 		hamlib_passes = 0;
 	}
-	pthread_mutex_unlock(&hamlib_mutex);
 }
 
 int hamlib_setfreq(long f)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
-	pthread_mutex_lock(&hamlib_mutex);
-		try {
-			LOG_DEBUG("%ld", f);
-			xcvr->setFreq(f);
-		}
-		catch (const RigException& Ex) {
-			show_error("SetFreq", Ex.what());
-			hamlib_passes = 0;
-		}
-	pthread_mutex_unlock(&hamlib_mutex);
+	guard_lock hamlib(&hamlib_mutex);
+	try {
+		LOG_DEBUG("%ld", f);
+		xcvr->setFreq(f);
+	}
+	catch (const RigException& Ex) {
+		show_error("SetFreq", Ex.what());
+		hamlib_passes = 0;
+	}
 	return 1;
 }
+
+static int hamlib_wait = 0;
 
 int hamlib_setmode(rmode_t m)
 {
@@ -441,35 +441,36 @@ int hamlib_setmode(rmode_t m)
 		return -1;
 	if (xcvr->isOnLine() == false)
 		return -1;
-	pthread_mutex_lock(&hamlib_mutex);
-		try {
-			hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
-			xcvr->setMode(m, hamlib_pbwidth);
-			hamlib_rmode = m;
-		}
-		catch (const RigException& Ex) {
-			show_error("Set Mode", Ex.what());
-			hamlib_passes = 0;
-		}
-	pthread_mutex_unlock(&hamlib_mutex);
+	guard_lock hamlib(&hamlib_mutex);
+	try {
+		hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
+		xcvr->setMode(m, hamlib_pbwidth);
+		hamlib_rmode = m;
+	}
+	catch (const RigException& Ex) {
+		show_error("Set Mode", Ex.what());
+		hamlib_passes = 0;
+	}
+	hamlib_wait = progdefaults.hamlib_mode_delay / 100;
 	return 1;
 }
+
+// width control via hamlib is not implemented
 
 int hamlib_setwidth(pbwidth_t w)
 {
 	if (xcvr->isOnLine() == false)
 		return -1;
-	pthread_mutex_lock(&hamlib_mutex);
-		try {
-			hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
-			xcvr->setMode(hamlib_rmode, w);
-			hamlib_pbwidth = w;
-		}
-		catch (const RigException& Ex) {
-			show_error("Set Width", Ex.what());
-			hamlib_passes = 0;
-		}
-	pthread_mutex_unlock(&hamlib_mutex);
+	guard_lock hamlib(&hamlib_mutex);
+	try {
+		hamlib_rmode = xcvr->getMode(hamlib_pbwidth);
+		xcvr->setMode(hamlib_rmode, w);
+		hamlib_pbwidth = w;
+	}
+	catch (const RigException& Ex) {
+		show_error("Set Width", Ex.what());
+		hamlib_passes = 0;
+	}
 	return 1;
 }
 
@@ -483,13 +484,41 @@ pbwidth_t hamlib_getwidth()
 	return hamlib_pbwidth;
 }
 
+bool hamlib_USB()
+{
+	if (hamlib_wait) return wf->USB();
+	bool islsb = false;
+	if (progdefaults.HamlibSideband == SIDEBAND_RIG) {
+		islsb = (hamlib_rmode == RIG_MODE_LSB ||
+				 hamlib_rmode == RIG_MODE_PKTLSB ||
+				 hamlib_rmode == RIG_MODE_ECSSLSB);
+		if (hamlib_rmode == RIG_MODE_CW) {
+			if (progdefaults.hamlib_cw_islsb) islsb = true;
+			else islsb = false;
+		}
+		if (hamlib_rmode == RIG_MODE_CWR) {
+			if (progdefaults.hamlib_cw_islsb) islsb = false;
+			else islsb = true;
+		}
+		if (hamlib_rmode == RIG_MODE_RTTY) {
+			if (progdefaults.hamlib_rtty_isusb) islsb = false;
+			else islsb = true;
+		}
+		if (hamlib_rmode == RIG_MODE_RTTYR) {
+			if (progdefaults.hamlib_rtty_isusb) islsb = true;
+			else islsb = false;
+		}
+	} else if (progdefaults.HamlibSideband == SIDEBAND_LSB)
+		islsb = true;
+	return !islsb;
+}
+
 static void *hamlib_loop(void *args)
 {
 	SET_THREAD_ID(RIGCTL_TID);
 
 	long int freq = 0L;
 	rmode_t  numode = RIG_MODE_NONE;
-	bool freqok = false, modeok = false;
 
 	for (;;) {
 		MilliSleep(100);
@@ -497,66 +526,55 @@ static void *hamlib_loop(void *args)
 			break;
 		if (hamlib_bypass)
 			continue;
-// hamlib locked while accessing hamlib serial i/o
-		pthread_mutex_lock(&hamlib_mutex);
+		if (hamlib_wait) {
+			hamlib_wait--;
+			continue;
+		}
 
-		if (need_freq) {
-			freq_t f;
-			try {
-				f = xcvr->getFreq();
-				freq = (long int) f;
-				freqok = true;
-				if (freq == 0) {
-					pthread_mutex_unlock(&hamlib_mutex);
-					continue;
+		{
+			guard_lock hamlib(&hamlib_mutex);
+			if (need_freq) {
+				freq_t f;
+				try {
+					f = xcvr->getFreq();
+					freq = (long int) f;
+					if (freq == 0) continue;
+					hamlib_freq = freq;
+					show_frequency(hamlib_freq);
+					wf->rfcarrier(hamlib_freq);
 				}
-			}
-			catch (const RigException& Ex) {
-				show_error(__func__, "Rig not responding: freq");
-				freqok = false;
+				catch (const RigException& Ex) {
+					show_error(__func__, "Rig not responding: freq");
+				}
 			}
 		}
 		if (hamlib_exit)
 			break;
+		if (hamlib_bypass)
+			continue;
 
-		if (need_mode && hamlib_rmode == numode) {
-			try {
-				numode = xcvr->getMode(hamlib_pbwidth);
-				modeok = true;
-			}
-			catch (const RigException& Ex) {
-				show_error(__func__, "Rig not responding: mode");
-				modeok = false;
+		{
+			guard_lock hamlib(&hamlib_mutex);
+			if (need_mode) {
+				try {
+					numode = xcvr->getMode(hamlib_pbwidth);
+					if (numode != hamlib_rmode) {
+						hamlib_rmode = numode;
+						show_mode(modeString(hamlib_rmode));
+						wf->USB(hamlib_USB());
+					}
+				}
+				catch (const RigException& Ex) {
+					show_error(__func__, "Rig not responding: mode");
+				}
 			}
 		}
-		pthread_mutex_unlock(&hamlib_mutex);
 
 		if (hamlib_exit)
 			break;
 		if (hamlib_bypass)
 			continue;
 
-		if (freqok && freq && (freq != hamlib_freq)) {
-			hamlib_freq = freq;
-			show_frequency(hamlib_freq);
-			wf->rfcarrier(hamlib_freq);
-		}
-
-		if (modeok && (hamlib_rmode != numode)) {
-			hamlib_rmode = numode;
-			show_mode(modeString(hamlib_rmode));
-			if (progdefaults.HamlibSideband != SIDEBAND_RIG)
-				wf->USB(progdefaults.HamlibSideband == SIDEBAND_USB);
-			else
-				wf->USB(!(hamlib_rmode == RIG_MODE_LSB ||
-					  hamlib_rmode == RIG_MODE_CWR ||
-					  hamlib_rmode == RIG_MODE_PKTLSB ||
-					  hamlib_rmode == RIG_MODE_ECSSLSB ||
-					  hamlib_rmode == RIG_MODE_RTTY));
-		}
-
-		if (hamlib_exit)
-			break;
 	}
 
 	hamlib_closed = true;
