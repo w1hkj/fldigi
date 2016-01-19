@@ -2782,21 +2782,81 @@ void set_macro_env(void)
 #ifndef __WOE32__
 		pSKEDH, FLDIGI_RX_IPC_KEY, FLDIGI_TX_IPC_KEY,
 #endif
-		FLDIGI_XMLRPC_ADDRESS, FLDIGI_XMLRPC_PORT,
-		FLDIGI_ARQ_ADDRESS, FLDIGI_ARQ_PORT,
+		FLDIGI_XMLRPC_ADDRESS,
+		FLDIGI_XMLRPC_PORT,
+		FLDIGI_ARQ_ADDRESS,
+		FLDIGI_ARQ_PORT,
 
-		FLDIGI_VERSION_ENVVAR, FLDIGI_PID, FLDIGI_CONFIG_DIR,
+		FLDIGI_VERSION_ENVVAR,
+		FLDIGI_PID,
+		FLDIGI_CONFIG_DIR,
 
-		FLDIGI_MY_CALL, FLDIGI_MY_NAME, FLDIGI_MY_LOCATOR,
+		FLDIGI_MY_CALL,
+		FLDIGI_MY_NAME,
+		FLDIGI_MY_LOCATOR,
 
-		FLDIGI_MODEM, FLDIGI_MODEM_LONG_NAME, FLDIGI_DIAL_FREQUENCY,
-		FLDIGI_AUDIO_FREQUENCY, FLDIGI_FREQUENCY,
+		FLDIGI_MODEM,
+		FLDIGI_MODEM_LONG_NAME,
+		FLDIGI_DIAL_FREQUENCY,
+		FLDIGI_AUDIO_FREQUENCY,
+		FLDIGI_FREQUENCY,
 
 		FLDIGI_MACRO_FILE,
+
 		FLDIGI_LOG_FILE,
-		FLDIGI_LOG_FREQUENCY, FLDIGI_LOG_TIME_ON, FLDIGI_LOG_TIME_OFF, FLDIGI_LOG_CALL, FLDIGI_LOG_NAME,
-		FLDIGI_LOG_RST_IN, FLDIGI_LOG_RST_OUT, FLDIGI_LOG_QTH, FLDIGI_LOG_LOCATOR,
-		FLDIGI_LOG_NOTES, FLDIGI_AZ, ENV_SIZE
+		FLDIGI_LOG_FREQUENCY,
+		FLDIGI_LOG_DATE,
+		FLDIGI_LOG_DATE_OFF,
+		FLDIGI_LOG_TIME_ON,
+		FLDIGI_LOG_TIME_OFF,
+		FLDIGI_LOG_CALL,
+		FLDIGI_LOG_NAME,
+		FLDIGI_LOG_RST_IN,
+		FLDIGI_LOG_RST_OUT,
+		FLDIGI_LOG_QTH,
+		FLDIGI_LOG_LOCATOR,
+		FLDIGI_LOG_NOTES,
+		FLDIGI_LOG_STATE,
+		FLDIGI_LOG_COUNTRY,
+		FLDIGI_LOG_SERNO_IN,
+		FLDIGI_LOG_SERNO_OUT,
+		FLDIGI_XCHG_IN,
+		FLDIGI_XCGH_OUT,
+		FLDIGI_VE_PROV,
+		FLDIGI_AZ,
+
+		FLDIGI_LOGBOOK_CALL,
+		FLDIGI_LOGBOOK_NAME,
+		FLDIGI_LOGBOOK_DATE,
+		FLDIGI_LOGBOOK_TIME_ON,
+		FLDIGI_LOGBOOK_DATE_OFF,
+		FLDIGI_LOGBOOK_TIME_OFF,
+		FLDIGI_LOGBOOK_RST_IN,
+		FLDIGI_LOGBOOK_RST_OUT,
+		FLDIGI_LOGBOOK_FREQUENCY,
+		FLDIGI_LOGBOOK_MODE,
+		FLDIGI_LOGBOOK_STATE,
+		FLDIGI_LOGBOOK_VE_PROV,
+		FLDIGI_LOGBOOK_COUNTRY,
+		FLDIGI_LOGBOOK_SERNO_IN,
+		FLDIGI_LOGBOOK_SERNO_OUT,
+		FLDIGI_LOGBOOK_XCHG_IN,
+		FLDIGI_LOGBOOK_XCHG_OUT,
+		FLDIGI_LOGBOOK_QTH,
+		FLDIGI_LOGBOOK_LOCATOR,
+		FLDIGI_LOGBOOK_QSL_R,
+		FLDIGI_LOGBOOK_QSL_S,
+		FLDIGI_LOGBOOK_NOTES,
+		FLDIGI_LOGBOOK_TX_PWR,
+		FLDIGI_LOGBOOK_COUNTY,
+		FLDIGI_LOGBOOK_IOTA,
+		FLDIGI_LOGBOOK_DXCC,
+		FLDIGI_LOGBOOK_QSL_VIA,
+		FLDIGI_LOGBOOK_CONTINENT,
+		FLDIGI_LOGBOOK_CQZ,
+		FLDIGI_LOGBOOK_ITUZ,
+
+		ENV_SIZE
 	};
 
 	struct {
@@ -2831,7 +2891,10 @@ void set_macro_env(void)
 		{ "FLDIGI_MACRO_FILE", progStatus.LastMacroFile.c_str() },
 
 		{ "FLDIGI_LOG_FILE", progdefaults.logbookfilename.c_str() },
+
 		{ "FLDIGI_LOG_FREQUENCY", inpFreq->value() },
+		{ "FLDIGI_LOG_DATE", inpDate_log->value() },
+		{ "FLDIGI_LOG_DATE_OFF", inpDateOff_log->value() },
 		{ "FLDIGI_LOG_TIME_ON", inpTimeOn->value() },
 		{ "FLDIGI_LOG_TIME_OFF", inpTimeOff->value() },
 		{ "FLDIGI_LOG_CALL", inpCall->value() },
@@ -2841,7 +2904,46 @@ void set_macro_env(void)
 		{ "FLDIGI_LOG_QTH", inpQth->value() },
 		{ "FLDIGI_LOG_LOCATOR", inpLoc->value() },
 		{ "FLDIGI_LOG_NOTES", inpNotes->value() },
-		{ "FLDIGI_AZ", inpAZ->value() }
+		{ "FLDIGI_LOG_STATE", inpState->value() },
+		{ "FLDIGI_LOG_COUNTRY", inpCountry->value() },
+		{ "FLDIGI_LOG_SERNO_IN", inpSerNo->value() },
+		{ "FLDIGI_LOG_SERNO_OUT", outSerNo->value() },
+		{ "FLDIGI_XCHG_IN", inpXchgIn->value() },
+		{ "FLDIGI_XCHG_OUT", inpSend1->value() },
+		{ "FLDIGI_VE_PROV", inpVEprov->value() },
+		{ "FLDIGI_AZ", inpAZ->value() },
+
+		{ "FLDIGI_LOGBOOK_CALL", inpCall_log->value() },
+		{ "FLDIGI_LOGBOOK_NAME", inpName_log->value () },
+		{ "FLDIGI_LOGBOOK_DATE", inpDate_log->value() },
+		{ "FLDIGI_LOGBOOK_TIME_ON", inpTimeOn_log->value() },
+		{ "FLDIGI_LOGBOOK_DATE_OFF", inpDateOff_log->value() },
+		{ "FLDIGI_LOGBOOK_TIME_OFF", inpTimeOff_log->value() },
+		{ "FLDIGI_LOGBOOK_RST_IN", inpRstR_log->value() },
+		{ "FLDIGI_LOGBOOK_RST_OUT", inpRstS_log->value() },
+		{ "FLDIGI_LOGBOOK_FREQUENCY", inpFreq_log->value() },
+		{ "FLDIGI_LOGBOOK_MODE", inpMode_log->value() },
+		{ "FLDIGI_LOGBOOK_STATE", inpState_log->value() },
+		{ "FLDIGI_LOGBOOK_VE_PROV", inpVE_Prov_log->value() },
+		{ "FLDIGI_LOGBOOK_COUNTRY", inpCountry_log->value() },
+		{ "FLDIGI_LOGBOOK_SERNO_IN", inpSerNoIn_log->value() },
+		{ "FLDIGI_LOGBOOK_SERNO_OUT", inpSerNoOut_log->value() },
+		{ "FLDIGI_LOGBOOK_XCHG_IN", inpXchgIn_log->value() },
+		{ "FLDIGI_LOGBOOK_XCHG_OUT", inpMyXchg_log->value() },
+		{ "FLDIGI_LOGBOOK_QTH", inpQth_log->value() },
+		{ "FLDIGI_LOGBOOK_LOCATOR", inpLoc_log->value() },
+		{ "FLDIGI_LOGBOOK_QSL_R", inpQSLrcvddate_log->value() },
+		{ "FLDIGI_LOGBOOK_QSL_S", inpQSLsentdate_log->value() },
+		{ "FLDIGI_LOGBOOK_NOTES", inpNotes_log->value() },
+		{ "FLDIGI_LOGBOOK_TX_PWR", inpTX_pwr_log->value() },
+		{ "FLDIGI_LOGBOOK_COUNTY", inpCNTY_log->value() },
+		{ "FLDIGI_LOGBOOK_IOTA", inpIOTA_log->value() },
+		{ "FLDIGI_LOGBOOK_DXCC", inpDXCC_log->value() },
+		{ "FLDIGI_LOGBOOK_QSL_VIA", inpQSL_VIA_log->value() },
+		{ "FLDIGI_LOGBOOK_CONTINENT", inpCONT_log->value() },
+		{ "FLDIGI_LOGBOOK_CQZ", inpCQZ_log->value() },
+		{ "FLDIGI_LOGBOOK_ITUZ", inpITUZ_log->value() }
+
 	};
 
 #ifndef __WOE32__
@@ -2886,8 +2988,13 @@ void set_macro_env(void)
 	unsetenv("MALLOC_PERTURB_");
 #endif
 
-	for (size_t j = 0; j < ENV_SIZE; j++)
-		setenv(env[j].var, env[j].val, 1);
+	string temp;
+	size_t pch;
+	for (size_t j = 0; j < ENV_SIZE; j++) {
+		temp = env[j].val;
+		while ((pch = temp.find("\n")) != string::npos) temp[pch] = ';';
+		setenv(env[j].var, temp.c_str(), 1);
+	}
 
 	string path = getenv("PATH");
 	string mypath = ScriptsDir;

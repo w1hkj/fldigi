@@ -61,8 +61,6 @@ static string notes;
 
 //=============================================================================
 
-//#if defined(__WOE32__) || defined(__APPLE__)
-
 static string adif;
 
 void writeADIF () {
@@ -130,8 +128,6 @@ void submit_ADIF(cQsoRec &rec)
 
 	writeADIF();
 }
-
-//#endif
 
 //---------------------------------------------------------------------
 // the following IPC message is compatible with xlog remote data spec.
