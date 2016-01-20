@@ -853,7 +853,7 @@ bool flrig_get_xcvr()
 // xmlrpc read polling thread
 //======================================================================
 static bool run_flrig_thread = true;
-static int poll_interval = 1000; // 100 // milliseconds
+static int poll_interval = 100; // 1 second
 
 //----------------------------------------------------------------------
 // Set QSY to true if xmlrpc client connection is OK
@@ -881,13 +881,13 @@ void flrig_connection()
 				method_str.append("    ").append(result[i]).append("\n");
 			LOG_INFO("%s", method_str.c_str());
 			connected_to_flrig = true;
-			poll_interval = 100;
+			poll_interval = 20; // every 200 msec
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
 			LOG_VERBOSE("%s", "Waiting for flrig");
 			connected_to_flrig = false;
-			poll_interval = 5000;
+			poll_interval = 500; // every 5 seconds
 		}
 	} catch (...) {
 //		LOG_ERROR("%s", "failure in flrig_client");
@@ -919,7 +919,10 @@ void connect_to_flrig()
 void * flrig_thread_loop(void *d)
 {
 	for(;;) {
-		MilliSleep(poll_interval );//progStatus.poll_interval);
+		for (int i = 0; i < poll_interval; i++) {
+			if (!run_flrig_thread) break;
+			MilliSleep(10);
+		}
 
 		if (!run_flrig_thread) break;
 
@@ -951,7 +954,7 @@ void * flrig_thread_loop(void *d)
 void FLRIG_start_flrig_thread()
 {
 	flrig_thread = new pthread_t;
-	poll_interval = 1000;
+	poll_interval = 100;
 	if (pthread_create(flrig_thread, NULL, flrig_thread_loop, NULL)) {
 		LOG_ERROR("%s", "flrig_thread create");
 		exit(EXIT_FAILURE);
@@ -960,11 +963,13 @@ void FLRIG_start_flrig_thread()
 
 void stop_flrig_thread()
 {
+	LOG_INFO("%s", "stopping flrig thread");
 	flrig_client->close();
 	pthread_mutex_lock(&mutex_flrig);
 		run_flrig_thread = false;
 	pthread_mutex_unlock(&mutex_flrig);
 	pthread_join(*flrig_thread, NULL);
+	LOG_INFO("%s", "flrig thread closed");
 }
 
 void reconnect_to_flrig()

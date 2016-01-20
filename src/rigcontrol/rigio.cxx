@@ -319,17 +319,17 @@ long long fm_freqdata(DATA d, size_t p)
 
 long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 {
+	failed = false;
+	if (nonCATrig || rigCAT_exit) {
+		failed = true;
+		return progStatus.noCATfreq;
+	}
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
 	long long f = 0;
-
-	failed = false;
-	if (nonCATrig) {
-		failed = true;
-		return progStatus.noCATfreq;
-	}
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -429,19 +429,14 @@ retry_get_freq: ;
 
 void rigCAT_setfreq(long long f)
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return;
-	}
+	if (nonCATrig || rigCAT_exit)
+		return;
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 
 	progStatus.noCATfreq = f;
-
-	if (nonCATrig) {
-		return;
-	}
 
 //	LOG_DEBUG("set frequency %lld", f);
 
@@ -496,19 +491,18 @@ void rigCAT_setfreq(long long f)
 
 string rigCAT_getmode()
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return "";
-	}
+	if (nonCATrig)
+		return progStatus.noCATmode;
+	if (rigCAT_exit) return "";
+
+//	guard_lock ser_guard( &rigCAT_mutex );
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	list<MODE>::iterator mode;
 	list<MODE> *pmode;
 	string strCmd, mData;
 	size_t len;
-
-	if (nonCATrig)
-		return progStatus.noCATmode;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -609,10 +603,8 @@ retry_get_mode: ;
 
 void rigCAT_setmode(const string& md)
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return;
-	}
+	if (rigCAT_exit) return;
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
@@ -685,19 +677,15 @@ void rigCAT_setmode(const string& md)
 
 string rigCAT_getwidth()
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return "";
-	}
+	if (rigCAT_exit || nonCATrig)
+		return progStatus.noCATwidth;
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	list<BW>::iterator bw;
 	list<BW> *pbw;
 	string strCmd, mData;
 	size_t len = 0, p = 0, pData = 0;
-
-	if (nonCATrig)
-		return progStatus.noCATwidth;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -798,18 +786,14 @@ retry_get_width: ;
 
 void rigCAT_setwidth(const string& w)
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return;
-	}
-	XMLIOS modeCmd;
-	list<XMLIOS>::iterator itrCmd;
-	string strCmd;
-
-	if (nonCATrig) {
+	if (nonCATrig || rigCAT_exit) {
 		progStatus.noCATwidth = w;
 		return;
 	}
+
+	XMLIOS modeCmd;
+	list<XMLIOS>::iterator itrCmd;
+	string strCmd;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -876,10 +860,8 @@ void rigCAT_setwidth(const string& w)
 
 void rigCAT_pttON()
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return;
-	}
+	if (rigCAT_exit) return;
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
@@ -932,10 +914,8 @@ void rigCAT_pttON()
 
 void rigCAT_pttOFF()
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return;
-	}
+	if (rigCAT_exit) return;
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
@@ -987,10 +967,8 @@ void rigCAT_pttOFF()
 
 void rigCAT_sendINIT(const string& icmd, int multiplier)
 {
-	{
-		guard_lock ser_guard( &rigCAT_mutex );
-		if (rigCAT_exit) return;
-	}
+	if (rigCAT_exit) return;
+
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
@@ -1312,7 +1290,7 @@ static void *rigCAT_loop(void *args)
 			guard_lock ser_guard( &rigCAT_mutex );
 
 			if (rigCAT_exit == true) {
-				LOG_INFO("%s", "Exit rigCAT loop");
+				LOG_INFO("%s", "Exited rigCAT loop");
 				return NULL;
 			}
 
@@ -1322,6 +1300,7 @@ static void *rigCAT_loop(void *args)
 		}
 
 		freq = rigCAT_getfreq(progdefaults.RigCatRetries, failed);
+		if (rigCAT_exit) continue;
 
 		if ((freq > 0) && (freq != llFreq)) {
 			llFreq = freq;
@@ -1330,12 +1309,16 @@ static void *rigCAT_loop(void *args)
 		}
 
 		sWidth = rigCAT_getwidth();
+		if (rigCAT_exit) continue;
+
 		if (sWidth.size() && sWidth != sRigWidth) {
 			sRigWidth = sWidth;
 			show_bw(sWidth);
 		}
 
 		sMode = rigCAT_getmode();
+		if (rigCAT_exit) continue;
+
 		if (sMode.size() && sMode != sRigMode) {
 			sRigMode = sMode;
 			if (ModeIsLSB(sMode))

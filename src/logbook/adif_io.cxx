@@ -622,12 +622,14 @@ void ADIF_RW_close(void)
 
 	pthread_mutex_lock(&ADIF_RW_mutex);
 	ADIF_RW_EXIT = true;
+	LOG_INFO("%s", "Exiting ADIF_RW_thread");
 	pthread_cond_signal(&ADIF_RW_cond);
 	pthread_mutex_unlock(&ADIF_RW_mutex);
 
 	pthread_join(*ADIF_RW_thread, NULL);
 	delete ADIF_RW_thread;
 	ADIF_RW_thread = 0;
+	LOG_INFO("%s", "ADIF_RW_thread closed");
 }
 
 static void ADIF_RW_init()
