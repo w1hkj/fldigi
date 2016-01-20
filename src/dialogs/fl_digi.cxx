@@ -5921,23 +5921,27 @@ void create_fl_digi_main_primary() {
 				QsoInfoFrame1A->end();
 
 				QsoInfoFrame1B = new Fl_Group (
-						rightof(btnQRZ) + pad,
-						y3,
+						rightof(btnQRZ) + pad, y3,
 						wf1, Hentry + pad);
 
 					outSerNo1 = new Fl_Input2(
-						inpFreq1->x(), y3, 40, Hentry, "#out");
+						inpFreq1->x(), y3, 40, Hentry,
+						"# S");
 					outSerNo1->align(FL_ALIGN_LEFT);
 					outSerNo1->tooltip(_("Sent serial number (read only)"));
 					outSerNo1->type(FL_NORMAL_OUTPUT);
 
 					inpSerNo1 = new Fl_Input2(
-						rightof(outSerNo1) + pad, y3, 40, Hentry, "#in");
+						rightof(outSerNo1) + pad, y3, 
+						40, Hentry,
+						"# R");
 					inpSerNo1->align(FL_ALIGN_LEFT);
 					inpSerNo1->tooltip(_("Received serial number"));
 
 					inpXchgIn1 = new Fl_Input2(
-						rightof(inpSerNo1) + pad + 10, y3, 237, Hentry, "Xch");
+						rightof(inpSerNo1) + pad + 14, y3,
+						inpAZ->x() + inpAZ->w() - (rightof(inpSerNo1) + pad + 14), Hentry,
+						"Xch");
 					inpXchgIn1->align(FL_ALIGN_LEFT);
 					inpXchgIn1->tooltip(_("Contest exchange in"));
 
