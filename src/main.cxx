@@ -222,6 +222,16 @@ void start_process(string executable)
 		CloseHandle(pi.hThread);
 		free(cmd);
 #else
+#ifdef __APPLE__
+	if (executable.find(".app") == (executable.length() - 4)) {
+		std::string progname = executable;
+		size_t p = progname.find("/", 1);
+		if (p != std::string::npos) progname.erase(0,p+1);
+		p = progname.find("-");
+		if (p != std::string::npos) progname.erase(p);
+		executable.append("/Contents/MacOS/").append(progname);
+	}
+#endif
 		switch (fork()) {
 			case -1:
 				LOG_PERROR("fork");
