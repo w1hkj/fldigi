@@ -1,5 +1,27 @@
-2015-11-26  David Freese  <iam_w1hkj@w1hkj.com>
 
+
+=Version 3.23.07=
+
+2016-01-20  David Freese  <iam_w1hkj@w1hkj.com>
+
+	10266d2: Exit delays
+	e821e49: Contest fields
+	ebc00ed: OS-X start_process
+	f5e3186: LOG RECORD exports
+	c0281ee: HAMLIB CW RTTY
+	ddb084c: PSKR metric
+	68c5a6a: PSKR/8
+	397f570: Audio adjust
+	4280903: WEB query
+	8af53b6: Mode Set
+	e756d93: Tab key docs
+	2fb5648: hamlib PTT_ON_DATA
+	22514a5: Macro Tool Bar
+	94f8362: XmlRpc client update
+	2652387: Log Notes
+	e9e8b36: Misc Updates
+	78baf6c: Set Frequency
+	14a2618: Rx SaveAs
 	16ede08: flrig xmlrpc
 
 
