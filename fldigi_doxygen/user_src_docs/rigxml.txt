@@ -8,288 +8,368 @@ This document describes the contents of the rig definition file \"rig.xml\".
 
 A number of transceivers have rig definition files written and tested
 which you may use. These are found in the xmls directory on this
-site: <a href="http://www.w1hkj.com/xmlarchives.html">xml archives</a>.
+site: <a href="https://sourceforge.net/projects/fldigi/files/xmls/">xml archives</a>.
 You will find subdirectories by manufacturer which contain files named
 by rig type, ie: TS-850.xml. If you create, test and verify the proper
 operation for a transceiver not yet posted please share that with
-others by sending it as an attachment to w1hkj@w1hkj.com and I will
+others by sending it as an attachment to feedback [at] w1hkj [dot] com and I will
 post it on the web site. You are encouraged to study the various rig
 definition files to learn more about how they are organized.
 
 Comments are contained within the tag pair:
-
-\<!-<br> --\>
-<br>
-
+<pre>
+\<!--
+...
+--\>
+</pre>
 and may appear anywhere in the rig definition file The entire rig definition
 must be contained within the tag pair
 
-\<RIGDEF\><br>\</RIGDEF\>
+<pre>
+<RIGDEF>
+...
+</RIGDEF>
+</pre>
 
 The text within the tag pair \<RIG\>\</RIG\> specifies the transceiver to
 which this file applies, as in:
 
-\<RIG\>Icom 746 PRO\</RIG\>
-<br>
+<pre>
+<RIG>Icom 746 PRO</RIG>
+</pre>
 
 The text within the tag pair \<PROGRAMMER\>\</PROGRAMMER\> is not used by the
 parser, but should as a minimum say who created and who tested the definition file, as in:
-<br>
 
-\<PROGRAMMER\>
-<br>
-
-Dave Freese W1HKJ Tested by: W1HKJ, Dave <br> \</PROGRAMMER\>
+</pre>
+<PROGRAMMER>
+    Dave Freese W1HKJ Tested by: W1HKJ, Dave
+</PROGRAMMER>
+</pre>
 
 The text within the tag pair
 
-\<STATUS\><br> \</STATUS\>
+<pre>
+<STATUS> ... </STATUS>
+</pre>
 
 is not used by the parser, but should as a minimum state whether the
 definition file has been \"Verified\", is \"Alpha&\", what the Version and
 Date of creation or update, as in:
 
-\<STATUS\> Verified Version: 1.0 Date: 2007 Jan 5 \</STATUS\>
+<pre>
+<STATUS> Verified Version: 1.0 Date: 2007 Jan 5 </STATUS>
+</pre>
 
-The \<TITLE\><br> \</TITLE\>
+The title bar tag pair contains the text which will be displayed on the window decoration bar, as in:
 
-tag pair contains the text which will be displayed on the window decoration bar, as in:
+<pre>
+<TITLE>Rig Control - IC-746 PRO</TITLE>
+</pre>
 
-\<TITLE\>Rig Control - IC-746 PRO\</TITLE\><br>
+\section serial_port Serial Port Parameters
 
 The serial port parameters may be preset in the xml file and also set or
-changed on the rigcat configuration tab.
-<br>
-\<!--
-<br>
-default settings for initial setup
-<br>
---\>
-<br>
+changed on the rigCAT configuration tab.  These values are loaded from the xml file.
+If a value is changed on the configuration tab it is saved in the progdefaults.xml file if the
+configuration is saved.  On a subsequent start of fldigi the saved parameters will override
+the ones in the rig definition file.
 
 <table>
     <tr>
-      <td>xml tag<br>
-      </td>
-      <td>parameter<br>
-      </td>
+      <td><b>xml tag</b></td>
+      <td><b>parameter</b></td>
+      <td><b>description</b></td>
     </tr>
     <tr>
-      <td>\<TIMEOUT\>TT\</TIMEOUT\></td>
-      <td>TT in milliseconds<br>
-      </td>
+      <td><TIMEOUT>TT</TIMEOUT></td>
+      <td>TT in milliseconds</td>
+      <td>serial port timeout</td>
     </tr>
     <tr>
-      <td>\<RETRIES\>NN\</RETRIES\></td>
-      <td>NN integer<br>
-      </td>
+      <td><RETRIES>NN</RETRIES></td>
+      <td>NN integer</td>
+      <td>number of times CAT string is resent</td>
     </tr>
     <tr>
-      <td>\<WRITE_DELAY\>TT\</WRITE_DELAY\></td>
-      <td>TT in milliseconds<br>
-      </td>
+      <td><WRITE_DELAY>TT</WRITE_DELAY></td>
+      <td>TT in milliseconds</td>
+      <td>wait time after sending normal command to xcvr</td>
     </tr>
     <tr>
-      <td>\<POST_WRITE_DELAY\>TT\</POST_WRITE_DELAY\></td>
-      <td>TT in milliseconds<br>
-      </td>
+      <td><INIT_DELAY>IT</INIT_DELAY></td>
+      <td>IT in milliseconds</td>
+      <td>wait time after sending init string to xcvr</td>
     </tr>
     <tr>
-      <td>\<BAUDRATE\>BAUD\</BAUDRATE\></td>
-      <td>BAUD = 1200, 2400, 4800, 9600, 19200, 38400 ...<br>
-      </td>
+      <td><BAUDRATE>BAUD</BAUDRATE></td>
+      <td>BAUD integer</td>
+      <td>1200, 2400, 4800, 9600, 19200, 38400 ...</td>
     </tr>
     <tr>
-      <td>\<STOPBITS\>B\</STOPBITS\></td>
-      <td>B = 1 or 2<br>
-      </td>
+      <td><STOPBITS>B</STOPBITS></td>
+      <td>B integer</td>
+      <td>1 or 2</td>
     </tr>
     <tr>
-      <td>\<RTSCTS\>BOOL\</RTSCTS\></td>
-      <td>BOOL = true, false; h/w handshake used for data flow control<br>
-      </td>
+      <td><RTSCTS>BOOL</RTSCTS></td>
+      <td>BOOL true, false</td>
+      <td>h/w handshake used for data flow control</td>
     </tr>
     <tr>
-      <td>\<RTSPLUS\>BOOL\</RTSPLUS\></td>
-      <td>BOOL = true, false; set RTS signal line to +12 V<br>
-      </td>
+      <td><RTSPLUS>BOOL</RTSPLUS></td>
+      <td>BOOL true, false</td>
+      <td>set RTS signal line to +12 V (default -12 V)</td>
     </tr>
     <tr>
-      <td>\<RTSPTT\>BOOL\</RTSPTT\></td>
-      <td>BOOL = true, false; toggle RTS signal line for PTT<br>
-      </td>
+      <td><RTSPTT>BOOL</RTSPTT></td>
+      <td>BOOL true, false</td>
+      <td>toggle RTS signal line for PTT</td>
     </tr>
     <tr>
-      <td>\<DTRPLUS\>BOOL\</DTRPLUS\></td>
-      <td>BOOL = true, false; set DTR signal line to + 12 V</td>
+      <td><DTRPLUS>BOOL</DTRPLUS></td>
+      <td>BOOL true, false</td>
+      <td>set DTR signal line to + 12 V (default -12 V)</td>
     </tr>
     <tr>
-      <td>\<DTRPTT\>BOOL\</DTRPTT\></td>
-      <td>BOOL = true, false; toggle DTR signal line for PTT<br>
-      </td>
+      <td><DTRPTT>BOOL</DTRPTT></td>
+      <td>BOOL true, false</td>
+      <td>toggle DTR signal line for PTT</td>
     </tr>
     <tr>
-      <td>\<ECHO\>BOOL\</ECHO\></td>
-      <td>BOOL = true, false; xcvr/interface echoes all chars (typical of CI-V interface)<br>
-      </td>
+      <td><CMDPTT>BOOL</CMDPTT></td>
+      <td>BOOL true, false</td>
+      <td>use command string for PTT (not supported by all xcvrs)</td>
     </tr>
     <tr>
-      <td>\<CMDPTT\>BOOL\</CMDPTT\></td>
-      <td>BOOL = true, false; use command string for PTT (not supported by all rigs)<br>
-      </td>
+      <td><ECHO>BOOL</ECHO></td>
+      <td>BOOL true, false</td>
+      <td>xcvr/interface echoes all chars (typical of CI-V interface)</td>
     </tr>
     <tr>
-      <td>\<WAIT_FOR_DEVICE\>nnn\</WAIT_FOR_DEVICE\></td>
-      <td>nnnn in milliseconds, used for correct startup of K9MJ CI-V router<br>
-      </td>
+      <td><WAIT_FOR_DEVICE>nnn</WAIT_FOR_DEVICE></td>
+      <td>nnnn in milliseconds</td>
+      <td>used for correct startup of K9MJ CI-V router</td>
+    </tr>
+    <tr>
+      <td><VSP>BOOL</VSP></td>
+      <td>BOOL true/false</td>
+      <td>serial port is a virtual device</td>
     </tr>
 </table>
-<br>
+
+\section polling Poll Interval
+
+The rigCAT code operates in a separate thread during which the various
+queries are made with a dafault interval of 100 milliseconds between the last query
+and the start of the next cycle.  The actual cycle period is dependent on
+the serial communications baud rate, the size of the commands, and the
+responsiveness of the transceiver.  It will always be greater than the poll interval.
+
+You can specify a poll interval in milliseconds in the xml file:
+
+<POLLINT>mmm</POLLINT>
+
+where mmm is the poll interval in milliseconds.
+
+\section modes_section Modes
 
 The transceiver modes are specified within the \<MODES\>\</MODES\> tag pair.
 Each entry or element associated with a mode has a symbol name (text) and a
 way to specify what the data transfer consists of. The data transfer might
-be a single byte, multiple bytes, or aa string
-<br>
+be a single byte, multiple bytes, or a string
 
 Example 1, for the Icom-746PRO
-<br>
 
-\<MODES\><br>
-      \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>RTTY\</SYMBOL\>\<BYTE\>04\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>05\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>07\</BYTE\>\</ELEMENT\><br>
-      \<ELEMENT\>\<SYMBOL\>RTTY-R\</SYMBOL\>\<BYTE\>08\</BYTE\>\</ELEMENT\><br>
-\</MODES\><br>
-<br>
+<pre>
+\<MODES\>
+  \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>00</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>01</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>02</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>03</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>RTTY\</SYMBOL\>\<BYTE\>04</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>05</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>07</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>RTTY-R\</SYMBOL\>\<BYTE\>08</BYTE>\</ELEMENT\>
+\</MODES\>
+</pre>
 
 Example 2, for the Kenwood 850
-<br>
 
-\<MODES\><br>
-       \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>31\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>32\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>33\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>34\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>35\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>FSK\</SYMBOL\>\<BYTE\>36\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>37\</BYTE\>\</ELEMENT\><br>
-
-\<ELEMENT\>\<SYMBOL\>FSK-R\</SYMBOL\>\<BYTE\>39\</BYTE\>\</ELEMENT\><br>
-\</MODES\><br>
-<br>
+<pre>
+\<MODES\>
+  \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>31</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>32</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>33</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>34</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>35</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>FSK\</SYMBOL\>\<BYTE\>36</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>37</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>FSK-R\</SYMBOL\>\<BYTE\>39</BYTE>\</ELEMENT\>
+\</MODES\>
+</pre>
 
 Example 3, for the FT-100
-<br>
-\<MODES\><br>
-       \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>04\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>DIG\</SYMBOL\>\<BYTE\>05\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>06\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>W-FM\</SYMBOL\>\<BYTE\>07\</BYTE\>\</ELEMENT\><br>
-\</MODES\><br>
-<br>
+
+<pre>
+\<MODES\>
+  \<ELEMENT\>\<SYMBOL\>LSB\</SYMBOL\>\<BYTE\>00</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>USB\</SYMBOL\>\<BYTE\>01</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>CW\</SYMBOL\>\<BYTE\>02</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>CW-R\</SYMBOL\>\<BYTE\>03</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>AM\</SYMBOL\>\<BYTE\>04</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>DIG\</SYMBOL\>\<BYTE\>05</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>FM\</SYMBOL\>\<BYTE\>06</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>W-FM\</SYMBOL\>\<BYTE\>07</BYTE>\</ELEMENT\>
+\</MODES\>
+</pre>
 
 The modes which are supported by lower sideband in the transceiver are
-specified in the \<LSBMODES\>\</LSBMODES\> tar pair. The string
+specified in the <LSBMODES></LSBMODES> tag pair. The string
 data for the LSB modes must match those given in the modes id specifier
 For example in the Icom 746 Pro:
-<br>
 
-\<LSBMODES\><br>
-       \<STRING\>LSB\</STRING\><br>
-       \<STRING\>RTTY\</STRING\><br>
-       \<STRING\>CW-R\</STRING\><br>
-\</LSBMODES\><br>
-<br>
+<pre>
+<LSBMODES>
+  \<STRING\>LSB\<STRING\>
+  \<STRING\>RTTY\<STRING\>
+  \<STRING\>CW-R\<STRING\>
+</LSBMODES>
+</pre>
+
+\section bandwidths Bandwidth Specifier
 
 If the transceiver data stream uses identically the same format for the
-bandwidth data then it is specified in the \<BANDWIDTHS\>\</BANDWIDTHS\> tag
+bandwidth data then it is specified in the <BANDWIDTHS></BANDWIDTHS> tag
 pair
-<br>
 
 Example for the Icom 746 Pro:
-<br>
 
-\<BANDWIDTHS\><br>
-       \<ELEMENT\>\<SYMBOL\>50\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>100\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>150\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>200\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>250\</SYMBOL\>\<BYTE\>04\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>05\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>350\</SYMBOL\>\<BYTE\>06\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>400\</SYMBOL\>\<BYTE\>07\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>450\</SYMBOL\>\<BYTE\>08\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>09\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>600\</SYMBOL\>\<BYTE\>10\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>700\</SYMBOL\>\<BYTE\>11\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>800\</SYMBOL\>\<BYTE\>12\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>900\</SYMBOL\>\<BYTE\>13\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1000\</SYMBOL\>\<BYTE\>14\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1100\</SYMBOL\>\<BYTE\>15\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1200\</SYMBOL\>\<BYTE\>16\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1300\</SYMBOL\>\<BYTE\>17\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1400\</SYMBOL\>\<BYTE\>18\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1500\</SYMBOL\>\<BYTE\>19\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1600\</SYMBOL\>\<BYTE\>20\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1700\</SYMBOL\>\<BYTE\>21\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1800\</SYMBOL\>\<BYTE\>22\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>1900\</SYMBOL\>\<BYTE\>23\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2000\</SYMBOL\>\<BYTE\>24\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2100\</SYMBOL\>\<BYTE\>25\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2200\</SYMBOL\>\<BYTE\>26\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2300\</SYMBOL\>\<BYTE\>27\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>28\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2500\</SYMBOL\>\<BYTE\>29\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2600\</SYMBOL\>\<BYTE\>30\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2700\</SYMBOL\>\<BYTE\>31\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2800\</SYMBOL\>\<BYTE\>32\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2900\</SYMBOL\>\<BYTE\>33\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3000\</SYMBOL\>\<BYTE\>34\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3100\</SYMBOL\>\<BYTE\>35\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3200\</SYMBOL\>\<BYTE\>36\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3300\</SYMBOL\>\<BYTE\>37\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3400\</SYMBOL\>\<BYTE\>38\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3500\</SYMBOL\>\<BYTE\>39\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>3600\</SYMBOL\>\<BYTE\>40\</BYTE\>\</ELEMENT\><br>
-\</BANDWIDTHS\><br>
-<br>
+<pre>
+<BANDWIDTHS>
+  \<ELEMENT\>\<SYMBOL\>50\</SYMBOL\>\<BYTE\>00</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>100\</SYMBOL\>\<BYTE\>01</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>150\</SYMBOL\>\<BYTE\>02</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>200\</SYMBOL\>\<BYTE\>03</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>250\</SYMBOL\>\<BYTE\>04</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>05</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>350\</SYMBOL\>\<BYTE\>06</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>400\</SYMBOL\>\<BYTE\>07</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>450\</SYMBOL\>\<BYTE\>08</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>09</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>600\</SYMBOL\>\<BYTE\>10</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>700\</SYMBOL\>\<BYTE\>11</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>800\</SYMBOL\>\<BYTE\>12</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>900\</SYMBOL\>\<BYTE\>13</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1000\</SYMBOL\>\<BYTE\>14</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1100\</SYMBOL\>\<BYTE\>15</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1200\</SYMBOL\>\<BYTE\>16</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1300\</SYMBOL\>\<BYTE\>17</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1400\</SYMBOL\>\<BYTE\>18</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1500\</SYMBOL\>\<BYTE\>19</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1600\</SYMBOL\>\<BYTE\>20</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1700\</SYMBOL\>\<BYTE\>21</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1800\</SYMBOL\>\<BYTE\>22</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>1900\</SYMBOL\>\<BYTE\>23</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2000\</SYMBOL\>\<BYTE\>24</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2100\</SYMBOL\>\<BYTE\>25</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2200\</SYMBOL\>\<BYTE\>26</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2300\</SYMBOL\>\<BYTE\>27</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>28</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2500\</SYMBOL\>\<BYTE\>29</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2600\</SYMBOL\>\<BYTE\>30</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2700\</SYMBOL\>\<BYTE\>31</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2800\</SYMBOL\>\<BYTE\>32</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2900\</SYMBOL\>\<BYTE\>33</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3000\</SYMBOL\>\<BYTE\>34</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3100\</SYMBOL\>\<BYTE\>35</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3200\</SYMBOL\>\<BYTE\>36</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3300\</SYMBOL\>\<BYTE\>37</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3400\</SYMBOL\>\<BYTE\>38</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3500\</SYMBOL\>\<BYTE\>39</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>3600\</SYMBOL\>\<BYTE\>40</BYTE>\</ELEMENT\>
+</BANDWIDTHS>
+</pre>
 
 If the bandwidth data stream is unique for send and receive data streams then
-they are specified separately with the \<BW-CMD\>\</BW-CMD\> tag pair for
-data sent to the transceiver, and the \<BW-REPLY\>\</BW-REPLY\> tag pair for
-data returned to the computer.
-<br>
+they are specified separately with a \<BW-CMD\>\</BW-CMD\> tag pair for
+data sent to the transceiver, and a \<BW-REPLY\>\</BW-REPLY\> tag pair for
+data returned to the computer.  The number and symbol name for these must match.
 
 Example: FT-100:
-<br>
 
-\<BW-CMD\><br>
-       \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>6000\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
-\</BW-CMD\><br>
-<br>
-\<BW-REPLY\><br>
-       \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>03\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>02\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>01\</BYTE\>\</ELEMENT\><br>
-       \<ELEMENT\>\<SYMBOL\>6000\</SYMBOL\>\<BYTE\>00\</BYTE\>\</ELEMENT\><br>
-\</BW-REPLY\><br>
-<br>
+<pre>
+<BW-CMD>
+  \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>00</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>01</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>02</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>6000\</SYMBOL\>\<BYTE\>03</BYTE>\</ELEMENT\>
+</BW-CMD>
+
+<BW-REPLY>
+  \<ELEMENT\>\<SYMBOL\>300\</SYMBOL\>\<BYTE\>03</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>500\</SYMBOL\>\<BYTE\>02</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>2400\</SYMBOL\>\<BYTE\>01</BYTE>\</ELEMENT\>
+  \<ELEMENT\>\<SYMBOL\>6000\</SYMBOL\>\<BYTE\>00</BYTE>\</ELEMENT\>
+</BW-REPLY>
+</pre>
+
+\section commands_replies Commands and Replies
+
+CAT command strings are defined within a \<COMMAND\>...\</COMMAND\> block.  Each
+block structure appears as:
+
+<pre>
+<COMMAND>
+  \<SYMBOL\>...\</SYMBOL\>   noun name of symbol
+  \<SIZE\>...\</SIZE\>       number of bytes in CAT string   
+  \<STRING\>...\</STRING\>   string literal (optional)
+  \<DATA\>                 data block (optional)
+    \<DTYPE\>...\</DTYPE\>   type of data in data block
+    \<SIZE\>...\</SIZE\>     number of bytes in data block
+    \<MAX\>...\</MAX\>       maximum value of data value
+    \<MIN\>...\</MIN\>       minimum value of data value
+    \<RESOL\>...\</RESOL\>   resolution of data value
+  \</DATA\>                end of data block
+  \<STRING\>...\</STRING\>   string literal (optional)
+</COMMAND>
+</pre>
+
+Here are three examples from the KX3.xml definition file
+<pre>
+  <COMMAND>
+    \<SYMBOL\>INIT\</SYMBOL\>
+    \<SIZE\>12\</SIZE\>
+    \<STRING\>AI0;DT0;K31;\</STRING\>
+  </COMMAND>
+
+  <COMMAND>
+    \<SYMBOL\>SETFREQ\</SYMBOL\>
+    \<SIZE\>14\</SIZE\>
+    \<STRING\>FA\</STRING\>
+    \<DATA\>
+      \<DTYPE\>DECIMAL\</DTYPE\>
+      \<SIZE\>11\</SIZE\>
+      \<MAX\>99999999999\</MAX\>
+      \<MIN\>00000490000\</MIN\>
+      \<RESOL\>1\</RESOL\>
+    \</DATA\>
+    \<STRING\>;\</STRING\>
+  </COMMAND>
+
+  <COMMAND>
+    \<SYMBOL\>GETFREQ\</SYMBOL\>
+    \<SIZE\>3\</SIZE\>
+    \<STRING\>FA;\</STRING\>
+    <INFO>FREQ</INFO>
+  </COMMAND>
+</pre>
+
+A command string may have a corresponding reply string sent by the transceiver.  The
+SYMBOL noun name for each command - reply pair is the same.
 
 Fldigi can parse and decode message returned from the transceiver that define
 4 aspects of the transceiver operation:
-<br>
 
 <table>
     <tr>
@@ -315,32 +395,44 @@ Fldigi can parse and decode message returned from the transceiver that define
 </table>
 <br>
 
-These are all contained within multiple \<REPLY\>\</REPLY\> tag pairs.  This
-is an example of a fixed format message with no variable fields. It is the
-OK message sent back by the Icom-746 PRO:
-<br>
+These are all contained within multiple \<REPLY\>\</REPLY\> tag pairs.  The REPLY
+block structure is:
 
-\<REPLY\><br>
-       \<SYMBOL\>OK\</SYMBOL\><br>
-       \<SIZE\>6\</SIZE\><br>
-       \<BYTES\>FE FE E0 66\</BYTES\><br>
-       \<BYTE\>FB\</BYTE\><br>
-       \<BYTE\>FD\</BYTE\><br>
-\</REPLY\><br>
-<br>
+<pre>
+\<REPLY\>
+  \<SYMBOL\>...\</SYMBOL\>         noun name of symbol
+  \<SIZE\>...\</SIZE\>             number of bytes in reply string
+  \<BYTES\>...</BYTES>           space separated hexadecimal values
+  \<BYTE\>...</BYTE>             single hexadecimal value
+  \<STRING\>...\</STRING\>         returned character string
+\</REPLY\>
+</pre>
+
+This is an example of a fixed format message with no variable fields. It is the
+OK message sent back by the Icom-746 PRO:
+
+<pre>
+\<REPLY\>
+  \<SYMBOL\>OK\</SYMBOL\>
+  \<SIZE\>6\</SIZE\>
+  \<BYTES\>FE FE E0 66</BYTES>
+  \<BYTE\>FB</BYTE>
+  \<BYTE\>FD</BYTE>
+\</REPLY\>
+</pre>
 
 The \<SYMBOL\>\</SYMBOL\> pair and the command definition are
 mandatory.  The \<SIZE\>\</SIZE\> field is mandatory and specifies the number
 of bytes contained in this reply. The above definition could also have been
 coded as:
-<br>
 
-\<REPLY\><br>
-       \<SYMBOL\>OK\</SYMBOL\><br>
-       \<SIZE\>6\</SIZE\><br>
-       \<BYTES\>FE FE E0 66 FB FD\</BYTES\><br>
-\</REPLY\><br>
-<br>
+<pre>
+\<REPLY\>
+  \<SYMBOL\>OK\</SYMBOL\>
+  \<SIZE\>6\</SIZE\>
+  \<BYTES\>FE FE E0 66 FB FD</BYTES>
+\</REPLY\>
+</pre>
 
 When the reply contains variable data it is specified in a contained
 tag pair \<DATA\>\</DATA\>. This data field contains specifiers that describe
@@ -350,37 +442,319 @@ be one of:
 
 BINARY or<br>
 DECIMAL<br>
-<br>
 
-This is an example for the reply to a mode query that is returned by the Icom-746 PRO:<br>
-<br>
+This is an example for the reply to a mode query that is returned by the Icom-746 PRO:
 
-\<REPLY\><br>
-       \<SYMBOL\>MODE\</SYMBOL\>     specifies the response name<br>
-\<SIZE\>8\</SIZE\>
-8 bytes of data returned<br>
-       \<BYTES\>FE FE E0 66\</BYTES\>  4 bytes of preamble<br>
+<pre>
+\<REPLY\>
+  \<SYMBOL\>MODE\</SYMBOL\>
+  \<SIZE\>8\</SIZE\>
+  \<BYTES\>FE FE E0 66</BYTES>
+  \<BYTE\>04</BYTE>
+  \<DATA\>
+    \<DTYPE\>BINARY\</DTYPE\>
+    \<SIZE\>1\</SIZE\>
+   \</DATA\>
+ <FILL>1</FILL>
+ \<BYTE\>FD</BYTE>
+\</REPLY\>
+</pre>
 
-\<BYTE\>04\</BYTE\>                       1
-additional byte for preample<br>
-       \<DATA\><br>
-
-\<DTYPE\>BINARY\</DTYPE\>   binary data field of
-1 byte<br>
-             \<SIZE\>1\</SIZE\><br>
-       \</DATA\><br>
-
-\<FILL\>1\</FILL\>
-a variable field (data) not used<br>
-
-\<BYTE\>FD\</BYTE\>                      1
-byte postamble<br>
-\</REPLY\><br>
-<br>
-
-Fldigi rigcat will check for both the preample and postamble to insure
+Fldigi rigCAT will check for both the preample and postamble to insure
 that a valid reply has been sent by the transceiver.
 <br>
+
+This is an example for the reply to a frequency query that is returned by the Elecraft KX3.
+The corresponding query command structure is shown above.
+
+<pre>
+\<REPLY\>
+  \<SYMBOL\>FREQ\</SYMBOL\>
+  \<SIZE\>14\</SIZE\>
+  \<STRING\>FA\</STRING\>
+  \<DATA\>
+    \<DTYPE\>DECIMAL\</DTYPE\>
+    \<SIZE\>11\</SIZE\>
+    \<MAX\>99999999999\</MAX\>
+    \<MIN\>00001500000\</MIN\>
+    \<RESOL\>1\</RESOL\>
+  \</DATA\>
+  \<STRING\>;\</STRING\>
+\</REPLY\>  
+</pre>
+
+\section Meters
+
+fldigi rigCAT can query the transceiver for both Smeter and Power Meter.
+The fldigi user interface controls that display these values have a range of
+0 to 100.  You need to provide the scale conversion from queried value to
+fldigi UI control scale.  The <SMETER>...</SMETER> and <PMETER>...</PMETER>
+are reserved pairs that are used to define the conversions.  The program will 
+interpolate between values as it converts the queried value to the user 
+interface control range.  
+
+Here are two examples of scale specifiers:
+
+<pre>
+<!-- smeter scale mapping for FT-950 -->
+<SMETER> 0,0; 255,100 </SMETER>
+
+<!-- power meter scale mapping for FT-950 -->
+<PMETER>
+  0,0; 16,1; 32,4; 48,7;
+  64,12; 80,18; 96,24; 112,32;
+  128,40; 144,50; 160,61; 176,73; 
+  192,85; 208,100
+</PMETER>
+
+<!-- smeter scale mapping for IC-706MkIIG -->
+<SMETER> 0,0; 255,100 </SMETER>
+</pre>
+
+The query and respective responses are coded as any other command/reply pair:
+
+For the FT-950:
+
+<pre>
+<REPLY>
+  <SYMBOL>SMETER</SYMBOL>
+  <SIZE>7</SIZE>
+  <STRING>RM1</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>3</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_SMETER</SYMBOL>
+  <SIZE>4</SIZE>
+  <STRING>RM1;</STRING>
+  <INFO>SMETER</INFO>
+</COMMAND>
+
+<REPLY>
+  <SYMBOL>PWRMETER</SYMBOL>
+  <SIZE>7</SIZE>
+  <STRING>RM5</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>3</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_PWRMETER</SYMBOL>
+  <SIZE>4</SIZE>
+  <STRING>RM5;</STRING>
+  <INFO>PWRMETER</INFO>
+</COMMAND>
+</pre>
+
+and for the IC-706MkIIG:
+
+<pre>
+<REPLY>
+    <SYMBOL>SMETER</SYMBOL>
+    <SIZE>10</SIZE>
+    <BYTES>FE FE E0 58 15 02</BYTES>
+    <DATA>
+        <DTYPE>BCD</DTYPE>
+        <SIZE> 3 </SIZE>
+        <MAX> 255 </MAX>
+        <MIN> 0 </MIN>
+        <RESOL> 1 </RESOL>
+     </DATA>
+    <BYTE>FD</BYTE>
+</REPLY>
+
+<COMMAND>
+    <SYMBOL>GET SMETER</SYMBOL>
+    <SIZE>7</SIZE>
+    <BYTES>FE FE 58 E0 15 02 FD</BYTES>
+    <INFO>SMETER</INFO>
+</COMMAND>
+</pre>
+
+\section notch_control Notch Control
+
+The transceiver manual notch can be both read and controlled using rigCAT.
+
+There are a few requirements that may not be met by all transceivers.
+<br>
+<ul>
+<li>it must support a CAT manual notch on/off string</li>
+<li>it must support a CAT manual notch value string</li>
+<li>the conversion between notch audio frequency and the CAT value must
+be bilateral.</li>
+</ul>
+<br>
+Here is an example for the FT-950:
+
+<pre>
+<NOTCH>
+  1,10; 300,3000;
+</NOTCH>
+
+<COMMAND>
+    <SYMBOL>SET_NOTCH_ON</SYMBOL>
+    <SIZE>8</SIZE>
+    <STRING>BP00001;</STRING>
+</COMMAND>
+
+<COMMAND>
+    <SYMBOL>SET_NOTCH_OFF</SYMBOL>
+    <SIZE>8</SIZE>
+    <STRING>BP00000;</STRING>
+</COMMAND>
+
+<COMMAND>
+    <SYMBOL>SET_NOTCH_VAL</SYMBOL>
+    <SIZE>8</SIZE>
+    <STRING>BP01</STRING>
+    <DATA>
+        <DTYPE>DECIMAL</DTYPE>
+        <SIZE>3</SIZE>
+    </DATA>
+    <STRING>;</STRING>
+</COMMAND>
+
+<REPLY>
+  <SYMBOL>NOTCH_ON</SYMBOL>
+  <SIZE>8</SIZE>
+  <STRING>BP00001;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_NOTCH_ON</SYMBOL>
+  <SIZE>5</SIZE>
+  <STRING>BP00;</STRING>
+  <INFO>NOTCH_ON</INFO>
+</COMMAND>
+
+<REPLY>
+  <SYMBOL>NOTCH</SYMBOL>
+  <SIZE>8</SIZE>
+  <STRING>BP01</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>3</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_NOTCH</SYMBOL>
+  <SIZE>5</SIZE>
+  <STRING>BP01;</STRING>
+  <INFO>NOTCH</INFO>
+</COMMAND>
+</pre>
+
+The notch is controlled from fldigi using the alt-ctl-left-click on the waterfall.
+The same keyboard-mouse combination is used to both set and clear the notch.  Point
+the cursor to an offending signal, and then use the keyboard-mouse combination to
+set the manual notch at that frequency.  Repeat the keyboard-mouse combination anywhere
+in the waterfall to clear the notch.  The SET notch is indicated by a dashed vertical
+line on the waterfall display at the audio frequency being notched.  You should also
+see a pronounced reduction in signal at that point.  fldigi will also annunciate any
+transceiver changes made to the manual notch.
+
+\section power_level Power Level Control
+
+rigCAT can control the power level of the transceiver if that is a supported CAT command.
+The definitions for the power level are similar to the notch in that the conversion
+should be bilateral.
+
+Another example using the FT-950 transceiver:
+
+<pre>
+<PWRLEVEL>
+  0,0; 100,100;
+</PWRLEVEL>
+
+<REPLY>
+  <SYMBOL>PWRLEVEL</SYMBOL>
+  <SIZE>6</SIZE>
+  <STRING>PC</STRING>
+  <DATA>
+    <DTYPE>DECIMAL</DTYPE>
+    <SIZE>3</SIZE>
+  </DATA>
+  <STRING>;</STRING>
+</REPLY>
+
+<COMMAND>
+  <SYMBOL>GET_PWRLEVEL</SYMBOL>
+  <SIZE>3</SIZE>
+  <STRING>PC;</STRING>
+  <INFO>PWRLEVEL</INFO>
+</COMMAND>
+
+<COMMAND>
+  <SYMBOL>SET_PWRLEVEL</SYMBOL>
+    <SIZE>6</SIZE>
+    <STRING>PC</STRING>
+    <DATA>
+        <DTYPE>DECIMAL</DTYPE>
+        <SIZE>3</SIZE>
+    </DATA>
+    <STRING>;</STRING>
+</COMMAND>
+</pre>
+
+The rigCAT controls for 
+<ul>
+<li>Transceiver-Mode</li>
+<li>Transceiver-Bandwidth</li>
+<li>Smeter</li>
+<li>Power-Meter and</li>
+<li>Power-Level</li>
+</ul>
+all share a common space on the main fldigi display.
+<center>
+\image html rigcat-1.png "Mode/Bandwidth controls"
+\image latex rigcat-1.png "Mode/Bandwidth controls" width=2.0in
+<br>
+\image html rigcat-2.png "S-meter"
+\image latex rigcat-2.png "S-meter" width=2.0in
+<br>
+\image html rigcat-3.png "Power-meter"
+\image latex rigcat-3.png "Power-meter" width=2.0in
+<br>
+\image html rigcat-4.png "Power Level"
+\image latex rigcat-4.png "Power Level" width=2.0in
+</center>
+<br>
+The transition between Mode/Bandwidth and the other control/displays is
+made using the button just to the right of the bandwidth control.
+
+The transition from either S-meter or Power-meter to the Power Level is 
+make by left clicking on the S-meter or Power-meter.
+
+\section debugging Debugging
+
+To assist in debugging an xml file you may place the following statement
+within the body of the <rigdef>...</rigdef> pair.
+
+<DEBUG>true</DEBUG>
+
+fldigi will then record critical events as they occur during the execution
+of the rigCAT loop.  Remove the debug statement from the xml when the
+file has been proven and before publishing.
+
+You can use the xml remarks brackets
+<pre>
+\<!--
+...
+--\>
+</pre>
+to surround sections of the xml document to inhibit certain functions if
+they have already been proven.
+
+You can increase the polling interval to slow things down during debugging.
 
 \ref rig_xml_page "Return to Top of Page"
 <br>

@@ -132,6 +132,18 @@ void Smeter::resize(int X, int Y, int W, int H) {
 	sx = (tw - meter_width) / 2;
 }
 
+int Smeter::handle(int event)
+{
+	if (Fl::event_inside( this )) {
+		if (event == FL_RELEASE) {
+			do_callback();
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
 //
 // End of Smeter.cxx
 //

@@ -574,6 +574,7 @@ fldigi_SOURCES += \
 	qrunner/fqueue.h \
 	qrunner/qrunner.cxx \
 	rigcontrol/FreqControl.cxx \
+	rigcontrol/norig.cxx \
 	rigcontrol/ptt.cxx \
 	rigcontrol/rigio.cxx \
 	rigcontrol/rigsupport.cxx \

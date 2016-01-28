@@ -62,6 +62,7 @@ void parseMODEREPLY(size_t &);
 void parseTITLE(size_t &);
 void parseLSBMODES(size_t &);
 void parseDISCARD(size_t &);
+void parseDEBUG(size_t &);
 
 void parseWRITE_DELAY(size_t &);
 void parseINIT_DELAY(size_t &);
@@ -80,6 +81,12 @@ void parseDTRPTT(size_t &);
 void parseRESTORE_TIO(size_t &);
 void parseECHO(size_t &);
 void parseVSP(size_t &);
+void parseLOGSTR(size_t &);
+void parsePOLLINT(size_t &);
+void parseSMETER(size_t &);
+void parsePMETER(size_t &);
+void parseNOTCH(size_t &);
+void parsePWRLEVEL(size_t &);
 
 void parseIOSsymbol(size_t &);
 void parseIOSsize(size_t &);
@@ -152,6 +159,13 @@ TAGS rigdeftags[] = {
 	{"<CMDPTT", parseCMDPTT},
 	{"<STOPBITS", parseSTOPBITS},
 	{"<VSP", parseVSP},
+	{"<LOGSTR", parseLOGSTR},
+	{"<POLLINT", parsePOLLINT},
+	{"<SMETER", parseSMETER},
+	{"<PMETER", parsePMETER},
+	{"<NOTCH", parseNOTCH},
+	{"<PWRLEVEL", parsePWRLEVEL},
+	{"<DEBUG", parseDEBUG},
 	{0, 0}
 };
 
@@ -522,6 +536,17 @@ void parseRIG(size_t &p0)
 }
 
 //---------------------------------------------------------------------
+// Parse DEBUG, use during xml file creation/testing
+//---------------------------------------------------------------------
+
+void parseDEBUG(size_t &p0){
+	bool val = getBool(p0);
+	xmlrig.debug = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+//---------------------------------------------------------------------
 // Parse Baudrate, write_delay, post_write_delay, timeout, retries
 // RTSCTS handshake
 //---------------------------------------------------------------------
@@ -651,6 +676,106 @@ void parseVSP(size_t &p0)
 	xmlrig.vsp = val;
 	size_t pend = tagEnd(p0);
 	p0 = pend;
+}
+
+void parseLOGSTR(size_t &p0) {
+	bool val = getBool(p0);
+	xmlrig.logstr = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parsePOLLINT(size_t &p0) {
+	int val = getInt(p0);
+	if (val < 100) val = 1000;
+	if (val > 20000) val = 20000;
+	xmlrig.pollinterval = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+void parseSMETER(size_t &p0) {
+	string strmeter = getElement(p0);
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+	xmlrig.smeter.clear();
+	int val, sm;
+	size_t p = strmeter.find(",");
+	while ( !strmeter.empty() && (p != string::npos) ) {
+		val = atoi(&strmeter[0]);
+		sm = atoi(&strmeter[p+1]);
+		xmlrig.smeter.push_back(PAIR(val,sm));
+		p = strmeter.find(";");
+		if (p == string::npos) strmeter.clear();
+		else {
+			strmeter.erase(0, p+1);
+			p = strmeter.find(",");
+		}
+	}
+	xmlrig.use_smeter = true;
+}
+
+void parsePMETER(size_t &p0) {
+	string strmeter = getElement(p0);
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+	xmlrig.smeter.clear();
+	int val, sm;
+	size_t p = strmeter.find(",");
+	while ( !strmeter.empty() && (p != string::npos) ) {
+		val = atoi(&strmeter[0]);
+		sm = atoi(&strmeter[p+1]);
+		xmlrig.pmeter.push_back(PAIR(val,sm));
+		p = strmeter.find(";");
+		if (p == string::npos) strmeter.clear();
+		else {
+			strmeter.erase(0, p+1);
+			p = strmeter.find(",");
+		}
+	}
+	xmlrig.use_pwrmeter = true;
+}
+
+void parseNOTCH(size_t &p0) {
+	string strnotch = getElement(p0);
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+	xmlrig.notch.clear();
+	int val, ntch;
+	size_t p = strnotch.find(",");
+	while ( !strnotch.empty() && (p != string::npos) ) {
+		val = atoi(&strnotch[0]);
+		ntch = atoi(&strnotch[p+1]);
+		xmlrig.notch.push_back(PAIR(val,ntch));
+		p = strnotch.find(";");
+		if (p == string::npos) strnotch.clear();
+		else {
+			strnotch.erase(0, p+1);
+			p = strnotch.find(",");
+		}
+	}
+	xmlrig.use_notch = true;
+}
+
+void parsePWRLEVEL(size_t &p0) {
+	string strpwrlevel = getElement(p0);
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+	xmlrig.pwrlevel.clear();
+	int val, pwr;
+	size_t p = strpwrlevel.find(",");
+	while ( !strpwrlevel.empty() && (p != string::npos) ) {
+		val = atoi(&strpwrlevel[0]);
+		pwr = atoi(&strpwrlevel[p+1]);
+		xmlrig.pwrlevel.push_back(PAIR(val,pwr));
+		p = strpwrlevel.find(";");
+		if (p == string::npos) strpwrlevel.clear();
+		else {
+			strpwrlevel.erase(0, p+1);
+			p = strpwrlevel.find(",");
+		}
+	}
+	xmlrig.use_pwrlevel = true;
 }
 
 //---------------------------------------------------------------------

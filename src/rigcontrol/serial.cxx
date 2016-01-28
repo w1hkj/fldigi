@@ -214,12 +214,12 @@ void Cserial::SetPTT(bool b)
 void Cserial::ClosePort()
 {
 	if (fd < 0) return;
-	LOG_DEBUG("Serial port closed, fd = %d", fd);
 	if (restore_tio) {
 		ioctl(fd, TIOCMSET, &origstatus);
 		tcsetattr (fd, TCSANOW, &oldtio);
 	}
 	close(fd);
+	LOG_INFO("Serial port closed, fd = %d", fd);
 	fd = -1;
 	return;
 }
@@ -348,7 +348,10 @@ void Cserial::ClosePort()
 	if (hComm) {
 		if (restore_tio)
 			bPortReady = SetCommTimeouts (hComm, &CommTimeoutsSaved);
-		CloseHandle(hComm);
+		if (CloseHandle(hComm)) {
+			errno = GetLastError();
+			LOG_PERROR(win_error_string(errno).c_str());
+		}
 		hComm = INVALID_HANDLE_VALUE;
 	}
 	return;

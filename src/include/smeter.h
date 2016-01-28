@@ -55,6 +55,8 @@ private:
 	Fl_Color scale_color;
 	static const char *meter_face;
 
+	void (*cbFunc)(Fl_Widget *, void *);
+
 protected:
 
 	virtual void draw();
@@ -77,10 +79,17 @@ public:
 	}
 	double	value() const { return (value_); }
 	void	resize(int x, int y, int w, int h);
+	int		handle(int);
 
 	void	set_background(Fl_Color c1) { bgnd_ = c1; redraw(); }
 	void	set_metercolor(Fl_Color c2) { fgnd_ = c2; redraw(); }
 	void	set_scalecolor(Fl_Color c3) { scale_color = c3; redraw(); }
+
+	void callback (void (*cbf)(Fl_Widget *, void *) ){ cbFunc = cbf;}
+	void do_callback() { 
+		if (cbFunc) cbFunc(this, (void*)0);
+	}
+
 };
 
 #endif // !smeter

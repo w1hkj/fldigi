@@ -885,12 +885,12 @@ void flrig_connection()
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
-			LOG_VERBOSE("%s", "Waiting for flrig");
+			LOG_INFO("%s", "Waiting for flrig");
 			connected_to_flrig = false;
 			poll_interval = 500; // every 5 seconds
 		}
 	} catch (...) {
-//		LOG_ERROR("%s", "failure in flrig_client");
+		LOG_ERROR("%s", "failure in flrig_client");
 	}
 }
 
@@ -905,12 +905,12 @@ void connect_to_flrig()
 		flrig_client = new XmlRpcClient(
 				progdefaults.flrig_ip_address.c_str(),
 				atol(progdefaults.flrig_ip_port.c_str()));
-		LOG_WARN("created flrig client %s, %ld",
+		LOG_INFO("created flrig xmlrpc client  %s, %ld",
 				progdefaults.flrig_ip_address.c_str(),
 				atol(progdefaults.flrig_ip_port.c_str()));
 		flrig_connection();
 	} catch (...) {
-		LOG_ERROR("Cannot create client %s, %s",
+		LOG_ERROR("Cannot create flrig xmlrpc client %s, %s",
 					progdefaults.flrig_ip_address.c_str(),
 					progdefaults.flrig_ip_port.c_str());
 	}
@@ -918,9 +918,12 @@ void connect_to_flrig()
 
 void * flrig_thread_loop(void *d)
 {
-	for(;;) {
+	while(run_flrig_thread) {
 		for (int i = 0; i < poll_interval; i++) {
-			if (!run_flrig_thread) break;
+			if (!run_flrig_thread) {
+				LOG_INFO("Exiting thread - 1");
+				return NULL;
+			}
 			MilliSleep(10);
 		}
 
@@ -948,6 +951,7 @@ void * flrig_thread_loop(void *d)
 				flrig_get_pwrmeter();
 		}
 	}
+	LOG_INFO("Exiting thread - 2");
 	return NULL;
 }
 

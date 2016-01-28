@@ -40,8 +40,15 @@ extern void rigCAT_setmode(const std::string&);
 extern std::string rigCAT_getwidth();
 extern void rigCAT_setwidth(const std::string&);
 
+extern void rigCAT_get_notch();
+extern void rigCAT_set_notch(int val);
+extern void rigCAT_get_smeter();
+extern void rigCAT_get_pwrmeter();
+extern void rigCAT_set_pwrlevel(int);
+extern void rigCAT_get_pwrlevel();
+
 extern void rigCAT_close();
-extern bool rigCAT_init(bool);
+extern bool rigCAT_init();
 extern void rigCAT_sendINIT(const std::string& icmd, int multiplier = 1);
 
 extern void rigCAT_set_ptt(int);
@@ -49,6 +56,17 @@ extern void rigCAT_set_qsy(long long f);
 
 extern void rigCAT_defaults();
 extern void rigCAT_restore_defaults();
+
+// no xcvr 
+
+extern long long noCAT_getfreq();
+extern void noCAT_setfreq(long long f);
+extern std::string noCAT_getmode();
+extern void noCAT_setmode(const std::string &md);
+extern std::string noCAT_getwidth();
+extern void noCAT_setwidth(const std::string &w);
+extern void noCAT_setPTT(bool val);
+extern void noCAT_init();
 
 #endif
 

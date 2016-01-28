@@ -50,6 +50,8 @@ Rig::Rig(rig_model_t rig_model)
 
 Rig::~Rig()
 {
+	LOG_INFO("Rig destroy %p", rig);
+	if (!rig) return;
 	close();
 }
 
@@ -58,7 +60,7 @@ void Rig::init(rig_model_t rig_model)
 	close();
 	if ((rig = rig_init(rig_model)) == NULL)
 		throw RigException ("Could not initialize rig");
-	LOG_VERBOSE("Initialised rig model %d: %s", rig_model, getName());
+	LOG_INFO("Initialised rig model %d: %s", rig_model, getName());
 }
 
 const char *Rig::getName()
@@ -78,9 +80,11 @@ void Rig::open(void)
 		throw RigException(err);
 }
 
-void Rig::close(void)
+void Rig::close(bool abort)
 {
-	if (rig) {
+	if (abort)
+		rig = NULL;
+	else if (rig) {
 		rig_close(rig);
 		rig_cleanup(rig);
 		rig = NULL;
@@ -209,7 +213,7 @@ void Rig::setConf(token_t token, const char *val)
 }
 void Rig::setConf(const char *name, const char *val)
 {
-	LOG_VERBOSE("setting \"%s\" to \"%s\"", name, val);
+	LOG_INFO("setting \"%s\" to \"%s\"", name, val);
 	int err = rig_set_conf(rig, tokenLookup(name), val);
 	if (err != RIG_OK)
 		throw RigException(name, err);

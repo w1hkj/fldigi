@@ -59,7 +59,7 @@ void PWRmeter::select_25W()
 	fl_font(FL_HELVETICA, labelsize());
 	meter_width = fl_width(W25_face);
 	sx = (tw - meter_width) / 2 + fl_width("|") / 2;
-	meter_width -= fl_width("|  25");
+	meter_width -= fl_width("|");
 }
 
 void PWRmeter::select_50W()
@@ -69,7 +69,7 @@ void PWRmeter::select_50W()
 	fl_font(FL_HELVETICA, labelsize());
 	meter_width = fl_width(W50_face);
 	sx = (tw - meter_width) / 2 + fl_width("|") / 2;
-	meter_width -= fl_width("|  50");
+	meter_width -= fl_width("|");
 }
 
 void PWRmeter::select_100W()
@@ -79,7 +79,7 @@ void PWRmeter::select_100W()
 	fl_font(FL_HELVETICA, labelsize());
 	meter_width = fl_width(W100_face);
 	sx = (tw - meter_width) / 2 + fl_width("|") / 2;
-	meter_width -= fl_width("| 100");
+	meter_width -= fl_width("|");
 }
 
 void PWRmeter::select_200W()
@@ -89,7 +89,7 @@ void PWRmeter::select_200W()
 	fl_font(FL_HELVETICA, labelsize());
 	meter_width = fl_width(W200_face);
 	sx = (tw - meter_width) / 2 + fl_width("|") / 2;
-	meter_width -= fl_width("| 200");
+	meter_width -= fl_width("|");
 }
 
 void PWRmeter::select_auto()
@@ -174,9 +174,6 @@ PWRmeter::PWRmeter(int X, int Y, int W, int H, const char* l)
 	fl_font(FL_HELVETICA, fsize);
 	meter_width = fl_width(W100_face);
 
-//printf("widths: 25W %.0f, 50W %.0f, 100W %.0f, 200W %.0f\n",
-//fl_width(W25_face), fl_width(W50_face), fl_width(W100_face), fl_width(W200_face));
-
 	meter_height = fl_height();
 	label(W100_face);
 	labelfont(FL_HELVETICA);
@@ -185,7 +182,7 @@ PWRmeter::PWRmeter(int X, int Y, int W, int H, const char* l)
 
 	sx = (tw - meter_width) / 2 + fl_width("|") / 2;
 
-	meter_width -= fl_width("| 100");
+	meter_width -= fl_width("|");
 }
 
 void PWRmeter::resize(int X, int Y, int W, int H) {
@@ -239,11 +236,20 @@ void PWRmeter::resize(int X, int Y, int W, int H) {
 	labelcolor(scale_color);
 
 	sx = (tw - meter_width) / 2 + fl_width("|") / 2;
-
-	meter_width -= fl_width("| 100");
+	meter_width -= fl_width("|");
 
 }
 
+int PWRmeter::handle(int event)
+{
+	if (Fl::event_inside( this )) {
+		if (event == FL_RELEASE) {
+			do_callback();
+			return 1;
+		}
+	}
+	return 0;
+}
 
 //
 // End of PWRmeter.cxx

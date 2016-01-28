@@ -23,6 +23,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -81,12 +82,23 @@ struct XMLIOS {
 		bad.clear();
 		size = fill1 = fill2 = 0;
 		data.clear();
-	};
+	}
 };
 
 struct TAGS { const char *tag; void (*fp)(size_t &);};
 
+struct PAIR { 
+	int val;
+	int mtr;
+	PAIR(int v, int s) { val = v; mtr = s; }
+	void clear() {val = 0; mtr = 0; }
+};
+
 struct XMLRIG {
+	XMLRIG() {
+		clear();
+	}
+
 	std::string	port;
 	string rigTitle;
 	int		baud;
@@ -100,12 +112,25 @@ struct XMLRIG {
 	int     write_delay;
 	int		init_delay;
 	int		wait_for_device;
-	int     post_write_delay;
-	int     timeout;
-	int     retries;
-	bool    echo;
-	bool    cmdptt;
-	bool    vsp;
+	int		post_write_delay;
+	int		timeout;
+	int		retries;
+	bool	echo;
+	bool	cmdptt;
+	bool	vsp;
+	bool	logstr;
+	int		pollinterval;
+	bool	use_smeter;
+	vector< PAIR > smeter;
+	bool	use_pwrmeter;
+	vector< PAIR > pmeter;
+	bool	use_notch;
+	vector< PAIR > notch;
+	bool	use_pwrlevel;
+	vector< PAIR >pwrlevel;
+
+	bool	debug;
+
 	void clear() {
 		port.clear();
 		baud = 1200;
@@ -119,6 +144,7 @@ struct XMLRIG {
 		echo = false;
 		cmdptt = false;
 		vsp = false;
+		logstr = false;
 		write_delay = 0;
 		init_delay = 0;
 		wait_for_device = 0;
@@ -126,6 +152,17 @@ struct XMLRIG {
 		timeout = 200;
 		retries = 5;
 		rigTitle = "";
+		pollinterval = 100;
+
+		debug = false;
+
+		use_smeter = false;
+		use_pwrmeter = false;
+		use_pwrlevel = false;
+		smeter.clear();
+		pmeter.clear();
+		pwrlevel.clear();
+		notch.clear();
 	}
 };
 

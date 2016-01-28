@@ -129,6 +129,7 @@ void PTT::set(bool ptt)
 
 	switch (pttdev) {
 	case PTT_NONE: default:
+		noCAT_setPTT(ptt);
 		break;
 #if USE_HAMLIB
 	case PTT_HAMLIB:

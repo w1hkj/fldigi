@@ -64,7 +64,7 @@ public:
 	void open(void);
 
 // This method close the communication port to the rig
-	void close(void);
+	void close(bool abort = false);
 
 	void setFreq(freq_t freq, vfo_t vfo = RIG_VFO_CURR);
 	freq_t getFreq(vfo_t vfo = RIG_VFO_CURR);

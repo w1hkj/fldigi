@@ -197,9 +197,9 @@ struct XmlRpcImpl : public XmlRpcServer
 	/// BEWARE IT IS CALLED FROM ANOTHER THREAD.
 	void close()
 	{
-		LOG_INFO("Stopping XML-RPC server");
 		exit();
 		shutdown();
+		LOG_INFO("XMLRPC server loop terminated");
 	}
 };
 
@@ -1004,13 +1004,14 @@ public:
 			return;
 		}
 
-		if (progdefaults.chkUSERIGCATis)
-			rigCAT_setmode(s);
-#if USE_HAMLIB
-		else if (progdefaults.chkUSEHAMLIBis)
-			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
-#endif
-		else if (progdefaults.chkUSEXMLRPCis)
+//		if (progdefaults.chkUSERIGCATis)
+//			rigCAT_setmode(s);
+//#if USE_HAMLIB
+//		else if (progdefaults.chkUSEHAMLIBis)
+//			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
+//#endif
+//		else 
+//		if (progdefaults.chkUSEXMLRPCis)
 			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
 		*retval = xmlrpc_c::value_nil();

@@ -755,38 +755,46 @@ void configuration::initInterface()
 	listbox_baudrate->hide();
 #endif
 
-	bool riginitOK = false;
-
-	if (chkUSERIGCATis) { // start the rigCAT thread
-		if (rigCAT_init(true)) {
+	if (connected_to_flrig) {
+		LOG_INFO("%s", "using flrig xcvr control");
+		wf->setQSY(1);
+	} else if (chkUSERIGCATis) { // start the rigCAT thread
+		if (rigCAT_init()) {
+			LOG_INFO("%s", "using rigCAT xcvr control");
 			wf->USB(true);
 			wf->setQSY(1);
-			riginitOK = true;
+			rigCAT_get_pwrlevel();
+		} else {
+			LOG_INFO("%s", "defaulting to no xcvr control");
+			noCAT_init();
+			wf->USB(true);
+			wf->setQSY(0);
+			chkUSERIGCATis = false;
 		}
 #if USE_HAMLIB
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
 		if (hamlib_init(HamlibCMDptt)) {
+			LOG_INFO("%s", "using HAMLIB xcvr control");
 			wf->USB(true);
 			wf->setQSY(1);
-			riginitOK = true;
+		} else {
+			LOG_INFO("%s", "defaulting to no xcvr control");
+			noCAT_init();
+			wf->USB(true);
+			wf->setQSY(0);
 		}
 #endif
 	} else if (chkUSEXMLRPCis) {
-		if (rigCAT_init(false)) {
-			LOG_VERBOSE("%s", "using XMLRPC");
-			wf->USB(true);
-			wf->setQSY(0);
-			riginitOK = true;
-		}
-	}
-
-	if (riginitOK == false) {
-		rigCAT_init(false);
+		LOG_INFO("%s", "using XMLRPC");
+		wf->USB(true);
+		wf->setQSY(0);
+	} else {
+		LOG_INFO("%s", "No xcvr control selected");
+		noCAT_init();
 		wf->USB(true);
 		wf->setQSY(0);
 	}
-
-	if (connected_to_flrig) wf->setQSY(1);
+	build_frequencies2_list();
 
 	if (HamlibCMDptt && chkUSEHAMLIBis)
 		push2talk->reset(PTT::PTT_HAMLIB);

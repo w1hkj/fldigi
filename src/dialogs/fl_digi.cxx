@@ -484,6 +484,10 @@ Progress			*pgrsSquelch = (Progress *)0;
 Smeter				*smeter = (Smeter *)0;
 PWRmeter			*pwrmeter = (PWRmeter *)0;
 
+Fl_Group			*pwrlevel_grp = (Fl_Group *)0;
+Fl_Value_Slider2	*pwr_level = (Fl_Value_Slider2 *)0;
+Fl_Button			*set_pwr_level = (Fl_Button *)0;
+
 static Fl_Pixmap 		*addrbookpixmap = 0;
 
 #if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
@@ -806,7 +810,7 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 #if USE_HAMLIB
 	hamlib_restore_defaults();
 #endif
-	rigCAT_restore_defaults();;
+	rigCAT_restore_defaults();
 	dlgConfig->show();
 	cb_init_mode(w, arg);
 }
@@ -921,7 +925,7 @@ void cb_contestiaCustom(Fl_Widget *w, void *arg)
 #if USE_HAMLIB
 	hamlib_restore_defaults();
 #endif
-	rigCAT_restore_defaults();;
+	rigCAT_restore_defaults();
 	dlgConfig->show();
 	cb_init_mode(w, arg);
 }
@@ -3423,23 +3427,31 @@ bool clean_exit(bool ask) {
 
 	delete push2talk;
 #if USE_HAMLIB
+LOG_INFO("hamlib_close");
 	hamlib_close();
 #endif
+LOG_INFO("rigCAT_close");
 	rigCAT_close();
 
+LOG_INFO("ADIF_RW_close");
 	ADIF_RW_close();
 
+LOG_INFO("trx_close");
 	trx_close();
 
 #if USE_HAMLIB
+LOG_INFO("delete xcvr %p", xcvr);
 	if (xcvr) delete xcvr;
 #endif
 
+LOG_INFO("close_logbook");
 	close_logbook();
 	MilliSleep(50);
 
+LOG_INFO("stop_flrig_thread");
 	stop_flrig_thread();
 
+LOG_INFO("exit_process");
 	exit_process();
 
 	return true;
@@ -5462,6 +5474,22 @@ static void add_docked(dockgroup *dock)
 	tgroup->box(FL_FLAT_BOX);//ENGRAVED_BOX);//NO_BOX);//BORDER_BOX);
 }
 
+void cb_meters(void *)
+{
+	rigCAT_get_pwrlevel();
+	pwrlevel_grp->show();
+}
+
+void cb_set_pwr_level(void *)
+{
+	rigCAT_set_pwrlevel((int)pwr_level->value());
+}
+
+void cb_exit_pwr_level(void*)
+{
+	pwrlevel_grp->hide();
+}
+
 void create_fl_digi_main_primary() {
 // bx used as a temporary spacer
 	Fl_Box *bx;
@@ -5623,13 +5651,48 @@ void create_fl_digi_main_primary() {
 				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
 				smeter_w, Hentry);
 			pwrmeter->select(progdefaults.PWRselect);
+			pwrmeter->tooltip(_("Click to set power level"));
+			pwrmeter->callback( (Fl_Callback *) cb_meters);
 			pwrmeter->hide();
 
 			smeter = new Smeter(
 				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
 				smeter_w, Hentry);
 			set_smeter_colors();
+			smeter->tooltip(_("Click to set power level"));
+			smeter->callback( (Fl_Callback *) cb_meters);
 			smeter->hide();
+
+			pwrlevel_grp = new Fl_Group(
+					smeter->x(), smeter->y(),
+					smeter->w(), smeter->h());
+
+				pwr_level = new Fl_Value_Slider2(
+						pwrlevel_grp->x(), pwrlevel_grp->y(), 
+						pwrlevel_grp->w() - 50, pwrlevel_grp->h());
+				pwr_level->type(FL_HOR_NICE_SLIDER);
+				pwr_level->range(0, 100.0);
+				pwr_level->step(1);
+				pwr_level->callback( (Fl_Callback *) cb_set_pwr_level );
+				pwr_level->color( fl_rgb_color(
+						progdefaults.bwsrSliderColor.R,
+						progdefaults.bwsrSliderColor.G,
+						progdefaults.bwsrSliderColor.B));
+				pwr_level->selection_color( fl_rgb_color(
+						progdefaults.bwsrSldrSelColor.R,
+						progdefaults.bwsrSldrSelColor.G,
+						progdefaults.bwsrSldrSelColor.B));
+				pwr_level->tooltip(_("Adjust Power Level"));
+
+				set_pwr_level = new Fl_Button(
+						pwr_level->x() + pwr_level->w(), pwr_level->y(),
+						50, pwr_level->h(),
+						_("Done"));
+				set_pwr_level->tooltip(_("Return to Smeter / Pmeter"));
+				set_pwr_level->callback( (Fl_Callback *) cb_exit_pwr_level );
+
+			pwrlevel_grp->end();
+			pwrlevel_grp->hide();
 
 			qso_combos = new Fl_Group(
 				qsoFreqDisp1->x(), qsoFreqDisp1->y() + qsoFreqDisp1->h() + pad,
@@ -8805,12 +8868,14 @@ void notch_on(int freq)
 {
 	notch_frequency = freq;
 	set_flrig_notch();
+	rigCAT_set_notch(notch_frequency);
 }
 
 void notch_off()
 {
 	notch_frequency = 0;
 	set_flrig_notch();
+	rigCAT_set_notch(notch_frequency);
 }
 
 void enable_kiss(void)
