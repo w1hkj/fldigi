@@ -269,14 +269,11 @@ void status::saveLastState()
 		VIEWERheight = dlgViewer->h();
 	}
 
-	scopeVisible = false;
-	if (scopeview && scopeview->visible()) {
-		scopeVisible = true;
-		scopeX = scopeview->x();
-		scopeY = scopeview->y();
-		scopeW = scopeview->w();
-		scopeH = scopeview->h();
-	}
+	scopeVisible = scopeview->visible();
+	scopeX = scopeview->x();
+	scopeY = scopeview->y();
+	scopeW = scopeview->w();
+	scopeH = scopeview->h();
 
 	contestiatones = progdefaults.contestiatones;
 	contestiabw = progdefaults.contestiabw;
@@ -883,7 +880,8 @@ void status::initLastState()
 
 	if (scopeview) {
 		scopeview->resize(scopeX, scopeY, scopeW, scopeH);
-		if (scopeVisible == true)
+		digiscope->resize(0,0,scopeW,scopeH);
+		if (scopeVisible)
 			scopeview->show();
 	}
 
