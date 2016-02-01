@@ -448,6 +448,7 @@ int FTextRX::handle_qso_data(int start, int end)
 			*(s + offsets.rm_eo) = '\0';
 			inpCall->value(p);
 			log_callback(inpCall);
+			Fl::copy(p, strlen(p), 1);  // copy to clipboard
 		} else {
 			inpXchgIn->position(inpXchgIn->size());
 			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
@@ -464,6 +465,7 @@ int FTextRX::handle_qso_data(int start, int end)
 			p = s + offsets.rm_so;
 			*(s + offsets.rm_eo) = '\0';
 			target = inpCall;
+			Fl::copy(p, strlen(p), 1);  // copy to clipboard
 		}
 		else if (count_if(s, s + strlen(s), static_cast<int(*)(int)>(isdigit)))
 			target = inpQth;
