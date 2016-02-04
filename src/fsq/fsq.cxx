@@ -1195,9 +1195,10 @@ int fsq::rx_process(const double *buf, int len)
 						&rx_stream[SHIFT_SIZE],				// from
 						BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
 				memset(fft_data, 0, sizeof(fft_data));
-				for (int i = 0; i < BLOCK_SIZE; i++)
-					fft_data[i].real() = fft_data[i].imag() =
-						rx_stream[i] * a_blackman[i];
+				for (int i = 0; i < BLOCK_SIZE; i++) {
+					double d = rx_stream[i] * a_blackman[i];
+					fft_data[i] = cmplx(d, d);
+				}
 				fft->ComplexFFT(fft_data);
 				process_tones();
 			}
@@ -1449,6 +1450,7 @@ double fsq_xmtdelay() // in seconds
 
 void fsq_repeat_last_command()
 {
+	using ::next;  // disambiguate from std::next
 	fsq_tx_text->clear();
 	fsq_tx_text->addstr(sz2utf8(commands[next].c_str()));
 	next++;
@@ -1494,7 +1496,7 @@ void try_transmit(void *)
 	if (active_modem != fsq_modem) return;
 
 	if (!active_modem->fsq_squelch_open() && trx_state == STATE_RX) {
-		next = 0;
+		::next = 0;
 		fsq_que_clear();
 //LOG_WARN("%s", "start_tx()");
 		start_tx();
