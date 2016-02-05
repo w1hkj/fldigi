@@ -949,6 +949,31 @@
         ELEM_(bool, eqsl_datetime_off, "EQSL_DATETIME_OFF",                             \
               "Send logbook date/time off vice date on (default)",                      \
               false)                                                                    \
+        /* MacLogger interface */                                                       \
+        ELEM_(bool, connect_to_maclogger, "CONNECT_TO_MACLOGGER",                       \
+              "Connect to MacLogger UDP server on 255.255.255.255 / 9932",              \
+              false)                                                                    \
+        ELEM_(bool, capture_maclogger_radio, "CAPTURE_MACLOGGER_RADIO",                 \
+              "Capture and use UDP Radio Report data",                                  \
+              true)                                                                     \
+        ELEM_(bool, capture_maclogger_spot_tune, "CAPTURE_MACLOGGER_SPOT_TUNE",         \
+              "Capture and use UDP Spot Tune data",                                     \
+              false)                                                                    \
+        ELEM_(bool, capture_maclogger_spot_report, "CAPTURE_MACLOGGER_SPOT_REPORT",     \
+              "Capture and use UDP Spot Report data",                                   \
+              false)                                                                    \
+        ELEM_(bool, capture_maclogger_log, "CAPTURE_MACLOGGER_LOG",                     \
+              "Capture and use UDP Log Report data",                                    \
+              false)                                                                    \
+        ELEM_(bool, capture_maclogger_lookup, "CAPTURE_MACLOGGER_LOOKUP",               \
+              "Capture and use UDP Lookup Report data",                                 \
+              false)                                                                    \
+        ELEM_(bool, enable_maclogger_log, "ENABLE_MACLOGGER_LOG",                       \
+              "Enable UDP string capture to file",                                      \
+              false)                                                                    \
+        ELEM_(std::string, maclogger_log_filename, "MACLOGGER_LOG_FILENAME",            \
+              "Filename for maclogger UDP datastream file",                             \
+              "maclogger_udp_strings.txt")                                              \
         /* Rig control */                                                               \
         ELEM_(bool, btnusb, "BTNUSB",                                                   \
               "This setting is currently unused",                                       \

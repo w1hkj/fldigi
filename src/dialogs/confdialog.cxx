@@ -695,6 +695,8 @@ progdefaults.changed = true;
 
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
+Fl_Tabs *tabsLog=(Fl_Tabs *)0;
+
 Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
 
 static void cb_btnNagMe(Fl_Check_Button* o, void*) {
@@ -811,6 +813,67 @@ Fl_Check_Button *btnUSunits=(Fl_Check_Button *)0;
 static void cb_btnUSunits(Fl_Check_Button* o, void*) {
   progdefaults.us_units = o->value();
 progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnConnectToMaclogger=(Fl_Check_Button *)0;
+
+static void cb_btnConnectToMaclogger(Fl_Check_Button* o, void*) {
+  progdefaults.connect_to_maclogger = o->value();
+if (progdefaults.connect_to_maclogger == false)
+  maclogger_close();
+else
+  maclogger_init();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_radio=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_radio(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_radio = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_log=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_log(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_log = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_lookup=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_lookup(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_lookup = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_spot_tune=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_spot_tune(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_spot_tune = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_spot_report=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_spot_report(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_spot_report = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_enable_maclogger_log=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_maclogger_log(Fl_Check_Button* o, void*) {
+  progdefaults.enable_maclogger_log = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Text_Display *txt_UDP_data=(Fl_Text_Display *)0;
+
+Fl_Output *txt_maclogger_log_filename=(Fl_Output *)0;
+
+static void cb_Clear(Fl_Button*, void*) {
+  txt_UDP_data->buffer()->text("");
 }
 
 Fl_Group *tabMBars=(Fl_Group *)0;
@@ -5789,7 +5852,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 600, 380);
+    { tabsConfigure = new Fl_Tabs(0, 0, 600, 385);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 355, _("Operator"));
@@ -5911,10 +5974,10 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 600, 355, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 600, 360, _("UI"));
         tabUI->tooltip(_("User Interface"));
         tabUI->hide();
-        { tabsUI = new Fl_Tabs(0, 25, 600, 355);
+        { tabsUI = new Fl_Tabs(0, 25, 600, 360);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
@@ -6328,61 +6391,63 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(0, 50, 600, 330, _("Log"));
-            tabLogServer->tooltip(_("User Interface - Logging"));
+          { tabLogServer = new Fl_Group(0, 50, 600, 335, _("Log"));
+            tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
             tabLogServer->hide();
-            { Fl_Group* o = new Fl_Group(52, 59, 496, 198, _("QSO logging"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(69, 81, 236, 20, _("Prompt to save log on exit"));
+            { tabsLog = new Fl_Tabs(0, 55, 600, 330);
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("QSO"));
+                { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(77, 134, 236, 20, _("Prompt to save log on exit"));
                 btnNagMe->tooltip(_("Bug me about saving log entries"));
                 btnNagMe->down_box(FL_DOWN_BOX);
                 btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
                 o->value(progdefaults.NagMe);
-              } // Fl_Check_Button* btnNagMe
-              { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(69, 110, 236, 20, _("Clear on save"));
+                } // Fl_Check_Button* btnNagMe
+                { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(77, 163, 236, 20, _("Clear on save"));
                 btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
                 btnClearOnSave->down_box(FL_DOWN_BOX);
                 btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
                 o->value(progdefaults.ClearOnSave);
-              } // Fl_Check_Button* btnClearOnSave
-              { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(69, 139, 236, 20, _("Convert callsign to upper case"));
+                } // Fl_Check_Button* btnClearOnSave
+                { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(77, 192, 236, 20, _("Convert callsign to upper case"));
                 btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
                 btnCallUpperCase->down_box(FL_DOWN_BOX);
                 btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
                 o->value(progdefaults.calluppercase);
-              } // Fl_Check_Button* btnCallUpperCase
-              { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(69, 169, 236, 20, _("Auto-fill Country and Azimuth"));
+                } // Fl_Check_Button* btnCallUpperCase
+                { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(77, 222, 236, 20, _("Auto-fill Country and Azimuth"));
                 btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
                 btnAutoFillQSO->down_box(FL_DOWN_BOX);
                 btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
                 o->value(progdefaults.autofill_qso_fields);
-              } // Fl_Check_Button* btnAutoFillQSO
-              { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(322, 81, 190, 20, _("Sort by Date/Time OFF"));
+                } // Fl_Check_Button* btnAutoFillQSO
+                { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(330, 134, 190, 20, _("Sort by Date/Time OFF"));
                 btnDateTimeSort->tooltip(_("Sort by date/time OFF - effects all ADIF/Cabrillo reports"));
                 btnDateTimeSort->down_box(FL_DOWN_BOX);
                 btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
                 o->value(progdefaults.sort_date_time_off);
-              } // Fl_Check_Button* btnDateTimeSort
-              { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(322, 110, 190, 20, _("Date time ON == OFF"));
+                } // Fl_Check_Button* btnDateTimeSort
+                { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(330, 163, 190, 20, _("Date time ON == OFF"));
                 btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
                 btndate_time_force->down_box(FL_DOWN_BOX);
                 btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
                 o->value(progdefaults.force_date_time);
-              } // Fl_Check_Button* btndate_time_force
-              { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(322, 139, 213, 20, _("Default RST in to 599/59"));
+                } // Fl_Check_Button* btndate_time_force
+                { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(330, 192, 213, 20, _("Default RST in to 599/59"));
                 btnRSTindefault->tooltip(_("Clear log controls sets RST in to 599/59"));
                 btnRSTindefault->down_box(FL_DOWN_BOX);
                 btnRSTindefault->callback((Fl_Callback*)cb_btnRSTindefault);
                 o->value(progdefaults.RSTin_default);
-              } // Fl_Check_Button* btnRSTindefault
-              { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(322, 169, 216, 20, _("Default RST out to 599/59"));
+                } // Fl_Check_Button* btnRSTindefault
+                { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(330, 222, 216, 20, _("Default RST out to 599/59"));
                 btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599/59"));
                 btnRSTdefault->down_box(FL_DOWN_BOX);
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
-              } // Fl_Check_Button* btnRSTdefault
-              { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(189, 196, 346, 24, _("cty.dat folder"));
+                } // Fl_Check_Button* btnRSTdefault
+                { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(197, 249, 346, 24, _("cty.dat folder"));
                 txt_cty_dat_pathname->tooltip(_("Enter full path-name for cty.dat folder"));
                 txt_cty_dat_pathname->box(FL_DOWN_BOX);
                 txt_cty_dat_pathname->color(FL_BACKGROUND2_COLOR);
@@ -6395,20 +6460,20 @@ Fl_Double_Window* ConfigureDialog() {
                 txt_cty_dat_pathname->align(Fl_Align(FL_ALIGN_LEFT));
                 txt_cty_dat_pathname->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.cty_dat_pathname.c_str());
-              } // Fl_Input2* txt_cty_dat_pathname
-              { btn_select_cty_dat = new Fl_Button(70, 225, 75, 24, _("Browse"));
+                } // Fl_Input2* txt_cty_dat_pathname
+                { btn_select_cty_dat = new Fl_Button(78, 278, 75, 24, _("Browse"));
                 btn_select_cty_dat->tooltip(_("Locate cty.dat file"));
                 btn_select_cty_dat->callback((Fl_Callback*)cb_btn_select_cty_dat);
-              } // Fl_Button* btn_select_cty_dat
-              { btn_default_cty_dat = new Fl_Button(165, 225, 75, 24, _("Default"));
+                } // Fl_Button* btn_select_cty_dat
+                { btn_default_cty_dat = new Fl_Button(173, 278, 75, 24, _("Default"));
                 btn_default_cty_dat->tooltip(_("Restore cty.dat default folder"));
                 btn_default_cty_dat->callback((Fl_Callback*)cb_btn_default_cty_dat);
-              } // Fl_Button* btn_default_cty_dat
-              { btn_reload_cty_dat = new Fl_Button(260, 225, 75, 24, _("Reload"));
+                } // Fl_Button* btn_default_cty_dat
+                { btn_reload_cty_dat = new Fl_Button(268, 278, 75, 24, _("Reload"));
                 btn_reload_cty_dat->tooltip(_("Reload cty.dat"));
                 btn_reload_cty_dat->callback((Fl_Callback*)cb_btn_reload_cty_dat);
-              } // Fl_Button* btn_reload_cty_dat
-              { Fl_Input2* o = inpMyPower = new Fl_Input2(485, 225, 50, 24, _("Transmit Power"));
+                } // Fl_Button* btn_reload_cty_dat
+                { Fl_Input2* o = inpMyPower = new Fl_Input2(493, 278, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color(FL_BACKGROUND2_COLOR);
@@ -6422,25 +6487,29 @@ Fl_Double_Window* ConfigureDialog() {
                 inpMyPower->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.mytxpower.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inpMyPower
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 263, 496, 110, _("Rx Text"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(75, 318, 191, 20, _("Single-click to capture"));
+                } // Fl_Input2* inpMyPower
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Rx Text"));
+                o->hide();
+                { Fl_Group* o = new Fl_Group(62, 100, 496, 110, _("Rx Text"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(85, 155, 191, 20, _("Single-click to capture"));
                 btnRXClicks->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnRXClicks->down_box(FL_DOWN_BOX);
                 btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
                 o->value(progdefaults.rxtext_clicks_qso_data);
-              } // Fl_Check_Button* btnRXClicks
-              { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(277, 318, 254, 20, _("callsign tooltips in received text"));
+                } // Fl_Check_Button* btnRXClicks
+                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(287, 155, 254, 20, _("callsign tooltips in received text"));
                 btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
                 btnRXTooltips->down_box(FL_DOWN_BOX);
                 btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
                 o->value(progdefaults.rxtext_tooltips);
-              } // Fl_Check_Button* btnRXTooltips
-              { Fl_Input2* o = inpNonword = new Fl_Input2(194, 288, 279, 24, _("Word delimiters"));
+                } // Fl_Check_Button* btnRXTooltips
+                { Fl_Input2* o = inpNonword = new Fl_Input2(204, 125, 279, 24, _("Word delimiters"));
                 inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
 ab and newline are automatically included."));
                 inpNonword->box(FL_DOWN_BOX);
@@ -6456,15 +6525,70 @@ ab and newline are automatically included."));
                 inpNonword->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.nonwordchars.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inpNonword
-              { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(277, 343, 220, 20, _("US units of distance (QRB)"));
+                } // Fl_Input2* inpNonword
+                { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(287, 180, 220, 20, _("US units of distance (QRB)"));
                 btnUSunits->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnUSunits->down_box(FL_DOWN_BOX);
                 btnUSunits->callback((Fl_Callback*)cb_btnUSunits);
                 o->value(progdefaults.us_units);
-              } // Fl_Check_Button* btnUSunits
-              o->end();
-            } // Fl_Group* o
+                } // Fl_Check_Button* btnUSunits
+                o->end();
+                } // Fl_Group* o
+                o->end();
+              } // Fl_Group* o
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("MacLogger"));
+                o->hide();
+                { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 95, 186, 20, _("Connect to MacLogger"));
+                btnConnectToMaclogger->down_box(FL_DOWN_BOX);
+                btnConnectToMaclogger->callback((Fl_Callback*)cb_btnConnectToMaclogger);
+                o->value(progdefaults.connect_to_maclogger);
+                } // Fl_Check_Button* btnConnectToMaclogger
+                { Fl_Check_Button* o = btn_capture_maclogger_radio = new Fl_Check_Button(205, 95, 186, 20, _("Capture Radio Report"));
+                btn_capture_maclogger_radio->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_radio->value(1);
+                btn_capture_maclogger_radio->callback((Fl_Callback*)cb_btn_capture_maclogger_radio);
+                o->value(progdefaults.capture_maclogger_radio);
+                } // Fl_Check_Button* btn_capture_maclogger_radio
+                { Fl_Check_Button* o = btn_capture_maclogger_log = new Fl_Check_Button(205, 120, 186, 20, _("Capture Log Report"));
+                btn_capture_maclogger_log->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_log->callback((Fl_Callback*)cb_btn_capture_maclogger_log);
+                o->value(progdefaults.capture_maclogger_log);
+                } // Fl_Check_Button* btn_capture_maclogger_log
+                { Fl_Check_Button* o = btn_capture_maclogger_lookup = new Fl_Check_Button(405, 95, 186, 20, _("Capture Lookup "));
+                btn_capture_maclogger_lookup->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_lookup->callback((Fl_Callback*)cb_btn_capture_maclogger_lookup);
+                o->value(progdefaults.capture_maclogger_lookup);
+                } // Fl_Check_Button* btn_capture_maclogger_lookup
+                { Fl_Check_Button* o = btn_capture_maclogger_spot_tune = new Fl_Check_Button(405, 120, 186, 20, _("Capture Spot Tune"));
+                btn_capture_maclogger_spot_tune->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_spot_tune->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_tune);
+                o->value(progdefaults.capture_maclogger_spot_tune);
+                } // Fl_Check_Button* btn_capture_maclogger_spot_tune
+                { Fl_Check_Button* o = btn_capture_maclogger_spot_report = new Fl_Check_Button(405, 147, 186, 20, _("Capture Spot Report"));
+                btn_capture_maclogger_spot_report->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_spot_report->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_report);
+                o->value(progdefaults.capture_maclogger_spot_report);
+                } // Fl_Check_Button* btn_capture_maclogger_spot_report
+                { Fl_Check_Button* o = btn_enable_maclogger_log = new Fl_Check_Button(10, 175, 165, 25, _("Enable UDP log file"));
+                btn_enable_maclogger_log->down_box(FL_DOWN_BOX);
+                btn_enable_maclogger_log->callback((Fl_Callback*)cb_btn_enable_maclogger_log);
+                o->value(progdefaults.enable_maclogger_log);
+                } // Fl_Check_Button* btn_enable_maclogger_log
+                { Fl_Text_Display* o = txt_UDP_data = new Fl_Text_Display(10, 220, 580, 156, _("UDP data stream"));
+                txt_UDP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
+                o->buffer(txtbuffer);
+                } // Fl_Text_Display* txt_UDP_data
+                { Fl_Output* o = txt_maclogger_log_filename = new Fl_Output(178, 175, 272, 25);
+                o->value(progdefaults.maclogger_log_filename.c_str());
+                } // Fl_Output* txt_maclogger_log_filename
+                { Fl_Button* o = new Fl_Button(460, 175, 129, 25, _("Clear UDP text"));
+                o->callback((Fl_Callback*)cb_Clear);
+                } // Fl_Button* o
+                o->end();
+              } // Fl_Group* o
+              tabsLog->end();
+            } // Fl_Tabs* tabsLog
             tabLogServer->end();
           } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 330, _("Macros"));
@@ -6675,8 +6799,9 @@ ab and newline are automatically included."));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
             tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx/Tx"));
-                { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 85, 165, 24, _("Rx/Tx Character set"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Rx/Tx"));
+                o->hide();
+                { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 90, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
                 listbox_charset_status->box(FL_BORDER_BOX);
                 listbox_charset_status->color((Fl_Color)55);
@@ -6691,92 +6816,92 @@ ab and newline are automatically included."));
                   listbox_charset_status->callback(cb_listbox_charset, 0);
                 listbox_charset_status->end();
                 } // Fl_ListBox* listbox_charset_status
-                { RxText = new Fl_Input(96, 116, 220, 36);
+                { RxText = new Fl_Input(96, 121, 220, 36);
                 RxText->value("Receive Text");
                 RxText->color(fl_rgb_color(progdefaults.RxColor.R, progdefaults.RxColor.G, progdefaults.RxColor.B));
                 RxText->textfont(progdefaults.RxFontnbr); RxText->textsize(progdefaults.RxFontsize); RxText->textcolor(progdefaults.RxFontcolor);
                 RxText->type(FL_MULTILINE_INPUT_WRAP);
                 } // Fl_Input* RxText
-                { btnRxColor = new Fl_Button(326, 123, 75, 21, _("Rx bkgnd"));
+                { btnRxColor = new Fl_Button(326, 128, 75, 21, _("Rx bkgnd"));
                 btnRxColor->callback((Fl_Callback*)cb_btnRxColor);
                 } // Fl_Button* btnRxColor
-                { btnTxColor = new Fl_Button(326, 166, 75, 21, _("Tx bkgnd"));
+                { btnTxColor = new Fl_Button(326, 171, 75, 21, _("Tx bkgnd"));
                 btnTxColor->callback((Fl_Callback*)cb_btnTxColor);
                 } // Fl_Button* btnTxColor
-                { TxText = new Fl_Input(96, 158, 220, 37);
+                { TxText = new Fl_Input(96, 163, 220, 37);
                 TxText->value("Transmit Text");
                 TxText->color(fl_rgb_color(progdefaults.TxColor.R, progdefaults.TxColor.G, progdefaults.TxColor.B));
                 TxText->textfont(progdefaults.TxFontnbr); TxText->textsize(progdefaults.TxFontsize); TxText->textcolor(progdefaults.TxFontcolor);
                 TxText->type(FL_MULTILINE_INPUT_WRAP);
                 } // Fl_Input* TxText
-                { btnRxFont = new Fl_Button(411, 123, 75, 21, _("Rx font"));
+                { btnRxFont = new Fl_Button(411, 128, 75, 21, _("Rx font"));
                 btnRxFont->callback((Fl_Callback*)cb_btnRxFont);
                 } // Fl_Button* btnRxFont
-                { btnTxFont = new Fl_Button(411, 166, 75, 21, _("Tx font"));
+                { btnTxFont = new Fl_Button(411, 171, 75, 21, _("Tx font"));
                 btnTxFont->callback((Fl_Callback*)cb_btnTxFont);
                 } // Fl_Button* btnTxFont
-                { MacroText = new Fl_Input(96, 201, 220, 37);
+                { MacroText = new Fl_Input(96, 206, 220, 37);
                 MacroText->value("Macro editor text");
                 MacroText->textfont(progdefaults.MacroEditFontnbr);
                 MacroText->textsize(progdefaults.MacroEditFontsize);
                 MacroText->type(FL_MULTILINE_INPUT_WRAP);
                 } // Fl_Input* MacroText
-                { btnMacroEditFont = new Fl_Button(326, 209, 120, 21, _("Macro Edit Font"));
+                { btnMacroEditFont = new Fl_Button(326, 214, 120, 21, _("Macro Edit Font"));
                 btnMacroEditFont->callback((Fl_Callback*)cb_btnMacroEditFont);
                 } // Fl_Button* btnMacroEditFont
-                { Fl_Group* o = new Fl_Group(86, 248, 404, 81, _("Text Highlighting"));
+                { Fl_Group* o = new Fl_Group(86, 253, 404, 81, _("Text Highlighting"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-                { btnXMIT = new Fl_Button(104, 276, 40, 21, _("XMIT"));
+                { btnXMIT = new Fl_Button(104, 281, 40, 21, _("XMIT"));
                 btnXMIT->tooltip(_("Sent chars in Rx/Tx pane"));
                 btnXMIT->callback((Fl_Callback*)cb_btnXMIT);
                 btnXMIT->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnXMIT->color(progdefaults.XMITcolor);
                 } // Fl_Button* btnXMIT
-                { btnCTRL = new Fl_Button(147, 276, 40, 21, _("CTRL"));
+                { btnCTRL = new Fl_Button(147, 281, 40, 21, _("CTRL"));
                 btnCTRL->tooltip(_("Control chars in Rx/Tx pane"));
                 btnCTRL->callback((Fl_Callback*)cb_btnCTRL);
                 btnCTRL->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnCTRL->color(progdefaults.CTRLcolor);
                 } // Fl_Button* btnCTRL
-                { btnSKIP = new Fl_Button(191, 276, 40, 21, _("SKIP"));
+                { btnSKIP = new Fl_Button(191, 281, 40, 21, _("SKIP"));
                 btnSKIP->tooltip(_("Skipped chars in Tx pane\n(Tx on/off in CW)"));
                 btnSKIP->callback((Fl_Callback*)cb_btnSKIP);
                 btnSKIP->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnSKIP->color(progdefaults.SKIPcolor);
                 } // Fl_Button* btnSKIP
-                { btnALTR = new Fl_Button(234, 276, 40, 21, _("ALTR"));
+                { btnALTR = new Fl_Button(234, 281, 40, 21, _("ALTR"));
                 btnALTR->tooltip(_("Alternate character color in Rx panelr"));
                 btnALTR->callback((Fl_Callback*)cb_btnALTR);
                 btnALTR->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnALTR->color(progdefaults.ALTRcolor);
                 } // Fl_Button* btnALTR
-                { btnSEL = new Fl_Button(278, 276, 39, 21, _("SEL"));
+                { btnSEL = new Fl_Button(278, 281, 39, 21, _("SEL"));
                 btnSEL->tooltip(_("Selection background color in Rx Tx panels"));
                 btnSEL->callback((Fl_Callback*)cb_btnSEL);
                 btnSEL->align(Fl_Align(FL_ALIGN_BOTTOM));
                 btnSEL->color(progdefaults.RxTxSelectcolor);
                 } // Fl_Button* btnSEL
-                { btnNoTextColor = new Fl_Button(325, 276, 70, 21, _("System"));
+                { btnNoTextColor = new Fl_Button(325, 281, 70, 21, _("System"));
                 btnNoTextColor->callback((Fl_Callback*)cb_btnNoTextColor);
                 } // Fl_Button* btnNoTextColor
-                { btnTextDefaults = new Fl_Button(399, 276, 70, 21, _("Defaults"));
+                { btnTextDefaults = new Fl_Button(399, 281, 70, 21, _("Defaults"));
                 btnTextDefaults->callback((Fl_Callback*)cb_btnTextDefaults);
                 } // Fl_Button* btnTextDefaults
                 o->end();
                 } // Fl_Group* o
-                { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(110, 340, 25, 25, _("display Rx control chars as ascii string"));
+                { Fl_Check_Button* o = btn_show_all_codes = new Fl_Check_Button(110, 345, 25, 25, _("display Rx control chars as ascii string"));
                 btn_show_all_codes->down_box(FL_DOWN_BOX);
                 btn_show_all_codes->callback((Fl_Callback*)cb_btn_show_all_codes);
                 o->value(progdefaults.show_all_codes);
                 } // Fl_Check_Button* btn_show_all_codes
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("FreqDisp / Meters"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("FreqDisp / Meters"));
                 o->hide();
-                { Fl_Group* o = new Fl_Group(115, 88, 394, 87);
+                { Fl_Group* o = new Fl_Group(115, 108, 395, 87);
                 o->box(FL_ENGRAVED_FRAME);
-                { Fl_Box* o = FDdisplay = new Fl_Box(195, 92, 235, 45, _("14070.150"));
+                { Fl_Box* o = FDdisplay = new Fl_Box(195, 112, 235, 45, _("14070.150"));
                 FDdisplay->box(FL_DOWN_BOX);
                 FDdisplay->color((Fl_Color)55);
                 FDdisplay->labelfont(4);
@@ -6785,47 +6910,47 @@ ab and newline are automatically included."));
                 o->labelcolor(fl_rgb_color(progdefaults.FDforeground.R,progdefaults.FDforeground.G,progdefaults.FDforeground.B));
                 o->labelfont(progdefaults.FreqControlFontnbr);
                 } // Fl_Box* FDdisplay
-                { btn_freq_control_font = new Fl_Button(122, 143, 90, 24, _("Font"));
+                { btn_freq_control_font = new Fl_Button(122, 163, 90, 24, _("Font"));
                 btn_freq_control_font->callback((Fl_Callback*)cb_btn_freq_control_font);
                 } // Fl_Button* btn_freq_control_font
-                { btnBackgroundColor = new Fl_Button(218, 143, 90, 24, _("Bg Color"));
+                { btnBackgroundColor = new Fl_Button(218, 163, 90, 24, _("Bg Color"));
                 btnBackgroundColor->callback((Fl_Callback*)cb_btnBackgroundColor);
                 } // Fl_Button* btnBackgroundColor
-                { btnForegroundColor = new Fl_Button(314, 143, 90, 24, _("Digit Color"));
+                { btnForegroundColor = new Fl_Button(314, 163, 90, 24, _("Digit Color"));
                 btnForegroundColor->callback((Fl_Callback*)cb_btnForegroundColor);
                 } // Fl_Button* btnForegroundColor
-                { btnFD_SystemColor = new Fl_Button(410, 143, 90, 24, _("Sys Colors"));
+                { btnFD_SystemColor = new Fl_Button(410, 163, 90, 24, _("Sys Colors"));
                 btnFD_SystemColor->callback((Fl_Callback*)cb_btnFD_SystemColor);
                 } // Fl_Button* btnFD_SystemColor
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(115, 179, 420, 62, _("S-meter"));
+                { Fl_Group* o = new Fl_Group(115, 199, 395, 62, _("S-meter"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { btnSmeter_bg_color = new Fl_Button(122, 206, 90, 24, _("Bg Color"));
+                { btnSmeter_bg_color = new Fl_Button(122, 226, 90, 24, _("Bg Color"));
                 btnSmeter_bg_color->callback((Fl_Callback*)cb_btnSmeter_bg_color);
                 } // Fl_Button* btnSmeter_bg_color
-                { btnSmeter_scale_color = new Fl_Button(218, 206, 90, 24, _("Scale Color"));
+                { btnSmeter_scale_color = new Fl_Button(218, 226, 90, 24, _("Scale Color"));
                 btnSmeter_scale_color->callback((Fl_Callback*)cb_btnSmeter_scale_color);
                 } // Fl_Button* btnSmeter_scale_color
-                { btnSmeter_meter_color = new Fl_Button(314, 206, 90, 24, _("Meter Color"));
+                { btnSmeter_meter_color = new Fl_Button(314, 226, 90, 24, _("Meter Color"));
                 btnSmeter_meter_color->callback((Fl_Callback*)cb_btnSmeter_meter_color);
                 } // Fl_Button* btnSmeter_meter_color
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(115, 248, 394, 67, _("PWR-meter"));
+                { Fl_Group* o = new Fl_Group(115, 268, 395, 67, _("PWR-meter"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { btnPWR_bg_color = new Fl_Button(122, 275, 90, 24, _("Bg Color"));
+                { btnPWR_bg_color = new Fl_Button(122, 295, 90, 24, _("Bg Color"));
                 btnPWR_bg_color->callback((Fl_Callback*)cb_btnPWR_bg_color);
                 } // Fl_Button* btnPWR_bg_color
-                { btnPWR_scale_color = new Fl_Button(218, 275, 90, 24, _("Scale Color"));
+                { btnPWR_scale_color = new Fl_Button(218, 295, 90, 24, _("Scale Color"));
                 btnPWR_scale_color->callback((Fl_Callback*)cb_btnPWR_scale_color);
                 } // Fl_Button* btnPWR_scale_color
-                { btnPWR_meter_Color = new Fl_Button(314, 275, 90, 24, _("Meter Color"));
+                { btnPWR_meter_Color = new Fl_Button(314, 295, 90, 24, _("Meter Color"));
                 btnPWR_meter_Color->callback((Fl_Callback*)cb_btnPWR_meter_Color);
                 } // Fl_Button* btnPWR_meter_Color
-                { Fl_ListBox* o = listboxPWRselect = new Fl_ListBox(410, 275, 80, 24, _("Power scale"));
+                { Fl_ListBox* o = listboxPWRselect = new Fl_ListBox(410, 295, 80, 24, _("Power scale"));
                 listboxPWRselect->tooltip(_("Select the type of FFT prefilter"));
                 listboxPWRselect->box(FL_DOWN_BOX);
                 listboxPWRselect->color(FL_BACKGROUND2_COLOR);
@@ -6846,7 +6971,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Log"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Log"));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(114, 101, 372, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
@@ -6890,7 +7015,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("F_keys"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("F_keys"));
                 o->hide();
                 { btnUseGroupColors = new Fl_Check_Button(135, 107, 165, 21, _("Use colored buttons"));
                 btnUseGroupColors->down_box(FL_DOWN_BOX);
@@ -6923,7 +7048,7 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnMacroBtnFont
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Tabs"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Tabs"));
                 o->hide();
                 { btnTabColor = new Fl_Button(200, 113, 75, 21, _("Tab Color"));
                 btnTabColor->callback((Fl_Callback*)cb_btnTabColor);
@@ -6933,7 +7058,7 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnTabDefaultColor
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Buttons"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Buttons"));
                 o->hide();
                 { btnSpotColor = new Fl_Button(159, 121, 70, 21, _("Spot"));
                 btnSpotColor->callback((Fl_Callback*)cb_btnSpotColor);
@@ -7013,8 +7138,7 @@ ab and newline are automatically included."));
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("SigLvl"));
-                o->hide();
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("SigLvl"));
                 { btnLowSignal = new Fl_Button(210, 142, 70, 21, _("Low"));
                 btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
                 } // Fl_Button* btnLowSignal

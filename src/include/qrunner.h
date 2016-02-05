@@ -51,6 +51,8 @@ namespace qrbind {
 #include "qrunner/fqueue.h"
 
 extern void write_message(int line_no, const char *func, const char *msg);
+extern void qrunner_debug(int tid, const char * name);
+extern const char *sztid[];
 
 #ifndef __MINGW32__
 #  define QRUNNER_READ(fd__, buf__, len__) read(fd__, buf__, len__)
@@ -106,12 +108,14 @@ public:
         bool request(const F& f)
         {
                 if (fifo->push(f)) {
+int resp = QRUNNER_WRITE(pfd[1], "", 1);
+qrunner_debug(GET_THREAD_ID(), typeid(F).name());
 #ifdef NDEBUG
-                        if (unlikely(QRUNNER_WRITE(pfd[1], "", 1) != 1)) {
+                        if (unlikely(resp != 1)) {
 							throw qexception(errno);
                         }
 #else
-                        assert(QRUNNER_WRITE(pfd[1], "", 1) == 1);
+assert(resp);
 #endif
                         return true;
                 }

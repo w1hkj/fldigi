@@ -47,6 +47,44 @@
 #  define QRUNNER_EAGAIN() ((errno = WSAGetLastError()) == WSAEWOULDBLOCK)
 #endif
 
+const char *sztid[] = {
+	"INVALID_TID",
+	"TRX_TID",
+	"QRZ_TID",
+	"RIGCTL_TID",
+	"NORIGCTL_TID",
+	"EQSL_TID",
+	"ADIF_RW_TID",
+	"XMLRPC_TID",
+	"ARQ_TID",
+	"ARQSOCKET_TID",
+	"MACLOGGER_TID",
+	"KISS_TID",
+	"KISSSOCKET_TID",
+	"FLMAIN_TID"
+};
+
+static pthread_mutex_t mlog = PTHREAD_MUTEX_INITIALIZER;
+void qrunner_debug(int tid, const char *name)
+{
+	// disabled !
+	return;
+
+	if (tid > ((int)sizeof(sztid)-1)) tid = 0;
+	else tid++;
+
+	if (tid < 2) return;
+
+	pthread_mutex_lock(&mlog);
+	FILE *fd = (FILE *)0;
+	fd = fopen("qrunner.txt", "a");
+	if(fd) {
+		fprintf(fd, "%s, %s\n", sztid[tid], name);
+		fclose(fd);
+	}
+	pthread_mutex_unlock(&mlog);
+}
+
 qrunner::qrunner()
         : attached(false), inprog(false), drop_flag(false)
 {
@@ -101,6 +139,7 @@ void qrunner::execute(int fd, void *arg)
 
 	if (qr->inprog)
 		return;
+
 	qr->inprog = true;
 
 	size_t n = QRUNNER_READ(fd, rbuf, FIFO_SIZE);
@@ -113,8 +152,9 @@ void qrunner::execute(int fd, void *arg)
 	case 0:
 		break;
 	default:
-		while (n--)
+		while (n--) {
 			qr->fifo->execute();
+		}
 	}
 
 	qr->inprog = false;

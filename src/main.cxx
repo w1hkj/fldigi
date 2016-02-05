@@ -95,6 +95,7 @@
 #include "Viewer.h"
 #include "kmlserver.h"
 #include "data_io.h"
+#include "maclogger.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -345,9 +346,12 @@ void delayed_startup(void *)
 	FLRIG_start_flrig_thread();
 
 	data_io_enabled = DISABLED_IO;
+
 	arq_init();
 	kiss_init();
+	if (progdefaults.connect_to_maclogger) maclogger_init();
 	data_io_enabled = progStatus.data_io_enabled;
+
 
 	toggle_io_port_selection(data_io_enabled);
 
@@ -500,6 +504,10 @@ int main(int argc, char ** argv)
 
 			case KISSSOCKET_TID:
 				cbq[i]->attach(i, "KISSSOCKET_TID");
+				break;
+
+			case MACLOGGER_TID:
+				cbq[i]->attach(i, "MACLOGGER_TID");
 				break;
 
 			case FLMAIN_TID:
@@ -764,6 +772,7 @@ void exit_process() {
 		KmlServer::Exit();
 	arq_close();
 	kiss_close();
+	maclogger_close();
 	XML_RPC_Server::stop();
 
 	if (progdefaults.usepskrep)

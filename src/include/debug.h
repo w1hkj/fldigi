@@ -43,7 +43,8 @@ public:
 		LOG_RPC = 1 << 5,
 		LOG_SPOTTER = 1 << 6,
 		LOG_KISSCONTROL = 1 << 7,
-		LOG_OTHER = 1 << 8
+		LOG_MACLOGGER = 1 << 8,
+		LOG_OTHER = 1 << 9
 	};
 	static void start(const char* filename);
 	static void stop(void);

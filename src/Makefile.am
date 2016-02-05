@@ -394,6 +394,7 @@ fldigi_SOURCES += \
 	include/jalocha/pj_mfsk.h \
 	include/jalocha/pj_struc.h \
 	include/kiss_io.h \
+	include/maclogger.h \
 	include/ax25_decode.h \
 	include/coordinate.h \
 	include/gfft.h \
@@ -514,6 +515,7 @@ fldigi_SOURCES += \
 	logbook/logbook.cxx \
 	logbook/logsupport.cxx \
 	logbook/lookupcall.cxx \
+	logbook/maclogger.cxx \
 	logbook/qrzlib.cxx \
 	logbook/qso_db.cxx \
 	logbook/table.cxx \

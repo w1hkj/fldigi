@@ -89,6 +89,7 @@ extern Fl_Check_Button *btn2NagMe;
 extern Fl_Check_Button *btn2_confirm_exit;
 extern Fl_Check_Button *btn_check_for_updates;
 extern Fl_Group *tabLogServer;
+extern Fl_Tabs *tabsLog;
 extern Fl_Check_Button *btnNagMe;
 extern Fl_Check_Button *btnClearOnSave;
 extern Fl_Check_Button *btnCallUpperCase;
@@ -107,6 +108,18 @@ extern Fl_Check_Button *btnRXClicks;
 extern Fl_Check_Button *btnRXTooltips;
 extern Fl_Input2 *inpNonword;
 extern Fl_Check_Button *btnUSunits;
+#include "maclogger.h"
+extern Fl_Check_Button *btnConnectToMaclogger;
+extern Fl_Check_Button *btn_capture_maclogger_radio;
+extern Fl_Check_Button *btn_capture_maclogger_log;
+extern Fl_Check_Button *btn_capture_maclogger_lookup;
+extern Fl_Check_Button *btn_capture_maclogger_spot_tune;
+extern Fl_Check_Button *btn_capture_maclogger_spot_report;
+extern Fl_Check_Button *btn_enable_maclogger_log;
+#include <FL/Fl_Text_Display.H>
+extern Fl_Text_Display *txt_UDP_data;
+#include <FL/Fl_Output.H>
+extern Fl_Output *txt_maclogger_log_filename;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
 extern Fl_Counter *cnt_macro_height;
@@ -174,7 +187,6 @@ extern Fl_Button *btnPWR_bg_color;
 extern Fl_Button *btnPWR_scale_color;
 extern Fl_Button *btnPWR_meter_Color;
 extern Fl_ListBox *listboxPWRselect;
-#include <FL/Fl_Output.H>
 extern Fl_Output *LOGGINGdisplay;
 extern Fl_Button *btnLOGGING_color;
 extern Fl_Button *btn_LOGGING_font;

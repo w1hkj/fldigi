@@ -102,7 +102,8 @@ Fl_Menu_Item src_menu[] = {
 	{ _("Flrig I/O"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("RPC"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ _("Spotter"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
-	{ _("KISS control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE | FL_MENU_DIVIDER  },
+	{ _("KISS control"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
+	{ _("Mac Logger"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE | FL_MENU_DIVIDER },
 	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ 0 }
 };
