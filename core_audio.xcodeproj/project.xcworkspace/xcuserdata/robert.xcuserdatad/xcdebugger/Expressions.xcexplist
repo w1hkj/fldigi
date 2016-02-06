@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "get_device_list:core_audio.c">
+      </ContextState>
+      <ContextState
+         contextName = "free_handle_memory:core_audio.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "device_list[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "get_handle:core_audio.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "device_list[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "free_device_info:core_audio.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "device-&gt;channel_desc[i]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "init_ringbuffer:core_audio.c">
+      </ContextState>
+      <ContextState
+         contextName = "get_device_attributes:core_audio.c">
+      </ContextState>
+      <ContextState
+         contextName = "get_no_of_channels:core_audio.c">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
