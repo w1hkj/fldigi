@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "core_audio/core_audio_test.c"
-            timestampString = "476422873.493598"
+            filePath = "core_audio/core_audio.cxx"
+            timestampString = "478923274.598234"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "main()"
+            startingLineNumber = "3277"
+            endingLineNumber = "3277"
+            landmarkName = "AudioConvertPlayback(CA_HANDLE handle)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "core_audio/core_audio_test.c"
-            timestampString = "476422873.493598"
+            filePath = "core_audio/core_audio.cxx"
+            timestampString = "478923074.002788"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
-            landmarkName = "main()"
+            startingLineNumber = "1871"
+            endingLineNumber = "1871"
+            landmarkName = "ca_set_converter_quaility(CA_HANDLE handle, int io_device, int quaility)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,29 +41,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "core_audio/core_audio_test.c"
-            timestampString = "476423194.810398"
+            filePath = "core_audio/core_audio.cxx"
+            timestampString = "478923074.002788"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "63"
-            endingLineNumber = "63"
-            landmarkName = "main()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "core_audio/core_audio_test.c"
-            timestampString = "476423201.225986"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
-            landmarkName = "main()"
+            startingLineNumber = "1906"
+            endingLineNumber = "1906"
+            landmarkName = "ca_set_converter_quaility(CA_HANDLE handle, int io_device, int quaility)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

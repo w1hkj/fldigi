@@ -1,3 +1,20 @@
 C/C++ Core Audio Driver
 
   * Initial Commit.
+  * Add better handling of mono devices in ca_open()
+  * Add external (host) accessible device list.
+  * Corrected indexing error in ca_free_device_list()
+  * Add older API's for 10.4.
+  * Use default devices on start up.
+  * Change condition flags placement.
+  * Revert to older unbroken version.
+  * Add sample rate converter.
+  * Set convert buffer sizes based on selected device.
+  * Calculate destination convert buffer size based
+    on upscaling possibility.
+  * Place converter code in a thread.
+  * Change to converter parameters, OS not longer complains.
+  * Add routine to alter conversion quaility.
+  * Converter: bytes_per_packet and ioNumberDataPackets where not
+    assigned correct values. Changed assignments and
+    results appear to be what is expected.

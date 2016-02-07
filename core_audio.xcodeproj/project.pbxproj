@@ -7,11 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E1367BE81C5C11DD00772B74 /* core_audio_test.c in Sources */ = {isa = PBXBuildFile; fileRef = E1367BE71C5C11DD00772B74 /* core_audio_test.c */; };
-		E1367BF21C5C12F200772B74 /* core_audio.c in Sources */ = {isa = PBXBuildFile; fileRef = E1367BF11C5C12F200772B74 /* core_audio.c */; };
-		E1F79AAA1C5D79B000A83DC6 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1F79AA71C5D79B000A83DC6 /* CoreAudio.framework */; };
-		E1F79AAB1C5D79B000A83DC6 /* CoreAudioKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1F79AA81C5D79B000A83DC6 /* CoreAudioKit.framework */; };
-		E1F79AAC1C5D79B000A83DC6 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1F79AA91C5D79B000A83DC6 /* CoreFoundation.framework */; };
+		E110C3A51C8BBBF500F721FB /* core_audio.cxx in Sources */ = {isa = PBXBuildFile; fileRef = E110C3A11C8BBBF500F721FB /* core_audio.cxx */; };
+		E110C3A61C8BBBF500F721FB /* core_audio_test.cxx in Sources */ = {isa = PBXBuildFile; fileRef = E110C3A31C8BBBF500F721FB /* core_audio_test.cxx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,15 +24,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E110C39F1C8BBBF500F721FB /* changes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = changes.txt; sourceTree = "<group>"; };
+		E110C3A11C8BBBF500F721FB /* core_audio.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_audio.cxx; sourceTree = "<group>"; };
+		E110C3A21C8BBBF500F721FB /* core_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core_audio.h; sourceTree = "<group>"; };
+		E110C3A31C8BBBF500F721FB /* core_audio_test.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_audio_test.cxx; sourceTree = "<group>"; };
 		E1367BE41C5C11DD00772B74 /* core_audio */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = core_audio; sourceTree = BUILT_PRODUCTS_DIR; };
-		E1367BE71C5C11DD00772B74 /* core_audio_test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = core_audio_test.c; sourceTree = "<group>"; };
-		E1367BEE1C5C126000772B74 /* core_audio.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core_audio.cxx; sourceTree = "<group>"; };
-		E1367BEF1C5C126000772B74 /* core_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core_audio.h; sourceTree = "<group>"; };
-		E1367BF11C5C12F200772B74 /* core_audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = core_audio.c; sourceTree = "<group>"; };
+		E1976A621C80CEFF0099E0F9 /* File */ = {isa = PBXFileReference; lastKnownFileType = text; path = File; sourceTree = "<group>"; };
 		E1DD10DA1C667A45000C7FB4 /* changes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = changes.txt; path = core_audio/changes.txt; sourceTree = "<group>"; };
-		E1F79AA71C5D79B000A83DC6 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = ../../../../System/Library/Frameworks/CoreAudio.framework; sourceTree = "<group>"; };
-		E1F79AA81C5D79B000A83DC6 /* CoreAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = ../../../../System/Library/Frameworks/CoreAudioKit.framework; sourceTree = "<group>"; };
-		E1F79AA91C5D79B000A83DC6 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = ../../../../System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,21 +38,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1F79AAA1C5D79B000A83DC6 /* CoreAudio.framework in Frameworks */,
-				E1F79AAB1C5D79B000A83DC6 /* CoreAudioKit.framework in Frameworks */,
-				E1F79AAC1C5D79B000A83DC6 /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E110C39E1C8BBBF500F721FB /* core_audio */ = {
+			isa = PBXGroup;
+			children = (
+				E110C39F1C8BBBF500F721FB /* changes.txt */,
+				E110C3A11C8BBBF500F721FB /* core_audio.cxx */,
+				E110C3A21C8BBBF500F721FB /* core_audio.h */,
+				E110C3A31C8BBBF500F721FB /* core_audio_test.cxx */,
+			);
+			path = core_audio;
+			sourceTree = "<group>";
+		};
 		E1367BDB1C5C11DD00772B74 = {
 			isa = PBXGroup;
 			children = (
+				E110C39E1C8BBBF500F721FB /* core_audio */,
+				E1976A621C80CEFF0099E0F9 /* File */,
 				E1DD10DA1C667A45000C7FB4 /* changes.txt */,
-				E1F79AA61C5D796700A83DC6 /* Framework/Libs */,
-				E1367BE61C5C11DD00772B74 /* core_audio */,
 				E1367BE51C5C11DD00772B74 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,27 +71,6 @@
 				E1367BE41C5C11DD00772B74 /* core_audio */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E1367BE61C5C11DD00772B74 /* core_audio */ = {
-			isa = PBXGroup;
-			children = (
-				E1367BEE1C5C126000772B74 /* core_audio.cxx */,
-				E1367BEF1C5C126000772B74 /* core_audio.h */,
-				E1367BE71C5C11DD00772B74 /* core_audio_test.c */,
-				E1367BF11C5C12F200772B74 /* core_audio.c */,
-			);
-			path = core_audio;
-			sourceTree = "<group>";
-		};
-		E1F79AA61C5D796700A83DC6 /* Framework/Libs */ = {
-			isa = PBXGroup;
-			children = (
-				E1F79AA71C5D79B000A83DC6 /* CoreAudio.framework */,
-				E1F79AA81C5D79B000A83DC6 /* CoreAudioKit.framework */,
-				E1F79AA91C5D79B000A83DC6 /* CoreFoundation.framework */,
-			);
-			name = Framework/Libs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,8 +129,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1367BE81C5C11DD00772B74 /* core_audio_test.c in Sources */,
-				E1367BF21C5C12F200772B74 /* core_audio.c in Sources */,
+				E110C3A61C8BBBF500F721FB /* core_audio_test.cxx in Sources */,
+				E110C3A51C8BBBF500F721FB /* core_audio.cxx in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,7 +154,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -185,6 +167,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -194,8 +177,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				"OTHER_CFLAGS[arch=*]" = "";
+				OTHER_CFLAGS = "$(SDK_FRAMEWORKS)";
+				OTHER_LDFLAGS = "$(SDK_FRAMEWORKS)";
 				SDKROOT = macosx10.8;
+				SDK_FRAMEWORKS = "-framework $(SDK_DIR)/AudioToolbox -framework $(SDK_DIR)/CoreAudio -framework $(SDK_DIR)/Foundation -framework $(SDK_DIR)/CoreFoundation";
 			};
 			name = Debug;
 		};
@@ -216,13 +201,14 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -231,21 +217,40 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(SDK_FRAMEWORKS)";
+				OTHER_LDFLAGS = "$(SDK_FRAMEWORKS)";
 				SDKROOT = macosx10.8;
+				SDK_FRAMEWORKS = "-framework $(SDK_DIR)/AudioToolbox -framework $(SDK_DIR)/CoreAudio -framework $(SDK_DIR)/Foundation -framework $(SDK_DIR)/CoreFoundation";
 			};
 			name = Release;
 		};
 		E1367BEC1C5C11DD00772B74 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				FRAMEWORK_SEARCH_PATHS = "$(SDK_DIR)";
+				HEADER_SEARCH_PATHS = "$(SDK_DIR)/usr/include";
+				LIBRARY_SEARCH_PATHS = "$(SDK_DIR)/usr/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = "$(SDK_FRAMEWORKS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
+				SDK_FRAMEWORKS = "-framework AudioToolbox -framework CoreAudio -framework Foundation -framework CoreFoundation";
 			};
 			name = Debug;
 		};
 		E1367BED1C5C11DD00772B74 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				FRAMEWORK_SEARCH_PATHS = "$(SDK_DIR)";
+				HEADER_SEARCH_PATHS = "$(SDK_DIR)/usr/include";
+				LIBRARY_SEARCH_PATHS = "$(SDK_DIR)/usr/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = "$(SDK_FRAMEWORKS)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.8;
+				SDK_FRAMEWORKS = "-framework AudioToolbox -framework CoreAudio -framework Foundation -framework CoreFoundation";
 			};
 			name = Release;
 		};

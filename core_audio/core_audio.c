@@ -2,6 +2,11 @@
  * core_audio.cxx
  *
  * Copyright (C) 2015 Robert Stiles, KK5VD
+ * 
+ * Core Audio coding requirements (in part) derived from RtAudio source code by
+ * Gary P. Scavone
+ * Original (non-GPL, but free to use) source can be found here.
+ * RtAudio WWW site: http://www.music.mcgill.ca/~gary/rtaudio/
  *
  * The source code contained in this file is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License as published by
@@ -48,6 +53,7 @@ static const char *msg_string[] = {
     (const char *) "Operating System function error",
     (const char *) "Playback Device:",
     (const char *) "  Record Device:",
+    (const char *) "Close current device before selecting new one",
     (const char *) "Invalid/Unknown error number",
     (const char *) 0
 };
@@ -224,16 +230,24 @@ void ca_print_device_list_to_console(CA_HANDLE handle)
     struct st_core_audio_handle *ca_handle = (struct st_core_audio_handle  *) handle;
     struct st_audio_device_list *device_list = ca_handle->device_list;
     size_t device_count = ca_handle->device_list_count;
+    AudioObjectID default_record_id   = 0;
+    AudioObjectID default_playback_id = 0;
+
+    ca_get_default_devices(&default_record_id, &default_playback_id);
 
     printf("\n");
     for(size_t i = 0; i < device_count; i++) {
         if(device_list[i].device_name) {
             if(device_list[i].device_io & AD_RECORD) {
-                printf("%u) Record %s\n", (unsigned int) i + 1, device_list[i].device_name);
+                printf("%u) Record %s ", (unsigned int) i + 1, device_list[i].device_name);
+                if(device_list[i].device_id == default_record_id) printf("(Default)");
+                printf("\n");
             }
 
             if(device_list[i].device_io & AD_PLAYBACK) {
-                printf("%u) Play   %s\n", (unsigned int) i + 1, device_list[i].device_name);
+                printf("%u) Play   %s ", (unsigned int) i + 1, device_list[i].device_name);
+                if(device_list[i].device_id == default_playback_id) printf("(Default)");
+                printf("\n");
             }
         }
     }
@@ -332,7 +346,10 @@ CA_HANDLE ca_get_handle(Float64 rb_duration)
     struct st_core_audio_handle *ca_handle   = (struct st_core_audio_handle *) 0;
     struct st_audio_device_list *device_list = (struct st_audio_device_list *) 0;
 
-    AudioDeviceID *devices   = (AudioDeviceID *)0;
+    AudioDeviceID *devices            = (AudioDeviceID *)0;
+    AudioDeviceID default_record_id   = (AudioDeviceID) 0;
+    AudioDeviceID default_playback_id = (AudioDeviceID) 0;
+
     size_t device_count      = 0;
     size_t record_channels   = 0;
     size_t playback_channels = 0;
@@ -366,7 +383,7 @@ CA_HANDLE ca_get_handle(Float64 rb_duration)
         return (void *)0;
     }
 
-    if(ca_get_device_list(&devices, &device_count)) {
+    if(ca_get_device_id_list(&devices, &device_count)) {
         error = SET_ERROR(0, CA_ALLOCATE_FAIL);
         goto _end;
     }
@@ -388,7 +405,7 @@ CA_HANDLE ca_get_handle(Float64 rb_duration)
 
     for(size_t i = 0; i < device_count; i++) {
         device_list[i].device_id = devices[i];
-        device_list[i].list_index_pos = i;
+        device_list[i].device_index = i;
         device_list[i].device_name = ca_get_device_name((CA_HANDLE) ca_handle, devices[i]);
         ca_get_no_of_channels((CA_HANDLE) ca_handle, devices[i], &record_channels, &playback_channels);
         ca_get_device_attributes((CA_HANDLE) ca_handle, devices[i], &device_list[i], record_channels, playback_channels);
@@ -430,12 +447,19 @@ CA_HANDLE ca_get_handle(Float64 rb_duration)
     pthread_mutex_init(&ca_handle->flag_mutex,   NULL);
     pthread_cond_init(&ca_handle->flag_cond,     NULL);
 
+
+    if(!ca_get_default_devices(&default_record_id, &default_playback_id)) {
+        ca_select_device_by_id((CA_HANDLE) ca_handle, default_record_id,   AD_RECORD);
+        ca_select_device_by_id((CA_HANDLE) ca_handle, default_playback_id, AD_PLAYBACK);
+    }
+
 _end:;
 
     if(error != CA_NO_ERROR) {
         ca_free_handle_memory((CA_HANDLE) ca_handle);
     } else {
         handle = (CA_HANDLE) ca_handle;
+        ca_handle->okay_to_run  = 1;
     }
 
     return handle;
@@ -459,10 +483,6 @@ int ca_open(CA_HANDLE handle)
     if(ca_handle->running_flag)
         ca_close(handle);
 
-    ca_handle->close_flag   = 0;
-    ca_handle->pause_flag   = 0;
-    ca_handle->running_flag = 0;
-
     if(ca_handle->selected_playback_device && (ca_handle->selected_playback_device->device_io & AD_PLAYBACK)) {
 
         // Initialize the ring buffer and ensure buffer is frame size aligned.
@@ -474,12 +494,17 @@ int ca_open(CA_HANDLE handle)
         ca_handle->rb_playback->write_pos           = 0;
         ca_handle->rb_playback->read_pos            = 0;
 
-        ca_map_device_channels(handle, AD_PLAYBACK, CA_LEFT_CHANNEL_INDEX, CA_RIGHT_CHANNEL_INDEX);
+        if(ca_handle->selected_playback_device->playback->no_of_channels < 2)
+            ca_map_device_channels(handle, AD_PLAYBACK, CA_MONO_CHANNEL_INDEX, CA_MONO_CHANNEL_INDEX);
+        else
+            ca_map_device_channels(handle, AD_PLAYBACK, CA_LEFT_CHANNEL_INDEX, CA_RIGHT_CHANNEL_INDEX);
 
         device_id = ca_handle->selected_playback_device->device_id;
 
 #if defined( MAC_OS_X_VERSION_10_5 ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5 )
         result = AudioDeviceCreateIOProcID(device_id, CADevicePlayback, handle,  &ca_handle->selected_playback_device->io_proc_id);
+#else
+        result = AudioDeviceAddIOProc(device_id, CADevicePlayback, (void *) handle);
 #endif
         if(result != noErr) return 1;
 
@@ -499,10 +524,15 @@ int ca_open(CA_HANDLE handle)
         ca_handle->rb_record->write_pos           = 0;
         ca_handle->rb_record->read_pos            = 0;
 
-        ca_map_device_channels(handle, AD_RECORD, CA_LEFT_CHANNEL_INDEX, CA_RIGHT_CHANNEL_INDEX);
+        if(ca_handle->selected_record_device->record->no_of_channels < 2)
+            ca_map_device_channels(handle, AD_RECORD, CA_MONO_CHANNEL_INDEX, CA_MONO_CHANNEL_INDEX);
+        else
+            ca_map_device_channels(handle, AD_RECORD, CA_LEFT_CHANNEL_INDEX, CA_RIGHT_CHANNEL_INDEX);
 
 #if defined( MAC_OS_X_VERSION_10_5 ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5 )
         result = AudioDeviceCreateIOProcID(device_id, CADeviceRecord, handle,  &ca_handle->selected_record_device->io_proc_id);
+#else
+        result = AudioDeviceAddIOProc(device_id, CADeviceRecord, (void *) handle);
 #endif
         if(result != noErr) return 1;
 
@@ -510,7 +540,6 @@ int ca_open(CA_HANDLE handle)
     }
 
     ca_handle->closed_flag  = 0;
-    ca_handle->okay_to_run = 1;
 
     return CA_NO_ERROR;
 }
@@ -535,11 +564,17 @@ int ca_run(CA_HANDLE handle)
         if(ca_handle->selected_playback_device) {
             result |= AudioDeviceStart(ca_handle->selected_playback_device->device_id, ca_handle->selected_playback_device->io_proc_id);
         }
+#else
+        if(ca_handle->selected_record_device) {
+            result |= AudioDeviceStart(ca_handle->selected_record_device->device_id, CADeviceRecord);
+        }
+
+        if(ca_handle->selected_playback_device) {
+            result |= AudioDeviceStart(ca_handle->selected_playback_device->device_id, CADevicePlayback);
+        }
 #endif
         ca_handle->running_flag = 1;
     }
-
-
 
     return (result ? CA_OS_ERROR : CA_NO_ERROR);
 }
@@ -581,6 +616,18 @@ int ca_close(CA_HANDLE handle)
         result |= AudioDeviceDestroyIOProcID(ca_handle->selected_record_device->device_id, ca_handle->selected_record_device->io_proc_id);
         ca_handle->record_callback = 0;
     }
+#else
+    if(ca_handle->playback_callback) {
+        result |= AudioDeviceStop(ca_handle->selected_playback_device->device_id, CADevicePlayback);
+        result |= AudioDeviceRemoveIOProc(ca_handle->selected_playback_device->device_id, CADevicePlayback);
+        ca_handle->playback_callback = 0;
+    }
+
+    if(ca_handle->record_callback) {
+        result |= AudioDeviceStop(ca_handle->selected_record_device->device_id, CADeviceRecord);
+        result |= AudioDeviceRemoveIOProc(ca_handle->selected_record_device->device_id, CADeviceRecord);
+        ca_handle->record_callback = 0;
+    }
 #endif
 
     ca_handle->pause_flag   = 0;
@@ -592,7 +639,7 @@ int ca_close(CA_HANDLE handle)
 }
 
 /** ***********************************************************************************
- * \brief Select an audio device by index.
+ * \brief Select audio device by index.
  * \param handle Core Audio Handle.
  * \param index Audio device index, 1...device_count.
  * \param device_io Record or Playback device.
@@ -607,6 +654,11 @@ AudioDeviceID ca_select_device_by_index(CA_HANDLE handle, int index, int device_
 
     struct st_core_audio_handle *ca_handle = (struct st_core_audio_handle *) handle;
     AudioDeviceID device_id = 0;
+
+    if(ca_handle->running_flag) {
+        ca_print_msg(handle, CA_MUST_CLOSE_DEVICE_FIRST, (char *) &__func__[0]);
+        return 0;
+    }
 
     if(index > 0) index--;
 
@@ -635,9 +687,9 @@ AudioDeviceID ca_select_device_by_index(CA_HANDLE handle, int index, int device_
 }
 
 /** ***********************************************************************************
- * \brief Select an audio device by name.
+ * \brief Select audio device by name.
  * \param handle Core Audio Handle.
- * \param device_name Device name (Format: device_name:device_id)
+ * \param device_name Device name
  * \param device_io Record or Playback device.
  * \return 0 Error, otherwise Device ID No.
  **************************************************************************************/
@@ -660,6 +712,11 @@ AudioDeviceID ca_select_device_by_name(CA_HANDLE handle, char *device_name, int 
     int device_found = 0;
     AudioDeviceID device_id = 0;
 
+    if(ca_handle->running_flag) {
+        ca_print_msg(handle, CA_MUST_CLOSE_DEVICE_FIRST, (char *) &__func__[0]);
+        return 0;
+    }
+
     if(count && list) {
         for(size_t i = 0; i < count; i++) {
             match = ca_string_match((const char *) device_name, (const char *) list[i].device_name, (size_t) AUDIO_DEVICE_NAME_LIMIT);
@@ -681,7 +738,6 @@ AudioDeviceID ca_select_device_by_name(CA_HANDLE handle, char *device_name, int 
                 }
             }
         }
-
     } else {
         SET_ERROR(handle, CA_DEVICE_SELECT_ERROR);
         return 0;
@@ -693,6 +749,62 @@ AudioDeviceID ca_select_device_by_name(CA_HANDLE handle, char *device_name, int 
     }
 
     return device_id;
+}
+
+/** ***********************************************************************************
+ * \brief Select audio device by OS ID.
+ * \param handle Core Audio Handle.
+ * \param device_id Operating systen device ID.
+ * \param device_io Record or Playback device.
+ * \return 0 Okay, otherwise error
+ **************************************************************************************/
+int ca_select_device_by_id(CA_HANDLE handle, AudioDeviceID device_id, int device_io)
+{
+    if(!handle) {
+        return SET_ERROR(0, CA_INVALID_HANDLE);
+    }
+
+    struct st_core_audio_handle *ca_handle = (struct st_core_audio_handle *) handle;
+    struct st_audio_device_list *list_item = (struct st_audio_device_list *) 0;
+
+    if(ca_handle->running_flag) {
+        ca_print_msg(handle, CA_MUST_CLOSE_DEVICE_FIRST, (char *) &__func__[0]);
+        return 0;
+    }
+
+    for(size_t i = 0; i < ca_handle->device_list_count; i++) {
+        if(ca_handle->device_list[i].device_id == device_id) {
+            list_item = &ca_handle->device_list[i];
+            break;
+        }
+    }
+
+    if(!list_item) {
+        return ca_print_msg(handle, CA_DEVICE_NOT_FOUND, (char *) &__func__[0]);
+    }
+
+    switch(device_io) {
+        case AD_PLAYBACK:
+            if(!list_item->playback) {
+                return ca_print_msg(handle, CA_INVALID_DIRECTION, (char *) "(Playback)");
+            }
+
+            ca_handle->selected_playback_device = list_item;
+            break;
+
+        case AD_RECORD:
+            if(!list_item->record) {
+                return ca_print_msg(handle, CA_INVALID_DIRECTION, (char *) "(Record)");
+            }
+
+            ca_handle->selected_record_device = list_item;
+            break;
+
+        default:
+            return ca_print_msg(handle, CA_UNKNOWN_IO_DIRECTION, (char *) &__func__[0]);
+    }
+
+    return CA_NO_ERROR;
 }
 
 
@@ -722,7 +834,7 @@ int ca_set_run_state(CA_HANDLE handle, enum run_pause flag)
 }
 
 /** ***********************************************************************************
- * \brief Install a property listener for the specified device.
+ * \brief Start property listener for the specified message.
  * \return 0 Okay, otherwise error.
  **************************************************************************************/
 int ca_start_listener(CA_HANDLE handle, struct ca_wait_data *wait_data)
@@ -749,7 +861,7 @@ int ca_start_listener(CA_HANDLE handle, struct ca_wait_data *wait_data)
 }
 
 /** ***********************************************************************************
- * \brief Remove installed property listener for the specified device.
+ * \brief Remove installed property listener for the specified message.
  * \return 0 Okay, otherwise error.
  **************************************************************************************/
 int ca_remove_listener(CA_HANDLE handle, struct ca_wait_data *wait_data)
@@ -798,7 +910,7 @@ int ca_get_default_devices(AudioDeviceID *record, AudioDeviceID *playback)
     UInt32 property_size = sizeof(AudioDeviceID);
     OSStatus os_error = noErr;
 
-    os_error = AudioObjectGetPropertyData(device_id, &property, 0, NULL, &property_size, &device_id);
+    os_error = AudioObjectGetPropertyData(kAudioObjectSystemObject, &property, 0, NULL, &property_size, &device_id);
 
     if(os_error == noErr)
         *playback = device_id;
@@ -807,7 +919,7 @@ int ca_get_default_devices(AudioDeviceID *record, AudioDeviceID *playback)
 
     property.mSelector = kAudioHardwarePropertyDefaultInputDevice;
 
-    os_error = AudioObjectGetPropertyData(device_id, &property, 0, NULL, &property_size, &device_id);
+    os_error = AudioObjectGetPropertyData(kAudioObjectSystemObject, &property, 0, NULL, &property_size, &device_id);
 
     if(os_error == noErr)
         *record = device_id;
@@ -874,7 +986,7 @@ Float64 ca_get_max_sample_rate(CA_HANDLE handle, struct st_audio_device_list * l
  * \param count Number of entries in the array.
  * \return 0 Okay, otherwise error.
  **************************************************************************************/
-int ca_get_device_list(AudioDeviceID **array_of_ids, size_t *count)
+int ca_get_device_id_list(AudioDeviceID **array_of_ids, size_t *count)
 {
     UInt32 property_size = sizeof(AudioDeviceID);
     OSStatus result = noErr;
@@ -1386,35 +1498,27 @@ int ca_wait_for_os(CA_HANDLE handle, float timeout)
     unsigned long seconds = 0;
     unsigned long microseconds = 0;
     float tmp = 0.0;
-    int loop_count = 0;
     int return_state = 0;
 
     struct st_core_audio_handle *ca_handle = (struct st_core_audio_handle *) handle;
 
     if(ca_handle->exit_flag) return CA_NO_ERROR;
 
-    while(1) {
-        tmp = timeout;
-        if(tmp <= 0.0) tmp = 1.0;
+    tmp = timeout;
+    if(tmp <= 0.0) tmp = 1.0;
 
-        gettimeofday(&tp, NULL);
+    gettimeofday(&tp, NULL);
 
-        seconds = (unsigned long) tmp;
-        tmp -= (float) seconds;
-        microseconds = (unsigned long) (tmp * 1000000.0);
+    seconds = (unsigned long) tmp;
+    tmp -= (float) seconds;
+    microseconds = (unsigned long) (tmp * 1000000.0);
 
-        ts.tv_nsec = (tp.tv_usec * 1000) + microseconds;
-        ts.tv_sec  = tp.tv_sec + seconds;
+    ts.tv_nsec = (tp.tv_usec * 1000) + microseconds;
+    ts.tv_sec  = tp.tv_sec + seconds;
 
-        pthread_mutex_lock(&ca_handle->flag_mutex);
-        return_state = pthread_cond_timedwait(&ca_handle->flag_cond, &ca_handle->flag_mutex, &ts);
-        pthread_mutex_unlock(&ca_handle->flag_mutex);
-
-        if(!return_state) break;
-
-        loop_count++;
-        if(loop_count > 1) break;
-    }
+    pthread_mutex_lock(&ca_handle->flag_mutex);
+    return_state = pthread_cond_timedwait(&ca_handle->flag_cond, &ca_handle->flag_mutex, &ts);
+    pthread_mutex_unlock(&ca_handle->flag_mutex);
 
 #if 0
     if(return_state == EINVAL)
@@ -2046,12 +2150,12 @@ static int ca_read_native_stereo(CA_HANDLE handle, int io_device, CORE_AUDIO_DAT
 
     *left  = (CORE_AUDIO_DATA_TYPE) rb->buffer[rb->read_pos + rb->left_channel_index];
     *right = (CORE_AUDIO_DATA_TYPE) rb->buffer[rb->read_pos + rb->right_channel_index];
-    
+
     int error = ca_inc_read_pos(handle, rb);
-    
+
     if(error)
         SET_ERROR(handle, error);
-    
+
     return error;
 }
 
@@ -2067,22 +2171,22 @@ static int ca_read_native_buffer(CA_HANDLE handle, int io_device, size_t amount_
     if(!handle) {
         return SET_ERROR(0, CA_INVALID_HANDLE);
     }
-    
+
     long head_count = 0;
     long tail_count = 0;
     long free_count = 0;
     CORE_AUDIO_DATA_TYPE *data = (CORE_AUDIO_DATA_TYPE *) buffer;
     struct st_ring_buffer * rb = (struct st_ring_buffer *) 0;
-    
+
     *amount_read = 0;
     rb = ca_device_to_ring_buffer(handle, io_device);
-    
+
     if(!rb || !data)
         return SET_ERROR(handle, CA_INVALID_PARAMATER);
-    
+
     if(rb->unit_count < 1)
         return SET_ERROR(handle, CA_BUFFER_EMPTY);
-    
+
     if(rb->read_pos >= rb->write_pos) {
         head_count = rb->unit_size - rb->read_pos;
         tail_count = rb->write_pos;
@@ -2090,12 +2194,12 @@ static int ca_read_native_buffer(CA_HANDLE handle, int io_device, size_t amount_
         head_count = rb->write_pos - rb->read_pos;
         tail_count = 0;
     }
-    
+
     free_count = head_count + tail_count;
-    
+
     if(amount_to_read > free_count)
         amount_to_read = free_count;
-    
+
     if(head_count) {
         if(head_count > amount_to_read) {
             head_count = amount_to_read;
@@ -2105,9 +2209,9 @@ static int ca_read_native_buffer(CA_HANDLE handle, int io_device, size_t amount_
             amount_to_read -= head_count;
         }
     }
-    
+
     tail_count = amount_to_read;
-    
+
     if(head_count > 0) {
         memcpy((void *) data, (void *)  &rb->buffer[rb->read_pos], (size_t) (head_count * sizeof(CORE_AUDIO_DATA_TYPE)));
         rb->read_pos   += head_count;
@@ -2116,7 +2220,7 @@ static int ca_read_native_buffer(CA_HANDLE handle, int io_device, size_t amount_
         if(rb->read_pos >= rb->unit_size) rb->read_pos = 0;
         rb->frame_count = rb->unit_count / rb->channels_per_frame;
     }
-    
+
     if(tail_count > 0) {
         memcpy((void *) &data[*amount_read], (void *) &rb->buffer[rb->read_pos], (size_t) (tail_count * sizeof(CORE_AUDIO_DATA_TYPE)));
         rb->read_pos   += tail_count;
@@ -2125,7 +2229,7 @@ static int ca_read_native_buffer(CA_HANDLE handle, int io_device, size_t amount_
         if(rb->read_pos >= rb->unit_size) rb->read_pos = 0;
         rb->frame_count = rb->unit_count / rb->channels_per_frame;
     }
-    
+
     return CA_NO_ERROR;
 }
 
@@ -2138,33 +2242,33 @@ int ca_flush_audio_stream(CA_HANDLE handle)
     if(!handle) {
         return SET_ERROR(0, CA_INVALID_HANDLE);
     }
-    
+
     struct st_core_audio_handle *ca_handle = (struct st_core_audio_handle *) handle;
-    
+
     pthread_mutex_lock(&ca_handle->io_mutex);
-    
+
     int old_pause_flag = ca_handle->pause_flag;
-    
+
     ca_handle->pause_flag = 1;
-    
+
     if(ca_handle->rb_record) {
         ca_handle->rb_record->write_pos     = (size_t) 0;
         ca_handle->rb_record->read_pos      = (size_t) 0;
         ca_handle->rb_record->unit_count    = (size_t) 0;
         ca_handle->rb_record->frame_count   = (size_t) 0;
     }
-    
+
     if(ca_handle->rb_playback) {
         ca_handle->rb_playback->write_pos   = (size_t) 0;
         ca_handle->rb_playback->read_pos    = (size_t) 0;
         ca_handle->rb_playback->unit_count  = (size_t) 0;
         ca_handle->rb_playback->frame_count = (size_t) 0;
     }
-    
+
     ca_handle->pause_flag = old_pause_flag;
-    
+
     pthread_mutex_unlock(&ca_handle->io_mutex);
-    
+
     return CA_NO_ERROR;
 }
 
@@ -2178,15 +2282,15 @@ struct st_ring_buffer * ca_device_to_ring_buffer(CA_HANDLE handle, int io_device
         SET_ERROR(0, CA_INVALID_HANDLE);
         return (struct st_ring_buffer *)0;
     }
-    
+
     struct st_ring_buffer * _rb = 0;
     struct st_core_audio_handle *ca_handle = (struct st_core_audio_handle *) handle;
-    
+
     switch(io_device) {
         case AD_RECORD:
             _rb = ca_handle->rb_record;
             break;
-            
+
         case AD_PLAYBACK:
             _rb = ca_handle->rb_playback;
             break;
@@ -2204,11 +2308,11 @@ struct st_ring_buffer * ca_init_ringbuffer(CA_HANDLE handle, size_t allocate_ele
         SET_ERROR(0, CA_INVALID_HANDLE);
         return (struct st_ring_buffer *)0;
     }
-    
+
     size_t data_size = sizeof(CORE_AUDIO_DATA_TYPE);
-    
+
     struct st_ring_buffer *tmp = (struct st_ring_buffer *) calloc(1, sizeof(struct st_ring_buffer));
-    
+
     if(!tmp) {
         SET_ERROR(handle, CA_ALLOCATE_FAIL);
         return (struct st_ring_buffer *)0;
@@ -2284,7 +2388,7 @@ int ca_map_device_channels(CA_HANDLE handle, int io_device, size_t left_index, s
                 return ca_print_msg(handle, CA_INVALID_PARAMATER, "Playback device not selected");
             
             if(!device->playback)
-                return ca_print_msg(handle, CA_INVALID_PARAMATER, "");
+                return ca_print_msg(handle, CA_INVALID_PARAMATER, (char *) &__func__[0]);
             
             device_info = device->playback;
             no_of_channels = device_info->no_of_channels;
@@ -2302,7 +2406,7 @@ int ca_map_device_channels(CA_HANDLE handle, int io_device, size_t left_index, s
                 return ca_print_msg(handle, CA_INVALID_PARAMATER, "Record device not selected");
             
             if(!device->record)
-                return ca_print_msg(handle, CA_INVALID_PARAMATER, "");
+                return ca_print_msg(handle, CA_INVALID_PARAMATER, (char *) &__func__[0]);
             
             device_info = device->record;
             no_of_channels = device_info->no_of_channels;
@@ -2314,8 +2418,16 @@ int ca_map_device_channels(CA_HANDLE handle, int io_device, size_t left_index, s
             break;
     }
     
-    if((left_index >= no_of_channels) || (right_index >= no_of_channels)) {
-        return ca_print_msg(handle, CA_INDEX_OUT_OF_RANGE, "");
+    if(left_index >= no_of_channels) {
+        ca_print_msg(handle, CA_INDEX_OUT_OF_RANGE, "Left Channel");
+        if(no_of_channels > 0)
+            left_index = no_of_channels - 1;
+    }
+    
+    if(right_index >= no_of_channels) {
+        ca_print_msg(handle, CA_INDEX_OUT_OF_RANGE, "Right Channel");
+        if(no_of_channels > 0)
+            right_index = no_of_channels - 1;
     }
     
     if(no_of_channels < 2) {
@@ -2329,6 +2441,188 @@ int ca_map_device_channels(CA_HANDLE handle, int io_device, size_t left_index, s
         rb->left_channel_index  = left_index;
         rb->right_channel_index = right_index;
     }
+    
+    return error;
+}
+
+/** ***********************************************************************************
+ * \brief Returns a structure array of devices. Use ca_free_device_list() to free memory.
+ * \param handle Core Audio Handle
+ * \return struct st_device_list * pointer, or null on error.
+ **************************************************************************************/
+struct st_device_list * ca_get_device_list(CA_HANDLE handle)
+{
+    if(!handle) {
+        SET_ERROR(0, CA_INVALID_HANDLE);
+        return (struct st_device_list *) 0;
+    }
+    
+    struct st_core_audio_handle *ca_handle       = (struct st_core_audio_handle *) handle;
+    struct st_device_list * list                 = (struct st_device_list *) 0;
+    struct st_audio_device_list **_record_list   = (struct st_audio_device_list **) 0;
+    struct st_audio_device_list **_playback_list = (struct st_audio_device_list **) 0;
+    struct st_audio_device_list *device_list     = (struct st_audio_device_list *)  0;
+    
+    size_t list_count             = 0;
+    size_t no_of_record_devices   = 0;
+    size_t no_of_playback_devices = 0;
+    
+    if(ca_handle->device_list) {
+        device_list = ca_handle->device_list;
+        list_count  = ca_handle->device_list_count;
+        
+        list = (struct st_device_list *) calloc(1, sizeof(struct st_device_list));
+        if(!list)
+            goto _end_in_fail;
+        
+        _record_list = (struct st_audio_device_list **) calloc(list_count, sizeof(struct st_audio_device_list *));
+        if(!_record_list)
+            goto _end_in_fail;
+        
+        _playback_list = (struct st_audio_device_list **) calloc(list_count, sizeof(struct st_audio_device_list *));
+        if(!_playback_list)
+            goto _end_in_fail;
+        
+        for(size_t i = 0; i < list_count; i++) {
+            if(ca_handle->device_list[i].device_io & AD_PLAYBACK) {
+                _playback_list[no_of_playback_devices] = &device_list[i];
+                no_of_playback_devices++;
+            }
+            
+            if(ca_handle->device_list[i].device_io & AD_RECORD) {
+                _record_list[no_of_record_devices] = &device_list[i];
+                no_of_record_devices++;
+            }
+        }
+        
+        if(no_of_playback_devices) {
+            list->playback_count = no_of_playback_devices;
+            
+            list->playback = (struct st_device_info *) calloc(no_of_playback_devices + 1, sizeof(struct st_device_info));
+            if(!list->playback)
+                goto _end_in_fail;
+            
+            for(size_t i = 0; i < no_of_playback_devices; i++ ) {
+                strncpy(list->playback[i].device_name, _playback_list[i]->device_name, AUDIO_DEVICE_NAME_LIMIT);
+                list->playback[i].no_of_channels = 0;
+                list->playback[i].device_index   = _playback_list[i]->device_index;
+                list->playback[i].device_id      = _playback_list[i]->device_id;
+                
+                for(size_t j = 0; j < _playback_list[i]->playback->no_of_channels; j++) {
+                    list->playback[i].channel_desc[j] = calloc(AUDIO_CHANNEL_NAME_LIMIT, sizeof(char));
+                    
+                    if(!list->playback[i].channel_desc[j])
+                        goto _end_in_fail;
+                    
+                    strncpy(list->playback[i].channel_desc[j], _playback_list[i]->playback->channel_desc[j], AUDIO_CHANNEL_NAME_LIMIT);
+                    list->playback[i].no_of_channels++;
+                }
+                
+                list->playback[i].sample_rates = (double *) calloc(_playback_list[i]->playback->sample_rate_count + 1, sizeof(double));
+                if(!list->playback[i].sample_rates)
+                    goto _end_in_fail;
+                
+                for(size_t j = 0; j < _playback_list[i]->playback->sample_rate_count; j++)
+                    list->playback[i].sample_rates[j] = (double) _playback_list[i]->playback->sample_rates[j];
+                
+            }
+        }
+        
+        if(no_of_record_devices) {
+            list->record_count = no_of_record_devices;
+            
+            list->record = (struct st_device_info *) calloc(no_of_record_devices + 1, sizeof(struct st_device_info));
+            if(!list->record)
+                goto _end_in_fail;
+            
+            for(size_t i = 0; i < no_of_playback_devices; i++ ) {
+                strncpy(list->record[i].device_name, _record_list[i]->device_name, AUDIO_DEVICE_NAME_LIMIT);
+                list->record[i].no_of_channels = 0;
+                list->record[i].device_index   = _record_list[i]->device_index;
+                list->record[i].device_id      = _record_list[i]->device_id;
+                
+                for(size_t j = 0; j < _record_list[i]->record->no_of_channels; j++) {
+                    list->record[i].channel_desc[j] = calloc(AUDIO_CHANNEL_NAME_LIMIT, sizeof(char));
+                    
+                    if(!list->record[i].channel_desc[j])
+                        goto _end_in_fail;
+                    
+                    strncpy(list->record[i].channel_desc[j], _record_list[i]->record->channel_desc[j], AUDIO_CHANNEL_NAME_LIMIT);
+                    list->record[i].no_of_channels++;
+                }
+                
+                list->record[i].sample_rates = (double *) calloc(_record_list[i]->record->sample_rate_count + 1, sizeof(double));
+                if(!list->record[i].sample_rates)
+                    goto _end_in_fail;
+                
+                for(size_t j = 0; j < _record_list[i]->record->sample_rate_count; j++)
+                    list->record[i].sample_rates[j] = (double) _record_list[i]->record->sample_rates[j];
+                
+            }
+        }
+    }
+    
+    if(_record_list)   free(_record_list);
+    if(_playback_list) free(_playback_list);
+    
+    return list;
+    
+_end_in_fail:;
+    
+    if(_record_list)   free(_record_list);
+    if(_playback_list) free(_playback_list);
+    
+    if(list)
+        ca_free_device_list(handle, list);
+    
+    SET_ERROR(handle, CA_ALLOCATE_FAIL);
+    
+    return (struct st_device_list *) 0;
+}
+
+/** ***********************************************************************************
+ * \brief
+ *
+ * \return int
+ **************************************************************************************/
+int ca_free_device_list(CA_HANDLE handle, struct st_device_list * list)
+{
+    if(!handle) {
+        SET_ERROR(0, CA_INVALID_HANDLE);
+    }
+    
+    int error = CA_NO_ERROR;
+    
+    if(!list)
+        return SET_ERROR(handle, CA_INVALID_PARAMATER);
+    
+    if(list->record) {
+        for(size_t i = 0; i < list->record_count; i++) {
+            for(size_t j = 0; j < list->record[i].no_of_channels; j++) {
+                if(list->record[i].channel_desc[j])
+                    free(list->record[i].channel_desc[j]);
+            }
+            
+            if(list->record[i].sample_rates)
+                free(list->record[i].sample_rates);
+        }
+        free(list->record);
+    }
+    
+    if(list->playback) {
+        for(size_t i = 0; i < list->playback_count; i++) {
+            for(size_t j = 0; j < list->playback[i].no_of_channels; j++) {
+                if(list->playback[i].channel_desc[j])
+                    free(list->playback[i].channel_desc[j]);
+            }
+            
+            if(list->playback[i].sample_rates)
+                free(list->playback[i].sample_rates);
+        }
+        free(list->playback);
+    }
+    
+    free(list);
     
     return error;
 }

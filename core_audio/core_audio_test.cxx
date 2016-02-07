@@ -1,5 +1,5 @@
 /** ***********************************************************************************
- * core_audio_test.c
+ * core_audio_test.cxx
  *
  * Copyright (C) 2015 Robert Stiles, KK5VD
  *
@@ -28,6 +28,7 @@ int main(int argc, const char * argv[])
     AudioDeviceID playback_id = 0;
     Float64 sample_rate = 0.0;
     Float64 return_sample_rate = 0.0;
+    int convert_flags = CA_CONV_HIGH|CA_CONV_NORMAL;
 
     CA_HANDLE ca_handle = (CA_HANDLE) 0;
 
@@ -50,21 +51,32 @@ int main(int argc, const char * argv[])
 
     playback_id = ca_select_device_by_name(ca_handle, device_name, AD_PLAYBACK);
 
-    sample_rate = 48000.0;
-    ca_set_sample_rate(ca_handle, playback_id, sample_rate);
-    ca_set_sample_rate(ca_handle, record_id, sample_rate);
+    //sample_rate = 48000.0;
+    sample_rate = 8000.0;
+    ca_set_sample_rate(ca_handle, AD_PLAYBACK, sample_rate);
+    ca_set_sample_rate(ca_handle, AD_RECORD, sample_rate);
 
-    ca_get_sample_rate(ca_handle, playback_id, &return_sample_rate);
+    ca_get_sample_rate(ca_handle, AD_PLAYBACK, &return_sample_rate);
     printf("Playback SR = %f\n", (float) return_sample_rate);
 
-    ca_get_sample_rate(ca_handle, record_id, &return_sample_rate);
+    ca_get_sample_rate(ca_handle, AD_RECORD, &return_sample_rate);
     printf("Record SR = %f\n", (float) return_sample_rate);
 
+
+    struct st_device_list * dev_list = ca_get_device_list(ca_handle);
+
+    if(dev_list)
+        ca_free_device_list(ca_handle, dev_list);
+
     ca_open(ca_handle);
+    
+    ca_set_converter_quaility(ca_handle, AD_PLAYBACK, convert_flags);
+    ca_set_converter_quaility(ca_handle, AD_RECORD,   convert_flags);
+
     ca_run(ca_handle);
 
     time_t current_time = time(0);
-    time_t end_time     = current_time + 10;;
+    time_t end_time     = current_time + 30;
 
     while(current_time < end_time) {
         ca_cross_connect(ca_handle);
