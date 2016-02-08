@@ -1451,10 +1451,13 @@ double fsq_xmtdelay() // in seconds
 void fsq_repeat_last_command()
 {
 	using ::next;  // disambiguate from std::next
+	if (commands.empty()) return;
 	fsq_tx_text->clear();
 	fsq_tx_text->addstr(sz2utf8(commands[next].c_str()));
 	next++;
-	if (next == commands.size()) next = 0;
+	if (next == commands.size()) {
+		next = 0;
+	}
 }
 
 int get_fsq_tx_char(void)
