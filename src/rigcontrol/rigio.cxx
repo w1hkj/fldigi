@@ -1174,6 +1174,7 @@ echo	   : %c\n",
 
 	if (failed) {
 		LOG_ERROR("*****************Failed to read xcvr frequency");
+		rigio.ClosePort();
 		return false;
 	}
 
