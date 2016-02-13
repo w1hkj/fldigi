@@ -25,6 +25,7 @@
 
 #include <string>
 #include <ctime>
+#include <stdio.h>
 
 #include "complex.h"
 #include "filters.h"
@@ -42,7 +43,6 @@ private:
 
 	double		phaseacc;
 
-	C_FIR_filter	*hilbert;
 	fftfilt *bpfilt;
 	Cmovavg *ffilt;
 	Cmovavg *favg;
@@ -78,6 +78,8 @@ public:
 	void tx_init(SoundBase *sc);
 	void restart();
 	void start_csv();
+	void stop_csv();
+
 	int rx_process(const double *buf, int len);
 	int tx_process();
 

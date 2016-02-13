@@ -62,7 +62,6 @@ void anal::init()
 
 anal::~anal()
 {
-	delete hilbert;
 	delete bpfilt;
 	delete ffilt;
 	delete favg;
@@ -94,6 +93,8 @@ void anal::restart()
 	dspcnt = DSP_CNT;
 	for (int i = 0; i < PIPE_LEN; i++) pipe[i] = 0;
 
+	if (write_to_csv) stop_csv();
+
 	start_csv();
 
 }
@@ -105,14 +106,14 @@ anal::anal()
 	samplerate = ANAL_SAMPLERATE;
 
 	bpfilt = (fftfilt *)0;
-	hilbert = new C_FIR_filter();
-	hilbert->init_hilbert(37, 1);
 	ffilt = new Cmovavg(FILT_LEN * samplerate);
 
-	analysisFilename = HomeDir;
-	analysisFilename.append("freqanalysis.csv");
+	analysisFilename = TempDir;
+	analysisFilename.append("analysis.csv");
 
 	cap &= ~CAP_TX;
+	write_to_csv = false;
+
 	restart();
 }
 
@@ -140,10 +141,22 @@ void anal::start_csv()
 	}
 	fprintf(out, "Clock,Elapsed Time,Freq Error,RF\n");
 	fclose(out);
+
+	put_status("Writing csv file");
+
+	write_to_csv = true;
+}
+
+void anal::stop_csv()
+{
+	write_to_csv = false;
+	put_status("");
 }
 
 void anal::writeFile()
 {
+	if (!write_to_csv) return;
+
 	struct timespec now;
 	struct tm tm;
 
@@ -163,6 +176,9 @@ void anal::writeFile()
 		tm.tm_hour, tm.tm_min, tm.tm_sec, elapsed, fout,
 		(wf->rfcarrier() + (wf->USB() ? 1.0 : -1.0) * (frequency + fout)));
 	fclose(out);
+
+	put_status("Writing csv file");
+
 }
 
 int anal::rx_process(const double *buf, int len)
@@ -180,7 +196,6 @@ int anal::rx_process(const double *buf, int len)
 // create analytic signal from sound card input samples
 		z = cmplx( *buf, *buf );
 		buf++;
-//		hilbert->run(z, z);
 // mix it with the audio carrier frequency to create a baseband signal
 		z = mixer(z);
 // low pass filter using Windowed Sinc - Overlap-Add convolution filter
@@ -216,7 +231,7 @@ int anal::rx_process(const double *buf, int len)
 					snprintf(msg1, sizeof(msg1), "%12.2f", wf->rfcarrier() + frequency + fout );
 				else
 					snprintf(msg1, sizeof(msg1), "%12.2f", wf->rfcarrier() - frequency - fout );
-				put_status(msg1, 2.0);
+				put_Status2(msg1, 2.0);
 				writeFile();
 			}
 // reset the display counter & the pipe pointer

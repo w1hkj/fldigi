@@ -664,7 +664,7 @@ update_freq:
 		if (testmode.find("CW") != string::npos)
 			afreq = 0;//-progdefaults.CWsweetspot;
 		if (mode == MODE_ANALYSIS) {
-			dfreq = active_modem->track_freq();
+			dfreq = 0;
 		} else {
 			if (usb)
 				dfreq = rfc + afreq + offset;

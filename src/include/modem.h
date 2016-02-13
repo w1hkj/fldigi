@@ -246,10 +246,9 @@ public:
 	int  ovhd_samples;
 
 // analysis mode
+	int  write_to_csv;
 	virtual void start_csv() {}
 	virtual void stop_csv() {}
-	virtual int is_csv() { return true;}
-	virtual double track_freq() { return 0;}
 
 // fsq mode
 	bool    fsq_tx_image;
