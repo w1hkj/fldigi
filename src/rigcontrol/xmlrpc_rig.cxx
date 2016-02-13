@@ -885,7 +885,7 @@ void flrig_connection()
 			flrig_get_xcvr();
 			Fl::awake(flrig_setQSY);
 		} else {
-			LOG_INFO("%s", "Waiting for flrig");
+			LOG_VERBOSE("%s", "Waiting for flrig");
 			connected_to_flrig = false;
 			poll_interval = 500; // every 5 seconds
 		}
