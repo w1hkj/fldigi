@@ -937,7 +937,7 @@ void * flrig_thread_loop(void *d)
 				exec_flrig_ptt();
 				continue;
 			}
-			flrig_get_ptt();
+			if (progdefaults.flrig_keys_modem) flrig_get_ptt();
 			if (trx_state == STATE_RX) {
 				flrig_get_frequency();
 				flrig_get_smeter();

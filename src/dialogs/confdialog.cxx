@@ -4324,6 +4324,15 @@ static void cb_mbw_delay(Fl_Counter* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Group *tabFLRIG=(Fl_Group *)0;
+
+Fl_Check_Button *chk_flrig_keys_modem=(Fl_Check_Button *)0;
+
+static void cb_chk_flrig_keys_modem(Fl_Check_Button* o, void*) {
+  progdefaults.flrig_keys_modem = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabSoundCard=(Fl_Group *)0;
 
 Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
@@ -10189,6 +10198,24 @@ definition"));
             } // Fl_Group* o
             tabXMLRPC->end();
           } // Fl_Group* tabXMLRPC
+          { tabFLRIG = new Fl_Group(0, 50, 600, 330, _("flrig"));
+            tabFLRIG->hide();
+            { Fl_Output* o = new Fl_Output(75, 77, 465, 58);
+              o->tooltip(_("\" \""));
+              o->type(12);
+              o->box(FL_BORDER_BOX);
+              o->color(FL_LIGHT1);
+              o->align(Fl_Align(FL_ALIGN_CENTER));
+              o->value(_("Disable this control if multiple instances of fldigi (client)\nare connected to a single flrig (server)."));
+            } // Fl_Output* o
+            { Fl_Check_Button* o = chk_flrig_keys_modem = new Fl_Check_Button(225, 150, 183, 20, _("Flrig PTT keys modem"));
+              chk_flrig_keys_modem->tooltip(_("\" \""));
+              chk_flrig_keys_modem->down_box(FL_DOWN_BOX);
+              chk_flrig_keys_modem->callback((Fl_Callback*)cb_chk_flrig_keys_modem);
+              o->value(progdefaults.flrig_keys_modem);
+            } // Fl_Check_Button* chk_flrig_keys_modem
+            tabFLRIG->end();
+          } // Fl_Group* tabFLRIG
           tabsRig->end();
         } // Fl_Tabs* tabsRig
         tabRig->end();

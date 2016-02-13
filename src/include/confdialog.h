@@ -508,6 +508,8 @@ extern Fl_Group *grpXMLRPC;
 extern Fl_Check_Button *chkUSEXMLRPC;
 extern Fl_Button *btnInitXMLRPC;
 extern Fl_Counter *mbw_delay;
+extern Fl_Group *tabFLRIG;
+extern Fl_Check_Button *chk_flrig_keys_modem;
 extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;

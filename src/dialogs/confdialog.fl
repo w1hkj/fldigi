@@ -5338,6 +5338,22 @@ when both in same macro definition} xywh {210 239 90 21} type Simple align 8 min
               }
             }
           }
+          Fl_Group tabFLRIG {
+            label flrig open
+            xywh {0 50 600 330} hide
+          } {
+            Fl_Output {} {
+              tooltip {" "} xywh {75 77 465 58} type Multiline box BORDER_BOX color 50 align 0
+              code0 {o->value(_("Disable this control if multiple instances of fldigi (client)\\nare connected to a single flrig (server)."));}
+            }
+            Fl_Check_Button chk_flrig_keys_modem {
+              label {Flrig PTT keys modem}
+              callback {progdefaults.flrig_keys_modem = o->value();
+progdefaults.changed = true;}
+              tooltip {" "} xywh {225 150 183 20} down_box DOWN_BOX
+              code0 {o->value(progdefaults.flrig_keys_modem);}
+            }
+          }
         }
       }
       Fl_Group tabSoundCard {
