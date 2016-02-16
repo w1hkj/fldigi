@@ -310,7 +310,7 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	std::string deffilename = LogsDir;
 	deffilename.append(fl_filename_name(logbook_filename.c_str()));
 
-	const char* p = FSEL::select( title.c_str(), filter.c_str(), deffilename.c_str());
+	const char* p = FSEL::saveas( title.c_str(), filter.c_str(), deffilename.c_str());
 
 	if (p) {
 		logbook_filename = p;
