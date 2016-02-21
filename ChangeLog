@@ -1,8 +1,33 @@
 
 
-=Version 3.23.07=
+=Version 3.23.08=
 
-2016-01-20  David Freese  <iam_w1hkj@w1hkj.com>
+2016-02-21  Rik van Riel  <riel@surriel.com>
+
+	bbbeed4: NAVTEX update
+
+2016-02-16  David Freese  <iam_w1hkj@w1hkj.com>
+
+	5b2edad: Save Logbook
+	1c8e0e9: Analysis mode
+	0f650e9: flrig PTT
+	106e3e2: flrig waiting
+	71fa224: COM port close
+	dd1165a: fsq repeat last
+	fb0fd4c: Mac Logger
+
+2016-02-04  Jonathan Wakely  <redi@users.sf.net>
+
+	813b58a: GCC 6 build
+
+2016-02-01  David Freese  <iam_w1hkj@w1hkj.com>
+
+	d808977: CALL capture
+	bea9cfe: Scope View
+	8bcc9e8: RigCAT modifications
+
+
+=Version 3.23.07=
 
 	10266d2: Exit delays
 	e821e49: Contest fields
