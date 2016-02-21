@@ -161,7 +161,7 @@ the ones in the rig definition file.
 \section polling Poll Interval
 
 The rigCAT code operates in a separate thread during which the various
-queries are made with a dafault interval of 100 milliseconds between the last query
+queries are made with a default interval of 100 milliseconds between the last query
 and the start of the next cycle.  The actual cycle period is dependent on
 the serial communications baud rate, the size of the commands, and the
 responsiveness of the transceiver.  It will always be greater than the poll interval.
