@@ -1,11 +1,13 @@
+// ---------------------------------------------------------------------
 //
-//	navtex.cxx
+//  navtex.cxx
 //
-// Copyright (C) 2011
-//		Remi Chateauneu, F4ECW
+// Copyright (C) 2011-2016
+//      Remi Chateauneu, F4ECW
+//      Rik van Riel, AB1KW, <riel@surriel.com>
 //
-// This file is part of fldigi.  Adapted from code contained in JNX source code 
-// distribution.
+// This file is part of fldigi.  Adapted from code contained in JNX
+// source code distribution.
 //  JNX Copyright (C) Paul Lutus
 // http://www.arachnoid.com/JNX/index.html
 //
@@ -21,7 +23,156 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// Sync using multicorrelator, instead of null crossings
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// Null crossings are somewhat noisy, and the code to keep the navtex
+// decoder in sync with the incoming signal using null crossings was
+// rather fragile.
+//
+// Use a multicorrelator instead, which relies on the averaged magnitude
+// of the signal accumulator to sync the decoder with the incoming signal.
+//
+// When debugging the code, the multicorrelator mostly corrects the
+// modem forward in time, which can be explained by the fact that a
+// bit takes 110.25 samples, while the code uses 110. When the NAVTEX
+// transmitter is running at exactly 100 baud, one can expect to see
+// the decoder get adjusted 25 times a second, to make up for the
+// difference between 11000 and 11025.
+//
+// When multiple signals are on the air simultaneously, the null crossing
+// code would often lose track of the signal. The multicorrelator seems
+// to be more stable in this situation, though of course when both signals
+// are close in strength things do not get decoded right.
+//
+// The signal sampling spread of 1/6 of the width of a bit was set through
+// trial and error. A larger spread increases the signal difference between
+// early, prompt, and late samples, but reduces the accumulator value seen
+// by the demodulator. A smaller spread increases the accumulator value seen,
+// but makes it harder to lock on in noisy conditions.
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// low pass mark & space individually
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// Putting individual low pass filters on mark and space seems to
+// result in an improved ability to overcome pulse noise, and decode
+// weaker navtex signals.
+//
+// I have not found any signal where the performance of the codec
+// got worse with this change.
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// Correct display metric
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// The NAVTEX display_metric() function was buggy, in that decayavg
+// returns the decayed value, but does not store it. It always put
+// the current value in the metric, and kept avg_ratio at 0.0.
+//
+// This resulted in a somewhat chaotic, and not very useful metric
+// display. Copy over the S/N calculation from the RTTY code, because
+// that code seems to work well.
+
+// Also print the S/N in Status2, like the RTTY code and other modes
+// do.
+
+// Copying over the RTTY S/N code wholesale might still not be
+// enough, since the NAVTEX wave form appears to be somewhat
+// different from RTTY.  However, at least we have something
+// now, and the metric used for squelch seems to work again.
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// Correct display metric
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// Widen afc filter for 'jump 90 Hz' code
+//
+// When the NAVTEX code spots a power imbalance of more than a factor
+// 5 between mark and space, it will shift the frequency by 90 Hz.
+// This is reported to help with some signals.
+//
+// However, it breaks with some other signals, which have a different
+// spectral distribution between mark and space, with a spectrum looking
+// something like this:
+//
+//                                        *
+//                                        *
+//                                        *
+//                                       **
+//     ******                           ***
+//    ********                         ******
+//   **********                       ********
+//  ********************************************
+// **********************************************
+//
+// In this spectrum, mark & space have a similar amount of energy,
+// but that is only apparent when the comparison between them is
+// done on a wider sample than 10 Hz.
+//
+// Sampling 30 Hz instead seems to result in a more stable AFC.
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// use exact bit length
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// With a baud rate of 100 and a sample rate of 11025, the number
+// of bits per sample is 110.25.  Approximating this with 110 bits
+// per sample results in the decoder continuously chasing after the
+// signal, and losing it more easily during transient noise or
+// interference events.
+//
+// Simply changing the variable type from int to double makes life
+// a little easier on the bit tracking code.
+//
+// The accumulator does not seem to care that it gets an extra sample
+// every 4 bit periods.
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// improvements to the multi correlator
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// While the multi correlator for bit sync was a nice improvement over
+// the null crossing tracking, it did lose sync too easily in the presence
+// of transient noise or interference, and was full of magic adjustments.
+//
+// Replace the magic adjustments with a calculation, which makes the multi
+// correlator able to ride out transient noise or interference, and then
+// make a larger adjustment all at once (if needed).
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// use same mark/space detector as RTTY modem
+//      Rik van Riel, AB1KW, <riel@surriel.com>
+//
+// Switch the NAVTEX modem over to the same mark/spac decoder, with W7AY's
+// automatic threshold correction algorithm, like the RTTY modem uses.
+//
+// The noise subtraction is a little different than in the RTTY modem;
+// the algorithm used in W7AY's code seems to work a little better with
+// the noise present at 518 kHz, when compared to the algorithm used in
+// the RTTY modem.
+//
+// I have compared this detector to a correlation detector; the latter
+// appears to be a little more sensitive, which includes higher
+// sensitivity to noise. With a 250 Hz filter on the radio, the
+// correlation detector might be a little bit better, while with the
+// filter on the radio opened up to 4kHz wide, this detector appears
+// to be more robust.
+//
+// On signals with a large mark/space power imbalance, or where the power
+// distribution in one of the two throws off the automatic frequency
+// correction, this decoder is able to handle signals that neither of
+// the alternatives tested does.
+// ---------------------------------------------------------------------
 
 #include <math.h>
 #include <stdlib.h>
@@ -54,6 +205,7 @@
 #include "strutil.h"
 #include "kmlserver.h"
 #include "record_loader.h"
+#include "fftfilt.h"
 
 #include "FL/fl_ask.H"
 
@@ -91,7 +243,7 @@ public:
 		std::string input_str ;
 		if( ! std::getline( istrm, input_str ) ) return istrm ;
 		std::stringstream str_strm( input_str );
-		
+
 		if( read_until_delim( m_delim, str_strm, rec.m_country                 )
 		&&  read_until_delim( m_delim, str_strm  /* Country code */            )
 		&&  read_until_delim( m_delim, str_strm, rec.m_frequency               )
@@ -105,7 +257,7 @@ public:
 
 		&& ( rec.m_coordinates.latitude().is_lon() == false  )
 		&& ( rec.m_coordinates.longitude().is_lon() == true  )
-		) 
+		)
 		{
 			return istrm ;
 		}
@@ -132,9 +284,9 @@ class NavtexCatalog : public RecordLoader< NavtexCatalog >
 	/// Tells if this is a reasonable Navtex frequency.
 	static bool freq_acceptable( double freq )
 	{
-		return	freq_close( freq, 490.0 )
-		||	freq_close( freq, 518.0 )
-		||	freq_close( freq, 4209.5 );
+		return  freq_close( freq, 490.0 )
+		||  freq_close( freq, 518.0 )
+		||  freq_close( freq, 4209.5 );
 	}
 
 	void Clear() {
@@ -212,7 +364,7 @@ public:
 		bool okFreq = freq_acceptable( freq );
 
 		//LOG_INFO("Operator Maidenhead=%s lon=%lf lat=%lf okFreq=%d Origin=%c",
-		//	maidenhead.c_str(), coo.longitude().angle(), coo.latitude().angle(), okFreq, origin );
+		//  maidenhead.c_str(), coo.longitude().angle(), coo.latitude().angle(), okFreq, origin );
 
 		for( CatalogType::const_iterator it = m_catalog.begin(), en = m_catalog.end(); it != en ; ++it )
 		{
@@ -255,8 +407,8 @@ public:
 		// The first message only contains a string very similar to a radio station.
 		if( (begSolStr->first < 2) && ( nxtSolStr->first > 2 ) ) {
 			//LOG_INFO("Levenshtein beg=%lf beg_name=%s next=%lf next_name=%s",
-			//	begSolStr->first, begSolStr->second->name().c_str(),
-			//	nxtSolStr->first, nxtSolStr->second->name().c_str() );
+			//  begSolStr->first, begSolStr->second->name().c_str(),
+			//  nxtSolStr->first, nxtSolStr->second->name().c_str() );
 			return & (*begSolStr->second) ;
 		}
 
@@ -269,8 +421,8 @@ public:
 		// Now we could search for a coordinate in the message, and we will keep the station which is the closest
 		// to this coordinate. We wish to do that anyway in order to map things in KML.
 		// Possible formats are -(This is experimental):
- 		// 67-04.0N 032-25.7E
- 		// 47-29'30N 003-16'00W
+		// 67-04.0N 032-25.7E
+		// 47-29'30N 003-16'00W
 		// 6930.1N 01729.9E
 		// 48-21'45N 004-31'45W
 		// 58-37N 003-32W
@@ -306,127 +458,8 @@ public:
 	}
 }; // NavtexCatalog
 
-/// Explanations here: http://www.arachnoid.com/BiQuadDesigner/index.html
-class BiQuadraticFilter {
-public:
-	enum Type {
-		BANDPASS, LOWPASS, HIGHPASS, NOTCH, PEAK, LOWSHELF, HIGHSHELF
-	};
-private:
-	double m_a0, m_a1, m_a2, m_b0, m_b1, m_b2;
-	double m_x1, m_x2, y, m_y1, m_y2;
-	double m_gain_abs;
-	Type   m_type;
-	double m_center_freq;
-	double m_sample_rate;
-	double m_Q;
-	double m_gainDB;
-public:
-	BiQuadraticFilter() {}
-
-	BiQuadraticFilter(Type type, double center_freq, double sample_rate, double Q, double gainDB = 0.0) {
-		configure(type, center_freq, sample_rate, Q, gainDB);
-	}
-
-	void configure(Type aType, double aCenter_freq, double aSample_rate, double aQ, double aGainDB = 0.0) {
-		m_x1 = m_x2 = m_y1 = m_y2 = 0;
-		aQ = (aQ == 0) ? 1e-9 : aQ;
-		m_type = aType;
-		m_sample_rate = aSample_rate;
-		m_Q = aQ;
-		m_gainDB = aGainDB;
-		reconfigure(aCenter_freq);
-	}
-private:
-	/// Allows parameter change while running
-	void reconfigure(double cf) {
-		m_center_freq = cf;
-		// only used for peaking and shelving filters
-		m_gain_abs = pow(10, m_gainDB / 40);
-		double omega = 2 * M_PI * cf / m_sample_rate;
-		double sn = sin(omega);
-		double cs = cos(omega);
-		double alpha = sn / (2 * m_Q);
-		double beta = sqrt(m_gain_abs + m_gain_abs);
-		switch (m_type) {
-			case BANDPASS:
-				m_b0 = alpha;
-				m_b1 = 0;
-				m_b2 = -alpha;
-				m_a0 = 1 + alpha;
-				m_a1 = -2 * cs;
-				m_a2 = 1 - alpha;
-				break;
-			case LOWPASS:
-				m_b0 = (1 - cs) / 2;
-				m_b1 = 1 - cs;
-				m_b2 = (1 - cs) / 2;
-				m_a0 = 1 + alpha;
-				m_a1 = -2 * cs;
-				m_a2 = 1 - alpha;
-				break;
-			case HIGHPASS:
-				m_b0 = (1 + cs) / 2;
-				m_b1 = -(1 + cs);
-				m_b2 = (1 + cs) / 2;
-				m_a0 = 1 + alpha;
-				m_a1 = -2 * cs;
-				m_a2 = 1 - alpha;
-				break;
-			case NOTCH:
-				m_b0 = 1;
-				m_b1 = -2 * cs;
-				m_b2 = 1;
-				m_a0 = 1 + alpha;
-				m_a1 = -2 * cs;
-				m_a2 = 1 - alpha;
-				break;
-			case PEAK:
-				m_b0 = 1 + (alpha * m_gain_abs);
-				m_b1 = -2 * cs;
-				m_b2 = 1 - (alpha * m_gain_abs);
-				m_a0 = 1 + (alpha / m_gain_abs);
-				m_a1 = -2 * cs;
-				m_a2 = 1 - (alpha / m_gain_abs);
-				break;
-			case LOWSHELF:
-				m_b0 = m_gain_abs * ((m_gain_abs + 1) - (m_gain_abs - 1) * cs + beta * sn);
-				m_b1 = 2 * m_gain_abs * ((m_gain_abs - 1) - (m_gain_abs + 1) * cs);
-				m_b2 = m_gain_abs * ((m_gain_abs + 1) - (m_gain_abs - 1) * cs - beta * sn);
-				m_a0 = (m_gain_abs + 1) + (m_gain_abs - 1) * cs + beta * sn;
-				m_a1 = -2 * ((m_gain_abs - 1) + (m_gain_abs + 1) * cs);
-				m_a2 = (m_gain_abs + 1) + (m_gain_abs - 1) * cs - beta * sn;
-				break;
-			case HIGHSHELF:
-				m_b0 = m_gain_abs * ((m_gain_abs + 1) + (m_gain_abs - 1) * cs + beta * sn);
-				m_b1 = -2 * m_gain_abs * ((m_gain_abs - 1) + (m_gain_abs + 1) * cs);
-				m_b2 = m_gain_abs * ((m_gain_abs + 1) + (m_gain_abs - 1) * cs - beta * sn);
-				m_a0 = (m_gain_abs + 1) - (m_gain_abs - 1) * cs + beta * sn;
-				m_a1 = 2 * ((m_gain_abs - 1) - (m_gain_abs + 1) * cs);
-				m_a2 = (m_gain_abs + 1) - (m_gain_abs - 1) * cs - beta * sn;
-				break;
-		}
-		/// Prescale filter constants
-		m_b0 /= m_a0;
-		m_b1 /= m_a0;
-		m_b2 /= m_a0;
-		m_a1 /= m_a0;
-		m_a2 /= m_a0;
-	}
-public:
-	/// Perform one filtering step
-	double filter(double x) {
-		y = m_b0 * x + m_b1 * m_x1 + m_b2 * m_x2 - m_a1 * m_y1 - m_a2 * m_y2;
-		m_x2 = m_x1;
-		m_x1 = x;
-		m_y2 = m_y1;
-		m_y1 = y;
-		return (y);
-	}
-};
-
 static const unsigned char code_to_ltrs[128] = {
-	//0	1	2	3	4	5	6	7	8	9	a	b	c	d	e	f
+	//0 1   2   3   4   5   6   7   8   9   a   b   c   d   e   f
 	'_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', // 0
 	'_', '_', '_', '_', '_', '_', '_', 'J', '_', '_', '_', 'F', '_', 'C', 'K', '_', // 1
 	'_', '_', '_', '_', '_', '_', '_', 'W', '_', '_', '_', 'Y', '_', 'P', 'Q', '_', // 2
@@ -438,7 +471,7 @@ static const unsigned char code_to_ltrs[128] = {
 };
 
 static const unsigned char code_to_figs[128] = {
-	//0	1	2	3	4	5	6	7	8	9	a	b	c	d	e	f
+	//0 1   2   3   4   5   6   7   8   9   a   b   c   d   e   f
 	'_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', // 0
 	'_', '_', '_', '_', '_', '_', '_', '\'', '_', '_', '_', '!', '_', ':', '(', '_', // 1
 	'_', '_', '_', '_', '_', '_', '_', '2', '_', '_', '_', '6', '_', '0', '1', '_', // 2
@@ -589,9 +622,9 @@ private:
 				default  : if( chrSeen ) {
 						   if( wasDelim ) {
 							  newStr.append(new_line);
-					   	   } else if( wasSpace ) {
+						   } else if( wasSpace ) {
 							  newStr.push_back(' ');
-					   	}
+						}
 					   }
 					   wasDelim = false ;
 					   wasSpace = false ;
@@ -631,7 +664,7 @@ public:
 
 		if (qlen >= header_len) {
 			const char * comp = & (*this)[ qlen - header_len ];
-			if( 
+			if(
 				(comp[0] == 'Z') &&
 				(comp[1] == 'C') &&
 				(comp[2] == 'Z') &&
@@ -641,14 +674,14 @@ public:
 				isalnum(comp[6]) &&
 				isdigit(comp[7]) &&
 				isdigit(comp[8]) &&
-				// (comp[9] == '\r') ) 
+				// (comp[9] == '\r') )
 				(strchr( "\n\r", comp[9] ) ) ) {
 
 				/// This returns the garbage before the valid header.
 				// Garbage because the trailer could not be read, but maybe header OK.
 				ccir_message msg_cut(
 					substr( 0, size() - header_len ),
-				       	m_origin,
+						m_origin,
 					m_subject,
 					m_number );
 				m_origin  = comp[5];
@@ -757,7 +790,7 @@ public:
 	} // display
 }; // ccir_message
 
-static const int deviation_f = 90;
+static const int deviation_f = 85;
 
 static const double dflt_center_freq = 1000.0 ;
 
@@ -774,10 +807,10 @@ class navtex_implementation {
 		switch( s ) {
 			case NOSIGNAL  : return "NOSIGNAL";
 			case SYNC_SETUP: return "SYNC_SETUP";
-			case SYNC1	 : return "SYNC1";
-			case SYNC2	 : return "SYNC2";
+			case SYNC1   : return "SYNC1";
+			case SYNC2   : return "SYNC2";
 			case READ_DATA : return "READ_DATA";
-			default		: return "Unknown" ;
+			default     : return "Unknown" ;
 		}
 	}
 
@@ -797,47 +830,56 @@ class navtex_implementation {
 
 	double                          m_metric ;
 
-	CCIR476				m_ccir476;
+	CCIR476             m_ccir476;
 	typedef std::list<int> sync_chrs_type ;
 	sync_chrs_type                  m_sync_chrs;
 	ccir_message                    m_curr_msg ;
 
-	int					m_c1, m_c2, m_c3;
+	int                 m_c1, m_c2, m_c3;
 	static const int                 m_zero_crossings_divisor = 4;
 	std::vector<int>                 m_zero_crossings ;
 	long                             m_zero_crossing_count;
-	double				 m_message_time ;
-	double				 m_signal_accumulator ;
-	double				 m_mark_f, m_space_f;
-	double				 m_audio_average ;
-	double				 m_audio_average_tc;
-	double				 m_audio_minimum ;
-	double				 m_time_sec;
+	double               m_message_time ;
+	double               m_early_accumulator ;
+	double               m_prompt_accumulator ;
+	double               m_late_accumulator ;
+	double               m_mark_f, m_space_f;
+	double               m_audio_average ;
+	double               m_audio_average_tc;
+	double               m_audio_minimum ;
+	double               m_time_sec;
 
-	double				 m_baud_rate ;
-	double				 m_baud_error;
-	int					m_sample_rate ;
-	bool				   m_averaged_mark_state;
-	int					m_bit_duration ;
-	bool				   m_old_mark_state;
-	BiQuadraticFilter	  m_biquad_mark;
-	BiQuadraticFilter	  m_biquad_space;
-	BiQuadraticFilter	  m_biquad_lowpass;
-	int					m_bit_sample_count, m_half_bit_sample_count;
-	State				  m_state;
-	int					m_sample_count;
-	int					m_next_event_count ;
-	int					m_bit_count;
-	int					m_code_bits;
-	bool				   m_shift ;
-	bool				   m_pulse_edge_event;
-	int					m_error_count;
-	int					m_valid_count;
-	double				 m_sync_delta;
-	bool				   m_alpha_phase ;
-	bool				   m_header_found ;
+	double               m_baud_rate ;
+	double               m_baud_error;
+	int                 m_sample_rate ;
+	bool                   m_averaged_mark_state;
+	int                 m_bit_duration ;
+	bool                   m_old_mark_state;
+	fftfilt					*m_mark_lowpass;
+	fftfilt					*m_space_lowpass;
+	double					m_mark_phase;
+	double					m_space_phase;
+	double                  m_bit_sample_count, m_half_bit_sample_count, m_quarter_bit_sample_count;
+	State                 m_state;
+	int                 m_sample_count;
+	double                  m_next_early_event;
+	double                  m_next_prompt_event;
+	double                  m_next_late_event;
+	double                  m_average_early_signal;
+	double                  m_average_prompt_signal;
+	double                  m_average_late_signal;
+	int                 m_bit_count;
+	int                 m_code_bits;
+	bool                   m_shift ;
+	bool                   m_pulse_edge_event;
+	int                 m_error_count;
+	int                 m_valid_count;
+	double               m_sync_delta;
+	bool                   m_alpha_phase ;
+	bool                   m_header_found ;
+	char snrmsg[80];
 	// filter method related
-	double				 m_center_frequency_f ;
+	double               m_center_frequency_f ;
 
 	navtex_implementation( const navtex_implementation & );
 	navtex_implementation();
@@ -852,12 +894,13 @@ public:
 		m_time_sec = 0.0 ;
 		m_state = NOSIGNAL;
 		m_message_time = 0.0 ;
-		m_signal_accumulator = 0;
+		m_early_accumulator = 0;
+		m_prompt_accumulator = 0;
+		m_late_accumulator = 0;
 		m_audio_average = 0;
-		m_audio_minimum = 256;
+		m_audio_minimum = 0.15;
 		m_sample_rate = the_sample_rate;
 		m_bit_duration = 0;
-		m_next_event_count = 0;
 		m_shift = false;
 		m_alpha_phase = false;
 		m_header_found = false;
@@ -866,17 +909,21 @@ public:
 		// this value must never be zero and bigger than 10.
 		m_baud_rate = 100;
 		double m_bit_duration_seconds = 1.0 / m_baud_rate;
-		m_bit_sample_count = (int) (m_sample_rate * m_bit_duration_seconds + 0.5);
+		m_bit_sample_count = m_sample_rate * m_bit_duration_seconds;
 		m_half_bit_sample_count = m_bit_sample_count / 2;
-		m_pulse_edge_event = false;
+		m_quarter_bit_sample_count = m_bit_sample_count / 4;
+		// A narrower spread between signals allows the modem to
+		// center on the pulses better, but a wider spread makes
+		// more robust under noisy conditions. 1/6 seems to work.
+		m_next_early_event = 0;
+		m_next_prompt_event = m_bit_sample_count / 6;
+		m_next_late_event = m_bit_sample_count * 2 / 6;
+		m_average_early_signal = 0;
+		m_average_prompt_signal = 0;
+		m_average_late_signal = 0;
 		m_error_count = 0;
 		m_valid_count = 0;
 		m_sample_count = 0;
-		m_next_event_count = 0;
-		m_zero_crossing_count = 0;
-		/// Maybe m_bit_sample_count is not a multiple of m_zero_crossings_divisor.
-		m_zero_crossings.resize( ( m_bit_sample_count + m_zero_crossings_divisor - 1 ) / m_zero_crossings_divisor, 0 );
-		m_sync_delta = 0;
 		m_old_mark_state = false;
 		m_averaged_mark_state = false ;
 
@@ -895,15 +942,19 @@ private:
 		double qv = m_center_frequency_f + (4.0 * 1000 / m_center_frequency_f);
 		m_mark_f = qv + deviation_f;
 		m_space_f = qv - deviation_f;
+		m_mark_phase = 0;
+		m_space_phase = 0;
 	}
 
 	void configure_filters() {
-		const double mark_space_filter_q = 6 * m_center_frequency_f / 1000.0;
-		m_biquad_mark.configure(BiQuadraticFilter::BANDPASS, m_mark_f, m_sample_rate, mark_space_filter_q);
-		m_biquad_space.configure(BiQuadraticFilter::BANDPASS, m_space_f, m_sample_rate, mark_space_filter_q);
-		static const double lowpass_filter_f = 140.0;
-		static const double invsqr2 = 1.0 / sqrt(2);
-		m_biquad_lowpass.configure(BiQuadraticFilter::LOWPASS, lowpass_filter_f, m_sample_rate, invsqr2);
+		const int filtlen = 512;
+		delete m_mark_lowpass;
+		m_mark_lowpass = new fftfilt(m_baud_rate/m_sample_rate, filtlen);
+		m_mark_lowpass->rtty_filter(m_baud_rate/m_sample_rate);
+
+		delete m_space_lowpass;
+		m_space_lowpass = new fftfilt(m_baud_rate/m_sample_rate, filtlen);
+		m_space_lowpass->rtty_filter(m_baud_rate/m_sample_rate);
 	}
 
 	void set_state(State s) {
@@ -1010,7 +1061,7 @@ private:
 				}
 			}
 			if (chr == -1) {
-				LOG_DEBUG("Fail all options: %x %x", code, m_c1); 
+				LOG_DEBUG("Fail all options: %x %x", code, m_c1);
 			} else {
 				switch (chr) {
 					case code_rep:
@@ -1057,20 +1108,24 @@ private:
 
 	void compute_metric(void)
 	{
-		static double avg_ratio = 0.0 ;
-		static const double width_f = 10.0 ;
-       		double numer_mark = wf->powerDensity(m_mark_f, width_f);
-       		double numer_space = wf->powerDensity(m_space_f, width_f);
-       		double numer_mid = wf->powerDensity(m_center_frequency_f, width_f);
-       		double denom = wf->powerDensity(m_center_frequency_f, 2 * deviation_f) + 1e-10;
+		static double sigpwr = 0.0 ;
+		static double noisepwr = 0.0;
+		double delta = m_baud_rate/8.0;
+		double np = wf->powerDensity(m_center_frequency_f, delta) * 3000 / delta;
+		double sp =
+			wf->powerDensity(m_mark_f, delta) +
+				wf->powerDensity(m_space_f, delta) + 1e-10;
+		double snr;
 
-		double ratio = ( numer_space + numer_mark + numer_mid ) / denom ;
+		sigpwr = decayavg ( sigpwr, sp, sp > sigpwr ? 2 : 8);
+		noisepwr = decayavg ( noisepwr, np, 16 );
+		snr = 10*log10(sigpwr / noisepwr);
 
-		/// The only power in this band should come from the signal.
-       		m_metric = 100 * decayavg( avg_ratio, ratio, 20 );
-
-		// LOG_INFO("m_metric=%lf",m_metric);
+		snprintf(snrmsg, sizeof(snrmsg), "s/n %3.0f dB", snr);
+		put_Status2(snrmsg);
+		m_metric = CLAMP((3000 / delta) * (sigpwr/noisepwr), 0.0, 100.0);
 		m_ptr_navtex->display_metric(m_metric);
+
 	}
 
 	void process_afc() {
@@ -1086,9 +1141,9 @@ private:
 		static int cnt_read_data = 0 ;
 		/// This centers the carrier where the activity is the strongest.
 		static const int bw[][2] = {
-			{ -deviation_f - 2, -deviation_f + 8 },
-			{  deviation_f - 8,  deviation_f + 2 } };
-       		double max_carrier = wf->powerDensityMaximum( 2, bw );
+			{ -deviation_f - 5, -deviation_f + 5 },
+			{  deviation_f - 5,  deviation_f + 5 } };
+		double max_carrier = wf->powerDensityMaximum( 2, bw );
 
 		/// Do not change the frequency too quickly if an image is received.
 		double next_carr = 0.0 ;
@@ -1105,8 +1160,8 @@ private:
 			} else {
 				lingering_state = m_state ;
 				/// Maybe this is the phasing signal, so we recenter.
-				double pwr_left = wf->powerDensity ( max_carrier - deviation_f, 10 );
-				double pwr_right = wf->powerDensity( max_carrier + deviation_f, 10 );
+				double pwr_left = wf->powerDensity ( max_carrier - deviation_f, 30 );
+				double pwr_right = wf->powerDensity( max_carrier + deviation_f, 30 );
 				static const double ratio_left_right = 5.0 ;
 				if( pwr_left > ratio_left_right * pwr_right ) {
 					max_carrier -= deviation_f ;
@@ -1145,6 +1200,47 @@ private:
 		}
 	}
 
+	// The signal is sampled at three points: early, prompt, and late.
+	// The prompt event is where the signal is decoded, while early and
+	// late are only used to adjust the time of the sampling to match
+	// the incoming signal.
+	//
+	// The early event happens 1/6 bit period before the prompt event,
+	// and the late event 1/6 bit period later. If the incoming signal
+	// peaks early, it means the decoder is late. That is, if the early
+	// signal is "too large", decoding should to happen earlier.
+	//
+	// Attempt to center the signal so the accumulator is at its
+	// maximum deviation at the prompt event. If the bit is decoded
+	// too early or too late, the code is more sensitive to noise,
+	// and less likely to decode the signal correctly.
+	void process_multicorrelator() {
+		// Adjust the sampling period once every 8 bit periods.
+		if (m_sample_count % (int)(m_bit_sample_count * 8))
+			return;
+
+		// Calculate the slope between early and late signals
+		// to align the logic sampling with the received signal
+		double slope = m_average_late_signal - m_average_early_signal;
+
+		if (m_average_prompt_signal < m_average_early_signal &&
+		    m_average_prompt_signal < m_average_late_signal)
+			// At a signal minimum. Get out quickly.
+			slope *= 2;
+		else if (m_average_prompt_signal > m_average_late_signal &&
+			 m_average_prompt_signal > m_average_late_signal)
+			// Limit the adjustment, to ride out noise
+			slope /= 8;
+		else
+			slope /= 4;
+
+		if (slope) {
+			m_next_early_event += slope;
+			m_next_prompt_event += slope;
+			m_next_late_event += slope;
+		}
+	}
+
 	/* A NAVTEX message is built on SITOR collective B-mode and consists of:
 	* a phasing signal of at least ten seconds
 	* the four characters "ZCZC" that identify the end of phasing
@@ -1165,97 +1261,136 @@ public:
 		process_afc();
 		process_timeout();
 		for( int i =0; i < nb_samples; ++i ) {
+			int n_out;
+			cmplx z, zmark, zspace, *zp_mark, *zp_space;
+
 			short v = static_cast<short>(32767 * data[i]);
 
 			m_time_sec = m_sample_count / m_sample_rate ;
+
 			double dv = v;
+			z = cmplx(dv, dv);
 
-			// separate mark and space by narrow filtering
-			double mark_level = m_biquad_mark.filter(dv);
-			double space_level = m_biquad_space.filter(dv);
+			zmark = mixer(m_mark_phase, m_mark_f, z);
+			m_mark_lowpass->run(zmark, &zp_mark);
 
-			double mark_abs = fabs(mark_level);
-			double space_abs = fabs(space_level);
+			zspace = mixer(m_space_phase, m_space_f, z);
+			n_out = m_space_lowpass->run(zspace, &zp_space);
+
+			if (n_out)
+				process_fft_output(zp_mark, zp_space, n_out);
+		}
+	}
+
+private:
+	cmplx mixer(double &phase, double f, cmplx in)
+	{
+		cmplx z = cmplx( cos(phase), sin(phase)) * in;
+
+		phase -= TWOPI * f / m_sample_rate;
+		if (phase < -TWOPI) phase += TWOPI;
+
+		return z;
+	}
+
+	// noise average decays fast down, slow up
+	double noise_decay(double avg, double value) {
+		int divisor;
+		if (value < avg)
+			divisor = m_bit_sample_count / 4;
+		else
+			divisor = m_bit_sample_count * 48;
+		return decayavg(avg, value, divisor);
+	}
+
+	// envelope average decays fast up, slow down
+	double envelope_decay(double avg, double value) {
+		int divisor;
+		if (value > avg)
+			divisor = m_bit_sample_count / 4;
+		else
+			divisor = m_bit_sample_count * 16;
+		return decayavg(avg, value, divisor);
+	}
+
+	void process_fft_output(cmplx *zp_mark, cmplx *zp_space, int samples) {
+		// envelope & noise levels for mark & space, respectively
+		static double mark_env = 0, space_env = 0;
+		static double mark_noise = 0, space_noise = 0;
+
+		for (int i = 0; i < samples; i++) {
+			double mark_abs = abs(zp_mark[i]);
+			double space_abs = abs(zp_space[i]);
+
+			process_multicorrelator();
 
 			m_audio_average += (std::max(mark_abs, space_abs) - m_audio_average) * m_audio_average_tc;
 
 			m_audio_average = std::max(.1, m_audio_average);
 
-			// produce difference of absolutes of mark and space
-			double diffabs = (mark_abs - space_abs);
+			// determine noise floor & envelope for mark & space
+			mark_env = envelope_decay(mark_env, mark_abs);
+			mark_noise = noise_decay(mark_noise, mark_abs);
 
-			diffabs /= m_audio_average;
+			space_env = envelope_decay(space_env, space_abs);
+			space_noise = noise_decay(space_noise, space_abs);
 
-			// now low-pass the resulting difference
-			double logic_level = m_biquad_lowpass.filter(diffabs);
+			double noise_floor = (space_noise + mark_noise) / 2;
 
+			// clip mark & space to envelope & floor
+			mark_abs = min(mark_abs, mark_env);
+			mark_abs = max(mark_abs, noise_floor);
+
+			space_abs = min(space_abs, space_env);
+			space_abs = max(space_abs, noise_floor);
+
+			// mark-space discriminator with automatic threshold
+			// correction, see:
+			// http://www.w7ay.net/site/Technical/ATC/
+			double logic_level =
+				(mark_abs - noise_floor) * (mark_env - noise_floor) -
+				(space_abs - noise_floor) * (space_env - noise_floor) -
+				0.5 * ( (mark_env - noise_floor) * (mark_env - noise_floor) -
+					 (space_env - noise_floor) * (space_env - noise_floor));
+
+			// the accumulator hits max when mark_state flips sign
 			bool mark_state = (logic_level > 0);
-			m_signal_accumulator += (mark_state) ? 1 : -1;
-			m_bit_duration++;
+			m_early_accumulator += (mark_state) ? 1 : -1;
+			m_prompt_accumulator += (mark_state) ? 1 : -1;
+			m_late_accumulator += (mark_state) ? 1 : -1;
 
-			// adjust signal synchronization over time
-			// by detecting zero crossings
-			if (mark_state != m_old_mark_state) {
-				// a valid bit duration must be longer than bit duration / 2
-				if ((m_bit_duration % m_bit_sample_count) > m_half_bit_sample_count) {
-					// create a relative index for this zero crossing
-					assert( m_sample_count - m_next_event_count + m_bit_sample_count * 8 >= 0 );
-					size_t index = size_t((m_sample_count - m_next_event_count + m_bit_sample_count * 8) % m_bit_sample_count);
-
-					// TODO: This never happened so could be replaced by assert() for speed-up.
-					// Size = m_bit_sample_count / m_zero_crossings_divisor
-					if( index / m_zero_crossings_divisor >= m_zero_crossings.size() ) {
-						LOG_ERROR("index=%d m_zero_crossings_divisor=%d m_zero_crossings.size()=%d\n",
-								(int)index, m_zero_crossings_divisor, (int)m_zero_crossings.size() );
-						LOG_ERROR("m_sample_count=%d m_next_event_count=%d m_bit_sample_count=%d\n",
-						m_sample_count, m_next_event_count, m_bit_sample_count );
-						exit(EXIT_FAILURE);
-					}
-
-					m_zero_crossings.at( index / m_zero_crossings_divisor )++;
-				}
-				m_bit_duration = 0;
-			}
-			m_old_mark_state = mark_state;
-			if (m_sample_count % m_bit_sample_count == 0) {
-				m_zero_crossing_count++;
-				static const int zero_crossing_samples = 16;
-				if (m_zero_crossing_count >= zero_crossing_samples) {
-					int best = 0;
-					int index = 0;
-					// locate max zero crossing
-					for (size_t i = 0; i < m_zero_crossings.size(); i++) {
-						int q = m_zero_crossings[i];
-						m_zero_crossings[i] = 0;
-						if (q > best) {
-							best = q;
-							index = i;
-						}
-					}
-					if (best > 0) { // if there is a basis for choosing
-						// create a signed correction value
-						index *= m_zero_crossings_divisor;
-						index = ((index + m_half_bit_sample_count) % m_bit_sample_count) - m_half_bit_sample_count;
-						// limit loop gain
-						double dbl_idx = (double)index / 8.0 ;
-						// m_sync_delta is a temporary value that is
-						// used once, then reset to zero
-						m_sync_delta = dbl_idx;
-						// m_baud_error is persistent -- used by baud error label
-						m_baud_error = dbl_idx;
-					}
-					m_zero_crossing_count = 0;
-				}
+			// An average of the magnitude of the accumulator
+			// is taken at the sample point, as well as a quarter
+			// bit before and after. This allows the code to see
+			// the best time to sample the signal without relying
+			// on (noisy) null crossings.
+			if (m_sample_count >= m_next_early_event) {
+				m_average_early_signal = decayavg(
+						m_average_early_signal,
+						fabs(m_early_accumulator), 16);
+				m_next_early_event += m_bit_sample_count;
+				m_early_accumulator = 0;
 			}
 
-			// flag the center of signal pulses
-			m_pulse_edge_event = m_sample_count >= m_next_event_count;
+			if (m_sample_count >= m_next_late_event) {
+				m_average_late_signal = decayavg(
+						m_average_late_signal,
+						fabs(m_late_accumulator), 16);
+				m_next_late_event += m_bit_sample_count;
+				m_late_accumulator = 0;
+			}
+
+			// the end of a signal pulse
+			// the accumulator should be at maximum deviation
+			m_pulse_edge_event = m_sample_count >= m_next_prompt_event;
 			if (m_pulse_edge_event) {
-				m_averaged_mark_state = (m_signal_accumulator > 0) ^ m_ptr_navtex->get_reverse();
-				m_signal_accumulator = 0;
-				// set new timeout value, include zero crossing correction
-				m_next_event_count = m_sample_count + m_bit_sample_count + (int) (m_sync_delta + 0.5);
-				m_sync_delta = 0;
+				m_average_prompt_signal = decayavg(
+						m_average_prompt_signal,
+						fabs(m_prompt_accumulator), 16);
+				m_next_prompt_event += m_bit_sample_count;
+
+				m_averaged_mark_state = (m_prompt_accumulator > 0) ^ m_ptr_navtex->get_reverse();
+				m_prompt_accumulator = 0;
 			}
 
 			if (m_audio_average < m_audio_minimum) {
