@@ -32,9 +32,11 @@ extern Fl_Group *grpNoise;
 #include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnNoiseOn;
 extern Fl_Counter2 *noiseDB;
+extern Fl_Check_Button *btnOffsetOn;
 #include <FL/Fl_Counter.H>
 extern Fl_Counter *ctrl_freq_offset;
-extern Fl_Check_Button *btnOffsetOn;
+extern Fl_Check_Button *btn_imd_on;
+extern Fl_Counter2 *xmtimd;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
 extern Fl_Group *tabBrowser;

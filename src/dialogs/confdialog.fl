@@ -366,7 +366,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} open
         tooltip {Operator information} xywh {0 25 600 355} when 1
       } {
         Fl_Group {} {
@@ -427,8 +427,8 @@ progdefaults.changed = true;}
           class Fl_Input2
         }
         Fl_Group grpNoise {
-          label {Test Signal - Do NOT use with transmitter} open
-          xywh {55 231 490 114} box ENGRAVED_FRAME align 21 hide
+          label {Test Signal - Do NOT use with transmitter} open selected
+          xywh {55 231 490 143} box ENGRAVED_FRAME align 21 hide
         } {
           Fl_Check_Button btnNoiseOn {
             label {Noise on}
@@ -439,19 +439,29 @@ progdefaults.changed = true;}
           Fl_Counter noiseDB {
             label dB
             callback {progdefaults.s2n = o->value();}
-            xywh {312 264 130 21} align 4 minimum -18 maximum 60 value 20
+            xywh {340 264 130 21} align 4 minimum -18 maximum 60 value 20
             code0 {o->value(progdefaults.s2n);}
             code1 {o->lstep(1);}
             class Fl_Counter2
           }
-          Fl_Counter ctrl_freq_offset {
-            label {freq-offset}
-            tooltip {ONLY FOR TESTING !} xywh {312 304 130 21} align 4 minimum -250 maximum 250
-            code0 {o->lstep(10);}
-          }
           Fl_Check_Button btnOffsetOn {
             label {Offset on}
             xywh {93 307 70 15} down_box DOWN_BOX
+          }
+          Fl_Counter ctrl_freq_offset {
+            label {freq-offset}
+            tooltip {ONLY FOR TESTING !} xywh {340 304 130 21} align 4 minimum -250 maximum 250
+            code0 {o->lstep(10);}
+          }
+          Fl_Check_Button btn_imd_on {
+            label {ALC emulation on}
+            xywh {93 342 70 15} down_box DOWN_BOX
+          }
+          Fl_Counter xmtimd {
+            label {ALC level}
+            xywh {340 339 130 21} align 4 minimum 0.5 maximum 1 step 0.01 value 1
+            code1 {o->lstep(.1);}
+            class Fl_Counter2
           }
         }
       }

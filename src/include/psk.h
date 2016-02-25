@@ -83,6 +83,10 @@ private:
 	double			*fir2c;
 	Cmovavg			*snfilt;
 	Cmovavg			*imdfilt;
+	Cmovavg			*e0_filt;
+	Cmovavg			*e1_filt;
+	Cmovavg			*e2_filt;
+	bool			displaysn;
 
 	double			I1[NUM_FILTERS];
 	double			I2[NUM_FILTERS];
@@ -166,6 +170,9 @@ private:
 
 	double			*tx_shape;
 	int 			preamble;
+	C_FIR_filter	*xmtfilt;
+
+	void			transmit(double *buf, int len);
 	void			tx_carriers();
 	void 			tx_symbol(int sym);
 	void			tx_bit(int bit);

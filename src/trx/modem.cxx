@@ -382,7 +382,7 @@ double modem::sigmaN (double es_ovr_n0)
 	case MODE_PSK125: case MODE_PSK250: case MODE_PSK500:
 	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250:
 	case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R:
-		mode_factor *= 16;
+		mode_factor = 400;
 		break;
 	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
 	case MODE_THROBX1: case MODE_THROBX2: case MODE_THROBX4:
@@ -431,13 +431,20 @@ double modem::gauss(double sigma) {
 // simulating the noise that is added to the signal.
 // return signal + noise, limiting value to +/- 1.0
 
+//static double mag;
+
 void modem::add_noise(double *buffer, int len)
 {
-	double sigma = sigmaN(progdefaults.s2n);
+	double sigma = sigmaN(noiseDB->value());
 	double sn = 0;
 	for (int n = 0; n < len; n++) {
-		sn = (buffer[n] + gauss(sigma)) / (1.0 + 3.0 * sigma);
-		buffer[n] = clamp(sn, -1.0, 1.0);
+//		mag = fabs(buffer[n]);
+//		if (btn_imd_on->value())
+//			buffer[n] *= (1.0 - mag *xmtimd->value())/(1.0 - xmtimd->value());
+		if (btnNoiseOn->value()) {
+			sn = (buffer[n] + gauss(sigma)) / (1.0 + 3.0 * sigma);
+			buffer[n] = clamp(sn, -1.0, 1.0);
+		}
 	}
 }
 
@@ -469,7 +476,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 
-	if (withnoise && progdefaults.noise) add_noise(buffer, len);
+	if (withnoise) add_noise(buffer, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
 	if (mult > 0.99) mult = 0.99;

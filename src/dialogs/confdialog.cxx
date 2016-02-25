@@ -316,9 +316,13 @@ static void cb_noiseDB(Fl_Counter2* o, void*) {
   progdefaults.s2n = o->value();
 }
 
+Fl_Check_Button *btnOffsetOn=(Fl_Check_Button *)0;
+
 Fl_Counter *ctrl_freq_offset=(Fl_Counter *)0;
 
-Fl_Check_Button *btnOffsetOn=(Fl_Check_Button *)0;
+Fl_Check_Button *btn_imd_on=(Fl_Check_Button *)0;
+
+Fl_Counter2 *xmtimd=(Fl_Counter2 *)0;
 
 Fl_Group *tabUI=(Fl_Group *)0;
 
@@ -5943,7 +5947,7 @@ Fl_Double_Window* ConfigureDialog() {
           inpMyAntenna->when(FL_WHEN_RELEASE);
           inpMyAntenna->labelsize(FL_NORMAL_SIZE);
         } // Fl_Input2* inpMyAntenna
-        { grpNoise = new Fl_Group(55, 231, 490, 114, _("Test Signal - Do NOT use with transmitter"));
+        { grpNoise = new Fl_Group(55, 231, 490, 143, _("Test Signal - Do NOT use with transmitter"));
           grpNoise->box(FL_ENGRAVED_FRAME);
           grpNoise->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
           grpNoise->hide();
@@ -5952,7 +5956,7 @@ Fl_Double_Window* ConfigureDialog() {
             btnNoiseOn->callback((Fl_Callback*)cb_btnNoiseOn);
             o->value(progdefaults.noise);
           } // Fl_Check_Button* btnNoiseOn
-          { Fl_Counter2* o = noiseDB = new Fl_Counter2(312, 264, 130, 21, _("dB"));
+          { Fl_Counter2* o = noiseDB = new Fl_Counter2(340, 264, 130, 21, _("dB"));
             noiseDB->box(FL_UP_BOX);
             noiseDB->color(FL_BACKGROUND_COLOR);
             noiseDB->selection_color(FL_INACTIVE_COLOR);
@@ -5969,16 +5973,35 @@ Fl_Double_Window* ConfigureDialog() {
             o->value(progdefaults.s2n);
             o->lstep(1);
           } // Fl_Counter2* noiseDB
-          { Fl_Counter* o = ctrl_freq_offset = new Fl_Counter(312, 304, 130, 21, _("freq-offset"));
+          { btnOffsetOn = new Fl_Check_Button(93, 307, 70, 15, _("Offset on"));
+            btnOffsetOn->down_box(FL_DOWN_BOX);
+          } // Fl_Check_Button* btnOffsetOn
+          { Fl_Counter* o = ctrl_freq_offset = new Fl_Counter(340, 304, 130, 21, _("freq-offset"));
             ctrl_freq_offset->tooltip(_("ONLY FOR TESTING !"));
             ctrl_freq_offset->minimum(-250);
             ctrl_freq_offset->maximum(250);
             ctrl_freq_offset->align(Fl_Align(FL_ALIGN_LEFT));
             o->lstep(10);
           } // Fl_Counter* ctrl_freq_offset
-          { btnOffsetOn = new Fl_Check_Button(93, 307, 70, 15, _("Offset on"));
-            btnOffsetOn->down_box(FL_DOWN_BOX);
-          } // Fl_Check_Button* btnOffsetOn
+          { btn_imd_on = new Fl_Check_Button(93, 342, 70, 15, _("ALC emulation on"));
+            btn_imd_on->down_box(FL_DOWN_BOX);
+          } // Fl_Check_Button* btn_imd_on
+          { Fl_Counter2* o = xmtimd = new Fl_Counter2(340, 339, 130, 21, _("ALC level"));
+            xmtimd->box(FL_UP_BOX);
+            xmtimd->color(FL_BACKGROUND_COLOR);
+            xmtimd->selection_color(FL_INACTIVE_COLOR);
+            xmtimd->labeltype(FL_NORMAL_LABEL);
+            xmtimd->labelfont(0);
+            xmtimd->labelsize(14);
+            xmtimd->labelcolor(FL_FOREGROUND_COLOR);
+            xmtimd->minimum(0.5);
+            xmtimd->maximum(1);
+            xmtimd->step(0.01);
+            xmtimd->value(1);
+            xmtimd->align(Fl_Align(FL_ALIGN_LEFT));
+            xmtimd->when(FL_WHEN_CHANGED);
+            o->lstep(.1);
+          } // Fl_Counter2* xmtimd
           grpNoise->end();
         } // Fl_Group* grpNoise
         tabOperator->end();
