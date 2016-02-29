@@ -137,16 +137,19 @@ string modeString(rmode_t m)
 void initOptionMenus()
 {
 	qso_opMODE->clear();
+
 	list<MODE>::iterator MD;
 	list<MODE> *pMD = 0;
+
 	if (lmodes.empty() == false)
 		pMD = &lmodes;
 	else if (lmodeCMD.empty() == false)
 		pMD = &lmodeCMD;
-
+printf("initOptionMenus()\n");
 	if (pMD) {
 		MD = pMD->begin();
 		while (MD != pMD->end()) {
+printf("adding mode: %s\n", (*MD).SYMBOL.c_str());
 			qso_opMODE->add( (*MD).SYMBOL.c_str());
 			MD++;
 		}
@@ -168,6 +171,7 @@ void initOptionMenus()
 	if (pBW) {
 		bw = pBW->begin();
 		while (bw != pBW->end()) {
+printf("adding BW: %s\n", (*bw).SYMBOL.c_str());
 			qso_opBW->add( (*bw).SYMBOL.c_str());
 			bw++;
 		}
@@ -522,7 +526,9 @@ bool init_NoRig_RigDialog()
 	qso_opBW->deactivate();
 	qso_opMODE->clear();
 
+printf("init_NoRig_RigDialog()\n");
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
+printf("adding %s\n", modes[i].name);
 		qso_opMODE->add(modes[i].name);
 	}
 // list of LSB type modes that various xcvrs report via flrig

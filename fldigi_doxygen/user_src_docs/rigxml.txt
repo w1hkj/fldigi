@@ -745,6 +745,16 @@ fldigi will then record critical events as they occur during the execution
 of the rigCAT loop.  Remove the debug statement from the xml when the
 file has been proven and before publishing.
 
+You can test an xml to observe the CAT send sequences by inhibiting the
+actual connection to the serial port.
+
+<NOSERIAL>true/false</NOSERIAL> - default false
+
+The serial i/o events are normally recorded as a sequence of HEX values.  This
+behavior can be changed to record the events as a string of ASCII characters.
+
+<ASCII>true/false</ASCII> - default false
+
 You can use the xml remarks brackets
 <pre>
 \<!--

@@ -63,8 +63,6 @@ static string		sRigWidth = "";
 static string		sRigMode = "";
 static long long	llFreq = 0;
 
-//static bool nonCATrig = false;
-
 static void *rigCAT_loop(void *args);
 
 #define RXBUFFSIZE 2000
@@ -89,7 +87,14 @@ bool sendCommand (string s, int retnbr, int waitval)
 			1000.0 / rigio.Baud() );
 
 	if (xmlrig.debug)
-		LOG_INFO("%s", str2hex(s.data(), s.length()));
+		LOG_INFO("%s",
+			xmlrig.ascii ? s.c_str() : str2hex(s.data(), s.length()));
+
+	if (xmlrig.noserial) {
+		memset(replybuff, 0, RXBUFFSIZE + 1);
+		numread = 0;
+		return true;
+	}
 
 	retval = rigio.WriteBuffer((unsigned char *)s.c_str(), numwrite);
 	if (retval <= 0)
@@ -116,7 +121,8 @@ bool sendCommand (string s, int retnbr, int waitval)
 		numread++;
 	}
 	if (xmlrig.debug)
-		LOG_INFO("reply %s", str2hex(replybuff, numread));
+		LOG_INFO("reply %s",
+			xmlrig.ascii ? (const char *)(replybuff) : str2hex(replybuff, numread));
 	if (numread > retnbr) {
 		memmove(replybuff, replybuff + numread - retnbr, retnbr);
 		numread = retnbr;
@@ -322,7 +328,7 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 {
 	const char symbol[] = "GETFREQ";
 	failed = false;
-	if (rigCAT_exit) {
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok) {
 		failed = true;
 		return progStatus.noCATfreq;
 	}
@@ -434,8 +440,10 @@ retry_get_freq: ;
 void rigCAT_setfreq(long long f)
 {
 	const char symbol[] = "SETFREQ";
-	if (rigCAT_exit)
-		return;
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok) {
+		progStatus.noCATfreq = f;
+	}
+	if (rigCAT_exit || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
@@ -494,7 +502,8 @@ string rigCAT_getmode()
 {
 	const char symbol[] = "GETMODE";
 
-	if (rigCAT_exit) return "";
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok)
+		return progStatus.noCATmode;
 
 //	guard_lock ser_guard( &rigCAT_mutex );
 
@@ -608,7 +617,11 @@ void rigCAT_setmode(const string& md)
 {
 	const char symbol[] = "SETMODE";
 
-	if (rigCAT_exit) return;
+
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok)
+		progStatus.noCATmode = md;
+
+	if (rigCAT_exit || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
@@ -622,10 +635,8 @@ void rigCAT_setmode(const string& md)
 	}
 	modeCmd = *itrCmd;
 
-	if ( modeCmd.str1.empty() == false) {
-		if (xmlrig.debug) LOG_INFO("%s not defined", symbol);
+	if ( modeCmd.str1.empty() == false)
 		strCmd.append(modeCmd.str1);
-	}
 
 	if ( modeCmd.data.size > 0 ) {
 		list<MODE>::iterator mode;
@@ -679,8 +690,8 @@ void rigCAT_setmode(const string& md)
 string rigCAT_getwidth()
 {
 	const char symbol[] = "GETBW";
-	
-	if (rigCAT_exit)
+
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok)
 		return progStatus.noCATwidth;
 
 	XMLIOS widthCmd;
@@ -700,7 +711,7 @@ string rigCAT_getwidth()
 		if (xmlrig.debug) LOG_INFO("%s not defined", symbol);
 		return "";
 	}
-	
+
 	widthCmd = *itrCmd;
 
 	if ( widthCmd.str1.empty() == false)
@@ -801,9 +812,11 @@ retry_get_width: ;
 void rigCAT_setwidth(const string& w)
 {
 	const char symbol[] = "SETBW";
-	
-	if (rigCAT_exit)
-		return;
+
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok)
+		progStatus.noCATwidth = w;
+
+	if (rigCAT_exit || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
@@ -876,7 +889,7 @@ void rigCAT_setwidth(const string& w)
 void rigCAT_pttON()
 {
 	const char symbol[] = "PTTON";
-	
+
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
@@ -895,7 +908,7 @@ void rigCAT_pttON()
 		if (xmlrig.debug) LOG_INFO("%s not defined", symbol);
 		return;
 	}
-	
+
 	modeCmd = *itrCmd;
 
 	if ( modeCmd.str1.empty() == false)
@@ -933,7 +946,7 @@ void rigCAT_pttON()
 void rigCAT_pttOFF()
 {
 	const char symbol[] = "PTTOFF";
-	
+
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
@@ -952,7 +965,7 @@ void rigCAT_pttOFF()
 		if (xmlrig.debug) LOG_INFO("%s not defined", symbol);
 		return;
 	}
-	
+
 	modeCmd = *itrCmd;
 
 	if ( modeCmd.str1.empty() == false)
@@ -1151,10 +1164,13 @@ echo	   : %c\n",
 			(rigio.RTSCTS() ? 'T' : 'F'),
 			progdefaults.RigCatECHO ? 'T' : 'F');
 
-	if (rigio.OpenPort() == false) {
-		LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
-		return false;
+	if (xmlrig.noserial == false && xmlrig.xmlok) {
+		if (rigio.OpenPort() == false) {
+			LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
+			xmlrig.xmlok = true;
+		}
 	}
+
 	sRigMode = "";
 	sRigWidth = "";
 
@@ -1170,21 +1186,27 @@ echo	   : %c\n",
 	rigCAT_sendINIT("INIT", progdefaults.RigCatInitDelay);
 	bool failed = false;
 
-	rigCAT_getfreq(3, failed, progdefaults.RigCatInitDelay);
+	if (xmlrig.noserial)
+		rigCAT_getfreq(1, failed, 0);
+	else if (xmlrig.xmlok) {
+		rigCAT_getfreq(3, failed, progdefaults.RigCatInitDelay);
 
-	if (failed) {
-		LOG_ERROR("*****************Failed to read xcvr frequency");
-		rigio.ClosePort();
-		return false;
+		if (failed) {
+			LOG_ERROR("*****************Failed to read xcvr frequency");
+			if (xmlrig.noserial == false)
+				rigio.ClosePort();
+			xmlrig.xmlok = false;
+		} else
+			LOG_INFO("Passed serial port test");
 	}
-
-	LOG_INFO("Passed serial port test");
 
 	llFreq = 0;
 
 	if (pthread_create(&rigCAT_thread, NULL, rigCAT_loop, NULL) < 0) {
 		LOG_ERROR("%s", "pthread_create failed");
-		rigio.ClosePort();
+		if (xmlrig.xmlok && !xmlrig.noserial)
+			rigio.ClosePort();
+		xmlrig.xmlok = false;
 		return false;
 	}
 
@@ -1321,8 +1343,8 @@ static void rigcat_set_smeter(void *data)
 void rigCAT_get_smeter()
 {
 	const char symbol[] = "GET_SMETER";
-	
-	if (rigCAT_exit) return;
+
+	if (rigCAT_exit || xmlrig.noserial) return;
 
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
@@ -1468,7 +1490,7 @@ void rigCAT_get_pwrmeter()
 {
 	const char symbol[] = "GET_PWRMETER";
 
-	if (rigCAT_exit) return;
+	if (rigCAT_exit || xmlrig.noserial) return;
 
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
@@ -1562,7 +1584,6 @@ static void rigcat_notch(void *data)
 {
 	int val = reinterpret_cast<long>(data);
 	notch_frequency = val;
-//	printf("notch value %d\n", val);
 }
 
 int notch_data(DATA d, size_t p)
@@ -1633,7 +1654,7 @@ int notch_val(int freq)
 bool rigCAT_notchON()
 {
 	const char symbol[] = "GET_NOTCH_ON";
-	
+
 	if (rigCAT_exit) return 0;
 
 	XMLIOS modeCmd;
@@ -1704,7 +1725,7 @@ bool rigCAT_notchON()
 void rigCAT_get_notch()
 {
 	const char symbol[] = "GET_NOTCH";
-	
+
 	if (rigCAT_exit) return;
 
 	if (!rigCAT_notchON()) {
@@ -1794,7 +1815,7 @@ void rigCAT_get_notch()
 // convert the data field
 	ntch = notch_data(rTemp.data, pData);
 	if (xmlrig.debug) LOG_INFO("%s converted to %d", symbol, (int)ntch);
-	
+
 	REQ(rigcat_notch, reinterpret_cast<void *>(ntch));
 
 }
@@ -1802,7 +1823,7 @@ void rigCAT_get_notch()
 void rigCAT_notch_ON()
 {
 	const char symbol[] = "SET_NOTCH_ON";
-	
+
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
@@ -1819,7 +1840,7 @@ void rigCAT_notch_ON()
 		if (xmlrig.debug) LOG_INFO("%s not defined", symbol);
 		return;
 	}
-	
+
 	modeCmd = *itrCmd;
 
 	if ( modeCmd.str1.empty() == false)
@@ -1857,7 +1878,7 @@ void rigCAT_notch_ON()
 void rigCAT_notch_OFF()
 {
 	const char symbol[] = "SET_NOTCH_OFF";
-	
+
 	if (rigCAT_exit) return;
 
 	XMLIOS modeCmd;
@@ -1874,7 +1895,7 @@ void rigCAT_notch_OFF()
 		if (xmlrig.debug) LOG_INFO("%s not defined", symbol);
 		return;
 	}
-	
+
 	modeCmd = *itrCmd;
 
 	if ( modeCmd.str1.empty() == false)
@@ -1912,7 +1933,7 @@ void rigCAT_notch_OFF()
 void rigCAT_set_notch(int freq)
 {
 	const char symbol[] = "SET_NOTCH_VAL";
-	
+
 	if (rigCAT_exit) return;
 
 	if (!freq) {
@@ -2041,7 +2062,7 @@ int pwrlevel_val(int pwr)
 	size_t n;
 	int val1, val2, pwr1, pwr2;
 	for (n = 0; n < xmlrig.pwrlevel.size() - 1; n++) {
-		if ((pwr > xmlrig.pwrlevel[n].mtr) && (pwr <= xmlrig.pwrlevel[n+1].mtr))
+		if ((pwr >= xmlrig.pwrlevel[n].mtr) && (pwr <= xmlrig.pwrlevel[n+1].mtr))
 			break;
 	}
 	if (n == xmlrig.pwrlevel.size() - 1)
@@ -2060,19 +2081,33 @@ int pwrlevel_val(int pwr)
 
 }
 
-// called by main UI loop
+// called by rigio thread
+// must use REQ(...) to set the power level control
+
+static void rigCAT_update_pwrlevel(void *v)
+{
+	long pwr = reinterpret_cast<long>(v);
+	char szpwr[10];
+	snprintf(szpwr, sizeof(szpwr), "%ld", pwr);
+	progdefaults.mytxpower = szpwr;
+
+	inpMyPower->value(szpwr);
+	pwr_level->value(pwr);
+
+	if (xmlrig.debug) LOG_INFO("Read power level %s", szpwr);
+}
 
 void rigCAT_get_pwrlevel()
 {
 	const char symbol[] = "GET_PWRLEVEL";
-	
-	if (rigCAT_exit || !xmlrig.use_pwrlevel) return;
+
+	if (rigCAT_exit || xmlrig.noserial || !xmlrig.xmlok) return;
 
 	XMLIOS modeCmd;
 	list<XMLIOS>::iterator itrCmd;
 	string strCmd;
 	size_t p = 0, len1 = 0, len2 = 0, pData = 0;
-	int pwr = 0;
+	long pwr = 0;
 
 	itrCmd = commands.begin();
 	while (itrCmd != commands.end()) {
@@ -2153,22 +2188,13 @@ void rigCAT_get_pwrlevel()
 // convert the data field
 	pwr = pwrlevel_data(rTemp.data, pData);
 
-	pwr_level->value(pwr);
-
-// set logging values
-
-	char szpwr[10];
-	snprintf(szpwr, sizeof(szpwr), "%d", pwr);
-	progdefaults.mytxpower = szpwr;
-	inpMyPower->value(szpwr);
-
-	if (xmlrig.debug) LOG_INFO("Read power level %s", szpwr);
+	REQ(rigCAT_update_pwrlevel, (void *)pwr);
 }
 
 void rigCAT_set_pwrlevel(int pwr)
 {
 	const char symbol[] = "SET_PWRLEVEL";
-	
+
 	if (rigCAT_exit || !xmlrig.use_pwrlevel) return;
 
 	XMLIOS modeCmd;
@@ -2300,7 +2326,10 @@ static void *rigCAT_loop(void *args)
 				show_mode(sMode);
 			}
 
+			if (xmlrig.use_pwrlevel) rigCAT_get_pwrlevel();
+
 			if (xmlrig.use_smeter) rigCAT_get_smeter();
+
 			if (xmlrig.use_notch) rigCAT_get_notch();
 
 		} else {

@@ -44,6 +44,7 @@
 #include "confdialog.h"
 
 #include "icons.h"
+#include "fl_digi.h"
 
 using namespace std;
 
@@ -63,6 +64,8 @@ void parseTITLE(size_t &);
 void parseLSBMODES(size_t &);
 void parseDISCARD(size_t &);
 void parseDEBUG(size_t &);
+void parseNOSERIAL(size_t &);
+void parseASCII(size_t &);
 
 void parseWRITE_DELAY(size_t &);
 void parseINIT_DELAY(size_t &);
@@ -166,6 +169,8 @@ TAGS rigdeftags[] = {
 	{"<NOTCH", parseNOTCH},
 	{"<PWRLEVEL", parsePWRLEVEL},
 	{"<DEBUG", parseDEBUG},
+	{"<NOSERIAL", parseNOSERIAL},
+	{"<ASCII", parseASCII},
 	{0, 0}
 };
 
@@ -547,6 +552,31 @@ void parseDEBUG(size_t &p0){
 }
 
 //---------------------------------------------------------------------
+// Parse NOSERIAL, use during xml file creation/testing
+// suppresses serial port i/o
+//---------------------------------------------------------------------
+
+void parseNOSERIAL(size_t &p0){
+	bool val = getBool(p0);
+	xmlrig.noserial = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+//---------------------------------------------------------------------
+// Parse ASCII, use during xml file creation/testing
+// prints events as ASCII string vice HEX sequence
+//---------------------------------------------------------------------
+
+void parseASCII(size_t &p0){
+	bool val = getBool(p0);
+	xmlrig.ascii = val;
+	size_t pend = tagEnd(p0);
+	p0 = pend;
+}
+
+
+//---------------------------------------------------------------------
 // Parse Baudrate, write_delay, post_write_delay, timeout, retries
 // RTSCTS handshake
 //---------------------------------------------------------------------
@@ -763,10 +793,13 @@ void parsePWRLEVEL(size_t &p0) {
 	p0 = pend;
 	xmlrig.pwrlevel.clear();
 	int val, pwr;
+	float min = 500, max = 0;
 	size_t p = strpwrlevel.find(",");
 	while ( !strpwrlevel.empty() && (p != string::npos) ) {
 		val = atoi(&strpwrlevel[0]);
 		pwr = atoi(&strpwrlevel[p+1]);
+		if (pwr < min) min = pwr;
+		if (pwr > max) max = pwr;
 		xmlrig.pwrlevel.push_back(PAIR(val,pwr));
 		p = strpwrlevel.find(";");
 		if (p == string::npos) strpwrlevel.clear();
@@ -775,6 +808,7 @@ void parsePWRLEVEL(size_t &p0) {
 			p = strpwrlevel.find(",");
 		}
 	}
+	pwr_level->range(min, max);
 	xmlrig.use_pwrlevel = true;
 }
 
@@ -1067,6 +1101,7 @@ bool readRigXML()
 		xmlfile.close();
 		if (testXML()) {
 			parseXML();
+			xmlrig.xmlok = true;
 			return true;
 		}
 	}

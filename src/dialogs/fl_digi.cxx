@@ -5476,7 +5476,7 @@ static void add_docked(dockgroup *dock)
 
 void cb_meters(void *)
 {
-	rigCAT_get_pwrlevel();
+	if (!rigCAT_active()) return;
 	pwrlevel_grp->show();
 }
 
@@ -5711,6 +5711,7 @@ void create_fl_digi_main_primary() {
 				qso_opMODE->callback((Fl_Callback*)cb_qso_opMODE);
 				qso_opMODE->align(FL_ALIGN_TOP);
 				qso_opMODE->when(FL_WHEN_RELEASE);
+				qso_opMODE->readonly(true);
 				qso_opMODE->end();
 
 				qso_opBW = new Fl_ComboBox(
@@ -5727,6 +5728,7 @@ void create_fl_digi_main_primary() {
 				qso_opBW->callback((Fl_Callback*)cb_qso_opBW);
 				qso_opBW->align(FL_ALIGN_TOP);
 				qso_opBW->when(FL_WHEN_RELEASE);
+				qso_opBW->readonly(true);
 				qso_opBW->end();
 
 				qso_opGROUP = new Fl_Group(

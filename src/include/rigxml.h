@@ -130,6 +130,9 @@ struct XMLRIG {
 	vector< PAIR >pwrlevel;
 
 	bool	debug;
+	bool	noserial;
+	bool	ascii;
+	bool	xmlok;
 
 	void clear() {
 		port.clear();
@@ -155,6 +158,9 @@ struct XMLRIG {
 		pollinterval = 100;
 
 		debug = false;
+		noserial = false;
+		ascii = false;
+		xmlok = false;
 
 		use_smeter = false;
 		use_pwrmeter = false;

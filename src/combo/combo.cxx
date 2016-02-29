@@ -364,18 +364,20 @@ void Fl_ComboBox::value( const char *s )
 		} else
 			val->value(datalist[idx]->s);
 	} else {
-		insert(s, 0);
-		for (i = 0; i < listsize; i++) {
-			if (strcmp (s, datalist[i]->s) == 0) {
-				idx = i;
-				if (type_ == LISTBOX) {
-					valbox->label(datalist[idx]->s);
-					valbox->redraw_label();
-				} else
+		if (type_ != LISTBOX && !val->readonly()) {
+			insert(s, 0);
+			for (i = 0; i < listsize; i++) {
+				if (strcmp (s, datalist[i]->s) == 0) {
+					idx = i;
 					val->value(datalist[idx]->s);
-				break;
+					break;
+				}
 			}
-		}
+		} else if (type_ == LISTBOX) {
+			valbox->label("");
+			valbox->redraw_label();
+		} else
+			val->value("");
 	}
 }
 

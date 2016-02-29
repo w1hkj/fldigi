@@ -49,6 +49,7 @@ extern void rigCAT_get_pwrlevel();
 
 extern void rigCAT_close();
 extern bool rigCAT_init();
+extern bool rigCAT_active();
 extern void rigCAT_sendINIT(const std::string& icmd, int multiplier = 1);
 
 extern void rigCAT_set_ptt(int);
