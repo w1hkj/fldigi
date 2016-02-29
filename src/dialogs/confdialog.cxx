@@ -697,6 +697,13 @@ static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_tx_show_timer=(Fl_Check_Button *)0;
+
+static void cb_btn_tx_show_timer(Fl_Check_Button* o, void*) {
+  progdefaults.show_tx_timer = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabLogServer=(Fl_Group *)0;
 
 Fl_Tabs *tabsLog=(Fl_Tabs *)0;
@@ -6374,10 +6381,10 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Check_Button* btn_rx_lowercase
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(40, 189, 520, 34);
+            { Fl_Group* o = new Fl_Group(40, 189, 260, 34);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_tx_lowercase = new Fl_Check_Button(75, 197, 389, 20, _("Transmit all text in lower case"));
+              { Fl_Check_Button* o = btn_tx_lowercase = new Fl_Check_Button(75, 197, 199, 20, _("Transmit lower case text"));
                 btn_tx_lowercase->down_box(FL_DOWN_BOX);
                 btn_tx_lowercase->callback((Fl_Callback*)cb_btn_tx_lowercase);
                 o->value(progdefaults.tx_lowercase);
@@ -6419,6 +6426,16 @@ Fl_Double_Window* ConfigureDialog() {
                 btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
                 o->value(progdefaults.check_for_updates);
               } // Fl_Check_Button* btn_check_for_updates
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(300, 189, 260, 34);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_tx_show_timer = new Fl_Check_Button(319, 195, 223, 20, _("Show TX timer"));
+                btn_tx_show_timer->down_box(FL_DOWN_BOX);
+                btn_tx_show_timer->callback((Fl_Callback*)cb_btn_tx_show_timer);
+                o->value(progdefaults.show_tx_timer);
+              } // Fl_Check_Button* btn_tx_show_timer
               o->end();
             } // Fl_Group* o
             tabUserInterface->end();

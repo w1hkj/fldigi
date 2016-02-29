@@ -90,6 +90,7 @@ extern Fl_Check_Button *btn2_save_macros_on_exit;
 extern Fl_Check_Button *btn2NagMe;
 extern Fl_Check_Button *btn2_confirm_exit;
 extern Fl_Check_Button *btn_check_for_updates;
+extern Fl_Check_Button *btn_tx_show_timer;
 extern Fl_Group *tabLogServer;
 extern Fl_Tabs *tabsLog;
 extern Fl_Check_Button *btnNagMe;

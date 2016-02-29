@@ -234,6 +234,7 @@ Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
 
+Fl_Box				*tx_timer = (Fl_Box *)0;
 Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
@@ -2682,6 +2683,52 @@ const char* zshowtime(void) {
 	return (const char *)s;
 }
 
+static char tx_time[6];
+static int tx_mins;
+static int tx_secs;
+bool   tx_timer_active = false;
+
+void show_tx_timer()
+{
+	if (!tx_timer) return;
+	if (progdefaults.show_tx_timer && tx_timer_active) {
+		snprintf(tx_time, sizeof(tx_time),"%02d:%02d", tx_mins, tx_secs);
+		tx_timer->color(FL_DARK_RED);
+		tx_timer->labelcolor(FL_YELLOW);
+		tx_timer->label(tx_time);
+		tx_timer->redraw_label();
+		tx_timer->redraw();
+	} else {
+		tx_timer->color(FL_BACKGROUND_COLOR);
+		tx_timer->labelcolor(FL_BACKGROUND_COLOR);
+		tx_timer->redraw_label();
+		tx_timer->redraw();
+	}
+}
+
+void start_tx_timer()
+{
+	tx_mins = 0; tx_secs = 0;
+	tx_timer_active = true;
+	show_tx_timer();
+}
+
+void stop_tx_timer()
+{
+	if (!tx_timer) return;
+	tx_timer_active = false;
+}
+
+void update_tx_timer()
+{
+	tx_secs++;
+	if (tx_secs == 60) {
+		tx_secs = 0;
+		tx_mins++;
+	}
+	show_tx_timer();
+}
+
 void ztimer(void* first_call)
 {
 	struct timeval tv;
@@ -2692,6 +2739,8 @@ void ztimer(void* first_call)
 		Fl::repeat_timeout(st, ztimer);
 	} else
 		Fl::repeat_timeout(1.0, ztimer);
+
+	update_tx_timer();
 
 	struct tm tm;
 	time_t t_temp;
@@ -2709,7 +2758,6 @@ void ztimer(void* first_call)
 	inpTimeOff2->value(zshowtime());
 	inpTimeOff3->value(zshowtime());
 }
-
 
 bool oktoclear = true;
 
@@ -5537,7 +5585,7 @@ void create_fl_digi_main_primary() {
 	fl_digi_main = new dropwin(progStatus.mainW, main_hmin);//progStatus.mainH);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
-			mnu = new Fl_Menu_Bar(pad, 0, progStatus.mainW - 250 - 2*pad, Hmenu);
+			mnu = new Fl_Menu_Bar(pad, 0, progStatus.mainW - 325 - pad, Hmenu);
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
@@ -5551,26 +5599,31 @@ void create_fl_digi_main_primary() {
 			mnu->menu(menu_);
 			toggle_visible_modes(NULL, NULL);
 
-			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 250 - pad, 0, 50, Hmenu, "Spot");
+			tx_timer = new Fl_Box(progStatus.mainW - 325, 0, 75, Hmenu, "");
+			tx_timer->box(FL_UP_BOX);
+			tx_timer->color(FL_BACKGROUND_COLOR);
+			tx_timer->labelcolor(FL_BACKGROUND_COLOR);
+
+			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 250, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(progdefaults.SpotColor);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "RxID");
+			btnRSID = new Fl_Light_Button(progStatus.mainW - 200, 0, 50, Hmenu, "RxID");
 			btnRSID->selection_color(progdefaults.RxIDColor);
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
-			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "TxID");
+			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 150, 0, 50, Hmenu, "TxID");
 			btnTxRSID->selection_color(progdefaults.TxIDColor);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
-			btnTune = new Fl_Light_Button(progStatus.mainW - 100 - pad, 0, 50, Hmenu, "TUNE");
+			btnTune = new Fl_Light_Button(progStatus.mainW - 100, 0, 50, Hmenu, "TUNE");
 			btnTune->selection_color(progdefaults.TuneColor);
 			btnTune->callback(cbTune, 0);
 
-			btnMacroTimer = new Fl_Button(progStatus.mainW - 50 - pad, 0, 50, Hmenu);
+			btnMacroTimer = new Fl_Button(progStatus.mainW - 50, 0, 50, Hmenu);
 			btnMacroTimer->labelcolor(FL_DARK_RED);
 			btnMacroTimer->callback(cbMacroTimerButton);
 			btnMacroTimer->set_output();
@@ -7437,7 +7490,7 @@ void create_fl_digi_main_WF_only() {
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 
-			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 200 - pad, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, progStatus.mainW - 275 - pad, Hmenu);
 // do some more work on the menu
 			for (size_t i = 0; i < sizeof(alt_menu_)/sizeof(alt_menu_[0]); i++) {
 // FL_NORMAL_SIZE may have changed; update the menu items
@@ -7449,6 +7502,11 @@ void create_fl_digi_main_WF_only() {
 					icons::set_icon_label(&alt_menu_[i]);
 			}
 			mnu->menu(alt_menu_);
+
+			tx_timer = new Fl_Box(progStatus.mainW - 275 - pad, 0, 75 - pad, Hmenu, "");
+			tx_timer->box(FL_UP_BOX);
+			tx_timer->color(FL_BACKGROUND_COLOR);
+			tx_timer->labelcolor(FL_BACKGROUND_COLOR);
 
 			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 200 - pad, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(progdefaults.SpotColor);

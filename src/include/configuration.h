@@ -76,6 +76,9 @@
     ELEM_(bool, confirmExit, "CONFIRMEXIT",                                             \
           "Ensure user wants to leave flgidi",                                          \
           true)                                                                         \
+        ELEM_(bool, show_tx_timer, "SHOW_TX_TIMER",                                     \
+          "Show tx timer on menu bar",                                                  \
+          true)                                                                         \
         ELEM_(bool, SaveConfig, "SAVECONFIG",                                           \
               "Save current configuration on exit",                                     \
               true)                                                                     \

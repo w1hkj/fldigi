@@ -62,6 +62,8 @@
 #include "re.h"
 #include "debug.h"
 
+#include "fl_digi.h"
+
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
@@ -156,6 +158,8 @@ void PTT::set(bool ptt)
 		break;
 #endif
 	}
+	if (ptt) start_tx_timer();
+	else     stop_tx_timer();
 }
 
 void PTT::close_all(void)

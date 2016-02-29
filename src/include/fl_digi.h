@@ -160,6 +160,9 @@ extern void				write_fsqDebug(std::string s, int style = FTextBase::RECV);
 extern void				fsq_que_clear();
 extern void				write_fsq_que(std::string s);
 
+extern void start_tx_timer();
+extern void stop_tx_timer();
+
 extern void fsq_disableshift();
 extern void fsq_enableshift();
 extern void fsq_updateRxPic(unsigned char data, int pos);
