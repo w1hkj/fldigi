@@ -363,6 +363,7 @@ bool rtty::rx(bool bit)
 		}
 
 		/// SHOW DECODER RUNNING SCORES AND WHICH DECODER IS CURRENT RX
+		/*
 		printf("\n %8d : %8d : %8d", runningscore[0], runningscore[1], runningscore[2]);
 		printf("\n");
 		if (0 == vote)
@@ -371,7 +372,7 @@ bool rtty::rx(bool bit)
 			printf("                Rx");
 		else
 			printf("                           Rx");
-
+		*/
 		///printf("\n Curr Decoder = %d", vote);
 
 		int ones = softones[vote];
