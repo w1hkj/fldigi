@@ -48,7 +48,10 @@
 //#define RTTY_SampleRate 12000
 
 #define MAXPIPE			1024
-#define MAXBITS			(2 * RTTY_SampleRate / 23 + 1)
+
+#define MINBAUD			20 // Lowest baud rate that does not cause segfaults
+#define SYMBLOCK		4 // How many received symbols are decoded at a time 
+#define MAXBITS			SYMBLOCK*(RTTY_SampleRate / MINBAUD)+1 
 
 #define	LETTERS	0x100
 #define	FIGURES	0x200

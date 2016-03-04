@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // cw20.cxx  --  CW 2.0 modem
 //
-// CW 2.0 Copyright (C) 2015
+// CW 2.0 Copyright (C) 2015 - 2016
 //		John Phelps, KL4YFD
 //
 // Most functions for this modem were borrowed from
@@ -14,7 +14,7 @@
 
 ///
 /// Major Bugs:
-/// Rx loses symbol alignment and stops decoding
+/// Rx sometimes loses symbol alignment and stops decoding
 /// 
 
 //
@@ -62,7 +62,6 @@ using namespace std;
 #include "rtty.h"
 
 #define FILTER_DEBUG 0
-
 #define SHAPER_BAUD 150
 
 // df=16 : correct up to 7 bits
@@ -70,8 +69,11 @@ using namespace std;
 #define K13_POLY1	016461 // 7473
 #define K13_POLY2	012767 // 5623
 
+// NOTE: withnoise is FALSE when Fldig is started with the " --noise"  commandline option, else TRUE
+// When started normally, CW 2.0 _only_ generates the right-channel PTT signal at RIGHT_CHANNEL_PTT_HZ (on-air operation)
+// When started with the " --noise " commandline option, fldigi _only_ generates a left-channel audio signal (off-air/testing only)
 extern bool withnoise;
-
+#define RIGHT_CHANNEL_PTT_HZ 3200
 
 int dspcnt = 0;
 
@@ -342,7 +344,7 @@ bool rtty::rx(bool bit)
 		
 		// Calculate the vote on which 1/3 of the symbol has the greatest difference of ones to zeros
 		for (int i=0; i<3; i++) {
-			/// BUG : KL4YFD magic numbers tuned ONLY for Cw 2.0 Fast @ 80 baud
+			/// BUG : magic numbers: fine tuned by trial and error
 			runningscore[i] += abs(softones[i] - softzeros[i]);
 			
 			if (runningscore[i] > 33333) { // Bounds checking that preserves the statistical ratios
@@ -378,8 +380,8 @@ bool rtty::rx(bool bit)
 		int ones = softones[vote];
 		int zeros = softzeros[vote];
 			  
-		int hardbit = -1;
-		int softbit = 128;
+		int hardbit = -1; // Invalid
+		int softbit = 128; // Puncture
 		// Both hard and soft decode here
 		if (ones > zeros) {
 			hardbit = 1;
@@ -405,7 +407,7 @@ bool rtty::rx(bool bit)
 		}
 		return true;
 	}
-	return true;	
+	return true;
 }
 
 void rtty::rx_pskr(unsigned char symbol)
@@ -596,7 +598,7 @@ int rtty::rx_process(const double *buf, int len)
 			if (mclipped < noise_floor) mclipped = noise_floor;
 			if (sclipped < noise_floor) sclipped = noise_floor;
 
-			/// KL4YFD  CW 2.0 mark only decode
+			/// CW 2.0: mark only decode
 			space_env = sclipped = noise_floor;
 
 
@@ -714,11 +716,7 @@ int rtty::rx_process(const double *buf, int len)
 				pipe[pipeptr] = bit - 0.5; //testbit - 0.5;
 				pipeptr = (pipeptr + 1) % symbollen;
 			}
-
-// detect TTY signal transitions
-// rx(...) returns true if valid TTY bit stream detected
-// either character or idle signal
-			
+		
 			rx(bit);
 /*
 			if ( rx( bit ) ) {
@@ -762,30 +760,27 @@ int rtty::rx_process(const double *buf, int len)
 	return 0;
 }
 
-//=====================================================================
-// RTTY transmit
-//=====================================================================
 //double freq1;
 double maxamp = 0;
 
-// Left channel audio signal
-// Is only generated for testing when starting Fldigi with parameter:  --noise
 double rtty::nco(double freq)
 {
-	if (!withnoise) return 0.0f; // No Left-channel / Mic-input Audio unless testing: CW 2.0 Transmits by keying the radio's CW key
+	// No Left-channel (Radio-Mic-input) audio unless testing:
+	// CW 2.0 Transmits by keying the radio's CW key
+	if (!withnoise) return 0.0f;
 
-	// audio signal for testing only. DO NOT USE ON-AIR!
+	// Audio signal for testing only. DO NOT USE ON-AIR!
 	phaseacc += TWOPI * freq / samplerate;
 	if (phaseacc > TWOPI) phaseacc -= TWOPI;
 	return cos(phaseacc);
 }
 
-// Right channel PTT signal at 3.2Khz
-// 3.2Khz is outside of normal SSB audio passband in case of incorrect connections
-// but well within the 4Khz Nyquist limit
+// Generate right channel PTT signal at RIGHT_CHANNEL_PTT_HZ
+// Frequency chosen to be outside of normal SSB audio passband in case of incorrect 
+// radio-to-computer connections, but still within the 4Khz Nyquist limit (for an 8KHz samplerate)
 double rtty::FSKnco()
 {
-	FSKphaseacc += TWOPI * 3200 / samplerate;
+	FSKphaseacc += TWOPI * RIGHT_CHANNEL_PTT_HZ / samplerate;
 
 	if (FSKphaseacc > TWOPI) FSKphaseacc -= TWOPI;
 
@@ -793,7 +788,7 @@ double rtty::FSKnco()
 
 }
 
-
+// symbol should be a 1 or a 0 only 
 void rtty::send_symbol(unsigned int symbol, int len)
 {
 	acc_symbols += len;
@@ -814,8 +809,8 @@ void rtty::send_symbol(unsigned int symbol, int len)
 		}
 	}
 
-	/// With --noise commandline parameter: only generate the Audio / Left channel
-	/// Without --noise: only generate the CW-KEY-PTT / Right channel
+	/// With --noise commandline parameter: only generate the Audio / Left channel (for off-air/testing)
+	/// Without --noise: only generate the CW-KEY-PTT / Right channel (for on-air)
 	if (!withnoise)
 		ModulateStereo(outbuf, FSKbuf, symbollen);
 	else
@@ -861,8 +856,9 @@ void rtty::send_char(unsigned char  c)
 	return;
 }
 
-// send idle in a way that both keeps FEC synchronized and decodes to nothing in MFSK varicode
+// Send idle in a way that keeps FEC & interleaver synch and decodes to nothing in the MFSK varicode.
 // After a few 0's as input, the FEC will output a constant string of 0's (key-ups)
+// So after a few seconds of not typing, the radio will become RF silent (less wasted energy)
 void rtty::send_idle()
 {
 	txdata = enc->encode( 0 ); // Keep synchronization with string of 0 bits
@@ -918,9 +914,9 @@ int rtty::tx_process()
 	  	restartchar = true; // Request later need for a buffer/restart character (to re-synchronize)
 		
 		if (rtty_baud == 40)
-			send_idle(); // FEC requires synchronization to be kept...
+			send_idle(); // Keep FEC & Interleaver synchronization
 		else
-			send_symbol(0, symbollen); // nothing to send: don't waste the RF power with an idle signal
+			send_symbol(0, symbollen);
 		return 0;
 	}
 
