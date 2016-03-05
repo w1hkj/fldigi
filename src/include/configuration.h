@@ -1608,6 +1608,9 @@
         ELEM_(Fl_Color, RxIDColor, "RXIDCOLOR",                                         \
               "UI RxID select color",                                                   \
               FL_GREEN)                                                                 \
+        ELEM_(Fl_Color, RxIDwideColor, "RXIDWIDECOLOR",                                 \
+              "UI RxID WIDE search select color",                                       \
+              FL_DARK_RED)                                                              \
         ELEM_(Fl_Color, TxIDColor, "TXIDCOLOR",                                         \
               "UI TxID select color",                                                   \
               FL_GREEN)                                                                 \

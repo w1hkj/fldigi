@@ -237,7 +237,8 @@ Fl_Menu_Bar 		*mnu;
 Fl_Box				*tx_timer = (Fl_Box *)0;
 Fl_Light_Button		*btnAutoSpot = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTune = (Fl_Light_Button *)0;
-Fl_Light_Button		*btnRSID = (Fl_Light_Button *)0;
+Fl_Box				*rsid_status = (Fl_Box *)0;
+Fl_Button			*btnRSID = (Fl_Light_Button *)0;
 Fl_Light_Button		*btnTxRSID = (Fl_Light_Button *)0;
 static Fl_Button	*btnMacroTimer = (Fl_Button *)0;
 
@@ -2574,10 +2575,41 @@ void cbTune(Fl_Widget *w, void *) {
 	restoreFocus(10);
 }
 
+void cb_quick_rsid (Fl_Widget *w, void *)
+{
+	progdefaults.rsidWideSearch = !progdefaults.rsidWideSearch;
+	if (progdefaults.rsidWideSearch) chkRSidWideSearch->set();
+	else chkRSidWideSearch->clear();
+}
+
+static Fl_Menu_Item quick_change_rsid[] = {
+	{ "Passband", 0, cb_quick_rsid, 0, FL_MENU_TOGGLE },
+	{0,0,0,0,0,0,0,0,0}
+};
+
 void cbRSID(Fl_Widget *w, void *)
 {
-	progdefaults.rsid = btnRSID->value();
-	progdefaults.changed = true;
+	switch (Fl::event_button()) {
+	case FL_LEFT_MOUSE:
+		progdefaults.rsid = !progdefaults.rsid;
+		progdefaults.changed = true;
+		break;
+	case FL_RIGHT_MOUSE:
+	{
+		Fl_Button *b = (Fl_Button *)w;
+		if (progdefaults.rsidWideSearch) quick_change_rsid[0].set();
+		else quick_change_rsid[0].clear();
+		const Fl_Menu_Item *m = quick_change_rsid->popup(b->x(), b->y() + b->h());
+		if (m && m->callback()) m->do_callback(0);
+		break;
+	}
+	default:
+		break;
+	}
+
+	Fl_Color clr = progdefaults.rsidWideSearch ? progdefaults.RxIDwideColor : progdefaults.RxIDColor;
+	rsid_status->color( progdefaults.rsid ? clr : FL_BACKGROUND_COLOR );
+	rsid_status->redraw();
 	restoreFocus(11);
 }
 
@@ -2595,7 +2627,7 @@ void cbAutoSpot(Fl_Widget* w, void*)
 
 void toggleRSID()
 {
-	btnRSID->value(0);
+	progdefaults.rsid = !progdefaults.rsid;
 	cbRSID(NULL, NULL);
 }
 
@@ -5609,8 +5641,14 @@ void create_fl_digi_main_primary() {
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(progStatus.mainW - 200, 0, 50, Hmenu, "RxID");
-			btnRSID->selection_color(progdefaults.RxIDColor);
+			Fl_Group *rs_grp = new Fl_Group(progStatus.mainW - 200, 0, 15, Hmenu, "");
+				rs_grp->box(FL_UP_BOX);
+				rsid_status = new Fl_Box(progStatus.mainW - 200 + 4, 6, 7, Hmenu-12);
+				rsid_status->box(FL_THIN_DOWN_BOX);
+				rsid_status->color(FL_BACKGROUND_COLOR);
+			rs_grp->end();
+
+			btnRSID = new Fl_Button(progStatus.mainW - 185, 0, 35, Hmenu, "RxID");
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
@@ -7513,8 +7551,15 @@ void create_fl_digi_main_WF_only() {
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(progStatus.mainW - 150 - pad, 0, 50, Hmenu, "RxID");
-			btnRSID->selection_color(progdefaults.RxIDColor);
+			Fl_Group *rs_grp = new Fl_Group(progStatus.mainW - 150, 0, 15, Hmenu, "");
+				rs_grp->box(FL_UP_BOX);
+				rsid_status = new Fl_Box(progStatus.mainW - 150 + 4, 6, 7, Hmenu-12);
+				rsid_status->box(FL_THIN_DOWN_BOX);
+				rsid_status->color(FL_BACKGROUND_COLOR);
+			rs_grp->end();
+
+
+			btnRSID = new Fl_Button(progStatus.mainW - 135 - pad, 0, 35, Hmenu, "RxID");
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->callback(cbRSID, 0);
 
@@ -8770,9 +8815,7 @@ void afc_selection_color()
 
 void rxid_selection_color()
 {
-	if (!btnRSID) return;
-	btnRSID->selection_color(progdefaults.RxIDColor);
-	btnRSID->redraw();
+	cbRSID(NULL, NULL);
 }
 
 void txid_selection_color()

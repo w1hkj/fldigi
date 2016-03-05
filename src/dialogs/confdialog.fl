@@ -474,7 +474,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330}
+            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1463,7 +1463,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
@@ -2305,7 +2305,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Buttons open
-                xywh {0 80 600 300} hide
+                xywh {0 80 600 300}
               } {
                 Fl_Button btnSpotColor {
                   label Spot
@@ -2314,43 +2314,7 @@ spotcolor->color(progdefaults.SpotColor);
 spotcolor->redraw();
 spot_selection_color();
 progdefaults.changed = true;}
-                  xywh {159 121 70 21}
-                }
-                Fl_Button btnRxIDColor {
-                  label RxID
-                  callback {progdefaults.RxIDColor = fl_show_colormap(progdefaults.RxIDColor);
-rxidcolor->color(progdefaults.RxIDColor);
-rxidcolor->redraw();
-rxid_selection_color();
-progdefaults.changed = true;}
-                  xywh {159 157 70 21}
-                }
-                Fl_Button btnTxIDColor {
-                  label TxID
-                  callback {progdefaults.TxIDColor = fl_show_colormap(progdefaults.TxIDColor);
-txidcolor->color(progdefaults.TxIDColor);
-txidcolor->redraw();
-txid_selection_color();
-progdefaults.changed = true;}
-                  xywh {159 193 70 20}
-                }
-                Fl_Button btnTuneColor {
-                  label Tune
-                  callback {progdefaults.TuneColor = fl_show_colormap(progdefaults.TuneColor);
-tunecolor->color(progdefaults.TuneColor);
-tunecolor->redraw();
-tune_selection_color();
-progdefaults.changed = true;}
-                  xywh {159 229 70 21}
-                }
-                Fl_Button btnLkColor {
-                  label Lk
-                  callback {progdefaults.LkColor = fl_show_colormap(progdefaults.LkColor);
-lockcolor->color(progdefaults.LkColor);
-lockcolor->redraw();
-xmtlock_selection_color();
-progdefaults.changed = true;}
-                  xywh {274 121 70 21}
+                  xywh {139 121 85 21}
                 }
                 Fl_Button btnRevColor {
                   label Rev
@@ -2359,25 +2323,34 @@ revcolor->color(progdefaults.RevColor);
 revcolor->redraw();
 rev_selection_color();
 progdefaults.changed = true;}
-                  xywh {274 157 70 21}
+                  xywh {139 157 85 21}
                 }
-                Fl_Button btnXmtColor {
-                  label {T/R}
-                  callback {progdefaults.XmtColor = fl_show_colormap(progdefaults.XmtColor);
-xmtcolor->color(progdefaults.XmtColor);
-xmtcolor->redraw();
-xmtrcv_selection_color();
+                Fl_Button btnTuneColor {
+                  label Tune
+                  callback {progdefaults.TuneColor = fl_show_colormap(progdefaults.TuneColor);
+tunecolor->color(progdefaults.TuneColor);
+tunecolor->redraw();
+tune_selection_color();
 progdefaults.changed = true;}
-                  xywh {274 193 70 20}
+                  xywh {139 194 85 21}
                 }
-                Fl_Button btnAfcColor {
-                  label AFC
-                  callback {progdefaults.AfcColor = fl_show_colormap(progdefaults.AfcColor);
-afccolor->color(progdefaults.AfcColor);
-afccolor->redraw();
-afc_selection_color();
+                Fl_Button btnRxIDColor {
+                  label {RxID nar}
+                  callback {progdefaults.RxIDColor = fl_show_colormap(progdefaults.RxIDColor);
+rxidcolor->color(progdefaults.RxIDColor);
+rxidcolor->redraw();
+rxid_selection_color();
 progdefaults.changed = true;}
-                  xywh {390 121 70 21}
+                  xywh {139 229 85 21}
+                }
+                Fl_Button btnLkColor {
+                  label Lk
+                  callback {progdefaults.LkColor = fl_show_colormap(progdefaults.LkColor);
+lockcolor->color(progdefaults.LkColor);
+lockcolor->redraw();
+xmtlock_selection_color();
+progdefaults.changed = true;}
+                  xywh {274 121 85 21}
                 }
                 Fl_Button btnSql1Color {
                   label {SQL-1}
@@ -2386,7 +2359,34 @@ sql1color->color(progdefaults.Sql1Color);
 sql1color->redraw();
 sql_selection_color();
 progdefaults.changed = true;}
-                  xywh {390 157 70 21}
+                  xywh {275 157 85 21}
+                }
+                Fl_Button btnXmtColor {
+                  label {T/R}
+                  callback {progdefaults.XmtColor = fl_show_colormap(progdefaults.XmtColor);
+xmtcolor->color(progdefaults.XmtColor);
+xmtcolor->redraw();
+xmtrcv_selection_color();
+progdefaults.changed = true;}
+                  xywh {274 194 85 20}
+                }
+                Fl_Button btnRxIDwideColor {
+                  label {RxID wide}
+                  callback {progdefaults.RxIDwideColor = fl_show_colormap(progdefaults.RxIDwideColor);
+rxidcolorwide->color(progdefaults.RxIDwideColor);
+rxidcolorwide->redraw();
+rxid_selection_color();
+progdefaults.changed = true;}
+                  xywh {274 229 85 21}
+                }
+                Fl_Button btnAfcColor {
+                  label AFC
+                  callback {progdefaults.AfcColor = fl_show_colormap(progdefaults.AfcColor);
+afccolor->color(progdefaults.AfcColor);
+afccolor->redraw();
+afc_selection_color();
+progdefaults.changed = true;}
+                  xywh {410 121 85 21}
                 }
                 Fl_Button btnSql2Color {
                   label {SQL-2}
@@ -2395,56 +2395,69 @@ sql2color->color(progdefaults.Sql2Color);
 sql2color->redraw();
 sql_selection_color();
 progdefaults.changed = true;}
-                  xywh {390 193 70 20}
+                  xywh {410 157 85 20}
+                }
+                Fl_Button btnTxIDColor {
+                  label TxID
+                  callback {progdefaults.TxIDColor = fl_show_colormap(progdefaults.TxIDColor);
+txidcolor->color(progdefaults.TxIDColor);
+txidcolor->redraw();
+txid_selection_color();
+progdefaults.changed = true;}
+                  xywh {409 229 85 20}
                 }
                 Fl_Box spotcolor {
-                  xywh {135 122 18 19} box THIN_DOWN_BOX color 3
+                  xywh {115 122 18 19} box THIN_DOWN_BOX color 3
                   code0 {o->color(progdefaults.SpotColor);}
                 }
-                Fl_Box rxidcolor {
-                  xywh {135 158 18 19} box THIN_DOWN_BOX
-                  code0 {o->color(progdefaults.RxIDColor);}
-                }
-                Fl_Box txidcolor {
-                  xywh {135 194 18 18} box THIN_DOWN_BOX
-                  code0 {o->color(progdefaults.TxIDColor);}
+                Fl_Box revcolor {
+                  xywh {115 158 18 19} box THIN_DOWN_BOX
+                  code0 {o->color(progdefaults.RevColor);}
                 }
                 Fl_Box tunecolor {
-                  xywh {135 230 18 19} box THIN_DOWN_BOX
+                  xywh {115 195 18 19} box THIN_DOWN_BOX
                   code0 {o->color(progdefaults.TuneColor);}
+                }
+                Fl_Box rxidcolor {
+                  xywh {115 230 18 19} box THIN_DOWN_BOX
+                  code0 {o->color(progdefaults.RxIDColor);}
                 }
                 Fl_Box lockcolor {
                   xywh {250 122 18 19} box THIN_DOWN_BOX color 3
                   code0 {o->color(progdefaults.LkColor);}
                 }
-                Fl_Box revcolor {
+                Fl_Box sql1color {
                   xywh {250 158 18 19} box THIN_DOWN_BOX
-                  code0 {o->color(progdefaults.RevColor);}
+                  code0 {o->color(progdefaults.Sql1Color);}
+                }
+                Fl_Box rxidcolorwide {
+                  xywh {250 230 18 19} box THIN_DOWN_BOX
+                  code0 {o->color(progdefaults.RxIDwideColor);}
                 }
                 Fl_Box xmtcolor {
-                  xywh {250 194 18 18} box THIN_DOWN_BOX
+                  xywh {250 195 18 18} box THIN_DOWN_BOX
                   code0 {o->color(progdefaults.XmtColor);}
                 }
                 Fl_Box afccolor {
-                  xywh {365 122 18 19} box THIN_DOWN_BOX color 3
+                  xywh {385 122 18 19} box THIN_DOWN_BOX color 3
                   code0 {o->color(progdefaults.AfcColor);}
                 }
-                Fl_Box sql1color {
-                  xywh {365 158 18 19} box THIN_DOWN_BOX
-                  code0 {o->color(progdefaults.Sql1Color);}
-                }
                 Fl_Box sql2color {
-                  xywh {365 194 18 18} box THIN_DOWN_BOX
+                  xywh {385 158 18 18} box THIN_DOWN_BOX
                   code0 {o->color(progdefaults.Sql2Color);}
+                }
+                Fl_Box txidcolor {
+                  xywh {385 230 18 18} box THIN_DOWN_BOX
+                  code0 {o->color(progdefaults.TxIDColor);}
                 }
                 Fl_Box {} {
                   label {Lighted button enabled colors}
-                  xywh {248 229 220 20} align 21
+                  xywh {200 275 220 20} align 21
                 }
               }
               Fl_Group {} {
                 label SigLvl open
-                xywh {0 80 600 300}
+                xywh {0 80 600 300} hide
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -5716,6 +5729,7 @@ progdefaults.changed = true;}
               Fl_Check_Button chkRSidWideSearch {
                 label {Searches passband}
                 callback {progdefaults.rsidWideSearch=o->value();
+rxid_selection_color();
 progdefaults.changed = true;}
                 tooltip {ON - search over entire waterfall
 OFF - limit search to +/- 200 Hz} xywh {40 143 203 20} down_box DOWN_BOX
