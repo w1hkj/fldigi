@@ -4084,6 +4084,11 @@ UI_return:
 	int nux = text_panel->x() + progStatus.tile_x;
 	int nuy = text_panel->y() + progStatus.tile_y_ratio * text_group->h();
 
+	if (nux > text_panel->w() - 4)
+		nux = text_panel->w() - 4;
+	if (nuy > text_panel->h() - 4)
+		nuy = text_panel->h() - 4;
+
 	text_panel->position( orgx, orgy, nux, nuy);
 
 	RigControlFrame->init_sizes();
