@@ -547,6 +547,20 @@ public:
 		return -code;
 	}
 
+	int bytes_to_code(int *pos) {
+		int code = 0;
+		int i;
+
+		for (i = 0; i < 7; i++)
+			code |= ((pos[i] > 0) << i);
+		return code;
+	}
+
+	int bytes_to_char(int *pos, int shift) {
+		int code = bytes_to_code(pos);
+		return code_to_char(code, shift);
+	}
+
 	// http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetNaive
 	/// Counting set bits, Brian Kernighan's way
 	static bool check_bits(int v) {
@@ -558,6 +572,19 @@ public:
 		//printf("check_bits %d %d %c\n", bc, (int)code_to_ltrs[v], code_to_ltrs[v] );
 		return bc == 4;
 	}
+
+	// Is there a valid character in the next 7 ints?
+	bool valid_char_at(int *pos) {
+		int count = 0;
+		int i;
+
+		for (i = 0; i < 7; i++)
+			if (pos[i] > 0)
+				count++;
+
+		return (count == 4);
+	}
+
 };
 
 /// This is temporary, to manipulate a multi-line string.
@@ -800,15 +827,14 @@ class navtex ;
 class navtex_implementation {
 
 	enum State {
-		NOSIGNAL, SYNC_SETUP, SYNC1, SYNC2, READ_DATA
+		NOSIGNAL, SYNC_SETUP, SYNC, READ_DATA
 	};
 
 	static const char * state_to_str( State s ) {
 		switch( s ) {
 			case NOSIGNAL  : return "NOSIGNAL";
 			case SYNC_SETUP: return "SYNC_SETUP";
-			case SYNC1   : return "SYNC1";
-			case SYNC2   : return "SYNC2";
+			case SYNC   : return "SYNC";
 			case READ_DATA : return "READ_DATA";
 			default     : return "Unknown" ;
 		}
@@ -832,13 +858,8 @@ class navtex_implementation {
 
 	CCIR476             m_ccir476;
 	typedef std::list<int> sync_chrs_type ;
-	sync_chrs_type                  m_sync_chrs;
 	ccir_message                    m_curr_msg ;
 
-	int                 m_c1, m_c2, m_c3;
-	static const int                 m_zero_crossings_divisor = 4;
-	std::vector<int>                 m_zero_crossings ;
-	long                             m_zero_crossing_count;
 	double               m_message_time ;
 	double               m_early_accumulator ;
 	double               m_prompt_accumulator ;
@@ -850,16 +871,14 @@ class navtex_implementation {
 	double               m_time_sec;
 
 	double               m_baud_rate ;
-	double               m_baud_error;
 	int                 m_sample_rate ;
-	bool                   m_averaged_mark_state;
+	int			m_averaged_mark_state;
 	int                 m_bit_duration ;
-	bool                   m_old_mark_state;
 	fftfilt					*m_mark_lowpass;
 	fftfilt					*m_space_lowpass;
 	double					m_mark_phase;
 	double					m_space_phase;
-	double                  m_bit_sample_count, m_half_bit_sample_count, m_quarter_bit_sample_count;
+	double                  m_bit_sample_count, m_half_bit_sample_count;
 	State                 m_state;
 	int                 m_sample_count;
 	double                  m_next_early_event;
@@ -868,13 +887,11 @@ class navtex_implementation {
 	double                  m_average_early_signal;
 	double                  m_average_prompt_signal;
 	double                  m_average_late_signal;
-	int                 m_bit_count;
-	int                 m_code_bits;
+	std::vector<int>	m_bit_values;
+	int			m_bit_cursor;
 	bool                   m_shift ;
 	bool                   m_pulse_edge_event;
 	int                 m_error_count;
-	int                 m_valid_count;
-	double               m_sync_delta;
 	bool                   m_alpha_phase ;
 	bool                   m_header_found ;
 	char snrmsg[80];
@@ -911,21 +928,23 @@ public:
 		double m_bit_duration_seconds = 1.0 / m_baud_rate;
 		m_bit_sample_count = m_sample_rate * m_bit_duration_seconds;
 		m_half_bit_sample_count = m_bit_sample_count / 2;
-		m_quarter_bit_sample_count = m_bit_sample_count / 4;
 		// A narrower spread between signals allows the modem to
 		// center on the pulses better, but a wider spread makes
-		// more robust under noisy conditions. 1/6 seems to work.
+		// more robust under noisy conditions. 1/5 seems to work.
 		m_next_early_event = 0;
-		m_next_prompt_event = m_bit_sample_count / 6;
-		m_next_late_event = m_bit_sample_count * 2 / 6;
+		m_next_prompt_event = m_bit_sample_count / 5;
+		m_next_late_event = m_bit_sample_count * 2 / 5;
 		m_average_early_signal = 0;
 		m_average_prompt_signal = 0;
 		m_average_late_signal = 0;
 		m_error_count = 0;
-		m_valid_count = 0;
 		m_sample_count = 0;
-		m_old_mark_state = false;
-		m_averaged_mark_state = false ;
+		// keep 1 second worth of bit values for decoding
+		m_bit_values.resize(m_baud_rate);
+		m_bit_cursor = 0;
+
+		m_mark_lowpass = 0;
+		m_space_lowpass = 0;
 
 		set_filter_values();
 		configure_filters();
@@ -948,11 +967,11 @@ private:
 
 	void configure_filters() {
 		const int filtlen = 512;
-		delete m_mark_lowpass;
+		if (m_mark_lowpass) delete m_mark_lowpass;
 		m_mark_lowpass = new fftfilt(m_baud_rate/m_sample_rate, filtlen);
 		m_mark_lowpass->rtty_filter(m_baud_rate/m_sample_rate);
 
-		delete m_space_lowpass;
+		if (m_space_lowpass) delete m_space_lowpass;
 		m_space_lowpass = new fftfilt(m_baud_rate/m_sample_rate, filtlen);
 		m_space_lowpass->rtty_filter(m_baud_rate/m_sample_rate);
 	}
@@ -1029,72 +1048,271 @@ private:
 		}
 	}
 
-	// two phases: alpha and rep
-	// marked during sync by code_alpha and code_rep
-	// then for data: rep phase character is sent first,
-	// then, three chars later, same char is sent in alpha phase
-	bool process_char(int code) {
-		bool success = CCIR476::check_bits(code);
-		int chr = -1;
-		// force phasing with the two phasing characters
-		if (code == code_rep) {
-			m_alpha_phase = false;
-		} else if (code == code_alpha) {
-			m_alpha_phase = true;
+	// The rep character is transmitted 5 characters (35 bits) ahead of
+	// the alpha character.
+	int fec_offset(int offset) {
+		return offset - 35;
+	}
+
+	// Flip the sign of the smallest (least certain) bit in a character;
+	// hopefully this will result in the right valid character.
+	void flip_smallest_bit(int *pos) {
+		int minimum = INT_MAX;
+		int smallest_bit = -1;
+		int i;
+
+		for (i = 0; i < 7; i++) {
+			if (abs(pos[i]) < minimum) {
+				minimum = abs(pos[i]);
+				smallest_bit = i;
+			}
 		}
-		if (!m_alpha_phase) {
-			m_c1 = m_c2;
-			m_c2 = m_c3;
-			m_c3 = code;
-		} else { // alpha channel
-			bool strict = false ;
-			if (strict) {
-				if (success && m_c1 == code) {
-					chr = code;
-				}
-			} else {
-				if (success) {
-					chr = code;
-				} else if (CCIR476::check_bits(m_c1)) {
-					chr = m_c1;
-					LOG_DEBUG("FEC replacement: %x -> %x", code, m_c1);
+
+		pos[smallest_bit] = -pos[smallest_bit];
+	}
+
+	// Try to find a position in the bit stream with:
+	// - the largest number of valid characters, and
+	// - with rep (duplicate) characters in the right locations
+	// This way the code can sync up with an incoming signal after
+	// the initial alpha/rep synchronisation
+	//
+	// http://www.arachnoid.com/JNX/index.html
+	// "NAUTICAL" becomes:
+	// rep alpha rep alpha N alpha A alpha U N T A I U C T A I L C blank A blank L
+	int find_alpha_characters(void) {
+		int best_offset = 0;
+		int best_score = 0;
+		int offset, i;
+
+		// With 7 bits per character, and interleaved rep & alpha
+		// characters, the first alpha character with a corresponding
+		// rep in the stream can be in any of 14 locations
+		for (offset = 35; offset < (35 + 14); offset++) {
+			int score = 0;
+			int reps = 0;
+			int limit = m_bit_values.size() - 7;
+
+			// Search for the largest sequence of valid characters
+			for (i = offset; i < limit; i += 7) {
+				if (m_ccir476.valid_char_at(&m_bit_values[i])) {
+					int ri = fec_offset(i);
+					int code = m_ccir476.bytes_to_code(&m_bit_values[i]);
+					int rep = m_ccir476.bytes_to_code(&m_bit_values[ri]);
+
+					// This character is valid
+					score++;
+
+					// Does it match its rep?
+					if (code == rep) {
+						// This offset is wrong, rep
+						// and alpha are spaced odd
+						if (code == code_alpha ||
+						    code == code_rep) {
+							score = 0;
+							break;
+						}
+						reps++;
+					} else if (code == code_alpha) {
+						// Is there a matching rep to
+						// this alpha?
+						int ri = i - 7;
+						int rep = m_ccir476.bytes_to_code(&m_bit_values[ri]);
+						if (rep == code_rep) {
+							reps++;
+						}
+					}
 				}
 			}
-			if (chr == -1) {
-				LOG_DEBUG("Fail all options: %x %x", code, m_c1);
-			} else {
-				switch (chr) {
-					case code_rep:
-						break;
-					case code_alpha:
-						break;
-					case code_beta:
-						break;
-					case code_char32:
-						break;
-					case code_ltrs:
-						m_shift = false;
-						break;
-					case code_figs:
-						m_shift = true;
-						break;
-					default:
-						chr = m_ccir476.code_to_char(chr, m_shift);
-						if (chr < 0) {
-							LOG_INFO(_("Missed this code: %x"), abs(chr));
-						} else {
-							filter_print(chr);
-							process_messages(chr);
-						}
-						break;
-				} // switch
 
-			} // if test != -1
-		} // alpha channel
+			// the most valid characters, with at least 3 FEC reps
+			if (reps > 3 && score + reps > best_score) {
+				best_score = score + reps;
+				best_offset = offset;
+			}
+		}
 
-		// alpha/rep phasing
-		m_alpha_phase = !m_alpha_phase;
+		// m_bit_values fits 14 characters; if there are at least
+		// 9 good ones, tell the caller where they start
+		if (best_score > 8)
+			return best_offset;
+		else
+			return -1;
+	}
+
+	// Turns accumulator values (estimates of whether a bit is 1 or 0)
+	// into navtex messages
+	void handle_bit_value(int accumulator) {
+		int buffersize = m_bit_values.size();
+		int i, offset = 0;
+
+		// Store the received value in the bit stream
+		for (i = 0; i < buffersize - 1; i++) {
+			m_bit_values[i] = m_bit_values[i+1];
+		}
+		m_bit_values[buffersize - 1] = accumulator;
+		if (m_bit_cursor > 0)
+			m_bit_cursor--;
+
+		// Find the most likely location where the message starts
+		if (m_state == SYNC) {
+			offset = find_alpha_characters();
+			if (offset >= 0) {
+				set_state(READ_DATA);
+				m_bit_cursor = offset;
+				m_alpha_phase = true;
+			} else
+				set_state(SYNC_SETUP);
+		}
+
+		// Process 7-bit characters as they come in,
+		// skipping rep (duplicate) characters
+		if (m_state == READ_DATA) {
+			if (m_bit_cursor < buffersize - 7) {
+				if (m_alpha_phase) {
+					int ret = process_bytes(m_bit_cursor);
+					m_error_count -= ret;
+					if (m_error_count > 5)
+						set_state(SYNC_SETUP);
+					if (m_error_count < 0)
+						m_error_count = 0;
+				}
+				m_alpha_phase = !m_alpha_phase;
+				m_bit_cursor += 7;
+			}
+		}
+	}
+
+	// Turn a series of 7 bit confidence values into a character
+	//
+	// 1 on successful decode of the alpha character
+	// 0 on unmodified FEC replacement
+	// -1 on soft failure (FEC calculation)
+	// -2 on hard failure
+	int process_bytes(int m_bit_cursor) {
+		int code = m_ccir476.bytes_to_code(&m_bit_values[m_bit_cursor]);
+		int success = 0;
+
+		if (m_ccir476.check_bits(code)) {
+			LOG_DEBUG("valid code : %x (%c)", code, m_ccir476.code_to_char(code, m_shift));
+			success = 1;
+			goto decode;
+		}
+
+		if (fec_offset(m_bit_cursor) < 0)
+			return -1;
+
+		// The alpha (primary) character received was not correct.
+		// Try the rep (duplicate) copy of the character, and some
+		// permutations to see if the correct character can be found.
+		{
+			int i, calc, avg[7];
+			// Rep is 5 characters before alpha.
+			int reppos = fec_offset(m_bit_cursor);
+			int rep = m_ccir476.bytes_to_code(&m_bit_values[reppos]);
+			if (CCIR476::check_bits(rep)) {
+				// Current code is probably code_alpha.
+				// Skip decoding to avoid switching phase.
+				if (rep == code_rep)
+					return 0;
+				LOG_DEBUG("FEC replacement: %x -> %x (%c)", code, rep, m_ccir476.code_to_char(rep, m_shift));
+				code = rep;
+				goto decode;
+			}
+
+			// Neither alpha or rep are valid. Check whether
+			// the average of the two is a valid character.
+			for (i = 0; i < 7; i++) {
+				int a = m_bit_values[m_bit_cursor + i];
+				int r = m_bit_values[rep + i];
+				avg[i] = a + r;
+			}
+
+			calc = m_ccir476.bytes_to_code(avg);
+			if (CCIR476::check_bits(calc)) {
+				LOG_DEBUG("FEC calculation: %x & %x -> %x (%c)", code, rep, calc, m_ccir476.code_to_char(calc, m_shift));
+				code = calc;
+				success = -1;
+				goto decode;
+			}
+
+			// Flip the lowest confidence bit in alpha.
+			flip_smallest_bit(&m_bit_values[m_bit_cursor]);
+			calc = m_ccir476.bytes_to_code(&m_bit_values[m_bit_cursor]);
+			if (CCIR476::check_bits(calc)) {
+				LOG_DEBUG("FEC calculation: %x & %x -> %x (%c)", code, rep, calc, m_ccir476.code_to_char(calc, m_shift));
+				code = calc;
+				success = -1;
+				goto decode;
+			}
+
+			// Flip the lowest confidence bit in rep.
+			flip_smallest_bit(&m_bit_values[reppos]);
+			calc = m_ccir476.bytes_to_code(&m_bit_values[reppos]);
+			if (CCIR476::check_bits(calc)) {
+				LOG_DEBUG("FEC calculation: %x & %x -> %x (%c)", code, rep, calc, m_ccir476.code_to_char(calc, m_shift));
+				code = calc;
+				success = -1;
+				goto decode;
+			}
+
+			// Try flipping the bit with the lowest confidence
+			// in the average of alpha & rep.
+			flip_smallest_bit(avg);
+			calc = m_ccir476.bytes_to_code(avg);
+			if (CCIR476::check_bits(calc)) {
+				LOG_DEBUG("FEC calculation: %x & %x -> %x (%c)", code, rep, calc, m_ccir476.code_to_char(calc, m_shift));
+				code = calc;
+				success = -1;
+				goto decode;
+			}
+
+			LOG_DEBUG("decode fail %x, %x", code, rep);
+			return -2;
+		}
+
+	decode:
+		process_char(code);
 		return success;
+	}
+
+	bool process_char(int chr) {
+		static int last_char = 0;
+		switch (chr) {
+			case code_rep:
+				// This code should run in alpha phase, but
+				// it just received two rep characters. Fix
+				// the rep/alpha phase, so FEC works again.
+				if (last_char == code_rep) {
+					LOG_DEBUG("fixing rep/alpha sync");
+					m_alpha_phase = false;
+				}
+				break;
+			case code_alpha:
+				break;
+			case code_beta:
+				break;
+			case code_char32:
+				break;
+			case code_ltrs:
+				m_shift = false;
+				break;
+			case code_figs:
+				m_shift = true;
+				break;
+			default:
+				chr = m_ccir476.code_to_char(chr, m_shift);
+				if (chr < 0) {
+					LOG_INFO(_("Missed this code: %x"), abs(chr));
+				} else {
+					filter_print(chr);
+					process_messages(chr);
+				}
+				break;
+			} // switch
+
+		last_char = chr;
+		return true;
 	}
 
 	void filter_print(int c) {
@@ -1141,8 +1359,8 @@ private:
 		static int cnt_read_data = 0 ;
 		/// This centers the carrier where the activity is the strongest.
 		static const int bw[][2] = {
-			{ -deviation_f - 5, -deviation_f + 5 },
-			{  deviation_f - 5,  deviation_f + 5 } };
+			{ -deviation_f - 10, -deviation_f + 5 },
+			{  deviation_f - 5,  deviation_f + 10 } };
 		double max_carrier = wf->powerDensityMaximum( 2, bw );
 
 		/// Do not change the frequency too quickly if an image is received.
@@ -1175,8 +1393,7 @@ private:
 			case SYNC_SETUP:
 				next_carr = max_carrier ;
 				break;
-			case SYNC1:
-			case SYNC2:
+			case SYNC:
 				next_carr = decayavg( m_center_frequency_f, max_carrier, 1 );
 				break;
 			case READ_DATA:
@@ -1205,8 +1422,8 @@ private:
 	// late are only used to adjust the time of the sampling to match
 	// the incoming signal.
 	//
-	// The early event happens 1/6 bit period before the prompt event,
-	// and the late event 1/6 bit period later. If the incoming signal
+	// The early event happens 1/5 bit period before the prompt event,
+	// and the late event 1/5 bit period later. If the incoming signal
 	// peaks early, it means the decoder is late. That is, if the early
 	// signal is "too large", decoding should to happen earlier.
 	//
@@ -1226,18 +1443,19 @@ private:
 		if (m_average_prompt_signal < m_average_early_signal &&
 		    m_average_prompt_signal < m_average_late_signal)
 			// At a signal minimum. Get out quickly.
-			slope *= 2;
+			slope /= 2;
 		else if (m_average_prompt_signal > m_average_late_signal &&
 			 m_average_prompt_signal > m_average_late_signal)
 			// Limit the adjustment, to ride out noise
-			slope /= 8;
+			slope /= 128;
 		else
-			slope /= 4;
+			slope /= 32;
 
 		if (slope) {
 			m_next_early_event += slope;
 			m_next_prompt_event += slope;
 			m_next_late_event += slope;
+			LOG_DEBUG("adjusting by %1.2f, early %1.1f, prompt %1.1f, late %1.1f", slope, m_average_early_signal, m_average_prompt_signal, m_average_late_signal);
 		}
 	}
 
@@ -1367,7 +1585,7 @@ private:
 			if (m_sample_count >= m_next_early_event) {
 				m_average_early_signal = decayavg(
 						m_average_early_signal,
-						fabs(m_early_accumulator), 16);
+						fabs(m_early_accumulator), 64);
 				m_next_early_event += m_bit_sample_count;
 				m_early_accumulator = 0;
 			}
@@ -1375,7 +1593,7 @@ private:
 			if (m_sample_count >= m_next_late_event) {
 				m_average_late_signal = decayavg(
 						m_average_late_signal,
-						fabs(m_late_accumulator), 16);
+						fabs(m_late_accumulator), 64);
 				m_next_late_event += m_bit_sample_count;
 				m_late_accumulator = 0;
 			}
@@ -1386,10 +1604,11 @@ private:
 			if (m_pulse_edge_event) {
 				m_average_prompt_signal = decayavg(
 						m_average_prompt_signal,
-						fabs(m_prompt_accumulator), 16);
+						fabs(m_prompt_accumulator), 64);
 				m_next_prompt_event += m_bit_sample_count;
-
-				m_averaged_mark_state = (m_prompt_accumulator > 0) ^ m_ptr_navtex->get_reverse();
+				m_averaged_mark_state = m_prompt_accumulator;
+				if (m_ptr_navtex->get_reverse())
+					m_averaged_mark_state = -m_averaged_mark_state;
 				m_prompt_accumulator = 0;
 			}
 
@@ -1402,79 +1621,14 @@ private:
 			switch (m_state) {
 				case NOSIGNAL: break;
 				case SYNC_SETUP:
-					m_bit_count = -1;
-					m_code_bits = 0;
 					m_error_count = 0;
-					m_valid_count = 0;
 					m_shift = false;
-					m_sync_chrs.clear();
-					set_state(SYNC1);
+					set_state(SYNC);
 					break;
-				// scan indefinitely for valid bit pattern
-				case SYNC1:
-					if (m_pulse_edge_event) {
-						m_code_bits = (m_code_bits >> 1) | ( m_averaged_mark_state ? 64 : 0);
-						if (CCIR476::check_bits(m_code_bits)) {
-							m_sync_chrs.push_back(m_code_bits);
-							m_bit_count = 0;
-							m_code_bits = 0;
-							set_state(SYNC2);
-						}
-					}
-					break;
-				//  sample and validate bits in groups of 7
-				case SYNC2:
-					// find any bit alignment that produces a valid character
-					// then test that synchronization in subsequent groups of 7 bits
-					if (m_pulse_edge_event) {
-						m_code_bits = (m_code_bits >> 1) | ( m_averaged_mark_state ? 64 : 0);
-						m_bit_count++;
-						if (m_bit_count == 7) {
-							if (CCIR476::check_bits(m_code_bits)) {
-								m_sync_chrs.push_back(m_code_bits);
-								m_code_bits = 0;
-								m_bit_count = 0;
-								m_valid_count++;
-								// successfully read 4 characters?
-								if (m_valid_count == 4) {
-									for( sync_chrs_type::const_iterator it = m_sync_chrs.begin(), en = m_sync_chrs.end(); it != en; ++it ) {
-										process_char(*it);
-									}
-									set_state(READ_DATA);
-								}
-							} else { // failed subsequent bit test
-								m_code_bits = 0;
-								m_bit_count = 0;
-								// LOG_INFO("restarting sync");
-								set_state(SYNC_SETUP);
-							}
-						}
-					}
-					break;
+				case SYNC:
 				case READ_DATA:
-					if (m_pulse_edge_event) {
-						m_code_bits = (m_code_bits >> 1) | ( m_averaged_mark_state ? 64 : 0);
-						m_bit_count++;
-						if (m_bit_count == 7) {
-							if (m_error_count > 0) {
-								LOG_DEBUG("Error count: %d", m_error_count);
-							}
-							if (process_char(m_code_bits)) {
-								if (m_error_count > 0) {
-									m_error_count--;
-								}
-							} else {
-								m_error_count++;
-								if (m_error_count > 2) {
-									LOG_DEBUG("Returning to sync");
-									set_state(SYNC_SETUP);
-								}
-							}
-							m_bit_count = 0;
-							m_code_bits = 0;
-						}
-					}
-					break;
+					if (m_pulse_edge_event)
+						handle_bit_value(m_averaged_mark_state);
 			}
 
 			m_sample_count++;
