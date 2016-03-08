@@ -54,6 +54,7 @@ Stefan Fendt       DL1SMF\n\
 Leigh Klotz        WA5ZNU\n\
 John Phelps        KL4YFD\n\
 Andrej Lajovic     S57LN\n\
+Rik van Riel       AB1KW\n\
 Robert Stiles      KK5VD\n\
 </pre>\
 <H4>Beginners' Guide:</H4>\n\
