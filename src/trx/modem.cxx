@@ -472,11 +472,11 @@ void modem::ModulateXmtr(double *buffer, int len)
 		return;
 	}
 
+	if (withnoise) add_noise(buffer, len);
+
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
-
-	if (withnoise) add_noise(buffer, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
 	if (mult > 0.99) mult = 0.99;
@@ -511,11 +511,11 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 	if(sample_flag)
 		tx_sample_count += len;
 
+	if (withnoise && progdefaults.noise) add_noise(left, len);
+
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
-
-	if (withnoise && progdefaults.noise) add_noise(left, len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
 	if (mult > 0.99) mult = 0.99;
@@ -553,11 +553,11 @@ void modem::ModulateVideoStereo(double *left, double *right, int len, bool sampl
 	if(sample_flag)
 		tx_sample_count += len;
 
+	if (withnoise && progdefaults.noise) add_noise(left, len);
+
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
-
-	if (withnoise && progdefaults.noise) add_noise(left, len);
 
 	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
 
@@ -595,6 +595,8 @@ void modem::ModulateVideo(double *buffer, int len)
 			ModulateVideoStereo( buffer, PTTchannel, len, false);
 		return;
 	}
+
+	if (withnoise && progdefaults.noise) add_noise(buffer, len);
 
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
