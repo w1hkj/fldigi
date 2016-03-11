@@ -4,22 +4,11 @@
 \tableofcontents
 
 
-\image html init-rig-setup.png "Initial Rig Setup"
-\image latex init-rig-setup.png "Initial Rig Setup" width=2.0in
+\image html init-rig-setup.png "Basic Rig Control"
+\image latex init-rig-setup.png "Basic Rig Control" width=2.0in
 <br>
 
-CAT not enabled
-<br>
-
-
-\image html docked-rig-control.png "Docked Rig Control"
-\image latex docked-rig-control.png "Docked Rig Control" width=5.0in
-<br>
-
-CAT not enabled, Manual Entry of transceiver frequency
-<br>
-
-<b>Note: </b>The same control is also used for both manual entry of the
+The same control is used for both manual entry of the
 transceiver frequency or with full CAT control.  When no CAT is available
 the control is simply a convenient way of keeping track of the transceiver
 USB/LSB suppressed carrier frequency, the mode and the audio tracking
@@ -28,31 +17,6 @@ enter the simplex frequency or the input frequency of a repeater being
 used.  This frequency value is used with the waterfall audio frequency to
 compute the logged frequency.  The logged frequency value will only be
 correct for LSB and USB operation.
-<br>
-
-The frequency/mode pick list is displayed when the book button is
-pressed.  Pressing the book button a second time will restore the
-original logging panel.
-<br>
-
-The pick list buttons control selecting, adding and deleting entries in
-the frequency/mode list.
-<br>
-
-<ul>
-	<li>add the current frequency / mode / audio track point to the list</li>
-	<li>select the current list entry</li>
-	<li>delete the highlighted entry from the list</li>
-	<li>delete all entries from the list (a warning prompt will appear)</li>
-	<li>show active frequencies based on either the entry field to the
-	right or the stations locator,
-	see \ref psk_reporter_page "pskreporter/spotter".</li>
-	<li>entry field for active frequencies search, for example "EM."</li>
-</ul>
-
-
-The browser list contains frequency, sideband, modem type and audio
-frequency.  The list is saved when fldigi is shut down.
 <br>
 
 The combo box on the left will allow the selection and control of the
@@ -94,6 +58,47 @@ respective combobox and FLDigi will adjust any internal parameters
 accordingly.  FLDigi queries the transceiver 10 times per second
 to maintain a lock step with the transceiver.
 <br>
+
+\section frequencies_list Frequency List
+
+The frequency/mode pick list is displayed when the book button is
+pressed.  Pressing the book button a second time will restore the
+original logging panel.
+<br>
+
+\image html view_frequencies.png "Frequency Pick List"
+\image latex view_frequencies.png "Frequency Pick List" width=3.0in
+
+The pick list buttons control selecting, adding and deleting entries in
+the frequency/mode list.
+<br>
+
+<ul>
+	<li>add the current frequency / mode / audio track point to the list</li>
+	<li>select the current list entry</li>
+	<li>delete the highlighted entry from the list</li>
+	<li>delete all entries from the list (a warning prompt will appear)</li>
+	<li>show active frequencies based on either the entry field to the
+	right or the stations locator,
+	see \ref psk_reporter_page "pskreporter/spotter".</li>
+	<li>entry field for active frequencies search, for example "EM."</li>
+</ul>
+
+
+The browser list contains frequency, sideband, modem type, audio
+frequency, and a text describing usage.  To edit the usage string:
+<ul>
+<li>highlight the entry to be edited</li>
+<li>press the combination of SHIFT and right arrow while pointing to the line</li>
+</ul>
+This will hide the frequencies browser and display the data relative to that line
+
+\image html edit_freq_entry.png "Edit frequency list entry"
+\image latex edit_freq_entry.png "Edit frequency list entry" width=3.0in
+
+Edit the text entry and press the "Enter" button when finished.
+
+The list is saved when fldigi is shut down.
 
 \section rig_config  Rig Configuration
 

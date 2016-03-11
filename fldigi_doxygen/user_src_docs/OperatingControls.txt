@@ -137,7 +137,7 @@ FT950
 <li>\<QSYFM\>\<FILWID:2400\></li>
 </ul>
 
-The <b>M\></b> button allows you to
+The <b>Store</b> button allows you to
 store, recall and manage mode/frequency pairs.  If you want to
 save the current mode and frequency simply left click the button.
  A right click will enable a popup menu from which you can select
