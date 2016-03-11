@@ -256,10 +256,16 @@ public:
 	std::string rmode;
 	int carrier;
 	trx_mode mode;
+	std::string usage;
 
-	qrg_mode_t() : rfcarrier(0), rmode("NONE"), carrier(0), mode(NUM_MODES) { }
-	qrg_mode_t(long long rfc_, std::string rm_, int c_, trx_mode m_)
-                : rfcarrier(rfc_), rmode(rm_), carrier(c_), mode(m_) { }
+	qrg_mode_t() :
+		rfcarrier(0),
+		rmode("NONE"),
+		carrier(0),
+		mode(NUM_MODES),
+		usage("") { }
+	qrg_mode_t(long long rfc_, std::string rm_, int c_, trx_mode m_, std::string use_ = "")
+                : rfcarrier(rfc_), rmode(rm_), carrier(c_), mode(m_), usage(use_) { }
 	bool operator<(const qrg_mode_t& rhs) const
         {
 		return rfcarrier < rhs.rfcarrier;
@@ -269,7 +275,7 @@ public:
 		return rfcarrier == rhs.rfcarrier && rmode == rhs.rmode &&
 		       carrier == rhs.carrier && mode == rhs.mode;
 	}
-        std::string str(void);
+	std::string str(void);
 };
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m);
 std::istream& operator>>(std::istream& s, qrg_mode_t& m);

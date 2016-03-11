@@ -54,6 +54,7 @@ extern int  cb_qso_opBW2();
 extern void qso_setMode();
 extern void setTitle();
 
+extern int  fwidths[];
 extern void qso_addFreq();
 extern void qso_delFreq();
 extern void qso_selectFreq();
@@ -62,6 +63,7 @@ extern void qso_setFreq();
 extern void qso_setFreq(long int f);
 extern void qso_clearList();
 extern void saveFreqList();
+extern void qso_updateEntry(int i, std::string usage);
 
 extern bool readRigXML();
 extern bool init_Xml_RigDialog();

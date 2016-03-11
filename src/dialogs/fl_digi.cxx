@@ -413,6 +413,10 @@ static Fl_Button		*qso_btnDelFreq = (Fl_Button *)0;
 static Fl_Button		*qso_btnClearList = (Fl_Button *)0;
 static Fl_Button		*qso_btnAct = 0;
 static Fl_Input2		*qso_inpAct = 0;
+static Fl_Group			*opUsageFrame = (Fl_Group *)0;
+static Fl_Output		*opOutUsage = (Fl_Output *)0;
+static Fl_Input2		*opUsage = (Fl_Input2 *)0;
+static Fl_Button		*opUsageEnter = (Fl_Button *)0;
 
 static Fl_Pack 		*wfpack = (Fl_Pack *)0;
 static Fl_Pack			*hpack = (Fl_Pack *)0;
@@ -4896,6 +4900,42 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 		qsy(strtoll(str[j - 1].erase(str[j - 1].find(' ')).c_str(), NULL, 10));
 }
 
+static int i_opUsage;
+static string s_opEntry;
+static string s_opUsageEntry;
+static string s_outEntry;
+
+void cb_opUsageEnter(Fl_Button *, void*)
+{
+	s_opUsageEntry = opUsage->value();
+	s_opEntry.append(s_opUsageEntry);
+	qso_opBrowser->text(i_opUsage, s_opEntry.c_str());
+	qso_updateEntry(i_opUsage, s_opUsageEntry);
+	opUsageFrame->hide();
+	qso_opBrowser->show();
+}
+
+void qso_opBrowser_amend(int i)
+{
+	size_t pos;
+	s_opEntry = qso_opBrowser->text(i);
+	pos = s_opEntry.rfind('|');
+	s_opUsageEntry = s_opEntry.substr(pos+1);
+	s_opEntry.erase(pos + 1);
+
+	s_outEntry = s_opEntry.substr(0, pos);
+	while ((pos = s_outEntry.find('|')) != string::npos)
+		s_outEntry.replace(pos, 1, "  ");
+
+	opOutUsage->value(s_outEntry.c_str());
+
+	opUsage->value(s_opUsageEntry.c_str());
+
+	i_opUsage = i;
+	qso_opBrowser->hide();
+	opUsageFrame->show();
+}
+
 void cb_qso_opBrowser(Fl_Browser*, void*)
 {
 	int i = qso_opBrowser->value();
@@ -4907,15 +4947,19 @@ void cb_qso_opBrowser(Fl_Browser*, void*)
 	qso_opBrowser->deselect();
 	qso_opBrowser->select(i);
 
-	switch (i = Fl::event_key()) {
+	int ikey = Fl::event_key();
+	switch (ikey) {
 	case FL_Enter: case FL_KP_Enter: case FL_Button + FL_LEFT_MOUSE:
-		if (i == FL_Button + FL_LEFT_MOUSE && !Fl::event_clicks())
+		if (ikey == FL_Button + FL_LEFT_MOUSE && !Fl::event_clicks())
 			break;
 		qso_selectFreq();
 		CloseQsoView();
 		break;
 	case ' ': case FL_Button + FL_RIGHT_MOUSE:
-		qso_setFreq();
+		if ((Fl::event_state() & FL_SHIFT) == FL_SHIFT) {
+			qso_opBrowser_amend(i);
+		} else
+			qso_setFreq();
 		break;
 	case FL_Button + FL_MIDDLE_MOUSE:
 		i = qso_opBrowser->value();
@@ -5898,260 +5942,289 @@ void create_fl_digi_main_primary() {
 
 		RigControlFrame->end();
 
-		int opB_w = wf1 - 2 * (Wbtn + pad) + pad;
 
-		RigViewerFrame = new Fl_Group(
+		Fl_Group *rightframes = new Fl_Group(
 					rightof(RigControlFrame) + pad, RigControlFrame->y(),
-					wf1, Hqsoframe);
+					progStatus.mainW - rightof(RigControlFrame) - pad, Hqsoframe);
+			rightframes->box(FL_FLAT_BOX);
 
-			qso_btnSelFreq = new Fl_Button(
-				RigViewerFrame->x(), RigViewerFrame->y() + pad,
-				Wbtn, Hentry);
-			qso_btnSelFreq->image(new Fl_Pixmap(left_arrow_icon));
-			qso_btnSelFreq->tooltip(_("Select"));
-			qso_btnSelFreq->callback((Fl_Callback*)cb_qso_btnSelFreq);
+			RigViewerFrame = new Fl_Group(
+					rightframes->x(), rightframes->y(),
+					rightframes->w(), rightframes->h());
 
-			qso_btnAddFreq = new Fl_Button(
-				rightof(qso_btnSelFreq) + pad, RigViewerFrame->y() + pad,
-				Wbtn, Hentry);
-			qso_btnAddFreq->image(new Fl_Pixmap(plus_icon));
-			qso_btnAddFreq->tooltip(_("Add current frequency"));
-			qso_btnAddFreq->callback((Fl_Callback*)cb_qso_btnAddFreq);
+				qso_btnSelFreq = new Fl_Button(
+					RigViewerFrame->x(), RigViewerFrame->y() + pad,
+					Wbtn, Hentry);
+				qso_btnSelFreq->image(new Fl_Pixmap(left_arrow_icon));
+				qso_btnSelFreq->tooltip(_("Select"));
+				qso_btnSelFreq->callback((Fl_Callback*)cb_qso_btnSelFreq);
 
-			qso_btnClearList = new Fl_Button(
-				RigViewerFrame->x(), RigViewerFrame->y() + Hentry + 2 * pad,
-				Wbtn, Hentry);
-			qso_btnClearList->image(new Fl_Pixmap(trash_icon));
-			qso_btnClearList->tooltip(_("Clear list"));
-			qso_btnClearList->callback((Fl_Callback*)cb_qso_btnClearList);
+				qso_btnAddFreq = new Fl_Button(
+					rightof(qso_btnSelFreq) + pad, RigViewerFrame->y() + pad,
+					Wbtn, Hentry);
+				qso_btnAddFreq->image(new Fl_Pixmap(plus_icon));
+				qso_btnAddFreq->tooltip(_("Add current frequency"));
+				qso_btnAddFreq->callback((Fl_Callback*)cb_qso_btnAddFreq);
 
-			qso_btnDelFreq = new Fl_Button(
-				rightof(qso_btnClearList) + pad, RigViewerFrame->y() + Hentry + 2 * pad,
-				Wbtn, Hentry);
-			qso_btnDelFreq->image(new Fl_Pixmap(minus_icon));
-			qso_btnDelFreq->tooltip(_("Delete from list"));
-			qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
+				qso_btnClearList = new Fl_Button(
+					RigViewerFrame->x(), RigViewerFrame->y() + Hentry + 2 * pad,
+					Wbtn, Hentry);
+				qso_btnClearList->image(new Fl_Pixmap(trash_icon));
+				qso_btnClearList->tooltip(_("Clear list"));
+				qso_btnClearList->callback((Fl_Callback*)cb_qso_btnClearList);
 
-			qso_btnAct = new Fl_Button(
-				RigViewerFrame->x(), RigViewerFrame->y() + 2*(Hentry + pad) + pad,
-				Wbtn, Hentry);
-			qso_btnAct->image(new Fl_Pixmap(chat_icon));
-			qso_btnAct->callback(cb_qso_inpAct);
-			qso_btnAct->tooltip("Show active frequencies");
+				qso_btnDelFreq = new Fl_Button(
+					rightof(qso_btnClearList) + pad, RigViewerFrame->y() + Hentry + 2 * pad,
+					Wbtn, Hentry);
+				qso_btnDelFreq->image(new Fl_Pixmap(minus_icon));
+				qso_btnDelFreq->tooltip(_("Delete from list"));
+				qso_btnDelFreq->callback((Fl_Callback*)cb_qso_btnDelFreq);
 
-			qso_inpAct = new Fl_Input2(
-				rightof(qso_btnAct) + pad, RigViewerFrame->y() + 2*(Hentry + pad) + pad,
-				Wbtn, Hentry);
-			qso_inpAct->when(FL_WHEN_ENTER_KEY | FL_WHEN_NOT_CHANGED);
-			qso_inpAct->callback(cb_qso_inpAct);
-			qso_inpAct->tooltip("Grid prefix for activity list");
+				qso_btnAct = new Fl_Button(
+					RigViewerFrame->x(), RigViewerFrame->y() + 2*(Hentry + pad) + pad,
+					Wbtn, Hentry);
+				qso_btnAct->image(new Fl_Pixmap(chat_icon));
+				qso_btnAct->callback(cb_qso_inpAct);
+				qso_btnAct->tooltip("Show active frequencies");
 
-			qso_opBrowser = new Fl_Browser(
-				rightof(qso_btnDelFreq) + pad,  RigViewerFrame->y() + pad,
-				opB_w, Hqsoframe - 2 * pad );
-			// use fixed column widths of 28%, 20%, 30% ... remainder is 4th column
-			static int opB_widths[] = {28*opB_w/100, 20*opB_w/100, 30*opB_w/100, 0};
-			qso_opBrowser->column_widths(opB_widths);
-			qso_opBrowser->column_char('|');
-			qso_opBrowser->tooltip(_("Select operating parameters"));
-			qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
-			qso_opBrowser->type(FL_MULTI_BROWSER);
-			qso_opBrowser->box(FL_DOWN_BOX);
-			qso_opBrowser->labelfont(4);
-			qso_opBrowser->labelsize(12);
+				qso_inpAct = new Fl_Input2(
+					rightof(qso_btnAct) + pad, RigViewerFrame->y() + 2*(Hentry + pad) + pad,
+					Wbtn, Hentry);
+				qso_inpAct->when(FL_WHEN_ENTER_KEY | FL_WHEN_NOT_CHANGED);
+				qso_inpAct->callback(cb_qso_inpAct);
+				qso_inpAct->tooltip("Grid prefix for activity list");
+
+// fwidths set in rigsupport.cxx
+				qso_opBrowser = new Fl_Browser(
+					rightof(qso_btnDelFreq) + pad,  RigViewerFrame->y() + pad,
+					rightframes->w() - 2*Wbtn - pad, Hqsoframe - 2 * pad );
+				qso_opBrowser->column_widths(fwidths);
+				qso_opBrowser->column_char('|');
+				qso_opBrowser->tooltip(_("Select operating parameters"));
+				qso_opBrowser->callback((Fl_Callback*)cb_qso_opBrowser);
+				qso_opBrowser->type(FL_MULTI_BROWSER);
+				qso_opBrowser->box(FL_DOWN_BOX);
+				qso_opBrowser->labelfont(4);
+				qso_opBrowser->labelsize(12);
 #ifdef __APPLE__
-			qso_opBrowser->textfont(FL_SCREEN_BOLD);
-			qso_opBrowser->textsize(13);
+				qso_opBrowser->textfont(FL_SCREEN_BOLD);
+				qso_opBrowser->textsize(13);
 #else
-			qso_opBrowser->textfont(FL_HELVETICA);
-			qso_opBrowser->textsize(13);
+				qso_opBrowser->textfont(FL_HELVETICA);
+				qso_opBrowser->textsize(13);
 #endif
-			RigViewerFrame->resizable(NULL);
+				opUsageFrame = new Fl_Group(
+					qso_opBrowser->x(),
+					qso_opBrowser->y(),
+					qso_opBrowser->w(), Hentry);
+					opUsageFrame->box(FL_DOWN_BOX);
 
-		RigViewerFrame->end();
-		RigViewerFrame->hide();
+					opOutUsage = new Fl_Output(
+						opUsageFrame->x() + pad, opUsageFrame->y() + opUsageFrame->h() / 2 - Hentry / 2,
+						opUsageFrame->w() * 4 / 10, Hentry);
+						opOutUsage->color(FL_BACKGROUND_COLOR);
 
-		int y2 = fl_digi_main->workspace->y() + Hentry + 2 * pad;
-		int y3 = fl_digi_main->workspace->y() + 2 * (Hentry + pad) + pad;
+					opUsage = new Fl_Input2(
+						opOutUsage->x() + opOutUsage->w() + pad,
+						opOutUsage->y(),
+						opUsageFrame->w() - opOutUsage->w() - 50 - 3 * pad, 
+						Hentry);
 
-		x_qsoframe = RigViewerFrame->x();
+					opUsageEnter = new Fl_Button(
+						opUsage->x() + opUsage->w() , opUsage->y(),
+						50, Hentry, "Enter");
+						opUsageEnter->callback((Fl_Callback*)cb_opUsageEnter);
 
-		QsoInfoFrame = new Fl_Group(
-					x_qsoframe, fl_digi_main->workspace->y(),
-					progStatus.mainW - x_qsoframe - pad, Hqsoframe);
+				opUsageFrame->end();
+				opUsageFrame->hide();
 
-			btnQRZ = new Fl_Button(
+				RigViewerFrame->resizable(qso_opBrowser);
+
+			RigViewerFrame->end();
+			RigViewerFrame->hide();
+
+			int y2 = fl_digi_main->workspace->y() + Hentry + 2 * pad;
+			int y3 = fl_digi_main->workspace->y() + 2 * (Hentry + pad) + pad;
+
+			x_qsoframe = RigViewerFrame->x();
+
+			QsoInfoFrame = new Fl_Group(
+					rightframes->x(), rightframes->y(),
+					rightframes->w(), rightframes->h());
+
+				btnQRZ = new Fl_Button(
 					x_qsoframe, qsoFreqDisp1->y(), Wbtn, Hentry);
-			btnQRZ->image(new Fl_Pixmap(net_icon));
-			btnQRZ->callback(cb_QRZ, 0);
-			btnQRZ->tooltip(_("QRZ"));
+				btnQRZ->image(new Fl_Pixmap(net_icon));
+				btnQRZ->callback(cb_QRZ, 0);
+				btnQRZ->tooltip(_("QRZ"));
 
-			qsoClear = new Fl_Button(
+				qsoClear = new Fl_Button(
 					x_qsoframe, btnQRZ->y() + pad + Wbtn, Wbtn, Hentry);
-			qsoClear->image(new Fl_Pixmap(edit_clear_icon));
-			qsoClear->callback(qsoClear_cb, 0);
-			qsoClear->tooltip(_("Clear"));
+				qsoClear->image(new Fl_Pixmap(edit_clear_icon));
+				qsoClear->callback(qsoClear_cb, 0);
+				qsoClear->tooltip(_("Clear"));
 
-			qsoSave = new Fl_Button(
+				qsoSave = new Fl_Button(
 					x_qsoframe, qsoClear->y() + pad + Wbtn, Wbtn, Hentry);
-			qsoSave->image(new Fl_Pixmap(save_icon));
-			qsoSave->callback(qsoSave_cb, 0);
-			qsoSave->tooltip(_("Save"));
+				qsoSave->image(new Fl_Pixmap(save_icon));
+				qsoSave->callback(qsoSave_cb, 0);
+				qsoSave->tooltip(_("Save"));
 
-			QsoInfoFrame1 = new Fl_Group(
-				rightof(btnQRZ) + pad,
-				fl_digi_main->workspace->y(), wf1, Hqsoframe);
+				QsoInfoFrame1 = new Fl_Group(
+					rightof(btnQRZ) + pad,
+					fl_digi_main->workspace->y(), wf1, Hqsoframe);
 
-				inpFreq1 = new Fl_Input2(
-					QsoInfoFrame1->x() + 25,
-					fl_digi_main->workspace->y() + pad, 90, Hentry, _("Frq"));
-				inpFreq1->type(FL_NORMAL_OUTPUT);
-				inpFreq1->tooltip(_("frequency kHz"));
-				inpFreq1->align(FL_ALIGN_LEFT);
+					inpFreq1 = new Fl_Input2(
+						QsoInfoFrame1->x() + 25,
+						fl_digi_main->workspace->y() + pad, 90, Hentry, _("Frq"));
+					inpFreq1->type(FL_NORMAL_OUTPUT);
+					inpFreq1->tooltip(_("frequency kHz"));
+					inpFreq1->align(FL_ALIGN_LEFT);
 
-				btnTimeOn = new Fl_Button(
-					next_to(inpFreq1), fl_digi_main->workspace->y() + pad,
-					Hentry, Hentry, _("On"));
-				btnTimeOn->tooltip(_("Press to update QSO start time"));
-				btnTimeOn->callback(cb_btnTimeOn);
+					btnTimeOn = new Fl_Button(
+						next_to(inpFreq1), fl_digi_main->workspace->y() + pad,
+						Hentry, Hentry, _("On"));
+					btnTimeOn->tooltip(_("Press to update QSO start time"));
+					btnTimeOn->callback(cb_btnTimeOn);
 
-				inpTimeOn1 = new Fl_Input2(
-					next_to(btnTimeOn), fl_digi_main->workspace->y() + pad,
-					40, Hentry, "");
-				inpTimeOn1->tooltip(_("QSO start time"));
-				inpTimeOn1->align(FL_ALIGN_LEFT);
-				inpTimeOn1->type(FL_INT_INPUT);
+					inpTimeOn1 = new Fl_Input2(
+						next_to(btnTimeOn), fl_digi_main->workspace->y() + pad,
+						40, Hentry, "");
+					inpTimeOn1->tooltip(_("QSO start time"));
+					inpTimeOn1->align(FL_ALIGN_LEFT);
+					inpTimeOn1->type(FL_INT_INPUT);
 
-				inpTimeOff1 = new Fl_Input2(
-					next_to(inpTimeOn1) + 20, fl_digi_main->workspace->y() + pad, 40, Hentry, _("Off"));
-				inpTimeOff1->tooltip(_("QSO end time"));
-				inpTimeOff1->align(FL_ALIGN_LEFT);
-				inpTimeOff1->type(FL_NORMAL_OUTPUT);
+					inpTimeOff1 = new Fl_Input2(
+						next_to(inpTimeOn1) + 20, fl_digi_main->workspace->y() + pad, 40, Hentry, _("Off"));
+					inpTimeOff1->tooltip(_("QSO end time"));
+					inpTimeOff1->align(FL_ALIGN_LEFT);
+					inpTimeOff1->type(FL_NORMAL_OUTPUT);
 
-				inpRstIn1 = new Fl_Input2(
-					next_to(inpTimeOff1) + 40, fl_digi_main->workspace->y() + pad, 40, Hentry, _("In"));
-				inpRstIn1->tooltip("RST in");
-				inpRstIn1->align(FL_ALIGN_LEFT);
+					inpRstIn1 = new Fl_Input2(
+						next_to(inpTimeOff1) + 40, fl_digi_main->workspace->y() + pad, 40, Hentry, _("In"));
+					inpRstIn1->tooltip("RST in");
+					inpRstIn1->align(FL_ALIGN_LEFT);
 
-				inpRstOut1 = new Fl_Input2(
-					next_to(inpRstIn1) + 30, fl_digi_main->workspace->y() + pad, 40, Hentry, _("Out"));
-				inpRstOut1->tooltip("RST out");
-				inpRstOut1->align(FL_ALIGN_LEFT);
+					inpRstOut1 = new Fl_Input2(
+						next_to(inpRstIn1) + 30, fl_digi_main->workspace->y() + pad, 40, Hentry, _("Out"));
+					inpRstOut1->tooltip("RST out");
+					inpRstOut1->align(FL_ALIGN_LEFT);
 
-				inpCall1 = new Fl_Input2(
-					inpFreq1->x(), y2,
-					inpTimeOn1->x() + inpTimeOn1->w() - inpFreq1->x(),
-					Hentry, _("Call"));
-				inpCall1->tooltip(_("call sign"));
-				inpCall1->align(FL_ALIGN_LEFT);
+					inpCall1 = new Fl_Input2(
+						inpFreq1->x(), y2,
+						inpTimeOn1->x() + inpTimeOn1->w() - inpFreq1->x(),
+						Hentry, _("Call"));
+					inpCall1->tooltip(_("call sign"));
+					inpCall1->align(FL_ALIGN_LEFT);
 
-				inpName1 = new Fl_Input2(
-					next_to(inpCall1) + 20, y2,
-					130,
-					Hentry, _("Op"));
-				inpName1->tooltip(_("Operator name"));
-				inpName1->align(FL_ALIGN_LEFT);
+					inpName1 = new Fl_Input2(
+						next_to(inpCall1) + 20, y2,
+						130,
+						Hentry, _("Op"));
+					inpName1->tooltip(_("Operator name"));
+					inpName1->align(FL_ALIGN_LEFT);
 
-				inpAZ = new Fl_Input2(
-					inpRstOut1->x(), y2, 40, Hentry, "Az");
-				inpAZ->tooltip(_("Azimuth"));
-				inpAZ->align(FL_ALIGN_LEFT);
+					inpAZ = new Fl_Input2(
+						inpRstOut1->x(), y2, 40, Hentry, "Az");
+					inpAZ->tooltip(_("Azimuth"));
+					inpAZ->align(FL_ALIGN_LEFT);
 
-				QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3, wf1, Hentry + pad);
+					QsoInfoFrame1A = new Fl_Group (x_qsoframe, y3, wf1, Hentry + pad);
 
-					inpQth = new Fl_Input2(
-						inpFreq1->x(), y3, inpName1->x() - inpFreq1->x(), Hentry, "Qth");
-					inpQth->tooltip(_("City"));
-					inpQth->align(FL_ALIGN_LEFT);
+						inpQth = new Fl_Input2(
+							inpFreq1->x(), y3, inpName1->x() - inpFreq1->x(), Hentry, "Qth");
+						inpQth->tooltip(_("City"));
+						inpQth->align(FL_ALIGN_LEFT);
 
-					inpState = new Fl_Input2(
-						next_to(inpQth) + 20, y3, 30, Hentry, "St");
-					inpState->tooltip(_("US State"));
-					inpState->align(FL_ALIGN_LEFT);
+						inpState = new Fl_Input2(
+							next_to(inpQth) + 20, y3, 30, Hentry, "St");
+						inpState->tooltip(_("US State"));
+						inpState->align(FL_ALIGN_LEFT);
 
-					inpVEprov = new Fl_Input2(
-						next_to(inpState) + 20, y3, 30, Hentry, "Pr");
-					inpVEprov->tooltip(_("Can. Province"));
-					inpVEprov->align(FL_ALIGN_LEFT);
+						inpVEprov = new Fl_Input2(
+							next_to(inpState) + 20, y3, 30, Hentry, "Pr");
+						inpVEprov->tooltip(_("Can. Province"));
+						inpVEprov->align(FL_ALIGN_LEFT);
 
-					inpLoc = new Fl_Input2(
-						next_to(inpAZ) - 60, y3, 60, Hentry, "Loc");
-					inpLoc->tooltip(_("Maidenhead Locator"));
-					inpLoc->align(FL_ALIGN_LEFT);
+						inpLoc = new Fl_Input2(
+							next_to(inpAZ) - 60, y3, 60, Hentry, "Loc");
+						inpLoc->tooltip(_("Maidenhead Locator"));
+						inpLoc->align(FL_ALIGN_LEFT);
 
-				QsoInfoFrame1A->end();
+					QsoInfoFrame1A->end();
 
-				QsoInfoFrame1B = new Fl_Group (
+					QsoInfoFrame1B = new Fl_Group (
 						rightof(btnQRZ) + pad, y3,
 						wf1, Hentry + pad);
 
-					outSerNo1 = new Fl_Input2(
-						inpFreq1->x(), y3, 40, Hentry,
-						"# S");
-					outSerNo1->align(FL_ALIGN_LEFT);
-					outSerNo1->tooltip(_("Sent serial number (read only)"));
-					outSerNo1->type(FL_NORMAL_OUTPUT);
+						outSerNo1 = new Fl_Input2(
+							inpFreq1->x(), y3, 40, Hentry,
+							"# S");
+						outSerNo1->align(FL_ALIGN_LEFT);
+						outSerNo1->tooltip(_("Sent serial number (read only)"));
+						outSerNo1->type(FL_NORMAL_OUTPUT);
 
-					inpSerNo1 = new Fl_Input2(
-						rightof(outSerNo1) + pad, y3, 
-						40, Hentry,
-						"# R");
-					inpSerNo1->align(FL_ALIGN_LEFT);
-					inpSerNo1->tooltip(_("Received serial number"));
+						inpSerNo1 = new Fl_Input2(
+							rightof(outSerNo1) + pad, y3, 
+							40, Hentry,
+							"# R");
+						inpSerNo1->align(FL_ALIGN_LEFT);
+						inpSerNo1->tooltip(_("Received serial number"));
 
-					inpXchgIn1 = new Fl_Input2(
-						rightof(inpSerNo1) + pad + 14, y3,
-						inpAZ->x() + inpAZ->w() - (rightof(inpSerNo1) + pad + 14), Hentry,
-						"Xch");
-					inpXchgIn1->align(FL_ALIGN_LEFT);
-					inpXchgIn1->tooltip(_("Contest exchange in"));
+						inpXchgIn1 = new Fl_Input2(
+							rightof(inpSerNo1) + pad + 14, y3,
+							inpAZ->x() + inpAZ->w() - (rightof(inpSerNo1) + pad + 14), Hentry,
+							"Xch");
+						inpXchgIn1->align(FL_ALIGN_LEFT);
+						inpXchgIn1->tooltip(_("Contest exchange in"));
 
-				QsoInfoFrame1B->end();
-				QsoInfoFrame1B->hide();
+					QsoInfoFrame1B->end();
+					QsoInfoFrame1B->hide();
 
-				QsoInfoFrame1->resizable(NULL);
-			QsoInfoFrame1->end();
+					QsoInfoFrame1->resizable(NULL);
+				QsoInfoFrame1->end();
 
-			QsoInfoFrame2 = new Fl_Group(
-				rightof(QsoInfoFrame1) + pad, fl_digi_main->workspace->y(),
-				progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
+				QsoInfoFrame2 = new Fl_Group(
+					rightof(QsoInfoFrame1) + pad, fl_digi_main->workspace->y(),
+					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
 
-				inpCountry = new Fl_Input2(
-					rightof(QsoInfoFrame1) + pad, fl_digi_main->workspace->y() + pad,
-					QsoInfoFrame2->w(), Hentry, "");
-				inpCountry->tooltip(_("Country"));
+					inpCountry = new Fl_Input2(
+						rightof(QsoInfoFrame1) + pad, fl_digi_main->workspace->y() + pad,
+						QsoInfoFrame2->w(), Hentry, "");
+					inpCountry->tooltip(_("Country"));
 
-				inpNotes = new Fl_Input2(
-					rightof(QsoInfoFrame1) + pad, y2,
-					QsoInfoFrame2->w(), 2*Hentry + pad, "");
-				inpNotes->type(FL_MULTILINE_INPUT);
-				inpNotes->tooltip(_("Notes"));
+					inpNotes = new Fl_Input2(
+						rightof(QsoInfoFrame1) + pad, y2,
+						QsoInfoFrame2->w(), 2*Hentry + pad, "");
+					inpNotes->type(FL_MULTILINE_INPUT);
+					inpNotes->tooltip(_("Notes"));
 
-			QsoInfoFrame2->end();
+				QsoInfoFrame2->end();
 
-			QsoInfoFrame->resizable(QsoInfoFrame2);
+				QsoInfoFrame->resizable(QsoInfoFrame2);
 
-			ifkp_avatar = new picture(
-				QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, fl_digi_main->workspace->y() + pad, 59, 74);
-			ifkp_avatar->box(FL_FLAT_BOX);
-			ifkp_avatar->noslant();
-			ifkp_avatar->callback(cb_ifkp_send_avatar);
-			ifkp_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
-			ifkp_load_avatar();
-			ifkp_avatar->hide();
+					ifkp_avatar = new picture(
+						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, fl_digi_main->workspace->y() + pad, 59, 74);
+					ifkp_avatar->box(FL_FLAT_BOX);
+					ifkp_avatar->noslant();
+					ifkp_avatar->callback(cb_ifkp_send_avatar);
+					ifkp_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
+					ifkp_load_avatar();
+					ifkp_avatar->hide();
 
-			thor_avatar = new picture(
-				QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, fl_digi_main->workspace->y() + pad, 59, 74);
-			thor_avatar->box(FL_FLAT_BOX);
-			thor_avatar->noslant();
-			thor_avatar->callback(cb_thor_send_avatar);
-			thor_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
-			thor_load_avatar();
-			thor_avatar->hide();
+					thor_avatar = new picture(
+						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, fl_digi_main->workspace->y() + pad, 59, 74);
+					thor_avatar->box(FL_FLAT_BOX);
+					thor_avatar->noslant();
+					thor_avatar->callback(cb_thor_send_avatar);
+					thor_avatar->tooltip(_("Left click - save avatar\nRight click - send my avatar"));
+					thor_load_avatar();
+					thor_avatar->hide();
 
-		QsoInfoFrame->end();
+				QsoInfoFrame->end();
 
-		TopFrame1->resizable(QsoInfoFrame);
+			rightframes->end();
+			TopFrame1->resizable(rightframes);
 
 		TopFrame1->end();
 

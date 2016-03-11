@@ -204,14 +204,24 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
 {
-	return s << m.rfcarrier << ' ' << m.rmode << ' ' << m.carrier << ' ' << mode_info[m.mode].sname;
+	return s << m.rfcarrier << ' ' 
+			 << m.rmode << ' ' 
+			 << m.carrier << ' ' 
+			 << mode_info[m.mode].sname << ' '
+			 << m.usage;
 }
 
 std::istream& operator>>(std::istream& s, qrg_mode_t& m)
 {
 	string sMode;
+	char temp[255];
 	int mnbr;
 	s >> m.rfcarrier >> m.rmode >> m.carrier >> sMode;
+
+	s.getline(temp, 255);
+	m.usage = temp;
+	while (m.usage[0] == ' ') m.usage.erase(0,1);
+
 // handle case for reading older type of specification string
 	if (sscanf(sMode.c_str(), "%d", &mnbr)) {
 		m.mode = mnbr;
@@ -233,7 +243,9 @@ std::string qrg_mode_t::str(void)
 	  << setprecision(3) << rfcarrier/1000.0 << '|'
 	  << rmode << '|'
 	  << (mode < NUM_MODES ? mode_info[mode].sname : "NONE") << '|'
-	  << carrier;
+//	  << carrier;
+	  << carrier << '|'
+	  << usage;
 	return s.str();
 }
 

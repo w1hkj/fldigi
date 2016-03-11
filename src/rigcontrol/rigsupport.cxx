@@ -58,9 +58,9 @@ string windowTitle;
 
 vector<qrg_mode_t> freqlist;
 
-const unsigned char nfields = 4;
+const unsigned char nfields = 5;//4;
 int fwidths[nfields];
-enum { max_rfcarrier, max_rmode, max_mode };
+enum { max_rfcarrier, max_rmode, max_mode, max_carrier };
 
 #if !USE_HAMLIB
 
@@ -198,13 +198,14 @@ void updateSelect()
 	}
 }
 
-size_t updateList(long rf, int freq, string rmd, trx_mode md)
+size_t updateList(long rf, int freq, string rmd, trx_mode md, string usage = "")
 {
 	qrg_mode_t m;
 	m.rmode = rmd;
 	m.mode = md;
 	m.rfcarrier = rf;
 	m.carrier = freq;
+	m.usage = usage;
 
 	freqlist.push_back(m);
 	sort(freqlist.begin(), freqlist.end());
@@ -268,7 +269,7 @@ void saveFreqList()
 		LOG_ERROR("Could not open %s", (HomeDir + "frequencies2.txt").c_str());
 		return;
 	}
-	freqfile << "# rfcarrier rig_mode carrier mode\n";
+	freqfile << "# rfcarrier rig_mode carrier mode usage\n";
 
 	copy(	freqlist.begin(),
 			freqlist.end(),
@@ -285,11 +286,14 @@ void build_frequencies2_list()
 	// calculate the column widths
 	memset(fwidths, 0, sizeof(fwidths));
 	// these need to be a little wider than fl_width thinks
-	fwidths[max_rmode] = fwidths[max_mode] = 10;
+	fwidths[max_rmode] = fwidths[max_mode] = 
+	fwidths[max_carrier] = fwidths[max_rfcarrier]= 15;
 
 	fwidths[max_rfcarrier] += (int)ceil(fl_width("999999.999"));
 
-	fwidths[max_rmode] += (int)ceil(fl_width("XXXX"));
+	fwidths[max_rmode] += (int)ceil(fl_width("XXXXXX"));
+
+	fwidths[max_carrier] += (int)ceil(fl_width("8888"));
 
 	// find mode with longest shortname
 	size_t s, smax = 0, mmax = 0;
@@ -499,6 +503,15 @@ void qso_addFreq()
 	if (freq) {
 		size_t pos = addtoList(freq);
 		qso_opBrowser->insert(pos+1, freqlist[pos].str().c_str());
+	}
+}
+
+void qso_updateEntry(int i, std::string usage)
+{
+	int v = i - 1;
+	int sz = (int)freqlist.size();
+	if ((v >= 0) && (v < sz)) {
+		freqlist[v].usage = usage;
 	}
 }
 
