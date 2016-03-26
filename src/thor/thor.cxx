@@ -1190,6 +1190,8 @@ void thor::flushtx()
   bitstate = 0;
 }
 
+static bool hide_after_sending = false;
+
 int thor::tx_process()
 {
 	int i = 0;
@@ -1246,6 +1248,8 @@ int thor::tx_process()
 			sendchar(imageheader[n], 0);
 		flushtx();
 		send_image();
+		if (hide_after_sending) thorpicTxWin->hide();
+		hide_after_sending = false;
 		txstate = TX_STATE_DATA;
 		break;
 	case TX_STATE_AVATAR:
@@ -1353,10 +1357,11 @@ void thor::send_image() {
 
 }
 
-void thor::thor_send_image() {
-	if (txstate == TX_STATE_RECEIVE) {
+void thor::thor_send_image(std::string image_str) {
+	if (!image_str.empty()) hide_after_sending = true;
+	imageheader = image_str;
+	if (txstate == TX_STATE_RECEIVE)
 		start_tx();
-	}
 }
 
 void thor::send_avatar()

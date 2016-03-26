@@ -309,6 +309,55 @@ mode when the image transmission is completed.
 \image latex ifkp-WF-image-mode.png "Image Mode Waterfall" width=3.5in
 </center>
 
+There is an alternate way of sending an image, but one which only transmits a color
+image with no provision for slant correction.  This may be more convenient
+for sharing images when you do not need the additional utility of the image dialog.
+<br>
+
+Open a file folder to the location of your image files that are suitable for MFSK 
+transmission.  These images should be constrained to be 240 x 200 or less for 
+reasonable transmit times.  Optionally prepare fldigi for the MFSK image 
+transmission by entering some suitable text to precede the transmission.  
+You may be sending the image, blossoms.jpg, for example.  
+<br>
+
+<center>
+\image html blossoms.png "image in files folder"
+\image latex blossoms.png "image in files folder" width=3.0in
+</center>
+
+One might enter:
+
+\image html blossoms-1.png ""
+\image latex blossoms-1.png "" width=4.0in
+
+Then drag and drop the the image file from the files folder to the transmit 
+text panel in fldigi.  The program will automatically resize the image to the
+nearest scale-aspect ratio less than or equal to the actual image size.
+<br>
+
+The TX panel text will then change to
+
+\image html blossoms-2.png ""
+\image latex blossoms-2.png "" width=4.0in
+
+The ^! is the character sequence used by the fldigi TX parser to indicate 
+that there is a pending execution command.  In this case it is to transmit 
+the blossoms.jpg file.
+<br>
+
+Add some suitable ending text and the sequence ^r to the next line and 
+then press the T/R button (if not already transmitting).  At the end of the 
+image the TX parser will find the ^r and return the program to the receive 
+mode.
+
+The Rx panel will echo the transmitted data:
+<br>
+\image html thor-pic-transmission.png ""
+\image latex thor-pic-transmission.png "" width=4.0in
+
+The transmit progress dialog will close at the conclusion of the image transmission.
+
 <b>Receive Image</b>
 
 Reception is completely automatic.  The decoder will identify the picture start, 

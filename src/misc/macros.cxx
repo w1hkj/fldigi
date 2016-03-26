@@ -1892,6 +1892,74 @@ static void pTxQueIMAGE(std::string &s, size_t &i, size_t endbracket)
 	s.replace(i, endbracket - i + 1, "^!");
 }
 
+static void doINSERTIMAGE(std::string s)
+{
+	if (s.length() > 0) {
+
+		bool Greyscale = false;
+		size_t p = string::npos;
+		string fname = s.substr(7);
+		p = fname.find(">");
+		fname.erase(p);
+		p = fname.find("G,");
+		if (p == string::npos) p = fname.find("g,");
+		if (p != string::npos) {
+			Greyscale = true;
+			fname.erase(p,2);
+		}
+		while (fname[0] == ' ') fname.erase(0,1);
+		if (s.empty()) return;
+
+		trx_mode md = active_modem->get_mode();
+		if ((md == MODE_MFSK16 || md == MODE_MFSK32 ||
+			 md == MODE_MFSK64 || md == MODE_MFSK128) &&
+			active_modem->get_cap() & modem::CAP_IMG) {
+				Greyscale ?
+					active_modem->send_Grey_image(fname) :
+					active_modem->send_color_image(fname);
+		}
+		else if (md == MODE_IFKP) {
+			ifkp_load_scaled_image(fname);
+		}
+		else if (md >= MODE_THOR_FIRST && md <= MODE_THOR_LAST)
+			thor_load_scaled_image(fname);
+	}
+	que_ok = true;
+}
+
+void TxQueINSERTIMAGE(std::string s)
+{
+	trx_mode active_mode = active_modem->get_mode();
+	if (! (active_mode == MODE_MFSK16 ||
+		   active_mode == MODE_MFSK32 ||
+		   active_mode == MODE_MFSK64 ||
+		   active_mode == MODE_MFSK128 ||
+		   active_mode == MODE_IFKP ||
+		   (active_mode >= MODE_THOR_FIRST && active_mode <= MODE_THOR_LAST) ) &&
+		   active_modem->get_cap() & modem::CAP_IMG)
+		return;
+
+	string scmd = "<IMAGE:>";
+	scmd.insert(7,s);
+
+	struct CMDS cmd = { scmd, doINSERTIMAGE };
+	push_txcmd(cmd);
+
+	string itext = s;
+	size_t p = itext.rfind("\\");
+	if (p == string::npos) p = itext.rfind("/");
+	if (p != string::npos) itext.erase(0, p+1);
+	p = itext.rfind(".");
+	if (p != string::npos) itext.erase(p);
+	itext.insert(0, "\nImage: ");
+	itext.append(" ^!");
+
+	if (active_mode == MODE_IFKP)
+		ifkp_tx_text->add_text(itext);
+	else
+		TransmitText->add_text(itext);
+}
+
 #include <float.h>
 #include "re.h"
 

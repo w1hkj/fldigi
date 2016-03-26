@@ -1022,6 +1022,8 @@ void mfsk::send_epilogue()
 	flush_xmt_filter(64);
 }
 
+static bool close_after_transmit = false;
+
 void mfsk::clearbits()
 {
 	int data = enc->encode(0);
@@ -1137,6 +1139,8 @@ int mfsk::tx_process()
 			btnpicTxSendGrey->show();
 			btnpicTxLoad->show();
 			btnpicTxClose->show();
+			if (close_after_transmit) picTxWin->hide();
+			close_after_transmit = false;
 			abortxmt = false;
 			rxstate = RX_STATE_DATA;
 			memset(picheader, ' ', PICHEADER - 1);
@@ -1151,6 +1155,7 @@ int mfsk::tx_process()
 void mfsk::send_color_image(std::string s)
 {
 	if (load_image(s.c_str())) {
+		close_after_transmit = true;
 		pic_TxSendColor();
 	}
 }
@@ -1158,6 +1163,7 @@ void mfsk::send_color_image(std::string s)
 void mfsk::send_Grey_image(std::string s)
 {
 	if (load_image(s.c_str())) {
+		close_after_transmit = true;
 		pic_TxSendGrey();
 	}
 }

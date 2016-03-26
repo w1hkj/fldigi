@@ -116,7 +116,7 @@ void ifkp_updateRxPic(unsigned char data, int pos)
 		for (int i = 0; i < ifkp::IMAGEspp; i++)
 			ifkp_rawvideo[RAWSTART + ifkp::IMAGEspp*ifkp_numpixels + i] = data;
 	ifkp_numpixels++;
-	if (ifkp_numpixels >= (RAWSIZE - RAWSTART - ifkp::IMAGEspp)) 
+	if (ifkp_numpixels >= (RAWSIZE - RAWSTART - ifkp::IMAGEspp))
 		ifkp_numpixels = RAWSIZE - RAWSTART - ifkp::IMAGEspp;
 }
 
@@ -473,6 +473,145 @@ void ifkp_createTxViewer()
 
 }
 
+
+void ifkp_load_scaled_image(std::string fname)
+{
+
+	if (!ifkppicTxWin) ifkp_createTxViewer();
+
+	int D = 0;
+	unsigned char *img_data;
+	int W = 160;
+	int H = 120;
+	int winW = 644;
+	int winH = 512;
+	int ifkppicX = 0;
+	int ifkppicY = 0;
+	string picmode = "pic% \n";
+
+	if (ifkpTxImg) {
+		ifkpTxImg->release();
+		ifkpTxImg = 0;
+	}
+
+	ifkpTxImg = Fl_Shared_Image::get(fname.c_str());
+	if (!ifkpTxImg)
+		return;
+
+	int iW = ifkpTxImg->w();
+	int iH = ifkpTxImg->h();
+	int aspect = 0;
+
+	if (iW > iH ) {
+		if (iW >= 640) {
+			W = 640; H = 480;
+			winW = 644; winH = 484;
+			aspect = 4;
+			picmode[4] = 'V';
+		}
+		else if (iW >= 320) {
+			W = 320; H = 240;
+			winW = 324; winH = 244;
+			aspect = 2;
+			picmode[4] = 'L';
+		}
+		else {
+			W = 160; H = 120;
+			winW = 164; winH = 124;
+			aspect = 1;
+			picmode[4] = 'S';
+		}
+	} else {
+		if (iH >= 300) {
+			W = 240; H = 300;
+			winW = 244; winH = 304;
+			aspect = 5;
+			picmode[4] = 'P';
+		}
+		else if (iH >= 150) {
+			W = 120; H = 150;
+			winW = 124; winH = 154;
+			aspect = 7;
+			picmode[4] = 'M';
+		}
+		else {
+			W = 59; H = 74;
+			winW = 67; winH = 82;
+			aspect = 0;
+			picmode[4] = 'T';
+		}
+	}
+
+	{
+		Fl_Image *temp;
+		selifkppicSize->value(aspect);
+		temp = ifkpTxImg->copy(W, H);
+		ifkpTxImg->release();
+		ifkpTxImg = (Fl_Shared_Image *)temp;
+	}
+
+	if (ifkpTxImg->count() > 1) {
+		ifkpTxImg->release();
+		ifkpTxImg = 0;
+		return;
+	}
+
+	ifkppicTx->hide();
+	ifkppicTx->clear();
+
+	img_data = (unsigned char *)ifkpTxImg->data()[0];
+
+	D = ifkpTxImg->d();
+
+	if (ifkpxmtimg) delete [] ifkpxmtimg;
+
+	ifkpxmtimg = new unsigned char [W * H * 3];
+	if (D == 3)
+		memcpy(ifkpxmtimg, img_data, W*H*3);
+	else if (D == 4) {
+		int i, j, k;
+		for (i = 0; i < W*H; i++) {
+			j = i*3; k = i*4;
+			ifkpxmtimg[j] = img_data[k];
+			ifkpxmtimg[j+1] = img_data[k+1];
+			ifkpxmtimg[j+2] = img_data[k+2];
+		}
+	} else if (D == 1) {
+		int i, j;
+		for (i = 0; i < W*H; i++) {
+			j = i * 3;
+			ifkpxmtimg[j] = ifkpxmtimg[j+1] = ifkpxmtimg[j+2] = img_data[i];
+		}
+	} else
+		return;
+
+	char* label = strdup(fname.c_str());
+	ifkppicTxWin->copy_label(basename(label));
+	free(label);
+
+// load the ifkppicture widget with the rgb image
+
+	ifkppicTxWin->size(winW, winH);
+	ifkppicX = (winW - W) / 2;
+	ifkppicY = (winH - H) / 2;
+	ifkppicTx->resize(ifkppicX, ifkppicY, W, H);
+
+	selifkppicSize->hide();
+	btnifkppicTransmit->hide();
+	btnifkppicTxLoad->hide();
+	btnifkppicTxClose->hide();
+	btnifkppicTxSendAbort->hide();
+
+	ifkppicTx->video(ifkpxmtimg, W * H * 3);
+	ifkppicTx->show();
+
+	ifkppicTxWin->show();
+
+	active_modem->ifkp_send_image(picmode);
+
+	return;
+}
+
 void ifkp_showTxViewer(char c)
 {
 	if (!ifkppicTxWin) ifkp_createTxViewer();
@@ -494,7 +633,7 @@ void ifkp_showTxViewer(char c)
 			break;
 		case 'L' :
 		case 'l' :
-			W = 320; H = 240; winW = 324; winH = 274; 
+			W = 320; H = 240; winW = 324; winH = 274;
 			selifkppicSize->value(2);
 			break;
 		case 'F' :
@@ -641,7 +780,7 @@ int ifkp_load_avatar(std::string image_fname, int W, int H)
 	shared_avatar_img = Fl_Shared_Image::get(fname.c_str(), W, H);
 
 // force image to be retrieved from hard drive vice shared image memory
-	shared_avatar_img->reload(); 
+	shared_avatar_img->reload();
 
 	if (!shared_avatar_img) {
 		ifkp_avatar->video(tux_img, W * H * 3);
@@ -732,7 +871,7 @@ void ifkp_update_avatar(unsigned char data, int pos)
 
 	ifkp_numpixels++;
 
-	if (ifkp_numpixels >= (RAWSIZE - RAWSTART - ifkp::IMAGEspp)) 
+	if (ifkp_numpixels >= (RAWSIZE - RAWSTART - ifkp::IMAGEspp))
 		ifkp_numpixels = RAWSIZE - RAWSTART - ifkp::IMAGEspp;
 
 }
@@ -820,4 +959,3 @@ void cb_ifkp_send_avatar( Fl_Widget *w, void *)
 		ifkp_avatar->save_png(fname.c_str());
 	}
 }
-

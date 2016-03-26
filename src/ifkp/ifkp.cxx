@@ -770,7 +770,10 @@ void ifkp::send_image()
 	}
 }
 
-void ifkp::ifkp_send_image() {
+std::string img_str;
+
+void ifkp::ifkp_send_image(std::string image_str) {
+	img_str = image_str;
 	TX_IMAGE = true;
 	start_tx();
 }
@@ -787,17 +790,29 @@ int ifkp::tx_process()
 		send_char(0);
 		send_char(0);
 	}
+
 	int c = get_tx_char();
-	if (c == GET_TX_CHAR_ETX) {
+
+//	if (c == GET_TX_CHAR_ETX || enable_image) {
+	if (TX_IMAGE || TX_AVATAR) {
+		if (img_str.length()) {
+			for (size_t n = 0; n < img_str.length(); n++)
+				send_char(img_str[n]);
+		}
 		if (TX_IMAGE) send_image();
 		if (TX_AVATAR) send_avatar();
 		send_char(0);
 		stopflag = false;
 		TX_IMAGE = false;
 		TX_AVATAR = false;
-		return -1;
+		if (img_str.length()) {
+			ifkppicTxWin->hide();
+			img_str.clear();
+		}
+		return 0;
 	}
-	if ( stopflag ) { // aborts transmission
+	if ( stopflag || c == GET_TX_CHAR_ETX) { // aborts transmission
+		send_char(0);
 		TX_IMAGE = false;
 		TX_AVATAR = false;
 		stopflag = false;

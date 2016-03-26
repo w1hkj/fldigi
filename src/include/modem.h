@@ -150,10 +150,10 @@ public:
 	virtual void		send_color_image(std::string) {}
 	virtual void		send_Grey_image(std::string) {}
 
-	virtual void		ifkp_send_image(){}
+	virtual void		ifkp_send_image(std::string s = ""){}
 	virtual void		ifkp_send_avatar(){}
 
-	virtual void		thor_send_image(){}
+	virtual void		thor_send_image(std::string s = ""){}
 	virtual void		thor_send_avatar(){}
 
 	void		set_stopflag(bool b) { stopflag = b;};

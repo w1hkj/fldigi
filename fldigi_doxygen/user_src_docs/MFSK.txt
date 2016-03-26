@@ -27,7 +27,6 @@ This is an example of properly tuned MFSK16 signal with a s/n of
 approximately 9 dB.
 <br>
 
-
 \image html mfsk-9db.png " MFSK16 signal"
 \image latex mfsk-9db.png " MFSK16 signal" width=6.0in
 <br>
@@ -61,15 +60,6 @@ is subject to burst and phase noise on the transmission path.  It
 can provide excellent photo transmission on a really good path.
 <br>
 
-\image html mfskpix-bee.png "Received MFSK Image"
-\image latex mfskpix-bee.png "Received MFSK Image" width=2.0in
-<br>
-
-This is an example of a photo received on a bench test.  The received
-image is an exact replica of the transmitted image.  The color depth is
-a full 24 bits.
-<br>
-
 Images should be carefully selected for size before beginning a
 transmission.  To calculate the transmit time for an image use the
 following formula:
@@ -100,12 +90,11 @@ Received images are saved in the default folder $HOME/.fldigi/images
 
 \section mfsk_tx_image Transmitting an Image
 
-
 \image html Xmt-Pix.png "Xmit Picture Dialog box"
 \image latex Xmt-Pix.png "Xmit Picture Dialog box" width=3.0in
 <br>
 
-You can only transmit an image while in the MFSK-16 mode.  The
+You can only transmit an image while in the MFSK-16/32/64/128 modes.  The
 image can be prepared for transmission while in the receive mode. Right click
 in the transmit text box and select "Send Image" from the popup menu. This
 will open up the transmit image dialog which will be blank to start.
@@ -159,28 +148,84 @@ will then have to toggle the T/R button if you want to return to
 receive.
 <br>
 
-\image html Xmt-Pix3.png "Received MFSK Image"
-\image latex Xmt-Pix3.png "Received MFSK Image" width=1.5in
+There is an alternate way of sending an image, but one which only transmits a color
+image with no provision for slant correction.  This may be more convenient
+for sharing images when you do not need the additional utility of the image dialog.
 <br>
 
-The receiving program decodes the "Pic:110x119C;" as a color picture
-110 wide by 119 high.  Here is shown being received on a computer
-running Vista Home Premium.
+Open a file folder to the location of your image files that are suitable for MFSK 
+transmission.  These images should be constrained to be 240 x 200 or less for 
+reasonable transmit times.  Optionally prepare fldigi for the MFSK image 
+transmission by entering some suitable text to precede the transmission.  
+You may be sending the image, blossoms.jpg, for example.  
 <br>
 
+<center>
+\image html blossoms.png "image in files folder"
+\image latex blossoms.png "image in files folder" width=3.0in
+</center>
 
-\image html Xmt-Pix4.png "Waterfall of a MFSK Image"
-\image latex Xmt-Pix4.png "Waterfall of a MFSK Image" width=3.5in
+One might enter:
+
+\image html blossoms-1.png ""
+\image latex blossoms-1.png "" width=4.0in
+
+Then drag and drop the the image file from the files folder to the transmit 
+text panel in fldigi.
+<br>
+
+The TX panel text will then change to
+
+\image html blossoms-2.png ""
+\image latex blossoms-2.png "" width=4.0in
+
+The ^! is the character sequence used by the fldigi TX parser to indicate 
+that there is a pending execution command.  In this case it is to transmit 
+the blossoms.jpg file.
+<br>
+
+Add some suitable ending text and the sequence ^r to the next line and 
+then press the T/R button (if not already transmitting).  At the end of the 
+image the TX parser will find the ^r and return the program to the receive 
+mode.
+
+The Rx panel will echo the transmitted data:
+<br>
+\image html blossoms-3.png ""
+\image latex blossoms-3.png "" width=4.0in
+
+The image progress dialog will close at the end of the image transfer.
+
+\section mfsk_rx_image Receiving an Image
+
+The receiving program decodes the "Pic:240x160C;" as a color picture
+240 wide by 160 high.
+<center>
+\image html Xmt-Pix2.png "Received MFSK Image"
+\image latex Xmt-Pix2.png "Received MFSK Image" width=3.0in
+</center>
 
 This is what the waterfall will look like during the reception of an
-MFSK-16 image.
+MFSK-64 image.
 <br>
+<center>
+\image html Xmt-Pix3.png "MFSK Image - Waterfall"
+\image latex Xmt-Pix3.png "MFSK Image - Waterfall" width=4.5in
+</center>
 
 The actual spectrum signature will vary with the image bytes being
-transmitted.  The waterfall scale is in the x4 mode and the above
-photo was being transmitted in 24 bit color for this screenshot. The
+transmitted.  The image was being transmitted in 24 bit color for this screenshot. The
 waterfall clearly shows that the image transmission is within the bandwidth
-occupied by MFSK-16.
+occupied by MFSK-64.
+
+Received images are automatically saved to the images folder and annotated with
+a date-time stamp.
+
+<center>
+\image html MFSK-rx-images.png "MFSK Rx Images"
+\image latex MFSK-rx-images.png "MFSK Rx Images" width=4.5in
+</center>
+
 <br>
 
 \section mfsk_picture_slant Picture with a slant
@@ -203,9 +248,8 @@ move the mouse to bottom left or right corner of the slanted images
 (the corner that clearly visible).  Then left click on that
 corner.  The program will correct for the slant.  The
 correction will not be perfect but it may help to make the image more
-viewable.
-<br>
-
+viewable.  Right click to undo the slant correction.  Slant corrections are
+not saved to the Rx image file.
 
 <br>
 \ref mfsk_page "Return to Top of Page"

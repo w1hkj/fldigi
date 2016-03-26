@@ -764,8 +764,8 @@ void FTextRX::dxcc_tooltip(void* obj)
 Fl_Menu_Item FTextTX::menu[] = {
 	{ icons::make_icon_label(_("Transmit"), tx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Receive"), rx_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Abort"), process_stop_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Send image..."), image_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Abort"), process_stop_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Send image..."), image_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 
 	{ 0 }, // EDIT_MENU_CUT
 	{ 0 }, // EDIT_MENU_COPY

@@ -28,6 +28,7 @@
 #include "fileselect.h"
 #include "qrunner.h"
 
+void thor_createTxViewer();
 
 Fl_Double_Window	*thorpicRxWin = (Fl_Double_Window *)0;
 picture				*thorpicRx = (picture *)0;
@@ -290,6 +291,145 @@ void thor_clear_rximage()
 //------------------------------------------------------------------------------
 // image transmit functions
 //------------------------------------------------------------------------------
+
+void thor_load_scaled_image(std::string fname)
+{
+
+	if (!thorpicTxWin) thor_createTxViewer();
+
+	int D = 0;
+	unsigned char *img_data;
+	int W = 160;
+	int H = 120;
+	int winW = 644;
+	int winH = 512;
+	int thorpicX = 0;
+	int thorpicY = 0;
+	string picmode = "pic% \n";
+
+	if (thorTxImg) {
+		thorTxImg->release();
+		thorTxImg = 0;
+	}
+
+	thorTxImg = Fl_Shared_Image::get(fname.c_str());
+	if (!thorTxImg)
+		return;
+
+	int iW = thorTxImg->w();
+	int iH = thorTxImg->h();
+	int aspect = 0;
+
+	if (iW > iH ) {
+		if (iW >= 640) {
+			W = 640; H = 480;
+			winW = 644; winH = 484;
+			aspect = 4;
+			picmode[4] = 'V';
+		}
+		else if (iW >= 320) {
+			W = 320; H = 240;
+			winW = 324; winH = 244;
+			aspect = 2;
+			picmode[4] = 'L';
+		}
+		else {
+			W = 160; H = 120;
+			winW = 164; winH = 124;
+			aspect = 1;
+			picmode[4] = 'S';
+		}
+	} else {
+		if (iH >= 300) {
+			W = 240; H = 300;
+			winW = 244; winH = 304;
+			aspect = 5;
+			picmode[4] = 'P';
+		}
+		else if (iH >= 150) {
+			W = 120; H = 150;
+			winW = 124; winH = 154;
+			aspect = 7;
+			picmode[4] = 'M';
+		}
+		else {
+			W = 59; H = 74;
+			winW = 67; winH = 82;
+			aspect = 0;
+			picmode[4] = 'T';
+		}
+	}
+
+	{
+		Fl_Image *temp;
+		selthorpicSize->value(aspect);
+		temp = thorTxImg->copy(W, H);
+		thorTxImg->release();
+		thorTxImg = (Fl_Shared_Image *)temp;
+	}
+
+	if (thorTxImg->count() > 1) {
+		thorTxImg->release();
+		thorTxImg = 0;
+		return;
+	}
+
+	thorpicTx->hide();
+	thorpicTx->clear();
+
+	img_data = (unsigned char *)thorTxImg->data()[0];
+
+	D = thorTxImg->d();
+
+	if (thorxmtimg) delete [] thorxmtimg;
+
+	thorxmtimg = new unsigned char [W * H * 3];
+	if (D == 3)
+		memcpy(thorxmtimg, img_data, W*H*3);
+	else if (D == 4) {
+		int i, j, k;
+		for (i = 0; i < W*H; i++) {
+			j = i*3; k = i*4;
+			thorxmtimg[j] = img_data[k];
+			thorxmtimg[j+1] = img_data[k+1];
+			thorxmtimg[j+2] = img_data[k+2];
+		}
+	} else if (D == 1) {
+		int i, j;
+		for (i = 0; i < W*H; i++) {
+			j = i * 3;
+			thorxmtimg[j] = thorxmtimg[j+1] = thorxmtimg[j+2] = img_data[i];
+		}
+	} else
+		return;
+
+	char* label = strdup(fname.c_str());
+	thorpicTxWin->copy_label(basename(label));
+	free(label);
+
+// load the thorpicture widget with the rgb image
+
+	thorpicTxWin->size(winW, winH);
+	thorpicX = (winW - W) / 2;
+	thorpicY = (winH - H) / 2;
+	thorpicTx->resize(thorpicX, thorpicY, W, H);
+
+	selthorpicSize->hide();
+	btnthorpicTransmit->hide();
+	btnthorpicTxLoad->hide();
+	btnthorpicTxClose->hide();
+	btnthorpicTxSendAbort->hide();
+
+	thorpicTx->video(thorxmtimg, W * H * 3);
+	thorpicTx->show();
+
+	thorpicTxWin->show();
+
+	active_modem->thor_send_image(picmode);
+
+	return;
+}
+
 
 int thor_load_image(const char *n) {
 

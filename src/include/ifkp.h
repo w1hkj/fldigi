@@ -171,7 +171,7 @@ static int		IMAGEspp;
 	void	send_image();
 	void	send_avatar();
 	void	ifkp_send_avatar();
-	void	ifkp_send_image();
+	void	ifkp_send_image(std::string s = "");
 
 };
 

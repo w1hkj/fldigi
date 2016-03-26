@@ -98,4 +98,6 @@ void Rx_queue_execute();
 bool queue_must_rx();
 void idleTimer(void *);
 
+extern void TxQueINSERTIMAGE(std::string s);
+
 #endif

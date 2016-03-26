@@ -242,6 +242,7 @@ extern void			cbSELCAL(Fl_Widget *w, void *d);
 extern void			cbFSQCALL(Fl_Widget *w, void *d);
 
 extern void			ifkp_showTxViewer(char C = 'T');
+extern void			ifkp_load_scaled_image(std::string);
 extern Fl_Double_Window	*ifkppicRxWin;
 extern Fl_Double_Window	*ifkppicTxWin;
 
@@ -554,5 +555,6 @@ extern void			thor_update_avatar(unsigned char data, int pos);
 extern int			thor_get_avatar_pixel(int pos, int color);
 extern void			cb_thor_send_avatar( Fl_Widget *w, void *);
 extern picture		*thor_avatar;
+extern void			thor_load_scaled_image(std::string fname);
 
 #endif
