@@ -7557,6 +7557,11 @@ void noop_controls() // create and then hide all controls not being used
 	qso_btnAct = new Fl_Button(defwidget); qso_btnAct->hide();
 	qso_inpAct = new Fl_Input2(defwidget); qso_inpAct->hide();
 
+	pwrmeter = new PWRmeter(defwidget); pwrmeter->hide();
+	smeter = new Smeter(defwidget); smeter->hide();
+	pwr_level = new Fl_Value_Slider2(defwidget); pwr_level->hide();
+	set_pwr_level = new Fl_Button(defwidget); set_pwr_level->hide();
+
 	dummywindow->end();
 	dummywindow->hide();
 
