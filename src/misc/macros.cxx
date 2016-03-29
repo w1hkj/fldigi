@@ -2865,6 +2865,7 @@ void set_macro_env(void)
 
 		FLDIGI_MODEM,
 		FLDIGI_MODEM_LONG_NAME,
+		FLDIGI_MODEM_ADIF_NAME,
 		FLDIGI_DIAL_FREQUENCY,
 		FLDIGI_AUDIO_FREQUENCY,
 		FLDIGI_FREQUENCY,
@@ -2951,6 +2952,8 @@ void set_macro_env(void)
 
 		{ "FLDIGI_MODEM", mode_info[active_modem->get_mode()].sname },
 		{ "FLDIGI_MODEM_LONG_NAME", mode_info[active_modem->get_mode()].name },
+		{ "FLDIGI_MODEM_ADIF_NAME", mode_info[active_modem->get_mode()].adif_name },
+
 		{ "FLDIGI_DIAL_FREQUENCY", "" },
 		{ "FLDIGI_AUDIO_FREQUENCY", "" },
 		{ "FLDIGI_FREQUENCY", "" },
