@@ -62,6 +62,8 @@ static int symlen = 4096; // nominal symbol length; 3 baud
 #define SQLFILT_SIZE 200
 #define NIT std::string::npos
 
+#define txcenterfreq  1500.0
+
 static const char *FSQBOL = " \n";
 static const char *FSQEOL = "\n ";
 static const char *FSQEOT = "  \b  ";
@@ -140,7 +142,7 @@ void printit(double speed, int bandwidth, int symlen, int bksize, int peak_hits,
 
 fsq::fsq(trx_mode md) : modem()
 {
-	modem::set_freq(1500);
+	modem::set_freq(1500); // default Rx/Tx center frequency
 
 	mode = md;
 	samplerate = SR;
@@ -217,7 +219,6 @@ fsq::~fsq()
 
 void  fsq::tx_init(SoundBase *sc)
 {
-	set_freq(1500);
 	scard = sc;
 	tone = prevtone = 0;
 	txphase = 0;
@@ -230,7 +231,7 @@ void  fsq::tx_init(SoundBase *sc)
 
 void  fsq::rx_init()
 {
-	set_freq(1500);
+	set_freq(frequency);
 	bandwidth = 33 * spacing * samplerate / FSQ_SYMLEN;
 	bkptr = 0;
 	peak_counter = 0;
@@ -264,10 +265,13 @@ void fsq::init()
 
 void fsq::set_freq(double f)
 {
-	frequency = 1500; modem::set_freq(frequency);
+	frequency = f;
+	modem::set_freq(frequency);
 	basetone = ceil(1.0*(frequency - bandwidth / 2) * FSQ_SYMLEN / samplerate);
+	tx_basetone = ceil((get_txfreq() - bandwidth / 2) * FSQ_SYMLEN / samplerate );
 	int incr = basetone % spacing;
 	basetone -= incr;
+	tx_basetone -= incr;
 }
 
 void fsq::show_mode()
@@ -300,10 +304,7 @@ void fsq::adjust_for_speed()
 
 void fsq::restart()
 {
-	modem::set_freq(1500);
-	basetone = ceil(1.0*(frequency - bandwidth / 2) * FSQ_SYMLEN / samplerate);
-	int incr = basetone % spacing;
-	basetone -= incr;
+	set_freq(frequency);
 
 	peak_hits = progdefaults.fsqhits;
 	adjust_for_speed();
@@ -1153,7 +1154,6 @@ void fsq::recvpic(double smpl)
 int fsq::rx_process(const double *buf, int len)
 {
 	if (peak_hits != progdefaults.fsqhits) restart();
-//	if (fsq_frequency != progdefaults.fsq_frequency) restart();
 	if (movavg_size != progdefaults.fsq_movavg) restart();
 	if (speed != progdefaults.fsqbaud) restart();
 	if (heard_log_fname != progdefaults.fsq_heard_log ||
@@ -1230,14 +1230,14 @@ void fsq::flush_buffer()
 void fsq::send_tone(int tone)
 {
 	double phaseincr;
-	double frequency;
+	double freq;
 
 	if (speed != progdefaults.fsqbaud) restart();
 
-	frequency = (basetone + tone * spacing) * samplerate / FSQ_SYMLEN;
+	freq = (tx_basetone + tone * spacing) * samplerate / FSQ_SYMLEN;
 	if (grpNoise->visible() && btnOffsetOn->value()==true)
-		frequency += ctrl_freq_offset->value();
-	phaseincr = 2.0 * M_PI * frequency / samplerate;
+		freq += ctrl_freq_offset->value();
+	phaseincr = 2.0 * M_PI * freq / samplerate;
 	prevtone = tone;
 
 	int send_symlen = symlen;

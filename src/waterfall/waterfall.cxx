@@ -304,7 +304,7 @@ void WFdisp::makeMarker()
 
 	makeMarker_(marker_width, &RGBmarker, carrierfreq, clrMin, clrM, clrMax);
 
-	if (unlikely(active_modem->freqlocked())) {
+	if (unlikely(active_modem->freqlocked() || mode == MODE_FSQ)) {
 		int txfreq = static_cast<int>(active_modem->get_txfreq());
 		adjust_color_inv(RGBmarker.R, RGBmarker.G, RGBmarker.B, FL_BLACK, FL_RED);
 		makeMarker_( static_cast<int>(bandwidth / 2.0 + 1),

@@ -9391,7 +9391,7 @@ static const Fl_Menu_Item *heard_popup;
 static const Fl_Menu_Item all_popup[] = {
 	{ "Copy", 0, cb_heard_copy, 0 },
 	{ "Copy All", 0, cb_heard_copy_all, 0 , FL_MENU_DIVIDER },
-	{ "Send File To... (#)", 0, 0, 0, FL_MENU_DIVIDER },
+	{ "Send File To... (#)", 0, cb_heard_send_file, 0, FL_MENU_DIVIDER },
 	{ "Send Image To... (%)", 0, cb_heard_send_image, 0 },
 	{ 0, 0, 0, 0 }
 };

@@ -142,6 +142,7 @@ protected:
 	int				fsq_frequency;  // 0 / 1
 	int				spacing;
 	int				basetone;
+	int				tx_basetone;
 	double			speed;
 	double			metric;
 	bool			ch_sqlch_open;

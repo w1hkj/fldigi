@@ -279,6 +279,7 @@ double modem::get_txfreq(void) const
 		return 0;
 	else if (mailserver && progdefaults.PSKmailSweetSpot)
 		return progdefaults.PSKsweetspot;
+	if (get_mode() == MODE_FSQ) return 1500;
 	return tx_frequency;
 }
 
@@ -286,6 +287,7 @@ double modem::get_txfreq_woffset(void) const
 {
 	if (mailserver && progdefaults.PSKmailSweetSpot)
 		return (progdefaults.PSKsweetspot - progdefaults.TxOffset);
+	if (get_mode() == MODE_FSQ) return (1500 - progdefaults.TxOffset);
 	return (tx_frequency - progdefaults.TxOffset);
 }
 
@@ -718,7 +720,7 @@ void modem::cwid_send_symbol(int bits)
 		sample = 0,
 		currsym = bits & 1;
 
-	freq = tx_frequency - progdefaults.TxOffset;
+	freq = get_txfreq() - progdefaults.TxOffset;
 
 	if ((currsym == 1) && (cwid_lastsym == 0))
 		cwid_phaseacc = 0.0;
@@ -843,7 +845,7 @@ void modem::wfid_make_tones(int numchars)
 {
 	double f, flo, fhi;
 	int vwidth = (numchars*NUMCOLS + (numchars-1)*CHARSPACE - 1);
-	f = tx_frequency + TONESPACING * vwidth/2.0;
+	f = get_txfreq() + TONESPACING * vwidth/2.0;
 	fhi = f + TONESPACING;
 	flo = fhi - (vwidth + 2) * TONESPACING;
 	for (int i = 1; i <= NUMCOLS * numchars; i++) {
