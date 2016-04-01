@@ -18,7 +18,7 @@
 
 /*!
 
-\mainpage FLDIGI Users Manual - Version 3.23.08
+\mainpage FLDIGI Users Manual - Version 3.23.09
 \anchor main_page
 
 <center>

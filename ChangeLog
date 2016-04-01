@@ -1,10 +1,37 @@
 
 
+=Version 3.23.09=
+
+2016-03-29  David Freese  <iam_w1hkj@w1hkj.com>
+
+	fc97b4a: FSQ variable Rx
+	58b3940: Export ADIF_NAME
+	91ddd6c: WF only
+	92c3c36: DnD Image
+	0ebcc2a: Frequencies2 use string
+	20ac527: Documentation
+	8eb05e6: View noise
+	7cd0d8d: About
+	9ed6cc3: NAVTEX update
+
+2016-03-07  Kamal Mostafa  <kamal@whence.com>
+
+	6da8d51: Sanitize tile_x, tile_y startup values
+
+2016-03-05  David Freese  <iam_w1hkj@w1hkj.com>
+
+	b1d12b8: RxID enhancement
+	f7662df: TX timer
+	4e055b4: rigcat mod
+	4c9f140: PSK IMD
+
+
 =Version 3.23.08=
+
 
 2016-02-21  Rik van Riel  <riel@surriel.com>
 
-	bbbeed4: NAVTEX update
+	f80745e: NAVTEX update
 
 2016-02-16  David Freese  <iam_w1hkj@w1hkj.com>
 
