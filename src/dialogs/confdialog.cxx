@@ -10198,22 +10198,22 @@ le Earth)"));
               { Fl_Counter* o = cntPTT_on_delay = new Fl_Counter(74, 311, 100, 21, _("Start of transmit PTT delay"));
                 cntPTT_on_delay->tooltip(_("Delay NN msec before starting audio"));
                 cntPTT_on_delay->minimum(0);
-                cntPTT_on_delay->maximum(500);
-                cntPTT_on_delay->step(1);
+                cntPTT_on_delay->maximum(5000);
+                cntPTT_on_delay->step(10);
                 cntPTT_on_delay->callback((Fl_Callback*)cb_cntPTT_on_delay);
                 cntPTT_on_delay->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.PTT_on_delay);
-                o->lstep(10);
+                o->lstep(100);
               } // Fl_Counter* cntPTT_on_delay
               { Fl_Counter* o = cntPTT_off_delay = new Fl_Counter(74, 341, 100, 21, _("PTT end of transmit delay"));
                 cntPTT_off_delay->tooltip(_("Delay NN msec before releasing PTT"));
                 cntPTT_off_delay->minimum(0);
-                cntPTT_off_delay->maximum(500);
-                cntPTT_off_delay->step(1);
+                cntPTT_off_delay->maximum(5000);
+                cntPTT_off_delay->step(10);
                 cntPTT_off_delay->callback((Fl_Callback*)cb_cntPTT_off_delay);
                 cntPTT_off_delay->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.PTT_off_delay);
-                o->lstep(10);
+                o->lstep(100);
               } // Fl_Counter* cntPTT_off_delay
               grpPTTdelays->end();
             } // Fl_Group* grpPTTdelays

@@ -120,10 +120,8 @@ void PTT::reset(ptt_t dev)
 void PTT::set(bool ptt)
 {
 // add milliseconds - no audio to clear virtual audio card used by Flex systems
-	if (ptt && progdefaults.PTT_off_delay)
+	if (!ptt && progdefaults.PTT_off_delay)
 		MilliSleep(progdefaults.PTT_off_delay);
-	if (!ptt && progdefaults.PTT_on_delay)
-		MilliSleep(progdefaults.PTT_on_delay);
 
 	if (active_modem == cw_modem &&
 	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
@@ -158,6 +156,9 @@ void PTT::set(bool ptt)
 		break;
 #endif
 	}
+	if (ptt && progdefaults.PTT_on_delay)
+		MilliSleep(progdefaults.PTT_on_delay);
+
 	if (ptt) start_tx_timer();
 	else     stop_tx_timer();
 }

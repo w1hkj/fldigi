@@ -5304,24 +5304,24 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group grpPTTdelays {
-              label {PTT delays valid for all CAT/PTT types}
+              label {PTT delays valid for all CAT/PTT types} open
               xywh {55 284 490 91} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter cntPTT_on_delay {
                 label {Start of transmit PTT delay}
                 callback {progdefaults.PTT_on_delay = o->value();
 progdefaults.changed = true;}
-                tooltip {Delay NN msec before starting audio} xywh {74 311 100 21} align 8 minimum 0 maximum 500 step 1
+                tooltip {Delay NN msec before starting audio} xywh {74 311 100 21} align 8 minimum 0 maximum 5000 step 10
                 code0 {o->value(progdefaults.PTT_on_delay);}
-                code1 {o->lstep(10);}
+                code1 {o->lstep(100);}
               }
               Fl_Counter cntPTT_off_delay {
                 label {PTT end of transmit delay}
                 callback {progdefaults.PTT_off_delay = o->value();
 progdefaults.changed = true;}
-                tooltip {Delay NN msec before releasing PTT} xywh {74 341 100 21} align 8 minimum 0 maximum 500 step 1
+                tooltip {Delay NN msec before releasing PTT} xywh {74 341 100 21} align 8 minimum 0 maximum 5000 step 10
                 code0 {o->value(progdefaults.PTT_off_delay);}
-                code1 {o->lstep(10);}
+                code1 {o->lstep(100);}
               }
             }
           }
