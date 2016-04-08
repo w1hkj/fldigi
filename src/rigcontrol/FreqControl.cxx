@@ -405,7 +405,7 @@ void cFreqControl::cancel_kb_entry(void)
 
 int cFreqControl::handle(int event)
 {
-	static Fl_Widget* fw = NULL;
+//	static Fl_Widget* fw = NULL;
 	int d;
 
 	switch (event) {
@@ -415,18 +415,18 @@ int cFreqControl::handle(int event)
 	case FL_UNFOCUS:
 		return 1;
 	case FL_ENTER:
-		fw = Fl::focus();
-		if (fw != NULL) // if NULL then fldigi did not have focus
-			take_focus();
+//		fw = Fl::focus();
+//		if (fw != NULL) // if NULL then fldigi did not have focus
+//			take_focus();
 		break;
 	case FL_LEAVE:
-		if (fw)
-			fw->take_focus();
-		if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, this))
-			cancel_kb_entry();
-		clear_focus();
-		updatevalue();
-		return 1;
+//		if (fw)
+//			fw->take_focus();
+//		if (Fl::has_timeout((Fl_Timeout_Handler)blink_point, this))
+//			cancel_kb_entry();
+//		clear_focus();
+//		updatevalue();
+//		return 1;
 		break;
 
 	case FL_KEYBOARD:
