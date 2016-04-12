@@ -62,13 +62,14 @@ Save tags and all enclosed text to date-time stamped file, ie:\n\
     ~/.nbems/WRAP/recv/extract-20090127-092515.wrap");
 #endif
 
-#define   bufsize  16
+#define   bufsize  32
 char  rx_extract_buff[bufsize + 1];
 string rx_buff;
 string rx_extract_msg;
 
 bool extract_wrap = false;
 bool extract_flamp = false;
+bool extract_arq = false;
 
 bool bInit = false;
 
@@ -81,6 +82,7 @@ void rx_extract_reset()
 	rx_extract_buff[bufsize] = 0;
 	extract_wrap = false;
 	extract_flamp = false;
+	extract_arq = false;
 	put_status("");
 }
 
@@ -286,32 +288,46 @@ void rx_extract_add(int c)
 	memmove(rx_extract_buff, &rx_extract_buff[1], bufsize - 1);
 	rx_extract_buff[bufsize - 1] = ch;
 
-	if ( strstr(rx_extract_buff, wrap_beg) && !extract_flamp) {
+	if (!extract_arq && strstr(rx_extract_buff, "ARQ:FILE::FLMSG_XFR")) {
+		extract_arq = true;
+		REQ(rx_remove_timer);
+		REQ(rx_add_timer);
+		memset(rx_extract_buff, ' ', bufsize);
+		rx_extract_msg = "Extracting ARQ msg";
+		put_status(rx_extract_msg.c_str());
+		return;
+	} else if (extract_arq) {
+		REQ(rx_remove_timer);
+		REQ(rx_add_timer);
+		if (strstr(rx_extract_buff, "ARQ::ETX"))
+			rx_extract_reset();
+		return;
+	} else if (!extract_flamp && strstr(rx_extract_buff, flamp_beg)) {
+		extract_flamp = true;
+		memset(rx_extract_buff, ' ', bufsize);
+		rx_extract_msg = "Extracting FLAMP";
+		put_status(rx_extract_msg.c_str());
+		return;
+	} else if (extract_flamp) {
+		REQ(rx_remove_timer);
+		REQ(rx_add_timer);
+		if (strstr(rx_extract_buff, flamp_end) != NULL)
+			rx_extract_reset();
+		return;
+	} else if (!extract_wrap && strstr(rx_extract_buff, wrap_beg)) {
 		rx_buff.assign(wrap_beg);
 		rx_extract_msg = "Extracting WRAP/FLMSG";
-
 		put_status(rx_extract_msg.c_str());
-
-		memset(rx_extract_buff, ' ', bufsize);
 		extract_wrap = true;
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
+		return;
 	} else if (extract_wrap) {
 		rx_buff += ch;
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
 		if (strstr(rx_extract_buff, wrap_end) != NULL) {
 			invoke_flmsg();
-			rx_extract_reset();
-		}
-	} else if (strstr(rx_extract_buff, flamp_beg) && ! extract_wrap) {
-		extract_flamp = true;
-		rx_extract_msg = "Extracting FLAMP";
-		put_status(rx_extract_msg.c_str());
-	} else if (extract_flamp == true) {
-		REQ(rx_remove_timer);
-		REQ(rx_add_timer);
-		if (strstr(rx_extract_buff, flamp_end) != NULL) {
 			rx_extract_reset();
 		}
 	}

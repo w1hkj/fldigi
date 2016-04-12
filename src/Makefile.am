@@ -35,16 +35,25 @@ include/hamlib.h \
 rigcontrol/hamlib.cxx \
 include/rigclass.h \
 rigcontrol/rigclass.cxx
+
 XMLRPC_SRC = \
 include/xmlrpc.h \
 misc/xmlrpc.cxx
+
 FLDIGI_WIN32_RES_SRC = fldigirc.rc
+
 FLARQ_WIN32_RES_SRC = flarq-src/flarqrc.rc
+
 COMMON_WIN32_RES_SRC = common.rc
+
 BENCHMARK_SRC = include/benchmark.h misc/benchmark.cxx
+
 REGEX_SRC = compat/regex.h compat/regex.c
+
 STACK_SRC = include/stack.h misc/stack.cxx
+
 MINGW32_SRC = include/compat.h compat/getsysinfo.c compat/mingw.c compat/mingw.h
+
 NLS_SRC = misc/nls.cxx include/nls.h
 
 # We distribute these but do not always compile them
@@ -77,7 +86,7 @@ XMLRPCPP_SRC = \
 EXTRA_fldigi_SOURCES = $(HAMLIB_SRC) $(XMLRPC_SRC) $(FLDIGI_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) \
 	$(BENCHMARK_SRC) $(REGEX_SRC) $(STACK_SRC) $(MINGW32_SRC) $(NLS_SRC) $(XMLRPCPP_SRC)
 
-EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC)
+EXTRA_flarq_SOURCES = $(FLARQ_WIN32_RES_SRC) $(COMMON_WIN32_RES_SRC) $(XMLRPCPP_SRC)
 
 fldigi_SOURCES =
 flarq_SOURCES =
@@ -86,11 +95,16 @@ fldigi_SOURCES += $(XMLRPC_SRC)
 
 if !ENABLE_FLXMLRPC
 fldigi_SOURCES += $(XMLRPCPP_SRC)
+flarq_SOURCES  += $(XMLRPCPP_SRC)
 else
 fldigi_CPPFLAGS += @FLXMLRPC_CFLAGS@
 fldigi_CXXFLAGS += @FLXMLRPC_CFLAGS@
 fldigi_CFLAGS   += @FLXMLRPC_CFLAGS@
 fldigi_LDFLAGS  += @FLXMLRPC_LIBS@
+flarq_CPPFLAGS += @FLXMLRPC_CFLAGS@
+flarq_CXXFLAGS += @FLXMLRPC_CFLAGS@
+flarq_CFLAGS   += @FLXMLRPC_CFLAGS@
+flarq_LDFLAGS  += @FLXMLRPC_LIBS@
 endif
 
 if ENABLE_HAMLIB
@@ -734,11 +748,13 @@ flarq_SOURCES += \
 	flarq-src/b64.cxx \
 	flarq-src/flarq.cxx \
 	flarq-src/flarqenv.cxx \
+	flarq-src/xml_server.cxx \
 	flarq-src/include/arq.h \
 	flarq-src/include/arqdialogs.h \
 	flarq-src/include/b64.h \
 	flarq-src/include/flarq.h \
 	flarq-src/include/flarqenv.h \
+	flarq-src/include/xml_server.h \
 	include/Fl_Text_Display_mod.H \
 	include/Fl_Text_Editor_mod.H \
 	include/FTextView.h \

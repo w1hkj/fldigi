@@ -27,13 +27,13 @@
 //	generic Frame format:
 //	   <SOH>dcl[info])12EF<EOT|SOH>
 //		|	||| |     |    |
-//		|	||| |     |    +--ASCII <SOH> or <EOT> (0x04) character 
+//		|	||| |     |    +--ASCII <SOH> or <EOT> (0x04) character
 //		|	||| |     +-------checksum (4xAlphaNum)
 //		|	||| +-------------Payload (1 ... 2^N chars, N 4, 5, 6, 7 8)
-//		|	||+---------------Block type 
+//		|	||+---------------Block type
 //		|	|+----------------Stream id
 //		|	+-----------------Protocol version number
-//		+---------------------ASCII <SOH> (0x01) character			  
+//		+---------------------ASCII <SOH> (0x01) character
 // BLOCKSIZE = 2^n
 //
 
@@ -88,19 +88,33 @@ using namespace std;
 #define ARQLOOPTIME		100		// # msec for loop timing
 //=====================================================================
 //link states
-#define DOWN		  0
-#define TIMEDOUT	  1
-#define ABORT         3
-#define CONNECTING    4
-#define CONNECTED	  5
-#define WAITING		  6
-#define WAITFORACK    7
-#define DISCONNECT    8
-#define DISCONNECTING 9
-#define ABORTING      10
+enum LINK_STATES {
+	DOWN = 0,
+	TIMEDOUT,
+	ABORT,
+	ARQ_CONNECTING,
+	ARQ_CONNECTED,
+	WAITING,
+	WAITFORACK,
+	DISCONNECT,
+	DISCONNECTING,
+	ABORTING,
+	STOPPED
+};
+
+//#define DOWN			0
+//#define TIMEDOUT		1
+//#define ABORT			3
+//#define ARQ_CONNECTING	4
+//#define ARQ_CONNECTED	5
+//#define WAITING			6
+//#define WAITFORACK		7
+//#define DISCONNECT		8
+//#define DISCONNECTING	9
+//#define ABORTING		10
 
 #define SENDING       0x80;
-	
+
 //=====================================================================
 
 extern char *ARQASCII[];
@@ -129,8 +143,8 @@ public:
                 crcval = (crcval >> 1);
         }
 	}
-	unsigned int crc16(char c) { 
-		update(c); 
+	unsigned int crc16(char c) {
+		update(c);
 		return crcval;
 	}
 	unsigned int crc16(string s) {
@@ -166,7 +180,7 @@ public:
 class arq {
 
 private:
-	bool		arqstop;
+	bool	arqstop;
 
 	string	MyCall;
 	string	UrCall;
@@ -175,18 +189,18 @@ private:
 	string	Frame;
 	string	Payload;
 	string	rcvPayload;
-	
+
 	string	logfile;
 
 	char	MyStreamID;
 	char	UrStreamID;
-	
+
 	char	MyBlockLengthChar;
 	char	UrBlockLengthChar;
 	char	BlockNumberChar;
 	char	fID;
 	int		blknbr;
-	
+
 // queues //
 	string	TxTextQueue;			// Text out to mail engine
 	string	TxPlainTextQueue;		// plain text transmit queu
@@ -219,14 +233,14 @@ private:
 	int	tx2txdelay;
 	int	TxDelay;
 	int    loopcount;
-	
+
 	int	baseRetryTime;
 	int	baseTimeout;
 	int	baseRetries;
-	
+
 	bool	immediate;
 	bool    primary;
-	
+
 	Ccrc16	framecrc;
 
 // My status
@@ -242,7 +256,7 @@ private:
 	vector<int>	MyMissing;				// missing Rx blocks
 	string MissingRxBlocks;
 	vector<cTxtBlk> RxPending;			// RxPending Rx blocks (not consecutive)
-	
+
 	list<cTxtBlk> TxBlocks;				// fifo of transmit buffers
 	list<cTxtBlk> TxMissing;			// fifo of sent; RxPending Status report
 	list<cTxtBlk> TxPending;			// fifo of transmitted buffers pending print
@@ -255,20 +269,19 @@ private:
 
 	int		LinkState;					// status of ARQ link
 	int		Sending;
-	
+
 	bool	bABORT;
-	
+
 // Link quality for sending *** used for testing only !! ***
 //	double	sendquality;
-	
-	
+
 	void	reset();
 	void	resetTx();
 	void	resetRx();
 	int     rtry();
-	
+
 	void	setBufferlength();
-	
+
 	void	checkblocks();
 	string	upcase(string s);
 	void	newblocknumber();
@@ -291,12 +304,12 @@ private:
 	void	beaconFrame(string txt);
 	void	textFrame(cTxtBlk block);
 	void    talkFrame(string txt);
-	
+
 	void	addToTxQue(string s);
-	
+
 	void	sendblocks();
 	void	transmitdata();
-	
+
 	string	frame() {return Frame;}
 
 	bool	isUrcall();
@@ -315,8 +328,8 @@ private:
 	void	parseTALK();
 
 	int		parseFrame(string txt);
-	
-// external functions called by arq class	
+
+// external functions called by arq class
 	void	(*sendfnc)(const string& s);
 	bool	(*getc1)(char &);
 	void	(*rcvfnc)();
@@ -330,7 +343,7 @@ private:
 	void	(*rxUrCall)(string s);
 	void	(*qualityfnc)(string s);
 	void	(*printSTATUS)(string s, double disptime);
-	
+
 public:
 	arq();
 	~arq() {};
@@ -338,33 +351,35 @@ public:
 	friend	void	arqloop(void *me);
 	void	start_arq();
 
+	void	restart_arq();
+
 	string	checksum(string &s);
 
 	void	myCall(string s) { MyCall = upcase(s);}
 	string	myCall() { return MyCall;}
-	
+
 	void	urCall(string s) { UrCall = s;}
 	string	urCall() { return UrCall;}
-	
+
 	void	newsession();
-	
+
 	void	setSendFunc( void (*f)(const string& s)) { sendfnc = f;}
 	void	setGetCFunc( bool (*f)(char &)) { getc1 = f;}
 	void	setRcvFunc( void (*f)()) { rcvfnc = f;}
-	
+
 	void	setPrintRX( void (*f)(string s)) { printRX = f;}
 	void	setPrintTX( void (*f)(string s)) { printTX = f;}
 	void	setPrintTALK (void (*f)(string s)) {printTALK = f;}
 	void	setPrintRX_DEBUG (void (*f)(string s)){printRX_DEBUG = f;}
 	void	setPrintTX_DEBUG (void (*f)(string s)) {printTX_DEBUG = f;}
 	void	setPrintSTATUS (void (*f)(string s, double disptime)) { printSTATUS = f;}
-	
+
 	void	setMaxHeaders( int mh ) { maxheaders = mh; }
 	void	setExponent( int exp ) { exponent = exp; setBufferlength(); }
 	int		getExponent() { return (int) exponent;}
 	void	setWaitTime( int rtime ) { RetryTime = rtime; baseRetryTime = rtime; }
 	int		getWaitTime() { return (int) RetryTime; }
-	void	setRetries ( int rtries ) { 
+	void	setRetries ( int rtries ) {
 				retries = Retries = baseRetries = rtries; }
 	int		getRetries() { return (int) Retries; }
 	void	setTimeout ( int tout ) { Timeout = tout; baseTimeout = tout; }
@@ -378,41 +393,41 @@ public:
 	void	setQualityValue( void (*f)(string s)) { qualityfnc = f;}
 	void	setAbortedTransfer( void (*f)()) { abortfnc = f;};
 	void	setDisconnected( void (*f)()) { disconnectfnc = f;};
-	
+
 	void	rcvChar( char c );
 
 	void	connect(string callsign);//, int blocksize = 6, int retries = 4);
 
 	void	sendblocks( string txt );
-	
+
 	void	sendBeacon (string txt);
 	void	sendPlainText( string txt );
 
 	string	getText() { return RxTextQueue;}
 	void	sendText(string txt);
 
-	bool	connected() { return (LinkState == CONNECTED); }
+	bool	connected() { return (LinkState == ARQ_CONNECTED); }
 	void	disconnect();
 	void	abort();
-	
+
 	int		state() { return (LinkState + Sending);}
-	
+
 	int     TXblocks() { return totalTx;}
 	int     TXbad() { return nbrbadTx;}
 	int     RXblocks() { return totalRx;}
 	int     RXbad() { return nbrbadRx;}
-	
-	double	quality() { 
+
+	double	quality() {
 		if (totalTx == 0) return 1.0;
 		return ( 1.0 * (totalTx - nbrbadTx) / totalTx );
 	}
-	
+
 	float  percentSent() {
 		if (Blocks2Send == 0) return 0.0;
 		if ((TxBlocks.empty() && TxMissing.empty())) return 1.0;
 		return (1.0 * (Blocks2Send - TxBlocks.size() - TxMissing.size()) / Blocks2Send);
 	}
-	
+
 	bool	transferComplete() {
 		if (TxMissing.empty() == false) return false;
 		if (TxBlocks.empty() == false) return false;

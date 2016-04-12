@@ -47,10 +47,19 @@ extern long		iwaittime;
 extern long		itimeout;
 extern int		bcnInterval;
 
+// used by xmlrpc interface
+extern int			arqstate;
+extern bool			sendingfile;
+extern bool			rxTextReady;
+extern bool			rxARQfile;
+extern std::string	txtarqload;
+
 extern void cb_SaveComposeMail();
 extern void cb_CancelComposeMail();
 extern void cb_UseTemplate();
 extern void cb_OpenComposeMail();
 extern void ComposeMail();
+
+extern void send_xml_text(std::string, std::string);
 
 #endif

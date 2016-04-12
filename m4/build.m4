@@ -35,11 +35,17 @@ $EXTRA_LIBS $FLXMLRPC_LIBS"
 # CPPFLAGS
   FLARQ_BUILD_CPPFLAGS="-I\$(srcdir) -I\$(srcdir)/include -I\$(srcdir)/fileselector \
 -I\$(srcdir)/flarq-src -I\$(srcdir)/flarq-src/include"
+  if test "x$ac_cv_flxmlrpc" != "xyes"; then
+    FLARQ_BUILD_CPPFLAGS="$FLARQ_BUILD_CPPFLAGS -I\$(srcdir)/xmlrpcpp"
+  fi
 # CXXFLAGS
   FLARQ_BUILD_CXXFLAGS="$FLTK_CFLAGS $X_CFLAGS $MAC_UNIVERSAL_CFLAGS $INTL_CFLAGS $PTW32_CFLAGS \
 $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
   if test "x$target_mingw32" = "xyes"; then
       FLARQ_BUILD_CXXFLAGS="-mthreads $FLARQ_BUILD_CXXFLAGS"
+  fi
+  if test "x$ac_cv_flxmlrpc" != "xyes"; then
+    FLARQ_BUILD_CXXFLAGS="$FLARQ_BUILD_CXXFLAGS -I\$(srcdir)/xmlrpcpp"
   fi
 # LDFLAGS
   FLARQ_BUILD_LDFLAGS="$MAC_UNIVERSAL_LDFLAGS"
@@ -47,7 +53,7 @@ $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
       FLARQ_BUILD_LDFLAGS="-mthreads $FLARQ_BUILD_LDFLAGS"
   fi
 # LDADD
-  FLARQ_BUILD_LDADD="$FLTK_LIBS $X_LIBS $INTL_LIBS $PTW32_LIBS $BFD_LIBS $EXTRA_LIBS"
+  FLARQ_BUILD_LDADD="$FLTK_LIBS $X_LIBS $INTL_LIBS $PTW32_LIBS $BFD_LIBS $EXTRA_LIBS $FLXMLRPC_LIBS"
 
   if test "x$ac_cv_debug" = "xyes"; then
       FLDIGI_BUILD_CXXFLAGS="$FLDIGI_BUILD_CXXFLAGS -UNDEBUG"

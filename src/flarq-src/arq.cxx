@@ -38,9 +38,9 @@ string RXIDENT		= "RX: Link Still Active";
 string RXCONREQ		= "RX: Connect Request";
 string RXCONACK		= "RX: Connect OK";
 string RXDISCONN	= "RX: Disconnect Request";
-string RXDISCONACK	= "RX: Disconnect OK";			
+string RXDISCONACK	= "RX: Disconnect OK";
 string RXSTATUS		= "RX: Status Report";
-string RXPOLL		= "RX: Send Blocks Report";			
+string RXPOLL		= "RX: Send Blocks Report";
 string TXSTATUS		= "TX: Blocks Received OK";
 string TXDISCONN	= "TX: Disconnect Request";
 string TXDISACK		= "TX: Disconnect OK";
@@ -69,12 +69,12 @@ arq::arq()
 	printRX_DEBUG = NULL;
 	printTX_DEBUG = NULL;
 	rxUrCall = NULL;
-	
+
 	Header.erase();
 
 	MyStreamID = '0';
 	UrStreamID = '0';
-	
+
 	UrCall.erase();
 	MyCall.erase();
 
@@ -89,7 +89,7 @@ arq::arq()
 	TXflag = false;
 
 	SessionNumber = 0;
-	
+
 	exponent = EXPONENT;
 	maxheaders = MAXHEADERS;
 	RetryTime = RETRYTIME;
@@ -100,7 +100,7 @@ arq::arq()
 	primary = false;
 
 	setBufferlength();
-	
+
 
 // status variables //
 //	totalRx = 0;
@@ -122,7 +122,7 @@ arq::arq()
 	UrLastHeader = MAXCOUNT - 1;	// Other station's Header last sent
 	UrEndHeader = MAXCOUNT - 1;		// Other station's last received Header
 	blkcount = -1;
-	
+
 	TXflag = false;					// TX on
 	LinkState = DOWN;				// ARQ link is initially down
 	Sending = 0;
@@ -131,7 +131,7 @@ arq::arq()
 
 	MyMissing.clear();
 	MissingRxBlocks = "";
-	
+
 	TxBlocks.clear();
 	TxMissing.clear();
 	TxPending.clear();
@@ -139,17 +139,17 @@ arq::arq()
 	RxPending.clear();
 
  	arqstop = false;
- 	
+
  	retries = baseRetries = Retries;
  	baseRetryTime = RetryTime;
  	baseTimeout = Timeout;
- 	
+
  	retrytime = RetryTime / ARQLOOPTIME;
  	timeout = Timeout / ARQLOOPTIME;
  	loopcount = 0;
-	
+
  	tx2txdelay = 0;//TxDelay / ARQLOOPTIME;
-	
+
 //	srand(time(NULL));
 }
 
@@ -196,14 +196,14 @@ void arq::reset()
 // new session number
 // unknown stream id = 0
 // known id's from 1 to 63
-void arq::newsession() 
+void arq::newsession()
 {
 	if (++SessionNumber == 64) SessionNumber = 1;
 	MyStreamID = SessionNumber + '0';
 }
 
 // get new blocknumber
-void arq::newblocknumber() 
+void arq::newblocknumber()
 {
 	Lastqueued++;
 	Lastqueued %= MAXCOUNT;
@@ -252,7 +252,7 @@ void arq::addToTxQue(string s)
 // c Header = Client:port Server:port <streamnr. (0)> <max. Headerlen>
 // e.g.: '00cW1HKJ:1025 KH6TY:24 4'
 //
-void arq::connectFrame() 
+void arq::connectFrame()
 {
 	char szGlobals[24];
 	reset();
@@ -280,9 +280,9 @@ void arq::connectFrame()
 
 	addToTxQue(Frame);
 
-	LinkState = CONNECTING;
+	LinkState = ARQ_CONNECTING;
 	printSTATUS(TXCONNECT, 5.0);
-} 
+}
 
 
 // Connect acknowledge (server:port, client:port)
@@ -294,7 +294,7 @@ void arq::ackFrame ()
 	reset();
 	IdHeader();
 	Header += CONACK;
-	
+
 	Payload.erase();
 	Payload.append(MyCall);
 	Payload.append(":24");
@@ -304,7 +304,7 @@ void arq::ackFrame ()
 	Payload += MyStreamID;
 	Payload += ' ';
 	Payload += MyBlockLengthChar;
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
@@ -317,11 +317,11 @@ void arq::ackFrame ()
 // c Header = Caller:port static:port <streamnr. (0)> <max. Headerlen>
 // e.g.: '00cW1HKJ:87 KH6TY:87 4'
 //
-void arq::ttyconnectFrame() 
+void arq::ttyconnectFrame()
 {
 	UnkHeader();
 	Header += CONREQ;
-	
+
 	Payload.erase();
 	Payload.append(MyCall);
 	Payload.append(":87");
@@ -332,24 +332,24 @@ void arq::ttyconnectFrame()
 	Payload += MyStreamID;
 	Payload += ' ';
 	Payload += MyBlockLengthChar;
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
 
 	addToTxQue(Frame);
-} 
+}
 
 // Connect acknowledge (server:port, client:port)
 // k Header = Server:port Client:port <streamnr.> <max. Headerlen>
 // e.g: '00kKH6TY:87 W1HKJ 4'
 // Service id # 87 is keyboard-to-keyboard
 //
-void arq::ttyackFrame() 
+void arq::ttyackFrame()
 {
 	IdHeader();
 	Header += CONACK;
-	
+
 	Payload.erase();
 	Payload.append(MyCall);
 	Payload.append(":87");
@@ -357,7 +357,7 @@ void arq::ttyackFrame()
 	Payload.append(UrCall);
 	Payload += ' ';
 	Payload += MyBlockLengthChar;
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
@@ -371,12 +371,12 @@ void arq::identFrame()
 {
 	IdHeader();
 	Header += IDENT;
-	
+
 	Payload.erase();
 	Payload.append(UrCall);
 	Payload.append(" de ");
 	Payload.append(MyCall);
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
@@ -386,7 +386,7 @@ void arq::identFrame()
 	char szIDENT[80];
 	snprintf(szIDENT,sizeof(szIDENT), TXIDENT.c_str(), retries);
 	printSTATUS(szIDENT, 5.0);
-	
+
 }
 
 // e.g. Ping frame
@@ -396,27 +396,27 @@ void arq::pingFrame()
 {
 	IdHeader();
 	Header += _UNPROTO;
-	
+
 	Payload.erase();
 	Payload.append(MyCall);
 	Payload.append(":7");
 	Payload += ' ';
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
-	
+
 	addToTxQue(Frame);
 }
 
 // talk frame
 // similar to UNPROTO frame
-// but only sent if CONNECTED
+// but only sent if ARQ_CONNECTED
 void arq::talkFrame(string txt)
 {
 	IdHeader();
 	Header += _TALK;
-	
+
 	Payload.erase();
 	Payload.append(MyCall);
 	Payload.append(":73");
@@ -442,11 +442,11 @@ void arq::ackAbortFrame()
 	Payload += (GoodHeader + 0x20);
 	Payload += (EndHeader + 0x20);
 	Payload.append(MissingRxBlocks);
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
-	
+
 	addToTxQue(Frame);
 	printSTATUS(TXSTATUS, 5.0);
 }
@@ -455,7 +455,7 @@ void arq::ackAbortFrame()
 //p frame = <last Header tx><last Header rx ok><last Header rx> <missing Headers>
 //e.g.: '00sXHCAB'
 //
-void arq::statFrame() 
+void arq::statFrame()
 {
 	IdHeader();
 	Header += STATUS;
@@ -465,11 +465,11 @@ void arq::statFrame()
 	Payload += (GoodHeader + 0x20);
 	Payload += (EndHeader + 0x20);
 	Payload.append(MissingRxBlocks);
-	
+
 	Frame = Header + Payload;
 	Frame = Frame + checksum(Frame);
 	Frame += EOT;
-	
+
 	addToTxQue(Frame);
 	printSTATUS(TXSTATUS, 5.0);
 }
@@ -498,7 +498,7 @@ void arq::disackFrame()
 {
 	IdHeader();
 	Header += _DISACK;
-	
+
 	Payload.erase();
 	Payload.append(MyCall);
 	Payload.append(":91");
@@ -531,7 +531,7 @@ void arq::abortFrame()
 // u Header = From:port  data
 // e.g: '00uKH6TY:72 Beacon text '
 //
-void arq::beaconFrame(string txt) 
+void arq::beaconFrame(string txt)
 {
 	UnkHeader();
 	Header += _UNPROTO;
@@ -555,7 +555,7 @@ void arq::beaconFrame(string txt)
 // poll
 //p frame = <last Header tx><last Header rx ok><last Header rx> <missing Headers>
 //e.g.: '00pXHCAB'
-void arq::pollFrame() 
+void arq::pollFrame()
 {
 
 	IdHeader();
@@ -603,8 +603,8 @@ void arq::parseCONREQ()
 	size_t p1 = 0, p2 = rcvPayload.find(':');
 	if (p2 == string::npos)
 		return;
-//	if (LinkState == CONNECTED || LinkState == WAITFORACK) return; // disallow multiple connects
-	
+//	if (LinkState == ARQ_CONNECTED || LinkState == WAITFORACK) return; // disallow multiple connects
+
 // requesting stations callsign
 	UrCall = upcase(rcvPayload.substr(p1, p2 - p1));
 	p1 = rcvPayload.find(' ', p2+1);
@@ -631,7 +631,7 @@ void arq::parseCONREQ()
 	UrStreamID = rcvPayload[p1];
 	p1++; // *p1 ==> requested block size
 	UrBlockLengthChar = rcvPayload[p1];
-	
+
 	p1 += 3; // *p1 ==>" TnnnRnnnWnnn"
 	if (p1 < rcvPayload.length()) {
 		char num[7];
@@ -655,7 +655,7 @@ void arq::parseCONREQ()
 					Timeout += Retries * RetryTime;
 				}
 			}
-/*			
+/*
 			char line[80];
 			string NewValues = "Temporary control parameters set to\n";
 			snprintf(line, 79, "  Retries   = %d\n", Retries);
@@ -668,15 +668,15 @@ void arq::parseCONREQ()
 */
 		}
 	}
-		
+
 	reset();
 
 	LinkState = WAITFORACK;
 	newsession();
 
-	if (rxUrCall) rxUrCall(UrCall);					
+	if (rxUrCall) rxUrCall(UrCall);
 
-	TxTextQueue.clear();//erase();
+	TxTextQueue.clear();
 	ackFrame();
 	immediate = true;
 	printSTATUS(RXCONREQ, 5.0);
@@ -685,10 +685,10 @@ void arq::parseCONREQ()
 
 void arq::parseCONACK()
 {
-	if (LinkState < CONNECTING ) { //!= CONNECTING) {
+	if (LinkState < ARQ_CONNECTING ) { //!= ARQ_CONNECTING) {
 		return; // Connect Acknowledge only valid during a connect
 	}
-	
+
 	size_t p1 = 0, p2 = rcvPayload.find(':');
 //	LinkState = DOWN;
 	if (p2 == string::npos)
@@ -708,7 +708,7 @@ void arq::parseCONACK()
 		UrCall.erase();
 		return;
 	}
-	
+
 	p1++; // *p1 ==> StreamID for requesting station
 	UrStreamID = rcvPayload[p1];
 	p1++; // *p1 ==> requested block size
@@ -716,9 +716,9 @@ void arq::parseCONACK()
 
 	RxTextQueue.clear();//erase();
 
-	LinkState = CONNECTED;
+	LinkState = ARQ_CONNECTED;
 	timeout = Timeout / ARQLOOPTIME;
-	
+
 	statFrame();
 	immediate = true;
 	primary = true;
@@ -753,14 +753,14 @@ void arq::parseABORT()
 	if (abortfnc) abortfnc();
 	ackAbortFrame();
 	immediate = true;
-	LinkState = CONNECTED;
+	LinkState = ARQ_CONNECTED;
 }
 
 void arq::parseACKABORT()
 {
 	reset();
 	if (abortfnc) abortfnc();
-	LinkState = CONNECTED;
+	LinkState = ARQ_CONNECTED;
 }
 
 void arq::parseUNPROTO()
@@ -787,7 +787,7 @@ void arq::parseSTATUS()
 {
 // create the missing list
 // all reported missing blocks
-	if (LinkState >= CONNECTED) {
+	if (LinkState >= ARQ_CONNECTED) {
 		UrLastHeader = rcvPayload[0] - 0x20;	// Other station's Header last sent
 		UrGoodHeader = rcvPayload[1] - 0x20;	// Other station's Good Header
 		UrEndHeader = rcvPayload[2] - 0x20;		// Other station's last received Header
@@ -809,10 +809,10 @@ void arq::parseSTATUS()
 			}
 			missing.push_back(LastHeader);
 		}
-	
+
 		if (missing.empty())
-			TxMissing.clear();		
-		
+			TxMissing.clear();
+
 		if (TxMissing.empty() == false) {
 			list<cTxtBlk> keep;
 			list<cTxtBlk>::iterator p = TxMissing.begin();
@@ -846,19 +846,19 @@ void arq::parseSTATUS()
 
 	switch (LinkState) {
 		case WAITFORACK :
-			LinkState = CONNECTED;
+			LinkState = ARQ_CONNECTED;
 			break;
 		case DISCONNECTING :
 			if (rxUrCall) rxUrCall("");
 			LinkState = DOWN;
 			break;
 		case WAITING :
-			LinkState = CONNECTED;
+			LinkState = ARQ_CONNECTED;
 			break;
 //		case ABORTING :
 //			reset();
 //			if (abortfnc) abortfnc();
-//			LinkState = CONNECTED;
+//			LinkState = ARQ_CONNECTED;
 //			break;
 //		case ABORT :
 //			break;
@@ -871,12 +871,12 @@ void arq::parseSTATUS()
 void arq::parsePOLL()
 {
 	if (LinkState == DISCONNECTING || LinkState == DOWN ||
-	    LinkState == TIMEDOUT || LinkState == ABORT ) 
+	    LinkState == TIMEDOUT || LinkState == ABORT )
 	    return;
 
 	statFrame();
 	immediate = true;
-	LinkState = CONNECTED;
+	LinkState = ARQ_CONNECTED;
 	printSTATUS(RXPOLL, 5.0);
 }
 
@@ -884,18 +884,18 @@ void arq::parseDATA()
 {
 	vector<cTxtBlk>::iterator p1, p2;
 	int n1, n2;
-	
-	if (LinkState < CONNECTED) return; // do not respond if DOWN or TIMEDOUT
-	
-	for (p1 = RxPending.begin(); p1 < RxPending.end(); p1++) 
+
+	if (LinkState < ARQ_CONNECTED) return; // do not respond if DOWN or TIMEDOUT
+
+	for (p1 = RxPending.begin(); p1 < RxPending.end(); p1++)
 		if (blknbr == p1->nbr()) {
 			return;
 		}
-		
+
 	char szStatus[80];
 	snprintf(szStatus, sizeof(szStatus),"RX: data block %d", blknbr);
 	printSTATUS(szStatus, 5.0);
-			
+
 	cTxtBlk tempblk(blknbr, rcvPayload);
 	RxPending.push_back (tempblk);
 
@@ -920,7 +920,7 @@ void arq::parseDATA()
 	}
 
 // add RxPending blocks that are consecutive to GoodHeader
-	p1 = RxPending.begin();	
+	p1 = RxPending.begin();
 	while (!RxPending.empty()) {
 		if ((p1->nbr() != (GoodHeader +1) % MAXCOUNT))
 			break;
@@ -988,14 +988,14 @@ int arq::parseFrame(string txt)
 // treat unproto TALK as a special case
 // no effort made to confirm the data by the CRC value
 	if (fID == _TALK) {
-		if (LinkState >= CONNECTED) {
+		if (LinkState >= ARQ_CONNECTED) {
 		 	timeout = Timeout / ARQLOOPTIME;
 			parseTALK();
 			retries = Retries;
 		}
 		return -1;
 	}
-	
+
 	string sRcvdCRC = testcrc.scrc16( txt.substr(0, len - 4));
 
 	if (sRcvdCRC != txt.substr(len - 4) ) {
@@ -1007,7 +1007,7 @@ int arq::parseFrame(string txt)
  	retries = Retries;
 
 	switch (fID) {
-		case IDENT : 
+		case IDENT :
 			if (!isUrcall())
 				break;
 			blknbr = fID - 0x20;
@@ -1016,8 +1016,8 @@ int arq::parseFrame(string txt)
 				printRX_DEBUG("IDENT:");
 			}
 			break;
-		case CONREQ : 
-			if (LinkState > TIMEDOUT) 
+		case CONREQ :
+			if (LinkState > TIMEDOUT)
 				break; // disallow multiple connects
 			blknbr = fID - 0x20;
 			parseCONREQ();
@@ -1104,11 +1104,11 @@ int arq::parseFrame(string txt)
 			}
 	}
 	if (printRX_DEBUG) {
-		printRX_DEBUG(txt); printRX_DEBUG("\n");	
+		printRX_DEBUG(txt); printRX_DEBUG("\n");
 	}
 
 
-	if (LinkState == CONNECTED)
+	if (LinkState == ARQ_CONNECTED)
 	 	timeout = Timeout / ARQLOOPTIME;
 
 	return fID;
@@ -1124,10 +1124,10 @@ void arq::rcvChar( char c )
 		tx2txdelay = TxDelay / ARQLOOPTIME;
 		return;
 	}
-	
+
 	if (lastRxChar == SOH && c == SOH) // consecutive <SOH> characters
 		return;
-		
+
 	if (lastRxChar == EOT && c == EOT) // consecutive <EOT> characters
 		return;
 
@@ -1142,7 +1142,7 @@ void arq::rcvChar( char c )
 		} else
 			RxFrameQueue += c;
 	}
-	
+
 	lastRxChar = c;
 }
 
@@ -1152,8 +1152,8 @@ void arq::sendText (string txt)
 {
 	size_t offset = 0;
 	cTxtBlk tempblk;
-	if (LinkState < CONNECTED) return;
-	
+	if (LinkState < ARQ_CONNECTED) return;
+
 	Blocks2Send = 0;
 	while (offset < txt.length()) {
 		newblocknumber();
@@ -1171,7 +1171,7 @@ void arq::sendblocks()
 	int missedblks = 0, newblks = 0;
 	int framecount = 0;
 	cTxtBlk tempblk;
-	
+
 	if (TxMissing.empty() == false) {
 		list<cTxtBlk>::iterator p = TxMissing.begin();
 		while (p != TxMissing.end()) {
@@ -1205,7 +1205,7 @@ void arq::sendblocks()
 	if (LinkState != ABORT && LinkState != ABORTING)
 		LinkState = WAITING;
 }
-	
+
 void arq::connect(string callsign)
 {
 	UrCall = callsign;
@@ -1215,7 +1215,7 @@ void arq::connect(string callsign)
 	if (rxUrCall) rxUrCall(UrCall);
 	TxTextQueue.clear();
 	connectFrame();
-	LinkState = CONNECTING;
+	LinkState = ARQ_CONNECTING;
 	immediate = true;
 }
 
@@ -1226,7 +1226,7 @@ void arq::disconnect()
 	RetryTime = baseRetryTime;
 	totalTx = 0;
 	nbrbadTx = 0;
-	
+
 	LinkState = DISCONNECT;
 }
 
@@ -1289,7 +1289,7 @@ void arqloop(void *who)
 {
 	arq *me = (arq *)who;
 	char c;
-		
+
 // check for received chars including 0x06 for Sending = 0
 	if (me->getc1(c) == true) {
 		me->rcvChar(c);
@@ -1310,7 +1310,7 @@ void arqloop(void *who)
 				me->immediate = false;
 			} else {
 				switch (me->LinkState) {
-				case  CONNECTING :
+				case  ARQ_CONNECTING :
 					break;
 				case  DISCONNECT :
 					me->LinkState = DISCONNECTING;
@@ -1320,7 +1320,7 @@ void arqloop(void *who)
 					me->TxPlainTextQueue.clear();
 					me->disconnectFrame();
 					me->immediate = true;
-					break;				
+					break;
 				case  DISCONNECTING :
 					if (me->retrytime-- == 0) {
 						me->retrytime = me->rtry();
@@ -1383,8 +1383,8 @@ void arqloop(void *who)
 						}
 					}
 					break;
-				
-				case CONNECTED :
+
+				case ARQ_CONNECTED :
 				default:
 					if (me->TxTextQueue.empty() == false) {
 						me->transmitdata();
@@ -1399,7 +1399,7 @@ void arqloop(void *who)
 				}
 				me->timeout--;
 				if (me->timeout == 0 // 10000 / ARQLOOPTIME // 10 seconds remaining
-				    && me->LinkState == CONNECTED // link is connected
+				    && me->LinkState == ARQ_CONNECTED // link is connected
 				    && me->primary == true ) { // this is the connecting station
 					if (--me->retries) { // repeat Retries and then allow timeout
 						me->TxTextQueue.clear();
@@ -1409,14 +1409,14 @@ void arqloop(void *who)
 					}
 				}
 				if (me->timeout == 0) {
-					if (me->LinkState == CONNECTED)
+					if (me->LinkState == ARQ_CONNECTED)
 						me->LinkState = TIMEDOUT;
 					else
 						me->LinkState = DOWN;
 					me->Retries = me->baseRetries;
 					me->Timeout = me->baseTimeout;
 					me->RetryTime = me->baseRetryTime;
-				
+
 					me->retries = me->Retries;
 					me->retrytime = me->rtry();
 					me->TxMissing.clear();
@@ -1446,8 +1446,29 @@ void arqloop(void *who)
 		}
 	}
 
-	if (me->arqstop)
+	if (me->arqstop) {
+		me->LinkState = STOPPED;
+		me->arqstop = false;
+
+		me->LinkState	= DOWN;
+		me->Retries		= me->baseRetries;
+		me->Timeout		= me->baseTimeout;
+		me->RetryTime	= me->baseRetryTime;
+		me->retries		= me->Retries;
+		me->retrytime	= me->rtry();
+
+		me->TxMissing.clear();
+		me->TxBlocks.clear();
+		me->TxTextQueue.clear();
+		me->TxPlainTextQueue.clear();
+		me->timeout = me->Timeout / ARQLOOPTIME;
+
+		if (me->rxUrCall) me->rxUrCall("");
+
+		me->printSTATUS(STIMEDOUT, 10.0);
+		Fl::repeat_timeout(	1.0, arqloop, me);
 		return;
+	}
 
 	Fl::repeat_timeout(	ARQLOOPTIME/1000.0, arqloop, me);
 }
@@ -1456,6 +1477,10 @@ void arqloop(void *who)
 void arq::start_arq()
 {
 	Fl::add_timeout(1.0, arqloop, this);
+}
+
+void arq::restart_arq() { 
+	arqstop = true;
 }
 
 //---------------------------------------------------------------------

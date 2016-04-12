@@ -77,8 +77,12 @@
 #include "b64.h"
 #include "gettext.h"
 
+#include "xml_server.h"
+
 #define FLDIGI_port "7322"
 #define MPSK_port "3122"
+
+#define FLARQ_XML_PORT 7422
 
 #define MPSK_TX   "TX"
 #define MPSK_RX   "RX"
@@ -946,6 +950,7 @@ void arqCLOSE()
 {
 	tcpip->close();
 	saveConfig();
+	exit_server();
 	exit(0);
 }
 
@@ -974,7 +979,14 @@ void restart()
 
 void arqCONNECT()
 {
-	if (digi_arq->state() < CONNECTED) {
+	int state = Fl::event_state();
+	if ((state & FL_CTRL) == FL_CTRL) {
+		digi_arq->restart_arq();
+		txtURCALL->value("");
+		restart();
+		return;
+	}
+	if (digi_arq->state() < ARQ_CONNECTED) {
 		if (strlen(txtURCALL->value()) > 0)
 			digi_arq->connect(txtURCALL->value());
 	} else {
@@ -1140,7 +1152,6 @@ void payloadText(string s)
 			}
 			if (incomingText.find(arqemail) != string::npos)
 				haveemail = true;
-			incomingText = "";
 			startpos = string::npos;
 			endpos = string::npos;
 			fnamepos = string::npos;
@@ -1151,6 +1162,9 @@ void payloadText(string s)
 			rxARQfile = false;
 			rxARQhavesize = false;
 			rxTextReady = true;
+			if (incomingText.find("FLMSG_XFR") != std::string::npos)
+				xml_rx_text_ready = true;
+			incomingText = "";
 			txtStatus->value("");
 			prgStatus->value(0.0);
 			prgStatus->label("");
@@ -1220,7 +1234,7 @@ void moveEmailFile()
 
 void sendEmailFile()
 {
-	if (arqstate < CONNECTED) {
+	if (arqstate < ARQ_CONNECTED) {
 		fl_alert2("Not connected");
 		return;
 	}
@@ -1284,7 +1298,7 @@ void sendEmailFile()
 
 void sendAsciiFile()
 {
-	if (arqstate < CONNECTED) {
+	if (arqstate < ARQ_CONNECTED) {
 		fl_alert2("Not connected");
 		return;
 	}
@@ -1336,7 +1350,7 @@ void sendAsciiFile()
 
 void sendImageFile()
 {
-	if (arqstate < CONNECTED) {
+	if (arqstate < ARQ_CONNECTED) {
 		fl_alert2("Not connected");
 		return;
 	}
@@ -1385,7 +1399,7 @@ void sendImageFile()
 
 void sendBinaryFile()
 {
-	if (arqstate < CONNECTED) {
+	if (arqstate < ARQ_CONNECTED) {
 		fl_alert2("Not connected");
 		return;
 	}
@@ -1432,6 +1446,43 @@ void sendBinaryFile()
 	sendingfile = false;
 }
 
+void send_xml_text(std::string fname, std::string txt)
+{
+	if (arqstate < ARQ_CONNECTED) {
+		fl_alert2("Not connected");
+		return;
+	}
+
+	size_t txtsize;
+	char sizemsg[40];
+
+	if (!txt.empty()) {
+		TX.erase();
+		TX.append(arqfile);
+		TX.append(fname);
+		TX.append("\n");
+		TX.append(arqascii);
+		txtsize = txt.length();
+		arqPayloadSize = txtsize;
+		blocksSent = 0;
+		snprintf(sizemsg, sizeof(sizemsg), "ARQ:SIZE::%d\n", 
+			static_cast<int>(txtsize));
+		TX.append(sizemsg);
+		TX.append(arqstart);
+		TX.append(txt);
+		TX.append(arqend);
+		traffic = true;
+		sendingfile = true;
+		statusmsg = "Sending XML payload: ";
+		statusmsg.append(fname);
+			txtStatus->value(statusmsg.c_str());
+		cbClearText();
+		return;
+	}
+	traffic = false;
+	sendingfile = false;
+}
+
 char statemsg[80];
 
 void dispState()
@@ -1450,7 +1501,7 @@ void dispState()
 //		mnuSend->deactivate();
 		mnu->redraw();
 	}
-	else if (arqstate == CONNECTED || arqstate == WAITING) {
+	else if (arqstate == ARQ_CONNECTED || arqstate == WAITING) {
 		if (btnCONNECT->active())
 			btnCONNECT->label("Disconnect");
 		if (!autobeacon)
@@ -1467,7 +1518,7 @@ void dispState()
 
 	if (currstate <= 0x7F) // receiving
 		switch (currstate) {
-			case CONNECTING :
+			case ARQ_CONNECTING :
 				snprintf(statemsg, sizeof(statemsg), "CONNECTING: %d", digi_arq->getTimeLeft());
 				txtState->value(statemsg);
 				txtState->redraw();
@@ -1486,7 +1537,7 @@ void dispState()
 				autobeacon = false;
 				break;
 			case WAITING :
-			case CONNECTED :
+			case ARQ_CONNECTED :
 				char szState[80];
 				snprintf(szState, sizeof(szState),"CONNECTED - Quality = %4.2f",
 					digi_arq->quality());
@@ -1573,7 +1624,7 @@ void mainloop(void *)
 	if (rxTextReady) {
 		if (haveemail)
 			saveEmailFile();
-		else
+		else if (!xml_rx_text_ready)
 			saveRxFile();
 	}
 	Fl::repeat_timeout(0.1, mainloop);
@@ -1892,6 +1943,8 @@ int main (int argc, char *argv[] )
 	make_pixmap(&flarq_icon_pixmap, flarq_icon, argc, argv);
 	arqwin->icon((char *)flarq_icon_pixmap);
 #endif
+
+	start_xml_server(FLARQ_XML_PORT);
 
 	arqwin->show(argc, argv);
 	return Fl::run();
