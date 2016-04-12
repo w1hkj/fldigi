@@ -95,10 +95,11 @@ static pthread_mutex_t external_mutex      = PTHREAD_MUTEX_INITIALIZER;
 bool kiss_enabled = false;
 bool kiss_exit = false;
 bool kiss_rx_exit = false;
+bool allow_kiss_socket_io = false;
 
 static bool smack_crc_enabled  = false;
 static int crc_mode            = CRC16_CCITT;
-static std::string default_kiss_modem = "PSK63RC5";
+static std::string default_kiss_modem = "BPSK250";
 static std::string kiss_modem = "";
 static unsigned int transmit_buffer_flush_timeout = 0;
 
@@ -147,6 +148,7 @@ static double kpsql_threshold = 0.0;
 extern int IMAGE_WIDTH;
 Socket *kiss_socket = 0;
 int data_io_enabled = DISABLED_IO;
+int data_io_type    = DATA_IO_UDP;
 //static bool host_responded = false;
 
 // Used to scale the sensitivity of KPSQL
@@ -165,6 +167,7 @@ extern void abort_tx();
 static std::vector<std::string> availabe_kiss_modems;
 
 extern void ax25_decode(unsigned char *buffer, size_t count, bool pad, bool tx_flag);
+static void kiss_main_thread_close(void *ptr);
 
 static int kiss_raw_enabled = KISS_RAW_DISABLED;
 
@@ -422,28 +425,25 @@ static void set_slider2(Fl_Slider2 * sider, int value)
 	sider->do_callback();
 }
 
-
 /**********************************************************************************
  *
  **********************************************************************************/
-/*
-static void set_valuator(Fl_Valuator* valuator, double value)
-{
-	valuator->value(value);
-	valuator->do_callback();
-}
-*/
-/**********************************************************************************
- *
- **********************************************************************************/
-static bool valid_kiss_modem(string _modem)
+bool valid_kiss_modem(string _modem)
 {
 	if(_modem.empty()) return false;
 
 	int index = 0;
 	int count = availabe_kiss_modems.size();
 
+    if(count < 1) {
+        for(index = 0; index < NUM_MODES; index++)
+            if(mode_info[index].iface_io & KISS_IO)
+                availabe_kiss_modems.push_back(mode_info[index].sname);
+        count = availabe_kiss_modems.size();
+    }
+
 	std::string cmp_str = "";
+    index = 0;
 
 	while(index < count) {
 		cmp_str = uppercase_string(availabe_kiss_modems[index]);
@@ -3360,25 +3360,49 @@ static void *ReadFromHostSocket(void *args)
 	static char buffer[2048];
 	string str_buffer;
 	size_t count = 0;
-
+	Socket *tmp_socket = (Socket *)0;
 	memset(buffer, 0, sizeof(buffer));
 	str_buffer.reserve(sizeof(buffer));
 
 	LOG_INFO("%s", "Kiss RX loop started. ");
+
+	kiss_rx_exit = false;
+	allow_kiss_socket_io = false;
+
+	if(progStatus.kiss_tcp_io && progStatus.kiss_tcp_listen) {
+		tmp_socket = kiss_socket->accept2();
+		if(!tmp_socket) {
+			kiss_rx_exit = true;
+		} else {
+			kiss_socket->shut_down();
+			kiss_socket->close();
+			kiss_socket = tmp_socket;
+		}
+	}
+
+	allow_kiss_socket_io = true;
 
 	while(!kiss_rx_exit) {
 
 		memset(buffer, 0, sizeof(buffer));
 
 		try {
+			if(allow_kiss_socket_io) {
+				if(progStatus.kiss_tcp_io)
+					count = kiss_socket->recv((void *) buffer, sizeof(buffer) - 1);
+				else
 			count = kiss_socket->recvFrom((void *) buffer, sizeof(buffer) - 1);
+			}
 		} catch (...) {
-			if (errno) LOG_INFO("recvFrom Socket Error %d", errno);
+			if (errno) LOG_INFO("recv/recvFrom Socket Error %d", errno);
 			count = 0;
 		}
 
-		if(count && (data_io_enabled == KISS_IO)) {
+		if((count == 0) && (errno != 0)) {
+		   		kiss_rx_exit = true;
+		}
 
+		if(count && (data_io_enabled == KISS_IO)) {
 #ifdef EXTENED_DEBUG_INFO
 			LOG_HEX(buffer, count);
 #endif
@@ -3388,7 +3412,11 @@ static void *ReadFromHostSocket(void *args)
 	}
 
 	kiss_exit = true;
+	allow_kiss_socket_io = false;
+	if(kiss_socket)
+		kiss_socket->shut_down();
 
+	Fl::awake(kiss_main_thread_close, (void *) 0);
 	LOG_INFO("%s", "Kiss RX loop exit. ");
 
 	return (void *)0;
@@ -3415,7 +3443,12 @@ static void ReadFromHostSocket()
 	}
 
 	try {
+		if(allow_kiss_socket_io) {
+			if(progStatus.kiss_tcp_io)
+				count = kiss_socket->recv((void *) buffer, sizeof(buffer) - 1);
+			else
 		count = kiss_socket->recvFrom((void *) buffer, sizeof(buffer) - 1);
+		}
 	} catch (...) {
 		LOG_INFO("Kiss RX Loop Shutdown");
 		count = 0;
@@ -3589,10 +3622,16 @@ void WriteToHostSocket(void)
 	if(to_host.empty()) return;
 
 	if(kiss_socket && data_io_enabled == KISS_IO) {
+		if(allow_kiss_socket_io) {
+			if(progStatus.kiss_tcp_io)
+				kiss_socket->send(to_host.c_str(), to_host.size());
+			else
 		kiss_socket->sendTo(to_host.c_str(), to_host.size());
+		}
 #ifdef EXTENED_DEBUG_INFO
 		LOG_HEX(to_host.c_str(), to_host.size());
 #endif
+
 	}
 	to_host.clear();
 }
@@ -3724,6 +3763,55 @@ void WriteToHostBCastFramesBuffered(void)
 /**********************************************************************************
  *
  **********************************************************************************/
+bool tcp_init(bool connect_flag)
+{
+	if(progdefaults.kiss_address.empty() || progdefaults.kiss_io_port.empty()) {
+		LOG_DEBUG("%s", "KISS IP Address or Port null");
+		return false;
+	}
+
+	kiss_ip_address.assign(progdefaults.kiss_address);
+	kiss_ip_io_port.assign(progdefaults.kiss_io_port);
+	kiss_ip_out_port.assign(progdefaults.kiss_out_port);
+
+	try {
+		kiss_socket = new Socket(Address(kiss_ip_address.c_str(), kiss_ip_io_port.c_str(), "tcp"));
+		kiss_socket->set_autoclose(true);
+		kiss_socket->set_nonblocking(false);
+
+		if(progdefaults.kiss_tcp_listen)
+			kiss_socket->bind();
+	}
+	catch (const SocketException& e) {
+		LOG_ERROR("Could not resolve %s: %s", kiss_ip_address.c_str(), e.what());
+		if(kiss_socket) {
+			kiss_socket->shut_down();
+			kiss_socket->close();
+			delete kiss_socket;
+			kiss_socket = 0;
+			kiss_enabled = 0;
+		}
+		return false;
+	}
+
+	if(connect_flag) {
+		if(kiss_socket->connect1() == false) {
+			LOG_INFO("Connection Failed: Host program present?");
+			kiss_socket->shut_down();
+			kiss_socket->close();
+			delete kiss_socket;
+			kiss_socket = 0;
+			kiss_enabled = 0;
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**********************************************************************************
+ *
+ **********************************************************************************/
 bool udp_init(void)
 {
 	if(progdefaults.kiss_address.empty() || progdefaults.kiss_io_port.empty()) {
@@ -3741,15 +3829,25 @@ bool udp_init(void)
 		kiss_socket->set_dual_port_number(kiss_ip_out_port);
 		kiss_socket->set_autoclose(true);
 		kiss_socket->set_nonblocking(false);
+
+		if(progdefaults.kiss_tcp_listen) // Listen flag indcates server mode.
 		kiss_socket->bindUDP();
-	}
-	catch (const SocketException& e) {
+
+	} catch (const SocketException& e) {
 		LOG_ERROR("Could not resolve %s: %s", kiss_ip_address.c_str(), e.what());
+		if(kiss_socket) {
+			kiss_socket->shut_down();
+			kiss_socket->close();
+			delete kiss_socket;
+			kiss_socket = 0;
+			kiss_enabled = 0;
+	}
 		return false;
 	}
 
 	return true;
 }
+
 /**********************************************************************************
  *
  **********************************************************************************/
@@ -3816,43 +3914,44 @@ void kiss_reset(void)
 /**********************************************************************************
  *
  **********************************************************************************/
-void kiss_init(void)
+void kiss_init(bool connect_flag)
 {
 	kiss_enabled = false;
 	kiss_exit = false;
 
-	int index = 0;
-
-	for(index = 0; index < NUM_MODES; index++)
-		if(mode_info[index].iface_io & KISS_IO)
-			availabe_kiss_modems.push_back(mode_info[index].sname);
-
 // progStatus.data_io_enabled (widget state), data_io_enabled (program state)
+
 	if(progStatus.data_io_enabled == KISS_IO) {
 		if(!(active_modem->iface_io() & KISS_IO)) {
 			set_default_kiss_modem();
 		}
 	}
 
-
 	if(init_hist_flag) {
 		memset(histogram, 0, sizeof(histogram));
 		init_hist_flag = false;
 	}
 
-	if(!udp_init()) return;
-
-	LOG_INFO("%s", "UDP Init - OK");
-
 	srand(time(0)); // For CSMA persistance
-
 	update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+
+	data_io_type = DATA_IO_NA;
+
+	if(progStatus.kiss_tcp_io) {
+		if(progStatus.kiss_tcp_listen) connect_flag = false;
+		Fl::awake(kiss_io_set_button_state, (void *) IO_CONNECT_STR);
+		if(!tcp_init(connect_flag)) return;
+		LOG_INFO("%s", "TCP Init - OK");
+	} else {
+		Fl::awake(kiss_io_set_button_state, (void *) IO_START_STR);
+	if(!udp_init()) return;
+	LOG_INFO("%s", "UDP Init - OK");
+	}
 
 	if (pthread_create(&kiss_thread, NULL, kiss_loop, NULL) < 0) {
 		LOG_ERROR("KISS kiss_thread: pthread_create failed");
 		return;
 	}
-
 
 #ifdef KISS_RX_THREAD
 	if (pthread_create(&kiss_rx_socket_thread, NULL, ReadFromHostSocket, NULL) < 0) {
@@ -3863,24 +3962,49 @@ void kiss_init(void)
 	}
 #endif
 
+	if(progStatus.kiss_tcp_io) {
+		Fl::awake(kiss_io_set_button_state, (void *) IO_DISCONNECT_STR);
+		data_io_type = DATA_IO_TCP;
+	} else {
+		Fl::awake(kiss_io_set_button_state, (void *) IO_STOP_STR);
+		data_io_type = DATA_IO_UDP;
+	}
+
+	if(progdefaults.data_io_enabled == KISS_IO)
+		data_io_enabled = KISS_IO;
+
 	kiss_enabled = true;
+	allow_kiss_socket_io = true;
 }
 
 /**********************************************************************************
  *
  **********************************************************************************/
-void kiss_close(void)
+void kiss_main_thread_close(void *ptr)
 {
-	if (!kiss_enabled) return;
+	kiss_close(true);
+}
+
+/**********************************************************************************
+ *
+ **********************************************************************************/
+void kiss_close(bool override_flag)
+{
+//	if (!kiss_enabled && !override_flag) return;
 
 	kiss_text_available = false;
+	allow_kiss_socket_io = false;
 
-	if(data_io_enabled == KISS_IO)
+	if(data_io_enabled == KISS_IO) {
 		data_io_enabled = DISABLED_IO;
+		data_io_type = DATA_IO_NA;
+	}
 
 	if(kiss_socket) {
 		kiss_socket->shut_down();
 		kiss_socket->close();
+	} else {
+		return;
 	}
 
 #ifdef KISS_RX_THREAD
@@ -3905,8 +4029,26 @@ void kiss_close(void)
 
 	LOG_INFO("%s", "Kiss loop terminated. ");
 
-
+	kiss_socket = 0;
 	kiss_enabled = false;
+
+	if(progdefaults.kiss_tcp_io)
+		Fl::awake(kiss_io_set_button_state, (void *) IO_CONNECT_STR);
+	else
+		Fl::awake(kiss_io_set_button_state, (void *) IO_START_STR);
+
+}
+
+/**********************************************************************************
+ *
+ **********************************************************************************/
+void connect_to_kiss_io(void)
+{
+	if(kiss_socket) {
+		kiss_close(true);
+	} else {
+    	        kiss_init(progdefaults.kiss_tcp_listen ? false : true);
+	}
 }
 
 /**********************************************************************************

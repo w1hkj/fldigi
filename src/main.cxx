@@ -348,7 +348,7 @@ void delayed_startup(void *)
 	data_io_enabled = DISABLED_IO;
 
 	arq_init();
-	kiss_init();
+	//kiss_init();
 	if (progdefaults.connect_to_maclogger) maclogger_init();
 	data_io_enabled = progStatus.data_io_enabled;
 
@@ -771,7 +771,7 @@ void exit_process() {
 	if (progdefaults.kml_enabled)
 		KmlServer::Exit();
 	arq_close();
-	kiss_close();
+	kiss_close(false);
 	maclogger_close();
 	XML_RPC_Server::stop();
 

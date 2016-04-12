@@ -1,122 +1,122 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-i18n_type 1 
-i18n_include "gettext.h" 
-i18n_function _ 
-header_name {.h} 
+version 1.0303
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
+header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_Tooltip.H>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_Box.H>} {private local
-} 
+}
 
 decl {\#include <FL/filename.H>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_File_Chooser.H>} {private local
-} 
+}
 
 decl {\#include <FL/fl_show_colormap.H>} {private local
-} 
+}
 
 decl {\#include "main.h"} {private local
-} 
+}
 
 decl {\#include "fl_digi.h"} {private local
-} 
+}
 
 decl {\#include "data_io.h"} {private local
-} 
+}
 
 decl {\#include "Viewer.h"} {private global
-} 
+}
 
 decl {\#include "font_browser.h"} {public global
-} 
+}
 
 decl {\#include "soundconf.h"} {private local
-} 
+}
 
 decl {\#include "globals.h"} {public local
-} 
+}
 
 decl {\#include "modem.h"} {public local
-} 
+}
 
 decl {\#include "configuration.h"} {public local
-} 
+}
 
 decl {\#include "combo.h"} {public local
-} 
+}
 
 decl {\#include "waterfall.h"} {private local
-} 
+}
 
 decl {\#include "rigxml.h"} {private local
-} 
+}
 
 decl {\#include "lookupcall.h"} {private local
-} 
+}
 
 decl {\#include "icons.h"} {private local
-} 
+}
 
 decl {\#include "Viewer.h"} {private local
-} 
+}
 
 decl {\#include "pskrep.h"} {private global
-} 
+}
 
 decl {\#include "flinput2.h"} {public local
-} 
+}
 
 decl {\#include "flslider2.h"} {public local
-} 
+}
 
 decl {\#include "flmisc.h"} {public local
-} 
+}
 
 decl {\#include "logsupport.h"} {private local
-} 
+}
 
 decl {\#include "notify.h"} {private local
-} 
+}
 
 decl {\#include "debug.h"} {private local
-} 
+}
 
 decl {\#include "status.h"} {private local
-} 
+}
 
 decl {\#include "rx_extract.h"} {private local
-} 
+}
 
 decl {\#include "kmlserver.h"} {private local
-} 
+}
 
 decl {\#include "macroedit.h"} {private local
-} 
+}
 
 decl {\#include "fileselect.h"} {private local
-} 
+}
 
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
-} 
+}
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {private local
-} 
+}
 
 decl {Fl_Double_Window *dlgConfig;} {public local
-} 
+}
 
 decl {Mode_Browser* mode_browser;} {public local
-} 
+}
 
 Function {choose_color(Fl_Color & c)} {private return_type void
 } {
@@ -124,7 +124,7 @@ Function {choose_color(Fl_Color & c)} {private return_type void
 Fl::get_color(c, r, g, b);
 if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
-} 
+}
 
 Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -144,7 +144,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     ReceiveText->setFont(font);
     ReceiveText->setFontSize(size);
     ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-    
+
     fsq_rx_text->setFont(font);
     fsq_rx_text->setFontSize(size);
     fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
@@ -156,7 +156,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -188,7 +188,7 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
      font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -201,16 +201,16 @@ Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
 
     progdefaults.MacroEditFontnbr = font;
     progdefaults.MacroEditFontsize = size;
-    
+
     update_macroedit_font();
 
     MacroText->textfont(font);
     MacroText->textsize(size);
-    
+
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -222,7 +222,7 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-} 
+}
 
 Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -231,7 +231,7 @@ Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
     progdefaults.MacroBtnFontcolor = font_browser->fontColor();
 
     font_browser->hide();
-    
+
     btnGroup1->labelcolor(progdefaults.MacroBtnFontcolor);
     btnGroup1->labelfont(progdefaults.MacroBtnFontnbr);
     btnGroup1->labelsize(progdefaults.MacroBtnFontsize);
@@ -249,7 +249,7 @@ Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 
     progdefaults.changed = true;
     colorize_macros();} {}
-} 
+}
 
 Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -259,7 +259,7 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-} 
+}
 
 Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -277,7 +277,7 @@ Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
     qsoFreqDisp3->redraw();
 
     font_browser->hide();} {}
-} 
+}
 
 Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -299,7 +299,7 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -321,7 +321,7 @@ Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
 } {
@@ -331,7 +331,7 @@ Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
 
 for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
 	qrzbxml[i]->value(b == qrzbxml[i]);} {}
-} 
+}
 
 Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 } {
@@ -341,7 +341,7 @@ Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 
 for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
-} 
+}
 
 Function {ConfigureDialog()} {open
 } {
@@ -366,8 +366,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 355} when 1
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -1912,7 +1912,7 @@ font_browser->show();}
     progdefaults.Smeter_bg_color.R = r;
     progdefaults.Smeter_bg_color.G = g;
     progdefaults.Smeter_bg_color.B = b;
-    
+
     set_smeter_colors();
 
     progdefaults.changed = true;}
@@ -1931,7 +1931,7 @@ font_browser->show();}
     progdefaults.Smeter_scale_color.R = r;
     progdefaults.Smeter_scale_color.G = g;
     progdefaults.Smeter_scale_color.B = b;
-    
+
     set_smeter_colors();
 
     progdefaults.changed = true;}
@@ -1950,7 +1950,7 @@ font_browser->show();}
     progdefaults.Smeter_meter_color.R = r;
     progdefaults.Smeter_meter_color.G = g;
     progdefaults.Smeter_meter_color.B = b;
-    
+
     set_smeter_colors();
 
     progdefaults.changed = true;}
@@ -1974,7 +1974,7 @@ font_browser->show();}
     progdefaults.PWRmeter_bg_color.R = r;
     progdefaults.PWRmeter_bg_color.G = g;
     progdefaults.PWRmeter_bg_color.B = b;
-    
+
     set_smeter_colors();
 
     progdefaults.changed = true;}
@@ -1993,7 +1993,7 @@ font_browser->show();}
     progdefaults.PWRmeter_scale_color.R = r;
     progdefaults.PWRmeter_scale_color.G = g;
     progdefaults.PWRmeter_scale_color.B = b;
-    
+
     set_smeter_colors();
 
     progdefaults.changed = true;}
@@ -2012,7 +2012,7 @@ font_browser->show();}
     progdefaults.PWRmeter_meter_color.R = r;
     progdefaults.PWRmeter_meter_color.G = g;
     progdefaults.PWRmeter_meter_color.B = b;
-    
+
     set_smeter_colors();
 
     progdefaults.changed = true;}
@@ -2957,7 +2957,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 600 330}
+            xywh {0 50 600 330} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 330} selection_color 50
@@ -4160,7 +4160,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabPSK {
             label PSK open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 330}
           } {
             Fl_Tabs tabsPSK {open
               xywh {0 50 600 330} selection_color 50
@@ -4241,17 +4241,23 @@ progdefaults.changed = true;}
                     label {Pilot tone}
                     callback {progdefaults.pskpilot = o->value();
 progdefaults.changed = true;}
-                    tooltip {Enable encode/decode vestigial pilot tone} xywh {141 342 113 20} down_box DOWN_BOX
+                    tooltip {Enable encode/decode vestigial pilot tone} xywh {100 340 113 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.pskpilot);}
                   }
                   Fl_Counter cnt_pilot_power {
                     label {pilot power (dB)}
                     callback {progdefaults.pilot_power = o->value();
 progdefaults.changed = true;}
-                    tooltip {Pilot tone power relative to signal} xywh {305 342 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
+                    tooltip {Pilot tone power relative to signal} xywh {205 340 75 20} type Simple align 8 minimum -60 maximum -20 step 1 value -30
                     code0 {o->value(progdefaults.pilot_power);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
+                  }
+                  Fl_Check_Button btnPSK8Preamble {
+                    label {Short Preamble}
+                    callback {progStatus.psk8DCDShortFlag = o->value();}
+                    tooltip {Enable encode/decode vestigial pilot tone} xywh {410 340 113 20} down_box DOWN_BOX
+                    code0 {o->value(progStatus.psk8DCDShortFlag);}
                   }
                 }
               }
@@ -6987,8 +6993,8 @@ progdefaults.changed = true;}
       }
       Fl_Group tabIO {
         label IO
-        callback {btnDisable_p2p_io_widgets->value(1);} open
-        tooltip {Program to Program Communications} xywh {0 25 600 355} hide
+        callback {btnDisable_p2p_io_widgets->value(1);} open selected
+        tooltip {Program to Program Communications} xywh {0 25 600 355}
         code0 {btnDisable_p2p_io_widgets->value(1);}
       } {
         Fl_Group {} {open
@@ -6996,11 +7002,12 @@ progdefaults.changed = true;}
         } {
           Fl_Check_Button btnDisable_p2p_io_widgets {
             label Lock user_data_type long
-            callback {progStatus.ip_lock = o->value();
+            callback { progStatus.ip_lock = o->value();
 if(o->value())
 	disable_config_p2p_io_widgets();
 else
-	enable_config_p2p_io_widgets();}
+	enable_config_p2p_io_widgets();
+kiss_io_set_button_state(0);}
             tooltip {Allow/Disallow Changes} xywh {12 112 85 20} down_box DOWN_BOX
             code0 {o->value(progStatus.ip_lock);}
           }
@@ -7056,7 +7063,7 @@ progdefaults.changed = true;}
           }
           Fl_Box {} {
             label {Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.
-Enable KISS for programs that supports UDP and TNC-2 KISS protocol.
+Enable KISS for programs that supports TCP/UDP and TNC-2 KISS protocol.
 Only one interface (ARQ/KISS) can be active at any given time.
 KISS/ARQ/XML Addr/Port changes require program restart.}
             xywh {8 37 582 72}
@@ -7123,7 +7130,7 @@ progdefaults.changed = true;}
 else
 	progdefaults.enableBusyChannel = false;
 progdefaults.changed = true;}
-            tooltip {Enable Busy Channel} xywh {425 147 65 15} down_box DOWN_BOX
+            tooltip {Enable Busy Channel} xywh {331 145 65 15} down_box DOWN_BOX
             code0 {if(progdefaults.enableBusyChannel) o->value(true);}
             code1 {else o->value(false);}
             code2 {progStatus.ip_lock ? o->deactivate() : o->activate();}
@@ -7146,7 +7153,7 @@ else
 	progdefaults.kiss_dual_port_enabled = false;
 
 progdefaults.changed = true;}
-            tooltip {Enable when both programs are using the same IP address} xywh {425 168 90 16} down_box DOWN_BOX
+            tooltip {Enable when both programs are using the same IP address} xywh {485 169 90 16} down_box DOWN_BOX
             code0 {if(progdefaults.kiss_dual_port_enabled) o->value(true); else o->value(false);}
             code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
@@ -7155,6 +7162,54 @@ progdefaults.changed = true;}
             callback {//restart_kiss_server();}
             xywh {505 193 82 25} hide
             code0 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Button btn_connect_kiss_io {
+            label Connect
+            callback {connect_to_kiss_io();}
+            tooltip {Return KISS TCP IO connection to a Listening state} xywh {504 193 82 25}
+            code0 {(progStatus.ip_lock || !progStatus.kiss_tcp_io) ? o->deactivate() : o->activate();}
+          }
+          Fl_Check_Button btnKissTCPIO {
+            label TCP
+            callback {if(o->value()) {
+	progdefaults.kiss_tcp_io = true;
+	progStatus.kiss_tcp_io = true;
+} else {
+	progStatus.kiss_tcp_io = false;
+	progdefaults.kiss_tcp_io = false;
+}
+kiss_io_set_button_state(0);}
+            tooltip {Check to enable TCP/IP IO Connection} xywh {425 145 60 15} down_box DOWN_BOX
+            code0 {if(progStatus.kiss_tcp_io) o->value(true); else o->value(false);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Check_Button btnKissUDPIO {
+            label UDP
+            callback {if(o->value()) {
+	progdefaults.kiss_tcp_io = false;
+	progStatus.kiss_tcp_io = false;
+} else {
+	progStatus.kiss_tcp_io = true;
+	progdefaults.kiss_tcp_io = true;
+}
+
+kiss_io_set_button_state(0);}
+            tooltip {Check to enable UDP/IP IO} xywh {425 170 60 15} down_box DOWN_BOX
+            code0 {if(progStatus.kiss_tcp_io) o->value(true); else o->value(false);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
+          }
+          Fl_Check_Button btnKissTCPListen {
+            label {Listen / Bind}
+            callback {if(o->value()) {
+	progdefaults.kiss_tcp_listen = true;
+	progStatus.kiss_tcp_listen = true;
+} else {
+	progStatus.kiss_tcp_listen = false;
+	progdefaults.kiss_tcp_listen = false;
+}}
+            tooltip {Monitor for TCP connection} xywh {485 145 95 15} down_box DOWN_BOX
+            code0 {if(progStatus.kiss_tcp_listen) o->value(true); else o->value(false);}
+            code1 {progStatus.ip_lock ? o->deactivate() : o->activate();}
           }
         }
         Fl_Group {} {
@@ -7340,18 +7395,18 @@ progdefaults.changed = false;}
       xywh {20 388 130 22}
     }
   }
-} 
+}
 
 Function {openConfig()} {return_type void
 } {
   code {if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();} {}
-} 
+}
 
 Function {closeDialog()} {return_type void
 } {
   code {if (dlgConfig) dlgConfig->hide();} {}
-} 
+}
 
 Function {createConfig()} {return_type void
 } {
@@ -7359,10 +7414,10 @@ Function {createConfig()} {return_type void
     dlgConfig = ConfigureDialog();
     dlgConfig->xclass(PACKAGE_NAME);
   }} {}
-} 
+}
 
 decl {class Fl_File_Chooser ;} {public global
-} 
+}
 
 Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
@@ -7372,7 +7427,7 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnWefaxSaveDir->redraw();
 	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
 }} {}
-} 
+}
 
 Function {KmlDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
 } {
@@ -7382,9 +7437,9 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnKmlSaveDir->redraw();
 	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
 }} {}
-} 
+}
 
-Function {make_window()} {} {} 
+Function {make_window()} {} {}
 
 Function {make_window()} {open
-} {} 
+} {}

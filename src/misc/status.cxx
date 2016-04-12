@@ -199,8 +199,11 @@ status progStatus = {
 	progdefaults.busyChannelSeconds,
 	progdefaults.kpsql_attenuation,
 	progdefaults.csma_enabled,
+	progdefaults.kiss_tcp_io,
+	progdefaults.kiss_tcp_listen,
 	true,
 	0.0,
+	progdefaults.psk8DCDShortFlag,
 
 	"CQ",				// string browser_search;
 
@@ -321,6 +324,9 @@ void status::saveLastState()
 	busyChannelSeconds     = progdefaults.busyChannelSeconds;
     kpsql_attenuation      = progdefaults.kpsql_attenuation;
 	csma_enabled           = progdefaults.csma_enabled;
+	kiss_tcp_io            = progdefaults.kiss_tcp_io;
+	kiss_tcp_listen        = progdefaults.kiss_tcp_listen;
+
 	squelch_value = 0;
 
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
@@ -334,6 +340,8 @@ void status::saveLastState()
 	spref.set("squelch_level", sldrSquelchValue);
 	spref.set("pwr_squelch_level", sldrPwrSquelchValue);
 	spref.set("afc_enabled", afconoff);
+
+	spref.set("psk8DCDShortFlag", psk8DCDShortFlag);
 
 	spref.set("log_enabled", LOGenabled);
 
@@ -479,6 +487,9 @@ if (!bWF_only) {
 	spref.set("busyChannelSeconds", busyChannelSeconds);
 	spref.set("kpsql_attenuation", kpsql_attenuation);
 	spref.set("csma_enabled", csma_enabled);
+	spref.set("kiss_tcp_io",         kiss_tcp_io);
+	spref.set("kiss_tcp_listen",     kiss_tcp_listen);
+
 	spref.set("browser_search", browser_search.c_str());
 
 	spref.set("meters", meters);
@@ -707,6 +718,10 @@ void status::loadLastState()
 	spref.get("busyChannelSeconds",     i, busyChannelSeconds);     busyChannelSeconds  = i;
 	spref.get("kpsql_attenuation",      i, kpsql_attenuation);      kpsql_attenuation   = i;
 	spref.get("csma_enabled",           i, csma_enabled);           csma_enabled        = i;
+	spref.get("kiss_tcp_io",            i, kiss_tcp_io);            kiss_tcp_io         = i;
+	spref.get("kiss_tcp_listen",        i, kiss_tcp_listen);        kiss_tcp_listen     = i;
+
+	spref.get("psk8DCDShortFlag",       i, psk8DCDShortFlag);       psk8DCDShortFlag    = i;
 
 	memset(strbuff, 0, sizeof(strbuff));
 	spref.get("browser_search", strbuff, browser_search.c_str(), sizeof(strbuff) - 1);
@@ -864,6 +879,8 @@ void status::initLastState()
 
 	cntKPSQLAttenuation->value(kpsql_attenuation);
 	progdefaults.kpsql_attenuation = kpsql_attenuation;
+
+	kiss_io_set_button_state(0);
 
 	if (bWF_only)
 		fl_digi_main->resize(mainX, mainY, mainW, Hmenu + Hwfall + Hstatus);

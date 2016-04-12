@@ -164,9 +164,11 @@ struct status {
 	int busyChannelSeconds;
 	int kpsql_attenuation;
 	bool csma_enabled;
+	bool kiss_tcp_io;
+	bool kiss_tcp_listen;
 	bool ip_lock;
 	double squelch_value;
-
+    bool psk8DCDShortFlag;
 	std::string	browser_search;
 
 	bool	meters;

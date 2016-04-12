@@ -83,7 +83,7 @@ bool bcast_rsid_kiss_frame(int new_wf_pos, int new_mode, int old_wf_pos, int old
 inline std::string uppercase_string(std::string str);
 static double detect_signal(int freq, int bw, double *low, double *high);
 static bool kiss_queue_frame(KISS_QUEUE_FRAME * frame, std::string cmd);
-static bool valid_kiss_modem(std::string _modem);
+bool valid_kiss_modem(std::string _modem);
 static KISS_QUEUE_FRAME *encap_kiss_frame(char *buffer, size_t size, int frame_type, int kiss_port_no);
 static KISS_QUEUE_FRAME *encap_kiss_frame(std::string data, int kiss_frame_type, int port);
 static KISS_QUEUE_FRAME *encap_kiss_frame(std::string package, int frame_type, int kiss_port_no);

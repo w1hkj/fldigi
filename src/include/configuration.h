@@ -1682,6 +1682,12 @@
         ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
               "Use CSMA on heavy traffic channels (AX25)",                              \
               true)                                                                     \
+	ELEM_(bool, kiss_tcp_io, "KISS_TCP_IO",                                         \
+	      "Connect kiss io via TCP/IP vise UDP/IP",                                 \
+	      false)                                                                    \
+        ELEM_(bool, kiss_tcp_listen, "KISS_TCP_LISTEN",                                 \
+              "Listen for TCP connection (Server mode)",                                \
+              false)                                                                    \
         ELEM_(std::string, flrig_ip_address, "FLRIG_IP_ADDRESS",                        \
               "IP Address of flrig server",                                             \
               DEFAULT_FLRIG_IP_ADDRESS)                                                 \
@@ -1891,9 +1897,12 @@
         ELEM_(bool, us_units, "US_UNITS",                                               \
               "Use US units of distance for QRB",                                       \
               false)                                                                    \
-        ELEM_(int, MacroEditFontsize, "MACROEDITFONTSIZE",                             \
+        ELEM_(int, MacroEditFontsize, "MACROEDITFONTSIZE",                              \
               "RX text font size",                                                      \
-              16)
+              16)                                                                       \
+        ELEM_(bool, psk8DCDShortFlag, "PSK8DCDSHORTFLAG",                               \
+              "Flag: Change DCD pre-ample length",                                      \
+              false)
 
 
 // declare the struct

@@ -26,11 +26,10 @@
 #include <sys/time.h>
 #ifdef __MINGW32__
 #  include <pthread.h>
-//#endif
 #else
 #  if !HAVE_CLOCK_GETTIME
-enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
-int clock_gettime(clockid_t clock_id, struct timespec* tp);
+  enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
+  int clock_gettime(clockid_t clock_id, struct timespec* tp);
 #  endif
 #endif
 

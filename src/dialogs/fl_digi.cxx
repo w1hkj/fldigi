@@ -1418,6 +1418,8 @@ void update_scope()
 		active_modem->refresh_scope();
 }
 
+extern bool valid_kiss_modem(std::string modem_name);
+
 void init_modem(trx_mode mode, int freq)
 {
 	ENSURE_THREAD(FLMAIN_TID);
@@ -1441,10 +1443,26 @@ void init_modem(trx_mode mode, int freq)
 	stopMacroTimer();
 
 	if (data_io_enabled == KISS_IO) {
-		if(!bcast_rsid_kiss_frame(freq, mode, (int) active_modem->get_txfreq(), active_modem->get_mode(),
+        trx_mode current_mode = active_modem->get_mode();
+		if(!bcast_rsid_kiss_frame(freq, mode, (int) active_modem->get_txfreq(), current_mode,
 								  progdefaults.rsid_notify_only ? RSID_KISS_NOTIFY : RSID_KISS_ACTIVE)) {
+
 			LOG_INFO("Invaild Modem for KISS I/O (%s)",  mode_info[mode].sname);
-			return;
+
+            if(!fl_choice2(_("Switch to ARQ I/O"), _("Yes"), _("No"), NULL)) {
+                btnEnable_kiss->value(false);
+                btnEnable_kiss->do_callback();
+
+                btnEnable_arq->value(true);
+                btnEnable_arq->do_callback();
+            } else {
+                std::string modem_name;
+                modem_name.assign(mode_info[current_mode].sname);
+                bool valid = valid_kiss_modem(modem_name);
+                if(!valid)
+                    current_mode = MODE_PSK250;
+                mode = current_mode;
+            }
 		}
 	}
 
@@ -5808,7 +5826,7 @@ void create_fl_digi_main_primary() {
 					smeter->w(), smeter->h());
 
 				pwr_level = new Fl_Value_Slider2(
-						pwrlevel_grp->x(), pwrlevel_grp->y(), 
+						pwrlevel_grp->x(), pwrlevel_grp->y(),
 						pwrlevel_grp->w() - 50, pwrlevel_grp->h());
 				pwr_level->type(FL_HOR_NICE_SLIDER);
 				pwr_level->range(0, 100.0);
@@ -6027,7 +6045,7 @@ void create_fl_digi_main_primary() {
 					opUsage = new Fl_Input2(
 						opOutUsage->x() + opOutUsage->w() + pad,
 						opOutUsage->y(),
-						opUsageFrame->w() - opOutUsage->w() - 50 - 3 * pad, 
+						opUsageFrame->w() - opOutUsage->w() - 50 - 3 * pad,
 						Hentry);
 
 					opUsageEnter = new Fl_Button(
@@ -6165,7 +6183,7 @@ void create_fl_digi_main_primary() {
 						outSerNo1->type(FL_NORMAL_OUTPUT);
 
 						inpSerNo1 = new Fl_Input2(
-							rightof(outSerNo1) + pad, y3, 
+							rightof(outSerNo1) + pad, y3,
 							40, Hentry,
 							"# R");
 						inpSerNo1->align(FL_ALIGN_LEFT);
@@ -9217,6 +9235,52 @@ void set_ip_to_default(int which_io)
 			txt_fllog_ip_port->do_callback();
 			break;
 	}
+}
+
+void kiss_io_set_button_state(void *ptr)
+{
+
+	if(progStatus.kiss_tcp_io) {
+		btn_connect_kiss_io->activate();
+
+		btn_connect_kiss_io->redraw();
+		btnKissTCPIO->activate();
+		btnKissTCPIO->value(true);
+		btnKissTCPListen->activate();
+
+		btnKissUDPIO->value(false);
+		btnKissUDPIO->activate();
+		btnEnable_dual_port->deactivate();
+
+	} else {
+		btn_connect_kiss_io->activate();
+
+		btnKissTCPIO->value(false);
+		btnKissTCPIO->activate();
+		btnKissTCPListen->activate();
+
+		btnKissUDPIO->value(true);
+		btnKissUDPIO->activate();
+		btnEnable_dual_port->activate();
+	}
+
+	char *label = (char *)0;
+	if(ptr)
+		label = (char *)ptr;
+
+	if(label) {
+		btn_connect_kiss_io->label(label);
+		btn_connect_kiss_io->redraw();
+	}
+
+	if(progStatus.ip_lock) {
+		btn_connect_kiss_io->deactivate();
+		btnKissTCPIO->deactivate();
+		btnKissUDPIO->deactivate();
+		btnKissTCPListen->deactivate();
+		btnEnable_dual_port->deactivate();
+	}
+
 }
 
 void set_CSV(int start)

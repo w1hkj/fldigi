@@ -773,7 +773,7 @@ psk::psk(trx_mode pskmode) : modem()
 		dec->setchunksize(4);
 		dec2 = new viterbi(K13, K16_POLY1, K16_POLY2);
 		dec2->setchunksize(4);
-	
+
 	} else if (_xpsk || _8psk || _16psk) {
 		enc = new encoder(K13, K13_POLY1, K13_POLY2);
 		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
@@ -1143,9 +1143,9 @@ void psk::vestigial_afc() {
 	std::setprecision(2); std::setw(5);
 	for (i = 0; i < 11; i++) if (abs(sfft_bins[i]) > 2.0*avg) break;
 	if (i < 11) {
-//		std::cout	<< "bin: " << i 
+//		std::cout	<< "bin: " << i
 //					<< ", freq offset: " << (i - 5)*samplerate/16384.0
-//					<< ", amp: " << abs(sfft_bins[i]) 
+//					<< ", amp: " << abs(sfft_bins[i])
 //					<< ", avg: " << avg << "\n";
 		if (i != 5) {
 			frequency -= 1.0*(i-5)*samplerate/sfft_size;
@@ -1351,7 +1351,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 			if (!_disablefec) break;
 			set_dcdON = 0;
 			break;
-		
+
 		case 0x10410410:	// xpsk DCD on (with FEC enabled)
 			if (_pskr) break;
 			if (_qpsk) break;
@@ -1361,7 +1361,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 			if (_disablefec) break;
 			set_dcdON = 1;
 			break;
- 
+
 		case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
 			if (_pskr) break;
 			if (_xpsk || _8psk || _16psk) {
@@ -1419,7 +1419,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 				phasequality = (phasequality + lastphasequality) / 2; // Differential modem: average probabilities between current and previous symbols
 				lastphasequality = phasequality;
 				int soft_qualityerror = static_cast<int>(128 - (128 * phasequality)) ;
-				
+
 				if (soft_qualityerror > 255-25) // Prevent soft-bit wrap-around (crossing of value 128)
 					softpuncture = true;
 				else if (soft_qualityerror < 128/3) // First 1/3 of phase delta is considered a perfect signal
@@ -1427,8 +1427,8 @@ void psk::rx_symbol(cmplx symbol, int car)
 				else if (soft_qualityerror > 128 - (128/8) ) // Last 1/8 of phase delta triggers a puncture
 					softpuncture = true;
 				else
-					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff 
-			
+					soft_qualityerror /= 2; // Scale the FEC error to prevent premature cutoff
+
 
 				if (softpuncture) {
 					for(int i=0; i<symbits; i++) rx_pskr(128);
@@ -1439,7 +1439,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 							rx_pskr( (graymapped_8psk_softbits[bitindex][i]) - soft_qualityerror );
 						else // Soft-Zero
 							rx_pskr( (graymapped_8psk_softbits[bitindex][i]) + soft_qualityerror  );
-					} 
+					}
 				}
 
 			} else {
@@ -2106,11 +2106,17 @@ void psk::tx_flush()
 		for (int i=0; i<symbits; i++) {
 			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
 		}
+
 		int symbol;
 		if (_16psk) symbol = 8;
 		else if (_8psk) symbol = 4;
 		else symbol = 2;
-		for (int i = 0; i < dcdbits; i++)
+
+		int _dcdbits = dcdbits - 1;
+		if(progStatus.psk8DCDShortFlag)
+			_dcdbits  = 32/(symbits - 1);
+
+		for (int i = 0; i <= _dcdbits; i++) // DCD window is only 32-bits wide
 			tx_symbol(symbol); // 0 degrees
 							   // Standard BPSK postamble
 							   // DCD off sequence (unmodulated carrier)
@@ -2131,6 +2137,12 @@ void psk::clearbits()
 int psk::tx_process()
 {
 	int c;
+
+	// DCD window is only 32 bits, send a maximum of 3-times.
+	if(progStatus.psk8DCDShortFlag) {
+		if ( (_8psk || _xpsk || _16psk) && preamble > 96)
+			preamble = 96;
+	}
 
 	if (preamble > 0) {
 		if (_pskr || ((_xpsk || _8psk || _16psk) && !_disablefec) ) {
