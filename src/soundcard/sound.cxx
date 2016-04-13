@@ -1602,6 +1602,8 @@ void SoundPort::init_stream(unsigned dir)
 				else
 						sd[1].params.suggestedLatency = (*sd[dir].idev)->defaultHighOutputLatency;
 		sd[1].params.hostApiSpecificStreamInfo = NULL;
+		if (max_channels < 2)
+			sd[1].params.channelCount = max_channels;
 	}
 
 	const vector<double>& rates = supported_rates[dir][(*sd[dir].idev)->name];
