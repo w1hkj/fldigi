@@ -3568,7 +3568,7 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {Rx Parameters} open
-              xywh {5 60 585 66} box ENGRAVED_BOX align 21
+              xywh {5 60 585 69} box ENGRAVED_BOX align 21
             } {
               Fl_Value_Slider valhits {
                 label {Min Hits}
@@ -3603,7 +3603,7 @@ progdefaults.changed = true;} open
             }
             Fl_Group {} {
               label {Tx Parameters} open
-              xywh {5 130 585 102} box ENGRAVED_BOX align 21
+              xywh {5 130 585 90} box ENGRAVED_BOX align 21
             } {
               Fl_Round_Button {btn_fsqbaud[0]} {
                 label {2 baud}
@@ -3687,24 +3687,36 @@ progdefaults.changed = true;}
                 label {QTC:}
                 callback {progdefaults.fsqQTCtext = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter QTC text} xywh {80 199 456 22}
+                tooltip {Enter QTC text} xywh {80 189 456 22}
                 code0 {o->value(progdefaults.fsqQTCtext.c_str());}
               }
             }
             Fl_Group {} {
+              label {Message Logging} open
+              xywh {5 220 585 39} box ENGRAVED_BOX align 21
+            } {
+              Fl_Check_Button btn_fsq_msg_dt_stamp {
+                label {Add date/time stamp to each message}
+                callback {progdefaults.add_fsq_msg_dt=o->value();
+progdefaults.changed=true;}
+                tooltip {Add date/time stamp to each \# received message} xywh {157 232 297 15} down_box DOWN_BOX value 1
+                code0 {o->value(progdefaults.add_fsq_msg_dt);}
+              }
+            }
+            Fl_Group {} {
               label Logging open
-              xywh {5 235 585 80} box ENGRAVED_BOX align 21
+              xywh {5 260 585 80} box ENGRAVED_BOX align 21
             } {
               Fl_Output txtAuditLog {
                 label {Audit log}
-                xywh {82 255 325 22}
+                xywh {82 280 325 22}
                 code0 {o->value(progdefaults.fsq_audit_log.c_str());}
               }
               Fl_Light_Button btn_enable_auditlog {
                 label Enable
                 callback {progdefaults.fsq_enable_audit_log = o->value();
 progdefaults.changed = true;}
-                xywh {421 256 74 20} selection_color 2
+                xywh {421 281 74 20} selection_color 2
                 code0 {o->value(progdefaults.fsq_enable_audit_log);}
               }
               Fl_Button btn_select_auditlog {
@@ -3718,18 +3730,18 @@ if (fname) {
   txtAuditLog->value(progdefaults.fsq_audit_log.c_str());
   progdefaults.changed = true;
 }}
-                xywh {509 256 70 20}
+                xywh {509 281 70 20}
               }
               Fl_Output txtHeardLog {
                 label {Heard log}
-                xywh {82 284 325 22}
+                xywh {82 308 325 22}
                 code0 {o->value(progdefaults.fsq_heard_log.c_str());}
               }
               Fl_Light_Button btn_enable_fsq_heard_log {
                 label Enable
                 callback {progdefaults.fsq_enable_heard_log = o->value();
 progdefaults.changed = true;}
-                xywh {421 285 74 20} selection_color 2
+                xywh {421 309 74 20} selection_color 2
                 code0 {o->value(progdefaults.fsq_enable_heard_log);}
               }
               Fl_Button btn_select_fsq_heard_log {
@@ -3742,12 +3754,12 @@ if (fname) {
   txtHeardLog->value(progdefaults.fsq_heard_log.c_str());
   progdefaults.changed = true;
 }}
-                xywh {509 285 70 20}
+                xywh {509 309 70 20}
               }
             }
             Fl_Group {} {
               label {Text Colors} open
-              xywh {5 318 585 55} box ENGRAVED_BOX align 21
+              xywh {5 340 585 35} box ENGRAVED_BOX align 21
             } {
               Fl_Button btn_fsq_xmt_color {
                 label XMIT
@@ -3759,7 +3771,7 @@ btn_fsq_xmt_color->redraw();
 fsq_rx_text->setFontColor(progdefaults.fsq_xmt_color, FTextBase::FSQ_TX);
 
 progdefaults.changed = true;}
-                tooltip {Transmit text} xywh {82 339 65 24} align 4
+                tooltip {Transmit text} xywh {145 346 40 24} align 4
                 code0 {btn_fsq_xmt_color->color(progdefaults.fsq_xmt_color);}
               }
               Fl_Button btn_fsq_directed_color {
@@ -3772,7 +3784,7 @@ btn_fsq_directed_color->redraw();
 fsq_rx_text->setFontColor(progdefaults.fsq_directed_color, FTextBase::FSQ_DIR);
 
 progdefaults.changed = true;}
-                tooltip {Directed received text} xywh {253 339 65 24} align 4
+                tooltip {Directed received text} xywh {275 346 40 24} align 4
                 code0 {btn_fsq_directed_color->color(progdefaults.fsq_directed_color);}
               }
               Fl_Button btn_fsq_undirected_color {
@@ -3785,7 +3797,7 @@ btn_fsq_undirected_color->redraw();
 fsq_rx_text->setFontColor(progdefaults.fsq_undirected_color, FTextBase::FSQ_UND);
 
 progdefaults.changed = true;}
-                tooltip {Undirected received text} xywh {425 339 65 24} align 4
+                tooltip {Undirected received text} xywh {425 346 40 24} align 4
                 code0 {btn_fsq_undirected_color->color(progdefaults.fsq_undirected_color);}
               }
               Fl_Button btn_fsq_color_defaults {
@@ -3807,7 +3819,7 @@ fsq_rx_text->setFontColor(progdefaults.fsq_directed_color, FTextBase::FSQ_DIR);
 fsq_rx_text->setFontColor(progdefaults.fsq_undirected_color, FTextBase::FSQ_UND);
 
 progdefaults.changed = true;}
-                xywh {507 339 74 24}
+                xywh {507 346 74 24}
               }
             }
           }

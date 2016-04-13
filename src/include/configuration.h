@@ -700,6 +700,9 @@
         ELEM_(Fl_Color, fsq_undirected_color, "FSQUNDIRECTEDCOLOR",                     \
               "Color for FSQ undirected text",                                          \
               FL_DARK_GREEN)                                                            \
+        ELEM_(bool, add_fsq_msg_dt, "ADDFSQMSGDT",                                      \
+              "Add date-time stamp to each # type received message",                    \
+              1)                                                                        \
         /* IFKP */                                                                      \
         ELEM_(int, ifkp_baud, "IFKPBAUD",                                               \
               "1, 2, 3",                                                                \

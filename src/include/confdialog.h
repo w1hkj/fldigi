@@ -338,6 +338,7 @@ extern Fl_Choice *sel_fsq_frequency;
 extern Fl_Choice *sel_fsq_sounder;
 extern Fl_Check_Button *btn_fsq_lowercase;
 extern Fl_Counter *cntr_FSQ_time_out;
+extern Fl_Check_Button *btn_fsq_msg_dt_stamp;
 extern Fl_Output *txtAuditLog;
 extern Fl_Light_Button *btn_enable_auditlog;
 extern Fl_Button *btn_select_auditlog;

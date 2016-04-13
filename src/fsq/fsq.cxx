@@ -675,14 +675,14 @@ void fsq::parse_pound(std::string relay)
 {
 	size_t p1 = NIT, p2 = NIT;
 	std::string fname = "";
-	bool named_file = false;
+	bool call_file = true;
 	p1 = rx_text.find('[');
 	if (p1 != NIT) {
 		p2 = rx_text.find(']', p1);
 		if (p2 != NIT) {
 			fname = rx_text.substr(p1 + 1, p2 - p1 - 1);
 			fname = fl_filename_name(fname.c_str());
-			named_file = true;
+			call_file = false;
 		} else p2 = 0;
 	} else p2 = 0;
 	if (fname.empty()) {
@@ -695,13 +695,18 @@ void fsq::parse_pound(std::string relay)
 
 	std::ofstream rxfile;
 	fname.insert(0, TempDir);
-	if (named_file) {
+	if (call_file) {
 		rxfile.open(fname.c_str(), ios::app);
 	} else {
 		rxfile.open(fname.c_str(), ios::out);
 	}
 	if (!rxfile) return;
-	rxfile << rx_text.substr(p2+1);
+	if (call_file && progdefaults.add_fsq_msg_dt) {
+		rxfile << "Received: " << zdate() << ", " << ztime() << "\n";
+		rxfile << rx_text.substr(p2+1) << "\n";
+	} else
+		rxfile << rx_text.substr(p2+1);
+
 	rxfile.close();
 
 	display_fsq_rx_text(toprint.append(rx_text).append("\n"), FTextBase::FSQ_DIR);
