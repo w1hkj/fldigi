@@ -3682,6 +3682,10 @@ static void cb_valTHOR_PATHS(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabOther=(Fl_Group *)0;
+
+Fl_Tabs *tabsOther=(Fl_Tabs *)0;
+
 Fl_Group *tabNavtex=(Fl_Group *)0;
 
 Fl_Check_Button *btnNvtxAdifLog=(Fl_Check_Button *)0;
@@ -5947,11 +5951,10 @@ Fl_Double_Window* ConfigureDialog() {
     { tabsConfigure = new Fl_Tabs(0, 0, 600, 385);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
-      { tabOperator = new Fl_Group(0, 25, 600, 355, _("Operator"));
+      { tabOperator = new Fl_Group(0, 25, 600, 360, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6091,7 +6094,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 360);
           tabsUI->selection_color(FL_LIGHT1);
-          { tabBrowser = new Fl_Group(0, 50, 600, 330, _("Browser"));
+          { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
             tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
@@ -6233,7 +6236,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabBrowser->end();
           } // Fl_Group* tabBrowser
-          { tabContest = new Fl_Group(0, 50, 600, 330, _("Contest"));
+          { tabContest = new Fl_Group(0, 50, 600, 335, _("Contest"));
             tabContest->tooltip(_("User Interface - Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(55, 70, 490, 80, _("Exchanges"));
@@ -6387,7 +6390,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabUserInterface = new Fl_Group(0, 50, 600, 330, _("General"));
+          { tabUserInterface = new Fl_Group(0, 50, 600, 335, _("General"));
             tabUserInterface->tooltip(_("User Interface - General"));
             tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(40, 77, 520, 76);
@@ -6517,8 +6520,8 @@ Fl_Double_Window* ConfigureDialog() {
           { tabLogServer = new Fl_Group(0, 50, 600, 335, _("Log"));
             tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
             tabLogServer->hide();
-            { tabsLog = new Fl_Tabs(0, 55, 600, 330);
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("QSO"));
+            { tabsLog = new Fl_Tabs(0, 55, 600, 335);
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6615,9 +6618,9 @@ Fl_Double_Window* ConfigureDialog() {
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Rx Text"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx Text"));
                 o->hide();
-                { Fl_Group* o = new Fl_Group(62, 100, 496, 110, _("Rx Text"));
+                { Fl_Group* o = new Fl_Group(62, 96, 496, 113, _("Rx Text"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(85, 155, 191, 20, _("Single-click to capture"));
@@ -6659,53 +6662,53 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("MacLogger"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("MacLogger"));
                 o->hide();
-                { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 95, 186, 20, _("Connect to MacLogger"));
+                { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 91, 186, 20, _("Connect to MacLogger"));
                 btnConnectToMaclogger->down_box(FL_DOWN_BOX);
                 btnConnectToMaclogger->callback((Fl_Callback*)cb_btnConnectToMaclogger);
                 o->value(progdefaults.connect_to_maclogger);
                 } // Fl_Check_Button* btnConnectToMaclogger
-                { Fl_Check_Button* o = btn_capture_maclogger_radio = new Fl_Check_Button(205, 95, 186, 20, _("Capture Radio Report"));
+                { Fl_Check_Button* o = btn_capture_maclogger_radio = new Fl_Check_Button(205, 91, 186, 20, _("Capture Radio Report"));
                 btn_capture_maclogger_radio->down_box(FL_DOWN_BOX);
                 btn_capture_maclogger_radio->value(1);
                 btn_capture_maclogger_radio->callback((Fl_Callback*)cb_btn_capture_maclogger_radio);
                 o->value(progdefaults.capture_maclogger_radio);
                 } // Fl_Check_Button* btn_capture_maclogger_radio
-                { Fl_Check_Button* o = btn_capture_maclogger_log = new Fl_Check_Button(205, 120, 186, 20, _("Capture Log Report"));
+                { Fl_Check_Button* o = btn_capture_maclogger_log = new Fl_Check_Button(205, 116, 186, 21, _("Capture Log Report"));
                 btn_capture_maclogger_log->down_box(FL_DOWN_BOX);
                 btn_capture_maclogger_log->callback((Fl_Callback*)cb_btn_capture_maclogger_log);
                 o->value(progdefaults.capture_maclogger_log);
                 } // Fl_Check_Button* btn_capture_maclogger_log
-                { Fl_Check_Button* o = btn_capture_maclogger_lookup = new Fl_Check_Button(405, 95, 186, 20, _("Capture Lookup "));
+                { Fl_Check_Button* o = btn_capture_maclogger_lookup = new Fl_Check_Button(405, 91, 186, 20, _("Capture Lookup "));
                 btn_capture_maclogger_lookup->down_box(FL_DOWN_BOX);
                 btn_capture_maclogger_lookup->callback((Fl_Callback*)cb_btn_capture_maclogger_lookup);
                 o->value(progdefaults.capture_maclogger_lookup);
                 } // Fl_Check_Button* btn_capture_maclogger_lookup
-                { Fl_Check_Button* o = btn_capture_maclogger_spot_tune = new Fl_Check_Button(405, 120, 186, 20, _("Capture Spot Tune"));
+                { Fl_Check_Button* o = btn_capture_maclogger_spot_tune = new Fl_Check_Button(405, 116, 186, 21, _("Capture Spot Tune"));
                 btn_capture_maclogger_spot_tune->down_box(FL_DOWN_BOX);
                 btn_capture_maclogger_spot_tune->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_tune);
                 o->value(progdefaults.capture_maclogger_spot_tune);
                 } // Fl_Check_Button* btn_capture_maclogger_spot_tune
-                { Fl_Check_Button* o = btn_capture_maclogger_spot_report = new Fl_Check_Button(405, 147, 186, 20, _("Capture Spot Report"));
+                { Fl_Check_Button* o = btn_capture_maclogger_spot_report = new Fl_Check_Button(405, 144, 186, 21, _("Capture Spot Report"));
                 btn_capture_maclogger_spot_report->down_box(FL_DOWN_BOX);
                 btn_capture_maclogger_spot_report->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_report);
                 o->value(progdefaults.capture_maclogger_spot_report);
                 } // Fl_Check_Button* btn_capture_maclogger_spot_report
-                { Fl_Check_Button* o = btn_enable_maclogger_log = new Fl_Check_Button(10, 175, 165, 25, _("Enable UDP log file"));
+                { Fl_Check_Button* o = btn_enable_maclogger_log = new Fl_Check_Button(10, 173, 165, 26, _("Enable UDP log file"));
                 btn_enable_maclogger_log->down_box(FL_DOWN_BOX);
                 btn_enable_maclogger_log->callback((Fl_Callback*)cb_btn_enable_maclogger_log);
                 o->value(progdefaults.enable_maclogger_log);
                 } // Fl_Check_Button* btn_enable_maclogger_log
-                { Fl_Text_Display* o = txt_UDP_data = new Fl_Text_Display(10, 220, 580, 156, _("UDP data stream"));
+                { Fl_Text_Display* o = txt_UDP_data = new Fl_Text_Display(10, 220, 580, 161, _("UDP data stream"));
                 txt_UDP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
                 o->buffer(txtbuffer);
                 } // Fl_Text_Display* txt_UDP_data
-                { Fl_Output* o = txt_maclogger_log_filename = new Fl_Output(178, 175, 272, 25);
+                { Fl_Output* o = txt_maclogger_log_filename = new Fl_Output(178, 173, 272, 26);
                 o->value(progdefaults.maclogger_log_filename.c_str());
                 } // Fl_Output* txt_maclogger_log_filename
-                { Fl_Button* o = new Fl_Button(460, 175, 129, 25, _("Clear UDP text"));
+                { Fl_Button* o = new Fl_Button(460, 173, 129, 26, _("Clear UDP text"));
                 o->callback((Fl_Callback*)cb_Clear);
                 } // Fl_Button* o
                 o->end();
@@ -6714,7 +6717,7 @@ ab and newline are automatically included."));
             } // Fl_Tabs* tabsLog
             tabLogServer->end();
           } // Fl_Group* tabLogServer
-          { tabMBars = new Fl_Group(0, 50, 600, 330, _("Macros"));
+          { tabMBars = new Fl_Group(0, 50, 600, 335, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
             tabMBars->hide();
             { Fl_Group* o = new Fl_Group(52, 263, 496, 35);
@@ -6833,7 +6836,7 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabMBars->end();
           } // Fl_Group* tabMBars
-          { tabWF_UI = new Fl_Group(0, 50, 600, 330, _("WF Ctrls"));
+          { tabWF_UI = new Fl_Group(0, 50, 600, 335, _("WF Ctrls"));
             tabWF_UI->tooltip(_("User Interface - Waterfall controls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(52, 83, 496, 253);
@@ -6918,10 +6921,10 @@ ab and newline are automatically included."));
             } // Fl_Group* o
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
-          { tabColorsFonts = new Fl_Group(0, 50, 600, 330, _("Clrs/Fnts"));
+          { tabColorsFonts = new Fl_Group(0, 50, 600, 335, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
             { tabsColors = new Fl_Tabs(0, 55, 600, 325);
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Rx/Tx"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Rx/Tx"));
                 o->hide();
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 90, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
@@ -7019,7 +7022,7 @@ ab and newline are automatically included."));
                 } // Fl_Check_Button* btn_show_all_codes
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("FreqDisp / Meters"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("FreqDisp / Meters"));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(115, 108, 395, 87);
                 o->box(FL_ENGRAVED_FRAME);
@@ -7093,7 +7096,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Log"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Log"));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(114, 101, 372, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
@@ -7137,7 +7140,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("F_keys"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("F_keys"));
                 o->hide();
                 { btnUseGroupColors = new Fl_Check_Button(135, 107, 165, 21, _("Use colored buttons"));
                 btnUseGroupColors->down_box(FL_DOWN_BOX);
@@ -7170,7 +7173,7 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnMacroBtnFont
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Tabs"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Tabs"));
                 o->hide();
                 { btnTabColor = new Fl_Button(200, 113, 75, 21, _("Tab Color"));
                 btnTabColor->callback((Fl_Callback*)cb_btnTabColor);
@@ -7180,7 +7183,8 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnTabDefaultColor
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("Buttons"));
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Buttons"));
+                o->hide();
                 { btnSpotColor = new Fl_Button(139, 121, 85, 21, _("Spot"));
                 btnSpotColor->callback((Fl_Callback*)cb_btnSpotColor);
                 } // Fl_Button* btnSpotColor
@@ -7266,8 +7270,7 @@ ab and newline are automatically included."));
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 300, _("SigLvl"));
-                o->hide();
+              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("SigLvl"));
                 { btnLowSignal = new Fl_Button(210, 142, 70, 21, _("Low"));
                 btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
                 } // Fl_Button* btnLowSignal
@@ -7308,7 +7311,7 @@ ab and newline are automatically included."));
             } // Fl_Tabs* tabsColors
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
-          { tab_touch = new Fl_Group(0, 50, 600, 330, _("Touch"));
+          { tab_touch = new Fl_Group(0, 50, 600, 335, _("Touch"));
             tab_touch->hide();
             { Fl_Box* o = new Fl_Box(15, 70, 570, 52, _("Note:\nThese configuration items are useful for but not unique to using fldig\
 i on a\ntouch screen device such as a tablet."));
@@ -7347,12 +7350,13 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Tabs* tabsUI
         tabUI->end();
       } // Fl_Group* tabUI
-      { tabWaterfall = new Fl_Group(0, 25, 600, 355, _("Waterfall"));
+      { tabWaterfall = new Fl_Group(0, 25, 600, 360, _("Waterfall"));
         tabWaterfall->hide();
-        { tabsWaterfall = new Fl_Tabs(0, 25, 600, 355);
+        { tabsWaterfall = new Fl_Tabs(0, 25, 600, 360);
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Display"));
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7547,7 +7551,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("FFT Processing"));
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("FFT Processing"));
             o->hide();
             { Fl_Group* o = new Fl_Group(55, 71, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
@@ -7683,8 +7687,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Mouse"));
-            o->hide();
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Mouse"));
             { Fl_Group* o = new Fl_Group(55, 73, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(65, 87, 340, 20, _("Left or right click always replays audio history"));
@@ -7741,18 +7744,17 @@ i on a\ntouch screen device such as a tablet."));
         } // Fl_Tabs* tabsWaterfall
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
-      { tabModems = new Fl_Group(0, 25, 600, 355, _("Modems"));
+      { tabModems = new Fl_Group(0, 25, 600, 360, _("Modems"));
         tabModems->hide();
-        { tabsModems = new Fl_Tabs(0, 25, 600, 355);
+        { tabsModems = new Fl_Tabs(0, 25, 600, 360);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
-          { tabCW = new Fl_Group(0, 50, 600, 330, _("CW"));
+          { tabCW = new Fl_Group(0, 50, 600, 335, _("CW"));
             tabCW->hide();
-            { tabsCW = new Fl_Tabs(0, 50, 600, 330);
+            { tabsCW = new Fl_Tabs(0, 50, 600, 335);
               tabsCW->selection_color(FL_LIGHT1);
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("General"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("General"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7976,8 +7978,9 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Timing and QSK"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Timing and QSK"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 585, 120, _("Timing"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8164,7 +8167,7 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Prosigns"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Prosigns"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 283);
@@ -8334,7 +8337,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Tabs* tabsCW
             tabCW->end();
           } // Fl_Group* tabCW
-          { tabDomEX = new Fl_Group(0, 50, 600, 330, _("Dom"));
+          { tabDomEX = new Fl_Group(0, 50, 600, 335, _("Dom"));
             tabDomEX->hide();
             { Fl_Group* o = new Fl_Group(55, 60, 490, 180);
               o->box(FL_ENGRAVED_FRAME);
@@ -8426,7 +8429,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabDomEX->end();
           } // Fl_Group* tabDomEX
-          { tabFeld = new Fl_Group(0, 50, 600, 330, _("Feld"));
+          { tabFeld = new Fl_Group(0, 50, 600, 335, _("Feld"));
             tabFeld->hide();
             { Fl_Group* o = new Fl_Group(55, 72, 490, 145);
               o->box(FL_ENGRAVED_FRAME);
@@ -8531,7 +8534,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabFeld->end();
           } // Fl_Group* tabFeld
-          { tabFSQ = new Fl_Group(0, 50, 600, 330, _("FSQ"));
+          { tabFSQ = new Fl_Group(0, 50, 600, 335, _("FSQ"));
             tabFSQ->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 585, 69, _("Rx Parameters"));
               o->box(FL_ENGRAVED_BOX);
@@ -8705,7 +8708,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabFSQ->end();
           } // Fl_Group* tabFSQ
-          { tabIFKP = new Fl_Group(0, 50, 600, 330, _("IFKP"));
+          { tabIFKP = new Fl_Group(0, 50, 600, 335, _("IFKP"));
             tabIFKP->hide();
             { Fl_Group* o = new Fl_Group(5, 65, 587, 120, _("Tx Parameters"));
               o->box(FL_ENGRAVED_BOX);
@@ -8775,7 +8778,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabIFKP->end();
           } // Fl_Group* tabIFKP
-          { tabMT63 = new Fl_Group(0, 50, 600, 330, _("MT-63"));
+          { tabMT63 = new Fl_Group(0, 50, 600, 335, _("MT-63"));
             tabMT63->hide();
             { Fl_Group* o = new Fl_Group(55, 73, 490, 84);
               o->box(FL_ENGRAVED_FRAME);
@@ -8834,7 +8837,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabMT63->end();
           } // Fl_Group* tabMT63
-          { tabOlivia = new Fl_Group(0, 50, 600, 330, _("Oliv"));
+          { tabOlivia = new Fl_Group(0, 50, 600, 335, _("Oliv"));
             tabOlivia->hide();
             { Fl_Group* o = new Fl_Group(55, 76, 490, 280);
               o->box(FL_ENGRAVED_FRAME);
@@ -8939,7 +8942,7 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabOlivia->end();
           } // Fl_Group* tabOlivia
-          { tabContestia = new Fl_Group(0, 50, 600, 330, _("Cont"));
+          { tabContestia = new Fl_Group(0, 50, 600, 335, _("Cont"));
             tabContestia->hide();
             { Fl_Group* o = new Fl_Group(55, 80, 490, 235);
               o->box(FL_ENGRAVED_FRAME);
@@ -9036,10 +9039,11 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Group* o
             tabContestia->end();
           } // Fl_Group* tabContestia
-          { tabPSK = new Fl_Group(0, 50, 600, 330, _("PSK"));
-            { tabsPSK = new Fl_Tabs(0, 50, 600, 330);
+          { tabPSK = new Fl_Group(0, 50, 600, 335, _("PSK"));
+            tabPSK->hide();
+            { tabsPSK = new Fl_Tabs(0, 50, 600, 335);
               tabsPSK->selection_color(FL_LIGHT1);
-              { grpPSK = new Fl_Group(0, 75, 600, 305, _("General"));
+              { grpPSK = new Fl_Group(0, 75, 600, 310, _("General"));
                 grpPSK->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 { Fl_Group* o = new Fl_Group(55, 87, 490, 86, _("AFC behavior"));
                 o->box(FL_ENGRAVED_FRAME);
@@ -9183,12 +9187,13 @@ i on a\ntouch screen device such as a tablet."));
             } // Fl_Tabs* tabsPSK
             tabPSK->end();
           } // Fl_Group* tabPSK
-          { tabRTTY = new Fl_Group(0, 50, 600, 330, _("TTY"));
+          { tabRTTY = new Fl_Group(0, 50, 600, 335, _("TTY"));
             tabRTTY->hide();
-            { tabsRTTY = new Fl_Tabs(0, 50, 600, 330);
+            { tabsRTTY = new Fl_Tabs(0, 50, 600, 335);
               tabsRTTY->selection_color(FL_LIGHT1);
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Tx"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Tx"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->hide();
                 { Fl_ListBox* o = selShift = new Fl_ListBox(65, 104, 100, 20, _("Carrier shift"));
                 selShift->tooltip(_("Select carrier shift"));
                 selShift->box(FL_DOWN_BOX);
@@ -9342,9 +9347,8 @@ i on a\ntouch screen device such as a tablet."));
                 } // Fl_Check_Button* chkPseudoFSK
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Rx"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Rx"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->hide();
                 { Fl_Group* o = new Fl_Group(32, 101, 535, 69, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9443,7 +9447,7 @@ ency"));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 305, _("Synop"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Synop"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->hide();
                 { Fl_Check_Button* o = btnSynopAdifDecoding = new Fl_Check_Button(190, 91, 126, 22, _("SYNOP to ADIF"));
@@ -9474,7 +9478,7 @@ le Earth)"));
             } // Fl_Tabs* tabsRTTY
             tabRTTY->end();
           } // Fl_Group* tabRTTY
-          { tabTHOR = new Fl_Group(0, 50, 600, 330, _("Thor"));
+          { tabTHOR = new Fl_Group(0, 50, 600, 335, _("Thor"));
             tabTHOR->hide();
             { Fl_Group* o = new Fl_Group(55, 78, 490, 270);
               o->box(FL_ENGRAVED_FRAME);
@@ -9579,37 +9583,39 @@ le Earth)"));
             } // Fl_Group* o
             tabTHOR->end();
           } // Fl_Group* tabTHOR
-          { tabNavtex = new Fl_Group(0, 50, 600, 330, _("Nav"));
-            tabNavtex->hide();
-            { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(171, 79, 235, 30, _("Log Navtex messages to Adif file"));
-              btnNvtxAdifLog->down_box(FL_DOWN_BOX);
-              btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
-              o->value(progdefaults.NVTX_AdifLog);
-            } // Fl_Check_Button* btnNvtxAdifLog
-            { Fl_Check_Button* o = btnNvtxKmlLog = new Fl_Check_Button(170, 125, 270, 30, _("Log Navtex messages to KML"));
-              btnNvtxKmlLog->tooltip(_("Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)"));
-              btnNvtxKmlLog->down_box(FL_DOWN_BOX);
-              btnNvtxKmlLog->callback((Fl_Callback*)cb_btnNvtxKmlLog);
-              o->value(progdefaults.NVTX_KmlLog);
-            } // Fl_Check_Button* btnNvtxKmlLog
-            tabNavtex->end();
-          } // Fl_Group* tabNavtex
-          { tabWefax = new Fl_Group(0, 50, 600, 330, _("WFx"));
-            tabWefax->hide();
-            { Fl_Group* o = new Fl_Group(2, 63, 598, 300);
-              { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(94, 137, 235, 30, _("Log Wefax messages to Adif file"));
+          { tabOther = new Fl_Group(0, 50, 600, 335, _("Other"));
+            { tabsOther = new Fl_Tabs(0, 50, 600, 335);
+              { tabNavtex = new Fl_Group(0, 75, 600, 310, _("Nav"));
+                tabNavtex->hide();
+                { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(181, 109, 235, 30, _("Log Navtex messages to Adif file"));
+                btnNvtxAdifLog->down_box(FL_DOWN_BOX);
+                btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
+                o->value(progdefaults.NVTX_AdifLog);
+                } // Fl_Check_Button* btnNvtxAdifLog
+                { Fl_Check_Button* o = btnNvtxKmlLog = new Fl_Check_Button(180, 155, 270, 30, _("Log Navtex messages to KML"));
+                btnNvtxKmlLog->tooltip(_("Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)"));
+                btnNvtxKmlLog->down_box(FL_DOWN_BOX);
+                btnNvtxKmlLog->callback((Fl_Callback*)cb_btnNvtxKmlLog);
+                o->value(progdefaults.NVTX_KmlLog);
+                } // Fl_Check_Button* btnNvtxKmlLog
+                tabNavtex->end();
+              } // Fl_Group* tabNavtex
+              { tabWefax = new Fl_Group(0, 75, 600, 310, _("WFx"));
+                tabWefax->hide();
+                { Fl_Group* o = new Fl_Group(2, 79, 598, 285);
+                { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(99, 155, 235, 30, _("Log Wefax messages to Adif file"));
                 btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));
                 btnWefaxAdifLog->down_box(FL_DOWN_BOX);
                 btnWefaxAdifLog->callback((Fl_Callback*)cb_btnWefaxAdifLog);
                 o->value(progdefaults.WEFAX_AdifLog);
-              } // Fl_Check_Button* btnWefaxAdifLog
-              { Fl_Check_Button* o = btnWefaxEmbeddedGui = new Fl_Check_Button(94, 74, 235, 30, _("Embedded Wefax Gui"));
+                } // Fl_Check_Button* btnWefaxAdifLog
+                { Fl_Check_Button* o = btnWefaxEmbeddedGui = new Fl_Check_Button(99, 92, 235, 30, _("Embedded Wefax Gui"));
                 btnWefaxEmbeddedGui->tooltip(_("Display tx and rx in main fldigi window.\nChange requires restart of fldigi"));
                 btnWefaxEmbeddedGui->down_box(FL_DOWN_BOX);
                 btnWefaxEmbeddedGui->callback((Fl_Callback*)cb_btnWefaxEmbeddedGui);
                 o->value(progdefaults.WEFAX_EmbeddedGui);
-              } // Fl_Check_Button* btnWefaxEmbeddedGui
-              { Fl_Value_Input2* o = btnWefaxShift = new Fl_Value_Input2(94, 177, 80, 20, _("Frequency shift (800 Hz)"));
+                } // Fl_Check_Button* btnWefaxEmbeddedGui
+                { Fl_Value_Input2* o = btnWefaxShift = new Fl_Value_Input2(99, 195, 80, 20, _("Frequency shift (800 Hz)"));
                 btnWefaxShift->tooltip(_("Default 800 Hz. Deutsche Wetterdienst 850Hz"));
                 btnWefaxShift->type(2);
                 btnWefaxShift->box(FL_DOWN_BOX);
@@ -9623,8 +9629,8 @@ le Earth)"));
                 btnWefaxShift->align(Fl_Align(FL_ALIGN_RIGHT));
                 btnWefaxShift->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.WEFAX_Shift);
-              } // Fl_Value_Input2* btnWefaxShift
-              { Fl_Value_Input2* o = btnWefaxMaxRows = new Fl_Value_Input2(94, 217, 85, 20, _("Received fax maximum rows number (5000)"));
+                } // Fl_Value_Input2* btnWefaxShift
+                { Fl_Value_Input2* o = btnWefaxMaxRows = new Fl_Value_Input2(99, 235, 85, 20, _("Received fax maximum rows number (5000)"));
                 btnWefaxMaxRows->tooltip(_("Maximum row number for a received fax image."));
                 btnWefaxMaxRows->type(2);
                 btnWefaxMaxRows->box(FL_DOWN_BOX);
@@ -9638,69 +9644,73 @@ le Earth)"));
                 btnWefaxMaxRows->align(Fl_Align(FL_ALIGN_RIGHT));
                 btnWefaxMaxRows->when(FL_WHEN_RELEASE);
                 o->value(progdefaults.WEFAX_MaxRows);
-              } // Fl_Value_Input2* btnWefaxMaxRows
-              { Fl_Input* o = btnWefaxSaveDir = new Fl_Input(94, 267, 310, 20, _("Fax images destination directory"));
+                } // Fl_Value_Input2* btnWefaxMaxRows
+                { Fl_Input* o = btnWefaxSaveDir = new Fl_Input(99, 285, 310, 20, _("Fax images destination directory"));
                 btnWefaxSaveDir->callback((Fl_Callback*)cb_btnWefaxSaveDir);
                 btnWefaxSaveDir->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 o->value(progdefaults.wefax_save_dir.c_str());
-              } // Fl_Input* btnWefaxSaveDir
-              { btnSelectFaxDestDir = new Fl_Button(424, 267, 80, 20, _("Directory..."));
+                } // Fl_Input* btnWefaxSaveDir
+                { btnSelectFaxDestDir = new Fl_Button(429, 285, 80, 20, _("Directory..."));
                 btnSelectFaxDestDir->callback((Fl_Callback*)cb_btnSelectFaxDestDir);
-              } // Fl_Button* btnSelectFaxDestDir
-              { Fl_Check_Button* o = btnWefaxHideTx = new Fl_Check_Button(94, 107, 235, 30, _("Hide Transmission window"));
+                } // Fl_Button* btnSelectFaxDestDir
+                { Fl_Check_Button* o = btnWefaxHideTx = new Fl_Check_Button(99, 125, 235, 30, _("Hide Transmission window"));
                 btnWefaxHideTx->tooltip(_("Hide transmission window by default."));
                 btnWefaxHideTx->down_box(FL_DOWN_BOX);
                 btnWefaxHideTx->callback((Fl_Callback*)cb_btnWefaxHideTx);
                 o->value(progdefaults.WEFAX_HideTx);
-              } // Fl_Check_Button* btnWefaxHideTx
-              { Fl_Check_Button* o = btnWefaxSaveMonochrome = new Fl_Check_Button(94, 297, 235, 30, _("Save image as monochrome file"));
+                } // Fl_Check_Button* btnWefaxHideTx
+                { Fl_Check_Button* o = btnWefaxSaveMonochrome = new Fl_Check_Button(99, 315, 235, 30, _("Save image as monochrome file"));
                 btnWefaxSaveMonochrome->tooltip(_("Save the fax image as a gray-level PNG file."));
                 btnWefaxSaveMonochrome->down_box(FL_DOWN_BOX);
                 btnWefaxSaveMonochrome->callback((Fl_Callback*)cb_btnWefaxSaveMonochrome);
                 o->value(progdefaults.WEFAX_SaveMonochrome);
-              } // Fl_Check_Button* btnWefaxSaveMonochrome
-              o->end();
-            } // Fl_Group* o
-            tabWefax->end();
-          } // Fl_Group* tabWefax
-          { tabDFTscan = new Fl_Group(0, 50, 600, 330, _("Scan"));
-            tabDFTscan->hide();
-            { Fl_Counter* o = cnt_dft_scans = new Fl_Counter(235, 129, 132, 21, _("# scans"));
-              cnt_dft_scans->minimum(10);
-              cnt_dft_scans->maximum(1000);
-              cnt_dft_scans->step(10);
-              cnt_dft_scans->value(60);
-              cnt_dft_scans->callback((Fl_Callback*)cb_cnt_dft_scans);
-              o->value(progdefaults.cnt_dft_scans);
-              o->lstep(100.0);
-            } // Fl_Counter* cnt_dft_scans
-            { Fl_Counter* o = cnt_dft_range = new Fl_Counter(251, 194, 100, 21, _("dB Range"));
-              cnt_dft_range->type(1);
-              cnt_dft_range->minimum(20);
-              cnt_dft_range->maximum(120);
-              cnt_dft_range->step(10);
-              cnt_dft_range->value(60);
-              cnt_dft_range->callback((Fl_Callback*)cb_cnt_dft_range);
-              o->value(progdefaults.cnt_dft_range);
-            } // Fl_Counter* cnt_dft_range
-            { Fl_Check_Button* o = btn_use_relative_dB = new Fl_Check_Button(275, 265, 70, 15, _("Use relative dB"));
-              btn_use_relative_dB->down_box(FL_DOWN_BOX);
-              btn_use_relative_dB->callback((Fl_Callback*)cb_btn_use_relative_dB);
-              o->value(progdefaults.dft_relative);
-            } // Fl_Check_Button* btn_use_relative_dB
-            tabDFTscan->end();
-          } // Fl_Group* tabDFTscan
+                } // Fl_Check_Button* btnWefaxSaveMonochrome
+                o->end();
+                } // Fl_Group* o
+                tabWefax->end();
+              } // Fl_Group* tabWefax
+              { tabDFTscan = new Fl_Group(0, 75, 600, 310, _("Scan"));
+                { Fl_Counter* o = cnt_dft_scans = new Fl_Counter(235, 154, 132, 21, _("# scans"));
+                cnt_dft_scans->minimum(10);
+                cnt_dft_scans->maximum(1000);
+                cnt_dft_scans->step(10);
+                cnt_dft_scans->value(60);
+                cnt_dft_scans->callback((Fl_Callback*)cb_cnt_dft_scans);
+                o->value(progdefaults.cnt_dft_scans);
+                o->lstep(100.0);
+                } // Fl_Counter* cnt_dft_scans
+                { Fl_Counter* o = cnt_dft_range = new Fl_Counter(251, 219, 100, 21, _("dB Range"));
+                cnt_dft_range->type(1);
+                cnt_dft_range->minimum(20);
+                cnt_dft_range->maximum(120);
+                cnt_dft_range->step(10);
+                cnt_dft_range->value(60);
+                cnt_dft_range->callback((Fl_Callback*)cb_cnt_dft_range);
+                o->value(progdefaults.cnt_dft_range);
+                } // Fl_Counter* cnt_dft_range
+                { Fl_Check_Button* o = btn_use_relative_dB = new Fl_Check_Button(275, 290, 70, 15, _("Use relative dB"));
+                btn_use_relative_dB->down_box(FL_DOWN_BOX);
+                btn_use_relative_dB->callback((Fl_Callback*)cb_btn_use_relative_dB);
+                o->value(progdefaults.dft_relative);
+                } // Fl_Check_Button* btn_use_relative_dB
+                tabDFTscan->end();
+              } // Fl_Group* tabDFTscan
+              tabsOther->end();
+            } // Fl_Tabs* tabsOther
+            tabOther->end();
+          } // Fl_Group* tabOther
           tabsModems->end();
         } // Fl_Tabs* tabsModems
         tabModems->end();
       } // Fl_Group* tabModems
-      { tabRig = new Fl_Group(0, 23, 600, 357, _("Rig"));
+      { tabRig = new Fl_Group(0, 25, 600, 360, _("Rig"));
         tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
-        { tabsRig = new Fl_Tabs(0, 23, 600, 357);
+        { tabsRig = new Fl_Tabs(0, 25, 600, 360);
           tabsRig->selection_color(FL_LIGHT1);
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("RigCAT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -9905,7 +9915,7 @@ le Earth)"));
             } // Fl_Group* grpRigCAT
             o->end();
           } // Fl_Group* o
-          { tabHamlib = new Fl_Group(0, 50, 600, 330, _("Hamlib"));
+          { tabHamlib = new Fl_Group(0, 50, 600, 335, _("Hamlib"));
             tabHamlib->hide();
             { chkUSEHAMLIB = new Fl_Check_Button(250, 59, 100, 20, _("Use Hamlib"));
               chkUSEHAMLIB->tooltip(_("Hamlib used for rig control"));
@@ -10177,7 +10187,7 @@ le Earth)"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Hardware PTT"));
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Hardware PTT"));
             o->hide();
             { Fl_Group* o = new Fl_Group(55, 57, 490, 38);
               o->box(FL_ENGRAVED_FRAME);
@@ -10297,7 +10307,7 @@ le Earth)"));
             } // Fl_Group* grpPTTdelays
             o->end();
           } // Fl_Group* o
-          { tabXMLRPC = new Fl_Group(0, 50, 600, 330, _("XML-RPC"));
+          { tabXMLRPC = new Fl_Group(0, 50, 600, 335, _("XML-RPC"));
             tabXMLRPC->hide();
             { grpXMLRPC = new Fl_Group(55, 61, 490, 160);
               grpXMLRPC->box(FL_ENGRAVED_FRAME);
@@ -10336,8 +10346,7 @@ definition"));
             } // Fl_Group* o
             tabXMLRPC->end();
           } // Fl_Group* tabXMLRPC
-          { tabFLRIG = new Fl_Group(0, 50, 600, 330, _("flrig"));
-            tabFLRIG->hide();
+          { tabFLRIG = new Fl_Group(0, 50, 600, 335, _("flrig"));
             { Fl_Output* o = new Fl_Output(75, 77, 465, 58);
               o->tooltip(_("\" \""));
               o->type(12);
@@ -10358,12 +10367,12 @@ definition"));
         } // Fl_Tabs* tabsRig
         tabRig->end();
       } // Fl_Group* tabRig
-      { tabSoundCard = new Fl_Group(0, 25, 600, 355, _("Audio"));
+      { tabSoundCard = new Fl_Group(0, 25, 600, 360, _("Audio"));
         tabSoundCard->tooltip(_("Audio devices"));
         tabSoundCard->hide();
-        { tabsSoundCard = new Fl_Tabs(0, 25, 600, 355);
+        { tabsSoundCard = new Fl_Tabs(0, 25, 600, 360);
           tabsSoundCard->selection_color(FL_LIGHT1);
-          { tabAudio = new Fl_Group(0, 50, 600, 330, _("Devices"));
+          { tabAudio = new Fl_Group(0, 50, 600, 335, _("Devices"));
             { AudioOSS = new Fl_Group(55, 65, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(65, 75, 53, 25, _("OSS"));
@@ -10436,7 +10445,7 @@ definition"));
             } // Fl_Group* AudioNull
             tabAudio->end();
           } // Fl_Group* tabAudio
-          { tabAudioOpt = new Fl_Group(0, 50, 600, 330, _("Settings"));
+          { tabAudioOpt = new Fl_Group(0, 50, 600, 335, _("Settings"));
             tabAudioOpt->hide();
             { grpAudioSampleRate = new Fl_Group(55, 65, 490, 90, _("Sample rate"));
               grpAudioSampleRate->box(FL_ENGRAVED_FRAME);
@@ -10549,7 +10558,7 @@ ll with your audio device."));
             } // Fl_Group* o
             tabAudioOpt->end();
           } // Fl_Group* tabAudioOpt
-          { tabAudioRightChannel = new Fl_Group(0, 50, 600, 330, _("Right channel"));
+          { tabAudioRightChannel = new Fl_Group(0, 50, 600, 335, _("Right channel"));
             tabAudioRightChannel->hide();
             { Fl_Group* o = new Fl_Group(25, 61, 550, 246, _("Transmit Usage"));
               o->box(FL_ENGRAVED_FRAME);
@@ -10606,7 +10615,7 @@ nce.\nYou may change the state from either location.\n..."));
             } // Fl_Group* o
             tabAudioRightChannel->end();
           } // Fl_Group* tabAudioRightChannel
-          { tabWavFile = new Fl_Group(0, 50, 600, 330, _("Wav"));
+          { tabWavFile = new Fl_Group(0, 50, 600, 335, _("Wav"));
             tabWavFile->hide();
             { Fl_ListBox* o = listbox_wav_samplerate = new Fl_ListBox(225, 96, 150, 24, _("Wav write sample rate"));
               listbox_wav_samplerate->tooltip(_("Pick baud rate from list"));
@@ -10631,10 +10640,11 @@ nce.\nYou may change the state from either location.\n..."));
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();
       } // Fl_Group* tabSoundCard
-      { tabID = new Fl_Group(0, 23, 600, 357, _("ID"));
+      { tabID = new Fl_Group(0, 25, 600, 360, _("ID"));
         tabID->hide();
-        { tabsID = new Fl_Tabs(0, 23, 600, 357);
-          { tabRsID = new Fl_Group(0, 50, 600, 330, _("RsID"));
+        { tabsID = new Fl_Tabs(0, 25, 600, 360);
+          { tabRsID = new Fl_Group(0, 50, 600, 335, _("RsID"));
+            tabRsID->hide();
             { Fl_Group* o = new Fl_Group(32, 55, 535, 210, _("Reed-Solomon ID (Rx)"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10758,7 +10768,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabRsID->end();
           } // Fl_Group* tabRsID
-          { tabVideoID = new Fl_Group(0, 50, 600, 330, _("Video"));
+          { tabVideoID = new Fl_Group(0, 50, 600, 335, _("Video"));
             tabVideoID->hide();
             { Fl_Group* o = new Fl_Group(32, 115, 536, 189, _("Video Preamble ID"));
               o->box(FL_ENGRAVED_FRAME);
@@ -10834,8 +10844,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabVideoID->end();
           } // Fl_Group* tabVideoID
-          { tabCwID = new Fl_Group(0, 50, 600, 330, _("CW"));
-            tabCwID->hide();
+          { tabCwID = new Fl_Group(0, 50, 600, 335, _("CW"));
             { sld = new Fl_Group(32, 146, 536, 127, _("CW Postamble ID"));
               sld->box(FL_ENGRAVED_FRAME);
               sld->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10877,11 +10886,12 @@ gured on the\n\"Notifications\" configure dialog."));
         } // Fl_Tabs* tabsID
         tabID->end();
       } // Fl_Group* tabID
-      { tabMisc = new Fl_Group(0, 25, 600, 355, _("Misc"));
+      { tabMisc = new Fl_Group(0, 25, 600, 360, _("Misc"));
         tabMisc->hide();
-        { tabsMisc = new Fl_Tabs(0, 25, 600, 355);
+        { tabsMisc = new Fl_Tabs(0, 25, 600, 360);
           tabsMisc->selection_color(FL_LIGHT1);
-          { tabCPUspeed = new Fl_Group(0, 50, 600, 330, _("CPU"));
+          { tabCPUspeed = new Fl_Group(0, 50, 600, 335, _("CPU"));
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(55, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10895,7 +10905,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabCPUspeed->end();
           } // Fl_Group* tabCPUspeed
-          { tabNBEMS = new Fl_Group(0, 50, 600, 330, _("NBEMS"));
+          { tabNBEMS = new Fl_Group(0, 50, 600, 335, _("NBEMS"));
             tabNBEMS->hide();
             { Fl_Group* o = new Fl_Group(50, 65, 500, 75, _("NBEMS data file interface"));
               o->box(FL_ENGRAVED_FRAME);
@@ -10965,7 +10975,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabNBEMS->end();
           } // Fl_Group* tabNBEMS
-          { tabPskmail = new Fl_Group(0, 50, 600, 330, _("Pskmail"));
+          { tabPskmail = new Fl_Group(0, 50, 600, 335, _("Pskmail"));
             tabPskmail->align(Fl_Align(FL_ALIGN_TOP_LEFT));
             tabPskmail->hide();
             { Fl_Group* o = new Fl_Group(55, 58, 490, 174, _("Mail Server Attributes"));
@@ -11072,7 +11082,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabPskmail->end();
           } // Fl_Group* tabPskmail
-          { tabSpot = new Fl_Group(0, 50, 600, 330, _("Spotting"));
+          { tabSpot = new Fl_Group(0, 50, 600, 335, _("Spotting"));
             tabSpot->hide();
             { Fl_Group* o = new Fl_Group(55, 72, 490, 254, _("PSK Reporter"));
               o->box(FL_ENGRAVED_FRAME);
@@ -11144,7 +11154,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabSpot->end();
           } // Fl_Group* tabSpot
-          { tabSweetSpot = new Fl_Group(0, 50, 600, 330, _("Sweet Spot"));
+          { tabSweetSpot = new Fl_Group(0, 50, 600, 335, _("Sweet Spot"));
             tabSweetSpot->hide();
             { Fl_Group* o = new Fl_Group(55, 71, 490, 75);
               o->box(FL_ENGRAVED_FRAME);
@@ -11229,7 +11239,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabSweetSpot->end();
           } // Fl_Group* tabSweetSpot
-          { tabText_IO = new Fl_Group(0, 50, 600, 330, _("Text i/o"));
+          { tabText_IO = new Fl_Group(0, 50, 600, 335, _("Text i/o"));
             tabText_IO->hide();
             { grpTalker = new Fl_Group(55, 132, 490, 73, _("Talker Socket (MS only)"));
               grpTalker->box(FL_ENGRAVED_FRAME);
@@ -11261,7 +11271,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Group* o
             tabText_IO->end();
           } // Fl_Group* tabText_IO
-          { tabDTMF = new Fl_Group(0, 50, 600, 330, _("DTMF"));
+          { tabDTMF = new Fl_Group(0, 50, 600, 335, _("DTMF"));
             tabDTMF->hide();
             { Fl_Check_Button* o = chkDTMFdecode = new Fl_Check_Button(212, 103, 175, 20, _("Decode DTMF tones"));
               chkDTMFdecode->tooltip(_("Decode received DTMF tones"));
@@ -11271,7 +11281,7 @@ gured on the\n\"Notifications\" configure dialog."));
             } // Fl_Check_Button* chkDTMFdecode
             tabDTMF->end();
           } // Fl_Group* tabDTMF
-          { tabWX = new Fl_Group(0, 50, 600, 330, _("WX"));
+          { tabWX = new Fl_Group(0, 50, 600, 335, _("WX"));
             tabWX->hide();
             { Fl_Group* o = new Fl_Group(55, 60, 490, 300, _("Weather query specification"));
               o->box(FL_ENGRAVED_FRAME);
@@ -11359,8 +11369,7 @@ earch for station name"));
             } // Fl_Group* o
             tabWX->end();
           } // Fl_Group* tabWX
-          { tabKML = new Fl_Group(0, 50, 600, 330, _("KML"));
-            tabKML->hide();
+          { tabKML = new Fl_Group(0, 50, 600, 335, _("KML"));
             { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
               btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
               btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);
@@ -11466,11 +11475,12 @@ and restarted if needed."));
         } // Fl_Tabs* tabsMisc
         tabMisc->end();
       } // Fl_Group* tabMisc
-      { tabQRZ = new Fl_Group(0, 25, 600, 355, _("Web"));
+      { tabQRZ = new Fl_Group(0, 25, 600, 360, _("Web"));
         tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
-        { tabsQRZ = new Fl_Tabs(0, 25, 600, 355);
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("Call Lookup"));
+        { tabsQRZ = new Fl_Tabs(0, 25, 600, 360);
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Call Lookup"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(34, 56, 538, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11648,8 +11658,7 @@ and restarted if needed."));
             } // Fl_Group* o
             o->end();
           } // Fl_Group* o
-          { Fl_Group* o = new Fl_Group(0, 50, 600, 330, _("eQSL"));
-            o->hide();
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("eQSL"));
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(225, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);
@@ -11754,12 +11763,12 @@ and restarted if needed."));
         } // Fl_Tabs* tabsQRZ
         tabQRZ->end();
       } // Fl_Group* tabQRZ
-      { tabAutoStart = new Fl_Group(0, 25, 600, 355, _("Autostart"));
+      { tabAutoStart = new Fl_Group(0, 25, 600, 360, _("Autostart"));
         tabAutoStart->tooltip(_("Operator information"));
         tabAutoStart->callback((Fl_Callback*)cb_tabAutoStart);
         tabAutoStart->when(FL_WHEN_CHANGED);
         tabAutoStart->hide();
-        { Fl_Group* o = new Fl_Group(2, 32, 596, 330, _("Auto start programs with fldigi"));
+        { Fl_Group* o = new Fl_Group(2, 32, 596, 335, _("Auto start programs with fldigi"));
           o->box(FL_ENGRAVED_BOX);
           o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
           { Fl_Input2* o = txt_auto_flrig_pathname = new Fl_Input2(63, 71, 310, 24, _("flrig:"));
@@ -11963,9 +11972,10 @@ and restarted if needed."));
         } // Fl_Group* o
         tabAutoStart->end();
       } // Fl_Group* tabAutoStart
-      { tabIO = new Fl_Group(0, 25, 600, 355, _("IO"));
+      { tabIO = new Fl_Group(0, 25, 600, 360, _("IO"));
         tabIO->tooltip(_("Program to Program Communications"));
         tabIO->callback((Fl_Callback*)cb_tabIO);
+        tabIO->hide();
         { Fl_Group* o = new Fl_Group(6, 34, 588, 102);
           o->box(FL_ENGRAVED_BOX);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -12322,13 +12332,13 @@ i.e. localhost"));
       } // Fl_Group* tabIO
       tabsConfigure->end();
     } // Fl_Tabs* tabsConfigure
-    { btnSaveConfig = new Fl_Button(330, 388, 130, 22, _("Save"));
+    { btnSaveConfig = new Fl_Button(330, 390, 130, 22, _("Save"));
       btnSaveConfig->callback((Fl_Callback*)cb_btnSaveConfig);
     } // Fl_Button* btnSaveConfig
-    { btnCloseConfig = new Fl_Return_Button(462, 388, 130, 22, _("Close"));
+    { btnCloseConfig = new Fl_Return_Button(462, 390, 130, 22, _("Close"));
       btnCloseConfig->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnCloseConfig
-    { btnResetConfig = new Fl_Button(20, 388, 130, 22, _("Restore defaults"));
+    { btnResetConfig = new Fl_Button(20, 390, 130, 22, _("Restore defaults"));
       btnResetConfig->callback((Fl_Callback*)cb_btnResetConfig);
     } // Fl_Button* btnResetConfig
     o->set_non_modal();

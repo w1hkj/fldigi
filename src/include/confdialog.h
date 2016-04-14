@@ -428,6 +428,8 @@ extern Fl_Check_Button *valTHOR_PREAMBLE;
 extern Fl_Check_Button *valTHOR_SOFTSYMBOLS;
 extern Fl_Check_Button *valTHOR_SOFTBITS;
 extern Fl_Counter2 *valTHOR_PATHS;
+extern Fl_Group *tabOther;
+extern Fl_Tabs *tabsOther;
 extern Fl_Group *tabNavtex;
 extern Fl_Check_Button *btnNvtxAdifLog;
 extern Fl_Check_Button *btnNvtxKmlLog;

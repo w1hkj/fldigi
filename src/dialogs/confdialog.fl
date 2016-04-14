@@ -1,122 +1,122 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303
-i18n_type 1
-i18n_include "gettext.h"
-i18n_function _
-header_name {.h}
+version 1.0303 
+i18n_type 1 
+i18n_include "gettext.h" 
+i18n_function _ 
+header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {private local
-}
+} 
 
 decl {\#include <FL/Fl_Tooltip.H>} {private local
-}
+} 
 
 decl {\#include <FL/Fl_Box.H>} {private local
-}
+} 
 
 decl {\#include <FL/filename.H>} {private local
-}
+} 
 
 decl {\#include <FL/Fl_File_Chooser.H>} {private local
-}
+} 
 
 decl {\#include <FL/fl_show_colormap.H>} {private local
-}
+} 
 
 decl {\#include "main.h"} {private local
-}
+} 
 
 decl {\#include "fl_digi.h"} {private local
-}
+} 
 
 decl {\#include "data_io.h"} {private local
-}
+} 
 
 decl {\#include "Viewer.h"} {private global
-}
+} 
 
 decl {\#include "font_browser.h"} {public global
-}
+} 
 
 decl {\#include "soundconf.h"} {private local
-}
+} 
 
 decl {\#include "globals.h"} {public local
-}
+} 
 
 decl {\#include "modem.h"} {public local
-}
+} 
 
 decl {\#include "configuration.h"} {public local
-}
+} 
 
 decl {\#include "combo.h"} {public local
-}
+} 
 
 decl {\#include "waterfall.h"} {private local
-}
+} 
 
 decl {\#include "rigxml.h"} {private local
-}
+} 
 
 decl {\#include "lookupcall.h"} {private local
-}
+} 
 
 decl {\#include "icons.h"} {private local
-}
+} 
 
 decl {\#include "Viewer.h"} {private local
-}
+} 
 
 decl {\#include "pskrep.h"} {private global
-}
+} 
 
 decl {\#include "flinput2.h"} {public local
-}
+} 
 
 decl {\#include "flslider2.h"} {public local
-}
+} 
 
 decl {\#include "flmisc.h"} {public local
-}
+} 
 
 decl {\#include "logsupport.h"} {private local
-}
+} 
 
 decl {\#include "notify.h"} {private local
-}
+} 
 
 decl {\#include "debug.h"} {private local
-}
+} 
 
 decl {\#include "status.h"} {private local
-}
+} 
 
 decl {\#include "rx_extract.h"} {private local
-}
+} 
 
 decl {\#include "kmlserver.h"} {private local
-}
+} 
 
 decl {\#include "macroedit.h"} {private local
-}
+} 
 
 decl {\#include "fileselect.h"} {private local
-}
+} 
 
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
-}
+} 
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {private local
-}
+} 
 
 decl {Fl_Double_Window *dlgConfig;} {public local
-}
+} 
 
 decl {Mode_Browser* mode_browser;} {public local
-}
+} 
 
 Function {choose_color(Fl_Color & c)} {private return_type void
 } {
@@ -124,7 +124,7 @@ Function {choose_color(Fl_Color & c)} {private return_type void
 Fl::get_color(c, r, g, b);
 if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
-}
+} 
 
 Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -156,7 +156,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -188,7 +188,7 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
      font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -210,7 +210,7 @@ Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -222,7 +222,7 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-}
+} 
 
 Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -249,7 +249,7 @@ Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 
     progdefaults.changed = true;
     colorize_macros();} {}
-}
+} 
 
 Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -259,7 +259,7 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-}
+} 
 
 Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -277,7 +277,7 @@ Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
     qsoFreqDisp3->redraw();
 
     font_browser->hide();} {}
-}
+} 
 
 Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -299,7 +299,7 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -321,7 +321,7 @@ Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
 } {
@@ -331,7 +331,7 @@ Function {set_qrzxml_buttons(Fl_Button* b)} {return_type void
 
 for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
 	qrzbxml[i]->value(b == qrzbxml[i]);} {}
-}
+} 
 
 Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 } {
@@ -341,7 +341,7 @@ Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 
 for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
-}
+} 
 
 Function {ConfigureDialog()} {open
 } {
@@ -359,15 +359,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {988 128 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {900 170 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 385} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;} selected
+        tooltip {Operator information} xywh {0 25 600 360} when 1
       } {
         Fl_Group {} {
           label Station open
@@ -466,7 +466,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI open
+        label UI
         tooltip {User Interface} xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsUI {open
@@ -474,7 +474,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 330} hide
+            tooltip {User Interface - Browser} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -660,7 +660,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest
-            tooltip {User Interface - Contest} xywh {0 50 600 330} hide
+            tooltip {User Interface - Contest} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label Exchanges open
@@ -799,8 +799,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabUserInterface {
-            label General open
-            tooltip {User Interface - General} xywh {0 50 600 330} hide
+            label General
+            tooltip {User Interface - General} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {40 77 520 76} box ENGRAVED_FRAME
@@ -935,15 +935,15 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLogServer {
-            label Log open
+            label Log
             tooltip {User Interface - Colors / Fonts} xywh {0 50 600 335} hide
           } {
             Fl_Tabs tabsLog {open
-              xywh {0 55 600 330}
+              xywh {0 55 600 335}
             } {
               Fl_Group {} {
                 label QSO
-                xywh {0 80 600 300}
+                xywh {0 75 600 315}
               } {
                 Fl_Group {} {
                   label {QSO logging} open
@@ -1043,12 +1043,12 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label {Rx Text} open
-                xywh {0 80 600 300} hide
+                label {Rx Text}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {
                   label {Rx Text} open
-                  xywh {62 100 496 110} box ENGRAVED_FRAME align 21
+                  xywh {62 96 496 113} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnRXClicks {
                     label {Single-click to capture}
@@ -1084,8 +1084,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label MacLogger open
-                xywh {0 80 600 300} hide
+                label MacLogger
+                xywh {0 75 600 315} hide
               } {
                 Fl_Check_Button btnConnectToMaclogger {
                   label {Connect to MacLogger}
@@ -1095,7 +1095,7 @@ if (progdefaults.connect_to_maclogger == false)
 else
   maclogger_init();
 progdefaults.changed = true;}
-                  xywh {10 95 186 20} down_box DOWN_BOX
+                  xywh {10 91 186 20} down_box DOWN_BOX
                   code0 {o->value(progdefaults.connect_to_maclogger);}
                   code1 {\#include "maclogger.h"}
                 }
@@ -1103,65 +1103,65 @@ progdefaults.changed = true;}
                   label {Capture Radio Report}
                   callback {progdefaults.capture_maclogger_radio = o->value();
 progdefaults.changed = true;}
-                  xywh {205 95 186 20} down_box DOWN_BOX value 1
+                  xywh {205 91 186 20} down_box DOWN_BOX value 1
                   code0 {o->value(progdefaults.capture_maclogger_radio);}
                 }
                 Fl_Check_Button btn_capture_maclogger_log {
                   label {Capture Log Report}
                   callback {progdefaults.capture_maclogger_log = o->value();
 progdefaults.changed = true;}
-                  xywh {205 120 186 20} down_box DOWN_BOX
+                  xywh {205 116 186 21} down_box DOWN_BOX
                   code0 {o->value(progdefaults.capture_maclogger_log);}
                 }
                 Fl_Check_Button btn_capture_maclogger_lookup {
                   label {Capture Lookup }
                   callback {progdefaults.capture_maclogger_lookup = o->value();
 progdefaults.changed = true;}
-                  xywh {405 95 186 20} down_box DOWN_BOX
+                  xywh {405 91 186 20} down_box DOWN_BOX
                   code0 {o->value(progdefaults.capture_maclogger_lookup);}
                 }
                 Fl_Check_Button btn_capture_maclogger_spot_tune {
                   label {Capture Spot Tune}
                   callback {progdefaults.capture_maclogger_spot_tune = o->value();
 progdefaults.changed = true;}
-                  xywh {405 120 186 20} down_box DOWN_BOX
+                  xywh {405 116 186 21} down_box DOWN_BOX
                   code0 {o->value(progdefaults.capture_maclogger_spot_tune);}
                 }
                 Fl_Check_Button btn_capture_maclogger_spot_report {
                   label {Capture Spot Report}
                   callback {progdefaults.capture_maclogger_spot_report = o->value();
 progdefaults.changed = true;}
-                  xywh {405 147 186 20} down_box DOWN_BOX
+                  xywh {405 144 186 21} down_box DOWN_BOX
                   code0 {o->value(progdefaults.capture_maclogger_spot_report);}
                 }
                 Fl_Check_Button btn_enable_maclogger_log {
                   label {Enable UDP log file}
                   callback {progdefaults.enable_maclogger_log = o->value();
 progdefaults.changed = true;}
-                  xywh {10 175 165 25} down_box DOWN_BOX
+                  xywh {10 173 165 26} down_box DOWN_BOX
                   code0 {o->value(progdefaults.enable_maclogger_log);}
                 }
                 Fl_Text_Display txt_UDP_data {
                   label {UDP data stream}
-                  xywh {10 220 580 156} align 5
+                  xywh {10 220 580 161} align 5
                   code0 {Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();}
                   code1 {o->buffer(txtbuffer);}
                 }
                 Fl_Output txt_maclogger_log_filename {
-                  xywh {178 175 272 25}
+                  xywh {178 173 272 26}
                   code0 {o->value(progdefaults.maclogger_log_filename.c_str());}
                 }
                 Fl_Button {} {
                   label {Clear UDP text}
                   callback {txt_UDP_data->buffer()->text("");}
-                  xywh {460 175 129 25}
+                  xywh {460 173 129 26}
                 }
               }
             }
           }
           Fl_Group tabMBars {
-            label Macros open
-            tooltip {User Interface - Macros} xywh {0 50 600 330} hide
+            label Macros
+            tooltip {User Interface - Macros} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {52 263 496 35} box ENGRAVED_FRAME
@@ -1324,7 +1324,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWF_UI {
             label {WF Ctrls}
-            tooltip {User Interface - Waterfall controls} xywh {0 50 600 330} hide
+            tooltip {User Interface - Waterfall controls} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {52 83 496 253} box ENGRAVED_BOX
@@ -1462,15 +1462,15 @@ WF_UI();}
             }
           }
           Fl_Group tabColorsFonts {
-            label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 330}
+            label {Clrs/Fnts}
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 335}
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 325}
             } {
               Fl_Group {} {
-                label {Rx/Tx} open
-                xywh {0 80 600 300} hide
+                label {Rx/Tx}
+                xywh {0 80 600 305} hide
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
@@ -1774,8 +1774,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label {FreqDisp / Meters} open
-                xywh {0 80 600 300} hide
+                label {FreqDisp / Meters}
+                xywh {0 80 600 305} hide
               } {
                 Fl_Group {} {open
                   xywh {115 108 395 87} box ENGRAVED_FRAME
@@ -2032,8 +2032,8 @@ progdefaults.changed = true;} open
                 }
               }
               Fl_Group {} {
-                label Log open
-                xywh {0 80 600 300} hide
+                label Log
+                xywh {0 80 600 305} hide
               } {
                 Fl_Group {} {
                   label {Logging Panel Controls} open
@@ -2153,8 +2153,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label F_keys open
-                xywh {0 80 600 300} hide
+                label F_keys
+                xywh {0 80 600 305} hide
               } {
                 Fl_Check_Button btnUseGroupColors {
                   label {Use colored buttons}
@@ -2285,8 +2285,8 @@ font_browser->show();}
                 }
               }
               Fl_Group {} {
-                label Tabs open
-                xywh {0 80 600 300} hide
+                label Tabs
+                xywh {0 80 600 305} hide
               } {
                 Fl_Button btnTabColor {
                   label {Tab Color}
@@ -2304,8 +2304,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label Buttons open
-                xywh {0 80 600 300}
+                label Buttons
+                xywh {0 80 600 305} hide
               } {
                 Fl_Button btnSpotColor {
                   label Spot
@@ -2456,8 +2456,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label SigLvl open
-                xywh {0 80 600 300} hide
+                label SigLvl
+                xywh {0 80 600 305}
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -2515,8 +2515,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tab_touch {
-            label Touch open
-            xywh {0 50 600 330} hide
+            label Touch
+            xywh {0 50 600 335} hide
           } {
             Fl_Box {} {
               label {Note:
@@ -2564,14 +2564,14 @@ UI_select();}
       }
       Fl_Group tabWaterfall {
         label Waterfall
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsWaterfall {open
-          xywh {0 25 600 355} color 50 selection_color 50
+          xywh {0 25 600 360} color 50 selection_color 50
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 600 330}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -2812,7 +2812,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 71 490 135} box ENGRAVED_FRAME
@@ -2897,7 +2897,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335}
           } {
             Fl_Group {} {open
               xywh {55 73 490 170} box ENGRAVED_FRAME
@@ -2949,22 +2949,22 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         }
       }
       Fl_Group tabModems {
-        label Modems open
-        xywh {0 25 600 355} hide
+        label Modems
+        xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {0 25 600 355} selection_color 50 align 9
+          xywh {0 25 600 360} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW open
-            xywh {0 50 600 330} hide
+            label CW
+            xywh {0 50 600 335} hide
           } {
             Fl_Tabs tabsCW {open
-              xywh {0 50 600 330} selection_color 50
+              xywh {0 50 600 335} selection_color 50
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 310} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -3113,7 +3113,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {Timing and QSK} open
-                xywh {0 75 600 305} align 5
+                xywh {0 75 600 310} align 5 hide
               } {
                 Fl_Group {} {
                   label Timing open
@@ -3238,7 +3238,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Prosigns open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 310} align 5 hide
               } {
                 Fl_Group {} {open
                   xywh {35 85 530 283} box ENGRAVED_FRAME
@@ -3425,8 +3425,8 @@ progdefaults.changed = true;} open
             }
           }
           Fl_Group tabDomEX {
-            label Dom open
-            xywh {0 50 600 330} hide
+            label Dom
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 60 490 180} box ENGRAVED_FRAME
@@ -3486,8 +3486,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFeld {
-            label Feld open
-            xywh {0 50 600 330} hide
+            label Feld
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 72 490 145} box ENGRAVED_FRAME
@@ -3563,8 +3563,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFSQ {
-            label FSQ open
-            xywh {0 50 600 330} hide
+            label FSQ
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Rx Parameters} open
@@ -3824,8 +3824,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabIFKP {
-            label IFKP open
-            xywh {0 50 600 330} hide
+            label IFKP
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Tx Parameters} open
@@ -3946,8 +3946,8 @@ if (fname) {
             }
           }
           Fl_Group tabMT63 {
-            label {MT-63} open
-            xywh {0 50 600 330} hide
+            label {MT-63}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 73 490 84} box ENGRAVED_FRAME align 21
@@ -4011,8 +4011,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabOlivia {
-            label Oliv open
-            xywh {0 50 600 330} hide
+            label Oliv
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 76 490 280} box ENGRAVED_FRAME
@@ -4090,8 +4090,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabContestia {
-            label Cont open
-            xywh {0 50 600 330} hide
+            label Cont
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 80 490 235} box ENGRAVED_FRAME
@@ -4159,15 +4159,15 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabPSK {
-            label PSK open
-            xywh {0 50 600 330}
+            label PSK
+            xywh {0 50 600 335} hide
           } {
             Fl_Tabs tabsPSK {open
-              xywh {0 50 600 330} selection_color 50
+              xywh {0 50 600 335} selection_color 50
             } {
               Fl_Group grpPSK {
                 label General open
-                xywh {0 75 600 305} align 5
+                xywh {0 75 600 310} align 5
               } {
                 Fl_Group {} {
                   label {AFC behavior} open
@@ -4264,15 +4264,15 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabRTTY {
-            label TTY open
-            xywh {0 50 600 330} hide
+            label TTY
+            xywh {0 50 600 335} hide
           } {
             Fl_Tabs tabsRTTY {open
-              xywh {0 50 600 330} selection_color 50
+              xywh {0 50 600 335} selection_color 50
             } {
               Fl_Group {} {
                 label Tx open
-                xywh {0 75 600 305} align 5
+                xywh {0 75 600 310} align 5 hide
               } {
                 Fl_Group selShift {
                   label {Carrier shift}
@@ -4395,7 +4395,7 @@ if (o->value()) {
               }
               Fl_Group {} {
                 label Rx open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 310} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -4515,7 +4515,7 @@ progdefaults.changed = true;
               }
               Fl_Group {} {
                 label Synop open
-                xywh {0 75 600 305} align 5 hide
+                xywh {0 75 600 310} align 5 hide
               } {
                 Fl_Check_Button btnSynopAdifDecoding {
                   label {SYNOP to ADIF}
@@ -4543,7 +4543,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabTHOR {
             label Thor
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 78 490 270} box ENGRAVED_FRAME
@@ -4619,138 +4619,147 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tabNavtex {
-            label Nav
-            xywh {0 50 600 330} hide
+          Fl_Group tabOther {
+            label Other open
+            xywh {0 50 600 335}
           } {
-            Fl_Check_Button btnNvtxAdifLog {
-              label {Log Navtex messages to Adif file}
-              callback {progdefaults.NVTX_AdifLog=o->value();
-progdefaults.changed = true;}
-              xywh {171 79 235 30} down_box DOWN_BOX
-              code0 {o->value(progdefaults.NVTX_AdifLog);}
-            }
-            Fl_Check_Button btnNvtxKmlLog {
-              label {Log Navtex messages to KML}
-              callback {progdefaults.NVTX_KmlLog=o->value();
-progdefaults.changed = true;}
-              tooltip {Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)} xywh {170 125 270 30} down_box DOWN_BOX
-              code0 {o->value(progdefaults.NVTX_KmlLog);}
-            }
-          }
-          Fl_Group tabWefax {
-            label WFx open
-            xywh {0 50 600 330} hide
-          } {
-            Fl_Group {} {open
-              xywh {2 63 598 300}
+            Fl_Tabs tabsOther {open
+              xywh {0 50 600 335}
             } {
-              Fl_Check_Button btnWefaxAdifLog {
-                label {Log Wefax messages to Adif file}
-                callback {progdefaults.WEFAX_AdifLog=o->value();
+              Fl_Group tabNavtex {
+                label Nav
+                xywh {0 75 600 310} hide
+              } {
+                Fl_Check_Button btnNvtxAdifLog {
+                  label {Log Navtex messages to Adif file}
+                  callback {progdefaults.NVTX_AdifLog=o->value();
 progdefaults.changed = true;}
-                tooltip {Sent and received faxes are logged to Adif file.} xywh {94 137 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_AdifLog);}
-              }
-              Fl_Check_Button btnWefaxEmbeddedGui {
-                label {Embedded Wefax Gui}
-                callback {progdefaults.WEFAX_EmbeddedGui=o->value();
+                  xywh {181 109 235 30} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.NVTX_AdifLog);}
+                }
+                Fl_Check_Button btnNvtxKmlLog {
+                  label {Log Navtex messages to KML}
+                  callback {progdefaults.NVTX_KmlLog=o->value();
 progdefaults.changed = true;}
-                tooltip {Display tx and rx in main fldigi window.
-Change requires restart of fldigi} xywh {94 74 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
+                  tooltip {Logs messages to Keyhole Markup Language (Google Earth, Marble, Gaia, etc...)} xywh {180 155 270 30} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.NVTX_KmlLog);}
+                }
               }
-              Fl_Input btnWefaxShift {
-                label {Frequency shift (800 Hz)}
-                callback {if( o->value() > 900 ) { o->value(900); return; }
+              Fl_Group tabWefax {
+                label WFx
+                xywh {0 75 600 310} hide
+              } {
+                Fl_Group {} {open
+                  xywh {2 79 598 285}
+                } {
+                  Fl_Check_Button btnWefaxAdifLog {
+                    label {Log Wefax messages to Adif file}
+                    callback {progdefaults.WEFAX_AdifLog=o->value();
+progdefaults.changed = true;}
+                    tooltip {Sent and received faxes are logged to Adif file.} xywh {99 155 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_AdifLog);}
+                  }
+                  Fl_Check_Button btnWefaxEmbeddedGui {
+                    label {Embedded Wefax Gui}
+                    callback {progdefaults.WEFAX_EmbeddedGui=o->value();
+progdefaults.changed = true;}
+                    tooltip {Display tx and rx in main fldigi window.
+Change requires restart of fldigi} xywh {99 92 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_EmbeddedGui);}
+                  }
+                  Fl_Input btnWefaxShift {
+                    label {Frequency shift (800 Hz)}
+                    callback {if( o->value() > 900 ) { o->value(900); return; }
 if( o->value() < 750 ) { o->value(750); return; }
 progdefaults.WEFAX_Shift=o->value();
 progdefaults.changed = true;}
-                tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {94 177 80 20} type Int align 8
-                code0 {o->value(progdefaults.WEFAX_Shift);}
-                class Fl_Value_Input2
-              }
-              Fl_Input btnWefaxMaxRows {
-                label {Received fax maximum rows number (5000)}
-                callback {if(o->value() > 10000 ) { o->value(10000); return ; }
+                    tooltip {Default 800 Hz. Deutsche Wetterdienst 850Hz} xywh {99 195 80 20} type Int align 8
+                    code0 {o->value(progdefaults.WEFAX_Shift);}
+                    class Fl_Value_Input2
+                  }
+                  Fl_Input btnWefaxMaxRows {
+                    label {Received fax maximum rows number (5000)}
+                    callback {if(o->value() > 10000 ) { o->value(10000); return ; }
 if(o->value() < 1000 ) { o->value(1000); return ; }
 progdefaults.WEFAX_MaxRows=o->value();
 progdefaults.changed = true;}
-                tooltip {Maximum row number for a received fax image.} xywh {94 217 85 20} type Int align 8
-                code0 {o->value(progdefaults.WEFAX_MaxRows);}
-                class Fl_Value_Input2
-              }
-              Fl_Input btnWefaxSaveDir {
-                label {Fax images destination directory}
-                callback {progdefaults.wefax_save_dir=o->value();
+                    tooltip {Maximum row number for a received fax image.} xywh {99 235 85 20} type Int align 8
+                    code0 {o->value(progdefaults.WEFAX_MaxRows);}
+                    class Fl_Value_Input2
+                  }
+                  Fl_Input btnWefaxSaveDir {
+                    label {Fax images destination directory}
+                    callback {progdefaults.wefax_save_dir=o->value();
 progdefaults.changed = true;}
-                xywh {94 267 310 20} align 5
-                code0 {o->value(progdefaults.wefax_save_dir.c_str());}
-              }
-              Fl_Button btnSelectFaxDestDir {
-                label {Directory...}
-                callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
+                    xywh {99 285 310 20} align 5
+                    code0 {o->value(progdefaults.wefax_save_dir.c_str());}
+                  }
+                  Fl_Button btnSelectFaxDestDir {
+                    label {Directory...}
+                    callback {Fl_File_Chooser *fc = new Fl_File_Chooser(".",NULL,Fl_File_Chooser::DIRECTORY,"Input File");
 fc->callback(WefaxDestDirSet);
 fc->show();}
-                xywh {424 267 80 20}
-              }
-              Fl_Check_Button btnWefaxHideTx {
-                label {Hide Transmission window}
-                callback {progdefaults.WEFAX_HideTx=o->value();
+                    xywh {429 285 80 20}
+                  }
+                  Fl_Check_Button btnWefaxHideTx {
+                    label {Hide Transmission window}
+                    callback {progdefaults.WEFAX_HideTx=o->value();
 progdefaults.changed = true;}
-                tooltip {Hide transmission window by default.} xywh {94 107 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_HideTx);}
-              }
-              Fl_Check_Button btnWefaxSaveMonochrome {
-                label {Save image as monochrome file}
-                callback {progdefaults.WEFAX_SaveMonochrome=o->value();
+                    tooltip {Hide transmission window by default.} xywh {99 125 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_HideTx);}
+                  }
+                  Fl_Check_Button btnWefaxSaveMonochrome {
+                    label {Save image as monochrome file}
+                    callback {progdefaults.WEFAX_SaveMonochrome=o->value();
 progdefaults.changed = true;}
-                tooltip {Save the fax image as a gray-level PNG file.} xywh {94 297 235 30} down_box DOWN_BOX
-                code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+                    tooltip {Save the fax image as a gray-level PNG file.} xywh {99 315 235 30} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
+                  }
+                }
               }
-            }
-          }
-          Fl_Group tabDFTscan {
-            label Scan open
-            xywh {0 50 600 330} hide
-          } {
-            Fl_Counter cnt_dft_scans {
-              label {\# scans}
-              callback {progdefaults.cnt_dft_scans=(int)o->value();
+              Fl_Group tabDFTscan {
+                label Scan
+                xywh {0 75 600 310}
+              } {
+                Fl_Counter cnt_dft_scans {
+                  label {\# scans}
+                  callback {progdefaults.cnt_dft_scans=(int)o->value();
 progdefaults.changed = true;}
-              xywh {235 129 132 21} minimum 10 maximum 1000 step 10 value 60
-              code0 {o->value(progdefaults.cnt_dft_scans);}
-              code1 {o->lstep(100.0);}
-            }
-            Fl_Counter cnt_dft_range {
-              label {dB Range}
-              callback {progdefaults.cnt_dft_range=o->value();
+                  xywh {235 154 132 21} minimum 10 maximum 1000 step 10 value 60
+                  code0 {o->value(progdefaults.cnt_dft_scans);}
+                  code1 {o->lstep(100.0);}
+                }
+                Fl_Counter cnt_dft_range {
+                  label {dB Range}
+                  callback {progdefaults.cnt_dft_range=o->value();
 update_scope();
 progdefaults.changed = true;}
-              xywh {251 194 100 21} type Simple minimum 20 maximum 120 step 10 value 60
-              code0 {o->value(progdefaults.cnt_dft_range);}
-            }
-            Fl_Check_Button btn_use_relative_dB {
-              label {Use relative dB}
-              callback {progdefaults.dft_relative=o->value();
+                  xywh {251 219 100 21} type Simple minimum 20 maximum 120 step 10 value 60
+                  code0 {o->value(progdefaults.cnt_dft_range);}
+                }
+                Fl_Check_Button btn_use_relative_dB {
+                  label {Use relative dB}
+                  callback {progdefaults.dft_relative=o->value();
 update_scope();
 progdefaults.changed = true;}
-              xywh {275 265 70 15} down_box DOWN_BOX
-              code0 {o->value(progdefaults.dft_relative);}
+                  xywh {275 290 70 15} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.dft_relative);}
+                }
+              }
             }
           }
         }
       }
       Fl_Group tabRig {
         label Rig open
-        tooltip {Transceiver control} xywh {0 23 600 357} hide
+        tooltip {Transceiver control} xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsRig {open
-          xywh {0 23 600 357} selection_color 50
+          xywh {0 25 600 360} selection_color 50
         } {
           Fl_Group {} {
-            label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 600 330}
+            label RigCAT
+            tooltip {Rig Control using xml spec file} xywh {0 50 600 335} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -4959,8 +4968,8 @@ btnRevertRIGCAT->activate();}
             }
           }
           Fl_Group tabHamlib {
-            label Hamlib open
-            xywh {0 50 600 330} hide
+            label Hamlib
+            xywh {0 50 600 335} hide
           } {
             Fl_Check_Button chkUSEHAMLIB {
               label {Use Hamlib}
@@ -5186,8 +5195,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group {} {
-            label {Hardware PTT} open
-            xywh {0 50 600 330} hide
+            label {Hardware PTT}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 57 490 38} box ENGRAVED_FRAME
@@ -5344,8 +5353,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabXMLRPC {
-            label {XML-RPC} open
-            xywh {0 50 600 330} hide
+            label {XML-RPC}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group grpXMLRPC {open
               xywh {55 61 490 160} box ENGRAVED_FRAME
@@ -5392,7 +5401,7 @@ when both in same macro definition} xywh {210 239 90 21} type Simple align 8 min
           }
           Fl_Group tabFLRIG {
             label flrig open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335}
           } {
             Fl_Output {} {
               tooltip {" "} xywh {75 77 465 58} type Multiline box BORDER_BOX color 50 align 0
@@ -5409,15 +5418,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio open
-        tooltip {Audio devices} xywh {0 25 600 355} hide
+        label Audio
+        tooltip {Audio devices} xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsSoundCard {open
-          xywh {0 25 600 355} selection_color 50
+          xywh {0 25 600 360} selection_color 50
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 600 330}
+            xywh {0 50 600 335}
           } {
             Fl_Group AudioOSS {open
               xywh {55 65 490 45} box ENGRAVED_FRAME
@@ -5501,7 +5510,7 @@ resetSoundCard();}
           }
           Fl_Group tabAudioOpt {
             label Settings open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group grpAudioSampleRate {
               label {Sample rate} open
@@ -5584,7 +5593,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabAudioRightChannel {
             label {Right channel} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Transmit Usage} open
@@ -5689,7 +5698,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWavFile {
             label Wav open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group listbox_wav_samplerate {
               label {Wav write sample rate}
@@ -5706,14 +5715,14 @@ progdefaults.changed = true;} open
       }
       Fl_Group tabID {
         label ID open
-        xywh {0 23 600 357} hide
+        xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsID {open
-          xywh {0 23 600 357}
+          xywh {0 25 600 360}
         } {
           Fl_Group tabRsID {
             label RsID open
-            xywh {0 50 600 330}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Reed-Solomon ID (Rx)} open
@@ -5854,7 +5863,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabVideoID {
             label Video open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Video Preamble ID} open
@@ -5926,7 +5935,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabCwID {
             label CW
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335}
           } {
             Fl_Group sld {
               label {CW Postamble ID} open
@@ -5962,14 +5971,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 600 355} hide
+        xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsMisc {open
-          xywh {0 25 600 355} selection_color 50
+          xywh {0 25 600 360} selection_color 50
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 600 330}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 75 490 51} box ENGRAVED_FRAME align 21
@@ -5985,7 +5994,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabNBEMS {
             label NBEMS open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {NBEMS data file interface} open
@@ -6048,7 +6057,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabPskmail {
             label Pskmail open
-            xywh {0 50 600 330} align 5 hide
+            xywh {0 50 600 335} align 5 hide
           } {
             Fl_Group {} {
               label {Mail Server Attributes} open
@@ -6115,7 +6124,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSpot {
             label Spotting open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {PSK Reporter} open
@@ -6198,7 +6207,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabSweetSpot {
             label {Sweet Spot} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 71 490 75} box ENGRAVED_FRAME align 21
@@ -6255,7 +6264,7 @@ Other radios should not need it.} xywh {270 172 70 15} down_box DOWN_BOX
           }
           Fl_Group tabText_IO {
             label {Text i/o} open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group grpTalker {
               label {Talker Socket (MS only)} open
@@ -6295,7 +6304,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabDTMF {
             label DTMF open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Check_Button chkDTMFdecode {
               label {Decode DTMF tones}
@@ -6306,7 +6315,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWX {
             label WX open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Weather query specification} open
@@ -6414,7 +6423,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabKML {
             label KML open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335}
           } {
             Fl_Input btnKmlSaveDir {
               label {KML files directory}
@@ -6520,15 +6529,15 @@ if (progdefaults.kml_enabled) {
         }
       }
       Fl_Group tabQRZ {
-        label Web open
-        tooltip {Callsign database} xywh {0 25 600 355} hide
+        label Web
+        tooltip {Callsign database} xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsQRZ {open
-          xywh {0 25 600 355}
+          xywh {0 25 600 360}
         } {
           Fl_Group {} {
             label {Call Lookup} open
-            xywh {0 50 600 330}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
@@ -6701,7 +6710,7 @@ progdefaults.changed= true;}
           }
           Fl_Group {} {
             label eQSL open
-            xywh {0 50 600 330} hide
+            xywh {0 50 600 335}
           } {
             Fl_Input inpEQSL_id {
               label {User ID}
@@ -6791,12 +6800,12 @@ progdefaults.changed = true;}
       }
       Fl_Group tabAutoStart {
         label Autostart
-        callback {progdefaults.changed = true;} open
-        tooltip {Operator information} xywh {0 25 600 355} when 1 hide
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 600 360} when 1 hide
       } {
         Fl_Group {} {
           label {Auto start programs with fldigi} open
-          xywh {2 32 596 330} box ENGRAVED_BOX align 17
+          xywh {2 32 596 335} box ENGRAVED_BOX align 17
         } {
           Fl_Input txt_auto_flrig_pathname {
             label {flrig:}
@@ -6993,8 +7002,8 @@ progdefaults.changed = true;}
       }
       Fl_Group tabIO {
         label IO
-        callback {btnDisable_p2p_io_widgets->value(1);} open selected
-        tooltip {Program to Program Communications} xywh {0 25 600 355}
+        callback {btnDisable_p2p_io_widgets->value(1);}
+        tooltip {Program to Program Communications} xywh {0 25 600 360} hide
         code0 {btnDisable_p2p_io_widgets->value(1);}
       } {
         Fl_Group {} {open
@@ -7002,7 +7011,7 @@ progdefaults.changed = true;}
         } {
           Fl_Check_Button btnDisable_p2p_io_widgets {
             label Lock user_data_type long
-            callback { progStatus.ip_lock = o->value();
+            callback {progStatus.ip_lock = o->value();
 if(o->value())
 	disable_config_p2p_io_widgets();
 else
@@ -7381,32 +7390,32 @@ number to the default value.} xywh {425 345 73 25}
     Fl_Button btnSaveConfig {
       label Save
       callback {progdefaults.saveDefaults();}
-      xywh {330 388 130 22}
+      xywh {330 390 130 22}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
       callback {closeDialog();}
-      xywh {462 388 130 22}
+      xywh {462 390 130 22}
     }
     Fl_Button btnResetConfig {
       label {Restore defaults}
       callback {progdefaults.resetDefaults();
 progdefaults.changed = false;}
-      xywh {20 388 130 22}
+      xywh {20 390 130 22}
     }
   }
-}
+} 
 
 Function {openConfig()} {return_type void
 } {
   code {if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();} {}
-}
+} 
 
 Function {closeDialog()} {return_type void
 } {
   code {if (dlgConfig) dlgConfig->hide();} {}
-}
+} 
 
 Function {createConfig()} {return_type void
 } {
@@ -7414,10 +7423,10 @@ Function {createConfig()} {return_type void
     dlgConfig = ConfigureDialog();
     dlgConfig->xclass(PACKAGE_NAME);
   }} {}
-}
+} 
 
 decl {class Fl_File_Chooser ;} {public global
-}
+} 
 
 Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
@@ -7427,7 +7436,7 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnWefaxSaveDir->redraw();
 	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
 }} {}
-}
+} 
 
 Function {KmlDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
 } {
@@ -7437,9 +7446,9 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnKmlSaveDir->redraw();
 	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
 }} {}
-}
+} 
 
-Function {make_window()} {} {}
+Function {make_window()} {} {} 
 
 Function {make_window()} {open
-} {}
+} {} 
