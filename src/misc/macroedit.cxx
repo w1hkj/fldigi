@@ -320,9 +320,10 @@ void update_macro_button(int iMacro, const char *text, const char *name)
 		btnMacro[iMacro % NUMMACKEYS]->label( macros.name[iMacro].c_str() );
 		btnMacro[iMacro % NUMMACKEYS]->redraw_label();
 	}
-	btnDockMacro[iMacro]->label(macros.name[iMacro].c_str());
-	btnDockMacro[iMacro]->redraw_label();
-
+	if (progdefaults.dockable_macros) {
+		btnDockMacro[iMacro]->label(macros.name[iMacro].c_str());
+		btnDockMacro[iMacro]->redraw_label();
+	}
 	macros.changed = true;
 }
 

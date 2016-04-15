@@ -362,7 +362,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     xywh {900 170 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 600 385} color 50 selection_color 50
+      xywh {0 0 600 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -466,15 +466,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabUI {
-        label UI
-        tooltip {User Interface} xywh {0 25 600 360} hide
+        label UI open
+        tooltip {User Interface} xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsUI {open
-          xywh {0 25 600 360} selection_color 50
+          xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 335} hide
+            tooltip {User Interface - Browser} xywh {0 50 600 335}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -936,7 +936,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 335} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsLog {open
               xywh {0 55 600 335}
@@ -1160,23 +1160,23 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMBars {
-            label Macros
+            label Macros open
             tooltip {User Interface - Macros} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
-              xywh {52 263 496 35} box ENGRAVED_FRAME
+              xywh {5 240 590 35} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnMacroMouseWheel {
                 label {Mouse wheel active on macro buttons}
                 callback {progdefaults.macro_wheel = o->value();
 progdefaults.changed = true;}
-                tooltip {enable mouse wheel control of macro bar} xywh {62 271 296 20} down_box DOWN_BOX
+                tooltip {enable mouse wheel control of macro bar} xywh {62 248 296 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.macro_wheel);}
               }
             }
             Fl_Group {} {
               label {Number and position of macro bars} open
-              xywh {52 61 496 200} box ENGRAVED_FRAME align 21
+              xywh {5 60 590 180} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter cnt_macro_height {
                 label {Button Height}
@@ -1184,7 +1184,7 @@ progdefaults.changed = true;}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                tooltip {Height of macro bar} xywh {215 93 89 22} type Simple align 8 minimum 22 maximum 66 step 2 value 22
+                tooltip {Height of macro bar} xywh {215 85 89 22} type Simple align 8 minimum 22 maximum 66 step 2 value 22
                 code0 {o->value(progdefaults.macro_height);}
               }
               Fl_Round_Button btn_scheme_0 {
@@ -1194,7 +1194,7 @@ progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
                 tooltip {Single macro bar below logging panel
-variable height} xywh {61 130 144 22} type Radio down_box ROUND_DOWN_BOX
+variable height} xywh {61 113 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_1 {
                 label {One above waterfall}
@@ -1202,7 +1202,7 @@ variable height} xywh {61 130 144 22} type Radio down_box ROUND_DOWN_BOX
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {61 155 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {61 138 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_2 {
                 label {One below waterfall}
@@ -1210,7 +1210,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {61 180 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {61 163 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_3 {
                 label {Two scheme 1}
@@ -1218,7 +1218,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {228 130 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 113 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_5 {
                 label {Two scheme 3}
@@ -1226,7 +1226,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {228 155 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 138 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_7 {
                 label {Two scheme 5}
@@ -1234,7 +1234,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {228 180 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 163 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_9 {
                 label {Two scheme 7}
@@ -1242,7 +1242,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {228 205 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 188 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_11 {
                 label {Two scheme 9}
@@ -1250,7 +1250,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {228 230 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {228 213 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_4 {
                 label {Two scheme 2}
@@ -1258,7 +1258,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {396 130 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {396 113 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_6 {
                 label {Two scheme 4}
@@ -1266,7 +1266,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {396 155 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {396 138 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_8 {
                 label {Two scheme 6}
@@ -1274,7 +1274,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {396 180 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {396 163 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_10 {
                 label {Two scheme 8}
@@ -1282,7 +1282,7 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {396 205 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {396 188 144 22} type Radio down_box ROUND_DOWN_BOX
               }
               Fl_Round_Button btn_scheme_12 {
                 label {Two scheme 10}
@@ -1290,35 +1290,48 @@ UI_select();}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                xywh {396 230 144 22} type Radio down_box ROUND_DOWN_BOX
+                xywh {396 213 144 22} type Radio down_box ROUND_DOWN_BOX
               }
             }
             Fl_Group {} {open
-              xywh {52 299 496 76} box ENGRAVED_FRAME
+              xywh {5 275 590 55} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnUseLastMacro {
-                label {Load last used macro file on startup}
+                label {Load last used macro file at start}
                 callback {progdefaults.UseLastMacro = o->value();
 update_main_title();
 progdefaults.changed = true;}
                 tooltip {ON - use last set of macros
-OFF - use default set} xywh {62 305 277 20} down_box DOWN_BOX
+OFF - use default set} xywh {62 280 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.UseLastMacro);}
               }
               Fl_Check_Button btnDisplayMacroFilename {
-                label {Display macro filename on startup}
+                label {Display macro filename at start}
                 callback {progdefaults.DisplayMacroFilename = o->value();
 progdefaults.changed = true;}
-                tooltip {The filename is written to the RX text area} xywh {62 327 277 20} down_box DOWN_BOX
+                tooltip {The filename is written to the RX text area} xywh {62 302 277 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.DisplayMacroFilename);}
               }
               Fl_Check_Button btn_save_macros_on_exit {
-                label {Prompt to save macro file when closing}
+                label {Prompt to save macro file}
                 callback {btn2_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
-                tooltip {Write current macro set on program exit} xywh {62 349 305 20} down_box DOWN_BOX
+                tooltip {Write current macro set on program exit} xywh {345 280 216 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
+              }
+            }
+            Fl_Group {} {
+              label {Change takes effect after program restart} open
+              xywh {5 330 590 55} box ENGRAVED_FRAME align 17
+            } {
+              Fl_Check_Button btn_dockable_macros {
+                label {Disable dockable macro bar}
+                callback {progdefaults.dockable_macros = !o->value();
+progdefaults.changed = true;}
+                tooltip {Allow minimized main dialog height 
+411 pixels with WF height = 100} xywh {152 353 296 20} down_box DOWN_BOX
+                code0 {o->value(!progdefaults.dockable_macros);}
               }
             }
           }
@@ -1463,10 +1476,10 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts}
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 335}
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 335} hide
           } {
             Fl_Tabs tabsColors {open
-              xywh {0 55 600 325}
+              xywh {0 55 600 330}
             } {
               Fl_Group {} {
                 label {Rx/Tx}
@@ -2812,7 +2825,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 600 335} hide
+            xywh {0 50 600 335}
           } {
             Fl_Group {} {open
               xywh {55 71 490 135} box ENGRAVED_FRAME
@@ -2897,7 +2910,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 600 335}
+            xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {55 73 490 170} box ENGRAVED_FRAME

@@ -570,7 +570,7 @@ void status::loadLastState()
 	if (mainW > Fl::w()) mainW = Fl::w();
 
 	spref.get("main_h", mainH, mainH);
-	if (mainH < HMIN) mainH = HMIN;
+//	if (mainH < HMIN) mainH = HMIN;
 	if (mainH > Fl::w()) mainH = Fl::h();
 
 	spref.get("wf_ui", i, WF_UI); WF_UI = i;

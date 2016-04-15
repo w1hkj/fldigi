@@ -195,6 +195,8 @@
 
 #define LOG_CONNECT_SERVER     _("Connect to server")
 
+#define DOCKED_MACROS_LABEL    _("View/Hide 48 macros")
+
 // MAXIMUM allowable string lengths in log fields
 #define MAX_FREQ 14
 #define MAX_TIME 4
@@ -1881,8 +1883,10 @@ void macro_cb(Fl_Widget *w, void *v)
 		restoreFocus(5);
 }
 
-void colorize_docked_macros(int i)
+void colorize_dockable_macros(int i)
 {
+	if (!progdefaults.dockable_macros) return;
+
 	if (progdefaults.useGroupColors == true) {
 		int k = i / 4;
 		if (k == 0 || k == 3 || k == 6 || k == 9)
@@ -1957,7 +1961,7 @@ void colorize_macros()
 {
 	FL_LOCK_D();
 	for (int i = 0; i < NUMMACKEYS * NUMKEYROWS; i++) colorize_macro(i);
-	for (int i = 0; i < 48; i++) colorize_docked_macros(i);
+	for (int i = 0; i < 48; i++) colorize_dockable_macros(i);
 	btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
 	btnAltMacros1->redraw_label();
 	btnAltMacros2->labelsize(progdefaults.MacroBtnFontsize);
@@ -2702,9 +2706,11 @@ void set_macroLabels()
 			btnMacro[i]->redraw_label();
 		}
 	}
-	for (int i = 0; i < 48; i++) {
-		btnDockMacro[i]->label(macros.name[i].c_str());
-		btnDockMacro[i]->redraw_label();
+	if (progdefaults.dockable_macros) {
+		for (int i = 0; i < 48; i++) {
+			btnDockMacro[i]->label(macros.name[i].c_str());
+			btnDockMacro[i]->redraw_label();
+		}
 	}
 }
 
@@ -3724,7 +3730,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 
 // docked macro's
 
-	if (progStatus.tbar_is_docked) {
+	if (progdefaults.dockable_macros && progStatus.tbar_is_docked) {
 		resize_macroframe2(x,y1,w,mh2);
 		macroFrame2->hide();
 		btnAltMacros2->deactivate();
@@ -4134,6 +4140,8 @@ UI_return:
 
 void cb_docked(Fl_Widget*, void*)
 {
+	if (!progdefaults.dockable_macros) return;
+
 	UI_select();
 }
 
@@ -4222,6 +4230,8 @@ void cb_menu_make_default_scripts(Fl_Widget*, void*)
 
 void cb_view_hide_macros(Fl_Widget*, void*)
 {
+	if (!progdefaults.dockable_macros) return;
+
 	progStatus.tile_y = progdefaults.rxtx_swap ? TransmitText->h() : ReceiveText->h();
 	progStatus.tile_y_ratio = 1.0 * progStatus.tile_y / text_group->h();
 
@@ -4502,7 +4512,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("View/Hide 48 macros")), 0, (Fl_Callback*)cb_view_hide_macros, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(DOCKED_MACROS_LABEL), 0, (Fl_Callback*)cb_view_hide_macros, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -5666,22 +5676,24 @@ void create_fl_digi_main_primary() {
 
 	int fixed_height =
 		Hmenu +
-		TB_HEIGHT +
 		Hqsoframe +
-		Hmacros*3 +
+		Hmacros*2 +
 		Hwfall +
 		Hstatus +
 		16; // inter group spacings
+	if (progdefaults.dockable_macros) fixed_height += TB_HEIGHT;
 
 	main_hmin = minhtext + mintxtext + 5 + fixed_height;
 
-	if (progStatus.mainH < main_hmin) progStatus.mainH = main_hmin;
+	if (progStatus.mainH < main_hmin) {
+		progStatus.mainH = main_hmin;
+	}
 
 	int Htext = main_hmin - fixed_height;
 
 	if (progStatus.tile_y > Htext) progStatus.tile_y = Htext / 2;
 
-	fl_digi_main = new dropwin(progStatus.mainW, main_hmin);//progStatus.mainH);
+	fl_digi_main = new dropwin(progStatus.mainW, main_hmin);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 			mnu = new Fl_Menu_Bar(pad, 0, progStatus.mainW - 325 - pad, Hmenu);
@@ -5737,24 +5749,33 @@ void create_fl_digi_main_primary() {
 		mnuFrame->end();
 
 // add draggable toolbar with 4 rows of 12 macros each
-		dock = new dockgroup(pad, mnu->h() + 2,  fl_digi_main->w() - 2*pad, TB_HEIGHT);
-		dock->box(FL_THIN_DOWN_BOX);
-		dock->end();
-		dock->set_window(fl_digi_main);
+		if (progdefaults.dockable_macros) {
+			dock = new dockgroup(pad, mnu->h() + 2,  fl_digi_main->w() - Hmenu - 2*pad, TB_HEIGHT);
+			dock->box(FL_THIN_DOWN_BOX);
+			dock->end();
+			dock->set_window(fl_digi_main);
 
-	// Create a toolgroup already docked in this dock
-		add_docked(dock);
-		dock->redraw();
+// Create a toolgroup already docked in this dock
+			add_docked(dock);
+			dock->redraw();
 
-	// Record in the dropwin which dock to use
-		fl_digi_main->set_dock(dock);
+// Record in the dropwin which dock to use
+			fl_digi_main->set_dock(dock);
 
-		fl_digi_main->begin();
+			fl_digi_main->begin();
 
 // docked window workspace
-		fl_digi_main->workspace = new Fl_Group(
-			pad, dock->y() + dock->h(),
-			dock->w(), fl_digi_main->h() - dock->h() - dock->y() - pad);
+			fl_digi_main->workspace = new Fl_Group(
+				pad, dock->y() + dock->h(),
+				dock->w(), fl_digi_main->h() - dock->h() - dock->y() - 2 * pad);
+		} else {
+			fl_digi_main->begin();
+			fl_digi_main->workspace = new Fl_Group(
+				pad, mnu->h() + 2,
+				fl_digi_main->w() - 2*pad, fl_digi_main->h() - Hmenu - 2 * pad);
+			getMenuItem(DOCKED_MACROS_LABEL)->hide();
+
+		}
 
 		// reset the message dialog font
 		fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
@@ -7214,7 +7235,8 @@ void create_fl_digi_main_primary() {
 	fl_digi_main->end();
 	fl_digi_main->resizable(fl_digi_main->workspace);
 
-	dock->callback(cb_docked);
+	if (progdefaults.dockable_macros)
+		dock->callback(cb_docked);
 
 	fl_digi_main->callback(cb_wMain);
 
@@ -7256,12 +7278,15 @@ void create_fl_digi_main_primary() {
 
 	toggle_smeter();
 
-	if (progStatus.tbar_is_docked) // do not change interface state
+	if (progdefaults.dockable_macros) {
+		if (progStatus.tbar_is_docked) // do not change interface state
+			UI_select();
+		else {
+			progStatus.tbar_is_docked = true; // for tbar toggle
+			cb_view_hide_macros((Fl_Widget *)0, (void *)0);
+		}
+	} else
 		UI_select();
-	else {
-		progStatus.tbar_is_docked = true; // for tbar toggle
-		cb_view_hide_macros((Fl_Widget *)0, (void *)0);
-	}
 
 	wf->UI_select(progStatus.WF_UI);
 

@@ -1045,6 +1045,13 @@ progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_dockable_macros=(Fl_Check_Button *)0;
+
+static void cb_btn_dockable_macros(Fl_Check_Button* o, void*) {
+  progdefaults.dockable_macros = !o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWF_UI=(Fl_Group *)0;
 
 Fl_Check_Button *btnWF_UIrev=(Fl_Check_Button *)0;
@@ -5948,7 +5955,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 600, 385);
+    { tabsConfigure = new Fl_Tabs(0, 0, 600, 390);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 360, _("Operator"));
@@ -6089,14 +6096,13 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 600, 360, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
         tabUI->hide();
-        { tabsUI = new Fl_Tabs(0, 25, 600, 360);
+        { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6517,7 +6523,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(0, 50, 600, 335, _("Log"));
+          { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
             tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
             tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 55, 600, 335);
@@ -6720,9 +6726,9 @@ ab and newline are automatically included."));
           { tabMBars = new Fl_Group(0, 50, 600, 335, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
             tabMBars->hide();
-            { Fl_Group* o = new Fl_Group(52, 263, 496, 35);
+            { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 271, 296, 20, _("Mouse wheel active on macro buttons"));
+              { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 248, 296, 20, _("Mouse wheel active on macro buttons"));
                 btnMacroMouseWheel->tooltip(_("enable mouse wheel control of macro bar"));
                 btnMacroMouseWheel->down_box(FL_DOWN_BOX);
                 btnMacroMouseWheel->callback((Fl_Callback*)cb_btnMacroMouseWheel);
@@ -6730,10 +6736,10 @@ ab and newline are automatically included."));
               } // Fl_Check_Button* btnMacroMouseWheel
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 61, 496, 200, _("Number and position of macro bars"));
+            { Fl_Group* o = new Fl_Group(5, 60, 590, 180, _("Number and position of macro bars"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Counter* o = cnt_macro_height = new Fl_Counter(215, 93, 89, 22, _("Button Height"));
+              { Fl_Counter* o = cnt_macro_height = new Fl_Counter(215, 85, 89, 22, _("Button Height"));
                 cnt_macro_height->tooltip(_("Height of macro bar"));
                 cnt_macro_height->type(1);
                 cnt_macro_height->minimum(22);
@@ -6744,94 +6750,105 @@ ab and newline are automatically included."));
                 cnt_macro_height->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.macro_height);
               } // Fl_Counter* cnt_macro_height
-              { btn_scheme_0 = new Fl_Round_Button(61, 130, 144, 22, _("One above Rx/Tx"));
+              { btn_scheme_0 = new Fl_Round_Button(61, 113, 144, 22, _("One above Rx/Tx"));
                 btn_scheme_0->tooltip(_("Single macro bar below logging panel\nvariable height"));
                 btn_scheme_0->type(102);
                 btn_scheme_0->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_0->callback((Fl_Callback*)cb_btn_scheme_0);
               } // Fl_Round_Button* btn_scheme_0
-              { btn_scheme_1 = new Fl_Round_Button(61, 155, 144, 22, _("One above waterfall"));
+              { btn_scheme_1 = new Fl_Round_Button(61, 138, 144, 22, _("One above waterfall"));
                 btn_scheme_1->type(102);
                 btn_scheme_1->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_1->callback((Fl_Callback*)cb_btn_scheme_1);
               } // Fl_Round_Button* btn_scheme_1
-              { btn_scheme_2 = new Fl_Round_Button(61, 180, 144, 22, _("One below waterfall"));
+              { btn_scheme_2 = new Fl_Round_Button(61, 163, 144, 22, _("One below waterfall"));
                 btn_scheme_2->type(102);
                 btn_scheme_2->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_2->callback((Fl_Callback*)cb_btn_scheme_2);
               } // Fl_Round_Button* btn_scheme_2
-              { btn_scheme_3 = new Fl_Round_Button(228, 130, 144, 22, _("Two scheme 1"));
+              { btn_scheme_3 = new Fl_Round_Button(228, 113, 144, 22, _("Two scheme 1"));
                 btn_scheme_3->type(102);
                 btn_scheme_3->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_3->callback((Fl_Callback*)cb_btn_scheme_3);
               } // Fl_Round_Button* btn_scheme_3
-              { btn_scheme_5 = new Fl_Round_Button(228, 155, 144, 22, _("Two scheme 3"));
+              { btn_scheme_5 = new Fl_Round_Button(228, 138, 144, 22, _("Two scheme 3"));
                 btn_scheme_5->type(102);
                 btn_scheme_5->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_5->callback((Fl_Callback*)cb_btn_scheme_5);
               } // Fl_Round_Button* btn_scheme_5
-              { btn_scheme_7 = new Fl_Round_Button(228, 180, 144, 22, _("Two scheme 5"));
+              { btn_scheme_7 = new Fl_Round_Button(228, 163, 144, 22, _("Two scheme 5"));
                 btn_scheme_7->type(102);
                 btn_scheme_7->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_7->callback((Fl_Callback*)cb_btn_scheme_7);
               } // Fl_Round_Button* btn_scheme_7
-              { btn_scheme_9 = new Fl_Round_Button(228, 205, 144, 22, _("Two scheme 7"));
+              { btn_scheme_9 = new Fl_Round_Button(228, 188, 144, 22, _("Two scheme 7"));
                 btn_scheme_9->type(102);
                 btn_scheme_9->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_9->callback((Fl_Callback*)cb_btn_scheme_9);
               } // Fl_Round_Button* btn_scheme_9
-              { btn_scheme_11 = new Fl_Round_Button(228, 230, 144, 22, _("Two scheme 9"));
+              { btn_scheme_11 = new Fl_Round_Button(228, 213, 144, 22, _("Two scheme 9"));
                 btn_scheme_11->type(102);
                 btn_scheme_11->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_11->callback((Fl_Callback*)cb_btn_scheme_11);
               } // Fl_Round_Button* btn_scheme_11
-              { btn_scheme_4 = new Fl_Round_Button(396, 130, 144, 22, _("Two scheme 2"));
+              { btn_scheme_4 = new Fl_Round_Button(396, 113, 144, 22, _("Two scheme 2"));
                 btn_scheme_4->type(102);
                 btn_scheme_4->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_4->callback((Fl_Callback*)cb_btn_scheme_4);
               } // Fl_Round_Button* btn_scheme_4
-              { btn_scheme_6 = new Fl_Round_Button(396, 155, 144, 22, _("Two scheme 4"));
+              { btn_scheme_6 = new Fl_Round_Button(396, 138, 144, 22, _("Two scheme 4"));
                 btn_scheme_6->type(102);
                 btn_scheme_6->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_6->callback((Fl_Callback*)cb_btn_scheme_6);
               } // Fl_Round_Button* btn_scheme_6
-              { btn_scheme_8 = new Fl_Round_Button(396, 180, 144, 22, _("Two scheme 6"));
+              { btn_scheme_8 = new Fl_Round_Button(396, 163, 144, 22, _("Two scheme 6"));
                 btn_scheme_8->type(102);
                 btn_scheme_8->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_8->callback((Fl_Callback*)cb_btn_scheme_8);
               } // Fl_Round_Button* btn_scheme_8
-              { btn_scheme_10 = new Fl_Round_Button(396, 205, 144, 22, _("Two scheme 8"));
+              { btn_scheme_10 = new Fl_Round_Button(396, 188, 144, 22, _("Two scheme 8"));
                 btn_scheme_10->type(102);
                 btn_scheme_10->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_10->callback((Fl_Callback*)cb_btn_scheme_10);
               } // Fl_Round_Button* btn_scheme_10
-              { btn_scheme_12 = new Fl_Round_Button(396, 230, 144, 22, _("Two scheme 10"));
+              { btn_scheme_12 = new Fl_Round_Button(396, 213, 144, 22, _("Two scheme 10"));
                 btn_scheme_12->type(102);
                 btn_scheme_12->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_12->callback((Fl_Callback*)cb_btn_scheme_12);
               } // Fl_Round_Button* btn_scheme_12
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(52, 299, 496, 76);
+            { Fl_Group* o = new Fl_Group(5, 275, 590, 55);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(62, 305, 277, 20, _("Load last used macro file on startup"));
+              { Fl_Check_Button* o = btnUseLastMacro = new Fl_Check_Button(62, 280, 277, 20, _("Load last used macro file at start"));
                 btnUseLastMacro->tooltip(_("ON - use last set of macros\nOFF - use default set"));
                 btnUseLastMacro->down_box(FL_DOWN_BOX);
                 btnUseLastMacro->callback((Fl_Callback*)cb_btnUseLastMacro);
                 o->value(progdefaults.UseLastMacro);
               } // Fl_Check_Button* btnUseLastMacro
-              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(62, 327, 277, 20, _("Display macro filename on startup"));
+              { Fl_Check_Button* o = btnDisplayMacroFilename = new Fl_Check_Button(62, 302, 277, 20, _("Display macro filename at start"));
                 btnDisplayMacroFilename->tooltip(_("The filename is written to the RX text area"));
                 btnDisplayMacroFilename->down_box(FL_DOWN_BOX);
                 btnDisplayMacroFilename->callback((Fl_Callback*)cb_btnDisplayMacroFilename);
                 o->value(progdefaults.DisplayMacroFilename);
               } // Fl_Check_Button* btnDisplayMacroFilename
-              { Fl_Check_Button* o = btn_save_macros_on_exit = new Fl_Check_Button(62, 349, 305, 20, _("Prompt to save macro file when closing"));
+              { Fl_Check_Button* o = btn_save_macros_on_exit = new Fl_Check_Button(345, 280, 216, 20, _("Prompt to save macro file"));
                 btn_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
                 btn_save_macros_on_exit->down_box(FL_DOWN_BOX);
                 btn_save_macros_on_exit->callback((Fl_Callback*)cb_btn_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn_save_macros_on_exit
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 330, 590, 55, _("Change takes effect after program restart"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_dockable_macros = new Fl_Check_Button(152, 353, 296, 20, _("Disable dockable macro bar"));
+                btn_dockable_macros->tooltip(_("Allow minimized main dialog height \n411 pixels with WF height = 100"));
+                btn_dockable_macros->down_box(FL_DOWN_BOX);
+                btn_dockable_macros->callback((Fl_Callback*)cb_btn_dockable_macros);
+                o->value(!progdefaults.dockable_macros);
+              } // Fl_Check_Button* btn_dockable_macros
               o->end();
             } // Fl_Group* o
             tabMBars->end();
@@ -6923,7 +6940,8 @@ ab and newline are automatically included."));
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 335, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
-            { tabsColors = new Fl_Tabs(0, 55, 600, 325);
+            tabColorsFonts->hide();
+            { tabsColors = new Fl_Tabs(0, 55, 600, 330);
               { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Rx/Tx"));
                 o->hide();
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 90, 165, 24, _("Rx/Tx Character set"));
@@ -7552,7 +7570,6 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("FFT Processing"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(55, 71, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(100, 89, 70, 22, _("Lower limit"));
@@ -7688,6 +7705,7 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Mouse"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(55, 73, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(65, 87, 340, 20, _("Left or right click always replays audio history"));

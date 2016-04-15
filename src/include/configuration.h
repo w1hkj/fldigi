@@ -1902,7 +1902,10 @@
               16)                                                                       \
         ELEM_(bool, psk8DCDShortFlag, "PSK8DCDSHORTFLAG",                               \
               "Flag: Change DCD pre-ample length",                                      \
-              false)
+              false)                                                                    \
+        ELEM_(bool, dockable_macros, "DOCKABLE_MACROS",                                 \
+              "Allow dockable macros",                                                  \
+              true)
 
 
 // declare the struct
