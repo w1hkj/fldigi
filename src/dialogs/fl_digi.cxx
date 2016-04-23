@@ -8181,10 +8181,10 @@ static void rx_parser(const unsigned char data, int style)
 
 	if (data == '\n' && lastdata == '\r');
 	else if (data == '\r') {
-		add_rx_char('\n');
+//		add_rx_char('\n');
 		display_rx_data('\n', style);
 	} else {
-		add_rx_char(data);
+//		add_rx_char(data);
 		display_rx_data(data, style);
 	}
 
@@ -8218,6 +8218,8 @@ static void put_rx_char_flmain(unsigned int data, int style)
 
 	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
+
+	add_rx_char(data & 0xFF);
 
 	if (mailclient || mailserver)
 		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
