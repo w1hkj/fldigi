@@ -5750,7 +5750,7 @@ void create_fl_digi_main_primary() {
 
 // add draggable toolbar with 4 rows of 12 macros each
 		if (progdefaults.dockable_macros) {
-			dock = new dockgroup(pad, mnu->h() + 2,  fl_digi_main->w() - Hmenu - 2*pad, TB_HEIGHT);
+			dock = new dockgroup(pad, mnu->h() + 2,  fl_digi_main->w() - 2*pad, TB_HEIGHT);
 			dock->box(FL_THIN_DOWN_BOX);
 			dock->end();
 			dock->set_window(fl_digi_main);
