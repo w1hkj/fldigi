@@ -593,6 +593,7 @@ extern Fl_Check_Button *chk_open_flmsg_print;
 extern Fl_Input2 *txt_flmsg_pathname;
 extern Fl_Button *btn_select_flmsg;
 extern Fl_Value_Slider *sldr_extract_timeout;
+extern Fl_Check_Button *chk_transfer__to_open_flmsg;
 extern Fl_Group *tabPskmail;
 extern Fl_Counter2 *cntServerCarrier;
 extern Fl_Counter2 *cntServerOffset;

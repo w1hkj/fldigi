@@ -359,7 +359,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {900 170 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {1076 134 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 390} color 50 selection_color 50
@@ -5991,7 +5991,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 600 335} hide
+            xywh {0 50 600 335}
           } {
             Fl_Group {} {open
               xywh {55 75 490 51} box ENGRAVED_FRAME align 21
@@ -6030,41 +6030,54 @@ progdefaults.changed = true;}
             }
             Fl_Group {} {
               label {Reception of flmsg files} open
-              xywh {50 141 500 130} box ENGRAVED_FRAME align 21
+              xywh {50 141 500 199} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button chk_open_flmsg {
                 label {Open with flmsg}
                 callback {progdefaults.open_flmsg = o->value();
 progdefaults.changed = true;}
-                tooltip {Open message with flmsg} xywh {104 168 136 20} down_box DOWN_BOX
+                tooltip {Open message with flmsg} xywh {104 241 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg);}
               }
               Fl_Check_Button chk_open_flmsg_print {
                 label {Open in browser}
                 callback {progdefaults.open_flmsg_print = o->value();
 progdefaults.changed = true;}
-                tooltip {Open file with default browser} xywh {310 168 136 20} down_box DOWN_BOX
+                tooltip {Open file with default browser} xywh {310 241 136 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.open_flmsg_print);}
               }
               Fl_Input txt_flmsg_pathname {
                 label {flmsg:}
                 callback {progdefaults.flmsg_pathname = o->value();
 progdefaults.changed = true;}
-                tooltip {Enter full path-filename for flmsg} xywh {104 199 330 24} when 1
+                tooltip {Enter full path-filename for flmsg} xywh {104 271 330 24} when 1
                 code0 {o->value(progdefaults.flmsg_pathname.c_str());}
                 class Fl_Input2
               }
               Fl_Button btn_select_flmsg {
                 label {Locate flmsg}
                 callback {select_flmsg_pathname();}
-                tooltip {Locate flmsg executable} xywh {441 199 100 24}
+                tooltip {Locate flmsg executable} xywh {441 271 100 24}
               }
               Fl_Value_Slider sldr_extract_timeout {
                 label {Timeout (secs)}
                 callback {progdefaults.extract_timeout=o->value();
 progdefaults.changed=true;}
-                tooltip {Extract times out after NN seconds of inactivity.} xywh {70 237 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 10 step 0.5 value 4 textsize 14
+                tooltip {Extract times out after NN seconds of inactivity.} xywh {70 309 364 21} type {Horz Knob} color 54 selection_color 0 align 8 minimum 1 maximum 20 step 0.5 value 10 textsize 14
                 code0 {o->value(progdefaults.extract_timeout);}
+              }
+              Fl_Group {} {
+                label {Selection of transfer direct takes precedence
+over all other flmsg reception settings} open
+                xywh {55 160 490 76} box ENGRAVED_FRAME align 17
+              } {
+                Fl_Check_Button chk_transfer__to_open_flmsg {
+                  label {Transfer direct to executing flmsg}
+                  callback {progdefaults.flmsg_transfer_direct = o->value();
+progdefaults.changed = true;}
+                  tooltip {Send data stream directly to executing flmsg} xywh {160 204 271 20} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.flmsg_transfer_direct);}
+                }
               }
             }
           }
@@ -6436,7 +6449,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabKML {
             label KML open
-            xywh {0 50 600 335}
+            xywh {0 50 600 335} hide
           } {
             Fl_Input btnKmlSaveDir {
               label {KML files directory}

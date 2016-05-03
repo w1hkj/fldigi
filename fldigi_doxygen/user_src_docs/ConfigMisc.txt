@@ -107,7 +107,7 @@ over HF and VHF radio.Additional information on flarq is available here:
 </ul>
 
 The reception of a flwrap and flmsg files can be automated by selecting
-the "Enable detection &amp; extraction" option. The wrap program
+the "Enable detection" option. The wrap program
 can then be used to test for validity and data extraction at some later
 time. fldigi can recognize flmsg data files and automatically
 open the flmsg program with the newly received data stream. It
@@ -115,6 +115,10 @@ can also transfer the data stream to flmsg and instruct flmsg to save
 the data file, unwrap and decode it, display the data in a fully
 formatted html page and then exit. Pressing "Locate flmsg"
 performs differently on the different OS that are supported.
+
+The ability to transfer incoming flmsg data streams directly to an executing
+flmsg was introduced with flmsg 3.0.  Check that option if you are using flmsg
+3.0 or greater.
 <br>
 
 <ul>

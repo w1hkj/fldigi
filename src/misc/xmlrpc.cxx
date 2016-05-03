@@ -1572,6 +1572,83 @@ public:
 	}
 };
 
+//----------------------------------------------------------------------
+// flmsg i/o
+//----------------------------------------------------------------------
+bool flmsg_online = false;
+void flmsg_defeat(void *)
+{
+	flmsg_online = false;
+}
+
+class Main_flmsg_online : public xmlrpc_c::method
+{
+public:
+	Main_flmsg_online()
+	{
+		_signature = "n:n";
+		_help = "flmsg online indication";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		flmsg_online = true;
+		Fl::remove_timeout(flmsg_defeat);
+		Fl::add_timeout(0.5, flmsg_defeat);
+	}
+};
+
+string flmsg_data;
+
+class Main_flmsg_available : public xmlrpc_c::method
+{
+public:
+	Main_flmsg_available()
+	{
+		_signature = "n:n";
+		_help = "flmsg data available";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		int data_ready = (int)flmsg_data.size();
+		*retval = xmlrpc_c::value_int(data_ready);
+	}
+};
+
+class Main_flmsg_transfer : public xmlrpc_c::method
+{
+public:
+	Main_flmsg_transfer()
+	{
+		_signature = "n:n";
+		_help = "data transfer to flmsg";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		string tempstr = flmsg_data;
+		*retval = xmlrpc_c::value_string(tempstr);
+		flmsg_data.clear();
+	}
+};
+
+class Main_flmsg_squelch : public xmlrpc_c::method
+{
+public:
+	Main_flmsg_squelch()
+	{
+		_signature = "b:n";
+		_help = "Returns the squelch state.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		*retval = xmlrpc_c::value_boolean(active_modem->get_metric() > progStatus.sldrSquelchValue);
+	}
+};
+
+//----------------------------------------------------------------------
+
 class Main_run_macro : public xmlrpc_c::method
 {
 public:
@@ -3312,192 +3389,197 @@ struct Navtex_send_message : public xmlrpc_c::method
 
 // method list: ELEM_(class_name, "method_name")
 #undef ELEM_
-#define METHOD_LIST														\
-ELEM_(Fldigi_list, "fldigi.list")									\
-ELEM_(Fldigi_name, "fldigi.name")									\
-ELEM_(Fldigi_version_struct, "fldigi.version_struct")			\
-ELEM_(Fldigi_version_string, "fldigi.version")					\
-ELEM_(Fldigi_name_version, "fldigi.name_version")					\
-ELEM_(Fldigi_config_dir, "fldigi.config_dir")						\
-ELEM_(Fldigi_terminate, "fldigi.terminate")						\
+#define METHOD_LIST                                                    \
+ELEM_(Fldigi_list, "fldigi.list")                                      \
+ELEM_(Fldigi_name, "fldigi.name")                                      \
+ELEM_(Fldigi_version_struct, "fldigi.version_struct")                  \
+ELEM_(Fldigi_version_string, "fldigi.version")                         \
+ELEM_(Fldigi_name_version, "fldigi.name_version")                      \
+ELEM_(Fldigi_config_dir, "fldigi.config_dir")                          \
+ELEM_(Fldigi_terminate, "fldigi.terminate")                            \
 \
-ELEM_(Modem_get_name, "modem.get_name")							\
-ELEM_(Modem_get_names, "modem.get_names")							\
-ELEM_(Modem_get_id, "modem.get_id")								\
-ELEM_(Modem_get_max_id, "modem.get_max_id")						\
-ELEM_(Modem_set_by_name, "modem.set_by_name")						\
-ELEM_(Modem_set_by_id, "modem.set_by_id")							\
+ELEM_(Modem_get_name, "modem.get_name")                                \
+ELEM_(Modem_get_names, "modem.get_names")                              \
+ELEM_(Modem_get_id, "modem.get_id")                                    \
+ELEM_(Modem_get_max_id, "modem.get_max_id")                            \
+ELEM_(Modem_set_by_name, "modem.set_by_name")                          \
+ELEM_(Modem_set_by_id, "modem.set_by_id")                              \
 \
-ELEM_(Modem_set_carrier, "modem.set_carrier")						\
-ELEM_(Modem_inc_carrier, "modem.inc_carrier")						\
-ELEM_(Modem_get_carrier, "modem.get_carrier")						\
+ELEM_(Modem_set_carrier, "modem.set_carrier")                          \
+ELEM_(Modem_inc_carrier, "modem.inc_carrier")                          \
+ELEM_(Modem_get_carrier, "modem.get_carrier")                          \
 \
-ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")				\
-ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")				\
-ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")				\
+ELEM_(Modem_get_afc_sr, "modem.get_afc_search_range")                  \
+ELEM_(Modem_set_afc_sr, "modem.set_afc_search_range")                  \
+ELEM_(Modem_inc_afc_sr, "modem.inc_afc_search_range")                  \
 \
-ELEM_(Modem_get_bw, "modem.get_bandwidth")							\
-ELEM_(Modem_set_bw, "modem.set_bandwidth")							\
-ELEM_(Modem_inc_bw, "modem.inc_bandwidth")							\
+ELEM_(Modem_get_bw, "modem.get_bandwidth")                             \
+ELEM_(Modem_set_bw, "modem.set_bandwidth")                             \
+ELEM_(Modem_inc_bw, "modem.inc_bandwidth")                             \
 \
-ELEM_(Modem_get_quality, "modem.get_quality")						\
-ELEM_(Modem_search_up, "modem.search_up")							\
-ELEM_(Modem_search_down, "modem.search_down")						\
+ELEM_(Modem_get_quality, "modem.get_quality")                          \
+ELEM_(Modem_search_up, "modem.search_up")                              \
+ELEM_(Modem_search_down, "modem.search_down")                          \
 \
-ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")	\
-ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")	\
-ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")			\
-ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")			\
+ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")        \
+ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")        \
+ELEM_(Modem_olivia_set_tones, "modem.olivia.set_tones")                \
+ELEM_(Modem_olivia_get_tones, "modem.olivia.get_tones")                \
 \
-ELEM_(Main_get_status1, "main.get_status1")						\
-ELEM_(Main_get_status2, "main.get_status2")						\
+ELEM_(Main_get_status1, "main.get_status1")                            \
+ELEM_(Main_get_status2, "main.get_status2")                            \
 \
-ELEM_(Main_get_sb, "main.get_sideband")							\
-ELEM_(Main_set_sb, "main.set_sideband")							\
-ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")				\
-ELEM_(Main_set_wf_sideband, "main.set_wf_sideband")				\
-ELEM_(Main_get_freq, "main.get_frequency")						\
-ELEM_(Main_set_freq, "main.set_frequency")						\
-ELEM_(Main_inc_freq, "main.inc_frequency")						\
+ELEM_(Main_get_sb, "main.get_sideband")                                \
+ELEM_(Main_set_sb, "main.set_sideband")                                \
+ELEM_(Main_get_wf_sideband, "main.get_wf_sideband")                    \
+ELEM_(Main_set_wf_sideband, "main.set_wf_sideband")                    \
+ELEM_(Main_get_freq, "main.get_frequency")                             \
+ELEM_(Main_set_freq, "main.set_frequency")                             \
+ELEM_(Main_inc_freq, "main.inc_frequency")                             \
 \
-ELEM_(Main_get_afc, "main.get_afc")								\
-ELEM_(Main_set_afc, "main.set_afc")								\
-ELEM_(Main_toggle_afc, "main.toggle_afc")							\
+ELEM_(Main_get_afc, "main.get_afc")                                    \
+ELEM_(Main_set_afc, "main.set_afc")                                    \
+ELEM_(Main_toggle_afc, "main.toggle_afc")                              \
 \
-ELEM_(Main_get_sql, "main.get_squelch")							\
-ELEM_(Main_set_sql, "main.set_squelch")							\
-ELEM_(Main_toggle_sql, "main.toggle_squelch")						\
+ELEM_(Main_get_sql, "main.get_squelch")                                \
+ELEM_(Main_set_sql, "main.set_squelch")                                \
+ELEM_(Main_toggle_sql, "main.toggle_squelch")                          \
 \
-ELEM_(Main_get_sql_level, "main.get_squelch_level")				\
-ELEM_(Main_set_sql_level, "main.set_squelch_level")				\
-ELEM_(Main_inc_sql_level, "main.inc_squelch_level")				\
+ELEM_(Main_get_sql_level, "main.get_squelch_level")                    \
+ELEM_(Main_set_sql_level, "main.set_squelch_level")                    \
+ELEM_(Main_inc_sql_level, "main.inc_squelch_level")                    \
 \
-ELEM_(Main_get_rev, "main.get_reverse")							\
-ELEM_(Main_set_rev, "main.set_reverse")							\
-ELEM_(Main_toggle_rev, "main.toggle_reverse")						\
+ELEM_(Main_get_rev, "main.get_reverse")                                \
+ELEM_(Main_set_rev, "main.set_reverse")                                \
+ELEM_(Main_toggle_rev, "main.toggle_reverse")                          \
 \
-ELEM_(Main_get_lock, "main.get_lock")								\
-ELEM_(Main_set_lock, "main.set_lock")								\
-ELEM_(Main_toggle_lock, "main.toggle_lock")						\
+ELEM_(Main_get_lock, "main.get_lock")                                  \
+ELEM_(Main_set_lock, "main.set_lock")                                  \
+ELEM_(Main_toggle_lock, "main.toggle_lock")                            \
 \
-ELEM_(Main_get_txid, "main.get_txid")								\
-ELEM_(Main_set_txid, "main.set_txid")								\
-ELEM_(Main_toggle_txid, "main.toggle_txid")						\
+ELEM_(Main_get_txid, "main.get_txid")                                  \
+ELEM_(Main_set_txid, "main.set_txid")                                  \
+ELEM_(Main_toggle_txid, "main.toggle_txid")                            \
 \
-ELEM_(Main_get_rsid, "main.get_rsid")								\
-ELEM_(Main_set_rsid, "main.set_rsid")								\
-ELEM_(Main_toggle_rsid, "main.toggle_rsid")						\
+ELEM_(Main_get_rsid, "main.get_rsid")                                  \
+ELEM_(Main_set_rsid, "main.set_rsid")                                  \
+ELEM_(Main_toggle_rsid, "main.toggle_rsid")                            \
 \
-ELEM_(Main_get_trx_status, "main.get_trx_status")					\
-ELEM_(Main_tx, "main.tx")											\
-ELEM_(Main_tune, "main.tune")										\
-ELEM_(Main_rsid, "main.rsid")										\
-ELEM_(Main_rx, "main.rx")											\
-ELEM_(Main_rx_tx, "main.rx_tx")									\
-ELEM_(Main_rx_only, "main.rx_only")								\
-ELEM_(Main_abort, "main.abort")									\
+ELEM_(Main_get_trx_status, "main.get_trx_status")                      \
+ELEM_(Main_tx, "main.tx")                                              \
+ELEM_(Main_tune, "main.tune")                                          \
+ELEM_(Main_rsid, "main.rsid")                                          \
+ELEM_(Main_rx, "main.rx")                                              \
+ELEM_(Main_rx_tx, "main.rx_tx")                                        \
+ELEM_(Main_rx_only, "main.rx_only")                                    \
+ELEM_(Main_abort, "main.abort")                                        \
 \
-ELEM_(Main_get_trx_state, "main.get_trx_state")					\
-ELEM_(Main_get_tx_timing, "main.get_tx_timing")					\
-ELEM_(Main_get_char_rates, "main.get_char_rates")					\
-ELEM_(Main_get_char_timing, "main.get_char_timing")				\
-ELEM_(Main_set_rig_name, "main.set_rig_name")						\
-ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")			\
-ELEM_(Main_set_rig_modes, "main.set_rig_modes")					\
-ELEM_(Main_set_rig_mode, "main.set_rig_mode")						\
-ELEM_(Main_get_rig_modes, "main.get_rig_modes")					\
-ELEM_(Main_get_rig_mode, "main.get_rig_mode")						\
-ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")		\
-ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")			\
-ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")			\
-ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")		\
+ELEM_(Main_get_trx_state, "main.get_trx_state")                        \
+ELEM_(Main_get_tx_timing, "main.get_tx_timing")                        \
+ELEM_(Main_get_char_rates, "main.get_char_rates")                      \
+ELEM_(Main_get_char_timing, "main.get_char_timing")                    \
+ELEM_(Main_set_rig_name, "main.set_rig_name")                          \
+ELEM_(Main_set_rig_frequency, "main.set_rig_frequency")                \
+ELEM_(Main_set_rig_modes, "main.set_rig_modes")                        \
+ELEM_(Main_set_rig_mode, "main.set_rig_mode")                          \
+ELEM_(Main_get_rig_modes, "main.get_rig_modes")                        \
+ELEM_(Main_get_rig_mode, "main.get_rig_mode")                          \
+ELEM_(Main_set_rig_bandwidths, "main.set_rig_bandwidths")              \
+ELEM_(Main_set_rig_bandwidth, "main.set_rig_bandwidth")                \
+ELEM_(Main_get_rig_bandwidth, "main.get_rig_bandwidth")                \
+ELEM_(Main_get_rig_bandwidths, "main.get_rig_bandwidths")              \
 \
-ELEM_(Main_run_macro, "main.run_macro")							\
-ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")			\
+ELEM_(Main_run_macro, "main.run_macro")                                \
+ELEM_(Main_get_max_macro_id, "main.get_max_macro_id")                  \
 \
-ELEM_(Rig_set_name, "rig.set_name")								\
-ELEM_(Rig_get_name, "rig.get_name")								\
-ELEM_(Rig_set_frequency, "rig.set_frequency")						\
-ELEM_(Rig_set_smeter, "rig.set_smeter")							\
-ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")						\
-ELEM_(Rig_set_modes, "rig.set_modes")								\
-ELEM_(Rig_set_mode, "rig.set_mode")								\
-ELEM_(Rig_get_modes, "rig.get_modes")								\
-ELEM_(Rig_get_mode, "rig.get_mode")								\
-ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")					\
-ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")						\
-ELEM_(Rig_get_freq, "rig.get_frequency")							\
-ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")						\
-ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")					\
-ELEM_(Rig_get_notch, "rig.get_notch")								\
-ELEM_(Rig_set_notch, "rig.set_notch")								\
-ELEM_(Rig_take_control, "rig.take_control")						\
-ELEM_(Rig_release_control, "rig.release_control")					\
+ELEM_(Rig_set_name, "rig.set_name")                                    \
+ELEM_(Rig_get_name, "rig.get_name")                                    \
+ELEM_(Rig_set_frequency, "rig.set_frequency")                          \
+ELEM_(Rig_set_smeter, "rig.set_smeter")                                \
+ELEM_(Rig_set_pwrmeter, "rig.set_pwrmeter")                            \
+ELEM_(Rig_set_modes, "rig.set_modes")                                  \
+ELEM_(Rig_set_mode, "rig.set_mode")                                    \
+ELEM_(Rig_get_modes, "rig.get_modes")                                  \
+ELEM_(Rig_get_mode, "rig.get_mode")                                    \
+ELEM_(Rig_set_bandwidths, "rig.set_bandwidths")                        \
+ELEM_(Rig_set_bandwidth, "rig.set_bandwidth")                          \
+ELEM_(Rig_get_freq, "rig.get_frequency")                               \
+ELEM_(Rig_get_bandwidth, "rig.get_bandwidth")                          \
+ELEM_(Rig_get_bandwidths, "rig.get_bandwidths")                        \
+ELEM_(Rig_get_notch, "rig.get_notch")                                  \
+ELEM_(Rig_set_notch, "rig.set_notch")                                  \
+ELEM_(Rig_take_control, "rig.take_control")                            \
+ELEM_(Rig_release_control, "rig.release_control")                      \
 \
-ELEM_(Log_get_freq, "log.get_frequency")							\
-ELEM_(Log_get_time_on, "log.get_time_on")							\
-ELEM_(Log_get_time_off, "log.get_time_off")						\
-ELEM_(Log_get_call, "log.get_call")								\
-ELEM_(Log_get_name, "log.get_name")								\
-ELEM_(Log_get_rst_in, "log.get_rst_in")							\
-ELEM_(Log_get_rst_out, "log.get_rst_out")							\
-ELEM_(Log_set_rst_in, "log.set_rst_in")							\
-ELEM_(Log_set_rst_out, "log.set_rst_out")							\
-ELEM_(Log_get_serial_number, "log.get_serial_number")			\
-ELEM_(Log_set_serial_number, "log.set_serial_number")			\
-ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")	\
-ELEM_(Log_get_exchange, "log.get_exchange")						\
-ELEM_(Log_set_exchange, "log.set_exchange")						\
-ELEM_(Log_get_state, "log.get_state")								\
-ELEM_(Log_get_province, "log.get_province")						\
-ELEM_(Log_get_country, "log.get_country")							\
-ELEM_(Log_get_qth, "log.get_qth")									\
-ELEM_(Log_get_band, "log.get_band")								\
-ELEM_(Log_get_sb, "log.get_sideband")								\
-ELEM_(Log_get_notes, "log.get_notes")								\
-ELEM_(Log_get_locator, "log.get_locator")							\
-ELEM_(Log_get_az, "log.get_az")									\
-ELEM_(Log_clear, "log.clear")										\
-ELEM_(Log_set_call, "log.set_call")								\
-ELEM_(Log_set_name, "log.set_name")								\
-ELEM_(Log_set_qth, "log.set_qth")									\
-ELEM_(Log_set_locator, "log.set_locator")							\
-ELEM_(Log_set_rst_in, "log.set_rst_in")							\
-ELEM_(Log_set_rst_out, "log.set_rst_out")							\
+ELEM_(Log_get_freq, "log.get_frequency")                               \
+ELEM_(Log_get_time_on, "log.get_time_on")                              \
+ELEM_(Log_get_time_off, "log.get_time_off")                            \
+ELEM_(Log_get_call, "log.get_call")                                    \
+ELEM_(Log_get_name, "log.get_name")                                    \
+ELEM_(Log_get_rst_in, "log.get_rst_in")                                \
+ELEM_(Log_get_rst_out, "log.get_rst_out")                              \
+ELEM_(Log_set_rst_in, "log.set_rst_in")                                \
+ELEM_(Log_set_rst_out, "log.set_rst_out")                              \
+ELEM_(Log_get_serial_number, "log.get_serial_number")                  \
+ELEM_(Log_set_serial_number, "log.set_serial_number")                  \
+ELEM_(Log_get_serial_number_sent, "log.get_serial_number_sent")        \
+ELEM_(Log_get_exchange, "log.get_exchange")                            \
+ELEM_(Log_set_exchange, "log.set_exchange")                            \
+ELEM_(Log_get_state, "log.get_state")                                  \
+ELEM_(Log_get_province, "log.get_province")                            \
+ELEM_(Log_get_country, "log.get_country")                              \
+ELEM_(Log_get_qth, "log.get_qth")                                      \
+ELEM_(Log_get_band, "log.get_band")                                    \
+ELEM_(Log_get_sb, "log.get_sideband")                                  \
+ELEM_(Log_get_notes, "log.get_notes")                                  \
+ELEM_(Log_get_locator, "log.get_locator")                              \
+ELEM_(Log_get_az, "log.get_az")                                        \
+ELEM_(Log_clear, "log.clear")                                          \
+ELEM_(Log_set_call, "log.set_call")                                    \
+ELEM_(Log_set_name, "log.set_name")                                    \
+ELEM_(Log_set_qth, "log.set_qth")                                      \
+ELEM_(Log_set_locator, "log.set_locator")                              \
+ELEM_(Log_set_rst_in, "log.set_rst_in")                                \
+ELEM_(Log_set_rst_out, "log.set_rst_out")                              \
 \
-ELEM_(Io_in_use, "io.in_use")	          						\
-ELEM_(Io_enable_kiss, "io.enable_kiss")							\
-ELEM_(Io_enable_arq, "io.enable_arq")							\
+ELEM_(Main_flmsg_online, "main.flmsg_online")                          \
+ELEM_(Main_flmsg_available, "main.flmsg_available")                    \
+ELEM_(Main_flmsg_transfer, "main.flmsg_transfer")                      \
+ELEM_(Main_flmsg_squelch, "main.flmsg_squelch")                        \
 \
-ELEM_(Text_get_rx_length, "text.get_rx_length")					\
-ELEM_(Text_get_rx, "text.get_rx")								\
-ELEM_(Text_clear_rx, "text.clear_rx")							\
-ELEM_(Text_add_tx, "text.add_tx")								\
-ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")					\
-ELEM_(Text_clear_tx, "text.clear_tx")							\
+ELEM_(Io_in_use, "io.in_use")                                          \
+ELEM_(Io_enable_kiss, "io.enable_kiss")                                \
+ELEM_(Io_enable_arq, "io.enable_arq")                                  \
 \
-ELEM_(RXTX_get_data, "rxtx.get_data")							\
-ELEM_(RX_get_data, "rx.get_data")								\
-ELEM_(TX_get_data, "tx.get_data")								\
+ELEM_(Text_get_rx_length, "text.get_rx_length")                        \
+ELEM_(Text_get_rx, "text.get_rx")                                      \
+ELEM_(Text_clear_rx, "text.clear_rx")                                  \
+ELEM_(Text_add_tx, "text.add_tx")                                      \
+ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")                          \
+ELEM_(Text_clear_tx, "text.clear_tx")                                  \
 \
-ELEM_(Spot_get_auto, "spot.get_auto")								\
-ELEM_(Spot_set_auto, "spot.set_auto")								\
-ELEM_(Spot_toggle_auto, "spot.toggle_auto")						\
-ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")			\
+ELEM_(RXTX_get_data, "rxtx.get_data")                                  \
+ELEM_(RX_get_data, "rx.get_data")                                      \
+ELEM_(TX_get_data, "tx.get_data")                                      \
 \
-ELEM_(Wefax_state_string, "wefax.state_string")					\
-ELEM_(Wefax_skip_apt, "wefax.skip_apt")							\
-ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")					\
-ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")		\
-ELEM_(Wefax_end_reception, "wefax.end_reception")					\
-ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")	\
-ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")					\
-ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")					\
-ELEM_(Wefax_get_received_file, "wefax.get_received_file")		\
-ELEM_(Wefax_send_file, "wefax.send_file")							\
+ELEM_(Spot_get_auto, "spot.get_auto")                                  \
+ELEM_(Spot_set_auto, "spot.set_auto")                                  \
+ELEM_(Spot_toggle_auto, "spot.toggle_auto")                            \
+ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")                  \
 \
-ELEM_(Navtex_get_message, "navtex.get_message")					\
-ELEM_(Navtex_send_message, "navtex.send_message")					\
+ELEM_(Wefax_state_string, "wefax.state_string")                        \
+ELEM_(Wefax_skip_apt, "wefax.skip_apt")                                \
+ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")                        \
+ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")              \
+ELEM_(Wefax_end_reception, "wefax.end_reception")                      \
+ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")    \
+ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")                        \
+ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")                      \
+ELEM_(Wefax_get_received_file, "wefax.get_received_file")              \
+ELEM_(Wefax_send_file, "wefax.send_file")                              \
+\
+ELEM_(Navtex_get_message, "navtex.get_message")                        \
+ELEM_(Navtex_send_message, "navtex.send_message")                      \
 
 struct rm_pred
 {

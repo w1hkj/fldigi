@@ -40,6 +40,7 @@
 #include "icons.h"
 #include "qrunner.h"
 #include "timeops.h"
+#include "xmlrpc.h"
 
 using namespace std;
 
@@ -126,6 +127,11 @@ void invoke_flmsg()
 	rx_extract_msg = "File saved in ";
 	rx_extract_msg.append(FLMSG_WRAP_recv_dir);
 	put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
+
+	if (flmsg_online && progdefaults.flmsg_transfer_direct) {
+		flmsg_data = rx_buff;
+		return;
+	}
 
 	if (progdefaults.open_nbems_folder)
 		open_recv_folder(FLMSG_WRAP_recv_dir.c_str());

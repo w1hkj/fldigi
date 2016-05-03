@@ -4858,6 +4858,13 @@ static void cb_sldr_extract_timeout(Fl_Value_Slider* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Check_Button *chk_transfer__to_open_flmsg=(Fl_Check_Button *)0;
+
+static void cb_chk_transfer__to_open_flmsg(Fl_Check_Button* o, void*) {
+  progdefaults.flmsg_transfer_direct = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabPskmail=(Fl_Group *)0;
 
 Fl_Counter2 *cntServerCarrier=(Fl_Counter2 *)0;
@@ -10909,7 +10916,6 @@ gured on the\n\"Notifications\" configure dialog."));
         { tabsMisc = new Fl_Tabs(0, 25, 600, 360);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 600, 335, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(55, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10942,22 +10948,22 @@ gured on the\n\"Notifications\" configure dialog."));
               } // Fl_Check_Button* chk_open_wrap_folder
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(50, 141, 500, 130, _("Reception of flmsg files"));
+            { Fl_Group* o = new Fl_Group(50, 141, 500, 199, _("Reception of flmsg files"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(104, 168, 136, 20, _("Open with flmsg"));
+              { Fl_Check_Button* o = chk_open_flmsg = new Fl_Check_Button(104, 241, 136, 20, _("Open with flmsg"));
                 chk_open_flmsg->tooltip(_("Open message with flmsg"));
                 chk_open_flmsg->down_box(FL_DOWN_BOX);
                 chk_open_flmsg->callback((Fl_Callback*)cb_chk_open_flmsg);
                 o->value(progdefaults.open_flmsg);
               } // Fl_Check_Button* chk_open_flmsg
-              { Fl_Check_Button* o = chk_open_flmsg_print = new Fl_Check_Button(310, 168, 136, 20, _("Open in browser"));
+              { Fl_Check_Button* o = chk_open_flmsg_print = new Fl_Check_Button(310, 241, 136, 20, _("Open in browser"));
                 chk_open_flmsg_print->tooltip(_("Open file with default browser"));
                 chk_open_flmsg_print->down_box(FL_DOWN_BOX);
                 chk_open_flmsg_print->callback((Fl_Callback*)cb_chk_open_flmsg_print);
                 o->value(progdefaults.open_flmsg_print);
               } // Fl_Check_Button* chk_open_flmsg_print
-              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(104, 199, 330, 24, _("flmsg:"));
+              { Fl_Input2* o = txt_flmsg_pathname = new Fl_Input2(104, 271, 330, 24, _("flmsg:"));
                 txt_flmsg_pathname->tooltip(_("Enter full path-filename for flmsg"));
                 txt_flmsg_pathname->box(FL_DOWN_BOX);
                 txt_flmsg_pathname->color(FL_BACKGROUND2_COLOR);
@@ -10971,24 +10977,36 @@ gured on the\n\"Notifications\" configure dialog."));
                 txt_flmsg_pathname->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.flmsg_pathname.c_str());
               } // Fl_Input2* txt_flmsg_pathname
-              { btn_select_flmsg = new Fl_Button(441, 199, 100, 24, _("Locate flmsg"));
+              { btn_select_flmsg = new Fl_Button(441, 271, 100, 24, _("Locate flmsg"));
                 btn_select_flmsg->tooltip(_("Locate flmsg executable"));
                 btn_select_flmsg->callback((Fl_Callback*)cb_btn_select_flmsg);
               } // Fl_Button* btn_select_flmsg
-              { Fl_Value_Slider* o = sldr_extract_timeout = new Fl_Value_Slider(70, 237, 364, 21, _("Timeout (secs)"));
+              { Fl_Value_Slider* o = sldr_extract_timeout = new Fl_Value_Slider(70, 309, 364, 21, _("Timeout (secs)"));
                 sldr_extract_timeout->tooltip(_("Extract times out after NN seconds of inactivity."));
                 sldr_extract_timeout->type(5);
                 sldr_extract_timeout->color(FL_LIGHT3);
                 sldr_extract_timeout->selection_color(FL_FOREGROUND_COLOR);
                 sldr_extract_timeout->minimum(1);
-                sldr_extract_timeout->maximum(10);
+                sldr_extract_timeout->maximum(20);
                 sldr_extract_timeout->step(0.5);
-                sldr_extract_timeout->value(4);
+                sldr_extract_timeout->value(10);
                 sldr_extract_timeout->textsize(14);
                 sldr_extract_timeout->callback((Fl_Callback*)cb_sldr_extract_timeout);
                 sldr_extract_timeout->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.extract_timeout);
               } // Fl_Value_Slider* sldr_extract_timeout
+              { Fl_Group* o = new Fl_Group(55, 160, 490, 76, _("Selection of transfer direct takes precedence\nover all other flmsg reception\
+ settings"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = chk_transfer__to_open_flmsg = new Fl_Check_Button(160, 204, 271, 20, _("Transfer direct to executing flmsg"));
+                chk_transfer__to_open_flmsg->tooltip(_("Send data stream directly to executing flmsg"));
+                chk_transfer__to_open_flmsg->down_box(FL_DOWN_BOX);
+                chk_transfer__to_open_flmsg->callback((Fl_Callback*)cb_chk_transfer__to_open_flmsg);
+                o->value(progdefaults.flmsg_transfer_direct);
+                } // Fl_Check_Button* chk_transfer__to_open_flmsg
+                o->end();
+              } // Fl_Group* o
               o->end();
             } // Fl_Group* o
             tabNBEMS->end();
@@ -11388,6 +11406,7 @@ earch for station name"));
             tabWX->end();
           } // Fl_Group* tabWX
           { tabKML = new Fl_Group(0, 50, 600, 335, _("KML"));
+            tabKML->hide();
             { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
               btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
               btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);

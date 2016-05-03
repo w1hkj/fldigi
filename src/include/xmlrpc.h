@@ -50,4 +50,8 @@ extern void xmlrpc_set_qsy(long long rfc);
 extern int  xmltest_char();
 extern bool xmltest_char_available;
 extern int number_of_samples(std::string s);
+
+extern bool flmsg_online;
+extern std::string flmsg_data;
+
 #endif // XMLRPC_H

@@ -872,6 +872,9 @@
         ELEM_(bool, open_flmsg, "OPEN_FLMSG",                                           \
               "Open flmsg with the autoextract file",                                   \
               true)                                                                     \
+        ELEM_(bool, flmsg_transfer_direct, "FLMSG_TRANSFER_DIRECT",                     \
+              "Transfer incoming flmsg autosend file to open flmsg application",        \
+              true)                                                                     \
         ELEM_(bool, open_flmsg_print, "OPEN_FLMSG_PRINT",                               \
               "Open flmsg with the autoextract file\nprint to browser\nclose flmsg",    \
               true)                                                                     \
