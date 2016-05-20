@@ -273,7 +273,7 @@ extern Fl_Light_Button		*btnAFC;
 extern Fl_Light_Button		*btnSQL;
 extern Fl_Light_Button		*btnPSQL;
 extern Fl_Box				*rsid_status;
-extern Fl_Button			*btnRSID;
+extern Fl_Light_Button		*btnRSID;
 extern Fl_Light_Button		*btnTxRSID;
 extern Fl_Light_Button		*btnTune;
 extern Fl_Light_Button		*btnAutoSpot;
