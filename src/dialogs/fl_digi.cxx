@@ -1842,6 +1842,7 @@ void set_default_charset(void)
 // if w is not NULL, give focus to TransmitText only if the last event was an Enter keypress
 void restoreFocus(int n)
 {
+	if (Fl::focus() == NULL) return;
 	if (!active_modem) {
 		TransmitText->take_focus();
 		return;
