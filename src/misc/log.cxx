@@ -40,6 +40,8 @@
 #include "fl_digi.h"
 #include "timeops.h"
 
+#include "ascii.h"
+
 using namespace std;
 
 static const char *lognames[] = { "RX", "TX", "", "" };
@@ -84,7 +86,8 @@ void cLogfile::log_to_file(log_t type, const string& s)
 			fprintf(logfile, "%s %s : %s (%s): ", lognames[type], freq, logmode, timestr);
 		}
 		for (size_t i = 0; i < s.length(); i++)
-			if (s[i] == '\n' || (unsigned char)s[i] >= ' ') fprintf(logfile, "%c", s[i]);
+			fprintf(logfile, "%s", ascii3[s[i] & 0xFF]);
+//			if (s[i] == '\n' || (unsigned char)s[i] >= ' ') fprintf(logfile, "%c", s[i]);
 		retflag = *s.rbegin() == '\n';
 		if (!retflag)
 			fflush(logfile);
