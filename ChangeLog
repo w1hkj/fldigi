@@ -1,8 +1,38 @@
 
 
-=Version 3.23.09=
+=Version 3.23.10=
 
-2016-03-29  David Freese  <iam_w1hkj@w1hkj.com>
+2016-05-23  David Freese  <iam_w1hkj@w1hkj.com>
+
+	33ad2e6: logger
+	c184758: Restore focus
+	af25ef7: RsID button
+	ae93f9c: flmsg keepalive
+	5b367fb: 4bars
+	b4b8df4: ASCII ctl chars
+	759e6cf: Suppress dockable macros
+	065ead7: Packet Prep
+
+2016-04-13  Edouard Lafargue W6ELA  <edouard@lafargue.name>
+
+	505c8b3: Portaudio Mono
+
+2016-04-13  David Freese  <iam_w1hkj@w1hkj.com>
+
+	68d9b32: FSQ message files
+
+2016-04-12  Robert Stiles  <kk5vd@yahoo.com>
+
+	4ab48d4: KISS, 8PSK, FLARQ icon Modifications
+
+2016-04-12  David Freese  <iam_w1hkj@w1hkj.com>
+
+	76ab77c: FLARQ
+	9c04f07: focus behavior
+	2a3f4d4: PTT delays
+
+
+=Version 3.23.09=
 
 	fc97b4a: FSQ variable Rx
 	58b3940: Export ADIF_NAME
