@@ -1,0 +1,70 @@
+/**
+\page  kiss_host_prgs_page Using KISS compatible programs with FLDIGI
+
+\tableofcontents
+
+The below listed host programs make use of FLDIGI extended KISS TNC hardware
+commands. While any KISS over IP compatible program should work, only the
+following have been tested by the developers of FLDIGI.
+
+Setting up FLDIGI to use KISS require the use of the KISS I/O port.
+see \ref config_io_page page for instructions.
+
+
+\section sGeneralInfoBpq32 BPQ32
+
+BPQ32 is beyond the scope of this document. The following links are available
+for detailed information about the program and it's use with FLDIGI.
+
+Documentation:<br>
+<a href="http://www.cantab.net/users/john.wiseman/Documents/BPQ32%20Documents.htm">BPQ32 Documents</a>
+<br>
+and for a specific reference to FLDIGI (search for keyword FLDigi)
+<br>
+<a href="http://www.cantab.net/users/john.wiseman/Documents/BPQ32.html">BPQ32 Documents (FLDIGI)</a>
+<br>
+Installation files:<br>
+<a href="http://www.cantab.net/users/john.wiseman/Downloads/">Program and Support Data</a>
+<br>
+\par Note:
+	The Macintosh Binary located on John's website are for PowerPC systems.
+	Binaries for Intel systems are available on request by contacting
+	Robert, KK5VD kk5vd(at)yahoo(dot)com or via John's email listed below.
+
+Any inquires about the software can be directed to:
+
+John Wiseman, G8BPQ
+john(dot)wiseman(at)cantab(dot)net
+
+\section sGeneralInfoUIChat UIChat
+
+For those who have used FLDIGI's FSQ interface, Mitch Winkle AB4MW has created
+a Java application that mimics FSQ interface while allowing the operator to
+use any of FLDIGI 8 bit KISS compatible modems.
+
+Mitch's Blog:
+https://plus.google.com/communities/110418910579764092090
+
+Program and Source code:
+https://sourceforge.net/projects/uichat/
+
+
+\section sGeneralInfoYAAC YAAC - "Yet Another APRS Client"
+
+Andrew Pavlin, KA2DDO has created a APRS client and Internet gateway
+package. Details about this software can be found in the following links.
+
+YAAC website:
+http://www.ka2ddo.org/ka2ddo/YAAC.html
+
+YAAC source code:
+https://sourceforge.net/projects/yetanotheraprsc/
+
+
+<br>
+\ref kiss_host_prgs_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

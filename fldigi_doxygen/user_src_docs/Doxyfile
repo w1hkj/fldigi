@@ -69,7 +69,7 @@ INPUT                = index.txt \
 	Wizard.txt Menus.txt ModeTable.txt CWkeying.txt  \
 	PseudoFSK.txt w5zit-interface.txt rigxml.txt commandline.txt \
 	buildinfo.txt xmlrpc-control.txt parseUALR.txt ualr-telnet.txt \
-	map.txt License.txt Recognitions.txt bpq32.txt
+	map.txt License.txt Recognitions.txt kiss_host_prgs.txt
 INCLUDE_PATH         = .
 EXAMPLE_PATH         = .
 OUTPUT_DIRECTORY     = ../user_docs

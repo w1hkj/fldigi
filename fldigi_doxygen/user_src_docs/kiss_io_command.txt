@@ -60,6 +60,7 @@ Command                          | Use
 <b>SQLS:</b>\<0-100\>            | Set SQL Level (percent)
 <b>TRXSBCAST:</b>\<ON\|OFF\>     | Enable/disable TX/RX state change broadcast (default: OFF)
 <b>TXBEBCAST:</b>\<ON\|OFF\>     | Enable/disable TX buffer empty broadcast (default: OFF)
+<b>TXLOCK:</b>\<ON\|OFF\>        | Enable/disable TX waterfall position lock.
 <b>WFF:</b>\<integer value\>     | Move TXRX cursor to frequency on waterfall.
 
 \verbatim
@@ -105,8 +106,9 @@ Command / Return Status                                   | Use
 <b>SQLP:</b>     FLDIGI returns SQLP:\<0-100\>            | Current Symbol Quality Level (Currently Not returning valid data)
 <b>SQLS:</b>     FLDIGI returns SQLS:\<0-100\>            | Set SQL Level Query (percent)
 <b>TNC:</b>      FLDIGI returns TNC:FLDIGI \<Version Number\> | Returns the version number of FLDIGI
-<b>TRXS:</b>     FLDIGI returns TRXS:\<RX\|TX\>           | Returns the current RX/TX state of FLDIGI
+<b>TRXS:</b>     FLDIGI returns TRXS:\<RX\|TX\>           | Return the current RX/TX state of FLDIGI
 <b>TXBUF:</b>    FLDIGI returns TXBUF:\<count\>           | Return the number of byte in the transmit queue
+<b>TXLOCK:</b>   FLDIGI returns TXLOCK:\<ON\|OFF\>        | Return TX waterfall position lock state.
 <b>WFBW:</b>     FLDIGI returns WFBW:\<LOWER HZ\>,\<UPPER HZ\> | Return the active waterfall bandwidth
 <b>WFF:</b>      FLDIGI returns WFF:\<integer value\>     |  Current modem position on waterfall (center)
 
