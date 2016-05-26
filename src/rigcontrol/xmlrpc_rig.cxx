@@ -119,6 +119,15 @@ void xmlrpc_rig_set_qsy(long long rfc)
 //======================================================================
 
 //----------------------------------------------------------------------
+// To prevent a FLTK library thread deadlock on MacOSX
+//----------------------------------------------------------------------
+static void ptt_on_off_failure(void * ptt_flag)
+{
+    int flag = *((int *) ptt_flag);
+    fl_alert2("fldigi/flrig PTT %s failure", flag ? "ON" : "OFF");
+}
+
+//----------------------------------------------------------------------
 // push to talk
 //----------------------------------------------------------------------
 static bool wait_ptt = false; // wait for transceiver to respond
@@ -126,6 +135,7 @@ static int  wait_ptt_timeout = 5; // 5 polls and then disable wait
 static int  ptt_state = 0;
 
 static int  new_ptt = -1;
+static int  last_new_ptt = -1;
 
 void exec_flrig_ptt() {
 	if (!connected_to_flrig) {
@@ -149,7 +159,7 @@ void exec_flrig_ptt() {
 						wait_ptt = true;
 						wait_ptt_timeout = 10;
 						ptt_state = new_ptt;
-						LOG_INFO("ptt %s in %d msec", 
+						LOG_INFO("ptt %s in %d msec",
 							ptt_state ? "ON" : "OFF",
 							i*50 + (j + 1)*20);
 						new_ptt = -1;
@@ -159,10 +169,14 @@ void exec_flrig_ptt() {
 			}
 		}
 	}
+
 	wait_ptt = false;
 	wait_ptt_timeout = 0;
 	LOG_ERROR("%s", "rig.set_ptt failed (3)");
-	fl_alert2("fldigi/flrig PTT %s failure", new_ptt ? "ON" : "OFF");
+    // FLTK thread dead lock on MacOSX. Call in main thread.
+    // fl_alert2("fldigi/flrig PTT %s failure", new_ptt ? "ON" : "OFF");
+    last_new_ptt = new_ptt;
+    REQ(ptt_on_off_failure, (void *) &last_new_ptt);
 	new_ptt = -1;
 	return;
 }
@@ -535,7 +549,7 @@ void xmlrpc_rig_post_bws(void *)
 
 		string labels1 = bws_result[1][0];
 		static char btn1_label[2];
-		btn1_label[0] = labels1[0]; btn1_label[1] = 0; 
+		btn1_label[0] = labels1[0]; btn1_label[1] = 0;
 		qso_btnBW1->label(btn1_label);
 		qso_btnBW1->redraw_label();
 		qso_btnBW1->redraw();
@@ -567,7 +581,7 @@ void xmlrpc_rig_post_bws(void *)
 
 			string labels2 = bws_result[0][0];
 			static char btn2_label[2];
-			btn2_label[0] = labels2[0]; btn2_label[1] = 0; 
+			btn2_label[0] = labels2[0]; btn2_label[1] = 0;
 			qso_btnBW2->label(btn2_label);
 			qso_btnBW2->redraw_label();
 			qso_btnBW2->redraw();

@@ -57,7 +57,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DOMEX5", "DominoEX 5", "DOMINOEX5", "DOMINO", "DM 5", DISABLED_IO },
 	{ MODE_DOMINOEX8, &dominoex8_modem, "DOMEX8", "DominoEX 8", "DOMINOEX8", "DOMINO", "DM 8", DISABLED_IO },
 	{ MODE_DOMINOEX11, &dominoex11_modem, "DOMX11", "DominoEX 11", "DOMINOEX11", "DOMINO", "DM11", DISABLED_IO },
-	{ MODE_DOMINOEX16, &dominoex16_modem, "DOMX16", "DominoEX 16", "DOMINOEX16", "DOMINO", "DM16", DISABLED_IO },
+	{ MODE_DOMINOEX16, &dominoex16_modem, "DOMX16", "DominoEX 16", "DOMINOEX16", "DOMINO", "DM16", ARQ_IO | KISS_IO },
 	{ MODE_DOMINOEX22, &dominoex22_modem, "DOMX22", "DominoEX 22", "DOMINOEX22", "DOMINO", "DM22", ARQ_IO | KISS_IO },
 	{ MODE_DOMINOEX44, &dominoex44_modem, "DOMX44", "DominoEX 44", "DOMINOEX44", "DOMINO", "DM44", ARQ_IO | KISS_IO },
 	{ MODE_DOMINOEX88, &dominoex88_modem, "DOMX88", "DominoEX 88", "DOMINOEX88", "DOMINO", "DM88", ARQ_IO | KISS_IO },
@@ -71,13 +71,13 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 	{ MODE_HELL80, &feld_80modem, "HELL80", "Hell 80", "", "HELL80", "HL80", DISABLED_IO },
 
 	{ MODE_MFSK8, &mfsk8_modem, "MFSK8", "MFSK-8", "MFSK8", "MFSK8", "MK 8", DISABLED_IO  },
-	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK16", "MFSK16", "MK16", ARQ_IO  },
+	{ MODE_MFSK16, &mfsk16_modem, "MFSK16", "MFSK-16", "MFSK16", "MFSK16", "MK16", ARQ_IO | KISS_IO },
 	{ MODE_MFSK32, &mfsk32_modem, "MFSK32", "MFSK-32", "MFSK32", "MFSK32", "MK32", ARQ_IO | KISS_IO  },
 
 	{ MODE_MFSK4, &mfsk4_modem, "MFSK4", "MFSK-4", "MFSK4", "MFSK4", "MK 4", DISABLED_IO  },
 	{ MODE_MFSK11, &mfsk11_modem, "MFSK11", "MFSK-11", "MFSK11", "MFSK11", "MK11", DISABLED_IO  },
 	{ MODE_MFSK22, &mfsk22_modem, "MFSK22", "MFSK-22", "MFSK22", "MFSK22", "MK22", DISABLED_IO  },
-	{ MODE_MFSK31, &mfsk31_modem, "MFSK31", "MFSK-31", "MFSK31", "MFSK31", "MK31", ARQ_IO  },
+	{ MODE_MFSK31, &mfsk31_modem, "MFSK31", "MFSK-31", "MFSK31", "MFSK31", "MK31", ARQ_IO | KISS_IO },
 	{ MODE_MFSK64, &mfsk64_modem, "MFSK64", "MFSK-64", "MFSK64", "MFSK64", "MK64", ARQ_IO | KISS_IO   },
 	{ MODE_MFSK128, &mfsk128_modem, "MFSK128", "MFSK-128", "MFSK128", "MFSK128", "MK128", ARQ_IO | KISS_IO   },
 	{ MODE_MFSK64L, &mfsk64l_modem, "MFSK64L", "MFSK-64L", "MFSK64L", "MFSK64L", "MK64L", ARQ_IO | KISS_IO   },
@@ -204,9 +204,9 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 std::ostream& operator<<(std::ostream& s, const qrg_mode_t& m)
 {
-	return s << m.rfcarrier << ' ' 
-			 << m.rmode << ' ' 
-			 << m.carrier << ' ' 
+	return s << m.rfcarrier << ' '
+			 << m.rmode << ' '
+			 << m.carrier << ' '
 			 << mode_info[m.mode].sname << ' '
 			 << m.usage;
 }

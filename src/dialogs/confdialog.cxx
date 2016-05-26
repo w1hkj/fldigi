@@ -5658,10 +5658,7 @@ Fl_Check_Button *btnEnable_arq=(Fl_Check_Button *)0;
 
 static void cb_btnEnable_arq(Fl_Check_Button* o, void*) {
   if(o->value()) {
-        progdefaults.changed = true;
-	progdefaults.data_io_enabled = ARQ_IO;
-	data_io_enabled = ARQ_IO;
-	enable_disable_kpsql();
+	enable_arq();
 }
 
 progdefaults.changed = true;
@@ -5671,9 +5668,7 @@ Fl_Check_Button *btnEnable_kiss=(Fl_Check_Button *)0;
 
 static void cb_btnEnable_kiss(Fl_Check_Button* o, void*) {
   if(o->value()) {
-	progdefaults.data_io_enabled = KISS_IO;
-	data_io_enabled = KISS_IO;
-	enable_disable_kpsql();
+	enable_kiss();
 }
 progdefaults.changed = true;
 }
@@ -5681,10 +5676,14 @@ progdefaults.changed = true;
 Fl_Check_Button *btnEnable_ax25_decode=(Fl_Check_Button *)0;
 
 static void cb_btnEnable_ax25_decode(Fl_Check_Button* o, void*) {
-  if(o->value())
+  if(o->value()) {
+	progStatus.ax25_decode_enabled = true;
 	progdefaults.ax25_decode_enabled = true;
-else
+}
+else {
+	progStatus.ax25_decode_enabled = false;
 	progdefaults.ax25_decode_enabled = false;
+}
 
 progdefaults.changed = true;
 }
@@ -5693,8 +5692,10 @@ Fl_Check_Button *btnEnable_csma=(Fl_Check_Button *)0;
 
 static void cb_btnEnable_csma(Fl_Check_Button* o, void*) {
   if(o->value()) {
+	progStatus.csma_enabled = true;
 	progdefaults.csma_enabled = true;
 } else {
+	progStatus.csma_enabled = false;
 	progdefaults.csma_enabled = false;
 }
 progdefaults.changed = true;
@@ -5710,56 +5711,69 @@ progdefaults.changed = true;
 Fl_Input2 *txtKiss_ip_address=(Fl_Input2 *)0;
 
 static void cb_txtKiss_ip_address(Fl_Input2* o, void*) {
-  progdefaults.kiss_address = o->value();
+  progStatus.kiss_address = o->value();
+progdefaults.kiss_address = o->value();
 progdefaults.changed = true;
 }
 
 Fl_Counter *cntKPSQLAttenuation=(Fl_Counter *)0;
 
 static void cb_cntKPSQLAttenuation(Fl_Counter* o, void*) {
-  progdefaults.kpsql_attenuation = (int) o->value();
-update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+  progStatus.kpsql_attenuation = (int) o->value();
+progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progStatus.kpsql_attenuation);
 progdefaults.changed = true;
 }
 
 Fl_Input2 *txtKiss_ip_io_port_no=(Fl_Input2 *)0;
 
 static void cb_txtKiss_ip_io_port_no(Fl_Input2* o, void*) {
-  progdefaults.kiss_io_port = o->value();
+  progStatus.kiss_io_port = o->value();
+progdefaults.kiss_io_port = o->value();
 progdefaults.changed = true;
 }
 
 Fl_Counter *cntBusyChannelSeconds=(Fl_Counter *)0;
 
 static void cb_cntBusyChannelSeconds(Fl_Counter* o, void*) {
-  progdefaults.busyChannelSeconds = (int) o->value();
+  progStatus.busyChannelSeconds = (int) o->value();
+progdefaults.busyChannelSeconds = (int) o->value();
 progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnEnableBusyChannel=(Fl_Check_Button *)0;
 
 static void cb_btnEnableBusyChannel(Fl_Check_Button* o, void*) {
-  if(o->value())
+  if(o->value()) {
+	progStatus.enableBusyChannel = true;
 	progdefaults.enableBusyChannel = true;
-else
+}
+else {
+	progStatus.enableBusyChannel = false;
 	progdefaults.enableBusyChannel = false;
+}
 progdefaults.changed = true;
 }
 
 Fl_Input2 *txtKiss_ip_out_port_no=(Fl_Input2 *)0;
 
 static void cb_txtKiss_ip_out_port_no(Fl_Input2* o, void*) {
-  progdefaults.kiss_out_port = o->value();
+  progStatus.kiss_out_port = o->value();
+progdefaults.kiss_out_port = o->value();
 progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnEnable_dual_port=(Fl_Check_Button *)0;
 
 static void cb_btnEnable_dual_port(Fl_Check_Button* o, void*) {
-  if(o->value())
+  if(o->value()) {
+	progStatus.kiss_dual_port_enabled = true;
 	progdefaults.kiss_dual_port_enabled = true;
-else
+}
+else {
+	progStatus.kiss_dual_port_enabled = false;
 	progdefaults.kiss_dual_port_enabled = false;
+}
 
 progdefaults.changed = true;
 }
@@ -5773,46 +5787,78 @@ static void cb_btn_restart_kiss(Fl_Button*, void*) {
 Fl_Button *btn_connect_kiss_io=(Fl_Button *)0;
 
 static void cb_btn_connect_kiss_io(Fl_Button*, void*) {
-  connect_to_kiss_io();
+  connect_to_kiss_io(true);
 }
 
 Fl_Check_Button *btnKissTCPIO=(Fl_Check_Button *)0;
 
 static void cb_btnKissTCPIO(Fl_Check_Button* o, void*) {
   if(o->value()) {
-	progdefaults.kiss_tcp_io = true;
 	progStatus.kiss_tcp_io = true;
+	progdefaults.kiss_tcp_io = true;
 } else {
 	progStatus.kiss_tcp_io = false;
 	progdefaults.kiss_tcp_io = false;
 }
 kiss_io_set_button_state(0);
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnKissUDPIO=(Fl_Check_Button *)0;
 
 static void cb_btnKissUDPIO(Fl_Check_Button* o, void*) {
   if(o->value()) {
-	progdefaults.kiss_tcp_io = false;
 	progStatus.kiss_tcp_io = false;
+	progdefaults.kiss_tcp_io = false;
 } else {
 	progStatus.kiss_tcp_io = true;
 	progdefaults.kiss_tcp_io = true;
 }
 
 kiss_io_set_button_state(0);
+progdefaults.changed = true;
 }
 
 Fl_Check_Button *btnKissTCPListen=(Fl_Check_Button *)0;
 
 static void cb_btnKissTCPListen(Fl_Check_Button* o, void*) {
   if(o->value()) {
-	progdefaults.kiss_tcp_listen = true;
 	progStatus.kiss_tcp_listen = true;
+	progdefaults.kiss_tcp_listen = true;
 } else {
 	progStatus.kiss_tcp_listen = false;
 	progdefaults.kiss_tcp_listen = false;
-};
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_7bit_modem_inhibit=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_7bit_modem_inhibit(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progStatus.kiss_io_modem_change_inhibit = true;
+	progdefaults.kiss_io_modem_change_inhibit = true;
+}
+else {
+	progStatus.kiss_io_modem_change_inhibit = false;
+	progdefaults.kiss_io_modem_change_inhibit = false;
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_auto_connect=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_auto_connect(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progdefaults.tcp_udp_auto_connect = true;
+}
+else {
+	progdefaults.tcp_udp_auto_connect = false;
+}
+
+progdefaults.changed = true;
 }
 
 Fl_Input2 *txtArq_ip_address=(Fl_Input2 *)0;
@@ -6851,7 +6897,7 @@ ab and newline are automatically included."));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
               { Fl_Check_Button* o = btn_dockable_macros = new Fl_Check_Button(152, 353, 296, 20, _("Disable dockable macro bar"));
-                btn_dockable_macros->tooltip(_("Allow minimized main dialog height \n411 pixels with WF height = 100"));
+                btn_dockable_macros->tooltip(_("Allow minimized main dialog height\n411 pixels with WF height = 100"));
                 btn_dockable_macros->down_box(FL_DOWN_BOX);
                 btn_dockable_macros->callback((Fl_Callback*)cb_btn_dockable_macros);
                 o->value(!progdefaults.dockable_macros);
@@ -7381,7 +7427,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7577,6 +7622,7 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("FFT Processing"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(55, 71, 490, 135);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Counter2* o = cntLowFreqCutoff = new Fl_Counter2(100, 89, 70, 22, _("Lower limit"));
@@ -7775,7 +7821,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 600, 335, _("CW"));
-            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 600, 335);
               tabsCW->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("General"));
@@ -9218,7 +9263,6 @@ i on a\ntouch screen device such as a tablet."));
               tabsRTTY->selection_color(FL_LIGHT1);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Tx"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                o->hide();
                 { Fl_ListBox* o = selShift = new Fl_ListBox(65, 104, 100, 20, _("Carrier shift"));
                 selShift->tooltip(_("Select carrier shift"));
                 selShift->box(FL_DOWN_BOX);
@@ -9374,6 +9418,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Rx"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->hide();
                 { Fl_Group* o = new Fl_Group(32, 101, 535, 69, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9609,9 +9654,9 @@ le Earth)"));
             tabTHOR->end();
           } // Fl_Group* tabTHOR
           { tabOther = new Fl_Group(0, 50, 600, 335, _("Other"));
+            tabOther->hide();
             { tabsOther = new Fl_Tabs(0, 50, 600, 335);
               { tabNavtex = new Fl_Group(0, 75, 600, 310, _("Nav"));
-                tabNavtex->hide();
                 { Fl_Check_Button* o = btnNvtxAdifLog = new Fl_Check_Button(181, 109, 235, 30, _("Log Navtex messages to Adif file"));
                 btnNvtxAdifLog->down_box(FL_DOWN_BOX);
                 btnNvtxAdifLog->callback((Fl_Callback*)cb_btnNvtxAdifLog);
@@ -9695,6 +9740,7 @@ le Earth)"));
                 tabWefax->end();
               } // Fl_Group* tabWefax
               { tabDFTscan = new Fl_Group(0, 75, 600, 310, _("Scan"));
+                tabDFTscan->hide();
                 { Fl_Counter* o = cnt_dft_scans = new Fl_Counter(235, 154, 132, 21, _("# scans"));
                 cnt_dft_scans->minimum(10);
                 cnt_dft_scans->maximum(1000);
@@ -9735,7 +9781,6 @@ le Earth)"));
           tabsRig->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
-            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -10372,6 +10417,7 @@ definition"));
             tabXMLRPC->end();
           } // Fl_Group* tabXMLRPC
           { tabFLRIG = new Fl_Group(0, 50, 600, 335, _("flrig"));
+            tabFLRIG->hide();
             { Fl_Output* o = new Fl_Output(75, 77, 465, 58);
               o->tooltip(_("\" \""));
               o->type(12);
@@ -10669,7 +10715,6 @@ nce.\nYou may change the state from either location.\n..."));
         tabID->hide();
         { tabsID = new Fl_Tabs(0, 25, 600, 360);
           { tabRsID = new Fl_Group(0, 50, 600, 335, _("RsID"));
-            tabRsID->hide();
             { Fl_Group* o = new Fl_Group(32, 55, 535, 210, _("Reed-Solomon ID (Rx)"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -10870,6 +10915,7 @@ gured on the\n\"Notifications\" configure dialog."));
             tabVideoID->end();
           } // Fl_Group* tabVideoID
           { tabCwID = new Fl_Group(0, 50, 600, 335, _("CW"));
+            tabCwID->hide();
             { sld = new Fl_Group(32, 146, 536, 127, _("CW Postamble ID"));
               sld->box(FL_ENGRAVED_FRAME);
               sld->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11517,7 +11563,6 @@ and restarted if needed."));
         tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 360);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Call Lookup"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(34, 56, 538, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11696,6 +11741,7 @@ and restarted if needed."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("eQSL"));
+            o->hide();
             { Fl_Input2* o = inpEQSL_id = new Fl_Input2(225, 58, 150, 20, _("User ID"));
               inpEQSL_id->tooltip(_("Your login name"));
               inpEQSL_id->box(FL_DOWN_BOX);
@@ -12027,7 +12073,7 @@ and restarted if needed."));
             btnEnable_arq->type(102);
             btnEnable_arq->down_box(FL_DOWN_BOX);
             btnEnable_arq->callback((Fl_Callback*)cb_btnEnable_arq);
-            if(progdefaults.data_io_enabled == ARQ_IO) o->value(true);
+            if(progStatus.data_io_enabled == ARQ_IO) o->value(true);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_arq
           { Fl_Check_Button* o = btnEnable_kiss = new Fl_Check_Button(221, 112, 115, 20, _("Enable KISS"));
@@ -12035,7 +12081,7 @@ and restarted if needed."));
             btnEnable_kiss->type(102);
             btnEnable_kiss->down_box(FL_DOWN_BOX);
             btnEnable_kiss->callback((Fl_Callback*)cb_btnEnable_kiss);
-            if(progdefaults.data_io_enabled == KISS_IO) o->value(true);
+            if(progStatus.data_io_enabled == KISS_IO) o->value(true);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_kiss
           { Fl_Check_Button* o = btnEnable_ax25_decode = new Fl_Check_Button(346, 112, 115, 20, _("AX25 Decode"));
@@ -12049,7 +12095,7 @@ and restarted if needed."));
             btnEnable_csma->tooltip(_("Used for BPQ32"));
             btnEnable_csma->down_box(FL_DOWN_BOX);
             btnEnable_csma->callback((Fl_Callback*)cb_btnEnable_csma);
-            if(progdefaults.csma_enabled) o->value(true);
+            if(progStatus.csma_enabled) o->value(true);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_csma
           { new Fl_Box(8, 37, 582, 72, _("Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.\nEnable KIS\
@@ -12062,12 +12108,12 @@ s require program restart."));
         { Fl_Group* o = new Fl_Group(6, 138, 588, 85, _("KISS"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { Fl_Button* o = btnDefault_kiss_ip = new Fl_Button(425, 193, 73, 25, _("Default"));
+          { Fl_Button* o = btnDefault_kiss_ip = new Fl_Button(505, 195, 80, 25, _("Default"));
             btnDefault_kiss_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
             btnDefault_kiss_ip->callback((Fl_Callback*)cb_btnDefault_kiss_ip);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Button* btnDefault_kiss_ip
-          { Fl_Input2* o = txtKiss_ip_address = new Fl_Input2(56, 193, 230, 25, _("Addr"));
+          { Fl_Input2* o = txtKiss_ip_address = new Fl_Input2(55, 195, 230, 25, _("Addr"));
             txtKiss_ip_address->tooltip(_("IP Address for KISS interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: i\
 .e. localhost"));
             txtKiss_ip_address->box(FL_DOWN_BOX);
@@ -12097,7 +12143,7 @@ s require program restart."));
             update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Counter* cntKPSQLAttenuation
-          { Fl_Input2* o = txtKiss_ip_io_port_no = new Fl_Input2(333, 164, 55, 25, _("I/O"));
+          { Fl_Input2* o = txtKiss_ip_io_port_no = new Fl_Input2(330, 195, 55, 25, _("I/O"));
             txtKiss_ip_io_port_no->tooltip(_("IP Address Port Number"));
             txtKiss_ip_io_port_no->box(FL_DOWN_BOX);
             txtKiss_ip_io_port_no->color(FL_BACKGROUND2_COLOR);
@@ -12125,7 +12171,7 @@ s require program restart."));
             o->step(1,10);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Counter* cntBusyChannelSeconds
-          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(331, 145, 65, 15, _("Busy"));
+          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(235, 145, 65, 15, _("Busy"));
             btnEnableBusyChannel->tooltip(_("Enable Busy Channel"));
             btnEnableBusyChannel->down_box(FL_DOWN_BOX);
             btnEnableBusyChannel->callback((Fl_Callback*)cb_btnEnableBusyChannel);
@@ -12133,7 +12179,7 @@ s require program restart."));
             else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnableBusyChannel
-          { Fl_Input2* o = txtKiss_ip_out_port_no = new Fl_Input2(333, 193, 55, 25, _("O"));
+          { Fl_Input2* o = txtKiss_ip_out_port_no = new Fl_Input2(425, 195, 55, 25, _("O"));
             txtKiss_ip_out_port_no->tooltip(_("Output port number when same IP address used"));
             txtKiss_ip_out_port_no->box(FL_DOWN_BOX);
             txtKiss_ip_out_port_no->color(FL_BACKGROUND2_COLOR);
@@ -12149,7 +12195,7 @@ s require program restart."));
             o->value(progdefaults.kiss_out_port.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_out_port_no
-          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(485, 169, 90, 16, _("Dual Port"));
+          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(360, 145, 55, 16, _("DP"));
             btnEnable_dual_port->tooltip(_("Enable when both programs are using the same IP address"));
             btnEnable_dual_port->down_box(FL_DOWN_BOX);
             btnEnable_dual_port->callback((Fl_Callback*)cb_btnEnable_dual_port);
@@ -12161,23 +12207,23 @@ s require program restart."));
             btn_restart_kiss->hide();
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Button* btn_restart_kiss
-          { Fl_Button* o = btn_connect_kiss_io = new Fl_Button(504, 193, 82, 25, _("Connect"));
+          { Fl_Button* o = btn_connect_kiss_io = new Fl_Button(504, 165, 82, 25, _("Start"));
             btn_connect_kiss_io->tooltip(_("Return KISS TCP IO connection to a Listening state"));
             btn_connect_kiss_io->callback((Fl_Callback*)cb_btn_connect_kiss_io);
-            (progStatus.ip_lock || !progStatus.kiss_tcp_io) ? o->deactivate() : o->activate();
+            (progStatus.ip_lock || !progdefaults.kiss_tcp_io) ? o->deactivate() : o->activate();
           } // Fl_Button* btn_connect_kiss_io
-          { Fl_Check_Button* o = btnKissTCPIO = new Fl_Check_Button(425, 145, 60, 15, _("TCP"));
+          { Fl_Check_Button* o = btnKissTCPIO = new Fl_Check_Button(420, 145, 60, 15, _("TCP"));
             btnKissTCPIO->tooltip(_("Check to enable TCP/IP IO Connection"));
             btnKissTCPIO->down_box(FL_DOWN_BOX);
             btnKissTCPIO->callback((Fl_Callback*)cb_btnKissTCPIO);
-            if(progStatus.kiss_tcp_io) o->value(true); else o->value(false);
+            if(progdefaults.kiss_tcp_io) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnKissTCPIO
-          { Fl_Check_Button* o = btnKissUDPIO = new Fl_Check_Button(425, 170, 60, 15, _("UDP"));
+          { Fl_Check_Button* o = btnKissUDPIO = new Fl_Check_Button(295, 145, 60, 15, _("UDP"));
             btnKissUDPIO->tooltip(_("Check to enable UDP/IP IO"));
             btnKissUDPIO->down_box(FL_DOWN_BOX);
             btnKissUDPIO->callback((Fl_Callback*)cb_btnKissUDPIO);
-            if(progStatus.kiss_tcp_io) o->value(true); else o->value(false);
+            if(progdefaults.kiss_tcp_io) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnKissUDPIO
           { Fl_Check_Button* o = btnKissTCPListen = new Fl_Check_Button(485, 145, 95, 15, _("Listen / Bind"));
@@ -12187,6 +12233,20 @@ s require program restart."));
             if(progStatus.kiss_tcp_listen) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnKissTCPListen
+          { Fl_Check_Button* o = btnEnable_7bit_modem_inhibit = new Fl_Check_Button(295, 169, 140, 16, _("Inhibit 7bit Modem"));
+            btnEnable_7bit_modem_inhibit->tooltip(_("Inhibit 7 bit modem change notice on user or RSID reception"));
+            btnEnable_7bit_modem_inhibit->down_box(FL_DOWN_BOX);
+            btnEnable_7bit_modem_inhibit->callback((Fl_Callback*)cb_btnEnable_7bit_modem_inhibit);
+            if(progdefaults.kiss_io_modem_change_inhibit) o->value(true); else o->value(false);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_7bit_modem_inhibit
+          { Fl_Check_Button* o = btnEnable_auto_connect = new Fl_Check_Button(445, 169, 45, 16, _("AC"));
+            btnEnable_auto_connect->tooltip(_("Connect to host program on FLDIGI start up"));
+            btnEnable_auto_connect->down_box(FL_DOWN_BOX);
+            btnEnable_auto_connect->callback((Fl_Callback*)cb_btnEnable_auto_connect);
+            if(progdefaults.tcp_udp_auto_connect) o->value(true); else o->value(false);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_auto_connect
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(6, 225, 588, 35, _("ARQ"));
@@ -12209,7 +12269,7 @@ e. localhost"));
             o->value(progdefaults.arq_address.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtArq_ip_address
-          { Fl_Input2* o = txtArq_ip_port_no = new Fl_Input2(333, 229, 55, 25, _("Port"));
+          { Fl_Input2* o = txtArq_ip_port_no = new Fl_Input2(330, 229, 55, 25, _("Port"));
             txtArq_ip_port_no->tooltip(_("IP Address Port Number"));
             txtArq_ip_port_no->box(FL_DOWN_BOX);
             txtArq_ip_port_no->color(FL_BACKGROUND2_COLOR);
@@ -12265,7 +12325,7 @@ e. localhost"));
             o->value(progdefaults.xmlrpc_address.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtXmlrpc_ip_address
-          { Fl_Input2* o = txtXmlrpc_ip_port_no = new Fl_Input2(333, 270, 55, 25, _("Port"));
+          { Fl_Input2* o = txtXmlrpc_ip_port_no = new Fl_Input2(330, 270, 55, 25, _("Port"));
             txtXmlrpc_ip_port_no->tooltip(_("IP Address Port Number"));
             txtXmlrpc_ip_port_no->box(FL_DOWN_BOX);
             txtXmlrpc_ip_port_no->color(FL_BACKGROUND2_COLOR);
@@ -12313,7 +12373,7 @@ i.e. localhost"));
             o->value(progdefaults.flrig_ip_address.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txt_flrig_ip_address
-          { Fl_Input2* o = txt_flrig_ip_port = new Fl_Input2(333, 309, 55, 25, _("Port"));
+          { Fl_Input2* o = txt_flrig_ip_port = new Fl_Input2(330, 309, 55, 25, _("Port"));
             txt_flrig_ip_port->tooltip(_("IP Address Port Number"));
             txt_flrig_ip_port->box(FL_DOWN_BOX);
             txt_flrig_ip_port->color(FL_BACKGROUND2_COLOR);
@@ -12346,7 +12406,7 @@ i.e. localhost"));
             o->value(progdefaults.xmllog_address.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input* txt_fllog_ip_address
-          { Fl_Input* o = txt_fllog_ip_port = new Fl_Input(333, 345, 55, 25, _("Port"));
+          { Fl_Input* o = txt_fllog_ip_port = new Fl_Input(330, 345, 55, 25, _("Port"));
             txt_fllog_ip_port->tooltip(_("IP Address Port Number"));
             txt_fllog_ip_port->callback((Fl_Callback*)cb_txt_fllog_ip_port);
             txt_fllog_ip_port->align(Fl_Align(FL_ALIGN_RIGHT));

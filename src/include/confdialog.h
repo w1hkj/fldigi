@@ -730,6 +730,8 @@ extern Fl_Button *btn_connect_kiss_io;
 extern Fl_Check_Button *btnKissTCPIO;
 extern Fl_Check_Button *btnKissUDPIO;
 extern Fl_Check_Button *btnKissTCPListen;
+extern Fl_Check_Button *btnEnable_7bit_modem_inhibit;
+extern Fl_Check_Button *btnEnable_auto_connect;
 extern Fl_Input2 *txtArq_ip_address;
 extern Fl_Input2 *txtArq_ip_port_no;
 extern Fl_Button *btnDefault_arq_ip;

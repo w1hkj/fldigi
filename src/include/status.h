@@ -80,7 +80,6 @@ struct status {
 	double  sldrPwrSquelchValue;
 	bool	afconoff;
 	bool	sqlonoff;
-	bool	pwrsqlonoff;
 	int		scopeX;
 	int		scopeY;
 	bool	scopeVisible;
@@ -166,9 +165,12 @@ struct status {
 	bool csma_enabled;
 	bool kiss_tcp_io;
 	bool kiss_tcp_listen;
+    bool kpsql_enabled;
 	bool ip_lock;
+    bool kiss_io_modem_change_inhibit;
 	double squelch_value;
     bool psk8DCDShortFlag;
+
 	std::string	browser_search;
 
 	bool	meters;

@@ -421,7 +421,7 @@ static int assign_index(widget_type * widget, ScriptParsing *sp, SCRIPT_COMMANDS
 	widget->do_callback();
 
 	data = index;
-	
+
 	return script_no_errors;
 }
 
@@ -1245,11 +1245,9 @@ int process_io_active_port(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
 		return script_no_errors;
 
 	if(value.find(PARM_KISS) != std::string::npos) {
-		btnEnable_kiss->value(true);
-		btnEnable_kiss->do_callback();
+        enable_kiss();
 	} else if(value.find(PARM_ARQ) != std::string::npos) {
-		btnEnable_arq->value(true);
-		btnEnable_arq->do_callback();
+        enable_arq();
 	} else {
 		return script_invalid_parameter;
 	}
@@ -2797,42 +2795,42 @@ int process_reset(ScriptParsing *sp, SCRIPT_COMMANDS *sc)
  ***********************************************************/
 static void script_execute(const char *filename, bool queue_flag)
 {
-	
+
 	ScriptParsing *sp = 0;
 	static std::string script_filename = "";
-	
+
 	if(!filename) {
 		LOG_INFO(_("Script file name (path) null pointer"));
 		return;
 	}
-	
+
 	script_filename.assign(filename);
-	
+
 	if(script_filename.empty()) {
 		LOG_INFO(_("Script file name (path) invalid"));
 		return;
 	}
-	
+
 	sp = new ScriptParsing;
-	
+
 	if(!sp) {
 		LOG_INFO(_("Script Parsing Class Allocation Fail (%s)"), script_filename.c_str());
 		return;
 	}
-	
+
 	LOG_INFO(_("Executing script file: %s"), script_filename.c_str());
-	
+
 	sp->parse_commands((char *) script_filename.c_str());
-	
+
 	if(sp->script_errors()) {
 		LOG_INFO(_("Issues reported in processing script file: %s"), script_filename.c_str());
 		fl_alert("%s", _("Script file contains potential issues\nSee documentation and/or Log file for details."));
 	}
-	
+
 	if(sp->restart_flag()) {
 		fl_alert("%s", _("Some changes made by the script requires program\nrestart before they become active."));
 	}
-	
+
 	if(sp)
 		delete sp;
 }
@@ -2845,16 +2843,16 @@ static void script_execute(const char *filename, bool queue_flag)
 void cb_scripts(bool reset_path = false)
 {
 	pthread_mutex_lock(&mutex_script_io);
-	
+
 	static bool first_time = true;
 	static char script_filename[FL_PATH_MAX + 1];
 	std::string new_path = "";
-	
+
 	if(reset_path || first_time) {
 		memset(script_filename, 0, sizeof(script_filename));
 		strncpy(script_filename, ScriptsDir.c_str(), FL_PATH_MAX);
 		int len = strnlen(script_filename, FL_PATH_MAX);
-		
+
 		if(len > 0) {
 			len--;
 			if(script_filename[len] == PATH_CHAR_SEPERATOR);
@@ -2862,22 +2860,22 @@ void cb_scripts(bool reset_path = false)
 		} else {
 			return;
 		}
-		
+
 		first_time = false;
 	}
-	
+
 	const char *p = FSEL::select((char *)_("Script Files"), (char *)_("*.txt"), \
 								 script_filename);
-	
+
 	if(p) {
 		memset(script_filename, 0, sizeof(script_filename));
 		strncpy(script_filename, p, FL_PATH_MAX);
-		
+
 		Fl::lock();
 		script_execute(script_filename, false);
 		Fl::unlock();
-		
+
 	}
-	
+
 	pthread_mutex_unlock(&mutex_script_io);
 }

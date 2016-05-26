@@ -251,16 +251,27 @@ void start_process(string executable)
 
 void toggle_io_port_selection(int io_mode)
 {
+
 	switch(io_mode) {
 		case ARQ_IO:
-			btnEnable_kiss->do_callback();
-			btnEnable_arq->do_callback();
-			progdefaults.changed = false;
-			break;
+            enable_arq();
+            progdefaults.changed = false;
+        break;
 
 		case KISS_IO:
-			btnEnable_arq->do_callback();
-			btnEnable_kiss->do_callback();
+
+            enable_kiss();
+
+            if(progdefaults.tcp_udp_auto_connect) {
+                btn_connect_kiss_io->value(1);
+                btn_connect_kiss_io->do_callback();
+            }
+
+            if(progdefaults.kpsql_enabled) {
+                btnPSQL->value(progdefaults.kpsql_enabled);
+                btnPSQL->do_callback();
+            }
+
 			progdefaults.changed = false;
 			break;
 
@@ -348,12 +359,12 @@ void delayed_startup(void *)
 	data_io_enabled = DISABLED_IO;
 
 	arq_init();
-	//kiss_init();
+
 	if (progdefaults.connect_to_maclogger) maclogger_init();
 	data_io_enabled = progStatus.data_io_enabled;
 
-
 	toggle_io_port_selection(data_io_enabled);
+    disable_config_p2p_io_widgets();
 
 	notify_start();
 
@@ -843,10 +854,10 @@ void generate_option_help(void) {
          << "    The default is: " << progdefaults.data_io_enabled << "\n\n"
 
          << "  --kiss-server-address HOSTNAME\n"
-         << "    Set the KISS UDP server address\n"
+         << "    Set the KISS TCP/UDP server address\n"
          << "    The default is: " << progdefaults.kiss_address << "\n\n"
          << "  --kiss-server-port-io I/O PORT\n"
-         << "    Set the KISS UDP server I/O port\n"
+         << "    Set the KISS TCP/UDP server I/O port\n"
          << "    The default is: " << progdefaults.kiss_io_port << "\n\n"
          << "  --kiss-server-port-o Output PORT\n"
          << "    Set the KISS UDP server output port\n"

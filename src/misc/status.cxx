@@ -119,7 +119,6 @@ status progStatus = {
 	5.0,				// double sldrPwrSquelchValue
 	true,				// bool afconoff
 	true,				// bool sqlonoff
-	false,				// bool pwrsqlonoff
 	50,					// int	scopeX;
 	50,					// int	scopeY;
 	false,				// bool	scopeVisible;
@@ -201,6 +200,8 @@ status progStatus = {
 	progdefaults.csma_enabled,
 	progdefaults.kiss_tcp_io,
 	progdefaults.kiss_tcp_listen,
+    progdefaults.kpsql_enabled,
+    progdefaults.kiss_io_modem_change_inhibit,
 	true,
 	0.0,
 	progdefaults.psk8DCDShortFlag,
@@ -326,7 +327,8 @@ void status::saveLastState()
 	csma_enabled           = progdefaults.csma_enabled;
 	kiss_tcp_io            = progdefaults.kiss_tcp_io;
 	kiss_tcp_listen        = progdefaults.kiss_tcp_listen;
-
+    kpsql_enabled          = progdefaults.kpsql_enabled;
+    kiss_io_modem_change_inhibit = progdefaults.kiss_io_modem_change_inhibit;
 	squelch_value = 0;
 
 	Fl_Preferences spref(HomeDir.c_str(), "w1hkj.com", PACKAGE_TARNAME);
@@ -336,7 +338,6 @@ void status::saveLastState()
 
 	spref.set("mode_name", mode_info[lastmode].sname);
 	spref.set("squelch_enabled", sqlonoff);
-	spref.set("pwr_squelch_enabled", pwrsqlonoff);
 	spref.set("squelch_level", sldrSquelchValue);
 	spref.set("pwr_squelch_level", sldrPwrSquelchValue);
 	spref.set("afc_enabled", afconoff);
@@ -479,7 +480,7 @@ if (!bWF_only) {
 		spref.set("kiss_dual_port_enabled", kiss_dual_port_enabled);
 	}
 
-	if(override_data_io_enabled != DISABLED_IO)
+	if(!override_data_io_enabled)
 		spref.set("data_io_enabled", data_io_enabled);
 
 	spref.set("ax25_decode_enabled", ax25_decode_enabled);
@@ -489,6 +490,8 @@ if (!bWF_only) {
 	spref.set("csma_enabled", csma_enabled);
 	spref.set("kiss_tcp_io",         kiss_tcp_io);
 	spref.set("kiss_tcp_listen",     kiss_tcp_listen);
+    spref.set("kpsql_enabled",       kpsql_enabled);
+    spref.set("kiss_io_modem_change_inhibit", kiss_io_modem_change_inhibit);
 
 	spref.set("browser_search", browser_search.c_str());
 
@@ -527,7 +530,6 @@ void status::loadLastState()
 	}
 
 	spref.get("squelch_enabled", i, sqlonoff); sqlonoff = i;
-	spref.get("pwr_squelch_enabled", i, pwrsqlonoff); pwrsqlonoff = i;
 	spref.get("squelch_level", i, sldrSquelchValue); sldrSquelchValue = i;
 	spref.get("pwr_squelch_level", i, sldrPwrSquelchValue); sldrPwrSquelchValue = i;
 	spref.get("afc_enabled", i, afconoff); afconoff = i;
@@ -710,7 +712,7 @@ void status::loadLastState()
 		spref.get("kiss_dual_port_enabled", i, kiss_dual_port_enabled); kiss_dual_port_enabled     = i;
 	}
 
-	if(override_data_io_enabled != DISABLED_IO)
+	if(!override_data_io_enabled)
 		spref.get("data_io_enabled", i, data_io_enabled); data_io_enabled = i;
 
 	spref.get("ax25_decode_enabled",    i, ax25_decode_enabled);    ax25_decode_enabled = i;
@@ -720,6 +722,8 @@ void status::loadLastState()
 	spref.get("csma_enabled",           i, csma_enabled);           csma_enabled        = i;
 	spref.get("kiss_tcp_io",            i, kiss_tcp_io);            kiss_tcp_io         = i;
 	spref.get("kiss_tcp_listen",        i, kiss_tcp_listen);        kiss_tcp_listen     = i;
+    spref.get("kpsql_enabled",          i, kpsql_enabled);          kpsql_enabled       = i;
+    spref.get("kiss_io_modem_change_inhibit", i, kiss_io_modem_change_inhibit); kiss_io_modem_change_inhibit = i;
 
 	spref.get("psk8DCDShortFlag",       i, psk8DCDShortFlag);       psk8DCDShortFlag    = i;
 
@@ -826,13 +830,13 @@ void status::initLastState()
 		data_io_enabled = ARQ_IO;
 		progdefaults.data_io_enabled = ARQ_IO;
 		progStatus.data_io_enabled = ARQ_IO;
-		pwrsqlonoff = false;
+		kpsql_enabled = false;
 	}
 
 	btnSQL->value(sqlonoff);
-	btnPSQL->value(pwrsqlonoff);
+	btnPSQL->value(kpsql_enabled);
 
-	if(pwrsqlonoff)
+	if(kpsql_enabled)
 		sldrSquelch->value(sldrPwrSquelchValue);
 	else
 		sldrSquelch->value(sldrSquelchValue);

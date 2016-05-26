@@ -1450,12 +1450,12 @@ void init_modem(trx_mode mode, int freq)
 
 			LOG_INFO("Invaild Modem for KISS I/O (%s)",  mode_info[mode].sname);
 
-            if(!fl_choice2(_("Switch to ARQ I/O"), _("Yes"), _("No"), NULL)) {
-                btnEnable_kiss->value(false);
-                btnEnable_kiss->do_callback();
+            int _yes = false;
+            if(!progdefaults.kiss_io_modem_change_inhibit)
+                _yes = fl_choice2(_("Switch to ARQ I/O"), _("No"), _("Yes"), NULL);
 
-                btnEnable_arq->value(true);
-                btnEnable_arq->do_callback();
+            if(_yes) {
+                enable_arq();
             } else {
                 std::string modem_name;
                 modem_name.assign(mode_info[current_mode].sname);
@@ -2737,7 +2737,7 @@ void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 
 void cb_sldrSquelch(Fl_Slider* o, void*) {
 
-	if(progStatus.pwrsqlonoff) {
+	if(progStatus.kpsql_enabled) {
 		progStatus.sldrPwrSquelchValue = o->value();
 	} else {
 	    progStatus.sldrSquelchValue = o->value();
@@ -3238,18 +3238,23 @@ void cbSQL(Fl_Widget *w, void *vi)
 
 void cbPwrSQL(Fl_Widget *w, void *vi)
 {
-	if(data_io_enabled == KISS_IO) {
+	if(progStatus.data_io_enabled == KISS_IO) {
 		FL_LOCK_D();
 		Fl_Button *b = (Fl_Button *)w;
 		b->activate();
 		int v = b->value();
-		if(!v)
+        if(!v) {
 			sldrSquelch->value(progStatus.sldrSquelchValue);
-		else
+            progStatus.kpsql_enabled = false;
+            progdefaults.kpsql_enabled = false;
+            b->clear();
+        } else {
 			sldrSquelch->value(progStatus.sldrPwrSquelchValue);
-
+            progStatus.kpsql_enabled = true;
+            progdefaults.kpsql_enabled = true;
+            b->set();
+        }
 		FL_UNLOCK_D();
-		progStatus.pwrsqlonoff = v ? true : false;
 	} else {
 		FL_LOCK_D();
 		Fl_Button *b = (Fl_Button *)w;
@@ -7193,8 +7198,8 @@ void create_fl_digi_main_primary() {
 			btnSQL->tooltip(_("Squelch"));
 
 			btnPSQL->selection_color(progdefaults.Sql1Color);
+			btnPSQL->value(progdefaults.kpsql_enabled);
 			btnPSQL->callback(cbPwrSQL, 0);
-			btnPSQL->value(1);
 			btnPSQL->tooltip(_("Monitor KISS Pwr Squelch"));
 
 			if(progdefaults.data_io_enabled == KISS_IO)
@@ -7837,7 +7842,7 @@ void create_fl_digi_main_WF_only() {
 			btnSQL->tooltip(_("Squelch"));
 	btnPSQL->selection_color(progdefaults.Sql1Color);
 	btnPSQL->callback(cbPwrSQL, 0);
-	btnPSQL->value(1);
+	btnPSQL->value(progdefaults.kpsql_enabled);
 	btnPSQL->tooltip(_("Monitor KISS Pwr Squelch"));
 
 	if(progdefaults.data_io_enabled == KISS_IO)
@@ -7948,7 +7953,7 @@ static void callback_set_metric(double metric)
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_s2n_progress->value(metric);
 
-	if(progStatus.pwrsqlonoff) {
+	if(progStatus.kpsql_enabled) {
 		if ((metric >= progStatus.sldrPwrSquelchValue) || inhibit_tx_seconds)
 			btnPSQL->selection_color(progdefaults.Sql2Color);
 		else
@@ -9127,21 +9132,33 @@ void notch_off()
 
 void enable_kiss(void)
 {
+    if(btnEnable_arq->value()) {
+        btnEnable_arq->value(false);
+    }
+
 	progdefaults.changed = true;
 	progdefaults.data_io_enabled = KISS_IO;
+    progStatus.data_io_enabled = KISS_IO;
 	data_io_enabled = KISS_IO;
+
 	btnEnable_kiss->value(true);
-	btnEnable_arq->value(false);
+
 	enable_disable_kpsql();
 }
 
 void enable_arq(void)
 {
+    if(btnEnable_kiss->value()) {
+        btnEnable_kiss->value(false);
+    }
+
 	progdefaults.changed = true;
 	progdefaults.data_io_enabled = ARQ_IO;
+    progStatus.data_io_enabled = ARQ_IO;
 	data_io_enabled = ARQ_IO;
+
 	btnEnable_arq->value(true);
-	btnEnable_kiss->value(false);
+
 	enable_disable_kpsql();
 }
 
@@ -9150,12 +9167,16 @@ void enable_disable_kpsql(void)
 	if(progdefaults.data_io_enabled == KISS_IO) {
 		check_kiss_modem();
 		btnPSQL->activate();
+        if(progStatus.kpsql_enabled || progdefaults.kpsql_enabled) {
+            btnPSQL->value(true);
+            btnPSQL->do_callback();
+        }
 	} else {
 		sldrSquelch->value(progStatus.sldrSquelchValue);
-		progStatus.pwrsqlonoff = false;
-		btnPSQL->value(0);
+		btnPSQL->value(false);
 		btnPSQL->deactivate();
 	}
+
 	progStatus.data_io_enabled = progdefaults.data_io_enabled;
 }
 
@@ -9175,6 +9196,8 @@ void disable_config_p2p_io_widgets(void)
 	cntBusyChannelSeconds->deactivate();
 	btnDefault_kiss_ip->deactivate();
 	btn_restart_kiss->deactivate();
+    btnEnable_7bit_modem_inhibit->deactivate();
+    btnEnable_auto_connect->deactivate();
 
 	txtArq_ip_address->deactivate();
 	txtArq_ip_port_no->deactivate();
@@ -9213,6 +9236,8 @@ void enable_config_p2p_io_widgets(void)
 	cntBusyChannelSeconds->activate();
 	btnDefault_kiss_ip->activate();
 	btn_restart_kiss->activate();
+    btnEnable_7bit_modem_inhibit->activate();
+    btnEnable_auto_connect->activate();
 
 	txtArq_ip_address->activate();
 	txtArq_ip_port_no->activate();

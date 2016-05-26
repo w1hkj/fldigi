@@ -55,6 +55,9 @@
 #define KISS_BUFFER_FACTOR 2
 #define HDLC_BUFFER_FACTOR 3
 
+#define KISS_CONNECT_RETRY_COUNT 10
+#define KISS_RETRY_WAIT_TIME 1000
+
 #define MAX_TEMP_BUFFER_SIZE 32000
 
 #define TX_BUFFER_TIMEOUT (60 * 10) // Ten minute timeout
@@ -147,6 +150,8 @@ static void set_sql_on_off(char *);
 static void set_trxs_bc_mode(char *);
 static void set_txbe_bc_mode(char *);
 static void set_wf_cursor_pos(char *);
+static void set_reply_tx_lock(char *);
+
 static void TransmitCSMA();
 static void WriteToHostBuffered(const char *data, size_t size);
 //static void WriteToHostBuffered(const char *data);
@@ -166,6 +171,8 @@ static void ReadFromHostBuffered(void);
 void ReadFromHostSocket(void);
 //static void set_busy_state_bc_mode(char * arg);
 static void reply_busy_state(char * arg);
+
+bool kiss_thread_running(void);
 
 #ifdef KISS_RX_THREAD
 static void *ReadFromHostSocket(void *args);

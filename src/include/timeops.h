@@ -24,13 +24,27 @@
 #include <config.h>
 #include <time.h>
 #include <sys/time.h>
+
 #ifdef __MINGW32__
 #  include <pthread.h>
-#else
-#  if !HAVE_CLOCK_GETTIME
-  enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
-  int clock_gettime(clockid_t clock_id, struct timespec* tp);
-#  endif
+#endif
+
+#if !HAVE_CLOCK_GETTIME
+//  enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
+#ifndef __clockid_t_defined
+typedef int clockid_t;
+#define __clockid_t_defined 1
+#endif  /* __clockid_t_defined */
+
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 0
+#endif
+
+#ifndef CLOCK_MONOTONIC
+#define CLOCK_MONOTONIC 1
+#endif
+
+int clock_gettime(clockid_t clock_id, struct timespec* tp);
 #endif
 
 struct timespec operator+(const struct timespec &t0, const double &t);

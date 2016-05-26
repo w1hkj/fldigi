@@ -1680,16 +1680,25 @@
               "Number of seconds to wait before transmit resume",                       \
               3)                                                                        \
         ELEM_(int, kpsql_attenuation, "KPSQL_ATTENUATION",                              \
-        "KPSQL Attenuation in 1/n of 1:1 Gain",                                         \
-        2)                                                                              \
+              "KPSQL Attenuation in 1/n of 1:1 Gain",                                   \
+              2)                                                                        \
         ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
               "Use CSMA on heavy traffic channels (AX25)",                              \
               true)                                                                     \
-	ELEM_(bool, kiss_tcp_io, "KISS_TCP_IO",                                         \
-	      "Connect kiss io via TCP/IP vise UDP/IP",                                 \
-	      false)                                                                    \
+	    ELEM_(bool, kiss_tcp_io, "KISS_TCP_IO",                                         \
+	          "Connect kiss io via TCP/IP vise UDP/IP",                                 \
+	          false)                                                                    \
         ELEM_(bool, kiss_tcp_listen, "KISS_TCP_LISTEN",                                 \
               "Listen for TCP connection (Server mode)",                                \
+              false)                                                                    \
+        ELEM_(bool, kpsql_enabled, "KPSQL_ENABLED",                                     \
+              "Enable/Disable KPSQL",                                                   \
+              false)                                                                    \
+        ELEM_(bool, tcp_udp_auto_connect, "TCP_UDP_AUTO_CONNECT",                       \
+              "Make Connect Attemp on Fldigi Start",                                    \
+              false)                                                                    \
+        ELEM_(bool, kiss_io_modem_change_inhibit, "KISS_IO_MODEM_CHANGE_INHIBIT",       \
+              "Enable/Disable Modem Change to a non 8 bit when KISS IO is in use",      \
               false)                                                                    \
         ELEM_(std::string, flrig_ip_address, "FLRIG_IP_ADDRESS",                        \
               "IP Address of flrig server",                                             \

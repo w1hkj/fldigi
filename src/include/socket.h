@@ -36,6 +36,9 @@
 #else
 #  include <winsock2.h>
 #  include <windows.h>
+#  ifndef ENOTCONN
+#  define ENOTCONN WSAENOTCONN
+#  endif
 #endif
 
 #include <string>

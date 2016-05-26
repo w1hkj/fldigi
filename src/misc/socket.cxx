@@ -59,11 +59,13 @@
 #include <cstdlib>
 #include <cmath>
 #include <cstdio>
+#include <errno.h>
 
 //#undef NDEBUG
 #include "debug.h"
 
 #include "socket.h"
+
 
 #if HAVE_GETADDRINFO && !defined(AI_NUMERICSERV)
 #  define AI_NUMERICSERV 0

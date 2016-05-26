@@ -29,8 +29,6 @@
 
 #include "gettext.h"
 
-#define IO_CONNECT_STR    _("Connect")
-#define IO_DISCONNECT_STR _("Disc")
 #define IO_START_STR      _("Start")
 #define IO_STOP_STR       _("Stop")
 
@@ -62,7 +60,7 @@ enum {DISABLED_IO, ARQ_IO, KISS_IO, XMLRPC_IO, FLRIG_IO, FLLOG_IO};
 
 // This variable indepent of progdefaults.data_io_enabled
 // and progStatus.data_io_enabled
-// Only on start de we assign this variable with progStatus.data_io_enabled.
+// Only on start do we assign this variable with progStatus.data_io_enabled.
 // This is one way assignment as we dont want to save all of the available states
 // this variable will have.
 extern int data_io_enabled; // Located in kiss_io.cxx
@@ -80,6 +78,9 @@ extern void WriteKISS(const char data);
 extern void WriteKISS(const char *data);
 extern void WriteKISS(const char *data, size_t size);
 extern void WriteKISS(std::string data);
+extern bool kiss_thread_running(void);
+
+extern bool kiss_auto_connect(void);
 
 extern void check_kiss_modem(void);
 extern int  kiss_get_char(void);
@@ -91,7 +92,7 @@ extern bool bcast_rsid_kiss_frame(int new_wf_pos, int new_mode, int old_wf_pos, 
 extern void bcast_trxc_kiss_frame(void);
 extern void update_kpsql_fractional_gain(int value);
 extern void kiss_io_set_button_state(void *);
-extern void connect_to_kiss_io(void);
+extern void connect_to_kiss_io(bool);
 
 // ARQ implementation
 extern void	arq_init(void);
