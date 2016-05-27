@@ -719,14 +719,16 @@ static void wefax_cb_pic_rx_save( Fl_Widget *, void *)
 
 	const char *file_name = FSEL::saveas(_("Save image as:"), ffilter, dfname.c_str(), NULL);
 	/// Beware that no extra comments are saved here.
-	if (file_name) {
-		wefax_pic_rx_picture->save_png(file_name,progdefaults.WEFAX_SaveMonochrome);
-		qso_notes( "RX:", file_name );
-		wefax_serviceme->qso_rec_save();
-		/// Next time, image will be saved at the same place.
-		default_dir_set( progdefaults.wefax_save_dir, file_name );
-		add_to_files_list( file_name );
-	}
+	if (!file_name) return;
+	if (!*file_name) return;
+
+	wefax_pic_rx_picture->save_png(file_name,progdefaults.WEFAX_SaveMonochrome);
+	qso_notes( "RX:", file_name );
+	wefax_serviceme->qso_rec_save();
+	/// Next time, image will be saved at the same place.
+	default_dir_set( progdefaults.wefax_save_dir, file_name );
+	add_to_files_list( file_name );
+
 }
 
 /// Beware, might be called by another thread. Called by the GUI
@@ -1482,10 +1484,9 @@ static void wefax_cb_pic_tx_load(Fl_Widget *, void *)
 			"Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
 			"Graphics Interchange Format\t*.gif",
 			default_dir_get( progdefaults.wefax_load_dir ).c_str() );
-	if (!fil_name) {
-		LOG_WARN( " Cannot FSEL::select" );
-		return ;
-	};
+	if (!fil_name) return;
+	if (!*fil_name) return;
+
 	/// Next time, image will be saved at the same place.
 	default_dir_set( progdefaults.wefax_load_dir, fil_name );
 	wefax_load_image(fil_name);

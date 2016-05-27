@@ -518,8 +518,10 @@ void cb_thorpicTxLoad(Fl_Widget *, void *)
 {
 	const char *fn =
 		FSEL::select(_("Load image file"), "Image\t*.{png,,gif,jpg,jpeg}\n", PicsDir.c_str());
-	if (fn)
-		thor_load_image(fn);
+	if (!fn) return;
+	if (!*fn) return;
+
+	thor_load_image(fn);
 }
 
 void thor_clear_tximage()

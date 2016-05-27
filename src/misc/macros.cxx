@@ -3679,10 +3679,9 @@ void MACROTEXT::openMacroFile()
 								 _("Open macro file"),
 								 _("Fldigi macro definition file\t*.{mdf}"),
 								 deffilename.c_str());
-	if (p) {
+	if (p && *p) {
 		loadMacros(p);
 		progStatus.LastMacroFile = p;
-//	}
 		showMacroSet();
 		if (progdefaults.DisplayMacroFilename) {
 			string Macroset;
@@ -3721,12 +3720,15 @@ void MACROTEXT::saveMacroFile()
 								 _("Save macro file"),
 								 _("Fldigi macro definition file\t*.{mdf}"),
 								 deffilename.c_str());
-	if (p) {
-		string sp = p;
-		if (sp.rfind(".mdf") == string::npos) sp.append(".mdf");
-		saveMacros(sp.c_str());
-		progStatus.LastMacroFile = sp;
-	}
+	if (!p) return;
+	if (!*p) return;
+
+	string sp = p;
+	if (sp.empty()) return;
+	if (sp.rfind(".mdf") == string::npos) sp.append(".mdf");
+	saveMacros(sp.c_str());
+	progStatus.LastMacroFile = sp;
+
 }
 
 void MACROTEXT::savecurrentMACROS(std::string &s, size_t &i, size_t endbracket)

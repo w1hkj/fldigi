@@ -144,8 +144,9 @@ void Export_CSV()
 	filters.append("\n");
 #endif
 	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "export.csv");
-	if (!p)
-		return;
+
+	if (!p) return;
+	if (!*p) return;
 
 	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
@@ -170,8 +171,9 @@ void Export_TXT()
 	filters.append("\n");
 #endif
 	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "export.txt");
-	if (!p)
-		return;
+
+	if (!p) return;
+	if (!*p) return;
 
 	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
@@ -201,8 +203,8 @@ void Export_ADIF()
 	defname.assign("export.").append(ADIF_SUFFIX);
 	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), defname.c_str());
 
-	if (!p)
-		return;
+	if (!p) return;
+	if (!*p) return;
 
 	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
 		if (chkExportBrowser->checked(i + 1)) {
@@ -285,19 +287,20 @@ void cb_mnuOpenLogbook(Fl_Menu_* m, void* d)
 	deffilename.append(fl_filename_name(logbook_filename.c_str()));
 
 	const char* p = FSEL::select( title.c_str(), filter.c_str(), deffilename.c_str());
+	if (!p) return;
+	if (!*p) return;
 
-	if (p) {
-		saveLogbook();
-		qsodb.deleteRecs();
+	saveLogbook();
+	qsodb.deleteRecs();
 
-		logbook_filename = p;
-		progdefaults.logbookfilename = logbook_filename;
-		progdefaults.changed = true;
+	logbook_filename = p;
+	progdefaults.logbookfilename = logbook_filename;
+	progdefaults.changed = true;
 
-		adifFile.readFile (logbook_filename.c_str(), &qsodb);
-		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
-		qsodb.isdirty(0);
-	}
+	adifFile.readFile (logbook_filename.c_str(), &qsodb);
+	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
+	qsodb.isdirty(0);
+
 }
 
 void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
@@ -312,23 +315,25 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 
 	const char* p = FSEL::saveas( title.c_str(), filter.c_str(), deffilename.c_str());
 
-	if (p) {
-		logbook_filename = p;
-		if (logbook_filename.find("." ADIF_SUFFIX) == string::npos)
-			logbook_filename.append("." ADIF_SUFFIX);
+	if (!p) return;
+	if (!*p) return;
 
-		progdefaults.logbookfilename = logbook_filename;
-		progdefaults.changed = true;
+	logbook_filename = p;
+	if (logbook_filename.find("." ADIF_SUFFIX) == string::npos)
+		logbook_filename.append("." ADIF_SUFFIX);
 
-		dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
+	progdefaults.logbookfilename = logbook_filename;
+	progdefaults.changed = true;
 
-		cQsoDb::reverse = false;
-		qsodb.SortByDate(progdefaults.sort_date_time_off);
+	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 
-		qsodb.isdirty(0);
-		restore_sort();
-		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
-	}
+	cQsoDb::reverse = false;
+	qsodb.SortByDate(progdefaults.sort_date_time_off);
+
+	qsodb.isdirty(0);
+	restore_sort();
+	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+
 }
 
 int comparerecs (const void *rp1, const void *rp2) { // rp1 needle, rp2 haystack
@@ -507,12 +512,14 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	Fl::wait();
 	fl_digi_main->redraw();
 	Fl::awake();
-	if (p) {
-		cQsoDb *mrgdb = new cQsoDb;
-		adifFile.do_readfile (p, mrgdb);
-		merge_recs(&qsodb, mrgdb);
-		delete mrgdb;
-	}
+	if (!p) return;
+	if (!*p) return;
+
+	cQsoDb *mrgdb = new cQsoDb;
+	adifFile.do_readfile (p, mrgdb);
+	merge_recs(&qsodb, mrgdb);
+	delete mrgdb;
+
 }
 
 void cb_export_date_select() {
@@ -1479,8 +1486,9 @@ void WriteCabrillo()
 	string strContest = "";
 
 	const char* p = FSEL::saveas( title.c_str(), filters.c_str(), "contest.txt");
-	if (!p)
-		return;
+
+	if (!p) return;
+	if (!*p) return;
 
 	for (int i = 0; i < chkCabBrowser->FLTK_nitems(); i++) {
 		if (chkCabBrowser->checked(i + 1)) {

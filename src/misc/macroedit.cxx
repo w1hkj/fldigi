@@ -344,7 +344,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			_("Text file to insert"),
 			filters.c_str(),
 			HomeDir.c_str());
-		if (p) {
+		if (p && *p) {
 			text.insert(6, p);
 		} else
 			text = "";
@@ -354,7 +354,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			_("Test text file"),
 			filters.c_str(),
 			HomeDir.c_str());
-		if (p) {
+		if (p && *p) {
 			text.insert(10, p);
 		} else
 			text = "";
@@ -364,7 +364,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			_("MFSK image file"),
 			filters.c_str(),
 			PicsDir.c_str());
-		if (p) {
+		if (p && *p) {
 			text.insert(7, p);
 		} else
 			text = "";
@@ -374,7 +374,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			_("Change to Macro file"),
 			filters.c_str(),
 			MacrosDir.c_str());
-		if (p) {
+		if (p && *p) {
 			text.insert(8, p);
 		} else
 			text = "";
@@ -386,7 +386,7 @@ void cbInsertMacro(Fl_Widget *, void *)
 			_("Executable file to insert"),
 			filters.c_str(),
 			HomeDir.c_str());
-		if (p) {
+		if (p && *p) {
 			string exefile = p;
 			exefile.append("</EXEC>");
 			text.insert(6, exefile);

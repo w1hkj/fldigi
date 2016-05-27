@@ -350,8 +350,9 @@ void cb_fsqpicTxLoad(Fl_Widget *, void *)
 {
 	const char *fn =
 		FSEL::select(_("Load image file"), "Image\t*.{png,,gif,jpg,jpeg}\n", PicsDir.c_str());
-	if (fn)
-		fsq_load_image(fn);
+	if (!fn) return;
+	if (!*fn) return;
+	fsq_load_image(fn);
 }
 
 void fsq_clear_tximage()

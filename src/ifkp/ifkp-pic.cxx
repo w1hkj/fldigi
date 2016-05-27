@@ -372,8 +372,9 @@ void cb_ifkppicTxLoad(Fl_Widget *, void *)
 {
 	const char *fn =
 		FSEL::select(_("Load image file"), "Image\t*.{png,,gif,jpg,jpeg}\n", PicsDir.c_str());
-	if (fn)
-		ifkp_load_image(fn);
+	if (!fn) return;
+	if (!*fn) return;
+	ifkp_load_image(fn);
 }
 
 void ifkp_clear_tximage()

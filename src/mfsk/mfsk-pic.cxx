@@ -181,8 +181,9 @@ void cb_picTxLoad(Fl_Widget *, void *)
 		FSEL::select(_("Load image file"), "Portable Network Graphics\t*.png\n"
 			    "Independent JPEG Group\t*.{jpg,jif,jpeg,jpe}\n"
 			    "Graphics Interchange Format\t*.gif", PicsDir.c_str());
-	if (fn)
-		load_image(fn);
+	if (!fn) return;
+	if (!*fn) return;
+	load_image(fn);
 }
 
 void cb_picTxClose( Fl_Widget *w, void *)

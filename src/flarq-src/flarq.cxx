@@ -441,8 +441,9 @@ void cb_UseTemplate()
 {
 	string templatename = ARQ_mail_out_dir;
 	const char *p = FSEL::select("Load Template file", "*.tpl", templatename.c_str());
-	if (p)
-		readComposedFile(p);
+	if (!p) return;
+	if (!*p) return;
+	readComposedFile(p);
 }
 
 void cb_ClearComposer()
@@ -520,8 +521,10 @@ void SaveComposeTemplate()
 {
 	string templatename = ARQ_mail_out_dir;
 	const char *p = FSEL::saveas("Save Template file", "*.tpl", templatename.c_str());
-	if (p)
-		saveComposedText(p);
+	if (!p) return;
+	if (!*p) return;
+
+	saveComposedText(p);
 }
 
 void cb_SaveComposeMail()
@@ -1309,7 +1312,7 @@ void sendAsciiFile()
 	size_t txtsize;
 	string textin = "";
 	char sizemsg[40];
-	if (p) {
+	if (p && *p) {
 		ifstream textfile;
 		textfile.open(p);
 		if (textfile) {
@@ -1361,7 +1364,7 @@ void sendImageFile()
 	string b64text;
 	base64 b64(true);
 	char sizemsg[40];
-	if (p) {
+	if (p && *p) {
 		ifstream textfile;
 		textfile.open(p, ios::binary);
 		if (textfile) {
@@ -1410,7 +1413,7 @@ void sendBinaryFile()
 	string b64text;
 	base64 b64(true);
 	char sizemsg[40];
-	if (p) {
+	if (p && *p) {
 		ifstream textfile;
 		textfile.open(p, ios::binary);
 		if (textfile) {

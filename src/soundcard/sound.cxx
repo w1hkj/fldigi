@@ -159,8 +159,8 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 		*fname = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
 	else
 		*fname = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
-	if (!*fname)
-		return;
+	if (!*fname) return;
+	if (!**fname) return;
 
 	if (fsel >= nfilt) // "Default" save-as type on OS X
 		fsel = 0;

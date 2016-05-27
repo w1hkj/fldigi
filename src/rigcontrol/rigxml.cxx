@@ -1113,11 +1113,12 @@ void selectRigXmlFilename()
 	string deffilename;
 	deffilename = progdefaults.XmlRigFilename;
 	const char *p = FSEL::select(_("Open rig xml file"), _("Fldigi rig xml definition file\t*.xml"), deffilename.c_str());
-	if (p) {
-		progdefaults.XmlRigFilename = p;
-		txtXmlRigFilename->value(fl_filename_name(p));
-		loadRigXmlFile();
-	}
+	if (!p) return;
+	if (!*p) return;
+
+	progdefaults.XmlRigFilename = p;
+	txtXmlRigFilename->value(fl_filename_name(p));
+	loadRigXmlFile();
 }
 
 void loadRigXmlFile(void)

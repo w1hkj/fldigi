@@ -9456,25 +9456,26 @@ void cb_heard_send_file(Fl_Widget *w, void *)
 	deffilename.append("fsq.txt");
 
 	const char* p = FSEL::select( "Select send file", "*.txt", deffilename.c_str());
+	if (!p) return;
+	if (!*p) return;
 
-	if (p) {
-		std::string fname = fl_filename_name(p);
-		ifstream txfile(p);
-		if (!txfile) return;
-		stringstream text;
-		char ch = txfile.get();
-		while (!txfile.eof()) {
-			text << ch;
-			ch = txfile.get();
-		}
-		txfile.close();
-		std::string s = fsq_selected_call.c_str();
-		s.append("#[");
-		s.append(fname.c_str());
-		s.append("]\n");
-		s.append(text.str().c_str());
-		fsq_xmt(s);
+	std::string fname = fl_filename_name(p);
+	ifstream txfile(p);
+	if (!txfile) return;
+	stringstream text;
+	char ch = txfile.get();
+	while (!txfile.eof()) {
+		text << ch;
+		ch = txfile.get();
 	}
+	txfile.close();
+	std::string s = fsq_selected_call.c_str();
+	s.append("#[");
+	s.append(fname.c_str());
+	s.append("]\n");
+	s.append(text.str().c_str());
+	fsq_xmt(s);
+
 }
 
 void cb_heard_read_file(Fl_Widget *w, void*)

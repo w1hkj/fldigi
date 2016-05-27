@@ -88,6 +88,7 @@ void loadPalette()
 	}
     const char *p = FSEL::select(_("Open palette"), _("Fldigi palette\t*.pal"), palfilename.c_str());
 	if (!p) return;
+	if (!*p) return;
 	if ((clrfile = fopen(p, "r")) != NULL) {
 		for (int i = 0; i < 9; i++) {
 			if (fscanf(clrfile, "%d;%d;%d\n", &r, &g, &b) == EOF) {

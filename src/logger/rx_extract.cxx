@@ -357,11 +357,13 @@ void select_flmsg_pathname()
 		deffilename = "/usr/local/bin/";
 		const char *p = FSEL::select(_("Locate flmsg executable"), _("flmsg\t*"), deffilename.c_str());
 # endif
-	if (p) {
-		progdefaults.flmsg_pathname = p;
-		progdefaults.changed = true;
-		txt_flmsg_pathname->value(p);
-	}
+	if (!p) return;
+	if (!*p) return;
+
+	progdefaults.flmsg_pathname = p;
+	progdefaults.changed = true;
+	txt_flmsg_pathname->value(p);
+
 #endif
 }
 
@@ -433,7 +435,7 @@ string select_binary_pathname(string deffilename)
 	const char *p = FSEL::select(_("Locate binary"), _("*"), deffilename.c_str());
 # endif
 	string executable = "";
-	if (p) executable = p;
+	if (p && *p) executable = p;
 // do not allow recursion !!
 	if (executable.find("fldigi") != string::npos) return "";
 	return executable;

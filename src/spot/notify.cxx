@@ -1244,14 +1244,16 @@ static void notify_event_cb(Fl_Widget* w, void* arg)
 static void notify_program_select_cb(Fl_Widget* w, void* arg)
 {
 	const char* fn = FSEL::select(_("Run program"), "", 0, 0);
-	if (fn) {
-		inpNotifyActionProgram->value(fn);
-		// quote program path
-		inpNotifyActionProgram->position(0);
-		inpNotifyActionProgram->insert("\"", 1);
-		inpNotifyActionProgram->position(inpNotifyActionProgram->size());
-		inpNotifyActionProgram->insert("\"", 1);
-	}
+	if (!fn) return;
+	if (!*fn) return;
+
+	inpNotifyActionProgram->value(fn);
+	// quote program path
+	inpNotifyActionProgram->position(0);
+	inpNotifyActionProgram->insert("\"", 1);
+	inpNotifyActionProgram->position(inpNotifyActionProgram->size());
+	inpNotifyActionProgram->insert("\"", 1);
+
 }
 
 // the test button callback

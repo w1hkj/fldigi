@@ -3008,12 +3008,11 @@ static void cb_btn_select_auditlog(Fl_Button*, void*) {
   std::string str = std::string(TempDir);
 str.append(progdefaults.fsq_audit_log);
 const char *fname = FSEL::saveas("Audit log", "*.txt\t*", str.c_str());
-
-if (fname) {
-  progdefaults.fsq_audit_log = fl_filename_name(fname);
-  txtAuditLog->value(progdefaults.fsq_audit_log.c_str());
-  progdefaults.changed = true;
-};
+if (!fname) return;
+if (!*fname) return;
+progdefaults.fsq_audit_log = fl_filename_name(fname);
+txtAuditLog->value(progdefaults.fsq_audit_log.c_str());
+progdefaults.changed = true;
 }
 
 Fl_Output *txtHeardLog=(Fl_Output *)0;
@@ -3031,11 +3030,11 @@ static void cb_btn_select_fsq_heard_log(Fl_Button*, void*) {
   std::string str = std::string(TempDir);
 str.append(progdefaults.fsq_heard_log);
 const char *fname = FSEL::saveas("Heard log", "*.txt\t*", str.c_str());
-if (fname) {
-  progdefaults.fsq_heard_log = fl_filename_name(fname);
-  txtHeardLog->value(progdefaults.fsq_heard_log.c_str());
-  progdefaults.changed = true;
-};
+if (!fname) return;
+if (!*fname) return;
+progdefaults.fsq_heard_log = fl_filename_name(fname);
+txtHeardLog->value(progdefaults.fsq_heard_log.c_str());
+progdefaults.changed = true;
 }
 
 Fl_Button *btn_fsq_xmt_color=(Fl_Button *)0;
@@ -3169,12 +3168,11 @@ static void cb_btn_ifkp_select_auditlog(Fl_Button*, void*) {
   std::string str = std::string(TempDir);
 str.append(progdefaults.ifkp_audit_log);
 const char *fname = FSEL::saveas("Audit log", "*.txt\t*", str.c_str());
-
-if (fname) {
-  progdefaults.ifkp_audit_log = fl_filename_name(fname);
-  txt_ifkp_audit_log->value(progdefaults.ifkp_audit_log.c_str());
-  progdefaults.changed = true;
-};
+if (!fname) return;
+if (!*fname) return;
+progdefaults.ifkp_audit_log = fl_filename_name(fname);
+txt_ifkp_audit_log->value(progdefaults.ifkp_audit_log.c_str());
+progdefaults.changed = true;
 }
 
 Fl_Output *txt_ifkp_heard_log=(Fl_Output *)0;
@@ -3192,11 +3190,11 @@ static void cb_btn_select_ifkp_heard_log(Fl_Button*, void*) {
   std::string str = std::string(TempDir);
 str.append(progdefaults.ifkp_heard_log);
 const char *fname = FSEL::saveas("Heard log", "*.txt\t*", str.c_str());
-if (fname) {
-  progdefaults.ifkp_heard_log = fl_filename_name(fname);
-  txt_ifkp_heard_log->value(progdefaults.ifkp_heard_log.c_str());
-  progdefaults.changed = true;
-};
+if (!fname) return;
+if (!*fname) return;
+progdefaults.ifkp_heard_log = fl_filename_name(fname);
+txt_ifkp_heard_log->value(progdefaults.ifkp_heard_log.c_str());
+progdefaults.changed = true;
 }
 
 Fl_Group *tabMT63=(Fl_Group *)0;
