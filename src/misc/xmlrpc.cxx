@@ -1725,10 +1725,29 @@ public:
 static string xmlchars;
 bool xmltest_char_available;
 static size_t pxmlchar = 0;
+static char xml_status_msg[50];
 int xmltest_char()
 {
-	if (pxmlchar >= xmlchars.length() ) return -3;
-	return xmlchars[pxmlchar++] & 0xFF;
+	if (xmlchars.empty() || !xmltest_char_available)
+		return 0;
+	if (pxmlchar >= xmlchars.length() ) {
+		xmlchars.clear();
+		pxmlchar = 0;
+		xmltest_char_available = false;
+		return -3;
+	}
+	pxmlchar++;
+	snprintf(xml_status_msg, sizeof(xml_status_msg), "%d%% sent",
+		100*pxmlchar/xmlchars.length());
+	put_status(xml_status_msg, 1.0);
+	return xmlchars[pxmlchar] & 0xFF;
+}
+
+void reset_xmlchars()
+{
+	xmlchars.clear();
+	pxmlchar = 0;
+	xmltest_char_available = false;
 }
 
 int number_of_samples( string s)
@@ -2944,7 +2963,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
+//		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
+		xmlchars = params.getString(0);
+		xmltest_char_available = true;
+		pxmlchar = 0;
 		*retval = xmlrpc_c::value_nil();
 	}
 };

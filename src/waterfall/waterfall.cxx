@@ -71,6 +71,7 @@
 #include "flslider2.h"
 #include "debug.h"
 #include "rigsupport.h"
+#include "xmlrpc.h"
 
 using namespace std;
 
@@ -1245,6 +1246,7 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		}
 		else {
 			TransmitText->clear();
+			reset_xmlchars();
 			if (arq_text_available)
 				AbortARQ();
 			if (progStatus.timer)
