@@ -528,12 +528,10 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 
 void ARQ_SOCKET_Server::stop(void)
 {
-	// FILEME - uncomment when we have an ARQ_SOCKET_Server than can be
-	// interrupted
-	//	if (!inst)
-	//		return;
-	//	delete inst;
-	//	inst = 0;
+	if (!inst)
+		return;
+	delete inst;
+	inst = 0;
 }
 
 void* ARQ_SOCKET_Server::thread_func(void*)

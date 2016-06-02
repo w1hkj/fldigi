@@ -1273,59 +1273,73 @@ void remove_windows()
 	if (scopeview) {
 		scopeview->hide();
 		delete scopeview;
+		scopeview = 0;
 	}
 	if (dlgViewer) {
 		dlgViewer->hide();
 		delete dlgViewer;
+		dlgViewer = 0;
 	}
 	if (dlgLogbook) {
 		dlgLogbook->hide();
 		delete dlgLogbook;
+		dlgLogbook = 0;
 	}
 	if (dlgConfig) {
 		dlgConfig->hide();
-		delete cboHamlibRig;
+		delete cboHamlibRig; // ??
 		delete dlgConfig;
+		dlgConfig = 0;
 	}
 	if (font_browser) {
 		font_browser->hide();
 		delete font_browser;
+		font_browser = 0;
 	}
 	if (notify_window) {
 		notify_window->hide();
 		delete notify_window;
+		notify_window = 0;
 	}
 	if (dxcc_window) {
 		dxcc_window->hide();
 		delete dxcc_window;
+		dxcc_window = 0;
 	}
 	if (picRxWin) {
 		picRxWin->hide();
 		delete picRxWin;
+		picRxWin = 0;
 	}
 	if (picTxWin) {
 		picTxWin->hide();
 		delete picTxWin;
+		picTxWin = 0;
 	}
 	if (fsqpicRxWin){
 		fsqpicRxWin->hide();
 		delete fsqpicRxWin;
+		fsqpicRxWin = 0;
 	}
 	if (fsqpicTxWin){
 		fsqpicTxWin->hide();
 		delete fsqpicTxWin;
+		fsqpicTxWin = 0;
 	}
 	if (ifkppicRxWin){
 		ifkppicRxWin->hide();
 		delete ifkppicRxWin;
+		ifkppicRxWin = 0;
 	}
 	if (ifkppicTxWin){
 		ifkppicTxWin->hide();
 		delete ifkppicTxWin;
+		ifkppicTxWin = 0;
 	}
 	if (thorpicRxWin){
 		thorpicRxWin->hide();
 		delete thorpicRxWin;
+		thorpicRxWin = 0;
 	}
 	if (thorpicTxWin){
 		thorpicTxWin->hide();
@@ -1334,35 +1348,35 @@ void remove_windows()
 	if (wefax_pic_rx_win) {
 		wefax_pic_rx_win->hide();
 		delete wefax_pic_rx_win;
+		wefax_pic_rx_win = 0;
 	}
 	if (wefax_pic_tx_win) {
 		wefax_pic_tx_win->hide();
 		delete wefax_pic_tx_win;
+		wefax_pic_tx_win = 0;
 	}
 	if (wExport) {
 		wExport->hide();
 		delete wExport;
+		wExport = 0;
 	}
 	if (wCabrillo) {
 		wCabrillo->hide();
 		delete wCabrillo;
+		wCabrillo = 0;
 	}
 	if (MacroEditDialog) {
 		MacroEditDialog->hide();
 		delete MacroEditDialog;
+		MacroEditDialog = 0;
 	}
 	if (fsqMonitor) {
 		fsqMonitor->hide();
 		delete fsqMonitor;
+		fsqMonitor = 0;
 	}
 	tgroup->hide_all();
 
-//	if (fsqDebug) {
-//		fsqDebug->hide();
-//		delete fsqDebug;
-//	}
-
-	debug::stop();
 }
 
 // callback executed from Escape / Window decoration 'X' or OS X cmd-Q
@@ -1371,6 +1385,14 @@ void remove_windows()
 // is opened post pressing the Red-X
 // Lion also does not allow any dialog other than the main dialog to
 // remain open after a Red-X exit
+
+void noop()
+{
+	FILE *exitlog = fopen(string(HomeDir).append("status_log.txt").c_str(), "a");
+	fprintf(exitlog,"\n=========================\nfltk called terminate\n=========================\n");
+	fclose(exitlog);
+	exit(128 + SIGABRT);
+}
 
 void cb_wMain(Fl_Widget*, void*)
 {
@@ -1384,6 +1406,8 @@ void cb_wMain(Fl_Widget*, void*)
 	if (!clean_exit(true)) return;
 #endif
 	remove_windows();  // more Apple Lion madness
+
+	std::set_terminate(noop);
 	fl_digi_main->hide();
 }
 
@@ -1391,8 +1415,10 @@ void cb_wMain(Fl_Widget*, void*)
 void cb_E(Fl_Menu_*, void*) {
 	if (!clean_exit(true))
 		return;
-	remove_windows();
-// this will make Fl::run return
+
+	remove_windows();  // more Apple Lion madness
+
+	std::set_terminate(noop);
 	fl_digi_main->hide();
 }
 

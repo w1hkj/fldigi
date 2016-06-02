@@ -169,6 +169,7 @@ void debug::stop(void)
 	if (window) {
 		window->hide();
 		delete window;
+		window = 0;
 	}
 	if (inst) {
 		delete inst;

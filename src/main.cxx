@@ -789,13 +789,14 @@ void exit_process() {
 	if (progdefaults.usepskrep)
 		pskrep_stop();
 
+LOG_INFO("Detach/delete qrunner threads");
 	for (int i = 0; i < NUM_QRUNNER_THREADS; i++) {
+LOG_INFO("thread %d", i);
 		cbq[i]->detach();
 		delete cbq[i];
 	}
-
+LOG_INFO("FSEL::destroy()");
 	FSEL::destroy();
-
 }
 
 void generate_option_help(void) {
