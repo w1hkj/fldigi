@@ -300,7 +300,7 @@ Fl_Group			*mf_group1 = 0;
 Fl_Group			*mf_group2 = 0;
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
-static Raster		*FHdisp;
+Raster				*FHdisp;
 Fl_Box				*minbox;
 int					oix;
 

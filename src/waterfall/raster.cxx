@@ -22,6 +22,9 @@
 
 #include <config.h>
 
+#include <iostream>
+
+#include <FL/Fl.H>
 #include <FL/fl_draw.H>
 
 #include "raster.h"
@@ -33,21 +36,24 @@
 #include "raster.h"
 #include "qrunner.h"
 
+using namespace std;
+
 bool rowschanged = false;
 
 Raster::Raster (int X, int Y, int W, int H) :
 	Fl_Widget (X, Y, W, H) {
 	width = W - 4;
 	height = H - 4;
-	space = 2;
-	rowheight = 2 * FELD_RX_COLUMN_LEN;//40;//60;
-	Nrows = (int)(height / (rowheight + space) - 0.5);
+	space = 1;
+	rowheight = 2 * FELD_RX_COLUMN_LEN + space;
+
+	Nrows = 0;
+	while ((Nrows * rowheight) < height) Nrows++;
+	Nrows--;
+
 	vidbuf = new unsigned char[width * height];
 	memset(vidbuf, 255, width * height);
 	col = 0;
-	vidpos = 0;
-	numcols = 0;
-	yp = Nrows * (space + rowheight);
 	box(FL_DOWN_BOX);
 }
 
@@ -59,39 +65,29 @@ Raster::~Raster()
 
 void Raster::data(int data[], int len)
 {
-	if (data == NULL || len == 0)
+	if (data == NULL || len == 0 || (len > rowheight))
 		return;
-	int h = len;
-	int pos;
-	int zeropos;
 
 	FL_LOCK_D();
 
-	if (h > height) 
-		h = height;
-	col++;
-	if (col >= width) {
-		unsigned char *from = vidbuf + (space + rowheight) * width;
-		int numtocopy = Nrows * (space + rowheight) * width;
-		memmove(vidbuf, from, numtocopy);
-		memset(	vidbuf + yp * width, 
-				255, (space + rowheight) * width);
-		col = 0;
-		damage(FL_DAMAGE_USER2);
+	for (int row = 0; row < Nrows; row++) {
+		int rowstart = width * rowheight * row;
+		int nextrow = width * rowheight * (row + 1);
+		for (int i = 0; i < len; i++) {
+			memmove(	vidbuf + rowstart + i*width,
+						vidbuf + rowstart + i*width + 1, 
+						width - 1);
+			if (row < (Nrows - 1)) {
+				vidbuf[rowstart + i*width + width - 1] =
+					vidbuf[nextrow + i* width];
+			}
+		}
 	}
-	else
-		if (damage() != FL_DAMAGE_ALL)
-			damage(FL_DAMAGE_USER1);
-	zeropos = Nrows * (space + rowheight) * width;
-	for (int i = 0; i < h; i++) {
-		pos = zeropos + width * (h - i - 1) + col;
-		vidbuf[pos] = (unsigned char)data[i];
+	int toppixel = width * (Nrows - 1) * rowheight + width - 1;
+	for (int i = 0; i < len; i++) {
+		vidbuf[toppixel + width * (len - i)] = (unsigned char) data[i];
 	}
-	numcols++;
-	vidpos = col - numcols;
-	if (vidpos < 0) vidpos = 0;
-	
-//	redraw();
+
 	REQ_DROP(&Raster::redraw, this);
 	FL_UNLOCK_D();
 
@@ -100,24 +96,25 @@ void Raster::data(int data[], int len)
 
 void Raster::clear()
 {
-	FL_LOCK_D();
-	for (int i = 0; i < width * height; i++)
-		vidbuf[i] = 255;
-	col = width;
-	REQ_DROP(&Raster::redraw, this);
+	memset(vidbuf, 255, width * height);
 //	redraw();
-	FL_UNLOCK_D();
+	REQ_DROP(&Raster::redraw, this);
 	FL_AWAKE_D();
 }
 
 void Raster::resize(int x, int y, int w, int h)
 {
-	int Wdest = w - 4, Hdest = h - 4;
-	int Ndest = (int)(Hdest / (rowheight + space) - 0.5);
+	int Wdest = w - 4;
+	int Hdest = h - 4;
+	int Ndest;
 	unsigned char *tempbuf = new unsigned char [Wdest * Hdest];
 	unsigned char *oldbuf;
 	int xfrcols, xfrrows;
 	int from, to;
+
+	Ndest = 0;
+	while ((Ndest * rowheight) < Hdest) Ndest++;
+	Ndest--;
 
 	memset(tempbuf, 255, Wdest * Hdest);
 
@@ -127,27 +124,27 @@ void Raster::resize(int x, int y, int w, int h)
 		xfrcols = Wdest;
 
 	if (Ndest <= Nrows) {
-		xfrrows = (Ndest + 1)*(rowheight + space);
-		from = (Nrows - Ndest) * (rowheight + space);
+		xfrrows = Ndest * rowheight;
+		from = (Nrows - Ndest) * rowheight;
 		to = 0;
 		for (int r = 0; r < xfrrows; r++)
 			for (int c = 0; c < xfrcols; c++)
 				tempbuf[(to + r) * Wdest + c] = vidbuf[(from + r) * width + c];
 	} else {
-		xfrrows = (Nrows + 1)*(rowheight + space);
+		xfrrows = Nrows * rowheight;
 		from = 0;
-		to = (Ndest - Nrows) * (rowheight + space);
+		to = (Ndest - Nrows) * rowheight;
 		for (int r = 0; r < xfrrows; r++)
 			for (int c = 0; c < xfrcols; c++)
 				tempbuf[(to + r) * Wdest + c] = vidbuf[(from + r) * width + c];
 	}
-	
+
 	oldbuf = vidbuf;
 	vidbuf = tempbuf;
 
-	width = Wdest; height = Hdest;
+	width = Wdest;
+	height = Hdest;
 	Nrows = Ndest;
-	yp = Ndest * (space + rowheight);
 
 	delete [] oldbuf;
 
@@ -158,27 +155,22 @@ void Raster::resize(int x, int y, int w, int h)
 
 void Raster::draw()
 {
-	if ((damage() & FL_DAMAGE_USER2)) {
-		draw_box();
-		fl_draw_image_mono(
-			vidbuf, 
-			x() + 2, y() + 2, 
-			width, height,
-			1, width );
-	} else if ((damage() & FL_DAMAGE_USER1)) {
-		fl_draw_image_mono(
-			vidbuf + vidpos + Nrows * (space + rowheight) * width,
-			x() + vidpos + 2, y() + yp + 2,
-			numcols, rowheight, 
-			1, width);
-		numcols = 0;
-	} else {
-		draw_box();
-		fl_draw_image_mono(
-			vidbuf, 
-			x() + 2, y() + 2, 
-			width, height,
-			1, width );
-	}
+	draw_box();
+	fl_draw_image_mono(
+		vidbuf, 
+		x() + 2, y() + 2, 
+		width, height, 1);
 }
 
+int Raster::handle(int event)
+{
+	if (Fl::event_inside( this )) {
+		if (event == FL_PUSH) {
+			if (Fl::event_button() == FL_RIGHT_MOUSE) {
+				clear();
+				return 1;
+			}
+		}
+	}
+	return Fl_Widget::handle(event);
+}

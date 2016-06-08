@@ -64,6 +64,7 @@ extern bool		bMOREINFO;
 
 extern FTextRX			*ReceiveText;
 extern FTextTX			*TransmitText;
+extern Raster			*FHdisp;
 extern pskBrowser		*mainViewer;
 extern Fl_Input2		*txtInpSeek;
 extern Fl_Box			*hideViewer;

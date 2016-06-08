@@ -1195,8 +1195,12 @@ static void pCLRRX(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	s.replace( i, 7, "" );
-	if (active_modem->get_mode() == MODE_IFKP)
+	trx_mode md = active_modem->get_mode();
+
+	if (md == MODE_IFKP)
 		ifkp_rx_text->clear();
+	else if ((md >= MODE_FELDHELL) && (md <= MODE_HELL80))
+		FHdisp->clear();
 	else
 		ReceiveText->clear();
 }
