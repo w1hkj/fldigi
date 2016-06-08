@@ -909,69 +909,39 @@ Fl_Round_Button *btn_scheme_0=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_0(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 0;
-progdefaults.changed = true;
+progdefaults.macro_height = 22;
+cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
+progdefaults.changed = true;
 }
 
 Fl_Round_Button *btn_scheme_1=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_1(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 1;
-progdefaults.changed = true;
+progdefaults.macro_height = 22;
+cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
+progdefaults.changed = true;
 }
 
 Fl_Round_Button *btn_scheme_2=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_2(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 2;
-progdefaults.changed = true;
+progdefaults.macro_height = 22;
+cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
+progdefaults.changed = true;
 }
 
 Fl_Round_Button *btn_scheme_3=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_3(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 3;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_scheme_5=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_5(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 5;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_scheme_7=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_7(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 7;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_scheme_9=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_9(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 9;
-progdefaults.changed = true;
-set_macroLabels();
-UI_select();
-}
-
-Fl_Round_Button *btn_scheme_11=(Fl_Round_Button *)0;
-
-static void cb_btn_scheme_11(Fl_Round_Button*, void*) {
-  progdefaults.mbar_scheme = 11;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
@@ -986,10 +956,28 @@ set_macroLabels();
 UI_select();
 }
 
+Fl_Round_Button *btn_scheme_5=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_5(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 5;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
 Fl_Round_Button *btn_scheme_6=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_6(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 6;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_7=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_7(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 7;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
@@ -1004,10 +992,28 @@ set_macroLabels();
 UI_select();
 }
 
+Fl_Round_Button *btn_scheme_9=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_9(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 9;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
 Fl_Round_Button *btn_scheme_10=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_10(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 10;
+progdefaults.changed = true;
+set_macroLabels();
+UI_select();
+}
+
+Fl_Round_Button *btn_scheme_11=(Fl_Round_Button *)0;
+
+static void cb_btn_scheme_11(Fl_Round_Button*, void*) {
+  progdefaults.mbar_scheme = 11;
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();
@@ -6013,6 +6019,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6149,11 +6156,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6776,7 +6783,6 @@ ab and newline are automatically included."));
           } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 335, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
-            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 248, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -6822,46 +6828,46 @@ ab and newline are automatically included."));
                 btn_scheme_3->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_3->callback((Fl_Callback*)cb_btn_scheme_3);
               } // Fl_Round_Button* btn_scheme_3
-              { btn_scheme_5 = new Fl_Round_Button(228, 138, 144, 22, _("Two scheme 3"));
-                btn_scheme_5->type(102);
-                btn_scheme_5->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_5->callback((Fl_Callback*)cb_btn_scheme_5);
-              } // Fl_Round_Button* btn_scheme_5
-              { btn_scheme_7 = new Fl_Round_Button(228, 163, 144, 22, _("Two scheme 5"));
-                btn_scheme_7->type(102);
-                btn_scheme_7->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_7->callback((Fl_Callback*)cb_btn_scheme_7);
-              } // Fl_Round_Button* btn_scheme_7
-              { btn_scheme_9 = new Fl_Round_Button(228, 188, 144, 22, _("Two scheme 7"));
-                btn_scheme_9->type(102);
-                btn_scheme_9->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_9->callback((Fl_Callback*)cb_btn_scheme_9);
-              } // Fl_Round_Button* btn_scheme_9
-              { btn_scheme_11 = new Fl_Round_Button(228, 213, 144, 22, _("Two scheme 9"));
-                btn_scheme_11->type(102);
-                btn_scheme_11->down_box(FL_ROUND_DOWN_BOX);
-                btn_scheme_11->callback((Fl_Callback*)cb_btn_scheme_11);
-              } // Fl_Round_Button* btn_scheme_11
               { btn_scheme_4 = new Fl_Round_Button(396, 113, 144, 22, _("Two scheme 2"));
                 btn_scheme_4->type(102);
                 btn_scheme_4->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_4->callback((Fl_Callback*)cb_btn_scheme_4);
               } // Fl_Round_Button* btn_scheme_4
+              { btn_scheme_5 = new Fl_Round_Button(228, 138, 144, 22, _("Two scheme 3"));
+                btn_scheme_5->type(102);
+                btn_scheme_5->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_5->callback((Fl_Callback*)cb_btn_scheme_5);
+              } // Fl_Round_Button* btn_scheme_5
               { btn_scheme_6 = new Fl_Round_Button(396, 138, 144, 22, _("Two scheme 4"));
                 btn_scheme_6->type(102);
                 btn_scheme_6->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_6->callback((Fl_Callback*)cb_btn_scheme_6);
               } // Fl_Round_Button* btn_scheme_6
+              { btn_scheme_7 = new Fl_Round_Button(228, 163, 144, 22, _("Two scheme 5"));
+                btn_scheme_7->type(102);
+                btn_scheme_7->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_7->callback((Fl_Callback*)cb_btn_scheme_7);
+              } // Fl_Round_Button* btn_scheme_7
               { btn_scheme_8 = new Fl_Round_Button(396, 163, 144, 22, _("Two scheme 6"));
                 btn_scheme_8->type(102);
                 btn_scheme_8->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_8->callback((Fl_Callback*)cb_btn_scheme_8);
               } // Fl_Round_Button* btn_scheme_8
+              { btn_scheme_9 = new Fl_Round_Button(228, 188, 144, 22, _("Two scheme 7"));
+                btn_scheme_9->type(102);
+                btn_scheme_9->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_9->callback((Fl_Callback*)cb_btn_scheme_9);
+              } // Fl_Round_Button* btn_scheme_9
               { btn_scheme_10 = new Fl_Round_Button(396, 188, 144, 22, _("Two scheme 8"));
                 btn_scheme_10->type(102);
                 btn_scheme_10->down_box(FL_ROUND_DOWN_BOX);
                 btn_scheme_10->callback((Fl_Callback*)cb_btn_scheme_10);
               } // Fl_Round_Button* btn_scheme_10
+              { btn_scheme_11 = new Fl_Round_Button(228, 213, 144, 22, _("Two scheme 9"));
+                btn_scheme_11->type(102);
+                btn_scheme_11->down_box(FL_ROUND_DOWN_BOX);
+                btn_scheme_11->callback((Fl_Callback*)cb_btn_scheme_11);
+              } // Fl_Round_Button* btn_scheme_11
               { btn_scheme_12 = new Fl_Round_Button(396, 213, 144, 22, _("Two scheme 10"));
                 btn_scheme_12->type(102);
                 btn_scheme_12->down_box(FL_ROUND_DOWN_BOX);

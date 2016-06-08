@@ -34,6 +34,7 @@
 
 // Drag the edges that were initially at oldx,oldy to newx,newy:
 // pass -1 as oldx or oldy to disable drag in that direction:
+//#define DEVEL_DEBUG 1
 
 int Panel::orgx()
 {
