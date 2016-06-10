@@ -40,19 +40,18 @@
 #include <map>
 #include <exception>
 #include <cstdlib>
-
 #include <signal.h>
 
-#include <xmlrpcpp/XmlRpcServer.h>
-#include <xmlrpcpp/XmlRpcServerMethod.h>
-#include <xmlrpcpp/XmlRpcValue.h>
+#include "threads.h"
+
+class XmlRpcImpl;
 
 #include "globals.h"
 #include "configuration.h"
 #ifdef HAVE_VALUES_H
 #	include <values.h>
 #endif
-#include "threads.h"
+
 #include "modem.h"
 #include "trx.h"
 #include "fl_digi.h"
@@ -213,8 +212,8 @@ struct rpc_method
 typedef list<rpc_method> methods_t;
 static methods_t* methods = 0;
 
-static pthread_t* server_thread;
-static pthread_mutex_t* server_mutex;
+pthread_t* server_thread;
+pthread_mutex_t* server_mutex;
 
 XML_RPC_Server* XML_RPC_Server::inst = 0;
 

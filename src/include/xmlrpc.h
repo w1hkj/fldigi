@@ -24,6 +24,12 @@
 #include <iosfwd>
 #include <string>
 
+#include <xmlrpcpp/XmlRpcServer.h>
+#include <xmlrpcpp/XmlRpcServerMethod.h>
+#include <xmlrpcpp/XmlRpcValue.h>
+
+#include "threads.h"
+
 class XmlRpcImpl;
 
 class XML_RPC_Server
@@ -54,5 +60,6 @@ extern int number_of_samples(std::string s);
 
 extern bool flmsg_online;
 extern std::string flmsg_data;
+extern pthread_mutex_t* server_mutex;
 
 #endif // XMLRPC_H

@@ -63,7 +63,7 @@ Save tags and all enclosed text to date-time stamped file, ie:\n\
     ~/.nbems/WRAP/recv/extract-20090127-092515.wrap");
 #endif
 
-#define   bufsize  32
+#define   bufsize  64
 char  rx_extract_buff[bufsize + 1];
 string rx_buff;
 string rx_extract_msg;
@@ -129,7 +129,8 @@ void invoke_flmsg()
 	put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
 
 	if (flmsg_online && progdefaults.flmsg_transfer_direct) {
-		flmsg_data = rx_buff;
+		guard_lock autolock(server_mutex);
+		flmsg_data.append(rx_buff);
 		return;
 	}
 
@@ -280,6 +281,36 @@ void invoke_flmsg()
 	}
 }
 
+void start_flmsg()
+{
+	string cmd = progdefaults.flmsg_pathname;
+
+#ifdef __MINGW32__
+	char *cmdstr = strdup(cmd.c_str());
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	memset(&si, 0, sizeof(si));
+	si.cb = sizeof(si);
+	memset(&pi, 0, sizeof(pi));
+	if (!CreateProcess( NULL, cmdstr,
+		NULL, NULL, FALSE,
+		CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+		LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+	free (cmdstr);
+#else
+	switch (fork()) {
+	case 0:
+		execlp((char*)cmd.c_str(), (char*)cmd.c_str(), (char*)0, (char*)0);
+		exit(EXIT_FAILURE);
+	case -1:
+		fl_alert2(_("Could not start flmsg"));
+	default: ;
+	}
+#endif
+}
+
 void rx_extract_add(int c)
 {
 	if (!c) return;
@@ -294,6 +325,11 @@ void rx_extract_add(int c)
 	memmove(rx_extract_buff, &rx_extract_buff[1], bufsize - 1);
 	rx_extract_buff[bufsize - 1] = ch;
 
+	if (strstr(rx_extract_buff, "~1") && strstr(rx_extract_buff, "~4")) {
+		if (!flmsg_online) start_flmsg();
+		memset(rx_extract_buff, ' ', bufsize);
+		return;
+	}
 	if (!extract_arq && strstr(rx_extract_buff, "ARQ:FILE::FLMSG_XFR")) {
 		extract_arq = true;
 		REQ(rx_remove_timer);

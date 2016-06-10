@@ -2190,7 +2190,7 @@ void cb_view_hide_channels(Fl_Menu_ *w, void *d)
 {
 	int mvgw = mvgroup->w();
 
-	progStatus.show_channels = !(mvgw > 0);
+	progStatus.show_channels = !(mvgw > mvgroup->x());
 
 	if (!progStatus.show_channels) {
 		save_mvx = mvgw;
