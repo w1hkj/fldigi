@@ -1,13 +1,38 @@
 
 
+=Version 3.23.11=
+
+2016-06-10  David Freese  <iam_w1hkj@w1hkj.com>
+
+	b657227: flmsg-arq autostart
+	c6ac0f1: Resize bug
+	3c7392e: Hell Raster Display
+	4841f10: Exit processing
+
+2016-05-29  Roman Bagiñski  <sp4jeu@gmail.com>
+
+	274d500: Polish translation update
+
+2016-05-28  David Freese  <iam_w1hkj@w1hkj.com>
+
+	9c959af: xmlrpc add tx text
+	01245fe: Native Select Save-As dialogs
+
+2016-05-26  Robert Stiles  <kk5vd@yahoo.com>
+
+	5209286: FLDIGI User Manual Update
+	4b2005e: KISS IO Bug fixes/Additions and C++11 Test
+
+
 =Version 3.23.10=
+
 
 2016-05-23  David Freese  <iam_w1hkj@w1hkj.com>
 
-	33ad2e6: logger
-	c184758: Restore focus
-	af25ef7: RsID button
-	ae93f9c: flmsg keepalive
+	e14bbb6: logger
+	19e7bad: Restore focus
+	0a99bef: RsID button
+	aa6592c: flmsg interface
 	5b367fb: 4bars
 	b4b8df4: ASCII ctl chars
 	759e6cf: Suppress dockable macros
