@@ -1995,6 +1995,10 @@ rxidcolor->color(progdefaults.RxIDColor);
 rxidcolor->redraw();
 rxid_selection_color();
 progdefaults.changed = true;
+
+Fl_Color clr = progdefaults.rsidWideSearch ? progdefaults.RxIDwideColor : progdefaults.RxIDColor;
+btnRSID->selection_color(clr);
+btnRSID->redraw();
 }
 
 Fl_Button *btnLkColor=(Fl_Button *)0;
@@ -2035,6 +2039,10 @@ rxidcolorwide->color(progdefaults.RxIDwideColor);
 rxidcolorwide->redraw();
 rxid_selection_color();
 progdefaults.changed = true;
+
+Fl_Color clr = progdefaults.rsidWideSearch ? progdefaults.RxIDwideColor : progdefaults.RxIDColor;
+btnRSID->selection_color(clr);
+btnRSID->redraw();
 }
 
 Fl_Button *btnAfcColor=(Fl_Button *)0;
@@ -2065,6 +2073,9 @@ txidcolor->color(progdefaults.TxIDColor);
 txidcolor->redraw();
 txid_selection_color();
 progdefaults.changed = true;
+
+btnTxRSID->selection_color(progdefaults.TxIDColor);
+btnTxRSID->redraw();
 }
 
 Fl_Box *spotcolor=(Fl_Box *)0;
@@ -6019,7 +6030,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6156,11 +6166,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6783,6 +6793,7 @@ ab and newline are automatically included."));
           } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 335, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
+            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 248, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -7000,7 +7011,6 @@ ab and newline are automatically included."));
             tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 330);
               { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Rx/Tx"));
-                o->hide();
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 90, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
                 listbox_charset_status->box(FL_BORDER_BOX);
@@ -7346,6 +7356,7 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("SigLvl"));
+                o->hide();
                 { btnLowSignal = new Fl_Button(210, 142, 70, 21, _("Low"));
                 btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
                 } // Fl_Button* btnLowSignal
