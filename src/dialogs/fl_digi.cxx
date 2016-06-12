@@ -5796,6 +5796,8 @@ cout << "main_hmin   " << main_hmin << endl;
 
 			btnRSID = new Fl_Light_Button(progStatus.mainW - 200, 0, 50, Hmenu, "RxID");
 			btnRSID->tooltip("Receive RSID");
+			btnRSID->selection_color(
+				progdefaults.rsidWideSearch ? progdefaults.RxIDwideColor : progdefaults.RxIDColor);
 			btnRSID->value(progdefaults.rsid);
 			btnRSID->callback(cbRSID, 0);
 
