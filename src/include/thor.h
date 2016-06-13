@@ -251,7 +251,6 @@ public:
 	void			send_image();
 	void			send_avatar();
 	void			thor_send_avatar();
-	void			thor_send_image();
 	void			thor_send_image(std::string s = "");
 
 };
