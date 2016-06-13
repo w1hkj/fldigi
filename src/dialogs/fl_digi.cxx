@@ -7106,7 +7106,7 @@ cout << "main_hmin   " << main_hmin << endl;
 		macroFrame1->end();
 		Y += Hmacros;
 
-		wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall + 2);
+		wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
 			wfpack->type(1);
 
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
@@ -7133,7 +7133,7 @@ cout << "main_hmin   " << main_hmin << endl;
 				Fl_Group::current()->resizable(wf);
 		wfpack->end();
 
-		Y += (Hwfall + 2);
+		Y += Hwfall;
 
 		hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
 			hpack->type(1);
