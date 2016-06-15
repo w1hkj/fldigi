@@ -341,7 +341,7 @@ bool fsq::fsq_squelch_open()
 	return ch_sqlch_open || metric >= progStatus.sldrSquelchValue;
 }
 
-static string triggers = " !#$%&'()*+,-.;<=>?@[\\]^_`{|}~";
+static string triggers = " !#$%&'()*+,-.;<=>?@[\\]^_{|}~";
 static string allcall = "allcall";
 static string cqcqcq = "cqcqcq";
 
@@ -392,10 +392,12 @@ void fsq::parse_rx_text()
 
 	state = TEXT;
 	size_t p = rx_text.find(':');
+	if (p == 0) {
+		rx_text.erase(0,1);
+		return;
+	}
 	if (p == std::string::npos ||
-		p == 0 ||
 		rx_text.length() < p + 2) {
-		rx_text.clear();
 		return;
 	}
 
@@ -404,10 +406,11 @@ void fsq::parse_rx_text()
 	station_calling.clear();
 
 	int max = p+1;
+	if (max > 20) max = 20;
 	std::string substr;
-	for (int i = 1; (i < 10) && (i < max); i++) {
+	for (int i = 1; i < max; i++) {
 		if (rx_text[p-i] <= ' ' || rx_text[p-i] > 'z') {
-			rx_text.clear();
+			rx_text.erase(0, p+1);
 			return;
 		}
 		substr = rx_text.substr(p-i, i);
@@ -419,10 +422,10 @@ void fsq::parse_rx_text()
 
 	if (station_calling == mycall) { // do not display any of own rx stream
 		LOG_ERROR("Station calling is mycall: %s", station_calling.c_str());
-		rx_text.clear();
+		rx_text.erase(0, p+3);
+//		rx_text.clear();
 		return;
 	}
-
 	if (!station_calling.empty()) {
 		REQ(add_to_heard_list, station_calling, szestimate);
 		std::string sheard = ztbuf;
@@ -933,7 +936,8 @@ void fsq::lf_check(int ch)
 	static char lfpair[3] = "01";
 	static char bstrng[4] = "012";
 
-	lfpair[0] = lfpair[1];  lfpair[1] = 0xFF & ch;
+	lfpair[0] = lfpair[1];
+	lfpair[1] = 0xFF & ch;
 
 	bstrng[0] = bstrng[1];
 	bstrng[1] = bstrng[2];
@@ -991,6 +995,7 @@ void fsq::process_symbol(int sym)
 				double val = snfilt->value();
 				for (int i = 0; i < SQLFILT_SIZE; i++) snfilt->run(val);
 				ch_sqlch_open = true;
+				rx_text.clear();
 			}
 
 			if (fsq_squelch_open()) {

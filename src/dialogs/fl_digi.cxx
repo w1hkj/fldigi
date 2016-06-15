@@ -6826,13 +6826,16 @@ cout << "main_hmin   " << main_hmin << endl;
 							fsq_left->w(), Y, 180, fsq_left->h());
 					fsq_right->box(FL_FLAT_BOX);
 
+				int bh = 20;
+				int qh = bh + bh + 1 + 8 + image_s2n.h();
+
 				static int heard_widths[] =
 						{ 40*fsq_right->w()/100,
 						  30*fsq_right->w()/100,
 						  0 };
 					fsq_heard = new Fl_Browser(
 							fsq_right->x(), fsq_right->y(),
-							fsq_right->w(), fsq_right->h() - minhtext);
+							fsq_right->w(), fsq_right->h() - qh);//minhtext);
 					fsq_heard->column_widths(heard_widths);
 					fsq_heard->column_char(',');
 					fsq_heard->tooltip(_("Select FSQ station"));
@@ -6851,13 +6854,14 @@ cout << "main_hmin   " << main_hmin << endl;
 #endif
 
 					int qw = fsq_right->w();
-					int gh = fsq_right->h() - fsq_heard->h();
+//					int gh = fsq_right->h() - fsq_heard->h();
+
 					int bw2 = qw / 2;
 					int bw4 = qw / 4;
-					int bh = 20;
+
 					fsq_lower_right = new Fl_Group(
 							fsq_right->x(), fsq_heard->y() + fsq_heard->h(),
-							qw, gh);
+							qw, qh);
 					fsq_lower_right->box(FL_FLAT_BOX);
 					fsq_lower_right->color(FL_WHITE);
 
@@ -9666,6 +9670,10 @@ void age_heard_list()
 
 void add_to_heard_list(string szcall, string szdb)
 {
+	int found = 0;
+	size_t pos_comma;
+	std::string testcall;
+	std::string line;
 	std::string time = inpTimeOff->value();
 
 	std::string str = szcall;
@@ -9677,13 +9685,15 @@ void add_to_heard_list(string szcall, string szdb)
 		if (fsq_heard->size() < 2) {
 			fsq_heard->add(str.c_str());
 		} else {
-			int found = 0;
-			std::string line;
 			for (int i = 2; i <= fsq_heard->size(); i++) {
 				line = fsq_heard->text(i);
-				if (line.find(szcall) == 0) {
-					found = i;
-					break;
+				pos_comma = line.find(",");
+				if (pos_comma != std::string::npos) {
+					testcall = line.substr(0, pos_comma);
+					if (testcall == szcall) {
+						found = i;
+						break;
+					}
 				}
 			}
 			if (found)
@@ -9695,13 +9705,15 @@ void add_to_heard_list(string szcall, string szdb)
 		if (ifkp_heard->size() == 0) {
 			ifkp_heard->add(str.c_str());
 		} else {
-			int found = 0;
-			std::string line;
 			for (int i = 1; i <= ifkp_heard->size(); i++) {
 				line = ifkp_heard->text(i);
-				if (line.find(szcall) == 0) {
-					found = i;
-					break;
+				pos_comma = line.find(",");
+				if (pos_comma != std::string::npos) {
+					testcall = line.substr(0, pos_comma);
+					if (testcall == szcall) {
+						found = i;
+						break;
+					}
 				}
 			}
 			if (found)
