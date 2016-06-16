@@ -698,13 +698,13 @@ void fsq::parse_pound(std::string relay)
 
 	std::ofstream rxfile;
 	fname.insert(0, TempDir);
-	if (call_file) {
+	if (progdefaults.always_append) {
 		rxfile.open(fname.c_str(), ios::app);
 	} else {
 		rxfile.open(fname.c_str(), ios::out);
 	}
 	if (!rxfile) return;
-	if (call_file && progdefaults.add_fsq_msg_dt) {
+	if (progdefaults.add_fsq_msg_dt) {
 		rxfile << "Received: " << zdate() << ", " << ztime() << "\n";
 		rxfile << rx_text.substr(p2+1) << "\n";
 	} else

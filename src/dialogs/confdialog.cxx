@@ -3010,6 +3010,13 @@ static void cb_btn_fsq_msg_dt_stamp(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Check_Button *btn_fsq_msg_append=(Fl_Check_Button *)0;
+
+static void cb_btn_fsq_msg_append(Fl_Check_Button* o, void*) {
+  progdefaults.always_append=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Output *txtAuditLog=(Fl_Output *)0;
 
 Fl_Light_Button *btn_enable_auditlog=(Fl_Light_Button *)0;
@@ -8621,7 +8628,7 @@ i on a\ntouch screen device such as a tablet."));
           } // Fl_Group* tabFeld
           { tabFSQ = new Fl_Group(0, 50, 600, 335, _("FSQ"));
             tabFSQ->hide();
-            { Fl_Group* o = new Fl_Group(5, 60, 585, 69, _("Rx Parameters"));
+            { Fl_Group* o = new Fl_Group(5, 60, 585, 65, _("Rx Parameters"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Value_Slider* o = valhits = new Fl_Value_Slider(140, 65, 125, 22, _("Min Hits"));
@@ -8664,25 +8671,25 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Choice* sel_fsq_heard_aging
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 130, 585, 90, _("Tx Parameters"));
+            { Fl_Group* o = new Fl_Group(5, 125, 585, 85, _("Tx Parameters"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Round_Button* o = btn_fsqbaud[0] = new Fl_Round_Button(150, 139, 55, 15, _("2 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[0] = new Fl_Round_Button(150, 135, 55, 15, _("2 baud"));
                 btn_fsqbaud[0]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[0]->callback((Fl_Callback*)cb_btn_fsqbaud);
                 o->value(progdefaults.fsqbaud == 2);
               } // Fl_Round_Button* btn_fsqbaud[0]
-              { Fl_Round_Button* o = btn_fsqbaud[1] = new Fl_Round_Button(258, 139, 55, 15, _("3 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[1] = new Fl_Round_Button(258, 135, 55, 15, _("3 baud"));
                 btn_fsqbaud[1]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[1]->callback((Fl_Callback*)cb_btn_fsqbaud1);
                 o->value(progdefaults.fsqbaud == 3);
               } // Fl_Round_Button* btn_fsqbaud[1]
-              { Fl_Round_Button* o = btn_fsqbaud[2] = new Fl_Round_Button(366, 139, 55, 15, _("4.5 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[2] = new Fl_Round_Button(366, 135, 55, 15, _("4.5 baud"));
                 btn_fsqbaud[2]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[2]->callback((Fl_Callback*)cb_btn_fsqbaud2);
                 o->value(progdefaults.fsqbaud == 4.5);
               } // Fl_Round_Button* btn_fsqbaud[2]
-              { Fl_Round_Button* o = btn_fsqbaud[3] = new Fl_Round_Button(475, 139, 55, 15, _("6 baud"));
+              { Fl_Round_Button* o = btn_fsqbaud[3] = new Fl_Round_Button(475, 135, 55, 15, _("6 baud"));
                 btn_fsqbaud[3]->down_box(FL_ROUND_DOWN_BOX);
                 btn_fsqbaud[3]->callback((Fl_Callback*)cb_btn_fsqbaud3);
                 o->value(progdefaults.fsqbaud == 6);
@@ -8695,20 +8702,20 @@ i on a\ntouch screen device such as a tablet."));
                 o->add("1150"); o->add("1500"); o->add("Variable");
                 o->value(progdefaults.fsq_frequency);
               } // Fl_Choice* sel_fsq_frequency
-              { Fl_Choice* o = sel_fsq_sounder = new Fl_Choice(80, 163, 100, 22, _("Sounder"));
+              { Fl_Choice* o = sel_fsq_sounder = new Fl_Choice(80, 156, 100, 22, _("Sounder"));
                 sel_fsq_sounder->tooltip(_("Send beacon every ..."));
                 sel_fsq_sounder->down_box(FL_BORDER_BOX);
                 sel_fsq_sounder->callback((Fl_Callback*)cb_sel_fsq_sounder);
                 o->add("OFF"); o->add("1 min"); o->add("10 min"); o->add("30 min"); o->add("60 min");
                 o->value(progdefaults.fsq_sounder);
               } // Fl_Choice* sel_fsq_sounder
-              { Fl_Check_Button* o = btn_fsq_lowercase = new Fl_Check_Button(366, 166, 214, 15, _("MYCALL always lower case"));
+              { Fl_Check_Button* o = btn_fsq_lowercase = new Fl_Check_Button(366, 159, 214, 15, _("MYCALL always lower case"));
                 btn_fsq_lowercase->tooltip(_("convert operator callsign to lower case"));
                 btn_fsq_lowercase->down_box(FL_DOWN_BOX);
                 btn_fsq_lowercase->callback((Fl_Callback*)cb_btn_fsq_lowercase);
                 o->value(progdefaults.fsq_lowercase);
               } // Fl_Check_Button* btn_fsq_lowercase
-              { Fl_Counter* o = cntr_FSQ_time_out = new Fl_Counter(254, 163, 80, 22, _("Time out"));
+              { Fl_Counter* o = cntr_FSQ_time_out = new Fl_Counter(254, 156, 80, 22, _("Time out"));
                 cntr_FSQ_time_out->tooltip(_("Time out xmt attempt in XX seconds"));
                 cntr_FSQ_time_out->type(1);
                 cntr_FSQ_time_out->minimum(2);
@@ -8719,74 +8726,81 @@ i on a\ntouch screen device such as a tablet."));
                 cntr_FSQ_time_out->align(Fl_Align(FL_ALIGN_LEFT));
                 o->value(progdefaults.fsq_time_out);
               } // Fl_Counter* cntr_FSQ_time_out
-              { Fl_Input* o = new Fl_Input(80, 189, 456, 22, _("QTC:"));
+              { Fl_Input* o = new Fl_Input(80, 182, 456, 22, _("QTC:"));
                 o->tooltip(_("Enter QTC text"));
                 o->callback((Fl_Callback*)cb_QTC);
                 o->value(progdefaults.fsqQTCtext.c_str());
               } // Fl_Input* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 220, 585, 39, _("Message Logging"));
+            { Fl_Group* o = new Fl_Group(5, 210, 585, 55, _("Message Logging"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_fsq_msg_dt_stamp = new Fl_Check_Button(157, 232, 297, 15, _("Add date/time stamp to each message"));
+              { Fl_Check_Button* o = btn_fsq_msg_dt_stamp = new Fl_Check_Button(35, 237, 297, 15, _("Add date/time stamp to each message"));
                 btn_fsq_msg_dt_stamp->tooltip(_("Add date/time stamp to each # received message"));
                 btn_fsq_msg_dt_stamp->down_box(FL_DOWN_BOX);
                 btn_fsq_msg_dt_stamp->value(1);
                 btn_fsq_msg_dt_stamp->callback((Fl_Callback*)cb_btn_fsq_msg_dt_stamp);
                 o->value(progdefaults.add_fsq_msg_dt);
               } // Fl_Check_Button* btn_fsq_msg_dt_stamp
+              { Fl_Check_Button* o = btn_fsq_msg_append = new Fl_Check_Button(359, 237, 210, 15, _("always append to file(s)"));
+                btn_fsq_msg_append->tooltip(_("append # directive msgs to named file"));
+                btn_fsq_msg_append->down_box(FL_DOWN_BOX);
+                btn_fsq_msg_append->value(1);
+                btn_fsq_msg_append->callback((Fl_Callback*)cb_btn_fsq_msg_append);
+                o->value(progdefaults.always_append);
+              } // Fl_Check_Button* btn_fsq_msg_append
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 260, 585, 80, _("Logging"));
+            { Fl_Group* o = new Fl_Group(5, 265, 585, 80, _("Logging"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Output* o = txtAuditLog = new Fl_Output(82, 280, 325, 22, _("Audit log"));
+              { Fl_Output* o = txtAuditLog = new Fl_Output(82, 285, 325, 22, _("Audit log"));
                 o->value(progdefaults.fsq_audit_log.c_str());
               } // Fl_Output* txtAuditLog
-              { Fl_Light_Button* o = btn_enable_auditlog = new Fl_Light_Button(421, 281, 74, 20, _("Enable"));
+              { Fl_Light_Button* o = btn_enable_auditlog = new Fl_Light_Button(421, 286, 74, 20, _("Enable"));
                 btn_enable_auditlog->selection_color((Fl_Color)2);
                 btn_enable_auditlog->callback((Fl_Callback*)cb_btn_enable_auditlog);
                 o->value(progdefaults.fsq_enable_audit_log);
               } // Fl_Light_Button* btn_enable_auditlog
-              { btn_select_auditlog = new Fl_Button(509, 281, 70, 20, _("Select"));
+              { btn_select_auditlog = new Fl_Button(509, 286, 70, 20, _("Select"));
                 btn_select_auditlog->callback((Fl_Callback*)cb_btn_select_auditlog);
               } // Fl_Button* btn_select_auditlog
-              { Fl_Output* o = txtHeardLog = new Fl_Output(82, 308, 325, 22, _("Heard log"));
+              { Fl_Output* o = txtHeardLog = new Fl_Output(82, 313, 325, 22, _("Heard log"));
                 o->value(progdefaults.fsq_heard_log.c_str());
               } // Fl_Output* txtHeardLog
-              { Fl_Light_Button* o = btn_enable_fsq_heard_log = new Fl_Light_Button(421, 309, 74, 20, _("Enable"));
+              { Fl_Light_Button* o = btn_enable_fsq_heard_log = new Fl_Light_Button(421, 314, 74, 20, _("Enable"));
                 btn_enable_fsq_heard_log->selection_color((Fl_Color)2);
                 btn_enable_fsq_heard_log->callback((Fl_Callback*)cb_btn_enable_fsq_heard_log);
                 o->value(progdefaults.fsq_enable_heard_log);
               } // Fl_Light_Button* btn_enable_fsq_heard_log
-              { btn_select_fsq_heard_log = new Fl_Button(509, 309, 70, 20, _("Select"));
+              { btn_select_fsq_heard_log = new Fl_Button(509, 314, 70, 20, _("Select"));
                 btn_select_fsq_heard_log->callback((Fl_Callback*)cb_btn_select_fsq_heard_log);
               } // Fl_Button* btn_select_fsq_heard_log
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 340, 585, 35, _("Text Colors"));
+            { Fl_Group* o = new Fl_Group(5, 345, 585, 35, _("Text Colors"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { btn_fsq_xmt_color = new Fl_Button(145, 346, 40, 24, _("XMIT"));
+              { btn_fsq_xmt_color = new Fl_Button(145, 352, 40, 20, _("XMIT"));
                 btn_fsq_xmt_color->tooltip(_("Transmit text"));
                 btn_fsq_xmt_color->callback((Fl_Callback*)cb_btn_fsq_xmt_color);
                 btn_fsq_xmt_color->align(Fl_Align(FL_ALIGN_LEFT));
                 btn_fsq_xmt_color->color(progdefaults.fsq_xmt_color);
               } // Fl_Button* btn_fsq_xmt_color
-              { btn_fsq_directed_color = new Fl_Button(275, 346, 40, 24, _("DIRECTED"));
+              { btn_fsq_directed_color = new Fl_Button(275, 352, 40, 20, _("DIRECTED"));
                 btn_fsq_directed_color->tooltip(_("Directed received text"));
                 btn_fsq_directed_color->callback((Fl_Callback*)cb_btn_fsq_directed_color);
                 btn_fsq_directed_color->align(Fl_Align(FL_ALIGN_LEFT));
                 btn_fsq_directed_color->color(progdefaults.fsq_directed_color);
               } // Fl_Button* btn_fsq_directed_color
-              { btn_fsq_undirected_color = new Fl_Button(425, 346, 40, 24, _("UNDIRECTED"));
+              { btn_fsq_undirected_color = new Fl_Button(425, 352, 40, 20, _("UNDIRECTED"));
                 btn_fsq_undirected_color->tooltip(_("Undirected received text"));
                 btn_fsq_undirected_color->callback((Fl_Callback*)cb_btn_fsq_undirected_color);
                 btn_fsq_undirected_color->align(Fl_Align(FL_ALIGN_LEFT));
                 btn_fsq_undirected_color->color(progdefaults.fsq_undirected_color);
               } // Fl_Button* btn_fsq_undirected_color
-              { btn_fsq_color_defaults = new Fl_Button(507, 346, 74, 24, _("Defaults"));
+              { btn_fsq_color_defaults = new Fl_Button(507, 352, 74, 20, _("Defaults"));
                 btn_fsq_color_defaults->callback((Fl_Callback*)cb_btn_fsq_color_defaults);
               } // Fl_Button* btn_fsq_color_defaults
               o->end();
