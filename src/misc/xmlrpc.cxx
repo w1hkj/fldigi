@@ -1735,11 +1735,10 @@ int xmltest_char()
 		xmltest_char_available = false;
 		return -3;
 	}
-	pxmlchar++;
 	snprintf(xml_status_msg, sizeof(xml_status_msg), "%d%% sent",
 		100*pxmlchar/xmlchars.length());
 	put_status(xml_status_msg, 1.0);
-	return xmlchars[pxmlchar] & 0xFF;
+	return xmlchars[pxmlchar++] & 0xFF;
 }
 
 void reset_xmlchars()
@@ -2951,6 +2950,25 @@ public:
 	}
 };
 
+class Text_add_tx_queu : public xmlrpc_c::method
+{
+public:
+	Text_add_tx_queu()
+	{
+		_signature = "n:s";
+		_help = "Adds a string to the TX transmit queu.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		xmlchars = params.getString(0);
+		xmltest_char_available = true;
+		pxmlchar = 0;
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+
 class Text_add_tx : public xmlrpc_c::method
 {
 public:
@@ -2962,10 +2980,7 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-//		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
-		xmlchars = params.getString(0);
-		xmltest_char_available = true;
-		pxmlchar = 0;
+		REQ_SYNC(&FTextTX::add_text, TransmitText, params.getString(0));
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -3576,6 +3591,7 @@ ELEM_(Text_get_rx_length, "text.get_rx_length")                        \
 ELEM_(Text_get_rx, "text.get_rx")                                      \
 ELEM_(Text_clear_rx, "text.clear_rx")                                  \
 ELEM_(Text_add_tx, "text.add_tx")                                      \
+ELEM_(Text_add_tx_queu, "text.add_tx_queu")                            \
 ELEM_(Text_add_tx_bytes, "text.add_tx_bytes")                          \
 ELEM_(Text_clear_tx, "text.clear_tx")                                  \
 \
