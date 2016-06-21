@@ -65,7 +65,9 @@ struct TRACEPAIR {
 
 TRACEPAIR tracepair(45, 352);
 
-bool xmt_filter = true;
+// enable to limit within band signal sidebands
+// not really needed
+static bool xmt_filter = false;
 
 //=============================================================================
 char mfskmsg[80];
@@ -79,11 +81,14 @@ void  mfsk::tx_init(SoundBase *sc)
 	txstate = TX_STATE_PREAMBLE;
 	bitstate = 0;
 
-	double bw2 = (numtones + 1) * samplerate / symlen / 2.0;
-	double flo = (get_txfreq_woffset() - bw2) / samplerate;
-	if (flo <= 0) flo = 0;
-	double fhi = (get_txfreq_woffset() + bw2) / samplerate;
-	xmtfilt->init_bandpass (127, 1, flo, fhi);
+	double factor = 1.5;
+	double bw2 = factor*(numtones + 1) * samplerate / symlen / 2.0;
+	double flo = (get_txfreq_woffset() - bw2);// / samplerate;
+	if (flo <= 100) flo = 100;
+	double fhi = (get_txfreq_woffset() + bw2);// / samplerate;
+	if (fhi >= samplerate/2 - 100) fhi = samplerate/2 - 100;
+
+	xmtfilt->init_bandpass (255, 1, flo/samplerate, fhi/samplerate);
 
 	videoText();
 }
@@ -1041,9 +1046,29 @@ void mfsk::clearbits()
 	}
 }
 
-
 int mfsk::tx_process()
 {
+	// filter test set to 1
+#if 0
+	double *ptr;
+	double f;
+	char msg[100];
+	for (int i = 100; i < 3900; i++) {
+		ptr = outbuf;
+		f = 1.0 * i;
+		snprintf(msg, sizeof(msg), "freq: %.0f", f);
+		put_status(msg);
+		for (int j = 0; j < 32; j++) {
+			*ptr++ = cos(phaseacc);
+			phaseacc += TWOPI * f / samplerate;
+			if (phaseacc > TWOPI) phaseacc -= TWOPI;
+		}
+		transmit (outbuf, 32);
+
+	}
+	return -1;
+#endif
+
 	int xmtbyte;
 
 	switch (txstate) {
