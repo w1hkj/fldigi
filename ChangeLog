@@ -1,9 +1,21 @@
 
 
+=Version 3.23.12=
+
+2016-06-21  David Freese  <iam_w1hkj@w1hkj.com>
+
+	fa831b2: xmlrpc add_tx
+	177a8f1: mfsk xmt filter
+	2b57556: FSQ msg append
+	de187d9: FSQ IFKP heard lists
+	76cf0e6: waterfall group
+	5f762f0: thor image
+	8cd6f83: RxID button
+
+
 =Version 3.23.11=
 
-2016-06-10  David Freese  <iam_w1hkj@w1hkj.com>
-
+	198f645: RxID color changes
 	b657227: flmsg-arq autostart
 	c6ac0f1: Resize bug
 	3c7392e: Hell Raster Display
