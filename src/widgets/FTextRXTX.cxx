@@ -1399,8 +1399,10 @@ void FTextTX::menu_cb(size_t item)
 		set_word_wrap(!wrap, true);
 		break;
 	default:
-		if (FTextTX::menu[item].flags == 0) // not an FL_SUB_MENU
-			add(FTextTX::menu[item].text[0]); add(FTextTX::menu[item].text[1]);
+		if (FTextTX::menu[item].flags == 0) { // not an FL_SUB_MENU
+			add(FTextTX::menu[item].text[0]);
+			add(FTextTX::menu[item].text[1]);
+		}
 	}
 }
 
