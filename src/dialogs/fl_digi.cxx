@@ -8467,12 +8467,12 @@ void put_WARNstatus(double val)
 	FL_LOCK_D();
 	if (val < 0.05)
 		WARNstatus->color(progdefaults.LowSignal);
-    if (val >= 0.05)
-        WARNstatus->color(progdefaults.NormSignal);
-    if (val >= 0.9)
-        WARNstatus->color(progdefaults.HighSignal);
-    if (val >= 0.98)
-        WARNstatus->color(progdefaults.OverSignal);
+	if (val >= 0.05)
+		WARNstatus->color(progdefaults.NormSignal);
+	if (val >= 0.9)
+		WARNstatus->color(progdefaults.HighSignal);
+	if (val >= 0.98)
+		WARNstatus->color(progdefaults.OverSignal);
 	WARNstatus->redraw();
 	FL_UNLOCK_D();
 }

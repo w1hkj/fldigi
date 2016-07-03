@@ -470,7 +470,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 	if (progdefaults.PTTrightchannel) {
 		for (int i = 0; i < len; i++)
 			PTTchannel[i] = PTTnco();
-			ModulateStereo( buffer, PTTchannel, len, false);
+		ModulateStereo( buffer, PTTchannel, len, false);
 		return;
 	}
 
@@ -594,7 +594,7 @@ void modem::ModulateVideo(double *buffer, int len)
 	if (progdefaults.PTTrightchannel) {
 		for (int i = 0; i < len; i++)
 			PTTchannel[i] = PTTnco();
-			ModulateVideoStereo( buffer, PTTchannel, len, false);
+		ModulateVideoStereo( buffer, PTTchannel, len, false);
 		return;
 	}
 

@@ -271,8 +271,8 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-10s", pRec->getField(QSLSDATE));
 				if (btnSelectNotes->value()) {
 					string temp = pRec->getField(NOTES);
-				for (size_t n = 0; n < temp.length(); n++)
-					if (temp[n] == '\n') temp[n] = ';';
+					for (size_t n = 0; n < temp.length(); n++)
+						if (temp[n] == '\n') temp[n] = ';';
 					fprintf (txtFile, "%-80s", temp.c_str());
 				}
 				if (btnSelectSerialIN->value())
