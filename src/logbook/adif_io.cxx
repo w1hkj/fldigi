@@ -396,12 +396,13 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 				if (strcmp(fields[j].name,"XCHG1") == 0) { j++; continue; }
 				if (fields[j].btn != NULL)
 					if ((*fields[j].btn)->value()) {
-					sFld = rec->getField(fields[j].type);
-						if (!sFld.empty())
+						sFld = rec->getField(fields[j].type);
+						if (!sFld.empty()) {
 							fprintf(adiFile, adifmt,
 								fields[j].name,//->c_str(),
 								sFld.length());
 							fprintf(adiFile, "%s", sFld.c_str());
+						}
 				}
 				j++;
 			}
