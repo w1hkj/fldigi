@@ -678,14 +678,12 @@ void fsq::parse_pound(std::string relay)
 {
 	size_t p1 = NIT, p2 = NIT;
 	std::string fname = "";
-	bool call_file = true;
 	p1 = rx_text.find('[');
 	if (p1 != NIT) {
 		p2 = rx_text.find(']', p1);
 		if (p2 != NIT) {
 			fname = rx_text.substr(p1 + 1, p2 - p1 - 1);
 			fname = fl_filename_name(fname.c_str());
-			call_file = false;
 		} else p2 = 0;
 	} else p2 = 0;
 	if (fname.empty()) {
