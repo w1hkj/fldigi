@@ -712,8 +712,10 @@ void status::loadLastState()
 		spref.get("kiss_dual_port_enabled", i, kiss_dual_port_enabled); kiss_dual_port_enabled     = i;
 	}
 
-	if(!override_data_io_enabled)
-		spref.get("data_io_enabled", i, data_io_enabled); data_io_enabled = i;
+	if(!override_data_io_enabled) {
+		spref.get("data_io_enabled", i, data_io_enabled);
+		data_io_enabled = i;
+	}
 
 	spref.get("ax25_decode_enabled",    i, ax25_decode_enabled);    ax25_decode_enabled = i;
 	spref.get("enableBusyChannel",      i, enableBusyChannel);      enableBusyChannel   = i;
