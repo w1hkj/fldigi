@@ -110,7 +110,8 @@ template <class type> int dspAllocArray2D(type ***Array, int Size1, int Size2)
     if((*Array)[i]==NULL) goto Error; }
   return 0;
 Error:
-  for(i=0; i<Size1; i++) free((*Array)[i]); free(*Array); return 1;
+  for(i=0; i<Size1; i++) free((*Array)[i]);
+  free(*Array); return 1;
 }
 
 template <class type> void dspFreeArray2D(type **Array, int Size1)

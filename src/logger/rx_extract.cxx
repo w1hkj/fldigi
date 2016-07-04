@@ -385,13 +385,14 @@ void select_flmsg_pathname()
 	return;
 #else
 	string deffilename = progdefaults.flmsg_pathname;
-	if (deffilename.empty())
 #  ifdef __MINGW32__
+	if (deffilename.empty())
 		deffilename = "C:\\Program Files\\";
-		const char *p = FSEL::select(_("Locate flmsg executable"), _("flmsg.exe\t*.exe"), deffilename.c_str());
+	const char *p = FSEL::select(_("Locate flmsg executable"), _("flmsg.exe\t*.exe"), deffilename.c_str());
 #  else
+	if (deffilename.empty())
 		deffilename = "/usr/local/bin/";
-		const char *p = FSEL::select(_("Locate flmsg executable"), _("flmsg\t*"), deffilename.c_str());
+	const char *p = FSEL::select(_("Locate flmsg executable"), _("flmsg\t*"), deffilename.c_str());
 # endif
 	if (!p) return;
 	if (!*p) return;

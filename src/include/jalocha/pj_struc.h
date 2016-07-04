@@ -81,7 +81,8 @@ template <class type> int AllocArray2D(type ***Array, size_t Rows, size_t Cols)
     if((*Array)[i]==0) goto Error; }
   return 0;
 Error:
-  for(i=0; i<Rows; i++) free((*Array)[i]); free(*Array); (*Array)=0; return -1;
+  for(i=0; i<Rows; i++) free((*Array)[i]);
+  free(*Array); (*Array)=0; return -1;
 }
 /*
 template <class type> int AddRowsToArray2D(type ***Array, size_t Rows, size_t Cols,

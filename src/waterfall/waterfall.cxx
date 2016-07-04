@@ -1410,8 +1410,8 @@ void btnMem_cb(Fl_Widget *, void *menu_event)
 					do {
 						if (i % 3 == 0 && i)
 							*--p = '.';
-							*--p = '0' + m.rfcarrier % 10;
-							++i;
+						*--p = '0' + m.rfcarrier % 10;
+						++i;
 					} while ((m.rfcarrier /= 10) && p > s);
 
 					o << p << (wf->USB() ? " + " : " - ");

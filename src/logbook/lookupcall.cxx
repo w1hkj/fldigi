@@ -730,7 +730,7 @@ void parse_html(const string& htmlpage)
 		p++;
 		while ((uchar)htmlpage[p] < 128 && p < htmlpage.length() )
 			lookup_fname += htmlpage[p++];
-			camel_case(lookup_fname);
+		camel_case(lookup_fname);
 	}
 	if ((p = htmlpage.find(HAMCALL_CITY)) != string::npos) {
 		p++;
