@@ -538,13 +538,14 @@ void fsq::parse_rx_text()
 		}
 	}
 
-// if allcall; only respond to the ' ', '*', '#', and '%' triggers
+// if allcall; only respond to the ' ', '*', '#', '%', and '[' triggers
 	else {
 		switch (tr) {
 			case ' ': parse_space(true);   break;
 			case '*': parse_star();    break;
 			case '#': parse_pound();   break;
 			case '%': parse_pcnt();    break;
+			case '[': parse_relayed(); break;
 		}
 	}
 
