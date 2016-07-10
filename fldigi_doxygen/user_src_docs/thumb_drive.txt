@@ -1,5 +1,6 @@
 /**
 \page  installing_on_thumb_drive_page Installing fldigi on a thumb drive
+\tableofcontents
 
 Installing fldigi (and any of the other NBEMS flxxxx applications) on a thumb
 drive is very simple.  Create a folder on the thumb drive named FL_APPS.  Then
@@ -33,6 +34,8 @@ drive was system device "H:"
 	<li>etc ...</li>
 </ul>
 
+\section moving_thumb_drive Moving thumb drive between computers
+
 If this removable drive installation is to be used on several computers or you
 expect that the hardware configuration might change then you should follow these
 steps each and every time that you exit the program.  This will insure that
@@ -51,7 +54,34 @@ remove all configuration items which are hardware specific.  Reconfiguring the
 sound card and transceiver control only takes a few steps the next time fldigi is
 executed.
 
+\section uncooperative_OS Extended Character Set Install
+
+This installation technique works equally well on the C:\\ drive, and it should be
+used when the operating system uses an extended character set for folder names and
+user login names such as Björn.  fldigi will try to convert that user name to a UTF-8
+character sequence which the OS (typically Microsoft) will not be able to use to
+create the fldigi.files folder, etc.
+
+Create the folder c:\\FL_APPS
 <br>
+Copy fldigi, flarq, flrig, flmsg, etc executables to the newly created folder and then
+either
+<ul>
+<li>delete the original desktop icon for the flxxx application, and create a new one for the copied file(s), or</li>
+<li>modify the properties dialog of the original desktop icon so that the "Target:" entry points to the newly copied file(s)</li>
+</ul>
+
+The fldigi.files, NBEMS.files, flrig.files, etc. folders will be created 
+as sub-folders in the c:\FL_APPS folder the first time that the respective 
+application is executed.
+<br>
+Configure each application.  If you already have logs, macro files, etc. 
+copy these to the respective places in the c:\FL_APPS tree.
+<br>
+When you upgrade fldigi you will only need to copy the new executable to 
+that c:\\FL_APPS folder, perhaps renaming the existing file as fldigi.exe.bak 
+so that it can be recovered if necessary.
+
 \ref main_page "Return to Main Page"
 
 */

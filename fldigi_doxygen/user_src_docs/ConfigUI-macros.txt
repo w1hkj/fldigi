@@ -56,17 +56,16 @@ All 48 macro buttons can be displayed in a matrix.
 \image latex macro-matrix.png "Macro Buttons Matrix" width=6.0in
 <br>
 
-The matrix display is toggled on and off using the menu item
+The matrix display is toggled on and off using the menu item.  All 48
+macros are available for selection and for editing.  The position of the
+48 macro matrix is fixed to be above the Rx/Tx panel.  The normal
+1/2 macro bar display is hidden when the 48 macro button matrix is displayed.
+fldigi will remember the toggle selection between program executions.
+
 <center>
 \image html view-hide-48.png ""
 \image latex view-hide-48.png "" width=1.0in
 </center>
-<br>
-
-The matrix display can be dragged off and restored to it's position below
-the main menu.  The drag button is the knurled vertical button on the left
-edge of the matrix.  Left click on the drag button and drag the matrix with
-the mouse.
 <br>
 
 Fldigi manages multiple files that contain macro definitions. You may
