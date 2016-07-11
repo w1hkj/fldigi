@@ -44,7 +44,7 @@ Raster::Raster (int X, int Y, int W, int H) :
 	Fl_Widget (X, Y, W, H) {
 	width = W - 4;
 	height = H - 4;
-	space = 1;
+	space = 0;//1;
 	rowheight = 2 * FELD_RX_COLUMN_LEN + space;
 
 	Nrows = 0;

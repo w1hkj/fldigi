@@ -758,6 +758,7 @@ void thor_clear_avatar()
 // W always 59, H always 74
 int thor_load_avatar(std::string image_fname, int W, int H)
 {
+	W = 59; H = 74;
 	if (image_fname.empty()) {
 		thor_clear_avatar();
 		return 1;
@@ -832,6 +833,7 @@ int thor_load_avatar(std::string image_fname, int W, int H)
 	thor_avatar->video(avatar_img, W * H * 3);
 
 	shared_avatar_img->release();
+	shared_avatar_img = 0;
 
 	return 1;
 }

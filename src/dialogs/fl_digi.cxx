@@ -163,10 +163,6 @@
 #include "record_loader.h"
 #include "record_browse.h"
 
-#include "toolgrp.h"
-#include "dropwin.h"
-#include "dock_events.h"
-
 #define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY | FL_WHEN_RELEASE
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
@@ -195,8 +191,6 @@
 
 #define LOG_CONNECT_SERVER     _("Connect to server")
 
-#define DOCKED_MACROS_LABEL    _("View/Hide 48 macros")
-
 // MAXIMUM allowable string lengths in log fields
 #define MAX_FREQ 14
 #define MAX_TIME 4
@@ -222,13 +216,9 @@ fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 bool bWF_only = false;
 bool withnoise = false;
 
-//Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
-dropwin				*fl_digi_main;
-
-dockgroup			*dock;      // the macro buttons dock
+Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
 
 Fl_Button			*btnDockMacro[48];
-toolgrp				*tgroup;
 
 Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
@@ -294,10 +284,12 @@ picture			*thor_avatar = (picture *)0;
 
 //------------------------------------------------------------------------------
 
-Fl_Group			*macroFrame1 = 0;
-Fl_Group			*macroFrame2 = 0;
-Fl_Group			*mf_group1 = 0;
-Fl_Group			*mf_group2 = 0;
+Fl_Group			*macroFrame1 = (Fl_Group *)0;
+Fl_Group			*macroFrame2 = (Fl_Group *)0;
+Fl_Group			*mf_group1 = (Fl_Group *)0;
+Fl_Group			*mf_group2 = (Fl_Group *)0;
+Fl_Group			*tbar = (Fl_Group *)0;
+
 FTextRX				*ReceiveText = 0;
 FTextTX				*TransmitText = 0;
 Raster				*FHdisp;
@@ -376,6 +368,7 @@ static Fl_Group		*QsoInfoFrame1 = (Fl_Group *)0;
 static Fl_Group		*QsoInfoFrame1A = (Fl_Group *)0;
 Fl_Group				*QsoInfoFrame1B = (Fl_Group *)0;
 static Fl_Group		*QsoInfoFrame2 = (Fl_Group *)0;
+static Fl_Group		*NotesFrame = (Fl_Group *)0;
 //static Fl_Group		*QsoButtonFrame = (Fl_Group *)0;
 
 Fl_Group				*TopFrame2 = (Fl_Group *)0;
@@ -430,11 +423,14 @@ static const int Hentry		= 24;
 static const int Wbtn		= Hentry;
 static int x_qsoframe	= Wbtn;
 int Hmenu		= 22;
-static const int Hqsoframe	= pad + 3 * (Hentry + pad);
-int Hstatus = 22;
-int Hmacros = 22;
+static const int Hqsoframe	= 2*pad + 3 * (Hentry + pad);
 
-#define TB_HEIGHT (20*4 + 6)
+int Hstatus = 20;//22;
+int Hmacros = 20;//22;
+
+#define TB_HEIGHT 20
+#define MACROBAR_MIN 18
+#define MACROBAR_MAX 30
 
 static const int sw		= 22;
 static const int wf1			= 395;
@@ -446,8 +442,7 @@ static const int w_inpRstOut2	= 30;
 
 // minimum height for raster display, FeldHell, is 66 pixels
 // )FELD-HELL raster min height) + frame width * 2
-static const int minhtext = FELD_RX_COLUMN_LEN * 3;//3 + 2;//3 + 6;
-//static const int mintxtext = 80;
+static const int minhtext = FELD_RX_HEIGHT;
 
 static int main_hmin;// = HMIN;
 
@@ -1143,31 +1138,24 @@ void startup_modem(modem* m, int f)
 
 	if (!bWF_only) {
 		if (id >= MODE_WEFAX_FIRST && id <= MODE_WEFAX_LAST) {
-//			center_group->hide();
 			text_group->hide();
 			fsq_group->hide();
 			ifkp_group->hide();
 			wefax_group->show();
-//			wefax_group->redraw();
 			center_group->redraw();
 		} else if (id == MODE_FSQ) {
-//			center_group->hide();
 			text_group->hide();
 			wefax_group->hide();
 			ifkp_group->hide();
 			fsq_group->show();
-//			fsq_group->redraw();
 			center_group->redraw();
 		} else if (id == MODE_IFKP) {
-//			center_group->hide();
 			text_group->hide();
 			wefax_group->hide();
 			fsq_group->hide();
 			ifkp_group->show();
-//			ifkp_group->redraw();
 			center_group->redraw();
 		} else {
-//			center_group->show();
 			text_group->show();
 			wefax_group->hide();
 			fsq_group->hide();
@@ -1181,29 +1169,35 @@ void startup_modem(modem* m, int f)
 			}
 			center_group->redraw();
 		}
-		if (id == MODE_IFKP && !ifkp_avatar->visible()) {
-			QsoInfoFrame2->size(QsoInfoFrame2->w() - 60, QsoInfoFrame2->h());
-			ifkp_load_avatar(inpCall->value());
+		ifkp_avatar->hide();
+		thor_avatar->hide();
+		string call = inpCall->value();
+		if (id == MODE_IFKP) {
+			if (!call.empty())
+				ifkp_load_avatar(inpCall->value());
+			else
+				ifkp_load_avatar();
+			NotesFrame->resize( QsoInfoFrame2->x(), QsoInfoFrame2->y(),
+								QsoInfoFrame2->w()- 59, QsoInfoFrame2->h());
 			ifkp_avatar->show();
-			ifkp_avatar->redraw();
-			QsoInfoFrame->redraw();
-		} else if (id != MODE_IFKP && ifkp_avatar->visible()) {
-			QsoInfoFrame2->size(QsoInfoFrame2->w() + 60, QsoInfoFrame2->h());
-			ifkp_avatar->hide();
-			QsoInfoFrame->redraw();
-		}
-		if ( ((id >= MODE_THOR11) && (id <= MODE_THOR22)) &&
-			!thor_avatar->visible()) {
-			QsoInfoFrame2->size(QsoInfoFrame2->w() - 60, QsoInfoFrame2->h());
-			thor_load_avatar(inpCall->value());
+		} else if ( ((id >= MODE_THOR11) && (id <= MODE_THOR22))) {
+			if (!call.empty())
+				thor_load_avatar(inpCall->value());
+			else
+				thor_load_avatar();
+			NotesFrame->resize( QsoInfoFrame2->x(), QsoInfoFrame2->y(),
+								QsoInfoFrame2->w()- 59, QsoInfoFrame2->h());
 			thor_avatar->show();
-			thor_avatar->redraw();
-			QsoInfoFrame->redraw();
-		} else if (((id < MODE_THOR11) || (id > MODE_THOR22)) && thor_avatar->visible()) {
-			QsoInfoFrame2->size(QsoInfoFrame2->w() + 60, QsoInfoFrame2->h());
-			thor_avatar->hide();
-			QsoInfoFrame->redraw();
 		}
+		else {
+			NotesFrame->resize( QsoInfoFrame2->x(), QsoInfoFrame2->y(),
+								QsoInfoFrame2->w(), QsoInfoFrame2->h());
+		}
+		ifkp_avatar->redraw();
+		thor_avatar->redraw();
+		QsoInfoFrame2->init_sizes();
+		QsoInfoFrame2->redraw();
+
 	}
 
 	if (id == MODE_RTTY) {
@@ -1355,7 +1349,6 @@ void remove_windows()
 		fsqMonitor->hide();
 		delete fsqMonitor;
 	}
-	tgroup->hide_all();
 
 //	if (fsqDebug) {
 //		fsqDebug->hide();
@@ -1883,10 +1876,8 @@ void macro_cb(Fl_Widget *w, void *v)
 		restoreFocus(5);
 }
 
-void colorize_dockable_macros(int i)
+void colorize_48macros(int i)
 {
-	if (!progdefaults.dockable_macros) return;
-
 	if (progdefaults.useGroupColors == true) {
 		int k = i / 4;
 		if (k == 0 || k == 3 || k == 6 || k == 9)
@@ -1961,7 +1952,7 @@ void colorize_macros()
 {
 	FL_LOCK_D();
 	for (int i = 0; i < NUMMACKEYS * NUMKEYROWS; i++) colorize_macro(i);
-	for (int i = 0; i < 48; i++) colorize_dockable_macros(i);
+	for (int i = 0; i < 48; i++) colorize_48macros(i);
 	btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
 	btnAltMacros1->redraw_label();
 	btnAltMacros2->labelsize(progdefaults.MacroBtnFontsize);
@@ -2721,11 +2712,9 @@ void set_macroLabels()
 			btnMacro[i]->redraw_label();
 		}
 	}
-	if (progdefaults.dockable_macros) {
-		for (int i = 0; i < 48; i++) {
-			btnDockMacro[i]->label(macros.name[i].c_str());
-			btnDockMacro[i]->redraw_label();
-		}
+	for (int i = 0; i < 48; i++) {
+		btnDockMacro[i]->label(macros.name[i].c_str());
+		btnDockMacro[i]->redraw_label();
 	}
 }
 
@@ -3751,38 +3740,32 @@ void resize_macroframe2(int x, int y, int w, int h)
 	macroFrame2->redraw();
 }
 
-int UI_position_macros(int x, int y1, int w, int HTh)
+void UI_position_macros(int x, int y1, int w, int HTh)
 {
 	int mh = progdefaults.macro_height;
-	int mh2 = progdefaults.macro_height / 2;
 
-// docked macro's
-
-	if (progdefaults.dockable_macros && progStatus.tbar_is_docked) {
-
-		resize_macroframe2(x,y1,w,mh2);
+	if (progdefaults.display_48macros) {
 		macroFrame2->hide();
-		btnAltMacros2->deactivate();
-
-		resize_macroframe1(x,y1,w,mh2);
 		macroFrame1->hide();
-		HTh += mh;
-
+		tbar->resize(x, y1, w, 4 * TB_HEIGHT);
+		tbar->show();
+		y1 += tbar->h();
+		HTh -= tbar->h();
 		center_group->resize(x, y1, w, HTh);
 		text_panel->resize(x, y1, w, HTh);
 		wefax_group->resize(x, y1, w, HTh);
 		fsq_group->resize(x, y1, w, HTh);
 		ifkp_group->resize(x, y1, w, HTh);
-
 		UI_select_central_frame(y1, HTh);
 		y1 += HTh;
 		wfpack->position(x, y1);
 		y1 += wfpack->h();
 		hpack->position(x, y1);
-		fl_digi_main->workspace->init_sizes();
-		return y1;
+		fl_digi_main->init_sizes();
+		return;
 	}
 
+	tbar->hide();
 	switch (progdefaults.mbar_scheme) { // 0, 1, 2 one bar schema
 		case 0:
 			resize_macroframe2(x,y1,w,mh);
@@ -3792,6 +3775,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			macroFrame1->show();
 			btnAltMacros1->activate();
 			y1 += mh;
+			HTh -= mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3808,6 +3792,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			resize_macroframe2(x,y1,w,mh);
 			macroFrame2->hide();
 			btnAltMacros2->deactivate();
+			HTh -= mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3827,6 +3812,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			resize_macroframe2(x,y1,w,mh);
 			macroFrame2->hide();
 			btnAltMacros2->deactivate();
+			HTh -= mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3843,14 +3829,16 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			hpack->position(x, y1);
 			break;
 		case 3:
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
-			resize_macroframe2(x, y1, w, mh2);
+			y1 += mh;
+			HTh -= mh;
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
+			y1 += mh;
+			HTh -= mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3863,14 +3851,16 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			hpack->position(x, y1);
 			break;
 		case 4:
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
-			resize_macroframe1(x, y1, w, mh2);
+			y1 += mh;
+			HTh -= mh;
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
+			HTh -= mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3883,6 +3873,7 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			hpack->position(x, y1);
 			break;
 		case 5:
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3890,38 +3881,40 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			ifkp_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
-			resize_macroframe2(x, y1, w, mh2);
+			y1 += mh;
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
+			y1 += mh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			hpack->position(x, y1);
 			break;
 		case 6:
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
 			y1 += HTh;
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
-			resize_macroframe1(x, y1, w, mh2);
+			y1 += mh;
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			hpack->position(x, y1);
 			break;
 		case 7:
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3929,36 +3922,38 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			ifkp_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
-			y1 += mh2;
+			y1 += mh;
 			hpack->position(x, y1);
 			break;
 		case 8:
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
 			fsq_group->resize(x, y1, w, HTh);
 			ifkp_group->resize(x, y1, w, HTh);
 			y1 += HTh;
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
-			y1 += mh2;
+			y1 += mh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
 			hpack->position(x, y1);
 			break;
 		case 9:
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3968,17 +3963,18 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += HTh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
-			resize_macroframe2(x, y1, w, mh2);
+			y1 += mh;
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
+			y1 += mh;
 			hpack->position(x, y1);
 			break;
 		case 10:
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -3988,21 +3984,22 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			y1 += HTh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
-			resize_macroframe1(x, y1, w, mh2);
+			y1 += mh;
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
 			hpack->position(x, y1);
 			break;
 		case 11:
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
+			y1 += mh;
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -4010,19 +4007,20 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			ifkp_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			hpack->position(x, y1);
 			break;
 		case 12:
-			resize_macroframe1(x, y1, w, mh2);
+			resize_macroframe1(x, y1, w, mh);
 			macroFrame1->show();
 			btnAltMacros1->deactivate();
-			y1 += mh2;
+			y1 += mh;
+			HTh -= 2*mh;
 			center_group->resize(x, y1, w, HTh);
 			text_panel->resize(x, y1, w, HTh);
 			wefax_group->resize(x, y1, w, HTh);
@@ -4030,17 +4028,17 @@ int UI_position_macros(int x, int y1, int w, int HTh)
 			ifkp_group->resize(x, y1, w, HTh);
 			UI_select_central_frame(y1, HTh);
 			y1 += HTh;
-			resize_macroframe2(x, y1, w, mh2);
+			resize_macroframe2(x, y1, w, mh);
 			macroFrame2->show();
 			btnAltMacros2->activate();
-			y1 += mh2;
+			y1 += mh;
 			wfpack->position(x, y1);
 			y1 += wfpack->h();
 			hpack->position(x, y1);
 			break;
 	}
-	fl_digi_main->workspace->init_sizes();
-	return y1;
+	fl_digi_main->init_sizes();
+	return;
 }
 
 bool UI_first = true;
@@ -4062,27 +4060,22 @@ void UI_select()
 		getMenuItem(RIGLOG_FULL_MLABEL)->setonly();
 	}
 
-	int x =   fl_digi_main->workspace->x();//macroFrame1->x();
-	int y1 =  fl_digi_main->workspace->y();//TopFrame1->y();
-	int w =   fl_digi_main->workspace->w();//fl_digi_main->w();
-	int HTh = fl_digi_main->workspace->h();
+	int x =   0;
+	int y1 =  Hmenu;
+	int w =   fl_digi_main->w();
+	int HTh = fl_digi_main->h() - y1;
 
 	if (cnt_macro_height) {
-		if (progdefaults.mbar_scheme > MACRO_SINGLE_BAR_MAX) { // 2 bars
-			cnt_macro_height->minimum(44);
-			if (progdefaults.macro_height < 44) progdefaults.macro_height = 44;
-		} else {
-			cnt_macro_height->minimum(22);
-			if (progdefaults.macro_height < 22) progdefaults.macro_height = 22;
-		}
-		cnt_macro_height->maximum(66);
-		if (progdefaults.macro_height > 66) progdefaults.macro_height = 66;
+		cnt_macro_height->minimum(MACROBAR_MIN);
+		cnt_macro_height->maximum(MACROBAR_MAX);
+		cnt_macro_height->step(1);
+		if (progdefaults.macro_height < MACROBAR_MIN) progdefaults.macro_height = MACROBAR_MIN;
+		if (progdefaults.macro_height > MACROBAR_MAX) progdefaults.macro_height = MACROBAR_MAX;
 		cnt_macro_height->value(progdefaults.macro_height);
 	}
 
 	HTh -= wfpack->h();
 	HTh -= hpack->h();
-	HTh -= progdefaults.macro_height;
 
 	if (progStatus.NO_RIGLOG && !restore_minimize) {
 		TopFrame1->hide();
@@ -4195,12 +4188,6 @@ UI_return:
 
 }
 
-void cb_docked(Fl_Widget*, void*)
-{
-	if (!progdefaults.dockable_macros) return;
-
-	UI_select();
-}
 
 void cb_mnu_wf_all(Fl_Menu_* w, void *d)
 {
@@ -4289,15 +4276,9 @@ void cb_menu_make_default_scripts(Fl_Widget*, void*)
 	cb_create_default_script();
 }
 
-void cb_view_hide_macros(Fl_Widget*, void*)
+void cb_48macros(Fl_Widget*, void*)
 {
-	if (!progdefaults.dockable_macros) return;
-
-	progStatus.tile_y = progdefaults.rxtx_swap ? TransmitText->h() : ReceiveText->h();
-	progStatus.tile_y_ratio = 1.0 * progStatus.tile_y / text_group->h();
-
-	progStatus.tbar_is_docked = progStatus.tbar_is_docked ? 0 : 1;
-	tgroup->hide_show();
+	progdefaults.display_48macros = !progdefaults.display_48macros;
 	UI_select();
 }
 
@@ -4574,7 +4555,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { VIEW_MLABEL, 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(DOCKED_MACROS_LABEL), 0, (Fl_Callback*)cb_view_hide_macros, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("View/Hide 48 macros")), 0, (Fl_Callback*)cb_48macros, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -5669,38 +5650,6 @@ inline int next_to(Fl_Widget* w)
 	return w->x() + w->w() + pad;
 }
 
-static void add_docked(dockgroup *dock)
-{
-	// Create a docked toolgroup
-	int w = dock->w();
-	int h = dock->h();
-	int Wbtn = (w-18) / 12;
-	int Hbtn = (h-4) / 4;
-	int xpos = 16;
-	int ypos = 2;
-
-	tgroup = new toolgrp(dock, 0, w, h);
-
-		for (int i = 0; i < 48; i++) {
-			btnDockMacro[i] = new Fl_Button(
-				xpos, ypos,
-				((i % 12) == 11) ? w - xpos - 4 : Wbtn, Hbtn, "");
-			btnDockMacro[i]->box(FL_THIN_UP_BOX);
-			btnDockMacro[i]->tooltip(_("Left Click - execute\nRight Click - edit"));
-			btnDockMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i | 0x80));
-
-			xpos += Wbtn;
-			if (i == 11 || i == 23 || i == 35) {
-				xpos = 16;
-				ypos += Hbtn;
-				if (i == 35) Hbtn = tgroup->h() - ypos - 2;
-			}
-		}
-
-	tgroup->end();
-	tgroup->box(FL_FLAT_BOX);//ENGRAVED_BOX);//NO_BOX);//BORDER_BOX);
-}
-
 void cb_meters(void *)
 {
 	if (!rigCAT_active()) return;
@@ -5721,7 +5670,6 @@ void create_fl_digi_main_primary() {
 // bx used as a temporary spacer
 	Fl_Box *bx;
 	int Wmacrobtn;
-	int Hmacrobtn;
 	int xpos;
 	int ypos;
 	int wBLANK;
@@ -5745,27 +5693,26 @@ void create_fl_digi_main_primary() {
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW;
 
 	int fixed_height =
-		Hmenu + 2 +
-		Hqsoframe + 2 +
-		Hwfall + 2 + 2 +
-		2*(Hstatus + 2);
-	if (progdefaults.dockable_macros)
-		fixed_height += (TB_HEIGHT + 4);
-	else
-		fixed_height += Hmacros*3 + 4;
+		Hmenu +
+		Hqsoframe +
+		Hwfall +
+		Hstatus;
+	int hmacros = TB_HEIGHT * 4;
 
+	fixed_height += hmacros;
 	int Htext = 3 * minhtext;
 
-	main_hmin = Htext + fixed_height;//mintxtext + 40 + fixed_height;
-cout << "Hmenu       " << Hmenu << endl;
-cout << "Hqsoframe   " << Hqsoframe << endl;
-cout << "Hmacros*3   " << Hmacros*3 << endl;
-cout << "Hwfall      " << Hwfall << endl;
-cout << "Hstatus     " << Hstatus << endl;
-cout << "minhtext    " << minhtext << endl;
-cout << "TB_HEIGHT   " << TB_HEIGHT << endl;
-cout << "text height " << 3 * minhtext << endl;
-cout << "main_hmin   " << main_hmin << endl;
+	main_hmin = Htext + fixed_height;
+
+cout << "=============================================================" << endl;
+cout << "min main_height ..... " << main_hmin << endl;
+cout << " = Hmenu ............ " << Hmenu << endl;
+cout << " + Hqsoframe ........ " << Hqsoframe << endl;
+cout << " + Hwfall ........... " << Hwfall << endl;
+cout << " + Hstatus  ......... " << Hstatus << endl;
+cout << " + Hmacros .......... " << hmacros << endl;
+cout << " + text height ...... " << Htext << endl;
+cout << "=============================================================" << endl;
 
 	if (progStatus.mainH < main_hmin) {
 		progStatus.mainH = main_hmin;
@@ -5773,10 +5720,14 @@ cout << "main_hmin   " << main_hmin << endl;
 
 	if (progStatus.tile_y > Htext) progStatus.tile_y = Htext / 2;
 
-	fl_digi_main = new dropwin(progStatus.mainW, main_hmin);
+	int W = progStatus.mainW;
+	int H = main_hmin;
 
-		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
-			mnu = new Fl_Menu_Bar(pad, 0, progStatus.mainW - 325 - pad, Hmenu);
+	fl_digi_main = new Fl_Double_Window(
+			progStatus.mainX, progStatus.mainY, W, H);
+
+		mnuFrame = new Fl_Group(0,0, W, Hmenu);
+			mnu = new Fl_Menu_Bar(0, 0, W - 325, Hmenu);
 			// do some more work on the menu
 			for (size_t i = 0; i < sizeof(menu_)/sizeof(menu_[0]); i++) {
 				// FL_NORMAL_SIZE may have changed; update the menu items
@@ -5790,33 +5741,33 @@ cout << "main_hmin   " << main_hmin << endl;
 			mnu->menu(menu_);
 			toggle_visible_modes(NULL, NULL);
 
-			tx_timer = new Fl_Box(progStatus.mainW - 325, 0, 75, Hmenu, "");
+			tx_timer = new Fl_Box(W - 325, 0, 75, Hmenu, "");
 			tx_timer->box(FL_UP_BOX);
 			tx_timer->color(FL_BACKGROUND_COLOR);
 			tx_timer->labelcolor(FL_BACKGROUND_COLOR);
 
-			btnAutoSpot = new Fl_Light_Button(progStatus.mainW - 250, 0, 50, Hmenu, "Spot");
+			btnAutoSpot = new Fl_Light_Button(W - 250, 0, 50, Hmenu, "Spot");
 			btnAutoSpot->selection_color(progdefaults.SpotColor);
 			btnAutoSpot->callback(cbAutoSpot, 0);
 			btnAutoSpot->deactivate();
 
-			btnRSID = new Fl_Light_Button(progStatus.mainW - 200, 0, 50, Hmenu, "RxID");
+			btnRSID = new Fl_Light_Button(W - 200, 0, 50, Hmenu, "RxID");
 			btnRSID->tooltip("Receive RSID");
 			btnRSID->selection_color(
 				progdefaults.rsidWideSearch ? progdefaults.RxIDwideColor : progdefaults.RxIDColor);
 			btnRSID->value(progdefaults.rsid);
 			btnRSID->callback(cbRSID, 0);
 
-			btnTxRSID = new Fl_Light_Button(progStatus.mainW - 150, 0, 50, Hmenu, "TxID");
+			btnTxRSID = new Fl_Light_Button(W - 150, 0, 50, Hmenu, "TxID");
 			btnTxRSID->selection_color(progdefaults.TxIDColor);
 			btnTxRSID->tooltip("Transmit RSID");
 			btnTxRSID->callback(cbTxRSID, 0);
 
-			btnTune = new Fl_Light_Button(progStatus.mainW - 100, 0, 50, Hmenu, "TUNE");
+			btnTune = new Fl_Light_Button(W - 100, 0, 50, Hmenu, "TUNE");
 			btnTune->selection_color(progdefaults.TuneColor);
 			btnTune->callback(cbTune, 0);
 
-			btnMacroTimer = new Fl_Button(progStatus.mainW - 50, 0, 50, Hmenu);
+			btnMacroTimer = new Fl_Button(W - 50, 0, 50, Hmenu);
 			btnMacroTimer->labelcolor(FL_DARK_RED);
 			btnMacroTimer->callback(cbMacroTimerButton);
 			btnMacroTimer->set_output();
@@ -5824,46 +5775,18 @@ cout << "main_hmin   " << main_hmin << endl;
 			mnuFrame->resizable(mnu);
 		mnuFrame->end();
 
-// add draggable toolbar with 4 rows of 12 macros each
-		if (progdefaults.dockable_macros) {
-			dock = new dockgroup(pad, mnu->h() + 2,  fl_digi_main->w() - 2*pad, TB_HEIGHT);
-			dock->box(FL_THIN_DOWN_BOX);
-			dock->end();
-			dock->set_window(fl_digi_main);
-
-// Create a toolgroup already docked in this dock
-			add_docked(dock);
-			dock->redraw();
-
-// Record in the dropwin which dock to use
-			fl_digi_main->set_dock(dock);
-
-			fl_digi_main->begin();
-
-// docked window workspace
-			fl_digi_main->workspace = new Fl_Group(
-				pad, dock->y() + dock->h(),
-				dock->w(), fl_digi_main->h() - dock->h() - dock->y() - 2 * pad);
-		} else {
-			fl_digi_main->begin();
-			fl_digi_main->workspace = new Fl_Group(
-				pad, mnu->h() + 2,
-				fl_digi_main->w() - 2*pad, fl_digi_main->h() - Hmenu - 2 * pad);
-			getMenuItem(DOCKED_MACROS_LABEL)->hide();
-
-		}
-
 		// reset the message dialog font
 		fl_message_font(FL_HELVETICA, FL_NORMAL_SIZE);
-
 		// reset the tooltip font
 		Fl_Tooltip::font(FL_HELVETICA);
 		Fl_Tooltip::size(FL_NORMAL_SIZE);
 		Fl_Tooltip::enable(progdefaults.tooltips);
 
+		Y += mnuFrame->h();
+
 		TopFrame1 = new Fl_Group(
-			0, fl_digi_main->workspace->y(),
-			fl_digi_main->workspace->w(), Hqsoframe);
+			0, Y,
+			fl_digi_main->w(), Hqsoframe);
 
 		int fnt1 = progdefaults.FreqControlFontnbr;
 		int freqheight1 = 2 * Hentry + pad;
@@ -5875,7 +5798,7 @@ cout << "main_hmin   " << main_hmin << endl;
 		int rig_control_frame_width = freqwidth1 + 3 * pad;
 
 		RigControlFrame = new Fl_Group(
-			0, fl_digi_main->workspace->y(),
+			0, TopFrame1->y(),
 			rig_control_frame_width, Hqsoframe);
 
 			RigControlFrame->box(FL_FLAT_BOX);
@@ -6060,7 +5983,7 @@ cout << "main_hmin   " << main_hmin << endl;
 
 		Fl_Group *rightframes = new Fl_Group(
 					rightof(RigControlFrame) + pad, RigControlFrame->y(),
-					progStatus.mainW - rightof(RigControlFrame) - pad, Hqsoframe);
+					W - rightof(RigControlFrame) - pad, Hqsoframe);
 			rightframes->box(FL_FLAT_BOX);
 
 			RigViewerFrame = new Fl_Group(
@@ -6158,8 +6081,8 @@ cout << "main_hmin   " << main_hmin << endl;
 			RigViewerFrame->end();
 			RigViewerFrame->hide();
 
-			int y2 = fl_digi_main->workspace->y() + Hentry + 2 * pad;
-			int y3 = fl_digi_main->workspace->y() + 2 * (Hentry + pad) + pad;
+			int y2 = TopFrame1->y() + Hentry + 2 * pad;
+			int y3 = TopFrame1->y() + 2 * (Hentry + pad) + pad;
 
 			x_qsoframe = RigViewerFrame->x();
 
@@ -6187,41 +6110,41 @@ cout << "main_hmin   " << main_hmin << endl;
 
 				QsoInfoFrame1 = new Fl_Group(
 					rightof(btnQRZ) + pad,
-					fl_digi_main->workspace->y(), wf1, Hqsoframe);
+					TopFrame1->y(), wf1, Hqsoframe);
 
 					inpFreq1 = new Fl_Input2(
 						QsoInfoFrame1->x() + 25,
-						fl_digi_main->workspace->y() + pad, 90, Hentry, _("Frq"));
+						TopFrame1->y() + pad, 90, Hentry, _("Frq"));
 					inpFreq1->type(FL_NORMAL_OUTPUT);
 					inpFreq1->tooltip(_("frequency kHz"));
 					inpFreq1->align(FL_ALIGN_LEFT);
 
 					btnTimeOn = new Fl_Button(
-						next_to(inpFreq1), fl_digi_main->workspace->y() + pad,
+						next_to(inpFreq1), TopFrame1->y() + pad,
 						Hentry, Hentry, _("On"));
 					btnTimeOn->tooltip(_("Press to update QSO start time"));
 					btnTimeOn->callback(cb_btnTimeOn);
 
 					inpTimeOn1 = new Fl_Input2(
-						next_to(btnTimeOn), fl_digi_main->workspace->y() + pad,
+						next_to(btnTimeOn), TopFrame1->y() + pad,
 						40, Hentry, "");
 					inpTimeOn1->tooltip(_("QSO start time"));
 					inpTimeOn1->align(FL_ALIGN_LEFT);
 					inpTimeOn1->type(FL_INT_INPUT);
 
 					inpTimeOff1 = new Fl_Input2(
-						next_to(inpTimeOn1) + 20, fl_digi_main->workspace->y() + pad, 40, Hentry, _("Off"));
+						next_to(inpTimeOn1) + 20, TopFrame1->y() + pad, 40, Hentry, _("Off"));
 					inpTimeOff1->tooltip(_("QSO end time"));
 					inpTimeOff1->align(FL_ALIGN_LEFT);
 					inpTimeOff1->type(FL_NORMAL_OUTPUT);
 
 					inpRstIn1 = new Fl_Input2(
-						next_to(inpTimeOff1) + 40, fl_digi_main->workspace->y() + pad, 40, Hentry, _("In"));
+						next_to(inpTimeOff1) + 40, TopFrame1->y() + pad, 40, Hentry, _("In"));
 					inpRstIn1->tooltip("RST in");
 					inpRstIn1->align(FL_ALIGN_LEFT);
 
 					inpRstOut1 = new Fl_Input2(
-						next_to(inpRstIn1) + 30, fl_digi_main->workspace->y() + pad, 40, Hentry, _("Out"));
+						next_to(inpRstIn1) + 30, TopFrame1->y() + pad, 40, Hentry, _("Out"));
 					inpRstOut1->tooltip("RST out");
 					inpRstOut1->align(FL_ALIGN_LEFT);
 
@@ -6300,26 +6223,30 @@ cout << "main_hmin   " << main_hmin << endl;
 				QsoInfoFrame1->end();
 
 				QsoInfoFrame2 = new Fl_Group(
-					rightof(QsoInfoFrame1) + pad, fl_digi_main->workspace->y(),
-					progStatus.mainW - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
+					rightof(QsoInfoFrame1) + pad, TopFrame1->y(),
+					W - rightof(QsoInfoFrame1) - 2*pad, Hqsoframe);
+					NotesFrame = new Fl_Group(
+						QsoInfoFrame2->x(), QsoInfoFrame2->y(),
+						QsoInfoFrame2->w() - 60, QsoInfoFrame2->h(),"");
+
+						NotesFrame->box(FL_FLAT_BOX);
 
 					inpCountry = new Fl_Input2(
-						rightof(QsoInfoFrame1) + pad, fl_digi_main->workspace->y() + pad,
-						QsoInfoFrame2->w(), Hentry, "");
+						NotesFrame->x(), NotesFrame->y(),
+						NotesFrame->w(), Hentry, "");
 					inpCountry->tooltip(_("Country"));
 
 					inpNotes = new Fl_Input2(
-						rightof(QsoInfoFrame1) + pad, y2,
-						QsoInfoFrame2->w(), 2*Hentry + pad, "");
+						NotesFrame->x(), y2,
+						NotesFrame->w(), 2*Hentry + pad, "");
 					inpNotes->type(FL_MULTILINE_INPUT);
 					inpNotes->tooltip(_("Notes"));
 
-				QsoInfoFrame2->end();
-
-				QsoInfoFrame->resizable(QsoInfoFrame2);
+					NotesFrame->end();
 
 					ifkp_avatar = new picture(
-						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, fl_digi_main->workspace->y() + pad, 59, 74);
+						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, TopFrame1->y() + pad, 
+						59, 74);
 					ifkp_avatar->box(FL_FLAT_BOX);
 					ifkp_avatar->noslant();
 					ifkp_avatar->callback(cb_ifkp_send_avatar);
@@ -6328,7 +6255,8 @@ cout << "main_hmin   " << main_hmin << endl;
 					ifkp_avatar->hide();
 
 					thor_avatar = new picture(
-						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, fl_digi_main->workspace->y() + pad, 59, 74);
+						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, TopFrame1->y() + pad, 
+						59, 74);
 					thor_avatar->box(FL_FLAT_BOX);
 					thor_avatar->noslant();
 					thor_avatar->callback(cb_thor_send_avatar);
@@ -6336,16 +6264,22 @@ cout << "main_hmin   " << main_hmin << endl;
 					thor_load_avatar();
 					thor_avatar->hide();
 
+				QsoInfoFrame2->end();
+				QsoInfoFrame2->resizable(NotesFrame);
+
 				QsoInfoFrame->end();
 
+				QsoInfoFrame->resizable(QsoInfoFrame2);
+
 			rightframes->end();
+
 			TopFrame1->resizable(rightframes);
 
 		TopFrame1->end();
 
-		TopFrame2 = new Fl_Group(0, fl_digi_main->workspace->y(), progStatus.mainW, Hentry + 2 * pad);
+		TopFrame2 = new Fl_Group(0, TopFrame1->y(), W, Hentry + 2 * pad);
 		{
-			int y = fl_digi_main->workspace->y() + pad;
+			int y = TopFrame1->y() + pad;
 			int h = Hentry;
 			qsoFreqDisp2 = new cFreqControl(
 				pad, y,
@@ -6447,7 +6381,7 @@ cout << "main_hmin   " << main_hmin << endl;
 			int xn = pad + bx5->x() + bx5->w();
 			inpName2 = new Fl_Input2(
 				xn, y,
-				progStatus.mainW - xn - pad, h, "");
+				W - xn - pad, h, "");
 			inpName2->tooltip(_("Other name"));
 
 		}
@@ -6455,9 +6389,9 @@ cout << "main_hmin   " << main_hmin << endl;
 		TopFrame2->end();
 		TopFrame2->hide();
 
-		TopFrame3 = new Fl_Group(0, fl_digi_main->workspace->y(), progStatus.mainW, Hentry + 2 * pad);
+		TopFrame3 = new Fl_Group(0, TopFrame1->y(), W, Hentry + 2 * pad);
 		{
-			int y = fl_digi_main->workspace->y() + pad;
+			int y = TopFrame3->y() + pad;
 			int h = Hentry;
 			qsoFreqDisp3 = new cFreqControl(
 				pad, y,
@@ -6527,7 +6461,7 @@ cout << "main_hmin   " << main_hmin << endl;
 			bx7a->align(FL_ALIGN_INSIDE);
 			inpXchgIn2 = new Fl_Input2(
 				rightof(bx7a), y,
-				static_cast<int>(progStatus.mainW
+				static_cast<int>(W
 				- rightof(bx7a) - pad
 				- fl_width(label6a) - wData - pad
 				- fl_width(label5a) - wData - pad
@@ -6596,24 +6530,51 @@ cout << "main_hmin   " << main_hmin << endl;
 		qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
 		qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
 
-		Y = fl_digi_main->workspace->y() + Hqsoframe + pad;
+		Y = TopFrame1->y() + Hqsoframe + pad;
+
+//------------------- 4 bar macros
+		tbar = new Fl_Group(0, Y, fl_digi_main->w(), TB_HEIGHT * 4);
+		{
+			int xpos = tbar->x();
+			int ypos = Y;
+			int Wbtn = tbar->w() / 12;
+			int remainder = tbar->w() - Wbtn * 12;
+			tbar->box(FL_FLAT_BOX);
+			for (int i = 0; i < 48; i++) {
+				btnDockMacro[i] = new Fl_Button( 
+					xpos, ypos, 
+					(remainder > 0) ? Wbtn + 1 : Wbtn, TB_HEIGHT, "");
+				remainder--;
+				btnDockMacro[i]->box(FL_THIN_UP_BOX);
+				btnDockMacro[i]->tooltip(_("Left Click - execute\nRight Click - edit"));
+				btnDockMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i | 0x80));
+				xpos += btnDockMacro[i]->w();
+				if (i == 11 || i == 23 || i == 35) {
+					xpos = tbar->x();
+					remainder = tbar->w() - Wbtn * 12;
+					ypos += TB_HEIGHT;
+				}
+			}
+			tbar->end();
+			tbar->hide();
+		}
+//--------------------------------
 
 		int alt_btn_width = 2 * DEFAULT_SW;
-		macroFrame2 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
+		macroFrame2 = new Fl_Group(0, Y, W, MACROBAR_MAX);
 			macroFrame2->box(FL_FLAT_BOX);
-			mf_group2 = new Fl_Group(0, Y, progStatus.mainW - alt_btn_width, Hmacros);
+			mf_group2 = new Fl_Group(0, Y, W - alt_btn_width, macroFrame2->h());
 			Wmacrobtn = (mf_group2->w()) / NUMMACKEYS;
-			Hmacrobtn = mf_group2->h();
 			wBLANK = (mf_group2->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = mf_group2->y();
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
-					bx = new Fl_Box(xpos, ypos, wBLANK, Hmacrobtn);
+					bx = new Fl_Box(xpos, ypos, wBLANK, macroFrame2->h());
 					bx->box(FL_FLAT_BOX);
 					xpos += wBLANK;
 				}
-				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn,
+				btnMacro[NUMMACKEYS + i] = new Fl_Button(xpos, ypos, Wmacrobtn, macroFrame2->h(),
 					macros.name[NUMMACKEYS + i].c_str());
 				btnMacro[NUMMACKEYS + i]->callback(macro_cb, reinterpret_cast<void *>(NUMMACKEYS + i));
 				btnMacro[NUMMACKEYS + i]->tooltip(
@@ -6622,8 +6583,8 @@ cout << "main_hmin   " << main_hmin << endl;
 			}
 			mf_group2->end();
 			btnAltMacros2 = new Fl_Button(
-					progStatus.mainW - alt_btn_width, ypos,
-					alt_btn_width, Hmacrobtn, "2");
+					W - alt_btn_width, ypos,
+					alt_btn_width, MACROBAR_MAX, "2");
 			btnAltMacros2->callback(altmacro_cb, 0);
 			btnAltMacros2->tooltip(_("Shift-key macro set"));
 			macroFrame2->resizable(mf_group2);
@@ -6631,7 +6592,7 @@ cout << "main_hmin   " << main_hmin << endl;
 
 		Y += Hmacros;
 
-		center_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+		center_group = new Fl_Group(0, Y, W, Htext);
 			center_group->box(FL_FLAT_BOX);
 
 			text_group = new Fl_Group(0, Y, center_group->w(), center_group->h());
@@ -6766,17 +6727,17 @@ cout << "main_hmin   " << main_hmin << endl;
 			text_group->end();
 			text_group->resizable(text_panel);
 
-		wefax_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+		wefax_group = new Fl_Group(0, Y, W, Htext);
 			wefax_group->box(FL_FLAT_BOX);
 			wefax_pic::create_both( true );
 		wefax_group->end();
 
-		fsq_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+		fsq_group = new Fl_Group(0, Y, W, Htext);
 			fsq_group->box(FL_FLAT_BOX);
 // left, resizable rx/tx widgets
 				fsq_left = new Panel(
 							0, Y,
-							progStatus.mainW - 180, Htext);
+							W - 180, Htext);
 
 				fsq_left->box(FL_FLAT_BOX);
 					// add rx & monitor
@@ -6860,7 +6821,6 @@ cout << "main_hmin   " << main_hmin << endl;
 #endif
 
 					int qw = fsq_right->w();
-//					int gh = fsq_right->h() - fsq_heard->h();
 
 					int bw2 = qw / 2;
 					int bw4 = qw / 4;
@@ -6959,12 +6919,12 @@ cout << "main_hmin   " << main_hmin << endl;
 
 		fsq_group->end();
 
-		ifkp_group = new Fl_Group(0, Y, progStatus.mainW, Htext);
+		ifkp_group = new Fl_Group(0, Y, W, Htext);
 			ifkp_group->box(FL_FLAT_BOX);
 // upper, receive ifkp widgets
 				ifkp_left = new Panel(
 							0, Y,
-							progStatus.mainW - (image_s2n.w()+4), Htext);
+							W - (image_s2n.w()+4), Htext);
 // add rx & tx
 				ifkp_rx_text = new FTextRX(
 							0, Y,
@@ -7059,11 +7019,6 @@ cout << "main_hmin   " << main_hmin << endl;
 					ifkp_s2n->image(image_s2n);
 
 					ifkp_sn_box->end();
-//						ifkp_thumbnail = new Fl_Box(
-//										ifkp_heard->x(), ifkp_s2n->y() + ifkp_s2n->h(),
-//										48,64);
-//						ifkp_thumbnail->box(FL_FLAT_BOX);
-//						ifkp_thumbnail->color(FL_BLACK);
 
 				ifkp_right->end();
 				ifkp_right->resizable(ifkp_heard);
@@ -7081,25 +7036,24 @@ cout << "main_hmin   " << main_hmin << endl;
 		fsq_group->hide();
 		ifkp_group->hide();
 
-		Y += center_group->h();//Htext;
+		Y += center_group->h();
 
 		Fl::add_handler(default_handler);
 
-		macroFrame1 = new Fl_Group(0, Y, progStatus.mainW, Hmacros);
+		macroFrame1 = new Fl_Group(0, Y, W, MACROBAR_MAX);
 			macroFrame1->box(FL_FLAT_BOX);
-			mf_group1 = new Fl_Group(0, Y, progStatus.mainW - alt_btn_width, Hmacros);
+			mf_group1 = new Fl_Group(0, Y, W - alt_btn_width, macroFrame1->h());
 			Wmacrobtn = (mf_group1->w()) / NUMMACKEYS;
-			Hmacrobtn = mf_group1->h();
 			wBLANK = (mf_group1->w() - NUMMACKEYS * Wmacrobtn) / 2;
 			xpos = 0;
 			ypos = mf_group1->y();
 			for (int i = 0; i < NUMMACKEYS; i++) {
 				if (i == 4 || i == 8) {
-					bx = new Fl_Box(xpos, ypos, wBLANK, Hmacrobtn);
+					bx = new Fl_Box(xpos, ypos, wBLANK, macroFrame1->h());
 					bx->box(FL_FLAT_BOX);
 					xpos += wBLANK;
 				}
-				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, Hmacrobtn,
+				btnMacro[i] = new Fl_Button(xpos, ypos, Wmacrobtn, macroFrame1->h(),
 					macros.name[i].c_str());
 				btnMacro[i]->callback(macro_cb, reinterpret_cast<void *>(i));
 				btnMacro[i]->tooltip(_("Left Click - execute\nFkey - execute\nRight Click - edit"));
@@ -7107,8 +7061,8 @@ cout << "main_hmin   " << main_hmin << endl;
 			}
 			mf_group1->end();
 			btnAltMacros1 = new Fl_Button(
-					progStatus.mainW - alt_btn_width, ypos,
-					alt_btn_width, Hmacrobtn, "1");
+					W - alt_btn_width, ypos,
+					alt_btn_width, macroFrame1->h(), "1");
 			btnAltMacros1->callback(altmacro_cb, 0);
 			btnAltMacros1->labelsize(progdefaults.MacroBtnFontsize);
 			btnAltMacros1->tooltip(_("Primary macro set"));
@@ -7116,7 +7070,7 @@ cout << "main_hmin   " << main_hmin << endl;
 		macroFrame1->end();
 		Y += Hmacros;
 
-		wfpack = new Fl_Pack(0, Y, progStatus.mainW, Hwfall);
+		wfpack = new Fl_Pack(0, Y, W, Hwfall);
 			wfpack->type(1);
 
 			wf = new waterfall(0, Y, Wwfall, Hwfall);
@@ -7145,9 +7099,9 @@ cout << "main_hmin   " << main_hmin << endl;
 
 		Y += Hwfall;
 
-		hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
+		hpack = new Fl_Pack(0, Y, W, Hstatus);
 			hpack->type(1);
-			MODEstatus = new Fl_Button(0,fl_digi_main->workspace->y()+Htext+Hwfall, Wmode+30, Hstatus, "");
+			MODEstatus = new Fl_Button(0,TopFrame1->y()+Htext+Hwfall, Wmode+30, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -7311,17 +7265,10 @@ cout << "main_hmin   " << main_hmin << endl;
 
 		inpNotes->when(FL_WHEN_RELEASE);
 
-	fl_digi_main->workspace->end();
-	fl_digi_main->workspace->resizable(center_group);
-// end of dockable workspace
-
 	fl_digi_main->end();
-	fl_digi_main->resizable(fl_digi_main->workspace);
-
-//	if (progdefaults.dockable_macros)
-//		dock->callback(cb_docked);
 
 	fl_digi_main->callback(cb_wMain);
+	fl_digi_main->resizable(center_group);
 
 	scopeview = new Fl_Double_Window(0,0,140,140, _("Scope"));
 	scopeview->xclass(PACKAGE_NAME);
@@ -7361,16 +7308,7 @@ cout << "main_hmin   " << main_hmin << endl;
 
 	toggle_smeter();
 
-	if (progdefaults.dockable_macros) {
-		if (progStatus.tbar_is_docked) { // do not change interface state
-			UI_select();
-		} else {
-			progStatus.tbar_is_docked = true; // for tbar toggle
-			cb_view_hide_macros((Fl_Widget *)0, (void *)0);
-		}
-	} else {
-		UI_select();
-	}
+	UI_select();
 
 	wf->UI_select(progStatus.WF_UI);
 
@@ -7734,7 +7672,7 @@ void create_fl_digi_main_WF_only() {
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
 	WF_only_height = Hmenu + Hwfall + Hstatus + 4 * pad;
 
-	fl_digi_main = new dropwin(progStatus.mainW, WF_only_height);
+	fl_digi_main = new Fl_Double_Window(progStatus.mainW, WF_only_height);
 
 		mnuFrame = new Fl_Group(0,0,progStatus.mainW, Hmenu);
 

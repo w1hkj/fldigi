@@ -909,8 +909,6 @@ Fl_Round_Button *btn_scheme_0=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_0(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 0;
-progdefaults.macro_height = 22;
-cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
 progdefaults.changed = true;
@@ -920,8 +918,6 @@ Fl_Round_Button *btn_scheme_1=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_1(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 1;
-progdefaults.macro_height = 22;
-cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
 progdefaults.changed = true;
@@ -931,8 +927,6 @@ Fl_Round_Button *btn_scheme_2=(Fl_Round_Button *)0;
 
 static void cb_btn_scheme_2(Fl_Round_Button*, void*) {
   progdefaults.mbar_scheme = 2;
-progdefaults.macro_height = 22;
-cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
 progdefaults.changed = true;
@@ -1048,13 +1042,6 @@ Fl_Check_Button *btn_save_macros_on_exit=(Fl_Check_Button *)0;
 static void cb_btn_save_macros_on_exit(Fl_Check_Button* o, void*) {
   btn2_save_macros_on_exit->value(o->value());
 progdefaults.SaveMacros = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_dockable_macros=(Fl_Check_Button *)0;
-
-static void cb_btn_dockable_macros(Fl_Check_Button* o, void*) {
-  progdefaults.dockable_macros = !o->value();
 progdefaults.changed = true;
 }
 
@@ -6817,10 +6804,10 @@ ab and newline are automatically included."));
               { Fl_Counter* o = cnt_macro_height = new Fl_Counter(215, 85, 89, 22, _("Button Height"));
                 cnt_macro_height->tooltip(_("Height of macro bar"));
                 cnt_macro_height->type(1);
-                cnt_macro_height->minimum(22);
-                cnt_macro_height->maximum(66);
-                cnt_macro_height->step(2);
-                cnt_macro_height->value(22);
+                cnt_macro_height->minimum(18);
+                cnt_macro_height->maximum(30);
+                cnt_macro_height->step(1);
+                cnt_macro_height->value(20);
                 cnt_macro_height->callback((Fl_Callback*)cb_cnt_macro_height);
                 cnt_macro_height->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.macro_height);
@@ -6913,17 +6900,6 @@ ab and newline are automatically included."));
                 btn_save_macros_on_exit->callback((Fl_Callback*)cb_btn_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn_save_macros_on_exit
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 330, 590, 55, _("Change takes effect after program restart"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_dockable_macros = new Fl_Check_Button(152, 353, 296, 20, _("Disable dockable macro bar"));
-                btn_dockable_macros->tooltip(_("Allow minimized main dialog height\n411 pixels with WF height = 100"));
-                btn_dockable_macros->down_box(FL_DOWN_BOX);
-                btn_dockable_macros->callback((Fl_Callback*)cb_btn_dockable_macros);
-                o->value(!progdefaults.dockable_macros);
-              } // Fl_Check_Button* btn_dockable_macros
               o->end();
             } // Fl_Group* o
             tabMBars->end();

@@ -40,6 +40,7 @@
 #define MAXLEN 512
 
 #define FELD_RX_COLUMN_LEN 20
+#define FELD_RX_HEIGHT (FELD_RX_COLUMN_LEN * 2 + 6)
 
 class feld : public modem {
 enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};

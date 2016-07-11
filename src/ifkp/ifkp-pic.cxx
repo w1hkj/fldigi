@@ -744,13 +744,15 @@ void ifkp_clear_avatar()
 	avatar_phase_correction = 0;
 	ifkp_numpixels = 0;
 	ifkp_rawrow = ifkp_rawrgb = ifkp_rawcol = 0;
-	ifkp_avatar->video(tux_img, 59 * 74 * 3);
+	ifkp_avatar->video(tux_img, sizeof(tux_img));
 }
 
 
 // W always 59, H always 74
 int ifkp_load_avatar(std::string image_fname, int W, int H)
 {
+	W = 59; H = 74;
+
 	if (image_fname.empty()) {
 		ifkp_clear_avatar();
 		return 1;
@@ -774,7 +776,7 @@ int ifkp_load_avatar(std::string image_fname, int W, int H)
 		fseek(temp, 0L, SEEK_SET);
 		fclose(temp);
 	} else {
-		ifkp_avatar->video(tux_img, W * H * 3);
+		ifkp_avatar->video(tux_img, 59 * 74 * 3);
 		return 1;
 	}
 
@@ -784,14 +786,14 @@ int ifkp_load_avatar(std::string image_fname, int W, int H)
 	shared_avatar_img->reload();
 
 	if (!shared_avatar_img) {
-		ifkp_avatar->video(tux_img, W * H * 3);
+		ifkp_avatar->video(tux_img, 59 * 74 * 3);
 		return 1;
 	}
 
 	if (shared_avatar_img->count() > 1) {
 		shared_avatar_img->release();
 		shared_avatar_img = 0;
-		ifkp_avatar->video(tux_img, W * H * 3);
+		ifkp_avatar->video(tux_img, 59 * 74 * 3);
 		return 0;
 	}
 
@@ -825,6 +827,7 @@ int ifkp_load_avatar(std::string image_fname, int W, int H)
 	ifkp_avatar->video(avatar_img, W * H * 3);
 
 	shared_avatar_img->release();
+	shared_avatar_img = 0;
 
 	return 1;
 }

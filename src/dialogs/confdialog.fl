@@ -1184,14 +1184,12 @@ progdefaults.changed = true;}
 progdefaults.changed = true;
 set_macroLabels();
 UI_select();}
-                tooltip {Height of macro bar} xywh {215 85 89 22} type Simple align 8 minimum 22 maximum 66 step 2 value 22
+                tooltip {Height of macro bar} xywh {215 85 89 22} type Simple align 8 minimum 18 maximum 30 step 1 value 20
                 code0 {o->value(progdefaults.macro_height);}
               }
               Fl_Round_Button btn_scheme_0 {
                 label {One above Rx/Tx}
                 callback {progdefaults.mbar_scheme = 0;
-progdefaults.macro_height = 22;
-cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
 progdefaults.changed = true;}
@@ -1201,8 +1199,6 @@ variable height} xywh {61 113 144 22} type Radio down_box ROUND_DOWN_BOX
               Fl_Round_Button btn_scheme_1 {
                 label {One above waterfall}
                 callback {progdefaults.mbar_scheme = 1;
-progdefaults.macro_height = 22;
-cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
 progdefaults.changed = true;}
@@ -1211,8 +1207,6 @@ progdefaults.changed = true;}
               Fl_Round_Button btn_scheme_2 {
                 label {One below waterfall}
                 callback {progdefaults.mbar_scheme = 2;
-progdefaults.macro_height = 22;
-cnt_macro_height->value(22);
 set_macroLabels();
 UI_select();
 progdefaults.changed = true;}
@@ -1325,19 +1319,6 @@ progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
                 tooltip {Write current macro set on program exit} xywh {345 280 216 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
-              }
-            }
-            Fl_Group {} {
-              label {Change takes effect after program restart} open
-              xywh {5 330 590 55} box ENGRAVED_FRAME align 17
-            } {
-              Fl_Check_Button btn_dockable_macros {
-                label {Disable dockable macro bar}
-                callback {progdefaults.dockable_macros = !o->value();
-progdefaults.changed = true;}
-                tooltip {Allow minimized main dialog height
-411 pixels with WF height = 100} xywh {152 353 296 20} down_box DOWN_BOX
-                code0 {o->value(!progdefaults.dockable_macros);}
               }
             }
           }

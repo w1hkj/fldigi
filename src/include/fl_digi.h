@@ -46,12 +46,11 @@
 #include "smeter.h"
 #include "pwrmeter.h"
 #include "picture.h"
-#include "dropwin.h"
 
 extern fre_t seek_re;
 
-//extern Fl_Double_Window *fl_digi_main;
-extern dropwin			*fl_digi_main;
+extern Fl_Double_Window *fl_digi_main;
+//extern dropwin			*fl_digi_main;
 
 extern Fl_Double_Window *scopeview;
 //extern Fl_Double_Window *opBrowserView;
@@ -233,7 +232,7 @@ extern void			cb_ifkp_heard(Fl_Browser*, void*);
 
 extern void			enableSELCAL();
 
-extern unsigned char tux_img[];
+extern unsigned char tux_img[59*74*3];
 
 extern void			cbFSQQTC(Fl_Widget *w, void *d);
 extern void			cbFSQQTH(Fl_Widget *w, void *d);
