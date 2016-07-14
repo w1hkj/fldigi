@@ -245,7 +245,7 @@ int pa_set_dev(Fl_Choice *loc_choice, std::string loc_dev_name, int loc_dev_inde
 		}
 	}
 
-	if (loc_idx > 0) {
+	if (loc_idx >= 0) {
 		loc_choice->value(loc_idx);
 		loc_choice->set_changed();
 	}
