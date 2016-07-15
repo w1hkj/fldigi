@@ -1735,8 +1735,8 @@ int xmltest_char()
 		xmltest_char_available = false;
 		return -3;
 	}
-	snprintf(xml_status_msg, sizeof(xml_status_msg), "%lu%% sent",
-		100*pxmlchar/xmlchars.length());
+	snprintf(xml_status_msg, sizeof(xml_status_msg), "%d%% sent",
+		static_cast<int>(100*pxmlchar/xmlchars.length()));
 	put_status(xml_status_msg, 1.0);
 	return xmlchars[pxmlchar++] & 0xFF;
 }
