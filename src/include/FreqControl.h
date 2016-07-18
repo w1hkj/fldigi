@@ -83,7 +83,7 @@ public:
 	int  handle(int event);
 
 	void set_lsd(int val) {
-		int temp;
+		int temp = precision;
 		if (val < 0) return;
 		if (val > 3) return;
 		if (val == 0) temp = 1;

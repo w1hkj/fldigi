@@ -120,7 +120,7 @@ public:
         }
         size_t read(T* dst, size_t n)
         {
-                vector_type v[2];
+                vector_type v[2] = { {0,0}, {0,0} };
                 n = get_rv(v, n);
 
                 memcpy(dst, v[0].buf, v[0].len * sizeof(T));
@@ -132,7 +132,7 @@ public:
         }
         size_t peek(T* dst, size_t n)
         {
-                vector_type v[2];
+                vector_type v[2] = { {0,0}, {0,0} };
                 n = get_rv(v, n);
 
                 memcpy(dst, v[0].buf, v[0].len * sizeof(T));
@@ -166,7 +166,7 @@ public:
         }
         size_t write(const T* src, size_t n)
         {
-                vector_type v[2];
+                vector_type v[2] = { {0,0}, {0,0} };
                 n = get_wv(v, n);
 
                 memcpy(v[0].buf, src, v[0].len * sizeof(T));

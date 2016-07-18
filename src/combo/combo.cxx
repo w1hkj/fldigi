@@ -60,8 +60,8 @@ int Fl_PopBrowser::handle(int event)
 		return 1;
  	}
 	if (event == FL_KEYDOWN) {
-		int  kbd = Fl::event_key();
-		char key = Fl::event_text()[0];
+		int kbd = Fl::event_key();
+		int key = Fl::event_text()[0];
 		if (kbd == FL_Down) {
 			if (popbrwsr->value() < popbrwsr->size())
 				popbrwsr->select(popbrwsr->value() + 1);
@@ -88,7 +88,7 @@ int Fl_PopBrowser::handle(int event)
 			pophide();
 			return 0;
 		}
-		if (key >= ' ' || key <= 0x7f) {
+		if (key >= ' ' && key <= 0x7f) {
 			keystrokes += key;
 			for (int i = 0; i < cbx->listsize; i++) {
 				if (strncasecmp(keystrokes.c_str(),
