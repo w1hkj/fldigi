@@ -22,6 +22,7 @@
 
 
 #if defined(_WINDOWS)
+#undef _WINSOCKAPI_
 # include <stdio.h>
 # include <winsock2.h>
 //# pragma lib(WS2_32.lib)

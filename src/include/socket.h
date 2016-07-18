@@ -34,6 +34,7 @@
 #  endif
 #  include <netinet/in.h>
 #else
+#undef _WINSOCKAPI_
 #  include <winsock2.h>
 #  include <windows.h>
 #  ifndef ENOTCONN

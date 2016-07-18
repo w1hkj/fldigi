@@ -33,6 +33,7 @@
 #endif // __FreeBSD__
 
 #if defined(_WINDOWS)
+#undef _WINSOCKAPI_
 # include <winsock2.h>
 
 # define USE_FTIME

@@ -23,6 +23,8 @@
 
 #include <sys/types.h>
 #include <pthread.h>
+
+#undef _WINSOCKAPI_
 #include <winsock2.h>
 
 #ifdef __cplusplus
