@@ -18,6 +18,9 @@ to the receive mode, i.e. after the \<RX\> tag (^r) is executed.
 \<\@RIGMODE:mode\>           | send CAT command to transceiver to change to a valid mode
 \<\@FILWID:width\>           | send CAT command to transceiver to change to a valid filter <br> width example to QSY to sweetspot (center of bandpass filter) and select <br> narrow filter
 \<\@TXRSID:on\|off\|t\>      | transmit RSID on, off, toggle
+\<@PUSH:m|f\>                | Push (save) current mode(m), freq(f) for later retrieval
+\<@PUSH\>                    | Push both mode and freq for later retrieval
+\<@POP\>                     | Pop (restore) pushed mode and/or freq
 <br>
 
 Note that each of these tags is identical to their immediate mode

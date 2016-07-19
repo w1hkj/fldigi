@@ -78,6 +78,7 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<ANTENNA>\tmy antenna"));
 	w->add(_("<BAND>\toperating band"));
 	w->add(_("<VER>\tFldigi version"));
+	w->add(_("<DIGI>\tdigital mode (adif)"));
 
 	w->add(LINE_SEP);
 	w->add(_("<CALL>\tother call"));
@@ -219,6 +220,10 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(LINE_SEP);
 	w->add(_("<CSV:on|off|t>\tAnalysis CSV on,off,toggle"));
 
+	w->add(LINE_SEP);
+	w->add(_("<PUSH>\tpush current mode to stack"));
+	w->add(_("<PUSH:m|f\tpush current mode / audio freq to stack"));
+	w->add(_("<POP>\tpop current mode/freq from stack"));
 	w->add(LINE_SEP);
 	assert(MODE_CONTESTIA < MODE_OLIVIA);
 	char s[256];

@@ -63,6 +63,8 @@ Macro       | Description
 \<MYRST\>   | my RST
 \<ANTENNA\> | configuration antenna
 \<VER\>     | Fldigi version
+\<DIGI\>    | insert ADIF mode specifier
+\<WFFREQ\>  | audio tracking frequency
 <br>
 
 Macro       | Description
@@ -141,11 +143,14 @@ Macro      | Description
 
 Macro       | Description
 :---------: | :----------------------------
-\<GOHOME\>   | return to waterfall cursor to sweet spot
-\<GOFREQ:NNNN\>  | move waterfall cursor to freq NNNN Hz
-\<QSYTO\>        | same as left-clk on QSY button
-\<QSYFM\>        | same as right-clk QSY button
+\<GOHOME\>           | return to waterfall cursor to sweet spot
+\<GOFREQ:NNNN\>      | move waterfall cursor to freq NNNN Hz
+\<QSYTO\>            | same as left-clk on QSY button
+\<QSYFM\>            | same as right-clk QSY button
 \<QSY:FFF.F[:NNNN]\> | Qsy to transceiver frequency in kHz, optional waterfall <br> (Audio) frequency in Hz (If not specified, it i not changed). Several QSY <br> frequencies, or ranges of frequencies provided by one increment, can be <br> proposed, in which case the first frequency after the current frequency <br> is chosen.
+\<PUSH:m|f\>         | Push (save) current mode(m), freq(f) for later retrieval
+\<PUSH\>             | Push both mode and freq for later retrieval
+\<POP\>              | Pop (restore) pushed mode and/or freq
 <br>
 
 Macro       | Description

@@ -66,10 +66,14 @@
 #include <string>
 #include <fstream>
 #include <queue>
+#include <stack>
 
 #ifdef __WIN32__
 #include "speak.h"
 #endif
+
+#include <float.h>
+#include "re.h"
 
 //using namespace std;
 
@@ -127,6 +131,7 @@ void rx_que_continue(void *);
 
 static void postQueue(std::string s)
 {
+	if (!progdefaults.macro_post) return;
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_rx_text->addstr(s, FTextBase::CTRL);
 	else
@@ -848,6 +853,176 @@ static void pTxQueWPM(std::string &s, size_t &i, size_t endbracket)
 		return;
 	}
 	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doWPM };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+struct STRpush {
+	string smode;
+	int    freq;
+	STRpush() { smode = ""; freq = -1; }
+};
+
+stack<STRpush> mf_stack;
+
+//static string mf_stack = "";
+
+static void mMODEM(std::string s)
+{
+	trx_mode m;
+	for (m = 0; m < NUM_MODES; m++)
+		if (s == mode_info[m].sname)
+			break;
+	if (m == NUM_MODES) {
+		return;
+	}
+	if (active_modem->get_mode() != mode_info[m].mode)
+		init_modem_sync(mode_info[m].mode);
+}
+
+static void mFREQ(int f)
+{
+	active_modem->set_freq(f);
+	wf->redraw();
+}
+
+static void doPOP(std::string s)
+{
+	if (!mf_stack.empty()) {
+		STRpush psh = mf_stack.top();
+		mf_stack.pop();
+		LOG_INFO("%s, %d", psh.smode.c_str(), psh.freq);
+		if (psh.freq != -1) mFREQ(psh.freq);
+		if (!psh.smode.empty()) mMODEM(psh.smode);
+	} else
+		LOG_INFO("%s", "stack empty");
+	que_ok = true;
+}
+
+static void pPOP(std::string &s, size_t &i, size_t endbracket)
+{
+	if (!mf_stack.empty()) {
+		STRpush psh = mf_stack.top();
+		mf_stack.pop();
+		LOG_INFO("%s, %d", psh.smode.c_str(), psh.freq);
+		if (psh.freq != -1) mFREQ(psh.freq);
+		if (!psh.smode.empty()) mMODEM(psh.smode);
+	} else
+		LOG_INFO("%s", "stack empty");
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void pTxQuePOP(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOP };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQuePOP(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPOP };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "");
+}
+
+static void doPUSHmode(std::string s)
+{
+	STRpush psh;
+	if (s[5] == '>') {
+		psh.smode = mode_info[active_modem->get_mode()].sname;
+		psh.freq = active_modem->get_freq();
+	} else {
+		if (s[5] == ':') {
+			if (s[6] == 'm' || s[7] == 'm')
+				psh.smode = mode_info[active_modem->get_mode()].sname;
+			if (s[6] == 'f' || s[7] == 'f')
+				psh.freq = active_modem->get_freq();
+		}
+	}
+	LOG_INFO("%s, %d", psh.smode.c_str(), psh.freq);
+	mf_stack.push(psh);
+	que_ok = true;
+}
+
+static void pTxQuePUSH(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPUSHmode };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pRxQuePUSH(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doPUSHmode };
+	push_rxcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pPUSH(std::string &s, size_t &i, size_t endbracket)
+{
+	STRpush psh;
+	if (s[5] == '>') {
+		psh.smode = mode_info[active_modem->get_mode()].sname;
+		psh.freq = active_modem->get_freq();
+	} else {
+		if (s[5] == ':') {
+			if (s[6] == 'm' || s[7] == 'm')
+				psh.smode = mode_info[active_modem->get_mode()].sname;
+			if (s[6] == 'f' || s[7] == 'f')
+				psh.freq = active_modem->get_freq();
+		}
+	}
+	LOG_INFO("%s, %d", psh.smode.c_str(), psh.freq);
+	mf_stack.push(psh);
+	s.replace(i, endbracket - i + 1, "");
+	return;
+}
+
+static void pDIGI(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace(i, endbracket - i + 1, mode_info[active_modem->get_mode()].adif_name);
+}
+
+string macrochar = "";
+static void doTxDIGI(std::string s)
+{
+	macrochar = mode_info[active_modem->get_mode()].adif_name;
+	que_ok = true;
+}
+
+static void pTxDIGI(std::string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTxDIGI };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void doTxFREQ(std::string s)
+{
+	macrochar = inpFreq->value();
+	que_ok = true;
+}
+
+static void pTxFREQ(std::string &s, size_t &i, size_t endbracket)
+{
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doTxFREQ };
 	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
 }
@@ -1963,9 +2138,6 @@ void TxQueINSERTIMAGE(std::string s)
 	else
 		TransmitText->add_text(itext);
 }
-
-#include <float.h>
-#include "re.h"
 
 static void doMODEM(std::string s)
 {
@@ -3345,6 +3517,7 @@ void queue_reset()
 		while (!Tx_cmds.empty()) Tx_cmds.pop();
 	}
 	while (!Rx_cmds.empty()) Rx_cmds.pop();
+	while (!mf_stack.empty()) mf_stack.pop();
 	Qwait_time = 0;
 	Qidle_time = 0;
 	que_ok = true;
@@ -3364,14 +3537,15 @@ void Tx_queue_execute()
 	CMDS cmd = Tx_cmds.front();
 	Tx_cmds.pop();
 	LOG_INFO("%s", cmd.cmd.c_str());
-	REQ(postQueue, cmd.cmd.append("\n"));
+	REQ(postQueue, cmd.cmd);
 	cmd.fp(cmd.cmd);
 	return;
 }
 
 bool queue_must_rx()
 {
-	static std::string must_rx = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL";
+// return true if current command is not a member 'must_rx'
+	static std::string must_rx = "<!MOD<!WAI<!GOH<!QSY<!GOF<!RIG<!FIL<!PUS<!POP";//<!DIG<!FRE";
 	if (Tx_cmds.empty()) return false;
 	CMDS cmd = Tx_cmds.front();
 	return (must_rx.find(cmd.cmd.substr(0,5)) != std::string::npos);
@@ -3402,7 +3576,7 @@ void Rx_queue_execution(void *)
 		cmd = Rx_cmds.front();
 		Rx_cmds.pop();
 		LOG_INFO("%s", cmd.cmd.c_str());
-		REQ(postQueue, cmd.cmd.append("\n"));
+		REQ(postQueue, cmd.cmd);
 		cmd.cmd.erase(0,2);
 		cmd.cmd.insert(0,"<!");
 		cmd.fp(cmd.cmd);
@@ -3533,6 +3707,9 @@ static const MTAGS mtags[] = {
 {"<REPEAT>",	pREPEAT},
 {"<SKED:",		pSKED},
 {"<TXATTEN:",	pTXATTEN},
+{"<POP>",		pPOP},
+{"<PUSH",		pPUSH},
+{"<DIGI>",		pDIGI},
 #ifdef __WIN32__
 	{"<TALK:",		pTALK},
 #endif
@@ -3557,6 +3734,10 @@ static const MTAGS mtags[] = {
     {"<!RIGLO:",    pTxQueRIGLO},
 	{"<!TXATTEN:",	pTxQueTXATTEN},
 	{"<!RIGCAT:",	pTxQueRIGCAT},
+	{"<!PUSH",		pTxQuePUSH},
+	{"<!POP>",		pTxQuePOP},
+	{"<!DIGI>",		pTxDIGI},
+	{"<!FREQ>",		pTxFREQ},
 // Rx After action
 	{"<@MODEM:",	pRxQueMODEM},
 	{"<@RIGCAT:",	pRxQueRIGCAT},
@@ -3568,6 +3749,8 @@ static const MTAGS mtags[] = {
     {"<@RIGLO:",    pRxQueRIGLO},
 	{"<@TXRSID:",	pRxQueTXRSID},
 	{"<@WAIT:",     pRxQueWAIT},
+	{"<@PUSH",		pRxQuePUSH},
+	{"<@POP>",		pRxQuePOP},
 
 	{0, 0}
 };

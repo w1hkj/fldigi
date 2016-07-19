@@ -85,6 +85,7 @@ extern std::string exec_date;
 extern std::string exec_time;
 extern std::string exec_string;
 extern std::string text2repeat;
+extern std::string macrochar;
 
 extern bool macro_idle_on;
 extern size_t repeatchar;

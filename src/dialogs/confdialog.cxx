@@ -1045,6 +1045,13 @@ progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_macro_post=(Fl_Check_Button *)0;
+
+static void cb_btn_macro_post(Fl_Check_Button* o, void*) {
+  progdefaults.macro_post = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWF_UI=(Fl_Group *)0;
 
 Fl_Check_Button *btnWF_UIrev=(Fl_Check_Button *)0;
@@ -6024,6 +6031,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6160,11 +6168,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6787,7 +6795,6 @@ ab and newline are automatically included."));
           } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 335, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
-            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 248, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -6900,6 +6907,16 @@ ab and newline are automatically included."));
                 btn_save_macros_on_exit->callback((Fl_Callback*)cb_btn_save_macros_on_exit);
                 o->value(progdefaults.SaveMacros);
               } // Fl_Check_Button* btn_save_macros_on_exit
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 330, 590, 55);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btn_macro_post = new Fl_Check_Button(65, 345, 216, 20, _("Show macro control codes"));
+                btn_macro_post->tooltip(_("print ^! execution codes in Rx panel"));
+                btn_macro_post->down_box(FL_DOWN_BOX);
+                btn_macro_post->callback((Fl_Callback*)cb_btn_macro_post);
+                o->value(progdefaults.macro_post);
+              } // Fl_Check_Button* btn_macro_post
               o->end();
             } // Fl_Group* o
             tabMBars->end();
@@ -8647,7 +8664,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Choice* sel_fsq_heard_aging
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 125, 585, 85, _("Tx Parameters"));
+            { Fl_Group* o = new Fl_Group(5, 125, 585, 95, _("Tx Parameters"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Round_Button* o = btn_fsqbaud[0] = new Fl_Round_Button(150, 135, 55, 15, _("2 baud"));

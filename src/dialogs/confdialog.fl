@@ -366,8 +366,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 600 360} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 600 360} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -467,14 +467,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 365} hide
+        tooltip {User Interface} xywh {0 25 600 365}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 335}
+            tooltip {User Interface - Browser} xywh {0 50 600 335} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1161,7 +1161,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMBars {
             label Macros open
-            tooltip {User Interface - Macros} xywh {0 50 600 335} hide
+            tooltip {User Interface - Macros} xywh {0 50 600 335}
           } {
             Fl_Group {} {open
               xywh {5 240 590 35} box ENGRAVED_FRAME
@@ -1319,6 +1319,17 @@ progdefaults.SaveMacros = o->value();
 progdefaults.changed = true;}
                 tooltip {Write current macro set on program exit} xywh {345 280 216 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.SaveMacros);}
+              }
+            }
+            Fl_Group {} {open
+              xywh {5 330 590 55} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btn_macro_post {
+                label {Show macro control codes}
+                callback {progdefaults.macro_post = o->value();
+progdefaults.changed = true;} selected
+                tooltip {print ^! execution codes in Rx panel} xywh {65 345 216 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.macro_post);}
               }
             }
           }
@@ -3614,7 +3625,7 @@ progdefaults.changed = true;} open
             }
             Fl_Group {} {
               label {Tx Parameters} open
-              xywh {5 125 585 85} box ENGRAVED_BOX align 21
+              xywh {5 125 585 95} box ENGRAVED_BOX align 21
             } {
               Fl_Round_Button {btn_fsqbaud[0]} {
                 label {2 baud}

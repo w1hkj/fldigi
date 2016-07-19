@@ -5704,15 +5704,16 @@ void create_fl_digi_main_primary() {
 
 	main_hmin = Htext + fixed_height;
 
-cout << "=============================================================" << endl;
-cout << "min main_height ..... " << main_hmin << endl;
-cout << " = Hmenu ............ " << Hmenu << endl;
-cout << " + Hqsoframe ........ " << Hqsoframe << endl;
-cout << " + Hwfall ........... " << Hwfall << endl;
-cout << " + Hstatus  ......... " << Hstatus << endl;
-cout << " + Hmacros .......... " << hmacros << endl;
-cout << " + text height ...... " << Htext << endl;
-cout << "=============================================================" << endl;
+// developer usage
+//cout << "=============================================================" << endl;
+//cout << "min main_height ..... " << main_hmin << endl;
+//cout << " = Hmenu ............ " << Hmenu << endl;
+//cout << " + Hqsoframe ........ " << Hqsoframe << endl;
+//cout << " + Hwfall ........... " << Hwfall << endl;
+//cout << " + Hstatus  ......... " << Hstatus << endl;
+//cout << " + Hmacros .......... " << hmacros << endl;
+//cout << " + text height ...... " << Htext << endl;
+//cout << "=============================================================" << endl;
 
 	if (progStatus.mainH < main_hmin) {
 		progStatus.mainH = main_hmin;
@@ -6245,7 +6246,7 @@ cout << "=============================================================" << endl;
 					NotesFrame->end();
 
 					ifkp_avatar = new picture(
-						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, TopFrame1->y() + pad, 
+						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, TopFrame1->y() + pad,
 						59, 74);
 					ifkp_avatar->box(FL_FLAT_BOX);
 					ifkp_avatar->noslant();
@@ -6255,7 +6256,7 @@ cout << "=============================================================" << endl;
 					ifkp_avatar->hide();
 
 					thor_avatar = new picture(
-						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, TopFrame1->y() + pad, 
+						QsoInfoFrame2->x() + QsoInfoFrame2->w() - 59, TopFrame1->y() + pad,
 						59, 74);
 					thor_avatar->box(FL_FLAT_BOX);
 					thor_avatar->noslant();
@@ -6541,8 +6542,8 @@ cout << "=============================================================" << endl;
 			int remainder = tbar->w() - Wbtn * 12;
 			tbar->box(FL_FLAT_BOX);
 			for (int i = 0; i < 48; i++) {
-				btnDockMacro[i] = new Fl_Button( 
-					xpos, ypos, 
+				btnDockMacro[i] = new Fl_Button(
+					xpos, ypos,
 					(remainder > 0) ? Wbtn + 1 : Wbtn, TB_HEIGHT, "");
 				remainder--;
 				btnDockMacro[i]->box(FL_THIN_UP_BOX);
@@ -8542,6 +8543,12 @@ int get_tx_char(void)
 	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
 	if (idling) { return GET_TX_CHAR_NODATA; }
 
+	if (!macrochar.empty()) {
+		int ch = macrochar[0];
+		macrochar.erase(0,1);
+		return ch;
+	}
+
 	if (xmltest_char_available) {
 		num_cps_chars++;
 		return xmltest_char();
@@ -8653,12 +8660,12 @@ int get_tx_char(void)
 			if (queue_must_rx()) {
 				que_timeout = 400; // 20 seconds
 				REQ(queue_execute_after_rx, (void *)0);
-				while(que_waiting) { MilliSleep(100); Fl::awake(); }
+				while(que_waiting) { MilliSleep(10); Fl::awake(); }
 				return(GET_TX_CHAR_ETX);
 			} else {
 				REQ(do_que_execute, (void*)0);
-				while(que_waiting) { MilliSleep(100); Fl::awake(); }
-				return(GET_TX_CHAR_NODATA);
+				while(que_waiting) { MilliSleep(10); Fl::awake(); }
+				return (GET_TX_CHAR_NODATA);
 			}
 			break;
 		default:

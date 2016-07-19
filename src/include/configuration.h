@@ -1340,6 +1340,9 @@
               "# and position of macro bars\n"                                          \
               "0..12, 1 = default",                                                     \
               1)                                                                        \
+        ELEM_(bool, macro_post, "MACROPOST",                                            \
+              "expand ^! macro tags in Rx panel when executed",                         \
+              false)                                                                    \
         ELEM_(double, txlevel, "TXATTEN",                                               \
               "TX attenuator (db) -30 .. 0",                                            \
               -3.0)                                                                     \

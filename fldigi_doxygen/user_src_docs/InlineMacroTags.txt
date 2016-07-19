@@ -21,6 +21,11 @@ during the transmission of the macro.
 \<!IDLE:NN.nn\>            | Transmit idle signal for specified number of seconds
 \<!WAIT:NN\>               | Wait (no audio) for specified number of seconds
 \<!WPM:ww[:ff]\>           | CW - ww = WPM, optional ff = Farnsworth wpm
+\<!PUSH:m|f\>              | Push (save) current mode(m), freq(f) for later retrieval
+\<!PUSH\>                  | Push both mode and freq for later retrieval
+\<!POP\>                   | Pop (restore) pushed mode and/or freq
+\<!DIGI\>                  | insert ADIF mode specifier
+\<!FREQ\>                  | RF transmit modem center frequency
 
 <br>
 
