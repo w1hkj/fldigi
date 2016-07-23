@@ -562,8 +562,8 @@ int main(int argc, char ** argv)
 	if (Fl::args(argc, argv, arg_idx, parse_args) != argc)
 		arg_error(argv[0], NULL, false);
 
-	if (main_window_title.empty())
-		main_window_title = PACKAGE_TARNAME;
+	if (argv_window_title.empty())
+		argv_window_title.assign(PACKAGE_TARNAME);
 
 #ifdef __WOE32__
 	if (HomeDir.empty()) HomeDir.assign(BaseDir).append("fldigi.files/");
@@ -1017,9 +1017,9 @@ int parse_args(int argc, char **argv, int& idx)
 	if (!(strlen(argv[idx]) >= 2 && strncmp(argv[idx], "--", 2) == 0)) {
 		// Store the window title. We may need this early in the initialisation
 		// process, before FLTK uses it to set the main window title.
-		if (main_window_title.empty() && argc > idx &&
+		if (argv_window_title.empty() && argc > idx &&
 		    (!strcmp(argv[idx], "-ti") || !strcmp(argv[idx], "-title")))
-			main_window_title = argv[idx + 1];
+			argv_window_title = argv[idx + 1];
 		else if (!strcmp(argv[idx], "-i") || !strcmp(argv[idx], "-iconic"))
 			iconified = true;
 		return 0;

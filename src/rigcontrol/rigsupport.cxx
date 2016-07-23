@@ -517,10 +517,6 @@ void qso_updateEntry(int i, std::string usage)
 
 void setTitle()
 {
-	if (windowTitle.empty()) return;
-	size_t p = main_window_title.find(" / ");
-	if (p != string::npos) main_window_title.erase(p);
-	main_window_title.append(" / ").append(windowTitle);
 	update_main_title();
 }
 
@@ -528,7 +524,7 @@ bool init_Xml_RigDialog()
 {
 	LOG_DEBUG("xml rig");
 	initOptionMenus();
-	windowTitle = xmlrig.rigTitle;
+	xcvr_title = xmlrig.rigTitle;
 	setTitle();
 	return true;
 }
@@ -536,12 +532,16 @@ bool init_Xml_RigDialog()
 bool init_NoRig_RigDialog()
 {
 	LOG_DEBUG("no rig");
+	qso_opBW->clear();
+	qso_opBW->add("  ");
+	qso_opBW->index(0);
+	qso_opBW->redraw();
 	qso_opBW->deactivate();
 	qso_opMODE->clear();
 
-printf("init_NoRig_RigDialog()\n");
+//printf("init_NoRig_RigDialog()\n");
 	for (size_t i = 0; i < sizeof(modes)/sizeof(modes[0]); i++) {
-printf("adding %s\n", modes[i].name);
+//printf("adding %s\n", modes[i].name);
 		qso_opMODE->add(modes[i].name);
 	}
 // list of LSB type modes that various xcvrs report via flrig
@@ -567,7 +567,7 @@ printf("adding %s\n", modes[i].name);
 	qso_opMODE->index(3);
 	qso_opMODE->activate();
 
-	windowTitle.clear();
+	xcvr_title.clear();
 	setTitle();
 
 	return true;
@@ -587,8 +587,8 @@ bool init_Hamlib_RigDialog()
 		qso_opMODE->add(modes[i].name);
 	}
 
-	windowTitle = "Hamlib ";
-	windowTitle.append(xcvr->getName());
+	xcvr_title = "Hamlib ";
+	xcvr_title.append(xcvr->getName());
 
 	setTitle();
 

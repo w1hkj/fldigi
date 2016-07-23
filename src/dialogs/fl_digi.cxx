@@ -4878,10 +4878,16 @@ int below(Fl_Widget* w)
 	return (a & FL_ALIGN_BOTTOM) ? w->y() + w->h() + FL_NORMAL_SIZE : w->y() + w->h();
 }
 
+string argv_window_title;
 string main_window_title;
+string xcvr_title;
 void update_main_title()
 {
-	string buf = main_window_title;
+	string buf = argv_window_title;
+	buf.append(" ver").append(PACKAGE_VERSION);
+	if (!xcvr_title.empty()) {
+		buf.append(" / ").append(xcvr_title);
+	}
 	buf.append(" - ");
 	if (bWF_only)
 		buf.append(_("waterfall-only mode"));

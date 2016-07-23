@@ -286,7 +286,9 @@ extern int				altMacros;
 extern waterfall		*wf;
 extern Digiscope		*digiscope;
 
+extern std::string		argv_window_title;
 extern std::string		main_window_title;
+extern std::string		xcvr_title;
 
 extern int Qwait_time;
 extern int Qidle_time;
