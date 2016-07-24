@@ -3817,15 +3817,72 @@ Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
 
+Fl_Group *tabFLRIG=(Fl_Group *)0;
+
+Fl_Check_Button *chk_flrig_keys_modem=(Fl_Check_Button *)0;
+
+static void cb_chk_flrig_keys_modem(Fl_Check_Button* o, void*) {
+  progdefaults.flrig_keys_modem = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnDefault_flrig_ip_mirror=(Fl_Button *)0;
+
+static void cb_btnDefault_flrig_ip_mirror(Fl_Button*, void*) {
+  set_ip_to_default(FLRIG_IO);
+txt_flrig_ip_address_mirror->value(progdefaults.flrig_ip_address.c_str());
+txt_flrig_ip_port_mirror->value(progdefaults.flrig_ip_port.c_str());
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_flrig_ip_address_mirror=(Fl_Input2 *)0;
+
+static void cb_txt_flrig_ip_address_mirror(Fl_Input2* o, void*) {
+  progdefaults.flrig_ip_address = o->value();
+txt_flrig_ip_address->value(progdefaults.flrig_ip_address.c_str());
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_flrig_ip_port_mirror=(Fl_Input2 *)0;
+
+static void cb_txt_flrig_ip_port_mirror(Fl_Input2* o, void*) {
+  progdefaults.flrig_ip_port = o->value();
+txt_flrig_ip_port->value(progdefaults.flrig_ip_port.c_str());
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_reconnect_flrig_server_mirror=(Fl_Button *)0;
+
+static void cb_btn_reconnect_flrig_server_mirror(Fl_Button*, void*) {
+  reconnect_to_flrig();
+}
+
+Fl_Check_Button *btn_fldigi_client_to_fldigi=(Fl_Check_Button *)0;
+
+static void cb_btn_fldigi_client_to_fldigi(Fl_Check_Button* o, void*) {
+  progdefaults.fldigi_client_to_flrig=o->value();
+if (o->value()) {
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.chkUSEXMLRPCis = false;
+  chkUSEHAMLIB->value(0);
+  chkUSEXMLRPC->value(0);
+  chkUSERIGCAT->value(0);
+}
+progdefaults.changed=true;
+}
+
 Fl_Check_Button *chkUSERIGCAT=(Fl_Check_Button *)0;
 
 static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
   chkUSEXMLRPC->value(0);
+  btn_fldigi_client_to_fldigi->value(0);
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
   progdefaults.chkUSEXMLRPCis = false;
+  progdefaults.fldigi_client_to_flrig = false;
   } else {
   progdefaults.chkUSERIGCATis = false;
   }
@@ -4014,8 +4071,10 @@ static void cb_chkUSEHAMLIB(Fl_Check_Button* o, void*) {
 if (o->value() == 1) {
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
+  btn_fldigi_client_to_fldigi->value(0);
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
+  progdefaults.fldigi_client_to_flrig = false;
 }
 
 btnInitHAMLIB->labelcolor(FL_RED);
@@ -4203,6 +4262,43 @@ static void cb_val_hamlib_mode_delay(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabXMLRPC=(Fl_Group *)0;
+
+Fl_Group *grpXMLRPC=(Fl_Group *)0;
+
+Fl_Check_Button *chkUSEXMLRPC=(Fl_Check_Button *)0;
+
+static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
+  progdefaults.chkUSEXMLRPCis = o->value();
+if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  btn_fldigi_client_to_fldigi->value(0);
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.fldigi_client_to_flrig = false;
+}
+
+btnInitXMLRPC->labelcolor(FL_RED);
+btnInitXMLRPC->redraw_label();
+progdefaults.changed = true;
+}
+
+Fl_Button *btnInitXMLRPC=(Fl_Button *)0;
+
+static void cb_btnInitXMLRPC(Fl_Button* o, void*) {
+  progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;
+}
+
+Fl_Counter *mbw_delay=(Fl_Counter *)0;
+
+static void cb_mbw_delay(Fl_Counter* o, void*) {
+  progdefaults.mbw=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Check_Button *btnPTTrightchannel=(Fl_Check_Button *)0;
 
 static void cb_btnPTTrightchannel(Fl_Check_Button* o, void*) {
@@ -4349,50 +4445,6 @@ Fl_Counter *cntPTT_off_delay=(Fl_Counter *)0;
 
 static void cb_cntPTT_off_delay(Fl_Counter* o, void*) {
   progdefaults.PTT_off_delay = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Group *tabXMLRPC=(Fl_Group *)0;
-
-Fl_Group *grpXMLRPC=(Fl_Group *)0;
-
-Fl_Check_Button *chkUSEXMLRPC=(Fl_Check_Button *)0;
-
-static void cb_chkUSEXMLRPC(Fl_Check_Button* o, void*) {
-  progdefaults.chkUSEXMLRPCis = o->value();
-if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
-  progdefaults.chkUSERIGCATis = false;
-}
-
-btnInitXMLRPC->labelcolor(FL_RED);
-btnInitXMLRPC->redraw_label();
-progdefaults.changed = true;
-}
-
-Fl_Button *btnInitXMLRPC=(Fl_Button *)0;
-
-static void cb_btnInitXMLRPC(Fl_Button* o, void*) {
-  progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;
-}
-
-Fl_Counter *mbw_delay=(Fl_Counter *)0;
-
-static void cb_mbw_delay(Fl_Counter* o, void*) {
-  progdefaults.mbw=o->value();
-progdefaults.changed=true;
-}
-
-Fl_Group *tabFLRIG=(Fl_Group *)0;
-
-Fl_Check_Button *chk_flrig_keys_modem=(Fl_Check_Button *)0;
-
-static void cb_chk_flrig_keys_modem(Fl_Check_Button* o, void*) {
-  progdefaults.flrig_keys_modem = o->value();
 progdefaults.changed = true;
 }
 
@@ -9801,8 +9853,80 @@ le Earth)"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 600, 360);
           tabsRig->selection_color(FL_LIGHT1);
+          { tabFLRIG = new Fl_Group(0, 50, 600, 335, _("flrig"));
+            { Fl_Group* o = new Fl_Group(10, 210, 580, 90, _("\"Disable PTT keys modem if multiple instances of fldigi (client)\nare connec\
+ted to a single flrig (server)."));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = chk_flrig_keys_modem = new Fl_Check_Button(240, 258, 183, 20, _("Flrig PTT keys modem"));
+                chk_flrig_keys_modem->tooltip(_("\" \""));
+                chk_flrig_keys_modem->down_box(FL_DOWN_BOX);
+                chk_flrig_keys_modem->callback((Fl_Callback*)cb_chk_flrig_keys_modem);
+                o->value(progdefaults.flrig_keys_modem);
+              } // Fl_Check_Button* chk_flrig_keys_modem
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(10, 125, 580, 81, _("flrig xmlrpc server parameters\nthese controls are mirrored on the IO configu\
+ration tab"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { btnDefault_flrig_ip_mirror = new Fl_Button(414, 171, 73, 24, _("Default"));
+                btnDefault_flrig_ip_mirror->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+                btnDefault_flrig_ip_mirror->callback((Fl_Callback*)cb_btnDefault_flrig_ip_mirror);
+              } // Fl_Button* btnDefault_flrig_ip_mirror
+              { Fl_Input2* o = txt_flrig_ip_address_mirror = new Fl_Input2(45, 171, 230, 24, _("Addr"));
+                txt_flrig_ip_address_mirror->tooltip(_("IP Address for flrig interface\nIP Address format: nnn.nnn.nnn.nnn\nor name: \
+i.e. localhost"));
+                txt_flrig_ip_address_mirror->box(FL_DOWN_BOX);
+                txt_flrig_ip_address_mirror->color(FL_BACKGROUND2_COLOR);
+                txt_flrig_ip_address_mirror->selection_color(FL_SELECTION_COLOR);
+                txt_flrig_ip_address_mirror->labeltype(FL_NORMAL_LABEL);
+                txt_flrig_ip_address_mirror->labelfont(0);
+                txt_flrig_ip_address_mirror->labelsize(14);
+                txt_flrig_ip_address_mirror->labelcolor(FL_FOREGROUND_COLOR);
+                txt_flrig_ip_address_mirror->callback((Fl_Callback*)cb_txt_flrig_ip_address_mirror);
+                txt_flrig_ip_address_mirror->align(Fl_Align(FL_ALIGN_RIGHT));
+                txt_flrig_ip_address_mirror->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.flrig_ip_address.c_str());
+              } // Fl_Input2* txt_flrig_ip_address_mirror
+              { Fl_Input2* o = txt_flrig_ip_port_mirror = new Fl_Input2(319, 171, 55, 24, _("Port"));
+                txt_flrig_ip_port_mirror->tooltip(_("IP Address Port Number"));
+                txt_flrig_ip_port_mirror->box(FL_DOWN_BOX);
+                txt_flrig_ip_port_mirror->color(FL_BACKGROUND2_COLOR);
+                txt_flrig_ip_port_mirror->selection_color(FL_SELECTION_COLOR);
+                txt_flrig_ip_port_mirror->labeltype(FL_NORMAL_LABEL);
+                txt_flrig_ip_port_mirror->labelfont(0);
+                txt_flrig_ip_port_mirror->labelsize(14);
+                txt_flrig_ip_port_mirror->labelcolor(FL_FOREGROUND_COLOR);
+                txt_flrig_ip_port_mirror->callback((Fl_Callback*)cb_txt_flrig_ip_port_mirror);
+                txt_flrig_ip_port_mirror->align(Fl_Align(FL_ALIGN_RIGHT));
+                txt_flrig_ip_port_mirror->when(FL_WHEN_CHANGED);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.flrig_ip_port.c_str());
+              } // Fl_Input2* txt_flrig_ip_port_mirror
+              { btn_reconnect_flrig_server_mirror = new Fl_Button(494, 171, 82, 24, _("Reconnect"));
+                btn_reconnect_flrig_server_mirror->tooltip(_("Press only if you change the address/port"));
+                btn_reconnect_flrig_server_mirror->callback((Fl_Callback*)cb_btn_reconnect_flrig_server_mirror);
+              } // Fl_Button* btn_reconnect_flrig_server_mirror
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(10, 68, 580, 52, _("flrig is the preferred method of tranceiver control"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_fldigi_client_to_fldigi = new Fl_Check_Button(35, 95, 70, 15, _("Enable flrig xcvr control with fldigi as client"));
+                btn_fldigi_client_to_fldigi->tooltip(_("Disable if flrig not used."));
+                btn_fldigi_client_to_fldigi->down_box(FL_DOWN_BOX);
+                btn_fldigi_client_to_fldigi->callback((Fl_Callback*)cb_btn_fldigi_client_to_fldigi);
+                o->value(progdefaults.fldigi_client_to_flrig);
+              } // Fl_Check_Button* btn_fldigi_client_to_fldigi
+              o->end();
+            } // Fl_Group* o
+            tabFLRIG->end();
+          } // Fl_Group* tabFLRIG
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("RigCAT"));
             o->tooltip(_("Rig Control using xml spec file"));
+            o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
               chkUSERIGCAT->down_box(FL_DOWN_BOX);
@@ -10279,6 +10403,45 @@ le Earth)"));
             } // Fl_Group* grpHamlib
             tabHamlib->end();
           } // Fl_Group* tabHamlib
+          { tabXMLRPC = new Fl_Group(0, 50, 600, 335, _("XML-RPC"));
+            tabXMLRPC->hide();
+            { grpXMLRPC = new Fl_Group(55, 61, 490, 160);
+              grpXMLRPC->box(FL_ENGRAVED_FRAME);
+              { Fl_Output* o = new Fl_Output(210, 80, 190, 58);
+                o->type(12);
+                o->box(FL_BORDER_BOX);
+                o->color(FL_LIGHT1);
+                o->value(_("Rig control via external\nprogram using xmlrpc\nremote calls."));
+              } // Fl_Output* o
+              { chkUSEXMLRPC = new Fl_Check_Button(210, 148, 183, 20, _("Use XML-RPC program"));
+                chkUSEXMLRPC->tooltip(_("Experimental"));
+                chkUSEXMLRPC->down_box(FL_DOWN_BOX);
+                chkUSEXMLRPC->callback((Fl_Callback*)cb_chkUSEXMLRPC);
+              } // Fl_Check_Button* chkUSEXMLRPC
+              { btnInitXMLRPC = new Fl_Button(251, 184, 113, 24, _("Initialize"));
+                btnInitXMLRPC->tooltip(_("Initialize XML-RPC rig control"));
+                btnInitXMLRPC->callback((Fl_Callback*)cb_btnInitXMLRPC);
+              } // Fl_Button* btnInitXMLRPC
+              grpXMLRPC->end();
+            } // Fl_Group* grpXMLRPC
+            { Fl_Group* o = new Fl_Group(55, 225, 490, 50);
+              o->box(FL_ENGRAVED_BOX);
+              { Fl_Counter* o = mbw_delay = new Fl_Counter(210, 239, 90, 21, _("Mode/BW delay"));
+                mbw_delay->tooltip(_("Delay in seconds between <RIGMODE... and <FILWID...\nwhen both in same macro \
+definition"));
+                mbw_delay->type(1);
+                mbw_delay->minimum(0.1);
+                mbw_delay->maximum(2);
+                mbw_delay->step(0.05);
+                mbw_delay->value(0.1);
+                mbw_delay->callback((Fl_Callback*)cb_mbw_delay);
+                mbw_delay->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.mbw);
+              } // Fl_Counter* mbw_delay
+              o->end();
+            } // Fl_Group* o
+            tabXMLRPC->end();
+          } // Fl_Group* tabXMLRPC
           { Fl_Group* o = new Fl_Group(0, 50, 600, 335, _("Hardware PTT"));
             o->hide();
             { Fl_Group* o = new Fl_Group(55, 57, 490, 38);
@@ -10399,63 +10562,6 @@ le Earth)"));
             } // Fl_Group* grpPTTdelays
             o->end();
           } // Fl_Group* o
-          { tabXMLRPC = new Fl_Group(0, 50, 600, 335, _("XML-RPC"));
-            tabXMLRPC->hide();
-            { grpXMLRPC = new Fl_Group(55, 61, 490, 160);
-              grpXMLRPC->box(FL_ENGRAVED_FRAME);
-              { Fl_Output* o = new Fl_Output(210, 80, 190, 58);
-                o->type(12);
-                o->box(FL_BORDER_BOX);
-                o->color(FL_LIGHT1);
-                o->value(_("Rig control via external\nprogram using xmlrpc\nremote calls."));
-              } // Fl_Output* o
-              { chkUSEXMLRPC = new Fl_Check_Button(210, 148, 183, 20, _("Use XML-RPC program"));
-                chkUSEXMLRPC->tooltip(_("Experimental"));
-                chkUSEXMLRPC->down_box(FL_DOWN_BOX);
-                chkUSEXMLRPC->callback((Fl_Callback*)cb_chkUSEXMLRPC);
-              } // Fl_Check_Button* chkUSEXMLRPC
-              { btnInitXMLRPC = new Fl_Button(251, 184, 113, 24, _("Initialize"));
-                btnInitXMLRPC->tooltip(_("Initialize XML-RPC rig control"));
-                btnInitXMLRPC->callback((Fl_Callback*)cb_btnInitXMLRPC);
-              } // Fl_Button* btnInitXMLRPC
-              grpXMLRPC->end();
-            } // Fl_Group* grpXMLRPC
-            { Fl_Group* o = new Fl_Group(55, 225, 490, 50);
-              o->box(FL_ENGRAVED_BOX);
-              { Fl_Counter* o = mbw_delay = new Fl_Counter(210, 239, 90, 21, _("Mode/BW delay"));
-                mbw_delay->tooltip(_("Delay in seconds between <RIGMODE... and <FILWID...\nwhen both in same macro \
-definition"));
-                mbw_delay->type(1);
-                mbw_delay->minimum(0.1);
-                mbw_delay->maximum(2);
-                mbw_delay->step(0.05);
-                mbw_delay->value(0.1);
-                mbw_delay->callback((Fl_Callback*)cb_mbw_delay);
-                mbw_delay->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.mbw);
-              } // Fl_Counter* mbw_delay
-              o->end();
-            } // Fl_Group* o
-            tabXMLRPC->end();
-          } // Fl_Group* tabXMLRPC
-          { tabFLRIG = new Fl_Group(0, 50, 600, 335, _("flrig"));
-            tabFLRIG->hide();
-            { Fl_Output* o = new Fl_Output(75, 77, 465, 58);
-              o->tooltip(_("\" \""));
-              o->type(12);
-              o->box(FL_BORDER_BOX);
-              o->color(FL_LIGHT1);
-              o->align(Fl_Align(FL_ALIGN_CENTER));
-              o->value(_("Disable this control if multiple instances of fldigi (client)\nare connected to a single flrig (server)."));
-            } // Fl_Output* o
-            { Fl_Check_Button* o = chk_flrig_keys_modem = new Fl_Check_Button(225, 150, 183, 20, _("Flrig PTT keys modem"));
-              chk_flrig_keys_modem->tooltip(_("\" \""));
-              chk_flrig_keys_modem->down_box(FL_DOWN_BOX);
-              chk_flrig_keys_modem->callback((Fl_Callback*)cb_chk_flrig_keys_modem);
-              o->value(progdefaults.flrig_keys_modem);
-            } // Fl_Check_Button* chk_flrig_keys_modem
-            tabFLRIG->end();
-          } // Fl_Group* tabFLRIG
           tabsRig->end();
         } // Fl_Tabs* tabsRig
         tabRig->end();

@@ -971,7 +971,7 @@ void * flrig_thread_loop(void *d)
 	while(run_flrig_thread) {
 		for (int i = 0; i < poll_interval; i++) {
 			if (!run_flrig_thread) {
-				LOG_INFO("Exiting thread - 1");
+//				LOG_INFO("Exiting thread - 1");
 				return NULL;
 			}
 			MilliSleep(10);
@@ -979,29 +979,31 @@ void * flrig_thread_loop(void *d)
 
 		if (!run_flrig_thread) break;
 
-		if (!flrig_client)
-			connect_to_flrig();
-		if (!connected_to_flrig) flrig_connection();
-		else if (flrig_get_xcvr()) {
-			if (new_ptt > -1) {
-				exec_flrig_ptt();
-				continue;
+		if (progdefaults.fldigi_client_to_flrig) {
+			if (!flrig_client)
+				connect_to_flrig();
+			if (!connected_to_flrig) flrig_connection();
+			else if (flrig_get_xcvr()) {
+				if (new_ptt > -1) {
+					exec_flrig_ptt();
+					continue;
+				}
+				if (progdefaults.flrig_keys_modem) flrig_get_ptt();
+				if (trx_state == STATE_RX) {
+					flrig_get_frequency();
+					flrig_get_smeter();
+					flrig_get_notch();
+					if (!modes_posted) flrig_get_modes();
+					if (modes_posted)  flrig_get_mode();
+					if (!bws_posted)   flrig_get_bws();
+					if (bws_posted)    flrig_get_bw();
+				}
+				else
+					flrig_get_pwrmeter();
 			}
-			if (progdefaults.flrig_keys_modem) flrig_get_ptt();
-			if (trx_state == STATE_RX) {
-				flrig_get_frequency();
-				flrig_get_smeter();
-				flrig_get_notch();
-				if (!modes_posted) flrig_get_modes();
-				if (modes_posted)  flrig_get_mode();
-				if (!bws_posted)   flrig_get_bws();
-				if (bws_posted)    flrig_get_bw();
-			}
-			else
-				flrig_get_pwrmeter();
 		}
 	}
-	LOG_INFO("Exiting thread - 2");
+//	LOG_INFO("Exiting thread - 2");
 	return NULL;
 }
 
@@ -1017,6 +1019,7 @@ void FLRIG_start_flrig_thread()
 
 void stop_flrig_thread()
 {
+	if (!flrig_client) return;
 	LOG_INFO("%s", "stopping flrig thread");
 	flrig_client->close();
 	pthread_mutex_lock(&mutex_flrig);

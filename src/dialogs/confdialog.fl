@@ -4784,18 +4784,101 @@ progdefaults.changed = true;}
         Fl_Tabs tabsRig {open
           xywh {0 25 600 360} selection_color 50
         } {
+          Fl_Group tabFLRIG {
+            label flrig open
+            xywh {0 50 600 335}
+          } {
+            Fl_Group {} {
+              label {"Disable PTT keys modem if multiple instances of fldigi (client)
+are connected to a single flrig (server).} open
+              xywh {10 210 580 90} box ENGRAVED_BOX align 17
+            } {
+              Fl_Check_Button chk_flrig_keys_modem {
+                label {Flrig PTT keys modem}
+                callback {progdefaults.flrig_keys_modem = o->value();
+progdefaults.changed = true;}
+                tooltip {" "} xywh {240 258 183 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.flrig_keys_modem);}
+              }
+            }
+            Fl_Group {} {
+              label {flrig xmlrpc server parameters
+these controls are mirrored on the IO configuration tab} open
+              xywh {10 125 580 81} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Button btnDefault_flrig_ip_mirror {
+                label Default
+                callback {set_ip_to_default(FLRIG_IO);
+txt_flrig_ip_address_mirror->value(progdefaults.flrig_ip_address.c_str());
+txt_flrig_ip_port_mirror->value(progdefaults.flrig_ip_port.c_str());
+progdefaults.changed = true;}
+                tooltip {Returns IP Address and port
+number to the default value.} xywh {414 171 73 24}
+              }
+              Fl_Input txt_flrig_ip_address_mirror {
+                label Addr
+                callback {progdefaults.flrig_ip_address = o->value();
+txt_flrig_ip_address->value(progdefaults.flrig_ip_address.c_str());
+progdefaults.changed = true;}
+                tooltip {IP Address for flrig interface
+IP Address format: nnn.nnn.nnn.nnn
+or name: i.e. localhost} xywh {45 171 230 24} align 8 when 1
+                code0 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->value(progdefaults.flrig_ip_address.c_str());}
+                class Fl_Input2
+              }
+              Fl_Input txt_flrig_ip_port_mirror {
+                label Port
+                callback {progdefaults.flrig_ip_port = o->value();
+txt_flrig_ip_port->value(progdefaults.flrig_ip_port.c_str());
+progdefaults.changed = true;}
+                tooltip {IP Address Port Number} xywh {319 171 55 24} align 8 when 1
+                code0 {o->labelsize(FL_NORMAL_SIZE);}
+                code1 {o->value(progdefaults.flrig_ip_port.c_str());}
+                class Fl_Input2
+              }
+              Fl_Button btn_reconnect_flrig_server_mirror {
+                label Reconnect
+                callback {reconnect_to_flrig();}
+                tooltip {Press only if you change the address/port} xywh {494 171 82 24}
+                code0 {\#include "rigsupport.h"}
+              }
+            }
+            Fl_Group {} {
+              label {flrig is the preferred method of tranceiver control} open
+              xywh {10 68 580 52} box ENGRAVED_BOX align 17
+            } {
+              Fl_Check_Button btn_fldigi_client_to_fldigi {
+                label {Enable flrig xcvr control with fldigi as client}
+                callback {progdefaults.fldigi_client_to_flrig=o->value();
+if (o->value()) {
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.chkUSEXMLRPCis = false;
+  chkUSEHAMLIB->value(0);
+  chkUSEXMLRPC->value(0);
+  chkUSERIGCAT->value(0);
+}
+progdefaults.changed=true;}
+                tooltip {Disable if flrig not used.} xywh {35 95 70 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.fldigi_client_to_flrig);}
+              }
+            }
+          }
           Fl_Group {} {
             label RigCAT
-            tooltip {Rig Control using xml spec file} xywh {0 50 600 335}
+            tooltip {Rig Control using xml spec file} xywh {0 50 600 335} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
               callback {if (o->value() == 1) {
   chkUSEHAMLIB->value(0);
   chkUSEXMLRPC->value(0);
+  btn_fldigi_client_to_fldigi->value(0);
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = true;
   progdefaults.chkUSEXMLRPCis = false;
+  progdefaults.fldigi_client_to_flrig = false;
   } else {
   progdefaults.chkUSERIGCATis = false;
   }
@@ -5004,8 +5087,10 @@ btnRevertRIGCAT->activate();}
 if (o->value() == 1) {
   chkUSERIGCAT->value(0);
   chkUSEXMLRPC->value(0);
+  btn_fldigi_client_to_fldigi->value(0);
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
+  progdefaults.fldigi_client_to_flrig = false;
 }
 
 btnInitHAMLIB->labelcolor(FL_RED);
@@ -5221,6 +5306,55 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group tabXMLRPC {
+            label {XML-RPC}
+            xywh {0 50 600 335} hide
+          } {
+            Fl_Group grpXMLRPC {open
+              xywh {55 61 490 160} box ENGRAVED_FRAME
+            } {
+              Fl_Output {} {
+                xywh {210 80 190 58} type Multiline box BORDER_BOX color 50
+                code0 {o->value(_("Rig control via external\\nprogram using xmlrpc\\nremote calls."));}
+              }
+              Fl_Check_Button chkUSEXMLRPC {
+                label {Use XML-RPC program}
+                callback {progdefaults.chkUSEXMLRPCis = o->value();
+if(o->value() == 1){
+  chkUSEHAMLIB->value(0);
+  chkUSERIGCAT->value(0);
+  btn_fldigi_client_to_fldigi->value(0);
+  progdefaults.chkUSEHAMLIBis = false;
+  progdefaults.chkUSERIGCATis = false;
+  progdefaults.fldigi_client_to_flrig = false;
+}
+
+btnInitXMLRPC->labelcolor(FL_RED);
+btnInitXMLRPC->redraw_label();
+progdefaults.changed = true;}
+                tooltip Experimental xywh {210 148 183 20} down_box DOWN_BOX
+              }
+              Fl_Button btnInitXMLRPC {
+                label Initialize
+                callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;}
+                tooltip {Initialize XML-RPC rig control} xywh {251 184 113 24}
+              }
+            }
+            Fl_Group {} {open
+              xywh {55 225 490 50} box ENGRAVED_BOX
+            } {
+              Fl_Counter mbw_delay {
+                label {Mode/BW delay}
+                callback {progdefaults.mbw=o->value();
+progdefaults.changed=true;}
+                tooltip {Delay in seconds between <RIGMODE... and <FILWID...
+when both in same macro definition} xywh {210 239 90 21} type Simple align 8 minimum 0.1 maximum 2 step 0.05 value 0.1
+                code0 {o->value(progdefaults.mbw);}
+              }
+            }
+          }
           Fl_Group {} {
             label {Hardware PTT}
             xywh {0 50 600 335} hide
@@ -5377,69 +5511,6 @@ progdefaults.changed = true;}
                 code0 {o->value(progdefaults.PTT_off_delay);}
                 code1 {o->lstep(100);}
               }
-            }
-          }
-          Fl_Group tabXMLRPC {
-            label {XML-RPC}
-            xywh {0 50 600 335} hide
-          } {
-            Fl_Group grpXMLRPC {open
-              xywh {55 61 490 160} box ENGRAVED_FRAME
-            } {
-              Fl_Output {} {
-                xywh {210 80 190 58} type Multiline box BORDER_BOX color 50
-                code0 {o->value(_("Rig control via external\\nprogram using xmlrpc\\nremote calls."));}
-              }
-              Fl_Check_Button chkUSEXMLRPC {
-                label {Use XML-RPC program}
-                callback {progdefaults.chkUSEXMLRPCis = o->value();
-if(o->value() == 1){
-  chkUSEHAMLIB->value(0);
-  chkUSERIGCAT->value(0);
-  progdefaults.chkUSEHAMLIBis = false;
-  progdefaults.chkUSERIGCATis = false;
-}
-
-btnInitXMLRPC->labelcolor(FL_RED);
-btnInitXMLRPC->redraw_label();
-progdefaults.changed = true;}
-                tooltip Experimental xywh {210 148 183 20} down_box DOWN_BOX
-              }
-              Fl_Button btnInitXMLRPC {
-                label Initialize
-                callback {progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;}
-                tooltip {Initialize XML-RPC rig control} xywh {251 184 113 24}
-              }
-            }
-            Fl_Group {} {open
-              xywh {55 225 490 50} box ENGRAVED_BOX
-            } {
-              Fl_Counter mbw_delay {
-                label {Mode/BW delay}
-                callback {progdefaults.mbw=o->value();
-progdefaults.changed=true;}
-                tooltip {Delay in seconds between <RIGMODE... and <FILWID...
-when both in same macro definition} xywh {210 239 90 21} type Simple align 8 minimum 0.1 maximum 2 step 0.05 value 0.1
-                code0 {o->value(progdefaults.mbw);}
-              }
-            }
-          }
-          Fl_Group tabFLRIG {
-            label flrig open
-            xywh {0 50 600 335} hide
-          } {
-            Fl_Output {} {
-              tooltip {" "} xywh {75 77 465 58} type Multiline box BORDER_BOX color 50 align 0
-              code0 {o->value(_("Disable this control if multiple instances of fldigi (client)\\nare connected to a single flrig (server)."));}
-            }
-            Fl_Check_Button chk_flrig_keys_modem {
-              label {Flrig PTT keys modem}
-              callback {progdefaults.flrig_keys_modem = o->value();
-progdefaults.changed = true;}
-              tooltip {" "} xywh {225 150 183 20} down_box DOWN_BOX
-              code0 {o->value(progdefaults.flrig_keys_modem);}
             }
           }
         }
