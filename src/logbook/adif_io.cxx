@@ -351,8 +351,10 @@ Loaded logbook %s\n\
 			REQ(write_rxtext, szmsg);
 	}
 
-	if (db == &qsodb)
-		REQ(adif_read_OK);
+	if (db != &qsodb)
+		LOG_ERROR("db != &qsodb");
+	else
+		read_logbook = true;
 
 	fclose(adiFile);
 }

@@ -92,4 +92,6 @@ extern bool qsodb_dxcc_entity_find(const char* country);
 
 extern void adif_read_OK();
 
+extern bool read_logbook;
+
 #endif
