@@ -89,7 +89,7 @@ AC_PROG_CC
 AC_USE_SYSTEM_EXTENSIONS
 
 #Check for C++11 compliance
-AX_CXX_COMPILE_STDCXX_11
+AX_CXX_COMPILE_STDCXX_11(, optional)
 
 # Checks for header files.
 AC_HEADER_STDC
