@@ -111,24 +111,24 @@ waterfall.  You do not have to wait for new signal data to observe
 the affect.
 <br>
 
-The <b>QSY</b> button is very specific to transceivers interfaced with either 
-hamlib, rigcat or when fldigi is used with flrig.  Each transceiver has a sweet 
-spot associated with its bandwidth controller.  For the FT950 is 1500 when the 
-transceiver is set to PKT-U.  As the transceivers bandwidth is changed the 
-changes occur centered at this frequency.  Set the "Sweet spot" frequency 
-(Config / Misc / Sweet Spot) to 1500.  Let's say that I just started copying a 
-rare dx at 1758 Hz and I wanted to put the signal at the sweet spot so I could 
-easily narrow the receiver bandwidth.  Click on the signal on the waterfall. 
-Let the AFC capture and then press the QSY button. The tranceiver frequency 
-will be shifted and the fldigi audio tracking point shifted in unison such 
-that the signal is now at the receivers sweet spot. Very fast and very 
-convenient! The QSY button will be dimmed and not activated if you do not have 
-a method of transceiver control enabled for your transceiver.  Right click on 
+The <b>QSY</b> button is very specific to transceivers interfaced with either
+hamlib, rigcat or when fldigi is used with flrig.  Each transceiver has a sweet
+spot associated with its bandwidth controller.  For the FT950 is 1500 when the
+transceiver is set to PKT-U.  As the transceivers bandwidth is changed the
+changes occur centered at this frequency.  Set the "Sweet spot" frequency
+(Config / Misc / Sweet Spot) to 1500.  Let's say that I just started copying a
+rare dx at 1758 Hz and I wanted to put the signal at the sweet spot so I could
+easily narrow the receiver bandwidth.  Click on the signal on the waterfall.
+Let the AFC capture and then press the QSY button. The tranceiver frequency
+will be shifted and the fldigi audio tracking point shifted in unison such
+that the signal is now at the receivers sweet spot. Very fast and very
+convenient! The QSY button will be dimmed and not activated if you do not have
+a method of transceiver control enabled for your transceiver.  Right click on
 the QSY button to undo the action.
 <br>
 
-This can also be achieved with the \<QSYTO\> and \<QSYFM\> macro tags.  If  you 
-combine these two with the \<FILWID:nnn\> command you can center the signal in 
+This can also be achieved with the \<QSYTO\> and \<QSYFM\> macro tags.  If  you
+combine these two with the \<FILWID:nnn\> command you can center the signal in
 the passband and also narrow the transceiver passband, i.e. when used with the
 FT950
 <br>
@@ -211,8 +211,8 @@ frequency and NOT the TX frequency.
 <br>
 
 
-\image html sql_kpsql_level_control.png "SQL/KPSQL Level Adjustment"
-\image latex sql_kpsql_level_control.png "SQL/KPSQL Level Adjustment" width=1.5in
+\image html sql_kpsql_level_control.png "SQL/PSM Level Adjustment"
+\image latex sql_kpsql_level_control.png "SQL/PSM Level Adjustment" width=1.5in
 <br>
 
 The <b>AFC</b> and <b>SQL</b> buttons enable or disable the respective
@@ -233,31 +233,26 @@ over driven.  You will see ghost signals on the waterfall and the modem
 decoders will not work correctly.
 <br>
 
-\image html sql_kpsql_kiss_io_enabled.png "KISS IO enabled"
-\image latex sql_kpsql_kiss_io_enabled.png "KISS IO enabled" width=3.4in
+\image html sql_kpsql_kiss_io_enabled.png  "PSM enabled from config panel"
+\image latex sql_kpsql_kiss_io_enabled.png "PSM enabled from config panel" width=3.4in
 <br>
 
-\image html sql_kpsql_kiss_io_disabled.png "ARQ IO enabled"
-\image latex sql_kpsql_kiss_io_disabled.png "ARQ IO enabled" width=3.4in
+\image html sql_kpsql_kiss_io_disabled.png  "PSM disabled from config panel"
+\image latex sql_kpsql_kiss_io_disabled.png "PSM disabled from config panel" width=3.4in
 <br>
 
-<b>KPSQL</b> squelch operates on the power aspect of a signal unlike SQL which
-measures the reception quality of the signal. For KPSQL to operate correctly
-the waterfall speed setting must set to either NORM or FAST, FAST being
-the better option. The level setting slider is active for KPSQL when the
-KPSQL button is enabled (indicated by either a yellow or green square on the
-button surface).  When disabled the slider adjustment effects SQL. KPSQL
-operates using two different threshold detection methods. With
-KPSQL button selected the user sets the threshold using the slider to the
-right of the vertical level indicator. With KPSQL deselected the detection
-level reverts to the histogram method. This method automatically adjust
-the threshold to just above the noise level and is used when the utmost
-signal sensitivity is desired.
+<b>PSM</b> operates on the power aspect of a signal unlike SQL which
+measures the reception quality of the signal. For PSM to operate correctly
+the waterfall speed setting must set to FAST. The level setting slider
+is active for PSM when the PSM button is enabled (indicated by either a
+yellow or green square on the button surface).  When disabled the slider
+adjustment effects SQL. With PSM button selected the user sets the threshold
+using the slider to the right of the vertical level indicator.
 
-<b>SQL</b> and <b>KPSQL</b> functional differences:
+<b>SQL</b> and <b>PSM</b> functional differences:
 <br>
 <b>SQL</b> - Inhibits character reception.<br>
-<b>KPSQL</b> - Inhibits the data transfer to the modem modulator.<br>
+<b>PSM</b> - Inhibits the data transfer to the modem modulator.<br>
 
 Receive audio level should be adjusted so that the overload indicator does
 not illuminate red.  When observing the received signals on the oscilloscope

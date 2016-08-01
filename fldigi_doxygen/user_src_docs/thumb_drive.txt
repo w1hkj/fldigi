@@ -71,15 +71,15 @@ either
 <li>modify the properties dialog of the original desktop icon so that the "Target:" entry points to the newly copied file(s)</li>
 </ul>
 
-The fldigi.files, NBEMS.files, flrig.files, etc. folders will be created 
-as sub-folders in the c:\FL_APPS folder the first time that the respective 
+The fldigi.files, NBEMS.files, flrig.files, etc. folders will be created
+as sub-folders in the c:\\FL_APPS folder the first time that the respective
 application is executed.
 <br>
-Configure each application.  If you already have logs, macro files, etc. 
-copy these to the respective places in the c:\FL_APPS tree.
+Configure each application.  If you already have logs, macro files, etc.
+copy these to the respective places in the c:\\FL_APPS tree.
 <br>
-When you upgrade fldigi you will only need to copy the new executable to 
-that c:\\FL_APPS folder, perhaps renaming the existing file as fldigi.exe.bak 
+When you upgrade fldigi you will only need to copy the new executable to
+that c:\\FL_APPS folder, perhaps renaming the existing file as fldigi.exe.bak
 so that it can be recovered if necessary.
 
 \ref main_page "Return to Main Page"

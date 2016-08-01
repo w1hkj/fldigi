@@ -1,0 +1,181 @@
+/**
+\page psm_page PSM Power Signal Monitor
+
+\tableofcontents
+
+\section sDescription Description
+
+PSM was originally introduced when the KISS IO interface was added and is
+specifically designed for the unattended operator portion of the
+Amateur Radio Bands; there are however other \ref sPossibleUse "possible uses".
+<br>
+
+\par NOTE:
+PSM was originally called KPSQL and the name was change to better
+differentiate it's function over the function of
+\ref operating_controls_page "SQL".
+<br>
+
+To configure see \ref config_psm_page "Configure PSM".
+<br>
+
+\subsection ssCSMAUse CSMA Carrier Sense Multiple Access
+
+  It's function is to monitor for signals within
+the bandpass of the modem and place a TX inhibit anytime a signal was
+present. This feature is reminiscent of the hardware TNC's during the
+heydays of packet radio. Hardware TNC's with TNC2 firmware supported a
+feature called CSMA. CSMA stands for <b>C</b>arrier <b>S</b>ense
+<b>M</b>ultiple <b>A</b>ccess. CSMA would monitor for a signal and
+inhibit transmit when a signal is present. But CSMA does more then just
+monitor for signals it controls the aspect of how and when a transmit will
+occur. To assist in the prevention of transmit collisions the transmit
+schedule included a short random delay in the transmit process. Additionally
+CSMA provided other parameters to control the frequency or how aggressive the
+transmits are allowed and the duration of quite periods so other stations
+have the opportunity to transmit. As you can tell this is designed to
+allow multiple stations to cooperate on a single frequency. CSMA is not
+exclusive to TNC's either in hardware or software. The communications
+provided by your ISP using Ethernet is another example.
+<br>
+
+\subsection ssBusyChannelUse Busy Channel
+
+Busy Channels is an extension to the CSMA methodology by incorporating
+programming code to consider gaps in the transmission. This is either the
+results of QSB or other broken/intermittent transmissions like the gaps
+between RSID's and the data that follows. The side effect of this feature
+is, it can be used to allow casual operators the use of a busy forward
+and store BBS frequency. When enable the frequency would have to be clear
+for the given set time before BBS operations would be allowed to continue.
+<br>
+
+\subsection ssHistgramUse Histogram
+
+Histogram operation is pretty much experimentally at this stage. The basic
+intent is to keep the detection threshold just above the noise level. In
+doing so, the triggering of a transmit is highly aggressive, as far as
+software is concerned. The actual aggressiveness is pretty slow when compared
+to hardware detection used in TNC's. This option should only be used with FM
+modulation and is not compatible with \ref ssBusyChannelUse.
+<br>
+
+\par WARNING Histogram: Experimental
+You may not make many friends if you use this on FM AFSK packet frequencies.
+The Author tested this on APRS frequencies and it fundamentally works. But
+wasn't left on to instigate a riot.
+<br>
+
+\section sPossibleUse Possible Use(s)
+
+As stated above it's primary designed for unattended operations. However,
+it's reasonable to assume this might work during a digital net
+operation when multiple stations are involved. Since PSM (KPSQL) has been
+moved out of KISS IO interface, it's functionality is available to keyboard,
+KISS, ARQ, and XMLRPC interfaces. This has the potential to cooperatively
+transmit between multiple stations while using FLDIGI's suite of tools. Namely,
+FLMSG, FLAMP, etc, and third party programs that makes using of the
+aforementioned interfaces.
+<br>
+
+\section sPSMCharateristics PSM Characteristics
+
+For those who have never used a CSMA device directly this may take a little
+getting used to. Without PSM enabled you have direct control as to when the
+transmit occurs. The human mind is pretty good at telling (by monitoring the
+waterfall) when the best time to transmit is, far better then the current
+implementation use in FLDIGI (detection wise). Patience is a PSM virtue, a
+prerequisite for cooperative activities. Not to say operators don't have
+this attribute, it's just PSM is more consistant in it's application.
+<br>
+
+With PSM enabled the operator can only instruct FLDIGI that transmit has been
+requested. CSMA decides when the appropriate time to do so. How and when
+CSMA transmits is dictated by adjustable parameters located on the PSM
+configuration panel (\ref config_psm_page). Expect delays in the
+transmitting of data. The amount of delay will vary with each TX/RX cycle.
+<br>
+
+Be mindfull of the adjustments made. The human nature side of this story
+revolves around the impatient side of us. As an example during the packet
+heydays (again) it's wasn't unusual for an operator to adjust CSMA parameters
+to gain an unfair advantage and capitalize the limited bandwidth available
+with our "slow" bitrate modems. You can not expect "high" throughput on a
+frequency used by multiple operators. This doesn't even include the other
+restrictions with limited bandwidth radio's and the rule of law.
+<br>
+
+The correct CSMA parameters other then the defaults for any given condition
+is to varied, ie, number of users, band conditions, etc. Experimentation
+is the only recourse. Dont be afraid of tweaking the values, just be mindful
+of the outcome and it's effect on the other operators using the frequency.
+<br>
+
+\section sPSMAdustment Adjustment of PSM Threshold and Options
+
+In order to adjust PSM theshold enable the following:
+<br>
+
+1. From the PSM configuration panel. Enable "Show and enable Power Signal
+Monitor button (PSM)" checkbox.
+<br>
+
+2. Enable PSM button located in the lower right hand side of FLDIGI's main
+window.
+<br>
+
+When PSM button is enabled on FLDIGI's main window. The Signal Level indicator
+and SQL threshold slider are now active for PSM. A green box on the PSM
+button indicates an active transmit inhibit. A yellow box indicates the
+possibility of a transmit. Transmit may or may not occur depending on the
+set parameters located on the PSM configuration panel.
+<br>
+
+Moving the SQL slider up changes the internal threshold reference, requiring
+a higher signal level to trigger a detection that will inhibit transmit.
+Setting the SQL slider lower allows a weaker signal to inhibit transmit,
+which if set to low, means that inhibit may be triggered by the base noise
+level. To determine where detection/non-detection threshold resides monitor
+the PSM button's square colored indicator. When this boundary is reached
+the color will toggle between green and yellow. It's easier to determine
+the theshold point when Busy Channel is disabled.
+<br>
+
+When Busy Channel is enabled and set to 3 seconds (for example) each time
+the signal crosses the set threshold of the SQL slider position a 3 second
+transmit inhibit is activated. If a signal crossing the threshold occurs
+again while inhibit is active the internal timer is reset to 3 seconds and
+the inhibit continues until the timer expires or reset again by another
+signal. This ensures there will be a 3 second period of "silence" before
+the transmitter is allowed to transmit.
+<br>
+
+Enabling CSMA adds a randomness to the transmit event and is controlled by the
+Persistance parameter. The values for Persistance ranges from 0-255 which is
+translated to a percent value as seen on the PSM configuration panel. When set
+to "63" this equates to a 25% chance of transmitting each time a random number
+is generated and compared to the persistance value. Higher values results in
+the greater likelihood transmit will occur. Slot Time is the no transmit period
+between tranmissions and is measure in milliseconds. Transmit data delay is
+used to send idle data before the relavent information is sent. This feature
+is only available if the modem selected has an idle transmit state.
+<br>
+
+\par NOTE:
+Deselecting PSM either by the configuration panal or by the PSM button provided
+on FLDIGI's main window returns the SQL slider and signal level indicator back
+to the SQL function. This enables the user to make SQL threshold adjustment to
+inhibit character quality receptions.
+<br>
+
+\par PSM Configuration
+\ref config_psm_page "Configure PSM"
+<br>
+
+
+\ref psm_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
