@@ -65,109 +65,110 @@ extern const char *sztid[];
 class qexception : public std::exception
 {
 public:
-        qexception(const char *msg_) : msg(msg_) { }
-        qexception(int e) : msg(strerror(e)) { }
-        ~qexception() throw() { }
-        const char *what(void) const throw() { perror(msg.c_str()); return msg.c_str(); }
+	qexception(const char *msg_) : msg(msg_) { }
+	qexception(int e) : msg(strerror(e)) { }
+	~qexception() throw() { }
+	const char *what(void) const throw() { perror(msg.c_str()); return msg.c_str(); }
 private:
-        std::string msg;
+	std::string msg;
 };
 
 struct fsignal
 {
-        typedef void result_type;
-        pthread_mutex_t* m;
-        pthread_cond_t* c;
+	typedef void result_type;
+	pthread_mutex_t* m;
+	pthread_cond_t* c;
 
-        fsignal(pthread_mutex_t* m_, pthread_cond_t* c_) : m(m_), c(c_) { }
-        void operator()(void) const
-        {
-                pthread_mutex_lock(m);
-                pthread_cond_signal(c);
-                pthread_mutex_unlock(m);
-        }
+	fsignal(pthread_mutex_t* m_, pthread_cond_t* c_) : m(m_), c(c_) { }
+	void operator()(void) const
+	{
+		pthread_mutex_lock(m);
+		pthread_cond_signal(c);
+		pthread_mutex_unlock(m);
+	}
 };
 
 struct nop
 {
-        typedef void result_type;
-        void operator()(void) const { }
+	typedef void result_type;
+	void operator()(void) const { }
 };
 
 class qrunner
 {
+private:
+#define QRUNNER_DEBUG false
 public:
-        qrunner();
-        ~qrunner();
+	qrunner();
+	~qrunner();
 
-        void attach(void);
-        void attach(int, std::string);
-        void detach(void);
+	void attach(void);
+	void attach(int, std::string);
+	void detach(void);
 
-        template <typename F>
-        bool request(const F& f)
-        {
-                if (fifo->push(f)) {
-int resp = QRUNNER_WRITE(pfd[1], "", 1);
-qrunner_debug(GET_THREAD_ID(), typeid(F).name());
+	template <typename F>
+	bool request(const F& f)
+	{
+// added mutex here and removed it from qrunner_debug
+		static pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+		guard_lock reqlock(&m);
+
+		if (fifo->push(f)) {
+			int resp = QRUNNER_WRITE(pfd[1], "", 1);
+			if (QRUNNER_DEBUG)
+				qrunner_debug(GET_THREAD_ID(), typeid(F).name());
 #ifdef NDEBUG
-                        if (unlikely(resp != 1)) {
-							throw qexception(errno);
-                        }
+			if (unlikely(resp != 1)) {
+				throw qexception(errno);
+			}
 #else
-assert(resp);
+			assert(resp);
 #endif
-                        return true;
-                }
+			return true;
+		}
+		return false;
+	}
 
-#ifndef NDEBUG
-//Remi's extra debugging info		LOG_ERROR("qrunner: thread %" PRIdPTR " fifo full!", GET_THREAD_ID());
-		LOG_ERROR("qrunner: thread %" PRIdPTR " fifo full at %s!", GET_THREAD_ID(),typeid(F).name() );
+	template <typename F>
+	bool request_sync(const F& f)
+	{
+		if (!attached)
+			return request(f);
 
-#endif
-                return false;
-        }
+		for (;;) {
+			if (request(f))
+				break;
+			sched_yield();
+		}
+		static pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+		static pthread_cond_t c = PTHREAD_COND_INITIALIZER;
+		fsignal s(&m, &c);
+		pthread_mutex_lock(&m);
+		for (;;) {
+			if (request(s))
+				break;
+			sched_yield();
+		}
+		pthread_cond_wait(&c, &m);
+		pthread_mutex_unlock(&m);
 
-        template <typename F>
-        bool request_sync(const F& f)
-        {
-                if (!attached)
-                        return request(f);
+		return true;
+	}
 
-                for (;;) {
-                        if (request(f))
-                                break;
-                        sched_yield();
-                }
-                static pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
-                static pthread_cond_t c = PTHREAD_COND_INITIALIZER;
-                fsignal s(&m, &c);
-                pthread_mutex_lock(&m);
-                for (;;) {
-                        if (request(s))
-                                break;
-                        sched_yield();
-                }
-                pthread_cond_wait(&c, &m);
-                pthread_mutex_unlock(&m);
+	static void execute(int fd, void *arg);
+	void flush(void);
 
-                return true;
-        }
-
-        static void execute(int fd, void *arg);
-        void flush(void);
-
-        void drop(void) { fifo->drop(); }
-        size_t size(void) { return fifo->size(); }
-		std::string id_str(void) { return _id_string; }
+	void drop(void) { fifo->drop(); }
+	size_t size(void) { return fifo->size(); }
+	std::string id_str(void) { return _id_string; }
 
 protected:
-        fqueue *fifo;
-        int pfd[2];
-        bool attached;
-        int _id_no;
-        std::string _id_string;
-		bool inprog;
+	fqueue *fifo;
+	int pfd[2];
+	bool attached;
+	int _id_no;
+	std::string _id_string;
+	bool inprog;
 public:
 	bool drop_flag;
 };
@@ -186,59 +187,61 @@ extern qrunner *cbq[NUM_QRUNNER_THREADS];
 #define REQ REQ_ASYNC
 #define REQ_DROP REQ_ASYNC_DROP
 
-#define REQ_ASYNC(...)						\
-	do {								\
-		if (GET_THREAD_ID() != FLMAIN_TID)			\
-			cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__)); \
-		else							\
-			qrbind::bind(__VA_ARGS__)(); \
+#define REQ_ASYNC(...)													\
+	do {																\
+		if (GET_THREAD_ID() != FLMAIN_TID)								\
+			cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__));	\
+		else															\
+			qrbind::bind(__VA_ARGS__)();								\
 	} while (0)
 
-#define REQ_SYNC(...)							\
-	do {								\
-		if (GET_THREAD_ID() != FLMAIN_TID)			\
-			cbq[GET_THREAD_ID()]->request_sync(qrbind::bind(__VA_ARGS__)); \
-		else							\
-			qrbind::bind(__VA_ARGS__)();			\
+#define REQ_SYNC(...)														\
+	do {																	\
+		if (GET_THREAD_ID() != FLMAIN_TID)									\
+			cbq[GET_THREAD_ID()]->request_sync(qrbind::bind(__VA_ARGS__));	\
+		else																\
+			qrbind::bind(__VA_ARGS__)();									\
 	} while (0)
 
-#define REQ_ASYNC_DROP(...)						\
-        do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID) {			\
-			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))	\
-				break;					\
-                        cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__)); \
-		}							\
-                else                                                    \
-                        qrbind::bind(__VA_ARGS__)();			\
-        } while (0)
-#define REQ_SYNC_DROP(...)						\
-        do {                                                            \
-                if (GET_THREAD_ID() != FLMAIN_TID) {			\
-			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))	\
-				break;					\
-                        cbq[GET_THREAD_ID()]->request_sync(qrbind::bind(__VA_ARGS__)); \
-		}							\
-                else                                                    \
-                        qrbind::bind(__VA_ARGS__)();			\
-        } while (0)
+#define REQ_ASYNC_DROP(...)												\
+	do {																\
+		if (GET_THREAD_ID() != FLMAIN_TID) {							\
+			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))				\
+				break;													\
+			cbq[GET_THREAD_ID()]->request(qrbind::bind(__VA_ARGS__));	\
+		}																\
+		else                                                    		\
+			qrbind::bind(__VA_ARGS__)();								\
+	} while (0)
 
-#define REQ_FLUSH(t_)                                                   \
-        do {                                                            \
-		if (GET_THREAD_ID() != FLMAIN_TID)			\
-			cbq[GET_THREAD_ID()]->request_sync(nop());	\
-		else if (t_ < NUM_QRUNNER_THREADS)			\
-			cbq[t_]->flush();				\
-		else							\
+#define REQ_SYNC_DROP(...)													\
+	do {																	\
+		if (GET_THREAD_ID() != FLMAIN_TID) {								\
+			if (unlikely(cbq[GET_THREAD_ID()]->drop_flag))					\
+				break;														\
+			cbq[GET_THREAD_ID()]->request_sync(qrbind::bind(__VA_ARGS__));	\
+		}																	\
+		else																\
+			qrbind::bind(__VA_ARGS__)();									\
+	} while (0)
+
+#define REQ_FLUSH(t_)										\
+	do {													\
+		if (GET_THREAD_ID() != FLMAIN_TID)					\
+			cbq[GET_THREAD_ID()]->request_sync(nop());		\
+		else if (t_ < NUM_QRUNNER_THREADS)					\
+			cbq[t_]->flush();								\
+		else												\
 			for (int i = 0; i < NUM_QRUNNER_THREADS; i++)	\
-				cbq[i]->flush();			\
+				cbq[i]->flush();							\
         } while (0)
 
-#define QRUNNER_DROP(v_)					\
-	do {							\
+#define QRUNNER_DROP(v_)							\
+	do {											\
 		if ((GET_THREAD_ID() != FLMAIN_TID))		\
 			cbq[GET_THREAD_ID()]->drop_flag = v_;	\
 	} while (0)
+
 #endif // BENCHMARK_MODE
 
 #endif // QRUNNER_H_

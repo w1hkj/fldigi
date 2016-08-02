@@ -8621,27 +8621,23 @@ int get_tx_char(void)
 			break;
 		case 'r':
 			if (active_modem->get_mode() == MODE_IFKP)
-//				REQ_SYNC(&FTextTX::clear_sent, ifkp_tx_text);
-				REQ_SYNC(&FTextTX::clear, ifkp_tx_text);
+				REQ(&FTextTX::clear, ifkp_tx_text);
 			else
-//				REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-				REQ_SYNC(&FTextTX::clear, TransmitText);
+				REQ(&FTextTX::clear, TransmitText);
 			REQ(Rx_queue_execute);
 			return(GET_TX_CHAR_ETX);
 			break;
 		case 'R':
 			if (active_modem->get_mode() == MODE_IFKP) {
 				if (ifkp_tx_text->eot()) {
-//					REQ_SYNC(&FTextTX::clear_sent, ifkp_tx_text);
-					REQ_SYNC(&FTextTX::clear, ifkp_tx_text);
+					REQ(&FTextTX::clear, ifkp_tx_text);
 					REQ(Rx_queue_execute);
 					return(GET_TX_CHAR_ETX);
 				} else
 					return(GET_TX_CHAR_NODATA);
 			} else {
 				if (TransmitText->eot()) {
-//					REQ_SYNC(&FTextTX::clear_sent, TransmitText);
-					REQ_SYNC(&FTextTX::clear, TransmitText);
+					REQ(&FTextTX::clear, TransmitText);
 					REQ(Rx_queue_execute);
 					return(GET_TX_CHAR_ETX);
 				} else
