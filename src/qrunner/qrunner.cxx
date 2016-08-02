@@ -37,10 +37,6 @@
 #include "fqueue.h"
 #include "qrunner.h"
 
-//Remi's advice for FIFO full issue #define FIFO_SIZE 2048
-//moved to fqueue.h
-//#define FIFO_SIZE 8192
-
 #ifndef __MINGW32__
 #  define QRUNNER_EAGAIN() (errno == EAGAIN)
 #else
@@ -64,37 +60,30 @@ const char *sztid[] = {
 	"FLMAIN_TID"
 };
 
-static pthread_mutex_t mlog = PTHREAD_MUTEX_INITIALIZER;
 void qrunner_debug(int tid, const char *name)
 {
-	// disabled !
-	return;
-
 	if (tid > ((int)sizeof(sztid)-1)) tid = 0;
 	else tid++;
 
 	if (tid < 2) return;
 
-	pthread_mutex_lock(&mlog);
 	FILE *fd = (FILE *)0;
 	fd = fopen("qrunner.txt", "a");
 	if(fd) {
 		fprintf(fd, "%s, %s\n", sztid[tid], name);
 		fclose(fd);
 	}
-	pthread_mutex_unlock(&mlog);
 }
 
-qrunner::qrunner()
-        : attached(false), inprog(false), drop_flag(false)
+qrunner::qrunner() : attached(false), inprog(false), drop_flag(false)
 {
-        fifo = new fqueue(FIFO_SIZE);
+	fifo = new fqueue(FIFO_SIZE);
 #ifndef __WOE32__
-        if (pipe(pfd) == -1)
+	if (pipe(pfd) == -1)
 #else
 	if (socketpair(PF_INET, SOCK_STREAM, 0, pfd) == -1)
 #endif
-                throw qexception(errno);
+		throw qexception(errno);
 	set_cloexec(pfd[0], 1);
 	set_cloexec(pfd[1], 1);
 	if (set_nonblock(pfd[0], 1) == -1)
@@ -106,29 +95,29 @@ qrunner::qrunner()
 
 qrunner::~qrunner()
 {
-        detach();
-        close(pfd[0]);
-        close(pfd[1]);
-        delete fifo;
+	detach();
+	close(pfd[0]);
+	close(pfd[1]);
+	delete fifo;
 }
 
 void qrunner::attach(int id_no, std::string id_string)
 {
-        Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
-        attached = true;
-        _id_no = id_no;
-        _id_string.assign(id_string);
+	Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
+	attached = true;
+	_id_no = id_no;
+	_id_string.assign(id_string);
 }
 
 void qrunner::attach(void)
 {
-        Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
-        attached = true;
+	Fl::add_fd(pfd[0], FL_READ, qrunner::execute, this);
+	attached = true;
 }
 void qrunner::detach(void)
 {
-        attached = false;
-        Fl::remove_fd(pfd[0], FL_READ);
+	attached = false;
+	Fl::remove_fd(pfd[0], FL_READ);
 }
 
 static unsigned char rbuf[FIFO_SIZE];
@@ -162,19 +151,5 @@ void qrunner::execute(int fd, void *arg)
 
 void qrunner::flush(void)
 {
-        execute(pfd[0], this);
+	execute(pfd[0], this);
 }
-/*
-static pthread_mutex_t mlog = PTHREAD_MUTEX_INITIALIZER;
-void write_message(int line, const char *func, const char *msg)
-{
-	pthread_mutex_lock(&mlog);
-	FILE *fd = (FILE *)0;
-	fd = fopen("qrunner.txt", "a");
-	if(fd) {
-		fprintf(fd, "L:%d F:%s %s\n", line, func, msg);
-		fclose(fd);
-	}
-	pthread_mutex_unlock(&mlog);
-}
-*/
