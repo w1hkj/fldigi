@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 //
 // flxmlrpc Copyright (c) 2015 by W1HKJ, Dave Freese <iam_w1hkj@w1hkj.com>
-//    
+//
 // XmlRpc++ Copyright (c) 2002-2008 by Chris Morley
 //
 // This file is part of fldigi
@@ -27,9 +27,17 @@
 # include <winsock2.h>
 //# pragma lib(WS2_32.lib)
 
-# define EINPROGRESS	WSAEINPROGRESS
-# define EWOULDBLOCK	WSAEWOULDBLOCK
-# define ETIMEDOUT	    WSAETIMEDOUT
+// Updates to MXE require conditional test before assignment to
+// prevent duplicate defines.
+
+#undef EINPROGRESS
+#define EINPROGRESS  WSAEINPROGRESS
+
+#undef EWOULDBLOCK
+#define EWOULDBLOCK  WSAEWOULDBLOCK
+
+#undef ETIMEDOUT
+#define ETIMEDOUT    WSAETIMEDOUT
 
 typedef int socklen_t;
 
@@ -63,7 +71,7 @@ static void initialize()
         WORD wVersionRequested = MAKEWORD( 2, 0 );
         WSADATA wsaData;
         WSAStartup(wVersionRequested, &wsaData);
-       	atexit((void(*)(void)) WSACleanup);
+        atexit((void(*)(void)) WSACleanup);
     }
 #else
     {
