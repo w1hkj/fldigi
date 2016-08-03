@@ -310,9 +310,10 @@ Fl_Button			*MODEstatus = (Fl_Button *)0;
 Fl_Button 			*btnMacro[NUMMACKEYS * NUMKEYROWS];
 Fl_Button			*btnAltMacros1 = (Fl_Button *)0;
 Fl_Button			*btnAltMacros2 = (Fl_Button *)0;
-Fl_Light_Button		*btnAFC;
-Fl_Light_Button		*btnSQL;
-Fl_Light_Button		*btnPSQL;
+Fl_Light_Button		*btnAFC = (Fl_Light_Button *)0;
+Fl_Light_Button		*btnSQL = (Fl_Light_Button *)0;
+Fl_Light_Button		*btnPSQL = (Fl_Light_Button *)0;
+Fl_Box				*corner_box = (Fl_Box *)0;
 Fl_Input2			*inpQth;
 Fl_Input2			*inpLoc;
 Fl_Input2			*inpState;
@@ -432,7 +433,7 @@ int Hmacros = 20;//22;
 #define MACROBAR_MIN 18
 #define MACROBAR_MAX 30
 
-static const int sw		= 22;
+// static const int sw		= 22;
 static const int wf1			= 395;
 
 static const int w_inpTime2	= 40;
@@ -1995,10 +1996,6 @@ void altmacro_cb(Fl_Widget *w, void *v)
 void cb_mnuConfigOperator(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabOperator);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2006,10 +2003,6 @@ void cb_mnuConfigOperator(Fl_Menu_*, void*) {
 void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabWaterfall);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2017,10 +2010,6 @@ void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 void cb_mnuConfigID(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabID);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2028,10 +2017,6 @@ void cb_mnuConfigID(Fl_Menu_*, void*) {
 void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabQRZ);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2039,10 +2024,6 @@ void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2050,10 +2031,6 @@ void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 void cb_mnuConfigAutostart(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabAutoStart);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2061,10 +2038,6 @@ void cb_mnuConfigAutostart(Fl_Menu_*, void*) {
 void cb_mnuConfigIO(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabIO);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2077,10 +2050,6 @@ void cb_mnuConfigNotify(Fl_Menu_*, void*)
 void cb_mnuUI(Fl_Menu_*, void *) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2089,10 +2058,6 @@ void cb_mnuConfigContest(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabContest);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2100,10 +2065,6 @@ void cb_mnuConfigContest(Fl_Menu_*, void*) {
 void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2111,10 +2072,6 @@ void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 void cb_mnuConfigSoundCard(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabSoundCard);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2122,10 +2079,6 @@ void cb_mnuConfigSoundCard(Fl_Menu_*, void*) {
 void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabModems);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2134,10 +2087,6 @@ void cb_mnuConfigWFcontrols(Fl_Menu_ *, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabWF_UI);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 }
@@ -2727,7 +2676,7 @@ void cb_mnuPicViewer(Fl_Menu_ *, void *) {
 
 void cb_sldrSquelch(Fl_Slider* o, void*) {
 
-	if(progStatus.kpsql_enabled) {
+	if (progdefaults.show_psm_btn && progStatus.kpsql_enabled) {
 		progStatus.sldrPwrSquelchValue = o->value();
 	} else {
 		progStatus.sldrSquelchValue = o->value();
@@ -3228,10 +3177,8 @@ void cbSQL(Fl_Widget *w, void *vi)
 
 void cbPwrSQL(Fl_Widget *w, void *vi)
 {
-	if(progStatus.data_io_enabled == KISS_IO) {
 		FL_LOCK_D();
 		Fl_Button *b = (Fl_Button *)w;
-		b->activate();
 		int v = b->value();
 		if(!v) {
 			sldrSquelch->value(progStatus.sldrSquelchValue);
@@ -3245,12 +3192,6 @@ void cbPwrSQL(Fl_Widget *w, void *vi)
 			b->set();
 		}
 		FL_UNLOCK_D();
-	} else {
-		FL_LOCK_D();
-		Fl_Button *b = (Fl_Button *)w;
-		b->deactivate();
-		FL_UNLOCK_D();
-	}
 }
 
 void startMacroTimer()
@@ -4044,8 +3985,44 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 bool UI_first = true;
 void UI_select()
 {
-	if (bWF_only)
+	if (bWF_only) {
+		int Y = cntTxLevel->y();
+		int psm_width = progdefaults.show_psm_btn ? bwSqlOnOff : 0;
+		StatusBar->resize(
+			fl_digi_main->w() - rightof(Status2), Y,
+			fl_digi_main->w() - rightof(Status2) -
+			bwTxLevel -  // tx level control
+			Wwarn -      // Warn indicator
+			bwAfcOnOff - // afc button
+			bwSqlOnOff - // sql button
+			psm_width,   // psm button, bwSqlOnOff / 0
+			StatusBar->h());
+
+		cntTxLevel->position(rightof(StatusBar), Y);
+		WARNstatus->position(rightof(cntTxLevel), Y);
+		btnAFC->position(rightof(WARNstatus), Y);
+		btnSQL->position(rightof(btnAFC), Y);
+		btnPSQL->resize(rightof(btnSQL), Y, psm_width, btnPSQL->h());
+
+		if (progdefaults.show_psm_btn)
+			btnPSQL->show();
+		else
+			btnPSQL->hide();
+
+		cntTxLevel->redraw();
+		WARNstatus->redraw();
+		btnAFC->redraw();
+		btnSQL->redraw();
+		btnPSQL->redraw();
+		StatusBar->redraw();
+
+		hpack->init_sizes();
+		hpack->redraw();
+
+		fl_digi_main->init_sizes();
+		fl_digi_main->redraw();
 		return;
+	}
 
 	Fl_Menu_Item* cf = getMenuItem(CONTEST_FIELDS_MLABEL);
 
@@ -4168,6 +4145,42 @@ UI_return:
 		text_panel->position(orgx, orgy, nux, nuy);
 	}
 
+	{
+		int Y = cntTxLevel->y();
+		int psm_width = progdefaults.show_psm_btn ? bwSqlOnOff : 0;
+		StatusBar->resize(
+			fl_digi_main->w() - rightof(Status2), Y,
+			fl_digi_main->w() - rightof(Status2) -
+			bwTxLevel -  // tx level control
+			Wwarn -      // Warn indicator
+			bwAfcOnOff - // afc button
+			bwSqlOnOff - // sql button
+			psm_width -  // psm button, bwSqlOnOff / 0
+			corner_box->w(), StatusBar->h());
+
+		cntTxLevel->position(rightof(StatusBar), Y);
+		WARNstatus->position(rightof(cntTxLevel), Y);
+		btnAFC->position(rightof(WARNstatus), Y);
+		btnSQL->position(rightof(btnAFC), Y);
+		btnPSQL->resize(rightof(btnSQL), Y, psm_width, btnPSQL->h());
+
+		if (progdefaults.show_psm_btn)
+			btnPSQL->show();
+		else
+			btnPSQL->hide();
+
+		cntTxLevel->redraw();
+		WARNstatus->redraw();
+		btnAFC->redraw();
+		btnSQL->redraw();
+		btnPSQL->redraw();
+		StatusBar->redraw();
+
+		hpack->init_sizes();
+		hpack->redraw();
+
+	}
+
 	RigControlFrame->init_sizes();
 	RigControlFrame->redraw();
 	smeter->redraw();
@@ -4181,6 +4194,7 @@ UI_return:
 	macroFrame1->redraw();
 	macroFrame2->redraw();
 	viewer_redraw();
+//	hpack->redraw();
 
 	fl_digi_main->init_sizes();
 
@@ -7100,9 +7114,12 @@ void create_fl_digi_main_primary() {
 
 		Y += Hwfall;
 
-		hpack = new Fl_Pack(0, Y, W, Hstatus);
+		hpack = new Fl_Pack(0, Y, fl_digi_main->w(), Hstatus);
 			hpack->type(1);
-			MODEstatus = new Fl_Button(0,TopFrame1->y()+Htext+Hwfall, Wmode+30, Hstatus, "");
+
+			MODEstatus = new Fl_Button(
+				0, Y, //TopFrame1->y() + Htext + Hwfall,
+				Wmode, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -7110,7 +7127,8 @@ void create_fl_digi_main_primary() {
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
-			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Y,
+			cntCW_WPM = new Fl_Counter2(
+				rightof(MODEstatus), Y,
 				Ws2n - Hstatus, Hstatus, "");
 			cntCW_WPM->callback(cb_cntCW_WPM);
 			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
@@ -7121,20 +7139,23 @@ void create_fl_digi_main_primary() {
 			cntCW_WPM->tooltip(_("CW transmit WPM"));
 			cntCW_WPM->hide();
 
-			btnCW_Default = new Fl_Button(rightof(cntCW_WPM), Y,
+			btnCW_Default = new Fl_Button(
+				rightof(cntCW_WPM), Y,
 				Hstatus, Hstatus, "*");
 			btnCW_Default->callback(cb_btnCW_Default);
 			btnCW_Default->tooltip(_("Default WPM"));
 			btnCW_Default->hide();
 
-			Status1 = new Fl_Box(rightof(MODEstatus), Y,
-				Ws2n, Hstatus, "");
+			Status1 = new Fl_Box(
+				rightof(MODEstatus), Y,
+				Ws2n, Hstatus, "STATUS1");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
-			Status2 = new Fl_Box(rightof(Status1), Y,
-				Wimd, Hstatus, "");
+			Status2 = new Fl_Box(
+				rightof(Status1), Y,
+				Wimd, Hstatus, "STATUS2");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -7148,32 +7169,28 @@ void create_fl_digi_main_primary() {
 
 // see corner_box below
 // corner_box used to leave room for OS X corner drag handle
-
 #ifdef __APPLE__
-			StatusBar = new Fl_Box(
-				rightof(Status2), Y,
-						fl_digi_main->w()
-						- bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff
-						- Wwarn - bwTxLevel
-						- rightof(Status2) + 2 * pad - Hstatus,
-						Hstatus, "");
+	#define cbwidth DEFAULT_SW
 #else
+	#define cbwidth 0
+#endif
+
 			StatusBar = new Fl_Box(
 				rightof(Status2), Y,
-						fl_digi_main->w()
-						- bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff
-						- Wwarn - bwTxLevel
-						- rightof(Status2) + 2 * pad,
-						Hstatus, "");
-#endif
+				fl_digi_main->w() - rightof(Status2)
+				- bwAfcOnOff - bwSqlOnOff
+				- Wwarn - bwTxLevel
+				- bwSqlOnOff
+				- cbwidth,
+				Hstatus, "STATUS BAR");
+
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			cntTxLevel = new Fl_Counter2(
-				rightof(StatusBar) + 2 * pad, Y,
-				bwTxLevel - 4 * pad,
-				Hstatus, "");
+				rightof(StatusBar), Y,
+				bwTxLevel, Hstatus, "");
 			cntTxLevel->minimum(-30);
 			cntTxLevel->maximum(0);
 			cntTxLevel->value(-6);
@@ -7183,7 +7200,7 @@ void create_fl_digi_main_primary() {
 			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 
 			WARNstatus = new Fl_Box(
-				rightof(StatusBar) + pad, Y,
+				rightof(cntTxLevel) + pad, Y,
 				Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
@@ -7191,19 +7208,19 @@ void create_fl_digi_main_primary() {
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
 			btnAFC = new Fl_Light_Button(
-						fl_digi_main->w() - bwSqlOnOff - bwAfcOnOff - bwPwrSqlOnOff,
-						Y,
-						bwAfcOnOff, Hstatus, "AFC");
+				rightof(WARNstatus) + pad, Y,
+				bwAfcOnOff, Hstatus, "AFC");
 
 			btnSQL = new Fl_Light_Button(
-						fl_digi_main->w() - bwSqlOnOff - bwPwrSqlOnOff,
-						Y,
-						bwSqlOnOff, Hstatus, "SQL");
+				rightof(btnAFC), Y,
+				bwSqlOnOff, Hstatus, "SQL");
+
+// btnPSQL will be resized later depending on the state of the
+// configuration parameter to show that widget
 
 			btnPSQL = new Fl_Light_Button(
-						fl_digi_main->w() - bwPwrSqlOnOff,
-						Y,
-						bwPwrSqlOnOff, Hstatus, "KPSQL");
+				rightof(btnSQL), Y,
+				bwSqlOnOff, Hstatus, "PSM");
 
 			btnSQL->selection_color(progdefaults.Sql1Color);
 
@@ -7218,18 +7235,13 @@ void create_fl_digi_main_primary() {
 			btnPSQL->selection_color(progdefaults.Sql1Color);
 			btnPSQL->value(progdefaults.kpsql_enabled);
 			btnPSQL->callback(cbPwrSQL, 0);
-			btnPSQL->tooltip(_("Monitor KISS Pwr Squelch"));
+			btnPSQL->tooltip(_("Power Signal Monitor"));
 
-			if(progdefaults.data_io_enabled == KISS_IO)
-				btnPSQL->activate();
-			else
-				btnPSQL->deactivate();
+			corner_box = new Fl_Box(
+				fl_digi_main->w() - Hstatus, Y,
+				cbwidth, Hstatus, "");
 
-#ifdef __APPLE__
-			Fl_Box *corner_box = new Fl_Box(fl_digi_main->w() - Hstatus, Y,
-						Hstatus, Hstatus, "");
 			corner_box->box(FL_FLAT_BOX);
-#endif
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -7498,6 +7510,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -7750,7 +7763,9 @@ void create_fl_digi_main_WF_only() {
 
 		hpack = new Fl_Pack(0, Y, progStatus.mainW, Hstatus);
 			hpack->type(1);
-			MODEstatus = new Fl_Button(0, Y, Wmode+30, Hstatus, "");
+			MODEstatus = new Fl_Button(
+				0, Y,
+				Wmode, Hstatus, "");
 			MODEstatus->box(FL_DOWN_BOX);
 			MODEstatus->color(FL_BACKGROUND2_COLOR);
 			MODEstatus->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -7758,7 +7773,9 @@ void create_fl_digi_main_WF_only() {
 			MODEstatus->when(FL_WHEN_CHANGED);
 			MODEstatus->tooltip(_("Left click: change mode\nRight click: configure"));
 
-			cntCW_WPM = new Fl_Counter2(rightof(MODEstatus), Y, Ws2n - Hstatus, Hstatus, "");
+			cntCW_WPM = new Fl_Counter2(
+				rightof(MODEstatus), Y,
+				Ws2n - Hstatus, Hstatus, "");
 			cntCW_WPM->callback(cb_cntCW_WPM);
 			cntCW_WPM->minimum(progdefaults.CWlowerlimit);
 			cntCW_WPM->maximum(progdefaults.CWupperlimit);
@@ -7768,34 +7785,42 @@ void create_fl_digi_main_WF_only() {
 			cntCW_WPM->step(1);
 			cntCW_WPM->hide();
 
-			btnCW_Default = new Fl_Button(rightof(cntCW_WPM), Y, Hstatus, Hstatus, "*");
+			btnCW_Default = new Fl_Button(
+				rightof(cntCW_WPM), Y,
+				Hstatus, Hstatus, "*");
 			btnCW_Default->callback(cb_btnCW_Default);
 			btnCW_Default->tooltip(_("Default WPM"));
 			btnCW_Default->hide();
 
-			Status1 = new Fl_Box(rightof(MODEstatus), Y, Ws2n, Hstatus, "");
+			Status1 = new Fl_Box(
+				rightof(MODEstatus), Y,
+				Ws2n, Hstatus, "");
 			Status1->box(FL_DOWN_BOX);
 			Status1->color(FL_BACKGROUND2_COLOR);
 			Status1->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
-			Status2 = new Fl_Box(rightof(Status1), Y, Wimd, Hstatus, "");
+			Status2 = new Fl_Box(
+				rightof(Status1), Y,
+				Wimd, Hstatus, "");
 			Status2->box(FL_DOWN_BOX);
 			Status2->color(FL_BACKGROUND2_COLOR);
 			Status2->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			StatusBar = new Fl_Box(
 				rightof(Status2), Y,
-						   progStatus.mainW - bwPwrSqlOnOff - bwSqlOnOff - bwAfcOnOff - Wwarn - bwTxLevel
-					- 2 * DEFAULT_SW - rightof(Status2),
-					Hstatus, "");
+				progStatus.mainW - rightof(Status2)
+				- 2 * bwSqlOnOff
+				- bwAfcOnOff
+				- Wwarn
+				- bwTxLevel,
+				Hstatus, "");
 			StatusBar->box(FL_DOWN_BOX);
 			StatusBar->color(FL_BACKGROUND2_COLOR);
 			StatusBar->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
 
 			cntTxLevel = new Fl_Counter2(
-				rightof(StatusBar) + 2 * pad, Y,
-				bwTxLevel - 4 * pad,
-				Hstatus, "");
+				rightof(StatusBar), Y,
+				bwTxLevel, Hstatus, "");
 			cntTxLevel->minimum(-30);
 			cntTxLevel->maximum(0);
 			cntTxLevel->value(-6);
@@ -7805,45 +7830,42 @@ void create_fl_digi_main_WF_only() {
 			cntTxLevel->tooltip(_("Tx level attenuator (dB)"));
 
 			WARNstatus = new Fl_Box(
-				rightof(StatusBar) + pad, Y,
+				rightof(cntTxLevel), Y,
 				Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
 			WARNstatus->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);
 
-			int sql_width = bwSqlOnOff;
 			btnAFC = new Fl_Light_Button(
-								 progStatus.mainW - bwSqlOnOff - bwAfcOnOff - bwPwrSqlOnOff,
-				Y,
+				rightof(WARNstatus), Y,
 				bwAfcOnOff, Hstatus, "AFC");
 			btnAFC->selection_color(progdefaults.AfcColor);
+
 			btnSQL = new Fl_Light_Button(
-				progStatus.mainW - bwSqlOnOff - bwPwrSqlOnOff,
-				Y,
-				sql_width, Hstatus, "SQL");
+				rightof(btnAFC), Y,
+				bwSqlOnOff, Hstatus, "SQL");
 
-		btnPSQL = new Fl_Light_Button(
-								  progStatus.mainW - bwPwrSqlOnOff,
-								  Y,
-								  bwPwrSqlOnOff, Hstatus, "KPSQL");
+// btnPSQL will be resized later depending on the state of the
+// configuration parameter to show that widget
 
-			btnSQL->selection_color(progdefaults.Sql1Color);
+			btnPSQL = new Fl_Light_Button(
+				rightof(btnSQL), Y,
+				bwSqlOnOff, Hstatus, "PSM");
+
 			btnAFC->callback(cbAFC, 0);
 			btnAFC->value(1);
 			btnAFC->tooltip(_("Automatic Frequency Control"));
+
 			btnSQL->callback(cbSQL, 0);
+			btnSQL->selection_color(progdefaults.Sql1Color);
 			btnSQL->value(1);
 			btnSQL->tooltip(_("Squelch"));
-	btnPSQL->selection_color(progdefaults.Sql1Color);
-	btnPSQL->callback(cbPwrSQL, 0);
-	btnPSQL->value(progdefaults.kpsql_enabled);
-	btnPSQL->tooltip(_("Monitor KISS Pwr Squelch"));
 
-	if(progdefaults.data_io_enabled == KISS_IO)
-		btnPSQL->activate();
-	else
-		btnPSQL->deactivate();
+			btnPSQL->selection_color(progdefaults.Sql1Color);
+			btnPSQL->callback(cbPwrSQL, 0);
+			btnPSQL->value(progdefaults.kpsql_enabled);
+			btnPSQL->tooltip(_("Power Signal Monitor"));
 
 			Fl_Group::current()->resizable(StatusBar);
 		hpack->end();
@@ -7898,6 +7920,8 @@ void create_fl_digi_main_WF_only() {
 		wf->xmtrcv->deactivate();
 	}
 
+	UI_select();
+
 }
 
 
@@ -7938,7 +7962,7 @@ void put_Bandwidth(int bandwidth)
 	wf->Bandwidth ((int)bandwidth);
 }
 
-static void callback_set_metric(double metric)
+void callback_set_metric(double metric)
 {
 	pgrsSquelch->value(metric);
 
@@ -7948,7 +7972,7 @@ static void callback_set_metric(double metric)
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_s2n_progress->value(metric);
 
-	if(progStatus.kpsql_enabled) {
+	if (progdefaults.show_psm_btn && progStatus.kpsql_enabled) {
 		if ((metric >= progStatus.sldrPwrSquelchValue) || inhibit_tx_seconds)
 			btnPSQL->selection_color(progdefaults.Sql2Color);
 		else
@@ -8452,6 +8476,7 @@ void put_MODEstatus(const char* fmt, ...)
 	va_end(args);
 
 	REQ(static_cast<void (Fl_Button::*)(const char *)>(&Fl_Button::label), MODEstatus, s);
+	REQ(static_cast<void (Fl_Button::*)()>(&Fl_Button::redraw_label), MODEstatus);
 }
 
 void put_MODEstatus(trx_mode mode)
@@ -9129,6 +9154,9 @@ void enable_kiss(void)
 	btnEnable_kiss->value(true);
 
 	enable_disable_kpsql();
+
+	progdefaults.show_psm_btn = true;
+	UI_select();
 }
 
 void enable_arq(void)
@@ -9145,6 +9173,9 @@ void enable_arq(void)
 	btnEnable_arq->value(true);
 
 	enable_disable_kpsql();
+
+	progdefaults.show_psm_btn = false;
+	UI_select();
 }
 
 void enable_disable_kpsql(void)
