@@ -28,6 +28,7 @@ extern bool Socket_arqRx();
 extern void AbortARQ();
 extern void pskmail_notify_rsid(trx_mode mode);
 extern void pskmail_notify_s2n(double s2n_count, double s2n_avg, double s2n_stddev);
+extern void flush_arq_tx_buffer(void);
 
 class ARQ_SOCKET_Server
 {

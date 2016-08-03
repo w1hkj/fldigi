@@ -516,6 +516,8 @@ fldigi_SOURCES += \
 	irrxml/irrTypes.h \
 	irrxml/irrXML.cpp \
 	irrxml/irrXML.h \
+   psm/psm.cxx \
+   psm/psm.h \
 	logbook/adif_io.cxx \
 	logbook/calendar.cxx \
 	logbook/date.cxx \

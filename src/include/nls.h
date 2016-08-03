@@ -21,7 +21,11 @@
 #ifndef NLS_H_
 #define NLS_H_
 
-#include <config.h>
+#include "config.h"
+
+#include <cstdio>
+#include <cstring>
+#include <string>
 
 #if ENABLE_NLS && defined(__WOE32__)
 struct lang_def_t {

@@ -94,12 +94,15 @@ public:
 
         bool pop(bool exec = false)
         {
-		if (rb->get_rv(rvec, blocksize) < blocksize)
-			return false;
-		reinterpret_cast<func_base *>(rvec[0].buf)->destroy(exec);
-		rb->read_advance(blocksize);
+            if (rb->get_rv(rvec, blocksize) < blocksize)
+			      return false;
 
-		return true;
+            func_base *_fb = reinterpret_cast<func_base *>(rvec[0].buf);
+
+            if(_fb && *rvec[0].buf) // Check for null pointer(s) before executing.
+                _fb->destroy(exec);
+            rb->read_advance(blocksize);
+            return true;
         }
 
         bool execute(void) { return pop(true); }

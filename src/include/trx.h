@@ -36,11 +36,12 @@
 
 extern	void	trx_start_modem(modem* m, int f = 0);
 extern	void	trx_start(void);
-extern	void	trx_close();
+extern	void	trx_close(void);
 
-extern	void	trx_transmit();
-extern	void	trx_tune();
-extern	void	trx_receive();
+extern	void	trx_transmit_psm(void);
+extern	void	trx_transmit(void);
+extern	void	trx_tune(void);
+extern	void	trx_receive(void);
 
 extern	void	trx_reset(void);
 

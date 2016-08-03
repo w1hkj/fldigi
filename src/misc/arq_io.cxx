@@ -894,6 +894,13 @@ int arq_get_char()
 	return c;
 }
 
+void flush_arq_tx_buffer(void)
+{
+	guard_lock arq_rx_lock(&arq_rx_mutex);
+    arq_text_available = false;
+    arqtext.clear();
+}
+
 //======================================================================
 // following function used if the T/R button is pressed to stop a transmission
 // that is servicing the ARQ text buffer.  It allows the ARQ client to reset

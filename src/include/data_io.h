@@ -90,7 +90,6 @@ extern bool kiss_bcast_rsid_reception;
 extern bool kiss_bcast_trx_toggle;
 extern bool bcast_rsid_kiss_frame(int new_wf_pos, int new_mode, int old_wf_pos, int old_mode, int notify);
 extern void bcast_trxc_kiss_frame(void);
-extern void update_kpsql_fractional_gain(int value);
 extern void kiss_io_set_button_state(void *);
 extern void connect_to_kiss_io(bool);
 

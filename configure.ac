@@ -88,6 +88,9 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_USE_SYSTEM_EXTENSIONS
 
+#Check for C++11 compliance
+AX_CXX_COMPILE_STDCXX_11
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_DIRENT
@@ -279,7 +282,7 @@ fi
 # Define USE_FLXMLRPC in config.h
 # Substitute FLXMLRPC_CFLAGS and FLXMLRPC_LIBS in Makefile
 
-AC_FLDIGI_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0], 
+AC_FLDIGI_PKG_CHECK([flxmlrpc], [flxmlrpc >= 0.1.0],
   [yes], [yes], [use external flxmlrpc library @<:@autodetect@:>@],
   [ENABLE_FLXMLRPC])
 

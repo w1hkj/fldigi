@@ -96,6 +96,7 @@
 #include "kmlserver.h"
 #include "data_io.h"
 #include "maclogger.h"
+#include "psm/psm.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -254,23 +255,23 @@ void toggle_io_port_selection(int io_mode)
 
 	switch(io_mode) {
 		case ARQ_IO:
-            enable_arq();
-            progdefaults.changed = false;
-        break;
+			enable_arq();
+			progdefaults.changed = false;
+		break;
 
 		case KISS_IO:
 
-            enable_kiss();
+			enable_kiss();
 
-            if(progdefaults.tcp_udp_auto_connect) {
-                btn_connect_kiss_io->value(1);
-                btn_connect_kiss_io->do_callback();
-            }
+			if(progdefaults.tcp_udp_auto_connect) {
+				btn_connect_kiss_io->value(1);
+				btn_connect_kiss_io->do_callback();
+			}
 
-            if(progdefaults.kpsql_enabled) {
-                btnPSQL->value(progdefaults.kpsql_enabled);
-                btnPSQL->do_callback();
-            }
+			if(progdefaults.kpsql_enabled && progdefaults.show_psm_btn) {
+				btnPSQL->value(progdefaults.kpsql_enabled);
+				btnPSQL->do_callback();
+			}
 
 			progdefaults.changed = false;
 			break;
@@ -359,12 +360,13 @@ void delayed_startup(void *)
 	data_io_enabled = DISABLED_IO;
 
 	arq_init();
+   start_psm_thread();
 
 	if (progdefaults.connect_to_maclogger) maclogger_init();
 	data_io_enabled = progStatus.data_io_enabled;
 
 	toggle_io_port_selection(data_io_enabled);
-    disable_config_p2p_io_widgets();
+	disable_config_p2p_io_widgets();
 
 	notify_start();
 
@@ -521,12 +523,16 @@ int main(int argc, char ** argv)
 				cbq[i]->attach(i, "MACLOGGER_TID");
 				break;
 
+			case PSM_TID:
+				cbq[i]->attach(i, "PSM_TID");
+				break;
+
 			case FLMAIN_TID:
 				cbq[i]->attach(i, "FLMAIN_TID");
 				break;
 
-		    default:
-		    	break;
+			default:
+				break;
 		}
 	}
 
@@ -781,8 +787,11 @@ void exit_process() {
 
 	if (progdefaults.kml_enabled)
 		KmlServer::Exit();
+
+   stop_psm_thread();
 	arq_close();
 	kiss_close(false);
+
 	maclogger_close();
 	XML_RPC_Server::stop();
 
@@ -809,111 +818,111 @@ void generate_option_help(void) {
 #endif
 
 	help << "Usage:\n"
-	     << "    " << PACKAGE_NAME << " [option...]\n\n";
+		 << "    " << PACKAGE_NAME << " [option...]\n\n";
 
 	help << PACKAGE_NAME << " options:\n\n"
 #if !defined(__WOE32__)
-	     << "  --home-dir DIRECTORY\n"
-	     << "    Set the home directory to full pathname of DIRECTORY\n"
-	     << "    fldigi will put the file stores\n"
-	     << "      .fldigi.files, and .nbems.files\n"
-	     << "    in this directory\n"
-	     << "    The default is: " << disp_base_dir << "\n\n"
+		 << "  --home-dir DIRECTORY\n"
+		 << "    Set the home directory to full pathname of DIRECTORY\n"
+		 << "    fldigi will put the file stores\n"
+		 << "      .fldigi.files, and .nbems.files\n"
+		 << "    in this directory\n"
+		 << "    The default is: " << disp_base_dir << "\n\n"
 
-	     << "  --config-dir DIRECTORY\n"
-	     << "    Look for configuration files in DIRECTORY\n"
-	     << "    The default is: " << disp_base_dir << ".fldigi/\n\n"
+		 << "  --config-dir DIRECTORY\n"
+		 << "    Look for configuration files in DIRECTORY\n"
+		 << "    The default is: " << disp_base_dir << ".fldigi/\n\n"
 #else
-	     << "  --home-dir FOLDER\n"
-	     << "    Set the home folder to full pathname of FOLDER\n"
-	     << "    fldigi will put the file stores\n"
-	     << "       fldigi.files, and nbems.files\n"
-	     << "    in this folder\n"
-	     << "    The default is: " << disp_base_dir << "\n\n"
+		 << "  --home-dir FOLDER\n"
+		 << "    Set the home folder to full pathname of FOLDER\n"
+		 << "    fldigi will put the file stores\n"
+		 << "       fldigi.files, and nbems.files\n"
+		 << "    in this folder\n"
+		 << "    The default is: " << disp_base_dir << "\n\n"
 
-	     << "  --config-dir FOLDER\n"
-	     << "    Look for configuration files in FOLDER\n"
-	     << "    The default is: " << disp_base_dir << "fldigi.files\\\n\n"
+		 << "  --config-dir FOLDER\n"
+		 << "    Look for configuration files in FOLDER\n"
+		 << "    The default is: " << disp_base_dir << "fldigi.files\\\n\n"
 #endif
 
 #if !defined(__WOE32__) && !defined(__APPLE__)
-	     << "  --rx-ipc-key KEY\n"
-	     << "    Set the receive message queue key\n"
-	     << "    May be given in hex if prefixed with \"0x\"\n"
-	     << "    The default is: " << progdefaults.rx_msgid
-	     << " or 0x" << hex << progdefaults.rx_msgid << dec << "\n\n"
+		 << "  --rx-ipc-key KEY\n"
+		 << "    Set the receive message queue key\n"
+		 << "    May be given in hex if prefixed with \"0x\"\n"
+		 << "    The default is: " << progdefaults.rx_msgid
+		 << " or 0x" << hex << progdefaults.rx_msgid << dec << "\n\n"
 
-	     << "  --tx-ipc-key KEY\n"
-	     << "    Set the transmit message queue key\n"
-	     << "    May be given in hex if prefixed with \"0x\"\n"
-	     << "    The default is: " << progdefaults.tx_msgid
-	     << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
+		 << "  --tx-ipc-key KEY\n"
+		 << "    Set the transmit message queue key\n"
+		 << "    May be given in hex if prefixed with \"0x\"\n"
+		 << "    The default is: " << progdefaults.tx_msgid
+		 << " or 0x" << hex << progdefaults.tx_msgid << dec << "\n\n"
 #endif
 
 		 << "  --enable-io-port <" << ARQ_IO << "|" << KISS_IO << "> ARQ=" << ARQ_IO << " KISS=" << KISS_IO << "\n"
-         << "    Select the active IO Port\n"
-         << "    The default is: " << progdefaults.data_io_enabled << "\n\n"
+		 << "    Select the active IO Port\n"
+		 << "    The default is: " << progdefaults.data_io_enabled << "\n\n"
 
-         << "  --kiss-server-address HOSTNAME\n"
-         << "    Set the KISS TCP/UDP server address\n"
-         << "    The default is: " << progdefaults.kiss_address << "\n\n"
-         << "  --kiss-server-port-io I/O PORT\n"
-         << "    Set the KISS TCP/UDP server I/O port\n"
-         << "    The default is: " << progdefaults.kiss_io_port << "\n\n"
-         << "  --kiss-server-port-o Output PORT\n"
-         << "    Set the KISS UDP server output port\n"
-         << "    The default is: " << progdefaults.kiss_out_port << "\n\n"
-         << "  --kiss-server-dual-port Dual Port Use (0=disable / 1=enable)\n"
-         << "    Set the KISS UDP server dual port flag\n"
-         << "    The default is: " << progdefaults.kiss_dual_port_enabled << "\n\n"
+		 << "  --kiss-server-address HOSTNAME\n"
+		 << "    Set the KISS TCP/UDP server address\n"
+		 << "    The default is: " << progdefaults.kiss_address << "\n\n"
+		 << "  --kiss-server-port-io I/O PORT\n"
+		 << "    Set the KISS TCP/UDP server I/O port\n"
+		 << "    The default is: " << progdefaults.kiss_io_port << "\n\n"
+		 << "  --kiss-server-port-o Output PORT\n"
+		 << "    Set the KISS UDP server output port\n"
+		 << "    The default is: " << progdefaults.kiss_out_port << "\n\n"
+		 << "  --kiss-server-dual-port Dual Port Use (0=disable / 1=enable)\n"
+		 << "    Set the KISS UDP server dual port flag\n"
+		 << "    The default is: " << progdefaults.kiss_dual_port_enabled << "\n\n"
 
-	     << "  --arq-server-address HOSTNAME\n"
-	     << "    Set the ARQ TCP server address\n"
-	     << "    The default is: " << progdefaults.arq_address << "\n\n"
-	     << "  --arq-server-port PORT\n"
-	     << "    Set the ARQ TCP server port\n"
-	     << "    The default is: " << progdefaults.arq_port << "\n\n"
-	     << "  --flmsg-dir DIRECTORY\n"
-	     << "    Look for flmsg files in DIRECTORY\n"
-	     << "    The default is " << FLMSG_dir_default << "\n\n"
-	     << "  --auto-dir DIRECTORY\n"
-	     << "    Look for auto-send files in DIRECTORY\n"
-	     << "    The default is " << HomeDir << "/autosend" << "\n\n"
+		 << "  --arq-server-address HOSTNAME\n"
+		 << "    Set the ARQ TCP server address\n"
+		 << "    The default is: " << progdefaults.arq_address << "\n\n"
+		 << "  --arq-server-port PORT\n"
+		 << "    Set the ARQ TCP server port\n"
+		 << "    The default is: " << progdefaults.arq_port << "\n\n"
+		 << "  --flmsg-dir DIRECTORY\n"
+		 << "    Look for flmsg files in DIRECTORY\n"
+		 << "    The default is " << FLMSG_dir_default << "\n\n"
+		 << "  --auto-dir DIRECTORY\n"
+		 << "    Look for auto-send files in DIRECTORY\n"
+		 << "    The default is " << HomeDir << "/autosend" << "\n\n"
 
-	     << "  --xmlrpc-server-address HOSTNAME\n"
-	     << "    Set the XML-RPC server address\n"
-	     << "    The default is: " << progdefaults.xmlrpc_address << "\n\n"
-	     << "  --xmlrpc-server-port PORT\n"
-	     << "    Set the XML-RPC server port\n"
-	     << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
-	     << "  --xmlrpc-allow REGEX\n"
-	     << "    Allow only the methods whose names match REGEX\n\n"
-	     << "  --xmlrpc-deny REGEX\n"
-	     << "    Allow only the methods whose names don't match REGEX\n\n"
-	     << "  --xmlrpc-list\n"
-	     << "    List all available methods\n\n"
+		 << "  --xmlrpc-server-address HOSTNAME\n"
+		 << "    Set the XML-RPC server address\n"
+		 << "    The default is: " << progdefaults.xmlrpc_address << "\n\n"
+		 << "  --xmlrpc-server-port PORT\n"
+		 << "    Set the XML-RPC server port\n"
+		 << "    The default is: " << progdefaults.xmlrpc_port << "\n\n"
+		 << "  --xmlrpc-allow REGEX\n"
+		 << "    Allow only the methods whose names match REGEX\n\n"
+		 << "  --xmlrpc-deny REGEX\n"
+		 << "    Allow only the methods whose names don't match REGEX\n\n"
+		 << "  --xmlrpc-list\n"
+		 << "    List all available methods\n\n"
 
 #if BENCHMARK_MODE
-	     << "  --benchmark-modem ID\n"
-	     << "    Specify the modem\n"
-	     << "    Default: " << mode_info[benchmark.modem].sname << "\n\n"
-	     << "  --benchmark-frequency FREQ\n"
-	     << "    Specify the modem frequency\n"
-	     << "    Default: " << benchmark.freq << "\n\n"
-	     << "  --benchmark-afc BOOLEAN\n"
-	     << "    Set modem AFC\n"
-	     << "    Default: " << benchmark.afc
-	     << " (" << boolalpha << benchmark.afc << noboolalpha << ")\n\n"
-	     << "  --benchmark-squelch BOOLEAN\n"
-	     << "    Set modem squelch\n"
-	     << "    Default: " << benchmark.sql
-	     << " (" << boolalpha << benchmark.sql << noboolalpha << ")\n\n"
-	     << "  --benchmark-squelch-level LEVEL\n"
-	     << "    Set modem squelch level\n"
-	     << "    Default: " << benchmark.sqlevel << " (%)\n\n"
-	     << "  --benchmark-input INPUT\n"
-	     << "    Specify the input\n"
-	     << "    Must be a positive integer indicating the number of samples\n"
+		 << "  --benchmark-modem ID\n"
+		 << "    Specify the modem\n"
+		 << "    Default: " << mode_info[benchmark.modem].sname << "\n\n"
+		 << "  --benchmark-frequency FREQ\n"
+		 << "    Specify the modem frequency\n"
+		 << "    Default: " << benchmark.freq << "\n\n"
+		 << "  --benchmark-afc BOOLEAN\n"
+		 << "    Set modem AFC\n"
+		 << "    Default: " << benchmark.afc
+		 << " (" << boolalpha << benchmark.afc << noboolalpha << ")\n\n"
+		 << "  --benchmark-squelch BOOLEAN\n"
+		 << "    Set modem squelch\n"
+		 << "    Default: " << benchmark.sql
+		 << " (" << boolalpha << benchmark.sql << noboolalpha << ")\n\n"
+		 << "  --benchmark-squelch-level LEVEL\n"
+		 << "    Set modem squelch level\n"
+		 << "    Default: " << benchmark.sqlevel << " (%)\n\n"
+		 << "  --benchmark-input INPUT\n"
+		 << "    Specify the input\n"
+		 << "    Must be a positive integer indicating the number of samples\n"
 		"    of silence to generate as the input"
 #  if USE_SNDFILE
 		", or a filename containing\n"
@@ -921,88 +930,88 @@ void generate_option_help(void) {
 #endif
 		"\n\n"
 
-	     << "  --benchmark-output FILE\n"
-	     << "    Specify the output data file\n"
-	     << "    Default: decoder output is discarded\n\n"
-	     << "  --benchmark-src-ratio RATIO\n"
-	     << "    Specify the sample rate conversion ratio\n"
-	     << "    Default: 1.0 (input is not resampled)\n\n"
-	     << "  --benchmark-src-type TYPE\n"
-	     << "    Specify the sample rate conversion type\n"
-	     << "    Default: " << benchmark.src_type << " (" << src_get_name(benchmark.src_type) << ")\n\n"
+		 << "  --benchmark-output FILE\n"
+		 << "    Specify the output data file\n"
+		 << "    Default: decoder output is discarded\n\n"
+		 << "  --benchmark-src-ratio RATIO\n"
+		 << "    Specify the sample rate conversion ratio\n"
+		 << "    Default: 1.0 (input is not resampled)\n\n"
+		 << "  --benchmark-src-type TYPE\n"
+		 << "    Specify the sample rate conversion type\n"
+		 << "    Default: " << benchmark.src_type << " (" << src_get_name(benchmark.src_type) << ")\n\n"
 #endif
 
-	     << "  --cpu-speed-test\n"
-	     << "    Perform the CPU speed test, show results in the event log\n"
-	     << "    and possibly change options.\n\n"
+		 << "  --cpu-speed-test\n"
+		 << "    Perform the CPU speed test, show results in the event log\n"
+		 << "    and possibly change options.\n\n"
 
-	     << "  --noise\n"
-	     << "    Unhide controls for noise tests\n\n"
+		 << "  --noise\n"
+		 << "    Unhide controls for noise tests\n\n"
 
-	     << "  --wfall-only\n"
-	     << "    Hide all controls but the waterfall\n\n"
+		 << "  --wfall-only\n"
+		 << "    Hide all controls but the waterfall\n\n"
 
-	     << "  --debug-level LEVEL\n"
-	     << "    Set the event log verbosity\n\n"
+		 << "  --debug-level LEVEL\n"
+		 << "    Set the event log verbosity\n\n"
 
-	     << "  --debug-pskmail\n"
-	     << "    Enable logging for pskmail / arq events\n\n"
+		 << "  --debug-pskmail\n"
+		 << "    Enable logging for pskmail / arq events\n\n"
 
-	     << "  --debug-audio\n"
-	     << "    Enable logging for sound-card events\n\n"
+		 << "  --debug-audio\n"
+		 << "    Enable logging for sound-card events\n\n"
 
-	     << "  --version\n"
-	     << "    Print version information\n\n"
+		 << "  --version\n"
+		 << "    Print version information\n\n"
 
-	     << "  --build-info\n"
-	     << "    Print build information\n\n"
+		 << "  --build-info\n"
+		 << "    Print build information\n\n"
 
-	     << "  --help\n"
-	     << "    Print this option help\n\n";
+		 << "  --help\n"
+		 << "    Print this option help\n\n";
 
 // Fl::help looks ugly so we'll write our own
 
 	help << "Standard FLTK options:\n\n"
 
-	     << "   -bg COLOR, -background COLOR\n"
-	     << "    Set the background color\n"
+		 << "   -bg COLOR, -background COLOR\n"
+		 << "    Set the background color\n"
 
-	     << "   -bg2 COLOR, -background2 COLOR\n"
-	     << "    Set the secondary (text) background color\n\n"
+		 << "   -bg2 COLOR, -background2 COLOR\n"
+		 << "    Set the secondary (text) background color\n\n"
 
-	     << "   -di DISPLAY, -display DISPLAY\n"
-	     << "    Set the X display to use DISPLAY,\n"
-	     << "    format is ``host:n.n''\n\n"
+		 << "   -di DISPLAY, -display DISPLAY\n"
+		 << "    Set the X display to use DISPLAY,\n"
+		 << "    format is ``host:n.n''\n\n"
 
-	     << "   -dn, -dnd or -nodn, -nodnd\n"
-	     << "    Enable or disable drag and drop copy and paste in text fields\n\n"
+		 << "   -dn, -dnd or -nodn, -nodnd\n"
+		 << "    Enable or disable drag and drop copy and paste in text fields\n\n"
 
-	     << "   -fg COLOR, -foreground COLOR\n"
-	     << "    Set the foreground color\n\n"
+		 << "   -fg COLOR, -foreground COLOR\n"
+		 << "    Set the foreground color\n\n"
 
-	     << "   -g GEOMETRY, -geometry GEOMETRY\n"
-	     << "    Set the initial window size and position\n"
-	     << "    GEOMETRY format is ``WxH+X+Y''\n"
-	     << "    ** " << PACKAGE_NAME << " may override this setting **\n\n"
+		 << "   -g GEOMETRY, -geometry GEOMETRY\n"
+		 << "    Set the initial window size and position\n"
+		 << "    GEOMETRY format is ``WxH+X+Y''\n"
+		 << "    ** " << PACKAGE_NAME << " may override this setting **\n\n"
 
-	     << "   -i, -iconic\n"
-	     << "    Start " << PACKAGE_NAME << " in iconified state\n\n"
+		 << "   -i, -iconic\n"
+		 << "    Start " << PACKAGE_NAME << " in iconified state\n\n"
 
-	     << "   -k, -kbd or -nok, -nokbd\n"
-	     << "    Enable or disable visible keyboard focus in non-text widgets\n\n"
+		 << "   -k, -kbd or -nok, -nokbd\n"
+		 << "    Enable or disable visible keyboard focus in non-text widgets\n\n"
 
-	     << "   -na CLASSNAME, -name CLASSNAME\n"
-	     << "    Set the window class to CLASSNAME\n\n"
+		 << "   -na CLASSNAME, -name CLASSNAME\n"
+		 << "    Set the window class to CLASSNAME\n\n"
 
-	     << "   -ti WINDOWTITLE, -title WINDOWTITLE\n"
-	     << "    Set the window title\n\n";
+		 << "   -ti WINDOWTITLE, -title WINDOWTITLE\n"
+		 << "    Set the window title\n\n";
 
 	help << "Additional UI options:\n\n"
 
-	     << "  --font FONT[:SIZE]\n"
-	     << "    Set the widget font and (optionally) size\n"
-	     << "    The default is: " << Fl::get_font(FL_HELVETICA)
-	     << ':' << FL_NORMAL_SIZE << "\n\n"
+		 << "  --font FONT[:SIZE]\n"
+		 << "    Set the widget font and (optionally) size\n"
+		 << "    The default is: " << Fl::get_font(FL_HELVETICA)
+		 << ':' << FL_NORMAL_SIZE << "\n\n"
 
 		;
 
@@ -1025,38 +1034,38 @@ int parse_args(int argc, char **argv, int& idx)
 		return 0;
 	}
 
-        enum { OPT_ZERO,
+		enum { OPT_ZERO,
 #ifndef __WOE32__
-	       OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
+		   OPT_RX_IPC_KEY, OPT_TX_IPC_KEY,
 #endif
-	       OPT_HOME_DIR,
-	       OPT_CONFIG_DIR,
-	       OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
-	       OPT_SHOW_CPU_CHECK,
-	       OPT_FLMSG_DIR,
-	       OPT_AUTOSEND_DIR,
+		   OPT_HOME_DIR,
+		   OPT_CONFIG_DIR,
+		   OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
+		   OPT_SHOW_CPU_CHECK,
+		   OPT_FLMSG_DIR,
+		   OPT_AUTOSEND_DIR,
 
-	       OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
-	       OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
+		   OPT_CONFIG_XMLRPC_ADDRESS, OPT_CONFIG_XMLRPC_PORT,
+		   OPT_CONFIG_XMLRPC_ALLOW, OPT_CONFIG_XMLRPC_DENY, OPT_CONFIG_XMLRPC_LIST,
 		   OPT_CONFIG_KISS_ADDRESS, OPT_CONFIG_KISS_PORT_IO, OPT_CONFIG_KISS_PORT_O,
 		   OPT_CONFIG_KISS_DUAL_PORT, OPT_ENABLE_IO_PORT,
 
 #if BENCHMARK_MODE
-	       OPT_BENCHMARK_MODEM, OPT_BENCHMARK_AFC, OPT_BENCHMARK_SQL, OPT_BENCHMARK_SQLEVEL,
-	       OPT_BENCHMARK_FREQ, OPT_BENCHMARK_INPUT, OPT_BENCHMARK_OUTPUT,
-	       OPT_BENCHMARK_SRC_RATIO, OPT_BENCHMARK_SRC_TYPE,
+		   OPT_BENCHMARK_MODEM, OPT_BENCHMARK_AFC, OPT_BENCHMARK_SQL, OPT_BENCHMARK_SQLEVEL,
+		   OPT_BENCHMARK_FREQ, OPT_BENCHMARK_INPUT, OPT_BENCHMARK_OUTPUT,
+		   OPT_BENCHMARK_SRC_RATIO, OPT_BENCHMARK_SRC_TYPE,
 #endif
 
-               OPT_FONT, OPT_WFALL_HEIGHT,
-               OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_WFALL_ONLY,
-               OPT_RX_ONLY,
+			   OPT_FONT, OPT_WFALL_HEIGHT,
+			   OPT_WINDOW_WIDTH, OPT_WINDOW_HEIGHT, OPT_WFALL_ONLY,
+			   OPT_RX_ONLY,
 #if USE_PORTAUDIO
-               OPT_FRAMES_PER_BUFFER,
+			   OPT_FRAMES_PER_BUFFER,
 #endif
-           OPT_MORE_INFO,
-	       OPT_NOISE, OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL, OPT_DEBUG_AUDIO,
-               OPT_EXIT_AFTER,
-               OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
+		   OPT_MORE_INFO,
+		   OPT_NOISE, OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL, OPT_DEBUG_AUDIO,
+			   OPT_EXIT_AFTER,
+			   OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
 	static const char shortopts[] = ":";
 	static const struct option longopts[] = {
@@ -1159,7 +1168,7 @@ int parse_args(int argc, char **argv, int& idx)
 			BaseDir = buf;
 		}
 			if (*BaseDir.rbegin() != '/')
-			       BaseDir += '/';
+				   BaseDir += '/';
 			break;
 
 		case OPT_CONFIG_DIR: {
@@ -1168,7 +1177,7 @@ int parse_args(int argc, char **argv, int& idx)
 			HomeDir = buf;
 		}
 			if (*HomeDir.rbegin() != '/')
-			       HomeDir += '/';
+				   HomeDir += '/';
 			break;
 
 		case OPT_ARQ_ADDRESS:
@@ -1247,9 +1256,9 @@ int parse_args(int argc, char **argv, int& idx)
 		case OPT_CONFIG_XMLRPC_DENY:
 			if (!progdefaults.xmlrpc_allow.empty())
 				cerr << "W: --" << longopts[longindex].name
-				     << " cannot be used together with --"
-				     << longopts[OPT_CONFIG_XMLRPC_ALLOW-1].name
-				     << " and will be ignored\n";
+					 << " cannot be used together with --"
+					 << longopts[OPT_CONFIG_XMLRPC_ALLOW-1].name
+					 << " and will be ignored\n";
 			else
 				progdefaults.xmlrpc_deny = optarg;
 			break;
@@ -1371,7 +1380,7 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_DEPRECATED:
 			cerr << "W: the --" << longopts[longindex].name
-			     << " option has been deprecated and will be removed in a future version\n";
+				 << " option has been deprecated and will be removed in a future version\n";
 			break;
 
 		case OPT_HELP:
@@ -1393,13 +1402,13 @@ int parse_args(int argc, char **argv, int& idx)
 	// Increment idx by the number of args we used and return that number.
 	// We must check whether the option argument is in the same argv element
 	// as the option name itself, i.e., --opt=arg.
-        c = longopts[longindex].has_arg ? 2 : 1;
-        if (c == 2) {
-                string arg = argv[idx];
-                string::size_type p;
-                if ((p = arg.rfind(optarg)) != string::npos && arg[p-1] == '=')
-                        c = 1;
-        }
+		c = longopts[longindex].has_arg ? 2 : 1;
+		if (c == 2) {
+				string arg = argv[idx];
+				string::size_type p;
+				if ((p = arg.rfind(optarg)) != string::npos && arg[p-1] == '=')
+						c = 1;
+		}
 	idx += c;
 	return c;
 }
@@ -1408,9 +1417,9 @@ void generate_version_text(void)
 {
 	version_text.assign(PACKAGE_STRING "\nCopyright (C) 2007-2010 " PACKAGE_AUTHORS ".\n");
 	version_text.append(_("License GPLv3+: GNU GPL version 3 or later "
-			      "<http://www.gnu.org/licenses/gpl-3.0.html>\n"
-			      "This is free software: you are free to change and redistribute it.\n"
-			      "There is NO WARRANTY, to the extent permitted by law.\n"));
+				  "<http://www.gnu.org/licenses/gpl-3.0.html>\n"
+				  "This is free software: you are free to change and redistribute it.\n"
+				  "There is NO WARRANTY, to the extent permitted by law.\n"));
 
 	ostringstream s;
 	s << "Build information:\n";
@@ -1438,8 +1447,8 @@ void generate_version_text(void)
 #endif
 
 	s << "\nRuntime information:\n";
-        struct utsname u;
-        if (uname(&u) != -1) {
+		struct utsname u;
+		if (uname(&u) != -1) {
 		s << "  system         : " << u.sysname << ' ' << u.nodename
 		  << ' ' << u.release << ' ' << u.version << ' ' << u.machine << "\n\n";
 	}
@@ -1468,8 +1477,8 @@ void generate_version_text(void)
 void debug_exec(char** argv)
 {
 #if !defined(NDEBUG) && defined(__GLIBC__)
-        if (getenv("FLDIGI_NO_EXEC"))
-                return;
+		if (getenv("FLDIGI_NO_EXEC"))
+				return;
 
 	char ppath[32], lname[32];
 	ssize_t n;
@@ -1477,35 +1486,35 @@ void debug_exec(char** argv)
 	if ((n = readlink(ppath, lname, sizeof(lname))) > 0) {
 		lname[n] = '\0';
 		if (strstr(lname, "gdb")) {
-                        cerr << "Not using malloc debugging hooks\n";
-                        return;
-                }
+						cerr << "Not using malloc debugging hooks\n";
+						return;
+				}
 	}
 
-        setenv("FLDIGI_NO_EXEC", "1", 0);
-        setenv("MALLOC_CHECK_", "3", 0);
-        setenv("MALLOC_PERTURB_", "42", 0);
-        if (execvp(*argv, argv) == -1)
-                perror("execvp");
+		setenv("FLDIGI_NO_EXEC", "1", 0);
+		setenv("MALLOC_CHECK_", "3", 0);
+		setenv("MALLOC_PERTURB_", "42", 0);
+		if (execvp(*argv, argv) == -1)
+				perror("execvp");
 #endif
 }
 
 void set_platform_ui(void)
 {
 #if defined(__APPLE__)
-       FL_NORMAL_SIZE = 12;
-       progdefaults.WaterfallFontsize = 12;
-       progdefaults.RxFontsize = 12;
-       progdefaults.TxFontsize = 12;
+	   FL_NORMAL_SIZE = 12;
+	   progdefaults.WaterfallFontsize = 12;
+	   progdefaults.RxFontsize = 12;
+	   progdefaults.TxFontsize = 12;
 #elif defined(__WOE32__)
-       Fl::set_font(FL_HELVETICA, "Tahoma");
-       FL_NORMAL_SIZE = 11;
-       progdefaults.WaterfallFontnbr = FL_HELVETICA;
-       progdefaults.WaterfallFontsize = 12;
-       progdefaults.RxFontsize = 12;
-       progdefaults.TxFontsize = 12;
+	   Fl::set_font(FL_HELVETICA, "Tahoma");
+	   FL_NORMAL_SIZE = 11;
+	   progdefaults.WaterfallFontnbr = FL_HELVETICA;
+	   progdefaults.WaterfallFontsize = 12;
+	   progdefaults.RxFontsize = 12;
+	   progdefaults.TxFontsize = 12;
 #else
-       FL_NORMAL_SIZE = 12;
+	   FL_NORMAL_SIZE = 12;
 #endif
 }
 
