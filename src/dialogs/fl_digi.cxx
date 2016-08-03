@@ -1437,34 +1437,34 @@ void init_modem(trx_mode mode, int freq)
 	stopMacroTimer();
 
 	if (data_io_enabled == KISS_IO) {
-        trx_mode current_mode = active_modem->get_mode();
+		trx_mode current_mode = active_modem->get_mode();
 		if(!bcast_rsid_kiss_frame(freq, mode, (int) active_modem->get_txfreq(), current_mode,
 								  progdefaults.rsid_notify_only ? RSID_KISS_NOTIFY : RSID_KISS_ACTIVE)) {
 
 			LOG_INFO("Invaild Modem for KISS I/O (%s)",  mode_info[mode].sname);
 
-            int _yes = false;
-            if(!progdefaults.kiss_io_modem_change_inhibit)
-                _yes = fl_choice2(_("Switch to ARQ I/O"), _("No"), _("Yes"), NULL);
+			int _yes = false;
+			if(!progdefaults.kiss_io_modem_change_inhibit)
+				_yes = fl_choice2(_("Switch to ARQ I/O"), _("No"), _("Yes"), NULL);
 
-            if(_yes) {
-                enable_arq();
-            } else {
-                std::string modem_name;
-                modem_name.assign(mode_info[current_mode].sname);
-                bool valid = valid_kiss_modem(modem_name);
-                if(!valid)
-                    current_mode = MODE_PSK250;
-                mode = current_mode;
-            }
+			if(_yes) {
+				enable_arq();
+			} else {
+				std::string modem_name;
+				modem_name.assign(mode_info[current_mode].sname);
+				bool valid = valid_kiss_modem(modem_name);
+				if(!valid)
+					current_mode = MODE_PSK250;
+				mode = current_mode;
+			}
 		}
 	}
 
 	//LOG_INFO("mode: %d, freq: %d", (int)mode, freq);
 
 #if !BENCHMARK_MODE
-       quick_change = 0;
-       modem_config_tab = tabsModems->child(0);
+	   quick_change = 0;
+	   modem_config_tab = tabsModems->child(0);
 #endif
 
 	switch (mode) {
@@ -1479,12 +1479,12 @@ void init_modem(trx_mode mode, int freq)
 
 	case MODE_NULL:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new NULLMODEM, freq);
+				  *mode_info[mode].modem = new NULLMODEM, freq);
 		break;
 
 	case MODE_CW:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new cw, freq);
+				  *mode_info[mode].modem = new cw, freq);
 		modem_config_tab = tabCW;
 		break;
 
@@ -1492,7 +1492,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
 	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new thor(mode), freq);
+				  *mode_info[mode].modem = new thor(mode), freq);
 		quick_change = quick_change_thor;
 		modem_config_tab = tabTHOR;
 		break;
@@ -1501,7 +1501,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
 	case MODE_DOMINOEX44: case MODE_DOMINOEX88:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new dominoex(mode), freq);
+				  *mode_info[mode].modem = new dominoex(mode), freq);
 		quick_change = quick_change_domino;
 		modem_config_tab = tabDomEX;
 		break;
@@ -1514,7 +1514,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_FSKH105:
 	case MODE_HELL80:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new feld(mode), freq);
+				  *mode_info[mode].modem = new feld(mode), freq);
 		quick_change = quick_change_feld;
 		modem_config_tab = tabFeld;
 		break;
@@ -1531,14 +1531,14 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_MFSK64L:
 	case MODE_MFSK128L:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new mfsk(mode), freq);
+				  *mode_info[mode].modem = new mfsk(mode), freq);
 		quick_change = quick_change_mfsk;
 		break;
 
 	case MODE_WEFAX_576:
 	case MODE_WEFAX_288:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new wefax(mode), freq);
+				  *mode_info[mode].modem = new wefax(mode), freq);
 		quick_change = quick_change_wefax;
 		modem_config_tab = tabWefax;
 		break;
@@ -1546,7 +1546,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_NAVTEX:
 	case MODE_SITORB:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new navtex(mode), freq);
+				  *mode_info[mode].modem = new navtex(mode), freq);
 		quick_change = quick_change_navtex;
 		modem_config_tab = tabNavtex;
 		break;
@@ -1554,7 +1554,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_MT63_500S: case MODE_MT63_1000S: case MODE_MT63_2000S :
 	case MODE_MT63_500L: case MODE_MT63_1000L: case MODE_MT63_2000L :
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new mt63(mode), freq);
+				  *mode_info[mode].modem = new mt63(mode), freq);
 		quick_change = quick_change_mt63;
 		modem_config_tab = tabMT63;
 		break;
@@ -1563,13 +1563,13 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_PSK125: case MODE_PSK250: case MODE_PSK500:
 	case MODE_PSK1000:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_psk;
 		modem_config_tab = tabPSK;
 		break;
 	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250: case MODE_QPSK500:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_qpsk;
 		modem_config_tab = tabPSK;
 		break;
@@ -1585,14 +1585,14 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_8PSK1000F:
 	case MODE_8PSK1200F:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_8psk;
 		modem_config_tab = tabPSK;
 		break;
 	case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R:
 	case MODE_PSK1000R:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_pskr;
 		modem_config_tab = tabPSK;
 		break;
@@ -1604,7 +1604,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_2X_PSK800 :
 	case MODE_2X_PSK1000 :
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_psk_multi;
 		modem_config_tab = tabPSK;
 		break;
@@ -1634,7 +1634,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_2X_PSK800R :
 	case MODE_2X_PSK1000R :
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_psk_multiR;
 		modem_config_tab = tabPSK;
 		break;
@@ -1650,35 +1650,35 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_OLIVIA_32_1000:
 	case MODE_OLIVIA_64_2000:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new olivia(mode), freq);
+				  *mode_info[mode].modem = new olivia(mode), freq);
 		modem_config_tab = tabOlivia;
 		quick_change = quick_change_olivia;
 		break;
 
 	case MODE_CONTESTIA:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new contestia, freq);
+				  *mode_info[mode].modem = new contestia, freq);
 		modem_config_tab = tabContestia;
 		quick_change = quick_change_contestia;
 		break;
 
 	case MODE_FSQ:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new fsq(mode), freq);
+				  *mode_info[mode].modem = new fsq(mode), freq);
 		modem_config_tab = tabFSQ;
 		quick_change = quick_change_fsq;
 		break;
 
 	case MODE_IFKP:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new ifkp(mode), freq);
+				  *mode_info[mode].modem = new ifkp(mode), freq);
 		modem_config_tab = tabIFKP;
 		quick_change = quick_change_ifkp;
 		break;
 
 	case MODE_RTTY:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new rtty(mode), freq);
+				  *mode_info[mode].modem = new rtty(mode), freq);
 		modem_config_tab = tabRTTY;
 		quick_change = quick_change_rtty;
 		break;
@@ -1686,7 +1686,7 @@ void init_modem(trx_mode mode, int freq)
 	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
 	case MODE_THROBX1: case MODE_THROBX2: case MODE_THROBX4:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new throb(mode), freq);
+				  *mode_info[mode].modem = new throb(mode), freq);
 		quick_change = quick_change_throb;
 		break;
 
@@ -1699,30 +1699,30 @@ void init_modem(trx_mode mode, int freq)
 
 	case MODE_WWV:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new wwv, freq);
+				  *mode_info[mode].modem = new wwv, freq);
 		break;
 
 	case MODE_ANALYSIS:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new anal, freq);
+				  *mode_info[mode].modem = new anal, freq);
 		break;
 
 	case MODE_FFTSCAN:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new fftscan, freq);
+				  *mode_info[mode].modem = new fftscan, freq);
 		modem_config_tab = tabDFTscan;
 		break;
 
 	case MODE_SSB:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new ssb, freq);
+				  *mode_info[mode].modem = new ssb, freq);
 		break;
 
 	default:
 		LOG_ERROR("Unknown mode: %" PRIdPTR, mode);
 		mode = MODE_PSK31;
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
-			      *mode_info[mode].modem = new psk(mode), freq);
+				  *mode_info[mode].modem = new psk(mode), freq);
 		quick_change = quick_change_psk;
 		modem_config_tab = tabPSK;
 		break;
@@ -2146,18 +2146,18 @@ void cb_logfile(Fl_Widget* w, void*)
 {
 	progStatus.LOGenabled = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
 	if (progStatus.LOGenabled == true) {
-    	Date tdy;
-	    string lfname = HomeDir;
-	    lfname.append("fldigi");
-	    lfname.append(tdy.szDate(2));
-	    lfname.append(".log");
+		Date tdy;
+		string lfname = HomeDir;
+		lfname.append("fldigi");
+		lfname.append(tdy.szDate(2));
+		lfname.append(".log");
 	   	logfile = new cLogfile(lfname);
-    	logfile->log_to_file_start();
-    } else {
-        logfile->log_to_file_stop();
-        delete logfile;
-        logfile = 0;
-    }
+		logfile->log_to_file_start();
+	} else {
+		logfile->log_to_file_stop();
+		delete logfile;
+		logfile = 0;
+	}
 }
 
 
@@ -2487,20 +2487,20 @@ void cb_mnuDebug(Fl_Widget*, void*)
 #ifndef NDEBUG
 void cb_mnuFun(Fl_Widget*, void*)
 {
-        fl_message2(_("Sunspot creation underway!"));
+		fl_message2(_("Sunspot creation underway!"));
 }
 #endif
 
 void cb_mnuAudioInfo(Fl_Widget*, void*)
 {
-        if (progdefaults.btnAudioIOis != SND_IDX_PORT) {
-                fl_alert2(_("Audio device information is only available for the PortAudio backend"));
-                return;
-        }
+		if (progdefaults.btnAudioIOis != SND_IDX_PORT) {
+				fl_alert2(_("Audio device information is only available for the PortAudio backend"));
+				return;
+		}
 
 #if USE_PORTAUDIO
 	size_t ndev;
-        string devtext[2], headers[2];
+		string devtext[2], headers[2];
 	SoundPort::devices_info(devtext[0], devtext[1]);
 	if (devtext[0] != devtext[1]) {
 		headers[0] = _("Capture device");
@@ -2730,7 +2730,7 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	if(progStatus.kpsql_enabled) {
 		progStatus.sldrPwrSquelchValue = o->value();
 	} else {
-	    progStatus.sldrSquelchValue = o->value();
+		progStatus.sldrSquelchValue = o->value();
 	}
 
 	restoreFocus(13);
@@ -2939,7 +2939,7 @@ void cb_loc(Fl_Widget* w, void*)
 
 	if (QRB::locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
 		QRB::locator2longlat(&lon[1], &lat[1], s.c_str()) == QRB::QRB_OK &&
-	    QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK) {
+		QRB::qrb(lon[0], lat[0], lon[1], lat[1], &distance, &azimuth) == QRB::QRB_OK) {
 		char az[4];
 		snprintf(az, sizeof(az), "%3.0f", azimuth);
 		inpAZ->value(az);
@@ -3233,17 +3233,17 @@ void cbPwrSQL(Fl_Widget *w, void *vi)
 		Fl_Button *b = (Fl_Button *)w;
 		b->activate();
 		int v = b->value();
-        if(!v) {
+		if(!v) {
 			sldrSquelch->value(progStatus.sldrSquelchValue);
-            progStatus.kpsql_enabled = false;
-            progdefaults.kpsql_enabled = false;
-            b->clear();
-        } else {
+			progStatus.kpsql_enabled = false;
+			progdefaults.kpsql_enabled = false;
+			b->clear();
+		} else {
 			sldrSquelch->value(progStatus.sldrPwrSquelchValue);
-            progStatus.kpsql_enabled = true;
-            progdefaults.kpsql_enabled = true;
-            b->set();
-        }
+			progStatus.kpsql_enabled = true;
+			progdefaults.kpsql_enabled = true;
+			b->set();
+		}
 		FL_UNLOCK_D();
 	} else {
 		FL_LOCK_D();
@@ -3361,7 +3361,7 @@ int default_handler(int event)
 		return 0;
 
 	if (RigViewerFrame && Fl::event_key() == FL_Escape &&
-	    RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
+		RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
 		CloseQsoView();
 		return 1;
 	}
@@ -3420,7 +3420,7 @@ int wo_default_handler(int event)
 		return 0;
 
 	if (RigViewerFrame && Fl::event_key() == FL_Escape &&
-	    RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
+		RigViewerFrame->visible() && Fl::event_inside(RigViewerFrame)) {
 		CloseQsoView();
 		return 1;
 	}
@@ -4944,7 +4944,7 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 
 	string::size_type i;
 	if (!fetch_http_gui(url, data, 10.0) ||
-	    (i = data.find("\r\n\r\n")) == string::npos) {
+		(i = data.find("\r\n\r\n")) == string::npos) {
 		LOG_ERROR("Error while fetching \"%s\": %s", url.c_str(), data.c_str());
 		return;
 	}
@@ -5420,7 +5420,7 @@ void LOGBOOK_colors_font()
 	ypos = inpNotes_log->y() + inpNotes_log->h() - wh;
 	Fl_Input2* row5[] = {
 		inpITUZ_log, inpCONT_log, inpDXCC_log, inpQSL_VIA_log
-       	};
+	   	};
 	for (size_t i = 0; i < sizeof(row5)/sizeof(*row5); i++) {
 		inp_font_pos(row5[i], row5[i]->x(), ypos, row5[i]->w(), wh);
 	}
@@ -7184,7 +7184,7 @@ void create_fl_digi_main_primary() {
 
 			WARNstatus = new Fl_Box(
 				rightof(StatusBar) + pad, Y,
-                Wwarn, Hstatus, "");
+				Wwarn, Hstatus, "");
 			WARNstatus->box(FL_DIAMOND_DOWN_BOX);
 			WARNstatus->color(FL_BACKGROUND_COLOR);
 			WARNstatus->labelcolor(FL_RED);
@@ -7990,7 +7990,7 @@ void set_scope_mode(Digiscope::scope_mode md)
 	if (digiscope) {
 		digiscope->mode(md);
 		REQ(&Fl_Window::size_range, scopeview, SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT,
-		    0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
+			0, 0, 0, 0, (md == Digiscope::PHASE || md == Digiscope::XHAIRS));
 	}
 	wf->wfscope->mode(md);
 	if (md == Digiscope::SCOPE) set_scope_clear_axis();
@@ -8900,7 +8900,7 @@ void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode
 	size_t r2;
 	if (m.rfcarrier)
 		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %lld%c%04d>>",
-			     mode_info[m.mode].name, m.rfcarrier, (wf->USB() ? '+' : '-'), m.carrier);
+				 mode_info[m.mode].name, m.rfcarrier, (wf->USB() ? '+' : '-'), m.carrier);
 	else
 		r2 = snprintf(buf+r1, sizeof(buf)-r1, "%s @ %04d>>", mode_info[m.mode].name, m.carrier);
 	if (r2 >= sizeof(buf)-r1)
@@ -9117,13 +9117,13 @@ void notch_off()
 
 void enable_kiss(void)
 {
-    if(btnEnable_arq->value()) {
-        btnEnable_arq->value(false);
-    }
+	if(btnEnable_arq->value()) {
+		btnEnable_arq->value(false);
+	}
 
 	progdefaults.changed = true;
 	progdefaults.data_io_enabled = KISS_IO;
-    progStatus.data_io_enabled = KISS_IO;
+	progStatus.data_io_enabled = KISS_IO;
 	data_io_enabled = KISS_IO;
 
 	btnEnable_kiss->value(true);
@@ -9133,13 +9133,13 @@ void enable_kiss(void)
 
 void enable_arq(void)
 {
-    if(btnEnable_kiss->value()) {
-        btnEnable_kiss->value(false);
-    }
+	if(btnEnable_kiss->value()) {
+		btnEnable_kiss->value(false);
+	}
 
 	progdefaults.changed = true;
 	progdefaults.data_io_enabled = ARQ_IO;
-    progStatus.data_io_enabled = ARQ_IO;
+	progStatus.data_io_enabled = ARQ_IO;
 	data_io_enabled = ARQ_IO;
 
 	btnEnable_arq->value(true);
@@ -9152,10 +9152,10 @@ void enable_disable_kpsql(void)
 	if(progdefaults.data_io_enabled == KISS_IO) {
 		check_kiss_modem();
 		btnPSQL->activate();
-        if(progStatus.kpsql_enabled || progdefaults.kpsql_enabled) {
-            btnPSQL->value(true);
-            btnPSQL->do_callback();
-        }
+		if(progStatus.kpsql_enabled || progdefaults.kpsql_enabled) {
+			btnPSQL->value(true);
+			btnPSQL->do_callback();
+		}
 	} else {
 		sldrSquelch->value(progStatus.sldrSquelchValue);
 		btnPSQL->value(false);
@@ -9181,8 +9181,8 @@ void disable_config_p2p_io_widgets(void)
 	cntBusyChannelSeconds->deactivate();
 	btnDefault_kiss_ip->deactivate();
 	btn_restart_kiss->deactivate();
-    btnEnable_7bit_modem_inhibit->deactivate();
-    btnEnable_auto_connect->deactivate();
+	btnEnable_7bit_modem_inhibit->deactivate();
+	btnEnable_auto_connect->deactivate();
 
 	txtArq_ip_address->deactivate();
 	txtArq_ip_port_no->deactivate();
@@ -9221,8 +9221,8 @@ void enable_config_p2p_io_widgets(void)
 	cntBusyChannelSeconds->activate();
 	btnDefault_kiss_ip->activate();
 	btn_restart_kiss->activate();
-    btnEnable_7bit_modem_inhibit->activate();
-    btnEnable_auto_connect->activate();
+	btnEnable_7bit_modem_inhibit->activate();
+	btnEnable_auto_connect->activate();
 
 	txtArq_ip_address->activate();
 	txtArq_ip_port_no->activate();
