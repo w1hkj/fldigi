@@ -1472,8 +1472,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		if (!wf->xmtrcv->value())
+		if (!wf->xmtrcv->value()) {
+LOG_INFO("enable TX");
 			REQ(set_button, wf->xmtrcv, true);
+		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1506,8 +1508,10 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		if (wf->xmtrcv->value())
+		if (wf->xmtrcv->value()) {
+LOG_INFO("disable TX");
 			REQ(set_button, wf->xmtrcv, false);
+		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
@@ -1720,13 +1724,16 @@ public:
 	}
 };
 
+pthread_mutex_t tx_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static string xmlchars;
 bool xmltest_char_available;
 static size_t pxmlchar = 0;
 static char xml_status_msg[50];
+
 int xmltest_char()
 {
+	guard_lock xmlchr_lock(&tx_queue_mutex);
 	if (xmlchars.empty() || !xmltest_char_available)
 		return 0;
 	if (pxmlchar >= xmlchars.length() ) {
@@ -2961,9 +2968,16 @@ public:
 	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
 	{
 		XMLRPC_LOCK;
-		xmlchars = params.getString(0);
-		xmltest_char_available = true;
-		pxmlchar = 0;
+		guard_lock xmlchr_lock(&tx_queue_mutex);
+		std::string txt2send = params.getString(0);
+		if (xmlchars.empty()) {
+			xmlchars = txt2send;
+			xmltest_char_available = true;
+			pxmlchar = 0;
+		}
+		else {
+			xmlchars.append(txt2send);
+		}
 		*retval = xmlrpc_c::value_nil();
 	}
 };
