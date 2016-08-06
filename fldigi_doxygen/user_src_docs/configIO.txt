@@ -19,9 +19,11 @@ I/O configuration panel as seen above allows the user to select one of the IO
 interfaces.  Each of the two interface options are used for different
 purpose(s). ARQ is selected when the user requires the use of the
 FLDIGI suite of programs (FLARQ, FLMSG, FLAMP, etc). The KISS interface
-is used with Ax25/ARQ networking software.  With the this interconnectivity
-multiple host programs are available to leverage this option. See
+is used to tranfers 8 bit binary data over wireless pathways using HDLC encoded
+frames.  With this interconnectivity multiple host programs are available to
+leverage this option. See
 \ref kiss_host_prgs_page "KISS Host Program(s) and FLDIGI"
+
 
 \par Note:
 Any changes to the IP Address and/or port numbers requires FLDIGI restart.
@@ -67,15 +69,6 @@ the protocol into human readable form. Only available when KISS I/O selected.
 \par NOTE:
 	When actived, only valid ax25 data will be displayed to the receive
 	panel. No un-squelched random characters will be seen.
-
-\subsection ssKISSCsma KISS I/O CSMA
-
-Selecting this option enables Carrier Sense Multiple Access. Basically in
-conjunction with KPSQL it monitors for busy signals. When the frequency is
-clear a small variable delay is initiated preventing the transmitter from
-transmitting. This variance allows other CSMA stations time to monitor
-the frequency in an attempt to prevent/limit packet collisions. Only available
-when KISS I/O selected.
 
 \subsection ssKISS KISS over IP
 
@@ -157,42 +150,6 @@ change.
 
 This is an option that should be disabled when FLDIGI is used in an automated
 state as FLDIGI will wait indefinitely for a response from the operator.
-
-\subsubsection ssBusyChannel Busy Channel
-
-Busy Channel when enabled and with the properly set threshold of the KPSQL
-squelch. Frequencies that are intermittently present within the bandwidth of
-the modem will inhibit the transmitter for the specified duration. This is a
-useful feature to prevent your station from capitalizing the frequency,
-allowing casual users to continue without interruptions from "BBS/Email"
-type operation.
-
-To prevent your station from transmitting between the grap of the RSID and
-the data stream. Enable Busy Channel with a 1~2 second inhibit period.
-
-\subsubsection ssKpsqlAttenuation KPSQL Attenuation.
-
-Reduces the sensitivity of the KPSQL squelch.  Useful when a direct audio
-card to audio card connection.
-
-KPSQL monitors for differences in the signal strength within the bandpass
-of the modem. Making it tolerant to AGC variations from the radio.
-
-\subsection ssModemSelection  Modem Selection Kiss I/O
-
-Use of the KISS I/O places a limit on the number of available modems. These
-modems support 8 bit transfers. The slowest of these modems have been omitted
-and generally comprise of the BPSK, 8PSK, MFSK, THOR, Contestia, Olivia and
-MT63 at various baud rates. Any attempt to select a modem not supported FLDIGI
-will ignore the request. If you are unsure, open the event log under the Help
-menu and note a message indicating that particular modem is not supported.
-
-See \ref ssInhibit7bit to change the behaviour of this modem check.
-
-<br>
-\image html invalid_kiss_io_modem.png "Invalid Modem for KISS I/O"
-\image latex invalid_kiss_io_modem.png "Invalid Modem for KISS I/O" width=5.5in
-<br>
 
 \subsection ssXmlRpcIO XMLRPC I/O
 

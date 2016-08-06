@@ -46,9 +46,9 @@ INPUT                = index.txt \
 	configcallsigndb.txt configContestia.txt configCW.txt \
 	configDomEX.txt configFH.txt \
 	configFSQ.txt configIFKP.txt \
-	ConfigID.txt configIO.txt ConfigMisc.txt \
+	ConfigID.txt configIO.txt configPSM.txt ConfigMisc.txt \
 	configModemScan.txt configMT63.txt configOlivia.txt ConfigOperator.txt \
-	configPSK.txt \
+	configPSK.txt configRig.txt \
 	configRTTY.txt configThor.txt ConfigUI-browser.txt \
 	ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logging.txt \
 	ConfigUI-macros.txt configUITouch.txt ConfigUI-WF-controls.txt \
@@ -64,7 +64,7 @@ INPUT                = index.txt \
 	Multiples.txt Notifier.txt OperatingControls.txt RST-RSQ.txt \
 	Spotter.txt Synop.txt TransceiverControl.txt UTF8.txt \
 	pskmail_config.txt PskViewer.txt DXCC_list.txt \
-	KeyboardAndKeys.txt xchar.txt \
+	KeyboardAndKeys.txt xchar.txt psm.txt \
 	KML.txt support_data.txt Installing.txt WindowsOS.txt \
 	Wizard.txt Menus.txt ModeTable.txt CWkeying.txt  \
 	PseudoFSK.txt w5zit-interface.txt rigxml.txt commandline.txt \

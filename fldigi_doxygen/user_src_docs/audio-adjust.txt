@@ -9,8 +9,8 @@ Setting the correct hardware, operating system, and fldigi received audio
 levels is not difficult, but it is the one setup procedure most often done
 incorrectly.  The most commonly used sound card devices contain either a
 16 or 24 bit analog to digital (a/d) converter.  A 16 bit a/d can provide
-approximately 90 db of signal conversion.  For the 16 bit converter, if the 
-peak audio signal that the a/d can handle is +/- 1 volt then the minimum 
+approximately 90 db of signal conversion.  For the 16 bit converter, if the
+peak audio signal that the a/d can handle is +/- 1 volt then the minimum
 discernable signal (1 bit) will be +/- 30.5 microvolts.  If more than a +/- 1 volt
 signal is applied to the a/d input then either one of two things may occur,
 (1) the audio is clipped, or (2) the audio is wrapped, large positive signals
@@ -30,8 +30,8 @@ These controls are below and to the left of the waterfall, "Upper signal level (
 
 Change the waterfall display to the "Scope" view.  Do this by pressing the "WF" button twice if
 it is currently displaying the waterfall.  You can also right click once on that button.  That
-button acts as a rotary and is left/right click sensitive.  The display should show what looks 
-like an oscilloscope view of the received audio.  This is the entire audio signal and not just 
+button acts as a rotary and is left/right click sensitive.  The display should show what looks
+like an oscilloscope view of the received audio.  This is the entire audio signal and not just
 the signal that is currently decoded.
 
 <center>
@@ -43,7 +43,7 @@ If your sound card a/d (also referred to as codec) is functioning correctly ther
 should be no signal offset and the signal will be centered vertically about the y-axis.  Set your
 transceiver to a portion of the band with digital signals, 14.070 MHz is a good spot.  Now adjust
 the transceiver audio output and the operating system mixer controls so that the peak signals do
-not exceed the upper/lower gray lines on the display.  The diamond indicator to the left of the 
+not exceed the upper/lower gray lines on the display.  The diamond indicator to the left of the
 fldigi AFC button will be colored as follows:
 <ul>
 <li>BLACK - no signal, or insufficient Rx audio</li>
@@ -53,7 +53,7 @@ fldigi AFC button will be colored as follows:
 </ul>
 You can then proceed to adjust the waterfall/fft appearance when you have the audio Rx level adjusted correctly.
 
-The three signal views should be similar to this with the level/range controls set to 0 and 60 respectively.  The 
+The three signal views should be similar to this with the level/range controls set to 0 and 60 respectively.  The
 waterfall palette used is "default.pal", and the received signal is about 20 dB above the noise floor.
 <center>
 <table>
@@ -82,13 +82,13 @@ transceiver audio output.  The result is very poor decoding.  The correct proced
 mixer controls to remove that 30 dB of gain.  This procedure is for Windows 10, but is similar on Windows 7,
 and Windows 8.
 
-Right click on the task bar speaker icon and select the "Recording devices" menu item.  This will open the 
+Right click on the task bar speaker icon and select the "Recording devices" menu item.  This will open the
 Sound devices dialog:
 <center>
 \image html win10-rec-properties.png "Sound Devices"
 \image latex win10-rec-properties.png "Sound Devices" width=3.5in
 </center>
-This is the dialog on my Windows 10 test computer with a SignaLink-USB connected to a USB hub.  The 
+This is the dialog on my Windows 10 test computer with a SignaLink-USB connected to a USB hub.  The
 SignaLink-USB shows up as a <b>Microphone</b> USB Audio CODEC.  Right click on the device entry and
 select Properties.  This opens up the Microphone Properties dialog:
 <center>
@@ -152,7 +152,7 @@ you do not have a dummy load.
 		to function (a light blinking or a meter showing this condition).</li>
 	<li>Reduce the Mixer audio output until the ALC is disabled.</li>
 	<li>You are now transmitting at maximum output power without distortion.</li>
-	<li>You can use the fldigi transmit attenuator to make small adjustments 
+	<li>You can use the fldigi transmit attenuator to make small adjustments
 	in the output power to compensate for variations in the SSB transmit filter.</li>
 </ul>
 
@@ -176,11 +176,11 @@ you can very quickly repeat the "Tune" and set the power for the frequency
 to which the waterfall is set.  The fldigi transmit attenuator control should
 have sufficient range to compensate for transmit SSB filter variation.  You
 do not want to transmit (or receive) near the cutoff frequencies of the SSB
-filter.  The transceiver filter will introduce both phase and amplitude 
+filter.  The transceiver filter will introduce both phase and amplitude
 distortion over the signal bandwidth.
 <br>
 
-\ref tune_page "Return to Top of Page"
+\ref audio_adjust_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
 
