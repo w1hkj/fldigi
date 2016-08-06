@@ -1,6 +1,47 @@
 
 
+=Version 3.23.13=
+
+2016-08-01  David Freese  <iam_w1hkj@w1hkj.com>
+
+	1d6a44c: QRUNNER BUG FIX
+	f247453: xmlrpc tx queue
+	e0ad1d8: Documentation Update
+
+2016-07-29  Robert Stiles  <kk5vd@yahoo.com>
+
+	4d038c8: m4 fixes
+	0807627: KPSQL PSM
+
+2016-07-28  David Freese  <iam_w1hkj@w1hkj.com>
+
+	f02228e: logbook read
+	1f6d966: flrig xmlrpc client
+	4ddae1f: Title bar
+	9777cfa: Macro tag PUSH/POP
+	73ea18b: G4 build warnings
+	e8e3b89: winsock2 error flag
+	8f8d6be: xmlrpc error warnings
+	302fca5: Port Audio Index
+	988ee57: Squeeze Play
+	a9d3ec1: Documentation
+	8fa2f92: FSQ allcall relay
+
+2016-07-04  Kamal Mostafa  <kamal@whence.com>
+
+	055a180: FTextTX: fix menu_cb default case behavior
+	93ca237: status: fix override_data_io_enabled behavior
+	10eaf9d: logbook: do not write empty string to ADIF
+	5609415: wefax
+	d43951e: fix warnings: misleading-indentation (no functional changes)
+	1ecf952: fix warning: unused variable 'call_file'
+	9e9139e: fix warning: C11 requires spaces around string macro
+	0531e5c: fix warning: format '%d' vs size_t
+	1e888d1: XmlRpc tm_mday fix
+
+
 =Version 3.23.12=
+
 
 2016-06-21  David Freese  <iam_w1hkj@w1hkj.com>
 
