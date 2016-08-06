@@ -325,7 +325,15 @@ void rx_extract_add(int c)
 	memmove(rx_extract_buff, &rx_extract_buff[1], bufsize - 1);
 	rx_extract_buff[bufsize - 1] = ch;
 
-	if (strstr(rx_extract_buff, "~1") && strstr(rx_extract_buff, "~4")) {
+// rx_extract_buff must contain in order:
+// ~1c - arq_soh + connect request
+// ; - arq_dle character
+// ~4 - arq_eoh
+// before auto starting flmsg
+	char *p1 = strstr(rx_extract_buff, "~1c"),
+		 *p2 = strstr(rx_extract_buff, ";"),
+		 *p3 = strstr(rx_extract_buff, "~4");
+	if ( (p1 && p2 && p3) && (p1 < p2) && (p2 < p3)) {
 		if (!flmsg_online) start_flmsg();
 		memset(rx_extract_buff, ' ', bufsize);
 		return;
