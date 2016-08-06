@@ -63,6 +63,7 @@
 
 #include "misc.h"
 #include "data_io.h"
+#include "psm/psm.h"
 
 #define STATUS_FILENAME "status"
 
@@ -201,6 +202,16 @@ status progStatus = {
 	progdefaults.kiss_tcp_io,
 	progdefaults.kiss_tcp_listen,
     progdefaults.kpsql_enabled,
+    progdefaults.csma_persistance,
+    progdefaults.csma_slot_time,
+    progdefaults.csma_transmit_delay,
+    progdefaults.psm_flush_buffer_timeout,
+    progdefaults.psm_minimum_bandwidth,
+    progdefaults.psm_minimum_bandwidth_margin,
+    progdefaults.psm_use_histogram,
+    progdefaults.psm_histogram_offset_threshold,
+    progdefaults.psm_hit_time_window,
+    progdefaults.tx_buffer_timeout,
     progdefaults.kiss_io_modem_change_inhibit,
 	true,
 	0.0,
@@ -328,6 +339,17 @@ void status::saveLastState()
 	kiss_tcp_io            = progdefaults.kiss_tcp_io;
 	kiss_tcp_listen        = progdefaults.kiss_tcp_listen;
     kpsql_enabled          = progdefaults.kpsql_enabled;
+    csma_persistance       = progdefaults.csma_persistance;
+    csma_slot_time         = progdefaults.csma_slot_time;
+    csma_transmit_delay    = progdefaults.csma_transmit_delay;
+
+    psm_flush_buffer_timeout       = progdefaults.psm_flush_buffer_timeout;
+    psm_minimum_bandwidth          = progdefaults.psm_minimum_bandwidth;
+    psm_minimum_bandwidth_margin   = progdefaults.psm_minimum_bandwidth_margin;
+    psm_use_histogram              = progdefaults.psm_use_histogram;
+    psm_histogram_offset_threshold = progdefaults.psm_histogram_offset_threshold;
+    psm_hit_time_window            = progdefaults.psm_hit_time_window;
+    tx_buffer_timeout              = progdefaults.tx_buffer_timeout;
     kiss_io_modem_change_inhibit = progdefaults.kiss_io_modem_change_inhibit;
 	squelch_value = 0;
 
@@ -491,6 +513,17 @@ if (!bWF_only) {
 	spref.set("kiss_tcp_io",         kiss_tcp_io);
 	spref.set("kiss_tcp_listen",     kiss_tcp_listen);
     spref.set("kpsql_enabled",       kpsql_enabled);
+    spref.set("csma_persistance", csma_persistance);
+    spref.set("csma_slot_time", csma_slot_time);
+    spref.set("csma_transmit_delay", csma_transmit_delay);
+
+    spref.set("psm_flush_buffer_timeout",       psm_flush_buffer_timeout);
+    spref.set("psm_minimum_bandwidth",          psm_minimum_bandwidth);
+    spref.set("psm_minimum_bandwidth_margin",   psm_minimum_bandwidth_margin);
+    spref.set("psm_use_histogram",              psm_use_histogram);
+    spref.set("psm_histogram_offset_threshold", psm_histogram_offset_threshold);
+    spref.set("psm_hit_time_window",            psm_hit_time_window);
+    spref.set("tx_buffer_timeout",              tx_buffer_timeout);
     spref.set("kiss_io_modem_change_inhibit", kiss_io_modem_change_inhibit);
 
 	spref.set("browser_search", browser_search.c_str());
@@ -713,8 +746,7 @@ void status::loadLastState()
 	}
 
 	if(!override_data_io_enabled) {
-		spref.get("data_io_enabled", i, data_io_enabled);
-		data_io_enabled = i;
+		spref.get("data_io_enabled", i, data_io_enabled); data_io_enabled = i;
 	}
 
 	spref.get("ax25_decode_enabled",    i, ax25_decode_enabled);    ax25_decode_enabled = i;
@@ -725,6 +757,20 @@ void status::loadLastState()
 	spref.get("kiss_tcp_io",            i, kiss_tcp_io);            kiss_tcp_io         = i;
 	spref.get("kiss_tcp_listen",        i, kiss_tcp_listen);        kiss_tcp_listen     = i;
     spref.get("kpsql_enabled",          i, kpsql_enabled);          kpsql_enabled       = i;
+
+    spref.get("csma_persistance",      i, csma_persistance);    csma_persistance    = i;
+    spref.get("csma_slot_time",        i, csma_slot_time);      csma_slot_time      = i;
+    spref.get("csma_transmit_delay",   i, csma_transmit_delay); csma_transmit_delay = i;
+
+    spref.get("psm_flush_buffer_timeout",       i, psm_flush_buffer_timeout);       psm_flush_buffer_timeout       = i;
+    spref.get("psm_minimum_bandwidth",          i, psm_minimum_bandwidth);          psm_minimum_bandwidth          = i;
+    spref.get("psm_minimum_bandwidth_margin",   i, psm_minimum_bandwidth_margin);   psm_minimum_bandwidth_margin   = i;
+    spref.get("psm_use_histogram",              i, psm_use_histogram);              psm_use_histogram              = i;
+    spref.get("psm_histogram_offset_threshold", i, psm_histogram_offset_threshold); psm_histogram_offset_threshold = i;
+    spref.get("psm_hit_time_window",            i, psm_hit_time_window);            psm_hit_time_window = i;
+
+    spref.get("tx_buffer_timeout", i, tx_buffer_timeout); tx_buffer_timeout = i;
+
     spref.get("kiss_io_modem_change_inhibit", i, kiss_io_modem_change_inhibit); kiss_io_modem_change_inhibit = i;
 
 	spref.get("psk8DCDShortFlag",       i, psk8DCDShortFlag);       psk8DCDShortFlag    = i;
@@ -928,5 +974,6 @@ void status::initLastState()
 	TransmitText->set_word_wrap(tx_word_wrap, true);
 
 //	set_server_label(xml_logbook);
-
+    disable_config_p2p_io_widgets();
+    update_csma_io_config(CSMA_ALL);
 }

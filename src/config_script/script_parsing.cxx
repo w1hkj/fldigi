@@ -206,6 +206,7 @@ static const SCRIPT_COMMANDS default_fldigi_command_table[] = {
 	{ CMD_FLDIGI_LOCK,      SCRIPT_COMMAND, 0,  1, {0}, { p_bool     }, 0, 0, 0, process_lock,         0, 0},
 	{ CMD_FLDIGI_SQL,       SCRIPT_COMMAND, 0,  1, {0}, { p_bool     }, 0, 0, 0, process_sql,          0, 0},
 	{ CMD_FLDIGI_KPSQL,     SCRIPT_COMMAND, 0,  1, {0}, { p_bool     }, 0, 0, 0, process_kpsql,        0, 0},
+	{ CMD_FLDIGI_KPSM,      SCRIPT_COMMAND, 0,  1, {0}, { p_bool     }, 0, 0, 0, process_kpsql,        0, 0},
 	{ CMD_FLDIGI_MODEM,     SCRIPT_COMMAND, 0,  1, {0}, { p_string   }, 0, 0, 0, process_modem,        0, 0},
 	{ CMD_END_CMD,          SCRIPT_COMMAND, 0,  0, {0}, { p_list_end }, 0, 0, 0, 0, 0, 0},
 	{ {0} }

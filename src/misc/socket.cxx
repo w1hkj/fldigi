@@ -624,6 +624,7 @@ void Socket::close(void)
 #else
 	::close(sockfd);
 #endif
+    connected_flag = false;
 }
 
 ///
@@ -775,6 +776,9 @@ void Socket::listen(int backlog)
 ///
 Socket Socket::accept(void)
 {
+    connected_flag = false;
+    Socket s;
+
 	listen();
 
 	// wait for fd to become readable
@@ -787,7 +791,12 @@ Socket Socket::accept(void)
 		throw SocketException(errno, "accept");
 	set_close_on_exec(true, r);
 
-	return Socket(r);
+    connected_flag = true;
+
+    s = Socket(r);
+    s.connected_flag = true;
+
+	return s;
 }
 
 ///
@@ -815,6 +824,9 @@ Socket Socket::accept1(void)
 ///
 Socket * Socket::accept2(void)
 {
+    connected_flag = false;
+    Socket * s = 0;
+
 	listen();
 
 	// wait for fd to become readable
@@ -827,7 +839,13 @@ Socket * Socket::accept2(void)
 		return (Socket *)0;
 	set_close_on_exec(true, r);
 
-	return new Socket(r);
+    connected_flag = true;
+
+    s = new Socket(r);
+    if(s)
+        s->connected_flag = true;
+
+    return s;
 }
 
 ///
@@ -835,11 +853,14 @@ Socket * Socket::accept2(void)
 ///
 void Socket::connect(void)
 {
+    connected_flag = false;
 #ifndef NDEBUG
 	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
 #endif
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
 		throw SocketException(errno, "connect");
+    else
+        connected_flag = true;
 }
 ///
 /// Connects the socket to the address that is associated with the object
@@ -847,16 +868,25 @@ void Socket::connect(void)
 ///
 bool Socket::connect1(void)
 {
+    connected_flag = false;
 #ifndef NDEBUG
 	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
 #endif
 	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1) {
 		return false;
 	}
+    connected_flag = true;
 	return true;
 }
 
 ///
+/// Return T/F connected state.
+///
+bool Socket::is_connected(void)
+{
+    return connected_flag;
+}
+
 /// Set socket to allow for broadcasting.
 ///
 void Socket::broadcast(bool flag)

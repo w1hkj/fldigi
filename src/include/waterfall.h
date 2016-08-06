@@ -258,6 +258,7 @@ class waterfall: public Fl_Group {
 	friend void center_cb(Fl_Widget *w, void *v);
 	friend void carrier_cb(Fl_Widget *w, void *v);
 	friend void mode_cb(Fl_Widget *w, void *v);
+   friend void set_wf_mode(void);
 	friend void reflevel_cb(Fl_Widget *w, void *v);
 	friend void ampspan_cb(Fl_Widget *w, void *v);
 	friend void qsy_cb(Fl_Widget *w, void *v);

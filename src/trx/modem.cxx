@@ -310,11 +310,13 @@ void modem::set_metric(double m)
 	metric = m;
 }
 
+extern void callback_set_metric(double metric);
+
 void modem::display_metric(double m)
 {
 	set_metric(m);
-	if(!progStatus.kpsql_enabled)
-	::global_display_metric(m);
+	if (!progStatus.kpsql_enabled) 
+		REQ(callback_set_metric, m);
 }
 
 bool modem::get_cwTrack()

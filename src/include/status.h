@@ -166,8 +166,18 @@ struct status {
 	bool kiss_tcp_io;
 	bool kiss_tcp_listen;
     bool kpsql_enabled;
-	bool ip_lock;
+    int csma_persistance;
+    int csma_slot_time;
+    int csma_transmit_delay;
+    int psm_flush_buffer_timeout;
+    int psm_minimum_bandwidth;
+    int psm_minimum_bandwidth_margin;
+    bool psm_use_histogram;
+    int psm_histogram_offset_threshold;
+    int psm_hit_time_window;
+    int tx_buffer_timeout;
     bool kiss_io_modem_change_inhibit;
+	bool ip_lock;
 	double squelch_value;
     bool psk8DCDShortFlag;
 

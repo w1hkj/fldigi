@@ -185,6 +185,7 @@ public:
 	unsigned int get_local_port() { return (unsigned int) atoi(address.get_service().c_str()); };
 	unsigned long get_to_address(void);
 	int use_dual_port(void) { if(use_kiss_dual_port) return *use_kiss_dual_port; else return 0; };
+   bool is_connected(void);
 
 	int fd(void);
 	void shut_down(void);
@@ -203,6 +204,7 @@ private:
 	unsigned int saddr_size;
 	int *use_kiss_dual_port;
 	unsigned int dual_port_number;
+   bool connected_flag;
 };
 
 #endif // SOCKET_H_

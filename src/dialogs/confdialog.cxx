@@ -27,6 +27,7 @@
 #include "kmlserver.h"
 #include "macroedit.h"
 #include "fileselect.h"
+#include "psm/psm.h"
 extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 #if USE_HAMLIB
   #include "hamlib.h"
@@ -5741,34 +5742,6 @@ static void cb_btnEnable_kiss(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnEnable_ax25_decode=(Fl_Check_Button *)0;
-
-static void cb_btnEnable_ax25_decode(Fl_Check_Button* o, void*) {
-  if(o->value()) {
-	progStatus.ax25_decode_enabled = true;
-	progdefaults.ax25_decode_enabled = true;
-}
-else {
-	progStatus.ax25_decode_enabled = false;
-	progdefaults.ax25_decode_enabled = false;
-}
-
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnEnable_csma=(Fl_Check_Button *)0;
-
-static void cb_btnEnable_csma(Fl_Check_Button* o, void*) {
-  if(o->value()) {
-	progStatus.csma_enabled = true;
-	progdefaults.csma_enabled = true;
-} else {
-	progStatus.csma_enabled = false;
-	progdefaults.csma_enabled = false;
-}
-progdefaults.changed = true;
-}
-
 Fl_Button *btnDefault_kiss_ip=(Fl_Button *)0;
 
 static void cb_btnDefault_kiss_ip(Fl_Button*, void*) {
@@ -5784,42 +5757,11 @@ progdefaults.kiss_address = o->value();
 progdefaults.changed = true;
 }
 
-Fl_Counter *cntKPSQLAttenuation=(Fl_Counter *)0;
-
-static void cb_cntKPSQLAttenuation(Fl_Counter* o, void*) {
-  progStatus.kpsql_attenuation = (int) o->value();
-progdefaults.kpsql_attenuation = (int) o->value();
-update_kpsql_fractional_gain(progStatus.kpsql_attenuation);
-progdefaults.changed = true;
-}
-
 Fl_Input2 *txtKiss_ip_io_port_no=(Fl_Input2 *)0;
 
 static void cb_txtKiss_ip_io_port_no(Fl_Input2* o, void*) {
   progStatus.kiss_io_port = o->value();
 progdefaults.kiss_io_port = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter *cntBusyChannelSeconds=(Fl_Counter *)0;
-
-static void cb_cntBusyChannelSeconds(Fl_Counter* o, void*) {
-  progStatus.busyChannelSeconds = (int) o->value();
-progdefaults.busyChannelSeconds = (int) o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnEnableBusyChannel=(Fl_Check_Button *)0;
-
-static void cb_btnEnableBusyChannel(Fl_Check_Button* o, void*) {
-  if(o->value()) {
-	progStatus.enableBusyChannel = true;
-	progdefaults.enableBusyChannel = true;
-}
-else {
-	progStatus.enableBusyChannel = false;
-	progdefaults.enableBusyChannel = false;
-}
 progdefaults.changed = true;
 }
 
@@ -5924,6 +5866,21 @@ static void cb_btnEnable_auto_connect(Fl_Check_Button* o, void*) {
 }
 else {
 	progdefaults.tcp_udp_auto_connect = false;
+}
+
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_ax25_decode=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_ax25_decode(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progStatus.ax25_decode_enabled = true;
+	progdefaults.ax25_decode_enabled = true;
+}
+else {
+	progStatus.ax25_decode_enabled = false;
+	progdefaults.ax25_decode_enabled = false;
 }
 
 progdefaults.changed = true;
@@ -6037,6 +5994,144 @@ static void cb_btnDefault_fllog_ip(Fl_Button*, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Group *tabKPSM=(Fl_Group *)0;
+
+Fl_Counter *cntBusyChannelSeconds=(Fl_Counter *)0;
+
+static void cb_cntBusyChannelSeconds(Fl_Counter* o, void*) {
+  progStatus.busyChannelSeconds = (int) o->value();
+progdefaults.busyChannelSeconds = (int) o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnableBusyChannel=(Fl_Check_Button *)0;
+
+static void cb_btnEnableBusyChannel(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progStatus.enableBusyChannel = true;
+	progdefaults.enableBusyChannel = true;
+}
+else {
+	progStatus.enableBusyChannel = false;
+	progdefaults.enableBusyChannel = false;
+}
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPSMTXBufferFlushTimer=(Fl_Counter *)0;
+
+static void cb_cntPSMTXBufferFlushTimer(Fl_Counter* o, void*) {
+  progStatus.psm_flush_buffer_timeout = (int) o->value();
+progdefaults.psm_flush_buffer_timeout = (int) o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPSMBandwidthMargins=(Fl_Counter *)0;
+
+static void cb_cntPSMBandwidthMargins(Fl_Counter* o, void*) {
+  progStatus.psm_minimum_bandwidth_margin   = (int) o->value();
+progdefaults.psm_minimum_bandwidth_margin = (int) o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPSMValidSamplePeriod=(Fl_Counter *)0;
+
+static void cb_cntPSMValidSamplePeriod(Fl_Counter* o, void*) {
+  progStatus.psm_hit_time_window   = (int) o->value();
+progdefaults.psm_hit_time_window = (int) o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnEnable_csma=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_csma(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progStatus.csma_enabled = true;
+	progdefaults.csma_enabled = true;
+} else {
+	progStatus.csma_enabled = false;
+	progdefaults.csma_enabled = false;
+}
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPersistance=(Fl_Counter *)0;
+
+static void cb_cntPersistance(Fl_Counter* o, void*) {
+  progStatus.csma_persistance = (int) o->value();
+progdefaults.csma_persistance = (int) o->value();
+progdefaults.changed = true;
+update_csma_io_config(CSMA_PERSISTANCE);
+}
+
+Fl_Counter *cntSlotTime=(Fl_Counter *)0;
+
+static void cb_cntSlotTime(Fl_Counter* o, void*) {
+  progStatus.csma_slot_time = (int) o->value();
+progdefaults.csma_slot_time = (int) o->value();
+progdefaults.changed = true;
+update_csma_io_config(CSMA_SLOT_TIME);
+}
+
+Fl_Counter *cntTransmitDelay=(Fl_Counter *)0;
+
+static void cb_cntTransmitDelay(Fl_Counter* o, void*) {
+  progStatus.csma_transmit_delay = (int) o->value();
+progdefaults.csma_transmit_delay = (int) o->value();
+progdefaults.changed = true;
+update_csma_io_config(CSMA_TX_DELAY);
+}
+
+Fl_Output *OutputSlotTimeMS=(Fl_Output *)0;
+
+Fl_Output *OutputTransmitDelayMS=(Fl_Output *)0;
+
+Fl_Output *OutputPersistancePercent=(Fl_Output *)0;
+
+Fl_Check_Button *btnEnable_histogram=(Fl_Check_Button *)0;
+
+static void cb_btnEnable_histogram(Fl_Check_Button* o, void*) {
+  if(o->value()) {
+	progStatus.psm_use_histogram = true;
+	progdefaults.psm_use_histogram = true;
+} else {
+	progStatus.psm_use_histogram = false;
+	progdefaults.psm_use_histogram = false;
+}
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntPSMThreshold=(Fl_Counter *)0;
+
+static void cb_cntPSMThreshold(Fl_Counter* o, void*) {
+  progStatus.psm_histogram_offset_threshold = (int) o->value();
+progdefaults.psm_histogram_offset_threshold = (int) o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntKPSQLAttenuation=(Fl_Counter *)0;
+
+static void cb_cntKPSQLAttenuation(Fl_Counter* o, void*) {
+  progStatus.kpsql_attenuation = (int) o->value();
+progdefaults.kpsql_attenuation = (int) o->value();
+update_kpsql_fractional_gain(progStatus.kpsql_attenuation);
+progdefaults.changed = true;
+}
+
+Fl_Button *btnBuyChannelDefaults=(Fl_Button *)0;
+
+static void cb_btnBuyChannelDefaults(Fl_Button*, void*) {
+  psm_set_defaults();
+}
+
+Fl_Check_Button *btn_show_psm_button=(Fl_Check_Button *)0;
+
+static void cb_btn_show_psm_button(Fl_Check_Button* o, void*) {
+  progdefaults.show_psm_btn = o->value();
+UI_select();
+progdefaults.changed = true;
+}
+
 Fl_Button *btnSaveConfig=(Fl_Button *)0;
 
 static void cb_btnSaveConfig(Fl_Button*, void*) {
@@ -6076,14 +6171,13 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 600, 390);
+    { tabsConfigure = new Fl_Tabs(0, 0, 600, 385);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 360, _("Operator"));
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6218,9 +6312,10 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 600, 360, _("UI"));
         tabUI->tooltip(_("User Interface"));
-        { tabsUI = new Fl_Tabs(0, 25, 600, 365);
+        tabUI->hide();
+        { tabsUI = new Fl_Tabs(0, 25, 600, 360);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
@@ -6645,11 +6740,11 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
+          { tabLogServer = new Fl_Group(0, 50, 600, 335, _("Log"));
             tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
             tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 55, 600, 335);
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("QSO"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("QSO"));
                 { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6746,7 +6841,7 @@ Fl_Double_Window* ConfigureDialog() {
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx Text"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("Rx Text"));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(62, 96, 496, 113, _("Rx Text"));
                 o->box(FL_ENGRAVED_FRAME);
@@ -6790,7 +6885,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("MacLogger"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 310, _("MacLogger"));
                 o->hide();
                 { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 91, 186, 20, _("Connect to MacLogger"));
                 btnConnectToMaclogger->down_box(FL_DOWN_BOX);
@@ -6847,6 +6942,7 @@ ab and newline are automatically included."));
           } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 335, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
+            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 248, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -6961,7 +7057,7 @@ ab and newline are automatically included."));
               } // Fl_Check_Button* btn_save_macros_on_exit
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 330, 590, 55);
+            { Fl_Group* o = new Fl_Group(5, 330, 590, 45);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btn_macro_post = new Fl_Check_Button(65, 345, 216, 20, _("Show macro control codes"));
                 btn_macro_post->tooltip(_("print ^! execution codes in Rx panel"));
@@ -7450,7 +7546,6 @@ ab and newline are automatically included."));
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
           { tab_touch = new Fl_Group(0, 50, 600, 335, _("Touch"));
-            tab_touch->hide();
             { Fl_Box* o = new Fl_Box(15, 70, 570, 52, _("Note:\nThese configuration items are useful for but not unique to using fldig\
 i on a\ntouch screen device such as a tablet."));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
@@ -11090,6 +11185,7 @@ gured on the\n\"Notifications\" configure dialog."));
         { tabsMisc = new Fl_Tabs(0, 25, 600, 360);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 600, 335, _("CPU"));
+            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(55, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11580,7 +11676,6 @@ earch for station name"));
             tabWX->end();
           } // Fl_Group* tabWX
           { tabKML = new Fl_Group(0, 50, 600, 335, _("KML"));
-            tabKML->hide();
             { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
               btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
               btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);
@@ -12212,20 +12307,6 @@ and restarted if needed."));
             if(progStatus.data_io_enabled == KISS_IO) o->value(true);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_kiss
-          { Fl_Check_Button* o = btnEnable_ax25_decode = new Fl_Check_Button(346, 112, 115, 20, _("AX25 Decode"));
-            btnEnable_ax25_decode->tooltip(_("Decode AX25 Packets into human readable form"));
-            btnEnable_ax25_decode->down_box(FL_DOWN_BOX);
-            btnEnable_ax25_decode->callback((Fl_Callback*)cb_btnEnable_ax25_decode);
-            if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);
-            progStatus.ip_lock ? o->deactivate() : o->activate();
-          } // Fl_Check_Button* btnEnable_ax25_decode
-          { Fl_Check_Button* o = btnEnable_csma = new Fl_Check_Button(471, 112, 115, 20, _("Enable CSMA"));
-            btnEnable_csma->tooltip(_("Used for BPQ32"));
-            btnEnable_csma->down_box(FL_DOWN_BOX);
-            btnEnable_csma->callback((Fl_Callback*)cb_btnEnable_csma);
-            if(progStatus.csma_enabled) o->value(true);
-            progStatus.ip_lock ? o->deactivate() : o->activate();
-          } // Fl_Check_Button* btnEnable_csma
           { new Fl_Box(8, 37, 582, 72, _("Enable ARQ for programs that support TCP and FLDIGI ARQ protocol.\nEnable KIS\
 S for programs that supports TCP/UDP and TNC-2 KISS protocol.\nOnly one interf\
 ace (ARQ/KISS) can be active at any given time.\nKISS/ARQ/XML Addr/Port change\
@@ -12258,19 +12339,6 @@ s require program restart."));
             o->value(progdefaults.kiss_address.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_address
-          { Fl_Counter* o = cntKPSQLAttenuation = new Fl_Counter(56, 169, 110, 20, _("KPSQL Attenuate"));
-            cntKPSQLAttenuation->tooltip(_("Attenuation"));
-            cntKPSQLAttenuation->minimum(1);
-            cntKPSQLAttenuation->maximum(999);
-            cntKPSQLAttenuation->step(1);
-            cntKPSQLAttenuation->value(1);
-            cntKPSQLAttenuation->callback((Fl_Callback*)cb_cntKPSQLAttenuation);
-            cntKPSQLAttenuation->align(Fl_Align(FL_ALIGN_RIGHT));
-            o->value(progdefaults.kpsql_attenuation);
-            o->step(1,10);
-            update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
-            progStatus.ip_lock ? o->deactivate() : o->activate();
-          } // Fl_Counter* cntKPSQLAttenuation
           { Fl_Input2* o = txtKiss_ip_io_port_no = new Fl_Input2(330, 195, 55, 25, _("I/O"));
             txtKiss_ip_io_port_no->tooltip(_("IP Address Port Number"));
             txtKiss_ip_io_port_no->box(FL_DOWN_BOX);
@@ -12287,26 +12355,6 @@ s require program restart."));
             o->value(progdefaults.kiss_io_port.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_io_port_no
-          { Fl_Counter* o = cntBusyChannelSeconds = new Fl_Counter(56, 145, 110, 20, _("Continue"));
-            cntBusyChannelSeconds->tooltip(_("Continue after in seconds"));
-            cntBusyChannelSeconds->minimum(1);
-            cntBusyChannelSeconds->maximum(999);
-            cntBusyChannelSeconds->step(1);
-            cntBusyChannelSeconds->value(1);
-            cntBusyChannelSeconds->callback((Fl_Callback*)cb_cntBusyChannelSeconds);
-            cntBusyChannelSeconds->align(Fl_Align(FL_ALIGN_RIGHT));
-            o->value(progdefaults.busyChannelSeconds);
-            o->step(1,10);
-            progStatus.ip_lock ? o->deactivate() : o->activate();
-          } // Fl_Counter* cntBusyChannelSeconds
-          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(235, 145, 65, 15, _("Busy"));
-            btnEnableBusyChannel->tooltip(_("Enable Busy Channel"));
-            btnEnableBusyChannel->down_box(FL_DOWN_BOX);
-            btnEnableBusyChannel->callback((Fl_Callback*)cb_btnEnableBusyChannel);
-            if(progdefaults.enableBusyChannel) o->value(true);
-            else o->value(false);
-            progStatus.ip_lock ? o->deactivate() : o->activate();
-          } // Fl_Check_Button* btnEnableBusyChannel
           { Fl_Input2* o = txtKiss_ip_out_port_no = new Fl_Input2(425, 195, 55, 25, _("O"));
             txtKiss_ip_out_port_no->tooltip(_("Output port number when same IP address used"));
             txtKiss_ip_out_port_no->box(FL_DOWN_BOX);
@@ -12323,7 +12371,7 @@ s require program restart."));
             o->value(progdefaults.kiss_out_port.c_str());
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Input2* txtKiss_ip_out_port_no
-          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(360, 145, 55, 16, _("DP"));
+          { Fl_Check_Button* o = btnEnable_dual_port = new Fl_Check_Button(131, 142, 140, 20, _("DP"));
             btnEnable_dual_port->tooltip(_("Enable when both programs are using the same IP address"));
             btnEnable_dual_port->down_box(FL_DOWN_BOX);
             btnEnable_dual_port->callback((Fl_Callback*)cb_btnEnable_dual_port);
@@ -12340,41 +12388,48 @@ s require program restart."));
             btn_connect_kiss_io->callback((Fl_Callback*)cb_btn_connect_kiss_io);
             (progStatus.ip_lock || !progdefaults.kiss_tcp_io) ? o->deactivate() : o->activate();
           } // Fl_Button* btn_connect_kiss_io
-          { Fl_Check_Button* o = btnKissTCPIO = new Fl_Check_Button(420, 145, 60, 15, _("TCP"));
+          { Fl_Check_Button* o = btnKissTCPIO = new Fl_Check_Button(280, 142, 70, 20, _("TCP/IP"));
             btnKissTCPIO->tooltip(_("Check to enable TCP/IP IO Connection"));
             btnKissTCPIO->down_box(FL_DOWN_BOX);
             btnKissTCPIO->callback((Fl_Callback*)cb_btnKissTCPIO);
             if(progdefaults.kiss_tcp_io) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnKissTCPIO
-          { Fl_Check_Button* o = btnKissUDPIO = new Fl_Check_Button(295, 145, 60, 15, _("UDP"));
+          { Fl_Check_Button* o = btnKissUDPIO = new Fl_Check_Button(55, 142, 70, 20, _("UDP/IP"));
             btnKissUDPIO->tooltip(_("Check to enable UDP/IP IO"));
             btnKissUDPIO->down_box(FL_DOWN_BOX);
             btnKissUDPIO->callback((Fl_Callback*)cb_btnKissUDPIO);
             if(progdefaults.kiss_tcp_io) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnKissUDPIO
-          { Fl_Check_Button* o = btnKissTCPListen = new Fl_Check_Button(485, 145, 95, 15, _("Listen / Bind"));
-            btnKissTCPListen->tooltip(_("Monitor for TCP connection"));
+          { Fl_Check_Button* o = btnKissTCPListen = new Fl_Check_Button(360, 142, 95, 20, _("Listen / Bind"));
+            btnKissTCPListen->tooltip(_("Monitor for TCP connection."));
             btnKissTCPListen->down_box(FL_DOWN_BOX);
             btnKissTCPListen->callback((Fl_Callback*)cb_btnKissTCPListen);
             if(progStatus.kiss_tcp_listen) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnKissTCPListen
-          { Fl_Check_Button* o = btnEnable_7bit_modem_inhibit = new Fl_Check_Button(295, 169, 140, 16, _("Inhibit 7bit Modem"));
+          { Fl_Check_Button* o = btnEnable_7bit_modem_inhibit = new Fl_Check_Button(55, 165, 140, 20, _("Inhibit 7bit Modem"));
             btnEnable_7bit_modem_inhibit->tooltip(_("Inhibit 7 bit modem change notice on user or RSID reception"));
             btnEnable_7bit_modem_inhibit->down_box(FL_DOWN_BOX);
             btnEnable_7bit_modem_inhibit->callback((Fl_Callback*)cb_btnEnable_7bit_modem_inhibit);
             if(progdefaults.kiss_io_modem_change_inhibit) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_7bit_modem_inhibit
-          { Fl_Check_Button* o = btnEnable_auto_connect = new Fl_Check_Button(445, 169, 45, 16, _("AC"));
+          { Fl_Check_Button* o = btnEnable_auto_connect = new Fl_Check_Button(280, 165, 155, 20, _("Auto Connect / Retry"));
             btnEnable_auto_connect->tooltip(_("Connect to host program on FLDIGI start up"));
             btnEnable_auto_connect->down_box(FL_DOWN_BOX);
             btnEnable_auto_connect->callback((Fl_Callback*)cb_btnEnable_auto_connect);
             if(progdefaults.tcp_udp_auto_connect) o->value(true); else o->value(false);
             progStatus.ip_lock ? o->deactivate() : o->activate();
           } // Fl_Check_Button* btnEnable_auto_connect
+          { Fl_Check_Button* o = btnEnable_ax25_decode = new Fl_Check_Button(470, 142, 115, 20, _("AX25 Decode"));
+            btnEnable_ax25_decode->tooltip(_("Decode AX25 Packets into human readable form"));
+            btnEnable_ax25_decode->down_box(FL_DOWN_BOX);
+            btnEnable_ax25_decode->callback((Fl_Callback*)cb_btnEnable_ax25_decode);
+            if(progdefaults.ax25_decode_enabled) o->value(true); else o->value(false);
+            progStatus.ip_lock ? o->deactivate() : o->activate();
+          } // Fl_Check_Button* btnEnable_ax25_decode
           o->end();
         } // Fl_Group* o
         { Fl_Group* o = new Fl_Group(6, 225, 588, 35, _("ARQ"));
@@ -12555,6 +12610,177 @@ i.e. localhost"));
         btnDisable_p2p_io_widgets->value(1);
         tabIO->end();
       } // Fl_Group* tabIO
+      { tabKPSM = new Fl_Group(0, 25, 600, 360, _("PSM"));
+        tabKPSM->tooltip(_("Power Signal Monior"));
+        tabKPSM->hide();
+        { Fl_Group* o = new Fl_Group(0, 33, 590, 105);
+          o->box(FL_ENGRAVED_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Counter* o = cntBusyChannelSeconds = new Fl_Counter(180, 39, 110, 20, _("Allow TX After Signal Detection (Seconds)"));
+            cntBusyChannelSeconds->tooltip(_("Allow transmits after \'N\' seconds of a signal detection."));
+            cntBusyChannelSeconds->minimum(1);
+            cntBusyChannelSeconds->maximum(999);
+            cntBusyChannelSeconds->step(1);
+            cntBusyChannelSeconds->value(1);
+            cntBusyChannelSeconds->callback((Fl_Callback*)cb_cntBusyChannelSeconds);
+            cntBusyChannelSeconds->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.busyChannelSeconds);
+            o->step(1,10);
+          } // Fl_Counter* cntBusyChannelSeconds
+          { Fl_Check_Button* o = btnEnableBusyChannel = new Fl_Check_Button(10, 41, 115, 20, _("Enable Busy Channel"));
+            btnEnableBusyChannel->tooltip(_("Enable to inhibit TX on signal Detections"));
+            btnEnableBusyChannel->down_box(FL_DOWN_BOX);
+            btnEnableBusyChannel->callback((Fl_Callback*)cb_btnEnableBusyChannel);
+            if(progdefaults.enableBusyChannel) o->value(true);
+            else o->value(false);
+          } // Fl_Check_Button* btnEnableBusyChannel
+          { Fl_Counter* o = cntPSMTXBufferFlushTimer = new Fl_Counter(180, 64, 110, 20, _("TX Buffer Flush Timer (Minutes, 0=Disable)"));
+            cntPSMTXBufferFlushTimer->tooltip(_("Flushes the TX buffer after x period when Busy Channel remains on (TX inhibit\
+ed)"));
+            cntPSMTXBufferFlushTimer->minimum(1);
+            cntPSMTXBufferFlushTimer->maximum(999);
+            cntPSMTXBufferFlushTimer->step(1);
+            cntPSMTXBufferFlushTimer->value(1);
+            cntPSMTXBufferFlushTimer->callback((Fl_Callback*)cb_cntPSMTXBufferFlushTimer);
+            cntPSMTXBufferFlushTimer->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.psm_flush_buffer_timeout);
+            o->step(1,10); o->minimum(0); o->maximum(999);
+          } // Fl_Counter* cntPSMTXBufferFlushTimer
+          { Fl_Counter* o = cntPSMBandwidthMargins = new Fl_Counter(180, 89, 110, 20, _("Modem Bandwidth Margins "));
+            cntPSMBandwidthMargins->tooltip(_("Monitor signals in modem bandwitdh plus margins."));
+            cntPSMBandwidthMargins->minimum(1);
+            cntPSMBandwidthMargins->maximum(999);
+            cntPSMBandwidthMargins->step(1);
+            cntPSMBandwidthMargins->value(1);
+            cntPSMBandwidthMargins->callback((Fl_Callback*)cb_cntPSMBandwidthMargins);
+            cntPSMBandwidthMargins->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.psm_minimum_bandwidth_margin);
+            o->step(1,10);
+          } // Fl_Counter* cntPSMBandwidthMargins
+          { Fl_Counter* o = cntPSMValidSamplePeriod = new Fl_Counter(180, 115, 110, 20, _("Valid Signal Sample Period (Milliseconds)"));
+            cntPSMValidSamplePeriod->tooltip(_("Valid signal sample period in Milliseconds"));
+            cntPSMValidSamplePeriod->minimum(1);
+            cntPSMValidSamplePeriod->maximum(999);
+            cntPSMValidSamplePeriod->step(1);
+            cntPSMValidSamplePeriod->value(1);
+            cntPSMValidSamplePeriod->callback((Fl_Callback*)cb_cntPSMValidSamplePeriod);
+            cntPSMValidSamplePeriod->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.psm_hit_time_window);
+            o->step(1,10);
+          } // Fl_Counter* cntPSMValidSamplePeriod
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(0, 142, 593, 92);
+          o->box(FL_ENGRAVED_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Check_Button* o = btnEnable_csma = new Fl_Check_Button(10, 156, 115, 20, _("Enable CSMA"));
+            btnEnable_csma->tooltip(_("Carrier Sense Mulitiple Access"));
+            btnEnable_csma->down_box(FL_DOWN_BOX);
+            btnEnable_csma->callback((Fl_Callback*)cb_btnEnable_csma);
+            if(progdefaults.csma_enabled) o->value(true);
+          } // Fl_Check_Button* btnEnable_csma
+          { Fl_Counter* o = cntPersistance = new Fl_Counter(140, 156, 110, 20, _("Persistance"));
+            cntPersistance->tooltip(_("Used to adjust the aggressiveness of TX"));
+            cntPersistance->minimum(1);
+            cntPersistance->maximum(999);
+            cntPersistance->step(1);
+            cntPersistance->value(1);
+            cntPersistance->callback((Fl_Callback*)cb_cntPersistance);
+            cntPersistance->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.csma_persistance);
+            o->step(1,10); o->minimum(0); o->maximum(255);
+          } // Fl_Counter* cntPersistance
+          { Fl_Counter* o = cntSlotTime = new Fl_Counter(140, 181, 110, 20, _("Slot Time"));
+            cntSlotTime->tooltip(_("Non transmit window after a transmit period"));
+            cntSlotTime->minimum(1);
+            cntSlotTime->maximum(999);
+            cntSlotTime->step(1);
+            cntSlotTime->value(1);
+            cntSlotTime->callback((Fl_Callback*)cb_cntSlotTime);
+            cntSlotTime->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.csma_slot_time);
+            o->step(1,10); o->minimum(1); o->maximum(255);
+          } // Fl_Counter* cntSlotTime
+          { Fl_Counter* o = cntTransmitDelay = new Fl_Counter(140, 206, 110, 20, _("Transmit Data Delay"));
+            cntTransmitDelay->tooltip(_("Idle transmit before data sent"));
+            cntTransmitDelay->minimum(1);
+            cntTransmitDelay->maximum(999);
+            cntTransmitDelay->step(1);
+            cntTransmitDelay->value(1);
+            cntTransmitDelay->callback((Fl_Callback*)cb_cntTransmitDelay);
+            cntTransmitDelay->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.csma_transmit_delay);
+            o->step(1,10); o->minimum(1); o->maximum(255);
+          } // Fl_Counter* cntTransmitDelay
+          { OutputSlotTimeMS = new Fl_Output(397, 181, 95, 20, _("MilliSeconds"));
+            OutputSlotTimeMS->tooltip(_("Displays the Slot Time in Milliseconds"));
+            OutputSlotTimeMS->align(Fl_Align(FL_ALIGN_RIGHT));
+          } // Fl_Output* OutputSlotTimeMS
+          { OutputTransmitDelayMS = new Fl_Output(397, 206, 95, 20, _("MilliSeconds"));
+            OutputTransmitDelayMS->tooltip(_("Displays the Transmit Delay in Milliseconds"));
+            OutputTransmitDelayMS->align(Fl_Align(FL_ALIGN_RIGHT));
+          } // Fl_Output* OutputTransmitDelayMS
+          { OutputPersistancePercent = new Fl_Output(397, 155, 95, 20, _("Percent (%)"));
+            OutputPersistancePercent->tooltip(_("Displays the Slot Time in Milliseconds"));
+            OutputPersistancePercent->align(Fl_Align(FL_ALIGN_RIGHT));
+          } // Fl_Output* OutputPersistancePercent
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(0, 237, 593, 30);
+          o->box(FL_ENGRAVED_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Check_Button* o = btnEnable_histogram = new Fl_Check_Button(10, 244, 140, 20, _("Enable Histogram"));
+            btnEnable_histogram->tooltip(_("Enable Histogram threshold signal monitoring"));
+            btnEnable_histogram->down_box(FL_DOWN_BOX);
+            btnEnable_histogram->callback((Fl_Callback*)cb_btnEnable_histogram);
+            if(progdefaults.psm_use_histogram) o->value(true);
+          } // Fl_Check_Button* btnEnable_histogram
+          { Fl_Counter* o = cntPSMThreshold = new Fl_Counter(180, 244, 110, 20, _("PSM Histogram Threshold"));
+            cntPSMThreshold->tooltip(_("Sets the theshold level to x value above the noise level"));
+            cntPSMThreshold->minimum(1);
+            cntPSMThreshold->maximum(999);
+            cntPSMThreshold->step(1);
+            cntPSMThreshold->value(1);
+            cntPSMThreshold->callback((Fl_Callback*)cb_cntPSMThreshold);
+            cntPSMThreshold->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.psm_histogram_offset_threshold);
+            o->step(1,10); o->minimum(1); o->maximum(20);
+          } // Fl_Counter* cntPSMThreshold
+          o->end();
+        } // Fl_Group* o
+        { Fl_Group* o = new Fl_Group(0, 270, 593, 31);
+          o->box(FL_ENGRAVED_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Counter* o = cntKPSQLAttenuation = new Fl_Counter(180, 275, 110, 20, _("PSM Attenuate"));
+            cntKPSQLAttenuation->tooltip(_("Adjust sensitivity by 1/N fractional values."));
+            cntKPSQLAttenuation->minimum(1);
+            cntKPSQLAttenuation->maximum(999);
+            cntKPSQLAttenuation->step(1);
+            cntKPSQLAttenuation->value(1);
+            cntKPSQLAttenuation->callback((Fl_Callback*)cb_cntKPSQLAttenuation);
+            cntKPSQLAttenuation->align(Fl_Align(FL_ALIGN_RIGHT));
+            o->value(progdefaults.kpsql_attenuation);
+            o->step(1,10); o->minimum(1); o->maximum(999);
+            update_kpsql_fractional_gain(progdefaults.kpsql_attenuation);
+          } // Fl_Counter* cntKPSQLAttenuation
+          o->end();
+        } // Fl_Group* o
+        { btnBuyChannelDefaults = new Fl_Button(464, 345, 126, 27, _("Default Settings"));
+          btnBuyChannelDefaults->callback((Fl_Callback*)cb_btnBuyChannelDefaults);
+        } // Fl_Button* btnBuyChannelDefaults
+        { Fl_Group* o = new Fl_Group(0, 304, 593, 31);
+          o->box(FL_ENGRAVED_BOX);
+          o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          { Fl_Check_Button* o = btn_show_psm_button = new Fl_Check_Button(10, 310, 151, 20, _("Show and enable Power Signal Monitor button (PSM)"));
+            btn_show_psm_button->tooltip(_("display PSM button on main dialog"));
+            btn_show_psm_button->down_box(FL_DOWN_BOX);
+            btn_show_psm_button->callback((Fl_Callback*)cb_btn_show_psm_button);
+            o->value(progdefaults.show_psm_btn);
+          } // Fl_Check_Button* btn_show_psm_button
+          o->end();
+        } // Fl_Group* o
+        tabKPSM->end();
+      } // Fl_Group* tabKPSM
       tabsConfigure->end();
     } // Fl_Tabs* tabsConfigure
     { btnSaveConfig = new Fl_Button(330, 390, 130, 22, _("Save"));
@@ -12564,6 +12790,7 @@ i.e. localhost"));
       btnCloseConfig->callback((Fl_Callback*)cb_btnCloseConfig);
     } // Fl_Return_Button* btnCloseConfig
     { btnResetConfig = new Fl_Button(20, 390, 130, 22, _("Restore defaults"));
+      btnResetConfig->tooltip(_("WARNING - this will over write ALL settings"));
       btnResetConfig->callback((Fl_Callback*)cb_btnResetConfig);
     } // Fl_Button* btnResetConfig
     o->set_non_modal();

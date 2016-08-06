@@ -1325,7 +1325,7 @@
         ELEM_(bool, UseLastMacro, "USELASTMACRO",                                       \
               "Load last used macro file on startup",                                   \
               false)                                                                    \
-        ELEM_(double, mbw, "MBW",                                                      \
+        ELEM_(double, mbw, "MBW",                                                       \
               "Delay between execution of RIGMODE and FILWID\n"                         \
               "when in the same macro definition\n"                                     \
               "range 0.1 to 2.0, default = 0.5",                                        \
@@ -1704,11 +1704,41 @@
               "Listen for TCP connection (Server mode)",                                \
               false)                                                                    \
         ELEM_(bool, kpsql_enabled, "KPSQL_ENABLED",                                     \
-              "Enable/Disable KPSQL",                                                   \
+              "Enable/Disable PSM",                                                     \
               false)                                                                    \
         ELEM_(bool, tcp_udp_auto_connect, "TCP_UDP_AUTO_CONNECT",                       \
               "Make Connect Attemp on Fldigi Start",                                    \
               false)                                                                    \
+        ELEM_(int, csma_persistance, "CSMA_PERSISTANCE",                                \
+              "CSMA Persistance",                                                       \
+              63)                                                                       \
+        ELEM_(int, csma_slot_time, "CSMA_SLOT_TIME",                                    \
+              "CSMA Slot Time",                                                         \
+              10)                                                                       \
+        ELEM_(int, csma_transmit_delay, "CSMA_TRANSMIT_DELAY",                          \
+              "CSMA Transit Delay",                                                     \
+              50)                                                                       \
+        ELEM_(int, psm_flush_buffer_timeout, "PSM_FLUSH_BUFFER_TIMEOUT",                \
+              "Flush buffer timout",                                                    \
+              15)                                                                       \
+        ELEM_(int, psm_minimum_bandwidth, "PSM_MINIMUM_BANDWIDTH",                      \
+              "PSM minimum measured bandwidth",                                         \
+              100)                                                                      \
+        ELEM_(int, psm_minimum_bandwidth_margin, "PSM_MINIMUM_BANDWIDTH_MARGIN",        \
+              "PSM minimum measured bandwidth margin",                                  \
+              10)                                                                       \
+        ELEM_(bool, psm_use_histogram, "PSM_USE_HISTOGRAM",                             \
+              "Histogram threshold",                                                    \
+              false)                                                                    \
+        ELEM_(int, psm_histogram_offset_threshold, "PSM_HISTOGRAM_OFFSET_THRESHOLD",    \
+              "Histogram theshold referece level",                                      \
+              3)                                                                        \
+        ELEM_(int, psm_hit_time_window, "PSM_HIT_TIME_WINDOW",                          \
+              "Valid signal test rate (milliseconds)",                                  \
+              15)                                                                       \
+        ELEM_(int, tx_buffer_timeout, "TX_BUFFER_TIMEOUT",                              \
+              "Transmit buffer timeout (minutes)",                                      \
+              15)                                                                       \
         ELEM_(bool, kiss_io_modem_change_inhibit, "KISS_IO_MODEM_CHANGE_INHIBIT",       \
               "Enable/Disable Modem Change to a non 8 bit when KISS IO is in use",      \
               false)                                                                    \
@@ -1825,7 +1855,7 @@
         ELEM_(bool, wx_station_name, "WX_STATION_NAME",                                 \
               "Report station noun name",                                               \
               true)                                                                     \
-    /* KML Keyhole Markup Language */                                               \
+    /* KML Keyhole Markup Language */                                                   \
         ELEM_(bool, kml_purge_on_startup, "KML_PURGE_ON_STARTUP",                       \
               "Purge KML data at startup",                                              \
               false)                                                                    \
@@ -1847,7 +1877,7 @@
        ELEM_(int, kml_balloon_style, "KML_BALLOON_STYLE",                               \
              "KML balloons data displayed as text, HTML tables, HTML single matrix",    \
              2)                                                                         \
-       ELEM_(double, cnt_dft_range, "cnt_dft_range",                                   \
+       ELEM_(double, cnt_dft_range, "cnt_dft_range",                                    \
              "Display range in dB for dft scan modem",                                  \
              60.0)                                                                      \
        ELEM_(int, cnt_dft_scans, "cnt_dft_scans",                                       \
@@ -1856,7 +1886,7 @@
        ELEM_(bool, dft_relative, "dft_relative",                                        \
              "Plot vertical scale as dB relative to maximum value",                     \
              false)                                                                     \
-       ELEM_(std::string, auto_flrig_pathname, "AUTO_FLRIG_PATHNAME",                  \
+       ELEM_(std::string, auto_flrig_pathname, "AUTO_FLRIG_PATHNAME",                   \
               "Full pathname to the flrig executable",                                  \
               "")                                                                       \
         ELEM_(std::string, auto_flamp_pathname, "AUTO_FLAMP_PATHNAME",                  \

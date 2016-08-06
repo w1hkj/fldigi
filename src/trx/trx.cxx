@@ -47,6 +47,7 @@
 #include "nullmodem.h"
 #include "macros.h"
 #include "rigsupport.h"
+#include "psm/psm.h"
 
 #if BENCHMARK_MODE
 #  include "benchmark.h"
@@ -404,6 +405,7 @@ void trx_trx_transmit_loop()
 
 	push2talk->set(false);
 	REQ(&waterfall::set_XmtRcvBtn, wf, false);
+	psm_transmit_ended(PSM_STOP);
 	if (progStatus.timer)
 		REQ(startMacroTimer);
 	WriteARQ(0x06);
@@ -536,6 +538,10 @@ void trx_start_modem_loop()
 			active_modem->set_freq(new_freq);
 		active_modem->restart();
 		trx_state = STATE_RX;
+		if (progdefaults.show_psm_btn &&
+			progStatus.kpsql_enabled &&
+			progStatus.psm_use_histogram)
+			psm_reset_histogram();
 		return;
 	}
 
@@ -716,8 +722,17 @@ void trx_close()
 }
 
 //=============================================================================
+void trx_transmit_psm(void) { trx_state = STATE_TX; };
 
-void trx_transmit(void) { trx_state = STATE_TX; }
+void trx_transmit(void) {
+	if (progdefaults.show_psm_btn &&
+		progStatus.kpsql_enabled &&
+		(!PERFORM_CPS_TEST || !active_modem->XMLRPC_CPS_TEST))
+		psm_transmit();
+	else
+		trx_state = STATE_TX;
+}
+
 void trx_tune(void) { trx_state = STATE_TUNE; }
 void trx_receive(void) { trx_state = STATE_RX; }
 

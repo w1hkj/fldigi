@@ -152,6 +152,7 @@
 #include "arq_io.h"
 #include "data_io.h"
 #include "kmlserver.h"
+#include "psm/psm.h"
 
 #include "notifydialog.h"
 #include "macroedit.h"
@@ -2042,6 +2043,13 @@ void cb_mnuConfigIO(Fl_Menu_*, void*) {
 
 }
 
+void cb_mnuConfigPSM(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabKPSM);
+	dlgConfig->show();
+
+}
+
 void cb_mnuConfigNotify(Fl_Menu_*, void*)
 {
 	notify_show();
@@ -3175,6 +3183,8 @@ void cbSQL(Fl_Widget *w, void *vi)
 	progStatus.sqlonoff = v ? true : false;
 }
 
+extern void set_wf_mode(void);
+
 void cbPwrSQL(Fl_Widget *w, void *vi)
 {
 		FL_LOCK_D();
@@ -3189,6 +3199,7 @@ void cbPwrSQL(Fl_Widget *w, void *vi)
 			sldrSquelch->value(progStatus.sldrPwrSquelchValue);
 			progStatus.kpsql_enabled = true;
 			progdefaults.kpsql_enabled = true;
+			set_wf_mode();
 			b->set();
 		}
 		FL_UNLOCK_D();
@@ -4560,6 +4571,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Autostart")), 0,  (Fl_Callback*)cb_mnuConfigAutostart, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("QRZ/eQSL"), net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -7511,6 +7523,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
@@ -7987,14 +8000,6 @@ void callback_set_metric(double metric)
 			btnSQL->selection_color(progdefaults.Sql2Color);
 		btnSQL->redraw_label();
 	}
-}
-
-void global_display_metric(double metric)
-{
-	FL_LOCK_D();
-	REQ_DROP(callback_set_metric, metric);
-	FL_UNLOCK_D();
-	FL_AWAKE_D();
 }
 
 void put_cwRcvWPM(double wpm)
@@ -8557,16 +8562,17 @@ extern int get_fsq_tx_char();
 
 int get_tx_char(void)
 {
-	if (active_modem->get_mode() == MODE_FSQ) return get_fsq_tx_char();
-
 	enum { STATE_CHAR, STATE_CTRL };
 	static int state = STATE_CHAR;
+
+	if (idling || csma_idling ) { return GET_TX_CHAR_NODATA; } // Keep this a the top of the list (CSMA TX delay).
+
+	if (active_modem->get_mode() == MODE_FSQ) return get_fsq_tx_char();
 
 	if (!que_ok) { return GET_TX_CHAR_NODATA; }
 	if (Qwait_time) { return GET_TX_CHAR_NODATA; }
 	if (Qidle_time) { return GET_TX_CHAR_NODATA; }
 	if (macro_idle_on) { return GET_TX_CHAR_NODATA; }
-	if (idling) { return GET_TX_CHAR_NODATA; }
 
 	if (!macrochar.empty()) {
 		int ch = macrochar[0];
@@ -8940,6 +8946,44 @@ void note_qrg(bool no_dup, const char* prefix, const char* suffix, trx_mode mode
 		ReceiveText->addstr(suffix);
 }
 
+
+// To be called from the main thread.
+void * set_xmtrcv_button_true(void)
+{
+	wf->xmtrcv->value(true);
+	wf->xmtrcv->redraw();
+	return (void *)0;
+}
+
+// To be called from the main thread.
+void * set_xmtrcv_button_false(void)
+{
+	wf->xmtrcv->value(false);
+	wf->xmtrcv->redraw();
+	return (void *)0;
+}
+
+// To be called from the main thread.
+void * set_xmtrcv_selection_color_transmitting(void)
+{
+	wf->xmtrcv_selection_color(progdefaults.XmtColor);
+	wf->redraw();
+	return (void *)0;
+}
+
+// To be called from the main thread.
+void * set_xmtrcv_selection_color_pending(void)
+{
+	wf->xmtrcv_selection_color(FL_YELLOW);
+	return (void *)0;
+}
+
+void xmtrcv_selection_color(Fl_Color clr)
+{
+	wf->xmtrcv_selection_color(clr);
+	wf->redraw();
+}
+
 void xmtrcv_selection_color()
 {
 	wf->xmtrcv_selection_color(progdefaults.XmtColor);
@@ -9154,9 +9198,6 @@ void enable_kiss(void)
 	btnEnable_kiss->value(true);
 
 	enable_disable_kpsql();
-
-	progdefaults.show_psm_btn = true;
-	UI_select();
 }
 
 void enable_arq(void)
@@ -9173,24 +9214,21 @@ void enable_arq(void)
 	btnEnable_arq->value(true);
 
 	enable_disable_kpsql();
-
-	progdefaults.show_psm_btn = false;
-	UI_select();
 }
 
 void enable_disable_kpsql(void)
 {
-	if(progdefaults.data_io_enabled == KISS_IO) {
+	if (progdefaults.data_io_enabled == KISS_IO) {
 		check_kiss_modem();
-		btnPSQL->activate();
-		if(progStatus.kpsql_enabled || progdefaults.kpsql_enabled) {
-			btnPSQL->value(true);
-			btnPSQL->do_callback();
-		}
+		//btnPSQL->activate();
+		//if(progStatus.kpsql_enabled || progdefaults.kpsql_enabled) {
+		//    btnPSQL->value(true);
+		//    btnPSQL->do_callback();
+		//}
 	} else {
 		sldrSquelch->value(progStatus.sldrSquelchValue);
-		btnPSQL->value(false);
-		btnPSQL->deactivate();
+		//btnPSQL->value(false);
+		//btnPSQL->deactivate();
 	}
 
 	progStatus.data_io_enabled = progdefaults.data_io_enabled;
@@ -9201,19 +9239,23 @@ void disable_config_p2p_io_widgets(void)
 	btnEnable_arq->deactivate();
 	btnEnable_kiss->deactivate();
 	btnEnable_ax25_decode->deactivate();
-	btnEnable_csma->deactivate();
+	//btnEnable_csma->deactivate();
 
 	txtKiss_ip_address->deactivate();
 	txtKiss_ip_io_port_no->deactivate();
 	txtKiss_ip_out_port_no->deactivate();
 	btnEnable_dual_port->deactivate();
-	btnEnableBusyChannel->deactivate();
-	cntKPSQLAttenuation->deactivate();
-	cntBusyChannelSeconds->deactivate();
+	//btnEnableBusyChannel->deactivate();
+	//cntKPSQLAttenuation->deactivate();
+	//cntBusyChannelSeconds->deactivate();
 	btnDefault_kiss_ip->deactivate();
 	btn_restart_kiss->deactivate();
 	btnEnable_7bit_modem_inhibit->deactivate();
 	btnEnable_auto_connect->deactivate();
+	btnKissTCPIO->deactivate();
+	btnKissUDPIO->deactivate();
+	btnKissTCPListen->deactivate();
+	btn_connect_kiss_io->deactivate();
 
 	txtArq_ip_address->deactivate();
 	txtArq_ip_port_no->deactivate();
@@ -9236,24 +9278,31 @@ void disable_config_p2p_io_widgets(void)
 	btn_reconnect_log_server->deactivate();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void enable_config_p2p_io_widgets(void)
 {
 	btnEnable_arq->activate();
 	btnEnable_kiss->activate();
 	btnEnable_ax25_decode->activate();
-	btnEnable_csma->activate();
+	//btnEnable_csma->activate();
 
 	txtKiss_ip_address->activate();
 	txtKiss_ip_io_port_no->activate();
 	txtKiss_ip_out_port_no->activate();
 	btnEnable_dual_port->activate();
-	btnEnableBusyChannel->activate();
-	cntKPSQLAttenuation->activate();
-	cntBusyChannelSeconds->activate();
+	//btnEnableBusyChannel->activate();
+	//cntKPSQLAttenuation->activate();
+	//cntBusyChannelSeconds->activate();
 	btnDefault_kiss_ip->activate();
 	btn_restart_kiss->activate();
 	btnEnable_7bit_modem_inhibit->activate();
 	btnEnable_auto_connect->activate();
+	btnKissTCPIO->activate();
+	btnKissUDPIO->activate();
+	btnKissTCPListen->activate();
+	btn_connect_kiss_io->activate();
 
 	txtArq_ip_address->activate();
 	txtArq_ip_port_no->activate();
@@ -9276,6 +9325,9 @@ void enable_config_p2p_io_widgets(void)
 	btn_reconnect_log_server->activate();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void set_ip_to_default(int which_io)
 {
 
@@ -9321,6 +9373,9 @@ void set_ip_to_default(int which_io)
 	}
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void kiss_io_set_button_state(void *ptr)
 {
 
@@ -9367,6 +9422,71 @@ void kiss_io_set_button_state(void *ptr)
 
 }
 
+//-----------------------------------------------------------------------------
+// Update CSMA Display Widgets in the IO Configuration Panel
+//-----------------------------------------------------------------------------
+void update_csma_io_config(int which)
+{
+   char buf[32];
+
+   if(which & CSMA_PERSISTANCE) {
+	  cntPersistance->value(progStatus.csma_persistance);
+	  if(progStatus.csma_persistance >= 0) {
+		 float results = ((progStatus.csma_persistance + 1) / 256.0) * 100.0;
+		 memset(buf, 0, sizeof(buf));
+		 snprintf(buf, sizeof(buf) - 1, "%f", results);
+		 OutputPersistancePercent->value(buf);
+	  }
+   }
+
+   if(which & CSMA_SLOT_TIME) {
+	  cntSlotTime->value(progStatus.csma_slot_time);
+	  int results = progStatus.csma_slot_time * 10;
+	  memset(buf, 0, sizeof(buf));
+	  snprintf(buf, sizeof(buf) - 1, "%d", results);
+	  OutputSlotTimeMS->value(buf);
+   }
+
+   if(which & CSMA_TX_DELAY) {
+	  cntTransmitDelay->value(progStatus.csma_transmit_delay);
+	  int results = progStatus.csma_transmit_delay * 10;
+	  memset(buf, 0, sizeof(buf));
+	  snprintf(buf, sizeof(buf) - 1, "%d", results);
+	  OutputTransmitDelayMS->value(buf);
+   }
+}
+
+//-----------------------------------------------------------------------------
+// Set PSM configuration panel defaults values.
+//-----------------------------------------------------------------------------
+void psm_set_defaults(void)
+{
+	progdefaults.csma_persistance               = progStatus.csma_persistance               = 63;
+	progdefaults.csma_slot_time                 = progStatus.csma_slot_time                 = 10;
+	progdefaults.csma_transmit_delay            = progStatus.csma_transmit_delay            = 50;
+	progdefaults.psm_flush_buffer_timeout       = progStatus.psm_flush_buffer_timeout       = 15;
+	progdefaults.psm_minimum_bandwidth_margin   = progStatus.psm_minimum_bandwidth_margin   = 10;
+	progdefaults.psm_histogram_offset_threshold = progStatus.psm_histogram_offset_threshold = 3;
+	progdefaults.psm_hit_time_window            = progStatus.psm_hit_time_window            = 15;
+	progdefaults.kpsql_attenuation              = progStatus.kpsql_attenuation              = 2;
+	progdefaults.busyChannelSeconds             = progStatus.busyChannelSeconds             = 3;
+
+	cntPersistance->value(progStatus.csma_persistance);
+	cntSlotTime->value(progStatus.csma_slot_time);
+	cntTransmitDelay->value(progStatus.csma_transmit_delay);
+	cntPSMTXBufferFlushTimer->value(progStatus.psm_flush_buffer_timeout);
+	cntPSMBandwidthMargins->value(progStatus.psm_minimum_bandwidth_margin);
+	cntPSMThreshold->value(progStatus.psm_histogram_offset_threshold);
+	cntPSMValidSamplePeriod->value(progStatus.psm_hit_time_window);
+	cntKPSQLAttenuation->value(progdefaults.kpsql_attenuation);
+	cntBusyChannelSeconds->value(progStatus.busyChannelSeconds);
+
+	update_csma_io_config(CSMA_ALL);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void set_CSV(int start)
 {
 	if (! (active_modem->get_mode() == MODE_ANALYSIS ||
@@ -9381,6 +9501,9 @@ void set_CSV(int start)
 		active_modem->start_csv();
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
 void set_freq_control_lsd()
 {
 	qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
@@ -9388,9 +9511,9 @@ void set_freq_control_lsd()
 	qsoFreqDisp3->set_lsd(progdefaults.sel_lsd);
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // FSQ mode control interface functions
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::string fsq_selected_call = "allcall";
 static int heard_picked;
 

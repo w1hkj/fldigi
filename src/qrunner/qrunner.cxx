@@ -57,6 +57,7 @@ const char *sztid[] = {
 	"MACLOGGER_TID",
 	"KISS_TID",
 	"KISSSOCKET_TID",
+	"PSM_TID",
 	"FLMAIN_TID"
 };
 
@@ -131,7 +132,7 @@ void qrunner::execute(int fd, void *arg)
 
 	qr->inprog = true;
 
-	size_t n = QRUNNER_READ(fd, rbuf, FIFO_SIZE);
+	long n = QRUNNER_READ(fd, rbuf, FIFO_SIZE);
 	switch (n) {
 	case -1:
 		if (!QRUNNER_EAGAIN()) {

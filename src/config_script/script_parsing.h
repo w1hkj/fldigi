@@ -169,6 +169,7 @@
 #define CMD_FLDIGI_AFC                 F_LOC("AFC")
 #define CMD_FLDIGI_SQL                 F_LOC("SQL")
 #define CMD_FLDIGI_KPSQL               F_LOC("KPSQL")
+#define CMD_FLDIGI_KPSM                F_LOC("KPSM")
 #define CMD_FLDIGI_MODEM               F_LOC("MODEM")
 
 #define CMD_IO                      F_LOC("IO")
