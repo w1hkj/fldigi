@@ -1688,15 +1688,18 @@
         ELEM_(int, busyChannelSeconds, "BUSY_CHANNEL_SECONDS",                          \
               "Number of seconds to wait before transmit resume",                       \
               3)                                                                        \
+        ELEM_(bool, show_psm_btn, "SHOW_PSM_BTN",                                       \
+              "Display / Enable PSM button on main dialog",                             \
+              false)                                                                    \
         ELEM_(int, kpsql_attenuation, "KPSQL_ATTENUATION",                              \
               "KPSQL Attenuation in 1/n of 1:1 Gain",                                   \
               2)                                                                        \
         ELEM_(bool, csma_enabled, "CSMA_ENABLED",                                       \
               "Use CSMA on heavy traffic channels (AX25)",                              \
               true)                                                                     \
-	    ELEM_(bool, kiss_tcp_io, "KISS_TCP_IO",                                         \
-	          "Connect kiss io via TCP/IP vise UDP/IP",                                 \
-	          false)                                                                    \
+        ELEM_(bool, kiss_tcp_io, "KISS_TCP_IO",                                         \
+              "Connect kiss io via TCP/IP vise UDP/IP",                                 \
+              false)                                                                    \
         ELEM_(bool, kiss_tcp_listen, "KISS_TCP_LISTEN",                                 \
               "Listen for TCP connection (Server mode)",                                \
               false)                                                                    \
