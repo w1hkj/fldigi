@@ -72,8 +72,6 @@ bool callfwd = true;
 bool modefwd = true;
 bool freqfwd = true;
 
-bool read_logbook = false;
-
 void restore_sort();
 
 // convert to and from "00:00:00" <=> "000000"
@@ -595,10 +593,6 @@ void cb_mnuExportTEXT_log(Fl_Menu_* m, void *d) {
 
 void cb_mnuShowLogbook(Fl_Menu_* m, void* d)
 {
-	if (read_logbook) {
-		adif_read_OK();
-		read_logbook = false;
-	}
 	dlgLogbook->show();
 }
 
