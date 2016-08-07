@@ -894,6 +894,12 @@ int arq_get_char()
 	return c;
 }
 
+int arq_tx_buffer_count(void)
+{
+	guard_lock arq_rx_lock(&arq_rx_mutex);
+	return (int) arqtext.size();
+}
+
 void flush_arq_tx_buffer(void)
 {
 	guard_lock arq_rx_lock(&arq_rx_mutex);

@@ -123,5 +123,6 @@ extern bool kiss_thread_running(void);
 extern int kiss_get_char(void);
 extern void ax25_decode(unsigned char *buffer, size_t count, bool pad, bool tx_flag);
 extern void flush_kiss_tx_buffer(void);
+extern int kiss_tx_buffer_count(void);
 
 #endif // KISSIO_H

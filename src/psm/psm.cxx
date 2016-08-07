@@ -270,18 +270,23 @@ static double detect_signal(int freq, int bw, double *low, double *high)
  **********************************************************************************/
 static void flush_tx_buffer(void)
 {
+	int flush_count_minimum = 200;
+
 	if(kiss_text_available) {
-		flush_kiss_tx_buffer();
+		if(kiss_tx_buffer_count() > flush_count_minimum)
+			flush_kiss_tx_buffer();
 		kiss_text_available = false;
 	}
 
 	if(arq_text_available) {
-		flush_arq_tx_buffer();
+		if(arq_tx_buffer_count() > flush_count_minimum)
+			flush_arq_tx_buffer();
 		arq_text_available = false;
 	}
 
 	if(xmltest_char_available) {
-		reset_xmlchars();
+		if(xmlrpc_tx_buffer_count() > flush_count_minimum)
+			reset_xmlchars();
 		xmltest_char_available = false;
 	}
 }
@@ -342,6 +347,15 @@ static inline double current_double_time(void)
 }
 
 /**********************************************************************************
+ * Reset TX flush timer.
+ **********************************************************************************/
+static inline void reset_tx_flush_timer(double current_time)
+{
+	timer_tramit_buffer_timeout = current_time + (progStatus.psm_flush_buffer_timeout * 60);
+	timer_tramit_buffer_timeout += (rand() & 0x7);
+}
+
+/**********************************************************************************
  * PSM processing. Sync's with Waterfall Display Update
  **********************************************************************************/
 static void process_psm(void)
@@ -394,15 +408,6 @@ static void process_psm(void)
 
 	if(timer_tramit_buffer_timeout == 0.0) {
 		timer_tramit_buffer_timeout = current_time + (progStatus.psm_flush_buffer_timeout * 60); // Minutes to Seconds
-	}
-
-	// If busy for an extended time flush transmit buffer(s).
-	if(progStatus.psm_flush_buffer_timeout) { // If set to zero no buffer flushing allowed.
-		if(current_time > timer_tramit_buffer_timeout) {
-			timer_tramit_buffer_timeout = current_time + (progStatus.psm_flush_buffer_timeout * 60);
-			flush_tx_buffer();
-			return;
-		}
 	}
 
 	if(histrogram_reset_timer) {
@@ -481,8 +486,9 @@ static void process_psm(void)
 	}
 
 	if(inhibit_tx_seconds || !request_transmit_flag ||
-	   detected_signal || (current_time < timer_slot_time))
-		return;
+	   detected_signal || (current_time < timer_slot_time)) {
+	   goto NO_TX;
+	}
 
 	delay_time = 0;
 
@@ -494,6 +500,7 @@ static void process_psm(void)
 			double _slot_time = ((progdefaults.csma_slot_time * 10) * 0.001);
 			timer_slot_time = current_time + _slot_time;
 			transmit_authorized = false;
+			goto NO_TX;
 		}
 
 		if(progStatus.csma_transmit_delay > 0) {
@@ -519,9 +526,24 @@ static void process_psm(void)
 			psm_millisleep(EST_STATE_CHANGE_MS);
 		}
 
-		timer_tramit_buffer_timeout = current_time + (progStatus.psm_flush_buffer_timeout * 60);
+		reset_tx_flush_timer(current_time);
+
 		timer_slot_time = current_time + ((progdefaults.csma_slot_time * 10) * 0.001);
 		timer_slot_time += (((rand() & 0xFF) * 0.00390625) * 0.20);
+	}
+
+NO_TX:;
+
+	// If busy for an extended time flush transmit buffer(s).
+	if(progStatus.psm_flush_buffer_timeout != 0) { // If set to zero no buffer flushing allowed.
+		if(request_transmit_flag) {
+			// Treat this condition as if we just transmitted.
+			reset_tx_flush_timer(current_time);
+		} else if(current_time > timer_tramit_buffer_timeout) {
+			reset_tx_flush_timer(current_time);
+			flush_tx_buffer();
+			return;
+		}
 	}
 }
 

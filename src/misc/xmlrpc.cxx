@@ -1748,8 +1748,15 @@ int xmltest_char()
 	return xmlchars[pxmlchar++] & 0xFF;
 }
 
+int xmlrpc_tx_buffer_count(void)
+{
+	guard_lock xmlchr_lock(&tx_queue_mutex);
+	return (int) xmlchars.size();
+}
+
 void reset_xmlchars()
 {
+	guard_lock xmlchr_lock(&tx_queue_mutex);
 	xmlchars.clear();
 	pxmlchar = 0;
 	xmltest_char_available = false;
