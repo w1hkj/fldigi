@@ -645,6 +645,8 @@ extern Fl_Check_Button *btn_wx_inches;
 extern Fl_Check_Button *btn_wx_mbars;
 #include "weather.h"
 extern Fl_Button *btn_metar_search;
+extern Fl_Input *txt_wx_url;
+extern Fl_Button *btn_default_wx_url;
 extern Fl_Group *tabKML;
 extern Fl_Input *btnKmlSaveDir;
 extern Fl_Input *inputKmlRootFile;

@@ -362,10 +362,10 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {975 115 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {795 215 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 600 385} color 50 selection_color 50
+      xywh {0 0 600 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -470,10 +470,10 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI
-        tooltip {User Interface} xywh {0 25 600 360} hide
+        tooltip {User Interface} xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsUI {
-          xywh {0 25 600 360} selection_color 50
+          xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser
@@ -939,7 +939,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 335} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsLog {open
               xywh {0 55 600 335}
@@ -6071,7 +6071,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabMisc {
-        label Misc
+        label Misc open
         xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsMisc {open
@@ -6079,7 +6079,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 600 335} hide
+            xywh {0 50 600 335}
           } {
             Fl_Group {} {open
               xywh {55 75 490 51} box ENGRAVED_FRAME align 21
@@ -6433,86 +6433,77 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {Weather query specification} open
-              xywh {55 60 490 300} box ENGRAVED_FRAME align 21
+              xywh {5 60 590 320} box ENGRAVED_FRAME align 21
             } {
               Fl_Input inpWXsta {
                 label {METAR station ID code}
                 callback {progdefaults.wx_sta = o->value();
 progdefaults.changed = true;}
                 tooltip {for example KMDQ for
-Huntsville-Madison Executive Airport, AL} xywh {94 92 43 24} align 8
+Huntsville-Madison Executive Airport, AL} xywh {95 131 50 24} align 8
                 code0 {o->value(progdefaults.wx_sta.c_str());}
               }
               Fl_Check_Button btn_wx_full {
                 label {Full report}
                 callback {progdefaults.wx_full=o->value();
 progdefaults.changed = true;}
-                tooltip {Insert full METAR report} xywh {258 130 70 15} down_box DOWN_BOX
+                tooltip {Insert full METAR report} xywh {260 170 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_full);}
-              }
-              Fl_Input {} {
-                label {End of header string:}
-                callback {progdefaults.wx_eoh = o->value();
-progdefaults.changed = true;}
-                tooltip {Text defining end of METAR header
-Typically 'Connection: close'
-Used to search for station name} xywh {258 156 266 25} when 1
-                code0 {o->value(progdefaults.wx_eoh.c_str());}
               }
               Fl_Check_Button btn_wx_station_name {
                 label {METAR station location}
                 callback {progdefaults.wx_station_name = o->value();
 progdefaults.changed = true;}
-                tooltip {Add geopolitical name of METAR station} xywh {258 192 70 15} down_box DOWN_BOX
+                tooltip {Add geopolitical name of METAR station} xywh {260 194 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_station_name);}
               }
               Fl_Check_Button btn_wx_condx {
                 label Conditions
                 callback {progdefaults.wx_condx=o->value();
 progdefaults.changed = true;}
-                tooltip {current wx conditions} xywh {258 218 70 15} down_box DOWN_BOX
+                tooltip {current wx conditions} xywh {260 220 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_condx);}
               }
               Fl_Check_Button btn_wx_fahrenheit {
                 label Fahrenheit
                 callback {progdefaults.wx_fahrenheit=o->value();
 progdefaults.changed = true;}
-                tooltip {report Fahrenheit} xywh {258 245 70 15} down_box DOWN_BOX
+                tooltip {report Fahrenheit} xywh {260 247 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_fahrenheit);}
               }
               Fl_Check_Button btn_wx_celsius {
                 label Celsius
                 callback {progdefaults.wx_celsius=o->value();
 progdefaults.changed = true;}
-                tooltip {report Celsius} xywh {386 245 70 15} down_box DOWN_BOX
+                tooltip {report Celsius} xywh {388 247 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_celsius);}
               }
               Fl_Check_Button btn_wx_mph {
                 label {Miles / Hour}
                 callback {progdefaults.wx_mph=o->value();
 progdefaults.changed = true;}
-                tooltip {report miles per hour} xywh {258 271 70 15} down_box DOWN_BOX
+                tooltip {report miles per hour} xywh {260 273 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_mph);}
               }
               Fl_Check_Button btn_wx_kph {
                 label {kilometers / hour}
                 callback {progdefaults.wx_kph=o->value();
 progdefaults.changed = true;}
-                tooltip {report kilometers per hour} xywh {386 271 70 15} down_box DOWN_BOX
+                tooltip {report kilometers per hour} xywh {388 273 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_kph);}
               }
               Fl_Check_Button btn_wx_inches {
                 label {Inches Hg.}
                 callback {progdefaults.wx_inches=o->value();
 progdefaults.changed = true;}
-                tooltip {report inches mercury} xywh {258 298 70 15} down_box DOWN_BOX
+                tooltip {report inches mercury} xywh {260 300 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_inches);}
               }
               Fl_Check_Button btn_wx_mbars {
                 label mbars
                 callback {progdefaults.wx_mbars=o->value();
 progdefaults.changed = true;}
-                tooltip {report millibars} xywh {386 298 70 15} down_box DOWN_BOX
+                tooltip {report millibars} xywh {388 300 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wx_mbars);}
               }
               Fl_Box {} {
@@ -6530,14 +6521,29 @@ progdefaults.changed = true;}
               Fl_Button btn_metar_search {
                 label {Search on  web}
                 callback {get_METAR_station();}
-                xywh {336 92 130 24}
+                xywh {337 131 130 24}
                 code0 {\#include "weather.h"}
+              }
+              Fl_Input txt_wx_url {
+                label {Access URL}
+                callback {progdefaults.wx_url = o->value();
+progdefaults.changed = true;}
+                tooltip {Enter METAR data internet URL} xywh {95 95 430 25} when 1
+                code0 {o->value(progdefaults.wx_url.c_str());}
+              }
+              Fl_Button btn_default_wx_url {
+                label Default
+                callback {txt_wx_url->value(
+"http://tgftp.nws.noaa.gov/data/observations/metar/decoded");
+progdefaults.wx_url=txt_wx_url->value();
+progdefaults.changed=true;}
+                tooltip {Default URL} xywh {530 95 60 25}
               }
             }
           }
           Fl_Group tabKML {
             label KML open
-            xywh {0 50 600 335}
+            xywh {0 50 600 335} hide
           } {
             Fl_Input btnKmlSaveDir {
               label {KML files directory}

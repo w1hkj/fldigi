@@ -1821,6 +1821,9 @@
              "Minimum length of logged messages",                                       \
              0 )                                                                        \
         /* WX fetch from NOAA */                                                        \
+        ELEM_(std::string, wx_url, "WX_URL",                                            \
+             "Internet URL used to fetch METAR data using wget symbology",              \
+             "http://tgftp.nws.noaa.gov/data/observations/metar/decoded/" )             \
         ELEM_(std::string, wx_eoh, "WX_EOH",                                            \
              "Text at end of METAR report header\n"                                     \
              "default = Connection: close",                                             \

@@ -213,8 +213,12 @@ void getwx(string& wx, const char *metar)
 	for (size_t n = 0; n < wxsta.length(); n++)
 		wxsta[n] = toupper(wxsta[n] & 0x7F);
 
-	url.assign("http://weather.noaa.gov/pub/data/observations/metar/decoded/")
-	   .append(wxsta).append(".TXT");
+	url.assign(progdefaults.wx_url);
+
+	if (!wxsta.empty()) {
+		if (url[url.length()-1] != '/') url += '/';
+		url.append(wxsta).append(".TXT");
+	}
 
 	if (!fetch_http_gui(url, text, 5.0)) {
 		LOG_WARN("%s", "url not available\n");
@@ -227,32 +231,38 @@ void getwx(string& wx, const char *metar)
 		return;
 	}
 
-	string eoh = progdefaults.wx_eoh;
-	if (eoh.empty()) eoh = "Connection: close";
-
-	p1 = text.find(eoh);
+	const char *cl = "Content-Length:";
+	int content_length;
+	p1 = text.find(cl);
 	if (p1 != string::npos) {
-		p1 = text.find("\n",p1);
-		text.erase(0, p1);
-		while (text[0] == '\r' || text[0] == '\n') text.erase(0,1);
-		p1 = text.find("\n");
-		name = text.substr(0, p1);
+		content_length = atol(&text[p1 + strlen(cl)]);
+		text.erase(0, text.length() - content_length);
+	} else {
+		p2 = text.find("(");
+		if (p2 != string::npos) {
+			p3 = text.rfind("\n", p2);
+			if (p3 != string::npos)
+				text.erase(0,p3 + 1);
+		}
+		else while ( (p2 = text.find("\r\n")) != string::npos)
+			text.erase(0, p2 + 2);
 	}
+
+	if (progdefaults.wx_full) {
+		wx.assign(text);
+		return;
+	}
+
+	p1 = text.find("\n");
+	name = text.substr(0, p1);
+	if ((p2 = name.find("(")) != string::npos)
+		name.erase(p2 - 1);
 
 	p3 = text.find("ob:");
 	if (p3 == string::npos) {
 		LOG_WARN("%s", "observations not available\n");
 		return;
 	}
-
-	if (progdefaults.wx_full) {
-		wx.assign(text.substr(0, p3));
-		return;
-	}
-//printf("%s\n",wx_full.c_str());
-
-	if (text[p2-1] == '(') // have valid line
-		name = text.substr(p1, p2 - p1 -2);
 
 	p = text.find(wxsta, p3 + 1);
 	text.erase(0, p + 1 + wxsta.length());
@@ -398,7 +408,7 @@ void getwx(string& wx, const char *metar)
 	}
 
 	if (progdefaults.wx_station_name && !name.empty()) { // parse noun name
-		wx.append("Sta:  ").append(name).append("\n");
+		wx.append("Loc:  ").append(name).append("\n");
 	}
 	if (progdefaults.wx_condx && !condx.empty()) {
 		wx.append("Cond: ").append(condx).append("\n");

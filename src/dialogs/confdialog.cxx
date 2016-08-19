@@ -5134,11 +5134,6 @@ static void cb_btn_wx_full(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-static void cb_End(Fl_Input* o, void*) {
-  progdefaults.wx_eoh = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Check_Button *btn_wx_station_name=(Fl_Check_Button *)0;
 
 static void cb_btn_wx_station_name(Fl_Check_Button* o, void*) {
@@ -5199,6 +5194,22 @@ Fl_Button *btn_metar_search=(Fl_Button *)0;
 
 static void cb_btn_metar_search(Fl_Button*, void*) {
   get_METAR_station();
+}
+
+Fl_Input *txt_wx_url=(Fl_Input *)0;
+
+static void cb_txt_wx_url(Fl_Input* o, void*) {
+  progdefaults.wx_url = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_default_wx_url=(Fl_Button *)0;
+
+static void cb_btn_default_wx_url(Fl_Button*, void*) {
+  txt_wx_url->value(
+"http://tgftp.nws.noaa.gov/data/observations/metar/decoded");
+progdefaults.wx_url=txt_wx_url->value();
+progdefaults.changed=true;
 }
 
 Fl_Group *tabKML=(Fl_Group *)0;
@@ -6171,7 +6182,7 @@ Fl_Double_Window* ConfigureDialog() {
     o->selection_color((Fl_Color)51);
     o->labelsize(18);
     o->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
-    { tabsConfigure = new Fl_Tabs(0, 0, 600, 385);
+    { tabsConfigure = new Fl_Tabs(0, 0, 600, 390);
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 360, _("Operator"));
@@ -6312,10 +6323,10 @@ Fl_Double_Window* ConfigureDialog() {
         } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
-      { tabUI = new Fl_Group(0, 25, 600, 360, _("UI"));
+      { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
         tabUI->hide();
-        { tabsUI = new Fl_Tabs(0, 25, 600, 360);
+        { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 335, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
@@ -6740,7 +6751,7 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(0, 50, 600, 335, _("Log"));
+          { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
             tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
             tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 55, 600, 335);
@@ -11185,7 +11196,6 @@ gured on the\n\"Notifications\" configure dialog."));
         { tabsMisc = new Fl_Tabs(0, 25, 600, 360);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 600, 335, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(55, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11589,71 +11599,64 @@ gured on the\n\"Notifications\" configure dialog."));
           } // Fl_Group* tabDTMF
           { tabWX = new Fl_Group(0, 50, 600, 335, _("WX"));
             tabWX->hide();
-            { Fl_Group* o = new Fl_Group(55, 60, 490, 300, _("Weather query specification"));
+            { Fl_Group* o = new Fl_Group(5, 60, 590, 320, _("Weather query specification"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input* o = inpWXsta = new Fl_Input(94, 92, 43, 24, _("METAR station ID code"));
+              { Fl_Input* o = inpWXsta = new Fl_Input(95, 131, 50, 24, _("METAR station ID code"));
                 inpWXsta->tooltip(_("for example KMDQ for\nHuntsville-Madison Executive Airport, AL"));
                 inpWXsta->callback((Fl_Callback*)cb_inpWXsta);
                 inpWXsta->align(Fl_Align(FL_ALIGN_RIGHT));
                 o->value(progdefaults.wx_sta.c_str());
               } // Fl_Input* inpWXsta
-              { Fl_Check_Button* o = btn_wx_full = new Fl_Check_Button(258, 130, 70, 15, _("Full report"));
+              { Fl_Check_Button* o = btn_wx_full = new Fl_Check_Button(260, 170, 70, 15, _("Full report"));
                 btn_wx_full->tooltip(_("Insert full METAR report"));
                 btn_wx_full->down_box(FL_DOWN_BOX);
                 btn_wx_full->callback((Fl_Callback*)cb_btn_wx_full);
                 o->value(progdefaults.wx_full);
               } // Fl_Check_Button* btn_wx_full
-              { Fl_Input* o = new Fl_Input(258, 156, 266, 25, _("End of header string:"));
-                o->tooltip(_("Text defining end of METAR header\nTypically \'Connection: close\'\nUsed to s\
-earch for station name"));
-                o->callback((Fl_Callback*)cb_End);
-                o->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.wx_eoh.c_str());
-              } // Fl_Input* o
-              { Fl_Check_Button* o = btn_wx_station_name = new Fl_Check_Button(258, 192, 70, 15, _("METAR station location"));
+              { Fl_Check_Button* o = btn_wx_station_name = new Fl_Check_Button(260, 194, 70, 15, _("METAR station location"));
                 btn_wx_station_name->tooltip(_("Add geopolitical name of METAR station"));
                 btn_wx_station_name->down_box(FL_DOWN_BOX);
                 btn_wx_station_name->callback((Fl_Callback*)cb_btn_wx_station_name);
                 o->value(progdefaults.wx_station_name);
               } // Fl_Check_Button* btn_wx_station_name
-              { Fl_Check_Button* o = btn_wx_condx = new Fl_Check_Button(258, 218, 70, 15, _("Conditions"));
+              { Fl_Check_Button* o = btn_wx_condx = new Fl_Check_Button(260, 220, 70, 15, _("Conditions"));
                 btn_wx_condx->tooltip(_("current wx conditions"));
                 btn_wx_condx->down_box(FL_DOWN_BOX);
                 btn_wx_condx->callback((Fl_Callback*)cb_btn_wx_condx);
                 o->value(progdefaults.wx_condx);
               } // Fl_Check_Button* btn_wx_condx
-              { Fl_Check_Button* o = btn_wx_fahrenheit = new Fl_Check_Button(258, 245, 70, 15, _("Fahrenheit"));
+              { Fl_Check_Button* o = btn_wx_fahrenheit = new Fl_Check_Button(260, 247, 70, 15, _("Fahrenheit"));
                 btn_wx_fahrenheit->tooltip(_("report Fahrenheit"));
                 btn_wx_fahrenheit->down_box(FL_DOWN_BOX);
                 btn_wx_fahrenheit->callback((Fl_Callback*)cb_btn_wx_fahrenheit);
                 o->value(progdefaults.wx_fahrenheit);
               } // Fl_Check_Button* btn_wx_fahrenheit
-              { Fl_Check_Button* o = btn_wx_celsius = new Fl_Check_Button(386, 245, 70, 15, _("Celsius"));
+              { Fl_Check_Button* o = btn_wx_celsius = new Fl_Check_Button(388, 247, 70, 15, _("Celsius"));
                 btn_wx_celsius->tooltip(_("report Celsius"));
                 btn_wx_celsius->down_box(FL_DOWN_BOX);
                 btn_wx_celsius->callback((Fl_Callback*)cb_btn_wx_celsius);
                 o->value(progdefaults.wx_celsius);
               } // Fl_Check_Button* btn_wx_celsius
-              { Fl_Check_Button* o = btn_wx_mph = new Fl_Check_Button(258, 271, 70, 15, _("Miles / Hour"));
+              { Fl_Check_Button* o = btn_wx_mph = new Fl_Check_Button(260, 273, 70, 15, _("Miles / Hour"));
                 btn_wx_mph->tooltip(_("report miles per hour"));
                 btn_wx_mph->down_box(FL_DOWN_BOX);
                 btn_wx_mph->callback((Fl_Callback*)cb_btn_wx_mph);
                 o->value(progdefaults.wx_mph);
               } // Fl_Check_Button* btn_wx_mph
-              { Fl_Check_Button* o = btn_wx_kph = new Fl_Check_Button(386, 271, 70, 15, _("kilometers / hour"));
+              { Fl_Check_Button* o = btn_wx_kph = new Fl_Check_Button(388, 273, 70, 15, _("kilometers / hour"));
                 btn_wx_kph->tooltip(_("report kilometers per hour"));
                 btn_wx_kph->down_box(FL_DOWN_BOX);
                 btn_wx_kph->callback((Fl_Callback*)cb_btn_wx_kph);
                 o->value(progdefaults.wx_kph);
               } // Fl_Check_Button* btn_wx_kph
-              { Fl_Check_Button* o = btn_wx_inches = new Fl_Check_Button(258, 298, 70, 15, _("Inches Hg."));
+              { Fl_Check_Button* o = btn_wx_inches = new Fl_Check_Button(260, 300, 70, 15, _("Inches Hg."));
                 btn_wx_inches->tooltip(_("report inches mercury"));
                 btn_wx_inches->down_box(FL_DOWN_BOX);
                 btn_wx_inches->callback((Fl_Callback*)cb_btn_wx_inches);
                 o->value(progdefaults.wx_inches);
               } // Fl_Check_Button* btn_wx_inches
-              { Fl_Check_Button* o = btn_wx_mbars = new Fl_Check_Button(386, 298, 70, 15, _("mbars"));
+              { Fl_Check_Button* o = btn_wx_mbars = new Fl_Check_Button(388, 300, 70, 15, _("mbars"));
                 btn_wx_mbars->tooltip(_("report millibars"));
                 btn_wx_mbars->down_box(FL_DOWN_BOX);
                 btn_wx_mbars->callback((Fl_Callback*)cb_btn_wx_mbars);
@@ -11668,14 +11671,25 @@ earch for station name"));
               { Fl_Box* o = new Fl_Box(93, 298, 156, 19, _("Barometric pressure"));
                 o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
               } // Fl_Box* o
-              { btn_metar_search = new Fl_Button(336, 92, 130, 24, _("Search on  web"));
+              { btn_metar_search = new Fl_Button(337, 131, 130, 24, _("Search on  web"));
                 btn_metar_search->callback((Fl_Callback*)cb_btn_metar_search);
               } // Fl_Button* btn_metar_search
+              { Fl_Input* o = txt_wx_url = new Fl_Input(95, 95, 430, 25, _("Access URL"));
+                txt_wx_url->tooltip(_("Enter METAR data internet URL"));
+                txt_wx_url->callback((Fl_Callback*)cb_txt_wx_url);
+                txt_wx_url->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.wx_url.c_str());
+              } // Fl_Input* txt_wx_url
+              { btn_default_wx_url = new Fl_Button(530, 95, 60, 25, _("Default"));
+                btn_default_wx_url->tooltip(_("Default URL"));
+                btn_default_wx_url->callback((Fl_Callback*)cb_btn_default_wx_url);
+              } // Fl_Button* btn_default_wx_url
               o->end();
             } // Fl_Group* o
             tabWX->end();
           } // Fl_Group* tabWX
           { tabKML = new Fl_Group(0, 50, 600, 335, _("KML"));
+            tabKML->hide();
             { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
               btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
               btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);
