@@ -3834,17 +3834,19 @@ void MACROTEXT::loadDefault()
 #else
 	;
 #endif
+	showMacroSet();
 	if (progdefaults.DisplayMacroFilename) {
+		LOG_INFO("%s", progStatus.LastMacroFile.c_str());
 		string Macroset;
-		Macroset.assign("Read macro file: ").append(progStatus.LastMacroFile);
+		Macroset.assign("\
+\n================================================\n\
+Read macros from: ").append(progStatus.LastMacroFile).append("\
+\n================================================\n");
 #ifdef __WOE32__
 		size_t p = string::npos;
 		while ( (p = Macroset.find("/")) != string::npos)
 			Macroset[p] = '\\';
 #endif
-		LOG_INFO("%s", Macroset.c_str());
-		Macroset.insert(0, "\n");
-		Macroset.append("\n");
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->addstr(Macroset);
 		else

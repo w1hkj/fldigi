@@ -345,6 +345,8 @@ void check_overrides()
 // these functions are all started after Fl::run() is executing
 void delayed_startup(void *)
 {
+	macros.loadDefault();
+
 	connect_to_log_server();
 
 #ifdef __WIN32__
@@ -717,8 +719,6 @@ int main(int argc, char ** argv)
 	setTabColors();
 
 	progdefaults.testCommPorts();
-
-	macros.loadDefault();
 
 #if USE_HAMLIB
 	xcvr = new Rig();
