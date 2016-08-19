@@ -66,21 +66,21 @@ FIELD fields[] = {
 	{QTH,          100,   "QTH",          &btnSelectQth},       // contacted stations city
 	{RST_RCVD,     3,     "RST_RCVD",     &btnSelectRSTrcvd},   // received signal report
 	{RST_SENT,     3,     "RST_SENT",     &btnSelectRSTsent},   // sent signal report
-	{STATE,        4,     "STATE",        &btnSelectState},     // contacted stations STATE
-	{VE_PROV,      4,     "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
-	{NOTES,        256,   "NOTES",        &btnSelectNotes},     // QSO notes
+	{STATE,        20,    "STATE",        &btnSelectState},     // contacted stations STATE
+	{VE_PROV,      20,    "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
+	{NOTES,        512,   "NOTES",        &btnSelectNotes},     // QSO notes
 	{QSLRDATE,     8,     "QSLRDATE",     &btnSelectQSLrcvd},   // QSL received date
 	{QSLSDATE,     8,     "QSLSDATE",     &btnSelectQSLsent},   // QSL sent date
 	{GRIDSQUARE,   8,     "GRIDSQUARE",   &btnSelectLOC},       // contacted stations Maidenhead Grid Square
 	{BAND,         8,     "BAND",         &btnSelectBand},      // QSO band
-	{CNTY,         20,    "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county
-	{COUNTRY,      40,    "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
+	{CNTY,         60,    "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county
+	{COUNTRY,      60,    "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
 	{CQZ,          8,     "CQZ",          &btnSelectCQZ},       // contacted stations CQ Zone
 	{DXCC,         8,     "DXCC",         &btnSelectDXCC},      // contacted stations Country Code
-	{QSL_VIA,      50,    "QSL_VIA",      &btnSelectQSL_VIA},   // contacted stations path
+	{QSL_VIA,      256,   "QSL_VIA",      &btnSelectQSL_VIA},   // contacted stations path
 	{IOTA,         20,    "IOTA",         &btnSelectIOTA},      // Islands on the air
 	{ITUZ,         20,    "ITUZ",         &btnSelectITUZ},      // ITU zone
-	{CONT,         20,    "CONT",         &btnSelectCONT},      // contacted stations continent
+	{CONT,         60,    "CONT",         &btnSelectCONT},      // contacted stations continent
 
 	{SRX,          50,    "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
 	{STX,          50,    "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
@@ -234,7 +234,7 @@ char * cAdifIO::fillfield (int recnbr, int fieldnum, char *buff)
 void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 {
 	int found;
-	static char szmsg[200];
+	static char szmsg[500];
 
 	read_errors.clear();
 	num_read_errors = 0;
@@ -333,22 +333,33 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 
 	if (!feof(adiFile))
 		snprintf(szmsg, sizeof(szmsg), "\
+================================================\n\
 ERROR reading logbook %s\n\
-      read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
+      read %d records in %4.2f seconds\n\
+================================================\n", fname, db->nbrRecs(), t);
 	else {
 		snprintf(szmsg, sizeof(szmsg), "\
-Loaded logbook %s\n\
-       read %d records in %4.2f seconds\n", fname, db->nbrRecs(), t);
-		LOG_INFO("%s", szmsg);
+================================================\n\
+Read Logbook: %s\n\
+      read %d records in %4.2f seconds\n\
+================================================\n", fname, db->nbrRecs(), t);
+		LOG_INFO("logfile: %s, read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
 		if (num_read_errors) {
-			read_errors.insert(0, szmsg);
+			if (!read_errors.empty()) {
+				read_errors.append("\n");
+				read_errors.append(szmsg);
+			} else
+				read_errors.assign(szmsg);
 			snprintf(szmsg, sizeof(szmsg),
-				"Corrected %d errors\nSave logbook and then reload",
+				"Corrected %d errors.  Save logbook and then reload\n",
 				num_read_errors);
-			read_errors.append(szmsg);
-			REQ(write_rxtext, read_errors.c_str());
+			read_errors.append("\
+================================================\n").append(szmsg);
+			read_errors.append("\
+================================================\n");
+			if (db == &qsodb) REQ(write_rxtext, read_errors.c_str());
 		} else
-			REQ(write_rxtext, szmsg);
+			if (db == &qsodb) REQ(write_rxtext, szmsg);
 	}
 
 	if (db == &qsodb)

@@ -156,7 +156,7 @@ void cQsoRec::trimFields () {
 			s.erase(0,1);
 			p = s.length();
 		}
-//make all upper case if Callsign or Mode  
+//make all upper case if Callsign or Mode
 		if (i == CALL || i == MODE) {
 			for (p = 0; p < s.length(); p++)
 				s[p] = toupper(s[p]);
@@ -174,28 +174,49 @@ const char * cQsoRec::getField (int n) const {
 
 const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 	if (this != &right) {
-		for (int i = 0; i < NUMFIELDS; i++)
-			(this->qsofield[i])->assign(*(right.qsofield[i]));
+		for (int i = 0; i < NUMFIELDS; i++) {
+			(this->qsofield[i])->assign((right.qsofield[i])->c_str());
+		}
 	}
 	return *this;
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
-	if (date_off)
-		return (*r1.qsofield[TIME_OFF]).compare( (*r2.qsofield[TIME_OFF]) );
-	return (*r1.qsofield[TIME_ON]).compare( (*r2.qsofield[TIME_ON]) );
+	const char * s1 = (*r1.qsofield[TIME_ON]).c_str();
+	const char * s2 = (*r2.qsofield[TIME_ON]).c_str();
+	if (date_off
+		&& !(*r1.qsofield[TIME_OFF]).empty()
+		&& !(*r2.qsofield[TIME_OFF]).empty() ) {
+		s1 = (*r1.qsofield[TIME_OFF]).c_str();
+		s2 = (*r2.qsofield[TIME_OFF]).c_str();
+	}
+	return strcmp(s1, s2);
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
-	if (date_off)
-		return (*r1.qsofield[QSO_DATE_OFF]).compare( (*r2.qsofield[QSO_DATE_OFF]) );
-	return (*r1.qsofield[QSO_DATE]).compare( (*r2.qsofield[QSO_DATE]) );
+	const char * s1 = (*r1.qsofield[QSO_DATE]).c_str();
+	const char * s2 = (*r2.qsofield[QSO_DATE]).c_str();
+	if (date_off
+		&& !(*r1.qsofield[QSO_DATE_OFF]).empty()
+		&& !(*r2.qsofield[QSO_DATE_OFF]).empty() ) {
+		s1 = (*r1.qsofield[QSO_DATE_OFF]).c_str();
+		s2 = (*r2.qsofield[QSO_DATE_OFF]).c_str();
+	}
+	return strcmp(s1, s2);
+//	long l1 = atol(s1);
+//	long l2 = atol(s2);
+//	int cmp = 0;
+//	if (l1 < l2) cmp = -1;
+//	if (l1 > l2) cmp = 1;
+
+//	return cmp;
 }
 
 int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 	int cmp = 0;
 	const char * s1 = (*r1.qsofield[CALL]).c_str();
 	const char * s2 = (*r2.qsofield[CALL]).c_str();
+
 	const char * p1 = strpbrk (s1+1, "0123456789");
 	const char * p2 = strpbrk (s2+1, "0123456789");
 
@@ -208,6 +229,7 @@ int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
 		}
 	} else
 		cmp = strcmp(s1, s2);
+
 	return cmp;
 }
 
@@ -223,42 +245,42 @@ int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
 }
 
 int compareqsos (const void *p1, const void *p2) {
-	cQsoRec *r1, *r2;
+	cQsoRec r1, r2;
 	if (cQsoDb::reverse) {
-		r2 = (cQsoRec *)p1;
-		r1 = (cQsoRec *)p2;
+		r2 = *(cQsoRec *)p1;
+		r1 = *(cQsoRec *)p2;
 	} else {
-		r1 = (cQsoRec *)p1;
-		r2 = (cQsoRec *)p2;
+		r1 = *(cQsoRec *)p1;
+		r2 = *(cQsoRec *)p2;
 	}
 
 	int cmp;
 	switch (compby) {
 		case COMPCALL :
-			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareModes(*r1, *r2)) != 0) return cmp;
-			return compareFreqs(*r1, *r2);
+			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
+			if ((cmp = compareDates(r1, r2)) != 0) return cmp;
+			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
+			if ((cmp = compareModes(r1, r2)) != 0) return cmp;
+			return compareFreqs(r1, r2);
 		case COMPMODE :
-			if ((cmp = compareModes (*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
-			return compareFreqs(*r1, *r2);
+			if ((cmp = compareModes (r1, r2)) != 0) return cmp;
+			if ((cmp = compareDates(r1, r2)) != 0) return cmp;
+			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
+			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
+			return compareFreqs(r1, r2);
 		case COMPFREQ :
-			if ((cmp = compareFreqs (*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
-			return compareModes(*r1, *r2);
+			if ((cmp = compareFreqs (r1, r2)) != 0) return cmp;
+			if ((cmp = compareDates(r1, r2)) != 0) return cmp;
+			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
+			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
+			return compareModes(r1, r2);
 		case COMPDATE :
 		default :
-			if ((cmp = compareDates (*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
-			if ((cmp = compareModes (*r1, *r2)) != 0) return cmp;
-			return compareFreqs (*r1, *r2);
+			if ((cmp = compareDates (r1, r2)) != 0) return cmp;
+			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
+			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
+			if ((cmp = compareModes (r1, r2)) != 0) return cmp;
+			return compareFreqs (r1, r2);
 	}
 }
 
@@ -324,7 +346,7 @@ cQsoDb::cQsoDb(cQsoDb *db) {
 
 cQsoDb::~cQsoDb() {
   delete [] qsorec;
-} 
+}
 
 void cQsoDb::deleteRecs() {
   delete [] qsorec;
@@ -374,14 +396,14 @@ cQsoRec* cQsoDb::newrec() {
 }
 
 void cQsoDb::qsoDelRec (int rnbr) {
-  if (rnbr < 0 || rnbr > (nbrrecs - 1)) 
+  if (rnbr < 0 || rnbr > (nbrrecs - 1))
     return;
   for (int i = rnbr; i < nbrrecs - 1; i++)
     qsorec[i] = qsorec[i+1];
   nbrrecs--;
   qsorec[nbrrecs].clearRec();
 }
-  
+
 void cQsoDb::qsoUpdRec (int rnbr, cQsoRec *updrec) {
   if (rnbr < 0 || rnbr > (nbrrecs - 1))
     return;
@@ -438,8 +460,8 @@ char buff[256];
   if (strstr (buff, "_LOGBODUP DBX") == 0) // new file format
     delim_in = '\n';
   if (strstr (buff, "3.0") != 0)
-	isVer3 = true;    
-  
+	isVer3 = true;
+
   cQsoRec inprec;
   while (inQsoFile >> inprec)
     qsoNewRec (&inprec);
@@ -452,7 +474,6 @@ char buff[256];
 int cQsoDb::qsoWriteFile (const char *fname) {
   ofstream outQsoFile (fname, ios::out);
   if (!outQsoFile) {
-  	printf("write failure: %s\n", fname);
     return 1;
   }
   outQsoFile << "_LOGBODUP DBX 3.0" << '\n';
@@ -485,32 +506,32 @@ unsigned long cQsoDb::epoch_dt (const char *szdate, const char *sztime)
   int  era, cent, quad, rest;
   int year, mon, mday;
   int secs;
-  
+
   year = ((szdate[0]*10 + szdate[1])*10 + szdate[2])*10 + szdate[3];
   mon  = szdate[4]*10 + szdate[5];
   mday = szdate[6]*10 + szdate[7];
-  
+
   secs = ((sztime[0]*10 + sztime[1])*60 + sztime[2]*10 + sztime[3])*60 +
          + sztime[4]*10 + sztime[5];
-  
+
   /* break down the year into 400, 100, 4, and 1 year multiples */
   rest = year - 1;
   quad = rest / 4;        rest %= 4;
   cent = quad / 25;       quad %= 25;
   era = cent / 4;         cent %= 4;
-  
+
   /* set up doe */
   doe = dayofyear (year, mon, mday);
   doe += era * (400 * 365 + 97);
   doe += cent * (100 * 365 + 24);
   doe += quad * (4 * 365 + 1);
   doe += rest * 365;
-  
+
   return doe*60*60*24 + secs;
 }
 
 bool cQsoDb::duplicate(
-		const char *callsign, 
+		const char *callsign,
 		const char *szdate, const char *sztime, unsigned int interval, bool chkdatetime,
 		const char *freq, bool chkfreq,
 		const char *state, bool chkstate,
@@ -524,11 +545,11 @@ bool cQsoDb::duplicate(
 		 b_dtimeDUP = true;
 	unsigned long datetime = epoch_dt(szdate, sztime);
 	unsigned long qsodatetime;
-	
+
 	for (int i = 0; i < nbrrecs; i++) {
 		if (strcasecmp(qsorec[i].getField(CALL), callsign) == 0) {
 // found callsign duplicate
-			b_freqDUP = b_stateDUP = b_modeDUP = 
+			b_freqDUP = b_stateDUP = b_modeDUP =
 				   	   b_xchg1DUP = b_dtimeDUP = false;
 			if (chkfreq) {
 				f2 = (int)atof(qsorec[i].getField(FREQ));
