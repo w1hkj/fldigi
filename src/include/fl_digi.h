@@ -106,6 +106,8 @@ extern Fl_Input2		*inpCountry;
 extern Fl_Input2		*inpSerNo;
 extern Fl_Input2		*outSerNo;
 extern Fl_Input2		*inpXchgIn;
+extern Fl_Input2		*inpXchgIn1;
+extern Fl_Input2		*inpXchgIn2;
 extern Fl_Input2		*inpVEprov;
 extern Fl_Input2		*inpLoc;
 extern Fl_Input2		*inpNotes;
@@ -456,6 +458,7 @@ extern void abort_tx();
 extern void set_rx_tx();
 extern void set_rx_only();
 
+extern void connect_to_fdserver(bool);
 extern void LOGGING_colors_font();
 extern void LOGBOOK_colors_font();
 
@@ -568,5 +571,9 @@ extern int			thor_get_avatar_pixel(int pos, int color);
 extern void			cb_thor_send_avatar( Fl_Widget *w, void *);
 extern picture		*thor_avatar;
 extern void			thor_load_scaled_image(std::string fname);
+
+// field day
+extern Fl_Input2	*inp_FD_class;
+extern Fl_Input2	*inp_FD_section;
 
 #endif

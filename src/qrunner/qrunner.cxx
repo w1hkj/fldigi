@@ -58,6 +58,7 @@ const char *sztid[] = {
 	"KISS_TID",
 	"KISSSOCKET_TID",
 	"PSM_TID",
+	"FD_TID",
 	"FLMAIN_TID"
 };
 

@@ -89,6 +89,8 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%s", ",\"SERIAL_SENT\"");
 	if (btnSelectXchgIn->value())    fprintf (txtFile, "%s", ",\"XCHG1\"");
 	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", ",\"MYXCHG\"");
+	if (btnSelectClass->value())     fprintf (txtFile, "%s", ",\"FD_CLASS\"");
+	if (btnSelectSection->value())   fprintf (txtFile, "%s", ",\"FD_SECTION\"");
 	fprintf (txtFile, "%s", szEOL);
 }
 
@@ -164,6 +166,12 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(XCHG1));
 				if (btnSelectMyXchg->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(MYXCHG));
+
+				if (btnSelectClass->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(FDCLASS));
+				if (btnSelectSection->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(FDSECTION));
+
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
@@ -208,6 +216,10 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%-7s", "STX");
 	if (btnSelectXchgIn->value())    fprintf (txtFile, "%-15s", "XCHG1");
 	if (btnSelectMyXchg->value())    fprintf (txtFile, "%-15s", "MYXCHG");
+
+	if (btnSelectClass->value())     fprintf (txtFile, "%-15s", "FDCLASS");
+	if (btnSelectSection->value())   fprintf (txtFile, "%-15s", "FDSECTION");
+
 	fprintf (txtFile, "%s", szEOL);
 }
 
@@ -283,6 +295,12 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-15s", pRec->getField(XCHG1));
 				if (btnSelectMyXchg->value())
 					fprintf (txtFile, "%-15s", pRec->getField(MYXCHG));
+
+				if (btnSelectClass->value())
+					fprintf (txtFile, "%-15s", pRec->getField(FDCLASS));
+				if (btnSelectSection->value())
+					fprintf (txtFile, "%-15s", pRec->getField(FDSECTION));
+
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);

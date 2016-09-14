@@ -968,7 +968,7 @@ void status::initLastState()
 	wBrowser->columnWidth(4, logbook_col_4);
 	wBrowser->columnWidth(5, logbook_col_5);
 
-	ReceiveText->set_quick_entry(quick_entry);
+	ReceiveText->set_all_entry(quick_entry);
 	ReceiveText->set_scroll_hints(rx_scroll_hints);
 	ReceiveText->set_word_wrap(rx_word_wrap, true);
 	TransmitText->set_word_wrap(tx_word_wrap, true);

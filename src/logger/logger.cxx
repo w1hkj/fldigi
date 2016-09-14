@@ -47,6 +47,7 @@
 
 #include "logsupport.h"
 #include "lookupcall.h"
+#include "fd_logger.h"
 
 #include <FL/fl_ask.H>
 
@@ -226,5 +227,6 @@ void submit_log(void)
 	else
 		AddRecord();
 
+	if (FD_logged_on) FD_add_record();
 }
 

@@ -1522,6 +1522,16 @@ static void pANTENNA(std::string &s, size_t &i, size_t endbracket)
         s.replace( i, 9, progdefaults.myAntenna.c_str() );
 }
 
+static void pMYCLASS(std::string &s, size_t &i, size_t endbracket)
+{
+        s.replace( i, 9, progdefaults.my_FD_class.c_str() );
+}
+
+static void pMYSECTION(std::string &s, size_t &i, size_t endbracket)
+{
+        s.replace( i, 11, progdefaults.my_FD_section.c_str() );
+}
+
 static void pLDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
@@ -3614,7 +3624,7 @@ static const MTAGS mtags[] = {
 {"<COMMENT:",	pCOMMENT},
 {"<CALL>",		pCALL},
 {"<FREQ>",		pFREQ},
-{"<BAND>",              pBAND},
+{"<BAND>",		pBAND},
 {"<LOC>",		pLOC},
 {"<MODE>",		pMODE},
 {"<NAME>",		pNAME},
@@ -3625,7 +3635,9 @@ static const MTAGS mtags[] = {
 {"<MYNAME>",	pMYNAME},
 {"<MYQTH>",		pMYQTH},
 {"<MYRST>",		pMYRST},
-{"<ANTENNA>",   pANTENNA},
+{"<MYCLASS>",	pMYCLASS},
+{"<MYSECTION>",	pMYSECTION},
+{"<ANTENNA>",	pANTENNA},
 {"<QSOTIME>",	pQSOTIME},
 {"<QSONBR>",	pQSONBR},
 {"<NXTNBR>",	pNXTNBR},

@@ -58,8 +58,16 @@ extern Fl_Button *bwsrHiLite_even_lines;
 extern Fl_Button *bwsrHiLite_odd_lines;
 extern Fl_Button *bwsrHiLite_select;
 extern Fl_Group *tabContest;
-#include <FL/Fl_Box.H>
-extern Fl_Box *lblSend;
+#include <FL/Fl_Light_Button.H>
+extern Fl_Light_Button *btnDupCheckOn;
+extern Fl_Check_Button *btnDupBand;
+extern Fl_Check_Button *btnDupMode;
+extern Fl_Check_Button *btnDupTimeSpan;
+#include <FL/Fl_Color_Chooser.H>
+extern Fl_Button *btnDupColor;
+extern Fl_Check_Button *btnDupXchg1;
+extern Fl_Check_Button *btnDupState;
+extern Fl_Value_Input2 *nbrTimeSpan;
 extern Fl_Input2 *inpSend1;
 extern Fl_Check_Button *btn599;
 extern Fl_Check_Button *btnCutNbrs;
@@ -67,16 +75,10 @@ extern Fl_Check_Button *btnUseLeadingZeros;
 extern Fl_Value_Input2 *nbrContestStart;
 extern Fl_Value_Input2 *nbrContestDigits;
 extern Fl_Button *btnResetSerNbr;
-#include <FL/Fl_Light_Button.H>
-extern Fl_Light_Button *btnDupCheckOn;
-extern Fl_Check_Button *btnDupBand;
-extern Fl_Check_Button *btnDupMode;
-extern Fl_Check_Button *btnDupState;
-extern Fl_Check_Button *btnDupXchg1;
-extern Fl_Check_Button *btnDupTimeSpan;
-extern Fl_Value_Input2 *nbrTimeSpan;
-#include <FL/Fl_Color_Chooser.H>
-extern Fl_Button *btnDupColor;
+extern Fl_Input2 *inp_my_FD_call;
+extern Fl_Input2 *inp_my_FD_section;
+extern Fl_Input2 *inp_my_FD_class;
+extern Fl_Check_Button *btn_fd_contest;
 extern Fl_Group *tabUserInterface;
 extern Fl_Check_Button *btnShowTooltips;
 extern Fl_Check_Button *chkMenuIcons;
@@ -145,6 +147,7 @@ extern Fl_Check_Button *btnDisplayMacroFilename;
 extern Fl_Check_Button *btn_save_macros_on_exit;
 extern Fl_Check_Button *btn_macro_post;
 extern Fl_Group *tabWF_UI;
+#include <FL/Fl_Box.H>
 extern Fl_Check_Button *btnWF_UIrev;
 extern Fl_Check_Button *btnWF_UIx1;
 extern Fl_Check_Button *btnWF_UIwfcarrier;

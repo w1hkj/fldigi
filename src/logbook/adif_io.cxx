@@ -88,6 +88,9 @@ FIELD fields[] = {
 	{XCHG1,        100,   "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
 	{MYXCHG,       100,   "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
 
+	{FDCLASS,      20,    "FD_CLASS",     &btnSelectClass},     // Field Day class received
+	{FDSECTION,    20,    "FD_SECTION",   &btnSelectSection},   // Field Day section received
+
 	{TX_PWR,       8,     "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
 	{NUMFIELDS,    0,     "",             NULL}
 };

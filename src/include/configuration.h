@@ -1325,6 +1325,33 @@
         ELEM_(std::string, mytxpower, "TXPOWER",                                        \
               "TX power used for logbook entries",                                      \
               "")                                                                       \
+        ELEM_(std::string, my_FD_call, "FD_CALL",                                       \
+              "Field Day call sign",                                                    \
+              "")                                                                       \
+        ELEM_(std::string, fd_op_call, "FD_OP_CALL",                                    \
+              "Field Day (w1hkj) server position operator call",                        \
+              "")                                                                       \
+        ELEM_(std::string, my_FD_class, "FDCLASS",                                      \
+              "Field Day class",                                                        \
+              "")                                                                       \
+        ELEM_(std::string, my_FD_section, "FDSECTION",                                  \
+              "Field Day section",                                                      \
+              "")                                                                       \
+        ELEM_(std::string, my_FD_mult, "FDMULT",                                        \
+              "Field Day multiplier",                                                   \
+              "5")                                                                      \
+        ELEM_(bool, FDcontest, "FDCONTEST",                                             \
+              "Use FD entries",                                                         \
+              false)                                                                    \
+        ELEM_(bool, connect_to_fdserver, "CONNECT_TO_FDSERVER",                         \
+              "Connect to field day server",                                            \
+              false)                                                                    \
+        ELEM_(std::string, fd_tcpip_addr, "FD_TCPIP_ADDR",                              \
+              "Field Day (w1hkj) server tcpip address",                                 \
+              "127.0.0.1")                                                              \
+        ELEM_(std::string, fd_tcpip_port, "FD_TCPIP_PORT",                              \
+              "Field Day (w1hkj) server tcpip port",                                    \
+              "20001")                                                                  \
         /* Macro controls */                                                            \
         ELEM_(bool, UseLastMacro, "USELASTMACRO",                                       \
               "Load last used macro file on startup",                                   \

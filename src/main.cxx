@@ -97,6 +97,7 @@
 #include "data_io.h"
 #include "maclogger.h"
 #include "psm/psm.h"
+#include "fd_logger.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -362,7 +363,9 @@ void delayed_startup(void *)
 	data_io_enabled = DISABLED_IO;
 
 	arq_init();
-   start_psm_thread();
+	FD_init();
+
+	start_psm_thread();
 
 	if (progdefaults.connect_to_maclogger) maclogger_init();
 	data_io_enabled = progStatus.data_io_enabled;
@@ -527,6 +530,10 @@ int main(int argc, char ** argv)
 
 			case PSM_TID:
 				cbq[i]->attach(i, "PSM_TID");
+				break;
+
+			case FD_TID:
+				cbq[i]->attach(i, "FD_TID");
 				break;
 
 			case FLMAIN_TID:
@@ -788,10 +795,10 @@ void exit_process() {
 	if (progdefaults.kml_enabled)
 		KmlServer::Exit();
 
-   stop_psm_thread();
+	stop_psm_thread();
 	arq_close();
+	FD_close();
 	kiss_close(false);
-
 	maclogger_close();
 	XML_RPC_Server::stop();
 

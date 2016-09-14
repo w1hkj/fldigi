@@ -44,6 +44,7 @@
 #include "textio.h"
 #include "logbook.h"
 #include "rigsupport.h"
+#include "fd_logger.h"
 
 #include "fl_digi.h"
 #include "fileselect.h"
@@ -740,14 +741,22 @@ void DupCheck()
 {
 	Fl_Color call_clr = progdefaults.LOGGINGcolor;
 
-	if (progdefaults.xml_logbook)
+	if ( FD_logged_on && strlen(inpCall->value()) > 2){
+		if ( FD_dupcheck())
+			call_clr = fl_rgb_color(
+				progdefaults.dup_color.R,
+				progdefaults.dup_color.G,
+				progdefaults.dup_color.B);
+	}
+
+	else if ( progdefaults.xml_logbook) {
 		if (xml_check_dup())
 			call_clr = fl_rgb_color(
 				progdefaults.dup_color.R,
 				progdefaults.dup_color.G,
 				progdefaults.dup_color.B);
-
-	if (!progdefaults.xml_logbook && qsodb.duplicate(
+	}
+	else if ( !progdefaults.xml_logbook && qsodb.duplicate(
 			inpCall->value(),
 			zdate(), ztime(), progdefaults.timespan, progdefaults.duptimespan,
 			inpFreq->value(), progdefaults.dupband,
@@ -976,6 +985,8 @@ void saveRecord() {
 	rec.putField(SRX, inpSerNoIn_log->value());
 	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(XCHG1, inpXchgIn_log->value());
+	rec.putField(FDCLASS, inp_FD_class_log->value());
+	rec.putField(FDSECTION, inp_FD_section_log->value());
 	if (!qso_exchange.empty()) {
 		rec.putField(MYXCHG, qso_exchange.c_str());
 		qso_exchange.clear();
@@ -1043,6 +1054,8 @@ cQsoRec rec;
 	rec.putField(STX, inpSerNoOut_log->value());
 	rec.putField(XCHG1, inpXchgIn_log->value());
 	rec.putField(MYXCHG, inpMyXchg_log->value());
+	rec.putField(FDCLASS, inp_FD_class_log->value());
+	rec.putField(FDSECTION, inp_FD_section_log->value());
 	rec.putField(CNTY, inpCNTY_log->value());
 	rec.putField(IOTA, inpIOTA_log->value());
 	rec.putField(DXCC, inpDXCC_log->value());
@@ -1114,6 +1127,8 @@ void EditRecord( int i )
 	inpSerNoIn_log->value(editQSO->getField(SRX));
 	inpSerNoOut_log->value(editQSO->getField(STX));
 	inpXchgIn_log->value(editQSO->getField(XCHG1));
+	inp_FD_class_log->value(editQSO->getField(FDCLASS));
+	inp_FD_section_log->value(editQSO->getField(FDSECTION));
 	inpMyXchg_log->value(editQSO->getField(MYXCHG));
 	inpCNTY_log->value(editQSO->getField(CNTY));
 	inpIOTA_log->value(editQSO->getField(IOTA));
@@ -1176,6 +1191,9 @@ void AddRecord ()
 	inpCONT_log->value("");
 	inpCQZ_log->value("");
 	inpITUZ_log->value("");
+
+	inp_FD_class_log->value(inp_FD_class->value());
+	inp_FD_section_log->value(inp_FD_section->value());
 
 	saveRecord();
 
@@ -1429,7 +1447,10 @@ void cabrillo_append_qso (FILE *fp, cQsoRec *rec)
 		toff = toff.append(" ");
 		exch_out.append(toff);
 	}
-
+//
+// ADD CONTESTNBR == FD
+//
+//
 	if (exch_out.length() > 20) exch_out = exch_out.substr(0,20);
 	len = exch_out.length();
 	if (len < 20) exch_out.append(20 - len, ' ');

@@ -117,6 +117,8 @@
 #include "macroedit.h"
 #include "logger.h"
 #include "lookupcall.h"
+#include "fd_logger.h"
+#include "fd_view.h"
 
 #include "font_browser.h"
 
@@ -206,6 +208,8 @@
 #define MAX_XCHG_IN 50
 #define MAX_COUNTRY 50
 #define MAX_NOTES 400
+#define MAX_SECTION 20
+#define MAX_CLASS   10
 
 using namespace std;
 
@@ -223,6 +227,8 @@ Fl_Button			*btnDockMacro[48];
 
 Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
+
+Fl_Double_Window	*field_day_viewer  = (Fl_Double_Window *)0;
 
 static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
@@ -322,6 +328,8 @@ Fl_Input2			*inpCountry;
 Fl_Input2			*inpSerNo;
 Fl_Input2			*outSerNo;
 Fl_Input2			*inpXchgIn;
+Fl_Input2			*inp_FD_class;
+Fl_Input2			*inp_FD_section;
 Fl_Input2			*inpVEprov;
 Fl_Input2			*inpNotes;
 Fl_Input2			*inpAZ;	// WA5ZNU
@@ -349,29 +357,31 @@ Fl_Input2			*inpName;
 Fl_Input2			*inpRstIn;
 Fl_Input2			*inpRstOut;
 
-static Fl_Group		*TopFrame1 = (Fl_Group *)0;
-static Fl_Input2		*inpFreq1;
-static Fl_Input2		*inpTimeOff1;
-static Fl_Input2		*inpTimeOn1;
-static Fl_Button		*btnTimeOn1;
+Fl_Group		*TopFrame1 = (Fl_Group *)0;
+Fl_Input2		*inpFreq1;
+Fl_Input2		*inpTimeOff1;
+Fl_Input2		*inpTimeOn1;
+Fl_Button		*btnTimeOn1;
 Fl_Input2				*inpCall1;
 Fl_Input2				*inpName1;
-static Fl_Input2		*inpRstIn1;
-static Fl_Input2		*inpRstOut1;
-static Fl_Input2		*inpXchgIn1;
-static Fl_Input2		*outSerNo1;
-static Fl_Input2		*inpSerNo1;
+Fl_Input2		*inpRstIn1;
+Fl_Input2		*inpRstOut1;
+Fl_Input2		*inp_FD_class1;
+Fl_Input2		*inp_FD_section1;
+Fl_Input2		*inpXchgIn1;
+Fl_Input2		*outSerNo1;
+Fl_Input2		*inpSerNo1;
 cFreqControl 			*qsoFreqDisp1 = (cFreqControl *)0;
 
-Fl_Group				*RigControlFrame = (Fl_Group *)0;
-Fl_Group				*RigViewerFrame = (Fl_Group *)0;
-Fl_Group				*QsoInfoFrame = (Fl_Group *)0;
+Fl_Group			*RigControlFrame = (Fl_Group *)0;
+Fl_Group			*RigViewerFrame = (Fl_Group *)0;
+Fl_Group			*QsoInfoFrame = (Fl_Group *)0;
 static Fl_Group		*QsoInfoFrame1 = (Fl_Group *)0;
 static Fl_Group		*QsoInfoFrame1A = (Fl_Group *)0;
-Fl_Group				*QsoInfoFrame1B = (Fl_Group *)0;
+Fl_Group			*QsoInfoFrame1B = (Fl_Group *)0;
 static Fl_Group		*QsoInfoFrame2 = (Fl_Group *)0;
 static Fl_Group		*NotesFrame = (Fl_Group *)0;
-//static Fl_Group		*QsoButtonFrame = (Fl_Group *)0;
+//static Fl_Group	*QsoButtonFrame = (Fl_Group *)0;
 
 Fl_Group				*TopFrame2 = (Fl_Group *)0;
 cFreqControl			*qsoFreqDisp2 = (cFreqControl *)0;
@@ -395,7 +405,9 @@ static Fl_Button		*btnTimeOn3;
 Fl_Input2				*inpCall3;
 static Fl_Input2		*outSerNo2;
 static Fl_Input2		*inpSerNo2;
-static Fl_Input2		*inpXchgIn2;
+Fl_Input2		*inpXchgIn2;
+static Fl_Input2		*inp_FD_class2;
+static Fl_Input2		*inp_FD_section2;
 static Fl_Button		*qso_opPICK3;
 static Fl_Button		*qsoClear3;
 static	Fl_Button		*qsoSave3;
@@ -1744,6 +1756,8 @@ void init_modem(trx_mode mode, int freq)
 			active_modem->set_freqlock(false);
 		}
 	}
+
+//	if (FD_logged_on) FD_mode_check();
 }
 
 void init_modem_sync(trx_mode m, int f)
@@ -2124,6 +2138,15 @@ void cb_log_server(Fl_Widget* w, void*)
 	progdefaults.xml_logbook = reinterpret_cast<Fl_Menu_*>(w)->mvalue()->value();
 	connect_to_log_server();
 }
+
+void cb_fd_viewer(Fl_Widget* w, void*)
+{
+	if (field_day_viewer->visible())
+		field_day_viewer->hide();
+	else
+		field_day_viewer->show();
+}
+
 
 void set_server_label(bool val)
 {
@@ -2829,6 +2852,8 @@ if (bWF_only) return;
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
 		inpXchgIn1, inpXchgIn2,
+		inp_FD_class1, inp_FD_section1,
+		inp_FD_class2, inp_FD_section2,
 		inpNotes };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++)
 		in[i]->value("");
@@ -3000,7 +3025,7 @@ if (bWF_only) return;
 		}
 	}
 
-	if (progdefaults.EnableDupCheck)
+	if (progdefaults.EnableDupCheck || FD_logged_on)
 		DupCheck();
 
 	if (w != inpCall)
@@ -3041,11 +3066,17 @@ void cb_log(Fl_Widget* w, void*)
 	if (inp == inpXchgIn1) inpXchgIn2->value(inpXchgIn1->value());
 	if (inp == inpXchgIn2) inpXchgIn1->value(inpXchgIn2->value());
 
+	if (inp == inp_FD_class1) inp_FD_class2->value(inp_FD_class1->value());
+	if (inp == inp_FD_class2) inp_FD_class1->value(inp_FD_class2->value());
+
+	if (inp == inp_FD_section1) inp_FD_section2->value(inp_FD_section1->value());
+	if (inp == inp_FD_section2) inp_FD_section1->value(inp_FD_section2->value());
+
 	if (inp->value()[0])
 		oktoclear = false;
-	if (progdefaults.EnableDupCheck) {
+
+	if (progdefaults.EnableDupCheck || FD_logged_on)
 		DupCheck();
-	}
 
 	if (Fl::event() == FL_KEYBOARD) {
 		int k = Fl::event_key();
@@ -3523,6 +3554,10 @@ LOG_INFO("stop_flrig_thread");
 
 LOG_INFO("exit_process");
 	exit_process();
+
+	if (field_day_viewer)
+		if (field_day_viewer->visible())
+			field_day_viewer->hide();
 
 	return true;
 }
@@ -4096,7 +4131,23 @@ void UI_select()
 		inpSerNo = inpSerNo1;
 		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
+		inp_FD_class = inp_FD_class1;
+		inp_FD_section = inp_FD_section1;
+		if (progdefaults.FDcontest) {
+			inpSerNo1->hide();
+			outSerNo1->hide();
+			inpXchgIn1->hide();
+			inp_FD_class1->show();
+			inp_FD_section1->show();
+		} else {
+			inpSerNo1->show();
+			outSerNo1->show();
+			inpXchgIn1->show();
+			inp_FD_class1->hide();
+			inp_FD_section1->hide();
+		}
 		qsoFreqDisp = qsoFreqDisp1;
+		TopFrame1->init_sizes();
 		goto UI_return;
 	}
 
@@ -4136,7 +4187,35 @@ void UI_select()
 		inpSerNo = inpSerNo2;
 		outSerNo = outSerNo2;
 		inpXchgIn = inpXchgIn2;
+
+		if (progdefaults.FDcontest) {
+			inpSerNo2->hide();
+			outSerNo2->hide();
+			inpXchgIn2->hide();
+			inp_FD_class2->resize(
+				inp_FD_class2->x(),
+				outSerNo2->y(),
+				inp_FD_class2->w(),
+				outSerNo2->h());
+			inp_FD_class2->show();
+			inp_FD_section2->resize(
+				inp_FD_section2->x(),
+				outSerNo2->y(),
+				inp_FD_section2->w(),
+				outSerNo2->h());
+			inp_FD_section2->show();
+		} else {
+			inp_FD_class2->hide();
+			inp_FD_section2->hide();
+			inpSerNo2->show();
+			outSerNo2->show();
+			inpXchgIn2->show();
+		}
+
+		inp_FD_class = inp_FD_class2;
+		inp_FD_section = inp_FD_section2;
 		qsoFreqDisp = qsoFreqDisp3;
+		TopFrame3->redraw();
 		inpCall4->hide();
 		Status2->show();
 		goto UI_return;
@@ -4624,7 +4703,9 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Open...")), 0, (Fl_Callback*)cb_mnuOpenLogbook, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Save")), 0, (Fl_Callback*)cb_mnuSaveLogbook, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
-{ LOG_CONNECT_SERVER, 0, cb_log_server, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
+{ LOG_CONNECT_SERVER, 0, (Fl_Callback*)cb_log_server, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
+
+{ icons::make_icon_label(_("Field Day Viewer")), 0, (Fl_Callback*)cb_fd_viewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 
 {0,0,0,0,0,0,0,0,0},
 
@@ -5081,6 +5162,7 @@ void _show_frequency(long long freq)
 	qsoFreqDisp1->value(freq);
 	qsoFreqDisp2->value(freq);
 	qsoFreqDisp3->value(freq);
+//	if (FD_logged_on) FD_band_check();
 }
 
 void show_frequency(long long freq)
@@ -5291,7 +5373,9 @@ void LOGGING_colors_font()
 		inpQth, inpLoc, inpAZ, inpState, inpVEprov, inpCountry,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
-		inpXchgIn1, inpXchgIn2 };
+		inpXchgIn1, inpXchgIn2,
+		inp_FD_class1, inp_FD_class2,
+		inp_FD_section1, inp_FD_section2 };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++) {
 		input_color_font(in[i]);
 //		in[i]->size(in[i]->w(), wh);
@@ -5361,17 +5445,20 @@ void LOGBOOK_colors_font()
 	int width_pwr  = fl_width("0000");
 	int width_loc  = fl_width("XX88XXX");
 	int width_mode = fl_width("CONTESTIA");
+	int width_state = fl_width("WWWW");
+	int width_province = fl_width("WWWW");
+	int width_country = fl_width("WWWWWWWWWWWWWWWWWWWW");
 
-	int dlg_width =	inpDate_log->x() +
+	int dlg_width =	2 +
 					width_date + 2 +
 					width_time + 2 +
 					width_freq + 2 +
 					width_mode + 2 +
 					width_pwr + 2 +
 					width_rst + 2 +
-					width_date + 2;
+					width_loc + 2;
 
-	int newheight = 24 + 4*(wh + 20) + 3*wh + 4 + bNewSave->h() + 4 + wBrowser->h() + 2;
+	int newheight = 24 + 4*(wh + 20) + 3*wh + 2 + wh + 2 + wBrowser->h() + 2;
 
 	if (dlg_width > progStatus.logbook_w)
 		progStatus.logbook_w = dlg_width;
@@ -5388,94 +5475,156 @@ void LOGBOOK_colors_font()
 
 // row1
 	int ypos = 24;
-	int xpos = inpDate_log->x();
 
-	date_font_pos(inpDate_log, xpos, ypos, width_date, wh); xpos += width_date + 2;
-	inp_font_pos(inpTimeOn_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
+// date on
+	int xpos = 2;
+	date_font_pos(inpDate_log, xpos, ypos, width_date, wh);
+// timeon
+	xpos += width_date + 2;
+	inp_font_pos(inpTimeOn_log, xpos, ypos, width_time, wh);
+// call
+	xpos += width_time + 2;
 	inp_font_pos(inpCall_log, xpos, ypos, width_freq, wh);
-
-	date_font_pos(inpQSLrcvddate_log,
-					dlg_width - 2 - width_date, ypos, width_date, wh);
-	inp_font_pos(inpRstR_log,
-					inpQSLrcvddate_log->x() - 2 - width_rst, ypos,
-					width_rst, wh);
-	inp_font_pos(inpName_log,
-					inpCall_log->x() + width_freq + 2, ypos,
-					inpRstR_log->x() - 2 - (inpCall_log->x() + width_freq + 2), wh);
-// row2
-	ypos += wh + 20;
-	xpos = inpDateOff_log->x();
-
-	date_font_pos(inpDateOff_log, xpos, ypos, width_date, wh); xpos += width_date + 2;
-	inp_font_pos(inpTimeOff_log, xpos, ypos, width_time, wh); xpos += width_time + 2;
-	inp_font_pos(inpFreq_log, xpos, ypos, width_freq, wh);
-
-	date_font_pos(inpQSLsentdate_log,
-					dlg_width - 2 - width_date, ypos, width_date, wh);
-	inp_font_pos(inpRstS_log,
-					inpQSLsentdate_log->x() - 2 - width_rst, ypos,
-					width_rst, wh);
-	inp_font_pos(inpTX_pwr_log,
-					inpRstS_log->x() - 2 - width_pwr, ypos,
-					width_pwr, wh);
-	inp_font_pos(inpMode_log,
-					inpFreq_log->x() + width_freq + 2, ypos,
-					inpTX_pwr_log->x() - 2 - (inpFreq_log->x() + width_freq + 2), wh);
-// row 3
-	ypos += (20 + wh);
-
-	inp_font_pos(inpLoc_log,
-					dlg_width - 2 - width_loc, ypos, width_loc, wh);
-	inp_font_pos(inpCountry_log,
-					inpLoc_log->x() - 2 - inpCountry_log->w(), ypos, inpCountry_log->w(), wh);
-	inp_font_pos(inpVE_Prov_log,
-					inpCountry_log->x() - 2 - inpVE_Prov_log->w(), ypos, inpVE_Prov_log->w(), wh);
-	inp_font_pos(inpState_log,
-					inpVE_Prov_log->x() - 2 - inpState_log->w(), ypos, inpState_log->w(), wh);
-	inp_font_pos(inpQth_log,
-					inpQth_log->x(), ypos, inpState_log->x() - 2 - inpQth_log->x(), wh);
-
-	ypos += (20 + wh);
-	Fl_Input2* row4[] = {
-		inpCNTY_log, inpIOTA_log, inpCQZ_log };
-	for (size_t i = 0; i < sizeof(row4)/sizeof(*row4); i++) {
-		inp_font_pos(row4[i], row4[i]->x(), ypos, row4[i]->w(), wh);
-	}
-
-	inp_font_pos(inpNotes_log, inpNotes_log->x(), ypos, inpNotes_log->w(), 3 * wh);
-
-	ypos = inpNotes_log->y() + inpNotes_log->h() - wh;
-	Fl_Input2* row5[] = {
-		inpITUZ_log, inpCONT_log, inpDXCC_log, inpQSL_VIA_log
-	   	};
-	for (size_t i = 0; i < sizeof(row5)/sizeof(*row5); i++) {
-		inp_font_pos(row5[i], row5[i]->x(), ypos, row5[i]->w(), wh);
-	}
-
-	ypos += 20 + wh;
-	Fl_Input2* row6[] = {
-		inpSerNoOut_log, inpMyXchg_log, inpSerNoIn_log, inpXchgIn_log, inpSearchString };
-	for (size_t i = 0; i < sizeof(row6)/sizeof(*row6); i++) {
-		inp_font_pos(row6[i], row6[i]->x(), ypos, row6[i]->w(), wh);
-	}
-
-	ypos += wh + 4;
+// name
+	xpos += width_freq + 2;
+	int wname = dlg_width - xpos - width_rst - width_loc - 6;
+	inp_font_pos(inpName_log, xpos, ypos, wname, wh);
+// rcvd RST
+	xpos += wname + 2;
+	inp_font_pos(inpRstR_log, xpos, ypos, width_rst, wh);
+// nbr records
+	xpos += width_rst + 2;
 	txtNbrRecs_log->textcolor(progdefaults.LOGBOOKtextcolor);
 	txtNbrRecs_log->color(progdefaults.LOGBOOKcolor);
-	txtNbrRecs_log->resize(txtNbrRecs_log->x(), ypos, txtNbrRecs_log->w(), txtNbrRecs_log->h());
+	txtNbrRecs_log->resize(xpos, ypos, width_loc, wh);
+
 	int ls = progdefaults.LOGBOOKtextsize;
 	txtNbrRecs_log->labelsize(ls < 14 ? ls : 14);
 	txtNbrRecs_log->redraw_label();
 
-	Fl_Button* btns[] = { bNewSave, bUpdateCancel, bDelete, bDialFreq,
-		bSearchPrev, bSearchNext };
+// row2
+	ypos += wh + 20;
+//date off
+	xpos = 2;
+	date_font_pos(inpDateOff_log, xpos, ypos, width_date, wh);
+//time off
+	xpos += width_date + 2;
+	inp_font_pos(inpTimeOff_log, xpos, ypos, width_time, wh);
+//frequency
+	xpos += width_time + 2;
+	inp_font_pos(inpFreq_log, xpos, ypos, width_freq, wh);
+//mode
+	xpos += width_freq + 2;
+	int wmode = dlg_width - xpos - width_rst - width_pwr - width_loc - 8;
+	inp_font_pos(inpMode_log, xpos, ypos, wmode, wh);
+//power
+	xpos += wmode + 2;
+	inp_font_pos(inpTX_pwr_log, xpos, ypos, width_pwr, wh);
+//sent RST
+	xpos += width_pwr + 2;
+	inp_font_pos(inpRstS_log, xpos, ypos, width_rst, wh);
+// locator
+	xpos += width_rst + 2;
+	inp_font_pos(inpLoc_log, xpos, ypos, width_loc, wh);
+
+// row 3
+// QTH
+	ypos += wh + 20;
+	xpos = 2;
+	int wqth = dlg_width - 4 - width_state - 2 - width_province - 2 - width_country - 2;
+	inp_font_pos(inpQth_log, xpos, ypos, wqth, wh);
+// state
+	xpos += wqth + 2;
+	inp_font_pos(inpState_log, xpos, ypos, width_state, wh);
+// province
+	xpos += width_state + 2;
+	inp_font_pos(inpVE_Prov_log, xpos, ypos, width_province, wh);
+// country
+	xpos += width_province + 2;
+	inp_font_pos(inpCountry_log, xpos, ypos, width_country, wh);
+
+	ypos += wh + 2;
+	Tabs->position(2, ypos);
+
+	Fl_Input2* inp[] = {
+		inpQSL_VIA_log,
+		inpSerNoOut_log, inpMyXchg_log, inpSerNoIn_log, inpXchgIn_log,
+		inp_FD_class_log, inp_FD_section_log,
+		inpCNTY_log, inpCNTY_log, inpIOTA_log, inpCONT_log, inpITUZ_log, inpDXCC_log
+	};
+	Fl_DateInput* dti[] = {
+		inpQSLrcvddate_log, inpQSLsentdate_log,
+		inpEQSLrcvddate_log, inpEQSLsentdate_log,
+		inpLOTWrcvddate_log, inpLOTWsentdate_log
+	};
+	Fl_Choice* chc[] = {
+		statusQSLrcvd, statusEQSLrcvd, statusLOTWrcvd,
+		statusQSLsent, statusEQSLsent, statusLOTWsent
+	};
+	for (size_t i = 0; i < sizeof(inp) / sizeof(*inp); i++) {
+		inp[i]->resize(inp[i]->x(), inp[i]->y(), inp[i]->w(), wh);
+		inp[i]->labelsize(ls < 14 ? ls : 14);
+		inp[i]->redraw_label();
+	}
+	for (size_t i = 0; i < sizeof(dti) / sizeof(*dti); i++) {
+		dti[i]->resize(dti[i]->x(), dti[i]->y(), dti[i]->w(), wh);
+		dti[i]->labelsize(ls < 14 ? ls : 14);
+		dti[i]->redraw_label();
+	}
+	for (size_t i = 0; i < sizeof(chc) / sizeof(*chc); i++) {
+		chc[i]->resize(chc[i]->x(), chc[i]->y(), chc[i]->w(), wh);
+		chc[i]->labelsize(ls < 14 ? ls : 14);
+		chc[i]->redraw_label();
+	}
+	inpNotes_log->resize(4, ypos+26, Tabs->w() - 4, 4*wh - 4);
+
+	Tabs->resize(2, ypos, dlg_width - 6 - inpSearchString->w(), 4*wh + 24);
+	tab_log_qsl->resize(2, ypos + 24, Tabs->w(), 4*wh);
+	tab_log_qsl_2->resize(2, ypos + 24, Tabs->w(), 4*wh);
+	tab_log_contest->resize(2, ypos + 24, Tabs->w(), 4*wh);
+	tab_log_other->resize(2, ypos + 24, Tabs->w(), 4*wh);
+	tab_log_notes->resize(2, ypos + 24, Tabs->w(), 4*wh);
+
+	inpSearchString->resize(
+		2 + Tabs->w() + 2, tab_log_qsl->y(),
+		inpSearchString->w(), wh);
+	inpSearchString->labelsize(ls < 14 ? ls : 14);
+	inpSearchString->redraw_label();
+	bSearchPrev->resize(
+		inpSearchString->x() + inpSearchString->w()/2 - bSearchPrev->w() - 3,
+		inpSearchString->y() + wh + 2,
+		bSearchPrev->w(), bSearchPrev->h());
+	bSearchNext->resize(
+		bSearchPrev->x() +bSearchPrev->w() + 6, bSearchPrev->y(),
+		bSearchNext->w(), bSearchNext->h());
+	bDialFreq->resize(
+		bSearchPrev->x(), bSearchNext->y() + bSearchNext->h() + 2,
+		bSearchPrev->w() + bSearchNext->w() + 6, bDialFreq->h());
+
+	ypos += Tabs->h() + 2;
+
+	Fl_Button* btns[] = { bNewSave, bUpdateCancel, bDelete };
+
+	xpos = 2;
+	int wlogfile = dlg_width - 6 - 3*(btns[0]->w() + 2);
+
+	txtLogFile->textsize(progdefaults.LOGBOOKtextsize);
+	txtLogFile->textfont(progdefaults.LOGBOOKtextfont);
+	txtLogFile->textcolor(progdefaults.LOGBOOKtextcolor);
+	txtLogFile->color(progdefaults.LOGBOOKcolor);
+	txtLogFile->labelsize(ls < 14 ? ls : 14);
+	txtLogFile->redraw_label();
+	txtLogFile->resize(xpos, ypos, wlogfile, wh);
+
+	xpos = 2 + wlogfile + 2;
 	for (size_t i = 0; i < sizeof(btns)/sizeof(*btns); i++) {
-		btns[i]->resize(btns[i]->x(), ypos, btns[i]->w(), btns[i]->h());
+		btns[i]->resize(xpos, ypos, btns[i]->w(), wh);
+		xpos += btns[i]->w() + 2;
 		btns[i]->redraw();
 	}
 
 // browser (table)
-	ypos += btns[0]->h() + 4;
+	ypos += wh + 2;
 
 	wBrowser->font(progdefaults.LOGBOOKtextfont);
 	wBrowser->fontsize(progdefaults.LOGBOOKtextsize);
@@ -5655,6 +5804,10 @@ void log_callback(Fl_Input2 *w) {
 		LOC_callback(w);
 	else if (w == inpXchgIn1 || w == inpXchgIn2)
 		XCHG_IN_callback(w);
+	else if (w == inp_FD_class1 || w == inp_FD_class2)
+	;
+	else if (w == inp_FD_section1 || w == inp_FD_section2)
+	;
 	else if (w == inpSerNo1 || w == inpSerNo2)
 		SERNO_callback(w);
 	else if (w == inpState || w == inpVEprov)
@@ -6244,6 +6397,23 @@ void create_fl_digi_main_primary() {
 						inpXchgIn1->align(FL_ALIGN_LEFT);
 						inpXchgIn1->tooltip(_("Contest exchange in"));
 
+						inp_FD_class1 = new Fl_Input2(
+							inpCall1->x() + 20, y3, 40, Hentry,
+							"Class");
+						inp_FD_class1->align(FL_ALIGN_LEFT);
+						inp_FD_class1->tooltip(_("Received FD class"));
+						inp_FD_class1->type(FL_NORMAL_INPUT);
+
+						inp_FD_section1 = new Fl_Input2(
+							rightof(inp_FD_class1) + 20, y3, 40, Hentry,
+							"Section");
+						inp_FD_section1->align(FL_ALIGN_LEFT);
+						inp_FD_section1->tooltip(_("Received FD section"));
+						inp_FD_section1->type(FL_NORMAL_INPUT);
+
+						inp_FD_class1->hide();
+						inp_FD_section1->hide();
+
 					QsoInfoFrame1B->end();
 					QsoInfoFrame1B->hide();
 
@@ -6463,79 +6633,67 @@ void create_fl_digi_main_primary() {
 			qsoSave3->tooltip(_("Save"));
 
 			fl_font(FL_HELVETICA, 14);//FL_NORMAL_SIZE);
-			const char *label2a = _("On");
-			const char *label3a = _("Off");
-			const char *label4a = _("Call");
-			const char *label5a = _("# S");
-			const char *label6a = _("# R");
-			const char *label7a = _("Ex");
 			const char *xData = "00000";
 			const char *xCall = "WW8WWW/WW";//"WW8WWW/WWWW";
 			int   wData = static_cast<int>(fl_width(xData));
 			int   wCall = static_cast<int>(fl_width(xCall));
 
-			Fl_Box *bx4a = new Fl_Box(
-				pad + rightof(qsoSave3), y,
-				static_cast<int>(fl_width(label4a)), h, label4a);
 			inpCall3 = new Fl_Input2(
-				pad + bx4a->x() + bx4a->w(), y,
-				wCall, h, "");
-			inpCall3->align(FL_ALIGN_INSIDE);
+				pad + rightof(qsoSave3) + 30, y,
+				wCall, h, "Call");
+			inpCall3->align(FL_ALIGN_LEFT);
 			inpCall3->tooltip(_("Other call"));
 
-			Fl_Box *bx7a = new Fl_Box(
-				rightof(inpCall3), y,
-				static_cast<int>(fl_width(label7a)), h, label7a);
-			bx7a->align(FL_ALIGN_INSIDE);
-			inpXchgIn2 = new Fl_Input2(
-				rightof(bx7a), y,
-				static_cast<int>(W
-				- rightof(bx7a) - pad
-				- fl_width(label6a) - wData - pad
-				- fl_width(label5a) - wData - pad
-				- fl_width(label2a) - wData - pad
-				- fl_width(label3a) - wData - pad),
-				h, "");
-			inpXchgIn2->tooltip(_("Contest exchange in"));
-
-			Fl_Box *bx6a = new Fl_Box(
-				rightof(inpXchgIn2), y,
-				static_cast<int>(fl_width(label6a)), h, label6a);
-			bx6a->align(FL_ALIGN_INSIDE);
-			inpSerNo2 = new Fl_Input2(
-				rightof(bx6a) + pad, y,
-				wData, h, "");
-			inpSerNo2->tooltip(_("Received serial number"));
-
-			Fl_Box *bx5a = new Fl_Box(
-				rightof(inpSerNo2), y,
-				static_cast<int>(fl_width(label5a)), h, label5a);
-			bx5a->align(FL_ALIGN_INSIDE);
-			outSerNo2 = new Fl_Input2(
-				rightof(bx5a) + pad, y,
-				wData, h, "");
-			outSerNo2->tooltip(_("Sent serial number (read only)"));
-			outSerNo2->type(FL_NORMAL_OUTPUT);
-
 			btnTimeOn3 = new Fl_Button(
-				rightof(outSerNo2), y,
-				static_cast<int>(fl_width(label2a)), h, label2a);
+				rightof(inpCall3) + 2, y,
+				8, h, "On");
 			btnTimeOn3->tooltip(_("Press to update"));
 			btnTimeOn3->box(FL_NO_BOX);
 			btnTimeOn3->callback(cb_btnTimeOn);
 			inpTimeOn3 = new Fl_Input2(
-				btnTimeOn3->x() + btnTimeOn3->w() + pad, y,
-				wData - 2, h, "");
+				rightof(btnTimeOn3), y,
+				wData, h, "");
 			inpTimeOn3->tooltip(_("Time On"));
 			inpTimeOn3->type(FL_INT_INPUT);
 
-			Fl_Box *bx3a = new Fl_Box(pad + rightof(inpTimeOn3), y,
-				static_cast<int>(fl_width(label3a)), h, label3a);
 			inpTimeOff3 = new Fl_Input2(
-				bx3a->x() + bx3a->w() + pad, y,
-				wData, h, "");
+				rightof(inpTimeOn3) + 20, y,
+				wData, h, "Off");
 			inpTimeOff3->tooltip(_("Time Off"));
 			inpTimeOff3->type(FL_NORMAL_OUTPUT);
+
+			inpSerNo2 = new Fl_Input2(
+				rightof(inpTimeOff3) + 10, y,
+				wData, h, "# R");
+			inpSerNo2->align(FL_ALIGN_LEFT);
+			inpSerNo2->tooltip(_("Received serial number"));
+
+			outSerNo2 = new Fl_Input2(
+				rightof(inpSerNo2) + 10, y,
+				wData, h, "# S");
+			outSerNo2->align(FL_ALIGN_LEFT);
+			outSerNo2->tooltip(_("Sent serial number (read only)"));
+
+			inp_FD_class2 = new Fl_Input2(
+				rightof(inpTimeOff3) + 24, y, wData, h, "Class");
+			inp_FD_class2->align(FL_ALIGN_LEFT);
+			inp_FD_class2->tooltip(_("Received FD class"));
+			inp_FD_class2->type(FL_NORMAL_INPUT);
+
+			inp_FD_section2 = new Fl_Input2(
+				rightof(inp_FD_class2) + pad + 26, y, wData, h, "Section");
+			inp_FD_section2->align(FL_ALIGN_LEFT);
+			inp_FD_section2->tooltip(_("Received FD section"));
+			inp_FD_section2->type(FL_NORMAL_INPUT);
+
+			inp_FD_class2->hide();
+			inp_FD_section2->hide();
+
+			inpXchgIn2 = new Fl_Input2(
+				rightof(outSerNo2) + 12, y,
+				fl_digi_main->w() - rightof(outSerNo2) - 12, h, "Ex");
+			inpXchgIn2->align(FL_ALIGN_LEFT);
+			inpXchgIn2->tooltip(_("Contest exchange in"));
 
 			TopFrame3->end();
 		}
@@ -7271,7 +7429,9 @@ void create_fl_digi_main_primary() {
 			inpQth, inpState, inpVEprov, inpCountry, inpAZ, inpNotes,
 			inpSerNo1, inpSerNo2,
 			outSerNo1, outSerNo2,
-			inpXchgIn1, inpXchgIn2 };
+			inpXchgIn1, inpXchgIn2,
+			inp_FD_class1, inp_FD_class2,
+			inp_FD_section1, inp_FD_section2 };
 		for (size_t i = 0; i < sizeof(logfields)/sizeof(*logfields); i++) {
 			logfields[i]->callback(cb_log);
 			logfields[i]->when(CB_WHEN);
@@ -7303,6 +7463,9 @@ void create_fl_digi_main_primary() {
 	scopeview->size_range(SCOPEWIN_MIN_WIDTH, SCOPEWIN_MIN_HEIGHT);
 	scopeview->end();
 	scopeview->hide();
+
+	field_day_viewer = make_fd_view();
+	field_day_viewer->hide();
 
 	if (!progdefaults.menuicons)
 		icons::toggle_icon_labels();
@@ -7612,6 +7775,11 @@ void noop_controls() // create and then hide all controls not being used
 	outSerNo1 = new Fl_Input2(defwidget); outSerNo1->hide();
 	inpSerNo1 = new Fl_Input2(defwidget); inpSerNo1->hide();
 	qsoFreqDisp1 = new cFreqControl(0,0,80,20,""); qsoFreqDisp1->hide();
+
+	inp_FD_class1 = new Fl_Input2(defwidget); inp_FD_class1->hide();
+	inp_FD_class2 = new Fl_Input2(defwidget); inp_FD_class2->hide();
+	inp_FD_section1 = new Fl_Input2(defwidget); inp_FD_section1->hide();
+	inp_FD_section2 = new Fl_Input2(defwidget); inp_FD_section2->hide();
 
 	inpTimeOff2 = new Fl_Input2(defwidget); inpTimeOff2->hide();
 	inpTimeOn2 = new Fl_Input2(defwidget); inpTimeOn2->hide();

@@ -198,6 +198,8 @@ void xml_add_record()
 	adif_str(XCHG1, inpXchgIn->value());
 	adif_str(MYXCHG, progdefaults.myXchg.c_str());
 	adif_str(NOTES, inpNotes->value());
+	adif_str(FDCLASS, progdefaults.my_FD_class.c_str());
+	adif_str(FDSECTION, progdefaults.my_FD_section.c_str());
 // these fields will always be blank unless they are added to the main
 // QSO log area.
 // need to add the remaining fields
@@ -237,6 +239,8 @@ void xml_add_record()
 	rec.putField(STX, outSerNo->value());
 	rec.putField(XCHG1, inpXchgIn->value());
 	rec.putField(MYXCHG, progdefaults.myXchg.c_str());
+	rec.putField(FDCLASS, progdefaults.my_FD_class.c_str());
+	rec.putField(FDSECTION, progdefaults.my_FD_section.c_str());
 	rec.putField(CNTY, "");
 	rec.putField(IOTA, "");
 	rec.putField(DXCC, "");

@@ -99,6 +99,30 @@ private:
 	bool draw_marks;
 };
 
+/*
+	RX_MENU_QRZ_THIS
+	RX_MENU_CALL
+	RX_MENU_NAME
+	RX_MENU_QTH,
+	RX_MENU_STATE
+	RX_MENU_PROVINCE
+	RX_MENU_COUNTRY
+	RX_MENU_LOC,
+	RX_MENU_RST_IN
+	RX_MENU_XCHG
+	RX_MENU_SERIAL
+	RX_MENU_CLASS
+	RX_MENU_SECTION,
+	RX_MENU_DIV
+	RX_MENU_COPY
+	RX_MENU_CLEAR
+	RX_MENU_SELECT_ALL,
+	RX_MENU_SAVE
+	RX_MENU_WRAP
+	RX_MENU_ALL_ENTRY
+	RX_MENU_SCROLL_HINTS
+*/
+
 Fl_Menu_Item FTextRX::menu[] = {
 	{ icons::make_icon_label(_("Look up call"), net_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Call"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -111,7 +135,9 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ icons::make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("FD class"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("FD section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 
 	{ 0 }, // VIEW_MENU_COPY
 	{ 0 }, // VIEW_MENU_CLEAR
@@ -119,7 +145,7 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ 0 }, // VIEW_MENU_SAVE
 	{ 0 }, // VIEW_MENU_WRAP
 
-	{ _("Quick entry"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
+	{ _("All entries"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ _("Scroll hints"),      0, 0, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL },
 	{ 0 }
 };
@@ -139,7 +165,7 @@ FTextRX::FTextRX(int x, int y, int w, int h, const char *l)
 	memcpy(menu + RX_MENU_COPY, FTextView::menu, (FTextView::menu->size() - 1) * sizeof(*FTextView::menu));
 	context_menu = menu;
 	init_context_menu();
-	menu[RX_MENU_QUICK_ENTRY].clear();
+	menu[RX_MENU_ALL_ENTRY].clear();
 	menu[RX_MENU_SCROLL_HINTS].clear();
 	menu[RX_MENU_WRAP].hide();
 	// Replace the scrollbar widget
@@ -343,12 +369,12 @@ void FTextRX::add(unsigned int c, int attr)
 		show_insert_position();
 }
 
-void FTextRX::set_quick_entry(bool b)
+void FTextRX::set_all_entry(bool b)
 {
 	if (b)
-		menu[RX_MENU_QUICK_ENTRY].set();
+		menu[RX_MENU_ALL_ENTRY].set();
 	else
-		menu[RX_MENU_QUICK_ENTRY].clear();
+		menu[RX_MENU_ALL_ENTRY].clear();
 }
 
 void FTextRX::set_scroll_hints(bool b)
@@ -441,7 +467,9 @@ int FTextRX::handle_qso_data(int start, int end)
 
 	Fl_Input2* target = 0;
 
-	if (QsoInfoFrame1B->visible()) {
+	if (inpXchgIn1->visible() || 
+		inpXchgIn2->visible() ||
+		progdefaults.FDcontest) {
 		if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
@@ -449,6 +477,11 @@ int FTextRX::handle_qso_data(int start, int end)
 			inpCall->value(p);
 			log_callback(inpCall);
 			Fl::copy(p, strlen(p), 1);  // copy to clipboard
+		} else if (progdefaults.FDcontest) { 
+			if (inp_FD_class->value()[0] == 0)
+				inp_FD_class->value(s);
+			else if (inp_FD_section->value()[0] == 0)
+				inp_FD_section->value(s);
 		} else {
 			inpXchgIn->position(inpXchgIn->size());
 			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
@@ -485,10 +518,10 @@ int FTextRX::handle_qso_data(int start, int end)
 
 void FTextRX::handle_context_menu(void)
 {
-	bool contest_ui = progStatus.Rig_Contest_UI ||
+	bool contest_ui = progStatus.Rig_Contest_UI || progdefaults.FDcontest ||
 		(progStatus.contest && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI);
 
-	unsigned shown = 0;
+	unsigned shown = 0; // all hidden
 
 #define show_item(x_) (shown |=  (1 << x_))
 #define hide_item(x_) (shown &= ~(1 << x_))
@@ -497,14 +530,19 @@ void FTextRX::handle_context_menu(void)
 	show_item(RX_MENU_CALL);
 
 	if (contest_ui || (progStatus.contest && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI)) {
-		show_item(RX_MENU_SERIAL);
-		show_item(RX_MENU_XCHG);
+		if (progdefaults.FDcontest) {
+			show_item(RX_MENU_CLASS);
+			show_item(RX_MENU_SECTION);
+		} else {
+			show_item(RX_MENU_SERIAL);
+			show_item(RX_MENU_XCHG);
+		}
 	}
 // "Look up call" shown only in non-contest mode
 	else if (progdefaults.QRZWEB != QRZWEBNONE || progdefaults.QRZXML != QRZXMLNONE)
 		show_item(RX_MENU_QRZ_THIS);
 
-	if (menu[RX_MENU_QUICK_ENTRY].value()) {
+	if (menu[RX_MENU_ALL_ENTRY].value()) {
 		for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_IN; i++)
 			show_item(i);
 		menu[RX_MENU_CALL].flags &= ~FL_MENU_DIVIDER;
@@ -523,7 +561,7 @@ void FTextRX::handle_context_menu(void)
 	else
 		menu[RX_MENU_SCROLL_HINTS].hide();
 
-	for (size_t i = RX_MENU_QRZ_THIS; i <= RX_MENU_XCHG; i++) {
+	for (size_t i = RX_MENU_QRZ_THIS; i <= RX_MENU_SECTION; i++) {
 		if (test_item(i))
 			menu[i].show();
 		else
@@ -585,14 +623,18 @@ void FTextRX::menu_cb(size_t item)
 	case RX_MENU_RST_IN:
 		input = inpRstIn;
 		break;
-
 	case RX_MENU_SERIAL:
 		input = inpSerNo;
 		break;
 	case RX_MENU_XCHG:
 		input = inpXchgIn;
 		break;
-
+	case RX_MENU_CLASS:
+		input = inp_FD_class;
+		break;
+	case RX_MENU_SECTION:
+		input = inp_FD_section;
+		break;
 	case RX_MENU_DIV:
 		note_qrg(false, "\n", "\n");
 		break;
@@ -610,7 +652,7 @@ void FTextRX::menu_cb(size_t item)
 		saveFile();
 		break;
 
-	case RX_MENU_QUICK_ENTRY:
+	case RX_MENU_ALL_ENTRY:
 		menu[item].flags ^= FL_MENU_VALUE;
 		if (menu[item].value())
 			handle_context_menu();

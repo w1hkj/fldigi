@@ -90,6 +90,8 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
+btnSelectClass->value(0);
+btnSelectSection->value(0);
 }
 
 Fl_Button *btnCheckAllFields=(Fl_Button *)0;
@@ -125,6 +127,8 @@ btnSelectCQZ->value(1);
 btnSelectITUZ->value(1);
 btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);
+btnSelectClass->value(1);
+btnSelectSection->value(1);
 }
 
 Fl_Check_Button *btnSelectCall=(Fl_Check_Button *)0;
@@ -189,6 +193,10 @@ Fl_Check_Button *btnSelectIOTA=(Fl_Check_Button *)0;
 
 Fl_Check_Button *btnSelectITUZ=(Fl_Check_Button *)0;
 
+Fl_Check_Button *btnSelectClass=(Fl_Check_Button *)0;
+
+Fl_Check_Button *btnSelectSection=(Fl_Check_Button *)0;
+
 Fl_Button *btnSetFieldDefaults=(Fl_Button *)0;
 
 static void cb_btnSetFieldDefaults(Fl_Button*, void*) {
@@ -236,8 +244,6 @@ Fl_Input2 *inpName_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpRstR_log=(Fl_Input2 *)0;
 
-Fl_DateInput *inpQSLrcvddate_log=(Fl_DateInput *)0;
-
 Fl_DateInput *inpDateOff_log=(Fl_DateInput *)0;
 
 Fl_Input2 *inpTimeOff_log=(Fl_Input2 *)0;
@@ -250,33 +256,49 @@ Fl_Input2 *inpTX_pwr_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpRstS_log=(Fl_Input2 *)0;
 
-Fl_DateInput *inpQSLsentdate_log=(Fl_DateInput *)0;
-
 Fl_Input2 *inpQth_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpState_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpVE_Prov_log=(Fl_Input2 *)0;
 
-Fl_Input2 *inpCountry_log=(Fl_Input2 *)0;
-
 Fl_Input2 *inpLoc_log=(Fl_Input2 *)0;
 
-Fl_Input2 *inpNotes_log=(Fl_Input2 *)0;
+Fl_Input2 *inpCountry_log=(Fl_Input2 *)0;
 
-Fl_Input2 *inpCNTY_log=(Fl_Input2 *)0;
+Fl_Tabs *Tabs=(Fl_Tabs *)0;
 
-Fl_Input2 *inpIOTA_log=(Fl_Input2 *)0;
+Fl_Group *tab_log_qsl=(Fl_Group *)0;
 
-Fl_Input2 *inpCQZ_log=(Fl_Input2 *)0;
+Fl_DateInput *inpQSLrcvddate_log=(Fl_DateInput *)0;
 
-Fl_Input2 *inpITUZ_log=(Fl_Input2 *)0;
+Fl_Choice *statusQSLrcvd=(Fl_Choice *)0;
 
-Fl_Input2 *inpCONT_log=(Fl_Input2 *)0;
+Fl_DateInput *inpEQSLrcvddate_log=(Fl_DateInput *)0;
 
-Fl_Input2 *inpDXCC_log=(Fl_Input2 *)0;
+Fl_Choice *statusEQSLrcvd=(Fl_Choice *)0;
+
+Fl_DateInput *inpLOTWrcvddate_log=(Fl_DateInput *)0;
+
+Fl_Choice *statusLOTWrcvd=(Fl_Choice *)0;
+
+Fl_DateInput *inpQSLsentdate_log=(Fl_DateInput *)0;
+
+Fl_Choice *statusQSLsent=(Fl_Choice *)0;
+
+Fl_DateInput *inpEQSLsentdate_log=(Fl_DateInput *)0;
+
+Fl_Choice *statusEQSLsent=(Fl_Choice *)0;
+
+Fl_DateInput *inpLOTWsentdate_log=(Fl_DateInput *)0;
+
+Fl_Choice *statusLOTWsent=(Fl_Choice *)0;
+
+Fl_Group *tab_log_qsl_2=(Fl_Group *)0;
 
 Fl_Input2 *inpQSL_VIA_log=(Fl_Input2 *)0;
+
+Fl_Group *tab_log_contest=(Fl_Group *)0;
 
 Fl_Input2 *inpSerNoOut_log=(Fl_Input2 *)0;
 
@@ -285,6 +307,28 @@ Fl_Input2 *inpMyXchg_log=(Fl_Input2 *)0;
 Fl_Input2 *inpSerNoIn_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpXchgIn_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inp_FD_class_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inp_FD_section_log=(Fl_Input2 *)0;
+
+Fl_Group *tab_log_other=(Fl_Group *)0;
+
+Fl_Input2 *inpCNTY_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpIOTA_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpCQZ_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpCONT_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpITUZ_log=(Fl_Input2 *)0;
+
+Fl_Input2 *inpDXCC_log=(Fl_Input2 *)0;
+
+Fl_Group *tab_log_notes=(Fl_Group *)0;
+
+Fl_Input2 *inpNotes_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inpSearchString=(Fl_Input2 *)0;
 
@@ -303,6 +347,8 @@ Fl_Button *bSearchPrev=(Fl_Button *)0;
 Fl_Button *bSearchNext=(Fl_Button *)0;
 
 Table *wBrowser=(Table *)0;
+
+Fl_Output *txtLogFile=(Fl_Output *)0;
 
 Fl_Double_Window *wCabrillo=(Fl_Double_Window *)0;
 
@@ -460,106 +506,112 @@ void create_logbook_dialogs() {
         btnSelectCall->down_box(FL_DOWN_BOX);
         btnSelectCall->value(1);
       } // Fl_Check_Button* btnSelectCall
-      { btnSelectName = new Fl_Check_Button(402, 52, 70, 15, _("Name"));
+      { btnSelectName = new Fl_Check_Button(402, 51, 70, 15, _("Name"));
         btnSelectName->down_box(FL_DOWN_BOX);
         btnSelectName->value(1);
       } // Fl_Check_Button* btnSelectName
-      { btnSelectFreq = new Fl_Check_Button(402, 73, 70, 15, _("Freq"));
+      { btnSelectFreq = new Fl_Check_Button(402, 71, 70, 15, _("Freq"));
         btnSelectFreq->down_box(FL_DOWN_BOX);
         btnSelectFreq->value(1);
       } // Fl_Check_Button* btnSelectFreq
-      { btnSelectBand = new Fl_Check_Button(402, 94, 70, 15, _("Band"));
+      { btnSelectBand = new Fl_Check_Button(402, 91, 70, 15, _("Band"));
         btnSelectBand->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectBand
-      { btnSelectMode = new Fl_Check_Button(402, 115, 70, 15, _("Mode"));
+      { btnSelectMode = new Fl_Check_Button(402, 111, 70, 15, _("Mode"));
         btnSelectMode->down_box(FL_DOWN_BOX);
         btnSelectMode->value(1);
       } // Fl_Check_Button* btnSelectMode
-      { btnSelectQSOdateOn = new Fl_Check_Button(402, 136, 70, 15, _("QSO Date On"));
+      { btnSelectQSOdateOn = new Fl_Check_Button(402, 132, 70, 15, _("QSO Date On"));
         btnSelectQSOdateOn->down_box(FL_DOWN_BOX);
         btnSelectQSOdateOn->value(1);
       } // Fl_Check_Button* btnSelectQSOdateOn
-      { btnSelectQSOdateOff = new Fl_Check_Button(402, 157, 70, 15, _("QSO Date Off"));
+      { btnSelectQSOdateOff = new Fl_Check_Button(402, 152, 70, 15, _("QSO Date Off"));
         btnSelectQSOdateOff->down_box(FL_DOWN_BOX);
         btnSelectQSOdateOff->value(1);
       } // Fl_Check_Button* btnSelectQSOdateOff
-      { btnSelectTimeON = new Fl_Check_Button(402, 178, 70, 15, _("Time ON"));
+      { btnSelectTimeON = new Fl_Check_Button(402, 172, 70, 15, _("Time ON"));
         btnSelectTimeON->down_box(FL_DOWN_BOX);
         btnSelectTimeON->value(1);
       } // Fl_Check_Button* btnSelectTimeON
-      { btnSelectTimeOFF = new Fl_Check_Button(402, 199, 70, 15, _("Time OFF"));
+      { btnSelectTimeOFF = new Fl_Check_Button(402, 192, 70, 15, _("Time OFF"));
         btnSelectTimeOFF->down_box(FL_DOWN_BOX);
         btnSelectTimeOFF->value(1);
       } // Fl_Check_Button* btnSelectTimeOFF
-      { btnSelectTX_pwr = new Fl_Check_Button(402, 220, 70, 15, _("TX Power"));
+      { btnSelectTX_pwr = new Fl_Check_Button(402, 212, 70, 15, _("TX Power"));
         btnSelectTX_pwr->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectTX_pwr
-      { btnSelectRSTsent = new Fl_Check_Button(402, 241, 70, 15, _("RST sent"));
+      { btnSelectRSTsent = new Fl_Check_Button(402, 233, 70, 15, _("RST sent"));
         btnSelectRSTsent->down_box(FL_DOWN_BOX);
         btnSelectRSTsent->value(1);
       } // Fl_Check_Button* btnSelectRSTsent
-      { btnSelectRSTrcvd = new Fl_Check_Button(402, 262, 70, 15, _("RST rcvd"));
+      { btnSelectRSTrcvd = new Fl_Check_Button(402, 253, 70, 15, _("RST rcvd"));
         btnSelectRSTrcvd->down_box(FL_DOWN_BOX);
         btnSelectRSTrcvd->value(1);
       } // Fl_Check_Button* btnSelectRSTrcvd
-      { btnSelectQth = new Fl_Check_Button(402, 283, 70, 15, _("Qth"));
+      { btnSelectQth = new Fl_Check_Button(402, 273, 70, 15, _("Qth"));
         btnSelectQth->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectQth
-      { btnSelectLOC = new Fl_Check_Button(402, 304, 70, 15, _("LOC"));
+      { btnSelectLOC = new Fl_Check_Button(402, 293, 70, 15, _("LOC"));
         btnSelectLOC->down_box(FL_DOWN_BOX);
         btnSelectLOC->value(1);
       } // Fl_Check_Button* btnSelectLOC
-      { btnSelectState = new Fl_Check_Button(402, 325, 70, 15, _("State"));
+      { btnSelectState = new Fl_Check_Button(402, 313, 70, 15, _("State"));
         btnSelectState->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectState
-      { btnSelectQSL_VIA = new Fl_Check_Button(402, 346, 70, 15, _("QSL-VIA"));
+      { btnSelectQSL_VIA = new Fl_Check_Button(402, 334, 70, 15, _("QSL-VIA"));
         btnSelectQSL_VIA->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectQSL_VIA
       { btnSelectProvince = new Fl_Check_Button(533, 31, 70, 15, _("Province"));
         btnSelectProvince->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectProvince
-      { btnSelectCountry = new Fl_Check_Button(533, 52, 70, 15, _("Country"));
+      { btnSelectCountry = new Fl_Check_Button(533, 51, 70, 15, _("Country"));
         btnSelectCountry->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectCountry
-      { btnSelectNotes = new Fl_Check_Button(533, 73, 70, 15, _("Notes"));
+      { btnSelectNotes = new Fl_Check_Button(533, 71, 70, 15, _("Notes"));
         btnSelectNotes->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectNotes
-      { btnSelectQSLrcvd = new Fl_Check_Button(533, 94, 70, 15, _("QSL rcvd date"));
+      { btnSelectQSLrcvd = new Fl_Check_Button(533, 91, 70, 15, _("QSL rcvd date"));
         btnSelectQSLrcvd->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectQSLrcvd
-      { btnSelectQSLsent = new Fl_Check_Button(533, 115, 70, 15, _("QSL sent date"));
+      { btnSelectQSLsent = new Fl_Check_Button(533, 112, 70, 15, _("QSL sent date"));
         btnSelectQSLsent->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectQSLsent
-      { btnSelectSerialIN = new Fl_Check_Button(533, 136, 70, 15, _("Serial # in"));
+      { btnSelectSerialIN = new Fl_Check_Button(533, 132, 70, 15, _("Serial # in"));
         btnSelectSerialIN->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectSerialIN
-      { btnSelectSerialOUT = new Fl_Check_Button(533, 157, 70, 15, _("Serial # out"));
+      { btnSelectSerialOUT = new Fl_Check_Button(533, 152, 70, 15, _("Serial # out"));
         btnSelectSerialOUT->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectSerialOUT
-      { btnSelectXchgIn = new Fl_Check_Button(533, 178, 70, 15, _("Exchange In"));
+      { btnSelectXchgIn = new Fl_Check_Button(533, 172, 70, 15, _("Exchange In"));
         btnSelectXchgIn->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectXchgIn
-      { btnSelectMyXchg = new Fl_Check_Button(533, 199, 70, 15, _("Exchange Out"));
+      { btnSelectMyXchg = new Fl_Check_Button(533, 193, 70, 15, _("Exchange Out"));
         btnSelectMyXchg->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectMyXchg
-      { btnSelectCNTY = new Fl_Check_Button(533, 220, 70, 15, _("County"));
+      { btnSelectCNTY = new Fl_Check_Button(533, 213, 70, 15, _("County"));
         btnSelectCNTY->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectCNTY
-      { btnSelectCONT = new Fl_Check_Button(533, 241, 70, 15, _("Continent"));
+      { btnSelectCONT = new Fl_Check_Button(533, 233, 70, 15, _("Continent"));
         btnSelectCONT->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectCONT
-      { btnSelectCQZ = new Fl_Check_Button(533, 262, 70, 15, _("CQZ"));
+      { btnSelectCQZ = new Fl_Check_Button(533, 253, 70, 15, _("CQZ"));
         btnSelectCQZ->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectCQZ
-      { btnSelectDXCC = new Fl_Check_Button(533, 283, 70, 15, _("DXCC"));
+      { btnSelectDXCC = new Fl_Check_Button(533, 274, 70, 15, _("DXCC"));
         btnSelectDXCC->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectDXCC
-      { btnSelectIOTA = new Fl_Check_Button(533, 304, 70, 15, _("IOTA"));
+      { btnSelectIOTA = new Fl_Check_Button(533, 294, 70, 15, _("IOTA"));
         btnSelectIOTA->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectIOTA
-      { btnSelectITUZ = new Fl_Check_Button(533, 325, 70, 15, _("ITUZ"));
+      { btnSelectITUZ = new Fl_Check_Button(533, 314, 70, 15, _("ITUZ"));
         btnSelectITUZ->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectITUZ
+      { btnSelectClass = new Fl_Check_Button(533, 334, 70, 15, _("FD class"));
+        btnSelectClass->down_box(FL_DOWN_BOX);
+      } // Fl_Check_Button* btnSelectClass
+      { btnSelectSection = new Fl_Check_Button(533, 355, 70, 15, _("FD section"));
+        btnSelectSection->down_box(FL_DOWN_BOX);
+      } // Fl_Check_Button* btnSelectSection
       { btnSetFieldDefaults = new Fl_Button(578, 375, 90, 24, _("Defaults"));
         btnSetFieldDefaults->callback((Fl_Callback*)cb_btnSetFieldDefaults);
       } // Fl_Button* btnSetFieldDefaults
@@ -567,7 +619,7 @@ void create_logbook_dialogs() {
     } // Fl_Group* o
     wExport->end();
   } // Fl_Double_Window* wExport
-  { dlgLogbook = new Fl_Double_Window(590, 514, _("Logbook"));
+  { dlgLogbook = new Fl_Double_Window(590, 490, _("Logbook"));
     { inpDate_log = new Fl_DateInput(4, 24, 100, 24, _("Date On"));
       inpDate_log->tooltip(_("Date QSO started"));
       inpDate_log->box(FL_DOWN_BOX);
@@ -605,7 +657,7 @@ void create_logbook_dialogs() {
       inpCall_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpCall_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpCall_log
-    { inpName_log = new Fl_Input2(280, 24, 166, 24, _("Name"));
+    { inpName_log = new Fl_Input2(280, 24, 185, 24, _("Name"));
       inpName_log->tooltip(_("Operator worked"));
       inpName_log->box(FL_DOWN_BOX);
       inpName_log->color(FL_BACKGROUND2_COLOR);
@@ -617,7 +669,7 @@ void create_logbook_dialogs() {
       inpName_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpName_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpName_log
-    { inpRstR_log = new Fl_Input2(448, 24, 36, 24, _("In"));
+    { inpRstR_log = new Fl_Input2(468, 24, 36, 24, _("In"));
       inpRstR_log->tooltip(_("Rst received"));
       inpRstR_log->box(FL_DOWN_BOX);
       inpRstR_log->color(FL_BACKGROUND2_COLOR);
@@ -629,19 +681,6 @@ void create_logbook_dialogs() {
       inpRstR_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpRstR_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpRstR_log
-    { Fl_DateInput* o = inpQSLrcvddate_log = new Fl_DateInput(486, 24, 100, 24, _("QSL-rcvd"));
-      inpQSLrcvddate_log->tooltip(_("QSL received on this date"));
-      inpQSLrcvddate_log->box(FL_DOWN_BOX);
-      inpQSLrcvddate_log->color(FL_BACKGROUND2_COLOR);
-      inpQSLrcvddate_log->selection_color(FL_SELECTION_COLOR);
-      inpQSLrcvddate_log->labeltype(FL_NORMAL_LABEL);
-      inpQSLrcvddate_log->labelfont(0);
-      inpQSLrcvddate_log->labelsize(14);
-      inpQSLrcvddate_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpQSLrcvddate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpQSLrcvddate_log->when(FL_WHEN_RELEASE);
-      o->format(2);
-    } // Fl_DateInput* inpQSLrcvddate_log
     { inpDateOff_log = new Fl_DateInput(4, 68, 100, 24, _("Date Off"));
       inpDateOff_log->tooltip(_("Date QSO Ended"));
       inpDateOff_log->box(FL_DOWN_BOX);
@@ -679,7 +718,7 @@ void create_logbook_dialogs() {
       inpFreq_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpFreq_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpFreq_log
-    { inpMode_log = new Fl_Input2(280, 68, 127, 24, _("Mode"));
+    { inpMode_log = new Fl_Input2(280, 68, 146, 24, _("Mode"));
       inpMode_log->tooltip(_("Mode in use"));
       inpMode_log->box(FL_DOWN_BOX);
       inpMode_log->color(FL_BACKGROUND2_COLOR);
@@ -691,7 +730,7 @@ void create_logbook_dialogs() {
       inpMode_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpMode_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpMode_log
-    { inpTX_pwr_log = new Fl_Input2(410, 68, 36, 24, _("Pwr"));
+    { inpTX_pwr_log = new Fl_Input2(429, 68, 36, 24, _("Pwr"));
       inpTX_pwr_log->tooltip(_("Transmit power used"));
       inpTX_pwr_log->box(FL_DOWN_BOX);
       inpTX_pwr_log->color(FL_BACKGROUND2_COLOR);
@@ -703,7 +742,7 @@ void create_logbook_dialogs() {
       inpTX_pwr_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpTX_pwr_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpTX_pwr_log
-    { inpRstS_log = new Fl_Input2(448, 68, 36, 24, _("Out"));
+    { inpRstS_log = new Fl_Input2(468, 68, 36, 24, _("Out"));
       inpRstS_log->tooltip(_("Rst sent"));
       inpRstS_log->box(FL_DOWN_BOX);
       inpRstS_log->color(FL_BACKGROUND2_COLOR);
@@ -715,20 +754,7 @@ void create_logbook_dialogs() {
       inpRstS_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpRstS_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpRstS_log
-    { Fl_DateInput* o = inpQSLsentdate_log = new Fl_DateInput(486, 68, 100, 24, _("QSL-sent"));
-      inpQSLsentdate_log->tooltip(_("QSL sent on this date"));
-      inpQSLsentdate_log->box(FL_DOWN_BOX);
-      inpQSLsentdate_log->color(FL_BACKGROUND2_COLOR);
-      inpQSLsentdate_log->selection_color(FL_SELECTION_COLOR);
-      inpQSLsentdate_log->labeltype(FL_NORMAL_LABEL);
-      inpQSLsentdate_log->labelfont(0);
-      inpQSLsentdate_log->labelsize(14);
-      inpQSLsentdate_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpQSLsentdate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpQSLsentdate_log->when(FL_WHEN_RELEASE);
-      o->format(2);
-    } // Fl_DateInput* inpQSLsentdate_log
-    { inpQth_log = new Fl_Input2(4, 112, 232, 24, _("Qth"));
+    { inpQth_log = new Fl_Input2(5, 112, 280, 24, _("Qth"));
       inpQth_log->tooltip(_("City of station worked"));
       inpQth_log->box(FL_DOWN_BOX);
       inpQth_log->color(FL_BACKGROUND2_COLOR);
@@ -740,7 +766,7 @@ void create_logbook_dialogs() {
       inpQth_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpQth_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpQth_log
-    { inpState_log = new Fl_Input2(240, 112, 44, 24, _("St"));
+    { inpState_log = new Fl_Input2(288, 112, 44, 24, _("St"));
       inpState_log->tooltip(_("US state of station worked"));
       inpState_log->box(FL_DOWN_BOX);
       inpState_log->color(FL_BACKGROUND2_COLOR);
@@ -752,7 +778,7 @@ void create_logbook_dialogs() {
       inpState_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpState_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpState_log
-    { inpVE_Prov_log = new Fl_Input2(287, 112, 44, 24, _("Pr"));
+    { inpVE_Prov_log = new Fl_Input2(335, 112, 44, 24, _("Pr"));
       inpVE_Prov_log->tooltip(_("Province of station worked"));
       inpVE_Prov_log->box(FL_DOWN_BOX);
       inpVE_Prov_log->color(FL_BACKGROUND2_COLOR);
@@ -764,19 +790,7 @@ void create_logbook_dialogs() {
       inpVE_Prov_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpVE_Prov_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpVE_Prov_log
-    { inpCountry_log = new Fl_Input2(334, 112, 166, 24, _("Country"));
-      inpCountry_log->tooltip(_("Country of station worked"));
-      inpCountry_log->box(FL_DOWN_BOX);
-      inpCountry_log->color(FL_BACKGROUND2_COLOR);
-      inpCountry_log->selection_color(FL_SELECTION_COLOR);
-      inpCountry_log->labeltype(FL_NORMAL_LABEL);
-      inpCountry_log->labelfont(0);
-      inpCountry_log->labelsize(14);
-      inpCountry_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpCountry_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpCountry_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpCountry_log
-    { inpLoc_log = new Fl_Input2(506, 112, 80, 24, _("Loc"));
+    { inpLoc_log = new Fl_Input2(508, 68, 76, 24, _("Loc"));
       inpLoc_log->tooltip(_("Stations grid square"));
       inpLoc_log->box(FL_DOWN_BOX);
       inpLoc_log->color(FL_BACKGROUND2_COLOR);
@@ -788,152 +802,318 @@ void create_logbook_dialogs() {
       inpLoc_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       inpLoc_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpLoc_log
-    { inpNotes_log = new Fl_Input2(4, 156, 300, 72, _("Notes"));
-      inpNotes_log->tooltip(_("Interesting notes"));
-      inpNotes_log->type(4);
-      inpNotes_log->box(FL_DOWN_BOX);
-      inpNotes_log->color(FL_BACKGROUND2_COLOR);
-      inpNotes_log->selection_color(FL_SELECTION_COLOR);
-      inpNotes_log->labeltype(FL_NORMAL_LABEL);
-      inpNotes_log->labelfont(0);
-      inpNotes_log->labelsize(14);
-      inpNotes_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpNotes_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpNotes_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpNotes_log
-    { inpCNTY_log = new Fl_Input2(311, 156, 120, 24, _("County"));
-      inpCNTY_log->tooltip(_("County"));
-      inpCNTY_log->box(FL_DOWN_BOX);
-      inpCNTY_log->color(FL_BACKGROUND2_COLOR);
-      inpCNTY_log->selection_color(FL_SELECTION_COLOR);
-      inpCNTY_log->labeltype(FL_NORMAL_LABEL);
-      inpCNTY_log->labelfont(0);
-      inpCNTY_log->labelsize(14);
-      inpCNTY_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpCNTY_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpCNTY_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpCNTY_log
-    { inpIOTA_log = new Fl_Input2(435, 156, 70, 24, _("IOTA"));
-      inpIOTA_log->tooltip(_("Islands on the air"));
-      inpIOTA_log->box(FL_DOWN_BOX);
-      inpIOTA_log->color(FL_BACKGROUND2_COLOR);
-      inpIOTA_log->selection_color(FL_SELECTION_COLOR);
-      inpIOTA_log->labeltype(FL_NORMAL_LABEL);
-      inpIOTA_log->labelfont(0);
-      inpIOTA_log->labelsize(14);
-      inpIOTA_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpIOTA_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpIOTA_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpIOTA_log
-    { inpCQZ_log = new Fl_Input2(516, 156, 70, 24, _("CQZ"));
-      inpCQZ_log->tooltip(_("CQ zone"));
-      inpCQZ_log->box(FL_DOWN_BOX);
-      inpCQZ_log->color(FL_BACKGROUND2_COLOR);
-      inpCQZ_log->selection_color(FL_SELECTION_COLOR);
-      inpCQZ_log->labeltype(FL_NORMAL_LABEL);
-      inpCQZ_log->labelfont(0);
-      inpCQZ_log->labelsize(14);
-      inpCQZ_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpCQZ_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpCQZ_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpCQZ_log
-    { inpITUZ_log = new Fl_Input2(311, 204, 59, 24, _("ITUZ"));
-      inpITUZ_log->tooltip(_("ITU zone"));
-      inpITUZ_log->box(FL_DOWN_BOX);
-      inpITUZ_log->color(FL_BACKGROUND2_COLOR);
-      inpITUZ_log->selection_color(FL_SELECTION_COLOR);
-      inpITUZ_log->labeltype(FL_NORMAL_LABEL);
-      inpITUZ_log->labelfont(0);
-      inpITUZ_log->labelsize(14);
-      inpITUZ_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpITUZ_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpITUZ_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpITUZ_log
-    { inpCONT_log = new Fl_Input2(374, 204, 66, 24, _("CONT"));
-      inpCONT_log->tooltip(_("Continent"));
-      inpCONT_log->box(FL_DOWN_BOX);
-      inpCONT_log->color(FL_BACKGROUND2_COLOR);
-      inpCONT_log->selection_color(FL_SELECTION_COLOR);
-      inpCONT_log->labeltype(FL_NORMAL_LABEL);
-      inpCONT_log->labelfont(0);
-      inpCONT_log->labelsize(14);
-      inpCONT_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpCONT_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpCONT_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpCONT_log
-    { inpDXCC_log = new Fl_Input2(445, 204, 70, 24, _("DXCC"));
-      inpDXCC_log->tooltip(_("DXCC designator"));
-      inpDXCC_log->box(FL_DOWN_BOX);
-      inpDXCC_log->color(FL_BACKGROUND2_COLOR);
-      inpDXCC_log->selection_color(FL_SELECTION_COLOR);
-      inpDXCC_log->labeltype(FL_NORMAL_LABEL);
-      inpDXCC_log->labelfont(0);
-      inpDXCC_log->labelsize(14);
-      inpDXCC_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpDXCC_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpDXCC_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpDXCC_log
-    { inpQSL_VIA_log = new Fl_Input2(518, 204, 70, 24, _("QSL-VIA"));
-      inpQSL_VIA_log->tooltip(_("QSL route of contacted station"));
-      inpQSL_VIA_log->box(FL_DOWN_BOX);
-      inpQSL_VIA_log->color(FL_BACKGROUND2_COLOR);
-      inpQSL_VIA_log->selection_color(FL_SELECTION_COLOR);
-      inpQSL_VIA_log->labeltype(FL_NORMAL_LABEL);
-      inpQSL_VIA_log->labelfont(0);
-      inpQSL_VIA_log->labelsize(14);
-      inpQSL_VIA_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpQSL_VIA_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-      inpQSL_VIA_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpQSL_VIA_log
-    { inpSerNoOut_log = new Fl_Input2(4, 252, 55, 24, _("Ser out"));
-      inpSerNoOut_log->tooltip(_("Contest serial # sent"));
-      inpSerNoOut_log->box(FL_DOWN_BOX);
-      inpSerNoOut_log->color(FL_BACKGROUND2_COLOR);
-      inpSerNoOut_log->selection_color(FL_SELECTION_COLOR);
-      inpSerNoOut_log->labeltype(FL_NORMAL_LABEL);
-      inpSerNoOut_log->labelfont(0);
-      inpSerNoOut_log->labelsize(14);
-      inpSerNoOut_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpSerNoOut_log->align(Fl_Align(FL_ALIGN_TOP));
-      inpSerNoOut_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpSerNoOut_log
-    { inpMyXchg_log = new Fl_Input2(63, 252, 176, 24, _("Exchange Out"));
-      inpMyXchg_log->tooltip(_("Contest exchange sent"));
-      inpMyXchg_log->box(FL_DOWN_BOX);
-      inpMyXchg_log->color(FL_BACKGROUND2_COLOR);
-      inpMyXchg_log->selection_color(FL_SELECTION_COLOR);
-      inpMyXchg_log->labeltype(FL_NORMAL_LABEL);
-      inpMyXchg_log->labelfont(0);
-      inpMyXchg_log->labelsize(14);
-      inpMyXchg_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpMyXchg_log->align(Fl_Align(FL_ALIGN_TOP));
-      inpMyXchg_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpMyXchg_log
-    { inpSerNoIn_log = new Fl_Input2(242, 252, 55, 24, _("Ser in"));
-      inpSerNoIn_log->tooltip(_("Contest serial # received"));
-      inpSerNoIn_log->box(FL_DOWN_BOX);
-      inpSerNoIn_log->color(FL_BACKGROUND2_COLOR);
-      inpSerNoIn_log->selection_color(FL_SELECTION_COLOR);
-      inpSerNoIn_log->labeltype(FL_NORMAL_LABEL);
-      inpSerNoIn_log->labelfont(0);
-      inpSerNoIn_log->labelsize(14);
-      inpSerNoIn_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpSerNoIn_log->align(Fl_Align(FL_ALIGN_TOP));
-      inpSerNoIn_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpSerNoIn_log
-    { inpXchgIn_log = new Fl_Input2(299, 252, 176, 24, _("Exchange In"));
-      inpXchgIn_log->tooltip(_("Contest exchange received"));
-      inpXchgIn_log->box(FL_DOWN_BOX);
-      inpXchgIn_log->color(FL_BACKGROUND2_COLOR);
-      inpXchgIn_log->selection_color(FL_SELECTION_COLOR);
-      inpXchgIn_log->labeltype(FL_NORMAL_LABEL);
-      inpXchgIn_log->labelfont(0);
-      inpXchgIn_log->labelsize(14);
-      inpXchgIn_log->labelcolor(FL_FOREGROUND_COLOR);
-      inpXchgIn_log->align(Fl_Align(FL_ALIGN_TOP));
-      inpXchgIn_log->when(FL_WHEN_RELEASE);
-    } // Fl_Input2* inpXchgIn_log
-    { inpSearchString = new Fl_Input2(481, 252, 105, 24, _("Call Search"));
+    { inpCountry_log = new Fl_Input2(382, 112, 202, 24, _("Country"));
+      inpCountry_log->tooltip(_("Country of station worked"));
+      inpCountry_log->box(FL_DOWN_BOX);
+      inpCountry_log->color(FL_BACKGROUND2_COLOR);
+      inpCountry_log->selection_color(FL_SELECTION_COLOR);
+      inpCountry_log->labeltype(FL_NORMAL_LABEL);
+      inpCountry_log->labelfont(0);
+      inpCountry_log->labelsize(14);
+      inpCountry_log->labelcolor(FL_FOREGROUND_COLOR);
+      inpCountry_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+      inpCountry_log->when(FL_WHEN_RELEASE);
+    } // Fl_Input2* inpCountry_log
+    { Tabs = new Fl_Tabs(5, 140, 474, 120);
+      { tab_log_qsl = new Fl_Group(5, 162, 474, 94, _("QSL"));
+        { Fl_DateInput* o = inpQSLrcvddate_log = new Fl_DateInput(9, 183, 100, 24, _("QSL-rcvd"));
+          inpQSLrcvddate_log->tooltip(_("QSL received on this date"));
+          inpQSLrcvddate_log->box(FL_DOWN_BOX);
+          inpQSLrcvddate_log->color(FL_BACKGROUND2_COLOR);
+          inpQSLrcvddate_log->selection_color(FL_SELECTION_COLOR);
+          inpQSLrcvddate_log->labeltype(FL_NORMAL_LABEL);
+          inpQSLrcvddate_log->labelfont(0);
+          inpQSLrcvddate_log->labelsize(14);
+          inpQSLrcvddate_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpQSLrcvddate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpQSLrcvddate_log->when(FL_WHEN_RELEASE);
+          o->format(2);
+        } // Fl_DateInput* inpQSLrcvddate_log
+        { Fl_Choice* o = statusQSLrcvd = new Fl_Choice(112, 183, 50, 24, _("Status"));
+          statusQSLrcvd->down_box(FL_BORDER_BOX);
+          statusQSLrcvd->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          o->add("N");o->add("Y");o->add("R");
+        } // Fl_Choice* statusQSLrcvd
+        { Fl_DateInput* o = inpEQSLrcvddate_log = new Fl_DateInput(165, 183, 100, 24, _("EQSL-rcvd"));
+          inpEQSLrcvddate_log->tooltip(_("QSL received on this date"));
+          inpEQSLrcvddate_log->box(FL_DOWN_BOX);
+          inpEQSLrcvddate_log->color(FL_BACKGROUND2_COLOR);
+          inpEQSLrcvddate_log->selection_color(FL_SELECTION_COLOR);
+          inpEQSLrcvddate_log->labeltype(FL_NORMAL_LABEL);
+          inpEQSLrcvddate_log->labelfont(0);
+          inpEQSLrcvddate_log->labelsize(14);
+          inpEQSLrcvddate_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpEQSLrcvddate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpEQSLrcvddate_log->when(FL_WHEN_RELEASE);
+          o->format(2);
+        } // Fl_DateInput* inpEQSLrcvddate_log
+        { Fl_Choice* o = statusEQSLrcvd = new Fl_Choice(269, 183, 50, 24, _("Status"));
+          statusEQSLrcvd->down_box(FL_BORDER_BOX);
+          statusEQSLrcvd->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          o->add("N");o->add("Y");o->add("R");
+        } // Fl_Choice* statusEQSLrcvd
+        { Fl_DateInput* o = inpLOTWrcvddate_log = new Fl_DateInput(322, 183, 100, 24, _("LOTW-rcvd"));
+          inpLOTWrcvddate_log->tooltip(_("QSL received on this date"));
+          inpLOTWrcvddate_log->box(FL_DOWN_BOX);
+          inpLOTWrcvddate_log->color(FL_BACKGROUND2_COLOR);
+          inpLOTWrcvddate_log->selection_color(FL_SELECTION_COLOR);
+          inpLOTWrcvddate_log->labeltype(FL_NORMAL_LABEL);
+          inpLOTWrcvddate_log->labelfont(0);
+          inpLOTWrcvddate_log->labelsize(14);
+          inpLOTWrcvddate_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpLOTWrcvddate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpLOTWrcvddate_log->when(FL_WHEN_RELEASE);
+          o->format(2);
+        } // Fl_DateInput* inpLOTWrcvddate_log
+        { Fl_Choice* o = statusLOTWrcvd = new Fl_Choice(426, 183, 50, 24, _("Status"));
+          statusLOTWrcvd->down_box(FL_BORDER_BOX);
+          statusLOTWrcvd->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          o->add("N");o->add("Y");o->add("R");
+        } // Fl_Choice* statusLOTWrcvd
+        { Fl_DateInput* o = inpQSLsentdate_log = new Fl_DateInput(9, 229, 100, 24, _("QSL-sent"));
+          inpQSLsentdate_log->tooltip(_("QSL sent on this date"));
+          inpQSLsentdate_log->box(FL_DOWN_BOX);
+          inpQSLsentdate_log->color(FL_BACKGROUND2_COLOR);
+          inpQSLsentdate_log->selection_color(FL_SELECTION_COLOR);
+          inpQSLsentdate_log->labeltype(FL_NORMAL_LABEL);
+          inpQSLsentdate_log->labelfont(0);
+          inpQSLsentdate_log->labelsize(14);
+          inpQSLsentdate_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpQSLsentdate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpQSLsentdate_log->when(FL_WHEN_RELEASE);
+          o->format(2);
+        } // Fl_DateInput* inpQSLsentdate_log
+        { Fl_Choice* o = statusQSLsent = new Fl_Choice(112, 229, 50, 24, _("Status"));
+          statusQSLsent->down_box(FL_BORDER_BOX);
+          statusQSLsent->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          o->add("N");o->add("Y");o->add("R");
+        } // Fl_Choice* statusQSLsent
+        { Fl_DateInput* o = inpEQSLsentdate_log = new Fl_DateInput(165, 229, 100, 24, _("EQSL-sent"));
+          inpEQSLsentdate_log->tooltip(_("QSL sent on this date"));
+          inpEQSLsentdate_log->box(FL_DOWN_BOX);
+          inpEQSLsentdate_log->color(FL_BACKGROUND2_COLOR);
+          inpEQSLsentdate_log->selection_color(FL_SELECTION_COLOR);
+          inpEQSLsentdate_log->labeltype(FL_NORMAL_LABEL);
+          inpEQSLsentdate_log->labelfont(0);
+          inpEQSLsentdate_log->labelsize(14);
+          inpEQSLsentdate_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpEQSLsentdate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpEQSLsentdate_log->when(FL_WHEN_RELEASE);
+          o->format(2);
+        } // Fl_DateInput* inpEQSLsentdate_log
+        { Fl_Choice* o = statusEQSLsent = new Fl_Choice(269, 229, 50, 24, _("Status"));
+          statusEQSLsent->down_box(FL_BORDER_BOX);
+          statusEQSLsent->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          o->add("N");o->add("Y");o->add("R");
+        } // Fl_Choice* statusEQSLsent
+        { Fl_DateInput* o = inpLOTWsentdate_log = new Fl_DateInput(322, 229, 100, 24, _("LOTW-sent"));
+          inpLOTWsentdate_log->tooltip(_("QSL sent on this date"));
+          inpLOTWsentdate_log->box(FL_DOWN_BOX);
+          inpLOTWsentdate_log->color(FL_BACKGROUND2_COLOR);
+          inpLOTWsentdate_log->selection_color(FL_SELECTION_COLOR);
+          inpLOTWsentdate_log->labeltype(FL_NORMAL_LABEL);
+          inpLOTWsentdate_log->labelfont(0);
+          inpLOTWsentdate_log->labelsize(14);
+          inpLOTWsentdate_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpLOTWsentdate_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpLOTWsentdate_log->when(FL_WHEN_RELEASE);
+          o->format(2);
+        } // Fl_DateInput* inpLOTWsentdate_log
+        { Fl_Choice* o = statusLOTWsent = new Fl_Choice(426, 229, 50, 24, _("Status"));
+          statusLOTWsent->down_box(FL_BORDER_BOX);
+          statusLOTWsent->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          o->add("N");o->add("Y");o->add("R");
+        } // Fl_Choice* statusLOTWsent
+        tab_log_qsl->end();
+      } // Fl_Group* tab_log_qsl
+      { tab_log_qsl_2 = new Fl_Group(5, 162, 474, 94, _("QSL-2"));
+        tab_log_qsl_2->hide();
+        { inpQSL_VIA_log = new Fl_Input2(25, 191, 170, 24, _("QSL-VIA"));
+          inpQSL_VIA_log->tooltip(_("QSL route of contacted station"));
+          inpQSL_VIA_log->box(FL_DOWN_BOX);
+          inpQSL_VIA_log->color(FL_BACKGROUND2_COLOR);
+          inpQSL_VIA_log->selection_color(FL_SELECTION_COLOR);
+          inpQSL_VIA_log->labeltype(FL_NORMAL_LABEL);
+          inpQSL_VIA_log->labelfont(0);
+          inpQSL_VIA_log->labelsize(14);
+          inpQSL_VIA_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpQSL_VIA_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpQSL_VIA_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpQSL_VIA_log
+        tab_log_qsl_2->end();
+      } // Fl_Group* tab_log_qsl_2
+      { tab_log_contest = new Fl_Group(5, 162, 474, 94, _("Contest"));
+        tab_log_contest->hide();
+        { inpSerNoOut_log = new Fl_Input2(72, 174, 55, 24, _("Ser out"));
+          inpSerNoOut_log->tooltip(_("Contest seral # sent"));
+          inpSerNoOut_log->box(FL_DOWN_BOX);
+          inpSerNoOut_log->color(FL_BACKGROUND2_COLOR);
+          inpSerNoOut_log->selection_color(FL_SELECTION_COLOR);
+          inpSerNoOut_log->labeltype(FL_NORMAL_LABEL);
+          inpSerNoOut_log->labelfont(0);
+          inpSerNoOut_log->labelsize(14);
+          inpSerNoOut_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpSerNoOut_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inpSerNoOut_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpSerNoOut_log
+        { inpMyXchg_log = new Fl_Input2(210, 174, 263, 24, _("Exch Out"));
+          inpMyXchg_log->tooltip(_("Contest exchange sent"));
+          inpMyXchg_log->box(FL_DOWN_BOX);
+          inpMyXchg_log->color(FL_BACKGROUND2_COLOR);
+          inpMyXchg_log->selection_color(FL_SELECTION_COLOR);
+          inpMyXchg_log->labeltype(FL_NORMAL_LABEL);
+          inpMyXchg_log->labelfont(0);
+          inpMyXchg_log->labelsize(14);
+          inpMyXchg_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpMyXchg_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inpMyXchg_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpMyXchg_log
+        { inpSerNoIn_log = new Fl_Input2(72, 202, 55, 24, _("Ser in"));
+          inpSerNoIn_log->tooltip(_("Contest serial # received"));
+          inpSerNoIn_log->box(FL_DOWN_BOX);
+          inpSerNoIn_log->color(FL_BACKGROUND2_COLOR);
+          inpSerNoIn_log->selection_color(FL_SELECTION_COLOR);
+          inpSerNoIn_log->labeltype(FL_NORMAL_LABEL);
+          inpSerNoIn_log->labelfont(0);
+          inpSerNoIn_log->labelsize(14);
+          inpSerNoIn_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpSerNoIn_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inpSerNoIn_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpSerNoIn_log
+        { inpXchgIn_log = new Fl_Input2(210, 202, 263, 24, _("Exch In"));
+          inpXchgIn_log->tooltip(_("Contest exchange received"));
+          inpXchgIn_log->box(FL_DOWN_BOX);
+          inpXchgIn_log->color(FL_BACKGROUND2_COLOR);
+          inpXchgIn_log->selection_color(FL_SELECTION_COLOR);
+          inpXchgIn_log->labeltype(FL_NORMAL_LABEL);
+          inpXchgIn_log->labelfont(0);
+          inpXchgIn_log->labelsize(14);
+          inpXchgIn_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpXchgIn_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inpXchgIn_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpXchgIn_log
+        { inp_FD_class_log = new Fl_Input2(72, 231, 55, 24, _("FD class"));
+          inp_FD_class_log->tooltip(_("Contest serial # received"));
+          inp_FD_class_log->box(FL_DOWN_BOX);
+          inp_FD_class_log->color(FL_BACKGROUND2_COLOR);
+          inp_FD_class_log->selection_color(FL_SELECTION_COLOR);
+          inp_FD_class_log->labeltype(FL_NORMAL_LABEL);
+          inp_FD_class_log->labelfont(0);
+          inp_FD_class_log->labelsize(14);
+          inp_FD_class_log->labelcolor(FL_FOREGROUND_COLOR);
+          inp_FD_class_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inp_FD_class_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inp_FD_class_log
+        { inp_FD_section_log = new Fl_Input2(210, 231, 55, 24, _("FD section"));
+          inp_FD_section_log->tooltip(_("Contest serial # received"));
+          inp_FD_section_log->box(FL_DOWN_BOX);
+          inp_FD_section_log->color(FL_BACKGROUND2_COLOR);
+          inp_FD_section_log->selection_color(FL_SELECTION_COLOR);
+          inp_FD_section_log->labeltype(FL_NORMAL_LABEL);
+          inp_FD_section_log->labelfont(0);
+          inp_FD_section_log->labelsize(14);
+          inp_FD_section_log->labelcolor(FL_FOREGROUND_COLOR);
+          inp_FD_section_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inp_FD_section_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inp_FD_section_log
+        tab_log_contest->end();
+      } // Fl_Group* tab_log_contest
+      { tab_log_other = new Fl_Group(5, 162, 474, 94, _("Other"));
+        tab_log_other->hide();
+        { inpCNTY_log = new Fl_Input2(16, 182, 240, 24, _("County"));
+          inpCNTY_log->tooltip(_("County"));
+          inpCNTY_log->box(FL_DOWN_BOX);
+          inpCNTY_log->color(FL_BACKGROUND2_COLOR);
+          inpCNTY_log->selection_color(FL_SELECTION_COLOR);
+          inpCNTY_log->labeltype(FL_NORMAL_LABEL);
+          inpCNTY_log->labelfont(0);
+          inpCNTY_log->labelsize(14);
+          inpCNTY_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpCNTY_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpCNTY_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpCNTY_log
+        { inpIOTA_log = new Fl_Input2(270, 182, 90, 24, _("IOTA"));
+          inpIOTA_log->tooltip(_("Islands on the air"));
+          inpIOTA_log->box(FL_DOWN_BOX);
+          inpIOTA_log->color(FL_BACKGROUND2_COLOR);
+          inpIOTA_log->selection_color(FL_SELECTION_COLOR);
+          inpIOTA_log->labeltype(FL_NORMAL_LABEL);
+          inpIOTA_log->labelfont(0);
+          inpIOTA_log->labelsize(14);
+          inpIOTA_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpIOTA_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpIOTA_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpIOTA_log
+        { inpCQZ_log = new Fl_Input2(377, 182, 90, 24, _("CQZ"));
+          inpCQZ_log->tooltip(_("CQ zone"));
+          inpCQZ_log->box(FL_DOWN_BOX);
+          inpCQZ_log->color(FL_BACKGROUND2_COLOR);
+          inpCQZ_log->selection_color(FL_SELECTION_COLOR);
+          inpCQZ_log->labeltype(FL_NORMAL_LABEL);
+          inpCQZ_log->labelfont(0);
+          inpCQZ_log->labelsize(14);
+          inpCQZ_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpCQZ_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpCQZ_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpCQZ_log
+        { inpCONT_log = new Fl_Input2(16, 226, 240, 24, _("Cont\'"));
+          inpCONT_log->tooltip(_("Continent"));
+          inpCONT_log->box(FL_DOWN_BOX);
+          inpCONT_log->color(FL_BACKGROUND2_COLOR);
+          inpCONT_log->selection_color(FL_SELECTION_COLOR);
+          inpCONT_log->labeltype(FL_NORMAL_LABEL);
+          inpCONT_log->labelfont(0);
+          inpCONT_log->labelsize(14);
+          inpCONT_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpCONT_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpCONT_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpCONT_log
+        { inpITUZ_log = new Fl_Input2(271, 226, 90, 24, _("ITUZ"));
+          inpITUZ_log->tooltip(_("ITU zone"));
+          inpITUZ_log->box(FL_DOWN_BOX);
+          inpITUZ_log->color(FL_BACKGROUND2_COLOR);
+          inpITUZ_log->selection_color(FL_SELECTION_COLOR);
+          inpITUZ_log->labeltype(FL_NORMAL_LABEL);
+          inpITUZ_log->labelfont(0);
+          inpITUZ_log->labelsize(14);
+          inpITUZ_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpITUZ_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpITUZ_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpITUZ_log
+        { inpDXCC_log = new Fl_Input2(377, 226, 90, 24, _("DXCC"));
+          inpDXCC_log->tooltip(_("DXCC designator"));
+          inpDXCC_log->box(FL_DOWN_BOX);
+          inpDXCC_log->color(FL_BACKGROUND2_COLOR);
+          inpDXCC_log->selection_color(FL_SELECTION_COLOR);
+          inpDXCC_log->labeltype(FL_NORMAL_LABEL);
+          inpDXCC_log->labelfont(0);
+          inpDXCC_log->labelsize(14);
+          inpDXCC_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpDXCC_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+          inpDXCC_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpDXCC_log
+        tab_log_other->end();
+      } // Fl_Group* tab_log_other
+      { tab_log_notes = new Fl_Group(5, 162, 474, 94, _("Notes"));
+        tab_log_notes->hide();
+        { inpNotes_log = new Fl_Input2(10, 166, 464, 85);
+          inpNotes_log->tooltip(_("Interesting notes"));
+          inpNotes_log->type(4);
+          inpNotes_log->box(FL_DOWN_BOX);
+          inpNotes_log->color(FL_BACKGROUND2_COLOR);
+          inpNotes_log->selection_color(FL_SELECTION_COLOR);
+          inpNotes_log->labeltype(FL_NORMAL_LABEL);
+          inpNotes_log->labelfont(0);
+          inpNotes_log->labelsize(14);
+          inpNotes_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpNotes_log->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+          inpNotes_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpNotes_log
+        tab_log_notes->end();
+      } // Fl_Group* tab_log_notes
+      Tabs->end();
+    } // Fl_Tabs* Tabs
+    { inpSearchString = new Fl_Input2(483, 161, 105, 24, _("Call Search"));
       inpSearchString->tooltip(_("Search for this callsign"));
       inpSearchString->box(FL_DOWN_BOX);
       inpSearchString->color(FL_BACKGROUND2_COLOR);
@@ -945,7 +1125,7 @@ void create_logbook_dialogs() {
       inpSearchString->align(Fl_Align(FL_ALIGN_TOP));
       inpSearchString->when(FL_WHEN_RELEASE);
     } // Fl_Input2* inpSearchString
-    { txtNbrRecs_log = new Fl_Input2(54, 284, 65, 22, _("Recs"));
+    { txtNbrRecs_log = new Fl_Input2(520, 24, 65, 24, _("Recs"));
       txtNbrRecs_log->tooltip(_("# Records in logbook"));
       txtNbrRecs_log->box(FL_DOWN_BOX);
       txtNbrRecs_log->color(FL_BACKGROUND2_COLOR);
@@ -954,38 +1134,38 @@ void create_logbook_dialogs() {
       txtNbrRecs_log->labelfont(0);
       txtNbrRecs_log->labelsize(14);
       txtNbrRecs_log->labelcolor(FL_FOREGROUND_COLOR);
-      txtNbrRecs_log->align(Fl_Align(FL_ALIGN_LEFT));
+      txtNbrRecs_log->align(Fl_Align(FL_ALIGN_TOP_LEFT));
       txtNbrRecs_log->when(FL_WHEN_RELEASE);
     } // Fl_Input2* txtNbrRecs_log
-    { bNewSave = new Fl_Button(135, 284, 75, 22, _("New"));
+    { bNewSave = new Fl_Button(395, 263, 59, 22, _("New"));
       bNewSave->tooltip(_("New record / Save record"));
       bNewSave->shortcut(0x8004e);
       bNewSave->color(FL_LIGHT1);
       bNewSave->selection_color((Fl_Color)48);
       bNewSave->callback((Fl_Callback*)cb_btnNewSave);
     } // Fl_Button* bNewSave
-    { bUpdateCancel = new Fl_Button(222, 284, 75, 22, _("Update"));
+    { bUpdateCancel = new Fl_Button(458, 263, 59, 22, _("Update"));
       bUpdateCancel->tooltip(_("Update the current record"));
       bUpdateCancel->shortcut(0x80055);
       bUpdateCancel->color(FL_LIGHT1);
       bUpdateCancel->selection_color((Fl_Color)48);
       bUpdateCancel->callback((Fl_Callback*)cb_btnUpdateCancel);
     } // Fl_Button* bUpdateCancel
-    { bDelete = new Fl_Button(310, 284, 75, 22, _("Delete"));
+    { bDelete = new Fl_Button(521, 263, 59, 22, _("Delete"));
       bDelete->tooltip(_("Delete the current record"));
       bDelete->shortcut(0x80044);
       bDelete->color(FL_LIGHT1);
       bDelete->selection_color((Fl_Color)48);
       bDelete->callback((Fl_Callback*)cb_btnDelete);
     } // Fl_Button* bDelete
-    { bDialFreq = new Fl_Button(398, 284, 75, 22, _("Dial"));
+    { bDialFreq = new Fl_Button(502, 223, 75, 22, _("Retrieve"));
       bDialFreq->tooltip(_("Retrieve for active modem use"));
       bDialFreq->shortcut(0x50066);
       bDialFreq->color(FL_LIGHT1);
       bDialFreq->selection_color((Fl_Color)48);
       bDialFreq->callback((Fl_Callback*)cb_btnDialFreq);
     } // Fl_Button* bDialFreq
-    { bSearchPrev = new Fl_Button(495, 284, 24, 22);
+    { bSearchPrev = new Fl_Button(499, 193, 24, 22);
       bSearchPrev->tooltip(_("Find previous"));
       bSearchPrev->color(FL_LIGHT1);
       bSearchPrev->selection_color((Fl_Color)48);
@@ -993,7 +1173,7 @@ void create_logbook_dialogs() {
       bSearchPrev->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
       bSearchPrev->image(new Fl_Pixmap(left_arrow_icon));
     } // Fl_Button* bSearchPrev
-    { bSearchNext = new Fl_Button(547, 284, 24, 22);
+    { bSearchNext = new Fl_Button(551, 193, 24, 22);
       bSearchNext->tooltip(_("Find next"));
       bSearchNext->color(FL_LIGHT1);
       bSearchNext->selection_color((Fl_Color)48);
@@ -1001,7 +1181,7 @@ void create_logbook_dialogs() {
       bSearchNext->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
       bSearchNext->image(new Fl_Pixmap(right_arrow_icon));
     } // Fl_Button* bSearchNext
-    { wBrowser = new Table(2, 315, 586, 195);
+    { wBrowser = new Table(2, 289, 586, 195);
       wBrowser->box(FL_DOWN_FRAME);
       wBrowser->color(FL_BACKGROUND2_COLOR);
       wBrowser->selection_color(FL_SELECTION_COLOR);
@@ -1014,6 +1194,9 @@ void create_logbook_dialogs() {
       wBrowser->end();
       Fl_Group::current()->resizable(wBrowser);
     } // Table* wBrowser
+    { txtLogFile = new Fl_Output(5, 263, 384, 22, _("File:"));
+      txtLogFile->color(FL_LIGHT3);
+    } // Fl_Output* txtLogFile
     dlgLogbook->end();
   } // Fl_Double_Window* dlgLogbook
   wBrowser->align (FL_ALIGN_TOP | FL_ALIGN_LEFT);

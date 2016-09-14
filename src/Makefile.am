@@ -243,7 +243,8 @@ FLDIGI_FL_SRC = \
 		dialogs/confdialog.fl \
 		dialogs/notifydialog.fl \
 		dialogs/record_browse.fl \
-		logbook/lgbook.fl
+		logbook/lgbook.fl \
+		logbook/fd_view.fl
 FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 
 if HAVE_FLUID
@@ -384,6 +385,7 @@ fldigi_SOURCES += \
 	include/thorvaricode.h \
 	include/dominoex.h \
 	include/dominovar.h \
+	include/fd_logger.h \
 	include/feld.h \
 	include/fftfilt.h \
 	include/filters.h \
@@ -500,6 +502,7 @@ fldigi_SOURCES += \
 	include/field_def.h \
 	include/logbook.h \
 	include/lgbook.h \
+	include/fd_view.h \
 	include/logsupport.h \
 	include/outputencoder.h \
 	include/qso_db.h \
@@ -516,12 +519,14 @@ fldigi_SOURCES += \
 	irrxml/irrTypes.h \
 	irrxml/irrXML.cpp \
 	irrxml/irrXML.h \
-   psm/psm.cxx \
-   psm/psm.h \
+	psm/psm.cxx \
+	psm/psm.h \
 	logbook/adif_io.cxx \
 	logbook/calendar.cxx \
 	logbook/date.cxx \
+	logbook/fd_logger.cxx \
 	logbook/lgbook.cxx \
+	logbook/fd_view.cxx \
 	logbook/logbook.cxx \
 	logbook/logsupport.cxx \
 	logbook/lookupcall.cxx \

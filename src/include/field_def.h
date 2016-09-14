@@ -57,6 +57,8 @@ SRX,
 STX,
 XCHG1,
 MYXCHG,
+FDCLASS,
+FDSECTION,
 TX_PWR, // do not add fields below this line; EXPORT must be last field in struc
 EXPORT, // flag used internally in fldigi's logbook
 NUMFIELDS };

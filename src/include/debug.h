@@ -44,7 +44,8 @@ public:
 		LOG_SPOTTER = 1 << 6,
 		LOG_KISSCONTROL = 1 << 7,
 		LOG_MACLOGGER = 1 << 8,
-		LOG_OTHER = 1 << 9
+		LOG_FD = 1 << 9,
+		LOG_OTHER = 1 << 10
 	};
 	static void start(const char* filename);
 	static void stop(void);

@@ -75,6 +75,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<MYNAME>\tmy name"));
 	w->add(_("<MYQTH>\tmy QTH"));
 	w->add(_("<MYRST>\tmy RST"));
+	w->add(_("<MYCLASS>\tmy FD class"));
+	w->add(_("<MYSECTION>\tmy FD section"));
 	w->add(_("<ANTENNA>\tmy antenna"));
 	w->add(_("<BAND>\toperating band"));
 	w->add(_("<VER>\tFldigi version"));
