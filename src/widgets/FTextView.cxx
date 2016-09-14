@@ -294,9 +294,9 @@ int FTextBase::readFile(const char* fn)
 	int ret = 0, pos = insert_position();
 
 #ifdef __WOE32__
-	FILE* tfile = fopen(fn, "rt");
+	FILE* tfile = fl_fopen(fn, "rt");
 #else
-	FILE* tfile = fopen(fn, "r");
+	FILE* tfile = fl_fopen(fn, "r");
 #endif
 	if (!tfile)
 		return -1;

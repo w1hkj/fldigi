@@ -35,6 +35,8 @@
 #include <cstdlib>
 #include <csignal>
 
+#include <FL/fl_utf8.h>
+
 #ifdef BUILD_FLDIGI
 #  include "main.h"
 #else
@@ -98,7 +100,7 @@ void diediedie(void)
 #endif
 
 #if !HAVE_DBG_STACK
-		FILE* stfile = fopen(stfname.c_str(), "w");
+		FILE* stfile = fl_fopen(stfname.c_str(), "w");
 		if (stfile) {
 			pstack(fileno(stfile), 1);
 			fprintf(stfile, "%s\n****** Version information:\n%s\n****** Build information:%s\n",

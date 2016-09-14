@@ -553,7 +553,7 @@ int SoundOSS::Open(int md, int freq)
 			oflags = oflags | O_CLOEXEC;
 #	   endif
 
-		device_fd = open(device.c_str(), oflags, 0);
+		device_fd = fl_open(device.c_str(), oflags, 0);
 		if (device_fd == -1)
 			throw SndException(errno);
 		Format(AFMT_S16_LE);	// default: 16 bit little endian

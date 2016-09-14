@@ -134,9 +134,9 @@ cmplx anal::mixer(cmplx in)
 
 void anal::start_csv()
 {
-	FILE *out = fopen(analysisFilename.c_str(), "w");
+	FILE *out = fl_fopen(analysisFilename.c_str(), "w");
 	if (unlikely(!out)) {
-		LOG_PERROR("fopen");
+		LOG_PERROR("fl_fopen");
 		return;
 	}
 	fprintf(out, "Clock,Elapsed Time,Freq Error,RF\n");
@@ -167,9 +167,9 @@ void anal::writeFile()
 	}
 	gmtime_r(&now.tv_sec, &tm);
 
-	FILE* out = fopen(analysisFilename.c_str(), "a");
+	FILE* out = fl_fopen(analysisFilename.c_str(), "a");
 	if (unlikely(!out)) {
-		LOG_PERROR("fopen");
+		LOG_PERROR("fl_fopen");
 		return;
 	}
 	fprintf(out, "%02d:%02d:%02d, %8.3f, %8.3f, %12.3f\n",

@@ -28,6 +28,7 @@
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 #include "Fl_Text_Buffer_mod.H"
+#include <FL/fl_utf8.h>
 
 
 /*

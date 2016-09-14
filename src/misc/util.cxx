@@ -34,6 +34,8 @@
 #include <cstdlib>
 #include <string>
 
+#include <FL/fl_utf8.h>
+
 #include "config.h"
 #include "util.h"
 
@@ -489,7 +491,7 @@ int test_process(int pid)
 	/// This is dependent on procfs.
 	char buf[32];
 	sprintf(buf,"/proc/%d/cmdline",pid);
-	FILE * tmpF = fopen( buf, "r" );
+	FILE * tmpF = fl_fopen( buf, "r" );
 	if( tmpF != NULL ) {
 		fclose(tmpF);
 		return 1 ;

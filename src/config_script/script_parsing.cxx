@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <FL/fl_utf8.h>
 #include "debug.h"
 #include "gettext.h"
 #include "script_parsing.h"
@@ -1240,7 +1241,7 @@ SCRIPT_CODES ScriptParsing::parse_commands(char *file_name_path)
 		return script_function_parameter_error;
 	}
 
-	fd = fopen(file_name_path, "r");
+	fd = fl_fopen(file_name_path, "r");
 	line_number = 0;
 
 	if(!fd) {
@@ -1342,7 +1343,7 @@ SCRIPT_CODES ScriptParsing::check_filename(char *filename)
 
 	FILE *fd = (FILE *)0;
 
-	fd = fopen(filename, "r");
+	fd = fl_fopen(filename, "r");
 
 	if(!fd) {
 		error = script_file_not_found;

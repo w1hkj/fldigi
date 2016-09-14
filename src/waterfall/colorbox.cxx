@@ -89,7 +89,7 @@ void loadPalette()
     const char *p = FSEL::select(_("Open palette"), _("Fldigi palette\t*.pal"), palfilename.c_str());
 	if (!p) return;
 	if (!*p) return;
-	if ((clrfile = fopen(p, "r")) != NULL) {
+	if ((clrfile = fl_fopen(p, "r")) != NULL) {
 		for (int i = 0; i < 9; i++) {
 			if (fscanf(clrfile, "%d;%d;%d\n", &r, &g, &b) == EOF) {
 				if (ferror(clrfile))
@@ -126,7 +126,7 @@ void savePalette()
 	}
 	const char *p = FSEL::saveas(_("Save palette"), _("Fldigi palette\t*.pal"), palfilename.c_str());
 	if (!p) return;
-	if ((clrfile = fopen(p, "w")) != NULL) {
+	if ((clrfile = fl_fopen(p, "w")) != NULL) {
 		for (int i = 0; i < 9; i++) {
 			fprintf(clrfile, "%3d;%3d;%3d\n", palette[i].R, palette[i].G, palette[i].B );
 		}

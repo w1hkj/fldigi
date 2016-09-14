@@ -128,7 +128,7 @@ void cb_btnifkpRxReset(Fl_Widget *, void *)
 void cb_btnifkpRxSave(Fl_Widget *, void *)
 {
 	ifkppicRx->save_png(PicsDir.c_str());
-//	FILE *raw = fopen("image.raw", "wb");
+//	FILE *raw = fl_fopen("image.raw", "wb");
 //	std::cout << "wrote " << fwrite(ifkp_rawvideo, 1, RAWSIZE, raw) << "\n";
 //	fclose(raw);
 }
@@ -138,7 +138,7 @@ void cb_btnifkpRxClose(Fl_Widget *, void *)
 	ifkppicRxWin->hide();
 	progStatus.ifkp_rx_abort = true;
 //	ifkppicRxWin->hide();
-//	FILE *raw = fopen("image.raw", "rb");
+//	FILE *raw = fl_fopen("image.raw", "rb");
 //	std::cout << "read " << fread(ifkp_rawvideo, 1, RAWSIZE, raw) << "\n";
 //	fclose(raw);
 //	ifkp_correct_video();
@@ -771,7 +771,7 @@ int ifkp_load_avatar(std::string image_fname, int W, int H)
 	std::string fname = AvatarDir;
 	fname.append(image_fname).append(".png");
 
-	FILE *temp = fopen(fname.c_str(), "rb");
+	FILE *temp = fl_fopen(fname.c_str(), "rb");
 	if (temp) {
 		fseek(temp, 0L, SEEK_SET);
 		fclose(temp);

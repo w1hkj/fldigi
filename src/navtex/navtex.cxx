@@ -1883,7 +1883,7 @@ public:
 int main(int n, const char ** v )
 {
 	printf("%s\n", v[1] );
-	FILE * f = fopen( v[1], "r" );
+	FILE * f = fl_fopen( v[1], "r" );
 	fseek( f, 0, SEEK_END );
 	long l = ftell( f );
 	printf("l=%ld\n", l);

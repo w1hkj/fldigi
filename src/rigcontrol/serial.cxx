@@ -20,6 +20,8 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
+#include <FL/fl_utf8.h>
+
 #include <config.h>
 
 #include <string>
@@ -78,7 +80,7 @@ bool Cserial::OpenPort()  {
 		oflags = oflags | O_CLOEXEC;
 #	endif
 
-	if ((fd = open( device.c_str(), oflags)) < 0)
+	if ((fd = fl_open( device.c_str(), oflags)) < 0)
 		return false;
 // save current port settings
 	tcflush (fd, TCIFLUSH);

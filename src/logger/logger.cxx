@@ -70,7 +70,7 @@ void writeADIF () {
 
     sfname = TempDir;
     sfname.append("log.adif");
-	adiFile = fopen (sfname.c_str(), "a");
+	adiFile = fl_fopen (sfname.c_str(), "a");
 	if (adiFile) {
 // write the current record to the file  
 		fprintf(adiFile,"%s<EOR>\n", adif.c_str());

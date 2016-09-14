@@ -124,9 +124,9 @@ std::complex<double> fftscan::dft (std::complex<double> *buff, double fm, double
 
 void fftscan::start_csv()
 {
-	FILE *out = fopen(fftscanFilename.c_str(), "w");
+	FILE *out = fl_fopen(fftscanFilename.c_str(), "w");
 	if (unlikely(!out)) {
-		LOG_PERROR("fopen");
+		LOG_PERROR("fl_fopen");
 		return;
 	}
 	fprintf(out, "Freq, |Amp|\n");
@@ -150,9 +150,9 @@ void fftscan::writeFile()
 	// calculate elapsed time using the number of sample blocks
 	int nyquist = fftscanFFT_LEN / 2;
 
-	FILE *out = fopen(fftscanFilename.c_str(), "w");//"a");
+	FILE *out = fl_fopen(fftscanFilename.c_str(), "w");//"a");
 	if (unlikely(!out)) {
-		LOG_PERROR("fopen");
+		LOG_PERROR("fl_fopen");
 		return;
 	}
 

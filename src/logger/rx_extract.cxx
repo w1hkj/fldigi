@@ -452,7 +452,7 @@ bool find_pathto_exectable(string &binpath, string executable)
 
 		// Most portable way to check if a file exists: Try to open it.
 		FILE *checkexists = NULL;
-		checkexists = fopen( testpath.c_str(), "r" ); // try to open file readonly
+		checkexists = fl_fopen( testpath.c_str(), "r" ); // try to open file readonly
 		if (checkexists) { // if the file successfully opened, it exists.
 			fclose(checkexists);
 			binpath = testpath;

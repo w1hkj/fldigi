@@ -181,7 +181,7 @@ struct RpcBuilder
 
 struct XmlRpcImpl : public XmlRpcServer
 {
-	void open(const char * port)
+	void fl_open(const char * port)
 	{
 		bindAndListen( atoi( port ) );
 
@@ -251,7 +251,7 @@ void XML_RPC_Server::start(const char* node, const char* service)
 	inst = new XML_RPC_Server;
 
 	try {
-		inst->server_impl->open(service);
+		inst->server_impl->fl_open(service);
 		if (pthread_create(server_thread, NULL, thread_func, NULL) != 0)
 			throw runtime_error(strerror(errno));
 	}

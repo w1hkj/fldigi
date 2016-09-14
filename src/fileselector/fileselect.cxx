@@ -127,7 +127,7 @@ void pfile (const char *dir, const char *fname, const char *filt) {
 	fl_filename_expand(fn, sizeof(fn) -1, "$HOME/");
 #endif
 	strcat(fn, "pfile.txt");
-	FILE *f = fopen(fn, "a");
+	FILE *f = fl_fopen(fn, "a");
 	fprintf(f,"\
 dir:  %s\n\
 file: %s\n\

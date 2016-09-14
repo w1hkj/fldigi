@@ -136,7 +136,7 @@ void cb_btnthorRxReset(Fl_Widget *, void *)
 void cb_btnthorRxSave(Fl_Widget *, void *)
 {
 	thorpicRx->save_png(PicsDir.c_str());
-//	FILE *raw = fopen("image.raw", "wb");
+//	FILE *raw = fl_fopen("image.raw", "wb");
 //	std::cout << "wrote " << fwrite(thor_rawvideo, 1, RAWSIZE, raw) << "\n";
 //	fclose(raw);
 }
@@ -146,7 +146,7 @@ void cb_btnthorRxClose(Fl_Widget *, void *)
 	thorpicRxWin->hide();
 //	progStatus.thor_rx_abort = true;
 //	thorpicRxWin->hide();
-//	FILE *raw = fopen("image.raw", "rb");
+//	FILE *raw = fl_fopen("image.raw", "rb");
 //	std::cout << "read " << fread(thor_rawvideo, 1, RAWSIZE, raw) << "\n";
 //	fclose(raw);
 //	thor_correct_video();
@@ -777,7 +777,7 @@ int thor_load_avatar(std::string image_fname, int W, int H)
 	std::string fname = AvatarDir;
 	fname.append(image_fname).append(".png");
 
-	FILE *temp = fopen(fname.c_str(), "rb");
+	FILE *temp = fl_fopen(fname.c_str(), "rb");
 	if (temp) {
 		fseek(temp, 0L, SEEK_SET);
 		fclose(temp);

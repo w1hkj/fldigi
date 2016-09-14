@@ -265,7 +265,7 @@ void parse_maclog()
 		if (progdefaults.enable_maclogger_log) {
 			std::string pathname = TempDir;
 			pathname.append("maclogger_udp_strings.txt");
-			FILE *maclog = fopen(pathname.c_str(), "a");
+			FILE *maclog = fl_fopen(pathname.c_str(), "a");
 			fprintf(maclog, "%s", srep.c_str());
 			fclose(maclog);
 		}

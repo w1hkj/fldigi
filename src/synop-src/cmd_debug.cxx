@@ -161,12 +161,12 @@ void debug::sync_text(void* arg)
 
 debug::debug(const char* filename)
 {
-	if ((wfile = fopen(filename, "w")) == NULL)
+	if ((wfile = fl_fopen(filename, "w")) == NULL)
 		throw strerror(errno);
 	setvbuf(wfile, (char*)NULL, _IOLBF, 0);
 	set_cloexec(fileno(wfile), 1);
 
-	if ((rfile = fopen(filename, "r")) == NULL)
+	if ((rfile = fl_fopen(filename, "r")) == NULL)
 		throw strerror(errno);
 	rfd = fileno(rfile);
 	set_cloexec(rfd, 1);

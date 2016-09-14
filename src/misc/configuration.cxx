@@ -840,7 +840,7 @@ static bool open_serial(const char* dev)
 {
 	bool ret = false;
 #ifdef __CYGWIN__
-	int fd = open(dev, O_RDWR | O_NOCTTY | O_NDELAY | O_CLOEXEC);
+	int fd = fl_open(dev, O_RDWR | O_NOCTTY | O_NDELAY | O_CLOEXEC);
 	if (fd != -1) {
 		close(fd);
 		ret = true;

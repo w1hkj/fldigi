@@ -957,7 +957,7 @@ inline double cw::qsknco()
 
 //void appendfile(double *left, double *right, size_t count)
 //{
-//	FILE *ofile = fopen("stereo.txt", "a");
+//	FILE *ofile = fl_fopen("stereo.txt", "a");
 //	for (size_t i = 0; i < count; i++)
 //		fprintf(ofile,"%f,%f\n", left[i], right[i]);
 //	fclose(ofile);

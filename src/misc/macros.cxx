@@ -327,7 +327,7 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 
 	std::string fname = s.substr(i+10, endbracket - i - 10);
 	if (fname.length() > 0 && !within_exec) {
-		FILE *toadd = fopen(fname.c_str(), "r");
+		FILE *toadd = fl_fopen(fname.c_str(), "r");
 		if (toadd) {
 			std::string buffer;
 			char c = getc(toadd);
@@ -571,7 +571,7 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 
 	std::string fname = s.substr(i+10, endbracket - i - 10);
 	if (fname.length() > 0 && !within_exec) {
-		FILE *toadd = fopen(fname.c_str(), "r");
+		FILE *toadd = fl_fopen(fname.c_str(), "r");
 		if (toadd) {
 			std::string buffer;
 			char c = getc(toadd);
@@ -671,7 +671,7 @@ static void pFILE(std::string &s, size_t &i, size_t endbracket)
 {
 	std::string fname = s.substr(i+6, endbracket - i - 6);
 	if (fname.length() > 0 && !within_exec) {
-		FILE *toadd = fopen(fname.c_str(), "r");
+		FILE *toadd = fl_fopen(fname.c_str(), "r");
 		if (toadd) {
 			std::string buffer;
 			char c = getc(toadd);

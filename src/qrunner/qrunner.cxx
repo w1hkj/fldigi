@@ -69,7 +69,7 @@ void qrunner_debug(int tid, const char *name)
 	if (tid < 2) return;
 
 	FILE *fd = (FILE *)0;
-	fd = fopen("qrunner.txt", "a");
+	fd = fl_fopen("qrunner.txt", "a");
 	if(fd) {
 		fprintf(fd, "%s, %s\n", sztid[tid], name);
 		fclose(fd);

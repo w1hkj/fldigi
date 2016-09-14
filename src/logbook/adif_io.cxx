@@ -240,7 +240,7 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	num_read_errors = 0;
 
 // open the adif file
-	FILE *adiFile = fopen (fname, "rb");
+	FILE *adiFile = fl_fopen (fname, "rb");
 
 	if (adiFile == NULL) {
 		LOG_ERROR("Could not open %s", fname);
@@ -388,7 +388,7 @@ int cAdifIO::writeFile (const char *fname, cQsoDb *db)
 // open the adif file
 	cQsoRec *rec;
 	string sFld;
-	adiFile = fopen (fname, "wb");
+	adiFile = fl_fopen (fname, "wb");
 	if (!adiFile)
 		return 1;
 
@@ -526,7 +526,7 @@ void cAdifIO::do_writelog()
 	Ccrc16 checksum;
 	string s_checksum;
 
-	adiFile = fopen (adif_file_name.c_str(), "wb");
+	adiFile = fl_fopen (adif_file_name.c_str(), "wb");
 
 	if (!adiFile) {
 		LOG_ERROR("Cannot write to %s", adif_file_name.c_str());

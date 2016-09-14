@@ -265,7 +265,7 @@ static int create_default_script(char *file_name)
 		return -1;
 	}
 
-	fd = fopen(file_name, "w");
+	fd = fl_fopen(file_name, "w");
 
 	if(!fd) {
 		LOG_INFO(_("Unable to create file %s (Error No=%d) func %s:%d"), file_name, errno, __FILE__, __LINE__);

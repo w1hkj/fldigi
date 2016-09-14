@@ -527,14 +527,14 @@ static FILE* open_file(const char* name, const char* suffix)
 			strncpy(newfn + flen + sz, suffix, newlen - flen - sz);
 			newfn[newlen - 1] = '\0';
 			mkdir(name, 0777);
-			fp = fopen(newfn, "wb");
+			fp = fl_fopen(newfn, "wb");
 		}
 		else
 			fp = NULL;
 		delete [] newfn;
 	}
 	else {
-		fp = fopen(name, "rb");
+		fp = fl_fopen(name, "rb");
 		if (fp) {
 			fclose(fp);
 			const int n = 5; // rename existing image files to keep up to 5 old versions
@@ -554,7 +554,7 @@ static FILE* open_file(const char* name, const char* suffix)
 			}
 			rename(name, oldfn.str().c_str());
 		}
-		fp = fopen(name, "wb");
+		fp = fl_fopen(name, "wb");
 	}
 	return fp;
 }

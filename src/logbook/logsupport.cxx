@@ -1504,7 +1504,7 @@ void WriteCabrillo()
 
 	string sp = p;
 	if (sp.find(".txt") == string::npos) sp.append(".txt");
-    FILE *cabFile = fopen (p, "w");
+    FILE *cabFile = fl_fopen (p, "w");
     if (!cabFile)
         return;
 

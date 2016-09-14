@@ -891,7 +891,7 @@ class  KmlSrvImpl : public KmlServer {
 
 		/// Used to copy the master file to the user copy if needed.
 		FILE * filSrc = NULL;
-		FILE * filDst = fopen( namDst.c_str(), "r" );
+		FILE * filDst = fl_fopen( namDst.c_str(), "r" );
 
 		/// If the file is there, leave as it is because it is maybe customize.
 		if( filDst ) {
@@ -899,13 +899,13 @@ class  KmlSrvImpl : public KmlServer {
 				LOG_INFO("Style file %s not altered", namDst.c_str() );
 			goto close_and_quit ;
 		}
-		filDst = fopen( namDst.c_str(), "w" );
+		filDst = fl_fopen( namDst.c_str(), "w" );
 		if( filDst == NULL ) {
 			if (bMOREINFO)
 				LOG_INFO("Cannot open destination style file %s", namDst.c_str() );
 			goto close_and_quit ;
 		}
-		filSrc = fopen( namSrc.c_str(), "r" );
+		filSrc = fl_fopen( namSrc.c_str(), "r" );
 		if( filSrc == NULL ) {
 			if (bMOREINFO)
 				LOG_INFO("Cannot open source style file %s", namSrc.c_str() );
@@ -1095,7 +1095,7 @@ class  KmlSrvImpl : public KmlServer {
 
 		PlacesMapT *ptrMap = m_placemarks.FindCategory( category );
 
-		FILE * filKml = fopen( kmlFilNam.c_str(), "r" );
+		FILE * filKml = fl_fopen( kmlFilNam.c_str(), "r" );
 		if( filKml == NULL ) {
 			LOG_ERROR("Could not open %s. Creating one.", kmlFilNam.c_str() );
 			CreateNewKmlFile( category );

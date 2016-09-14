@@ -49,7 +49,7 @@ static const char *lognames[] = { "RX", "TX", "", "" };
 cLogfile::cLogfile(const string& fname)
 	: retflag(true), logtype(LOG_RX)
 {
-	if ((logfile = fopen(fname.c_str(), "a"))) {
+	if ((logfile = fl_fopen(fname.c_str(), "a"))) {
 		setvbuf(logfile, (char*)NULL, _IOLBF, 0);
 		set_cloexec(fileno(logfile), 1);
 	}

@@ -94,7 +94,7 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 
 int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 	cQsoRec *pRec = (cQsoRec *)0;
-	FILE *txtFile = fopen (fname, "w");
+	FILE *txtFile = fl_fopen (fname, "w");
 	if (!txtFile) return 1;
   
 	if (txtFile) {
@@ -213,7 +213,7 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 
 int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 	cQsoRec *pRec = (cQsoRec *)0;
-	FILE *txtFile = fopen (fname, "w");
+	FILE *txtFile = fl_fopen (fname, "w");
 	if (!txtFile) return 1;
   
 	if (txtFile) {

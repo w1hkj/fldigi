@@ -117,7 +117,7 @@ char *QRZImageFilename (char *call)
 	strcat (fname, imgcall);
 	while (fname[strlen(fname)-1] == ' ') fname[strlen(fname)-1] = 0;
 	strcat (fname, ".jpg");
-	f = fopen(fname, "r");
+	f = fl_fopen(fname, "r");
 	if (f != NULL) {
 		fclose (f);
 		return fname;
@@ -142,7 +142,7 @@ int  checkPath( const char *filename )
 			filename_expand(f2name, 79, fname);
 			strcpy (fname, f2name);
 		}
-		f = fopen(fname, "r" );
+		f = fl_fopen(fname, "r" );
 		if( f != NULL )  {
 			fclose( f );
 			char pathname[120];
@@ -169,7 +169,7 @@ int  checkPath( const char *filename )
 			filename_expand(f2name, 79, fname);
 			strcpy (fname, f2name);
 		}
-		f = fopen(fname, "r" );
+		f = fl_fopen(fname, "r" );
 		if( f != NULL )  {
 			fclose( f );
 			QRZpath = *pQRZpath;
@@ -200,7 +200,7 @@ void SetQRZdirectory(char *dir)
 bool QRZ::ImageExists() {
 	if (Qimagefname == NULL)
 		return (hasImage = false);
-	imagefile = fopen(Qimagefname, "r");
+	imagefile = fl_fopen(Qimagefname, "r");
 	if (imagefile) {
 		fclose (imagefile);
 		return (hasImage = true);
@@ -239,7 +239,7 @@ void QRZ::OpenQRZFiles( const char *fname )
 	strcat( dfname, fname );
 	strcat( dfname, ".dat" );
 
-	idxfile = fopen( idxname, "r" );
+	idxfile = fl_fopen( idxname, "r" );
 	if( idxfile == NULL ) {
 		QRZvalid = 0;
 		return;
@@ -274,7 +274,7 @@ void QRZ::OpenQRZFiles( const char *fname )
 
 	fclose( idxfile );
 
-	datafile = fopen( dfname, "r" );
+	datafile = fl_fopen( dfname, "r" );
 	if( datafile == NULL ) {
 		free( index );
 		QRZvalid = 0;
