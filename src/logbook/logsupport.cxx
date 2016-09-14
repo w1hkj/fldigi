@@ -1397,7 +1397,6 @@ void cb_Export_Cabrillo(Fl_Menu_* m, void* d) {
  			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
 			rec->getField(MODE) );
-std::cout << line << "\n";
         chkCabBrowser->add(line);
 	}
 	wCabrillo->show();

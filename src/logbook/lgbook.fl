@@ -36,8 +36,8 @@ decl {// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk'
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup}
-    xywh {812 177 675 435} type Double hide
+    label {Export Setup} open
+    xywh {587 58 675 435} type Double visible
   } {
     Fl_Group {} {
       label {Select Records to Export}
@@ -92,7 +92,7 @@ Export_log();}
       xywh {405 408 90 24}
     }
     Fl_Group {} {
-      label {Select Fields to Export}
+      label {Select Fields to Export} open
       xywh {392 4 280 400} box ENGRAVED_FRAME align 21
     } {
       Fl_Button btnClearAllFields {
@@ -128,7 +128,8 @@ btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
 btnSelectClass->value(0);
-btnSelectSection->value(0);}
+btnSelectSection->value(0);
+btnSelectQSL_VIA->value(0);}
         xywh {395 375 90 24}
       }
       Fl_Button btnCheckAllFields {
@@ -164,7 +165,8 @@ btnSelectITUZ->value(1);
 btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);
 btnSelectClass->value(1);
-btnSelectSection->value(1);}
+btnSelectSection->value(1);
+btnSelectQSL_VIA->value(1);}
         xywh {487 375 90 24}
       }
       Fl_Check_Button btnSelectCall {
@@ -330,14 +332,15 @@ btnSelectCONT->value(0);
 btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
-btnSelectNotes->value(0);}
+btnSelectNotes->value(0);
+btnSelectQSL_VIA->value(0);} selected
         xywh {578 375 90 24}
       }
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook open selected
-    xywh {919 185 590 490} type Double resizable visible
+    label Logbook
+    xywh {919 185 590 490} type Double hide resizable
   } {
     Fl_Input inpDate_log {
       label {Date On}

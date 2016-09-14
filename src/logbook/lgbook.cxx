@@ -92,6 +92,7 @@ btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
 btnSelectClass->value(0);
 btnSelectSection->value(0);
+btnSelectQSL_VIA->value(0);
 }
 
 Fl_Button *btnCheckAllFields=(Fl_Button *)0;
@@ -129,6 +130,7 @@ btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);
 btnSelectClass->value(1);
 btnSelectSection->value(1);
+btnSelectQSL_VIA->value(1);
 }
 
 Fl_Check_Button *btnSelectCall=(Fl_Check_Button *)0;
@@ -230,6 +232,7 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
+btnSelectQSL_VIA->value(0);
 }
 
 Fl_Double_Window *dlgLogbook=(Fl_Double_Window *)0;

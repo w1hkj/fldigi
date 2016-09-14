@@ -78,6 +78,7 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectCNTY->value())      fprintf (txtFile, "%s", ",\"CNTY\"");
 	if (btnSelectCountry->value())   fprintf (txtFile, "%s", ",\"CNTRY\"");
 	if (btnSelectDXCC->value())      fprintf (txtFile, "%s", ",\"DXCC\"");
+	if (btnSelectCQZ->value())       fprintf (txtFile, "%s", ",\"CQZONE\"");
 	if (btnSelectIOTA->value())      fprintf (txtFile, "%s", ",\"IOTA\"");
 	if (btnSelectCONT->value())      fprintf (txtFile, "%s", ",\"CONT\"");
 	if (btnSelectITUZ->value())      fprintf (txtFile, "%s", ",\"ITUZ\"");
@@ -140,6 +141,8 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(COUNTRY));
 				if (btnSelectDXCC->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(DXCC));
+				if (btnSelectCQZ->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(CQZ));
 				if (btnSelectIOTA->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(IOTA));
 				if (btnSelectCONT->value())
@@ -204,6 +207,7 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 	if (btnSelectCountry->value())   fprintf (txtFile, "%-15s", "CNTRY");
 	if (btnSelectCNTY->value())      fprintf (txtFile, "%-8s",  "CNTY");
 	if (btnSelectDXCC->value())      fprintf (txtFile, "%-8s",  "DXCC");
+	if (btnSelectCQZ->value())       fprintf (txtFile, "%-8s",  "CQZONE");
 	if (btnSelectIOTA->value())      fprintf (txtFile, "%-8s", "IOTA");
 	if (btnSelectCONT->value())      fprintf (txtFile, "%-8s",  "CONT");
 	if (btnSelectITUZ->value())      fprintf (txtFile, "%-8s",  "ITUZ");
@@ -269,6 +273,8 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-8s", pRec->getField(CNTY));
 				if (btnSelectDXCC->value())
 					fprintf (txtFile, "%-8s", pRec->getField(DXCC));
+				if (btnSelectCQZ->value())
+					fprintf (txtFile, "%-8s", pRec->getField(CQZ));
 				if (btnSelectIOTA->value())
 					fprintf (txtFile, "%-8s", pRec->getField(IOTA));
 				if (btnSelectCONT->value())

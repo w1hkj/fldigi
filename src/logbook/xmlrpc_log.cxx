@@ -213,7 +213,7 @@ void xml_add_record()
 // send it to the server
 	XmlRpcValue oneArg, result;
 	oneArg[0] = adif.c_str();
-	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
+//	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
 
 // submit it foreign log programs
 	cQsoRec rec;
