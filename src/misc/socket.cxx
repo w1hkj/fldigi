@@ -857,10 +857,18 @@ void Socket::connect(void)
 #ifndef NDEBUG
 	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
 #endif
-	if (::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen) == -1)
-		throw SocketException(errno, "connect");
-    else
-        connected_flag = true;
+	LOG_INFO("Connecting to %s", address.get_str(ainfo).c_str());
+	int res = ::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen);
+	if (res == -1) {
+		LOG_INFO("Response %d, error %d", res, errno);
+		if ( (errno == EAGAIN) || (errno == EINPROGRESS) )
+			throw SocketException(errno, "connect");
+		if (errno == EALREADY) {
+			connected_flag = true;
+			return;
+		}
+	}
+    connected_flag = true;
 }
 ///
 /// Connects the socket to the address that is associated with the object

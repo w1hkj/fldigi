@@ -98,6 +98,7 @@
 #include "maclogger.h"
 #include "psm/psm.h"
 #include "fd_logger.h"
+#include "n3fjp_logger.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -362,6 +363,7 @@ void delayed_startup(void *)
 
 	data_io_enabled = DISABLED_IO;
 
+	n3fjp_init();
 	arq_init();
 	FD_init();
 
@@ -534,6 +536,10 @@ int main(int argc, char ** argv)
 
 			case FD_TID:
 				cbq[i]->attach(i, "FD_TID");
+				break;
+
+			case N3FJP_TID:
+				cbq[i]->attach(i, "N3FJP_TID");
 				break;
 
 			case FLMAIN_TID:

@@ -486,6 +486,350 @@ viewer_redraw();
 progdefaults.changed = true;
 }
 
+Fl_Group *tabUserInterface=(Fl_Group *)0;
+
+Fl_Check_Button *btnShowTooltips=(Fl_Check_Button *)0;
+
+static void cb_btnShowTooltips(Fl_Check_Button* o, void*) {
+  progdefaults.tooltips = o->value();
+Fl_Tooltip::enable(progdefaults.tooltips);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *chkMenuIcons=(Fl_Check_Button *)0;
+
+static void cb_chkMenuIcons(Fl_Check_Button* o, void*) {
+  progdefaults.menuicons = o->value();
+icons::toggle_icon_labels();
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listboxScheme=(Fl_ListBox *)0;
+
+static void cb_listboxScheme(Fl_ListBox* o, void*) {
+  progdefaults.ui_scheme = o->value();
+    Fl::scheme(progdefaults.ui_scheme.c_str());
+
+    progdefaults.changed = true;
+}
+
+Fl_Button *bVisibleModes=(Fl_Button *)0;
+
+static void cb_bVisibleModes(Fl_Button* o, void*) {
+  mode_browser->label(o->label());
+mode_browser->callback(toggle_visible_modes);
+mode_browser->show(&progdefaults.visible_modes);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_language=(Fl_ListBox *)0;
+
+static void cb_listbox_language(Fl_ListBox* o, void*) {
+  progdefaults.ui_language = o->index();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_rx_lowercase=(Fl_Check_Button *)0;
+
+static void cb_btn_rx_lowercase(Fl_Check_Button* o, void*) {
+  progdefaults.rx_lowercase = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_tx_lowercase=(Fl_Check_Button *)0;
+
+static void cb_btn_tx_lowercase(Fl_Check_Button* o, void*) {
+  progdefaults.tx_lowercase = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_save_config_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn_save_config_on_exit(Fl_Check_Button* o, void*) {
+  progdefaults.SaveConfig = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2_save_macros_on_exit=(Fl_Check_Button *)0;
+
+static void cb_btn2_save_macros_on_exit(Fl_Check_Button* o, void*) {
+  btn_save_macros_on_exit->value(o->value());
+progdefaults.SaveMacros = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2NagMe=(Fl_Check_Button *)0;
+
+static void cb_btn2NagMe(Fl_Check_Button* o, void*) {
+  btnNagMe->value(o->value());
+progdefaults.NagMe=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn2_confirm_exit=(Fl_Check_Button *)0;
+
+static void cb_btn2_confirm_exit(Fl_Check_Button* o, void*) {
+  btn2_confirm_exit->value(o->value());
+progdefaults.confirmExit=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_check_for_updates=(Fl_Check_Button *)0;
+
+static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
+  progdefaults.check_for_updates = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_tx_show_timer=(Fl_Check_Button *)0;
+
+static void cb_btn_tx_show_timer(Fl_Check_Button* o, void*) {
+  progdefaults.show_tx_timer = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *tabLogServer=(Fl_Group *)0;
+
+Fl_Tabs *tabsLog=(Fl_Tabs *)0;
+
+Fl_Group *grp_Log_QSO=(Fl_Group *)0;
+
+Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
+
+static void cb_btnNagMe(Fl_Check_Button* o, void*) {
+  btn2NagMe->value(o->value());
+progdefaults.NagMe=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnClearOnSave=(Fl_Check_Button *)0;
+
+static void cb_btnClearOnSave(Fl_Check_Button* o, void*) {
+  progdefaults.ClearOnSave=o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCallUpperCase=(Fl_Check_Button *)0;
+
+static void cb_btnCallUpperCase(Fl_Check_Button* o, void*) {
+  progdefaults.calluppercase = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnAutoFillQSO=(Fl_Check_Button *)0;
+
+static void cb_btnAutoFillQSO(Fl_Check_Button* o, void*) {
+  progdefaults.autofill_qso_fields = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnDateTimeSort=(Fl_Check_Button *)0;
+
+static void cb_btnDateTimeSort(Fl_Check_Button* o, void*) {
+  progdefaults.sort_date_time_off = o->value();
+progdefaults.changed = true;
+reload_browser();
+}
+
+Fl_Check_Button *btndate_time_force=(Fl_Check_Button *)0;
+
+static void cb_btndate_time_force(Fl_Check_Button* o, void*) {
+  progdefaults.force_date_time = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnRSTindefault=(Fl_Check_Button *)0;
+
+static void cb_btnRSTindefault(Fl_Check_Button* o, void*) {
+  progdefaults.RSTin_default = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnRSTdefault=(Fl_Check_Button *)0;
+
+static void cb_btnRSTdefault(Fl_Check_Button* o, void*) {
+  progdefaults.RSTdefault = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_cty_dat_pathname=(Fl_Input2 *)0;
+
+static void cb_txt_cty_dat_pathname(Fl_Input2* o, void*) {
+  progdefaults.cty_dat_pathname = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_select_cty_dat=(Fl_Button *)0;
+
+static void cb_btn_select_cty_dat(Fl_Button*, void*) {
+  select_cty_dat_pathname();
+}
+
+Fl_Button *btn_default_cty_dat=(Fl_Button *)0;
+
+static void cb_btn_default_cty_dat(Fl_Button*, void*) {
+  default_cty_dat_pathname();
+}
+
+Fl_Button *btn_reload_cty_dat=(Fl_Button *)0;
+
+static void cb_btn_reload_cty_dat(Fl_Button*, void*) {
+  reload_cty_dat();
+}
+
+Fl_Input2 *inpMyPower=(Fl_Input2 *)0;
+
+static void cb_inpMyPower(Fl_Input2* o, void*) {
+  progdefaults.mytxpower = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *grpRX_Text=(Fl_Group *)0;
+
+Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
+
+static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
+  progdefaults.rxtext_clicks_qso_data = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnRXTooltips=(Fl_Check_Button *)0;
+
+static void cb_btnRXTooltips(Fl_Check_Button* o, void*) {
+  progdefaults.rxtext_tooltips = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inpNonword=(Fl_Input2 *)0;
+
+static void cb_inpNonword(Fl_Input2* o, void*) {
+  progdefaults.nonwordchars = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnUSunits=(Fl_Check_Button *)0;
+
+static void cb_btnUSunits(Fl_Check_Button* o, void*) {
+  progdefaults.us_units = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Group *grpMacLogger=(Fl_Group *)0;
+
+Fl_Check_Button *btnConnectToMaclogger=(Fl_Check_Button *)0;
+
+static void cb_btnConnectToMaclogger(Fl_Check_Button* o, void*) {
+  progdefaults.connect_to_maclogger = o->value();
+if (progdefaults.connect_to_maclogger == false)
+  maclogger_close();
+else
+  maclogger_init();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_radio=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_radio(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_radio = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_log=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_log(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_log = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_lookup=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_lookup(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_lookup = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_spot_tune=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_spot_tune(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_spot_tune = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_capture_maclogger_spot_report=(Fl_Check_Button *)0;
+
+static void cb_btn_capture_maclogger_spot_report(Fl_Check_Button* o, void*) {
+  progdefaults.capture_maclogger_spot_report = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_enable_maclogger_log=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_maclogger_log(Fl_Check_Button* o, void*) {
+  progdefaults.enable_maclogger_log = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Text_Display *txt_UDP_data=(Fl_Text_Display *)0;
+
+Fl_Output *txt_maclogger_log_filename=(Fl_Output *)0;
+
+static void cb_Clear(Fl_Button*, void*) {
+  txt_UDP_data->buffer()->text("");
+}
+
+Fl_Group *grpN3FJP_logs=(Fl_Group *)0;
+
+Fl_Text_Display *txt_N3FJP_data=(Fl_Text_Display *)0;
+
+static void cb_Clear1(Fl_Button*, void*) {
+  txt_N3FJP_data->buffer()->text("");
+}
+
+Fl_Input2 *txt_N3FJP_ip_address=(Fl_Input2 *)0;
+
+static void cb_txt_N3FJP_ip_address(Fl_Input2* o, void*) {
+  progdefaults.N3FJP_address = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *txt_N3FJP_ip_port_no=(Fl_Input2 *)0;
+
+static void cb_txt_N3FJP_ip_port_no(Fl_Input2* o, void*) {
+  progdefaults.N3FJP_port = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_default_N3FJP_ip=(Fl_Button *)0;
+
+static void cb_btn_default_N3FJP_ip(Fl_Button*, void*) {
+  txt_N3FJP_ip_address->value("127.0.0.1");
+progdefaults.N3FJP_address = "127.0.0.1";
+txt_N3FJP_ip_port_no->value("1100");
+progdefaults.N3FJP_port = "1100";
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_enable_N3FJP_log=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_N3FJP_log(Fl_Check_Button* o, void*) {
+  progdefaults.enable_N3FJP_log = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_connect_to_n3fjp=(Fl_Check_Button *)0;
+
+static void cb_btn_connect_to_n3fjp(Fl_Check_Button* o, void*) {
+  progdefaults.connect_to_n3fjp=o->value();
+progdefaults.changed=true;
+}
+
+Fl_Check_Button *btn_N3FJP_sweet_spot=(Fl_Check_Button *)0;
+
+static void cb_btn_N3FJP_sweet_spot(Fl_Check_Button* o, void*) {
+  progdefaults.N3FJP_sweet_spot = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabContest=(Fl_Group *)0;
 
 Fl_Light_Button *btnDupCheckOn=(Fl_Light_Button *)0;
@@ -622,297 +966,52 @@ static void cb_inp_my_FD_class(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btn_fd_contest=(Fl_Check_Button *)0;
+Fl_Check_Button *btn_generic_contest=(Fl_Check_Button *)0;
 
-static void cb_btn_fd_contest(Fl_Check_Button* o, void*) {
-  progdefaults.FDcontest = o->value();
+static void cb_btn_generic_contest(Fl_Check_Button* o, void*) {
+  if (o->value()) progdefaults.logging = LOG_CONT;
+else progdefaults.logging = LOG_QSO;
+btn_fd_contest->value(0);
+btn_cqww_contest->value(0);
+btn_bart_contest->value(0);
 UI_select();
 progdefaults.changed = true;
 }
 
-Fl_Group *tabUserInterface=(Fl_Group *)0;
+Fl_Check_Button *btn_fd_contest=(Fl_Check_Button *)0;
 
-Fl_Check_Button *btnShowTooltips=(Fl_Check_Button *)0;
-
-static void cb_btnShowTooltips(Fl_Check_Button* o, void*) {
-  progdefaults.tooltips = o->value();
-Fl_Tooltip::enable(progdefaults.tooltips);
+static void cb_btn_fd_contest(Fl_Check_Button* o, void*) {
+  if (o->value()) progdefaults.logging = LOG_FD;
+else progdefaults.logging = LOG_QSO;
+btn_cqww_contest->value(0);
+btn_bart_contest->value(0);
+btn_generic_contest->value(0);
+UI_select();
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *chkMenuIcons=(Fl_Check_Button *)0;
+Fl_Check_Button *btn_cqww_contest=(Fl_Check_Button *)0;
 
-static void cb_chkMenuIcons(Fl_Check_Button* o, void*) {
-  progdefaults.menuicons = o->value();
-icons::toggle_icon_labels();
+static void cb_btn_cqww_contest(Fl_Check_Button* o, void*) {
+  if (o->value()) progdefaults.logging = LOG_CQWW;
+else progdefaults.logging = LOG_QSO;
+btn_fd_contest->value(0);
+btn_bart_contest->value(0);
+btn_generic_contest->value(0);
+UI_select();
 progdefaults.changed = true;
 }
 
-Fl_ListBox *listboxScheme=(Fl_ListBox *)0;
+Fl_Check_Button *btn_bart_contest=(Fl_Check_Button *)0;
 
-static void cb_listboxScheme(Fl_ListBox* o, void*) {
-  progdefaults.ui_scheme = o->value();
-    Fl::scheme(progdefaults.ui_scheme.c_str());
-
-    progdefaults.changed = true;
-}
-
-Fl_Button *bVisibleModes=(Fl_Button *)0;
-
-static void cb_bVisibleModes(Fl_Button* o, void*) {
-  mode_browser->label(o->label());
-mode_browser->callback(toggle_visible_modes);
-mode_browser->show(&progdefaults.visible_modes);
+static void cb_btn_bart_contest(Fl_Check_Button* o, void*) {
+  if (o->value()) progdefaults.logging = LOG_BART;
+else progdefaults.logging = LOG_QSO;
+btn_fd_contest->value(0);
+btn_cqww_contest->value(0);
+btn_generic_contest->value(0);
+UI_select();
 progdefaults.changed = true;
-}
-
-Fl_ListBox *listbox_language=(Fl_ListBox *)0;
-
-static void cb_listbox_language(Fl_ListBox* o, void*) {
-  progdefaults.ui_language = o->index();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_rx_lowercase=(Fl_Check_Button *)0;
-
-static void cb_btn_rx_lowercase(Fl_Check_Button* o, void*) {
-  progdefaults.rx_lowercase = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_tx_lowercase=(Fl_Check_Button *)0;
-
-static void cb_btn_tx_lowercase(Fl_Check_Button* o, void*) {
-  progdefaults.tx_lowercase = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_save_config_on_exit=(Fl_Check_Button *)0;
-
-static void cb_btn_save_config_on_exit(Fl_Check_Button* o, void*) {
-  progdefaults.SaveConfig = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn2_save_macros_on_exit=(Fl_Check_Button *)0;
-
-static void cb_btn2_save_macros_on_exit(Fl_Check_Button* o, void*) {
-  btn_save_macros_on_exit->value(o->value());
-progdefaults.SaveMacros = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn2NagMe=(Fl_Check_Button *)0;
-
-static void cb_btn2NagMe(Fl_Check_Button* o, void*) {
-  btnNagMe->value(o->value());
-progdefaults.NagMe=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn2_confirm_exit=(Fl_Check_Button *)0;
-
-static void cb_btn2_confirm_exit(Fl_Check_Button* o, void*) {
-  btn2_confirm_exit->value(o->value());
-progdefaults.confirmExit=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_check_for_updates=(Fl_Check_Button *)0;
-
-static void cb_btn_check_for_updates(Fl_Check_Button* o, void*) {
-  progdefaults.check_for_updates = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_tx_show_timer=(Fl_Check_Button *)0;
-
-static void cb_btn_tx_show_timer(Fl_Check_Button* o, void*) {
-  progdefaults.show_tx_timer = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Group *tabLogServer=(Fl_Group *)0;
-
-Fl_Tabs *tabsLog=(Fl_Tabs *)0;
-
-Fl_Check_Button *btnNagMe=(Fl_Check_Button *)0;
-
-static void cb_btnNagMe(Fl_Check_Button* o, void*) {
-  btn2NagMe->value(o->value());
-progdefaults.NagMe=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnClearOnSave=(Fl_Check_Button *)0;
-
-static void cb_btnClearOnSave(Fl_Check_Button* o, void*) {
-  progdefaults.ClearOnSave=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCallUpperCase=(Fl_Check_Button *)0;
-
-static void cb_btnCallUpperCase(Fl_Check_Button* o, void*) {
-  progdefaults.calluppercase = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnAutoFillQSO=(Fl_Check_Button *)0;
-
-static void cb_btnAutoFillQSO(Fl_Check_Button* o, void*) {
-  progdefaults.autofill_qso_fields = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnDateTimeSort=(Fl_Check_Button *)0;
-
-static void cb_btnDateTimeSort(Fl_Check_Button* o, void*) {
-  progdefaults.sort_date_time_off = o->value();
-progdefaults.changed = true;
-reload_browser();
-}
-
-Fl_Check_Button *btndate_time_force=(Fl_Check_Button *)0;
-
-static void cb_btndate_time_force(Fl_Check_Button* o, void*) {
-  progdefaults.force_date_time = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnRSTindefault=(Fl_Check_Button *)0;
-
-static void cb_btnRSTindefault(Fl_Check_Button* o, void*) {
-  progdefaults.RSTin_default = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnRSTdefault=(Fl_Check_Button *)0;
-
-static void cb_btnRSTdefault(Fl_Check_Button* o, void*) {
-  progdefaults.RSTdefault = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *txt_cty_dat_pathname=(Fl_Input2 *)0;
-
-static void cb_txt_cty_dat_pathname(Fl_Input2* o, void*) {
-  progdefaults.cty_dat_pathname = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Button *btn_select_cty_dat=(Fl_Button *)0;
-
-static void cb_btn_select_cty_dat(Fl_Button*, void*) {
-  select_cty_dat_pathname();
-}
-
-Fl_Button *btn_default_cty_dat=(Fl_Button *)0;
-
-static void cb_btn_default_cty_dat(Fl_Button*, void*) {
-  default_cty_dat_pathname();
-}
-
-Fl_Button *btn_reload_cty_dat=(Fl_Button *)0;
-
-static void cb_btn_reload_cty_dat(Fl_Button*, void*) {
-  reload_cty_dat();
-}
-
-Fl_Input2 *inpMyPower=(Fl_Input2 *)0;
-
-static void cb_inpMyPower(Fl_Input2* o, void*) {
-  progdefaults.mytxpower = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
-
-static void cb_btnRXClicks(Fl_Check_Button* o, void*) {
-  progdefaults.rxtext_clicks_qso_data = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnRXTooltips=(Fl_Check_Button *)0;
-
-static void cb_btnRXTooltips(Fl_Check_Button* o, void*) {
-  progdefaults.rxtext_tooltips = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Input2 *inpNonword=(Fl_Input2 *)0;
-
-static void cb_inpNonword(Fl_Input2* o, void*) {
-  progdefaults.nonwordchars = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnUSunits=(Fl_Check_Button *)0;
-
-static void cb_btnUSunits(Fl_Check_Button* o, void*) {
-  progdefaults.us_units = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnConnectToMaclogger=(Fl_Check_Button *)0;
-
-static void cb_btnConnectToMaclogger(Fl_Check_Button* o, void*) {
-  progdefaults.connect_to_maclogger = o->value();
-if (progdefaults.connect_to_maclogger == false)
-  maclogger_close();
-else
-  maclogger_init();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_capture_maclogger_radio=(Fl_Check_Button *)0;
-
-static void cb_btn_capture_maclogger_radio(Fl_Check_Button* o, void*) {
-  progdefaults.capture_maclogger_radio = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_capture_maclogger_log=(Fl_Check_Button *)0;
-
-static void cb_btn_capture_maclogger_log(Fl_Check_Button* o, void*) {
-  progdefaults.capture_maclogger_log = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_capture_maclogger_lookup=(Fl_Check_Button *)0;
-
-static void cb_btn_capture_maclogger_lookup(Fl_Check_Button* o, void*) {
-  progdefaults.capture_maclogger_lookup = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_capture_maclogger_spot_tune=(Fl_Check_Button *)0;
-
-static void cb_btn_capture_maclogger_spot_tune(Fl_Check_Button* o, void*) {
-  progdefaults.capture_maclogger_spot_tune = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_capture_maclogger_spot_report=(Fl_Check_Button *)0;
-
-static void cb_btn_capture_maclogger_spot_report(Fl_Check_Button* o, void*) {
-  progdefaults.capture_maclogger_spot_report = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_enable_maclogger_log=(Fl_Check_Button *)0;
-
-static void cb_btn_enable_maclogger_log(Fl_Check_Button* o, void*) {
-  progdefaults.enable_maclogger_log = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Text_Display *txt_UDP_data=(Fl_Text_Display *)0;
-
-Fl_Output *txt_maclogger_log_filename=(Fl_Output *)0;
-
-static void cb_Clear(Fl_Button*, void*) {
-  txt_UDP_data->buffer()->text("");
 }
 
 Fl_Group *tabMBars=(Fl_Group *)0;
@@ -6212,7 +6311,7 @@ Fl_Double_Window* ConfigureDialog() {
   static const char szContestiaBandwidth[] = "125|250|500|1000|2000";
   static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600|115200|230400|460800";
   static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";
-  { Fl_Double_Window* o = new Fl_Double_Window(600, 415, _("Fldigi configuration"));
+  { Fl_Double_Window* o = new Fl_Double_Window(600, 420, _("Fldigi configuration"));
     w = o;
     o->color(FL_DARK2);
     o->selection_color((Fl_Color)51);
@@ -6225,6 +6324,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6361,11 +6461,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6505,9 +6605,397 @@ Fl_Double_Window* ConfigureDialog() {
             } // Fl_Group* o
             tabBrowser->end();
           } // Fl_Group* tabBrowser
+          { tabUserInterface = new Fl_Group(0, 50, 600, 340, _("General"));
+            tabUserInterface->tooltip(_("User Interface - General"));
+            tabUserInterface->hide();
+            { Fl_Group* o = new Fl_Group(40, 77, 520, 76);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(75, 90, 120, 20, _("Show tooltips"));
+                btnShowTooltips->tooltip(_("Enable / disable tooltips"));
+                btnShowTooltips->down_box(FL_DOWN_BOX);
+                btnShowTooltips->value(1);
+                btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
+                o->value(progdefaults.tooltips);
+              } // Fl_Check_Button* btnShowTooltips
+              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(219, 90, 150, 20, _("Show menu icons"));
+                chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
+                chkMenuIcons->down_box(FL_DOWN_BOX);
+                chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
+                o->value(progdefaults.menuicons);
+              } // Fl_Check_Button* chkMenuIcons
+              { Fl_ListBox* o = listboxScheme = new Fl_ListBox(193, 119, 80, 20, _("UI scheme"));
+                listboxScheme->tooltip(_("Change application look and feel"));
+                listboxScheme->box(FL_DOWN_BOX);
+                listboxScheme->color(FL_BACKGROUND2_COLOR);
+                listboxScheme->selection_color(FL_BACKGROUND_COLOR);
+                listboxScheme->labeltype(FL_NORMAL_LABEL);
+                listboxScheme->labelfont(0);
+                listboxScheme->labelsize(14);
+                listboxScheme->labelcolor(FL_FOREGROUND_COLOR);
+                listboxScheme->callback((Fl_Callback*)cb_listboxScheme);
+                listboxScheme->align(Fl_Align(FL_ALIGN_RIGHT));
+                listboxScheme->when(FL_WHEN_RELEASE);
+                listboxScheme->add("base");
+                listboxScheme->add("gtk+");
+                listboxScheme->add("plastic");
+                listboxScheme->value(progdefaults.ui_scheme.c_str());
+                       o->labelsize(FL_NORMAL_SIZE);
+                listboxScheme->end();
+              } // Fl_ListBox* listboxScheme
+              { bVisibleModes = new Fl_Button(58, 119, 110, 20, _("Visible modes"));
+                bVisibleModes->tooltip(_("Select modes for menu access"));
+                bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
+              } // Fl_Button* bVisibleModes
+              { Fl_ListBox* o = listbox_language = new Fl_ListBox(375, 119, 170, 20, _("UI language"));
+                listbox_language->tooltip(_("Changes take effect on next program startup"));
+                listbox_language->box(FL_DOWN_BOX);
+                listbox_language->color(FL_BACKGROUND2_COLOR);
+                listbox_language->selection_color(FL_BACKGROUND_COLOR);
+                listbox_language->labeltype(FL_NORMAL_LABEL);
+                listbox_language->labelfont(0);
+                listbox_language->labelsize(12);
+                listbox_language->labelcolor(FL_FOREGROUND_COLOR);
+                listbox_language->callback((Fl_Callback*)cb_listbox_language);
+                listbox_language->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                listbox_language->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                listbox_language->end();
+              } // Fl_ListBox* listbox_language
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(40, 154, 520, 34);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(75, 161, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
+                btn_rx_lowercase->down_box(FL_DOWN_BOX);
+                btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
+                o->value(progdefaults.rx_lowercase);
+              } // Fl_Check_Button* btn_rx_lowercase
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(40, 189, 260, 34);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_tx_lowercase = new Fl_Check_Button(75, 197, 199, 20, _("Transmit lower case text"));
+                btn_tx_lowercase->down_box(FL_DOWN_BOX);
+                btn_tx_lowercase->callback((Fl_Callback*)cb_btn_tx_lowercase);
+                o->value(progdefaults.tx_lowercase);
+              } // Fl_Check_Button* btn_tx_lowercase
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(40, 224, 520, 76, _("Exit prompts"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(75, 248, 233, 20, _("Prompt to save Configuration"));
+                btn_save_config_on_exit->down_box(FL_DOWN_BOX);
+                btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
+                o->value(progdefaults.SaveConfig);
+              } // Fl_Check_Button* btn_save_config_on_exit
+              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(75, 270, 233, 20, _("Prompt to save macro file"));
+                btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
+                btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
+                btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
+                o->value(progdefaults.SaveMacros);
+              } // Fl_Check_Button* btn2_save_macros_on_exit
+              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(319, 248, 166, 20, _("Prompt to save log"));
+                btn2NagMe->tooltip(_("Bug me about saving log entries"));
+                btn2NagMe->down_box(FL_DOWN_BOX);
+                btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
+                o->value(progdefaults.NagMe);
+              } // Fl_Check_Button* btn2NagMe
+              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(319, 270, 200, 20, _("Confirm exit"));
+                btn2_confirm_exit->down_box(FL_DOWN_BOX);
+                btn2_confirm_exit->callback((Fl_Callback*)cb_btn2_confirm_exit);
+                o->value(progdefaults.confirmExit);
+              } // Fl_Check_Button* btn2_confirm_exit
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(40, 301, 520, 52, _("Check for updates"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(75, 324, 324, 20, _("Check for updates when starting program"));
+                btn_check_for_updates->down_box(FL_DOWN_BOX);
+                btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
+                o->value(progdefaults.check_for_updates);
+              } // Fl_Check_Button* btn_check_for_updates
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(300, 189, 260, 34);
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_tx_show_timer = new Fl_Check_Button(319, 195, 223, 20, _("Show TX timer"));
+                btn_tx_show_timer->down_box(FL_DOWN_BOX);
+                btn_tx_show_timer->callback((Fl_Callback*)cb_btn_tx_show_timer);
+                o->value(progdefaults.show_tx_timer);
+              } // Fl_Check_Button* btn_tx_show_timer
+              o->end();
+            } // Fl_Group* o
+            tabUserInterface->end();
+          } // Fl_Group* tabUserInterface
+          { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
+            tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
+            tabLogServer->hide();
+            { tabsLog = new Fl_Tabs(0, 50, 600, 340);
+              { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
+                { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(77, 134, 236, 20, _("Prompt to save log on exit"));
+                btnNagMe->tooltip(_("Bug me about saving log entries"));
+                btnNagMe->down_box(FL_DOWN_BOX);
+                btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
+                o->value(progdefaults.NagMe);
+                } // Fl_Check_Button* btnNagMe
+                { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(77, 163, 236, 20, _("Clear on save"));
+                btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
+                btnClearOnSave->down_box(FL_DOWN_BOX);
+                btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
+                o->value(progdefaults.ClearOnSave);
+                } // Fl_Check_Button* btnClearOnSave
+                { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(77, 192, 236, 20, _("Convert callsign to upper case"));
+                btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
+                btnCallUpperCase->down_box(FL_DOWN_BOX);
+                btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
+                o->value(progdefaults.calluppercase);
+                } // Fl_Check_Button* btnCallUpperCase
+                { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(77, 222, 236, 20, _("Auto-fill Country and Azimuth"));
+                btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
+                btnAutoFillQSO->down_box(FL_DOWN_BOX);
+                btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
+                o->value(progdefaults.autofill_qso_fields);
+                } // Fl_Check_Button* btnAutoFillQSO
+                { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(330, 134, 190, 20, _("Sort by Date/Time OFF"));
+                btnDateTimeSort->tooltip(_("Sort by date/time OFF - effects all ADIF/Cabrillo reports"));
+                btnDateTimeSort->down_box(FL_DOWN_BOX);
+                btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
+                o->value(progdefaults.sort_date_time_off);
+                } // Fl_Check_Button* btnDateTimeSort
+                { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(330, 163, 190, 20, _("Date time ON == OFF"));
+                btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
+                btndate_time_force->down_box(FL_DOWN_BOX);
+                btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
+                o->value(progdefaults.force_date_time);
+                } // Fl_Check_Button* btndate_time_force
+                { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(330, 192, 213, 20, _("Default RST in to 599/59"));
+                btnRSTindefault->tooltip(_("Clear log controls sets RST in to 599/59"));
+                btnRSTindefault->down_box(FL_DOWN_BOX);
+                btnRSTindefault->callback((Fl_Callback*)cb_btnRSTindefault);
+                o->value(progdefaults.RSTin_default);
+                } // Fl_Check_Button* btnRSTindefault
+                { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(330, 222, 216, 20, _("Default RST out to 599/59"));
+                btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599/59"));
+                btnRSTdefault->down_box(FL_DOWN_BOX);
+                btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
+                o->value(progdefaults.RSTdefault);
+                } // Fl_Check_Button* btnRSTdefault
+                { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(197, 249, 346, 24, _("cty.dat folder"));
+                txt_cty_dat_pathname->tooltip(_("Enter full path-name for cty.dat folder"));
+                txt_cty_dat_pathname->box(FL_DOWN_BOX);
+                txt_cty_dat_pathname->color(FL_BACKGROUND2_COLOR);
+                txt_cty_dat_pathname->selection_color(FL_SELECTION_COLOR);
+                txt_cty_dat_pathname->labeltype(FL_NORMAL_LABEL);
+                txt_cty_dat_pathname->labelfont(0);
+                txt_cty_dat_pathname->labelsize(14);
+                txt_cty_dat_pathname->labelcolor(FL_FOREGROUND_COLOR);
+                txt_cty_dat_pathname->callback((Fl_Callback*)cb_txt_cty_dat_pathname);
+                txt_cty_dat_pathname->align(Fl_Align(FL_ALIGN_LEFT));
+                txt_cty_dat_pathname->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.cty_dat_pathname.c_str());
+                } // Fl_Input2* txt_cty_dat_pathname
+                { btn_select_cty_dat = new Fl_Button(78, 278, 75, 24, _("Browse"));
+                btn_select_cty_dat->tooltip(_("Locate cty.dat file"));
+                btn_select_cty_dat->callback((Fl_Callback*)cb_btn_select_cty_dat);
+                } // Fl_Button* btn_select_cty_dat
+                { btn_default_cty_dat = new Fl_Button(173, 278, 75, 24, _("Default"));
+                btn_default_cty_dat->tooltip(_("Restore cty.dat default folder"));
+                btn_default_cty_dat->callback((Fl_Callback*)cb_btn_default_cty_dat);
+                } // Fl_Button* btn_default_cty_dat
+                { btn_reload_cty_dat = new Fl_Button(268, 278, 75, 24, _("Reload"));
+                btn_reload_cty_dat->tooltip(_("Reload cty.dat"));
+                btn_reload_cty_dat->callback((Fl_Callback*)cb_btn_reload_cty_dat);
+                } // Fl_Button* btn_reload_cty_dat
+                { Fl_Input2* o = inpMyPower = new Fl_Input2(493, 278, 50, 24, _("Transmit Power"));
+                inpMyPower->tooltip(_("Tx power used for logbook entries"));
+                inpMyPower->box(FL_DOWN_BOX);
+                inpMyPower->color(FL_BACKGROUND2_COLOR);
+                inpMyPower->selection_color(FL_SELECTION_COLOR);
+                inpMyPower->labeltype(FL_NORMAL_LABEL);
+                inpMyPower->labelfont(0);
+                inpMyPower->labelsize(14);
+                inpMyPower->labelcolor(FL_FOREGROUND_COLOR);
+                inpMyPower->callback((Fl_Callback*)cb_inpMyPower);
+                inpMyPower->align(Fl_Align(FL_ALIGN_LEFT));
+                inpMyPower->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.mytxpower.c_str());
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Input2* inpMyPower
+                o->end();
+                } // Fl_Group* o
+                grp_Log_QSO->end();
+              } // Fl_Group* grp_Log_QSO
+              { grpRX_Text = new Fl_Group(0, 75, 600, 315, _("Rx Text"));
+                grpRX_Text->hide();
+                { Fl_Group* o = new Fl_Group(62, 96, 496, 113, _("Rx Text"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(85, 155, 191, 20, _("Single-click to capture"));
+                btnRXClicks->tooltip(_("Enable for single click capure of text in Rx panel"));
+                btnRXClicks->down_box(FL_DOWN_BOX);
+                btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
+                o->value(progdefaults.rxtext_clicks_qso_data);
+                } // Fl_Check_Button* btnRXClicks
+                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(287, 155, 254, 20, _("callsign tooltips in received text"));
+                btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
+                btnRXTooltips->down_box(FL_DOWN_BOX);
+                btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
+                o->value(progdefaults.rxtext_tooltips);
+                } // Fl_Check_Button* btnRXTooltips
+                { Fl_Input2* o = inpNonword = new Fl_Input2(204, 125, 279, 24, _("Word delimiters"));
+                inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
+ab and newline are automatically included."));
+                inpNonword->box(FL_DOWN_BOX);
+                inpNonword->color(FL_BACKGROUND2_COLOR);
+                inpNonword->selection_color(FL_SELECTION_COLOR);
+                inpNonword->labeltype(FL_NORMAL_LABEL);
+                inpNonword->labelfont(0);
+                inpNonword->labelsize(14);
+                inpNonword->labelcolor(FL_FOREGROUND_COLOR);
+                inpNonword->textfont(4);
+                inpNonword->callback((Fl_Callback*)cb_inpNonword);
+                inpNonword->align(Fl_Align(FL_ALIGN_LEFT));
+                inpNonword->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.nonwordchars.c_str());
+                o->labelsize(FL_NORMAL_SIZE);
+                } // Fl_Input2* inpNonword
+                { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(287, 180, 220, 20, _("US units of distance (QRB)"));
+                btnUSunits->tooltip(_("Enable for single click capure of text in Rx panel"));
+                btnUSunits->down_box(FL_DOWN_BOX);
+                btnUSunits->callback((Fl_Callback*)cb_btnUSunits);
+                o->value(progdefaults.us_units);
+                } // Fl_Check_Button* btnUSunits
+                o->end();
+                } // Fl_Group* o
+                grpRX_Text->end();
+              } // Fl_Group* grpRX_Text
+              { grpMacLogger = new Fl_Group(0, 75, 600, 315, _("MacLogger"));
+                grpMacLogger->hide();
+                { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 91, 186, 20, _("Connect to MacLogger"));
+                btnConnectToMaclogger->down_box(FL_DOWN_BOX);
+                btnConnectToMaclogger->callback((Fl_Callback*)cb_btnConnectToMaclogger);
+                o->value(progdefaults.connect_to_maclogger);
+                } // Fl_Check_Button* btnConnectToMaclogger
+                { Fl_Check_Button* o = btn_capture_maclogger_radio = new Fl_Check_Button(205, 91, 186, 20, _("Capture Radio Report"));
+                btn_capture_maclogger_radio->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_radio->value(1);
+                btn_capture_maclogger_radio->callback((Fl_Callback*)cb_btn_capture_maclogger_radio);
+                o->value(progdefaults.capture_maclogger_radio);
+                } // Fl_Check_Button* btn_capture_maclogger_radio
+                { Fl_Check_Button* o = btn_capture_maclogger_log = new Fl_Check_Button(205, 116, 186, 21, _("Capture Log Report"));
+                btn_capture_maclogger_log->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_log->callback((Fl_Callback*)cb_btn_capture_maclogger_log);
+                o->value(progdefaults.capture_maclogger_log);
+                } // Fl_Check_Button* btn_capture_maclogger_log
+                { Fl_Check_Button* o = btn_capture_maclogger_lookup = new Fl_Check_Button(405, 91, 186, 20, _("Capture Lookup "));
+                btn_capture_maclogger_lookup->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_lookup->callback((Fl_Callback*)cb_btn_capture_maclogger_lookup);
+                o->value(progdefaults.capture_maclogger_lookup);
+                } // Fl_Check_Button* btn_capture_maclogger_lookup
+                { Fl_Check_Button* o = btn_capture_maclogger_spot_tune = new Fl_Check_Button(405, 116, 186, 21, _("Capture Spot Tune"));
+                btn_capture_maclogger_spot_tune->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_spot_tune->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_tune);
+                o->value(progdefaults.capture_maclogger_spot_tune);
+                } // Fl_Check_Button* btn_capture_maclogger_spot_tune
+                { Fl_Check_Button* o = btn_capture_maclogger_spot_report = new Fl_Check_Button(405, 144, 186, 21, _("Capture Spot Report"));
+                btn_capture_maclogger_spot_report->down_box(FL_DOWN_BOX);
+                btn_capture_maclogger_spot_report->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_report);
+                o->value(progdefaults.capture_maclogger_spot_report);
+                } // Fl_Check_Button* btn_capture_maclogger_spot_report
+                { Fl_Check_Button* o = btn_enable_maclogger_log = new Fl_Check_Button(10, 173, 165, 26, _("Enable UDP log file"));
+                btn_enable_maclogger_log->down_box(FL_DOWN_BOX);
+                btn_enable_maclogger_log->callback((Fl_Callback*)cb_btn_enable_maclogger_log);
+                o->value(progdefaults.enable_maclogger_log);
+                } // Fl_Check_Button* btn_enable_maclogger_log
+                { Fl_Text_Display* o = txt_UDP_data = new Fl_Text_Display(10, 220, 580, 161, _("UDP data stream"));
+                txt_UDP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
+                o->buffer(txtbuffer);
+                } // Fl_Text_Display* txt_UDP_data
+                { Fl_Output* o = txt_maclogger_log_filename = new Fl_Output(178, 173, 272, 26);
+                o->value(progdefaults.maclogger_log_filename.c_str());
+                } // Fl_Output* txt_maclogger_log_filename
+                { Fl_Button* o = new Fl_Button(460, 173, 129, 26, _("Clear UDP text"));
+                o->callback((Fl_Callback*)cb_Clear);
+                } // Fl_Button* o
+                grpMacLogger->end();
+              } // Fl_Group* grpMacLogger
+              { grpN3FJP_logs = new Fl_Group(0, 75, 600, 315, _("N3FJP logs"));
+                grpN3FJP_logs->hide();
+                { Fl_Text_Display* o = txt_N3FJP_data = new Fl_Text_Display(5, 148, 590, 170, _("TCP/IP Data Stream"));
+                txt_N3FJP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
+                o->buffer(txtbuffer);
+                } // Fl_Text_Display* txt_N3FJP_data
+                { Fl_Button* o = new Fl_Button(501, 321, 90, 24, _("Clear text"));
+                o->callback((Fl_Callback*)cb_Clear1);
+                } // Fl_Button* o
+                { Fl_Input2* o = txt_N3FJP_ip_address = new Fl_Input2(5, 100, 350, 25, _("Address"));
+                txt_N3FJP_ip_address->tooltip(_("N3FJP Server IP Address"));
+                txt_N3FJP_ip_address->box(FL_DOWN_BOX);
+                txt_N3FJP_ip_address->color(FL_BACKGROUND2_COLOR);
+                txt_N3FJP_ip_address->selection_color(FL_SELECTION_COLOR);
+                txt_N3FJP_ip_address->labeltype(FL_NORMAL_LABEL);
+                txt_N3FJP_ip_address->labelfont(0);
+                txt_N3FJP_ip_address->labelsize(14);
+                txt_N3FJP_ip_address->labelcolor(FL_FOREGROUND_COLOR);
+                txt_N3FJP_ip_address->callback((Fl_Callback*)cb_txt_N3FJP_ip_address);
+                txt_N3FJP_ip_address->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                txt_N3FJP_ip_address->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.N3FJP_address.c_str());
+                } // Fl_Input2* txt_N3FJP_ip_address
+                { Fl_Input2* o = txt_N3FJP_ip_port_no = new Fl_Input2(365, 100, 55, 25, _("Port"));
+                txt_N3FJP_ip_port_no->tooltip(_("N3FJP Server IP Port"));
+                txt_N3FJP_ip_port_no->box(FL_DOWN_BOX);
+                txt_N3FJP_ip_port_no->color(FL_BACKGROUND2_COLOR);
+                txt_N3FJP_ip_port_no->selection_color(FL_SELECTION_COLOR);
+                txt_N3FJP_ip_port_no->labeltype(FL_NORMAL_LABEL);
+                txt_N3FJP_ip_port_no->labelfont(0);
+                txt_N3FJP_ip_port_no->labelsize(14);
+                txt_N3FJP_ip_port_no->labelcolor(FL_FOREGROUND_COLOR);
+                txt_N3FJP_ip_port_no->callback((Fl_Callback*)cb_txt_N3FJP_ip_port_no);
+                txt_N3FJP_ip_port_no->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                txt_N3FJP_ip_port_no->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                o->value(progdefaults.N3FJP_port.c_str());
+                } // Fl_Input2* txt_N3FJP_ip_port_no
+                { btn_default_N3FJP_ip = new Fl_Button(423, 100, 73, 25, _("Default"));
+                btn_default_N3FJP_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
+                btn_default_N3FJP_ip->callback((Fl_Callback*)cb_btn_default_N3FJP_ip);
+                } // Fl_Button* btn_default_N3FJP_ip
+                { Fl_Check_Button* o = btn_enable_N3FJP_log = new Fl_Check_Button(10, 320, 165, 26, _("Enable Data Stream"));
+                btn_enable_N3FJP_log->down_box(FL_DOWN_BOX);
+                btn_enable_N3FJP_log->callback((Fl_Callback*)cb_btn_enable_N3FJP_log);
+                o->value(progdefaults.enable_N3FJP_log);
+                } // Fl_Check_Button* btn_enable_N3FJP_log
+                { Fl_Check_Button* o = btn_connect_to_n3fjp = new Fl_Check_Button(510, 105, 70, 15, _("Connect"));
+                btn_connect_to_n3fjp->down_box(FL_DOWN_BOX);
+                btn_connect_to_n3fjp->callback((Fl_Callback*)cb_btn_connect_to_n3fjp);
+                o->value(progdefaults.connect_to_n3fjp);
+                } // Fl_Check_Button* btn_connect_to_n3fjp
+                { Fl_Check_Button* o = btn_N3FJP_sweet_spot = new Fl_Check_Button(10, 350, 255, 26, _("Center DXspot freq at sweet spot"));
+                btn_N3FJP_sweet_spot->tooltip(_("N3FJP DX spots centered on mode sweet spot"));
+                btn_N3FJP_sweet_spot->down_box(FL_DOWN_BOX);
+                btn_N3FJP_sweet_spot->callback((Fl_Callback*)cb_btn_N3FJP_sweet_spot);
+                o->value(progdefaults.N3FJP_sweet_spot);
+                } // Fl_Check_Button* btn_N3FJP_sweet_spot
+                grpN3FJP_logs->end();
+              } // Fl_Group* grpN3FJP_logs
+              tabsLog->end();
+            } // Fl_Tabs* tabsLog
+            tabLogServer->end();
+          } // Fl_Group* tabLogServer
           { tabContest = new Fl_Group(0, 50, 600, 340, _("Contest"));
             tabContest->tooltip(_("User Interface - Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 590, 89, _("Duplicate check, CALL plus"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6655,10 +7143,10 @@ Fl_Double_Window* ConfigureDialog() {
               } // Fl_Group* o
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 265, 590, 58, _("Field Day"));
+            { Fl_Group* o = new Fl_Group(5, 265, 590, 40, _("Field Day"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Input2* o = inp_my_FD_call = new Fl_Input2(117, 288, 80, 24, _("FD Oper\' Call"));
+              { Fl_Input2* o = inp_my_FD_call = new Fl_Input2(215, 273, 80, 24, _("FD Oper\' Call"));
                 inp_my_FD_call->tooltip(_("Field Day Callsign\nMay be same as OP callsign"));
                 inp_my_FD_call->box(FL_DOWN_BOX);
                 inp_my_FD_call->color(FL_BACKGROUND2_COLOR);
@@ -6673,7 +7161,7 @@ Fl_Double_Window* ConfigureDialog() {
                 o->value(progdefaults.fd_op_call.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inp_my_FD_call
-              { Fl_Input2* o = inp_my_FD_section = new Fl_Input2(365, 288, 45, 22, _("Section"));
+              { Fl_Input2* o = inp_my_FD_section = new Fl_Input2(463, 273, 45, 22, _("Section"));
                 inp_my_FD_section->tooltip(_("Field Day Section"));
                 inp_my_FD_section->box(FL_DOWN_BOX);
                 inp_my_FD_section->color(FL_BACKGROUND2_COLOR);
@@ -6688,7 +7176,7 @@ Fl_Double_Window* ConfigureDialog() {
                 o->value(progdefaults.my_FD_section.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inp_my_FD_section
-              { Fl_Input2* o = inp_my_FD_class = new Fl_Input2(247, 288, 50, 22, _("Class"));
+              { Fl_Input2* o = inp_my_FD_class = new Fl_Input2(345, 273, 50, 22, _("Class"));
                 inp_my_FD_class->tooltip(_("Field Day Class"));
                 inp_my_FD_class->box(FL_DOWN_BOX);
                 inp_my_FD_class->color(FL_BACKGROUND2_COLOR);
@@ -6703,343 +7191,39 @@ Fl_Double_Window* ConfigureDialog() {
                 o->value(progdefaults.my_FD_class.c_str());
                 inpSend1->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inp_my_FD_class
-              { Fl_Check_Button* o = btn_fd_contest = new Fl_Check_Button(445, 289, 70, 20, _("FD Contest"));
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 307, 590, 78, _("Contest Logging"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btn_generic_contest = new Fl_Check_Button(30, 335, 70, 20, _("Generic"));
+                btn_generic_contest->tooltip(_("Use Field Day Contest Fields"));
+                btn_generic_contest->down_box(FL_DOWN_BOX);
+                btn_generic_contest->callback((Fl_Callback*)cb_btn_generic_contest);
+                o->value(progdefaults.logging == LOG_CONT);
+              } // Fl_Check_Button* btn_generic_contest
+              { Fl_Check_Button* o = btn_fd_contest = new Fl_Check_Button(175, 335, 70, 20, _("Field Day"));
                 btn_fd_contest->tooltip(_("Use Field Day Contest Fields"));
                 btn_fd_contest->down_box(FL_DOWN_BOX);
                 btn_fd_contest->callback((Fl_Callback*)cb_btn_fd_contest);
-                o->value(progdefaults.FDcontest);
+                o->value(progdefaults.logging == LOG_FD);
               } // Fl_Check_Button* btn_fd_contest
+              { Fl_Check_Button* o = btn_cqww_contest = new Fl_Check_Button(320, 335, 70, 20, _("CQWW RTTY"));
+                btn_cqww_contest->tooltip(_("Use Field Day Contest Fields"));
+                btn_cqww_contest->down_box(FL_DOWN_BOX);
+                btn_cqww_contest->callback((Fl_Callback*)cb_btn_cqww_contest);
+                o->value(progdefaults.logging == LOG_CQWW);
+              } // Fl_Check_Button* btn_cqww_contest
+              { Fl_Check_Button* o = btn_bart_contest = new Fl_Check_Button(465, 335, 70, 20, _("BART RTTY"));
+                btn_bart_contest->tooltip(_("Use Field Day Contest Fields"));
+                btn_bart_contest->down_box(FL_DOWN_BOX);
+                btn_bart_contest->callback((Fl_Callback*)cb_btn_bart_contest);
+                o->value(progdefaults.logging == LOG_BART);
+              } // Fl_Check_Button* btn_bart_contest
               o->end();
             } // Fl_Group* o
             tabContest->end();
           } // Fl_Group* tabContest
-          { tabUserInterface = new Fl_Group(0, 50, 600, 340, _("General"));
-            tabUserInterface->tooltip(_("User Interface - General"));
-            tabUserInterface->hide();
-            { Fl_Group* o = new Fl_Group(40, 77, 520, 76);
-              o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnShowTooltips = new Fl_Check_Button(75, 90, 120, 20, _("Show tooltips"));
-                btnShowTooltips->tooltip(_("Enable / disable tooltips"));
-                btnShowTooltips->down_box(FL_DOWN_BOX);
-                btnShowTooltips->value(1);
-                btnShowTooltips->callback((Fl_Callback*)cb_btnShowTooltips);
-                o->value(progdefaults.tooltips);
-              } // Fl_Check_Button* btnShowTooltips
-              { Fl_Check_Button* o = chkMenuIcons = new Fl_Check_Button(219, 90, 150, 20, _("Show menu icons"));
-                chkMenuIcons->tooltip(_("Enable / disable icons on menus"));
-                chkMenuIcons->down_box(FL_DOWN_BOX);
-                chkMenuIcons->callback((Fl_Callback*)cb_chkMenuIcons);
-                o->value(progdefaults.menuicons);
-              } // Fl_Check_Button* chkMenuIcons
-              { Fl_ListBox* o = listboxScheme = new Fl_ListBox(193, 119, 80, 20, _("UI scheme"));
-                listboxScheme->tooltip(_("Change application look and feel"));
-                listboxScheme->box(FL_DOWN_BOX);
-                listboxScheme->color(FL_BACKGROUND2_COLOR);
-                listboxScheme->selection_color(FL_BACKGROUND_COLOR);
-                listboxScheme->labeltype(FL_NORMAL_LABEL);
-                listboxScheme->labelfont(0);
-                listboxScheme->labelsize(14);
-                listboxScheme->labelcolor(FL_FOREGROUND_COLOR);
-                listboxScheme->callback((Fl_Callback*)cb_listboxScheme);
-                listboxScheme->align(Fl_Align(FL_ALIGN_RIGHT));
-                listboxScheme->when(FL_WHEN_RELEASE);
-                listboxScheme->add("base");
-                listboxScheme->add("gtk+");
-                listboxScheme->add("plastic");
-                listboxScheme->value(progdefaults.ui_scheme.c_str());
-                       o->labelsize(FL_NORMAL_SIZE);
-                listboxScheme->end();
-              } // Fl_ListBox* listboxScheme
-              { bVisibleModes = new Fl_Button(58, 119, 110, 20, _("Visible modes"));
-                bVisibleModes->tooltip(_("Select modes for menu access"));
-                bVisibleModes->callback((Fl_Callback*)cb_bVisibleModes);
-              } // Fl_Button* bVisibleModes
-              { Fl_ListBox* o = listbox_language = new Fl_ListBox(375, 119, 170, 20, _("UI language"));
-                listbox_language->tooltip(_("Changes take effect on next program startup"));
-                listbox_language->box(FL_DOWN_BOX);
-                listbox_language->color(FL_BACKGROUND2_COLOR);
-                listbox_language->selection_color(FL_BACKGROUND_COLOR);
-                listbox_language->labeltype(FL_NORMAL_LABEL);
-                listbox_language->labelfont(0);
-                listbox_language->labelsize(12);
-                listbox_language->labelcolor(FL_FOREGROUND_COLOR);
-                listbox_language->callback((Fl_Callback*)cb_listbox_language);
-                listbox_language->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                listbox_language->when(FL_WHEN_RELEASE);
-                o->labelsize(FL_NORMAL_SIZE);
-                listbox_language->end();
-              } // Fl_ListBox* listbox_language
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(40, 154, 520, 34);
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_rx_lowercase = new Fl_Check_Button(75, 161, 389, 20, _("Print CW / RTTY / THROB / CONTESTIA in lowercase"));
-                btn_rx_lowercase->down_box(FL_DOWN_BOX);
-                btn_rx_lowercase->callback((Fl_Callback*)cb_btn_rx_lowercase);
-                o->value(progdefaults.rx_lowercase);
-              } // Fl_Check_Button* btn_rx_lowercase
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(40, 189, 260, 34);
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_tx_lowercase = new Fl_Check_Button(75, 197, 199, 20, _("Transmit lower case text"));
-                btn_tx_lowercase->down_box(FL_DOWN_BOX);
-                btn_tx_lowercase->callback((Fl_Callback*)cb_btn_tx_lowercase);
-                o->value(progdefaults.tx_lowercase);
-              } // Fl_Check_Button* btn_tx_lowercase
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(40, 224, 520, 76, _("Exit prompts"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_save_config_on_exit = new Fl_Check_Button(75, 248, 233, 20, _("Prompt to save Configuration"));
-                btn_save_config_on_exit->down_box(FL_DOWN_BOX);
-                btn_save_config_on_exit->callback((Fl_Callback*)cb_btn_save_config_on_exit);
-                o->value(progdefaults.SaveConfig);
-              } // Fl_Check_Button* btn_save_config_on_exit
-              { Fl_Check_Button* o = btn2_save_macros_on_exit = new Fl_Check_Button(75, 270, 233, 20, _("Prompt to save macro file"));
-                btn2_save_macros_on_exit->tooltip(_("Write current macro set on program exit"));
-                btn2_save_macros_on_exit->down_box(FL_DOWN_BOX);
-                btn2_save_macros_on_exit->callback((Fl_Callback*)cb_btn2_save_macros_on_exit);
-                o->value(progdefaults.SaveMacros);
-              } // Fl_Check_Button* btn2_save_macros_on_exit
-              { Fl_Check_Button* o = btn2NagMe = new Fl_Check_Button(319, 248, 166, 20, _("Prompt to save log"));
-                btn2NagMe->tooltip(_("Bug me about saving log entries"));
-                btn2NagMe->down_box(FL_DOWN_BOX);
-                btn2NagMe->callback((Fl_Callback*)cb_btn2NagMe);
-                o->value(progdefaults.NagMe);
-              } // Fl_Check_Button* btn2NagMe
-              { Fl_Check_Button* o = btn2_confirm_exit = new Fl_Check_Button(319, 270, 200, 20, _("Confirm exit"));
-                btn2_confirm_exit->down_box(FL_DOWN_BOX);
-                btn2_confirm_exit->callback((Fl_Callback*)cb_btn2_confirm_exit);
-                o->value(progdefaults.confirmExit);
-              } // Fl_Check_Button* btn2_confirm_exit
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(40, 301, 520, 52, _("Check for updates"));
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_check_for_updates = new Fl_Check_Button(75, 324, 324, 20, _("Check for updates when starting program"));
-                btn_check_for_updates->down_box(FL_DOWN_BOX);
-                btn_check_for_updates->callback((Fl_Callback*)cb_btn_check_for_updates);
-                o->value(progdefaults.check_for_updates);
-              } // Fl_Check_Button* btn_check_for_updates
-              o->end();
-            } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(300, 189, 260, 34);
-              o->box(FL_ENGRAVED_FRAME);
-              o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_tx_show_timer = new Fl_Check_Button(319, 195, 223, 20, _("Show TX timer"));
-                btn_tx_show_timer->down_box(FL_DOWN_BOX);
-                btn_tx_show_timer->callback((Fl_Callback*)cb_btn_tx_show_timer);
-                o->value(progdefaults.show_tx_timer);
-              } // Fl_Check_Button* btn_tx_show_timer
-              o->end();
-            } // Fl_Group* o
-            tabUserInterface->end();
-          } // Fl_Group* tabUserInterface
-          { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
-            tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
-            tabLogServer->hide();
-            { tabsLog = new Fl_Tabs(0, 50, 600, 340);
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("QSO"));
-                { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
-                o->box(FL_ENGRAVED_FRAME);
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(77, 134, 236, 20, _("Prompt to save log on exit"));
-                btnNagMe->tooltip(_("Bug me about saving log entries"));
-                btnNagMe->down_box(FL_DOWN_BOX);
-                btnNagMe->callback((Fl_Callback*)cb_btnNagMe);
-                o->value(progdefaults.NagMe);
-                } // Fl_Check_Button* btnNagMe
-                { Fl_Check_Button* o = btnClearOnSave = new Fl_Check_Button(77, 163, 236, 20, _("Clear on save"));
-                btnClearOnSave->tooltip(_("Clear log entries after saving or using macro <LOG>"));
-                btnClearOnSave->down_box(FL_DOWN_BOX);
-                btnClearOnSave->callback((Fl_Callback*)cb_btnClearOnSave);
-                o->value(progdefaults.ClearOnSave);
-                } // Fl_Check_Button* btnClearOnSave
-                { Fl_Check_Button* o = btnCallUpperCase = new Fl_Check_Button(77, 192, 236, 20, _("Convert callsign to upper case"));
-                btnCallUpperCase->tooltip(_("Force callsign field to UPPERCASE"));
-                btnCallUpperCase->down_box(FL_DOWN_BOX);
-                btnCallUpperCase->callback((Fl_Callback*)cb_btnCallUpperCase);
-                o->value(progdefaults.calluppercase);
-                } // Fl_Check_Button* btnCallUpperCase
-                { Fl_Check_Button* o = btnAutoFillQSO = new Fl_Check_Button(77, 222, 236, 20, _("Auto-fill Country and Azimuth"));
-                btnAutoFillQSO->tooltip(_("Fill in Country / Azimuth using cty.dat information"));
-                btnAutoFillQSO->down_box(FL_DOWN_BOX);
-                btnAutoFillQSO->callback((Fl_Callback*)cb_btnAutoFillQSO);
-                o->value(progdefaults.autofill_qso_fields);
-                } // Fl_Check_Button* btnAutoFillQSO
-                { Fl_Check_Button* o = btnDateTimeSort = new Fl_Check_Button(330, 134, 190, 20, _("Sort by Date/Time OFF"));
-                btnDateTimeSort->tooltip(_("Sort by date/time OFF - effects all ADIF/Cabrillo reports"));
-                btnDateTimeSort->down_box(FL_DOWN_BOX);
-                btnDateTimeSort->callback((Fl_Callback*)cb_btnDateTimeSort);
-                o->value(progdefaults.sort_date_time_off);
-                } // Fl_Check_Button* btnDateTimeSort
-                { Fl_Check_Button* o = btndate_time_force = new Fl_Check_Button(330, 163, 190, 20, _("Date time ON == OFF"));
-                btndate_time_force->tooltip(_("Force date/time ON == date/time OFF"));
-                btndate_time_force->down_box(FL_DOWN_BOX);
-                btndate_time_force->callback((Fl_Callback*)cb_btndate_time_force);
-                o->value(progdefaults.force_date_time);
-                } // Fl_Check_Button* btndate_time_force
-                { Fl_Check_Button* o = btnRSTindefault = new Fl_Check_Button(330, 192, 213, 20, _("Default RST in to 599/59"));
-                btnRSTindefault->tooltip(_("Clear log controls sets RST in to 599/59"));
-                btnRSTindefault->down_box(FL_DOWN_BOX);
-                btnRSTindefault->callback((Fl_Callback*)cb_btnRSTindefault);
-                o->value(progdefaults.RSTin_default);
-                } // Fl_Check_Button* btnRSTindefault
-                { Fl_Check_Button* o = btnRSTdefault = new Fl_Check_Button(330, 222, 216, 20, _("Default RST out to 599/59"));
-                btnRSTdefault->tooltip(_("Clear log controls sets RST out to 599/59"));
-                btnRSTdefault->down_box(FL_DOWN_BOX);
-                btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
-                o->value(progdefaults.RSTdefault);
-                } // Fl_Check_Button* btnRSTdefault
-                { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(197, 249, 346, 24, _("cty.dat folder"));
-                txt_cty_dat_pathname->tooltip(_("Enter full path-name for cty.dat folder"));
-                txt_cty_dat_pathname->box(FL_DOWN_BOX);
-                txt_cty_dat_pathname->color(FL_BACKGROUND2_COLOR);
-                txt_cty_dat_pathname->selection_color(FL_SELECTION_COLOR);
-                txt_cty_dat_pathname->labeltype(FL_NORMAL_LABEL);
-                txt_cty_dat_pathname->labelfont(0);
-                txt_cty_dat_pathname->labelsize(14);
-                txt_cty_dat_pathname->labelcolor(FL_FOREGROUND_COLOR);
-                txt_cty_dat_pathname->callback((Fl_Callback*)cb_txt_cty_dat_pathname);
-                txt_cty_dat_pathname->align(Fl_Align(FL_ALIGN_LEFT));
-                txt_cty_dat_pathname->when(FL_WHEN_CHANGED);
-                o->value(progdefaults.cty_dat_pathname.c_str());
-                } // Fl_Input2* txt_cty_dat_pathname
-                { btn_select_cty_dat = new Fl_Button(78, 278, 75, 24, _("Browse"));
-                btn_select_cty_dat->tooltip(_("Locate cty.dat file"));
-                btn_select_cty_dat->callback((Fl_Callback*)cb_btn_select_cty_dat);
-                } // Fl_Button* btn_select_cty_dat
-                { btn_default_cty_dat = new Fl_Button(173, 278, 75, 24, _("Default"));
-                btn_default_cty_dat->tooltip(_("Restore cty.dat default folder"));
-                btn_default_cty_dat->callback((Fl_Callback*)cb_btn_default_cty_dat);
-                } // Fl_Button* btn_default_cty_dat
-                { btn_reload_cty_dat = new Fl_Button(268, 278, 75, 24, _("Reload"));
-                btn_reload_cty_dat->tooltip(_("Reload cty.dat"));
-                btn_reload_cty_dat->callback((Fl_Callback*)cb_btn_reload_cty_dat);
-                } // Fl_Button* btn_reload_cty_dat
-                { Fl_Input2* o = inpMyPower = new Fl_Input2(493, 278, 50, 24, _("Transmit Power"));
-                inpMyPower->tooltip(_("Tx power used for logbook entries"));
-                inpMyPower->box(FL_DOWN_BOX);
-                inpMyPower->color(FL_BACKGROUND2_COLOR);
-                inpMyPower->selection_color(FL_SELECTION_COLOR);
-                inpMyPower->labeltype(FL_NORMAL_LABEL);
-                inpMyPower->labelfont(0);
-                inpMyPower->labelsize(14);
-                inpMyPower->labelcolor(FL_FOREGROUND_COLOR);
-                inpMyPower->callback((Fl_Callback*)cb_inpMyPower);
-                inpMyPower->align(Fl_Align(FL_ALIGN_LEFT));
-                inpMyPower->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.mytxpower.c_str());
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Input2* inpMyPower
-                o->end();
-                } // Fl_Group* o
-                o->end();
-              } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx Text"));
-                o->hide();
-                { Fl_Group* o = new Fl_Group(62, 96, 496, 113, _("Rx Text"));
-                o->box(FL_ENGRAVED_FRAME);
-                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Check_Button* o = btnRXClicks = new Fl_Check_Button(85, 155, 191, 20, _("Single-click to capture"));
-                btnRXClicks->tooltip(_("Enable for single click capure of text in Rx panel"));
-                btnRXClicks->down_box(FL_DOWN_BOX);
-                btnRXClicks->callback((Fl_Callback*)cb_btnRXClicks);
-                o->value(progdefaults.rxtext_clicks_qso_data);
-                } // Fl_Check_Button* btnRXClicks
-                { Fl_Check_Button* o = btnRXTooltips = new Fl_Check_Button(287, 155, 254, 20, _("callsign tooltips in received text"));
-                btnRXTooltips->tooltip(_("Popup info after a 2 second hover on a callsign"));
-                btnRXTooltips->down_box(FL_DOWN_BOX);
-                btnRXTooltips->callback((Fl_Callback*)cb_btnRXTooltips);
-                o->value(progdefaults.rxtext_tooltips);
-                } // Fl_Check_Button* btnRXTooltips
-                { Fl_Input2* o = inpNonword = new Fl_Input2(204, 125, 279, 24, _("Word delimiters"));
-                inpNonword->tooltip(_("RX text QSO data entry is bounded by the non-word characters\ndefined here. T\
-ab and newline are automatically included."));
-                inpNonword->box(FL_DOWN_BOX);
-                inpNonword->color(FL_BACKGROUND2_COLOR);
-                inpNonword->selection_color(FL_SELECTION_COLOR);
-                inpNonword->labeltype(FL_NORMAL_LABEL);
-                inpNonword->labelfont(0);
-                inpNonword->labelsize(14);
-                inpNonword->labelcolor(FL_FOREGROUND_COLOR);
-                inpNonword->textfont(4);
-                inpNonword->callback((Fl_Callback*)cb_inpNonword);
-                inpNonword->align(Fl_Align(FL_ALIGN_LEFT));
-                inpNonword->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.nonwordchars.c_str());
-                o->labelsize(FL_NORMAL_SIZE);
-                } // Fl_Input2* inpNonword
-                { Fl_Check_Button* o = btnUSunits = new Fl_Check_Button(287, 180, 220, 20, _("US units of distance (QRB)"));
-                btnUSunits->tooltip(_("Enable for single click capure of text in Rx panel"));
-                btnUSunits->down_box(FL_DOWN_BOX);
-                btnUSunits->callback((Fl_Callback*)cb_btnUSunits);
-                o->value(progdefaults.us_units);
-                } // Fl_Check_Button* btnUSunits
-                o->end();
-                } // Fl_Group* o
-                o->end();
-              } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("MacLogger"));
-                o->hide();
-                { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 91, 186, 20, _("Connect to MacLogger"));
-                btnConnectToMaclogger->down_box(FL_DOWN_BOX);
-                btnConnectToMaclogger->callback((Fl_Callback*)cb_btnConnectToMaclogger);
-                o->value(progdefaults.connect_to_maclogger);
-                } // Fl_Check_Button* btnConnectToMaclogger
-                { Fl_Check_Button* o = btn_capture_maclogger_radio = new Fl_Check_Button(205, 91, 186, 20, _("Capture Radio Report"));
-                btn_capture_maclogger_radio->down_box(FL_DOWN_BOX);
-                btn_capture_maclogger_radio->value(1);
-                btn_capture_maclogger_radio->callback((Fl_Callback*)cb_btn_capture_maclogger_radio);
-                o->value(progdefaults.capture_maclogger_radio);
-                } // Fl_Check_Button* btn_capture_maclogger_radio
-                { Fl_Check_Button* o = btn_capture_maclogger_log = new Fl_Check_Button(205, 116, 186, 21, _("Capture Log Report"));
-                btn_capture_maclogger_log->down_box(FL_DOWN_BOX);
-                btn_capture_maclogger_log->callback((Fl_Callback*)cb_btn_capture_maclogger_log);
-                o->value(progdefaults.capture_maclogger_log);
-                } // Fl_Check_Button* btn_capture_maclogger_log
-                { Fl_Check_Button* o = btn_capture_maclogger_lookup = new Fl_Check_Button(405, 91, 186, 20, _("Capture Lookup "));
-                btn_capture_maclogger_lookup->down_box(FL_DOWN_BOX);
-                btn_capture_maclogger_lookup->callback((Fl_Callback*)cb_btn_capture_maclogger_lookup);
-                o->value(progdefaults.capture_maclogger_lookup);
-                } // Fl_Check_Button* btn_capture_maclogger_lookup
-                { Fl_Check_Button* o = btn_capture_maclogger_spot_tune = new Fl_Check_Button(405, 116, 186, 21, _("Capture Spot Tune"));
-                btn_capture_maclogger_spot_tune->down_box(FL_DOWN_BOX);
-                btn_capture_maclogger_spot_tune->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_tune);
-                o->value(progdefaults.capture_maclogger_spot_tune);
-                } // Fl_Check_Button* btn_capture_maclogger_spot_tune
-                { Fl_Check_Button* o = btn_capture_maclogger_spot_report = new Fl_Check_Button(405, 144, 186, 21, _("Capture Spot Report"));
-                btn_capture_maclogger_spot_report->down_box(FL_DOWN_BOX);
-                btn_capture_maclogger_spot_report->callback((Fl_Callback*)cb_btn_capture_maclogger_spot_report);
-                o->value(progdefaults.capture_maclogger_spot_report);
-                } // Fl_Check_Button* btn_capture_maclogger_spot_report
-                { Fl_Check_Button* o = btn_enable_maclogger_log = new Fl_Check_Button(10, 173, 165, 26, _("Enable UDP log file"));
-                btn_enable_maclogger_log->down_box(FL_DOWN_BOX);
-                btn_enable_maclogger_log->callback((Fl_Callback*)cb_btn_enable_maclogger_log);
-                o->value(progdefaults.enable_maclogger_log);
-                } // Fl_Check_Button* btn_enable_maclogger_log
-                { Fl_Text_Display* o = txt_UDP_data = new Fl_Text_Display(10, 220, 580, 161, _("UDP data stream"));
-                txt_UDP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
-                o->buffer(txtbuffer);
-                } // Fl_Text_Display* txt_UDP_data
-                { Fl_Output* o = txt_maclogger_log_filename = new Fl_Output(178, 173, 272, 26);
-                o->value(progdefaults.maclogger_log_filename.c_str());
-                } // Fl_Output* txt_maclogger_log_filename
-                { Fl_Button* o = new Fl_Button(460, 173, 129, 26, _("Clear UDP text"));
-                o->callback((Fl_Callback*)cb_Clear);
-                } // Fl_Button* o
-                o->end();
-              } // Fl_Group* o
-              tabsLog->end();
-            } // Fl_Tabs* tabsLog
-            tabLogServer->end();
-          } // Fl_Group* tabLogServer
           { tabMBars = new Fl_Group(0, 50, 600, 340, _("Macros"));
             tabMBars->tooltip(_("User Interface - Macros"));
             tabMBars->hide();
@@ -7257,8 +7441,8 @@ ab and newline are automatically included."));
           { tabColorsFonts = new Fl_Group(0, 50, 600, 340, _("Clrs/Fnts"));
             tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
             tabColorsFonts->hide();
-            { tabsColors = new Fl_Tabs(0, 55, 600, 330);
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Rx/Tx"));
+            { tabsColors = new Fl_Tabs(0, 55, 600, 335);
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx/Tx"));
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 90, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
                 listbox_charset_status->box(FL_BORDER_BOX);
@@ -7355,7 +7539,7 @@ ab and newline are automatically included."));
                 } // Fl_Check_Button* btn_show_all_codes
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("FreqDisp / Meters"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("FreqDisp / Meters"));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(115, 108, 395, 87);
                 o->box(FL_ENGRAVED_FRAME);
@@ -7429,7 +7613,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Log"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Log"));
                 o->hide();
                 { Fl_Group* o = new Fl_Group(114, 101, 372, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
@@ -7473,7 +7657,7 @@ ab and newline are automatically included."));
                 } // Fl_Group* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("F_keys"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("F_keys"));
                 o->hide();
                 { btnUseGroupColors = new Fl_Check_Button(135, 107, 165, 21, _("Use colored buttons"));
                 btnUseGroupColors->down_box(FL_DOWN_BOX);
@@ -7506,7 +7690,7 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnMacroBtnFont
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Tabs"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Tabs"));
                 o->hide();
                 { btnTabColor = new Fl_Button(200, 113, 75, 21, _("Tab Color"));
                 btnTabColor->callback((Fl_Callback*)cb_btnTabColor);
@@ -7516,7 +7700,7 @@ ab and newline are automatically included."));
                 } // Fl_Button* btnTabDefaultColor
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("Buttons"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Buttons"));
                 o->hide();
                 { btnSpotColor = new Fl_Button(139, 121, 85, 21, _("Spot"));
                 btnSpotColor->callback((Fl_Callback*)cb_btnSpotColor);
@@ -7603,7 +7787,7 @@ ab and newline are automatically included."));
                 } // Fl_Box* o
                 o->end();
               } // Fl_Group* o
-              { Fl_Group* o = new Fl_Group(0, 80, 600, 305, _("SigLvl"));
+              { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("SigLvl"));
                 o->hide();
                 { btnLowSignal = new Fl_Button(210, 142, 70, 21, _("Low"));
                 btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);

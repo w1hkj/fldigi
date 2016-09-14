@@ -49,6 +49,8 @@
 #include "lookupcall.h"
 #include "fd_logger.h"
 
+#include "n3fjp_logger.h"
+
 #include <FL/fl_ask.H>
 
 using namespace std;
@@ -206,6 +208,7 @@ void submit_record(cQsoRec &rec)
 #else
 	submit_ADIF(rec);
 #endif
+	n3fjp_add_record(rec);
 }
 
 //---------------------------------------------------------------------

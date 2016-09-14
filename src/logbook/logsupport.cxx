@@ -40,6 +40,7 @@
 #include "date.h"
 
 #include "logger.h"
+#include "n3fjp_logger.h"
 #include "adif_io.h"
 #include "textio.h"
 #include "logbook.h"
@@ -449,12 +450,11 @@ void merge_recs( cQsoDb *db, cQsoDb *mrgdb ) // (haystack, needle)
 				db->qsoNewRec(copy->getRec(n));
 				n++;
 			} else {
-cQsoRec *r1 = copy->getRec(n);
-cQsoRec *r2 = mrgdb->getRec(m);
-printf("original:\n%s, %s, %s, %s, %s\nmerge:\n%s, %s, %s, %s, %s\n",
-r1->getField(CALL), r1->getField(QSO_DATE), r1->getField(TIME_ON), r1->getField(MODE), r1->getField(FREQ),
-r2->getField(CALL), r2->getField(QSO_DATE), r2->getField(TIME_ON), r2->getField(MODE), r2->getField(FREQ));
-
+//				cQsoRec *r1 = copy->getRec(n);
+//				cQsoRec *r2 = mrgdb->getRec(m);
+//printf("original:\n%s, %s, %s, %s, %s\nmerge:\n%s, %s, %s, %s, %s\n",
+//r1->getField(CALL), r1->getField(QSO_DATE), r1->getField(TIME_ON), r1->getField(MODE), r1->getField(FREQ),
+//r2->getField(CALL), r2->getField(QSO_DATE), r2->getField(TIME_ON), r2->getField(MODE), r2->getField(FREQ));
 				db->qsoNewRec(mrgdb->getRec(m));
 				merged->qsoNewRec(mrgdb->getRec(m));
 				m++;
@@ -741,7 +741,15 @@ void DupCheck()
 {
 	Fl_Color call_clr = progdefaults.LOGGINGcolor;
 
-	if ( FD_logged_on && strlen(inpCall->value()) > 2){
+	if (n3fjp_connected) {
+		if (n3fjp_dupcheck())
+			call_clr = fl_rgb_color(
+				progdefaults.dup_color.R,
+				progdefaults.dup_color.G,
+				progdefaults.dup_color.B);
+	}
+
+	else if ( FD_logged_on && strlen(inpCall->value()) > 2) {
 		if ( FD_dupcheck())
 			call_clr = fl_rgb_color(
 				progdefaults.dup_color.R,
@@ -791,7 +799,13 @@ cQsoRec* SearchLog(const char *callsign)
 
 void SearchLastQSO(const char *callsign)
 {
+	if (n3fjp_connected) {
+		n3fjp_get_record(callsign);
+		return;
+	}
+
 	size_t len = strlen(callsign);
+
 	if (len < 3)
 		return;
 
@@ -876,7 +890,7 @@ int log_search_handler(int)
 
 static int editNbr = 0;
 
-void cb_btnDialFreq(Fl_Button* b, void* d) 
+void cb_btnRetrieve(Fl_Button* b, void* d) 
 {
 	double drf  = atof(inpFreq_log->value());
 	if (!drf) return;
@@ -918,6 +932,9 @@ void cb_btnDialFreq(Fl_Button* b, void* d)
 	inpNotes->value (qsoPtr->getField(NOTES));
 
 	wBrowser->take_focus();
+	if (n3fjp_connected)
+		n3fjp_get_record(inpCall->value());
+
 }
 
 void clearRecord() {
@@ -1022,8 +1039,9 @@ void saveRecord() {
 	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
 }
 
+
 void updateRecord() {
-cQsoRec rec;
+	cQsoRec rec;
 	if (qsodb.nbrRecs() == 0) return;
 	rec.putField(CALL, inpCall_log->value());
 	rec.putField(NAME, inpName_log->value());
@@ -1145,6 +1163,13 @@ std::string sTime_on = "";
 std::string sDate_off = "";
 std::string sTime_off = "";
 
+static string ucasestr(string str)
+{
+	string s = str;
+	for (size_t n = 0; n < s.length(); n++) s[n] = toupper(s[n]);
+	return s;
+}
+
 void AddRecord ()
 {
 	inpCall_log->value(inpCall->value());
@@ -1168,8 +1193,8 @@ void AddRecord ()
 		inpFreq_log->value(Mhz);
 	}
 	inpMode_log->value (logmode);
-	inpState_log->value (inpState->value());
-	inpVE_Prov_log->value (inpVEprov->value());
+	inpState_log->value (ucasestr(inpState->value()).c_str());
+	inpVE_Prov_log->value (ucasestr(inpVEprov->value()).c_str());
 	inpCountry_log->value (inpCountry->value());
 
 	inpSerNoIn_log->value(inpSerNo->value());
@@ -1189,11 +1214,12 @@ void AddRecord ()
 	inpDXCC_log->value("");
 	inpQSL_VIA_log->value("");
 	inpCONT_log->value("");
-	inpCQZ_log->value("");
+
+	inpCQZ_log->value(inp_CQzone->value());
 	inpITUZ_log->value("");
 
-	inp_FD_class_log->value(inp_FD_class->value());
-	inp_FD_section_log->value(inp_FD_section->value());
+	inp_FD_class_log->value(ucasestr(inp_FD_class->value()).c_str());
+	inp_FD_section_log->value(ucasestr(inp_FD_section->value()).c_str());
 
 	saveRecord();
 

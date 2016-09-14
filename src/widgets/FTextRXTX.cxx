@@ -113,6 +113,8 @@ private:
 	RX_MENU_SERIAL
 	RX_MENU_CLASS
 	RX_MENU_SECTION,
+	RX_MENU_CQZONE,
+	RX_MENU_CQSTATE,
 	RX_MENU_DIV
 	RX_MENU_COPY
 	RX_MENU_CLEAR
@@ -137,6 +139,8 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ icons::make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("FD class"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("FD section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("CQ zone"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("CQ STATE"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 
 	{ 0 }, // VIEW_MENU_COPY
@@ -467,9 +471,7 @@ int FTextRX::handle_qso_data(int start, int end)
 
 	Fl_Input2* target = 0;
 
-	if (inpXchgIn1->visible() || 
-		inpXchgIn2->visible() ||
-		progdefaults.FDcontest) {
+	if (progdefaults.logging != LOG_QSO) {
 		if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
@@ -477,11 +479,16 @@ int FTextRX::handle_qso_data(int start, int end)
 			inpCall->value(p);
 			log_callback(inpCall);
 			Fl::copy(p, strlen(p), 1);  // copy to clipboard
-		} else if (progdefaults.FDcontest) { 
+		} else if (progdefaults.logging == LOG_FD) { 
 			if (inp_FD_class->value()[0] == 0)
 				inp_FD_class->value(s);
 			else if (inp_FD_section->value()[0] == 0)
 				inp_FD_section->value(s);
+		} else if (progdefaults.logging == LOG_CQWW) {
+			if (inp_CQzone->value()[0] == 0)
+				inp_CQzone->value(s);
+			else if (inp_CQstate->value()[0] == 0)
+				inp_CQstate->value(s);
 		} else {
 			inpXchgIn->position(inpXchgIn->size());
 			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
@@ -518,8 +525,11 @@ int FTextRX::handle_qso_data(int start, int end)
 
 void FTextRX::handle_context_menu(void)
 {
-	bool contest_ui = progStatus.Rig_Contest_UI || progdefaults.FDcontest ||
-		(progStatus.contest && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI);
+	bool contest_ui =
+			progStatus.Rig_Contest_UI || 
+			(progdefaults.logging != LOG_QSO) ||
+			progStatus.contest;
+	if (progStatus.NO_RIGLOG || progStatus.Rig_Log_UI) contest_ui = false;
 
 	unsigned shown = 0; // all hidden
 
@@ -529,39 +539,42 @@ void FTextRX::handle_context_menu(void)
 
 	show_item(RX_MENU_CALL);
 
-	if (contest_ui || (progStatus.contest && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI)) {
-		if (progdefaults.FDcontest) {
+	if (contest_ui) {// || progStatus.contest) && !progStatus.NO_RIGLOG && !progStatus.Rig_Log_UI) {
+		if (progdefaults.logging == LOG_FD) {
 			show_item(RX_MENU_CLASS);
 			show_item(RX_MENU_SECTION);
-		} else {
+		} else if (progdefaults.logging == LOG_CQWW) {
+			show_item(RX_MENU_CQZONE);
+			show_item(RX_MENU_CQSTATE);
+		} else if (	progdefaults.logging == LOG_CONT || 
+					progdefaults.logging == LOG_BART) {
 			show_item(RX_MENU_SERIAL);
 			show_item(RX_MENU_XCHG);
 		}
 	}
+	else {
+		show_item(RX_MENU_NAME);
+		show_item(RX_MENU_QTH);
+		show_item(RX_MENU_RST_IN);
 // "Look up call" shown only in non-contest mode
-	else if (progdefaults.QRZWEB != QRZWEBNONE || progdefaults.QRZXML != QRZXMLNONE)
-		show_item(RX_MENU_QRZ_THIS);
+		if (progdefaults.QRZWEB != QRZWEBNONE || progdefaults.QRZXML != QRZXMLNONE)
+			show_item(RX_MENU_QRZ_THIS);
+		menu[RX_MENU_CALL].flags |= FL_MENU_DIVIDER;
+	}
 
 	if (menu[RX_MENU_ALL_ENTRY].value()) {
 		for (size_t i = RX_MENU_NAME; i <= RX_MENU_RST_IN; i++)
 			show_item(i);
 		menu[RX_MENU_CALL].flags &= ~FL_MENU_DIVIDER;
 	}
-	else {
-		if (!contest_ui && !progStatus.contest) {
-			show_item(RX_MENU_NAME);
-			show_item(RX_MENU_QTH);
-			show_item(RX_MENU_RST_IN);
-		}
-		menu[RX_MENU_CALL].flags |= FL_MENU_DIVIDER;
-	}
+
 
 	if (static_cast<MVScrollbar*>(mVScrollBar)->has_marks())
 		menu[RX_MENU_SCROLL_HINTS].show();
 	else
 		menu[RX_MENU_SCROLL_HINTS].hide();
 
-	for (size_t i = RX_MENU_QRZ_THIS; i <= RX_MENU_SECTION; i++) {
+	for (size_t i = RX_MENU_QRZ_THIS; i < RX_MENU_DIV; i++) {
 		if (test_item(i))
 			menu[i].show();
 		else
@@ -634,6 +647,12 @@ void FTextRX::menu_cb(size_t item)
 		break;
 	case RX_MENU_SECTION:
 		input = inp_FD_section;
+		break;
+	case RX_MENU_CQZONE:
+		input = inp_CQzone;
+		break;
+	case RX_MENU_CQSTATE:
+		input = inp_CQstate;
 		break;
 	case RX_MENU_DIV:
 		note_qrg(false, "\n", "\n");

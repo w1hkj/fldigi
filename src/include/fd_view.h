@@ -25,6 +25,7 @@ extern Fl_Input2 *inp_fd_op_call;
 #include <FL/Fl_Check_Button.H>
 #include "confdialog.h"
 #include "fl_digi.h"
+#include "logsupport.h"
 extern Fl_Check_Button *btn_fd_connect;
 extern Fl_Box *box_fdserver_connected;
 Fl_Double_Window* make_fd_view();

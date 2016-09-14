@@ -183,8 +183,21 @@ int Fl_Input2::handle_key_ascii(int key)
 int Fl_Input2::handle(int event)
 {
 	switch (event) {
+	if (event == FL_LEAVE) {
+		do_callback();
+		return 1;
+	}
 	case FL_KEYBOARD: {
 		int b = Fl::event_key();
+
+		if (b == FL_Enter || b == FL_KP_Enter) {
+			do_callback();
+			return Fl_Input::handle(event);
+		}
+		if (b == FL_Tab) {
+			do_callback();
+			return Fl_Input::handle(event);
+		}
 
 		if ((Fl::event_state() & FL_CTRL) && (isdigit(b) || isdigit(b - FL_KP))) {
 			if (handle_key_ascii(b)) {

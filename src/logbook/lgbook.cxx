@@ -340,7 +340,7 @@ Fl_Button *bUpdateCancel=(Fl_Button *)0;
 
 Fl_Button *bDelete=(Fl_Button *)0;
 
-Fl_Button *bDialFreq=(Fl_Button *)0;
+Fl_Button *bRetrieve=(Fl_Button *)0;
 
 Fl_Button *bSearchPrev=(Fl_Button *)0;
 
@@ -1158,13 +1158,13 @@ void create_logbook_dialogs() {
       bDelete->selection_color((Fl_Color)48);
       bDelete->callback((Fl_Callback*)cb_btnDelete);
     } // Fl_Button* bDelete
-    { bDialFreq = new Fl_Button(502, 223, 75, 22, _("Retrieve"));
-      bDialFreq->tooltip(_("Retrieve for active modem use"));
-      bDialFreq->shortcut(0x50066);
-      bDialFreq->color(FL_LIGHT1);
-      bDialFreq->selection_color((Fl_Color)48);
-      bDialFreq->callback((Fl_Callback*)cb_btnDialFreq);
-    } // Fl_Button* bDialFreq
+    { bRetrieve = new Fl_Button(502, 223, 75, 22, _("Retrieve"));
+      bRetrieve->tooltip(_("Retrieve for active modem use"));
+      bRetrieve->shortcut(0x50066);
+      bRetrieve->color(FL_LIGHT1);
+      bRetrieve->selection_color((Fl_Color)48);
+      bRetrieve->callback((Fl_Callback*)cb_btnRetrieve);
+    } // Fl_Button* bRetrieve
     { bSearchPrev = new Fl_Button(499, 193, 24, 22);
       bSearchPrev->tooltip(_("Find previous"));
       bSearchPrev->color(FL_LIGHT1);

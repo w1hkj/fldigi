@@ -342,16 +342,17 @@ progdefaults.changed = true;}
         callback {progdefaults.connect_to_fdserver=o->value();
 if (progdefaults.connect_to_fdserver) {
 	btn_fd_contest->value(1);
-	progdefaults.FDcontest=true;
+	progdefaults.logging = LOG_FD;
 } else {
 	btn_fd_contest->value(0);
-	progdefaults.FDcontest=false;
+	progdefaults.logging = LOG_QSO;
 }
 UI_select();} selected
         tooltip {Connect / Disconnect^jAddr/Port/OP required} xywh {608 236 70 20} down_box DOWN_BOX
         code0 {o->value(progdefaults.connect_to_fdserver);}
         code1 {\#include "confdialog.h"}
         code2 {\#include "fl_digi.h"}
+        code3 {\#include "logsupport.h"}
       }
       Fl_Box box_fdserver_connected {
         label Connected

@@ -53,10 +53,10 @@ static void cb_btn_fd_connect(Fl_Check_Button* o, void*) {
   progdefaults.connect_to_fdserver=o->value();
 if (progdefaults.connect_to_fdserver) {
 	btn_fd_contest->value(1);
-	progdefaults.FDcontest=true;
+	progdefaults.logging = LOG_FD;
 } else {
 	btn_fd_contest->value(0);
-	progdefaults.FDcontest=false;
+	progdefaults.logging = LOG_QSO;
 }
 UI_select();
 }

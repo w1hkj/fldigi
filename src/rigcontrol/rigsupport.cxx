@@ -50,6 +50,9 @@
 
 #include "gettext.h"
 
+extern void n3fjp_set_freq(long);
+extern bool n3fjp_connected;
+
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
@@ -396,12 +399,15 @@ void sendFreq(long int f)
 		set_flrig_freq(f);
 #if USE_HAMLIB
 	else if (progdefaults.chkUSEHAMLIBis)
-			hamlib_setfreq(f);
+		hamlib_setfreq(f);
 #endif
 	else if (progdefaults.chkUSERIGCATis)
 		rigCAT_setfreq(f);
 	else
 		noCAT_setfreq(f);
+
+	if (n3fjp_connected)
+		n3fjp_set_freq(f);
 }
 
 void qso_movFreq(Fl_Widget* w, void *data)

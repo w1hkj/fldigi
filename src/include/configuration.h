@@ -986,6 +986,23 @@
         ELEM_(std::string, maclogger_log_filename, "MACLOGGER_LOG_FILENAME",            \
               "Filename for maclogger UDP datastream file",                             \
               "maclogger_udp_strings.txt")                                              \
+        /* N3FJP tcpip interface */                                                     \
+        ELEM_(std::string, N3FJP_address, "N3FJP_ADDRESS",                              \
+              "IP Address of N3FJP socket",                                             \
+              "127.0.0.1")                                                              \
+        ELEM_(std::string, N3FJP_port, "N3FJP_PORT",                                    \
+              "IP port number of N3FJP socket",                                         \
+              "1100")                                                                   \
+        ELEM_(bool, enable_N3FJP_log, "ENABLE_N3FJP_LOG",                               \
+              "Enable data stream logging.",                                            \
+              true)                                                                     \
+        ELEM_(bool, connect_to_n3fjp, "CONNECT_TO_N3FJP",                               \
+              "Connect to the N3FJP log server",                                        \
+              false)                                                                    \
+        ELEM_(bool, N3FJP_sweet_spot, "N3FJP_SWEET_SPOT",                               \
+              "Use N3FJP spot report as signal center freq.\n"                          \
+              "Center the target at mode sweet spot",                                   \
+              false)                                                                    \
         /* Rig control */                                                               \
         ELEM_(bool, flrig_keys_modem, "FLRIG_KEYS_MODEM",                               \
               "PTT change at flrig changes Rx/Tx state\n"                               \
@@ -1340,9 +1357,14 @@
         ELEM_(std::string, my_FD_mult, "FDMULT",                                        \
               "Field Day multiplier",                                                   \
               "5")                                                                      \
-        ELEM_(bool, FDcontest, "FDCONTEST",                                             \
-              "Use FD entries",                                                         \
-              false)                                                                    \
+        ELEM_(int, logging, "LOGGING",                                                  \
+              "Logging for:\n"                                                          \
+              "  0 - generic QSO\n"                                                     \
+              "  1 - generic contest\n"                                                 \
+              "  2 - Field Day\n"                                                       \
+              "  3 - CQWW RTTY\n"                                                       \
+              "  4 - BART",                                                             \
+              0)                                                                        \
         ELEM_(bool, connect_to_fdserver, "CONNECT_TO_FDSERVER",                         \
               "Connect to field day server",                                            \
               false)                                                                    \

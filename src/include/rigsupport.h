@@ -55,6 +55,7 @@ extern void qso_setMode();
 extern void setTitle();
 
 extern int  fwidths[];
+extern void sendFreq(long int f);
 extern void qso_addFreq();
 extern void qso_delFreq();
 extern void qso_selectFreq();

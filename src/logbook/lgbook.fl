@@ -336,7 +336,7 @@ btnSelectNotes->value(0);}
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook open
+    label Logbook open selected
     xywh {919 185 590 490} type Double resizable visible
   } {
     Fl_Input inpDate_log {
@@ -427,7 +427,7 @@ btnSelectNotes->value(0);}
       xywh {5 140 474 120}
     } {
       Fl_Group tab_log_qsl {
-        label QSL open selected
+        label QSL open
         xywh {5 162 474 94}
       } {
         Fl_Input inpQSLrcvddate_log {
@@ -612,9 +612,9 @@ btnSelectNotes->value(0);}
       callback cb_btnDelete
       tooltip {Delete the current record} xywh {521 263 59 22} shortcut 0x80044 color 50 selection_color 48
     }
-    Fl_Button bDialFreq {
+    Fl_Button bRetrieve {
       label Retrieve
-      callback cb_btnDialFreq
+      callback cb_btnRetrieve
       tooltip {Retrieve for active modem use} xywh {502 223 75 22} shortcut 0x50066 color 50 selection_color 48
     }
     Fl_Button bSearchPrev {

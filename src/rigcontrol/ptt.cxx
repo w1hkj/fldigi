@@ -64,6 +64,8 @@
 
 #include "fl_digi.h"
 
+#include "n3fjp_logger.h"
+
 LOG_FILE_SOURCE(debug::LOG_RIGCONTROL);
 
 using namespace std;
@@ -156,6 +158,9 @@ void PTT::set(bool ptt)
 		break;
 #endif
 	}
+	if (n3fjp_connected)
+		n3fjp_set_ptt(ptt);
+
 	if (ptt && progdefaults.PTT_on_delay)
 		MilliSleep(progdefaults.PTT_on_delay);
 

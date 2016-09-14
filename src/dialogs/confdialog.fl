@@ -362,15 +362,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {799 65 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {638 69 600 420} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -470,14 +470,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 365} hide
+        tooltip {User Interface} xywh {0 25 600 365}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser
-            tooltip {User Interface - Browser} xywh {0 50 600 340}
+            tooltip {User Interface - Browser} xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -661,183 +661,6 @@ progdefaults.changed = true;}
               }
             }
           }
-          Fl_Group tabContest {
-            label Contest open
-            tooltip {User Interface - Contest} xywh {0 50 600 340} hide
-          } {
-            Fl_Group {} {
-              label {Duplicate check, CALL plus} open
-              xywh {5 60 590 89} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Light_Button btnDupCheckOn {
-                label {On/Off}
-                callback {progdefaults.EnableDupCheck = o->value();
-progdefaults.changed = true;}
-                tooltip {Check for duplicates} xywh {70 81 74 20} selection_color 2
-                code0 {o->value(progdefaults.EnableDupCheck);}
-              }
-              Fl_Check_Button btnDupBand {
-                label Band
-                callback {progdefaults.dupband = o->value();
-progdefaults.changed = true;}
-                tooltip {Bands must match} xywh {175 81 70 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupband);}
-              }
-              Fl_Check_Button btnDupMode {
-                label Mode
-                callback {progdefaults.dupmode = o->value();
-progdefaults.changed = true;}
-                tooltip {Mode must match} xywh {295 81 70 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupmode);}
-              }
-              Fl_Check_Button btnDupTimeSpan {
-                label {Time span over}
-                callback {progdefaults.duptimespan=(int)o->value();
-progdefaults.changed = true;}
-                tooltip {QSO must not occur within a time period of} xywh {410 81 129 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.duptimespan);}
-              }
-              Fl_Button btnDupColor {
-                label {Dup Color}
-                callback {fl_color_chooser("Dup Check",
-  progdefaults.dup_color.R,
-  progdefaults.dup_color.G,
-  progdefaults.dup_color.B);
-o->color(
-  fl_rgb_color(
-    progdefaults.dup_color.R,
-    progdefaults.dup_color.G,
-    progdefaults.dup_color.B));
-o->redraw();
-progdefaults.changed = true;}
-                tooltip {Left click to select dup color} xywh {70 108 90 24} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
-                code0 {o->color(fl_rgb_color(progdefaults.dup_color.R, progdefaults.dup_color.G, progdefaults.dup_color.B));}
-                code1 {\#include <FL/Fl_Color_Chooser.H>}
-              }
-              Fl_Check_Button btnDupXchg1 {
-                label {Exchange In}
-                callback {progdefaults.dupxchg1 = o->value();
-progdefaults.changed = true;}
-                tooltip {free form 1 must match} xywh {175 110 105 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupxchg1);}
-              }
-              Fl_Check_Button btnDupState {
-                label State
-                callback {progdefaults.dupstate = o->value();
-progdefaults.changed = true;}
-                tooltip {State must match} xywh {295 110 70 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.dupstate);}
-              }
-              Fl_Value_Input nbrTimeSpan {
-                label minutes
-                callback {progdefaults.timespan = (int)o->value();
-progdefaults.changed = true;}
-                tooltip {Enter time span in minutes} xywh {410 108 53 24} align 8 maximum 1440 step 1 value 120
-                code0 {o->value(progdefaults.timespan);}
-                class Fl_Value_Input2
-              }
-            }
-            Fl_Group {} {
-              label {Contest Exchanges} open
-              xywh {5 150 590 113} box ENGRAVED_FRAME align 21
-            } {
-              Fl_Input inpSend1 {
-                label {Send Xchg}
-                callback {progdefaults.myXchg=o->value();
-progdefaults.changed = true;}
-                tooltip {free form exchange} xywh {91 175 140 24}
-                code0 {o->value(progdefaults.myXchg.c_str());}
-                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Input2
-              }
-              Fl_Check_Button btn599 {
-                label {RST always 599/59}
-                callback {progdefaults.fixed599 = o->value();
-progdefaults.changed = true;}
-                tooltip {Force RST in/out to 599/59} xywh {242 177 130 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.fixed599);}
-              }
-              Fl_Check_Button btnCutNbrs {
-                label {Send CW cut \#'s}
-                callback {progdefaults.cutnbrs=o->value();
-progdefaults.changed = true;}
-                tooltip {0 = T; 9 = N} xywh {445 177 139 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.cutnbrs);}
-              }
-              Fl_Group {} {
-                label {Serial number} open
-                xywh {10 204 580 55} box ENGRAVED_FRAME align 21
-              } {
-                Fl_Check_Button btnUseLeadingZeros {
-                  label {Use leading zeros}
-                  callback {progdefaults.UseLeadingZeros = o->value();
-progdefaults.changed = true;}
-                  tooltip {Insert leading zeros into Xmtd serial number} xywh {80 230 154 20} down_box DOWN_BOX value 1
-                }
-                Fl_Value_Input nbrContestStart {
-                  label Start
-                  callback {progdefaults.ContestStart = (int)o->value();
-progdefaults.changed = true;}
-                  tooltip {Starting number} xywh {275 230 45 20} align 1 maximum 10000 step 1
-                  code0 {o->value(progdefaults.ContestStart);}
-                  class Fl_Value_Input2
-                }
-                Fl_Value_Input nbrContestDigits {
-                  label Digits
-                  callback {progdefaults.ContestDigits = (int)o->value();
-progdefaults.changed = true;}
-                  tooltip {Number of digits in serial number} xywh {357 230 45 20} align 1 minimum 1 maximum 5 step 1 value 3
-                  class Fl_Value_Input2
-                }
-                Fl_Button btnResetSerNbr {
-                  label Reset
-                  callback {cb_ResetSerNbr();}
-                  tooltip {Initialize the QSO logging fields} xywh {449 230 70 20}
-                }
-              }
-            }
-            Fl_Group {} {
-              label {Field Day} open
-              xywh {5 265 590 58} box ENGRAVED_BOX align 21
-            } {
-              Fl_Input inp_my_FD_call {
-                label {FD Oper' Call}
-                callback {progdefaults.fd_op_call=o->value();
-progdefaults.changed = true;}
-                tooltip {Field Day Callsign
-May be same as OP callsign} xywh {117 288 80 24}
-                code0 {o->value(progdefaults.fd_op_call.c_str());}
-                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Input2
-              }
-              Fl_Input inp_my_FD_section {
-                label Section
-                callback {progdefaults.my_FD_section=o->value();
-progdefaults.changed = true;}
-                tooltip {Field Day Section} xywh {365 288 45 22}
-                code0 {o->value(progdefaults.my_FD_section.c_str());}
-                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Input2
-              }
-              Fl_Input inp_my_FD_class {
-                label Class
-                callback {progdefaults.my_FD_class=o->value();
-progdefaults.changed = true;}
-                tooltip {Field Day Class} xywh {247 288 50 22}
-                code0 {o->value(progdefaults.my_FD_class.c_str());}
-                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Input2
-              }
-              Fl_Check_Button btn_fd_contest {
-                label {FD Contest}
-                callback {progdefaults.FDcontest = o->value();
-UI_select();
-progdefaults.changed = true;}
-                tooltip {Use Field Day Contest Fields} xywh {445 289 70 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.FDcontest);}
-              }
-            }
-          }
           Fl_Group tabUserInterface {
             label General
             tooltip {User Interface - General} xywh {0 50 600 340} hide
@@ -975,13 +798,13 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLogServer {
-            label Log
+            label Log open
             tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsLog {open
               xywh {0 50 600 340}
             } {
-              Fl_Group {} {
+              Fl_Group grp_Log_QSO {
                 label QSO
                 xywh {0 75 600 315}
               } {
@@ -1082,7 +905,7 @@ progdefaults.changed = true;}
                   }
                 }
               }
-              Fl_Group {} {
+              Fl_Group grpRX_Text {
                 label {Rx Text}
                 xywh {0 75 600 315} hide
               } {
@@ -1123,7 +946,7 @@ progdefaults.changed = true;}
                   }
                 }
               }
-              Fl_Group {} {
+              Fl_Group grpMacLogger {
                 label MacLogger
                 xywh {0 75 600 315} hide
               } {
@@ -1197,10 +1020,297 @@ progdefaults.changed = true;}
                   xywh {460 173 129 26}
                 }
               }
+              Fl_Group grpN3FJP_logs {
+                label {N3FJP logs} open
+                xywh {0 75 600 315} hide
+              } {
+                Fl_Text_Display txt_N3FJP_data {
+                  label {TCP/IP Data Stream}
+                  xywh {5 148 590 170} align 5
+                  code0 {Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();}
+                  code1 {o->buffer(txtbuffer);}
+                }
+                Fl_Button {} {
+                  label {Clear text}
+                  callback {txt_N3FJP_data->buffer()->text("");}
+                  xywh {501 321 90 24}
+                }
+                Fl_Input txt_N3FJP_ip_address {
+                  label Address
+                  callback {progdefaults.N3FJP_address = o->value();
+progdefaults.changed = true;}
+                  tooltip {N3FJP Server IP Address} xywh {5 100 350 25} align 5
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  code1 {o->value(progdefaults.N3FJP_address.c_str());}
+                  class Fl_Input2
+                }
+                Fl_Input txt_N3FJP_ip_port_no {
+                  label Port
+                  callback {progdefaults.N3FJP_port = o->value();
+progdefaults.changed = true;}
+                  tooltip {N3FJP Server IP Port} xywh {365 100 55 25} align 5
+                  code0 {o->labelsize(FL_NORMAL_SIZE);}
+                  code1 {o->value(progdefaults.N3FJP_port.c_str());}
+                  class Fl_Input2
+                }
+                Fl_Button btn_default_N3FJP_ip {
+                  label Default
+                  callback {txt_N3FJP_ip_address->value("127.0.0.1");
+progdefaults.N3FJP_address = "127.0.0.1";
+txt_N3FJP_ip_port_no->value("1100");
+progdefaults.N3FJP_port = "1100";
+progdefaults.changed = true;}
+                  tooltip {Returns IP Address and port
+number to the default value.} xywh {423 100 73 25}
+                }
+                Fl_Check_Button btn_enable_N3FJP_log {
+                  label {Enable Data Stream}
+                  callback {progdefaults.enable_N3FJP_log = o->value();
+progdefaults.changed = true;}
+                  xywh {10 320 165 26} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.enable_N3FJP_log);}
+                }
+                Fl_Check_Button btn_connect_to_n3fjp {
+                  label Connect
+                  callback {progdefaults.connect_to_n3fjp=o->value();
+progdefaults.changed=true;}
+                  xywh {510 105 70 15} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.connect_to_n3fjp);}
+                }
+                Fl_Check_Button btn_N3FJP_sweet_spot {
+                  label {Center DXspot freq at sweet spot}
+                  callback {progdefaults.N3FJP_sweet_spot = o->value();
+progdefaults.changed = true;}
+                  tooltip {N3FJP DX spots centered on mode sweet spot} xywh {10 350 255 26} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.N3FJP_sweet_spot);}
+                }
+              }
+            }
+          }
+          Fl_Group tabContest {
+            label Contest open
+            tooltip {User Interface - Contest} xywh {0 50 600 340}
+          } {
+            Fl_Group {} {
+              label {Duplicate check, CALL plus} open
+              xywh {5 60 590 89} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Light_Button btnDupCheckOn {
+                label {On/Off}
+                callback {progdefaults.EnableDupCheck = o->value();
+progdefaults.changed = true;}
+                tooltip {Check for duplicates} xywh {70 81 74 20} selection_color 2
+                code0 {o->value(progdefaults.EnableDupCheck);}
+              }
+              Fl_Check_Button btnDupBand {
+                label Band
+                callback {progdefaults.dupband = o->value();
+progdefaults.changed = true;}
+                tooltip {Bands must match} xywh {175 81 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.dupband);}
+              }
+              Fl_Check_Button btnDupMode {
+                label Mode
+                callback {progdefaults.dupmode = o->value();
+progdefaults.changed = true;}
+                tooltip {Mode must match} xywh {295 81 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.dupmode);}
+              }
+              Fl_Check_Button btnDupTimeSpan {
+                label {Time span over}
+                callback {progdefaults.duptimespan=(int)o->value();
+progdefaults.changed = true;}
+                tooltip {QSO must not occur within a time period of} xywh {410 81 129 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.duptimespan);}
+              }
+              Fl_Button btnDupColor {
+                label {Dup Color}
+                callback {fl_color_chooser("Dup Check",
+  progdefaults.dup_color.R,
+  progdefaults.dup_color.G,
+  progdefaults.dup_color.B);
+o->color(
+  fl_rgb_color(
+    progdefaults.dup_color.R,
+    progdefaults.dup_color.G,
+    progdefaults.dup_color.B));
+o->redraw();
+progdefaults.changed = true;}
+                tooltip {Left click to select dup color} xywh {70 108 90 24} box DOWN_BOX down_box DOWN_BOX color 7 selection_color 7
+                code0 {o->color(fl_rgb_color(progdefaults.dup_color.R, progdefaults.dup_color.G, progdefaults.dup_color.B));}
+                code1 {\#include <FL/Fl_Color_Chooser.H>}
+              }
+              Fl_Check_Button btnDupXchg1 {
+                label {Exchange In}
+                callback {progdefaults.dupxchg1 = o->value();
+progdefaults.changed = true;}
+                tooltip {free form 1 must match} xywh {175 110 105 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.dupxchg1);}
+              }
+              Fl_Check_Button btnDupState {
+                label State
+                callback {progdefaults.dupstate = o->value();
+progdefaults.changed = true;}
+                tooltip {State must match} xywh {295 110 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.dupstate);}
+              }
+              Fl_Value_Input nbrTimeSpan {
+                label minutes
+                callback {progdefaults.timespan = (int)o->value();
+progdefaults.changed = true;}
+                tooltip {Enter time span in minutes} xywh {410 108 53 24} align 8 maximum 1440 step 1 value 120
+                code0 {o->value(progdefaults.timespan);}
+                class Fl_Value_Input2
+              }
+            }
+            Fl_Group {} {
+              label {Contest Exchanges} open
+              xywh {5 150 590 113} box ENGRAVED_FRAME align 21
+            } {
+              Fl_Input inpSend1 {
+                label {Send Xchg}
+                callback {progdefaults.myXchg=o->value();
+progdefaults.changed = true;}
+                tooltip {free form exchange} xywh {91 175 140 24}
+                code0 {o->value(progdefaults.myXchg.c_str());}
+                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+              Fl_Check_Button btn599 {
+                label {RST always 599/59}
+                callback {progdefaults.fixed599 = o->value();
+progdefaults.changed = true;}
+                tooltip {Force RST in/out to 599/59} xywh {242 177 130 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.fixed599);}
+              }
+              Fl_Check_Button btnCutNbrs {
+                label {Send CW cut \#'s}
+                callback {progdefaults.cutnbrs=o->value();
+progdefaults.changed = true;}
+                tooltip {0 = T; 9 = N} xywh {445 177 139 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.cutnbrs);}
+              }
+              Fl_Group {} {
+                label {Serial number} open
+                xywh {10 204 580 55} box ENGRAVED_FRAME align 21
+              } {
+                Fl_Check_Button btnUseLeadingZeros {
+                  label {Use leading zeros}
+                  callback {progdefaults.UseLeadingZeros = o->value();
+progdefaults.changed = true;}
+                  tooltip {Insert leading zeros into Xmtd serial number} xywh {80 230 154 20} down_box DOWN_BOX value 1
+                }
+                Fl_Value_Input nbrContestStart {
+                  label Start
+                  callback {progdefaults.ContestStart = (int)o->value();
+progdefaults.changed = true;}
+                  tooltip {Starting number} xywh {275 230 45 20} align 1 maximum 10000 step 1
+                  code0 {o->value(progdefaults.ContestStart);}
+                  class Fl_Value_Input2
+                }
+                Fl_Value_Input nbrContestDigits {
+                  label Digits
+                  callback {progdefaults.ContestDigits = (int)o->value();
+progdefaults.changed = true;}
+                  tooltip {Number of digits in serial number} xywh {357 230 45 20} align 1 minimum 1 maximum 5 step 1 value 3
+                  class Fl_Value_Input2
+                }
+                Fl_Button btnResetSerNbr {
+                  label Reset
+                  callback {cb_ResetSerNbr();}
+                  tooltip {Initialize the QSO logging fields} xywh {449 230 70 20}
+                }
+              }
+            }
+            Fl_Group {} {
+              label {Field Day} open
+              xywh {5 265 590 40} box ENGRAVED_BOX align 21
+            } {
+              Fl_Input inp_my_FD_call {
+                label {FD Oper' Call}
+                callback {progdefaults.fd_op_call=o->value();
+progdefaults.changed = true;}
+                tooltip {Field Day Callsign
+May be same as OP callsign} xywh {215 273 80 24}
+                code0 {o->value(progdefaults.fd_op_call.c_str());}
+                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+              Fl_Input inp_my_FD_section {
+                label Section
+                callback {progdefaults.my_FD_section=o->value();
+progdefaults.changed = true;}
+                tooltip {Field Day Section} xywh {463 273 45 22}
+                code0 {o->value(progdefaults.my_FD_section.c_str());}
+                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+              Fl_Input inp_my_FD_class {
+                label Class
+                callback {progdefaults.my_FD_class=o->value();
+progdefaults.changed = true;}
+                tooltip {Field Day Class} xywh {345 273 50 22}
+                code0 {o->value(progdefaults.my_FD_class.c_str());}
+                code1 {inpSend1->labelsize(FL_NORMAL_SIZE);}
+                class Fl_Input2
+              }
+            }
+            Fl_Group {} {
+              label {Contest Logging} open selected
+              xywh {5 307 590 78} box ENGRAVED_BOX align 21
+            } {
+              Fl_Check_Button btn_generic_contest {
+                label Generic
+                callback {if (o->value()) progdefaults.logging = LOG_CONT;
+else progdefaults.logging = LOG_QSO;
+btn_fd_contest->value(0);
+btn_cqww_contest->value(0);
+btn_bart_contest->value(0);
+UI_select();
+progdefaults.changed = true;}
+                tooltip {Use Field Day Contest Fields} xywh {30 335 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.logging == LOG_CONT);}
+              }
+              Fl_Check_Button btn_fd_contest {
+                label {Field Day}
+                callback {if (o->value()) progdefaults.logging = LOG_FD;
+else progdefaults.logging = LOG_QSO;
+btn_cqww_contest->value(0);
+btn_bart_contest->value(0);
+btn_generic_contest->value(0);
+UI_select();
+progdefaults.changed = true;}
+                tooltip {Use Field Day Contest Fields} xywh {175 335 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.logging == LOG_FD);}
+              }
+              Fl_Check_Button btn_cqww_contest {
+                label {CQWW RTTY}
+                callback {if (o->value()) progdefaults.logging = LOG_CQWW;
+else progdefaults.logging = LOG_QSO;
+btn_fd_contest->value(0);
+btn_bart_contest->value(0);
+btn_generic_contest->value(0);
+UI_select();
+progdefaults.changed = true;}
+                tooltip {Use Field Day Contest Fields} xywh {320 335 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.logging == LOG_CQWW);}
+              }
+              Fl_Check_Button btn_bart_contest {
+                label {BART RTTY}
+                callback {if (o->value()) progdefaults.logging = LOG_BART;
+else progdefaults.logging = LOG_QSO;
+btn_fd_contest->value(0);
+btn_cqww_contest->value(0);
+btn_generic_contest->value(0);
+UI_select();
+progdefaults.changed = true;}
+                tooltip {Use Field Day Contest Fields} xywh {465 335 70 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.logging == LOG_BART);}
+              }
             }
           }
           Fl_Group tabMBars {
-            label Macros open
+            label Macros
             tooltip {User Interface - Macros} xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
@@ -1517,11 +1627,11 @@ WF_UI();}
             tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsColors {open
-              xywh {0 55 600 330}
+              xywh {0 55 600 335}
             } {
               Fl_Group {} {
                 label {Rx/Tx}
-                xywh {0 80 600 305}
+                xywh {0 75 600 315}
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
@@ -1826,7 +1936,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label {FreqDisp / Meters}
-                xywh {0 80 600 305} hide
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {open
                   xywh {115 108 395 87} box ENGRAVED_FRAME
@@ -2084,7 +2194,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group {} {
                 label Log
-                xywh {0 80 600 305} hide
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {
                   label {Logging Panel Controls} open
@@ -2205,7 +2315,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label F_keys
-                xywh {0 80 600 305} hide
+                xywh {0 75 600 315} hide
               } {
                 Fl_Check_Button btnUseGroupColors {
                   label {Use colored buttons}
@@ -2337,7 +2447,7 @@ font_browser->show();}
               }
               Fl_Group {} {
                 label Tabs
-                xywh {0 80 600 305} hide
+                xywh {0 75 600 315} hide
               } {
                 Fl_Button btnTabColor {
                   label {Tab Color}
@@ -2355,8 +2465,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label Buttons open
-                xywh {0 80 600 305} hide
+                label Buttons
+                xywh {0 75 600 315} hide
               } {
                 Fl_Button btnSpotColor {
                   label Spot
@@ -2519,7 +2629,7 @@ btnTxRSID->redraw();}
               }
               Fl_Group {} {
                 label SigLvl
-                xywh {0 80 600 305} hide
+                xywh {0 75 600 315} hide
               } {
                 Fl_Button btnLowSignal {
                   label Low

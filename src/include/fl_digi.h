@@ -115,9 +115,9 @@ extern Fl_Input2		*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoSave;
 extern Fl_Box			*txtRigName;
 
-extern cFreqControl	*qsoFreqDisp1;
+extern cFreqControl		*qsoFreqDisp1;
 extern cFreqControl 	*qsoFreqDisp2;
-extern cFreqControl	*qsoFreqDisp3;
+extern cFreqControl		*qsoFreqDisp3;
 extern Fl_Input2		*inpFreq2;
 
 extern Fl_Input2		*inpCall1;
@@ -575,5 +575,14 @@ extern void			thor_load_scaled_image(std::string fname);
 // field day
 extern Fl_Input2	*inp_FD_class;
 extern Fl_Input2	*inp_FD_section;
+extern Fl_Input2	*inp_FD_class1;
+extern Fl_Input2	*inp_FD_section1;
+extern Fl_Input2	*inp_FD_class2;
+extern Fl_Input2	*inp_FD_section2;
+
+// CQWW RTTY
+extern Fl_Input2	*inp_CQzone;
+extern Fl_Input2	*inp_CQstate;
+
 
 #endif
