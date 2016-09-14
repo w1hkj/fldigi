@@ -89,6 +89,7 @@ static  double hsbuff[SCBLOCKSIZE];
 
 static bool trxrunning = false;
 
+extern bool	trx_inhibit;
 bool	rx_only = false;
 
 #include "tune.cxx"
@@ -269,6 +270,9 @@ void trx_trx_receive_loop()
 		}
 		if (trx_state != STATE_RX)
 			break;
+
+		if (trx_inhibit)
+			continue;
 
 		if (bHighSpeed) {
 			bool afc = progStatus.afconoff;

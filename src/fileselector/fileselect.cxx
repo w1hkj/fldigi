@@ -106,6 +106,8 @@ The filter type must be terminated with a '\n' on OS X or the application crashe
 
 */
 
+bool trx_inhibit = false;
+
 using namespace std;
 
 namespace FSEL {
@@ -199,11 +201,14 @@ const char* select(const char* title, const char* filter, const char* def, int* 
 //	pfile(sdirectory.c_str(), sdef.c_str(), sfilter.c_str());
 
 	filename.clear();
+
+	trx_inhibit = true;
+
 	switch ( native.show() ) {
-		case -1: 
+		case -1: // ERROR
 			LOG_ERROR("ERROR: %s\n", native.errmsg()); // Error fall through
-		case  1: 
-			return 0;
+		case  1: // CANCEL
+			filename = "";
 			break;
 		default:
 			if ( native.filename() ) {
@@ -213,6 +218,8 @@ const char* select(const char* title, const char* filter, const char* def, int* 
 		}
 		break;
 	}
+
+	trx_inhibit = false;
 
 	if (fsel)
 		*fsel = native.filter_value();
@@ -276,9 +283,16 @@ const char* saveas(const char* title, const char* filter, const char* def, int* 
 //	pfile(sdirectory.c_str(), sdef.c_str(), sfilter.c_str());
 
 	filename.clear();
+
+	trx_inhibit = true;
+
 	switch ( native.show() ) {
-		case -1: LOG_ERROR("ERROR: %s\n", native.errmsg()); break;	// ERROR
-		case  1: break;		// CANCEL
+		case -1: // ERROR
+			LOG_ERROR("ERROR: %s\n", native.errmsg()); 
+			break;
+		case  1: // CANCEL
+			filename = "";
+			break;
 		default: 
 			if ( native.filename() ) {
 				filename = native.filename();
@@ -287,6 +301,8 @@ const char* saveas(const char* title, const char* filter, const char* def, int* 
 		}
 		break;
 	}
+
+	trx_inhibit = false;
 
 	if (fsel)
 		*fsel = native.filter_value();
@@ -321,9 +337,16 @@ const char* dir_select(const char* title, const char* filter, const char* def)
 		sdirectory.clear();
 
 	filename.clear();
+
+	trx_inhibit = true;
+
 	switch ( native.show() ) {
-		case -1: LOG_ERROR("ERROR: %s\n", native.errmsg()); break;	// ERROR
-		case  1: break;		// CANCEL
+		case -1: // ERROR
+			LOG_ERROR("ERROR: %s\n", native.errmsg()); 
+			break;
+		case  1: // CANCEL
+			filename = "";
+			break;
 		default:
 			if ( native.filename() ) {
 				filename = native.filename();
@@ -332,6 +355,8 @@ const char* dir_select(const char* title, const char* filter, const char* def)
 		}
 		break;
 	}
+
+	trx_inhibit = false;
 
 	return filename.c_str();
 }
