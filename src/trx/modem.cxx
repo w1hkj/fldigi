@@ -361,9 +361,10 @@ void modem::set_samplerate(int smprate)
 
 double modem::PTTnco()
 {
+	double amp = sin(PTTphaseacc);
 	PTTphaseacc += TWOPI * 1000 / samplerate;
 	if (PTTphaseacc > TWOPI) PTTphaseacc -= TWOPI;
-	return sin(PTTphaseacc);
+	return amp;
 }
 
 double modem::sigmaN (double es_ovr_n0)

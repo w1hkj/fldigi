@@ -80,7 +80,8 @@
 #define SND_RW_LEN	(8 * SND_BUF_LEN)
 
 // We never write duplicate/QSK/PTT tone/PseudoFSK data to the sound files
-#define SNDFILE_CHANNELS 1
+//#define SNDFILE_CHANNELS 1
+#define SNDFILE_CHANNELS 2
 
 int sndfile_samplerate[7] = {8000, 11025, 16000, 22050, 24000, 44100, 48000};
 
@@ -102,11 +103,16 @@ SoundBase::SoundBase()
 
 #if USE_SNDFILE
 	int err;
-	writ_src_data = new SRC_DATA;
+	writ_src_data_left = new SRC_DATA;
+	writ_src_data_right = new SRC_DATA;
 	play_src_data = new SRC_DATA;
 
-	writ_src_state = src_new(progdefaults.sample_converter, 1, &err);
-	if (writ_src_state == 0)
+	writ_src_state_left = src_new(progdefaults.sample_converter, 1, &err);
+	if (writ_src_state_left == 0)
+		throw SndException(src_strerror(err));
+
+	writ_src_state_right = src_new(progdefaults.sample_converter, 1, &err);
+	if (writ_src_state_right == 0)
 		throw SndException(src_strerror(err));
 
 	play_src_state = src_new(progdefaults.sample_converter, 1, &err);
@@ -115,14 +121,25 @@ SoundBase::SoundBase()
 
 	if (play_src_state == 0)
 		throw SndException(src_strerror(err));
-	src_out_buffer = new float [SND_RW_LEN];
-	if (!src_out_buffer)
+
+	src_write_buffer_left = new float [SND_RW_LEN];
+	if (!src_write_buffer_left)
 		throw SndException(src_strerror(err));
-	src_inp_buffer = new float [SND_RW_LEN];
-	if (!src_inp_buffer)
+
+	src_write_buffer_right = new float [SND_RW_LEN];
+	if (!src_write_buffer_right)
 		throw SndException(src_strerror(err));
+
+	src_rd_inp_buffer = new float [SND_RW_LEN];
+	if (!src_rd_inp_buffer)
+		throw SndException(src_strerror(err));
+
+	src_rd_out_buffer = new float [SND_RW_LEN];
+	if (!src_rd_out_buffer)
+		throw SndException(src_strerror(err));
+
 	modem_wr_sr = modem_play_sr = 0;
-	inp_pointer = src_out_buffer;
+	out_pointer = src_rd_out_buffer;
 #endif
 }
 
@@ -137,10 +154,13 @@ SoundBase::~SoundBase()
 		sf_close(ofCapture);
 	if (ifPlayback)
 		sf_close(ifPlayback);
-	delete writ_src_data;
+	delete writ_src_data_left;
+	delete writ_src_data_right;
 	delete play_src_data;
-	delete [] src_out_buffer;
-	delete [] src_inp_buffer;
+	delete [] src_write_buffer_left;
+	delete [] src_write_buffer_right;
+	delete [] src_rd_inp_buffer;
+	delete [] src_rd_out_buffer;
 #endif
 }
 
@@ -241,8 +261,12 @@ int SoundBase::Generate(bool val)
 	generate = true;
 
 	modem_wr_sr = sample_frequency;
-	writ_src_data->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
-	src_set_ratio(writ_src_state, writ_src_data->src_ratio);
+
+	writ_src_data_left->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+	src_set_ratio(writ_src_state_left, writ_src_data_left->src_ratio);
+
+	writ_src_data_right->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+	src_set_ratio(writ_src_state_right, writ_src_data_right->src_ratio);
 
 	return 1;
 }
@@ -292,10 +316,10 @@ play_info.sections,
 play_info.seekable);
 
 // this restriction needs to be removed!
-	if (play_info.channels != 1) {
-		sf_close(ifPlayback);
-		return -3;
-	}
+//	if (play_info.channels != 1) {
+//		sf_close(ifPlayback);
+//		return -3;
+//	}
 
 	modem_play_sr = sample_frequency;
 	play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
@@ -327,39 +351,50 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 		modem_play_sr = sample_frequency;
 		play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
 		src_set_ratio(play_src_state, play_src_data->src_ratio);
-LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
+		LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 		new_playback = true;
 	}
 
-	while ( static_cast<size_t>(inp_pointer - src_out_buffer) < count) {
+#define RDBLKSIZE 1024
+	float rdbuf[2 * RDBLKSIZE];
+	int ch = play_info.channels;
+	while ( static_cast<size_t>(out_pointer - src_rd_out_buffer) < count) {
+		memset(src_rd_inp_buffer, 0, RDBLKSIZE * sizeof(float));
 		if (new_playback) {
-			memset(src_inp_buffer, 0, 1024 * sizeof(float));
 			new_playback = false;
-			rd_count = 1024;
-		} else
-			rd_count = sf_readf_float(file, src_inp_buffer, 1024);
-		if (!rd_count) break;
-		play_src_data->data_in = src_inp_buffer;
+			rd_count = RDBLKSIZE;
+		}
+		else {
+			memset(rdbuf, 0, 2 * RDBLKSIZE * sizeof(float));
+			rd_count = sf_readf_float(file, rdbuf, RDBLKSIZE);
+			if (!rd_count) break;
+			for (int i = 0; i < rd_count; i++)
+				src_rd_inp_buffer[i] = rdbuf[i * ch];
+		}
+
+		play_src_data->data_in = src_rd_inp_buffer;
 		play_src_data->input_frames = rd_count;
-		play_src_data->data_out = inp_pointer;
-		play_src_data->output_frames = SND_RW_LEN - (inp_pointer - src_out_buffer);
+		play_src_data->data_out = out_pointer;
+		play_src_data->output_frames = SND_RW_LEN - (out_pointer - src_rd_out_buffer);
 		play_src_data->end_of_input = 0;
 
 		if ((err = src_process(play_src_state, play_src_data)) != 0)
 			throw SndException(src_strerror(err));
 
-		inp_pointer += play_src_data->output_frames_gen;
+		out_pointer += play_src_data->output_frames_gen;
+
 	}
-	if ( static_cast<size_t>(inp_pointer - src_out_buffer) >= count) {
-		memcpy(buf, src_out_buffer, count * sizeof(float));
-		memmove(src_out_buffer, src_out_buffer + count, (SND_RW_LEN - count) * sizeof(float));
-		inp_pointer -= count;
+
+	if ( static_cast<size_t>(out_pointer - src_rd_out_buffer) >= count) {
+		memcpy(buf, src_rd_out_buffer, count * sizeof(float));
+		memmove(src_rd_out_buffer, src_rd_out_buffer + count, (SND_RW_LEN - count) * sizeof(float));
+		out_pointer -= count;
 		r = count;
 	}
 
 	if (r == 0) {
 		src_reset (play_src_state);
-		inp_pointer = src_out_buffer;
+		out_pointer = src_rd_out_buffer;
 		if (!progdefaults.loop_playback) {
 			Playback(0);
 			bHighSpeed = false;
@@ -378,42 +413,75 @@ LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 //    progdefaults.wavSampleRate
 // resultant data (left channel only) is written to a wav file
 //----------------------------------------------------------------------
-void SoundBase::write_file(SNDFILE* file, float* buf, size_t count)
+void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_t count)
 {
+	if (bufright == NULL || !progdefaults.record_both_channels) {
+		bufright = new float[count];
+		memset(bufright, 0, count * sizeof(float));
+	}
+
 	int err;
+	size_t output_size = count;
+	float *bufl = bufleft;
+	float *bufr = bufright;
+
 	if (modem_wr_sr != sample_frequency) {
 		modem_wr_sr = sample_frequency;
-		writ_src_data->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
-		src_set_ratio(writ_src_state, writ_src_data->src_ratio);
-	}
-	writ_src_data->data_in = buf;
-	writ_src_data->input_frames = count;
-	writ_src_data->data_out = src_out_buffer;
-	writ_src_data->output_frames = SND_RW_LEN;
-	writ_src_data->end_of_input = 0;
+		writ_src_data_left->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		writ_src_data_left->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		src_set_ratio(writ_src_state_left, writ_src_data_left->src_ratio);
 
-	if ((err = src_process(writ_src_state, writ_src_data)) != 0) {
+		writ_src_data_right->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		writ_src_data_right->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		src_set_ratio(writ_src_state_right, writ_src_data_right->src_ratio);
+	}
+	writ_src_data_left->data_in = bufleft;
+	writ_src_data_left->input_frames = count;
+	writ_src_data_left->data_out = src_write_buffer_left;
+	writ_src_data_left->output_frames = SND_RW_LEN;
+	writ_src_data_left->end_of_input = 0;
+
+	writ_src_data_right->data_in = bufright;
+	writ_src_data_right->input_frames = count;
+	writ_src_data_right->data_out = src_write_buffer_right;
+	writ_src_data_right->output_frames = SND_RW_LEN;
+	writ_src_data_right->end_of_input = 0;
+
+	if ((err = src_process(writ_src_state_left, writ_src_data_left)) != 0) {
+		throw SndException(src_strerror(err));
+	}
+	if ((err = src_process(writ_src_state_right, writ_src_data_right)) != 0) {
 		throw SndException(src_strerror(err));
 	}
 
-	size_t output_size = writ_src_data->output_frames_gen;
+	output_size = writ_src_data_left->output_frames_gen;
+	bufl = src_write_buffer_left;
+	bufr = src_write_buffer_right;
 
 	if (output_size) {
-		for (size_t i = 0; i < output_size; i++)
-			writ_src_data->data_out[i] *= 0.9;
-		sf_writef_float(file, writ_src_data->data_out, output_size);
+		float buffer[2*output_size];
+		for (size_t i = 0; i < output_size; i++) {
+			buffer[2*i] = 0.9 * bufl[i];
+			buffer[2*i + 1] = 0.9 * bufr[i];
+		}
+		sf_write_float(file, buffer, 2 * output_size);
 	}
 	return;
 
 }
 
-void SoundBase::write_file(SNDFILE* file, double* buf, size_t count)
+void SoundBase::write_file(SNDFILE* file, double* bufleft, double *bufright, size_t count)
 {
-	float *outbuf = new float[count];
-	for (size_t i = 0; i < count; i++)
-		outbuf[i] = buf[i];
-	write_file(file, outbuf, count);
-	delete [] outbuf;
+	float *outbuf_l = new float[count];
+	float *outbuf_r = new float[count];
+
+	for (size_t i = 0; i < count; i++) {
+		outbuf_l[i] = bufleft[i];
+		outbuf_r[i] = (bufright ? bufright[i] : 0);
+	}
+	write_file(file, outbuf_l, outbuf_r, count);
+	delete [] outbuf_l;
+	delete [] outbuf_r;
 	return;
 }
 
@@ -693,7 +761,7 @@ size_t SoundOSS::Read(float *buffer, size_t buffersize)
 
 #if USE_SNDFILE
 	if (capture)
-		write_file(ofCapture, buffer, buffersize);
+		write_file(ofCapture, buffer, NULL, buffersize);
 	if (playback) {
 		read_file(ifPlayback, buffer, buffersize);
 		return buffersize;
@@ -738,7 +806,7 @@ size_t SoundOSS::Write(double *buf, size_t count)
 
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, buf, count);
+		write_file(ofGenerate, buf, NULL, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -807,7 +875,7 @@ size_t SoundOSS::Write_stereo(double *bufleft, double *bufright, size_t count)
 
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, bufleft, count);
+		write_file(ofGenerate, bufleft, bufright, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -1316,7 +1384,7 @@ size_t SoundPort::Read(float *buf, size_t count)
 
 #if USE_SNDFILE
 	if (capture)
-		write_file(ofCapture, buf, count);
+		write_file(ofCapture, buf, NULL, count);
 #endif
 
 		return count;
@@ -1326,7 +1394,7 @@ size_t SoundPort::Write(double *buf, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, buf, count);
+		write_file(ofGenerate, buf, NULL, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -1355,7 +1423,7 @@ size_t SoundPort::Write_stereo(double *bufleft, double *bufright, size_t count)
 
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofCapture, bufleft, count);
+		write_file(ofCapture, bufleft, bufright, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -2016,7 +2084,7 @@ size_t SoundPulse::Write(double* buf, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, buf, count);
+		write_file(ofGenerate, buf, NULL, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -2045,7 +2113,7 @@ size_t SoundPulse::Write_stereo(double* bufleft, double* bufright, size_t count)
 
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, bufleft, count);
+		write_file(ofGenerate, bufleft, bufright, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -2162,7 +2230,7 @@ size_t SoundPulse::Read(float *buf, size_t count)
 
 #if USE_SNDFILE
 	if (capture)
-				write_file(ofCapture, buf, count);
+				write_file(ofCapture, buf, NULL, count);
 #endif
 
 	return count;
@@ -2197,7 +2265,7 @@ size_t SoundNull::Write(double* buf, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, buf, count);
+		write_file(ofGenerate, buf, NULL, count);
 #endif
 
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) {
@@ -2213,7 +2281,7 @@ size_t SoundNull::Write_stereo(double* bufleft, double* bufright, size_t count)
 {
 #if USE_SNDFILE
 	if (generate)
-		write_file(ofGenerate, bufleft, count);
+		write_file(ofGenerate, bufleft, bufright, count);
 #endif
 
 	MilliSleep((long)ceil((1e3 * count) / sample_frequency));
@@ -2232,7 +2300,7 @@ size_t SoundNull::Read(float *buf, size_t count)
 		memset(buf, 0, count * sizeof(*buf));
 #if USE_SNDFILE
 	if (capture)
-		write_file(ofCapture, buf, count);
+		write_file(ofCapture, buf, NULL, count);
 #endif
 	if (!bHighSpeed)
 		MilliSleep((long)ceil((1e3 * count) / sample_frequency));

@@ -80,15 +80,22 @@ protected:
 	SNDFILE* ifPlayback;
 	SNDFILE* ofGenerate;
 
-	SRC_STATE	*writ_src_state;
-	SRC_STATE	*play_src_state;
+// 2 channel writes
+	SRC_STATE	*writ_src_state_left;
+	SRC_STATE	*writ_src_state_right;
+	SRC_DATA	*writ_src_data_left;
+	SRC_DATA	*writ_src_data_right;
 
-	SRC_DATA	*writ_src_data;
+	float		*src_write_buffer_left;
+	float		*src_write_buffer_right;
+
+// 1 channel reads
+	SRC_STATE	*play_src_state;
 	SRC_DATA	*play_src_data;
 
-	float		*src_out_buffer;
-	float		*src_inp_buffer;
-	float		*inp_pointer;
+	float		*src_rd_out_buffer;
+	float		*src_rd_inp_buffer;
+	float		*out_pointer;
 
 	SF_INFO		play_info;
 
@@ -98,8 +105,8 @@ protected:
 	bool   new_playback;
 
 	sf_count_t  read_file(SNDFILE* file, float* buf, size_t count);
-	void         write_file(SNDFILE* file, float* buf, size_t count);
-	void         write_file(SNDFILE* file, double* buf, size_t count);
+	void        write_file(SNDFILE* file, float* buf_left, float *buf_right, size_t count);
+	void        write_file(SNDFILE* file, double* buf_left, double *buf_right, size_t count);
 
 	bool	 format_supported(int format);
 	void	 tag_file(SNDFILE *sndfile, const char *title);

@@ -933,11 +933,10 @@ inline double cw::nco(double freq)
 
 inline double cw::qsknco()
 {
+	double amp = sin(qskphase);
 	qskphase += 2.0 * M_PI * 1000 / samplerate;
-
 	if (qskphase > TWOPI) qskphase -= TWOPI;
-
-	return sin(qskphase);
+	return amp;
 }
 
 //=====================================================================

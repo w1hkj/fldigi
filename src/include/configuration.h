@@ -1238,6 +1238,10 @@
               "0 - 8000, 1 - 11025, 2 - 16000, 3 - 22050\n"                             \
               "4 - 24000, 5 - 44100, 6 - 48000",                                        \
               0)                                                                        \
+        ELEM_(bool, record_both_channels, "RECORD_BOTH_CHANNELS",                       \
+              "Enabled - record wav file in stereo\n"                                   \
+              "Disabled - record wav file in monaural (left channel only)",             \
+              false)                                                                    \
         ELEM_(bool, loop_playback, "LOOPPLAYBACK",                                      \
               "true = continuous loop of sound file playback\n"                         \
               "false = single pass through playback file.",                             \

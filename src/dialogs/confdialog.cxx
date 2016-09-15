@@ -4666,6 +4666,13 @@ static void cb_listbox_wav_samplerate(Fl_ListBox* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_record_both=(Fl_Check_Button *)0;
+
+static void cb_btn_record_both(Fl_Check_Button* o, void*) {
+  progdefaults.record_both_channels=o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabID=(Fl_Group *)0;
 
 Fl_Tabs *tabsID=(Fl_Tabs *)0;
@@ -10939,6 +10946,11 @@ nce.\nYou may change the state from either location.\n..."));
               o->labelsize(FL_NORMAL_SIZE);
               listbox_wav_samplerate->end();
             } // Fl_ListBox* listbox_wav_samplerate
+            { Fl_Check_Button* o = btn_record_both = new Fl_Check_Button(225, 145, 176, 15, _("Record both channels"));
+              btn_record_both->down_box(FL_DOWN_BOX);
+              btn_record_both->callback((Fl_Callback*)cb_btn_record_both);
+              o->value(progdefaults.record_both_channels);
+            } // Fl_Check_Button* btn_record_both
             tabWavFile->end();
           } // Fl_Group* tabWavFile
           tabsSoundCard->end();

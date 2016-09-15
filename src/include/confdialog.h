@@ -558,6 +558,7 @@ extern Fl_Check_Button *chkPseudoFSK2;
 extern Fl_Check_Button *chkReverseRxAudio;
 extern Fl_Group *tabWavFile;
 extern Fl_ListBox *listbox_wav_samplerate;
+extern Fl_Check_Button *btn_record_both;
 extern Fl_Group *tabID;
 extern Fl_Tabs *tabsID;
 extern Fl_Group *tabRsID;

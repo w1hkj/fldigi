@@ -362,7 +362,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {795 215 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {799 65 600 415} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 390} color 50 selection_color 50
@@ -5519,7 +5519,7 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabSoundCard {
-        label Audio
+        label Audio open
         tooltip {Audio devices} xywh {0 25 600 360} hide
       } {
         Fl_Tabs tabsSoundCard {open
@@ -5811,6 +5811,13 @@ progdefaults.changed = true;} open
               code2 {o->labelsize(FL_NORMAL_SIZE);}
               class Fl_ListBox
             } {}
+            Fl_Check_Button btn_record_both {
+              label {Record both channels}
+              callback {progdefaults.record_both_channels=o->value();
+progdefaults.changed=true;}
+              xywh {225 145 176 15} down_box DOWN_BOX
+              code0 {o->value(progdefaults.record_both_channels);}
+            }
           }
         }
       }
