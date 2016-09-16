@@ -1715,7 +1715,7 @@ int psk::rx_process(const double *buf, int len)
 
 void psk::transmit(double *buf, int len)
 {
-//	if (btn_imd_on->value())
+	if (btn_imd_on->value())
 		for (int i = 0; i < len; i++) xmtfilt->Irun(buf[i], buf[i]);
 
 	ModulateXmtr(buf, len);
