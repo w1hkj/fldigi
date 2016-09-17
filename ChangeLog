@@ -1,20 +1,40 @@
 
 
+=Version 3.23.14=
+
+2016-09-17  David Freese  <iam_w1hkj@w1hkj.com>
+
+	9e6e34a: Documentation update
+	6c5ad4b: PSK IMD Emulator
+	e6980a6: Wave file
+	ff2265b: trx inhibit
+	0fc2f5e: Log Reports
+	01bd367: N3FJP application interface
+	ccbd5e8: Field Day
+	4fc8b12: UTF8 file access
+	c6e1f29: logbook merge
+	570d3bf: Initialize Macros
+	d9d12f4: NOAA wx access
+	0552fc6: Revert "logbook read"
+
+
 =Version 3.23.13=
 
-2016-08-01  David Freese  <iam_w1hkj@w1hkj.com>
+	f4988a2: flmsg auto start
+	efc4640: Documentation Update
 
-	1d6a44c: QRUNNER BUG FIX
-	f247453: xmlrpc tx queue
-	e0ad1d8: Documentation Update
+2016-08-06  Robert Stiles  <kk5vd@yahoo.com>
 
-2016-07-29  Robert Stiles  <kk5vd@yahoo.com>
+	0f237ba: KPSQL PSM
 
-	4d038c8: m4 fixes
-	0807627: KPSQL PSM
+2016-08-06  David Freese  <iam_w1hkj@w1hkj.com>
 
-2016-07-28  David Freese  <iam_w1hkj@w1hkj.com>
-
+	e6b1743: m4 updates
+	3520065: xmlrpc mod
+	fafaa7c: Main User Interface
+	360d6a2: fl_digi.cxx whitespace
+	bdb3afb: xmlrpc tx queue
+	33be65f: QRUNNER BUG FIX
 	f02228e: logbook read
 	1f6d966: flrig xmlrpc client
 	4ddae1f: Title bar
