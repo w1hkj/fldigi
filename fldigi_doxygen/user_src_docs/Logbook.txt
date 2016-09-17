@@ -1,5 +1,5 @@
 /**
-\page  qso_log_book_page QSO Logbook
+\page  logbook_page Logbook
 
 \tableofcontents
 
@@ -16,36 +16,41 @@ format.
 The complete set of logbook fields are:
 <br>
 
-ADIF FIELD |   | USE
-:--------- |:-:| :----------------------------------------------
-BAND       |   | QSO band (computed from frequency)
-CALL       | * | contacted stations call sign
-COMMENT    | * | comment field for QSO
-COUNTRY    | * | contacted stations DXCC entity name
-CQZ        |   | CQ zone
-DXCC       |   | contacted stations DXCC country code
-FREQ       | * | QSO frequency in MHz
-GRIDSQUARE | * | contacted stations Maidenhead Grid Square (Loc)
-IOTA       |   | Islands On The Air
-IOTA       |   | Islands-On-The-Air designator
-ITUZ       |   | ITU zone
-MODE       |   | QSO mode
-MYXCHG     |   | sent contest exchange
-NAME       | * | contacted operators name
-QSLRDATE   |   | QSL received date
-QSLSDATE   |   | QSL sent date
-QSO_DATE   | * | QSO data at start of contact
-QTH        | * | contacted stations city
-RST_RCVD   | * | received signal report
-RST_SENT   | * | sent signal report
-SRX        | * | QSO received serial number
-STATE      | * | contacted stations state
-STX        | * | QSO transmitted serial number
-TIME_OFF   | * | end time of QSO in HHMM format
-TIME_ON    | * | start time of QSO in HHMM format
-TX_PWR     | * | power transmitted by this station
-VE_PROV    | * | 2 letter abbreviation for Canadian Province
-XCHG1      | * | received contest exchange
+  ADIF FIELD |   | USE
+:----------- |:-:| :----------------------------------------------
+BAND         |   | QSO band (computed from frequency)
+CALL         | * | contacted stations call sign
+COMMENT      | * | comment field for QSO
+COUNTRY      | * | contacted stations DXCC entity name
+CNTY         |   | secondary political subdivision, ie: county
+CQZ          | * | contacted stations CQ Zone
+CONT         |   | contacted stations continent
+DXCC         |   | contacted stations DXCC country code
+FDCLASS      | * | Field Day class received
+FDSECTION    | * | Field Day section received
+FREQ         | * | QSO frequency in MHz
+GRIDSQUARE   | * | contacted stations Maidenhead Grid Square (Loc)
+IOTA         |   | Islands-On-The-Air designator
+ITUZ         |   | ITU zone
+MODE         |   | QSO mode
+MYXCHG       |   | sent contest exchange
+NAME         | * | contacted operators name
+QSLRDATE     |   | QSL received date
+QSLSDATE     |   | QSL sent date
+QSO_DATE     | * | QSO date at start of contact
+QSO_DATE_OFF | * | QSO date at end of contact
+QSL_VIA      |   | contacted stations QSL path
+QTH          | * | contacted stations city
+RST_RCVD     | * | received signal report
+RST_SENT     | * | sent signal report
+SRX          | * | QSO received serial number
+STATE        | * | contacted stations state
+STX          | * | QSO transmitted serial number
+TIME_OFF     | * | QSO time at end of contact HHMM or HHMMSS in UTC
+TIME_ON      | * | QSO time at start of contact HHMM or HHMMSS in UTC
+TX_PWR       | * | power transmitted by this station
+VE_PROV      | * | 2 letter abbreviation for Canadian Province
+XCHG1        | * | received contest exchange
 <br>
 
 \* - These fields are either captured on the main dialog, computed from
@@ -225,6 +230,12 @@ external database or for uploading to LOTW or eQSL.  Data from
 those sources can also be used for importing into the logbook.
 <br>
 
+Fldigi can connect to 3rd party Logbook and Contest Log programs such as
+\ref n3fjp_logs_page "N3FJP ACL and the N3FJP contest programs".  On OS X, it can automatically export
+data to the MacLogger program.
+
+Link to MacLogger documentation
+
 Exporting logbook data: \ref exporting_logbook_data "Log Exports".
 <br>
 
@@ -233,7 +244,7 @@ Cabrillo reporting: \ref cabrillo_report_page "Contest Reports".
 
 
 <br>
-\ref qso_log_book_page "Return to Top of Page"
+\ref logbook_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
 

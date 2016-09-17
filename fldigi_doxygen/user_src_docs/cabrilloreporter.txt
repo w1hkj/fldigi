@@ -27,7 +27,7 @@ file.
 
 If you use the \ref contest_how_to_page \<XBEG\>...\<XEND\> to
 capture your outgoing exchange, OR if you choose to capture all received
-exchange information in the "Exch" field on the  \ref qso_log_book_page "" panel then
+exchange information in the "Exch" field on the  \ref logbook_page panel then
 you should be careful not to duplicate the data in the Caprillo report. For
 example:
 <br>

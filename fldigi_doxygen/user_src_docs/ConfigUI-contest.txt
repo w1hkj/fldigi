@@ -3,12 +3,9 @@
 
 \tableofcontents
 
-
-
 \image html config-ui-tabs.png "UI Tabs"
 \image latex config-ui-tabs.png "UI Tabs" width=4.0in
 <br>
-
 
 Fldigi supports a generic but robust set of contest functions. In
 addition to serial-in and serial-out you can capture and transmit three

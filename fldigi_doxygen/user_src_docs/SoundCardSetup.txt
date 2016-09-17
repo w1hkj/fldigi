@@ -185,8 +185,14 @@ and these controls may be changed on this or the other tabs.
 \image latex SavedWAVFileSampleRate.png "Sample Rate of Saved WAV Files" width=2.0in
 <br>
 
-User selectable WAV file sample rate.
-<br>
+fldigi can record received and transmitted audio.  The recordings use
+"wav" file format and can be in any sample rate selectable on the Audio/Wav
+configuration tab.  The audio in/out is normally on the left channel and that
+is the only channel recorded.  The recording is make in two channels with the
+right channel silent.  fldigi's right channel can be used for PTT, Pseduo FSK,
+and CW QSK signal tones.  It helps to be able to view both channels using an
+audio analysis program such as Audacity.  Enable the "Record both channesl"
+check box to record both left and right channel signals.
 
 \section multiple_sound_cards Multiple sound cards
 

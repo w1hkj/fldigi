@@ -3,19 +3,25 @@
 
 \tableofcontents
 
+\section contest_fields Contest Fields
 
-Fldigi supports a basic contesting format.   Select the menu item
+Fldigi supports a generic and a few popular contesting formats.   Select the menu item
 View/Contest fields to see how the QSO entry entry fields change for
 contest data.  You will see that fldigi has fields to support
 received and sent contest numbers as well as generic contest exchange
-information.
+information.  At the same time open the configuration dialog for contesting:
 <br>
-
-\section contest_fields Contest Fields
-\image html contest-fields.png "Contest Fields"
-\image latex contest-fields.png "Contest Fields" width=4.5in
+\image html config-ui-contest.png ""
+\image latex config-ui-contest.png "" width=4.5in
 <br>
+Select the type of logging fields which will be displayed by enabling either
+Generic, Field Day, CQWW RTTY, or BART RTTY as the contest type.
 
+\section generic_contest Generic Contest
+
+\image html contest-fields.png ""
+\image latex contest-fields.png "" width=4.5in
+<br>
 The serial number out (\#Out) is automatically initialized and updated by
 the built-in serial number generator.   You can enter the
 appropriate exchange information via the keyboard or mouse.  Text
@@ -26,7 +32,7 @@ destination QSO field.  Make your selection and the info is placed
 in the correct text box.  Note that the popup menu changes with
 the QSO logging view and also with a change in "Quick entry".  A
 full description is found in the description of operating the
- \ref qso_log_book_page "Logbook".  The important thing to note for contest
+ \ref logbook_page "Logbook".  The important thing to note for contest
 operation is that the Call and Serial \# are single word captures.  The Xchg
 capture can be either single word or multiple word (mark / right click).  If
 the Xchg field has text contents then the new capture is appended to
@@ -37,12 +43,8 @@ rapidly fill in the serial number and the exchange data (even if multi value)
 by simply pointing and right clicking on the desired word.
 <br>
 
-\image html config-ui-contest.png "UI Contest"
-\image latex config-ui-contest.png "UI Contest" width=4.5in
-<br>
-
-To set up fldigi for contesting you will need to open configure contest.
-the 1st row contains what info you want sent with the appropriate macro
+Set up the Generic contesting on the UI/Contest tab.  The Send Xchg control
+is the text you want the appropriate macro
 tag. ie...if the contest requires RST and name you would fill in the
 Exchange Out box with your name.  The contents of this field are accessed from
 a macro with the \<XOUT\> tag. You will also need to check the RST
@@ -85,6 +87,41 @@ the new log file now or later by using the system file manager or when you
 save the log.  The import/export feature of fldigi will allow you to export
 the log into your everyday logging software or the built-in fldigi logbook.
 <br>
+
+\section field_day_contest Field Day Contest
+
+The log fields and associated Rx Text popup menu changes to appropriate fields
+when the Field Day check box is enabled on the contest configuration tab:
+
+\image html fd-config.png ""
+\image latex fd-config.png "" width=4.5in
+
+\image html field-day-fields.png ""
+\image latex field-day-fields.png "" width=4.0in
+
+The field day station station callsign is your fldigi user callsign.  Enter the
+operator's call (if different).  Enter the Class and Section for your station.
+These will all be available as macro tags for writing macros appropriate for
+participating in the field day event.
+
+fldigi can connect to external Field Day logging programs such as N3FJP's
+FDlog and/or a TclTk application called "fdserver" that is a part of the family
+of fldigi programs.  fdserver operation is described in a separate document.
+
+\section CQWW_RTTY_contest CQWW RTTY Contest
+
+Selecting the CQWW RTTY checkbox changes the logging controls and the Rx text
+popup menu items accordingly:
+
+\image html CQWW_RTTY_fields.png ""
+\image latex CQWW_RTTY_fields.png "" width=4.0in
+
+\image html CQWW_RTTY_fields_2.png ""
+\image latex CQWW_RTTY_fields_2.png "" width=5.0in
+
+\section BART_RTTY_context BART RTTY Contest
+
+under development
 
 \section restarting_contest_session Restarting a contest session
 

@@ -1,0 +1,120 @@
+/**
+\page  fdserver_page  Field Day Server setup
+
+\tableofcontents
+fldigi can connect to and share data with an external program called "fdserver."
+fdserver is implemented in a scripting language called TclTk.  TclTk scripts can
+be run on Linux, OS X, and all current versions of Windows.  The look and feel of the
+TclTk application is nearly identical across all of the platforms.  fdserver uses a
+socket interface to communicate with compatible clients on the same computer or with
+others on a LAN configuration.  The fdserver main dialog on a Linux computer:
+
+\image html fdserver-main.png ""
+\image latex fdserver-main.png "" width=6.0in
+
+with two clients shown as connected, W1HKJ on 40 meter digital, and K2LBM on 17 meter digital.
+
+\section connecting_to_fdserver Fdserver Connect
+
+Open fldigi's fdclient dialg from the main Log menu:
+
+\image html menu-logbook.png ""
+\image latex menu-logbook.png "" width=1.3in
+
+\image html fldigi-fdclient.png ""
+\image latex fldigi-fdclient.png "" width=6.0in
+
+Enter the operator callsign which may be the same as the station callsign or
+different in the case of multi-operator participation.  Make sure that the 
+tcpip address and port are correct (the same as configured for the server).  If
+the fdserver is on a different computer then the tcpip addr is either the
+32 bit address in Dot-decimal notation (xxx.xxx.xxx.xxx), or the LAN recognized DNS
+name such as "daves-linux-box".  Most LAN routers maintain a DNS server that matches
+noun name to the 32 bit address.  (see https://en.wikipedia.org/wiki/IPv4).
+<br>
+
+Enable the "connect" check box and fldigi should immediately find and connect to
+the fdserver.  The connected indicator will change from medium grey to green.
+<br>
+
+fdserver will only allow a single position to be logged in for a band/mode.  Event
+management is up to the event participants.
+<br>
+
+fdserver stores each contact with the operator Call.  Refer to the separate
+fdserver/fdclient documentation for details.
+<br>
+
+Immediately after connecting the fdserver will provide fldigi with
+<ul>
+<li>FD Call</li>
+<li>FD Class</li>
+<li>FD Section</li>
+<li>FD Mult</li>
+<li>Score</li>
+</ul>
+The server will broadcast changes to the various logging events, such as a new 
+20 meter CW contact.  Each fdserver client, whether the TclTk fdclient application or
+fldigi can quickly see the event activities on the client dialog.
+
+Logging off of the fdserver is as simple as unchecking the "connect" box.
+
+\section fdserver FDserver/FDclient
+
+Here are some simple startup and running instructions for the TclTk applications,
+fdserver.tcl and fdclient.tcl.
+<br>
+
+You must have the tcltk/wish interpreter installed on your computer.  When installed
+the file manager will usually associate the .tcl extension with the server and allow
+the interpreter to be run and execute the target script file.  tcltk script files
+are plain ASCII text and can be edited with a proper text editor (DO NOT use Notepad on Windows).
+Notepad++ and Geany are both available for Windows and are free.
+<br>
+
+<b>fdserver</b>
+<br>
+
+Start fdserver.tcl and you are presented with it's configuration dialog:
+\image html fd-server-init.png ""
+\image latex fd-server-init.png "" width=2.5in
+
+Enter
+<ul>
+<li>Station  - the station call for the FD event</li>
+<li>Mult     - the station multiplier for the FD event</li>
+<li>Class    - the station class for the FD event</li>
+<li>Section  - the station section for the FD event</li>
+<li>Autosave - interval in seconds between updating the database file</li>
+<li>DBfile   - name of the field day log file</li>
+<li>TCPIP_address - use 127.0.0.1, local host</li>
+<li>TCPIP_port    - default is 20001</li>
+</ul>
+Press OK and the main fdserver dialog opens and is ready to accept clients.
+
+<b>fdclient</b>
+
+Start fdclient.tcl and the main fdclient dialog opens:
+
+\image html fdclient-main.png ""
+\image latex fdclient-main.png "" width=6.0in
+
+Press the "LogOn" button to open the client log on dialog
+
+\image html fdclient-logon.png ""
+\image latex fdclient-logon.png "" width=6.0in
+
+Select the band and mode.  Enter the Operator Callsign and press OK.
+<br>
+
+The fdclient main dialog will show connected with the same type of information
+that is shown on the fldigi fdclient dialog.
+<br>
+
+The fdclient.tcl application can be used for phone, and CW operations that do
+not use fldigi.
+
+\ref main_page "Return to Main Page"
+
+*/
+ 

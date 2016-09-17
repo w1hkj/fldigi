@@ -2,16 +2,16 @@
 \page operating_page Operating
 
 <ul>
-	<li> \subpage fft_scan_page </li>
 	<li> \subpage contest_how_to_page </li>
 	<li> \subpage cw_keying_page </li>
 	<li> \subpage digiscope_display_page </li>
 	<li> \subpage digiscope_display_wwv_mode </li>
 	<li> \subpage dxcc_list_page </li>
-	<li> \subpage xchar_page </li>
+	<li> \subpage fft_scan_page </li>
 	<li> \subpage frequency_analyzer_page </li>
 	<li> \subpage keyboard_operation_page </li>
 	<li> \subpage kml_page </li>
+	<li> \subpage logbook_page </li>
 	<li> \subpage menus_page </li>
 	<li> \subpage mouse_and_keyboard_shortcuts_page </li>
 	<li> \subpage notifier_page </li>
@@ -28,6 +28,7 @@
 	<li> \subpage w5zit_rt_channel_page </li>
 	<li> \subpage working_logs_page </li>
 	<li> \subpage wwv_tx_mode </li>
+	<li> \subpage xchar_page </li>
 </ul>
 
 */

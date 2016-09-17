@@ -1,0 +1,131 @@
+/**
+\page  n3fjp_logs_page  N3FJP Log/Contest Setup
+
+\tableofcontents
+
+\section n3fjp_ACL N3FJP ACL
+
+<b>Starting N3FJP loggers with fldigi</b>
+
+You should start the N3FJP ACL or contest software before starting fldigi. 
+The logging program ACL and the N3FJP contest logs are tcpip socket servers.
+fldigi will recognize the N3FJP logger that is being used, whether ACL or
+one of the contest logs.
+
+<b>Exiting the programs</b>
+
+You should exit fldigi before exiting the logging program.
+
+<b>Setting up fldigi for use with ACL</b>
+
+Select the N3FJP_logger from the fldigi config menu:
+
+\image html Config_menu_N3FJP.png ""
+\image latex Config_menu_N3FJP.png "" width=1.5in
+<br>
+
+This will open the configuration dialog to the N3FJP logger tab.
+
+\image html N3FJP_logs_configuration.png ""
+\image latex N3FJP_logs_configuration.png "" width=5.0in
+<br>
+
+The default address, 127.0.0.1 (localhost) is used when both fldigi and 
+ACL are on the same computer.  The values shown above are for the instance 
+where fldigi and ACL are running on different machines on the same local 
+area network. Fldigi is on a Linux machine and ACL on a Windows 7 machine.
+
+You can observe the two way socket communications between the two programs 
+by enabling the “Enable Data Stream” check box.
+
+Open the Settings / Application Program Interface (API) menu item on ACL. 
+Make sure that the box TCP API Enabled (Server) is checked and that the 
+Port 1100 corresponds to the Port setting in the above dialog.
+
+Enable the “Connect” check box and fldigi should find ACL and begin data 
+exchanges.
+
+<b>Capturing Rx text in fldigi</b>
+
+The fldigi user can capture text, both word delimited and mouse 
+high-lighted from the received text panel. The text will capture either 
+with a double-left or single-left mouse click. This is selectable on
+this fldigi configuration tab:
+
+\image html single-click.png ""
+\image latex single-click.png "" width=5.0in
+<br>
+Single-click is faster, but makes marking text a bit more difficult, 
+especially if the text is being moved vertically as it is being decoded.
+I hardly ever mark-bound a text to capture, so I prefer the single-click
+paradigm.
+
+The behavior of the left-click transfer is dependent on whether fldigi is 
+configured for casual contacts or contesting (include field day). The word 
+capture for both casual and contesting will always transfer a recognized 
+CALL to the fldigi logging entry for CALL. Call recognition uses a 
+Regular Expression Parser.
+
+A word that passes the rules for RST will be transferred to the RSTin entry.
+
+A word that passes the rules for Maidenhead locater (grid square) will be 
+transferred to the Loc entry.
+
+For casual contacts, the fields are then populated in order: NAME, QTH.
+
+Contest fields are populated in a similar way for CALL. If the contest 
+fields for Xchg are visible then the left click paradigm is to append 
+each clicked word LEFT to RIGHT with a space separator to the XchngIn 
+entry control.
+
+If the  Field Day contest fields CLASS and SECTION are visible then the 
+left-clicked Rx text words will be entered in that order.
+
+Capturing the Field Day values for CALL, CLASS and SECTION can take as 
+few as 3 mouse clicks.
+
+<b>Trigger Actions</b>
+
+Immediately after the call field is updated, the CALLTAB command is sent 
+to ACL. This doesn't actually change focus in ACL, but performs all the 
+functions associated with tabbing from the Call field in ACL, including 
+duplicate check, listing previous contacts and retrieving previous contact 
+info. In ACL, it also initiates call book lookup (if enabled), checks 
+Watch List, etc.
+
+This action takes place when:
+
+<ul>
+<li>fldigi's log call field is populated from the Rx text transfer</li>
+<li>fldigi's log call field is exited via ENTER or TAB key</li>
+</ul>
+
+The TXTENTRY in ACL will change whenever a 3 or more keystrokes occurs in 
+the fldigi log call field, or when the log call field is populated from 
+the Rx text grab.
+
+Clearing the fldigi log fields will clear the N3FJP call fields
+
+Clearing the fldigi log call field using the right-click-clear paradigm 
+will clear the N3FJP call fields
+
+\section n3fjp_fd_contest_log N3FJP FD Contest
+
+You will need to perform some additional configuration in fldigi to fully 
+appreciate the data capture and FD event logging.  Open the Contest 
+configuration tab and make the following entries: FD operator CALL, your CLASS,
+your SECTION.
+
+\section n3fjp_cqww_contest N3FJP CQWW RTTY Contest logger
+
+Select the CQWW contest on the Contest configuration tab.  The fields for 
+CQzone and CQstate are then visible, as are the respective Rx text, right click
+popup menu items.
+
+\ref ui_configuration_contest_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
+ 
