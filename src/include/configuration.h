@@ -1010,7 +1010,7 @@
               true)                                                                     \
         ELEM_(bool, fldigi_client_to_flrig, "CLIENT_TO_FLRIG",                          \
               "True if flrig xmlrpc server is used for xcvr control",                   \
-              true)                                                                     \
+              false)                                                                    \
         ELEM_(bool, btnusb, "BTNUSB",                                                   \
               "This setting is currently unused",                                       \
               true)                                                                     \
