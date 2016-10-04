@@ -318,8 +318,10 @@ static void n3fjp_parse_data_stream(string buffer)
 	inpState->value(ParseTextField(buffer, "STATE").c_str());
 	inpCountry->value(ParseTextField(buffer, "COUNTRYWORKED").c_str());
 	inpLoc->value(ParseTextField(buffer, "GRID").c_str());
-
 	adjust_freq(ParseTextField(buffer, "FREQUENCY"));
+
+	inp_CQzone->value(ParseTextField(buffer, "CQZONE").c_str());
+	inp_CQstate->value(ParseTextField(buffer, "STATE").c_str());
 
 // comments field does not contain \n delimiters
 // substitute \n for each '-'

@@ -4158,10 +4158,6 @@ void UI_select()
 		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
 		inpState = inpState1;
-		inp_FD_class = inp_FD_class1;
-		inp_FD_section = inp_FD_section1;
-		inp_CQstate = inp_CQstate1;
-		inp_CQzone = inp_CQzone1;
 
 		QSO_frame_1->hide();
 		Contest_frame_1->hide();
@@ -4170,12 +4166,16 @@ void UI_select()
 
 		switch (progdefaults.logging) {
 			case LOG_FD:
+				inp_FD_class = inp_FD_class1;
+				inp_FD_section = inp_FD_section1;
 				QSO_frame_1->hide();
 				Contest_frame_1->hide();
 				CQWW_RTTY_frame_1->hide();
 				FD_frame_1->show();
 				break;
 			case LOG_CQWW:
+				inpState = inp_CQstate = inp_CQstate1;
+				inp_CQzone = inp_CQzone1;
 				QSO_frame_1->hide();
 				Contest_frame_1->hide();
 				FD_frame_1->hide();
@@ -4244,14 +4244,10 @@ void UI_select()
 		outSerNo = outSerNo2;
 		inpXchgIn = inpXchgIn2;
 
-		inp_FD_class = inp_FD_class2;
-		inp_FD_section = inp_FD_section2;
-
-		inpState = inp_CQstate = inp_CQstate2;
-		inp_CQzone = inp_CQzone2;
-
 		switch (progdefaults.logging) {
 			case LOG_FD:
+				inp_FD_class = inp_FD_class2;
+				inp_FD_section = inp_FD_section2;
 				inpSerNo2->hide();
 				outSerNo2->hide();
 				inpXchgIn2->hide();
@@ -4261,6 +4257,8 @@ void UI_select()
 				inp_FD_section2->show();
 				break;
 			case LOG_CQWW:
+				inpState = inp_CQstate = inp_CQstate2;
+				inp_CQzone = inp_CQzone2;
 				inpSerNo2->hide();
 				outSerNo2->hide();
 				inpXchgIn2->hide();
@@ -6795,6 +6793,7 @@ void create_fl_digi_main_primary() {
 
 			TopFrame3->end();
 		}
+		
 		TopFrame3->resizable(inpXchgIn2);
 		TopFrame3->hide();
 
