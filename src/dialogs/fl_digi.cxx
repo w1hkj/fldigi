@@ -2405,7 +2405,8 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 
 void cb_mnuCheckUpdate(Fl_Widget *, void *)
 {
-	const char* url = "http://sourceforge.net/projects/fldigi/files/fldigi/";
+	const char *url = "http://www.w1hkj.com/files/fldigi/";
+
 	string version_str;
 	string reply;
 
@@ -2426,26 +2427,9 @@ void cb_mnuCheckUpdate(Fl_Widget *, void *)
 
 	if (is_ok)
 		fl_message2(_("You are running the latest version"));
-	else {
-		int choice =
-				fl_choice2(_("Version %s is available at Source Forge\n\nWhat would you like to do?"),
-				  _("Close"), _("Visit URL"), _("Copy URL"),
+	else
+		fl_message2(_("Version %s is available at Source Forge"),
 				  version_str.c_str());
-		switch (choice) {
-			case 1:
-				cb_mnuVisitURL(NULL, (void*)url);
-				break;
-			case 2: {
-				size_t n = strlen(url);
-				Fl::copy(url, n, 0);
-				Fl::copy(url, n, 1);
-				break;
-			}
-			default:
-			case 0:
-				break;
-		}
-	}
 
 	put_status("");
 }
