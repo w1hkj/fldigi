@@ -182,13 +182,11 @@
 #define WEFAX_RX_IMAGE_MLABEL  _("&Weather Fax Image RX")
 #define WEFAX_fsq_tx_image_MLABEL  _("&Weather Fax Image TX")
 #define CONTEST_MLABEL         _("Contest")
-#define CONTEST_FIELDS_MLABEL  _("&Contest fields")
 #define COUNTRIES_MLABEL       _("C&ountries")
 #define UI_MLABEL              _("&UI")
 #define RIGLOG_FULL_MLABEL     _("Full")
+#define RIGLOG_PARTIAL_MLABEL  _("Partial")
 #define RIGLOG_NONE_MLABEL     _("None")
-#define RIGLOG_MLABEL          _("Rig control and logging")
-#define RIGCONTEST_MLABEL      _("Rig control and contest")
 #define DOCKEDSCOPE_MLABEL     _("Docked scope")
 #define WF_MLABEL              _("Minimal controls")
 #define SHOW_CHANNELS          _("Show channels")
@@ -2693,50 +2691,6 @@ void cb_mnuShowCountries(Fl_Menu_ *, void *)
 	notify_dxcc_show();
 }
 
-void adjust_contest_frames()
-{
-	if (!progStatus.contest) {
-			FD_frame_1->hide();
-			CQWW_RTTY_frame_1->hide();
-			Contest_frame_1->hide();
-			QSO_frame_1->show();
-		return;
-	}
-	switch (progdefaults.logging) {
-		case LOG_CONT:
-			QSO_frame_1->hide();
-			FD_frame_1->hide();
-			CQWW_RTTY_frame_1->hide();
-			Contest_frame_1->show();
-			break;
-		case LOG_FD:
-			QSO_frame_1->hide();
-			Contest_frame_1->hide();
-			CQWW_RTTY_frame_1->hide();
-			FD_frame_1->show();
-			break;
-		case LOG_CQWW:
-			QSO_frame_1->hide();
-			Contest_frame_1->hide();
-			FD_frame_1->hide();
-			CQWW_RTTY_frame_1->show();
-			break;
-		case LOG_BART:
-		case LOG_QSO:
-		default:
-			FD_frame_1->hide();
-			CQWW_RTTY_frame_1->hide();
-			Contest_frame_1->hide();
-			QSO_frame_1->show();
-			break;
-	}
-}
-
-void cb_mnuContest(Fl_Menu_ *m, void *) {
-	progStatus.contest = m->mvalue()->value();
-	adjust_contest_frames();
-}
-
 void set_macroLabels()
 {
 	if (bWF_only) return;
@@ -3228,7 +3182,6 @@ void qso_save_now()
 	submit_log();
 	if (progdefaults.ClearOnSave)
 		clearQSO();
-//	ReceiveText->mark(FTextBase::XMIT);
 }
 
 
@@ -4158,19 +4111,6 @@ void UI_select()
 		return;
 	}
 
-	Fl_Menu_Item* cf = getMenuItem(CONTEST_FIELDS_MLABEL);
-
-	if (progStatus.NO_RIGLOG || progStatus.Rig_Contest_UI || progStatus.Rig_Log_UI) {
-		cf->clear();
-		cf->deactivate();
-	}
-	else {
-		cf->activate();
-		if (progStatus.contest)
-			cf->set();
-		getMenuItem(RIGLOG_FULL_MLABEL)->setonly();
-	}
-
 	int x =   0;
 	int y1 =  Hmenu;
 	int w =   fl_digi_main->w();
@@ -4199,8 +4139,7 @@ void UI_select()
 		goto UI_return;
 	}
 
-	if ((!progStatus.Rig_Log_UI && ! progStatus.Rig_Contest_UI) ||
-			restore_minimize) {
+	if (!progStatus.Rig_Log_UI || restore_minimize) {
 		TopFrame1->resize( x, y1, w, Hqsoframe );
 		y1 += (TopFrame1->h());
 		HTh -= (TopFrame1->h());
@@ -4231,50 +4170,65 @@ void UI_select()
 
 		switch (progdefaults.logging) {
 			case LOG_FD:
+				QSO_frame_1->hide();
+				Contest_frame_1->hide();
+				CQWW_RTTY_frame_1->hide();
 				FD_frame_1->show();
 				break;
 			case LOG_CQWW:
-				inpState = inp_CQstate;
+				QSO_frame_1->hide();
+				Contest_frame_1->hide();
+				FD_frame_1->hide();
 				CQWW_RTTY_frame_1->show();
 				break;
 			case LOG_BART:
 //				break;
 			case LOG_CONT:
+				QSO_frame_1->hide();
+				FD_frame_1->hide();
+				CQWW_RTTY_frame_1->hide();
 				Contest_frame_1->show();
 				break;
-			default:
+			default: // no contest
+				FD_frame_1->hide();
+				CQWW_RTTY_frame_1->hide();
+				Contest_frame_1->hide();
 				QSO_frame_1->show();
 		}
+		QSO_frame_1->redraw();
+		Contest_frame_1->redraw();
+		CQWW_RTTY_frame_1->redraw();
+		FD_frame_1->redraw();
 
 		qsoFreqDisp = qsoFreqDisp1;
 		TopFrame1->init_sizes();
+
 		goto UI_return;
 	}
+	else {
+		if (progdefaults.logging == 0) { // generic QSO
+			TopFrame2->resize( x, y1, w, Hentry + 2 * pad);
+			y1 += TopFrame2->h();
+			HTh -= TopFrame2->h();
+			UI_position_macros(x, y1, w, HTh);
+			TopFrame1->hide();
+			TopFrame3->hide();
+			TopFrame2->show();
+			inpCall = inpCall2;
+			inpTimeOn = inpTimeOn2;
+			inpTimeOff = inpTimeOff2;
+			inpName = inpName2;
+			inpSerNo = inpSerNo1;
+			outSerNo = outSerNo1;
+			inpRstIn = inpRstIn2;
+			inpRstOut = inpRstOut2;
+			inpState = inpState1;
+			qsoFreqDisp = qsoFreqDisp2;
+			inpCall4->hide();
+			Status2->show();
+			goto UI_return;
+		}
 
-	if (progStatus.Rig_Log_UI) {
-		TopFrame2->resize( x, y1, w, Hentry + 2 * pad);
-		y1 += TopFrame2->h();
-		HTh -= TopFrame2->h();
-		UI_position_macros(x, y1, w, HTh);
-		TopFrame1->hide();
-		TopFrame3->hide();
-		TopFrame2->show();
-		inpCall = inpCall2;
-		inpTimeOn = inpTimeOn2;
-		inpTimeOff = inpTimeOff2;
-		inpName = inpName2;
-		inpSerNo = inpSerNo1;
-		outSerNo = outSerNo1;
-		inpRstIn = inpRstIn2;
-		inpRstOut = inpRstOut2;
-		inpState = inpState1;
-		qsoFreqDisp = qsoFreqDisp2;
-		inpCall4->hide();
-		Status2->show();
-		goto UI_return;
-	}
-
-	if (progStatus.Rig_Contest_UI) {
 		TopFrame3->resize( x, y1, w, Hentry + 2 * pad);
 		y1 += TopFrame3->h();
 		HTh -= TopFrame3->h();
@@ -4296,7 +4250,6 @@ void UI_select()
 		inpState = inp_CQstate = inp_CQstate2;
 		inp_CQzone = inp_CQzone2;
 
-
 		switch (progdefaults.logging) {
 			case LOG_FD:
 				inpSerNo2->hide();
@@ -4316,6 +4269,7 @@ void UI_select()
 				inp_CQstate2->show();
 				inp_CQzone2->show();
 				break;
+			case LOG_BART:
 			case LOG_CONT:
 			default:
 				inp_FD_class2->hide();
@@ -4399,9 +4353,6 @@ UI_return:
 	macroFrame1->redraw();
 	macroFrame2->redraw();
 	viewer_redraw();
-//	hpack->redraw();
-
-	adjust_contest_frames();
 
 	fl_digi_main->init_sizes();
 
@@ -4415,30 +4366,20 @@ void cb_mnu_wf_all(Fl_Menu_* w, void *d)
 	wf->UI_select(progStatus.WF_UI = w->mvalue()->value());
 }
 
-void cb_mnu_riglog(Fl_Menu_* w, void *d)
+void cb_mnu_riglog_all(Fl_Menu_* w, void *d)
 {
 	getMenuItem(w->mvalue()->label())->setonly();
-	progStatus.Rig_Log_UI = true;
-	progStatus.Rig_Contest_UI = false;
-	progStatus.NO_RIGLOG = false;
-
-	UI_select();
-}
-
-void cb_mnu_rigcontest(Fl_Menu_* w, void *d)
-{
-	getMenuItem(w->mvalue()->label())->setonly();
-	progStatus.Rig_Contest_UI = true;
 	progStatus.Rig_Log_UI = false;
 	progStatus.NO_RIGLOG = false;
 
 	UI_select();
 }
 
-void cb_mnu_riglog_all(Fl_Menu_* w, void *d)
+void cb_mnu_riglog_partial(Fl_Menu_* w, void *d)
 {
 	getMenuItem(w->mvalue()->label())->setonly();
-	progStatus.NO_RIGLOG = progStatus.Rig_Log_UI = progStatus.Rig_Contest_UI = false;
+	progStatus.Rig_Log_UI = true;
+	progStatus.NO_RIGLOG = false;
 
 	UI_select();
 }
@@ -4448,7 +4389,6 @@ void cb_mnu_riglog_none(Fl_Menu_* w, void *d)
 	getMenuItem(w->mvalue()->label())->setonly();
 	progStatus.NO_RIGLOG = true;
 	progStatus.Rig_Log_UI = false;
-	progStatus.Rig_Contest_UI = false;
 
 	UI_select();
 }
@@ -4788,12 +4728,10 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
-{ icons::make_icon_label(_("Controls")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Rig/Log Controls")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
 { RIGLOG_FULL_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_all, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
-{ RIGLOG_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
-{ RIGCONTEST_MLABEL, 0, (Fl_Callback*)cb_mnu_rigcontest, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
+{ RIGLOG_PARTIAL_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_partial, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
 { RIGLOG_NONE_MLABEL, 0, (Fl_Callback*)cb_mnu_riglog_none, 0, FL_MENU_RADIO, FL_NORMAL_LABEL, 0, 14, 0},
-{ CONTEST_FIELDS_MLABEL, 'c', (Fl_Callback*)cb_mnuContest, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { icons::make_icon_label(_("Waterfall")), 0, 0, 0, FL_SUBMENU, _FL_MULTI_LABEL, 0, 14, 0},
@@ -4857,8 +4795,6 @@ static int count_visible_items(Fl_Menu_Item* menu)
 	while (menu->label()) {
 		if (!(menu->flags & FL_SUBMENU) && menu->visible())
 			n++;
-//		if (menu->visible())
-//			n++;
 		menu++;
 	}
 	return n;
@@ -5495,7 +5431,8 @@ void LOGGING_colors_font()
 		inpXchgIn1, inpXchgIn2,
 		inp_FD_class1, inp_FD_class2,
 		inp_FD_section1, inp_FD_section2,
-		inp_CQzone1 };
+		inp_CQzone1, inp_CQzone2,
+		inp_CQstate1, inp_CQstate2 };
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++) {
 		input_color_font(in[i]);
 //		in[i]->size(in[i]->w(), wh);
@@ -6874,6 +6811,8 @@ void create_fl_digi_main_primary() {
 		inpXchgIn = inpXchgIn1;
 		inp_FD_class = inp_FD_class1;
 		inp_FD_section = inp_FD_section1;
+		inp_CQzone = inp_CQzone1;
+		inp_CQstate = inp_CQstate1;
 
 		qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
 		qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
@@ -7640,10 +7579,9 @@ void create_fl_digi_main_primary() {
 		bool var; const char* label;
 	} toggles[] = {
 		{ progStatus.LOGenabled, LOG_TO_FILE_MLABEL },
-		{ progStatus.contest, CONTEST_FIELDS_MLABEL },
 		{ progStatus.WF_UI, WF_MLABEL },
-		{ progStatus.Rig_Log_UI, RIGLOG_MLABEL },
-		{ progStatus.Rig_Contest_UI, RIGCONTEST_MLABEL },
+		{ progStatus.Rig_Log_UI, RIGLOG_PARTIAL_MLABEL },
+		{ !progStatus.Rig_Log_UI, RIGLOG_FULL_MLABEL },
 		{ progStatus.NO_RIGLOG, RIGLOG_NONE_MLABEL },
 		{ progStatus.DOCKEDSCOPE, DOCKEDSCOPE_MLABEL }
 	};
