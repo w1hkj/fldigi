@@ -244,7 +244,8 @@ FLDIGI_FL_SRC = \
 		dialogs/notifydialog.fl \
 		dialogs/record_browse.fl \
 		logbook/lgbook.fl \
-		logbook/fd_view.fl
+		logbook/fd_view.fl \
+		dxcluster/dx_dialog.fl
 FLARQ_FL_SRC = flarq-src/arqdialogs.fl
 
 if HAVE_FLUID
@@ -500,6 +501,8 @@ fldigi_SOURCES += \
 	include/adif_io.h \
 	include/calendar.h \
 	include/date.h \
+	include/dx_dialog.h \
+	include/dx_cluster.h \
 	include/field_def.h \
 	include/logbook.h \
 	include/lgbook.h \
@@ -522,6 +525,8 @@ fldigi_SOURCES += \
 	irrxml/irrXML.h \
 	psm/psm.cxx \
 	psm/psm.h \
+	dxcluster/dx_dialog.cxx \
+	dxcluster/dxcluster.cxx \
 	logbook/adif_io.cxx \
 	logbook/calendar.cxx \
 	logbook/date.cxx \

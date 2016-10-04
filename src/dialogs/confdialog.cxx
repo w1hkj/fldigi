@@ -230,6 +230,27 @@ static void cbLOGBOOKFontBrowser(Fl_Widget*, void*) {
       progdefaults.changed = true;
 }
 
+static void cbDXC_FontBrowser(Fl_Widget*, void*) {
+  Fl_Font font = font_browser->fontNumber();
+      int size = font_browser->fontSize();
+      Fl_Color color = font_browser->fontColor();
+  
+      progdefaults.DXC_textfont = font;
+      progdefaults.DXC_textsize = size;
+      progdefaults.DXC_textcolor = color;
+  
+      DXC_display->textsize(size);
+      DXC_display->textcolor(color);
+      DXC_display->textfont(font);
+      DXC_display->redraw();
+  
+      DXC_colors_font();
+  
+      font_browser->hide();
+  
+      progdefaults.changed = true;
+}
+
 void set_qrzxml_buttons(Fl_Button* b) {
   Fl_Button* qrzbxml[] = { btnQRZXMLnotavailable, btnQRZcdrom, btnQRZsub,
                            btnHamcall,
@@ -1933,6 +1954,67 @@ LOGBOOKdisplay->redraw();
 
 LOGBOOK_colors_font();
 
+progdefaults.changed = true;
+}
+
+Fl_Output *DXC_display=(Fl_Output *)0;
+
+Fl_Button *btn_DXC_color=(Fl_Button *)0;
+
+static void cb_btn_DXC_color(Fl_Button* o, void*) {
+  progdefaults.DXC_color = fl_show_colormap((Fl_Color)progdefaults.DXC_color);
+o->color(progdefaults.DXC_color);
+o->redraw();
+DXC_display->color(progdefaults.DXC_color);
+DXC_display->redraw();
+
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_DXC_font=(Fl_Button *)0;
+
+static void cb_btn_DXC_font(Fl_Button*, void*) {
+  font_browser->fontNumber(progdefaults.DXC_textfont);
+font_browser->fontSize(progdefaults.DXC_textsize);
+font_browser->fontColor(progdefaults.DXC_textcolor);
+font_browser->fontFilter(Font_Browser::FIXED_WIDTH);
+font_browser->callback(cbDXC_FontBrowser);
+font_browser->show();
+}
+
+Fl_Button *btnDXCdefault_colors_font=(Fl_Button *)0;
+
+static void cb_btnDXCdefault_colors_font(Fl_Button*, void*) {
+  progdefaults.DXC_color = FL_BACKGROUND2_COLOR;
+progdefaults.DXC_textfont = FL_COURIER;
+progdefaults.DXC_textsize = 14;
+progdefaults.DXC_textcolor = FL_BLACK;
+
+DXC_display->color(progdefaults.DXC_color);
+DXC_display->textsize(progdefaults.DXC_textsize);
+DXC_display->textcolor(progdefaults.DXC_textcolor);
+DXC_display->textfont(progdefaults.DXC_textfont);
+
+DXC_display->redraw();
+
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_DXC_even_lines=(Fl_Button *)0;
+
+static void cb_btn_DXC_even_lines(Fl_Button* o, void*) {
+  progdefaults.DXC_even_color = fl_show_colormap((Fl_Color)progdefaults.DXC_even_color);
+o->color(progdefaults.DXC_even_color);
+o->redraw();
+progdefaults.changed = true;
+}
+
+Fl_Button *btn_DXC_odd_lines=(Fl_Button *)0;
+
+static void cb_btn_DXC_odd_lines(Fl_Button* o, void*) {
+  progdefaults.DXC_odd_color = fl_show_colormap((Fl_Color)progdefaults.DXC_odd_color);
+o->color(progdefaults.DXC_odd_color);
+o->redraw();
 progdefaults.changed = true;
 }
 
@@ -6324,7 +6406,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6461,11 +6542,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6737,6 +6818,7 @@ Fl_Double_Window* ConfigureDialog() {
             tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
+                grp_Log_QSO->hide();
                 { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6929,7 +7011,6 @@ ab and newline are automatically included."));
                 grpMacLogger->end();
               } // Fl_Group* grpMacLogger
               { grpN3FJP_logs = new Fl_Group(0, 75, 600, 315, _("N3FJP logs"));
-                grpN3FJP_logs->hide();
                 { Fl_Text_Display* o = txt_N3FJP_data = new Fl_Text_Display(5, 148, 590, 170, _("TCP/IP Data Stream"));
                 txt_N3FJP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
@@ -6996,6 +7077,7 @@ ab and newline are automatically included."));
           } // Fl_Group* tabLogServer
           { tabContest = new Fl_Group(0, 50, 600, 340, _("Contest"));
             tabContest->tooltip(_("User Interface - Contest"));
+            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 590, 89, _("Duplicate check, CALL plus"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7615,44 +7697,75 @@ ab and newline are automatically included."));
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Log"));
                 o->hide();
-                { Fl_Group* o = new Fl_Group(114, 101, 372, 65, _("Logging Panel Controls"));
+                { Fl_Group* o = new Fl_Group(70, 101, 457, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Output* o = LOGGINGdisplay = new Fl_Output(132, 125, 98, 25);
+                { Fl_Output* o = LOGGINGdisplay = new Fl_Output(84, 125, 184, 25);
                 o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGGINGtextcolor);
                 o->color(progdefaults.LOGGINGcolor);
                 o->value("W1HKJ");
                 o->redraw();
                 } // Fl_Output* LOGGINGdisplay
-                { btnLOGGING_color = new Fl_Button(240, 125, 80, 25, _("Bg Color"));
+                { btnLOGGING_color = new Fl_Button(276, 125, 80, 25, _("Bg Color"));
                 btnLOGGING_color->callback((Fl_Callback*)cb_btnLOGGING_color);
                 } // Fl_Button* btnLOGGING_color
-                { btn_LOGGING_font = new Fl_Button(330, 125, 55, 25, _("Font"));
+                { btn_LOGGING_font = new Fl_Button(366, 125, 55, 25, _("Font"));
                 btn_LOGGING_font->callback((Fl_Callback*)cb_btn_LOGGING_font);
                 } // Fl_Button* btn_LOGGING_font
-                { btnLOGGINGdefault_colors_font = new Fl_Button(396, 125, 80, 25, _("Default"));
+                { btnLOGGINGdefault_colors_font = new Fl_Button(432, 125, 80, 25, _("Default"));
                 btnLOGGINGdefault_colors_font->callback((Fl_Callback*)cb_btnLOGGINGdefault_colors_font);
                 } // Fl_Button* btnLOGGINGdefault_colors_font
                 o->end();
                 } // Fl_Group* o
-                { Fl_Group* o = new Fl_Group(115, 176, 370, 65, _("Logbook Dialog"));
+                { Fl_Group* o = new Fl_Group(70, 176, 457, 65, _("Logbook Dialog"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Output* o = LOGBOOKdisplay = new Fl_Output(131, 200, 98, 25);
+                { Fl_Output* o = LOGBOOKdisplay = new Fl_Output(84, 200, 184, 25);
                 o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.LOGBOOKtextcolor);
                 o->color(progdefaults.LOGBOOKcolor);
                 o->value("14.070000");
                 o->redraw();
                 } // Fl_Output* LOGBOOKdisplay
-                { btnLOGBOOK_color = new Fl_Button(239, 200, 80, 25, _("Bg Color"));
+                { btnLOGBOOK_color = new Fl_Button(275, 200, 80, 25, _("Bg Color"));
                 btnLOGBOOK_color->callback((Fl_Callback*)cb_btnLOGBOOK_color);
                 } // Fl_Button* btnLOGBOOK_color
-                { btn_LOGBOOK_font = new Fl_Button(329, 200, 55, 25, _("Font"));
+                { btn_LOGBOOK_font = new Fl_Button(365, 200, 55, 25, _("Font"));
                 btn_LOGBOOK_font->callback((Fl_Callback*)cb_btn_LOGBOOK_font);
                 } // Fl_Button* btn_LOGBOOK_font
-                { btnLOGBOOKdefault_colors_font = new Fl_Button(395, 200, 80, 25, _("Default"));
+                { btnLOGBOOKdefault_colors_font = new Fl_Button(431, 200, 80, 25, _("Default"));
                 btnLOGBOOKdefault_colors_font->callback((Fl_Callback*)cb_btnLOGBOOKdefault_colors_font);
                 } // Fl_Button* btnLOGBOOKdefault_colors_font
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(70, 255, 457, 101, _("DX Cluster Dialog"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Output* o = DXC_display = new Fl_Output(84, 279, 184, 25);
+                o->textfont(progdefaults.LOGGINGtextfont);o->textsize(progdefaults.LOGGINGtextsize);o->textcolor(progdefaults.DXC_textcolor);
+                o->color(progdefaults.DXC_color);
+                o->value("DX de W1HKJ-1");
+                o->redraw();
+                } // Fl_Output* DXC_display
+                { Fl_Button* o = btn_DXC_color = new Fl_Button(275, 279, 80, 25, _("Bg Color"));
+                btn_DXC_color->callback((Fl_Callback*)cb_btn_DXC_color);
+                o->color(progdefaults.DXC_color);
+                } // Fl_Button* btn_DXC_color
+                { btn_DXC_font = new Fl_Button(365, 279, 55, 25, _("Font"));
+                btn_DXC_font->callback((Fl_Callback*)cb_btn_DXC_font);
+                } // Fl_Button* btn_DXC_font
+                { btnDXCdefault_colors_font = new Fl_Button(431, 279, 80, 25, _("Default"));
+                btnDXCdefault_colors_font->callback((Fl_Callback*)cb_btnDXCdefault_colors_font);
+                } // Fl_Button* btnDXCdefault_colors_font
+                { Fl_Button* o = btn_DXC_even_lines = new Fl_Button(275, 315, 86, 25, _("Even Lines"));
+                btn_DXC_even_lines->color((Fl_Color)55);
+                btn_DXC_even_lines->callback((Fl_Callback*)cb_btn_DXC_even_lines);
+                o->color(progdefaults.DXC_even_color);
+                } // Fl_Button* btn_DXC_even_lines
+                { Fl_Button* o = btn_DXC_odd_lines = new Fl_Button(365, 315, 86, 25, _("Odd Lines"));
+                btn_DXC_odd_lines->color((Fl_Color)246);
+                btn_DXC_odd_lines->callback((Fl_Callback*)cb_btn_DXC_odd_lines);
+                o->color(progdefaults.DXC_odd_color);
+                } // Fl_Button* btn_DXC_odd_lines
                 o->end();
                 } // Fl_Group* o
                 o->end();
@@ -10946,7 +11059,7 @@ definition"));
         } // Fl_Tabs* tabsRig
         tabRig->end();
       } // Fl_Group* tabRig
-      { tabSoundCard = new Fl_Group(0, 25, 600, 360, _("Audio"));
+      { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
         tabSoundCard->tooltip(_("Audio devices"));
         tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);

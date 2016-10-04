@@ -99,6 +99,8 @@
 #include "psm/psm.h"
 #include "fd_logger.h"
 #include "n3fjp_logger.h"
+#include "dx_cluster.h"
+#include "dx_dialog.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -366,6 +368,7 @@ void delayed_startup(void *)
 	n3fjp_init();
 	arq_init();
 	FD_init();
+	DXcluster_init();
 
 	start_psm_thread();
 
@@ -540,6 +543,10 @@ int main(int argc, char ** argv)
 
 			case N3FJP_TID:
 				cbq[i]->attach(i, "N3FJP_TID");
+				break;
+
+			case DXCC_TID:
+				cbq[i]->attach(i, "DXCC_TID");
 				break;
 
 			case FLMAIN_TID:
@@ -758,6 +765,9 @@ int main(int argc, char ** argv)
 
 	dlgViewer = createViewer();
 	create_logbook_dialogs();
+	dxcluster_viewer = dxc_window();
+	dxcluster_viewer->hide();
+
 	LOGBOOK_colors_font();
 
 	if( progdefaults.kml_save_dir.empty() ) {
@@ -804,6 +814,8 @@ void exit_process() {
 	stop_psm_thread();
 	arq_close();
 	FD_close();
+	DXcluster_close();
+
 	kiss_close(false);
 	maclogger_close();
 	XML_RPC_Server::stop();

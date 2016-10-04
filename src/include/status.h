@@ -100,6 +100,7 @@ struct status {
 	bool	rx_scroll_hints;
 	bool	rx_word_wrap;
 	bool	tx_word_wrap;
+	bool	cluster_connected;
 
 	int		logbook_x;
 	int		logbook_y;
@@ -112,6 +113,11 @@ struct status {
 	int		logbook_col_3;
 	int		logbook_col_4;
 	int		logbook_col_5;
+
+	int		dxdialog_x;
+	int		dxdialog_y;
+	int		dxdialog_w;
+	int		dxdialog_h;
 
 // Contestia, Olivia, RTTY state values
 	int		contestiatones;

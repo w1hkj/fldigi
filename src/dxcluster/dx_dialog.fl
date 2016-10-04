@@ -1,0 +1,143 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0303 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include "configuration.h"} {private local
+} 
+
+decl {\#include "dx_cluster.h"} {private local
+} 
+
+Function {dxc_window()} {open
+} {
+  Fl_Window {} {
+    label {DX Cluster Spotting} open
+    xywh {729 35 625 395} type Double resizable visible
+  } {
+    Fl_Group {} {open
+      xywh {2 2 621 57} box ENGRAVED_BOX
+    } {
+      Fl_Input inp_dxcc_host_url {
+        label {Telnet URL}
+        callback {progdefaults.dxcc_host_url=o->value();
+progdefaults.changed = true;}
+        tooltip {telnet server URL} xywh {10 25 382 24} align 1
+        code0 {\#include "flinput2.h"}
+        code1 {o->value(progdefaults.dxcc_host_url.c_str());}
+        class Fl_Input2
+      }
+      Fl_Input inp_dccc_host_port {
+        label Port
+        callback {progdefaults.dxcc_host_port=o->value();
+progdefaults.changed = true;}
+        tooltip {telnet server port} xywh {400 25 60 24} align 1
+        code1 {o->value(progdefaults.dxcc_host_port.c_str());}
+        class Fl_Input2
+      }
+      Fl_Input inp_dccc_login {
+        label {Login as}
+        callback {progdefaults.dxcc_login=o->value();
+progdefaults.changed = true;}
+        tooltip {login call sign} xywh {469 25 60 24} align 1
+        code1 {o->value(progdefaults.dxcc_login.c_str());}
+        class Fl_Input2
+      }
+      Fl_Check_Button btn_dxcc_connect {
+        label Connect
+        callback {progStatus.cluster_connected=o->value();
+DXcluster_connect(o->value());}
+        tooltip {Connect / Disconnect} xywh {534 29 70 15} down_box DOWN_BOX
+        code0 {o->value(progStatus.cluster_connected);}
+        code1 {\#include "status.h"}
+      }
+    }
+    Fl_Tabs {} {open
+      xywh {2 60 621 307}
+    } {
+      Fl_Group {} {
+        label {DX Reports} open
+        xywh {2 84 621 282} hide
+      } {
+        Fl_Browser brws_dx_cluster {
+          callback {DXcluster_select();}
+          tooltip {Left Click to select SPOT} xywh {4 88 617 254} type Hold align 18 textfont 4
+        }
+        Fl_Button btn_dxc_cluster_clear {
+          label Clear
+          callback {brws_dx_cluster->clear();}
+          tooltip {Clear parsed data stream} xywh {294 343 70 22}
+        }
+      }
+      Fl_Group {} {
+        label {TelNet stream} open
+        xywh {2 84 621 283} hide
+      } {
+        Fl_Browser brws_tcpip_stream {
+          xywh {4 88 617 254} type Hold align 18 textfont 4 resizable
+        }
+        Fl_Button btn_dxc_tcpip_clear {
+          label Clear
+          callback {brws_tcpip_stream->clear();}
+          tooltip {Clear tcpip stream} xywh {294 343 70 22}
+        }
+      }
+      Fl_Group {} {
+        label Sunspot open
+        xywh {2 84 621 283}
+      } {
+        Fl_Browser brws_dxc_wwv {
+          xywh {4 88 617 254} type Hold align 18 textfont 4 resizable
+        }
+        Fl_Button btn_dxc_wwv_query {
+          label Update
+          callback {dxc_wwv_query();}
+          tooltip {Get WWV sunspot events} xywh {439 343 70 22}
+        }
+        Fl_Button btn_dxc_wwv_clear {
+          label Clear
+          callback {dxc_wwv_clear()} selected
+          tooltip {Clear help panel} xywh {515 343 70 22}
+        }
+      }
+      Fl_Group {} {
+        label Help open
+        xywh {2 84 621 283} hide
+      } {
+        Fl_Browser brws_dxc_help {
+          xywh {4 88 617 254} type Hold align 18 textfont 4 resizable
+        }
+        Fl_Button btn_dxc_help_query {
+          label {Get Help}
+          callback {dxc_help_query();}
+          tooltip {Get WWV sunspot events} xywh {439 343 70 22}
+        }
+        Fl_Input inp_help_string {
+          label {Help on:}
+          tooltip {Leave blank for general help
+Enter subject, e.g. DX} xywh {265 343 170 22}
+          class Fl_Input2
+        }
+        Fl_Button btn_dxc_help_clear {
+          label Clear
+          callback {dxc_help_clear()}
+          tooltip {Clear help panel} xywh {515 343 70 22}
+        }
+      }
+    }
+    Fl_Input inp_dxcluster_cmd {
+      label {Cmd:}
+      tooltip {Command string} xywh {45 369 391 24}
+      class Fl_Input2
+    }
+    Fl_Button btn_cluster_submit {
+      label Submit
+      callback {DXcluster_submit();}
+      tooltip {Send command to server} xywh {439 369 70 24}
+    }
+    Fl_Button btn_cluster_spot {
+      label Spot
+      callback {send_DXcluster_spot();}
+      tooltip {Send SPOT string to server} xywh {553 369 70 24}
+    }
+  }
+} 

@@ -60,6 +60,7 @@
 #include "lgbook.h"
 #include "logsupport.h"
 #include "qso_db.h"
+#include "dx_dialog.h"
 
 #include "misc.h"
 #include "data_io.h"
@@ -139,9 +140,10 @@ status progStatus = {
 	true,				// bool rx_scroll_hints;
 	true,				// bool rx_word_wrap
 	true,				// bool tx_word_wrap
+	false,				// bool cluster_connected; // not saved
 
-	20,					// int logbook_x;
-	20,					// int logbook_y;
+	50,					// int logbook_x;
+	50,					// int logbook_y;
 	590,				// int logbook_w;
 	490,				// int logbook_h;
 	false,				// bool logbook_reverse;
@@ -151,6 +153,11 @@ status progStatus = {
 	110,				// int		logbook_browser_col_3;
 	120,				// int		logbook_browser_col_4;
 	103,				// int		logbook_browser_col_5;
+
+	50,					// int dxdialog_x;
+	50,					// int dxdialog_y;
+	625,				// int dxdialog_w;
+	395,				// int dxdialog_h;
 
 	progdefaults.contestiatones,
 	progdefaults.contestiabw,
@@ -257,6 +264,10 @@ void status::saveLastState()
 	logbook_col_4 = wBrowser->columnWidth(4);
 	logbook_col_5 = wBrowser->columnWidth(5);
 
+	dxdialog_x = dxcluster_viewer->x();
+	dxdialog_y = dxcluster_viewer->y();
+	dxdialog_w = dxcluster_viewer->w();
+	dxdialog_h = dxcluster_viewer->h();
 
 	if (!bWF_only) {
 		RxTextHeight = (ReceiveText->h() * 100) / text_panel->h();//VTgroup->h();
@@ -451,6 +462,11 @@ if (!bWF_only) {
 	spref.set("logbook_col_3", logbook_col_3);
 	spref.set("logbook_col_4", logbook_col_4);
 	spref.set("logbook_col_5", logbook_col_5);
+
+	spref.set("dxdialog_x", dxdialog_x);
+	spref.set("dxdialog_y", dxdialog_y);
+	spref.set("dxdialog_w", dxdialog_w);
+	spref.set("dxdialog_h", dxdialog_h);
 
 	spref.set("contestiatones", contestiatones);
 	spref.set("contestiabw", contestiabw);
@@ -672,6 +688,11 @@ void status::loadLastState()
 	spref.get("logbook_col_3", logbook_col_3, logbook_col_3);
 	spref.get("logbook_col_4", logbook_col_4, logbook_col_4);
 	spref.get("logbook_col_5", logbook_col_5, logbook_col_5);
+
+	spref.get("dxdialog_x", dxdialog_x, dxdialog_x);
+	spref.get("dxdialog_y", dxdialog_y, dxdialog_y);
+	spref.get("dxdialog_w", dxdialog_w, dxdialog_w);
+	spref.get("dxdialog_h", dxdialog_h, dxdialog_h);
 
 	spref.get("contestiatones", contestiatones, contestiatones);
 	spref.get("contestiabw", contestiabw, contestiabw);
@@ -967,6 +988,8 @@ void status::initLastState()
 	wBrowser->columnWidth(3, logbook_col_3);
 	wBrowser->columnWidth(4, logbook_col_4);
 	wBrowser->columnWidth(5, logbook_col_5);
+
+	dxcluster_viewer->resize(dxdialog_x, dxdialog_y, dxdialog_w, dxdialog_h);
 
 	ReceiveText->set_all_entry(quick_entry);
 	ReceiveText->set_scroll_hints(rx_scroll_hints);

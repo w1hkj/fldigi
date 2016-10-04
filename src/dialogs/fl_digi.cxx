@@ -157,6 +157,9 @@
 #include "psm/psm.h"
 #include "n3fjp_logger.h"
 
+#include "dx_cluster.h"
+#include "dx_dialog.h"
+
 #include "notifydialog.h"
 #include "macroedit.h"
 #include "rx_extract.h"
@@ -228,6 +231,8 @@ Fl_Help_Dialog 		*help_dialog       = (Fl_Help_Dialog *)0;
 Fl_Double_Window	*scopeview         = (Fl_Double_Window *)0;
 
 Fl_Double_Window	*field_day_viewer  = (Fl_Double_Window *)0;
+
+Fl_Double_Window	*dxcluster_viewer  = (Fl_Double_Window *)0;
 
 static Fl_Group		*mnuFrame;
 Fl_Menu_Bar 		*mnu;
@@ -2181,6 +2186,13 @@ void cb_fd_viewer(Fl_Widget* w, void*)
 		field_day_viewer->show();
 }
 
+void cb_dxc_viewer(Fl_Widget* w, void*)
+{
+	if (dxcluster_viewer->visible())
+		dxcluster_viewer->hide();
+	else
+		dxcluster_viewer->show();
+}
 
 void set_server_label(bool val)
 {
@@ -3599,6 +3611,10 @@ LOG_INFO("exit_process");
 		if (field_day_viewer->visible())
 			field_day_viewer->hide();
 
+	if (dxcluster_viewer)
+		if (dxcluster_viewer->visible())
+			dxcluster_viewer->hide();
+
 	return true;
 }
 
@@ -4760,6 +4776,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { LOG_CONNECT_SERVER, 0, (Fl_Callback*)cb_log_server, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Field Day Viewer")), 0, (Fl_Callback*)cb_fd_viewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("DX Cluster Viewer")), 0, (Fl_Callback*)cb_dxc_viewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 
 {0,0,0,0,0,0,0,0,0},
 
@@ -5483,6 +5500,11 @@ inline void date_font_pos(Fl_DateInput* inp, int x, int y, int w, int h)
 	inp->labelsize(ls < 14 ? ls : 14);
 	inp->redraw_label();
 	inp->resize(x, y, w, h);
+}
+
+void DXC_colors_font()
+{
+	return;
 }
 
 void LOGBOOK_colors_font()

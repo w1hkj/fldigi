@@ -584,5 +584,7 @@ extern Fl_Input2	*inp_FD_section2;
 extern Fl_Input2	*inp_CQzone;
 extern Fl_Input2	*inp_CQstate;
 
+extern Fl_Double_Window	*dxcluster_viewer;
+extern void DXC_colors_font();
 
 #endif
