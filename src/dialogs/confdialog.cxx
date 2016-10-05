@@ -851,6 +851,13 @@ static void cb_btn_N3FJP_sweet_spot(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_N3FJP_modem_carrier=(Fl_Check_Button *)0;
+
+static void cb_btn_N3FJP_modem_carrier(Fl_Check_Button* o, void*) {
+  progdefaults.N3FJP_modem_carrier = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabContest=(Fl_Group *)0;
 
 Fl_Light_Button *btnDupCheckOn=(Fl_Light_Button *)0;
@@ -6406,6 +6413,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6542,11 +6550,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6815,7 +6823,6 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
             tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
-            tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 grp_Log_QSO->hide();
@@ -7069,6 +7076,12 @@ ab and newline are automatically included."));
                 btn_N3FJP_sweet_spot->callback((Fl_Callback*)cb_btn_N3FJP_sweet_spot);
                 o->value(progdefaults.N3FJP_sweet_spot);
                 } // Fl_Check_Button* btn_N3FJP_sweet_spot
+                { Fl_Check_Button* o = btn_N3FJP_modem_carrier = new Fl_Check_Button(275, 349, 255, 26, _("Report actual modem RF frequency"));
+                btn_N3FJP_modem_carrier->tooltip(_("Suppressed carrier +/- AF injection frequency"));
+                btn_N3FJP_modem_carrier->down_box(FL_DOWN_BOX);
+                btn_N3FJP_modem_carrier->callback((Fl_Callback*)cb_btn_N3FJP_modem_carrier);
+                o->value(progdefaults.N3FJP_modem_carrier);
+                } // Fl_Check_Button* btn_N3FJP_modem_carrier
                 grpN3FJP_logs->end();
               } // Fl_Group* grpN3FJP_logs
               tabsLog->end();

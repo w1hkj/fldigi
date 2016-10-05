@@ -384,15 +384,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {1051 60 600 420} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {521 31 600 420} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -492,14 +492,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 365} hide
+        tooltip {User Interface} xywh {0 25 600 365}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser open
-            tooltip {User Interface - Browser} xywh {0 50 600 340}
+            tooltip {User Interface - Browser} xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -821,7 +821,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340}
           } {
             Fl_Tabs tabsLog {open
               xywh {0 50 600 340}
@@ -1105,6 +1105,13 @@ progdefaults.changed=true;}
 progdefaults.changed = true;}
                   tooltip {N3FJP DX spots centered on mode sweet spot} xywh {10 350 255 26} down_box DOWN_BOX
                   code0 {o->value(progdefaults.N3FJP_sweet_spot);}
+                }
+                Fl_Check_Button btn_N3FJP_modem_carrier {
+                  label {Report actual modem RF frequency}
+                  callback {progdefaults.N3FJP_modem_carrier = o->value();
+progdefaults.changed = true;} selected
+                  tooltip {Suppressed carrier +/- AF injection frequency} xywh {275 349 255 26} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.N3FJP_modem_carrier);}
                 }
               }
             }

@@ -435,6 +435,17 @@ static string n3fjp_freq()
 {
 	if (!active_modem) return "";
 	float freq = qsoFreqDisp->value();
+	if (progdefaults.N3FJP_modem_carrier) {
+		if (ModeIsLSB(mode_info[active_modem->get_mode()].adif_name)) {
+			freq -= active_modem->get_txfreq();
+			if (active_modem->get_mode() == MODE_RTTY)
+				freq -= progdefaults.rtty_shift / 2;
+		} else {
+			freq += active_modem->get_txfreq();
+			if (active_modem->get_mode() == MODE_RTTY)
+				freq += progdefaults.rtty_shift / 2;
+		}
+	}
 	freq /= 1e6;
 	char szfreq[20];
 	snprintf(szfreq, sizeof(szfreq), "%f", freq);

@@ -1003,6 +1003,9 @@
               "Use N3FJP spot report as signal center freq.\n"                          \
               "Center the target at mode sweet spot",                                   \
               false)                                                                    \
+        ELEM_(bool, N3FJP_modem_carrier, "N3FJP_MODEM_CARRIER",                         \
+              "Use actual modem carrier frequency for logging",                         \
+              true)                                                                     \
         /* Rig control */                                                               \
         ELEM_(bool, flrig_keys_modem, "FLRIG_KEYS_MODEM",                               \
               "PTT change at flrig changes Rx/Tx state\n"                               \
