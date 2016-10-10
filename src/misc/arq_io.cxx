@@ -526,10 +526,21 @@ bool ARQ_SOCKET_Server::start(const char* node, const char* service)
 	return !pthread_create(arq_socket_thread, NULL, thread_func, NULL);
 }
 
+bool server_stopped = false;
+
 void ARQ_SOCKET_Server::stop(void)
 {
 	if (!inst)
 		return;
+	inst->run = false;
+
+	int timeout = 20;
+	SET_THREAD_CANCEL();
+	while(!server_stopped) {
+		MilliSleep(50);
+		if (--timeout == 0) break;
+	}
+
 	delete inst;
 	inst = 0;
 }
@@ -544,7 +555,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	// On woe32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-#ifdef __WOE32__
+#ifdef __WOE32__ 
 			if (inst->server_socket->wait(0))
 				arq_run(inst->server_socket->accept());
 #else
@@ -582,6 +593,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	}
 
 	inst->server_socket->close();
+server_stopped = true;
 	return NULL;
 }
 
@@ -802,8 +814,10 @@ static void *arq_loop(void *args)
 
 	for (;;) {
 		/* see if we are being canceled */
-		if (arq_exit)
+		if (arq_exit) {
+printf("exiting arq_loop\n");
 			break;
+}
 
 		test_arq_clients();
 
@@ -843,6 +857,7 @@ void arq_init()
 	arq_enabled = false;
 
 	txstring.clear();
+	arqclient.clear();
 
 	if (!ARQ_SOCKET_Server::start( progdefaults.arq_address.c_str(), progdefaults.arq_port.c_str() )) {
 		arq_enabled = false;
@@ -868,6 +883,7 @@ void arq_close(void)
 	arq_exit = true;
 
 	// and then wait for it to die
+printf("pthread_join arq_thread\n");
 	pthread_join(arq_thread, NULL);
 	arq_enabled = false;
 	LOG_INFO("ARQ closed");
