@@ -217,7 +217,10 @@ int SoundBase::Capture(bool val)
 		return 0;
 
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
-	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], SNDFILE_CHANNELS, format, 0, 0 };
+	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
+		progdefaults.record_both_channels ? 2 : 1,
+//		SNDFILE_CHANNELS,
+		format, 0, 0 };
 	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
 		LOG_ERROR("Could not write %s:%s", fname, sf_strerror(NULL) );
 		return 0;
@@ -249,7 +252,10 @@ int SoundBase::Generate(bool val)
 	if (!fname)
 		return 0;
 
-	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], SNDFILE_CHANNELS, format, 0, 0 };
+	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
+		progdefaults.record_both_channels ? 2 : 1,
+//		SNDFILE_CHANNELS,
+		format, 0, 0 };
 	if ((ofGenerate = sf_open(fname, SFM_WRITE, &info)) == NULL) {
 		LOG_ERROR("Could not write %s", fname);
 		return 0;
@@ -459,12 +465,16 @@ void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_
 	bufr = src_write_buffer_right;
 
 	if (output_size) {
-		float buffer[2*output_size];
-		for (size_t i = 0; i < output_size; i++) {
-			buffer[2*i] = 0.9 * bufl[i];
-			buffer[2*i + 1] = 0.9 * bufr[i];
+		if (progdefaults.record_both_channels) {
+			float buffer[2*output_size];
+			for (size_t i = 0; i < output_size; i++) {
+				buffer[2*i] = 0.9 * bufl[i];
+				buffer[2*i + 1] = 0.9 * bufr[i];
+			}
+			sf_write_float(file, buffer, 2 * output_size);
+		} else {
+			sf_write_float(file, bufl, output_size);
 		}
-		sf_write_float(file, buffer, 2 * output_size);
 	}
 	return;
 
@@ -490,10 +500,9 @@ bool SoundBase::format_supported(int format)
 	SF_INFO info = {
 		0,
 		sndfile_samplerate[progdefaults.wavSampleRate],
-		SNDFILE_CHANNELS,
-		format,
-		0,
-		0 };
+		progdefaults.record_both_channels ? 2 : 1,
+//		SNDFILE_CHANNELS,
+		format, 0, 0 };
 	FILE* f;
 	if ((f = tmpfile()) == NULL)
 		return false;
