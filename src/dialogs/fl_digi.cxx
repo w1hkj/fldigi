@@ -5468,8 +5468,10 @@ inline void inp_font_pos(Fl_Input2* inp, int x, int y, int w, int h)
 	inp->textfont(progdefaults.LOGBOOKtextfont);
 	inp->textcolor(progdefaults.LOGBOOKtextcolor);
 	inp->color(progdefaults.LOGBOOKcolor);
-	int ls = progdefaults.LOGBOOKtextsize;
-	inp->labelsize(ls < 14 ? ls : 14);
+	inp->labelfont(progdefaults.LOGBOOKtextfont);
+	int ls = progdefaults.LOGBOOKtextsize - 1;
+	ls = ls < 10 ? 10 : (ls > 14 ? 14 : ls);
+	inp->labelsize(ls);
 	inp->redraw_label();
 	inp->resize(x, y, w, h);
 }
@@ -5480,10 +5482,43 @@ inline void date_font_pos(Fl_DateInput* inp, int x, int y, int w, int h)
 	inp->textfont(progdefaults.LOGBOOKtextfont);
 	inp->textcolor(progdefaults.LOGBOOKtextcolor);
 	inp->color(progdefaults.LOGBOOKcolor);
-	int ls = progdefaults.LOGBOOKtextsize;
-	inp->labelsize(ls < 14 ? ls : 14);
+	inp->labelfont(progdefaults.LOGBOOKtextfont);
+	int ls = progdefaults.LOGBOOKtextsize - 1;
+	ls = ls < 10 ? 10 : (ls > 14 ? 14 : ls);
+	inp->labelsize(ls);
 	inp->redraw_label();
 	inp->resize(x, y, w, h);
+}
+
+inline void btn_font_pos(Fl_Widget* btn, int x, int y, int w, int h)
+{
+	btn->labelfont(progdefaults.LOGBOOKtextfont);
+	int ls = progdefaults.LOGBOOKtextsize - 1;
+	ls = ls < 10 ? 10 : (ls > 14 ? 14 : ls);
+	btn->labelsize(ls);
+	btn->redraw_label();
+	btn->resize(x, y, w, h);
+	btn->redraw();
+}
+
+inline void tab_font_pos(Fl_Widget* tab, int x, int y, int w, int h, int ls)
+{
+	tab->labelfont(progdefaults.LOGBOOKtextfont);
+	tab->labelsize(ls);
+	tab->redraw_label();
+	tab->resize(x, y, w, h);
+	tab->redraw();
+}
+
+inline void chc_font_pos(Fl_Choice* chc, int x, int y, int w, int h)
+{
+	chc->labelfont(progdefaults.LOGBOOKtextfont);
+	int ls = progdefaults.LOGBOOKtextsize - 1;
+	ls = ls < 10 ? 10 : (ls > 14 ? 14 : ls);
+	chc->labelsize(ls);
+	chc->redraw_label();
+	chc->resize(x, y, w, h);
+	chc->redraw();
 }
 
 void DXC_colors_font()
@@ -5495,12 +5530,13 @@ void LOGBOOK_colors_font()
 {
 	if (!dlgLogbook) return;
 
+	int ls = progdefaults.LOGBOOKtextsize;
+
 // input / output / date / text fields
-	fl_font(progdefaults.LOGBOOKtextfont, progdefaults.LOGBOOKtextsize);
+	fl_font(progdefaults.LOGBOOKtextfont, ls);
 	int wh = fl_height() + 4;// + 8;
 	int width_date = fl_width("888888888") + wh;
 	int width_time = fl_width("23:59:599");
-//	int width_call = fl_width("WW/WW8WWW/WW.");
 	int width_freq = fl_width("WW/WW8WWW/WW.");//fl_width("99.9999999");
 	int width_rst  = fl_width("5999");
 	int width_pwr  = fl_width("0000");
@@ -5555,13 +5591,7 @@ void LOGBOOK_colors_font()
 	inp_font_pos(inpRstR_log, xpos, ypos, width_rst, wh);
 // nbr records
 	xpos += width_rst + 2;
-	txtNbrRecs_log->textcolor(progdefaults.LOGBOOKtextcolor);
-	txtNbrRecs_log->color(progdefaults.LOGBOOKcolor);
-	txtNbrRecs_log->resize(xpos, ypos, width_loc, wh);
-
-	int ls = progdefaults.LOGBOOKtextsize;
-	txtNbrRecs_log->labelsize(ls < 14 ? ls : 14);
-	txtNbrRecs_log->redraw_label();
+	inp_font_pos(txtNbrRecs_log, xpos, ypos, width_loc, wh);
 
 // row2
 	ypos += wh + 20;
@@ -5605,7 +5635,23 @@ void LOGBOOK_colors_font()
 	inp_font_pos(inpCountry_log, xpos, ypos, width_country, wh);
 
 	ypos += wh + 2;
+
 	Tabs->position(2, ypos);
+
+	inp_font_pos(inpSearchString,
+		dlg_width - 2 - width_freq, ypos, 
+		width_freq, wh);
+
+	int tab_h = wh * 14 / progdefaults.LOGBOOKtextsize;
+	int tab_grp_h = 4 * wh + 4;
+	Tabs->resize(2, ypos, dlg_width - 6 - inpSearchString->w(), tab_grp_h + tab_h);
+	Tabs->selection_color(progdefaults.TabsColor);
+
+	tab_font_pos(tab_log_qsl, 2, ypos + tab_h, Tabs->w(), tab_grp_h, 14);
+	tab_font_pos(tab_log_qsl_2, 2, ypos + tab_h, Tabs->w(), tab_grp_h, 14);
+	tab_font_pos(tab_log_contest, 2, ypos + tab_h, Tabs->w(), tab_grp_h, 14);
+	tab_font_pos(tab_log_other, 2, ypos + tab_h, Tabs->w(), tab_grp_h, 14);
+	tab_font_pos(tab_log_notes, 2, ypos + tab_h, Tabs->w(), tab_grp_h, 14);
 
 	Fl_Input2* inp[] = {
 		inpQSL_VIA_log,
@@ -5622,73 +5668,72 @@ void LOGBOOK_colors_font()
 		statusQSLrcvd, statusEQSLrcvd, statusLOTWrcvd,
 		statusQSLsent, statusEQSLsent, statusLOTWsent
 	};
-	for (size_t i = 0; i < sizeof(inp) / sizeof(*inp); i++) {
-		inp[i]->resize(inp[i]->x(), inp[i]->y(), inp[i]->w(), wh);
-		inp[i]->labelsize(ls < 14 ? ls : 14);
-		inp[i]->redraw_label();
-	}
-	for (size_t i = 0; i < sizeof(dti) / sizeof(*dti); i++) {
-		dti[i]->resize(dti[i]->x(), dti[i]->y(), dti[i]->w(), wh);
-		dti[i]->labelsize(ls < 14 ? ls : 14);
-		dti[i]->redraw_label();
-	}
-	for (size_t i = 0; i < sizeof(chc) / sizeof(*chc); i++) {
-		chc[i]->resize(chc[i]->x(), chc[i]->y(), chc[i]->w(), wh);
-		chc[i]->labelsize(ls < 14 ? ls : 14);
-		chc[i]->redraw_label();
-	}
-	inpNotes_log->resize(4, ypos+26, Tabs->w() - 4, 4*wh - 4);
+	for (size_t i = 0; i < sizeof(inp) / sizeof(*inp); i++)
+		inp_font_pos(inp[i], inp[i]->x(), inp[i]->y(), inp[i]->w(), wh);
 
-	Tabs->resize(2, ypos, dlg_width - 6 - inpSearchString->w(), 4*wh + 24);
-	tab_log_qsl->resize(2, ypos + 24, Tabs->w(), 4*wh);
-	tab_log_qsl_2->resize(2, ypos + 24, Tabs->w(), 4*wh);
-	tab_log_contest->resize(2, ypos + 24, Tabs->w(), 4*wh);
-	tab_log_other->resize(2, ypos + 24, Tabs->w(), 4*wh);
-	tab_log_notes->resize(2, ypos + 24, Tabs->w(), 4*wh);
+	for (size_t i = 0; i < sizeof(dti) / sizeof(*dti); i++)
+		date_font_pos(	dti[i], dti[i]->x(), dti[i]->y(), dti[i]->w(), wh);
 
-	inpSearchString->resize(
-		2 + Tabs->w() + 2, tab_log_qsl->y(),
-		inpSearchString->w(), wh);
-	inpSearchString->labelsize(ls < 14 ? ls : 14);
-	inpSearchString->redraw_label();
-	bSearchPrev->resize(
-		inpSearchString->x() + inpSearchString->w()/2 - bSearchPrev->w() - 3,
+	for (size_t i = 0; i < sizeof(chc) / sizeof(*chc); i++)
+		chc_font_pos(chc[i], chc[i]->x(), chc[i]->y(), chc[i]->w(), wh);
+
+	inpNotes_log->resize(
+		tab_log_notes->x() + 2, 
+		tab_log_notes->y() + 4,
+		tab_log_notes->w() - 4,
+		tab_log_notes->h() - 6);
+
+	btn_font_pos(inpSearchString,
+		2 + Tabs->w() + 2,
+		tab_log_qsl->y(),
+		inpSearchString->w(),
+		wh);
+
+	int bSPwidth = bSearchPrev->w() * ls / 14;
+	btn_font_pos(bSearchPrev,
+		inpSearchString->x() + inpSearchString->w()/2 - bSPwidth - 3,
 		inpSearchString->y() + wh + 2,
-		bSearchPrev->w(), bSearchPrev->h());
-	bSearchNext->resize(
-		bSearchPrev->x() +bSearchPrev->w() + 6, bSearchPrev->y(),
-		bSearchNext->w(), bSearchNext->h());
-	bRetrieve->resize(
-		bSearchPrev->x(), bSearchNext->y() + bSearchNext->h() + 2,
-		bSearchPrev->w() + bSearchNext->w() + 6, bRetrieve->h());
+		bSPwidth,
+		wh);
+	btn_font_pos(bSearchNext,
+		bSearchPrev->x() + bSPwidth + 6,
+		bSearchPrev->y(),
+		bSPwidth,
+		wh);
+
+	btn_font_pos(bRetrieve,
+		inpSearchString->x() + inpSearchString->w()/2 - (bRetrieve->w() * ls/14)/2,
+		bSearchNext->y() + bSearchNext->h() + 2,
+		bRetrieve->w()*ls/14,
+		wh);
 
 	ypos += Tabs->h() + 2;
 
 	Fl_Button* btns[] = { bNewSave, bUpdateCancel, bDelete };
+	int btnwidth = bNewSave->w() * ls / 14;
 
 	xpos = 2;
-	int wlogfile = dlg_width - 6 - 3*(btns[0]->w() + 2);
+	int wlogfile = dlg_width - 6 - 3*(btnwidth + 2);
 
-	txtLogFile->textsize(progdefaults.LOGBOOKtextsize);
+	txtLogFile->textsize(ls);
 	txtLogFile->textfont(progdefaults.LOGBOOKtextfont);
 	txtLogFile->textcolor(progdefaults.LOGBOOKtextcolor);
 	txtLogFile->color(progdefaults.LOGBOOKcolor);
-	txtLogFile->labelsize(ls < 14 ? ls : 14);
+	txtLogFile->labelsize(ls);
 	txtLogFile->redraw_label();
 	txtLogFile->resize(xpos, ypos, wlogfile, wh);
 
 	xpos = 2 + wlogfile + 2;
 	for (size_t i = 0; i < sizeof(btns)/sizeof(*btns); i++) {
-		btns[i]->resize(xpos, ypos, btns[i]->w(), wh);
-		xpos += btns[i]->w() + 2;
-		btns[i]->redraw();
+		btn_font_pos(btns[i], xpos, ypos, btnwidth, wh);
+		xpos += btnwidth + 2;
 	}
 
 // browser (table)
 	ypos += wh + 2;
 
 	wBrowser->font(progdefaults.LOGBOOKtextfont);
-	wBrowser->fontsize(progdefaults.LOGBOOKtextsize);
+	wBrowser->fontsize(ls);
 	wBrowser->color(progdefaults.LOGBOOKcolor);
 	wBrowser->selection_color(FL_SELECTION_COLOR);
 

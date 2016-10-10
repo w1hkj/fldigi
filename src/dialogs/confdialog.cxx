@@ -1899,7 +1899,7 @@ Fl_Button *btnLOGGINGdefault_colors_font=(Fl_Button *)0;
 static void cb_btnLOGGINGdefault_colors_font(Fl_Button*, void*) {
   progdefaults.LOGGINGcolor = FL_BACKGROUND2_COLOR;
 progdefaults.LOGGINGtextfont = (Fl_Font)0;
-progdefaults.LOGGINGtextsize = 12;
+progdefaults.LOGGINGtextsize = 14;
 progdefaults.LOGGINGtextcolor = FL_BLACK;
 
 LOGGINGdisplay->color(progdefaults.LOGGINGcolor);
@@ -1950,7 +1950,7 @@ Fl_Button *btnLOGBOOKdefault_colors_font=(Fl_Button *)0;
 static void cb_btnLOGBOOKdefault_colors_font(Fl_Button*, void*) {
   progdefaults.LOGBOOKcolor = FL_BACKGROUND2_COLOR;
 progdefaults.LOGBOOKtextfont = (Fl_Font)0;
-progdefaults.LOGBOOKtextsize = 12;
+progdefaults.LOGBOOKtextsize = 14;
 progdefaults.LOGBOOKtextcolor = FL_BLACK;
 
 LOGBOOKdisplay->color(progdefaults.LOGBOOKcolor);
@@ -2156,6 +2156,7 @@ Fl_Button *btnTabColor=(Fl_Button *)0;
 static void cb_btnTabColor(Fl_Button*, void*) {
   progdefaults.TabsColor = fl_show_colormap(progdefaults.TabsColor);
 setTabColors();
+LOGBOOK_colors_font();
 progdefaults.changed = true;
 }
 
@@ -2164,6 +2165,7 @@ Fl_Button *btnTabDefaultColor=(Fl_Button *)0;
 static void cb_btnTabDefaultColor(Fl_Button*, void*) {
   progdefaults.TabsColor = FL_BACKGROUND2_COLOR;
 setTabColors();
+LOGBOOK_colors_font();
 progdefaults.changed = true;
 }
 
@@ -6413,7 +6415,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -6550,11 +6551,11 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
             tabBrowser->tooltip(_("User Interface - Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -6823,6 +6824,7 @@ Fl_Double_Window* ConfigureDialog() {
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
             tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
+            tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 grp_Log_QSO->hide();
