@@ -257,14 +257,15 @@ void debug::hex_dump(const char* func, const char * data, int length)
 			}
 			data_index++;
 		}
-		LOG_DEBUG("%s: %s %s", func, cbuff, hbuff);
+		if (debug::inst) LOG_DEBUG("%s: %s %s", func, cbuff, hbuff);
 		count -= step;
 	}
 }
 
 void debug::elog(const char* func, const char* srcf, int line, const char* text)
 {
-	log(ERROR_LEVEL, func, srcf, line, "%s: %s", text, strerror(errno));
+	if (debug::inst)
+		log(ERROR_LEVEL, func, srcf, line, "%s: %s", text, strerror(errno));
 }
 
 void debug::show(void)
@@ -276,6 +277,8 @@ void debug::show(void)
 void debug::sync_text(void* arg)
 {
 	guard_lock debug_lock(&debug_mutex);
+
+	if (!window) return;
 
 	size_t p1 = 0, p2 = linebuf.find("\n");
 	while (p2 != string::npos) {

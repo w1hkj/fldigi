@@ -198,7 +198,6 @@ struct XmlRpcImpl : public XmlRpcServer
 	{
 		exit();
 		shutdown();
-		LOG_INFO("XMLRPC server loop terminated");
 	}
 };
 

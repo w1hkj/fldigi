@@ -1304,86 +1304,107 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 void remove_windows()
 {
 	if (scopeview) {
+LOG_ERROR("Deleting %s", "scopeview");
 		scopeview->hide();
 		delete scopeview;
 	}
 	if (dlgViewer) {
+LOG_ERROR("Deleting %s", "dlgViewer");
 		dlgViewer->hide();
 		delete dlgViewer;
 	}
 	if (dlgLogbook) {
+LOG_ERROR("Deleting %s", "dlgLogbook");
 		dlgLogbook->hide();
 		delete dlgLogbook;
 	}
 	if (dlgConfig) {
+LOG_ERROR("Deleting %s", "dlgConfig");
 		dlgConfig->hide();
 		delete cboHamlibRig;
 		delete dlgConfig;
 	}
 	if (font_browser) {
+LOG_ERROR("Deleting %s", "font-browser");
 		font_browser->hide();
 		delete font_browser;
 	}
 	if (notify_window) {
+LOG_ERROR("Deleting %s", "notify_window");
 		notify_window->hide();
 		delete notify_window;
 	}
 	if (dxcc_window) {
+LOG_ERROR("Deleting %s", "dxcc_window");
 		dxcc_window->hide();
 		delete dxcc_window;
 	}
 	if (picRxWin) {
+LOG_ERROR("Deleting %s", "picRxWin");
 		picRxWin->hide();
 		delete picRxWin;
 	}
 	if (picTxWin) {
+LOG_ERROR("Deleting %s", "picTxWin");
 		picTxWin->hide();
 		delete picTxWin;
 	}
 	if (fsqpicRxWin){
+LOG_ERROR("Deleting %s", "fsqpicRxWin");
 		fsqpicRxWin->hide();
 		delete fsqpicRxWin;
 	}
 	if (fsqpicTxWin){
+LOG_ERROR("Deleting %s", "fsqpicTxWin");
 		fsqpicTxWin->hide();
 		delete fsqpicTxWin;
 	}
 	if (ifkppicRxWin){
+LOG_ERROR("Deleting %s", "ifppicRxWin");
 		ifkppicRxWin->hide();
 		delete ifkppicRxWin;
 	}
 	if (ifkppicTxWin){
+LOG_ERROR("Deleting %s", "ifppicTxWin");
 		ifkppicTxWin->hide();
 		delete ifkppicTxWin;
 	}
 	if (thorpicRxWin){
+LOG_ERROR("Deleting %s", "thorpicRxWin");
 		thorpicRxWin->hide();
 		delete thorpicRxWin;
 	}
 	if (thorpicTxWin){
+LOG_ERROR("Deleting %s", "thorpicTxWin");
 		thorpicTxWin->hide();
 		delete thorpicTxWin;
 	}
 	if (wefax_pic_rx_win) {
+LOG_ERROR("Deleting %s", "wefax_pic_rxin");
 		wefax_pic_rx_win->hide();
 		delete wefax_pic_rx_win;
 	}
 	if (wefax_pic_tx_win) {
+LOG_ERROR("Deleting %s", "wefax_pic_txin");
 		wefax_pic_tx_win->hide();
 		delete wefax_pic_tx_win;
 	}
 	if (wExport) {
+LOG_ERROR("Deleting %s", "wExport");
 		wExport->hide();
 		delete wExport;
 	}
 	if (wCabrillo) {
+LOG_ERROR("Deleting %s", "wCabrillo");
 		wCabrillo->hide();
 		delete wCabrillo;
 	}
 	if (MacroEditDialog) {
+LOG_ERROR("Deleting %s", "MacroEditDialog");
 		MacroEditDialog->hide();
 		delete MacroEditDialog;
 	}
+LOG_ERROR("Deleting %s", "fsqMonitor");
 	if (fsqMonitor) {
 		fsqMonitor->hide();
 		delete fsqMonitor;
@@ -1393,7 +1414,7 @@ void remove_windows()
 //		fsqDebug->hide();
 //		delete fsqDebug;
 //	}
-
+LOG_ERROR("stopping debug session\n");
 	debug::stop();
 }
 
