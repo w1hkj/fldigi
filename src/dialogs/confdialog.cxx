@@ -7294,7 +7294,7 @@ ab and newline are automatically included."));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { Fl_Check_Button* o = btn_generic_contest = new Fl_Check_Button(30, 335, 70, 20, _("Generic"));
-                btn_generic_contest->tooltip(_("Use Field Day Contest Fields"));
+                btn_generic_contest->tooltip(_("Use generic contest fields"));
                 btn_generic_contest->down_box(FL_DOWN_BOX);
                 btn_generic_contest->callback((Fl_Callback*)cb_btn_generic_contest);
                 o->value(progdefaults.logging == LOG_CONT);
@@ -7306,13 +7306,13 @@ ab and newline are automatically included."));
                 o->value(progdefaults.logging == LOG_FD);
               } // Fl_Check_Button* btn_fd_contest
               { Fl_Check_Button* o = btn_cqww_contest = new Fl_Check_Button(320, 335, 70, 20, _("CQWW RTTY"));
-                btn_cqww_contest->tooltip(_("Use Field Day Contest Fields"));
+                btn_cqww_contest->tooltip(_("Use CQWW Fields"));
                 btn_cqww_contest->down_box(FL_DOWN_BOX);
                 btn_cqww_contest->callback((Fl_Callback*)cb_btn_cqww_contest);
                 o->value(progdefaults.logging == LOG_CQWW);
               } // Fl_Check_Button* btn_cqww_contest
-              { Fl_Check_Button* o = btn_bart_contest = new Fl_Check_Button(465, 335, 70, 20, _("BART RTTY"));
-                btn_bart_contest->tooltip(_("Use Field Day Contest Fields"));
+              { Fl_Check_Button* o = btn_bart_contest = new Fl_Check_Button(465, 335, 70, 20, _("BARTG RTTY"));
+                btn_bart_contest->tooltip(_("Use generic contest fields"));
                 btn_bart_contest->down_box(FL_DOWN_BOX);
                 btn_bart_contest->callback((Fl_Callback*)cb_btn_bart_contest);
                 o->value(progdefaults.logging == LOG_BART);

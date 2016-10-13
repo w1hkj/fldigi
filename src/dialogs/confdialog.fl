@@ -1297,7 +1297,7 @@ btn_cqww_contest->value(0);
 btn_bart_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use Field Day Contest Fields} xywh {30 335 70 20} down_box DOWN_BOX
+                tooltip {Use generic contest fields} xywh {30 335 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_CONT);}
               }
               Fl_Check_Button btn_fd_contest {
@@ -1321,11 +1321,11 @@ btn_bart_contest->value(0);
 btn_generic_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use Field Day Contest Fields} xywh {320 335 70 20} down_box DOWN_BOX
+                tooltip {Use CQWW Fields} xywh {320 335 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_CQWW);}
               }
               Fl_Check_Button btn_bart_contest {
-                label {BART RTTY}
+                label {BARTG RTTY}
                 callback {if (o->value()) progdefaults.logging = LOG_BART;
 else progdefaults.logging = LOG_QSO;
 btn_fd_contest->value(0);
@@ -1333,7 +1333,7 @@ btn_cqww_contest->value(0);
 btn_generic_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use Field Day Contest Fields} xywh {465 335 70 20} down_box DOWN_BOX
+                tooltip {Use generic contest fields} xywh {465 335 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_BART);}
               }
             }
