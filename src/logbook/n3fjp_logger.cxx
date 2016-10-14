@@ -90,6 +90,50 @@ int  tracked_mode = -1;
 enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY};
 int  n3fjp_contest = FJP_NONE;
 
+int n3fjp_wait = 0;
+
+void adjust_freq(string s);
+void n3fjp_parse_response(string s);
+void n3fjp_disp_report(string s, string fm = "");
+void n3fjp_send(string cmd);
+void n3fjp_rcv(string &rx);
+void n3fjp_send_freq_mode();
+void n3fjp_clear_record();
+void n3fjp_getfields();
+void n3fjp_get_record(string call);
+static string ParseField(string &record, string fieldtag);
+static string ParseTextField(string &record, string fieldtag);
+static string ucasestr(string s);
+static void n3fjp_parse_data_stream(string buffer);
+static void n3fjp_parse_calltab_event(string buffer);
+string fmt_date(string date);
+string fmt_time(string time);
+string field_rec(string fld, string val);
+static string n3fjp_tstmode();
+static string n3fjp_opmode();
+static string n3fjp_opband();
+static string n3fjp_freq();
+static void send_control(const string ctl, string val);
+static void send_action(const string action);
+static void send_command(const string command, string val="");
+bool n3fjp_dupcheck();
+static void n3fjp_send_data();
+static void n3fjp_send_data_norig();
+void get_n3fjp_frequency();
+void do_n3fjp_add_record_entries();
+void n3fjp_set_freq(long f);
+void n3fjp_set_ptt(int on);
+void n3fjp_add_record(cQsoRec &record);
+void n3fjp_parse_response(string tempbuff);
+void n3fjp_rcv_data();
+static void connect_to_n3fjp_server();
+void n3fjp_start();
+void n3fjp_restart();
+void n3fjp_disconnect();
+void *n3fjp_loop(void *args);
+void n3fjp_init(void);
+void n3fjp_close(void);
+
 //======================================================================
 //
 //======================================================================
@@ -133,7 +177,7 @@ void adjust_freq(string sfreq)
 //
 //======================================================================
 
-static void n3fjp_disp_report(string s, string fm = "")
+void n3fjp_disp_report(string s, string fm)
 {
 	string report = fm.append(s);
 	size_t p = report.find("\r\n");
@@ -156,9 +200,10 @@ static void n3fjp_disp_report(string s, string fm = "")
 
 }
 
-static void n3fjp_send(string cmd)
+void n3fjp_send(string cmd)
 {
 	try {
+//LOG_INFO("%s", cmd.c_str());
 		cmd.append("\r\n");
 		n3fjp_socket->send(cmd);
 		n3fjp_disp_report(cmd, "SEND:");
@@ -167,7 +212,7 @@ static void n3fjp_send(string cmd)
 	}
 }
 
-static void n3fjp_rcv(string &rx)
+void n3fjp_rcv(string &rx)
 {
 	try {
 		n3fjp_socket->recv(rx);
@@ -178,7 +223,7 @@ static void n3fjp_rcv(string &rx)
 }
 
 
-static void send_freq_mode()
+void n3fjp_send_freq_mode()
 {
 	if (!active_modem) return;
 
@@ -263,7 +308,6 @@ void n3fjp_get_record(string call)
 	}
 }
 
-
 //======================================================================
 // parse string containing value, e.g.
 // <FREQ>14.01310</FREQ>
@@ -347,6 +391,8 @@ static void n3fjp_parse_calltab_event(string buffer)
 {
 	inpCall->value(ParseField(buffer, "CALL").c_str());
 	inpCountry->value(ParseField(buffer, "COUNTRY").c_str());
+//	LOG_INFO("%s", buffer.c_str());
+	n3fjp_getfields();
 }
 
 //======================================================================
@@ -481,7 +527,7 @@ static void send_action(const string action)
 	MilliSleep(10);
 }
 
-static void send_command(const string command, string val="")
+static void send_command(const string command, string val)
 {
 	string cmd;
 	cmd.assign("<CMD><").append(command).append(">");
@@ -519,12 +565,13 @@ bool n3fjp_dupcheck()
 	} catch (...) {
 		;
 	}
-
-	MilliSleep(100);
+	MilliSleep(200);
 
 	try {
 		string resp;
 		n3fjp_rcv(resp);
+		n3fjp_parse_response(resp);
+
 		if (resp.find("Duplicate") != string::npos)
 			return true;
 		return false;
@@ -717,52 +764,60 @@ void n3fjp_add_record(cQsoRec &record)
 //======================================================================
 //
 //======================================================================
+void n3fjp_parse_response(string tempbuff)
+{
+	if (tempbuff.empty()) return;
+	size_t p1 = string::npos, p2 = string::npos;
+
+	if (tempbuff.find("RIGRESPONSE") != string::npos) {
+		size_t p0 = tempbuff.find("<RIG>");
+		if (p0 != string::npos) {
+			p0 += strlen("<RIG>");
+			string rigname = tempbuff.substr(p0);
+			p0 = rigname.find("</RIG>");
+			if (p0 != string::npos) {
+				rigname.erase(p0);
+				if (rigname != "None" && rigname != "Client API") {
+					n3fjp_has_xcvr_control = N3FJP;
+					send_command("READBMF");
+				} else
+				n3fjp_has_xcvr_control = FLDIGI;
+			}
+		}
+	}
+
+	if (n3fjp_has_xcvr_control == N3FJP) {
+		if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != string::npos) {
+			p1 += strlen("<CHANGEFREQ><VALUE>");
+			p2 = tempbuff.find("</VALUE>", p1);
+			if (p2 == string::npos) return;
+			string sfreq = tempbuff.substr(p1, p2 - p1);
+			REQ(adjust_freq, sfreq);
+		} else if (tempbuff.find("<READBMFRESPONSE>") != string::npos) {
+			string sfreq = ParseField(tempbuff, "FREQ");
+			REQ(adjust_freq, sfreq);
+		}
+	}
+
+	if (tempbuff.find("<CALLTABEVENT>") != string::npos) {
+		n3fjp_rxbuffer = tempbuff;
+		REQ(n3fjp_parse_calltab_event, tempbuff);
+	}
+
+	if (tempbuff.find("ALLFIELDSWVRESPONSE") != string::npos) {
+		REQ(n3fjp_parse_data_stream, tempbuff);
+	}
+}
+
+//======================================================================
+//
+//======================================================================
 void n3fjp_rcv_data()
 {
 	string tempbuff = "";
 	try {
-		size_t p1 = string::npos, p2 = string::npos;
 		n3fjp_rcv(tempbuff);
-		if (!tempbuff.empty()) {
-
-			if (tempbuff.find("RIGRESPONSE") != string::npos) {
-				size_t p0 = tempbuff.find("<RIG>");
-				if (p0 != string::npos) {
-					p0 += strlen("<RIG>");
-					string rigname = tempbuff.substr(p0);
-					p0 = rigname.find("</RIG>");
-					if (p0 != string::npos) {
-						rigname.erase(p0);
-						if (rigname != "None" && rigname != "Client API") {
-							n3fjp_has_xcvr_control = N3FJP;
-							send_command("READBMF");
-						} else
-						n3fjp_has_xcvr_control = FLDIGI;
-					}
-				}
-			}
-
-			if (n3fjp_has_xcvr_control == N3FJP) {
-				if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != string::npos) {
-					p1 += strlen("<CHANGEFREQ><VALUE>");
-					p2 = tempbuff.find("</VALUE>", p1);
-					if (p2 == string::npos) return;
-					string sfreq = tempbuff.substr(p1, p2 - p1);
-					REQ(adjust_freq, sfreq);
-				} else if (tempbuff.find("<READBMFRESPONSE>") != string::npos) {
-					string sfreq = ParseField(tempbuff, "FREQ");
-					REQ(adjust_freq, sfreq);
-				}
-			}
-			if (tempbuff.find("<CALLTABEVENT>") != string::npos) {
-				n3fjp_rxbuffer = tempbuff;
-				REQ(n3fjp_parse_calltab_event, tempbuff);
-				REQ(n3fjp_getfields);
-			}
-			if (tempbuff.find("ALLFIELDSWVRESPONSE") != string::npos) {
-				REQ(n3fjp_parse_data_stream, tempbuff);
-			}
-		}
+		n3fjp_parse_response(tempbuff);
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error %d, %s", e.error(), e.what());
 	}
@@ -937,7 +992,7 @@ void *n3fjp_loop(void *args)
 			else if (n3fjp_connected) {
 				try {
 					if (n3fjp_has_xcvr_control == FLDIGI)
-						send_freq_mode();
+						n3fjp_send_freq_mode();
 					if (!send_this.empty()) {
 						guard_lock send_lock(&send_this_mutex);
 						n3fjp_send(send_this);
@@ -966,6 +1021,7 @@ void *n3fjp_loop(void *args)
 //======================================================================
 //
 //======================================================================
+
 void n3fjp_init(void)
 {
 	n3fjp_enabled = false;
