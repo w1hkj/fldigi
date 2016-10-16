@@ -32,8 +32,8 @@ extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);
 #if USE_HAMLIB
   #include "hamlib.h"
 #endif
-Fl_Double_Window *dlgConfig; 
-Mode_Browser* mode_browser; 
+Fl_Double_Window *dlgConfig;
+Mode_Browser* mode_browser;
 
 static void choose_color(Fl_Color & c) {
   unsigned char r, g, b;
@@ -46,30 +46,30 @@ static void cbRxFontBrowser(Fl_Widget*, void*) {
   Fl_Font font = font_browser->fontNumber();
       int size = font_browser->fontSize();
       Fl_Color color = font_browser->fontColor();
-  
+
       RxText->textfont(font);
       RxText->textsize(size);
       RxText->textcolor(color);
       RxText->redraw();
-  
+
       progdefaults.RxFontnbr = font;
       progdefaults.RxFontsize = size;
       progdefaults.RxFontcolor = color;
-  
+
       ReceiveText->setFont(font);
       ReceiveText->setFontSize(size);
       ReceiveText->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-  
+
       fsq_rx_text->setFont(font);
       fsq_rx_text->setFontSize(size);
       fsq_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-  
+
       ifkp_rx_text->setFont(font);
       ifkp_rx_text->setFontSize(size);
       ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-  
+
       font_browser->hide();
-  
+
       progdefaults.changed = true;
 }
 
@@ -77,62 +77,62 @@ static void cbTxFontBrowser(Fl_Widget*, void*) {
   Fl_Font font = font_browser->fontNumber();
       int size = font_browser->fontSize();
       Fl_Color color = font_browser->fontColor();
-  
+
       TxText->textfont(font);
       TxText->textsize(size);
       TxText->textcolor(color);
       TxText->redraw();
-  
+
       progdefaults.TxFontnbr = font;
       progdefaults.TxFontsize = size;
       progdefaults.TxFontcolor = color;
-  
+
       TransmitText->setFont(font);
       TransmitText->setFontSize(size);
       TransmitText->setFontColor(progdefaults.TxFontcolor, FTextBase::RECV);
-  
+
       fsq_tx_text->setFont(font);
       fsq_tx_text->setFontSize(size);
       fsq_tx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-  
+
       ifkp_rx_text->setFont(font);
       ifkp_rx_text->setFontSize(size);
       ifkp_rx_text->setFontColor(progdefaults.RxFontcolor, FTextBase::RECV);
-  
+
        font_browser->hide();
-  
+
       progdefaults.changed = true;
 }
 
 static void cbMacroEditFontBrowser(Fl_Widget*, void*) {
   Fl_Font font = font_browser->fontNumber();
       int size = font_browser->fontSize();
-  
+
       MacroText->textfont(font);
       MacroText->textsize(size);
       MacroText->redraw();
-  
+
       progdefaults.MacroEditFontnbr = font;
       progdefaults.MacroEditFontsize = size;
-  
+
       update_macroedit_font();
-  
+
       MacroText->textfont(font);
       MacroText->textsize(size);
-  
+
       font_browser->hide();
-  
+
       progdefaults.changed = true;
 }
 
 void cbWaterfallFontBrowser(Fl_Widget*, void*) {
   Fl_Font fnt = font_browser->fontNumber();
       int size = font_browser->fontSize();
-  
+
       progdefaults.WaterfallFontnbr = fnt;
       progdefaults.WaterfallFontsize = size;
       progdefaults.changed = true;
-  
+
       font_browser->hide();
 }
 
@@ -140,24 +140,24 @@ static void cbMacroBtnFontBrowser(Fl_Widget*, void*) {
   progdefaults.MacroBtnFontnbr = font_browser->fontNumber();
       progdefaults.MacroBtnFontsize = font_browser->fontSize();;
       progdefaults.MacroBtnFontcolor = font_browser->fontColor();
-  
+
       font_browser->hide();
-  
+
       btnGroup1->labelcolor(progdefaults.MacroBtnFontcolor);
       btnGroup1->labelfont(progdefaults.MacroBtnFontnbr);
       btnGroup1->labelsize(progdefaults.MacroBtnFontsize);
       btnGroup1->redraw_label();
-  
+
       btnGroup2->labelcolor(progdefaults.MacroBtnFontcolor);
       btnGroup2->labelfont(progdefaults.MacroBtnFontnbr);
       btnGroup2->labelsize(progdefaults.MacroBtnFontsize);
       btnGroup2->redraw_label();
-  
+
       btnGroup3->labelcolor(progdefaults.MacroBtnFontcolor);
       btnGroup3->labelfont(progdefaults.MacroBtnFontnbr);
       btnGroup3->labelsize(progdefaults.MacroBtnFontsize);
       btnGroup3->redraw_label();
-  
+
       progdefaults.changed = true;
       colorize_macros();
 }
@@ -167,7 +167,7 @@ void cbViewerFontBrowser(Fl_Widget*, void*) {
       progdefaults.ViewerFontsize = font_browser->fontSize();
       initViewer();
       progdefaults.changed = true;
-  
+
       font_browser->hide();
 }
 
@@ -175,7 +175,7 @@ void cbFreqControlFontBrowser(Fl_Widget*, void*) {
   Fl_Font fnt = font_browser->fontNumber();
       progdefaults.FreqControlFontnbr = fnt;
       progdefaults.changed = true;
-  
+
       FDdisplay->labelfont(progdefaults.FreqControlFontnbr);
       FDdisplay->redraw();
       qsoFreqDisp1->font(progdefaults.FreqControlFontnbr);
@@ -184,7 +184,7 @@ void cbFreqControlFontBrowser(Fl_Widget*, void*) {
       qsoFreqDisp1->redraw();
       qsoFreqDisp2->redraw();
       qsoFreqDisp3->redraw();
-  
+
       font_browser->hide();
 }
 
@@ -192,20 +192,20 @@ static void cbLOGGINGFontBrowser(Fl_Widget*, void*) {
   Fl_Font font = font_browser->fontNumber();
       int size = font_browser->fontSize();
       Fl_Color color = font_browser->fontColor();
-  
+
       progdefaults.LOGGINGtextfont = font;
       progdefaults.LOGGINGtextsize = size;
       progdefaults.LOGGINGtextcolor = color;
-  
+
       LOGGINGdisplay->textsize(size);
       LOGGINGdisplay->textcolor(color);
       LOGGINGdisplay->textfont(font);
       LOGGINGdisplay->redraw();
-  
+
       LOGGING_colors_font();
-  
+
       font_browser->hide();
-  
+
       progdefaults.changed = true;
 }
 
@@ -213,20 +213,20 @@ static void cbLOGBOOKFontBrowser(Fl_Widget*, void*) {
   Fl_Font font = font_browser->fontNumber();
       int size = font_browser->fontSize();
       Fl_Color color = font_browser->fontColor();
-  
+
       progdefaults.LOGBOOKtextfont = font;
       progdefaults.LOGBOOKtextsize = size;
       progdefaults.LOGBOOKtextcolor = color;
-  
+
       LOGBOOKdisplay->textsize(size);
       LOGBOOKdisplay->textcolor(color);
       LOGBOOKdisplay->textfont(font);
       LOGBOOKdisplay->redraw();
-  
+
       LOGBOOK_colors_font();
-  
+
       font_browser->hide();
-  
+
       progdefaults.changed = true;
 }
 
@@ -234,20 +234,20 @@ static void cbDXC_FontBrowser(Fl_Widget*, void*) {
   Fl_Font font = font_browser->fontNumber();
       int size = font_browser->fontSize();
       Fl_Color color = font_browser->fontColor();
-  
+
       progdefaults.DXC_textfont = font;
       progdefaults.DXC_textsize = size;
       progdefaults.DXC_textcolor = color;
-  
+
       DXC_display->textsize(size);
       DXC_display->textcolor(color);
       DXC_display->textfont(font);
       DXC_display->redraw();
-  
+
       DXC_colors_font();
-  
+
       font_browser->hide();
-  
+
       progdefaults.changed = true;
 }
 
@@ -255,7 +255,7 @@ void set_qrzxml_buttons(Fl_Button* b) {
   Fl_Button* qrzbxml[] = { btnQRZXMLnotavailable, btnQRZcdrom, btnQRZsub,
                            btnHamcall,
                            btnCALLOOK, btnHamQTH};
-  
+
   for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
   	qrzbxml[i]->value(b == qrzbxml[i]);
 }
@@ -264,7 +264,7 @@ void set_qrzweb_buttons(Fl_Button* b) {
   Fl_Button* qrzbweb[] = { btnQRZWEBnotavailable, btnQRZonline,
                                 btnHAMCALLonline,
                                 btnHamQTHonline };
-  
+
   for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
   	qrzbweb[i]->value(b == qrzbweb[i]);
 }
@@ -11336,7 +11336,7 @@ nce.\nYou may change the state from either location.\n..."));
               listbox_wav_samplerate->callback((Fl_Callback*)cb_listbox_wav_samplerate);
               listbox_wav_samplerate->align(Fl_Align(FL_ALIGN_TOP_LEFT));
               listbox_wav_samplerate->when(FL_WHEN_RELEASE);
-              o->add("8000|11025|16000|22050|24000|44100|48000");
+              o->add("Native|8000|11025|16000|22050|24000|44100|48000");
               o->index(progdefaults.wavSampleRate);
               o->labelsize(FL_NORMAL_SIZE);
               listbox_wav_samplerate->end();

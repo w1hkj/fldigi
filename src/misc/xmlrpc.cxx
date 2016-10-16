@@ -64,6 +64,8 @@ class XmlRpcImpl;
 #include "wefax-pic.h"
 #include "navtex.h"
 #include "ascii.h"
+#include "sound.h"
+
 
 #if USE_HAMLIB
 #include "hamlib.h"
@@ -854,6 +856,23 @@ public:
 	}
 };
 
+extern bool bHighSpeed;
+class Modem_highspeed : public xmlrpc_c::method
+{
+public:
+	Modem_highspeed()
+	{
+		_signature = "n:b";
+		_help = "Remove modem time constraint from receive processing.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		XMLRPC_LOCK;
+		bHighSpeed = params.getBoolean(0);
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 class Modem_olivia_set_bandwidth : public xmlrpc_c::method
 {
 public:
@@ -1008,7 +1027,7 @@ public:
 //		else if (progdefaults.chkUSEHAMLIBis)
 //			hamlib_setmode(s == "LSB" ? RIG_MODE_LSB : RIG_MODE_USB);
 //#endif
-//		else 
+//		else
 //		if (progdefaults.chkUSEXMLRPCis)
 			REQ(static_cast<void (waterfall::*)(bool)>(&waterfall::USB), wf, s == "USB");
 
@@ -3432,6 +3451,271 @@ struct Navtex_send_message : public xmlrpc_c::method
 		*retval = xmlrpc_c::value_string( e.what() );
 	}
 };
+
+// =============================================================================
+
+
+#define LSD_BUFF_SIZE 32767
+
+static unsigned char linsim_data[LSD_BUFF_SIZE];
+static vector<unsigned char> formated_linsim_data[LSD_BUFF_SIZE];
+static int linsim_data_index = 0;
+static pthread_mutex_t linsim_input_mutex = PTHREAD_MUTEX_INITIALIZER;
+static std::string rec_filename;
+static std::string pb_filename;
+bool xmlrpc_sndfile_flag;
+bool xmlrpc_linsim_read_flag;
+bool enable_xmlrpc_linsim_read_flag;
+int  linsim_read_count;
+int  linsim_read_count_expected;
+
+extern SoundBase *scard;
+
+void do_xmlrpc_playback(void * s)
+{
+	if(arq_state())
+		arq_close();
+	if(scard) {
+		scard->Playback_xmlrpc(pb_filename);
+	}
+	Fl::awake();
+}
+
+void do_xmlprc_record(void * s)
+{
+	if(arq_state())
+		arq_close();
+	if(scard) {
+		scard->Generate_xmlrpc(rec_filename);
+	}
+	Fl::awake();
+}
+
+struct Audio_playback : public xmlrpc_c::method
+{
+	Audio_playback() {
+		_signature = "n:s";
+		_help = "Playback audio from the given path/filename"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		std::string status = params.getString(0);
+		pb_filename.assign(status);
+		Fl::awake(do_xmlrpc_playback, 0);
+		*retval = xmlrpc_c::value_nil();
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Audio_record : public xmlrpc_c::method
+{
+	Audio_record() {
+		_signature = "n:s";
+		_help = "Record audio to the given path/filename"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		std::string status = params.getString(0);
+		rec_filename.assign(status);
+		Fl::awake(do_xmlprc_record, 0);
+		*retval = xmlrpc_c::value_nil();
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+struct Audio_record_stop : public xmlrpc_c::method
+{
+	Audio_record_stop() {
+		_signature = "n:n";
+		_help = "Stop Recording of Audio"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		rec_filename.clear();
+		Fl::awake(do_xmlprc_record, 0);
+		*retval = xmlrpc_c::value_nil();
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
+struct Audio_status : public xmlrpc_c::method
+{
+	Audio_status() {
+		_signature = "s:n";
+		_help = "Return the status of xmlrpc sndcard generate/playback"; }
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		if(scard) {
+			if(scard->Playback_state()) {
+				*retval = xmlrpc_c::value_string("Playback");
+			} else if(scard->Generate_state()) {
+				*retval = xmlrpc_c::value_string("Generate");
+			} else {
+				*retval = xmlrpc_c::value_string("Idle");
+			}
+		} else {
+			*retval = xmlrpc_c::value_string("Sound Card Null Pointer");
+		}
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+// =============================================================================
+
+int set_linsim_data(unsigned char character)
+{
+	guard_lock linsim_lock(&linsim_input_mutex);
+
+	if(linsim_data_index >= LSD_BUFF_SIZE) {
+		xmlrpc_linsim_read_flag = 0;
+		linsim_read_count       = 0;
+		return linsim_data_index;
+	}
+
+	if(!linsim_read_count) return 0;
+
+	linsim_data[linsim_data_index++] = character;
+
+	if(linsim_data_index >= linsim_read_count) {
+		xmlrpc_linsim_read_flag = 0;
+		linsim_read_count       = 0;
+	}
+
+	return linsim_data_index;
+}
+
+int clear_linsim_data(void)
+{
+	guard_lock linsim_lock(&linsim_input_mutex);
+
+	memset(linsim_data, 0, sizeof(linsim_data));
+	memset(formated_linsim_data, 0, sizeof(formated_linsim_data));
+	linsim_data_index = 0;
+	return linsim_data_index;
+}
+
+static unsigned char * formated_linsim(size_t &size)
+{
+	guard_lock linsim_lock(&linsim_input_mutex);
+
+	static std::string local_data;
+	unsigned char *cPtr = (unsigned char *)0;
+
+	if(linsim_data_index > 0) {
+		local_data.assign("FILE: ").append(pb_filename).append("\n");
+		local_data.append("[START]");
+		local_data.append((char *) linsim_data, (size_t) linsim_data_index);
+		local_data.append("[END]\n\n");
+	} else {
+		local_data.assign("No Data Available");
+	}
+
+	cPtr = (unsigned char *) local_data.c_str();
+	size = (size_t) local_data.size();
+
+	return cPtr;
+}
+
+class Linsim_get_rx_data : public xmlrpc_c::method
+{
+public:
+	Linsim_get_rx_data()
+	{
+		_signature = "6:n";
+		_help = "Returns formated string of data recorded during linsim processing.";
+	}
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	{
+		unsigned char *_data;
+		size_t size;
+		_data = formated_linsim(size);
+		vector<unsigned char> bytes(size);
+		memcpy(&bytes[0], _data, size);
+		*retval = xmlrpc_c::value_bytestring(bytes);
+	}
+};
+
+class Linsim_set_read_count : public xmlrpc_c::method
+{
+public:
+	Linsim_set_read_count()
+	{
+		_signature = "i:i";
+		_help = "Sets the amount of data to record during linsim opertions.";
+	}
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		linsim_read_count_expected = params.getInt(0);
+		*retval = xmlrpc_c::value_int(linsim_read_count_expected);
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+
+};
+
+struct Linsim_status : public xmlrpc_c::method
+{
+	Linsim_status() {
+		_signature = "s:n";
+		_help = "Return the status of xmlrpc linsim processing state";
+	}
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		if(xmlrpc_sndfile_flag || xmlrpc_linsim_read_flag) {
+			*retval = xmlrpc_c::value_string("Busy");
+		} else {
+			*retval = xmlrpc_c::value_string("Idle");
+		}
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_string( e.what() );
+	}
+};
+
+class Linsim_record_rx_data : public xmlrpc_c::method
+{
+public:
+	Linsim_record_rx_data()	{
+		_signature = "n:b";
+		_help = "Flags FLDIGI to record rx text for linsim.";
+	}
+
+	void execute(const xmlrpc_c::paramList& params, xmlrpc_c::value* retval)
+	try
+	{
+		enable_xmlrpc_linsim_read_flag = (bool) params.getBoolean(0);
+		*retval = xmlrpc_c::value_nil();
+	}
+	catch( const exception & e )
+	{
+		*retval = xmlrpc_c::value_nil();
+	}
+};
+
 // =============================================================================
 
 // End XML-RPC interface
@@ -3469,6 +3753,7 @@ ELEM_(Modem_inc_bw, "modem.inc_bandwidth")                             \
 ELEM_(Modem_get_quality, "modem.get_quality")                          \
 ELEM_(Modem_search_up, "modem.search_up")                              \
 ELEM_(Modem_search_down, "modem.search_down")                          \
+ELEM_(Modem_highspeed,   "modem.highspeed")                            \
 \
 ELEM_(Modem_olivia_set_bandwidth, "modem.olivia.set_bandwidth")        \
 ELEM_(Modem_olivia_get_bandwidth, "modem.olivia.get_bandwidth")        \
@@ -3617,19 +3902,29 @@ ELEM_(Spot_set_auto, "spot.set_auto")                                  \
 ELEM_(Spot_toggle_auto, "spot.toggle_auto")                            \
 ELEM_(Spot_pskrep_get_count, "spot.pskrep.get_count")                  \
 \
-ELEM_(Wefax_state_string, "wefax.state_string")                        \
-ELEM_(Wefax_skip_apt, "wefax.skip_apt")                                \
-ELEM_(Wefax_skip_phasing, "wefax.skip_phasing")                        \
+ELEM_(Wefax_state_string,      "wefax.state_string")                   \
+ELEM_(Wefax_skip_apt,          "wefax.skip_apt")                       \
+ELEM_(Wefax_skip_phasing,      "wefax.skip_phasing")                   \
 ELEM_(Wefax_set_tx_abort_flag, "wefax.set_tx_abort_flag")              \
-ELEM_(Wefax_end_reception, "wefax.end_reception")                      \
+ELEM_(Wefax_end_reception,     "wefax.end_reception")                  \
 ELEM_(Wefax_start_manual_reception, "wefax.start_manual_reception")    \
-ELEM_(Wefax_set_adif_log, "wefax.set_adif_log")                        \
-ELEM_(Wefax_set_max_lines, "wefax.set_max_lines")                      \
+ELEM_(Wefax_set_adif_log,      "wefax.set_adif_log")                   \
+ELEM_(Wefax_set_max_lines,     "wefax.set_max_lines")                  \
 ELEM_(Wefax_get_received_file, "wefax.get_received_file")              \
-ELEM_(Wefax_send_file, "wefax.send_file")                              \
+ELEM_(Wefax_send_file,         "wefax.send_file")                      \
 \
-ELEM_(Navtex_get_message, "navtex.get_message")                        \
+ELEM_(Navtex_get_message,  "navtex.get_message")                       \
 ELEM_(Navtex_send_message, "navtex.send_message")                      \
+\
+ELEM_(Audio_playback,     "audio.playback")                            \
+ELEM_(Audio_record,       "audio.record")                              \
+ELEM_(Audio_record_stop,  "audio.record_stop")                         \
+ELEM_(Audio_status,       "audio.status")                              \
+\
+ELEM_(Linsim_record_rx_data, "linsim.record_rx_data")                  \
+ELEM_(Linsim_get_rx_data,    "linsim.get_rx_data")                     \
+ELEM_(Linsim_set_read_count, "linsim.set_read_count")                  \
+ELEM_(Linsim_status,         "linsim.status")                          \
 
 struct rm_pred
 {

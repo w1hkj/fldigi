@@ -83,7 +83,9 @@
 //#define SNDFILE_CHANNELS 1
 #define SNDFILE_CHANNELS 2
 
-int sndfile_samplerate[7] = {8000, 11025, 16000, 22050, 24000, 44100, 48000};
+int sndfile_samplerate[8] = {0, 8000, 11025, 16000, 22050, 24000, 44100, 48000};
+
+static pthread_mutex_t xmlrpc_sndfile_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 using namespace std;
 
@@ -165,20 +167,40 @@ SoundBase::~SoundBase()
 }
 
 #if USE_SNDFILE
+
+inline int SoundBase::selected_sample_rate(void)
+{
+	int sr = sndfile_samplerate[progdefaults.wavSampleRate];
+	if(sr == 0) {
+		if(active_modem)
+	 		sr = (int) active_modem->get_samplerate();
+		if(sr < 8000) sr = 8000;
+	}
+	return sr;
+}
+
 void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
 {
 	std::string filters = _("Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n");
 	int nfilt = 2;
+
 	if (format_supported(SF_FORMAT_FLAC | SF_FORMAT_PCM_16)) {
 		filters += _("Free Lossless Audio Codec\t*.flac");
 		nfilt++;
 	}
 
 	int fsel;
-	if (strstr(def_fname, "playback"))
-		*fname = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
-	else
-		*fname = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
+
+	if(xmlrpc_sndfile_flag) {
+		fsel = 0;
+		*fname = xmlrpc_filename;
+	} else {
+		if (strstr(def_fname, "playback"))
+			*fname = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
+		else
+			*fname = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
+	}
+
 	if (!*fname) return;
 	if (!**fname) return;
 
@@ -216,9 +238,9 @@ int SoundBase::Capture(bool val)
 	if (!fname)
 		return 0;
 
+	int selected_sr = selected_sample_rate();
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
-	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
-		progdefaults.record_both_channels ? 2 : 1,
+	SF_INFO info = { 0, selected_sr, progdefaults.record_both_channels ? 2 : 1,
 //		SNDFILE_CHANNELS,
 		format, 0, 0 };
 	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
@@ -233,15 +255,50 @@ int SoundBase::Capture(bool val)
 	return 1;
 }
 
+int SoundBase::Generate_xmlrpc(std::string filename_path)
+{
+	int count = sizeof(xmlrpc_filename);
+	int flag = 0;
+
+	if(filename_path.empty())
+		return Generate(false);
+
+	memset(xmlrpc_filename, 0, count);
+	if(count > 0) count--;
+
+	if(filename_path.length() < count)
+
+	count = filename_path.length();
+	memcpy(xmlrpc_filename, filename_path.c_str(), count);
+
+	xmlrpc_sndfile_flag = true;
+
+	return Generate(true);
+}
+
+bool SoundBase::pad_minimum(SNDFILE * sf, float duration)
+{
+	size_t units = duration * selected_sample_rate();
+	Allocate<float> B;
+	float * data = B.allocate(units);
+	if (generate && data && units) {
+		write_file(sf, data, NULL, units);
+	}
+}
+
 int SoundBase::Generate(bool val)
 {
+	guard_lock glock (&xmlrpc_sndfile_mutex);
+
 	if (!val) {
 		if (ofGenerate) {
 			int err;
+			pad_minimum(ofGenerate, 0.5);
 			if ((err = sf_close(ofGenerate)) != 0)
 				LOG_ERROR("sf_close error: %s", sf_error_number(err));
 			ofGenerate = 0;
 		}
+		xmlrpc_sndfile_flag = false;
 		generate = false;
 		return 1;
 	}
@@ -252,7 +309,7 @@ int SoundBase::Generate(bool val)
 	if (!fname)
 		return 0;
 
-	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
+	SF_INFO info = { 0, selected_sample_rate(),
 		progdefaults.record_both_channels ? 2 : 1,
 //		SNDFILE_CHANNELS,
 		format, 0, 0 };
@@ -268,18 +325,48 @@ int SoundBase::Generate(bool val)
 
 	modem_wr_sr = sample_frequency;
 
-	writ_src_data_left->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+	writ_src_data_left->src_ratio = 1.0 * selected_sample_rate() / modem_wr_sr;
 	src_set_ratio(writ_src_state_left, writ_src_data_left->src_ratio);
 
-	writ_src_data_right->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+	writ_src_data_right->src_ratio = 1.0 * selected_sample_rate() / modem_wr_sr;
 	src_set_ratio(writ_src_state_right, writ_src_data_right->src_ratio);
 
 	return 1;
 }
 
+int SoundBase::Playback_xmlrpc(std::string filename_path)
+{
+	int count = sizeof(xmlrpc_filename);
+	int flag = 0;
+
+	if(filename_path.empty())
+		return flag;
+
+	memset(xmlrpc_filename, 0, count);
+	if(count > 0) count--;
+
+	if(filename_path.length() < count)
+		count = filename_path.length();
+
+	memcpy(xmlrpc_filename, filename_path.c_str(), count);
+
+	xmlrpc_sndfile_flag     = true;
+	xmlrpc_linsim_read_flag = false;
+
+	if(enable_xmlrpc_linsim_read_flag) {
+		clear_linsim_data();
+		linsim_read_count = linsim_read_count_expected;
+	} else {
+		linsim_read_count = 0;
+	}
+
+	return Playback(true);
+}
 
 int SoundBase::Playback(bool val)
 {
+	guard_lock glock (&xmlrpc_sndfile_mutex);
+
 	if (!val) {
 		if (ifPlayback) {
 			int err;
@@ -288,6 +375,7 @@ int SoundBase::Playback(bool val)
 			ifPlayback = 0;
 		}
 		playback = false;
+		xmlrpc_sndfile_flag = false;
 		return 1;
 	}
 	const char* fname;
@@ -330,9 +418,16 @@ play_info.seekable);
 	modem_play_sr = sample_frequency;
 	play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
 	src_set_ratio(play_src_state, play_src_data->src_ratio);
-LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
+	LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
 
-	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
+
+	if(xmlrpc_sndfile_flag) {
+		if(enable_xmlrpc_linsim_read_flag)
+			xmlrpc_linsim_read_flag = true;
+		progdefaults.loop_playback = 0;
+	} else {
+	    progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
+	}
 
 	playback = true;
 	new_playback = true;
@@ -402,9 +497,10 @@ sf_count_t SoundBase::read_file(SNDFILE* file, float* buf, size_t count)
 		src_reset (play_src_state);
 		out_pointer = src_rd_out_buffer;
 		if (!progdefaults.loop_playback) {
+			if(!xmlrpc_sndfile_flag)
+				REQ(reset_mnuPlayback);
 			Playback(0);
 			bHighSpeed = false;
-			REQ(reset_mnuPlayback);
 		} else {
 			memset(buf, count, sizeof(*buf));
 			sf_seek(file, 0, SEEK_SET);
@@ -433,12 +529,12 @@ void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_
 
 	if (modem_wr_sr != sample_frequency) {
 		modem_wr_sr = sample_frequency;
-		writ_src_data_left->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
-		writ_src_data_left->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		writ_src_data_left->src_ratio = 1.0 * selected_sample_rate() / modem_wr_sr;
+		writ_src_data_left->src_ratio = 1.0 * selected_sample_rate() / modem_wr_sr;
 		src_set_ratio(writ_src_state_left, writ_src_data_left->src_ratio);
 
-		writ_src_data_right->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
-		writ_src_data_right->src_ratio = 1.0 * sndfile_samplerate[progdefaults.wavSampleRate] / modem_wr_sr;
+		writ_src_data_right->src_ratio = 1.0 * selected_sample_rate() / modem_wr_sr;
+		writ_src_data_right->src_ratio = 1.0 * selected_sample_rate() / modem_wr_sr;
 		src_set_ratio(writ_src_state_right, writ_src_data_right->src_ratio);
 	}
 	writ_src_data_left->data_in = bufleft;
@@ -466,12 +562,12 @@ void SoundBase::write_file(SNDFILE* file, float* bufleft, float* bufright, size_
 
 	if (output_size) {
 		if (progdefaults.record_both_channels) {
-			float buffer[2*output_size];
-			for (size_t i = 0; i < output_size; i++) {
-				buffer[2*i] = 0.9 * bufl[i];
-				buffer[2*i + 1] = 0.9 * bufr[i];
-			}
-			sf_write_float(file, buffer, 2 * output_size);
+		float buffer[2*output_size];
+		for (size_t i = 0; i < output_size; i++) {
+			buffer[2*i] = 0.9 * bufl[i];
+			buffer[2*i + 1] = 0.9 * bufr[i];
+		}
+		sf_write_float(file, buffer, 2 * output_size);
 		} else {
 			sf_write_float(file, bufl, output_size);
 		}
@@ -499,7 +595,7 @@ bool SoundBase::format_supported(int format)
 {
 	SF_INFO info = {
 		0,
-		sndfile_samplerate[progdefaults.wavSampleRate],
+		selected_sample_rate(),
 		progdefaults.record_both_channels ? 2 : 1,
 //		SNDFILE_CHANNELS,
 		format, 0, 0 };
@@ -765,7 +861,7 @@ size_t SoundOSS::Read(float *buffer, size_t buffersize)
 		src_buffer[i] = ibuff[i] / MAXSC;
 
 	for (size_t i = 0; i < buffersize; i++)
-		buffer[i] = src_buffer[2*i + 
+		buffer[i] = src_buffer[2*i +
 							   progdefaults.ReverseRxAudio ? 1 : 0];
 
 #if USE_SNDFILE
@@ -1189,8 +1285,8 @@ device type = %s\n\
 device name = %s\n\
 # input channels %d\n\
 # output channels %d",
-		mode == O_WRONLY ? "Write" : 
-		mode == O_RDONLY ? "Read" : 
+		mode == O_WRONLY ? "Write" :
+		mode == O_RDONLY ? "Read" :
 		mode == O_RDWR ? "Read/Write" : "unknown",
 		device_type == 0 ? "paInDevelopment" :
 		device_type == 1 ? "paDirectSound" :
@@ -1953,7 +2049,7 @@ SoundPulse::SoundPulse(const char *dev)
 {
 	sd[0].stream = 0;
 	sd[0].stream_params.channels = 2;
-	sd[0].dir = PA_STREAM_RECORD; 
+	sd[0].dir = PA_STREAM_RECORD;
 	sd[0].stream_params.format = PA_SAMPLE_FLOAT32LE;
 	sd[0].buffer_attrs.maxlength = (uint32_t)-1;
 	sd[0].buffer_attrs.minreq = (uint32_t)-1;
@@ -2179,7 +2275,7 @@ long SoundPulse::src_read_cb(void* arg, float** data)
 
 	int err;
 	int nread = 0;
-	if ((nread = pa_simple_read(p->sd[0].stream, p->snd_buffer, 
+	if ((nread = pa_simple_read(p->sd[0].stream, p->snd_buffer,
 			p->sd[0].stream_params.channels * sizeof(float) * p->sd[0].blocksize, &err)) == -1) {
 		LOG_ERROR("%s", pa_strerror(err));
 		*data = 0;
@@ -2222,7 +2318,7 @@ size_t SoundPulse::Read(float *buf, size_t count)
 	}
 	else {
 		int err;
-		if ((r = pa_simple_read(sd[0].stream, rbuf, 
+		if ((r = pa_simple_read(sd[0].stream, rbuf,
 				sd[0].stream_params.channels * sizeof(float) * count, &err)) == -1)
 			throw SndPulseException(err);
 	}
@@ -2304,13 +2400,13 @@ size_t SoundNull::Read(float *buf, size_t count)
 	if (playback) {
 		read_file(ifPlayback, buf, count);
 	}
-	else
-#endif
-		memset(buf, 0, count * sizeof(*buf));
-#if USE_SNDFILE
+	memset(buf, 0, count * sizeof(*buf));
 	if (capture)
 		write_file(ofCapture, buf, NULL, count);
+#else
+	memset(buf, 0, count * sizeof(*buf));
 #endif
+
 	if (!bHighSpeed)
 		MilliSleep((long)ceil((1e3 * count) / sample_frequency));
 

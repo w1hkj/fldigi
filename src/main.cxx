@@ -813,7 +813,8 @@ void exit_process() {
 		KmlServer::Exit();
 
 	stop_psm_thread();
-	arq_close();
+	if(arq_state())
+		arq_close();
 	FD_close();
 	DXcluster_close();
 

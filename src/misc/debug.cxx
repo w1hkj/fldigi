@@ -186,7 +186,7 @@ void debug::log(level_e level, const char* func, const char* srcf, int line, con
 
 	if (!inst)
 		return;
-	if (unlikely(debug::level == DEBUG_LEVEL) || 
+	if (unlikely(debug::level == DEBUG_LEVEL) ||
 		debug_pskmail || debug_audio) {
 		time_t t = time(NULL);
 		struct tm stm;

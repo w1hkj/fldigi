@@ -1,125 +1,125 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-i18n_type 1 
-i18n_include "gettext.h" 
-i18n_function _ 
-header_name {.h} 
+version 1.0303
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
+header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_Tooltip.H>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_Box.H>} {private local
-} 
+}
 
 decl {\#include <FL/filename.H>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_File_Chooser.H>} {private local
-} 
+}
 
 decl {\#include <FL/fl_show_colormap.H>} {private local
-} 
+}
 
 decl {\#include "main.h"} {private local
-} 
+}
 
 decl {\#include "fl_digi.h"} {private local
-} 
+}
 
 decl {\#include "data_io.h"} {private local
-} 
+}
 
 decl {\#include "Viewer.h"} {private global
-} 
+}
 
 decl {\#include "font_browser.h"} {public global
-} 
+}
 
 decl {\#include "soundconf.h"} {private local
-} 
+}
 
 decl {\#include "globals.h"} {public local
-} 
+}
 
 decl {\#include "modem.h"} {public local
-} 
+}
 
 decl {\#include "configuration.h"} {public local
-} 
+}
 
 decl {\#include "combo.h"} {public local
-} 
+}
 
 decl {\#include "waterfall.h"} {private local
-} 
+}
 
 decl {\#include "rigxml.h"} {private local
-} 
+}
 
 decl {\#include "lookupcall.h"} {private local
-} 
+}
 
 decl {\#include "icons.h"} {private local
-} 
+}
 
 decl {\#include "Viewer.h"} {private local
-} 
+}
 
 decl {\#include "pskrep.h"} {private global
-} 
+}
 
 decl {\#include "flinput2.h"} {public local
-} 
+}
 
 decl {\#include "flslider2.h"} {public local
-} 
+}
 
 decl {\#include "flmisc.h"} {public local
-} 
+}
 
 decl {\#include "logsupport.h"} {private local
-} 
+}
 
 decl {\#include "notify.h"} {private local
-} 
+}
 
 decl {\#include "debug.h"} {private local
-} 
+}
 
 decl {\#include "status.h"} {private local
-} 
+}
 
 decl {\#include "rx_extract.h"} {private local
-} 
+}
 
 decl {\#include "kmlserver.h"} {private local
-} 
+}
 
 decl {\#include "macroedit.h"} {private local
-} 
+}
 
 decl {\#include "fileselect.h"} {private local
-} 
+}
 
 decl {\#include "psm/psm.h"} {private local
-} 
+}
 
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
-} 
+}
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {private local
-} 
+}
 
 decl {Fl_Double_Window *dlgConfig;} {public local
-} 
+}
 
 decl {Mode_Browser* mode_browser;} {public local
-} 
+}
 
 Function {choose_color(Fl_Color & c)} {private return_type void
 } {
@@ -127,7 +127,7 @@ Function {choose_color(Fl_Color & c)} {private return_type void
 Fl::get_color(c, r, g, b);
 if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
-} 
+}
 
 Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -159,7 +159,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {open private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -191,7 +191,7 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {open private return_type void
      font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -213,7 +213,7 @@ Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -225,7 +225,7 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-} 
+}
 
 Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -252,7 +252,7 @@ Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 
     progdefaults.changed = true;
     colorize_macros();} {}
-} 
+}
 
 Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -262,7 +262,7 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-} 
+}
 
 Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -280,7 +280,7 @@ Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
     qsoFreqDisp3->redraw();
 
     font_browser->hide();} {}
-} 
+}
 
 Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -302,7 +302,7 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -324,7 +324,7 @@ Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {cbDXC_FontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -346,7 +346,7 @@ Function {cbDXC_FontBrowser(Fl_Widget*, void*)} {open private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-} 
+}
 
 Function {set_qrzxml_buttons(Fl_Button* b)} {open return_type void
 } {
@@ -356,7 +356,7 @@ Function {set_qrzxml_buttons(Fl_Button* b)} {open return_type void
 
 for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
 	qrzbxml[i]->value(b == qrzbxml[i]);} {}
-} 
+}
 
 Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 } {
@@ -366,7 +366,7 @@ Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 
 for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
-} 
+}
 
 Function {ConfigureDialog()} {open
 } {
@@ -6053,7 +6053,7 @@ progdefaults.changed = true;}
               callback {progdefaults.wavSampleRate = o->index();
 progdefaults.changed = true;} open
               tooltip {Pick baud rate from list} xywh {225 96 150 24} box DOWN_BOX color 7 align 5
-              code0 {o->add("8000|11025|16000|22050|24000|44100|48000");}
+              code0 {o->add("Native|8000|11025|16000|22050|24000|44100|48000");}
               code1 {o->index(progdefaults.wavSampleRate);}
               code2 {o->labelsize(FL_NORMAL_SIZE);}
               class Fl_ListBox
@@ -7953,18 +7953,18 @@ progdefaults.changed = true;}
       tooltip {WARNING - this will over write ALL settings} xywh {20 394 130 22}
     }
   }
-} 
+}
 
 Function {openConfig()} {return_type void
 } {
   code {if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();} {}
-} 
+}
 
 Function {closeDialog()} {return_type void
 } {
   code {if (dlgConfig) dlgConfig->hide();} {}
-} 
+}
 
 Function {createConfig()} {return_type void
 } {
@@ -7972,10 +7972,10 @@ Function {createConfig()} {return_type void
     dlgConfig = ConfigureDialog();
     dlgConfig->xclass(PACKAGE_NAME);
   }} {}
-} 
+}
 
 decl {class Fl_File_Chooser ;} {public global
-} 
+}
 
 Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
@@ -7985,7 +7985,7 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnWefaxSaveDir->redraw();
 	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
 }} {}
-} 
+}
 
 Function {KmlDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
 } {
@@ -7995,9 +7995,9 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnKmlSaveDir->redraw();
 	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
 }} {}
-} 
+}
 
-Function {make_window()} {} {} 
+Function {make_window()} {} {}
 
 Function {make_window()} {open
-} {} 
+} {}

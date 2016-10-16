@@ -555,7 +555,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	// On woe32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-#ifdef __WOE32__ 
+#ifdef __WOE32__
 			if (inst->server_socket->wait(0))
 				arq_run(inst->server_socket->accept());
 #else
@@ -815,9 +815,9 @@ static void *arq_loop(void *args)
 	for (;;) {
 		/* see if we are being canceled */
 		if (arq_exit) {
-printf("exiting arq_loop\n");
+			printf("exiting arq_loop\n");
 			break;
-}
+		}
 
 		test_arq_clients();
 
@@ -883,7 +883,7 @@ void arq_close(void)
 	arq_exit = true;
 
 	// and then wait for it to die
-printf("pthread_join arq_thread\n");
+	printf("pthread_join arq_thread\n");
 	pthread_join(arq_thread, NULL);
 	arq_enabled = false;
 	LOG_INFO("ARQ closed");

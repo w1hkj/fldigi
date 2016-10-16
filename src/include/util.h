@@ -28,6 +28,41 @@
 #include "config.h"
 
 #ifdef __cplusplus
+#include <cstring>
+// Allocate and clear memory class template. Intended use for temporary
+// memory allocation at the function level without having to keep track of
+// freeing memory at every return statement.
+
+template <typename DATA_TYPE>
+class Allocate {
+private:
+	DATA_TYPE * pointer;
+	size_t no_of_bytes;
+public:
+	Allocate(void) {
+		pointer = (DATA_TYPE *)0;
+		no_of_bytes = 0;
+	}
+
+	~Allocate(void) {
+		if(pointer) {
+			if(no_of_bytes)
+				memset(pointer, 0, no_of_bytes);
+			delete [] pointer;
+		}
+		pointer     = (DATA_TYPE *)0;
+		no_of_bytes = 0;
+	}
+
+	DATA_TYPE * allocate(size_t units) {
+		pointer = new DATA_TYPE[units];
+		no_of_bytes = sizeof(DATA_TYPE) * units;
+		if(pointer && no_of_bytes)
+			memset(pointer, 0, no_of_bytes);
+		return pointer;
+	}
+};
+
 extern "C" {
 #endif
 

@@ -3033,7 +3033,7 @@ if (bWF_only) return;
 	}
 
 	if (old_call == new_call) {
-		if (n3fjp_calltab && n3fjp_connected) 
+		if (n3fjp_calltab && n3fjp_connected)
 			SearchLastQSO(inpCall->value());
 		return;
 	}
@@ -4228,27 +4228,27 @@ void UI_select()
 	}
 	else {
 		if (progdefaults.logging == 0) { // generic QSO
-			TopFrame2->resize( x, y1, w, Hentry + 2 * pad);
-			y1 += TopFrame2->h();
-			HTh -= TopFrame2->h();
-			UI_position_macros(x, y1, w, HTh);
-			TopFrame1->hide();
-			TopFrame3->hide();
-			TopFrame2->show();
-			inpCall = inpCall2;
-			inpTimeOn = inpTimeOn2;
-			inpTimeOff = inpTimeOff2;
-			inpName = inpName2;
-			inpSerNo = inpSerNo1;
-			outSerNo = outSerNo1;
-			inpRstIn = inpRstIn2;
-			inpRstOut = inpRstOut2;
-			inpState = inpState1;
-			qsoFreqDisp = qsoFreqDisp2;
-			inpCall4->hide();
-			Status2->show();
-			goto UI_return;
-		}
+		TopFrame2->resize( x, y1, w, Hentry + 2 * pad);
+		y1 += TopFrame2->h();
+		HTh -= TopFrame2->h();
+		UI_position_macros(x, y1, w, HTh);
+		TopFrame1->hide();
+		TopFrame3->hide();
+		TopFrame2->show();
+		inpCall = inpCall2;
+		inpTimeOn = inpTimeOn2;
+		inpTimeOff = inpTimeOff2;
+		inpName = inpName2;
+		inpSerNo = inpSerNo1;
+		outSerNo = outSerNo1;
+		inpRstIn = inpRstIn2;
+		inpRstOut = inpRstOut2;
+		inpState = inpState1;
+		qsoFreqDisp = qsoFreqDisp2;
+		inpCall4->hide();
+		Status2->show();
+		goto UI_return;
+	}
 
 		TopFrame3->resize( x, y1, w, Hentry + 2 * pad);
 		y1 += TopFrame3->h();
@@ -4267,8 +4267,8 @@ void UI_select()
 
 		switch (progdefaults.logging) {
 			case LOG_FD:
-				inp_FD_class = inp_FD_class2;
-				inp_FD_section = inp_FD_section2;
+		inp_FD_class = inp_FD_class2;
+		inp_FD_section = inp_FD_section2;
 				inpSerNo2->hide();
 				outSerNo2->hide();
 				inpXchgIn2->hide();
@@ -5660,7 +5660,7 @@ void LOGBOOK_colors_font()
 	Tabs->position(2, ypos);
 
 	inp_font_pos(inpSearchString,
-		dlg_width - 2 - width_freq, ypos, 
+		dlg_width - 2 - width_freq, ypos,
 		width_freq, wh);
 
 	int tab_h = wh * 14 / progdefaults.LOGBOOKtextsize;
@@ -5699,7 +5699,7 @@ void LOGBOOK_colors_font()
 		chc_font_pos(chc[i], chc[i]->x(), chc[i]->y(), chc[i]->w(), wh);
 
 	inpNotes_log->resize(
-		tab_log_notes->x() + 2, 
+		tab_log_notes->x() + 2,
 		tab_log_notes->y() + 4,
 		tab_log_notes->w() - 4,
 		tab_log_notes->h() - 6);
@@ -6865,7 +6865,7 @@ void create_fl_digi_main_primary() {
 
 			TopFrame3->end();
 		}
-		
+
 		TopFrame3->resizable(inpXchgIn2);
 		TopFrame3->hide();
 
@@ -8695,6 +8695,9 @@ void put_rx_char(unsigned int data, int style)
 			WriteKISS(data);
 			break;
 	}
+
+	if(xmlrpc_linsim_read_flag)
+		set_linsim_data((unsigned char) data);
 
 	if(progdefaults.ax25_decode_enabled && data_io_enabled == KISS_IO)
 		disp_rx_processed_char();

@@ -39,7 +39,6 @@
 
 #define SCBLOCKSIZE 512
 
-
 class SndException : public std::exception
 {
 public:
@@ -79,6 +78,8 @@ protected:
 	SNDFILE* ofCapture;
 	SNDFILE* ifPlayback;
 	SNDFILE* ofGenerate;
+
+	char xmlrpc_filename[2048];
 
 // 2 channel writes
 	SRC_STATE	*writ_src_state_left;
@@ -133,6 +134,12 @@ public:
 	int		Capture(bool val);
 	int		Playback(bool val);
 	int		Generate(bool val);
+	int		Playback_xmlrpc(std::string filename_path);
+	bool	Playback_state(void) { return playback; }
+	int		Generate_xmlrpc(std::string filename_path);
+	bool	Generate_state(void) { return generate; }
+	bool    pad_minimum(SNDFILE * sf, float duration);
+	inline int selected_sample_rate(void);
 #endif
 };
 

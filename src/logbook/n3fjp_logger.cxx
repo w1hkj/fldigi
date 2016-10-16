@@ -767,47 +767,47 @@ void n3fjp_add_record(cQsoRec &record)
 void n3fjp_parse_response(string tempbuff)
 {
 	if (tempbuff.empty()) return;
-	size_t p1 = string::npos, p2 = string::npos;
+		size_t p1 = string::npos, p2 = string::npos;
 
-	if (tempbuff.find("RIGRESPONSE") != string::npos) {
-		size_t p0 = tempbuff.find("<RIG>");
-		if (p0 != string::npos) {
-			p0 += strlen("<RIG>");
-			string rigname = tempbuff.substr(p0);
-			p0 = rigname.find("</RIG>");
-			if (p0 != string::npos) {
-				rigname.erase(p0);
-				if (rigname != "None" && rigname != "Client API") {
-					n3fjp_has_xcvr_control = N3FJP;
-					send_command("READBMF");
-				} else
-				n3fjp_has_xcvr_control = FLDIGI;
+			if (tempbuff.find("RIGRESPONSE") != string::npos) {
+				size_t p0 = tempbuff.find("<RIG>");
+				if (p0 != string::npos) {
+					p0 += strlen("<RIG>");
+					string rigname = tempbuff.substr(p0);
+					p0 = rigname.find("</RIG>");
+					if (p0 != string::npos) {
+						rigname.erase(p0);
+						if (rigname != "None" && rigname != "Client API") {
+							n3fjp_has_xcvr_control = N3FJP;
+							send_command("READBMF");
+						} else
+						n3fjp_has_xcvr_control = FLDIGI;
+					}
+				}
+			}
+
+			if (n3fjp_has_xcvr_control == N3FJP) {
+				if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != string::npos) {
+					p1 += strlen("<CHANGEFREQ><VALUE>");
+					p2 = tempbuff.find("</VALUE>", p1);
+					if (p2 == string::npos) return;
+					string sfreq = tempbuff.substr(p1, p2 - p1);
+					REQ(adjust_freq, sfreq);
+				} else if (tempbuff.find("<READBMFRESPONSE>") != string::npos) {
+					string sfreq = ParseField(tempbuff, "FREQ");
+					REQ(adjust_freq, sfreq);
+				}
+			}
+
+			if (tempbuff.find("<CALLTABEVENT>") != string::npos) {
+				n3fjp_rxbuffer = tempbuff;
+				REQ(n3fjp_parse_calltab_event, tempbuff);
+			}
+
+			if (tempbuff.find("ALLFIELDSWVRESPONSE") != string::npos) {
+				REQ(n3fjp_parse_data_stream, tempbuff);
 			}
 		}
-	}
-
-	if (n3fjp_has_xcvr_control == N3FJP) {
-		if ((p1 = tempbuff.find("<CHANGEFREQ><VALUE>")) != string::npos) {
-			p1 += strlen("<CHANGEFREQ><VALUE>");
-			p2 = tempbuff.find("</VALUE>", p1);
-			if (p2 == string::npos) return;
-			string sfreq = tempbuff.substr(p1, p2 - p1);
-			REQ(adjust_freq, sfreq);
-		} else if (tempbuff.find("<READBMFRESPONSE>") != string::npos) {
-			string sfreq = ParseField(tempbuff, "FREQ");
-			REQ(adjust_freq, sfreq);
-		}
-	}
-
-	if (tempbuff.find("<CALLTABEVENT>") != string::npos) {
-		n3fjp_rxbuffer = tempbuff;
-		REQ(n3fjp_parse_calltab_event, tempbuff);
-	}
-
-	if (tempbuff.find("ALLFIELDSWVRESPONSE") != string::npos) {
-		REQ(n3fjp_parse_data_stream, tempbuff);
-	}
-}
 
 //======================================================================
 //
@@ -984,7 +984,7 @@ void *n3fjp_loop(void *args)
 			else if (!n3fjp_connected && progdefaults.connect_to_n3fjp && (--loopcount == 0)) {
 				connect_to_n3fjp_server();
 				loopcount = 1;
-			} 
+			}
 
 			else if (n3fjp_connected && !progdefaults.connect_to_n3fjp)
 				n3fjp_disconnect();

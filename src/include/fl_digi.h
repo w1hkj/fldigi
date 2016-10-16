@@ -545,6 +545,15 @@ extern void EQSL_close(void);
 extern Fl_Double_Window *notify_window;
 extern Fl_Double_Window *dxcc_window;
 
+// LinSim
+extern bool xmlrpc_sndfile_flag;
+extern bool xmlrpc_linsim_read_flag;
+extern bool enable_xmlrpc_linsim_read_flag;
+extern int linsim_read_count;
+extern int linsim_read_count_expected;
+extern int set_linsim_data(unsigned char character);
+extern int clear_linsim_data(void);
+
 extern void cb_mnuCheckUpdate(Fl_Widget *, void *);
 
 bool ask_dir_creation( const std::string & dir );
