@@ -80,9 +80,17 @@ fldigi.name_version        | s:n | Returns the program name and version
 fldigi.terminate           | n:i | Terminates fldigi. ``i'' is bitmask specifying data to save: 0=options; 1=log; 2=macros
 fldigi.version             | s:n | Returns the program version as a string
 fldigi.version_struct      | S:n | Returns the program version as a struct
+audio.playback             | n:s | Playback audio from the given path/filename
+audio.record               | n:s | Record audio to the given path/filename
+audio.record_stop          | n:n | Stop Recording of Audio
+audio.status               | s:n | Return the status of xmlrpc sndcard generate/playback
 io.enable_arq              | n:n | Switch to ARQ I/O
 io.enable_kiss             | n:n | Switch to KISS I/O
 io.in_use                  | s:n | Returns the IO port in use (ARQ/KISS).
+linsim.get_rx_data         | 6:n | Returns formated string of data recorded during linsim processing.
+linsim.record_rx_data      | n:b | Flags FLDIGI to record rx text for linsim.
+linsim.set_read_count      | i:i | Sets the amount of data to record during linsim opertions.
+linsim.status              | s:n | Return the status of xmlrpc linsim processing state
 log.clear                  | n:n | Clears the contents of the log fields
 log.get_az                 | s:n | Returns the AZ field contents
 log.get_band               | s:n | Returns the current band name
@@ -119,7 +127,6 @@ main.get_lock              | b:n | Returns the Transmit Lock state
 main.get_max_macro_id      | i:n | Returns the maximum macro ID number
 main.get_reverse           | b:n | Returns the Reverse Sideband state
 main.get_rsid              | b:n | Returns the RSID state
-main.get_txid              | b:n | Returns the TxRSID state
 main.get_squelch           | b:n | Returns the squelch state
 main.get_squelch_level     | d:n | Returns the squelch level
 main.get_status1           | s:n | Returns the contents of the first status field (typically s/n)
@@ -127,6 +134,7 @@ main.get_status2           | s:n | Returns the contents of the second status fie
 main.get_trx_state         | s:n | Returns T/R state
 main.get_trx_status        | s:n | Returns transmit/tune/receive status
 main.get_tx_timing         | n:6 | Returns transmit duration for test string (samples:sample rate:secs).
+main.get_txid              | b:n | Returns the TxRSID state
 main.get_wf_sideband       | s:n | Returns the current waterfall sideband
 main.inc_frequency         | d:d | Increments the RF carrier frequency. Returns the new value
 main.inc_squelch_level     | d:d | Increments the squelch level. Returns the new level
@@ -139,7 +147,6 @@ main.set_frequency         | d:d | Sets the RF carrier frequency. Returns the ol
 main.set_lock              | b:b | Sets the Transmit Lock state. Returns the old state
 main.set_reverse           | b:b | Sets the Reverse Sideband state. Returns the old state
 main.set_rsid              | b:b | Sets the RSID state. Returns the old state
-mmain.set_txid             | b:b | Sets the TxRSID state. Returns the old state
 main.set_squelch           | b:b | Sets the squelch state. Returns the old state
 main.set_squelch_level     | d:d | Sets the squelch level. Returns the old level
 main.set_wf_sideband       | n:s | Sets the waterfall sideband to USB or LSB
@@ -147,10 +154,11 @@ main.toggle_afc            | b:n | Toggles the AFC state. Returns the new state
 main.toggle_lock           | b:n | Toggles the Transmit Lock state. Returns the new state
 main.toggle_reverse        | b:n | Toggles the Reverse Sideband state. Returns the new state
 main.toggle_rsid           | b:n | Toggles the RSID state. Returns the new state
-main.toggle_txid           | b:n | Toggles the TxRSID state. Returns the new state
 main.toggle_squelch        | b:n | Toggles the squelch state. Returns the new state
+main.toggle_txid           | b:n | Toggles the TxRSID state. Returns the new state
 main.tune                  | n:n | Tunes
 main.tx                    | n:n | Transmits
+mmain.set_txid             | b:b | Sets the TxRSID state. Returns the old state
 modem.get_afc_search_range | i:n | Returns the modem AFC search range
 modem.get_bandwidth        | i:n | Returns the modem bandwidth
 modem.get_carrier          | i:n | Returns the modem carrier frequency
@@ -159,6 +167,7 @@ modem.get_max_id           | i:n | Returns the maximum modem ID number
 modem.get_name             | s:n | Returns the name of the current modem
 modem.get_names            | A:n | Returns all modem names
 modem.get_quality          | d:n | Returns the modem signal quality in the range [0:100]
+modem.highspeed            | n:b | Remove modem time constraint from receive processing.
 modem.inc_afc_search_range | n:i | Increments the modem AFC search range. Returns the new value
 modem.inc_bandwidth        | n:i | Increments the modem bandwidth. Returns the new value
 modem.inc_carrier          | i:i | Increments the modem carrier frequency. Returns the new carrier
