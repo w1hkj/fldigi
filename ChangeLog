@@ -1,8 +1,33 @@
 
 
-=Version 3.23.14=
+=Version 3.23.15=
 
-2016-09-17  David Freese  <iam_w1hkj@w1hkj.com>
+2016-10-16  David Freese  <iam_w1hkj@w1hkj.com>
+
+	7732982: Translation file
+	153ae9a: N3FJP command sequencing
+	300624a: BARTG vice BART
+	0ac4bb3: speed test
+	0476267: XP fault on failure
+	c426649: Default Logbook widget sizing
+	e58b039: Mono / Stereo wav file
+	7cacca6: ARQ thread
+
+2016-10-05  w1hkj  <w1hkj@bellsouth.net>
+
+	2937696: N3FJP logged frequency
+
+2016-10-04  David Freese  <iam_w1hkj@w1hkj.com>
+
+	bdb408d: update check
+	005f10a: DX cluster
+	72d0f38: CQWW zone/state
+	914b60c: Contest fields
+	79fa4c8: OSX Clang build
+	9db7e7b: flrig default
+
+
+=Version 3.23.14=
 
 	9e6e34a: Documentation update
 	6c5ad4b: PSK IMD Emulator
