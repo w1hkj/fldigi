@@ -64,7 +64,7 @@ Save tags and all enclosed text to date-time stamped file, ie:\n\
 #endif
 
 #define   bufsize  64
-char  rx_extract_buff[bufsize + 1];
+string rx_extract_buff;
 string rx_buff;
 string rx_extract_msg;
 
@@ -79,8 +79,7 @@ char dttm[64];
 void rx_extract_reset()
 {
 	rx_buff.clear();
-	memset(rx_extract_buff, ' ', bufsize);
-	rx_extract_buff[bufsize] = 0;
+	rx_extract_buff.assign(' ', bufsize);
 	extract_wrap = false;
 	extract_flamp = false;
 	extract_arq = false;
@@ -322,49 +321,56 @@ void rx_extract_add(int c)
 	}
 	char ch = (char)c;
 
-	memmove(rx_extract_buff, &rx_extract_buff[1], bufsize - 1);
-	rx_extract_buff[bufsize - 1] = ch;
+	rx_extract_buff = rx_extract_buff.substr(1);
+	rx_extract_buff += ch;
 
 // rx_extract_buff must contain in order:
 // ~1c - arq_soh + connect request
 // ; - arq_dle character
 // ~4 - arq_eoh
 // before auto starting flmsg
-	char *p1 = strstr(rx_extract_buff, "~1c"),
-		 *p2 = strstr(rx_extract_buff, ";"),
-		 *p3 = strstr(rx_extract_buff, "~4");
-	if ( (p1 && p2 && p3) && (p1 < p2) && (p2 < p3)) {
+
+	size_t p1 = rx_extract_buff.find("~1c");
+	size_t p2 = rx_extract_buff.find(";");
+	size_t p3 = rx_extract_buff.find("~4");
+
+	if ( (p1 != string::npos) && (p2 != string::npos) && (p3 != string::npos) &&
+		 (p1 < p2) && (p2 < p3)) {
 		if (!flmsg_online) start_flmsg();
-		memset(rx_extract_buff, ' ', bufsize);
+		rx_extract_buff.assign(' ', bufsize);
 		return;
 	}
-	if (!extract_arq && strstr(rx_extract_buff, "ARQ:FILE::FLMSG_XFR")) {
+
+	if (!extract_arq &&
+		(rx_extract_buff.find("ARQ:FILE::FLMSG_XFR") != string::npos) ) {
 		extract_arq = true;
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
-		memset(rx_extract_buff, ' ', bufsize);
+		rx_extract_buff.assign(' ', bufsize);
 		rx_extract_msg = "Extracting ARQ msg";
 		put_status(rx_extract_msg.c_str());
 		return;
 	} else if (extract_arq) {
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
-		if (strstr(rx_extract_buff, "ARQ::ETX"))
+		if (rx_extract_buff.find("ARQ::ETX"))
 			rx_extract_reset();
 		return;
-	} else if (!extract_flamp && strstr(rx_extract_buff, flamp_beg)) {
+	} else if (!extract_flamp &&
+			   (rx_extract_buff.find(flamp_beg) != string::npos) ) {
 		extract_flamp = true;
-		memset(rx_extract_buff, ' ', bufsize);
+		rx_extract_buff.assign(' ', bufsize);
 		rx_extract_msg = "Extracting FLAMP";
 		put_status(rx_extract_msg.c_str());
 		return;
 	} else if (extract_flamp) {
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
-		if (strstr(rx_extract_buff, flamp_end) != NULL)
+		if (rx_extract_buff.find(flamp_end) != string::npos)
 			rx_extract_reset();
 		return;
-	} else if (!extract_wrap && strstr(rx_extract_buff, wrap_beg)) {
+	} else if (!extract_wrap &&
+			   (rx_extract_buff.find(wrap_beg) != string::npos) ) {
 		rx_buff.assign(wrap_beg);
 		rx_extract_msg = "Extracting WRAP/FLMSG";
 		put_status(rx_extract_msg.c_str());
@@ -376,7 +382,7 @@ void rx_extract_add(int c)
 		rx_buff += ch;
 		REQ(rx_remove_timer);
 		REQ(rx_add_timer);
-		if (strstr(rx_extract_buff, wrap_end) != NULL) {
+		if (rx_extract_buff.find(wrap_end) != string::npos) {
 			invoke_flmsg();
 			rx_extract_reset();
 		}
