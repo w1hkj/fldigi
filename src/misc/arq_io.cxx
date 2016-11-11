@@ -472,7 +472,7 @@ static string errstring;
 
 static pthread_t* arq_socket_thread = 0;
 ARQ_SOCKET_Server* ARQ_SOCKET_Server::inst = 0;
-static std::vector<ARQCLIENT> arqclient; // Protected by arq_mutex
+static std::vector<ARQCLIENT *> arqclient; // Protected by arq_mutex
 
 void arq_run(Socket);
 
@@ -580,14 +580,11 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 		guard_lock arq_lock(&arq_mutex);
 
 		if (!arqclient.empty()) {
-			vector<ARQCLIENT>::iterator p = arqclient.begin();
-			while (p != arqclient.end()) {
-				try {
-					(*p).sock.close();
-					arqclient.erase(p);
-				}
-				catch (...) {;}
-				p++;
+			for (vector<ARQCLIENT *>::iterator p = arqclient.begin();
+					p < arqclient.end();
+					p++) {
+				(*p)->sock.close();
+				arqclient.erase(p);
 			}
 		}
 	}
@@ -614,16 +611,16 @@ void arq_run(Socket s)
 	struct timeval t = { 0, 20000 };
 	s.set_timeout(t);
 	s.set_nonblocking();
-	ARQCLIENT client;
-	client.sock = s;
-	client.keep_alive = time(0);
+	ARQCLIENT *client = new ARQCLIENT;
+	client->sock = s;
+	client->keep_alive = time(0);
 	arqclient.push_back(client);
 	arqmode = true;
-	vector<ARQCLIENT>::iterator p = arqclient.begin();
+	vector<ARQCLIENT *>::iterator p = arqclient.begin();
 	ostringstream outs;
 	outs << "Clients: ";
 	while (p != arqclient.end()) {
-		outs << (*p).sock.fd() << " ";
+		outs << (*p)->sock.fd() << " ";
 		p++;
 	}
 	LOG_INFO("%s", outs.str().c_str());
@@ -642,20 +639,20 @@ void WriteARQsocket(unsigned char* data, size_t len)
 		outs += asc[data[i] & 0x7F];
 	LOG_INFO("%s", outs.c_str());
 
-	vector<ARQCLIENT>::iterator p;
+	vector<ARQCLIENT *>::iterator p;
 	for (p = arqclient.begin(); p < arqclient.end(); p++) {
 		try {
-			(*p).sock.wait(1);
-			(*p).sock.send(data, len);
-			(*p).keep_alive = time(0);
+			(*p)->sock.wait(1);
+			(*p)->sock.send(data, len);
+			(*p)->keep_alive = time(0);
 			p++;
 		}
 		catch (const SocketException& e) {
-			LOG_INFO("closing socket fd %d %s", (*p).sock.fd(), e.what());
+			LOG_INFO("closing socket fd %d %s", (*p)->sock.fd(), e.what());
 			try {
-				(*p).sock.close();
+				(*p)->sock.close();
 			} catch (const SocketException& e) {
-				LOG_ERROR("Socket error on # %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+				LOG_ERROR("Socket error on # %d, %d: %s", (*p)->sock.fd(), e.error(), e.what());
 			}
 			arqclient.erase(p);
 		}
@@ -671,23 +668,23 @@ void test_arq_clients()
 	if (arqclient.empty()) return;
 	static string instr;
 	instr.clear();
-	vector<ARQCLIENT>::iterator p;
+	vector<ARQCLIENT *>::iterator p;
 	p = arqclient.begin();
 	time_t now;
 	while (p != arqclient.end()) {
-		if (difftime(now = time(0), (*p).keep_alive) > CLIENT_TIMEOUT) {
+		if (difftime(now = time(0), (*p)->keep_alive) > CLIENT_TIMEOUT) {
 			try {
-				(*p).sock.wait(1);
-				(*p).sock.send("\0", 1);
-				(*p).keep_alive = now;
+				(*p)->sock.wait(1);
+				(*p)->sock.send("\0", 1);
+				(*p)->keep_alive = now;
 				p++;
 			}
 			catch (const SocketException& e) {
-				LOG_INFO("socket %d timed out, error %d, %s", (*p).sock.fd(), e.error(), e.what());
+				LOG_INFO("socket %d timed out, error %d, %s", (*p)->sock.fd(), e.error(), e.what());
 				try {
-					(*p).sock.close();
+					(*p)->sock.close();
 				} catch (const SocketException& e) {
-					LOG_ERROR("Socket error on # %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+					LOG_ERROR("Socket error on # %d, %d: %s", (*p)->sock.fd(), e.error(), e.what());
 				}
 				arqclient.erase(p);
 			}
@@ -706,27 +703,27 @@ bool Socket_arqRx()
 		if (arqclient.empty()) return false;
 
 		static string instr;
-		vector<ARQCLIENT>::iterator p = arqclient.begin();
+		vector<ARQCLIENT *>::iterator p = arqclient.begin();
 		size_t n = 0;
 		instr.clear();
 
 		while (p != arqclient.end()) {
 			try {
-				(*p).sock.wait(0);
-				n = (*p).sock.recv(instr);
+				(*p)->sock.wait(0);
+				n = (*p)->sock.recv(instr);
 				if ( n > 0) {
 					txstring.append(instr);
-					(*p).keep_alive = time(0);
+					(*p)->keep_alive = time(0);
 				}
 				p++;
 			}
 			catch (const SocketException& e) {
 				txstring.clear();
-				LOG_INFO("closing socket fd %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+				LOG_INFO("closing socket fd %d, %d: %s", (*p)->sock.fd(), e.error(), e.what());
 				try {
-					(*p).sock.close();
+					(*p)->sock.close();
 				} catch (const SocketException& e) {
-					LOG_ERROR("socket error on # %d, %d: %s", (*p).sock.fd(), e.error(), e.what());
+					LOG_ERROR("socket error on # %d, %d: %s", (*p)->sock.fd(), e.error(), e.what());
 				}
 				arqclient.erase(p);
 			}
