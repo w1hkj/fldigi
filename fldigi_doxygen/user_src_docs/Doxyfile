@@ -48,7 +48,7 @@ INPUT                = index.txt \
 	configFSQ.txt configIFKP.txt \
 	ConfigID.txt configIO.txt configPSM.txt ConfigMisc.txt \
 	configModemScan.txt configMT63.txt configOlivia.txt ConfigOperator.txt \
-	configPSK.txt configRig.txt \
+	configPSK.txt configRIG.txt \
 	configRTTY.txt configThor.txt ConfigUI-browser.txt \
 	ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logging.txt \
 	ConfigUI-macros.txt configUITouch.txt ConfigUI-WF-controls.txt \

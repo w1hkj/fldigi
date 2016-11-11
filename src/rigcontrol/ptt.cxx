@@ -63,6 +63,7 @@
 #include "debug.h"
 
 #include "fl_digi.h"
+#include "confdialog.h"
 
 #include "n3fjp_logger.h"
 
@@ -110,12 +111,10 @@ void PTT::reset(ptt_t dev)
 	case PTT_TTY:
 		open_tty();
 		break;
-	case PTT_GPIO:
-		open_gpio();
-		break;
 	default:
 		break; // nothing to open
 	}
+	open_gpio();
 	set(false);
 }
 
@@ -128,7 +127,17 @@ void PTT::set(bool ptt)
 	if (active_modem == cw_modem &&
 	    ((progdefaults.useCWkeylineRTS) || progdefaults.useCWkeylineDTR == true))
 		return;
-
+//{ // uncomment block for debugging
+//	string sport =
+//		pttdev == PTT_NONE ? "NONE" :
+//		pttdev == PTT_HAMLIB ? "HAMLIB" :
+//		pttdev == PTT_RIGCAT ? "RIGCAT" :
+//		pttdev == PTT_TTY ? "TTY" :
+//		pttdev == PTT_GPIO ? "GPIO" :
+//		pttdev == PTT_PARPORT ? "PARPORT" :
+//		pttdev == PTT_UHROUTER ? "UHROUTER" : "UNKNOWN";
+//	LOG_INFO("PTT via %s : %s", sport.c_str(), ptt ? "ON" : "OFF");
+//}
 	switch (pttdev) {
 	case PTT_NONE: default:
 		noCAT_setPTT(ptt);
@@ -144,13 +153,12 @@ void PTT::set(bool ptt)
 	case PTT_TTY:
 		set_tty(ptt);
 		break;
-	case PTT_GPIO:
-		set_gpio(ptt);
-		break;
 #if HAVE_PARPORT
 	case PTT_PARPORT:
 		set_parport(ptt);
 		break;
+#else
+	btnUsePPortPTT->hide();
 #endif
 #if HAVE_UHROUTER
 	case PTT_UHROUTER:
@@ -158,6 +166,8 @@ void PTT::set(bool ptt)
 		break;
 #endif
 	}
+	set_gpio(ptt);
+
 	if (n3fjp_connected)
 		n3fjp_set_ptt(ptt);
 
@@ -176,9 +186,6 @@ void PTT::close_all(void)
 	case PTT_TTY:
 		close_tty();
 		break;
-	case PTT_GPIO:
-		close_gpio();
-		break;
 #if HAVE_PARPORT
 	case PTT_PARPORT:
 		close_parport();
@@ -192,16 +199,101 @@ void PTT::close_all(void)
 	default:
 		break;
 	}
+	close_gpio();
 	pttfd = -1;
 }
 
 //-------------------- gpio port PTT --------------------//
+#ifndef __MINGW32__
+static void gpioEXEC(std::string execstr)
+{
+	int pfd[2];
+	if (pipe(pfd) == -1) {
+		LOG_PERROR("pipe");
+		return;
+	}
+	pid_t pid;
+	switch (pid = fork()) {
+		case -1:
+			LOG_PERROR("fork");
+			return;
+		case 0: // child
+			close(pfd[0]);
+			if (dup2(pfd[1], STDOUT_FILENO) != STDOUT_FILENO) {
+				LOG_PERROR("dup2");
+				exit(EXIT_FAILURE);
+			}
+			close(pfd[1]);
+			execl("/bin/sh", "sh", "-c", execstr.c_str(), (char *)NULL);
+			perror("execl");
+			exit(EXIT_FAILURE);
+	}
+
+	// parent
+	close(pfd[1]);
+
+}
+#else // !__MINGW32__
+
+static void gpioEXEC(std::string execstr)
+{
+	char* cmd = strdup(execstr.c_str());
+
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	memset(&si, 0, sizeof(si));
+	si.cb = sizeof(si);
+	memset(&pi, 0, sizeof(pi));
+	if (!CreateProcess(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+		LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+	free(cmd);
+
+}
+#endif // !__MINGW32__
+
+
+static const char *gpio_name[] = {
+		"17", "18", "27", "22", "23",
+		"24", "25", "4",  "5",  "6",
+		"13", "19", "26", "12", "16",
+		"20", "21"};
+
+void export_gpio(int bcm)
+{
+	if (bcm < 0 || bcm > 16) return;
+	string exec_str = "gpio export ";
+	exec_str.append(gpio_name[bcm]).append(" out");
+	gpioEXEC(exec_str);
+	LOG_INFO("%s", exec_str.c_str());
+}
+
+void unexport_gpio(int bcm)
+{
+	if (bcm < 0 || bcm > 16) return;
+	string exec_str = "gpio unexport ";
+	exec_str.append(gpio_name[bcm]);
+	gpioEXEC(exec_str);
+	LOG_INFO("%s", exec_str.c_str());
+}
+
 void PTT::open_gpio(void)
 {
+	bool enabled = false;
+	for (int i = 0; i < 17; i++) {
+		enabled = (progdefaults.enable_gpio >> i) & 0x01;
+		if (enabled) export_gpio(i);
+	}
 }
 
 void PTT::close_gpio(void)
 {
+	bool enabled = false;
+	for (int i = 0; i < 17; i++) {
+		enabled = (progdefaults.enable_gpio >> i) & 0x01;
+		if (enabled) unexport_gpio(i);
+	}
 }
 
 void PTT::set_gpio(bool ptt)
@@ -209,22 +301,35 @@ void PTT::set_gpio(bool ptt)
 #define VALUE_MAX 30 
 	static const char s_values_str[] = "01";
 
-	char path[VALUE_MAX];
+	string portname = "/sys/class/gpio/gpio";
+	string ctrlport;
+	bool enabled = false;
+	int val = 0;
+	int fd;
 
-	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", progdefaults.GPIOPort);
-	int fd = fl_open(path, O_WRONLY);
-	if (-1 == fd) {
-		LOG_ERROR("Failed to open gpio (%s) value for writing!\n", path);
-		return;
+	for (int i = 0; i < 17; i++) {
+		enabled = (progdefaults.enable_gpio >> i) & 0x01;
+
+		if (enabled) {
+			val = (progdefaults.gpio_on >> i) & 0x01;
+			ctrlport = portname;
+			ctrlport.append(gpio_name[i]);
+			ctrlport.append("/value");
+			fd = fl_open(ctrlport.c_str(), O_WRONLY);
+
+			if (-1 == fd) {
+				LOG_ERROR("Failed to open gpio (%s) for writing!", ctrlport.c_str());
+			} else {
+				if (ptt) { if (val == 1) val = 1; else val = 0;}
+				if (!ptt)  { if (val == 1) val = 0; else val = 1;}
+				if (write(fd, &s_values_str[val], 1) != 1)
+					LOG_ERROR("Failed to write value!");
+				else
+					LOG_INFO("Set GPIO ptt %s, on %s", (val ? "HIGH" : "LOW"), ctrlport.c_str());
+				close(fd);
+			}
+		}
 	}
-
-	if (1 != write(fd, &s_values_str[ ptt ? 1 : 0], 1)) {
-		LOG_ERROR("Failed to write value!\n");
-		return;
-	}
-
-	close(fd);
-
 }
 
 //-------------------- serial port PTT --------------------//

@@ -2,7 +2,8 @@ fldigi_configuration.txt fldigi_developer.txt fldigi_logging.txt \
 fldigi_macros.txt fldigi_modems.txt fldigi_operating.txt \
 New-Install.txt thumb_drive.txt colorsandfonts.txt \
 audio-adjust.txt \
-configcallsigndb.txt configContestia.txt configCW.txt \
+configcallsigndb.txt configRIG.txt \
+configContestia.txt configCW.txt \
 configDomEX.txt configFSQ.txt configFH.txt ConfigID.txt \
 configIFKP.txt ConfigMisc.txt \
 configMT63.txt configOlivia.txt ConfigOperator.txt configPSK.txt \

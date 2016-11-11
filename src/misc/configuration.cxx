@@ -529,8 +529,6 @@ int configuration::setDefaults()
 
 	inpTTYdev->value(PTTdev.c_str());
 
-	inpGPIOPort->value(GPIOPort);
-
 	chkUSEHAMLIB->value(0);
 	chkUSERIGCAT->value(0);
 	chkUSEXMLRPC->value(0);
@@ -734,8 +732,6 @@ void configuration::initInterface()
 
 	PTTdev = inpTTYdev->value();
 
-	GPIOPort = static_cast<int>(inpGPIOPort->value());
-
 #if USE_HAMLIB
 	chkUSEHAMLIBis = chkUSEHAMLIB->value();
      HamlibCMDptt = btnHamlibCMDptt->value();
@@ -804,8 +800,6 @@ void configuration::initInterface()
 		push2talk->reset(PTT::PTT_TTY);
 	else if (UsePPortPTT)
 		push2talk->reset(PTT::PTT_PARPORT);
-	else if (UseGPIOPTT)
-		push2talk->reset(PTT::PTT_GPIO);
 	else if (UseUHrouterPTT)
 		push2talk->reset(PTT::PTT_UHROUTER);
 	else

@@ -208,6 +208,145 @@ details on building a \ref w5zit_rt_channel_page "right channel PTT interface" f
 type of hardware control.
 <br>
 
+\section gpio_ptt  Use Pi GPIO PTT
+
+\image html config-rig-gpio.png "GPIO Pin Setup"
+\image latex config-rig-gpio.png "GPIO Pin Setup" width=4.5in
+
+The Pi2 and Pi3 miniature computers offer a large array of possibilities for
+controlling devices.  It has a array of General Purpose Input Output, gpio, 
+lines of a 40 pin in-line header.  17 of these gpio lines can be used for
+things like push-to-talk.  There are several add on boards for the Pi3,
+such as the NW Digital Radio UDRC-II, that has a full interface for digital
+operations, including PTT and audio codecs.
+
+Access to hardware ports is always limited to the user who either is root 
+or has root privileges.  setuid and setgid (short for set user ID upon 
+execution, and set group ID upon execution, respectively) are Linux
+access rights flags that allow users to run an executable with the 
+permissions of the executable's owner or group respectively and to change 
+behaviour in directories. They are often used to allow users on a computer 
+system to run programs with temporarily elevated privileges in order to 
+perform a specific task. While the assumed user id or group id privileges 
+provided are not always elevated, at a minimum they are specific.
+
+It is possible to give full gpio access and control privileges by elevating
+fldigi with setuid root.  But this is not advisable as fldigi is also
+granted access to both serial and network services.  There is a way to
+provide the access via a second program that does have the elevated privilege
+
+This is a copy of material at 
+
+\verbatim
+https://projects.drogon.net/raspberry-pi/wiringpi/download-and-install/
+\endverbatim
+
+for installing WiringPi which includes a really nice utility called gpio.
+
+To obtain WiringPi using GIT:
+
+\verbatim
+$ git clone git://git.drogon.net/wiringPi
+\endverbatim
+
+If you have already used the clone operation for the first time, then
+
+\verbatim
+$ cd wiringPi
+$ git pull origin
+\endverbatim
+
+Will fetch an updated version then you can re-run the build script below.
+
+To build/install there is a simplified script:
+
+\verbatim
+$ cd wiringPi
+$ ./build
+\endverbatim
+
+The build script will compile and install it all for you.  It does 
+use the sudo command at one point, so you may wish to inspect the script 
+before running it.
+
+<b>Test wiringPi's installation</b>
+
+run the gpio command to check the installation:
+
+\verbatim
+$ gpio -v
+$ gpio readall
+\endverbatim
+
+That should give you some confidence that it’s working OK.
+
+WiringPi is released under the GNU Lesser Public License version 3.
+
+fldigi uses the gpio program for initializing the gpio port, which also
+happens to the change the privilege of the temporary sys file for setting
+the port state.
+
+<b>Read the man document for gpio</b>
+\verbatim
+GPIO is  a  swiss  army knife of a command line tool to allow the user 
+easy access to the GPIO pins on the Raspberry Pi and the SPI A/D and D/A 
+converters on  the  Gertboard.  It's designed for simple testing and 
+diagnostic purposes, but can be used in shell scripts for general if 
+somewhat slow control of the GPIO pins.
+
+It can also control the IO's on the PiFace IO board and load the SPI and 
+I2C  kernel  modules if required.
+
+Additionally, it can be used to set the exports in the /sys/class/gpio 
+system directory to allow subsequent programs to use the /sys/class/gpio 
+interface without needing to  be run as root."
+
+After installing gpio on your Pi you can set the gpio port on fldigi's
+GPIO configuration tab.  The UDRC-II for example uses pin 16, BCM # 23,
+for push to talk.  It has an LED indicator on the board to show when PTT
+has been enabled.  For this board you select "BCM 23" and select the
+corresponding "= 1 (on)" check box.
+\endverbatim
+
+During start up fldigi uses the gpio program to set up the gpio pins with
+the command 
+\verbatim
+$ gpio export NN out
+\endverbatim
+This is the command to export a GPIO pin in the /sys/class/gpio directory. 
+Note  that  the  pin number  is  the  BCM_GPIO number.  'out' sets the pin
+to be an output control, and 'in' an input control.
+
+Once a GPIO pin has been exported, the gpio program changes the  ownership  of  the
+<br>
+
+/sys/class/gpiogpioX/value
+<br>
+
+and if present in later kernels, the
+<br>
+
+/sys/class/gpio/gpioX/edge
+<br>
+
+pseudo files to that of the user running the  gpio  program. This means 
+that you can have a small script of gpio exports to setup the gpio
+pins as your program requires without the need to run anything as root,
+or with the sudo command.
+
+During shutdown fldigi uses the gpio program to disable access to the gpio
+pins used with PTT by invoking the command
+<br>
+
+gpio unexport NN.
+<br>
+
+You can check that this is working correctly from a terminal window using the
+command
+\verbatim
+$ gpio readall
+\endverbatim
+
 \ref rig_config_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

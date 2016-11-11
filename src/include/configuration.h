@@ -59,8 +59,6 @@
 #  define DEFAULT_HAMRIGDEVICE "/dev/rig"
 #endif
 
-#define DEFAULT_GPIO_PORT 17
-
 // Format: ELEM_(TYPE, VARIABLE-NAME, TAG-STRING, DOC-STRING, DEFAULT-VALUE)
 // Variables that are not saved to the xml file have empty TAG-STRINGs and DOC-STRINGs
 //
@@ -133,7 +131,7 @@
               "disable changing frequency on rsid modem change/reset",                  \
               false)                                                                    \
         ELEM_(bool, retain_freq_lock, "RETAINFREQLOCK",                                 \
-             "retain frequency lock on rsid modem change/reset",                   \
+             "retain frequency lock on rsid modem change/reset",                        \
              false)                                                                     \
         ELEM_(bool, changed, "", "",  false)                                            \
                                                                                         \
@@ -244,10 +242,10 @@
         ELEM_(bool, pskpilot, "PSKPILOT",                                               \
               "Vestigial pilot tone on = 1, off = 0",                                   \
               false)                                                                    \
-        ELEM_(double, pilot_power, "PILOT_POWER",                                      \
+        ELEM_(double, pilot_power, "PILOT_POWER",                                       \
               "Pilot tone relative power level",                                        \
               -30.0)                                                                    \
-        ELEM_(double, ACQsn, "ACQSN",                                                  \
+        ELEM_(double, ACQsn, "ACQSN",                                                   \
               "PSK signal acquisition S/N (dB)",                                        \
               9.0)                                                                      \
         ELEM_(bool, Pskmails2nreport, "PSKMAILS2NREPORT",                               \
@@ -459,13 +457,13 @@
               "  0: Hanning; 1: Blackman;"                                              \
               "Raised cosine = Hanning.",                                               \
               0)   /* Hanning */                                                        \
-        ELEM_(double, CWrisetime, "CWRISETIME",                                        \
+        ELEM_(double, CWrisetime, "CWRISETIME",                                         \
               "Leading and trailing edge rise times (milliseconds)",                    \
               4.0)                                                                      \
         ELEM_(bool, CW_bpf_on, "CW_BPF_ON",                                             \
               "Enable filtering of transmit audio",                                     \
               false)                                                                    \
-        ELEM_(double, CW_bpf, "CW_BPF",                                                \
+        ELEM_(double, CW_bpf, "CW_BPF",                                                 \
               "Transmit filter hi cutoff frequency\n"                                   \
               "f0 +/- CW_bpf/2",                                                        \
               100.0)                                                                    \
@@ -642,10 +640,10 @@
               "size of moving average filter for bin filtering\n"                       \
               "value 2 to 8",                                                           \
               4)                                                                        \
-        ELEM_(double, fsq_img_filter, "FSQIMGFILTER",                                  \
+        ELEM_(double, fsq_img_filter, "FSQIMGFILTER",                                   \
               "0 - 300 Hz, 1 - 400 Hz, 2 - 500 Hz (default)",                           \
               2)                                                                        \
-        ELEM_(double, fsqbaud, "FSQBAUD",                                              \
+        ELEM_(double, fsqbaud, "FSQBAUD",                                               \
               "6, 4.5, 3 or 2 baud",                                                    \
               4.5)                                                                      \
         ELEM_(int, fsqhits, "FSQHITS",                                                  \
@@ -663,7 +661,7 @@
         ELEM_(std::string, fsqQTCtext, "FSQQTCTEXT",                                    \
               "QTC text string",                                                        \
               "cq cq cq de nocall")                                                     \
-        ELEM_(int, fsq_heard_aging, "FSQHEARDAGING",                                   \
+        ELEM_(int, fsq_heard_aging, "FSQHEARDAGING",                                    \
               "0 - NEVER (default)\n"                                                   \
               "1 - 1 minute, 2 - 5 minutes, 3 - 10 minutes\n"                           \
               "4 - 20 minutes, 5 - 30 minutes",                                         \
@@ -920,7 +918,7 @@
               "http://www.qrz.com/")                                                    \
         ELEM_(std::string, callookurl, "CALLOOKURL",                                    \
               "web address of callook",                                                 \
-              "http://callook.info/")                                                \
+              "http://callook.info/")                                                   \
         ELEM_(int, QRZWEB, "QRZWEBTYPE",                                                \
               "Callsign browser query type.  Values are as follows:\n"                  \
               "  0: none; 1: QRZ web browser; 2: HamCall web browser\n"                 \
@@ -1063,9 +1061,6 @@
         ELEM_(std::string, PTTdev, "PTTDEV",                                            \
               "PTT device",                                                             \
               DEFAULT_PTTDEV)                                                           \
-        ELEM_(int, GPIOPort, "GPIOPORT",                                                \
-              "PTT GPIO Port",                                                          \
-              DEFAULT_GPIO_PORT)                                                        \
         ELEM_(std::string, CWFSKport, "", "",  DEFAULT_CWFSKPORT)                       \
         ELEM_(std::string, HamRigDevice, "HAMRIGDEVICE",                                \
               "Hamlib rig device",                                                      \
@@ -1128,9 +1123,15 @@
         ELEM_(bool, UsePPortPTT, "USEPPORTPTT",                                         \
               "Use parallel port PTT",                                                  \
               false)                                                                    \
-        ELEM_(bool, UseGPIOPTT, "USEGPIOPTT",                                           \
-              "Use parallel port PTT",                                                  \
-              false)                                                                    \
+        /* GPIO parameters */                                                           \
+        ELEM_(long, enable_gpio, "ENABLE_GPIO",                                         \
+              "GPIO enable\n"                                                           \
+              "bits 0 - 16; bit 0 --> gpio pin N",                                      \
+              0)                                                                        \
+        ELEM_(long, gpio_on, "GPIO_STATE",                                              \
+              "GPIO State\n"                                                            \
+              "bits 0 - 16; bit 0 --> PTT ON state on pin N",                           \
+              0)                                                                        \
         /* RigCAT parameters */                                                         \
         ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS",                                     \
               "Initial state of RTS",                                                   \

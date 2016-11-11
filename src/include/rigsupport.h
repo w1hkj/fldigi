@@ -98,6 +98,10 @@ extern void set_flrig_mode(const char *md);
 extern void set_flrig_bw(int bw1, int bw2 = 0);
 extern void set_flrig_notch();
 
+// GPIO export/unexport pin #
+extern void export_gpio(int);
+extern void unexport_gpio(int);
+
 //------------------------------------------------------------------------------
 
 #endif

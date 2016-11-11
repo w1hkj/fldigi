@@ -384,15 +384,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {820 48 600 420} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {675 30 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 600 390} color 50 selection_color 50
+      xywh {0 0 600 395} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} selected
-        tooltip {Operator information} xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;}
+        tooltip {Operator information} xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label Station open
@@ -499,7 +499,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser open
-            tooltip {User Interface - Browser} xywh {0 50 600 340}
+            tooltip {User Interface - Browser} xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -821,14 +821,14 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
+            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340}
           } {
             Fl_Tabs tabsLog {open
               xywh {0 50 600 340}
             } {
               Fl_Group grp_Log_QSO {
                 label QSO
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Group {} {
                   label {QSO logging} open
@@ -1044,7 +1044,7 @@ progdefaults.changed = true;}
               }
               Fl_Group grpN3FJP_logs {
                 label {N3FJP logs} open
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Text_Display txt_N3FJP_data {
                   label {TCP/IP Data Stream}
@@ -1660,7 +1660,7 @@ WF_UI();}
             } {
               Fl_Group {} {
                 label {Rx/Tx}
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
@@ -2729,7 +2729,7 @@ btnTxRSID->redraw();}
               }
               Fl_Group {} {
                 label SigLvl
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -2843,7 +2843,7 @@ UI_select();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -3169,7 +3169,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {55 73 490 170} box ENGRAVED_FRAME
@@ -3229,14 +3229,14 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         } {
           Fl_Group tabCW {
             label CW
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 600 340} selection_color 50
             } {
               Fl_Group {} {
                 label General open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
                   label Receive open
@@ -3510,7 +3510,7 @@ progdefaults.changed = true;}
               }
               Fl_Group {} {
                 label Prosigns open
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {open
                   xywh {35 85 530 283} box ENGRAVED_FRAME
@@ -4549,7 +4549,7 @@ progdefaults.changed = true;}
             } {
               Fl_Group {} {
                 label Tx open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group selShift {
                   label {Carrier shift}
@@ -4792,7 +4792,7 @@ progdefaults.changed = true;
               }
               Fl_Group {} {
                 label Synop open
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Check_Button btnSynopAdifDecoding {
                   label {SYNOP to ADIF}
@@ -4898,14 +4898,14 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOther {
             label Other open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Tabs tabsOther {open
               xywh {0 50 600 340}
             } {
               Fl_Group tabNavtex {
                 label Nav
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Check_Button btnNvtxAdifLog {
                   label {Log Navtex messages to Adif file}
@@ -4996,7 +4996,7 @@ progdefaults.changed = true;}
               }
               Fl_Group tabDFTscan {
                 label Scan
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Counter cnt_dft_scans {
                   label {\# scans}
@@ -5028,16 +5028,15 @@ progdefaults.changed = true;}
         }
       }
       Fl_Group tabRig {
-        label Rig
         label Rig open
-        tooltip {Transceiver control} xywh {0 25 600 365} hide
+        tooltip {Transceiver control} xywh {0 25 600 365}
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabFLRIG {
             label flrig open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {"Disable PTT keys modem if multiple instances of fldigi (client)
@@ -5232,9 +5231,17 @@ btnRevertRIGCAT->activate();}
               Fl_Round_Button btnRigCatCMDptt {
                 label {CAT command for PTT}
                 callback {if (o->value()== 1) {
-  btnRigCatRTSptt->value(0);
-  btnRigCatDTRptt->value(0);
-}
+btnRigCatRTSptt->value(0);
+btnRigCatDTRptt->value(0);
+progdefaults.RigCatCMDptt = true;
+progdefaults.TTYptt = 
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.HamlibCMDptt = false;
+} else
+progdefaults.RigCatCMDptt = false;
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
@@ -5245,9 +5252,15 @@ btnRevertRIGCAT->activate();}
               Fl_Round_Button btnRigCatRTSptt {
                 label {Toggle RTS for PTT}
                 callback {if (o->value() == 1) {
-//  btnRigCatDTRptt->value(0);
-  btnRigCatCMDptt->value(0);
-}
+btnRigCatCMDptt->value(0);
+progdefaults.RigCatRTSptt = true;
+progdefaults.TTYptt = 
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+} else
+progdefaults.RigCatRTSptt = false;
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
@@ -5258,9 +5271,15 @@ btnRevertRIGCAT->activate();}
               Fl_Round_Button btnRigCatDTRptt {
                 label {Toggle DTR for PTT}
                 callback {if (o->value() == 1) {
-//  btnRigCatRTSptt->value(0);
-  btnRigCatCMDptt->value(0);
-}
+btnRigCatCMDptt->value(0);
+progdefaults.RigCatDTRptt = true;
+progdefaults.TTYptt = 
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+} else
+progdefaults.RigCatDTRptt = false;
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
@@ -5467,7 +5486,20 @@ progdefaults.changed = true;}
                 label {PTT via Hamlib command}
                 callback {btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();}
+btnRevertHAMLIB->activate();
+
+if (o->value()) {
+progdefaults.HamlibCMDptt = true;
+progdefaults.TTYptt = 
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.RigCatCMDptt = false;
+} else
+progdefaults.HamlibCMDptt = false;
+
+progdefaults.changed = true;}
                 tooltip {PTT using hamlib command} xywh {55 211 215 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.HamlibCMDptt);}
               }
@@ -5607,31 +5639,33 @@ when both in same macro definition} xywh {210 239 90 21} type Simple align 8 min
             }
           }
           Fl_Group {} {
-            label {Hardware PTT}
+            label {Hardware PTT} open
             xywh {0 50 600 340} hide
           } {
-            Fl_Group {} {open
+            Fl_Group {} {
               xywh {55 57 490 38} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnPTTrightchannel {
                 label {PTT tone on right audio channel }
                 callback {progdefaults.PTTrightchannel = o->value();
 btnPTTrightchannel2->value(o->value());
+
 if (o->value()) {
-  progdefaults.QSK = false;
-  btnQSK->value(0);
-  progdefaults.PseudoFSK = false;
-  chkPseudoFSK->value(0);
-  progdefaults.sig_on_right_channel = false;
-  chkAudioStereoOut->value(0);
+progdefaults.QSK = false;
+btnQSK->value(0);
+progdefaults.PseudoFSK = false;
+chkPseudoFSK->value(0);
+progdefaults.sig_on_right_channel = false;
+chkAudioStereoOut->value(0);
 }
+
 progdefaults.changed = true;}
                 tooltip {Can be used in lieu of or in addition to other PTT types} xywh {74 66 250 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.PTTrightchannel);}
               }
             }
             Fl_Group grpHWPTT {
-              label {h/w ptt device-pin} open
+              label {h/w ptt device-pin}
               xywh {55 97 490 184} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnTTYptt {
@@ -5639,9 +5673,17 @@ progdefaults.changed = true;}
                 callback {btnUsePPortPTT->value(false);
 btnUseUHrouterPTT->value(false);
 
-progdefaults.TTYptt = o->value();
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = false;
+if (o->value()) {
+progdefaults.TTYptt = true;
+progdefaults.UsePPortPTT =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+} else
+progdefaults.TTYptt = false;
+
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
@@ -5693,12 +5735,20 @@ progdefaults.changed = true;}
               }
               Fl_Round_Button btnUsePPortPTT {
                 label {Use parallel port PTT}
-                callback {btnTTYptt->value(false);
-btnUseUHrouterPTT->value(false);
+                callback {btnTTYptt->value(0);
+btnUseUHrouterPTT->value(0);
 
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = o->value();
-progdefaults.UseUHrouterPTT = false;
+if (o->value()) {
+progdefaults.UsePPortPTT = true;
+progdefaults.TTYptt =
+progdefaults.UseUHrouterPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+} else
+progdefaults.UsePPortPTT = false;
+
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
@@ -5706,44 +5756,28 @@ progdefaults.changed = true;}
               }
               Fl_Round_Button btnUseUHrouterPTT {
                 label {Use uHRouter PTT}
-                callback {btnTTYptt->value(false);
-btnUsePPortPTT->value(false);
+                callback {btnTTYptt->value(0);
+btnUsePPortPTT->value(0);
 
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = o->value();
+if (o->value()) {
+progdefaults.UseUHrouterPTT = true;
+progdefaults.TTYptt =
+progdefaults.UsePPortPTT =
+progdefaults.RigCatRTSptt =
+progdefaults.RigCatDTRptt =
+progdefaults.RigCatCMDptt =
+progdefaults.HamlibCMDptt = false;
+} else
+progdefaults.UseUHrouterPTT = false;
+
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
                 xywh {74 221 170 20} down_box DOWN_BOX selection_color 1
               }
-              Fl_Round_Button btnUseGPIOPTT {
-                label {Use GPIO PTT}
-                callback {btnTTYptt->value(false);
-btnUsePPortPTT->value(false);
-btnUseUHrouterPTT->value(false);
-
-progdefaults.TTYptt = false;
-progdefaults.UsePPortPTT = false;
-progdefaults.UseUHrouterPTT = false;
-progdefaults.UseGPIOPTT = o->value();
-
-btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                xywh {74 252 170 20} down_box DOWN_BOX selection_color 1
-              }
-              Fl_Counter inpGPIOPort {
-                label {GPIO:}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {Select GPIO port} xywh {286 252 65 20} type Simple align 4 minimum 0 maximum 31 step 1 value 17
-                class Fl_Counter2
-              }
             }
             Fl_Group grpPTTdelays {
-              label {PTT delays valid for all CAT/PTT types} open
+              label {PTT delays valid for all CAT/PTT types}
               xywh {55 284 490 91} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter cntPTT_on_delay {
@@ -5764,6 +5798,448 @@ progdefaults.changed = true;}
               }
             }
           }
+          Fl_Group {} {
+            label GPIO open
+            xywh {0 50 600 340}
+          } {
+            Fl_Box {} {
+              label {BCM GPIO  pin    Value}
+              xywh {70 96 189 17} labelfont 4 align 20
+            }
+            Fl_Check_Button {btn_enable_gpio[0]} {
+              label {17   00   11}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= 1;
+  export_gpio(0);
+} else {
+  progdefaults.enable_gpio &= ~1;
+  unexport_gpio(0);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 121 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value(progdefaults.enable_gpio & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[1]} {
+              label {18   01   12}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<1);
+  export_gpio(1);
+} else {
+  progdefaults.enable_gpio &= ~(1<<1);
+  unexport_gpio(1);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 150 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 1) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[2]} {
+              label {27   02   13}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<2);
+  export_gpio(2);
+} else {
+  progdefaults.enable_gpio &= ~(1<<2);
+  unexport_gpio(2);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 180 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 2) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[3]} {
+              label {22   03   15}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<3);
+  export_gpio(3);
+} else {
+  progdefaults.enable_gpio &= ~(1<<3);
+  unexport_gpio(3);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 210 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 3) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[4]} {
+              label {23   04   16}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<4);
+  export_gpio(4);
+} else {
+  progdefaults.enable_gpio &= ~(1<<4);
+  unexport_gpio(4);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 240 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 4) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[5]} {
+              label {24   05   18}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<5);
+  export_gpio(5);
+} else {
+  progdefaults.enable_gpio &= ~(1<<5);
+  unexport_gpio(5);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 270 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 5) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[6]} {
+              label {25   06   22}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<6);
+  export_gpio(6);
+} else {
+  progdefaults.enable_gpio &= ~(1<<6);
+  unexport_gpio(6);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 300 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 6) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[7]} {
+              label { 4   07    7}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<7);
+  export_gpio(7);
+} else {
+  progdefaults.enable_gpio &= ~(1<<7);
+  unexport_gpio(7);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {60 330 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 7) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[8]} {
+              label { 5   21   29}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<8);
+  export_gpio(8);
+} else {
+  progdefaults.enable_gpio &= ~(1<<8);
+  unexport_gpio(8);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 121 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 8) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[9]} {
+              label { 6   22   31}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<9);
+  export_gpio(9);
+} else {
+  progdefaults.enable_gpio &= ~(1<<9);
+  unexport_gpio(9);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 150 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 9) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[10]} {
+              label {13   23   33}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<10);
+  export_gpio(10);
+} else {
+  progdefaults.enable_gpio &= ~(1<<10);
+  unexport_gpio(10);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 180 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 10) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[11]} {
+              label {19   24   35}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<11);
+  export_gpio(11);
+} else {
+  progdefaults.enable_gpio &= ~(1<<11);
+  unexport_gpio(11);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 210 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 11) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[12]} {
+              label {26   25   37}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<12);
+  export_gpio(12);
+} else {
+  progdefaults.enable_gpio &= ~(1<<12);
+  unexport_gpio(12);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 240 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 12) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[13]} {
+              label {12   26   32}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<13);
+  export_gpio(13);
+} else {
+  progdefaults.enable_gpio &= ~(1<<13);
+  unexport_gpio(13);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 270 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 13) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[14]} {
+              label {16   27   36}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<14);
+  export_gpio(14);
+} else {
+  progdefaults.enable_gpio &= ~(1<<14);
+  unexport_gpio(14);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 300 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 14) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[15]} {
+              label {20   28   38}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<15);
+  export_gpio(15);
+} else {
+  progdefaults.enable_gpio &= ~(1<<15);
+  unexport_gpio(15);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 330 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 15) & 0x01);}
+            }
+            Fl_Check_Button {btn_enable_gpio[16]} {
+              label {21   29   40}
+              callback {if (o->value()){
+  progdefaults.enable_gpio |= (1<<16);
+  export_gpio(16);
+} else {
+  progdefaults.enable_gpio &= ~(1<<16);
+  unexport_gpio(16);
+}
+progdefaults.changed = true;}
+              tooltip {Select pin number} xywh {320 360 125 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.enable_gpio >> 16) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[0]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= 1;
+} else {
+  progdefaults.gpio_on &= ~1;
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 120 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[1]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<1);
+} else {
+  progdefaults.gpio_on &= ~(1<<1);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 150 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 1) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[2]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<2);
+} else {
+  progdefaults.gpio_on &= ~(1<<2);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 180 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 2) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[3]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<3);
+} else {
+  progdefaults.gpio_on &= ~(1<<3);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 210 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 3) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[4]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<4);
+} else {
+  progdefaults.gpio_on &= ~(1<<4);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 240 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 4) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[5]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<5);
+} else {
+  progdefaults.gpio_on &= ~(1<<5);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 270 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 5) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[6]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<6);
+} else {
+  progdefaults.gpio_on &= ~(1<<6);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 300 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 6) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[7]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<7);
+} else {
+  progdefaults.gpio_on &= ~(1<<7);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {200 330 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 7) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[8]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<8);
+} else {
+  progdefaults.gpio_on &= ~(1<<8);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 121 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 8) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[9]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<9);
+} else {
+  progdefaults.gpio_on &= ~(1<<9);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 150 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 9) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[10]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<10);
+} else {
+  progdefaults.gpio_on &= ~(1<<10);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 180 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 10) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[11]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<11);
+} else {
+  progdefaults.gpio_on &= ~(1<<11);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 210 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 11) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[12]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<12);
+} else {
+  progdefaults.gpio_on &= ~(1<<12);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 240 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 12) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[13]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<13);
+} else {
+  progdefaults.gpio_on &= ~(1<<13);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 270 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 13) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[14]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<14);
+} else {
+  progdefaults.gpio_on &= ~(1<<14);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 300 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 14) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[15]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<15);
+} else {
+  progdefaults.gpio_on &= ~(1<<15);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 330 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 15) & 0x01);}
+            }
+            Fl_Check_Button {btn_gpio_on[16]} {
+              label {= 1 (on)}
+              callback {if (o->value()){
+  progdefaults.gpio_on |= (1<<16);
+} else {
+  progdefaults.gpio_on &= ~(1<<16);
+}
+wf->xmtrcv->value(0);
+progdefaults.changed = true;}
+              tooltip {Select PTT on state} xywh {460 360 84 15} down_box DOWN_BOX labelfont 4
+              code0 {o->value((progdefaults.gpio_on >> 16) & 0x01);}
+            }
+            Fl_Box {} {
+              label {BCM GPIO  pin    Value}
+              xywh {330 96 194 17} labelfont 4 align 20
+            }
+            Fl_Box {} {
+              label {Enable GPIO PTT (Pi specific controls)}
+              xywh {170 68 283 17}
+            }
+          }
         }
       }
       Fl_Group tabSoundCard {
@@ -5775,7 +6251,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabAudio {
             label Devices open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group AudioOSS {open
               xywh {55 65 490 45} box ENGRAVED_FRAME
@@ -6047,7 +6523,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWavFile {
             label Wav open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group listbox_wav_samplerate {
               label {Wav write sample rate}
@@ -6078,7 +6554,7 @@ progdefaults.changed=true;}
         } {
           Fl_Group tabRsID {
             label RsID open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Reed-Solomon ID (Rx)} open
@@ -6291,7 +6767,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabCwID {
             label CW
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group sld {
               label {CW Postamble ID} open
@@ -6334,7 +6810,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCPUspeed {
             label CPU open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {55 75 490 51} box ENGRAVED_FRAME align 21
@@ -6798,7 +7274,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabKML {
             label KML open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Input btnKmlSaveDir {
               label {KML files directory}
@@ -6905,14 +7381,14 @@ if (progdefaults.kml_enabled) {
       }
       Fl_Group tabQRZ {
         label Web open
-        tooltip {Callsign database} xywh {0 25 600 365}
+        tooltip {Callsign database} xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 600 365}
         } {
           Fl_Group {} {
             label {Call Lookup} open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Web Browser lookup} open
@@ -7177,7 +7653,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLOTW {
-            label LoTW open selected
+            label LoTW open
             xywh {0 50 600 340}
           } {
             Fl_Input txt_lotw_pathname {
@@ -8054,13 +8530,13 @@ progdefaults.changed = true;}
     }
     Fl_Button btnSaveConfig {
       label Save
-      callback {progdefaults.saveDefaults();}
-      xywh {330 394 130 22}
+      callback {progdefaults.saveDefaults();} selected
+      xywh {330 400 130 22}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
       callback {closeDialog();}
-      xywh {462 394 130 22}
+      xywh {462 400 130 22}
     }
     Fl_Button btnResetConfig {
       label {Restore defaults}
@@ -8068,7 +8544,7 @@ progdefaults.changed = true;}
 	progdefaults.resetDefaults();
 	progdefaults.changed = false;
 }}
-      tooltip {WARNING - this will over write ALL settings} xywh {20 394 130 22}
+      tooltip {WARNING - this will over write ALL settings} xywh {20 400 130 22}
     }
   }
 } 
