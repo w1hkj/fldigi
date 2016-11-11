@@ -1,8 +1,13 @@
-2016-10-31  David Freese  <iam_w1hkj@w1hkj.com>
 
-	a802ade: lotw interface
-	401a127: Alpha
-	f7a11e0: GPIO PTT
+
+=Version 3.23.16=
+
+2016-11-10  David Freese  <iam_w1hkj@w1hkj.com>
+
+	3d60e20: N3FJP rounding
+	fff0baf: Resident help
+	6b3e9a7: lotw/eqsl interface
+	52278a5: GPIO PTT
 	9c0ed51: ARQ Client vector
 	0e7feae: Rx Extract
 
