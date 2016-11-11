@@ -140,12 +140,20 @@ void n3fjp_close(void);
 
 void adjust_freq(string sfreq)
 {
-	long long freq = (long long)(1e6*atof(sfreq.c_str()));
+	long freq;
+	size_t pp = sfreq.find(".");
+	if (pp == string::npos) return;
+
+	while ((sfreq.length() - pp) < 7) sfreq.append("0");
+	sfreq.erase(pp,1);
+	freq = atol(sfreq.c_str());
 
 	if (freq == 0) return;
 
+	wf->rfcarrier(freq);
+	wf->movetocenter();
 	show_frequency(freq);
-	sendFreq(freq);
+
 	return;
 
 	if (progdefaults.N3FJP_sweet_spot) {
@@ -159,18 +167,20 @@ void adjust_freq(string sfreq)
 		else if (active_modem->get_mode() < MODE_SSB)
 			afreq = progdefaults.PSKsweetspot;
 		else {
+			wf->rfcarrier(freq);
+			wf->movetocenter();
 			show_frequency(freq);
-			sendFreq(freq);
 			return;
 		}
 		freq -= (wf->USB() ? afreq : -afreq);
+		wf->rfcarrier(freq);
+		wf->movetocenter();
 		show_frequency(freq);
-		wf->Carrier(afreq);
-		sendFreq(freq);
-	} else {
-		show_frequency(freq);
-		sendFreq(freq);
+		return;
 	}
+	wf->rfcarrier(freq);
+	wf->movetocenter();
+	show_frequency(freq);
 }
 
 //======================================================================
@@ -727,11 +737,15 @@ void do_n3fjp_add_record_entries()
 void n3fjp_set_freq(long f)
 {
 	char szfreq[20];
-	snprintf(szfreq, sizeof(szfreq), "%f", f/1e6);
+	snprintf(szfreq, sizeof(szfreq), "%ld", f);
+	string freq = szfreq;
+	while (freq.length() < 7) freq.insert(0, "0");
+	freq.insert(freq.length() - 6, ".");
+
 	string cmd;
 
 	cmd.assign("<CMD><CHANGEFREQ><VALUE>");
-	cmd.append(szfreq);
+	cmd.append(freq);
 	cmd.append("</VALUE><SUPPRESSMODEDEFAULT>TRUE</SUPPRESSMODEDEFAULT></CMD>");
 
 	{	guard_lock send_lock(&send_this_mutex);
