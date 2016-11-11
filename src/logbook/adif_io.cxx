@@ -69,8 +69,16 @@ FIELD fields[] = {
 	{STATE,        20,    "STATE",        &btnSelectState},     // contacted stations STATE
 	{VE_PROV,      20,    "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
 	{NOTES,        512,   "NOTES",        &btnSelectNotes},     // QSO notes
+
 	{QSLRDATE,     8,     "QSLRDATE",     &btnSelectQSLrcvd},   // QSL received date
 	{QSLSDATE,     8,     "QSLSDATE",     &btnSelectQSLsent},   // QSL sent date
+
+	{EQSLRDATE,    8,     "EQSLRDATE",    NULL},                // EQSL received date
+	{EQSLSDATE,    8,     "EQSLSDATE",    NULL},                // EQSL sent date
+
+	{LOTWRDATE,    8,     "LOTWRDATE",    NULL},                // EQSL received date
+	{LOTWSDATE,    8,     "LOTWSDATE",    NULL},                // EQSL sent date
+
 	{GRIDSQUARE,   8,     "GRIDSQUARE",   &btnSelectLOC},       // contacted stations Maidenhead Grid Square
 	{BAND,         8,     "BAND",         &btnSelectBand},      // QSO band
 	{CNTY,         60,    "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county

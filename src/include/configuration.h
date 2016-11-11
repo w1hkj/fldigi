@@ -961,6 +961,25 @@
         ELEM_(bool, eqsl_datetime_off, "EQSL_DATETIME_OFF",                             \
               "Send logbook date/time off vice date on (default)",                      \
               false)                                                                    \
+        /* tqsl automatic log submission */                                             \
+        ELEM_(bool, submit_lotw, "SUBMIT_LOTW",                                         \
+              "Send adif record to LoTW",                                               \
+              false)                                                                    \
+        ELEM_(bool, lotw_quiet_mode, "LOTW_QUIET_MODE",                                 \
+              "Add -q to tqsl command line parameters",                                 \
+              true)                                                                     \
+        ELEM_(std::string, lotw_pathname, "LOTW_PATHNAME",                              \
+              "Path-name of tqsl executable",                                           \
+              "")                                                                       \
+        ELEM_(std::string, lotw_pwd, "LOTW_PASSWORD",                                   \
+              "Password to access tqsl executable",                                     \
+              "")                                                                       \
+        ELEM_(bool, submit_lotw_password, "SUBMIT_LOTW_PASSWORD",                       \
+              "Send -p <password> with each upload ",                                   \
+              true)                                                                     \
+        ELEM_(std::string, lotw_location, "LOTW_LOCATION",                              \
+              "Tqsl station location for uploading records",                            \
+              "")                                                                       \
         /* MacLogger interface */                                                       \
         ELEM_(bool, connect_to_maclogger, "CONNECT_TO_MACLOGGER",                       \
               "Connect to MacLogger UDP server on 255.255.255.255 / 9932",              \

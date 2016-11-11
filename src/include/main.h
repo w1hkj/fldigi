@@ -47,6 +47,7 @@ extern std::string		MacrosDir;
 extern std::string		WrapDir;
 extern std::string		TalkDir;
 extern std::string		TempDir;
+extern std::string		LoTWDir;
 extern std::string		KmlDir;
 extern std::string		PskMailDir;
 extern std::string		DATA_dir;

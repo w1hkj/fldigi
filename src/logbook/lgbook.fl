@@ -36,8 +36,8 @@ decl {// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk'
 Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
-    label {Export Setup} open
-    xywh {587 58 675 435} type Double visible
+    label {Export Setup}
+    xywh {936 62 675 435} type Double hide
   } {
     Fl_Group {} {
       label {Select Records to Export}
@@ -130,7 +130,7 @@ btnSelectNotes->value(0);
 btnSelectClass->value(0);
 btnSelectSection->value(0);
 btnSelectQSL_VIA->value(0);}
-        xywh {395 375 90 24}
+        xywh {395 351 85 24}
       }
       Fl_Button btnCheckAllFields {
         label {Check All}
@@ -167,7 +167,7 @@ btnSelectNotes->value(1);
 btnSelectClass->value(1);
 btnSelectSection->value(1);
 btnSelectQSL_VIA->value(1);}
-        xywh {487 375 90 24}
+        xywh {395 377 85 24}
       }
       Fl_Check_Button btnSelectCall {
         label Call
@@ -203,7 +203,7 @@ btnSelectQSL_VIA->value(1);}
       }
       Fl_Check_Button btnSelectTimeOFF {
         label {Time OFF}
-        xywh {402 192 70 15} down_box DOWN_BOX value 1
+        xywh {402 192 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectTX_pwr {
         label {TX Power}
@@ -223,7 +223,7 @@ btnSelectQSL_VIA->value(1);}
       }
       Fl_Check_Button btnSelectLOC {
         label LOC
-        xywh {402 293 70 15} down_box DOWN_BOX value 1
+        xywh {402 293 70 15} down_box DOWN_BOX
       }
       Fl_Check_Button btnSelectState {
         label State
@@ -333,14 +333,49 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
-btnSelectQSL_VIA->value(0);} selected
-        xywh {578 375 90 24}
+btnSelectQSL_VIA->value(0);}
+        xywh {488 377 85 24}
+      }
+      Fl_Button btnSetLoTWfields {
+        label LoTW
+        callback {btnSelectCall->value(1);
+btnSelectName->value(0);
+btnSelectFreq->value(1);
+btnSelectBand->value(0);
+btnSelectMode->value(1);
+btnSelectQSOdateOn->value(1);
+btnSelectQSOdateOff->value(0);
+btnSelectTimeON->value(1);
+btnSelectTimeOFF->value(0);
+btnSelectQth->value(0);
+btnSelectLOC->value(0);
+btnSelectState->value(0);
+btnSelectProvince->value(0);
+btnSelectCountry->value(0);
+btnSelectQSLrcvd->value(0);
+btnSelectQSLsent->value(0);
+btnSelectSerialIN->value(0);
+btnSelectSerialOUT->value(0);
+btnSelectXchgIn->value(0);
+btnSelectMyXchg->value(0);
+btnSelectRSTsent->value(0);
+btnSelectRSTrcvd->value(0);
+btnSelectIOTA->value(0);
+btnSelectDXCC->value(0);
+btnSelectCNTY->value(0);
+btnSelectCONT->value(0);
+btnSelectCQZ->value(0);
+btnSelectITUZ->value(0);
+btnSelectTX_pwr->value(0);
+btnSelectNotes->value(0);
+btnSelectQSL_VIA->value(0);}
+        xywh {581 377 85 24}
       }
     }
   }
   Fl_Window dlgLogbook {
-    label Logbook
-    xywh {919 185 590 490} type Double hide resizable
+    label Logbook open
+    xywh {695 71 590 490} type Double resizable visible
   } {
     Fl_Input inpDate_log {
       label {Date On}
@@ -439,74 +474,39 @@ btnSelectQSL_VIA->value(0);} selected
           code1 {o->format(2);}
           class Fl_DateInput
         }
-        Fl_Choice statusQSLrcvd {
-          label Status open
-          xywh {112 183 50 24} down_box BORDER_BOX align 5
-          code0 {o->add("N");o->add("Y");o->add("R");}
-        } {}
         Fl_Input inpEQSLrcvddate_log {
           label {EQSL-rcvd}
-          tooltip {QSL received on this date} xywh {165 183 100 24} align 5
+          tooltip {QSL received on this date} xywh {113 183 100 24} align 5
           code1 {o->format(2);}
           class Fl_DateInput
         }
-        Fl_Choice statusEQSLrcvd {
-          label Status open
-          xywh {269 183 50 24} down_box BORDER_BOX align 5
-          code0 {o->add("N");o->add("Y");o->add("R");}
-        } {}
         Fl_Input inpLOTWrcvddate_log {
           label {LOTW-rcvd}
-          tooltip {QSL received on this date} xywh {322 183 100 24} align 5
+          tooltip {QSL received on this date} xywh {217 183 100 24} align 5
           code1 {o->format(2);}
           class Fl_DateInput
         }
-        Fl_Choice statusLOTWrcvd {
-          label Status open
-          xywh {426 183 50 24} down_box BORDER_BOX align 5
-          code0 {o->add("N");o->add("Y");o->add("R");}
-        } {}
         Fl_Input inpQSLsentdate_log {
           label {QSL-sent}
           tooltip {QSL sent on this date} xywh {9 229 100 24} align 5
           code1 {o->format(2);}
           class Fl_DateInput
         }
-        Fl_Choice statusQSLsent {
-          label Status open
-          xywh {112 229 50 24} down_box BORDER_BOX align 5
-          code0 {o->add("N");o->add("Y");o->add("R");}
-        } {}
         Fl_Input inpEQSLsentdate_log {
           label {EQSL-sent}
-          tooltip {QSL sent on this date} xywh {165 229 100 24} align 5
+          tooltip {QSL sent on this date} xywh {113 229 100 24} align 5
           code1 {o->format(2);}
           class Fl_DateInput
         }
-        Fl_Choice statusEQSLsent {
-          label Status open
-          xywh {269 229 50 24} down_box BORDER_BOX align 5
-          code0 {o->add("N");o->add("Y");o->add("R");}
-        } {}
         Fl_Input inpLOTWsentdate_log {
           label {LOTW-sent}
-          tooltip {QSL sent on this date} xywh {322 229 100 24} align 5
+          tooltip {QSL sent on this date} xywh {217 229 100 24} align 5
           code1 {o->format(2);}
           class Fl_DateInput
         }
-        Fl_Choice statusLOTWsent {
-          label Status open
-          xywh {426 229 50 24} down_box BORDER_BOX align 5
-          code0 {o->add("N");o->add("Y");o->add("R");}
-        } {}
-      }
-      Fl_Group tab_log_qsl_2 {
-        label {QSL-2} open
-        xywh {5 162 474 94} hide
-      } {
         Fl_Input inpQSL_VIA_log {
-          label {QSL-VIA}
-          tooltip {QSL route of contacted station} xywh {25 191 170 24} align 5
+          label {QSL-VIA} selected
+          tooltip {QSL route of contacted station} xywh {320 183 155 70} type Multiline align 5 resizable
           class Fl_Input2
         }
       }

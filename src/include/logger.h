@@ -45,4 +45,6 @@ extern  char logtime[];
 extern  char adifdate[];
 extern	const char *logmode;
 
+extern string str_lotw;
+
 #endif

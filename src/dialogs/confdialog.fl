@@ -5029,6 +5029,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig
+        label Rig open
         tooltip {Transceiver control} xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsRig {open
@@ -6903,8 +6904,8 @@ if (progdefaults.kml_enabled) {
         }
       }
       Fl_Group tabQRZ {
-        label Web
-        tooltip {Callsign database} xywh {0 25 600 365} hide
+        label Web open
+        tooltip {Callsign database} xywh {0 25 600 365}
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 600 365}
@@ -7082,7 +7083,7 @@ progdefaults.changed= true;}
               }
             }
           }
-          Fl_Group {} {
+          Fl_Group tabEQSL {
             label eQSL open
             xywh {0 50 600 340} hide
           } {
@@ -7090,7 +7091,7 @@ progdefaults.changed= true;}
               label {User ID}
               callback {progdefaults.eqsl_id = o->value();
 progdefaults.changed = true;}
-              tooltip {Your login name} xywh {225 58 150 20}
+              tooltip {Your login name} xywh {154 60 150 22}
               code0 {o->value(progdefaults.eqsl_id.c_str());}
               code1 {inpEQSL_id->labelsize(FL_NORMAL_SIZE);}
               class Fl_Input2
@@ -7099,7 +7100,7 @@ progdefaults.changed = true;}
               label Password
               callback {progdefaults.eqsl_pwd = o->value();
 progdefaults.changed = true;}
-              tooltip {Your login password} xywh {225 85 150 20}
+              tooltip {Your login password} xywh {154 87 150 22}
               code0 {o->value(progdefaults.eqsl_pwd.c_str());}
               code1 {o->type(FL_SECRET_INPUT);}
               code2 {inpEQSL_pwd->labelsize(FL_NORMAL_SIZE);}
@@ -7110,64 +7111,181 @@ progdefaults.changed = true;}
               callback {inpEQSL_pwd->type(inpEQSL_pwd->type() ^ FL_SECRET_INPUT);
 inpEQSL_pwd->redraw();
 o->label((inpEQSL_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
-              tooltip {Show password in plain text} xywh {395 85 70 20}
+              tooltip {Show password in plain text} xywh {310 87 70 22}
             }
             Fl_Input inpEQSL_nick {
               label {QTH Nickname}
               callback {progdefaults.eqsl_nick = o->value();
 progdefaults.changed = true;}
-              tooltip {Your login name} xywh {225 114 150 20}
+              tooltip {Your login name} xywh {154 115 150 22}
               code0 {o->value(progdefaults.eqsl_nick.c_str());}
               code1 {inpEQSL_nick->labelsize(FL_NORMAL_SIZE);}
               class Fl_Input2
             }
+            Fl_Button btn_verify_eqsl {
+              label Verify
+              callback cb_btn_verify_eqsl
+              tooltip {Verify database with eQSL download file} xywh {475 111 70 24}
+            }
             Fl_Group {} {
               label Options open
-              xywh {30 141 516 223} box ENGRAVED_FRAME align 21
+              xywh {42 141 516 223} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btn_send_when_logged {
                 label {send when logged (log button, <LOG>, <LNW>)}
                 callback {progdefaults.eqsl_when_logged = o->value();
 progdefaults.changed = true;}
-                tooltip {automatic data upload} xywh {79 166 70 15} down_box DOWN_BOX
+                tooltip {automatic data upload} xywh {91 166 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.eqsl_when_logged);}
               }
               Fl_Input txt_eqsl_default_message {
                 label {Default message}
                 callback {progdefaults.eqsl_default_message = o->value();
 progdefaults.changed = true;}
-                tooltip {default text to send with <LOG> etc} xywh {83 226 451 40} type Multiline align 5 when 1
+                tooltip {default text to send with <LOG> etc} xywh {95 226 451 40} type Multiline align 5 when 1
                 code0 {o->value(progdefaults.eqsl_default_message.c_str());}
                 class Fl_Input2
               }
               Fl_Group {} {
                 label {Text Tags (tags use {} delimiters)} open
-                xywh {30 270 513 90} box FLAT_BOX align 21
+                xywh {49 270 481 90} box FLAT_BOX align 21
               } {
                 Fl_Box eqsl_txt1 {
                   label {  {CALL} other ops call sign}
-                  xywh {32 317 220 17} align 20
+                  xywh {64 317 220 17} align 20
                 }
                 Fl_Box eqsl_txt2 {
                   label {  {MODE} full mode / submode}
-                  xywh {30 336 220 17} align 20
+                  xywh {62 336 220 17} align 20
                 }
                 Fl_Box eqsl_txt3 {
                   label {{NAME} other ops name}
-                  xywh {278 317 220 17} align 20
+                  xywh {310 317 220 17} align 20
                 }
                 Fl_Box {} {
                   label {These tags can also be used in <EQSL:[message]>}
-                  xywh {68 293 440 17}
+                  xywh {80 293 440 17}
                 }
               }
               Fl_Check_Button btn_send_datetime_off {
                 label {Use date/time off for log entry}
                 callback {progdefaults.eqsl_datetime_off = o->value();
 progdefaults.changed = true;}
-                tooltip {default uses date/time on} xywh {80 188 70 15} down_box DOWN_BOX
+                tooltip {default uses date/time on} xywh {92 188 70 15} down_box DOWN_BOX
                 code0 {o->value(progdefaults.eqsl_datetime_off);}
               }
+            }
+          }
+          Fl_Group tabLOTW {
+            label LoTW open selected
+            xywh {0 50 600 340}
+          } {
+            Fl_Input txt_lotw_pathname {
+              label {tqsl:}
+              callback {progdefaults.lotw_pathname = o->value();
+progdefaults.changed = true;}
+              tooltip {Enter full path-filename for tqsl executable} xywh {90 91 379 24} when 1
+              code0 {o->value(progdefaults.lotw_pathname.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input inpLOTW_pwd {
+              label Password
+              callback {progdefaults.lotw_pwd = o->value();
+progdefaults.changed = true;}
+              tooltip {Your tqsl login password} xywh {90 126 200 24}
+              code0 {o->value(progdefaults.lotw_pwd.c_str());}
+              code1 {o->type(FL_SECRET_INPUT);}
+              code2 {inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);}
+              class Fl_Input2
+            }
+            Fl_Check_Button btn_submit_lotw_password {
+              label {Use password for tqsl access}
+              callback {progdefaults.submit_lotw_password=o->value();
+progdefaults.changed=true;}
+              tooltip {Submit password with each upload} xywh {90 161 234 16} down_box DOWN_BOX
+              code0 {o->value(progdefaults.submit_lotw_password);}
+            }
+            Fl_Input inpLOTW_location {
+              label Location
+              callback {progdefaults.lotw_location = o->value();
+progdefaults.changed = true;}
+              tooltip {tqsl station location} xywh {90 188 200 24}
+              code0 {o->value(progdefaults.lotw_location.c_str());}
+              code1 {inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);}
+              class Fl_Input2
+            }
+            Fl_Button btn_select_lotw {
+              label Locate
+              callback {std::string str = select_binary_pathname(progdefaults.lotw_pathname);
+txt_lotw_pathname->value(str.c_str());
+progdefaults.lotw_pathname = str;
+progdefaults.changed = true;}
+              tooltip {Locate tqsl executable} xywh {477 91 70 24}
+            }
+            Fl_Check_Button btn_lotw_quiet_mode {
+              label {Quiet mode [-q], do not open tqsl dialog}
+              callback {progdefaults.lotw_quiet_mode=o->value();
+progdefaults.changed=true;}
+              tooltip {Operate tqsl in batch mode (no dialog)} xywh {90 223 309 16} down_box DOWN_BOX
+              code0 {o->value(progdefaults.lotw_quiet_mode);}
+            }
+            Fl_Check_Button btn_submit_lotw {
+              label {Send QSO data to LoTW when logged}
+              callback {progdefaults.submit_lotw=o->value();
+progdefaults.changed=true;}
+              tooltip {Submit each QSO as logged} xywh {90 247 289 16} down_box DOWN_BOX
+              code0 {o->value(progdefaults.submit_lotw);}
+            }
+            Fl_Button btn_export_lotw {
+              label Export
+              callback {cb_btnExportLoTW();}
+              tooltip {Export records for LoTW upload} xywh {90 273 70 24}
+            }
+            Fl_Button btn_review_lotw {
+              label Check
+              callback {cb_review_lotw();}
+              tooltip {Review lotw.adif file before sending with tqsl} xywh {90 300 70 24}
+            }
+            Fl_Button btn_send_lotw {
+              label Send
+              callback {cb_send_lotw();}
+              tooltip {Send lotw.adif via tqsl} xywh {90 328 70 24}
+            }
+            Fl_Box {} {
+              label {Export all or a set of logbook records for LoTW upload}
+              xywh {175 273 395 24} align 20
+            }
+            Fl_Box {} {
+              label {Review / edit the exported LoTW upload adif file}
+              xywh {175 300 395 24} align 20
+            }
+            Fl_Box {} {
+              label {Submit the upload adif file to LoTW}
+              xywh {175 328 395 24} align 20
+            }
+            Fl_Box {} {
+              label {You must have tqsl installed and it's location recorded for LoTW updates to work!}
+              xywh {11 60 574 24} align 16
+            }
+            Fl_Button btnLOTW_pwd_show {
+              label Show
+              callback {inpLOTW_pwd->type(inpLOTW_pwd->type() ^ FL_SECRET_INPUT);
+inpLOTW_pwd->redraw();
+o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
+              tooltip {Show password in plain text} xywh {297 126 70 24}
+            }
+            Fl_Box {} {
+              label {Use this tqsl station location}
+              xywh {300 188 285 24} align 20
+            }
+            Fl_Button btn_verify_lotw {
+              label Match
+              callback cb_btn_verify_lotw
+              tooltip {Verify database with LoTW download file} xywh {90 356 70 24}
+            }
+            Fl_Box {} {
+              label {Match logbook records with LoTW download file}
+              xywh {175 356 395 24} align 20
             }
           }
         }

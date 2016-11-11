@@ -583,3 +583,72 @@ bool cQsoDb::duplicate(
 	return false;
 }
 
+// set epoch interval test to 15 * 60
+static inline const char *adifmode(const char *mode)
+{
+	for (int i = 0; i < NUM_MODES; i++) {
+		if (strcasecmp(mode_info[i].sname, mode) == 0)
+			return (mode_info[i].adif_name);
+	}
+	return "";
+}
+
+int cQsoDb::matched( cQsoRec *rec )
+{
+	bool match = false;
+	bool test = false;
+
+	int interval = 60 * 15;
+
+	const char *callsign = rec->getField(CALL);
+	const char *date = rec->getField(QSO_DATE);
+	const char *time = rec->getField(TIME_ON);
+	const char *mode = rec->getField(MODE); 
+	const char *band = rec->getField(BAND);
+
+	unsigned long qsodatetime,
+				  lotwdatetime = epoch_dt(date, time);
+
+	int   freq = (int)(atof(rec->getField(FREQ)) / 1000.0);
+	int   difftime;
+
+	for (int i = 0; i < nbrrecs; i++) {
+// test CALL
+		match = (strcasecmp(qsorec[i].getField(CALL), callsign) == 0);
+		if (!match) continue;
+// test FREQ
+		test = (freq == (int)(atof(qsorec[i].getField(FREQ)) / 1000.0));
+// test BAND iff FREQ test fails
+		if (!test) test = (strcasecmp(qsorec[i].getField(BAND), band) == 0);
+		match = match && test;
+		if (!match) continue;
+// test MODE
+		test = (qsorec[i].getField(MODE)[0] == 0 && mode[0] == 0) ||
+				(strcasestr(qsorec[i].getField(MODE), mode) != 0);
+		if (!test) test = (strcasecmp(mode, adifmode(qsorec[i].getField(MODE))) == 0);
+		if (!test) test = (strcasecmp(mode, "DATA") == 0);
+		match = match && test;
+		if (!match) continue;
+// test date/time (epoch)
+		qsodatetime = epoch_dt (
+						qsorec[i].getField(QSO_DATE),
+						qsorec[i].getField(TIME_ON));
+		difftime = (int)(lotwdatetime - qsodatetime);
+		if (abs(difftime) < interval)
+			test = true;
+		else
+			test = false;
+		match = match && test;
+		if (!match) continue;
+// found match
+
+//	printf("%10s, %12s, %s, %s, %s\n%10s, %12s, %s, %s, %s\n",
+//		rec->getField(CALL), rec->getField(FREQ), rec->getField(QSO_DATE), rec->getField(TIME_ON), rec->getField(MODE),
+//		qsorec[i].getField(CALL), qsorec[i].getField(FREQ), qsorec[i].getField(QSO_DATE), qsorec[i].getField(TIME_ON), qsorec[i].getField(MODE) );
+//	printf("epoch test: %ud ~= %ud ==> %d\n", (uint)lotwdatetime, (uint)qsodatetime, difftime);
+
+		return i;
+	}
+	return -1;
+}
+

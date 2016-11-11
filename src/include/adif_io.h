@@ -26,7 +26,7 @@
 
 #include "qso_db.h"
 
-#define ADIF_VERS "2.2.3"
+#define ADIF_VERS "2.2.7"
 
 class cAdifIO {
 private:

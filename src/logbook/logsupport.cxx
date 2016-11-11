@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <fstream>
 
 #include "main.h"
 #include "trx.h"
@@ -57,8 +58,14 @@
 #include "qrunner.h"
 #include "flmisc.h"
 
+#include "network.h"
+
 #include <FL/filename.H>
 #include <FL/fl_ask.H>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Text_Display.H>
+#include <FL/Fl_Text_Editor.H>
+#include <FL/Fl_Button.H>
 
 using namespace std;
 
@@ -220,11 +227,96 @@ void Export_ADIF()
 	adifFile.writeFile (sp.c_str(), &qsodb);
 }
 
+void Export_LOTW()
+{
+	if (chkExportBrowser->nchecked() == 0) return;
+
+	cQsoRec *rec;
+
+	if (str_lotw.empty())
+		str_lotw = "Fldigi LoTW upload file\n<ADIF_VER:5>2.2.7\n<EOH>\n";
+	string adifrec;
+
+	for (int i = 0; i < chkExportBrowser->FLTK_nitems(); i++) {
+		if (chkExportBrowser->checked(i + 1)) {
+			rec = qsodb.getRec(i);
+			rec->putField(EXPORT, "E");
+			qsodb.qsoUpdRec (i, rec);
+			adifrec = lotw_rec(*rec);
+			if (adifrec.empty()) {
+				LOG_INFO("%s", "Invalid LOTW record");
+			} else
+				str_lotw.append(adifrec);
+		}
+	}
+}
+
+static Fl_Double_Window *lotw_review_dialog = 0;
+static Fl_Text_Buffer *buff = 0;
+static Fl_Text_Editor *disp = 0;
+static Fl_Button *lotw_close_review = 0;
+static Fl_Button *lotw_save_review = 0;
+static Fl_Button *lotw_clear_review = 0;
+
+void cb_lotw_close_review(Fl_Button *, void *)
+{
+	lotw_review_dialog->hide();
+	delete lotw_review_dialog;
+	lotw_review_dialog = 0;
+	lotw_close_review = 0;
+	buff = 0;
+	disp = 0;
+}
+
+void cb_lotw_save_review(Fl_Button *, void *)
+{
+	str_lotw = buff->text();
+}
+
+void cb_lotw_clear_review(Fl_Button *, void *)
+{
+	buff->text("");
+}
+
+void cb_review_lotw()
+{
+	if (str_lotw.empty()) return;
+
+	if (!lotw_review_dialog) {
+		lotw_review_dialog = new Fl_Double_Window(50,50, 640, 400, _("LoTW Review"));
+		lotw_review_dialog->begin();
+
+		buff = new Fl_Text_Buffer();
+		disp = new Fl_Text_Editor(4, 4, 632, 364);
+		disp->textfont(FL_SCREEN);
+		disp->buffer(buff); // attach text buffer to display widget
+		lotw_close_review = new Fl_Button(576, 372, 60, 24, _("Close"));
+		lotw_close_review->callback((Fl_Callback *)cb_lotw_close_review);
+
+		lotw_clear_review = new Fl_Button(4, 372, 60, 24, _("Clear"));
+		lotw_clear_review->callback((Fl_Callback *)cb_lotw_clear_review);
+
+		lotw_save_review = new Fl_Button(lotw_review_dialog->w()/2-30, 372, 60, 24, _("Save"));
+		lotw_save_review->callback((Fl_Callback *)cb_lotw_save_review);
+
+		lotw_review_dialog->end();
+	}
+	buff->text(str_lotw.c_str());
+
+	lotw_review_dialog->show();
+}
+
+void cb_send_lotw()
+{
+	send_to_lotw(NULL);
+}
+
 static savetype export_to = ADIF;
 
 void Export_log()
 {
-	if (export_to == ADIF) Export_ADIF();
+	if (export_to == LOTW) Export_LOTW();
+	else if (export_to == ADIF) Export_ADIF();
 	else if (export_to == CSV) Export_CSV();
 	else Export_TXT();
 }
@@ -520,20 +612,104 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	cQsoDb *mrgdb = new cQsoDb;
 	adifFile.do_readfile (p, mrgdb);
 
-printf("base %d, merge with %d\n", qsodb.nbrRecs(), mrgdb->nbrRecs());
+//printf("base %d, merge with %d\n", qsodb.nbrRecs(), mrgdb->nbrRecs());
 	merge_recs(&qsodb, mrgdb);
 
 	delete mrgdb;
 
 }
 
+static string lotw_download_name = "";
+static cQsoDb *lotw_db = 0;
+
+void verify_lotw(void *)
+{
+	lotw_db = new cQsoDb;
+	adifFile.do_readfile (lotw_download_name.c_str(), lotw_db);
+
+	string notice;
+	char sznote[50];
+	
+	if (lotw_db->nbrRecs() == 0) {
+		notice = "No records in lotw download file";
+		LOG_INFO("%s", notice.c_str());
+	} else {
+
+		int matchrec;
+		cQsoRec *qrec, *lrec;
+		int nverified = 0;
+		string date;
+		string qdate;
+
+		for (int i = 0; i < lotw_db->nbrRecs(); i++) {
+			lrec = lotw_db->getRec(i);
+			date = lrec->getField(QSLRDATE);
+			matchrec = qsodb.matched( lrec );
+			if (matchrec != -1) {
+				qrec = qsodb.getRec(matchrec);
+				qdate = qrec->getField(LOTWRDATE);
+				if (date != qdate) {
+					nverified++;
+					qrec->putField(STATE, lrec->getField(STATE));
+					qrec->putField(GRIDSQUARE, lrec->getField(GRIDSQUARE));
+					qrec->putField(CQZ, lrec->getField(CQZ));
+					qrec->putField(COUNTRY, lrec->getField(COUNTRY));
+					qrec->putField(CNTY, lrec->getField(CNTY));
+					qrec->putField(DXCC, lrec->getField(DXCC));
+					qrec->putField(DXCC, lrec->getField(DXCC));
+					qrec->putField(LOTWRDATE, lrec->getField(QSLRDATE));
+				}
+			} else {
+				notice.append("Could not match ");
+				notice.append(lrec->getField(CALL)).append(" on ");
+				notice.append(lrec->getField(QSO_DATE)).append("\n");
+				LOG_INFO("Could not match %s on %s", lrec->getField(CALL), lrec->getField(QSO_DATE));
+			}
+		}
+		snprintf(sznote, sizeof(sznote),"%d records matched", nverified);
+		notice.append(sznote).append("\n");
+		LOG_INFO("%d records matched", nverified);
+	}
+	fl_alert2("%s", notice.c_str());
+
+	delete lotw_db;
+}
+
+void cb_btn_verify_lotw(Fl_Button *, void *) {
+
+	string deffname = LoTWDir;
+	deffname.append("lotwreport.adi");
+	
+	ifstream f(deffname.c_str());
+	
+//	const char* p = FSEL::select(_("LoTW download file"), "ADIF\t*.{adi,adif}", deffname.c_str());
+
+//	if (!p || !*p) {
+	if (!f) {
+		fl_alert2("\
+Could not find LoTW report file.\n\n\
+Download from ARRL's LoTW page after logging in at:\n\n\
+https://lotw.arrl.org/lotwuser/default\n\n\
+Store the report file to the fldigi LOTW folder,\n\n\
+naming the file 'lotwreport.adi'");
+		return;
+	}
+//	lotw_download_name = p;
+	f.close();
+	lotw_download_name = deffname;
+	Fl::awake(verify_lotw);
+}
+
 void cb_export_date_select() {
 	if (qsodb.nbrRecs() == 0) return;
 	int start = atoi(inp_export_start_date->value());
 	int stop = atoi(inp_export_stop_date->value());
+
+	chkExportBrowser->check_none();
+
 	if (!start || !stop) return;
 	int chkdate;
-	chkExportBrowser->check_none();
+
 	if (!btn_export_by_date->value()) return;
 
 	cQsoRec *rec;
@@ -543,6 +719,7 @@ void cb_export_date_select() {
 		if (chkdate >= start && chkdate <= stop)
 			chkExportBrowser->checked(i+1, 1);
 	}
+
 	chkExportBrowser->redraw();
 }
 
@@ -569,9 +746,9 @@ void cb_Export_log() {
 	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
 		rec = qsodb.getRec (i);
 		snprintf(line,sizeof(line),"%8s %4s %-10s %-10s %-s",
- 			rec->getField(QSO_DATE),
- 			rec->getField(TIME_OFF),
- 			rec->getField(CALL),
+			rec->getField(QSO_DATE),
+			rec->getField((export_to == LOTW ? TIME_ON : TIME_OFF) ),
+			rec->getField(CALL),
 			szfreq(rec->getField(FREQ)),
 			rec->getField(MODE) );
         chkExportBrowser->add(line);
@@ -587,6 +764,11 @@ void cb_mnuExportADIF_log(Fl_Menu_* m, void* d) {
 
 void cb_mnuExportCSV_log(Fl_Menu_* m, void* d) {
 	export_to = CSV;
+	cb_Export_log();
+}
+
+void cb_btnExportLoTW() {
+	export_to = LOTW;
 	cb_Export_log();
 }
 
@@ -954,8 +1136,16 @@ void clearRecord() {
 	inpVE_Prov_log->value ("");
 	inpCountry_log->value ("");
 	inpLoc_log->value ("");
+
 	inpQSLrcvddate_log->value ("");
 	inpQSLsentdate_log->value ("");
+
+	inpEQSLrcvddate_log->value ("");
+	inpEQSLsentdate_log->value ("");
+
+	inpLOTWrcvddate_log->value ("");
+	inpLOTWsentdate_log->value ("");
+
 	inpSerNoOut_log->value ("");
 	inpSerNoIn_log->value ("");
 	inpXchgIn_log->value("");
@@ -995,8 +1185,16 @@ void saveRecord() {
 	rec.putField(COUNTRY, inpCountry_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
 	rec.putField(NOTES, inpNotes_log->value());
+
 	rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
 	rec.putField(QSLSDATE, inpQSLsentdate_log->value());
+
+	rec.putField(EQSLRDATE, inpEQSLrcvddate_log->value());
+	rec.putField(EQSLSDATE, inpEQSLsentdate_log->value());
+
+	rec.putField(LOTWRDATE, inpLOTWrcvddate_log->value());
+	rec.putField(LOTWSDATE, inpLOTWsentdate_log->value());
+
 	rec.putField(RST_RCVD, inpRstR_log->value ());
 	rec.putField(RST_SENT, inpRstS_log->value ());
 	rec.putField(SRX, inpSerNoIn_log->value());
@@ -1064,8 +1262,16 @@ void updateRecord() {
 	rec.putField(COUNTRY, inpCountry_log->value());
 	rec.putField(GRIDSQUARE, inpLoc_log->value());
 	rec.putField(NOTES, inpNotes_log->value());
+
 	rec.putField(QSLRDATE, inpQSLrcvddate_log->value());
 	rec.putField(QSLSDATE, inpQSLsentdate_log->value());
+
+	rec.putField(EQSLRDATE, inpEQSLrcvddate_log->value());
+	rec.putField(EQSLSDATE, inpEQSLsentdate_log->value());
+
+	rec.putField(LOTWRDATE, inpLOTWrcvddate_log->value());
+	rec.putField(LOTWSDATE, inpLOTWsentdate_log->value());
+
 	rec.putField(RST_RCVD, inpRstR_log->value ());
 	rec.putField(RST_SENT, inpRstS_log->value ());
 	rec.putField(SRX, inpSerNoIn_log->value());
@@ -1139,8 +1345,16 @@ void EditRecord( int i )
 	inpCountry_log->value (editQSO->getField(COUNTRY));
 	inpQth_log->value (editQSO->getField(QTH));
 	inpLoc_log->value (editQSO->getField(GRIDSQUARE));
+
 	inpQSLrcvddate_log->value (editQSO->getField(QSLRDATE));
 	inpQSLsentdate_log->value (editQSO->getField(QSLSDATE));
+
+	inpEQSLrcvddate_log->value (editQSO->getField(EQSLRDATE));
+	inpEQSLsentdate_log->value (editQSO->getField(EQSLSDATE));
+
+	inpLOTWrcvddate_log->value (editQSO->getField(LOTWRDATE));
+	inpLOTWsentdate_log->value (editQSO->getField(LOTWSDATE));
+
 	inpNotes_log->value (editQSO->getField(NOTES));
 	inpSerNoIn_log->value(editQSO->getField(SRX));
 	inpSerNoOut_log->value(editQSO->getField(STX));
@@ -1204,8 +1418,16 @@ void AddRecord ()
 
 	inpQth_log->value (inpQth->value());
 	inpLoc_log->value (inpLoc->value());
+
 	inpQSLrcvddate_log->value ("");
 	inpQSLsentdate_log->value ("");
+
+	inpEQSLrcvddate_log->value ("");
+	inpEQSLsentdate_log->value ("");
+
+	inpLOTWrcvddate_log->value ("");
+	inpLOTWsentdate_log->value ("");
+
 	inpNotes_log->value (inpNotes->value());
 
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
@@ -1723,3 +1945,57 @@ bool qsodb_dxcc_entity_find(const char* country)
 {
 	return dxcc_entity_cache.find(country) != dxcc_entity_cache.end();
 }
+
+//======================================================================
+// eQSL verification support
+//======================================================================
+
+static string eqsl_download_name = "";
+static cQsoDb *eqsl_db = 0;
+
+void verify_eqsl(void *)
+{
+	eqsl_db = new cQsoDb;
+	adifFile.do_readfile (eqsl_download_name.c_str(), eqsl_db);
+
+	if (eqsl_db->nbrRecs() == 0) {
+		LOG_INFO("No records in eqsl download file");
+		return;
+	}
+	LOG_INFO("logbook %d records, verify with %d records", qsodb.nbrRecs(), eqsl_db->nbrRecs());
+
+	int matchrec;
+	cQsoRec *qrec, *lrec;
+	int nverified = 0;
+
+	for (int i = 0; i < eqsl_db->nbrRecs(); i++) {
+		lrec = eqsl_db->getRec(i);
+		matchrec = qsodb.matched( lrec );
+		if (matchrec != -1) {
+			qrec = qsodb.getRec(matchrec);
+			if (qrec->getField(EQSLRDATE)[0] == 0) {
+				nverified++;
+				qrec->putField(EQSLRDATE, zdate());
+			}
+		} else {
+			LOG_INFO("Could not match %s on %s", lrec->getField(CALL), lrec->getField(QSO_DATE));
+		}
+	}
+	LOG_INFO("%d records updated", nverified);
+	delete eqsl_db;
+}
+
+void cb_btn_verify_eqsl(Fl_Button *, void *) {
+	ENSURE_THREAD(FLMAIN_TID);
+
+	const char* p = FSEL::select(_("LoTW download file"), "ADIF\t*.{adi,adif}", LoTWDir.c_str());
+
+	if (!p) return;
+	if (!*p) return;
+
+	eqsl_download_name = p;
+
+	Fl::awake(verify_eqsl);
+
+}
+

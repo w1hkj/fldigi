@@ -37,7 +37,7 @@
 #  define ADIF_SUFFIX "adif"
 #endif
 
-enum savetype {ADIF, CSV, TEXT, LO};
+enum savetype {ADIF, CSV, TEXT, LOTW, LO};
 enum logtype {LOG_QSO, LOG_CONT, LOG_FD, LOG_CQWW, LOG_BART};
 
 extern cQsoDb        qsodb;
@@ -64,6 +64,16 @@ extern void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d);
 extern void cb_mnuExportADIF_log(Fl_Menu_* m, void* d);
 extern void cb_mnuExportCSV_log(Fl_Menu_* m, void* d);
 extern void cb_mnuExportTEXT_log(Fl_Menu_* m, void* d);
+
+extern string lotw_rec(cQsoRec &rec);
+extern void cb_btnExportLoTW();
+
+extern void cb_review_lotw();
+extern void cb_send_lotw();
+extern void send_to_lotw(void *);
+extern void cb_btn_verify_lotw(Fl_Button *, void *);
+extern void cb_btn_verify_eqsl(Fl_Button *, void *);
+
 extern void cb_Export_Cabrillo(Fl_Menu_* m, void* d);
 extern void cb_export_date_select();
 

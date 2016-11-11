@@ -1,10 +1,15 @@
+2016-10-31  David Freese  <iam_w1hkj@w1hkj.com>
+
+	a802ade: lotw interface
+	401a127: Alpha
+	f7a11e0: GPIO PTT
+	9c0ed51: ARQ Client vector
+	0e7feae: Rx Extract
 
 
 =Version 3.23.15=
 
-2016-10-16  David Freese  <iam_w1hkj@w1hkj.com>
-
-	7732982: Translation file
+	436c6f8: Translation file
 	153ae9a: N3FJP command sequencing
 	300624a: BARTG vice BART
 	0ac4bb3: speed test

@@ -123,6 +123,9 @@ public:
 		const char *mode, bool chkmode,
 		const char *xchg1, bool chkxchg1 );
 
+	int matched( cQsoRec *rec );
+
+
 };
 
 #endif
