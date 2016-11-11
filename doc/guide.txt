@@ -23,6 +23,8 @@ Beginners' Guide to Fldigi
 :revision: 3.11
 // Aliases
 :docsurl: http://www.w1hkj.com/FldigiHelp/index.html
+//:docszip: http://www.w1hkj.com/files/fldigi/fldigi-help.zip
+:docszip: https://sourceforge.net/projects/fldigi/files/fldigi-help.zip/download/
 :docs: {docsurl}[Online Documentation]
 :home: http://www.w1hkj.com/Fldigi.html
 
@@ -33,6 +35,13 @@ Of necessity, this Beginners' Guide contains only as much as you need to know to
 get started. You should learn how to make best use of the program by reading the
 {docs}. You can also access it from within the Fldigi program from the 'Help'
 menu item.
+
+You can install the entire html help system by downloading from Source Forge:
+ 
+{docszip}
+ 
+Unzip the downloaded file into the same folder as this document.  The menu
+item "Help / Online documentation..." will then open the local copy of the fldigi help system.
 ********************************************************************************
 
 

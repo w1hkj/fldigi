@@ -3,7 +3,7 @@ const char* szBeginner = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n\
 <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n\
 <head>\n\
 <meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" />\n\
-<meta name=\"generator\" content=\"AsciiDoc 8.6.6\" />\n\
+<meta name=\"generator\" content=\"AsciiDoc 8.6.9\" />\n\
 <title>Beginners' Guide to Fldigi</title>\n\
 <style type=\"text/css\">\n\
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */\n\
@@ -87,9 +87,15 @@ ul, ol, li > p {\n\
 ul > li     { color: #aaa; }\n\
 ul > li > * { color: black; }\n\
 \n\
-pre {\n\
+.monospaced, code, pre {\n\
+  font-family: \"Courier New\", Courier, monospace;\n\
+  font-size: inherit;\n\
+  color: navy;\n\
   padding: 0;\n\
   margin: 0;\n\
+}\n\
+pre {\n\
+  white-space: pre-wrap;\n\
 }\n\
 \n\
 #author {\n\
@@ -219,7 +225,7 @@ div.exampleblock > div.content {\n\
 }\n\
 \n\
 div.imageblock div.content { padding-left: 0; }\n\
-span.image img { border-style: none; }\n\
+span.image img { border-style: none; vertical-align: text-bottom; }\n\
 a.image:visited { color: white; }\n\
 \n\
 dl {\n\
@@ -349,7 +355,7 @@ div.colist td img {\n\
   margin-bottom: 0.1em;\n\
 }\n\
 \n\
-div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {\n\
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {\n\
   margin-top: 0;\n\
   margin-bottom: 0;\n\
 }\n\
@@ -407,17 +413,13 @@ span.underline { text-decoration: underline; }\n\
 span.overline { text-decoration: overline; }\n\
 span.line-through { text-decoration: line-through; }\n\
 \n\
+div.unbreakable { page-break-inside: avoid; }\n\
+\n\
 \n\
 /*\n\
  * xhtml11 specific\n\
  *\n\
  * */\n\
-\n\
-tt {\n\
-  font-family: monospace;\n\
-  font-size: inherit;\n\
-  color: navy;\n\
-}\n\
 \n\
 div.tableblock {\n\
   margin-top: 1.0em;\n\
@@ -451,12 +453,6 @@ div.tableblock > table[frame=\"vsides\"] {\n\
  * html5 specific\n\
  *\n\
  * */\n\
-\n\
-.monospaced {\n\
-  font-family: monospace;\n\
-  font-size: inherit;\n\
-  color: navy;\n\
-}\n\
 \n\
 table.tableblock {\n\
   margin-top: 1.0em;\n\
@@ -537,6 +533,8 @@ body.manpage div.sectionbody {\n\
 @media print {\n\
   body.manpage div#toc { display: none; }\n\
 }\n\
+\n\
+\n\
 </style>\n\
 <script type=\"text/javascript\">\n\
 /*<![CDATA[*/\n\
@@ -581,7 +579,7 @@ toc: function (toclevels) {\n\
 \n\
   function tocEntries(el, toclevels) {\n\
     var result = new Array;\n\
-    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');\n\
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');\n\
     // Function that scans the DOM tree for header elements (the DOM2\n\
     // nodeIterator API would be a better technique but not supported by all\n\
     // browsers).\n\
@@ -610,7 +608,7 @@ toc: function (toclevels) {\n\
   var i;\n\
   for (i = 0; i < toc.childNodes.length; i++) {\n\
     var entry = toc.childNodes[i];\n\
-    if (entry.nodeName == 'div'\n\
+    if (entry.nodeName.toLowerCase() == 'div'\n\
      && entry.getAttribute(\"class\")\n\
      && entry.getAttribute(\"class\").match(/^toclevel/))\n\
       tocEntriesToRemove.push(entry);\n\
@@ -656,7 +654,7 @@ footnotes: function () {\n\
   var entriesToRemove = [];\n\
   for (i = 0; i < noteholder.childNodes.length; i++) {\n\
     var entry = noteholder.childNodes[i];\n\
-    if (entry.nodeName == 'div' && entry.getAttribute(\"class\") == \"footnote\")\n\
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute(\"class\") == \"footnote\")\n\
       entriesToRemove.push(entry);\n\
   }\n\
   for (i = 0; i < entriesToRemove.length; i++) {\n\
@@ -750,6 +748,10 @@ asciidoc.install(1);\n\
 get started. You should learn how to make best use of the program by reading the\n\
 <a href=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</a>. You can also access it from within the Fldigi program from the <em>Help</em>\n\
 menu item.</p></div>\n\
+<div class=\"paragraph\"><p>You can install the entire html help system by downloading from Source Forge:</p></div>\n\
+<div class=\"paragraph\"><p><a href=\"https://sourceforge.net/projects/fldigi/files/fldigi-help.zip/download/\">https://sourceforge.net/projects/fldigi/files/fldigi-help.zip/download/</a></p></div>\n\
+<div class=\"paragraph\"><p>Unzip the downloaded file into the same folder as this document.  The menu\n\
+item \"Help / Online documentation&#8230;\" will then open the local copy of the fldigi help system.</p></div>\n\
 </div></div>\n\
 </div>\n\
 </div>\n\
@@ -841,14 +843,14 @@ programs also offer this RSID feature as an option.</p></div>\n\
 <div class=\"ulist\"><div class=\"title\">Essentials</div><ul>\n\
 <li>\n\
 <p>\n\
-Use the menu <tt>Configure&#8594;Operator</tt> item to set the operator name, callsign,\n\
+Use the menu <code>Configure&#8594;Operator</code> item to set the operator name, callsign,\n\
   locator and so on.\n\
 </p>\n\
 </li>\n\
 <li>\n\
 <p>\n\
-If you have more than one sound card, use the menu <tt>Configure&#8594;Sound Card</tt>,\n\
-  <tt>Audio Devices</tt> tab, to select the sound card you wish to use. You can ignore\n\
+If you have more than one sound card, use the menu <code>Configure&#8594;Sound Card</code>,\n\
+  <code>Audio Devices</code> tab, to select the sound card you wish to use. You can ignore\n\
   the other tabs for now.\n\
 </p>\n\
 </li>\n\
@@ -856,20 +858,20 @@ If you have more than one sound card, use the menu <tt>Configure&#8594;Sound Car
 <div class=\"ulist\"><div class=\"title\">Rig Control</div><ul>\n\
 <li>\n\
 <p>\n\
-Use the menu <tt>Configure&#8594;Rig Control</tt> item to set how you will control the\n\
-  rig. If you will key the rig via a serial port, in the <tt>Hardware PTT</tt> tab\n\
+Use the menu <code>Configure&#8594;Rig Control</code> item to set how you will control the\n\
+  rig. If you will key the rig via a serial port, in the <code>Hardware PTT</code> tab\n\
   select <em>Use serial port PTT</em>, the device name you will use, and which line\n\
   controls PTT. If in doubt, check both <em>RTS</em> and <em>DTR</em>. You <strong>must</strong> then press\n\
-  the <tt>Initialize</tt> button.\n\
+  the <code>Initialize</code> button.\n\
 </p>\n\
 </li>\n\
 <li>\n\
 <p>\n\
 If you plan to use CAT control of the rig via the COM port, check <em>Use Hamlib</em>\n\
-  in the <tt>Hamlib</tt> tab. Select your rig model from the drop-down menu and set the\n\
+  in the <code>Hamlib</code> tab. Select your rig model from the drop-down menu and set the\n\
   serial port device name, baud rate, and RTS/CTS options as needed. If in\n\
   addition you wish to use PTT control via CAT, also check <em>PTT via Hamlib\n\
-  command</em>. You <strong>must</strong> then press the <tt>Initialize</tt> button.\n\
+  command</em>. You <strong>must</strong> then press the <code>Initialize</code> button.\n\
 </p>\n\
 </li>\n\
 </ul></div>\n\
@@ -925,7 +927,7 @@ YII=\" />\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>If your rig is CAT-capable but not yet supported by\n\
 <a href=\"http://www.hamlib.org/\">Hamlib</a>, it may still be possible to control it via\n\
-Fldigi&#8217;s <tt>RigCAT</tt> system.  Refer to the <a href=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</a> for details.</p></div>\n\
+Fldigi&#8217;s <code>RigCAT</code> system.  Refer to the <a href=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</a> for details.</p></div>\n\
 </td>\n\
 </tr></table>\n\
 </div>\n\
@@ -935,7 +937,7 @@ Fldigi&#8217;s <tt>RigCAT</tt> system.  Refer to the <a href=\"http://www.w1hkj.
 When you start Fldigi for the very first time, it makes a series of\n\
   measurements to determine your computer&#8217;s processing speed.  Although these\n\
   measurements are usually accurate, if you have a very slow processor (under\n\
-  700MHz), you should verify that <em>Slow CPU</em> under <tt>Configure&#8594;Misc&#8594;CPU</tt> has\n\
+  700MHz), you should verify that <em>Slow CPU</em> under <code>Configure&#8594;Misc&#8594;CPU</code> has\n\
   been enabled. The receiver decoding strategy of certain modems uses fewer\n\
   processor cycles in this mode.\n\
 </p>\n\
@@ -944,7 +946,7 @@ When you start Fldigi for the very first time, it makes a series of\n\
 <div class=\"ulist\"><div class=\"title\">Modems</div><ul>\n\
 <li>\n\
 <p>\n\
-Each of the modems can be individually set up from the <tt>Configure&#8594;Modems</tt>\n\
+Each of the modems can be individually set up from the <code>Configure&#8594;Modems</code>\n\
   multi-tabbed dialog. You need not change anything here to start with, although\n\
   it might be a good idea to set the <em>secondary text</em> for DominoEX and THOR to\n\
   something useful, such as your call and locator. <span class=\"footnote\"><br />[Secondary text is\n\
@@ -958,22 +960,22 @@ Each of the modems can be individually set up from the <tt>Configure&#8594;Modem
 <div class=\"ulist\"><div class=\"title\">Other settings</div><ul>\n\
 <li>\n\
 <p>\n\
-Use the menu <tt>Configure&#8594;UI</tt>, <tt>Restart</tt> tab, to set the aspect ratio of the\n\
+Use the menu <code>Configure&#8594;UI</code>, <code>Restart</code> tab, to set the aspect ratio of the\n\
   waterfall display and whether or not you want to dock a second digiscope to\n\
   the main window.\n\
 </p>\n\
 </li>\n\
 <li>\n\
 <p>\n\
-Use the menu <tt>Configure&#8594;IDs</tt> item to set whether you wish to transmit RSID\n\
+Use the menu <code>Configure&#8594;IDs</code> item to set whether you wish to transmit RSID\n\
   data at the start of each over (this is for the benefit of others and does not\n\
   affect RSID reception). If you plan to regularly use the RSID feature on\n\
   receive, you should deselect the option that starts new modems at the &#8220;sweet\n\
-  spot&#8221; frequencies in <tt>Misc&#8594;Sweet Spot</tt>.\n\
+  spot&#8221; frequencies in <code>Misc&#8594;Sweet Spot</code>.\n\
 </p>\n\
 </li>\n\
 </ul></div>\n\
-<div class=\"paragraph\"><p>Finally, use the menu item <tt>Configure&#8594;Save Config</tt> to save the new\n\
+<div class=\"paragraph\"><p>Finally, use the menu item <code>Configure&#8594;Save Config</code> to save the new\n\
 configuration.</p></div>\n\
 </div>\n\
 <div class=\"sect2\">\n\
@@ -989,7 +991,7 @@ Use your sound card <em>Master Volume</em> applet to select the sound card, the 
 <li>\n\
 <p>\n\
 On Windows, the <em>Volume</em> applet can usually be opened by clicking\n\
-  <tt>Start&#8594;Run…</tt> and entering <tt>sndvol32</tt>, or from the Control Panel.\n\
+  <code>Start&#8594;Run…</code> and entering <code>sndvol32</code>, or from the Control Panel.\n\
 </p>\n\
 </li>\n\
 <li>\n\
@@ -1007,9 +1009,9 @@ Use your sound card <em>Recording Control</em> applet to select the sound card, 
 <li>\n\
 <p>\n\
 On Windows, the <em>Record</em> applet can usually be opened by clicking\n\
-  <tt>Start&#8594;Run…</tt> and entering <tt>sndvol32</tt>, or from the Control Panel. If opened\n\
+  <code>Start&#8594;Run…</code> and entering <code>sndvol32</code>, or from the Control Panel. If opened\n\
   from the Control Panel, you&#8217;ll end up with the Master Volume applet, and need\n\
-  to switch using <tt>Options&#8594;Properties</tt>, and selecting the <tt>Recording</tt> radio\n\
+  to switch using <code>Options&#8594;Properties</code>, and selecting the <code>Recording</code> radio\n\
   button.\n\
 </p>\n\
 </li>\n\
@@ -1062,7 +1064,7 @@ identification of the signal.</p></div>\n\
 <div class=\"hdlist\"><table>\n\
 <tr>\n\
 <td class=\"hdlist1\">\n\
-<strong><tt>WF</tt></strong> (Waterfall)\n\
+<strong><code>WF</code></strong> (Waterfall)\n\
 <br />\n\
 </td>\n\
 <td class=\"hdlist2\">\n\
@@ -1077,7 +1079,7 @@ identification of the signal.</p></div>\n\
 </tr>\n\
 <tr>\n\
 <td class=\"hdlist1\">\n\
-<strong><tt>FFT</tt></strong> (Fast Fourier Transform)\n\
+<strong><code>FFT</code></strong> (Fast Fourier Transform)\n\
 <br />\n\
 </td>\n\
 <td class=\"hdlist2\">\n\
@@ -1090,7 +1092,7 @@ identification of the signal.</p></div>\n\
 </tr>\n\
 <tr>\n\
 <td class=\"hdlist1\">\n\
-<strong><tt>SIG</tt></strong> (Signal)\n\
+<strong><code>SIG</code></strong> (Signal)\n\
 <br />\n\
 </td>\n\
 <td class=\"hdlist2\">\n\
@@ -1167,7 +1169,7 @@ gAAjPsXPpABEh6evxaekSs3pTaXqYf2zx6N6T6x6/N8qj/j6H2ll/uhtrRpgAAAAAElFTkSuQmCC\" /
 <div class=\"paragraph\"><p>You can temporarily &#8220;monitor&#8221; a different signal by right-clicking on it. As\n\
 long as you hold the mouse button down, the signal under it will be decoded; as\n\
 soon as you release the mouse, decoding will revert to the previously tuned spot\n\
-(where the red marks are).  If you also hold the <tt>Control</tt> key down before\n\
+(where the red marks are).  If you also hold the <code>Control</code> key down before\n\
 right-clicking, Fldigi will first decode all of its buffered audio at that\n\
 frequency.</p></div>\n\
 </td>\n\
@@ -1177,7 +1179,7 @@ frequency.</p></div>\n\
 <div class=\"sect2\">\n\
 <h3 id=\"_log_data\">3.4. Log Data</h3>\n\
 <div class=\"paragraph\"><p>Fldigi provides two QSO entry views, one for casual QSO logging and the second\n\
-for contesting.  The <tt>View&#8594;Contest fields</tt> menu item switches between the two\n\
+for contesting.  The <code>View&#8594;Contest fields</code> menu item switches between the two\n\
 modes.</p></div>\n\
 <div class=\"paragraph\"><p>The <em>Frequency</em>, <em>Time Off</em>, and (when in contest mode) <em>#Out</em> fields are filled\n\
 by the program.  All the others can be populated by manual keyboard entry or by\n\
@@ -1264,7 +1266,7 @@ call to the <em>Call</em> field.</p></div>\n\
 recent QSO with that station and, if an entry is found, the <em>Name</em>, <em>QTH</em> and\n\
 other fields will be pre-filled.  If the logbook dialog is open, that last QSO\n\
 will also be selected for viewing in the logbook.</p></div>\n\
-<div class=\"paragraph\"><p>You open the logbook by selecting from the View menu; <tt>View&#8594;Logbook</tt>.  The\n\
+<div class=\"paragraph\"><p>You open the logbook by selecting from the View menu; <code>View&#8594;Logbook</code>.  The\n\
 logbook title bar will show you which logbook you currently have open.  Fldigi\n\
 can maintain an unlimited (except for disk space) number of logbooks.</p></div>\n\
 </div>\n\
@@ -1274,14 +1276,14 @@ can maintain an unlimited (except for disk space) number of logbooks.</p></div>\
 click on any of the items, a list of optional functions will appear. Keyboard\n\
 menu selection is also provided. Where underscored characters are shown in the\n\
 menu, you can select these menu items from the keyboard using the marked\n\
-character and <tt>Alt</tt> at the same time, then moving around with the\n\
-<tt>up</tt>/<tt>down</tt>/<tt>left</tt>/<tt>right</tt> keys. Press <tt>Esc</tt> to quit from the menu with no\n\
+character and <code>Alt</code> at the same time, then moving around with the\n\
+<code>up</code>/<code>down</code>/<code>left</code>/<code>right</code> keys. Press <code>Esc</code> to quit from the menu with no\n\
 change.</p></div>\n\
 <div class=\"sect3\">\n\
 <h4 id=\"_menu_functions\">3.5.1. Menu functions</h4>\n\
 <div class=\"paragraph\"><div class=\"title\">File</div><p>Allows you to open or save Macros (we won&#8217;t get into that here), turn on/off\n\
 logging to file, record/play audio samples, and exit the program. You can also\n\
-exit the program by clicking on the <tt>X</tt> in the top right corner of the window,\n\
+exit the program by clicking on the <code>X</code> in the top right corner of the window,\n\
 in the usual manner.</p></div>\n\
 <div class=\"paragraph\"><div class=\"title\">Op Mode</div><p>This is where you select the operating modem used for transmission and\n\
 reception. Some modes only have one option. Where more are offered, drag the\n\
@@ -1303,7 +1305,7 @@ several categories and there are menu items in which you enter your personal\n\
 information, or define your computer sound card, for example. Modems can be\n\
 individually changed, each having different adjustments. The Modems dialog has\n\
 multiple tabs, so you can edit any one of them. Don&#8217;t fool with the settings\n\
-until you know what you are doing!  The final item, <tt>Save Config</tt> allows you to\n\
+until you know what you are doing!  The final item, <code>Save Config</code> allows you to\n\
 save the altered configuration for next time you start the program (otherwise\n\
 changes are temporary).</p></div>\n\
 <div class=\"paragraph\"><div class=\"title\">View</div><p>This menu item allows you to open extra windows. Most will be greyed out, but\n\
@@ -1322,7 +1324,7 @@ information about the program.</p></div>\n\
 feature. When in use, the button turns yellow and no text reception is possible\n\
 until a signal is identified, or the feature is turned off again. If you plan to\n\
 use the RSID feature on receive, you must leave the <em>Start New Modem at Sweet\n\
-Spot</em> item in the menu <tt>Configure&#8594;Defaults&#8594;Misc</tt> tab unchecked.</p></div>\n\
+Spot</em> item in the menu <code>Configure&#8594;Defaults&#8594;Misc</code> tab unchecked.</p></div>\n\
 <div class=\"paragraph\" id=\"ref-tune\"><div class=\"title\">TUNE</div><p>This button transmits a continuous tone at the current audio frequency. The tone\n\
 level will be at the maximum signal level for any modem, which makes this\n\
 function useful for adjusting your transceiver&#8217;s output power.</p></div>\n\
@@ -1338,15 +1340,15 @@ F12, you&#8217;ll notice the buttons are grouped in patterns four to a group, ju
 the Function Keys are). You can also select them with a left-click of the\n\
 mouse. If you right-click on the button, you are able to edit the button&#8217;s label\n\
 and its function. A handy dialog pops up to allow this to be done. There are\n\
-many standard shortcuts, such as <tt>&lt;MYCALL&gt;</tt>, which you can use within the\n\
+many standard shortcuts, such as <code>&lt;MYCALL&gt;</code>, which you can use within the\n\
 Macros. Notice that the buttons also turn the transmitter on and off as\n\
 necessary.</p></div>\n\
 <div class=\"paragraph\"><p>You can just about hold a complete QSO using these buttons from left to right\n\
 (but please don&#8217;t!). Notice that at the right are two spare buttons you can set\n\
-as you wish, and then a button labelled <tt>1</tt>. Yes, this is the first set of\n\
+as you wish, and then a button labelled <code>1</code>. Yes, this is the first set of\n\
 <em>four</em> sets of Macros, and you can access the others using this button, which\n\
-changes to read <tt>2</tt>, <tt>3</tt>, <tt>4</tt> then <tt>1</tt> again (right-click to go backwards), or\n\
-by pressing <tt>Alt</tt> and the corresponding number (1-4, not F1-F4) at the same\n\
+changes to read <code>2</code>, <code>3</code>, <code>4</code> then <code>1</code> again (right-click to go backwards), or\n\
+by pressing <code>Alt</code> and the corresponding number (1-4, not F1-F4) at the same\n\
 time.</p></div>\n\
 <div class=\"admonitionblock\">\n\
 <table><tr>\n\
@@ -1420,69 +1422,69 @@ the bandwidth cursor.</p></div>\n\
 you have a very fast computer.</p></div>\n\
 <div class=\"paragraph\"><p>The next four buttons (two on either side of a number, the audio frequency in\n\
 Hz) control the receiving frequency (they move the red cursor lines).</p></div>\n\
-<div class=\"paragraph\"><p>The <tt>QSY</tt> button moves the signal under the bandwidth cursor to a preset audio\n\
+<div class=\"paragraph\"><p>The <code>QSY</code> button moves the signal under the bandwidth cursor to a preset audio\n\
 frequency (typically, the centre of the transceiver&#8217;s passband). The Store\n\
 button allows you to store or recall the current frequency and mode. See the\n\
 <a href=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</a> for details on these functions.</p></div>\n\
-<div class=\"paragraph\"><p>The <tt>Lk</tt> button locks the transmit frequency (and illuminates a green marker), and the\n\
-<tt>Rv</tt> button turns the signal decoding upside down (some modes are sideband\n\
+<div class=\"paragraph\"><p>The <code>Lk</code> button locks the transmit frequency (and illuminates a green marker), and the\n\
+<code>Rv</code> button turns the signal decoding upside down (some modes are sideband\n\
 sensitive, and if they are the wrong way up, can&#8217;t be received\n\
 correctly). Remember to turn this one off when you&#8217;re done, or you won&#8217;t receive\n\
 anything! If every signal you hear is upside down, check your transceiver\n\
 sideband setting.</p></div>\n\
-<div class=\"paragraph\"><p>The <tt>T/R</tt> button forces the transmitter on or off.</p></div>\n\
+<div class=\"paragraph\"><p>The <code>T/R</code> button forces the transmitter on or off.</p></div>\n\
 <div class=\"admonitionblock\">\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Caution\" src=\"data:image/png;base64,\n\
-iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAJrUlEQVR42u2ZeVBW1xnGXYB2bNBx\n\
-TQ1pY2iHGac6ROMYdbQYqZAQAxhXFOOCuOGCJmDVJjGuoBLBJUhsrDrWrQqO20hsCgqiyC5IQFRc\n\
-cMV9/+798Ol5Dt+9eLnUr7jFzPjHO8AH55zf85z3fe85lzoAftHxSsArAa8EPIdJz58/j5ycHD34\n\
-8y9GQFFREWbNmoUOHTroMWTIEGzbtg0vvYCEhAQ4OTmJWevUGHPnzsVLK2Dr1q1wdHQk6GNj3rx5\n\
-eOkEbN68GXXr1jWAur39Or6NnAhfzzYmEREREXhpBGzYsAEODg4GQL+e7rhflgjr6Y2wlqdh6qj3\n\
-TSIWLFiAn13AunXrUL9+fQNYb693YDmXCLUkBuqxxVCLFsFauhphQX82iVi4cCF+NgFr1qwxwff9\n\
-sD0s538Q4AK+eDGsAl79KRJq4TyoJ1bis+FdTCKioqLwwgUw5+vVq2cA6d+rAxTClyyBtdjmvA3e\n\
-enQ21IKZUI/HYsrQ90wiFi9ejBcmYOXKlSb4AN+O0nnrsSUybSrKE1BxaROsZatRcXED1KOzoOZ/\n\
-IWK6+P1ShAa+axjPBhAdHY3nLmDFihVczJQ2Gjydt56Mg3o3FRND+mFaWCCWR4di/DAP3EwPg5oX\n\
-DiX3M7E732DiIHeTiCVLluC5CVi+fHkN8O9CIXzJ0sqCLRY5XxqL9JS/m9JkXcTHUHM/h5ozGWr2\n\
-BCiFERg/sI1JxLJly/DMBcTExJjgR/TvCqXKeRFRomgjRZ4vRcqPy00C0tYNFgJCoWRPhJI1Dkrm\n\
-aCgFczCuf2uTCJr1zAQIR0wwwQHdoF7YKwp2qRAQDVXvNvPFZ1HIOLCiGlQd3EgLscGHQM0cAyVj\n\
-JJTDI6Dkf4UxfdxMImJjY/HUAkSfNsGPGexB+CrnCV+0gPAi5gghc1CYs8owxvXNRgJ+ghk+/VMo\n\
-hwKh5E3D6E/+YBLBmntiAfv37zfBjw3sXglP54uZ81Ga8yJsrTL/S5Sf3WwY18vjbQO8qsMPhnIw\n\
-AEpaf1HcYQj2a2USkZmZidoK4HmeR2Az/MV/V8FL543wslUemYGKG/Fwcqw6XoQPay/h1Yxgm/ND\n\
-6XwV/IE+UFL9YckOxUjf3xnWnTlzJshTKwF79+41TNK1wx9hJbzs89GVBaulzdHZIqTzlX0+byoq\n\
-ylfDtdXr+viVX3WHYg9+/8ew7POBJTME7dycDevzUvRUArJS4m3Oi4IlPNPmp/mwCuetBV/bnJfw\n\
-slVaz8TAx7u9Pv7HuF7V4AcK+H42eD8oKb2EgA9hSfYS4Ym/DW31bAWEj+7JbsM+T+cFPJ0XBSvh\n\
-v5Rpowh4Rfb5KVAKp+PrGf318cXb+unwFuG8xea8JcVfwFc6ryR7S3hL0vuY1NflqQSwBngV1Cf4\n\
-bfOG2PV9sIS30nkBb9XhpfMiBHzuFKi2Vpn1w+f6+GtJg4WAQCFAS5tPYEklPJ33EQII/xcoSd2R\n\
-GNUGTRvq9SNrMTs7G7XuQvPnzze40MqlMQ5vHS8LVuZ8AXOezv9VwIcJeD5hJ0l4RXabYAzwcoXb\n\
-7xsK+CGGnCe8RThPeEXAK3RewCfFtEV7t9cM6y5atAgPHz6UUSsB3IXmzZsbJnujhTP+s3o4rPkS\n\
-Xrgv4HMJL9ImZxLUrPEixoifJ8BaOhPWsnm4mTHGVLCEV6TzXnReps2Bb93RpY2xeJs1a4ZLly4R\n\
-Xo9aPcgKCwvh4uJinLRxA+yOC7AVrO484YXzY0UEQy0KR+nRCHwx1Qd9/NwRv6CrET5FOm+A9+va\n\
-xLCOs7MzDh48CFVVYbVaUVFRYRJhVwD/+MSJE2jSxDh5I+dfISGmtyxYmTbZwnnCZ4yq7DaZI7Hx\n\
-HyOqYBo44G6yr+688ojzh+Lc8al3C8P8fDnARnL//n1YLBaKoIAaRTwWnsFBZ86cQevWxkNXg187\n\
-4J8RHwgB0nlbnw8S+T5M5vyl5EA0fK3yFcvwXm/Zcv4jg/OHv2uH0H5vGObl/Zq3vRs3buD27du4\n\
-d++eFKEoSo0i7MIz6EBZWRnc3Y1neCfHelg921O4P0oICBICCM8+P0i2ykPfe+K76e1wfpe3TBvL\n\
-I/Cn/vUewgJcTEcHXva5Vnl5Oa5fv24QUdNO2BXAQQ8ePMDdu3flTnTs2LGaY+IiMrUzTu/qZ4MP\n\
-EDEAFj3nfZk21eA7YW7wW6az1uTJk1FQUMC0pQgWsBRx69YtphN3wVQPj4XnH1M5HeCWXr16FSdP\n\
-nkS3bt1Mx+XYaZ1wemdvKGkDRPQVAvy1tBHwHwj4nlAE/Gnh/NJQV3EtNcIPGjQIKSkpyMrKApsH\n\
-1zl37hyuXLki175z5w6NpKEmAXbd5zbSCTpCZ/j+08PDw/yaZOI7OLX9I815AW9Om7Uz3ODoYLwc\n\
-eXt7Y8eOHbJwU1NTdRGnTp3ChQsXcO3atf+1C/YFcBAHU8DFixdlGh0/fhz5+fnw8fExiZg/7k84\n\
-ndBTK1g6L+B7SPj4Oa1F8RtfCHTu3BlbtmzB9u3bsXv3biQlJSEtLQ15eXlcR9sFMjATnkgAd0AX\n\
-cPbsWU4sHcrNzYW/v785lwe6onSrh3Cf8EybTtj7TVsTfNu2bbF27Vps2rQJfLe6c+dO7NmzB/v2\n\
-7UNGRgaKi4u5HgvasAP2i7hKgF4DN2/epBPybF5aWsrJuQvynBIQEGC+dvq+iZObu8hWmTC3NVo2\n\
-dTLe0lxdERcXB76aFO+ZDAKSk5MpgKlKAdoO2KkBO3XAIuIu0A3WAYuMCxw5coSL1SiijetvMNav\n\
-JVo0Nr61btmyJS/udF8KiI+PlzWQmJgo4dPT07UUomFcl11Qa6VkMwiwJ4LbxsEUwY5AEcxNfSe4\n\
-GBcNCQmp9vbCHE2bNkVkZCThpfP8nwJzn2nD3KcZ3FnOy3rjWlyzpvT5v44S1dKJTnBCPZ3YKY4d\n\
-O6anU3h4uPbmzhSNGjUCT7nr168nuJbvmuOcg3OZngPag4zFa+coYY5qT2S6QBEsbLY3Fra+G1yc\n\
-xb1x40YEBQXBy8sLnp6e6NGjhzzXr1q1it2GqcKezwu7hC4pKSE0HedcnFPr/4bUIYOdw5w9IboI\n\
-uqKlFBejWyw4CiEQc5l9nS6zOHmyZBCabrN+WEccw17P8XxQ0nH9HGTu+/aP00+SUlyMi2pFrj3w\n\
-6CghWYx0mOL4GX9Hl7XzDjsc56AhNIbg2gFOB67FhabWKcXFuCgXpyC2PO3ooe/O5cuX+T0/04AN\n\
-sDZghnYHMAE/MwGMamcmLqoJYtslkAbIMHz/yCVF//qIMYb5n6UAswizGA1KCw3QAGcvXtj/yOyB\n\
-PD2s/fgvlLDkWQ1/L8QAAAAASUVORK5CYII=\" />\n\
+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\n\
+SUVORK5CYII=\" />\n\
 </td>\n\
 <td class=\"content\">\n\
-<div class=\"paragraph\"><p>Use the <tt>T/R</tt> button with care, as it will stop transmission immediately, losing\n\
+<div class=\"paragraph\"><p>Use the <code>T/R</code> button with care, as it will stop transmission immediately, losing\n\
 whatever is in the buffer (what you have typed in the Transmit pane), or start\n\
 it immediately, even if nothing is ready to transmit.</p></div>\n\
 </td>\n\
@@ -1492,7 +1494,7 @@ it immediately, even if nothing is ready to transmit.</p></div>\n\
 right of the Status line:</p></div>\n\
 <div class=\"dlist\"><dl>\n\
 <dt class=\"hdlist1\">\n\
-<tt>AFC</tt> (AFC) control\n\
+<code>AFC</code> (AFC) control\n\
 </dt>\n\
 <dd>\n\
 <p>\n\
@@ -1502,7 +1504,7 @@ right of the Status line:</p></div>\n\
 </p>\n\
 </dd>\n\
 <dt class=\"hdlist1\">\n\
-<tt>SQL</tt> (Squelch) control\n\
+<code>SQL</code> (Squelch) control\n\
 </dt>\n\
 <dd>\n\
 <p>\n\
@@ -1510,7 +1512,7 @@ right of the Status line:</p></div>\n\
   &#8220;text&#8221; received, even if there is no signal present, and the receiver is\n\
   simply attempting to decode noise. When activated by pressing the button, the\n\
   indicator turns yellow. If the incoming signal strength exceeds that set by\n\
-  the adjacent slider control (above the <tt>SQL</tt> button), the indicator turns\n\
+  the adjacent slider control (above the <code>SQL</code> button), the indicator turns\n\
   green and the incoming signal is decoded and printed. The signal strength is\n\
   indicated on the green bar beside the Squelch level slider. If nothing seems\n\
   to be printing, the first thing to do is check the Squelch!\n\
@@ -1540,11 +1542,11 @@ also shown here. This box changes size when you enlarge the program window.</p><
 <h3 id=\"_procedure\">4.1. Procedure</h3>\n\
 <div class=\"paragraph\"><p>Operating procedure for digital modes is similar to that for Morse. Some of the\n\
 same abbreviations are used. For example, at the beginning of an over, you might\n\
-send <tt>VK3XYZ de WB8ABC</tt> or just <tt>RR Jack</tt> and so on. At the end of an over, it\n\
-is usual to send <tt>ZL1ABC de AA3AR K</tt>, and at the end of a QSO <tt>73 F3XYZ de 3D2ZZ\n\
-SK</tt>. When operating in a group or net it is usual to sign <tt>AA3AE es gp de ZK8WW\n\
-K</tt>.</p></div>\n\
-<div class=\"paragraph\"><p>It is also considered a courtesy to send a blank line or two (press <tt>Enter</tt>)\n\
+send <code>VK3XYZ de WB8ABC</code> or just <code>RR Jack</code> and so on. At the end of an over, it\n\
+is usual to send <code>ZL1ABC de AA3AR K</code>, and at the end of a QSO <code>73 F3XYZ de 3D2ZZ\n\
+SK</code>. When operating in a group or net it is usual to sign <code>AA3AE es gp de ZK8WW\n\
+K</code>.</p></div>\n\
+<div class=\"paragraph\"><p>It is also considered a courtesy to send a blank line or two (press <code>Enter</code>)\n\
 before any text at the start of an over, and following the last text at the end\n\
 of an over. You can also place these in the macros. The purpose is to separate\n\
 your text from the previous text, and especially from any rubbish that was\n\
@@ -1610,7 +1612,7 @@ the following:</p></div>\n\
 <div class=\"hdlist\"><table>\n\
 <tr>\n\
 <td class=\"hdlist1\">\n\
-<strong><tt>&gt;&gt;</tt></strong>\n\
+<strong><code>&gt;&gt;</code></strong>\n\
 <br />\n\
 </td>\n\
 <td class=\"hdlist2\">\n\
@@ -1621,7 +1623,7 @@ The transmitter comes on and stays on when you use this button/macro.\n\
 </tr>\n\
 <tr>\n\
 <td class=\"hdlist1\">\n\
-<strong><tt>||</tt></strong>\n\
+<strong><code>||</code></strong>\n\
 <br />\n\
 </td>\n\
 <td class=\"hdlist2\">\n\
@@ -1633,7 +1635,7 @@ The transmitter goes off when the text from this button/macro has been\n\
 </tr>\n\
 <tr>\n\
 <td class=\"hdlist1\">\n\
-<strong><tt>&gt;|</tt></strong>\n\
+<strong><code>&gt;|</code></strong>\n\
 <br />\n\
 </td>\n\
 <td class=\"hdlist2\">\n\
@@ -1648,14 +1650,14 @@ The transmitter comes on, sends the text from this button/macro, and\n\
 </tr></table>\n\
 </div>\n\
 <div class=\"paragraph\"><p>The Macros are set up to control the transmitter as necessary, but you can also\n\
-switch the transmitter on at the start of an over with <tt>Ctrl</tt> and <tt>T</tt> or the TX\n\
-macro button, and off again with <tt>Ctrl</tt> and <tt>R</tt> or the RX macro button. If you\n\
+switch the transmitter on at the start of an over with <code>Ctrl</code> and <code>T</code> or the TX\n\
+macro button, and off again with <code>Ctrl</code> and <code>R</code> or the RX macro button. If you\n\
 have Macros copied into or text already typed in the Transmit pane when you\n\
 start the transmitter, this is sent first.</p></div>\n\
 <div class=\"paragraph\"><p>Calling another station you have tuned in is as simple as pushing a button. Put\n\
-his callsign into the log data (right click, select Call) and press the <tt>ANS</tt>\n\
+his callsign into the log data (right click, select Call) and press the <code>ANS</code>\n\
 Macro button (or F2) when you are ready. If he replies, you are in business!\n\
-Then press <tt>QSO</tt> (F3) to start each over, and <tt>BTU</tt> (F4) to end it, and <tt>SK</tt>\n\
+Then press <code>QSO</code> (F3) to start each over, and <code>BTU</code> (F4) to end it, and <code>SK</code>\n\
 (F5) to sign off.</p></div>\n\
 <div class=\"admonitionblock\">\n\
 <table><tr>\n\
@@ -1853,52 +1855,52 @@ station.</p></div>\n\
 <table><tr>\n\
 <td class=\"icon\">\n\
 <img alt=\"Important\" src=\"data:image/png;base64,\n\
-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\" />\n\
+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\" />\n\
 </td>\n\
 <td class=\"content\">\n\
 <div class=\"paragraph\"><p>You <strong>must not</strong> use RIT (Clarifier) when using digital modes.</p></div>\n\
@@ -1936,9 +1938,9 @@ tuning.</p></div>\n\
 <h2 id=\"ref-special-keys\">5. Special Keys</h2>\n\
 <div class=\"sectionbody\">\n\
 <div class=\"paragraph\"><p>Several special keyboard controls are provided to make operating easier.</p></div>\n\
-<div class=\"paragraph\"><div class=\"title\">Start Transmission</div><p>Press <tt>Ctrl</tt> and <tt>T</tt> to start transmission if there is text ready in the transmit\n\
+<div class=\"paragraph\"><div class=\"title\">Start Transmission</div><p>Press <code>Ctrl</code> and <code>T</code> to start transmission if there is text ready in the transmit\n\
 buffer.</p></div>\n\
-<div class=\"paragraph\"><div class=\"title\">Pause Transmission</div><p>Press <tt>Pause</tt> or <tt>Break</tt> while in receive, and the program will switch to\n\
+<div class=\"paragraph\"><div class=\"title\">Pause Transmission</div><p>Press <code>Pause</code> or <code>Break</code> while in receive, and the program will switch to\n\
 transmit mode. It will continue with the text in the transmit buffer (the\n\
 Transmit pane text) from the current point, i.e. where the red (previously sent)\n\
 text ends and the black (yet to be sent) text begins. If the buffer only\n\
@@ -1946,14 +1948,14 @@ contains unsent text, then it will begin at the first character in the\n\
 buffer. If the buffer is empty, the program will switch to transmit mode, and\n\
 depending on the mode of operation, will send idle characters or nothing at all\n\
 until characters are entered into the buffer.</p></div>\n\
-<div class=\"paragraph\"><p>If you press <tt>Pause</tt> or <tt>Break</tt> while in transmit mode, the program will return\n\
+<div class=\"paragraph\"><p>If you press <code>Pause</code> or <code>Break</code> while in transmit mode, the program will return\n\
 to receive mode. There may be a slight delay for some modes like MFSK, PSK and\n\
 others, that requires the transmitter to send a postamble at the end of a\n\
 transmission. The transmit text buffer stays intact, ready for the\n\
-<tt>Pause</tt>/<tt>Break</tt> key to return you to the transmit mode .</p></div>\n\
-<div class=\"paragraph\"><p>Pressing <tt>Alt</tt> or <tt>Meta</tt> and <tt>R</tt> has the same effect as <tt>Pause</tt>/<tt>Break</tt>. You\n\
-could think of the <tt>Pause</tt>/<tt>Break</tt> key as a software break-in capability.</p></div>\n\
-<div class=\"paragraph\"><div class=\"title\">Escape</div><p>Pressing <tt>Esc</tt> while transmitting will abort the transmission. Transmission\n\
+<code>Pause</code>/<code>Break</code> key to return you to the transmit mode .</p></div>\n\
+<div class=\"paragraph\"><p>Pressing <code>Alt</code> or <code>Meta</code> and <code>R</code> has the same effect as <code>Pause</code>/<code>Break</code>. You\n\
+could think of the <code>Pause</code>/<code>Break</code> key as a software break-in capability.</p></div>\n\
+<div class=\"paragraph\"><div class=\"title\">Escape</div><p>Pressing <code>Esc</code> while transmitting will abort the transmission. Transmission\n\
 stops as soon as possible, (any necessary postamble is sent), and the program\n\
 returns to receive. Any unsent text in the transmit buffer will be lost.</p></div>\n\
 <div class=\"admonitionblock\">\n\
@@ -2006,29 +2008,29 @@ vEAeITAk/tggQyIdAQW/IqtSSaRuLSgCydf2hibVOzKytBAxgAsA0oomaDEpm/SODF/bO7Jkb4gl\n\
 gAAjPsXPpABEh6evxaekSs3pTaXqYf2zx6N6T6x6/N8qj/j6H2ll/uhtrRpgAAAAAElFTkSuQmCC\" />\n\
 </td>\n\
 <td class=\"content\">\n\
-<div class=\"paragraph\"><p>If you press <tt>Esc Esc</tt> (i.e. twice in quick succession), transmission stops\n\
+<div class=\"paragraph\"><p>If you press <code>Esc Esc</code> (i.e. twice in quick succession), transmission stops\n\
 immediately, without sending any postamble, and the program returns to\n\
 receive. Any unsent text in the transmit buffer will be lost. Use this feature\n\
 as an <strong>emergency stop</strong>.</p></div>\n\
 </td>\n\
 </tr></table>\n\
 </div>\n\
-<div class=\"paragraph\"><div class=\"title\">Return to Receive</div><p>Press <tt>Ctrl</tt> and <tt>R</tt> to insert the <tt>^r</tt> command in the transmit buffer at the\n\
+<div class=\"paragraph\"><div class=\"title\">Return to Receive</div><p>Press <code>Ctrl</code> and <code>R</code> to insert the <code>^r</code> command in the transmit buffer at the\n\
 current typing point. When transmission reaches this point, transmission will\n\
 stop.</p></div>\n\
-<div class=\"paragraph\"><div class=\"title\">Move Typing Cursor</div><p>Press <tt>Tab</tt> to move the cursor (typing insertion point) to the end of the\n\
-transmit buffer. This will also pause transmission. A <tt>Tab</tt> press at that\n\
+<div class=\"paragraph\"><div class=\"title\">Move Typing Cursor</div><p>Press <code>Tab</code> to move the cursor (typing insertion point) to the end of the\n\
+transmit buffer. This will also pause transmission. A <code>Tab</code> press at that\n\
 position moves the cursor back to the character following the last one\n\
 transmitted.  Morse operation is slightly different. See the <a href=\"http://www.w1hkj.com/FldigiHelp/index.html\">Online Documentation</a> for CW.</p></div>\n\
-<div class=\"paragraph\"><div class=\"title\">Send Any ASCII Character</div><p>Press <tt>Ctrl</tt> and (at the same time) any three-digit number (on the numeric\n\
+<div class=\"paragraph\"><div class=\"title\">Send Any ASCII Character</div><p>Press <code>Ctrl</code> and (at the same time) any three-digit number (on the numeric\n\
 keypad or the normal numeric keys) to insert the ASCII character designated by\n\
-that entry value into the transmit buffer. For example, <tt>Ctrl 177</tt> is &#8220;±&#8221;\n\
-(plus/minus) and <tt>Ctrl 176</tt> is &#8220;°&#8221; (degree). If you press a key other than the\n\
+that entry value into the transmit buffer. For example, <code>Ctrl 177</code> is &#8220;±&#8221;\n\
+(plus/minus) and <code>Ctrl 176</code> is &#8220;°&#8221; (degree). If you press a key other than the\n\
 numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
 <h2 id=\"ref-credits\" class=\"float\">Credits</h2>\n\
-<div class=\"paragraph\"><p>Copyright &#169; 2008 Murray Greenman, <tt>ZL1BPU</tt>.</p></div>\n\
-<div class=\"paragraph\"><p>Copyright &#169; 2008-2009 David Freese, <tt>W1HKJ</tt>.</p></div>\n\
-<div class=\"paragraph\"><p>Copyright &#169; 2009 Stelios Bounanos, <tt>M0GLD</tt>.</p></div>\n\
+<div class=\"paragraph\"><p>Copyright &#169; 2008 Murray Greenman, <code>ZL1BPU</code>.</p></div>\n\
+<div class=\"paragraph\"><p>Copyright &#169; 2008-2009 David Freese, <code>W1HKJ</code>.</p></div>\n\
+<div class=\"paragraph\"><p>Copyright &#169; 2009 Stelios Bounanos, <code>M0GLD</code>.</p></div>\n\
 <div class=\"paragraph\"><p>License GPLv3+: <a href=\"http://www.gnu.org/licenses/gpl.html\">GNU GPL version 3 or later</a>.</p></div>\n\
 </div>\n\
 </div>\n\
@@ -2036,7 +2038,7 @@ numeric keypad&#8217;s 0-9 the sequence will be discarded.</p></div>\n\
 <div id=\"footnotes\"><hr /></div>\n\
 <div id=\"footer\">\n\
 <div id=\"footer-text\">\n\
-Last updated 2014-06-23 11:09:00 CDT\n\
+Last updated 2016-11-04 17:46:33 \n\
 </div>\n\
 <div id=\"footer-badges\">\n\
 <a href=\"http://validator.w3.org/check?uri=referer\">\n\

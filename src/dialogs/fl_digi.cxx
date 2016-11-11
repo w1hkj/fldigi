@@ -2424,6 +2424,19 @@ void cb_mnuBeginnersURL(Fl_Widget*, void*)
 #endif
 }
 
+void cb_mnuOnLineDOCS(Fl_Widget *, void *)
+{
+	string helpfile = HelpDir;
+	helpfile.append("fldigi-help/index.html");
+	ifstream f(helpfile.c_str());
+	if (!f) {
+		cb_mnuVisitURL(0, (void *)PACKAGE_DOCS);
+	} else {
+		f.close();
+		cb_mnuVisitURL(0, (void *)helpfile.c_str());
+	}
+}
+
 void cb_mnuCheckUpdate(Fl_Widget *, void *)
 {
 	const char *url = "http://www.w1hkj.com/files/fldigi/";
@@ -4792,7 +4805,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Create sunspots"), weather_clear_icon), 0, cb_mnuFun, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 #endif
 { icons::make_icon_label(_("Beginners' Guide"), start_here_icon), 0, cb_mnuBeginnersURL, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Online documentation..."), help_browser_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_DOCS, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Online documentation..."), help_browser_icon), 0, cb_mnuOnLineDOCS, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Fldigi web site..."), net_icon), 0, cb_mnuVisitURL, (void *)PACKAGE_HOME, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Reception reports..."), pskr_icon), 0, cb_mnuVisitPSKRep, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Command line options"), utilities_terminal_icon), 0, cb_mnuCmdLineHelp, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
