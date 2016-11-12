@@ -363,6 +363,7 @@ int fsq::valid_callsign(std::string s)
 	if (s == allcall) return 2;
 	if (s == cqcqcq) return 4;
 	if (s == mycall) return 1;
+	if (s.find("Heard") != string::npos) return 0;
 
 	static char sz[21];
 	memset(sz, 0, 21);
@@ -423,7 +424,6 @@ void fsq::parse_rx_text()
 	if (station_calling == mycall) { // do not display any of own rx stream
 		LOG_ERROR("Station calling is mycall: %s", station_calling.c_str());
 		rx_text.erase(0, p+3);
-//		rx_text.clear();
 		return;
 	}
 	if (!station_calling.empty()) {
@@ -448,10 +448,13 @@ void fsq::parse_rx_text()
 	size_t tr_pos = 0;
 	char tr = rx_text[tr_pos];
 	size_t trigger = triggers.find(tr);
+
 // strip any leading spaces before either text or first directed callsign
+
 	while (rx_text.length() > 1 &&
 		triggers.find(rx_text[0]) != std::string::npos)
 		rx_text.erase(0,1);
+
 // find first word
 	while ( tr_pos < rx_text.length()
 			&& ((trigger = triggers.find(rx_text[tr_pos])) == std::string::npos) ) {
@@ -465,18 +468,22 @@ void fsq::parse_rx_text()
 			rx_text.insert(0," ");
 			break; // not a callsign
 		}
-		if (word_is == 1) directed = true; // mycall
+		if (word_is == 1) {
+			directed = true; // mycall
+		}
 		// test for cqcqcq and allcall
-		else if (word_is != 8) all = true;
+		else if (word_is != 8) 
+			all = true;
 
 		rx_text.erase(0, tr_pos);
-		if (rx_text[0] != ' ') break;
 
 		while (rx_text.length() > 1 &&
 			(rx_text[0] == ' ' && rx_text[1] == ' '))
 			rx_text.erase(0,1);
 
+		if (rx_text[0] != ' ') break;
 		rx_text.erase(0, 1);
+
 		tr_pos = 0;
 		tr = rx_text[tr_pos];
 		trigger = triggers.find(tr);
