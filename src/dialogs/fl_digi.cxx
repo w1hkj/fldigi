@@ -404,7 +404,7 @@ cFreqControl 		*qsoFreqDisp1 = (cFreqControl *)0;
 // Top Frame 2 group controls - no contest
 Fl_Group			*TopFrame2 = (Fl_Group *)0;
 cFreqControl		*qsoFreqDisp2 = (cFreqControl *)0;
-static Fl_Input2	*inpTimeOff2 = (Fl_Input2 *)0;
+Fl_Input2	        *inpTimeOff2 = (Fl_Input2 *)0;
 static Fl_Input2	*inpTimeOn2 = (Fl_Input2 *)0;
 static Fl_Button	*btnTimeOn2;
 Fl_Input2			*inpCall2 = (Fl_Input2 *)0;
@@ -423,7 +423,7 @@ static Fl_Button	*qso_opPICK3;
 static Fl_Button	*qsoClear3;
 static	Fl_Button	*qsoSave3;
 
-static Fl_Input2	*inpTimeOff3 = (Fl_Input2 *)0;
+Fl_Input2	        *inpTimeOff3 = (Fl_Input2 *)0;
 static Fl_Input2	*inpTimeOn3 = (Fl_Input2 *)0;
 static Fl_Button	*btnTimeOn3;
 Fl_Input2			*inpCall3 = (Fl_Input2 *)0;
@@ -2777,6 +2777,7 @@ void cb_sldrSquelch(Fl_Slider* o, void*) {
 	restoreFocus(13);
 }
 
+/*
 static char ztbuf[20] = "20120602 123000";
 
 const char* zdate(void) { return ztbuf; }
@@ -2863,6 +2864,7 @@ void ztimer(void* first_call)
 	inpTimeOff2->value(zshowtime());
 	inpTimeOff3->value(zshowtime());
 }
+*/
 
 bool oktoclear = true;
 
@@ -3628,6 +3630,9 @@ LOG_INFO("stop_flrig_thread");
 
 LOG_INFO("Stopping N3FJP thread");
 	n3fjp_close();
+
+LOG_INFO("Stopping TOD clock");
+	TOD_close();
 
 LOG_INFO("exit_process");
 	exit_process();

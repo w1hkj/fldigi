@@ -341,6 +341,7 @@ fldigi_SOURCES += \
 	dialogs/htmlstrings.cxx \
 	dialogs/notifydialog.cxx \
 	dialogs/record_browse.cxx \
+	dialogs/tod_clock.cxx \
 	dtmf/dtmf.cxx \
 	thor/thor.cxx \
 	thor/thorvaricode.cxx \

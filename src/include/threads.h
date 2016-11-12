@@ -44,6 +44,7 @@ int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, dou
 enum {
 	INVALID_TID = -1,
 	TRX_TID,
+	TOD_TID,
 	QRZ_TID,
 	RIGCTL_TID,
 	NORIGCTL_TID,

@@ -401,7 +401,8 @@ int main(int argc, char ** argv)
 	program_start_time = time(0);
 
 	// ztimer must be run by FLTK's timeout handler
-	ztimer((void*)true);
+	TOD_init(); // initialize time of day thread
+//	ztimer((void*)true);
 
 	active_modem = new NULLMODEM;
 
@@ -488,6 +489,10 @@ int main(int argc, char ** argv)
 		switch(i) {
 			case TRX_TID:
 				cbq[i]->attach(i, "TRX_TID");
+				break;
+
+			case TOD_TID:
+				cbq[i]->attach(i, "TOD_TID");
 				break;
 
 			case QRZ_TID:

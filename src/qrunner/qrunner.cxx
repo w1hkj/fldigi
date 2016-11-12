@@ -46,6 +46,7 @@
 const char *sztid[] = {
 	"INVALID_TID",
 	"TRX_TID",
+	"TOD_TID",
 	"QRZ_TID",
 	"RIGCTL_TID",
 	"NORIGCTL_TID",
