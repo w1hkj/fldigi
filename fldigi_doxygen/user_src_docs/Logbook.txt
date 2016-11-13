@@ -223,18 +223,16 @@ recent at the top.  You might want to view it with the most recent on the
 bottom.
 <br>
 
-There are no frills such as keeping track of DXCC
-worked, fancy printouts etc.  Fldigi's logbook is primarily a
-capture function.  You can export your data for use with an
-external database or for uploading to LOTW or eQSL.  Data from
-those sources can also be used for importing into the logbook.
+Fldigi's logbook is primarily a capture function.  You can export your 
+data for use with an external database or for uploading to LOTW or eQSL.
+Data from those sources can also be used for importing into the logbook.
 <br>
+
+LoTW: \ref lotw_interface_page  "LoTW configuration and use"
 
 Fldigi can connect to 3rd party Logbook and Contest Log programs such as
 \ref n3fjp_logs_page "N3FJP ACL and the N3FJP contest programs".  On OS X, it can automatically export
 data to the MacLogger program.
-
-Link to MacLogger documentation
 
 Exporting logbook data: \ref exporting_logbook_data "Log Exports".
 <br>

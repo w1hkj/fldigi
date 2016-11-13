@@ -1,81 +1,7 @@
 /**
-\page callsign_db_configuration_page  Callsign DB Configuration
+\page lotw_interface_page  LoTW
 \tableofcontents
 <br>
-
-\section qrz  QRZ
-<br>
-\image html config-qrz.png "QRZ"
-\image latex config-qrz.png "QRZ" width=5.0in
-<br>
-<br>
-Fldigi will open a web browser to either QRZ.com or Hamcall.net with the
-contents of the QSO Call field used as a query string to the on line
-service. You may find that your default browser needs to be
-triggered twice on the first such query. That behavior seems to
-be associated with IE7 but not IE6 for example.
-<br>
-
-If you have a CD
-with the QRZ database installed you can use that CD or its' stored
-contents on a hard drive. Simply specify where the CALLBK
-directory can be found and enable the QRZ radio button.
-<br>
-
-If you are a paid subscriber to either QRZ or Hamcall xml database service
-then you can specify that fldigi use that service for all Callsign data
-base queries.<br>
-<br>
-
-OK2CQR provides a very nice callsign lookup service on his hamqth.com
-web site. There is no subscriber fee to use this service.
-Simply register and then use your registered user name and password for
-access. You might want to provide monetary support to Petr if
-this service meets your needs.<br>
-<br>
-
-\section eqsl  EQSL
-<br>
-
-\image html config-eqsl.png "EQSL"
-\image latex config-eqsl.png "EQSL" width=5.0in
-<br>
-
-Configure the eQSL log entry upload with your user ID, password, and QTH
-nickname. See <a href="Macros.html">Macros</a> for additional
-information.<br>
-<br>
-
-\section fldigi_logging  FLdigi Logging
-<br>
-
-\image html log-it.png "Log It"
-\image latex log-it.png "Log It" width=0.5in
-<br>
-
-If you check the "send when logged" button then the logged record will be
-sent to eQSL when either the
-log it button is pressed, or when the macro tag &lt;LOG&gt; or &lt;LNW&gt;
-is executed.<br>
-<br>
-You may elect to use the default of date-time ON or date-time OFF for the
-eQSL submission.<br>
-<br>
-You may send a message with the log record. If you fill in the
-default message text then it will be used for that purpose. You
-might want to use something like:<br>
-<br>
-Tks for {MODE} qso {NAME}. 73, pse eQSL<br>
-<br>
-
-<b>Verify</b>
-<br>
-Download an adif formatted record file from eQSL and save it to a convenient
-location on your computer.  Then press the "Verify" button and fldigi will
-try to match your records with the eQSL download record; updating each
-matched record's eQSL date received data element.
-
-\section LOTW Logbook of the world
 
 fldigi does not have a direct connection for uploading and downloading LoTW
 records.  Instead, it uses the tqsl program that each LoTW user will have on
@@ -89,9 +15,11 @@ Open the LoTW configuration dialog from the Logbook menu:
 
 \image html lotw-menu.png ""
 \image latex lotw-menu.png "" width=1.0in
-
+<br>
 \image html lotw-dialog.png ""
 \image latex lotw-dialog.png "" width=5.0in
+
+\section LOTW_configuration LoTW configuration
 
 Use the "Locate" button to open an OS file finder dialog to locate the tqsl
 binary.  Click on it when found.  The above image shows this on a Linux
@@ -99,14 +27,27 @@ computer.  On OS X you need to open the Applications folder,
 and then drag and drop the tqsl icon on to the 'tqsl:' control.  You will see
 /Applications/tqsl.app in that control after the drag and drop.
 
-As a LoTW user you will have created at least one and possibly two passwords for
-system access.  The first is your web access password and the second is the tqsl
-application password.  The tqsl application password is optional.  If you use
-a tqsl application password then you need to enter that in the Password control
-and also enable the "Use password..." check button.  LoTW also provides for
-managing the LoTW data for specific locations.  My LoTW logbook has data for the past
-two QTH locations.  Enter the location for which the LoTW records will be relevant.
-Case is significant in both the password and the location entries.
+The Callsign Certificate used to digitally sign QSOs being uploaded (and 
+typically specified in a Station Location) can optionally be password protected 
+if the user is running TQSL on a public or physically unprotected computer. For 
+typical home use, this is unnecessary; instructions for removing a password from 
+a Callsign Certificate are here:
+\verbatim
+<https://lotw.arrl.org/lotw-help/removecertificatepassword/>
+\endverbatim
+If you use are using a password protected certificate you need to enter that 
+in the Password control and also enable the "Use password..." check button.
+
+Many users will need only one "Callsign Certificate", but those who operate 
+using club or contest callsigns, who occasionally operate /P or /QRP, or who 
+operate from other DXCC entities will have more than one. Users who operate 
+from more than one geographic location, e.g. county or NPOTA or SOTA activators, 
+must define a "Station Location" for each such location. When submitting a group 
+QSOs to LoTW via TQSL's command line interface, you must specify a 
+Station Location; if the specified Station Location doesn't specify a 
+Callsign Certificate, you must also specify a Callsign Certificate.  All QSOs 
+in the submitted group must thus have been made using the same over the air 
+callsign and from the same geographic location.
 
 Leave the "Quiet mode" unchecked until you are comfortable with fldigi's LoTW
 interface.  If unchecked the tqsl dialog will open each time the "Send" button
@@ -121,10 +62,21 @@ memory image of the file and is therefore volatile.  Exit fldigi before submitti
 the LoTW records for upload and the memory image is lost.  BUT the data is still
 available for LoTW upload.
 
+\section LOTW_usage LoTW usage
+
+fldigi sends adif records to LoTW via the tqsl command line interface.  tqsl acts
+upon a set of adif records in an upload file that fldigi creates for that purpose.
+All update files are in the fldigi files sub-folder "LOTW".  The upload file is
+created when the Send button is pressed and the tqsl binary is invoked.
+
+An in memory image of that file is created as described above and can be reviewed and
+edited using the Check button.  The LoTW Review dialog will only appear if there are
+records ready for upload.
+
 \image html lotw-review.png ""
 \image latex lotw-review.png "" width=5.0in
 
-The text box is an actual editor.  You can modify or delete a record line, or
+The text box is an fairly complete text editor.  You can modify or delete a record line, or
 just clear the entire image file contents.  If you modify the file then you must
 save it before taking any subsequent action to upload the file to LoTW.  Be sure
 you fully understand how to change the ADIF record before attempting to make
@@ -148,7 +100,7 @@ tqsl will reject any that are duplicates if you forget this step.
 When all looks OK you can upload the records using the Send button on the LoTW config
 dialog.
 
-<b>Verifying local against LoTW download</b>
+\section LoTW_verification Matching with online LoTW records
 
 Download a set of adif records from LoTW using the LoTW web interface.  Save
 the download file to a convenient location.  Then press the "Match" button and fldigi will

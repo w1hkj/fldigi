@@ -9,6 +9,7 @@ configIFKP.txt ConfigMisc.txt \
 configMT63.txt configOlivia.txt ConfigOperator.txt configPSK.txt \
 configRTTY.txt configThor.txt ConfigUI-browser.txt \
 ConfigUI-contest.txt ConfigUI-general.txt ConfigUI-logging.txt \
+lotw_interface.txt \
 ConfigUI-macros.txt ConfigUI-WF-controls.txt ConfigWaterfall.txt \
 SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \
 Logbook.txt LogExports.txt working_logs.txt Macros.txt \
