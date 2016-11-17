@@ -6239,6 +6239,13 @@ progdefaults.changed = true;}
               label {Enable GPIO PTT (Pi specific controls)}
               xywh {170 68 283 17}
             }
+            Fl_Counter cnt_gpio_pulse_width {
+              label {Pulse width (msec)}
+              callback {progdefaults.gpio_pulse_width=(int)o->value();
+progdefaults.changed=true;} selected
+              tooltip {Set >0 if pulsed PTT used} xywh {60 357 80 21} type Simple align 8 minimum 0 maximum 50 step 1
+              code0 {o->value(progdefaults.gpio_pulse_width);}
+            }
           }
         }
       }
@@ -8530,7 +8537,7 @@ progdefaults.changed = true;}
     }
     Fl_Button btnSaveConfig {
       label Save
-      callback {progdefaults.saveDefaults();} selected
+      callback {progdefaults.saveDefaults();}
       xywh {330 400 130 22}
     }
     Fl_Return_Button btnCloseConfig {

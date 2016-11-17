@@ -1132,6 +1132,9 @@
               "GPIO State\n"                                                            \
               "bits 0 - 16; bit 0 --> PTT ON state on pin N",                           \
               0)                                                                        \
+        ELEM_(int, gpio_pulse_width, "GPIO_PULSE_WIDTH",                                \
+              "GPIO pulse width setting for PiHpSDR PTT",                               \
+              0)                                                                        \
         /* RigCAT parameters */                                                         \
         ELEM_(bool, RigCatRTSplus, "RIGCATRTSPLUS",                                     \
               "Initial state of RTS",                                                   \

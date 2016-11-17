@@ -5061,6 +5061,13 @@ wf->xmtrcv->value(0);
 progdefaults.changed = true;
 }
 
+Fl_Counter *cnt_gpio_pulse_width=(Fl_Counter *)0;
+
+static void cb_cnt_gpio_pulse_width(Fl_Counter* o, void*) {
+  progdefaults.gpio_pulse_width=(int)o->value();
+progdefaults.changed=true;
+}
+
 Fl_Group *tabSoundCard=(Fl_Group *)0;
 
 Fl_Tabs *tabsSoundCard=(Fl_Tabs *)0;
@@ -11777,6 +11784,16 @@ definition"));
             } // Fl_Box* o
             { new Fl_Box(170, 68, 283, 17, _("Enable GPIO PTT (Pi specific controls)"));
             } // Fl_Box* o
+            { Fl_Counter* o = cnt_gpio_pulse_width = new Fl_Counter(60, 357, 80, 21, _("Pulse width (msec)"));
+              cnt_gpio_pulse_width->tooltip(_("Set >0 if pulsed PTT used"));
+              cnt_gpio_pulse_width->type(1);
+              cnt_gpio_pulse_width->minimum(0);
+              cnt_gpio_pulse_width->maximum(50);
+              cnt_gpio_pulse_width->step(1);
+              cnt_gpio_pulse_width->callback((Fl_Callback*)cb_cnt_gpio_pulse_width);
+              cnt_gpio_pulse_width->align(Fl_Align(FL_ALIGN_RIGHT));
+              o->value(progdefaults.gpio_pulse_width);
+            } // Fl_Counter* cnt_gpio_pulse_width
             o->end();
           } // Fl_Group* o
           tabsRig->end();

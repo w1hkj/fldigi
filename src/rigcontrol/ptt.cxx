@@ -317,15 +317,32 @@ void PTT::set_gpio(bool ptt)
 			ctrlport.append("/value");
 			fd = fl_open(ctrlport.c_str(), O_WRONLY);
 
-			if (-1 == fd) {
+			bool ok = false;
+			if (fd == -1) {
 				LOG_ERROR("Failed to open gpio (%s) for writing!", ctrlport.c_str());
 			} else {
-				if (ptt) { if (val == 1) val = 1; else val = 0;}
-				if (!ptt)  { if (val == 1) val = 0; else val = 1;}
-				if (write(fd, &s_values_str[val], 1) != 1)
-					LOG_ERROR("Failed to write value!");
+				if (progdefaults.gpio_pulse_width == 0) {
+					if (ptt) { if (val == 1) val = 1; else val = 0;}
+					if (!ptt)  { if (val == 1) val = 0; else val = 1;}
+					if (write(fd, &s_values_str[val], 1) == 1)
+						ok = true;
+				} else {
+					if (write(fd, &s_values_str[val], 1) == 1) {
+						MilliSleep(progdefaults.gpio_pulse_width);
+						if (write(fd, &s_values_str[val == 0 ? 1 : 0], 1) == 1)
+							ok = true;
+					}
+				}
+				if (ok)
+					LOG_INFO("Set GPIO ptt on %s %s%s", 
+						ctrlport.c_str(),
+						(progdefaults.gpio_pulse_width > 0) ?
+							"pulsed " : "",
+						(val == 1 ? "HIGH" : "LOW")
+					);
 				else
-					LOG_INFO("Set GPIO ptt %s, on %s", (val ? "HIGH" : "LOW"), ctrlport.c_str());
+					LOG_ERROR("Failed to write value!");
+
 				close(fd);
 			}
 		}

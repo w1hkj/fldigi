@@ -551,6 +551,7 @@ extern Fl_Counter *cntPTT_on_delay;
 extern Fl_Counter *cntPTT_off_delay;
 extern Fl_Check_Button *btn_enable_gpio[17];
 extern Fl_Check_Button *btn_gpio_on[17];
+extern Fl_Counter *cnt_gpio_pulse_width;
 extern Fl_Group *tabSoundCard;
 extern Fl_Tabs *tabsSoundCard;
 extern Fl_Group *tabAudio;
