@@ -54,7 +54,7 @@ INPUT                = index.txt \
 	ConfigUI-macros.txt configUITouch.txt ConfigUI-WF-controls.txt \
 	ConfigWaterfall.txt configure_scripting.txt kiss_io_command.txt \
 	SoundCardSetup.txt Contest-How-To.txt cabrilloreporter.txt \
-	Logbook.txt fdserver.txt \
+	Logbook.txt dxcluster.txt fdserver.txt \
 	maclogger.txt n3fjp_logs.txt LogExports.txt lotw_interface.txt \
 	working_logs.txt Macros.txt \
 	InlineMacroTags.txt atMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \

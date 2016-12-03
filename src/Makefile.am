@@ -655,6 +655,10 @@ fldigi_SOURCES += \
 EXTRA_fldigi_SOURCES += \
 	blank/blank.cxx \
 	blank/blank.h \
+	dxcluster/arc-help.cxx \
+	dxcluster/CCC_Commands.cxx \
+	dxcluster/DXClusterServers.cxx \
+	dxcluster/DXSpiderCommandReference.cxx \
 	fileselector/flnfc_common.cxx \
 	feld/Feld7x7-14.cxx \
 	feld/Feld7x7n-14.cxx \

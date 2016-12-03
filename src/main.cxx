@@ -774,6 +774,7 @@ int main(int argc, char ** argv)
 	dlgViewer = createViewer();
 	create_logbook_dialogs();
 	dxcluster_viewer = dxc_window();
+
 	dxcluster_viewer->hide();
 
 	LOGBOOK_colors_font();

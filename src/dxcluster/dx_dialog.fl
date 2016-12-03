@@ -1,7 +1,19 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0303 
+i18n_type 1 
+i18n_include "gettext.h" 
+i18n_function _ 
 header_name {.h} 
 code_name {.cxx}
+decl {\#include "Fl_Text_Buffer_mod.H"} {private local
+} 
+
+decl {Fl_Text_Buffer_mod telnet_txt_buffer;} {private local
+} 
+
+decl {Fl_Text_Buffer_mod telnet_view_buffer;} {private local
+} 
+
 decl {\#include "configuration.h"} {private local
 } 
 
@@ -12,25 +24,31 @@ Function {dxc_window()} {open
 } {
   Fl_Window {} {
     label {DX Cluster Spotting} open
-    xywh {729 35 625 395} type Double resizable visible
+    xywh {633 153 680 400} type Double resizable visible
   } {
-    Fl_Group {} {open
-      xywh {2 2 621 57} box ENGRAVED_BOX
+    Fl_Group btn_select_host {open
+      xywh {1 2 678 50} box ENGRAVED_BOX
     } {
       Fl_Input inp_dxcc_host_url {
-        label {Telnet URL}
+        label {DX HOST hostname/IP}
         callback {progdefaults.dxcc_host_url=o->value();
 progdefaults.changed = true;}
-        tooltip {telnet server URL} xywh {10 25 382 24} align 1
+        tooltip {telnet server URL} xywh {6 25 256 22} labelsize 13 align 5
         code0 {\#include "flinput2.h"}
         code1 {o->value(progdefaults.dxcc_host_url.c_str());}
         class Fl_Input2
+      }
+      Fl_Button btn_show_host_tab {
+        label {@2>}
+        callback {cluster_tabs->value(tabDXclusterConfig);
+cluster_tabs->redraw();}
+        xywh {263 25 20 22}
       }
       Fl_Input inp_dccc_host_port {
         label Port
         callback {progdefaults.dxcc_host_port=o->value();
 progdefaults.changed = true;}
-        tooltip {telnet server port} xywh {400 25 60 24} align 1
+        tooltip {telnet server port} xywh {285 25 70 22} labelsize 13 align 5
         code1 {o->value(progdefaults.dxcc_host_port.c_str());}
         class Fl_Input2
       }
@@ -38,106 +56,395 @@ progdefaults.changed = true;}
         label {Login as}
         callback {progdefaults.dxcc_login=o->value();
 progdefaults.changed = true;}
-        tooltip {login call sign} xywh {469 25 60 24} align 1
+        tooltip {login call sign} xywh {357 25 80 22} labelsize 13 align 5
         code1 {o->value(progdefaults.dxcc_login.c_str());}
         class Fl_Input2
+      }
+      Fl_Box lbl_dxc_connected {
+        label Connected
+        xywh {440 26 20 20} box DIAMOND_DOWN_BOX color 55 labelfont 2 align 8
       }
       Fl_Check_Button btn_dxcc_connect {
         label Connect
         callback {progStatus.cluster_connected=o->value();
-DXcluster_connect(o->value());}
-        tooltip {Connect / Disconnect} xywh {534 29 70 15} down_box DOWN_BOX
+DXcluster_connect(o->value());} selected
+        tooltip {Connect / Disconnect} xywh {553 10 119 15} down_box DOWN_BOX
         code0 {o->value(progStatus.cluster_connected);}
         code1 {\#include "status.h"}
       }
+      Fl_Check_Button btn_dxc_auto_connect {
+        label {Auto connect}
+        callback {progdefaults.dxc_auto_connect = o->value();
+progdefaults.changed = true;} selected
+        tooltip {Connect to host when starting fldigi} xywh {553 31 119 15} down_box DOWN_BOX
+        code0 {o->value(progdefaults.dxc_auto_connect);}
+      }
     }
-    Fl_Tabs {} {open
-      xywh {2 60 621 307}
+    Fl_Tabs cluster_tabs {open
+      xywh {0 55 680 340} resizable
     } {
-      Fl_Group {} {
-        label {DX Reports} open
-        xywh {2 84 621 282} hide
+      Fl_Group tabDXclusterTelNetStream {
+        label {TelNet stream} open
+        xywh {1 80 677 314} hide
       } {
+        Fl_Group {} {open
+          xywh {2 82 676 276} box ENGRAVED_FRAME
+        } {
+          Fl_Text_Editor brws_tcpip_stream {
+            tooltip {Cluster server command strings} xywh {4 85 668 240} labelsize 13 textfont 13 resizable
+            code0 {\#include "FTextView.h"}
+            class FTextView
+          }
+          Fl_Button dxc_macro_1 {
+            label m1
+            callback dxc_click_m1
+            tooltip {DX cluster macro\\nLeft click execute\\nRight click edit} xywh {4 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_1.c_str());}
+          }
+          Fl_Button dxc_macro_2 {
+            label m2
+            callback dxc_click_m2
+            xywh {88 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_2.c_str());}
+          }
+          Fl_Button dxc_macro_3 {
+            label m3
+            callback dxc_click_m3
+            xywh {172 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_3.c_str());}
+          }
+          Fl_Button dxc_macro_4 {
+            label m4
+            callback dxc_click_m4
+            xywh {256 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_4.c_str());}
+          }
+          Fl_Button dxc_macro_5 {
+            label m5
+            callback dxc_click_m5
+            xywh {340 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_5.c_str());}
+          }
+          Fl_Button dxc_macro_6 {
+            label m6
+            callback dxc_click_m6
+            xywh {424 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_6.c_str());}
+          }
+          Fl_Button dxc_macro_7 {
+            label m7
+            callback dxc_click_m7
+            xywh {508 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_7.c_str());}
+          }
+          Fl_Button dxc_macro_8 {
+            label m8
+            callback dxc_click_m8
+            tooltip {DX cluster macro\\nLeft click execute\\nRight click edit} xywh {592 331 80 22}
+            code0 {o->label(progdefaults.dxcm_label_8.c_str());}
+          }
+        }
+        Fl_Input inp_dxcluster_cmd {
+          label {Cmd:}
+          callback {DXcluster_submit();}
+          tooltip {Command string} xywh {43 364 480 22} labelsize 13 when 8
+          class Fl_Input2
+        }
+        Fl_Button btn_cluster_spot {
+          label Spot
+          callback {send_DXcluster_spot();}
+          tooltip {Send SPOT string to server} xywh {527 364 70 22}
+        }
+        Fl_Button btn_cluster_submit {
+          label Submit
+          callback {DXcluster_submit();}
+          tooltip {Send command to server} xywh {602 364 70 22}
+        }
+      }
+      Fl_Group tabDXclusterReports {
+        label {DX Reports} open
+        xywh {1 80 673 314} hide
+      } {
+        Fl_Browser reports_header {
+          xywh {3 84 671 20} color 52 when 2 textfont 4
+        }
         Fl_Browser brws_dx_cluster {
           callback {DXcluster_select();}
-          tooltip {Left Click to select SPOT} xywh {4 88 617 254} type Hold align 18 textfont 4
+          tooltip {Left Click to select SPOT} xywh {3 104 671 260} type Hold align 18 textfont 4 resizable
         }
         Fl_Button btn_dxc_cluster_clear {
           label Clear
           callback {brws_dx_cluster->clear();}
-          tooltip {Clear parsed data stream} xywh {294 343 70 22}
+          tooltip {Clear parsed data stream} xywh {294 366 72 22}
+        }
+        Fl_Check_Button brws_order {
+          label {New entries in first line}
+          callback {progdefaults.dxc_topline = o->value();
+dxc_lines();
+progdefaults.changed=true;}
+          xywh {31 371 186 15} down_box DOWN_BOX when 1
+          code0 {o->value(progdefaults.dxc_topline);}
+        }
+        Fl_Button btn_cluster_spot2 {
+          label Spot
+          callback {send_DXcluster_spot();}
+          tooltip {Send SPOT string to server} xywh {585 368 70 22}
         }
       }
-      Fl_Group {} {
-        label {TelNet stream} open
-        xywh {2 84 621 283} hide
+      Fl_Group tabDXclusterConfig {
+        label Config open
+        tooltip {Initialization strings for telnet cluster host} xywh {0 80 676 314}
       } {
-        Fl_Browser brws_tcpip_stream {
-          xywh {4 88 617 254} type Hold align 18 textfont 4 resizable
+        Fl_Group {} {open
+          xywh {0 82 676 130} resizable
+        } {
+          Fl_Group {} {open
+            xywh {1 82 348 124}
+          } {
+            Fl_Browser brws_dxcluster_hosts {
+              label Hosts
+              xywh {4 101 278 100} type Hold align 1 textfont 4 resizable
+              code0 {static int widths[]={o->w()*6/10, o->w()*2/10, 0 };}
+              code1 {o->column_widths(widths);}
+              code2 {o->column_char(':');}
+              code3 {dxcluster_hosts_load();}
+            }
+            Fl_Button btn_dxcluster_hosts_select {
+              label Select
+              callback dxcluster_hosts_select
+              tooltip {Select highlighted DX cluster host} xywh {288 101 54 22}
+            }
+            Fl_Button btn_dxcluster_hosts_add {
+              label Add
+              callback dxcluster_hosts_add
+              tooltip {Add current DX cluster host} xywh {288 127 54 22}
+            }
+            Fl_Button btn_dxcluster_hosts_delete {
+              label Delete
+              callback dxcluster_hosts_delete
+              tooltip {Delete highlighted DX cluster host} xywh {288 153 54 22}
+            }
+            Fl_Button btn_dxcluster_servers {
+              label Srvrs
+              callback dxcluster_servers
+              tooltip {Server List} xywh {288 179 54 22}
+            }
+          }
+          Fl_Group {} {open
+            xywh {350 82 325 107}
+          } {
+            Fl_Text_Editor ed_telnet_cmds {
+              label {Cluster Server Setup Cmds}
+              tooltip {Cluster server command strings} xywh {354 101 248 80} textfont 13 resizable
+              class FTextEdit
+            }
+            Fl_Button btn_dxcluster_hosts_load_setup {
+              label Load
+              callback dxcluster_hosts_load_setup
+              tooltip {Load Cluster Setup Commands} xywh {609 101 59 22}
+            }
+            Fl_Button btn_dxcluster_hosts_save_setup {
+              label Save
+              callback dxcluster_hosts_save_setup
+              tooltip {Save Cluster Setup Commands} xywh {609 130 59 22}
+            }
+            Fl_Button btn_dxcluster_hosts_send_setup {
+              label Send
+              callback dxcluster_hosts_send_setup
+              tooltip {Send Commands to Cluster Server} xywh {609 159 59 22}
+            }
+          }
+          Fl_Check_Button btn_spot_when_logged {
+            label {Spot when logged}
+            callback {progdefaults.spot_when_logged = o->value();
+progdefaults.changed = true;}
+            tooltip {Create DX spot when logging contact} xywh {354 188 146 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.spot_when_logged);}
+          }
+          Fl_Check_Button btn_dxc_hertz {
+            label {Report [0..99 Hz]}
+            callback {progdefaults.dxc_hertz = o->value();
+progdefaults.changed = true;}
+            tooltip {Add [0..99] Hz WF value to DX report notes} xywh {512 188 146 15} down_box DOWN_BOX
+            code0 {o->value(progdefaults.dxc_hertz);}
+          }
         }
-        Fl_Button btn_dxc_tcpip_clear {
-          label Clear
-          callback {brws_tcpip_stream->clear();}
-          tooltip {Clear tcpip stream} xywh {294 343 70 22}
+        Fl_Group {} {open
+          xywh {0 218 676 174} align 17
+        } {
+          Fl_Group {} {open
+            xywh {1 218 307 170}
+          } {
+            Fl_Input mlabel_1 {
+              label {label 1}
+              callback {progdefaults.dxcm_label_1=o->value();
+dxc_macro_1->label(progdefaults.dxcm_label_1.c_str());
+progdefaults.changed=true;}
+              xywh {5 238 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_1.c_str());}
+            }
+            Fl_Input mtext_1 {
+              label {macro text}
+              callback {progdefaults.dxcm_text_1=o->value();
+progdefaults.changed=true;}
+              xywh {87 238 220 22} align 1
+              code0 {o->value(progdefaults.dxcm_text_1.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input mlabel_2 {
+              label {label 2}
+              callback {progdefaults.dxcm_label_2=o->value();
+dxc_macro_2->label(progdefaults.dxcm_label_2.c_str());
+progdefaults.changed=true;}
+              xywh {5 278 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_2.c_str());}
+            }
+            Fl_Input mtext_2 {
+              callback {progdefaults.dxcm_text_2=o->value();
+progdefaults.changed=true;}
+              xywh {87 278 220 22} align 17
+              code0 {o->value(progdefaults.dxcm_text_2.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input mlabel_3 {
+              label {label 3}
+              callback {progdefaults.dxcm_label_3=o->value();
+dxc_macro_3->label(progdefaults.dxcm_label_3.c_str());
+progdefaults.changed=true;}
+              xywh {5 318 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_3.c_str());}
+            }
+            Fl_Input mtext_3 {
+              callback {progdefaults.dxcm_text_3=o->value();
+progdefaults.changed=true;}
+              xywh {87 318 220 22} align 17
+              code0 {o->value(progdefaults.dxcm_text_3.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input mlabel_4 {
+              label {label 4}
+              callback {progdefaults.dxcm_label_4=o->value();
+dxc_macro_4->label(progdefaults.dxcm_label_4.c_str());
+progdefaults.changed=true;}
+              xywh {5 358 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_4.c_str());}
+            }
+            Fl_Input mtext_4 {
+              callback {progdefaults.dxcm_text_4=o->value();
+progdefaults.changed=true;}
+              xywh {87 358 220 22} align 17
+              code0 {o->value(progdefaults.dxcm_text_4.c_str());}
+              class Fl_Input2
+            }
+          }
+          Fl_Group {} {open
+            xywh {308 218 307 170}
+          } {
+            Fl_Input mlabel_5 {
+              label {label 5}
+              callback {progdefaults.dxcm_label_5=o->value();
+dxc_macro_5->label(progdefaults.dxcm_label_5.c_str());
+progdefaults.changed=true;}
+              xywh {310 237 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_5.c_str());}
+            }
+            Fl_Input mtext_5 {
+              label {macro text}
+              callback {progdefaults.dxcm_text_5=o->value();
+progdefaults.changed=true;}
+              xywh {391 237 220 22} align 1
+              code0 {o->value(progdefaults.dxcm_text_5.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input mlabel_6 {
+              label {label 6}
+              callback {progdefaults.dxcm_label_6=o->value();
+dxc_macro_6->label(progdefaults.dxcm_label_6.c_str());
+progdefaults.changed=true;}
+              xywh {310 277 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_6.c_str());}
+            }
+            Fl_Input mtext_6 {
+              callback {progdefaults.dxcm_text_6=o->value();
+progdefaults.changed=true;}
+              xywh {391 277 220 22} align 17
+              code0 {o->value(progdefaults.dxcm_text_6.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input mlabel_7 {
+              label {label 7}
+              callback {progdefaults.dxcm_label_7=o->value();
+dxc_macro_7->label(progdefaults.dxcm_label_7.c_str());
+progdefaults.changed=true;}
+              xywh {310 317 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_7.c_str());}
+            }
+            Fl_Input mtext_7 {
+              callback {progdefaults.dxcm_text_7=o->value();
+progdefaults.changed=true;}
+              xywh {391 317 220 22} align 17
+              code0 {o->value(progdefaults.dxcm_text_7.c_str());}
+              class Fl_Input2
+            }
+            Fl_Input mlabel_8 {
+              label {label 8}
+              callback {progdefaults.dxcm_label_8=o->value();
+dxc_macro_8->label(progdefaults.dxcm_label_8.c_str());
+progdefaults.changed=true;}
+              xywh {310 357 80 22} align 1
+              code0 {o->value(progdefaults.dxcm_label_8.c_str());}
+            }
+            Fl_Input mtext_8 {
+              callback {progdefaults.dxcm_text_8=o->value();
+progdefaults.changed=true;}
+              xywh {391 357 220 22} align 17
+              code0 {o->value(progdefaults.dxcm_text_8.c_str());}
+              class Fl_Input2
+            }
+          }
+          Fl_Button btn_dxcluster_ar_help {
+            label {AR ?}
+            callback dxcluster_ar_help
+            tooltip {AR Commands} xywh {618 230 56 22}
+          }
+          Fl_Button btn_dxcluster_cc_help {
+            label {CC ?}
+            callback dxcluster_cc_help
+            tooltip {CC Commands} xywh {618 272 56 22}
+          }
+          Fl_Button btn_dxcluster_dx_help {
+            label {DX ?}
+            callback dxcluster_dx_help
+            tooltip {Spider Commands} xywh {618 315 56 22}
+          }
         }
       }
-      Fl_Group {} {
-        label Sunspot open
-        xywh {2 84 621 283}
-      } {
-        Fl_Browser brws_dxc_wwv {
-          xywh {4 88 617 254} type Hold align 18 textfont 4 resizable
-        }
-        Fl_Button btn_dxc_wwv_query {
-          label Update
-          callback {dxc_wwv_query();}
-          tooltip {Get WWV sunspot events} xywh {439 343 70 22}
-        }
-        Fl_Button btn_dxc_wwv_clear {
-          label Clear
-          callback {dxc_wwv_clear()} selected
-          tooltip {Clear help panel} xywh {515 343 70 22}
-        }
-      }
-      Fl_Group {} {
+      Fl_Group tabDXclusterHelp {
         label Help open
-        xywh {2 84 621 283} hide
+        xywh {1 80 675 314} hide
       } {
-        Fl_Browser brws_dxc_help {
-          xywh {4 88 617 254} type Hold align 18 textfont 4 resizable
+        Fl_Text_Editor brws_dxc_help {
+          tooltip {Cluster server command strings} xywh {3 84 673 281} labelsize 13 textfont 13 resizable
+          class FTextView
         }
         Fl_Button btn_dxc_help_query {
           label {Get Help}
           callback {dxc_help_query();}
-          tooltip {Get WWV sunspot events} xywh {439 343 70 22}
+          tooltip {Get WWV sunspot events} xywh {441 368 70 22}
         }
         Fl_Input inp_help_string {
           label {Help on:}
+          callback {dxc_help_query();}
           tooltip {Leave blank for general help
-Enter subject, e.g. DX} xywh {265 343 170 22}
+Enter subject, e.g. DX} xywh {265 368 172 22} labelsize 13 when 8
           class Fl_Input2
         }
         Fl_Button btn_dxc_help_clear {
           label Clear
           callback {dxc_help_clear()}
-          tooltip {Clear help panel} xywh {515 343 70 22}
+          tooltip {Clear help panel} xywh {517 368 71 22}
         }
       }
-    }
-    Fl_Input inp_dxcluster_cmd {
-      label {Cmd:}
-      tooltip {Command string} xywh {45 369 391 24}
-      class Fl_Input2
-    }
-    Fl_Button btn_cluster_submit {
-      label Submit
-      callback {DXcluster_submit();}
-      tooltip {Send command to server} xywh {439 369 70 24}
-    }
-    Fl_Button btn_cluster_spot {
-      label Spot
-      callback {send_DXcluster_spot();}
-      tooltip {Send SPOT string to server} xywh {553 369 70 24}
     }
   }
 } 

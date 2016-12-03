@@ -50,6 +50,30 @@ extern bool DXcluster_connected;
 
 extern void send_DXcluster_spot();
 
+extern void dxcluster_hosts_save();
+extern void dxcluster_hosts_load();
+
+extern void dxcluster_hosts_clear_setup(Fl_Button*, void*);
+extern void dxcluster_hosts_load_setup(Fl_Button*, void*);
+extern void dxcluster_hosts_save_setup(Fl_Button*, void*);
+extern void dxcluster_hosts_send_setup(Fl_Button*, void*);
+extern void dxcluster_ccc_help(Fl_Button*, void*);
+extern void dxcluster_arc_help(Fl_Button*, void*);
+extern void dxcluster_dxc_help(Fl_Button*, void*);
+extern void dxcluser_servers(Fl_Button*, void*);
+extern void dxcluster_hosts_load();
+
+extern void dxc_lines();
+
+extern void dxc_click_m1(Fl_Button*, void*);
+extern void dxc_click_m2(Fl_Button*, void*);
+extern void dxc_click_m3(Fl_Button*, void*);
+extern void dxc_click_m4(Fl_Button*, void*);
+extern void dxc_click_m5(Fl_Button*, void*);
+extern void dxc_click_m6(Fl_Button*, void*);
+extern void dxc_click_m7(Fl_Button*, void*);
+extern void dxc_click_m8(Fl_Button*, void*);
+
 struct dxinfo {
 	std::string  spotter;
 	std::string  freq;

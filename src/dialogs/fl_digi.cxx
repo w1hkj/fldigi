@@ -1409,7 +1409,11 @@ LOG_ERROR("Deleting %s", "fsqMonitor");
 		fsqMonitor->hide();
 		delete fsqMonitor;
 	}
-
+	if (dxcluster_viewer) {
+LOG_ERROR("Deleting %s", "dxcluster_viewer");
+		dxcluster_viewer->hide();
+		delete dxcluster_viewer;
+	}
 //	if (fsqDebug) {
 //		fsqDebug->hide();
 //		delete fsqDebug;
@@ -4765,6 +4769,8 @@ _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("View/Hide Channels")), 'v', (Fl_Callback*)cb_view_hide_channels, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("View/Hide 48 macros")), 0, (Fl_Callback*)cb_48macros, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
+{ icons::make_icon_label(_("DX Cluster")), 0, (Fl_Callback*)cb_dxc_viewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+
 { icons::make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'd', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'w', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -4807,8 +4813,7 @@ _FL_MULTI_LABEL, 0, 14, 0},
 
 { LOG_CONNECT_SERVER, 0, (Fl_Callback*)cb_log_server, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER, FL_NORMAL_LABEL, 0, 14, 0},
 
-{ icons::make_icon_label(_("Field Day Viewer")), 0, (Fl_Callback*)cb_fd_viewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("DX Cluster Viewer")), 0, (Fl_Callback*)cb_dxc_viewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Field Day Logging")), 0, (Fl_Callback*)cb_fd_viewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 
 {0,0,0,0,0,0,0,0,0},
 
@@ -5326,6 +5331,11 @@ void setTabColors()
 	tabsID->selection_color(progdefaults.TabsColor);
 	tabsQRZ->selection_color(progdefaults.TabsColor);
 	if (dlgConfig->visible()) dlgConfig->redraw();
+
+	if (dxcluster_viewer) {
+		cluster_tabs->selection_color(progdefaults.TabsColor);
+		if (dxcluster_viewer->visible()) dxcluster_viewer->redraw();
+	}
 }
 
 void showMacroSet() {
@@ -5567,11 +5577,6 @@ inline void chc_font_pos(Fl_Choice* chc, int x, int y, int w, int h)
 	chc->redraw_label();
 	chc->resize(x, y, w, h);
 	chc->redraw();
-}
-
-void DXC_colors_font()
-{
-	return;
 }
 
 void LOGBOOK_colors_font()

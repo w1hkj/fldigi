@@ -52,6 +52,8 @@
 
 #include "n3fjp_logger.h"
 
+#include "dx_cluster.h"
+
 #include <FL/fl_ask.H>
 
 using namespace std;
@@ -371,6 +373,11 @@ extern void xml_add_record();
 
 void submit_log(void)
 {
+	if (progdefaults.spot_when_logged) {
+		if (!dxcluster_viewer->visible()) dxcluster_viewer->show();
+		send_DXcluster_spot();
+	}
+
 	if (progStatus.spot_log)
 		spot_log(inpCall->value(), inpLoc->value());
 

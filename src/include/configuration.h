@@ -1405,9 +1405,14 @@
         ELEM_(std::string, dxcc_host_url, "DXCC_HOST_URL",                              \
               "DXCC cluster tcpip address",                                             \
               "")                                                                       \
-        ELEM_(Fl_Color, DXC_color, "DXC_COLOR",                                         \
-              "Background color in dxcluster dialog",                                   \
-              FL_BACKGROUND2_COLOR)                                                     \
+        ELEM_(std::string, dxcluster_hosts, "DXCLUSTER_HOSTS",                          \
+              "Array of dxcluster host-port-user lines\n"                               \
+              "Fields separated by : character\n"                                       \
+              "Lines separated by | character",                                         \
+              "")                                                                       \
+        ELEM_(RGB, DX_Color, "DX_COLOR",                                                \
+              "RX text font color (RGB)",                                               \
+              { 0, 0, 130 })                                                            \
         ELEM_(Fl_Color, DXC_even_color, "DXC_EVEN_COLOR",                               \
               "Even line background color in dxcluster dialog",                         \
               7)                                                                        \
@@ -1416,12 +1421,24 @@
               246)                                                                      \
         ELEM_(Fl_Color, DXC_textcolor, "DXC_TEXTCOLOR",                                 \
               "Text color in dxcluster dialog",                                         \
-              FL_BLACK)                                                                 \
+              FL_YELLOW)                                                                \
         ELEM_(Fl_Font, DXC_textfont, "DXC_TEXTFONT",                                    \
               "DX cluster browsers font number",                                        \
               FL_COURIER)                                                               \
         ELEM_(int, DXC_textsize, "DXC_TEXTSIZE",                                        \
               "DX cluster browsers font size",                                          \
+              14)                                                                       \
+        ELEM_(Fl_Color, DXfontcolor, "DXFONTCOLOR",                                     \
+              "Text color in dxcluster stream",                                         \
+              FL_YELLOW)                                                                \
+        ELEM_(Fl_Color, DXalt_color, "DXALT_COLOR",                                     \
+              "Alternate text color in dxcluster stream",                               \
+              FL_DARK_RED)                                                              \
+        ELEM_(Fl_Font, DXfontnbr, "DXFONTNBR",                                          \
+              "DX cluster stream font number",                                          \
+              FL_COURIER)                                                               \
+        ELEM_(int, DXfontsize, "DXFONTSIZE",                                            \
+              "DX cluster stream font size",                                            \
               14)                                                                       \
         ELEM_(std::string, dxcc_host_port, "DXCC_HOST_PORT",                            \
               "DXCC cluster tcpip port number",                                         \
@@ -1429,9 +1446,69 @@
         ELEM_(std::string, dxcc_login, "DXCC_LOGIN",                                    \
               "DXCC cluster login call sign",                                           \
               "")                                                                       \
+        ELEM_(std::string, dxcm_label_1, "DXC_ML1",                                     \
+              "DXC Macro Label 1",                                                      \
+              "Show DX")                                                                \
+        ELEM_(std::string, dxcm_text_1, "DXC_MACRO1",                                   \
+              "DXC Macro 1",                                                            \
+              "SH/DX")                                                                  \
+        ELEM_(std::string, dxcm_label_2, "DXC_ML2",                                     \
+              "DXC Macro Label 2",                                                      \
+              "dxcm 2")                                                                 \
+        ELEM_(std::string, dxcm_text_2, "DXC_MACRO2",                                   \
+              "DXC Macro 2",                                                            \
+              "")                                                                       \
+        ELEM_(std::string, dxcm_label_3, "DXC_ML3",                                     \
+              "DXC Macro Label 3",                                                      \
+              "dxcm 3")                                                                 \
+        ELEM_(std::string, dxcm_text_3, "DXC_MACRO3",                                   \
+              "DXC Macro 3",                                                            \
+              "")                                                                       \
+        ELEM_(std::string, dxcm_label_4, "DXC_ML4",                                     \
+              "DXC Macro Label 4",                                                      \
+              "dxcm 4")                                                                 \
+        ELEM_(std::string, dxcm_text_4, "DXC_MACRO4",                                   \
+              "DXC Macro 4",                                                            \
+              "")                                                                       \
+        ELEM_(std::string, dxcm_label_5, "DXC_ML5",                                     \
+              "DXC Macro Label 5",                                                      \
+              "dxcm 5")                                                                 \
+        ELEM_(std::string, dxcm_text_5, "DXC_MACRO5",                                   \
+              "DXC Macro 5",                                                            \
+              "")                                                                       \
+        ELEM_(std::string, dxcm_label_6, "DXC_ML6",                                     \
+              "DXC Macro Label 6",                                                      \
+              "dxcm 6")                                                                 \
+        ELEM_(std::string, dxcm_text_6, "DXC_MACRO6",                                   \
+              "DXC Macro 6",                                                            \
+              "")                                                                       \
+        ELEM_(std::string, dxcm_label_7, "DXC_ML7",                                     \
+              "DXC Macro Label 7",                                                      \
+              "dxcm 7")                                                                 \
+        ELEM_(std::string, dxcm_text_7, "DXC_MACRO7",                                   \
+              "DXC Macro 7",                                                            \
+              "")                                                                       \
+        ELEM_(std::string, dxcm_label_8, "DXC_ML8",                                     \
+              "DXC Macro Label 8",                                                      \
+              "dxcm 8")                                                                 \
+        ELEM_(std::string, dxcm_text_8, "DXC_MACRO8",                                   \
+              "DXC Macro 8",                                                            \
+              "")                                                                       \
+        ELEM_(bool, dxc_topline, "DXC_TOPLINE",                                         \
+              "DXC report order; true = new record on top line",                        \
+              true)                                                                     \
+        ELEM_(bool, spot_when_logged, "SPOT_WHEN_LOGGED",                               \
+              "Create spot Cmd: string when logging contact",                           \
+              false)                                                                    \
+        ELEM_(bool, dxc_auto_connect, "DXC_AUTO_CONNECT",                               \
+              "Connect to HOST when starting fldigi",                                   \
+              false)                                                                    \
+        ELEM_(bool, dxc_hertz, "DXC_HERTZ",                                             \
+              "Add 0..99 Hertz audio frequency factor [nn] to DX report/notes",         \
+              false)                                                                    \
         ELEM_(bool, UseLastMacro, "USELASTMACRO",                                       \
               "Load last used macro file on startup",                                   \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(double, mbw, "MBW",                                                       \
               "Delay between execution of RIGMODE and FILWID\n"                         \
               "when in the same macro definition\n"                                     \
@@ -1439,7 +1516,7 @@
               0.5)                                                                      \
         ELEM_(bool, DisplayMacroFilename, "DISPLAYMACROFILENAME",                       \
               "Display macro filename on startup",                                      \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, SaveMacros, "SAVEMACROS",                                           \
               "Save current macros on exit",                                            \
               true)                                                                     \

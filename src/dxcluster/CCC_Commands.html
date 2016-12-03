@@ -1,0 +1,801 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
+<title>CCC Commands</title>
+</head>
+<body>
+<div align="left">
+<table height="20" border="0" cellpadding="0" cellspacing="0"
+width="100%" align="center">
+<tbody>
+<tr>
+<td bgcolor="#ffffff">
+<h2 align="center">CC Cluster Commands</h2>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div align="left">
+<table bgcolor="#FFFFFF" border="0"
+cellpadding="5" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td>
+<div align="center">
+<table border="1" cellpadding="3"
+ cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td width="150">ANnounce</td>
+<td width="600">Send an announcement to local USERs.&nbsp; (AN&lt;Text Message&gt;)</td>
+</tr>
+<tr>
+<td>ANnounce/Full</td>
+<td>Send an announcement to all nodes and USERs.&nbsp; (AN/F &lt;Text Message&gt;)</td>
+</tr>
+<tr>
+<td>BYE</td>
+<td>Disconnect from the node. (BYE) or (B)</td>
+</tr>
+<tr>
+<td>DX</td>
+<td>Send a DX spot.&nbsp; (DX &lt;Callsign&gt; &lt;Frequency&gt; or DX &lt;Frequency&gt; &lt;Callsign&gt;)</td>
+</tr>
+<tr>
+<td>DXTest</td>
+<td>Returns&nbsp; to USER only. (DXT P5NOW 14006.06) Good for testing RES 1 &amp; RES 2</td>
+</tr>
+<tr>
+<td>DIR</td>
+<td>Shows mail messages on the node</td>
+</tr>
+<tr>
+<td>DIR/BULLETIN</td>
+<td>Shows mail messages to ALL, BULLETIN and anything not to a call</td>
+</tr>
+<tr>
+<td>DIR/NEW</td>
+<td>Shows only mail messages you haven't seen since your last DIR</td>
+</tr>
+<tr>
+<td>DIR/OWN</td>
+<td>Shows only mail messages to you including messages to ALL &amp; ones you sent</td>
+</tr>
+<tr>
+<td>DIR/SUBJECT</td>
+<td>Shows mail messages with subject you enter.&nbsp; (DIR/SUBJECT ARL)</td>
+</tr>
+<tr>
+<td>DELete</td>
+<td>Delete mail messages. (DEL (Msg #) (DEL 1-99) Deletes your messages from 1 to 99</td>
+</tr>
+<tr>
+<td>Kill</td>
+<td>Delete mail messages.&nbsp; (K (Msg #) (K 1-99) Deletes your messages from 1 to 99</td>
+</tr>
+<tr>
+<td>List</td>
+<td>Shows mail messages on the node</td>
+</tr>
+<tr>
+<td>List/NEW</td>
+<td>Shows only mail messages you haven't seen since your last DIR or L</td>
+</tr>
+<tr>
+<td>List/OWN</td>
+<td>Shows only mail messages to you including messages to ALL &amp; ones you sent</td>
+</tr>
+<tr>
+<td>QUIT</td>
+<td>Disconnect from the node</td>
+</tr>
+<tr>
+<td>READ</td>
+<td>Read cluster mail.&nbsp; (READ &lt;Message #&gt;)&nbsp; See Mail Send/Receive below</td>
+</tr>
+<tr>
+<td>REply</td>
+<td>REply without a number following replies to the last mail message you read.&nbsp;
+ REply &lt;#&gt; replies to the message with that number given.&nbsp;
+ REply/DELete replies to message and deletes it.&nbsp; REply/DELete/RR replies
+ to message, delets message and gets a return receipt.&nbsp; REply/RR replies
+ to message and gets a return receipt.&nbsp;</td>
+</tr>
+<tr>
+<td>SEND</td>
+<td>(SEND &lt;Callsign&gt;) Sends mail&nbsp; to that callsign.&nbsp;SEND &lt;LOCAL&gt;
+ to just send a message to local node USERs.&nbsp; SEND &lt;ALL&gt;, SEND
+ &lt;FORSALE&gt; and SEND &lt;DXNEWS&gt; will be passed to all nodes for all USERs.</td>
+</tr>
+<tr>
+<td>SET/ANN</td>
+<td>Turn on announcements</td>
+</tr>
+<tr>
+<td>SET/BEACON</td>
+<td>Turn on beacon spots.&nbsp; These are spots ending in "/B" or "BCN"</td>
+</tr>
+<tr>
+<td>SET/BEEP</td>
+<td>Turn on a beep for DX and Announcement spots</td>
+</tr>
+<tr>
+<td>SET/BOB</td>
+<td>Turn on bottom of band DX spots</td>
+</tr>
+<tr>
+<td>SET/DX</td>
+<td>Turn on DX spot announcements</td>
+</tr>
+<tr>
+<td>SET/DXCQ</td>
+<td>Turn on CQ Zone in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/DXITU</td>
+<td>Turn on ITU Zone in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/DXS</td>
+<td>Turn on US state/province or country in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/USSTATE</td>
+<td>Turn on US
+state or Canadian province spotter in DX info for DX spots</td>
+</tr> 
+<tr>
+<td>SET/FILTER</td>
+<td>See Band
+&amp; Mode Filtering Below</td>
+</tr>
+<tr>
+<td>SET/GRID</td>
+<td>Turns on DX
+Grid, toggles CQ Zone, ITU Zone, &amp; US State to off</td>
+</tr>
+<tr>
+<td>SET/HOME</td>
+<td>Tell cluster
+your home node.&nbsp;(SET/HOME &lt;Node Call&gt;) If you normally connect to
+K8SMC then it would be (SET/HOME K8SMC)&nbsp;</td>
+</tr>
+<tr>
+<td>SET/LOCATION</td>
+<td>Set your location (lat/lon) of your station.&nbsp; (SET/LOCATION 42 17 N 84 21 W)</td>
+</tr>
+<tr>
+<td>SET/LOGIN</td>
+<td>Tells cluster to send USER connects and disconnects.</td> 
+</tr>
+<tr>
+<td>SET/NAME</td>
+<td>Set your name<o:p></o:p> (SET/NAME &lt;First Name&gt;)</td>
+</tr>
+<tr>
+<td>SET/NOANN</td>
+<td>Turn off announcements.</td>
+</tr>
+<tr>
+<td>SET/NOBEACON</td>
+<td>Turn off beacon spots.&nbsp; These are spots ending in "/B" or "BCN"</td>
+</tr>
+<tr>
+<td>SET/NOBEEP</td>
+<td>Turn off a beep for DX and Announcement spots<o:p>
+</o:p> .</td>
+</tr>
+<tr>
+<td>SET/NOBOB</td>
+<td>Turn off bottom of band DX spots.</td>
+</tr>
+<tr>
+<td>SET/NOCQ</td>
+<td>Turn off CQ Zone in spot announcements.</td>
+</tr>
+<tr>
+<td>SET/NODX</td>
+<td>Turn off DX spot announcements.</td>
+</tr>
+<tr>
+<td>SET/NODXCQ</td>
+<td>Turn off CQ Zone in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/NODXITU</td>
+<td>Turn off ITU Zone in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/NODXS</td>
+<td>Turn off US state/province or country in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/NOUSSTATE</td>
+<td>Turn off US state or Canadian province spotter in DX info for DX spots</td>
+</tr>
+<tr>
+<td>SET/NOGRID</td>
+<td>Turn off DX Grids in spot announcements</td>
+</tr>
+<tr>
+<td>SET/NOITU</td>
+<td>Turn off ITU Zone in spot announcements</td>
+</tr>
+<tr>
+<td>SET/NOLOGIN</td>
+<td>Stops cluster from sending USER connects and disconnects</td>
+</tr>
+<tr>
+<td>SET/NOOWN</td>
+<td>Turn off skimmer spots for your own call</td>
+</tr>
+<tr>
+<td>SET/NOSELF</td>
+<td>Turn off self spots by other users</td>
+</tr>
+<tr>
+<td>SET/NOSKIMMER</td>
+<td>Turn off Skimmer spots</td>
+</tr>
+<tr>
+<td>SET/NOTALK</td>
+<td>Turn off the display of talk messages<o:p></o:p></td>
+</tr>
+<tr>
+<td>SET/NOWCY</td>
+<td>Turn off the display of WCY spots</td>
+</tr>
+<tr>
+<td>SET/NOWWV</td>
+<td>Turn off the display of WWV spots</td>
+</tr>
+<tr>
+<td>SET/NOWX</td>
+<td>Turn off the display of weather announcements</td>
+</tr>
+<tr>
+<td>SET/OWN</td>
+<td>Turn on Skimmer spots for own call</td>
+</tr>
+<tr>
+<td>SET/NOLOGIN</td>
+<td>Stops cluster from sending USER connects and disconnects</td>
+</tr>
+<tr>
+<td>SET/QRA</td>
+<td>Input your Grid Square.&nbsp;(SET/QRA EN72)</td>
+</tr>
+<tr>
+<td>SET/QTH</td>
+<td>Set your city and state. (SET/QTH &lt;City, State&gt;) DX &lt;City, Country&gt;</td>
+</tr>
+<tr>
+<td>SET/RES 1</td>
+<td>Tells CC-Cluster to give you 1 decimal point rounding in DX spots</td>
+</tr>
+<tr>
+<td>SET/RES 2</td>
+<td>Tells CC-Cluster to give you 2 decimal point rounding in DX spots</td>
+</tr>
+<tr>
+<td>SET/SELF</td>
+<td>Turn on self spots by other users</td>
+</tr>
+<tr>
+<td>SET/SKIMMER</td>
+<td>Turn on Skimmer spots</td>
+</tr>
+<tr>
+<td>SET/TALK</td>
+<td>Turn on the display of talk messages</td>
+</tr>
+<tr>
+<td>SET/USSTATE</td>
+<td>Turns on US State, toggles CQ Zone, DX Grid, &amp; ITU Zone to off</td>
+</tr>
+<tr>
+<td>SET/WCY</td>
+<td>Turn on the display of WCY spots</td>
+</tr>
+<tr>
+<td>SET/WIDTH</td>
+<td>Sets the line width for DX spots, normally this has been 80 characters.&nbsp; Depending
+on your logging program you can use anything between 45 to 130
+characters,&nbsp; SET/WIDTH XX where XX is the number of characters.</td>
+</tr>
+<tr>
+<td>SET/WWV</td>
+<td>Turn on the display of WWV spots</td>
+</tr>
+<tr>
+<td>SET/WX</td>
+<td>Turn on the display of weather announcements</td>
+</tr>
+<tr>
+<td>SHow/CL</td>
+<td>Node Info and CCC Uptime&nbsp; See SH/VERSION&nbsp;</td>
+</tr>
+<tr>
+<td>SHow/CONF</td>
+<td>Shows nodes and callsigns of USERs, only nodes called LOCAL by Sysop.</td>
+</tr>
+<tr>
+<td>SHow/DX</td>
+<td>Shows last 30 spots</td>
+</tr>
+<tr>
+<td>SHow/DX &lt;Call&gt;</td>
+<td>Shows last 30 spots for that call</td>
+</tr>
+<tr>
+<td>SHow/DX/&lt;number&gt;</td>
+<td>Shows that number of spots.&nbsp; SH/DX/100</td>
+</tr>
+<tr>
+<td>SHow/DX &lt;Band&gt;</td>
+<td>Shows spots on that band.&nbsp; SH/DX 20&nbsp; for 20 meters</td>
+</tr>
+<tr>
+<td>SHow/DX/ &lt;Freq&gt;</td>
+<td>Shows spots by frequency range.&nbsp; Syntax = SH/DX 7020-7130</td>
+</tr>
+<tr>
+<td>SHow/DX &lt;prefix*&gt;</td>
+<td>Shows all spots for a country, standard prefix not necessary, asterisk needed</td>
+</tr>
+<tr>
+<td>SHow/DX 'rtty'</td>
+<td>Shows spots where the comment field contains (rtty)</td>
+</tr>
+<tr>
+<td>SHow/DXBY &lt;call&gt;</td>
+<td>Shows spots where spotter = Call</td>
+</tr>
+<tr>
+<td>SHow/FDX</td>
+<td>Shows real time formatted dx spots.</td>
+</tr>
+<tr>
+<td>SHow/FILTER</td>
+<td>Shows how you have your filters set.</td>
+</tr>
+<tr>
+<td>SHow/HEAD &lt;Call&gt;</td>
+<td>Shows heading - distance and bearing for the
+call.</td>
+</tr>
+<tr>
+<td>SHow/MYANN</td>
+<td>Shows last 5 announcements allowed by your filter settings.</td>
+</tr>
+<tr>
+<td>SHow/MYDX</td>
+<td>Shows last 30 spots allowed by your filter settings</td>
+</tr>
+<tr>
+<td>SHow/MYDX &lt;Call&gt;</td>
+<td>Shows last 30 spots for the call allowed by your filter settings.</td>
+</tr>
+<tr>
+<td>SHow/MYDX/&lt;number&gt;</td>
+<td>Shows that number of spots allowed by your filter.&nbsp; SH/MYDX/100</td>
+</tr>
+<tr>
+<td>SHow/MYDX &lt;Band&gt;</td>
+<td>Shows spots on that band allowed by your filter settings.&nbsp; SH/MYDX 20&nbsp; for 20 meters</td>
+</tr>
+<tr>
+<td>SHow/MYFDX</td>
+<td>Shows last 30 spots allowed by your filter settings.&nbsp;&nbsp;</td>
+</tr>
+<tr>
+<td>SHow/MYWX</td>
+<td>Shows last 5 weather announcements allowed by your filter settings.</td>
+</tr>
+<tr>
+<td>SHow/RES</td>
+<td>Shows the number of digits after the decimal point for frequencies</td>
+</tr>
+<tr>
+<td>SHow/SETTINGS</td>
+<td>Shows information on the node for your call and how you are setup.</td>
+</tr>
+<tr>
+<td>SHow/STATION</td>
+<td>Shows information on the node for a station.&nbsp; (SH/STA &lt;Callsign&gt;)</td>
+</tr>
+<tr>
+<td>SHow/SUN</td>
+<td>Shows local sunrise and sunset times.&nbsp; (SH/SUN &lt;Prefix.) for that country</td>
+</tr>
+<tr>
+<td>SHow/TIME</td>
+<td>Shows GMT time.</td>
+</tr>
+<tr>
+<td>SHow/TIME &lt;Call&gt;</td>
+<td>Shows local time for the call.</td>
+</tr>
+<tr>
+<td>SHow/USDB</td>
+<td>Shows State/Province for US/VE calls.&nbsp; (SH/USDB &lt;Callsign&gt;)</td>
+</tr>
+<tr>
+<td>SHow/USERS</td>
+<td>Shows callsigns of everyone connected to the local node.</td>
+</tr>
+<tr>
+<td>SHow/VERSION</td>
+<td>Shows the CCC Uptime for connections.</td>
+</tr>
+<tr>
+<td>SHow/WIDTH</td>
+<td>Shows the length of a DX Spot. Normally 80 characters.</td>
+</tr>
+<tr>
+<td>SHow/WWV</td>
+<td>Shows WWV info, (SH/WWV) gives last 5 (SH/WWV/99) gives last 99</td>
+</tr>
+<tr>
+<td>SHow/WCY</td>
+<td>Shows last 5 DK0WCY, similar to WWV</td>
+</tr>
+<tr>
+<td>Talk</td>
+<td>Send a talk message to someone on the node.&nbsp; (T&lt;Callsign&gt; &lt;Message&gt;)</td>
+</tr>
+<tr>
+<td>UNSET/</td>
+<td>This command can be used instead of SET/NO, Compatibility for DX-Spider USERs</td>
+</tr>
+<tr>
+<td>WHO</td>
+<td>This command will return a list of connections in alphabetical order.&nbsp; Items are: Call User/Node Name IP/AGW</td>
+</tr>
+<tr>
+<td>WX</td>
+<td>The command "WX" will send a local weather announcement.&nbsp; (WX Sunny and Warm)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+&nbsp; 
+<div align="center">
+<center>
+<table border="0" cellpadding="0" cellspacing="0"
+width="600">
+<tbody>
+<tr>
+<td width="100%" align="center"><font color="#800000">Most Common Used Filter Commands</font></td>
+</tr>
+</tbody>
+</table>
+</center>
+</div>
+<div align="center">
+<center>
+<table border="1" cellpadding="3" cellspacing="0"
+width="100%">
+<tbody>
+<tr>
+<td width="250">Filter Settings:</td>
+<td width="500">Filters are mostly default to off, but one simple setting for say someone in the US or Canada
+ that is happy seeing spots from just the US and Canada can do a quick setting for this: SET/FILTER K,VE/PASS</td>
+</tr>
+<tr>
+<td width="250">SH/FILTER</td>
+<td width="500">Shows all of your USER
+ filter settings</td>
+</tr>
+<tr>
+<td width="250">SH/FILTER &lt;aaa&gt;</td>
+<td width="500">Show setting for specific filter, &lt;aaa&gt; = filter name.<br>
+ SH/FILTER DOC = DX Origination Country<br>
+ SH/FILTER DOS = DX Origination State<br>
+ SH/FILTER AOC = Announce Origination Country<br>
+ SH/FILTER AOS = Announce Origination State<br>
+ SH/FILTER WOC = Weather Origination Country<br>
+ SH/FILTER WOS = Weather Origination State<br>
+ SH/FILTER DXCTY = DX spot CounTrY<br>
+ SH/FILTER DXSTATE = DX spot STATE&nbsp;</td>
+</tr>
+<tr>
+<td width="250">SET/NOFILTER</td>
+<td width="500">Resets all filters to default.&nbsp; If you suspect you have
+ entered invalid filter command or commands, reset and start over.</td>
+</tr>
+<tr>
+<td width="250">SET/FILTER &lt;aaa&gt;/OFF</td>
+<td width="500">Turn off specific filter.&nbsp; &lt;aaa&gt; = filter name (see SH/FILTER &lt;aaa&gt;)</td>
+</tr>
+<tr>
+<td width="250">SET/FILTER K,VE/PASS</td>
+<td width="500">This would be the most common filter setting for say someone
+ in the United States or Canada to set so as to only see spots that
+ originated in the US or Canada.&nbsp;</td>
+</tr>
+<tr>
+<td width="250">SET/FILTER &lt;aaa&gt;/&lt;p/r&gt; &lt;bbb&gt;</td>
+<td width="500">Set specific filter.<br>
+ &lt;aaa&gt; = filter name (see SH/FILTER &lt;aaa&gt;<br>
+ &lt;p/r&gt; = PASS or REJECT<br>
+ &lt;bbb&gt; = Country or State<br>
+ Example #1:&nbsp; SET/FILTER DOC/PASS EA,OH,G&nbsp; This would set your
+ filter to pass originated spots from Spain, Finland and England only.<br>
+ Example #2:&nbsp; SET/FILTER DXCTY/PASS F,OH&nbsp; This would set
+ your filter to pass spots for France and Finland only.</td>
+</tr>
+<tr>
+<td width="250">DX Band Mode Filtering</td>
+<td width="500">The DXBM filter has many variations for your settings, it
+ is defaulted to receive all DX spots for all modes from 160 to 10 meters,
+ (see Band &amp; Mode Filtering below).</td>
+</tr>
+</tbody>
+</table>
+</center>
+</div>
+<p>&nbsp;</p>
+<div align="center">
+<center>
+<table border="0" cellpadding="0" cellspacing="0"
+width="600">
+<tbody>
+<tr>
+<td>
+<p align="center"><font color="#800000">Band &amp; Mode Filtering</font></p>
+</td>
+</tr>
+</tbody>
+</table>
+</center>
+</div>
+<div align="center">
+<center>
+<table border="1" cellpadding="3" cellspacing="0"
+width="80%">
+<tbody>
+<tr>
+<td>You can tailor the DX spots from CC Cluster to only the bands and modes that interest you.</td>
+</tr>
+<tr>
+<td>The default setting for new users is to receive all DX
+ spots from 160 to 10 meters, all modes.</td>
+</tr>
+<tr>
+<td>To reset the band/mode filter to pass everything, enter "SET/FILTER DXBM/OFF".</td>
+</tr>
+<tr>
+<td>To display your current settings, enter "SH/FILTER DXBM".</td>
+</tr>
+<tr>
+<td>You can change any band or band/mode</td>
+</tr>
+<tr>
+<td>You can set the band or band/mode to either pass or reject.</td>
+</tr>
+<tr>
+<td>You can add items one at a time, or all at once.</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>For example:</td>
+</tr>
+<tr>
+<td>To add 6 meters, you enter "SET/FILTER DXBM/PASS 6".<br>
+ To delete 80 meter and 40 meter CW, enter "SET/FILTER DXBM/REJECT 80-CW,40-CW"</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>Although the band/mode has a "mode" name, it does not mean
+ that when you select 40-RTTY that you are selecting only RTTY spots. What it
+ really means is that you are selecting the frequency range in the following
+ table that corresponds to this name.  In this case 7040-7100. The actual
+ mode may be anything. The only thing you have selected is a frequency range.</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</center>
+</div>
+<div align="center">
+<br>
+<center>
+<table border="1" cellpadding="3" cellspacing="0"
+width="100%">
+<caption><font color="#800000">DXBM Frequencies</font></caption>
+<tbody>
+<tr align="center">
+<th bgcolor="#cccc99">Band Mode</th>
+<th bgcolor="#cccc99">Low</th>
+<th bgcolor="#cccc99">High</th>
+<th bgcolor="#cccc99">Band Mode</th>
+<th bgcolor="#cccc99">Low</th>
+<th bgcolor="#cccc99">High</th>
+<th bgcolor="#cccc99">Band Mode</th>
+<th bgcolor="#cccc99">Low</th>
+<th bgcolor="#cccc99">High</th>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">160-CW</td>
+<td bgcolor="#ffff99">1800</td>
+<td bgcolor="#ffff99">1850</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff66">160-SSB</td>
+<td bgcolor="#ffff99">1850</td>
+<td bgcolor="#ffff99">2000</td>
+</tr><tr align="center">
+<td bgcolor="#ffff66">80-CW</td>
+<td bgcolor="#ffff99">3500</td>
+<td bgcolor="#ffff99">3580</td>
+<td bgcolor="#ffff66">80-RTTY</td>
+<td bgcolor="#ffff99">3580</td>
+<td bgcolor="#ffff99">3700</td>
+<td bgcolor="#ffff66">80-SSB</td>
+<td bgcolor="#ffff99">3700</td>
+<td bgcolor="#ffff99">4000</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff66">60-SSB</td>
+<td bgcolor="#ffff99">5260</td>
+<td bgcolor="#ffff99">5405</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">40-CW</td>
+<td bgcolor="#ffff99">7000</td>
+<td bgcolor="#ffff99">7040</td>
+<td bgcolor="#ffff66">40-RTTY</td>
+<td bgcolor="#ffff99">7040</td>
+<td bgcolor="#ffff99">7100</td>
+<td bgcolor="#ffff66">40-SSB</td>
+<td bgcolor="#ffff99">7100</td>
+<td bgcolor="#ffff99">7300</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">30-CW</td>
+<td bgcolor="#ffff99">10100</td>
+<td bgcolor="#ffff99">10130</td>
+<td bgcolor="#ffff66">30-RTTY</td>
+<td bgcolor="#ffff99">10130</td>
+<td bgcolor="#ffff99">10150</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+</tr><tr align="center">
+<td bgcolor="#ffff66">20-CW</td>
+<td bgcolor="#ffff99">14000</td>
+<td bgcolor="#ffff99">14070</td>
+<td bgcolor="#ffff66">20-RTTY</td>
+<td bgcolor="#ffff99">14070</td>
+<td bgcolor="#ffff99">14150</td>
+<td bgcolor="#ffff66">20-SSB</td>
+<td bgcolor="#ffff99">14150</td>
+<td bgcolor="#ffff99">14350</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">17-CW</td>
+<td bgcolor="#ffff99">18068</td>
+<td bgcolor="#ffff99">18100</td>
+<td bgcolor="#ffff66">17-RTTY</td>
+<td bgcolor="#ffff99">18100</td>
+<td bgcolor="#ffff99">18110</td>
+<td bgcolor="#ffff66">17-SSB</td>
+<td bgcolor="#ffff99">18110</td>
+<td bgcolor="#ffff99">18168</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">15-CW</td>
+<td bgcolor="#ffff99">21000</td>
+<td bgcolor="#ffff99">21070</td>
+<td bgcolor="#ffff66">15-RTTY</td>
+<td bgcolor="#ffff99">21070</td>
+<td bgcolor="#ffff99">21200</td>
+<td bgcolor="#ffff66">15-SSB</td>
+<td bgcolor="#ffff99">21200</td>
+<td bgcolor="#ffff99">21450</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">12-CW</td>
+<td bgcolor="#ffff99">24890</td>
+<td bgcolor="#ffff99">24920</td>
+<td bgcolor="#ffff66">12-RTTY</td>
+<td bgcolor="#ffff99">24920</td>
+<td bgcolor="#ffff99">24930</td>
+<td bgcolor="#ffff66">12-SSB</td>
+<td bgcolor="#ffff99">24930</td>
+<td bgcolor="#ffff99">24990</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">10-CW</td>
+<td bgcolor="#ffff99">28000</td>
+<td bgcolor="#ffff99">28070</td>
+<td bgcolor="#ffff66">10-RTTY</td>
+<td bgcolor="#ffff99">28070</td>
+<td bgcolor="#ffff99">28300</td>
+<td bgcolor="#ffff66">10-SSB</td>
+<td bgcolor="#ffff99">28300</td>
+<td bgcolor="#ffff99">29700</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">6-CW</td>
+<td bgcolor="#ffff99">50000</td>
+<td bgcolor="#ffff99">50080</td>
+<td bgcolor="#ffff66">6-SSB</td>
+<td bgcolor="#ffff99">50080</td>
+<td bgcolor="#ffff99">50500</td>
+<td bgcolor="#ffff66">6-FM</td>
+<td bgcolor="#ffff99">50500</td>
+<td bgcolor="#ffff99">54000</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff66">4-MTR</td>
+<td bgcolor="#ffff99">70000</td>
+<td bgcolor="#ffff99">70650</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">2-CW</td>
+<td bgcolor="#ffff99">144000</td>
+<td bgcolor="#ffff99">144100</td>
+<td bgcolor="#ffff66">2-SSB</td>
+<td bgcolor="#ffff99">144100</td>
+<td bgcolor="#ffff99">144500</td>
+<td bgcolor="#ffff66">2-FM</td>
+<td bgcolor="#ffff99">144500</td>
+<td bgcolor="#ffff99">148000</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">1-CW</td>
+<td bgcolor="#ffff99">220000</td>
+<td bgcolor="#ffff99">221000</td>
+<td bgcolor="#ffff66">1-SSB</td>
+<td bgcolor="#ffff99">222000</td>
+<td bgcolor="#ffff99">224000</td>
+<td bgcolor="#ffff66">1-FM</td>
+<td bgcolor="#ffff99">221000</td>
+<td bgcolor="#ffff99">222000</td>
+</tr>
+<tr align="center">
+<td bgcolor="#ffff66">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff66">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff99">&nbsp;</td>
+<td bgcolor="#ffff66">MW-MW</td>
+<td bgcolor="#ffff99">500000</td>
+<td bgcolor="#ffff99">47000000</td>
+</tr>
+</tbody>
+</table>
+</center>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>

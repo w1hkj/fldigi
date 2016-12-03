@@ -326,8 +326,8 @@ void Address::lookup(const char* proto_name)
 	if (service.find_first_not_of("0123456789") == string::npos)
 		hints.ai_flags |= AI_NUMERICSERV;
 
-	int r;
-	if ((r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info)) < 0)
+	int r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info);
+	if (r < 0)
 		throw SocketException(r, "getaddrinfo");
 
 #else // use gethostbyname etc.
@@ -859,14 +859,14 @@ void Socket::connect(void)
 #endif
 	LOG_INFO("Connecting to %s", address.get_str(ainfo).c_str());
 	int res = ::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen);
+	LOG_INFO("Result = %d\n", res);
 	if (res == -1) {
-		LOG_INFO("Response %d, error %d", res, errno);
-		if ( (errno == EAGAIN) || (errno == EINPROGRESS) )
-			throw SocketException(errno, "connect");
+		LOG_INFO("Response %d, error %d, %s", res, errno, strerror(errno));
 		if (errno == EALREADY) {
 			connected_flag = true;
 			return;
 		}
+		throw SocketException(errno, "connect");
 	}
     connected_flag = true;
 }

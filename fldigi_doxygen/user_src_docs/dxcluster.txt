@@ -1,0 +1,229 @@
+/**
+\page dxcluster_interface_page  DX Cluster
+\tableofcontents
+<br>
+fldigi can connect to and display data from DX cluster servers.  The three
+most common server types are AR-Cluster, CC-Cluster, and DX Spider.  Open the
+dxcluster dialog from the View menu:
+<center>
+\image html dxc_menu_access.png ""
+\image latex dxc_menu_access.png "" width=1.0in
+<br>
+\image html dxc_config.png ""
+\image latex dxc_config.png "" width=7.0in
+</center>
+\section s_logon Logging on to remote host
+Enter the DX HOST hostname/IP, the Port and your Login call.  Then check
+the "Connect" control.  The "Connected" label will be visible only after
+the remote host connection has been been made.  The above dialog shows the
+4 hosts that I routinely use.
+<ul>
+<li>k4zr.no-ip.org, a DX Spider server</li>
+<li>dxc.wb3ffv.us, a DX Spider server</li>
+<li>nk7z-cluster.ddns.net, an AR Cluster server</li>
+<li>dxspots.com, a CC Cluster server</li>
+</ul>
+Immediately after checking the "Connect" control the dxcluster dialog should
+change to the "TelNet stream" tab.  This tab displays the raw telnet data
+stream, shown here for the three server types:
+<center>
+\image html dxc_ar_logon.png ""
+\image latex dxc_ar_logon.png "" width=7.0in
+<br>
+\image html dxc_cc_logon.png ""
+\image latex dxc_cc_logon.png "" width=7.0in
+<br>
+\image html dxc_dx_logon.png ""
+\image latex dxc_dx_logon.png "" width=7.0in
+</center>
+The dxcluster connect and disconnect events are recorded in fldigi's event log.
+<center>
+\image html dxc_event_log.png ""
+\image latex dxc_event_log.png "" width=6.0in
+</center>
+\section s_dxc_configure Configuring
+<center>
+\image html dxc_config.png ""
+\image latex dxc_config.png "" width=7.0in
+</center>
+\subsection s_dxc_config_hosts Managing Hosts
+You can maintain a list of remote hosts to which you can reliably connect and
+which provide good information relative to your QRA (Maidenhead locator).  The
+following refers to the Config tab on the dxcluster dialog as shown above.
+<ul>
+<li>Add the current host to the list using the "Add" button.</li>
+<li>Highlight an entry and press the "Select" button to transfer the elements
+to the connect controls.</li>
+<li>Highlight an entry and press the "Delete" button to delete an entry.</li>
+<li>Use the menu item "Configure / Save Config" to save the modified list.
+It will be restored the next time fldigi is executed.</li>
+</ul>
+Press the "Servers" button if you are unfamiliar with the telnet address and 
+port number of a convenient dxcluster server.  fldigi will open up a local
+html document with a list of recently verified servers:
+<center>
+\image html dxc_servers.png ""
+\image latex dxc_servers.png "" width=8.0in
+</center>
+\subsection s_dxc_config_init_cmds Initial Host Commands
+Most cluster servers will save your setup commands from a previous telnet
+session.  You can also store those commands in the text editing control,
+"Cluster Server Setup Cmds."
+<br>
+
+You can save and reload any number of command sequences.  Each is saved in a plain text
+file in the fldigi files subfolder "Scripts".  The default extension for the dxcluster
+scripts is "dxc".  Be sure you add the extension to your saved files.
+It will not be added if you do not with the result that file may not be
+visible when you try to load it.
+<br>
+
+Send the script to the remote server using the "Send" button.  The transmission and
+response will be available for viewing on the "TelNet stream" tab.
+\subsection s_dxc_config_macros Command Macros
+Configure each of the 8 command macro buttons.  The m1...m8 controls are
+the button label and the corresponding multi-line text control are the
+associated server commands.
+<br>
+DX cluster command help can be viewed for each of the 3 server types.  
+Press the corresponding help button:
+<center>
+\image html dxc_ar_help.png ""
+\image latex dxc_ar_help.png "" width=7.0in
+<br>
+\image html dxc_cc_help.png ""
+\image latex dxc_cc_help.png "" width=7.0in
+<br>
+\image html dx_spider_help.png ""
+\image latex dx_spider_help.png "" width=7.0in
+</center>
+\subsection s_cluster_colors DX cluster color scheme
+You can change the text colors, and text fonts from the main fldigi configuration
+dialog:
+<center>
+\image html dxc_font_color_config.png ""
+\image latex dxc_font_color_config.png "" width=5.0in
+</center>
+\subsection s_auto_spotting  Spot when logged
+Enable the "Spot when logged" check box if you want to create the spot report
+whenever you log a contact from the fldigi main dialog.  You will still have
+to review the spot report and submit it with the Submit button.
+\subsection s_auto_connect  Auto Connect to Host
+Enable the "Auto Connect" if you want to connect to the host when starting
+fldigi.
+\section s_dxc_stream TelNet stream
+<center>
+\image html dxc_dx_logon.png ""
+\image latex dxc_dx_logon.png "" width=7.0in
+</center>
+The raw data to and from the cluster server is shown on the TelNet stream tab.
+Sent data is in red and received data is in black.  The image shows the
+automatic log on activity between my station and the K4ZR DXSpider cluster
+server.  Those 4 lines are created based on your fldigi user configuration.
+<br>
+
+The TelNet stream text display is context sensitive to the right mouse button.
+You can copy marked text or delete the display contents using the right mouse
+button.
+<br>
+
+You can send individual commands to the remote host using the "Cmd:" control.
+Enter the command, for example: "SHow/FILTER", or "SH/FILTER".  Then press the
+"Submit" button.  The command string will be sent to the remote server and you
+can view the results on the "TelNet stream" tab.
+<br>
+
+During a logon to the remote host fldigi will send some default commands depending
+on the host type.  If the remote host is either an CC-Cluster or DX Spider host then
+fldigi will send this sequence:
+\verbatim
+     set/page 0
+     set/name [user name]
+     set/qth [user qth]
+     set/qra [user locator]
+\endverbatim
+Where the [] values are those entered on the main "User" configuration tab.
+<br>
+
+Sending prepared (macro) commands or dx spot reports to the remote server is
+a two step process. Pressing any of the 4 macro buttons will transfer the macro string to the
+Cmd: control.  You can modify the command string before pressing the Submit
+button.
+\subsection s_dxc_spotting Submitting a spot
+You generate a spot report using the Spot button on the TelNet stream tab.
+Fldigi will generate a spot report that tries to provide the cluster with
+some mode details.  For example:
+\verbatim
+dx 3512.4 K2LBM RTTY [85]       mode is RTTY, Mark frequency @ 3512.485
+dx 3581.1 K2LBM MFSK16 [50]     mode is MFSK16, center frequency @ 3581.150
+dx 3580.8 K2LBM OLIVIA [00]     mode is OLIVIA (8-500), center frequency @ 3580.800
+\endverbatim
+Unfortunately, the ADIF mode specifier does not provide details reqarding mode
+characteristics.  The [0..99] values in the notes field denote the additional
+Hertz and tens-of-Hertz needed to specifiy the frequency to the nearest Hertz
+rather than rounded as is usually reported in the cluster spot report.  This
+field is only added to the report if the "Report [0..99 Hz]" control is
+enabled on the dxcluster configure tab.
+<br>
+
+Pressing either of the SPOT buttons only adds the spot report to the Cmd: control.  You
+can then modify the spot report before actually submitting the report using
+the Submit button.
+
+\section s_dxcluster_reports DX cluster reports
+fldigi parses the received data stream and displays each dx spot in a tabular form on
+the "DX Reports" tab:
+<center>
+\image html dxc_reports.png ""
+\image latex dxc_reports.png "" width=7.0in
+</center>
+Left clicking on a spotted report line will transfer the frequency and mode to fldigi's
+operating parameters.  The mode change is contingent on the mode being reported by the
+spotter and included in the 'Notes' block.
+<br>
+
+You can elect to view the reports with the most recent on either the top or
+the bottom of the list.
+
+\subsection s_dxc_qsy_logic DX Cluster QSY logic
+A cluster spot report line has this format:
+\verbatim
+-SPOTTER---<-FREQ--><--DX STA---><----------NOTES--------------><-UTC><LOC--
+KB8O       14240.0  D66D         up 10 59 Ohio                  2059Z EN81
+\endverbatim
+fldigi will change mode if and only if the NOTES block contains a valid ADIF
+mode specifier, i.e. CW, PSK31, QPSK63, RTTY, etc.<br>
+
+The QSY logic does not make any assumptions regarding band, sub band in
+determining the RF carrier and AF injection frequency.<br>
+
+If the fldigi mode is SSB (available on the mode menu), then the QSY is
+to the FREQ value with no change in the WF tracking frequency.<br>
+
+Otherwise the existing mode or the mode detected in the NOTES is used
+to determine the QSY values:
+\verbatim
+CW:   QSY is based on the CW sweet spot
+RTTY: QSY is based on the RTTY sweet spot
+PSK:  QSY is based on the PSK sweet spot
+DIGI: QSY is based on the PSK sweet spot
+\endverbatim
+Most DX reports do not include a mode usage.  Ergo it is up to the user to
+know what mode he or she is interested in.  Are you spotting SSB, then change
+the fldigi mode to SSB.  Are you interested in CW?  Then change the mode to
+CW.  This is really a KISS approach that is constrained by the very limited
+amount of data contained in the DX spot report.
+\section s_cluster_help On Line Cluster Help
+The Help tab provides a convenient access to help obtained directly from the dxcluster
+server.  It is the equivalent of using the HELP command from the Cmd: control.  The
+difference is that the server reply is parsed and presented in a separate text viewer.
+<center>
+\image html dxc_cluster_help.png ""
+\image latex dxc_cluster_help.png "" width=7.0in
+</center>
+\ref dxcluster_interface_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
