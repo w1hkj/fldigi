@@ -1,15 +1,24 @@
 
 
+=Version 3.23.17=
+
+2016-11-27  David Freese  <iam_w1hkj@w1hkj.com>
+
+	ea12502: dxcluster update
+	a81372a: GPIO update
+	99b0d1b: LoTW documentation
+	214a782: Time Of Day Clock
+	839eb0f: FSQ Heard parser
+
+
 =Version 3.23.16=
 
-2016-11-10  David Freese  <iam_w1hkj@w1hkj.com>
-
-	3d60e20: N3FJP rounding
-	fff0baf: Resident help
-	6b3e9a7: lotw/eqsl interface
-	52278a5: GPIO PTT
-	9c0ed51: ARQ Client vector
-	0e7feae: Rx Extract
+	df67d85: N3FJP rounding
+	dd5dc22: GPIO PTT
+	03b95b5: lotw/eqsl interface
+	360209b: Resident help
+	4e905b6: ARQ Client vector
+	66a62fc: Rx Extract
 
 
 =Version 3.23.15=
