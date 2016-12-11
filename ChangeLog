@@ -1,10 +1,17 @@
 
 
+=Version 3.23.18=
+
+2016-12-11  David Freese  <iam_w1hkj@w1hkj.com>
+
+	782204c: DXcluster sort
+	73c2d1e: LoTW
+	dc9c107: Socket Connect State
+
+
 =Version 3.23.17=
 
-2016-11-27  David Freese  <iam_w1hkj@w1hkj.com>
-
-	ea12502: dxcluster update
+	e0eaaef: dxcluster update
 	a81372a: GPIO update
 	99b0d1b: LoTW documentation
 	214a782: Time Of Day Clock
