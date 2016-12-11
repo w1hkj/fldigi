@@ -842,7 +842,7 @@ static void connect_to_n3fjp_server()
 	try {
 		if (!n3fjp_connected)
 			n3fjp_socket->connect();
-
+MilliSleep(100);
 		std::string pathname = TempDir;
 		pathname.append("n3fjp_data_stream.txt");
 		FILE *n3fjplog = fopen(pathname.c_str(), "w");

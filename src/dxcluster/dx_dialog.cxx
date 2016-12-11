@@ -329,7 +329,7 @@ Fl_Double_Window* dxc_window() {
       { btn_show_host_tab = new Fl_Button(263, 25, 20, 22, _("@2>"));
         btn_show_host_tab->callback((Fl_Callback*)cb_btn_show_host_tab);
       } // Fl_Button* btn_show_host_tab
-      { Fl_Input2* o = inp_dccc_host_port = new Fl_Input2(285, 25, 70, 22, _("Port"));
+      { Fl_Input2* o = inp_dccc_host_port = new Fl_Input2(285, 25, 50, 22, _("Port"));
         inp_dccc_host_port->tooltip(_("telnet server port"));
         inp_dccc_host_port->box(FL_DOWN_BOX);
         inp_dccc_host_port->color(FL_BACKGROUND2_COLOR);
@@ -343,7 +343,7 @@ Fl_Double_Window* dxc_window() {
         inp_dccc_host_port->when(FL_WHEN_RELEASE);
         o->value(progdefaults.dxcc_host_port.c_str());
       } // Fl_Input2* inp_dccc_host_port
-      { Fl_Input2* o = inp_dccc_login = new Fl_Input2(357, 25, 80, 22, _("Login as"));
+      { Fl_Input2* o = inp_dccc_login = new Fl_Input2(336, 25, 80, 22, _("Login as"));
         inp_dccc_login->tooltip(_("login call sign"));
         inp_dccc_login->box(FL_DOWN_BOX);
         inp_dccc_login->color(FL_BACKGROUND2_COLOR);
@@ -357,10 +357,9 @@ Fl_Double_Window* dxc_window() {
         inp_dccc_login->when(FL_WHEN_RELEASE);
         o->value(progdefaults.dxcc_login.c_str());
       } // Fl_Input2* inp_dccc_login
-      { lbl_dxc_connected = new Fl_Box(440, 26, 20, 20, _("Connected"));
+      { lbl_dxc_connected = new Fl_Box(418, 26, 20, 20, _("Connect State"));
         lbl_dxc_connected->box(FL_DIAMOND_DOWN_BOX);
         lbl_dxc_connected->color((Fl_Color)55);
-        lbl_dxc_connected->labelfont(2);
         lbl_dxc_connected->align(Fl_Align(FL_ALIGN_RIGHT));
       } // Fl_Box* lbl_dxc_connected
       { Fl_Check_Button* o = btn_dxcc_connect = new Fl_Check_Button(553, 10, 119, 15, _("Connect"));

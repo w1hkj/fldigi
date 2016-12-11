@@ -48,7 +48,7 @@ cluster_tabs->redraw();}
         label Port
         callback {progdefaults.dxcc_host_port=o->value();
 progdefaults.changed = true;}
-        tooltip {telnet server port} xywh {285 25 70 22} labelsize 13 align 5
+        tooltip {telnet server port} xywh {285 25 50 22} labelsize 13 align 5
         code1 {o->value(progdefaults.dxcc_host_port.c_str());}
         class Fl_Input2
       }
@@ -56,18 +56,18 @@ progdefaults.changed = true;}
         label {Login as}
         callback {progdefaults.dxcc_login=o->value();
 progdefaults.changed = true;}
-        tooltip {login call sign} xywh {357 25 80 22} labelsize 13 align 5
+        tooltip {login call sign} xywh {336 25 80 22} labelsize 13 align 5
         code1 {o->value(progdefaults.dxcc_login.c_str());}
         class Fl_Input2
       }
       Fl_Box lbl_dxc_connected {
-        label Connected
-        xywh {440 26 20 20} box DIAMOND_DOWN_BOX color 55 labelfont 2 align 8
+        label {Connect State} selected
+        xywh {418 26 20 20} box DIAMOND_DOWN_BOX color 55 align 8
       }
       Fl_Check_Button btn_dxcc_connect {
         label Connect
         callback {progStatus.cluster_connected=o->value();
-DXcluster_connect(o->value());} selected
+DXcluster_connect(o->value());}
         tooltip {Connect / Disconnect} xywh {553 10 119 15} down_box DOWN_BOX
         code0 {o->value(progStatus.cluster_connected);}
         code1 {\#include "status.h"}
@@ -75,7 +75,7 @@ DXcluster_connect(o->value());} selected
       Fl_Check_Button btn_dxc_auto_connect {
         label {Auto connect}
         callback {progdefaults.dxc_auto_connect = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
         tooltip {Connect to host when starting fldigi} xywh {553 31 119 15} down_box DOWN_BOX
         code0 {o->value(progdefaults.dxc_auto_connect);}
       }

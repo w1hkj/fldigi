@@ -230,8 +230,11 @@ Address::Address(const char* host, int port, const char* proto_name)
 	ostringstream s;
 	s << port;
 	service = s.str();
-
-	lookup(proto_name);
+	try {
+		lookup(proto_name);
+	} catch (...) {
+		throw;
+	}
 }
 
 Address::Address(const char* host, const char* port_name, const char* proto_name)
@@ -243,8 +246,11 @@ Address::Address(const char* host, const char* port_name, const char* proto_name
 	memset(&host_entry, 0, sizeof(host_entry));
 	memset(&service_entry, 0, sizeof(service_entry));
 #endif
-
-	lookup(proto_name);
+	try {
+		lookup(proto_name);
+	} catch (...) {
+		throw;
+	}
 }
 
 Address::Address(const Address& addr)
@@ -327,8 +333,8 @@ void Address::lookup(const char* proto_name)
 		hints.ai_flags |= AI_NUMERICSERV;
 
 	int r = getaddrinfo(node.empty() ? NULL : node.c_str(), service.c_str(), &hints, &info);
-	if (r < 0)
-		throw SocketException(r, "getaddrinfo");
+	if (r != 0)
+		throw SocketException(gai_strerror(r));
 
 #else // use gethostbyname etc.
 	memset(&host_entry, 0, sizeof(host_entry));
@@ -339,6 +345,7 @@ void Address::lookup(const char* proto_name)
 	struct hostent* hp;
 	if ((hp = gethostbyname(node.c_str())) == NULL)
 		throw SocketException(hstrerror(HOST_NOT_FOUND));
+
 	copy_hostent(&host_entry, hp);
 
 	int port;
@@ -600,12 +607,10 @@ void Socket::open(const Address& addr)
 	address = addr;
 	size_t n = address.size();
 
-	for (anum = 0; anum < n; anum++) {
+//	for (anum = 0; anum < n; anum++) {
+	for (anum = n-1; anum >= 0; anum--) {
 		ainfo = address.get(anum);
-#ifndef NDEBUG
-		LOG_DEBUG("Trying %s", address.get_str(ainfo).c_str());
-#endif
-
+		LOG_INFO("Trying %s", address.get_str(ainfo).c_str());
 		if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) != -1)
 			break;
 	}
@@ -854,18 +859,16 @@ Socket * Socket::accept2(void)
 void Socket::connect(void)
 {
     connected_flag = false;
-#ifndef NDEBUG
-	LOG_DEBUG("Connecting to %s", address.get_str(ainfo).c_str());
-#endif
 	LOG_INFO("Connecting to %s", address.get_str(ainfo).c_str());
 	int res = ::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen);
-	LOG_INFO("Result = %d\n", res);
 	if (res == -1) {
-		LOG_INFO("Response %d, error %d, %s", res, errno, strerror(errno));
-		if (errno == EALREADY) {
+		if (!errno || (errno == EWOULDBLOCK) || (errno == EINPROGRESS) || 
+			(errno == EISCONN) || (errno == EALREADY) ) {
 			connected_flag = true;
+			LOG_DEBUG("CONNECT OK: %d, %s", errno, strerror(errno));
 			return;
 		}
+		LOG_ERROR("CONNECT Fail: %d, %s", errno, strerror(errno));
 		throw SocketException(errno, "connect");
 	}
     connected_flag = true;
@@ -1120,7 +1123,11 @@ size_t Socket::sendTo(const void* buf, size_t len)
 ///
 size_t Socket::sendTo(const std::string& buf)
 {
-	return sendTo(buf.data(), buf.length());
+	try {
+		return sendTo(buf.data(), buf.length());
+	} catch (...) {
+		throw;
+	}
 }
 
 //
