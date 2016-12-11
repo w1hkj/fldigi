@@ -31,6 +31,7 @@
 #include <string>
 #include <fstream>
 
+#include "icons.h"
 #include "logger.h"
 #include "lgbook.h"
 #include "main.h"
@@ -125,11 +126,10 @@ void check_lotw_log(void *)
 		if (c == EOF) break;
 	}
 	fclose(logfile);
-	size_t p = logtxt.find("UploadFile returns");
+
+	size_t p = logtxt.find("UploadFile returns 0");
 	if (p != string::npos) {
-		logtxt.erase(0, p);
-		p = logtxt.find("\r\n");
-		logtxt.erase(p);
+		if (progdefaults.lotw_quiet_mode) fl_alert2("LoTW upload OK");
 	} else {
 		string errlog = LoTWDir;
 		errlog.append("lotw_error_log.txt");
@@ -140,9 +140,9 @@ void check_lotw_log(void *)
 			logtxt.assign("LoTW upload errors\nCheck file ");
 			logtxt.append(errlog);
 		}
+		if (progdefaults.lotw_quiet_mode) fl_alert2("LoTW upload Failed\nView LoTW error log:\n%s", errlog.c_str());
 	}
 	remove(lotw_log_fname.c_str());
-	LOG_INFO("%s", logtxt.c_str());
 }
 
 void send_to_lotw(void *)
@@ -165,7 +165,8 @@ void send_to_lotw(void *)
 	lotw_log_fname = LoTWDir;
 	lotw_log_fname.append("lotw_log.txt");
 
-	string pstring = progdefaults.lotw_pathname;
+	string pstring;
+	pstring.assign("\"").append(progdefaults.lotw_pathname).append("\"");
 	pstring.append(" -d -u -a compliant");
 
 	if (progdefaults.lotw_quiet_mode)
