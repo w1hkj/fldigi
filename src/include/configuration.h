@@ -1409,7 +1409,11 @@
               "Array of dxcluster host-port-user lines\n"                               \
               "Fields separated by : character\n"                                       \
               "Lines separated by | character",                                         \
-              "")                                                                       \
+              "\
+dxc.wb3ffv.us:7300:|\
+nk7z-cluster.ddns.net:7373:|\
+dx.n8noe.us:7373:|\
+w0mw.dynip.com:23:|")                                                                   \
         ELEM_(RGB, DX_Color, "DX_COLOR",                                                \
               "RX text font color (RGB)",                                               \
               { 0, 0, 130 })                                                            \

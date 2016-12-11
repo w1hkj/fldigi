@@ -835,8 +835,6 @@ void DXcluster_doconnect()
 				progdefaults.dxcc_host_url.c_str(),
 				progdefaults.dxcc_host_port.c_str() );
 
-std::cout << addr.size() << " addresses for " << progdefaults.dxcc_host_url << std::endl;
-
 			DXcluster_socket = new Socket( addr );
 
 			DXcluster_socket->set_nonblocking(true);
@@ -1049,6 +1047,7 @@ void dxcluster_hosts_save()
 		hosts.append(hostline).append("|");
 	}
 	progdefaults.dxcluster_hosts = hosts;
+	progdefaults.changed = true;
 }
 
 void dxcluster_hosts_load()
@@ -1070,12 +1069,18 @@ void dxcluster_hosts_load()
 
 	string hosts = progdefaults.dxcluster_hosts;
 	size_t p = hosts.find("|");
+	size_t p2;
 	while (p != string::npos && p != 0) {
-		hostline.assign(hosts.substr(0,p));
+		hostline.assign(hosts.substr(0,p+1));
+		p2 = hostline.find(":|");
+		if (p2 != string::npos) hostline.insert(p+1, progdefaults.myCall);
+		p2 = hostline.find("|");
+		if (p2 != string::npos) hostline.erase(p2, 1);
 		brws_dxcluster_hosts->add(hostline.c_str());
 		hosts.erase(0, p+1);
 		p = hosts.find("|");
 	}
+	brws_dxcluster_hosts->sort(FL_SORT_ASCENDING);
 	brws_dxcluster_hosts->redraw();
 }
 
@@ -1138,7 +1143,7 @@ void dxcluster_hosts_add(Fl_Button*, void*)
 	brws_dxcluster_hosts->textfont(progdefaults.DXfontnbr);
 	brws_dxcluster_hosts->textsize(progdefaults.DXfontsize);
 
-	string host_line =	progdefaults.dxcc_host_url.c_str();
+	string host_line = progdefaults.dxcc_host_url.c_str();
 	host_line.append(":").append(progdefaults.dxcc_host_port.c_str());
 	host_line.append(":").append(progdefaults.dxcc_login);
 	if (brws_dx_cluster->size() > 0) {
@@ -1148,6 +1153,7 @@ void dxcluster_hosts_add(Fl_Button*, void*)
 		}
 	}
 	brws_dxcluster_hosts->add(host_line.c_str());
+	brws_dxcluster_hosts->sort(FL_SORT_ASCENDING);
 	brws_dxcluster_hosts->redraw();
 	dxcluster_hosts_save();
 }
