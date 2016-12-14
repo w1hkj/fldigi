@@ -87,7 +87,7 @@ int n3fjp_has_xcvr_control = UNKNOWN;
 double tracked_freq = 0;
 int  tracked_mode = -1;
 
-enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY};
+enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY, FJP_GENERIC};
 int  n3fjp_contest = FJP_NONE;
 
 int n3fjp_wait = 0;
@@ -629,6 +629,14 @@ static void n3fjp_send_data()
 			send_control("CQZONE", rec.getField(CQZ));
 			send_control("STATE", rec.getField(STATE));
 		}
+		if (n3fjp_contest == FJP_GENERIC) {
+			send_control("RSTS", rec.getField(RST_SENT));
+			send_control("RSTR", rec.getField(RST_RCVD));
+			send_control("SERIALS", rec.getField(STX));
+			send_control("SERIALR", rec.getField(SRX));
+			send_control("SPCNUM", ucasestr(rec.getField(XCHG1)));
+		}
+
 		string other = "XCVR:";
 		char szfreq[6];
 		snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
@@ -686,6 +694,13 @@ static void n3fjp_send_data_norig()
 			send_control("RSTR", rec.getField(RST_RCVD));
 			send_control("CQZONE", rec.getField(CQZ));
 			send_control("STATE", rec.getField(STATE));
+		}
+		if (n3fjp_contest == FJP_GENERIC) {
+			send_control("RSTS", rec.getField(RST_SENT));
+			send_control("RSTR", rec.getField(RST_RCVD));
+			send_control("SERIALS", rec.getField(STX));
+			send_control("SERIALR", rec.getField(SRX));
+			send_control("SPCNUM", ucasestr(rec.getField(XCHG1)));
 		}
 
 		string other = "XCVR:";
@@ -865,6 +880,7 @@ MilliSleep(100);
 			n3fjp_contest = FJP_CQWWRTTY;
 		else if (info.find("ARRL Field Day Contest Log") != string::npos)
 			n3fjp_contest = FJP_FD;
+		else n3fjp_contest = FJP_GENERIC;
 
 		info.insert(0, "Connected to ");
 
@@ -903,6 +919,8 @@ MilliSleep(100);
 
 void n3fjp_start()
 {
+	static bool firstreport = true;
+
 	n3fjp_ip_address =  progdefaults.N3FJP_address;
 	n3fjp_ip_port = progdefaults.N3FJP_port;
 
@@ -915,9 +933,13 @@ void n3fjp_start()
 		n3fjp_socket->set_timeout(0.01);
 		n3fjp_socket->set_nonblocking(true);
 		LOG_INFO("Client socket %d", n3fjp_socket->fd());
+		firstreport = true;
 	}
 	catch (const SocketException& e) {
-		LOG_INFO("%s", e.what() );
+		if (firstreport) {
+			LOG_INFO("%s", e.what() );
+			firstreport = false;
+		}
 		delete n3fjp_socket;
 		n3fjp_socket = 0;
 		n3fjp_connected = false;
@@ -927,6 +949,8 @@ void n3fjp_start()
 
 void n3fjp_restart()
 {
+	static bool firstreport = true;
+
 	n3fjp_ip_address =  progdefaults.N3FJP_address;
 	n3fjp_ip_port = progdefaults.N3FJP_port;
 
@@ -942,9 +966,13 @@ void n3fjp_restart()
 		n3fjp_socket->set_timeout(0.01);
 		n3fjp_socket->set_nonblocking(true);
 		LOG_INFO("Client socket %d", n3fjp_socket->fd());
+		firstreport = true;
 	}
 	catch (const SocketException& e) {
-		LOG_INFO("%s", e.what() );
+		if (firstreport) {
+			LOG_INFO("%s", e.what() );
+			firstreport = false;
+		}
 		delete n3fjp_socket;
 		n3fjp_socket = 0;
 		n3fjp_connected = false;
@@ -979,6 +1007,9 @@ void *n3fjp_loop(void *args)
 	int n3fjp_looptime = 100;
 	while(1) {
 		if (n3fjp_exit) break;
+
+		if (!n3fjp_socket) n3fjp_looptime = 2000;
+		else n3fjp_looptime = 100;
 
 		for (int i = 0; i < n3fjp_looptime/10; i++) {
 			MilliSleep(10);
