@@ -85,7 +85,7 @@ bool DXcluster_enabled = false;
 #define DXCLUSTER_CONNECT_TIMEOUT 5000 // 5 second timeout
 #define DXCLUSTER_SOCKET_TIMEOUT 100 // milliseconds
 #define DXCLUSTER_LOOP_TIME 100 // milliseconds
-int  DXcluster_connect_timeout = 
+int  DXcluster_connect_timeout =
 	(DXCLUSTER_CONNECT_TIMEOUT) / (DXCLUSTER_SOCKET_TIMEOUT + DXCLUSTER_LOOP_TIME);
 
 
@@ -784,23 +784,51 @@ void DXcluster_select()
 //          1     ^   2     ^   3        ^4         5         6         ^
 //7080.4 CO3VR Optional Comment
 
+void freqstrings( string &khz, string &hz )
+{
+	string sfreq = inpFreq->value();
+
+	int phz = sfreq.length() - 2;
+	hz = sfreq.substr(phz, 2);
+	sfreq.erase(phz);
+
+	size_t p = sfreq.find(".");
+	if (p != string::npos) sfreq.erase(p,1);
+
+	long freq = atol(sfreq.c_str());
+
+	if (!progdefaults.dxc_hertz) {
+		if (hz > "49") freq++;
+	}
+	char szfreq[20];
+	snprintf(szfreq, sizeof(szfreq), "%ld", freq);
+	khz = szfreq;
+	khz.insert(khz.length() - 1, ".");
+
+	return;
+}
+
 void send_DXcluster_spot()
 {
 	if (inpCall->value()[0] == 0) return;  // no call
 
-	string spot = "dx ";
-	spot.append(inpFreq->value());
-	string hz = spot.substr(spot.length() - 2, 2);
-	spot.erase(spot.length()-2); // truncate to nearest 100 Hz
+	string hz, khz;
+	freqstrings( khz, hz );
 
-	spot.append(" ").append(inpCall->value()).append(" ");
+	string spot = "dx ";
+	spot.append(khz)
+		.append(" ")
+		.append(inpCall->value())
+		.append(" ");
 
 	string comments = trim(inp_dxcluster_cmd->value());
 	string currmode = mode_info[active_modem->get_mode()].adif_name;
+
 	if (comments.find(currmode) == string::npos) {
 		if (progdefaults.dxc_hertz) {
-			currmode.append(" [");
-			currmode.append(hz).append("] ");
+			currmode.append(" [")
+					.append(hz).
+					append("] ");
 		}
 		comments.insert(0, currmode);
 	}
@@ -848,7 +876,7 @@ void DXcluster_doconnect()
 			temp.append(progdefaults.dxcc_host_url).append(":");
 			temp.append(progdefaults.dxcc_host_port);
 			REQ(show_error, temp);
-			DXcluster_connect_timeout = 
+			DXcluster_connect_timeout =
 				(DXCLUSTER_CONNECT_TIMEOUT) / (DXCLUSTER_SOCKET_TIMEOUT + DXCLUSTER_LOOP_TIME);
 		} catch (const SocketException& e) {
 			LOG_ERROR("%s", e.what() );
@@ -949,7 +977,7 @@ void DXcluster_init(void)
 	brws_tcpip_stream->setFontColor(progdefaults.DXfontcolor, FTextBase::RECV);
 	brws_tcpip_stream->setFontColor(progdefaults.DXalt_color, FTextBase::XMIT);
 	brws_tcpip_stream->setFontColor(
-		fl_contrast(progdefaults.DXfontcolor, 
+		fl_contrast(progdefaults.DXfontcolor,
 			fl_rgb_color(	progdefaults.DX_Color.R,
 				progdefaults.DX_Color.G,
 				progdefaults.DX_Color.B) ),
