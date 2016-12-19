@@ -5151,10 +5151,13 @@ void cb_qso_inpAct(Fl_Widget*, void*)
 	string data, url;
 	data.reserve(128);
 	url = "http://pskreporter.info/cgi-bin/psk-freq.pl";
+
+	url.append("?mode=").append(mode_info[active_modem->get_mode()].adif_name);
+
 	if (qso_inpAct->size())
-		url.append("?grid=").append(qso_inpAct->value());
+		url.append("&?grid=").append(qso_inpAct->value());
 	else if (progdefaults.myLocator.length() > 2)
-		url.append("?grid=").append(progdefaults.myLocator, 0, 2);
+		url.append("&?grid=").append(progdefaults.myLocator, 0, 2);
 
 	string::size_type i;
 	if (!fetch_http_gui(url, data, 10.0) ||
