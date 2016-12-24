@@ -186,6 +186,11 @@ void adjust_freq(string sfreq)
 //======================================================================
 //
 //======================================================================
+void n3fjp_show(string s)
+{
+	txt_N3FJP_data->insert(s.c_str());
+	txt_N3FJP_data->redraw();
+}
 
 void n3fjp_disp_report(string s, string fm)
 {
@@ -857,7 +862,9 @@ static void connect_to_n3fjp_server()
 	try {
 		if (!n3fjp_connected)
 			n3fjp_socket->connect();
-MilliSleep(100);
+
+		if (!n3fjp_socket->is_connected()) return;
+
 		std::string pathname = TempDir;
 		pathname.append("n3fjp_data_stream.txt");
 		FILE *n3fjplog = fopen(pathname.c_str(), "w");
@@ -867,6 +874,7 @@ MilliSleep(100);
 		string buffer;
 		string cmd = "<CMD><PROGRAM></CMD>";
 		n3fjp_send(cmd);
+		MilliSleep(100);
 
 		n3fjp_rcv(buffer);
 		if (buffer.empty()) return;
@@ -908,6 +916,10 @@ MilliSleep(100);
 		send_command(cmd);
 
 	} catch (const SocketException& e) {
+		string err;
+		err = e.what();
+		err.append("\n");
+		REQ(n3fjp_show, err);
 		LOG_INFO("%s(%d)", e.what(), e.error());
 	}
 
@@ -1003,15 +1015,14 @@ void *n3fjp_loop(void *args)
 {
 	SET_THREAD_ID(N3FJP_TID);
 
-	int loopcount = 10;
 	int n3fjp_looptime = 100;
 	while(1) {
 		if (n3fjp_exit) break;
 
-		if (!n3fjp_socket) n3fjp_looptime = 2000;
-		else n3fjp_looptime = 100;
+		if (!n3fjp_connected) n3fjp_looptime = 5000;  // test for N3FJP logger every 5 sec
+		else n3fjp_looptime = 250;  // r/w to N3FJP logger every 1/4 second
 
-		for (int i = 0; i < n3fjp_looptime/10; i++) {
+		for (int i = 0; i < n3fjp_looptime / 10; i++) {
 			MilliSleep(10);
 			if (n3fjp_exit) break;
 		}
@@ -1026,9 +1037,8 @@ void *n3fjp_loop(void *args)
 				n3fjp_restart();
 			}
 
-			else if (!n3fjp_connected && progdefaults.connect_to_n3fjp && (--loopcount == 0)) {
+			else if (!n3fjp_connected && progdefaults.connect_to_n3fjp ) {
 				connect_to_n3fjp_server();
-				loopcount = 1;
 			} 
 
 			else if (n3fjp_connected && !progdefaults.connect_to_n3fjp)

@@ -859,18 +859,26 @@ Socket * Socket::accept2(void)
 void Socket::connect(void)
 {
     connected_flag = false;
-	LOG_INFO("Connecting to %s", address.get_str(ainfo).c_str());
 	int res = ::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen);
 	if (res == -1) {
-		if (!errno || (errno == EWOULDBLOCK) || (errno == EINPROGRESS) || 
-			(errno == EISCONN) || (errno == EALREADY) ) {
+		if (errno == 0) {
+			LOG_INFO("Connected to %s", address.get_str(ainfo).c_str());
 			connected_flag = true;
-			LOG_DEBUG("CONNECT OK: %d, %s", errno, strerror(errno));
 			return;
 		}
-		LOG_ERROR("CONNECT Fail: %d, %s", errno, strerror(errno));
+		if (!errno || (errno == EWOULDBLOCK) || (errno == EINPROGRESS) || 
+			(errno == EISCONN) || (errno == EALREADY) ) {
+			LOG_DEBUG("Connect attempt to %s : %d, %s", 
+				address.get_str(ainfo).c_str(),
+				errno, strerror(errno));
+			return;
+		}
+		LOG_DEBUG("Connect to %s failed: %d, %s", 
+			address.get_str(ainfo).c_str(),
+			errno, strerror(errno));
 		throw SocketException(errno, "connect");
 	}
+	LOG_INFO("Connected to %s", address.get_str(ainfo).c_str());
     connected_flag = true;
 }
 ///
