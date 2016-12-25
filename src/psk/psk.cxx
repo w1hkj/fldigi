@@ -452,8 +452,7 @@ psk::psk(trx_mode pskmode) : modem()
 			break;
 */
 		case MODE_8PSK1333: // 125 baud | 8 carriers | 8PSK | 1500bps | 2000hz BW
-            /// Future --> 2000bps @ 2/3 rate fec.
-			symbollen = 32;
+			symbollen = 128;
 			numcarriers = 8;
 			separation = 2.0f;
 			idepth = 2500;
@@ -531,7 +530,7 @@ psk::psk(trx_mode pskmode) : modem()
 			// end 8psk modes
 */
 		case MODE_8PSK1333F: // 62.5 baud | 16 carriers | xpsk | 1000 bits/sec | 2000Hz BW
-			symbollen = 64;
+			symbollen = 256;
 			numcarriers = 16;
 			separation = 2.0f;
 			idepth = 2500;
