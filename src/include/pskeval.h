@@ -29,7 +29,7 @@
 #include "waterfall.h"
 
 #define FLOWER 200
-#define FUPPER 4000
+#define FUPPER 8000
 
 class pskeval {
 private:

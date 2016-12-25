@@ -387,30 +387,30 @@ psk::psk(trx_mode pskmode) : modem()
 			break;
 
 	// 8psk modes without FEC
-		case MODE_8PSK125:
+		case MODE_8PSK125: // 125 baud x 24 = 9KBPS | 6KHZ BW
 			symbollen = 128;
 			samplerate = 16000;
-            numcarriers = 16;
+            numcarriers = 24;
             separation = 2.0f;
 			_8psk = true;
 			_disablefec = true;
 			dcdbits = 128;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+		case MODE_8PSK250: // 250 baud X 12 = 9KBPS | 6KHZ BW
 			symbollen = 64;
 			samplerate = 16000;
-            numcarriers = 8;
+            numcarriers = 12;
             separation = 2.0f;
 			_8psk = true;
 			_disablefec = true;
 			dcdbits = 256;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
-			symbollen = 32;
+		case MODE_8PSK500: // 125 baud X 16 = 6KBPS | 4KHZ BW
+			symbollen = 128;
 			samplerate = 16000;
-            numcarriers = 4;
+            numcarriers = 16;
             separation = 2.0f;
 			_8psk = true;
 			_disablefec = true;
@@ -427,9 +427,11 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK1200: // 500 baud | 4 carriers | 16PSK | 8000bps | 3500HZ BW
-			symbollen = 32;
-			numcarriers = 4;
+            
+            /// broken mode...
+		case MODE_8PSK1200: // 250 baud | 12 carriers | 16PSK | 6000bps | 6000HZ BW 
+			symbollen = 64;
+			numcarriers = 12;
 			separation = 2.0;
 			samplerate = 16000;
 			//idepth = 2500;
@@ -451,12 +453,12 @@ psk::psk(trx_mode pskmode) : modem()
 */
 		case MODE_8PSK1333: // 125 baud | 8 carriers | 8PSK | 1500bps | 2000hz BW
             /// Future --> 2000bps @ 2/3 rate fec.
-			symbollen = 64;
+			symbollen = 32;
 			numcarriers = 8;
 			separation = 2.0f;
 			idepth = 2500;
 			flushlength = 500;
-			samplerate = 8000;
+			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 768;
 			cap |= CAP_REV;
@@ -529,12 +531,12 @@ psk::psk(trx_mode pskmode) : modem()
 			// end 8psk modes
 */
 		case MODE_8PSK1333F: // 62.5 baud | 16 carriers | xpsk | 1000 bits/sec | 2000Hz BW
-			symbollen = 128;
+			symbollen = 64;
 			numcarriers = 16;
 			separation = 2.0f;
 			idepth = 2500;
 			flushlength = 500;
-			samplerate = 8000;
+			samplerate = 16000;
 			_xpsk = true;
 			dcdbits = 1024;
 			cap |= CAP_REV;
