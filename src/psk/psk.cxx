@@ -390,6 +390,8 @@ psk::psk(trx_mode pskmode) : modem()
 		case MODE_8PSK125:
 			symbollen = 128;
 			samplerate = 16000;
+            numcarriers = 16;
+            separation = 2.0f;
 			_8psk = true;
 			_disablefec = true;
 			dcdbits = 128;
@@ -398,6 +400,8 @@ psk::psk(trx_mode pskmode) : modem()
 		case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
 			symbollen = 64;
 			samplerate = 16000;
+            numcarriers = 8;
+            separation = 2.0f;
 			_8psk = true;
 			_disablefec = true;
 			dcdbits = 256;
@@ -406,6 +410,8 @@ psk::psk(trx_mode pskmode) : modem()
 		case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
 			symbollen = 32;
 			samplerate = 16000;
+            numcarriers = 4;
+            separation = 2.0f;
 			_8psk = true;
 			_disablefec = true;
 			dcdbits = 512;
@@ -414,18 +420,20 @@ psk::psk(trx_mode pskmode) : modem()
 		case MODE_8PSK1000: // 1000 baud | 3000 bits/sec  No FEC
 			symbollen = 16;
 			samplerate = 16000;
+            numcarriers = 2;
 			_8psk = true;
 			_disablefec = true;
+            separation = 2.0f;
 			dcdbits = 1024;
 			cap |= CAP_REV;
 			break;
-		case MODE_8PSK1200: // 31.25 baud | 36 carriers | 16PSK | 2250bps | 2250HZ BW
-			symbollen = 256;
-			numcarriers = 36;
+		case MODE_8PSK1200: // 500 baud | 4 carriers | 16PSK | 8000bps | 3500HZ BW
+			symbollen = 32;
+			numcarriers = 4;
 			separation = 2.0;
-			samplerate = 8000;
-			idepth = 2500;
-			flushlength = 500;
+			samplerate = 16000;
+			//idepth = 2500;
+			//flushlength = 500;
 			_16psk = true;
 			dcdbits = 512;
 			cap |= CAP_REV;
@@ -441,10 +449,11 @@ psk::psk(trx_mode pskmode) : modem()
 			cap |= CAP_REV;
 			break;
 */
-		case MODE_8PSK1333: // 64 baud | 18 carriers | 8PSK | 1687bps | 2250hz BW
-			symbollen = 128;
-			numcarriers = 18;
-			separation = 1.95f;
+		case MODE_8PSK1333: // 125 baud | 8 carriers | 8PSK | 1500bps | 2000hz BW
+            /// Future --> 2000bps @ 2/3 rate fec.
+			symbollen = 64;
+			numcarriers = 8;
+			separation = 2.0f;
 			idepth = 2500;
 			flushlength = 500;
 			samplerate = 8000;
@@ -519,10 +528,10 @@ psk::psk(trx_mode pskmode) : modem()
 			break;
 			// end 8psk modes
 */
-		case MODE_8PSK1333F: // 125 baud | 10 carriers | 1250 bits/sec | 2200Hz BW
-			symbollen = 64;
-			numcarriers = 10;
-			separation = 1.8f;
+		case MODE_8PSK1333F: // 62.5 baud | 16 carriers | xpsk | 1000 bits/sec | 2000Hz BW
+			symbollen = 128;
+			numcarriers = 16;
+			separation = 2.0f;
 			idepth = 2500;
 			flushlength = 500;
 			samplerate = 8000;
@@ -781,7 +790,8 @@ psk::psk(trx_mode pskmode) : modem()
 		}
 	}
 
-	switch (progdefaults.PSK_filter) {
+///	switch (progdefaults.PSK_filter) {
+	switch (1) { // 1:good | 2:bad | 3:? | 4:bad | 0:
 		case 1:
 			// use the original gmfsk matched filters
 			for (int i = 0; i < 64; i++) {
@@ -853,7 +863,7 @@ psk::psk(trx_mode pskmode) : modem()
 		dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
 		dec2->setchunksize(4);
 
-	} else if (_puncturing) { 
+	} else if (_xpsk || _puncturing) { 
 		// Use the FEC code best suited for puncturing
 		enc = new encoder(K13, K13_POLY1, K13_POLY2);
 		dec = new viterbi(K13, K13_POLY1, K13_POLY2);
@@ -864,7 +874,7 @@ psk::psk(trx_mode pskmode) : modem()
 		dec2->settraceback (PATHMEM);
 		dec2->setchunksize(4);
 
-	} else if (_xpsk || _8psk || _16psk) { 
+	} else if ( _8psk || _16psk) { 
 		// Use the code with the best FEC capabilities
 		enc = new encoder(K16, K16_POLY1, K16_POLY2);
 		dec = new viterbi(K16, K16_POLY1, K16_POLY2);
