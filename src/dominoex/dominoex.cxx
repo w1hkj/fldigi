@@ -228,7 +228,12 @@ dominoex::dominoex(trx_mode md)
 		samplerate = 11025;
 		break;
 // 8kHz modes
-	case MODE_DOMINOEX4:
+	case MODE_DOMINOEXMICRO:
+		symlen = 4000;
+		doublespaced = 1;
+		samplerate = 8000;
+		break;
+    case MODE_DOMINOEX4:
 		symlen = 2048;
 		doublespaced = 2;
 		samplerate = 8000;
@@ -703,8 +708,10 @@ int dominoex::tx_process()
 		break;
 	case TX_STATE_START:
 		sendchar('\r', 0);
-		sendchar(2, 0);		// STX
-		sendchar('\r', 0);
+        if (mode != MODE_DOMINOEXMICRO) {
+            sendchar(2, 0);		// STX
+            sendchar('\r', 0);
+        }
 		txstate = TX_STATE_DATA;
 		break;
 	case TX_STATE_DATA:
@@ -720,8 +727,10 @@ int dominoex::tx_process()
 		break;
 	case TX_STATE_END:
 		sendchar('\r', 0);
-		sendchar(4, 0);		// EOT
-		sendchar('\r', 0);
+        if (mode != MODE_DOMINOEXMICRO) {
+            sendchar(4, 0);		// EOT
+            sendchar('\r', 0);
+        }
 		txstate = TX_STATE_FLUSH;
 		break;
 	case TX_STATE_FLUSH:

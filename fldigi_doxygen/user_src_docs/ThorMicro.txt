@@ -1,0 +1,164 @@
+/**
+\page  thor_micro_page Thor Micro
+
+\tableofcontents
+
+THOR Micro is a new soundcard based digital mode designed for the 
+2200 meter, 600 meter, 160 meter, and higher amateur radio bands.<br>
+
+This new mode is:
+<ul>
+<li>More robust than Olivia  ( perfect copy at -18db SNR )</li>
+<li>As narrow as PSK31       ( 36 Hz bandwidth )</li>
+</ul>
+The major limiting factors on the LF and MF amateur radio bands are low 
+radiated power and high noise. Antennas at these low frequencies suffer 
+from very low efficiency and little of the power sent to them is converted 
+into RF.<br>
+
+In order to overcome the low power output at these frequencies, THOR micro's 
+speed is slowed down to 2 baud. This increases the watts/Hz (spectral density) 
+of the transmitted signal, focusing the power into a very-narrow bandwidth.<br>
+
+On the receive side this sharp signal translates into an increased 
+signal-to-noise ratio. Further gain can be achieved by using very-narrow 
+receive filters.<br>
+
+This mode is also a great tool for low-power digital operation, or in 
+place of QRSS.<br>
+
+Thor Micro emits a distinctive double rising tone sequence at the
+beginning of each transmission.  It is used to flush the receive
+decoder and also provides a visual and audible clue to its being used.<br>
+
+The modem code for Thor uses a wide band multiple frequency
+detector that can lock on and detect the incoming signal even when
+badly mistuned.  Frequency domain oversampling is used to allow
+proper tone detection without the need for AFC.  The AFC control does
+not alter the decoder in any way.<br>
+
+There is just one mode of THOR micro
+<center>
+|   Name   | Baudrate |   Bitrate  | Datarate   |   FEC
+:---------:|:--------:|:----------:|:----------:|:--------------:
+THOR Micro | 2        | 8 bits/sec | 4 bits/sec | K=7 @ 1/2 Rate |
+</center>
+
+\section thormicro_performance Performance
+
+THOR Micro can achieve 100% decode at signal to noise ratios lower than 
+-18dB, which makes it more robust than Olivia.  This mode can be decoded
+properly even when to the human ear, the incoming signal sounds like pure 
+noise.<br>
+
+Such performance is achieved by using a very low baudrate, which increases 
+the spectral density (watts-per-Hz) of the transmitted signal.<br>
+
+The signal to noise ratio (SNR) for any mode is calculated as a ratio of 
+the Energy-per-bit / Noise-Level.  For THOR Micro the energy-per-bit 
+(at 25 watts) would be 25 watts X 0.5 seconds, or 12 watt/sec per symbol:  3 watt/sec per bit.
+
+For Olivia 8-250, the lowest SNR Olivia mode: 25 watts X 0.032 seconds or
+0.8 watt/sec per symbol:  0.26 watt/sec per bit. The effective Thor Micro 
+signal strength is 11 times that of of the equivalent Olivia signal.
+THOR Micro uses a 7.5 dB gain soft-decision FEC code.<br>
+
+On the 2200, 630, and 160 meter bands this increase in effective received-signal 
+power helps overcome the massive system losses and high-noise levels encountered 
+when using these low frequencies.
+
+\section thormicro_multilanguage Multi-language UTF-8 Support
+
+THOR Micro supports sending all UTF-8 characters.  This means the mode 
+can be used to communicate in any language.
+
+Please ensure the font chosen in Fldigi has the characters for the 
+language you are trying to use, otherwise Fldigi will just display 
+every character as an empty box.
+
+\section thormicro_preamble Preamble
+
+A special preamble precedes each THOR micro transmission. It consists of 
+a bit-sequence that is invalid in the normal data stream: a string of 
+64 zeros. This preamble is the distinctive rising tone sequence that occurs
+twice before any data modulation.<br>
+
+When received, this preamble triggers the receiver end to flush the long 
+interleaver and the soft-decision viterbi decoder. This flush prepares 
+the viterbi decoder and interleaver for the data about to be received.<br>
+
+Flushing any received noise-bits before decoding the actual signal 
+decreases the probability of error and provides FEC gain. This gain 
+comes from not mixing the good data-bits with bad noise-bits by filling 
+interleaver and soft-decoder instead with punctures.<br>
+
+\section fwd_err_corr Forward Error Correction
+
+A constraint length 7 convolutional FEC is used at 1/2 rate.  This long 
+constraint-length code gives a free distance of 10 (can correct a 4-bit error).
+The coding gain is  about 7.5 dB.<br>
+
+2.5 dB of soft-decision coding-gain has been added to all coding-gain calculations .
+
+\section thormicro_ifkp_mod IFK+ Modulation
+
+THOR Micro uses a modulation scheme known as Incremental Frequency Keying 
+Plus (IFK+). It is very similar to 18-tone MFSK modulation, but with 
+many benefits.<br>
+
+Using IFK+ modulation is what allows THOR Micro to achieve it's very-narrow bandwidth.
+IFK+ modulation is much easier to tune than an MFSK signal of the same baudrate.
+For MFSK, a signal must be tuned to an accuracy of baudrate / 3.
+This results in an accuracy requirement of less than 1 Hz (at 2 baud).<br>
+
+The tuning accuracy requirement of IFK+ is bandwidth / 2.  This is about 18Hz 
+for a 2 baud IFK+ signal. This tuning can easily be achieved by manually 
+clicking on the signal in the waterfall display, just like a PSK31 signal, or
+by presetting the receiver to within +/- 18 Hertz of the target frequency.<br>
+
+IFK+ is a differential-type MFSK modulation where the data-bits are encoded 
+as the frequency difference between the previous tone and the next tone.
+<pre>
+    Number (bits) to be sent: 3 (0011)
+    Previous tone: 4 (0100)
+    Transmitted tone: 3 + 4 + 2 = 9 (1001)
+</pre>
+Since there are only 18-tones in THOR micro, the number simply wraps around 
+back to 0 when it reaches number 19.<br>
+
+The current tone always has 2 added before transmitting. This introduces 
+a known pattern within the signal that benefits soft-decision decoding, 
+boosts the forward error correction, and improves resistance to 
+intersymbol interference.<br>
+
+\section thormicro_interleavers Interleavers
+
+Even though the THOR Micro interleaver is quite short in bitcount, the 
+mode's slow baudrate spreads the bits over a long timeframe.
+<center>
+|  Mode    | Bits | Msec
+:----------|------|------:
+THOR Micro | 16   | 1500 |
+</center>
+From the perspective of "number of bits": it is a short interleaver.<br>
+
+From the perspective of "number of milliseconds": it is a long interleaver.<br>
+
+<pre>
+    Constraint Length 7 FEC details:
+        constraint length = 7
+        polynomial 1 octal: 0155
+        polynomial 2 octal: 0117
+        polynomial 1 decimal: 109
+        polynomial 2 decimal: 79
+    Interleaver Details:
+        4x4 self synchronizing
+        1500 milliseconds
+</pre>
+
+\ref thor_micro_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

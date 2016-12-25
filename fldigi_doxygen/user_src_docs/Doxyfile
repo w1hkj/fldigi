@@ -58,9 +58,9 @@ INPUT                = index.txt \
 	maclogger.txt n3fjp_logs.txt LogExports.txt lotw_interface.txt \
 	working_logs.txt Macros.txt \
 	InlineMacroTags.txt atMacroTags.txt advanced_qsy.txt execmacro.txt CW.txt \
-	DominoEX.txt hell.txt Contestia.txt MFSK.txt MT63.txt \
+	DominoEX.txt DomExMicro.txt hell.txt Contestia.txt MFSK.txt MT63.txt \
 	FSQ.txt IFKP.txt \
-	Navtex.txt psk.txt Olivia.txt RTTYFSK.txt Thor.txt \
+	Navtex.txt psk.txt Olivia.txt RTTYFSK.txt Thor.txt ThorMicro.txt \
 	throb.txt WEFAX.txt WWV-xmt.txt FrequencyAnalysis.txt \
 	DigiscopeDisplay.txt DigiWWV.txt MousingKeyboardShortcuts.txt \
 	Multiples.txt Notifier.txt OperatingControls.txt RST-RSQ.txt \

@@ -53,6 +53,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_CONTESTIA, &contestia_modem, "CTSTIA", "Contestia", "", "CONTESTI", "CT", DISABLED_IO },
 
+	{ MODE_DOMINOEXMICRO, &dominoexmicro_modem, "DOMEX Micro", "DominoEX Micro", "DOMINOEXMICRO", "DOMINO", "DM M", DISABLED_IO },
 	{ MODE_DOMINOEX4, &dominoex4_modem, "DOMEX4", "DominoEX 4", "DOMINOEX4", "DOMINO", "DM 4", DISABLED_IO },
 	{ MODE_DOMINOEX5, &dominoex5_modem, "DOMEX5", "DominoEX 5", "DOMINOEX5", "DOMINO", "DM 5", DISABLED_IO },
 	{ MODE_DOMINOEX8, &dominoex8_modem, "DOMEX8", "DominoEX 8", "DOMINOEX8", "DOMINO", "DM 8", DISABLED_IO },
@@ -142,6 +143,7 @@ const struct mode_info_t mode_info[NUM_MODES] = {
 
 	{ MODE_RTTY, &rtty_modem, "RTTY", "RTTY", "RTTY", "RTTY", "RY", DISABLED_IO },
 
+	{ MODE_THORMICRO, &thormicro_modem, "THOR Micro", "THOR Micro", "THORM", "THOR", "THM", DISABLED_IO  },
 	{ MODE_THOR4, &thor4_modem, "THOR4", "THOR 4", "THOR4", "THOR", "TH4", DISABLED_IO  },
 	{ MODE_THOR5, &thor5_modem, "THOR5", "THOR 5", "THOR5", "THOR", "TH5", DISABLED_IO  },
 	{ MODE_THOR8, &thor8_modem, "THOR8", "THOR 8", "THOR8", "THOR", "TH8", DISABLED_IO  },

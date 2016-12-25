@@ -6,6 +6,7 @@
 	<li> \subpage contestia_page </li>
 	<li> \subpage cw_page </li>
 	<li> \subpage domino_ex_page </li>
+	<li> \subpage domEX_micro_page </li>
 	<li> \subpage feld_hell_page </li>
 	<li> \subpage fsq_page </li>
 	<li> \subpage ifkp_page </li>
@@ -16,6 +17,7 @@
 	<li> \subpage psk_page </li>
 	<li> \subpage rtty_page </li>
 	<li> \subpage thor_page </li>
+	<li> \subpage thor_micro_page </li>
 	<li> \subpage throb_page </li>
 	<li> \subpage wefax_page </li>
 	<li> \subpage wwv_tx_mode </li>

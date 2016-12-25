@@ -1,0 +1,118 @@
+/**
+\page  domEX_micro_page DominoEX Micro
+
+\tableofcontents
+
+DominoEX Micro is a new soundcard based digital mode designed for the 
+2200 meter, 600 meter, 160 meter, and higher amateur radio bands.<br>
+
+This new mode is:
+<ul>
+<li>As robust as Olivia    ( perfect copy at -15 db SNR )</li>
+<li>As narrow as PSK31     ( 36 Hz bandwidth )</li>
+</ul>
+
+The major limiting factors on the LF and MF amateur radio bands are low 
+radiated power and high noise. Antennas at these low frequencies suffer 
+from very low efficiency and little of the power sent to them is converted 
+into RF.<br>
+
+In order to overcome the low power output at these frequencies, DominoEX micro's 
+speed is slowed down to 2 baud. This increases the watts/Hz (spectral density) 
+of the transmitted signal, focusing the power into a very-narrow bandwidth.<br>
+
+On the receive side this sharp signal translates into an increased 
+signal-to-noise ratio. Further gain can be achieved by using very-narrow 
+receive filters.<br>
+
+This mode is also a great tool for low-power digital operation, or in 
+place of QRSS.<br>
+
+The modem code for DominoEX uses a wide band multiple frequency
+detector that can lock on and detect the incoming signal even when
+badly mistuned.  Frequency domain oversampling is used to allow
+proper tone detection without the need for AFC.  The AFC control does
+not alter the decoder in any way.<br>
+
+There is just one mode of DominoEX micro
+<center>
+|     Name     | Baudrate |   Bitrate  | Datarate   | FEC
+:-------------:|:--------:|:----------:|:----------:|:----:
+DominoEX Micro | 2        | 8 bits/sec | 8 bits/sec | None |
+</center>
+
+\section dommicro_performance Performance
+
+DominoEX Micro can achieve 100% decode at signal to noise ratios lower than 
+-15 dB, which makes it more robust than Olivia.  This mode can be decoded
+properly even when to the human ear, the incoming signal sounds like pure 
+noise.<br>
+
+Such performance is achieved by using a very low baudrate, which increases 
+the spectral density (watts-per-Hz) of the transmitted signal.<br>
+
+The signal to noise ratio (SNR) for any mode is calculated as a ratio of 
+the Energy-per-bit / Noise-Level.  For DominoEX Micro the energy-per-bit 
+(at 25 watts) would be 25 watts X 0.5 seconds, or 12 watt/sec per symbol:
+ 3 watt/sec per bit.<br>
+
+For Olivia 8-250, the lowest SNR Olivia mode: 25 watts X 0.032 seconds or
+0.8 watt/sec per symbol:  0.26 watt/sec per bit. The effective DominoEX Micro 
+signal strength is 11 times that of of the equivalent Olivia signal.<br>
+
+Having a very-low baudrate is how DominoEX Micro is comparable to Olivia,
+even without forward error correction. The modulation for this 
+micro mode can be decoded when an equivalent Olivia modulation 
+fails. No amount of Forward Error Correction can compensate for a complete loss 
+of decode at the de-modulation step.<br>
+
+On the 2200, 630, and 160 meter bands this increase in effective received-signal 
+power helps overcome the massive system losses and high-noise levels encountered 
+when using these low frequencies.<br>
+
+\section dommicro_multi-language Multi-language UTF-8 Support
+
+DominoEX Micro supports sending all UTF-8 characters.  This means the mode 
+can be used to communicate in any language.<br>
+
+Please ensure the font chosen in Fldigi has the characters for the 
+language you are trying to use, otherwise Fldigi will just display 
+every character as an empty box.<br>
+
+\section dommicro_ifkp_mod IFK+ Modulation
+
+DominoEX Micro uses a modulation scheme known as Incremental Frequency Keying 
+Plus (IFK+). It is very similar to 18-tone MFSK modulation, but with 
+many benefits.<br>
+
+Using IFK+ modulation is what allows DominoEX Micro to achieve it's very-narrow bandwidth.
+IFK+ modulation is much easier to tune than an MFSK signal of the same baudrate.
+For MFSK, a signal must be tuned to an accuracy of baudrate / 3.
+This results in an accuracy requirement of less than 1 Hz (at 2 baud).<br>
+
+The tuning accuracy requirement of IFK+ is bandwidth / 2.  This is about 18Hz 
+for a 2 baud IFK+ signal. This tuning can easily be achieved by manually 
+clicking on the signal in the waterfall display, just like a PSK31 signal, or
+by presetting the receiver to within +/- 18 Hertz of the target frequency.<br>
+
+IFK+ is a differential-type MFSK modulation where the data-bits are encoded 
+as the frequency difference between the previous tone and the next tone.
+<pre>
+    Number (bits) to be sent: 3 (0011)
+    Previous tone: 4 (0100)
+    Transmitted tone: 3 + 4 + 2 = 9 (1001)
+</pre>
+Since there are only 18-tones in DominoEX micro, the number simply wraps around 
+back to 0 when it reaches number 19.<br>
+
+The current tone always has 2 added before transmitting. This introduces 
+a known pattern within the signal that benefits soft-decision decoding, 
+and improves resistance to intersymbol interference.<br>
+
+\ref domEX_micro_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+==========================
+

@@ -709,6 +709,7 @@ static const Fl_Menu_Item quick_change_mt63[] = {
 };
 
 static const Fl_Menu_Item quick_change_thor[] = {
+	{ mode_info[MODE_THORMICRO].name, 0, cb_init_mode, (void *)MODE_THORMICRO },
 	{ mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4 },
 	{ mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5 },
 	{ mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8 },
@@ -723,6 +724,7 @@ static const Fl_Menu_Item quick_change_thor[] = {
 };
 
 static const Fl_Menu_Item quick_change_domino[] = {
+	{ mode_info[MODE_DOMINOEXMICRO].name, 0, cb_init_mode, (void *)MODE_DOMINOEXMICRO },
 	{ mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4 },
 	{ mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5 },
 	{ mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8 },
@@ -1552,7 +1554,7 @@ void init_modem(trx_mode mode, int freq)
 		modem_config_tab = tabCW;
 		break;
 
-	case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
+	case MODE_THORMICRO: case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
 	case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
 	case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -1561,7 +1563,7 @@ void init_modem(trx_mode mode, int freq)
 		modem_config_tab = tabTHOR;
 		break;
 
-	case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
+	case MODE_DOMINOEXMICRO: case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
 	case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
 	case MODE_DOMINOEX44: case MODE_DOMINOEX88:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
@@ -4547,6 +4549,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"DominoEX", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_DOMINOEXMICRO].name, 0, cb_init_mode, (void *)MODE_DOMINOEXMICRO, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX4].name, 0, cb_init_mode, (void *)MODE_DOMINOEX4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX5].name, 0, cb_init_mode, (void *)MODE_DOMINOEX5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_DOMINOEX8].name, 0, cb_init_mode, (void *)MODE_DOMINOEX8, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -4694,6 +4697,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {"THOR", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ mode_info[MODE_THORMICRO].name, 0, cb_init_mode, (void *)MODE_THORMICRO, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR4].name, 0, cb_init_mode, (void *)MODE_THOR4, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR5].name, 0, cb_init_mode, (void *)MODE_THOR5, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_THOR8].name, 0, cb_init_mode, (void *)MODE_THOR8, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -9185,7 +9189,7 @@ void resetCONTESTIA() {
 
 void resetTHOR() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
+	if (md == MODE_THORMICRO || md == MODE_THOR4 || md == MODE_THOR5 || md == MODE_THOR8 ||
 		md == MODE_THOR11 ||
 		md == MODE_THOR16 || md == MODE_THOR22 ||
 		md == MODE_THOR25x4 || md == MODE_THOR50x1 ||
@@ -9195,7 +9199,7 @@ void resetTHOR() {
 
 void resetDOMEX() {
 	trx_mode md = active_modem->get_mode();
-	if (md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
+	if (md == MODE_DOMINOEXMICRO || md == MODE_DOMINOEX4 || md == MODE_DOMINOEX5 ||
 		md == MODE_DOMINOEX8 || md == MODE_DOMINOEX11 ||
 		md == MODE_DOMINOEX16 || md == MODE_DOMINOEX22 ||
 		md == MODE_DOMINOEX44 || md == MODE_DOMINOEX88 )

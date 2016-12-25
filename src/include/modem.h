@@ -385,6 +385,7 @@ extern modem *olivia_64_2000_modem;
 
 extern modem *contestia_modem;
 
+extern modem *thormicro_modem;
 extern modem *thor4_modem;
 extern modem *thor5_modem;
 extern modem *thor8_modem;
@@ -396,6 +397,7 @@ extern modem *thor50x1_modem;
 extern modem *thor50x2_modem;
 extern modem *thor100_modem;
 
+extern modem *dominoexmicro_modem;
 extern modem *dominoex4_modem;
 extern modem *dominoex5_modem;
 extern modem *dominoex8_modem;
