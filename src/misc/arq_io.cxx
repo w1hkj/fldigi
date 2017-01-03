@@ -180,13 +180,13 @@ void ParseMode(string src)
 		}
 		if (debug_pskmail)
 			LOG_INFO("%s %5.2f sec", "ARQ set ptt on", msecs/1000.0);
-		push2talk->set(true);
 		REQ(&waterfall::set_XmtRcvBtn, wf, true);
+		REQ(trx_tune);
 		MilliSleep(msecs);
 		if (debug_pskmail)
 			LOG_INFO("%s", "ARQ set ptt off");
-		push2talk->set(false);
 		REQ(&waterfall::set_XmtRcvBtn, wf, false);
+		REQ(trx_receive);
 		return;
 	}
 	for (size_t i = 0; i < NUM_MODES; ++i) {

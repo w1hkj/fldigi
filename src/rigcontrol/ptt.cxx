@@ -376,7 +376,7 @@ void PTT::open_tty(void)
 	com_to_tty(pttdevName);
 #    endif
 
-	int oflags = O_RDWR | O_NOCTTY | O_NDELAY;
+	int oflags = O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK;
 #	ifdef HAVE_O_CLOEXEC
 		oflags = oflags | O_CLOEXEC;
 #	endif
@@ -420,6 +420,7 @@ void PTT::close_tty(void)
 		close(pttfd);
 	}
 	delete oldtio;
+	pttfd = -1;
 #  endif // HAVE_TTYPORT
 #endif // __MINGW32__
 }
@@ -430,8 +431,16 @@ void PTT::set_tty(bool ptt)
 	serPort.SetPTT(ptt);
 #else
 #  if HAVE_TTYPORT
-	int status;
-	ioctl(pttfd, TIOCMGET, &status);
+	if (pttfd == -1){
+		LOG_ERROR("PTT::set_tty pttfd = -1. error.");
+		return;
+	}
+	static int status;
+	int retval = ioctl(pttfd, TIOCMGET, &status);
+    	if (retval != 0) {
+        	LOG_ERROR("ioctl error return %d, %s", errno, strerror(errno));
+        	close_tty();
+    	}
 
 	if (ptt) {
 		if (progdefaults.RTSptt == true && progdefaults.RTSplus == false)
@@ -453,7 +462,11 @@ void PTT::set_tty(bool ptt)
 			status |= TIOCM_DTR;
 	}
 	LOG_DEBUG("Status %02X, %s", status & 0xFF, uint2bin(status, 8));
-	ioctl(pttfd, TIOCMSET, &status);
+	retval = ioctl(pttfd, TIOCMSET, &status);
+    	if (retval != 0) {
+        	LOG_ERROR("ioctl error return %d, %s", errno, strerror(errno));
+        	close_tty();
+    	}
 #  endif // HAVE_TTYPORT
 #endif // __MINGW32__
 }
