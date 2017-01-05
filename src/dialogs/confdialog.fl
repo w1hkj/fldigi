@@ -427,7 +427,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {1061 30 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {634 39 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 600 395} color 50 selection_color 50
@@ -535,7 +535,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 365}
+        tooltip {User Interface} xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
@@ -2485,7 +2485,7 @@ ed_telnet_cmds->redraw();
 
 dxcluster_hosts_load();
 
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                     xywh {222 341 86 25}
                   }
                   Fl_Button btnDXfont {
@@ -3379,8 +3379,8 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
         }
       }
       Fl_Group tabModems {
-        label Modems
-        xywh {0 25 600 365} hide
+        label Modems open
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 365} selection_color 50 align 9
@@ -3916,79 +3916,97 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFeld {
-            label Feld
-            xywh {0 50 600 340} hide
+            label Feld open
+            xywh {0 50 600 340}
           } {
-            Fl_Group {} {open
-              xywh {55 72 490 145} box ENGRAVED_FRAME
+            Fl_Group {} {
+              label {Hell Transmit Parameters} open
+              xywh {55 72 500 133} box ENGRAVED_FRAME align 17
             } {
               Fl_Group listboxHellFont {
                 label {Transmit font}
                 callback {progdefaults.feldfontnbr=o->index();
 progdefaults.changed = true;} open
-                tooltip {Select TX raster font} xywh {65 82 150 20} box DOWN_BOX color 7 align 8
+                tooltip {Select TX raster font} xywh {70 97 225 22} box DOWN_BOX color 7 align 8
                 code0 {\#include "fontdef.h"}
                 code1 {o->add(szFeldFonts);}
                 code2 {o->index(progdefaults.feldfontnbr);
                        o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
-              Fl_Check_Button btnBlackboard {
-                label {Reverse video}
-                callback {progdefaults.HellBlackboard=o->value();
-progdefaults.changed = true;}
-                tooltip {Display RX in reverse video} xywh {350 82 125 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.HellBlackboard);}
-              }
-              Fl_Spinner valHellXmtWidth {
-                label {Transmit width}
-                callback {progdefaults.HellXmtWidth=(int)o->value();
-progdefaults.changed = true;}
-                tooltip {\# of multiple scans / character line} xywh {65 112 40 20} align 8 maximum 3
-                code0 {o->value(progdefaults.HellXmtWidth);}
-                code1 {o->labelsize(FL_NORMAL_SIZE);}
-                class Fl_Spinner2
-              }
-              Fl_Check_Button btnHellRcvWidth {
-                label {Halve receive width}
-                callback {progdefaults.HellRcvWidth=o->value();
-progdefaults.changed = true;}
-                tooltip {Compress Rx in time} xywh {350 112 155 20} down_box DOWN_BOX
-                code0 {o->value(progdefaults.HellRcvWidth);}
-              }
               Fl_Group listboxHellPulse {
                 label {Pulse shape}
                 callback {progdefaults.HellPulseFast = o->index();
 progdefaults.changed = true;} open
-                tooltip {Raised cosine pulse shape factor} xywh {65 159 150 20} box DOWN_BOX color 7 align 5
+                tooltip {Raised cosine pulse shape factor} xywh {70 145 150 22} box DOWN_BOX color 7 align 5
                 code0 {o->add(_("Slow (4 msec)"));}
                 code1 {o->add(_("Fast (2 msec)"));}
                 code2 {o->index(progdefaults.HellPulseFast);
                        o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ListBox
               } {}
-              Fl_Value_Slider sldrHellBW {
-                label {Receive filter bandwidth}
-                callback {progdefaults.HELL_BW = sldrHellBW->value();}
-                tooltip {Adjust the DSP bandwidth} xywh {256 159 246 20} type Horizontal align 5 minimum 10 maximum 2400 step 5 value 400 textsize 14
-                code0 {o->value(progdefaults.HELL_BW);}
-                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
-                class Fl_Value_Slider2
-              }
               Fl_Check_Button btnFeldHellIdle {
                 label {Transmit periods (.) when idle}
                 callback {progdefaults.HellXmtIdle=o->value();
 progdefaults.changed = true;}
-                tooltip {Transmits a diddle dot when no keyboard activity} xywh {65 189 230 20} down_box DOWN_BOX value 1
+                tooltip {Transmits a diddle dot when no keyboard activity} xywh {70 180 230 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.HellXmtIdle);}
               }
-              Fl_Check_Button btnHellXmtWidth {
-                label {2x Xmt Width (hidden)}
-                callback {progdefaults.HellXmtWidth=o->value();
+              Fl_Value_Slider valHellXmtWidth {
+                label {Tx Width Multiplier}
+                callback {progdefaults.HellXmtWidth=(int)o->value();
 progdefaults.changed = true;}
-                xywh {355 187 113 20} down_box DOWN_BOX
+                tooltip {Range 1...3} xywh {251 145 150 22} type {Horz Knob} color 54 align 8 minimum 1 maximum 3 step 1 value 1 textsize 14
                 code0 {o->value(progdefaults.HellXmtWidth);}
-                code1 {o->hide();}
+              }
+            }
+            Fl_Group {} {
+              label {Hell Receive Parameters} open
+              xywh {55 208 500 173} box ENGRAVED_FRAME align 17
+            } {
+              Fl_Check_Button btnBlackboard {
+                label {Reverse video}
+                callback {progdefaults.HellBlackboard=o->value();
+FHdisp->reverse(progdefaults.HellBlackboard);
+progdefaults.changed = true;}
+                tooltip {Display RX in reverse video} xywh {70 232 125 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.HellBlackboard);}
+              }
+              Fl_Check_Button btnHellMarquee {
+                label {Marquee text}
+                callback {progdefaults.HellMarquee=o->value();
+FHdisp->set_marquee(progdefaults.HellMarquee);
+progdefaults.changed = true;}
+                tooltip {Display RX as a scrolling marquee} xywh {255 232 125 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.HellMarquee);}
+              }
+              Fl_Value_Slider valHellRcvWidth {
+                label {Rx Width Multiplier}
+                callback {progdefaults.HellRcvWidth=(int)o->value();
+progdefaults.changed = true;}
+                tooltip {Range 1...4} xywh {70 268 120 22} type {Horz Knob} color 54 align 8 minimum 1 maximum 4 step 1 value 1 textsize 14
+                code0 {o->value(progdefaults.HellRcvWidth);}
+              }
+              Fl_Value_Slider valHellRcvHeight {
+                label {Rx Height in pixels}
+                callback {FHdisp_char_height();}
+                tooltip {May require resizing the Rx/Tx panel} xywh {70 307 250 22} type {Horz Knob} color 54 align 8 minimum 14 maximum 42 step 2 value 20 textsize 14
+                code0 {o->value(progdefaults.HellRcvHeight);}
+              }
+              Fl_Value_Slider sldrHellBW {
+                label {Receive filter bandwidth}
+                callback {progdefaults.HELL_BW = sldrHellBW->value();}
+                tooltip {Adjust the DSP bandwidth} xywh {70 346 250 22} type Horizontal color 54 align 8 minimum 10 maximum 2400 step 5 value 400 textsize 14
+                code0 {o->value(progdefaults.HELL_BW);}
+                code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
+                class Fl_Value_Slider2
+              }
+              Fl_Value_Slider val_hellagc {
+                label {Rx AGC}
+                callback {progdefaults.hellagc=(int)o->value();
+progdefaults.changed = true;} selected
+                tooltip {1 - Slow, 2 - Medium, 3 - Fast} xywh {335 268 120 22} type {Horz Knob} color 54 align 8 minimum 1 maximum 3 step 1 value 2 textsize 14
+                code0 {o->value(progdefaults.hellagc);}
               }
             }
           }
@@ -5056,7 +5074,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOther {
             label Other open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsOther {open
               xywh {0 50 600 340}

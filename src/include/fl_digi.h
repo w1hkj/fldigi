@@ -595,4 +595,9 @@ extern Fl_Double_Window	*dxcluster_viewer;
 extern void  TOD_init();
 extern void  TOD_close();
 
+//======================================================================
+//FeldHell resizable Rx character height
+//======================================================================
+extern void FHdisp_char_height();
+
 #endif

@@ -485,11 +485,17 @@
         ELEM_(double, HELL_BW_FSK, "HELL_BW5", "FSK Hell bandwidth",  180.0)            \
         ELEM_(double, HELL_BW_FSK105, "HELL_BW6", "FSK105 Hell bandwidth",  100.0)      \
         ELEM_(double, HELL_BW_HELL80, "HELL_BW7", "HELL80 bandwidth",  450.0)           \
-        ELEM_(bool, HellRcvWidth, "HELLRCVWIDTH",                                       \
-              "Halve receive width (compress RX in time)",                              \
-              false)                                                                    \
+        ELEM_(int, HellRcvWidth, "HELLRCVWIDTH",                                        \
+              "Horizontal size multiplier for each hell character, 1, 2, or 3",         \
+              2)                                                                        \
+        ELEM_(int, HellRcvHeight, "HELLRCVHEIGHT",                                      \
+              "Vertical char size in pixels",                                           \
+              20)                                                                       \
         ELEM_(bool, HellBlackboard, "HELLBLACKBOARD",                                   \
               "Display RX in reverse video",                                            \
+              false)                                                                    \
+        ELEM_(bool, HellMarquee, "HELLMARQUEE",                                         \
+              "Display RX as scrolling marquee",                                        \
               false)                                                                    \
         ELEM_(int, HellXmtWidth, "HELLXMTWIDTH",                                        \
               "Transmit width (number of multiple scans per character line)",           \
@@ -501,6 +507,9 @@
               "Raised cosine pulse shape factor. Values are as follows:\n"              \
               "  0: slow (4 ms); 1: fast (2 ms).",                                      \
               false)   /* slow */                                                       \
+        ELEM_(int, hellagc, "HELLAGC",                                                  \
+              "1 - slow, 2 - medium, 3 - fast",                                         \
+              2)                                                                        \
         /* OLIVIA */                                                                    \
         ELEM_(int, oliviatones, "OLIVIATONES",                                          \
               "Number of tones. Values are as follows:\n"                               \

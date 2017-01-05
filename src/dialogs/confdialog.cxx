@@ -3213,38 +3213,11 @@ static void cb_listboxHellFont(Fl_ListBox* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnBlackboard=(Fl_Check_Button *)0;
-
-static void cb_btnBlackboard(Fl_Check_Button* o, void*) {
-  progdefaults.HellBlackboard=o->value();
-progdefaults.changed = true;
-}
-
-Fl_Spinner2 *valHellXmtWidth=(Fl_Spinner2 *)0;
-
-static void cb_valHellXmtWidth(Fl_Spinner2* o, void*) {
-  progdefaults.HellXmtWidth=(int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnHellRcvWidth=(Fl_Check_Button *)0;
-
-static void cb_btnHellRcvWidth(Fl_Check_Button* o, void*) {
-  progdefaults.HellRcvWidth=o->value();
-progdefaults.changed = true;
-}
-
 Fl_ListBox *listboxHellPulse=(Fl_ListBox *)0;
 
 static void cb_listboxHellPulse(Fl_ListBox* o, void*) {
   progdefaults.HellPulseFast = o->index();
 progdefaults.changed = true;
-}
-
-Fl_Value_Slider2 *sldrHellBW=(Fl_Value_Slider2 *)0;
-
-static void cb_sldrHellBW(Fl_Value_Slider2*, void*) {
-  progdefaults.HELL_BW = sldrHellBW->value();
 }
 
 Fl_Check_Button *btnFeldHellIdle=(Fl_Check_Button *)0;
@@ -3254,10 +3227,52 @@ static void cb_btnFeldHellIdle(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Check_Button *btnHellXmtWidth=(Fl_Check_Button *)0;
+Fl_Value_Slider *valHellXmtWidth=(Fl_Value_Slider *)0;
 
-static void cb_btnHellXmtWidth(Fl_Check_Button* o, void*) {
-  progdefaults.HellXmtWidth=o->value();
+static void cb_valHellXmtWidth(Fl_Value_Slider* o, void*) {
+  progdefaults.HellXmtWidth=(int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnBlackboard=(Fl_Check_Button *)0;
+
+static void cb_btnBlackboard(Fl_Check_Button* o, void*) {
+  progdefaults.HellBlackboard=o->value();
+FHdisp->reverse(progdefaults.HellBlackboard);
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnHellMarquee=(Fl_Check_Button *)0;
+
+static void cb_btnHellMarquee(Fl_Check_Button* o, void*) {
+  progdefaults.HellMarquee=o->value();
+FHdisp->set_marquee(progdefaults.HellMarquee);
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *valHellRcvWidth=(Fl_Value_Slider *)0;
+
+static void cb_valHellRcvWidth(Fl_Value_Slider* o, void*) {
+  progdefaults.HellRcvWidth=(int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Value_Slider *valHellRcvHeight=(Fl_Value_Slider *)0;
+
+static void cb_valHellRcvHeight(Fl_Value_Slider*, void*) {
+  FHdisp_char_height();
+}
+
+Fl_Value_Slider2 *sldrHellBW=(Fl_Value_Slider2 *)0;
+
+static void cb_sldrHellBW(Fl_Value_Slider2*, void*) {
+  progdefaults.HELL_BW = sldrHellBW->value();
+}
+
+Fl_Value_Slider *val_hellagc=(Fl_Value_Slider *)0;
+
+static void cb_val_hellagc(Fl_Value_Slider* o, void*) {
+  progdefaults.hellagc=(int)o->value();
 progdefaults.changed = true;
 }
 
@@ -7190,6 +7205,7 @@ Fl_Double_Window* ConfigureDialog() {
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
         tabUI->tooltip(_("User Interface"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
@@ -9045,7 +9061,6 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 365, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -9730,10 +9745,10 @@ i on a\ntouch screen device such as a tablet."));
             tabDomEX->end();
           } // Fl_Group* tabDomEX
           { tabFeld = new Fl_Group(0, 50, 600, 340, _("Feld"));
-            tabFeld->hide();
-            { Fl_Group* o = new Fl_Group(55, 72, 490, 145);
+            { Fl_Group* o = new Fl_Group(55, 72, 500, 133, _("Hell Transmit Parameters"));
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_ListBox* o = listboxHellFont = new Fl_ListBox(65, 82, 150, 20, _("Transmit font"));
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_ListBox* o = listboxHellFont = new Fl_ListBox(70, 97, 225, 22, _("Transmit font"));
                 listboxHellFont->tooltip(_("Select TX raster font"));
                 listboxHellFont->box(FL_DOWN_BOX);
                 listboxHellFont->color(FL_BACKGROUND2_COLOR);
@@ -9750,35 +9765,7 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listboxHellFont->end();
               } // Fl_ListBox* listboxHellFont
-              { Fl_Check_Button* o = btnBlackboard = new Fl_Check_Button(350, 82, 125, 20, _("Reverse video"));
-                btnBlackboard->tooltip(_("Display RX in reverse video"));
-                btnBlackboard->down_box(FL_DOWN_BOX);
-                btnBlackboard->callback((Fl_Callback*)cb_btnBlackboard);
-                o->value(progdefaults.HellBlackboard);
-              } // Fl_Check_Button* btnBlackboard
-              { Fl_Spinner2* o = valHellXmtWidth = new Fl_Spinner2(65, 112, 40, 20, _("Transmit width"));
-                valHellXmtWidth->tooltip(_("# of multiple scans / character line"));
-                valHellXmtWidth->box(FL_NO_BOX);
-                valHellXmtWidth->color(FL_BACKGROUND_COLOR);
-                valHellXmtWidth->selection_color(FL_BACKGROUND_COLOR);
-                valHellXmtWidth->labeltype(FL_NORMAL_LABEL);
-                valHellXmtWidth->labelfont(0);
-                valHellXmtWidth->labelsize(14);
-                valHellXmtWidth->labelcolor(FL_FOREGROUND_COLOR);
-                valHellXmtWidth->maximum(3);
-                valHellXmtWidth->callback((Fl_Callback*)cb_valHellXmtWidth);
-                valHellXmtWidth->align(Fl_Align(FL_ALIGN_RIGHT));
-                valHellXmtWidth->when(FL_WHEN_RELEASE);
-                o->value(progdefaults.HellXmtWidth);
-                o->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Spinner2* valHellXmtWidth
-              { Fl_Check_Button* o = btnHellRcvWidth = new Fl_Check_Button(350, 112, 155, 20, _("Halve receive width"));
-                btnHellRcvWidth->tooltip(_("Compress Rx in time"));
-                btnHellRcvWidth->down_box(FL_DOWN_BOX);
-                btnHellRcvWidth->callback((Fl_Callback*)cb_btnHellRcvWidth);
-                o->value(progdefaults.HellRcvWidth);
-              } // Fl_Check_Button* btnHellRcvWidth
-              { Fl_ListBox* o = listboxHellPulse = new Fl_ListBox(65, 159, 150, 20, _("Pulse shape"));
+              { Fl_ListBox* o = listboxHellPulse = new Fl_ListBox(70, 145, 150, 22, _("Pulse shape"));
                 listboxHellPulse->tooltip(_("Raised cosine pulse shape factor"));
                 listboxHellPulse->box(FL_DOWN_BOX);
                 listboxHellPulse->color(FL_BACKGROUND2_COLOR);
@@ -9796,11 +9783,74 @@ i on a\ntouch screen device such as a tablet."));
                        o->labelsize(FL_NORMAL_SIZE);
                 listboxHellPulse->end();
               } // Fl_ListBox* listboxHellPulse
-              { Fl_Value_Slider2* o = sldrHellBW = new Fl_Value_Slider2(256, 159, 246, 20, _("Receive filter bandwidth"));
+              { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(70, 180, 230, 20, _("Transmit periods (.) when idle"));
+                btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
+                btnFeldHellIdle->down_box(FL_DOWN_BOX);
+                btnFeldHellIdle->value(1);
+                btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
+                o->value(progdefaults.HellXmtIdle);
+              } // Fl_Check_Button* btnFeldHellIdle
+              { Fl_Value_Slider* o = valHellXmtWidth = new Fl_Value_Slider(251, 145, 150, 22, _("Tx Width Multiplier"));
+                valHellXmtWidth->tooltip(_("Range 1...3"));
+                valHellXmtWidth->type(5);
+                valHellXmtWidth->color(FL_LIGHT3);
+                valHellXmtWidth->minimum(1);
+                valHellXmtWidth->maximum(3);
+                valHellXmtWidth->step(1);
+                valHellXmtWidth->value(1);
+                valHellXmtWidth->textsize(14);
+                valHellXmtWidth->callback((Fl_Callback*)cb_valHellXmtWidth);
+                valHellXmtWidth->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.HellXmtWidth);
+              } // Fl_Value_Slider* valHellXmtWidth
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(55, 208, 500, 173, _("Hell Receive Parameters"));
+              o->box(FL_ENGRAVED_FRAME);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btnBlackboard = new Fl_Check_Button(70, 232, 125, 20, _("Reverse video"));
+                btnBlackboard->tooltip(_("Display RX in reverse video"));
+                btnBlackboard->down_box(FL_DOWN_BOX);
+                btnBlackboard->callback((Fl_Callback*)cb_btnBlackboard);
+                o->value(progdefaults.HellBlackboard);
+              } // Fl_Check_Button* btnBlackboard
+              { Fl_Check_Button* o = btnHellMarquee = new Fl_Check_Button(255, 232, 125, 20, _("Marquee text"));
+                btnHellMarquee->tooltip(_("Display RX as a scrolling marquee"));
+                btnHellMarquee->down_box(FL_DOWN_BOX);
+                btnHellMarquee->callback((Fl_Callback*)cb_btnHellMarquee);
+                o->value(progdefaults.HellMarquee);
+              } // Fl_Check_Button* btnHellMarquee
+              { Fl_Value_Slider* o = valHellRcvWidth = new Fl_Value_Slider(70, 268, 120, 22, _("Rx Width Multiplier"));
+                valHellRcvWidth->tooltip(_("Range 1...4"));
+                valHellRcvWidth->type(5);
+                valHellRcvWidth->color(FL_LIGHT3);
+                valHellRcvWidth->minimum(1);
+                valHellRcvWidth->maximum(4);
+                valHellRcvWidth->step(1);
+                valHellRcvWidth->value(1);
+                valHellRcvWidth->textsize(14);
+                valHellRcvWidth->callback((Fl_Callback*)cb_valHellRcvWidth);
+                valHellRcvWidth->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.HellRcvWidth);
+              } // Fl_Value_Slider* valHellRcvWidth
+              { Fl_Value_Slider* o = valHellRcvHeight = new Fl_Value_Slider(70, 307, 250, 22, _("Rx Height in pixels"));
+                valHellRcvHeight->tooltip(_("May require resizing the Rx/Tx panel"));
+                valHellRcvHeight->type(5);
+                valHellRcvHeight->color(FL_LIGHT3);
+                valHellRcvHeight->minimum(14);
+                valHellRcvHeight->maximum(42);
+                valHellRcvHeight->step(2);
+                valHellRcvHeight->value(20);
+                valHellRcvHeight->textsize(14);
+                valHellRcvHeight->callback((Fl_Callback*)cb_valHellRcvHeight);
+                valHellRcvHeight->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.HellRcvHeight);
+              } // Fl_Value_Slider* valHellRcvHeight
+              { Fl_Value_Slider2* o = sldrHellBW = new Fl_Value_Slider2(70, 346, 250, 22, _("Receive filter bandwidth"));
                 sldrHellBW->tooltip(_("Adjust the DSP bandwidth"));
                 sldrHellBW->type(1);
                 sldrHellBW->box(FL_DOWN_BOX);
-                sldrHellBW->color(FL_BACKGROUND_COLOR);
+                sldrHellBW->color(FL_LIGHT3);
                 sldrHellBW->selection_color(FL_BACKGROUND_COLOR);
                 sldrHellBW->labeltype(FL_NORMAL_LABEL);
                 sldrHellBW->labelfont(0);
@@ -9812,24 +9862,24 @@ i on a\ntouch screen device such as a tablet."));
                 sldrHellBW->value(400);
                 sldrHellBW->textsize(14);
                 sldrHellBW->callback((Fl_Callback*)cb_sldrHellBW);
-                sldrHellBW->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                sldrHellBW->align(Fl_Align(FL_ALIGN_RIGHT));
                 sldrHellBW->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.HELL_BW);
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
               } // Fl_Value_Slider2* sldrHellBW
-              { Fl_Check_Button* o = btnFeldHellIdle = new Fl_Check_Button(65, 189, 230, 20, _("Transmit periods (.) when idle"));
-                btnFeldHellIdle->tooltip(_("Transmits a diddle dot when no keyboard activity"));
-                btnFeldHellIdle->down_box(FL_DOWN_BOX);
-                btnFeldHellIdle->value(1);
-                btnFeldHellIdle->callback((Fl_Callback*)cb_btnFeldHellIdle);
-                o->value(progdefaults.HellXmtIdle);
-              } // Fl_Check_Button* btnFeldHellIdle
-              { Fl_Check_Button* o = btnHellXmtWidth = new Fl_Check_Button(355, 187, 113, 20, _("2x Xmt Width (hidden)"));
-                btnHellXmtWidth->down_box(FL_DOWN_BOX);
-                btnHellXmtWidth->callback((Fl_Callback*)cb_btnHellXmtWidth);
-                o->value(progdefaults.HellXmtWidth);
-                o->hide();
-              } // Fl_Check_Button* btnHellXmtWidth
+              { Fl_Value_Slider* o = val_hellagc = new Fl_Value_Slider(335, 268, 120, 22, _("Rx AGC"));
+                val_hellagc->tooltip(_("1 - Slow, 2 - Medium, 3 - Fast"));
+                val_hellagc->type(5);
+                val_hellagc->color(FL_LIGHT3);
+                val_hellagc->minimum(1);
+                val_hellagc->maximum(3);
+                val_hellagc->step(1);
+                val_hellagc->value(2);
+                val_hellagc->textsize(14);
+                val_hellagc->callback((Fl_Callback*)cb_val_hellagc);
+                val_hellagc->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.hellagc);
+              } // Fl_Value_Slider* val_hellagc
               o->end();
             } // Fl_Group* o
             tabFeld->end();
@@ -10891,6 +10941,7 @@ le Earth)"));
             tabTHOR->end();
           } // Fl_Group* tabTHOR
           { tabOther = new Fl_Group(0, 50, 600, 340, _("Other"));
+            tabOther->hide();
             { tabsOther = new Fl_Tabs(0, 50, 600, 340);
               { tabNavtex = new Fl_Group(0, 75, 600, 315, _("Nav"));
                 tabNavtex->hide();

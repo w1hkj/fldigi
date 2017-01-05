@@ -349,15 +349,17 @@ extern Fl_Counter2 *valDominoEX_PATHS;
 extern Fl_Group *tabFeld;
 #include "fontdef.h"
 extern Fl_ListBox *listboxHellFont;
-extern Fl_Check_Button *btnBlackboard;
-extern Fl_Spinner2 *valHellXmtWidth;
-extern Fl_Check_Button *btnHellRcvWidth;
 extern Fl_ListBox *listboxHellPulse;
-extern Fl_Value_Slider2 *sldrHellBW;
 extern Fl_Check_Button *btnFeldHellIdle;
-extern Fl_Check_Button *btnHellXmtWidth;
-extern Fl_Group *tabFSQ;
 #include <FL/Fl_Value_Slider.H>
+extern Fl_Value_Slider *valHellXmtWidth;
+extern Fl_Check_Button *btnBlackboard;
+extern Fl_Check_Button *btnHellMarquee;
+extern Fl_Value_Slider *valHellRcvWidth;
+extern Fl_Value_Slider *valHellRcvHeight;
+extern Fl_Value_Slider2 *sldrHellBW;
+extern Fl_Value_Slider *val_hellagc;
+extern Fl_Group *tabFSQ;
 extern Fl_Value_Slider *valhits;
 extern Fl_Choice *sel_fsq_lpf;
 extern Fl_Value_Slider *sldrMovAvg;

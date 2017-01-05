@@ -25,21 +25,38 @@ The video edges will be sharper, but the bandwidth twice as
 large. You might find 2 msec a better choice for VHF and above.<br>
 <br>
 
-Fldigi provides three controls for the receive function. The video is
-normally black on white. You can change that to white on black.
-You can also compress the horizontal scan rate of the video.
-You might find this effective in displaying received fonts that
-are broad (or if the other end is using a multiple dot transmit width).<br>
-<br>
+Decoded FeldHell transmissions are displayed as a raw video raster.
+The video is displayed as black characters on a white background.  Enable
+the "Reverse video" control for a white on black display.<br>
 
-As
-you change Hellschreiber modes the optimum filter bandwidth will be
+The default display mode is for each line of text to be displayed in the
+lowest line, characters appended in a left to right fashion.  The lines
+scroll up as each line is filled.  You can select "Marquee text" mode if
+you prefer to have the characters scroll from right to left as on a movie marquee.
+Marquee text is suitable if you are only viewing a single line of text.<br>
+
+Both the width and height of the characters can be adjusted.  The Feld Hell
+character is transmitted using a 7x14 or 8x14 array of dots.  The character display
+height can be adjusted from 14 to 42 pixels, with 14, 28 and 42 being multiples
+of the transmitted rate.  The height can be adjusted in units of 2 pixels.
+Remember that each vertical part of the character array is sent twice.  The
+on screen display height for each row will than be twice the selected height, i.e.
+28 to 84 pixels.<br>
+
+The width is adjustable as 1x, 2x, 3x and 4x the received array.  I suggest
+you begin with the Rx Width Multiplier set to 2 and the Rx Height in pixels set
+to 28.  Move the Rx/Tx panel divider up or down to see fewer or more raster
+lines.<br>
+
+The Rx AGC control sets the decay rate of the decoder average signal level.
+Lower numbers is slower and larger a faster decay rate.<br>
+
+As you change Hellschreiber modes the optimum filter bandwidth will be
 set. You can change that and might find a narrower filter
 effective if you are experiencing CWI interference. FeldHell is
-susceptible to CWI. If you narrow the filter the received video
+susceptible to CWI. If you narrow the filter to much the received video
 will become blurred.<br>
 
-<br>
 \ref feld_hell_configuration_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

@@ -479,9 +479,8 @@ static const int w_inpCall2	= 100;
 static const int w_inpRstIn2	= 30;
 static const int w_inpRstOut2	= 30;
 
-// minimum height for raster display, FeldHell, is 66 pixels
-// )FELD-HELL raster min height) + frame width * 2
-static const int minhtext = FELD_RX_HEIGHT;
+// maximum 1 row height for raster display, FeldHell
+static int minhtext = 42*2+6;
 
 static int main_hmin;// = HMIN;
 
@@ -3666,7 +3665,7 @@ void UI_check_swap()
 	int tx_y = 0, tx_h = 0, tx_x = 0, tx_w = 0;
 	int rx_y = 0, rx_h = 0, rx_x = 0, rx_w = 0;
 
-	if (progdefaults.rxtx_swap && ReceiveText->y() < TransmitText->y()) {
+	if (progdefaults.rxtx_swap && (ReceiveText->y() <= TransmitText->y())) {
 		tx_y = ReceiveText->y();
 		tx_h = first_check ? progStatus.tile_y : TransmitText->h();
 		tx_x = mv_x + mv_w;
@@ -3702,7 +3701,8 @@ void UI_check_swap()
 		progStatus.tile_y = TransmitText->h();
 		progStatus.tile_y_ratio = 1.0 * TransmitText->h() / text_panel->h();
 	}
-	if (!progdefaults.rxtx_swap && ReceiveText->y() > TransmitText->y()) {
+//	else if (!progdefaults.rxtx_swap && ReceiveText->y() > TransmitText->y()) {
+	else if (progdefaults.rxtx_swap && (ReceiveText->y() > TransmitText->y())) {
 		rx_y = TransmitText->y();
 		rx_h = first_check ? progStatus.tile_y : ReceiveText->h();
 		rx_x = mv_x + mv_w;
@@ -6040,6 +6040,18 @@ void create_fl_digi_main_primary() {
 	int hmacros = TB_HEIGHT * 4;
 
 	fixed_height += hmacros;
+
+//----------------------------------------------------------------------
+// needed to prevent user from manually modifying fldigi_def.xml
+// with values to would cause the UI to seg fault
+	if (progdefaults.HellRcvHeight < 14) progdefaults.HellRcvHeight = 14;
+	if (progdefaults.HellRcvHeight > 42) progdefaults.HellRcvHeight = 42;
+	if (progdefaults.HellRcvWidth < 1) progdefaults.HellRcvWidth = 1;
+	if (progdefaults.HellRcvWidth > 4) progdefaults.HellRcvWidth = 4;
+//----------------------------------------------------------------------
+
+	minhtext = 2 * progdefaults.HellRcvHeight + 4;//6;
+
 	int Htext = 3 * minhtext;
 
 	main_hmin = Htext + fixed_height;
@@ -7082,8 +7094,11 @@ void create_fl_digi_main_primary() {
 
 				FHdisp = new Raster(
 						text_panel->x() + mvgroup->w(), text_panel->y(),
-						text_panel->w() - mvgroup->w(), rh);
+						text_panel->w() - mvgroup->w(), rh,
+						progdefaults.HellRcvHeight);
 					FHdisp->align(FL_ALIGN_CLIP);
+					FHdisp->reverse(progdefaults.HellBlackboard);
+					FHdisp->clear();
 					FHdisp->hide();
 
 				TransmitText = new FTextTX(
@@ -10367,4 +10382,42 @@ void cbFSQCALL(Fl_Widget *w, void *d)
 		}
 	}
 	restoreFocus();
+}
+
+//======================================================================
+//FeldHell resizable Rx character height
+//======================================================================
+extern pthread_mutex_t feld_mutex;
+
+void FHdisp_char_height()
+{
+	guard_lock raster_lock(&feld_mutex);
+
+	int rh = progdefaults.HellRcvHeight = (int)valHellRcvHeight->value();
+
+	rh = FHdisp->change_rowheight(rh);
+	if (rh != progdefaults.HellRcvHeight) {
+		progdefaults.HellRcvHeight = rh;
+		valHellRcvHeight->value(rh);
+		valHellRcvHeight->redraw();
+		fl_alert2("Selection too large for current Rx height\nIncrease Rx height");
+	} else
+	progdefaults.changed = true;
+
+	trx_mode mode = active_modem->get_mode();
+	if ( (mode >= MODE_HELL_FIRST) &&
+		 (mode <= MODE_HELL_LAST) )
+		active_modem->restart();
+
+// adjust upper/lower bounds of Rx/Tx panel
+	minhtext = 2 * progdefaults.HellRcvHeight + 4;//6;
+	minbox->resize(
+			text_panel->x(),
+			text_panel->y() + minhtext,
+			text_panel->w() - 100,
+			text_panel->h() - 2*minhtext);
+	minbox->redraw();
+
+//	UI_select();
+
 }

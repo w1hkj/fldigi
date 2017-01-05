@@ -47,16 +47,16 @@ using namespace std;
 #include "qrunner.h"
 #include "status.h"
 #include "debug.h"
+#include "threads.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Value_Slider.H>
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
-char feldmsg[80];
+pthread_mutex_t feld_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int feld::RxColumnLen = FELD_RX_COLUMN_LEN;
-int feld::TxColumnLen = 14;
+char feldmsg[80];
 
 void feld::tx_init(SoundBase *sc)
 {
@@ -73,12 +73,13 @@ void feld::rx_init()
 {
 	rxcounter = 0.0;
 	peakhold = 0.0;
-	for (int i = 0; i < 2*RxColumnLen; i++ )
+	for (int i = 0; i < 2 * RxColumnLen; i++ )
 		col_data[i] = 0;
 	col_pointer = 0;
 	peakhold = 0.0;
 	minhold = 1.0;
 	agc = 0.0;
+
 	return;
 }
 
@@ -93,25 +94,11 @@ void feld::init()
 void feld::restart()
 {
 	set_bandwidth(hell_bandwidth);
-}
 
-feld::~feld()
-{
-	if (hilbert) delete hilbert;
-	if (bpfilt) delete bpfilt;
-	if (bbfilt) delete bbfilt;
-	if (minmaxfilt) delete minmaxfilt;
-}
+RxColumnLen = progdefaults.HellRcvHeight;
+TxColumnLen = FELD_COLUMN_LEN;
 
-feld::feld(trx_mode m)
-{
-	double lp;
-	mode = m;
-	samplerate = FeldSampleRate;
-
-	cap |= CAP_BW;
-
- 	switch (mode) {
+	switch (mode) {
 // Amplitude modulation modes
 		case MODE_FELDHELL:
  			feldcolumnrate = 17.5;
@@ -187,6 +174,41 @@ feld::feld(trx_mode m)
 			feldcolumnrate = 17.5;
 			break;
 	}
+/*
+std::cout <<
+"HellRcvHeight:      " << progdefaults.HellRcvHeight << "\n" <<
+"rx column length:   " << RxColumnLen << "\n" <<
+"tx column length:   " << TxColumnLen << "\n" <<
+"feldcolumrate:      " << feldcolumnrate << "\n" <<
+"rxpixrate:          " << rxpixrate << "\n" <<
+"txpixrate:          " << txpixrate << "\n" <<
+"downsampleinc:      " << downsampleinc << "\n" <<
+"upsampleinc:        " << upsampleinc << "\n" <<
+"hell_bandwidth:     " << hell_bandwidth << "\n" <<
+"filter bandwidth:   " << filter_bandwidth << "\n";
+*/
+	col_data.alloc(2 * RxColumnLen);
+
+}
+
+feld::~feld()
+{
+	if (hilbert) delete hilbert;
+	if (bpfilt) delete bpfilt;
+	if (bbfilt) delete bbfilt;
+	if (minmaxfilt) delete minmaxfilt;
+}
+
+feld::feld(trx_mode m)
+{
+	double lp;
+	mode = m;
+	samplerate = FeldSampleRate;
+
+	cap |= CAP_BW;
+
+	restart();
+
 	progdefaults.HELL_BW = filter_bandwidth;
 
 	hilbert = new C_FIR_filter();
@@ -204,11 +226,10 @@ feld::feld(trx_mode m)
 
 	minmaxfilt = new Cmovavg(120);
 
-	blackboard = false;
-	hardkeying = false;
-
 	rxphacc = 0.0;
 	txphacc = 0.0;
+
+	REQ(&Raster::set_marquee, FHdisp, progdefaults.HellMarquee);
 
 }
 
@@ -232,6 +253,8 @@ cmplx feld::mixer(cmplx in)
 
 void feld::FSKHELL_rx(cmplx z)
 {
+	guard_lock raster_lock(&feld_mutex);
+
 	double f;
 	double vid;
 	double avg;
@@ -249,7 +272,18 @@ void feld::FSKHELL_rx(cmplx z)
 	if (avg > agc)
 		agc = avg;
 	else
-		agc *= (1.0 - 0.01 / RxColumnLen);
+		switch (progdefaults.hellagc) {
+			case 3:
+				agc *= (1.0 - 0.2 / RxColumnLen);
+				break;
+			case 2:
+				agc *= (1.0 - 0.075 / RxColumnLen);
+				break;
+			case 1:
+			default:
+				agc *= (1.0 - 0.01 / RxColumnLen);
+		}
+
 	metric = CLAMP(1000*agc, 0.0, 100.0);
 	display_metric(metric);
 
@@ -259,16 +293,24 @@ void feld::FSKHELL_rx(cmplx z)
 		vid = 1.0 - vid;
 	if (reverse)
 		vid = 1.0 - vid;
-	if (blackboard)
+	if (progdefaults.HellBlackboard)
 		vid = 1.0 - vid;
 
 	col_data[col_pointer + RxColumnLen] = (int)(vid * 255.0);
 	col_pointer++;
 	if (col_pointer == RxColumnLen) {
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
-			REQ(put_rx_data, col_data, col_data.size());
-			if (!halfwidth)
-				REQ(put_rx_data, col_data, col_data.size());
+			switch (progdefaults.HellRcvWidth) {
+				case 4:
+					REQ(put_rx_data, col_data, col_data.size());
+				case 3:
+					REQ(put_rx_data, col_data, col_data.size());
+				case 2:
+					REQ(put_rx_data, col_data, col_data.size());
+				case 1:
+				default:
+					REQ(put_rx_data, col_data, col_data.size());
+			}
 		}
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
@@ -278,7 +320,10 @@ void feld::FSKHELL_rx(cmplx z)
 
 void feld::rx(cmplx z)
 {
+	guard_lock raster_lock(&feld_mutex);
+
 	double x, avg;
+	int ix;
 
 	x = abs(z);
 	if (x > peakval) peakval = x;
@@ -287,6 +332,7 @@ void feld::rx(cmplx z)
 	rxcounter += downsampleinc;
 	if (rxcounter < 1.0)
 		return;
+
 	rxcounter -= 1.0;
 
 	x = peakval;
@@ -295,33 +341,50 @@ void feld::rx(cmplx z)
 		peakhold = x;
 	else
 		peakhold *= (1.0 - 0.02 / RxColumnLen);
-	x = x / peakhold;
-	x = CLAMP (x, 0.0, 1.0);
+	ix = CLAMP(255 * x / peakhold, 0, 255);
 
 	if (avg > agc)
 		agc = avg;
 	else
-		agc *= (1.0 - 0.01 / RxColumnLen);
+		switch (progdefaults.hellagc) {
+			case 3:
+				agc *= (1.0 - 0.2 / RxColumnLen);
+				break;
+			case 2:
+				agc *= (1.0 - 0.075 / RxColumnLen);
+				break;
+			case 1:
+			default:
+				agc *= (1.0 - 0.01 / RxColumnLen);
+		}
+
 	metric = CLAMP(1000*agc, 0.0, 100.0);
 	display_metric(metric);
 
-	if (blackboard)
-		x = 255 * x;
-	else
-		x = 255 * (1.0 - x);
+	if (!progdefaults.HellBlackboard)
+		ix = 255 - ix;
 
-	col_data[col_pointer + RxColumnLen] = (int)x;
+	col_data[col_pointer + RxColumnLen] = ix;
 	col_pointer++;
-	if (col_pointer == RxColumnLen) {
+	if (col_pointer >= RxColumnLen) {
 		if (metric > progStatus.sldrSquelchValue || progStatus.sqlonoff == false) {
-			REQ(put_rx_data, col_data, col_data.size());
-			if (!halfwidth)
-				REQ(put_rx_data, col_data, col_data.size());
+			switch (progdefaults.HellRcvWidth) {
+				case 4:
+					REQ(put_rx_data, col_data, col_data.size());
+				case 3:
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);//col_data.size());
+				case 2:
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);//col_data.size());
+				case 1:
+				default:
+					REQ(put_rx_data, col_data, 2 * RxColumnLen);//col_data.size());
+			}
 		}
 		col_pointer = 0;
 		for (int i = 0; i < RxColumnLen; i++)
 			col_data[i] = col_data[i + RxColumnLen];
 	}
+
 }
 
 int feld::rx_process(const double *buf, int len)
@@ -329,9 +392,6 @@ int feld::rx_process(const double *buf, int len)
 
 	cmplx z, *zp;
 	int i, n;
-
-	halfwidth = progdefaults.HellRcvWidth;
-	blackboard = progdefaults.HellBlackboard;
 
 	if (progdefaults.HELL_BW != filter_bandwidth) {
 		double lp;
@@ -504,6 +564,7 @@ void feld::send_symbol(int currsymb, int nextsymb)
 
 // write to soundcard & display
 	ModulateXmtr(outbuf, outlen);
+
 	rx_process(outbuf, outlen);
 
 }

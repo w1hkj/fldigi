@@ -36,25 +36,36 @@
 #include "raster.h"
 #include "qrunner.h"
 
+#include "threads.h"
+
+static pthread_mutex_t raster_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 using namespace std;
 
-bool rowschanged = false;
+bool active = false;
 
-Raster::Raster (int X, int Y, int W, int H) :
+Raster::Raster (int X, int Y, int W, int H, int rh, bool rv) :
 	Fl_Widget (X, Y, W, H) {
 	width = W - 4;
 	height = H - 4;
-	space = 0;//1;
-	rowheight = 2 * FELD_RX_COLUMN_LEN + space;
+	space = 1;
+	rowheight = 2 * rh;
+	rhs = rowheight + space;
 
 	Nrows = 0;
-	while ((Nrows * rowheight) < height) Nrows++;
+	while ((Nrows * rhs) < height) Nrows++;
 	Nrows--;
 
 	vidbuf = new unsigned char[width * height];
-	memset(vidbuf, 255, width * height);
+	_reverse = rv;
+	if (_reverse)
+		memset(vidbuf, 0, width * height);
+	else
+		memset(vidbuf, 255, width * height);
 	col = 0;
+
 	box(FL_DOWN_BOX);
+	marquee = false;
 }
 
 Raster::~Raster()
@@ -62,61 +73,119 @@ Raster::~Raster()
 	delete [] vidbuf;
 }
 
+int Raster::change_rowheight( int rh )
+{
+	guard_lock raster_lock(&raster_mutex);
+
+	while ( (2*rh+space) > height) rh--;
+
+	rowheight = 2 * rh;
+	rhs = rowheight + space;
+
+	Nrows = 0;
+	while ((Nrows * rhs) < height) Nrows++;
+	Nrows--;
+
+	if (_reverse)
+		memset(vidbuf, 0, width * height);
+	else
+		memset(vidbuf, 255, width * height);
+	col = 0;
+
+	REQ_DROP(&Raster::redraw, this);
+
+	return rh;
+}
 
 void Raster::data(int data[], int len)
 {
-	if (data == NULL || len == 0 || (len > rowheight))
+
+	guard_lock raster_lock(&raster_mutex);
+
+	if (data == NULL || len == 0 || (len > rowheight)) {
 		return;
+	}
 
-	FL_LOCK_D();
-
-	for (int row = 0; row < Nrows; row++) {
-		int rowstart = width * rowheight * row;
-		int nextrow = width * rowheight * (row + 1);
-		for (int i = 0; i < len; i++) {
-			memmove(	vidbuf + rowstart + i*width,
+	if (marquee) {
+		for (int row = 0; row < Nrows; row++) {
+			int rowstart = width * rhs * row;
+			int nextrow = width * rhs * (row + 1);
+			for (int i = 0; i < len; i++) {
+				memmove(vidbuf + rowstart + i*width,
 						vidbuf + rowstart + i*width + 1, 
 						width - 1);
-			if (row < (Nrows - 1)) {
-				vidbuf[rowstart + i*width + width - 1] =
-					vidbuf[nextrow + i* width];
+				if (row < (Nrows - 1)) {
+					vidbuf[rowstart + i*width + width - 1] =
+						vidbuf[nextrow + i* width];
+				}
 			}
 		}
-	}
-	int toppixel = width * (Nrows - 1) * rowheight + width - 1;
-	for (int i = 0; i < len; i++) {
-		vidbuf[toppixel + width * (len - i)] = (unsigned char) data[i];
+		int toppixel = width * (Nrows - 1) * rhs + width - 1;
+		for (int i = 0; i < len; i++) {
+			vidbuf[toppixel + width * (len - i)] = (unsigned char) data[i];
+		}
+	} else {
+		int pos = 0;
+		int zeropos = (Nrows - 1) * rhs * width;
+		for (int i = 0; i < len; i++) {
+			pos = zeropos + width * (len - i - 1) + col;
+			vidbuf[pos] = (unsigned char)data[i];
+		}
+		if (++col >= width) {
+			unsigned char *from = vidbuf + rhs * width;
+			int numtocopy = (Nrows -1) * rhs * width;
+			memmove(vidbuf, from, numtocopy);
+			if (_reverse)
+				memset(vidbuf + zeropos, 0, rhs * width);
+			else
+				memset(vidbuf + zeropos, 255, rhs * width);
+			col = 0;
+		}
 	}
 
 	REQ_DROP(&Raster::redraw, this);
-	FL_UNLOCK_D();
-
-	FL_AWAKE_D();
 }
 
 void Raster::clear()
 {
-	memset(vidbuf, 255, width * height);
-//	redraw();
+	guard_lock raster_lock(&raster_mutex);
+
+	if (_reverse)
+		memset(vidbuf, 0, width * height);
+	else
+		memset(vidbuf, 255, width * height);
+	col = 0;
+
 	REQ_DROP(&Raster::redraw, this);
-	FL_AWAKE_D();
 }
 
 void Raster::resize(int x, int y, int w, int h)
 {
+	guard_lock raster_lock(&raster_mutex);
+
 	int Wdest = w - 4;
 	int Hdest = h - 4;
-	int Ndest;
-	unsigned char *tempbuf = new unsigned char [Wdest * Hdest];
-	unsigned char *oldbuf;
-	int xfrcols, xfrrows;
-	int from, to;
-
-	Ndest = 0;
-	while ((Ndest * rowheight) < Hdest) Ndest++;
+	int Ndest = 0;
+	while ((Ndest * rhs) < Hdest) Ndest++;
 	Ndest--;
 
-	memset(tempbuf, 255, Wdest * Hdest);
+	unsigned char *tempbuf = new unsigned char [Wdest * Hdest];
+	unsigned char *oldbuf = vidbuf;
+
+	if (_reverse)
+		memset(tempbuf, 0, Wdest * Hdest);
+	else
+		memset(tempbuf, 255, Wdest * Hdest);
+
+	int Ato = Wdest * Hdest;
+	int Afm = width * height;
+
+	if (Ato >= Afm) {
+	} else {
+	}
+
+	int xfrcols, xfrrows;
+	int from, to;
 
 	if (Wdest >= width)
 		xfrcols = width;
@@ -124,33 +193,32 @@ void Raster::resize(int x, int y, int w, int h)
 		xfrcols = Wdest;
 
 	if (Ndest <= Nrows) {
-		xfrrows = Ndest * rowheight;
-		from = (Nrows - Ndest) * rowheight;
+		xfrrows = Ndest * rhs;
+		from = (Nrows - Ndest) * rhs;
 		to = 0;
 		for (int r = 0; r < xfrrows; r++)
 			for (int c = 0; c < xfrcols; c++)
 				tempbuf[(to + r) * Wdest + c] = vidbuf[(from + r) * width + c];
 	} else {
-		xfrrows = Nrows * rowheight;
+		xfrrows = Nrows * rhs;
 		from = 0;
-		to = (Ndest - Nrows) * rowheight;
+		to = (Ndest - Nrows) * rhs;
 		for (int r = 0; r < xfrrows; r++)
 			for (int c = 0; c < xfrcols; c++)
 				tempbuf[(to + r) * Wdest + c] = vidbuf[(from + r) * width + c];
 	}
 
-	oldbuf = vidbuf;
-	vidbuf = tempbuf;
-
 	width = Wdest;
 	height = Hdest;
 	Nrows = Ndest;
+	vidbuf = tempbuf;
 
 	delete [] oldbuf;
 
 	Fl_Widget::resize(x,y,w,h);
 
 	redraw();
+
 }
 
 void Raster::draw()

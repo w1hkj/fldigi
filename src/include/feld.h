@@ -39,15 +39,13 @@
 
 #define MAXLEN 512
 
-#define FELD_RX_COLUMN_LEN 20
-#define FELD_RX_HEIGHT (FELD_RX_COLUMN_LEN * 2 + 6)
+#define FELD_COLUMN_LEN 14
 
 class feld : public modem {
 enum FELD_STATE {PREAMBLE, POSTAMBLE, DATA};
-public:
-static	int    RxColumnLen;
-static	int    TxColumnLen;
 protected:
+	int    RxColumnLen;
+	int    TxColumnLen;
 //rx
 	double rxphacc;
 	double rxdelta;
@@ -74,11 +72,9 @@ protected:
 	double txcounter;
 	double hell_bandwidth;
 	double filter_bandwidth;
-	
+
 	int depth;
 	int dxmode;
-	int halfwidth;
-	bool blackboard;
 	bool hardkeying;
 	double feldcolumnrate;
 
@@ -86,14 +82,14 @@ protected:
 	int postamble;
 	int prevsymb;
 	cmplx prev;
-	
+
 	double OnShape[MAXLEN];
 	double OffShape[MAXLEN];
-	
-	mbuffer<int, 2*FELD_RX_COLUMN_LEN> col_data;
+
+	mbuffer<int> col_data;
 	int col_pointer;
 	int fntnbr;
-	
+
 	cmplx mixer(cmplx);
 	double nco(double);
 	void	rx(cmplx);

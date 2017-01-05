@@ -33,25 +33,31 @@ private:
 	int		width;
 	int		height;
 	int		col;
-	//int		row;
 	int		Nrows;
 	int		rowheight;
+	int		rhs;
 	int		space;
 	int		vidpos;	 // column start position
 	int		numcols; // number of columns to redraw
 	int		yp;
+	bool	marquee;
+	bool	_reverse;
 public:
-	Raster(int, int, int, int);
+	Raster(int X, int Y, int W, int H, int rh = 2, bool rv = false);
 	~Raster();
 	void	draw();
 	int		handle(int);
 	void	resize(int x, int y, int w, int h);
 	unsigned char *buffer() { return vidbuf;}
 	int		size() { return width * height;}
+	int		change_rowheight( int rh );
 	void	data(int data[], int len);
 	void	clear();
 	void	show() { Fl_Widget::show();}
 	void	hide() { Fl_Widget::hide();}
+	void	set_marquee(bool val) { marquee = val; }
+	bool	get_marquee() { return marquee; }
+	void	reverse(bool val) { _reverse = val; }
 };
 
 #endif
