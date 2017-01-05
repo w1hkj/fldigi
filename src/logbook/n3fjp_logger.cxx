@@ -886,7 +886,7 @@ static void connect_to_n3fjp_server()
 			n3fjp_contest = FJP_NONE;
 		else if (info.find("CQ WW DX RTTY Contest Log") != string::npos)
 			n3fjp_contest = FJP_CQWWRTTY;
-		else if (info.find("ARRL Field Day Contest Log") != string::npos)
+		else if (info.find("Field Day Contest") != string::npos)
 			n3fjp_contest = FJP_FD;
 		else n3fjp_contest = FJP_GENERIC;
 
