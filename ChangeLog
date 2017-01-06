@@ -1,12 +1,28 @@
 
 
+=Version 3.23.20=
+
+2017-01-05  David Freese  <iam_w1hkj@w1hkj.com>
+
+	5c45632: N3FJP Winter FD
+	3119c92: FELD raster display
+	ca8daf3: ARQ PTT
+
+2016-12-25  John Phelps  <kl4yfd@gmail.com>
+
+	de339d7: NEW micro modes
+
+2016-12-24  David Freese  <iam_w1hkj@w1hkj.com>
+
+	1a8f982: Socket connect
+	6219ac9: pskreporter query
+
+
 =Version 3.23.19=
 
-2016-12-17  David Freese  <iam_w1hkj@w1hkj.com>
-
-	8dc6202: DX cluster improvements
-	1412352: Text highlight
-	996bb3f: N3FJP generic contest
+	0b3ad4a: DX cluster improvements
+	e06d6f2: Text highlight
+	5dae212: N3FJP generic contest
 
 
 =Version 3.23.18=
