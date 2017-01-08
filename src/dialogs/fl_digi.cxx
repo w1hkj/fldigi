@@ -2937,7 +2937,9 @@ if (bWF_only) return;
 	qso_exchange.clear();
 	oktoclear = true;
 	LOGGING_colors_font();
-	inpCall1->take_focus();
+
+	inpCall->take_focus();
+
 	if (n3fjp_connected)
 		n3fjp_clear_record();
 }
@@ -3193,7 +3195,9 @@ void qsoSave_cb(Fl_Widget *b, void *)
 	string havecall = inpCall->value();
 	string timeon = inpTimeOn->value();
 
-	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
+	while (!havecall.empty() && havecall[0] <= ' ') havecall.erase(0,1);
+	while (!havecall.empty() && havecall[havecall.length() - 1] <= ' ') havecall.erase(havecall.length()-1, 1);
+
 	if (havecall.empty()) {
 		fl_message2(_("Enter a CALL !"));
 		restoreFocus(19);
@@ -3217,7 +3221,9 @@ void qsoSave_cb(Fl_Widget *b, void *)
 void qso_save_now()
 {
 	string havecall = inpCall->value();
-	while (!havecall.empty() && havecall[0] == ' ') havecall.erase(0,1);
+	while (!havecall.empty() && havecall[0] <= ' ') havecall.erase(0,1);
+	while (!havecall.empty() && havecall[havecall.length() - 1] <= ' ') havecall.erase(havecall.length()-1, 1);
+
 	if (havecall.empty())
 		return;
 

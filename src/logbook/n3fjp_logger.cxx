@@ -137,6 +137,16 @@ void n3fjp_close(void);
 //======================================================================
 //
 //======================================================================
+static std::string strip(std::string s)
+{
+	while (s.length() && (s[0] <= ' ')) s.erase(0,1);
+	while (s.length() && (s[s.length()-1] <= ' ')) s.erase(s.length()-1, 1);
+	return s;
+}
+
+//======================================================================
+//
+//======================================================================
 
 void adjust_freq(string sfreq)
 {
@@ -272,7 +282,8 @@ void n3fjp_clear_record()
 	string cmd = "<CMD><ACTION><VALUE>CLEAR</VALUE></CMD>";
 	try {
 		n3fjp_send(cmd);
-		MilliSleep(5);
+		n3fjp_wait = 100;
+//		MilliSleep(5);
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error: %d, %s", e.error(), e.what());
 	}
@@ -288,6 +299,7 @@ void n3fjp_getfields()
 	string cmd ="<CMD><ALLFIELDSWITHVALUES></CMD>";
 	try {
 		n3fjp_send(cmd);
+		n3fjp_wait = 100;
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error: %d, %s", e.error(), e.what());
 		n3fjp_calltab = false;
@@ -316,6 +328,8 @@ void n3fjp_get_record(string call)
 
 		n3fjp_send(cmd2);
 		n3fjp_calltab = false;
+
+		n3fjp_wait = 100;
 
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error: %d, %s", e.error(), e.what());
@@ -522,10 +536,10 @@ static void send_control(const string ctl, string val)
 	cmd.append("</VALUE></CMD>");
 	try {
 		n3fjp_send(cmd);
+		n3fjp_wait = 100;
 	} catch (...) {
 		throw;
 	}
-	MilliSleep(10);
 }
 
 static void send_action(const string action)
@@ -536,10 +550,10 @@ static void send_action(const string action)
 	cmd.append("</VALUE></CMD>");
 	try {
 		n3fjp_send(cmd);
+		n3fjp_wait = 100;
 	} catch (...) {
 		throw;
 	}
-	MilliSleep(10);
 }
 
 static void send_command(const string command, string val)
@@ -552,48 +566,56 @@ static void send_command(const string command, string val)
 	try {
 		n3fjp_send(cmd);
 		MilliSleep(5);
+		n3fjp_wait = 100;
 	} catch (...) {
 		throw;
 	}
-	MilliSleep(10);
 }
+
+string last_lookup = "";
+bool   last_dupcheck = false;
 
 bool n3fjp_dupcheck()
 {
+	guard_lock rx_lock(&n3fjp_mutex);
+
 	string chkcall = inpCall->value();
+	if (chkcall == last_lookup) return last_dupcheck;
+
 	if (chkcall.length() < 3) return false;
+	if ((chkcall.length() == 3) && isdigit(chkcall[2])) return false;
+
+	last_lookup = chkcall;
 
 	string cmd;
+	bool isdup = false;
 
 	cmd.assign("<CMD><DUPECHECK><CALL>");
-	cmd.append(inpCall->value());
+	cmd.append(strip(inpCall->value()));
 	cmd.append("</CALL><BAND>");
-	cmd.append(n3fjp_opband());
+	cmd.append(strip(n3fjp_opband()));
 	cmd.append("</BAND><MODE>");
-	cmd.append(n3fjp_tstmode());
+	cmd.append(strip(n3fjp_tstmode()));
 	cmd.append("</MODE></CMD>");
-
-	guard_lock rx_lock(&n3fjp_mutex);
 
 	try {
 		n3fjp_send(cmd);
-	} catch (...) {
-		;
-	}
-	MilliSleep(200);
 
-	try {
+		MilliSleep(200);
+
 		string resp;
 		n3fjp_rcv(resp);
-		n3fjp_parse_response(resp);
 
 		if (resp.find("Duplicate") != string::npos)
-			return true;
-		return false;
+			isdup = true;
+		n3fjp_parse_response(resp);
+
 	} catch (...) {
-		;
+		throw;
 	}
-	return false;
+	last_dupcheck = isdup;
+
+	return isdup;
 }
 
 static cQsoRec rec;
@@ -605,8 +627,7 @@ static void n3fjp_send_data()
 		send_control("FREQUENCY", n3fjp_freq());
 		send_control("BAND", n3fjp_opband());
 		send_control("MODE", n3fjp_opmode());
-		send_control("CALL", rec.getField(CALL));
-		send_action("CALLTAB");
+		send_control("CALL", strip(rec.getField(CALL)));
 
 		if (n3fjp_contest == FJP_NONE) {
 			send_control("DATE", fmt_date(rec.getField(QSO_DATE)));
@@ -623,23 +644,23 @@ static void n3fjp_send_data()
 		}
 		if (n3fjp_contest == FJP_FD) {
 			send_control("MODETST", n3fjp_tstmode());
-			send_control("CLASS", ucasestr(rec.getField(FDCLASS)));
-			send_control("SECTION", ucasestr(rec.getField(FDSECTION)));
-			send_control("SERIALR", rec.getField(SRX));
-			send_control("SERIALS", rec.getField(STX));
+			send_control("CLASS", strip(ucasestr(rec.getField(FDCLASS))));
+			send_control("SECTION", strip(ucasestr(rec.getField(FDSECTION))));
+			send_control("SERIALR", strip(rec.getField(SRX)));
+			send_control("SERIALS", strip(rec.getField(STX)));
 		}
 		if (n3fjp_contest == FJP_CQWWRTTY) {
-			send_control("RSTS", rec.getField(RST_SENT));
-			send_control("RSTR", rec.getField(RST_RCVD));
-			send_control("CQZONE", rec.getField(CQZ));
-			send_control("STATE", rec.getField(STATE));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("CQZONE", strip(rec.getField(CQZ)));
+			send_control("STATE", strip(rec.getField(STATE)));
 		}
 		if (n3fjp_contest == FJP_GENERIC) {
-			send_control("RSTS", rec.getField(RST_SENT));
-			send_control("RSTR", rec.getField(RST_RCVD));
-			send_control("SERIALS", rec.getField(STX));
-			send_control("SERIALR", rec.getField(SRX));
-			send_control("SPCNUM", ucasestr(rec.getField(XCHG1)));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("SERIALS", strip(rec.getField(STX)));
+			send_control("SERIALR", strip(rec.getField(SRX)));
+			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
 		}
 
 		string other = "XCVR:";
@@ -647,7 +668,7 @@ static void n3fjp_send_data()
 		snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
 		other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
 		other.append(" MODE:");
-		other.append(rec.getField(MODE));
+		other.append(strip(rec.getField(MODE)));
 		other.append(" WF:");
 		other.append(szfreq);
 
@@ -668,8 +689,7 @@ static void n3fjp_send_data_norig()
 		cmd.append("</CMD>");
 		n3fjp_send(cmd);
 
-		send_control("CALL", rec.getField(CALL));
-		send_action("CALLTAB");
+		send_control("CALL", strip(rec.getField(CALL)));
 
 		if (n3fjp_contest == FJP_NONE) {
 			send_control("FREQUENCY", n3fjp_freq());
@@ -677,35 +697,35 @@ static void n3fjp_send_data_norig()
 			send_control("DATE", fmt_date(rec.getField(QSO_DATE)));
 			send_control("TIMEON", fmt_time(rec.getField(TIME_ON)));
 			send_control("TIMEOFF", fmt_time(rec.getField(TIME_OFF)));
-			send_control("RSTS", rec.getField(RST_SENT));
-			send_control("RSTR", rec.getField(RST_RCVD));
-			send_control("NAMER", rec.getField(NAME));
-			send_control("COMMENTS", rec.getField(NOTES));
-			send_control("POWER", rec.getField(TX_PWR));
-			send_control("STATE", rec.getField(STATE));
-			send_control("GRIDR", rec.getField(GRIDSQUARE));
-			send_control("QTHGROUP", rec.getField(QTH));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("NAMER", strip(rec.getField(NAME)));
+			send_control("COMMENTS", strip(rec.getField(NOTES)));
+			send_control("POWER", strip(rec.getField(TX_PWR)));
+			send_control("STATE", strip(rec.getField(STATE)));
+			send_control("GRIDR", strip(rec.getField(GRIDSQUARE)));
+			send_control("QTHGROUP", strip(rec.getField(QTH)));
 		}
 		if (n3fjp_contest == FJP_FD) {
 			send_control("MODETST", n3fjp_tstmode());
-			send_control("CLASS", ucasestr(rec.getField(FDCLASS)));
-			send_control("SECTION", ucasestr(rec.getField(FDSECTION)));
-			send_control("SERIALR", rec.getField(SRX));
-			send_control("SERIALS", rec.getField(STX));
+			send_control("CLASS", strip(ucasestr(rec.getField(FDCLASS))));
+			send_control("SECTION", strip(ucasestr(rec.getField(FDSECTION))));
+			send_control("SERIALR", strip(rec.getField(SRX)));
+			send_control("SERIALS", strip(rec.getField(STX)));
 		}
 		if (n3fjp_contest == FJP_CQWWRTTY) {
 			send_control("MODETST", n3fjp_tstmode());
-			send_control("RSTS", rec.getField(RST_SENT));
-			send_control("RSTR", rec.getField(RST_RCVD));
-			send_control("CQZONE", rec.getField(CQZ));
-			send_control("STATE", rec.getField(STATE));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("CQZONE", strip(rec.getField(CQZ)));
+			send_control("STATE", strip(rec.getField(STATE)));
 		}
 		if (n3fjp_contest == FJP_GENERIC) {
-			send_control("RSTS", rec.getField(RST_SENT));
-			send_control("RSTR", rec.getField(RST_RCVD));
-			send_control("SERIALS", rec.getField(STX));
-			send_control("SERIALR", rec.getField(SRX));
-			send_control("SPCNUM", ucasestr(rec.getField(XCHG1)));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("SERIALS", strip(rec.getField(STX)));
+			send_control("SERIALR", strip(rec.getField(SRX)));
+			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
 		}
 
 		string other = "XCVR:";
@@ -713,7 +733,7 @@ static void n3fjp_send_data_norig()
 		snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
 		other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
 		other.append(" MODE:");
-		other.append(rec.getField(MODE));
+		other.append(strip(rec.getField(MODE)));
 		other.append(" WF:");
 		other.append(szfreq);
 
@@ -1019,13 +1039,17 @@ void *n3fjp_loop(void *args)
 	while(1) {
 		if (n3fjp_exit) break;
 
-		if (!n3fjp_connected) n3fjp_looptime = 5000;  // test for N3FJP logger every 5 sec
-		else n3fjp_looptime = 250;  // r/w to N3FJP logger every 1/4 second
+		MilliSleep(10);
+		if (n3fjp_wait) n3fjp_wait -= 10;
+		if (n3fjp_looptime) n3fjp_looptime -= 10;
 
-		for (int i = 0; i < n3fjp_looptime / 10; i++) {
-			MilliSleep(10);
-			if (n3fjp_exit) break;
-		}
+		if (n3fjp_wait > 0) continue;
+
+		if (n3fjp_looptime > 0) continue;
+
+//		if (!n3fjp_connected) n3fjp_looptime = 5000;  // test for N3FJP logger every 5 sec
+//		else n3fjp_looptime = 250;  // r/w to N3FJP logger every 1/4 second
+		n3fjp_looptime = 200;
 
 		if (!n3fjp_socket || (n3fjp_socket->fd() == -1)) {
 			n3fjp_start();
