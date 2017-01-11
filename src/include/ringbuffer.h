@@ -67,7 +67,7 @@ public:
                 size = s;
                 big_mask = size * 2 - 1;
                 small_mask = size - 1;
-                buf = new T[size];
+                buf = new T[2 * size];
         }
         ~ringbuffer()
         {

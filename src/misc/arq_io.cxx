@@ -3,7 +3,7 @@
 //
 // support for ARQ server/client system such as pskmail and fl_arq
 //
-// Copyright (C) 2006-2013
+// Copyright (C) 2006-2017
 //		Dave Freese, W1HKJ
 // Copyright (C) 2008-2013
 //		Stelios Bounanos, M0GLD
@@ -157,61 +157,52 @@ static void set_button(Fl_Button* button, bool value)
 
 void ParseMode(string src)
 {
-	if (src.find("XMTTUNE") != string::npos) {
+LOG_INFO("%s", src.c_str());
+	if ((src.find("XMTTUNE") != string::npos) ||
+		(src.find("PTTTUNE") != string::npos)) {
 		int msecs = 100;
 		if (src.length() > 7) {
 			int ret = sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
 			if (ret != 1 || msecs < 10 || msecs > 20000) msecs = 100;
 		}
-		if (debug_pskmail)
-			LOG_INFO("%s %5.2f sec", "ARQ tune on", msecs/1000.0);
-		trx_tune();
+//		if (debug_pskmail)
+			LOG_INFO("%s %5.2f sec", "ARQ set ptt-tune on", msecs/1000.0);
+		REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, true);
+		REQ_SYNC(trx_tune);
 		MilliSleep(msecs);
-		if (debug_pskmail)
-			LOG_INFO("%s", "ARQ tune off");
-		trx_receive();
-		return;
+//		if (debug_pskmail)
+			LOG_INFO("%s", "ARQ set ptt-tune off");
+		REQ_SYNC(&waterfall::set_XmtRcvBtn, wf, false);
+		REQ_SYNC(trx_receive);
 	}
-	if (src.find("PTTTUNE") != string::npos) {
-		int msecs = 100;
-		if (src.length() > 7) {
-			int ret = sscanf( src.substr(7, src.length() - 7).c_str(), "%d", &msecs);
-			if (ret != 1 || msecs < 10 || msecs > 20000) msecs = 100;
-		}
-		if (debug_pskmail)
-			LOG_INFO("%s %5.2f sec", "ARQ set ptt on", msecs/1000.0);
-		REQ(&waterfall::set_XmtRcvBtn, wf, true);
-		REQ(trx_tune);
-		MilliSleep(msecs);
-		if (debug_pskmail)
-			LOG_INFO("%s", "ARQ set ptt off");
-		REQ(&waterfall::set_XmtRcvBtn, wf, false);
-		REQ(trx_receive);
-		return;
-	}
-	for (size_t i = 0; i < NUM_MODES; ++i) {
+	else for (size_t i = 0; i < NUM_MODES; ++i) {
 		if (strlen(mode_info[i].pskmail_name) > 0) {
 			if (src == mode_info[i].pskmail_name) {
-				REQ_SYNC(init_modem_sync, mode_info[i].mode, 0);
-				AbortARQ();
-				WriteARQ('\002');
-				if (debug_pskmail)
+				if (active_modem->get_mode() == mode_info[i].mode) {
+					LOG_INFO("Active modem already set to %s", src.c_str());
+				} else {
+					REQ_SYNC(init_modem_sync, mode_info[i].mode, 0);
+					MilliSleep(100);
+//				AbortARQ();
+//				if (debug_pskmail)
 					LOG_INFO("Modem set to %s", mode_info[i].pskmail_name);
+				}
 				break;
 			}
 		}
 	}
+	WriteARQ('\002');
 }
 
 void ParseRSID(string src)
 {
 	if (src == "ON") {
-		if (debug_pskmail)
+//		if (debug_pskmail)
 			LOG_INFO("%s", "RsID turned ON");
 		REQ(set_button, btnRSID, 1);
 	}
 	if (src == "OFF") {
-		if (debug_pskmail)
+//		if (debug_pskmail)
 			LOG_INFO("%s", "RsID turned OFF");
 		REQ(set_button, btnRSID, 0);
 	}
@@ -221,12 +212,12 @@ void ParseRSID(string src)
 void ParseTxRSID(string src)
 {
 	if (src == "ON") {
-		if (debug_pskmail)
+//		if (debug_pskmail)
 			LOG_INFO("%s", "TxRsID turned ON");
 		REQ(set_button, btnTxRSID, 1);
 	}
 	if (src == "OFF") {
-		if (debug_pskmail)
+//		if (debug_pskmail)
 			LOG_INFO("%s", "TxRsID turned OFF");
 		REQ(set_button, btnTxRSID, 0);
 	}
@@ -240,11 +231,14 @@ void parse_arqtext(string &toparse)
 
 	if (toparse.empty()) return;
 
+LOG_INFO("parsing: %s", noctrl(toparse).c_str());
+
+
 	idxCmd = toparse.find("<cmd>");
 	idxCmdEnd = toparse.find("</cmd>");
 
 	while ( idxCmd != string::npos && idxCmdEnd != string::npos && idxCmdEnd > idxCmd ) {
-		LOG_INFO("Parsing: %s", noctrl(toparse.substr(idxCmd, idxCmdEnd - idxCmd + 6)).c_str());
+//		LOG_INFO("Parsing: %s", noctrl(toparse.substr(idxCmd, idxCmdEnd - idxCmd + 6)).c_str());
 
 		strCmdText = toparse.substr(idxCmd + 5, idxCmdEnd - idxCmd - 5);
 		if (strCmdText == "server" && mailserver == false && mailclient == false) {
@@ -286,8 +280,8 @@ void parse_arqtext(string &toparse)
 			if (	idxSubCmdEnd != string::npos &&
 				idxSubCmdEnd > idxSubCmd ) {
 				strSubCmd = strCmdText.substr(idxSubCmd + 6, idxSubCmdEnd - idxSubCmd - 6);
-				ParseMode(strSubCmd);
 				LOG_INFO("%s %s", "ARQ mode ", strSubCmd.c_str());
+				ParseMode(strSubCmd);
 			}
 		} else if ((idxSubCmd = strCmdText.find("<rsid>")) != string::npos) {
 			idxSubCmdEnd = strCmdText.find("</rsid>");
@@ -316,6 +310,8 @@ void parse_arqtext(string &toparse)
 		idxCmd = toparse.find("<cmd>");
 		idxCmdEnd = toparse.find("</cmd>");
 	}
+	if (!toparse.empty())
+		LOG_INFO("Remaining text: %s", noctrl(toparse).c_str());
 }
 
 #define TIMEOUT 180 // 3 minutes
@@ -759,7 +755,7 @@ bool Socket_arqRx()
 		} else {
 			arqtext.append(txstring);
 			if (trx_state != STATE_TX) {
-				if (debug_pskmail)
+//				if (debug_pskmail)
 					LOG_INFO("%s","Restarting TX");
 				start_tx();
 			}

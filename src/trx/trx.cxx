@@ -255,10 +255,16 @@ void trx_trx_receive_loop()
 			} else {
 				if (trxrb.write_space() == 0) // discard some old data
 					trxrb.read_advance(SCBLOCKSIZE);
-				trxrb.get_wv(rbvec);
+
+				size_t room = trxrb.get_wv(rbvec, numread);
+
+				if (room < numread) {
+					LOG_ERROR("trxrb.get_wv(rbvec) = %d, numread = %d", (int)room, (int)numread);
+				} else {
 			// convert to double and write to rb
 				for (size_t i = 0; i < numread; i++)
 					rbvec[0].buf[i] = fbuf[i];
+				}
 			}
 		}
 		catch (const SndException& e) {
