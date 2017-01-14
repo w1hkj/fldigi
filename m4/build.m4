@@ -16,6 +16,11 @@ AC_DEFUN([AC_FLDIGI_BUILD_INFO], [
   FLDIGI_BUILD_CXXFLAGS="$PORTAUDIO_CFLAGS $FLTK_CFLAGS $X_CFLAGS $SNDFILE_CFLAGS $SAMPLERATE_CFLAGS \
 $PULSEAUDIO_CFLAGS $HAMLIB_CFLAGS $PNG_CFLAGS $XMLRPC_CFLAGS $MAC_UNIVERSAL_CFLAGS \
 $INTL_CFLAGS $PTW32_CFLAGS $BFD_CFLAGS -pipe -Wall -fexceptions $OPT_CFLAGS $DEBUG_CFLAGS"
+
+  if test "x$target_darwin" = "xno"; then
+    FLDIGI_BUILD_CXXFLAGS="$FLDIGI_BUILD_CXXFLAGS --param=max-vartrack-size=0"
+  fi
+
   if test "x$target_mingw32" = "xyes"; then
       FLDIGI_BUILD_CXXFLAGS="-mthreads $FLDIGI_BUILD_CXXFLAGS"
   fi
@@ -35,6 +40,11 @@ $EXTRA_LIBS $FLXMLRPC_LIBS"
 # CPPFLAGS
   FLARQ_BUILD_CPPFLAGS="-I\$(srcdir) -I\$(srcdir)/include -I\$(srcdir)/fileselector \
 -I\$(srcdir)/flarq-src -I\$(srcdir)/flarq-src/include"
+
+  if test "x$target_darwin" = "xno"; then
+    FLDIGI_BUILD_CXXFLAGS="$FLDIGI_BUILD_CXXFLAGS --param=max-vartrack-size=0"
+  fi
+
   if test "x$ac_cv_flxmlrpc" != "xyes"; then
     FLARQ_BUILD_CPPFLAGS="$FLARQ_BUILD_CPPFLAGS -I\$(srcdir)/xmlrpcpp"
   fi
