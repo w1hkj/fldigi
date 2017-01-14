@@ -1107,8 +1107,8 @@ class  KmlSrvImpl : public KmlServer {
 			~FilCloserT() { fclose(m_file); }
 		} Closer = { filKml };
 
-		std::auto_ptr< irr::io::IrrXMLReader > xml( irr::io::createIrrXMLReader( Closer.m_file ) );
-		if( xml.get() == NULL ) {
+		irr::io::IrrXMLReader * xml = irr::io::createIrrXMLReader( Closer.m_file );
+		if( xml == NULL ) {
 			LOG_ERROR("Could not parse %s", kmlFilNam.c_str() );
 			return ;
 		}
@@ -1376,6 +1376,10 @@ class  KmlSrvImpl : public KmlServer {
 				break;
 			}
 		}
+
+// And of course delete it
+
+		delete xml;
 
 		if (bMOREINFO)
 			LOG_INFO("kmlFilNam=%s loaded sz=%d",
