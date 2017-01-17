@@ -23,6 +23,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 #include "qso_db.h"
 
@@ -39,10 +40,12 @@ public:
 	cAdifIO ();
 	~cAdifIO ();
 	int readAdifRec () {return 0;};
-	int writeAdifRec () {return 0;};
+	int  writeAdifRec (cQsoRec *rec, const char *fname);
 	void readFile (const char *, cQsoDb *);
 	void do_readfile(const char *, cQsoDb *);
 	void do_writelog();
+	std::string adif_record(cQsoRec *rec);
+
 	int writeFile (const char *, cQsoDb *);
 	int writeLog (const char *, cQsoDb *, bool b = true);
 	bool log_changed(const char *fname);

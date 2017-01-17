@@ -5502,7 +5502,8 @@ void LOGGING_colors_font()
 		inp_FD_class1, inp_FD_class2,
 		inp_FD_section1, inp_FD_section2,
 		inp_CQzone1, inp_CQzone2,
-		inp_CQstate1, inp_CQstate2 };
+		inp_CQstate1, inp_CQstate2
+	};
 	for (size_t i = 0; i < sizeof(in)/sizeof(*in); i++) {
 		input_color_font(in[i]);
 //		in[i]->size(in[i]->w(), wh);
@@ -5541,7 +5542,7 @@ inline void inp_font_pos(Fl_Input2* inp, int x, int y, int w, int h)
 	inp->color(progdefaults.LOGBOOKcolor);
 	inp->labelfont(progdefaults.LOGBOOKtextfont);
 	int ls = progdefaults.LOGBOOKtextsize - 1;
-	ls = ls < 10 ? 10 : (ls > 14 ? 14 : ls);
+	ls = ls < 12 ? 12 : (ls > 14 ? 14 : ls);
 	inp->labelsize(ls);
 	inp->redraw_label();
 	inp->resize(x, y, w, h);
@@ -5722,7 +5723,9 @@ void LOGBOOK_colors_font()
 		inpQSL_VIA_log,
 		inpSerNoOut_log, inpMyXchg_log, inpSerNoIn_log, inpXchgIn_log,
 		inp_FD_class_log, inp_FD_section_log,
-		inpCNTY_log, inpCNTY_log, inpIOTA_log, inpCONT_log, inpITUZ_log, inpDXCC_log
+		inpCNTY_log, inpIOTA_log, inpCQZ_log,
+		inpCONT_log, inpITUZ_log, inpDXCC_log,
+		inp_log_sta_call, inp_log_op_call, inp_log_sta_qth, inp_log_sta_loc
 	};
 	Fl_DateInput* dti[] = {
 		inpQSLrcvddate_log, inpQSLsentdate_log,

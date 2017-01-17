@@ -24,9 +24,10 @@ extern Fl_Tabs *tabsConfigure;
 #include <FL/Fl_Group.H>
 extern Fl_Group *tabOperator;
 extern Fl_Input2 *inpMyCallsign;
-extern Fl_Input2 *inpMyName;
 extern Fl_Input2 *inpMyQth;
 extern Fl_Input2 *inpMyLocator;
+extern Fl_Input2 *inpOperCallsign;
+extern Fl_Input2 *inpMyName;
 extern Fl_Input2 *inpMyAntenna;
 extern Fl_Group *grpNoise;
 #include <FL/Fl_Check_Button.H>

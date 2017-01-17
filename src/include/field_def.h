@@ -63,7 +63,12 @@ XCHG1,
 MYXCHG,
 FDCLASS,
 FDSECTION,
-TX_PWR, // do not add fields below this line; EXPORT must be last field in struc
+TX_PWR,
+OP_CALL,
+STA_CALL,
+MY_GRID,
+MY_CITY,
+// do not add fields below this line; EXPORT must be last field in struc
 EXPORT, // flag used internally in fldigi's logbook
 NUMFIELDS };
 

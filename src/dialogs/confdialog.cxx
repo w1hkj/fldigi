@@ -334,13 +334,6 @@ notify_change_callsign();
 progdefaults.changed = true;
 }
 
-Fl_Input2 *inpMyName=(Fl_Input2 *)0;
-
-static void cb_inpMyName(Fl_Input2* o, void*) {
-  progdefaults.myName = o->value();
-progdefaults.changed = true;
-}
-
 Fl_Input2 *inpMyQth=(Fl_Input2 *)0;
 
 static void cb_inpMyQth(Fl_Input2* o, void*) {
@@ -352,6 +345,20 @@ Fl_Input2 *inpMyLocator=(Fl_Input2 *)0;
 
 static void cb_inpMyLocator(Fl_Input2* o, void*) {
   progdefaults.myLocator = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inpOperCallsign=(Fl_Input2 *)0;
+
+static void cb_inpOperCallsign(Fl_Input2* o, void*) {
+  progdefaults.operCall = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Input2 *inpMyName=(Fl_Input2 *)0;
+
+static void cb_inpMyName(Fl_Input2* o, void*) {
+  progdefaults.myName = o->value();
 progdefaults.changed = true;
 }
 
@@ -7068,12 +7075,11 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
-        { Fl_Group* o = new Fl_Group(55, 35, 490, 170, _("Station"));
+        { Fl_Group* o = new Fl_Group(50, 50, 485, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          { inpMyCallsign = new Fl_Input2(160, 64, 110, 24, _("Callsign:"));
-            inpMyCallsign->tooltip(_("Operator/Station callsign"));
+          { inpMyCallsign = new Fl_Input2(195, 79, 110, 24, _("Station Callsign:"));
+            inpMyCallsign->tooltip(_("Station callsign"));
             inpMyCallsign->box(FL_DOWN_BOX);
             inpMyCallsign->color(FL_BACKGROUND2_COLOR);
             inpMyCallsign->selection_color(FL_SELECTION_COLOR);
@@ -7086,21 +7092,7 @@ Fl_Double_Window* ConfigureDialog() {
             inpMyCallsign->when(FL_WHEN_RELEASE);
             inpMyCallsign->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyCallsign
-          { inpMyName = new Fl_Input2(340, 64, 140, 24, _("Name:"));
-            inpMyName->tooltip(_("Operators name"));
-            inpMyName->box(FL_DOWN_BOX);
-            inpMyName->color(FL_BACKGROUND2_COLOR);
-            inpMyName->selection_color(FL_SELECTION_COLOR);
-            inpMyName->labeltype(FL_NORMAL_LABEL);
-            inpMyName->labelfont(0);
-            inpMyName->labelsize(14);
-            inpMyName->labelcolor(FL_FOREGROUND_COLOR);
-            inpMyName->callback((Fl_Callback*)cb_inpMyName);
-            inpMyName->align(Fl_Align(FL_ALIGN_LEFT));
-            inpMyName->when(FL_WHEN_RELEASE);
-            inpMyName->labelsize(FL_NORMAL_SIZE);
-          } // Fl_Input2* inpMyName
-          { inpMyQth = new Fl_Input2(160, 98, 320, 24, _("QTH:"));
+          { inpMyQth = new Fl_Input2(195, 113, 320, 24, _("Station QTH:"));
             inpMyQth->tooltip(_("Operators QTH"));
             inpMyQth->box(FL_DOWN_BOX);
             inpMyQth->color(FL_BACKGROUND2_COLOR);
@@ -7114,7 +7106,7 @@ Fl_Double_Window* ConfigureDialog() {
             inpMyQth->when(FL_WHEN_RELEASE);
             inpMyQth->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyQth
-          { inpMyLocator = new Fl_Input2(160, 133, 85, 24, _("Locator:"));
+          { inpMyLocator = new Fl_Input2(195, 148, 85, 24, _("Station Locator:"));
             inpMyLocator->tooltip(_("Maidenhead locator as in EM64qv"));
             inpMyLocator->box(FL_DOWN_BOX);
             inpMyLocator->color(FL_BACKGROUND2_COLOR);
@@ -7128,9 +7120,38 @@ Fl_Double_Window* ConfigureDialog() {
             inpMyLocator->when(FL_WHEN_RELEASE);
             inpMyLocator->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyLocator
+          { Fl_Input2* o = inpOperCallsign = new Fl_Input2(196, 181, 110, 24, _("Operator Callsign:"));
+            inpOperCallsign->tooltip(_("Operator callsign (if different than station callsign)"));
+            inpOperCallsign->box(FL_DOWN_BOX);
+            inpOperCallsign->color(FL_BACKGROUND2_COLOR);
+            inpOperCallsign->selection_color(FL_SELECTION_COLOR);
+            inpOperCallsign->labeltype(FL_NORMAL_LABEL);
+            inpOperCallsign->labelfont(0);
+            inpOperCallsign->labelsize(14);
+            inpOperCallsign->labelcolor(FL_FOREGROUND_COLOR);
+            inpOperCallsign->callback((Fl_Callback*)cb_inpOperCallsign);
+            inpOperCallsign->align(Fl_Align(FL_ALIGN_LEFT));
+            inpOperCallsign->when(FL_WHEN_RELEASE);
+            o->labelsize(FL_NORMAL_SIZE);
+            o->value(progdefaults.operCall.c_str());
+          } // Fl_Input2* inpOperCallsign
+          { inpMyName = new Fl_Input2(195, 212, 140, 24, _("Operator Name:"));
+            inpMyName->tooltip(_("Operators name"));
+            inpMyName->box(FL_DOWN_BOX);
+            inpMyName->color(FL_BACKGROUND2_COLOR);
+            inpMyName->selection_color(FL_SELECTION_COLOR);
+            inpMyName->labeltype(FL_NORMAL_LABEL);
+            inpMyName->labelfont(0);
+            inpMyName->labelsize(14);
+            inpMyName->labelcolor(FL_FOREGROUND_COLOR);
+            inpMyName->callback((Fl_Callback*)cb_inpMyName);
+            inpMyName->align(Fl_Align(FL_ALIGN_LEFT));
+            inpMyName->when(FL_WHEN_RELEASE);
+            inpMyName->labelsize(FL_NORMAL_SIZE);
+          } // Fl_Input2* inpMyName
           o->end();
         } // Fl_Group* o
-        { inpMyAntenna = new Fl_Input2(160, 167, 320, 24, _("Antenna:"));
+        { inpMyAntenna = new Fl_Input2(195, 248, 320, 24, _("Antenna:"));
           inpMyAntenna->tooltip(_("Short description of antenna"));
           inpMyAntenna->box(FL_DOWN_BOX);
           inpMyAntenna->color(FL_BACKGROUND2_COLOR);
@@ -9061,6 +9082,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 600, 365, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 600, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));

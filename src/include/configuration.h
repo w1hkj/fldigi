@@ -1212,7 +1212,7 @@
               0)   /* SIDEBAND_RIG */                                                   \
         /* Operator */                                                                  \
         ELEM_(std::string, myCall, "MYCALL",                                            \
-              "Operator callsign",                                                      \
+              "Station callsign",                                                       \
               "")                                                                       \
         ELEM_(std::string, myQth, "MYQTH",                                              \
               "Operator QTH",                                                           \
@@ -1227,6 +1227,9 @@
               "Antenna description (keep short!)",                                      \
               "")                                                                       \
         /* Sound card */                                                                \
+        ELEM_(std::string, operCall, "OPERCALL",                                        \
+              "Operator call sign, if distinct from the station call MYCALL",           \
+              "")                                                                       \
         ELEM_(int, btnAudioIOis, "AUDIOIO",                                             \
               "Audio subsystem.  Values are as follows:\n"                              \
               "  0: OSS; 1: PortAudio; 2: PulseAudio; 3: File I/O",                     \

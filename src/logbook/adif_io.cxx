@@ -100,6 +100,12 @@ FIELD fields[] = {
 	{FDSECTION,    20,    "FD_SECTION",   &btnSelectSection},   // Field Day section received
 
 	{TX_PWR,       8,     "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
+
+	{OP_CALL,     15,     "OPERATOR",     &btnSelectOperator},  // Callsign of person logging the QSO
+	{STA_CALL,    15,     "STATION_CALL", &btnSelectStaCall},   // Callsign of transmitting station
+	{MY_GRID,      8,     "MY_GRIDSQUARE",&btnSelectStaGrid},   // Xmt station locator
+	{MY_CITY,     60,     "MY_CITY",      &btnSelectStaCity},   // Xmt station location
+
 	{NUMFIELDS,    0,     "",             NULL}
 };
 
@@ -115,7 +121,6 @@ FIELD fields[] = {
 	{AGE,          2,     "AGE",          NULL},                // contacted operators age in years
 	{ARRL_SECT,    20,    "ARRL_SECT",    NULL},                // contacted stations ARRL section
 	{CONTEST_ID,   20,    "CONTEST_ID",   NULL},                // QSO contest identifier
-	{OPERATOR,     20,    "OPERATOR",     NULL},                // Callsign of person logging the QSO
 	{PFX,          20,    "PFX",          NULL},                // WPA prefix
 	{PROP_MODE,    100,   "PROP_MODE",    NULL},                // propogation mode
 	{QSL_MSG,      256,   "QSL_MSG",      NULL},                // personal message to appear on qsl card
@@ -487,6 +492,47 @@ static cQsoDb *wrdb = 0;
 
 static struct timespec t0, t1;
 
+std::string cAdifIO::adif_record(cQsoRec *rec)
+{
+	static std::string record;
+	static std::string sFld;
+	record.clear();
+	for (int j = 0; fields[j].type != NUMFIELDS; j++) {
+		if (strcmp(fields[j].name,"MYXCHG") == 0) continue;
+		if (strcmp(fields[j].name,"XCHG1") == 0) continue;
+		sFld = rec->getField(fields[j].type);
+		if (!sFld.empty()) {
+			snprintf(recfield, sizeof(recfield),
+				adifmt,
+				fields[j].name,
+				sFld.length());
+			record.append(recfield).append(sFld);
+		}
+	}
+	record.append(szEOR);
+	record.append(szEOL);
+	return record;
+}
+
+int cAdifIO::writeAdifRec (cQsoRec *rec, const char *fname)
+{
+	std::string strRecord = adif_record(rec);
+
+	FILE *adiFile = fl_fopen (fname, "ab");
+
+	if (!adiFile) {
+		LOG_ERROR("Cannot write to %s", fname);
+		return 1;
+	}
+	LOG_INFO("Write record to %s", fname);
+
+	fprintf (adiFile, "%s", strRecord.c_str());
+
+	fclose (adiFile);
+
+	return 0;
+}
+
 int cAdifIO::writeLog (const char *fname, cQsoDb *db, bool immediate) {
 	ENSURE_THREAD(FLMAIN_TID);
 
@@ -529,13 +575,8 @@ void cAdifIO::do_writelog()
 	ADIFHEADER.append(szEOL);
 	ADIFHEADER.append("<PROGRAMVERSION:%d>%s");
 	ADIFHEADER.append(szEOL);
-	ADIFHEADER.append("<DATA CHECKSUM:%d>%s");
-	ADIFHEADER.append(szEOL);
 	ADIFHEADER.append("<EOH>");
 	ADIFHEADER.append(szEOL);
-
-	Ccrc16 checksum;
-	string s_checksum;
 
 	adiFile = fl_fopen (adif_file_name.c_str(), "wb");
 
@@ -546,41 +587,21 @@ void cAdifIO::do_writelog()
 	}
 	LOG_INFO("Writing %s", adif_file_name.c_str());
 
-	string sFld;
 	cQsoRec *rec;
 
 	records.clear();
 	for (int i = 0; i < adifdb->nbrRecs(); i++) {
 		rec = adifdb->getRec(i);
-		record.clear();
-		int j = 0;
-		while (fields[j].type != NUMFIELDS) {
-			if (strcmp(fields[j].name,"MYXCHG") == 0) { j++; continue; }
-			if (strcmp(fields[j].name,"XCHG1") == 0) { j++; continue; }
-			sFld = rec->getField(fields[j].type);
-			if (!sFld.empty()) {
-				snprintf(recfield, sizeof(recfield), adifmt,
-					fields[j].name,
-					sFld.length());
-				record.append(recfield).append(sFld);
-			}
-			j++;
-		}
-		record.append(szEOR);
-		record.append(szEOL);
-		records.append(record);
+		records.append(adif_record(rec));
 		adifdb->qsoUpdRec(i, rec);
 	}
 	nrecs = adifdb->nbrRecs();
-
-	s_checksum = checksum.scrc16(records);
 
 	fprintf (adiFile, ADIFHEADER.c_str(),
 		 fl_filename_name(adif_file_name.c_str()),
 		 strlen(ADIF_VERS), ADIF_VERS,
 		 strlen(PACKAGE_NAME), PACKAGE_NAME,
-		 strlen(PACKAGE_VERSION), PACKAGE_VERSION,
-		 s_checksum.length(), s_checksum.c_str()
+		 strlen(PACKAGE_VERSION), PACKAGE_VERSION
 		);
 	fprintf (adiFile, "%s", records.c_str());
 

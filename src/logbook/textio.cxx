@@ -92,8 +92,13 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectMyXchg->value())    fprintf (txtFile, "%s", ",\"MYXCHG\"");
 	if (btnSelectClass->value())     fprintf (txtFile, "%s", ",\"FD_CLASS\"");
 	if (btnSelectSection->value())   fprintf (txtFile, "%s", ",\"FD_SECTION\"");
+	if (btnSelectOperator->value())  fprintf (txtFile, "%s", ",\"OPER\"");
+	if (btnSelectStaCall->value())   fprintf (txtFile, "%s", ",\"STA_CALL\"");
+	if (btnSelectStaGrid->value())   fprintf (txtFile, "%s", ",\"STA_GRID\"");
+	if (btnSelectStaCity->value())   fprintf (txtFile, "%s", ",\"STA_CITY\"");
 	fprintf (txtFile, "%s", szEOL);
 }
+
 
 int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 	cQsoRec *pRec = (cQsoRec *)0;
@@ -175,6 +180,15 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 				if (btnSelectSection->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(FDSECTION));
 
+				if (btnSelectOperator->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(OP_CALL));
+				if (btnSelectStaCall->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(STA_CALL));
+				if (btnSelectStaGrid->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(MY_GRID));
+				if (btnSelectStaCity->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(MY_CITY));
+
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");
 				db->qsoUpdRec(i, pRec);
@@ -190,8 +204,8 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 {
 	if (btnSelectQSOdateOn->value()) fprintf (txtFile, "%-10s", "DATE_ON");
 	if (btnSelectQSOdateOff->value())fprintf (txtFile, "%-10s", "DATE_OFF");
-	if (btnSelectTimeON->value())    fprintf (txtFile, "%-6s", "ON");
-	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%-6s", "OFF");
+	if (btnSelectTimeON->value())    fprintf (txtFile, "%-8s", "ON");
+	if (btnSelectTimeOFF->value())   fprintf (txtFile, "%-8s", "OFF");
 	if (btnSelectCall->value())      fprintf (txtFile, "%-10s", "CALL");
 	if (btnSelectName->value())      fprintf (txtFile, "%-15s", "NAME");
 	if (btnSelectBand->value())      fprintf (txtFile, "%-7s", "BAND");
@@ -223,6 +237,11 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 
 	if (btnSelectClass->value())     fprintf (txtFile, "%-15s", "FDCLASS");
 	if (btnSelectSection->value())   fprintf (txtFile, "%-15s", "FDSECTION");
+
+	if (btnSelectOperator->value())  fprintf (txtFile, "%-15s", "OPER");
+	if (btnSelectStaCall->value())   fprintf (txtFile, "%-15s", "STA_CALL");
+	if (btnSelectStaGrid->value())   fprintf (txtFile, "%-15s", "STA_GRID");
+	if (btnSelectStaCity->value())   fprintf (txtFile, "%-15s", "STA_CITY");
 
 	fprintf (txtFile, "%s", szEOL);
 }
@@ -306,6 +325,16 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-15s", pRec->getField(FDCLASS));
 				if (btnSelectSection->value())
 					fprintf (txtFile, "%-15s", pRec->getField(FDSECTION));
+
+				if (btnSelectOperator->value())
+					fprintf (txtFile, "%-15s", pRec->getField(OP_CALL));
+				if (btnSelectStaCall->value())
+					fprintf (txtFile, "%-15s", pRec->getField(STA_CALL));
+				if (btnSelectStaGrid->value())
+					fprintf (txtFile, "%-15s", pRec->getField(MY_GRID));
+				if (btnSelectStaCity->value())
+					fprintf (txtFile, "%-15s", pRec->getField(MY_CITY));
+
 
 				fprintf (txtFile, "%s", szEOL);
 				pRec->putField(EXPORT,"");

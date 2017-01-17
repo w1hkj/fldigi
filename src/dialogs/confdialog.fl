@@ -434,15 +434,15 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open
+        tooltip {Operator information} xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
-          label Station open
-          xywh {55 35 490 170} box ENGRAVED_FRAME align 21
+          label {Station / Operator} open
+          xywh {50 50 485 245} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
-            label {Callsign:}
+            label {Station Callsign:}
             callback {if (progdefaults.THORsecText.empty()) {
 progdefaults.THORsecText = o->value();
 progdefaults.THORsecText.append(" ");
@@ -457,32 +457,41 @@ progdefaults.myCall = o->value();
 update_main_title();
 notify_change_callsign();
 progdefaults.changed = true;}
-            tooltip {Operator/Station callsign} xywh {160 64 110 24}
+            tooltip {Station callsign} xywh {195 79 110 24}
             code0 {inpMyCallsign->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
-          Fl_Input inpMyName {
-            label {Name:}
-            callback {progdefaults.myName = o->value();
-progdefaults.changed = true;}
-            tooltip {Operators name} xywh {340 64 140 24}
-            code0 {inpMyName->labelsize(FL_NORMAL_SIZE);}
-            class Fl_Input2
-          }
           Fl_Input inpMyQth {
-            label {QTH:}
+            label {Station QTH:}
             callback {progdefaults.myQth = o->value();
 progdefaults.changed = true;}
-            tooltip {Operators QTH} xywh {160 98 320 24}
+            tooltip {Operators QTH} xywh {195 113 320 24}
             code0 {inpMyQth->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
           Fl_Input inpMyLocator {
-            label {Locator:}
+            label {Station Locator:}
             callback {progdefaults.myLocator = o->value();
 progdefaults.changed = true;}
-            tooltip {Maidenhead locator as in EM64qv} xywh {160 133 85 24}
+            tooltip {Maidenhead locator as in EM64qv} xywh {195 148 85 24}
             code0 {inpMyLocator->labelsize(FL_NORMAL_SIZE);}
+            class Fl_Input2
+          }
+          Fl_Input inpOperCallsign {
+            label {Operator Callsign:}
+            callback {progdefaults.operCall = o->value();
+progdefaults.changed = true;} selected
+            tooltip {Operator callsign (if different than station callsign)} xywh {196 181 110 24}
+            code0 {o->labelsize(FL_NORMAL_SIZE);}
+            code1 {o->value(progdefaults.operCall.c_str());}
+            class Fl_Input2
+          }
+          Fl_Input inpMyName {
+            label {Operator Name:}
+            callback {progdefaults.myName = o->value();
+progdefaults.changed = true;}
+            tooltip {Operators name} xywh {195 212 140 24}
+            code0 {inpMyName->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
         }
@@ -490,7 +499,7 @@ progdefaults.changed = true;}
           label {Antenna:}
           callback {progdefaults.myAntenna = o->value();
 progdefaults.changed = true;}
-          tooltip {Short description of antenna} xywh {160 167 320 24}
+          tooltip {Short description of antenna} xywh {195 248 320 24}
           code0 {inpMyAntenna->labelsize(FL_NORMAL_SIZE);}
           class Fl_Input2
         }
@@ -3380,7 +3389,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 600 365} selection_color 50 align 9
@@ -4004,7 +4013,7 @@ progdefaults.changed = true;}
               Fl_Value_Slider val_hellagc {
                 label {Rx AGC}
                 callback {progdefaults.hellagc=(int)o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                 tooltip {1 - Slow, 2 - Medium, 3 - Fast} xywh {335 268 120 22} type {Horz Knob} color 54 align 8 minimum 1 maximum 3 step 1 value 2 textsize 14
                 code0 {o->value(progdefaults.hellagc);}
               }

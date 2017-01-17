@@ -32,6 +32,7 @@
 #include "globals.h"
 #include "timeops.h"
 
+#include "debug.h"
 #include "pthread.h"
 
 using namespace std;
@@ -182,55 +183,19 @@ const cQsoRec &cQsoRec::operator=(const cQsoRec &right) {
 }
 
 int compareTimes (const cQsoRec &r1, const cQsoRec &r2) {
-	const char * s1 = (*r1.qsofield[TIME_ON]).c_str();
-	const char * s2 = (*r2.qsofield[TIME_ON]).c_str();
-	if (date_off
-		&& !(*r1.qsofield[TIME_OFF]).empty()
-		&& !(*r2.qsofield[TIME_OFF]).empty() ) {
-		s1 = (*r1.qsofield[TIME_OFF]).c_str();
-		s2 = (*r2.qsofield[TIME_OFF]).c_str();
-	}
-	return strcmp(s1, s2);
+	if (date_off)
+		return r1.qsofield[TIME_OFF]->compare(*r2.qsofield[TIME_OFF]);
+	return r1.qsofield[TIME_ON]->compare(*r2.qsofield[TIME_ON]);
 }
 
 int compareDates (const cQsoRec &r1, const cQsoRec &r2) {
-	const char * s1 = (*r1.qsofield[QSO_DATE]).c_str();
-	const char * s2 = (*r2.qsofield[QSO_DATE]).c_str();
-	if (date_off
-		&& !(*r1.qsofield[QSO_DATE_OFF]).empty()
-		&& !(*r2.qsofield[QSO_DATE_OFF]).empty() ) {
-		s1 = (*r1.qsofield[QSO_DATE_OFF]).c_str();
-		s2 = (*r2.qsofield[QSO_DATE_OFF]).c_str();
-	}
-	return strcmp(s1, s2);
-//	long l1 = atol(s1);
-//	long l2 = atol(s2);
-//	int cmp = 0;
-//	if (l1 < l2) cmp = -1;
-//	if (l1 > l2) cmp = 1;
-
-//	return cmp;
+	if (date_off)
+		return r1.qsofield[QSO_DATE_OFF]->compare(*r2.qsofield[QSO_DATE_OFF]);
+	return r1.qsofield[QSO_DATE]->compare(*r2.qsofield[QSO_DATE]);
 }
 
 int compareCalls (const cQsoRec &r1, const cQsoRec &r2) {
-	int cmp = 0;
-	const char * s1 = (*r1.qsofield[CALL]).c_str();
-	const char * s2 = (*r2.qsofield[CALL]).c_str();
-
-	const char * p1 = strpbrk (s1+1, "0123456789");
-	const char * p2 = strpbrk (s2+1, "0123456789");
-
-	if (p1 && p2) {
-		cmp = (*p1 < *p2) ? -1 : (*p1 > *p2) ? 1 : 0;
-		if (cmp == 0) {
-			cmp = strncmp (s1, s2, max(p1 - s1, p2 - s2));
-			if (cmp == 0)
-				cmp = strcmp(p1+1, p2+1);
-		}
-	} else
-		cmp = strcmp(s1, s2);
-
-	return cmp;
+	return (r1.qsofield[CALL])->compare( *r2.qsofield[CALL] );
 }
 
 int compareModes (const cQsoRec &r1, const cQsoRec &r2) {
@@ -244,44 +209,76 @@ int compareFreqs (const cQsoRec &r1, const cQsoRec &r2) {
 	return (f1 == f2 ? 0 : f1 < f2 ? -1 : 1);
 }
 
-int compareqsos (const void *p1, const void *p2) {
-	cQsoRec r1, r2;
+int comparebydate(const void *p1, const void *p2)
+{
+	cQsoRec *r1, *r2;
 	if (cQsoDb::reverse) {
-		r2 = *(cQsoRec *)p1;
-		r1 = *(cQsoRec *)p2;
+		r2 = (cQsoRec *)p1;
+		r1 = (cQsoRec *)p2;
 	} else {
-		r1 = *(cQsoRec *)p1;
-		r2 = *(cQsoRec *)p2;
+		r1 = (cQsoRec *)p1;
+		r2 = (cQsoRec *)p2;
 	}
-
 	int cmp;
-	switch (compby) {
-		case COMPCALL :
-			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
-			if ((cmp = compareDates(r1, r2)) != 0) return cmp;
-			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
-			if ((cmp = compareModes(r1, r2)) != 0) return cmp;
-			return compareFreqs(r1, r2);
-		case COMPMODE :
-			if ((cmp = compareModes (r1, r2)) != 0) return cmp;
-			if ((cmp = compareDates(r1, r2)) != 0) return cmp;
-			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
-			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
-			return compareFreqs(r1, r2);
-		case COMPFREQ :
-			if ((cmp = compareFreqs (r1, r2)) != 0) return cmp;
-			if ((cmp = compareDates(r1, r2)) != 0) return cmp;
-			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
-			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
-			return compareModes(r1, r2);
-		case COMPDATE :
-		default :
-			if ((cmp = compareDates (r1, r2)) != 0) return cmp;
-			if ((cmp = compareTimes(r1, r2)) != 0) return cmp;
-			if ((cmp = compareCalls(r1, r2)) != 0) return cmp;
-			if ((cmp = compareModes (r1, r2)) != 0) return cmp;
-			return compareFreqs (r1, r2);
+	if ((cmp = compareDates(*r1, *r2))) return cmp;
+	if ((cmp = compareTimes(*r1, *r2))) return cmp;
+	if ((cmp = compareCalls(*r1, *r2))) return cmp;
+	if ((cmp = compareModes(*r1, *r2))) return cmp;
+	return compareFreqs(*r1, *r2);
+}
+
+int comparebymode(const void *p1, const void *p2)
+{
+	cQsoRec *r1, *r2;
+	if (cQsoDb::reverse) {
+		r2 = (cQsoRec *)p1;
+		r1 = (cQsoRec *)p2;
+	} else {
+		r1 = (cQsoRec *)p1;
+		r2 = (cQsoRec *)p2;
 	}
+	int cmp;
+	if ((cmp = compareModes(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+	return compareFreqs(*r1, *r2);
+}
+
+int comparebycall(const void *p1, const void *p2)
+{
+	cQsoRec *r1, *r2;
+	if (cQsoDb::reverse) {
+		r2 = (cQsoRec *)p1;
+		r1 = (cQsoRec *)p2;
+	} else {
+		r1 = (cQsoRec *)p1;
+		r2 = (cQsoRec *)p2;
+	}
+	int cmp;
+	if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareModes(*r1, *r2)) != 0) return cmp;
+	return compareFreqs(*r1, *r2);
+}
+
+int comparebyfreq(const void *p1, const void *p2)
+{
+	cQsoRec *r1, *r2;
+	if (cQsoDb::reverse) {
+		r2 = (cQsoRec *)p1;
+		r1 = (cQsoRec *)p2;
+	} else {
+		r1 = (cQsoRec *)p1;
+		r2 = (cQsoRec *)p2;
+	}
+	int cmp;
+	if ((cmp = compareFreqs(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareDates(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareTimes(*r1, *r2)) != 0) return cmp;
+	if ((cmp = compareCalls(*r1, *r2)) != 0) return cmp;
+	return compareModes(*r1, *r2);
 }
 
 bool cQsoRec::operator==(const cQsoRec &right) const {
@@ -412,26 +409,67 @@ void cQsoDb::qsoUpdRec (int rnbr, cQsoRec *updrec) {
   return;
 }
 
+#if 1
+
 void cQsoDb::SortByDate (bool how) {
-  date_off = how;
-  compby = COMPDATE;
-  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+	date_off = how;
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebydate);
 }
 
 void cQsoDb::SortByCall () {
-  compby = COMPCALL;
-  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebycall);
 }
 
 void cQsoDb::SortByMode () {
-  compby = COMPMODE;
-  qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebymode);
 }
 
 void cQsoDb::SortByFreq () {
-	compby = COMPFREQ;
-	qsort (qsorec, nbrrecs, sizeof (cQsoRec), compareqsos);
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebyfreq);
 }
+
+#else
+
+#include <chrono>
+
+using Clock = std::chrono::steady_clock;
+using std::chrono::time_point;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+
+void cQsoDb::SortByDate (bool how) {
+	date_off = how;
+	time_point<Clock> start = Clock::now();
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebydate);
+	time_point<Clock> end = Clock::now();
+	milliseconds diff = duration_cast<milliseconds>(end - start);
+	LOG_VERBOSE("qsort in %.0f msec", 1.0* diff.count());
+}
+
+void cQsoDb::SortByCall () {
+	time_point<Clock> start = Clock::now();
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebycall);
+	time_point<Clock> end = Clock::now();
+	milliseconds diff = duration_cast<milliseconds>(end - start);
+	LOG_VERBOSE("qsort in %.0f msec", 1.0* diff.count());
+}
+
+void cQsoDb::SortByMode () {
+	time_point<Clock> start = Clock::now();
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebymode);
+	time_point<Clock> end = Clock::now();
+	milliseconds diff = duration_cast<milliseconds>(end - start);
+	LOG_VERBOSE("qsort in %.0f msec", 1.0* diff.count());
+}
+
+void cQsoDb::SortByFreq () {
+	time_point<Clock> start = Clock::now();
+	qsort (qsorec, nbrrecs, sizeof (cQsoRec), comparebyfreq);
+	time_point<Clock> end = Clock::now();
+	milliseconds diff = duration_cast<milliseconds>(end - start);
+	LOG_VERBOSE("qsort in %.0f msec", 1.0* diff.count());
+}
+#endif
 
 bool cQsoDb::qsoIsValidFile(const char *fname) {
   char buff[256];

@@ -37,31 +37,31 @@ Function {create_logbook_dialogs()} {open return_type void
 } {
   Fl_Window wExport {
     label {Export Setup}
-    xywh {936 62 675 435} type Double hide
+    xywh {802 50 675 480} type Double hide
   } {
     Fl_Group {} {
       label {Select Records to Export}
-      xywh {4 4 388 400} box ENGRAVED_FRAME align 21
+      xywh {4 4 388 445} box ENGRAVED_FRAME align 21
     } {
       Fl_Check_Browser chkExportBrowser {
-        xywh {13 25 370 295}
+        xywh {13 25 370 350}
       }
       Fl_Button btnClearAll {
         label {Clear All}
         callback {btn_export_by_date->value(0);
 chkExportBrowser->check_none();}
-        xywh {69 325 90 24}
+        xywh {69 379 90 24}
       }
       Fl_Button btnCheckAll {
         label {Check All}
         callback {btn_export_by_date->value(0);
 chkExportBrowser->check_all();}
-        xywh {200 325 90 24}
+        xywh {200 379 90 24}
       }
       Fl_Input inp_export_start_date {
         label {Start Date}
         callback {cb_export_date_select();}
-        tooltip {Start date for export} xywh {14 371 100 22} align 5
+        tooltip {Start date for export} xywh {14 422 100 22} align 5
         code0 {\#include "calendar.h"}
         code1 {inp_export_start_date->format(2);}
         class Fl_DateInput
@@ -69,7 +69,7 @@ chkExportBrowser->check_all();}
       Fl_Input inp_export_stop_date {
         label {Stop Date}
         callback {cb_export_date_select();}
-        tooltip {Inclusive stop date for export} xywh {138 371 100 22} align 5
+        tooltip {Inclusive stop date for export} xywh {138 422 100 22} align 5
         code0 {\#include "calendar.h"}
         code1 {inp_export_stop_date->format(2);}
         class Fl_DateInput
@@ -77,23 +77,23 @@ chkExportBrowser->check_all();}
       Fl_Check_Button btn_export_by_date {
         label {select by date}
         callback {cb_export_date_select();}
-        tooltip {Enable to select date range} xywh {263 374 70 15} down_box DOWN_BOX
+        tooltip {Enable to select date range} xywh {263 425 70 15} down_box DOWN_BOX
       }
     }
     Fl_Return_Button btnOK {
       label OK
       callback {wExport->hide();
 Export_log();}
-      xywh {536 408 90 24}
+      xywh {536 454 90 24}
     }
     Fl_Button btnCancel {
       label Cancel
       callback {wExport->hide();}
-      xywh {405 408 90 24}
+      xywh {405 454 90 24}
     }
     Fl_Group {} {
       label {Select Fields to Export} open
-      xywh {392 4 280 400} box ENGRAVED_FRAME align 21
+      xywh {392 4 280 445} box ENGRAVED_FRAME align 21
     } {
       Fl_Button btnClearAllFields {
         label {Clear All}
@@ -129,8 +129,12 @@ btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
 btnSelectClass->value(0);
 btnSelectSection->value(0);
-btnSelectQSL_VIA->value(0);}
-        xywh {395 351 85 24}
+btnSelectQSL_VIA->value(0);
+btnSelectOperator->value(0);
+btnSelectStaCall->value(0);
+btnSelectStaGrid->value(0);
+btnSelectStaCity->value(0);}
+        xywh {396 395 85 24}
       }
       Fl_Button btnCheckAllFields {
         label {Check All}
@@ -166,8 +170,12 @@ btnSelectTX_pwr->value(1);
 btnSelectNotes->value(1);
 btnSelectClass->value(1);
 btnSelectSection->value(1);
-btnSelectQSL_VIA->value(1);}
-        xywh {395 377 85 24}
+btnSelectQSL_VIA->value(1);
+btnSelectOperator->value(1);
+btnSelectStaCall->value(1);
+btnSelectStaGrid->value(1);
+btnSelectStaCity->value(1);}
+        xywh {396 421 85 24}
       }
       Fl_Check_Button btnSelectCall {
         label Call
@@ -233,6 +241,14 @@ btnSelectQSL_VIA->value(1);}
         label {QSL-VIA}
         xywh {402 334 70 15} down_box DOWN_BOX
       }
+      Fl_Check_Button btnSelectClass {
+        label {FD class}
+        xywh {402 353 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectSection {
+        label {FD section}
+        xywh {402 374 70 15} down_box DOWN_BOX
+      }
       Fl_Check_Button btnSelectProvince {
         label Province
         xywh {533 31 70 15} down_box DOWN_BOX
@@ -293,14 +309,6 @@ btnSelectQSL_VIA->value(1);}
         label ITUZ
         xywh {533 314 70 15} down_box DOWN_BOX
       }
-      Fl_Check_Button btnSelectClass {
-        label {FD class}
-        xywh {533 334 70 15} down_box DOWN_BOX
-      }
-      Fl_Check_Button btnSelectSection {
-        label {FD section}
-        xywh {533 355 70 15} down_box DOWN_BOX
-      }
       Fl_Button btnSetFieldDefaults {
         label Defaults
         callback {btnSelectCall->value(1);
@@ -333,8 +341,12 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
-btnSelectQSL_VIA->value(0);}
-        xywh {488 377 85 24}
+btnSelectQSL_VIA->value(0);
+btnSelectOperator->value(0);
+btnSelectStaCall->value(0);
+btnSelectStaGrid->value(0);
+btnSelectStaCity->value(0);}
+        xywh {489 421 85 24}
       }
       Fl_Button btnSetLoTWfields {
         label LoTW
@@ -368,14 +380,34 @@ btnSelectCQZ->value(0);
 btnSelectITUZ->value(0);
 btnSelectTX_pwr->value(0);
 btnSelectNotes->value(0);
-btnSelectQSL_VIA->value(0);}
-        xywh {581 377 85 24}
+btnSelectQSL_VIA->value(0);
+btnSelectOperator->value(0);
+btnSelectStaCall->value(0);
+btnSelectStaGrid->value(0);
+btnSelectStaCity->value(0);}
+        xywh {582 421 85 24}
+      }
+      Fl_Check_Button btnSelectStaCall {
+        label {Station Call}
+        xywh {535 334 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectStaCity {
+        label {Station QTH}
+        xywh {535 355 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectStaGrid {
+        label {Station LOC}
+        xywh {535 375 70 15} down_box DOWN_BOX
+      }
+      Fl_Check_Button btnSelectOperator {
+        label Operator
+        xywh {535 395 70 15} down_box DOWN_BOX
       }
     }
   }
   Fl_Window dlgLogbook {
     label Logbook open
-    xywh {695 71 590 490} type Double resizable visible
+    xywh {857 119 590 490} type Double resizable visible
   } {
     Fl_Input inpDate_log {
       label {Date On}
@@ -462,11 +494,11 @@ btnSelectQSL_VIA->value(0);}
       class Fl_Input2
     }
     Fl_Tabs Tabs {open
-      xywh {5 140 474 120}
+      xywh {5 140 475 120}
     } {
       Fl_Group tab_log_qsl {
         label QSL open
-        xywh {5 162 474 94}
+        xywh {5 164 475 96} hide
       } {
         Fl_Input inpQSLrcvddate_log {
           label {QSL-rcvd}
@@ -505,14 +537,14 @@ btnSelectQSL_VIA->value(0);}
           class Fl_DateInput
         }
         Fl_Input inpQSL_VIA_log {
-          label {QSL-VIA} selected
-          tooltip {QSL route of contacted station} xywh {320 183 155 70} type Multiline align 5 resizable
+          label {QSL-VIA}
+          tooltip {QSL route of contacted station} xywh {320 183 156 70} type Multiline align 5 resizable
           class Fl_Input2
         }
       }
       Fl_Group tab_log_contest {
         label Contest open
-        xywh {5 162 474 94} hide
+        xywh {5 164 475 96} hide
       } {
         Fl_Input inpSerNoOut_log {
           label {Ser out}
@@ -521,7 +553,7 @@ btnSelectQSL_VIA->value(0);}
         }
         Fl_Input inpMyXchg_log {
           label {Exch Out}
-          tooltip {Contest exchange sent} xywh {210 174 263 24}
+          tooltip {Contest exchange sent} xywh {210 174 264 24}
           class Fl_Input2
         }
         Fl_Input inpSerNoIn_log {
@@ -531,7 +563,7 @@ btnSelectQSL_VIA->value(0);}
         }
         Fl_Input inpXchgIn_log {
           label {Exch In}
-          tooltip {Contest exchange received} xywh {210 202 263 24}
+          tooltip {Contest exchange received} xywh {210 202 264 24}
           class Fl_Input2
         }
         Fl_Input inp_FD_class_log {
@@ -541,51 +573,76 @@ btnSelectQSL_VIA->value(0);}
         }
         Fl_Input inp_FD_section_log {
           label {FD section}
-          tooltip {Contest serial \# received} xywh {210 231 55 24}
+          tooltip {Contest serial \# received} xywh {210 231 56 24}
           class Fl_Input2
         }
       }
       Fl_Group tab_log_other {
         label Other open
-        xywh {5 162 474 94} hide
+        xywh {5 164 475 96}
       } {
         Fl_Input inpCNTY_log {
           label County
-          tooltip County xywh {16 182 240 24} align 5
+          tooltip County xywh {16 187 241 24} align 5
           class Fl_Input2
         }
         Fl_Input inpIOTA_log {
           label IOTA
-          tooltip {Islands on the air} xywh {270 182 90 24} align 5
+          tooltip {Islands on the air} xywh {271 187 90 24} align 5
           class Fl_Input2
         }
         Fl_Input inpCQZ_log {
           label CQZ
-          tooltip {CQ zone} xywh {377 182 90 24} align 5
+          tooltip {CQ zone} xywh {378 187 90 24} align 5
           class Fl_Input2
         }
         Fl_Input inpCONT_log {
           label {Cont'}
-          tooltip Continent xywh {16 226 240 24} align 5
+          tooltip Continent xywh {16 231 241 24} align 5
           class Fl_Input2
         }
         Fl_Input inpITUZ_log {
           label ITUZ
-          tooltip {ITU zone} xywh {271 226 90 24} align 5
+          tooltip {ITU zone} xywh {272 231 90 24} align 5
           class Fl_Input2
         }
         Fl_Input inpDXCC_log {
-          label DXCC
-          tooltip {DXCC designator} xywh {377 226 90 24} align 5
+          label DXCC selected
+          tooltip {DXCC designator} xywh {378 231 90 24} align 5
           class Fl_Input2
         }
       }
       Fl_Group tab_log_notes {
         label Notes open
-        xywh {5 162 474 94} hide
+        xywh {5 164 475 96} hide
       } {
         Fl_Input inpNotes_log {
-          tooltip {Interesting notes} xywh {10 166 464 85} type Multiline align 21
+          tooltip {Interesting notes} xywh {10 166 465 85} type Multiline align 21
+          class Fl_Input2
+        }
+      }
+      Fl_Group tab_log_my_station {
+        label {My Station} open
+        xywh {5 164 475 96} hide
+      } {
+        Fl_Input inp_log_sta_call {
+          label {Station Call}
+          tooltip {Interesting notes} xywh {10 187 100 24} align 5
+          class Fl_Input2
+        }
+        Fl_Input inp_log_op_call {
+          label {Operator Call}
+          tooltip {Interesting notes} xywh {135 187 100 24} align 5
+          class Fl_Input2
+        }
+        Fl_Input inp_log_sta_qth {
+          label {Station QTH}
+          tooltip {Interesting notes} xywh {10 231 334 24} align 5
+          class Fl_Input2
+        }
+        Fl_Input inp_log_sta_loc {
+          label {Station Locator}
+          tooltip {Interesting notes} xywh {350 231 120 24} align 5
           class Fl_Input2
         }
       }

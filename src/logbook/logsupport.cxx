@@ -82,6 +82,8 @@ bool modefwd = true;
 bool freqfwd = true;
 
 void restore_sort();
+void addBrowserRow(cQsoRec *, int);
+void adjustBrowser(bool keep_pos = false);
 
 // convert to and from "00:00:00" <=> "000000"
 const char *timeview(const char *s)
@@ -346,8 +348,31 @@ static void dxcc_entity_cache_add(cQsoDb& db);
 void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	saveLogbook();
 
+	string title = _("Create new logbook file");
+	string filter;
+	filter.assign("ADIF\t*.").append(ADIF_SUFFIX);
+#ifdef __APPLE__
+	filter.append("\n");
+#endif
+
 	logbook_filename = LogsDir;
 	logbook_filename.append("newlog." ADIF_SUFFIX);
+
+	const char* p = FSEL::select( title.c_str(), filter.c_str(), logbook_filename.c_str());
+	if (!p) return;
+	if (!*p) return;
+
+	FILE *testopen = fopen(logbook_filename.c_str(), "r");
+	if (testopen) {
+		string warn = logbook_filename;
+		int ans = fl_choice2(
+					_("%s exists, overwrite?"), 
+					_("No"), _("Yes"), NULL,
+					warn.c_str());
+		if (!ans) return;
+		fclose(testopen);
+	}
+	
 	progdefaults.logbookfilename = logbook_filename;
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 	progdefaults.changed = true;
@@ -904,6 +929,7 @@ void cb_SortByMode (void) {
 	}
 	cQsoDb::reverse = modefwd;
 	qsodb.SortByMode();
+
 	loadBrowser();
 }
 
@@ -916,6 +942,7 @@ void cb_SortByFreq (void) {
 	}
 	cQsoDb::reverse = freqfwd;
 	qsodb.SortByFreq();
+
 	loadBrowser();
 }
 
@@ -1160,6 +1187,12 @@ void clearRecord() {
 	inpITUZ_log->value("");
 	inpTX_pwr_log->value("");
 	inpSearchString->value ("");
+
+	inp_log_sta_call->value("");
+	inp_log_op_call->value("");
+	inp_log_sta_qth->value("");
+	inp_log_sta_loc->value("");
+
 }
 
 void saveRecord() {
@@ -1223,18 +1256,27 @@ void saveRecord() {
 	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
 
+	rec.putField(STA_CALL, inp_log_sta_call->value());
+	rec.putField(OP_CALL, inp_log_op_call->value());
+	rec.putField(MY_CITY, inp_log_sta_qth->value());
+	rec.putField(MY_GRID, inp_log_sta_loc->value());
+
 	qsodb.qsoNewRec (&rec);
 	dxcc_entity_cache_add(&rec);
 	submit_record(rec);
 
 	cQsoDb::reverse = false;
-	qsodb.SortByDate(progdefaults.sort_date_time_off);
 
 	qsodb.isdirty(0);
 
-	loadBrowser();
+	addBrowserRow(&rec, qsodb.nbrRecs() - 1);
+	adjustBrowser();
 
-	adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	if (qsodb.nbrRecs() == 1) 
+		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
+	else
+		adifFile.writeAdifRec(&rec, logbook_filename.c_str());
+
 }
 
 
@@ -1288,6 +1330,12 @@ void updateRecord() {
 	rec.putField(CQZ, inpCQZ_log->value());
 	rec.putField(ITUZ, inpITUZ_log->value());
 	rec.putField(TX_PWR, inpTX_pwr_log->value());
+
+	rec.putField(STA_CALL, inp_log_sta_call->value());
+	rec.putField(OP_CALL, inp_log_op_call->value());
+	rec.putField(MY_CITY, inp_log_sta_qth->value());
+	rec.putField(MY_GRID, inp_log_sta_loc->value());
+
 	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoUpdRec (editNbr, &rec);
 	dxcc_entity_cache_add(&rec);
@@ -1370,6 +1418,12 @@ void EditRecord( int i )
 	inpCQZ_log->value(editQSO->getField(CQZ));
 	inpITUZ_log->value(editQSO->getField(ITUZ));
 	inpTX_pwr_log->value(editQSO->getField(TX_PWR));
+
+	inp_log_sta_call->value(editQSO->getField(STA_CALL));
+	inp_log_op_call->value(editQSO->getField(OP_CALL));
+	inp_log_sta_qth->value(editQSO->getField(MY_CITY));
+	inp_log_sta_loc->value(editQSO->getField(MY_GRID));
+
 }
 
 std::string sDate_on = "";
@@ -1443,10 +1497,12 @@ void AddRecord ()
 	inp_FD_class_log->value(ucasestr(inp_FD_class->value()).c_str());
 	inp_FD_section_log->value(ucasestr(inp_FD_section->value()).c_str());
 
-	saveRecord();
+	inp_log_sta_call->value(progdefaults.myCall.c_str());
+	inp_log_op_call->value(progdefaults.operCall.c_str());
+	inp_log_sta_qth->value(progdefaults.myQth.c_str());
+	inp_log_sta_loc->value(progdefaults.myLocator.c_str());
 
-	restore_sort();
-	loadBrowser();
+	saveRecord();
 
 	logState = VIEWREC;
 	activateButtons();
@@ -1459,27 +1515,24 @@ void cb_browser (Fl_Widget *w, void *data )
 	EditRecord (editNbr);
 }
 
-void loadBrowser(bool keep_pos)
+void addBrowserRow(cQsoRec *rec, int nbr)
 {
-	cQsoRec *rec;
 	char sNbr[6];
+	snprintf(sNbr,sizeof(sNbr),"%d", nbr);
+	wBrowser->addRow (7,
+		rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
+		timeview4(rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON)),
+		rec->getField(CALL),
+		rec->getField(NAME),
+		rec->getField(FREQ),
+		rec->getField(MODE),
+		sNbr);
+}
+
+void adjustBrowser(bool keep_pos)
+{
 	int row = wBrowser->value(), pos = wBrowser->scrollPos();
 	if (row >= qsodb.nbrRecs()) row = qsodb.nbrRecs() - 1;
-	wBrowser->clear();
-	if (qsodb.nbrRecs() == 0)
-		return;
-	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
-		rec = qsodb.getRec (i);
-		snprintf(sNbr,sizeof(sNbr),"%d",i);
-		wBrowser->addRow (7,
-			rec->getField(progdefaults.sort_date_time_off ? QSO_DATE_OFF : QSO_DATE),
-			timeview4(rec->getField(progdefaults.sort_date_time_off ? TIME_OFF : TIME_ON)),
-			rec->getField(CALL),
-			rec->getField(NAME),
-			rec->getField(FREQ),
-			rec->getField(MODE),
-			sNbr);
-	}
 	if (keep_pos && row >= 0) {
 		wBrowser->value(row);
 		wBrowser->scrollTo(pos);
@@ -1493,6 +1546,19 @@ void loadBrowser(bool keep_pos)
 	char szRecs[6];
 	snprintf(szRecs, sizeof(szRecs), "%5d", qsodb.nbrRecs());
 	txtNbrRecs_log->value(szRecs);
+}
+
+void loadBrowser(bool keep_pos)
+{
+	cQsoRec *rec;
+	wBrowser->clear();
+	if (qsodb.nbrRecs() == 0)
+		return;
+	for( int i = 0; i < qsodb.nbrRecs(); i++ ) {
+		rec = qsodb.getRec (i);
+		addBrowserRow(rec, i);
+	}
+	adjustBrowser(keep_pos);
 }
 
 //=============================================================================

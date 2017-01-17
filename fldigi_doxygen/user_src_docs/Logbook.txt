@@ -3,15 +3,74 @@
 
 \tableofcontents
 
+\section logbook_dialog Logbook Dialog
+You open the logbook by selecting from the Logbook menu; Logbook/View.  The
+logbook title bar will show you which logbook you currently have open.
+Fldigi can maintain an unlimited (except for disk space) number of logbooks.<br>
 
+<center>
+\image html logbook.png "Log Book"
+\image latex logbook.png "Log Book" width=6.0in
+</center><br>
+
+You can resize the dialog to suit your screen size and operating needs.
+Fldigi will remember the placement and size for subsequent use.<br>
+
+You can create new entries, update existing entries, and delete entries
+using this dialog.  You can also search for an entry by callsign.  The browser
+can be sorted by Date, Callsign, Frequency or Mode.  The sort can
+be forward or backward with the most recent being the default selected
+entry after each sort.  You execute the sort by clicking on the
+column button at the top of the column to be sorted.  Each click
+causes the sort to reverse.  I like to view my log with the most
+recent at the top.  You might want to view it with the most recent on the
+bottom.<br>
+
+Recent changes to the support code has reduced the time and cpu load associated
+with reading, writing, and updating the adif data file.  The following statistics
+should give the user some idea as to the performance expectations.  These were
+measured on a Linux Mint-17 32 bit OS; CPU: Intel Pentium 4 CPU @ 3.20 GHz;
+solid state drive 250 GB.  Depending on OS version, Windows users should expect
+to see larger times for read and sort.  The increase primarily due to the way
+that the Windows OS handles disk buffering and it's multi-threading implementation.<br>
+
+ # records |   read   |   sort
+:----------|:---------|:--------
+1000       |60 msec   |2 msec
+2000       |100 msec  |6 msec
+4000       |170 msec  |15 msec
+8000       |360 msec  |45 msec
+16000      |620 msec  |90 msec
+32000      |1.340 sec |250 msec
+64000      |2.630 sec |550 msec
+128000     |11.61 sec |1.40 sec
+
+\subsection tabbed_values Tab Views
+<center>
+\image html logbook.png "Log Book"
+\image latex logbook.png "Log Book" width=6.0in
+<br>
+\image html logbook-contest-tab.png "Contest entries"
+\image latex logbook-contest-tab.png "Contest entries" width=5.0in
+<br>
+\image html logbook-other-tab.png "DX entries"
+\image latex logbook-other-tab.png "DX" width=5.0in
+<br>
+\image html logbook-notes-tab.png "Notes entries"
+\image latex logbook-notes-tab.png "Notes entries" width=5.0in
+<br>
+\image html logbook-my-station-tab.png "My Station entries"
+\image latex logbook-my-station-tab.png "My Station entries" width=5.0in
+
+</center>
+
+\section list_of_log_fields List of Log Fields
 Fldigi maintains a large set of QSO logbook fields that will probably be
 sufficient for casual operating, contesting and some certificate logging.  All
 of the fields that are captured in the logbook are maintained in an ADIF
 database that can be read by any logbook program that can read the ADIF text
 format.
 <br>
-
-\section list_of_log_fields List of Log Fields
 
 The complete set of logbook fields are:
 <br>
@@ -51,6 +110,10 @@ TIME_ON      | * | QSO time at start of contact HHMM or HHMMSS in UTC
 TX_PWR       | * | power transmitted by this station
 VE_PROV      | * | 2 letter abbreviation for Canadian Province
 XCHG1        | * | received contest exchange
+OP_CALL      | * | Callsign of person logging the QSO
+STA_CALL     | * | Callsign of transmitting station
+MY_GRID      | * | Xmt station locator
+MY_CITY      | * | Xmt station location
 <br>
 
 \* - These fields are either captured on the main dialog, computed from
@@ -198,30 +261,6 @@ the logbook dialog is open that last QSO will be selected for viewing in the
 logbook.
 <br>
 
-You open the logbook by selecting from the Logbook menu; Logbook/View.  The
-logbook title bar will show you which logbook you currently have open.
-Fldigi can maintain an unlimited (except for disk space) number of logbooks.
-<br>
-
-\image html logbook.png "Log Book"
-\image latex logbook.png "Log Book" width=6.0in
-<br>
-
-<br>
-You can resize the dialog to suit your screen size and operating needs.
-Fldigi will remember the placement and size for subsequent use.
-<br>
-
-You can create new entries, update existing entries, and delete entries
-using this dialog.  You can also search for an entry by callsign.  The browser
-can be sorted by Date, Callsign, Frequency or Mode.  The sort can
-be forward or backward with the most recent being the default selected
-entry after each sort.  You execute the sort by clicking on the
-column button at the top of the column to be sorted.  Each click
-causes the sort to reverse.  I like to view my log with the most
-recent at the top.  You might want to view it with the most recent on the
-bottom.
-<br>
 
 Fldigi's logbook is primarily a capture function.  You can export your 
 data for use with an external database or for uploading to LOTW or eQSL.
