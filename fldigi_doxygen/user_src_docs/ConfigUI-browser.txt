@@ -49,7 +49,7 @@ been looking for these metacharacters:
 <br>
 
 \verbatim
->.[{()\*+?|^$</span></big><br>
+.[{()\*+?|^$
 \endverbatim
 <br>
 
