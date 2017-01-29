@@ -1,8 +1,18 @@
 
 
-=Version 3.23.20=
+=Version 3.23.21=
 
-2017-01-05  David Freese  <iam_w1hkj@w1hkj.com>
+2017-01-23  David Freese  <iam_w1hkj@w1hkj.com>
+
+	880720b: Documentation
+	228950f: Logbook update
+	35d74af: kml auto_ptr deprecated
+	2042371: build flags
+	a3bc5e3: PSKMAIL beacon faults
+	5b970cc: N3FJP record rejections
+
+
+=Version 3.23.20=
 
 	5c45632: N3FJP Winter FD
 	3119c92: FELD raster display
