@@ -1091,6 +1091,9 @@
         ELEM_(int, HamRigStopbits, "HAMRIGSTOPBITS",                                    \
               "Hamlib stopbits <1/2>.",                                                 \
               2)   /* 600 baud */                                                       \
+        ELEM_(int, HamRigPollrate, "HAMRIGPOLLRATE",                                    \
+              "250 - 2000 in 50 msec increments",                                        \
+              250)                                                                      \
         ELEM_(int, hamlib_ptt_on_data, "HAMLIBPTTONDATA",                               \
               "Hamlib PTT for xmt audio on data port",                                  \
               1)                                                                        \

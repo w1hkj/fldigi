@@ -147,34 +147,6 @@ void hamlib_get_defaults()
 	testrig.close();
 }
 
-void hamlib_restore_defaults()
-{
-	cboHamlibRig->index(hamlib_get_index(progdefaults.HamRigModel));
-	inpRIGdev->value(progdefaults.HamRigDevice.c_str());
-	cntHamlibRetries->value(progdefaults.HamlibRetries);
-	cntHamlibTimeout->value(progdefaults.HamlibTimeout);
-	cntHamlibWriteDelay->value(progdefaults.HamlibWriteDelay);
-	cntHamlibWait->value(progdefaults.HamlibWait);
-	btnHamlibCMDptt->value(progdefaults.HamlibCMDptt);
-	btnHamlibDTRplus->value(progdefaults.HamlibDTRplus);
-	chkHamlibRTSCTSflow->value(progdefaults.HamlibRTSCTSflow);
-	if (chkHamlibRTSCTSflow->value()) chkHamlibRTSplus->deactivate();
-	chkHamlibRTSplus->value(progdefaults.HamlibRTSplus);
-	chkHamlibXONXOFFflow->value(progdefaults.HamlibXONXOFFflow);
-	listbox_sideband->index(progdefaults.HamlibSideband);
-	valHamRigStopbits->value(progdefaults.HamRigStopbits);
-	listbox_baudrate->index(progdefaults.HamRigBaudrate);
-	if (xcvr && xcvr->canSetPTT()) btnHamlibCMDptt->activate();
-	else btnHamlibCMDptt->deactivate();
-	btnHamlibCMDptt->value(progdefaults.HamlibCMDptt);
-	inpHamlibConfig->value(progdefaults.HamConfig.c_str());
-
-	btnInitHAMLIB->labelcolor(FL_FOREGROUND_COLOR);
-	btnInitHAMLIB->redraw_label();
-	btnRevertHAMLIB->deactivate();
-	btnRevertHAMLIB->redraw();
-}
-
 void hamlib_init_defaults()
 {
 	progdefaults.HamRigModel = hamlib_get_rig_model(cboHamlibRig->index());
@@ -450,7 +422,7 @@ int hamlib_setmode(rmode_t m)
 		show_error("Set Mode", Ex.what());
 		hamlib_passes = 0;
 	}
-	hamlib_wait = progdefaults.hamlib_mode_delay / 100;
+	hamlib_wait = progdefaults.hamlib_mode_delay / 50;
 	return 1;
 }
 
@@ -518,17 +490,31 @@ static void *hamlib_loop(void *args)
 
 	long int freq = 0L;
 	rmode_t  numode = RIG_MODE_NONE;
+    int skips = 0;
 
 	for (;;) {
-		MilliSleep(100);
+        bool cont = false;
+		MilliSleep(50);
+
+        if (skips) {
+            skips--;
+            cont = true;
+        } if (hamlib_wait) {
+			hamlib_wait--;
+			cont = true;
+		}
+
+        if (cont)
+            continue;
+        else {
+            skips = valHamRigPollrate->value() / 50;
+        }
+
+
 		if (hamlib_exit)
 			break;
 		if (hamlib_bypass)
 			continue;
-		if (hamlib_wait) {
-			hamlib_wait--;
-			continue;
-		}
 
 		{
 			guard_lock hamlib(&hamlib_mutex);

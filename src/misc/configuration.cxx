@@ -771,6 +771,7 @@ void configuration::initInterface()
 	} else if (chkUSEHAMLIBis) { // start the hamlib thread
 		if (hamlib_init(HamlibCMDptt)) {
 			LOG_INFO("%s", "using HAMLIB xcvr control");
+			btnInitHAMLIB->deactivate();
 			wf->USB(true);
 			wf->setQSY(1);
 		} else {

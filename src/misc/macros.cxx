@@ -54,6 +54,7 @@
 #include "weather.h"
 #include "utf8file_io.h"
 #include "xmlrpc.h"
+#include "rigio.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>

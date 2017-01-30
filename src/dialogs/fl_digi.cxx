@@ -849,10 +849,6 @@ void cb_oliviaCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabOlivia;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 	cb_init_mode(w, arg);
 }
@@ -964,10 +960,6 @@ void cb_contestiaCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabContestia;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 	cb_init_mode(w, arg);
 }
@@ -1023,10 +1015,6 @@ void cb_rttyCustom(Fl_Widget *w, void *arg)
 	modem_config_tab = tabRTTY;
 	tabsConfigure->value(tabModems);
 	tabsModems->value(modem_config_tab);
-#if USE_HAMLIB
-	hamlib_restore_defaults();
-#endif
-	rigCAT_restore_defaults();
 	dlgConfig->show();
 
 	cb_init_mode(w, arg);
@@ -3266,10 +3254,7 @@ void status_cb(Fl_Widget *b, void *arg)
 			progdefaults.loadDefaults();
 			tabsConfigure->value(tabModems);
 			tabsModems->value(modem_config_tab);
-#if USE_HAMLIB
-			hamlib_restore_defaults();
-#endif
-			rigCAT_restore_defaults();
+//			rigCAT_restore_defaults();
 			dlgConfig->show();
 		}
 	}

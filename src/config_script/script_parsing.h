@@ -143,6 +143,7 @@
 #define CMD_HAMLIB_POST_WRITE_DELAY    F_LOC("PWDELAY")
 #define CMD_HAMLIB_BAUD_RATE           F_LOC("BRATE")
 #define CMD_HAMLIB_STOP_BITS           F_LOC("SBITS")
+#define CMD_HAMLIB_POLL_RATE           F_LOC("POLL_RATE")
 #define CMD_HAMLIB_SIDE_BAND           F_LOC("SBAND")
 #define CMD_HAMLIB_PTT_COMMAND         F_LOC("PTT COMMAND")
 #define CMD_HAMLIB_DTR_12V             F_LOC("DTR 12V")

@@ -421,6 +421,7 @@ static int create_default_script(char *file_name)
 	if(add_command(fd, (char *)CMD_HAMLIB_POST_WRITE_DELAY,  (int)    cntHamlibWait->value(),        1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_HAMLIB_BAUD_RATE,         (char *) listbox_baudrate->value(),     1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_HAMLIB_STOP_BITS,         (int)    valHamRigStopbits->value(),    1)) return fclose(fd);
+	if(add_command(fd, (char *)CMD_HAMLIB_POLL_RATE,         (int)    valHamRigPollrate->value(),    1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_HAMLIB_SIDE_BAND,         (char *) listbox_sideband->value(),     1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_HAMLIB_PTT_COMMAND,       (bool)   btnHamlibCMDptt->value(),      1)) return fclose(fd);
 	if(add_command(fd, (char *)CMD_HAMLIB_DTR_12V,           (bool)   btnHamlibDTRplus->value(),     1)) return fclose(fd);

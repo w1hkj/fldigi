@@ -4274,11 +4274,13 @@ static void cb_chkUSERIGCAT(Fl_Check_Button* o, void*) {
   progdefaults.chkUSERIGCATis = true;
   progdefaults.chkUSEXMLRPCis = false;
   progdefaults.fldigi_client_to_flrig = false;
-  } else {
+  btnInitRIGCAT->labelcolor(FL_RED);
+  btnInitRIGCAT->redraw();
+} else {
   progdefaults.chkUSERIGCATis = false;
-  }
-btnInitRIGCAT->labelcolor(FL_RED);
-btnInitRIGCAT->redraw();
+  progdefaults.initInterface();
+}
+progdefaults.changed=true;
 }
 
 Fl_Group *grpRigCAT=(Fl_Group *)0;
@@ -4298,7 +4300,6 @@ Fl_ComboBox *inpXmlRigDevice=(Fl_ComboBox *)0;
 static void cb_inpXmlRigDevice(Fl_ComboBox*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input2 *cntRigCatRetries=(Fl_Value_Input2 *)0;
@@ -4306,7 +4307,6 @@ Fl_Value_Input2 *cntRigCatRetries=(Fl_Value_Input2 *)0;
 static void cb_cntRigCatRetries(Fl_Value_Input2*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input2 *cntRigCatTimeout=(Fl_Value_Input2 *)0;
@@ -4314,7 +4314,6 @@ Fl_Value_Input2 *cntRigCatTimeout=(Fl_Value_Input2 *)0;
 static void cb_cntRigCatTimeout(Fl_Value_Input2*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input2 *cntRigCatWait=(Fl_Value_Input2 *)0;
@@ -4322,7 +4321,6 @@ Fl_Value_Input2 *cntRigCatWait=(Fl_Value_Input2 *)0;
 static void cb_cntRigCatWait(Fl_Value_Input2*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_ListBox *listbox_xml_rig_baudrate=(Fl_ListBox *)0;
@@ -4330,7 +4328,6 @@ Fl_ListBox *listbox_xml_rig_baudrate=(Fl_ListBox *)0;
 static void cb_listbox_xml_rig_baudrate(Fl_ListBox*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Counter2 *valRigCatStopbits=(Fl_Counter2 *)0;
@@ -4338,7 +4335,6 @@ Fl_Counter2 *valRigCatStopbits=(Fl_Counter2 *)0;
 static void cb_valRigCatStopbits(Fl_Counter2*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Button *btnInitRIGCAT=(Fl_Button *)0;
@@ -4355,7 +4351,6 @@ static void cb_btnRigCatEcho(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
 progdefaults.changed = true;
-btnRevertRIGCAT->activate();
 }
 
 Fl_Round_Button *btnRigCatCMDptt=(Fl_Round_Button *)0;
@@ -4376,7 +4371,6 @@ progdefaults.RigCatCMDptt = false;
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Round_Button *btnRigCatRTSptt=(Fl_Round_Button *)0;
@@ -4395,7 +4389,6 @@ progdefaults.RigCatRTSptt = false;
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Round_Button *btnRigCatDTRptt=(Fl_Round_Button *)0;
@@ -4414,7 +4407,6 @@ progdefaults.RigCatDTRptt = false;
 
 btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *btnRigCatRTSplus=(Fl_Check_Button *)0;
@@ -4422,7 +4414,6 @@ Fl_Check_Button *btnRigCatRTSplus=(Fl_Check_Button *)0;
 static void cb_btnRigCatRTSplus(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *btnRigCatDTRplus=(Fl_Check_Button *)0;
@@ -4430,7 +4421,6 @@ Fl_Check_Button *btnRigCatDTRplus=(Fl_Check_Button *)0;
 static void cb_btnRigCatDTRplus(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *chkRigCatRTSCTSflow=(Fl_Check_Button *)0;
@@ -4438,7 +4428,6 @@ Fl_Check_Button *chkRigCatRTSCTSflow=(Fl_Check_Button *)0;
 static void cb_chkRigCatRTSCTSflow(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Check_Button *chk_restore_tio=(Fl_Check_Button *)0;
@@ -4446,15 +4435,6 @@ Fl_Check_Button *chk_restore_tio=(Fl_Check_Button *)0;
 static void cb_chk_restore_tio(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
-}
-
-Fl_Button *btnRevertRIGCAT=(Fl_Button *)0;
-
-static void cb_btnRevertRIGCAT(Fl_Button*, void*) {
-  btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
-btnInitRIGCAT->redraw_label();
-rigCAT_restore_defaults();
 }
 
 Fl_Check_Button *chkRigCatVSP=(Fl_Check_Button *)0;
@@ -4462,7 +4442,6 @@ Fl_Check_Button *chkRigCatVSP=(Fl_Check_Button *)0;
 static void cb_chkRigCatVSP(Fl_Check_Button*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Value_Input2 *cntRigCatInitDelay=(Fl_Value_Input2 *)0;
@@ -4470,7 +4449,6 @@ Fl_Value_Input2 *cntRigCatInitDelay=(Fl_Value_Input2 *)0;
 static void cb_cntRigCatInitDelay(Fl_Value_Input2*, void*) {
   btnInitRIGCAT->labelcolor(FL_RED);
 btnInitRIGCAT->redraw_label();
-btnRevertRIGCAT->activate();
 }
 
 Fl_Group *tabHamlib=(Fl_Group *)0;
@@ -4486,10 +4464,13 @@ if (o->value() == 1) {
   progdefaults.chkUSERIGCATis = false;
   progdefaults.chkUSEXMLRPCis = false;
   progdefaults.fldigi_client_to_flrig = false;
+  btnInitHAMLIB->labelcolor(FL_RED);
+  btnInitHAMLIB->activate();
+  btnInitHAMLIB->redraw();
+} else {
+  progdefaults.initInterface();
 }
 
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw();
 progdefaults.changed = true;
 }
 
@@ -4500,7 +4481,6 @@ Fl_ListBox *cboHamlibRig=(Fl_ListBox *)0;
 static void cb_cboHamlibRig(Fl_ListBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 #if USE_HAMLIB
 hamlib_get_defaults();
 #endif
@@ -4511,7 +4491,6 @@ Fl_ComboBox *inpRIGdev=(Fl_ComboBox *)0;
 static void cb_inpRIGdev(Fl_ComboBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input2 *cntHamlibRetries=(Fl_Value_Input2 *)0;
@@ -4519,7 +4498,6 @@ Fl_Value_Input2 *cntHamlibRetries=(Fl_Value_Input2 *)0;
 static void cb_cntHamlibRetries(Fl_Value_Input2*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input2 *cntHamlibTimeout=(Fl_Value_Input2 *)0;
@@ -4527,7 +4505,6 @@ Fl_Value_Input2 *cntHamlibTimeout=(Fl_Value_Input2 *)0;
 static void cb_cntHamlibTimeout(Fl_Value_Input2*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input2 *cntHamlibWriteDelay=(Fl_Value_Input2 *)0;
@@ -4535,7 +4512,6 @@ Fl_Value_Input2 *cntHamlibWriteDelay=(Fl_Value_Input2 *)0;
 static void cb_cntHamlibWriteDelay(Fl_Value_Input2*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Value_Input2 *cntHamlibWait=(Fl_Value_Input2 *)0;
@@ -4543,7 +4519,6 @@ Fl_Value_Input2 *cntHamlibWait=(Fl_Value_Input2 *)0;
 static void cb_cntHamlibWait(Fl_Value_Input2*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_ListBox *listbox_baudrate=(Fl_ListBox *)0;
@@ -4551,39 +4526,19 @@ Fl_ListBox *listbox_baudrate=(Fl_ListBox *)0;
 static void cb_listbox_baudrate(Fl_ListBox*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Counter2 *valHamRigStopbits=(Fl_Counter2 *)0;
 
 static void cb_valHamRigStopbits(Fl_Counter2* o, void*) {
   progdefaults.HamRigStopbits = (int)o->value();
-btnRevertHAMLIB->activate();
 progdefaults.changed = true;
 }
 
-Fl_Counter2 *cntHamlibTimeout0=(Fl_Counter2 *)0;
+Fl_Counter2 *valHamRigPollrate=(Fl_Counter2 *)0;
 
-static void cb_cntHamlibTimeout0(Fl_Counter2* o, void*) {
-  progdefaults.HamlibTimeout = (int)o->value();
-btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-}
-
-Fl_Input2 *inpHamlibConfig=(Fl_Input2 *)0;
-
-static void cb_inpHamlibConfig(Fl_Input2*, void*) {
-  btnInitHAMLIB->labelcolor(FL_RED);
-btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
-}
-
-Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
-
-static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
-  progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-//btnRevertHAMLIB->activate();
+static void cb_valHamRigPollrate(Fl_Counter2* o, void*) {
+  progdefaults.HamRigPollrate = (int)o->value();
 progdefaults.changed = true;
 }
 
@@ -4592,8 +4547,6 @@ Fl_Check_Button *btnHamlibCMDptt=(Fl_Check_Button *)0;
 static void cb_btnHamlibCMDptt(Fl_Check_Button* o, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
-
 if (o->value()) {
 progdefaults.HamlibCMDptt = true;
 progdefaults.TTYptt = 
@@ -4619,7 +4572,6 @@ Fl_Check_Button *btnHamlibDTRplus=(Fl_Check_Button *)0;
 static void cb_btnHamlibDTRplus(Fl_Check_Button*, void*) {
   btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *chkHamlibRTSplus=(Fl_Check_Button *)0;
@@ -4629,7 +4581,6 @@ static void cb_chkHamlibRTSplus(Fl_Check_Button* o, void*) {
   chkHamlibRTSCTSflow->value(0);
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *chkHamlibRTSCTSflow=(Fl_Check_Button *)0;
@@ -4642,7 +4593,6 @@ static void cb_chkHamlibRTSCTSflow(Fl_Check_Button* o, void*) {
   chkHamlibRTSplus->activate();
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
 }
 
 Fl_Check_Button *chkHamlibXONXOFFflow=(Fl_Check_Button *)0;
@@ -4652,17 +4602,6 @@ static void cb_chkHamlibXONXOFFflow(Fl_Check_Button* o, void*) {
   chkHamlibRTSCTSflow->value(0);
 btnInitHAMLIB->labelcolor(FL_RED);
 btnInitHAMLIB->redraw_label();
-btnRevertHAMLIB->activate();
-}
-
-Fl_Button *btnRevertHAMLIB=(Fl_Button *)0;
-
-static void cb_btnRevertHAMLIB(Fl_Button*, void*) {
-  btnInitHAMLIB->labelcolor(FL_FOREGROUND_COLOR);
-btnInitHAMLIB->redraw_label();
-#if USE_HAMLIB
-hamlib_restore_defaults();
-#endif
 }
 
 Fl_Check_Button *chk_hamlib_cw_is_lsb=(Fl_Check_Button *)0;
@@ -4677,12 +4616,27 @@ static void cb_chk_hamlib_rtty_is_usb(Fl_Check_Button* o, void*) {
   progdefaults.hamlib_rtty_isusb = o->value();
 }
 
-Fl_ListBox *listbox_sideband=(Fl_ListBox *)0;
-
 Fl_Counter2 *val_hamlib_mode_delay=(Fl_Counter2 *)0;
 
 static void cb_val_hamlib_mode_delay(Fl_Counter2* o, void*) {
   progdefaults.hamlib_mode_delay = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_ListBox *listbox_sideband=(Fl_ListBox *)0;
+
+Fl_Input2 *inpHamlibConfig=(Fl_Input2 *)0;
+
+static void cb_inpHamlibConfig(Fl_Input2*, void*) {
+  btnInitHAMLIB->labelcolor(FL_RED);
+btnInitHAMLIB->redraw_label();
+}
+
+Fl_Button *btnInitHAMLIB=(Fl_Button *)0;
+
+static void cb_btnInitHAMLIB(Fl_Button* o, void*) {
+  progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
 progdefaults.changed = true;
 }
 
@@ -4701,10 +4655,11 @@ if(o->value() == 1){
   progdefaults.chkUSEHAMLIBis = false;
   progdefaults.chkUSERIGCATis = false;
   progdefaults.fldigi_client_to_flrig = false;
+  btnInitXMLRPC->labelcolor(FL_RED);
+  btnInitXMLRPC->redraw_label();
+} else {
+  progdefaults.initInterface();
 }
-
-btnInitXMLRPC->labelcolor(FL_RED);
-btnInitXMLRPC->redraw_label();
 progdefaults.changed = true;
 }
 
@@ -11089,7 +11044,6 @@ le Earth)"));
         { tabsRig = new Fl_Tabs(0, 25, 600, 365);
           tabsRig->selection_color(FL_LIGHT1);
           { tabFLRIG = new Fl_Group(0, 50, 600, 340, _("flrig"));
-            tabFLRIG->hide();
             { Fl_Group* o = new Fl_Group(10, 210, 580, 90, _("\"Disable PTT keys modem if multiple instances of fldigi (client)\nare connec\
 ted to a single flrig (server)."));
               o->box(FL_ENGRAVED_BOX);
@@ -11334,12 +11288,6 @@ i.e. localhost"));
                 chk_restore_tio->callback((Fl_Callback*)cb_chk_restore_tio);
                 o->value(progdefaults.RigCatRestoreTIO);
               } // Fl_Check_Button* chk_restore_tio
-              { btnRevertRIGCAT = new Fl_Button(415, 289, 113, 24, _("Revert"));
-                btnRevertRIGCAT->tooltip(_("Reset rigCAT interface"));
-                btnRevertRIGCAT->callback((Fl_Callback*)cb_btnRevertRIGCAT);
-                btnRevertRIGCAT->hide();
-                btnRevertRIGCAT->deactivate();
-              } // Fl_Button* btnRevertRIGCAT
               { Fl_Check_Button* o = chkRigCatVSP = new Fl_Check_Button(306, 300, 100, 25, _("VSP Enable"));
                 chkRigCatVSP->tooltip(_("Virtual Serial Port Emulator - suppress WARNINGS"));
                 chkRigCatVSP->down_box(FL_DOWN_BOX);
@@ -11374,9 +11322,9 @@ i.e. localhost"));
               chkUSEHAMLIB->down_box(FL_DOWN_BOX);
               chkUSEHAMLIB->callback((Fl_Callback*)cb_chkUSEHAMLIB);
             } // Fl_Check_Button* chkUSEHAMLIB
-            { grpHamlib = new Fl_Group(5, 88, 585, 277);
+            { grpHamlib = new Fl_Group(5, 88, 585, 294);
               grpHamlib->box(FL_ENGRAVED_FRAME);
-              { Fl_ListBox* o = cboHamlibRig = new Fl_ListBox(41, 98, 275, 22, _("Rig:"));
+              { Fl_ListBox* o = cboHamlibRig = new Fl_ListBox(41, 98, 250, 22, _("Rig:"));
                 cboHamlibRig->box(FL_DOWN_BOX);
                 cboHamlibRig->color(FL_BACKGROUND2_COLOR);
                 cboHamlibRig->selection_color(FL_BACKGROUND_COLOR);
@@ -11390,7 +11338,7 @@ i.e. localhost"));
                 o->labelsize(FL_NORMAL_SIZE);
                 cboHamlibRig->end();
               } // Fl_ListBox* cboHamlibRig
-              { Fl_ComboBox* o = inpRIGdev = new Fl_ComboBox(385, 98, 190, 22, _("Device:"));
+              { Fl_ComboBox* o = inpRIGdev = new Fl_ComboBox(355, 98, 220, 22, _("Device:"));
                 inpRIGdev->box(FL_DOWN_BOX);
                 inpRIGdev->color(FL_BACKGROUND2_COLOR);
                 inpRIGdev->selection_color(FL_BACKGROUND_COLOR);
@@ -11422,7 +11370,7 @@ i.e. localhost"));
                 o->value(progdefaults.HamlibRetries);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibRetries
-              { Fl_Value_Input2* o = cntHamlibTimeout = new Fl_Value_Input2(165, 138, 70, 24, _("Retry Interval (ms)"));
+              { Fl_Value_Input2* o = cntHamlibTimeout = new Fl_Value_Input2(180, 138, 70, 24, _("Retry Interval (msec)"));
                 cntHamlibTimeout->tooltip(_("Msec\'s between retries"));
                 cntHamlibTimeout->box(FL_DOWN_BOX);
                 cntHamlibTimeout->color(FL_BACKGROUND2_COLOR);
@@ -11439,7 +11387,7 @@ i.e. localhost"));
                 o->value(progdefaults.HamlibTimeout);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibTimeout
-              { Fl_Value_Input2* o = cntHamlibWriteDelay = new Fl_Value_Input2(40, 181, 70, 24, _("Write delay (ms)"));
+              { Fl_Value_Input2* o = cntHamlibWriteDelay = new Fl_Value_Input2(40, 181, 70, 24, _("Write delay (msec)"));
                 cntHamlibWriteDelay->tooltip(_("Msec\'s between sequential commands"));
                 cntHamlibWriteDelay->box(FL_DOWN_BOX);
                 cntHamlibWriteDelay->color(FL_BACKGROUND2_COLOR);
@@ -11456,7 +11404,7 @@ i.e. localhost"));
                 o->value(progdefaults.HamlibWriteDelay);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibWriteDelay
-              { Fl_Value_Input2* o = cntHamlibWait = new Fl_Value_Input2(166, 181, 70, 24, _("Post write delay (ms)"));
+              { Fl_Value_Input2* o = cntHamlibWait = new Fl_Value_Input2(180, 181, 70, 24, _("Post write delay (msec)"));
                 cntHamlibWait->tooltip(_("Wait interval (msecs) before reading response"));
                 cntHamlibWait->box(FL_DOWN_BOX);
                 cntHamlibWait->color(FL_BACKGROUND2_COLOR);
@@ -11473,7 +11421,7 @@ i.e. localhost"));
                 o->value(progdefaults.HamlibWait);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Value_Input2* cntHamlibWait
-              { Fl_ListBox* o = listbox_baudrate = new Fl_ListBox(476, 123, 99, 22, _("Baud rate:"));
+              { Fl_ListBox* o = listbox_baudrate = new Fl_ListBox(476, 126, 99, 22, _("Baud rate:"));
                 listbox_baudrate->box(FL_DOWN_BOX);
                 listbox_baudrate->color(FL_BACKGROUND2_COLOR);
                 listbox_baudrate->selection_color(FL_BACKGROUND_COLOR);
@@ -11489,7 +11437,7 @@ i.e. localhost"));
                        o->labelsize(FL_NORMAL_SIZE);
                 listbox_baudrate->end();
               } // Fl_ListBox* listbox_baudrate
-              { Fl_Counter2* o = valHamRigStopbits = new Fl_Counter2(480, 148, 95, 21, _("Stopbits"));
+              { Fl_Counter2* o = valHamRigStopbits = new Fl_Counter2(480, 154, 95, 21, _("Stopbits"));
                 valHamRigStopbits->type(1);
                 valHamRigStopbits->box(FL_UP_BOX);
                 valHamRigStopbits->color(FL_BACKGROUND_COLOR);
@@ -11508,114 +11456,75 @@ i.e. localhost"));
                 o->value(progdefaults.HamRigStopbits);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* valHamRigStopbits
-              { Fl_Counter2* o = cntHamlibTimeout0 = new Fl_Counter2(160, 145, 100, 20, _("Retry interval (ms)"));
-                cntHamlibTimeout0->tooltip(_("Msec\'s between retries"));
-                cntHamlibTimeout0->type(1);
-                cntHamlibTimeout0->box(FL_UP_BOX);
-                cntHamlibTimeout0->color(FL_BACKGROUND_COLOR);
-                cntHamlibTimeout0->selection_color(FL_INACTIVE_COLOR);
-                cntHamlibTimeout0->labeltype(FL_NORMAL_LABEL);
-                cntHamlibTimeout0->labelfont(0);
-                cntHamlibTimeout0->labelsize(14);
-                cntHamlibTimeout0->labelcolor(FL_FOREGROUND_COLOR);
-                cntHamlibTimeout0->minimum(2);
-                cntHamlibTimeout0->maximum(20000);
-                cntHamlibTimeout0->step(1);
-                cntHamlibTimeout0->value(10);
-                cntHamlibTimeout0->callback((Fl_Callback*)cb_cntHamlibTimeout0);
-                cntHamlibTimeout0->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                cntHamlibTimeout0->when(FL_WHEN_CHANGED);
-                cntHamlibTimeout0->hide();
-                o->value(progdefaults.HamlibTimeout);
-              } // Fl_Counter2* cntHamlibTimeout0
-              { inpHamlibConfig = new Fl_Input2(30, 331, 425, 22, _("Advanced configuration:"));
-                inpHamlibConfig->tooltip(_("Optional configuration\nin format: param=val ..."));
-                inpHamlibConfig->box(FL_DOWN_BOX);
-                inpHamlibConfig->color(FL_BACKGROUND2_COLOR);
-                inpHamlibConfig->selection_color(FL_SELECTION_COLOR);
-                inpHamlibConfig->labeltype(FL_NORMAL_LABEL);
-                inpHamlibConfig->labelfont(0);
-                inpHamlibConfig->labelsize(14);
-                inpHamlibConfig->labelcolor(FL_FOREGROUND_COLOR);
-                inpHamlibConfig->callback((Fl_Callback*)cb_inpHamlibConfig);
-                inpHamlibConfig->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                inpHamlibConfig->when(FL_WHEN_RELEASE);
-                inpHamlibConfig->value(progdefaults.HamConfig.c_str());
-                inpHamlibConfig->labelsize(FL_NORMAL_SIZE);
-              } // Fl_Input2* inpHamlibConfig
-              { btnInitHAMLIB = new Fl_Button(462, 330, 113, 24, _("Initialize"));
-                btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
-                btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
-              } // Fl_Button* btnInitHAMLIB
-              { Fl_Check_Button* o = btnHamlibCMDptt = new Fl_Check_Button(55, 211, 215, 20, _("PTT via Hamlib command"));
+              { Fl_Counter2* o = valHamRigPollrate = new Fl_Counter2(480, 182, 95, 21, _("Polling Interval (msec)"));
+                valHamRigPollrate->type(1);
+                valHamRigPollrate->box(FL_UP_BOX);
+                valHamRigPollrate->color(FL_BACKGROUND_COLOR);
+                valHamRigPollrate->selection_color(FL_INACTIVE_COLOR);
+                valHamRigPollrate->labeltype(FL_NORMAL_LABEL);
+                valHamRigPollrate->labelfont(0);
+                valHamRigPollrate->labelsize(14);
+                valHamRigPollrate->labelcolor(FL_FOREGROUND_COLOR);
+                valHamRigPollrate->minimum(100);
+                valHamRigPollrate->maximum(2000);
+                valHamRigPollrate->step(50);
+                valHamRigPollrate->value(100);
+                valHamRigPollrate->callback((Fl_Callback*)cb_valHamRigPollrate);
+                valHamRigPollrate->align(Fl_Align(FL_ALIGN_LEFT));
+                valHamRigPollrate->when(FL_WHEN_CHANGED);
+                o->value(progdefaults.HamRigPollrate);
+                o->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Counter2* valHamRigPollrate
+              { Fl_Check_Button* o = btnHamlibCMDptt = new Fl_Check_Button(55, 229, 215, 20, _("PTT via Hamlib command"));
                 btnHamlibCMDptt->tooltip(_("PTT using hamlib command"));
                 btnHamlibCMDptt->down_box(FL_DOWN_BOX);
                 btnHamlibCMDptt->callback((Fl_Callback*)cb_btnHamlibCMDptt);
                 o->value(progdefaults.HamlibCMDptt);
               } // Fl_Check_Button* btnHamlibCMDptt
-              { Fl_Check_Button* o = btnHamlibPTT_ON_DATA = new Fl_Check_Button(55, 236, 215, 20, _("Audio on Auxiliary Port"));
+              { Fl_Check_Button* o = btnHamlibPTT_ON_DATA = new Fl_Check_Button(55, 254, 215, 20, _("Audio on Auxiliary Port"));
                 btnHamlibPTT_ON_DATA->tooltip(_("PTT enables auxiliary audio source"));
                 btnHamlibPTT_ON_DATA->down_box(FL_DOWN_BOX);
                 btnHamlibPTT_ON_DATA->callback((Fl_Callback*)cb_btnHamlibPTT_ON_DATA);
                 o->value(progdefaults.hamlib_ptt_on_data);
               } // Fl_Check_Button* btnHamlibPTT_ON_DATA
-              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(55, 261, 90, 20, _("DTR +12"));
+              { Fl_Check_Button* o = btnHamlibDTRplus = new Fl_Check_Button(55, 280, 90, 20, _("DTR +12"));
                 btnHamlibDTRplus->tooltip(_("Initial state of DTR"));
                 btnHamlibDTRplus->down_box(FL_DOWN_BOX);
                 btnHamlibDTRplus->callback((Fl_Callback*)cb_btnHamlibDTRplus);
                 o->value(progdefaults.HamlibDTRplus);
               } // Fl_Check_Button* btnHamlibDTRplus
-              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(245, 261, 85, 20, _("RTS +12"));
+              { Fl_Check_Button* o = chkHamlibRTSplus = new Fl_Check_Button(245, 280, 85, 20, _("RTS +12"));
                 chkHamlibRTSplus->tooltip(_("Initial state of RTS"));
                 chkHamlibRTSplus->down_box(FL_DOWN_BOX);
                 chkHamlibRTSplus->callback((Fl_Callback*)cb_chkHamlibRTSplus);
                 o->value(progdefaults.HamlibRTSplus);
               } // Fl_Check_Button* chkHamlibRTSplus
-              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(55, 287, 170, 20, _("RTS/CTS flow control"));
+              { Fl_Check_Button* o = chkHamlibRTSCTSflow = new Fl_Check_Button(55, 306, 170, 20, _("RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->tooltip(_("Rig requires RTS/CTS flow control"));
                 chkHamlibRTSCTSflow->down_box(FL_DOWN_BOX);
                 chkHamlibRTSCTSflow->callback((Fl_Callback*)cb_chkHamlibRTSCTSflow);
                 o->value(progdefaults.HamlibRTSCTSflow);
                 if (o->value()) chkHamlibRTSplus->deactivate();
               } // Fl_Check_Button* chkHamlibRTSCTSflow
-              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(245, 287, 185, 20, _("XON/XOFF flow control"));
+              { Fl_Check_Button* o = chkHamlibXONXOFFflow = new Fl_Check_Button(245, 306, 185, 20, _("XON/XOFF flow control"));
                 chkHamlibXONXOFFflow->tooltip(_("Rig requires Xon/Xoff flow control"));
                 chkHamlibXONXOFFflow->down_box(FL_DOWN_BOX);
                 chkHamlibXONXOFFflow->callback((Fl_Callback*)cb_chkHamlibXONXOFFflow);
                 o->value(progdefaults.HamlibXONXOFFflow);
               } // Fl_Check_Button* chkHamlibXONXOFFflow
-              { btnRevertHAMLIB = new Fl_Button(381, 299, 113, 24, _("Revert"));
-                btnRevertHAMLIB->tooltip(_("Reset hamlib interface"));
-                btnRevertHAMLIB->callback((Fl_Callback*)cb_btnRevertHAMLIB);
-                btnRevertHAMLIB->hide();
-                btnRevertHAMLIB->deactivate();
-              } // Fl_Button* btnRevertHAMLIB
-              { Fl_Check_Button* o = chk_hamlib_cw_is_lsb = new Fl_Check_Button(435, 261, 142, 20, _("CW is LSB mode"));
+              { Fl_Check_Button* o = chk_hamlib_cw_is_lsb = new Fl_Check_Button(435, 280, 142, 20, _("CW is LSB mode"));
                 chk_hamlib_cw_is_lsb->tooltip(_("Check if xcvr uses LSB for CW"));
                 chk_hamlib_cw_is_lsb->down_box(FL_DOWN_BOX);
                 chk_hamlib_cw_is_lsb->callback((Fl_Callback*)cb_chk_hamlib_cw_is_lsb);
                 o->value(progdefaults.hamlib_cw_islsb);
               } // Fl_Check_Button* chk_hamlib_cw_is_lsb
-              { Fl_Check_Button* o = chk_hamlib_rtty_is_usb = new Fl_Check_Button(435, 287, 152, 20, _("RTTY is USB mode"));
+              { Fl_Check_Button* o = chk_hamlib_rtty_is_usb = new Fl_Check_Button(435, 306, 152, 20, _("RTTY is USB mode"));
                 chk_hamlib_rtty_is_usb->tooltip(_("Check if xcvr uses USB for RTTY"));
                 chk_hamlib_rtty_is_usb->down_box(FL_DOWN_BOX);
                 chk_hamlib_rtty_is_usb->callback((Fl_Callback*)cb_chk_hamlib_rtty_is_usb);
                 o->value(progdefaults.hamlib_rtty_isusb);
               } // Fl_Check_Button* chk_hamlib_rtty_is_usb
-              { Fl_ListBox* o = listbox_sideband = new Fl_ListBox(431, 235, 144, 22, _("Sideband:"));
-                listbox_sideband->box(FL_DOWN_BOX);
-                listbox_sideband->color(FL_BACKGROUND2_COLOR);
-                listbox_sideband->selection_color(FL_BACKGROUND_COLOR);
-                listbox_sideband->labeltype(FL_NORMAL_LABEL);
-                listbox_sideband->labelfont(0);
-                listbox_sideband->labelsize(14);
-                listbox_sideband->labelcolor(FL_FOREGROUND_COLOR);
-                listbox_sideband->align(Fl_Align(FL_ALIGN_LEFT));
-                listbox_sideband->when(FL_WHEN_RELEASE);
-                o->labelsize(FL_NORMAL_SIZE);
-                listbox_sideband->end();
-              } // Fl_ListBox* listbox_sideband
-              { Fl_Counter2* o = val_hamlib_mode_delay = new Fl_Counter2(480, 210, 95, 21, _("Mode delay"));
+              { Fl_Counter2* o = val_hamlib_mode_delay = new Fl_Counter2(480, 228, 95, 21, _("Mode delay (msec)"));
                 val_hamlib_mode_delay->tooltip(_("Delay NN msec after executing mode change"));
                 val_hamlib_mode_delay->type(1);
                 val_hamlib_mode_delay->box(FL_UP_BOX);
@@ -11635,6 +11544,38 @@ i.e. localhost"));
                 o->value(progdefaults.hamlib_mode_delay);
                 o->labelsize(FL_NORMAL_SIZE);
               } // Fl_Counter2* val_hamlib_mode_delay
+              { Fl_ListBox* o = listbox_sideband = new Fl_ListBox(431, 253, 144, 22, _("Sideband:"));
+                listbox_sideband->box(FL_DOWN_BOX);
+                listbox_sideband->color(FL_BACKGROUND2_COLOR);
+                listbox_sideband->selection_color(FL_BACKGROUND_COLOR);
+                listbox_sideband->labeltype(FL_NORMAL_LABEL);
+                listbox_sideband->labelfont(0);
+                listbox_sideband->labelsize(14);
+                listbox_sideband->labelcolor(FL_FOREGROUND_COLOR);
+                listbox_sideband->align(Fl_Align(FL_ALIGN_LEFT));
+                listbox_sideband->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                listbox_sideband->end();
+              } // Fl_ListBox* listbox_sideband
+              { inpHamlibConfig = new Fl_Input2(30, 350, 460, 24, _("Advanced configuration:"));
+                inpHamlibConfig->tooltip(_("Optional configuration\nin format: param=val ..."));
+                inpHamlibConfig->box(FL_DOWN_BOX);
+                inpHamlibConfig->color(FL_BACKGROUND2_COLOR);
+                inpHamlibConfig->selection_color(FL_SELECTION_COLOR);
+                inpHamlibConfig->labeltype(FL_NORMAL_LABEL);
+                inpHamlibConfig->labelfont(0);
+                inpHamlibConfig->labelsize(14);
+                inpHamlibConfig->labelcolor(FL_FOREGROUND_COLOR);
+                inpHamlibConfig->callback((Fl_Callback*)cb_inpHamlibConfig);
+                inpHamlibConfig->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                inpHamlibConfig->when(FL_WHEN_RELEASE);
+                inpHamlibConfig->value(progdefaults.HamConfig.c_str());
+                inpHamlibConfig->labelsize(FL_NORMAL_SIZE);
+              } // Fl_Input2* inpHamlibConfig
+              { btnInitHAMLIB = new Fl_Button(495, 350, 80, 24, _("Initialize"));
+                btnInitHAMLIB->tooltip(_("Initialize hamlib interface"));
+                btnInitHAMLIB->callback((Fl_Callback*)cb_btnInitHAMLIB);
+              } // Fl_Button* btnInitHAMLIB
               grpHamlib->end();
             } // Fl_Group* grpHamlib
             tabHamlib->end();
@@ -11776,6 +11717,7 @@ definition"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("GPIO"));
+            o->hide();
             { Fl_Box* o = new Fl_Box(70, 96, 189, 17, _("BCM GPIO  pin    Value"));
               o->labelfont(4);
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));

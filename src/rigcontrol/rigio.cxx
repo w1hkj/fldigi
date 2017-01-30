@@ -1070,31 +1070,6 @@ void rigCAT_defaults()
 	chkRigCatVSP->value(xmlrig.vsp);
 }
 
-void rigCAT_restore_defaults()
-{
-	inpXmlRigDevice->value(progdefaults.XmlRigDevice.c_str());
-	listbox_xml_rig_baudrate->index(progdefaults.XmlRigBaudrate);
-	valRigCatStopbits->value(progdefaults.RigCatStopbits);
-	btnRigCatRTSplus->value(progdefaults.RigCatRTSplus);
-	btnRigCatDTRplus->value(progdefaults.RigCatDTRplus);
-	btnRigCatRTSptt->value(progdefaults.RigCatRTSptt);
-	btnRigCatDTRptt->value(progdefaults.RigCatDTRptt);
-	chk_restore_tio->value(progdefaults.RigCatRestoreTIO);
-	chkRigCatRTSCTSflow->value(progdefaults.RigCatRTSCTSflow);
-	cntRigCatRetries->value(progdefaults.RigCatRetries);
-	cntRigCatTimeout->value(progdefaults.RigCatTimeout);
-	cntRigCatWait->value(progdefaults.RigCatWait);
-	cntRigCatInitDelay->value(progdefaults.RigCatInitDelay);
-//	cntRigCatWaitForDevice->value(progdefaults.RicCatWaitForDevice);
-	btnRigCatEcho->value(progdefaults.RigCatECHO);
-	btnRigCatCMDptt->value(progdefaults.RigCatCMDptt);
-	chkRigCatVSP->value(progdefaults.RigCatVSP);
-
-	btnInitRIGCAT->labelcolor(FL_FOREGROUND_COLOR);
-	btnRevertRIGCAT->deactivate();
-	dlgConfig->redraw();
-}
-
 void rigCAT_init_defaults()
 {
 	progdefaults.XmlRigDevice = inpXmlRigDevice->value();
