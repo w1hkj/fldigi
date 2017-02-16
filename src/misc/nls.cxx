@@ -51,6 +51,7 @@ struct lang_def_t ui_langs[] = {
 	{ "fr", "fr_FR", "Fran\347ais (French)"},
 	{ "it", "it_IT", "Italiano (Italian)"},
 	{ "pl", "pl_PL", "Język (Polish)"},
+	{ "ru", "ru_RU", "Pусский (Russian)"},
 	{ NULL, NULL, NULL }
 };
 
@@ -133,8 +134,9 @@ int setup_nls(void)
 	}
 
 	bindtextdomain(PACKAGE, ldir);
-	/* fltk-1.1.x only knows about Latin-1 */
-	bind_textdomain_codeset(PACKAGE, "ISO-8859-1");
+
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
+
 	textdomain(PACKAGE);
 
 	return nls_set_up = 1;
