@@ -435,7 +435,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
       Fl_Group tabOperator {
         label Operator
         callback {progdefaults.changed = true;} open selected
-        tooltip {Operator information} xywh {0 25 600 365} when 1
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -544,14 +544,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        tooltip {User Interface} xywh {0 25 600 365} hide
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabBrowser {
             label Browser open
-            tooltip {User Interface - Browser} xywh {0 50 600 340} hide
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -736,8 +736,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabUserInterface {
-            label General
-            tooltip {User Interface - General} xywh {0 50 600 340} hide
+            label General open
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {40 77 520 76} box ENGRAVED_FRAME
@@ -873,14 +873,14 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340} hide
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsLog {open
               xywh {0 50 600 340}
             } {
               Fl_Group grp_Log_QSO {
                 label QSO
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {
                   label {QSO logging} open
@@ -1096,7 +1096,7 @@ progdefaults.changed = true;}
               }
               Fl_Group grpN3FJP_logs {
                 label {N3FJP logs} open
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Text_Display txt_N3FJP_data {
                   label {TCP/IP Data Stream}
@@ -1170,7 +1170,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabContest {
             label Contest open
-            tooltip {User Interface - Contest} xywh {0 50 600 340} hide
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Duplicate check, CALL plus} open
@@ -1391,8 +1391,8 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabMBars {
-            label Macros
-            tooltip {User Interface - Macros} xywh {0 50 600 340} hide
+            label Macros open
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {5 240 590 35} box ENGRAVED_FRAME
@@ -1566,7 +1566,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabWF_UI {
             label {WF Ctrls}
-            tooltip {User Interface - Waterfall controls} xywh {0 50 600 340} hide
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {52 83 496 253} box ENGRAVED_BOX
@@ -1705,7 +1705,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            tooltip {User Interface - Colors / Fonts} xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsColors {open
               xywh {0 55 600 335}
@@ -2275,7 +2275,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group {} {
                 label Log open
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {
                   label {Logging Panel Controls} open
@@ -2896,7 +2896,7 @@ btnTxRSID->redraw();}
               }
               Fl_Group {} {
                 label SigLvl
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -2955,7 +2955,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tab_touch {
             label Touch
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Box {} {
               label {Note:
@@ -3926,7 +3926,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFeld {
             label Feld open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Hell Transmit Parameters} open
@@ -5083,7 +5083,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOther {
             label Other open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Tabs tabsOther {open
               xywh {0 50 600 340}
@@ -5214,14 +5214,14 @@ progdefaults.changed = true;}
       }
       Fl_Group tabRig {
         label Rig open
-        tooltip {Transceiver control} xywh {0 25 600 365} hide
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsRig {open
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabFLRIG {
             label flrig open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {"Disable PTT keys modem if multiple instances of fldigi (client)
@@ -5302,7 +5302,7 @@ progdefaults.changed=true;}
           }
           Fl_Group {} {
             label RigCAT open
-            tooltip {Rig Control using xml spec file} xywh {0 50 600 340} hide
+            xywh {0 50 600 340} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -5942,7 +5942,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label GPIO open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Box {} {
               label {BCM GPIO  pin    Value}
@@ -6393,7 +6393,7 @@ progdefaults.changed=true;}
       }
       Fl_Group tabSoundCard {
         label Audio open
-        tooltip {Audio devices} xywh {0 25 600 365} hide
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 600 365} selection_color 50
@@ -7530,7 +7530,7 @@ if (progdefaults.kml_enabled) {
       }
       Fl_Group tabQRZ {
         label Web open
-        tooltip {Callsign database} xywh {0 25 600 365} hide
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 600 365}
@@ -7918,7 +7918,7 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
       Fl_Group tabAutoStart {
         label Autostart
         callback {progdefaults.changed = true;}
-        tooltip {Operator information} xywh {0 25 600 365} when 1 hide
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Auto start programs with fldigi} open
@@ -8120,7 +8120,7 @@ progdefaults.changed = true;}
       Fl_Group tabIO {
         label IO
         callback {btnDisable_p2p_io_widgets->value(1);}
-        tooltip {Program to Program Communications} xywh {0 25 600 365} hide
+        xywh {0 25 600 365} hide
         code0 {btnDisable_p2p_io_widgets->value(1);}
       } {
         Fl_Group {} {open
@@ -8501,7 +8501,7 @@ number to the default value.} xywh {425 345 73 25}
       }
       Fl_Group tabKPSM {
         label PSM open
-        tooltip {Power Signal Monior} xywh {0 25 600 365} hide
+        xywh {0 25 600 365} hide
       } {
         Fl_Group {} {open
           xywh {0 33 590 105} box ENGRAVED_BOX align 21

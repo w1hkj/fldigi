@@ -7027,7 +7027,6 @@ Fl_Double_Window* ConfigureDialog() {
       tabsConfigure->color(FL_LIGHT1);
       tabsConfigure->selection_color(FL_LIGHT1);
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
-        tabOperator->tooltip(_("Operator information"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
         { Fl_Group* o = new Fl_Group(50, 50, 485, 245, _("Station / Operator"));
@@ -7180,12 +7179,10 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
-        tabUI->tooltip(_("User Interface"));
         tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
-            tabBrowser->tooltip(_("User Interface - Browser"));
             tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
@@ -7327,7 +7324,6 @@ Fl_Double_Window* ConfigureDialog() {
             tabBrowser->end();
           } // Fl_Group* tabBrowser
           { tabUserInterface = new Fl_Group(0, 50, 600, 340, _("General"));
-            tabUserInterface->tooltip(_("User Interface - General"));
             tabUserInterface->hide();
             { Fl_Group* o = new Fl_Group(40, 77, 520, 76);
               o->box(FL_ENGRAVED_FRAME);
@@ -7454,10 +7450,10 @@ Fl_Double_Window* ConfigureDialog() {
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
-            tabLogServer->tooltip(_("User Interface - Colors / Fonts"));
             tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
+                grp_Log_QSO->hide();
                 { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7650,7 +7646,6 @@ ab and newline are automatically included."));
                 grpMacLogger->end();
               } // Fl_Group* grpMacLogger
               { grpN3FJP_logs = new Fl_Group(0, 75, 600, 315, _("N3FJP logs"));
-                grpN3FJP_logs->hide();
                 { Fl_Text_Display* o = txt_N3FJP_data = new Fl_Text_Display(5, 148, 590, 170, _("TCP/IP Data Stream"));
                 txt_N3FJP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
@@ -7722,7 +7717,6 @@ ab and newline are automatically included."));
             tabLogServer->end();
           } // Fl_Group* tabLogServer
           { tabContest = new Fl_Group(0, 50, 600, 340, _("Contest"));
-            tabContest->tooltip(_("User Interface - Contest"));
             tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 590, 89, _("Duplicate check, CALL plus"));
               o->box(FL_ENGRAVED_FRAME);
@@ -7953,7 +7947,6 @@ ab and newline are automatically included."));
             tabContest->end();
           } // Fl_Group* tabContest
           { tabMBars = new Fl_Group(0, 50, 600, 340, _("Macros"));
-            tabMBars->tooltip(_("User Interface - Macros"));
             tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
@@ -8082,7 +8075,6 @@ ab and newline are automatically included."));
             tabMBars->end();
           } // Fl_Group* tabMBars
           { tabWF_UI = new Fl_Group(0, 50, 600, 340, _("WF Ctrls"));
-            tabWF_UI->tooltip(_("User Interface - Waterfall controls"));
             tabWF_UI->hide();
             { Fl_Group* o = new Fl_Group(52, 83, 496, 253);
               o->box(FL_ENGRAVED_BOX);
@@ -8167,7 +8159,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 340, _("Clrs/Fnts"));
-            tabColorsFonts->tooltip(_("User Interface - Colors / Fonts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 55, 600, 335);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx/Tx"));
                 o->hide();
@@ -8342,6 +8334,7 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Log"));
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 101, 590, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8562,7 +8555,6 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("SigLvl"));
-                o->hide();
                 { btnLowSignal = new Fl_Button(210, 142, 70, 21, _("Low"));
                 btnLowSignal->callback((Fl_Callback*)cb_btnLowSignal);
                 } // Fl_Button* btnLowSignal
@@ -8604,7 +8596,6 @@ ab and newline are automatically included."));
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
           { tab_touch = new Fl_Group(0, 50, 600, 340, _("Touch"));
-            tab_touch->hide();
             { Fl_Box* o = new Fl_Box(15, 70, 570, 52, _("Note:\nThese configuration items are useful for but not unique to using fldig\
 i on a\ntouch screen device such as a tablet."));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
@@ -9722,6 +9713,7 @@ i on a\ntouch screen device such as a tablet."));
             tabDomEX->end();
           } // Fl_Group* tabDomEX
           { tabFeld = new Fl_Group(0, 50, 600, 340, _("Feld"));
+            tabFeld->hide();
             { Fl_Group* o = new Fl_Group(55, 72, 500, 133, _("Hell Transmit Parameters"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
@@ -10918,7 +10910,6 @@ le Earth)"));
             tabTHOR->end();
           } // Fl_Group* tabTHOR
           { tabOther = new Fl_Group(0, 50, 600, 340, _("Other"));
-            tabOther->hide();
             { tabsOther = new Fl_Tabs(0, 50, 600, 340);
               { tabNavtex = new Fl_Group(0, 75, 600, 315, _("Nav"));
                 tabNavtex->hide();
@@ -11039,11 +11030,11 @@ le Earth)"));
         tabModems->end();
       } // Fl_Group* tabModems
       { tabRig = new Fl_Group(0, 25, 600, 365, _("Rig"));
-        tabRig->tooltip(_("Transceiver control"));
         tabRig->hide();
         { tabsRig = new Fl_Tabs(0, 25, 600, 365);
           tabsRig->selection_color(FL_LIGHT1);
           { tabFLRIG = new Fl_Group(0, 50, 600, 340, _("flrig"));
+            tabFLRIG->hide();
             { Fl_Group* o = new Fl_Group(10, 210, 580, 90, _("\"Disable PTT keys modem if multiple instances of fldigi (client)\nare connec\
 ted to a single flrig (server)."));
               o->box(FL_ENGRAVED_BOX);
@@ -11115,7 +11106,6 @@ i.e. localhost"));
             tabFLRIG->end();
           } // Fl_Group* tabFLRIG
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("RigCAT"));
-            o->tooltip(_("Rig Control using xml spec file"));
             o->hide();
             { chkUSERIGCAT = new Fl_Check_Button(245, 60, 110, 20, _("Use RigCAT"));
               chkUSERIGCAT->tooltip(_("RigCAT used for rig control"));
@@ -11717,7 +11707,6 @@ definition"));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("GPIO"));
-            o->hide();
             { Fl_Box* o = new Fl_Box(70, 96, 189, 17, _("BCM GPIO  pin    Value"));
               o->labelfont(4);
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
@@ -11983,7 +11972,6 @@ definition"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
-        tabSoundCard->tooltip(_("Audio devices"));
         tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
@@ -13111,7 +13099,6 @@ and restarted if needed."));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 600, 365, _("Web"));
-        tabQRZ->tooltip(_("Callsign database"));
         tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 365);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Call Lookup"));
@@ -13513,7 +13500,6 @@ work!"));
         tabQRZ->end();
       } // Fl_Group* tabQRZ
       { tabAutoStart = new Fl_Group(0, 25, 600, 365, _("Autostart"));
-        tabAutoStart->tooltip(_("Operator information"));
         tabAutoStart->callback((Fl_Callback*)cb_tabAutoStart);
         tabAutoStart->when(FL_WHEN_CHANGED);
         tabAutoStart->hide();
@@ -13722,7 +13708,6 @@ work!"));
         tabAutoStart->end();
       } // Fl_Group* tabAutoStart
       { tabIO = new Fl_Group(0, 25, 600, 365, _("IO"));
-        tabIO->tooltip(_("Program to Program Communications"));
         tabIO->callback((Fl_Callback*)cb_tabIO);
         tabIO->hide();
         { Fl_Group* o = new Fl_Group(6, 34, 588, 102);
@@ -14054,7 +14039,6 @@ i.e. localhost"));
         tabIO->end();
       } // Fl_Group* tabIO
       { tabKPSM = new Fl_Group(0, 25, 600, 365, _("PSM"));
-        tabKPSM->tooltip(_("Power Signal Monior"));
         tabKPSM->hide();
         { Fl_Group* o = new Fl_Group(0, 33, 590, 105);
           o->box(FL_ENGRAVED_BOX);

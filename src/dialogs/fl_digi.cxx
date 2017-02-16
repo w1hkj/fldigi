@@ -6134,6 +6134,8 @@ void create_fl_digi_main_primary() {
 		// reset the tooltip font
 		Fl_Tooltip::font(FL_HELVETICA);
 		Fl_Tooltip::size(FL_NORMAL_SIZE);
+		Fl_Tooltip::hoverdelay(0.5);
+		Fl_Tooltip::delay(2.0);
 		Fl_Tooltip::enable(progdefaults.tooltips);
 
 		Y += mnuFrame->h();
