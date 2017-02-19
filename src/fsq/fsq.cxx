@@ -58,11 +58,12 @@ using namespace std;
 
 void  clear_xmt_arrays();
 
-static int symlen = 4096; // nominal symbol length; 3 baud
-#define SQLFILT_SIZE 200
-#define NIT std::string::npos
+#define SQLFILT_SIZE 16
 
+#define NIT std::string::npos
 #define txcenterfreq  1500.0
+
+int fsq::symlen = 4096; // nominal symbol length; 3 baud
 
 static const char *FSQBOL = " \n";
 static const char *FSQEOL = "\n ";
@@ -87,8 +88,8 @@ static std::string sz2utf8(std::string s)
 	return s;
 }
 
-static int nibbles[199];
-static void init_nibbles()
+//static int nibbles[199];
+void fsq::init_nibbles()
 {
 	int nibble = 0;
 	for (int i = 0; i < 199; i++) {
@@ -148,7 +149,11 @@ fsq::fsq(trx_mode md) : modem()
 	samplerate = SR;
 	fft = new g_fft<double>(FFTSIZE);
 	snfilt = new Cmovavg(SQLFILT_SIZE);
-	baudfilt = new Cmovavg(3);
+
+	noisefilt = new Cmovavg(32);
+	sigfilt = new Cmovavg(8);
+
+//	baudfilt = new Cmovavg(3);
 	movavg_size = progdefaults.fsq_movavg;
 	if (movavg_size < 1) movavg_size = progdefaults.fsq_movavg = 1;
 	if (movavg_size > 4) movavg_size = progdefaults.fsq_movavg = 4;
@@ -206,9 +211,13 @@ fsq::~fsq()
 {
 	delete fft;
 	delete snfilt;
+
+	delete sigfilt;
+	delete noisefilt;
+
 	for (int i = 0; i < NUMBINS; i++)
 		delete binfilt[i];
-	delete baudfilt;
+//	delete baudfilt;
 	delete picfilter;
 	REQ(close_fsqMonitor);
 	stop_sounder();
@@ -472,7 +481,7 @@ void fsq::parse_rx_text()
 			directed = true; // mycall
 		}
 		// test for cqcqcq and allcall
-		else if (word_is != 8) 
+		else if (word_is != 8)
 			all = true;
 
 		rx_text.erase(0, tr_pos);
@@ -806,9 +815,6 @@ void fsq::parse_carat(std::string relay)
 	display_fsq_rx_text(toprint.append(rx_text).append("\n"), FTextBase::FSQ_DIR);
 }
 
-double maxfreq = 0;
-double minfreq = 4000;
-
 void fsq::parse_pcnt()
 {
 	switch (rx_text[2]) {
@@ -839,8 +845,6 @@ void fsq::parse_pcnt()
 
 	}
 	REQ( fsq_showRxViewer, picW, picH, rx_text[2] );
-	maxfreq = 0;
-	minfreq = 4000;
 
 	image_counter = 0;
 
@@ -998,8 +1002,6 @@ void fsq::process_symbol(int sym)
 			lf_check(curr_ch);
 
 			if (b_bot) {
-				double val = snfilt->value();
-				for (int i = 0; i < SQLFILT_SIZE; i++) snfilt->run(val);
 				ch_sqlch_open = true;
 				rx_text.clear();
 			}
@@ -1010,12 +1012,18 @@ void fsq::process_symbol(int sym)
 					display_fsq_mon_text( fsq_bot, FTextBase::CTRL);
 				if (b_eol) {
 					display_fsq_mon_text( fsq_eol, FTextBase::CTRL);
-					for (int i = 0; i < SQLFILT_SIZE; i++) snfilt->run(0);
+					noisefilt->reset();
+					noisefilt->run(1);
+					sigfilt->reset();
+					sigfilt->run(1);
 					snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
 				}
 				if (b_eot) {
 					snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
-					for (int i = 0; i < SQLFILT_SIZE; i++) snfilt->run(0);
+					noisefilt->reset();
+					noisefilt->run(1);
+					sigfilt->reset();
+					sigfilt->run(1);
 					display_fsq_mon_text( fsq_eot, FTextBase::CTRL);
 				}
 			}
@@ -1045,40 +1053,78 @@ void fsq::process_symbol(int sym)
 // 908 Hz and 1351 Hz respectively for original center frequency of 1145 Hz
 // 1280 to 1720 for a 1500 Hz center frequency
 
+static double sig = 0;
+
 void fsq::process_tones()
 {
-	noise = 0;
 	max = 0;
-	peak = 0;
+	peak = NUMBINS / 2;
+
 // examine FFT bin contents over bandwidth +/- ~ 50 Hz
 // 8 * 12000 / 2048 = 46.875 Hz
-	int firstbin = basetone - 21;
-//	double K = 0.133333;
-//	if (progdefaults.fsq_fastavg) K *= 3.0;
-// time domain moving average filter for each tone bin
+	int firstbin = frequency * FSQ_SYMLEN / samplerate - NUMBINS / 2;
+
+	double sigval = 0;
+
+	double mins[4];
+	double min = 1e8;
+	double temp;
+	int k = 0;
 	for (int i = 0; i < NUMBINS; ++i) {
 		val = norm(fft_data[i + firstbin]);
+
 		tones[i] = binfilt[i]->run(val);
 		if (tones[i] > max) {
 			max = tones[i];
 			peak = i;
 		}
+// looking for minimum signal in a 3 bin sequence
+		mins[k++] = val;
+		if (k == 3) {
+			temp = mins[0] + mins[1] + mins[2];
+			if (temp < min) min = temp;
+			k = 0;
+		}
 	}
 
-	noise += (tones[0] + tones[NUMBINS - 1]) / 2.0;
-	noise *= FFTSIZE / 2.0;
+	sigval = tones[peak-1] + tones[peak] + tones[peak+1];
+	sigval /= 3;
+	min /= 3;
 
-	if (noise < 1e-8) noise = 1e-8;
+	if (min <= 0.001 || sigval <= 0.001) {
+		sig = 1;
+		noise = 1;
+	} else {
+		sig = .95 * sig + .05 * sigval;
+		noise = .99 * noise + .01 * min;
+	}
 
-	s2n = 10 * log10(snfilt->run(tones[peak]/noise)) + 3.0;
+	s2n = 10 * snfilt->run(log10(sig / noise)) - 36;
 
-	metric = 2 * (s2n + 20);
-	metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
+	if (s2n > 0) s2n *= 1.3;  // very empirical
+
+//if (s2n > -30) {
+//FILE *fsqtxt = fopen("fsq.txt", "a");
+//fprintf(fsqtxt, "%d,%f,%f,%f,%f,%f\n", peak, sigval, sig, min, noise, s2n);
+//fclose(fsqtxt);
+//}
+
+//scale to -25 to +45 db range
+// -25 -> 0 linear
+// 0 - > 45 compressed by 2
+
+	if (s2n < -25) s2n = -25;
+	if (s2n > 45) s2n = 45;
+
+	if (s2n <= 0) metric = 2 * (25 + s2n);
+	if (s2n > 0) metric = 50 *( 1 + s2n / 45);
+
 	display_metric(metric);
 
 	if (metric < progStatus.sldrSquelchValue && ch_sqlch_open)
 		ch_sqlch_open = false;
 
+// requires consecutive hits
 	if (peak == prev_peak) {
 		peak_counter++;
 	} else {
@@ -1719,7 +1765,7 @@ void sounder(void *)
 	std::string xmtstr = FSQBOL;
 	xmtstr.append(active_modem->fsq_mycall()).append(":").append(FSQEOT);
 	int numsymbols = xmtstr.length();
-	int xmtsecs = (int)(1.0 * numsymbols * (symlen / 4096.0) / SR);
+	int xmtsecs = (int)(1.0 * numsymbols * (fsq::symlen / 4096.0) / SR);
 	if (fsq_tx_text->eot()) {
 		std::string stime = ztime();
 		stime.erase(4);

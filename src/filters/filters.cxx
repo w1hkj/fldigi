@@ -277,10 +277,11 @@ double Cmovavg::run(double a)
 	}
 	if (empty) {
 		empty = false;
+		out = 0;
 		for (int i = 0; i < len; i++) {
 			in[i] = a;
+			out += a;
 		}
-		out = a * len;
 		pint = 0;
 		return a;
 	}
