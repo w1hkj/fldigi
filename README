@@ -6,7 +6,9 @@ BPSK and QPSK        31, 63, 125, 250 (both), and 63F and 500 (BPSK only)
 PSKR                 125, 250, and 500
 CW                   speeds from 5 to 200 wpm
 DominoEX             4, 5, 8, 11, 16 and 22; also with FEC
+FSQ
 Hellschreiber        Feld Hell, Slow Hell, Hell x5/x9, FSKHell(-105) and Hell 80
+IFKP
 MFSK                 4, 8, 11, 16, 22, 31, 32 and 64; most with image support
 MT63                 500, 1000 and 2000
 OLIVIA               various tones and bandwidths
@@ -20,14 +22,12 @@ Fldigi can also control a transceiver using Hamlib or RigCAT I/O, perform online
 or cdrom QRZ queries, log QSOs with the built-in logbook or Xlog, and send
 reception reports to the PSK Automatic Propagation Reporter.
 
-
 The latest version can always be found at:
 
-  http://www.w1hkj.com/Fldigi.html
+  http://www.w1hkj.com/
 
 Visit this page for extensive documentation and an archive of XML files for
 transceivers supported by RigCAT.
-
 
 The wiki page contains FAQs and HOWTOs, as well as links to all Fldigi
 resources:
@@ -44,7 +44,7 @@ and Yahoo groups.  Stable releases are announced to all lists and groups; test
 
   * linuxham group
     General discussion on fldigi, related software and other ham radio topics
-    http://groups.yahoo.com/group/linuxham/join
+    https://groups.io/g/linuxham
 
   * win-fldigi group
     For Windows users of fldigi
@@ -52,7 +52,7 @@ and Yahoo groups.  Stable releases are announced to all lists and groups; test
 
   * NBEMSham group
     Special focus on NBEMS operation
-    http://groups.yahoo.com/group/NBEMSham/
+    https://groups.io/g/nbems
 
   * fldigi-alpha list
     Discussion of fldigi testing and related subjects
