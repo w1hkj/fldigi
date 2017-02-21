@@ -818,6 +818,10 @@ int main(int argc, char ** argv)
 				cbq[i]->attach(i, "ADIF_RW_TID");
 				break;
 
+			case ADIF_MERGE_TID:
+				cbq[i]->attach(i, "ADIF_MERGE_TID");
+				break;
+
 			case XMLRPC_TID:
 				cbq[i]->attach(i, "XMLRPC_TID");
 				break;

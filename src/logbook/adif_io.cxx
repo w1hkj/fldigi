@@ -344,22 +344,22 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 	clock_gettime(CLOCK_REALTIME, &t1);
 #endif
 
-	t0 = t1 - t0;
-	float t = (t0.tv_sec + t0.tv_nsec/1e9);
+	float t = t1.tv_sec - t0.tv_sec + (t1.tv_nsec - t0.tv_nsec)/1e9;
+
 
 	if (!feof(adiFile))
 		snprintf(szmsg, sizeof(szmsg), "\
 ================================================\n\
 ERROR reading logbook %s\n\
-      read %d records in %4.2f seconds\n\
+      read %d records in %4.1f seconds\n\
 ================================================\n", fname, db->nbrRecs(), t);
 	else {
 		snprintf(szmsg, sizeof(szmsg), "\
 ================================================\n\
 Read Logbook: %s\n\
-      read %d records in %4.2f seconds\n\
+      read %d records in %4.1f seconds\n\
 ================================================\n", fname, db->nbrRecs(), t);
-		LOG_INFO("logfile: %s, read %d records in %4.2f seconds", fname, db->nbrRecs(), t);
+		LOG_INFO("logfile: %s, read %d records in %4.1f seconds", fname, db->nbrRecs(), t);
 		if (num_read_errors) {
 			if (!read_errors.empty()) {
 				read_errors.append("\n");

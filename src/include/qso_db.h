@@ -124,8 +124,12 @@ public:
 		const char *xchg1, bool chkxchg1 );
 
 	int matched( cQsoRec *rec );
-
-
 };
+
+extern int comparebydate(const void *p1, const void *p2);
+extern int comparebymode(const void *p1, const void *p2);
+extern int comparebycall(const void *p1, const void *p2);
+extern int comparebyfreq(const void *p1, const void *p2);
+
 
 #endif

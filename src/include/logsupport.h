@@ -77,7 +77,7 @@ extern void cb_btn_verify_eqsl(Fl_Button *, void *);
 extern void cb_Export_Cabrillo(Fl_Menu_* m, void* d);
 extern void cb_export_date_select();
 
-extern void saveLogbook();
+extern void saveLogbook(bool force = false);
 extern void cb_mnuShowLogbook(Fl_Menu_ *m, void* d);
 
 extern void activateButtons();
