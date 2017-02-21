@@ -94,8 +94,7 @@ static string valid_callsign(char ch)
 
 // nibbles table used for fast conversion from tone difference to symbol
 
-static int nibbles[199];
-static void init_nibbles()
+void ifkp::init_nibbles()
 {
 	int nibble = 0;
 	for (int i = 0; i < 199; i++) {
@@ -419,33 +418,73 @@ void ifkp::process_symbol(int sym)
 	prev_symbol = symbol;
 }
 
+static double sig = 0;
+
 void ifkp::process_tones()
 {
-	noise = 0;
 	max = 0;
 	peak = 0;
-	int firstbin = basetone - 21;
-// time domain moving average filter for each tone bin
+
+	max = 0;
+	peak = IFKP_NUMBINS / 2;
+
+	int firstbin = frequency * IFKP_SYMLEN / samplerate - IFKP_NUMBINS / 2;
+
+	double sigval = 0;
+
+	double mins[4];
+	double min = 1e8;
+	double temp;
+	int k = 0;
 	for (int i = 0; i < IFKP_NUMBINS; ++i) {
 		val = norm(fft_data[i + firstbin]);
+
 		tones[i] = binfilt[i]->run(val);
 		if (tones[i] > max) {
 			max = tones[i];
 			peak = i;
 		}
+// looking for minimum signal in a 3 bin sequence
+		mins[k++] = val;
+		if (k == 3) {
+			temp = mins[0] + mins[1] + mins[2];
+			if (temp < min) min = temp;
+			k = 0;
+		}
 	}
 
-	noise += (tones[0] + tones[IFKP_NUMBINS - 1]) / 2.0;
-	noise *= IFKP_FFTSIZE;
+	sigval = tones[peak-1] + tones[peak] + tones[peak+1];
+	sigval /= 3;
+	min /= 3;
 
-	if (noise < 1e-8) noise = 1e-8;
+	if (min <= 0.001 || sigval <= 0.001) {
+		sig = 1;
+		noise = 1;
+	} else {
+		sig = .95 * sig + .05 * sigval;
+		noise = .99 * noise + .01 * min;
+	}
 
-	s2n = 10 * log10(snfilt->run(tones[peak]*.734/noise));
+	s2n = 10 * snfilt->run(log10(sig / noise)) - 36;
 
-	snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
+	if (s2n > 0) s2n *= 1.3;  // very empirical
 
-	metric = 2 * (s2n + 20);
-	metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
+//if (s2n > -30) {
+//FILE *ifkptxt = fopen("ifkp.txt", "a");
+//fprintf(ifkptxt, "%d,%f,%f,%f,%f,%f\n", peak, sigval, sig, min, noise, s2n);
+//fclose(ifkptxt);
+//}
+
+//scale to -25 to +45 db range
+// -25 -> 0 linear
+// 0 - > 45 compressed by 2
+
+	if (s2n < -25) s2n = -25;
+	if (s2n > 45) s2n = 45;
+
+	if (s2n <= 0) metric = 2 * (25 + s2n);
+	if (s2n > 0) metric = 50 *( 1 + s2n / 45);
+
 	display_metric(metric);
 
 	if (peak == prev_peak) {
