@@ -102,7 +102,7 @@ void start_tx_timer()
 {
 	tx_mins = 0; tx_secs = 0;
 	tx_timer_active = true;
-	show_tx_timer();
+	REQ(show_tx_timer);
 }
 
 void stop_tx_timer()
