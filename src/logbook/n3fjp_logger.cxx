@@ -87,7 +87,7 @@ int n3fjp_has_xcvr_control = UNKNOWN;
 double tracked_freq = 0;
 int  tracked_mode = -1;
 
-enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY, FJP_GENERIC};
+enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY, FJP_NAQP, FJP_GENERIC};
 int  n3fjp_contest = FJP_NONE;
 
 int n3fjp_wait = 0;
@@ -373,6 +373,23 @@ static string ParseTextField(string &record, string fieldtag)
 	return record.substr(p2, p3 - p2);
 }
 
+//======================================================================
+// parse value contents
+// <VALUE>valuestring</VALUE>
+//======================================================================
+static string ParseValueField(string field, string &record)
+{
+	string start = "<";
+	start.append(field).append("><VALUE>");
+	string endvalue = "</VALUE>";
+	size_t p1 = record.find(start);
+	size_t p2 = record.find(endvalue, p1);
+	if ((p1 == string::npos) || (p2 == string::npos) ||
+		(p2 < p1) ) return "";
+	p1 += start.length();
+	return record.substr(p1, p2 - p1);
+}
+
 static string ucasestr(string s)
 {
 	for (size_t n = 0; n < s.length(); n++) s[n] = toupper(s[n]);
@@ -646,8 +663,6 @@ static void n3fjp_send_data()
 			send_control("MODETST", n3fjp_tstmode());
 			send_control("CLASS", strip(ucasestr(rec.getField(FDCLASS))));
 			send_control("SECTION", strip(ucasestr(rec.getField(FDSECTION))));
-			send_control("SERIALR", strip(rec.getField(SRX)));
-			send_control("SERIALS", strip(rec.getField(STX)));
 		}
 		if (n3fjp_contest == FJP_CQWWRTTY) {
 			send_control("RSTS", strip(rec.getField(RST_SENT)));
@@ -658,9 +673,15 @@ static void n3fjp_send_data()
 		if (n3fjp_contest == FJP_GENERIC) {
 			send_control("RSTS", strip(rec.getField(RST_SENT)));
 			send_control("RSTR", strip(rec.getField(RST_RCVD)));
-			send_control("SERIALS", strip(rec.getField(STX)));
-			send_control("SERIALR", strip(rec.getField(SRX)));
+			send_control("SERIALNOR", strip(rec.getField(SRX)));
 			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
+		}
+		if (n3fjp_contest == FJP_NAQP) {
+			send_control("NAMER", rec.getField(NAME));
+			if (strlen(rec.getField(STATE)) > 0)
+				send_control("SPCNUM", rec.getField(STATE));
+			else if (strlen(rec.getField(VE_PROV)) > 0)
+				send_control("SPCNUM", rec.getField(VE_PROV));
 		}
 
 		string other = "XCVR:";
@@ -710,8 +731,6 @@ static void n3fjp_send_data_norig()
 			send_control("MODETST", n3fjp_tstmode());
 			send_control("CLASS", strip(ucasestr(rec.getField(FDCLASS))));
 			send_control("SECTION", strip(ucasestr(rec.getField(FDSECTION))));
-			send_control("SERIALR", strip(rec.getField(SRX)));
-			send_control("SERIALS", strip(rec.getField(STX)));
 		}
 		if (n3fjp_contest == FJP_CQWWRTTY) {
 			send_control("MODETST", n3fjp_tstmode());
@@ -723,9 +742,15 @@ static void n3fjp_send_data_norig()
 		if (n3fjp_contest == FJP_GENERIC) {
 			send_control("RSTS", strip(rec.getField(RST_SENT)));
 			send_control("RSTR", strip(rec.getField(RST_RCVD)));
-			send_control("SERIALS", strip(rec.getField(STX)));
-			send_control("SERIALR", strip(rec.getField(SRX)));
+			send_control("SERIALNOR", strip(rec.getField(SRX)));
 			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
+		}
+		if (n3fjp_contest == FJP_NAQP) {
+			send_control("NAMER", rec.getField(NAME));
+			if (strlen(rec.getField(STATE)) > 0)
+				send_control("SPCNUM", rec.getField(STATE));
+			else if (strlen(rec.getField(VE_PROV)) > 0)
+				send_control("SPCNUM", rec.getField(VE_PROV));
 		}
 
 		string other = "XCVR:";
@@ -815,6 +840,19 @@ void n3fjp_add_record(cQsoRec &record)
 	n3fjp_bool_add_record = true;
 }
 
+void n3fjp_request_next_serial_number()
+{
+	send_command("<CMD><NEXTSERIALNUMBER></CMD>");
+}
+
+string n3fjp_serno = "";
+
+void n3fjp_parse_next_serial(string buff)
+{
+	n3fjp_serno = ParseValueField("NEXTSERIALNUMBERRESPONSE", buff);
+	clearQSO();
+}
+
 //======================================================================
 //
 //======================================================================
@@ -861,6 +899,12 @@ void n3fjp_parse_response(string tempbuff)
 	if (tempbuff.find("ALLFIELDSWVRESPONSE") != string::npos) {
 		REQ(n3fjp_parse_data_stream, tempbuff);
 	}
+	if (tempbuff.find("<ENTEREVENT>") != string::npos) {
+		REQ(n3fjp_request_next_serial_number);
+	}
+	if (tempbuff.find("<NEXTSERIALNUMBERRESPONSE>") != string::npos) {
+		REQ(n3fjp_parse_next_serial, tempbuff);
+	}
 }
 
 //======================================================================
@@ -880,6 +924,8 @@ void n3fjp_rcv_data()
 static void connect_to_n3fjp_server()
 {
 	try {
+		n3fjp_serno.clear();
+
 		if (!n3fjp_connected)
 			n3fjp_socket->connect();
 
@@ -908,7 +954,12 @@ static void connect_to_n3fjp_server()
 			n3fjp_contest = FJP_CQWWRTTY;
 		else if (info.find("Field Day Contest") != string::npos)
 			n3fjp_contest = FJP_FD;
-		else n3fjp_contest = FJP_GENERIC;
+		else if (info.find("NAQP Contest Log") != string::npos)
+			n3fjp_contest = FJP_NAQP;
+		else {
+			n3fjp_contest = FJP_GENERIC;
+			REQ(n3fjp_request_next_serial_number);
+		}
 
 		info.insert(0, "Connected to ");
 
@@ -1025,6 +1076,8 @@ void n3fjp_disconnect()
 	n3fjp_connected = false;
 	n3fjp_has_xcvr_control = UNKNOWN;
 	LOG_INFO("Disconnected");
+	n3fjp_serno.clear();
+	REQ(clearQSO);
 }
 
 //======================================================================

@@ -108,6 +108,8 @@ extern Fl_Input2		*inpState;
 extern Fl_Input2		*inpCountry;
 extern Fl_Input2		*inpSerNo;
 extern Fl_Input2		*outSerNo;
+extern Fl_Input2		*outSerNo1;
+extern Fl_Input2		*outSerNo2;
 extern Fl_Input2		*inpXchgIn;
 extern Fl_Input2		*inpXchgIn1;
 extern Fl_Input2		*inpXchgIn2;

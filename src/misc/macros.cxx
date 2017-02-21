@@ -1890,6 +1890,40 @@ static void pVER(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 5, progname );
 }
 
+static void pSERNO(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	int  contestval;
+	contestval = atoi(outSerNo->value());
+	if (contestval) {
+		char serstr[10];
+		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
+		snprintf(serstr, sizeof(serstr), contest_count.fmt.c_str(), contestval);
+		s.replace (i, 7, cut_string(serstr));
+	} else
+		s.replace (i, 7, "");
+}
+
+static void pLASTNO(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	int  contestval;
+	contestval = atoi(outSerNo->value()) - 1;
+	if (contestval) {
+		char serstr[10];
+		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
+		snprintf(serstr, sizeof(serstr), contest_count.fmt.c_str(), contestval);
+		s.replace (i, 8, cut_string(serstr));
+	} else
+		s.replace (i, 8, "");
+}
+
 static void pCNTR(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -3670,6 +3704,8 @@ static const MTAGS mtags[] = {
 {"<XBEG>",		pXBEG},
 {"<XEND>",		pXEND},
 {"<SAVEXCHG>",	pSAVEXCHG},
+{"<SERNO>",		pSERNO},
+{"<LASTNO>",	pLASTNO},
 {"<LOG",		pLOG},
 {"<LNW",		pLNW},
 {"<CLRLOG>",	pCLRLOG},

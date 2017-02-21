@@ -427,8 +427,8 @@ Fl_Input2	        *inpTimeOff3 = (Fl_Input2 *)0;
 static Fl_Input2	*inpTimeOn3 = (Fl_Input2 *)0;
 static Fl_Button	*btnTimeOn3;
 Fl_Input2			*inpCall3 = (Fl_Input2 *)0;
-static Fl_Input2	*outSerNo2 = (Fl_Input2 *)0;
-static Fl_Input2	*inpSerNo2 = (Fl_Input2 *)0;
+Fl_Input2			*outSerNo2 = (Fl_Input2 *)0;
+Fl_Input2			*inpSerNo2 = (Fl_Input2 *)0;
 Fl_Input2			*inpXchgIn2 = (Fl_Input2 *)0;
 Fl_Input2			*inp_FD_class2 = (Fl_Input2 *)0;
 Fl_Input2			*inp_FD_section2 = (Fl_Input2 *)0;
@@ -2860,9 +2860,16 @@ void ztimer(void* first_call)
 */
 
 bool oktoclear = true;
+extern string n3fjp_serno;
 
 void updateOutSerNo()
 {
+	if (!n3fjp_serno.empty()) {
+		outSerNo1->value(n3fjp_serno.c_str());
+		outSerNo2->value(n3fjp_serno.c_str());
+		return;
+	}
+
 	if (contest_count.count) {
 		char szcnt[10] = "";
 		contest_count.Format(progdefaults.ContestDigits, progdefaults.UseLeadingZeros);
