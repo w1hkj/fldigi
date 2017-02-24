@@ -194,6 +194,8 @@ thor::~thor()
 	delete picfilter;
 	delete pixfilter;
 	delete pixsyncfilter;
+
+	activate_thor_image_item(false);
 }
 
 thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
@@ -356,6 +358,8 @@ thor::thor(trx_mode md) : hilbert(0), fft(0), filter_reset(false)
 	pixsyncfilter = new Cmovavg(3*IMAGEspp);
 
 	init();
+
+	activate_thor_image_item(true);
 }
 
 //=====================================================================

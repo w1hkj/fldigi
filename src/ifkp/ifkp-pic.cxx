@@ -25,6 +25,7 @@
 
 #include "gettext.h"
 #include "fileselect.h"
+#include "timeops.h"
 
 Fl_Double_Window	*ifkppicRxWin = (Fl_Double_Window *)0;
 picture				*ifkppicRx = (picture *)0;
@@ -42,7 +43,8 @@ Fl_Button			*btnifkppicTxLoad = (Fl_Button *)0;
 Fl_Button			*btnifkppicTxClose = (Fl_Button *)0;
 Fl_Choice			*selifkppicSize = (Fl_Choice *)0;
 
-void ifkp_showTxViewer(char c);
+void ifkp_showRxViewer(char c);
+void ifkp_createRxViewer();
 
 Fl_Shared_Image	*ifkpTxImg = (Fl_Shared_Image *)0;
 unsigned char *ifkpxmtimg = (unsigned char *)0;
@@ -128,20 +130,73 @@ void cb_btnifkpRxReset(Fl_Widget *, void *)
 void cb_btnifkpRxSave(Fl_Widget *, void *)
 {
 	ifkppicRx->save_png(PicsDir.c_str());
-//	FILE *raw = fl_fopen("image.raw", "wb");
-//	std::cout << "wrote " << fwrite(ifkp_rawvideo, 1, RAWSIZE, raw) << "\n";
-//	fclose(raw);
 }
 
 void cb_btnifkpRxClose(Fl_Widget *, void *)
 {
 	ifkppicRxWin->hide();
 	progStatus.ifkp_rx_abort = true;
-//	ifkppicRxWin->hide();
-//	FILE *raw = fl_fopen("image.raw", "rb");
-//	std::cout << "read " << fread(ifkp_rawvideo, 1, RAWSIZE, raw) << "\n";
-//	fclose(raw);
-//	ifkp_correct_video();
+}
+
+void ifkp_save_raw_video()
+{
+	string fname = "YYYYMMDDHHMMSSz";
+
+	time_t time_sec = time(0);
+	struct tm ztime;
+	(void)gmtime_r(&time_sec, &ztime);
+	char sztime[fname.length()+1];
+
+	strftime(sztime, sizeof(sztime), "%Y%m%d%H%M%Sz", &ztime);
+
+	fname.assign(PicsDir).append("IFKP").append(sztime).append(".raw");
+
+	FILE *raw = fl_fopen(fname.c_str(), "wb");
+	fwrite(&ifkp_image_type, 1, 1, raw);
+	fwrite(ifkp_rawvideo, 1, RAWSIZE, raw);
+	fclose(raw);
+}
+
+void ifkp_load_raw_video()
+{
+// abort & close any Rx video processing
+	int image_type = 0;
+	string image_types = "TSLFVPpMm";
+
+	if (!ifkppicRxWin)
+		ifkp_createRxViewer();
+	else
+		ifkppicRxWin->hide();
+
+	const char *p = FSEL::select(
+			_("Load raw image file"), "Image\t*.raw\n", PicsDir.c_str());
+
+	if (!p || !*p) return;
+
+	FILE *raw = fl_fopen(p, "rb");
+	int numread = fread(&image_type, 1, 1, raw);
+	if (numread != 1) {
+		fclose(raw);
+		return;
+	}
+
+	if (image_types.find(ifkp_image_type) != string::npos) {
+
+		ifkp_showRxViewer(image_type);
+
+		numread = fread(ifkp_rawvideo, 1, RAWSIZE, raw);
+
+		if (numread == RAWSIZE) {
+			ifkpcnt_phase->activate();
+			ifkpcnt_slant->activate();
+			btnifkpRxSave->activate();
+
+			ifkp_correct_video();
+			ifkppicRxWin->redraw();
+		}
+	}
+
+	fclose(raw);
 }
 
 void cb_ifkp_cnt_phase(Fl_Widget *, void *data)
@@ -178,6 +233,9 @@ void ifkp_enableshift()
 	ifkpcnt_phase->activate();
 	ifkpcnt_slant->activate();
 	btnifkpRxSave->activate();
+
+	ifkp_save_raw_video();
+
 	ifkppicRxWin->redraw();
 }
 
@@ -392,6 +450,8 @@ int ifkppic_TxGetPixel(int pos, int color)
 	return ifkpxmtimg[3*pos + color]; // color = {RED, GREEN, BLUE}
 }
 
+string ifkp_image_header;
+
 void cb_ifkppicTransmit( Fl_Widget *w, void *)
 {
 	string picmode = " pic%";
@@ -406,8 +466,7 @@ void cb_ifkppicTransmit( Fl_Widget *w, void *)
 		case 7: picmode += 'M'; break;
 		case 8: picmode += 'm'; break;
 	}
-	picmode.append("^r");
-	ifkp_tx_text->add(picmode.c_str());
+	ifkp_image_header = picmode;
 	active_modem->ifkp_send_image();
 }
 

@@ -181,6 +181,8 @@ ifkp::ifkp(trx_mode md) : modem()
 
 	restart();
 
+	activate_ifkp_image_item(true);
+
 }
 
 ifkp::~ifkp()
@@ -195,6 +197,9 @@ ifkp::~ifkp()
 	ifkp_deleteRxViewer();
 	heard_log.close();
 	audit_log.close();
+
+	activate_ifkp_image_item(false);
+
 }
 
 void  ifkp::tx_init(SoundBase *sc)
@@ -748,6 +753,11 @@ void ifkp::send_image()
 		case 6 : W = 240; H = 300; color = false; break;
 		case 7 : W = 120; H = 150; break;
 		case 8 : W = 120; H = 150; color = false; break;
+	}
+
+	while (!ifkp_image_header.empty()) {
+		send_char(ifkp_image_header[0]);
+		ifkp_image_header.erase(0,1);
 	}
 
 	REQ(ifkp_clear_tximage);

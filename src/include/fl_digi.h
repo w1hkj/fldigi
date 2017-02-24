@@ -237,6 +237,9 @@ extern void			ifkp_update_avatar(unsigned char data, int pos);
 extern int			ifkp_get_avatar_pixel(int pos, int color);
 extern void			cb_ifkp_send_avatar( Fl_Widget *w, void *);
 
+extern void			ifkp_load_raw_video();
+extern void			activate_ifkp_image_item(bool);
+
 extern void			cb_ifkp_heard(Fl_Browser*, void*);
 
 extern void			enableSELCAL();
@@ -317,6 +320,7 @@ extern void activate_rig_menu_item(bool b);
 extern void activate_test_menu_item(bool b);
 extern void activate_mfsk_image_item(bool b);
 extern void activate_wefax_image_item(bool b);
+extern void activate_thor_image_item(bool b);
 extern void WF_UI();
 
 extern void set_macroLabels();
@@ -578,6 +582,8 @@ extern int			thor_get_avatar_pixel(int pos, int color);
 extern void			cb_thor_send_avatar( Fl_Widget *w, void *);
 extern picture		*thor_avatar;
 extern void			thor_load_scaled_image(std::string fname);
+
+extern void			thor_load_raw_video();
 
 // field day
 extern Fl_Input2	*inp_FD_class;
