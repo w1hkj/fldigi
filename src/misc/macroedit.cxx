@@ -164,7 +164,7 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<FILE:>\tinsert text file"));
-	w->add(_("<IMAGE:>\tinsert MFSK image"));
+	w->add(_("<IMAGE:>\tinsert image file"));
 	w->add(LINE_SEP);
 
 	w->add(_("<PAUSE>\tpause transmit"));

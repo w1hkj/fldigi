@@ -27,8 +27,10 @@
 #include "gettext.h"
 #include "fileselect.h"
 #include "qrunner.h"
+#include "timeops.h"
 
 void thor_createTxViewer();
+void thor_showRxViewer(char);
 
 Fl_Double_Window	*thorpicRxWin = (Fl_Double_Window *)0;
 picture				*thorpicRx = (picture *)0;
@@ -46,7 +48,8 @@ Fl_Button			*btnthorpicTxLoad = (Fl_Button *)0;
 Fl_Button			*btnthorpicTxClose = (Fl_Button *)0;
 Fl_Choice			*selthorpicSize = (Fl_Choice *)0;
 
-void thor_showTxViewer(char c);
+void thor_showRxViewer(char c);
+void thor_createRxViewer();
 
 Fl_Shared_Image	*thorTxImg = (Fl_Shared_Image *)0;
 unsigned char *thorxmtimg = (unsigned char *)0;
@@ -133,23 +136,75 @@ void cb_btnthorRxReset(Fl_Widget *, void *)
 //	progStatus.thor_rx_abort = true;
 }
 
+void thor_save_raw_video()
+{
+	string fname = "YYYYMMDDHHMMSSz";
+
+	time_t time_sec = time(0);
+	struct tm ztime;
+	(void)gmtime_r(&time_sec, &ztime);
+	char sztime[fname.length()+1];
+
+	strftime(sztime, sizeof(sztime), "%Y%m%d%H%M%Sz", &ztime);
+
+	fname.assign(PicsDir).append("THOR").append(sztime).append(".raw");
+
+	FILE *raw = fl_fopen(fname.c_str(), "wb");
+	fwrite(&thor_image_type, 1, 1, raw);
+	fwrite(thor_rawvideo, 1, RAWSIZE, raw);
+	fclose(raw);
+}
+
+void thor_load_raw_video()
+{
+// abort & close any Rx video processing
+	int image_type = 0;
+	string image_types = "TSLFVPpMm";
+
+	if (!thorpicRxWin)
+		thor_createRxViewer();
+	else
+		thorpicRxWin->hide();
+
+	const char *p = FSEL::select(
+			_("Load raw image file"), "Image\t*.raw\n", PicsDir.c_str());
+
+	if (!p || !*p) return;
+
+	FILE *raw = fl_fopen(p, "rb");
+	int numread = fread(&image_type, 1, 1, raw);
+	if (numread != 1) {
+		fclose(raw);
+		return;
+	}
+
+	if (image_types.find(thor_image_type) != string::npos) {
+
+		thor_showRxViewer(image_type);
+
+		numread = fread(thor_rawvideo, 1, RAWSIZE, raw);
+
+		if (numread == RAWSIZE) {
+			thorcnt_phase->activate();
+			thorcnt_slant->activate();
+			btnthorRxSave->activate();
+
+			thor_correct_video();
+			thorpicRxWin->redraw();
+		}
+	}
+
+	fclose(raw);
+}
+
 void cb_btnthorRxSave(Fl_Widget *, void *)
 {
 	thorpicRx->save_png(PicsDir.c_str());
-//	FILE *raw = fl_fopen("image.raw", "wb");
-//	std::cout << "wrote " << fwrite(thor_rawvideo, 1, RAWSIZE, raw) << "\n";
-//	fclose(raw);
 }
 
 void cb_btnthorRxClose(Fl_Widget *, void *)
 {
 	thorpicRxWin->hide();
-//	progStatus.thor_rx_abort = true;
-//	thorpicRxWin->hide();
-//	FILE *raw = fl_fopen("image.raw", "rb");
-//	std::cout << "read " << fread(thor_rawvideo, 1, RAWSIZE, raw) << "\n";
-//	fclose(raw);
-//	thor_correct_video();
 }
 
 void cb_thor_cnt_phase(Fl_Widget *, void *data)
@@ -183,9 +238,13 @@ void thor_disableshift()
 void thor_enableshift()
 {
 	if (!thorpicRxWin) return;
+
 	thorcnt_phase->activate();
 	thorcnt_slant->activate();
 	btnthorRxSave->activate();
+
+	thor_save_raw_video();
+
 	thorpicRxWin->redraw();
 }
 

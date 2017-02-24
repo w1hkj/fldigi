@@ -124,20 +124,12 @@ void cb_btnfsqRxReset(Fl_Widget *, void *)
 void cb_btnfsqRxSave(Fl_Widget *, void *)
 {
 	fsqpicRx->save_png(PicsDir.c_str());
-//	FILE *raw = fl_fopen("image.raw", "wb");
-//	std::cout << "wrote " << fwrite(rawvideo, 1, RAWSIZE, raw) << "\n";
-//	fclose(raw);
 }
 
 void cb_btnfsqRxClose(Fl_Widget *, void *)
 {
 	fsqpicRxWin->hide();
 	progStatus.fsq_rx_abort = true;
-//	fsqpicRxWin->hide();
-//	FILE *raw = fl_fopen("image.raw", "rb");
-//	std::cout << "read " << fread(rawvideo, 1, RAWSIZE, raw) << "\n";
-//	fclose(raw);
-//	correct_video();
 }
 
 void cb_cnt_phase(Fl_Widget *, void *data)

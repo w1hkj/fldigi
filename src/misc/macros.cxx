@@ -2095,10 +2095,14 @@ static void doIMAGE(std::string s)
 			 active_mode == MODE_MFSK32 ||
 			 active_mode == MODE_MFSK64 ||
 			 active_mode == MODE_MFSK128) &&
-			active_modem->get_cap() & modem::CAP_IMG) {
-				Greyscale ?
-					active_modem->send_Grey_image(fname) :
-					active_modem->send_color_image(fname);
+			 active_modem->get_cap() & modem::CAP_IMG) {
+			Greyscale ?
+				active_modem->send_Grey_image(fname) :
+				active_modem->send_color_image(fname);
+		} else if (active_mode >= MODE_THOR_FIRST && active_mode <= MODE_THOR_LAST) {
+			thor_load_scaled_image(fname);
+        } else if (active_mode == MODE_IFKP) {
+			ifkp_load_scaled_image(fname);
 		}
 	}
 	que_ok = true;
