@@ -1536,89 +1536,177 @@ static void pMYSECTION(std::string &s, size_t &i, size_t endbracket)
 static void pLDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%x %H:%M %Z";
+	std::string timefmt = s.substr(i, endbracket-i);
+
+	size_t p = timefmt.find(":");
+	if (p == 4) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	localtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%x %H:%M %Z", &sTime);
-	s.replace( i, 5, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pILDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%Y-%m-%d %H:%M%z";
+	std::string timefmt = s.substr(i, endbracket-i);
+
+	size_t p = timefmt.find(":");
+	if (p == 5) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	localtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%M%z", &sTime);
-	s.replace( i, 6, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pZDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%x %H:%MZ";
+	std::string timefmt = s.substr(i, endbracket - i);
+
+	size_t p = timefmt.find(":");
+	if (p == 4) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%x %H:%MZ", &sTime);
-	s.replace( i, 5, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pIZDT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%Y-%m-%d %H:%MZ";
+	std::string timefmt = s.substr(i, endbracket-i);
+
+	size_t p = timefmt.find(":");
+	if (p == 5) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d %H:%MZ", &sTime);
-	s.replace( i, 6, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pLT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%H%MZ";
+	std::string timefmt = s.substr(i, endbracket-i);
+
+	size_t p = timefmt.find(":");
+	if (p == 3) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	localtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%H%M", &sTime);
-	s.replace( i, 4, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pZT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%H%MZ";
+	std::string timefmt = s.substr(i, endbracket-i);
+
+	size_t p = timefmt.find(":");
+	if (p == 3) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%H%MZ", &sTime);
-	s.replace( i, 4, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pLD(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%Y-%m-%d";
+	std::string timefmt = s.substr(i, endbracket - i);
+
+	size_t p = timefmt.find(":");
+	if (p == 3) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	localtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d", &sTime);
-	s.replace( i, 4, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void pZD(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
+
+	std::string fmt = "%Y-%m-%d";
+	std::string timefmt = s.substr(i, endbracket - i);
+
+	size_t p = timefmt.find(":");
+	if (p == 3) {
+		fmt = timefmt.substr(p + 1, timefmt.length() - p - 1);
+		if (fmt[0] == '"') fmt.erase(0,1);
+		if (fmt[fmt.length()-1] == '"') fmt.erase(fmt.length()-1);
+	}
+
 	time_t tmptr;
 	tm sTime;
 	time (&tmptr);
 	gmtime_r(&tmptr, &sTime);
-	mystrftime(szDt, 79, "%Y-%m-%d", &sTime);
-	s.replace( i, 4, szDt);
+	mystrftime(szDt, 79, fmt.c_str(), &sTime);
+	s.replace(i, endbracket - i + 1, szDt);
 }
 
 static void p_ID(std::string &s, size_t &i, size_t endbracket)
@@ -3683,13 +3771,17 @@ static const MTAGS mtags[] = {
 {"<INFO1>",		pINFO1},
 {"<INFO2>",		pINFO2},
 {"<LDT>",		pLDT},
-{"<ILDT>",		pILDT},
+{"<LDT:",		pLDT},
+{"<ILDT",		pILDT},
 {"<ZDT>",		pZDT},
-{"<IZDT>",		pIZDT},
-{"<LT>",		pLT},
-{"<ZT>",		pZT},
+{"<ZDT:",		pZDT},
+{"<IZDT",		pIZDT},
+{"<LT",			pLT},
+{"<ZT",			pZT},
 {"<LD>",		pLD},
+{"<LD:",		pLD},
 {"<ZD>",		pZD},
+{"<ZD:",		pZD},
 {"<ID>",		p_ID},
 {"<TEXT>",		pTEXT},
 {"<VIDEO:",		pVIDEO},
