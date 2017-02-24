@@ -105,14 +105,19 @@ Macro       | Description
 Macro       | Description
 :---------: | :----------------------------
 \<QSOTIME\> | insert current logbook time HHMM, ie 0919
-\<ILDT\>    | insert current local date-time in iso-8601 format, ie 2011-08-28 04:16-0500
-\<LDT\>     | insert Local date-time, ie 2011-08-28 04:16-0500
-\<IZDT\>    | insert Zulu date-time in iso-8601 format, ie 08/28/2011 04:16 CDT
-\<ZDT\>     | insert Zulu date-time, ie 2011-08-28 09:16Z
-\<LT\>      | insert local time, ie 0416
-\<ZT\>      | insert zulu time, ie 0916Z
-\<LD\>      | insert local date, ie 2011-08-28
-\<ZD\>      | insert Zulu date, ie 2011-08-28
+\<ILDT[:fmt]\>    | insert current local date-time in iso-8601 format, ie 2011-08-28 04:16-0500
+\<LDT[:fmt]\>     | insert Local date-time, ie 2011-08-28 04:16-0500
+\<IZDT[:fmt]\>    | insert Zulu date-time in iso-8601 format, ie 08/28/2011 04:16 CDT
+\<ZDT[:fmt]\>     | insert Zulu date-time, ie 2011-08-28 09:16Z
+\<LT[:fmt]\>      | insert local time, ie 0416
+\<ZT[:fmt]\>      | insert zulu time, ie 0916Z
+\<LD[:fmt]\>      | insert local date, ie 2011-08-28
+\<ZD[:fmt]\>      | insert Zulu date, ie 2011-08-28
+<br>              | see date time specifiers below for fmt
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
 \<WX\> <br> \<WX:xxxx\> | insert current weather data from METAR as specified on <br> WX configuration tab. see WX configure replace xxxx with the 4 letter <br> METAR designator for a report on a station other than the one specified on <br> the weather configuration tab.
 <br>
 
@@ -148,7 +153,7 @@ Macro       | Description
 \<QSYTO\>            | same as left-clk on QSY button
 \<QSYFM\>            | same as right-clk QSY button
 \<QSY:FFF.F[:NNNN]\> | Qsy to transceiver frequency in kHz, optional waterfall <br> (Audio) frequency in Hz (If not specified, it i not changed). Several QSY <br> frequencies, or ranges of frequencies provided by one increment, can be <br> proposed, in which case the first frequency after the current frequency <br> is chosen.
-\<PUSH:m|f\>         | Push (save) current mode(m), freq(f) for later retrieval
+\<PUSH:m\|f\>         | Push (save) current mode(m), freq(f) for later retrieval
 \<PUSH\>             | Push both mode and freq for later retrieval
 \<POP\>              | Pop (restore) pushed mode and/or freq
 <br>
@@ -280,6 +285,74 @@ that is supported by fldigi:
 </center>
 <br>
 
+\section date_time_specifiers Date Time Specifiers
+<center>
+
+ Format | Description
+:-----: | :--------------------------------------------------------------
+\%a  | The abbreviated weekday name according to the current locale
+\%A  | The full weekday name according to the current locale
+\%b  | The abbreviated month name according to the current locale
+\%B  | The full month name according to the current locale
+\%c  | The preferred date and time representation for the current locale
+\%C  | The century number (year/100) as a 2-digit integer
+\%d  | The day of the month as a decimal number (range 01 to 31)
+\%D  | Equivalent  to \%m/\%d/\%y.  (Americans only)
+\%e  | Like  \%d, the day of the month as a decimal number, leading space
+\%E  | Modifier: use alternative format, see below
+\%F  | Equivalent to \%Y-\%m-\%d (the ISO 8601 date format)
+\%G  | The ISO 8601 week-based year with century as  a  decimal  number
+\%g  | Like \%G, but without century, that is, with a 2-digit year (00-99)
+\%h  | Equivalent to \%b
+\%H  | The hour as a decimal number using a 24-hour clock (range 00 to 23)
+\%I  | The hour as a decimal number using a 12-hour clock (range 01 to 12)
+\%j  | The day of the year as a decimal number (range 001 to 366)
+\%k  | The  hour  (24-hour  clock)  as a decimal number (range 0 to 23)
+\%l  | The hour (12-hour clock) as a decimal number (range 1 to  12)
+\%m  | The month as a decimal number (range 01 to 12)
+\%M  | The minute as a decimal number (range 00 to 59)
+\%n  | A newline character
+\%O  | Modifier: use alternative format
+\%p  | Either "AM" or "PM" according to the given time value
+\%P  | Like \%p but in lowercase: "am" or "pm"
+\%r  | The  time  in  a.m.  or  p.m.  notation.  Equivalent to \%I:\%M:\%S \%p
+\%R  | The time in 24-hour notation (\%H:\%M)
+\%s  | The number of seconds since the Epoch, 1970-01-01 00:00:00 +0000 (UTC)
+\%S  | The  second  as a decimal number (range 00 to 60)
+\%t  | A tab character.
+\%T  | The time in 24-hour notation (\%H:\%M:\%S)
+\%u  | The day of the week as a decimal, range 1 to 7, Monday being 1
+\%U  | The week number of the current year as a decimal number, range 00 to  53
+\%V  | The ISO 8601 week number of the current year as a decimal number
+\%w  | The day of the week as a decimal, range 0 to 6, Sunday being 0
+\%W  | The  week  number of the current year as a decimal number
+\%x  | The preferred date representation for the current locale without the time
+\%X  | The preferred time representation for the current locale without the date
+\%y  | The year as a decimal number without a century (range 00 to 99)
+\%Y  | The year as a decimal number including the century
+\%z  | The +hhmm or -hhmm numeric timezone, hour and minute offset from UTC
+\%Z  | The timezone name or abbreviation
+\%\%  | A literal '\%' character
+</center>
+<br>
+Some date time examples:
+<br>
+Macros:
+<br>
+\<ZT><br>
+\<ZT:\%H\%M\%S Z\><br>
+\<ZT:\%H hours, \%M minutes, \%S seconds UTC\><br>
+\<ZT:\%T UTC\><br>
+\<ZDT\><br>
+\<ZDT:\%a \%d \%b \%Y \%T UTC\><br>
+<br>
+Resulting transmit strings:
+<br>
+<center>
+\image html date_time_examples.png ""
+\image latex date_time_examples.png "" width=4.0in
+</center>
+<br>
 \section other_modems Other Modems
 
 The following modems perform other functions not involving data
