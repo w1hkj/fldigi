@@ -690,6 +690,11 @@ void delayed_startup(void *)
 
 	auto_start();
 
+	if (progStatus.WK_online) {
+		btn_WK_connect->value(1);
+		WK_connect(1);
+	}
+
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
 
@@ -860,6 +865,10 @@ int main(int argc, char ** argv)
 
 			case DXCC_TID:
 				cbq[i]->attach(i, "DXCC_TID");
+				break;
+
+			case WKEY_TID:
+				cbq[i]->attach(i, "WKEY_TID");
 				break;
 
 			case FLMAIN_TID:

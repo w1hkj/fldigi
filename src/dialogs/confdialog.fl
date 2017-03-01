@@ -430,7 +430,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     xywh {675 24 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
-      xywh {0 0 600 395} color 50 selection_color 50
+      xywh {0 0 605 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
@@ -439,7 +439,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
       } {
         Fl_Group {} {
           label {Station / Operator} open
-          xywh {50 50 485 245} box ENGRAVED_FRAME align 21
+          xywh {35 35 529 245} box ENGRAVED_FRAME align 21
         } {
           Fl_Input inpMyCallsign {
             label {Station Callsign:}
@@ -457,7 +457,7 @@ progdefaults.myCall = o->value();
 update_main_title();
 notify_change_callsign();
 progdefaults.changed = true;}
-            tooltip {Station callsign} xywh {195 79 110 24}
+            tooltip {Station callsign} xywh {195 64 110 24}
             code0 {inpMyCallsign->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
@@ -465,7 +465,7 @@ progdefaults.changed = true;}
             label {Station QTH:}
             callback {progdefaults.myQth = o->value();
 progdefaults.changed = true;}
-            tooltip {Operators QTH} xywh {195 113 320 24}
+            tooltip {Operators QTH} xywh {195 98 320 24}
             code0 {inpMyQth->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
@@ -473,7 +473,7 @@ progdefaults.changed = true;}
             label {Station Locator:}
             callback {progdefaults.myLocator = o->value();
 progdefaults.changed = true;}
-            tooltip {Maidenhead locator as in EM64qv} xywh {195 148 85 24}
+            tooltip {Maidenhead locator as in EM64qv} xywh {195 133 85 24}
             code0 {inpMyLocator->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
@@ -481,7 +481,7 @@ progdefaults.changed = true;}
             label {Operator Callsign:}
             callback {progdefaults.operCall = o->value();
 progdefaults.changed = true;}
-            tooltip {Operator callsign (if different than station callsign)} xywh {196 181 110 24}
+            tooltip {Operator callsign (if different than station callsign)} xywh {196 166 110 24}
             code0 {o->labelsize(FL_NORMAL_SIZE);}
             code1 {o->value(progdefaults.operCall.c_str());}
             class Fl_Input2
@@ -490,7 +490,7 @@ progdefaults.changed = true;}
             label {Operator Name:}
             callback {progdefaults.myName = o->value();
 progdefaults.changed = true;}
-            tooltip {Operators name} xywh {195 212 140 24}
+            tooltip {Operators name} xywh {195 197 140 24}
             code0 {inpMyName->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
@@ -499,46 +499,46 @@ progdefaults.changed = true;}
           label {Antenna:}
           callback {progdefaults.myAntenna = o->value();
 progdefaults.changed = true;}
-          tooltip {Short description of antenna} xywh {195 248 320 24}
+          tooltip {Short description of antenna} xywh {195 233 320 24}
           code0 {inpMyAntenna->labelsize(FL_NORMAL_SIZE);}
           class Fl_Input2
         }
         Fl_Group grpNoise {
-          label {Test Signal - Do NOT use with transmitter} open
-          xywh {55 231 490 143} box ENGRAVED_FRAME align 21 hide
+          label {Test Signal - Do NOT use with transmitter} open selected
+          xywh {35 281 529 99} box ENGRAVED_FRAME align 21 hide
         } {
-          Fl_Check_Button btnNoiseOn {
-            label {Noise on}
-            callback {progdefaults.noise = o->value();}
-            xywh {93 269 70 15} down_box DOWN_BOX
-            code0 {o->value(progdefaults.noise);}
-          }
           Fl_Counter noiseDB {
             label dB
             callback {progdefaults.s2n = o->value();}
-            xywh {340 264 130 21} align 4 minimum -18 maximum 60 value 20
+            xywh {70 323 127 21} align 1 minimum -18 maximum 60 value 20
             code0 {o->value(progdefaults.s2n);}
             code1 {o->lstep(1);}
             class Fl_Counter2
           }
-          Fl_Check_Button btnOffsetOn {
-            label {Offset on}
-            xywh {93 307 70 15} down_box DOWN_BOX
+          Fl_Check_Button btnNoiseOn {
+            label {Noise on}
+            callback {progdefaults.noise = o->value();}
+            xywh {99 355 68 12} down_box DOWN_BOX
+            code0 {o->value(progdefaults.noise);}
           }
           Fl_Counter ctrl_freq_offset {
             label {freq-offset}
-            tooltip {ONLY FOR TESTING !} xywh {340 304 130 21} align 4 minimum -250 maximum 250
+            tooltip {ONLY FOR TESTING !} xywh {234 323 127 21} align 1 minimum -250 maximum 250
             code0 {o->lstep(10);}
           }
-          Fl_Check_Button btn_imd_on {
-            label {ALC emulation on}
-            xywh {93 342 70 15} down_box DOWN_BOX
+          Fl_Check_Button btnOffsetOn {
+            label {Offset on}
+            xywh {263 355 68 12} down_box DOWN_BOX
           }
           Fl_Counter xmtimd {
             label {ALC level}
-            xywh {340 339 130 21} align 4 minimum 0.5 maximum 1 step 0.01 value 1
+            xywh {399 323 127 21} align 1 minimum 0.5 maximum 1 step 0.01 value 1
             code1 {o->lstep(.1);}
             class Fl_Counter2
+          }
+          Fl_Check_Button btn_imd_on {
+            label {ALC on}
+            xywh {428 355 68 12} down_box DOWN_BOX
           }
         }
       }
@@ -1392,7 +1392,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMBars {
             label Macros open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {5 240 590 35} box ENGRAVED_FRAME
@@ -1707,12 +1707,12 @@ WF_UI();}
             label {Clrs/Fnts} open
             xywh {0 50 600 340} hide
           } {
-            Fl_Tabs tabsColors {open
-              xywh {0 55 600 335}
+            Fl_Tabs tabsColors {
+              xywh {0 50 600 340}
             } {
               Fl_Group {} {
                 label {Rx/Tx} open
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
@@ -2896,7 +2896,7 @@ btnTxRSID->redraw();}
               }
               Fl_Group {} {
                 label SigLvl
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Button btnLowSignal {
                   label Low
@@ -3389,20 +3389,20 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 600 365} hide
+        xywh {0 25 605 365} hide
       } {
         Fl_Tabs tabsModems {open
-          xywh {0 25 600 365} selection_color 50 align 9
+          xywh {0 25 605 365} selection_color 50 align 9
         } {
           Fl_Group tabCW {
-            label CW
-            xywh {0 50 600 340} hide
+            label CW open
+            xywh {0 50 605 340}
           } {
             Fl_Tabs tabsCW {open
-              xywh {0 50 600 340} selection_color 50
+              xywh {0 50 605 340} selection_color 50
             } {
-              Fl_Group {} {
-                label General open
+              Fl_Group tabsCW_general {
+                label General
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
@@ -3550,8 +3550,8 @@ progdefaults.changed = true;}
                   }
                 }
               }
-              Fl_Group {} {
-                label {Timing and QSK} open
+              Fl_Group tabsCW_timing {
+                label {Timing and QSK}
                 xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {
@@ -3675,9 +3675,9 @@ progdefaults.changed = true;}
                   } {}
                 }
               }
-              Fl_Group {} {
-                label Prosigns open
-                xywh {0 75 600 315} align 5
+              Fl_Group tabsCW_prosigns {
+                label Prosigns
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group {} {open
                   xywh {35 85 530 283} box ENGRAVED_FRAME
@@ -3686,8 +3686,57 @@ progdefaults.changed = true;}
                     label {Use '(' paren not KN}
                     callback {progdefaults.CW_use_paren=o->value();
 progdefaults.changed = true;}
-                    xywh {266 244 68 15} down_box DOWN_BOX
+                    xywh {161 244 68 15} down_box DOWN_BOX
                     code0 {o->value(progdefaults.CW_use_paren);}
+                  }
+                  Fl_Group {} {
+                    label {Use these for WinKeyer} open
+                    xywh {362 96 182 262} box ENGRAVED_FRAME align 17
+                  } {
+                    Fl_Box {} {
+                      label {" RR}
+                      tooltip {.-..-.} xywh {422 127 59 22}
+                    }
+                    Fl_Box {} {
+                      label {$ SX}
+                      tooltip {...-..-} xywh {422 147 59 22}
+                    }
+                    Fl_Box {} {
+                      label {' WG}
+                      tooltip {.----.} xywh {422 166 59 22}
+                    }
+                    Fl_Box {} {
+                      label {( KN}
+                      tooltip {-.--.} xywh {422 185 59 22}
+                    }
+                    Fl_Box {} {
+                      label {) KK}
+                      tooltip {-.--.-} xywh {422 204 59 22}
+                    }
+                    Fl_Box {} {
+                      label {+ AR}
+                      tooltip {.-.-.} xywh {422 223 59 22}
+                    }
+                    Fl_Box {} {
+                      label {< AR}
+                      tooltip {.-.-.} xywh {422 242 59 22}
+                    }
+                    Fl_Box {} {
+                      label {> SK}
+                      tooltip {...-.-} xywh {422 261 59 22}
+                    }
+                    Fl_Box {} {
+                      label {= BT}
+                      tooltip {-...-} xywh {422 280 59 22}
+                    }
+                    Fl_Box {} {
+                      label {- DU}
+                      tooltip {-....-} xywh {422 299 59 22}
+                    }
+                    Fl_Box {} {
+                      label {@@ AC}
+                      tooltip {.--.-.} xywh {422 320 59 22}
+                    }
                   }
                 }
                 Fl_Group {listbox_prosign[0]} {
@@ -3702,7 +3751,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[0] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 102 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 102 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[0];}
                   code2 {o->value(s);
@@ -3721,7 +3770,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[1] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 129 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 129 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[1];}
                   code2 {o->value(s);
@@ -3740,7 +3789,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[2] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 157 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 157 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[2];}
                   code2 {o->value(s);
@@ -3759,7 +3808,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[3] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 184 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 184 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[3];}
                   code2 {o->value(s);}
@@ -3777,7 +3826,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[4] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 212 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 212 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[4];}
                   code2 {o->value(s);
@@ -3796,7 +3845,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[5] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 240 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 240 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[5];}
                   code2 {o->value(s);
@@ -3815,7 +3864,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[6] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 267 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 267 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[6];}
                   code2 {o->value(s);
@@ -3834,7 +3883,7 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[7] = ps[c];
 progdefaults.changed = true;;} open
-                  xywh {167 295 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 295 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[7];}
                   code2 {o->value(s);
@@ -3853,13 +3902,233 @@ o->index(c);
 char ps[] = "~%&+={}<>[] ";
 progdefaults.CW_prosigns[8] = ps[c];
 progdefaults.changed = true;} open
-                  xywh {167 323 47 22} box DOWN_BOX color 7 align 4
+                  xywh {106 323 47 22} box DOWN_BOX color 7 align 4
                   code0 {o->add(szProsigns);}
                   code1 {char s[2] = " "; s[0] = progdefaults.CW_prosigns[8];}
                   code2 {o->value(s);
                        o->labelsize(FL_NORMAL_SIZE);}
                   class Fl_ListBox
                 } {}
+              }
+              Fl_Group tabsCW_winkeyer {
+                label WinKeyer open
+                xywh {0 75 600 315} align 5
+              } {
+                Fl_Group select_WK_CommPort {
+                  label {Ser. Port}
+                  callback {progStatus.WK_serial_port_name = o->value();} open
+                  tooltip {Xcvr serial port} xywh {69 85 405 23} box DOWN_BOX color 55 align 4
+                  code0 {\#include "combo.h"}
+                  code1 {\#include "winkeyer.h"}
+                  class Fl_ComboBox
+                } {}
+                Fl_Light_Button btn_WK_connect {
+                  label Connect
+                  callback {WK_connect(o->value());}
+                  tooltip {Connect / Disconnect from WinKeyer} xywh {500 85 80 23}
+                  code0 {o->value(progStatus.WK_online);}
+                }
+                Fl_Group {} {
+                  label ModeReg open
+                  xywh {10 191 134 192} box ENGRAVED_FRAME align 17
+                } {
+                  Fl_Check_Button btn_WK_swap {
+                    label Swap
+                    callback {WK_change_btn_swap();}
+                    tooltip {Swap left/right keyer contacts} xywh {20 217 70 15} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_auto_space {
+                    label {Auto Space}
+                    callback {WK_change_btn_auto_space();}
+                    tooltip {Enable paddle auto spacing of characters} xywh {20 249 70 15} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_ct_space {
+                    label {CT space}
+                    callback {WK_change_btn_ct_space();}
+                    tooltip {Enable contest character spacing} xywh {20 281 70 15} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_paddledog {
+                    label {Paddle Dog}
+                    callback {WK_change_btn_paddledog();}
+                    xywh {20 313 70 15} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_cut_zeronine {
+                    label {Cut 0/9}
+                    callback {WK_change_btn_cut_zeronine();}
+                    tooltip {Use T/N for 0/9} xywh {20 346 70 15} down_box DOWN_BOX
+                  }
+                }
+                Fl_Group {} {
+                  label ModeReg open
+                  xywh {167 191 134 192} box ENGRAVED_FRAME align 17
+                } {
+                  Fl_Check_Button btn_WK_paddle_echo {
+                    label {Paddle echo}
+                    callback {WK_change_btn_paddle_echo();}
+                    tooltip {Echo paddle chars to Rx Panel} xywh {173 217 70 16} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_serial_echo {
+                    label {Serial echo}
+                    callback {WK_change_btn_serial_echo();}
+                    tooltip {Must be enabled} xywh {173 249 70 16} down_box DOWN_BOX value 1 deactivate
+                  }
+                  Fl_Check_Button btn_WK_sidetone_on {
+                    label {Tone Keyer}
+                    callback {WK_change_btn_sidetone_on();}
+                    tooltip {Enable Winkeyer tone keying} xywh {173 281 103 16} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_tone_on {
+                    label {Tone ON}
+                    callback {WK_change_btn_tone_on();}
+                    tooltip {Enable Winkeyer audio tone} xywh {173 313 87 16} down_box DOWN_BOX
+                  }
+                  Fl_Check_Button btn_WK_ptt_on {
+                    label {PTT ON}
+                    callback {WK_change_btn_ptt_on();}
+                    tooltip {Enable Winkeyer PTT output} xywh {173 346 87 16} down_box DOWN_BOX
+                  }
+                }
+                Fl_Group {} {
+                  label {WPM Settings} open
+                  xywh {310 191 112 192} box ENGRAVED_FRAME align 17
+                } {
+                  Fl_Counter cntr_WK_min_wpm {
+                    label {Min WPM}
+                    callback {WK_change_cntr_min_wpm();
+if ((o->value() + cntr_WK_rng_wpm->value()) > 55)
+  cntr_WK_rng_wpm->value(55 - o->value());}
+                    tooltip {Minimum WPM setting
+default = 10} xywh {331 215 64 22} type Simple minimum 10 maximum 30 step 1 value 10
+                  }
+                  Fl_Counter cntr_WK_rng_wpm {
+                    label {Rng WPM}
+                    callback {WK_change_cntr_rng_wpm();
+if ((cntr_WK_min_wpm->value() + o->value()) > 55)
+o->value(55 - cntr_WK_min_wpm->value());}
+                    tooltip {Range WPM setting
+default = 25} xywh {331 258 64 21} type Simple
+                  }
+                  Fl_Counter cntr_WK_farnsworth {
+                    label Farsnworth
+                    callback {WK_change_cntr_farnsworth();}
+                    tooltip {Farnsworth keying (0 = none)
+default = 0} xywh {331 300 64 22} type Simple
+                  }
+                  Fl_Counter cntr_WK_cmd_wpm {
+                    label {Cmd WPM}
+                    callback {WK_change_cntr_cmd_wpm();}
+                    tooltip {WPM speed for Winkeyer Command strings
+default = 18} xywh {331 343 64 22} type Simple
+                  }
+                }
+                Fl_Group {} {
+                  label {Timing/Settings} open
+                  xywh {430 191 160 192} box ENGRAVED_FRAME align 17
+                } {
+                  Fl_Counter cntr_WK_ratio {
+                    label Ratio
+                    callback {WK_change_cntr_ratio();}
+                    tooltip {Keying ratio
+default = 3.0} xywh {442 215 64 22} type Simple
+                  }
+                  Fl_Counter cntr_WK_comp {
+                    label Comp
+                    callback {WK_change_cntr_comp();}
+                    tooltip {Compensation in msec
+default = 0} xywh {442 258 64 21} type Simple
+                  }
+                  Fl_Counter cntr_WK_first_ext {
+                    label {1st Ext}
+                    callback {WK_change_cntr_first_ext();}
+                    tooltip {Extra duration to first dit/dot in msec
+default = 0} xywh {442 300 64 22} type Simple
+                  }
+                  Fl_Counter cntr_WK_sample {
+                    label Sample
+                    callback {WK_change_cntr_sample();}
+                    tooltip {Paddle sampling (see Winkeyer manual)
+default = 50} xywh {442 343 64 22} type Simple
+                  }
+                  Fl_Counter cntr_WK_weight {
+                    label Weight
+                    callback {WK_change_cntr_weight();}
+                    tooltip {Keying weight
+default = 50} xywh {513 215 64 22} type Simple
+                  }
+                  Fl_Counter cntr_WK_leadin {
+                    label Leadin
+                    callback {WK_change_cntr_leadin();}
+                    tooltip {Leadin in msec
+default = 0} xywh {513 258 64 21} type Simple
+                  }
+                  Fl_Counter cntr_WK_tail {
+                    label Tail
+                    callback {WK_change_cntr_tail();}
+                    tooltip {Extend last dit/dot in msec
+default = 0} xywh {513 300 64 22} type Simple
+                  }
+                }
+                Fl_Group {} {open
+                  xywh {10 143 580 47} box ENGRAVED_FRAME
+                } {
+                  Fl_Group choice_WK_keyer_mode {
+                    label {Keyer Mode}
+                    callback {WK_change_choice_keyer_mode();} open
+                    xywh {35 148 90 22} box BORDER_BOX color 55 align 2
+                    code0 {\#include "combo.h"}
+                    class Fl_ComboBox
+                  } {}
+                  Fl_Group choice_WK_hang {
+                    label Hang
+                    callback {WK_change_choice_hang();} open
+                    xywh {181 148 90 22} box BORDER_BOX color 55 align 2
+                    class Fl_ComboBox
+                  } {}
+                  Fl_Group choice_WK_sidetone {
+                    label Sidetone
+                    callback {WK_change_choice_sidetone();} open
+                    xywh {328 148 90 22} box BORDER_BOX color 55 align 2
+                    class Fl_ComboBox
+                  } {}
+                  Fl_Group choice_WK_output_pins {
+                    label {Output PIns}
+                    callback {WK_change_choice_output_pins();} open
+                    xywh {475 148 90 22} box BORDER_BOX color 55 align 2
+                    class Fl_ComboBox
+                  } {}
+                }
+                Fl_Group {} {open
+                  xywh {10 113 397 25} box ENGRAVED_FRAME
+                } {
+                  Fl_Box box_WK_wait {
+                    label Wait
+                    xywh {40 117 16 16} box DIAMOND_DOWN_BOX align 8
+                  }
+                  Fl_Box box_WK_break_in {
+                    label Bk
+                    xywh {115 117 16 16} box DIAMOND_DOWN_BOX align 8
+                  }
+                  Fl_Box box_WK_busy {
+                    label Busy
+                    xywh {190 117 16 16} box DIAMOND_DOWN_BOX align 8
+                  }
+                  Fl_Box box_WK_xoff {
+                    label Bfr
+                    xywh {265 117 16 16} box DIAMOND_DOWN_BOX align 8
+                  }
+                  Fl_Box box_WK_keydown {
+                    label Key
+                    xywh {341 117 16 16} box DIAMOND_DOWN_BOX align 8
+                  }
+                }
+                Fl_Check_Button btn_WK_use_pot {
+                  label {Use Pot}
+                  callback {WK_use_pot_changed();}
+                  tooltip {Winkeyer pot controls WPM} xywh {418 117 20 15} down_box DOWN_BOX align 8 when 1
+                }
+                Fl_Output txt_WK_wpm {
+                  tooltip {WPM setting} xywh {505 114 50 22}
+                }
               }
             }
           }
@@ -3925,7 +4194,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabFeld {
-            label Feld open
+            label Feld
             xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
@@ -5083,7 +5352,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabOther {
             label Other open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsOther {open
               xywh {0 50 600 340}
@@ -5302,7 +5571,7 @@ progdefaults.changed=true;}
           }
           Fl_Group {} {
             label RigCAT open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -5942,7 +6211,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label GPIO open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Box {} {
               label {BCM GPIO  pin    Value}
@@ -8680,12 +8949,12 @@ progdefaults.changed = true;}
     Fl_Button btnSaveConfig {
       label Save
       callback {progdefaults.saveDefaults();}
-      xywh {330 400 130 22}
+      xywh {330 394 130 22}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
       callback {closeDialog();}
-      xywh {462 400 130 22}
+      xywh {462 394 130 22}
     }
     Fl_Button btnResetConfig {
       label {Restore defaults}
@@ -8693,7 +8962,7 @@ progdefaults.changed = true;}
 	progdefaults.resetDefaults();
 	progdefaults.changed = false;
 }}
-      tooltip {WARNING - this will over write ALL settings} xywh {20 400 130 22}
+      tooltip {WARNING - this will over write ALL settings} xywh {20 394 130 22}
     }
   }
 } 

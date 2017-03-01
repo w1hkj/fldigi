@@ -231,6 +231,41 @@ status progStatus = {
 	false,				// fsq_rx_abort
 	false,				// ifkp_rx_abort
 
+//----------------------------------------------------------------------
+// winkeyer status values
+//----------------------------------------------------------------------
+
+	"NONE",			// string WK_serial_port_name;
+	1200,			// int WK_comm_baudrate;
+	2,				// int WK_stopbits;
+	2,				// int WK_comm_retries;
+	5,				// int WK_comm_wait;
+	50,				// int WK_comm_timeout;
+	false,			// bool WK_comm_echo;
+
+// wkeyer defaults
+	0xC4,			// unsigned char WK_mode_register;
+	18,				// unsigned char WK_speed_wpm;
+	6,				// unsigned char WK_sidetone;
+	50,				// unsigned char WK_weight;
+	0,				// unsigned char WK_lead_in_time;
+	0,				// unsigned char WK_tail_time;
+	10,				// unsigned char WK_min_wpm;
+	25,				// unsigned char WK_max_wpm;
+	0,				// unsigned char WK_first_extension;
+	0,				// unsigned char WK_key_compensation;
+	0,				// unsigned char WK_farnsworth_wpm;
+	50,				// unsigned char WK_paddle_setpoint;
+	50,				// unsigned char WK_dit_dah_ratio;
+	7,				// unsigned char WK_pin_configuration;
+	255,			// unsigned char WK_dont_care;
+
+	false,			// bool WK_cut_zeronine;
+	18,				// unsigned char WK_cmd_wpm;
+	false,			// bool WK_use_pot
+	false,			// bool WK_online;
+
+//----------------------------------------------------------------------
 	false				// bool bLastStateRead;
 };
 
@@ -546,7 +581,31 @@ if (!bWF_only) {
 
 	spref.set("meters", meters);
 
-//	spref.set("xml_logbook", xml_logbook);
+//----------------------------------------------------------------------
+// WinKeyer prefs set
+
+	spref.set("WK_serial_port_name", WK_serial_port_name.c_str());
+
+	spref.set("WK_mode_register", WK_mode_register);
+	spref.set("WK_speed_wpm", WK_speed_wpm);
+	spref.set("WK_cut_zeronine", WK_cut_zeronine);
+	spref.set("WK_cmd_wpm", WK_cmd_wpm);
+	spref.set("WK_sidetone", WK_sidetone);
+	spref.set("WK_weight", WK_weight);
+	spref.set("WK_lead_in_time", WK_lead_in_time);
+	spref.set("WK_tail_time", WK_tail_time);
+	spref.set("WK_min_wpm", WK_min_wpm);
+	spref.set("WK_rng_wpm", WK_rng_wpm);
+	spref.set("WK_1st_ext", WK_first_extension);
+	spref.set("WK_key_comp", WK_key_compensation);
+	spref.set("WK_farnsworth", WK_farnsworth_wpm);
+	spref.set("WK_paddle_set", WK_paddle_setpoint);
+	spref.set("WK_dit_dah_ratio", WK_dit_dah_ratio);
+	spref.set("WK_pin_config", WK_pin_configuration);
+	spref.set("WK_use_pot", WK_use_pot);
+
+	spref.set("WK_online", WK_online);
+
 }
 
 void status::loadLastState()
@@ -803,7 +862,35 @@ void status::loadLastState()
 
 	spref.get("meters",  i, meters); meters = i;
 
-//	spref.get("xml_logbook", i, xml_logbook); xml_logbook = i;
+//----------------------------------------------------------------------
+// WinKeyer prefs get
+//----------------------------------------------------------------------
+
+		spref.get("WK_serial_port_name", strbuff, "NONE", 199);
+		WK_serial_port_name = strbuff;
+		if (WK_serial_port_name.find("tty") == 0) 
+			WK_serial_port_name.insert(0, "/dev/");
+
+		spref.get("WK_mode_register", i, WK_mode_register); WK_mode_register = i;
+		spref.get("WK_speed_wpm", i, WK_speed_wpm); WK_speed_wpm = i;
+		spref.get("WK_cmd_wpm", i, WK_cmd_wpm); WK_cmd_wpm = i;
+		spref.get("WK_cut_zeronine", i, WK_cut_zeronine); WK_cut_zeronine = i;
+		spref.get("WK_sidetone", i, WK_sidetone); WK_sidetone = i;
+		spref.get("WK_weight", i, WK_weight); WK_weight = i;
+		spref.get("WK_lead_in_time", i, WK_lead_in_time); WK_lead_in_time = i;
+		spref.get("WK_tail_time", i, WK_tail_time); WK_tail_time = i;
+		spref.get("WK_min_wpm", i, WK_min_wpm); WK_min_wpm = i;
+		spref.get("WK_rng_wpm", i, WK_rng_wpm); WK_rng_wpm = i;
+		spref.get("WK_1st_ext", i, WK_first_extension); WK_first_extension = i;
+		spref.get("WK_key_comp", i, WK_key_compensation); WK_key_compensation = i;
+		spref.get("WK_farnsworth", i, WK_farnsworth_wpm); WK_farnsworth_wpm = i;
+		spref.get("WK_paddle_set", i, WK_paddle_setpoint); WK_paddle_setpoint = i;
+		spref.get("WK_dit_dah_ratio", i, WK_dit_dah_ratio); WK_dit_dah_ratio = i;
+		spref.get("WK_pin_config", i, WK_pin_configuration); WK_pin_configuration = i;
+		spref.get("WK_use_pot", i, WK_use_pot); WK_use_pot = i;
+
+		spref.get("WK_online", i, WK_online); WK_online = i;
+
 }
 
 void status::initLastState()
@@ -849,11 +936,11 @@ void status::initLastState()
 	if (lastmode >= MODE_PSK_FIRST && lastmode <= MODE_PSK_LAST) {
 		if (mvsquelch) {
 			mvsquelch->range(-3.0, 6.0);
-			mvsquelch->value(progStatus.VIEWER_psksquelch);
+			mvsquelch->value(VIEWER_psksquelch);
 		}
 		if (sldrViewerSquelch) {
 			sldrViewerSquelch->range(-3.0, 6.0);
-			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
+			sldrViewerSquelch->value(VIEWER_psksquelch);
 		}
 	}
 
@@ -889,16 +976,16 @@ void status::initLastState()
 	if(override_data_io_enabled != DISABLED_IO) {
 		data_io_enabled = override_data_io_enabled;
 		progdefaults.data_io_enabled = data_io_enabled;
-		progStatus.data_io_enabled = data_io_enabled;
+		data_io_enabled = data_io_enabled;
 	}
 
-	if(progStatus.data_io_enabled == KISS_IO) {
+	if(data_io_enabled == KISS_IO) {
 		data_io_enabled = KISS_IO;
 		progdefaults.data_io_enabled = KISS_IO;
 	} else {
 		data_io_enabled = ARQ_IO;
 		progdefaults.data_io_enabled = ARQ_IO;
-		progStatus.data_io_enabled = ARQ_IO;
+		data_io_enabled = ARQ_IO;
 		kpsql_enabled = false;
 	}
 
@@ -996,7 +1083,106 @@ void status::initLastState()
 	ReceiveText->set_word_wrap(rx_word_wrap, true);
 	TransmitText->set_word_wrap(tx_word_wrap, true);
 
-//	set_server_label(xml_logbook);
     disable_config_p2p_io_widgets();
     update_csma_io_config(CSMA_ALL);
+
+// config_WK
+	choice_WK_keyer_mode->add("Iambic B");
+	choice_WK_keyer_mode->add("Iambic A");
+	choice_WK_keyer_mode->add("Ultimatic");
+	choice_WK_keyer_mode->add("Bug Mode");
+	choice_WK_keyer_mode->index((WK_mode_register & 0x30) >> 4);
+
+	choice_WK_output_pins->add("Key 1");
+	choice_WK_output_pins->add("Key 2");
+	choice_WK_output_pins->add("Key 1 & 2");
+	choice_WK_output_pins->index(((WK_pin_configuration & 0x06) >> 2) - 1);
+
+	choice_WK_sidetone->add("4000");
+	choice_WK_sidetone->add("2000");
+	choice_WK_sidetone->add("1333");
+	choice_WK_sidetone->add("1000");
+	choice_WK_sidetone->add("800");
+	choice_WK_sidetone->add("666");
+	choice_WK_sidetone->add("571");
+	choice_WK_sidetone->add("500");
+	choice_WK_sidetone->add("444");
+	choice_WK_sidetone->add("400");
+	choice_WK_sidetone->index((WK_sidetone & 0x0F) - 1);
+
+	choice_WK_hang->add("Wait 1.0");
+	choice_WK_hang->add("Wait 1.33");
+	choice_WK_hang->add("Wait 1.66");
+	choice_WK_hang->add("Wait 2.0");
+	choice_WK_hang->index((WK_pin_configuration & 0x30) >> 4);
+
+	cntr_WK_tail->minimum(0); 
+	cntr_WK_tail->maximum(250); 
+	cntr_WK_tail->step(10);
+	cntr_WK_tail->value(WK_tail_time);
+
+	cntr_WK_leadin->minimum(0); 
+	cntr_WK_leadin->maximum(250); 
+	cntr_WK_leadin->step(10);
+	cntr_WK_leadin->value(WK_lead_in_time);
+
+	cntr_WK_weight->minimum(10); 
+	cntr_WK_weight->maximum(90); 
+	cntr_WK_weight->step(1);
+	cntr_WK_weight->value(WK_weight);
+
+	cntr_WK_sample->minimum(10); 
+	cntr_WK_sample->maximum(90); 
+	cntr_WK_sample->step(1);
+	cntr_WK_sample->value(WK_paddle_setpoint);
+
+	cntr_WK_first_ext->minimum(0); 
+	cntr_WK_first_ext->maximum(250); 
+	cntr_WK_first_ext->step(1);
+	cntr_WK_first_ext->value(WK_first_extension);
+
+	cntr_WK_comp->minimum(0); 
+	cntr_WK_comp->maximum(250); 
+	cntr_WK_comp->step(1);
+	cntr_WK_comp->value(WK_key_compensation);
+
+	cntr_WK_ratio->minimum(2.0); 
+	cntr_WK_ratio->maximum(4.0); 
+	cntr_WK_ratio->step(0.1);
+	cntr_WK_ratio->value(WK_dit_dah_ratio * 3 / 50.0);
+
+	cntr_WK_cmd_wpm->minimum(10); 
+	cntr_WK_cmd_wpm->maximum(30); 
+	cntr_WK_cmd_wpm->step(1);
+	cntr_WK_cmd_wpm->value(WK_cmd_wpm);
+
+	cntr_WK_farnsworth->minimum(10); 
+	cntr_WK_farnsworth->maximum(99); 
+	cntr_WK_farnsworth->step(1);
+	cntr_WK_farnsworth->value(WK_farnsworth_wpm);
+
+	cntr_WK_rng_wpm->minimum(10); 
+	cntr_WK_rng_wpm->maximum(40); 
+	cntr_WK_rng_wpm->step(1);
+	cntr_WK_rng_wpm->value(WK_rng_wpm);
+
+	cntr_WK_min_wpm->minimum(5); 
+	cntr_WK_min_wpm->maximum(89); 
+	cntr_WK_min_wpm->step(1);
+	cntr_WK_min_wpm->value(WK_min_wpm);
+
+	btn_WK_sidetone_on->value(WK_sidetone);
+	btn_WK_cut_zeronine->value(WK_cut_zeronine);
+
+	btn_WK_ptt_on->value((WK_pin_configuration & 0x01) == 0x01);
+	btn_WK_tone_on->value((WK_pin_configuration & 0x02) == 0x02);
+
+	btn_WK_ct_space->value((WK_mode_register & 0x01) == 0x01);
+	btn_WK_auto_space->value((WK_mode_register & 0x02) == 0x02);
+	btn_WK_serial_echo->value((WK_mode_register & 0x04) == 0x04);
+	btn_WK_swap->value((WK_mode_register & 0x08) == 0x08);
+	btn_WK_paddle_echo->value((WK_mode_register & 0x40) == 0x40);
+	btn_WK_paddledog->value((WK_mode_register & 0x80) == 0x80);
+
+	select_WK_CommPort->value(WK_serial_port_name.c_str());
 }
