@@ -361,6 +361,8 @@ Fl_Input2 *inp_FD_class_log=(Fl_Input2 *)0;
 
 Fl_Input2 *inp_FD_section_log=(Fl_Input2 *)0;
 
+Fl_Input2 *inpBand_log=(Fl_Input2 *)0;
+
 Fl_Group *tab_log_other=(Fl_Group *)0;
 
 Fl_Input2 *inpCNTY_log=(Fl_Input2 *)0;
@@ -984,7 +986,6 @@ void create_logbook_dialogs() {
         tab_log_qsl->end();
       } // Fl_Group* tab_log_qsl
       { tab_log_contest = new Fl_Group(5, 164, 475, 96, _("Contest"));
-        tab_log_contest->hide();
         { inpSerNoOut_log = new Fl_Input2(72, 174, 55, 24, _("Ser out"));
           inpSerNoOut_log->tooltip(_("Contest seral # sent"));
           inpSerNoOut_log->box(FL_DOWN_BOX);
@@ -1057,9 +1058,22 @@ void create_logbook_dialogs() {
           inp_FD_section_log->align(Fl_Align(FL_ALIGN_LEFT));
           inp_FD_section_log->when(FL_WHEN_RELEASE);
         } // Fl_Input2* inp_FD_section_log
+        { inpBand_log = new Fl_Input2(394, 231, 80, 24, _("Band"));
+          inpBand_log->tooltip(_("Contest serial # received"));
+          inpBand_log->box(FL_DOWN_BOX);
+          inpBand_log->color(FL_BACKGROUND2_COLOR);
+          inpBand_log->selection_color(FL_SELECTION_COLOR);
+          inpBand_log->labeltype(FL_NORMAL_LABEL);
+          inpBand_log->labelfont(0);
+          inpBand_log->labelsize(14);
+          inpBand_log->labelcolor(FL_FOREGROUND_COLOR);
+          inpBand_log->align(Fl_Align(FL_ALIGN_LEFT));
+          inpBand_log->when(FL_WHEN_RELEASE);
+        } // Fl_Input2* inpBand_log
         tab_log_contest->end();
       } // Fl_Group* tab_log_contest
       { tab_log_other = new Fl_Group(5, 164, 475, 96, _("Other"));
+        tab_log_other->hide();
         { inpCNTY_log = new Fl_Input2(16, 187, 241, 24, _("County"));
           inpCNTY_log->tooltip(_("County"));
           inpCNTY_log->box(FL_DOWN_BOX);

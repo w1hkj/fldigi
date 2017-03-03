@@ -1,27 +1,27 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-i18n_type 1 
-i18n_include "gettext.h" 
-i18n_function _ 
-header_name {.h} 
+version 1.0304
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
+header_name {.h}
 code_name {.cxx}
 decl {\#include <config.h>} {private local
-} 
+}
 
 decl {\#include <FL/Fl_Pixmap.H>} {private local
-} 
+}
 
 decl {\#include "flmisc.h"} {private local
-} 
+}
 
 decl {\#include "logsupport.h"} {private local
-} 
+}
 
 decl {\#include "pixmaps.h"} {private local
-} 
+}
 
 decl {\#include "flinput2.h"} {public local
-} 
+}
 
 decl {// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk's
 // FL/Fl_Check_Browser.H (http://www.fltk.org/str.php?L2984)
@@ -31,7 +31,7 @@ decl {// Avoid 'nitems' macro collision between FreeBSD's sys/params.h and fltk'
 \#undef nitems
 // ^^^ Avoid 'nitems' macro collision
  extern Fl_Check_Browser *chkExportBrowser;} {public local
-} 
+}
 
 Function {create_logbook_dialogs()} {open return_type void
 } {
@@ -544,7 +544,7 @@ btnSelectStaCity->value(0);}
       }
       Fl_Group tab_log_contest {
         label Contest open
-        xywh {5 164 475 96} hide
+        xywh {5 164 475 96}
       } {
         Fl_Input inpSerNoOut_log {
           label {Ser out}
@@ -576,10 +576,15 @@ btnSelectStaCity->value(0);}
           tooltip {Contest serial \# received} xywh {210 231 56 24}
           class Fl_Input2
         }
+        Fl_Input inpBand_log {
+          label Band selected
+          tooltip {Contest serial \# received} xywh {394 231 80 24}
+          class Fl_Input2
+        }
       }
       Fl_Group tab_log_other {
         label Other open
-        xywh {5 164 475 96}
+        xywh {5 164 475 96} hide
       } {
         Fl_Input inpCNTY_log {
           label County
@@ -838,4 +843,4 @@ btnCabRSTrcvd->value(1);}
       }
     }
   }
-} 
+}
