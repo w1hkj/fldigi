@@ -288,6 +288,7 @@ used on MARS CW operations.
 
 See \ref cw_page "Operating CW" for additional information.
 <br>
+See \ref cw_winkeyer_page for additional information on WinKeyer interface.
 <br>
 
 \ref cw_configuration_page "Return to Top of Page"

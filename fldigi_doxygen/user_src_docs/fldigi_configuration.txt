@@ -76,6 +76,7 @@ but the defaults should be satisfactory for most users.
 <ul>
 	<li> \subpage contestia_configuration_page </li>
 	<li> \subpage cw_configuration_page </li>
+	<li> \subpage cw_winkeyer_page </li>
 	<li> \subpage domino_ex_configuration_page </li>
 	<li> \subpage feld_hell_configuration_page </li>
 	<li> \subpage fsq_configuration_page </li>
@@ -89,7 +90,6 @@ but the defaults should be satisfactory for most users.
 	<li> \subpage thor_configuration_page </li>
 </ul>
 <br>
-
 
 When you have completed the configuration go to the <b>Configure</b> menu
 and select <b>Save config</b> or press the "Save Config" button on the
