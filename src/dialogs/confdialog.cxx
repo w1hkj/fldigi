@@ -9228,7 +9228,6 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9288,6 +9287,7 @@ i on a\ntouch screen device such as a tablet."));
                 cntLower->callback((Fl_Callback*)cb_cntLower);
                 cntLower->align(Fl_Align(FL_ALIGN_TOP));
                 cntLower->when(FL_WHEN_CHANGED);
+                cntLower->hide();
                 o->value(progdefaults.CWlower);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntLower
@@ -9308,6 +9308,7 @@ i on a\ntouch screen device such as a tablet."));
                 cntUpper->callback((Fl_Callback*)cb_cntUpper);
                 cntUpper->align(Fl_Align(FL_ALIGN_TOP));
                 cntUpper->when(FL_WHEN_CHANGED);
+                cntUpper->hide();
                 o->value(progdefaults.CWupper);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntUpper
@@ -9847,6 +9848,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_prosigns
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));
                 tabsCW_winkeyer->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_winkeyer->hide();
                 { select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
                 select_WK_CommPort->tooltip(_("Xcvr serial port"));
                 select_WK_CommPort->box(FL_DOWN_BOX);

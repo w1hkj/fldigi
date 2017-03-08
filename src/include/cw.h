@@ -211,6 +211,11 @@ protected:
 	double lowerwpm;
 	double upperwpm;
 
+	int synchscope;
+	double noise_floor;
+	double sig_avg;
+	double siglevel;
+
 	bool use_paren;
 	std::string prosigns;
 
