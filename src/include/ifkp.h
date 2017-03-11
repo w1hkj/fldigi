@@ -67,6 +67,7 @@ protected:
 	double			val;
 	double			max;
 	double			noise;
+	double			noisepower;
 	int				peak;
 	int				prev_peak;
 	int				last_peak;
@@ -76,7 +77,7 @@ protected:
 	int				prev_symbol;
 	int				curr_nibble;
 	int				prev_nibble;
-
+	int				nibbles[199];
 	void			process_symbol(int);
 	void			parse_pic(int);
 	double			s2n;
@@ -132,6 +133,8 @@ public:
 	int		tx_process ();
 
 	void	set_freq(double);
+
+	void	init_nibbles();
 //----
 
 // support for ifkp image transfers

@@ -94,8 +94,7 @@ static string valid_callsign(char ch)
 
 // nibbles table used for fast conversion from tone difference to symbol
 
-static int nibbles[199];
-static void init_nibbles()
+void ifkp::init_nibbles()
 {
 	int nibble = 0;
 	for (int i = 0; i < 199; i++) {
@@ -124,7 +123,7 @@ ifkp::ifkp(trx_mode md) : modem()
 
 	mode = md;
 	fft = new g_fft<double>(IFKP_FFTSIZE);
-	snfilt = new Cmovavg(200);
+	snfilt = new Cmovavg(64);
 	movavg_size = 4;
 	for (int i = 0; i < IFKP_NUMBINS; i++) binfilt[i] = new Cmovavg(movavg_size);
 	txphase = 0;
@@ -421,31 +420,50 @@ void ifkp::process_symbol(int sym)
 
 void ifkp::process_tones()
 {
-	noise = 0;
 	max = 0;
 	peak = 0;
-	int firstbin = basetone - 21;
-// time domain moving average filter for each tone bin
+
+	max = 0;
+	peak = IFKP_NUMBINS / 2;
+
+	int firstbin = frequency * IFKP_SYMLEN / samplerate - IFKP_NUMBINS / 2;
+
+	double sigval = 0;
+
+	double mins[3];
+	double min = 3.0e8;
+	double temp;
+
+	mins[0] = mins[1] = mins[2] = 1.0e8;
 	for (int i = 0; i < IFKP_NUMBINS; ++i) {
 		val = norm(fft_data[i + firstbin]);
+// looking for maximum signal
 		tones[i] = binfilt[i]->run(val);
 		if (tones[i] > max) {
 			max = tones[i];
 			peak = i;
 		}
+// looking for minimum signal in a 3 bin sequence
+		mins[2] = tones[i];
+		temp = mins[0] + mins[1] + mins[2];
+		mins[0] = mins[1];
+		mins[1] = mins[2];
+		if (temp < min) min = temp;
 	}
 
-	noise += (tones[0] + tones[IFKP_NUMBINS - 1]) / 2.0;
-	noise *= IFKP_FFTSIZE;
+	sigval = tones[peak-1] + tones[peak] + tones[peak+1];
+	if (min == 0) min = 1e-10;
 
-	if (noise < 1e-8) noise = 1e-8;
+	s2n = 10 * log10( snfilt->run(sigval/min)) - 36.0;
 
-	s2n = 10 * log10(snfilt->run(tones[peak]*.734/noise));
+//scale to -25 to +45 db range
+// -25 -> 0 linear
+// 0 - > 45 compressed by 2
 
-	snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
+	if (s2n <= 0) metric = 2 * (25 + s2n);
+	if (s2n > 0) metric = 50 * ( 1 + s2n / 45);
+	metric = clamp(metric, 0, 100);
 
-	metric = 2 * (s2n + 20);
-	metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
 	display_metric(metric);
 
 	if (peak == prev_peak) {
