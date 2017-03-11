@@ -41,10 +41,10 @@ class fsq : public modem {
 #define FFTSIZE		4096
 #define FSQ_SYMLEN	4096
 
-#define BLOCK_SIZE	FFTSIZE // (FFTSIZE / 2)
-#define SHIFT_SIZE	(FSQ_SYMLEN / 16)
+#define NUMBINS		144 // 200 //((FFTSIZE / 4) - 2)
 
-#define NUMBINS		142
+#define BLOCK_SIZE	FFTSIZE
+#define SHIFT_SIZE	(FSQ_SYMLEN / 16)
 
 enum STATE {TEXT, IMAGE};
 
@@ -69,6 +69,8 @@ protected:
 	int 			bkptr;
 	g_fft<double>	*fft;
 	Cmovavg			*snfilt;
+	Cmovavg			*sigfilt;
+	Cmovavg			*noisefilt;
 	Cmovavg			*baudfilt;
 	double			val;
 	double			max;
@@ -82,6 +84,7 @@ protected:
 	int				prev_symbol;
 	int				curr_nibble;
 	int				prev_nibble;
+	int				nibbles[199];
 	void			lf_check(int);
 	void			process_symbol(int);
 	double			s2n;
@@ -158,6 +161,8 @@ protected:
 	void			adjust_for_speed();
 	void			process_tones();
 
+	void init_nibbles();
+
 	void			set_freq(double);
 
 	bool			valid_char(int);
@@ -178,6 +183,8 @@ public:
 	std::string fsq_mycall() { return mycall; }
 
 	bool	fsq_squelch_open();
+
+	static int		symlen;
 
 // support for fsq image transfers
 private:
