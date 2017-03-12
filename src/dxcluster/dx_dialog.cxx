@@ -38,7 +38,18 @@ static void cb_inp_dccc_login(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Box *lbl_dxc_connected=(Fl_Box *)0;
+Fl_Input2 *inp_dxcc_password=(Fl_Input2 *)0;
+
+static void cb_inp_dxcc_password(Fl_Input2* o, void*) {
+  progdefaults.dxcc_password = o->value();
+}
+
+Fl_Button *btnDXCLUSTERpasswordShow=(Fl_Button *)0;
+
+static void cb_btnDXCLUSTERpasswordShow(Fl_Button*, void*) {
+  inp_dxcc_password->type(inp_dxcc_password->type() ^ FL_SECRET_INPUT);
+inp_dxcc_password->redraw();
+}
 
 Fl_Check_Button *btn_dxcc_connect=(Fl_Check_Button *)0;
 
@@ -46,6 +57,8 @@ static void cb_btn_dxcc_connect(Fl_Check_Button* o, void*) {
   progStatus.cluster_connected=o->value();
 DXcluster_connect(o->value());
 }
+
+Fl_Box *lbl_dxc_connected=(Fl_Box *)0;
 
 Fl_Check_Button *btn_dxc_auto_connect=(Fl_Check_Button *)0;
 
@@ -319,7 +332,7 @@ Fl_Double_Window* dxc_window() {
         inp_dxcc_host_url->selection_color(FL_SELECTION_COLOR);
         inp_dxcc_host_url->labeltype(FL_NORMAL_LABEL);
         inp_dxcc_host_url->labelfont(0);
-        inp_dxcc_host_url->labelsize(13);
+        inp_dxcc_host_url->labelsize(14);
         inp_dxcc_host_url->labelcolor(FL_FOREGROUND_COLOR);
         inp_dxcc_host_url->callback((Fl_Callback*)cb_inp_dxcc_host_url);
         inp_dxcc_host_url->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -336,7 +349,7 @@ Fl_Double_Window* dxc_window() {
         inp_dccc_host_port->selection_color(FL_SELECTION_COLOR);
         inp_dccc_host_port->labeltype(FL_NORMAL_LABEL);
         inp_dccc_host_port->labelfont(0);
-        inp_dccc_host_port->labelsize(13);
+        inp_dccc_host_port->labelsize(14);
         inp_dccc_host_port->labelcolor(FL_FOREGROUND_COLOR);
         inp_dccc_host_port->callback((Fl_Callback*)cb_inp_dccc_host_port);
         inp_dccc_host_port->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -350,25 +363,46 @@ Fl_Double_Window* dxc_window() {
         inp_dccc_login->selection_color(FL_SELECTION_COLOR);
         inp_dccc_login->labeltype(FL_NORMAL_LABEL);
         inp_dccc_login->labelfont(0);
-        inp_dccc_login->labelsize(13);
+        inp_dccc_login->labelsize(14);
         inp_dccc_login->labelcolor(FL_FOREGROUND_COLOR);
         inp_dccc_login->callback((Fl_Callback*)cb_inp_dccc_login);
         inp_dccc_login->align(Fl_Align(FL_ALIGN_TOP_LEFT));
         inp_dccc_login->when(FL_WHEN_RELEASE);
         o->value(progdefaults.dxcc_login.c_str());
       } // Fl_Input2* inp_dccc_login
-      { lbl_dxc_connected = new Fl_Box(418, 26, 20, 20, _("Connect State"));
-        lbl_dxc_connected->box(FL_DIAMOND_DOWN_BOX);
-        lbl_dxc_connected->color((Fl_Color)55);
-        lbl_dxc_connected->align(Fl_Align(FL_ALIGN_RIGHT));
-      } // Fl_Box* lbl_dxc_connected
-      { Fl_Check_Button* o = btn_dxcc_connect = new Fl_Check_Button(553, 10, 119, 15, _("Connect"));
+      { Fl_Input2* o = inp_dxcc_password = new Fl_Input2(420, 25, 80, 22, _("Password"));
+        inp_dxcc_password->tooltip(_("Your login password"));
+        inp_dxcc_password->box(FL_DOWN_BOX);
+        inp_dxcc_password->color(FL_BACKGROUND2_COLOR);
+        inp_dxcc_password->selection_color(FL_SELECTION_COLOR);
+        inp_dxcc_password->labeltype(FL_NORMAL_LABEL);
+        inp_dxcc_password->labelfont(0);
+        inp_dxcc_password->labelsize(14);
+        inp_dxcc_password->labelcolor(FL_FOREGROUND_COLOR);
+        inp_dxcc_password->callback((Fl_Callback*)cb_inp_dxcc_password);
+        inp_dxcc_password->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+        inp_dxcc_password->when(FL_WHEN_RELEASE);
+        o->value(progdefaults.dxcc_password.c_str());
+        o->type(FL_SECRET_INPUT);
+        inp_dxcc_password->labelsize(FL_NORMAL_SIZE);
+      } // Fl_Input2* inp_dxcc_password
+      { btnDXCLUSTERpasswordShow = new Fl_Button(503, 25, 22, 22, _("?"));
+        btnDXCLUSTERpasswordShow->tooltip(_("Show password in plain text"));
+        btnDXCLUSTERpasswordShow->callback((Fl_Callback*)cb_btnDXCLUSTERpasswordShow);
+      } // Fl_Button* btnDXCLUSTERpasswordShow
+      { Fl_Check_Button* o = btn_dxcc_connect = new Fl_Check_Button(571, 10, 101, 15, _("Connect"));
         btn_dxcc_connect->tooltip(_("Connect / Disconnect"));
         btn_dxcc_connect->down_box(FL_DOWN_BOX);
         btn_dxcc_connect->callback((Fl_Callback*)cb_btn_dxcc_connect);
         o->value(progStatus.cluster_connected);
       } // Fl_Check_Button* btn_dxcc_connect
-      { Fl_Check_Button* o = btn_dxc_auto_connect = new Fl_Check_Button(553, 31, 119, 15, _("Auto connect"));
+      { lbl_dxc_connected = new Fl_Box(540, 17, 20, 20);
+        lbl_dxc_connected->tooltip(_("Connected State"));
+        lbl_dxc_connected->box(FL_DIAMOND_DOWN_BOX);
+        lbl_dxc_connected->color((Fl_Color)55);
+        lbl_dxc_connected->align(Fl_Align(FL_ALIGN_RIGHT));
+      } // Fl_Box* lbl_dxc_connected
+      { Fl_Check_Button* o = btn_dxc_auto_connect = new Fl_Check_Button(571, 31, 101, 15, _("Auto conn\'"));
         btn_dxc_auto_connect->tooltip(_("Connect to host when starting fldigi"));
         btn_dxc_auto_connect->down_box(FL_DOWN_BOX);
         btn_dxc_auto_connect->callback((Fl_Callback*)cb_btn_dxc_auto_connect);
@@ -494,7 +528,7 @@ Fl_Double_Window* dxc_window() {
               brws_dxcluster_hosts->textfont(4);
               brws_dxcluster_hosts->align(Fl_Align(FL_ALIGN_TOP));
               Fl_Group::current()->resizable(brws_dxcluster_hosts);
-              static int widths[]={o->w()*6/10, o->w()*2/10, 0 };
+              static int widths[]={o->w()*6/10, o->w()*2/10, o->w()*2/10, 0 };
               o->column_widths(widths);
               o->column_char(':');
               dxcluster_hosts_load();

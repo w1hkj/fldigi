@@ -1425,10 +1425,10 @@
               "Fields separated by : character\n"                                       \
               "Lines separated by | character",                                         \
               "\
-dxc.wb3ffv.us:7300:|\
-nk7z-cluster.ddns.net:7373:|\
-dx.n8noe.us:7373:|\
-w0mw.dynip.com:23:|")                                                                   \
+dxc.wb3ffv.us:7300::|\
+nk7z-cluster.ddns.net:7373::|\
+dx.n8noe.us:7373::|\
+w0mw.dynip.com:23::|")                                                                   \
         ELEM_(RGB, DX_Color, "DX_COLOR",                                                \
               "RX text font color (RGB)",                                               \
               { 0, 0, 130 })                                                            \
@@ -1464,6 +1464,9 @@ w0mw.dynip.com:23:|")                                                           
               "")                                                                       \
         ELEM_(std::string, dxcc_login, "DXCC_LOGIN",                                    \
               "DXCC cluster login call sign",                                           \
+              "")                                                                       \
+        ELEM_(std::string, dxcc_password, "DXCC_PASSWORD",                              \
+              "DXCC cluster login password",                                            \
               "")                                                                       \
         ELEM_(std::string, dxcm_label_1, "DXC_ML1",                                     \
               "DXC Macro Label 1",                                                      \
