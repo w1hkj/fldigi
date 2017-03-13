@@ -3911,20 +3911,44 @@ void UI_position_macros(int x, int y1, int w, int HTh)
 	if (progdefaults.display_48macros) {
 		macroFrame2->hide();
 		macroFrame1->hide();
-		tbar->resize(x, y1, w, 4 * TB_HEIGHT);
-		tbar->show();
-		y1 += tbar->h();
-		HTh -= tbar->h();
-		center_group->resize(x, y1, w, HTh);
-		text_panel->resize(x, y1, w, HTh);
-		wefax_group->resize(x, y1, w, HTh);
-		fsq_group->resize(x, y1, w, HTh);
-		ifkp_group->resize(x, y1, w, HTh);
-		UI_select_central_frame(y1, HTh);
-		y1 += HTh;
-		wfpack->position(x, y1);
-		y1 += wfpack->h();
-		hpack->position(x, y1);
+		if (!progdefaults.four_bar_position) {
+			tbar->resize(x, y1, w, 4 * TB_HEIGHT);
+			tbar->show();
+			y1 += tbar->h();
+			HTh -= tbar->h();
+			center_group->resize(x, y1, w, HTh);
+			text_panel->resize(x, y1, w, HTh);
+			wefax_group->resize(x, y1, w, HTh);
+			fsq_group->resize(x, y1, w, HTh);
+			ifkp_group->resize(x, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+			y1 += HTh;
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+		} else {
+			int htbar = 4 * TB_HEIGHT;
+
+			HTh -= htbar;
+
+			center_group->resize(x, y1, w, HTh);
+			text_panel->resize(x, y1, w, HTh);
+			wefax_group->resize(x, y1, w, HTh);
+			fsq_group->resize(x, y1, w, HTh);
+			ifkp_group->resize(x, y1, w, HTh);
+			UI_select_central_frame(y1, HTh);
+
+			y1 += HTh;
+
+			tbar->resize(x, y1, w, htbar);
+			tbar->show();
+
+			y1 += htbar;
+
+			wfpack->position(x, y1);
+			y1 += wfpack->h();
+			hpack->position(x, y1);
+		}
 		fl_digi_main->init_sizes();
 		return;
 	}

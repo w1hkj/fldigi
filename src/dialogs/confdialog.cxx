@@ -1252,6 +1252,14 @@ static void cb_btn_macro_post(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_4bar_position=(Fl_Check_Button *)0;
+
+static void cb_btn_4bar_position(Fl_Check_Button* o, void*) {
+  progdefaults.four_bar_position = o->value();
+UI_select();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabWF_UI=(Fl_Group *)0;
 
 Fl_Check_Button *btnWF_UIrev=(Fl_Check_Button *)0;
@@ -7375,7 +7383,6 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8139,6 +8146,7 @@ ab and newline are automatically included."));
             tabContest->end();
           } // Fl_Group* tabContest
           { tabMBars = new Fl_Group(0, 50, 600, 340, _("Macros"));
+            tabMBars->hide();
             { Fl_Group* o = new Fl_Group(5, 240, 590, 35);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnMacroMouseWheel = new Fl_Check_Button(62, 248, 296, 20, _("Mouse wheel active on macro buttons"));
@@ -8253,14 +8261,24 @@ ab and newline are automatically included."));
               } // Fl_Check_Button* btn_save_macros_on_exit
               o->end();
             } // Fl_Group* o
-            { Fl_Group* o = new Fl_Group(5, 330, 590, 45);
+            { Fl_Group* o = new Fl_Group(5, 330, 295, 45);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btn_macro_post = new Fl_Check_Button(65, 345, 216, 20, _("Show macro control codes"));
+              { Fl_Check_Button* o = btn_macro_post = new Fl_Check_Button(65, 342, 216, 20, _("Show macro control codes"));
                 btn_macro_post->tooltip(_("print ^! execution codes in Rx panel"));
                 btn_macro_post->down_box(FL_DOWN_BOX);
                 btn_macro_post->callback((Fl_Callback*)cb_btn_macro_post);
                 o->value(progdefaults.macro_post);
               } // Fl_Check_Button* btn_macro_post
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(300, 330, 295, 45);
+              o->box(FL_ENGRAVED_FRAME);
+              { Fl_Check_Button* o = btn_4bar_position = new Fl_Check_Button(332, 342, 216, 20, _("4 bar macro set below Tx"));
+                btn_4bar_position->tooltip(_("Position the 4 bar macro set below Tx panel\nDefault above Rx panel"));
+                btn_4bar_position->down_box(FL_DOWN_BOX);
+                btn_4bar_position->callback((Fl_Callback*)cb_btn_4bar_position);
+                o->value(progdefaults.four_bar_position);
+              } // Fl_Check_Button* btn_4bar_position
               o->end();
             } // Fl_Group* o
             tabMBars->end();
