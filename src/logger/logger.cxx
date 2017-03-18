@@ -109,7 +109,7 @@ void putadif(int num, const char *s, string &str = adif)
 void check_lotw_log(void *)
 {
 	string logtxt;
-	FILE * logfile = fopen(lotw_log_fname.c_str(), "r");
+	FILE * logfile = fl_fopen(lotw_log_fname.c_str(), "r");
 	if (!logfile) {
 		logcheck_count++;
 		if (logcheck_count < 20) {

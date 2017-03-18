@@ -159,7 +159,7 @@ void show_tx_stream(string buff)
 #ifdef DXC_DEBUG
 	string pname = "TempDir";
 	pname.append("dxcdebug.txt", "a");
-	FILE *dxcdebug = fopen(pname.c_str(), "a");
+	FILE *dxcdebug = fl_fopen(pname.c_str(), "a");
 	fprintf(dxcdebug, "[T]:%s\n", buff.c_str());
 	fclose(dxcdebug);
 #endif
@@ -183,7 +183,7 @@ void show_rx_stream(string buff)
 #ifdef DXC_DEBUG
 	string pname = "TempDir";
 	pname.append("dxcdebug.txt", "a");
-	FILE *dxcdebug = fopen(pname.c_str(), "a");
+	FILE *dxcdebug = fl_fopen(pname.c_str(), "a");
 	fprintf(dxcdebug, "[R]:%s\n", buff.c_str());
 	fclose(dxcdebug);
 #endif
@@ -200,7 +200,7 @@ void show_error(string buff)
 #ifdef DXC_DEBUG
 	string pname = "TempDir";
 	pname.append("dxcdebug.txt", "a");
-	FILE *dxcdebug = fopen(pname.c_str(), "a");
+	FILE *dxcdebug = fl_fopen(pname.c_str(), "a");
 	fprintf(dxcdebug, "[E]:%s\n", buff.c_str());
 	fclose(dxcdebug);
 #endif
@@ -301,7 +301,7 @@ void show_help_line(string buff)
 #ifdef DXC_DEBUG
 	string pname = "TempDir";
 	pname.append("dxcdebug.txt", "a");
-	FILE *dxcdebug = fopen(pname.c_str(), "a");
+	FILE *dxcdebug = fl_fopen(pname.c_str(), "a");
 	fprintf(dxcdebug, "[W]:%s\n", buff.c_str());
 	fclose(dxcdebug);
 #endif
@@ -1065,7 +1065,7 @@ void DXcluster_init(void)
 #ifdef DXC_DEBUG
 	string pname = "TempDir";
 	pname.append("dxcdebug.txt", "a");
-	FILE *dxcdebug = fopen(pname.c_str(), "w");
+	FILE *dxcdebug = fl_fopen(pname.c_str(), "w");
 	fprintf(dxcdebug, "DXC session\n\n");
 	fclose(dxcdebug);
 #endif
