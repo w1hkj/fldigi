@@ -123,19 +123,19 @@ string pskBrowser::freqformat(int i) // 0 < i < channels
 			if (freq != NULLFREQ)
 				snprintf(szLine, sizeof(szLine), "%4d", freq);
 			else
-				sprintf(szLine, "    ");
+				snprintf(szLine, sizeof(szLine), "    ");
 			break;
 		case VIEWER_LABEL_RF:
 			if (freq != NULLFREQ)
 				snprintf(szLine, sizeof(szLine), "%8.2f", (rfc + (usb ? freq : -freq)) / 1000.0f);
 			else
-				sprintf(szLine, "    ");
+				snprintf(szLine, sizeof(szLine), "    ");
 			break;
 		case VIEWER_LABEL_CH:
 			snprintf(szLine, sizeof(szLine), "%2d", i + 1);
 			break;
 		default:
-			sprintf(szLine, "    ");
+			snprintf(szLine, sizeof(szLine), "    ");
 			break;
 	}
 	fline = white;

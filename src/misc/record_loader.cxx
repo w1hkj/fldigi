@@ -124,7 +124,7 @@ struct Row
 		bool isGood = ( nb_recs >= 0 );
 
 		if( isGood )
-			sprintf( nb_recs_str, "%6d", nb_recs );
+			snprintf( nb_recs_str, sizeof(nb_recs_str), "%6d", nb_recs );
 		else
 			strcpy( nb_recs_str, "   N/A" );
 		m_nb_rows->value(nb_recs_str);
@@ -245,7 +245,7 @@ std::string RecordLoaderInterface::Timestamp() const
 	struct tm tmLastMod = *localtime( & st.st_mtime );
 
 	char buf[64];
-	sprintf(buf, "%d/%d/%d %02d:%02d",
+	snprintf(buf, sizeof(buf), "%d/%d/%d %02d:%02d",
 			tmLastMod.tm_year + 1900,
 			tmLastMod.tm_mon + 1,
 			tmLastMod.tm_mday,
@@ -264,7 +264,7 @@ std::string RecordLoaderInterface::ContentSize() const
 	if (stat(filnam.c_str(), &st) == -1 ) return "      N/A";
 
 	char buf[64];
-	sprintf(buf, "%9" PRIuSZ, (size_t)st.st_size );
+	snprintf(buf, sizeof(buf), "%9" PRIuSZ, (size_t)st.st_size );
 	return buf ;
 }
 
