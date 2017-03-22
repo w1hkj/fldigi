@@ -372,7 +372,7 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 	suffix.append(ADIF_SUFFIX);
 	if (temp.find(suffix) == string::npos) temp.append(suffix);
 
-	FILE *testopen = fopen(temp.c_str(), "r");
+	FILE *testopen = fl_fopen(temp.c_str(), "r");
 	if (testopen) {
 		string warn = logbook_filename;
 		int ans = fl_choice2(

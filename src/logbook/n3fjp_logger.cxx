@@ -219,7 +219,7 @@ void n3fjp_disp_report(string s, string fm)
 
 	std::string pathname = TempDir;
 	pathname.append("n3fjp_data_stream.txt");
-	FILE *n3fjplog = fopen(pathname.c_str(), "a");
+	FILE *n3fjplog = fl_fopen(pathname.c_str(), "a");
 	fprintf(n3fjplog, "%s", report.c_str());
 	fclose(n3fjplog);
 
@@ -933,7 +933,7 @@ static void connect_to_n3fjp_server()
 
 		std::string pathname = TempDir;
 		pathname.append("n3fjp_data_stream.txt");
-		FILE *n3fjplog = fopen(pathname.c_str(), "w");
+		FILE *n3fjplog = fl_fopen(pathname.c_str(), "w");
 		fprintf(n3fjplog, "N3FJP / fldigi tcpip log\n\n");
 		fclose(n3fjplog);
 
