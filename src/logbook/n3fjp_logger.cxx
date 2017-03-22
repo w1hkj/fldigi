@@ -836,6 +836,7 @@ void n3fjp_set_ptt(int on)
 
 void n3fjp_add_record(cQsoRec &record)
 {
+	if (!n3fjp_connected) return;
 	rec = record;
 	n3fjp_bool_add_record = true;
 }
@@ -1100,9 +1101,8 @@ void *n3fjp_loop(void *args)
 
 		if (n3fjp_looptime > 0) continue;
 
-//		if (!n3fjp_connected) n3fjp_looptime = 5000;  // test for N3FJP logger every 5 sec
-//		else n3fjp_looptime = 250;  // r/w to N3FJP logger every 1/4 second
-		n3fjp_looptime = 200;
+		if (!n3fjp_connected) n3fjp_looptime = 5000;  // test for N3FJP logger every 5 sec
+		else n3fjp_looptime = 250;  // r/w to N3FJP logger every 1/4 second
 
 		if (!n3fjp_socket || (n3fjp_socket->fd() == -1)) {
 			n3fjp_start();
