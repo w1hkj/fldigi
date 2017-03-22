@@ -6547,6 +6547,13 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));
 
 Fl_Button *btn_verify_lotw=(Fl_Button *)0;
 
+Fl_Input2 *inpLOTW_download=(Fl_Input2 *)0;
+
+static void cb_inpLOTW_download(Fl_Input2* o, void*) {
+  progdefaults.lotw_download = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabAutoStart=(Fl_Group *)0;
 
 static void cb_tabAutoStart(Fl_Group*, void*) {
@@ -7750,7 +7757,6 @@ Fl_Double_Window* ConfigureDialog() {
                 grp_Log_QSO->end();
               } // Fl_Group* grp_Log_QSO
               { grpRX_Text = new Fl_Group(0, 75, 600, 315, _("Rx Text"));
-                grpRX_Text->hide();
                 { Fl_Group* o = new Fl_Group(62, 96, 496, 113, _("Rx Text"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -13910,7 +13916,7 @@ and restarted if needed."));
               o->type(FL_SECRET_INPUT);
               inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpLOTW_pwd
-            { Fl_Check_Button* o = btn_submit_lotw_password = new Fl_Check_Button(90, 161, 234, 16, _("Use password for tqsl access"));
+            { Fl_Check_Button* o = btn_submit_lotw_password = new Fl_Check_Button(389, 130, 122, 16, _("Use password"));
               btn_submit_lotw_password->tooltip(_("Submit password with each upload"));
               btn_submit_lotw_password->down_box(FL_DOWN_BOX);
               btn_submit_lotw_password->callback((Fl_Callback*)cb_btn_submit_lotw_password);
@@ -13986,6 +13992,22 @@ work!"));
             { Fl_Box* o = new Fl_Box(175, 356, 395, 24, _("Match logbook records with LoTW download file"));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
             } // Fl_Box* o
+            { Fl_Input2* o = inpLOTW_download = new Fl_Input2(139, 157, 412, 24, _("Download folder"));
+              inpLOTW_download->tooltip(_("Set this to directory LOTW downloads report to.\nYou cannot change LOTW from \
+here."));
+              inpLOTW_download->box(FL_DOWN_BOX);
+              inpLOTW_download->color(FL_BACKGROUND2_COLOR);
+              inpLOTW_download->selection_color(FL_SELECTION_COLOR);
+              inpLOTW_download->labeltype(FL_NORMAL_LABEL);
+              inpLOTW_download->labelfont(0);
+              inpLOTW_download->labelsize(14);
+              inpLOTW_download->labelcolor(FL_FOREGROUND_COLOR);
+              inpLOTW_download->callback((Fl_Callback*)cb_inpLOTW_download);
+              inpLOTW_download->align(Fl_Align(FL_ALIGN_LEFT));
+              inpLOTW_download->when(FL_WHEN_RELEASE);
+              o->value(progdefaults.lotw_download.c_str());
+              inpLOTW_download->labelsize(FL_NORMAL_SIZE);
+            } // Fl_Input2* inpLOTW_download
             tabLOTW->end();
           } // Fl_Group* tabLOTW
           tabsQRZ->end();

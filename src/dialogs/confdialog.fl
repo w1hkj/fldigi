@@ -981,7 +981,7 @@ progdefaults.changed = true;}
               }
               Fl_Group grpRX_Text {
                 label {Rx Text}
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Group {} {
                   label {Rx Text} open
@@ -8106,10 +8106,10 @@ progdefaults.changed = true;}
               class Fl_Input2
             }
             Fl_Check_Button btn_submit_lotw_password {
-              label {Use password for tqsl access}
+              label {Use password}
               callback {progdefaults.submit_lotw_password=o->value();
 progdefaults.changed=true;}
-              tooltip {Submit password with each upload} xywh {90 161 234 16} down_box DOWN_BOX
+              tooltip {Submit password with each upload} xywh {389 130 122 16} down_box DOWN_BOX
               code0 {o->value(progdefaults.submit_lotw_password);}
             }
             Fl_Input inpLOTW_location {
@@ -8193,6 +8193,16 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
             Fl_Box {} {
               label {Match logbook records with LoTW download file}
               xywh {175 356 395 24} align 20
+            }
+            Fl_Input inpLOTW_download {
+              label {Download folder}
+              callback {progdefaults.lotw_download = o->value();
+progdefaults.changed = true;}
+              tooltip {Set this to directory LOTW downloads report to.
+You cannot change LOTW from here.} xywh {139 157 412 24}
+              code0 {o->value(progdefaults.lotw_download.c_str());}
+              code2 {inpLOTW_download->labelsize(FL_NORMAL_SIZE);}
+              class Fl_Input2
             }
           }
         }

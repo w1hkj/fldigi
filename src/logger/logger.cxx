@@ -190,11 +190,16 @@ void send_to_lotw(void *)
 
 string lotw_rec(cQsoRec &rec)
 {
+  /* does not honor the selection of adif fields selected by the user
+     only sends the required  call, mode, freq, and qso date.
+     BAND can also be sent to LOTW
+     Others are ignored.
+  */
 	static string valid_lotw_modes =
 	"\
 AM AMTORFEC ASCI ATV CHIP64 CHIP128 CLO CONTESTI CW DSTAR DOMINO DOMINOF FAX \
 FM FMHELL FSK31 FSK441 GTOR HELL HELL80 HFSK JT44 JT4A JT4B JT4C JT4D JT4E \
-JT4F JT4G JT65 JT65A JT65B JT65C JT6M MFSK8 MFSK16 \
+JT4F JT4G JT65 JT65A JT65B JT65C JT6M JT9 MFSK8 MFSK16 \
 MT63 OLIVIA PAC PAC2 PAC3 PAX PAX2 PCW PKT PSK10 PSK31 PSK63 PSK63F PSK125 \
 PSKAM10 PSKAM31 PSKAM50 PSKFEC31 PSKHELL Q15 QPSK31 QPSK63 QPSK125 \
 ROS RTTY RTTYM SSB SSTV THRB THOR THRBX TOR VOI WINMOR WSPR ";
@@ -221,16 +226,25 @@ MFSK4 MFSK11 MFSK22 MFSK31 MFSK32 MFSK64 MFSK128 MFSK64L MFSK128L";
 	putadif(MODE, temp.c_str(), strrec);
 
 	temp = rec.getField(FREQ);
-	size_t len = temp.length();
-	temp.erase(len - 3);
+	temp.resize(7);
 	putadif(FREQ, temp.c_str(), strrec);
 
 	putadif(QSO_DATE, rec.getField(QSO_DATE), strrec);
+	//KB add BAND
+	putadif(BAND, rec.getField(BAND), strrec);
 
 	temp = rec.getField(TIME_ON);
 	if (temp.length() > 4) temp.erase(4);
 	putadif(TIME_ON, temp.c_str(), strrec);
 
+	// kb add LOTW sent date to the log if not already entered
+	temp = rec.getField(LOTWSDATE);
+	if (! temp.length())
+	  {
+	    rec.putField(LOTWSDATE, zdate());
+	    qsodb.isdirty(1);
+	  }
+	//
 	strrec.append("<EOR>\n");
 
 	return strrec;

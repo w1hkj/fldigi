@@ -987,6 +987,9 @@
         ELEM_(std::string, lotw_location, "LOTW_LOCATION",                              \
               "Tqsl station location for uploading records",                            \
               "")                                                                       \
+        ELEM_(std::string, lotw_download, "LOTW_DOWNLOAD",                              \
+              "Directory LOTW uses for downloading records",                            \
+              "Downloads")                                                              \
         /* MacLogger interface */                                                       \
         ELEM_(bool, connect_to_maclogger, "CONNECT_TO_MACLOGGER",                       \
               "Connect to MacLogger UDP server on 255.255.255.255 / 9932",              \

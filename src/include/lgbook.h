@@ -28,6 +28,7 @@ extern Fl_Check_Button *btn_export_by_date;
 #include <FL/Fl_Return_Button.H>
 extern Fl_Return_Button *btnOK;
 extern Fl_Button *btnCancel;
+extern Fl_Group *grpFieldsToExport;
 extern Fl_Button *btnClearAllFields;
 extern Fl_Button *btnCheckAllFields;
 extern Fl_Check_Button *btnSelectCall;

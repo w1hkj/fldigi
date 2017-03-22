@@ -15,15 +15,13 @@ Fl_Check_Browser *chkExportBrowser=(Fl_Check_Browser *)0;
 Fl_Button *btnClearAll=(Fl_Button *)0;
 
 static void cb_btnClearAll(Fl_Button*, void*) {
-  btn_export_by_date->value(0);
-chkExportBrowser->check_none();
+  chkExportBrowser->check_none();
 }
 
 Fl_Button *btnCheckAll=(Fl_Button *)0;
 
 static void cb_btnCheckAll(Fl_Button*, void*) {
-  btn_export_by_date->value(0);
-chkExportBrowser->check_all();
+  chkExportBrowser->check_all();
 }
 
 Fl_DateInput *inp_export_start_date=(Fl_DateInput *)0;
@@ -56,6 +54,8 @@ Fl_Button *btnCancel=(Fl_Button *)0;
 static void cb_btnCancel(Fl_Button*, void*) {
   wExport->hide();
 }
+
+Fl_Group *grpFieldsToExport=(Fl_Group *)0;
 
 Fl_Button *btnClearAllFields=(Fl_Button *)0;
 
@@ -253,7 +253,8 @@ static void cb_btnSetLoTWfields(Fl_Button*, void*) {
   btnSelectCall->value(1);
 btnSelectName->value(0);
 btnSelectFreq->value(1);
-btnSelectBand->value(0);
+//btnSelectBand->value(0);
+btnSelectBand->value(1);
 btnSelectMode->value(1);
 btnSelectQSOdateOn->value(1);
 btnSelectQSOdateOff->value(0);
@@ -524,7 +525,7 @@ void create_logbook_dialogs() {
         inp_export_start_date->labelcolor(FL_FOREGROUND_COLOR);
         inp_export_start_date->callback((Fl_Callback*)cb_inp_export_start_date);
         inp_export_start_date->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-        inp_export_start_date->when(FL_WHEN_RELEASE);
+        inp_export_start_date->when(FL_WHEN_CHANGED);
         inp_export_start_date->format(2);
       } // Fl_DateInput* inp_export_start_date
       { inp_export_stop_date = new Fl_DateInput(138, 422, 100, 22, _("Stop Date"));
@@ -538,11 +539,11 @@ void create_logbook_dialogs() {
         inp_export_stop_date->labelcolor(FL_FOREGROUND_COLOR);
         inp_export_stop_date->callback((Fl_Callback*)cb_inp_export_stop_date);
         inp_export_stop_date->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-        inp_export_stop_date->when(FL_WHEN_RELEASE);
+        inp_export_stop_date->when(FL_WHEN_CHANGED);
         inp_export_stop_date->format(2);
       } // Fl_DateInput* inp_export_stop_date
       { btn_export_by_date = new Fl_Check_Button(263, 425, 70, 15, _("select by date"));
-        btn_export_by_date->tooltip(_("Enable to select date range"));
+        btn_export_by_date->tooltip(_("Check to select date range"));
         btn_export_by_date->down_box(FL_DOWN_BOX);
         btn_export_by_date->callback((Fl_Callback*)cb_btn_export_by_date);
       } // Fl_Check_Button* btn_export_by_date
@@ -554,9 +555,10 @@ void create_logbook_dialogs() {
     { btnCancel = new Fl_Button(405, 454, 90, 24, _("Cancel"));
       btnCancel->callback((Fl_Callback*)cb_btnCancel);
     } // Fl_Button* btnCancel
-    { Fl_Group* o = new Fl_Group(392, 4, 280, 445, _("Select Fields to Export"));
-      o->box(FL_ENGRAVED_FRAME);
-      o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+    { grpFieldsToExport = new Fl_Group(392, 4, 280, 445, _("Select Fields to Export"));
+      grpFieldsToExport->tooltip(_("Not available for LOTW upload"));
+      grpFieldsToExport->box(FL_ENGRAVED_FRAME);
+      grpFieldsToExport->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
       { btnClearAllFields = new Fl_Button(396, 395, 85, 24, _("Clear All"));
         btnClearAllFields->callback((Fl_Callback*)cb_btnClearAllFields);
       } // Fl_Button* btnClearAllFields
@@ -689,8 +691,8 @@ void create_logbook_dialogs() {
       { btnSelectOperator = new Fl_Check_Button(535, 395, 70, 15, _("Operator"));
         btnSelectOperator->down_box(FL_DOWN_BOX);
       } // Fl_Check_Button* btnSelectOperator
-      o->end();
-    } // Fl_Group* o
+      grpFieldsToExport->end();
+    } // Fl_Group* grpFieldsToExport
     wExport->end();
   } // Fl_Double_Window* wExport
   { dlgLogbook = new Fl_Double_Window(590, 490, _("Logbook"));
