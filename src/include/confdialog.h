@@ -162,6 +162,7 @@ extern Fl_Check_Button *btnUseLastMacro;
 extern Fl_Check_Button *btnDisplayMacroFilename;
 extern Fl_Check_Button *btn_save_macros_on_exit;
 extern Fl_Check_Button *btn_macro_post;
+extern Fl_Check_Button *btn_4bar_position;
 extern Fl_Group *tabWF_UI;
 #include <FL/Fl_Box.H>
 extern Fl_Check_Button *btnWF_UIrev;

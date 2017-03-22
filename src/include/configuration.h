@@ -1549,6 +1549,10 @@ w0mw.dynip.com:23::|")                                                          
               "# and position of macro bars\n"                                          \
               "0..12, 1 = default",                                                     \
               1)                                                                        \
+        ELEM_(bool, four_bar_position, "FOURBARPOSITION",                               \
+              "Position 4 bar macro sat below Tx panel\n"                               \
+              "Default is above Rx panel",                                              \
+              false)                                                                    \
         ELEM_(bool, macro_post, "MACROPOST",                                            \
               "expand ^! macro tags in Rx panel when executed",                         \
               false)                                                                    \

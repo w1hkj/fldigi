@@ -504,7 +504,7 @@ progdefaults.changed = true;}
           class Fl_Input2
         }
         Fl_Group grpNoise {
-          label {Test Signal - Do NOT use with transmitter} open selected
+          label {Test Signal - Do NOT use with transmitter} open
           xywh {35 281 529 99} box ENGRAVED_FRAME align 21 hide
         } {
           Fl_Counter noiseDB {
@@ -551,7 +551,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1392,7 +1392,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabMBars {
             label Macros open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {5 240 590 35} box ENGRAVED_FRAME
@@ -1553,14 +1553,27 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group {} {open
-              xywh {5 330 590 45} box ENGRAVED_FRAME
+              xywh {5 330 295 45} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btn_macro_post {
                 label {Show macro control codes}
                 callback {progdefaults.macro_post = o->value();
 progdefaults.changed = true;}
-                tooltip {print ^! execution codes in Rx panel} xywh {65 345 216 20} down_box DOWN_BOX
+                tooltip {print ^! execution codes in Rx panel} xywh {65 342 216 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.macro_post);}
+              }
+            }
+            Fl_Group {} {open
+              xywh {300 330 295 45} box ENGRAVED_FRAME
+            } {
+              Fl_Check_Button btn_4bar_position {
+                label {4 bar macro set below Tx}
+                callback {progdefaults.four_bar_position = o->value();
+UI_select();
+progdefaults.changed = true;}
+                tooltip {Position the 4 bar macro set below Tx panel
+Default above Rx panel} xywh {332 342 216 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.four_bar_position);}
               }
             }
           }
@@ -8953,7 +8966,7 @@ progdefaults.changed = true;}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
-      callback {closeDialog();} selected
+      callback {closeDialog();}
       xywh {462 394 130 22}
     }
     Fl_Button btnResetConfig {
