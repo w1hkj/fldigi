@@ -227,7 +227,10 @@ void Export_ADIF()
 		}
 	}
 	string sp = p;
-	if (sp.find("." ADIF_SUFFIX) == string::npos) sp.append("." ADIF_SUFFIX);
+	string temp = ".";
+	temp.append(ADIF_SUFFIX);
+
+	if (sp.find(temp) == string::npos) sp.append(temp);
 	adifFile.writeFile (sp.c_str(), &qsodb);
 }
 
@@ -358,25 +361,29 @@ void cb_mnuNewLogbook(Fl_Menu_* m, void* d){
 #endif
 
 	logbook_filename = LogsDir;
-	logbook_filename.append("newlog." ADIF_SUFFIX);
+	logbook_filename.append("newlog.").append(ADIF_SUFFIX);
 
 	const char* p = FSEL::saveas( title.c_str(), filter.c_str(), logbook_filename.c_str());
 	if (!p) return;
 	if (!*p) return;
 
-	FILE *testopen = fopen(p, "r");
+	string temp = p;
+	string suffix = ".";
+	suffix.append(ADIF_SUFFIX);
+	if (temp.find(suffix) == string::npos) temp.append(suffix);
+
+	FILE *testopen = fopen(temp.c_str(), "r");
 	if (testopen) {
 		string warn = logbook_filename;
 		int ans = fl_choice2(
 					_("%s exists, overwrite?"),
 					_("No"), _("Yes"), NULL,
-					warn.c_str());
+					temp.c_str());
 		if (!ans) return;
 		fclose(testopen);
 	}
 
-	progdefaults.logbookfilename = logbook_filename = p;
-std::cout << "logbook filename " << logbook_filename << std::endl;
+	progdefaults.logbookfilename = logbook_filename = temp;
 
 	dlgLogbook->label(fl_filename_name(logbook_filename.c_str()));
 	progdefaults.changed = true;
@@ -444,8 +451,10 @@ void cb_mnuSaveLogbook(Fl_Menu_*m, void* d) {
 	if (!*p) return;
 
 	logbook_filename = p;
-	if (logbook_filename.find("." ADIF_SUFFIX) == string::npos)
-		logbook_filename.append("." ADIF_SUFFIX);
+	string temp = ".";
+	temp.append(ADIF_SUFFIX);
+	if (logbook_filename.find(temp) == string::npos)
+		logbook_filename.append(temp);
 
 	progdefaults.logbookfilename = logbook_filename;
 	progdefaults.changed = true;
@@ -1422,6 +1431,7 @@ void clearRecord() {
 	inpRstR_log->value ("");
 	inpRstS_log->value ("");
 	inpFreq_log->value ("");
+	inpBand_log->value ("");
 	inpMode_log->value ("");
 	inpQth_log->value ("");
 	inpState_log->value ("");
@@ -1476,6 +1486,7 @@ void saveRecord() {
 	inpTimeOff_log->value(timeview(tm.c_str()));
 
 	rec.putField(FREQ, inpFreq_log->value());
+	rec.putField(BAND, inpBand_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
 	rec.putField(STATE, inpState_log->value());
@@ -1562,6 +1573,7 @@ void updateRecord() {
 	inpTimeOff_log->value(timeview(tm.c_str()));
 
 	rec.putField(FREQ, inpFreq_log->value());
+	rec.putField(BAND, inpBand_log->value());
 	rec.putField(MODE, inpMode_log->value());
 	rec.putField(QTH, inpQth_log->value());
 	rec.putField(STATE, inpState_log->value());
@@ -1652,6 +1664,7 @@ void EditRecord( int i )
 	inpRstR_log->value (editQSO->getField(RST_RCVD));
 	inpRstS_log->value (editQSO->getField(RST_SENT));
 	inpFreq_log->value (editQSO->getField(FREQ));
+	inpBand_log->value (editQSO->getField(BAND));
 	inpMode_log->value (editQSO->getField(MODE));
 	inpState_log->value (editQSO->getField(STATE));
 	inpVE_Prov_log->value (editQSO->getField(VE_PROV));
@@ -1724,6 +1737,7 @@ void AddRecord ()
 		char Mhz[30];
 		snprintf(Mhz, sizeof(Mhz), "%-f", atof(inpFreq->value()) / 1000.0);
 		inpFreq_log->value(Mhz);
+		inpBand_log->value(band_name(Mhz));
 	}
 	inpMode_log->value (logmode);
 	inpState_log->value (ucasestr(inpState->value()).c_str());

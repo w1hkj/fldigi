@@ -3306,6 +3306,7 @@ void set_macro_env(void)
 		{ "FLDIGI_LOGBOOK_RST_IN", inpRstR_log->value() },
 		{ "FLDIGI_LOGBOOK_RST_OUT", inpRstS_log->value() },
 		{ "FLDIGI_LOGBOOK_FREQUENCY", inpFreq_log->value() },
+		{ "FLDIGI_LOGBOOK_BAND", inpBand_log->value() },
 		{ "FLDIGI_LOGBOOK_MODE", inpMode_log->value() },
 		{ "FLDIGI_LOGBOOK_STATE", inpState_log->value() },
 		{ "FLDIGI_LOGBOOK_VE_PROV", inpVE_Prov_log->value() },

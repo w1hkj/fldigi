@@ -103,6 +103,7 @@ extern Fl_Input2 *inpSerNoIn_log;
 extern Fl_Input2 *inpXchgIn_log;
 extern Fl_Input2 *inp_FD_class_log;
 extern Fl_Input2 *inp_FD_section_log;
+extern Fl_Input2 *inpBand_log;
 extern Fl_Group *tab_log_other;
 extern Fl_Input2 *inpCNTY_log;
 extern Fl_Input2 *inpIOTA_log;
