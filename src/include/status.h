@@ -194,6 +194,41 @@ struct status {
 	bool	fsq_rx_abort;
 	bool	ifkp_rx_abort;
 
+//----------------------------------------------------------------------
+// winkeyer status values
+//----------------------------------------------------------------------
+	std::string	WK_serial_port_name;
+	int		WK_comm_baudrate;
+	int		WK_stopbits;
+	int		WK_comm_retries;
+	int		WK_comm_wait;
+	int		WK_comm_timeout;
+	bool	WK_comm_echo;
+
+// wkeyer values
+	unsigned char WK_mode_register;
+	unsigned char WK_speed_wpm;
+	unsigned char WK_sidetone;
+	unsigned char WK_weight;
+	unsigned char WK_lead_in_time;
+	unsigned char WK_tail_time;
+	unsigned char WK_min_wpm;
+	unsigned char WK_rng_wpm;
+	unsigned char WK_first_extension;
+	unsigned char WK_key_compensation;
+	unsigned char WK_farnsworth_wpm;
+	unsigned char WK_paddle_setpoint;
+	unsigned char WK_dit_dah_ratio;
+	unsigned char WK_pin_configuration;
+	unsigned char WK_dont_care;
+
+	bool	WK_cut_zeronine;
+	unsigned char WK_cmd_wpm;
+	bool	WK_use_pot;
+	bool	WK_online;
+
+//----------------------------------------------------------------------
+
 	bool	bLastStateRead;
 
 	void initLastState();

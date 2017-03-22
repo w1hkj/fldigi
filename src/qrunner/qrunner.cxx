@@ -63,6 +63,7 @@ const char *sztid[] = {
 	"FD_TID",
 	"N3FJP_TID",
 	"DXCC_TID",
+	"WKEY_TID",
 	"FLMAIN_TID"
 };
 

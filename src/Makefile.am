@@ -333,6 +333,7 @@ fldigi_SOURCES += \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \
 	cw_rtty/view_rtty.cxx \
+	cw_rtty/winkeyer.cxx \
 	contestia/contestia.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
@@ -516,6 +517,7 @@ fldigi_SOURCES += \
 	include/psk_browser.h \
 	include/utf8file_io.h \
 	include/weather.h \
+	include/winkeyer.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \

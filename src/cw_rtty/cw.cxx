@@ -52,6 +52,8 @@
 
 #include "qrunner.h"
 
+#include "winkeyer.h"
+
 using namespace std;
 
 #define XMT_FILT_LEN 256
@@ -1272,6 +1274,16 @@ int cw::tx_process()
 	}
 
 	c = get_tx_char();
+
+	if (progStatus.WK_online) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			return -1;
+		}
+		if (WK_send_char(c)) return -1; // WinKeyer problem
+		return 0;
+	}
+
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		stopflag = false;
 		if (progdefaults.CW_bpf_on) { // flush the transmit bandpass filter

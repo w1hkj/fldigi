@@ -908,6 +908,8 @@ void configuration::testCommPorts()
 		inpRIGdev->add(gbuf.gl_pathv[j]);
 #  endif
 		inpXmlRigDevice->add(gbuf.gl_pathv[j]);
+
+		select_WK_CommPort->add(gbuf.gl_pathv[j]);
 	}
 	globfree(&gbuf);
 #endif
@@ -936,6 +938,8 @@ void configuration::testCommPorts()
 			inpRIGdev->add(ttyname);
 #  endif
 			inpXmlRigDevice->add(ttyname);
+
+			select_WK_CommPort->add(ttyname);
 		}
 #else // __APPLE__
 		glob_t gbuf;
@@ -959,6 +963,7 @@ void configuration::testCommPorts()
 #  endif
 			inpXmlRigDevice->add(gbuf.gl_pathv[j]);
 
+			select_WK_CommPort->add(gbuf.gl_pathv[j]);
 		}
 		globfree(&gbuf);
 #endif // __APPLE__

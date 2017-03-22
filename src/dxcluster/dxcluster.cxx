@@ -680,8 +680,10 @@ void rf_af(long &rf, long &af)
 
 	if (md == MODE_CW) {
 		af = progdefaults.CWsweetspot;
-		if (wf->USB()) rf -= af;
-		else           rf += af;
+		if (!progStatus.WK_online) {
+			if (wf->USB()) rf -= af;
+			else           rf += af;
+		}
 	}
 	else if (md == MODE_RTTY) {
 		int shift;

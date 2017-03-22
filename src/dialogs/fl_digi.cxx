@@ -170,6 +170,8 @@
 #include "record_loader.h"
 #include "record_browse.h"
 
+#include "winkeyer.h"
+
 #define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY_ALWAYS | FL_WHEN_RELEASE_ALWAYS
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
@@ -1622,6 +1624,7 @@ void init_modem(trx_mode mode, int freq)
 		quick_change = quick_change_psk;
 		modem_config_tab = tabPSK;
 		break;
+
 	case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250: case MODE_QPSK500:
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new psk(mode), freq);
@@ -2053,56 +2056,48 @@ void cb_mnuConfigOperator(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabOperator);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigWaterfall(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabWaterfall);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigID(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabID);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabQRZ);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigMisc(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigAutostart(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabAutoStart);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigIO(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabIO);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigPSM(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabKPSM);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigNotify(Fl_Menu_*, void*)
@@ -2114,7 +2109,6 @@ void cb_mnuUI(Fl_Menu_*, void *) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabUI);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigContest(Fl_Menu_*, void*) {
@@ -2122,28 +2116,108 @@ void cb_mnuConfigContest(Fl_Menu_*, void*) {
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabContest);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigRigCtrl(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabRig);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigSoundCard(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabSoundCard);
 	dlgConfig->show();
-
 }
 
 void cb_mnuConfigModems(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
+	switch (active_modem->get_mode()) {
+		case MODE_CW:
+			modem_config_tab = tabCW;
+			break;
+		case MODE_THORMICRO: case MODE_THOR4: case MODE_THOR5: case MODE_THOR8:
+		case MODE_THOR11:case MODE_THOR16: case MODE_THOR22:
+		case MODE_THOR25x4: case MODE_THOR50x1: case MODE_THOR50x2: case MODE_THOR100:
+			modem_config_tab = tabTHOR;
+			break;
+		case MODE_DOMINOEXMICRO: case MODE_DOMINOEX4: case MODE_DOMINOEX5: case MODE_DOMINOEX8:
+		case MODE_DOMINOEX11: case MODE_DOMINOEX16: case MODE_DOMINOEX22:
+		case MODE_DOMINOEX44: case MODE_DOMINOEX88:
+			modem_config_tab = tabDomEX;
+			break;
+		case MODE_FELDHELL: case MODE_SLOWHELL: case MODE_HELLX5: case MODE_HELLX9:
+		case MODE_FSKHELL: case MODE_FSKH105:case MODE_HELL80:
+			modem_config_tab = tabFeld;
+			break;
+		case MODE_WEFAX_576: case MODE_WEFAX_288:
+			modem_config_tab = tabWefax;
+			break;
+		case MODE_NAVTEX: case MODE_SITORB:
+			modem_config_tab = tabNavtex;
+			break;
+		case MODE_MT63_500S: case MODE_MT63_1000S: case MODE_MT63_2000S :
+		case MODE_MT63_500L: case MODE_MT63_1000L: case MODE_MT63_2000L :
+			quick_change = quick_change_mt63;
+			modem_config_tab = tabMT63;
+			break;
+		case MODE_OLIVIA: case MODE_OLIVIA_4_250: case MODE_OLIVIA_8_250:
+		case MODE_OLIVIA_4_500: case MODE_OLIVIA_8_500: case MODE_OLIVIA_16_500:
+		case MODE_OLIVIA_8_1000: case MODE_OLIVIA_16_1000: case MODE_OLIVIA_32_1000:
+		case MODE_OLIVIA_64_2000:
+			modem_config_tab = tabOlivia;
+			break;
+		case MODE_CONTESTIA:
+			modem_config_tab = tabContestia;
+			break;
+		case MODE_FSQ:
+			modem_config_tab = tabFSQ;
+			break;
+		case MODE_IFKP:
+			modem_config_tab = tabIFKP;
+			break;
+		case MODE_RTTY:
+			modem_config_tab = tabRTTY;
+			break;
+		default:
+//		case MODE_PSK31: case MODE_PSK63: case MODE_PSK63F:
+//		case MODE_PSK125: case MODE_PSK250: case MODE_PSK500:
+//		case MODE_PSK1000:
+//		case MODE_QPSK31: case MODE_QPSK63: case MODE_QPSK125: case MODE_QPSK250:
+//		case MODE_QPSK500:
+//		case MODE_8PSK125: case MODE_8PSK250: case MODE_8PSK500: case MODE_8PSK1000:
+//		case MODE_8PSK125FL: case MODE_8PSK125F: case MODE_8PSK250FL: case MODE_8PSK250F:
+//		case MODE_8PSK500F: case MODE_8PSK1000F: case MODE_8PSK1200F:
+//		case MODE_PSK125R: case MODE_PSK250R: case MODE_PSK500R: case MODE_PSK1000R:
+//		case MODE_12X_PSK125 : case MODE_6X_PSK250 : case MODE_2X_PSK500 :
+//		case MODE_4X_PSK500 : case MODE_2X_PSK800 : case MODE_2X_PSK1000 :
+//		case MODE_4X_PSK63R : case MODE_5X_PSK63R : case MODE_10X_PSK63R :
+//		case MODE_20X_PSK63R : case MODE_32X_PSK63R :
+//		case MODE_4X_PSK125R : case MODE_5X_PSK125R : case MODE_10X_PSK125R :
+//		case MODE_12X_PSK125R : case MODE_16X_PSK125R :
+//		case MODE_2X_PSK250R : case MODE_3X_PSK250R : case MODE_5X_PSK250R :
+//		case MODE_6X_PSK250R : case MODE_7X_PSK250R :
+//		case MODE_2X_PSK500R : case MODE_3X_PSK500R : case MODE_4X_PSK500R :
+//		case MODE_2X_PSK800R : case MODE_2X_PSK1000R :
+//		case MODE_MFSK4: case MODE_MFSK11: case MODE_MFSK22: case MODE_MFSK31:
+//		case MODE_MFSK64: case MODE_MFSK8: case MODE_MFSK16: case MODE_MFSK32:
+//		case MODE_MFSK128: case MODE_MFSK64L: case MODE_MFSK128L:
+//		case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:
+//		case MODE_THROBX1: case MODE_THROBX2: case MODE_THROBX4:
+			modem_config_tab = tabPSK;
+			break;
+	}
 	tabsConfigure->value(tabModems);
+	tabsModems->value(modem_config_tab);
 	dlgConfig->show();
+}
 
+void cb_mnuConfigWinkeyer(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabModems);
+	tabsModems->value(tabCW);
+	tabsCW->value(tabsCW_winkeyer);
+	dlgConfig->show();
 }
 
 void cb_mnuConfigWFcontrols(Fl_Menu_ *, void*) {
@@ -2151,7 +2225,6 @@ void cb_mnuConfigWFcontrols(Fl_Menu_ *, void*) {
 	tabsConfigure->value(tabUI);
 	tabsUI->value(tabWF_UI);
 	dlgConfig->show();
-
 }
 
 void cb_n3fjp_logs(Fl_Menu_ *, void*) {
@@ -3644,6 +3717,9 @@ LOG_INFO("stop_flrig_thread");
 LOG_INFO("Stopping N3FJP thread");
 	n3fjp_close();
 
+LOG_INFO("Closing WinKeyer interface");
+	WK_exit();
+
 LOG_INFO("Stopping TOD clock");
 	TOD_close();
 
@@ -4754,25 +4830,40 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 
 {_("&Configure"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Operator"), system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+
+{ _("UI"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+
 { icons::make_icon_label(_("Colors && Fonts")), 0, (Fl_Callback*)cb_mnuConfigFonts, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Operator"), system_users_icon), 0, (Fl_Callback*)cb_mnuConfigOperator, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("User Interface")), 0,  (Fl_Callback*)cb_mnuUI, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER,
-_FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Waterfall controls")), 0,  (Fl_Callback*)cb_mnuConfigWFcontrols, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ _("Operating"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Active Modem"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Winkeyer"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigWinkeyer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ icons::make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+
+{ _("Miscellaneous"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Autostart")), 0,  (Fl_Callback*)cb_mnuConfigAutostart, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ _("Contest/Logging"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("QRZ/eQSL"), net_icon), 0,  (Fl_Callback*)cb_mnuConfigQRZ, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("N3FJP logs")), 0, (Fl_Callback*)cb_n3fjp_logs, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("MacLogger")), 0, (Fl_Callback*)cb_maclogger, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(CONTEST_MLABEL), 0,  (Fl_Callback*)cb_mnuConfigContest, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("N3FJP logs")), 0, (Fl_Callback*)cb_n3fjp_logs, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("MacLogger")), 0, (Fl_Callback*)cb_maclogger, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
 { icons::make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -5396,10 +5487,20 @@ void sync_cw_parameters()
 void cb_cntCW_WPM(Fl_Widget * w, void *v)
 {
 	Fl_Counter2 *cnt = (Fl_Counter2 *) w;
+	if (progStatus.WK_online && progStatus.WK_use_pot) {
+		cnt->value(progStatus.WK_speed_wpm);
+		return;
+	}
+
+	if (progStatus.WK_online && cnt->value() > 55) cnt->value(55);
+
 	progdefaults.CWspeed = (int)cnt->value();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	progdefaults.changed = true;
 	sync_cw_parameters();
+
+	if (progStatus.WK_online) WK_set_wpm();
+
 	restoreFocus(25);
 }
 
@@ -5744,7 +5845,7 @@ void LOGBOOK_colors_font()
 	Fl_Input2* inp[] = {
 		inpQSL_VIA_log,
 		inpSerNoOut_log, inpMyXchg_log, inpSerNoIn_log, inpXchgIn_log,
-		inp_FD_class_log, inp_FD_section_log,
+		inp_FD_class_log, inp_FD_section_log, inpBand_log,
 		inpCNTY_log, inpIOTA_log, inpCQZ_log,
 		inpCONT_log, inpITUZ_log, inpDXCC_log,
 		inp_log_sta_call, inp_log_op_call, inp_log_sta_qth, inp_log_sta_loc
@@ -7937,7 +8038,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(_("Waterfall"), waterfall_icon), 0,  (Fl_Callback*)cb_mnuConfigWaterfall, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(RIGCONTROL_MLABEL, multimedia_player_icon), 0, (Fl_Callback*)cb_mnuConfigRigCtrl, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Modems"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Active Modem"), emblems_system_icon), 0, (Fl_Callback*)cb_mnuConfigModems, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
