@@ -1087,7 +1087,8 @@ protected:
 		if( idx_array < arrsz )
 			val = array[idx_array];
 		else {
-			sprintf( buffer, _("Unknown index %d/%d/%d"), (int)idx, (int)idx_array, (int)arrsz );
+			snprintf( buffer, sizeof(buffer), 
+				_("Unknown index %d/%d/%d"), (int)idx, (int)idx_array, (int)arrsz );
 			val = buffer ;
 		}
 		Append( title, val );
@@ -1140,14 +1141,14 @@ public:
 	void Append( const char * key, double val, const char * unit = NULL ) const
 	{
 		char buf[20];
-		sprintf( buf, "%.1lf", val );
+		snprintf( buf, sizeof(buf), "%.1lf", val );
 		ItemAdd( key, buf, unit );
 	}
 
 	void Append( const char * key, int val, const char * unit = NULL ) const
 	{
 		char buf[12];
-		sprintf( buf, "%d", val );
+		snprintf( buf, sizeof(buf), "%d", val );
 		ItemAdd( key, buf, unit );
 	}
 
@@ -1188,7 +1189,7 @@ class RegexT : public WithRefCnt< RegexT >
 
 	void treat_error(int stat) const {
 		char errbuf[512];
-		size_t lenbuf = sprintf( errbuf, "%s:", m_str );
+		size_t lenbuf = snprintf( errbuf, sizeof(errbuf), "%s:", m_str );
 		regerror(stat, &m_regex, errbuf + lenbuf, sizeof(errbuf) - lenbuf );
 		throw std::runtime_error(errbuf);
 	}
@@ -1212,7 +1213,7 @@ public:
 	, m_generator(gener)
 	, m_priority(priority) {
 		char tmpbuf[ 3 + strlen(m_str) ];
-		sprintf( tmpbuf, "^%s$", m_str );
+		snprintf( tmpbuf, sizeof(tmpbuf), "^%s$", m_str );
 		int stat = regcomp( &m_regex, tmpbuf, REG_EXTENDED|REG_NOSUB);
 		if(stat) treat_error(stat);
 	}
@@ -1492,7 +1493,7 @@ public:
 
 static std::string hour_min( int hour, int min ) {
 	char buf[10];
-	sprintf( buf, "%02d:%02d", hour, min );
+	snprintf( buf, sizeof(buf), "%02d:%02d", hour, min );
 	return buf ;
 }
 
@@ -1933,7 +1934,8 @@ public:
 			if( 0 == strcmp( "SHIP", m_ship_buoy_identifier ) ) {
 				static int ship_counter = 0 ;
 				++ship_counter ;
-				sprintf( m_ship_buoy_identifier, "SHIP_%d", ship_counter );
+				snprintf( m_ship_buoy_identifier, sizeof(m_ship_buoy_identifier),
+					"SHIP_%d", ship_counter );
 			}
 		} else {
 			m_ship_buoy_identifier[0] = '\0';

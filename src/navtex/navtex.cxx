@@ -1776,7 +1776,7 @@ public:
 		for( size_t i = 0, sz = sevenbits.size(); i < sz; i++ )
 		{
 			char tmp_stat[64];
-			sprintf( tmp_stat, "Transmission %d%%", (int)( 100.0  * ( i + 1.0 ) / sz ) );
+			snprintf( tmp_stat, sizeof(tmp_stat), "Transmission %d%%", (int)( 100.0  * ( i + 1.0 ) / sz ) );
 			put_status( tmp_stat );
 
 			char c = sevenbits[i];
@@ -1802,7 +1802,7 @@ public:
 			char preamble[64];
 			const char origin = 'Z' ; // Never seen this value.
 			const char subject = 'I' ; // This code is not used.
-			sprintf( preamble, "ZCZC %c%c%02d\r\n", origin, subject, m_message_counter );
+			snprintf( preamble, sizeof(preamble), "ZCZC %c%c%02d\r\n", origin, subject, m_message_counter );
 			m_message_counter = ( m_message_counter + 1 ) % 100 ;
 
 			/// The extra cr-nl before NNNN is not in the specification but clarify things.

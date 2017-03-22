@@ -490,7 +490,7 @@ int test_process(int pid)
 #elif defined(__linux__)
 	/// This is dependent on procfs.
 	char buf[32];
-	sprintf(buf,"/proc/%d/cmdline",pid);
+	snprintf(buf, sizeof(buf), "/proc/%d/cmdline",pid);
 	FILE * tmpF = fl_fopen( buf, "r" );
 	if( tmpF != NULL ) {
 		fclose(tmpF);
