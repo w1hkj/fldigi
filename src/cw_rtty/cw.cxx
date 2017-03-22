@@ -335,10 +335,9 @@ cw::cw() : modem()
 	qsk_signal = new double[QSK_DELAY_LEN];
 	for (int i = 0; i < QSK_DELAY_LEN; i++) qsk_signal[i] = 0.0;
 	cw_xmt_filter = new fftfilt( lwr, upr, 2*XMT_FILT_LEN);// transmit filter length
-//		FilterFFTLen);
 
-// bit filter based on 10 msec rise time of CW waveform
-	int bfv = (int)(samplerate * .010 / DEC_RATIO);
+	int bfv = symbollen / 50;
+	if (bfv < 1) bfv = 1;
 	bitfilter = new Cmovavg(bfv);
 
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
@@ -348,6 +347,11 @@ cw::cw() : modem()
 	REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth), wf, (int)bandwidth);
 	REQ(static_cast<int (Fl_Value_Slider2::*)(double)>(&Fl_Value_Slider2::value), sldrCWbandwidth, (int)bandwidth);
 	update_Status();
+
+	synchscope = 50;
+	noise_floor = 1.0;
+	sig_avg = 0.0;
+
 }
 
 // SHOULD ONLY BE CALLED FROM THE rx_processing loop
@@ -402,15 +406,15 @@ void cw::reset_rx_filter()
 
 		memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
 
-		agc_peak = 0;
-		clear_syncscope();
+
+	int bfv = symbollen / 50;
+	if (bfv < 1) bfv = 1;
+	bitfilter->setLength(bfv);
+
+	siglevel = 0;
+
 	}
-	if (lower_threshold != progdefaults.CWlower ||
-		upper_threshold != progdefaults.CWupper) {
-		lower_threshold = progdefaults.CWlower;
-		upper_threshold = progdefaults.CWupper;
-		clear_syncscope();
-	}
+
 }
 
 // sync_parameters()
@@ -536,8 +540,7 @@ void cw::update_syncscope()
 	for (int i = 0; i < pipesize; i++)
 		scopedata[i] = 0.96*pipe[i]+0.02;
 
-	set_scope_xaxis_1(progdefaults.CWupper);
-	set_scope_xaxis_2(progdefaults.CWlower);
+	set_scope_xaxis_1(siglevel);
 
 	set_scope(scopedata, pipesize, true);
 	scopedata.next(); // change buffers
@@ -549,8 +552,8 @@ void cw::update_syncscope()
 
 void cw::clear_syncscope()
 {
-	set_scope_xaxis_1(upper_threshold);
-	set_scope_xaxis_2(lower_threshold);
+	set_scope_xaxis_1(siglevel);
+
 	set_scope(clearpipe, pipesize, false);
 	clrcount = CLRCOUNT;
 }
@@ -577,22 +580,37 @@ void cw::decode_stream(double value)
 	const char *c, *somc;
 	char *cptr;
 
+	sig_avg = decayavg(sig_avg, value, 1000);
 
-// Compute a variable threshold value for tone detection
-// Fast attack and slow decay.
-	if (value > agc_peak)
-		agc_peak = decayavg(agc_peak, value, 20);
-	else
-		agc_peak = decayavg(agc_peak, value, 800);
+	if (value < sig_avg) {
+		if (value < noise_floor)
+			noise_floor = decayavg(noise_floor, value, 100);
+		else 
+			noise_floor = decayavg(noise_floor, value, 1000);
+	}
+	if (value > sig_avg)  {
+		if (value > agc_peak)
+			agc_peak = decayavg(agc_peak, value, 100);
+		else
+			agc_peak = decayavg(agc_peak, value, 1000); 
+	}
 
-	metric = clamp(agc_peak * 2e3 , 0.0, 100.0);
+	float norm_noise  = noise_floor / agc_peak;
+	float norm_sig    = sig_avg / agc_peak;
+	siglevel = norm_sig;
 
-// save correlation amplitude value for the sync scope
-// normalize if possible
 	if (agc_peak)
 		value /= agc_peak;
 	else
 		value = 0;
+
+	if (norm_noise) metric = clamp(100 * sig_avg / norm_noise , 0, 100);
+	else metric = 0;
+
+	float diff = (norm_sig - norm_noise);
+
+	progdefaults.CWupper = norm_sig - 0.2 * diff;
+	progdefaults.CWlower = norm_noise + 0.7 * diff;
 
 	pipe[pipeptr] = value;
 	if (++pipeptr == pipesize) pipeptr = 0;
@@ -611,6 +629,7 @@ void cw::decode_stream(double value)
 
 	if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
 		update_syncscope();
+		synchscope = 100;
 		if (progdefaults.CWuseSOMdecoding) {
 			somc = find_winner(cw_buffer, cw_adaptive_receive_threshold);
 			cptr = (char*)somc;
@@ -628,7 +647,11 @@ void cw::decode_stream(double value)
 			else while (*c)
 				put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++, FTextBase::CTRL);
 		}
+	} else if (--synchscope == 0) {
+		synchscope = 25;
+	update_syncscope();
 	}
+
 }
 
 void cw::rx_FFTprocess(const double *buf, int len)

@@ -3402,8 +3402,8 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
               xywh {0 50 605 340} selection_color 50
             } {
               Fl_Group tabsCW_general {
-                label General
-                xywh {0 75 600 315} align 5 hide
+                label General open
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label Receive open
@@ -3437,7 +3437,7 @@ progdefaults.changed = true;}
                     label Lower
                     callback {progdefaults.CWlower = o->value();
 progdefaults.changed = true;}
-                    tooltip {Detector low threshold} xywh {209 108 65 20} type Simple align 1 minimum 0.01 maximum 0.99 step 0.01 value 0.45
+                    tooltip {Detector low threshold} xywh {209 108 65 20} type Simple align 1 minimum 0.01 maximum 0.99 step 0.01 value 0.45 hide
                     code0 {o->value(progdefaults.CWlower);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3446,7 +3446,7 @@ progdefaults.changed = true;}
                     label Upper
                     callback {progdefaults.CWupper = o->value();
 progdefaults.changed = true;}
-                    tooltip {Detector high threshold} xywh {302 108 65 20} type Simple align 1 minimum 0.01 maximum 0.99 step 0.01 value 0.55
+                    tooltip {Detector high threshold} xywh {302 108 65 20} type Simple align 1 minimum 0.01 maximum 0.99 step 0.01 value 0.55 hide
                     code0 {o->value(progdefaults.CWupper);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
@@ -3912,7 +3912,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group tabsCW_winkeyer {
                 label WinKeyer open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_WK_CommPort {
                   label {Ser. Port}
@@ -8953,7 +8953,7 @@ progdefaults.changed = true;}
     }
     Fl_Return_Button btnCloseConfig {
       label Close
-      callback {closeDialog();}
+      callback {closeDialog();} selected
       xywh {462 394 130 22}
     }
     Fl_Button btnResetConfig {
