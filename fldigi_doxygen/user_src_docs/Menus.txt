@@ -142,7 +142,8 @@ Additional information:
 <br>
 \ref cw_configuration_page
 <br>
-
+\ref cw_winkeyer_page
+<br>
 
 <HR>
 \subsubsection s_op_mode_contestia Contestia
@@ -398,9 +399,28 @@ Additional information:
 
 <HR>
 \subsection s_configure Configure
-
-\image html menu-configure.png "Configure"
-\image latex menu-configure.png "Configure" width=1.4in
+<center>
+<table>
+	<tr><td>
+\image html config_menu_1.png ""
+\image latex config_menu_1.png "" width=1.5in
+	</td>
+	<td>
+\image html config_menu_2.png ""
+\image latex config_menu_2.png "" width=1.5in
+	</td>
+	</tr>
+	<tr><td>
+\image html config_menu_3.png ""
+\image latex config_menu_4.png "" width=1.5in
+	</td>
+	<td>
+\image html config_menu_4.png ""
+\image latex config_menu_4.png "" width=1.5in
+	</td>
+	</tr>
+</table>
+</center>
 <br>
 
 See \ref configuration_page Page
@@ -456,40 +476,31 @@ See \ref configuration_page Page
 <HR>
 \subsection s_logbook Logbook
 
-\image html menu-logbook.png "Logbook"
-\image latex menu-logbook.png "Logbook" width=1.0in
+<center>
+  <table>
+    <tr>
+    <td>
+      \image html logbook_menu_1.png ""
+      \image latex logbook_menu_1.png width=1.5in
+    </td>
+    <td>
+      \image html logbook_menu_2.png ""
+      \image latex logbook_menu_2.png width=1.5in
+    </td>
+    <td>
+      \image html logbook_menu_3.png ""
+      \image latex logbook_menu_3.png width=1.5in
+    </td>
+    </tr>
+  </table>
+</center>
 <br>
-
-\image html menu-logbook-adif.png "Logbook ADIF"
-\image latex menu-logbook-adif.png "Logbook ADIF" width=2.25in
-<br>
-
-\image html menu-logbook-reports.png "Logbook Reports"
-\image latex menu-logbook-reports.png "Logbook Reports" width=2.3in
-<br>
-
-<ul>
-	<li>View - open the logbook dialog</li>
-	<li>New - create a new logbook</li>
-	<li>Open - open an existing logbook</li>
-	<li>Save - save the current logbook</li>
-	<li>ADIF / Merge - merge adif data from an ADIF file</li>
-	<li>ADIF / Export - export selected or all logbook records to an ADIF
-	formated file - see \ref exporting_logbook_data "Log Exports".</li>
-	<li>Reports / Text ... - export selected or all logbook records to a
-	text file suitable for printing</li>
-	<li>Reports / CSV ... - export selected or all logbook records to a
-	tab delimited file</li>
-	<li>Reports / Cabrillo ... - create a Cabrillo contest report.
-	- see \ref cabrillo_report_page "Cabrillo Reports".</li>
-</ul>
-<br>
-
 <HR>
 \subsection s_help Help
-
+<center>
 \image html menu-help.png "Help"
 \image latex menu-help.png "Help" width=1.9in
+</center>
 <br>
 
 <ul>
@@ -520,10 +531,10 @@ See \ref configuration_page Page
 
 <HR>
 \subsection s_other Spot, Tx RSID, Rx RSID, and Tune Buttons
-
+<center>
 \image html menu-linux.png "Menu"
 \image latex menu-linux.png "Menu" width=6.0in
-
+</center>
 <ul>
 	<li>Spot button - The "Spot" light button is visible if callsign spotting
 	is enabled.  Use this button to toggle the callsign spotting reporter

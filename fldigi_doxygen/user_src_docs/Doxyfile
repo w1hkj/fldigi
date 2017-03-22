@@ -2,6 +2,7 @@
 #
 #
 # Copyright (C) 2013 Robert Stiles, KK5VD.
+#           (c) 2017 David Freese, W1HKJ
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation under the terms of the GNU General Public License is hereby
@@ -13,7 +14,7 @@
 # input used in their production; they are not affected by this license.
 
 PROJECT_NAME         = "FLDIGI Users Manual"
-PROJECT_NUMBER       = 3.23
+PROJECT_NUMBER       = 4.0
 PROJECT_BRIEF        =
 ALLEXTERNALS         = NO
 CASE_SENSE_NAMES     = NO
@@ -68,7 +69,7 @@ INPUT                = index.txt \
 	pskmail_config.txt PskViewer.txt DXCC_list.txt \
 	KeyboardAndKeys.txt xchar.txt psm.txt \
 	KML.txt support_data.txt Installing.txt WindowsOS.txt \
-	Wizard.txt Menus.txt ModeTable.txt CWkeying.txt  \
+	Wizard.txt Menus.txt ModeTable.txt CWkeying.txt  CWwinkeyer.txt \
 	PseudoFSK.txt w5zit-interface.txt rigxml.txt commandline.txt \
 	buildinfo.txt xmlrpc-control.txt parseUALR.txt ualr-telnet.txt \
 	map.txt License.txt Recognitions.txt kiss_host_prgs.txt
