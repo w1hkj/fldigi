@@ -1,24 +1,24 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-i18n_type 1 
-i18n_include "gettext.h" 
-i18n_function _ 
-header_name {.h} 
+version 1.0304
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
+header_name {.h}
 code_name {.cxx}
 decl {\#include "Fl_Text_Buffer_mod.H"} {private local
-} 
+}
 
 decl {Fl_Text_Buffer_mod telnet_txt_buffer;} {private local
-} 
+}
 
 decl {Fl_Text_Buffer_mod telnet_view_buffer;} {private local
-} 
+}
 
 decl {\#include "configuration.h"} {private local
-} 
+}
 
 decl {\#include "dx_cluster.h"} {private local
-} 
+}
 
 Function {dxc_window()} {open
 } {
@@ -33,7 +33,7 @@ Function {dxc_window()} {open
         label {DX HOST hostname/IP}
         callback {progdefaults.dxcc_host_url=o->value();
 progdefaults.changed = true;}
-        tooltip {telnet server URL} xywh {6 25 256 22} labelsize 13 align 5
+        tooltip {telnet server URL} xywh {6 25 256 22} align 5
         code0 {\#include "flinput2.h"}
         code1 {o->value(progdefaults.dxcc_host_url.c_str());}
         class Fl_Input2
@@ -48,7 +48,7 @@ cluster_tabs->redraw();}
         label Port
         callback {progdefaults.dxcc_host_port=o->value();
 progdefaults.changed = true;}
-        tooltip {telnet server port} xywh {285 25 50 22} labelsize 13 align 5
+        tooltip {telnet server port} xywh {285 25 50 22} align 5
         code1 {o->value(progdefaults.dxcc_host_port.c_str());}
         class Fl_Input2
       }
@@ -56,27 +56,41 @@ progdefaults.changed = true;}
         label {Login as}
         callback {progdefaults.dxcc_login=o->value();
 progdefaults.changed = true;}
-        tooltip {login call sign} xywh {336 25 80 22} labelsize 13 align 5
+        tooltip {login call sign} xywh {336 25 80 22} align 5
         code1 {o->value(progdefaults.dxcc_login.c_str());}
         class Fl_Input2
       }
-      Fl_Box lbl_dxc_connected {
-        label {Connect State} selected
-        xywh {418 26 20 20} box DIAMOND_DOWN_BOX color 55 align 8
+      Fl_Input inp_dxcc_password {
+        label Password
+        callback {progdefaults.dxcc_password = o->value();}
+        tooltip {Your login password} xywh {420 25 80 22} align 5
+        code0 {o->value(progdefaults.dxcc_password.c_str());}
+        code1 {o->type(FL_SECRET_INPUT);}
+        code2 {inp_dxcc_password->labelsize(FL_NORMAL_SIZE);}
+        class Fl_Input2
+      }
+      Fl_Button btnDXCLUSTERpasswordShow {
+        label {?}
+        callback {inp_dxcc_password->type(inp_dxcc_password->type() ^ FL_SECRET_INPUT);
+inp_dxcc_password->redraw();}
+        tooltip {Show password in plain text} xywh {503 25 22 22}
       }
       Fl_Check_Button btn_dxcc_connect {
         label Connect
         callback {progStatus.cluster_connected=o->value();
 DXcluster_connect(o->value());}
-        tooltip {Connect / Disconnect} xywh {553 10 119 15} down_box DOWN_BOX
+        tooltip {Connect / Disconnect} xywh {571 10 101 15} down_box DOWN_BOX
         code0 {o->value(progStatus.cluster_connected);}
         code1 {\#include "status.h"}
       }
+      Fl_Box lbl_dxc_connected {
+        tooltip {Connected State} xywh {540 17 20 20} box DIAMOND_DOWN_BOX color 55 align 8
+      }
       Fl_Check_Button btn_dxc_auto_connect {
-        label {Auto connect}
+        label {Auto conn'}
         callback {progdefaults.dxc_auto_connect = o->value();
 progdefaults.changed = true;}
-        tooltip {Connect to host when starting fldigi} xywh {553 31 119 15} down_box DOWN_BOX
+        tooltip {Connect to host when starting fldigi} xywh {571 31 101 15} down_box DOWN_BOX
         code0 {o->value(progdefaults.dxc_auto_connect);}
       }
     }
@@ -202,9 +216,9 @@ progdefaults.changed=true;}
             xywh {1 82 348 124}
           } {
             Fl_Browser brws_dxcluster_hosts {
-              label Hosts
+              label Hosts selected
               xywh {4 101 278 100} type Hold align 1 textfont 4 resizable
-              code0 {static int widths[]={o->w()*6/10, o->w()*2/10, 0 };}
+              code0 {static int widths[]={o->w()*6/10, o->w()*2/10, o->w()*2/10, 0 };}
               code1 {o->column_widths(widths);}
               code2 {o->column_char(':');}
               code3 {dxcluster_hosts_load();}
@@ -447,4 +461,4 @@ Enter subject, e.g. DX} xywh {265 368 172 22} labelsize 13 when 8
       }
     }
   }
-} 
+}

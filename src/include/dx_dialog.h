@@ -12,11 +12,13 @@ extern Fl_Input2 *inp_dxcc_host_url;
 extern Fl_Button *btn_show_host_tab;
 extern Fl_Input2 *inp_dccc_host_port;
 extern Fl_Input2 *inp_dccc_login;
-#include <FL/Fl_Box.H>
-extern Fl_Box *lbl_dxc_connected;
+extern Fl_Input2 *inp_dxcc_password;
+extern Fl_Button *btnDXCLUSTERpasswordShow;
 #include <FL/Fl_Check_Button.H>
 #include "status.h"
 extern Fl_Check_Button *btn_dxcc_connect;
+#include <FL/Fl_Box.H>
+extern Fl_Box *lbl_dxc_connected;
 extern Fl_Check_Button *btn_dxc_auto_connect;
 #include <FL/Fl_Tabs.H>
 extern Fl_Tabs *cluster_tabs;

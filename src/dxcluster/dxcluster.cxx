@@ -311,6 +311,30 @@ enum server_type {NIL, DX_SPIDER, AR_CLUSTER, CC_CLUSTER};
 static int  cluster_login = NIL;
 static bool logged_in = false;
 
+void register_dxspider()
+{
+	string login;
+
+	login.assign("set/page 0\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/name ").append(progdefaults.myName);
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/qth ").append(progdefaults.myQth);
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/qra ").append(progdefaults.myLocator);
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+}
+
 void login_to_dxspider()
 {
 	if (!DXcluster_socket) return;
@@ -320,24 +344,8 @@ void login_to_dxspider()
 		DXcluster_socket->send(login);
 		REQ(show_tx_stream, login);
 
-		login.assign("set/page 0\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/name ").append(progdefaults.myName);
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/qth ").append(progdefaults.myQth);
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/qra ").append(progdefaults.myLocator);
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
+		if (progdefaults.dxcc_password.empty())
+			register_dxspider();
 
 		logged_in = true;
 		cluster_login = NIL;
@@ -420,6 +428,41 @@ Connection closed by foreign host.
 
 */
 
+void register_cccluster()
+{
+	string login;
+
+	login.assign("set/name ").append(progdefaults.myName);
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/qth ").append(progdefaults.myQth);
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/qra ").append(progdefaults.myLocator);
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/noskimmer");
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/noown");
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+
+	login.assign("set/nobeacon");
+	login.append("\r\n");
+	DXcluster_socket->send(login);
+	REQ(show_tx_stream, login);
+}
+
 void login_to_cccluster()
 {
 	if (!DXcluster_socket) return;
@@ -430,35 +473,8 @@ void login_to_cccluster()
 		DXcluster_socket->send(login);
 		REQ(show_tx_stream, login);
 
-		login.assign("set/name ").append(progdefaults.myName);
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/qth ").append(progdefaults.myQth);
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/qra ").append(progdefaults.myLocator);
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/noskimmer");
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/noown");
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
-
-		login.assign("set/nobeacon");
-		login.append("\r\n");
-		DXcluster_socket->send(login);
-		REQ(show_tx_stream, login);
+		if (progdefaults.dxcc_password.empty())
+			register_cccluster();
 
 		logged_in = true;
 		cluster_login = NIL;
@@ -467,6 +483,32 @@ void login_to_cccluster()
 		REQ(show_error, e.what());
 	}
 }
+
+void send_password()
+{
+	if (!DXcluster_socket ||
+		logged_in == false ||
+		inp_dxcc_password->value()[0] == 0) return;
+
+	try {
+		string password = inp_dxcc_password->value();
+		password.append("\r\n");
+		DXcluster_socket->send(password);
+		REQ(show_tx_stream, password);
+
+		switch (cluster_login) {
+			case AR_CLUSTER: break;
+			case CC_CLUSTER: register_cccluster(); break;
+			case DX_SPIDER:  register_dxspider(); break;
+		}
+
+	} catch (const SocketException& e) {
+		LOG_ERROR("%s", e.what() );
+		REQ(show_error, e.what());
+	}
+
+}
+
 
 static bool help_lines = false;
 
@@ -546,6 +588,9 @@ void parse_DXcluster_stream(string input_buffer)
 
 		if (cluster_login == DX_SPIDER && ucasebuffer.find("LOGIN:") != string::npos)
 			login_to_dxspider();
+
+		if (cluster_login == DX_SPIDER && ucasebuffer.find("PASSWORD:") != string::npos)
+			send_password();
 	}
 }
 
@@ -680,7 +725,8 @@ void rf_af(long &rf, long &af)
 
 	if (md == MODE_CW) {
 		af = progdefaults.CWsweetspot;
-		if (!progStatus.WK_online) {
+		string smode = qso_opMODE->value();
+		if (smode.find("CW") == string::npos) {
 			if (wf->USB()) rf -= af;
 			else           rf += af;
 		}
@@ -1102,8 +1148,9 @@ void dxcluster_hosts_load()
 	size_t p2;
 	while (p != string::npos && p != 0) {
 		hostline.assign(hosts.substr(0,p+1));
-		p2 = hostline.find(":|");
-		if (p2 != string::npos) hostline.insert(p+1, progdefaults.myCall);
+		p2 = hostline.find("::|");
+		if (p2 != string::npos)
+			hostline.insert(p2 + 1, progdefaults.myCall);
 		p2 = hostline.find("|");
 		if (p2 != string::npos) hostline.erase(p2, 1);
 		brws_dxcluster_hosts->add(hostline.c_str());
@@ -1120,7 +1167,10 @@ void dxcluster_hosts_select(Fl_Button*, void*)
 	int line_nbr = brws_dxcluster_hosts->value();
 	if (line_nbr == 0) return;
 	host_line = brws_dxcluster_hosts->text(line_nbr);
-	string host_name, host_port, host_login;
+	string	host_name, 
+			host_port,
+			host_login,
+			host_password;
 	size_t p = host_line.find("@.");
 	if (p != string::npos) host_line.erase(0, p + 2);
 	p = host_line.find(":");
@@ -1131,7 +1181,14 @@ void dxcluster_hosts_select(Fl_Button*, void*)
 	if (p == string::npos) return;
 	host_port = host_line.substr(0, p);
 	host_line.erase(0, p+1);
-	host_login = host_line;
+	p = host_line.find(":");
+	if (p == string::npos) 
+		host_login = host_line;
+	else {
+		host_login = host_line.substr(0, p);
+		host_line.erase(0, p+1);
+		host_password = host_line;
+	}
 
 	progdefaults.dxcc_host_url = host_name;
 	inp_dxcc_host_url->value(host_name.c_str());
@@ -1144,6 +1201,13 @@ void dxcluster_hosts_select(Fl_Button*, void*)
 	progdefaults.dxcc_login = host_login;
 	inp_dccc_login->value(host_login.c_str());
 	inp_dccc_login->redraw();
+
+	progdefaults.dxcc_password = host_password;
+	inp_dxcc_password->value(host_password.c_str());
+	inp_dxcc_password->redraw();
+
+std::cout << "host " << host_name << "\nport " << host_port <<
+"\nlogin " << host_login << "\npassword " << host_password << std::endl;
 
 }
 
@@ -1176,6 +1240,7 @@ void dxcluster_hosts_add(Fl_Button*, void*)
 	string host_line = progdefaults.dxcc_host_url.c_str();
 	host_line.append(":").append(progdefaults.dxcc_host_port.c_str());
 	host_line.append(":").append(progdefaults.dxcc_login);
+	host_line.append(":").append(progdefaults.dxcc_password);
 	if (brws_dx_cluster->size() > 0) {
 		for (int i = 1; i <= brws_dxcluster_hosts->size(); i++) {
 			if (host_line == brws_dxcluster_hosts->text(i))
