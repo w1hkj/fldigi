@@ -1261,7 +1261,7 @@
               "")                                                                       \
         ELEM_(bool, sig_on_right_channel, "SIGONRIGHTCHANNEL",                          \
               "Duplicate modem signal on left & right",                                 \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, ReverseAudio, "REVERSEAUDIO",                                       \
               "Reverse left-right rx audio channels",                                   \
               false)                                                                    \
