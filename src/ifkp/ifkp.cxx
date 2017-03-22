@@ -123,7 +123,7 @@ ifkp::ifkp(trx_mode md) : modem()
 
 	mode = md;
 	fft = new g_fft<double>(IFKP_FFTSIZE);
-	snfilt = new Cmovavg(200);
+	snfilt = new Cmovavg(64);
 	movavg_size = 4;
 	for (int i = 0; i < IFKP_NUMBINS; i++) binfilt[i] = new Cmovavg(movavg_size);
 	txphase = 0;
@@ -423,8 +423,6 @@ void ifkp::process_symbol(int sym)
 	prev_symbol = symbol;
 }
 
-static double sig = 0;
-
 void ifkp::process_tones()
 {
 	max = 0;
@@ -437,58 +435,39 @@ void ifkp::process_tones()
 
 	double sigval = 0;
 
-	double mins[4];
-	double min = 1e8;
+	double mins[3];
+	double min = 3.0e8;
 	double temp;
-	int k = 0;
+
+	mins[0] = mins[1] = mins[2] = 1.0e8;
 	for (int i = 0; i < IFKP_NUMBINS; ++i) {
 		val = norm(fft_data[i + firstbin]);
-
+// looking for maximum signal
 		tones[i] = binfilt[i]->run(val);
 		if (tones[i] > max) {
 			max = tones[i];
 			peak = i;
 		}
 // looking for minimum signal in a 3 bin sequence
-		mins[k++] = val;
-		if (k == 3) {
-			temp = mins[0] + mins[1] + mins[2];
-			if (temp < min) min = temp;
-			k = 0;
-		}
+		mins[2] = tones[i];
+		temp = mins[0] + mins[1] + mins[2];
+		mins[0] = mins[1];
+		mins[1] = mins[2];
+		if (temp < min) min = temp;
 	}
 
 	sigval = tones[peak-1] + tones[peak] + tones[peak+1];
-	sigval /= 3;
-	min /= 3;
+	if (min == 0) min = 1e-10;
 
-	if (min <= 0.001 || sigval <= 0.001) {
-		sig = 1;
-		noise = 1;
-	} else {
-		sig = .95 * sig + .05 * sigval;
-		noise = .99 * noise + .01 * min;
-	}
-
-	s2n = 10 * snfilt->run(log10(sig / noise)) - 36;
-
-	if (s2n > 0) s2n *= 1.3;  // very empirical
-
-//if (s2n > -30) {
-//FILE *ifkptxt = fopen("ifkp.txt", "a");
-//fprintf(ifkptxt, "%d,%f,%f,%f,%f,%f\n", peak, sigval, sig, min, noise, s2n);
-//fclose(ifkptxt);
-//}
+	s2n = 10 * log10( snfilt->run(sigval/min)) - 36.0;
 
 //scale to -25 to +45 db range
 // -25 -> 0 linear
 // 0 - > 45 compressed by 2
 
-	if (s2n < -25) s2n = -25;
-	if (s2n > 45) s2n = 45;
-
 	if (s2n <= 0) metric = 2 * (25 + s2n);
-	if (s2n > 0) metric = 50 *( 1 + s2n / 45);
+	if (s2n > 0) metric = 50 * ( 1 + s2n / 45);
+	metric = clamp(metric, 0, 100);
 
 	display_metric(metric);
 
