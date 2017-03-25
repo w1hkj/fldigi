@@ -127,6 +127,8 @@
 
 #include "rigsupport.h"
 
+#include "logsupport.h"
+
 #include "qrunner.h"
 
 #include "Viewer.h"
@@ -1310,6 +1312,11 @@ LOG_ERROR("Deleting %s", "dlgViewer");
 LOG_ERROR("Deleting %s", "dlgLogbook");
 		dlgLogbook->hide();
 		delete dlgLogbook;
+	}
+	if (lotw_review_dialog) {
+LOG_ERROR("Deleting %s", "lotw_review_dialog");
+		lotw_review_dialog->hide();
+		delete lotw_review_dialog;
 	}
 	if (dlgConfig) {
 LOG_ERROR("Deleting %s", "dlgConfig");

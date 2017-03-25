@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <fstream>
+#include <vector>
 
 #include "main.h"
 #include "trx.h"
@@ -71,6 +72,8 @@
 
 using namespace std;
 
+extern vector<int> lotw_recs_sent;
+
 cQsoDb		qsodb;
 cAdifIO		adifFile;
 cTextFile	txtFile;
@@ -82,6 +85,8 @@ sorttype lastsort = SORTDATE;
 bool callfwd = true;
 bool modefwd = true;
 bool freqfwd = true;
+
+int editNbr = 0;
 
 void restore_sort();
 void addBrowserRow(cQsoRec *, int);
@@ -234,6 +239,18 @@ void Export_ADIF()
 	adifFile.writeFile (sp.c_str(), &qsodb);
 }
 
+// refresh_logbook_dialog ONLY called as an Fl::awake process
+// insures that logbook dialog LOTWSDATE field is updated by
+// FLTK UI thread.
+// called by Export_LOTW() and saveRecord()
+
+static string lotwsdate;
+void refresh_logbook_dialog(void *)
+{
+	inpLOTWsentdate_log->value(lotwsdate.c_str());
+	inpLOTWsentdate_log->redraw();
+}
+
 void Export_LOTW()
 {
 	if (chkExportBrowser->nchecked() == 0) return;
@@ -248,7 +265,13 @@ void Export_LOTW()
 		if (chkExportBrowser->checked(i + 1)) {
 			rec = qsodb.getRec(i);
 			rec->putField(EXPORT, "E");
+			rec->putField(LOTWSDATE, zdate());
 			qsodb.qsoUpdRec (i, rec);
+			lotw_recs_sent.push_back(i);
+			if (i == editNbr) {
+				lotwsdate = rec->getField(LOTWSDATE);
+				Fl::awake(refresh_logbook_dialog);
+			}
 			adifrec = lotw_rec(*rec);
 			if (adifrec.empty()) {
 				LOG_INFO("%s", "Invalid LOTW record");
@@ -258,7 +281,7 @@ void Export_LOTW()
 	}
 }
 
-static Fl_Double_Window *lotw_review_dialog = 0;
+Fl_Double_Window *lotw_review_dialog = 0;
 static Fl_Text_Buffer *buff = 0;
 static Fl_Text_Editor *disp = 0;
 static Fl_Button *lotw_close_review = 0;
@@ -1371,8 +1394,6 @@ int log_search_handler(int)
 	return 1;
 }
 
-static int editNbr = 0;
-
 void cb_btnRetrieve(Fl_Button* b, void* d)
 {
 	double drf  = atof(inpFreq_log->value());
@@ -1502,7 +1523,13 @@ void saveRecord() {
 	rec.putField(EQSLSDATE, inpEQSLsentdate_log->value());
 
 	rec.putField(LOTWRDATE, inpLOTWrcvddate_log->value());
-	rec.putField(LOTWSDATE, inpLOTWsentdate_log->value());
+
+	if (progdefaults.submit_lotw) {
+		lotwsdate = zdate();
+		rec.putField(LOTWSDATE, lotwsdate.c_str());
+		Fl::awake(refresh_logbook_dialog);
+	} else
+		rec.putField(LOTWSDATE, inpLOTWsentdate_log->value());
 
 	rec.putField(RST_RCVD, inpRstR_log->value ());
 	rec.putField(RST_SENT, inpRstS_log->value ());
@@ -1538,15 +1565,15 @@ void saveRecord() {
 	rec.putField(MY_GRID, inp_log_sta_loc->value());
 
 	qsodb.qsoNewRec (&rec);
+
+	lotw_recs_sent.push_back(qsodb.nbrRecs() - 1);
+
 	dxcc_entity_cache_add(&rec);
 	submit_record(rec);
 
-//	cQsoDb::reverse = false;
-
 	qsodb.isdirty(0);
 
-	addBrowserRow(&rec, qsodb.nbrRecs() - 1);
-	adjustBrowser();
+	reload_browser();
 
 	if (qsodb.nbrRecs() == 1)
 		adifFile.writeLog (logbook_filename.c_str(), &qsodb);
