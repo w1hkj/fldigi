@@ -1,6 +1,58 @@
 
 
+=Version 4.0.0=
+
+2017-03-27  David Freese  <iam_w1hkj@w1hkj.com>
+
+	01ff09f: STATION_CALLSIGN
+	f41b4f9: OS X 10.12 build
+	f0f3763: Free BSD mods
+	b163605: Logbook mods
+	167f064: ru-po-update
+	5354812: Default Tx Audio
+	fac5963: remove sprintf
+	a9db866: Documentation update
+	b522581: n3fjp logger search
+	c565b03: fopen -> fl_fopen
+	abd9554: 48 bar macro
+	5f5776c: CW decoder
+	9c0f906: DX cluster
+	016799a: Logbook support
+	b4e227b: WinKeyer
+	1fe26c1: fsq ifkp s/n computation
+	d576fd8: fltk version update
+	2a1a8c3: Macro Date Time Formats
+
+2017-02-24  Keith Bellairs  <keith@bellairs.org>
+
+	627eb31: lotw addition
+
+2017-02-23  David Freese  <iam_w1hkj@w1hkj.com>
+
+	0507110: THOR/IFKP Image transfers
+
+2017-02-23  Giuseppe Ciaccio  <giuseppe.ciaccio@unige.it>
+
+	95b51b6: OSS bug fix
+
+2017-02-21  David Freese  <iam_w1hkj@w1hkj.com>
+
+	f462dd7: ifkp s/n update
+	376f7f5: PSKMAIL PTT fault protection
+	bcec5aa: Logbook File Handling
+	cbdea29: n3fjp contest update
+	fccb4eb: fsq s/n update
+	1786a5e: README update
+	67bc122: Russian UTF-8 translation
+	9decf04: Tooltips
+
+2017-01-30  Jae Stutzman  <k5jae@stutzman.net>
+
+	fef4e93: Hamlib/RigCAT/XMLRPC Interface
+
+
 =Version 3.23.21=
+
 
 2017-01-23  David Freese  <iam_w1hkj@w1hkj.com>
 
@@ -1875,7 +1927,7 @@
 
 2010-03-18  Stelios Bounanos  <vcs@enotty.net>
 
-	2715366: Fix label sizes
+	2715366c: Fix label sizes
 	4ed6c1c: Add PSK browser font change support
 	735dba2: Cosmetic changes the PSK browser
 	5a1cf7d: Add font browser filter
