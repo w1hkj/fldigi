@@ -54,57 +54,57 @@ static const char *szEOR = "<EOR>";
 
 // These ADIF fields define the ADIF database
 FIELD fields[] = {
-//  TYPE,          FSIZE, NAME,           WIDGET
-	{FREQ,         12,    "FREQ",         &btnSelectFreq},      // QSO frequency in Mhz
-	{CALL,         15,    "CALL",         &btnSelectCall},      // contacted stations CALLSIGN
-	{MODE,         10,    "MODE",         &btnSelectMode},      // QSO mode
-	{NAME,         80,    "NAME",         &btnSelectName},      // contacted operators NAME
-	{QSO_DATE,     8,     "QSO_DATE",     &btnSelectQSOdateOn}, // QSO data
-	{QSO_DATE_OFF, 8,     "QSO_DATE_OFF", &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
-	{TIME_OFF,     6,     "TIME_OFF",     &btnSelectTimeOFF},   // HHMM or HHMMSS in UTC
-	{TIME_ON,      6,     "TIME_ON",      &btnSelectTimeON},    // HHMM or HHMMSS in UTC
-	{QTH,          100,   "QTH",          &btnSelectQth},       // contacted stations city
-	{RST_RCVD,     3,     "RST_RCVD",     &btnSelectRSTrcvd},   // received signal report
-	{RST_SENT,     3,     "RST_SENT",     &btnSelectRSTsent},   // sent signal report
-	{STATE,        20,    "STATE",        &btnSelectState},     // contacted stations STATE
-	{VE_PROV,      20,    "VE_PROV",      &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
-	{NOTES,        512,   "NOTES",        &btnSelectNotes},     // QSO notes
+//  TYPE,          FSIZE,  NAME,              WIDGET
+	{FREQ,         12,    "FREQ",             &btnSelectFreq},      // QSO frequency in Mhz
+	{CALL,         15,    "CALL",             &btnSelectCall},      // contacted stations CALLSIGN
+	{MODE,         10,    "MODE",             &btnSelectMode},      // QSO mode
+	{NAME,         80,    "NAME",             &btnSelectName},      // contacted operators NAME
+	{QSO_DATE,     8,     "QSO_DATE",         &btnSelectQSOdateOn}, // QSO data
+	{QSO_DATE_OFF, 8,     "QSO_DATE_OFF",     &btnSelectQSOdateOff},// QSO data OFF, according to ADIF 2.2.6
+	{TIME_OFF,     6,     "TIME_OFF",         &btnSelectTimeOFF},   // HHMM or HHMMSS in UTC
+	{TIME_ON,      6,     "TIME_ON",          &btnSelectTimeON},    // HHMM or HHMMSS in UTC
+	{QTH,          100,   "QTH",              &btnSelectQth},       // contacted stations city
+	{RST_RCVD,     3,     "RST_RCVD",         &btnSelectRSTrcvd},   // received signal report
+	{RST_SENT,     3,     "RST_SENT",         &btnSelectRSTsent},   // sent signal report
+	{STATE,        20,    "STATE",            &btnSelectState},     // contacted stations STATE
+	{VE_PROV,      20,    "VE_PROV",          &btnSelectProvince},  // 2 letter abbreviation for Canadian Province
+	{NOTES,        512,   "NOTES",            &btnSelectNotes},     // QSO notes
 
-	{QSLRDATE,     8,     "QSLRDATE",     &btnSelectQSLrcvd},   // QSL received date
-	{QSLSDATE,     8,     "QSLSDATE",     &btnSelectQSLsent},   // QSL sent date
+	{QSLRDATE,     8,     "QSLRDATE",         &btnSelectQSLrcvd},   // QSL received date
+	{QSLSDATE,     8,     "QSLSDATE",         &btnSelectQSLsent},   // QSL sent date
 
-	{EQSLRDATE,    8,     "EQSLRDATE",    NULL},                // EQSL received date
-	{EQSLSDATE,    8,     "EQSLSDATE",    NULL},                // EQSL sent date
+	{EQSLRDATE,    8,     "EQSLRDATE",        NULL},                // EQSL received date
+	{EQSLSDATE,    8,     "EQSLSDATE",        NULL},                // EQSL sent date
 
-	{LOTWRDATE,    8,     "LOTWRDATE",    NULL},                // EQSL received date
-	{LOTWSDATE,    8,     "LOTWSDATE",    NULL},                // EQSL sent date
+	{LOTWRDATE,    8,     "LOTWRDATE",        NULL},                // EQSL received date
+	{LOTWSDATE,    8,     "LOTWSDATE",        NULL},                // EQSL sent date
 
-	{GRIDSQUARE,   8,     "GRIDSQUARE",   &btnSelectLOC},       // contacted stations Maidenhead Grid Square
-	{BAND,         8,     "BAND",         &btnSelectBand},      // QSO band
-	{CNTY,         60,    "CNTY",         &btnSelectCNTY},      // secondary political subdivision, ie: county
-	{COUNTRY,      60,    "COUNTRY",      &btnSelectCountry},   // contacted stations DXCC entity name
-	{CQZ,          8,     "CQZ",          &btnSelectCQZ},       // contacted stations CQ Zone
-	{DXCC,         8,     "DXCC",         &btnSelectDXCC},      // contacted stations Country Code
-	{QSL_VIA,      256,   "QSL_VIA",      &btnSelectQSL_VIA},   // contacted stations path
-	{IOTA,         20,    "IOTA",         &btnSelectIOTA},      // Islands on the air
-	{ITUZ,         20,    "ITUZ",         &btnSelectITUZ},      // ITU zone
-	{CONT,         60,    "CONT",         &btnSelectCONT},      // contacted stations continent
+	{GRIDSQUARE,   8,     "GRIDSQUARE",       &btnSelectLOC},       // contacted stations Maidenhead Grid Square
+	{BAND,         8,     "BAND",             &btnSelectBand},      // QSO band
+	{CNTY,         60,    "CNTY",             &btnSelectCNTY},      // secondary political subdivision, ie: county
+	{COUNTRY,      60,    "COUNTRY",          &btnSelectCountry},   // contacted stations DXCC entity name
+	{CQZ,          8,     "CQZ",              &btnSelectCQZ},       // contacted stations CQ Zone
+	{DXCC,         8,     "DXCC",             &btnSelectDXCC},      // contacted stations Country Code
+	{QSL_VIA,      256,   "QSL_VIA",          &btnSelectQSL_VIA},   // contacted stations path
+	{IOTA,         20,    "IOTA",             &btnSelectIOTA},      // Islands on the air
+	{ITUZ,         20,    "ITUZ",             &btnSelectITUZ},      // ITU zone
+	{CONT,         60,    "CONT",             &btnSelectCONT},      // contacted stations continent
 
-	{SRX,          50,    "SRX",          &btnSelectSerialIN},  // received serial number for a contest QSO
-	{STX,          50,    "STX",          &btnSelectSerialOUT}, // QSO transmitted serial number
+	{SRX,          50,    "SRX",              &btnSelectSerialIN},  // received serial number for a contest QSO
+	{STX,          50,    "STX",              &btnSelectSerialOUT}, // QSO transmitted serial number
 
-	{XCHG1,        100,   "SRX_STRING",   &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
-	{MYXCHG,       100,   "STX_STRING",   &btnSelectMyXchg},    // contest exchange sent
+	{XCHG1,        100,   "SRX_STRING",       &btnSelectXchgIn},    // contest exchange #1 / free1 in xlog
+	{MYXCHG,       100,   "STX_STRING",       &btnSelectMyXchg},    // contest exchange sent
 
-	{FDCLASS,      20,    "FD_CLASS",     &btnSelectClass},     // Field Day class received
-	{FDSECTION,    20,    "FD_SECTION",   &btnSelectSection},   // Field Day section received
+	{FDCLASS,      20,    "FD_CLASS",         &btnSelectClass},     // Field Day class received
+	{FDSECTION,    20,    "FD_SECTION",       &btnSelectSection},   // Field Day section received
 
-	{TX_PWR,       8,     "TX_PWR",       &btnSelectTX_pwr},    // power transmitted by this station
+	{TX_PWR,       8,     "TX_PWR",           &btnSelectTX_pwr},    // power transmitted by this station
 
-	{OP_CALL,     15,     "OPERATOR",     &btnSelectOperator},  // Callsign of person logging the QSO
-	{STA_CALL,    15,     "STATION_CALL", &btnSelectStaCall},   // Callsign of transmitting station
-	{MY_GRID,      8,     "MY_GRIDSQUARE",&btnSelectStaGrid},   // Xmt station locator
-	{MY_CITY,     60,     "MY_CITY",      &btnSelectStaCity},   // Xmt station location
+	{OP_CALL,     15,     "OPERATOR",         &btnSelectOperator},  // Callsign of person logging the QSO
+	{STA_CALL,    15,     "STATION_CALLSIGN", &btnSelectStaCall},   // Callsign of transmitting station
+	{MY_GRID,      8,     "MY_GRIDSQUARE",    &btnSelectStaGrid},   // Xmt station locator
+	{MY_CITY,     60,     "MY_CITY",          &btnSelectStaCity},   // Xmt station location
 
 	{NUMFIELDS,    0,     "",             NULL}
 };
