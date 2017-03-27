@@ -316,7 +316,7 @@ void cAdifIO::do_readfile(const char *fname, cQsoDb *db)
 			} else {
 				ptr2 = ptr + 1;
 			}
-			if ((ptr2) > 0 && (unsigned)(ptr2 - ptr) <= p)
+			if ((ptr2 != NULL) && (unsigned)(ptr2 - ptr) <= p)
 				ptr = strchr(ptr2,'<');
 			else
 				break; // corrupt record

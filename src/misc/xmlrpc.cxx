@@ -44,7 +44,7 @@
 
 #include "threads.h"
 
-class XmlRpcImpl;
+struct XmlRpcImpl;
 
 #include "globals.h"
 #include "configuration.h"

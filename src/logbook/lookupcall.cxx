@@ -711,12 +711,12 @@ void CALLOOKquery()
 // Hamcall specific functions
 // ---------------------------------------------------------------------
 
-#define HAMCALL_CALL 181
-#define HAMCALL_FIRST 184
-#define HAMCALL_CITY 191
-#define HAMCALL_STATE 192
-#define HAMCALL_GRID 202
-#define HAMCALL_DOB 194
+#define HAMCALL_CALL   "181"
+#define HAMCALL_FIRST  "184"
+#define HAMCALL_CITY   "191"
+#define HAMCALL_STATE  "192"
+#define HAMCALL_GRID   "202"
+#define HAMCALL_DOB    "194"
 
 void parse_html(const string& htmlpage)
 {

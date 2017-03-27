@@ -607,8 +607,7 @@ void Socket::open(const Address& addr)
 	address = addr;
 	size_t n = address.size();
 
-//	for (anum = 0; anum < n; anum++) {
-	for (anum = n-1; anum >= 0; anum--) {
+	for (anum = n-1; anum >= 1; anum--) {
 		ainfo = address.get(anum);
 		LOG_INFO("Trying %s", address.get_str(ainfo).c_str());
 		if ((sockfd = socket(ainfo->ai_family, ainfo->ai_socktype, ainfo->ai_protocol)) != -1)

@@ -584,7 +584,7 @@ Fl_Button *bVisibleModes=(Fl_Button *)0;
 static void cb_bVisibleModes(Fl_Button* o, void*) {
   mode_browser->label(o->label());
 mode_browser->callback(toggle_visible_modes);
-mode_browser->show(&progdefaults.visible_modes);
+mode_browser->show_(&progdefaults.visible_modes);
 progdefaults.changed = true;
 }
 
@@ -5647,7 +5647,7 @@ Fl_Button *bRSIDRxModes=(Fl_Button *)0;
 static void cb_bRSIDRxModes(Fl_Button* o, void*) {
   mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.rsid_rx_modes);
+mode_browser->show_(&progdefaults.rsid_rx_modes);
 progdefaults.changed = true;
 }
 
@@ -5720,7 +5720,7 @@ Fl_Button *bRSIDTxModes=(Fl_Button *)0;
 static void cb_bRSIDTxModes(Fl_Button* o, void*) {
   mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.rsid_tx_modes);
+mode_browser->show_(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;
 }
 
@@ -5787,7 +5787,7 @@ Fl_Button *bVideoIDModes=(Fl_Button *)0;
 static void cb_bVideoIDModes(Fl_Button* o, void*) {
   mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.videoid_modes);
+mode_browser->show_(&progdefaults.videoid_modes);
 progdefaults.changed = true;
 }
 
@@ -5814,7 +5814,7 @@ Fl_Button *bCWIDModes=(Fl_Button *)0;
 static void cb_bCWIDModes(Fl_Button* o, void*) {
   mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.cwid_modes);
+mode_browser->show_(&progdefaults.cwid_modes);
 progdefaults.changed = true;
 }
 

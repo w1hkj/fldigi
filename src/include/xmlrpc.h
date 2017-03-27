@@ -30,7 +30,7 @@
 
 #include "threads.h"
 
-class XmlRpcImpl;
+struct XmlRpcImpl;
 
 class XML_RPC_Server
 {

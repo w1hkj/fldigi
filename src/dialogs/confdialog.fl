@@ -776,7 +776,7 @@ progdefaults.changed = true;}
                 label {Visible modes}
                 callback {mode_browser->label(o->label());
 mode_browser->callback(toggle_visible_modes);
-mode_browser->show(&progdefaults.visible_modes);
+mode_browser->show_(&progdefaults.visible_modes);
 progdefaults.changed = true;}
                 tooltip {Select modes for menu access} xywh {58 119 110 20}
               }
@@ -7012,7 +7012,7 @@ without changing modem and frequency} xywh {40 112 168 20} down_box DOWN_BOX
                 label {Receive modes}
                 callback {mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.rsid_rx_modes);
+mode_browser->show_(&progdefaults.rsid_rx_modes);
 progdefaults.changed = true;}
                 xywh {40 81 130 24}
               }
@@ -7111,7 +7111,7 @@ progdefaults.changed = true;}
                 label {Transmit modes}
                 callback {mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.rsid_tx_modes);
+mode_browser->show_(&progdefaults.rsid_tx_modes);
 progdefaults.changed = true;}
                 xywh {377 294 130 24}
               }
@@ -7190,7 +7190,7 @@ progdefaults.changed=true;}
                 label {Video ID modes}
                 callback {mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.videoid_modes);
+mode_browser->show_(&progdefaults.videoid_modes);
 progdefaults.changed = true;}
                 xywh {420 146 120 24}
               }
@@ -7224,7 +7224,7 @@ progdefaults.changed = true;}
                 label {CW ID modes}
                 callback {mode_browser->label(o->label());
 mode_browser->callback(0);
-mode_browser->show(&progdefaults.cwid_modes);
+mode_browser->show_(&progdefaults.cwid_modes);
 progdefaults.changed = true;}
                 xywh {412 184 120 24}
               }

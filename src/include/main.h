@@ -23,6 +23,9 @@
 
 #include <config.h>
 
+// FreeBSD needs this 
+#include <time.h>
+
 #include <string>
 
 #include "ptt.h"

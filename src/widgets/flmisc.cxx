@@ -104,7 +104,7 @@ void adjust_color_inv(unsigned char& bg1r, unsigned char& bg1g, unsigned char& b
 	bg1r = 255 - bg1r; bg1g = 255 - bg1g; bg1b = 255 - bg1b;
 	Fl_Color adj = fl_rgb_color(bg1r, bg1g, bg1b);
 	if (fl_contrast(adj, bg2) != adj)
-		Fl::get_color((def >= 0 ? def : adj), bg1r, bg1g, bg1b);
+		Fl::get_color((def >= 1 ? def : adj), bg1r, bg1g, bg1b);
 }
 
 #if !defined(__APPLE__) && !defined(__WOE32__) && USE_X
@@ -287,7 +287,7 @@ Mode_Browser::~Mode_Browser(void)
 	delete modes;
 }
 
-void Mode_Browser::show(mode_set_t* b)
+void Mode_Browser::show_(mode_set_t* b)
 {
 	store = b;
 	modes->check_none();

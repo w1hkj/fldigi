@@ -106,7 +106,7 @@ static int diffTm( time_t tim1, time_t tim2 )
 	if( (tim1 <= 0 ) || (tim2 <= 0 ) ) throw std::runtime_error("Invalid times");
 
 	double nbSecs = difftime( tim1, tim2 );
-	return abs( 0.5 + nbSecs * ( 1.0 / ( 24 * 3600 ) ) );
+	return fabs( 0.5 + nbSecs * ( 1.0 / ( 24 * 3600 ) ) );
 }
 
 /// We could use any other time as long as it is clear.

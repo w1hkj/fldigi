@@ -1095,7 +1095,7 @@ void psk::findsignal()
 			}
 			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ServerACQsn / 10) ) {
 				if (progdefaults.PSKmailSweetSpot) {
-					if (fabs(ftest - progdefaults.ServerCarrier) < progdefaults.ServerOffset) {
+					if (abs(ftest - progdefaults.ServerCarrier) < progdefaults.ServerOffset) {
 						frequency = ftest;
 						set_freq(frequency);
 						freqerr = 0.0;

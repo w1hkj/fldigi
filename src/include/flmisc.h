@@ -87,7 +87,7 @@ public:
 	Mode_Browser(void);
 	~Mode_Browser(void);
 
-	void show(mode_set_t* b);
+	void show_(mode_set_t* b);
 	void callback(Fl_Callback* cb, void* args = 0);
 private:
 	Fl_Button *close_button, *all_button, *none_button;
