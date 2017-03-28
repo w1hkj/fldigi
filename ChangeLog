@@ -1,11 +1,16 @@
 
 
+=Version 4.0.1=
+
+2017-03-28  David Freese  <iam_w1hkj@w1hkj.com>
+
+	f40e79d: Socket connect
+
+
 =Version 4.0.0=
 
-2017-03-27  David Freese  <iam_w1hkj@w1hkj.com>
-
-	01ff09f: STATION_CALLSIGN
-	f41b4f9: OS X 10.12 build
+	7efc9b2: OS X 10.12 build
+	ffd6f09: STATION_CALLSIGN
 	f0f3763: Free BSD mods
 	b163605: Logbook mods
 	167f064: ru-po-update
