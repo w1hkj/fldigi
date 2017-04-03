@@ -861,29 +861,32 @@ Socket * Socket::accept2(void)
 ///
 void Socket::connect(void)
 {
-    connected_flag = false;
+	connected_flag = false;
+
 	int res = ::connect(sockfd, ainfo->ai_addr, ainfo->ai_addrlen);
+
 	if (res == -1) {
-		if (errno == 0) {
-			LOG_INFO("Connected to %s", address.get_str(ainfo).c_str());
+		if (errno == 0 || errno == EISCONN) {
+			LOG_INFO("Connected to %s : %s", address.get_str(ainfo).c_str(),
+				strerror(errno) );
 			connected_flag = true;
 			return;
 		}
-		if (!errno || (errno == EWOULDBLOCK) || (errno == EINPROGRESS) || 
-			(errno == EISCONN) || (errno == EALREADY) ) {
-			LOG_DEBUG("Connect attempt to %s : %d, %s", 
+		if (errno == EWOULDBLOCK || errno == EINPROGRESS || errno == EALREADY) { 
+			LOG_INFO("Connect attempt to %s : %d, %s", 
 				address.get_str(ainfo).c_str(),
 				errno, strerror(errno));
 			return;
 		}
-		LOG_DEBUG("Connect to %s failed: %d, %s", 
+		LOG_ERROR("Connect to %s failed: %d, %s", 
 			address.get_str(ainfo).c_str(),
 			errno, strerror(errno));
 		throw SocketException(errno, "connect");
 	}
-	LOG_INFO("Connected to %s", address.get_str(ainfo).c_str());
-    connected_flag = true;
+	LOG_INFO(" Connected to %s", address.get_str(ainfo).c_str());
+	connected_flag = true;
 }
+
 ///
 /// Connects the socket to the address that is associated with the object
 /// Return connect state (T/F)

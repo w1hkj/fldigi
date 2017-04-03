@@ -114,6 +114,8 @@ extern Fl_Input2 *txt_N3FJP_ip_port_no;
 extern Fl_Button *btn_default_N3FJP_ip;
 extern Fl_Check_Button *btn_enable_N3FJP_log;
 extern Fl_Check_Button *btn_connect_to_n3fjp;
+#include <FL/Fl_Box.H>
+extern Fl_Box *box_n3fjp_connected;
 extern Fl_Check_Button *btn_N3FJP_sweet_spot;
 extern Fl_Check_Button *btn_N3FJP_modem_carrier;
 extern Fl_Group *tabContest;
@@ -164,7 +166,6 @@ extern Fl_Check_Button *btn_save_macros_on_exit;
 extern Fl_Check_Button *btn_macro_post;
 extern Fl_Check_Button *btn_4bar_position;
 extern Fl_Group *tabWF_UI;
-#include <FL/Fl_Box.H>
 extern Fl_Check_Button *btnWF_UIrev;
 extern Fl_Check_Button *btnWF_UIx1;
 extern Fl_Check_Button *btnWF_UIwfcarrier;

@@ -196,6 +196,13 @@ void adjust_freq(string sfreq)
 //======================================================================
 //
 //======================================================================
+void set_connect_box()
+{
+	box_n3fjp_connected->color(
+		n3fjp_connected ? FL_DARK_GREEN : FL_BACKGROUND2_COLOR);
+	box_n3fjp_connected->redraw();
+}
+
 void n3fjp_show(string s)
 {
 	txt_N3FJP_data->insert(s.c_str());
@@ -930,7 +937,19 @@ static void connect_to_n3fjp_server()
 		if (!n3fjp_connected)
 			n3fjp_socket->connect();
 
-		if (!n3fjp_socket->is_connected()) return;
+		if (!n3fjp_socket->is_connected()) {
+			MilliSleep(200);
+			n3fjp_socket->connect();
+			if (!n3fjp_socket->is_connected()) {
+				n3fjp_socket->shut_down();
+				n3fjp_socket->close();
+				delete n3fjp_socket;
+				n3fjp_socket = 0;
+				n3fjp_connected = false;
+				REQ(set_connect_box);
+				return;
+			}
+		}
 
 		std::string pathname = TempDir;
 		pathname.append("n3fjp_data_stream.txt");
@@ -968,6 +987,7 @@ static void connect_to_n3fjp_server()
 		info.append(", Ver ").append(ver);
 
 		n3fjp_connected = true;
+		REQ(set_connect_box);
 
 		cmd = "<CMD><CALLTABENTEREVENTS><VALUE>TRUE</VALUE></CMD>";
 		n3fjp_send(cmd);
@@ -1027,6 +1047,7 @@ void n3fjp_start()
 		delete n3fjp_socket;
 		n3fjp_socket = 0;
 		n3fjp_connected = false;
+		REQ(set_connect_box);
 		n3fjp_has_xcvr_control = UNKNOWN;
 	}
 }
@@ -1043,6 +1064,7 @@ void n3fjp_restart()
 		n3fjp_socket->close();
 		delete n3fjp_socket;
 		n3fjp_connected = false;
+		REQ(set_connect_box);
 		n3fjp_socket = new Socket(
 				Address( n3fjp_ip_address.c_str(),
 						 n3fjp_ip_port.c_str(),
@@ -1060,6 +1082,7 @@ void n3fjp_restart()
 		delete n3fjp_socket;
 		n3fjp_socket = 0;
 		n3fjp_connected = false;
+		REQ(set_connect_box);
 		n3fjp_has_xcvr_control = UNKNOWN;
 	}
 }
@@ -1075,6 +1098,7 @@ void n3fjp_disconnect()
 	delete n3fjp_socket;
 	n3fjp_socket = 0;
 	n3fjp_connected = false;
+	REQ(set_connect_box);
 	n3fjp_has_xcvr_control = UNKNOWN;
 	LOG_INFO("Disconnected");
 	n3fjp_serno.clear();
@@ -1089,7 +1113,7 @@ void *n3fjp_loop(void *args)
 {
 	SET_THREAD_ID(N3FJP_TID);
 
-	int n3fjp_looptime = 100;
+	int n3fjp_looptime = 5000;
 	while(1) {
 		if (n3fjp_exit) break;
 
@@ -1101,49 +1125,48 @@ void *n3fjp_loop(void *args)
 
 		if (n3fjp_looptime > 0) continue;
 
-		if (!n3fjp_connected) n3fjp_looptime = 5000;  // test for N3FJP logger every 5 sec
+		if (!n3fjp_connected) n3fjp_looptime = 5000; // test for N3FJP logger every 5 sec
 		else n3fjp_looptime = 250;  // r/w to N3FJP logger every 1/4 second
 
-		if (!n3fjp_socket || (n3fjp_socket->fd() == -1)) {
-			n3fjp_start();
-		}
+		if (progdefaults.connect_to_n3fjp) {
+			if (!n3fjp_socket || (n3fjp_socket->fd() == -1))
+				n3fjp_start();
 
-		else if (n3fjp_socket) {
-			if ((n3fjp_ip_address != progdefaults.N3FJP_address) ||
-				(n3fjp_ip_port != progdefaults.N3FJP_port) ) {
-				n3fjp_restart();
-			}
+			if (n3fjp_socket) {
+				if ((n3fjp_ip_address != progdefaults.N3FJP_address) ||
+					(n3fjp_ip_port != progdefaults.N3FJP_port) ) {
+					n3fjp_restart();
+				}
 
-			else if (!n3fjp_connected && progdefaults.connect_to_n3fjp ) {
-				connect_to_n3fjp_server();
-			} 
+				if (!n3fjp_connected)
+					connect_to_n3fjp_server();
 
-			else if (n3fjp_connected && !progdefaults.connect_to_n3fjp)
-				n3fjp_disconnect();
-
-			else if (n3fjp_connected) {
-				try {
-					if (n3fjp_has_xcvr_control == FLDIGI)
-						n3fjp_send_freq_mode();
-					if (!send_this.empty()) {
-						guard_lock send_lock(&send_this_mutex);
-						n3fjp_send(send_this);
-						send_this.clear();
-					} else if (n3fjp_bool_add_record)
-						do_n3fjp_add_record_entries();
-					else {
-						guard_lock rx_lock(&n3fjp_mutex);
-						n3fjp_rcv_data();
+				if (n3fjp_connected) {
+					try {
+						if (n3fjp_has_xcvr_control == FLDIGI)
+							n3fjp_send_freq_mode();
+						if (!send_this.empty()) {
+							guard_lock send_lock(&send_this_mutex);
+							n3fjp_send(send_this);
+							send_this.clear();
+						} else if (n3fjp_bool_add_record)
+							do_n3fjp_add_record_entries();
+						else {
+							guard_lock rx_lock(&n3fjp_mutex);
+							n3fjp_rcv_data();
+						}
+					} catch (const SocketException& e) {
+						LOG_ERROR("%s", e.what() );
+						delete n3fjp_socket;
+						n3fjp_socket = 0;
+						n3fjp_connected = false;
+						REQ(set_connect_box);
+						n3fjp_has_xcvr_control = UNKNOWN;
 					}
-				} catch (const SocketException& e) {
-					LOG_ERROR("%s", e.what() );
-					delete n3fjp_socket;
-					n3fjp_socket = 0;
-					n3fjp_connected = false;
-					n3fjp_has_xcvr_control = UNKNOWN;
 				}
 			}
-		}
+		} else if (n3fjp_connected)
+			n3fjp_disconnect();
 	}
 	// exit the n3fjp thread
 	SET_THREAD_CANCEL();

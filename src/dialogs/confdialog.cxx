@@ -889,6 +889,8 @@ static void cb_btn_connect_to_n3fjp(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Box *box_n3fjp_connected=(Fl_Box *)0;
+
 Fl_Check_Button *btn_N3FJP_sweet_spot=(Fl_Check_Button *)0;
 
 static void cb_btn_N3FJP_sweet_spot(Fl_Check_Button* o, void*) {
@@ -7229,6 +7231,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7379,10 +7382,10 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -7649,7 +7652,6 @@ Fl_Double_Window* ConfigureDialog() {
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
-            tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 grp_Log_QSO->hide();
@@ -7883,7 +7885,7 @@ ab and newline are automatically included."));
                 o->labelsize(FL_NORMAL_SIZE);
                 o->value(progdefaults.N3FJP_port.c_str());
                 } // Fl_Input2* txt_N3FJP_ip_port_no
-                { btn_default_N3FJP_ip = new Fl_Button(423, 100, 73, 25, _("Default"));
+                { btn_default_N3FJP_ip = new Fl_Button(423, 100, 67, 25, _("Default"));
                 btn_default_N3FJP_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
                 btn_default_N3FJP_ip->callback((Fl_Callback*)cb_btn_default_N3FJP_ip);
                 } // Fl_Button* btn_default_N3FJP_ip
@@ -7892,11 +7894,17 @@ ab and newline are automatically included."));
                 btn_enable_N3FJP_log->callback((Fl_Callback*)cb_btn_enable_N3FJP_log);
                 o->value(progdefaults.enable_N3FJP_log);
                 } // Fl_Check_Button* btn_enable_N3FJP_log
-                { Fl_Check_Button* o = btn_connect_to_n3fjp = new Fl_Check_Button(510, 105, 70, 15, _("Connect"));
+                { Fl_Check_Button* o = btn_connect_to_n3fjp = new Fl_Check_Button(495, 90, 70, 15, _("Connect"));
                 btn_connect_to_n3fjp->down_box(FL_DOWN_BOX);
                 btn_connect_to_n3fjp->callback((Fl_Callback*)cb_btn_connect_to_n3fjp);
                 o->value(progdefaults.connect_to_n3fjp);
                 } // Fl_Check_Button* btn_connect_to_n3fjp
+                { box_n3fjp_connected = new Fl_Box(495, 117, 16, 16, _("Connected"));
+                box_n3fjp_connected->box(FL_DIAMOND_DOWN_BOX);
+                box_n3fjp_connected->color(FL_LIGHT2);
+                box_n3fjp_connected->selection_color((Fl_Color)58);
+                box_n3fjp_connected->align(Fl_Align(FL_ALIGN_RIGHT));
+                } // Fl_Box* box_n3fjp_connected
                 { Fl_Check_Button* o = btn_N3FJP_sweet_spot = new Fl_Check_Button(10, 350, 255, 26, _("Center DXspot freq at sweet spot"));
                 btn_N3FJP_sweet_spot->tooltip(_("N3FJP DX spots centered on mode sweet spot"));
                 btn_N3FJP_sweet_spot->down_box(FL_DOWN_BOX);
@@ -8805,6 +8813,7 @@ ab and newline are automatically included."));
             tabColorsFonts->end();
           } // Fl_Group* tabColorsFonts
           { tab_touch = new Fl_Group(0, 50, 600, 340, _("Touch"));
+            tab_touch->hide();
             { Fl_Box* o = new Fl_Box(15, 70, 570, 52, _("Note:\nThese configuration items are useful for but not unique to using fldig\
 i on a\ntouch screen device such as a tablet."));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
@@ -9246,6 +9255,7 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9866,7 +9876,6 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_prosigns
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));
                 tabsCW_winkeyer->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_winkeyer->hide();
                 { select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
                 select_WK_CommPort->tooltip(_("Xcvr serial port"));
                 select_WK_CommPort->box(FL_DOWN_BOX);
