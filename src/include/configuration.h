@@ -1441,6 +1441,9 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, DXC_textcolor, "DXC_TEXTCOLOR",                                 \
               "Text color in dxcluster dialog",                                         \
               FL_YELLOW)                                                                \
+        ELEM_(std::string, DXC_textname, "DXC_TEXTNAME",                                \
+              "DX cluster browser font name",                                           \
+              "")                                                                       \
         ELEM_(Fl_Font, DXC_textfont, "DXC_TEXTFONT",                                    \
               "DX cluster browsers font number",                                        \
               FL_COURIER)                                                               \
@@ -1453,6 +1456,9 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, DXalt_color, "DXALT_COLOR",                                     \
               "Alternate text color in dxcluster stream",                               \
               FL_DARK_RED)                                                              \
+        ELEM_(std::string, DXfontname, "DXFONTNAME",                                    \
+              "DX cluster stream font name",                                            \
+              "")                                                                       \
         ELEM_(Fl_Font, DXfontnbr, "DXFONTNBR",                                          \
               "DX cluster stream font number",                                          \
               FL_COURIER)                                                               \
@@ -1613,12 +1619,12 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(std::string, charset_name, "CHARSET_NAME",                                \
               "Default character set",                                                  \
               "UTF-8")                                                                  \
-        ELEM_(std::string, RxFontName, "RXFONTNAME",                                    \
-              "RX text font name",                                                      \
-              "")                                                                       \
         ELEM_(bool, RxFontWarn, "RXFONTWARN",                                           \
               "Enable RX font warnings",                                                \
               true)                                                                     \
+        ELEM_(std::string, RxFontName, "RXFONTNAME",                                    \
+              "RX text font name",                                                      \
+              "")                                                                       \
         ELEM_(Fl_Font, RxFontnbr, "RXFONTNBR",                                          \
               "RX text font index",                                                     \
               FL_HELVETICA)                                                             \
@@ -1628,7 +1634,7 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, RxFontcolor, "RXFNTCOLOR",                                      \
               "RX text font color",                                                     \
               FL_BLACK)                                                                 \
-        ELEM_(std::string, MacroBtnFontname, "MACROBTNFONTNAME",                        \
+        ELEM_(std::string, MacroBtnFontName, "MACROBTNFONTNAME",                        \
               "Macro Btn Font Name",                                                    \
               "")                                                                       \
         ELEM_(Fl_Font, MacroBtnFontnbr, "MACROBTNFONTNBR",                              \
@@ -1643,12 +1649,12 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, RxTxSelectcolor, "RXTXSELCOLOR",                                \
               "RX/TX text select color",                                                \
               FL_MAGENTA)                                                               \
-        ELEM_(std::string, TxFontName, "TXFONTNAME",                                    \
-              "TX text font name",                                                      \
-              "")                                                                       \
         ELEM_(bool, TxFontWarn, "TXFONTWARN",                                           \
               "Enable TX font warnings",                                                \
               true)                                                                     \
+        ELEM_(std::string, TxFontName, "TXFONTNAME",                                    \
+              "TX text font name",                                                      \
+              "")                                                                       \
         ELEM_(Fl_Font, TxFontnbr, "TXFONTNBR",                                          \
               "TX text font index",                                                     \
               FL_HELVETICA)                                                             \
@@ -1703,6 +1709,9 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, LOGGINGcolor, "LOGGINGCOLOR",                                   \
               "Background color in logging controls",                                   \
               FL_BACKGROUND2_COLOR)                                                     \
+        ELEM_(std::string, LOGGINGfontname, "LOGGINGTEXTNAME",                          \
+              "LOGGING text font name",                                                 \
+              "")                                                                       \
         ELEM_(Fl_Font, LOGGINGtextfont, "LOGGINGTEXTFONT",                              \
               "Logging Controls font number",                                           \
               FL_HELVETICA)                                                             \
@@ -1715,6 +1724,9 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, LOGBOOKcolor, "LOGBOOKCOLOR",                                   \
               "Background color in logbook dialog",                                     \
               FL_BACKGROUND2_COLOR)                                                     \
+        ELEM_(std::string, LOGBOOKtextname, "LOGBOOKTEXTNAME",                          \
+              "Logbook text font name",                                                 \
+              "")                                                                       \
         ELEM_(Fl_Font, LOGBOOKtextfont, "LOGBOOKTEXTFONT",                              \
               "Logbook dialog controls font number",                                    \
               FL_HELVETICA)                                                             \
@@ -2158,6 +2170,9 @@ w0mw.dynip.com:23::|")                                                          
               "Enabled, View smeter & power meter\n"                                    \
               "Disable, (default)",                                                     \
               false)                                                                    \
+        ELEM_(std::string, MacroEditFontName, "MACROEDITORFONTNAME",                    \
+              "Macro editor font name",                                                 \
+              "")                                                                       \
         ELEM_(Fl_Font, MacroEditFontnbr, "MACROEDITFONTNBR",                            \
               "RX text font index",                                                     \
               FL_HELVETICA)                                                             \

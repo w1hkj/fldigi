@@ -445,9 +445,22 @@ void configuration::saveDefaults()
 
 	RxFontName = Fl::get_font_name(RxFontnbr);
 	TxFontName = Fl::get_font_name(TxFontnbr);
+
 	WaterfallFontName = Fl::get_font_name(WaterfallFontnbr);
+
 	ViewerFontName = Fl::get_font_name(ViewerFontnbr);
+
 	FreqControlFontName = Fl::get_font_name(FreqControlFontnbr);
+
+	MacroEditFontName = Fl::get_font_name(MacroEditFontnbr);
+	MacroBtnFontName = Fl::get_font_name(MacroBtnFontnbr);
+
+	DXC_textname = Fl::get_font_name(DXC_textfont);
+	DXfontname = Fl::get_font_name(DXfontnbr);
+
+	LOGGINGfontname = Fl::get_font_name(LOGGINGtextfont);
+	LOGBOOKtextname = Fl::get_font_name(LOGBOOKtextfont);
+
 
 #if ENABLE_NLS && defined(__WOE32__)
 	set_ui_lang(listbox_language->index());
@@ -988,6 +1001,22 @@ Fl_Font font_number(const char* name)
 
 void configuration::initFonts(void)
 {
+	RxFontnbr =
+	TxFontnbr =
+	WaterfallFontnbr =
+	ViewerFontnbr =
+	FreqControlFontnbr =
+	MacroBtnFontnbr =
+	MacroEditFontnbr  = 
+
+	DXC_textfont =
+	DXfontnbr =
+
+	LOGGINGtextfont =
+	LOGBOOKtextfont =
+
+	FL_HELVETICA;
+
 	if (!RxFontName.empty())
 		RxFontnbr = font_number(RxFontName.c_str());
 	if (!TxFontName.empty())
@@ -999,4 +1028,18 @@ void configuration::initFonts(void)
 	if (!FreqControlFontName.empty())
 		FreqControlFontnbr = font_number(FreqControlFontName.c_str());
 
+	if (!MacroEditFontName.empty())
+		MacroEditFontnbr = font_number(MacroEditFontName.c_str());
+	if (!MacroBtnFontName.empty())
+		MacroBtnFontnbr = font_number(MacroBtnFontName.c_str());
+
+	if (!DXC_textname.empty())
+		DXC_textfont = font_number(DXC_textname.c_str());
+	if (!DXfontname.empty())
+		DXfontnbr = font_number(DXfontname.c_str());
+
+	if (!LOGGINGfontname.empty())
+		LOGGINGtextfont = font_number(LOGGINGfontname.c_str());
+	if (!LOGBOOKtextname.empty())
+		LOGBOOKtextfont = font_number(LOGBOOKtextname.c_str());
 }
