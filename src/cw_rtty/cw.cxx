@@ -1301,9 +1301,13 @@ int cw::tx_process()
 	if (progStatus.WK_online) {
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
+			put_echo_char('\n');
 			return -1;
 		}
-		if (WK_send_char(c)) return -1; // WinKeyer problem
+		if (WK_send_char(c)){
+			put_echo_char('\n');
+			return -1; // WinKeyer problem
+		}
 		return 0;
 	}
 
@@ -1314,6 +1318,7 @@ int cw::tx_process()
 			for (int i = 0; i < n; i++) outbuf[i] = 0;
 			nb_filter(outbuf, outbuf, n);
 		}
+		put_echo_char('\n');
 		return -1;
 	}
 	acc_symbols = 0;
