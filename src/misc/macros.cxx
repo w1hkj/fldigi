@@ -4068,7 +4068,7 @@ void MACROTEXT::saveMacroFile()
 
 void MACROTEXT::savecurrentMACROS(std::string &s, size_t &i, size_t endbracket)
 {
-	saveMacros(progStatus.LastMacroFile.c_str());
+	writeMacroFile();
 	s.replace(i, endbracket - i + 1, "");
 }
 
