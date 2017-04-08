@@ -238,6 +238,16 @@ void  ifkp::rx_init()
 	pic_str = "     ";
 }
 
+void ifkp::rx_reset()
+{
+	prevz = cmplx(0,0);
+	image_counter = 0;
+	pixel = 0;
+	pic_str = "     ";
+	snfilt->reset();
+	state = TEXT;
+}
+
 void ifkp::init()
 {
 	peak_hits = 4;
@@ -264,9 +274,9 @@ void ifkp::set_freq(double f)
 	if (frequency > 3900 - 0.5 * bandwidth) frequency = 3900 - 0.5 * bandwidth;
 
 	tx_frequency = frequency;
-	
+
 	REQ(put_freq, frequency);
-	
+
 	set_bandwidth(33 * IFKP_SPACING * samplerate / symlen);
 	basetone = ceil((frequency - bandwidth / 2.0) * symlen / samplerate);
 
@@ -477,7 +487,7 @@ void ifkp::process_tones()
 		peak_counter = 0;
 	}
 
-	if ((peak_counter >= peak_hits) && 
+	if ((peak_counter >= peak_hits) &&
 		(peak != last_peak) &&
 		(metric >= progStatus.sldrSquelchValue ||
 		 progStatus.sqlonoff == false)) {
@@ -499,7 +509,6 @@ void ifkp::recvpic(double smpl)
 	pixel = (samplerate / TWOPI) * pixfilter->run(arg(conj(prevz) * currz));
 	sync = (samplerate / TWOPI) * syncfilter->run(arg(conj(prevz) * currz));
 	prevz = currz;
-	amplitude = ampfilter->run(norm(currz));
 
 	image_counter++;
 	if (image_counter < 0) return;
@@ -537,7 +546,7 @@ void ifkp::recvpic(double smpl)
 				col = 0;
 				row++;
 				if (row >= picH) {
-					state = TEXT;
+					rx_reset();
 					REQ(ifkp_enableshift);
 				}
 			}
@@ -554,20 +563,11 @@ void ifkp::recvpic(double smpl)
 					++row;
 				}
 			}
-			if (row > picH) {
-				state = TEXT;
+			if (row >= picH) {
+				rx_reset();
 				REQ(ifkp_enableshift);
 			}
 		}
-
-		amplitude *= (samplerate/2)*(.734); // sqrt(3000 / (11025/2))
-		s2n = 10 * log10(snfilt->run( amplitude * amplitude / noise));
-
-		metric = 2 * (s2n + 20);
-		metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
-		display_metric(metric);
-		amplitude = 0;
-
 	}
 }
 
@@ -586,22 +586,16 @@ int ifkp::rx_process(const double *buf, int len)
 	}
 
 	while (len) {
-		if (state != TEXT) {
-			recvpic(*buf);
-			len--;
-			buf++;
-		} else {
+		if (state == TEXT) {
 			rxfilter->Irun(*buf, val);
 			rx_stream[IFKP_BLOCK_SIZE + bkptr] = val;
-			len--;
-			buf++;
 			bkptr++;
 
 			if (bkptr == IFKP_SHIFT_SIZE) {
 				bkptr = 0;
 				memcpy(	rx_stream,								// to
-						&rx_stream[IFKP_SHIFT_SIZE],			// from
-						IFKP_BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
+					&rx_stream[IFKP_SHIFT_SIZE],			// from
+					IFKP_BLOCK_SIZE*sizeof(*rx_stream));	// # bytes
 				memset(fft_data, 0, sizeof(fft_data));
 				for (int i = 0; i < IFKP_BLOCK_SIZE; i++) {
 					double d = rx_stream[i] * a_blackman[i];
@@ -610,7 +604,11 @@ int ifkp::rx_process(const double *buf, int len)
 				fft->ComplexFFT(fft_data);
 				process_tones();
 			}
-		}
+		} else
+			recvpic(*buf);
+
+		len--;
+		buf++;
 	}
 	return 0;
 }

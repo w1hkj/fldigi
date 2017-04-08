@@ -127,6 +127,7 @@ public:
 	~ifkp ();
 	void	init ();
 	void	rx_init ();
+	void	rx_reset ();
 	void	restart ();
 	void	tx_init (SoundBase *sc);
 	int		rx_process (const double *buf, int len);
@@ -139,7 +140,6 @@ public:
 
 // support for ifkp image transfers
 private:
-	double amplitude;
 	double pixel;
 	double sync;
 	bool    TX_IMAGE;
