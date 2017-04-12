@@ -65,19 +65,19 @@ pthread_mutex_t WK_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // ADMIN MODE
 static const char ADMIN				= '\x00';
-static const char CALIBRATE			= '\x00';
+//static const char CALIBRATE			= '\x00';
 static const char RESET				= '\x01';
 static const char HOST_OPEN			= '\x02';
 static const char HOST_CLOSE		= '\x03';
 static const char ECHO_TEST			= '\x04';
-static const char PADDLE_A2D		= '\x05';
-static const char SPEED_A2D			= '\x06';
-static const char GET_VALUES		= '\x07';
-static const char GET_CAL			= '\x09';
-static const char WK1_MODE			= '\x0A';
+//static const char PADDLE_A2D		= '\x05';
+//static const char SPEED_A2D			= '\x06';
+//static const char GET_VALUES		= '\x07';
+//static const char GET_CAL			= '\x09';
+//static const char WK1_MODE			= '\x0A';
 static const char WK2_MODE			= '\x0B';
-static const char DUMP_EEPROM		= '\x0C';
-static const char LOAD_EEPROM		= '\x0D';
+//static const char DUMP_EEPROM		= '\x0C';
+//static const char LOAD_EEPROM		= '\x0D';
 
 //static const char *SEND_MSG_NBR		= "\x0E";
 

@@ -50,8 +50,13 @@ public:
 	FTextBase(int x, int y, int w, int h, const char *l = 0);
 	virtual ~FTextBase() { delete tbuf; delete sbuf; }
 
+#if FLDIGI_FLTK_API_MAJOR == 1 && FLDIGI_FLTK_API_MINOR == 3
+	virtual void	add(unsigned int c, int attr = RECV);
+#else
 	virtual void	add(unsigned char c, int attr = RECV);
+#endif
 	virtual void	add(const char *text, int attr = RECV);
+
 	void	     	addstr(std::string text, int attr = RECV) { add(text.c_str(), attr); }
 	void	     	addchr(unsigned char c, int attr = RECV) { add(c, attr); }
 

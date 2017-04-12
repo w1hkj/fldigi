@@ -178,7 +178,7 @@ public:
 	virtual void		decWPM() {};
 	virtual void		toggleWPM() {};
 	virtual void		sync_parameters() {};
-	virtual void		reset_rx_filter(bool) {};
+	virtual void		reset_rx_filter() {};
 	virtual void		update_Status() {};
 
 // for waterfall id transmission
