@@ -62,9 +62,8 @@ char confidence[80];
 
 #include "thor-pic.cxx"
 
-void thor::tx_init(SoundBase *sc)
+void thor::tx_init()
 {
-	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	txprevtone = 0;
 	bitstate = 0;

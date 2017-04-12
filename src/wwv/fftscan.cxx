@@ -44,7 +44,7 @@ using namespace std;
 
 static char msg[30];
 
-void fftscan::tx_init(SoundBase *sc)
+void fftscan::tx_init()
 {
 }
 

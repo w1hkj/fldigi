@@ -2379,10 +2379,8 @@ void fax_implementation::tx_apt_stop(void)
 //=============================================================================
 
 /// Called by trx_trx_transmit_loop
-void  wefax::tx_init(SoundBase *sc)
+void  wefax::tx_init()
 {
-	modem::scard = sc; // SoundBase
-	
 	videoText(); // In trx/modem.cxx
 	m_impl->init_tx(modem::samplerate) ;
 }

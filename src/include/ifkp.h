@@ -129,7 +129,7 @@ public:
 	void	rx_init ();
 	void	rx_reset ();
 	void	restart ();
-	void	tx_init (SoundBase *sc);
+	void	tx_init ();
 	int		rx_process (const double *buf, int len);
 	int		tx_process ();
 

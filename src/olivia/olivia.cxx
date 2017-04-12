@@ -59,9 +59,8 @@ double olivia::nco(double freq)
 	return cos(preamblephase);
 }
 
-void olivia::tx_init(SoundBase *sc)
+void olivia::tx_init()
 {
-	scard = sc;
 	phaseacc = 0;
 	prevsymbol = cmplx (1.0, 0.0);
 	preamble = 32;

@@ -52,9 +52,8 @@ static map<int, unsigned char> mupsksec2pri;
 
 bool usingFEC = false;
 
-void dominoex::tx_init(SoundBase *sc)
+void dominoex::tx_init()
 {
-	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	txprevtone = 0;
 	Mu_bitstate = 0;

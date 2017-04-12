@@ -123,9 +123,8 @@ PKT_PHG_table	pkt::PHG_table[] = {
 	{ "N",  1 }
 	};
 
-void pkt::tx_init(SoundBase *sc)
+void pkt::tx_init()
 {
-	scard = sc;
 
 	int scale_factor = (pkt_baud > 1200 ? 2 : 1); // baud rate proportional
 

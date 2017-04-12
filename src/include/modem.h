@@ -96,7 +96,7 @@ public:
 
 // these processes must be declared in the derived class
 	virtual void init();
-	virtual void tx_init (SoundBase *sc) = 0;
+	virtual void tx_init () = 0;
 	virtual void rx_init () = 0;
 	virtual void restart () = 0;
 	virtual void rx_flush() {};

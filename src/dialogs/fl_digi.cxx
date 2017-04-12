@@ -2336,14 +2336,14 @@ static bool genval = false;
 static bool playval = false;
 void cb_mnuCapture(Fl_Widget *w, void *d)
 {
-	if (!scard) return;
+	if (!RXscard) return;
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label()); //eek
 	if (playval || genval) {
 		m->clear();
 		return;
 	}
 	capval = m->value();
-	if(!scard->Capture(capval)) {
+	if(!RXscard->Capture(capval)) {
 		m->clear();
 		capval = false;
 	}
@@ -2356,9 +2356,9 @@ void cb_mnuGenerate(Fl_Widget *w, void *d)
 		m->clear();
 		return;
 	}
-	if (!scard) return;
+	if (!TXscard) return;
 	genval = m->value();
-	if (!scard->Generate(genval)) {
+	if (!TXscard->Generate(genval)) {
 		m->clear();
 		genval = false;
 	}
@@ -2374,7 +2374,7 @@ void reset_mnuPlayback()
 
 void cb_mnuPlayback(Fl_Widget *w, void *d)
 {
-	if (!scard) return;
+	if (!RXscard) return;
 	Fl_Menu_Item *m = getMenuItem(((Fl_Menu_*)w)->mvalue()->label());
 	Playback_menu_item = m;
 	if (capval || genval) {
@@ -2385,7 +2385,7 @@ void cb_mnuPlayback(Fl_Widget *w, void *d)
 	playval = m->value();
 	if (!playval) bHighSpeed = false;
 
-	int err = scard->Playback(playval);
+	int err = RXscard->Playback(playval);
 
 	if(err < 0) {
 		switch (err) {

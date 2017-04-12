@@ -467,7 +467,7 @@ bool disable_modem = false;
 
 void modem::ModulateXmtr(double *buffer, int len)
 {
-	if (unlikely(!scard)) return;
+	if (unlikely(!TXscard)) return;
 	if (disable_modem) return;
 
 	tx_sample_count += len;
@@ -495,7 +495,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 	try {
 		unsigned n = 4;
-		while (scard->Write(buffer, len) == 0 && --n);
+		while (TXscard->Write(buffer, len) == 0 && --n);
 		if (n == 0)
 			throw SndException(-99, "Sound write failed");
 	}
@@ -512,7 +512,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 using namespace std;
 void modem::ModulateStereo(double *left, double *right, int len, bool sample_flag)
 {
-	if (unlikely(!scard)) return;
+	if (unlikely(!TXscard)) return;
 	if (disable_modem) return;
 
 	if(sample_flag)
@@ -536,7 +536,7 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 	}
 	try {
 		unsigned n = 4;
-		while (scard->Write_stereo(left, right, len) == 0 && --n);
+		while (TXscard->Write_stereo(left, right, len) == 0 && --n);
 		if (n == 0)
 			throw SndException(-99, "Sound write failed");
 	}
@@ -555,7 +555,7 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 //------------------------------------------------------------------------------
 void modem::ModulateVideoStereo(double *left, double *right, int len, bool sample_flag)
 {
-	if (unlikely(!scard)) return;
+	if (unlikely(!TXscard)) return;
 
 	if(sample_flag)
 		tx_sample_count += len;
@@ -577,7 +577,7 @@ void modem::ModulateVideoStereo(double *left, double *right, int len, bool sampl
 	}
 	try {
 		unsigned n = 4;
-		while (scard->Write_stereo(left, right, len) == 0 && --n);
+		while (TXscard->Write_stereo(left, right, len) == 0 && --n);
 		if (n == 0)
 			throw SndException(-99, "Sound write failed");
 	}
@@ -592,7 +592,7 @@ void modem::ModulateVideoStereo(double *left, double *right, int len, bool sampl
 
 void modem::ModulateVideo(double *buffer, int len)
 {
-	if (unlikely(!scard)) return;
+	if (unlikely(!TXscard)) return;
 
 	tx_sample_count += len;
 
@@ -618,7 +618,7 @@ void modem::ModulateVideo(double *buffer, int len)
 
 	try {
 		unsigned n = 4;
-		while (scard->Write(buffer, len) == 0 && --n);
+		while (TXscard->Write(buffer, len) == 0 && --n);
 		if (n == 0)
 			throw SndException(-99, "Sound write failed");
 	}

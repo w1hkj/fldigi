@@ -120,9 +120,8 @@ static unsigned char graymapped_8psk_softbits[8][3] =  {
 
 char pskmsg[80];
 
-void psk::tx_init(SoundBase *sc)
+void psk::tx_init()
 {
-	scard = sc;
 	for (int car = 0; car < numcarriers; car++) {
 		phaseacc[car] = 0;
 		prevsymbol[car] = cmplx (1.0, 0.0);

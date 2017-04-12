@@ -75,9 +75,8 @@ char mfskmsg[80];
 
 #include "mfsk-pic.cxx"
 
-void  mfsk::tx_init(SoundBase *sc)
+void  mfsk::tx_init()
 {
-	scard = sc;
 	txstate = TX_STATE_PREAMBLE;
 	bitstate = 0;
 

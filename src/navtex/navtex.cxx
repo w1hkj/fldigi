@@ -1946,9 +1946,8 @@ int  navtex::rx_process(const double *buf, int len)
 	return 0;
 }
 
-void navtex::tx_init(SoundBase *sc)
+void navtex::tx_init()
 {
-	modem::scard = sc; // SoundBase
 	videoText(); // In trx/modem.cxx
 }
 

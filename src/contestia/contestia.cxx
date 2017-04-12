@@ -52,9 +52,8 @@ double contestia::nco(double freq)
 	return cos(preamblephase);
 }
 
-void contestia::tx_init(SoundBase *sc)
+void contestia::tx_init()
 {
-	scard = sc;
 	phaseacc = 0;
 	prevsymbol = cmplx (1.0, 0.0);
 	preamble = 32;

@@ -31,7 +31,7 @@
 
 #define ssb_bw         4
 
-void ssb::tx_init(SoundBase *sc)
+void ssb::tx_init()
 {
 }
 

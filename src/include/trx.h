@@ -51,7 +51,8 @@ extern state_t		trx_state;
 extern modem		*active_modem;
 extern cRsId		*ReedSolomon;
 
-extern	SoundBase 	*scard;
+extern	SoundBase 	*RXscard;
+extern	SoundBase	*TXscard;
 
 extern  bool bHistory;
 extern  bool bHighSpeed;

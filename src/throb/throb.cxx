@@ -44,9 +44,8 @@
 
 char throbmsg[80];
 
-void  throb::tx_init(SoundBase *sc)
+void  throb::tx_init()
 {
-	scard = sc;
 	preamble = 4;
 	reset_syms();
 	videoText();

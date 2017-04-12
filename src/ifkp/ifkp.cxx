@@ -202,9 +202,8 @@ ifkp::~ifkp()
 
 }
 
-void  ifkp::tx_init(SoundBase *sc)
+void  ifkp::tx_init()
 {
-	scard = sc;
 	tone = prevtone = 0;
 	txphase = 0;
 	send_bot = true;

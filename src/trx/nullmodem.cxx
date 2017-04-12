@@ -46,9 +46,8 @@ NULLMODEM:: NULLMODEM() : modem()
 
 NULLMODEM::~NULLMODEM() {};
 
-void  NULLMODEM::tx_init(SoundBase *sc)
+void  NULLMODEM::tx_init()
 {
-	scard = sc;
 }
 
 void  NULLMODEM::rx_init()

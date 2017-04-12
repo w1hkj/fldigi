@@ -226,9 +226,8 @@ fsq::~fsq()
 	audit_log.close();
 };
 
-void  fsq::tx_init(SoundBase *sc)
+void  fsq::tx_init()
 {
-	scard = sc;
 	tone = prevtone = 0;
 	txphase = 0;
 	send_bot = true;

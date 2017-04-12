@@ -58,9 +58,8 @@ pthread_mutex_t feld_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char feldmsg[80];
 
-void feld::tx_init(SoundBase *sc)
+void feld::tx_init()
 {
-	scard = sc;
 	txcounter = 0.0;
 	tx_state = PREAMBLE;
 	preamble = 3;

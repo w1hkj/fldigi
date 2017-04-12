@@ -33,9 +33,8 @@
 
 char BLANKmsg[80];
 
-void  BLANK::tx_init(SoundBase *sc)
+void  BLANK::tx_init()
 {
-	scard = sc;
 }
 
 void  BLANK::rx_init()

@@ -75,7 +75,7 @@ public:
 	~anal();
 	void init();
 	void rx_init();
-	void tx_init(SoundBase *sc);
+	void tx_init();
 	void restart();
 	void start_csv();
 	void stop_csv();

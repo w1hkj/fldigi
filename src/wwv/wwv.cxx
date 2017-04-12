@@ -35,9 +35,8 @@
 
 using namespace std;
 
-void wwv::tx_init(SoundBase *sc)
+void wwv::tx_init()
 {
-	scard = sc;
 	phaseacc = 0;
 }
 

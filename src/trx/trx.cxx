@@ -75,7 +75,11 @@ state_t 	trx_state;
 modem		*active_modem = 0;
 cRsId		*ReedSolomon = 0;
 cDTMF		*dtmf = 0;
-SoundBase 	*scard;
+SoundBase 	*RXscard = 0;
+SoundBase	*TXscard = 0;
+static int	current_RXsamplerate = 0;
+static int	current_TXsamplerate = 0;
+
 static int	_trx_tune;
 
 // Ringbuffer for the audio "history". A pointer into this buffer
@@ -198,7 +202,6 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 void trx_trx_receive_loop()
 {
 	size_t  numread;
-	int  current_samplerate;
 	assert(powerof2(SCBLOCKSIZE));
 
 	if (unlikely(!active_modem)) {
@@ -212,20 +215,24 @@ void trx_trx_receive_loop()
 	return;
 #endif
 
-	if (unlikely(!scard)) {
-	MilliSleep(10);
-	return;
+	if (!RXscard) {
+		MilliSleep(10);
+		return;
 	}
 
 	try {
-		current_samplerate = active_modem->get_samplerate();
-		if (scard->Open(O_RDONLY, current_samplerate))
-			REQ(sound_update, progdefaults.btnAudioIOis);
+		if (current_RXsamplerate != active_modem->get_samplerate() ) {
+			current_RXsamplerate = active_modem->get_samplerate();
+			RXscard->Close(O_RDONLY);
+			if (RXscard->Open(O_RDONLY, current_RXsamplerate))
+				REQ(sound_update, progdefaults.btnAudioIOis);
+		}
 	}
 	catch (const SndException& e) {
 		LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 		put_status(e.what(), 5);
-		scard->Close();
+//		RXscard->Close();
+		current_RXsamplerate = 0;
 //	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
 		if (progdefaults.btnAudioIOis == SND_IDX_PORT) {
 			sound_close();
@@ -240,11 +247,13 @@ void trx_trx_receive_loop()
 	ringbuffer<double>::vector_type rbvec[2];
 	rbvec[0].buf = rbvec[1].buf = 0;
 
+	RXscard->flush(O_RDONLY);
+
 	while (1) {
 		try {
 			numread = 0;
 			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
-				numread += scard->Read(fbuf + numread, SCBLOCKSIZE - numread);
+				numread += RXscard->Read(fbuf + numread, SCBLOCKSIZE - numread);
 			if (numread > SCBLOCKSIZE) {
 				LOG_ERROR("numread error %lu", (unsigned long) numread);
 				numread = SCBLOCKSIZE;
@@ -253,7 +262,7 @@ void trx_trx_receive_loop()
 				for (size_t i = 0; i < numread; i++)
 					hsbuff[i] = fbuf[i];
 			} else {
-				if (trxrb.write_space() == 0) // discard some old data
+				if (trxrb.write_space() == 0) // diRXscard some old data
 					trxrb.read_advance(SCBLOCKSIZE);
 
 				size_t room = trxrb.get_wv(rbvec, numread);
@@ -268,7 +277,7 @@ void trx_trx_receive_loop()
 			}
 		}
 		catch (const SndException& e) {
-			scard->Close();
+//			RXscard->Close();
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
 			MilliSleep(10);
@@ -293,7 +302,7 @@ void trx_trx_receive_loop()
 			active_modem->HistoryON(false);
 		} else {
 			trxrb.write_advance(numread);
-			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_samplerate);
+			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_RXsamplerate);
 
 			if (!bHistory) {
 				active_modem->rx_process(rbvec[0].buf, numread);
@@ -317,8 +326,8 @@ void trx_trx_receive_loop()
 			}
 		}
 	}
-	if (scard->must_close(O_RDONLY))
-		scard->Close(O_RDONLY);
+//	if (RXscard->must_close(O_RDONLY))
+//		RXscard->Close(O_RDONLY);
 }
 
 
@@ -327,20 +336,22 @@ void trx_trx_transmit_loop()
 {
 	if (rx_only) return;
 
-	int  current_samplerate;
-	if (!scard) {
+	if (!TXscard) {
 		MilliSleep(10);
 		return;
 	}
 	if (active_modem) {
 
 		try {
-			current_samplerate = active_modem->get_samplerate();
-			scard->Open(O_WRONLY, current_samplerate);
-		}
-		catch (const SndException& e) {
+			if (current_TXsamplerate != active_modem->get_samplerate() ) {
+				current_TXsamplerate = active_modem->get_samplerate();
+				TXscard->Close(O_WRONLY);
+				TXscard->Open(O_WRONLY, current_TXsamplerate);
+			}
+		} catch (const SndException& e) {
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 1);
+			current_TXsamplerate = 0;
 			MilliSleep(10);
 			return;
 		}
@@ -352,7 +363,7 @@ void trx_trx_transmit_loop()
 			push2talk->set(true);
 			REQ(&waterfall::set_XmtRcvBtn, wf, true);
 		}
-		active_modem->tx_init(scard);
+		active_modem->tx_init();
 
 		if ( ReedSolomon->assigned(active_modem->get_mode()) &&
 			 (progdefaults.TransmitRSid || progStatus.n_rsids != 0)) {
@@ -386,9 +397,10 @@ void trx_trx_transmit_loop()
 							trx_state = STATE_RX;
 				}
 				catch (const SndException& e) {
-					scard->Close();
+//					TXscard->Close();
 					LOG_ERROR("%s", e.what());
 					put_status(e.what(), 5);
+					current_TXsamplerate = 0;
 					MilliSleep(10);
 					return;
 				}
@@ -404,11 +416,11 @@ void trx_trx_transmit_loop()
 
 		progStatus.n_rsids = 0;
 
-		trx_xmit_wfall_end(current_samplerate);
+		trx_xmit_wfall_end(current_TXsamplerate);
 
-		scard->flush();
-		if (scard->must_close(O_WRONLY))
-			scard->Close(O_WRONLY);
+		TXscard->flush();
+//		if (TXscard->must_close(O_WRONLY))
+//			RXscard->Close(O_WRONLY);
 
 	} else
 		MilliSleep(10);
@@ -426,47 +438,50 @@ void trx_tune_loop()
 {
 	if (rx_only) return;
 
-	int  current_samplerate;
-	if (!scard) {
+	if (!TXscard) {
 		MilliSleep(10);
 		return;
 	}
 	if (active_modem) {
 		try {
-			current_samplerate = active_modem->get_samplerate();
-			scard->Open(O_WRONLY, current_samplerate);
-		}
-		catch (const SndException& e) {
+			if (current_TXsamplerate != active_modem->get_samplerate()) {
+				current_TXsamplerate = active_modem->get_samplerate();
+				TXscard->Close(O_WRONLY);
+				TXscard->Open(O_WRONLY, current_TXsamplerate);
+			}
+		} catch (const SndException& e) {
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 1);
 			MilliSleep(10);
+			current_TXsamplerate = 0;
 			return;
 		}
 
 		push2talk->set(true);
-		active_modem->tx_init(scard);
+		active_modem->tx_init();
 
 		try {
 			while (trx_state == STATE_TUNE) {
 				if (_trx_tune == 0) {
 					REQ(&waterfall::set_XmtRcvBtn, wf, true);
-					xmttune::keydown(active_modem->get_txfreq_woffset(), scard);
+					xmttune::keydown(active_modem->get_txfreq_woffset(), RXscard);
 					_trx_tune = 1;
 				} else
-					xmttune::tune(active_modem->get_txfreq_woffset(), scard);
+					xmttune::tune(active_modem->get_txfreq_woffset(), RXscard);
 			}
-			xmttune::keyup(active_modem->get_txfreq_woffset(), scard);
+			xmttune::keyup(active_modem->get_txfreq_woffset(), RXscard);
 		}
 		catch (const SndException& e) {
-			scard->Close();
+//			TXscard->Close();
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
 			MilliSleep(10);
+			current_TXsamplerate = 0;
 			return;
 		}
-		scard->flush();
-		if (scard->must_close(O_WRONLY))
-			scard->Close(O_WRONLY);
+		TXscard->flush();
+//		if (TXscard->must_close(O_WRONLY))
+//			TXscard->Close(O_WRONLY);
 
 		_trx_tune = 0;
 	} else
@@ -503,8 +518,10 @@ void *trx_loop(void *args)
 
 		switch (trx_state) {
 		case STATE_ABORT:
-			delete scard;
-			scard = 0;
+			delete RXscard;
+			RXscard = 0;
+			delete TXscard;
+			TXscard = 0;
 			trx_state = STATE_ENDED;
 			// fall through
 		case STATE_ENDED:
@@ -582,33 +599,43 @@ void trx_start_modem(modem* m, int f)
 //=============================================================================
 void trx_reset_loop()
 {
-	if (scard)  {
-		delete scard;
-		scard = 0;
+	if (RXscard)  {
+		delete RXscard;
+		RXscard = 0;
+	}
+	if (TXscard)  {
+		delete TXscard;
+		TXscard = 0;
 	}
 
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
 	case SND_IDX_OSS:
-		scard = new SoundOSS(scDevice[0].c_str());
+		RXscard = new SoundOSS(scDevice[0].c_str());
+		TXscard = new SoundOSS(scDevice[0].c_str());
 		break;
 #endif
 #if USE_PORTAUDIO
 	case SND_IDX_PORT:
-		scard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		RXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		TXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
 		break;
 #endif
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
-		scard = new SoundPulse(scDevice[0].c_str());
+		RXscard = new SoundPulse(scDevice[0].c_str());
+		TXscard = new SoundPulse(scDevice[0].c_str());
 		break;
 #endif
 	case SND_IDX_NULL:
-		scard = new SoundNull;
+		RXscard = new SoundNull;
+		TXscard = new SoundNull;
 		break;
 	default:
 		abort();
 	}
+
+	current_RXsamplerate = current_TXsamplerate = 0;
 
 	trx_state = STATE_RX;
 }
@@ -630,7 +657,14 @@ void trx_start(void)
 		return;
 	}
 
-	if (scard) delete scard;
+	if (RXscard) {
+		delete RXscard;
+		RXscard = 0;
+	}
+	if (TXscard) {
+		delete TXscard;
+		TXscard = 0;
+	}
 	if (ReedSolomon) delete ReedSolomon;
 	if (dtmf) delete dtmf;
 
@@ -638,25 +672,30 @@ void trx_start(void)
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
 	case SND_IDX_OSS:
-		scard = new SoundOSS(scDevice[0].c_str());
+		RXscard = new SoundOSS(scDevice[0].c_str());
+		TXscard = new SoundOSS(scDevice[0].c_str());
 		break;
 #endif
 #if USE_PORTAUDIO
 	case SND_IDX_PORT:
-		scard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		RXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		TXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
 		break;
 #endif
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
-		scard = new SoundPulse(scDevice[0].c_str());
+		RXscard = new SoundPulse(scDevice[0].c_str());
+		TXscard = new SoundPulse(scDevice[0].c_str());
 		break;
 #endif
 	case SND_IDX_NULL:
-		scard = new SoundNull;
+		RXscard = new SoundNull;
+		TXscard = new SoundNull;
 		break;
 	default:
 		abort();
 	}
+	current_RXsamplerate = current_TXsamplerate = 0;
 
 	ReedSolomon = new cRsId;
 	dtmf = new cDTMF;
@@ -724,9 +763,9 @@ void trx_close()
 	delete trx_sem;
 #endif
 
-	if (scard) {
-		delete scard;
-		scard = 0;
+	if (RXscard) {
+		delete RXscard;
+		RXscard = 0;
 	}
 	LOG_INFO("%s", "trx thread closed");
 }

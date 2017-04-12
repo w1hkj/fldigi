@@ -40,7 +40,7 @@ public:
 	navtex (trx_mode md);
 	virtual ~navtex();
 	void rx_init();
-	void tx_init(SoundBase *sc);
+	void tx_init();
 	void restart();
 	int  rx_process(const double *buf, int len);
 	int  tx_process();

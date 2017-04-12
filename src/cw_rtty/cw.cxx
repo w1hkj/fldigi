@@ -181,9 +181,8 @@ const char * cw::find_winner (float *inbuf, int twodots)
 		return NULL;
 }
 
-void cw::tx_init(SoundBase *sc)
+void cw::tx_init()
 {
-	scard = sc;
 	phaseacc = 0;
 	lastsym = 0;
 	qskphase = 0;

@@ -53,7 +53,7 @@ public:
 	~mt63();
 	void    init();
 	void    rx_init();
-	void    tx_init(SoundBase*);
+	void    tx_init();
 	void    restart();
 	int     rx_process(const double *buf, int len);
 	int     tx_process();
