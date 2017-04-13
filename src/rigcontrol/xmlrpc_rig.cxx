@@ -103,6 +103,9 @@ static XmlRpcValue bw_result;
 static XmlRpcValue notch_result;
 
 static double timeout = 2.0;
+
+static int wait_bws_timeout = 0;
+
 //======================================================================
 
 void xmlrpc_rig_set_qsy(long long rfc)
@@ -331,13 +334,16 @@ void set_flrig_mode(const char *md)
 		if (!flrig_client->execute("rig.set_mode", val, result, timeout)) {
 			LOG_ERROR("%s", "rig.set_mode failed");
 			wait_mode = false;
-			wait_mode_timeout = 5;
+			wait_mode_timeout = 10;
 		} else {
 			posted_mode = md;
 			need_sideband = true;
 			bws_posted = false;
 			wait_mode = true;
-			wait_mode_timeout = 5;
+			wait_mode_timeout = 10;
+			wait_bws_timeout = 5;
+qso_opBW->hide();
+qso_opGROUP->hide();
 			LOG_VERBOSE("set mode: %s", md);
 		}
 	} catch (...) {}
@@ -379,6 +385,10 @@ void flrig_get_mode()
 					xml_USB = (sb[0] == 'U');
 				} else {
 					xml_USB = true;
+				}
+				if (posted) {
+					need_sideband = false;
+					return;
 				}
 				Fl::awake(xmlrpc_rig_post_mode, reinterpret_cast<void*>(&md));
 				LOG_VERBOSE("get mode: %s:%s", md.c_str(), xml_USB ? "USB" : "LSB");
@@ -487,6 +497,7 @@ void xmlrpc_rig_post_bw(void *)
 		qso_opBW->redraw();
 		LOG_VERBOSE("Update BW %s", posted_bw.c_str());
 	}
+qso_opBW->show();
 }
 
 void xmlrpc_rig_post_bw1(void *)
@@ -499,6 +510,7 @@ void xmlrpc_rig_post_bw1(void *)
 		qso_opBW1->redraw();
 		LOG_VERBOSE("Update combo BW1 %s", posted_bw1.c_str());
 	}
+qso_opGROUP->show();
 }
 
 void xmlrpc_rig_post_bw2(void *)
@@ -510,18 +522,14 @@ void xmlrpc_rig_post_bw2(void *)
 		qso_opBW2->redraw();
 		LOG_VERBOSE("Update combo BW2 %s", posted_bw2.c_str());
 	}
+qso_opGROUP->show();
 }
 
-void flrig_get_bw()
+void do_flrig_get_bw()
 {
 	guard_lock flrig_lock(&mutex_flrig);
 	XmlRpcValue res;
 	try {
-		if (wait_bw_timeout) {
-			wait_bw_timeout--;
-			return;
-		}
-
 		if (flrig_client->execute("rig.get_bw", XmlRpcValue(), res, timeout) ) {
 			static string s1;
 			static string s2;
@@ -546,6 +554,15 @@ void flrig_get_bw()
 			LOG_ERROR("%s", "get bw failed!");
 		}
 	} catch (...) {}
+}
+
+void flrig_get_bw()
+{
+	if (wait_bw_timeout) {
+		wait_bw_timeout--;
+		return;
+	}
+	do_flrig_get_bw();
 }
 
 pthread_mutex_t mutex_flrig_bws = PTHREAD_MUTEX_INITIALIZER;
@@ -574,7 +591,7 @@ void xmlrpc_rig_post_bws(void *)
 		static char tooltip1[20];
 		snprintf(tooltip1,sizeof(tooltip1),"%s",labels1.substr(2).c_str());
 		qso_opBW1->tooltip(tooltip1);
-		qso_opBW1->index(0);
+//		qso_opBW1->index(0);
 		qso_opBW1->redraw();
 
 		{
@@ -606,7 +623,7 @@ void xmlrpc_rig_post_bws(void *)
 			static char tooltip2[20];
 			snprintf(tooltip2,sizeof(tooltip2),"%s",labels2.substr(2).c_str());
 			qso_opBW2->tooltip(tooltip2);
-			qso_opBW2->index(0);
+//			qso_opBW2->index(0);
 			qso_opBW2->redraw();
 
 			{
@@ -624,7 +641,7 @@ void xmlrpc_rig_post_bws(void *)
 			return;
 		}
 		qso_opBW->hide();
-		qso_opGROUP->show();
+//		qso_opGROUP->show();
 		bws_posted = true;
 		return;
 	} catch (XmlRpcException err) {
@@ -636,10 +653,10 @@ void xmlrpc_rig_post_bws(void *)
 				bwstr = string(bws_result[0][i]);
 				qso_opBW->add(bwstr.c_str());
 			}
-			qso_opBW->index(0);
+//			qso_opBW->index(0);
 			qso_opBW->activate();
 			qso_opBW->tooltip("xcvr bandwidth");
-			qso_opBW->show();
+//			qso_opBW->show();
 			qso_opGROUP->hide();
 
 			{
@@ -660,11 +677,17 @@ void xmlrpc_rig_post_bws(void *)
 		}
 	}
 	bws_posted = true;
+do_flrig_get_bw();
 }
 
 void flrig_get_bws()
 {
-	if (bws_posted) return;
+	if (bws_posted)
+		return;
+	if (wait_bws_timeout) {
+		wait_bws_timeout--;
+		return;
+	}
 	XmlRpcValue result;
 	try {
 		if (flrig_client->execute("rig.get_bws", XmlRpcValue(), bws_result, timeout) ) {
@@ -996,7 +1019,7 @@ void * flrig_thread_loop(void *d)
 					if (!modes_posted) flrig_get_modes();
 					if (modes_posted)  flrig_get_mode();
 					if (!bws_posted)   flrig_get_bws();
-					if (bws_posted)    flrig_get_bw();
+					else if (bws_posted)    flrig_get_bw();
 				}
 				else
 					flrig_get_pwrmeter();
