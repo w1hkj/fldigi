@@ -1,8 +1,26 @@
 
 
-=Version 4.0.1=
+=Version 4.0.2=
 
-2017-03-28  David Freese  <iam_w1hkj@w1hkj.com>
+2017-04-14  keith bellairs  <keith@bellairs.org>
+
+	7432793: Lotw Match
+
+2017-04-13  David Freese  <iam_w1hkj@w1hkj.com>
+
+	ed5850e: flrigi bw synch
+	9723972: Clang 8.1.0
+	97024a9: Sound card
+	1549193: Revert "wefax"
+	c85b75e: IFKP image processing
+	ef39743: Macro Save
+	4396c43: CW end-of-transmit
+	2f1d709: Font Initialization
+	a1d4122: OS X socket connect
+	835d823: Winkeyer exit process
+
+
+=Version 4.0.1=
 
 	f40e79d: Socket connect
 
