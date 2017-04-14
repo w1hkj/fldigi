@@ -1303,6 +1303,10 @@ int cw::tx_process()
 			put_echo_char('\n');
 			return -1;
 		}
+		if (c == GET_TX_CHAR_NODATA) {
+			MilliSleep(50);
+			return 0;
+		}
 		if (WK_send_char(c)){
 			put_echo_char('\n');
 			return -1; // WinKeyer problem
