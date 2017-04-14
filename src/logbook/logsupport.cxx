@@ -990,6 +990,7 @@ void verify_lotw(void *)
 		}
 		snprintf(sznote, sizeof(sznote),"%d records matched", nverified);
 		notice.append(sznote).append("\n");
+		if (nverified) qsodb.isdirty(1);
 		LOG_INFO("%d records matched", nverified);
 	}
 	fl_alert2("%s", notice.c_str());
