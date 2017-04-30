@@ -517,8 +517,10 @@ Fl_Group* Wizard::make_intro(void)
 
 	ostringstream help_;
 	help_ << '\n' << _("The wizard will guide you through the basic fldigi settings") << ":\n\n";
-	for (tab_t::const_iterator i = tabs.begin() + 1; i != tabs.end(); ++i)
-		help_ << "\t- " << i->tab->tooltip() << '\n';
+	help_ << "\t- Operator\n";
+	help_ << "\t- Sound Card Interface\n";
+	help_ << "\t- Transceiver control\n";
+	help_ << "\t- Miscellaneous Data Files\n";
 	help_ << '\n' << _("Feel free to skip any pages or exit the wizard at any time") << ". "
 	      << _("All settings shown here can be changed later via the Configure menu") << '.';
 

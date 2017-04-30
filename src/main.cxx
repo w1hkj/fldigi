@@ -101,6 +101,7 @@
 #include "n3fjp_logger.h"
 #include "dx_cluster.h"
 #include "dx_dialog.h"
+#include "record_loader.h"
 
 #if USE_HAMLIB
 	#include "rigclass.h"
@@ -204,14 +205,6 @@ static void checkdirectories(void);
 
 static void arg_error(const char* name, const char* arg, bool missing);
 static void fatal_error(string);
-
-// TODO: find out why fldigi crashes on OS X if the wizard window is
-// shown before fldigi_main.
-#ifndef __APPLE__
-#  define SHOW_WIZARD_BEFORE_MAIN_WINDOW 1
-#else
-#  define SHOW_WIZARD_BEFORE_MAIN_WINDOW 0
-#endif
 
 /*
 from: https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
@@ -1078,14 +1071,12 @@ int main(int argc, char ** argv)
 	progdefaults.initInterface();
 	trx_start();
 
-#if SHOW_WIZARD_BEFORE_MAIN_WINDOW
 	if (!have_config) {
 		show_wizard(argc, argv);
 		Fl_Window* w;
 		while ((w = Fl::first_window()) && w->visible())
 			Fl::wait();
 	}
-#endif
 
 	dlgViewer = createViewer();
 	create_logbook_dialogs();
@@ -1118,11 +1109,6 @@ int main(int argc, char ** argv)
 	update_main_title();
 
 	mode_browser = new Mode_Browser;
-
-#if !SHOW_WIZARD_BEFORE_MAIN_WINDOW
-	if (!have_config)
-		show_wizard();
-#endif
 
 	Fl::add_timeout(.05, delayed_startup);
 
