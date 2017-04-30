@@ -544,7 +544,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
@@ -1152,7 +1152,7 @@ progdefaults.changed=true;}
                   code0 {o->value(progdefaults.connect_to_n3fjp);}
                 }
                 Fl_Box box_n3fjp_connected {
-                  label Connected selected
+                  label Connected
                   xywh {495 117 16 16} box DIAMOND_DOWN_BOX color 52 selection_color 58 align 8
                 }
                 Fl_Check_Button btn_N3FJP_sweet_spot {
@@ -3406,7 +3406,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 605 365} hide
+        xywh {0 25 605 365}
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 605 365} selection_color 50 align 9
@@ -3419,13 +3419,27 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
               xywh {0 50 605 340} selection_color 50
             } {
               Fl_Group tabsCW_general {
-                label General open
-                xywh {0 75 600 315} align 5 hide
+                label General open selected
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label Receive open
                   xywh {35 85 530 130} box ENGRAVED_FRAME align 21
                 } {
+                  Fl_Check_Button btnCWuseSOMdecoding {
+                    label {SOM decoding}
+                    callback {progdefaults.CWuseSOMdecoding = o->value();
+progdefaults.changed = true;}
+                    tooltip {Self Organizing Mapping} xywh {96 108 125 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWuseSOMdecoding);}
+                  }
+                  Fl_Check_Button btnCWrcvTrack {
+                    label Tracking
+                    callback {progdefaults.CWtrack = o->value();
+progdefaults.changed = true;}
+                    tooltip {Automatic Rx speed tracking} xywh {250 108 80 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWtrack);}
+                  }
                   Fl_Value_Slider sldrCWbandwidth {
                     label {Filter bandwidth}
                     callback {progdefaults.CWbandwidth = (int)o->value();
@@ -3435,6 +3449,13 @@ progdefaults.changed = true;}
                     code1 {o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);}
                     class Fl_Value_Slider2
                   }
+                  Fl_Check_Button btnCWmfilt {
+                    label {Matched Filter}
+                    callback {progdefaults.CWmfilt = o->value();
+progdefaults.changed = true;}
+                    tooltip {Matched Filter bandwidth} xywh {397 149 80 20} down_box DOWN_BOX value 1
+                    code0 {o->value(progdefaults.CWmfilt);}
+                  }
                   Fl_Value_Output valCWrcvWPM {
                     label {Rx WPM}
                     callback {progdefaults.changed = true;}
@@ -3442,13 +3463,6 @@ progdefaults.changed = true;}
                   }
                   Fl_Progress prgsCWrcvWPM {
                     tooltip {Tracked CW speed in WPM} xywh {86 188 300 20} color 49 selection_color 15 align 0
-                  }
-                  Fl_Check_Button btnCWuseSOMdecoding {
-                    label {SOM decoding}
-                    callback {progdefaults.CWuseSOMdecoding = o->value();
-progdefaults.changed = true;}
-                    tooltip {Self Organizing Mapping} xywh {63 108 125 20} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.CWuseSOMdecoding);}
                   }
                   Fl_Counter cntLower {
                     label Lower
@@ -3467,27 +3481,6 @@ progdefaults.changed = true;}
                     code0 {o->value(progdefaults.CWupper);}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Counter2
-                  }
-                  Fl_Check_Button btnCWmfilt {
-                    label {Matched Filter}
-                    callback {progdefaults.CWmfilt = o->value();
-progdefaults.changed = true;}
-                    tooltip {Matched Filter bandwidth} xywh {397 108 80 20} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.CWmfilt);}
-                  }
-                  Fl_Check_Button btnCWuseFFTfilter {
-                    label {FFT filter}
-                    callback {progdefaults.CWuse_fft_filter = o->value();
-progdefaults.changed = true;}
-                    tooltip {FFT / FIR filter} xywh {397 134 125 20} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.CWuse_fft_filter);}
-                  }
-                  Fl_Check_Button btnCWrcvTrack {
-                    label Tracking
-                    callback {progdefaults.CWtrack = o->value();
-progdefaults.changed = true;}
-                    tooltip {Automatic Rx speed tracking} xywh {397 160 80 20} down_box DOWN_BOX value 1
-                    code0 {o->value(progdefaults.CWtrack);}
                   }
                   Fl_Counter cntCWrange {
                     label {Range, WPM}
@@ -3929,7 +3922,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group tabsCW_winkeyer {
                 label WinKeyer open
-                xywh {0 75 600 315} align 5
+                xywh {0 75 600 315} align 5 hide
               } {
                 Fl_Group select_WK_CommPort {
                   label {Ser. Port}

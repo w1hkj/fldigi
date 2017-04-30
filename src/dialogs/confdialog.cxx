@@ -2844,10 +2844,31 @@ Fl_Tabs *tabsCW=(Fl_Tabs *)0;
 
 Fl_Group *tabsCW_general=(Fl_Group *)0;
 
+Fl_Check_Button *btnCWuseSOMdecoding=(Fl_Check_Button *)0;
+
+static void cb_btnCWuseSOMdecoding(Fl_Check_Button* o, void*) {
+  progdefaults.CWuseSOMdecoding = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWrcvTrack=(Fl_Check_Button *)0;
+
+static void cb_btnCWrcvTrack(Fl_Check_Button* o, void*) {
+  progdefaults.CWtrack = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Value_Slider2 *sldrCWbandwidth=(Fl_Value_Slider2 *)0;
 
 static void cb_sldrCWbandwidth(Fl_Value_Slider2* o, void*) {
   progdefaults.CWbandwidth = (int)o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btnCWmfilt=(Fl_Check_Button *)0;
+
+static void cb_btnCWmfilt(Fl_Check_Button* o, void*) {
+  progdefaults.CWmfilt = o->value();
 progdefaults.changed = true;
 }
 
@@ -2858,13 +2879,6 @@ static void cb_valCWrcvWPM(Fl_Value_Output*, void*) {
 }
 
 Fl_Progress *prgsCWrcvWPM=(Fl_Progress *)0;
-
-Fl_Check_Button *btnCWuseSOMdecoding=(Fl_Check_Button *)0;
-
-static void cb_btnCWuseSOMdecoding(Fl_Check_Button* o, void*) {
-  progdefaults.CWuseSOMdecoding = o->value();
-progdefaults.changed = true;
-}
 
 Fl_Counter2 *cntLower=(Fl_Counter2 *)0;
 
@@ -2877,27 +2891,6 @@ Fl_Counter2 *cntUpper=(Fl_Counter2 *)0;
 
 static void cb_cntUpper(Fl_Counter2* o, void*) {
   progdefaults.CWupper = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCWmfilt=(Fl_Check_Button *)0;
-
-static void cb_btnCWmfilt(Fl_Check_Button* o, void*) {
-  progdefaults.CWmfilt = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCWuseFFTfilter=(Fl_Check_Button *)0;
-
-static void cb_btnCWuseFFTfilter(Fl_Check_Button* o, void*) {
-  progdefaults.CWuse_fft_filter = o->value();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btnCWrcvTrack=(Fl_Check_Button *)0;
-
-static void cb_btnCWrcvTrack(Fl_Check_Button* o, void*) {
-  progdefaults.CWtrack = o->value();
 progdefaults.changed = true;
 }
 
@@ -7382,6 +7375,7 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
+        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
@@ -9246,7 +9240,6 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 605, 365, _("Modems"));
-        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 605, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -9255,10 +9248,23 @@ i on a\ntouch screen device such as a tablet."));
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
                 tabsCW_general->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tabsCW_general->hide();
                 { Fl_Group* o = new Fl_Group(35, 85, 530, 130, _("Receive"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_Check_Button* o = btnCWuseSOMdecoding = new Fl_Check_Button(96, 108, 125, 20, _("SOM decoding"));
+                btnCWuseSOMdecoding->tooltip(_("Self Organizing Mapping"));
+                btnCWuseSOMdecoding->down_box(FL_DOWN_BOX);
+                btnCWuseSOMdecoding->value(1);
+                btnCWuseSOMdecoding->callback((Fl_Callback*)cb_btnCWuseSOMdecoding);
+                o->value(progdefaults.CWuseSOMdecoding);
+                } // Fl_Check_Button* btnCWuseSOMdecoding
+                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(250, 108, 80, 20, _("Tracking"));
+                btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
+                btnCWrcvTrack->down_box(FL_DOWN_BOX);
+                btnCWrcvTrack->value(1);
+                btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
+                o->value(progdefaults.CWtrack);
+                } // Fl_Check_Button* btnCWrcvTrack
                 { Fl_Value_Slider2* o = sldrCWbandwidth = new Fl_Value_Slider2(50, 149, 335, 20, _("Filter bandwidth"));
                 sldrCWbandwidth->tooltip(_("CW dsp filter bandwidth"));
                 sldrCWbandwidth->type(1);
@@ -9280,6 +9286,13 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWbandwidth);
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWbandwidth
+                { Fl_Check_Button* o = btnCWmfilt = new Fl_Check_Button(397, 149, 80, 20, _("Matched Filter"));
+                btnCWmfilt->tooltip(_("Matched Filter bandwidth"));
+                btnCWmfilt->down_box(FL_DOWN_BOX);
+                btnCWmfilt->value(1);
+                btnCWmfilt->callback((Fl_Callback*)cb_btnCWmfilt);
+                o->value(progdefaults.CWmfilt);
+                } // Fl_Check_Button* btnCWmfilt
                 { valCWrcvWPM = new Fl_Value_Output(50, 188, 35, 20, _("Rx WPM"));
                 valCWrcvWPM->color(FL_BACKGROUND2_COLOR);
                 valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
@@ -9291,13 +9304,6 @@ i on a\ntouch screen device such as a tablet."));
                 prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
                 prgsCWrcvWPM->align(Fl_Align(FL_ALIGN_CENTER));
                 } // Fl_Progress* prgsCWrcvWPM
-                { Fl_Check_Button* o = btnCWuseSOMdecoding = new Fl_Check_Button(63, 108, 125, 20, _("SOM decoding"));
-                btnCWuseSOMdecoding->tooltip(_("Self Organizing Mapping"));
-                btnCWuseSOMdecoding->down_box(FL_DOWN_BOX);
-                btnCWuseSOMdecoding->value(1);
-                btnCWuseSOMdecoding->callback((Fl_Callback*)cb_btnCWuseSOMdecoding);
-                o->value(progdefaults.CWuseSOMdecoding);
-                } // Fl_Check_Button* btnCWuseSOMdecoding
                 { Fl_Counter2* o = cntLower = new Fl_Counter2(209, 108, 65, 20, _("Lower"));
                 cntLower->tooltip(_("Detector low threshold"));
                 cntLower->type(1);
@@ -9340,27 +9346,6 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWupper);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntUpper
-                { Fl_Check_Button* o = btnCWmfilt = new Fl_Check_Button(397, 108, 80, 20, _("Matched Filter"));
-                btnCWmfilt->tooltip(_("Matched Filter bandwidth"));
-                btnCWmfilt->down_box(FL_DOWN_BOX);
-                btnCWmfilt->value(1);
-                btnCWmfilt->callback((Fl_Callback*)cb_btnCWmfilt);
-                o->value(progdefaults.CWmfilt);
-                } // Fl_Check_Button* btnCWmfilt
-                { Fl_Check_Button* o = btnCWuseFFTfilter = new Fl_Check_Button(397, 134, 125, 20, _("FFT filter"));
-                btnCWuseFFTfilter->tooltip(_("FFT / FIR filter"));
-                btnCWuseFFTfilter->down_box(FL_DOWN_BOX);
-                btnCWuseFFTfilter->value(1);
-                btnCWuseFFTfilter->callback((Fl_Callback*)cb_btnCWuseFFTfilter);
-                o->value(progdefaults.CWuse_fft_filter);
-                } // Fl_Check_Button* btnCWuseFFTfilter
-                { Fl_Check_Button* o = btnCWrcvTrack = new Fl_Check_Button(397, 160, 80, 20, _("Tracking"));
-                btnCWrcvTrack->tooltip(_("Automatic Rx speed tracking"));
-                btnCWrcvTrack->down_box(FL_DOWN_BOX);
-                btnCWrcvTrack->value(1);
-                btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
-                o->value(progdefaults.CWtrack);
-                } // Fl_Check_Button* btnCWrcvTrack
                 { Fl_Counter2* o = cntCWrange = new Fl_Counter2(397, 187, 65, 20, _("Range, WPM"));
                 cntCWrange->tooltip(_("Range +/- wpm"));
                 cntCWrange->type(1);
@@ -9876,6 +9861,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Group* tabsCW_prosigns
               { tabsCW_winkeyer = new Fl_Group(0, 75, 600, 315, _("WinKeyer"));
                 tabsCW_winkeyer->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tabsCW_winkeyer->hide();
                 { select_WK_CommPort = new Fl_ComboBox(69, 85, 405, 23, _("Ser. Port"));
                 select_WK_CommPort->tooltip(_("Xcvr serial port"));
                 select_WK_CommPort->box(FL_DOWN_BOX);

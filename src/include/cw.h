@@ -36,20 +36,11 @@
 #include "fftfilt.h"
 #include "mbuffer.h"
 
-
-#define	CWSampleRate	8000
+#define	CW_SAMPLERATE	8000
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
 #define KNUM 			640			// 1/2 dot length at 5 wpm
 
-// decimation ratio for the receiver 
-//#define	DEC_RATIO	8
-//#define CW_FIRLEN 32		
-//#define CW_FIRLEN   122      
-//#define CW_FIRLEN	  256
-//#define CW_FIRLEN   512
-// Limits on values of CW send and timing parameters 
-//#define	CW_MIN_SPEED		5	// Lowest WPM allowed 
-//#define	CW_MAX_SPEED		100	// Highest WPM allowed 
+#define MAX_MORSE_ELEMENTS 6 // maximum of 6 elements in a Morse character 256
 
 // CW function return status codes. 
 #define	CW_SUCCESS	0
@@ -59,8 +50,8 @@
 #define	ASC_SPACE	' '	// ASCII space char 
 
 // Tone and timing magic numbers. 
-#define	DOT_MAGIC	1200000	// Dot length magic number.  The Dot
-//							   length is 1200000/WPM Usec 
+#define	KWPM	(12 * CW_SAMPLERATE/10)  // #samples in dot = KWPM / WPM
+
 #define	TONE_SILENT	0	// 0Hz = silent 'tone' 
 #define	USECS_PER_SEC	1000000	// Microseconds in a second 
 
@@ -68,14 +59,14 @@
 #define	INITIAL_RECEIVE_SPEED	18	// Initial receive speed in WPM 
 
 // Initial adaptive speed threshold 
-#define	INITIAL_THRESHOLD	((DOT_MAGIC / INITIAL_RECEIVE_SPEED) * 2)
+#define	INITIAL_THRESHOLD	((KWPM / INITIAL_RECEIVE_SPEED) * 2)
 
 // Initial noise filter threshold 
-#define	INITIAL_NOISE_THRESHOLD	((DOT_MAGIC / CW_MAX_SPEED) / 2)
+#define	INITIAL_NOISE_THRESHOLD	((KWPM / CW_MAX_SPEED) / 2)
 
 #define TRACKING_FILTER_SIZE 16
 
-#define MAX_PIPE_SIZE (22 * CWSampleRate * 12 / 800)
+#define MAX_PIPE_SIZE (22 * CW_SAMPLERATE * 12 / 800)
 
 enum CW_RX_STATE {
 	RS_IDLE = 0,
@@ -94,7 +85,7 @@ class cw : public modem {
 
 #define CLRCOUNT 16
 #define	DEC_RATIO	16
-#define CW_FIRLEN   512
+#define CW_FIRLEN   128
 // Maximum number of signs (dit or dah) in a Morse char.
 #define WGT_SIZE 7
 
@@ -117,14 +108,11 @@ protected:
 
 	int			FilterFFTLen;
 	bool		use_matched_filter;
-	bool		use_fft_filter;
 
 	double		upper_threshold;
 	double		lower_threshold;
 
-	C_FIR_filter	*hilbert;   // Hilbert filter precedes sinc filter
 	fftfilt			*cw_FFT_filter; // sinc / matched filter
-	C_FIR_filter	*cw_FIR_filter; // linear phase finite impulse response filter
 
 	Cmovavg		*bitfilter;
 	Cmovavg		*trackingfilter;
@@ -175,13 +163,12 @@ protected:
 	long int cw_receive_dash_length;		// Length of a receive Dash, in Usec 
 
 // Receive buffering
-#define	RECEIVE_CAPACITY	256		// Way longer than any representation 
-	char rx_rep_buf[RECEIVE_CAPACITY];
+	std::string rx_rep_buf;
 	int cw_rr_current;				// Receive buffer current location 
 	unsigned int cw_rr_start_timestamp;		// Tone start timestamp 
 	unsigned int cw_rr_end_timestamp;		// Tone end timestamp 
 
-	long int cw_adaptive_receive_threshold;		// 2-dot threshold for adaptive speed 
+	long int two_dots;		// 2-dot threshold for adaptive speed 
 	int in_replay; 					//AG1LE: if we have replay even, set to 1 otherwise = 0 ; 
 
 // Receive adaptive speed tracking.
@@ -196,7 +183,7 @@ protected:
 	void	sync_parameters();
 	void	reset_rx_filter();
 	int		handle_event(int cw_event, const char **c);
-	int		usec_diff(unsigned int earlier, unsigned int later);
+	inline	int usec_diff(unsigned int earlier, unsigned int later);
 	void	send_symbol(int symbol, int len);
 	void	send_ch(int c);
 	bool 	tables_init();

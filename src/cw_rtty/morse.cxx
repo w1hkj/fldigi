@@ -230,7 +230,7 @@ void cMorse::init()
 	}
 }
 
-const char *cMorse::rx_lookup(char *r)
+const char *cMorse::rx_lookup(const char *r)
 {
 	int			token;
 	CW_TABLE *cw;

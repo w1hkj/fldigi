@@ -45,7 +45,7 @@
 
 C_FIR_filter::C_FIR_filter () {
 	pointer = counter = length = 0;
-	decimateratio = 0;
+	decimateratio = 1;
 	ifilter = qfilter = (double *)0;
 	ffreq = 0.0;
 }

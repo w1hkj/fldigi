@@ -59,7 +59,7 @@ public:
 	~cMorse() {
 	}
 	void init();
-	const char	*rx_lookup(char *r);
+	const char	*rx_lookup(const char *r);
 	unsigned long	tx_lookup(int c);
 	const char *tx_print(int c);
 };

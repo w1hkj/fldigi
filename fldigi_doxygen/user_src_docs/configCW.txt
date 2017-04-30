@@ -20,18 +20,13 @@ indicator.<br>
 <br>The CW signals are converted to a baseband signal. It is the
 digital equivalent of tuning an analog USB transceiver so that the
 carrier is exactly at the CW carrier frequency. The CW decoder
-can use one of two different DSP filters. The Fast Fourier
-Transform (FFT) filter is implemented with a sin(x)/x
+uses a Fast Fourier Transform (FFT) filter implemented with a sin(x)/x
 impulse response. This is a very steep sided low pass
-filter. Unchecking the FFT filter causes the decoder to use a
-Finite Impulse Response (FIR) filter with a cutoff slope that is not as
-steep. The FFT filter is optimum when receiving CW in a white
-noise environment. The FIR filter may give better response with
-impulse noise. Selected a "Matched" filter for either the FFT or
-FIR implementation optimizes the filter bandwidth for white noise
-suppression. A lot of impuse noise (static) can cause either
-filter to ring and increasing the filter bandwidth might improve
-detection in that electrical environment.
+filter.  The FFT filter is optimum when receiving CW in a white
+noise environment.  Select "Matched" filter to optimize the filter width
+for the current transmit WPM setting. A lot of impuse noise (static) can 
+cause the filter to ring.  Increasing the filter bandwidth might improve
+detection in that QRN environment.
 <br>
 <br>
 

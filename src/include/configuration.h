@@ -410,9 +410,6 @@
         ELEM_(bool, CWmfilt, "CWMFILT",                                                 \
               "Matched Filter in use",                                                  \
               false)                                                                    \
-        ELEM_(bool, CWuse_fft_filter, "CWUSEFFTFILTER",                                 \
-              "Use FFT overlap and add convolution filter",                             \
-              false)                                                                    \
         ELEM_(bool, CWuseSOMdecoding, "CWUSESOMDECODING",                               \
               "Self Organizing Map decoding",                                           \
               false)                                                                    \

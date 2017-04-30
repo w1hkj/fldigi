@@ -118,7 +118,7 @@ private:
 	int		len, pint;
 	bool	empty;
 public:
-	Cmovavg(int filtlen);
+	Cmovavg(int filtlen = 64);
 	~Cmovavg();
 	double run(double a);
 	void setLength(int filtlen);

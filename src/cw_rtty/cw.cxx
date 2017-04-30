@@ -228,7 +228,7 @@ void cw::init()
 		set_freq(wf->Carrier());
 
 	trackingfilter->reset();
-	cw_adaptive_receive_threshold = (long int)trackingfilter->run(2 * cw_send_dot_length);
+	two_dots = (long int)trackingfilter->run(2 * cw_send_dot_length);
 	put_cwRcvWPM(cw_send_speed);
 	for (int i = 0; i < OUTBUFSIZE; i++)
 		outbuf[i] = qskbuf[i] = 0.0;
@@ -240,8 +240,6 @@ void cw::init()
 }
 
 cw::~cw() {
-	if (hilbert) delete hilbert;
-	if (cw_FIR_filter) delete cw_FIR_filter;
 	if (cw_FFT_filter) delete cw_FFT_filter;
 	if (cw_xmt_filter) delete cw_xmt_filter;
 	if (bitfilter) delete bitfilter;
@@ -263,7 +261,7 @@ cw::cw() : modem()
 	cw_ptr = 0;
 	clrcount = CLRCOUNT;
 
-	samplerate = CWSampleRate;
+	samplerate = CW_SAMPLERATE;
 	fragmentsize = CWMaxSymLen;
 
 	cw_speed  = progdefaults.CWspeed;
@@ -271,14 +269,14 @@ cw::cw() : modem()
 
 	cw_send_speed = cw_speed;
 	cw_receive_speed = cw_speed;
-	cw_adaptive_receive_threshold = 2 * DOT_MAGIC / cw_speed;
-	cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
-	cw_send_dot_length = DOT_MAGIC / cw_send_speed;
+	two_dots = 2 * KWPM / cw_speed;
+	cw_noise_spike_threshold = two_dots / 4;
+	cw_send_dot_length = KWPM / cw_send_speed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
 	symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
 	fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
 
-	memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
+	rx_rep_buf.clear();
 
 // block of variables that get updated each time speed changes
 	pipesize = (22 * samplerate * 12) / (progdefaults.CWspeed * 160);
@@ -301,22 +299,15 @@ cw::cw() : modem()
 	agc_peak = 1.0;
 	in_replay = 0;
 
-	use_fft_filter = progdefaults.CWuse_fft_filter;
 	use_matched_filter = progdefaults.CWmfilt;
 
 	bandwidth = progdefaults.CWbandwidth;
 	if (use_matched_filter)
 		progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2;
 
-	hilbert = new C_FIR_filter(); // hilbert transform used by FFT filter
-	hilbert->init_hilbert(37, 1);
-
-	cw_FIR_filter = new C_FIR_filter();
-	cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, progdefaults.CWspeed/(1.2 * samplerate));
-
 //overlap and add filter length should be a factor of 2
 // low pass implementation
-	FilterFFTLen = 4096;
+	FilterFFTLen = 2048;
 	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), FilterFFTLen);
 
 // transmit filtering
@@ -335,7 +326,7 @@ cw::cw() : modem()
 	for (int i = 0; i < QSK_DELAY_LEN; i++) qsk_signal[i] = 0.0;
 	cw_xmt_filter = new fftfilt( lwr, upr, 2*XMT_FILT_LEN);// transmit filter length
 
-	int bfv = symbollen / 50;
+	int bfv = symbollen / 32;
 	if (bfv < 1) bfv = 1;
 	bitfilter = new Cmovavg(bfv);
 
@@ -356,12 +347,10 @@ cw::cw() : modem()
 // SHOULD ONLY BE CALLED FROM THE rx_processing loop
 void cw::reset_rx_filter()
 {
-	if (use_fft_filter != progdefaults.CWuse_fft_filter ||
-		use_matched_filter != progdefaults.CWmfilt ||
+	if (use_matched_filter != progdefaults.CWmfilt ||
 		cw_speed != progdefaults.CWspeed ||
 		(bandwidth != progdefaults.CWbandwidth && !use_matched_filter)) {
 
-		use_fft_filter = progdefaults.CWuse_fft_filter;
 		use_matched_filter = progdefaults.CWmfilt;
 		cw_send_speed = cw_speed = progdefaults.CWspeed;
 
@@ -371,13 +360,9 @@ void cw::reset_rx_filter()
 			bandwidth = progdefaults.CWbandwidth;
 
 		double fbw = 0.5 * bandwidth / samplerate;
-		if (use_fft_filter) { // FFT filter
-			cw_FFT_filter->create_lpf(fbw);
-			FFTphase = 0;
-		} else { // FIR filter
-			cw_FIR_filter->init_lowpass (CW_FIRLEN, DEC_RATIO, fbw);
-			FIRphase = 0;
-		}
+		cw_FFT_filter->create_lpf(fbw);
+		FFTphase = 0;
+
 		REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth),
 			wf, (int)bandwidth);
 		REQ(static_cast<int (Fl_Value_Slider2::*)(double)>(&Fl_Value_Slider2::value),
@@ -387,9 +372,9 @@ void cw::reset_rx_filter()
 		if (pipesize < 0) pipesize = 512;
 		if (pipesize > MAX_PIPE_SIZE) pipesize = MAX_PIPE_SIZE;
 
-		cw_adaptive_receive_threshold = 2 * DOT_MAGIC / cw_speed;
-		cw_noise_spike_threshold = cw_adaptive_receive_threshold / 4;
-		cw_send_dot_length = DOT_MAGIC / cw_send_speed;
+		two_dots = 2 * KWPM / cw_speed;
+		cw_noise_spike_threshold = two_dots / 4;
+		cw_send_dot_length = KWPM / cw_send_speed;
 		cw_send_dash_length = 3 * cw_send_dot_length;
 		symbollen = (int)round(samplerate * 1.2 / progdefaults.CWspeed);
 		fsymlen = (int)round(samplerate * 1.2 / progdefaults.CWfarnsworth);
@@ -403,10 +388,9 @@ void cw::reset_rx_filter()
 		clrcount = 0;
 		smpl_ctr = 0;
 
-		memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
+		rx_rep_buf.clear();
 
-
-	int bfv = symbollen / 50;
+	int bfv = symbollen / 32;
 	if (bfv < 1) bfv = 1;
 	bitfilter->setLength(bfv);
 
@@ -425,7 +409,7 @@ void cw::sync_transmit_parameters()
 	wpm = usedefaultWPM ? progdefaults.defCWspeed : progdefaults.CWspeed;
 	fwpm = progdefaults.CWfarnsworth;
 
-	cw_send_dot_length = DOT_MAGIC / progdefaults.CWspeed;
+	cw_send_dot_length = KWPM / progdefaults.CWspeed;
 	cw_send_dash_length = 3 * cw_send_dot_length;
 
 	nusymbollen = (int)round(samplerate * 1.2 / wpm);
@@ -451,7 +435,7 @@ void cw::sync_parameters()
 	if ((cwTrack != progdefaults.CWtrack) ||
 		(cw_send_speed != progdefaults.CWspeed)) {
 		trackingfilter->reset();
-		cw_adaptive_receive_threshold = 2 * cw_send_dot_length;
+		two_dots = 2 * cw_send_dot_length;
 		put_cwRcvWPM(cw_send_speed);
 	}
 	cwTrack = progdefaults.CWtrack;
@@ -464,20 +448,20 @@ void cw::sync_parameters()
 		lowerwpm = progdefaults.CWlowerlimit;
 	if (upperwpm > progdefaults.CWupperlimit)
 		upperwpm = progdefaults.CWupperlimit;
-	cw_lower_limit = 2 * DOT_MAGIC / upperwpm;
-	cw_upper_limit = 2 * DOT_MAGIC / lowerwpm;
+	cw_lower_limit = 2 * KWPM / upperwpm;
+	cw_upper_limit = 2 * KWPM / lowerwpm;
 
 	if (cwTrack)
-		cw_receive_speed = DOT_MAGIC / (cw_adaptive_receive_threshold / 2);
+		cw_receive_speed = KWPM / (two_dots / 2);
 	else {
 		cw_receive_speed = cw_send_speed;
-		cw_adaptive_receive_threshold = 2 * cw_send_dot_length;
+		two_dots = 2 * cw_send_dot_length;
 	}
 
 	if (cw_receive_speed > 0)
-		cw_receive_dot_length = DOT_MAGIC / cw_receive_speed;
+		cw_receive_dot_length = KWPM / cw_receive_speed;
 	else
-		cw_receive_dot_length = DOT_MAGIC / 5;
+		cw_receive_dot_length = KWPM / 5;
 
 	cw_receive_dash_length = 3 * cw_receive_dot_length;
 
@@ -488,28 +472,20 @@ void cw::sync_parameters()
 
 //=======================================================================
 // cw_update_tracking()
-// This gets called everytime we have a dot dash sequence or a dash dot
-// sequence. Since we have semi validated tone durations, we can try and
-// track the cw speed by adjusting the cw_adaptive_receive_threshold variable.
-// This is done with moving average filters for both dot & dash.
 //=======================================================================
 
-void cw::update_tracking(int idot, int idash)
+inline void cw::update_tracking(int dur_1, int dur_2)
 {
-	int dot, dash;
-	if (idot > cw_lower_limit && idot < cw_upper_limit)
-		dot = idot;
-	else
-		dot = cw_send_dot_length;
-	if (idash > cw_lower_limit && idash < cw_upper_limit)
-		dash = idash;
-	else
-		dash = cw_send_dash_length;
+static int min_dot = KWPM / 200;
+static int max_dash = 3 * KWPM / 5;
+	if ((dur_1 > dur_2) && (dur_1 > 4 * dur_2)) return;
+	if ((dur_2 > dur_1) && (dur_2 > 4 * dur_1)) return;
+	if (dur_1 < min_dot || dur_2 < min_dot) return;
+	if (dur_2 > max_dash || dur_2 > max_dash) return;
 
-	cw_adaptive_receive_threshold = (long int)trackingfilter->run((dash + dot) / 2);
+	two_dots = trackingfilter->run((dur_1 + dur_2) / 2);
 
-//	if (!use_matched_filter)
-		sync_parameters();
+	sync_parameters();
 }
 
 //=======================================================================
@@ -603,8 +579,9 @@ void cw::decode_stream(double value)
 	else
 		value = 0;
 
-	if (norm_noise) metric = clamp(100 * sig_avg / norm_noise , 0, 100);
-	else metric = 0;
+	metric = 0.8 * metric;
+	if ((noise_floor > 1e-4) && (noise_floor < sig_avg))
+		metric += 0.2 * clamp(2.5 * (20*log10(sig_avg / noise_floor)) , 0, 100);
 
 	float diff = (norm_sig - norm_noise);
 
@@ -630,7 +607,7 @@ void cw::decode_stream(double value)
 		update_syncscope();
 		synchscope = 100;
 		if (progdefaults.CWuseSOMdecoding) {
-			somc = find_winner(cw_buffer, cw_adaptive_receive_threshold);
+			somc = find_winner(cw_buffer, two_dots);
 			cptr = (char*)somc;
 			if (somc != NULL) {
 				while (*cptr != '\0')
@@ -687,46 +664,23 @@ void cw::rx_FFTprocess(const double *buf, int len)
 	} //while (len-- > 0)
 }
 
-void cw::rx_FIRprocess(const double *buf, int len)
-{
-	cmplx z;
-
-	while (len-- > 0) {
-		z = cmplx ( *buf * cos(FIRphase), *buf * sin(FIRphase) );
-		buf++;
-
-		FIRphase += TWOPI * frequency / samplerate;
-		if (FIRphase > TWOPI) FIRphase -= TWOPI;
-
-		if (cw_FIR_filter->run ( z, z )) {
-
-// update the basic sample counter used for morse timing
-			smpl_ctr += DEC_RATIO;
-// demodulate
-			FIRvalue = abs(z);
-			FIRvalue = bitfilter->run(FIRvalue);
-
-			decode_stream(FIRvalue);
-		}
-	}
-}
-
 static bool cwprocessing = false;
 
 int cw::rx_process(const double *buf, int len)
 {
-	if (cwprocessing) return 0;
+	if (cwprocessing)
+		return 0;
+
 	cwprocessing = true;
+
 	reset_rx_filter();
 
-	if (use_fft_filter)
-		rx_FFTprocess(buf, len);
-	else
-		rx_FIRprocess(buf, len);
+	rx_FFTprocess(buf, len);
 
 	if (!clrcount--) clear_syncscope();
 
 	display_metric(metric);
+
 	cwprocessing = false;
 
 	return 0;
@@ -736,15 +690,9 @@ int cw::rx_process(const double *buf, int len)
 
 // Compare two timestamps, and return the difference between them in usecs.
 
-int cw::usec_diff(unsigned int earlier, unsigned int later)
+inline int cw::usec_diff(unsigned int earlier, unsigned int later)
 {
-// Compare the timestamps.
-// At 4 WPM, the dash length is 3*(1200000/4)=900,000 usecs, and
-// the word gap is 2,100,000 usecs.
-	if (earlier >= later) {
-		return 0;
-	} else
-		return (int) (((double) (later - earlier) * USECS_PER_SEC) / samplerate);
+	return (earlier >= later) ? 0 : (later - earlier);
 }
 
 
@@ -773,7 +721,7 @@ int cw::handle_event(int cw_event, const char **c)
 		cw_ptr = 0;
 		memset(cw_buffer, 0, sizeof(cw_buffer));
 		smpl_ctr = 0;					// reset audio sample counter
-		memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
+		rx_rep_buf.clear();
 		break;
 	case CW_KEYDOWN_EVENT:
 // A receive tone start can only happen while we
@@ -783,7 +731,7 @@ int cw::handle_event(int cw_event, const char **c)
 // first tone in idle state reset audio sample counter
 		if (cw_receive_state == RS_IDLE) {
 			smpl_ctr = 0;
-			memset(rx_rep_buf, 0, sizeof(rx_rep_buf));
+			rx_rep_buf.clear();
 			cw_rr_current = 0;
 			cw_ptr = 0;
 		}
@@ -835,18 +783,18 @@ int cw::handle_event(int cw_event, const char **c)
 		last_element = element_usec;
 // ok... do we have a dit or a dah?
 // a dot is anything shorter than 2 dot times
-		if (element_usec <= cw_adaptive_receive_threshold) {
-			rx_rep_buf[cw_rr_current++] = CW_DOT_REPRESENTATION;
+		if (element_usec <= two_dots) {
+			rx_rep_buf += CW_DOT_REPRESENTATION;
 	//		printf("%d dit ", last_element/1000);  // print dot length
 			cw_buffer[cw_ptr++] = (float)last_element;
 		} else {
 // a dash is anything longer than 2 dot times
-			rx_rep_buf[cw_rr_current++] = CW_DASH_REPRESENTATION;
+			rx_rep_buf += CW_DASH_REPRESENTATION;
 			cw_buffer[cw_ptr++] = (float)last_element;
 		}
 // We just added a representation to the receive buffer.
 // If it's full, then reset everything as it probably noise
-		if (cw_rr_current == RECEIVE_CAPACITY - 1) {
+		if (rx_rep_buf.length() > MAX_MORSE_ELEMENTS) {
 			cw_receive_state = RS_IDLE;
 			cw_rr_current = 0;	// reset decoding pointer
 			cw_ptr = 0;
@@ -854,7 +802,7 @@ int cw::handle_event(int cw_event, const char **c)
 			return CW_ERROR;
 		} else {
 // zero terminate representation
-			rx_rep_buf[cw_rr_current] = 0;
+//			rx_rep_buf.clear();
 			cw_buffer[cw_ptr] = 0.0;
 		}
 // All is well.  Move to the more normal after-tone state.
@@ -889,13 +837,13 @@ int cw::handle_event(int cw_event, const char **c)
 			element_usec <= (4 * cw_receive_dot_length) &&
 			cw_receive_state == RS_AFTER_TONE) {
 // Look up the representation
-//cout << "CW_QUERY medium time after keyup: " << rx_rep_buf;
-			*c = morse.rx_lookup(rx_rep_buf);
+			*c = morse.rx_lookup(rx_rep_buf.c_str());
 //cout <<": " << *c <<flush;
 			if (*c == NULL) {
 // invalid decode... let user see error
 				*c = "*";
 			}
+			rx_rep_buf.clear();
 			cw_receive_state = RS_IDLE;
 			cw_rr_current = 0;	// reset decoding pointer
 			space_sent = false;
