@@ -36,6 +36,8 @@
 #include "fftfilt.h"
 #include "mbuffer.h"
 
+#include "view_cw.h"
+
 #define	CW_SAMPLERATE	8000
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
 #define KNUM 			640			// 1/2 dot length at 5 wpm
@@ -85,7 +87,6 @@ class cw : public modem {
 
 #define CLRCOUNT 16
 #define	DEC_RATIO	16
-#define CW_FIRLEN   128
 // Maximum number of signs (dit or dah) in a Morse char.
 #define WGT_SIZE 7
 
@@ -100,13 +101,10 @@ protected:
 	int			fsymlen;        	// length of extra interelement space (farnsworth)
 	double		phaseacc;		// used by NCO for rx/tx tones
 	double		FFTphase;
-	double		FIRphase;
 	double		FFTvalue;
-	double		FIRvalue;
 	unsigned int	smpl_ctr;		// sample counter for timing cw rx
 	double		agc_peak;		// threshold for tone detection 
 
-	int			FilterFFTLen;
 	bool		use_matched_filter;
 
 	double		upper_threshold;
@@ -226,6 +224,8 @@ protected:
 	double	*qsk_signal;
 	int		qsk_ptr;
 	void nb_filter(double *output, double *qsk, int len);
+
+	view_cw	viewcw;
 
 public:
 	cw();

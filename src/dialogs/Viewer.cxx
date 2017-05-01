@@ -82,10 +82,14 @@ void initViewer()
 		if (active_modem->get_mode() == MODE_RTTY) {
 			mvsquelch->range(-12.0, 6.0);
 			mvsquelch->value(progStatus.VIEWER_rttysquelch);
+		} else if (active_modem->get_mode() == MODE_CW) {
+			mvsquelch->range(0.0, 40.0);
+			mvsquelch->value(progStatus.VIEWER_cwsquelch);
 		} else {
 			mvsquelch->range(-3.0, 6.0);
 			mvsquelch->value(progStatus.VIEWER_psksquelch);
 		}
+		mvsquelch->redraw();
 	}
 	if (brwsViewer) {
 		brwsViewer->usb = usb;
@@ -103,10 +107,14 @@ void initViewer()
 		if (active_modem->get_mode() == MODE_RTTY) {
 			sldrViewerSquelch->range(-12.0, 6.0);
 			sldrViewerSquelch->value(progStatus.VIEWER_rttysquelch);
+		} else if (active_modem->get_mode() == MODE_CW) {
+			sldrViewerSquelch->range(0.0, 40.0);
+			sldrViewerSquelch->value(progStatus.VIEWER_cwsquelch);
 		} else {
 			sldrViewerSquelch->range(-3.0, 6.0);
 			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
 		}
+		sldrViewerSquelch->redraw();
 	}
 	active_modem->clear_viewer();
 }
@@ -236,6 +244,8 @@ static void cb_Squelch(Fl_Slider *, void *)
 {
 	if (active_modem->get_mode() == MODE_RTTY)
 		progStatus.VIEWER_rttysquelch = sldrViewerSquelch->value();
+	else if (active_modem->get_mode() == MODE_CW)
+		progStatus.VIEWER_cwsquelch = sldrViewerSquelch->value();
 	else
 		progStatus.VIEWER_psksquelch = sldrViewerSquelch->value();
 
@@ -349,7 +359,6 @@ void openViewer()
 {
 	if (!dlgViewer) {
 		dlgViewer = createViewer();
-		initViewer();
 	}
 	initViewer();
 	dlgViewer->show();
@@ -358,38 +367,20 @@ void openViewer()
 
 void viewer_paste_freq(int freq)
 {
-//	if (pskviewer) {
-		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-			int ftest = active_modem->viewer_get_freq(i);
-			if (ftest == NULLFREQ) continue;
-			if (fabs(ftest - freq) <= 50) {
-				if (progdefaults.VIEWERascend)
-					i = (progdefaults.VIEWERchannels - i);
-				else i++;
-				if (mainViewer)
-					mainViewer->select(i);
-				if (brwsViewer)
-					brwsViewer->select(i);
-				return;
-			}
+	for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
+		int ftest = active_modem->viewer_get_freq(i);
+		if (ftest == NULLFREQ) continue;
+		if (fabs(ftest - freq) <= 50) {
+			if (progdefaults.VIEWERascend)
+				i = (progdefaults.VIEWERchannels - i);
+			else i++;
+			if (mainViewer)
+				mainViewer->select(i);
+			if (brwsViewer)
+				brwsViewer->select(i);
+			return;
 		}
-//	}
-//	if (rttyviewer) {
-//		for (int i = 0; i < progdefaults.VIEWERchannels; i++) {
-//			int ftest = rttyviewer->get_freq(i);
-//			if (ftest == NULLFREQ) continue;
-//			if (fabs(ftest - freq) <= 50) {
-//				if (progdefaults.VIEWERascend)
-//					i = (progdefaults.VIEWERchannels - i);
-//				else i++;
-//				if (mainViewer)
-//					mainViewer->select(i);
-//				if (brwsViewer)
-//					brwsViewer->select(i);
-//				return;
-//			}
-//		}
-//	}
+	}
 }
 
 

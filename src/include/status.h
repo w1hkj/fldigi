@@ -63,6 +63,7 @@ struct status {
 	unsigned int	VIEWERheight;
 	double	VIEWER_psksquelch;
 	double	VIEWER_rttysquelch;
+	double	VIEWER_cwsquelch;
 	bool	VIEWERvisible;
 	unsigned int	fsqMONITORxpos;
 	unsigned int	fsqMONITORypos;

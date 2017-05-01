@@ -334,6 +334,7 @@ fldigi_SOURCES += \
 	cw_rtty/rtty.cxx \
 	cw_rtty/view_rtty.cxx \
 	cw_rtty/winkeyer.cxx \
+	cw_rtty/view_cw.cxx \
 	contestia/contestia.cxx \
 	dialogs/confdialog.cxx \
 	dialogs/fl_digi.cxx \
@@ -380,6 +381,7 @@ fldigi_SOURCES += \
 	include/configuration.h \
 	include/contestia.h \
 	include/cw.h \
+	include/view_cw.h \
 	include/data_io.h \
 	include/debug.h \
 	include/digiscope.h \

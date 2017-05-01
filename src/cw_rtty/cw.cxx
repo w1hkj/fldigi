@@ -58,6 +58,7 @@ using namespace std;
 
 #define XMT_FILT_LEN 256
 #define QSK_DELAY_LEN 4*XMT_FILT_LEN
+#define CW_FFT_SIZE 2048 // must be a factor of 2
 
 const cw::SOM_TABLE cw::som_table[] = {
 	/* Prosigns */
@@ -209,6 +210,8 @@ void cw::rx_init()
 	update_Status();
 	usedefaultWPM = false;
 	scope_clear = true;
+
+	viewcw.restart();
 }
 
 void cw::init()
@@ -286,9 +289,7 @@ cw::cw() : modem()
 	cwTrack = true;
 	phaseacc = 0.0;
 	FFTphase = 0.0;
-	FIRphase = 0.0;
 	FFTvalue = 0.0;
-	FIRvalue = 0.0;
 	pipeptr = 0;
 	clrcount = 0;
 
@@ -305,10 +306,7 @@ cw::cw() : modem()
 	if (use_matched_filter)
 		progdefaults.CWbandwidth = bandwidth = 2.0 * progdefaults.CWspeed / 1.2;
 
-//overlap and add filter length should be a factor of 2
-// low pass implementation
-	FilterFFTLen = 2048;
-	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), FilterFFTLen);
+	cw_FFT_filter = new fftfilt(progdefaults.CWspeed/(1.2 * samplerate), CW_FFT_SIZE);
 
 // transmit filtering
 
@@ -381,9 +379,7 @@ void cw::reset_rx_filter()
 
 		phaseacc = 0.0;
 		FFTphase = 0.0;
-		FIRphase = 0.0;
 		FFTvalue = 0.0;
-		FIRvalue = 0.0;
 		pipeptr = 0;
 		clrcount = 0;
 		smpl_ctr = 0;
@@ -680,6 +676,10 @@ int cw::rx_process(const double *buf, int len)
 	if (!clrcount--) clear_syncscope();
 
 	display_metric(metric);
+
+	if ( (dlgViewer->visible() || progStatus.show_channels ) 
+		&& !bHighSpeed && !bHistory )
+		viewcw.rx_process(buf, len);
 
 	cwprocessing = false;
 

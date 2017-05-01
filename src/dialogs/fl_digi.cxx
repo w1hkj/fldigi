@@ -1149,25 +1149,48 @@ void set_dominoex_tab_widgets()
 //    cb_init_mode(w, arg);
 //}
 
-void startup_modem(modem* m, int f)
+void set_mode_controls(trx_mode id)
 {
-	trx_start_modem(m, f);
-#if BENCHMARK_MODE
-	return;
-#endif
-
-	restoreFocus(1);
-
-	trx_mode id = m->get_mode();
-
 	if (id == MODE_CW) {
 		cntCW_WPM->show();
 		btnCW_Default->show();
 		Status1->hide();
+		if (mvsquelch) {
+			mvsquelch->value(progStatus.VIEWER_cwsquelch);
+			mvsquelch->range(0, 40.0);
+			mvsquelch->redraw();
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->value(progStatus.VIEWER_cwsquelch);
+			sldrViewerSquelch->range(0, 40.0);
+			sldrViewerSquelch->redraw();
+		}
 	} else {
 		cntCW_WPM->hide();
 		btnCW_Default->hide();
 		Status1->show();
+	}
+
+	if (id == MODE_RTTY) {
+		if (mvsquelch) {
+			mvsquelch->value(progStatus.VIEWER_rttysquelch);
+			mvsquelch->range(-6.0, 34.0);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->value(progStatus.VIEWER_rttysquelch);
+			sldrViewerSquelch->range(-12.0, 6.0);
+		}
+	}
+
+	if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST) {
+		if (mvsquelch) {
+			mvsquelch->value(progStatus.VIEWER_psksquelch);
+			mvsquelch->range(-3.0, 6.0);
+		}
+		if (sldrViewerSquelch) {
+			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
+			sldrViewerSquelch->range(-3.0, 6.0);
+		}
 	}
 
 	if (!bWF_only) {
@@ -1234,25 +1257,23 @@ void startup_modem(modem* m, int f)
 
 	}
 
-	if (id == MODE_RTTY) {
-		if (mvsquelch) {
-			mvsquelch->value(progStatus.VIEWER_rttysquelch);
-			mvsquelch->range(-12.0, 6.0);
-		}
-		if (sldrViewerSquelch) {
-			sldrViewerSquelch->value(progStatus.VIEWER_rttysquelch);
-			sldrViewerSquelch->range(-12.0, 6.0);
-		}
-	} else if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST) {
+}
+
+void startup_modem(modem* m, int f)
+{
+	trx_start_modem(m, f);
+#if BENCHMARK_MODE
+	return;
+#endif
+
+	restoreFocus(1);
+
+	trx_mode id = m->get_mode();
+
+	set_mode_controls(id);
+
+	if (id >= MODE_PSK_FIRST && id <= MODE_PSK_LAST) {
 		m->set_sigsearch(SIGSEARCH);
-		if (mvsquelch) {
-			mvsquelch->value(progStatus.VIEWER_psksquelch);
-			mvsquelch->range(-3.0, 6.0);
-		}
-		if (sldrViewerSquelch) {
-			sldrViewerSquelch->value(progStatus.VIEWER_psksquelch);
-			sldrViewerSquelch->range(-3.0, 6.0);
-		}
 	}
 
 	if (m->get_cap() & modem::CAP_AFC) {
@@ -3484,7 +3505,9 @@ void cb_mvsquelch(Fl_Widget *w, void *d)
 {
 	progStatus.squelch_value = mvsquelch->value();
 
-	if (active_modem->get_mode() == MODE_RTTY)
+	if (active_modem->get_mode() == MODE_CW)
+		progStatus.VIEWER_cwsquelch = progStatus.squelch_value;
+	else if (active_modem->get_mode() == MODE_RTTY)
 		progStatus.VIEWER_rttysquelch = progStatus.squelch_value;
 	else
 		progStatus.VIEWER_psksquelch = progStatus.squelch_value;
@@ -7922,6 +7945,7 @@ void create_fl_digi_main_primary() {
 		wf->xmtrcv->deactivate();
 	}
 
+	set_mode_controls(active_modem->get_mode());
 }
 
 void cb_mnuAltDockedscope(Fl_Menu_ *w, void *d);
