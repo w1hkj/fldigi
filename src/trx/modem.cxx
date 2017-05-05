@@ -725,7 +725,7 @@ void modem::cwid_send_symbol(int bits)
 		sample = 0,
 		currsym = bits & 1;
 
-	freq = get_txfreq() - progdefaults.TxOffset;
+	freq = get_txfreq_woffset() - progdefaults.TxOffset;
 
 	if ((currsym == 1) && (cwid_lastsym == 0))
 		cwid_phaseacc = 0.0;
@@ -850,7 +850,7 @@ void modem::wfid_make_tones(int numchars)
 {
 	double f, flo, fhi;
 	int vwidth = (numchars*NUMCOLS + (numchars-1)*CHARSPACE - 1);
-	f = get_txfreq() + TONESPACING * vwidth/2.0;
+	f = get_txfreq_woffset() + TONESPACING * vwidth/2.0;
 	fhi = f + TONESPACING;
 	flo = fhi - (vwidth + 2) * TONESPACING;
 	for (int i = 1; i <= NUMCOLS * numchars; i++) {
@@ -921,7 +921,7 @@ void modem::pretone()
 {
 	int sr = get_samplerate();
 	int symlen = sr / 10;
-	double phaseincr = 2.0 * M_PI * get_txfreq() / sr;
+	double phaseincr = 2.0 * M_PI * get_txfreq_woffset() / sr;
 	double phase = 0.0;
 	double outbuf[symlen];
 

@@ -645,7 +645,7 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 
 	if (progdefaults.rsid_notify_only) {
 		if (data_io_enabled == KISS_IO) {
-			bcast_rsid_kiss_frame(rsidfreq, mbin, (int) active_modem->get_txfreq(),
+			bcast_rsid_kiss_frame(rsidfreq, mbin, (int) active_modem->get_txfreq_woffset(),
 								  active_modem->get_mode(), RSID_KISS_NOTIFY);
 		}
 		return;
@@ -956,7 +956,7 @@ void cRsId::send(bool preRSID)
 		active_modem->ModulateXmtr(outbuf, symlen);
 
 // transmit sequence of 15 symbols (tones)
-	fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
+	fr = 1.0 * active_modem->get_txfreq_woffset() - (RSID_SAMPLE_RATE * 7 / 1024);
 	phase = 0.0;
 
 	for (int i = 0; i < 15; i++) {
@@ -989,7 +989,7 @@ void cRsId::send(bool preRSID)
 			outbuf = new double[symlen];
 		}
 // transmit sequence of 15 symbols (tones)
-		fr = 1.0 * active_modem->get_txfreq() - (RSID_SAMPLE_RATE * 7 / 1024);
+		fr = 1.0 * active_modem->get_txfreq_woffset() - (RSID_SAMPLE_RATE * 7 / 1024);
 		phase = 0.0;
 
 		for (int i = 0; i < 15; i++) {

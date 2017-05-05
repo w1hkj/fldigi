@@ -464,12 +464,12 @@ void trx_tune_loop()
 			while (trx_state == STATE_TUNE) {
 				if (_trx_tune == 0) {
 					REQ(&waterfall::set_XmtRcvBtn, wf, true);
-					xmttune::keydown(active_modem->get_txfreq_woffset(), RXscard);
+					xmttune::keydown(active_modem->get_txfreq_woffset(), TXscard);
 					_trx_tune = 1;
 				} else
-					xmttune::tune(active_modem->get_txfreq_woffset(), RXscard);
+					xmttune::tune(active_modem->get_txfreq_woffset(), TXscard);
 			}
-			xmttune::keyup(active_modem->get_txfreq_woffset(), RXscard);
+			xmttune::keyup(active_modem->get_txfreq_woffset(), TXscard);
 		}
 		catch (const SndException& e) {
 //			TXscard->Close();
@@ -612,30 +612,35 @@ void trx_reset_loop()
 #if USE_OSS
 	case SND_IDX_OSS:
 		RXscard = new SoundOSS(scDevice[0].c_str());
+		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
 		TXscard = new SoundOSS(scDevice[0].c_str());
+		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
 		break;
 #endif
 #if USE_PORTAUDIO
 	case SND_IDX_PORT:
 		RXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
 		TXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
+		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
 		break;
 #endif
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
 		RXscard = new SoundPulse(scDevice[0].c_str());
+		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
 		TXscard = new SoundPulse(scDevice[0].c_str());
+		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
 		break;
 #endif
 	case SND_IDX_NULL:
 		RXscard = new SoundNull;
 		TXscard = new SoundNull;
+		current_RXsamplerate = current_TXsamplerate = 0;
 		break;
 	default:
 		abort();
 	}
-
-	current_RXsamplerate = current_TXsamplerate = 0;
 
 	trx_state = STATE_RX;
 }

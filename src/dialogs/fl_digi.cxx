@@ -206,7 +206,7 @@
 #define MAX_FREQ 14
 #define MAX_TIME 4
 #define MAX_RST 3
-#define MAX_CALL 15
+#define MAX_CALL 30
 #define MAX_NAME 30
 #define MAX_AZ 3
 #define MAX_QTH 50
