@@ -105,6 +105,7 @@ private:
 	RX_MENU_NAME
 	RX_MENU_QTH,
 	RX_MENU_STATE
+	RX_MENU_COUNTY,
 	RX_MENU_PROVINCE
 	RX_MENU_COUNTRY
 	RX_MENU_LOC,
@@ -131,10 +132,11 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ icons::make_icon_label(_("Name"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("QTH"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("State"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("Province"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("County"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("Province"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Country"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Locator"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
-	{ icons::make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0,  FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("RST(r)"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Exchange In"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("FD class"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
@@ -632,6 +634,9 @@ void FTextRX::menu_cb(size_t item)
 		break;
 	case RX_MENU_LOC:
 		input = inpLoc;
+		break;
+	case RX_MENU_COUNTY:
+		input = inpCounty;
 		break;
 	case RX_MENU_RST_IN:
 		input = inpRstIn;

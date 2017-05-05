@@ -106,6 +106,7 @@ extern Fl_Input2		*inpRstOut;
 extern Fl_Input2		*inpQth;
 extern Fl_Input2		*inpState;
 extern Fl_Input2		*inpCountry;
+extern Fl_Input2		*inpCounty;
 extern Fl_Input2		*inpSerNo;
 extern Fl_Input2		*outSerNo;
 extern Fl_Input2		*outSerNo1;

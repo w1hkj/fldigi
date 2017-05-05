@@ -215,6 +215,7 @@
 #define MAX_SERNO 10
 #define MAX_XCHG_IN 50
 #define MAX_COUNTRY 50
+#define MAX_COUNTY 100
 #define MAX_NOTES 400
 #define MAX_SECTION 20
 #define MAX_CLASS   10
@@ -361,6 +362,7 @@ Fl_Input2			*inpQth = (Fl_Input2 *)0;
 Fl_Input2			*inpLoc = (Fl_Input2 *)0;
 Fl_Input2			*inpState = (Fl_Input2 *)0;
 Fl_Input2			*inpCountry = (Fl_Input2 *)0;
+Fl_Input2			*inpCounty = (Fl_Input2 *)0;
 Fl_Input2			*inpSerNo = (Fl_Input2 *)0;
 Fl_Input2			*outSerNo = (Fl_Input2 *)0;
 Fl_Input2			*inpXchgIn = (Fl_Input2 *)0;
@@ -373,6 +375,7 @@ Fl_Input2			*inpNotes = (Fl_Input2 *)0;
 Fl_Input2			*inpAZ = (Fl_Input2 *)0;
 Fl_Button			*qsoTime;
 Fl_Button			*btnQRZ;
+Fl_Button			*CFtoggle = (Fl_Button *)0;
 
 // Top Frame 1 group controls
 Fl_Group			*Logging_frame = (Fl_Group *)0;
@@ -470,15 +473,14 @@ static int x_qsoframe	= Wbtn;
 int Hmenu		= 22;
 static const int Hqsoframe	= 2*pad + 3 * (Hentry + pad);
 
-int Hstatus = 20;//22;
-int Hmacros = 20;//22;
+int Hstatus = 20;
+int Hmacros = 20;
 
 #define TB_HEIGHT 20
 #define MACROBAR_MIN 18
 #define MACROBAR_MAX 30
 
-// static const int sw		= 22;
-static const int wf1			= 395;
+static const int wf1			= 355;
 
 static const int w_inpTime2	= 40;
 static const int w_inpCall2	= 100;
@@ -3021,7 +3023,7 @@ if (bWF_only) return;
 		inpTimeOn1, inpTimeOn2, inpTimeOn3,
 		inpRstIn1, inpRstIn2,
 		inpRstOut1, inpRstOut2,
-		inpQth, inpLoc, inpAZ, inpVEprov, inpCountry,
+		inpQth, inpLoc, inpAZ, inpVEprov, inpCountry, inpCounty,
 		inpState1,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
@@ -3403,6 +3405,21 @@ void cbSQL(Fl_Widget *w, void *vi)
 	int v = b->value();
 	FL_UNLOCK_D();
 	progStatus.sqlonoff = v ? true : false;
+}
+
+void CFtoggle_cb(Fl_Widget *w, void *)
+{
+	if (inpCountry->visible()) {
+		inpCountry->hide();
+		inpCounty->show();
+		CFtoggle->label("c");
+		CFtoggle->redraw_label();
+	} else {
+		inpCounty->hide();
+		inpCountry->show();
+		CFtoggle->label("C");
+		CFtoggle->redraw_label();
+	}
 }
 
 extern void set_wf_mode(void);
@@ -5671,7 +5688,7 @@ void LOGGING_colors_font()
 		inpTimeOff1, inpTimeOff2, inpTimeOff3,
 		inpRstIn1, inpRstIn2,
 		inpRstOut1, inpRstOut2,
-		inpQth, inpLoc, inpAZ, inpVEprov, inpCountry,
+		inpQth, inpLoc, inpAZ, inpVEprov, inpCountry, inpCounty,
 		inpState1,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
@@ -5787,7 +5804,7 @@ void LOGBOOK_colors_font()
 	int width_loc  = fl_width("XX88XXX");
 	int width_mode = fl_width("CONTESTIA");
 	int width_state = fl_width("WWWW");
-	int width_province = fl_width("WWWW");
+	int width_province = fl_width("WWW.");
 	int width_country = fl_width("WWWWWWWWWWWWWWWWWWWW");
 
 	int dlg_width =	2 +
@@ -6128,6 +6145,13 @@ void COUNTRY_callback(Fl_Input2 *w) {
 	w->value(s.c_str());
 }
 
+void COUNTY_callback(Fl_Input2 *w) {
+	std::string s;
+	s = w->value();
+	if (s.length() > MAX_COUNTY) s.erase(MAX_COUNTY);
+	w->value(s.c_str());
+}
+
 void NOTES_callback(Fl_Input2 *w) {
 	std::string s;
 	s = w->value();
@@ -6144,6 +6168,8 @@ void log_callback(Fl_Input2 *w) {
 		NAME_callback(w);
 	else if (w == inpCountry)
 		COUNTRY_callback(w);
+	else if (w == inpCounty)
+		COUNTY_callback(w);
 	else if (w == inpNotes)
 		NOTES_callback(w);
 	else if (w == inpLoc)
@@ -6680,39 +6706,39 @@ void create_fl_digi_main_primary() {
 					inpTimeOff1->type(FL_NORMAL_OUTPUT);
 
 					inpRstIn1 = new Fl_Input2(
-						next_to(inpTimeOff1) + 40, TopFrame1->y() + pad, 40, Hentry, _("In"));
+						next_to(inpTimeOff1) + 15, TopFrame1->y() + pad, 35, Hentry, _("In"));
 					inpRstIn1->tooltip("RST in");
 					inpRstIn1->align(FL_ALIGN_LEFT);
 
 					inpRstOut1 = new Fl_Input2(
-						next_to(inpRstIn1) + 30, TopFrame1->y() + pad, 40, Hentry, _("Out"));
+						next_to(inpRstIn1) + 25, TopFrame1->y() + pad, 35, Hentry, _("Out"));
 					inpRstOut1->tooltip("RST out");
 					inpRstOut1->align(FL_ALIGN_LEFT);
 
 					inpCall1 = new Fl_Input2(
 						inpFreq1->x(), y2,
-						inpTimeOn1->x() + inpTimeOn1->w() - inpFreq1->x(),
+						next_to(inpTimeOn1) - inpFreq1->x(),
 						Hentry, _("Call"));
 					inpCall1->tooltip(_("call sign"));
 					inpCall1->align(FL_ALIGN_LEFT);
 
 					inpName1 = new Fl_Input2(
 						next_to(inpCall1) + 20, y2,
-						130,
+						next_to(inpRstIn1) - next_to(inpCall1) - 20,
 						Hentry, _("Op"));
 					inpName1->tooltip(_("Operator name"));
 					inpName1->align(FL_ALIGN_LEFT);
 
 					inpAZ = new Fl_Input2(
-						inpRstOut1->x(), y2, 40, Hentry, "Az");
+						inpRstOut1->x(), y2, 35, Hentry, "Az");
 					inpAZ->tooltip(_("Azimuth"));
 					inpAZ->align(FL_ALIGN_LEFT);
 
 					QSO_frame_1 = new Fl_Group (x_qsoframe, y3, wf1, Hentry + pad);
 
 						inpQth = new Fl_Input2(
-							inpFreq1->x(), y3, inpName1->x() - inpFreq1->x(), Hentry, "Qth");
-						inpQth->tooltip(_("City"));
+							inpCall1->x(), y3, inpCall1->w(), Hentry, "Qth");
+						inpQth->tooltip(_("QTH City"));
 						inpQth->align(FL_ALIGN_LEFT);
 
 						inpState1 = new Fl_Input2(
@@ -6728,7 +6754,8 @@ void create_fl_digi_main_primary() {
 						inpVEprov->align(FL_ALIGN_LEFT);
 
 						inpLoc = new Fl_Input2(
-							next_to(inpAZ) - 60, y3, 60, Hentry, "Loc");
+							next_to(inpVEprov) + 15, y3,
+							next_to(inpAZ) - (next_to(inpVEprov) + 15), Hentry, "L");
 						inpLoc->tooltip(_("Maidenhead Locator"));
 						inpLoc->align(FL_ALIGN_LEFT);
 
@@ -6807,22 +6834,47 @@ void create_fl_digi_main_primary() {
 				Logging_frame_2 = new Fl_Group(
 					rightof(Logging_frame_1) + pad, TopFrame1->y(),
 					W - rightof(Logging_frame_1) - 2*pad, Hqsoframe);
+
 					NotesFrame = new Fl_Group(
 						Logging_frame_2->x(), Logging_frame_2->y(),
 						Logging_frame_2->w() - 60, Logging_frame_2->h(),"");
 
 						NotesFrame->box(FL_FLAT_BOX);
+						inpNotes = new Fl_Input2(
+							NotesFrame->x(), NotesFrame->y() + pad,
+							NotesFrame->w(), 2*Hentry, "");
+						inpNotes->type(FL_MULTILINE_INPUT);
+						inpNotes->tooltip(_("Notes"));
 
-					inpCountry = new Fl_Input2(
-						NotesFrame->x(), NotesFrame->y(),
-						NotesFrame->w(), Hentry, "");
-					inpCountry->tooltip(_("Country"));
+						Fl_Group *CFframe = new Fl_Group(
+							NotesFrame->x(), inpNotes->y() + inpNotes->h() + pad,
+							NotesFrame->w(), Hentry, "");
 
-					inpNotes = new Fl_Input2(
-						NotesFrame->x(), y2,
-						NotesFrame->w(), 2*Hentry + pad, "");
-					inpNotes->type(FL_MULTILINE_INPUT);
-					inpNotes->tooltip(_("Notes"));
+							CFframe->box(FL_FLAT_BOX);
+
+							CFtoggle = new Fl_Button(
+								CFframe->x(), CFframe->y(), 18, Hentry, "C");
+								CFtoggle->tooltip("Toggle Country / county");
+								CFtoggle->callback(CFtoggle_cb, 0);
+
+							Fl_Group *CCframe = new
+							 Fl_Group(
+								CFframe->x() + 18 + pad, CFtoggle->y(),
+								CFframe->w() - 18 - pad, Hentry, "");
+								CCframe->box(FL_FLAT_BOX);
+
+								inpCountry = new Fl_Input2(
+									CCframe->x(), CCframe->y(), CCframe->w(), CCframe->h(), "");
+								inpCountry->tooltip(_("Country"));
+//	inpCountry->hide();
+								inpCounty = new Fl_Input2(
+									CCframe->x(), CCframe->y(), CCframe->w(), CCframe->h(), "");
+								inpCounty->tooltip(_("County"));
+								inpCounty->hide();
+
+							CCframe->end();
+//CCframe->hide();
+						CFframe->resizable(CCframe);
 
 					NotesFrame->end();
 
@@ -7833,7 +7885,7 @@ void create_fl_digi_main_primary() {
 			inpTimeOff1, inpTimeOff2, inpTimeOff3,
 			inpRstIn1, inpRstIn2,
 			inpRstOut1, inpRstOut2,
-			inpQth, inpVEprov, inpCountry, inpAZ, inpNotes,
+			inpQth, inpVEprov, inpCountry, inpCounty, inpAZ, inpNotes,
 			inpState1,
 			inpSerNo1, inpSerNo2,
 			outSerNo1, outSerNo2,
@@ -8146,6 +8198,7 @@ void noop_controls() // create and then hide all controls not being used
 	inpLoc = new Fl_Input2(defwidget); inpLoc->hide();
 	inpState1 = new Fl_Input2(defwidget); inpState1->hide();
 	inpCountry = new Fl_Input2(defwidget); inpCountry->hide();
+	inpCounty = new Fl_Input2(defwidget); inpCounty->hide();
 	inpSerNo = new Fl_Input2(defwidget); inpSerNo->hide();
 	outSerNo = new Fl_Input2(defwidget); outSerNo->hide();
 	inpXchgIn = new Fl_Input2(defwidget); inpXchgIn->hide();

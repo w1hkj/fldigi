@@ -247,6 +247,16 @@ Highlighted text will be overwritten when a paste is selected.  Otherwise the
 clipboard will be pasted at the current cursor position.
 <br>
 
+The two most extreme right fields in the casual and contest views require some
+explanation.  The topmost field in a multi-line edit control and it's contents
+are for notes or comments.  When a remote database query is made this control
+will be populated with the street address of the queried call sign (if available).
+The small button on the lower line of controls is used to toggle the usage of
+the entry control to it's right.  That entry control is "Country" when the button
+face shows 'C', and "County" when the button face shows 'c'.  These two controls
+provide a convenience for county hunters.
+<br>
+
 You can query on-line and local CD based data base systems for data
 regarding a Call.  Set up your query using
 the \ref callsign_db_configuration_page "Callsign DB configuration tab".

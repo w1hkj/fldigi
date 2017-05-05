@@ -1332,9 +1332,15 @@ void SearchLastQSO(const char *callsign)
 		inpName->value(inpName_log->value());
 		inpQth->value(inpQth_log->value());
 		inpLoc->value(inpLoc_log->value());
+		inpLoc->position (0);
 		inpState->value(inpState_log->value());
+		inpState->position (0);
 		inpVEprov->value(inpVE_Prov_log->value ());
+		inpVEprov->position (0);
 		inpCountry->value(inpCountry_log->value ());
+		inpCountry->position (0);
+		inpCounty->value(inpCNTY_log->value ());
+		inpCounty->position (0);
 		inpSearchString->value(callsign);
 		if (inpLoc->value()[0]) {
 			double lon1, lat1, lon2, lat2;
@@ -1345,6 +1351,7 @@ void SearchLastQSO(const char *callsign)
 				 QRB::qrb(lon1, lat1, lon2, lat2, &distance, &azimuth) == QRB::QRB_OK ) {
 				snprintf(szAZ,sizeof(szAZ),"%0.f", azimuth);
 				inpAZ->value(szAZ);
+				inpAZ->position (0);
 			} else
 				inpAZ->value("");
 		} else
@@ -1430,10 +1437,15 @@ void cb_btnRetrieve(Fl_Button* b, void* d)
 	inpName->value (qsoPtr->getField(NAME));
 	inpTimeOn->value (inpTimeOff->value());
 	inpState->value (qsoPtr->getField(STATE));
+	inpState->position (0);
 	inpCountry->value (qsoPtr->getField(COUNTRY));
+	inpCountry->position (0);
+	inpCounty->value (qsoPtr->getField(CNTY));
+	inpCounty->position (0);
 	inpXchgIn->value(qsoPtr->getField(XCHG1));
 	inpQth->value (qsoPtr->getField(QTH));
 	inpLoc->value (qsoPtr->getField(GRIDSQUARE));
+	inpLoc->position (0);
 	inpNotes->value (qsoPtr->getField(NOTES));
 
 	wBrowser->take_focus();
@@ -1771,6 +1783,7 @@ void AddRecord ()
 	inpState_log->value (ucasestr(inpState->value()).c_str());
 	inpVE_Prov_log->value (ucasestr(inpVEprov->value()).c_str());
 	inpCountry_log->value (inpCountry->value());
+	inpCNTY_log->value (inpCounty->value());
 
 	inpSerNoIn_log->value(inpSerNo->value());
 	inpSerNoOut_log->value(outSerNo->value());
