@@ -56,7 +56,7 @@ static const char *szEOR = "<EOR>";
 FIELD fields[] = {
 //  TYPE,          FSIZE,  NAME,              WIDGET
 	{FREQ,         12,    "FREQ",             &btnSelectFreq},      // QSO frequency in Mhz
-	{CALL,         15,    "CALL",             &btnSelectCall},      // contacted stations CALLSIGN
+	{CALL,         30,    "CALL",             &btnSelectCall},      // contacted stations CALLSIGN
 	{MODE,         10,    "MODE",             &btnSelectMode},      // QSO mode
 	{NAME,         80,    "NAME",             &btnSelectName},      // contacted operators NAME
 	{QSO_DATE,     8,     "QSO_DATE",         &btnSelectQSOdateOn}, // QSO data
@@ -101,8 +101,8 @@ FIELD fields[] = {
 
 	{TX_PWR,       8,     "TX_PWR",           &btnSelectTX_pwr},    // power transmitted by this station
 
-	{OP_CALL,     15,     "OPERATOR",         &btnSelectOperator},  // Callsign of person logging the QSO
-	{STA_CALL,    15,     "STATION_CALLSIGN", &btnSelectStaCall},   // Callsign of transmitting station
+	{OP_CALL,     30,     "OPERATOR",         &btnSelectOperator},  // Callsign of person logging the QSO
+	{STA_CALL,    30,     "STATION_CALLSIGN", &btnSelectStaCall},   // Callsign of transmitting station
 	{MY_GRID,      8,     "MY_GRIDSQUARE",    &btnSelectStaGrid},   // Xmt station locator
 	{MY_CITY,     60,     "MY_CITY",          &btnSelectStaCity},   // Xmt station location
 
