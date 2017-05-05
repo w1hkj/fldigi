@@ -1194,11 +1194,13 @@ void do_qsy(bool dir)
 	if (dir) {
 // store
 		m.rfcarrier = wf->rfcarrier();
-		m.carrier = active_modem->get_freq();
+		int wfc = m.carrier = active_modem->get_freq();
 		qsy_stack.push_back(m);
+		m.rmode = qso_opMODE->value();
+		trx_mode md = active_modem->get_mode();
 
 // qsy to the sweet spot frequency that is the center of the PBF in the rig
-		switch (active_modem->get_mode()) {
+		switch (md) {
 			case MODE_CW:
 				m.carrier = (long long)progdefaults.CWsweetspot;
 				break;
@@ -1209,7 +1211,13 @@ void do_qsy(bool dir)
 				m.carrier = (long long)progdefaults.PSKsweetspot;
 				break;
 		}
-		if (wf->USB())
+		if (m.rmode.find("CW") != string::npos) {
+			if (wf->USB())
+				m.rfcarrier += (wfc - m.carrier);
+			else
+				m.rfcarrier -= (wfc - m.carrier);
+		}
+		else if (wf->USB())
 			m.rfcarrier += (wf->carrier() - m.carrier);
 		else
 			m.rfcarrier -= (wf->carrier() - m.carrier);
