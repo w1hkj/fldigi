@@ -1,11 +1,20 @@
 
 
+=Version 4.0.4=
+
+2017-05-05  David Freese  <iam_w1hkj@w1hkj.com>
+
+	e71dcfb: LOG area controls
+	1da1562: CALL field size
+	dc9532c: CW QSY
+	8fab963: Sound Card Output
+	240f52a: cw scanner
+
+
 =Version 4.0.3=
 
-2017-04-30  David Freese  <iam_w1hkj@w1hkj.com>
-
-	c9b9bb9: OS X Wizard
-	a8a6e09: cw decoder
+	2be82c9: CW code update
+	a311139: OS X Wizard
 	7e552c4: CW wait
 
 
