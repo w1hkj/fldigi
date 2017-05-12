@@ -1,251 +1,234 @@
-= Fldigi 3.22 release notes =
+NEWS for version 4.x
 
-== Modems ==
+Version 4.0.4
 
-  * RTTY 
-    - Fixed decoder for baud rate > 110
-    - modified DSP filter; filter length dependent on baud rate
+  cw scanner
+    . adds multi signal scanner / browser
+  Sound Card
+    . keep input and output sound card devices open for duration of
+      fldigi execution
+    . Corrected tune output device
+    . Changed tune, wfid, video and cw id to use tx offset
+  CW QSY
+    . Correct QSY when transceiver in CW and CW-R type modes
+  CALL field size
+    . Increased CALL, OP_CALL, STA_CALL from 15 to 30 chars
+  LOG area controls
+    . Resize controls to add County entry control.  Allow user
+      to select which extra qso field is displayed; country or
+      county.
 
-  * EmComm 8PSK modes
-        Mode   Baud  WPM  BW   FEC     ITU    RSID-1 RSID-2
-      8PSK125   125  310  125   Y    125HG1B    56    1037
-      8PSK250   250  620  250   Y    250HG1B    56    1038
-      8PSK500   500 1650  500   Y    500HG1B    56    1043
-      8PSK1000 1000 3300 1000   N    1000HG1B   56    1047
-      8PSK1200 1200 3540 1200   Y    1200HG1B   56    1058
-      8PSK1333 1333 4300 1333   N    1333HG1B   56    1059
+Version 4.0.3
 
-  * PSK/PSKR squelch changed to fast attack / slow decay processing
+  CW code update
+    . Changed all element timing to number of samples
+      both CW and CW scanning detectors
+    . Removed FIR filter. FFT filter only for CW signal path.
+    . Removed Hilbert transform from CW signal path
+    . Update CW documentation
 
-  * fft-scan - used to measure transceiver filter characteristics.
-    - preferred noise source is wide band noise bridge.
-    - open circuit antenna will suffice
+  OS X Wizard
+    . Discovered cause of Wizard failure on OS X
+      - newly created dialogs cannot be accessed until actually shown.
 
-  * Analysis modem
-    - added signal level to display and text file
-    - removed debugging printf statement in cw.cxx file
-    - restored "noise" controls to active state
+  CW wait
+    . Correct Windows performance at end of CW Tx text
+      - program should wait for keyboard input
+      - terminate with the ^r character pair
+      - terminate with control-r
+      - terminate with the T/R button
 
-== Macros ==
+Version 4.0.2
 
-  * Added information macro tags
-    - <ANTENNA> my antenna
-    - <BAND>    current operating band
-  * New modem tests based on a specified number of 5 letter code groups
-    - <CPS_N:nnn>
-    - <WAV_N:nnn>
-  * <DELTA:+/-n.nnn> increment/decrement xcvr carrier
-  * <FOCUS> force keyboard focus to frequency control.
+  Revert "wefax"
+    . This reverts commit 5609415222335e9376defc325f20ae29c5c8c8ca.
+    . Modifies wefax.cxx iaw request from Remi, wefax author
 
+  Lotw Match
+    . fix failure to mark logbook as dirty when records are matched
 
-== User interface ==
+  flrigi bw synch
+    . Improve bandwidth table / selection sync with flrig when changing 
+      xcvr mode from fldigi
 
-  * Added Dutch translation
-  * Updated Polish translation
-  * Touch Screen UI
-    - user selectable macro button bar height
-    - allow swapping Rx and Tx panels.
-    - larger frequency control with max range into GHz values
-    - modified single left click behavior.  Single left click either
-      . grabs QSO data
-      . acts on "clickable" item.
-      . starts drag sequence
-  * Smeter / Power meter, added new meter viewers
-    - annunciates values received from flrig / xmlrpc values
-    - button to toggle between meter(s) and xvcr mode/bw controls
-  * Freq Control
-    - Modified keyboard events:
-      . added progdefaults.sel_lsd
-        selection of Right / Left arrow least significant digit
-          Right Arrow     +      1 LSD
-          Left  Arrow     -      1 LSD
-          Up Arrow        +     10 * LSD
-          Dn Arrow        -     10 * LSD
-          Shft Rt Arrow   +    100 * LSD
-          Shft Lft Arrow  -    100 * LSD
-          Shft Up Arrow   +   1000 * LSD
-          Shft Dn Arrow   -   1000 * LSD
-      . Added OFFCOLOR to background of group box to insure that all digit areas
-        are contiguous with digit backgrounds.
-      . added "focus" indicator that is more visible than the default fltk 
-        dotted line
-  * Signal browsers
-    - modified rtty and psk viewers to eliminate modem specific code in the 
-      UI elements
-    - restricted psk multichannel viewer to modes
-      . PSK31, PSK63, PSK63F and PSK125
-      . QPSK31, QPSK63 and QPSK125
-  * Removed Mixer controls and supporting code
-  * Macro Buttons
-    - Increase width of alternate macro button(s)
-    - Added 2 row scheme, one above, one below text panel
-    - Macro row(s) button height user adjustable
-  * New User Exit Behavior - changed defaults for new user to force
-    - confirm exit, save configuration & macros on first use
-    - prompt dialogs thereafter until user changes configuration dialog selections
-    - added UI configuration to new install Wizard
+  Clang 8.1.0
+    . Correct warning notification with latest Clang compiler on
+      macOS Sierra 10.12.4
 
-== XMLRPC control language ==
+  Sound card
+    . Changed to separate Rx/Tx soundcard instances
+      - only open/close when samplerate changes
+      - attempt to reduce incidence of lost sound card in OS X
 
-  * Added xmlrpc commands
-    - main.get_txid    get state of txid switch
-    - main.set_txid    set state of txid switch
-    - main.toggle_txid toggle state of txid switch
-    - main.rx_only     disables Tx.
-    - main.rx_tx       enables normal Rx/Tx operation
-  * KISS/ARQ specific commands
-    - io.in_use        Returns the IO port in use (ARQ/KISS).
-    - io.enable_kiss   Switch to KISS I/O
-    - io.enable_arq    Switch to ARQ I/O
+  IFKP image processing
+    . Rx processing failed to return to TEXT state upon conclusion of 
+      image transfer
 
+  Macro Save
+    . Corrected issue with macro tag "Save"
 
-== Other changes ==
+  CW end of transmit
+    . Add <LF> character to Rx echo text when going from Tx to Rx
+      - provides visual separation of Tx and Rx text in the Rx panel
+      - color rendition still applies.
 
-  * Thumb drive - updated documentation on thumb drive installation
-    in folder FL_APPS
-  * KISS interface
-    - query and Set Kiss hardware commands
-    - support bcast rsid over kiss socket
-    - selectable modem options limited to 8 bit versions only (kiss i/o mode)
-    - simple HDLC encapsulation frame for transmit/receive CRC data verification.
-    - histogram based threshold detection.
-    - user configurable inhibit transmit on busy frequencies for nn seconds
-    - imposes transmit wait on valid frame reception
-    - dual UDP ports for concurrent operation of programs using the same IP address.
-    - transmit buffer cleared when data is available for more then 10 mins and 
-      has not been transmitted.
-    - AX-25 decoding.
-    - user configuration item to disable CSMA from config panel and kiss
-      hardware frame.
-    - KISS command to adjust KPSQL detection gain (for testing).
-    - new xmlrpc command 'BUSY:<T|F>'
-      * Waterfall display gain adjusted based on sample rate changes.
-    - added DEBUG Logging command LOG_HEX(const char *buf, int len);
-      D:,... ReadFromHostSocket: ..BUSY:. C0 06 42 55 53 59 3A C0
-  * MEMMAP removed old Kachina rig control code
-  * RsID time out Changed secondary time out to use real time vice RsID symbols
-  * Documentation change to doxygen and included in repository.
-  * Virtual serial ports - added /opt/vttySn usage for Linux
-    - create a linked name to a virtual port (socat) with link defined as 
-    /opt/vttyS0 ...
+  Font Initialization
+    . Force all font initialization to be name dependent
+    . Font name / Font number can change as user installs or removes 
+      fonts from the OS with potentially fatal impact on fldigi font usage.
+    . May require user to reconfigure various font selections
 
-== Bug fixes ==
+  OS X socket connect
+    . connect test for fail conditions not correct for OS X
 
-  * too numerous to list
+  Winkeyer exit process
+    . Release resources when closing Winkeyer
+    . Issue ADMIN:CLOSE command to Winkeyer when disconnecting or
+      closing fldigi.
 
-= Fldigi 3.21 release notes =
+Version 4.0.1
 
-== Modems ==
+  Socket connect
+    . FreeBSD mod causes seg fault on non BSD platforms
+      - make change OS dependent
 
-  * Weather Fax receive and transmit
-  * RSID can be configured to open the decoder squelch
-  * Added several new RSID modem codes
-  * Video ID improvements
-  * Added browser support for the PSK63F and PSK-nnn-R types
-  * Improved CW prosign handling
-  * Improved signal detection in PSK multiple decoder
-  * The MT-63 modem can now receive and transmit on any frequency
-  * Added support for multiple RTTY decoders
+Version 4.0.0
 
-== Macros ==
+  OS X 10.12 build
+    . Compile changes for OS X Darwin 10.12 Clang build
 
-  * Added REPEAT macro
-  * Added LNW macro
-  * Added CLEARLOG macro
-  * Added QSY macro
-  * Added RIGMOD and FILWID macros
+  STATION_CALLSIGN
+    . Change adif field STATION_CALL to STATION_CALLSIGN compliant with
+      adif specification
 
-== User interface ==
+  Free BSD mods
+    . Compliance mods for current version of Clang compiler
 
-  * Added Italian and Spanish translations
-  * Translations now also work on win32
-  * Added second (optional) macro bar
-  * Improved PSK/RTTY browser widget
+  Logbook mods
+    . Update log field LOTWSDATE for each record sent to LOTW when the
+      upload file is created
+    . clear LOTWSDATE field if lotw rejects submission or fails to 
+      respond within 25 seconds
+    . insure that lotw review dialog closes on program exit
+    . restore tabular sort order when adding a record
 
-== Other changes ==
+  Default Tx Audio
+    . Change default audio output to both channels
 
-  * RigCAT can use RTS and DTR PTT simultaneously
-  * Added interface to Logbook server
-  * Added support for ADIF 2.2.3 QSO_DATE_OFF field
-  * Added support for CALLOOK (http://callook.info)
+  remove sprintf
+    . change all remaining occurances of sprintf to snprintf
 
-== Bug fixes ==
+  Documentation update
+    . New documentation for winkeyer interface
 
-  * Yes
+  n3fjp logger search
+    . set initial search for n3fjp server to 5 second intervals
 
+  fopen->fl_fopen
+    . update to UDF-8 compatible fopen call
 
-= Fldigi 3.20 release notes =
+  48 bar macro
+    . allow user to select above / below Rx/Tx panels
 
-== Modems ==
+  CW decoder
+    . Improved CW decoder
+      - removed user adjustable signal level controls
+      - added automatic tracking filters for Rx signal level
+      - tracking filters change parameters with detected WPM.
 
- * Added new PSK-500 mode
- * Added "robust PSK" modes: PSK-125R, PSK-250R, PSK-500R
- * Added PSK63F mode, compatible with MultiPsk PSK63FEC
- * Added Contestia support
- * Added SSB "modem" to simplify logging of SSB QSOs
- * Added MT63 modem preamble tones to aid signal acquisition
- * Added selectable filter widths for Hellschreiber modes
- * Added AGC and S/N detector for FM-HELL modes
- * Added Olivia noise estimator
+  DX cluster
+    . Update dxcluster QSY to correctly align signal to sweet spot
+      when transceiver is in a CW mode.
+    . add ability to respond to password prompt
 
- * Improved THOR and DominoEX squelch responsiveness
- * Improved Olivia squelch detection
- * Improved Feldhell AGC and S/N detector
- * Improved RTTY decoder
+  Logbook support
+    . Add checkband test to new log entry before writing record
+    . Added BAND control to log view, contest tab
+      - fldigi does not use the BAND field, it is present as a
+        convenience for exporting or importing from log programs
+        that do use it.
+      - the control is on the contest tab since that seems to be
+        the most common use for BAND (e.g. field day event).
+    . OS X file naming dialog drops the ".adif" extension.
+      - add code to insure newlog etc have the correct extension.
 
- * Removed THOR soft decoding
- * RSID now works at the same time as modem decoding
- * The HELL-80 tone spacing was changed to 300 Hz
+  WinKeyer
+    . Added embedded WinKeyer interface
 
-== Macros ==
+  fsq ifkp s/n computation
+    . Additional change to s/n measurement
 
- * Added <LOCK:on|off|t> macro to enable/disable/toggle the transmit lock
- * Added <TUNE:nn> macro to transmit tuning tone for ''nn'' seconds
- * Added <RXRSID:on|off|t> and <TXRSID:on|off|t> macros
- * Added <WAIT:nn> macro to delay macro expansion by ''nn'' seconds
- * Added <SRCHUP>, <SRCHDN>, <GOHOME>, <GOFREQ:nnnn> macros to search for a
-   signal up and down in frequency, go to the "sweet spot frequency", and
-   set the current modem frequency to ''nnnn''
- * The <MODEM> macro syntax is now <MODEM:str>. The older <MODEM>str syntax is
-   still supported.  Modem parameters may be specified when using the new
-   syntax; currently for RTTY (shift, baud, bits), Olivia (bw, tones) and
-   Contestia (bw, tones), e.g.: <MODEM:RTTY:170:45.45:5>, <MODEM:OLIVIA:500:16>,
-   <MODEM:CTSTIA:250:8>.
+  fltk version update
+    . update all fluid generated source and header files
 
-== User interface ==
+  Macro Date Time Formats
+    . Allow user to specify the date time format using strftime format
+      strings
+      - <ZT> becomes <ZT:"%H%M%S">; <ZT:"%H:%M:%SZ"> etc.
+      - <ZT:fmt> fmt is the strftime format string
+        if the ':fmt' is not in the macro tag then the current format
+        is used
 
- * The main window's QSO and waterfall toolbar are now much more configurable
- * The QSO toolbar can now be set to Contest mode, Minimal mode, Full mode,
-   and some combinations thereof
- * The docked digiscope can be hidden and shown without a restart
- * It is now possible to select the modes for which to transmit RSID, VideoID
-   and CWID
- * The Op Modes menu can now be customised
- * Removed the floating rig control window
- * Removed various Alt-<key> shortcuts
- * Added a simple "wizard" for first-time users
- * Added a waterfall-only mode; enabled with --wfall-only
- * Removed option to use check buttons for AFC and SQL toggles
+  lotw addition
+    . Add jt9 modes for lotw upload
+    . Allow up to 7 numerals in frequency element
 
-== Other changes ==
+  THOR/IFKP Image transfers
+    . Add auto save Rx images to
+      - Thor
+      - IFKP
+    . Corrected IFKP send image sequencing
+      - pic%[T] where T is image scale was not being sent before the
+        image fascimille.
+    . Added Thor and IFKP image transfer using the <IMAGE:fname> macro
+      tag
 
- * The XML-RPC server now supports HTTP/1.1 keep-alive connections
- * Added several new XML-RPC methods
- * Renamed various main.set_rig_NNN XML-RPC methods to rig.set_NNN
- * Removed obsolete command line switches: --twoscopes, --experimental
- * Improved support for PulseAudio, now also the default backend on Linux
- * The ^R string is no longer treated like ^r; it is now ignored unless at the
-   end of the text to be transmitted
- * The Portaudio playback stream is no longer kept open in receive mode; this
-   fixes a problem with certain rig interfaces that generate a PTT signal even
-   when the audio is complete silence
- * Improved win32 serial port support
+  ifkp s/n update
+    . Change to s/n measurement
+      - noise measured over full range of possible signal bins
+      - noise referenced to 3000 Hz bandwidth
 
-== Bug fixes ==
+  fsq s/n update
+    . Change to s/n measurement
+      - noise measured over full range of possible signal bins
+      - noise referenced to 3000 Hz bandwidth
 
- * The MT63 transmit buffer is now correctly initialized
- * Fixed random exceptions-related crashes on win32
- * Stabilized AFC for all PSK baud rates
- * Improved sensitivity of RSID implementation
+  OSS bug fix
+    . Add missing parenthesis to reverse audio test
+      - bug fix submitted by Guiseppe, IZ1QZE
 
- Many more small (and a couple not so small) bug fixes all over the tree
+  PSKMAIL PTT fault protection
+    . add REQ(...) to show_tx_timer function call
+
+  Logbook File Handling
+    . Change new log file naming paradigm
+      - move logbook open/save/merge to a separate sub    -menu
+    . Change logbook merge logic
+      - discover and cull duplicates in both current and merge records
+      - write duplicates to adif file for user review
+      - annotate Rx Panel with user information on merger performance
+
+  Russian UTF-8 translation
+    . Added Russian po files
+
+  Tooltips
+    . Correct and update various tooltips
+
+  n3fjp contest update
+    . Add read next serial to send from n3fjp logger
+    . Add send TXTENTRYSERIALNOR to n3fjp generic logger
+    . Add new macro tags
+      - <SERNO>   current serial number
+      - <LASTNO>  last serial number
+    . add support fields for N3FJP NAQP contest logging
+
+  Hamlib/RigCAT/XMLRPC Interface
+    . Hamlib (K5JAE)
+      - Add user adjustable poll rate
+      - Add Defaults button
+      - Modify activation of controls based on hamlib selection
+    . RigCAT (W1HKJ)
+      - removed btnRevertRIGCAT & associated functions
+      - toggle Initialize button state with change in rigcat enable
+    . XMLRPC (W1HKJ)
+      - toggle Initialize button state with change in xmlrpc enable
