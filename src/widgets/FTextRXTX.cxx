@@ -527,11 +527,7 @@ int FTextRX::handle_qso_data(int start, int end)
 
 void FTextRX::handle_context_menu(void)
 {
-	bool contest_ui =
-			progStatus.Rig_Contest_UI || 
-			(progdefaults.logging != LOG_QSO) ||
-			progStatus.contest;
-	if (progStatus.NO_RIGLOG || progStatus.Rig_Log_UI) contest_ui = false;
+	bool contest_ui = (progdefaults.logging != LOG_QSO);
 
 	unsigned shown = 0; // all hidden
 
