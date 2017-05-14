@@ -633,6 +633,7 @@ int SoundOSS::Open(int md, int freq)
 		device_fd = fl_open(device.c_str(), oflags, 0);
 		if (device_fd == -1)
 			throw SndException(errno);
+
 		Format(AFMT_S16_LE);	// default: 16 bit little endian
 		Channels(2);			//		2 channels
 		Frequency(freq);
@@ -1744,7 +1745,7 @@ void SoundPort::start_stream(unsigned dir)
 			paNoFlag,
 			stream_process, &sd[dir]);
 	if (err != paNoError) {
-		pa_perror(err, "Portaudio open stream error");
+//		pa_perror(err, "Portaudio open stream error");
 		throw SndPortException(err);
 	}
 

@@ -55,12 +55,19 @@ static void init_oss(void)
 #if USE_OSS
 	glob_t gbuf;
 	glob("/dev/dsp*", 0, NULL, &gbuf);
+	if (gbuf.gl_pathc == 0) {
+		AudioOSS->deactivate();
+		btnAudioIO[SND_IDX_OSS]->deactivate();
+		menuOSSDev->deactivate();
+		return;
+	}
 	for (size_t i = 0; i < gbuf.gl_pathc; i++)
 		menuOSSDev->add(gbuf.gl_pathv[i]);
 	if (progdefaults.OSSdevice.length() == 0 && gbuf.gl_pathc)
 		progdefaults.OSSdevice = gbuf.gl_pathv[0];
 	menuOSSDev->value(progdefaults.OSSdevice.c_str());
 	globfree(&gbuf);
+	menuOSSDev->activate();
 #endif // USE_OSS
 }
 
@@ -458,8 +465,8 @@ void sound_update(unsigned idx)
 	switch (idx) {
 #if USE_OSS
 		case SND_IDX_OSS:
-			menuOSSDev->activate();
 			scDevice[0] = scDevice[1] = menuOSSDev->value();
+			menuOSSDev->activate();
 			break;
 #endif
 

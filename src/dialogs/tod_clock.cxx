@@ -60,10 +60,25 @@ using namespace std;
 static pthread_t TOD_thread;
 //static pthread_mutex_t TOD_mutex     = PTHREAD_MUTEX_INITIALIZER;
 
+static unsigned long  _zmsec = 0;
+
 static char ztbuf[20] = "20120602 123000";
 
-const char* zdate(void) { return ztbuf; }
-const char* ztime(void) { return ztbuf + 9; }
+const unsigned long zmsec(void)
+{
+	return _zmsec;
+}
+
+const char* zdate(void)
+{
+	return ztbuf;
+}
+
+const char* ztime(void)
+{
+	return ztbuf + 9;
+}
+
 const char* zshowtime(void) {
 	static char s[5];
 	strncpy(s, &ztbuf[9], 4);
@@ -126,6 +141,7 @@ void ztimer(void *)
 	struct tm tm;
 	time_t t_temp;
 	struct timeval tv;
+
 	gettimeofday(&tv, NULL);
 
 	t_temp=(time_t)tv.tv_sec;
@@ -167,15 +183,17 @@ void *TOD_loop(void *args)
 			double st = 1000.0 - tv.tv_usec / 1e3;
 			MilliSleep(st);
 			first_call = false;
-		} else
+			_zmsec += st;
+		} else {
 			MilliSleep(50);
-			if (--count == 0) {
-				Fl::awake(ztimer);
-				count = 20;
-			}
+			_zmsec += 50;
 		}
+		if (--count == 0) {
+			Fl::awake(ztimer);
+			count = 20;
+		}
+	}
 
-		
 // exit the TOD thread
 	SET_THREAD_CANCEL();
 	return NULL;

@@ -503,6 +503,7 @@ extern bool xml_get_record(const char *);
 extern const char* zdate(void);
 extern const char* ztime(void);
 extern void ztimer(void* first_call);
+extern const unsigned long zmsec(void);
 
 extern void setTabColors();
 

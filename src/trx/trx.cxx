@@ -600,10 +600,12 @@ void trx_start_modem(modem* m, int f)
 void trx_reset_loop()
 {
 	if (RXscard)  {
+		RXscard->Close();
 		delete RXscard;
 		RXscard = 0;
 	}
 	if (TXscard)  {
+		TXscard->Close();
 		delete TXscard;
 		TXscard = 0;
 	}
@@ -618,12 +620,37 @@ void trx_reset_loop()
 		break;
 #endif
 #if USE_PORTAUDIO
+/// All of this very convoluted logic is needed to allow a Linux user
+/// to switch from PulseAudio to PortAudio.  PulseAudio does not immediately
+/// release the sound card resources after closing the pulse audio object.
 	case SND_IDX_PORT:
+	{
 		RXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
-		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
 		TXscard = new SoundPort(scDevice[0].c_str(), scDevice[1].c_str());
-		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+		unsigned long tm1 = zmsec();
+		int RXret = 0, TXret = 0;
+		int i;
+		for (i = 0; i < 10; i++) { // try 10 times
+			try {
+				if (!RXret)
+					RXret = RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
+				if (!TXret)
+					TXret = TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+				break;
+			} catch (const SndException& e) {
+				MilliSleep(50);
+				Fl::awake();
+			}
+		}
+		unsigned long tm = zmsec() - tm1;
+		if (i == 10) {
+			LOG_PERROR("Port Audio device not available");
+			abort();
+		} else {
+			LOG_INFO ("Port Audio device available after %0.1f seconds", tm / 1000.0 );
+		}
 		break;
+	}
 #endif
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
