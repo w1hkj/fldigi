@@ -3406,7 +3406,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 605 365}
+        xywh {0 25 605 365} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 605 365} selection_color 50 align 9
@@ -3419,7 +3419,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
               xywh {0 50 605 340} selection_color 50
             } {
               Fl_Group tabsCW_general {
-                label General open selected
+                label General open
                 xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
@@ -8196,8 +8196,8 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));}
       }
       Fl_Group tabAutoStart {
         label Autostart
-        callback {progdefaults.changed = true;}
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Auto start programs with fldigi} open
@@ -8237,8 +8237,8 @@ progdefaults.changed = true;}
           }
           Fl_Input txt_auto_flnet_pathname {
             label {flnet:}
-            callback {progdefaults.flnet_pathname = o->value();
-progdefaults.changed = true;}
+            callback {progdefaults.auto_flnet_pathname = o->value();
+progdefaults.changed = true;} selected
             tooltip {Enter full path-filename for flnet} xywh {63 147 310 24} when 1
             code0 {o->value(progdefaults.auto_flnet_pathname.c_str());}
             class Fl_Input2

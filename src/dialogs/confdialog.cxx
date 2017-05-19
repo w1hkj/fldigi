@@ -6583,7 +6583,7 @@ progdefaults.changed = true;
 Fl_Input2 *txt_auto_flnet_pathname=(Fl_Input2 *)0;
 
 static void cb_txt_auto_flnet_pathname(Fl_Input2* o, void*) {
-  progdefaults.flnet_pathname = o->value();
+  progdefaults.auto_flnet_pathname = o->value();
 progdefaults.changed = true;
 }
 
@@ -9240,6 +9240,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 605, 365, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 605, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
@@ -13990,7 +13991,6 @@ work!"));
       { tabAutoStart = new Fl_Group(0, 25, 600, 365, _("Autostart"));
         tabAutoStart->callback((Fl_Callback*)cb_tabAutoStart);
         tabAutoStart->when(FL_WHEN_CHANGED);
-        tabAutoStart->hide();
         { Fl_Group* o = new Fl_Group(2, 32, 596, 335, _("Auto start programs with fldigi"));
           o->box(FL_ENGRAVED_BOX);
           o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));

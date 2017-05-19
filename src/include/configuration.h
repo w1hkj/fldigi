@@ -891,9 +891,6 @@
         ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
               "Full pathname to the flmsg executable",                                  \
               "")                                                                       \
-        ELEM_(std::string, flnet_pathname, "FLNET_PATHNAME",                            \
-              "Full pathname to the flnet executable",                                  \
-              "")                                                                       \
         ELEM_(double, extract_timeout, "EXTRACT_TIMEOUT",                               \
               "Abort message extraction after nn.n seconds of inactivity",              \
               2.0)                                                                      \
