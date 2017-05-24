@@ -1363,6 +1363,7 @@ void SearchLastQSO(const char *callsign)
 		inpState->value("");
 		inpVEprov->value("");
 		inpCountry->value("");
+		inpCounty->value("");
 		inpAZ->value("");
 		inpSearchString->value("");
 	}
@@ -1805,7 +1806,7 @@ void AddRecord ()
 	inpNotes_log->value (inpNotes->value());
 
 	inpTX_pwr_log->value (progdefaults.mytxpower.c_str());
-	inpCNTY_log->value("");
+
 	inpIOTA_log->value("");
 	inpDXCC_log->value("");
 	inpQSL_VIA_log->value("");
