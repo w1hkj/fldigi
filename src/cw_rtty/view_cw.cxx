@@ -213,8 +213,8 @@ int CW_CHANNEL::decode_state(int cw_state)
 				&& (curr_element < 2 * two_dots) ) {
 //				&& cw_receive_state == POST_TONE) {
 
-				const char * code = morse->rx_lookup(rx_rep_buf.c_str());
-				if (code == NULL) {
+				std::string code = morse->rx_lookup(rx_rep_buf);
+				if (code.length()) {
 					decode_str.clear();
 					cw_receive_state = KEYUP;
 					rx_rep_buf.clear();

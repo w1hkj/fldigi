@@ -40,7 +40,7 @@
 
 #define	CW_SAMPLERATE	8000
 #define	CWMaxSymLen		4096		// AG1LE: - was 4096 
-#define KNUM 			640			// 1/2 dot length at 5 wpm
+#define CWKNUM 			640			// 1/2 dot length at 5 wpm
 
 #define MAX_MORSE_ELEMENTS 6 // maximum of 6 elements in a Morse character 256
 
@@ -91,9 +91,8 @@ class cw : public modem {
 #define WGT_SIZE 7
 
 struct SOM_TABLE {
-	char chr;	/* The character(s) represented */
-	const char *prt;	/* The printable representation of the character */
-	float wgt[WGT_SIZE];	/* Dot-dash weight vector */
+	std::string		rpr;			// The printable representation of the character
+	float			wgt[WGT_SIZE];	// Dot-dash weight vector
 };
 
 protected:
@@ -180,7 +179,7 @@ protected:
 	void	update_Status();
 	void	sync_parameters();
 	void	reset_rx_filter();
-	int		handle_event(int cw_event, const char **c);
+	int		handle_event(int cw_event, std::string &sc);
 	inline	int usec_diff(unsigned int earlier, unsigned int later);
 	void	send_symbol(int symbol, int len);
 	void	send_ch(int c);
@@ -246,8 +245,10 @@ public:
 	void	toggleWPM();
 
 	int normalize(float *v, int n, int twodots);
-	const char *find_winner (float *inbuf, int twodots);
+	std::string	find_winner (float *inbuf, int twodots);
 
 };
+
+extern bool CW_table_changed;
 
 #endif

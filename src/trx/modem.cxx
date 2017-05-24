@@ -769,7 +769,7 @@ void modem::cwid_send_symbol(int bits)
 
 void modem::cwid_send_ch(int ch)
 {
-	int code;
+	std::string code;
 
 // handle word space separately (7 dots spacing)
 // last char already had 2 elements of inter-character spacing
@@ -785,17 +785,20 @@ void modem::cwid_send_ch(int ch)
 	}
 
 // convert character code to a morse representation
-	if ((ch < 256) && (ch >= 0)) {
-		code = morse.tx_lookup(ch); //cw_tx_lookup(ch);
-	} else {
-		code = 0x04; 	// two extra dot spaces
-	}
-
+	code = morse.tx_lookup(ch); //cw_tx_lookup(ch);
+	if (!code.length())
+		return;
 // loop sending out binary bits of cw character
-	while (code > 1) {
-		cwid_send_symbol(code);// & 1);
-		code = code >> 1;
+	for (size_t n = 0; n < code.length(); n++) {
+		cwid_send_symbol(0);
+		cwid_send_symbol(1);
+		if (code[n] == '-') {
+			cwid_send_symbol(1);
+			cwid_send_symbol(1);
+		}
 	}
+	cwid_send_symbol(0);
+	cwid_send_symbol(0);
 
 }
 

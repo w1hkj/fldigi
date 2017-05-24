@@ -473,6 +473,42 @@
         ELEM_(std::string, CW_prosigns, "CWPROSIGNS",                                   \
               "CW prosigns BT AA AS AR SK KN INT HM VE",                                \
               "=~<>%+&{}")                                                              \
+        ELEM_(bool, A_umlaut, "A_umlaut",                                               \
+              "Use Ä extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, A_aelig, "A_aelig",                                                 \
+              "Use Æ extended CW character",                                            \
+              false)                                                                    \
+        ELEM_(bool, A_ring, "A_ring",                                                   \
+              "Use Ä extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, C_cedilla, "C_cedilla",                                             \
+              "Use Ç extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, E_grave, "E_grave",                                                 \
+              "Use È extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, E_acute, "E_acute",                                                 \
+              "Use É extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, O_acute, "O_acute",                                                 \
+              "Use Ó extended CW character",                                            \
+              false)                                                                    \
+        ELEM_(bool, O_umlaut, "O_umlaut",                                               \
+              "Use Ö extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, O_slash, "O_slash",                                                 \
+              "Use Ø extended CW character",                                            \
+              false)                                                                    \
+        ELEM_(bool, N_tilde, "N_tilde",                                                 \
+              "Use Ñ extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, U_umlaut, "U_umlaut",                                               \
+              "Use Ü extended CW character",                                            \
+              true)                                                                     \
+        ELEM_(bool, U_circ, "U_circ",                                                   \
+              "Use Û extended CW character",                                            \
+              false)                                                                    \
         /* FELD HELL */                                                                 \
         ELEM_(double, HELL_BW, "HELL_BW0", "Feld Hell working bandwidth",  245.0)       \
         ELEM_(double, HELL_BW_FH, "HELL_BW1", "FH bandwidth",  245.0)                   \

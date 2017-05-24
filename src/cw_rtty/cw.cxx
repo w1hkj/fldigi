@@ -62,70 +62,80 @@ using namespace std;
 
 const cw::SOM_TABLE cw::som_table[] = {
 	/* Prosigns */
-	{'=',	"<BT>",   {1.0,  0.33,  0.33,  0.33, 1.0,   0, 0}	}, // 0
-	{'~',	"<AA>",   { 0.33, 1.0,  0.33, 1.0,   0,   0, 0}	}, // 1
-	{'%',	"<AS>",   { 0.33, 1.0,  0.33,  0.33,  0.33,   0, 0} 	}, // 2
-	{'+',	"<AR>",   { 0.33, 1.0,  0.33, 1.0,  0.33,   0, 0} 	}, // 3
-	{'>',	"<SK>",   { 0.33,  0.33,  0.33, 1.0,  0.33, 1.0, 0}	}, // 4
-	{'<',	"<KN>",   {1.0,  0.33, 1.0, 1.0,  0.33,   0, 0} 	}, // 5
-	{'&',	"<INT>",  { 0.33,  0.33, 1.0,  0.33, 1.0,   0, 0}	}, // 6
-	{'}',	"<HM>",   { 0.33,  0.33,  0.33,  0.33, 1.0, 1.0, 0}	}, // 7
-	{'{',	"<VE>",   { 0.33,  0.33,  0.33, 1.0,  0.33,   0, 0}	}, // 8
+	{"-...-",	{1.0,  0.33,  0.33,  0.33, 1.0,   0, 0} },
+	{".-.-",	{ 0.33, 1.0,  0.33, 1.0,   0,   0, 0} },
+	{".-...",	{ 0.33, 1.0,  0.33,  0.33,  0.33,   0, 0} },
+	{".-.-.",	{ 0.33, 1.0,  0.33, 1.0,  0.33,   0, 0} },
+	{"...-.-",	{ 0.33,  0.33,  0.33, 1.0,  0.33, 1.0, 0} },
+	{"-.--.",	{1.0,  0.33, 1.0, 1.0,  0.33,   0, 0} },
+	{"..-.-",	{ 0.33,  0.33, 1.0,  0.33, 1.0,   0, 0} },
+	{"....--",	{ 0.33,  0.33,  0.33,  0.33, 1.0, 1.0, 0} },
+	{"...-.",	{ 0.33,  0.33,  0.33, 1.0,  0.33,   0, 0} },
 	/* ASCII 7bit letters */
-	{'A',	"A",	{ 0.33, 1.0,   0,   0,   0,   0, 0}	},
-	{'B',	"B",	{1.0,  0.33,  0.33,  0.33,   0,   0, 0}	},
-	{'C',	"C",	{1.0,  0.33, 1.0,  0.33,   0,   0, 0}	},
-	{'D',	"D",	{1.0,  0.33,  0.33,   0,   0,   0, 0} 	},
-	{'E',	"E",	{ 0.33,   0,   0,   0,   0,   0, 0}	},
-	{'F',	"F",	{ 0.33,  0.33, 1.0,  0.33,   0,   0, 0}	},
-	{'G',	"G",	{1.0, 1.0,  0.33,   0,   0,   0, 0}	},
-	{'H',	"H",	{ 0.33,  0.33,  0.33,  0.33,   0,   0, 0}	},
-	{'I',	"I",	{ 0.33,  0.33,   0,   0,   0,   0, 0}	},
-	{'J',	"J",	{ 0.33, 1.0, 1.0, 1.0,   0,   0, 0}	},
-	{'K',	"K",	{1.0,  0.33, 1.0,   0,   0,   0, 0}	},
-	{'L',	"L",	{ 0.33, 1.0,  0.33,  0.33,   0,   0, 0}	},
-	{'M',	"M",	{1.0, 1.0,   0,   0,   0,   0, 0}	},
-	{'N',	"N",	{1.0,  0.33,   0,   0,   0,   0, 0}	},
-	{'O',	"O",	{1.0, 1.0, 1.0,   0,   0,   0, 0}	},
-	{'P',	"P",	{ 0.33, 1.0, 1.0,  0.33,   0,   0, 0}	},
-	{'Q',	"Q",	{1.0, 1.0,  0.33, 1.0,   0,   0, 0}	},
-	{'R',	"R",	{ 0.33, 1.0,  0.33,   0,   0,   0, 0}	},
-	{'S',	"S",	{ 0.33,  0.33,  0.33,   0,   0,   0, 0}	},
-	{'T',	"T",	{1.0,   0,   0,   0,   0,   0, 0}	},
-	{'U',	"U",	{ 0.33,  0.33, 1.0,   0,   0,   0, 0}	},
-	{'V',	"V",	{ 0.33,  0.33,  0.33, 1.0,   0,   0, 0}	},
-	{'W',	"W",	{ 0.33, 1.0, 1.0,   0,   0,   0, 0}	},
-	{'X',	"X",	{1.0,  0.33,  0.33, 1.0,   0,   0, 0}	},
-	{'Y',	"Y",	{1.0,  0.33, 1.0, 1.0,   0,   0, 0}	},
-	{'Z',	"Z",	{1.0, 1.0,  0.33,  0.33,   0,   0, 0}	},
+	{".-",		{ 0.33, 1.0,   0,   0,   0,   0, 0}	},
+	{"-...",	{1.0,  0.33,  0.33,  0.33,   0,   0, 0}	},
+	{"-.-.",	{1.0,  0.33, 1.0,  0.33,   0,   0, 0}	},
+	{"-..",		{1.0,  0.33,  0.33,   0,   0,   0, 0} 	},
+	{".",		{ 0.33,   0,   0,   0,   0,   0, 0}	},
+	{"..-.",	{ 0.33,  0.33, 1.0,  0.33,   0,   0, 0}	},
+	{"--.",		{1.0, 1.0,  0.33,   0,   0,   0, 0}	},
+	{"....",	{ 0.33,  0.33,  0.33,  0.33,   0,   0, 0}	},
+	{"..",		{ 0.33,  0.33,   0,   0,   0,   0, 0}	},
+	{".---J",	{ 0.33, 1.0, 1.0, 1.0,   0,   0, 0}	},
+	{"-.-",		{1.0,  0.33, 1.0,   0,   0,   0, 0}	},
+	{".-..",	{ 0.33, 1.0,  0.33,  0.33,   0,   0, 0}	},
+	{"--",		{1.0, 1.0,   0,   0,   0,   0, 0}	},
+	{"-.",		{1.0,  0.33,   0,   0,   0,   0, 0}	},
+	{"---",		{1.0, 1.0, 1.0,   0,   0,   0, 0}	},
+	{".--.",	{ 0.33, 1.0, 1.0,  0.33,   0,   0, 0}	},
+	{"--.-",	{1.0, 1.0,  0.33, 1.0,   0,   0, 0}	},
+	{".-.",		{ 0.33, 1.0,  0.33,   0,   0,   0, 0}	},
+	{"...",		{ 0.33,  0.33,  0.33,   0,   0,   0, 0}	},
+	{"-",		{1.0,   0,   0,   0,   0,   0, 0}	},
+	{"..-",		{ 0.33,  0.33, 1.0,   0,   0,   0, 0}	},
+	{"...-",	{ 0.33,  0.33,  0.33, 1.0,   0,   0, 0}	},
+	{".--",		{ 0.33, 1.0, 1.0,   0,   0,   0, 0}	},
+	{"-..-",	{1.0,  0.33,  0.33, 1.0,   0,   0, 0}	},
+	{"-.--",	{1.0,  0.33, 1.0, 1.0,   0,   0, 0}	},
+	{"--..",	{1.0, 1.0,  0.33,  0.33,   0,   0, 0}	},
 	/* Numerals */
-	{'0',	"0",	{1.0, 1.0, 1.0, 1.0, 1.0,   0, 0}	},
-	{'1',	"1",	{ 0.33, 1.0, 1.0, 1.0, 1.0,   0, 0}	},
-	{'2',	"2",	{ 0.33,  0.33, 1.0, 1.0, 1.0,   0, 0}	},
-	{'3',	"3",	{ 0.33,  0.33,  0.33, 1.0, 1.0,   0, 0}	},
-	{'4',	"4",	{ 0.33,  0.33,  0.33,  0.33, 1.0,   0, 0}	},
-	{'5',	"5",	{ 0.33,  0.33,  0.33,  0.33,  0.33,   0, 0}	},
-	{'6',	"6",	{1.0,  0.33,  0.33,  0.33,  0.33,   0, 0}	},
-	{'7',	"7",	{1.0, 1.0,  0.33,  0.33,  0.33,   0, 0}	},
-	{'8',	"8",	{1.0, 1.0, 1.0,  0.33,  0.33,   0, 0}	},
-	{'9',	"9",	{1.0, 1.0, 1.0, 1.0,  0.33,   0, 0}	},
+	{"-----",	{1.0, 1.0, 1.0, 1.0, 1.0,   0, 0}	},
+	{".----",	{ 0.33, 1.0, 1.0, 1.0, 1.0,   0, 0}	},
+	{"..---",	{ 0.33,  0.33, 1.0, 1.0, 1.0,   0, 0}	},
+	{"...--",	{ 0.33,  0.33,  0.33, 1.0, 1.0,   0, 0}	},
+	{"....-",	{ 0.33,  0.33,  0.33,  0.33, 1.0,   0, 0}	},
+	{".....",	{ 0.33,  0.33,  0.33,  0.33,  0.33,   0, 0}	},
+	{"-....",	{1.0,  0.33,  0.33,  0.33,  0.33,   0, 0}	},
+	{"--...",	{1.0, 1.0,  0.33,  0.33,  0.33,   0, 0}	},
+	{"---..",	{1.0, 1.0, 1.0,  0.33,  0.33,   0, 0}	},
+	{"----.",	{1.0, 1.0, 1.0, 1.0,  0.33,   0, 0}	},
 	/* Punctuation */
-	{'\\',	"\\",	{ 0.33, 1.0,  0.33,  0.33, 1.0,  0.33, 0}	},
-	{'\'',	"'",	{ 0.33, 1.0, 1.0, 1.0, 1.0,  0.33, 0}	},
-	{'$',	"$",	{ 0.33,  0.33,  0.33, 1.0,  0.33,  0.33,1.0}	},
-	{'(',	"(",	{1.0,  0.33, 1.0, 1.0,  0.33,   0, 0}	},
-	{')',	")",	{1.0,  0.33, 1.0, 1.0,  0.33, 1.0, 0}	},
-	{',',	",",	{1.0, 1.0,  0.33,  0.33, 1.0, 1.0, 0}	},
-	{'-',	"-",	{1.0,  0.33,  0.33,  0.33,  0.33, 1.0, 0}	},
-	{'.',	".",	{ 0.33, 1.0,  0.33, 1.0,  0.33, 1.0, 0}	},
-	{'/',	"/",	{1.0,  0.33,  0.33, 1.0,  0.33,   0, 0}	},
-	{':',	":",	{1.0, 1.0, 1.0,  0.33,  0.33,  0.33, 0}	},
-	{';',	";",	{1.0,  0.33, 1.0,  0.33, 1.0,  0.33, 0}	},
-	{'?',	"?",	{ 0.33,  0.33, 1.0, 1.0,  0.33,  0.33, 0}	},
-	{'_',	"_",	{ 0.33,  0.33, 1.0, 1.0,  0.33, 1.0, 0}	},
-	{'@',	"@",	{ 0.33, 1.0, 1.0,  0.33, 1.0,  0.33, 0}	},
-	{'!',	"!",	{1.0,  0.33, 1.0,  0.33, 1.0, 1.0, 0}	},
-	{0, NULL, {0.0}}
+	{".-..-.",	{ 0.33, 1.0,  0.33,  0.33, 1.0,  0.33, 0}	},
+	{".----.",	{ 0.33, 1.0, 1.0, 1.0, 1.0,  0.33, 0}	},
+	{"...-..-",	{ 0.33,  0.33,  0.33, 1.0,  0.33,  0.33, 1.0}	},
+	{"-.---.",	{1.0,  0.33, 1.0, 1.0,  0.33,   0, 0}	},
+	{"-.--.-",	{1.0,  0.33, 1.0, 1.0,  0.33, 1.0, 0}	},
+	{"--..--",	{1.0, 1.0,  0.33,  0.33, 1.0, 1.0, 0}	},
+	{"-....-",	{1.0,  0.33,  0.33,  0.33,  0.33, 1.0, 0}	},
+	{".-.-.-",	{ 0.33, 1.0,  0.33, 1.0,  0.33, 1.0, 0}	},
+	{"-..-.",	{1.0,  0.33,  0.33, 1.0,  0.33,   0, 0}	},
+	{"---...",	{1.0, 1.0, 1.0,  0.33,  0.33,  0.33, 0}	},
+	{"-.-.-.",	{1.0,  0.33, 1.0,  0.33, 1.0,  0.33, 0}	},
+	{"..--..",	{ 0.33,  0.33, 1.0, 1.0,  0.33,  0.33, 0}	},
+	{"..--.-",	{ 0.33,  0.33, 1.0, 1.0,  0.33, 1.0, 0}	},
+	{".--.-.",	{ 0.33, 1.0, 1.0,  0.33, 1.0,  0.33, 0}	},
+	{"-.-.--",	{1.0,  0.33, 1.0,  0.33, 1.0, 1.0, 0}	},
+
+	{".-.-",	{0.33, 1.0, 0.33, 1.0, 0, 0 , 0}  },	// A umlaut, A aelig
+	{".--.-",	{0.33, 1.0, 1.0, 0.33, 1.0, 0, 0 }  },	// A ring
+	{"-.-..",	{1.0, 0.33, 1.0, 0.33, 0.33, 0, 0} },	// C cedilla
+	{".-..-",	{0.33, 1.0, 0.33, 0.33, 1.0, 0, 0} },	// E grave
+	{"..-..",	{0.33, 0.33, 1.0, 0.33, 0.33, 0, 0} },	// E acute
+	{"---.",	{1.0, 1.0, 1.0, 0.33, 0, 0, 0} },		// O acute, O umlat, O slash
+	{"--.--",	{1.0, 1.0, 0.33, 1.0, 1.0, 0, 0} },		// N tilde
+	{"..--",	{0.33, 0.33, 1.0, 1.0, 0, 0, 0} },		// U umlaut, U circ
+
+	{"", {0.0}}
 };
 
 int cw::normalize(float *v, int n, int twodots)
@@ -153,33 +163,35 @@ int cw::normalize(float *v, int n, int twodots)
 }
 
 
-const char * cw::find_winner (float *inbuf, int twodots)
+std::string cw::find_winner (float *inbuf, int twodots)
 {
 	float diffsf = 999999999999.0;
 
-	if ( normalize (inbuf, WGT_SIZE, twodots) == 0) return NULL;
+	if ( normalize (inbuf, WGT_SIZE, twodots) == 0) return " ";
 
-	const SOM_TABLE * winner = NULL;
-	for ( const SOM_TABLE * som = som_table; som->chr != 0; som++) {
+	int winner = -1;
+	for ( int n = 0; som_table[n].rpr.length(); n++) {
 		 /* Compute the distance between codebook and input entry */
 		float difference = 0.0;
 	   	for (int i = 0; i < WGT_SIZE; i++) {
-			float diff = (inbuf[i] - som->wgt[i]);
+			float diff = (inbuf[i] - som_table[n].wgt[i]);
 					difference += diff * diff;
 					if (difference > diffsf) break;
 	  		}
 
 	 /* If distance is smaller than previous distances */
 			if (difference < diffsf) {
-	  			winner = som;
+	  			winner = n;
 	  			diffsf = difference;
 			}
 	}
 
-	if (winner != NULL)
-		return winner->prt;
-	else
-		return NULL;
+	if (!som_table[winner].rpr.empty()) {
+		string sc = morse.rx_lookup(som_table[winner].rpr);
+		if (sc.empty()) return "*";
+		else return sc;
+	} else
+		return "*";
 }
 
 void cw::tx_init()
@@ -548,8 +560,8 @@ cmplx cw::mixer(cmplx in)
 
 void cw::decode_stream(double value)
 {
-	const char *c, *somc;
-	char *cptr;
+	std::string sc;
+	std::string somc;
 
 	sig_avg = decayavg(sig_avg, value, 1000);
 
@@ -591,33 +603,31 @@ void cw::decode_stream(double value)
 // Power detection using hysterisis detector
 // upward trend means tone starting
 		if ((value > progdefaults.CWupper) && (cw_receive_state != RS_IN_TONE)) {
-			handle_event(CW_KEYDOWN_EVENT, NULL);
+			handle_event(CW_KEYDOWN_EVENT, sc);
 		}
 // downward trend means tone stopping
 		if ((value < progdefaults.CWlower) && (cw_receive_state == RS_IN_TONE)) {
-			handle_event(CW_KEYUP_EVENT, NULL);
+			handle_event(CW_KEYUP_EVENT, sc);
 		}
 	}
 
-	if (handle_event(CW_QUERY_EVENT, &c) == CW_SUCCESS) {
+	if (handle_event(CW_QUERY_EVENT, sc) == CW_SUCCESS) {
 		update_syncscope();
 		synchscope = 100;
 		if (progdefaults.CWuseSOMdecoding) {
 			somc = find_winner(cw_buffer, two_dots);
-			cptr = (char*)somc;
-			if (somc != NULL) {
-				while (*cptr != '\0')
-					put_rx_char(progdefaults.rx_lowercase ? tolower(*cptr++) : *cptr++,FTextBase::CTRL);
-			}
-			if (strlen(c) == 1 && *c == ' ')
-				put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
+			if (!somc.empty())
+				for (size_t n = 0; n < somc.length(); n++)
+					put_echo_char(
+						somc[n],
+						somc[0] == '<' ? FTextBase::CTRL : FTextBase::RECV);
 			cw_ptr = 0;
 			memset(cw_buffer, 0, sizeof(cw_buffer));
 		} else {
-			if (strlen(c) == 1)
-				put_rx_char(progdefaults.rx_lowercase ? tolower(*c) : *c);
-			else while (*c)
-				put_rx_char(progdefaults.rx_lowercase ? tolower(*c++) : *c++, FTextBase::CTRL);
+			for (size_t n = 0; n < sc.length(); n++)
+				put_echo_char(
+					sc[n],
+					sc[0] == '<' ? FTextBase::CTRL : FTextBase::RECV);
 		}
 	} else if (--synchscope == 0) {
 		synchscope = 25;
@@ -707,7 +717,7 @@ inline int cw::usec_diff(unsigned int earlier, unsigned int later)
 //	If there is no data ready, CW_ERROR is returned.
 //=======================================================================
 
-int cw::handle_event(int cw_event, const char **c)
+int cw::handle_event(int cw_event, string &sc)
 {
 	static int space_sent = true;	// for word space logic
 	static int last_element = 0;	// length of last dot/dash
@@ -815,15 +825,6 @@ int cw::handle_event(int cw_event, const char **c)
 // CW_SUCCESS is returned when there is a printable character. Nothing to do if we are in a tone
 		if (cw_receive_state == RS_IN_TONE)
 			return CW_ERROR;
-// in this call we expect a pointer to a char to be valid
-		if (c == NULL) {
-// else we had no place to put character...
-			cw_receive_state = RS_IDLE;
-			cw_rr_current = 0;
-			cw_ptr = 0;
-// reset decoding pointer
-			return CW_ERROR;
-		}
 // compute length of silence so far
 		sync_parameters();
 		element_usec = usec_diff(cw_rr_end_timestamp, smpl_ctr);
@@ -837,11 +838,10 @@ int cw::handle_event(int cw_event, const char **c)
 			element_usec <= (4 * cw_receive_dot_length) &&
 			cw_receive_state == RS_AFTER_TONE) {
 // Look up the representation
-			*c = morse.rx_lookup(rx_rep_buf.c_str());
-//cout <<": " << *c <<flush;
-			if (*c == NULL) {
+			sc = morse.rx_lookup(rx_rep_buf);
+			if (sc.empty()) {
 // invalid decode... let user see error
-				*c = "*";
+				sc = "*";
 			}
 			rx_rep_buf.clear();
 			cw_receive_state = RS_IDLE;
@@ -854,7 +854,7 @@ int cw::handle_event(int cw_event, const char **c)
 // LONG time since keyup... check for a word space
 // FARNSWOTH MOD HERE -->
 		if ((element_usec > (4 * cw_receive_dot_length)) && !space_sent) {
-			*c = " ";
+			sc = " ";
 			space_sent = true;
 			return CW_SUCCESS;
 		}
@@ -872,11 +872,11 @@ int cw::handle_event(int cw_event, const char **c)
 // this is 1/2 cycle of a raised cosine
 //===========================================================================
 
-double keyshape[KNUM];
+double keyshape[CWKNUM];
 
 void cw::makeshape()
 {
-	for (int i = 0; i < KNUM; i++) keyshape[i] = 1.0;
+	for (int i = 0; i < CWKNUM; i++) keyshape[i] = 1.0;
 
 	switch (QSKshape) {
 		case 1: // blackman
@@ -1160,7 +1160,7 @@ void cw::send_symbol(int bits, int len)
 
 void cw::send_ch(int ch)
 {
-	int code;
+	string code;
 	int chout = ch;
 	int flen;
 
@@ -1180,28 +1180,43 @@ void cw::send_ch(int ch)
 		return;
 	}
 
-// convert character code to a morse representation
-	if ((chout < 256) && (chout >= 0)) {
-		code = morse.tx_lookup(chout); //cw_tx_lookup(ch);
-		firstelement = true;
-	} else {
-		code = 0x04; 	// two extra dot spaces
-		firstelement = false;
-	}
+// loop sending out binary bits of cw character at WPM or Farnsworth rate
 
-// loop sending out binary bits of cw character
-// at WPM or Farnsworth rate
 	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth))
 		flen = fsymlen;
 	else
 		flen = symbollen;
 
-	int charlen = 0;
-	while (code > 1) {
-		send_symbol(code, flen);
-		charlen++;
-		code = code >> 1;
+	int charlen = 0; // used for Farsnworth timing adjustment
+
+	if (chout <= 0) {
+		send_symbol(0, flen);
+		send_symbol(0, flen);
+		firstelement = false;
+		return;
 	}
+
+	code = morse.tx_lookup(chout);
+	if (!code.length()) {
+		return;
+	}
+
+	firstelement = true;
+
+//	while (code.length()) {
+	for (size_t n = 0; n < code.length(); n++) {
+		send_symbol(0, flen);
+		send_symbol(1, flen);
+		charlen += 2;
+		if (code[n] == '-') {
+			send_symbol( 1, flen );
+			send_symbol( 1, flen );
+			charlen += 2;
+		}
+	}
+	send_symbol(0, flen);
+	send_symbol(0, flen);
+	charlen += 2;
 
 // inter character space at WPM/FWPM rate
 	flen = symbollen;
@@ -1214,15 +1229,12 @@ void cw::send_ch(int ch)
 	}
 	if (flen) send_symbol(0, flen);
 
-	FL_AWAKE();
-
 	if (ch != -1) {
-		string prtstr = morse.tx_print(ch);
-		if (prtstr.length() == 1)
-			put_echo_char(progdefaults.rx_lowercase ? tolower(prtstr[0]) : prtstr[0]);
-		else
-			for (size_t n = 0; n < prtstr.length(); n++)
-				put_echo_char(progdefaults.rx_lowercase ? tolower(prtstr[n]) : prtstr[n], FTextBase::CTRL);
+		string prtstr = morse.tx_print();
+		for (size_t n = 0; n < prtstr.length(); n++)
+			put_echo_char(
+				prtstr[n],
+				prtstr[0] == '<' ? FTextBase::CTRL : FTextBase::XMIT);
 	}
 }
 
@@ -1274,6 +1286,7 @@ int cw::tx_process()
 	}
 	acc_symbols = 0;
 	send_ch(c);
+	FL_AWAKE();
 
 	xmt_samples = char_samples = acc_symbols;
 

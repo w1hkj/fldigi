@@ -234,12 +234,11 @@ int WK_send_char(int c)
 
 	int n = 0;
 
-	int code = wkmorse->tx_lookup(c & 0xFF);
 	if (c != ' ') {
-		while (code > 1) {
-			if (code & 0x01) n += 4;
-			else n += 2;
-			code = code >> 1;
+		std::string code = wkmorse->tx_lookup(c);
+		for (size_t i = 0; i < code.length(); i++) {
+			n += 2;
+			if (code[i] == '-') n += 2;
 		}
 	} else n = 7;
 	n += 4;
