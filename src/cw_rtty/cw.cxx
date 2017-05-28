@@ -562,20 +562,32 @@ void cw::decode_stream(double value)
 {
 	std::string sc;
 	std::string somc;
+	int attack = 0;
+	int decay = 0;
+	switch (progdefaults.cwrx_attack) {
+		case 0: attack = 100; break;
+		case 1: default: attack = 50; break;
+		case 2: attack = 25;
+	}
+	switch (progdefaults.cwrx_decay) {
+		case 0: decay = 1000; break;
+		case 1: default : decay = 500; break;
+		case 2: decay = 250;
+	}
 
-	sig_avg = decayavg(sig_avg, value, 1000);
+	sig_avg = decayavg(sig_avg, value, decay);
 
 	if (value < sig_avg) {
 		if (value < noise_floor)
-			noise_floor = decayavg(noise_floor, value, 100);
+			noise_floor = decayavg(noise_floor, value, attack);
 		else 
-			noise_floor = decayavg(noise_floor, value, 1000);
+			noise_floor = decayavg(noise_floor, value, decay);
 	}
 	if (value > sig_avg)  {
 		if (value > agc_peak)
-			agc_peak = decayavg(agc_peak, value, 100);
+			agc_peak = decayavg(agc_peak, value, attack);
 		else
-			agc_peak = decayavg(agc_peak, value, 1000); 
+			agc_peak = decayavg(agc_peak, value, decay); 
 	}
 
 	float norm_noise  = noise_floor / agc_peak;

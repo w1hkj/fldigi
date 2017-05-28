@@ -422,6 +422,14 @@
         ELEM_(int, CWupperlimit, "CWUPPERLIMIT",                                        \
               "Upper TX limit (WPM)",                                                   \
               50)                                                                       \
+        ELEM_(int, cwrx_attack, "CWRX_ATTACK",                                          \
+              "rx squelch attack timing\n"                                              \
+              "SLOW = 0 (100)\nMEDIUM = 1 (50)\nFAST = 2 (25)",                         \
+              1)                                                                        \
+        ELEM_(int, cwrx_decay, "CWRX_DECAY",                                            \
+              "rx squelch decay timing\n"                                               \
+              "SLOW = 0 (1000)\nMEDIUM = 1 (500)\nFAST = 2 (250)",                      \
+              1)                                                                        \
         ELEM_(double, CWdash2dot, "CWDASH2DOT",                                         \
               "Dash to dot ratio",                                                      \
               3.0)                                                                      \

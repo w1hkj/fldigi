@@ -321,6 +321,8 @@ extern Fl_Progress *prgsCWrcvWPM;
 extern Fl_Counter2 *cntLower;
 extern Fl_Counter2 *cntUpper;
 extern Fl_Counter2 *cntCWrange;
+extern Fl_Choice *mnu_cwrx_attack;
+extern Fl_Choice *mnu_cwrx_decay;
 extern Fl_Value_Slider2 *sldrCWxmtWPM;
 extern Fl_Counter2 *cntCWdefWPM;
 extern Fl_Counter *cntCWlowerlimit;

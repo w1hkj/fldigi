@@ -2901,6 +2901,20 @@ static void cb_cntCWrange(Fl_Counter2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Choice *mnu_cwrx_attack=(Fl_Choice *)0;
+
+static void cb_mnu_cwrx_attack(Fl_Choice* o, void*) {
+  progdefaults.cwrx_attack = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Choice *mnu_cwrx_decay=(Fl_Choice *)0;
+
+static void cb_mnu_cwrx_decay(Fl_Choice* o, void*) {
+  progdefaults.cwrx_decay = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Value_Slider2 *sldrCWxmtWPM=(Fl_Value_Slider2 *)0;
 
 static void cb_sldrCWxmtWPM(Fl_Value_Slider2* o, void*) {
@@ -9407,7 +9421,7 @@ i on a\ntouch screen device such as a tablet."));
                 btnCWrcvTrack->callback((Fl_Callback*)cb_btnCWrcvTrack);
                 o->value(progdefaults.CWtrack);
                 } // Fl_Check_Button* btnCWrcvTrack
-                { Fl_Value_Slider2* o = sldrCWbandwidth = new Fl_Value_Slider2(50, 149, 335, 20, _("Filter bandwidth"));
+                { Fl_Value_Slider2* o = sldrCWbandwidth = new Fl_Value_Slider2(50, 149, 250, 20, _("Filter bandwidth"));
                 sldrCWbandwidth->tooltip(_("CW dsp filter bandwidth"));
                 sldrCWbandwidth->type(1);
                 sldrCWbandwidth->box(FL_DOWN_BOX);
@@ -9428,7 +9442,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWbandwidth);
                 o->labelsize(FL_NORMAL_SIZE); o->textsize(FL_NORMAL_SIZE);
                 } // Fl_Value_Slider2* sldrCWbandwidth
-                { Fl_Check_Button* o = btnCWmfilt = new Fl_Check_Button(397, 149, 80, 20, _("Matched Filter"));
+                { Fl_Check_Button* o = btnCWmfilt = new Fl_Check_Button(303, 149, 80, 20, _("Matched Filt\'"));
                 btnCWmfilt->tooltip(_("Matched Filter bandwidth"));
                 btnCWmfilt->down_box(FL_DOWN_BOX);
                 btnCWmfilt->value(1);
@@ -9440,7 +9454,7 @@ i on a\ntouch screen device such as a tablet."));
                 valCWrcvWPM->callback((Fl_Callback*)cb_valCWrcvWPM);
                 valCWrcvWPM->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 } // Fl_Value_Output* valCWrcvWPM
-                { prgsCWrcvWPM = new Fl_Progress(86, 188, 300, 20);
+                { prgsCWrcvWPM = new Fl_Progress(86, 188, 214, 20);
                 prgsCWrcvWPM->tooltip(_("Tracked CW speed in WPM"));
                 prgsCWrcvWPM->color(FL_BACKGROUND_COLOR);
                 prgsCWrcvWPM->selection_color(FL_SELECTION_COLOR);
@@ -9488,7 +9502,7 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWupper);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntUpper
-                { Fl_Counter2* o = cntCWrange = new Fl_Counter2(397, 187, 65, 20, _("Range, WPM"));
+                { Fl_Counter2* o = cntCWrange = new Fl_Counter2(303, 187, 65, 20, _("Range"));
                 cntCWrange->tooltip(_("Range +/- wpm"));
                 cntCWrange->type(1);
                 cntCWrange->box(FL_UP_BOX);
@@ -9508,6 +9522,23 @@ i on a\ntouch screen device such as a tablet."));
                 o->value(progdefaults.CWrange);
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Counter2* cntCWrange
+                { Fl_Group* o = new Fl_Group(425, 110, 135, 95, _("Squelch"));
+                o->box(FL_ENGRAVED_BOX);
+                o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+                { Fl_Choice* o = mnu_cwrx_attack = new Fl_Choice(480, 140, 72, 20, _("Attack"));
+                mnu_cwrx_attack->down_box(FL_BORDER_BOX);
+                mnu_cwrx_attack->callback((Fl_Callback*)cb_mnu_cwrx_attack);
+                o->add("Slow|Med|Fast");
+                o->value(progdefaults.cwrx_attack);
+                } // Fl_Choice* mnu_cwrx_attack
+                { Fl_Choice* o = mnu_cwrx_decay = new Fl_Choice(480, 175, 72, 20, _("Decay"));
+                mnu_cwrx_decay->down_box(FL_BORDER_BOX);
+                mnu_cwrx_decay->callback((Fl_Callback*)cb_mnu_cwrx_decay);
+                o->add("Slow|Med|Fast");
+                o->value(progdefaults.cwrx_decay);
+                } // Fl_Choice* mnu_cwrx_decay
+                o->end();
+                } // Fl_Group* o
                 o->end();
                 } // Fl_Group* o
                 { Fl_Group* o = new Fl_Group(35, 215, 530, 150, _("Transmit"));
