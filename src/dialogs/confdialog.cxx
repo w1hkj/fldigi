@@ -7348,7 +7348,7 @@ static void cb_btnCloseConfig(Fl_Return_Button*, void*) {
 Fl_Button *btnResetConfig=(Fl_Button *)0;
 
 static void cb_btnResetConfig(Fl_Button*, void*) {
-  if (fl_choice2("Confirm", "Yes", "No", NULL)) {
+  if (fl_choice2("This will effect every configuration item!\nConfirm", "Yes", "No", NULL)) {
 	progdefaults.resetDefaults();
 	progdefaults.changed = false;
 };
@@ -7380,7 +7380,6 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9396,6 +9395,7 @@ i on a\ntouch screen device such as a tablet."));
         tabWaterfall->end();
       } // Fl_Group* tabWaterfall
       { tabModems = new Fl_Group(0, 25, 605, 365, _("Modems"));
+        tabModems->hide();
         { tabsModems = new Fl_Tabs(0, 25, 605, 365);
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));

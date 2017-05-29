@@ -434,8 +434,8 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3406,7 +3406,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 605 365}
+        xywh {0 25 605 365} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 605 365} selection_color 50 align 9
@@ -3506,7 +3506,7 @@ progdefaults.changed = true;} open
                     Fl_Choice mnu_cwrx_decay {
                       label Decay
                       callback {progdefaults.cwrx_decay = o->value();
-progdefaults.changed = true;} open selected
+progdefaults.changed = true;} open
                       xywh {480 175 72 20} down_box BORDER_BOX
                       code0 {o->add("Slow|Med|Fast");}
                       code1 {o->value(progdefaults.cwrx_decay);}
@@ -9158,7 +9158,7 @@ progdefaults.changed = true;}
     }
     Fl_Button btnResetConfig {
       label {Restore defaults}
-      callback {if (fl_choice2("Confirm", "Yes", "No", NULL)) {
+      callback {if (fl_choice2("This will effect every configuration item!\\nConfirm", "Yes", "No", NULL)) {
 	progdefaults.resetDefaults();
 	progdefaults.changed = false;
 }}
