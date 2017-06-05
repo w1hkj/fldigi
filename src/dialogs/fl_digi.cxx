@@ -8883,7 +8883,14 @@ static void rx_parser(const unsigned char data, int style)
 
 static void put_rx_char_flmain(unsigned int data, int style)
 {
+    
+    	add_rx_char(data & 0xFF); // Send the received char to the received-data-stream
+        bool dataonly = true;
+        if (dataonly)
+            return; // For data-only modes return here and don't update the screen / GUI
+        /// Is it OK to break thread safety here? Seems OK...
 	ENSURE_THREAD(FLMAIN_TID);
+        
 
 	// possible destinations for the data
 	enum dest_type {
@@ -8905,7 +8912,6 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
 
-	add_rx_char(data & 0xFF);
 
 	if (mailclient || mailserver)
 		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
@@ -9367,6 +9373,10 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data, int style)
 {
+    /// Return and print nothing for data-only modes. Makes GUI non-responsive
+    bool dataonly = true;
+    if (dataonly)return;
+    
 // suppress print to rx widget when making timing tests
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return;
 
