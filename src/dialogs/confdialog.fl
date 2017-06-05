@@ -1,131 +1,131 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
-i18n_type 1
-i18n_include "gettext.h"
-i18n_function _
-header_name {.h}
+version 1.0303 
+i18n_type 1 
+i18n_include "gettext.h" 
+i18n_function _ 
+header_name {.h} 
 code_name {.cxx}
 decl {\#include <config.h>} {private local
-}
+} 
 
 decl {\#include <FL/Fl_Tooltip.H>} {private local
-}
+} 
 
 decl {\#include <FL/Fl_Box.H>} {private local
-}
+} 
 
 decl {\#include <FL/filename.H>} {private local
-}
+} 
 
 decl {\#include <FL/Fl_File_Chooser.H>} {private local
-}
+} 
 
 decl {\#include <FL/fl_show_colormap.H>} {private local
-}
+} 
 
 decl {\#include "main.h"} {private local
-}
+} 
 
 decl {\#include "fl_digi.h"} {private local
-}
+} 
 
 decl {\#include "data_io.h"} {private local
-}
+} 
 
 decl {\#include "Viewer.h"} {private global
-}
+} 
 
 decl {\#include "font_browser.h"} {public global
-}
+} 
 
 decl {\#include "soundconf.h"} {private local
-}
+} 
 
 decl {\#include "globals.h"} {public local
-}
+} 
 
 decl {\#include "modem.h"} {public local
-}
+} 
 
 decl {\#include "configuration.h"} {public local
-}
+} 
 
 decl {\#include "combo.h"} {public local
-}
+} 
 
 decl {\#include "waterfall.h"} {private local
-}
+} 
 
 decl {\#include "rigxml.h"} {private local
-}
+} 
 
 decl {\#include "lookupcall.h"} {private local
-}
+} 
 
 decl {\#include "icons.h"} {private local
-}
+} 
 
 decl {\#include "Viewer.h"} {private local
-}
+} 
 
 decl {\#include "pskrep.h"} {private global
-}
+} 
 
 decl {\#include "flinput2.h"} {public local
-}
+} 
 
 decl {\#include "flslider2.h"} {public local
-}
+} 
 
 decl {\#include "flmisc.h"} {public local
-}
+} 
 
 decl {\#include "logsupport.h"} {private local
-}
+} 
 
 decl {\#include "notify.h"} {private local
-}
+} 
 
 decl {\#include "debug.h"} {private local
-}
+} 
 
 decl {\#include "status.h"} {private local
-}
+} 
 
 decl {\#include "rx_extract.h"} {private local
-}
+} 
 
 decl {\#include "kmlserver.h"} {private local
-}
+} 
 
 decl {\#include "macroedit.h"} {private local
-}
+} 
 
 decl {\#include "fileselect.h"} {private local
-}
+} 
 
 decl {\#include "psm/psm.h"} {private local
-}
+} 
 
 decl {\#include "dx_cluster.h"} {private local
-}
+} 
 
 decl {extern void WefaxDestDirSet(Fl_File_Chooser *w, void *userdata);} {private local
-}
+} 
 
 decl {\#include "dx_dialog.h"} {private local
-}
+} 
 
 decl {\#if USE_HAMLIB
   \#include "hamlib.h"
 \#endif} {private local
-}
+} 
 
 decl {Fl_Double_Window *dlgConfig;} {public local
-}
+} 
 
 decl {Mode_Browser* mode_browser;} {public local
-}
+} 
 
 Function {choose_color(Fl_Color & c)} {open private return_type void
 } {
@@ -133,7 +133,7 @@ Function {choose_color(Fl_Color & c)} {open private return_type void
 Fl::get_color(c, r, g, b);
 if (fl_color_chooser("Font color", r, g, b))
     c = fl_rgb_color(r, g, b);} {}
-}
+} 
 
 Function {cbRxFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -165,7 +165,7 @@ Function {cbRxFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbTxFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -197,7 +197,7 @@ Function {cbTxFontBrowser(Fl_Widget*, void*)} {private return_type void
      font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbDXfont_browser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -236,7 +236,7 @@ font_browser->hide();
 dxcluster_hosts_load();
 
 progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbDXC_FontBrowser(Fl_Widget*, void*)} {open private return_type void
 } {
@@ -256,7 +256,7 @@ Function {cbDXC_FontBrowser(Fl_Widget*, void*)} {open private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -278,7 +278,7 @@ Function {cbMacroEditFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -290,7 +290,7 @@ Function {cbWaterfallFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-}
+} 
 
 Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -317,7 +317,7 @@ Function {cbMacroBtnFontBrowser(Fl_Widget*, void*)} {private return_type void
 
     progdefaults.changed = true;
     colorize_macros();} {}
-}
+} 
 
 Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -327,7 +327,7 @@ Function {cbViewerFontBrowser(Fl_Widget*, void*)} {return_type void
     progdefaults.changed = true;
 
     font_browser->hide();} {}
-}
+} 
 
 Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
 } {
@@ -345,7 +345,7 @@ Function {cbFreqControlFontBrowser(Fl_Widget*, void*)} {return_type void
     qsoFreqDisp3->redraw();
 
     font_browser->hide();} {}
-}
+} 
 
 Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -367,7 +367,7 @@ Function {cbLOGGINGFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
 } {
@@ -389,7 +389,7 @@ Function {cbLOGBOOKFontBrowser(Fl_Widget*, void*)} {private return_type void
     font_browser->hide();
 
     progdefaults.changed = true;} {}
-}
+} 
 
 Function {set_qrzxml_buttons(Fl_Button* b)} {open return_type void
 } {
@@ -399,7 +399,7 @@ Function {set_qrzxml_buttons(Fl_Button* b)} {open return_type void
 
 for (size_t i = 0; i < sizeof(qrzbxml)/sizeof(*qrzbxml); i++)
 	qrzbxml[i]->value(b == qrzbxml[i]);} {}
-}
+} 
 
 Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 } {
@@ -409,7 +409,7 @@ Function {set_qrzweb_buttons(Fl_Button* b)} {return_type void
 
 for (size_t i = 0; i < sizeof(qrzbweb)/sizeof(*qrzbweb); i++)
 	qrzbweb[i]->value(b == qrzbweb[i]);} {}
-}
+} 
 
 Function {ConfigureDialog()} {open
 } {
@@ -427,7 +427,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {675 24 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {675 37 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 605 390} color 50 selection_color 50
@@ -3019,8 +3019,8 @@ UI_select();}
         }
       }
       Fl_Group tabWaterfall {
-        label Waterfall
-        xywh {0 25 600 365} hide
+        label Waterfall open
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsWaterfall {open
           xywh {0 25 600 365} color 50 selection_color 50
@@ -3268,7 +3268,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label {FFT Processing} open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {55 71 490 135} box ENGRAVED_FRAME
@@ -3306,8 +3306,8 @@ progdefaults.changed = true;} open
                 label {Upper limit}
                 callback {progdefaults.HighFreqCutoff = (int)o->value();
 progdefaults.changed = true;
-setwfrange();}
-                tooltip {High frequency limit in Hz} xywh {323 89 95 22} type Simple align 8 minimum 2000 maximum 4000 step 100 value 3000
+setwfrange();} selected
+                tooltip {High frequency limit in Hz} xywh {323 89 95 22} type Simple align 8 minimum 2000 maximum 8000 step 100 value 3000
                 code0 {o->value(progdefaults.HighFreqCutoff);}
                 code1 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Counter2
@@ -3353,7 +3353,7 @@ progdefaults.changed = true;}
           }
           Fl_Group {} {
             label Mouse open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {55 73 490 170} box ENGRAVED_FRAME
@@ -3406,7 +3406,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
       }
       Fl_Group tabModems {
         label Modems open
-        xywh {0 25 605 365}
+        xywh {0 25 605 365} hide
       } {
         Fl_Tabs tabsModems {open
           xywh {0 25 605 365} selection_color 50 align 9
@@ -3419,7 +3419,7 @@ behaves inside the waterfall} xywh {65 207 150 22} box DOWN_BOX color 7 align 8
               xywh {0 50 605 340} selection_color 50
             } {
               Fl_Group tabsCW_general {
-                label General open selected
+                label General open
                 xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
@@ -8975,18 +8975,18 @@ progdefaults.changed = true;}
       tooltip {WARNING - this will over write ALL settings} xywh {20 394 130 22}
     }
   }
-}
+} 
 
 Function {openConfig()} {return_type void
 } {
   code {if (!dlgConfig) createConfig();
 progdefaults.loadDefaults();} {}
-}
+} 
 
 Function {closeDialog()} {return_type void
 } {
   code {if (dlgConfig) dlgConfig->hide();} {}
-}
+} 
 
 Function {createConfig()} {return_type void
 } {
@@ -8994,10 +8994,10 @@ Function {createConfig()} {return_type void
     dlgConfig = ConfigureDialog();
     dlgConfig->xclass(PACKAGE_NAME);
   }} {}
-}
+} 
 
 decl {class Fl_File_Chooser ;} {public global
-}
+} 
 
 Function {WefaxDestDirSet(Fl_File_Chooser *w, void *userdata)} {return_type void
 } {
@@ -9007,7 +9007,7 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnWefaxSaveDir->redraw();
 	cb_btnWefaxSaveDir( btnWefaxSaveDir, NULL );
 }} {}
-}
+} 
 
 Function {KmlDestDirSet(Fl_File_Chooser *w, void *userdata)} {open return_type void
 } {
@@ -9017,9 +9017,9 @@ if( ( w->value() != NULL ) && ( ! w->shown() ) ) {
 	btnKmlSaveDir->redraw();
 	cb_btnKmlSaveDir( btnKmlSaveDir, NULL );
 }} {}
-}
+} 
 
-Function {make_window()} {} {}
+Function {make_window()} {} {} 
 
 Function {make_window()} {open
-} {}
+} {} 

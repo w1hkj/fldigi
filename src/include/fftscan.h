@@ -38,9 +38,13 @@
 class fftscan : public modem {
 public:
 #define fftscan_BW			4
-#define	fftscan_SampleRate	8000
-#define fftscanFFT_LEN		8192 // approximately 1 sec of bpf'd audio stream
-#define NYQUIST				4000 // 1/2 fftscanFFT_LEN
+//#define	fftscan_SampleRate	8000
+//#define fftscanFFT_LEN		8192 // approximately 1 sec of bpf'd audio stream
+//#define NYQUIST				4000 // 1/2 fftscanFFT_LEN
+
+#define	fftscan_SampleRate	16000
+#define fftscanFFT_LEN		16384 // approximately 1 sec of bpf'd audio stream
+#define NYQUIST			8000 // 1/2 fftscanFFT_LEN
 private:
 
 	std::string	fftscanFilename;

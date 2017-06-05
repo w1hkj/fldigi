@@ -6238,7 +6238,8 @@ void create_fl_digi_main_primary() {
 	fl_mac_set_about(cb_mnuAboutURL, 0);
 #endif
 
-	IMAGE_WIDTH = 4000;
+	//IMAGE_WIDTH = 4000;
+        IMAGE_WIDTH = 8000;
 
 	Hwfall = progdefaults.wfheight;
 
@@ -8330,7 +8331,9 @@ void create_fl_digi_main_WF_only() {
 	fl_font(fnt, fsize);
 
 
-	IMAGE_WIDTH = 4000;
+	//IMAGE_WIDTH = 4000;
+        IMAGE_WIDTH = 8000;
+
 	Hwfall = progdefaults.wfheight;
 	Wwfall = progStatus.mainW - 2 * DEFAULT_SW - 2 * pad;
 	WF_only_height = Hmenu + Hwfall + Hstatus + 4 * pad;

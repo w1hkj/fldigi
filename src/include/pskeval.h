@@ -13,7 +13,7 @@
 // (at your option) any later version.
 //
 // Fldigi is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// but WITHOUT ANY WARRANTY; without even the implied warranty of  #defi  #define fftscan_BW			4ne fftscan_BW			4
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
@@ -29,7 +29,7 @@
 #include "waterfall.h"
 
 #define FLOWER 200
-#define FUPPER 4000
+#define FUPPER 8000
 
 class pskeval {
 private:
