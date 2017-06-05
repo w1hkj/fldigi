@@ -290,21 +290,33 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 128;
 			break;
 
-		case MODE_QPSK31:
-			symbollen = 256;
-			_qpsk = true;
-			dcdbits = 32;
-			cap |= CAP_REV;
-			break;
-		case MODE_QPSK63:
+		case MODE_QPSK31: // 125 baud 8psk x 24 carriers = 9 Kbps in 6Khz BW
 			symbollen = 128;
-			_qpsk = true;
-			dcdbits = 64;
+                        samplerate = 16000;
+                        numcarriers = 24;
+                        separation = 2.0f; /// OFDM
+                        _disablefec = true;
+			_8psk = true;
+			dcdbits = 128;
 			cap |= CAP_REV;
 			break;
-		case MODE_QPSK125:
-			symbollen = 64;
-			_qpsk = true;
+		case MODE_QPSK63: // 125 baud 8psk x 28 carriers = 10.5 Kbps in 7Khz BW
+			symbollen = 128;
+                        samplerate = 16000;
+                        numcarriers = 30;
+                        separation = 2.0f; /// OFDM
+			_8psk = true;
+                        _disablefec = true;
+			dcdbits = 128;
+			cap |= CAP_REV;
+			break;
+		case MODE_QPSK125: // !NOT Working! --> ~125 baud 16psk x 24 carriers = 12 Kbps in 6Khz BW
+			symbollen = 176;
+                        samplerate = 22050;
+                        separation = 2.0f; /// OFDM
+                        _disablefec = true;
+			_16psk = true;
+                        numcarriers = 24;
 			dcdbits = 128;
 			cap |= CAP_REV;
 			break;
@@ -691,7 +703,8 @@ psk::psk(trx_mode pskmode) : modem()
 		}
 	}
 
-	switch (progdefaults.PSK_filter) {
+	//switch (progdefaults.PSK_filter) {
+        switch ( 3 ) { // Filter 3 provides the _least_ inter-carrier interference: found by trial and error.
 		case 1:
 			// use the original gmfsk matched filters
 			for (int i = 0; i < 64; i++) {
@@ -1771,7 +1784,7 @@ void psk::tx_carriers()
 		else { // Map the incoming symbols to the underlying 16psk constellation.
 			if (_xpsk) sym = sym * 4 + 2; // Give it the "X" constellation shape
 			else if (_8psk) sym *= 2; // Map 8psk to 16psk
-			else sym *= 4; // For BPSK and QPSK
+			else if (!_16psk) sym *= 4; // For BPSK and QPSK (exception for 16psk)
 			symbol = prevsymbol[car] * sym_vec_pos[(sym & SVP_MASK)];	// complex multiplication
 		}
 
