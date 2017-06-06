@@ -1653,7 +1653,7 @@ int Fl_Text_Display_mod::position_to_line( int pos, int *lineNum ) const {
     if ( empty_vlines() ) {
       if ( mLastChar < mBuffer->length() ) {
         if ( !position_to_line( mLastChar, lineNum ) ) {
-          Fl::error("Fl_Text_Display_mod::position_to_line(): Consistency check ptvl failed");
+          Fl::error("Please change the text panel font / font-size.\nUse a fixed width font such as Consolas on Windows.");
           return 0;
         }
         return ++( *lineNum ) <= mNVisibleLines - 1;
