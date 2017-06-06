@@ -73,6 +73,8 @@
 #include "speak.h"
 #endif
 
+#include "audio_alert.h"
+
 #include <float.h>
 #include "re.h"
 
@@ -1754,6 +1756,26 @@ static void pDTMF(std::string &s, size_t &i, size_t endbracket)
 	CMDS cmd = {s.substr(i, endbracket - i + 1), doDTMF};
 	push_txcmd(cmd);
 	s.replace(i, endbracket - i + 1, "^!");
+}
+
+static void pALERT(std::string &s, size_t &i, size_t endbracket)
+{
+	if (trx_state != STATE_RX) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+	std::string cmd = s.substr(i+7, endbracket - i - 7);
+	if (audio_alert) 
+		try {
+			audio_alert->alert(cmd);
+		} catch (...) {
+		}
+	s.replace(i, endbracket - i + 1, "");
 }
 
 static void pPAUSE(std::string &s, size_t &i, size_t endbracket)
@@ -3858,6 +3880,7 @@ static const MTAGS mtags[] = {
 {"<POP>",		pPOP},
 {"<PUSH",		pPUSH},
 {"<DIGI>",		pDIGI},
+{"<ALERT:",		pALERT},
 #ifdef __WIN32__
 	{"<TALK:",		pTALK},
 #endif

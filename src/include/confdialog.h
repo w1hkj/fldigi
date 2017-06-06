@@ -645,6 +645,35 @@ extern Fl_Check_Button *chkReverseRxAudio;
 extern Fl_Group *tabWavFile;
 extern Fl_ListBox *listbox_wav_samplerate;
 extern Fl_Check_Button *btn_record_both;
+extern Fl_Group *tabAlerts;
+#include <FL/Fl_File_Input.H>
+extern Fl_File_Input *inp_wav_fname_regex;
+#include <FL/Fl_Native_File_Chooser.H>
+extern Fl_Button *btn_select_regex_wav;
+extern Fl_Choice *mnu_regex_alert_menu;
+extern Fl_Check_Button *btn_enable_regex_match_wa;
+#include "audio_alert.h"
+extern Fl_Button *btn_test_regex_wav;
+extern Fl_File_Input *inp_wav_fname_mycall;
+extern Fl_Button *btn_select_mycall_wav;
+extern Fl_Choice *mnu_mycall_alert_menu;
+extern Fl_Check_Button *btn_enable_mycall_match_wav;
+extern Fl_Button *btn_test_mycall_wav;
+extern Fl_File_Input *inp_wav_flmsg_rcvd;
+extern Fl_Button *btn_select_rx_extract_msg;
+extern Fl_Choice *mnu_rx_extract_alert_menu;
+extern Fl_Check_Button *btn_enable_flmsg_wav;
+extern Fl_Button *btn_test_flmsg_extract_wav;
+extern Fl_File_Input *inp_wav_flmsg_timed_out;
+extern Fl_Button *btn_select_rx_extract_timed_out;
+extern Fl_Choice *mnu_rx_timed_out_alert_menu;
+extern Fl_Button *btn_test_rx_extract_timed_out;
+extern Fl_Check_Button *btn_enable_flmsg_time_out_wav;
+extern Fl_File_Input *inp_wav_fname_rsid;
+extern Fl_Button *btn_select_rsid_wav;
+extern Fl_Choice *mnu_rsid_alert_menu;
+extern Fl_Check_Button *btn_enable_rsid_match_wav;
+extern Fl_Button *btn_test_rsid_wav;
 extern Fl_Group *tabID;
 extern Fl_Tabs *tabsID;
 extern Fl_Group *tabRsID;

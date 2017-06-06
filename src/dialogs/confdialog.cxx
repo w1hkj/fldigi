@@ -5771,6 +5771,283 @@ static void cb_btn_record_both(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Group *tabAlerts=(Fl_Group *)0;
+
+Fl_File_Input *inp_wav_fname_regex=(Fl_File_Input *)0;
+
+Fl_Button *btn_select_regex_wav=(Fl_Button *)0;
+
+static void cb_btn_select_regex_wav(Fl_Button*, void*) {
+  Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\t*.wav\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.BWSR_REGEX_MATCH = fnfc.filename();
+  	inp_wav_fname_regex->value(progdefaults.BWSR_REGEX_MATCH.c_str());
+	progdefaults.REGEX_ALERT_MENU = 0;
+	mnu_regex_alert_menu->value(progdefaults.REGEX_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+};
+}
+
+Fl_Choice *mnu_regex_alert_menu=(Fl_Choice *)0;
+
+static void cb_mnu_regex_alert_menu(Fl_Choice* o, void*) {
+  if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.BWSR_REGEX_MATCH = "bark"; break;
+    case 2 : progdefaults.BWSR_REGEX_MATCH = "checkout"; break;
+    case 3 : progdefaults.BWSR_REGEX_MATCH = "diesel"; break;
+    case 4 : progdefaults.BWSR_REGEX_MATCH = "steam_train"; break;
+    case 5 : progdefaults.BWSR_REGEX_MATCH = "doesnot"; break;
+    case 6 : progdefaults.BWSR_REGEX_MATCH = "beeboo"; break;
+    case 7 : progdefaults.BWSR_REGEX_MATCH = "phone"; break;
+    case 8 : progdefaults.BWSR_REGEX_MATCH = "dinner_bell"; break;
+  }
+  inp_wav_fname_regex->value(progdefaults.BWSR_REGEX_MATCH.c_str());
+}
+progdefaults.REGEX_ALERT_MENU = o->value();
+}
+
+Fl_Check_Button *btn_enable_regex_match_wa=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_regex_match_wa(Fl_Check_Button* o, void*) {
+  progdefaults.ENABLE_BWSR_REGEX_MATCH=o->value();
+}
+
+Fl_Button *btn_test_regex_wav=(Fl_Button *)0;
+
+static void cb_btn_test_regex_wav(Fl_Button*, void*) {
+  audio_alert->alert(progdefaults.BWSR_REGEX_MATCH.c_str());
+}
+
+Fl_File_Input *inp_wav_fname_mycall=(Fl_File_Input *)0;
+
+Fl_Button *btn_select_mycall_wav=(Fl_Button *)0;
+
+static void cb_btn_select_mycall_wav(Fl_Button*, void*) {
+  Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\t*.wav\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.BWSR_MYCALL_MATCH = fnfc.filename();
+  	inp_wav_fname_mycall->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
+	progdefaults.MYCALL_ALERT_MENU = 0;
+  	mnu_mycall_alert_menu->value(progdefaults.MYCALL_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+};
+}
+
+Fl_Choice *mnu_mycall_alert_menu=(Fl_Choice *)0;
+
+static void cb_mnu_mycall_alert_menu(Fl_Choice* o, void*) {
+  if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.BWSR_MYCALL_MATCH = "bark"; break;
+    case 2 : progdefaults.BWSR_MYCALL_MATCH = "checkout"; break;
+    case 3 : progdefaults.BWSR_MYCALL_MATCH = "diesel"; break;
+    case 4 : progdefaults.BWSR_MYCALL_MATCH = "steam_train"; break;
+    case 5 : progdefaults.BWSR_MYCALL_MATCH = "doesnot"; break;
+    case 6 : progdefaults.BWSR_MYCALL_MATCH = "beeboo"; break;
+    case 7 : progdefaults.BWSR_MYCALL_MATCH = "phone"; break;
+    case 8 : progdefaults.BWSR_MYCALL_MATCH = "dinner_bell"; break;
+  }
+  inp_wav_fname_mycall->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
+}
+progdefaults.MYCALL_ALERT_MENU = o->value();
+}
+
+Fl_Check_Button *btn_enable_mycall_match_wav=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_mycall_match_wav(Fl_Check_Button* o, void*) {
+  progdefaults.ENABLE_BWSR_MYCALL_MATCH=o->value();
+}
+
+Fl_Button *btn_test_mycall_wav=(Fl_Button *)0;
+
+static void cb_btn_test_mycall_wav(Fl_Button*, void*) {
+  audio_alert->alert(progdefaults.BWSR_MYCALL_MATCH.c_str());
+}
+
+Fl_File_Input *inp_wav_flmsg_rcvd=(Fl_File_Input *)0;
+
+Fl_Button *btn_select_rx_extract_msg=(Fl_Button *)0;
+
+static void cb_btn_select_rx_extract_msg(Fl_Button*, void*) {
+  Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\t*.wav\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.RX_EXTRACT_MSG_RCVD = fnfc.filename();
+  	inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
+  	progdefaults.RX_EXTRACT_ALERT_MENU = 0;
+  	mnu_rx_extract_alert_menu->value(progdefaults.RX_EXTRACT_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+};
+}
+
+Fl_Choice *mnu_rx_extract_alert_menu=(Fl_Choice *)0;
+
+static void cb_mnu_rx_extract_alert_menu(Fl_Choice* o, void*) {
+  if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.RX_EXTRACT_MSG_RCVD = "bark"; break;
+    case 2 : progdefaults.RX_EXTRACT_MSG_RCVD = "checkout"; break;
+    case 3 : progdefaults.RX_EXTRACT_MSG_RCVD = "diesel"; break;
+    case 4 : progdefaults.RX_EXTRACT_MSG_RCVD = "steam_train"; break;
+    case 5 : progdefaults.RX_EXTRACT_MSG_RCVD = "doesnot"; break;
+    case 6 : progdefaults.RX_EXTRACT_MSG_RCVD = "beeboo"; break;
+    case 7 : progdefaults.RX_EXTRACT_MSG_RCVD = "phone"; break;
+    case 8 : progdefaults.RX_EXTRACT_MSG_RCVD = "dinner_bell"; break;
+  }
+  inp_wav_flmsg_rcvd->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
+}
+progdefaults.RX_EXTRACT_ALERT_MENU = o->value();
+}
+
+Fl_Check_Button *btn_enable_flmsg_wav=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_flmsg_wav(Fl_Check_Button* o, void*) {
+  progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD=o->value();
+}
+
+Fl_Button *btn_test_flmsg_extract_wav=(Fl_Button *)0;
+
+static void cb_btn_test_flmsg_extract_wav(Fl_Button*, void*) {
+  audio_alert->alert(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
+}
+
+Fl_File_Input *inp_wav_flmsg_timed_out=(Fl_File_Input *)0;
+
+Fl_Button *btn_select_rx_extract_timed_out=(Fl_Button *)0;
+
+static void cb_btn_select_rx_extract_timed_out(Fl_Button*, void*) {
+  Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\t*.wav\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.RX_EXTRACT_TIMED_OUT = fnfc.filename();
+  	inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
+  	progdefaults.TIMED_OUT_ALERT_MENU = 0;
+  	mnu_rx_timed_out_alert_menu->value(progdefaults.TIMED_OUT_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+};
+}
+
+Fl_Choice *mnu_rx_timed_out_alert_menu=(Fl_Choice *)0;
+
+static void cb_mnu_rx_timed_out_alert_menu(Fl_Choice* o, void*) {
+  if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.RX_EXTRACT_TIMED_OUT = "bark"; break;
+    case 2 : progdefaults.RX_EXTRACT_TIMED_OUT = "checkout"; break;
+    case 3 : progdefaults.RX_EXTRACT_TIMED_OUT = "diesel"; break;
+    case 4 : progdefaults.RX_EXTRACT_TIMED_OUT = "steam_train"; break;
+    case 5 : progdefaults.RX_EXTRACT_TIMED_OUT = "doesnot"; break;
+    case 6 : progdefaults.RX_EXTRACT_TIMED_OUT = "beeboo"; break;
+    case 7 : progdefaults.RX_EXTRACT_TIMED_OUT = "phone"; break;
+    case 8 : progdefaults.RX_EXTRACT_TIMED_OUT = "dinner_bell"; break;
+  }
+  inp_wav_flmsg_timed_out->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
+}
+progdefaults.TIMED_OUT_ALERT_MENU = o->value();
+}
+
+Fl_Button *btn_test_rx_extract_timed_out=(Fl_Button *)0;
+
+static void cb_btn_test_rx_extract_timed_out(Fl_Button*, void*) {
+  audio_alert->alert(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
+}
+
+Fl_Check_Button *btn_enable_flmsg_time_out_wav=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_flmsg_time_out_wav(Fl_Check_Button* o, void*) {
+  progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT=o->value();
+}
+
+Fl_File_Input *inp_wav_fname_rsid=(Fl_File_Input *)0;
+
+Fl_Button *btn_select_rsid_wav=(Fl_Button *)0;
+
+static void cb_btn_select_rsid_wav(Fl_Button*, void*) {
+  Fl_Native_File_Chooser fnfc;
+fnfc.title("Pick a file");
+fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+fnfc.filter("wav files\t*.wav\n");
+fnfc.directory("./");           // default directory to use
+// Show native chooser
+switch ( fnfc.show() ) {
+  case -1: break; // ERROR
+  case  1: break; // CANCEL
+  default: {
+  	progdefaults.RSID_MATCH = fnfc.filename();
+  	inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
+  	progdefaults.RSID_ALERT_MENU = 0;
+  	mnu_rsid_alert_menu->value(progdefaults.RSID_ALERT_MENU);
+  	break; // FILE CHOSEN
+  }
+};
+}
+
+Fl_Choice *mnu_rsid_alert_menu=(Fl_Choice *)0;
+
+static void cb_mnu_rsid_alert_menu(Fl_Choice* o, void*) {
+  if (o->value() > 0) {
+  switch (o->value()) {
+    case 1 : progdefaults.RSID_MATCH = "bark"; break;
+    case 2 : progdefaults.RSID_MATCH = "checkout"; break;
+    case 3 : progdefaults.RSID_MATCH = "diesel"; break;
+    case 4 : progdefaults.RSID_MATCH = "steam_train"; break;
+    case 5 : progdefaults.RSID_MATCH = "doesnot"; break;
+    case 6 : progdefaults.RSID_MATCH = "beeboo"; break;
+    case 7 : progdefaults.RSID_MATCH = "phone"; break;
+    case 8 : progdefaults.RSID_MATCH = "dinner_bell"; break;
+  }
+  inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
+}
+progdefaults.RSID_ALERT_MENU = o->value();
+}
+
+Fl_Check_Button *btn_enable_rsid_match_wav=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_rsid_match_wav(Fl_Check_Button* o, void*) {
+  progdefaults.ENABLE_RSID_MATCH=o->value();
+}
+
+Fl_Button *btn_test_rsid_wav=(Fl_Button *)0;
+
+static void cb_btn_test_rsid_wav(Fl_Button*, void*) {
+  audio_alert->alert(progdefaults.RSID_MATCH.c_str());
+}
+
 Fl_Group *tabID=(Fl_Group *)0;
 
 Fl_Tabs *tabsID=(Fl_Tabs *)0;
@@ -7380,6 +7657,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -12732,7 +13010,6 @@ definition"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
-        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));
@@ -12980,6 +13257,7 @@ nce.\nYou may change the state from either location.\n..."));
             tabAudioRightChannel->end();
           } // Fl_Group* tabAudioRightChannel
           { tabWavFile = new Fl_Group(0, 50, 600, 340, _("Wav"));
+            tabWavFile->hide();
             { Fl_ListBox* o = listbox_wav_samplerate = new Fl_ListBox(225, 96, 150, 24, _("Wav write sample rate"));
               listbox_wav_samplerate->tooltip(_("Pick baud rate from list"));
               listbox_wav_samplerate->box(FL_DOWN_BOX);
@@ -13004,6 +13282,151 @@ nce.\nYou may change the state from either location.\n..."));
             } // Fl_Check_Button* btn_record_both
             tabWavFile->end();
           } // Fl_Group* tabWavFile
+          { tabAlerts = new Fl_Group(0, 50, 600, 340, _("Alerts"));
+            tabAlerts->color(FL_LIGHT1);
+            tabAlerts->selection_color(FL_LIGHT1);
+            { Fl_Group* o = new Fl_Group(5, 56, 590, 66, _("Regex Match in Browser"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_File_Input* o = inp_wav_fname_regex = new Fl_File_Input(10, 80, 304, 35, _("REGEX detected wav"));
+                inp_wav_fname_regex->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->value(progdefaults.BWSR_REGEX_MATCH.c_str());
+              } // Fl_File_Input* inp_wav_fname_regex
+              { btn_select_regex_wav = new Fl_Button(316, 91, 60, 24, _("Select"));
+                btn_select_regex_wav->callback((Fl_Callback*)cb_btn_select_regex_wav);
+              } // Fl_Button* btn_select_regex_wav
+              { Fl_Choice* o = mnu_regex_alert_menu = new Fl_Choice(380, 91, 135, 24, _("Sound:"));
+                mnu_regex_alert_menu->box(FL_DOWN_BOX);
+                mnu_regex_alert_menu->down_box(FL_BORDER_BOX);
+                mnu_regex_alert_menu->color((Fl_Color)53);
+                mnu_regex_alert_menu->callback((Fl_Callback*)cb_mnu_regex_alert_menu);
+                mnu_regex_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->value(progdefaults.REGEX_ALERT_MENU);
+              } // Fl_Choice* mnu_regex_alert_menu
+              { Fl_Check_Button* o = btn_enable_regex_match_wa = new Fl_Check_Button(514, 69, 70, 15, _("Enable"));
+                btn_enable_regex_match_wa->down_box(FL_DOWN_BOX);
+                btn_enable_regex_match_wa->callback((Fl_Callback*)cb_btn_enable_regex_match_wa);
+                o->value(progdefaults.ENABLE_BWSR_REGEX_MATCH);
+              } // Fl_Check_Button* btn_enable_regex_match_wa
+              { btn_test_regex_wav = new Fl_Button(518, 91, 60, 24, _("Test"));
+                btn_test_regex_wav->callback((Fl_Callback*)cb_btn_test_regex_wav);
+              } // Fl_Button* btn_test_regex_wav
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 123, 590, 66, _("MYCALL Match in Browser"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_File_Input* o = inp_wav_fname_mycall = new Fl_File_Input(10, 147, 304, 35, _("MYCALL detected wav"));
+                inp_wav_fname_mycall->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->value(progdefaults.BWSR_MYCALL_MATCH.c_str());
+              } // Fl_File_Input* inp_wav_fname_mycall
+              { btn_select_mycall_wav = new Fl_Button(316, 158, 60, 24, _("Select"));
+                btn_select_mycall_wav->callback((Fl_Callback*)cb_btn_select_mycall_wav);
+              } // Fl_Button* btn_select_mycall_wav
+              { Fl_Choice* o = mnu_mycall_alert_menu = new Fl_Choice(380, 158, 135, 24, _("Sound:"));
+                mnu_mycall_alert_menu->box(FL_DOWN_BOX);
+                mnu_mycall_alert_menu->down_box(FL_BORDER_BOX);
+                mnu_mycall_alert_menu->color((Fl_Color)53);
+                mnu_mycall_alert_menu->callback((Fl_Callback*)cb_mnu_mycall_alert_menu);
+                mnu_mycall_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->value(progdefaults.MYCALL_ALERT_MENU);
+              } // Fl_Choice* mnu_mycall_alert_menu
+              { Fl_Check_Button* o = btn_enable_mycall_match_wav = new Fl_Check_Button(514, 136, 70, 15, _("Enable"));
+                btn_enable_mycall_match_wav->down_box(FL_DOWN_BOX);
+                btn_enable_mycall_match_wav->callback((Fl_Callback*)cb_btn_enable_mycall_match_wav);
+                o->value(progdefaults.ENABLE_BWSR_MYCALL_MATCH);
+              } // Fl_Check_Button* btn_enable_mycall_match_wav
+              { btn_test_mycall_wav = new Fl_Button(518, 158, 60, 24, _("Test"));
+                btn_test_mycall_wav->callback((Fl_Callback*)cb_btn_test_mycall_wav);
+              } // Fl_Button* btn_test_mycall_wav
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 190, 590, 122, _("flmsg interface"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_File_Input* o = inp_wav_flmsg_rcvd = new Fl_File_Input(10, 214, 304, 35, _("flmsg received wav"));
+                inp_wav_flmsg_rcvd->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->value(progdefaults.RX_EXTRACT_MSG_RCVD.c_str());
+              } // Fl_File_Input* inp_wav_flmsg_rcvd
+              { btn_select_rx_extract_msg = new Fl_Button(316, 225, 60, 24, _("Select"));
+                btn_select_rx_extract_msg->callback((Fl_Callback*)cb_btn_select_rx_extract_msg);
+              } // Fl_Button* btn_select_rx_extract_msg
+              { Fl_Choice* o = mnu_rx_extract_alert_menu = new Fl_Choice(380, 225, 135, 24, _("Sound:"));
+                mnu_rx_extract_alert_menu->box(FL_DOWN_BOX);
+                mnu_rx_extract_alert_menu->down_box(FL_BORDER_BOX);
+                mnu_rx_extract_alert_menu->color((Fl_Color)53);
+                mnu_rx_extract_alert_menu->callback((Fl_Callback*)cb_mnu_rx_extract_alert_menu);
+                mnu_rx_extract_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->value(progdefaults.RX_EXTRACT_ALERT_MENU);
+              } // Fl_Choice* mnu_rx_extract_alert_menu
+              { Fl_Check_Button* o = btn_enable_flmsg_wav = new Fl_Check_Button(514, 203, 70, 15, _("Enable"));
+                btn_enable_flmsg_wav->down_box(FL_DOWN_BOX);
+                btn_enable_flmsg_wav->callback((Fl_Callback*)cb_btn_enable_flmsg_wav);
+                o->value(progdefaults.ENABLE_RX_EXTRACT_MSG_RCVD);
+              } // Fl_Check_Button* btn_enable_flmsg_wav
+              { btn_test_flmsg_extract_wav = new Fl_Button(518, 225, 60, 24, _("Test"));
+                btn_test_flmsg_extract_wav->callback((Fl_Callback*)cb_btn_test_flmsg_extract_wav);
+              } // Fl_Button* btn_test_flmsg_extract_wav
+              { Fl_File_Input* o = inp_wav_flmsg_timed_out = new Fl_File_Input(10, 270, 304, 35, _("flmsg timed out wav"));
+                inp_wav_flmsg_timed_out->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->value(progdefaults.RX_EXTRACT_TIMED_OUT.c_str());
+              } // Fl_File_Input* inp_wav_flmsg_timed_out
+              { btn_select_rx_extract_timed_out = new Fl_Button(316, 281, 60, 24, _("Select"));
+                btn_select_rx_extract_timed_out->callback((Fl_Callback*)cb_btn_select_rx_extract_timed_out);
+              } // Fl_Button* btn_select_rx_extract_timed_out
+              { Fl_Choice* o = mnu_rx_timed_out_alert_menu = new Fl_Choice(380, 281, 135, 24, _("Sound:"));
+                mnu_rx_timed_out_alert_menu->box(FL_DOWN_BOX);
+                mnu_rx_timed_out_alert_menu->down_box(FL_BORDER_BOX);
+                mnu_rx_timed_out_alert_menu->color((Fl_Color)53);
+                mnu_rx_timed_out_alert_menu->callback((Fl_Callback*)cb_mnu_rx_timed_out_alert_menu);
+                mnu_rx_timed_out_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->value(progdefaults.TIMED_OUT_ALERT_MENU);
+              } // Fl_Choice* mnu_rx_timed_out_alert_menu
+              { btn_test_rx_extract_timed_out = new Fl_Button(518, 281, 60, 24, _("Test"));
+                btn_test_rx_extract_timed_out->callback((Fl_Callback*)cb_btn_test_rx_extract_timed_out);
+              } // Fl_Button* btn_test_rx_extract_timed_out
+              { Fl_Check_Button* o = btn_enable_flmsg_time_out_wav = new Fl_Check_Button(515, 260, 70, 15, _("Enable"));
+                btn_enable_flmsg_time_out_wav->down_box(FL_DOWN_BOX);
+                btn_enable_flmsg_time_out_wav->callback((Fl_Callback*)cb_btn_enable_flmsg_time_out_wav);
+                o->value(progdefaults.ENABLE_RX_EXTRACT_TIMED_OUT);
+              } // Fl_Check_Button* btn_enable_flmsg_time_out_wav
+              o->end();
+            } // Fl_Group* o
+            { Fl_Group* o = new Fl_Group(5, 314, 590, 66, _("RsID detection"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_File_Input* o = inp_wav_fname_rsid = new Fl_File_Input(10, 338, 304, 35, _("RsID audio alert wav"));
+                inp_wav_fname_rsid->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->value(progdefaults.RSID_MATCH.c_str());
+              } // Fl_File_Input* inp_wav_fname_rsid
+              { btn_select_rsid_wav = new Fl_Button(316, 349, 60, 24, _("Select"));
+                btn_select_rsid_wav->callback((Fl_Callback*)cb_btn_select_rsid_wav);
+              } // Fl_Button* btn_select_rsid_wav
+              { Fl_Choice* o = mnu_rsid_alert_menu = new Fl_Choice(380, 349, 135, 24, _("Sound:"));
+                mnu_rsid_alert_menu->box(FL_DOWN_BOX);
+                mnu_rsid_alert_menu->down_box(FL_BORDER_BOX);
+                mnu_rsid_alert_menu->color((Fl_Color)53);
+                mnu_rsid_alert_menu->callback((Fl_Callback*)cb_mnu_rsid_alert_menu);
+                mnu_rsid_alert_menu->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");
+                o->value(progdefaults.RSID_ALERT_MENU);
+              } // Fl_Choice* mnu_rsid_alert_menu
+              { Fl_Check_Button* o = btn_enable_rsid_match_wav = new Fl_Check_Button(514, 327, 70, 15, _("Enable"));
+                btn_enable_rsid_match_wav->down_box(FL_DOWN_BOX);
+                btn_enable_rsid_match_wav->callback((Fl_Callback*)cb_btn_enable_rsid_match_wav);
+                o->value(progdefaults.ENABLE_RSID_MATCH);
+              } // Fl_Check_Button* btn_enable_rsid_match_wav
+              { btn_test_rsid_wav = new Fl_Button(518, 349, 60, 24, _("Test"));
+                btn_test_rsid_wav->callback((Fl_Callback*)cb_btn_test_rsid_wav);
+              } // Fl_Button* btn_test_rsid_wav
+              o->end();
+            } // Fl_Group* o
+            tabAlerts->end();
+          } // Fl_Group* tabAlerts
           tabsSoundCard->end();
         } // Fl_Tabs* tabsSoundCard
         tabSoundCard->end();

@@ -174,6 +174,8 @@
 
 #include "winkeyer.h"
 
+#include "audio_alert.h"
+
 #define CB_WHEN FL_WHEN_CHANGED | FL_WHEN_NOT_CHANGED | FL_WHEN_ENTER_KEY_ALWAYS | FL_WHEN_RELEASE_ALWAYS
 
 #define LOG_TO_FILE_MLABEL     _("Log all RX/TX text")
@@ -3681,8 +3683,12 @@ LOG_INFO("Closing WinKeyer interface");
 LOG_INFO("Stopping TOD clock");
 	TOD_close();
 
+LOG_INFO("Deleting audio_alert");
+	delete audio_alert;
+
 LOG_INFO("exit_process");
 	exit_process();
+
 
 	if (field_day_viewer)
 		if (field_day_viewer->visible())

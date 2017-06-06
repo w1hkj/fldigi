@@ -127,7 +127,7 @@ void viewaddchr(int ch, int freq, char c, int md)
 			mainViewer->usb = wf->USB();
 			mainViewer->redraw();
 		}
-		mainViewer->addchr(ch, freq, c, md);
+		mainViewer->addchr(ch, freq, c, md, true);
 	}
 	if (dlgViewer) {
 		if (brwsViewer->rfc != wf->rfcarrier() || brwsViewer->usb != wf->USB()) {

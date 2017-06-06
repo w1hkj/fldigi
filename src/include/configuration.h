@@ -935,9 +935,54 @@
         ELEM_(std::string, flmsg_pathname, "FLMSG_PATHNAME",                            \
               "Full pathname to the flmsg executable",                                  \
               "")                                                                       \
+        ELEM_(std::string, BWSR_REGEX_MATCH, "BWSR_REGEX_MATCH",                        \
+              "audio alert audio clip name / file",                                     \
+              "dinner_bell")                                                            \
+        ELEM_(int, REGEX_ALERT_MENU, "REGEX_ALERT_MENU",                                \
+              "menu selector",                                                          \
+              8)                                                                        \
+        ELEM_(bool, ENABLE_BWSR_REGEX_MATCH, "ENABLE_BWSR_REGEX_MATCH",                 \
+              "enable audio alert when regex match is detected in browser",             \
+              false)                                                                    \
+        ELEM_(std::string, BWSR_MYCALL_MATCH, "BWSR_MYCALL_MATCH",                      \
+              "audio alert audio clip name / file",                                     \
+              "dinner_bell")                                                            \
+        ELEM_(int, MYCALL_ALERT_MENU, "MYCALL_ALERT_MENU",                              \
+              "menu selector",                                                          \
+              8)                                                                        \
+        ELEM_(bool, ENABLE_BWSR_MYCALL_MATCH, "ENABLE_BWSR_MYCALL_MATCH",               \
+              "enable audio alert when MYCALL is detected in browser",                  \
+              false)                                                                    \
         ELEM_(double, extract_timeout, "EXTRACT_TIMEOUT",                               \
               "Abort message extraction after nn.n seconds of inactivity",              \
               2.0)                                                                      \
+        ELEM_(std::string, RX_EXTRACT_MSG_RCVD, "RX_EXTRACT_MSG_RCVD",                  \
+              "audio alert audio clip name / file",                                     \
+              "phone")                                                                  \
+        ELEM_(int, RX_EXTRACT_ALERT_MENU, "RX_EXTRACT_ALERT_MENU",                      \
+              "menu selector",                                                          \
+              7)                                                                        \
+        ELEM_(bool, ENABLE_RX_EXTRACT_MSG_RCVD, "ENABLE_RX_EXTRACT_MSG_RCVD",           \
+              "enable audio alert when flmsg received",                                 \
+              false)                                                                    \
+        ELEM_(std::string, RX_EXTRACT_TIMED_OUT, "RX_EXTRACT_TIMED_OUT",                \
+              "audio alert audio clip name / file",                                     \
+              "beeboo")                                                                 \
+        ELEM_(int, TIMED_OUT_ALERT_MENU, "TIMED_OUT_ALERT_MENU",                        \
+              "menu selector",                                                          \
+              6)                                                                        \
+        ELEM_(bool, ENABLE_RX_EXTRACT_TIMED_OUT, "ENABLE_RX_EXTRACT_TIMED_OUT",         \
+              "enable audio alert when flmsg reception times out",                      \
+              false)                                                                    \
+        ELEM_(std::string, RSID_MATCH, "RSID_MATCH",                                    \
+              "audio alert audio clip name / file",                                     \
+              "phone")                                                                  \
+        ELEM_(int, RSID_ALERT_MENU, "RSID_ALERT_MENU",                                  \
+              "menu selector",                                                          \
+              7)                                                                        \
+        ELEM_(bool, ENABLE_RSID_MATCH, "ENABLE_RSID_MATCH",                             \
+              "enable audio alert when RsID is detected",                               \
+              false)                                                                    \
         ELEM_(std::string, cty_dat_pathname, "CTYDAT_PATHNAME",                         \
               "Full pathname to the cty.dat data file",                                 \
               "")                                                                       \

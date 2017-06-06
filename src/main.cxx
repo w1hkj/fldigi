@@ -706,6 +706,10 @@ void delayed_startup(void *)
 
 #if USE_PORTAUDIO
 	LOG_INFO("%s", str_pa_devices.c_str());
+	try {
+		audio_alert = new Caudio_alert;
+	} catch (...) {
+	}
 #endif
 }
 
@@ -859,6 +863,10 @@ int main(int argc, char ** argv)
 
 			case PSM_TID:
 				cbq[i]->attach(i, "PSM_TID");
+				break;
+
+			case AUDIO_ALERT_TID:
+				cbq[i]->attach(i, "AUDIO_ALERT_TID");
 				break;
 
 			case FD_TID:

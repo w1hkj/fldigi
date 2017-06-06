@@ -42,6 +42,8 @@
 #include "icons.h"
 #include "Viewer.h"
 
+#include "audio_alert.h"
+
 #include <string>
 
 using namespace std;
@@ -76,6 +78,7 @@ pskBrowser::pskBrowser(int x, int y, int w, int h, const char *l)
 
 	string bline;
 	for (int i = 0; i < MAXCHANNELS; i++) {
+		alerted[i].regex_alert = alerted[i].mycall_alert = false;
 		bwsrline[i] = " ";
 		bwsrfreq[i] = NULLFREQ;
 		bline = freqformat(i);
@@ -221,7 +224,7 @@ void pskBrowser::makecolors()
 	bkgnd[1] = tempstr;
 }
 
-void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < channels
+void pskBrowser::addchr(int ch, int freq, unsigned char c, int md, bool signal_alert)
 {
 	if (ch < 0 || ch >= MAXCHANNELS)
 		return;
@@ -261,11 +264,34 @@ void pskBrowser::addchr(int ch, int freq, unsigned char c, int md) // 0 < ch < c
 
 	nuline = freqformat(ch);
 
-	if (seek_re  && seek_re->match(bwsrline[ch].c_str(), REG_NOTBOL | REG_NOTEOL))
-		nuline.append(hilite_color_1);
-	else if (	!progdefaults.myCall.empty() && 
-				case_find (bwsrline[ch], progdefaults.myCall ) != string::npos)
+	if (!bwsrline[ch].empty()) {
+		if (seek_re  && seek_re->match(bwsrline[ch].c_str(), REG_NOTBOL | REG_NOTEOL)) {
+			if ((trx_state == STATE_RX) && 
+				(alerted[ch].regex_alert == false) &&
+				signal_alert &&
+				progdefaults.ENABLE_BWSR_REGEX_MATCH) {
+				if (audio_alert) audio_alert->alert(progdefaults.BWSR_REGEX_MATCH);
+				alerted[ch].regex_alert = true;
+			}
+			nuline.append(hilite_color_1);
+		} else {
+			alerted[ch].regex_alert = false;
+		}
+	} else {
+		alerted[ch].regex_alert = false;
+	}
+	if (!progdefaults.myCall.empty() && 
+			case_find (bwsrline[ch], progdefaults.myCall ) != string::npos) {
 		nuline.append(hilite_color_2);
+		if ((trx_state == STATE_RX) && 
+			(alerted[ch].mycall_alert == false) &&
+			signal_alert &&
+			progdefaults.ENABLE_BWSR_MYCALL_MATCH) {
+			if (audio_alert) audio_alert->alert(progdefaults.BWSR_MYCALL_MATCH);
+			alerted[ch].mycall_alert = true;
+		} 
+	} else
+		alerted[ch].mycall_alert = false;
 
 	nuline.append("@.").append(bwsrline[ch]);
 

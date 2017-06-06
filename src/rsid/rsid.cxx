@@ -47,6 +47,7 @@
 #include "main.h"
 #include "arq_io.h"
 #include "data_io.h"
+#include "audio_alert.h"
 
 LOG_FILE_SOURCE(debug::LOG_MODEM);
 
@@ -633,6 +634,9 @@ void cRsId::apply(int iBin, int iSymbol, int extended)
 			p_rsid[n].name, rsidfreq);
 		return;
 	}
+
+	if (progdefaults.ENABLE_RSID_MATCH)
+		audio_alert->alert(progdefaults.RSID_MATCH);
 
 	if (mailclient || mailserver)
 		REQ(pskmail_notify_rsid, mbin);

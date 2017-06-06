@@ -49,8 +49,9 @@ private:
 
 	std::string bwsrline[MAXCHANNELS];
 	int bwsrfreq[MAXCHANNELS];
+	struct {bool regex_alert; bool mycall_alert;} alerted[MAXCHANNELS];
+
 	CharsetDistiller *cdistiller;
-	
 
 	int labelwidth[VIEWER_LABEL_NTYPES];
 
@@ -94,7 +95,7 @@ public:
 	Fl_Color Background2() { return Backgnd2; }
 	void columns(int a) { cols[0] = a; cols[1] = 0; column_widths(cols); }
 	void resize(int x, int y, int w, int h);
-	void addchr(int ch, int freq, unsigned char c, int md);
+	void addchr(int ch, int freq, unsigned char c, int md, bool alert = false);
 	std::string freqformat (int i);
 	void set_freq(int i, int freq);
 	void clearline(int i) { bwsrline[i] = ""; }

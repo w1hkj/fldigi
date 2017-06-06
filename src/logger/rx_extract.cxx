@@ -42,6 +42,8 @@
 #include "timeops.h"
 #include "xmlrpc.h"
 
+#include "audio_alert.h"
+
 using namespace std;
 
 static const char *wrap_beg = "[WRAP:beg]";
@@ -91,6 +93,11 @@ void rx_extract_timer(void *)
 	rx_extract_msg = "Extract timed out";
 	put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
 	rx_extract_reset();
+
+	if (trx_state != STATE_RX) return;
+	if (audio_alert)
+		audio_alert->alert(progdefaults.RX_EXTRACT_TIMED_OUT);
+
 }
 
 void rx_add_timer()
@@ -126,6 +133,10 @@ void invoke_flmsg()
 	rx_extract_msg = "File saved in ";
 	rx_extract_msg.append(FLMSG_WRAP_recv_dir);
 	put_status(rx_extract_msg.c_str(), 20, STATUS_CLEAR);
+
+	if (trx_state != STATE_RX) return;
+	if (audio_alert)
+		audio_alert->alert(progdefaults.RX_EXTRACT_MSG_RCVD);
 
 	if (flmsg_online && progdefaults.flmsg_transfer_direct) {
 		guard_lock autolock(server_mutex);

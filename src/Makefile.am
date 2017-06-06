@@ -520,6 +520,8 @@ fldigi_SOURCES += \
 	include/utf8file_io.h \
 	include/weather.h \
 	include/winkeyer.h \
+	include/audio_alert.h \
+	include/play.pa.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -614,6 +616,14 @@ fldigi_SOURCES += \
 	rsid/rsid.cxx \
 	soundcard/sound.cxx \
 	soundcard/soundconf.cxx \
+	soundcard/audio_alert.cxx \
+	soundcard/bark.cxx \
+	soundcard/checkout.cxx \
+	soundcard/diesel.cxx \
+	soundcard/doesnot.cxx \
+	soundcard/dinnerbell.cxx \
+	soundcard/play.pa.cxx \
+	soundcard/steam_train.cxx \
 	spot/notify.cxx \
 	spot/pskrep.cxx \
 	spot/spot.cxx \

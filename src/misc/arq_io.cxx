@@ -808,7 +808,6 @@ static void *arq_loop(void *args)
 	for (;;) {
 		/* see if we are being canceled */
 		if (arq_exit) {
-printf("exiting arq_loop\n");
 			break;
 }
 
@@ -876,7 +875,7 @@ void arq_close(void)
 	arq_exit = true;
 
 	// and then wait for it to die
-printf("pthread_join arq_thread\n");
+
 	pthread_join(arq_thread, NULL);
 	arq_enabled = false;
 	LOG_INFO("ARQ closed");
