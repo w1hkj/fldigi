@@ -191,7 +191,7 @@
 #define THOR_IMAGE_MLABEL      _("THOR Raw Image")
 #define IFKP_IMAGE_MLABEL      _("IFKP Raw Image")
 #define WEFAX_RX_IMAGE_MLABEL  _("Weather Fax Image RX")
-#define WEFAX_fsq_tx_image_MLABEL  _("Weather Fax Image TX")
+#define WEFAX_TX_IMAGE_MLABEL  _("Weather Fax Image TX")
 #define CONTEST_MLABEL         _("Contest")
 #define COUNTRIES_MLABEL       _("C&ountries")
 #define UI_MLABEL              _("&UI")
@@ -1941,8 +1941,8 @@ void restoreFocus(int n)
 
 void macro_cb(Fl_Widget *w, void *v)
 {
-	if (active_modem->get_mode() == MODE_FSQ)
-		return;
+//	if (active_modem->get_mode() == MODE_FSQ)
+//		return;
 
 	int b = (int)(reinterpret_cast<long> (v));
 
@@ -4868,7 +4868,7 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(THOR_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuThorViewRaw,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(IFKP_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuIfkpViewRaw,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(WEFAX_fsq_tx_image_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Signal browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(COUNTRIES_MLABEL), 'o', (Fl_Callback*)cb_mnuShowCountries, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
@@ -5087,7 +5087,7 @@ void activate_wefax_image_item(bool b)
 	Fl_Menu_Item *wefax_rx_item = getMenuItem(WEFAX_RX_IMAGE_MLABEL);
 	if (wefax_rx_item)
 		icons::set_active(wefax_rx_item, b);
-	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_fsq_tx_image_MLABEL);
+	Fl_Menu_Item *wefax_tx_item = getMenuItem(WEFAX_TX_IMAGE_MLABEL);
 	if (wefax_tx_item)
 		icons::set_active(wefax_tx_item, b);
 }
@@ -8075,7 +8075,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(THOR_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuThorViewRaw,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(IFKP_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)cb_mnuIfkpViewRaw,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(WEFAX_RX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_rx,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(WEFAX_fsq_tx_image_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 'm', (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Signal Browser")), 's', (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
@@ -10448,9 +10448,15 @@ void cb_ifkp_heard(Fl_Browser*, void*)
 	restoreFocus();
 }
 
+static void do_fsq_rx_text(std::string text, int style) 
+{
+	for (size_t n = 0; n < text.length(); n++)
+		rx_parser( text[n], style );
+}
+
 void display_fsq_rx_text(std::string text, int style)
 {
-	REQ(&FTextRX::addstr, fsq_rx_text, text, style);
+	REQ(do_fsq_rx_text, text, style);
 }
 
 void display_fsq_mon_text(std::string text, int style)

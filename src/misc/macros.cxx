@@ -137,6 +137,8 @@ static void postQueue(std::string s)
 	if (!progdefaults.macro_post) return;
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_rx_text->addstr(s, FTextBase::CTRL);
+	else if (active_modem->get_mode() == MODE_FSQ)
+		fsq_rx_text->addstr(s, FTextBase::CTRL);
 	else
 		ReceiveText->addstr(s, FTextBase::CTRL);
 }
@@ -241,6 +243,8 @@ chars/sec:    %f",
 	strcat(results, "\n");
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_rx_text->add(results, FTextBase::ALTR);
+	else if (active_modem->get_mode() == MODE_FSQ)
+		fsq_rx_text->addstr(results, FTextBase::ALTR);
 	else
 		ReceiveText->add(results, FTextBase::ALTR);
 	PERFORM_CPS_TEST = false;
@@ -255,6 +259,8 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_tx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->addstr("Mode not supported", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -307,6 +313,8 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 		LOG_INFO("%s", line_out.c_str());
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add(line_out.c_str(), FTextBase::ALTR);
+		if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add(line_out.c_str(), FTextBase::ALTR);
 		else
 			ReceiveText->add(line_out.c_str(), FTextBase::ALTR);
 	}
@@ -322,6 +330,8 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -342,6 +352,8 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			fclose(toadd);
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_tx_text->clear();
+			else if (active_modem->get_mode() == MODE_FSQ)
+				fsq_tx_text->clear();
 			else
 				TransmitText->clear();
 			testfilename = fname;
@@ -362,6 +374,8 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 			resp.append(fname).append("\n");
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+			else if (active_modem->get_mode() == MODE_FSQ)
+				fsq_rx_text->add(resp.c_str(), FTextBase::ALTR);
 			else
 				ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 			LOG_WARN("%s not found", fname.c_str());
@@ -383,6 +397,8 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -400,6 +416,8 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 	if (buffer.length()) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_tx_text->clear();
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_tx_text->clear();
 		else
 			TransmitText->clear();
 
@@ -420,6 +438,8 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 		resp.append("\n");
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add(resp.c_str(), FTextBase::ALTR);
 		else
 			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 		PERFORM_CPS_TEST = false;
@@ -435,6 +455,8 @@ static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -464,6 +486,8 @@ static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_tx_text->clear();
+	else if (active_modem->get_mode() == MODE_FSQ)
+		fsq_tx_text->clear();
 	else
 		TransmitText->clear();
 
@@ -491,6 +515,8 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		return;
@@ -515,6 +541,8 @@ static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -544,6 +572,8 @@ static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_tx_text->clear();
+	else if (active_modem->get_mode() == MODE_FSQ)
+		fsq_tx_text->clear();
 	else
 		TransmitText->clear();
 
@@ -566,6 +596,8 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -586,6 +618,8 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 			fclose(toadd);
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_tx_text->clear();
+			else if (active_modem->get_mode() == MODE_FSQ)
+				fsq_tx_text->clear();
 			else
 				TransmitText->clear();
 			testfilename = fname;
@@ -603,6 +637,8 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 			resp.append(fname).append("\n");
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+			else if (active_modem->get_mode() == MODE_FSQ)
+				fsq_rx_text->add(resp.c_str(), FTextBase::ALTR);
 			else
 				ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 			LOG_WARN("%s not found", fname.c_str());
@@ -624,6 +660,8 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add("Mode not supported\n", FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add("Mode not supported\n", FTextBase::ALTR);
 		else
 			ReceiveText->add("Mode not supported\n", FTextBase::ALTR);
 		s.clear();
@@ -641,6 +679,8 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 	if (buffer.length()) {
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_tx_text->clear();
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_tx_text->clear();
 		else
 			TransmitText->clear();
 
@@ -658,6 +698,8 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 		resp.append("\n");
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->add(resp.c_str(), FTextBase::ALTR);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->add(resp.c_str(), FTextBase::ALTR);
 		else
 			ReceiveText->add(resp.c_str(), FTextBase::ALTR);
 		PERFORM_CPS_TEST = false;
@@ -1377,6 +1419,8 @@ static void pCLRRX(std::string &s, size_t &i, size_t endbracket)
 
 	if (md == MODE_IFKP)
 		ifkp_rx_text->clear();
+	else if (md == MODE_FSQ)
+		fsq_rx_text->clear();
 	else if ((md >= MODE_FELDHELL) && (md <= MODE_HELL80))
 		FHdisp->clear();
 	else
@@ -1393,6 +1437,8 @@ static void pCLRTX(std::string &s, size_t &i, size_t endbracket)
 	queue_reset();
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_tx_text->clear();
+	else if (active_modem->get_mode() == MODE_FSQ)
+		fsq_tx_text->clear();
 	else
 		TransmitText->clear();
 }
@@ -1404,6 +1450,8 @@ static void pFOCUS(std::string &s, size_t &i, size_t endbracket)
 			qsoFreqDisp->restore_colors();
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_tx_text->take_focus();
+			else if (active_modem->get_mode() == MODE_FSQ)
+				fsq_tx_text->take_focus ();
 			else
 				TransmitText->take_focus();
 		} else {
@@ -2256,9 +2304,8 @@ static void doINSERTIMAGE(std::string s)
 					active_modem->send_Grey_image(fname) :
 					active_modem->send_color_image(fname);
 		}
-		else if (md == MODE_IFKP) {
+		else if (md == MODE_IFKP)
 			ifkp_load_scaled_image(fname);
-		}
 		else if (md >= MODE_THOR_FIRST && md <= MODE_THOR_LAST)
 			thor_load_scaled_image(fname);
 	}
@@ -2294,6 +2341,8 @@ void TxQueINSERTIMAGE(std::string s)
 
 	if (active_mode == MODE_IFKP)
 		ifkp_tx_text->add_text(itext);
+	else if (active_mode == MODE_FSQ)
+		fsq_tx_text->add_text(itext);
 	else
 		TransmitText->add_text(itext);
 }
@@ -4020,6 +4069,8 @@ Read macros from: ").append(progStatus.LastMacroFile).append("\
 #endif
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_rx_text->addstr(Macroset);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_rx_text->addstr(Macroset);
 		else
 			ReceiveText->addstr(Macroset);
 	}
@@ -4048,6 +4099,8 @@ void MACROTEXT::openMacroFile()
 			Macroset.assign("\nLoaded macros: ").append(progStatus.LastMacroFile).append("\n");
 			if (active_modem->get_mode() == MODE_IFKP)
 				ifkp_rx_text->addstr(Macroset);
+			if (active_modem->get_mode() == MODE_FSQ)
+				fsq_rx_text->addstr(Macroset);
 			else
 				ReceiveText->addstr(Macroset);
 		}
@@ -4255,12 +4308,16 @@ void MACROTEXT::timed_execute()
 	queue_reset();
 	if (active_modem->get_mode() == MODE_IFKP)
 		ifkp_tx_text->clear();
+	else if (active_modem->get_mode() == MODE_FSQ)
+		fsq_tx_text->clear();
 	else
 		TransmitText->clear();
 	if (!rx_only) {
 		text2send = expandMacro(exec_string);
 		if (active_modem->get_mode() == MODE_IFKP)
 			ifkp_tx_text->add_text(text2send);
+		else if (active_modem->get_mode() == MODE_FSQ)
+			fsq_tx_text->add_text( text2send );
 		else
 			TransmitText->add_text(text2send);
 		exec_string.clear();
@@ -4292,11 +4349,12 @@ void MACROTEXT::execute(int n)
 
 	if (!rx_only) {
 		if (progStatus.repeatMacro == -1) {
-			if (mode == MODE_IFKP) {
+			if (mode == MODE_IFKP)
 				ifkp_tx_text->add_text( text2send );
-			} else {
+			else if (mode == MODE_FSQ)
+				fsq_tx_text->add_text( text2send );
+			else
 				TransmitText->add_text( text2send );
-			}
 		} else {
 			size_t p = std::string::npos;
 			text2send = text[n];
@@ -4304,11 +4362,12 @@ void MACROTEXT::execute(int n)
 				text2send[p] = '[';
 			while ((p = text2send.find('>')) != std::string::npos)
 				text2send[p] = ']';
-			if (mode == MODE_IFKP) {
+			if (mode == MODE_IFKP)
 				ifkp_tx_text->add_text( text2send );
-			} else {
+			else if (mode == MODE_FSQ)
+				fsq_tx_text->add_text( text2send );
+			else
 				TransmitText->add_text( text2send );
-			}
 		}
 	}
 	text2send.clear();
