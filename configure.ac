@@ -334,6 +334,12 @@ Configuration summary:
   i18n ........................ $USE_NLS
 ])
 
+ac_xmlrpc_report="internal lib";
+
+if test "x$ac_cv_flxmlrpc" = "xyes"; then
+  ac_xmlrpc_report="external lib";
+fi
+ 
 if test "x$ac_cv_want_fldigi" = "xyes"; then
   AC_MSG_RESULT([ fldigi build options:
 
@@ -342,7 +348,7 @@ if test "x$ac_cv_want_fldigi" = "xyes"; then
   portaudio ................... $ac_cv_portaudio
   pulseaudio .................. $ac_cv_pulseaudio
 
-  flxmlrpc .................... $ac_cv_flxmlrpc
+  flxmlrpc .................... $ac_xmlrpc_report
 
   hamlib ...................... $ac_cv_hamlib
 ])
