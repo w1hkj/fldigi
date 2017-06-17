@@ -5621,6 +5621,16 @@ progdefaults.changed = true;
 resetSoundCard();
 }
 
+Fl_Group *AudioDuplex=(Fl_Group *)0;
+
+Fl_Round_Button *btn_is_full_duplex=(Fl_Round_Button *)0;
+
+static void cb_btn_is_full_duplex(Fl_Round_Button* o, void*) {
+  progdefaults.is_full_duplex = o->value();
+progdefaults.changed = true;
+resetSoundCard();
+}
+
 Fl_Group *tabAudioOpt=(Fl_Group *)0;
 
 Fl_Group *grpAudioSampleRate=(Fl_Group *)0;
@@ -13013,7 +13023,6 @@ definition"));
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));
-            tabAudio->hide();
             { AudioOSS = new Fl_Group(55, 65, 490, 45);
               AudioOSS->box(FL_ENGRAVED_FRAME);
               { btnAudioIO[0] = new Fl_Round_Button(65, 75, 53, 25, _("OSS"));
@@ -13084,6 +13093,18 @@ definition"));
               } // Fl_Round_Button* btnAudioIO[3]
               AudioNull->end();
             } // Fl_Group* AudioNull
+            { AudioDuplex = new Fl_Group(55, 280, 490, 45);
+              AudioDuplex->box(FL_ENGRAVED_FRAME);
+              { Fl_Round_Button* o = btn_is_full_duplex = new Fl_Round_Button(66, 290, 223, 25, _("Device supports full duplex"));
+                btn_is_full_duplex->tooltip(_("NO AUDIO DEVICE AVAILABLE (or testing)"));
+                btn_is_full_duplex->down_box(FL_DOWN_BOX);
+                btn_is_full_duplex->value(1);
+                btn_is_full_duplex->selection_color((Fl_Color)1);
+                btn_is_full_duplex->callback((Fl_Callback*)cb_btn_is_full_duplex);
+                o->value(progdefaults.is_full_duplex);
+              } // Fl_Round_Button* btn_is_full_duplex
+              AudioDuplex->end();
+            } // Fl_Group* AudioDuplex
             tabAudio->end();
           } // Fl_Group* tabAudio
           { tabAudioOpt = new Fl_Group(0, 50, 600, 340, _("Settings"));
@@ -13285,6 +13306,7 @@ nce.\nYou may change the state from either location.\n..."));
           { tabAlerts = new Fl_Group(0, 50, 600, 340, _("Alerts"));
             tabAlerts->color(FL_LIGHT1);
             tabAlerts->selection_color(FL_LIGHT1);
+            tabAlerts->hide();
             { Fl_Group* o = new Fl_Group(5, 56, 590, 66, _("Regex Match in Browser"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));

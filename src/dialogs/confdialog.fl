@@ -6868,8 +6868,8 @@ progdefaults.changed=true;}
           xywh {0 25 600 365} selection_color 50
         } {
           Fl_Group tabAudio {
-            label Devices
-            xywh {0 50 600 340} hide
+            label Devices open
+            xywh {0 50 600 340}
           } {
             Fl_Group AudioOSS {open
               xywh {55 65 490 45} box ENGRAVED_FRAME
@@ -6948,6 +6948,18 @@ http://www.pulseaudio.org/wiki/ServerStrings} xywh {310 201 225 24}
 progdefaults.changed = true;
 resetSoundCard();}
                 tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {66 245 100 25} down_box DOWN_BOX selection_color 1
+              }
+            }
+            Fl_Group AudioDuplex {open selected
+              xywh {55 280 490 45} box ENGRAVED_FRAME
+            } {
+              Fl_Round_Button btn_is_full_duplex {
+                label {Device supports full duplex}
+                callback {progdefaults.is_full_duplex = o->value();
+progdefaults.changed = true;
+resetSoundCard();}
+                tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {66 290 223 25} down_box DOWN_BOX value 1 selection_color 1
+                code0 {o->value(progdefaults.is_full_duplex);}
               }
             }
           }
@@ -7163,7 +7175,7 @@ progdefaults.changed=true;}
           }
           Fl_Group tabAlerts {
             label Alerts open
-            xywh {0 50 600 340} color 50 selection_color 50
+            xywh {0 50 600 340} color 50 selection_color 50 hide
           } {
             Fl_Group {} {
               label {Regex Match in Browser} open
@@ -7455,7 +7467,7 @@ switch ( fnfc.show() ) {
   }
   inp_wav_fname_rsid->value(progdefaults.RSID_MATCH.c_str());
 }
-progdefaults.RSID_ALERT_MENU = o->value();} open selected
+progdefaults.RSID_ALERT_MENU = o->value();} open
                 xywh {380 349 135 24} box DOWN_BOX down_box BORDER_BOX color 53 align 5
                 code0 {o->add("wav file|bark|checkout|diesel|steam_train|doesnot|beeboo|phone|dinner_bell");}
                 code1 {o->value(progdefaults.RSID_ALERT_MENU);}

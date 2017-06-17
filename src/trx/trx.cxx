@@ -76,6 +76,8 @@ modem		*active_modem = 0;
 cRsId		*ReedSolomon = 0;
 cDTMF		*dtmf = 0;
 SoundBase 	*RXscard = 0;
+bool		RXsc_is_open = false;
+bool		TXsc_is_open = false;
 SoundBase	*TXscard = 0;
 static int	current_RXsamplerate = 0;
 static int	current_TXsamplerate = 0;
@@ -221,17 +223,21 @@ void trx_trx_receive_loop()
 	}
 
 	try {
-		if (current_RXsamplerate != active_modem->get_samplerate() ) {
+		if (!progdefaults.is_full_duplex || !RXsc_is_open ||
+			current_RXsamplerate != active_modem->get_samplerate() ) {
 			current_RXsamplerate = active_modem->get_samplerate();
 			RXscard->Close(O_RDONLY);
-			if (RXscard->Open(O_RDONLY, current_RXsamplerate))
+			if (RXscard->Open(O_RDONLY, current_RXsamplerate)) {
 				REQ(sound_update, progdefaults.btnAudioIOis);
+				RXsc_is_open = true;
+			}
 		}
 	}
 	catch (const SndException& e) {
 		LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 		put_status(e.what(), 5);
-//		RXscard->Close();
+		RXscard->Close();
+		RXsc_is_open = false;
 		current_RXsamplerate = 0;
 //	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
 		if (progdefaults.btnAudioIOis == SND_IDX_PORT) {
@@ -277,7 +283,8 @@ void trx_trx_receive_loop()
 			}
 		}
 		catch (const SndException& e) {
-//			RXscard->Close();
+			RXscard->Close();
+			RXsc_is_open = false;
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
 			MilliSleep(10);
@@ -326,8 +333,12 @@ void trx_trx_receive_loop()
 			}
 		}
 	}
-//	if (RXscard->must_close(O_RDONLY))
-//		RXscard->Close(O_RDONLY);
+	if (trx_state == STATE_RESTART) return;
+
+	if (!progdefaults.is_full_duplex ) {
+		RXscard->Close(O_RDONLY);
+		RXsc_is_open = false;
+	}
 }
 
 
@@ -343,10 +354,11 @@ void trx_trx_transmit_loop()
 	if (active_modem) {
 
 		try {
-			if (current_TXsamplerate != active_modem->get_samplerate() ) {
+			if (current_TXsamplerate != active_modem->get_samplerate() || !TXsc_is_open) {
 				current_TXsamplerate = active_modem->get_samplerate();
 				TXscard->Close(O_WRONLY);
-				TXscard->Open(O_WRONLY, current_TXsamplerate);
+				if (TXscard->Open(O_WRONLY, current_TXsamplerate))
+					TXsc_is_open = true;
 			}
 		} catch (const SndException& e) {
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
@@ -397,7 +409,8 @@ void trx_trx_transmit_loop()
 							trx_state = STATE_RX;
 				}
 				catch (const SndException& e) {
-//					TXscard->Close();
+					TXscard->Close();
+					TXsc_is_open = false;
 					LOG_ERROR("%s", e.what());
 					put_status(e.what(), 5);
 					current_TXsamplerate = 0;
@@ -406,7 +419,7 @@ void trx_trx_transmit_loop()
 				}
 			}
 		} else
-			if (trx_state != STATE_ABORT)
+			if (trx_state != STATE_ABORT && trx_state != STATE_RESTART)
 				trx_state = STATE_RX;
 
 		if (ReedSolomon->assigned(active_modem->get_mode()) &&
@@ -419,8 +432,13 @@ void trx_trx_transmit_loop()
 		trx_xmit_wfall_end(current_TXsamplerate);
 
 		TXscard->flush();
-//		if (TXscard->must_close(O_WRONLY))
-//			RXscard->Close(O_WRONLY);
+
+		if (trx_state == STATE_RX) {
+			if (!progdefaults.is_full_duplex) {
+				TXscard->Close(O_WRONLY);
+				TXsc_is_open = false;
+			}
+		}
 
 	} else
 		MilliSleep(10);
@@ -444,10 +462,12 @@ void trx_tune_loop()
 	}
 	if (active_modem) {
 		try {
-			if (current_TXsamplerate != active_modem->get_samplerate()) {
+			if (!progdefaults.is_full_duplex || !TXsc_is_open ||
+				current_TXsamplerate != active_modem->get_samplerate() ) {
 				current_TXsamplerate = active_modem->get_samplerate();
 				TXscard->Close(O_WRONLY);
 				TXscard->Open(O_WRONLY, current_TXsamplerate);
+				TXsc_is_open = true;
 			}
 		} catch (const SndException& e) {
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
@@ -472,7 +492,8 @@ void trx_tune_loop()
 			xmttune::keyup(active_modem->get_txfreq_woffset(), TXscard);
 		}
 		catch (const SndException& e) {
-//			TXscard->Close();
+			TXscard->Close();
+			TXsc_is_open = false;
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
 			MilliSleep(10);
@@ -480,8 +501,13 @@ void trx_tune_loop()
 			return;
 		}
 		TXscard->flush();
-//		if (TXscard->must_close(O_WRONLY))
-//			TXscard->Close(O_WRONLY);
+
+		if (trx_state == STATE_RX) {
+			if (!progdefaults.is_full_duplex) {
+				TXscard->Close(O_WRONLY);
+				TXsc_is_open = false;
+			}
+		}
 
 		_trx_tune = 0;
 	} else
@@ -601,11 +627,13 @@ void trx_reset_loop()
 {
 	if (RXscard)  {
 		RXscard->Close();
+		RXsc_is_open = false;
 		delete RXscard;
 		RXscard = 0;
 	}
 	if (TXscard)  {
 		TXscard->Close();
+		TXsc_is_open = false;
 		delete TXscard;
 		TXscard = 0;
 	}
@@ -615,8 +643,10 @@ void trx_reset_loop()
 	case SND_IDX_OSS:
 		RXscard = new SoundOSS(scDevice[0].c_str());
 		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
+		RXsc_is_open = true;
 		TXscard = new SoundOSS(scDevice[0].c_str());
 		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+		TXsc_is_open = true;
 		break;
 #endif
 #if USE_PORTAUDIO
@@ -634,8 +664,12 @@ void trx_reset_loop()
 			try {
 				if (!RXret)
 					RXret = RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
-				if (!TXret)
-					TXret = TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+				if (progdefaults.is_full_duplex) {
+					if (!TXret)
+						TXret = TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+				}
+				if (RXret) RXsc_is_open = true;
+				if (TXret) TXsc_is_open = true;
 				break;
 			} catch (const SndException& e) {
 				MilliSleep(50);
@@ -655,9 +689,13 @@ void trx_reset_loop()
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
 		RXscard = new SoundPulse(scDevice[0].c_str());
-		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
+		if (RXscard->Open(O_RDONLY, current_RXsamplerate = 8000))
+			RXsc_is_open = true;
+
 		TXscard = new SoundPulse(scDevice[0].c_str());
-		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+		if (progdefaults.is_full_duplex)
+			if (TXscard->Open(O_WRONLY, current_TXsamplerate = 8000))
+				TXsc_is_open = true;
 		break;
 #endif
 	case SND_IDX_NULL:

@@ -1342,6 +1342,9 @@
         ELEM_(std::string, PulseServer, "PULSESERVER",                                  \
               "PulseAudio server string",                                               \
               "")                                                                       \
+        ELEM_(bool, is_full_duplex, "IS_FULL_DUPLEX",                                   \
+              "Audio codec supports full duplex operation",                             \
+              true)                                                                     \
         ELEM_(bool, sig_on_right_channel, "SIGONRIGHTCHANNEL",                          \
               "Duplicate modem signal on left & right",                                 \
               true)                                                                     \
