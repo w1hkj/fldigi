@@ -544,7 +544,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 600 365} hide
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
@@ -1100,14 +1100,14 @@ progdefaults.changed = true;}
               } {
                 Fl_Text_Display txt_N3FJP_data {
                   label {TCP/IP Data Stream}
-                  xywh {5 148 590 170} align 5
+                  xywh {5 145 590 150} align 5
                   code0 {Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();}
                   code1 {o->buffer(txtbuffer);}
                 }
                 Fl_Button {} {
                   label {Clear text}
                   callback {txt_N3FJP_data->buffer()->text("");}
-                  xywh {501 321 90 24}
+                  xywh {501 298 90 24}
                 }
                 Fl_Input txt_N3FJP_ip_address {
                   label Address
@@ -1141,7 +1141,7 @@ number to the default value.} xywh {423 100 67 25}
                   label {Enable Data Stream}
                   callback {progdefaults.enable_N3FJP_log = o->value();
 progdefaults.changed = true;}
-                  xywh {10 320 165 26} down_box DOWN_BOX
+                  xywh {10 297 165 26} down_box DOWN_BOX
                   code0 {o->value(progdefaults.enable_N3FJP_log);}
                 }
                 Fl_Check_Button btn_connect_to_n3fjp {
@@ -1166,8 +1166,15 @@ progdefaults.changed = true;}
                   label {Report actual modem RF frequency}
                   callback {progdefaults.N3FJP_modem_carrier = o->value();
 progdefaults.changed = true;}
-                  tooltip {Suppressed carrier +/- AF injection frequency} xywh {275 349 255 26} down_box DOWN_BOX
+                  tooltip {Suppressed carrier +/- AF injection frequency} xywh {275 350 255 26} down_box DOWN_BOX
                   code0 {o->value(progdefaults.N3FJP_modem_carrier);}
+                }
+                Fl_Check_Button btn_enable_N3FJP_RIGTX {
+                  label {PTT via <RIGTX> and <RIGRX>}
+                  callback {progdefaults.enable_N3FJP_RIGTX = o->value();
+progdefaults.changed = true;} selected
+                  xywh {10 324 165 26} down_box DOWN_BOX
+                  code0 {o->value(progdefaults.enable_N3FJP_RIGTX);}
                 }
               }
             }
@@ -6862,7 +6869,7 @@ progdefaults.changed=true;}
       }
       Fl_Group tabSoundCard {
         label Audio open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 600 365} selection_color 50
@@ -6950,7 +6957,7 @@ resetSoundCard();}
                 tooltip {NO AUDIO DEVICE AVAILABLE (or testing)} xywh {66 245 100 25} down_box DOWN_BOX selection_color 1
               }
             }
-            Fl_Group AudioDuplex {open selected
+            Fl_Group AudioDuplex {open
               xywh {55 280 490 45} box ENGRAVED_FRAME
             } {
               Fl_Round_Button btn_is_full_duplex {

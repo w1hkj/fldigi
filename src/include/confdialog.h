@@ -118,6 +118,7 @@ extern Fl_Check_Button *btn_connect_to_n3fjp;
 extern Fl_Box *box_n3fjp_connected;
 extern Fl_Check_Button *btn_N3FJP_sweet_spot;
 extern Fl_Check_Button *btn_N3FJP_modem_carrier;
+extern Fl_Check_Button *btn_enable_N3FJP_RIGTX;
 extern Fl_Group *tabContest;
 #include <FL/Fl_Light_Button.H>
 extern Fl_Light_Button *btnDupCheckOn;

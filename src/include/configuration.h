@@ -1115,6 +1115,9 @@
         ELEM_(bool, N3FJP_modem_carrier, "N3FJP_MODEM_CARRIER",                         \
               "Use actual modem carrier frequency for logging",                         \
               true)                                                                     \
+        ELEM_(bool, enable_N3FJP_RIGTX, "N3FJP_RIGTX",                                  \
+              "Use RIGTX/RX vice CWCOMPORTKEYDOWN/CWCOMPORTKEYUP",                      \
+              false)                                                                    \
         /* Rig control */                                                               \
         ELEM_(bool, flrig_keys_modem, "FLRIG_KEYS_MODEM",                               \
               "PTT change at flrig changes Rx/Tx state\n"                               \

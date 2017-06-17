@@ -905,6 +905,13 @@ static void cb_btn_N3FJP_modem_carrier(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_enable_N3FJP_RIGTX=(Fl_Check_Button *)0;
+
+static void cb_btn_enable_N3FJP_RIGTX(Fl_Check_Button* o, void*) {
+  progdefaults.enable_N3FJP_RIGTX = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabContest=(Fl_Group *)0;
 
 Fl_Light_Button *btnDupCheckOn=(Fl_Light_Button *)0;
@@ -7818,7 +7825,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
@@ -8284,12 +8290,12 @@ ab and newline are automatically included."));
                 grpMacLogger->end();
               } // Fl_Group* grpMacLogger
               { grpN3FJP_logs = new Fl_Group(0, 75, 600, 315, _("N3FJP logs"));
-                { Fl_Text_Display* o = txt_N3FJP_data = new Fl_Text_Display(5, 148, 590, 170, _("TCP/IP Data Stream"));
+                { Fl_Text_Display* o = txt_N3FJP_data = new Fl_Text_Display(5, 145, 590, 150, _("TCP/IP Data Stream"));
                 txt_N3FJP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
                 o->buffer(txtbuffer);
                 } // Fl_Text_Display* txt_N3FJP_data
-                { Fl_Button* o = new Fl_Button(501, 321, 90, 24, _("Clear text"));
+                { Fl_Button* o = new Fl_Button(501, 298, 90, 24, _("Clear text"));
                 o->callback((Fl_Callback*)cb_Clear1);
                 } // Fl_Button* o
                 { Fl_Input2* o = txt_N3FJP_ip_address = new Fl_Input2(5, 100, 350, 25, _("Address"));
@@ -8326,7 +8332,7 @@ ab and newline are automatically included."));
                 btn_default_N3FJP_ip->tooltip(_("Returns IP Address and port\nnumber to the default value."));
                 btn_default_N3FJP_ip->callback((Fl_Callback*)cb_btn_default_N3FJP_ip);
                 } // Fl_Button* btn_default_N3FJP_ip
-                { Fl_Check_Button* o = btn_enable_N3FJP_log = new Fl_Check_Button(10, 320, 165, 26, _("Enable Data Stream"));
+                { Fl_Check_Button* o = btn_enable_N3FJP_log = new Fl_Check_Button(10, 297, 165, 26, _("Enable Data Stream"));
                 btn_enable_N3FJP_log->down_box(FL_DOWN_BOX);
                 btn_enable_N3FJP_log->callback((Fl_Callback*)cb_btn_enable_N3FJP_log);
                 o->value(progdefaults.enable_N3FJP_log);
@@ -8348,12 +8354,17 @@ ab and newline are automatically included."));
                 btn_N3FJP_sweet_spot->callback((Fl_Callback*)cb_btn_N3FJP_sweet_spot);
                 o->value(progdefaults.N3FJP_sweet_spot);
                 } // Fl_Check_Button* btn_N3FJP_sweet_spot
-                { Fl_Check_Button* o = btn_N3FJP_modem_carrier = new Fl_Check_Button(275, 349, 255, 26, _("Report actual modem RF frequency"));
+                { Fl_Check_Button* o = btn_N3FJP_modem_carrier = new Fl_Check_Button(275, 350, 255, 26, _("Report actual modem RF frequency"));
                 btn_N3FJP_modem_carrier->tooltip(_("Suppressed carrier +/- AF injection frequency"));
                 btn_N3FJP_modem_carrier->down_box(FL_DOWN_BOX);
                 btn_N3FJP_modem_carrier->callback((Fl_Callback*)cb_btn_N3FJP_modem_carrier);
                 o->value(progdefaults.N3FJP_modem_carrier);
                 } // Fl_Check_Button* btn_N3FJP_modem_carrier
+                { Fl_Check_Button* o = btn_enable_N3FJP_RIGTX = new Fl_Check_Button(10, 324, 165, 26, _("PTT via <RIGTX> and <RIGRX>"));
+                btn_enable_N3FJP_RIGTX->down_box(FL_DOWN_BOX);
+                btn_enable_N3FJP_RIGTX->callback((Fl_Callback*)cb_btn_enable_N3FJP_RIGTX);
+                o->value(progdefaults.enable_N3FJP_RIGTX);
+                } // Fl_Check_Button* btn_enable_N3FJP_RIGTX
                 grpN3FJP_logs->end();
               } // Fl_Group* grpN3FJP_logs
               tabsLog->end();
@@ -13020,6 +13031,7 @@ definition"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
+        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));

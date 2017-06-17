@@ -830,10 +830,17 @@ void n3fjp_set_ptt(int on)
 	if (n3fjp_has_xcvr_control != N3FJP) return;
 
 	string cmd = "<CMD>";
-	if (on)
-		cmd.append("<CWCOMPORTKEYDOWN>");
-	else
-		cmd.append("<CWCOMPORTKEYUP>");
+	if (on) {
+		if (progdefaults.enable_N3FJP_RIGTX)
+			cmd.append("<RIGTX>");
+		else
+			cmd.append("<CWCOMPORTKEYDOWN>");
+	} else {
+		if (progdefaults.enable_N3FJP_RIGTX)
+			cmd.append("<RIGRX>");
+		else
+			cmd.append("<CWCOMPORTKEYUP>");
+	}
 	cmd.append("</CMD>");
 
 	{	guard_lock send_lock(&send_this_mutex);
