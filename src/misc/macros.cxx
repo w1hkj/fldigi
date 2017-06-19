@@ -2161,6 +2161,16 @@ static void pSAVEXCHG(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i, 10, "");
 }
 
+static void pFD_CLASS(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 9, inp_FD_class->value() );
+}
+
+static void pFD_SECTION(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 8, inp_FD_section->value() );
+}
+
 static void pLOG(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
@@ -3276,6 +3286,8 @@ void set_macro_env(void)
 		FLDIGI_LOG_SERNO_OUT,
 		FLDIGI_XCHG_IN,
 		FLDIGI_XCGH_OUT,
+		FLDIGI_FD_CLASS,
+		FLDIGI_FD_SECTION,
 		FLDIGI_VE_PROV,
 		FLDIGI_AZ,
 
@@ -3296,6 +3308,8 @@ void set_macro_env(void)
 		FLDIGI_LOGBOOK_SERNO_OUT,
 		FLDIGI_LOGBOOK_XCHG_IN,
 		FLDIGI_LOGBOOK_XCHG_OUT,
+		FLDIGI_FD_CLASS_OUT,
+		FLDIGI_FD_SECTION_OUT,
 		FLDIGI_LOGBOOK_QTH,
 		FLDIGI_LOGBOOK_LOCATOR,
 		FLDIGI_LOGBOOK_QSL_R,
@@ -3367,6 +3381,8 @@ void set_macro_env(void)
 		{ "FLDIGI_LOG_SERNO_OUT", outSerNo->value() },
 		{ "FLDIGI_XCHG_IN", inpXchgIn->value() },
 		{ "FLDIGI_XCHG_OUT", inpSend1->value() },
+		{ "FLDIGI_FD_CLASS", inp_FD_class->value() },
+		{ "FLDIGI_FD_SECTION", inp_FD_section->value() },
 		{ "FLDIGI_VE_PROV", inpVEprov->value() },
 		{ "FLDIGI_AZ", inpAZ->value() },
 
@@ -3388,6 +3404,8 @@ void set_macro_env(void)
 		{ "FLDIGI_LOGBOOK_SERNO_OUT", inpSerNoOut_log->value() },
 		{ "FLDIGI_LOGBOOK_XCHG_IN", inpXchgIn_log->value() },
 		{ "FLDIGI_LOGBOOK_XCHG_OUT", inpMyXchg_log->value() },
+		{ "FLDIGI_FD_CLASS_OUT", inp_FD_class_log->value() },
+		{ "FLDIGI_FD_SECTION_OUT", inp_FD_section_log->value() },
 		{ "FLDIGI_LOGBOOK_QTH", inpQth_log->value() },
 		{ "FLDIGI_LOGBOOK_LOCATOR", inpLoc_log->value() },
 		{ "FLDIGI_LOGBOOK_QSL_R", inpQSLrcvddate_log->value() },
@@ -3871,6 +3889,8 @@ static const MTAGS mtags[] = {
 {"<X1>",		pXOUT},
 {"<XIN>",		pXIN},
 {"<XOUT>",		pXOUT},
+{"<FDCLASS>",	pFD_CLASS},
+{"<FDSECT>",	pFD_SECTION},
 {"<XBEG>",		pXBEG},
 {"<XEND>",		pXEND},
 {"<SAVEXCHG>",	pSAVEXCHG},

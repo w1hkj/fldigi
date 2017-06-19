@@ -140,6 +140,8 @@ void loadBrowser(Fl_Widget *widget) {
 	w->add(_("<SAVEXCHG>\tsave contest out"));
 	w->add(_("<SERNO>\tcurrent contest serno"));
 	w->add(_("<LASTNO>\tlast serno sent"));
+	w->add(_("<FDCLASS>\trecvd FD class"));
+	w->add(_("<FDSECT>\trecvd FD section"));
 
 	w->add(LINE_SEP);
 	w->add(_("<RX>\treceive"));
