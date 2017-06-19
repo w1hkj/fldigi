@@ -1,8 +1,30 @@
 
 
-=Version 4.0.4=
+=Version 4.0.5=
 
-2017-05-05  David Freese  <iam_w1hkj@w1hkj.com>
+2017-06-19  David Freese  <iam_w1hkj@w1hkj.com>
+
+	bc29d97: Documentation update
+	6164c26: TELNET timeout
+	8922c5d: FD macros
+	b0928a0: N3FJP PTT
+	dcca120: Rx/Tx open/close
+	a49cf18: xmlrpc configuration
+	36a7fce: FSQ macros
+	6aaec34: Consistency check fail
+	7bcd89c: Audio Alerts
+	5f65d2e: Restore defaults
+	a9346cd: cw variable squelch
+	8460fba: INSTALL/README/NEWS
+	c2c9f38: CW Extended char set
+	ad8e33e: County field
+	64b397f: autostart on os x
+	43b37fe: Rx Context Menu
+	3aea3ca: Port Audio on Linux
+	f994b6a: NEWS update
+
+
+=Version 4.0.4=
 
 	e71dcfb: LOG area controls
 	1da1562: CALL field size
