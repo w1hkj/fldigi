@@ -29,7 +29,7 @@ will both reduce the image noise and also blur the image.
 
 Callsigns that satisfy the parsing requirements will be added to the FSQ heard list.
 You can elect to have the heard list periodically managed so that older entries are removed or aged.
-The user can elect no aging, Never; or 1, 5 10, 20 minutes intervals for aging.
+The user can elect no aging, Never; or 1, 5, 10, 20, 30, 60, 90, and 120 minutes.
 
 \section fsq_tx_parameters Tx Parameters
 

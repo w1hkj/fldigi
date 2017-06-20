@@ -82,7 +82,10 @@ Macro       | Description
 :---------: | :----------------------------
 \<MAPIT\>   | map other stations locator on google
 \<MAPIT:adr \| lat \| loc\> | map other stations address, latitude-longitude <br> locator as specified
-<br>        | <br>
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
 \<CLRRX\>   | clear RX pane
 \<CLRTX\>   | clear TX pane
 <br>
@@ -131,6 +134,16 @@ Macro       | Description
 \<XBEG\>    | mark exchange in start
 \<XEND\>    | mark exchange in end
 \<SAVEXCHG\> | save marked text to contest exchange in
+\<FDCLASS\>  | recvd FD class
+\<FDSECT\>   | recvd FD section
+
+<br>
+
+Macro       | Description
+:---------: | :----------------------------
+\<ALERT:[snd]\> | audio alert using internal sound <br>where [snd] is one of bark, checkout, doesnot,<br>phone, beeboo, diesel, steam_train, dinner_bell
+\<ALERT:\>  | alert using external wav file
+
 <br>
 
 Macro     | Description

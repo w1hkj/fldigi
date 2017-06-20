@@ -1,0 +1,119 @@
+/**
+\page audio_alerts_page Audio Alerts
+
+\tableofcontents
+
+\section Audio Alerts
+
+There are occassions when your attention is not given fully to the computer
+screen, but you would like to know when a digital event takes place.  You
+might for instance like to know when the signal decodes the character sequence
+"CQ CQ" or when your call sign is decoded.  You might be waiting for the start
+of a net that is preluded by an RsID signal.  In all of these instances, and more,
+you can set up fldigi to provide an audio signal alert to the default audio
+device.
+
+\section Configuring Audio Alerts
+
+<center>
+\image html configure_audio_alerts.png "Generic Audio Alerts"
+\image latex configure_audio_alerts.png "Generic Audio Alerts" width=5.0in
+</center>
+
+The PSK / RTTY / CW signal browser can be set up to search for incoming text
+strings.  As the text string is detected in a browser line the color of the
+line text will change to indicate the text presence.  The detection text can
+be a general regular expression, but most commonly is a simple text string
+such as "CQ CQ".
+
+<center>
+\image html CQ_CQ_alert.png "CQ CQ regex"
+\image latex CQ_CQ_alert.png "CQ CQ regex" width=2.5in
+</center>
+
+The regex detection defaults to red text.  The detection of <MYCALL> is an integral
+part of the browser code.  A <MYCALL> detection causes the text to turn green.
+
+Both of these events can trigger an audio alert.  
+
+<center>
+\image html regex_mycall_audio_alert.png "Regex MYCALL events"
+\image latex regex_mycall_audio_alert.png "Regex MYCALL events" width=5.0in
+</center>
+
+The regex audio alert is shown using an external wav file "barbershop-mail.wav", and
+the MYCALL audio alert is shown using an internal wav file "beeboo", a sound similar
+to a european emergency vehicle siren.  If you use a wav file that you have
+either created yourself or downloaded from the internet try to keep it's size less 
+than 300 Kb and it's duration to less than 5 seconds.  The idea is to provide an
+audio alert, not play music.  Hi fidelity is not important, so most 8000 sample/sec
+monophonic wav files will suffice.  Look at this web site for a large selection
+of audio clips:
+<br>
+
+http://www.wavsource.com/
+<br>
+
+You can also enable an alert for these conditions:
+<ul>
+<li> receipt of an flmsg text</li>
+<li> time out of a flmsg reception</li>
+<li> detection of an RsID signal</li>
+</ul>
+You can test the efficacy of the audio alert using the "Test" button associated
+with each of the alerts.  Normal signal processing and user interaction with the
+program will not be effected by the audio alert.  The alert playback is handled in
+a separate thread and occurs as a background process.
+
+Select an internal audio alert signal using the "Sound" selector
+<center>
+\image html alerts-picklist.png "Alert pick list"
+\image latex alerts-picklist.png "Alert pick list" width=1.5in
+</center>
+or a wav file on your computer using the associated "Select" button.
+
+<br>
+\subsection audio_alerts_caution WARNING
+
+DO NOT enable audio alerts if you are using the default audio device for fldigi
+transmit audio.  You will be a very unwelcome neighbor if your start transmitting
+steam engine or diesel train whistles over the air!
+
+\section macro_audio_alerts Macro Audio Alerts
+
+Two new macro tags provide support for function key initiated audio alert playback
+
+<ALERT:internal-wav> where internal-wav may be one of
+<ul>
+<li>bark - barking dog</li>
+<li>checkout - George Carlin - check out what's new</li>
+<li>diesel - diesel train horn</li>
+<li>steam train - steam train whistle</li>
+<li>doesnot - computer voice, "that does not compute"</li>
+<li>beeboo - occulting two-tone sound similar to euro police car</li>
+<li>phone - ringing telephone</li>
+<li>dinner bell - similar to cruise ship dinner bell</li>
+</ul>
+or <ALERT:path-name-to-wav-file>
+Audio playback using the macro tag is immediate upon pressing the associated function key.
+
+\section notifier_events Notifier Audio Alerts
+
+You can create special audio alerts using the Notifications dialog
+<center>
+\image html notifier-alert-1.png ""
+\image latex notifier-alert-1.png "" width=4.0in
+\image html notifier-alert-2.png ""
+\image latex notifier-alert-2.png "" width=4.0in
+</center>
+
+The notifier event is set up using the these \ref notifier_page "instructions" with the addition
+of the audio macro event added to the text appended to the TX text.  This
+text is never actually sent, but triggers the audio event playback using the
+macro facility.
+
+\ref audio_alerts_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/

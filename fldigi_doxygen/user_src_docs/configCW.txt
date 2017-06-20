@@ -3,8 +3,10 @@
 
 \tableofcontents
 <br>
+<center>
 \image html config-cw-general.png "General CW Configuration"
 \image latex config-cw-general.png "General CW Configuration" width=5.0in
+</center>
 <br>
 
 Fldigi can send and receive morse code from 5 wpm to 200 wpm. The
@@ -28,7 +30,6 @@ for the current transmit WPM setting. A lot of impuse noise (static) can
 cause the filter to ring.  Increasing the filter bandwidth might improve
 detection in that QRN environment.
 <br>
-<br>
 
 Fldigi can track the incoming signal. Enable Rx WPM tracking by enabling
 the check box "Enable Tx Trkg". The tracking range (+/- Hz around the
@@ -36,21 +37,17 @@ TxWPM setting) can be set using the "Rx Trkg Rng" control. When
 tracking is enabled the tracking filter is reset every time the
 transmit WPM is adjusted.
 <br>
+
+CW detection is basically an amplitude demodulator with an automatic threshold
+adjustment.
 <br>
 
-CW detection is basically an amplitude demodulator. You can set
-the threshold for detecting when the signal transitions from off-to-on
-and on-to-off. These signal levels are relative to the average
-signal level. The on-to-off is the "Lower" value and the
-off-to-on the "Upper." This implementation provides a hysteresis
-detector. Early fldigi CW decoders used this scheme but the
-detection levels were not adjustable.
-<br>
+You can control the attack and decay squelch parameters of the detector, slow - medium - fast,
+for both attack and decay.
 <br>
 
 The RxWPM control is an indicator and is not used for setting the operation
 of the CW decoder.
-<br>
 <br>
 
 "SOM decoding" provides a fuzzy logic implementation to match the RX
@@ -64,7 +61,6 @@ make the setting easier two additional controls are provided.
 "Lower" sets the lower limit of the slider and "Upper" sets the
 upper limit of the slider. The resolution of the TxWPM slider is
 1 WPM. The Lower/Upper controls are in in 5 WPM increments.
-<br>
 <br>
 
 The transmit encoder settings for WPM can also be adjusted with three hot
@@ -87,11 +83,10 @@ back to the CW speed that you were previously using.<br>
 
 \section subsec_timing Timing
 <br>
-
+<center>
 \image html config-cw-qsk.png "Timing"
 \image latex config-cw-qsk.png "Timing" width=5.0in
-<br>
-<br>
+</center>
 
 Fldigi generates CW by inserting a keyed tone at the current
 waterfall audio frequency. The transceiver should be operated in

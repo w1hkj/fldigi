@@ -66,6 +66,10 @@ or platform support. That'll be the day! Until then:
 	select different capture and playback audio devices.</li>
 	<li>The OSS	backend should be used only as a last resort. Note that it
 	has not been updated to support user-configurable sample rates.</li>
+	<li>Most audio devices will support full duplex operation.  The device
+	will be opened for both read and write.  If your audio device does not support
+	full duplex (some blue tooth devices are in this category), then uncheck
+	the "Device supports full duplex" control.</li>
 </ul>
 
 <b>On Windows:</b>
@@ -195,6 +199,9 @@ audio analysis program such as Audacity.  Enable the "Record both channesl"
 check box to record both left and right channel signals.
 
 \section multiple_sound_cards Multiple sound cards
+
+This section applies to Linux and OS X operating systems.
+<br>
 
 In systems with multiple sound cards they will not always be in the
 correct sort order on boot.  This may cause problems not only with

@@ -45,6 +45,11 @@ Port 1100 corresponds to the Port setting in the above dialog.
 Enable the “Connect” check box and fldigi should find ACL and begin data 
 exchanges.
 
+The command pair <CWCOMPORTKEYDOWN> ... <CWCOMPORTKEYUP> is sent to change
+the PTT state if the N3FJP software is used for transceiver control.  You
+can change this to <RIGTX> ... <RIGRX> by enabling the check box control,
+"PTT via <RIGTX> and <RIGRX>."
+
 <b>Capturing Rx text in fldigi</b>
 
 The fldigi user can capture text, both word delimited and mouse 

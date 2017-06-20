@@ -7,12 +7,10 @@
 You open the logbook by selecting from the Logbook menu; Logbook/View.  The
 logbook title bar will show you which logbook you currently have open.
 Fldigi can maintain an unlimited (except for disk space) number of logbooks.<br>
-
 <center>
 \image html logbook.png "Log Book"
 \image latex logbook.png "Log Book" width=6.0in
-</center><br>
-
+</center>
 You can resize the dialog to suit your screen size and operating needs.
 Fldigi will remember the placement and size for subsequent use.<br>
 
@@ -32,8 +30,7 @@ should give the user some idea as to the performance expectations.  These were
 measured on a Linux Mint-17 32 bit OS; CPU: Intel Pentium 4 CPU @ 3.20 GHz;
 solid state drive 250 GB.  Depending on OS version, Windows users should expect
 to see larger times for read and sort.  The increase primarily due to the way
-that the Windows OS handles disk buffering and it's multi-threading implementation.<br>
-
+that the Windows OS handles disk buffering and it's multi-threading implementation.
  # records |   read   |   sort
 :----------|:---------|:--------
 1000       |60 msec   |2 msec

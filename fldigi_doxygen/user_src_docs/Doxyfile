@@ -43,7 +43,7 @@ INPUT                = index.txt \
 	fldigi_macros.txt fldigi_modems.txt fldigi_operating.txt \
 	fldigi_developer.txt \
 	New-Install.txt thumb_drive.txt colorsandfonts.txt \
-	audio-adjust.txt \
+	audio-adjust.txt audio_alerts.txt \
 	configcallsigndb.txt configContestia.txt configCW.txt \
 	configDomEX.txt configFH.txt \
 	configFSQ.txt configIFKP.txt \
