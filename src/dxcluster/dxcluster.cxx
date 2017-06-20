@@ -78,6 +78,7 @@ pthread_mutex_t DXcluster_mutex     = PTHREAD_MUTEX_INITIALIZER;
 Socket *DXcluster_socket = 0;
 
 enum DXC_STATES {DISCONNECTED, CONNECTING, CONNECTED};
+
 int  DXcluster_state = DISCONNECTED;
 bool DXcluster_exit = false;
 bool DXcluster_enabled = false;
@@ -609,32 +610,11 @@ void DXcluster_recv_data()
 	string tempbuff;
 	try {
 		guard_lock dxc_lock(&DXcluster_mutex);
-		DXcluster_socket->recv(tempbuff);
-		if (tempbuff.empty()) {
-			if (DXcluster_state == CONNECTING) {
-				DXcluster_connect_timeout--;
-				if (DXcluster_connect_timeout <= 0) {
-					REQ(show_error, "Connection attempt timed out");
-					DXcluster_state = DISCONNECTED;
-					set_btn_dxcc_connect(false);
-					REQ(dxc_label);
-					DXcluster_socket->shut_down();
-					DXcluster_socket->close();
-					delete DXcluster_socket;
-					DXcluster_socket = 0;
-				}
-			}
-			return;
+		if (DXcluster_state == CONNECTED) {
+			DXcluster_socket->recv(tempbuff);
+			if (!tempbuff.empty())
+				REQ(parse_DXcluster_stream, tempbuff);
 		}
-		if (DXcluster_state == CONNECTING) {
-			DXcluster_state = CONNECTED;
-			REQ(dxc_label);
-
-			LOG_INFO( "Connected to dxserver %s:%s",
-				progdefaults.dxcc_host_url.c_str(),
-				progdefaults.dxcc_host_port.c_str() );
-		}
-		REQ(parse_DXcluster_stream, tempbuff);
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error %d, %s", e.error(), e.what());
 	}
@@ -896,49 +876,63 @@ bool connect_to_cluster;
 
 void DXcluster_doconnect()
 {
+	int result = 0;
 	if (connect_to_cluster) {
 		REQ(clear_dxcluster_viewer);
 		try {
-			if (DXcluster_socket) {
+			if (DXcluster_state == DISCONNECTED) {
+				if (DXcluster_socket) {
+					DXcluster_socket->shut_down();
+					DXcluster_socket->close();
+					delete DXcluster_socket;
+					DXcluster_socket = 0;
+					DXcluster_state = DISCONNECTED;
+					REQ(dxc_label);
+				}
+				Address addr = Address(
+					progdefaults.dxcc_host_url.c_str(),
+					progdefaults.dxcc_host_port.c_str() );
+
+				DXcluster_socket = new Socket( addr );
+
+				DXcluster_socket->set_nonblocking(true);
+				DXcluster_socket->set_timeout((double)(DXCLUSTER_SOCKET_TIMEOUT / 1000.0));
+			}
+
+			result = DXcluster_socket->connect();
+			if ( (result == 0) || (result == EISCONN) || (result == EALREADY) ) {
+				DXcluster_state = CONNECTED;
+				REQ(dxc_label);
+				LOG_INFO( "Connected to dxserver %s:%s",
+					progdefaults.dxcc_host_url.c_str(),
+					progdefaults.dxcc_host_port.c_str() );
+				connect_changed = false;
+				return;
+			} else if ( (result == EWOULDBLOCK) || (result == EINPROGRESS) )
+				DXcluster_state = CONNECTING;
+			else
+				DXcluster_state = DISCONNECTED;
+
+			if ((DXcluster_state == CONNECTING) &&
+				(DXcluster_connect_timeout-- <= 0) ) {
+				REQ(show_error, "Connection attempt timed out");
+				DXcluster_state = DISCONNECTED;
+				set_btn_dxcc_connect(false);
+				REQ(dxc_label);
 				DXcluster_socket->shut_down();
 				DXcluster_socket->close();
 				delete DXcluster_socket;
 				DXcluster_socket = 0;
-				DXcluster_state = DISCONNECTED;
-				REQ(dxc_label);
+			} else {
+				LOG_INFO("Connecting %f seconds remaining", DXcluster_connect_timeout * DXCLUSTER_LOOP_TIME * 0.001);
 			}
-			Address addr = Address(
-				progdefaults.dxcc_host_url.c_str(),
-				progdefaults.dxcc_host_port.c_str() );
-
-			DXcluster_socket = new Socket( addr );
-
-			DXcluster_socket->set_nonblocking(true);
-			DXcluster_socket->set_timeout((double)(DXCLUSTER_SOCKET_TIMEOUT / 1000.0));
-
-			DXcluster_socket->connect();
-
-			DXcluster_state = CONNECTING;
-			REQ(dxc_label);
-			string temp = "Connecting to ";
-			temp.append(progdefaults.dxcc_host_url).append(":");
-			temp.append(progdefaults.dxcc_host_port);
-			REQ(show_error, temp);
-			DXcluster_connect_timeout =
-				(DXCLUSTER_CONNECT_TIMEOUT) / (DXCLUSTER_SOCKET_TIMEOUT + DXCLUSTER_LOOP_TIME);
+			connect_changed = false;
+			return;
 		} catch (const SocketException& e) {
 			LOG_ERROR("%s", e.what() );
-			delete DXcluster_socket;
-			DXcluster_socket = 0;
-			DXcluster_state = DISCONNECTED;
-			progStatus.cluster_connected = false;
 			REQ(show_error, e.what());
-			set_btn_dxcc_connect(false);
-			REQ(dxc_label);
-			logged_in = false;
 		}
-	}
-	else {
+	}	else {
 		if (!DXcluster_socket) return;
 
 		try {
@@ -983,8 +977,9 @@ void *DXcluster_loop(void *args)
 	while(1) {
 		MilliSleep(DXCLUSTER_LOOP_TIME);
 		if (DXcluster_exit) break;
-		if (connect_changed) DXcluster_doconnect();
-		if (DXcluster_state != DISCONNECTED) DXcluster_recv_data();
+		if (connect_changed || (DXcluster_state == CONNECTING) )
+			DXcluster_doconnect();
+		if (DXcluster_state == CONNECTED) DXcluster_recv_data();
 	}
 	// exit the DXCC thread
 	SET_THREAD_CANCEL();

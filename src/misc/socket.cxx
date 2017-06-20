@@ -411,11 +411,17 @@ const addr_info_t* Address::get(size_t n) const
 		return NULL;
 
 	memset(&saddr, 0, sizeof(saddr));
+#ifdef __WIN32__
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr = *(struct in_addr*)host_entry.h_addr_list[n];
 	saddr.sin_port = service_entry.s_port;
-
 	addr.ai_family = saddr.sin_family;
+#else
+	saddr.sin6_family = AF_INET6;
+	saddr.sin6_addr = *(struct in6_addr*)host_entry.h_addr_list[n];
+	saddr.sin6_port = service_entry.s_port;
+	addr.ai_family = saddr.sin6_family;
+#endif
 	addr.ai_addrlen = sizeof(saddr);
 	addr.ai_addr = (struct sockaddr*)&saddr;
 #  ifndef NDEBUG
@@ -444,8 +450,13 @@ string Address::get_str(const addr_info_t* addr)
 		return "";
 #else
 	char* host, port[8];
+#ifdef __WIN32__
 	host = inet_ntoa(((struct sockaddr_in*)addr->ai_addr)->sin_addr);
 	snprintf(port, sizeof(port), "%u", htons(((struct sockaddr_in*)addr->ai_addr)->sin_port));
+#else
+	host = inet_ntoa(((struct sockaddr_in6*)addr->ai_addr)->sin6_addr);
+	snprintf(port, sizeof(port), "%u", htons(((struct sockaddr_in6*)addr->ai_addr)->sin6_port));
+#endif
 	return string("[").append(host).append("]:").append(port);
 #endif
 }
@@ -694,7 +705,11 @@ void Socket::bindUDP(void)
 	struct addrinfo hints;
 	struct addrinfo *res = NULL;
 	struct addrinfo *ai_p = NULL;
+#ifdef __WIN32__
 	struct sockaddr_in *addr_in = NULL;
+#else
+	struct sockaddr_in6 *addr_in = NULL;
+#endif
 	struct sockaddr addr;
 
 	int r = 1;
@@ -706,7 +721,11 @@ void Socket::bindUDP(void)
 #  ifdef AI_ADDRCONFIG
 	hints.ai_flags = AI_ADDRCONFIG;
 #  endif
+#ifdef __WIN32__
 	hints.ai_family = AF_INET;
+#else
+	hints.ai_family = AF_INET6;
+#endif
 	hints.ai_socktype = SOCK_DGRAM;
 	//hints.ai_protocol = ainfo->ai_protocol;
 	hints.ai_flags |= AI_NUMERICSERV;
@@ -718,16 +737,28 @@ void Socket::bindUDP(void)
 		throw SocketException(r, "getaddrinfo");
 
 	memset(&addr, 0, sizeof(addr));
+#ifdef __WIN32__
 	addr_in = (sockaddr_in *) &addr;
+#else
+	addr_in = (sockaddr_in6 *) &addr;
+#endif
 
 	for(ai_p = res; ai_p != NULL; ai_p = ai_p->ai_next) {
-        if (ai_p->ai_family == AF_INET) {
+#ifdef __WIN32__
+		if (ai_p->ai_family == AF_INET) {
+#else
+		if (ai_p->ai_family == AF_INET6) {
+#endif
 			memcpy(addr_in, ai_p->ai_addr, sizeof(addr));
 			break;
         }
 	}
 
+#ifdef __WIN32__
 	addr_in->sin_addr.s_addr = INADDR_ANY;
+#else
+	addr_in->sin6_addr = in6addr_any;
+#endif
 
 	if (::bind(sockfd, (const struct sockaddr *)&addr, sizeof(struct sockaddr)) == -1) {
 		freeaddrinfo(res);
@@ -744,15 +775,24 @@ void Socket::bindUDP(void)
 #else
 	;
 #endif
-
+#ifdef __WIN32__
 	struct sockaddr_in *addr;
+#else
+	struct sockaddr_in6 *addr;
+#endif
+
 	struct sockaddr_storage store_addr;
 
 	memset(&store_addr, 0, sizeof(store_addr));
+#ifdef __WIN32__
 	memcpy(&store_addr, ainfo->ai_addr, sizeof(struct sockaddr_in));
-
 	addr = (struct sockaddr_in *) &store_addr;
 	addr->sin_addr.s_addr = INADDR_ANY;
+#else
+	memcpy(&store_addr, ainfo->ai_addr, sizeof(struct sockaddr_in6));
+	addr = (struct sockaddr_in6 *) &store_addr;
+	addr->sin6_addr.s6_addr = in6addr_any;
+#endif
 
 	if (::bind(sockfd, (const struct sockaddr *)addr, sizeof(struct sockaddr)) == -1)
 		throw SocketException(errno, "bind");
@@ -859,7 +899,7 @@ Socket * Socket::accept2(void)
 ///
 /// Connects the socket to the address that is associated with the object
 ///
-void Socket::connect(void)
+int Socket::connect(void)
 {
 	connected_flag = false;
 
@@ -870,13 +910,13 @@ void Socket::connect(void)
 			LOG_INFO("Connected to %s : %s", address.get_str(ainfo).c_str(),
 				strerror(errno) );
 			connected_flag = true;
-			return;
+			return errno;
 		}
 		if (errno == EWOULDBLOCK || errno == EINPROGRESS || errno == EALREADY) { 
 			LOG_INFO("Connect attempt to %s : %d, %s", 
 				address.get_str(ainfo).c_str(),
 				errno, strerror(errno));
-			return;
+			return errno;
 		}
 		LOG_ERROR("Connect to %s failed: %d, %s", 
 			address.get_str(ainfo).c_str(),
@@ -885,6 +925,7 @@ void Socket::connect(void)
 	}
 	LOG_INFO(" Connected to %s", address.get_str(ainfo).c_str());
 	connected_flag = true;
+	return EISCONN;
 }
 
 ///
@@ -929,11 +970,11 @@ void Socket::broadcast(bool flag)
 ///
 /// @param addr The address to connect to
 ///
-void Socket::connect(const Address& addr)
+int Socket::connect(const Address& addr)
 {
 	close();
 	open(addr);
-	connect();
+	return connect();
 }
 
 ///
@@ -1150,11 +1191,17 @@ size_t Socket::sendTo(const std::string& buf)
 void Socket::set_port(struct sockaddr *sa, unsigned int port)
 {
 //	unsigned short int port_number = 0;
-
+#ifdef __WIN32__
 	if (sa->sa_family == AF_INET) {
 		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
-        saddr_in->sin_port = htons(port);
+		saddr_in->sin_port = htons(port);
 	}
+#else
+	if (sa->sa_family == AF_INET6) {
+		struct sockaddr_in6 *saddr_in = (sockaddr_in6 *) sa;
+        saddr_in->sin6_port = htons(port);
+	}
+#endif
 }
 
 //
@@ -1163,12 +1210,17 @@ void Socket::set_port(struct sockaddr *sa, unsigned int port)
 unsigned int Socket::get_port(struct sockaddr *sa)
 {
 	unsigned short int port_number = 0;
-
+#ifdef __WIN32__
 	if (sa->sa_family == AF_INET) {
 		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
-        port_number = (unsigned short int) saddr_in->sin_port;
+		port_number = (unsigned short int) saddr_in->sin_port;
 	}
-
+#else
+	if (sa->sa_family == AF_INET6) {
+		struct sockaddr_in6 *saddr_in = (sockaddr_in6 *) sa;
+        port_number = (unsigned short int) saddr_in->sin6_port;
+	}
+#endif
 	return (unsigned int) ntohs(port_number);
 }
 
@@ -1177,14 +1229,17 @@ unsigned int Socket::get_port(struct sockaddr *sa)
 //
 unsigned long Socket::get_address4(struct sockaddr *sa)
 {
+#ifdef __WIN32__
 	unsigned long IPAddr = 0;
 
 	if (sa->sa_family == AF_INET) {
 		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
 		IPAddr = saddr_in->sin_addr.s_addr;
 	}
-
 	return (unsigned long) ntohl(IPAddr);
+#else
+return 0L;
+#endif
 }
 
 unsigned long Socket::get_to_address(void)
@@ -1269,10 +1324,18 @@ size_t Socket::recvFrom(void* buf, size_t len)
 /// Return the local Ip Address
 ///
 ///
+#ifdef __WIN32__
 sockaddr_in * Socket::localIPAddress(void)
+#else
+sockaddr_in6 * Socket::localIPAddress(void)
+#endif
 {
 	char buf[512];
+#ifdef __WIN32__
 	static struct sockaddr_in localaddr;
+#else
+	static struct sockaddr_in6 localaddr;
+#endif
 	struct msghdr hmsg;
 	struct cmsghdr *cmsg;
 	struct in_pktinfo *pkt = 0;
