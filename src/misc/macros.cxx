@@ -1675,7 +1675,7 @@ static void pLT(std::string &s, size_t &i, size_t endbracket)
 {
 	char szDt[80];
 
-	std::string fmt = "%H%MZ";
+	std::string fmt = "%H%ML";
 	std::string timefmt = s.substr(i, endbracket-i);
 
 	size_t p = timefmt.find(":");
