@@ -3,6 +3,7 @@ fldigi_macros.txt fldigi_modems.txt fldigi_operating.txt \
 New-Install.txt thumb_drive.txt colorsandfonts.txt \
 audio-adjust.txt \
 configcallsigndb.txt configRIG.txt \
+audio_alerts.txt configAutostart.txt \
 configContestia.txt configCW.txt \
 configDomEX.txt configFSQ.txt configFH.txt ConfigID.txt \
 configIFKP.txt ConfigMisc.txt \

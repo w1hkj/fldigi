@@ -1,0 +1,49 @@
+/**
+\page autostart_configuration_page  Autostart Configuration
+\tableofcontents
+<br>
+
+\section config_autostart Configuration
+<center>
+\image html autostart.png ""
+\image latex autostart.png "" width=5.0in
+</center>
+<br>
+You can configure fldigi to start up to seven external programs when
+it begins execution
+<ul>
+<li>flrig - Transceiver controller</li>
+<li>flamp - Amateur Multicast Protocol</li>
+<li>flnet - Net Control Operator database and logger</li>
+<li>fllog - fldigi compatible log server for multiple clients</li>
+<li>Prog 1..3 - user selectable programs</li>
+</ul>
+\section program_selection Program Selection
+The location of each autostart program must be identified and entered into
+the respective text control.  Use the \"Locate\" button to open a file browser.
+Select the executable and the full pathname to that file will be
+entered for you.  You can also enter or modify each entry manually.  The
+entry will appear similar to:
+<br>
+Operating System | Entry
+:----------------|:----------------------------------------------
+Windows XP       |C:\\Progam Files\\flrig-1.3.31\\flrig.exe
+Windows 7        |C:\\Program Files (x86)\\flrig-1.3.31\\flrig.exe
+Windows 10       |C:\\Program Files\\flrig-1.3.31\\flrig.exe
+Linux            |/usr/local/bin/flrig
+OS X             |/Applications/flrig-1.3.31.app
+<br>
+On OS X you simply drag the application icon (in the Applications folder) to
+the respective text control.
+\section autostart_test Testing-Enabling
+You can test, or manually start each of the autostart programs using the
+respective \"Test\" button.  If the desired application launches correctly you
+can check the Enable box for that application to have it launch when starting
+fldigi.
+<br>
+\ref autostart_configuration_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+
+*/
