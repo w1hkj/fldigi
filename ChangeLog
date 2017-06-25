@@ -1,10 +1,18 @@
 
 
+=Version 4.0.6=
+
+2017-06-25  David Freese  <iam_w1hkj@w1hkj.com>
+
+	094ac3c: Documentation
+	1715749: flmsg alert
+	b3dd76d: Time Macros
+	a3f27d2: Require PortAudio
+
+
 =Version 4.0.5=
 
-2017-06-19  David Freese  <iam_w1hkj@w1hkj.com>
-
-	bc29d97: Documentation update
+	254e717: Documentation update
 	6164c26: TELNET timeout
 	8922c5d: FD macros
 	b0928a0: N3FJP PTT
