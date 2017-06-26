@@ -707,10 +707,11 @@ void Socket::bindUDP(void)
 	struct addrinfo *ai_p = NULL;
 #ifdef __WIN32__
 	struct sockaddr_in *addr_in = NULL;
+	struct sockaddr addr;
 #else
 	struct sockaddr_in6 *addr_in = NULL;
+	struct sockaddr_in6 addr;
 #endif
-	struct sockaddr addr;
 
 	int r = 1;
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&r, sizeof(r)) == -1)
@@ -1106,7 +1107,6 @@ size_t Socket::recv(string& buf)
 size_t Socket::sendTo(const void* buf, size_t len)
 {
 	struct sockaddr * useAddr = (struct sockaddr *)0;
-//	struct sockaddr dup_addr;
 	size_t addr_size = 0;
 
 	if(use_kiss_dual_port && *use_kiss_dual_port) {
@@ -1190,7 +1190,6 @@ size_t Socket::sendTo(const std::string& buf)
 //
 void Socket::set_port(struct sockaddr *sa, unsigned int port)
 {
-//	unsigned short int port_number = 0;
 #ifdef __WIN32__
 	if (sa->sa_family == AF_INET) {
 		struct sockaddr_in *saddr_in = (sockaddr_in *) sa;
