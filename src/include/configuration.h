@@ -1141,6 +1141,9 @@
         ELEM_(bool, DTRplus, "DTRPLUS",                                                 \
               "Initial voltage on DTR is +V",                                           \
               false)                                                                    \
+        ELEM_(bool, SCU_17, "SCU_17",                                                   \
+              "Serial port is SCU-17 (requires 0 stop bits",                            \
+              false)                                                                    \
         ELEM_(bool, PTTrightchannel, "PTTRIGHTCHANNEL",                                 \
               "Generate PTT signal on right audio channel",                             \
               false)                                                                    \

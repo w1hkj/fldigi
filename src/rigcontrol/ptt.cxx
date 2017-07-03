@@ -354,18 +354,21 @@ void PTT::set_gpio(bool ptt)
 void PTT::open_tty(void)
 {
 #ifdef __MINGW32__
+	serPort.Baud(progdefaults.BaudRate(progdefaults.XmlRigBaudrate));
 	serPort.Device(progdefaults.PTTdev);
 	serPort.RTS(progdefaults.RTSplus);
 	serPort.DTR(progdefaults.DTRplus);
 	serPort.RTSptt(progdefaults.RTSptt);
 	serPort.DTRptt(progdefaults.DTRptt);
+	if (progdefaults.SCU_17) serPort.Stopbits(0);
+	else serPort.Stopbits(2);
 	if (serPort.OpenPort() == false) {
 		LOG_ERROR("Cannot open serial port %s", rigio.Device().c_str());
 		pttfd = -1;
 		return;
 	}
-	LOG_DEBUG("Serial port %s open", progdefaults.PTTdev.c_str());
-	pttfd = -1; // just a dummy return for this implementation
+//	pttfd = -1; // just a dummy return for this implementation
+	LOG_INFO("Serial port %s open", progdefaults.PTTdev.c_str());
 
 #else
 

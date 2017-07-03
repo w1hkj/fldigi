@@ -71,7 +71,14 @@ public:
 	void RestoreTIO(bool b) { restore_tio = b; }
 	bool RestoreTIO() { return restore_tio; }
 
-	void Stopbits(int n) {stopbits = (n == 1 ? 1 : 2);}
+	void Stopbits(int n) {
+		switch (n) {
+			case 0: stopbits = 0; break;
+			case 1: stopbits = 1; break;
+			case 2:
+			default: stopbits = 2; break;
+		}
+	}
 	int  Stopbits() { return stopbits;}
 
 	int  ReadBuffer (unsigned char *b, int nbr);
@@ -180,7 +187,14 @@ public:
 	void RestoreTIO(bool b) { restore_tio = b; }
 	bool RestoreTIO() { return restore_tio; }
 
-	void Stopbits(int n) {stopbits = (n == 1 ? 1 : 2);}
+	void Stopbits(int n) {
+		switch (n) {
+			case 0: stopbits = 0; break;
+			case 1: stopbits = 1; break;
+			case 2:
+			default: stopbits = 2; break;
+		}
+	}
 	int  Stopbits() { return stopbits;}
 
 //Members

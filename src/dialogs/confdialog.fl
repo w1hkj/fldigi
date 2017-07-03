@@ -427,15 +427,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {980 31 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {992 46 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 605 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -544,7 +544,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
@@ -1172,7 +1172,7 @@ progdefaults.changed = true;}
                 Fl_Check_Button btn_enable_N3FJP_RIGTX {
                   label {PTT via <RIGTX> and <RIGRX>}
                   callback {progdefaults.enable_N3FJP_RIGTX = o->value();
-progdefaults.changed = true;} selected
+progdefaults.changed = true;}
                   xywh {10 324 165 26} down_box DOWN_BOX
                   code0 {o->value(progdefaults.enable_N3FJP_RIGTX);}
                 }
@@ -5697,7 +5697,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabFLRIG {
             label flrig open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {
               label {"Disable PTT keys modem if multiple instances of fldigi (client)
@@ -5778,7 +5778,7 @@ progdefaults.changed=true;}
           }
           Fl_Group {} {
             label RigCAT open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Check_Button chkUSERIGCAT {
               label {Use RigCAT}
@@ -6261,7 +6261,7 @@ when both in same macro definition} xywh {210 239 90 21} type Simple align 8 min
             xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
-              xywh {55 57 490 38} box ENGRAVED_FRAME
+              xywh {10 57 580 38} box ENGRAVED_FRAME
             } {
               Fl_Check_Button btnPTTrightchannel {
                 label {PTT tone on right audio channel }
@@ -6283,8 +6283,8 @@ progdefaults.changed = true;}
               }
             }
             Fl_Group grpHWPTT {
-              label {h/w ptt device-pin}
-              xywh {55 97 490 184} box ENGRAVED_FRAME align 21
+              label {h/w ptt device-pin} open
+              xywh {10 97 580 184} box ENGRAVED_FRAME align 21
             } {
               Fl_Round_Button btnTTYptt {
                 label {Use separate serial port PTT}
@@ -6305,51 +6305,23 @@ progdefaults.TTYptt = false;
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {74 121 220 20} down_box DOWN_BOX selection_color 1
+                xywh {25 124 220 20} down_box DOWN_BOX selection_color 1
               }
               Fl_Group inpTTYdev {
                 label {Device:}
                 callback {btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;} open
-                xywh {128 151 160 22} box DOWN_BOX color 7 align 4
+                xywh {18 165 350 22} box DOWN_BOX color 7 align 5
                 code0 {o->labelsize(FL_NORMAL_SIZE);}
                 class Fl_ComboBox
               } {}
-              Fl_Round_Button btnRTSptt {
-                label {Use RTS}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
+              Fl_Round_Button btnSCU_17 {
+                label {Port is second SCU-17 device}
+                callback {progdefaults.SCU_17=o->value();
 progdefaults.changed = true;}
-                tooltip {RTS is PTT signal line} xywh {310 120 85 20} down_box DOWN_BOX
-              }
-              Fl_Round_Button btnRTSplusV {
-                label {RTS = +V}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {Initial voltage on RTS} xywh {407 120 100 20} down_box DOWN_BOX
-              }
-              Fl_Round_Button btnDTRptt {
-                label {Use DTR}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {DTR is PTT signal line} xywh {310 150 85 20} down_box DOWN_BOX
-              }
-              Fl_Round_Button btnDTRplusV {
-                label {DTR = +V}
-                callback {btnInitHWPTT->labelcolor(FL_RED);
-btnInitHWPTT->redraw();
-progdefaults.changed = true;}
-                tooltip {Initial voltage on DTR} xywh {407 150 100 20} down_box DOWN_BOX
-              }
-              Fl_Button btnInitHWPTT {
-                label Initialize
-                callback {progdefaults.initInterface();
-o->labelcolor(FL_FOREGROUND_COLOR);
-progdefaults.changed = true;}
-                tooltip {Initialize the H/W PTT interface} xywh {411 217 113 24}
+                tooltip {Driver requires stop bits to be ZERO!} xywh {260 124 236 20} down_box DOWN_BOX selection_color 1
+                code0 {o->value(progdefaults.SCU_17);}
               }
               Fl_Round_Button btnUsePPortPTT {
                 label {Use parallel port PTT}
@@ -6370,7 +6342,7 @@ progdefaults.UsePPortPTT = false;
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {74 191 170 20} down_box DOWN_BOX selection_color 1
+                xywh {25 213 170 20} down_box DOWN_BOX selection_color 1
               }
               Fl_Round_Button btnUseUHrouterPTT {
                 label {Use uHRouter PTT}
@@ -6391,12 +6363,47 @@ progdefaults.UseUHrouterPTT = false;
 btnInitHWPTT->labelcolor(FL_RED);
 btnInitHWPTT->redraw();
 progdefaults.changed = true;}
-                xywh {74 221 170 20} down_box DOWN_BOX selection_color 1
+                xywh {25 245 170 20} down_box DOWN_BOX selection_color 1
+              }
+              Fl_Round_Button btnRTSptt {
+                label {Use RTS}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {RTS is PTT signal line} xywh {380 153 85 20} down_box DOWN_BOX
+              }
+              Fl_Round_Button btnRTSplusV {
+                label {RTS = +V}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {Initial voltage on RTS} xywh {471 153 100 20} down_box DOWN_BOX
+              }
+              Fl_Round_Button btnDTRptt {
+                label {Use DTR}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {DTR is PTT signal line} xywh {380 185 85 20} down_box DOWN_BOX
+              }
+              Fl_Round_Button btnDTRplusV {
+                label {DTR = +V}
+                callback {btnInitHWPTT->labelcolor(FL_RED);
+btnInitHWPTT->redraw();
+progdefaults.changed = true;}
+                tooltip {Initial voltage on DTR} xywh {471 185 100 20} down_box DOWN_BOX
+              }
+              Fl_Button btnInitHWPTT {
+                label Initialize
+                callback {progdefaults.initInterface();
+o->labelcolor(FL_FOREGROUND_COLOR);
+progdefaults.changed = true;}
+                tooltip {Initialize the H/W PTT interface} xywh {450 242 113 24}
               }
             }
             Fl_Group grpPTTdelays {
               label {PTT delays valid for all CAT/PTT types}
-              xywh {55 284 490 91} box ENGRAVED_FRAME align 21
+              xywh {10 284 580 91} box ENGRAVED_FRAME align 21
             } {
               Fl_Counter cntPTT_on_delay {
                 label {Start of transmit PTT delay}

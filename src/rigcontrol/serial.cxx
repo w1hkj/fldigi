@@ -295,6 +295,10 @@ void Cserial::FlushBuffer()
 
 #else // __MINGW32__
 
+//======================================================================
+// Win32 support code
+//======================================================================
+
 #include "estrings.h"
 
 using namespace std;
@@ -587,8 +591,8 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 
 	dcb.BaudRate			= BaudRate;
 	dcb.ByteSize			= ByteSize;
-	dcb.Parity				= Parity ;
-	dcb.StopBits			= (StopBits == 1 ? ONESTOPBIT : TWOSTOPBITS);
+	dcb.Parity				= Parity;
+	dcb.StopBits			= StopBits;
 	dcb.fBinary				= TRUE;
 	dcb.fDsrSensitivity		= FALSE;
 	dcb.fParity				= dwParity;
@@ -670,8 +674,10 @@ void Cserial::SetPTT(bool b)
 	SetCommState(hComm, &dcb);
 }
 
+//======================================================================
+// end Win32 code
+//======================================================================
 #endif //__MINGW32__
-
 
 #ifdef __WOE32__
 #include <sstream>
@@ -710,4 +716,5 @@ void tty_to_com(string& port)
 	ss.seekp(0);
 	port = ss.str();
 }
+
 #endif

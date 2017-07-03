@@ -144,13 +144,16 @@ configuration tab for rig control.
 
 You select this operation by checking the "Use serial port PTT".
  Select the serial port from the list (fldigi will have searched
-for available ports).  Then specify whether the h/w uses RTS or
-DTR and whether a + or - voltage is required to toggle PTT on.
+for available ports).  Enable the
+"Port is second SCU-17 device" control if you are using an SCU-17 or a similar 
+device which has a dual USB virtual serial port.  The SCU-17 Windows driver
+requires the stop bits to be set to ZERO or the driver fails to correctly
+initialize.
 
-You can use a serial port for control with the RTS and DTR pins
-configured for you particular interface.
-The program allows you to use RTS, DTR or BOTH for the PTT
-signal.  Press the Initialize button to start the serial port.
+Then specify whether the h/w uses RTS or DTR and whether a + or - voltage is 
+required to toggle PTT on.  The program allows you to use RTS, DTR or BOTH for the PTT
+signal.  Press the Initialize button to restart the serial port with the selected
+settings.
 <br>
 
 <b>Parallel Port (Linux and Free BSD only)</b>
