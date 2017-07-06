@@ -630,11 +630,14 @@ void WriteARQsocket(unsigned char* data, size_t len)
 	static string instr;
 	instr.clear();
 
-	string outs = "";
+    // TODO FIXME
+
+/*  // Causes too much printing to console, this should only be enabled for debug
+    string outs = "";
 	for (unsigned int i = 0; i < len; i++)
 		outs += asc[data[i] & 0x7F];
 	LOG_INFO("%s", outs.c_str());
-
+*/
 	vector<ARQCLIENT *>::iterator p;
 	for (p = arqclient.begin(); p < arqclient.end(); p++) {
 		try {

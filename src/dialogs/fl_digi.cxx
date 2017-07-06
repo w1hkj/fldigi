@@ -4794,6 +4794,7 @@ static Fl_Menu_Item menu_[] = {
 {0,0,0,0,0,0,0,0,0},
 {0,0,0,0,0,0,0,0,0},
 
+/*
 {"OFDM", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { "OFDM 8x24  (9Kbps)", 0, cb_init_mode, (void *)MODE_QPSK31, 0, FL_NORMAL_LABEL, 0, 14, 0},
 { "OFDM 8x28  (10.5Kbps)", 0, cb_init_mode, (void *)MODE_QPSK63, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -4801,6 +4802,7 @@ static Fl_Menu_Item menu_[] = {
 //{ mode_info[MODE_QPSK250].name, 0, cb_init_mode, (void *)MODE_QPSK250, 0, FL_NORMAL_LABEL, 0, 14, 0},
 //{ mode_info[MODE_QPSK500].name, 0, cb_init_mode, (void *)MODE_QPSK500, 0, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
+*/
 
 {"8PSK", 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { mode_info[MODE_8PSK125].name, 0, cb_init_mode, (void *)MODE_8PSK125, 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -8884,13 +8886,8 @@ static void rx_parser(const unsigned char data, int style)
 static void put_rx_char_flmain(unsigned int data, int style)
 {
     
-    	add_rx_char(data & 0xFF); // Send the received char to the received-data-stream
-        bool dataonly = true;
-        if (dataonly)
-            return; // For data-only modes return here and don't update the screen / GUI
-        /// Is it OK to break thread safety here? Seems OK...
+    add_rx_char(data & 0xFF); // Send the received char to the received-data-stream
 	ENSURE_THREAD(FLMAIN_TID);
-        
 
 	// possible destinations for the data
 	enum dest_type {
@@ -8912,6 +8909,7 @@ static void put_rx_char_flmain(unsigned int data, int style)
 	// select a byte translation table
 	trx_mode mode = active_modem->get_mode();
 
+    add_rx_char(data & 0xFF);
 
 	if (mailclient || mailserver)
 		rx_chd.rx((unsigned char *)ascii2[data & 0xFF]);
@@ -9373,9 +9371,6 @@ int get_tx_char(void)
 
 void put_echo_char(unsigned int data, int style)
 {
-    /// Return and print nothing for data-only modes. Makes GUI non-responsive
-    bool dataonly = true;
-    if (dataonly)return;
     
 // suppress print to rx widget when making timing tests
 	if (PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST) return;
