@@ -1,8 +1,10 @@
+2017-07-03  David Freese  <iam_w1hkj@w1hkj.com>
+
+	ee6cc45: SCU-17 ptt
+	964816a: bindUDP
 
 
 =Version 4.0.6=
-
-2017-06-25  David Freese  <iam_w1hkj@w1hkj.com>
 
 	094ac3c: Documentation
 	1715749: flmsg alert
