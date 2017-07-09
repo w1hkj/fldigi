@@ -1158,6 +1158,7 @@ void fsq::recvpic(double smpl)
 				if (row >= picH) {
 					state = TEXT;
 					REQ(fsq_enableshift);
+					metric = 0;
 				}
 			}
 		} else {
@@ -1173,16 +1174,9 @@ void fsq::recvpic(double smpl)
 			if (row >= picH) {
 				state = TEXT;
 				REQ(fsq_enableshift);
+				metric = 0;
 			}
 		}
-
-		s2n = 10 * log10(snfilt->run(12000*amplitude/noise)) + 3.0;
-
-		snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
-
-		metric = 2 * (s2n + 20);
-		metric = CLAMP(metric, 0, 100.0);  // -20 to +30 db range
-		display_metric(metric);
 
 		pixel = 0;
 		amplitude = 0;
