@@ -317,18 +317,36 @@ static void cb_tabOperator(Fl_Group*, void*) {
 
 Fl_Input2 *inpMyCallsign=(Fl_Input2 *)0;
 
-static void cb_inpMyCallsign(Fl_Input2* o, void*) {
-  if (progdefaults.THORsecText.empty()) {
-progdefaults.THORsecText = o->value();
+static void cb_inpMyCallsign(Fl_Input2*, void*) {
+  const char *triggers = " !#$%&'()*+,-.;<=>?@[\\]^_{|}~";
+std::string mycall = inpMyCallsign->value();
+
+for (size_t k = 0; k < mycall.length(); k++) {
+  for (size_t n = 0; n < strlen(triggers); n++) {
+    if (mycall[k] == triggers[n]) {
+      if ( fl_choice2("Replace FSQ trigger character with slash /", _("no"), _("yes"), NULL ) )
+        mycall[k] = '/';
+    }
+  }
+}
+
+if (progdefaults.THORsecText.empty()) {
+progdefaults.THORsecText = mycall;
 progdefaults.THORsecText.append(" ");
 txtTHORSecondary->value(progdefaults.THORsecText.c_str());
 }
+
 if (progdefaults.secText.empty()) {
-progdefaults.secText = o->value();
+progdefaults.secText = mycall;
 progdefaults.secText.append(" ");
 txtSecondary->value(progdefaults.secText.c_str());
 }
-progdefaults.myCall = o->value();
+
+progdefaults.myCall = mycall;
+
+inpMyCallsign->value(progdefaults.myCall.c_str());
+inpMyCallsign->redraw();
+
 update_main_title();
 notify_change_callsign();
 progdefaults.changed = true;
@@ -7695,7 +7713,7 @@ Fl_Double_Window* ConfigureDialog() {
             inpMyCallsign->labelcolor(FL_FOREGROUND_COLOR);
             inpMyCallsign->callback((Fl_Callback*)cb_inpMyCallsign);
             inpMyCallsign->align(Fl_Align(FL_ALIGN_LEFT));
-            inpMyCallsign->when(FL_WHEN_RELEASE);
+            inpMyCallsign->when(FL_WHEN_CHANGED);
             inpMyCallsign->labelsize(FL_NORMAL_SIZE);
           } // Fl_Input2* inpMyCallsign
           { inpMyQth = new Fl_Input2(195, 98, 320, 24, _("Station QTH:"));

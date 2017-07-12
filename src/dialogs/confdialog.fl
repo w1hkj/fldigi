@@ -434,7 +434,7 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
+        callback {progdefaults.changed = true;} open
         xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
@@ -443,21 +443,39 @@ static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
         } {
           Fl_Input inpMyCallsign {
             label {Station Callsign:}
-            callback {if (progdefaults.THORsecText.empty()) {
-progdefaults.THORsecText = o->value();
+            callback {const char *triggers = " !\#$%&'()*+,-.;<=>?@[\\\\]^_{|}~";
+std::string mycall = inpMyCallsign->value();
+
+for (size_t k = 0; k < mycall.length(); k++) {
+  for (size_t n = 0; n < strlen(triggers); n++) {
+    if (mycall[k] == triggers[n]) {
+      if ( fl_choice2("Replace FSQ trigger character with slash /", _("no"), _("yes"), NULL ) )
+        mycall[k] = '/';
+    }
+  }
+}
+
+if (progdefaults.THORsecText.empty()) {
+progdefaults.THORsecText = mycall;
 progdefaults.THORsecText.append(" ");
 txtTHORSecondary->value(progdefaults.THORsecText.c_str());
 }
+
 if (progdefaults.secText.empty()) {
-progdefaults.secText = o->value();
+progdefaults.secText = mycall;
 progdefaults.secText.append(" ");
 txtSecondary->value(progdefaults.secText.c_str());
 }
-progdefaults.myCall = o->value();
+
+progdefaults.myCall = mycall;
+
+inpMyCallsign->value(progdefaults.myCall.c_str());
+inpMyCallsign->redraw();
+
 update_main_title();
 notify_change_callsign();
-progdefaults.changed = true;}
-            tooltip {Station callsign} xywh {195 64 110 24}
+progdefaults.changed = true;} selected
+            tooltip {Station callsign} xywh {195 64 110 24} when 1
             code0 {inpMyCallsign->labelsize(FL_NORMAL_SIZE);}
             class Fl_Input2
           }
