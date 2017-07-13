@@ -250,6 +250,8 @@ int FTextRX::handle(int event)
 	// catch some text-modifying events that are not handled by kf_* functions
 	case FL_KEYBOARD:
 		break;
+	case FL_PASTE:
+		return 0;
 	case FL_ENTER:
 		if (!progdefaults.rxtext_tooltips || Fl_Tooltip::delay() == 0.0f)
 			break;
