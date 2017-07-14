@@ -630,14 +630,14 @@ void cw::decode_stream(double value)
 			somc = find_winner(cw_buffer, two_dots);
 			if (!somc.empty())
 				for (size_t n = 0; n < somc.length(); n++)
-					put_echo_char(
+					put_rx_char(
 						somc[n],
 						somc[0] == '<' ? FTextBase::CTRL : FTextBase::RECV);
 			cw_ptr = 0;
 			memset(cw_buffer, 0, sizeof(cw_buffer));
 		} else {
 			for (size_t n = 0; n < sc.length(); n++)
-				put_echo_char(
+				put_rx_char(
 					sc[n],
 					sc[0] == '<' ? FTextBase::CTRL : FTextBase::RECV);
 		}
