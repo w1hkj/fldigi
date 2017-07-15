@@ -45,7 +45,6 @@ private:
 
 	fftfilt *bpfilt;
 	Cmovavg *ffilt;
-	Cmovavg *favg;
 
 	double pipe[PIPE_LEN];
 

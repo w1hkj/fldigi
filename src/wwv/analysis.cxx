@@ -64,7 +64,6 @@ anal::~anal()
 {
 	delete bpfilt;
 	delete ffilt;
-	delete favg;
 }
 
 void anal::restart()
