@@ -1,8 +1,6 @@
 /**
 \page  frequency_analyzer_page Frequency Analyzer
 
-\tableofcontents
-<br>
 <br>
 
 Fldigi can be used to accurately measure the frequency of a remote signal

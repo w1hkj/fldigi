@@ -56,22 +56,12 @@ You can then proceed to adjust the waterfall/fft appearance when you have the au
 The three signal views should be similar to this with the level/range controls set to 0 and 60 respectively.  The
 waterfall palette used is "default.pal", and the received signal is about 20 dB above the noise floor.
 <center>
-<table>
-  <tr>
-    <td>
-      \image html win10-fldigi-wf.png "Waterfall"
-      \image latex win10-fldigi-wf.png "Waterfal" width=1.5in
-    </td>
-    <td>
-      \image html win10-fldigi-fft.png "FFT"
-      \image latex win10-fldigi-fft.png "FFT" width=1.5in
-    </td>
-    <td>
-      \image html win10-fldigi-signal.png "Scope"
-      \image latex win10-fldigi-signal.png "Scope" width=1.5in
-    </td>
-  </tr>
-</table>
+  \image html win10-fldigi-wf.png "Waterfall"
+  \image latex win10-fldigi-wf.png "Waterfall" width=1.5in
+  \image html win10-fldigi-fft.png "FFT"
+  \image latex win10-fldigi-fft.png "FFT" width=1.5in
+  \image html win10-fldigi-signal.png "Scope"
+  \image latex win10-fldigi-signal.png "Scope" width=1.5in
 </center>
 \section rx_win10 Windows Audio Properties
 A combination of the Windows operating system and certain audio codecs needs to be accommodated.  The codecs

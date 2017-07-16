@@ -97,9 +97,7 @@ has two applications:
 
 Received images are saved in the default folder
 
-<tt>$HOME/.fldigi/images (Linux) or \<defaultpath\>/fldigi.files/images</tt>
-
-(Windows).
+<tt>$HOME/.fldigi/images (Linux) or \<defaultpath\>/fldigi.files/images (Windows).</tt>
 <br>
 
 Additionally, they can be saved manually, at any time, using the

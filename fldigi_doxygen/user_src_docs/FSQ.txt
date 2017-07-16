@@ -51,20 +51,10 @@ panel is for entering all transmitted text, including directives.  These two pan
 can be resized vertically by dragging the dividing bar which separates them.
 
 <center>
-<table>
-  <tr>
-    <td>
-      \image html fsq-undirected-mode.png "Undirected Mode"
-      \image latex fsq-undirected-mode.png "Undirected Mode" width=1.5in
-    </td>
-  </tr>
-  <tr>
-    <td>
-      \image html fsq-directed-mode.png "Directed Mode"
-      \image latex fsq-directed-mode.png "Directed Mode" width=1.5in
-    </td>
-  </tr>
-</table>
+  \image html fsq-undirected-mode.png "Undirected Mode"
+  \image latex fsq-undirected-mode.png "Undirected Mode" width=1.5in
+  \image html fsq-directed-mode.png "Directed Mode"
+  \image latex fsq-directed-mode.png "Directed Mode" width=1.5in
 </center>
 
 The Rx-text panel displays only recognized text in the Directed Mode.  The text
@@ -534,18 +524,10 @@ Heard list entries have an associated pop-up menu, available by right-clicking o
 the desired entry:
 
 <center>
-<table>
-<tr>
-  <td>
-    \image html fsq-allcall-popup.png "All Call Menu"
-    \image latex fsq-allcall-popup.png "All Call Menu" width=2.0in
-  </td>
-  <td>
-    \image html fsq-directed-popup.png "Directed Menu"
-    \image latex fsq-directed-popup.png "Directed Menu" width=2.0in
-  </td>
-</tr>
-</table>
+  \image html fsq-allcall-popup.png "All Call Menu"
+  \image latex fsq-allcall-popup.png "All Call Menu" width=2.0in
+  \image html fsq-directed-popup.png "Directed Menu"
+  \image latex fsq-directed-popup.png "Directed Menu" width=2.0in
 </center>
 
 \section fsq_image_mode Image Mode

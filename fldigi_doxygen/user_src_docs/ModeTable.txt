@@ -4,211 +4,185 @@
 \tableofcontents
 
 \section psk_table PSK
-
-<small>
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:--------: | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK31      | 31.25 | 50   | 80.00%     | 31      | 1-PSK      | <br> | 31HG1B    | 1      | <br>
-PSK63      | 62.5  | 100  | 80.00%     | 63      | 1-PSK      | <br> | 63HG1B    | 2      | <br>
-PSK125     | 125   | 200  | 80.00%     | 125     | 1-PSK      | <br> | 125HG1B   | 4      | <br>
-PSK250     | 250   | 400  | 80.00%     | 250     | 1-PSK      | <br> | 250HG1B   | 126    | <br>
-PSK250C6   | 250   | 2400 | 80.00%     | 2000    | 6-PSK      | <br> | 2000HG1B  | 263    | 63
-PSK500     | 500   | 800  | 80.00%     | 500     | 1-PSK      | <br> | 500HG1B   | 173    | <br>
-PSK500C2   | 500   | 1600 | 80.00%     | 1200    | 2-PSK      | <br> | 1200HG1B  | 263    | 27
-PSK500C4   | 500   | 3200 | 80.00%     | 2600    | 4-PSK      | <br> | 2600HG1B  | 263    | 28
-PSK800C2   | 800   | 2300 | 80.00%     | 1400    | 2-PSK      | <br> | 2300HGB1  | 263    | 57
-PSK1000    | 1000  | 1600 | 80.00%     | 1800    | 1-PSK      | <br> | 1800HG1B  | 263    | 50
-PSK1000C2  | 1000  | 3200 | 80.00%     | 3600    | 2-PSK      | <br> | 3600HG1BC | 263    | 52
-<br>
-
-\section pskr_table PSKR / PSK-FEC
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:--------: | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK63FEC   | 62.5  | 55   | 80.00%     | 63      | 1-PSK      | <br> | 63HG1B    | 22     | <br>
-PSK63RC4   | 63    | 220  | 80.00%     | 330     | 4-PSKR     | <br> | 330HG1BC  | 263    | 1
-PSK63RC5   | 63    | 275  | 80.00%     | 416     | 5-PSKR     | <br> | 416HG1BC  | 263    | 2
-PSK63RC10  | 63    | 550  | 80.00%     | 850     | 10-PSKR    | <br> | 850HG1BC  | 263    | 3
-PSK63RC20  | 63    | 1100 | 80.00%     | 1725    | 20-PSKR    | <br> | 1725HG1BC | 263    | 4
-PSK63RC32  | 63    | 1760 | 80.00%     | 2775    | 32-PSKR    | <br> | 2775HG1BC | 263    | 5
-<br>
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK125R    | 125   | 110  | 80.00%     | 125     | 1-PSKR     | <br> | 125HG1B   | 183    | <br>
-PSK125RC4  | 125   | 352  | 80.00%     | 650     | 3-PSKR     | <br> | 650HG1B   | 10     | <br>
-PSK125RC5  | 125   | 440  | 80.00%     | 825     | 4-PSKR     | <br> | 700HG1BC  | 11     | <br>
-PSK125RC10 | 125   | 1100 | 80.00%     | 1700    | 10-PSKR    | <br> | 1700HG1BC | 12     | <br>
-PSK125RC16 | 125   | 1760 | 80.00%     | 2750    | 16-PSKR    | <br> | 2750HG1BC | 13     | <br>
-<br>
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK250R    | 250   | 220  | 80.00%     | 250     | 1-PSKR     | <br> | 250HG1B   | 186    | <br>
-PSK250RC2  | 250   | 440  | 80.00%     | 600     | 2-PSKR     | <br> | 600HG1BC  | 263    | 20
-PSK250RC3  | 250   | 660  | 80.00%     | 950     | 3-PSKR     | <br> | 950HG1BC  | 263    | 21
-PSK250RC5  | 250   | 1100 | 80.00%     | 1650    | 5-PSKR     | <br> | 1760HG1BC | 263    | 22
-PSK250RC6  | 250   | 1320 | 80.00%     | 2000    | 6-PSKR     | <br> | 2000HG1BC | 263    | 65
-PSK250RC7  | 250   | 1540 | 80.00%     | 2350    | 7-PSKR     | <br> | 2350HG1BC | 263    | 23
-<br>
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK500R    | 500   | 440  | 80.00%     | 500     | 1-PSKR     | <br> | 500-HG1BC | 187    | <br>
-PSK500RC2  | 500   | 880  | 80.00%     | 1400    | 2-PSKR     | <br> | 1400HG1BC | 263    | 24
-PSK500RC3  | 500   | 1320 | 80.00%     | 1900    | 3-PSKR     | <br> | 1900HG1BC | 263    | 25
-PSK500RC4  | 500   | 1760 | 80.00%     | 2600    | 4-PSKR     | <br> | 2600HG1BC | 263    | 26
-<br>
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK800RC2  | 800   | 1280 | 80.00%     | 1400    | 2-PSKR     | <br> | 800HGB1C  | 263    | 54
-<br>
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-PSK1000R   | 1000  | 880  | 80.00%     | 1800    | 1-PSKR     | <br> | 1800HG1B  | 263    | 51
-PSK1000RC2 | 1000  | 1760 | 80.00%     | 3600    | 2-PSKR     | <br> | 3600HG1BC | 263    | 53
-<br>
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+PSK31      | 31.25 | 50   | 31      | 1-PSK      | <br> | 31HG1B    | 1      | <br>
+PSK63      | 62.5  | 100  | 63      | 1-PSK      | <br> | 63HG1B    | 2      | <br>
+PSK125     | 125   | 200  | 125     | 1-PSK      | <br> | 125HG1B   | 4      | <br>
+PSK250     | 250   | 400  | 250     | 1-PSK      | <br> | 250HG1B   | 126    | <br>
+PSK250C6   | 250   | 2400 | 2000    | 6-PSK      | <br> | 2000HG1B  | 263    | 63
+PSK500     | 500   | 800  | 500     | 1-PSK      | <br> | 500HG1B   | 173    | <br>
+PSK500C2   | 500   | 1600 | 1200    | 2-PSK      | <br> | 1200HG1B  | 263    | 27
+PSK500C4   | 500   | 3200 | 2600    | 4-PSK      | <br> | 2600HG1B  | 263    | 28
+PSK800C2   | 800   | 2300 | 1400    | 2-PSK      | <br> | 2300HGB1  | 263    | 57
+PSK1000    | 1000  | 1600 | 1800    | 1-PSK      | <br> | 1800HG1B  | 263    | 50
+PSK1000C2  | 1000  | 3200 | 3600    | 2-PSK      | <br> | 3600HG1BC | 263    | 52
 
 \section qpsk_table QPSK
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+QPSK31     | 31.25 | 50   | 31      | 1-QPSK     | <br> | 31H0G1B   | 110    | <br>
+QPSK63     | 62.5  | 100  | 63      | 1-QPSK     | <br> | 63HG1B    | 3      | <br>
+QPSK125    | 125   | 200  | 125     | 1-QPSK     | <br> | 125HG1B   | 5      | <br>
+QPSK250    | 250   | 400  | 250     | 1-QPSK     | <br> | 250HG1B   | 127    | <br>
+QPSK500    | 500   | 800  | 500     | 1-QPSK     | <br> | 500HG1B   | <br>   | <br>
 
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-QPSK31     | 31.25 | 50   | 80.00%     | 31      | 1-QPSK     | <br> | 31H0G1B   | 110    | <br>
-QPSK63     | 62.5  | 100  | 80.00%     | 63      | 1-QPSK     | <br> | 63HG1B    | 3      | <br>
-QPSK125    | 125   | 200  | 80.00%     | 125     | 1-QPSK     | <br> | 125HG1B   | 5      | <br>
-QPSK250    | 250   | 400  | 80.00%     | 250     | 1-QPSK     | <br> | 250HG1B   | 127    | <br>
-QPSK500    | 500   | 800  | 80.00%     | 500     | 1-QPSK     | <br> | 500HG1B   | <br>   | <br>
-<br>
+\section pskfec_table PSK-FEC
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+PSK63FEC   | 62.5  | 55   | 63      | 1-PSK      | <br> | 63HG1B    | 22     | <br>
+PSK63RC4   | 63    | 220  | 330     | 4-PSKR     | <br> | 330HG1BC  | 263    | 1
+PSK63RC5   | 63    | 275  | 416     | 5-PSKR     | <br> | 416HG1BC  | 263    | 2
+PSK63RC10  | 63    | 550  | 850     | 10-PSKR    | <br> | 850HG1BC  | 263    | 3
+PSK63RC20  | 63    | 1100 | 1725    | 20-PSKR    | <br> | 1725HG1BC | 263    | 4
+PSK63RC32  | 63    | 1760 | 2775    | 32-PSKR    | <br> | 2775HG1BC | 263    | 5
+
+\section pskr_table PSKR
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+PSK125R    | 125   | 110  | 125     | 1-PSKR     | <br> | 125HG1B   | 183    | <br>
+PSK125RC4  | 125   | 352  | 650     | 3-PSKR     | <br> | 650HG1B   | 10     | <br>
+PSK125RC5  | 125   | 440  | 825     | 4-PSKR     | <br> | 700HG1BC  | 11     | <br>
+PSK125RC10 | 125   | 1100 | 1700    | 10-PSKR    | <br> | 1700HG1BC | 12     | <br>
+PSK125RC16 | 125   | 1760 | 2750    | 16-PSKR    | <br> | 2750HG1BC | 13     | <br>
+ <br>      | <br>  | <br> | <br>    | <br>       | <br> | <br>      | <br>   | <br>
+PSK250R    | 250   | 220  | 250     | 1-PSKR     | <br> | 250HG1B   | 186    | <br>
+PSK250RC2  | 250   | 440  | 600     | 2-PSKR     | <br> | 600HG1BC  | 263    | 20
+PSK250RC3  | 250   | 660  | 950     | 3-PSKR     | <br> | 950HG1BC  | 263    | 21
+PSK250RC5  | 250   | 1100 | 1650    | 5-PSKR     | <br> | 1760HG1BC | 263    | 22
+PSK250RC6  | 250   | 1320 | 2000    | 6-PSKR     | <br> | 2000HG1BC | 263    | 65
+PSK250RC7  | 250   | 1540 | 2350    | 7-PSKR     | <br> | 2350HG1BC | 263    | 23
+ <br>      | <br>  | <br> | <br>    | <br>       | <br> | <br>      | <br>   | <br>
+PSK500R    | 500   | 440  | 500     | 1-PSKR     | <br> | 500-HG1BC | 187    | <br>
+PSK500RC2  | 500   | 880  | 1400    | 2-PSKR     | <br> | 1400HG1BC | 263    | 24
+PSK500RC3  | 500   | 1320 | 1900    | 3-PSKR     | <br> | 1900HG1BC | 263    | 25
+PSK500RC4  | 500   | 1760 | 2600    | 4-PSKR     | <br> | 2600HG1BC | 263    | 26
+ <br>      | <br>  | <br> | <br>    | <br>       | <br> | <br>      | <br>   | <br>
+PSK800RC2  | 800   | 1280 | 1400    | 2-PSKR     | <br> | 800HGB1C  | 263    | 54
+ <br>      | <br>  | <br> | <br>    | <br>       | <br> | <br>      | <br>   | <br>
+PSK1000R   | 1000  | 880  | 1800    | 1-PSKR     | <br> | 1800HG1B  | 263    | 51
+PSK1000RC2 | 1000  | 1760 | 3600    | 2-PSKR     | <br> | 3600HG1BC | 263    | 53
 
 \section eight_psk_table 8PSK
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-8PSK125    | 125   | 620  | 80.00%     | 125     | 1-8PSK     | <br> | 250HG1B   | 56     | 1066
-8PSK250    | 250   | 620  | 80.00%     | 250     | 1-8PSK     | <br> | 250HG1B   | 56     | 1071
-8PSK500    | 500   | 1650 | 80.00%     | 500     | 1-8PSK     | <br> | 500HG1B   | 56     | 1076
-8PSK1000   | 1000  | 3300 | 80.00%     | 1000    | 1-8PSK     | <br> | 1000HG1B  | 56     | 1047
-8PSK125F   | 125   | 620  | 80.00%     | 125     | 1-8PSK     | <br> | 250HG1B   | 56     | 1037
-8PSK250F   | 250   | 620  | 80.00%     | 250     | 1-8PSK     | <br> | 250HG1B   | 56     | 1038
-8PSK500F   | 500   | 1650 | 80.00%     | 500     | 1-8PSK     | <br> | 500HG1B   | 56     | 1043
-8PSK1000F  | 1000  | 3300 | 80.00%     | 1000    | 1-8PSK     | <br> | 1000HG1B  | 56     | 1078
-8PSK1200F  | 1200  | 4200 | 80.00%     | 1200    | 1-8PSK     | <br> | 1200HG1B  | 56     | 1058
-<br>
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+8PSK125    | 125   | 620  | 125     | 1-8PSK     | <br> | 250HG1B   | 56     | 1066
+8PSK250    | 250   | 620  | 250     | 1-8PSK     | <br> | 250HG1B   | 56     | 1071
+8PSK500    | 500   | 1650 | 500     | 1-8PSK     | <br> | 500HG1B   | 56     | 1076
+8PSK1000   | 1000  | 3300 | 1000    | 1-8PSK     | <br> | 1000HG1B  | 56     | 1047
+8PSK125F   | 125   | 620  | 125     | 1-8PSK     | <br> | 250HG1B   | 56     | 1037
+8PSK250F   | 250   | 620  | 250     | 1-8PSK     | <br> | 250HG1B   | 56     | 1038
+8PSK500F   | 500   | 1650 | 500     | 1-8PSK     | <br> | 500HG1B   | 56     | 1043
+8PSK1000F  | 1000  | 3300 | 1000    | 1-8PSK     | <br> | 1000HG1B  | 56     | 1078
+8PSK1200F  | 1200  | 4200 | 1200    | 1-8PSK     | <br> | 1200HG1B  | 56     | 1058
 
 \section contestia_table Contestia
-
- Mode             | Baud  | WPM | Duty Cycle | BW (Hz) | Modulation | S/N    | ITU     | RSID-1 | RSID-2
-:---------------: | :---: | :-: | :--------: | :-----: | :--------: | :----: | :-----: | :----: | :----:
-CONTESTIA-4-250   | 62.5  | 40  | 100.00%    | 250     | 4-FSK      | -10 dB | 250HF1B | 55     | <br>
-CONTSTIA-8-250    | 31.25 | 30  | 100.00%    | 250     | 8-FSK      | -13 dB | 250HF1B | 49     | <br>
-CONTESTIA-4-500   | 125   | 78  | 100.00%    | 500     | 4-FSK      | -8 dB  | 500HF1B | 54     | <br>
-CONTESTIA-8-500   | 62.5  | 60  | 100.00%    | 500     | 8-FSK      | -10 dB | 500HF1B | 52     | <br>
-CONTESTIA-16-500  | 31.25 | 30  | 100.00%    | 500     | 16-FSK     | -12 dB | 500HF1B | 50     | <br>
-CONTESTIA-8-1000  | 125   | 117 | 100.00%    | 1000    | 8-FSK      | -5 dB  | 1K00F1B | 117    | <br>
-CONTESTIA-16-1000 | 62.5  | 78  | 100.00%    | 1000    | 16-FSK     | -9 dB  | 1K00F1B | 53     | <br>
-CONTESTIA-32-1000 | 31.25 | 48  | 100.00%    | 1000    | 32-FSK     | -12 dB | 1K00F1B | 51     | <br>
-<br>
+ Mode             | Baud  | WPM | BW (Hz) | Modulation | S/N    | ITU     | RSID-1 | RSID-2
+:---------------- | :---: | :-: | :-----: | :--------: | :--: | :-------: | :----: | :----:
+CONTESTIA-4-250   | 62.5  | 40  | 250     | 4-FSK      | -10 dB | 250HF1B | 55     | <br>
+CONTSTIA-8-250    | 31.25 | 30  | 250     | 8-FSK      | -13 dB | 250HF1B | 49     | <br>
+CONTESTIA-4-500   | 125   | 78  | 500     | 4-FSK      | -8 dB  | 500HF1B | 54     | <br>
+CONTESTIA-8-500   | 62.5  | 60  | 500     | 8-FSK      | -10 dB | 500HF1B | 52     | <br>
+CONTESTIA-16-500  | 31.25 | 30  | 500     | 16-FSK     | -12 dB | 500HF1B | 50     | <br>
+CONTESTIA-8-1000  | 125   | 117 | 1000    | 8-FSK      | -5 dB  | 1K00F1B | 117    | <br>
+CONTESTIA-16-1000 | 62.5  | 78  | 1000    | 16-FSK     | -9 dB  | 1K00F1B | 53     | <br>
+CONTESTIA-32-1000 | 31.25 | 48  | 1000    | 32-FSK     | -12 dB | 1K00F1B | 51     | <br>
 
 \section domino_ex_table DominoEX
-
- Mode      | Baud | WPM | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :--: | :-: | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-DominoEX4  | 3.9  | 29  | 100.00%    | 173     | <br>       | <br> | 173HF1B   | 84     | <br>
-DominoEX5  | 5.4  | 44  | 100.00%    | 244     | <br>       | <br> | 244HF1B   | 85     | <br>
-DominoEX8  | 7.8  | 58  | 100.00%    | 346     | <br>       | <br> | 346HF1B   | 86     | <br>
-DominoEX11 | 10.8 | 80  | 100.00%    | 262     | <br>       | <br> | 262HF1B   | 87     | <br>
-DominoEX16 | 15.6 | 115 | 100.00%    | 355     | <br>       | <br> | 355HF1B   | 88     | <br>
-DominoEX22 | 21.5 | 160 | 100.00%    | 524     | <br>       | <br> | 524HF1B   | 90     | <br>
-DominoEX44 | 43   | 312 | 100.00%    | 1600    | <br>       | <br> | 1600HF1B  | 263    | 45
-DominoEX88 | 86   | 614 | 100.00%    | 1600    | <br>       | <br> | 1600HF1B  | 263    | 46
-<br>
+ Mode      | Baud  | WPM | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-: | :-----: | :--------: | :--: | :-------: | :----: | :----:
+DominoEX4  | 3.9   | 29  | 173     | <br>       | <br> | 173HF1B   | 84     | <br>
+DominoEX5  | 5.4   | 44  | 244     | <br>       | <br> | 244HF1B   | 85     | <br>
+DominoEX8  | 7.8   | 58  | 346     | <br>       | <br> | 346HF1B   | 86     | <br>
+DominoEX11 | 10.8  | 80  | 262     | <br>       | <br> | 262HF1B   | 87     | <br>
+DominoEX16 | 15.6  | 115 | 355     | <br>       | <br> | 355HF1B   | 88     | <br>
+DominoEX22 | 21.5  | 160 | 524     | <br>       | <br> | 524HF1B   | 90     | <br>
+DominoEX44 | 43    | 312 | 1600    | <br>       | <br> | 1600HF1B  | 263    | 45
+DominoEX88 | 86    | 614 | 1600    | <br>       | <br> | 1600HF1B  | 263    | 46
 
 \section mfsk_table MFSK
+ Mode    | Baud  | WPM | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:------- | :---: | :-: | :-----: | :--------: | :--: | :-------: | :----: | :----:
+MFSK4    | 3.9   | 18  | 154     | 32-FSK     | <br> | 154HF1B   | <br>   | <br>
+MFSK8    | 7.8   | 36  | 316     | 32-FSK     | <br> | 316HF1B   | 60     | <br>
+MFSK11   | 10.8  | 40  | 218     | 16-FSK     | <br> | 218HF1B   | 148    | <br>
+MFSK16   | 15.6  | 58  | 316     | 16-FSK     | <br> | 316HF1B   | 57     | <br>
+MFSK22   | 21.5  | 80  | 435     | 16-FSK     | <br> | 435HF1B   | 152    | <br>
+MFSK31   | 31.3  | 55  | 330     | 8-FSK      | <br> | 330HF1B   | <br>   | <br>
+MFSK32   | 31.3  | 120 | 630     | 16-FSK     | <br> | 630HF1B   | 147    | <br>
+MFSK64   | 63    | 240 | 1260    | 16-FSK     | <br> | 1260HF1B  | 263    | 30
+MFSK128  | 125   | 480 | 1920    | <br>       | <br> | 1920HF1B  | 263    | 31
+MFSK64L  | 63    | 240 | 1260    | 16-FSK     | <br> | 1260HF1B  | 263    | 30
+MFSK128L | 125   | 480 | 1920    | <br>       | <br> | 1920HF1B  | 263    | 31
 
- Mode    | Baud  | WPM | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:----:   | :---: | :-: | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-MFSK4    | 3.9   | 18  | 100.00%    | 154     | 32-FSK     | <br> | 154HF1B   | <br>   | <br>
-MFSK8    | 7.8   | 36  | 100.00%    | 316     | 32-FSK     | <br> | 316HF1B   | 60     | <br>
-MFSK11   | 10.8  | 40  | 100.00%    | 218     | 16-FSK     | <br> | 218HF1B   | 148    | <br>
-MFSK16   | 15.6  | 58  | 100.00%    | 316     | 16-FSK     | <br> | 316HF1B   | 57     | <br>
-MFSK22   | 21.5  | 80  | 100.00%    | 435     | 16-FSK     | <br> | 435HF1B   | 152    | <br>
-MFSK31   | 31.3  | 55  | 100.00%    | 330     | 8-FSK      | <br> | 330HF1B   | <br>   | <br>
-MFSK32   | 31.3  | 120 | 100.00%    | 630     | 16-FSK     | <br> | 630HF1B   | 147    | <br>
-MFSK64   | 63    | 240 | 100.00%    | 1260    | 16-FSK     | <br> | 1260HF1B  | 263    | 30
-MFSK128  | 125   | 480 | 100.00%    | 1920    | <br>       | <br> | 1920HF1B  | 263    | 31
-MFSK64L  | 63    | 240 | 100.00%    | 1260    | 16-FSK     | <br> | 1260HF1B  | 263    | 30
-MFSK128L | 125   | 480 | 100.00%    | 1920    | <br>       | <br> | 1920HF1B  | 263    | 31
-<br>
+\section fsq_table FSQ
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+FSQ-2      | 1.95  | ~20  |   290   | 33-FSK     | -17  |290HF1B    |  <br>  | <br>
+FSQ-3      | 2.93  | ~30  |   290   | 33-FSK     | -16  |290HF1B    |  <br>  | <br>
+FSQ-4.5    | 3.91  | ~40  |   290   | 33-FSK     | -15  |290HF1B    |  <br>  | <br>
+FSQ-6      | 5.86  | ~60  |   290   | 33-FSK     | -14  |290HF1B    |  <br>  | <br>
+
+\section ifkp_table IFKP
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+IFKP-.5    | 1.82  | ~18  |   386   | 33-FSK     | -17  |386HF1B    |  <br>  | <br>
+IFKP-1.0   | 3.65  | ~37  |   386   | 33-FSK     | -16  |386HF1B    |  <br>  | <br>
+IFKP-2.0   | 5.30  | ~74  |   386   | 33-FSK     | -14  |386HF1B    |  <br>  | <br>
 
 \section mt63_table MT-63
-
- Mode      | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:  | :---: | :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-MT63-500   | 5     | 50   | 80.00%     | 500     | 64 x 2-PSK | <br> | 500HJ2DEN | 9      | <br>
-MT63-1000  | 10    | 100  | 80.00%     | 1000    | 64 x 2-PSK | <br> | 1K00J2DEN | 12     | <br>
-MT63-2000  | 20    | 200  | 80.00%     | 2000    | 64 x 2-PSK | <br> | 2K00J2DEN | 15     | <br>
-<br>
+ Mode      | Baud  | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------- | :---: | :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+MT63-500   | 5     | 50   | 500     | 64 x 2-PSK | <br> | 500HJ2DEN | 9      | <br>
+MT63-1000  | 10    | 100  | 1000    | 64 x 2-PSK | <br> | 1K00J2DEN | 12     | <br>
+MT63-2000  | 20    | 200  | 2000    | 64 x 2-PSK | <br> | 2K00J2DEN | 15     | <br>
 
 \section olivia_table Olivia
-
- Mode          | Baud | WPM | Duty Cycle | BW (Hz) | Modulation | S/N    | ITU       | RSID-1 | RSID-2
-:------------: |:---: |:---:| :--------: | :-----: | :--------: | :----: | :-------: | :----: | :----:
-OLIVIA-4-250   | 63   | 20  | 100.00%    | 250     | 4-FSK      | -12 dB | 250HF1B   | 75     | <br>
-OLIVIA-8-250   | 31   | 15  | 100.00%    | 250     | 8-FSK      | -14 dB | 250HF1B   | 69     | <br>
-OLIVIA-4-500   | 125  | 40  | 100.00%    | 500     | 4-FSK      | -10 dB | 500HF1B   | 74     | <br>
-OLIVIA-8-500   | 63   | 30  | 100.00%    | 500     | 8-FSK      | -11 dB | 500HF1B   | 72     | <br>
-OLIVIA-16-500  | 31   | 20  | 100.00%    | 500     | 16-FSK     | -13 dB | 500HF1B   | 70     | <br>
-OLIVIA-8-1000  | 125  | 58  | 100.00%    | 1000    | 8-FSK      | - 7 dB | 1K00F1B   | 116    | <br>
-OLIVIA-16-1000 | 63   | 40  | 100.00%    | 1000    | 16-FSK     | -10 dB | 1K00F1B   | 73     | <br>
-OLIVIA-32-1000 | 31   | 24  | 100.00%    | 1000    | 32-FSK     | -12 dB | 1K00F1B   | 71     | <br>
-<br>
+ Mode          | Baud  | WPM | BW (Hz) | Modulation | S/N    | ITU       | RSID-1 | RSID-2
+:------------- | :---: | :-: | :-----: | :--------: | :--:   | :-------: | :----: | :----:
+OLIVIA-4-250   | 63    | 20  | 250     | 4-FSK      | -12 dB | 250HF1B   | 75     | <br>
+OLIVIA-8-250   | 31    | 15  | 250     | 8-FSK      | -14 dB | 250HF1B   | 69     | <br>
+OLIVIA-4-500   | 125   | 40  | 500     | 4-FSK      | -10 dB | 500HF1B   | 74     | <br>
+OLIVIA-8-500   | 63    | 30  | 500     | 8-FSK      | -11 dB | 500HF1B   | 72     | <br>
+OLIVIA-16-500  | 31    | 20  | 500     | 16-FSK     | -13 dB | 500HF1B   | 70     | <br>
+OLIVIA-8-1000  | 125   | 58  | 1000    | 8-FSK      | - 7 dB | 1K00F1B   | 116    | <br>
+OLIVIA-16-1000 | 63    | 40  | 1000    | 16-FSK     | -10 dB | 1K00F1B   | 73     | <br>
+OLIVIA-32-1000 | 31    | 24  | 1000    | 32-FSK     | -12 dB | 1K00F1B   | 71     | <br>
 
 \section rtty_table RTTY
-
- Mode    | Baud | WPM  | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:------: | :---:| :-:  | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-RTTY 45  | 45   | 60   | 100.00%    | 270     | <br>       | <br> | 270HF1B   | 39     | <br>
-RTTY 50  | 50   | 66   | 100.00%    | 270     | <br>       | <br> | 270HF1B   | 40     | <br>
-RTTY 75N | 75   | 100  | 100.00%    | 370     | <br>       | <br> | 370HF1B   | 41     | <br>
-RTTY 75W | 75   | 100  | 100.00%    | 870     | <br>       | <br> | 870HF1B   | <br>   | <br>
-<br>
+ Mode    | Baud | WPM  | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:------- | :---:| :-:  | :-----: | :--------: | :--: | :-------: | :----: | :----:
+RTTY 45  | 45   | 60   | 270     | <br>       | <br> | 270HF1B   | 39     | <br>
+RTTY 50  | 50   | 66   | 270     | <br>       | <br> | 270HF1B   | 40     | <br>
+RTTY 75N | 75   | 100  | 370     | <br>       | <br> | 370HF1B   | 41     | <br>
+RTTY 75W | 75   | 100  | 870     | <br>       | <br> | 870HF1B   | <br>   | <br>
 
 \section thor_table THOR
-
- Mode    | Baud | WPM | Duty Cycle | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
-:-------:| :--: | :-: | :--------: | :-----: | :--------: | :--: | :-------: | :----: | :----:
-THOR4    | 3.9  | 14  | 100.00%    | 173     | <br>       | <br> | 173HF1B   | 136    | <br>
-THOR5    | 5.4  | 22  | 100.00%    | 244     | <br>       | <br> | 244HF1B   | 139    | <br>
-THOR8    | 7.8  | 28  | 100.00%    | 346     | <br>       | <br> | 346HF1B   | 137    | <br>
-THOR11   | 10.8 | 40  | 100.00%    | 262     | <br>       | <br> | 262HF1B   | 143    | <br>
-THOR16   | 15.6 | 58  | 100.00%    | 355     | <br>       | <br> | 355HF1B   | 138    | <br>
-THOR22   | 21.5 | 78  | 100.00%    | 524     | <br>       | <br> | 524HF1B   | 145    | <br>
-THOR25X4 | 24.3 | 88  | 100.00%    | 1800    | 4x tone spacing, 2 sec interleave | <br> | 1800HF1B | 263 | 40
-THOR50X1 | 48.6 | 176 | 100.00%    | 900     | 1 sec interleave                  | <br> | 900HF1B  | 263 | 41
-THOR50X2 | 48.5 | 176 | 100.00%    | 1800    | 2x tone spacing, 1 sec interleave | <br> | 1800HF1B | 263 | 42
-THOR100  | 97   | 352 | 100.00%    | 1800    | 0.5 sec interleave                | <br> | 1800HF1B | 263 | 43
-<br>
+ Mode    | Baud | WPM | BW (Hz) | Modulation | S/N  | ITU       | RSID-1 | RSID-2
+:--------| :--: | :-: | :-----: | :--------: | :--: | :-------: | :----: | :----:
+THOR4    | 3.9  | 14  | 173     | <br>       | <br> | 173HF1B   | 136    | <br>
+THOR5    | 5.4  | 22  | 244     | <br>       | <br> | 244HF1B   | 139    | <br>
+THOR8    | 7.8  | 28  | 346     | <br>       | <br> | 346HF1B   | 137    | <br>
+THOR11   | 10.8 | 40  | 262     | <br>       | <br> | 262HF1B   | 143    | <br>
+THOR16   | 15.6 | 58  | 355     | <br>       | <br> | 355HF1B   | 138    | <br>
+THOR22   | 21.5 | 78  | 524     | <br>       | <br> | 524HF1B   | 145    | <br>
+THOR25X4 | 24.3 | 88  | 1800    | 4x tone spacing<br>2 sec interleave | <br> | 1800HF1B | 263 | 40
+THOR50X1 | 48.6 | 176 | 900     | 1 sec interleave                  | <br> | 900HF1B  | 263 | 41
+THOR50X2 | 48.5 | 176 | 1800    | 2x tone spacing<br>1 sec interleave | <br> | 1800HF1B | 263 | 42
+THOR100  | 97   | 352 | 1800    | 0.5 sec interleave                | <br> | 1800HF1B | 263 | 43
 
 \section throb_table THROB
+ Mode   | Baud  | WPM  | BW (Hz) | Modulation   | S/N   | ITU       | RSID-1 | RSID-2
+:------ | :---: | :-:  | :-----: | :----------: | :---: | :-------: | :----: | :----:
+THROB1  | 1     | 10   | 72      | 1/2 of 9-FSK | <br>  | 72H0F1B   | 43     | <br>
+THROB2  | 2     | 20   | 72      | 1/2 of 9-FSK | <br>  | 72H0F1B   | 44     | <br>
+THROB4  | 4     | 30   | 144     | 1/2 of 9-FSK | <br>  | 144HF1B   | 45     | <br>
+THROBX1 | 1     | 10   | 94      | 2 of 11-FSK  | <br>  | 94H0F1B   | 46     | <br>
+THROBX2 | 2     | 20   | 94      | 2 of 11-FSK  | <br>  | 94H0F1B   | 47     | <br>
+THROBX4 | 4     | 40   | 188     | 2 of 11-FSK  | <br>  | 188HF1B   | 146    | <br>
 
- Mode   | Baud  | WPM  | Duty Cycle | BW (Hz) | Modulation   | S/N   | ITU       | RSID-1 | RSID-2
-:-----: | :---: | :-:  | :--------: | :-----: | :----------: | :---: | :-------: | :----: | :----:
-THROB1  | 1     | 10   | 80.00%     | 72      | 1/2 of 9-FSK | <br>  | 72H0F1B   | 43     | <br>
-THROB2  | 2     | 20   | 80.00%     | 72      | 1/2 of 9-FSK | <br>  | 72H0F1B   | 44     | <br>
-THROB4  | 4     | 30   | 80.00%     | 144     | 1/2 of 9-FSK | <br>  | 144HF1B   | 45     | <br>
-THROBX1 | 1     | 10   | 80.00%     | 94      | 2 of 11-FSK  | <br>  | 94H0F1B   | 46     | <br>
-THROBX2 | 2     | 20   | 80.00%     | 94      | 2 of 11-FSK  | <br>  | 94H0F1B   | 47     | <br>
-THROBX4 | 4     | 40   | 80.00%    | 188      | 2 of 11-FSK  | <br>  | 188HF1B   | 146    | <br>
-<br>
-
-</small>
-
-<br>
 \ref mode_table_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"
-
 
 */
