@@ -589,19 +589,58 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 		return FALSE;
 	}
 
+	LOG_INFO("\n\
+Get Comm State:\n\
+DCB.DCBlength       %d\n\
+DCB.Baudrate        %d\n\
+DCB.ByteSize        %d\n\
+DCB.Parity          %d\n\
+DCB.StopBits        %d\n\
+DCB.Binary          %d\n\
+DCB.fDtrControl     %d\n\
+DCB.fRtsControl     %d\n\
+DCB.fDsrSensitivity %d\n\
+DCB.fParity         %d\n\
+DCB.fOutX           %d\n\
+DCB.fInX            %d\n\
+DCB.fNull           %d\n\
+DCB.XonChar         %d\n\
+DCB.XoffChar        %d\n\
+DCB.fAbortOnError   %d\n\
+DCB.fOutxCtsFlow    %d\n\
+DCB.fOutxDsrFlow    %d\n",
+	(int)dcb.DCBlength,
+	(int)dcb.BaudRate,
+	(int)dcb.ByteSize,
+	(int)dcb.Parity,
+	(int)dcb.StopBits,
+	(int)dcb.fBinary,
+	(int)dcb.fDtrControl,
+	(int)dcb.fRtsControl,
+	(int)dcb.fDsrSensitivity,
+	(int)dcb.fParity,
+	(int)dcb.fOutX,
+	(int)dcb.fInX,
+	(int)dcb.fNull,
+	(int)dcb.XonChar,
+	(int)dcb.XoffChar,
+	(int)dcb.fAbortOnError,
+	(int)dcb.fOutxCtsFlow,
+	(int)dcb.fOutxDsrFlow);
+
 	dcb.BaudRate			= BaudRate;
 	dcb.ByteSize			= ByteSize;
 	dcb.Parity				= Parity;
-	dcb.StopBits			= StopBits;
-	dcb.fBinary				= TRUE;
-	dcb.fDsrSensitivity		= FALSE;
-	dcb.fParity				= dwParity;
-	dcb.fOutX				= FALSE;
-	dcb.fInX				= FALSE;
-	dcb.fNull				= FALSE;
-	dcb.fAbortOnError		= TRUE;
-	dcb.fOutxCtsFlow		= FALSE;
-	dcb.fOutxDsrFlow		= FALSE;
+	dcb.StopBits			= (StopBits == 1) ? 0 : 2;
+//	dcb.fBinary				= TRUE;
+//	dcb.fDsrSensitivity		= FALSE;
+//	dcb.fParity				= dwParity;
+//	dcb.fOutX				= FALSE;
+//	dcb.fInX				= FALSE;
+//	dcb.fNull				= FALSE;
+//	dcb.fAbortOnError		= TRUE;
+//	dcb.fOutxCtsFlow		= FALSE;
+//	dcb.fOutxDsrFlow		= FALSE;
 
 	if (dtr)
 		dcb.fDtrControl = DTR_CONTROL_ENABLE;
@@ -619,11 +658,52 @@ BOOL Cserial::ConfigurePort(DWORD	BaudRate,
 			dcb.fRtsControl = RTS_CONTROL_DISABLE;
 	}
 
+	LOG_INFO("\n\
+Set Comm State:\n\
+DCB.DCBlength       %d\n\
+DCB.Baudrate        %d\n\
+DCB.ByteSize        %d\n\
+DCB.Parity          %d\n\
+DCB.StopBits        %d\n\
+DCB.Binary          %d\n\
+DCB.fDtrControl     %d\n\
+DCB.fRtsControl     %d\n\
+DCB.fDsrSensitivity %d\n\
+DCB.fParity         %d\n\
+DCB.fOutX           %d\n\
+DCB.fInX            %d\n\
+DCB.fNull           %d\n\
+DCB.XonChar         %d\n\
+DCB.XoffChar        %d\n\
+DCB.fAbortOnError   %d\n\
+DCB.fOutxCtsFlow    %d\n\
+DCB.fOutxDsrFlow    %d\n",
+	(int)dcb.DCBlength,
+	(int)dcb.BaudRate,
+	(int)dcb.ByteSize,
+	(int)dcb.Parity,
+	(int)dcb.StopBits,
+	(int)dcb.fBinary,
+	(int)dcb.fDtrControl,
+	(int)dcb.fRtsControl,
+	(int)dcb.fDsrSensitivity,
+	(int)dcb.fParity,
+	(int)dcb.fOutX,
+	(int)dcb.fInX,
+	(int)dcb.fNull,
+	(int)dcb.XonChar,
+	(int)dcb.XoffChar,
+	(int)dcb.fAbortOnError,
+	(int)dcb.fOutxCtsFlow,
+	(int)dcb.fOutxDsrFlow);
+
 	bPortReady = SetCommState(hComm, &dcb);
+
 	if(bPortReady == 0) {
+		errno = GetLastError();
+		LOG_PERROR(win_error_string(errno).c_str());
 		CloseHandle(hComm);
 		hComm = INVALID_HANDLE_VALUE;
-		LOG_PERROR("Port not available");
 		return FALSE;
 	}
 

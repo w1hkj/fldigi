@@ -22,16 +22,20 @@
 #define RIGIO_H
 
 #include <string>
+#include "threads.h"
 
 #include "serial.h"
 
 extern Cserial rigio;
 
+extern pthread_mutex_t rigCAT_mutex;
+
 extern bool hexout(const std::string&);
 
-extern bool sendCommand(std::string, int retnbr, int waitval);
+extern bool sendCommand(std::string cmd, std::string catstr, int retnbr, int waitval);
+extern void add_to_cmdque( std::string cmd, std::string s, int retnbr, int waitval);
 
-extern long long rigCAT_getfreq(int retries, bool &failed, int multiplier = 1);
+extern long long rigCAT_getfreq(int retries, bool &failed, int waitval = 0);
 extern void rigCAT_setfreq(long long);
 
 extern std::string rigCAT_getmode();

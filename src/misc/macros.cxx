@@ -1927,7 +1927,7 @@ static void doRIGCAT(std::string s)
 		if (ch == ':') break;
 	}
 
-	sendCommand(buff, retnbr, progdefaults.RigCatWait);
+	add_to_cmdque("RIGCAT macro", buff, retnbr, progdefaults.RigCatWait);
 
 	que_ok = true;
 }
@@ -2004,9 +2004,7 @@ static void pRIGCAT(std::string &s, size_t &i, size_t endbracket)
 		if (ch == ':') break;
 	}
 
-	LOG_INFO("cat %s", hexstr(buff).c_str());
-
-	sendCommand(buff, retnbr, progdefaults.RigCatWait);
+	add_to_cmdque( "RIGCAT macro", buff, retnbr, progdefaults.RigCatWait);
 
 	s.replace(i, endbracket - i + 1, "");
 }
