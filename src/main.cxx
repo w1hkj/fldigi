@@ -538,6 +538,10 @@ void start_process(string executable)
 			DIR *dp = NULL;
 			std::string testdir = executable;
 			dp = opendir(testdir.append("/Contents/MacOS/").c_str());
+			if (!dp) {
+				fl_alert2("FOLDER NOT FOUND\n\n%s", testdir.append("/Contents/MacOS/").c_str());
+				return;
+			}
 			struct dirent *sd = NULL;
 			sd = readdir(dp);
 			string sds = sd->d_name;
