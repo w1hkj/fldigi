@@ -548,6 +548,11 @@ void start_process(string executable)
 			while (sds == "." || sds == "..") { sd = readdir(dp); sds = sd->d_name; }
 			closedir(dp);
 			executable.append("/Contents/MacOS/").append(sds);
+			if (executable.find(" ") != string::npos) {
+				string exec;
+				exec.assign("\"").append(executable).append("\"");
+				executable.assign(exec);
+			}
 			if (!params.empty()) executable.append(params);
 		}
 #endif
