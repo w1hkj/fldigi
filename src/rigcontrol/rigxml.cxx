@@ -749,7 +749,7 @@ void parsePMETER(size_t &p0) {
 	string strmeter = getElement(p0);
 	size_t pend = tagEnd(p0);
 	p0 = pend;
-	xmlrig.smeter.clear();
+	xmlrig.pmeter.clear();
 	int val, sm;
 	size_t p = strmeter.find(",");
 	while ( !strmeter.empty() && (p != string::npos) ) {
