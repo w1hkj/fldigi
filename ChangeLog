@@ -1,7 +1,31 @@
-2017-07-03  David Freese  <iam_w1hkj@w1hkj.com>
 
-	ee6cc45: SCU-17 ptt
-	964816a: bindUDP
+
+=Version 4.0.8=
+
+2017-07-21  David Freese  <iam_w1hkj@w1hkj.com>
+
+	38b65ea: Executable pathname
+	2a3c38b: rigCAT metering
+	37d78b1: OS X autostart
+	0006904: RigCAT i/o
+	c0bf2f2: Doxygen build
+	6e4f04c: Analysis modem
+	c438ba6: XMLRPC rx stream
+
+2017-07-13  Matt Roberts KK5YJ  <matt@kk5jy.net>
+
+	4a6e7ce: RX text paste
+
+2017-07-12  David Freese  <iam_w1hkj@w1hkj.com>
+
+	ef36e76: FSQ triggers
+	8517451: FSQ image
+
+
+=Version 4.0.7=
+
+	2f7b7b9: SCU-17 ptt
+	9fc06d6: bindUDP
 
 
 =Version 4.0.6=
