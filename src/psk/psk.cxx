@@ -195,11 +195,20 @@ void psk::rx_init()
 
 }
 
+bool psk::viewer_mode()
+{
+	if (mode == MODE_PSK31 || mode == MODE_PSK63 || mode == MODE_PSK63F ||
+		mode == MODE_PSK125 || mode == MODE_PSK250 || mode == MODE_PSK500 ||
+		mode == MODE_PSK125R || mode == MODE_PSK250R || mode == MODE_PSK500R ||
+		mode == MODE_QPSK31 || mode == MODE_QPSK63 || mode == MODE_QPSK125 ||
+		mode == MODE_QPSK250 || mode == MODE_QPSK500 ) 
+		return true;
+	return false;
+}
 
 void psk::restart()
 {
-	if ((mode >= MODE_PSK31 && mode <= MODE_PSK125) ||
-		(mode >= MODE_QPSK31 && mode <= MODE_QPSK125))
+	if (viewer_mode())
 		pskviewer->restart(mode);
 	evalpsk->setbw(sc_bw);
 }
@@ -825,8 +834,7 @@ psk::psk(trx_mode pskmode) : modem()
 	acquire = 0;
 
 	evalpsk = new pskeval;
-	if ((mode >= MODE_PSK31 && mode <= MODE_PSK125) ||
-		(mode >= MODE_QPSK31 && mode <= MODE_QPSK125))
+	if (viewer_mode())
 		pskviewer = new viewpsk(evalpsk, mode);
 	else
 		pskviewer = 0;
@@ -1530,10 +1538,11 @@ int psk::rx_process(const double *buf, int len)
 	cmplx z, z2[MAX_CARRIERS];
 	bool can_rx_symbol = false;
 
-	if (mode >= MODE_PSK31 && mode <= MODE_PSK125) {
+	if (viewer_mode()) {
 		if (!progdefaults.report_when_visible ||
 			dlgViewer->visible() || progStatus.show_channels )
-			if (pskviewer && !bHistory) pskviewer->rx_process(buf, len);
+			if (pskviewer && !bHistory)
+				pskviewer->rx_process(buf, len);
 		if (evalpsk)
 			evalpsk->sigdensity();
 	}

@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "fl_digi.h"
 #include "viewpsk.h"
 #include "pskeval.h"
 #include "pskcoeff.h"
@@ -40,6 +41,7 @@
 #include "Viewer.h"
 #include "qrunner.h"
 #include "status.h"
+#include "trx.h"
 
 extern waterfall *wf;
 
@@ -48,6 +50,15 @@ extern waterfall *wf;
 #define SQLCOEFF 0.01
 //#define SQLDECAY 50
 #define SQLDECAY 20
+
+#define K		5
+#define POLY1	0x17
+#define POLY2	0x19
+
+#define PSKR_K		7
+#define PSKR_POLY1	0x6d
+#define PSKR_POLY2	0x4f
+
 //=====================================================================
 
 viewpsk::viewpsk(pskeval* eval, trx_mode pskmode)
@@ -55,6 +66,10 @@ viewpsk::viewpsk(pskeval* eval, trx_mode pskmode)
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		channel[i].fir1 = (C_FIR_filter *)0;
 		channel[i].fir2 = (C_FIR_filter *)0;
+		channel[i].dec = (viterbi *)0;
+		channel[i].dec2 = (viterbi *)0;
+		channel[i].Rxinlv = (interleave *)0;
+		channel[i].Rxinlv2 = (interleave *)0;
 	}
 
 	evalpsk = eval;
@@ -67,6 +82,10 @@ viewpsk::~viewpsk()
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		if (channel[i].fir1) delete channel[i].fir1;
 		if (channel[i].fir2) delete channel[i].fir2;
+		if (channel[i].dec) delete channel[i].dec;
+		if (channel[i].dec2) delete channel[i].dec2;
+		if (channel[i].Rxinlv) delete channel[i].Rxinlv;
+		if (channel[i].Rxinlv2) delete channel[i].Rxinlv2;
 	}
 }
 
@@ -79,8 +98,16 @@ void viewpsk::init()
 		channel[i].phaseacc = 0;
 		channel[i].prevsymbol = cmplx (1.0, 0.0);
 		channel[i].quality = cmplx (0.0, 0.0);
-		channel[i].shreg = 0;
+		if (_pskr) {
+		// MFSK varicode instead of psk
+			channel[i].shreg = 1;
+			channel[i].shreg2 = 1;
+		} else {
+			channel[i].shreg = 0;
+			channel[i].shreg2 = 0;
+		}
 		channel[i].dcdshreg = 0;
+		channel[i].dcdshreg2 = 0;
 		channel[i].dcd = false;
 		channel[i].bitclk = 0;
 		channel[i].freqerr = 0.0;
@@ -106,31 +133,80 @@ void viewpsk::restart(trx_mode pskmode)
 	double			fir1c[64];
 	double			fir2c[64];
 
+	int idepth = 2;
+	int isize = 2;
+
+	_pskr = false;
+	_qpsk = false;
+	symbits = 1;
+
 	switch (viewmode) {
 	case MODE_PSK31:
 		symbollen = 256;
 		dcdbits = 32;
 		break;
-	case MODE_PSK63:
+
 	case MODE_PSK63F:
+		_pskr = true;
+	case MODE_PSK63:
 		symbollen = 128;
 		dcdbits = 64;
 		break;
-	case MODE_PSK125:
+
 	case MODE_PSK125R:
+		_pskr = true;
+		idepth = 40;  // 2x2x40 interleaver
+	case MODE_PSK125:
 		symbollen = 64;
 		dcdbits = 128;
 		break;
-	case MODE_PSK250:
+
 	case MODE_PSK250R:
+		_pskr = true;
+		idepth = 80;  // 2x2x80 interleaver
+	case MODE_PSK250:
 		symbollen = 32;
 		dcdbits = 256;
 		break;
-	case MODE_PSK500:
 	case MODE_PSK500R:
+		_pskr = true;
+		idepth = 160; // 2x2x160 interleaver
+	case MODE_PSK500:
 		symbollen = 16;
 		dcdbits = 512;
 		break;
+
+	case MODE_QPSK31:
+		symbollen = 256;
+		_qpsk = true;
+		symbits = 2;
+		dcdbits = 32;
+		break;
+	case MODE_QPSK63:
+		symbollen = 128;
+		symbits = 2;
+		_qpsk = true;
+		dcdbits = 64;
+		break;
+	case MODE_QPSK125:
+		symbollen = 64;
+		symbits = 2;
+		_qpsk = true;
+		dcdbits = 128;
+		break;
+	case MODE_QPSK250:
+		symbollen = 32;
+		symbits = 2;
+		_qpsk = true;
+		dcdbits = 256;
+		break;
+	case MODE_QPSK500:
+		symbollen = 16;
+		symbits = 2;
+		_qpsk = true;
+		dcdbits = 512;
+		break;
+
 	default: // punt! mode not one of the above.
 		symbollen = 512;
 		dcdbits = 32;
@@ -148,6 +224,28 @@ void viewpsk::restart(trx_mode pskmode)
 		if (channel[i].fir2) delete channel[i].fir2;
 		channel[i].fir2 = new C_FIR_filter();
 		channel[i].fir2->init(FIRLEN, 1, fir2c, fir2c);
+
+		if (_qpsk) {
+			if (channel[i].dec) delete channel[i].dec;
+			channel[i].dec = new viterbi(K, POLY1, POLY2);
+
+			if (channel[i].dec2) delete channel[i].dec;
+			channel[i].dec2 = 0;
+		} else {
+			if (channel[i].dec) delete channel[i].dec;
+			channel[i].dec = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+			channel[i].dec->setchunksize(4);
+
+			if (channel[i].dec2) delete channel[i].dec;
+			channel[i].dec2 = new viterbi(PSKR_K, PSKR_POLY1, PSKR_POLY2);
+			channel[i].dec2->setchunksize(4);
+		}
+
+	// 2x2x(20,40,80,160)
+		channel[i].Rxinlv = new interleave (isize, idepth, INTERLEAVE_REV);
+	// 2x2x(20,40,80,160)
+		channel[i].Rxinlv2 = new interleave (isize, idepth, INTERLEAVE_REV);
+
 	}
 
 	bandwidth = VPSKSAMPLERATE / symbollen;
@@ -159,17 +257,144 @@ void viewpsk::restart(trx_mode pskmode)
 //========================= viewpsk receive routines ==========================
 //=============================================================================
 
+bool viewpsk::is_valid_char(int &c)
+{
+	if (c == '\n' || c == '\r') {
+		c = ' ';
+		return true;
+	}
+	if (c <= 0) return false;
+	if (c > 0x7F) return false;
+	if (iscntrl(c & 0xFF)) return false;
+	return true;
+}
+
 void viewpsk::rx_bit(int ch, int bit)
 {
 	int c;
 	channel[ch].shreg = (channel[ch].shreg << 1) | !!bit;
-	if ((channel[ch].shreg & 3) == 0) {
-		c = psk_varicode_decode(channel[ch].shreg >> 2);
-		channel[ch].shreg = 0;
-		if (c == -1) return;
-		if (c == '\n' || c == '\r') c = ' ';
-		if (iscntrl(c & 0xFF)) return;
-		REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
+	if (_pskr) {
+		// MFSK varicode instead of PSK Varicode
+		if ((channel[ch].shreg & 7) == 1) {
+			c = varidec(channel[ch].shreg >> 1);
+			channel[ch].shreg = 1;
+			// Voting at the character level
+			if (channel[ch].fecmet >= channel[ch].fecmet2) {
+				if (is_valid_char(c))
+					REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
+			}
+		}
+	} else {
+		if ((channel[ch].shreg & 3) == 0) {
+			c = psk_varicode_decode(channel[ch].shreg >> 2);
+			channel[ch].shreg = 0;
+			if (is_valid_char(c))
+				REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
+		}
+	}
+}
+
+void viewpsk::rx_bit2(int ch, int bit)
+{
+	int c;
+
+	channel[ch].shreg2 = (channel[ch].shreg2 << 1) | !!bit;
+	// MFSK varicode instead of PSK Varicode
+	if ((channel[ch].shreg2 & 7) == 1) {
+		c = varidec(channel[ch].shreg2 >> 1);
+		// Voting at the character level
+		if (channel[ch].fecmet < channel[ch].fecmet2) {
+			if (is_valid_char(c))
+				REQ(&viewaddchr, ch, (int)channel[ch].frequency, c, viewmode);
+		}
+		channel[ch].shreg2 = 1;
+	}
+}
+
+void viewpsk::rx_pskr(int ch, unsigned char symbol)
+{
+	int met;
+	unsigned char twosym[2];
+	unsigned char tempc;
+	int c;
+
+	// Accumulate the soft bits for the interleaver THEN submit to Viterbi
+	// decoder in alternance so that each one is processed one bit later.
+	// Only two possibilities for sync: current bit or previous one since
+	// we encode with R = 1/2 and send encoded bits one after the other
+	// through the interleaver.
+
+	channel[ch].symbolpair[1] = channel[ch].symbolpair[0];
+	channel[ch].symbolpair[0] = symbol;
+
+	if (channel[ch].rxbitstate == 0) {
+		// process bit 1
+		// copy to avoid scrambling symbolpair for the next bit
+		channel[ch].rxbitstate = 1;
+		twosym[0] = channel[ch].symbolpair[0];
+		twosym[1] = channel[ch].symbolpair[1];
+		// De-interleave for Robust modes only
+		if (viewmode != MODE_PSK63F) channel[ch].Rxinlv2->symbols(twosym);
+		// pass de-interleaved bits pair to the decoder, reversed
+		tempc = twosym[1];
+		twosym[1] = twosym[0];
+		twosym[0] = tempc;
+		// Then viterbi decoder
+		c = channel[ch].dec2->decode(twosym, &met);
+		if (c != -1) {
+			// FEC only take metric measurement after backtrace
+			// Will be used for voting between the two decoded streams
+			channel[ch].fecmet2 = decayavg(channel[ch].fecmet2, met, 20);
+			rx_bit2(ch, c & 0x08);
+			rx_bit2(ch, c & 0x04);
+			rx_bit2(ch, c & 0x02);
+			rx_bit2(ch, c & 0x01);
+		}
+	} else {
+		// process bit 0
+		// copy to avoid scrambling symbolpair for the next bit
+		channel[ch].rxbitstate = 0;
+		twosym[0] = channel[ch].symbolpair[0];
+		twosym[1] = channel[ch].symbolpair[1];
+		// De-interleave
+		if (viewmode != MODE_PSK63F) channel[ch].Rxinlv->symbols(twosym);
+		tempc = twosym[1];
+		twosym[1] = twosym[0];
+		twosym[0] = tempc;
+		// Then viterbi decoder
+		c = channel[ch].dec->decode(twosym, &met);
+		if (c != -1) {
+			channel[ch].fecmet = decayavg(channel[ch].fecmet, met, 20);
+			rx_bit(ch, c & 0x08);
+			rx_bit(ch, c & 0x04);
+			rx_bit(ch, c & 0x02);
+			rx_bit(ch, c & 0x01);
+		}
+	}
+}
+
+void viewpsk::rx_qpsk(int ch, int bits)
+{
+	unsigned char sym[2];
+	int c;
+
+	if (!active_modem->get_reverse())
+		bits = (4 - bits) & 3;
+
+	sym[0] = (bits & 1) ? 255 : 0;
+	sym[1] = (bits & 2) ? 0 : 255;	// top bit is flipped
+
+	c = channel[ch].dec->decode(sym, NULL);
+
+	if (c != -1) {
+		rx_bit(ch, c & 0x80);
+		rx_bit(ch, c & 0x40);
+		rx_bit(ch, c & 0x20);
+		rx_bit(ch, c & 0x10);
+		rx_bit(ch, c & 0x08);
+		rx_bit(ch, c & 0x04);
+		rx_bit(ch, c & 0x02);
+		rx_bit(ch, c & 0x01);
 	}
 }
 
@@ -281,7 +506,11 @@ nexti: ;
 
 void viewpsk::rx_symbol(int ch, cmplx symbol)
 {
-	int n;
+	int n = 2; // psk
+	unsigned char softbit = 128;
+	double softangle;
+	double softamp;
+	double sigamp = norm(symbol);
 
 	channel[ch].phase = arg ( conj(channel[ch].prevsymbol) * symbol );
 	channel[ch].prevsymbol = symbol;
@@ -289,38 +518,74 @@ void viewpsk::rx_symbol(int ch, cmplx symbol)
 	if (channel[ch].phase < 0)
 		channel[ch].phase += 2 * M_PI;
 
-	channel[ch].bits = (((int) (channel[ch].phase / M_PI + 0.5)) & 1) << 1;
-	n = 2; // psk
+	if (_qpsk) {
+		n = 4;
+		channel[ch].bits = ((int) (channel[ch].phase / M_PI_2 + 0.5)) & (n-1);
+	} else {
+		channel[ch].bits = (((int) (channel[ch].phase / M_PI + 0.5)) & (n-1)) << 1;
 
-	channel[ch].dcdshreg = (channel[ch].dcdshreg << 2) | channel[ch].bits;
+	// hard decode if needed
+	// softbit = (bits & 2) ? 0 : 255;  
+	// reversed as we normally pass "!bits" when hard decoding
+	// Soft decode section below
+		channel[ch].averageamp = decayavg(channel[ch].averageamp, sigamp, SQLDECAY);
+		if (sigamp > 0 && channel[ch].averageamp > 0) {
+			softamp = clamp( channel[ch].averageamp / sigamp, 1.0, 1e6);
+		} else {
+			softamp = 1; // arbritary number (50% impact)
+		}
+	// Compute values between -128 and +127 for phase value only
+		if (channel[ch].phase > M_PI) {
+			softangle = (127 - (((2 * M_PI - channel[ch].phase) / M_PI) * (double) 255));
+		} else {
+			softangle = (127 - ((channel[ch].phase / M_PI) * (double) 255));
+		}
+	// Then apply impact of amplitude. Finally, re-centre on 127-128
+	// as the decoder needs values between 0-255
+		softbit = (unsigned char) ((softangle / (1 + softamp)) - 127);
+	}
+
+	channel[ch].dcdshreg <<= (symbits + 1);
+	channel[ch].dcdshreg |= channel[ch].bits;
 
 	switch (channel[ch].dcdshreg) {
-	case 0xAAAAAAAA:	/* DCD on by preamble */
-		if (!channel[ch].dcd)
-			REQ(&viewaddchr, ch, (int)channel[ch].frequency, 0, viewmode);
-		channel[ch].dcd = true;
-		channel[ch].quality = cmplx (1.0, 0.0);
-		channel[ch].metric = 100;
-		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
-		channel[ch].acquire = 0;
-		break;
+
+	// bpsk DCD on
+
+		case 0xAAAAAAAA:	/* DCD on by preamble */
+			if (_pskr) break;
+			if (!channel[ch].dcd)
+				REQ(&viewaddchr, ch, (int)channel[ch].frequency, 0, viewmode);
+			channel[ch].dcd = 1;
+			channel[ch].quality = cmplx (1.0, 0.0);
+			channel[ch].metric = 100;
+			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+			channel[ch].acquire = 0;
+			break;
+
+	// pskr DCD on
+		case 0x0A0A0A0A:
+			if (!_pskr) break;
+			if (!channel[ch].dcd)
+				REQ(&viewaddchr, ch, (int)channel[ch].frequency, 0, viewmode);
+			channel[ch].dcd = 1;
+			channel[ch].quality = cmplx (1.0, 0.0);
+			channel[ch].metric = 100;
+			channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
+			channel[ch].acquire = 0;
+			break;
 
 	case 0:			/* DCD off by postamble */
 		channel[ch].dcd = false;
 		channel[ch].quality = cmplx (0.0, 0.0);
 		channel[ch].metric = 0;
 		channel[ch].acquire = 0;
-//		channel[ch].frequency = NULLFREQ;
 		break;
 
 	default:
 		channel[ch].quality = cmplx (
 			decayavg(channel[ch].quality.real(), cos(n*channel[ch].phase), SQLDECAY),
 			decayavg(channel[ch].quality.imag(), sin(n*channel[ch].phase), SQLDECAY));
-//		channel[ch].quality.re = 
-//			decayavg(channel[ch].quality.re, cos(n*channel[ch].phase), SQLDECAY);
-//		channel[ch].quality.im = 
-//			decayavg(channel[ch].quality.im, sin(n*channel[ch].phase), SQLDECAY);
 		channel[ch].metric = norm(channel[ch].quality);
 		if (channel[ch].metric > (progStatus.VIEWER_psksquelch + 6.0)/26.0) {
 			channel[ch].dcd = true;
@@ -331,7 +596,9 @@ void viewpsk::rx_symbol(int ch, cmplx symbol)
 
 	if (channel[ch].dcd == true) {
 		channel[ch].timeout = progdefaults.VIEWERtimeout * VPSKSAMPLERATE / WFBLOCKSIZE;
-		rx_bit(ch, !channel[ch].bits);
+		if (_qpsk) rx_qpsk(ch, channel[ch].bits);
+		else if (_pskr) rx_pskr(ch, softbit);
+		else rx_bit(ch, !channel[ch].bits);
 		channel[ch].acquire = 0;
 	}
 }
@@ -361,7 +628,10 @@ int viewpsk::rx_process(const double *buf, int len)
 				ampsum = 0.0;
 				channel[ch].syncbuf[idx] = 0.8 * channel[ch].syncbuf[idx] + 0.2 * abs(z2);
 
-				for (int i = 0; i < 8; i++) {
+				double bitsteps = (symbollen >= 16 ? 16 : symbollen);
+				int symsteps = (int) (bitsteps / 2);
+
+				for (int i = 0; i < symsteps; i++) {
 					sum += (channel[ch].syncbuf[i] - channel[ch].syncbuf[i+8]);
 					ampsum += (channel[ch].syncbuf[i] + channel[ch].syncbuf[i+8]);
 				}
@@ -370,9 +640,9 @@ int viewpsk::rx_process(const double *buf, int len)
 				channel[ch].bitclk -= sum / 5.0;
 				channel[ch].bitclk += 1;
 
-				if (channel[ch].bitclk < 0) channel[ch].bitclk += 16.0;
-				if (channel[ch].bitclk >= 16.0) {
-					channel[ch].bitclk -= 16.0;
+				if (channel[ch].bitclk < 0) channel[ch].bitclk += bitsteps;
+				if (channel[ch].bitclk >= bitsteps) {
+					channel[ch].bitclk -= bitsteps;
 					rx_symbol(ch, z2);
 					afc(ch);
 				}

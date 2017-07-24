@@ -208,6 +208,8 @@ public:
 	void searchDown();
 	void searchUp();
 
+	bool viewer_mode();
+
 	void clear_viewer() { 
 		if (pskviewer) pskviewer->clear();
 //		if ((mode >= MODE_PSK31 && mode <= MODE_PSK125) ||

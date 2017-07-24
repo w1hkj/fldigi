@@ -28,6 +28,9 @@
 #include "globals.h"
 #include "filters.h"
 #include "pskeval.h"
+#include "viterbi.h"
+#include "mfskvaricode.h"
+#include "interleave.h"
 
 //=====================================================================
 #define	VPSKSAMPLERATE	(8000)
@@ -44,19 +47,34 @@ struct CHANNEL {
 	cmplx			prevsymbol;
 	cmplx			quality;
 	unsigned int	shreg;
+	unsigned int	shreg2;
 	double			metric;
 
 	double			frequency;
 	double			freqerr;
 	double			phase;
 	double			syncbuf[16];
+	double			averageamp;
 
 	C_FIR_filter	*fir1;
 	C_FIR_filter	*fir2;
-	
+	viterbi 		*dec;
+	viterbi			*dec2;
+
+	unsigned int 	bitshreg;
+	int 			rxbitstate;
+
+	unsigned char	symbolpair[2];
+	int				fecmet;
+	int				fecmet2;
+
+	interleave		*Rxinlv;
+	interleave		*Rxinlv2;
+
 	int				bits;
 	double 			bitclk;
 	unsigned int	dcdshreg;
+	unsigned int	dcdshreg2;
 	int 			dcd;
 	int				waitcount;
 	int				timeout;
@@ -66,10 +84,12 @@ struct CHANNEL {
 };
 
 class viewpsk {
+
 private:
 	trx_mode	viewmode;
 
 	int			symbollen;
+	int			symbits;
 	double		bandwidth;
 	int			dcdbits;
 
@@ -86,12 +106,21 @@ private:
 	int			nchannels;
 	int			lowfreq;
 
+	bool		_pskr;
+	bool		_qpsk;
+
 	pskeval*	evalpsk;
 
 	void		rx_symbol(int ch, cmplx symbol);
 	void 		rx_bit(int ch, int bit);
 	void		findsignal(int);
 	void		afc(int);
+
+	void 		rx_bit2(int ch, int bit);
+	void		rx_pskr(int ch, unsigned char symbol);
+	void		rx_qpsk(int ch, int bits);
+
+	bool		is_valid_char(int &c);
 
 	inline void		timeout_check();
 	inline void		insert();

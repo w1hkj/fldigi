@@ -1870,6 +1870,7 @@ static void pTXRX(std::string &s, size_t &i, size_t endbracket)
 		ToggleTXRX = true;
 }
 
+/*
 static std::string hexstr(std::string &s)
 {
 	static std::string hex;
@@ -1881,6 +1882,7 @@ static std::string hexstr(std::string &s)
 	}
 	return hex;
 }
+*/
 
 static void doRIGCAT(std::string s)
 {
