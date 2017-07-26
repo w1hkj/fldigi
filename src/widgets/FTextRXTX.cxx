@@ -694,7 +694,7 @@ void FTextRX::menu_cb(size_t item)
 
 	if (!input)
 		return;
-	char* s = get_word(popx, popy, progdefaults.nonwordchars.c_str());
+	char* s = get_word(popx, popy, progdefaults.nonwordchars.c_str(), false);
 	if (!s)
 		return;
 
