@@ -52,6 +52,8 @@
 #include "ascii.h"
 #include "timeops.h"
 
+#include "test_signal.h"
+
 using namespace std;
 
 #include "fsq_varicode.cxx"
@@ -1267,8 +1269,9 @@ void fsq::send_tone(int tone)
 	if (speed != progdefaults.fsqbaud) restart();
 
 	freq = (tx_basetone + tone * spacing) * samplerate / FSQ_SYMLEN;
-	if (grpNoise->visible() && btnOffsetOn->value()==true)
+	if (test_signal_window && test_signal_window->visible() && btnOffsetOn->value())
 		freq += ctrl_freq_offset->value();
+
 	phaseincr = 2.0 * M_PI * freq / samplerate;
 	prevtone = tone;
 

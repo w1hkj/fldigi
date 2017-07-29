@@ -169,8 +169,8 @@ private:
 	int				txsymbols[MAX_CARRIERS];
 
 	double			*tx_shape;
+	double			*imd_shape;
 	int 			preamble;
-	C_FIR_filter	*xmtfilt;
 
 	void			transmit(double *buf, int len);
 	void			tx_carriers();

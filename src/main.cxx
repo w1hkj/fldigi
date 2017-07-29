@@ -1311,9 +1311,6 @@ void generate_option_help(void) {
 		 << "    Perform the CPU speed test, show results in the event log\n"
 		 << "    and possibly change options.\n\n"
 
-		 << "  --noise\n"
-		 << "    Unhide controls for noise tests\n\n"
-
 		 << "  --wfall-only\n"
 		 << "    Hide all controls but the waterfall\n\n"
 
@@ -1429,7 +1426,7 @@ int parse_args(int argc, char **argv, int& idx)
 			   OPT_FRAMES_PER_BUFFER,
 #endif
 		   OPT_MORE_INFO,
-		   OPT_NOISE, OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL, OPT_DEBUG_AUDIO,
+		   OPT_DEBUG_LEVEL, OPT_DEBUG_PSKMAIL, OPT_DEBUG_AUDIO,
 			   OPT_EXIT_AFTER,
 			   OPT_DEPRECATED, OPT_HELP, OPT_VERSION, OPT_BUILD_INFO };
 
@@ -1490,7 +1487,6 @@ int parse_args(int argc, char **argv, int& idx)
 		{ "more-info",     1, 0, OPT_MORE_INFO },
 		{ "exit-after",    1, 0, OPT_EXIT_AFTER },
 
-		{ "noise", 0, 0, OPT_NOISE },
 		{ "debug-level",   1, 0, OPT_DEBUG_LEVEL },
 		{ "debug-pskmail", 0, 0, OPT_DEBUG_PSKMAIL },
 		{ "debug-audio", 0, 0, OPT_DEBUG_AUDIO },
@@ -1719,10 +1715,6 @@ int parse_args(int argc, char **argv, int& idx)
 
 		case OPT_RX_ONLY:
 			rx_only = true;
-			break;
-
-		case OPT_NOISE:
-			withnoise = true;
 			break;
 
 		case OPT_SHOW_CPU_CHECK:

@@ -243,6 +243,7 @@ FLDIGI_FL_SRC = \
 		dialogs/confdialog.fl \
 		dialogs/notifydialog.fl \
 		dialogs/record_browse.fl \
+		dialogs/testsigs.fl \
 		logbook/lgbook.fl \
 		logbook/fd_view.fl \
 		dxcluster/dx_dialog.fl
@@ -344,6 +345,7 @@ fldigi_SOURCES += \
 	dialogs/notifydialog.cxx \
 	dialogs/record_browse.cxx \
 	dialogs/tod_clock.cxx \
+	dialogs/testsigs.cxx \
 	dtmf/dtmf.cxx \
 	thor/thor.cxx \
 	thor/thorvaricode.cxx \
@@ -522,6 +524,8 @@ fldigi_SOURCES += \
 	include/winkeyer.h \
 	include/audio_alert.h \
 	include/play.pa.h \
+	include/testsigs.h \
+	include/test_signal.h \
 	irrxml/CXMLReaderImpl.h \
 	irrxml/fast_atof.h \
 	irrxml/heapsort.h \
@@ -633,6 +637,7 @@ fldigi_SOURCES += \
 	trx/modem.cxx \
 	trx/nullmodem.cxx \
 	trx/trx.cxx \
+	trx/test_signal.cxx \
 	waterfall/colorbox.cxx \
 	waterfall/digiscope.cxx \
 	waterfall/raster.cxx \

@@ -147,6 +147,8 @@
 #include "locator.h"
 #include "notify.h"
 
+#include "test_signal.h"
+
 #include "logbook.h"
 
 #include "rx_extract.h"
@@ -230,7 +232,6 @@ void set599();
 fre_t seek_re("CQ", REG_EXTENDED | REG_ICASE | REG_NOSUB);
 
 bool bWF_only = false;
-bool withnoise = false;
 
 Fl_Double_Window	*fl_digi_main      = (Fl_Double_Window *)0;
 
@@ -1324,120 +1325,125 @@ void cb_mnuSaveMacro(Fl_Menu_*, void*) {
 void remove_windows()
 {
 	if (scopeview) {
-LOG_ERROR("Deleting %s", "scopeview");
+LOG_INFO("Deleting %s", "scopeview");
 		scopeview->hide();
 		delete scopeview;
 	}
 	if (dlgViewer) {
-LOG_ERROR("Deleting %s", "dlgViewer");
+LOG_INFO("Deleting %s", "dlgViewer");
 		dlgViewer->hide();
 		delete dlgViewer;
 	}
 	if (dlgLogbook) {
-LOG_ERROR("Deleting %s", "dlgLogbook");
+LOG_INFO("Deleting %s", "dlgLogbook");
 		dlgLogbook->hide();
 		delete dlgLogbook;
 	}
 	if (lotw_review_dialog) {
-LOG_ERROR("Deleting %s", "lotw_review_dialog");
+LOG_INFO("Deleting %s", "lotw_review_dialog");
 		lotw_review_dialog->hide();
 		delete lotw_review_dialog;
 	}
 	if (dlgConfig) {
-LOG_ERROR("Deleting %s", "dlgConfig");
+LOG_INFO("Deleting %s", "dlgConfig");
 		dlgConfig->hide();
 		delete cboHamlibRig;
 		delete dlgConfig;
 	}
 	if (font_browser) {
-LOG_ERROR("Deleting %s", "font-browser");
+LOG_INFO("Deleting %s", "font-browser");
 		font_browser->hide();
 		delete font_browser;
 	}
 	if (notify_window) {
-LOG_ERROR("Deleting %s", "notify_window");
+LOG_INFO("Deleting %s", "notify_window");
 		notify_window->hide();
 		delete notify_window;
 	}
 	if (dxcc_window) {
-LOG_ERROR("Deleting %s", "dxcc_window");
+LOG_INFO("Deleting %s", "dxcc_window");
 		dxcc_window->hide();
 		delete dxcc_window;
 	}
 	if (picRxWin) {
-LOG_ERROR("Deleting %s", "picRxWin");
+LOG_INFO("Deleting %s", "picRxWin");
 		picRxWin->hide();
 		delete picRxWin;
 	}
 	if (picTxWin) {
-LOG_ERROR("Deleting %s", "picTxWin");
+LOG_INFO("Deleting %s", "picTxWin");
 		picTxWin->hide();
 		delete picTxWin;
 	}
 	if (fsqpicRxWin){
-LOG_ERROR("Deleting %s", "fsqpicRxWin");
+LOG_INFO("Deleting %s", "fsqpicRxWin");
 		fsqpicRxWin->hide();
 		delete fsqpicRxWin;
 	}
 	if (fsqpicTxWin){
-LOG_ERROR("Deleting %s", "fsqpicTxWin");
+LOG_INFO("Deleting %s", "fsqpicTxWin");
 		fsqpicTxWin->hide();
 		delete fsqpicTxWin;
 	}
 	if (ifkppicRxWin){
-LOG_ERROR("Deleting %s", "ifppicRxWin");
+LOG_INFO("Deleting %s", "ifppicRxWin");
 		ifkppicRxWin->hide();
 		delete ifkppicRxWin;
 	}
 	if (ifkppicTxWin){
-LOG_ERROR("Deleting %s", "ifppicTxWin");
+LOG_INFO("Deleting %s", "ifppicTxWin");
 		ifkppicTxWin->hide();
 		delete ifkppicTxWin;
 	}
 	if (thorpicRxWin){
-LOG_ERROR("Deleting %s", "thorpicRxWin");
+LOG_INFO("Deleting %s", "thorpicRxWin");
 		thorpicRxWin->hide();
 		delete thorpicRxWin;
 	}
 	if (thorpicTxWin){
-LOG_ERROR("Deleting %s", "thorpicTxWin");
+LOG_INFO("Deleting %s", "thorpicTxWin");
 		thorpicTxWin->hide();
 		delete thorpicTxWin;
 	}
 	if (wefax_pic_rx_win) {
-LOG_ERROR("Deleting %s", "wefax_pic_rxin");
+LOG_INFO("Deleting %s", "wefax_pic_rxin");
 		wefax_pic_rx_win->hide();
 		delete wefax_pic_rx_win;
 	}
 	if (wefax_pic_tx_win) {
-LOG_ERROR("Deleting %s", "wefax_pic_txin");
+LOG_INFO("Deleting %s", "wefax_pic_txin");
 		wefax_pic_tx_win->hide();
 		delete wefax_pic_tx_win;
 	}
 	if (wExport) {
-LOG_ERROR("Deleting %s", "wExport");
+LOG_INFO("Deleting %s", "wExport");
 		wExport->hide();
 		delete wExport;
 	}
 	if (wCabrillo) {
-LOG_ERROR("Deleting %s", "wCabrillo");
+LOG_INFO("Deleting %s", "wCabrillo");
 		wCabrillo->hide();
 		delete wCabrillo;
 	}
 	if (MacroEditDialog) {
-LOG_ERROR("Deleting %s", "MacroEditDialog");
+LOG_INFO("Deleting %s", "MacroEditDialog");
 		MacroEditDialog->hide();
 		delete MacroEditDialog;
 	}
-LOG_ERROR("Deleting %s", "fsqMonitor");
+LOG_INFO("Deleting %s", "fsqMonitor");
 	if (fsqMonitor) {
 		fsqMonitor->hide();
 		delete fsqMonitor;
 	}
 	if (dxcluster_viewer) {
-LOG_ERROR("Deleting %s", "dxcluster_viewer");
+LOG_INFO("Deleting %s", "dxcluster_viewer");
 		dxcluster_viewer->hide();
 		delete dxcluster_viewer;
+	}
+	if (test_signal_window) {
+LOG_INFO("Deleting %s", "test signal window");
+		test_signal_window->hide();
+		delete test_signal_window;
 	}
 //	if (fsqDebug) {
 //		fsqDebug->hide();
@@ -2135,6 +2141,11 @@ void cb_mnuConfigPSM(Fl_Menu_*, void*) {
 void cb_mnuConfigNotify(Fl_Menu_*, void*)
 {
 	notify_show();
+}
+
+void cb_mnuTestSignals(Fl_Menu_*, void*)
+{
+	show_testdialog();
 }
 
 void cb_mnuUI(Fl_Menu_*, void *) {
@@ -4842,7 +4853,8 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Test Signals")), 0, (Fl_Callback*)cb_mnuTestSignals, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
 { _("Contest/Logging"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
@@ -7885,9 +7897,6 @@ void create_fl_digi_main_primary() {
 
 	createConfig();
 	createRecordLoader();
-	if (withnoise) {
-		grpNoise->show();
-	}
 
 	switch (progdefaults.mbar_scheme) {
 		case 0: btn_scheme_0->setonly(); break;
@@ -8067,6 +8076,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Test Signals")), 0, (Fl_Callback*)cb_mnuTestSignals, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Save Config"), save_icon), 0, (Fl_Callback*)cb_mnuSaveConfig, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
 
@@ -8476,9 +8486,6 @@ void create_fl_digi_main_WF_only() {
 
 	createConfig();
 	createRecordLoader();
-	if (withnoise) {
-		grpNoise->show();
-	}
 	altTabs();
 
 	if (rx_only) {

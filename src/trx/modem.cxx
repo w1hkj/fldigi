@@ -38,6 +38,9 @@
 #include "qrunner.h"
 #include "macros.h"
 
+#include "testsigs.h"
+#include "test_signal.h"
+
 #include "status.h"
 #include "debug.h"
 
@@ -290,6 +293,10 @@ double modem::get_txfreq_woffset(void) const
 	if (mailserver && progdefaults.PSKmailSweetSpot)
 		return (progdefaults.PSKsweetspot - progdefaults.TxOffset);
 	if (get_mode() == MODE_FSQ) return (1500 - progdefaults.TxOffset);
+
+	if (test_signal_window && test_signal_window->visible() && btnOffsetOn->value())
+		return tx_frequency + ctrl_freq_offset->value();
+
 	return (tx_frequency - progdefaults.TxOffset);
 }
 
@@ -438,16 +445,12 @@ double modem::gauss(double sigma) {
 // simulating the noise that is added to the signal.
 // return signal + noise, limiting value to +/- 1.0
 
-//static double mag;
-
 void modem::add_noise(double *buffer, int len)
 {
 	double sigma = sigmaN(noiseDB->value());
 	double sn = 0;
+
 	for (int n = 0; n < len; n++) {
-//		mag = fabs(buffer[n]);
-//		if (btn_imd_on->value())
-//			buffer[n] *= (1.0 - mag *xmtimd->value())/(1.0 - xmtimd->value());
 		if (btnNoiseOn->value()) {
 			sn = (buffer[n] + gauss(sigma)) / (1.0 + 3.0 * sigma);
 			buffer[n] = clamp(sn, -1.0, 1.0);
@@ -464,6 +467,7 @@ void modem::s2nreport(void)
 }
 
 bool disable_modem = false;
+#define SIGLIMIT 0.95
 
 void modem::ModulateXmtr(double *buffer, int len)
 {
@@ -479,18 +483,18 @@ void modem::ModulateXmtr(double *buffer, int len)
 		return;
 	}
 
-	if (withnoise) add_noise(buffer, len);
+	if (test_signal_window && test_signal_window->visible()) add_noise(buffer, len);
 
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
-	if (mult > 0.99) mult = 0.99;
+	if (mult > SIGLIMIT) mult = SIGLIMIT;
 	for (int i = 0; i < len; i++) {
 		buffer[i] *= mult;
-		if (buffer[i] < -0.99) buffer[i] = -0.99;
-		if (buffer[i] >  0.99) buffer[i] = 0.99;
+		if (buffer[i] < -SIGLIMIT) buffer[i] = -SIGLIMIT;
+		if (buffer[i] >  SIGLIMIT) buffer[i] = SIGLIMIT;
 	}
 
 	try {
@@ -510,6 +514,7 @@ void modem::ModulateXmtr(double *buffer, int len)
 
 #include <iostream>
 using namespace std;
+
 void modem::ModulateStereo(double *left, double *right, int len, bool sample_flag)
 {
 	if (unlikely(!TXscard)) return;
@@ -518,21 +523,21 @@ void modem::ModulateStereo(double *left, double *right, int len, bool sample_fla
 	if(sample_flag)
 		tx_sample_count += len;
 
-	if (withnoise && progdefaults.noise) add_noise(left, len);
+	if (test_signal_window && test_signal_window->visible() && progdefaults.noise) add_noise(left, len);
 
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 
 	double mult = pow(10, progdefaults.txlevel / 20.0);
-	if (mult > 0.99) mult = 0.99;
+	if (mult > SIGLIMIT) mult = SIGLIMIT;
 
 	for (int i = 0; i < len; i++) {
-		if (right[i] < -0.99) right[i] = -0.99;
-		if (right[i] >  0.99) right[i] = 0.99;
+		if (right[i] < -SIGLIMIT) right[i] = -SIGLIMIT;
+		if (right[i] >  SIGLIMIT) right[i] = SIGLIMIT;
 		left[i] *= mult;
-		if (left[i] < -0.99) left[i] = -0.99;
-		if (left[i] >  0.99) left[i] = 0.99;
+		if (left[i] < -SIGLIMIT) left[i] = -SIGLIMIT;
+		if (left[i] >  SIGLIMIT) left[i] = SIGLIMIT;
 	}
 	try {
 		unsigned n = 4;
@@ -560,20 +565,20 @@ void modem::ModulateVideoStereo(double *left, double *right, int len, bool sampl
 	if(sample_flag)
 		tx_sample_count += len;
 
-	if (withnoise && progdefaults.noise) add_noise(left, len);
+	if (test_signal_window && test_signal_window->visible() && progdefaults.noise) add_noise(left, len);
 
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, left, (size_t)len);
 
-	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
+	double mult = SIGLIMIT * pow(10, progdefaults.txlevel / 20.0);
 
 	for (int i = 0; i < len; i++) {
-		if (right[i] < -1.0) right[i] = -1.0;
-		if (right[i] >  1.0) right[i] = 1.0;
+		if (right[i] < -SIGLIMIT) right[i] = -SIGLIMIT;
+		if (right[i] >  SIGLIMIT) right[i] = SIGLIMIT;
 		left[i] *= mult;
-		if (left[i] < -1.0) left[i] = -1.0;
-		if (left[i] >  1.0) left[i] = 1.0;
+		if (left[i] < -SIGLIMIT) left[i] = -SIGLIMIT;
+		if (left[i] >  SIGLIMIT) left[i] = SIGLIMIT;
 	}
 	try {
 		unsigned n = 4;
@@ -603,17 +608,17 @@ void modem::ModulateVideo(double *buffer, int len)
 		return;
 	}
 
-	if (withnoise && progdefaults.noise) add_noise(buffer, len);
+	if (test_signal_window && test_signal_window->visible() && progdefaults.noise) add_noise(buffer, len);
 
 	if (progdefaults.viewXmtSignal &&
 		!(PERFORM_CPS_TEST || active_modem->XMLRPC_CPS_TEST))
 		trx_xmit_wfall_queue(samplerate, buffer, (size_t)len);
 
-	double mult = 0.99 * pow(10, progdefaults.txlevel / 20.0);
+	double mult = SIGLIMIT * pow(10, progdefaults.txlevel / 20.0);
 	for (int i = 0; i < len; i++) {
 		buffer[i] *= mult;
-		if (buffer[i] < -1.0) buffer[i] = -1.0;
-		if (buffer[i] >  1.0) buffer[i] = 1.0;
+		if (buffer[i] < -SIGLIMIT) buffer[i] = -SIGLIMIT;
+		if (buffer[i] >  SIGLIMIT) buffer[i] = SIGLIMIT;
 	}
 
 	try {

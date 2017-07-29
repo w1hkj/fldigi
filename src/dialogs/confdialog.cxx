@@ -387,28 +387,6 @@ static void cb_inpMyAntenna(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *grpNoise=(Fl_Group *)0;
-
-Fl_Counter2 *noiseDB=(Fl_Counter2 *)0;
-
-static void cb_noiseDB(Fl_Counter2* o, void*) {
-  progdefaults.s2n = o->value();
-}
-
-Fl_Check_Button *btnNoiseOn=(Fl_Check_Button *)0;
-
-static void cb_btnNoiseOn(Fl_Check_Button* o, void*) {
-  progdefaults.noise = o->value();
-}
-
-Fl_Counter *ctrl_freq_offset=(Fl_Counter *)0;
-
-Fl_Check_Button *btnOffsetOn=(Fl_Check_Button *)0;
-
-Fl_Counter2 *xmtimd=(Fl_Counter2 *)0;
-
-Fl_Check_Button *btn_imd_on=(Fl_Check_Button *)0;
-
 Fl_Group *tabUI=(Fl_Group *)0;
 
 Fl_Tabs *tabsUI=(Fl_Tabs *)0;
@@ -7789,63 +7767,6 @@ Fl_Double_Window* ConfigureDialog() {
           inpMyAntenna->when(FL_WHEN_RELEASE);
           inpMyAntenna->labelsize(FL_NORMAL_SIZE);
         } // Fl_Input2* inpMyAntenna
-        { grpNoise = new Fl_Group(35, 281, 529, 99, _("Test Signal - Do NOT use with transmitter"));
-          grpNoise->box(FL_ENGRAVED_FRAME);
-          grpNoise->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-          grpNoise->hide();
-          { Fl_Counter2* o = noiseDB = new Fl_Counter2(70, 323, 127, 21, _("dB"));
-            noiseDB->box(FL_UP_BOX);
-            noiseDB->color(FL_BACKGROUND_COLOR);
-            noiseDB->selection_color(FL_INACTIVE_COLOR);
-            noiseDB->labeltype(FL_NORMAL_LABEL);
-            noiseDB->labelfont(0);
-            noiseDB->labelsize(14);
-            noiseDB->labelcolor(FL_FOREGROUND_COLOR);
-            noiseDB->minimum(-18);
-            noiseDB->maximum(60);
-            noiseDB->value(20);
-            noiseDB->callback((Fl_Callback*)cb_noiseDB);
-            noiseDB->align(Fl_Align(FL_ALIGN_TOP));
-            noiseDB->when(FL_WHEN_CHANGED);
-            o->value(progdefaults.s2n);
-            o->lstep(1);
-          } // Fl_Counter2* noiseDB
-          { Fl_Check_Button* o = btnNoiseOn = new Fl_Check_Button(99, 355, 68, 12, _("Noise on"));
-            btnNoiseOn->down_box(FL_DOWN_BOX);
-            btnNoiseOn->callback((Fl_Callback*)cb_btnNoiseOn);
-            o->value(progdefaults.noise);
-          } // Fl_Check_Button* btnNoiseOn
-          { Fl_Counter* o = ctrl_freq_offset = new Fl_Counter(234, 323, 127, 21, _("freq-offset"));
-            ctrl_freq_offset->tooltip(_("ONLY FOR TESTING !"));
-            ctrl_freq_offset->minimum(-250);
-            ctrl_freq_offset->maximum(250);
-            ctrl_freq_offset->align(Fl_Align(FL_ALIGN_TOP));
-            o->lstep(10);
-          } // Fl_Counter* ctrl_freq_offset
-          { btnOffsetOn = new Fl_Check_Button(263, 355, 68, 12, _("Offset on"));
-            btnOffsetOn->down_box(FL_DOWN_BOX);
-          } // Fl_Check_Button* btnOffsetOn
-          { Fl_Counter2* o = xmtimd = new Fl_Counter2(399, 323, 127, 21, _("ALC level"));
-            xmtimd->box(FL_UP_BOX);
-            xmtimd->color(FL_BACKGROUND_COLOR);
-            xmtimd->selection_color(FL_INACTIVE_COLOR);
-            xmtimd->labeltype(FL_NORMAL_LABEL);
-            xmtimd->labelfont(0);
-            xmtimd->labelsize(14);
-            xmtimd->labelcolor(FL_FOREGROUND_COLOR);
-            xmtimd->minimum(0.5);
-            xmtimd->maximum(1);
-            xmtimd->step(0.01);
-            xmtimd->value(1);
-            xmtimd->align(Fl_Align(FL_ALIGN_TOP));
-            xmtimd->when(FL_WHEN_CHANGED);
-            o->lstep(.1);
-          } // Fl_Counter2* xmtimd
-          { btn_imd_on = new Fl_Check_Button(428, 355, 68, 12, _("ALC on"));
-            btn_imd_on->down_box(FL_DOWN_BOX);
-          } // Fl_Check_Button* btn_imd_on
-          grpNoise->end();
-        } // Fl_Group* grpNoise
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
@@ -7853,7 +7774,6 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8120,9 +8040,9 @@ Fl_Double_Window* ConfigureDialog() {
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
+            tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
-                grp_Log_QSO->hide();
                 { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8315,6 +8235,7 @@ ab and newline are automatically included."));
                 grpMacLogger->end();
               } // Fl_Group* grpMacLogger
               { grpN3FJP_logs = new Fl_Group(0, 75, 600, 315, _("N3FJP logs"));
+                grpN3FJP_logs->hide();
                 { Fl_Text_Display* o = txt_N3FJP_data = new Fl_Text_Display(5, 145, 590, 150, _("TCP/IP Data Stream"));
                 txt_N3FJP_data->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 Fl_Text_Buffer *txtbuffer = new Fl_Text_Buffer();
@@ -9330,7 +9251,6 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Display"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9662,6 +9582,7 @@ i on a\ntouch screen device such as a tablet."));
             o->end();
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Mouse"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(55, 73, 490, 170);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(65, 87, 340, 20, _("Left or right click always replays audio history"));
@@ -13501,7 +13422,6 @@ nce.\nYou may change the state from either location.\n..."));
         tabID->hide();
         { tabsID = new Fl_Tabs(0, 25, 600, 365);
           { tabRsID = new Fl_Group(0, 50, 600, 340, _("RsID"));
-            tabRsID->hide();
             { Fl_Group* o = new Fl_Group(32, 55, 535, 210, _("Reed-Solomon ID (Rx)"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -13702,6 +13622,7 @@ gured on the\n\"Notifications\" configure dialog."));
             tabVideoID->end();
           } // Fl_Group* tabVideoID
           { tabCwID = new Fl_Group(0, 50, 600, 340, _("CW"));
+            tabCwID->hide();
             { sld = new Fl_Group(32, 146, 536, 127, _("CW Postamble ID"));
               sld->box(FL_ENGRAVED_FRAME);
               sld->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -13748,7 +13669,6 @@ gured on the\n\"Notifications\" configure dialog."));
         { tabsMisc = new Fl_Tabs(0, 25, 600, 365);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 600, 340, _("CPU"));
-            tabCPUspeed->hide();
             { Fl_Group* o = new Fl_Group(55, 75, 490, 51);
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -14242,6 +14162,7 @@ gured on the\n\"Notifications\" configure dialog."));
             tabWX->end();
           } // Fl_Group* tabWX
           { tabKML = new Fl_Group(0, 50, 600, 340, _("KML"));
+            tabKML->hide();
             { Fl_Input* o = btnKmlSaveDir = new Fl_Input(26, 75, 390, 24, _("KML files directory"));
               btnKmlSaveDir->tooltip(_("Where generated KML documents are stored."));
               btnKmlSaveDir->callback((Fl_Callback*)cb_btnKmlSaveDir);
@@ -14351,7 +14272,6 @@ and restarted if needed."));
         tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 365);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Call Lookup"));
-            o->hide();
             { Fl_Group* o = new Fl_Group(34, 56, 538, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -14636,6 +14556,7 @@ and restarted if needed."));
             tabEQSL->end();
           } // Fl_Group* tabEQSL
           { tabLOTW = new Fl_Group(0, 50, 600, 340, _("LoTW"));
+            tabLOTW->hide();
             { Fl_Input2* o = txt_lotw_pathname = new Fl_Input2(90, 91, 379, 24, _("tqsl:"));
               txt_lotw_pathname->tooltip(_("Enter full path-filename for tqsl executable"));
               txt_lotw_pathname->box(FL_DOWN_BOX);

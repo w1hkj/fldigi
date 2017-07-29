@@ -1,0 +1,56 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0304
+i18n_type 1
+i18n_include "gettext.h"
+i18n_function _
+header_name {.h}
+code_name {.cxx}
+decl {\#include "configuration.h"} {selected private local
+}
+
+Function {make_testdialog()} {open
+} {
+  Fl_Window {} {
+    label {Test Signals} open
+    xywh {569 35 480 100} type Double visible
+  } {
+    Fl_Counter noiseDB {
+      label {Noise level (db)}
+      callback {progdefaults.s2n = o->value();}
+      xywh {10 41 127 21} align 1 minimum -18 maximum 60 value 20
+      code0 {o->value(progdefaults.s2n);}
+      code1 {o->lstep(1);}
+      code2 {\#include "flslider2.h"}
+      class Fl_Counter2
+    }
+    Fl_Check_Button btnNoiseOn {
+      label {Noise on}
+      callback {progdefaults.noise = o->value();}
+      xywh {39 73 68 12} down_box DOWN_BOX
+      code0 {o->value(progdefaults.noise);}
+    }
+    Fl_Counter ctrl_freq_offset {
+      label {freq-offset}
+      tooltip {ONLY FOR TESTING !} xywh {174 41 127 21} align 1 minimum -250 maximum 250
+      code0 {o->lstep(10);}
+    }
+    Fl_Check_Button btnOffsetOn {
+      label {Offset on}
+      xywh {203 73 68 12} down_box DOWN_BOX
+    }
+    Fl_Counter xmtimd {
+      label {PSK IMD
+level (db)}
+      xywh {339 41 127 21} align 1 minimum -40 maximum -15 step 1 value -30
+      class Fl_Counter2
+    }
+    Fl_Check_Button btn_imd_on {
+      label {IMD on}
+      xywh {368 73 68 12} down_box DOWN_BOX
+    }
+    Fl_Box {} {
+      label {!! DO NOT USE ON LIVE TRANSMITER !!}
+      xywh {2 2 368 20} labelcolor 80
+    }
+  }
+}

@@ -52,6 +52,7 @@
 #include "macros.h"
 
 #include "confdialog.h"
+#include "test_signal.h"
 
 extern waterfall *wf;
 
@@ -154,12 +155,6 @@ void psk::tx_init()
 	vphase = 0;
 	maxamp = 0;
 
-	double bw2 = 6.0 * bandwidth;
-	double flo = (get_txfreq_woffset() - bw2);
-	if (flo <= 0) flo = 0;
-	double fhi = (get_txfreq_woffset() + bw2);
-	if (fhi >= 0.48*samplerate) fhi = 0.48*samplerate;
-	xmtfilt->init_bandpass (127, 1, flo/samplerate, fhi/samplerate);
 }
 
 void psk::rx_init()
@@ -227,6 +222,7 @@ void psk::init()
 psk::~psk()
 {
 	if (tx_shape) delete [] tx_shape;
+	if (imd_shape) delete [] imd_shape;
 	if (enc) delete enc;
 	if (dec) delete dec;
 	// FEC 2nd Viterbi decoder
@@ -252,7 +248,6 @@ psk::~psk()
 
 	if (vestigial_sfft) delete vestigial_sfft;
 
-	if (xmtfilt) delete xmtfilt;
 }
 
 psk::psk(trx_mode pskmode) : modem()
@@ -811,10 +806,18 @@ psk::psk(trx_mode pskmode) : modem()
 	startpreamble = true;
 
 	tx_shape = new double[symbollen];
+	imd_shape = new double[symbollen];
 
 	// raised cosine shape for the transmitter
-	for ( int i = 0; i < symbollen; i++)
-		tx_shape[i] = 0.5 * cos(i * M_PI / symbollen) + 0.5;
+	double sym_ph = 0;
+	for ( int i = 0; i < symbollen; i++) {
+		sym_ph = i * M_PI / symbollen;
+		tx_shape[i] = 0.5 * cos(sym_ph) + 0.5;
+		imd_shape[i] = 0.5 * ( cos(3.0 * sym_ph) + 
+							   (3.0/5.0) * cos(5.0 * sym_ph) +
+							   (3.0/7.0) * cos(7.0 * sym_ph) + 
+							   (3.0/9.0) * cos(9.0 * sym_ph) );
+	}
 
 	fragmentsize = symbollen;
 	sc_bw = samplerate / symbollen;
@@ -849,8 +852,6 @@ psk::psk(trx_mode pskmode) : modem()
 		vestigial_sfft = new sfft(sfft_size, bin - 5, bin + 6); // 11 bins
 		for (int i = 0; i < 11; i++) sfft_bins[i] = cmplx(0,0);
 	}
-
-	xmtfilt = new C_FIR_filter();
 
 }
 
@@ -1488,12 +1489,12 @@ void psk::signalquality()
 	if (((e0 - e1) > 0) && (e1 > 0))
 		snratio = (e0 - e1) / e1;
 	else
-		snratio = 1000.0;
+		snratio = 1.0;
 
 	if (((e0 - e1) > 0) && ((e2 - e1) > 0) )
 		imdratio = (e2 - e1) / (e0 - e1);
 	else
-		imdratio = 0.001;
+		imdratio = 1.0;
 
 }
 
@@ -1509,24 +1510,23 @@ void psk::update_syncscope()
 		memset(msg2, 0, sizeof(msg2));
 
 		s2n = 10.0*log10( snratio );
-		snprintf(msg1, sizeof(msg1), "s/n %2.0f dB", s2n);
+		snprintf(msg1, sizeof(msg1), "S/N %2.0f dB", s2n);
+		put_Status1(
+			msg1,
+			progdefaults.StatusTimeout,
+			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
 
 		imd = 10.0*log10( imdratio );
-		snprintf(msg2, sizeof(msg2), "imd %2.0f dB", imd);
 
-		put_Status1(	msg1,
-						progdefaults.StatusTimeout,
-						progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
-		put_Status2(	msg2,
-						progdefaults.StatusTimeout,
-						progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
+		if ( (imd > -18) || (s2n + imd) < -1 ) {
+			snprintf(msg2, sizeof(msg2), "%s", "");
+		} else
+			snprintf(msg2, sizeof(msg2), "IMD %2.0f dB", imd);
+		put_Status2(
+			msg2,
+			progdefaults.StatusTimeout,
+			progdefaults.StatusDim ? STATUS_DIM : STATUS_CLEAR);
 	}
-
-//static char msg3[50];
-//memset(msg3, 0, sizeof(msg3));
-//snprintf(msg3, sizeof(msg3), "%10.3f, %10.3f, %10.3f",
-//e0, e1, e2);
-//put_status(msg3);
 
 }
 
@@ -1723,9 +1723,6 @@ int psk::rx_process(const double *buf, int len)
 
 void psk::transmit(double *buf, int len)
 {
-	if (btn_imd_on->value())
-		for (int i = 0; i < len; i++) xmtfilt->Irun(buf[i], buf[i]);
-
 	ModulateXmtr(buf, len);
 }
 
@@ -1788,6 +1785,21 @@ void psk::tx_carriers()
 		for (int i = 0; i < symbollen; i++) {
 
 			shapeA = tx_shape[i];
+
+			if (test_signal_window && test_signal_window->visible() && btn_imd_on->value()) {
+				double imd = pow(10, xmtimd->value()/20.0);
+				shapeA -= (imd * imd_shape[i]);
+//				shapeA = cos(i * M_PI/symbollen);
+//				shapeA -= imd * cos(3.0 * i * M_PI / symbollen);
+//				shapeA -= imd * (3.0 / 5.0) * cos(5.0 * i * M_PI / symbollen);
+//				shapeA -= imd * (3.0 / 7.0) * cos(7.0 * i * M_PI / symbollen);
+//				shapeA -= imd * (3.0 / 9.0) * cos(9.0 * i * M_PI / symbollen);
+//				shapeA *= 0.5;
+//				shapeA += 0.5;
+			} 
+//			else
+//				shapeA = tx_shape[i];  //0.5 * cos(i * M_PI / symbollen) + 0.5;
+
 			shapeB = (1.0 - shapeA);
 
 			ival = shapeA * prevsymbol[car].real() + shapeB * symbol.real();
@@ -1798,11 +1810,6 @@ void psk::tx_carriers()
 			} else {
 				outbuf[i] = (ival * cos(phaseacc[car]) + qval * sin(phaseacc[car])) / numcarriers;
 			}
-// create an imd value
-			double maxmag = xmtimd->value();
-			if (btn_imd_on->value())
-				if (fabs(outbuf[i]) > maxmag)
-					outbuf[i] = maxmag * (outbuf[i] < 0 ? -1 : 1);
 
 			phaseacc[car] += delta[car];
 			if (phaseacc[car] > TWOPI) phaseacc[car] -= TWOPI;
@@ -1825,7 +1832,6 @@ void psk::tx_carriers()
 	maxamp = 0;
 	for (int i = 0; i < symbollen; i++)
 		if (maxamp < fabs(outbuf[i])) maxamp = fabs(outbuf[i]);
-	maxamp *= 1.02;
 	if (maxamp) {
 		for (int i = 0; i < symbollen; i++)
 			outbuf[i] /= maxamp;
@@ -2132,6 +2138,8 @@ void psk::tx_flush()
 		for (int i = 0; i < dcdbits; i++)
 			tx_symbol(2); // 0 degrees
 	}
+	for (int i = 0; i < 2048; i++) outbuf[i] = 0;
+	transmit(outbuf, 2048);
 }
 
 // Necessary to clear the interleaver before we start sending

@@ -51,6 +51,8 @@
 
 #include "confdialog.h"
 
+#include "test_signal.h"
+
 using namespace std;
 
 #include "ifkp_varicode.cxx"
@@ -627,11 +629,11 @@ void ifkp::send_tone(int tone)
 {
 	double phaseincr;
 	double frequency;
-	double freq_error = ctrl_freq_offset->value();
 
 	frequency = (basetone + tone * IFKP_SPACING) * samplerate / symlen;
-	if (grpNoise->visible() && btnOffsetOn->value()==true)
-		frequency += freq_error;
+	if (test_signal_window && test_signal_window->visible() && btnOffsetOn->value())
+		frequency += ctrl_freq_offset->value();
+
 	phaseincr = 2.0 * M_PI * frequency / samplerate;
 	prevtone = tone;
 

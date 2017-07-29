@@ -29,15 +29,6 @@ extern Fl_Input2 *inpMyLocator;
 extern Fl_Input2 *inpOperCallsign;
 extern Fl_Input2 *inpMyName;
 extern Fl_Input2 *inpMyAntenna;
-extern Fl_Group *grpNoise;
-extern Fl_Counter2 *noiseDB;
-#include <FL/Fl_Check_Button.H>
-extern Fl_Check_Button *btnNoiseOn;
-#include <FL/Fl_Counter.H>
-extern Fl_Counter *ctrl_freq_offset;
-extern Fl_Check_Button *btnOffsetOn;
-extern Fl_Counter2 *xmtimd;
-extern Fl_Check_Button *btn_imd_on;
 extern Fl_Group *tabUI;
 extern Fl_Tabs *tabsUI;
 extern Fl_Group *tabBrowser;
@@ -46,6 +37,7 @@ extern Fl_Spinner2 *cntTimeout;
 extern Fl_ListBox *listboxViewerLabel;
 #include <FL/Fl_Button.H>
 extern Fl_Button *btnViewerFont;
+#include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btnFixedIntervals;
 extern Fl_Check_Button *btnMarquee;
 extern Fl_Check_Button *btnAscend;
@@ -146,6 +138,7 @@ extern Fl_Check_Button *btn_cqww_contest;
 extern Fl_Check_Button *btn_bart_contest;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
+#include <FL/Fl_Counter.H>
 extern Fl_Counter *cnt_macro_height;
 #include <FL/Fl_Round_Button.H>
 extern Fl_Round_Button *btn_scheme_0;

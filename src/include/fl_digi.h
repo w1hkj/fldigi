@@ -292,7 +292,6 @@ extern Fl_Light_Button		*btnTune;
 extern Fl_Light_Button		*btnAutoSpot;
 
 extern bool			bWF_only;
-extern bool			withnoise;
 extern int				altMacros;
 
 extern waterfall		*wf;
