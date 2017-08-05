@@ -243,6 +243,7 @@ int WK_send_char(int c)
 	} else n = 7;
 	n += 4;
 	n *= 120 / cntCW_WPM->value();
+	n *= 2; // needed for ZLP clone compatibility
 
 	while (WK_wait_for_char) {
 		MilliSleep(10);
