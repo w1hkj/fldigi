@@ -21,6 +21,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <iostream>
 
 #include <list>
 
@@ -103,10 +104,14 @@ void spot_recv(char c, int decoder, int afreq, int md)
 	string::size_type n = buf.length();
 	if (n == DECBUFSIZE)
 		buf.erase(0, DECBUFSIZE - SEARCHLEN);
+
 	const char* search = buf.c_str() + (n > SEARCHLEN ? n - SEARCHLEN : 0);
+
+	bool matched = false;
 
 	for (rcblist_t::iterator i = rcblist.begin(); i != rcblist.end(); ++i) {
 		if (unlikely(i->first->match(search))) {
+			matched = true;
 			const vector<regmatch_t>& m = i->first->suboff();
 			for (list<callback_t*>::iterator j = i->second.begin();
 			     j != i->second.end() && (*j)->rcb; ++j) {
@@ -117,6 +122,8 @@ void spot_recv(char c, int decoder, int afreq, int md)
 			}
 		}
 	}
+	if (matched)
+		buf.clear();
 }
 
 static void get_log_details(long long& freq, trx_mode& mode, time_t& rtime)
