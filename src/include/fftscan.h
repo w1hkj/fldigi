@@ -48,20 +48,17 @@ private:
 	bool _refresh;
 
 	double *fftbuff;
-	std::complex<double> *dftbuff;
+	double *dftbuff;
 	double *buffer;
 
 	g_fft<double>	*scanfft;
 
-	// int restart_count;
-
-	//double sig_level;
 	double	wf_freq;
 	long  ticks;
 	double  scans;
 
 	void writeFile();
-	std::complex<double> dft (std::complex<double> *buff, double fm, double Ts, double offset);
+
 	inline double blackman(double x) {
 		return (0.42 - 0.50 * cos(2 * M_PI * x) + 0.08 * cos(4 * M_PI * x));
 	}

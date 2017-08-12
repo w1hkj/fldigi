@@ -92,7 +92,7 @@ fftscan::fftscan()
 	samplerate = fftscan_SampleRate;
 
 	fftbuff = new double[fftscanFFT_LEN];
-	dftbuff = new std::complex<double>[fftscanFFT_LEN];
+	dftbuff = new double[fftscanFFT_LEN];
 	buffer  = new double[fftscanFFT_LEN / 2];
 
 	scanfft = new g_fft<double>(fftscanFFT_LEN);
@@ -104,22 +104,6 @@ fftscan::fftscan()
 
 	cap &= ~CAP_TX;
 	restart();
-}
-
-std::complex<double> fftscan::dft (std::complex<double> *buff, double fm, double Ts, double offset)
-{
-	std::complex<double> val;
-	val = std::complex<double>(0,0);
-
-	double factor = 2.0 / fftscanFFT_LEN;
-	double omega = fm * Ts + offset / (2.0 * fftscanFFT_LEN);
-
-	for( int i = 0; i < fftscanFFT_LEN; i++)
-		val += buff[i] * std::complex<double>(
-			cos(2 * M_PI * i * omega),
-			sin(2 * M_PI * i * omega) );
-	val *= factor;
-	return val;
 }
 
 void fftscan::start_csv()
@@ -156,8 +140,11 @@ void fftscan::writeFile()
 		return;
 	}
 
+	double val = 0;
 	for (int i = 0; i < nyquist; i++) {
-		buffer[i] = 20 * log10f(fftbuff[i]/nyquist);
+		val = fftbuff[i];
+		if (val == 0) val = nyquist * 1e-10;
+		buffer[i] = 20 * log10f(val/nyquist);
 	}
 
 	if (progdefaults.dft_relative) {
@@ -187,8 +174,11 @@ void fftscan::update_syncscope()
 {
 	int nyquist = fftscanFFT_LEN/2;
 
+	double val = 0;
 	for (int i = 0; i < nyquist; i++) {
-		buffer[i] = 20 * log10f(fftbuff[i]/nyquist);
+		val = fftbuff[i];
+		if (val == 0) val = nyquist * 1e-10;
+		buffer[i] = 20 * log10f(val/nyquist);
 	}
 
 	if (progdefaults.dft_relative) {
@@ -232,37 +222,44 @@ int fftscan::rx_process(const double *buf, int len)
 	if (wf_freq != frequency)
 		restart();
 
+	int minscans = fftscanFFT_LEN / len;
 	scans++;
 
-	if (scans > progdefaults.cnt_dft_scans) {
+	if (scans > (progdefaults.cnt_dft_scans + minscans)) {
 		if (_refresh) {
 			_refresh = false;
 			update_syncscope();
 		}
 		return 0;
 	}
+	int pscans = scans - minscans;
+	if (pscans < 1) return 0;
 
 	for (int i = 0; i < fftscanFFT_LEN - len; i++)
 		dftbuff[i] = dftbuff[i + len];
 	for (int i = 0; i < len; i++) {
-		dftbuff[fftscanFFT_LEN - len + i] = std::complex<double>(buf[i], 0);
+		dftbuff[fftscanFFT_LEN - len + i] = buf[i];
 	}
 
-	for (int i = 0; i < fftscanFFT_LEN; i++)
-		tempbuff[i] = dftbuff[i];
+	double val;
+	for (int i = 0; i < fftscanFFT_LEN; i++) {
+		val = dftbuff[i] * blackman(1.0 * i / fftscanFFT_LEN);
+		tempbuff[i] = std::complex<double>(val, val);
+	}
 
 	scanfft->ComplexFFT(tempbuff);
+
 	for (int i = 0; i < fftscanFFT_LEN/2; i++)
-		fftbuff[i] = (fftbuff[i] * (scans - 1) + abs(tempbuff[i])) / scans;
+		fftbuff[i] = (fftbuff[i] * (pscans - 1) + abs(tempbuff[i])) / pscans;
 
 	update_syncscope();
 
-	if (scans == progdefaults.cnt_dft_scans) {
+	if (pscans == progdefaults.cnt_dft_scans) {
 		put_Status2("scan completed", 30.0);
 		writeFile();
 		return 0;
 	}
-	snprintf(msg, sizeof(msg), "scanning %d", (int)(progdefaults.cnt_dft_scans - scans + 1));
+	snprintf(msg, sizeof(msg), "scanning %d", (int)(progdefaults.cnt_dft_scans - pscans + 1));
 	put_Status2(msg, 5.0);
 
 	return 0;
