@@ -64,6 +64,7 @@ extern void dxcluser_servers(Fl_Button*, void*);
 extern void dxcluster_hosts_load();
 
 extern void dxc_lines();
+extern void dxc_lines_redraw();
 
 extern void dxc_click_m1(Fl_Button*, void*);
 extern void dxc_click_m2(Fl_Button*, void*);

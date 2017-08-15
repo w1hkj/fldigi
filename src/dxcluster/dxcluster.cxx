@@ -25,6 +25,7 @@
 #include <cmath>
 #include <cstring>
 #include <vector>
+#include <queue>
 #include <list>
 #include <stdlib.h>
 
@@ -207,10 +208,74 @@ void show_error(string buff)
 #endif
 }
 
-#include <queue>
+static void odd_even()
+{
+	char hdr[100];
+	snprintf(hdr, sizeof(hdr), 
+			"@F%d@S%d@.Spotter    Freq     Dx Station       Notes                      UTC    LOC",
+			progdefaults.DXC_textfont,
+			progdefaults.DXC_textsize);
+	reports_header->clear();
+	reports_header->add(hdr);
+	reports_header->redraw();
+
+	snprintf(odd, sizeof(odd), "@B%u@C%u@F%d@S%d@.",
+			progdefaults.DXC_odd_color,
+			FL_BLACK,
+			progdefaults.DXC_textfont,
+			progdefaults.DXC_textsize);
+
+	snprintf(even, sizeof(even), "@B%u@C%u@F%d@S%d@.",
+		progdefaults.DXC_even_color,
+		FL_BLACK,
+		progdefaults.DXC_textfont,
+		progdefaults.DXC_textsize);
+
+}
+
+void dxc_lines_redraw()
+{
+	guard_lock dxcc_lock(&dxc_line_mutex);
+
+	odd_even();
+
+	int n = brws_dx_cluster->size();
+	if (n == 0) return;
+
+	queue<string> lines;
+	string dxc_line;
+	size_t p;
+	for (int i = 0; i < n; i++) {
+		dxc_line = brws_dx_cluster->text(i+1);
+		p = dxc_line.find(".");
+		if (p != string::npos) dxc_line.erase(0,p+1);
+		lines.push(dxc_line);
+	}
+	brws_dx_cluster->clear();
+
+	for (int i = 0; i < n; i++) {
+		if (i % 2)
+			dxc_line.assign(even);
+		else
+			dxc_line.assign(odd);
+		dxc_line.append(lines.front());
+		lines.pop();
+		brws_dx_cluster->insert(1, dxc_line.c_str());
+	}
+	if (progdefaults.dxc_topline)
+		brws_dx_cluster->make_visible(1);
+	else
+		brws_dx_cluster->bottomline(brws_dx_cluster->size());
+
+	brws_dx_cluster->redraw();
+}
+
 void dxc_lines()
 {
 	guard_lock dxcc_lock(&dxc_line_mutex);
+
+	odd_even();
+
 	int n = brws_dx_cluster->size();
 
 	if (n == 0) return;
@@ -1162,7 +1227,7 @@ void dxcluster_hosts_select(Fl_Button*, void*)
 	int line_nbr = brws_dxcluster_hosts->value();
 	if (line_nbr == 0) return;
 	host_line = brws_dxcluster_hosts->text(line_nbr);
-	string	host_name, 
+	string	host_name,
 			host_port,
 			host_login,
 			host_password;
@@ -1177,7 +1242,7 @@ void dxcluster_hosts_select(Fl_Button*, void*)
 	host_port = host_line.substr(0, p);
 	host_line.erase(0, p+1);
 	p = host_line.find(":");
-	if (p == string::npos) 
+	if (p == string::npos)
 		host_login = host_line;
 	else {
 		host_login = host_line.substr(0, p);
@@ -1200,10 +1265,6 @@ void dxcluster_hosts_select(Fl_Button*, void*)
 	progdefaults.dxcc_password = host_password;
 	inp_dxcc_password->value(host_password.c_str());
 	inp_dxcc_password->redraw();
-
-std::cout << "host " << host_name << "\nport " << host_port <<
-"\nlogin " << host_login << "\npassword " << host_password << std::endl;
-
 }
 
 void dxcluster_hosts_delete(Fl_Button*, void*)

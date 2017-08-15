@@ -24,7 +24,7 @@ Function {dxc_window()} {open
 } {
   Fl_Window {} {
     label {DX Cluster Spotting} open
-    xywh {633 153 680 400} type Double resizable visible
+    xywh {902 41 680 400} type Double resizable visible
   } {
     Fl_Group btn_select_host {open
       xywh {1 2 678 50} box ENGRAVED_BOX
@@ -98,8 +98,8 @@ progdefaults.changed = true;}
       xywh {0 55 680 340} resizable
     } {
       Fl_Group tabDXclusterTelNetStream {
-        label {TelNet stream} open
-        xywh {1 80 677 314} hide
+        label {TelNet stream} open selected
+        xywh {1 80 677 314}
       } {
         Fl_Group {} {open
           xywh {2 82 676 276} box ENGRAVED_FRAME
@@ -207,7 +207,7 @@ progdefaults.changed=true;}
       }
       Fl_Group tabDXclusterConfig {
         label Config open
-        tooltip {Initialization strings for telnet cluster host} xywh {0 80 676 314}
+        tooltip {Initialization strings for telnet cluster host} xywh {0 80 676 314} hide
       } {
         Fl_Group {} {open
           xywh {0 82 676 130} resizable
@@ -216,56 +216,70 @@ progdefaults.changed=true;}
             xywh {1 82 348 124}
           } {
             Fl_Browser brws_dxcluster_hosts {
-              label Hosts selected
-              xywh {4 101 278 100} type Hold align 1 textfont 4 resizable
+              label Hosts
+              xywh {5 100 278 100} type Hold align 1 textfont 4 resizable
               code0 {static int widths[]={o->w()*6/10, o->w()*2/10, o->w()*2/10, 0 };}
               code1 {o->column_widths(widths);}
               code2 {o->column_char(':');}
               code3 {dxcluster_hosts_load();}
             }
-            Fl_Button btn_dxcluster_hosts_select {
-              label Select
-              callback dxcluster_hosts_select
-              tooltip {Select highlighted DX cluster host} xywh {288 101 54 22}
-            }
-            Fl_Button btn_dxcluster_hosts_add {
-              label Add
-              callback dxcluster_hosts_add
-              tooltip {Add current DX cluster host} xywh {288 127 54 22}
-            }
-            Fl_Button btn_dxcluster_hosts_delete {
-              label Delete
-              callback dxcluster_hosts_delete
-              tooltip {Delete highlighted DX cluster host} xywh {288 153 54 22}
-            }
-            Fl_Button btn_dxcluster_servers {
-              label Srvrs
-              callback dxcluster_servers
-              tooltip {Server List} xywh {288 179 54 22}
+            Fl_Group {} {open
+              xywh {286 100 61 100}
+            } {
+              Fl_Button btn_dxcluster_hosts_select {
+                label Select
+                callback dxcluster_hosts_select
+                tooltip {Select highlighted DX cluster host} xywh {290 106 54 19}
+              }
+              Fl_Button btn_dxcluster_hosts_add {
+                label Add
+                callback dxcluster_hosts_add
+                tooltip {Add current DX cluster host} xywh {290 128 54 19}
+              }
+              Fl_Button btn_dxcluster_hosts_delete {
+                label Delete
+                callback dxcluster_hosts_delete
+                tooltip {Delete highlighted DX cluster host} xywh {290 151 54 19}
+              }
+              Fl_Button btn_dxcluster_servers {
+                label Srvrs
+                callback dxcluster_servers
+                tooltip {Server List} xywh {290 174 54 19}
+              }
+              Fl_Group {} {open
+                xywh {290 195 54 2} resizable
+              } {}
             }
           }
           Fl_Group {} {open
-            xywh {350 82 325 107}
+            xywh {350 82 325 103}
           } {
             Fl_Text_Editor ed_telnet_cmds {
               label {Cluster Server Setup Cmds}
-              tooltip {Cluster server command strings} xywh {354 101 248 80} textfont 13 resizable
+              tooltip {Cluster server command strings} xywh {354 100 248 80} textfont 13 resizable
               class FTextEdit
             }
-            Fl_Button btn_dxcluster_hosts_load_setup {
-              label Load
-              callback dxcluster_hosts_load_setup
-              tooltip {Load Cluster Setup Commands} xywh {609 101 59 22}
-            }
-            Fl_Button btn_dxcluster_hosts_save_setup {
-              label Save
-              callback dxcluster_hosts_save_setup
-              tooltip {Save Cluster Setup Commands} xywh {609 130 59 22}
-            }
-            Fl_Button btn_dxcluster_hosts_send_setup {
-              label Send
-              callback dxcluster_hosts_send_setup
-              tooltip {Send Commands to Cluster Server} xywh {609 159 59 22}
+            Fl_Group {} {open
+              xywh {606 100 59 82}
+            } {
+              Fl_Button btn_dxcluster_hosts_load_setup {
+                label Load
+                callback dxcluster_hosts_load_setup
+                tooltip {Load Cluster Setup Commands} xywh {610 106 54 19}
+              }
+              Fl_Button btn_dxcluster_hosts_save_setup {
+                label Save
+                callback dxcluster_hosts_save_setup
+                tooltip {Save Cluster Setup Commands} xywh {610 128 54 19}
+              }
+              Fl_Button btn_dxcluster_hosts_send_setup {
+                label Send
+                callback dxcluster_hosts_send_setup
+                tooltip {Send Commands to Cluster Server} xywh {610 151 54 19}
+              }
+              Fl_Group {} {open
+                xywh {610 174 54 2} resizable
+              } {}
             }
           }
           Fl_Check_Button btn_spot_when_logged {

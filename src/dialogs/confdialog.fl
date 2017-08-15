@@ -255,6 +255,8 @@ Function {cbDXC_FontBrowser(Fl_Widget*, void*)} {open private return_type void
 
     font_browser->hide();
 
+    dxc_lines_redraw();
+
     progdefaults.changed = true;} {}
 }
 
@@ -531,7 +533,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1709,14 +1711,14 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
-            Fl_Tabs tabsColors {
+            Fl_Tabs tabsColors {open
               xywh {0 50 600 340}
             } {
               Fl_Group {} {
                 label {Rx/Tx} open
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group listbox_charset_status {
                   label {Rx/Tx Character set} open
@@ -2279,7 +2281,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group {} {
                 label Log open
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Group {} {
                   label {Logging Panel Controls} open
@@ -2438,6 +2440,7 @@ DXC_display->redraw();}
                     callback {progdefaults.DXC_even_color = fl_show_colormap((Fl_Color)progdefaults.DXC_even_color);
 o->color(progdefaults.DXC_even_color);
 o->redraw();
+dxc_lines_redraw();
 progdefaults.changed = true}
                     xywh {222 302 86 25} color 55
                     code0 {o->color(progdefaults.DXC_even_color);}
@@ -2447,6 +2450,7 @@ progdefaults.changed = true}
                     callback {progdefaults.DXC_odd_color = fl_show_colormap((Fl_Color)progdefaults.DXC_odd_color);
 o->color(progdefaults.DXC_odd_color);
 o->redraw();
+dxc_lines_redraw();
 progdefaults.changed = true}
                     xywh {314 302 86 25} color 246
                     code0 {o->color(progdefaults.DXC_odd_color);}

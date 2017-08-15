@@ -160,6 +160,8 @@ static void cbDXC_FontBrowser(Fl_Widget*, void*) {
   
       font_browser->hide();
   
+      dxc_lines_redraw();
+  
       progdefaults.changed = true;
 }
 
@@ -2057,6 +2059,7 @@ static void cb_btn_DXC_even_lines(Fl_Button* o, void*) {
   progdefaults.DXC_even_color = fl_show_colormap((Fl_Color)progdefaults.DXC_even_color);
 o->color(progdefaults.DXC_even_color);
 o->redraw();
+dxc_lines_redraw();
 progdefaults.changed = true;
 }
 
@@ -2066,6 +2069,7 @@ static void cb_btn_DXC_odd_lines(Fl_Button* o, void*) {
   progdefaults.DXC_odd_color = fl_show_colormap((Fl_Color)progdefaults.DXC_odd_color);
 o->color(progdefaults.DXC_odd_color);
 o->redraw();
+dxc_lines_redraw();
 progdefaults.changed = true;
 }
 
@@ -7774,6 +7778,7 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8770,9 +8775,9 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 340, _("Clrs/Fnts"));
-            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 50, 600, 340);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx/Tx"));
+                o->hide();
                 { Fl_ListBox* o = listbox_charset_status = new Fl_ListBox(96, 90, 165, 24, _("Rx/Tx Character set"));
                 listbox_charset_status->tooltip(_("Select Rx/Tx Character Set"));
                 listbox_charset_status->box(FL_BORDER_BOX);
@@ -8944,7 +8949,6 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Log"));
-                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 101, 590, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
