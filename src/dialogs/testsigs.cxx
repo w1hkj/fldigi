@@ -60,7 +60,7 @@ Fl_Double_Window* make_testdialog() {
     { btnOffsetOn = new Fl_Check_Button(203, 73, 68, 12, _("Offset on"));
       btnOffsetOn->down_box(FL_DOWN_BOX);
     } // Fl_Check_Button* btnOffsetOn
-    { xmtimd = new Fl_Counter2(339, 41, 127, 21, _("PSK IMD\nlevel (db)"));
+    { Fl_Counter2* o = xmtimd = new Fl_Counter2(339, 41, 127, 21, _("PSK IMD\nlevel (db)"));
       xmtimd->box(FL_UP_BOX);
       xmtimd->color(FL_BACKGROUND_COLOR);
       xmtimd->selection_color(FL_INACTIVE_COLOR);
@@ -70,10 +70,10 @@ Fl_Double_Window* make_testdialog() {
       xmtimd->labelcolor(FL_FOREGROUND_COLOR);
       xmtimd->minimum(-40);
       xmtimd->maximum(-15);
-      xmtimd->step(1);
       xmtimd->value(-30);
       xmtimd->align(Fl_Align(FL_ALIGN_TOP));
       xmtimd->when(FL_WHEN_CHANGED);
+      o->lstep(1.0);
     } // Fl_Counter2* xmtimd
     { btn_imd_on = new Fl_Check_Button(368, 73, 68, 12, _("IMD on"));
       btn_imd_on->down_box(FL_DOWN_BOX);

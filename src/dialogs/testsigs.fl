@@ -5,7 +5,7 @@ i18n_include "gettext.h"
 i18n_function _
 header_name {.h}
 code_name {.cxx}
-decl {\#include "configuration.h"} {selected private local
+decl {\#include "configuration.h"} {private local
 }
 
 Function {make_testdialog()} {open
@@ -16,7 +16,7 @@ Function {make_testdialog()} {open
   } {
     Fl_Counter noiseDB {
       label {Noise level (db)}
-      callback {progdefaults.s2n = o->value();}
+      callback {progdefaults.s2n = o->value();} selected
       xywh {10 41 127 21} align 1 minimum -18 maximum 60 value 20
       code0 {o->value(progdefaults.s2n);}
       code1 {o->lstep(1);}
@@ -41,7 +41,8 @@ Function {make_testdialog()} {open
     Fl_Counter xmtimd {
       label {PSK IMD
 level (db)}
-      xywh {339 41 127 21} align 1 minimum -40 maximum -15 step 1 value -30
+      xywh {339 41 127 21} align 1 minimum -40 maximum -15 value -30
+      code0 {o->lstep(1.0);}
       class Fl_Counter2
     }
     Fl_Check_Button btn_imd_on {
