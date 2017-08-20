@@ -49,6 +49,12 @@
 #include "rigsupport.h"
 #include "psm/psm.h"
 
+#include "fft-monitor.h"
+
+extern fftmon *fft_modem;
+
+#include "spectrum_viewer.h"
+
 #if BENCHMARK_MODE
 #  include "benchmark.h"
 #endif
@@ -312,6 +318,9 @@ void trx_trx_receive_loop()
 			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_RXsamplerate);
 
 			if (!bHistory) {
+				if (fft_modem && spectrum_viewer->visible())
+					fft_modem->rx_process(rbvec[0].buf, numread);
+
 				active_modem->rx_process(rbvec[0].buf, numread);
 				if (progdefaults.rsid)
 					ReedSolomon->receive(fbuf, numread);

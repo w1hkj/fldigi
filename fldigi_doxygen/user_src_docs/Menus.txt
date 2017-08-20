@@ -374,16 +374,15 @@ Additional information:
 <br>
 
 <HR>
-\subsubsection s_op_mode_other SSB, WWV, Freq Anal, and Freq Scan
+\subsubsection s_op_mode_other SSB, WWV, and Freq Anal
 
-\image html  menu-scan.png "Analysis / Scan"
-\image latex menu-scan.png "Analysis / Scan" width=0.6in
+\image html  menu-wwv.png "Analysis / WWV"
+\image latex menu-wwv.png "Analysis / WWV" width=0.6in
 
 <ul>
 	<li>SSB - fldigi does not transmit, but can be used for rig control,
 	signal frequency analysis and logging</li>
 	<li>WWV - special receive only modem used for calibrating sound card</li>
-	<li>Freq Scan - Evaluate Rx/Codec Signal Path</li>
 	<li>Freq Anal - used for carrier detection and frequency measurement</li>
 </ul>
 <br>
@@ -393,8 +392,6 @@ Additional information:
 \ref frequency_analyzer_page
 <br>
 \ref digiscope_display_wwv_mode
-<br>
-\ref fft_scan_page
 <br>
 
 <HR>
@@ -444,14 +441,20 @@ See \ref configuration_page Page
 <ul>
 	<li>View/Hide Channels - Opens / Closes muli-signal viewer, shares space
 	with Rx/Tx panels</li>
-	<li>Floating Scope - Opens up a resizable, moveable scope display</li>
-	<li>MFSK Image - Opens the MFSK picture image (if being received)</li>
-	<li>Weather Fax Image - Opens WEFAX send/receive dialog </li>
 	<li>Signal browser - open the psk/rtty viewer dialog to display up to 30
 	simultaneously decoded psk signals Dialog viewer contains shared
 	data / control with the View/Hide Channel viewer</li>
+	<li>View/Hide 48 macros - toggle display of 4 rows of macros</li>
+	<li>DX Cluster - open DX cluster dialog</li>
+	<li>Floating Scope - Opens up a resizable, moveable scope display</li>
+	<li>Spectrum dialog - Opens a spectrum analysis dialog</li>
+	<li>MFSK Image - Opens the MFSK picture image (if being received)</li>
+	<li>THOR Raw Image - Opens the THOR picture image (if being received)</li>
+	<li>IFKP Raw Image - Opens the IFKP picture image (if being received)</li>
+	<li>Weather Fax Image RX - Opens WEFAX receive dialog </li>
+	<li>Weather Fax Image TX - Opens WEFAX transmit dialog </li>
 	<li>Countries - DXCC entities</li>
-	<li>Controls</li>
+	<li>Rig/Log Controls</li>
 	<ul>
 		<li>Full - show all logbook and rig controls</li>
 		<li>Rig control and logging - minimizes the logging panel for

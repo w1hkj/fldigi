@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
-// fftscan.h  --  frequency fftscan modem
+// fftmon.h  --  frequency fftmon modem
 //
-// Copyright (C) 2006
+// Copyright (C) 2017
 //		Dave Freese, W1HKJ
 //
 // This file is part of fldigi.
@@ -20,8 +20,8 @@
 // along with fldigi.  If not, see <http://www.gnu.org/licenses/>.
 // ----------------------------------------------------------------------------
 
-#ifndef _fftscan_H
-#define _fftscan_H
+#ifndef _fftmon_H
+#define _fftmon_H
 
 #include <stdio.h>
 
@@ -35,49 +35,47 @@
 #include "mbuffer.h"
 #include "gfft.h"
 
-class fftscan : public modem {
-public:
-#define fftscan_BW			4
-#define	fftscan_SampleRate	8000
-#define fftscanFFT_LEN		8192 // approximately 1 sec of bpf'd audio stream
-#define NYQUIST				4000 // 1/2 fftscanFFT_LEN
-private:
+extern void writeFile();
 
-	std::string	fftscanFilename;
-	bool write_to_csv;
-	bool _refresh;
+class fftmon : public modem {
+friend void toggle_scans(void *);
+
+public:
+#define fftmonFFT_LEN		8192 // approximately 1 sec of bpf'd audio stream
+#define LENdiv2				4096
+
+private:
 
 	double *fftbuff;
 	double *dftbuff;
 	double *buffer;
+	Cmovavg *fftfilt[LENdiv2];
+
+	double bshape[fftmonFFT_LEN];
+
+	int  fftmon_sr;
 
 	g_fft<double>	*scanfft;
 
-	double	wf_freq;
-	long  ticks;
-	double  scans;
-
-	void writeFile();
+	bool  scans_stable;
+	int   numscans;
 
 	inline double blackman(double x) {
 		return (0.42 - 0.50 * cos(2 * M_PI * x) + 0.08 * cos(4 * M_PI * x));
 	}
+	void update_fftscope();
 
 public:
-	fftscan();
-	~fftscan();
+	fftmon();
+	~fftmon();
 	void init();
-	void rx_init();
-	void tx_init();
+	void rx_init() {}
+	void tx_init() {}
 	void restart();
-	void start_csv();
-	void stop_csv();
-	int  is_csv() { return write_to_csv;}
-	void update_syncscope();
-	int  rx_process(const double *buf, int len);
-	void refresh_scope() { _refresh = true; }
 
-	int tx_process();
+	int  rx_process(const double *buf, int len);
+
+	int tx_process() { return -1; }
 
 };
 

@@ -378,7 +378,6 @@ Non Data Modems  | Description
 <MODEM:NULL>     | Null modem - Rx stream is discarded. Tx stream is silent but PTT is enabled
 <MODEM:SSB>      | SSB modem (place holder)
 <MODEM:ANALYSIS> | \ref frequency_analyzer_page "Analyze Frequency"
-<MODEM:FREQSCAN> | \ref fft_scan_page "Waterfall Power Measurement Frequency Scan"
 <MODEM:WWV>      | \ref digiscope_display_wwv_mode "Calibrate Sound Card"
 </center>
 <br>

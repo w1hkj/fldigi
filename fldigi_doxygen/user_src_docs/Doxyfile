@@ -62,7 +62,6 @@ INPUT                = \
 	configIO.txt \
 	configPSM.txt \
 	ConfigMisc.txt \
-	configModemScan.txt \
 	configMT63.txt \
 	configOlivia.txt \
 	ConfigOperator.txt \
@@ -114,6 +113,7 @@ INPUT                = \
 	WEFAX.txt \
 	DigiscopeDisplay.txt \
 	DigiWWV.txt \
+	spectrum_viewer.txt \
 	MousingKeyboardShortcuts.txt \
 	Multiples.txt \
 	Notifier.txt \

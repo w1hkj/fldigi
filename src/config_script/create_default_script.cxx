@@ -115,7 +115,6 @@
 //#include "pkt.h"
 #include "wwv.h"
 #include "analysis.h"
-#include "fftscan.h"
 #include "ssb.h"
 
 #include "smeter.h"

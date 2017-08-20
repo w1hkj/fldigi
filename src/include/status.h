@@ -87,6 +87,14 @@ struct status {
 	int		scopeW;
 	int		scopeH;
 
+	int		svX; // spectrum viewer X, Y, W, H
+	int		svY;
+	int		svW;
+	int		svH;
+	bool	x_graticule;
+	bool	y_graticule;
+	bool	xy_graticule;
+
 	int		repeatMacro;
 	float	repeatIdleTime;
 	int		timer;

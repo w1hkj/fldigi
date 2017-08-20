@@ -56,6 +56,10 @@ Digiscope::Digiscope (int X, int Y, int W, int H) :
 	_zptr = 0;
 	for (int i = 0; i < NUM_GRIDS; i++)
 		_x[i] = _y[i] = 0;
+	_y_user1 = _y_user2 = -1;
+	_x_user1 = _x_user2 = -1;
+	_x_graticule = _y_graticule = false;
+
 	phase_mode = PHASE1;
 }
 
@@ -309,6 +313,40 @@ void Digiscope::draw_scope()
 			fl_begin_line();
 			fl_vertex(0.0, _y[i]);
 			fl_vertex(1.0, _y[i]);
+			fl_end_line();
+		}
+	}
+
+	if (_x_graticule) {
+		if (_y_user1 > 0 && _y_user1 < 1.0) {
+			fl_color(FL_CYAN);
+			fl_begin_line();
+			fl_vertex(0.0, 1.0 - _y_user1);
+			fl_vertex(1.0, 1.0 - _y_user1);
+			fl_end_line();
+		}
+		if (_y_user2 > 0 && _y_user2 < 1.0) {
+			fl_color(FL_MAGENTA);
+			fl_begin_line();
+			fl_vertex(0.0, 1.0 - _y_user2);
+			fl_vertex(1.0, 1.0 - _y_user2);
+			fl_end_line();
+		}
+	}
+
+	if (_y_graticule) {
+		if (_x_user1 > 0 && _x_user1 < 1.0) {
+			fl_color(FL_CYAN);
+			fl_begin_line();
+			fl_vertex(_x_user1, 0.0);
+			fl_vertex(_x_user1, 1.0);
+			fl_end_line();
+		}
+		if (_x_user2 > 0 && _x_user2 < 1.0) {
+			fl_color(FL_MAGENTA);
+			fl_begin_line();
+			fl_vertex(_x_user2, 0.0);
+			fl_vertex(_x_user2, 1.0);
 			fl_end_line();
 		}
 	}

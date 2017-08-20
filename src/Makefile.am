@@ -353,6 +353,9 @@ fldigi_SOURCES += \
 	dominoex/dominovar.cxx \
 	feld/feld.cxx \
 	feld/feldfonts.cxx \
+	fft-monitor/fft-monitor.cxx \
+	fft-monitor/spectrum.cxx \
+	fft-monitor/spectrum_viewer.cxx \
 	fileselector/fileselect.cxx \
 	filters/fftfilt.cxx \
 	filters/filters.cxx \
@@ -373,7 +376,6 @@ fldigi_SOURCES += \
 	include/Panel.h \
 	include/FreqControl.h \
 	include/analysis.h \
-	include/fftscan.h \
 	include/ascii.h \
 	include/charsetdistiller.h \
 	include/charsetlist.h \
@@ -395,6 +397,7 @@ fldigi_SOURCES += \
 	include/fd_logger.h \
 	include/feld.h \
 	include/fftfilt.h \
+	include/fft-monitor.h \
 	include/filters.h \
 	include/fl_digi.h \
 	include/fl_lock.h \
@@ -485,6 +488,8 @@ fldigi_SOURCES += \
 	include/socket.h \
 	include/sound.h \
 	include/soundconf.h \
+	include/spectrum.h \
+	include/spectrum_viewer.h \
 	include/spot.h \
 	include/ssb.h \
 	include/stacktrace.h \
@@ -661,7 +666,6 @@ fldigi_SOURCES += \
 	ifkp/tux.cxx \
 	fsq/fsq_monitor.cxx \
 	wwv/analysis.cxx \
-	wwv/fftscan.cxx \
 	wwv/wwv.cxx \
 	logbook/xmlrpc_log.cxx \
 	libtiniconv/tiniconv.c \

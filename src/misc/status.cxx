@@ -66,6 +66,8 @@
 #include "data_io.h"
 #include "psm/psm.h"
 
+#include "spectrum_viewer.h"
+
 #define STATUS_FILENAME "status"
 
 status progStatus = {
@@ -127,6 +129,15 @@ status progStatus = {
 	false,				// bool	scopeVisible;
 	172,				// int	scopeW;
 	172,				// int	scopeH;
+
+	10,					// int svX;
+	10,					// int svY;
+	550,				// int svW;
+	400,				// int svH;
+	false,				// bool	x_graticule;
+	false,				// bool	y_graticule;
+	true,				// bool	xy_graticule;
+
 	-1,					// int	repeatMacro;
 	0,					// float	repeatIdleTime;
 	0,					// int timer
@@ -337,6 +348,13 @@ void status::saveLastState()
 	scopeW = scopeview->w();
 	scopeH = scopeview->h();
 
+	if (spectrum_viewer) {
+		svX = spectrum_viewer->x();
+		svY = spectrum_viewer->y();
+		svW = spectrum_viewer->w();
+		svH = spectrum_viewer->h();
+	}
+
 	contestiatones = progdefaults.contestiatones;
 	contestiabw = progdefaults.contestiabw;
 	contestiamargin = progdefaults.contestiasmargin;
@@ -476,6 +494,14 @@ if (!bWF_only) {
 	spref.set("scope_y", scopeY);
 	spref.set("scope_w", scopeW);
 	spref.set("scope_h", scopeH);
+
+	spref.set("svX", svX);
+	spref.set("svY", svY);
+	spref.set("svW", svW);
+	spref.set("svH", svH);
+	spref.set("x_graticule", x_graticule);
+	spref.set("y_graticule", y_graticule);
+	spref.set("xy_graticule", xy_graticule);
 
 	spref.set("last_macro_file", LastMacroFile.c_str());
 
@@ -726,6 +752,14 @@ void status::loadLastState()
 	spref.get("scope_w", scopeW, scopeW);
 	spref.get("scope_h", scopeH, scopeH);
 
+	spref.get("svX", svX, svX);
+	spref.get("svY", svY, svY);
+	spref.get("svW", svW, svW);
+	spref.get("svH", svH, svH);
+	spref.get("x_graticule", i, x_graticule); x_graticule = i;
+	spref.get("y_graticule", i, y_graticule); y_graticule = i;
+	spref.get("xy_graticule",i, xy_graticule); xy_graticule = i;
+
 	memset(strbuff, 0, sizeof(strbuff));
 	spref.get("last_macro_file", strbuff, "macros.mdf", sizeof(strbuff) - 1);
 	LastMacroFile = strbuff;
@@ -893,6 +927,7 @@ void status::loadLastState()
 		spref.get("WK_use_pot", i, WK_use_pot); WK_use_pot = i;
 
 		spref.get("WK_online", i, WK_online); WK_online = i;
+
 
 }
 

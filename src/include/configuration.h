@@ -117,7 +117,6 @@
         ELEM_(mode_set_t, rsid_tx_modes, "RSIDTXMODESEXCLUDE",                          \
               "Mode names for which RSID transmission is disabled",                     \
               mode_set_t())                                                             \
-                                                                                        \
         ELEM_(int, RsID_label_type, "RSID_ERRORS",                                      \
               "values (low, medium, high)  0, 1, 2",                                    \
               1)                                                                        \
@@ -624,11 +623,9 @@
         ELEM_(bool, THOR_SOFTBITS, "THORSOFTBITS",                                      \
               "Enable Soft-bit decoding",                                               \
               true)                                                                     \
-                                                                                        \
         ELEM_(bool, PKT_RXTimestamp, "PKTRXTIMESTAMP",                                  \
               "No timestamps on RX packets by default",                                 \
               false)                                                                    \
-                                                                                        \
         ELEM_(bool, PKT_expandMicE, "PKTEXPANDMICE",                                    \
               "decode received Mic-E data",                                             \
               false)                                                                    \
@@ -1516,11 +1513,7 @@
               "Array of dxcluster host-port-user lines\n"                               \
               "Fields separated by : character\n"                                       \
               "Lines separated by | character",                                         \
-              "\
-dxc.wb3ffv.us:7300::|\
-nk7z-cluster.ddns.net:7373::|\
-dx.n8noe.us:7373::|\
-w0mw.dynip.com:23::|")                                                                   \
+              "w3nr.ddns.net:7300::|dx.n8noe.us:7373::|w0mw.dynip.com:23::|")           \
         ELEM_(RGB, DX_Color, "DX_COLOR",                                                \
               "RX text font color (RGB)",                                               \
               { 0, 0, 130 })                                                            \
@@ -1946,7 +1939,6 @@ w0mw.dynip.com:23::|")                                                          
         ELEM_(Fl_Color, TuneColor, "TUNECOLOR",                                         \
               "UI Tune select color",                                                   \
               FL_RED)                                                                   \
-                                                                                        \
         /* XMLRPC LOGBOOK server */                                                     \
         ELEM_(bool, xml_logbook, "XML_LOGBOOK",                                         \
               "Try to open remote xml logbook",                                         \
@@ -2279,8 +2271,22 @@ w0mw.dynip.com:23::|")                                                          
               false)                                                                    \
         ELEM_(bool, display_48macros, "DISPLAY_48MACROS",                               \
               "Allow dockable macros",                                                  \
-              false)
-
+              false)                                                                    \
+        ELEM_(double, fftviewer_maxdb, "fftviewer_maxdb",                               \
+             "Upper axis in dB for spectrum viewer",                                    \
+             0.0)                                                                       \
+        ELEM_(double, fftviewer_range, "fftviewer_range",                               \
+             "Display range in dB for spectrum viewer",                                 \
+             60.0)                                                                      \
+        ELEM_(int, fftviewer_scans, "fftviewer_scans",                                  \
+             "Number of scans over which the average signal level is measured.",        \
+             100)                                                                       \
+        ELEM_(double, fftviewer_fcenter, "fftviewer_fcenter",                           \
+             "Scan center frequency in Hertz",                                          \
+             2000.0)                                                                    \
+        ELEM_(double, fftviewer_frng, "fftviewer_frng",                                 \
+             "Frequency scan range in Hertz",                                           \
+             4000.0)
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

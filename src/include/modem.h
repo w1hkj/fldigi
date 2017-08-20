@@ -416,7 +416,6 @@ extern modem *throbx4_modem;
 
 extern modem *wwv_modem;
 extern modem *anal_modem;
-extern modem *fftscan_modem;
 extern modem *ssb_modem;
 
 extern modem *fsq_modem;

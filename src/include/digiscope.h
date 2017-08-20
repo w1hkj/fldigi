@@ -70,6 +70,12 @@ private:
 	bool _highlight;
 	scope_mode phase_mode;
 
+protected:
+	double _y_user1, _y_user2;
+	double _x_user1, _x_user2;
+	bool	_x_graticule;
+	bool	_y_graticule;
+
 public:
 	Digiscope(int, int, int, int);
 	~Digiscope();
@@ -102,6 +108,22 @@ public:
 		for (int i = 0; i < NUM_GRIDS; i++)
 			_x[i] = _y[i] = 0;
 	}
+
+	double x_user1() { return _x_user1; }
+	void x_user1(double val) { _x_user1 = val; }
+	double x_user2() { return _x_user2; }
+	void x_user2(double val) { _x_user2 = val; }
+
+	double y_user1() { return _y_user1; }
+	void y_user1(double val) { _y_user1 = val; }
+	double y_user2() { return _y_user2; }
+	void y_user2(double val) { _y_user2 = val; }
+
+	bool x_graticule() { return _x_graticule; }
+	void x_graticule(bool b) { _x_graticule = b; }
+
+	bool y_graticule() { return _y_graticule; }
+	void y_graticule(bool b) { _y_graticule = b; }
 };
 
 #endif

@@ -429,7 +429,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {992 46 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {775 60 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 605 390} color 50 selection_color 50
@@ -533,7 +533,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabBrowser {
             label Browser open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {open
               xywh {30 65 540 300} box ENGRAVED_FRAME
@@ -1711,7 +1711,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsColors {open
               xywh {0 50 600 340}
@@ -5569,7 +5569,7 @@ progdefaults.changed = true;}
               }
               Fl_Group tabWefax {
                 label WFx
-                xywh {0 75 600 315} hide
+                xywh {0 75 600 315}
               } {
                 Fl_Group {} {open
                   xywh {2 79 598 285}
@@ -5637,35 +5637,6 @@ progdefaults.changed = true;}
                     tooltip {Save the fax image as a gray-level PNG file.} xywh {99 315 235 30} down_box DOWN_BOX
                     code0 {o->value(progdefaults.WEFAX_SaveMonochrome);}
                   }
-                }
-              }
-              Fl_Group tabDFTscan {
-                label Scan
-                xywh {0 75 600 315}
-              } {
-                Fl_Counter cnt_dft_scans {
-                  label {\# scans}
-                  callback {progdefaults.cnt_dft_scans=(int)o->value();
-progdefaults.changed = true;}
-                  xywh {235 154 132 21} minimum 10 maximum 1000 step 10 value 60
-                  code0 {o->value(progdefaults.cnt_dft_scans);}
-                  code1 {o->lstep(100.0);}
-                }
-                Fl_Counter cnt_dft_range {
-                  label {dB Range}
-                  callback {progdefaults.cnt_dft_range=o->value();
-update_scope();
-progdefaults.changed = true;}
-                  xywh {251 219 100 21} type Simple minimum 20 maximum 120 step 10 value 60
-                  code0 {o->value(progdefaults.cnt_dft_range);}
-                }
-                Fl_Check_Button btn_use_relative_dB {
-                  label {Use relative dB}
-                  callback {progdefaults.dft_relative=o->value();
-update_scope();
-progdefaults.changed = true;}
-                  xywh {275 290 70 15} down_box DOWN_BOX
-                  code0 {o->value(progdefaults.dft_relative);}
                 }
               }
             }

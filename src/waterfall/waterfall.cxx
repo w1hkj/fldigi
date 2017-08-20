@@ -75,6 +75,8 @@
 #include "psm/psm.h"
 #include "kiss_io.h"
 
+#include "spectrum_viewer.h"
+
 using namespace std;
 
 #define bwFFT		30

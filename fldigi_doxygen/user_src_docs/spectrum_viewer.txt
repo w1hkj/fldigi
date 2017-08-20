@@ -1,0 +1,161 @@
+/**
+\page  spectrum_viewer_page Spectrum Viewer
+
+\tableofcontents
+
+<br>
+\image html spectrum-scope.png "Spectrum Scope Display"
+\image latex spectrum-scope.png "Spectrum Scope Display" width=6.0in
+<br>
+\section sv_description Spectrum Viewer Description
+
+The Spectrum Viewer is an analysis tool used to evaluate received signals.
+It can be used to measure signal integrity, audio-codec noise floor,
+transceiver passband characteristics, Rx signal spectrum, etc.  The time
+domain audio stream is converted to the frequency domain using a Fast
+Fourier Transform, FFT.  The FFT uses a snapshot of 8192 audio samples obtained
+from a sliding window.  At any instance in time the FFT is computed from the
+immediate past 8192 samples.  A 8192 sample set in the time domain results in
+a 4096 set of complex values in the frequency domain.
+<br>
+
+The fldigi modems use a sampling rate of 8000, 11025, 12000 and 16000 
+samples per second.  The respective FFT's then can display values up to 
+1/2 of the sample rate.  The viewed frequency range is constrained to
+0 to 4000 Hertz.
+<br>
+
+The display is signal magnitude in dB versus frequency.
+
+\section sv_controls Operating Controls
+
+The Spectrum Viewer operating controls are used to set:
+<br>
+\image html spectrum-scope-controls.png ""
+\image latex spectrum-scope-controls.png "" width=6.0in
+<br>
+<ul>
+<li>the averaging of FFT conversions, '# scans'</li>
+<li>top to bottom range of dB scale, 'dB Range'</li>
+<li>the upper vertical scale value in dB, 'upper dB'</li>
+<li>the center frequency in Hertz, 'F-center'</li>
+<li>the frequency range in Hertz, 'F-range'</li>
+<li>reset frequency range to 0...4000 Hertz, 'Reset'</li>
+<li>go to the current waterfall tracking frequency 'Goto'</li>
+<li>   SHIFT-left click on the spectrum display will also center the selected point in the display</li>
+</ul>
+<br>
+When the Spectrum Dialog first opens, or when the # scans is changed that control
+is displayed in the gray background color.  When the scan count has reached or
+exceeds the # scans then that control changes to green as shown above.
+<br>
+
+The scope graticule is always 10 dB per division on the vertical scale.  The
+horizontal scale is dependent on the the selected frequency range:
+<ul>
+<li>greater than 2000 Hertz - 500 Hertz per division</li>
+<li>between 1001 Hertz and 2000 Hertz - 200 Hertz per division</li>
+<li>between 501 and 1000 Hertz - 100 Hertz per division</li>
+<li>between 251 and 500 Hertz - 50 Hertz per division</li>
+<li>less than or equal to 250 Hertz - 25 Hertz per division</li>
+</ul>
+
+\section Measuring Signal Characteristics
+
+\image html spectrum-scope-idle-signal.png ""
+\image latex spectrum-scope-idle-signal.png "" width=6.0in
+<br>
+\subsection measure-magnitude Basic Signal Measurement
+
+A measurement of amplitude and frequency is made by left clicking on the display
+with the center of the cross-hair cursor placed on the data point of interest.
+The FFT display can be paused to take a snapshot of the values.
+
+<ul>
+<li>Right click on the display to toggle between running and paused, or</li>
+<li>Press the Running/Paused button to toggle betweeen running and paused.</li>
+</ul>
+The label will change to indicate the state of the FFT processing; "Running" or "Paused".
+<br>
+
+The above image shows a psk-31 idle (no modulation) test signal whose characteristics are
+<ul>
+<li>S/N 40 dB</li>
+<li>IMD minus 20 dB</li>
+</ul>
+a signal that no one wants to put on the air, but is too often observed.
+The frequency / dB readout to the right of the "Paused" indicator was obtained
+by left clicking on the signal just to right of center.  The 3rd order intermodulation
+frequency is clearly 20 dB below the fundamental phase modulation signal.  A clean
+psk-31 should be better than minus 25 dB IMD.  Modern transmitters can achieve IMD levels
+at or better than -30 dB when not overdriven.  No ALC is the rule.  Set the transmitter
+power level to full power and then reduce the audio drive to no more than 25% of full
+power.  This will usually result in a PSK signal of which you can be proud. 
+<br>
+
+Here is the same signal during modulation:
+<br>
+\image html spectrum-scope-modulated-signal.png ""
+\image latex spectrum-scope-modulated-signal.png "" width=6.0in
+
+\subsection measure-difference Differential Signal Measurement
+You can measure the dB difference between two points:
+<ul>
+<li>'1' + left mouse click : first point (cyan line)</li>
+<li>'2' + left mouse click : second point (magenta line)</li>
+<li>'3' or 'c' + left mouse click : clear both points</li>
+</ul>
+The signal level and frequency differences will be shown in the right most top status control.  
+Entry of points 1 and 2 need not be in order and either the #1 or #2 point can be selected multiple
+times to extract dB differences over a range of point pairs.  Selecting measurement 
+points will be easier if you pause the FFT display.
+<br>
+\image html spectrum-scope-status.png ""
+\image latex spectrum-scope-status.png "" width=2.0in
+
+\section fldigi_main_dialog_comparison Agreement with main fldigi dialog
+
+fldigi measures the S/N and IMD of a psk signal on it's main dialog.  These measurements
+are made only during idle.  During modulation the values are either blanked or dimmed at
+the user's discretion.  This illustrates the test signal display both on the spectrum viewer
+and on the main waterfall.
+<br>
+\image html spectrum-scope-wf.png ""
+\image latex spectrum-scope-wf.png "" width=6.0in
+<br>
+\section menu Menu
+\image html spectrum-scope-menu.png ""
+\image latex spectrum-scope-menu.png "" width=0.75in
+<br>
+Select whether the Signal Measurement points are shown with amplitude, frequency or
+both as linear graticules.
+<br>
+
+You can capture the current full FFT spectrum at any time, both when running or paused.
+Select the "Save to CSV" menu item and a comma separated value file will be save to
+the fldigi temp folder.
+<br>
+
+Close the spectrum viewer by either selecting the "Close" menu item or clicking the dialog
+decoration "X" button.
+
+\section filter_eval Filter Evaluation
+\image html spectrum-scope-filter-eval.png ""
+\image latex spectrum-scope-filter-eval.png "" width=4.0in
+
+This illustrates using the Spectrum Viewer to view and evaluate a transceiver filter.
+This is 40 meter noise on an IC-7200 with the filter set to 3000 Hertz.
+
+\section csv_file CSV file usage
+
+The comma separated value file can be opened using any spread sheet program.  My personal
+preference is the program Gnumeric (available for Unix, Linux and Windows).  The file
+contains columnar data for frequency and magnitude (linear).  You can use the spread
+sheet program mathematics to generate a column of 20log10(mag) values.
+
+\ref spectrum_viewer_page "Return to Top of Page"
+<br>
+\ref main_page "Return to Main Page"
+
+*/
+

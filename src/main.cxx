@@ -123,6 +123,8 @@
 
 #include "nullmodem.h"
 
+#include "spectrum_viewer.h"
+
 using namespace std;
 
 string appname;
@@ -1148,6 +1150,8 @@ int main(int argc, char ** argv)
 }
 
 void exit_process() {
+
+	close_spectrum_viewer();
 
 	if (progdefaults.kml_enabled)
 		KmlServer::Exit();

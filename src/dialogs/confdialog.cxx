@@ -4537,31 +4537,6 @@ static void cb_btnWefaxSaveMonochrome(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Group *tabDFTscan=(Fl_Group *)0;
-
-Fl_Counter *cnt_dft_scans=(Fl_Counter *)0;
-
-static void cb_cnt_dft_scans(Fl_Counter* o, void*) {
-  progdefaults.cnt_dft_scans=(int)o->value();
-progdefaults.changed = true;
-}
-
-Fl_Counter *cnt_dft_range=(Fl_Counter *)0;
-
-static void cb_cnt_dft_range(Fl_Counter* o, void*) {
-  progdefaults.cnt_dft_range=o->value();
-update_scope();
-progdefaults.changed = true;
-}
-
-Fl_Check_Button *btn_use_relative_dB=(Fl_Check_Button *)0;
-
-static void cb_btn_use_relative_dB(Fl_Check_Button* o, void*) {
-  progdefaults.dft_relative=o->value();
-update_scope();
-progdefaults.changed = true;
-}
-
 Fl_Group *tabRig=(Fl_Group *)0;
 
 Fl_Tabs *tabsRig=(Fl_Tabs *)0;
@@ -7778,7 +7753,6 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
-            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8775,6 +8749,7 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 340, _("Clrs/Fnts"));
+            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 50, 600, 340);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx/Tx"));
                 o->hide();
@@ -11936,7 +11911,6 @@ le Earth)"));
                 tabNavtex->end();
               } // Fl_Group* tabNavtex
               { tabWefax = new Fl_Group(0, 75, 600, 315, _("WFx"));
-                tabWefax->hide();
                 { Fl_Group* o = new Fl_Group(2, 79, 598, 285);
                 { Fl_Check_Button* o = btnWefaxAdifLog = new Fl_Check_Button(99, 155, 235, 30, _("Log Wefax messages to Adif file"));
                 btnWefaxAdifLog->tooltip(_("Sent and received faxes are logged to Adif file."));
@@ -12004,32 +11978,6 @@ le Earth)"));
                 } // Fl_Group* o
                 tabWefax->end();
               } // Fl_Group* tabWefax
-              { tabDFTscan = new Fl_Group(0, 75, 600, 315, _("Scan"));
-                { Fl_Counter* o = cnt_dft_scans = new Fl_Counter(235, 154, 132, 21, _("# scans"));
-                cnt_dft_scans->minimum(10);
-                cnt_dft_scans->maximum(1000);
-                cnt_dft_scans->step(10);
-                cnt_dft_scans->value(60);
-                cnt_dft_scans->callback((Fl_Callback*)cb_cnt_dft_scans);
-                o->value(progdefaults.cnt_dft_scans);
-                o->lstep(100.0);
-                } // Fl_Counter* cnt_dft_scans
-                { Fl_Counter* o = cnt_dft_range = new Fl_Counter(251, 219, 100, 21, _("dB Range"));
-                cnt_dft_range->type(1);
-                cnt_dft_range->minimum(20);
-                cnt_dft_range->maximum(120);
-                cnt_dft_range->step(10);
-                cnt_dft_range->value(60);
-                cnt_dft_range->callback((Fl_Callback*)cb_cnt_dft_range);
-                o->value(progdefaults.cnt_dft_range);
-                } // Fl_Counter* cnt_dft_range
-                { Fl_Check_Button* o = btn_use_relative_dB = new Fl_Check_Button(275, 290, 70, 15, _("Use relative dB"));
-                btn_use_relative_dB->down_box(FL_DOWN_BOX);
-                btn_use_relative_dB->callback((Fl_Callback*)cb_btn_use_relative_dB);
-                o->value(progdefaults.dft_relative);
-                } // Fl_Check_Button* btn_use_relative_dB
-                tabDFTscan->end();
-              } // Fl_Group* tabDFTscan
               tabsOther->end();
             } // Fl_Tabs* tabsOther
             tabOther->end();

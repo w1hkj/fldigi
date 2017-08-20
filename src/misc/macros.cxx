@@ -254,7 +254,7 @@ static void pCPS_TEST(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -325,7 +325,7 @@ static void pCPS_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -392,7 +392,7 @@ static void pCPS_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -450,7 +450,7 @@ static void pCPS_N(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -510,7 +510,7 @@ static void pWAV_TEST(std::string &s, size_t &i, size_t endbracket)
 	s.clear();
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -536,7 +536,7 @@ static void pWAV_N(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -591,7 +591,7 @@ static void pWAV_FILE(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -655,7 +655,7 @@ static void pWAV_STRING(std::string &s, size_t &i, size_t endbracket)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB || id == MODE_WWV ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		if (active_modem->get_mode() == MODE_IFKP)
@@ -2015,7 +2015,7 @@ static void doVIDEO(string s)
 {
 	trx_mode id = active_modem->get_mode();
 	if ( id == MODE_SSB ||
-		id == MODE_ANALYSIS || id == MODE_FFTSCAN ||
+		id == MODE_ANALYSIS ||
 		id == MODE_WEFAX_576 || id == MODE_WEFAX_288 ||
 		id == MODE_SITORB || id == MODE_NAVTEX ) {
 		return;
