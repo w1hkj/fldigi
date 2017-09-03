@@ -2,6 +2,17 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   AC_REQUIRE([AC_FLDIGI_MACOSX])
   AC_REQUIRE([AC_FLDIGI_WIN32])
 
+  AC_ARG_WITH([clock_gettime],
+                AC_HELP_STRING([--without-clock_gettime], [Do not use clock_gettime lib]),
+                [case "${withval}" in
+                  yes|no) ac_cv_with_clock_gettime="${withval}" ;;
+                  *)      AC_MSG_ERROR([bad value ${withval} for --without-clock_gettime]) ;;
+                 esac],
+                 [ac_cv_with_clock_gettime=yes])
+
+  if test "x$ac_cv_with_clock_gettime" = "xyes"; then
+    AC_FLDIGI_SEARCH_LIBS([clock_gettime], [rt], [$other_libs])
+  fi
 
   if test "x$target_mingw32" = "xyes"; then
       # Newer versions of mingw32 comes with pthread.
@@ -13,7 +24,6 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
       sem_libs="pthread rt"
   fi
   AM_CONDITIONAL([COMPAT_REGEX], [test "x$ac_cv_header_regex_h" != "xyes"])
-
 
   other_libs=""
 
@@ -27,7 +37,6 @@ AC_DEFUN([AC_FLDIGI_NP_COMPAT], [
   fi
 
   AC_FLDIGI_SEARCH_LIBS([dlopen], [dl], [$other_libs])
-  AC_FLDIGI_SEARCH_LIBS([clock_gettime], [rt], [$other_libs])
   AC_FLDIGI_SEARCH_LIBS([sem_unlink], [$sem_libs], [$other_libs])
   AC_FLDIGI_SEARCH_LIBS([sem_timedwait], [$sem_libs], [$other_libs])
 
