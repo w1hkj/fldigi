@@ -524,7 +524,11 @@ void start_process(string executable)
 							NULL, NULL,
 							&si, &pi))
 			LOG_ERROR("CreateProcess failed with error code %ld", GetLastError());
-		MilliSleep(100);
+		for (int i = 0; i < 5; i++) {
+			MilliSleep(50);
+			Fl::awake();
+		}
+//		MilliSleep(100);
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
 		LOG_INFO("Process handles closed");
@@ -620,8 +624,10 @@ static void auto_start()
 	// A general wait to ensure FLDIGI initialization of
 	// io ports. 1/4 to 3/4 second delay.
 	int nloops = 0;
-	while(nloops++ < 3) {
-		MilliSleep(250);
+	while(nloops++ < 15) {// 3) {
+		MilliSleep(50);
+		Fl::awake();
+//		MilliSleep(250);
 		if(arq_state() && data_io_enabled == ARQ_IO)
 			break; // Exit early if verified.
 	}
