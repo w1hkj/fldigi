@@ -2207,7 +2207,7 @@ void fax_implementation::modulate(const double* buffer, int number)
 /// Returns true if succesful
 /*
 MULTIPSK: 120 LPM / 288 IOC and a transmission
-takes with a 200 lines picture 150 sec.
+takes with a 200 lines wefax_map 150 sec.
 
 In FLDIGI it took 480 sec. For 120 LPM it's too
 slow. "240 LPM" in FLDIGI gives 130 sec which is nearly real 120 LPM.
@@ -2363,7 +2363,7 @@ void fax_implementation::tx_params_set(
 	lpm_set( the_lpm );
 	m_xmt_pic_buf = xmtpic_buffer ;
 
-	PUT_STATUS( _("Sending picture.")
+	PUT_STATUS( _("Sending wefax_map.")
 			<< _(" rows=") << m_img_tx_rows
 			<< _(" cols=") << m_img_tx_cols );
 }
@@ -2453,7 +2453,7 @@ wefax::wefax(trx_mode wefax_mode) : modem()
 	m_impl = new fax_implementation(wefax_mode, this);
 
 	/// Now this object is usable by wefax_pic.
-	wefax_pic::setpicture_link(this);
+	wefax_pic::setwefax_map_link(this);
 
 	int tmpShift = progdefaults.WEFAX_Shift ;
 	if(
@@ -2647,11 +2647,11 @@ int wefax::tx_process()
 
 	REQ_FLUSH(GET_THREAD_ID());
 
-	FL_LOCK_E();
+	// FL_LOCK_E();
 	wefax_pic::restart_tx_viewer();
 	transmit_lock_release(status);
 	m_abortxmt = false;
-	FL_UNLOCK_E();
+	// FL_UNLOCK_E();
 	m_impl->tx_apt_stop();
 	return -1;
 }

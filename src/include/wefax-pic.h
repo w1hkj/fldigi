@@ -50,7 +50,7 @@ public:
 	static void skip_rx_phasing(bool auto_center);
 	static void cb_mnu_pic_viewer_rx(Fl_Menu_ *, void *);
 	static void cb_mnu_pic_viewer_tx(Fl_Menu_ *, void *);
-	static void setpicture_link(wefax *me);
+	static void setwefax_map_link(wefax *me);
 	static void save_image(const std::string & fil_name, const std::string & extra_comments);
 	static void power( double start, double phase, double image, double black, double stop );
 	static void send_image( const std::string & fil_name );
