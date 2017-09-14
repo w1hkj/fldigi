@@ -1365,9 +1365,10 @@ public:
 /// Narrow, middle etc... input filters. Constructed at program startup. Readonly.
 fir_filter_pair_set fax_implementation::m_rx_filters ;
 
-// http://www.newearth.demon.co.uk/radio/hfwefax1.htm
-// "...the total offset is 1900Hz, so to tune a fax station on 4610kHz, tune to 4608.1kHz USB."
-static const double wefax_default_carrier = 1900;
+// center frequency offset is 1500Hz
+// to tune a fax station on 4610kHz, tune to 4608.5 kHz USB
+
+static const double wefax_default_carrier = 1500;
 
 fax_implementation::fax_implementation( int fax_mode, wefax * ptr_wefax  )
 	: m_ptr_wefax( ptr_wefax )
@@ -1795,7 +1796,7 @@ cleanup_rx:
 // 2.5% white at the end (or inverted). In normal phasing lines we try to
 // count the length between the white-black transitions. If the line has
 // a reasonable amount of black (4.8%--5.2%) and the length fits in the 
-// range of 60--360lpm (plus some tolerance) it is considered a valid
+// range of 60--360 lpm (plus some tolerance) it is considered a valid
 // phasing line. Then the start of a line and the lpm is calculated.
 void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 {
@@ -1844,11 +1845,11 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 
 		/// In the phasing line, there is a white segment of 5% of the total length,
 		// so it is approximated with 0.048->0.052.
-		if(m_curr_phase_high>=(m_phase_inverted?0.948:0.048)*m_curr_phase_len &&
-		   m_curr_phase_high<=(m_phase_inverted?0.952:0.052)*m_curr_phase_len &&
-		   m_curr_phase_len <= 1.1  * m_sample_rate &&
-		   m_curr_phase_len >= 0.15 * m_sample_rate)
-		{
+		if (m_curr_phase_high >= (m_phase_inverted ? 0.948 : 0.048) * m_curr_phase_len &&
+			m_curr_phase_high <= (m_phase_inverted ? 0.952 : 0.052) * m_curr_phase_len &&
+			m_curr_phase_len <= 1.1  * m_sample_rate &&
+			m_curr_phase_len >= 0.15 * m_sample_rate) {
+
 			double tmp_lpm = 60.0 * m_sample_rate / m_curr_phase_len;
 
 			m_lpm_sum_rx += tmp_lpm;
@@ -1858,7 +1859,7 @@ void fax_implementation::decode_phasing(int x, const fax_signal & the_signal )
 				<< ". " << _("Decoding phasing line") << ", lpm = " << tmp_lpm
 				<< " " << _("count") << "=" << m_phase_lines );
 
-			m_num_phase_lines=0;
+			m_num_phase_lines = 0;
 			/// This option was selected just once, in the middle of an image,
 			// with many vertical lines.
 			if( m_phase_lines >= 5 /* Was 4 */ ) {
@@ -2571,7 +2572,7 @@ int wefax::rx_process(const double *buf, int len)
 	/// Wait some seconds otherwise not significant.
 	if( idx >= avg_buf_size ) {
 		if( idx == avg_buf_size ) {
-			LOG_INFO( _("Starting samples loss control avg_buf_size=%d"), avg_buf_size);
+			LOG_VERBOSE( _("Starting samples loss control avg_buf_size=%d"), avg_buf_size);
 		}
 		int idx_mod_first = idx % avg_buf_size ;
 		double total_tim = buf_tim[idx_mod] - buf_tim[idx_mod_first];
@@ -2588,7 +2589,7 @@ int wefax::rx_process(const double *buf, int len)
 			int expected_samples = (int)( modem::samplerate * total_tim + 0.5 );
 			int missing_samples = expected_samples - total_len ;
 
-			LOG_INFO(_("Lost %d samples idx=%d estim_smpl_rate=%f total_tim=%f total_len=%d. Auto-center."),
+			LOG_VERBOSE(_("Lost %d samples idx=%d estim_smpl_rate=%f total_tim=%f total_len=%d. Auto-center."),
 				missing_samples,
 				idx,
 				estim_smpl_rate,
@@ -2647,11 +2648,9 @@ int wefax::tx_process()
 
 	REQ_FLUSH(GET_THREAD_ID());
 
-	// FL_LOCK_E();
 	wefax_pic::restart_tx_viewer();
 	transmit_lock_release(status);
 	m_abortxmt = false;
-	// FL_UNLOCK_E();
 	m_impl->tx_apt_stop();
 	return -1;
 }

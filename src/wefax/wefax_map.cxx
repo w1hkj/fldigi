@@ -201,7 +201,6 @@ void wefax_map::stretch(double the_ratio)
 }
 
 /// Change the horizontal center of the image by shifting the pixels.
-/// Beware that it is not protected by FL_LOCK_D/FL_UNLOCK_D
 void wefax_map::shift_horizontal_center(int horizontal_shift)
 {
 	/// This is a number of pixels.
@@ -216,7 +215,7 @@ void wefax_map::shift_horizontal_center(int horizontal_shift)
 		memmove( vidbuf + horizontal_shift, vidbuf, bufsize - horizontal_shift );
 		memset( vidbuf, background, horizontal_shift );
 	} else {
-		/// Here, it is not necessary to reduce the buffer'size.
+		/// Here, it is not necessary to reduce the buffer size.
 		memmove( vidbuf, vidbuf - horizontal_shift, bufsize + horizontal_shift );
 		memset( vidbuf + bufsize + horizontal_shift, background, -horizontal_shift );
 	}
