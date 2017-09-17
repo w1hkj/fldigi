@@ -54,6 +54,10 @@ if test "x$ac_cv_want_ptw32" != "xno"; then
     PTW32_CFLAGS="${PTW32_CFLAGS:-$ptw32_default_cflags}"
     PTW32_LIBS="${PTW32_LIBS:-$ptw32_default_libs}"
     ac_cv_want_ptw32="yes"
+else
+    if test "x$target_mingw32" = "xyes"; then
+    PTW32_LIBS="-lpthread -lwsock32 -lws2_32"
+    fi
 fi
 
 AC_SUBST([PTW32_CFLAGS])

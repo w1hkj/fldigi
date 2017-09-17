@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include <sstream>
+
 #ifdef __MINGW32__
 #  include "compat.h"
 #endif
@@ -263,9 +265,10 @@ std::string RecordLoaderInterface::ContentSize() const
 	struct stat st;
 	if (stat(filnam.c_str(), &st) == -1 ) return "      N/A";
 
-	char buf[64];
-	snprintf(buf, sizeof(buf), "%9" PRIuSZ, (size_t)st.st_size );
-	return buf ;
+	std::stringstream buf;
+	buf.width(9); buf.fill(' ');
+	buf <<  st.st_size;
+	return buf.str();
 }
 
 // ----------------------------------------------------------------------------

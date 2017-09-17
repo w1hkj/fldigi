@@ -21,11 +21,29 @@
 #ifndef MINGW_H_
 #define MINGW_H_
 
+#include "config.h"
+
 #include <sys/types.h>
 #include <pthread.h>
 
-#undef _WINSOCKAPI_
 #include <winsock2.h>
+
+#undef EADDRINUSE
+#define EADDRINUSE WSAEADDRINUSE
+
+#undef EISCONN
+#define EISCONN WSAEISCONN
+
+#undef EWOULDBLOCK
+#define EWOULDBLOCK WSAEWOULDBLOCK
+
+#undef EINPROGRESS
+#define EINPROGRESS WSAEINPROGRESS
+
+#undef EALREADY
+#define EALREADY WSAEALREADY
+
+//======================================================================
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,9 +99,6 @@ int mingw_rename(const char*, const char*);
 #endif
 #ifndef SHUT_RDWR
 #  define SHUT_RDWR SD_BOTH
-#endif
-#ifndef EADDRINUSE
-#  define EADDRINUSE WSAEADDRINUSE
 #endif
 
 int nanosleep (const struct timespec *req, struct timespec *rem);

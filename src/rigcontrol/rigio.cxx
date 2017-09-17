@@ -451,7 +451,8 @@ long long rigCAT_getfreq(int retries, bool &failed, int waitval)
 			if (len1) {
 				for (size_t i = 0; i < len1; i++) {
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-						LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
+						unsigned int ui = i;
+						LOG_ERROR("failed pre data string test @ %u", ui);
 						goto retry_get_freq;
 					}
 				}
@@ -616,7 +617,8 @@ string rigCAT_getmode()
 			if (len) {
 				for (size_t i = 0; i < len; i++)
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-						LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
+						unsigned int ui = i;
+						LOG_ERROR("failed pre data string test @ %u", ui);
 						goto retry_get_mode;
 					}
 				p = len;
@@ -813,7 +815,8 @@ string rigCAT_getwidth()
 			if (len) {
 				for (size_t i = 0; i < len; i++)
 					if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-						LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
+						unsigned int ui = i;
+						LOG_ERROR("failed pre data string test @ %u", ui);
 						goto retry_get_width;
 					}
 				p = pData = len;
@@ -827,7 +830,8 @@ string rigCAT_getwidth()
 			if (len) {
 				for (size_t i = 0; i < len; i++)
 					if ((char)rTemp.str2[i] != (char)replybuff[p + i]) {
-						LOG_ERROR("failed post data string test @ %" PRIuSZ, i);
+						unsigned int ui = i;
+						LOG_ERROR("failed pre data string test @ %u", ui);
 						goto retry_get_width;
 					}
 			}
@@ -1446,8 +1450,9 @@ void rigCAT_get_smeter()
 	if (len1) {
 		for (size_t i = 0; i < len1; i++) {
 			if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-					LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
-					return;
+				unsigned int ui = i;
+				LOG_ERROR("failed pre data string test @ %u", ui);
+				return;
 			}
 		}
 		p = len1;
@@ -1597,8 +1602,9 @@ void rigCAT_get_pwrmeter()
 	if (len1) {
 		for (size_t i = 0; i < len1; i++) {
 			if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-					LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
-					return;
+				unsigned int ui = i;
+				LOG_ERROR("failed pre data string test @ %u", ui);
+				return;
 			}
 		}
 		p = len1;
@@ -1847,7 +1853,8 @@ void rigCAT_get_notch()
 	if (len1) {
 		for (size_t i = 0; i < len1; i++) {
 			if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-					LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
+					unsigned int ui = i;
+					LOG_ERROR("failed pre data string test @ %u", ui);
 					return;
 			}
 		}
@@ -2220,7 +2227,8 @@ void rigCAT_get_pwrlevel()
 	if (len1) {
 		for (size_t i = 0; i < len1; i++) {
 			if ((char)rTemp.str1[i] != (char)replybuff[i]) {
-					LOG_ERROR("failed pre data string test @ %" PRIuSZ, i);
+					unsigned int ui = i;
+					LOG_ERROR("failed pre data string test @ %u", ui);
 					return;
 			}
 		}

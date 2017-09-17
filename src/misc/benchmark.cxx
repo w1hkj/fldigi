@@ -24,6 +24,7 @@
 
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -113,15 +114,20 @@ static size_t do_rx_src(struct rusage ru[2], struct timespec wall_time[2]);
 void do_benchmark(void)
 {
 	ENSURE_THREAD(TRX_TID);
+	stringstream info;
 
 	if (benchmark.src_ratio != 1.0)
-		LOG_INFO("modem=%" PRIdPTR " (%s) rate=%d ratio=%f converter=%d (\"%s\")",
-			 active_modem->get_mode(), mode_info[active_modem->get_mode()].sname,
-			 active_modem->get_samplerate(),
-			 benchmark.src_ratio, benchmark.src_type, src_get_name(benchmark.src_type));
+		info << "modem=" << active_modem->get_mode()
+			 << " (" << mode_info[active_modem->get_mode()].sname << ")"
+			 << " rate=" << active_modem->get_samplerate()
+			 << " ratio=" << benchmark.src_ratio
+			 << " converter=" << benchmark.src_type
+			 << " (" << src_get_name(benchmark.src_type) << ")";
 	else
-		LOG_INFO("modem=%" PRIdPTR " (%s) rate=%d", active_modem->get_mode(),
-			 mode_info[active_modem->get_mode()].sname, active_modem->get_samplerate());
+		info << "modem=" << active_modem->get_mode()
+			 << " (" << mode_info[active_modem->get_mode()].sname << ")"
+			 << " rate=" << active_modem->get_samplerate();
+	LOG_INFO("%s", info.str().c_str());
 
 #if USE_SNDFILE
 	if (!benchmark.samples) {
@@ -152,12 +158,18 @@ void do_benchmark(void)
 	}
 #endif
 
-	LOG_INFO("processed: %" PRIuSZ " samples (decoded %" PRIuSZ ") in %.3f seconds", nproc, nrx,
-		 wall_time[1].tv_sec + wall_time[1].tv_nsec / 1e9);
+	info << "processed: " << nproc << " samples (decoded " << nrx << ") in "
+		 << precision(3)
+		 <<  wall_time[1].tv_sec + wall_time[1].tv_nsec / 1e9 << " seconds";
+	LOG_INFO("%s", info.str().c_str());
+
 	double speed = nproc / (ru[1].ru_utime.tv_sec + ru[1].ru_utime.tv_usec / 1e6);
-	LOG_INFO("cpu time : %" PRIdMAX ".%03" PRIdMAX "; speed=%.3f samples/s; factor=%.3f",
-		 (intmax_t)ru[1].ru_utime.tv_sec, (intmax_t)ru[1].ru_utime.tv_usec / 1000,
-		 speed, speed / active_modem->get_samplerate());
+	info << "cpu time : " << width(10)
+		 << (intmax_t)ru[1].ru_utime.tv_sec << "." << width(3) << fill('0')
+		 << (intmax_t)ru[1].ru_utime.tv_usec / 1000
+		 << "; speed=" << speed
+		 << "/s; factor=" << speed / active_modem->get_samplerate();
+	LOG_INFO("%s", info.str().c_str());
 }
 
 // ----------------------------------------------------------------------------

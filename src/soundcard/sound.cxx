@@ -1053,7 +1053,8 @@ SoundPort::SoundPort(const char *in_dev, const char *out_dev) : req_sample_rate(
 #endif
 	for (size_t i = 0; i < sizeof(sems)/sizeof(*sems); i++) {
 #if USE_NAMED_SEMAPHORES
-		snprintf(sname, sizeof(sname), "%" PRIuSZ "-%u-%s", i, getpid(), PACKAGE_TARNAME);
+		unsigned int un = i;
+		snprintf(sname, sizeof(sname), "%u-%u-%s", un, getpid(), PACKAGE_TARNAME);
 		if ((*sems[i] = sem_open(sname, O_CREAT | O_EXCL, 0600, 0)) == (sem_t*)SEM_FAILED) {
 			pa_perror(errno, sname);
 			throw SndException(errno);
@@ -1586,7 +1587,9 @@ void SoundPort::src_data_reset(unsigned dir)
 					MAX(req_sample_rate, sd[dir].dev_sample_rate) /
 					MIN(req_sample_rate, sd[dir].dev_sample_rate))),
 					8192);
-	LOG_VERBOSE("rbsize = %" PRIuSZ "", rbsize);
+	stringstream info;
+	info << "rbsize = " << rbsize;
+	LOG_VERBOSE("%s", info.str().c_str());
 	if (sd[dir].rb) delete sd[dir].rb;
 	sd[dir].rb = new ringbuffer<float>(rbsize);
 }

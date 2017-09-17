@@ -26,6 +26,7 @@
 // ----------------------------------------------------------------------------
 
 #include <config.h>
+#include <sstream>
 
 #include <FL/Fl.H>
 
@@ -326,7 +327,10 @@ void contestia::restart()
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
-	put_MODEstatus("%s %" PRIuSZ "/%" PRIuSZ "", get_mode_name(), Tx->Tones, Tx->Bandwidth);
+	stringstream info;
+	info << get_mode_name() << " " << Tx->Tones << "/" << Tx->Bandwidth;
+	put_MODEstatus("%s", info.str().c_str());
+
 	metric = 0;
 
 	sigpwr = 1e-10; noisepwr = 1e-8;

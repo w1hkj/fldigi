@@ -156,15 +156,10 @@ void anal::writeFile()
 {
 	if (!write_to_csv) return;
 
-	struct timespec now;
+	time_t now = time(NULL);
 	struct tm tm;
 
-	// calculate wall clock time using the realtime clock
-	if (clock_gettime(CLOCK_REALTIME, &now) == -1) {
-		LOG_PERROR("clock_gettime");
-		abort();
-	}
-	gmtime_r(&now.tv_sec, &tm);
+	gmtime_r(&now, &tm);
 
 	FILE* out = fl_fopen(analysisFilename.c_str(), "a");
 	if (unlikely(!out)) {

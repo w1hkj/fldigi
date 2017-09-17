@@ -33,6 +33,8 @@
 #include <cctype>
 #include <cstdlib>
 
+#include <sstream>
+
 #include "timeops.h"
 
 #if HAVE_STD_HASH
@@ -765,8 +767,11 @@ struct replace_refs
 			str[len - 1] = '\0';
 			break;
 		case REF_CALLSIGN:
-			if (n.event == NOTIFY_EVENT_MYCALL || n.event == NOTIFY_EVENT_STATION)
-				snprintf(str, len, "\\%" PRIuSZ, event_regex[n.event].index);
+			if (n.event == NOTIFY_EVENT_MYCALL || n.event == NOTIFY_EVENT_STATION) {
+				stringstream info;
+				info << "\\" << event_regex[n.event].index;
+				strncpy(str, info.str().c_str(), len);
+			}
 			break;
 		case REF_COUNTRY:
 			if (n.event == NOTIFY_EVENT_STATION) {
@@ -870,7 +875,10 @@ static void notify_notify(const notify_t& n)
 					setenv("FLDIGI_NOTIFY_CALLSIGN", val.c_str(), 1);
 			}
 			setenv("FLDIGI_NOTIFY_TEXT", n.match_string, 1);
-			snprintf(var, sizeof(var), "%" PRIuSZ, n.submatch_length);
+
+			unsigned int un = n.submatch_length;
+			snprintf(var, sizeof(var), "%u", un);
+
 			setenv("FLDIGI_NOTIFY_STR_NUM", var, 1);
 			snprintf(var, sizeof(var), "%d", n.afreq);
 			setenv("FLDIGI_NOTIFY_AUDIO_FREQUENCY", var, 1);
@@ -909,7 +917,9 @@ static bool notify_is_dup(notify_t& n, const char* str, const regmatch_t* sub, s
 		return false;
 
 	if (n.dup_ref == 0 || n.dup_ref >= len) {
-		LOG_ERROR("Bad dup_ref: %" PRIuSZ " >= %" PRIuSZ, n.dup_ref, len);
+		stringstream info;
+		info << "Bad dup_ref: " << n.dup_ref << " >= " << len;
+		LOG_ERROR("%s", info.str().c_str());
 		return false;
 	}
 	const regmatch_t& subidx = sub[n.dup_ref];
@@ -1549,41 +1559,41 @@ static void notify_save(void)
 	Fl_Preferences ndata(HomeDir.c_str(), PACKAGE_TARNAME, "notify");
 	ndata.set("items", static_cast<int>(notify_list.size()));
 
-	char group[8];
 	size_t num = 0;
+	stringstream group;
 	for (notify_list_t::iterator i = notify_list.begin(); i != notify_list.end(); ++i) {
-		snprintf(group, sizeof(group), "item%" PRIuSZ, num++);
+		group << "item" << num++;
 
-		ndata.set(Fl_Preferences::Name("%s/event", group), i->event);
+		ndata.set(Fl_Preferences::Name("%s/event", group.str().c_str()), i->event);
 		if (i->event >= NOTIFY_EVENT_CUSTOM)
-			ndata.set(Fl_Preferences::Name("%s/re", group), i->re.c_str());
-		ndata.set(Fl_Preferences::Name("%s/enabled", group), i->enabled);
+			ndata.set(Fl_Preferences::Name("%s/re", group.str().c_str()), i->re.c_str());
+		ndata.set(Fl_Preferences::Name("%s/enabled", group.str().c_str()), i->enabled);
 
-		ndata.set(Fl_Preferences::Name("%s/action/alert", group), i->action.alert.c_str());
-		ndata.set(Fl_Preferences::Name("%s/action/rx_marker", group), i->action.rx_marker.c_str());
-		ndata.set(Fl_Preferences::Name("%s/action/macro", group), i->action.macro.c_str());
-		ndata.set(Fl_Preferences::Name("%s/action/program", group), i->action.program.c_str());
-		ndata.set(Fl_Preferences::Name("%s/action/trigger_limit", group),
+		ndata.set(Fl_Preferences::Name("%s/action/alert", group.str().c_str()), i->action.alert.c_str());
+		ndata.set(Fl_Preferences::Name("%s/action/rx_marker", group.str().c_str()), i->action.rx_marker.c_str());
+		ndata.set(Fl_Preferences::Name("%s/action/macro", group.str().c_str()), i->action.macro.c_str());
+		ndata.set(Fl_Preferences::Name("%s/action/program", group.str().c_str()), i->action.program.c_str());
+		ndata.set(Fl_Preferences::Name("%s/action/trigger_limit", group.str().c_str()),
 			  static_cast<int>(i->action.trigger_limit));
-		ndata.set(Fl_Preferences::Name("%s/action/alert_timeout", group),
+		ndata.set(Fl_Preferences::Name("%s/action/alert_timeout", group.str().c_str()),
 			  static_cast<int>(i->action.alert_timeout));
 
-		ndata.set(Fl_Preferences::Name("%s/filter/match", group), i->filter.match);
-		ndata.set(Fl_Preferences::Name("%s/filter/callsign", group), i->filter.callsign.c_str());
-		ndata.set(Fl_Preferences::Name("%s/filter/nwb", group), i->filter.nwb);
-		ndata.set(Fl_Preferences::Name("%s/filter/lotw", group), i->filter.lotw);
-		ndata.set(Fl_Preferences::Name("%s/filter/eqsl", group), i->filter.eqsl);
+		ndata.set(Fl_Preferences::Name("%s/filter/match", group.str().c_str()), i->filter.match);
+		ndata.set(Fl_Preferences::Name("%s/filter/callsign", group.str().c_str()), i->filter.callsign.c_str());
+		ndata.set(Fl_Preferences::Name("%s/filter/nwb", group.str().c_str()), i->filter.nwb);
+		ndata.set(Fl_Preferences::Name("%s/filter/lotw", group.str().c_str()), i->filter.lotw);
+		ndata.set(Fl_Preferences::Name("%s/filter/eqsl", group.str().c_str()), i->filter.eqsl);
 		int k = 0;
 		for (notify_filter_dxcc_t::const_iterator j = i->filter.dxcc.begin();
 		     j != i->filter.dxcc.end() && j->second; ++j) {
-			ndata.set(Fl_Preferences::Name("%s/filter/dxcc/%d", group, k++), j->first.c_str());
+			ndata.set(Fl_Preferences::Name("%s/filter/dxcc/%d", group.str().c_str(), k++), j->first.c_str());
 		}
 
-		ndata.set(Fl_Preferences::Name("%s/dup/ignore", group), i->dup_ignore);
-		ndata.set(Fl_Preferences::Name("%s/dup/ref", group), static_cast<int>(i->dup_ref));
-		ndata.set(Fl_Preferences::Name("%s/dup/when", group), static_cast<int>(i->dup.when));
-		ndata.set(Fl_Preferences::Name("%s/dup/band", group), i->dup.band);
-		ndata.set(Fl_Preferences::Name("%s/dup/mode", group), static_cast<int>(i->dup.mode));
+		ndata.set(Fl_Preferences::Name("%s/dup/ignore", group.str().c_str()), i->dup_ignore);
+		ndata.set(Fl_Preferences::Name("%s/dup/ref", group.str().c_str()), static_cast<int>(i->dup_ref));
+		ndata.set(Fl_Preferences::Name("%s/dup/when", group.str().c_str()), static_cast<int>(i->dup.when));
+		ndata.set(Fl_Preferences::Name("%s/dup/band", group.str().c_str()), i->dup.band);
+		ndata.set(Fl_Preferences::Name("%s/dup/mode", group.str().c_str()), static_cast<int>(i->dup.mode));
 	}
 }
 
@@ -1599,59 +1609,58 @@ static void notify_load(void)
 		return;
 	size_t n = static_cast<size_t>(x);
 
-	char group[8];
+	stringstream group;
 	for (size_t i = 0; i < n; i++) {
 		notify_t nitem;
+		group << "item" << i;
 
-		snprintf(group, sizeof(group), "item%" PRIuSZ, i);
-
-		ndata.get(Fl_Preferences::Name("%s/event", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/event", group.str().c_str()), x, 0);
 		nitem.event = static_cast<notify_event_t>(x);
 		nitem.last_trigger = 0;
 		if (nitem.event >= NOTIFY_EVENT_CUSTOM) {
-			ndata.get(Fl_Preferences::Name("%s/re", group), s, "", sizeof(s)-1);
+			ndata.get(Fl_Preferences::Name("%s/re", group.str().c_str()), s, "", sizeof(s)-1);
 			nitem.re = s;
 		}
 		else
 			nitem.re = event_regex[nitem.event].regex;
-		ndata.get(Fl_Preferences::Name("%s/enabled", group), x, 1);
+		ndata.get(Fl_Preferences::Name("%s/enabled", group.str().c_str()), x, 1);
 		nitem.enabled = x;
 
-		ndata.get(Fl_Preferences::Name("%s/action/alert", group), s, "", sizeof(s)-1);
+		ndata.get(Fl_Preferences::Name("%s/action/alert", group.str().c_str()), s, "", sizeof(s)-1);
 		nitem.action.alert = s;
-		ndata.get(Fl_Preferences::Name("%s/action/macro", group), s, "", sizeof(s)-1);
+		ndata.get(Fl_Preferences::Name("%s/action/macro", group.str().c_str()), s, "", sizeof(s)-1);
 		nitem.action.macro = s;
-		ndata.get(Fl_Preferences::Name("%s/action/rx_marker", group), s, "", sizeof(s)-1);
+		ndata.get(Fl_Preferences::Name("%s/action/rx_marker", group.str().c_str()), s, "", sizeof(s)-1);
 		nitem.action.rx_marker = s;
-		ndata.get(Fl_Preferences::Name("%s/action/program", group), s, "", sizeof(s)-1);
+		ndata.get(Fl_Preferences::Name("%s/action/program", group.str().c_str()), s, "", sizeof(s)-1);
 		nitem.action.program = s;
-		ndata.get(Fl_Preferences::Name("%s/action/trigger_limit", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/action/trigger_limit", group.str().c_str()), x, 0);
 		nitem.action.trigger_limit = x;
-		ndata.get(Fl_Preferences::Name("%s/action/alert_timeout", group), x, 5);
+		ndata.get(Fl_Preferences::Name("%s/action/alert_timeout", group.str().c_str()), x, 5);
 		nitem.action.alert_timeout = x;
 
-		ndata.get(Fl_Preferences::Name("%s/filter/match", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/filter/match", group.str().c_str()), x, 0);
 		nitem.filter.match = static_cast<notify_filter_match_t>(x);
-		ndata.get(Fl_Preferences::Name("%s/filter/callsign", group), s, "", sizeof(s)-1);
+		ndata.get(Fl_Preferences::Name("%s/filter/callsign", group.str().c_str()), s, "", sizeof(s)-1);
 		nitem.filter.callsign = s;
-		ndata.get(Fl_Preferences::Name("%s/filter/nwb", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/filter/nwb", group.str().c_str()), x, 0);
 		nitem.filter.nwb = x;
-		ndata.get(Fl_Preferences::Name("%s/filter/lotw", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/filter/lotw", group.str().c_str()), x, 0);
 		nitem.filter.lotw = x;
-		ndata.get(Fl_Preferences::Name("%s/filter/eqsl", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/filter/eqsl", group.str().c_str()), x, 0);
 		nitem.filter.eqsl = x;
-		for (int k = 0; ndata.get(Fl_Preferences::Name("%s/filter/dxcc/%d", group, k), s, "", sizeof(s)-1); k++)
+		for (int k = 0; ndata.get(Fl_Preferences::Name("%s/filter/dxcc/%d", group.str().c_str(), k), s, "", sizeof(s)-1); k++)
 			nitem.filter.dxcc[s] = true;
 
-		ndata.get(Fl_Preferences::Name("%s/dup/ignore", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/dup/ignore", group.str().c_str()), x, 0);
 		nitem.dup_ignore = x;
-		ndata.get(Fl_Preferences::Name("%s/dup/ref", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/dup/ref", group.str().c_str()), x, 0);
 		nitem.dup_ref = x;
-		ndata.get(Fl_Preferences::Name("%s/dup/when", group), x, 600);
+		ndata.get(Fl_Preferences::Name("%s/dup/when", group.str().c_str()), x, 600);
 		nitem.dup.when = x;
-		ndata.get(Fl_Preferences::Name("%s/dup/band", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/dup/band", group.str().c_str()), x, 0);
 		nitem.dup.band = static_cast<band_t>(x);
-		ndata.get(Fl_Preferences::Name("%s/dup/mode", group), x, 0);
+		ndata.get(Fl_Preferences::Name("%s/dup/mode", group.str().c_str()), x, 0);
 		nitem.dup.mode = static_cast<trx_mode>(x);
 
 		notify_list.push_back(nitem);

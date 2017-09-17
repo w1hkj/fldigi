@@ -53,6 +53,8 @@
 
 #include "confdialog.h"
 
+#include "timeops.h"
+
 LOG_FILE_SOURCE(debug::LOG_FD);
 
 using namespace std;

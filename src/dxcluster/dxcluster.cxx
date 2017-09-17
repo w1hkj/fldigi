@@ -32,6 +32,7 @@
 #include <FL/Fl_Text_Display.H>
 #include <FL/Fl_Text_Buffer.H>
 
+#include "config.h"
 #include "fl_digi.h"
 #include "rigsupport.h"
 #include "modem.h"
@@ -53,6 +54,10 @@
 #include "dx_cluster.h"
 
 #include "confdialog.h"
+
+#ifdef __MINGW32__
+#  include "compat/mingw.h"
+#endif
 
 LOG_FILE_SOURCE(debug::LOG_FD);
 

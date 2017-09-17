@@ -198,14 +198,6 @@ deprecated__ typeof(strcat) strcat;
 #  define NOMINMAX 1
 #endif
 
-#ifndef __MINGW32__
-#  define PRIuSZ "zu"
-#  define PRIdSZ "zd"
-#else
-#  define PRIuSZ "Iu"
-#  define PRIdSZ "Id"
-#endif
-
 #  define PATH_SEP "/"
 
 /// Unnamed sempahores are not supported on OS X (and named semaphores are broken on cygwin).

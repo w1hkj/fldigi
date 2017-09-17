@@ -2296,9 +2296,10 @@ static void dxcc_entity_cache_add(cQsoDb& db)
 	int n = db.nbrRecs();
 	for (int i = 0; i < n; i++)
 		dxcc_entity_cache_add(db.getRec(i));
-	if (!dxcc_entity_cache.empty())
-		LOG_INFO("Found %" PRIuSZ " countries in %d QSO records",
-			 dxcc_entity_cache.size(), n);
+	if (!dxcc_entity_cache.empty()) {
+		unsigned int un = dxcc_entity_cache.size();
+		LOG_INFO("Found %u countries in %d QSO records", un, n);
+	}
 }
 
 static void dxcc_entity_cache_rm(cQsoRec* r)

@@ -1121,7 +1121,9 @@ void payloadText(string s)
 				sizepos += arqsizespec.length();
 				if ((lfpos = incomingText.find('\n', sizepos)) != string::npos) {
 					string sizechars = incomingText.substr(sizepos, lfpos - sizepos);
-					sscanf(sizechars.c_str(), "%" PRIuSZ, &arqPayloadSize);
+					unsigned int tempnbr;
+					sscanf(sizechars.c_str(), "%u", &tempnbr);
+					arqPayloadSize = tempnbr;
 					rxARQhavesize = true;
 					char statusmsg[40];
 					snprintf(statusmsg, sizeof(statusmsg), "Rcvg: %d", 

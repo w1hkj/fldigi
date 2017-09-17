@@ -45,6 +45,8 @@
 #include <cstdlib>
 
 #include <string>
+#include <sstream>
+
 #include <deque>
 #include <vector>
 #include <algorithm>
@@ -808,7 +810,9 @@ bool pskrep_sender::send(void)
 
 	// empty dgram or no reports (shouldn't happen)
 	if (dgram_size == 0 || dgram_size == report_offset + 4) {
-		LOG_DEBUG("Not sending empty dgram: %" PRIuSZ " %" PRIuSZ "", dgram_size, report_offset);
+		stringstream info;
+		info << dgram_size << " " << report_offset;
+		LOG_DEBUG("Not sending empty dgram: %s", info.str().c_str());
 		return false;
 	}
 
@@ -828,7 +832,11 @@ bool pskrep_sender::send(void)
 	*reinterpret_cast<uint32_t*>(dgram + 4) = htonl(time(NULL));
 
 	bool ret;
-	LOG_DEBUG("Sending datagram (%" PRIuSZ "): \"%s\"", dgram_size, str2hex(dgram, dgram_size));
+	{
+		stringstream info;
+		info << "(" << dgram_size << "): \"" << str2hex(dgram, dgram_size) << "\"";
+		LOG_DEBUG("Sending datgram %s", info.str().c_str());
+	}
 	try {
 		if ((size_t)send_socket->send(dgram, dgram_size) != dgram_size)
 			throw SocketException("short write");

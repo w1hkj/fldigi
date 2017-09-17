@@ -27,6 +27,8 @@
 
 #include <config.h>
 
+#include <sstream>
+
 #include <FL/Fl.H>
 
 #include "olivia.h"
@@ -378,10 +380,12 @@ void olivia::restart()
 	fragmentsize = 1024;
 	set_bandwidth(Tx->Bandwidth - Tx->Bandwidth / Tx->Tones);
 
+	stringstream info;
 	if (mode == MODE_OLIVIA)
-		put_MODEstatus("%s %" PRIuSZ "/%" PRIuSZ "", get_mode_name(), Tx->Tones, Tx->Bandwidth);
+		info << get_mode_name() << " " << Tx->Tones << "/" << Tx->Bandwidth;
 	else
-		put_MODEstatus("%s", mode_info[mode].sname);//get_mode_name());
+		info << mode_info[mode].sname;
+	put_MODEstatus("%s", info.str().c_str());
 
 	metric = 0;
 

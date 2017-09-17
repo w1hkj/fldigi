@@ -6,7 +6,7 @@
 #include "misc.h"
 #include "debug.h"
 
-static pthread_t       alert_pthread = 0;
+static pthread_t       alert_pthread;
 static pthread_mutex_t alert_mutex;
 
 	   bool alert_thread_running   = false;
