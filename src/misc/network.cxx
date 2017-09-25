@@ -37,21 +37,49 @@
 #include "socket.h"
 #include "timeops.h"
 #include "gettext.h"
+#include "debug.h"
 
 using namespace std;
 
 bool request_reply(const string& node, const string& service, const string& request, string& reply, double timeout)
 {
+	LOG_VERBOSE("\n\
+========================================================================\n\
+node: %s\n\
+service: %s\n\
+========================================================================",
+node.c_str(), service.c_str() );
+
 	try {
 		Socket s(Address(node.c_str(), service.c_str()));
 		s.connect();
 		s.set_nonblocking();
 		s.set_timeout(timeout);
 
-		if (s.send(request) != request.length() || s.recv(reply) == 0) {
-		        reply = "Request timed out";
+		if (s.send(request) != request.length()) {
+			LOG_ERROR("\n\
+======================== SEND TIMED OUT ================================\n\
+%s\n\
+========================================================================",
+				request.c_str());
+			reply = "Send timed out";
 			return false;
 		}
+		LOG_VERBOSE("\n\
+=============================== SENT ===================================\n\
+%s\n\
+========================================================================",
+			request.c_str());
+		if (s.recv(reply) == 0) {
+			LOG_ERROR("Reply time out");
+			reply = "Reply timed out";
+			return false;
+		}
+		LOG_VERBOSE("\n\
+============================== REPLY ===================================\n\
+%s\n\
+========================================================================",
+			reply.c_str());
 	}
 	catch (const SocketException& e) {
 		reply = e.what();
@@ -77,8 +105,9 @@ bool fetch_http(const string& url, string& reply, double timeout)
 		: std::string( http_host_begin, http_host_end );
 
 	string request;
-	request.append("GET ").append(http_page).append(" HTTP/1.0\n")
-	       .append("Host: ").append(http_host).append("\nConnection: close\n\n");
+	request.append("GET ").append(http_page).append(" HTTP/1.0\r\n")
+           .append("Host: ").append(http_host).append("\r\n")
+           .append("Connection: close\r\n\r\n");
 
 	return request_reply( http_host, "http", request, reply, timeout);
 }

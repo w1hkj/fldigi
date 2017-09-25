@@ -224,10 +224,9 @@ void getwx(string& wx, const char *metar)
 		LOG_WARN("%s", "url not available\n");
 		return;
 	}
-
 	p2 = text.find(wxsta);
 	if (p2 == string::npos) {
-		LOG_WARN("%s", "station not found\n");
+		LOG_ERROR("Send:\n%s\nReply:\n%s", url.c_str(), text.c_str());
 		return;
 	}
 
