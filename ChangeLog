@@ -1,9 +1,19 @@
 
 
+=Version 4.0.10=
+
+2017-09-25  David Freese  <w1hkj@bellsouth.net>
+
+	949ed87: WX HamQth bug fix
+	0142116: win7 mingw build fixes
+	6ed0b70: wefax ui mods
+	c1c7ebf: wefax_map
+	1707691: auto start
+
+
 =Version 4.0.9=
 
-2017-09-03  David Freese  <w1hkj@bellsouth.net>
-
+	26a1f8c: doc update
 	cc95f0a: clock_gettime
 	5d4008a: spectrum display
 	6021e18: Test Signal Dialog
