@@ -55,6 +55,7 @@
 #include "utf8file_io.h"
 #include "xmlrpc.h"
 #include "rigio.h"
+#include "strutil.h"
 
 #include <FL/Fl.H>
 #include <FL/filename.H>
@@ -2926,14 +2927,23 @@ static void pQSYFM(std::string &s, size_t &i, size_t endbracket)
 	do_qsy(false);
 }
 
+struct rfafmd { int rf; int af; std::string mdname;
+	rfafmd(int a, int b, std::string nm) { rf = a; af = b; mdname = nm;}
+	rfafmd(int a, int b) {rf = a; af = b; mdname = active_modem->get_mode_name();}
+	rfafmd(){rf = af = 0; mdname = active_modem->get_mode_name();}
+};
+static queue<rfafmd> fpairs;
+
 static void pQSY(std::string &s, size_t &i, size_t endbracket)
 {
 	if (within_exec) {
 		s.replace(i, endbracket - i + 1, "");
 		return;
 	}
+
+	std::string mdname = active_modem->get_mode_name();
 	int rf = 0;
-	int audio = 0;
+	int af = 0;
 	float rfd = 0;
 	std::string sGoFreq = s.substr(i+5, endbracket - i - 5);
 	// no frequency(s) specified
@@ -2941,26 +2951,54 @@ static void pQSY(std::string &s, size_t &i, size_t endbracket)
 		s.replace(i, endbracket-i+1, "");
 		return;
 	}
-	// rf first value
-	sscanf(sGoFreq.c_str(), "%f", &rfd);
-	if (rfd > 0)
-		rf = (int)(1000*rfd);
-	size_t pos;
-	if ((pos = sGoFreq.find(":")) != std::string::npos) {
-		// af second value
-		sGoFreq.erase(0, pos+1);
-		if (sGoFreq.length())
-			sscanf(sGoFreq.c_str(), "%d", &audio);
-		if (audio < 0) audio = 0;
-		if (audio < progdefaults.LowFreqCutoff)
-			audio = progdefaults.LowFreqCutoff;
-		if (audio > progdefaults.HighFreqCutoff)
-			audio = progdefaults.HighFreqCutoff;
+
+	if (fpairs.empty()) {
+		std::string triad;
+		size_t pos;
+		while (!sGoFreq.empty()) {
+			pos = sGoFreq.find(";");
+			if (pos == std::string::npos) triad = sGoFreq;
+			else  triad = sGoFreq.substr(0, pos);
+			sGoFreq.erase(0, triad.length()+1);
+			sscanf(triad.c_str(), "%f", &rfd);
+			if (rfd > 0) rf = (int)(1000*rfd);
+			if ((pos = triad.find(":")) != std::string::npos) {
+				triad.erase(0,pos+1);
+				if (triad.length())
+					sscanf(triad.c_str(), "%d", &af);
+				if (af < 0) af = 0;
+				if (af < progdefaults.LowFreqCutoff) af = progdefaults.LowFreqCutoff;
+				if (af > progdefaults.HighFreqCutoff) af = progdefaults.HighFreqCutoff;
+			} else af = active_modem->get_freq();
+
+			if ((pos = triad.find(":")) != std::string::npos) {
+				triad.erase(0, pos+1);
+				strtrim(triad);
+				fpairs.push(rfafmd(rf, af, triad));
+			} else
+				fpairs.push(rfafmd(rf,af, mdname));
+		}
 	}
+
+	struct rfafmd fpair;
+
+	fpair = fpairs.front();
+	rf = fpair.rf;
+	af = fpair.af;
+	if (fpair.mdname != mdname) {
+		for (int m = 0; m < NUM_MODES; m++) {
+			if (fpair.mdname == mode_info[m].sname) {
+				init_modem_sync(mode_info[m].mode);
+				break;
+			}
+		}
+	}
+	fpairs.pop();
+
 	if (rf && rf != wf->rfcarrier())
-		qsy(rf, audio);
+		qsy(rf, af);
 	else
-		active_modem->set_freq(audio);
+		active_modem->set_freq(af);
 
 	s.replace(i, endbracket - i + 1, "");
 }
