@@ -47,7 +47,7 @@
 
 extern waterfall *wf;
 
-#define CH_SPACING 25
+#define CH_SPACING 50
 #define VCW_FFT_SIZE 2048 // must be a factor of 2
 
 enum {READY, NOT_READY};
@@ -214,7 +214,7 @@ int CW_CHANNEL::decode_state(int cw_state)
 //				&& cw_receive_state == POST_TONE) {
 
 				std::string code = morse->rx_lookup(rx_rep_buf);
-				if (code.length()) {
+				if (code.empty()) {
 					decode_str.clear();
 					cw_receive_state = KEYUP;
 					rx_rep_buf.clear();
