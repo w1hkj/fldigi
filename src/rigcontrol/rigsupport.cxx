@@ -148,11 +148,11 @@ void initOptionMenus()
 		pMD = &lmodes;
 	else if (lmodeCMD.empty() == false)
 		pMD = &lmodeCMD;
-printf("initOptionMenus()\n");
+//printf("initOptionMenus()\n");
 	if (pMD) {
 		MD = pMD->begin();
 		while (MD != pMD->end()) {
-printf("adding mode: %s\n", (*MD).SYMBOL.c_str());
+//printf("adding mode: %s\n", (*MD).SYMBOL.c_str());
 			qso_opMODE->add( (*MD).SYMBOL.c_str());
 			MD++;
 		}
@@ -174,7 +174,7 @@ printf("adding mode: %s\n", (*MD).SYMBOL.c_str());
 	if (pBW) {
 		bw = pBW->begin();
 		while (bw != pBW->end()) {
-printf("adding BW: %s\n", (*bw).SYMBOL.c_str());
+//printf("adding BW: %s\n", (*bw).SYMBOL.c_str());
 			qso_opBW->add( (*bw).SYMBOL.c_str());
 			bw++;
 		}
