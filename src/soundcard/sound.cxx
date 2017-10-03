@@ -1141,7 +1141,7 @@ int SoundPort::Open(int mode, int freq)
 	req_sample_rate = sample_frequency = freq;
 
 	// do we need to (re)initialise the streams?
-	int ret = 0;
+	int ret = 1;
 	int sr[2] = { progdefaults.in_sample_rate, progdefaults.out_sample_rate };
 
 	// initialize stream if it is a JACK device, regardless of mode
@@ -1167,12 +1167,12 @@ int SoundPort::Open(int mode, int freq)
 			// reset the semaphore
 			while (sem_trywait(sd[i].rwsem) == 0);
 			if (errno && errno != EAGAIN) {
-				pa_perror(errno, "open");
+				pa_perror(errno, "open failed");
 				throw SndException(errno);
 			}
 			start_stream(i);
 
-			ret = 1;
+			ret = 0;
 		}
 		else {
 			pause_stream(i);

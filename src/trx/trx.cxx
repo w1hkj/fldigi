@@ -30,6 +30,7 @@
 #include <semaphore.h>
 #include <cstdlib>
 #include <string>
+#include <string.h>
 
 #include "trx.h"
 #include "main.h"
@@ -48,6 +49,8 @@
 #include "macros.h"
 #include "rigsupport.h"
 #include "psm/psm.h"
+
+#include "icons.h"
 
 #include "fft-monitor.h"
 
@@ -232,8 +235,9 @@ void trx_trx_receive_loop()
 		if (!progdefaults.is_full_duplex || !RXsc_is_open ||
 			current_RXsamplerate != active_modem->get_samplerate() ) {
 			current_RXsamplerate = active_modem->get_samplerate();
-			RXscard->Close(O_RDONLY);
-			if (RXscard->Open(O_RDONLY, current_RXsamplerate)) {
+			if (RXscard) {
+				RXscard->Close(O_RDONLY);
+				RXscard->Open(O_RDONLY, current_RXsamplerate);
 				REQ(sound_update, progdefaults.btnAudioIOis);
 				RXsc_is_open = true;
 			}
@@ -242,7 +246,7 @@ void trx_trx_receive_loop()
 	catch (const SndException& e) {
 		LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 		put_status(e.what(), 5);
-		RXscard->Close();
+		if (RXscard) RXscard->Close();
 		RXsc_is_open = false;
 		current_RXsamplerate = 0;
 //	if (e.error() == EBUSY && progdefaults.btnAudioIOis == SND_IDX_PORT) {
@@ -259,13 +263,15 @@ void trx_trx_receive_loop()
 	ringbuffer<double>::vector_type rbvec[2];
 	rbvec[0].buf = rbvec[1].buf = 0;
 
-	RXscard->flush(O_RDONLY);
+	if (RXscard) RXscard->flush(O_RDONLY);
 
 	while (1) {
 		try {
 			numread = 0;
-			while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
-				numread += RXscard->Read(fbuf + numread, SCBLOCKSIZE - numread);
+			if (RXscard) {
+				while (numread < SCBLOCKSIZE && trx_state == STATE_RX)
+					numread += RXscard->Read(fbuf + numread, SCBLOCKSIZE - numread);
+			}
 			if (numread > SCBLOCKSIZE) {
 				LOG_ERROR("numread error %lu", (unsigned long) numread);
 				numread = SCBLOCKSIZE;
@@ -289,7 +295,7 @@ void trx_trx_receive_loop()
 			}
 		}
 		catch (const SndException& e) {
-			RXscard->Close();
+			if (RXscard) RXscard->Close();
 			RXsc_is_open = false;
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
@@ -342,10 +348,11 @@ void trx_trx_receive_loop()
 			}
 		}
 	}
-	if (trx_state == STATE_RESTART) return;
+	if (trx_state == STATE_RESTART)
+		return;
 
 	if (!progdefaults.is_full_duplex ) {
-		RXscard->Close(O_RDONLY);
+		if (RXscard) RXscard->Close(O_RDONLY);
 		RXsc_is_open = false;
 	}
 }
@@ -365,9 +372,11 @@ void trx_trx_transmit_loop()
 		try {
 			if (current_TXsamplerate != active_modem->get_samplerate() || !TXsc_is_open) {
 				current_TXsamplerate = active_modem->get_samplerate();
-				TXscard->Close(O_WRONLY);
-				if (TXscard->Open(O_WRONLY, current_TXsamplerate))
+				if (TXscard) {
+					TXscard->Close(O_WRONLY);
+					TXscard->Open(O_WRONLY, current_TXsamplerate);
 					TXsc_is_open = true;
+				}
 			}
 		} catch (const SndException& e) {
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
@@ -418,7 +427,7 @@ void trx_trx_transmit_loop()
 							trx_state = STATE_RX;
 				}
 				catch (const SndException& e) {
-					TXscard->Close();
+					if (TXscard) TXscard->Close();
 					TXsc_is_open = false;
 					LOG_ERROR("%s", e.what());
 					put_status(e.what(), 5);
@@ -440,11 +449,11 @@ void trx_trx_transmit_loop()
 
 		trx_xmit_wfall_end(current_TXsamplerate);
 
-		TXscard->flush();
+		if (TXscard) TXscard->flush();
 
 		if (trx_state == STATE_RX) {
 			if (!progdefaults.is_full_duplex) {
-				TXscard->Close(O_WRONLY);
+				if (TXscard) TXscard->Close(O_WRONLY);
 				TXsc_is_open = false;
 			}
 		}
@@ -474,9 +483,11 @@ void trx_tune_loop()
 			if (!progdefaults.is_full_duplex || !TXsc_is_open ||
 				current_TXsamplerate != active_modem->get_samplerate() ) {
 				current_TXsamplerate = active_modem->get_samplerate();
-				TXscard->Close(O_WRONLY);
-				TXscard->Open(O_WRONLY, current_TXsamplerate);
-				TXsc_is_open = true;
+				if (TXscard) TXscard->Close(O_WRONLY);
+				if (TXscard) {
+					TXscard->Open(O_WRONLY, current_TXsamplerate);
+					TXsc_is_open = true;
+				}
 			}
 		} catch (const SndException& e) {
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
@@ -501,7 +512,7 @@ void trx_tune_loop()
 			xmttune::keyup(active_modem->get_txfreq_woffset(), TXscard);
 		}
 		catch (const SndException& e) {
-			TXscard->Close();
+			if (TXscard) TXscard->Close();
 			TXsc_is_open = false;
 			LOG_ERROR("%s. line: %i", e.what(), __LINE__);
 			put_status(e.what(), 5);
@@ -509,11 +520,11 @@ void trx_tune_loop()
 			current_TXsamplerate = 0;
 			return;
 		}
-		TXscard->flush();
+		if (TXscard) TXscard->flush();
 
 		if (trx_state == STATE_RX) {
 			if (!progdefaults.is_full_duplex) {
-				TXscard->Close(O_WRONLY);
+				if (TXscard) TXscard->Close(O_WRONLY);
 				TXsc_is_open = false;
 			}
 		}
@@ -632,6 +643,20 @@ void trx_start_modem(modem* m, int f)
 }
 
 //=============================================================================
+static string reset_loop_msg;
+void show_reset_loop_alert()
+{
+	progdefaults.btnAudioIOis = SND_IDX_NULL; // file i/o
+	sound_update(progdefaults.btnAudioIOis);
+	if (btnAudioIO[0]) {
+		fl_alert2("%s", reset_loop_msg.c_str());
+		btnAudioIO[0]->value(0);
+		btnAudioIO[1]->value(0);
+		btnAudioIO[2]->value(0);
+		btnAudioIO[3]->value(1);
+	}
+}
+
 void trx_reset_loop()
 {
 	if (RXscard)  {
@@ -650,12 +675,22 @@ void trx_reset_loop()
 	switch (progdefaults.btnAudioIOis) {
 #if USE_OSS
 	case SND_IDX_OSS:
-		RXscard = new SoundOSS(scDevice[0].c_str());
-		RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
-		RXsc_is_open = true;
-		TXscard = new SoundOSS(scDevice[0].c_str());
-		TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
-		TXsc_is_open = true;
+		try {
+			RXscard = new SoundOSS(scDevice[0].c_str());
+			if (!RXscard) break;
+
+			RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
+			RXsc_is_open = true;
+
+			TXscard = new SoundOSS(scDevice[0].c_str());
+			if (!TXscard) break;
+
+			TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+			TXsc_is_open = true;
+		} catch (...) {
+			reset_loop_msg = "OSS open failure";
+			REQ(show_reset_loop_alert);
+		}
 		break;
 #endif
 #if USE_PORTAUDIO
@@ -669,6 +704,8 @@ void trx_reset_loop()
 		unsigned long tm1 = zmsec();
 		int RXret = 0, TXret = 0;
 		int i;
+		RXsc_is_open = false;
+		TXsc_is_open = false;
 		for (i = 0; i < 10; i++) { // try 10 times
 			try {
 				if (!RXret)
@@ -687,8 +724,13 @@ void trx_reset_loop()
 		}
 		unsigned long tm = zmsec() - tm1;
 		if (i == 10) {
+			if (RXscard) delete RXscard;
+			if (TXscard) delete TXscard;
+			RXscard = 0;
+			TXscard = 0;
 			LOG_PERROR("Port Audio device not available");
-			abort();
+			reset_loop_msg = "Port Audio device not available";
+			REQ(show_reset_loop_alert);
 		} else {
 			LOG_INFO ("Port Audio device available after %0.1f seconds", tm / 1000.0 );
 		}
@@ -697,14 +739,39 @@ void trx_reset_loop()
 #endif
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
-		RXscard = new SoundPulse(scDevice[0].c_str());
-		if (RXscard->Open(O_RDONLY, current_RXsamplerate = 8000))
+		try {
+			RXscard = new SoundPulse(scDevice[0].c_str());
+			if (!RXscard) break;
+
+			RXscard->Open(O_RDONLY, current_RXsamplerate = 8000);
 			RXsc_is_open = true;
 
-		TXscard = new SoundPulse(scDevice[0].c_str());
-		if (progdefaults.is_full_duplex)
-			if (TXscard->Open(O_WRONLY, current_TXsamplerate = 8000))
+			TXscard = new SoundPulse(scDevice[0].c_str());
+			if (!TXscard) break;
+		
+// needed to open playback device in PaVolumeControl
+			TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+			double buffer[1024];
+			for (int i = 0; i < 1024; buffer[i++] = 0);
+			TXscard->Write_stereo(buffer, buffer, 1024);
+
+			if (progdefaults.is_full_duplex)
 				TXsc_is_open = true;
+			else {
+				TXscard->Close();
+				TXsc_is_open = false;
+			}
+		} catch (const SndException& e) {
+			LOG_ERROR("%s", e.what());
+			if (RXscard) delete RXscard;
+			if (TXscard) delete TXscard;
+			RXscard = 0;
+			TXscard = 0;
+			reset_loop_msg = "Pulse Audio error:\n";
+			reset_loop_msg.append(e.what());
+			reset_loop_msg.append("\n\nIs the server running?\nClose fldigi and execute 'pulseaudio --start'");
+			REQ(show_reset_loop_alert);
+		}
 		break;
 #endif
 	case SND_IDX_NULL:
@@ -763,8 +830,36 @@ void trx_start(void)
 #endif
 #if USE_PULSEAUDIO
 	case SND_IDX_PULSE:
-		RXscard = new SoundPulse(scDevice[0].c_str());
-		TXscard = new SoundPulse(scDevice[0].c_str());
+		try {
+			RXscard = new SoundPulse(scDevice[0].c_str());
+			if (!RXscard) break;
+
+			TXscard = new SoundPulse(scDevice[0].c_str());
+			if (!TXscard) break;
+
+// needed to open playback device in PaVolumeControl
+			TXscard->Open(O_WRONLY, current_TXsamplerate = 8000);
+			double buffer[1024];
+			for (int i = 0; i < 1024; buffer[i++] = 0);
+			TXscard->Write_stereo(buffer, buffer, 1024);
+
+			if (progdefaults.is_full_duplex)
+				TXsc_is_open = true;
+			else {
+				TXscard->Close();
+				TXsc_is_open = false;
+			}
+		} catch (const SndException& e) {
+			LOG_ERROR("%s", e.what());
+			if (RXscard) delete RXscard;
+			if (TXscard) delete TXscard;
+			RXscard = 0;
+			TXscard = 0;
+			reset_loop_msg = "Pulse Audio error:\n";
+			reset_loop_msg.append(e.what());
+			reset_loop_msg.append("\n\nIs the server running?");
+			REQ(show_reset_loop_alert);
+		}
 		break;
 #endif
 	case SND_IDX_NULL:
