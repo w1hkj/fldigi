@@ -130,8 +130,8 @@ void viewpsk::restart(trx_mode pskmode)
 	if (viewmode == pskmode) return;
 	viewmode = pskmode;
 
-	double			fir1c[64];
-	double			fir2c[64];
+	double			fir1c[FIRLEN+1];
+	double			fir2c[FIRLEN+1];
 
 	int idepth = 2;
 	int isize = 2;
@@ -213,17 +213,18 @@ void viewpsk::restart(trx_mode pskmode)
 		break;
 	}
 
-	wsincfilt(fir1c, 1.0 / symbollen, true);	// creates fir1c matched sin(x)/x filter w blackman
-	wsincfilt(fir2c, 1.0 / 16.0, true);			// creates fir2c matched sin(x)/x filter w blackman
+	raisedcosfilt(fir1c, FIRLEN);
+	for (int i = 0; i <= FIRLEN; i++)
+		fir2c[i] = pskcore_filter[i];
 
 	for (int i = 0; i < MAXCHANNELS; i++) {
 		if (channel[i].fir1) delete channel[i].fir1;
 		channel[i].fir1 = new C_FIR_filter();
-		channel[i].fir1->init(FIRLEN, symbollen / 16, fir1c, fir1c);
+		channel[i].fir1->init(FIRLEN+1, symbollen / 16, fir1c, fir1c);
 
 		if (channel[i].fir2) delete channel[i].fir2;
 		channel[i].fir2 = new C_FIR_filter();
-		channel[i].fir2->init(FIRLEN, 1, fir2c, fir2c);
+		channel[i].fir2->init(FIRLEN+1, 1, fir2c, fir2c);
 
 		if (_qpsk) {
 			if (channel[i].dec) delete channel[i].dec;

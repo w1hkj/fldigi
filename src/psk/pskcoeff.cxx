@@ -31,13 +31,12 @@
 
 #include <math.h>
 
-
-// 64-tap raised-cosine FIR
+// 65-tap raised-cosine FIR
 // implements
 //  u[n] = (1.0 - cos(2PI * n / 64))/128.0
 // used in gmfsk, twpsk etc.
 
-double gmfir1c[64] = {
+double gmfir1c[FIRLEN+1] = {
 	0.000000, //0
 	0.000038, //1
 	0.000150, //2
@@ -102,13 +101,14 @@ double gmfir1c[64] = {
 	0.000336, //61
 	0.000150, //62
 	0.000038, //63
+	0.000000  //64
 };
 
 // 4-bit receive filter for 31.25 baud BPSK
 // Designed by G3PLX
 //
 
-double gmfir2c[64] = {
+double gmfir2c[FIRLEN+1] = {
 	0.000625000,
 	0.000820912,
 	0.001374651,
@@ -172,7 +172,8 @@ double gmfir2c[64] = {
 	0.003110600,
 	0.002188141,
 	0.001374651,
-	0.000820912
+	0.000820912,
+	0.000625000
 };
 
 
@@ -199,36 +200,107 @@ double syncfilt[16] = {
 	0.097545161
 };
 
+double pskcore_filter[FIRLEN+1] = {
+	4.3453566e-005,		//0
+	-0.00049122414,		//1
+	-0.00078771292,		//2
+	-0.0013507826,		//3
+	-0.0021287814,		//4
+	-0.003133466,		//5
+	-0.004366817,		//6
+	-0.0058112187,		//7
+	-0.0074249976,		//8
+	-0.0091398882,		//9
+	-0.010860157,		//10
+	-0.012464086,		//11
+	-0.013807772,		//12
+	-0.014731191,		//13
+	-0.015067057,		//14
+	-0.014650894,		//15
+	-0.013333425,		//16
+	-0.01099166,		//17
+	-0.0075431246,		//18
+	-0.0029527849,		//19
+	0.0027546292,		//20
+	0.0094932775,		//21
+	0.017113308,		//22
+	0.025403511,		//23
+	0.034099681,		//24
+	0.042895839,		//25
+	0.051458575,		//26
+	0.059444853,		//27
+	0.066521003,		//28
+	0.072381617,		//29
+	0.076767694,		//30
+	0.079481619,		//31
+	0.080420311,		//32
+	0.079481619,		//33
+	0.076767694,		//34
+	0.072381617,		//35
+	0.066521003,		//36
+	0.059444853,		//37
+	0.051458575,		//38
+	0.042895839,		//39
+	0.034099681,		//40
+	0.025403511,		//41
+	0.017113308,		//42
+	0.0094932775,		//43
+	0.0027546292,		//44
+	-0.0029527849,		//45
+	-0.0075431246,		//46
+	-0.01099166,		//47
+	-0.013333425,		//48
+	-0.014650894,		//49
+	-0.015067057,		//50
+	-0.014731191,		//51
+	-0.013807772,		//52
+	-0.012464086,		//53
+	-0.010860157,		//54
+	-0.0091398882,		//55
+	-0.0074249976,		//56
+	-0.0058112187,		//57
+	-0.004366817,		//58
+	-0.003133466,		//59
+	-0.0021287814,		//60
+	-0.0013507826,		//61
+	-0.00078771292,		//62
+	-0.00049122414,		//63
+	4.3453566e-005		//64
+  };
+ 
 // experimental filters (higher precision)
 // identical to the G0TJZ filter but with double precision
-void raisedcosfilt(double *firc)
+// *firc should be double of len+1
+
+void raisedcosfilt(double *firc, int len)
 {
-	for (int i = 0; i < 64; i++)
-		firc[i] = (1.0 - cos(M_PI * i / 32.0))/128.0;
+	for (int i = 0; i <= len; i++)
+		firc[i] = (1.0 - cos(M_PI * i / 32.0))/(2*len);
 }
 
-void wsincfilt(double *firc, double fc, bool blackman)
+// *firc should be double of len+1
+void wsincfilt(double *firc, double fc, int len, bool blackman)
 {
 	double normalize = 0;
 // sin(x-tau)/(x-tau)	
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i <= len; i++)
 		if (i == 32)
 			firc[i] = 2.0 * M_PI * fc;
 		else
 			firc[i] = sin(2*M_PI*fc*(i - 32))/(i-32);
 // blackman window
 	if (blackman)
-		for (int i = 0; i < 64; i++)
-			firc[i] = firc[i] * (0.42 - 0.5 * cos(2*M_PI*i/64) + 0.08 * cos(4*M_PI*i/64));
+		for (int i = 0; i <= len; i++)
+			firc[i] = firc[i] * (0.42 - 0.5 * cos(2*M_PI*i/(len-1)) + 0.08 * cos(4*M_PI*i/len));
 // hamming window
 	else
-		for (int i = 0; i < 64; i++)
-			firc[i] = firc[i] * (0.54 - 0.46 * cos(2*M_PI*i/64));
+		for (int i = 0; i <= len; i++)
+			firc[i] = firc[i] * (0.54 - 0.46 * cos(2*M_PI*i/len));
 // normalization factor
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i <= len; i++)
 		normalize += firc[i];
 // normalize the filter
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i <= len; i++)
 		firc[i] /= normalize;
 }
 

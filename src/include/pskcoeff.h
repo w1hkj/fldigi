@@ -23,11 +23,13 @@
 
 #define	FIRLEN	64
 
-extern double gmfir1c[FIRLEN];
-extern double gmfir2c[FIRLEN];
+extern double gmfir1c[];
+extern double gmfir2c[];
+extern double pskcore_filter[];
+
 extern double syncfilt[16];
 
-extern void raisedcosfilt(double *);
-extern void wsincfilt(double *, double fc, bool blackman);
+extern void raisedcosfilt(double *, int len);
+extern void wsincfilt(double *, double fc, int len, bool blackman);
 
 #endif

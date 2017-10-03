@@ -682,8 +682,8 @@ psk::psk(trx_mode pskmode) : modem()
 	vestigial_sfft = (sfft *)0;
 
 	// create impulse response for experimental FIR filters
-	double fir1c[64];
-	double fir2c[64];
+	double fir1c[FIRLEN+1];
+	double fir2c[FIRLEN+1];
 
 	for (int i = 0; i < MAX_CARRIERS; i++) {
 		if (i < numcarriers) {
@@ -696,9 +696,32 @@ psk::psk(trx_mode pskmode) : modem()
 	}
 
 	switch (progdefaults.PSK_filter) {
+		default :
+		case 0:
+			// pskcore filter implementation
+			raisedcosfilt(fir1c, FIRLEN);
+			for (int i = 0; i <= FIRLEN; i++)
+				fir2c[i] = pskcore_filter[i];
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init(FIRLEN+1, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
+				fir2[i]->init(FIRLEN+1, 1, fir2c, fir2c);
+			}
+			break;
 		case 1:
-			// use the original gmfsk matched filters
-			for (int i = 0; i < 64; i++) {
+			// slightly better performance than G3PLX filter
+			// creates raised cosine filter
+			raisedcosfilt(fir1c, FIRLEN);
+			// 1/22 with Hamming window nearly identical to gmfir2c
+			wsincfilt(fir2c, 1.0 / 22.0, FIRLEN, false);
+			for (int i = 0; i < numcarriers; i++) {
+				fir1[i]->init(FIRLEN+1, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
+				fir2[i]->init(FIRLEN+1, 1, fir2c, fir2c);
+			}
+			break;
+		case 2:
+			// use the original gmfsk, G3PLX, matched filters
+			// a raised cosine filter 
+			for (int i = 0; i <= FIRLEN; i++) {
 				fir1c[i] = gmfir1c[i];
 				fir2c[i] = gmfir2c[i];
 			}
@@ -707,42 +730,6 @@ psk::psk(trx_mode pskmode) : modem()
 				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
 			}
 			break;
-		case 2:
-			// creates fir1c matched sin(x)/x filter w hamming
-			wsincfilt(fir1c, 1.0 / symbollen, false);
-			// creates fir2c matched sin(x)/x filter w hamming
-			wsincfilt(fir2c, 1.0 / 16.0, false);
-			for (int i = 0; i < numcarriers; i++) {
-				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
-				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
-			}
-			break;
-		case 3:
-			// creates fir1c matched sin(x)/x filter w hamming
-			wsincfilt(fir1c, 1.0 / symbollen, false);
-			// 1/22 with Hamming window nearly identical to gmfir2c
-			wsincfilt(fir2c, 1.0 / 22.0, false);
-			for (int i = 0; i < numcarriers; i++) {
-				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
-				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
-			}
-			break;
-		case 4:
-			wsincfilt(fir2c, 1.5 / 16.0, true);
-			for (int i = 0; i < numcarriers; i++) {
-				fir1[i]->init_lowpass (FIRLEN, 16, 1.5 / symbollen);
-				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
-			}
-		case 0:
-		default :
-			// creates fir1c matched sin(x)/x filter w blackman
-			wsincfilt(fir1c, 1.0 / symbollen, true);
-			// creates fir2c matched sin(x)/x filter w blackman
-			wsincfilt(fir2c, 1.0 / 16.0, true);
-			for (int i = 0; i < numcarriers; i++) {
-				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
-				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
-			}
 	}
 
 	snfilt = new Cmovavg(16);

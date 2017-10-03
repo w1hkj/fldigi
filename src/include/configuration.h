@@ -227,9 +227,11 @@
         ELEM_(bool, tx_lowercase, "TX_LOWERCASE",                                       \
               "Transmit all text in lowercase",                                         \
               false)                                                                    \
-        /* PSK, filter can be 0, 1, 2, 3 or 4 */                                        \
+        /* PSK, filter can be 0, 1, 2 */                                                \
         ELEM_(int, PSK_filter, "PSKFILTER",                                             \
-              "Not configurable; must always be 0",                                     \
+              "0 - PskCore filter\n"                                                    \
+              "1 - Raised cosine / sinc filter\n"                                       \
+              "2 - G3PLX (gmfsk) filter",                                               \
               0)                                                                        \
         ELEM_(bool, pskbrowser_on, "PSKBROWSER_ON",                                     \
               "Enable psk multi-channel detector - disable for very slow cpus",         \
