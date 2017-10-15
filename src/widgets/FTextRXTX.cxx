@@ -476,7 +476,7 @@ int FTextRX::handle_qso_data(int start, int end)
 	Fl_Input2* target = 0;
 
 	if (progdefaults.logging != LOG_QSO) {
-		if (call.match(s)) { // point p to substring
+		if ((inpCall->value()[0] == 0) && call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
 			*(s + offsets.rm_eo) = '\0';
