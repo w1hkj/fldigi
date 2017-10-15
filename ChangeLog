@@ -1,8 +1,20 @@
 
 
-=Version 4.0.10=
+=Version 4.0.11=
 
-2017-09-25  David Freese  <w1hkj@bellsouth.net>
+2017-10-14  David Freese  <w1hkj@bellsouth.net>
+
+	3302f0d: Text Capture
+	35387db: FreeBSD mod
+	6e94d54: Documentation update
+	e4abdbf: PSK filter
+	cd36a46: Audio Stream
+	5a9322f: printf cleanup
+	e8651ed: CW Multichannel
+	89b5207: QSY multi
+
+
+=Version 4.0.10=
 
 	949ed87: WX HamQth bug fix
 	0142116: win7 mingw build fixes
