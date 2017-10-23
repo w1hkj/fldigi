@@ -962,7 +962,7 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group grpRX_Text {
-                label {Rx Text}
+                label {Rx Text} open
                 xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {
@@ -972,6 +972,7 @@ progdefaults.changed = true;}
                   Fl_Check_Button btnRXClicks {
                     label {Single-click to capture}
                     callback {progdefaults.rxtext_clicks_qso_data = o->value();
+btnRXClicks2->value(progdefaults.rxtext_clicks_qso_data);
 progdefaults.changed = true;}
                     tooltip {Enable for single click capure of text in Rx panel} xywh {85 155 191 20} down_box DOWN_BOX
                     code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
@@ -1342,7 +1343,7 @@ btn_cqww_contest->value(0);
 btn_bart_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use generic contest fields} xywh {30 335 70 20} down_box DOWN_BOX
+                tooltip {Use generic contest fields} xywh {30 329 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_CONT);}
               }
               Fl_Check_Button btn_fd_contest {
@@ -1354,7 +1355,7 @@ btn_bart_contest->value(0);
 btn_generic_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use Field Day Contest Fields} xywh {175 335 70 20} down_box DOWN_BOX
+                tooltip {Use Field Day Contest Fields} xywh {175 329 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_FD);}
               }
               Fl_Check_Button btn_cqww_contest {
@@ -1366,7 +1367,7 @@ btn_bart_contest->value(0);
 btn_generic_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use CQWW Fields} xywh {320 335 70 20} down_box DOWN_BOX
+                tooltip {Use CQWW Fields} xywh {320 329 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_CQWW);}
               }
               Fl_Check_Button btn_bart_contest {
@@ -1378,8 +1379,23 @@ btn_cqww_contest->value(0);
 btn_generic_contest->value(0);
 UI_select();
 progdefaults.changed = true;}
-                tooltip {Use generic contest fields} xywh {465 335 70 20} down_box DOWN_BOX
+                tooltip {Use generic contest fields} xywh {465 329 70 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.logging == LOG_BART);}
+              }
+              Fl_Check_Button btnRXClicks2 {
+                label {Single-click to capture Rx word}
+                callback {progdefaults.rxtext_clicks_qso_data = o->value();
+btnRXClicks->value(progdefaults.rxtext_clicks_qso_data);
+progdefaults.changed = true;}
+                tooltip {Enable for single click capure of text in Rx panel} xywh {30 356 243 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.rxtext_clicks_qso_data);}
+              }
+              Fl_Check_Button btn_clear_fields {
+                label {Clear fields with CALL capture}
+                callback {progdefaults.clear_fields=o->value();
+progdefaults.changed = true;}
+                xywh {320 358 238 15} down_box DOWN_BOX
+                code0 {o->value(progdefaults.clear_fields);}
               }
             }
           }

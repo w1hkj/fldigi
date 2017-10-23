@@ -1414,6 +1414,9 @@
         ELEM_(bool, cutnbrs, "CUTNBRS",                                                 \
               "Send CW cut numbers",                                                    \
               false)                                                                    \
+        ELEM_(bool, clear_fields, "CLEARFIELDS",                                        \
+              "clear logging fields upon transfer of CALL from Rx panel",               \
+              true)                                                                     \
         ELEM_(RGB, bwsrSliderColor, "BWSRSLIDERCOLOR",                                  \
               "Background color of signal browser detect level",                        \
               {185, 211, 238})                                                          \

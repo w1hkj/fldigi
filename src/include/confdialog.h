@@ -136,6 +136,8 @@ extern Fl_Check_Button *btn_generic_contest;
 extern Fl_Check_Button *btn_fd_contest;
 extern Fl_Check_Button *btn_cqww_contest;
 extern Fl_Check_Button *btn_bart_contest;
+extern Fl_Check_Button *btnRXClicks2;
+extern Fl_Check_Button *btn_clear_fields;
 extern Fl_Group *tabMBars;
 extern Fl_Check_Button *btnMacroMouseWheel;
 #include <FL/Fl_Counter.H>

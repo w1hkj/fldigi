@@ -476,12 +476,26 @@ int FTextRX::handle_qso_data(int start, int end)
 	Fl_Input2* target = 0;
 
 	if (progdefaults.logging != LOG_QSO) {
-		if ((inpCall->value()[0] == 0) && call.match(s)) { // point p to substring
+		if (loc.match(s)) { // force maidenhead match to exchange
+							// or it will overwrite the call
+			inpXchgIn->position(inpXchgIn->size());
+			if (inpXchgIn->size()) inpXchgIn->insert(" ", 1);
+			inpXchgIn->insert(s);
+			log_callback(inpXchgIn);
+		} else if (call.match(s)) { // point p to substring
 			const regmatch_t& offsets = call.suboff()[1];
 			p = s + offsets.rm_so;
 			*(s + offsets.rm_eo) = '\0';
 			inpCall->value(p);
-			log_callback(inpCall);
+			if (progdefaults.clear_fields) {
+				inpXchgIn->value("");
+				inpName->value("");
+				inp_FD_class->value("");
+				inp_FD_section->value("");
+				inp_CQzone->value("");
+				inp_CQstate->value("");
+				log_callback(inpCall);
+			}
 			Fl::copy(p, strlen(p), 1);  // copy to clipboard
 		} else if (progdefaults.logging == LOG_FD) { 
 			if (inp_FD_class->value()[0] == 0)
