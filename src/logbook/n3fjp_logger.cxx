@@ -663,7 +663,7 @@ static void n3fjp_send_data()
 			send_control("COMMENTS", rec.getField(NOTES));
 			send_control("POWER", rec.getField(TX_PWR));
 			send_control("STATE", rec.getField(STATE));
-			send_control("GRIDR", rec.getField(GRIDSQUARE));
+			send_control("GRID", rec.getField(GRIDSQUARE));
 			send_control("QTHGROUP", rec.getField(QTH));
 		}
 		if (n3fjp_contest == FJP_FD) {
@@ -731,7 +731,7 @@ static void n3fjp_send_data_norig()
 			send_control("COMMENTS", strip(rec.getField(NOTES)));
 			send_control("POWER", strip(rec.getField(TX_PWR)));
 			send_control("STATE", strip(rec.getField(STATE)));
-			send_control("GRIDR", strip(rec.getField(GRIDSQUARE)));
+			send_control("GRID", strip(rec.getField(GRIDSQUARE)));
 			send_control("QTHGROUP", strip(rec.getField(QTH)));
 		}
 		if (n3fjp_contest == FJP_FD) {
