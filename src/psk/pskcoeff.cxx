@@ -271,31 +271,38 @@ double pskcore_filter[FIRLEN+1] = {
 // experimental filters (higher precision)
 // identical to the G0TJZ filter but with double precision
 // *firc should be double of len+1
-
 void raisedcosfilt(double *firc, int len)
 {
+	double k1 = M_PI * 2.0 / len;
+	double k2 = 2.0 * len;
+
 	for (int i = 0; i <= len; i++)
-		firc[i] = (1.0 - cos(M_PI * i / 32.0))/(2*len);
+		firc[i] = ( 1.0 - cos( k1 * i ) ) / k2;
 }
 
-// *firc should be double of len+1
+// *firc should be double of FIRLEN+1
+// 33, 65, 129 ...
 void wsincfilt(double *firc, double fc, int len, bool blackman)
 {
 	double normalize = 0;
-// sin(x-tau)/(x-tau)	
+	double k1 = 2.0 * M_PI / len;
+	double k2 = 2.0 * M_PI * fc;
+	double l2 = len / 2.0;
+
+// sin(x-tau)/(x-tau)
 	for (int i = 0; i <= len; i++)
-		if (i == 32)
-			firc[i] = 2.0 * M_PI * fc;
+		if (i == l2)
+			firc[i] = 1.0;
 		else
-			firc[i] = sin(2*M_PI*fc*(i - 32))/(i-32);
+			firc[i] = sin(k2 * (i - l2)) / (k2 * (i - l2));
 // blackman window
 	if (blackman)
 		for (int i = 0; i <= len; i++)
-			firc[i] = firc[i] * (0.42 - 0.5 * cos(2*M_PI*i/(len-1)) + 0.08 * cos(4*M_PI*i/len));
+			firc[i] = firc[i] * (0.42 - 0.5 * cos(k1 * i) + 0.08 * cos(2.0 * k1 * i));
 // hamming window
 	else
 		for (int i = 0; i <= len; i++)
-			firc[i] = firc[i] * (0.54 - 0.46 * cos(2*M_PI*i/len));
+			firc[i] = firc[i] * (0.54 - 0.46 * cos(k1 * i));
 // normalization factor
 	for (int i = 0; i <= len; i++)
 		normalize += firc[i];

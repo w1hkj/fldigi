@@ -30,6 +30,6 @@ extern double pskcore_filter[];
 extern double syncfilt[16];
 
 extern void raisedcosfilt(double *, int len);
-extern void wsincfilt(double *, double fc, int len, bool blackman);
+extern void wsincfilt(double *, double fc, int len, bool blackman = true);
 
 #endif

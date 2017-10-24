@@ -252,6 +252,9 @@ psk::~psk()
 
 psk::psk(trx_mode pskmode) : modem()
 {
+enum FIR_TYPE {PSK_CORE, GMFSK, SINC};
+FIR_TYPE fir_type = PSK_CORE;
+
 	cap |= CAP_AFC | CAP_AFC_SR;
 
 	mode = pskmode;
@@ -272,26 +275,32 @@ psk::psk(trx_mode pskmode) : modem()
 		case MODE_PSK31:
 			symbollen = 256;
 			dcdbits = 32;
+			fir_type = PSK_CORE;
 			break;
 		case MODE_PSK63:
 			symbollen = 128;
 			dcdbits = 64;
+			fir_type = PSK_CORE;
 			break;
 		case MODE_PSK125:
 			symbollen = 64;
 			dcdbits = 128;
+			fir_type = SINC;
 			break;
 		case MODE_PSK250:
 			symbollen = 32;
 			dcdbits = 256;
+			fir_type = SINC;
 			break;
 		case MODE_PSK500:
 			symbollen = 16;
 			dcdbits = 512;
+			fir_type = SINC;
 			break;
 		case MODE_PSK1000:
 			symbollen = 8;
 			dcdbits = 128;
+			fir_type = SINC;
 			break;
 
 		case MODE_QPSK31:
@@ -299,35 +308,41 @@ psk::psk(trx_mode pskmode) : modem()
 			_qpsk = true;
 			dcdbits = 32;
 			cap |= CAP_REV;
+			fir_type = PSK_CORE;
 			break;
 		case MODE_QPSK63:
 			symbollen = 128;
 			_qpsk = true;
 			dcdbits = 64;
 			cap |= CAP_REV;
+			fir_type = PSK_CORE;
 			break;
 		case MODE_QPSK125:
 			symbollen = 64;
 			_qpsk = true;
 			dcdbits = 128;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_QPSK250:
 			symbollen = 32;
 			_qpsk = true;
 			dcdbits = 256;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_QPSK500:
 			symbollen = 16;
 			_qpsk = true;
 			dcdbits = 512;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_PSK63F:  // As per Multipsk (BPSK63 + FEC + MFSK Varicode)
 			symbollen = 128;
 			_pskr = true;
 			dcdbits = 64;
+			fir_type = PSK_CORE;
 			break;
 
 	// 8psk modes without FEC
@@ -339,6 +354,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 128;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
 			symbollen = 64;
@@ -348,6 +364,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 256;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
 			symbollen = 32;
@@ -357,6 +374,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 512;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK1000: // 1000 baud | 3000 bits/sec  No FEC
 			symbollen = 16;
@@ -366,6 +384,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 
 	// 8psk modes with FEC
@@ -378,6 +397,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 128;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK250FL: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
 			symbollen = 64;
@@ -388,6 +408,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 256;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK125F:
 			symbollen = 128;
@@ -398,6 +419,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 128;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK250F: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
 			symbollen = 64;
@@ -408,6 +430,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 256;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK500F: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
 			symbollen = 32;
@@ -419,6 +442,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 512;
 			vestigial = true;
 			cap |= CAP_REV;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK1000F: // 1000 baud | 3000 bits/sec
 			symbollen = 16;
@@ -431,6 +455,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_puncturing = true;
 			vestigial = true;
 			PSKviterbi = true;
+			fir_type = SINC;
 			break;
 		case MODE_8PSK1200F: // 1200 baud | 1800 bits/sec
 			symbollen = 13;
@@ -443,6 +468,7 @@ psk::psk(trx_mode pskmode) : modem()
 			cap |= CAP_REV;
 			vestigial = true;
 			PSKviterbi = true;
+			fir_type = SINC;
 			break;
 			// end 8psk modes
 
@@ -451,24 +477,28 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;
 			dcdbits = 128;
 			idepth = 40;  // 2x2x40 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_PSK250R:
 			symbollen = 32;
 			_pskr = true;
 			dcdbits = 256;
 			idepth = 80;  // 2x2x80 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_PSK500R:
 			symbollen = 16;
 			_pskr = true;
 			dcdbits = 512;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_PSK1000R:
 			symbollen = 8;
 			_pskr = true;
 			dcdbits = 512;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 			// multi-carrier modems
@@ -478,6 +508,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 4;
 			idepth = 80; // 2x2x80 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_5X_PSK63R:
 			symbollen = 128; //PSK63
@@ -485,6 +516,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true; //PSKR
 			numcarriers = 5;
 			idepth = 260; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_10X_PSK63R:
 			symbollen = 128; //PSK63
@@ -492,6 +524,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true; //PSKR
 			numcarriers = 10;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_20X_PSK63R:
 			symbollen = 128; //PSK63
@@ -499,6 +532,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true; //PSKR
 			numcarriers = 20;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_32X_PSK63R:
 			symbollen = 128; //PSK63
@@ -506,6 +540,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true; //PSKR
 			numcarriers = 32;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 		case MODE_4X_PSK125R:
@@ -514,6 +549,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 4;
 			idepth = 80; // 2x2x80 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_5X_PSK125R:
 			symbollen = 64;//PSK125
@@ -521,6 +557,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 5;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_10X_PSK125R:
 			symbollen = 64;//PSK125
@@ -528,12 +565,14 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 10;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 		case MODE_12X_PSK125:
 			symbollen = 64;//PSK125
 			dcdbits = 128;//512;
 			numcarriers = 12;
+			fir_type = SINC;
 			break;
 		case MODE_12X_PSK125R:
 			symbollen = 64;//PSK125
@@ -541,6 +580,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 12;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 		case MODE_16X_PSK125R:
@@ -549,6 +589,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 16;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 		case MODE_2X_PSK250R:
@@ -557,6 +598,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 2;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_3X_PSK250R:
 			symbollen = 32;//PSK250
@@ -564,6 +606,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = true;//PSKR
 			numcarriers = 3;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_5X_PSK250R:
 			symbollen = 32;//PSK250
@@ -571,11 +614,13 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			numcarriers = 5;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_6X_PSK250:
 			symbollen = 32;//PSK250
 			dcdbits = 512;
 			numcarriers = 6;
+			fir_type = SINC;
 			break;
 		case MODE_6X_PSK250R:
 			symbollen = 32;//PSK250
@@ -583,6 +628,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			numcarriers = 6;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_7X_PSK250R:
 			symbollen = 32;//PSK250
@@ -590,17 +636,20 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			numcarriers = 7;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 		case MODE_2X_PSK500:
 			symbollen = 16;
 			dcdbits = 512;
 			numcarriers = 2;
+			fir_type = SINC;
 			break;
 		case MODE_4X_PSK500:
 			symbollen = 16;
 			dcdbits = 512;
 			numcarriers = 4;
+			fir_type = SINC;
 			break;
 
 		case MODE_2X_PSK500R:
@@ -609,6 +658,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			idepth = 160; // 2x2x160 interleaver
 			numcarriers = 2;
+			fir_type = SINC;
 			break;
 		case MODE_3X_PSK500R:
 			symbollen = 16;
@@ -616,6 +666,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			idepth = 160; // 2x2x160 interleaver
 			numcarriers = 3;
+			fir_type = SINC;
 			break;
 		case MODE_4X_PSK500R:
 			symbollen = 16;
@@ -623,6 +674,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			idepth = 160; // 2x2x160 interleaver
 			numcarriers = 4;
+			fir_type = SINC;
 			break;
 
 		case MODE_2X_PSK800:
@@ -630,6 +682,7 @@ psk::psk(trx_mode pskmode) : modem()
 			_pskr = false;
 			dcdbits = 512;
 			numcarriers = 2;
+			fir_type = SINC;
 			break;
 		case MODE_2X_PSK800R:
 			symbollen = 10;
@@ -637,6 +690,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			idepth = 160; // 2x2x160 interleaver
 			numcarriers = 2;
+			fir_type = SINC;
 			break;
 
 		case MODE_2X_PSK1000:
@@ -644,6 +698,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			numcarriers = 2;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 		case MODE_2X_PSK1000R:
 			symbollen = 8;//PSK1000
@@ -651,6 +706,7 @@ psk::psk(trx_mode pskmode) : modem()
 			dcdbits = 1024;
 			numcarriers = 2;
 			idepth = 160; // 2x2x160 interleaver
+			fir_type = SINC;
 			break;
 
 		default:
@@ -658,6 +714,7 @@ psk::psk(trx_mode pskmode) : modem()
 			symbollen = 256;
 			dcdbits = 32;
 			numcarriers = 1;
+			fir_type = PSK_CORE;
 	}
 
 	// Set the number of bits-per-symbol based on the chosen constellation
@@ -695,10 +752,8 @@ psk::psk(trx_mode pskmode) : modem()
 		}
 	}
 
-	switch (progdefaults.PSK_filter) {
-		default :
-		case 0:
-			// pskcore filter implementation
+	switch (fir_type) {
+		case PSK_CORE: // PSKcore filter
 			raisedcosfilt(fir1c, FIRLEN);
 			for (int i = 0; i <= FIRLEN; i++)
 				fir2c[i] = pskcore_filter[i];
@@ -707,24 +762,10 @@ psk::psk(trx_mode pskmode) : modem()
 				fir2[i]->init(FIRLEN+1, 1, fir2c, fir2c);
 			}
 			break;
-		case 1:
-			// slightly better performance than G3PLX filter
-			// creates raised cosine filter
-			raisedcosfilt(fir1c, FIRLEN);
-			// 1/22 with Hamming window nearly identical to gmfir2c
-			wsincfilt(fir2c, 1.0 / 22.0, FIRLEN, false);
-			for (int i = 0; i < numcarriers; i++) {
-				fir1[i]->init(FIRLEN+1, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
-				fir2[i]->init(FIRLEN+1, 1, fir2c, fir2c);
-			}
-			break;
-		case 2:
-			// use the original gmfsk, G3PLX, matched filters
-			// a raised cosine filter 
-			for (int i = 0; i <= FIRLEN; i++) {
-				fir1c[i] = gmfir1c[i];
-				fir2c[i] = gmfir2c[i];
-			}
+		default:
+		case SINC: // fir1c & fir2c matched sin(x)/x filter w blackman
+			wsincfilt(fir1c, 1.0 / symbollen, FIRLEN);
+			wsincfilt(fir2c, 1.0 / 16.0, FIRLEN);
 			for (int i = 0; i < numcarriers; i++) {
 				fir1[i]->init(FIRLEN, symbollen > 15 ? symbollen / 16 : 1, fir1c, fir1c);
 				fir2[i]->init(FIRLEN, 1, fir2c, fir2c);
