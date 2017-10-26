@@ -1178,12 +1178,21 @@ void cw::send_ch(int ch)
 	int flen;
 
 	sync_parameters();
+
 // handle word space separately (7 dots spacing)
 // last char already had 3 elements of inter-character spacing
 
+	double T = (50.0 - 31 * fsymlen / symbollen) / 19.0;
+
+	if (!progdefaults.CWusefarnsworth || (progdefaults.CWspeed >= progdefaults.CWfarnsworth))
+		T = 1.0;
+
+	int tc = 3.0 * T * symbollen;
+	int tw = 7.0 * T * symbollen;
+
 	if ((chout == ' ') || (chout == '\n')) {
 		firstelement = false;
-		flen = 4 * symbollen;
+		flen = tw - tc - ( T > 1.0 ? fsymlen : 0);
 		while (flen - symbollen > 0) {
 			send_symbol(0, symbollen);
 			flen -= symbollen;
@@ -1193,21 +1202,10 @@ void cw::send_ch(int ch)
 		return;
 	}
 
-// loop sending out binary bits of cw character at WPM or Farnsworth rate
-
 	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth))
 		flen = fsymlen;
 	else
 		flen = symbollen;
-
-	int charlen = 0; // used for Farsnworth timing adjustment
-
-	if (chout <= 0) {
-		send_symbol(0, flen);
-		send_symbol(0, flen);
-		firstelement = false;
-		return;
-	}
 
 	code = morse.tx_lookup(chout);
 	if (!code.length()) {
@@ -1220,27 +1218,25 @@ void cw::send_ch(int ch)
 	for (size_t n = 0; n < code.length(); n++) {
 		send_symbol(0, flen);
 		send_symbol(1, flen);
-		charlen += 2;
 		if (code[n] == '-') {
 			send_symbol( 1, flen );
 			send_symbol( 1, flen );
-			charlen += 2;
 		}
 	}
 	send_symbol(0, flen);
 	send_symbol(0, flen);
-	charlen += 2;
+	send_symbol(0, flen);
 
 // inter character space at WPM/FWPM rate
-	flen = symbollen;
-	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth))
-		flen += (symbollen - fsymlen)*charlen;
-
-	while(flen - symbollen > 0) {
-		send_symbol(0, symbollen);
-		flen -= symbollen;
+//	if (progdefaults.CWusefarnsworth && (progdefaults.CWspeed <= progdefaults.CWfarnsworth)) {
+	if (T > 1.0) {
+		flen = tc - 3 * flen;
+		while(flen - symbollen > 0) {
+			send_symbol(0, symbollen);
+			flen -= symbollen;
+		}
+		if (flen) send_symbol(0, flen);
 	}
-	if (flen) send_symbol(0, flen);
 
 	if (ch != -1) {
 		string prtstr = morse.tx_print();
