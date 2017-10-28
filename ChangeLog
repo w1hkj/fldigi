@@ -1,8 +1,17 @@
 
 
-=Version 4.0.11=
+=Version 4.0.12=
 
-2017-10-14  David Freese  <w1hkj@bellsouth.net>
+2017-10-25  David Freese  <w1hkj@bellsouth.net>
+
+	abb522d: Farnsworth timing
+	408a01b: PSK sinc filter
+	8cfc154: ACL interface
+	792b152: Text capture
+	dd2c8ef: OSX start process
+
+
+=Version 4.0.11=
 
 	3302f0d: Text Capture
 	35387db: FreeBSD mod
