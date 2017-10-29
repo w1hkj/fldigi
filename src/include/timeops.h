@@ -29,49 +29,22 @@
 #  include <pthread.h>
 #endif
 
-#ifdef __APPLE__
-#	if __DARWIN_C_LEVEL < 199309L
-#		if!HAVE_CLOCK_GETTIME
-//  enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
-#			ifndef __clockid_t_defined
-				typedef int clockid_t;
-				#define __clockid_t_defined 1
-#			endif  /* __clockid_t_defined */
+#if !HAVE_CLOCK_GETTIME
+#	ifndef __clockid_t_defined
+		typedef int clockid_t;
+		#define __clockid_t_defined 1
+#	endif  /* __clockid_t_defined */
 
-#			ifndef CLOCK_REALTIME
-#				define CLOCK_REALTIME 0
-#			endif
+#	ifndef CLOCK_REALTIME
+#		define CLOCK_REALTIME 0
+#	endif
 
-#			ifndef CLOCK_MONOTONIC
-#				define CLOCK_MONOTONIC 1
-#			endif
+#	ifndef CLOCK_MONOTONIC
+#		define CLOCK_MONOTONIC 1
+#	endif
 
-int clock_gettime(clockid_t clock_id, struct timespec* tp);
-#		endif /* !HAVE_CLOCK_GETTIME */
-
-#	endif /* __DARWIN_C_LEVEL */
-
-#else
-
-#	if !HAVE_CLOCK_GETTIME
-//  enum clockid_t { CLOCK_REALTIME, CLOCK_MONOTONIC };
-#		ifndef __clockid_t_defined
-			typedef int clockid_t;
-			#define __clockid_t_defined 1
-#		endif  /* __clockid_t_defined */
-
-#		ifndef CLOCK_REALTIME
-#			define CLOCK_REALTIME 0
-#		endif
-
-#		ifndef CLOCK_MONOTONIC
-#			define CLOCK_MONOTONIC 1
-#		endif
-
-		int clock_gettime(clockid_t clock_id, struct timespec* tp);
-#	endif /* !HAVE_CLOCK_GETTIME */
-
-#endif /* __APPLE__ */
+	int clock_gettime(clockid_t clock_id, struct timespec* tp);
+#endif /* !HAVE_CLOCK_GETTIME */
 
 struct timespec operator+(const struct timespec &t0, const double &t);
 struct timespec operator-(const struct timespec &t0, const struct timespec &t1);
