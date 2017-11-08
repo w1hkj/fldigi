@@ -1273,6 +1273,7 @@ int cw::tx_process()
 			return -1;
 		}
 		if (c == GET_TX_CHAR_NODATA) {
+			Fl::awake();
 			MilliSleep(50);
 			return 0;
 		}
@@ -1293,17 +1294,16 @@ int cw::tx_process()
 		put_echo_char('\n');
 		return -1;
 	}
+
+	if (c == GET_TX_CHAR_NODATA) {
+		MilliSleep(10);
+		return 0;
+	}
+
 	acc_symbols = 0;
 	send_ch(c);
-	FL_AWAKE();
 
-	xmt_samples = char_samples = acc_symbols;
-
-//	printf("%5s %d samples, overhead %d, %f sec's\n",
-//		ascii3[c & 0xff],
-//		char_samples,
-//		ovhd_samples,
-//		1.0 * char_samples / samplerate);
+	char_samples = acc_symbols;
 
 	return 0;
 }
