@@ -38,7 +38,7 @@
 #endif
 
 enum savetype {ADIF, CSV, TEXT, LOTW, LO};
-enum logtype {LOG_QSO, LOG_CONT, LOG_FD, LOG_CQWW, LOG_BART};
+enum logtype {LOG_QSO, LOG_CONT, LOG_FD, LOG_CQWW, LOG_BART, LOG_CWSS};
 
 extern cQsoDb        qsodb;
 extern cAdifIO       adifFile;

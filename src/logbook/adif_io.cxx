@@ -106,6 +106,11 @@ FIELD fields[] = {
 	{MY_GRID,      8,     "MY_GRIDSQUARE",    &btnSelectStaGrid},   // Xmt station locator
 	{MY_CITY,     60,     "MY_CITY",          &btnSelectStaCity},   // Xmt station location
 
+	{SS_SEC,       20,    "CWSS_SECTION",     &btnSelect_cwss_section},   // CW sweepstakes
+	{SS_SERNO,     20,    "CWSS_SERNO",       &btnSelect_cwss_serno},
+	{SS_PREC,      20,    "CWSS_PREC",        &btnSelect_cwss_prec},
+	{SS_CHK,       20,    "CWSS_CHK",         &btnSelect_cwss_check},
+
 	{NUMFIELDS,    0,     "",             NULL}
 };
 

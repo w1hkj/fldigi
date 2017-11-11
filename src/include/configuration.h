@@ -1464,7 +1464,7 @@
               120)                                                                      \
         ELEM_(int, ContestStart, "CONTESTSTART",                                        \
               "Contest starting number",                                                \
-              0)                                                                        \
+              1)                                                                        \
         ELEM_(int, ContestDigits, "CONTESTDIGITS",                                      \
               "Number of digits in serial number",                                      \
               4)                                                                        \

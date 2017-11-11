@@ -3361,6 +3361,10 @@ void set_macro_env(void)
 		FLDIGI_LOGBOOK_CONTINENT,
 		FLDIGI_LOGBOOK_CQZ,
 		FLDIGI_LOGBOOK_ITUZ,
+		FLDIGI_LOGBOOK_SS_SERNO,
+		FLDIGI_LOGBOOK_SS_PREC,
+		FLDIGI_LOGBOOK_SS_CHK,
+		FLDIGI_LOGBOOK_SS_SEC,
 
 		ENV_SIZE
 	};
@@ -3448,7 +3452,6 @@ void set_macro_env(void)
 		{ "FLDIGI_LOGBOOK_LOCATOR", inpLoc_log->value() },
 		{ "FLDIGI_LOGBOOK_QSL_R", inpQSLrcvddate_log->value() },
 		{ "FLDIGI_LOGBOOK_QSL_S", inpQSLsentdate_log->value() },
-		{ "FLDIGI_LOGBOOK_NOTES", inpNotes_log->value() },
 		{ "FLDIGI_LOGBOOK_TX_PWR", inpTX_pwr_log->value() },
 		{ "FLDIGI_LOGBOOK_COUNTY", inpCNTY_log->value() },
 		{ "FLDIGI_LOGBOOK_IOTA", inpIOTA_log->value() },
@@ -3456,7 +3459,12 @@ void set_macro_env(void)
 		{ "FLDIGI_LOGBOOK_QSL_VIA", inpQSL_VIA_log->value() },
 		{ "FLDIGI_LOGBOOK_CONTINENT", inpCONT_log->value() },
 		{ "FLDIGI_LOGBOOK_CQZ", inpCQZ_log->value() },
-		{ "FLDIGI_LOGBOOK_ITUZ", inpITUZ_log->value() }
+		{ "FLDIGI_LOGBOOK_ITUZ", inpITUZ_log->value() },
+		{ "FLDIGI_LOGBOOK_SS_SERNO", inp_log_cwss_serno->value() },
+		{ "FLDIGI_LOGBOOK_SS_PREC", inp_log_cwss_prec->value() },
+		{ "FLDIGI_LOGBOOK_SS_CHK", inp_log_cwss_chk->value() },
+		{ "FLDIGI_LOGBOOK_SS_SEC", inp_log_cwss_sec->value() },
+		{ "FLDIGI_LOGBOOK_NOTES", inpNotes_log->value() }
 
 	};
 
@@ -3504,7 +3512,12 @@ void set_macro_env(void)
 
 	string temp;
 	size_t pch;
-	for (size_t j = 0; j < ENV_SIZE; j++) {
+//	for (size_t j = 0; j < ENV_SIZE; j++) {
+//		temp = env[j].val;
+//		while ((pch = temp.find("\n")) != string::npos) temp[pch] = ';';
+//		setenv(env[j].var, temp.c_str(), 1);
+//	}
+	for (size_t j = 0; j < sizeof(env) / sizeof (*env); j++) {
 		temp = env[j].val;
 		while ((pch = temp.find("\n")) != string::npos) temp[pch] = ';';
 		setenv(env[j].var, temp.c_str(), 1);
@@ -3517,6 +3530,7 @@ void set_macro_env(void)
 	mypath.append(":");
 	path.insert(0,mypath);
 	setenv("PATH", path.c_str(), 1);
+
 }
 
 // this is only for the case where the user tries to nest <EXEC>...

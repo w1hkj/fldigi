@@ -87,7 +87,7 @@ int n3fjp_has_xcvr_control = UNKNOWN;
 double tracked_freq = 0;
 int  tracked_mode = -1;
 
-enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY, FJP_NAQP, FJP_GENERIC};
+enum {FJP_NONE, FJP_FD, FJP_CQWWRTTY, FJP_NAQP, FJP_SS, FJP_GENERIC};
 int  n3fjp_contest = FJP_NONE;
 
 int n3fjp_wait = 0;
@@ -411,7 +411,7 @@ static void n3fjp_parse_data_stream(string buffer)
 	string name = ParseTextField(buffer, "NAMER");
 	for (size_t n = 1; n < name.length(); n++) name[n] = tolower(name[n]);
 	inpName->value(name.c_str());
-	inpQth->value(ParseTextField(buffer, "COUNTYR").c_str());
+	inpCounty->value(ParseTextField(buffer, "COUNTYR").c_str());
 	inpState->value(ParseTextField(buffer, "STATE").c_str());
 	inpCountry->value(ParseTextField(buffer, "COUNTRYWORKED").c_str());
 	inpLoc->value(ParseTextField(buffer, "GRID").c_str());
@@ -647,13 +647,13 @@ static cQsoRec rec;
 static void n3fjp_send_data()
 {
 	try {
-		send_command("IGNORERIGPOLLS", "TRUE");
-		send_control("FREQUENCY", n3fjp_freq());
-		send_control("BAND", n3fjp_opband());
-		send_control("MODE", n3fjp_opmode());
-		send_control("CALL", strip(rec.getField(CALL)));
 
+		send_command("IGNORERIGPOLLS", "TRUE");
 		if (n3fjp_contest == FJP_NONE) {
+			send_control("FREQUENCY", n3fjp_freq());
+			send_control("BAND", n3fjp_opband());
+			send_control("MODE", n3fjp_opmode());
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("DATE", fmt_date(rec.getField(QSO_DATE)));
 			send_control("TIMEON", fmt_time(rec.getField(TIME_ON)));
 			send_control("TIMEOFF", fmt_time(rec.getField(TIME_OFF)));
@@ -665,42 +665,70 @@ static void n3fjp_send_data()
 			send_control("STATE", rec.getField(STATE));
 			send_control("GRID", rec.getField(GRIDSQUARE));
 			send_control("QTHGROUP", rec.getField(QTH));
+			send_control("COUNTYR", rec.getField(CNTY));
 		}
-		if (n3fjp_contest == FJP_FD) {
+		else if (n3fjp_contest == FJP_FD) {
+			send_control("FREQUENCY", n3fjp_freq());
+			send_control("BAND", n3fjp_opband());
+			send_control("MODE", n3fjp_opmode());
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("MODETST", n3fjp_tstmode());
 			send_control("CLASS", strip(ucasestr(rec.getField(FDCLASS))));
 			send_control("SECTION", strip(ucasestr(rec.getField(FDSECTION))));
 		}
-		if (n3fjp_contest == FJP_CQWWRTTY) {
+		else if (n3fjp_contest == FJP_CQWWRTTY) {
+			send_control("FREQUENCY", n3fjp_freq());
+			send_control("BAND", n3fjp_opband());
+			send_control("MODE", n3fjp_opmode());
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("RSTS", strip(rec.getField(RST_SENT)));
 			send_control("RSTR", strip(rec.getField(RST_RCVD)));
 			send_control("CQZONE", strip(rec.getField(CQZ)));
 			send_control("STATE", strip(rec.getField(STATE)));
 		}
-		if (n3fjp_contest == FJP_GENERIC) {
-			send_control("RSTS", strip(rec.getField(RST_SENT)));
-			send_control("RSTR", strip(rec.getField(RST_RCVD)));
-			send_control("SERIALNOR", strip(rec.getField(SRX)));
-			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
+		else if (n3fjp_contest == FJP_SS) {
+			send_control("CALL", strip(rec.getField(CALL)));
+			send_control("SERIALNOR", strip(rec.getField(SS_SERNO)));
+			send_control("PRECEDENCE", strip(rec.getField(SS_PREC)));
+			send_control("CHECK", strip(rec.getField(SS_CHK)));
+			send_control("SECTION", strip(rec.getField(SS_SEC)));
 		}
-		if (n3fjp_contest == FJP_NAQP) {
+		else if (n3fjp_contest == FJP_NAQP) {
+			send_control("FREQUENCY", n3fjp_freq());
+			send_control("BAND", n3fjp_opband());
+			send_control("MODE", n3fjp_opmode());
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("NAMER", rec.getField(NAME));
 			if (strlen(rec.getField(STATE)) > 0)
 				send_control("SPCNUM", rec.getField(STATE));
 			else if (strlen(rec.getField(VE_PROV)) > 0)
 				send_control("SPCNUM", rec.getField(VE_PROV));
 		}
+		else if (n3fjp_contest == FJP_GENERIC) {
+			send_control("FREQUENCY", n3fjp_freq());
+			send_control("BAND", n3fjp_opband());
+			send_control("MODE", n3fjp_opmode());
+			send_control("CALL", strip(rec.getField(CALL)));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("SERIALNOR", strip(rec.getField(SRX)));
+			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
+		}
 
-		string other = "XCVR:";
-		char szfreq[6];
-		snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
-		other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
-		other.append(" MODE:");
-		other.append(strip(rec.getField(MODE)));
-		other.append(" WF:");
-		other.append(szfreq);
+		send_action("ENTER");
 
-		send_control("OTHER8", other);
+		if (n3fjp_contest != FJP_SS) {
+			string other = "XCVR:";
+			char szfreq[6];
+			snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
+			other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
+			other.append(" MODE:");
+			other.append(strip(rec.getField(MODE)));
+			other.append(" WF:");
+			other.append(szfreq);
+
+			send_control("OTHER8", other);
+		}
 
 		send_command("IGNORERIGPOLLS", "FALSE");
 	} catch (...) {
@@ -711,15 +739,16 @@ static void n3fjp_send_data()
 static void n3fjp_send_data_norig()
 {
 	try {
-		string cmd = "<CMD><CHANGEBM>";
-		cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
-		cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
-		cmd.append("</CMD>");
-		n3fjp_send(cmd);
-
-		send_control("CALL", strip(rec.getField(CALL)));
+		string cmd;
 
 		if (n3fjp_contest == FJP_NONE) {
+			cmd = "<CMD><CHANGEBM>";
+			cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
+			cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
+			cmd.append("</CMD>");
+			n3fjp_send(cmd);
+
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("FREQUENCY", n3fjp_freq());
 			send_control("MODE", n3fjp_opmode());
 			send_control("DATE", fmt_date(rec.getField(QSO_DATE)));
@@ -734,42 +763,81 @@ static void n3fjp_send_data_norig()
 			send_control("GRID", strip(rec.getField(GRIDSQUARE)));
 			send_control("QTHGROUP", strip(rec.getField(QTH)));
 		}
-		if (n3fjp_contest == FJP_FD) {
+		else if (n3fjp_contest == FJP_FD) {
+			cmd = "<CMD><CHANGEBM>";
+			cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
+			cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
+			cmd.append("</CMD>");
+			n3fjp_send(cmd);
+
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("MODETST", n3fjp_tstmode());
 			send_control("CLASS", strip(ucasestr(rec.getField(FDCLASS))));
 			send_control("SECTION", strip(ucasestr(rec.getField(FDSECTION))));
 		}
-		if (n3fjp_contest == FJP_CQWWRTTY) {
+		else if (n3fjp_contest == FJP_CQWWRTTY) {
+			cmd = "<CMD><CHANGEBM>";
+			cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
+			cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
+			cmd.append("</CMD>");
+			n3fjp_send(cmd);
+
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("MODETST", n3fjp_tstmode());
 			send_control("RSTS", strip(rec.getField(RST_SENT)));
 			send_control("RSTR", strip(rec.getField(RST_RCVD)));
 			send_control("CQZONE", strip(rec.getField(CQZ)));
 			send_control("STATE", strip(rec.getField(STATE)));
 		}
-		if (n3fjp_contest == FJP_GENERIC) {
-			send_control("RSTS", strip(rec.getField(RST_SENT)));
-			send_control("RSTR", strip(rec.getField(RST_RCVD)));
-			send_control("SERIALNOR", strip(rec.getField(SRX)));
-			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
+		else if (n3fjp_contest == FJP_SS) {
+			send_control("CALL", strip(rec.getField(CALL)));
+			send_control("SERIALNOR", strip(rec.getField(SS_SERNO)));
+			send_control("PRECEDENCE", strip(rec.getField(SS_PREC)));
+			send_control("CHECK", strip(rec.getField(SS_CHK)));
+			send_control("SECTION", strip(rec.getField(SS_SEC)));
 		}
-		if (n3fjp_contest == FJP_NAQP) {
+		else if (n3fjp_contest == FJP_NAQP) {
+			cmd = "<CMD><CHANGEBM>";
+			cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
+			cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
+			cmd.append("</CMD>");
+			n3fjp_send(cmd);
+
+			send_control("CALL", strip(rec.getField(CALL)));
 			send_control("NAMER", rec.getField(NAME));
 			if (strlen(rec.getField(STATE)) > 0)
 				send_control("SPCNUM", rec.getField(STATE));
 			else if (strlen(rec.getField(VE_PROV)) > 0)
 				send_control("SPCNUM", rec.getField(VE_PROV));
 		}
+		else if (n3fjp_contest == FJP_GENERIC) {
+			cmd = "<CMD><CHANGEBM>";
+			cmd.append("<BAND>").append(n3fjp_opband()).append("</BAND>");
+			cmd.append("<MODE>").append(n3fjp_opmode()).append("</MODE>");
+			cmd.append("</CMD>");
+			n3fjp_send(cmd);
 
-		string other = "XCVR:";
-		char szfreq[6];
-		snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
-		other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
-		other.append(" MODE:");
-		other.append(strip(rec.getField(MODE)));
-		other.append(" WF:");
-		other.append(szfreq);
+			send_control("CALL", strip(rec.getField(CALL)));
+			send_control("RSTS", strip(rec.getField(RST_SENT)));
+			send_control("RSTR", strip(rec.getField(RST_RCVD)));
+			send_control("SERIALNOR", strip(rec.getField(SRX)));
+			send_control("SPCNUM", strip(ucasestr(rec.getField(XCHG1))));
+		}
 
-		send_control("OTHER8", other);
+		send_action("ENTER");
+
+		if (n3fjp_contest != FJP_SS) {
+			string other = "XCVR:";
+			char szfreq[6];
+			snprintf(szfreq, sizeof(szfreq), "%d", (int)active_modem->get_txfreq());
+			other.append(ModeIsLSB(rec.getField(MODE)) ? "LSB" : "USB");
+			other.append(" MODE:");
+			other.append(strip(rec.getField(MODE)));
+			other.append(" WF:");
+			other.append(szfreq);
+
+			send_control("OTHER8", other);
+		}
 
 	} catch (...) {
 		throw;
@@ -797,8 +865,6 @@ void do_n3fjp_add_record_entries()
 			n3fjp_send_data();
 		else
 			n3fjp_send_data_norig();
-
-		send_action("ENTER");
 
 	} catch (const SocketException& e) {
 		LOG_ERROR("Error: %d, %s", e.error(), e.what());
@@ -857,7 +923,8 @@ void n3fjp_add_record(cQsoRec &record)
 
 void n3fjp_request_next_serial_number()
 {
-	send_command("<CMD><NEXTSERIALNUMBER></CMD>");
+	send_command("NEXTSERIALNUMBER");
+//	send_command("<CMD><NEXTSERIALNUMBER></CMD>");
 }
 
 string n3fjp_serno = "";
@@ -975,6 +1042,7 @@ static void connect_to_n3fjp_server()
 		n3fjp_contest = FJP_NONE;
 
 		string info = ParseField(buffer, "PGM");
+
 		if (info.find("Amateur Contact Log") != string::npos)
 			n3fjp_contest = FJP_NONE;
 		else if (info.find("CQ WW DX RTTY Contest Log") != string::npos)
@@ -983,7 +1051,10 @@ static void connect_to_n3fjp_server()
 			n3fjp_contest = FJP_FD;
 		else if (info.find("NAQP Contest Log") != string::npos)
 			n3fjp_contest = FJP_NAQP;
-		else {
+		else if (info.find("ARRL November Sweepstakes Contest Log") != string::npos) {
+			n3fjp_contest = FJP_SS;
+			REQ(n3fjp_request_next_serial_number);
+		} else {
 			n3fjp_contest = FJP_GENERIC;
 			REQ(n3fjp_request_next_serial_number);
 		}

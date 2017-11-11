@@ -1503,6 +1503,11 @@ void clearRecord() {
 	inp_log_sta_qth->value("");
 	inp_log_sta_loc->value("");
 
+	inp_log_cwss_serno->value("");
+	inp_log_cwss_prec->value("");
+	inp_log_cwss_chk->value("");
+	inp_log_cwss_sec->value("");
+
 }
 
 void saveRecord() {
@@ -1577,6 +1582,11 @@ void saveRecord() {
 	rec.putField(OP_CALL, inp_log_op_call->value());
 	rec.putField(MY_CITY, inp_log_sta_qth->value());
 	rec.putField(MY_GRID, inp_log_sta_loc->value());
+
+	rec.putField(SS_SERNO, inp_log_cwss_serno->value());
+	rec.putField(SS_PREC, inp_log_cwss_prec->value());
+	rec.putField(SS_CHK, inp_log_cwss_chk->value());
+	rec.putField(SS_SEC, inp_log_cwss_sec->value());
 
 	qsodb.qsoNewRec (&rec);
 
@@ -1653,6 +1663,11 @@ void updateRecord() {
 	rec.putField(OP_CALL, inp_log_op_call->value());
 	rec.putField(MY_CITY, inp_log_sta_qth->value());
 	rec.putField(MY_GRID, inp_log_sta_loc->value());
+
+	rec.putField(SS_SERNO, inp_log_cwss_serno->value());
+	rec.putField(SS_PREC, inp_log_cwss_prec->value());
+	rec.putField(SS_CHK, inp_log_cwss_chk->value());
+	rec.putField(SS_SEC, inp_log_cwss_sec->value());
 
 	dxcc_entity_cache_rm(qsodb.getRec(editNbr));
 	qsodb.qsoUpdRec (editNbr, &rec);
@@ -1743,6 +1758,11 @@ void EditRecord( int i )
 	inp_log_sta_qth->value(editQSO->getField(MY_CITY));
 	inp_log_sta_loc->value(editQSO->getField(MY_GRID));
 
+	inp_log_cwss_serno->value(editQSO->getField(SS_SERNO));
+	inp_log_cwss_prec->value(editQSO->getField(SS_PREC));
+	inp_log_cwss_chk->value(editQSO->getField(SS_CHK));
+	inp_log_cwss_sec->value(editQSO->getField(SS_SEC));
+
 }
 
 std::string sDate_on = "";
@@ -1822,6 +1842,11 @@ void AddRecord ()
 	inp_log_op_call->value(progdefaults.operCall.c_str());
 	inp_log_sta_qth->value(progdefaults.myQth.c_str());
 	inp_log_sta_loc->value(progdefaults.myLocator.c_str());
+
+	inp_log_cwss_serno->value(ucasestr(inp_SS_SerialNoR->value()).c_str());
+	inp_log_cwss_prec->value(ucasestr(inp_SS_Precedence->value()).c_str());
+	inp_log_cwss_chk->value(ucasestr(inp_SS_Check->value()).c_str());
+	inp_log_cwss_sec->value(ucasestr(inp_SS_Section->value()).c_str());
 
 	saveRecord();
 

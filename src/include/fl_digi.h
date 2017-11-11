@@ -597,6 +597,12 @@ extern Fl_Input2	*inp_FD_section2;
 extern Fl_Input2	*inp_CQzone;
 extern Fl_Input2	*inp_CQstate;
 
+// CW Sweepstakes
+extern Fl_Input2	*inp_SS_SerialNoR;
+extern Fl_Input2	*inp_SS_Precedence;
+extern Fl_Input2	*inp_SS_Check;
+extern Fl_Input2	*inp_SS_Section;
+
 extern Fl_Double_Window	*dxcluster_viewer;
 
 // TOD clock

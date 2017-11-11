@@ -1055,6 +1055,7 @@ else progdefaults.logging = LOG_QSO;
 btn_fd_contest->value(0);
 btn_cqww_contest->value(0);
 btn_bart_contest->value(0);
+btn_cwss_contest->value(0);
 UI_select();
 progdefaults.changed = true;
 }
@@ -1067,6 +1068,7 @@ else progdefaults.logging = LOG_QSO;
 btn_cqww_contest->value(0);
 btn_bart_contest->value(0);
 btn_generic_contest->value(0);
+btn_cwss_contest->value(0);
 UI_select();
 progdefaults.changed = true;
 }
@@ -1079,6 +1081,7 @@ else progdefaults.logging = LOG_QSO;
 btn_fd_contest->value(0);
 btn_bart_contest->value(0);
 btn_generic_contest->value(0);
+btn_cwss_contest->value(0);
 UI_select();
 progdefaults.changed = true;
 }
@@ -1091,6 +1094,20 @@ else progdefaults.logging = LOG_QSO;
 btn_fd_contest->value(0);
 btn_cqww_contest->value(0);
 btn_generic_contest->value(0);
+btn_cwss_contest->value(0);
+UI_select();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_cwss_contest=(Fl_Check_Button *)0;
+
+static void cb_btn_cwss_contest(Fl_Check_Button* o, void*) {
+  if (o->value()) progdefaults.logging = LOG_CWSS;
+else progdefaults.logging = LOG_QSO;
+btn_generic_contest->value(0);
+btn_fd_contest->value(0);
+btn_cqww_contest->value(0);
+btn_bart_contest->value(0);
 UI_select();
 progdefaults.changed = true;
 }
@@ -7672,6 +7689,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7765,10 +7783,10 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8313,7 +8331,6 @@ ab and newline are automatically included."));
             tabLogServer->end();
           } // Fl_Group* tabLogServer
           { tabContest = new Fl_Group(0, 50, 600, 340, _("Contest"));
-            tabContest->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 590, 89, _("Duplicate check, CALL plus"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8520,24 +8537,30 @@ ab and newline are automatically included."));
                 btn_generic_contest->callback((Fl_Callback*)cb_btn_generic_contest);
                 o->value(progdefaults.logging == LOG_CONT);
               } // Fl_Check_Button* btn_generic_contest
-              { Fl_Check_Button* o = btn_fd_contest = new Fl_Check_Button(175, 329, 70, 20, _("Field Day"));
+              { Fl_Check_Button* o = btn_fd_contest = new Fl_Check_Button(126, 329, 70, 20, _("Field Day"));
                 btn_fd_contest->tooltip(_("Use Field Day Contest Fields"));
                 btn_fd_contest->down_box(FL_DOWN_BOX);
                 btn_fd_contest->callback((Fl_Callback*)cb_btn_fd_contest);
                 o->value(progdefaults.logging == LOG_FD);
               } // Fl_Check_Button* btn_fd_contest
-              { Fl_Check_Button* o = btn_cqww_contest = new Fl_Check_Button(320, 329, 70, 20, _("CQWW RTTY"));
+              { Fl_Check_Button* o = btn_cqww_contest = new Fl_Check_Button(237, 329, 70, 20, _("CQWW RTTY"));
                 btn_cqww_contest->tooltip(_("Use CQWW Fields"));
                 btn_cqww_contest->down_box(FL_DOWN_BOX);
                 btn_cqww_contest->callback((Fl_Callback*)cb_btn_cqww_contest);
                 o->value(progdefaults.logging == LOG_CQWW);
               } // Fl_Check_Button* btn_cqww_contest
-              { Fl_Check_Button* o = btn_bart_contest = new Fl_Check_Button(465, 329, 70, 20, _("BARTG RTTY"));
+              { Fl_Check_Button* o = btn_bart_contest = new Fl_Check_Button(364, 329, 70, 20, _("BARTG RTTY"));
                 btn_bart_contest->tooltip(_("Use generic contest fields"));
                 btn_bart_contest->down_box(FL_DOWN_BOX);
                 btn_bart_contest->callback((Fl_Callback*)cb_btn_bart_contest);
                 o->value(progdefaults.logging == LOG_BART);
               } // Fl_Check_Button* btn_bart_contest
+              { Fl_Check_Button* o = btn_cwss_contest = new Fl_Check_Button(495, 329, 70, 20, _("CW SS"));
+                btn_cwss_contest->tooltip(_("CW Sweepstakes"));
+                btn_cwss_contest->down_box(FL_DOWN_BOX);
+                btn_cwss_contest->callback((Fl_Callback*)cb_btn_cwss_contest);
+                o->value(progdefaults.logging == LOG_CWSS);
+              } // Fl_Check_Button* btn_cwss_contest
               { Fl_Check_Button* o = btnRXClicks2 = new Fl_Check_Button(30, 356, 243, 20, _("Single-click to capture Rx word"));
                 btnRXClicks2->tooltip(_("Enable for single click capure of text in Rx panel"));
                 btnRXClicks2->down_box(FL_DOWN_BOX);

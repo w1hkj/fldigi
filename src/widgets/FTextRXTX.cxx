@@ -114,6 +114,10 @@ private:
 	RX_MENU_SERIAL
 	RX_MENU_CLASS
 	RX_MENU_SECTION,
+	RX_MENU_SS_SER,
+	RX_MENU_SS_PRE,
+	RX_MENU_SS_CHK,
+	RX_MENU_SS_SEC,
 	RX_MENU_CQZONE,
 	RX_MENU_CQSTATE,
 	RX_MENU_DIV
@@ -141,6 +145,10 @@ Fl_Menu_Item FTextRX::menu[] = {
 	{ icons::make_icon_label(_("Serial number"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("FD class"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("FD section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("SS ser #"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("SS prec"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("SS check"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
+	{ icons::make_icon_label(_("SS section"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("CQ zone"), enter_key_icon), 0, 0, 0, 0, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("CQ STATE"), enter_key_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
 	{ icons::make_icon_label(_("Insert marker"), insert_link_icon), 0, 0, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL },
@@ -560,10 +568,15 @@ void FTextRX::handle_context_menu(void)
 		} else if (progdefaults.logging == LOG_CQWW) {
 			show_item(RX_MENU_CQZONE);
 			show_item(RX_MENU_CQSTATE);
-		} else if (	progdefaults.logging == LOG_CONT || 
+		} else if ( progdefaults.logging == LOG_CONT || 
 					progdefaults.logging == LOG_BART) {
 			show_item(RX_MENU_SERIAL);
 			show_item(RX_MENU_XCHG);
+		} else if ( progdefaults.logging == LOG_CWSS) {
+			show_item(RX_MENU_SS_SER);
+			show_item(RX_MENU_SS_PRE);
+			show_item(RX_MENU_SS_CHK);
+			show_item(RX_MENU_SS_SEC);
 		}
 	}
 	else {
@@ -664,6 +677,18 @@ void FTextRX::menu_cb(size_t item)
 		break;
 	case RX_MENU_SECTION:
 		input = inp_FD_section;
+		break;
+	case RX_MENU_SS_SER:
+		input = inp_SS_SerialNoR;
+		break;
+	case RX_MENU_SS_PRE:
+		input = inp_SS_Precedence;
+		break;
+	case RX_MENU_SS_CHK:
+		input = inp_SS_Check;
+		break;
+	case RX_MENU_SS_SEC:
+		input = inp_SS_Section;
 		break;
 	case RX_MENU_CQZONE:
 		input = inp_CQzone;

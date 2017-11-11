@@ -397,9 +397,8 @@ void submit_record(cQsoRec &rec)
 {
 #if !defined(__WOE32__) && !defined(__APPLE__)
 	send_IPC_log(rec);
-#else
-	submit_ADIF(rec);
 #endif
+	submit_ADIF(rec);
 	submit_lotw(rec);
 	n3fjp_add_record(rec);
 }

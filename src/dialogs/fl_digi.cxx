@@ -410,6 +410,13 @@ Fl_Input2			*inp_FD_section1 = (Fl_Input2 *)0;
 Fl_Group			*CQWW_RTTY_frame_1 = (Fl_Group *)0;
 Fl_Input2			*inp_CQzone1 = (Fl_Input2 *)0;
 Fl_Input2			*inp_CQstate1 = (Fl_Input2 *)0;
+// CW Sweepstakes contest sub frame
+Fl_Group			*CWSweepstakes_frame = (Fl_Group *)0;
+Fl_Input2			*outSerNo3 = (Fl_Input2 *)0;
+Fl_Input2			*inp_SS_SerialNoR = (Fl_Input2 *)0;
+Fl_Input2			*inp_SS_Precedence = (Fl_Input2 *)0;
+Fl_Input2			*inp_SS_Check = (Fl_Input2 *)0;
+Fl_Input2			*inp_SS_Section = (Fl_Input2 *)0;
 
 // Single Line Rig / Logging Controls
 cFreqControl 		*qsoFreqDisp1 = (cFreqControl *)0;
@@ -2897,6 +2904,7 @@ void updateOutSerNo()
 	if (!n3fjp_serno.empty()) {
 		outSerNo1->value(n3fjp_serno.c_str());
 		outSerNo2->value(n3fjp_serno.c_str());
+		outSerNo3->value(n3fjp_serno.c_str());
 		return;
 	}
 
@@ -2906,9 +2914,11 @@ void updateOutSerNo()
 		snprintf(szcnt, sizeof(szcnt), contest_count.fmt.c_str(), contest_count.count);
 		outSerNo1->value(szcnt);
 		outSerNo2->value(szcnt);
+		outSerNo3->value(szcnt);
 	} else {
 		outSerNo1->value("");
 		outSerNo2->value("");
+		outSerNo3->value("");
 	}
 }
 
@@ -2944,9 +2954,12 @@ if (bWF_only) return;
 		inpState1,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
+		outSerNo3,
 		inpXchgIn1, inpXchgIn2,
 		inp_FD_class1, inp_FD_section1,
 		inp_FD_class2, inp_FD_section2,
+		inp_SS_Check, inp_SS_Precedence,
+		inp_SS_Section, inp_SS_SerialNoR,
 		inp_CQstate1, inp_CQstate2,
 		inp_CQzone1, inp_CQzone2,
 		inpNotes };
@@ -4291,6 +4304,7 @@ void UI_select()
 		Contest_frame_1->hide();
 		CQWW_RTTY_frame_1->hide();
 		FD_frame_1->hide();
+		CWSweepstakes_frame->hide();
 
 		switch (progdefaults.logging) {
 			case LOG_FD:
@@ -4299,6 +4313,7 @@ void UI_select()
 				QSO_frame_1->hide();
 				Contest_frame_1->hide();
 				CQWW_RTTY_frame_1->hide();
+				CWSweepstakes_frame->hide();
 				FD_frame_1->show();
 				break;
 			case LOG_CQWW:
@@ -4307,6 +4322,7 @@ void UI_select()
 				QSO_frame_1->hide();
 				Contest_frame_1->hide();
 				FD_frame_1->hide();
+				CWSweepstakes_frame->hide();
 				CQWW_RTTY_frame_1->show();
 				break;
 			case LOG_BART:
@@ -4315,18 +4331,31 @@ void UI_select()
 				QSO_frame_1->hide();
 				FD_frame_1->hide();
 				CQWW_RTTY_frame_1->hide();
+				CWSweepstakes_frame->hide();
 				Contest_frame_1->show();
 				break;
-			default: // no contest
+			case LOG_CWSS:
+				outSerNo = outSerNo3;
+				inpState = inp_CQstate = inp_CQstate1;
+				inp_CQzone = inp_CQzone1;
+				QSO_frame_1->hide();
+				Contest_frame_1->hide();
+				FD_frame_1->hide();
+				CQWW_RTTY_frame_1->hide();
+				CWSweepstakes_frame->show();
+				break;
+		default: // no contest
 				FD_frame_1->hide();
 				CQWW_RTTY_frame_1->hide();
 				Contest_frame_1->hide();
+				CWSweepstakes_frame->hide();
 				QSO_frame_1->show();
 		}
 		QSO_frame_1->redraw();
 		Contest_frame_1->redraw();
 		CQWW_RTTY_frame_1->redraw();
 		FD_frame_1->redraw();
+		CWSweepstakes_frame->redraw();
 
 		qsoFreqDisp = qsoFreqDisp1;
 		TopFrame1->init_sizes();
@@ -4383,6 +4412,7 @@ void UI_select()
 				inp_CQzone2->hide();
 				inp_FD_class2->show();
 				inp_FD_section2->show();
+				CWSweepstakes_frame->hide();
 				break;
 			case LOG_CQWW:
 				inpState = inp_CQstate = inp_CQstate2;
@@ -4395,6 +4425,16 @@ void UI_select()
 				inp_CQstate2->show();
 				inp_CQzone2->show();
 				break;
+			case LOG_CWSS:
+				inpState = inp_CQstate = inp_CQstate1;
+				inp_CQzone = inp_CQzone1;
+				QSO_frame_1->hide();
+				Contest_frame_1->hide();
+				FD_frame_1->hide();
+				outSerNo = outSerNo3;
+				CQWW_RTTY_frame_1->hide();
+				CWSweepstakes_frame->show();
+				break;
 			case LOG_BART:
 			case LOG_CONT:
 			default:
@@ -4405,6 +4445,7 @@ void UI_select()
 				inpSerNo2->show();
 				outSerNo2->show();
 				inpXchgIn2->show();
+				CWSweepstakes_frame->hide();
 				break;
 		}
 
@@ -5615,6 +5656,9 @@ void LOGGING_colors_font()
 		inpState1,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
+		outSerNo3,
+		inp_SS_Check, inp_SS_Precedence,
+		inp_SS_Section, inp_SS_SerialNoR,
 		inpXchgIn1, inpXchgIn2,
 		inp_FD_class1, inp_FD_class2,
 		inp_FD_section1, inp_FD_section2,
@@ -6102,6 +6146,9 @@ void log_callback(Fl_Input2 *w) {
 	else if (w == inp_FD_class1 || w == inp_FD_class2)
 	;
 	else if (w == inp_FD_section1 || w == inp_FD_section2)
+	;
+	else if (w == inp_SS_SerialNoR || w == inp_SS_Precedence ||
+			 w == inp_SS_Check || w == inp_SS_Section )
 	;
 	else if (w == inpSerNo1 || w == inpSerNo2)
 		SERNO_callback(w);
@@ -6750,6 +6797,48 @@ void create_fl_digi_main_primary() {
 
 					CQWW_RTTY_frame_1->end();
 					CQWW_RTTY_frame_1->hide();
+
+// CW Sweepstakes contest sub frame
+					CWSweepstakes_frame = new Fl_Group (
+						Logging_frame_1->x(), y3, wf1, Hentry + pad);
+
+						outSerNo3 = new Fl_Input2(
+							CWSweepstakes_frame->x() + 25, y3, 40, Hentry,
+							"S#");
+						outSerNo3->align(FL_ALIGN_LEFT);
+						outSerNo3->tooltip(_("Sent serno"));
+						outSerNo3->type(FL_NORMAL_OUTPUT);
+
+						inp_SS_SerialNoR = new Fl_Input2(
+							rightof(outSerNo3) + 15, y3, 40, Hentry,
+							"R#");
+						inp_SS_SerialNoR->align(FL_ALIGN_LEFT);
+						inp_SS_SerialNoR->tooltip(_("Received serno"));
+						inp_SS_SerialNoR->type(FL_NORMAL_INPUT);
+
+						inp_SS_Precedence = new Fl_Input2(
+							rightof(inp_SS_SerialNoR) + 15, y3, 40, Hentry,
+							"Pre");
+						inp_SS_Precedence->align(FL_ALIGN_LEFT);
+						inp_SS_Precedence->tooltip(_("SS Precedence"));
+						inp_SS_Precedence->type(FL_NORMAL_INPUT);
+
+						inp_SS_Check = new Fl_Input2(
+							rightof(inp_SS_Precedence) + 15, y3, 40, Hentry,
+							"Chk");
+						inp_SS_Check->align(FL_ALIGN_LEFT);
+						inp_SS_Check->tooltip(_("SS Check"));
+						inp_SS_Check->type(FL_NORMAL_INPUT);
+
+						inp_SS_Section = new Fl_Input2(
+							rightof(inp_SS_Check) + 15, y3, 40, Hentry,
+							"Sec");
+						inp_SS_Section->align(FL_ALIGN_LEFT);
+						inp_SS_Section->tooltip(_("SS section"));
+						inp_SS_Section->type(FL_NORMAL_INPUT);
+
+					CWSweepstakes_frame->end();
+					CWSweepstakes_frame->hide();
 
 					Logging_frame_1->resizable(NULL);
 				Logging_frame_1->end();
@@ -7812,6 +7901,9 @@ void create_fl_digi_main_primary() {
 			inpState1,
 			inpSerNo1, inpSerNo2,
 			outSerNo1, outSerNo2,
+			outSerNo3,
+			inp_SS_Check, inp_SS_Precedence,
+			inp_SS_Section, inp_SS_SerialNoR,
 			inpXchgIn1, inpXchgIn2,
 			inp_FD_class1, inp_FD_class2,
 			inp_FD_section1, inp_FD_section2,
@@ -8191,6 +8283,12 @@ void noop_controls() // create and then hide all controls not being used
 	inpSerNo2 = new Fl_Input2(defwidget); inpSerNo2->hide();
 	inpXchgIn2 = new Fl_Input2(defwidget); inpXchgIn2->hide();
 	qsoFreqDisp3 = new cFreqControl(0,0,80,20,""); qsoFreqDisp3->hide();
+
+	outSerNo3 = new Fl_Input2(defwidget); outSerNo3->hide();
+	inp_SS_SerialNoR = new Fl_Input2(defwidget); inp_SS_SerialNoR->hide();
+	inp_SS_Precedence = new Fl_Input2(defwidget); inp_SS_Precedence->hide();
+	inp_SS_Check = new Fl_Input2(defwidget); inp_SS_Check->hide();
+	inp_SS_Section = new Fl_Input2(defwidget); inp_SS_Section->hide();
 
 	qso_opPICK3 = new Fl_Button(defwidget); qso_opPICK3->hide();
 	qsoClear3 = new Fl_Button(defwidget); qsoClear3->hide();

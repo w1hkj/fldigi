@@ -68,6 +68,10 @@ OP_CALL,
 STA_CALL,
 MY_GRID,
 MY_CITY,
+SS_SERNO,
+SS_PREC,
+SS_CHK,
+SS_SEC,
 // do not add fields below this line; EXPORT must be last field in struc
 EXPORT, // flag used internally in fldigi's logbook
 NUMFIELDS };
