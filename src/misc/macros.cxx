@@ -2358,6 +2358,26 @@ void TxQueINSERTIMAGE(std::string s)
 		TransmitText->add_text(itext);
 }
 
+static void doAVATAR(std::string s)
+{
+	if (active_modem->get_mode() == MODE_IFKP)
+		active_modem->m_ifkp_send_avatar();
+
+	que_ok = true;
+}
+
+static void pTxQueAVATAR(std::string &s, size_t &i, size_t endbracket)
+{
+	if (within_exec) {
+		s.replace(i, endbracket - i + 1, "");
+		return;
+	}
+
+	struct CMDS cmd = { s.substr(i, endbracket - i + 1), doAVATAR };
+	push_txcmd(cmd);
+	s.replace(i, endbracket - i + 1, "^!");
+}
+
 static void doMODEM(std::string s)
 {
 	static fre_t re("<!MODEM:([[:alnum:]-]+)((:[[:digit:].+-]*)*)>", REG_EXTENDED);
@@ -4009,6 +4029,7 @@ static const MTAGS mtags[] = {
 	{"<WX>",		pWX},
 	{"<WX:",		pWX2},
 	{"<IMAGE:",		pTxQueIMAGE},
+	{"<AVATAR>",	pTxQueAVATAR},
 // Tx Delayed action
 	{"<!WPM:",		pTxQueWPM},
 	{"<!RISE:",		pTxQueRISETIME},

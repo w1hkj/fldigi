@@ -994,8 +994,6 @@ void cb_ifkp_send_avatar( Fl_Widget *w, void *)
 		} else
 			return;
 
-		string picmode = "\npic%A\n^r";
-		ifkp_tx_text->add(picmode.c_str());
 		active_modem->ifkp_send_avatar();
 		return;
 	}

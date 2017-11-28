@@ -33,6 +33,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <algorithm>
 #include <iomanip>
 
@@ -308,37 +309,31 @@ int FTextBase::readFile(const char* fn)
 	std::string newbuf;
 	size_t p;
 	memset(buf, 0, BUFSIZ+1);
+	p = 0;
+	while (fgets(buf, sizeof(buf), tfile)) {
+		newbuf.append(buf);
+		memset(buf, 0, BUFSIZ+1);
+	}
+	if (ferror(tfile))
+		return (-1);
+	fclose(tfile);
+
+	while ((p = newbuf.find("^",p)) != string::npos) {
+		newbuf.insert(p, "^");
+		p += 2;
+	}
+	p = 0;
+	while ((p = newbuf.find("@^^", p)) != string::npos) {
+		newbuf.erase(p,2);
+	}
 	if (pos == tbuf->length()) { // optimise for append
-		while (fgets(buf, sizeof(buf), tfile)) {
-			newbuf = buf;
-			p = 0;
-			while ((p = newbuf.find('^',p)) != string::npos) {
-				newbuf.insert(p, "^");
-				p += 2;
-			}
-			tbuf->append(newbuf.c_str());
-			memset(buf, 0, BUFSIZ+1);
-		}
-		if (ferror(tfile))
-			ret = -1;
+		tbuf->append(newbuf.c_str());
 		pos = tbuf->length();
 	}
 	else {
-		while (fgets(buf, sizeof(buf), tfile)) {
-			newbuf = buf;
-			p = 0;
-			while ((p = newbuf.find('^',p)) != string::npos) {
-				newbuf.insert(p, "^");
-				p += 2;
-			}
-			tbuf->insert(pos, newbuf.c_str());
-			pos += strlen(buf);
-			memset(buf, 0, BUFSIZ+1);
-		}
-		if (ferror(tfile))
-			ret = -1;
+		tbuf->insert(pos, newbuf.c_str());
+		pos += newbuf.length();
 	}
-	fclose(tfile);
 
 	insert_position(pos);
 	show_insert_position();
@@ -799,6 +794,7 @@ int FTextEdit::handle_dnd_drop(void)
 	string::size_type p, len;
 
 	text = Fl::event_text();
+std::cout << "dnd text: '" << text << "'" << std::endl;
 
 	const char sep[] = "\n";
 #if defined(__APPLE__) || defined(__WOE32__)
@@ -817,14 +813,14 @@ int FTextEdit::handle_dnd_drop(void)
 #endif
 
 #ifndef BUILD_FLARQ
-	if ((text.find("jpg") != string::npos) ||
-		(text.find("JPG") != string::npos) ||
-		(text.find("jpeg") != string::npos) ||
-		(text.find("JPEG") != string::npos) ||
-		(text.find("png") != string::npos) ||
-		(text.find("PNG") != string::npos) ||
-		(text.find("bmp") != string::npos) ||
-		(text.find("BMP") != string::npos) ) {
+	if ((text.find(".jpg") != string::npos) ||
+		(text.find(".JPG") != string::npos) ||
+		(text.find(".jpeg") != string::npos) ||
+		(text.find(".JPEG") != string::npos) ||
+		(text.find(".png") != string::npos) ||
+		(text.find(".PNG") != string::npos) ||
+		(text.find(".bmp") != string::npos) ||
+		(text.find(".BMP") != string::npos) ) {
 
 		LOG_INFO("DnD image %s", text.c_str());
 

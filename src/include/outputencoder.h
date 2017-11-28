@@ -34,6 +34,7 @@ class OutputEncoder
 		void set_output_encoding(const int charset_out);
 		void push(std::string s);
 		const unsigned int pop(void);
+		const unsigned int peek(void);
 
 	private:
 		unsigned int buffer_size;

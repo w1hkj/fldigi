@@ -138,3 +138,12 @@ const unsigned int OutputEncoder::pop(void)
 
 	return(c);
 }
+
+// return next character to be pop'd, do not advance pointers;
+
+const unsigned int OutputEncoder::peek(void)
+{
+	if (pop_ptr == encoding_ptr) return -1;
+	return *pop_ptr;
+}
+

@@ -9299,6 +9299,48 @@ int get_tx_char(void)
 		state = STATE_CHAR;
 
 		switch (c) {
+		case 'a': case 'A':
+			if (active_modem->get_mode() == MODE_IFKP)
+				active_modem->m_ifkp_send_avatar();
+			else if (active_modem->get_mode() >= MODE_THOR_FIRST &&
+					 active_modem->get_mode() <= MODE_THOR_LAST)
+				active_modem->m_thor_send_avatar();
+			return(GET_TX_CHAR_NODATA);
+
+		case 'i': case 'I':
+			{
+				string fname;
+				if (active_modem->get_mode() == MODE_IFKP)
+					c = ifkp_tx_text->nextChar();
+				else
+					c = TransmitText->nextChar();
+				if (c == '[') {
+					if (active_modem->get_mode() == MODE_IFKP)
+						c = ifkp_tx_text->nextChar();
+					else
+						c = TransmitText->nextChar();
+					while (c != ']' && c != -1) {
+						fname += c;
+						if (active_modem->get_mode() == MODE_IFKP)
+							c = ifkp_tx_text->nextChar();
+						else
+							c = TransmitText->nextChar();
+					}
+					if (c == -1) return (GET_TX_CHAR_NODATA);
+					if (active_modem->get_mode() == MODE_IFKP) {
+						ifkp_load_scaled_image(fname);
+						return (GET_TX_CHAR_NODATA);
+					}
+					if (active_modem->get_mode() >= MODE_THOR_FIRST &&
+					 active_modem->get_mode() <= MODE_THOR_LAST) {
+						thor_load_scaled_image(fname);
+						return (GET_TX_CHAR_NODATA);
+					}
+					active_modem->send_color_image(fname);
+				}
+			}
+			return(GET_TX_CHAR_NODATA);
+
 		case 'p': case 'P':
 			TransmitText->pause();
 			break;
