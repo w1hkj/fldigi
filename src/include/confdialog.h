@@ -64,6 +64,8 @@ extern Fl_Check_Button *btn2NagMe;
 extern Fl_Check_Button *btn2_confirm_exit;
 extern Fl_Check_Button *btn_check_for_updates;
 extern Fl_Check_Button *btn_tx_show_timer;
+#include <FL/Fl_Spinner.H>
+extern Fl_Spinner *val_tx_timeout;
 extern Fl_Group *tabLogServer;
 extern Fl_Tabs *tabsLog;
 extern Fl_Group *grp_Log_QSO;

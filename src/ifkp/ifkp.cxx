@@ -740,6 +740,8 @@ void ifkp::send_image()
 
 	REQ(ifkp_clear_tximage);
 
+	stop_deadman();
+
 	freq = frequency - 0.6 * bandwidth;
 	#define PHASE_CORR  (3 * symlen / 2)
 	phaseincr = radians * freq;
@@ -795,6 +797,7 @@ void ifkp::send_image()
 			}
 		}
 	}
+	start_deadman();
 }
 
 std::string img_str;

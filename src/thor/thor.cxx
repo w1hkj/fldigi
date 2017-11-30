@@ -1307,6 +1307,8 @@ void thor::send_image() {
 
 	REQ(thor_clear_tximage);
 
+	stop_deadman();
+
 	double black[symlen];
 
 	memset(black, 0, sizeof(*black) * symlen);
@@ -1368,7 +1370,7 @@ void thor::send_image() {
 			}
 		}
 	}
-
+	start_deadman();
 }
 
 void thor::thor_send_image(std::string image_str) {

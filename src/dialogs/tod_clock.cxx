@@ -60,11 +60,46 @@ LOG_FILE_SOURCE(debug::LOG_FD);
 using namespace std;
 
 static pthread_t TOD_thread;
-//static pthread_mutex_t TOD_mutex     = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t TX_mutex     = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned long  _zmsec = 0;
 
 static char ztbuf[20] = "20120602 123000";
+
+#define TX_TIMEOUT 60 //*5		// 5 minute timeout
+
+extern void xmtrcv_cb(Fl_Widget *, void *);
+
+static int tx_timeout = 0;
+
+void kill_tx(void *)
+{
+	wf->xmtrcv->value(0);
+	xmtrcv_cb(wf->xmtrcv, 0);
+	fl_alert2("TX timeout expired!\nAre you awake?");
+}
+
+void service_deadman()
+{
+	guard_lock txlock(&TX_mutex);
+	if (!tx_timeout) return;
+	if (--tx_timeout == 0) {
+		Fl::awake(kill_tx);
+	}
+}
+
+void start_deadman()
+{
+	guard_lock txlock(&TX_mutex);
+	tx_timeout = 60 * progdefaults.tx_timeout;
+}
+
+void stop_deadman()
+{
+	guard_lock txlock(&TX_mutex);
+	tx_timeout = 0;
+}
+
 
 const unsigned long zmsec(void)
 {
@@ -163,6 +198,8 @@ void ztimer(void *)
 	inpTimeOff1->redraw();
 	inpTimeOff2->redraw();
 	inpTimeOff3->redraw();
+
+	service_deadman();
 }
 
 //======================================================================

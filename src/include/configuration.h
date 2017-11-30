@@ -77,6 +77,9 @@
         ELEM_(bool, show_tx_timer, "SHOW_TX_TIMER",                                     \
           "Show tx timer on menu bar",                                                  \
           true)                                                                         \
+        ELEM_(int, tx_timeout, "TX_TIMEOUT",                                            \
+          "TX deadman timeout in minutes",                                              \
+          5)                                                                            \
         ELEM_(bool, SaveConfig, "SAVECONFIG",                                           \
               "Save current configuration on exit",                                     \
               true)                                                                     \

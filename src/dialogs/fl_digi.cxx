@@ -9229,22 +9229,28 @@ int get_tx_char(void)
 	if (!macrochar.empty()) {
 		int ch = macrochar[0];
 		macrochar.erase(0,1);
+		start_deadman();
 		return ch;
 	}
 
 	if (xmltest_char_available) {
 		num_cps_chars++;
+		start_deadman();
 		return xmltest_char();
 	}
 
 	if (data_io_enabled == ARQ_IO && arq_text_available) {
+		start_deadman();
 		return arq_get_char();
 	} else if (data_io_enabled == KISS_IO && kiss_text_available) {
+		start_deadman();
 		return kiss_get_char();
 	}
 
-	if (active_modem == cw_modem && progdefaults.QSKadjust)
+	if (active_modem == cw_modem && progdefaults.QSKadjust) {
+		start_deadman();
 		return szTestChar[2 * progdefaults.TestChar];
+	}
 
 	if ( (progStatus.repeatMacro > -1) && progStatus.repeatIdleTime > 0 &&
 		 !idling ) {
@@ -9255,8 +9261,10 @@ int get_tx_char(void)
 
 	int c;
 
-	if ((c = tx_encoder.pop()) != -1)
+	if ((c = tx_encoder.pop()) != -1) {
+		start_deadman();
 		return(c);
+	}
 
 	if ((progStatus.repeatMacro > -1) && text2repeat.length()) {
 		string repeat_content;
@@ -9414,6 +9422,8 @@ int get_tx_char(void)
 
 	if (progdefaults.tx_lowercase)
 		c = fl_tolower(c);
+
+	start_deadman();
 
 	return(c);
 }

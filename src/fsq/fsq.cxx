@@ -1342,6 +1342,8 @@ void fsq::send_image()
 
 	REQ(fsq_clear_tximage);
 
+	stop_deadman();
+
 	freq = frequency - 200;
 	#define PHASE_CORR  200
 	phaseincr = radians * freq;
@@ -1397,6 +1399,7 @@ void fsq::send_image()
 			}
 		}
 	}
+	start_deadman();
 }
 
 void fsq::send_string(std::string s)
@@ -1526,6 +1529,7 @@ int get_fsq_tx_char(void)
 			default: ;
 		}
 	}
+	start_deadman();
 	return(c);
 }
 

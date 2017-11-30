@@ -608,6 +608,9 @@ extern Fl_Double_Window	*dxcluster_viewer;
 // TOD clock
 extern void  TOD_init();
 extern void  TOD_close();
+extern void  start_deadman();
+extern void  stop_deadman();
+extern void  disable_deadman();
 
 //======================================================================
 //FeldHell resizable Rx character height

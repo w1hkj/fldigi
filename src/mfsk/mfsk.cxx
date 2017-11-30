@@ -1135,6 +1135,7 @@ int mfsk::tx_process()
 		case TX_STATE_PICTURE:
 			int i = 0;
 			int blocklen = 128;
+			stop_deadman();
 			while (i < xmtbytes) {
 				if (stopflag || abortxmt)
 					break;
@@ -1151,6 +1152,7 @@ int mfsk::tx_process()
 				i += blocklen;
 			}
 			flushtx(preamble);
+			start_deadman();
 
 			REQ_FLUSH(GET_THREAD_ID());
 

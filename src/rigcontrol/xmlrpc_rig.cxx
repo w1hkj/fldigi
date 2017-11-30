@@ -122,15 +122,6 @@ void xmlrpc_rig_set_qsy(long long rfc)
 //======================================================================
 
 //----------------------------------------------------------------------
-// To prevent a FLTK library thread deadlock on MacOSX
-//----------------------------------------------------------------------
-static void ptt_on_off_failure(void * ptt_flag)
-{
-    int flag = *((int *) ptt_flag);
-    fl_alert2("fldigi/flrig PTT %s failure", flag ? "ON" : "OFF");
-}
-
-//----------------------------------------------------------------------
 // push to talk
 //----------------------------------------------------------------------
 static bool wait_ptt = false; // wait for transceiver to respond
@@ -186,10 +177,7 @@ return;
 //std::cout << "rig.set_ptt timeout" << std::endl;
 
 	LOG_ERROR("fldigi/flrig PTT %s failure", new_ptt ? "ON" : "OFF");
-    // FLTK thread dead lock on MacOSX. Call in main thread.
-    // fl_alert2("fldigi/flrig PTT %s failure", new_ptt ? "ON" : "OFF");
     last_new_ptt = new_ptt;
-//    REQ(ptt_on_off_failure, (void *) &last_new_ptt);
 	new_ptt = -1;
 	return;
 }
