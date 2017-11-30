@@ -1299,6 +1299,10 @@ void xmtrcv_cb(Fl_Widget *w, void *vi)
 		}
 		else {
 			TransmitText->clear();
+			if (active_modem->get_mode() == MODE_FSQ && fsq_tx_text)
+				fsq_tx_text->clear();
+			else if (active_modem->get_mode() == MODE_IFKP && ifkp_tx_text)
+				ifkp_tx_text->clear();
 
 			if (arq_text_available)
 				AbortARQ();
