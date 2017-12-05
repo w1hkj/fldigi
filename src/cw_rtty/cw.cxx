@@ -1266,16 +1266,17 @@ int cw::tx_process()
 
 	c = get_tx_char();
 
+	if (c == GET_TX_CHAR_NODATA) {
+		Fl::awake();
+		MilliSleep(50);
+		return 0;
+	}
+
 	if (progStatus.WK_online) {
 		if (c == GET_TX_CHAR_ETX || stopflag) {
 			stopflag = false;
 			put_echo_char('\n');
 			return -1;
-		}
-		if (c == GET_TX_CHAR_NODATA) {
-			Fl::awake();
-			MilliSleep(50);
-			return 0;
 		}
 		if (WK_send_char(c)){
 			put_echo_char('\n');
@@ -1293,11 +1294,6 @@ int cw::tx_process()
 		}
 		put_echo_char('\n');
 		return -1;
-	}
-
-	if (c == GET_TX_CHAR_NODATA) {
-		MilliSleep(10);
-		return 0;
 	}
 
 	acc_symbols = 0;

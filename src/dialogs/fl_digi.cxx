@@ -9299,7 +9299,6 @@ int get_tx_char(void)
 	}
 
 	if (c == -1) {
-		queue_reset();
 		return(GET_TX_CHAR_NODATA);
 	}
 
