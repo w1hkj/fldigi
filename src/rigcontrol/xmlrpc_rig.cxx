@@ -193,7 +193,7 @@ void xmlrpc_rig_show_ptt(void *data)
 {
 	guard_lock flrig_lock(&mutex_flrig_ptt);
 	int on = reinterpret_cast<long>(data);
-	if (wf) {
+	if (wf && (trx_state != STATE_TUNE)) {
 		wf->xmtrcv->value(on);
 		wf->xmtrcv->do_callback();
 	}
