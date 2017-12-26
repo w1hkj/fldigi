@@ -71,6 +71,7 @@ Italiano    Italian      Pierfrancesco Caci  IK5PVX\n\
 Język       Polish       Roman Bagiński      SP4JEU\n\
 Nederlands  Dutch        Peter van der Post  PA1POS\n\
 Pусский     Russian      Alexandr Kalugin    RX9CDR\n\
+Ελληνικά    Greek        Haris Andrianos     SV1GRB\n\
 </pre>\
 </body>\n\
 </html>\n\
