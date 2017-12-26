@@ -2294,7 +2294,16 @@
              2000.0)                                                                    \
         ELEM_(double, fftviewer_frng, "fftviewer_frng",                                 \
              "Frequency scan range in Hertz",                                           \
-             4000.0)
+             4000.0)                                                                    \
+        ELEM_(int, wf_spectrum_range, "wf_spectrum_range",                              \
+             "Initial spectrum range = N x modem bandwidth",                            \
+             10)                                                                        \
+        ELEM_(bool, wf_spectrum_center, "wf_spectrum_center",                           \
+             "left click on waterfall transfers to spectrum center",                    \
+             true)                                                                      \
+        ELEM_(bool, wf_spectrum_dbvals, "wf_spectrum_dbvals",                           \
+             "use waterfall db range and offset values for spectrum scope",             \
+             true)
 
 // declare the struct
 #define ELEM_DECLARE_CONFIGURATION(type_, var_, tag_, ...) type_ var_;

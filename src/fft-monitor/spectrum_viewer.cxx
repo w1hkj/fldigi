@@ -28,6 +28,8 @@
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Box.H>
 
+#include <iostream>
+
 #include "configuration.h"
 #include "status.h"
 
@@ -120,30 +122,50 @@ void cb_pause_button(Fl_Button *b, void *d)
 
 void cb_fftviewer_goto(Fl_Button *b, void *d)
 {
-	int fc = active_modem->get_freq();
-	int fr = 10 * active_modem->get_bandwidth();
+	if (progdefaults.wf_spectrum_center) {
+		progdefaults.fftviewer_fcenter = active_modem->get_freq();
+		int range = int(active_modem->get_bandwidth()  * progdefaults.wf_spectrum_range);
+		if (range > 4000) range = 4000;
+		progdefaults.fftviewer_frng = range;
 
-	int rem = 0;
+		fftviewer_frng->value(range);
+		fftviewer_frng->redraw();
+		fftviewer_fcenter->value(progdefaults.fftviewer_fcenter);
+		fftviewer_fcenter->redraw();
+	} else {
+		int fc = active_modem->get_freq();
+		int fr = 10 * active_modem->get_bandwidth();
+		int rem = 0;
 
-	if (fc < 100) fc = 100;
+		if (fc < 100) fc = 100;
+		if (fr < 200) fr = 200;
+		if (fc + fr/2 > 4000) fr = (4000 - fc)/2;
+		if (fc < fr/2) fr = fc * 2;
+		rem = fr % 20;
+		fr /= 20;
+		if (rem >= 10) fr = fr + 1;
+		fr *= 20;
+		if (fr > 4000) fr = 4000;
 
-	if (fr < 200) fr = 200;
-	if (fc + fr/2 > 4000) fr = (4000 - fc)/2;
-	if (fc < fr/2) fr = fc * 2;
-	rem = fr % 20;
-	fr /= 20;
-	if (rem >= 10) fr = fr + 1;
-	fr *= 20;
-	if (fr > 4000) fr = 4000;
+		progdefaults.fftviewer_frng = fr;
+		progdefaults.fftviewer_fcenter = fc;
 
-	progdefaults.fftviewer_frng = fr;
-	progdefaults.fftviewer_fcenter = fc;
+		fftviewer_fcenter->value(fc);
+		fftviewer_fcenter->redraw();
 
-	fftviewer_fcenter->value(fc);
-	fftviewer_fcenter->redraw();
+		fftviewer_frng->value(fr);
+		fftviewer_frng->redraw();
+	}
 
-	fftviewer_frng->value(fr);
-	fftviewer_frng->redraw();
+	if (progdefaults.wf_spectrum_dbvals) {
+		progdefaults.fftviewer_range = progdefaults.wfAmpSpan;
+		progdefaults.fftviewer_maxdb = progdefaults.wfRefLevel;
+		fftviewer_maxdb->value(progdefaults.fftviewer_maxdb);
+		fftviewer_maxdb->redraw();
+		fftviewer_range->value(progdefaults.fftviewer_range);
+		fftviewer_range->redraw();
+	}
+
 }
 
 void cb_spectrum_viewer(Fl_Double_Window *w, void *)
@@ -379,7 +401,26 @@ void open_spectrum_viewer()
 {
 	if (!spectrum_viewer) create_spectrum_viewer();
 
+	int fr = active_modem->get_freq();
 	if (!fft_modem) fft_modem = new fftmon();
+	active_modem->set_freq(fr);
+
+	progdefaults.fftviewer_fcenter = fr;
+	int range = int(active_modem->get_bandwidth()  * progdefaults.wf_spectrum_range);
+	if (range > 4000) range = 4000;
+	progdefaults.fftviewer_frng = range;
+
+	fftviewer_frng->value(range);
+	fftviewer_frng->redraw();
+	fftviewer_fcenter->value(progdefaults.fftviewer_fcenter);
+	fftviewer_fcenter->redraw();
+
+	progdefaults.fftviewer_range = progdefaults.wfAmpSpan;
+	progdefaults.fftviewer_maxdb = progdefaults.wfRefLevel;
+	fftviewer_maxdb->value(progdefaults.fftviewer_maxdb);
+	fftviewer_maxdb->redraw();
+	fftviewer_range->value(progdefaults.fftviewer_range);
+	fftviewer_range->redraw();
 
 	spectrum_viewer->show();
 	spectrum_viewer->resize(progStatus.svX, progStatus.svY, progStatus.svW, progStatus.svH);
@@ -399,3 +440,55 @@ void close_spectrum_viewer()
 	}
 }
 
+void recenter_spectrum_viewer()
+{
+	if (!spectrum_viewer) return;
+	if (!spectrum_viewer->visible()) return;
+	if (!progdefaults.wf_spectrum_center) return;
+
+	if (progdefaults.wf_spectrum_center) {
+		progdefaults.fftviewer_fcenter = active_modem->get_freq();
+		int range = int(active_modem->get_bandwidth()  * progdefaults.wf_spectrum_range);
+		if (range > 4000) range = 4000;
+		progdefaults.fftviewer_frng = range;
+
+		fftviewer_frng->value(range);
+		fftviewer_frng->redraw();
+		fftviewer_fcenter->value(progdefaults.fftviewer_fcenter);
+		fftviewer_fcenter->redraw();
+	} else {
+		int fc = active_modem->get_freq();
+		int fr = 10 * active_modem->get_bandwidth();
+		int rem = 0;
+
+		if (fc < 100) fc = 100;
+		if (fr < 200) fr = 200;
+		if (fc + fr/2 > 4000) fr = (4000 - fc)/2;
+		if (fc < fr/2) fr = fc * 2;
+		rem = fr % 20;
+		fr /= 20;
+		if (rem >= 10) fr = fr + 1;
+		fr *= 20;
+		if (fr > 4000) fr = 4000;
+
+		progdefaults.fftviewer_frng = fr;
+		progdefaults.fftviewer_fcenter = fc;
+
+		fftviewer_fcenter->value(fc);
+		fftviewer_fcenter->redraw();
+
+		fftviewer_frng->value(fr);
+		fftviewer_frng->redraw();
+	}
+
+	if (progdefaults.wf_spectrum_dbvals) {
+		progdefaults.fftviewer_range = progdefaults.wfAmpSpan;
+		progdefaults.fftviewer_maxdb = progdefaults.wfRefLevel;
+		fftviewer_maxdb->value(progdefaults.fftviewer_maxdb);
+		fftviewer_maxdb->redraw();
+		fftviewer_range->value(progdefaults.fftviewer_range);
+		fftviewer_range->redraw();
+	}
+
+	spectrum_viewer->redraw();
+}

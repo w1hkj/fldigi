@@ -42,6 +42,7 @@ extern Fl_Double_Window	*spectrum_viewer;
 
 extern void open_spectrum_viewer();
 extern void close_spectrum_viewer();
+extern void recenter_spectrum_viewer();
 
 #endif
 

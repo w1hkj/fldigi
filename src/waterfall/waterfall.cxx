@@ -2060,6 +2060,8 @@ int WFdisp::handle(int event)
 			oldcarrier = newcarrier;
 			if (eb != FL_LEFT_MOUSE || !ReceiveText->visible())
 				break;
+			if (eb == FL_LEFT_MOUSE)
+				recenter_spectrum_viewer();
 			if (!(Fl::event_state() & (FL_CTRL | FL_META | FL_ALT | FL_SHIFT))) {
 				if (Fl::event_clicks() == 1)
 					note_qrg(true, "\n", "\n");

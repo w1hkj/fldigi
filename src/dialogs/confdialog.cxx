@@ -2881,6 +2881,26 @@ static void cb_listboxWaterfallWheelAction(Fl_ListBox* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnWFspectrum_center=(Fl_Check_Button *)0;
+
+static void cb_btnWFspectrum_center(Fl_Check_Button* o, void*) {
+  progdefaults.wf_spectrum_center = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Spinner *wfl_spectrum_range=(Fl_Spinner *)0;
+
+static void cb_wfl_spectrum_range(Fl_Spinner* o, void*) {
+  progdefaults.wf_spectrum_range = o->value();
+}
+
+Fl_Check_Button *btnWFspectrum_dbvals=(Fl_Check_Button *)0;
+
+static void cb_btnWFspectrum_dbvals(Fl_Check_Button* o, void*) {
+  progdefaults.wf_spectrum_dbvals = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *tabModems=(Fl_Group *)0;
 
 Fl_Tabs *tabsModems=(Fl_Tabs *)0;
@@ -9627,27 +9647,27 @@ i on a\ntouch screen device such as a tablet."));
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Mouse"));
             o->hide();
-            { Fl_Group* o = new Fl_Group(55, 73, 490, 170);
+            { Fl_Group* o = new Fl_Group(10, 60, 580, 170);
               o->box(FL_ENGRAVED_FRAME);
-              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(65, 87, 340, 20, _("Left or right click always replays audio history"));
+              { Fl_Check_Button* o = btnWaterfallHistoryDefault = new Fl_Check_Button(65, 75, 340, 20, _("Left or right click always replays audio history"));
                 btnWaterfallHistoryDefault->tooltip(_("Replay trackline audio"));
                 btnWaterfallHistoryDefault->down_box(FL_DOWN_BOX);
                 btnWaterfallHistoryDefault->callback((Fl_Callback*)cb_btnWaterfallHistoryDefault);
                 o->value(progdefaults.WaterfallHistoryDefault);
               } // Fl_Check_Button* btnWaterfallHistoryDefault
-              { Fl_Check_Button* o = btnWaterfallQSY = new Fl_Check_Button(65, 117, 380, 20, _("Dragging on the waterfall scale changes frequency"));
+              { Fl_Check_Button* o = btnWaterfallQSY = new Fl_Check_Button(65, 105, 380, 20, _("Dragging on the waterfall scale changes frequency"));
                 btnWaterfallQSY->tooltip(_("Enable drag cursor on waterfall scale"));
                 btnWaterfallQSY->down_box(FL_DOWN_BOX);
                 btnWaterfallQSY->callback((Fl_Callback*)cb_btnWaterfallQSY);
                 o->value(progdefaults.WaterfallQSY);
               } // Fl_Check_Button* btnWaterfallQSY
-              { Fl_Check_Button* o = btnWaterfallClickInsert = new Fl_Check_Button(65, 159, 225, 20, _("Insert text on single left click"));
+              { Fl_Check_Button* o = btnWaterfallClickInsert = new Fl_Check_Button(65, 147, 225, 20, _("Insert text on single left click"));
                 btnWaterfallClickInsert->tooltip(_("Insert special text in Rx panel\nwhen waterfall clicked"));
                 btnWaterfallClickInsert->down_box(FL_DOWN_BOX);
                 btnWaterfallClickInsert->callback((Fl_Callback*)cb_btnWaterfallClickInsert);
                 o->value(progdefaults.WaterfallClickInsert);
               } // Fl_Check_Button* btnWaterfallClickInsert
-              { inpWaterfallClickText = new Fl_Input2(351, 147, 180, 50);
+              { inpWaterfallClickText = new Fl_Input2(351, 135, 180, 50);
                 inpWaterfallClickText->tooltip(_("The string <FREQ> is replaced with\nthe current modem and frequency"));
                 inpWaterfallClickText->box(FL_DOWN_BOX);
                 inpWaterfallClickText->color(FL_BACKGROUND2_COLOR);
@@ -9662,7 +9682,7 @@ i on a\ntouch screen device such as a tablet."));
               } // Fl_Input2* inpWaterfallClickText
               o->end();
             } // Fl_Group* o
-            { Fl_ListBox* o = listboxWaterfallWheelAction = new Fl_ListBox(65, 207, 150, 22, _("Wheel action"));
+            { Fl_ListBox* o = listboxWaterfallWheelAction = new Fl_ListBox(65, 195, 150, 22, _("Wheel action"));
               listboxWaterfallWheelAction->tooltip(_("Select how the mouse wheel\nbehaves inside the waterfall"));
               listboxWaterfallWheelAction->box(FL_DOWN_BOX);
               listboxWaterfallWheelAction->color(FL_BACKGROUND2_COLOR);
@@ -9677,6 +9697,32 @@ i on a\ntouch screen device such as a tablet."));
               o->labelsize(FL_NORMAL_SIZE);
               listboxWaterfallWheelAction->end();
             } // Fl_ListBox* listboxWaterfallWheelAction
+            { Fl_Group* o = new Fl_Group(10, 233, 580, 150, _("Spectrum Scope / Waterfall interaction"));
+              o->box(FL_ENGRAVED_BOX);
+              o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
+              { Fl_Check_Button* o = btnWFspectrum_center = new Fl_Check_Button(65, 265, 340, 20, _("left click transfers frequency to scope center frequency"));
+                btnWFspectrum_center->tooltip(_("left click on WF recenters spectrum scope"));
+                btnWFspectrum_center->down_box(FL_DOWN_BOX);
+                btnWFspectrum_center->callback((Fl_Callback*)cb_btnWFspectrum_center);
+                o->value(progdefaults.wf_spectrum_center);
+              } // Fl_Check_Button* btnWFspectrum_center
+              { Fl_Spinner* o = wfl_spectrum_range = new Fl_Spinner(65, 300, 50, 24, _("left click spectrum range *= mode bandwidth"));
+                wfl_spectrum_range->tooltip(_("Initial spectrum range is NN times the modem bw"));
+                wfl_spectrum_range->minimum(2);
+                wfl_spectrum_range->maximum(20);
+                wfl_spectrum_range->value(10);
+                wfl_spectrum_range->callback((Fl_Callback*)cb_wfl_spectrum_range);
+                wfl_spectrum_range->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.wf_spectrum_range);
+              } // Fl_Spinner* wfl_spectrum_range
+              { Fl_Check_Button* o = btnWFspectrum_dbvals = new Fl_Check_Button(65, 340, 340, 20, _("use waterfall range/limit values"));
+                btnWFspectrum_dbvals->tooltip(_("values left/below waterfall"));
+                btnWFspectrum_dbvals->down_box(FL_DOWN_BOX);
+                btnWFspectrum_dbvals->callback((Fl_Callback*)cb_btnWFspectrum_dbvals);
+                o->value(progdefaults.wf_spectrum_dbvals);
+              } // Fl_Check_Button* btnWFspectrum_dbvals
+              o->end();
+            } // Fl_Group* o
             o->end();
           } // Fl_Group* o
           tabsWaterfall->end();

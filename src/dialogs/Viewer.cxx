@@ -43,6 +43,7 @@
 
 #include "psk_browser.h"
 #include "view_rtty.h"
+#include "spectrum_viewer.h"
 
 extern pskBrowser *mainViewer;
 
@@ -219,6 +220,7 @@ static void cb_brwsViewer(Fl_Hold_Browser*, void*) {
 				ReceiveText->addstr(brwsViewer->line(sel).c_str(), FTextBase::ALTR);
 			}
 			active_modem->set_freq(brwsViewer->freq(sel));
+			recenter_spectrum_viewer();
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (mainViewer)
 				mainViewer->select(sel);

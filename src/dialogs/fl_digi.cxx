@@ -4910,7 +4910,7 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(_("DX Cluster")), 'd', (Fl_Callback*)cb_dxc_viewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Floating scope"), utilities_system_monitor_icon), 'f', (Fl_Callback*)cb_mnuDigiscope, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Spectrum dialog"), utilities_system_monitor_icon), 's', (Fl_Callback*)cb_mnuSpectrum, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Spectrum scope"), utilities_system_monitor_icon), 's', (Fl_Callback*)cb_mnuSpectrum, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(MFSK_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuPicViewer, 0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(THOR_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)cb_mnuThorViewRaw,0, FL_MENU_INACTIVE, _FL_MULTI_LABEL, 0, 14, 0},
@@ -5579,6 +5579,7 @@ static void cb_mainViewer(Fl_Hold_Browser*, void*) {
 				ReceiveText->addstr(mainViewer->line(sel), FTextBase::ALTR);
 			}
 			active_modem->set_freq(mainViewer->freq(sel));
+			recenter_spectrum_viewer();
 			active_modem->set_sigsearch(SIGSEARCH);
 			if (brwsViewer) brwsViewer->select(sel);
 		} else
@@ -8173,7 +8174,7 @@ static Fl_Menu_Item alt_menu_[] = {
 { icons::make_icon_label(WEFAX_TX_IMAGE_MLABEL, image_icon), 0, (Fl_Callback*)wefax_pic::cb_mnu_pic_viewer_tx,0, FL_MENU_INACTIVE | FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { icons::make_icon_label(_("Signal Browser")), 0, (Fl_Callback*)cb_mnuViewer, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Spectrum dialog")), 0, (Fl_Callback*)cb_mnuSpectrum, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Spectrum scope")), 0, (Fl_Callback*)cb_mnuSpectrum, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { DOCKEDSCOPE_MLABEL, 0, (Fl_Callback*)cb_mnuAltDockedscope, 0, FL_MENU_TOGGLE, FL_NORMAL_LABEL, 0, 14, 0},
 {0,0,0,0,0,0,0,0,0},
