@@ -16,7 +16,7 @@ domain audio stream is converted to the frequency domain using a Fast
 Fourier Transform, FFT.  The FFT uses a snapshot of 8192 audio samples obtained
 from a sliding window.  At any instance in time the FFT is computed from the
 immediate past 8192 samples.  A 8192 sample set in the time domain results in
-a 4096 set of complex values in the frequency domain.
+a set of 4096 complex values in the frequency domain.
 <br>
 
 The fldigi modems use a sampling rate of 8000, 11025, 12000 and 16000 
@@ -145,6 +145,27 @@ decoration "X" button.
 
 This illustrates using the Spectrum Viewer to view and evaluate a transceiver filter.
 This is 40 meter noise on an IC-7200 with the filter set to 3000 Hertz.
+
+\section wf_interaction Interaction with waterfall
+
+The spectrum scope view and the waterfall tracking point can be coordinated in one of
+two ways
+<ul>
+<li>Pressing the "Goto" button the Spectrum Scope dialog</li>
+<li>Normal left-click selection of a waterfall signal.</li>
+</ul>
+In either case the waterfall tracking point will become the new center of the
+spectrum display and the width a multiple of the current mode bandwidth.  You
+can configure the waterfall interaction on the Waterfall/Mouse configuration
+tab.
+\image html spectrum-scope-wf-config.png ""
+\image latex spectrum-scope-wf-config.png "" width=5.0in
+<ul>
+<li>select "left click transfers..." to enable the waterfall left-click / scope interaction.</li>
+<li>set the multiplier factor for the initial Spectrum Scope frequency range.</li>
+<li>select "use waterfall range/limit values" to set the Spectrum Scope
+dB Range and upper dB initial values.</li>
+</ul>
 
 \section csv_file CSV file usage
 

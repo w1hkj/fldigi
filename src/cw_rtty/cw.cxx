@@ -1267,6 +1267,16 @@ int cw::tx_process()
 	c = get_tx_char();
 
 	if (c == GET_TX_CHAR_NODATA) {
+		if (stopflag) {
+			stopflag = false;
+			if (progdefaults.CW_bpf_on) { // flush the transmit bandpass filter
+				int n = cw_xmt_filter->flush_size();
+				for (int i = 0; i < n; i++) outbuf[i] = 0;
+				nb_filter(outbuf, outbuf, n);
+			}
+			put_echo_char('\n');
+			return -1;
+		}
 		Fl::awake();
 		MilliSleep(50);
 		return 0;
