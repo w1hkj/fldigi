@@ -1,8 +1,24 @@
 
 
-=Version 4.0.12=
+=Version 4.0.13=
 
-2017-10-25  David Freese  <w1hkj@bellsouth.net>
+2017-12-26  David Freese  <w1hkj@bellsouth.net>
+
+	4c5c168: Language Translation
+	13ef81d: cw t/r - doc update
+	c4099e1: Spectrum Analyzer
+	2e7f681: TS990 tune feedback
+	43cc1b2: OS X CW
+	8d156c6: FSQ/IFKP clear tx panel
+	f62c96a: deadman
+	80f52a8: Image transmit
+	fb4797b: flrig race
+	1b01276: CW Sweepstakes
+	5ef93f4: CW no tx char
+	a044193: timeops
+
+
+=Version 4.0.12=
 
 	abb522d: Farnsworth timing
 	408a01b: PSK sinc filter
