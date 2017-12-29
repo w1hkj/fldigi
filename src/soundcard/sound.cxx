@@ -1563,23 +1563,23 @@ void SoundPort::src_data_reset(unsigned dir)
 	if (dir == 0) {
 		if (rx_src_state)
 			src_delete(rx_src_state);
-			rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
-											sd[0].params.channelCount, &err, &sd[0]);
-			if (!rx_src_state) {
-				pa_perror(err, src_strerror(err));
-				throw SndException(src_strerror(err));
-			}
-			sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
+		rx_src_state = src_callback_new(src_read_cb, progdefaults.sample_converter,
+										sd[0].params.channelCount, &err, &sd[0]);
+		if (!rx_src_state) {
+			pa_perror(err, src_strerror(err));
+			throw SndException(src_strerror(err));
+		}
+		sd[0].src_ratio = req_sample_rate / (sd[0].dev_sample_rate * (1.0 + rxppm / 1e6));
 	}
 	else if (dir == 1) {
 		if (tx_src_state)
 			src_delete(tx_src_state);
-			tx_src_state = src_new(progdefaults.sample_converter, sd[1].params.channelCount, &err);
-			if (!tx_src_state) {
-				pa_perror(err, src_strerror(err));
-				throw SndException(src_strerror(err));
-			}
-			tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
+		tx_src_state = src_new(progdefaults.sample_converter, sd[1].params.channelCount, &err);
+		if (!tx_src_state) {
+			pa_perror(err, src_strerror(err));
+			throw SndException(src_strerror(err));
+		}
+		tx_src_data->src_ratio = sd[1].dev_sample_rate * (1.0 + txppm / 1e6) / req_sample_rate;
 	}
 
 	rbsize = 2 * MAX(ceil2(
@@ -1640,7 +1640,7 @@ void SoundPort::init_stream(unsigned dir)
 
 	if ((sd[dir].idev = name_to_device(sd[dir].device, dir)) != devs.end())
 		idx = sd[dir].idev - devs.begin();
-		if (idx == paNoDevice) { // no match
+	if (idx == paNoDevice) { // no match
 		LOG_ERROR("Could not find device \"%s\", using default device", sd[dir].device.c_str());
 		PaDeviceIndex def = (dir == 0 ? Pa_GetDefaultInputDevice() : Pa_GetDefaultOutputDevice());
 		if (def == paNoDevice) {
@@ -1649,7 +1649,7 @@ void SoundPort::init_stream(unsigned dir)
 		}
 		sd[dir].idev = devs.begin() + def;
 		idx = def;
-		}
+	}
 	else if (sd[dir].idev == devs.end()) // if we only found a near-match point the idev iterator to it
 		sd[dir].idev = devs.begin() + idx;
 
