@@ -18,7 +18,7 @@ it begins execution
 <li>fllog - fldigi compatible log server for multiple clients</li>
 <li>Prog 1..3 - user selectable programs</li>
 </ul>
-\section program_selection Program Selection
+\section autostart_program_selection Program Selection
 The location of each autostart program must be identified and entered into
 the respective text control.  Use the \"Locate\" button to open a file browser.
 Select the executable and the full pathname to that file will be
@@ -35,11 +35,56 @@ OS X             |/Applications/flrig-1.3.31.app
 <br>
 On OS X you simply drag the application icon (in the Applications folder) to
 the respective text control.
+<br>
+The OS X "app" paradigm embeds the actual "unix binary" within the structure
+of the app directory (folder), i.e.
+<ul>
+<li>/Applications/flmsg.app</li>
+<li>/Applications/flmsg.app/flmsg-4.0.3/Contents/MacOS/flmsg</li>
+</ul>
+Either the 1st or 2nd can be entered into the autostart control.  If  the
+first then fldigi will search for the unix binary pathname within the 
+construct of the app directory.
+<center>
+\image html autostart-osx.png ""
+\image latex autostart-osx.png "" width=6.0in
+</center>
+Prog 1:, Prog2:, and Prog3: will all start the correct application when 
+pressing the respective Test button.  Note that the unix binary for 
+flcluster is tagged with the name "exec" in the Finder.  Prog 1 uses the 
+system "open" to start Athena, the logbook program associated with the 
+lgbkdb extension.<br>
+<br>
+If the /*.app/*/Contents/MacOS/ folder has more than one file and both 
+are tagged as "exec" then fldigi may not reference the correct one.  
+In that case it is necessary to use the second format.<br>
+<br>
+Drag the "app" icon to the control and the 1st entry results.  Drag the 
+"exec" icon to the control and 2nd entry results.<br>
+<br>
+You must become conversant with the Unix directory system if you are 
+working from within the context of an OS X terminal window.  Open a 
+terminal window and enter<br>
+<br>
+echo $PATH<br>
+<br>
+at the command line prompt.  The terminal shell program should respond with:<br>
+<br>
+/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:<br>
+<br>
+which is the order in which directories will be searched to find a terminal 
+reference binary.  The OS X terminal shell program does NOT search the app
+folders for an executable.  If you want to execute an app exec binary from
+the terminal window it is necessary to enter the full Unix pathname to that
+executable, i.e.<br>
+<br>
+/Applications/fldigi-4.0.13/Contents/MacOS/fldigi
+
 \section autostart_test Testing-Enabling
 You can test, or manually start each of the autostart programs using the
 respective \"Test\" button.  If the desired application launches correctly you
 can check the Enable box for that application to have it launch when starting
-fldigi.
+fldigi.<br>
 <br>
 \ref autostart_configuration_page "Return to Top of Page"
 <br>

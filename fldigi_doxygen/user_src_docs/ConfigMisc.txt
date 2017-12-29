@@ -132,11 +132,14 @@ select the flmsg.exe file. The entry box will be correctly
 populated.</li>
 
 <li>OS X - a file browser is opened to the "Applications"
-folder. Locate the flmsg icon, and right click on it.
-Select "Show Package Contents". Double click "Contents".
+folder. Locate the flmsg icon.  Then drag and drop that icon on to the
+"flmsg:" entry control.  You may also right click on the application icon,
+and select "Show Package Contents". Double click "Contents".
 Double click on "MacOS". You will be viewing an icon labeled
-"flmsg". Drag and drop the icon on to the "flmsg:" entry box and
-the the value will be correctly entered.</li>
+"exec". Drag and drop the icon on to the "flmsg:" entry box and
+the the value will be correctly entered.  Either should correctly launch
+the flmsg application.  See \ref config_autostart "Autostart configuration".
+</li>
 </ul>
 
 \section subsec_dtmf_decoding DTMF decoding
