@@ -429,15 +429,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {553 70 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {536 535 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 605 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open selected
-        xywh {0 25 600 365} when 1
+        callback {progdefaults.changed = true;} open
+        xywh {0 25 600 365} when 1 hide
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3058,7 +3058,7 @@ UI_select();}
         } {
           Fl_Group {} {
             label Display open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Group {} {
               label {Colors and cursors} open
@@ -3422,39 +3422,52 @@ progdefaults.changed = true;}
 the current modem and frequency} xywh {351 135 180 50} align 8
                 class Fl_Input2
               }
-            }
-            Fl_Group listboxWaterfallWheelAction {
-              label {Wheel action}
-              callback {progdefaults.WaterfallWheelAction = o->index();
+              Fl_Group listboxWaterfallWheelAction {
+                label {Wheel action}
+                callback {progdefaults.WaterfallWheelAction = o->index();
 progdefaults.changed = true;} open
-              tooltip {Select how the mouse wheel
-behaves inside the waterfall} xywh {65 195 150 22} box DOWN_BOX color 7 align 8
-              code0 {o->labelsize(FL_NORMAL_SIZE);}
-              class Fl_ListBox
-            } {}
+                tooltip {Select how the mouse wheel
+behaves inside the waterfall} xywh {65 188 150 22} box DOWN_BOX color 7 align 8
+                code0 {o->labelsize(FL_NORMAL_SIZE);}
+                class Fl_ListBox
+              } {}
+            }
+          }
+          Fl_Group {} {
+            label Spectrum open
+            xywh {0 50 600 340}
+          } {
             Fl_Group {} {
               label {Spectrum Scope / Waterfall interaction} open
-              xywh {10 233 580 150} box ENGRAVED_BOX align 17
+              xywh {10 65 580 150} box ENGRAVED_BOX align 17
             } {
               Fl_Check_Button btnWFspectrum_center {
                 label {left click transfers frequency to scope center frequency}
                 callback {progdefaults.wf_spectrum_center = o->value();
 progdefaults.changed = true;}
-                tooltip {left click on WF recenters spectrum scope} xywh {65 265 340 20} down_box DOWN_BOX
+                tooltip {left click on WF recenters spectrum scope} xywh {75 107 365 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wf_spectrum_center);}
-              }
-              Fl_Spinner wfl_spectrum_range {
-                label {left click spectrum range *= mode bandwidth}
-                callback {progdefaults.wf_spectrum_range = o->value();}
-                tooltip {Initial spectrum range is NN times the modem bw} xywh {65 300 50 24} align 8 minimum 2 maximum 20 value 10
-                code0 {o->value(progdefaults.wf_spectrum_range);}
               }
               Fl_Check_Button btnWFspectrum_dbvals {
                 label {use waterfall range/limit values}
                 callback {progdefaults.wf_spectrum_dbvals = o->value();
 progdefaults.changed = true;}
-                tooltip {values left/below waterfall} xywh {65 340 340 20} down_box DOWN_BOX
+                tooltip {values left/below waterfall} xywh {75 138 221 20} down_box DOWN_BOX
                 code0 {o->value(progdefaults.wf_spectrum_dbvals);}
+              }
+              Fl_Counter cntr_spectrum_freq_scale {
+                label {freq scale = N * modem bandwidth}
+                callback {progdefaults.wf_spectrum_scale_factor = o->value();
+progdefaults.changed = true;}
+                xywh {75 170 75 20} type Simple align 8 minimum 1 maximum 10 step 1 value 5
+                code0 {o->value(progdefaults.wf_spectrum_scale_factor);}
+              }
+              Fl_Check_Button btn_spectrum_modem_scale {
+                label use
+                callback {progdefaults.wf_spectrum_modem_scale = o->value();
+progdefaults.changed = true;}
+                tooltip {scale spectrum display linked to modem bandwidth} xywh {385 170 55 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.wf_spectrum_modem_scale);}
               }
             }
           }
@@ -6896,7 +6909,7 @@ progdefaults.changed=true;}
       }
       Fl_Group tabSoundCard {
         label Audio open
-        xywh {0 25 600 365} hide
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 600 365} selection_color 50
@@ -6998,7 +7011,7 @@ resetSoundCard();}
             }
           }
           Fl_Group tabAudioOpt {
-            label Settings
+            label Settings open
             xywh {0 50 600 340} hide
           } {
             Fl_Group grpAudioSampleRate {
@@ -9506,7 +9519,7 @@ progdefaults.changed = true;}
     }
     Fl_Button btnSaveConfig {
       label Save
-      callback {progdefaults.saveDefaults();}
+      callback {progdefaults.saveDefaults();} selected
       xywh {330 394 130 22}
     }
     Fl_Return_Button btnCloseConfig {

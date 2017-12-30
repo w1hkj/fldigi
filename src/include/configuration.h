@@ -139,10 +139,10 @@
                                                                                         \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
               "Waterfall reference level (dB)",                                         \
-              -20.0)                                                                    \
+              0.0)                                                                      \
         ELEM_(double, wfAmpSpan, "WFAMPSPAN",                                           \
               "Waterfall amplitude span (dB)",                                          \
-              70.0)                                                                     \
+              60.0)                                                                     \
         ELEM_(bool, WF_UIrev, "WF_UIREV",                                               \
               "WF_UI - enable reverse button",                                          \
               false)                                                                    \
@@ -1404,6 +1404,10 @@
         ELEM_(int, PTT_off_delay, "PTTOFFDELAY",                                        \
               "End of transmit delay before disabling PTT",                             \
               0)                                                                        \
+        ELEM_(double, rx_gain, "RX_GAIN",                                               \
+              "gain factor to compensate for low level output on USB A/D in dB\n"       \
+              "minimum -10.0, maximum + 10.0",                                          \
+              0.0)                                                                      \
         /* Contest controls and Logbook */                                              \
         ELEM_(std::string, logbookfilename, "LOGBOOKFILENAME",                          \
               "Logbook file name",                                                      \
@@ -2296,11 +2300,17 @@
              "Frequency scan range in Hertz",                                           \
              4000.0)                                                                    \
         ELEM_(int, wf_spectrum_range, "wf_spectrum_range",                              \
-             "Initial spectrum range = N x modem bandwidth",                            \
-             10)                                                                        \
+             "Initial spectrum range",                                                  \
+             500)                                                                       \
         ELEM_(bool, wf_spectrum_center, "wf_spectrum_center",                           \
              "left click on waterfall transfers to spectrum center",                    \
              true)                                                                      \
+        ELEM_(bool, wf_spectrum_modem_scale, "wf_spectrum_modem_scale",                 \
+             "scale spectrum display frequency linked to modem bandwidth",              \
+             true)                                                                      \
+        ELEM_(int, wf_spectrum_scale_factor, "spectrum_scale_factor",                   \
+             "scale factor for spectrum display linked to modem bandwidth",             \
+             5)                                                                         \
         ELEM_(bool, wf_spectrum_dbvals, "wf_spectrum_dbvals",                           \
              "use waterfall db range and offset values for spectrum scope",             \
              true)

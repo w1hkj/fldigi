@@ -105,12 +105,6 @@ public:
 	double Ampspan() {
 		return ampspan;
 	}
-	void Reflevel(double RefLev) {
-		reflevel = (int)RefLev;
-	}
-	double Reflevel() {
-		return reflevel;
-	}
 	void Bandwidth (int bw) {
 		bandwidth = bw;
 		makeMarker();
@@ -195,7 +189,6 @@ private:
 	float	dispdec;
 	int 	ampspan;
     double  peakaudio;
-	int 	reflevel;
 	double	dfreq;
 	bool	centercarrier;
 	bool	cursormoved;
@@ -258,8 +251,7 @@ class waterfall: public Fl_Group {
 	friend void center_cb(Fl_Widget *w, void *v);
 	friend void carrier_cb(Fl_Widget *w, void *v);
 	friend void mode_cb(Fl_Widget *w, void *v);
-   friend void set_wf_mode(void);
-	friend void reflevel_cb(Fl_Widget *w, void *v);
+    friend void set_wf_mode(void);
 	friend void ampspan_cb(Fl_Widget *w, void *v);
 	friend void qsy_cb(Fl_Widget *w, void *v);
 	friend void rate_cb(Fl_Widget *w, void *v);
@@ -358,11 +350,9 @@ public:
 	Digiscope	*wfscope;
 
 private:
-	//bool		ishidden;
 	int			wf_dim;
-	//Fl_Box		*bezel;
 	WFdisp		*wfdisp;
-	Fl_Group	*rs1; //, *rs2, *hidden;
+	Fl_Group	*rs1;
 	Fl_Button	*mode;
 	Fl_Button	*x1;
 	Fl_Button	*left;

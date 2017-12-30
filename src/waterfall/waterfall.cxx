@@ -153,7 +153,7 @@ WFdisp::WFdisp (int x0, int y0, int w0, int h0, char *lbl) :
 	offset = 0;
 	sigoffset = 0;
 	ampspan = 75;
-	reflevel = -10;
+//	reflevel = -10;
 	initmaps();
 	bandwidth = 32;
 	RGBmarker = RGBred;
@@ -513,7 +513,7 @@ void WFdisp::setPrefilter(int v)
 
 int WFdisp::log2disp(int v)
 {
-	double val = 255.0 * (reflevel- v) / ampspan;
+	double val = -255.0 * v / ampspan;
 	if (val < 0) return 255;
 	if (val > 255 ) return 0;
 	return (int)(255 - val);
@@ -630,19 +630,22 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 	memmove((void*)circbuff,
 			(void*)(circbuff + len),
 			(size_t)((FFT_LEN - len)*sizeof(wf_fft_type)));
-	memcpy((void*)&circbuff[FFT_LEN-len],
-			(void*)sig,
-			(size_t)(len)*sizeof(double));
 
 	{
+		double gain = pow(10, progdefaults.wfRefLevel / -20.0);
 		overload = false;
 		double overval, peak = 0.0;
 		for (int i = 0; i < len; i++) {
 			overval = fabs(sig[i]);
+			sig[i] *= gain;
 			if (overval > peak) peak = overval;
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
+
+	memcpy((void*)&circbuff[FFT_LEN-len],
+			(void*)sig,
+			(size_t)(len)*sizeof(double));
 
 	if (mode == SCOPE)
 		process_analog(circbuff, FFT_LEN);
@@ -1361,13 +1364,10 @@ void set_wf_mode(void)
 
 	m = WCLAMP(m, WATERFALL, NUM_WF_MODES-1);
 
-	Fl_Widget* b[] = { wf->x1, wf->wfcarrier, wf->wfRefLevel, wf->wfAmpSpan };
-	for (size_t i = 0; i < sizeof(b)/sizeof(*b); i++) {
-		if (m == SCOPE)
-			b[i]->deactivate();
-		else
-			b[i]->activate();
-	}
+	if (m == SCOPE)
+		wf->x1->deactivate();
+	else
+		wf->x1->activate();
 
 	wf->wfdisp->Mode(static_cast<WFmode>(m));
 	wf->mode->label(names[m]);
@@ -1385,7 +1385,6 @@ void reflevel_cb(Fl_Widget *w, void *v) {
 	waterfall *wf = (waterfall *)w->parent();
 	double val = wf->wfRefLevel->value();
 	FL_UNLOCK_D();
-	wf->wfdisp->Reflevel(val);
 	progdefaults.wfRefLevel = val;
 	restoreFocus();
 }
@@ -1606,7 +1605,6 @@ long long waterfall::rfcarrier() {
 void waterfall::setRefLevel() {
 	FL_LOCK_D();
 	wfRefLevel->value(progdefaults.wfRefLevel);
-	wfdisp->Reflevel(progdefaults.wfRefLevel);
 	FL_UNLOCK_D();
 }
 
@@ -1648,7 +1646,7 @@ void waterfall::show_scope(bool on)
 waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	Fl_Group(x0,y0,w0,h0,lbl) {
 	int xpos;
-	float ratio;// = w0 < 600 ? w0 / 600.0 : 1.0;
+	float ratio;
 	ratio = w0 * 1.0 / bwdths;
 
 	wf_dim = h() - BTN_HEIGHT - 4;
@@ -1680,7 +1678,6 @@ waterfall::waterfall(int x0, int y0, int w0, int h0, char *lbl) :
 	wfRefLevel->precision(0);
 	wfRefLevel->range(-40.0, 0.0);
 	wfRefLevel->value(-20.0);
-	wfdisp->Reflevel(-20.0);
 	wfRefLevel->tooltip(_("Upper signal level (dB)"));
 	wfRefLevel->type(FL_SIMPLE_COUNTER);
 

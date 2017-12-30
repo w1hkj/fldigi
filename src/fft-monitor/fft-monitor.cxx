@@ -51,9 +51,12 @@ using namespace std;
 //extern Digiscope	*fftscope;
 //extern spectrum		*fftscope;
 
+#include "confdialog.h"
+
 extern Fl_Counter	*fftviewer_scans;
 extern Fl_Counter	*fftviewer_fcenter;
 extern Fl_Counter	*fftviewer_frng;
+
 extern Fl_Button	*pause_button;
 extern Fl_Box		*annunciator;
 
@@ -132,12 +135,10 @@ static double filebuff[LENdiv2];
 double goto_freq()
 {
 	int fc = fftscope->gofreq();
-	int fr = 10 * active_modem->get_bandwidth();
-
+	int fr = progdefaults.fftviewer_frng;
 	int rem = 0;
 
 	if (fc < 100) fc = 100;
-
 	if (fr < 200) fr = 200;
 	if (fc + fr/2 > 4000) fr = (4000 - fc)/2;
 	if (fc < fr/2) fr = fc * 2;

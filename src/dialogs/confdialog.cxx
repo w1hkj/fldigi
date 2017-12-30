@@ -2888,16 +2888,24 @@ static void cb_btnWFspectrum_center(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
-Fl_Spinner *wfl_spectrum_range=(Fl_Spinner *)0;
-
-static void cb_wfl_spectrum_range(Fl_Spinner* o, void*) {
-  progdefaults.wf_spectrum_range = o->value();
-}
-
 Fl_Check_Button *btnWFspectrum_dbvals=(Fl_Check_Button *)0;
 
 static void cb_btnWFspectrum_dbvals(Fl_Check_Button* o, void*) {
   progdefaults.wf_spectrum_dbvals = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Counter *cntr_spectrum_freq_scale=(Fl_Counter *)0;
+
+static void cb_cntr_spectrum_freq_scale(Fl_Counter* o, void*) {
+  progdefaults.wf_spectrum_scale_factor = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Check_Button *btn_spectrum_modem_scale=(Fl_Check_Button *)0;
+
+static void cb_btn_spectrum_modem_scale(Fl_Check_Button* o, void*) {
+  progdefaults.wf_spectrum_modem_scale = o->value();
 progdefaults.changed = true;
 }
 
@@ -7716,6 +7724,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9315,6 +9324,7 @@ i on a\ntouch screen device such as a tablet."));
           tabsWaterfall->color(FL_LIGHT1);
           tabsWaterfall->selection_color(FL_LIGHT1);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Display"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(50, 63, 496, 190, _("Colors and cursors"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9680,47 +9690,57 @@ i on a\ntouch screen device such as a tablet."));
                 inpWaterfallClickText->align(Fl_Align(FL_ALIGN_RIGHT));
                 inpWaterfallClickText->when(FL_WHEN_RELEASE);
               } // Fl_Input2* inpWaterfallClickText
+              { Fl_ListBox* o = listboxWaterfallWheelAction = new Fl_ListBox(65, 188, 150, 22, _("Wheel action"));
+                listboxWaterfallWheelAction->tooltip(_("Select how the mouse wheel\nbehaves inside the waterfall"));
+                listboxWaterfallWheelAction->box(FL_DOWN_BOX);
+                listboxWaterfallWheelAction->color(FL_BACKGROUND2_COLOR);
+                listboxWaterfallWheelAction->selection_color(FL_BACKGROUND_COLOR);
+                listboxWaterfallWheelAction->labeltype(FL_NORMAL_LABEL);
+                listboxWaterfallWheelAction->labelfont(0);
+                listboxWaterfallWheelAction->labelsize(14);
+                listboxWaterfallWheelAction->labelcolor(FL_FOREGROUND_COLOR);
+                listboxWaterfallWheelAction->callback((Fl_Callback*)cb_listboxWaterfallWheelAction);
+                listboxWaterfallWheelAction->align(Fl_Align(FL_ALIGN_RIGHT));
+                listboxWaterfallWheelAction->when(FL_WHEN_RELEASE);
+                o->labelsize(FL_NORMAL_SIZE);
+                listboxWaterfallWheelAction->end();
+              } // Fl_ListBox* listboxWaterfallWheelAction
               o->end();
             } // Fl_Group* o
-            { Fl_ListBox* o = listboxWaterfallWheelAction = new Fl_ListBox(65, 195, 150, 22, _("Wheel action"));
-              listboxWaterfallWheelAction->tooltip(_("Select how the mouse wheel\nbehaves inside the waterfall"));
-              listboxWaterfallWheelAction->box(FL_DOWN_BOX);
-              listboxWaterfallWheelAction->color(FL_BACKGROUND2_COLOR);
-              listboxWaterfallWheelAction->selection_color(FL_BACKGROUND_COLOR);
-              listboxWaterfallWheelAction->labeltype(FL_NORMAL_LABEL);
-              listboxWaterfallWheelAction->labelfont(0);
-              listboxWaterfallWheelAction->labelsize(14);
-              listboxWaterfallWheelAction->labelcolor(FL_FOREGROUND_COLOR);
-              listboxWaterfallWheelAction->callback((Fl_Callback*)cb_listboxWaterfallWheelAction);
-              listboxWaterfallWheelAction->align(Fl_Align(FL_ALIGN_RIGHT));
-              listboxWaterfallWheelAction->when(FL_WHEN_RELEASE);
-              o->labelsize(FL_NORMAL_SIZE);
-              listboxWaterfallWheelAction->end();
-            } // Fl_ListBox* listboxWaterfallWheelAction
-            { Fl_Group* o = new Fl_Group(10, 233, 580, 150, _("Spectrum Scope / Waterfall interaction"));
+            o->end();
+          } // Fl_Group* o
+          { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Spectrum"));
+            { Fl_Group* o = new Fl_Group(10, 65, 580, 150, _("Spectrum Scope / Waterfall interaction"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btnWFspectrum_center = new Fl_Check_Button(65, 265, 340, 20, _("left click transfers frequency to scope center frequency"));
+              { Fl_Check_Button* o = btnWFspectrum_center = new Fl_Check_Button(75, 107, 365, 20, _("left click transfers frequency to scope center frequency"));
                 btnWFspectrum_center->tooltip(_("left click on WF recenters spectrum scope"));
                 btnWFspectrum_center->down_box(FL_DOWN_BOX);
                 btnWFspectrum_center->callback((Fl_Callback*)cb_btnWFspectrum_center);
                 o->value(progdefaults.wf_spectrum_center);
               } // Fl_Check_Button* btnWFspectrum_center
-              { Fl_Spinner* o = wfl_spectrum_range = new Fl_Spinner(65, 300, 50, 24, _("left click spectrum range *= mode bandwidth"));
-                wfl_spectrum_range->tooltip(_("Initial spectrum range is NN times the modem bw"));
-                wfl_spectrum_range->minimum(2);
-                wfl_spectrum_range->maximum(20);
-                wfl_spectrum_range->value(10);
-                wfl_spectrum_range->callback((Fl_Callback*)cb_wfl_spectrum_range);
-                wfl_spectrum_range->align(Fl_Align(FL_ALIGN_RIGHT));
-                o->value(progdefaults.wf_spectrum_range);
-              } // Fl_Spinner* wfl_spectrum_range
-              { Fl_Check_Button* o = btnWFspectrum_dbvals = new Fl_Check_Button(65, 340, 340, 20, _("use waterfall range/limit values"));
+              { Fl_Check_Button* o = btnWFspectrum_dbvals = new Fl_Check_Button(75, 138, 221, 20, _("use waterfall range/limit values"));
                 btnWFspectrum_dbvals->tooltip(_("values left/below waterfall"));
                 btnWFspectrum_dbvals->down_box(FL_DOWN_BOX);
                 btnWFspectrum_dbvals->callback((Fl_Callback*)cb_btnWFspectrum_dbvals);
                 o->value(progdefaults.wf_spectrum_dbvals);
               } // Fl_Check_Button* btnWFspectrum_dbvals
+              { Fl_Counter* o = cntr_spectrum_freq_scale = new Fl_Counter(75, 170, 75, 20, _("freq scale = N * modem bandwidth"));
+                cntr_spectrum_freq_scale->type(1);
+                cntr_spectrum_freq_scale->minimum(1);
+                cntr_spectrum_freq_scale->maximum(10);
+                cntr_spectrum_freq_scale->step(1);
+                cntr_spectrum_freq_scale->value(5);
+                cntr_spectrum_freq_scale->callback((Fl_Callback*)cb_cntr_spectrum_freq_scale);
+                cntr_spectrum_freq_scale->align(Fl_Align(FL_ALIGN_RIGHT));
+                o->value(progdefaults.wf_spectrum_scale_factor);
+              } // Fl_Counter* cntr_spectrum_freq_scale
+              { Fl_Check_Button* o = btn_spectrum_modem_scale = new Fl_Check_Button(385, 170, 55, 20, _("use"));
+                btn_spectrum_modem_scale->tooltip(_("scale spectrum display linked to modem bandwidth"));
+                btn_spectrum_modem_scale->down_box(FL_DOWN_BOX);
+                btn_spectrum_modem_scale->callback((Fl_Callback*)cb_btn_spectrum_modem_scale);
+                o->value(progdefaults.wf_spectrum_modem_scale);
+              } // Fl_Check_Button* btn_spectrum_modem_scale
               o->end();
             } // Fl_Group* o
             o->end();
@@ -13047,7 +13067,6 @@ definition"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
-        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));
