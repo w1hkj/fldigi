@@ -167,7 +167,6 @@ private:
 	double k1;
 	double k2;
 	double k3;
-	bool isvalid;
 public:
 	goertzel(int n, double freq, double sr);
 	~goertzel();

@@ -188,6 +188,10 @@ void psk::rx_init()
 	if (Rxinlv) Rxinlv->flush();
 	if (Rxinlv2) Rxinlv2->flush();
 
+	for (int i = 0; i < NUM_FILTERS; i++) {
+		re_Gbin[i]->reset();
+		im_Gbin[i]->reset();
+	}
 }
 
 bool psk::viewer_mode()
@@ -232,11 +236,16 @@ psk::~psk()
 		if (fir1[i]) delete fir1[i];
 		if (fir2[i]) delete fir2[i];
 	}
-	if (snfilt) delete snfilt;
-	if (imdfilt) delete imdfilt;
+
 	if (e0_filt) delete e0_filt;
 	if (e1_filt) delete e1_filt;
 	if (e2_filt) delete e2_filt;
+	if (e3_filt) delete e3_filt;
+
+	for (int i = 0; i < NUM_FILTERS; i++) {
+		delete re_Gbin[i];
+		delete im_Gbin[i];
+	}
 
 	if (pskviewer) delete pskviewer;
 	if (evalpsk) delete evalpsk;
@@ -773,11 +782,20 @@ FIR_TYPE fir_type = PSK_CORE;
 			break;
 	}
 
-	snfilt = new Cmovavg(16);
-	imdfilt = new Cmovavg(16);
 	e0_filt = new Cmovavg(dcdbits / 2);
 	e1_filt = new Cmovavg(dcdbits / 2);
 	e2_filt = new Cmovavg(dcdbits / 2);
+	e3_filt = new Cmovavg(dcdbits / 2);
+
+	re_Gbin[0] = new goertzel(160, 0,      500.0);	// base
+	re_Gbin[1] = new goertzel(160, 15.625, 500.0);	// fundamental
+	re_Gbin[2] = new goertzel(160, 62.5,   500.0);	// 4th harmonic (noise)
+	re_Gbin[3] = new goertzel(160, 46.875, 500.0);	// 3rd harmonic (imd)
+
+	im_Gbin[0] = new goertzel(160, 0,      500.0);	// base
+	im_Gbin[1] = new goertzel(160, 15.625, 500.0);	// fundamental
+	im_Gbin[2] = new goertzel(160, 62.5,   500.0);	// 4th harmonic (noise)
+	im_Gbin[3] = new goertzel(160, 46.875, 500.0);	// 3rd harmonic (imd)
 
 	if (_disablefec) {
 		enc = NULL;
@@ -861,7 +879,7 @@ FIR_TYPE fir_type = PSK_CORE;
 		sigsearch = 0;
 	for (int i = 0; i < 16; i++)
 		syncbuf[i] = 0.0;
-	E1 = E2 = E3 = 0.0;
+//	E1 = E2 = E3 = 0.0;
 	acquire = 0;
 
 	evalpsk = new pskeval;
@@ -1155,6 +1173,7 @@ void psk::findsignal()
 		} else { // normal signal search algorithm
 			f1 = (int)(frequency - progdefaults.SearchRange/2);
 			f2 = (int)(frequency + progdefaults.SearchRange/2);
+			resetSN_IMD();
 			if (evalpsk->sigpeak(ftest, f1, f2) > pow(10, progdefaults.ACQsn / 10.0) ) {
 				frequency = ftest;
 				set_freq(frequency);
@@ -1416,9 +1435,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 			}
 	}
 
-	displaysn = false;
 	if ( 1 == set_dcdON ) {
-		displaysn = true;
 		dcd = true;
 		acquire = 0;
 		quality = cmplx (1.0, 0.0);
@@ -1505,24 +1522,68 @@ void psk::rx_symbol(cmplx symbol, int car)
 	}
 }
 
-static double e0, e1, e2;
+static double e0, e1, e2, e3;
 
 void psk::signalquality()
 {
-//	double e0, e1, e2;
-	e0 = e0_filt->run(m_Energy[0]);
-	e1 = e1_filt->run(m_Energy[1]);
-	e2 = e2_filt->run(m_Energy[2]);
+	double r0 = re_Gbin[0]->mag();
+	double r1 = re_Gbin[1]->mag();
+	double r2 = re_Gbin[2]->mag();
+	double r3 = re_Gbin[3]->mag();
 
-	if (((e0 - e1) > 0) && (e1 > 0))
-		snratio = (e0 - e1) / e1;
-	else
-		snratio = 1.0;
+	double i0 = im_Gbin[0]->mag();
+	double i1 = im_Gbin[1]->mag();
+	double i2 = im_Gbin[2]->mag();
+	double i3 = im_Gbin[3]->mag();
 
-	if (((e0 - e1) > 0) && ((e2 - e1) > 0) )
-		imdratio = (e2 - e1) / (e0 - e1);
-	else
-		imdratio = 1.0;
+	r0 = sqrtf(r0*r0 + i0*i0);
+	r1 = sqrtf(r1*r1 + i1*i1);
+	r2 = sqrtf(r2*r2 + i2*i2);
+	r3 = sqrtf(r3*r3 + i3*i3);
+//std::cout << r0 << ", " << r1 << ", " << r2 << ", " << r3 << std::endl;
+//	if (r0 > r1) r1 = r0;
+
+	e0 = e0_filt->run(r0);
+	e1 = e1_filt->run(r1);
+	e2 = e2_filt->run(r2);
+	e3 = e3_filt->run(r3);
+
+	if (e1 > e0) {
+		if ((e1 > 2 * e2) && (e2 > 0)) {
+			snratio = e1 / e2;
+			if (snratio < 1.0) 
+				snratio = 1.0;
+		} else
+			snratio = 1.0;
+	} else {
+		if ((e0 > 2 * e2) && (e2 > 0)) {
+			snratio = e0 / e2;
+			if (snratio < 1.0) snratio = 1.0;
+		} else
+			snratio = 1.0;
+	}
+
+	if ( (e1 > 2 * e3) && (e3 > 2 * e2) ) {
+		imdratio = e3 / e1;
+		if (imdratio < (1.0 /snratio)) imdratio = 1.0 / snratio;
+	} else
+		imdratio = 1.0 / snratio ;
+
+	displaysn = false;
+	if (snratio > 4)
+		displaysn = true;
+
+	if (r0 > r1) {
+		if ((r0 / r2 < 0.1 * snratio ) || (r0 / r2 < 2.0)) {
+//std::cout << "r0 / r2 " << r0/r2 << ", snratio " << snratio << std::endl;
+			displaysn = false;
+		}
+	} else {
+		if ((r1 / r2 < 0.1 * snratio ) || (r1 / r2 < 2.0)) {
+//std::cout << "r1 / r2 " << r1/r2 << ", snratio " << snratio << std::endl;
+			displaysn = false;
+		}
+	}
 
 }
 
@@ -1538,7 +1599,11 @@ void psk::update_syncscope()
 		memset(msg2, 0, sizeof(msg2));
 
 		s2n = 10.0*log10( snratio );
-		snprintf(msg1, sizeof(msg1), "S/N %2.0f dB", s2n);
+		if (s2n < 6)
+			strcpy(msg1, "S/N ---");
+		else
+			snprintf(msg1, sizeof(msg1), "S/N %2.0f dB", s2n);
+
 		put_Status1(
 			msg1,
 			progdefaults.StatusTimeout,
@@ -1546,10 +1611,11 @@ void psk::update_syncscope()
 
 		imd = 10.0*log10( imdratio );
 
-		if ( (imd > -18) || (s2n + imd) < -1 ) {
-			snprintf(msg2, sizeof(msg2), "%s", "");
-		} else
+		if (imd > -10) 
+			strcpy(msg2, "IMD ---");
+		else
 			snprintf(msg2, sizeof(msg2), "IMD %2.0f dB", imd);
+
 		put_Status2(
 			msg2,
 			progdefaults.StatusTimeout,
@@ -1737,7 +1803,7 @@ int psk::rx_process(const double *buf, int len)
 				sigsearch = SIGSEARCH;
 			}
 		}
-		else if ( E1/ E2 <= 1.0) {
+		else if ( snratio <= 1.0) {
 			waitcount = 8;
 			sigsearch = 0;
 		}
@@ -2254,58 +2320,54 @@ int psk::tx_process()
 // derived from pskcore by Moe Wheatley, AE4JY
 //============================================================================
 
+static bool reset_filters;
+
 void psk::initSN_IMD()
 {
-	for(int i = 0; i < NUM_FILTERS; i++)
-	{
-		I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
-		m_Energy[i] = 0.0;
-	}
-	m_NCount = 0;
-
-	COEF[0] = 2.0 * cos(TWOPI * 9 / GOERTZEL);
-	COEF[1] = 2.0 * cos(TWOPI * 36 / GOERTZEL);
-	COEF[2] = 2.0 * cos(TWOPI  * 27 / GOERTZEL);
+	reset_filters = true;
 }
 
 void psk::resetSN_IMD()
 {
-	for(int i = 0; i < NUM_FILTERS; i++) {
-		I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
-	}
-	m_NCount = 0;
+	reset_filters = true;
 }
 
 //============================================================================
 //  This routine calculates the energy in the frequency bands of
-//   carrier=F0(15.625), noise=F1(31.25), and
-//   3rd order product=F2(46.875)
+//   carrier = base (0), fundamental = F1(15.625), noise = F2(31.25), and
+//   3rd order product = F3(46.875)
 //  It is called with cmplx data samples at 500 Hz.
 //============================================================================
 
 void psk::calcSN_IMD(cmplx z)
 {
-	int i;
-	double tempI = 0, tempQ = 0;
+	if (!re_Gbin[0]) return;
 
-	for(i = 0; i < NUM_FILTERS; i++) {
-		tempI = I1[i];
-		tempQ = Q1[i];
-		I1[i] = I1[i] * COEF[i]- I2[i] + z.real();
-		Q1[i] = Q1[i] * COEF[i]- Q2[i] + z.imag();
-		I2[i] = tempI;
-		Q2[i] = tempQ;
-	}
+	if (reset_filters) {
+		e0_filt->reset();
+		e1_filt->reset();
+		e2_filt->reset();
+		e3_filt->reset();
 
-	if( ++m_NCount >= GOERTZEL ) {
-		m_NCount = 0;
-		for(i = 0; i < NUM_FILTERS; i++) {
-			m_Energy[i] =   I1[i]*I1[i] + Q1[i]*Q1[i]
-			+ I2[i]*I2[i] + Q2[i]*Q2[i]
-			- I1[i]*I2[i]*COEF[i]
-			- Q1[i]*Q2[i]*COEF[i];
-			I1[i] = I2[i] = Q1[i] = Q2[i] = 0.0;
+		for(int i = 0; i < NUM_FILTERS; i++) {
+			re_Gbin[i]->reset();
+			im_Gbin[i]->reset();
 		}
-		signalquality();
+		reset_filters = false;
 	}
+
+	bool isvalid = true;
+
+	for (int i = 0; i < NUM_FILTERS; i++) {
+		isvalid &= re_Gbin[i]->run(real(z));
+		isvalid &= im_Gbin[i]->run(imag(z));
+	}
+	if (isvalid) {
+		signalquality();
+		for (int i = 0; i < NUM_FILTERS; i++) {
+			re_Gbin[i]->reset();
+			im_Gbin[i]->reset();
+		}
+	}
+	return;
 }

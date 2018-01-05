@@ -513,7 +513,6 @@ void goertzel::reset()
 {
 	Q0 = Q1 = Q2 = 0.0;
 	count = N;
-	isvalid = false;
 }
 
 void goertzel::reset(int n, double freq, double sr)
@@ -525,19 +524,15 @@ void goertzel::reset(int n, double freq, double sr)
 	k3 = 2.0 * k1;
 	Q0 = Q1 = Q2 = 0.0;
 	count = N = n;
-	isvalid = false;
 }
 
 bool goertzel::run(double sample)
 {
-    Q0 = sample + k3*Q1 - Q2;
-    Q2 = Q1;
-    Q1 = Q0;
-    if (--count == 0) {
-	count = N;
+	Q0 = sample + k3*Q1 - Q2;
+	Q2 = Q1;
+	Q1 = Q0;
+	if (count) { --count; return false; }
 	return true;
-    }
-    return false;
 }
 
 double goertzel::real()

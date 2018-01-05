@@ -44,8 +44,7 @@
 #define SNTHRESHOLD 6.0
 #define AFCDECAYSLOW 8
 
-#define NUM_FILTERS 3
-#define GOERTZEL 288		//96 x 2 must be an integer value
+#define NUM_FILTERS 4
 
 #define MAX_CARRIERS 32
 
@@ -78,24 +77,17 @@ private:
 // rx variables & functions
 	C_FIR_filter		*fir1[MAX_CARRIERS];
 	C_FIR_filter		*fir2[MAX_CARRIERS];
-//	C_FIR_filter		*fir3;
 	double			*fir1c;
 	double			*fir2c;
-	Cmovavg			*snfilt;
-	Cmovavg			*imdfilt;
+
 	Cmovavg			*e0_filt;
 	Cmovavg			*e1_filt;
 	Cmovavg			*e2_filt;
+	Cmovavg			*e3_filt;
 	bool			displaysn;
 
-	double			I1[NUM_FILTERS];
-	double			I2[NUM_FILTERS];
-	double			Q1[NUM_FILTERS];
-	double			Q2[NUM_FILTERS];
-	double			COEF[NUM_FILTERS];
-	double			m_Energy[NUM_FILTERS];
-	int				m_NCount;
-	bool			imdValid;
+	goertzel		*re_Gbin[NUM_FILTERS];
+	goertzel		*im_Gbin[NUM_FILTERS];
 
 	encoder 		*enc;
 	viterbi 		*dec;
@@ -146,7 +138,6 @@ private:
 	double			k0, k1, k2;
 	double			I11, I12, I21, I22, I31, I32;
 	double			snratio, s2n, imdratio, imd;
-	double			E1, E2, E3;
 	double			afcmetric;
 
 //PSKR modes
