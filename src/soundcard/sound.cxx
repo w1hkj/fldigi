@@ -165,7 +165,7 @@ SoundBase::~SoundBase()
 }
 
 #if USE_SNDFILE
-void SoundBase::get_file_params(const char* def_fname, const char** fname, int* format)
+void SoundBase::get_file_params(const char* def_fname, std::string &fname, int* format)
 {
 	std::string filters = _("Waveform Audio Format\t*.wav\n" "AU\t*.{au,snd}\n");
 	int nfilt = 2;
@@ -175,12 +175,16 @@ void SoundBase::get_file_params(const char* def_fname, const char** fname, int* 
 	}
 
 	int fsel;
+	const char *fn = 0;
 	if (strstr(def_fname, "playback"))
-		*fname = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
+		fn = FSEL::select(_("Audio file"), filters.c_str(), def_fname, &fsel);
 	else
-		*fname = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
-	if (!*fname) return;
-	if (!**fname) return;
+		fn = FSEL::saveas(_("Audio file"), filters.c_str(), def_fname, &fsel);
+	if (!fn || !*fn) {
+		fname = "";
+		return;
+	}
+	fname = fn;
 
 	if (fsel >= nfilt) // "Default" save-as type on OS X
 		fsel = 0;
@@ -210,10 +214,10 @@ int SoundBase::Capture(bool val)
 		return 1;
 	}
 
-	const char* fname;
+	std::string fname;
 	int format;
-	get_file_params("capture.wav", &fname, &format);
-	if (!fname)
+	get_file_params("capture.wav", fname, &format);
+	if (fname.empty())
 		return 0;
 
 	// frames (ignored), freq, channels, format, sections (ignored), seekable (ignored)
@@ -221,8 +225,8 @@ int SoundBase::Capture(bool val)
 		progdefaults.record_both_channels ? 2 : 1,
 //		SNDFILE_CHANNELS,
 		format, 0, 0 };
-	if ((ofCapture = sf_open(fname, SFM_WRITE, &info)) == NULL) {
-		LOG_ERROR("Could not write %s:%s", fname, sf_strerror(NULL) );
+	if ((ofCapture = sf_open(fname.c_str(), SFM_WRITE, &info)) == NULL) {
+		LOG_ERROR("Could not write %s:%s", fname.c_str(), sf_strerror(NULL) );
 		return 0;
 	}
 	if (sf_command(ofCapture, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
@@ -246,18 +250,18 @@ int SoundBase::Generate(bool val)
 		return 1;
 	}
 
-	const char* fname;
+	std::string fname;
 	int format;
-	get_file_params("generate.wav", &fname, &format);
-	if (!fname)
+	get_file_params("generate.wav", fname, &format);
+	if (fname.empty())
 		return 0;
 
 	SF_INFO info = { 0, sndfile_samplerate[progdefaults.wavSampleRate], 
 		progdefaults.record_both_channels ? 2 : 1,
 //		SNDFILE_CHANNELS,
 		format, 0, 0 };
-	if ((ofGenerate = sf_open(fname, SFM_WRITE, &info)) == NULL) {
-		LOG_ERROR("Could not write %s", fname);
+	if ((ofGenerate = sf_open(fname.c_str(), SFM_WRITE, &info)) == NULL) {
+		LOG_ERROR("Could not write %s", fname.c_str());
 		return 0;
 	}
 	if (sf_command(ofGenerate, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) != SF_TRUE)
@@ -290,10 +294,10 @@ int SoundBase::Playback(bool val)
 		playback = false;
 		return 1;
 	}
-	const char* fname;
+	std::string fname;
 	int format;
-	get_file_params("playback.wav", &fname, &format);
-	if (!fname)
+	get_file_params("playback.wav", fname, &format);
+	if (fname.empty())
 		return -1;
 
 	play_info.frames = 0;
@@ -303,11 +307,12 @@ int SoundBase::Playback(bool val)
 	play_info.sections = 0;
 	play_info.seekable = 0;
 
-	if ((ifPlayback = sf_open(fname, SFM_READ, &play_info)) == NULL) {
-		LOG_ERROR("Could not read %s:%s", fname, sf_strerror(NULL) );
+	if ((ifPlayback = sf_open(fname.c_str(), SFM_READ, &play_info)) == NULL) {
+		LOG_ERROR("Could not read %s:%s", fname.c_str(), sf_strerror(NULL) );
 		return -2;
 	}
-LOG_VERBOSE("wav file stats:\n\
+LOG_VERBOSE
+("wav file stats:\n\
 frames     : %d\n\
 samplerate : %d\n\
 channels   : %d\n\
@@ -321,16 +326,11 @@ play_info.format,
 play_info.sections,
 play_info.seekable);
 
-// this restriction needs to be removed!
-//	if (play_info.channels != 1) {
-//		sf_close(ifPlayback);
-//		return -3;
-//	}
-
 	modem_play_sr = sample_frequency;
 	play_src_data->src_ratio = 1.0 * modem_play_sr / play_info.samplerate;
 	src_set_ratio(play_src_state, play_src_data->src_ratio);
-LOG_VERBOSE("src ratio %f", play_src_data->src_ratio);
+LOG_VERBOSE
+("src ratio %f", play_src_data->src_ratio);
 
 	progdefaults.loop_playback = fl_choice2(_("Playback continuous loop?"), _("No"), _("Yes"), NULL);
 
