@@ -551,8 +551,10 @@ static FILE* open_file(const char* name, const char* suffix)
 				newfn.seekp(p);
 				oldfn << i;
 				newfn << i + 1;
+				remove(newfn.str().c_str());
 				rename(oldfn.str().c_str(), newfn.str().c_str());
 			}
+			remove(oldfn.str().c_str());
 			rename(name, oldfn.str().c_str());
 		}
 		fp = fl_fopen(name, "wb");

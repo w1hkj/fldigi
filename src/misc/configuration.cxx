@@ -260,6 +260,7 @@ void configuration::writeDefaultsXML()
 
 	string deffname_backup(deffname);
 	deffname_backup.append("-old");
+	remove(deffname_backup.c_str());
 	rename(deffname.c_str(), deffname_backup.c_str());
 
 	ofstream f(deffname.c_str());

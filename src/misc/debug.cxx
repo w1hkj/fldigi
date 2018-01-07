@@ -107,8 +107,10 @@ Fl_Menu_Item src_menu[] = {
 	{ _("Other"), 0, 0, 0, FL_MENU_TOGGLE | FL_MENU_VALUE },
 	{ 0 }
 };
+
 #include <iostream>
-void debug::rotate_log(const char* filename)
+
+static void rotate_log(std::string filename)
 {
 	const int n = 5; // rename existing log files to keep up to 5 old versions
 	ostringstream oldfn, newfn;
@@ -123,10 +125,13 @@ void debug::rotate_log(const char* filename)
 		newfn.seekp(p);
 		oldfn << i;
 		newfn << i + 1;
+		remove(newfn.str().c_str());
 		rename(oldfn.str().c_str(), newfn.str().c_str());
 	}
-	rename(filename, oldfn.str().c_str());
+	remove(oldfn.str().c_str());
+	rename(filename.c_str(), oldfn.str().c_str());
 }
+
 
 void debug::start(const char* filename)
 {
