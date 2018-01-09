@@ -846,7 +846,7 @@ void wefax_pic::skip_rx_phasing(bool auto_center)
 	/// it seems that a call to skip_apt is lost... ?
 	wefax_btn_rx_abort->show();
 	wefax_btn_rx_skip_apt->hide();
-//	wefax_btn_rx_skip_phasing->hide();
+	wefax_btn_rx_skip_phasing->hide();
 
 	wefax_round_rx_noise_removal->show();
 	if( progdefaults.WEFAX_SaveMonochrome ) {
