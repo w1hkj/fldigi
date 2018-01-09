@@ -939,17 +939,17 @@ void status::initLastState()
 // RTTY
 	if (lastmode == MODE_RTTY ) {
 		progdefaults.rtty_shift = rtty_shift;
-		selShift->index(progdefaults.rtty_shift + 1);
+		selShift->index(progdefaults.rtty_shift);
 		if (rtty_shift == selShift->lsize() - 1) {
 			selCustomShift->deactivate();
 		}
 		else { // Custom shift
 			selCustomShift->activate();
 		}
-		selBaud->index((progdefaults.rtty_baud = rtty_baud) + 1);
-		selBits->index((progdefaults.rtty_bits = rtty_bits) + 1);
-		selParity->index((progdefaults.rtty_parity = rtty_parity) + 1);
-		selStopBits->index((progdefaults.rtty_stop = rtty_stop) + 1);
+		selBaud->index((progdefaults.rtty_baud = rtty_baud));
+		selBits->index((progdefaults.rtty_bits = rtty_bits));
+		selParity->index((progdefaults.rtty_parity = rtty_parity));
+		selStopBits->index((progdefaults.rtty_stop = rtty_stop));
 		btnCRCRLF->value(progdefaults.rtty_crcrlf = rtty_crcrlf);
 		btnAUTOCRLF->value(progdefaults.rtty_autocrlf = rtty_autocrlf);
 		cntrAUTOCRLF->value(progdefaults.rtty_autocount = rtty_autocount);
