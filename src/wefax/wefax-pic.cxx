@@ -116,12 +116,12 @@ static bool wefax_image_loaded_in_gui = false ;
 /// Used for shifting the received image left and right.
 static volatile int center_val_prev = 0 ;
 
+static volatile bool enable_auto_center = false ;
 static volatile bool global_auto_center = false ;
 
 void wefax_pic::update_auto_center(bool is_auto_center)
 {
-	wefax_round_rx_auto_center->value(is_auto_center ? 1 : 0);
-	global_auto_center = is_auto_center;
+	global_auto_center = is_auto_center && enable_auto_center;
 }
 
 /// Global pointer to the current wefax modem.
@@ -756,7 +756,8 @@ static void wefax_cb_pic_rx_auto_center( Fl_Widget *, void *)
 	ENSURE_THREAD(FLMAIN_TID);
 
 	char rndVal = wefax_round_rx_auto_center->value();
-	wefax_pic::update_auto_center(rndVal ? true : false);
+	enable_auto_center = rndVal ? true : false;
+	wefax_pic::update_auto_center(global_auto_center);
 }
 
 /// This gets the directory where images are accessed by default.
@@ -1309,6 +1310,8 @@ void wefax_pic::create_rx_viewer(int pos_x, int pos_y,int win_wid, int hei_win)
 	wefax_round_rx_auto_center->selection_color(FL_GREEN);
 	wefax_round_rx_auto_center->callback(wefax_cb_pic_rx_auto_center, 0);
 	wefax_round_rx_auto_center->tooltip(_("Enable automatic image centering"));
+	wefax_round_rx_auto_center->value(1);
+	enable_auto_center = true;
 	update_auto_center(false);
 
 	wid_off_low += 2 * wid_btn_margin + wid_btn_curr ;
