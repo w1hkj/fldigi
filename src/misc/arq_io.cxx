@@ -410,16 +410,21 @@ bool WRAP_auto_arqRx()
 	time_t start_time, prog_time;
 	static char mailline[1000];
 	static string sAutoFile("");
-	sAutoFile.assign(FLMSG_WRAP_auto_dir);
-	sAutoFile.append("wrap_auto_file");
 
 	ifstream autofile;
-	autofile.open(sAutoFile.c_str());
-	if (!autofile) {
-		sAutoFile.assign(WRAP_auto_dir);
+
+	if (sAutoFile.empty()) {
+		sAutoFile.assign(FLMSG_WRAP_auto_dir);
 		sAutoFile.append("wrap_auto_file");
 		autofile.open(sAutoFile.c_str());
-	}
+		if (!autofile) {
+			sAutoFile.assign(WRAP_auto_dir);
+			sAutoFile.append("wrap_auto_file");
+			autofile.open(sAutoFile.c_str());
+		}
+	} else
+		autofile.open(sAutoFile.c_str());
+
 	if(autofile) {
 		/// Mutex is unlocked when leaving the block.
 		guard_lock arq_rx_lock(&arq_rx_mutex);
