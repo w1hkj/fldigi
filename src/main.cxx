@@ -1126,8 +1126,9 @@ int main(int argc, char ** argv)
 	}
 
 	dlgViewer = createViewer();
-	create_logbook_dialogs();
 	dxcluster_viewer = dxc_window();
+	if (!dlgLogbook)
+		create_logbook_dialogs();
 
 	dxcluster_viewer->hide();
 

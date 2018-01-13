@@ -54,6 +54,11 @@ XmlRpcClient *log_client = (XmlRpcClient *)0;
 
 bool test_connection(bool info = false)
 {
+	if (!log_client) {
+		create_logbook_dialogs();
+		if (!log_client)
+			return false;
+	}
 	XmlRpcValue query, result;
 	if (log_client->execute("system.listMethods", query, result)) {
 		if (info) {
@@ -213,7 +218,8 @@ void xml_add_record()
 // send it to the server
 	XmlRpcValue oneArg, result;
 	oneArg[0] = adif.c_str();
-//	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
+//	log_client->execute("log.add_record", oneArg, result);
+	std::cout << "result: " << log_client->execute("log.add_record", oneArg, result) << std::endl;
 
 // submit it foreign log programs
 	cQsoRec rec;
@@ -258,7 +264,9 @@ bool xml_check_dup()
 	if (!test_connection()) {
 		LOG_INFO("%s","Logbook server down!");
 		progdefaults.xml_logbook = false;
+		progdefaults.changed = true;
 		activate_log_menus(true);
+		if (!dlgLogbook) create_logbook_dialogs();
 		start_logbook();
 		return false;
 	}
@@ -282,7 +290,10 @@ bool xml_check_dup()
 
 void connect_to_log_server(void *)
 {
-	if (log_client) delete log_client;
+	if (log_client) {
+		delete log_client;
+		log_client = 0;
+	}
 	log_client = new XmlRpcClient(
 					progdefaults.xmllog_address.c_str(),
 					atoi(progdefaults.xmllog_port.c_str()));
