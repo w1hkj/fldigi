@@ -1,8 +1,26 @@
+2018-01-14  David Freese  <w1hkj@bellsouth.net>
+
+	f799522: linux shutdown
+	29593c8: remote logbook
+	4e87d16: ARQ exit seg fault
+
+2018-01-09  Stelian Pop  <stelian@popies.net>
+
+	e09d167: WEFAX auto center behavior
+	be34220: WEFAX phasing change button
+	2dee90e: RTTY configure initializers
+
+2018-01-07  David Freese  <w1hkj@bellsouth.net>
+
+	a5e88af: File aging
+	f028159: OS X shutdown
+	38b294a: PSK IMD
+	a7d67d8: Spectrum Display
+	daa6d43: Warnings in sound.cxx
+	eb0caa4: OS X app paradigm
 
 
 =Version 4.0.13=
-
-2017-12-26  David Freese  <w1hkj@bellsouth.net>
 
 	4c5c168: Language Translation
 	13ef81d: cw t/r - doc update
