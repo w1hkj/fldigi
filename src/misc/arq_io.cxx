@@ -561,13 +561,13 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	// On WIN32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-#ifdef __WIN32__
+//#ifdef __WIN32__
 			if (inst->server_socket->wait(0))
 				arq_run(inst->server_socket->accept());
-#else
-			arq_run(inst->server_socket->accept());
-			TEST_THREAD_CANCEL();
-#endif
+//#else
+//			arq_run(inst->server_socket->accept());
+//			TEST_THREAD_CANCEL();
+//#endif
 		}
 		catch (const SocketException& e) {
 			if (e.error() != EINTR) {
@@ -596,7 +596,7 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	}
 
 	inst->server_socket->close();
-server_stopped = true;
+	server_stopped = true;
 	return NULL;
 }
 
@@ -878,28 +878,23 @@ void arq_init()
 void arq_close(void)
 {
 	if (!arq_enabled) return;
-std::cout << "ARQ_SOCKET_Server::stop()" << std::endl;
 
 	ARQ_SOCKET_Server::stop();
-std::cout << "stopped!" << std::endl;
 
 	// tell the arq thread to kill it self
 	{
 		guard_lock arqclose(&tosend_mutex);
 		arq_exit = true;
-std::cout << "pthread_join(arq_thread, NULL)" << std::endl;
-
-//		pthread_join(arq_thread, NULL);
 	}
-
 // and then wait for it to die
-//	pthread_join(arq_thread, NULL);
+	pthread_join(arq_thread, NULL);
+
 	arq_enabled = false;
 	LOG_INFO("ARQ closed");
 	if(data_io_enabled == ARQ_IO)
 		data_io_enabled = DISABLED_IO ;
 	arq_exit = false;
-std::cout << "arq_closed" << std::endl;
+
 }
 
 int arq_get_char()
