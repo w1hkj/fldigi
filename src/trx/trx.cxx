@@ -121,11 +121,11 @@ static void trx_xmit_wfall_draw(int samplerate)
 	rv[1].buf = 0;
 
 #define block_read_(vec_)						\
-	while (vec_.len >= WFBLOCKSIZE) {				\
-		wf->sig_data(vec_.buf, WFBLOCKSIZE, samplerate);	\
+	while (vec_.len >= WFBLOCKSIZE) {			\
+		wf->sig_data(vec_.buf, samplerate);		\
 		vec_.len -= WFBLOCKSIZE;				\
 		vec_.buf += WFBLOCKSIZE;				\
-		trxrb.read_advance(WFBLOCKSIZE);				\
+		trxrb.read_advance(WFBLOCKSIZE);		\
 	}
 
 	trxrb.get_rv(rv);
@@ -143,7 +143,7 @@ static void trx_xmit_wfall_draw(int samplerate)
 		double buf[WFBLOCKSIZE];
 		do {
 			trxrb.read(buf, WFBLOCKSIZE);
-			wf->sig_data(buf, WFBLOCKSIZE, samplerate);
+			wf->sig_data(buf, samplerate);
 		} while (trxrb.read_space() >= WFBLOCKSIZE);
 	}
 }
@@ -175,7 +175,7 @@ static void trx_xmit_wfall_end(int samplerate)
 
 	trxrb.write_advance(pad);
 
-	REQ(trx_xmit_wfall_draw, samplerate);
+	trx_xmit_wfall_draw(samplerate);
 }
 
 // Copy buf to the ringbuffer if it has enough space. Queue a waterfall
@@ -205,7 +205,7 @@ void trx_xmit_wfall_queue(int samplerate, const double* buf, size_t len)
 
 	trxrb.write_advance(len);
 	if (trxrb.read_space() >= WFBLOCKSIZE)
-		REQ(trx_xmit_wfall_draw, samplerate);
+		trx_xmit_wfall_draw(samplerate);
 }
 
 //=============================================================================
@@ -321,7 +321,7 @@ void trx_trx_receive_loop()
 			active_modem->HistoryON(false);
 		} else {
 			trxrb.write_advance(numread);
-			REQ(&waterfall::sig_data, wf, rbvec[0].buf, numread, current_RXsamplerate);
+			wf->sig_data(rbvec[0].buf, current_RXsamplerate);//
 
 			if (!bHistory) {
 				if (fft_modem && spectrum_viewer->visible())

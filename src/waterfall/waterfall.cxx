@@ -30,6 +30,7 @@
 
 #include <sstream>
 #include <vector>
+#include <queue>
 #include <algorithm>
 #include <map>
 
@@ -615,37 +616,55 @@ void WFdisp::redrawCursor()
 
 extern state_t trx_state;
 
-void WFdisp::sig_data( double *sig, int len, int sr )
+static pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
+struct AUDIO_BLOCK {
+	double sig[WFBLOCKSIZE];
+	int sr;
+};
+queue<AUDIO_BLOCK> audio_blocks;
+
+void WFdisp::sig_data( double *sig, int sr)
 {
-	if (wfspeed == PAUSE)
-		goto update_freq;
+	guard_lock data_lock(&data_mutex);
+	AUDIO_BLOCK audio_block;
+	memset(audio_block.sig, 0, WFBLOCKSIZE * sizeof(double));
+	for (int i = 0; i < WFBLOCKSIZE; i++) 
+		audio_block.sig[i] = sig[i];
+	audio_block.sr = sr;
+	audio_blocks.push(audio_block);
+	REQ(&WFdisp::handle_sig_data, this);
+}
+
+void WFdisp::handle_sig_data()
+{
+	guard_lock data_lock(&data_mutex);
+
+	while (!audio_blocks.empty()) {
 
 	// if sound card sampling rate changed reset the waterfall buffer
-	if (srate != sr) {
-		srate = sr;
+	if (srate != audio_blocks.front().sr) {
+		srate = audio_blocks.front().sr;
 		memset(circbuff, 0, FFT_LEN * sizeof(*circbuff));
 		ptrCB = 0;
 	}
 
 	memmove((void*)circbuff,
-			(void*)(circbuff + len),
-			(size_t)((FFT_LEN - len)*sizeof(wf_fft_type)));
+			(void*)(circbuff + WFBLOCKSIZE),
+			(size_t)((FFT_LEN - WFBLOCKSIZE)*sizeof(wf_fft_type)));
 
 	{
 		double gain = pow(10, progdefaults.wfRefLevel / -20.0);
+		int insertptr = FFT_LEN - WFBLOCKSIZE;
 		overload = false;
 		double overval, peak = 0.0;
-		for (int i = 0; i < len; i++) {
-			overval = fabs(sig[i]);
-			sig[i] *= gain;
+		for (int i = 0; i < WFBLOCKSIZE; i++) {
+			overval = fabs(audio_blocks.front().sig[i]);
+			circbuff[insertptr + i] = gain * audio_blocks.front().sig[i];
 			if (overval > peak) peak = overval;
 		}
 		peakaudio = 0.1 * peak + 0.9 * peakaudio;
 	}
-
-	memcpy((void*)&circbuff[FFT_LEN-len],
-			(void*)sig,
-			(size_t)(len)*sizeof(double));
+	audio_blocks.pop();
 
 	if (mode == SCOPE)
 		process_analog(circbuff, FFT_LEN);
@@ -654,7 +673,6 @@ void WFdisp::sig_data( double *sig, int len, int sr )
 
 	put_WARNstatus(peakaudio);
 
-update_freq:
 	static char szFrequency[14];
 	if (active_modem && rfc != 0) { // use a boolean for the waterfall
 		int offset = 0;
@@ -685,6 +703,8 @@ update_freq:
 		snprintf(szFrequency, sizeof(szFrequency), "%-.0f", dfreq);
 	}
 	inpFreq->value(szFrequency);
+
+	}
 }
 
 // Check the display offset & limit to 0 to max IMAGE_WIDTH displayed
