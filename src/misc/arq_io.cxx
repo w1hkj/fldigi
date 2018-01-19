@@ -561,13 +561,13 @@ void* ARQ_SOCKET_Server::thread_func(void*)
 	// On WIN32 we block for a short time and test for cancellation.
 	while (inst->run) {
 		try {
-//#ifdef __WIN32__
+#ifdef __WIN32__
 			if (inst->server_socket->wait(0))
 				arq_run(inst->server_socket->accept());
-//#else
-//			arq_run(inst->server_socket->accept());
-//			TEST_THREAD_CANCEL();
-//#endif
+#else
+			arq_run(inst->server_socket->accept());
+			TEST_THREAD_CANCEL();
+#endif
 		}
 		catch (const SocketException& e) {
 			if (e.error() != EINTR) {
