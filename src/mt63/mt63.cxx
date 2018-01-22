@@ -63,6 +63,8 @@ int mt63::tx_process()
 	rx_flush();
 // do not put above rx_flush()
 
+	modem::tx_process();
+
 	guard_lock dsp_lock(&mt63_mutex);
 
 	int c;

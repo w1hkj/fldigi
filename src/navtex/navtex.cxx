@@ -1953,6 +1953,8 @@ void navtex::tx_init()
 
 int  navtex::tx_process()
 {
+	modem::tx_process();
+
 	m_impl->process_tx();
 
 	return -1;

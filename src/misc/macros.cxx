@@ -2023,9 +2023,7 @@ static void doVIDEO(string s)
 	}
 	size_t start = s.find(':') + 1;
 	size_t end = s.find('>');
-	std::string buff = s.substr(start, end - start);
-	if (buff.empty()) return;
-	active_modem->wfid_text(buff);
+	active_modem->macro_video_text = s.substr(start, end - start);
 	que_ok = true;
 }
 

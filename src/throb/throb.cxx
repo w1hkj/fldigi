@@ -608,6 +608,8 @@ void throb::send(int symbol)
 
 int throb::tx_process()
 {
+	modem::tx_process();
+
 	int i, c, sym;
 
 	if (preamble > 0) {

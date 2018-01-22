@@ -161,6 +161,8 @@ int olivia::unescape(int c)
 
 int olivia::tx_process()
 {
+	modem::tx_process();
+
 	int c = 0, len = 0;
 
 	if ((mode == MODE_OLIVIA && 

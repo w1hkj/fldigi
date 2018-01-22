@@ -2637,6 +2637,8 @@ void wefax::set_tx_parameters(
 /// Callback continuously called by fldigi modem class.
 int wefax::tx_process()
 {
+	modem::tx_process();
+
 	bool tx_was_completed = m_impl->trx_do_next();
 	std::string status ;
 	if( false == tx_was_completed ) {

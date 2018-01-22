@@ -86,6 +86,8 @@ int NULLMODEM::rx_process(const double *buf, int len)
 
 int NULLMODEM::tx_process()
 {
+	modem::tx_process();
+
 	MilliSleep(10);
 	if (!fl_digi_main) {
 		return 0;

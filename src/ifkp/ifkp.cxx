@@ -852,6 +852,8 @@ void ifkp::m_ifkp_send_avatar()
 
 int ifkp::tx_process()
 {
+	modem::tx_process();
+
 	if (send_bot) {
 		send_bot = false;
 		send_char(0);

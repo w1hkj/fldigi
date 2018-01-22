@@ -100,7 +100,14 @@ public:
 	virtual void rx_init () = 0;
 	virtual void restart () = 0;
 	virtual void rx_flush() {};
-	virtual int  tx_process () = 0;
+	virtual int  tx_process ()// = 0;
+	{
+		if (!macro_video_text.empty()) {
+			wfid_text(macro_video_text);
+			macro_video_text.clear();
+		}
+		return 0;
+	}
 	virtual int  rx_process (const double *, int len) = 0;
 	virtual void shutdown(){};
 	virtual void set1(int, int){};
@@ -198,6 +205,7 @@ private:
 	double  PTTnco();
 
 public:
+	std::string macro_video_text;
 	void	wfid_text(const std::string& s);
 
 // for CW ID transmission

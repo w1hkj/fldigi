@@ -1418,6 +1418,8 @@ void fsq::fsq_send_image(std::string s) {
 
 int fsq::tx_process()
 {
+	modem::tx_process();
+
 	if (send_bot) {
 		std::string send;
 		send.assign(" ").append(FSQBOL).append(mycall).append(":");

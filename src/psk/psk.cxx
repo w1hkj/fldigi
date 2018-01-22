@@ -2246,6 +2246,8 @@ void psk::clearbits()
 
 int psk::tx_process()
 {
+	modem::tx_process();
+
 	int c;
 
 	// DCD window is only 32 bits, send a maximum of 3-times.

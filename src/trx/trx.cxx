@@ -123,6 +123,7 @@ static void trx_xmit_wfall_draw(int samplerate)
 #define block_read_(vec_)						\
 	while (vec_.len >= WFBLOCKSIZE) {			\
 		wf->sig_data(vec_.buf, samplerate);		\
+		REQ(&waterfall::handle_sig_data, wf);	\
 		vec_.len -= WFBLOCKSIZE;				\
 		vec_.buf += WFBLOCKSIZE;				\
 		trxrb.read_advance(WFBLOCKSIZE);		\
@@ -144,6 +145,7 @@ static void trx_xmit_wfall_draw(int samplerate)
 		do {
 			trxrb.read(buf, WFBLOCKSIZE);
 			wf->sig_data(buf, samplerate);
+			REQ(&waterfall::handle_sig_data, wf);
 		} while (trxrb.read_space() >= WFBLOCKSIZE);
 	}
 }
@@ -321,8 +323,8 @@ void trx_trx_receive_loop()
 			active_modem->HistoryON(false);
 		} else {
 			trxrb.write_advance(numread);
-			wf->sig_data(rbvec[0].buf, current_RXsamplerate);//
-
+			wf->sig_data(rbvec[0].buf, current_RXsamplerate);
+			REQ(&waterfall::handle_sig_data, wf);
 			if (!bHistory) {
 				if (fft_modem && spectrum_viewer->visible())
 					fft_modem->rx_process(rbvec[0].buf, numread);

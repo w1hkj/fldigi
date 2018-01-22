@@ -604,6 +604,8 @@ void feld::tx_char(char c)
 
 int feld::tx_process()
 {
+	modem::tx_process();
+
 	int c;
 	bool hdkey;
 

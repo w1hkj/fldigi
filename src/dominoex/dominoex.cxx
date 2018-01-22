@@ -696,8 +696,9 @@ void dominoex::flushtx()
 
 int dominoex::tx_process()
 {
-	int i;
+	modem::tx_process();
 
+	int i;
 	switch (txstate) {
 	case TX_STATE_PREAMBLE:
 		if (progdefaults.DOMINOEX_FEC)
