@@ -912,7 +912,8 @@ void cb_mnuMergeADIF_log(Fl_Menu_* m, void* d) {
 	ENSURE_THREAD(FLMAIN_TID);
 
 	if (MERGE_thread) {
-		fl_alert2("Database merger in progress");
+		notify_dialog* alert_window = new notify_dialog;
+		alert_window->notify(_("Database merger in progress"), 5.0, true);
 		return;
 	}
 
@@ -993,7 +994,8 @@ void verify_lotw(void *)
 		if (nverified) qsodb.isdirty(1);
 		LOG_INFO("%d records matched", nverified);
 	}
-	fl_alert2("%s", notice.c_str());
+	notify_dialog* alert_window = new notify_dialog;
+	alert_window->notify(notice.c_str(), 5.0, true);
 
 	delete lotw_db;
 }
@@ -1009,12 +1011,14 @@ void cb_btn_verify_lotw(Fl_Button *, void *) {
 
 //	if (!p || !*p) {
 	if (!f) {
-		fl_alert2("\
+		std::string alert = _("\
 Could not find LoTW report file.\n\n\
 Download from ARRL's LoTW page after logging in at:\n\n\
 https://lotw.arrl.org/lotwuser/default\n\n\
 Store the report file to the fldigi LOTW folder,\n\n\
 naming the file 'lotwreport.adi'");
+		notify_dialog* alert_window = new notify_dialog;
+		alert_window->notify(alert.c_str(), 20, true);
 		return;
 	}
 //	lotw_download_name = p;

@@ -429,15 +429,15 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {536 535 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {515 217 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 605 390} color 50 selection_color 50
     } {
       Fl_Group tabOperator {
         label Operator
-        callback {progdefaults.changed = true;} open
-        xywh {0 25 600 365} when 1 hide
+        callback {progdefaults.changed = true;} open selected
+        xywh {0 25 600 365} when 1
       } {
         Fl_Group {} {
           label {Station / Operator} open
@@ -3482,7 +3482,7 @@ progdefaults.changed = true;}
         } {
           Fl_Group tabCW {
             label CW open
-            xywh {0 50 605 340}
+            xywh {0 50 605 340} hide
           } {
             Fl_Tabs tabsCW {open
               xywh {0 50 605 340} selection_color 50
@@ -4559,7 +4559,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabFSQ {
             label FSQ open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Group {} {
               label {Rx Parameters} open
@@ -4691,18 +4691,25 @@ progdefaults.changed = true;}
               xywh {5 210 585 55} box ENGRAVED_BOX align 21
             } {
               Fl_Check_Button btn_fsq_msg_dt_stamp {
-                label {Add date/time stamp to each message}
+                label {Add date/time}
                 callback {progdefaults.add_fsq_msg_dt=o->value();
 progdefaults.changed=true;}
-                tooltip {Add date/time stamp to each \# received message} xywh {35 237 297 15} down_box DOWN_BOX value 1
+                tooltip {Add date/time stamp to each \# received message} xywh {35 237 135 15} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.add_fsq_msg_dt);}
               }
               Fl_Check_Button btn_fsq_msg_append {
                 label {always append to file(s)}
                 callback {progdefaults.always_append=o->value();
 progdefaults.changed=true;}
-                tooltip {append \# directive msgs to named file} xywh {359 237 210 15} down_box DOWN_BOX value 1
+                tooltip {append \# directive msgs to named file} xywh {182 237 210 15} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.always_append);}
+              }
+              Fl_Counter cntr_FSQ_notify_time_out {
+                label {Notify time out}
+                callback {progdefaults.fsq_notify_time_out = o->value();
+progdefaults.changed = true;}
+                tooltip {Notification dialog closes after XX seconds;^j0 == dialog remains open} xywh {495 233 80 22} type Simple align 4 minimum 0 maximum 30 step 1 value 10
+                code0 {o->value(progdefaults.fsq_notify_time_out);}
               }
             }
             Fl_Group {} {
@@ -6909,7 +6916,7 @@ progdefaults.changed=true;}
       }
       Fl_Group tabSoundCard {
         label Audio open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsSoundCard {open
           xywh {0 25 600 365} selection_color 50
@@ -9519,7 +9526,7 @@ progdefaults.changed = true;}
     }
     Fl_Button btnSaveConfig {
       label Save
-      callback {progdefaults.saveDefaults();} selected
+      callback {progdefaults.saveDefaults();}
       xywh {330 394 130 22}
     }
     Fl_Return_Button btnCloseConfig {

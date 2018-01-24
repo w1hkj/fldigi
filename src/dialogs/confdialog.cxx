@@ -3828,6 +3828,13 @@ static void cb_btn_fsq_msg_append(Fl_Check_Button* o, void*) {
 progdefaults.changed=true;
 }
 
+Fl_Counter *cntr_FSQ_notify_time_out=(Fl_Counter *)0;
+
+static void cb_cntr_FSQ_notify_time_out(Fl_Counter* o, void*) {
+  progdefaults.fsq_notify_time_out = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Output *txtAuditLog=(Fl_Output *)0;
 
 Fl_Light_Button *btn_enable_auditlog=(Fl_Light_Button *)0;
@@ -7724,7 +7731,6 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
-        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9755,6 +9761,7 @@ i on a\ntouch screen device such as a tablet."));
           tabsModems->selection_color(FL_LIGHT1);
           tabsModems->align(Fl_Align(FL_ALIGN_TOP_RIGHT));
           { tabCW = new Fl_Group(0, 50, 605, 340, _("CW"));
+            tabCW->hide();
             { tabsCW = new Fl_Tabs(0, 50, 605, 340);
               tabsCW->selection_color(FL_LIGHT1);
               { tabsCW_general = new Fl_Group(0, 75, 600, 315, _("General"));
@@ -10968,7 +10975,6 @@ ded Morse characters."));
             tabFeld->end();
           } // Fl_Group* tabFeld
           { tabFSQ = new Fl_Group(0, 50, 600, 340, _("FSQ"));
-            tabFSQ->hide();
             { Fl_Group* o = new Fl_Group(5, 60, 585, 65, _("Rx Parameters"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -11077,20 +11083,31 @@ ded Morse characters."));
             { Fl_Group* o = new Fl_Group(5, 210, 585, 55, _("Message Logging"));
               o->box(FL_ENGRAVED_BOX);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-              { Fl_Check_Button* o = btn_fsq_msg_dt_stamp = new Fl_Check_Button(35, 237, 297, 15, _("Add date/time stamp to each message"));
+              { Fl_Check_Button* o = btn_fsq_msg_dt_stamp = new Fl_Check_Button(35, 237, 135, 15, _("Add date/time"));
                 btn_fsq_msg_dt_stamp->tooltip(_("Add date/time stamp to each # received message"));
                 btn_fsq_msg_dt_stamp->down_box(FL_DOWN_BOX);
                 btn_fsq_msg_dt_stamp->value(1);
                 btn_fsq_msg_dt_stamp->callback((Fl_Callback*)cb_btn_fsq_msg_dt_stamp);
                 o->value(progdefaults.add_fsq_msg_dt);
               } // Fl_Check_Button* btn_fsq_msg_dt_stamp
-              { Fl_Check_Button* o = btn_fsq_msg_append = new Fl_Check_Button(359, 237, 210, 15, _("always append to file(s)"));
+              { Fl_Check_Button* o = btn_fsq_msg_append = new Fl_Check_Button(182, 237, 210, 15, _("always append to file(s)"));
                 btn_fsq_msg_append->tooltip(_("append # directive msgs to named file"));
                 btn_fsq_msg_append->down_box(FL_DOWN_BOX);
                 btn_fsq_msg_append->value(1);
                 btn_fsq_msg_append->callback((Fl_Callback*)cb_btn_fsq_msg_append);
                 o->value(progdefaults.always_append);
               } // Fl_Check_Button* btn_fsq_msg_append
+              { Fl_Counter* o = cntr_FSQ_notify_time_out = new Fl_Counter(495, 233, 80, 22, _("Notify time out"));
+                cntr_FSQ_notify_time_out->tooltip(_("Notification dialog closes after XX seconds;^j0 == dialog remains open"));
+                cntr_FSQ_notify_time_out->type(1);
+                cntr_FSQ_notify_time_out->minimum(0);
+                cntr_FSQ_notify_time_out->maximum(30);
+                cntr_FSQ_notify_time_out->step(1);
+                cntr_FSQ_notify_time_out->value(10);
+                cntr_FSQ_notify_time_out->callback((Fl_Callback*)cb_cntr_FSQ_notify_time_out);
+                cntr_FSQ_notify_time_out->align(Fl_Align(FL_ALIGN_LEFT));
+                o->value(progdefaults.fsq_notify_time_out);
+              } // Fl_Counter* cntr_FSQ_notify_time_out
               o->end();
             } // Fl_Group* o
             { Fl_Group* o = new Fl_Group(5, 265, 585, 80, _("Logging"));
@@ -13067,6 +13084,7 @@ definition"));
         tabRig->end();
       } // Fl_Group* tabRig
       { tabSoundCard = new Fl_Group(0, 25, 600, 365, _("Audio"));
+        tabSoundCard->hide();
         { tabsSoundCard = new Fl_Tabs(0, 25, 600, 365);
           tabsSoundCard->selection_color(FL_LIGHT1);
           { tabAudio = new Fl_Group(0, 50, 600, 340, _("Devices"));

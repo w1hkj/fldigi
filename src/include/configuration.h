@@ -729,6 +729,10 @@
         ELEM_(int, fsq_time_out, "FSQTIMEOUT",                                          \
               "Time out auto replies after XX seconds",                                 \
               6)                                                                        \
+        ELEM_(int, fsq_notify_time_out, "FSQNOTIFYTIMEOUT",                             \
+              "FSQ notifier dialog time out XX seconds\n"                               \
+              "00 == no time out",                                                      \
+              10)                                                                       \
         ELEM_(bool, fsq_enable_heard_log, "FSQ_ENABLE_HEARD_LOG",                       \
               "FSQ enable heard log file",                                              \
               1)                                                                        \

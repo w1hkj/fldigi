@@ -47,6 +47,7 @@
 #include "adif_io.h"
 #include "date.h"
 #include "configuration.h"
+#include "flmisc.h"
 
 #include "logsupport.h"
 #include "lookupcall.h"
@@ -157,7 +158,10 @@ void check_lotw_log(void *)
 
 	size_t p = logtxt.find("UploadFile returns 0");
 	if (p != string::npos) {
-		if (progdefaults.lotw_quiet_mode) fl_alert2("LoTW upload OK");
+		if (progdefaults.lotw_quiet_mode) {
+			notify_dialog* alert_window = new notify_dialog;
+			alert_window->notify(_("LoTW upload OK"), 5.0, true);
+		}
 		clear_lotw_recs_sent();
 	} else {
 		string errlog = LoTWDir;
@@ -169,7 +173,12 @@ void check_lotw_log(void *)
 			logtxt.assign("LoTW upload errors\nCheck file ");
 			logtxt.append(errlog);
 		}
-		if (progdefaults.lotw_quiet_mode) fl_alert2("LoTW upload Failed\nView LoTW error log:\n%s", errlog.c_str());
+		if (progdefaults.lotw_quiet_mode) {
+			std::string alert = _("LoTW upload Failed\nView LoTW error log:");
+			alert.append(errlog);
+			notify_dialog* alert_window = new notify_dialog;
+			alert_window->notify(alert.c_str(), 15.0, true);
+		}
 		restore_lotwsdates();
 	}
 	remove(lotw_log_fname.c_str());

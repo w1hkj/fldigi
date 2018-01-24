@@ -51,6 +51,7 @@
 #include "icons.h"
 #include "ascii.h"
 #include "timeops.h"
+#include "flmisc.h"
 
 #include "test_signal.h"
 
@@ -79,6 +80,19 @@ static std::string fsq_string;
 static std::string fsq_delayed_string;
 
 #include "fsq-pic.cxx"
+
+void post_alert(std::string s1, double timeout = 0.0, std::string s2 = "")
+{
+	if (active_modem && (active_modem->get_mode() == MODE_FSQ)  && !s2.empty()) {
+		active_modem->send_ack(s2);
+	}
+
+	notify_dialog* alert_window = new notify_dialog;
+	alert_window->notify(s1.c_str(), timeout, true);
+
+	display_fsq_mon_text(s1, FTextBase::ALTR);
+
+}
 
 // nibbles table used for fast conversion from tone difference to symbol
 
@@ -207,6 +221,7 @@ fsq::fsq(trx_mode md) : modem()
 	start_aging();
 
 	show_mode();
+
 }
 
 fsq::~fsq()
@@ -856,31 +871,17 @@ void fsq::parse_pcnt()
 	display_fsq_rx_text(toprint.append(rx_text).append("\n"), FTextBase::FSQ_DIR);
 }
 
-static string alert;
-static bool alert_pending = false;
-static std::string delayed_alert = "";
-
-void post_alert(void *)
-{
-	fl_alert2("%s", alert.c_str());
-	if (active_modem->get_mode() == MODE_FSQ) {
-		active_modem->send_ack(delayed_alert);
-	}
-	alert_pending = false;
-}
-
 void fsq::parse_vline(std::string relay)
 {
-	if (alert_pending) return;
 	display_fsq_rx_text(toprint.append(rx_text).append("\n"), FTextBase::FSQ_DIR);
-	alert = "Message received from ";
+
+	std::string alert = "Message received from ";
 	if (relay.empty()) alert.append(station_calling);
 	else alert.append(relay);
 	alert.append("\n").append("at: ").append(zshowtime()).append("\n");
 	alert.append(rx_text.substr(1));
-	delayed_alert = relay;
-	alert_pending = true;
-	Fl::awake(post_alert);
+
+	REQ(post_alert, alert, progdefaults.fsq_notify_time_out, relay);
 }
 
 void fsq::send_ack(std::string relay)
@@ -1751,7 +1752,7 @@ void sounder(void *)
 		std::string stime = ztime();
 		stime.erase(4);
 		stime.insert(2,":");
-		std::string sndx = "\nSounded @ ";
+		std::string sndx = "Sounded @ ";
 		sndx.append(stime);
 		display_fsq_rx_text(sndx, FTextBase::ALTR);
 
