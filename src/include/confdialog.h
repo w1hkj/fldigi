@@ -827,6 +827,8 @@ extern Fl_Button *btn_send_lotw;
 extern Fl_Button *btnLOTW_pwd_show;
 extern void cb_btn_verify_lotw(Fl_Button*, void*);
 extern Fl_Button *btn_verify_lotw;
+extern void cb_btn_view_unmatched(Fl_Button*, void*);
+extern Fl_Button *btn_view_unmatched;
 extern Fl_Group *tabAutoStart;
 extern Fl_Input2 *txt_auto_flrig_pathname;
 extern Fl_Button *btn_select_flrig;

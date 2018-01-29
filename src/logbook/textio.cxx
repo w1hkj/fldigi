@@ -85,6 +85,8 @@ void cTextFile::writeCSVHeader(FILE *txtFile)
 	if (btnSelectLOC->value())       fprintf (txtFile, "%s", ",\"GRIDSQUARE\"");
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%s", ",\"QSL_RCVD\"");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "%s", ",\"QSL_SENT\"");
+	if (btnSelectLOTWrcvd->value())  fprintf (txtFile, "%s", ",\"LOTW_RCVD\"");
+	if (btnSelectLOTWLsent->value())  fprintf (txtFile, "%s", ",\"LOTW_SENT\"");
 	if (btnSelectNotes->value())     fprintf (txtFile, "%s", ",\"NOTES\"");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "%s", ",\"SERIAL RCVD\"");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%s", ",\"SERIAL_SENT\"");
@@ -160,6 +162,10 @@ int cTextFile::writeCSVFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, ",\"%s\"", pRec->getField(QSLRDATE));
 				if (btnSelectQSLsent->value())
 					fprintf (txtFile, ",\"%s\"", pRec->getField(QSLSDATE));
+				if (btnSelectLOTWrcvd->value())  
+					fprintf (txtFile, ",\"%s\"", pRec->getField(LOTWSDATE));
+				if (btnSelectLOTWLsent->value())
+					fprintf (txtFile, ",\"%s\"", pRec->getField(LOTWSDATE));
 				if (btnSelectNotes->value()) {
 					string temp = pRec->getField(NOTES);
 					for (size_t n = 0; n < temp.length(); n++)
@@ -229,6 +235,8 @@ void cTextFile::writeTXTHeader(FILE *txtFile)
 
 	if (btnSelectQSLrcvd->value())   fprintf (txtFile, "%-10s", "QSLR");
 	if (btnSelectQSLsent->value())   fprintf (txtFile, "%-10s", "QSLS");
+	if (btnSelectLOTWrcvd->value())  fprintf (txtFile, "%-10s", "LOTWR");
+	if (btnSelectLOTWLsent->value())  fprintf (txtFile, "%-10s", "LOTWS");
 	if (btnSelectNotes->value())     fprintf (txtFile, "%-80s", "NOTES");
 	if (btnSelectSerialIN->value())  fprintf (txtFile, "%-7s", "SRX");
 	if (btnSelectSerialOUT->value()) fprintf (txtFile, "%-7s", "STX");
@@ -306,6 +314,10 @@ int cTextFile::writeTXTFile (const char *fname, cQsoDb *db) {
 					fprintf (txtFile, "%-10s", pRec->getField(QSLRDATE));
 				if (btnSelectQSLsent->value())
 					fprintf (txtFile, "%-10s", pRec->getField(QSLSDATE));
+				if (btnSelectLOTWrcvd->value())
+					fprintf (txtFile, "%-10s", pRec->getField(LOTWRDATE));
+				if (btnSelectLOTWLsent->value())
+					fprintf (txtFile, "%-10s", pRec->getField(LOTWSDATE));
 				if (btnSelectNotes->value()) {
 					string temp = pRec->getField(NOTES);
 					for (size_t n = 0; n < temp.length(); n++)

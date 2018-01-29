@@ -25,9 +25,6 @@ extern Fl_DateInput *inp_export_start_date;
 extern Fl_DateInput *inp_export_stop_date;
 #include <FL/Fl_Check_Button.H>
 extern Fl_Check_Button *btn_export_by_date;
-#include <FL/Fl_Return_Button.H>
-extern Fl_Return_Button *btnOK;
-extern Fl_Button *btnCancel;
 extern Fl_Check_Button *btnSelectCall;
 extern Fl_Check_Button *btnSelectName;
 extern Fl_Check_Button *btnSelectFreq;
@@ -53,6 +50,8 @@ extern Fl_Check_Button *btnSelectCountry;
 extern Fl_Check_Button *btnSelectNotes;
 extern Fl_Check_Button *btnSelectQSLrcvd;
 extern Fl_Check_Button *btnSelectQSLsent;
+extern Fl_Check_Button *btnSelectLOTWrcvd;
+extern Fl_Check_Button *btnSelectLOTWLsent;
 extern Fl_Check_Button *btnSelectSerialIN;
 extern Fl_Check_Button *btnSelectSerialOUT;
 extern Fl_Check_Button *btnSelectXchgIn;
@@ -73,6 +72,9 @@ extern Fl_Button *btnClearAllFields;
 extern Fl_Button *btnCheckAllFields;
 extern Fl_Button *btnSetFieldDefaults;
 extern Fl_Button *btnSetLoTWfields;
+#include <FL/Fl_Return_Button.H>
+extern Fl_Return_Button *btnOK;
+extern Fl_Button *btnCancel;
 extern Fl_Double_Window *dlgLogbook;
 extern Fl_DateInput *inpDate_log;
 extern Fl_Input2 *inpTimeOn_log;

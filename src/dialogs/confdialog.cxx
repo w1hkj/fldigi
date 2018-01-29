@@ -7049,6 +7049,8 @@ o->label((inpLOTW_pwd->type() & FL_SECRET_INPUT) ? _("Show") : _("Hide"));
 
 Fl_Button *btn_verify_lotw=(Fl_Button *)0;
 
+Fl_Button *btn_view_unmatched=(Fl_Button *)0;
+
 Fl_Group *tabAutoStart=(Fl_Group *)0;
 
 static void cb_tabAutoStart(Fl_Group*, void*) {
@@ -7731,6 +7733,7 @@ Fl_Double_Window* ConfigureDialog() {
       { tabOperator = new Fl_Group(0, 25, 600, 365, _("Operator"));
         tabOperator->callback((Fl_Callback*)cb_tabOperator);
         tabOperator->when(FL_WHEN_CHANGED);
+        tabOperator->hide();
         { Fl_Group* o = new Fl_Group(35, 35, 529, 245, _("Station / Operator"));
           o->box(FL_ENGRAVED_FRAME);
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -7828,6 +7831,7 @@ Fl_Double_Window* ConfigureDialog() {
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
+            tabBrowser->hide();
             { Fl_Group* o = new Fl_Group(30, 65, 540, 300);
               o->box(FL_ENGRAVED_FRAME);
               { Fl_Spinner2* o = cntChannels = new Fl_Spinner2(46, 75, 50, 24, _("Channels, first channel starts at waterfall lower limit"));
@@ -8102,7 +8106,6 @@ Fl_Double_Window* ConfigureDialog() {
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
-            tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
@@ -14369,9 +14372,9 @@ and restarted if needed."));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 600, 365, _("Web"));
-        tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 365);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Call Lookup"));
+            o->hide();
             { Fl_Group* o = new Fl_Group(34, 56, 538, 122, _("Web Browser lookup"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -14656,8 +14659,7 @@ and restarted if needed."));
             tabEQSL->end();
           } // Fl_Group* tabEQSL
           { tabLOTW = new Fl_Group(0, 50, 600, 340, _("LoTW"));
-            tabLOTW->hide();
-            { Fl_Input2* o = txt_lotw_pathname = new Fl_Input2(90, 91, 379, 24, _("tqsl:"));
+            { Fl_Input2* o = txt_lotw_pathname = new Fl_Input2(82, 91, 422, 24, _("tqsl:"));
               txt_lotw_pathname->tooltip(_("Enter full path-filename for tqsl executable"));
               txt_lotw_pathname->box(FL_DOWN_BOX);
               txt_lotw_pathname->color(FL_BACKGROUND2_COLOR);
@@ -14671,7 +14673,7 @@ and restarted if needed."));
               txt_lotw_pathname->when(FL_WHEN_CHANGED);
               o->value(progdefaults.lotw_pathname.c_str());
             } // Fl_Input2* txt_lotw_pathname
-            { Fl_Input2* o = inpLOTW_pwd = new Fl_Input2(90, 126, 200, 24, _("Password"));
+            { Fl_Input2* o = inpLOTW_pwd = new Fl_Input2(82, 126, 250, 24, _("Password"));
               inpLOTW_pwd->tooltip(_("Your tqsl login password"));
               inpLOTW_pwd->box(FL_DOWN_BOX);
               inpLOTW_pwd->color(FL_BACKGROUND2_COLOR);
@@ -14687,13 +14689,13 @@ and restarted if needed."));
               o->type(FL_SECRET_INPUT);
               inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpLOTW_pwd
-            { Fl_Check_Button* o = btn_submit_lotw_password = new Fl_Check_Button(90, 161, 234, 16, _("Use password for tqsl access"));
+            { Fl_Check_Button* o = btn_submit_lotw_password = new Fl_Check_Button(42, 161, 234, 16, _("Use password for tqsl access"));
               btn_submit_lotw_password->tooltip(_("Submit password with each upload"));
               btn_submit_lotw_password->down_box(FL_DOWN_BOX);
               btn_submit_lotw_password->callback((Fl_Callback*)cb_btn_submit_lotw_password);
               o->value(progdefaults.submit_lotw_password);
             } // Fl_Check_Button* btn_submit_lotw_password
-            { Fl_Input2* o = inpLOTW_location = new Fl_Input2(90, 188, 200, 24, _("Location"));
+            { Fl_Input2* o = inpLOTW_location = new Fl_Input2(82, 188, 250, 24, _("Location"));
               inpLOTW_location->tooltip(_("tqsl station location"));
               inpLOTW_location->box(FL_DOWN_BOX);
               inpLOTW_location->color(FL_BACKGROUND2_COLOR);
@@ -14708,61 +14710,66 @@ and restarted if needed."));
               o->value(progdefaults.lotw_location.c_str());
               inpLOTW_pwd->labelsize(FL_NORMAL_SIZE);
             } // Fl_Input2* inpLOTW_location
-            { btn_select_lotw = new Fl_Button(477, 91, 70, 24, _("Locate"));
+            { btn_select_lotw = new Fl_Button(525, 91, 70, 24, _("Locate"));
               btn_select_lotw->tooltip(_("Locate tqsl executable"));
               btn_select_lotw->callback((Fl_Callback*)cb_btn_select_lotw);
             } // Fl_Button* btn_select_lotw
-            { Fl_Check_Button* o = btn_lotw_quiet_mode = new Fl_Check_Button(90, 223, 309, 16, _("Quiet mode [-q], do not open tqsl dialog"));
+            { Fl_Check_Button* o = btn_lotw_quiet_mode = new Fl_Check_Button(42, 223, 309, 16, _("Quiet mode [-q], do not open tqsl dialog"));
               btn_lotw_quiet_mode->tooltip(_("Operate tqsl in batch mode (no dialog)"));
               btn_lotw_quiet_mode->down_box(FL_DOWN_BOX);
               btn_lotw_quiet_mode->callback((Fl_Callback*)cb_btn_lotw_quiet_mode);
               o->value(progdefaults.lotw_quiet_mode);
             } // Fl_Check_Button* btn_lotw_quiet_mode
-            { Fl_Check_Button* o = btn_submit_lotw = new Fl_Check_Button(90, 247, 289, 16, _("Send QSO data to LoTW when logged"));
+            { Fl_Check_Button* o = btn_submit_lotw = new Fl_Check_Button(42, 247, 289, 16, _("Send QSO data to LoTW when logged"));
               btn_submit_lotw->tooltip(_("Submit each QSO as logged"));
               btn_submit_lotw->down_box(FL_DOWN_BOX);
               btn_submit_lotw->callback((Fl_Callback*)cb_btn_submit_lotw);
               o->value(progdefaults.submit_lotw);
             } // Fl_Check_Button* btn_submit_lotw
-            { btn_export_lotw = new Fl_Button(90, 273, 70, 24, _("Export"));
+            { btn_export_lotw = new Fl_Button(15, 273, 70, 24, _("Export"));
               btn_export_lotw->tooltip(_("Export records for LoTW upload"));
               btn_export_lotw->callback((Fl_Callback*)cb_btn_export_lotw);
             } // Fl_Button* btn_export_lotw
-            { btn_review_lotw = new Fl_Button(90, 300, 70, 24, _("Check"));
+            { btn_review_lotw = new Fl_Button(15, 300, 70, 24, _("Check"));
               btn_review_lotw->tooltip(_("Review lotw.adif file before sending with tqsl"));
               btn_review_lotw->callback((Fl_Callback*)cb_btn_review_lotw);
             } // Fl_Button* btn_review_lotw
-            { btn_send_lotw = new Fl_Button(90, 328, 70, 24, _("Send"));
+            { btn_send_lotw = new Fl_Button(15, 328, 70, 24, _("Send"));
               btn_send_lotw->tooltip(_("Send lotw.adif via tqsl"));
               btn_send_lotw->callback((Fl_Callback*)cb_btn_send_lotw);
             } // Fl_Button* btn_send_lotw
-            { Fl_Box* o = new Fl_Box(175, 273, 395, 24, _("Export all or a set of logbook records for LoTW upload"));
+            { Fl_Box* o = new Fl_Box(90, 273, 346, 24, _("Export logbook records for LoTW upload"));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
             } // Fl_Box* o
-            { Fl_Box* o = new Fl_Box(175, 300, 395, 24, _("Review / edit the exported LoTW upload adif file"));
+            { Fl_Box* o = new Fl_Box(90, 300, 346, 24, _("Review / edit the exported LoTW upload adif file"));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
             } // Fl_Box* o
-            { Fl_Box* o = new Fl_Box(175, 328, 395, 24, _("Submit the upload adif file to LoTW"));
+            { Fl_Box* o = new Fl_Box(90, 328, 346, 24, _("Submit the upload adif file to LoTW"));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
             } // Fl_Box* o
             { Fl_Box* o = new Fl_Box(11, 60, 574, 24, _("You must have tqsl installed and it\'s location recorded for LoTW updates to \
 work!"));
               o->align(Fl_Align(FL_ALIGN_CENTER|FL_ALIGN_INSIDE));
             } // Fl_Box* o
-            { btnLOTW_pwd_show = new Fl_Button(297, 126, 70, 24, _("Show"));
+            { btnLOTW_pwd_show = new Fl_Button(340, 126, 70, 24, _("Show"));
               btnLOTW_pwd_show->tooltip(_("Show password in plain text"));
               btnLOTW_pwd_show->callback((Fl_Callback*)cb_btnLOTW_pwd_show);
             } // Fl_Button* btnLOTW_pwd_show
-            { Fl_Box* o = new Fl_Box(300, 188, 285, 24, _("Use this tqsl station location"));
+            { Fl_Box* o = new Fl_Box(339, 188, 211, 24, _("Use this tqsl station location"));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
             } // Fl_Box* o
-            { btn_verify_lotw = new Fl_Button(90, 356, 70, 24, _("Match"));
+            { btn_verify_lotw = new Fl_Button(15, 356, 70, 24, _("Match"));
               btn_verify_lotw->tooltip(_("Verify database with LoTW download file"));
               btn_verify_lotw->callback((Fl_Callback*)cb_btn_verify_lotw);
             } // Fl_Button* btn_verify_lotw
-            { Fl_Box* o = new Fl_Box(175, 356, 395, 24, _("Match logbook records with LoTW download file"));
+            { Fl_Box* o = new Fl_Box(90, 356, 346, 24, _("Match logbook records with LoTW download file"));
               o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
             } // Fl_Box* o
+            { btn_view_unmatched = new Fl_Button(456, 356, 139, 24, _("View Unmatched"));
+              btn_view_unmatched->tooltip(_("Verify database with LoTW download file"));
+              btn_view_unmatched->callback((Fl_Callback*)cb_btn_view_unmatched);
+              btn_view_unmatched->deactivate();
+            } // Fl_Button* btn_view_unmatched
             tabLOTW->end();
           } // Fl_Group* tabLOTW
           tabsQRZ->end();

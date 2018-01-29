@@ -74,6 +74,7 @@ extern void cb_send_lotw();
 extern void send_to_lotw(void *);
 extern void cb_btn_verify_lotw(Fl_Button *, void *);
 extern void cb_btn_verify_eqsl(Fl_Button *, void *);
+extern void cb_btn_view_unmatched(Fl_Button *, void *);
 
 extern void cb_Export_Cabrillo(Fl_Menu_* m, void* d);
 extern void cb_export_date_select();
