@@ -1396,8 +1396,10 @@ void SearchLastQSO(const char *callsign)
 		wBrowser->GotoRow(row);
 		inpName->value(inpName_log->value());
 		inpQth->value(inpQth_log->value());
-		inpLoc->value(inpLoc_log->value());
-		inpLoc->position (0);
+		inpLoc1->value(inpLoc_log->value());
+		inpLoc1->position (0);
+		inpLoc2->value(inpLoc_log->value());
+		inpLoc2->position (0);
 		inpState->value(inpState_log->value());
 		inpState->position (0);
 		inpVEprov->value(inpVE_Prov_log->value ());
@@ -1424,7 +1426,8 @@ void SearchLastQSO(const char *callsign)
 	} else {
 		inpName->value("");
 		inpQth->value("");
-		inpLoc->value("");
+		inpLoc1->value("");
+		inpLoc2->value("");
 		inpState->value("");
 		inpVEprov->value("");
 		inpCountry->value("");
@@ -1510,8 +1513,10 @@ void cb_btnRetrieve(Fl_Button* b, void* d)
 	inpCounty->position (0);
 	inpXchgIn->value(qsoPtr->getField(XCHG1));
 	inpQth->value (qsoPtr->getField(QTH));
-	inpLoc->value (qsoPtr->getField(GRIDSQUARE));
-	inpLoc->position (0);
+	inpLoc1->value (qsoPtr->getField(GRIDSQUARE));
+	inpLoc1->position (0);
+	inpLoc2->value (qsoPtr->getField(GRIDSQUARE));
+	inpLoc2->position (0);
 	inpNotes->value (qsoPtr->getField(NOTES));
 
 	wBrowser->take_focus();

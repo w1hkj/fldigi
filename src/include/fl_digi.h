@@ -116,6 +116,8 @@ extern Fl_Input2		*inpXchgIn1;
 extern Fl_Input2		*inpXchgIn2;
 extern Fl_Input2		*inpVEprov;
 extern Fl_Input2		*inpLoc;
+extern Fl_Input2		*inpLoc1;
+extern Fl_Input2		*inpLoc2;
 extern Fl_Input2		*inpNotes;
 extern Fl_Input2		*inpAZ;	// WA5ZNU
 extern Fl_Button		*qsoSave;

@@ -397,11 +397,13 @@ Fl_Input2			*inpName1 = (Fl_Input2 *)0;
 Fl_Input2			*inpRstIn1 = (Fl_Input2 *)0;
 Fl_Input2			*inpRstOut1 = (Fl_Input2 *)0;
 Fl_Input2			*inpState1 = (Fl_Input2 *)0;
+Fl_Input2			*inpLoc1 = (Fl_Input2 *)0;
 // Generic contest sub frame
 Fl_Group			*Contest_frame_1 = (Fl_Group *)0;
 Fl_Input2			*inpXchgIn1 = (Fl_Input2 *)0;
 Fl_Input2			*outSerNo1 = (Fl_Input2 *)0;
 Fl_Input2			*inpSerNo1 = (Fl_Input2 *)0;
+Fl_Input2			*inpLoc2 = (Fl_Input2 *)0;
 // FD contest sub frame
 Fl_Group			*FD_frame_1 = (Fl_Group *)0;
 Fl_Input2			*inp_FD_class1 = (Fl_Input2 *)0;
@@ -2950,8 +2952,9 @@ if (bWF_only) return;
 		inpTimeOn1, inpTimeOn2, inpTimeOn3,
 		inpRstIn1, inpRstIn2,
 		inpRstOut1, inpRstOut2,
-		inpQth, inpLoc, inpAZ, inpVEprov, inpCountry, inpCounty,
+		inpQth, inpLoc1, inpAZ, inpVEprov, inpCountry, inpCounty,
 		inpState1,
+		inpLoc2,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
 		outSerNo3,
@@ -3027,10 +3030,12 @@ void cb_loc(Fl_Widget* w, void*)
 		}
 	}
 	if ( !ok) {
-		inpLoc->value("");
+		inpLoc1->value("");
+		inpLoc2->value("");
 		return;
 	}
-	inpLoc->value(s.c_str());
+	inpLoc1->value(s.c_str());
+	inpLoc2->value(s.c_str());
 
 	if (QRB::locator2longlat(&lon[0], &lat[0], progdefaults.myLocator.c_str()) == QRB::QRB_OK &&
 		QRB::locator2longlat(&lon[1], &lat[1], s.c_str()) == QRB::QRB_OK &&
@@ -3100,7 +3105,7 @@ if (bWF_only) return;
 	}
 
 	if (old_call == new_call) {
-		if (n3fjp_calltab && n3fjp_connected) 
+		if (n3fjp_calltab && n3fjp_connected)
 			SearchLastQSO(inpCall->value());
 		return;
 	}
@@ -4299,6 +4304,7 @@ void UI_select()
 		outSerNo = outSerNo1;
 		inpXchgIn = inpXchgIn1;
 		inpState = inpState1;
+		inpLoc = inpLoc1;
 
 		QSO_frame_1->hide();
 		Contest_frame_1->hide();
@@ -4333,6 +4339,7 @@ void UI_select()
 				CQWW_RTTY_frame_1->hide();
 				CWSweepstakes_frame->hide();
 				Contest_frame_1->show();
+				inpLoc = inpLoc2;
 				break;
 			case LOG_CWSS:
 				outSerNo = outSerNo3;
@@ -4380,6 +4387,7 @@ void UI_select()
 			inpRstIn = inpRstIn2;
 			inpRstOut = inpRstOut2;
 			inpState = inpState1;
+			inpLoc = inpLoc2;
 			qsoFreqDisp = qsoFreqDisp2;
 			inpCall4->hide();
 			Status2->show();
@@ -5655,6 +5663,7 @@ void LOGGING_colors_font()
 		inpRstOut1, inpRstOut2,
 		inpQth, inpLoc, inpAZ, inpVEprov, inpCountry, inpCounty,
 		inpState1,
+		inpLoc1, inpLoc2,
 		inpSerNo1, inpSerNo2,
 		outSerNo1, outSerNo2,
 		outSerNo3,
@@ -5868,7 +5877,7 @@ void LOGBOOK_colors_font()
 	Tabs->position(2, ypos);
 
 	inp_font_pos(inpSearchString,
-		dlg_width - 2 - width_freq, ypos, 
+		dlg_width - 2 - width_freq, ypos,
 		width_freq, wh);
 
 	int tab_h = wh * 14 / progdefaults.LOGBOOKtextsize;
@@ -5901,7 +5910,7 @@ void LOGBOOK_colors_font()
 		date_font_pos(	dti[i], dti[i]->x(), dti[i]->y(), dti[i]->w(), wh);
 
 	inpNotes_log->resize(
-		tab_log_notes->x() + 2, 
+		tab_log_notes->x() + 2,
 		tab_log_notes->y() + 4,
 		tab_log_notes->w() - 4,
 		tab_log_notes->h() - 6);
@@ -6261,6 +6270,8 @@ void create_fl_digi_main_primary() {
 
 	fl_digi_main = new Fl_Double_Window(
 			progStatus.mainX, progStatus.mainY, W, H);
+
+		fl_font(FL_HELVETICA, FL_NORMAL_SIZE);
 
 		mnuFrame = new Fl_Group(0,0, W, Hmenu);
 			mnu = new Fl_Menu_Bar(0, 0, W - 325, Hmenu);
@@ -6724,11 +6735,11 @@ void create_fl_digi_main_primary() {
 						inpVEprov->tooltip(_("Can. Province"));
 						inpVEprov->align(FL_ALIGN_LEFT);
 
-						inpLoc = new Fl_Input2(
+						inpLoc1 = new Fl_Input2(
 							next_to(inpVEprov) + 15, y3,
 							next_to(inpAZ) - (next_to(inpVEprov) + 15), Hentry, "L");
-						inpLoc->tooltip(_("Maidenhead Locator"));
-						inpLoc->align(FL_ALIGN_LEFT);
+						inpLoc1->tooltip(_("Maidenhead Locator"));
+						inpLoc1->align(FL_ALIGN_LEFT);
 
 					QSO_frame_1->end();
 
@@ -6736,22 +6747,33 @@ void create_fl_digi_main_primary() {
 						Logging_frame_1->x(), y3, wf1, Hentry + pad);
 
 						outSerNo1 = new Fl_Input2(
-							inpFreq1->x(), y3, 40, Hentry,
-							"# S");
+							inpFreq1->x(), y3,
+							40, Hentry,
+							"S#");
 						outSerNo1->align(FL_ALIGN_LEFT);
 						outSerNo1->tooltip(_("Sent serial number (read only)"));
 						outSerNo1->type(FL_NORMAL_OUTPUT);
 
 						inpSerNo1 = new Fl_Input2(
-							rightof(outSerNo1) + pad, y3,
+							rightof(outSerNo1) + 4, y3,
 							40, Hentry,
-							"# R");
+							"R#");
 						inpSerNo1->align(FL_ALIGN_LEFT);
 						inpSerNo1->tooltip(_("Received serial number"));
 
+						inpLoc2 = new Fl_Input2(
+							Contest_frame_1->x() + Contest_frame_1->w() - 62, y3,
+							62, Hentry,
+							"L");
+						inpLoc2->tooltip(_("Maidenhead Locator"));
+						inpLoc2->align(FL_ALIGN_LEFT);
+
+int ixi = inpSerNo1->x() + inpSerNo1->w() + fl_width("Xch") + 4;
+int iwi = inpLoc2->x() - 4 - fl_width("L") - ixi;
+
 						inpXchgIn1 = new Fl_Input2(
-							rightof(inpSerNo1) + pad + 14, y3,
-							inpAZ->x() + inpAZ->w() - (rightof(inpSerNo1) + pad + 14), Hentry,
+							ixi, y3,
+							iwi, Hentry,
 							"Xch");
 						inpXchgIn1->align(FL_ALIGN_LEFT);
 						inpXchgIn1->tooltip(_("Contest exchange in"));
@@ -7161,7 +7183,7 @@ void create_fl_digi_main_primary() {
 
 			TopFrame3->end();
 		}
-		
+
 		TopFrame3->resizable(inpXchgIn2);
 		TopFrame3->hide();
 
@@ -7180,6 +7202,7 @@ void create_fl_digi_main_primary() {
 		inp_FD_section = inp_FD_section1;
 		inp_CQzone = inp_CQzone1;
 		inp_CQstate = inp_CQstate1;
+		inpLoc = inpLoc2;
 
 		qsoFreqDisp1->set_lsd(progdefaults.sel_lsd);
 		qsoFreqDisp2->set_lsd(progdefaults.sel_lsd);
@@ -7923,8 +7946,10 @@ void create_fl_digi_main_primary() {
 		inpCall4->callback(cb_call);
 		inpCall4->when(CB_WHEN);
 
-		inpLoc->callback(cb_loc);
-		inpLoc->when(CB_WHEN);
+		inpLoc1->callback(cb_loc);
+		inpLoc1->when(CB_WHEN);
+		inpLoc2->callback(cb_loc);
+		inpLoc2->when(CB_WHEN);
 
 		inpNotes->when(FL_WHEN_RELEASE);
 
@@ -8209,7 +8234,8 @@ void noop_controls() // create and then hide all controls not being used
 	}
 
 	inpQth = new Fl_Input2(defwidget); inpQth->hide();
-	inpLoc = new Fl_Input2(defwidget); inpLoc->hide();
+	inpLoc1 = new Fl_Input2(defwidget); inpLoc->hide();
+	inpLoc2 = new Fl_Input2(defwidget); inpLoc2->hide();
 	inpState1 = new Fl_Input2(defwidget); inpState1->hide();
 	inpCountry = new Fl_Input2(defwidget); inpCountry->hide();
 	inpCounty = new Fl_Input2(defwidget); inpCounty->hide();
@@ -10598,7 +10624,7 @@ void cb_ifkp_heard(Fl_Browser*, void*)
 	restoreFocus();
 }
 
-static void do_fsq_rx_text(std::string text, int style) 
+static void do_fsq_rx_text(std::string text, int style)
 {
 	for (size_t n = 0; n < text.length(); n++)
 		rx_parser( text[n], style );
