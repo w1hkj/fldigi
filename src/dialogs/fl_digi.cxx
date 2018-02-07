@@ -2112,9 +2112,66 @@ void cb_mnuConfigQRZ(Fl_Menu_*, void*) {
 	dlgConfig->show();
 }
 
-void cb_mnuConfigMisc(Fl_Menu_*, void*) {
+void cb_mnuConfigCPU_speed(Fl_Menu_*, void*) {
 	progdefaults.loadDefaults();
 	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabCPUspeed);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigNBEMS(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabNBEMS);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigPSKmail(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabPskmail);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigPSKreporter(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabSpot);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigSweetspot(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabSweetSpot);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigTextIO(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabText_IO);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigDTMF(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabDTMF);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigWX(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabWX);
+	dlgConfig->show();
+}
+
+void cb_mnuConfigKML(Fl_Menu_*, void*) {
+	progdefaults.loadDefaults();
+	tabsConfigure->value(tabMisc);
+	tabsMisc->value(tabKML);
 	dlgConfig->show();
 }
 
@@ -4889,10 +4946,21 @@ static Fl_Menu_Item menu_[] = {
 { icons::make_icon_label(_("Sound Card"), audio_card_icon), 0, (Fl_Callback*)cb_mnuConfigSoundCard, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 
 { _("Miscellaneous"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("CPU speed")), 0,  (Fl_Callback*)cb_mnuConfigCPU_speed, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("NBEMS")), 0,  (Fl_Callback*)cb_mnuConfigNBEMS, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("PSKmail")), 0,  (Fl_Callback*)cb_mnuConfigPSKmail, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("PSK reporter")), 0,  (Fl_Callback*)cb_mnuConfigPSKreporter, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Sweet spot")), 0,  (Fl_Callback*)cb_mnuConfigSweetspot, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("Text IO")), 0, (Fl_Callback*)cb_mnuConfigTextIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("DTMF")), 0, (Fl_Callback*)cb_mnuConfigDTMF, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("WX")), 0, (Fl_Callback*)cb_mnuConfigWX, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{ icons::make_icon_label(_("KML")), 0, (Fl_Callback*)cb_mnuConfigKML, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
+{0,0,0,0,0,0,0,0,0},
+
+{ _("Other"), 0, 0, 0, FL_SUBMENU, FL_NORMAL_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Autostart")), 0,  (Fl_Callback*)cb_mnuConfigAutostart, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IDs")), 0,  (Fl_Callback*)cb_mnuConfigID, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("IO")), 0,  (Fl_Callback*)cb_mnuConfigIO, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
-{ icons::make_icon_label(_("Misc")), 0,  (Fl_Callback*)cb_mnuConfigMisc, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Notifications")), 0,  (Fl_Callback*)cb_mnuConfigNotify, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("PSM")), 0,  (Fl_Callback*)cb_mnuConfigPSM, 0, FL_MENU_DIVIDER, _FL_MULTI_LABEL, 0, 14, 0},
 { icons::make_icon_label(_("Test Signals")), 0, (Fl_Callback*)cb_mnuTestSignals, 0, 0, _FL_MULTI_LABEL, 0, 14, 0},
