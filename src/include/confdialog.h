@@ -732,6 +732,8 @@ extern Fl_Check_Button *btnPSKRepAuto;
 extern Fl_Check_Button *btnPSKRepLog;
 extern Fl_Check_Button *btnPSKRepQRG;
 extern Fl_Check_Button *btn_report_when_visible;
+extern Fl_Check_Button *btn_pskrep_autostart;
+extern Fl_Box *box_connected_to_pskrep;
 extern Fl_Input2 *inpPSKRepHost;
 extern Fl_Input2 *inpPSKRepPort;
 extern Fl_Button *btnPSKRepInit;

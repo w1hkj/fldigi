@@ -716,9 +716,13 @@ void delayed_startup(void *)
 
 	notify_start();
 
-	if (progdefaults.usepskrep)
-		if (!pskrep_start())
+	if (progdefaults.pskrep_autostart) {
+		if (!pskrep_start()) {
 			LOG_ERROR("Could not start PSK reporter: %s", pskrep_error());
+			box_connected_to_pskrep->color(FL_WHITE);
+		} else
+			box_connected_to_pskrep->color(FL_GREEN);
+	}
 
 	auto_start();
 

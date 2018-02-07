@@ -429,7 +429,7 @@ static const char szBaudRates[] = "300|600|1200|2400|4800|9600|19200|38400|57600
 static const char szProsigns[] = "~|%|&|+|=|{|}|<|>|[|]| ";} {}
   Fl_Window {} {
     label {Fldigi configuration} open
-    xywh {515 217 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
+    xywh {615 176 600 425} type Double color 45 selection_color 51 labelsize 18 align 80 non_modal visible
   } {
     Fl_Tabs tabsConfigure {open
       xywh {0 0 605 390} color 50 selection_color 50
@@ -7799,7 +7799,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabMisc {
         label Misc open
-        xywh {0 25 600 365} hide
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsMisc {open
           xywh {0 25 600 365} selection_color 50
@@ -7969,7 +7969,7 @@ progdefaults.changed = true;}
           } {
             Fl_Group {} {
               label {PSK Reporter} open
-              xywh {55 72 490 254} box ENGRAVED_FRAME align 21
+              xywh {40 62 525 300} box ENGRAVED_FRAME align 21
             } {
               Fl_Check_Button btnPSKRepAuto {
                 label {Automatically spot callsigns in decoded text}
@@ -7986,22 +7986,33 @@ progdefaults.changed = true;}
 btnPSKRepInit->labelcolor(FL_RED);
 btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Send report only when QSO is logged} xywh {65 133 327 20} down_box DOWN_BOX
+                tooltip {Send report only when QSO is logged} xywh {65 134 327 20} down_box DOWN_BOX
                 code0 {btnPSKRepLog->value(progdefaults.pskrep_log);}
               }
               Fl_Check_Button btnPSKRepQRG {
                 label {Report rig frequency (enable only if you have rig control!)}
                 callback {progdefaults.pskrep_qrg = o->value();
 progdefaults.changed = true;}
-                tooltip {Include the transmit frequency} xywh {65 164 416 20} down_box DOWN_BOX
+                tooltip {Include the transmit frequency} xywh {65 166 416 20} down_box DOWN_BOX
                 code0 {btnPSKRepQRG->value(progdefaults.pskrep_qrg);}
               }
               Fl_Check_Button btn_report_when_visible {
                 label {Disable spotting when signal browser(s) are not visible.}
                 callback {progdefaults.report_when_visible = o->value();
 progdefaults.changed = true;}
-                tooltip {Check to reduce CPU load in PSK and RTTY modes.} xywh {65 195 416 20} down_box DOWN_BOX value 1
+                tooltip {Check to reduce CPU load in PSK and RTTY modes.} xywh {65 198 416 20} down_box DOWN_BOX value 1
                 code0 {o->value(progdefaults.report_when_visible);}
+              }
+              Fl_Check_Button btn_pskrep_autostart {
+                label {Log on to pskrep when starting fldigi}
+                callback {progdefaults.pskrep_autostart = o->value();
+progdefaults.changed = true;}
+                tooltip {Automatically start psk reporter socket connection} xywh {65 230 291 20} down_box DOWN_BOX
+                code0 {o->value(progdefaults.pskrep_autostart);}
+              }
+              Fl_Box box_connected_to_pskrep {
+                label Connected
+                xywh {375 231 18 18} box DIAMOND_DOWN_BOX color 7 align 8
               }
               Fl_Input inpPSKRepHost {
                 label {Host:}
@@ -8009,7 +8020,7 @@ progdefaults.changed = true;}
 btnPSKRepInit->labelcolor(FL_RED);
 btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
-                tooltip {To whom the connection is made} xywh {108 228 220 24} when 1
+                tooltip {To whom the connection is made} xywh {108 268 220 24} when 1
                 code0 {inpPSKRepHost->value(progdefaults.pskrep_host.c_str());}
                 code1 {inpPSKRepHost->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -8020,7 +8031,7 @@ progdefaults.changed = true;}
 btnPSKRepInit->labelcolor(FL_RED);
 btnPSKRepInit->redraw_label();
 progdefaults.changed = true;}
-                tooltip {Using UDP port \#} xywh {477 228 60 24} when 1
+                tooltip {Using UDP port \#} xywh {477 268 60 24} when 1
                 code0 {inpPSKRepPort->value(progdefaults.pskrep_port.c_str());}
                 code1 {inpPSKRepPort->labelsize(FL_NORMAL_SIZE);}
                 class Fl_Input2
@@ -8031,17 +8042,20 @@ progdefaults.changed = true;}
 if (!pskrep_start()) {
     boxPSKRepMsg->copy_label(pskrep_error());
     progdefaults.usepskrep = false;
+    box_connected_to_pskrep->color(FL_WHITE);
+    box_connected_to_pskrep->redraw();
 } else {
     boxPSKRepMsg->label(0);
     o->labelcolor(FL_FOREGROUND_COLOR);
     progdefaults.usepskrep = true;
-}
-progdefaults.changed = true;}
-                tooltip {Initialize the socket client} xywh {457 273 80 24}
+    box_connected_to_pskrep->color(FL_GREEN);
+    box_connected_to_pskrep->redraw();
+}} selected
+                tooltip {Initialize the socket client} xywh {457 313 80 24}
               }
               Fl_Box boxPSKRepMsg {
                 label {<PSK Reporter error message>}
-                xywh {67 257 300 48} labelfont 2
+                xywh {67 297 300 48} labelfont 2
                 code0 {boxPSKRepMsg->label(0);}
               }
             }
@@ -8377,7 +8391,7 @@ if (progdefaults.kml_enabled) {
       }
       Fl_Group tabQRZ {
         label Web open
-        xywh {0 25 600 365}
+        xywh {0 25 600 365} hide
       } {
         Fl_Tabs tabsQRZ {open
           xywh {0 25 600 365}
@@ -8649,7 +8663,7 @@ progdefaults.changed = true;}
             }
           }
           Fl_Group tabLOTW {
-            label LoTW open selected
+            label LoTW open
             xywh {0 50 600 340}
           } {
             Fl_Input txt_lotw_pathname {

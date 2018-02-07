@@ -6470,6 +6470,15 @@ static void cb_btn_report_when_visible(Fl_Check_Button* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btn_pskrep_autostart=(Fl_Check_Button *)0;
+
+static void cb_btn_pskrep_autostart(Fl_Check_Button* o, void*) {
+  progdefaults.pskrep_autostart = o->value();
+progdefaults.changed = true;
+}
+
+Fl_Box *box_connected_to_pskrep=(Fl_Box *)0;
+
 Fl_Input2 *inpPSKRepHost=(Fl_Input2 *)0;
 
 static void cb_inpPSKRepHost(Fl_Input2* o, void*) {
@@ -6495,12 +6504,15 @@ static void cb_btnPSKRepInit(Fl_Button* o, void*) {
 if (!pskrep_start()) {
     boxPSKRepMsg->copy_label(pskrep_error());
     progdefaults.usepskrep = false;
+    box_connected_to_pskrep->color(FL_WHITE);
+    box_connected_to_pskrep->redraw();
 } else {
     boxPSKRepMsg->label(0);
     o->labelcolor(FL_FOREGROUND_COLOR);
     progdefaults.usepskrep = true;
-}
-progdefaults.changed = true;
+    box_connected_to_pskrep->color(FL_GREEN);
+    box_connected_to_pskrep->redraw();
+};
 }
 
 Fl_Box *boxPSKRepMsg=(Fl_Box *)0;
@@ -13768,7 +13780,6 @@ gured on the\n\"Notifications\" configure dialog."));
         tabID->end();
       } // Fl_Group* tabID
       { tabMisc = new Fl_Group(0, 25, 600, 365, _("Misc"));
-        tabMisc->hide();
         { tabsMisc = new Fl_Tabs(0, 25, 600, 365);
           tabsMisc->selection_color(FL_LIGHT1);
           { tabCPUspeed = new Fl_Group(0, 50, 600, 340, _("CPU"));
@@ -13976,7 +13987,7 @@ gured on the\n\"Notifications\" configure dialog."));
             tabPskmail->end();
           } // Fl_Group* tabPskmail
           { tabSpot = new Fl_Group(0, 50, 600, 340, _("Spotting"));
-            { Fl_Group* o = new Fl_Group(55, 72, 490, 254, _("PSK Reporter"));
+            { Fl_Group* o = new Fl_Group(40, 62, 525, 300, _("PSK Reporter"));
               o->box(FL_ENGRAVED_FRAME);
               o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
               { btnPSKRepAuto = new Fl_Check_Button(65, 103, 324, 20, _("Automatically spot callsigns in decoded text"));
@@ -13985,26 +13996,37 @@ gured on the\n\"Notifications\" configure dialog."));
                 btnPSKRepAuto->callback((Fl_Callback*)cb_btnPSKRepAuto);
                 btnPSKRepAuto->value(progdefaults.pskrep_auto);
               } // Fl_Check_Button* btnPSKRepAuto
-              { btnPSKRepLog = new Fl_Check_Button(65, 133, 327, 20, _("Send reception report when logging a QSO"));
+              { btnPSKRepLog = new Fl_Check_Button(65, 134, 327, 20, _("Send reception report when logging a QSO"));
                 btnPSKRepLog->tooltip(_("Send report only when QSO is logged"));
                 btnPSKRepLog->down_box(FL_DOWN_BOX);
                 btnPSKRepLog->callback((Fl_Callback*)cb_btnPSKRepLog);
                 btnPSKRepLog->value(progdefaults.pskrep_log);
               } // Fl_Check_Button* btnPSKRepLog
-              { btnPSKRepQRG = new Fl_Check_Button(65, 164, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
+              { btnPSKRepQRG = new Fl_Check_Button(65, 166, 416, 20, _("Report rig frequency (enable only if you have rig control!)"));
                 btnPSKRepQRG->tooltip(_("Include the transmit frequency"));
                 btnPSKRepQRG->down_box(FL_DOWN_BOX);
                 btnPSKRepQRG->callback((Fl_Callback*)cb_btnPSKRepQRG);
                 btnPSKRepQRG->value(progdefaults.pskrep_qrg);
               } // Fl_Check_Button* btnPSKRepQRG
-              { Fl_Check_Button* o = btn_report_when_visible = new Fl_Check_Button(65, 195, 416, 20, _("Disable spotting when signal browser(s) are not visible."));
+              { Fl_Check_Button* o = btn_report_when_visible = new Fl_Check_Button(65, 198, 416, 20, _("Disable spotting when signal browser(s) are not visible."));
                 btn_report_when_visible->tooltip(_("Check to reduce CPU load in PSK and RTTY modes."));
                 btn_report_when_visible->down_box(FL_DOWN_BOX);
                 btn_report_when_visible->value(1);
                 btn_report_when_visible->callback((Fl_Callback*)cb_btn_report_when_visible);
                 o->value(progdefaults.report_when_visible);
               } // Fl_Check_Button* btn_report_when_visible
-              { inpPSKRepHost = new Fl_Input2(108, 228, 220, 24, _("Host:"));
+              { Fl_Check_Button* o = btn_pskrep_autostart = new Fl_Check_Button(65, 230, 291, 20, _("Log on to pskrep when starting fldigi"));
+                btn_pskrep_autostart->tooltip(_("Automatically start psk reporter socket connection"));
+                btn_pskrep_autostart->down_box(FL_DOWN_BOX);
+                btn_pskrep_autostart->callback((Fl_Callback*)cb_btn_pskrep_autostart);
+                o->value(progdefaults.pskrep_autostart);
+              } // Fl_Check_Button* btn_pskrep_autostart
+              { box_connected_to_pskrep = new Fl_Box(375, 231, 18, 18, _("Connected"));
+                box_connected_to_pskrep->box(FL_DIAMOND_DOWN_BOX);
+                box_connected_to_pskrep->color(FL_BACKGROUND2_COLOR);
+                box_connected_to_pskrep->align(Fl_Align(FL_ALIGN_RIGHT));
+              } // Fl_Box* box_connected_to_pskrep
+              { inpPSKRepHost = new Fl_Input2(108, 268, 220, 24, _("Host:"));
                 inpPSKRepHost->tooltip(_("To whom the connection is made"));
                 inpPSKRepHost->box(FL_DOWN_BOX);
                 inpPSKRepHost->color(FL_BACKGROUND2_COLOR);
@@ -14019,7 +14041,7 @@ gured on the\n\"Notifications\" configure dialog."));
                 inpPSKRepHost->value(progdefaults.pskrep_host.c_str());
                 inpPSKRepHost->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPSKRepHost
-              { inpPSKRepPort = new Fl_Input2(477, 228, 60, 24, _("Port:"));
+              { inpPSKRepPort = new Fl_Input2(477, 268, 60, 24, _("Port:"));
                 inpPSKRepPort->tooltip(_("Using UDP port #"));
                 inpPSKRepPort->box(FL_DOWN_BOX);
                 inpPSKRepPort->color(FL_BACKGROUND2_COLOR);
@@ -14034,11 +14056,11 @@ gured on the\n\"Notifications\" configure dialog."));
                 inpPSKRepPort->value(progdefaults.pskrep_port.c_str());
                 inpPSKRepPort->labelsize(FL_NORMAL_SIZE);
               } // Fl_Input2* inpPSKRepPort
-              { btnPSKRepInit = new Fl_Button(457, 273, 80, 24, _("Initialize"));
+              { btnPSKRepInit = new Fl_Button(457, 313, 80, 24, _("Initialize"));
                 btnPSKRepInit->tooltip(_("Initialize the socket client"));
                 btnPSKRepInit->callback((Fl_Callback*)cb_btnPSKRepInit);
               } // Fl_Button* btnPSKRepInit
-              { boxPSKRepMsg = new Fl_Box(67, 257, 300, 48, _("<PSK Reporter error message>"));
+              { boxPSKRepMsg = new Fl_Box(67, 297, 300, 48, _("<PSK Reporter error message>"));
                 boxPSKRepMsg->labelfont(2);
                 boxPSKRepMsg->label(0);
               } // Fl_Box* boxPSKRepMsg
@@ -14372,6 +14394,7 @@ and restarted if needed."));
         tabMisc->end();
       } // Fl_Group* tabMisc
       { tabQRZ = new Fl_Group(0, 25, 600, 365, _("Web"));
+        tabQRZ->hide();
         { tabsQRZ = new Fl_Tabs(0, 25, 600, 365);
           { Fl_Group* o = new Fl_Group(0, 50, 600, 340, _("Call Lookup"));
             o->hide();

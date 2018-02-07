@@ -2074,6 +2074,9 @@
               "Display all rx char's using ascii3 table",                               \
               false)                                                                    \
         /* PSK reporter */                                                              \
+        ELEM_(bool, pskrep_autostart, "PSKREP_AUTOSTART",                               \
+              "Enable to start pskrep interface when starting fldigi",                  \
+              false)                                                                    \
         ELEM_(bool, usepskrep, "USEPSKREP",                                             \
               "(Set by fldigi)",                                                        \
               false)                                                                    \
