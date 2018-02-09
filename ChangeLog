@@ -1,8 +1,28 @@
 
 
-=Version 4.0.15=
+=Version 4.0.16=
 
-2018-01-18  David Freese  <w1hkj@bellsouth.net>
+2018-02-08  David Freese  <w1hkj@bellsouth.net>
+
+	54c63f9: wo seg fault
+	8fa88c7: 8psk lockup problem
+	45a8991: Miscellaneous menu
+	8ff1cd6: pskrep autostart
+	4a78b53: OS X build script
+	487db95: Grid Square Contest
+	8c36d5f: Logbook Export
+
+2018-01-28  Haris Andrianos  <sv1grb@gmail.com>
+
+	6c19a62: Greek translation update
+
+2018-01-24  David Freese  <w1hkj@bellsouth.net>
+
+	dc384c6: Alert timeouts
+	af04127: video
+
+
+=Version 4.0.15=
 
 	e87f41a: ARQ server
 	5ab6914: Signal gain
