@@ -8302,7 +8302,7 @@ void noop_controls() // create and then hide all controls not being used
 	}
 
 	inpQth = new Fl_Input2(defwidget); inpQth->hide();
-	inpLoc1 = new Fl_Input2(defwidget); inpLoc->hide();
+	inpLoc1 = new Fl_Input2(defwidget); inpLoc1->hide();
 	inpLoc2 = new Fl_Input2(defwidget); inpLoc2->hide();
 	inpState1 = new Fl_Input2(defwidget); inpState1->hide();
 	inpCountry = new Fl_Input2(defwidget); inpCountry->hide();
