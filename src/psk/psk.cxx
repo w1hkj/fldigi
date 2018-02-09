@@ -1594,7 +1594,7 @@ void psk::update_syncscope()
 
 	display_metric(metric);
 
-	if (displaysn) {
+	if (displaysn && mode == MODE_PSK31) {
 		memset(msg1, 0, sizeof(msg1));
 		memset(msg2, 0, sizeof(msg2));
 
