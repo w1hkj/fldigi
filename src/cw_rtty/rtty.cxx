@@ -600,6 +600,9 @@ int rtty::rx_process(const double *buf, int len)
 		progStatus.rtty_filter_changed = false;
 		reset_filters();
 	}
+{
+	reverse = wf->Reverse() ^ !wf->USB();
+}
 
 	Metric();
 #if FILTER_DEBUG == 1

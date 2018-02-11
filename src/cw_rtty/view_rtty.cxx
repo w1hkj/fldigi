@@ -458,6 +458,10 @@ int view_rtty::rx_process(const double *buf, int buflen)
 	static bool bit = true;
 	int n = 0;
 
+{
+	reverse = wf->Reverse() ^ !wf->USB();
+}
+
 	rtty_squelch = pow(10, progStatus.VIEWER_rttysquelch / 10.0);
 
 	for (int ch = 0; ch < progdefaults.VIEWERchannels; ch++) {
