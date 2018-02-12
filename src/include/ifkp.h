@@ -168,7 +168,7 @@ public:
 	int		col;
 	int		rgb;
 	int		pixelnbr;
-static int		IMAGEspp;
+	static int		IMAGEspp;
 	int		TXspp;
 	void	recvpic(double smpl);
 	void	send_image();
@@ -177,6 +177,7 @@ static int		IMAGEspp;
 	void	m_ifkp_send_avatar();
 	void	ifkp_send_image(std::string s = "");
 
+	void	toggle_logs();
 };
 
 #endif

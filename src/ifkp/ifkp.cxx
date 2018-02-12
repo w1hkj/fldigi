@@ -66,6 +66,9 @@ static string teststr = "";
 static string allowed = " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/";
 static char sz[21];
 
+static bool enable_audit_log = false;
+static bool enable_heard_log = false;
+
 int ifkp::IMAGEspp = IMAGESPP;
 
 static string valid_callsign(char ch)
@@ -166,22 +169,9 @@ ifkp::ifkp(trx_mode md) : modem()
 
 	TX_IMAGE = TX_AVATAR = false;
 
-	heard_log_fname = progdefaults.ifkp_heard_log;
-	std::string sheard = TempDir;
-	sheard.append(heard_log_fname);
-	heard_log.open(sheard.c_str(), ios::app);
-
-	audit_log_fname = progdefaults.ifkp_audit_log;
-	std::string saudit = TempDir;
-	saudit.append(audit_log_fname);
-	audit_log.open(saudit.c_str(), ios::app);
-
-	audit_log << "\n==================================================\n";
-	audit_log << "Audit log: " << zdate() << ", " << ztime() << "\n";
-	audit_log << "==================================================\n";
-	audit_log.flush();
-
 	restart();
+
+	toggle_logs();
 
 	activate_ifkp_image_item(true);
 
@@ -310,6 +300,44 @@ void ifkp::show_mode()
 	return;
 }
 
+void ifkp::toggle_logs()
+{
+	if (enable_audit_log != progdefaults.ifkp_enable_audit_log){
+		enable_audit_log = progdefaults.ifkp_enable_audit_log;
+		if (audit_log.is_open()) audit_log.close();
+	}
+	if (enable_heard_log != progdefaults.ifkp_enable_heard_log) {
+		enable_heard_log = progdefaults.ifkp_enable_heard_log;
+		if (heard_log.is_open()) heard_log.close();
+	}
+
+	if (enable_heard_log) {
+		heard_log_fname = progdefaults.ifkp_heard_log;
+		std::string sheard = TempDir;
+		sheard.append(heard_log_fname);
+		heard_log.open(sheard.c_str(), ios::app);
+
+		heard_log << "==================================================\n";
+		heard_log << "Heard log: " << zdate() << ", " << ztime() << "\n";
+		heard_log << "==================================================\n";
+		heard_log.flush();
+	}
+
+	if (enable_audit_log) {
+		audit_log_fname = progdefaults.ifkp_audit_log;
+		std::string saudit = TempDir;
+		saudit.append(audit_log_fname);
+		audit_log.close();
+		audit_log.open(saudit.c_str(), ios::app);
+
+		audit_log << "==================================================\n";
+		audit_log << "Audit log: " << zdate() << ", " << ztime() << "\n";
+		audit_log << "==================================================\n";
+		audit_log.flush();
+	}
+
+}
+
 void ifkp::restart()
 {
 	set_freq(wf->Carrier());
@@ -408,7 +436,7 @@ void ifkp::process_symbol(int sym)
 //			if (ch_sqlch_open || metric >= progStatus.sldrSquelchValue) {
 			if (metric >= progStatus.sldrSquelchValue) {
 				put_rx_char(curr_ch, FTextBase::RECV);
-				if (progdefaults.ifkp_enable_audit_log) {
+				if (enable_audit_log) {
 					audit_log << ifkp_ascii[curr_ch];
 					if (curr_ch == '\n') audit_log << '\n';
 				}
@@ -417,7 +445,7 @@ void ifkp::process_symbol(int sym)
 				if (!station_calling.empty()) {
 					snprintf(szestimate, sizeof(szestimate), "%.0f db", s2n );
 					REQ(add_to_heard_list, station_calling.c_str(), szestimate);
-					if (progdefaults.ifkp_enable_heard_log) {
+					if (enable_heard_log) {
 						std::string sheard = zdate();
 						sheard.append(":").append(ztime());
 						sheard.append(",").append(station_calling);
@@ -576,6 +604,10 @@ int ifkp::rx_process(const double *buf, int len)
 {
 	double val;
 	cmplx zin, z;
+
+	if (enable_audit_log != progdefaults.ifkp_enable_audit_log ||
+		enable_heard_log != progdefaults.ifkp_enable_heard_log)
+		toggle_logs();
 
 	if (bkptr < 0) bkptr = 0;
 	if (bkptr >= IFKP_SHIFT_SIZE) bkptr = 0;

@@ -219,6 +219,7 @@ public:
 	void	send_image();
 	void	fsq_send_image(std::string s);
 
+	void	toggle_logs();
 };
 
 #endif

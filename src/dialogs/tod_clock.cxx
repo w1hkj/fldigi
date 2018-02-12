@@ -173,6 +173,22 @@ void update_tx_timer()
 	show_tx_timer();
 }
 
+void init_ztime()
+{
+	struct tm tm;
+	time_t t_temp;
+	struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+
+	t_temp=(time_t)tv.tv_sec;
+	gmtime_r(&t_temp, &tm);
+	if (!strftime(ztbuf, sizeof(ztbuf), "%Y%m%d %H%M%S", &tm))
+		memset(ztbuf, 0, sizeof(ztbuf));
+	else
+		ztbuf[8] = '\0';
+}
+
 void ztimer(void *)
 {
 	struct tm tm;
@@ -223,6 +239,7 @@ void *TOD_loop(void *args)
 			MilliSleep(st);
 			first_call = false;
 			_zmsec += st;
+			init_ztime();
 		} else {
 			MilliSleep(50);
 			_zmsec += 50;

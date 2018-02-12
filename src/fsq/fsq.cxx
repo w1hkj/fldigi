@@ -79,6 +79,9 @@ static const char *fsq_eot = "<eot>";
 static std::string fsq_string;
 static std::string fsq_delayed_string;
 
+static bool enable_audit_log = false;
+static bool enable_heard_log = false;
+
 #include "fsq-pic.cxx"
 
 void post_alert(std::string s1, double timeout = 0.0, std::string s2 = "")
@@ -197,20 +200,6 @@ fsq::fsq(trx_mode md) : modem()
 	for (int i = 0; i < BLOCK_SIZE; i++)
 		a_blackman[i] = blackman(1.0 * i / BLOCK_SIZE);
 
-	heard_log_fname = progdefaults.fsq_heard_log;
-	std::string sheard = TempDir;
-	sheard.append(heard_log_fname);
-	heard_log.open(sheard.c_str(), ios::app);
-
-	audit_log_fname = progdefaults.fsq_audit_log;
-	std::string saudit = TempDir;
-	saudit.append(audit_log_fname);
-	audit_log.open(saudit.c_str(), ios::app);
-
-	audit_log << "\n==================================================\n";
-	audit_log << "Audit log: " << zdate() << ", " << ztime() << "\n";
-	audit_log << "==================================================\n";
-
 	fsq_tx_image = false;
 
 	init_nibbles();
@@ -222,6 +211,8 @@ fsq::fsq(trx_mode md) : modem()
 
 	show_mode();
 
+	restart();
+	toggle_logs();
 }
 
 fsq::~fsq()
@@ -239,8 +230,11 @@ fsq::~fsq()
 	REQ(close_fsqMonitor);
 	stop_sounder();
 	stop_aging();
-	heard_log.close();
-	audit_log.close();
+
+	if (enable_audit_log)
+		audit_log.close();
+	if (enable_heard_log)
+		heard_log.close();
 };
 
 void  fsq::tx_init()
@@ -325,6 +319,42 @@ void fsq::adjust_for_speed()
 		symlen = 2048;
 	}
 	show_mode();
+}
+
+void fsq::toggle_logs()
+{
+	if (enable_heard_log != progdefaults.fsq_enable_heard_log) {
+		enable_heard_log = progdefaults.fsq_enable_heard_log;
+		if (heard_log.is_open()) heard_log.close();
+	}
+
+	if (enable_audit_log != progdefaults.fsq_enable_audit_log) {
+		enable_audit_log = progdefaults.fsq_enable_audit_log;
+		if (audit_log.is_open()) audit_log.close();
+	}
+
+	if (enable_heard_log) {
+		heard_log_fname = progdefaults.fsq_heard_log;
+		std::string sheard = TempDir;
+		sheard.append(heard_log_fname);
+		heard_log.open(sheard.c_str(), ios::app);
+
+		heard_log << "==================================================\n";
+		heard_log << "Heard log: " << zdate() << ", " << ztime() << "\n";
+		heard_log << "==================================================\n";
+	}
+
+	if (enable_audit_log) {
+		audit_log_fname = progdefaults.fsq_audit_log;
+		std::string saudit = TempDir;
+		saudit.append(audit_log_fname);
+		audit_log.close();
+		audit_log.open(saudit.c_str(), ios::app);
+
+		audit_log << "==================================================\n";
+		audit_log << "Audit log: " << zdate() << ", " << ztime() << "\n";
+		audit_log << "==================================================\n";
+	}
 }
 
 void fsq::restart()
@@ -453,11 +483,13 @@ void fsq::parse_rx_text()
 	}
 	if (!station_calling.empty()) {
 		REQ(add_to_heard_list, station_calling, szestimate);
-		std::string sheard = ztbuf;
-		sheard.append(",").append(station_calling);
-		sheard.append(",").append(szestimate).append("\n");
-		heard_log << sheard;
-		heard_log.flush();
+		if (enable_heard_log) {
+			std::string sheard = ztbuf;
+			sheard.append(",").append(station_calling);
+			sheard.append(",").append(szestimate).append("\n");
+			heard_log << sheard;
+			heard_log.flush();
+		}
 	}
 
 // remove station_calling, colon and checksum
@@ -997,10 +1029,11 @@ void fsq::process_symbol(int sym)
 			curr_ch = wsq_varidecode[prev_nibble * 32 + curr_nibble];
 		}
 		if (curr_ch > 0) {
-			audit_log << fsq_ascii[curr_ch];// & 0xFF];
-			if (curr_ch == '\n') audit_log << '\n';
-			audit_log.flush();
-
+			if (enable_audit_log) {
+				audit_log << fsq_ascii[curr_ch];// & 0xFF];
+				if (curr_ch == '\n') audit_log << '\n';
+				audit_log.flush();
+			}
 			lf_check(curr_ch);
 
 			if (b_bot) {
@@ -1191,9 +1224,10 @@ int fsq::rx_process(const double *buf, int len)
 	if (peak_hits != progdefaults.fsqhits) restart();
 	if (movavg_size != progdefaults.fsq_movavg) restart();
 	if (speed != progdefaults.fsqbaud) restart();
-	if (heard_log_fname != progdefaults.fsq_heard_log ||
-		audit_log_fname != progdefaults.fsq_audit_log) restart();
 
+	if (enable_heard_log != progdefaults.fsq_enable_heard_log ||
+		enable_audit_log != progdefaults.fsq_enable_audit_log) 
+		toggle_logs();
 
 	if (sounder_interval != progdefaults.fsq_sounder) {
 		sounder_interval = progdefaults.fsq_sounder;
