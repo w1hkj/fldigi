@@ -5,8 +5,9 @@
 //		Dave Freese, W1HKJ
 // Copyright (C) 2009-2010
 //		John Douyere, VK2ETA
-// Copyright (C) 2014
+// Copyright (C) 2014-2018
 //		John Phelps, KL4YFD
+//      Modified by Joe Counsil, K0OG - Flushlengths on 8PSKxF Modes
 //
 // PSK-FEC and PSK-R modes contributed by VK2ETA
 //
@@ -140,7 +141,6 @@ void psk::tx_init()
 
 	// interleaver
 	bitshreg = 0;
-	startpreamble = true;
 
 	symbols = 0;
 	acc_symbols = 0;
@@ -200,7 +200,7 @@ bool psk::viewer_mode()
 		mode == MODE_PSK125 || mode == MODE_PSK250 || mode == MODE_PSK500 ||
 		mode == MODE_PSK125R || mode == MODE_PSK250R || mode == MODE_PSK500R ||
 		mode == MODE_QPSK31 || mode == MODE_QPSK63 || mode == MODE_QPSK125 ||
-		mode == MODE_QPSK250 || mode == MODE_QPSK500 ) 
+		mode == MODE_QPSK250 || mode == MODE_QPSK500 )
 		return true;
 	return false;
 }
@@ -355,7 +355,7 @@ FIR_TYPE fir_type = PSK_CORE;
 			break;
 
 	// 8psk modes without FEC
-		case MODE_8PSK125:
+		case MODE_8PSK125: // 125 baud | 375 bits/sec No FEC
 			symbollen = 128;
 			samplerate = 16000;
 			_8psk = true;
@@ -365,7 +365,7 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK250: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+		case MODE_8PSK250: // 250 baud | 750 bits/sec No FEC
 			symbollen = 64;
 			samplerate = 16000;
 			_8psk = true;
@@ -375,7 +375,7 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK500: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
+		case MODE_8PSK500: // 500 baud | 1500 bits/sec No FEC
 			symbollen = 32;
 			samplerate = 16000;
 			_8psk = true;
@@ -397,10 +397,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			break;
 
 	// 8psk modes with FEC
-		case MODE_8PSK125FL:
+		case MODE_8PSK125FL: // 125 baud | 187 bits/sec @ 1/2 Rate K=13 FEC
 			symbollen = 128;
-			idepth = 384; // 1024 milliseconds
-			flushlength = 38;
+			idepth = 384; // 2048 milliseconds
+			flushlength = 55;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 128;
@@ -408,10 +408,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK250FL: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+		case MODE_8PSK250FL: // 250 baud | 375 bits/sec @ 1/2 Rate K=13 FEC
 			symbollen = 64;
-			idepth = 512; // 682 milliseconds
-			flushlength = 47;
+			idepth = 512; // 1365 milliseconds
+			flushlength = 65;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 256;
@@ -419,10 +419,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK125F:
+		case MODE_8PSK125F: // 125 baud | 187 bits/sec @ 1/2 Rate K=16 FEC
 			symbollen = 128;
-			idepth = 384; // 1024 milliseconds
-			flushlength = 38;
+			idepth = 384; // 2048 milliseconds
+			flushlength = 55;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 128;
@@ -430,10 +430,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK250F: // 250 baud | 375 bits/sec @ 1/2 Rate FEC
+		case MODE_8PSK250F: // 250 baud | 375 bits/sec @ 1/2 Rate K=16 FEC
 			symbollen = 64;
-			idepth = 512; // 682 milliseconds
-			flushlength = 47;
+			idepth = 512; // 1365 milliseconds
+			flushlength = 65;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 256;
@@ -441,10 +441,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK500F: // 500 baud | 1000 bits/sec @ 2/3 rate FEC
+		case MODE_8PSK500F: // 500 baud | 1000 bits/sec @ 2/3 rate K=13 FEC
 			symbollen = 32;
 			idepth = 640; // 426 milliseconds
-			flushlength = 62;
+			flushlength = 80;
 			samplerate = 16000;
 			_8psk = true;
 			_puncturing = true;
@@ -453,10 +453,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			cap |= CAP_REV;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK1000F: // 1000 baud | 3000 bits/sec
+		case MODE_8PSK1000F: // 1000 baud | 2000 bits/sec @ 2/3 rate K=7 FEC
 			symbollen = 16;
-			idepth = 512;
-			flushlength = 56;
+			idepth = 512; // 170 milliseconds
+			flushlength = 120;
 			samplerate = 16000;
 			_8psk = true;
 			dcdbits = 1024;
@@ -466,10 +466,10 @@ FIR_TYPE fir_type = PSK_CORE;
 			PSKviterbi = true;
 			fir_type = SINC;
 			break;
-		case MODE_8PSK1200F: // 1200 baud | 1800 bits/sec
+		case MODE_8PSK1200F: // 1200 baud | 2400 bits/sec @ 2/3 rate K=7 FEC
 			symbollen = 13;
-			idepth = 512;
-			flushlength = 56;
+			idepth = 512; // 142 milliseconds
+			flushlength = 175;
 			samplerate = 16000;
 			_8psk = true;
 			_puncturing = true;
@@ -820,7 +820,7 @@ FIR_TYPE fir_type = PSK_CORE;
 		enc = new encoder(K16, K16_POLY1, K16_POLY2);
 		dec = new viterbi(K16, K16_POLY1, K16_POLY2);
 		dec->setchunksize(4);
-		dec2 = new viterbi(K13, K16_POLY1, K16_POLY2);
+		dec2 = new viterbi(K16, K16_POLY1, K16_POLY2);
 		dec2->setchunksize(4);
 
 	} else if (_xpsk || _8psk || _16psk) {
@@ -849,7 +849,6 @@ FIR_TYPE fir_type = PSK_CORE;
 
 	bitshreg = 0;
 	rxbitstate = 0;
-	startpreamble = true;
 
 	tx_shape = new double[symbollen];
 	imd_shape = new double[symbollen];
@@ -859,9 +858,9 @@ FIR_TYPE fir_type = PSK_CORE;
 	for ( int i = 0; i < symbollen; i++) {
 		sym_ph = i * M_PI / symbollen;
 		tx_shape[i] = 0.5 * cos(sym_ph) + 0.5;
-		imd_shape[i] = 0.5 * ( cos(3.0 * sym_ph) + 
+		imd_shape[i] = 0.5 * ( cos(3.0 * sym_ph) +
 							   (3.0/5.0) * cos(5.0 * sym_ph) +
-							   (3.0/7.0) * cos(7.0 * sym_ph) + 
+							   (3.0/7.0) * cos(7.0 * sym_ph) +
 							   (3.0/9.0) * cos(9.0 * sym_ph) );
 	}
 
@@ -921,7 +920,7 @@ void psk::rx_bit(int bit)
 		// MFSK varicode instead of PSK Varicode
 		if ((shreg & 7) == 1) {
 			c = varidec(shreg >> 1);
-			// Voting at the character level for only PSKR modes
+			// Voting at the character level
 			if (fecmet >= fecmet2 || _disablefec) {
 				if ((c != -1) && (c != 0) && (dcd == true)) {
 					put_rx_char(c);
@@ -1366,36 +1365,17 @@ void psk::rx_symbol(cmplx symbol, int car)
 
 			// pskr DCD on
 		case 0x0A0A0A0A:
-			if ( _xpsk || _8psk || _16psk) break;
-			if (_qpsk) break;
 			if (!_pskr) break;
 			set_dcdON = 1;
 			break;
 
-			// 8psk DCD on (FEC enabled, with Gray-mapped constellation)
-		case 0x25252525: // UN-punctured
-			if (_pskr || _xpsk || _16psk) break;
-			if (!_8psk) break;
-			if (_disablefec) break;
-			set_dcdON = 1;
-			break;
-		case 0x22222222: // punctured @ 2/3 rate
-			if (_pskr || _xpsk || _16psk) break;
-			if (!_8psk) break;
-			if (_disablefec) break;
-			set_dcdON = 1;
-			break;
-
 		case 0x92492492:	// xpsk DCD off (with FEC disabled)
-			if (_pskr) break;
-			if (_qpsk) break;
 			if (!_xpsk) break;
 			if (!_disablefec) break;
 			set_dcdON = 0;
 			break;
 
 		case 0x10842108:	// 16psk DCD off (with FEC disabled)
-			if (_pskr) break;
 			if (!_16psk) break;
 			if (!_disablefec) break;
 			set_dcdON = 0;
@@ -1407,20 +1387,10 @@ void psk::rx_symbol(cmplx symbol, int car)
 			set_dcdON = 0;
 			break;
 
-		case 0x10410410:	// xpsk DCD on (with FEC enabled)
+		case 0x00000000:	// bpsk DCD off.  8psk DCD on.
 			if (_pskr) break;
-			if (_qpsk) break;
-			if (_8psk) break;
-			if (_16psk) break;
-			if (!_xpsk) break;
-			if (_disablefec) break;
-			set_dcdON = 1;
-			break;
-
-		case 0x00000000:	// bpsk DCD off.  x,8,16psk DCD on (with FEC disabled).
-			if (_pskr) break;
-			if (_xpsk || _8psk || _16psk) {
-				if (!_disablefec) break;
+			if (_xpsk || _16psk) break;
+			if (_8psk) {
 				set_dcdON = 1;
 				break;
 			}
@@ -1435,6 +1405,7 @@ void psk::rx_symbol(cmplx symbol, int car)
 			}
 	}
 
+	//printf("\n%08x", dcdshreg);
 	if ( 1 == set_dcdON ) {
 		dcd = true;
 		acquire = 0;
@@ -1461,7 +1432,6 @@ void psk::rx_symbol(cmplx symbol, int car)
 			int bitmask = 1;
 			unsigned char xsoftsymbols[symbits];
 
-			//printf("\n");
 			if ( (_puncturing && _16psk) ) rx_pskr(128); // 16psk: recover punctured low bit
 
 			// Soft-decode of Gray-mapped 8psk
@@ -1499,7 +1469,6 @@ void psk::rx_symbol(cmplx symbol, int car)
 				//Hard Decode Section
 				for(int i=0; i<symbits; i++) { // Hard decode symbits into soft-symbols
 					xsoftsymbols[i] = (bits & bitmask) ? 255 : 0 ;
-					//printf(" %.3u ", xsoftsymbols[i]);
 					rx_pskr(xsoftsymbols[i]); // Feed to the PSKR FEC decoder, one bit at a time.
 					bitmask = bitmask << 1;
 				}
@@ -1551,7 +1520,7 @@ void psk::signalquality()
 	if (e1 > e0) {
 		if ((e1 > 2 * e2) && (e2 > 0)) {
 			snratio = e1 / e2;
-			if (snratio < 1.0) 
+			if (snratio < 1.0)
 				snratio = 1.0;
 		} else
 			snratio = 1.0;
@@ -1611,7 +1580,7 @@ void psk::update_syncscope()
 
 		imd = 10.0*log10( imdratio );
 
-		if (imd > -10) 
+		if (imd > -10)
 			strcpy(msg2, "IMD ---");
 		else
 			snprintf(msg2, sizeof(msg2), "IMD %2.0f dB", imd);
@@ -1890,7 +1859,7 @@ void psk::tx_carriers()
 //				shapeA -= imd * (3.0 / 9.0) * cos(9.0 * i * M_PI / symbollen);
 //				shapeA *= 0.5;
 //				shapeA += 0.5;
-			} 
+			}
 //			else
 //				shapeA = tx_shape[i];  //0.5 * cos(i * M_PI / symbollen) + 0.5;
 
@@ -1991,11 +1960,9 @@ void psk::tx_xpsk(int bit)
 	int fecbits = 0;
 
 	// If invalid value of bitcount, reset to 0
-	if (_puncturing || _xpsk || _16psk)
+	if ( (_8psk && _puncturing) || _xpsk || _16psk)
 		if ( (bitcount & 0x1) )
 			bitcount = 0;
-
-	//printf("\n\n bit: %d", bit);
 
 	// Pass one bit and return two bits
 	bitshreg = enc->encode(bit);
@@ -2003,67 +1970,11 @@ void psk::tx_xpsk(int bit)
 	Txinlv->bits(&bitshreg); // Bit-interleave
 	fecbits = bitshreg;
 
-
-	/// DEBUG
-	/*
-	 * 	static bool flip;
-	 if (flip) {
-	 flip = false;
-	 fecbits = 0;
-	 } else {
-	 flip = true;
-	 fecbits = 3;
-	 }
-	 */
-
-	//printf("\nfecbits: %u", fecbits);
-	//printf("\nbitcount: %d", bitcount);
-
 	if (_xpsk) { // 2 bits-per-symbol. Transmit every call
 		xpsk_sym = static_cast<unsigned int>(fecbits);
 		tx_symbol(xpsk_sym);
 		return;
 	}
-
-	// DEBUG
-	/*
-	 if (_8psk) {
-	 tx_symbol(0);
-	 tx_symbol(7);
-	 return;
-	 }
-	 */
-
-	// DEBUG, send a known pattern of symbols / bits
-	/*
-	 * 	static int counter = 0;
-	 counter++;
-	 if ( counter > 7 ) counter = 0;
-	 tx_symbol(1);
-	 return;
-	 */
-
-	/*
-	 else if (mode == MODE_8PSK ???) { // Puncture @ 5/6 rate | tx 3bits/symbol (8psk)
-	 // Collect up to 8 bits
-	 if ( x_bitcount < 8 ) {
-	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
-	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
-	 x_bitcount += 2;
-	 return;
-
-	 // When 10 bits are buffered,
-	 //	drop 4 bits then transmit 6 bits (2-symbols)
-	 } else {
-	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << x_bitcount ;
-	 x_xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << x_bitcount ;
-	 tx_symbol( (x_xpsk_sym & 14) >> 1);
-	 tx_symbol( (x_xpsk_sym & 448) >> 6);
-	 x_xpsk_sym = x_bitcount = 0;
-	 return;
-	 }
-	 }
-	 */
 
 	else if (_8psk && _puncturing) { // @ 2/3 rate
 
@@ -2074,8 +1985,8 @@ void psk::tx_xpsk(int bit)
 
 		} else if ( 2 == bitcount ) {
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
-			/// Puncture -> //xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
-			tx_symbol(xpsk_sym & 7);
+			/// Punctured anyways, so skip -> //xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 2 ;
+			tx_symbol(xpsk_sym & 7); /// Drop/puncture the high-bit on Tx
 			xpsk_sym = bitcount = 0;
 			return;
 		}
@@ -2085,35 +1996,21 @@ void psk::tx_xpsk(int bit)
 	else if (_8psk) { // 3 bits-per-symbol. Accumulate then tx.
 
 		if ( 0 == bitcount ) { // Empty xpsk_sym buffer: add 2 bits and return
-							   //printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym = static_cast<unsigned int>(fecbits);
-			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
 			bitcount = 2;
 			return ;
 
 		} else if ( 1 == bitcount ) { // xpsk_sym buffer with one bit: add 2 bits then tx and clear
-									  //xpsk_sym <<= 2; // shift left 2 bits
-
-			//printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 1 ;
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) << 1 ;
-			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
-
-			//printf("\nxpsk_sym|postinlv: %u", xpsk_sym);
 			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
 			return;
 
 		} else if ( 2 == bitcount ) { // xpsk_sym buffer with 2 bits: add 1 then tx and save next bit
-									  //printf("\nxpsk_sym|preadd: %u", xpsk_sym);
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 1) << 2 ;
-			//printf("\nxpsk_sym|postadd: %u", xpsk_sym);
-
-			//printf("\nxpsk_sym|postinlv: %u", xpsk_sym);
-
 			tx_symbol(xpsk_sym);
 			xpsk_sym = bitcount = 0;
-
 			xpsk_sym |= (static_cast<unsigned int>(fecbits) & 2) >> 1 ;
 			bitcount = 1;
 			return;
@@ -2200,16 +2097,19 @@ void psk::tx_flush()
 			tx_bit(1);
 			tx_bit(1);
 		}
-		// QPSK - flush the encoder
+
+	// QPSK - flush the encoder
 	} else if (_qpsk) {
 		for (int i = 0; i < dcdbits; i++)
 			tx_bit(0);
-		// FEC : replace unmodulated carrier by an encoded sequence of zeros
+
+	// FEC enabled: Sens the NULL character in MFSk varicode as the flush / post-amble sequence
 	} else if (!_disablefec && (_xpsk || _8psk || _16psk) ) {
-		for (int i = 0; i < flushlength; i++) {
-			tx_char(0);   // <NUL>
+		for (int i=0; i<flushlength; i++) {
+			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
 		}
-		// FEC disabled: use unmodulated carrier
+
+	// FEC disabled: use unmodulated carrier (bpsk-like single tone)
 	} else if (_disablefec && ( _xpsk || _8psk || _16psk) ) {
 		for (int i=0; i<symbits; i++) {
 			tx_char(0); // Send <NUL> to clear bit accumulators on both Tx and Rx ends.
@@ -2218,16 +2118,12 @@ void psk::tx_flush()
 		int symbol;
 		if (_16psk) symbol = 8;
 		else if (_8psk) symbol = 4;
-		else symbol = 2;
+		else symbol = 2; // xpsk
 
-		int _dcdbits = dcdbits - 1;
-		if(progStatus.psk8DCDShortFlag)
-			_dcdbits  = 32/(symbits - 1);
+		for (int i = 0; i <= 96; i++) // DCD window is only 32-bits wide. Send 3-times
+			tx_symbol(symbol);
 
-		for (int i = 0; i <= _dcdbits; i++) // DCD window is only 32-bits wide
-			tx_symbol(symbol); // 0 degrees
-							   // Standard BPSK postamble
-							   // DCD off sequence (unmodulated carrier)
+	// Standard BPSK postamble
 	} else {
 		for (int i = 0; i < dcdbits; i++)
 			tx_symbol(2); // 0 degrees
@@ -2248,43 +2144,57 @@ int psk::tx_process()
 {
 	modem::tx_process();
 
-	int c;
-
-	// DCD window is only 32 bits, send a maximum of 3-times.
-	if(progStatus.psk8DCDShortFlag) {
-		if ( (_8psk || _xpsk || _16psk) && preamble > 96)
-			preamble = 96;
-	}
-
-	if (preamble > 0) {
-		if (_pskr || ((_xpsk || _8psk || _16psk) && !_disablefec) ) {
-			if (startpreamble == true) {
-				if (mode != MODE_PSK63F) clearbits();
-				startpreamble = false;
-			}
+	if (preamble) {
+		if (_pskr) {
+			if (mode != MODE_PSK63F)
+				clearbits();
 			// FEC prep the encoder with one/zero sequences of bits
-			preamble--;
-			preamble--;
-			tx_bit(1);
-			tx_bit(0);
+			for (int i = 0; i < preamble; i += 2) {
+				tx_bit(1);
+				tx_bit(0);
+			}
 			// FEC: Mark start of first character with a double zero
 			// to ensure sync at end of preamble
-			if (preamble == 0) {
-				while (acc_symbols % numcarriers) tx_bit(0);
-				tx_char(0); // <NUL>
-			}
+			while (acc_symbols % numcarriers) tx_bit(0);
+			tx_char(0); // <NUL>
+			preamble = 0;
 			return 0;
+		} else if (_8psk) {
+			if (!_disablefec) clearbits();
+			if(progStatus.psk8DCDShortFlag)
+				if (preamble > 96) preamble = 96;
+			if (_disablefec) {
+				// Send continuous symbol 0: Usual PSK 2-tone preamble
+				for (int i = 0; i < preamble; i++ )
+					tx_symbol(0);
+				tx_char(0);
+				preamble = 0;
+				return 0;
+			} else {
+				_disablefec = true;
+				for (int i = 0; i < preamble/2; i++) tx_symbol(0);
+				_disablefec = false;
+				// FEC prep the encoder with encoded sequence of double-zeros
+				// sends a single centered preamble tone for FEC modes
+				for (int i = 0; i < preamble; i += 2) {
+					tx_bit(0);
+					tx_bit(0);
+				}
+				tx_char(0);
+				preamble = 0;
+				return 0;
+			}
 		} else {
-			//JD for QPSK500R
-			//			if (mode == MODE_QPSK500) clearbits();
 			// Standard BPSK/QPSK preamble
-			preamble--;
-			tx_symbol(0);   // send phase reversals
+			for (int i = 0; i < preamble; i++) {
+				tx_symbol(0);   // send phase reversals
+			}
+			preamble = 0;
 			return 0;
 		}
 	}
 
-	c = get_tx_char();
+	int c = get_tx_char();
 
 	if (c == GET_TX_CHAR_ETX || stopflag) {
 		tx_flush();
