@@ -1486,6 +1486,9 @@
         ELEM_(std::string, logbookfilename, "LOGBOOKFILENAME",                          \
               "Logbook file name",                                                      \
               "")                                                                       \
+        ELEM_(bool, DisplayLogbookRead, "LOGBOOKREADDISPLAY",                           \
+              "Display read # recs and logbook name on program start",                  \
+              0)                                                                        \
         ELEM_(bool, fixed599, "FIXED599",                                               \
               "Force RST in/out to 599",                                                \
               false)                                                                    \

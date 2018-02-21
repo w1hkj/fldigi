@@ -379,8 +379,8 @@ Read Logbook: %s\n\
 			read_errors.append("\
 ================================================\n");
 			if (db == &qsodb) REQ(write_rxtext, read_errors.c_str());
-		} else
-			if (db == &qsodb) REQ(write_rxtext, szmsg);
+		} else if (progdefaults.DisplayLogbookRead && (db == &qsodb))
+			REQ(write_rxtext, szmsg);
 	}
 
 	if (db == &qsodb)

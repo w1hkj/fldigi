@@ -755,6 +755,13 @@ static void cb_inpMyPower(Fl_Input2* o, void*) {
 progdefaults.changed = true;
 }
 
+Fl_Check_Button *btnDisplayLogbookRead=(Fl_Check_Button *)0;
+
+static void cb_btnDisplayLogbookRead(Fl_Check_Button* o, void*) {
+  progdefaults.DisplayLogbookRead = o->value();
+progdefaults.changed = true;
+}
+
 Fl_Group *grpRX_Text=(Fl_Group *)0;
 
 Fl_Check_Button *btnRXClicks=(Fl_Check_Button *)0;
@@ -8108,7 +8115,6 @@ Fl_Double_Window* ConfigureDialog() {
         tabOperator->end();
       } // Fl_Group* tabOperator
       { tabUI = new Fl_Group(0, 25, 600, 365, _("UI"));
-        tabUI->hide();
         { tabsUI = new Fl_Tabs(0, 25, 600, 365);
           tabsUI->selection_color(FL_LIGHT1);
           { tabBrowser = new Fl_Group(0, 50, 600, 340, _("Browser"));
@@ -8389,7 +8395,6 @@ Fl_Double_Window* ConfigureDialog() {
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
-                grp_Log_QSO->hide();
                 { Fl_Group* o = new Fl_Group(45, 99, 515, 250, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -8441,7 +8446,7 @@ Fl_Double_Window* ConfigureDialog() {
                 btnRSTdefault->callback((Fl_Callback*)cb_btnRSTdefault);
                 o->value(progdefaults.RSTdefault);
                 } // Fl_Check_Button* btnRSTdefault
-                { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(197, 249, 346, 24, _("cty.dat folder"));
+                { Fl_Input2* o = txt_cty_dat_pathname = new Fl_Input2(197, 283, 346, 24, _("cty.dat folder"));
                 txt_cty_dat_pathname->tooltip(_("Enter full path-name for cty.dat folder"));
                 txt_cty_dat_pathname->box(FL_DOWN_BOX);
                 txt_cty_dat_pathname->color(FL_BACKGROUND2_COLOR);
@@ -8455,19 +8460,19 @@ Fl_Double_Window* ConfigureDialog() {
                 txt_cty_dat_pathname->when(FL_WHEN_CHANGED);
                 o->value(progdefaults.cty_dat_pathname.c_str());
                 } // Fl_Input2* txt_cty_dat_pathname
-                { btn_select_cty_dat = new Fl_Button(78, 278, 75, 24, _("Browse"));
+                { btn_select_cty_dat = new Fl_Button(78, 312, 75, 24, _("Browse"));
                 btn_select_cty_dat->tooltip(_("Locate cty.dat file"));
                 btn_select_cty_dat->callback((Fl_Callback*)cb_btn_select_cty_dat);
                 } // Fl_Button* btn_select_cty_dat
-                { btn_default_cty_dat = new Fl_Button(173, 278, 75, 24, _("Default"));
+                { btn_default_cty_dat = new Fl_Button(173, 312, 75, 24, _("Default"));
                 btn_default_cty_dat->tooltip(_("Restore cty.dat default folder"));
                 btn_default_cty_dat->callback((Fl_Callback*)cb_btn_default_cty_dat);
                 } // Fl_Button* btn_default_cty_dat
-                { btn_reload_cty_dat = new Fl_Button(268, 278, 75, 24, _("Reload"));
+                { btn_reload_cty_dat = new Fl_Button(268, 312, 75, 24, _("Reload"));
                 btn_reload_cty_dat->tooltip(_("Reload cty.dat"));
                 btn_reload_cty_dat->callback((Fl_Callback*)cb_btn_reload_cty_dat);
                 } // Fl_Button* btn_reload_cty_dat
-                { Fl_Input2* o = inpMyPower = new Fl_Input2(493, 278, 50, 24, _("Transmit Power"));
+                { Fl_Input2* o = inpMyPower = new Fl_Input2(493, 312, 50, 24, _("Transmit Power"));
                 inpMyPower->tooltip(_("Tx power used for logbook entries"));
                 inpMyPower->box(FL_DOWN_BOX);
                 inpMyPower->color(FL_BACKGROUND2_COLOR);
@@ -8482,6 +8487,12 @@ Fl_Double_Window* ConfigureDialog() {
                 o->value(progdefaults.mytxpower.c_str());
                 o->labelsize(FL_NORMAL_SIZE);
                 } // Fl_Input2* inpMyPower
+                { Fl_Check_Button* o = btnDisplayLogbookRead = new Fl_Check_Button(77, 252, 277, 20, _("Display logbook read datum at start"));
+                btnDisplayLogbookRead->tooltip(_("The filename is written to the RX text area"));
+                btnDisplayLogbookRead->down_box(FL_DOWN_BOX);
+                btnDisplayLogbookRead->callback((Fl_Callback*)cb_btnDisplayLogbookRead);
+                o->value(progdefaults.DisplayLogbookRead);
+                } // Fl_Check_Button* btnDisplayLogbookRead
                 o->end();
                 } // Fl_Group* o
                 grp_Log_QSO->end();
@@ -8531,6 +8542,7 @@ ab and newline are automatically included."));
                 grpRX_Text->end();
               } // Fl_Group* grpRX_Text
               { grpMacLogger = new Fl_Group(0, 75, 600, 315, _("MacLogger"));
+                grpMacLogger->hide();
                 { Fl_Check_Button* o = btnConnectToMaclogger = new Fl_Check_Button(10, 91, 186, 20, _("Connect to MacLogger"));
                 btnConnectToMaclogger->down_box(FL_DOWN_BOX);
                 btnConnectToMaclogger->callback((Fl_Callback*)cb_btnConnectToMaclogger);

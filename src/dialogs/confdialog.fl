@@ -526,7 +526,7 @@ progdefaults.changed = true;}
       }
       Fl_Group tabUI {
         label UI open
-        xywh {0 25 600 365} hide
+        xywh {0 25 600 365}
       } {
         Fl_Tabs tabsUI {open
           xywh {0 25 600 365} selection_color 50
@@ -868,8 +868,8 @@ progdefaults.changed = true;}
               xywh {0 50 600 340}
             } {
               Fl_Group grp_Log_QSO {
-                label QSO
-                xywh {0 75 600 315} hide
+                label QSO open
+                xywh {0 75 600 315}
               } {
                 Fl_Group {} {
                   label {QSO logging} open
@@ -937,7 +937,7 @@ progdefaults.changed = true;}
                     label {cty.dat folder}
                     callback {progdefaults.cty_dat_pathname = o->value();
 progdefaults.changed = true;}
-                    tooltip {Enter full path-name for cty.dat folder} xywh {197 249 346 24} when 1
+                    tooltip {Enter full path-name for cty.dat folder} xywh {197 283 346 24} when 1
                     code0 {o->value(progdefaults.cty_dat_pathname.c_str());}
                     code1 {\#include "dxcc.h"}
                     class Fl_Input2
@@ -945,26 +945,33 @@ progdefaults.changed = true;}
                   Fl_Button btn_select_cty_dat {
                     label Browse
                     callback {select_cty_dat_pathname();}
-                    tooltip {Locate cty.dat file} xywh {78 278 75 24}
+                    tooltip {Locate cty.dat file} xywh {78 312 75 24}
                   }
                   Fl_Button btn_default_cty_dat {
                     label Default
                     callback {default_cty_dat_pathname();}
-                    tooltip {Restore cty.dat default folder} xywh {173 278 75 24}
+                    tooltip {Restore cty.dat default folder} xywh {173 312 75 24}
                   }
                   Fl_Button btn_reload_cty_dat {
                     label Reload
                     callback {reload_cty_dat();}
-                    tooltip {Reload cty.dat} xywh {268 278 75 24}
+                    tooltip {Reload cty.dat} xywh {268 312 75 24}
                   }
                   Fl_Input inpMyPower {
                     label {Transmit Power}
                     callback {progdefaults.mytxpower = o->value();
 progdefaults.changed = true;}
-                    tooltip {Tx power used for logbook entries} xywh {493 278 50 24}
+                    tooltip {Tx power used for logbook entries} xywh {493 312 50 24}
                     code0 {o->value(progdefaults.mytxpower.c_str());}
                     code1 {o->labelsize(FL_NORMAL_SIZE);}
                     class Fl_Input2
+                  }
+                  Fl_Check_Button btnDisplayLogbookRead {
+                    label {Display logbook read datum at start}
+                    callback {progdefaults.DisplayLogbookRead = o->value();
+progdefaults.changed = true;}
+                    tooltip {The filename is written to the RX text area} xywh {77 252 277 20} down_box DOWN_BOX
+                    code0 {o->value(progdefaults.DisplayLogbookRead);}
                   }
                 }
               }
@@ -1012,7 +1019,7 @@ progdefaults.changed = true;}
               }
               Fl_Group grpMacLogger {
                 label MacLogger
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Check_Button btnConnectToMaclogger {
                   label {Connect to MacLogger}

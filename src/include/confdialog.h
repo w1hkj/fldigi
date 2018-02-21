@@ -83,6 +83,7 @@ extern Fl_Button *btn_select_cty_dat;
 extern Fl_Button *btn_default_cty_dat;
 extern Fl_Button *btn_reload_cty_dat;
 extern Fl_Input2 *inpMyPower;
+extern Fl_Check_Button *btnDisplayLogbookRead;
 extern Fl_Group *grpRX_Text;
 extern Fl_Check_Button *btnRXClicks;
 extern Fl_Check_Button *btnRXTooltips;
