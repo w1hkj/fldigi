@@ -695,7 +695,17 @@ void WFdisp::handle_sig_data()
 			int offset = 0;
 			double afreq = active_modem->get_txfreq();
 			trx_mode mode = active_modem->get_mode();
-			if (mode == MODE_RTTY && progdefaults.useMARKfreq) {
+			string testmode = qso_opMODE->value();
+
+			bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
+								(testmode.find("FSK") != string::npos) ||
+								((testmode.find("DATA") != string::npos) &&
+								 (use_nanoFSK || use_Nav || progdefaults.PseudoFSK)) );
+			usb = !ModeIsLSB(testmode);
+			if ((testmode.find("DATA") != string::npos) && xcvr_useFSK)
+				usb = !usb;
+
+			if (mode == MODE_RTTY && progdefaults.useMARKfreq && !xcvr_useFSK) {
 				offset = (progdefaults.rtty_shift < rtty::numshifts ?
 					rtty::SHIFT[progdefaults.rtty_shift] :
 					progdefaults.rtty_custom_shift);
@@ -830,8 +840,49 @@ void WFdisp::drawScale() {
 
 	if (progdefaults.wf_audioscale)
 		pixmap = (scaleimage + (int)offset);
-	else if (usb || !rfc)
-		pixmap = (scaleimage +  (int)((rfc % 1000 + offset)) );
+		fl_draw_image_mono(
+			pixmap,
+			x(), y() + WFTEXT,
+			w(), WFSCALE,
+			step, scale_width);
+
+		fl_color(fl_rgb_color(228));
+		fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
+
+		for (int i = 1; ; i++) {
+			fr = 500.0 * i;
+			snprintf(szFreq, sizeof(szFreq), "%7.0f", fr);
+			fw = (int)fl_width(szFreq);
+			xoff = (int) (( (1000.0/step) * i - fw) / 2.0 - offset /step );
+			if (xoff > 0 && xoff < w() - fw)
+				fl_draw(szFreq, x() + xoff, y() + 10 );
+			if (xoff > w() - fw) break;
+		}
+		return;
+	}
+
+	int mdoffset = 0;
+	string testmode = qso_opMODE->value();
+
+	bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
+						(testmode.find("FSK") != string::npos) ||
+						((testmode.find("DATA") != string::npos) &&
+						 (use_nanoFSK || use_Nav || progdefaults.PseudoFSK)) );
+
+	usb = !ModeIsLSB(testmode);
+	if ((testmode.find("DATA") != string::npos) && xcvr_useFSK)
+		usb = !usb;
+
+	if (testmode.find("CW") != string::npos)
+		mdoffset = progdefaults.CWsweetspot;
+
+	if (xcvr_useFSK) {
+		if (usb) mdoffset = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_baud] * 2;
+		else mdoffset = progdefaults.xcvr_FSK_MARK;
+	}
+
+	if (usb)
+		pixmap = (scaleimage +  (int)(((rfc - mdoffset) % 1000 + offset)) );
 	else
 		pixmap = (scaleimage + (int)((1000 - rfc % 1000 + offset)));
 
@@ -1241,6 +1292,12 @@ void do_qsy(bool dir)
 		qsy_stack.push_back(m);
 		m.rmode = qso_opMODE->value();
 		trx_mode md = active_modem->get_mode();
+
+		string testmode = qso_opMODE->value();
+		bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
+							(testmode.find("FSK") != string::npos) ||
+							((testmode.find("DATA") != string::npos) &&
+							 (use_nanoFSK || use_Nav)) );
 
 // qsy to the sweet spot frequency that is the center of the PBF in the rig
 		switch (md) {
