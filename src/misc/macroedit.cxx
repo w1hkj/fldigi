@@ -84,14 +84,22 @@ void loadBrowser(Fl_Widget *widget) {
 
 	w->add(LINE_SEP);
 	w->add(_("<CALL>\tother call"));
-	w->add(_("<INFO1>\tS/N etc."));
-	w->add(_("<INFO2>\tIMD etc."));
-	w->add(_("<LOC>\tother locator"));
 	w->add(_("<NAME>\tother name"));
 	w->add(_("<QTH>\tother QTH"));
+	w->add(_("<ST>\tother State"));
+	w->add(_("<PR>\tother Province"));
+	w->add(_("<LOC>\tother locator"));
 	w->add(_("<RST>\tother RST"));
+
+	w->add(LINE_SEP);
+	w->add(_("<INFO1>\tS/N etc."));
+	w->add(_("<INFO2>\tIMD etc."));
+
+	w->add(LINE_SEP);
 	w->add(_("<QSONBR>\t# QSO recs"));
 	w->add(_("<NXTNBR>\tnext QSO rec #"));
+
+	w->add(LINE_SEP);
 	w->add(_("<MAPIT>\tmap on google"));
 	w->add(_("<MAPIT:adr/lat/loc>\tmap by value"));
 

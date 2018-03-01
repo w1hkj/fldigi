@@ -1530,6 +1530,16 @@ static void pQTH(std::string &s, size_t &i, size_t endbracket)
 	s.replace( i,5, inpQth->value() );
 }
 
+static void pST(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 4, inpState->value() );
+}
+
+static void pPR(std::string &s, size_t &i, size_t endbracket)
+{
+	s.replace( i, 4, inpVEprov->value() );
+}
+
 static void pQSOTIME(std::string &s, size_t &i, size_t endbracket)
 {
 	qso_time = inpTimeOff->value();
@@ -3919,6 +3929,8 @@ static const MTAGS mtags[] = {
 {"<NAME>",		pNAME},
 {"<QTH>",		pQTH},
 {"<RST>",		pRST},
+{"<ST>",		pST},
+{"<PR>",		pPR},
 {"<MYCALL>",	pMYCALL},
 {"<MYLOC>",		pMYLOC},
 {"<MYNAME>",	pMYNAME},
