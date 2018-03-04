@@ -2028,6 +2028,9 @@
         ELEM_(Fl_Color, TuneColor, "TUNECOLOR",                                         \
               "UI Tune select color",                                                   \
               FL_RED)                                                                   \
+        ELEM_(Fl_Color, default_btn_color, "DEFAULTBTNCOLOR",                           \
+              "Default color of lighted buttons",                                       \
+              FL_YELLOW)                                                                \
         /* XMLRPC LOGBOOK server */                                                     \
         ELEM_(bool, xml_logbook, "XML_LOGBOOK",                                         \
               "Try to open remote xml logbook",                                         \

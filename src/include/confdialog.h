@@ -260,6 +260,8 @@ extern Fl_Box *xmtcolor;
 extern Fl_Box *afccolor;
 extern Fl_Box *sql2color;
 extern Fl_Box *txidcolor;
+extern Fl_Button *btn_default_btn_color;
+extern Fl_Box *default_btn_color;
 extern Fl_Button *btnLowSignal;
 extern Fl_Box *lowcolor;
 extern Fl_Button *btnHighSignal;

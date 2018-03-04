@@ -9865,6 +9865,27 @@ void spot_selection_color()
 	btnAutoSpot->redraw();
 }
 
+void set_default_btn_color()
+{
+	Fl_Light_Button *buttons[] = {
+		btn_FSQCALL, btn_SELCAL, btn_MONITOR, btnPSQL,
+		btnDupCheckOn, btn_WK_connect,
+		btn_nanoCW_connect, btn_nanoIO_connect, 
+		btn_enable_auditlog, btn_enable_fsq_heard_log,
+		btn_enable_ifkp_audit_log, btn_enable_ifkp_audit_log,
+		btn_Nav_connect, btn_Nav_config,
+		btnConnectTalker };
+
+	size_t nbtns = sizeof(buttons)/sizeof(*buttons);
+
+	for (size_t i = 0; i < nbtns; i++) {
+		if (buttons[i] != NULL) {
+			buttons[i]->selection_color(progdefaults.default_btn_color);
+			buttons[i]->redraw();
+		}
+	}
+}
+
 void set_colors()
 {
 	spot_selection_color();
@@ -9875,6 +9896,7 @@ void set_colors()
 	afc_selection_color();
 	xmtlock_selection_color();
 	tune_selection_color();
+	set_default_btn_color();
 }
 
 // Olivia

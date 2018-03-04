@@ -862,7 +862,7 @@ progdefaults.changed = true;}
           }
           Fl_Group tabLogServer {
             label Log open
-            xywh {0 50 600 340}
+            xywh {0 50 600 340} hide
           } {
             Fl_Tabs tabsLog {open
               xywh {0 50 600 340}
@@ -1758,7 +1758,7 @@ WF_UI();}
           }
           Fl_Group tabColorsFonts {
             label {Clrs/Fnts} open
-            xywh {0 50 600 340} hide
+            xywh {0 50 600 340}
           } {
             Fl_Tabs tabsColors {open
               xywh {0 50 600 340}
@@ -2328,7 +2328,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group {} {
                 label Log open
-                xywh {0 75 600 315}
+                xywh {0 75 600 315} hide
               } {
                 Fl_Group {} {
                   label {Logging Panel Controls} open
@@ -2787,8 +2787,8 @@ progdefaults.changed = true;}
                 }
               }
               Fl_Group {} {
-                label Buttons
-                xywh {0 75 600 315} hide
+                label Buttons open
+                xywh {0 75 600 315}
               } {
                 Fl_Button btnSpotColor {
                   label Spot
@@ -2814,7 +2814,7 @@ progdefaults.changed = true;}
 tunecolor->color(progdefaults.TuneColor);
 tunecolor->redraw();
 tune_selection_color();
-progdefaults.changed = true;}
+progdefaults.changed = true;} selected
                   xywh {139 194 85 21}
                 }
                 Fl_Button btnRxIDColor {
@@ -2946,7 +2946,20 @@ btnTxRSID->redraw();}
                 }
                 Fl_Box {} {
                   label {Lighted button enabled colors}
-                  xywh {200 275 220 20} align 21
+                  xywh {195 310 220 20} align 21
+                }
+                Fl_Button btn_default_btn_color {
+                  label {All Others}
+                  callback {progdefaults.default_btn_color = fl_show_colormap(progdefaults.default_btn_color);
+default_btn_color->color(progdefaults.default_btn_color);
+default_btn_color->redraw();
+set_default_btn_color();
+progdefaults.changed = true;}
+                  xywh {274 264 85 21}
+                }
+                Fl_Box default_btn_color {
+                  xywh {250 264 18 19} box THIN_DOWN_BOX
+                  code0 {o->color(progdefaults.default_btn_color);}
                 }
               }
               Fl_Group {} {

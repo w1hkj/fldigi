@@ -394,6 +394,7 @@ extern void rxid_selection_color();
 extern void txid_selection_color();
 extern void tune_selection_color();
 extern void spot_selection_color();
+extern void set_default_btn_color();
 
 extern void put_WARNstatus(double);
 

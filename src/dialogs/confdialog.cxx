@@ -2534,6 +2534,18 @@ Fl_Box *sql2color=(Fl_Box *)0;
 
 Fl_Box *txidcolor=(Fl_Box *)0;
 
+Fl_Button *btn_default_btn_color=(Fl_Button *)0;
+
+static void cb_btn_default_btn_color(Fl_Button*, void*) {
+  progdefaults.default_btn_color = fl_show_colormap(progdefaults.default_btn_color);
+default_btn_color->color(progdefaults.default_btn_color);
+default_btn_color->redraw();
+set_default_btn_color();
+progdefaults.changed = true;
+}
+
+Fl_Box *default_btn_color=(Fl_Box *)0;
+
 Fl_Button *btnLowSignal=(Fl_Button *)0;
 
 static void cb_btnLowSignal(Fl_Button*, void*) {
@@ -8393,6 +8405,7 @@ Fl_Double_Window* ConfigureDialog() {
             tabUserInterface->end();
           } // Fl_Group* tabUserInterface
           { tabLogServer = new Fl_Group(0, 50, 600, 340, _("Log"));
+            tabLogServer->hide();
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 { Fl_Group* o = new Fl_Group(45, 99, 515, 250, _("QSO logging"));
@@ -9145,7 +9158,6 @@ ab and newline are automatically included."));
             tabWF_UI->end();
           } // Fl_Group* tabWF_UI
           { tabColorsFonts = new Fl_Group(0, 50, 600, 340, _("Clrs/Fnts"));
-            tabColorsFonts->hide();
             { tabsColors = new Fl_Tabs(0, 50, 600, 340);
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Rx/Tx"));
                 o->hide();
@@ -9320,6 +9332,7 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Log"));
+                o->hide();
                 { Fl_Group* o = new Fl_Group(5, 101, 590, 65, _("Logging Panel Controls"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -9453,7 +9466,6 @@ ab and newline are automatically included."));
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("Buttons"));
-                o->hide();
                 { btnSpotColor = new Fl_Button(139, 121, 85, 21, _("Spot"));
                 btnSpotColor->callback((Fl_Callback*)cb_btnSpotColor);
                 } // Fl_Button* btnSpotColor
@@ -9534,9 +9546,16 @@ ab and newline are automatically included."));
                 txidcolor->box(FL_THIN_DOWN_BOX);
                 o->color(progdefaults.TxIDColor);
                 } // Fl_Box* txidcolor
-                { Fl_Box* o = new Fl_Box(200, 275, 220, 20, _("Lighted button enabled colors"));
+                { Fl_Box* o = new Fl_Box(195, 310, 220, 20, _("Lighted button enabled colors"));
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 } // Fl_Box* o
+                { btn_default_btn_color = new Fl_Button(274, 264, 85, 21, _("All Others"));
+                btn_default_btn_color->callback((Fl_Callback*)cb_btn_default_btn_color);
+                } // Fl_Button* btn_default_btn_color
+                { Fl_Box* o = default_btn_color = new Fl_Box(250, 264, 18, 19);
+                default_btn_color->box(FL_THIN_DOWN_BOX);
+                o->color(progdefaults.default_btn_color);
+                } // Fl_Box* default_btn_color
                 o->end();
               } // Fl_Group* o
               { Fl_Group* o = new Fl_Group(0, 75, 600, 315, _("SigLvl"));
