@@ -40,7 +40,7 @@ int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout);
 
 int sem_timedwait_rel(sem_t* sem, double rel_timeout);
 int pthread_cond_timedwait_rel(pthread_cond_t* cond, pthread_mutex_t* mutex, double rel_timeout);
-
+// qrunner threads
 enum {
 	INVALID_TID = -1,
 	TRX_TID,

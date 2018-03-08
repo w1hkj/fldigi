@@ -166,7 +166,10 @@ void PTT::set(bool ptt)
 		break;
 #endif
 	}
+
 	set_gpio(ptt);
+
+	nano_PTT(ptt);
 
 	if (n3fjp_connected)
 		n3fjp_set_ptt(ptt);

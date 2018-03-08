@@ -334,6 +334,7 @@ fldigi_SOURCES += \
 	cw_rtty/morse.cxx \
 	cw_rtty/rtty.cxx \
 	cw_rtty/view_rtty.cxx \
+	cw_rtty/nanoIO.cxx \
 	cw_rtty/winkeyer.cxx \
 	cw_rtty/view_cw.cxx \
 	contestia/contestia.cxx \
@@ -525,6 +526,7 @@ fldigi_SOURCES += \
 	include/table.h \
 	include/textio.h \
 	include/psk_browser.h \
+	include/nanoIO.h \
 	include/utf8file_io.h \
 	include/weather.h \
 	include/winkeyer.h \

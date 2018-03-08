@@ -700,7 +700,7 @@ void WFdisp::handle_sig_data()
 			bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
 								(testmode.find("FSK") != string::npos) ||
 								((testmode.find("DATA") != string::npos) &&
-								 (use_nanoFSK || use_Nav || progdefaults.PseudoFSK)) );
+								 (use_nanoIO || progdefaults.PseudoFSK)) );
 			usb = !ModeIsLSB(testmode);
 			if ((testmode.find("DATA") != string::npos) && xcvr_useFSK)
 				usb = !usb;
@@ -712,9 +712,9 @@ void WFdisp::handle_sig_data()
 				offset /= 2;
 				if (active_modem->get_reverse()) offset *= -1;
 			}
-			string testmode = qso_opMODE->value();
-			usb = !ModeIsLSB(testmode);
 			if (testmode.find("CW") != string::npos)
+				afreq = 0;
+			if (xcvr_useFSK)
 				afreq = 0;
 			if (mode == MODE_ANALYSIS) {
 				dfreq = 0;
@@ -838,7 +838,7 @@ void WFdisp::drawScale() {
 	double fr;
 	uchar *pixmap;
 
-	if (progdefaults.wf_audioscale)
+	if (progdefaults.wf_audioscale) {
 		pixmap = (scaleimage + (int)offset);
 		fl_draw_image_mono(
 			pixmap,
@@ -867,7 +867,7 @@ void WFdisp::drawScale() {
 	bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
 						(testmode.find("FSK") != string::npos) ||
 						((testmode.find("DATA") != string::npos) &&
-						 (use_nanoFSK || use_Nav || progdefaults.PseudoFSK)) );
+						 (use_nanoIO ||progdefaults.PseudoFSK)) );
 
 	usb = !ModeIsLSB(testmode);
 	if ((testmode.find("DATA") != string::npos) && xcvr_useFSK)
@@ -884,7 +884,7 @@ void WFdisp::drawScale() {
 	if (usb)
 		pixmap = (scaleimage +  (int)(((rfc - mdoffset) % 1000 + offset)) );
 	else
-		pixmap = (scaleimage + (int)((1000 - rfc % 1000 + offset)));
+		pixmap = (scaleimage + (int)((1000 - (rfc + mdoffset) % 1000 + offset)));
 
 	fl_draw_image_mono(
 		pixmap,
@@ -894,33 +894,21 @@ void WFdisp::drawScale() {
 
 	fl_color(fl_rgb_color(228));
 	fl_font(progdefaults.WaterfallFontnbr, progdefaults.WaterfallFontsize);
+
 	for (int i = 1; ; i++) {
-		if (progdefaults.wf_audioscale)
-			fr = 500.0 * i;
-		else {
-			int cwoffset = 0;
-			string testmode = qso_opMODE->value();
-			usb = !ModeIsLSB(testmode);
-			if (testmode.find("CW") != string::npos)
-				cwoffset = progdefaults.CWsweetspot;
-			if (usb)
-				fr = (rfc - (rfc%500))/1000.0 + 0.5*i - cwoffset/1000.0;
-			else
-				fr = (rfc - (rfc %500))/1000.0 + 0.5 - 0.5*i + cwoffset/1000.0;
-		}
-		if (progdefaults.wf_audioscale)
-			snprintf(szFreq, sizeof(szFreq), "%7.0f", fr);
+		if (usb)
+			fr = (rfc - mdoffset - (rfc - mdoffset) % 500 + 500 * i)/1000.0;
 		else
-			snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
+			fr = (rfc + mdoffset - (rfc + mdoffset) % 500 - 500 * i + 500)/1000.0;
+
+		snprintf(szFreq, sizeof(szFreq), "%7.1f", fr);
 		fw = (int)fl_width(szFreq);
-		if (progdefaults.wf_audioscale)
-			xoff = (int) (( (1000.0/step) * i - fw) / 2.0 - offset /step );
-		else if (usb)
+		if (usb)
 			xoff = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
-							(offset + rfc % 500) /step );
+							(offset + (rfc - mdoffset) % 500) / step );
 		else
 			xoff = (int) ( ( (1000.0/step) * i - fw) / 2.0 -
-							(offset + 500 - rfc % 500) /step );
+							(offset + 500 - (rfc + mdoffset) % 500) / step );
 		if (xoff > 0 && xoff < w() - fw)
 			fl_draw(szFreq, x() + xoff, y() + 10 );
 		if (xoff > w() - fw) break;
@@ -1297,18 +1285,22 @@ void do_qsy(bool dir)
 		bool xcvr_useFSK = ((testmode.find("RTTY") != string::npos) ||
 							(testmode.find("FSK") != string::npos) ||
 							((testmode.find("DATA") != string::npos) &&
-							 (use_nanoFSK || use_Nav)) );
+							 (use_nanoIO)) );
 
 // qsy to the sweet spot frequency that is the center of the PBF in the rig
 		switch (md) {
 			case MODE_CW:
-				m.carrier = (long long)progdefaults.CWsweetspot;
+				m.carrier = progdefaults.CWsweetspot;
 				break;
 			case MODE_RTTY:
-				m.carrier = (long long)progdefaults.RTTYsweetspot;
+				if (xcvr_useFSK) {
+					// qsy operates on change in audio center track
+					m.carrier = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift]/2;
+				} else
+					m.carrier = progdefaults.RTTYsweetspot;
 				break;
 			default:
-				m.carrier = (long long)progdefaults.PSKsweetspot;
+				m.carrier = progdefaults.PSKsweetspot;
 				break;
 		}
 		if (m.rmode.find("CW") != string::npos) {
@@ -1316,11 +1308,18 @@ void do_qsy(bool dir)
 				m.rfcarrier += (wfc - m.carrier);
 			else
 				m.rfcarrier -= (wfc - m.carrier);
+		} else if ( (md == MODE_RTTY) && xcvr_useFSK ) {
+			if (wf->USB()) {
+				m.rfcarrier += (wfc - m.carrier);
+			} else {
+				m.rfcarrier -= (wfc - m.carrier);
+			}
+		} else {
+			if (wf->USB())
+				m.rfcarrier += (wf->carrier() - m.carrier);
+			else
+				m.rfcarrier -= (wf->carrier() - m.carrier);
 		}
-		else if (wf->USB())
-			m.rfcarrier += (wf->carrier() - m.carrier);
-		else
-			m.rfcarrier -= (wf->carrier() - m.carrier);
 	}
 	else { // qsy to top of stack
 		if (qsy_stack.size()) {

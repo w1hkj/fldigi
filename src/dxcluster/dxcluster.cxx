@@ -767,6 +767,8 @@ void DXcluster_submit()
 void rf_af(long &rf, long &af)
 {
 	mode_t md = active_modem->get_mode();
+	string testmode = qso_opMODE->value();
+	bool xcvr_useFSK = (testmode.find("RTTY") != string::npos);
 
 	if (md == MODE_SSB) {
 		af = 0;
@@ -782,28 +784,19 @@ void rf_af(long &rf, long &af)
 		}
 	}
 	else if (md == MODE_RTTY) {
-		int shift;
-		switch (progdefaults.rtty_shift) {
-		case 0 : shift = 23; break;
-		case 1 : shift = 85; break;
-		case 2 : shift = 160; break;
-		case 3 : shift = 170; break;
-		case 4 : shift = 182; break;
-		case 5 : shift = 200; break;
-		case 6 : shift = 240; break;
-		case 7 : shift = 350; break;
-		case 8 : shift = 425; break;
-		case 9 : shift = 850; break;
-		default: shift = 0;
-		}
-		af = progdefaults.RTTYsweetspot;
-		if (progdefaults.useMARKfreq) {
-			if (wf->USB()) rf -= (af + shift / 2);
-			else           rf += (af - shift / 2);
-		}
-		else {
-			if (wf->USB()) rf -= af;
-			else           rf += af;
+		if (xcvr_useFSK) {
+			af = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift]/2;
+		} else {
+			int shift = rtty::SHIFT[progdefaults.rtty_shift];
+			af = progdefaults.RTTYsweetspot;
+			if (progdefaults.useMARKfreq) {
+				if (wf->USB()) rf -= (af + shift / 2);
+				else           rf += (af - shift / 2);
+			}
+			else {
+				if (wf->USB()) rf -= af;
+				else           rf += af;
+			}
 		}
 	} else {
 		af = progdefaults.PSKsweetspot;

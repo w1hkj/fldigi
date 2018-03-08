@@ -53,12 +53,16 @@
 #include "qrunner.h"
 
 #include "winkeyer.h"
+#include "nanoIO.h"
 
 using namespace std;
 
 #define XMT_FILT_LEN 256
 #define QSK_DELAY_LEN 4*XMT_FILT_LEN
 #define CW_FFT_SIZE 2048 // must be a factor of 2
+
+static double nano_d2d = 0;
+static int nano_wpm = 0;
 
 const cw::SOM_TABLE cw::som_table[] = {
 	/* Prosigns */
@@ -252,6 +256,9 @@ void cw::init()
 	prosigns = progdefaults.CW_prosigns;
 	stopflag = false;
 	maxval = 0;
+
+	if (use_nanoIO) set_nanoCW();
+
 }
 
 cw::~cw() {
@@ -343,6 +350,10 @@ cw::cw() : modem()
 	trackingfilter = new Cmovavg(TRACKING_FILTER_SIZE);
 
 	makeshape();
+
+	nano_wpm = progdefaults.CWspeed;
+	nano_d2d = progdefaults.CWdash2dot;
+
 	sync_parameters();
 	REQ(static_cast<void (waterfall::*)(int)>(&waterfall::Bandwidth), wf, (int)bandwidth);
 	REQ(static_cast<int (Fl_Value_Slider2::*)(double)>(&Fl_Value_Slider2::value), sldrCWbandwidth, (int)bandwidth);
@@ -437,6 +448,17 @@ void cw::sync_transmit_parameters()
 
 void cw::sync_parameters()
 {
+	if (use_nanoIO) {
+		if (nano_wpm != progdefaults.CWspeed) {
+			nano_wpm = progdefaults.CWspeed;
+			set_nanoWPM(progdefaults.CWspeed);
+		}
+		if (nano_d2d != progdefaults.CWdash2dot) {
+			nano_d2d = progdefaults.CWdash2dot;
+			set_nano_dash2dot(progdefaults.CWdash2dot);
+		}
+	}
+
 	sync_transmit_parameters();
 
 // check if user changed the tracking or the cw default speed
@@ -1266,6 +1288,8 @@ int cw::tx_process()
 
 	c = get_tx_char();
 
+	if (use_nanoIO) set_nanoCW();
+
 	if (c == GET_TX_CHAR_NODATA) {
 		if (stopflag) {
 			stopflag = false;
@@ -1292,6 +1316,18 @@ int cw::tx_process()
 			put_echo_char('\n');
 			return -1; // WinKeyer problem
 		}
+		return 0;
+	}
+
+	if (use_nanoIO) {
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			put_echo_char('\n');
+			nano_serial_flush();
+			return -1;
+		}
+		nano_send_char(c);
+		put_echo_char(c);
 		return 0;
 	}
 

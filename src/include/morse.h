@@ -51,6 +51,7 @@ public:
 	std::string		rx_lookup(std::string);
 	std::string		tx_lookup(int);
 	std::string		tx_print() { return toprint; }
+	int  tx_length(int);
 };
 
 #endif

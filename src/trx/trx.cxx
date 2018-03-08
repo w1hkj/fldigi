@@ -503,15 +503,23 @@ void trx_tune_loop()
 		active_modem->tx_init();
 
 		try {
-			while (trx_state == STATE_TUNE) {
-				if (_trx_tune == 0) {
-					REQ(&waterfall::set_XmtRcvBtn, wf, true);
-					xmttune::keydown(active_modem->get_txfreq_woffset(), TXscard);
-					_trx_tune = 1;
-				} else
-					xmttune::tune(active_modem->get_txfreq_woffset(), TXscard);
+			if (use_nanoIO) {
+				nanoCW_tune(1);
+				REQ(&waterfall::set_XmtRcvBtn, wf, true);
+				while (trx_state == STATE_TUNE) MilliSleep(10);
+				nanoCW_tune(0);
 			}
-			xmttune::keyup(active_modem->get_txfreq_woffset(), TXscard);
+			else {
+				while (trx_state == STATE_TUNE) {
+					if (_trx_tune == 0) {
+						REQ(&waterfall::set_XmtRcvBtn, wf, true);
+						xmttune::keydown(active_modem->get_txfreq_woffset(), TXscard);
+						_trx_tune = 1;
+					} else
+						xmttune::tune(active_modem->get_txfreq_woffset(), TXscard);
+				}
+				xmttune::keyup(active_modem->get_txfreq_woffset(), TXscard);
+			}
 		}
 		catch (const SndException& e) {
 			if (TXscard) TXscard->Close();

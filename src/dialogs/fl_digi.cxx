@@ -174,6 +174,7 @@
 #include "record_browse.h"
 
 #include "winkeyer.h"
+#include "nanoIO.h"
 
 #include "audio_alert.h"
 
@@ -5615,9 +5616,13 @@ void cb_cntCW_WPM(Fl_Widget * w, void *v)
 	}
 
 	if (progStatus.WK_online && cnt->value() > 55) cnt->value(55);
+	if (use_nanoIO && cnt->value() > 60) cnt->value(60);
+	if (use_nanoIO && cnt->value() < 5) cnt->value(5);
 
 	progdefaults.CWspeed = (int)cnt->value();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
+	cntr_nanoCW_WPM->value(progdefaults.CWspeed);
+
 	progdefaults.changed = true;
 	sync_cw_parameters();
 
@@ -9215,6 +9220,7 @@ void set_CWwpm()
 	FL_LOCK_D();
 	sldrCWxmtWPM->value(progdefaults.CWspeed);
 	cntCW_WPM->value(progdefaults.CWspeed);
+	if (use_nanoIO) set_nanoWPM(progdefaults.CWspeed);
 	FL_UNLOCK_D();
 }
 
@@ -9684,8 +9690,9 @@ void set_rx_only()
 
 void qsy(long long rfc, int fmid)
 {
-	if (rfc <= 0LL)
+	if (rfc <= 0LL) {
 		rfc = wf->rfcarrier();
+	}
 
 	if (fmid > 0) {
 		if (active_modem->freqlocked())
@@ -9697,8 +9704,9 @@ void qsy(long long rfc, int fmid)
 		if (adj)
 			rfc += (wf->USB() ? adj : -adj);
 	}
-	if (rfc == wf->rfcarrier())
+	if (rfc == wf->rfcarrier()) {
 		return;
+	}
 
 	if (connected_to_flrig)
 		REQ(xmlrpc_rig_set_qsy, rfc);
@@ -9712,7 +9720,13 @@ void qsy(long long rfc, int fmid)
 		REQ(xmlrpc_set_qsy, rfc);
 	else
 		qso_selectFreq((long int) rfc, fmid);
-		//LOG_VERBOSE("Ignoring rfcarrier change request (no rig control)");
+
+	string testmode = qso_opMODE->value();
+	bool xcvr_useFSK = (testmode.find("RTTY") != string::npos);
+	if (xcvr_useFSK) {
+		int fmid = progdefaults.xcvr_FSK_MARK + rtty::SHIFT[progdefaults.rtty_shift]/2;
+		wf->carrier(fmid);
+	} 
 }
 
 map<string, qrg_mode_t> qrg_marks;

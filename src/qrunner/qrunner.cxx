@@ -42,7 +42,7 @@
 #else
 #  define QRUNNER_EAGAIN() ((errno = WSAGetLastError()) == WSAEWOULDBLOCK)
 #endif
-
+// qrunner threads
 const char *sztid[] = {
 	"INVALID_TID",
 	"TRX_TID",

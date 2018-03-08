@@ -19,8 +19,8 @@
  */
 
 #include <config.h>
-
 #include <cstring>
+#include <iostream>
 
 #include "morse.h"
 #include "configuration.h"
@@ -265,6 +265,19 @@ std::string cMorse::tx_lookup(int c)
 	utf8.clear();
 	return "";
 
+}
+
+int cMorse::tx_length(int c)
+{
+	if (c == ' ') return 4;
+	std::string ms = tx_lookup(c);
+	if (ms.empty()) return 0;
+	int len = 0;
+	for (size_t i = 0; i < ms.length(); i++)
+		if (ms[i] == '.') len += 2;
+		else              len += 4;
+	len += 2;
+	return len;
 }
 
 

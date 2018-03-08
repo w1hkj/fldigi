@@ -1308,6 +1308,35 @@
               "Force the rig sideband (for the purpose of calculating frequencies).\n"  \
               "Values are as follows: 0: as reported by rig; 1: LSB; 2: USB.",          \
               0)   /* SIDEBAND_RIG */                                                   \
+        /* nanoIO interface parameters */                                               \
+        ELEM_(std::string, nanoIO_serial_port_name, "NANOSERIALPORTNAME",               \
+              "nanoIO serial device",                                                   \
+              "NONE")                                                                   \
+        ELEM_(int, nanoIO_baud, "NANOIOBAUD",                                           \
+              "0 - 45.45, 1 - 50, 2 - 75, 3 - 100 baud",                                \
+              0)                                                                        \
+        ELEM_(int, nanoIO_polarity, "NANOIOPOLARITY",                                   \
+              "MARK polarity 0 - high, 1 - low",                                        \
+              1)                                                                        \
+        ELEM_(int, nanoIO_CW_incr, "NANOIOCWINCR",                                      \
+              "^ ' increment/decrement value\n"                                         \
+              "range '1' to '5'",                                                       \
+              '2')                                                                      \
+        ELEM_(int, CW_keyspeed, "NANOCWKEYSPEED",                                       \
+              "Paddle keyer WPM (0...100)",                                             \
+              18)                                                                       \
+        ELEM_(int, nanoIO_CW_keyer, "NANOIOCWKEYER",                                    \
+              "0 - IambicA, 1 - IambicB, 2 - Straight",                                 \
+              0)                                                                        \
+        ELEM_(int, xcvr_FSK_sideband, "XCVRFSKSIDEBAND",                                \
+              "0 = LSB | 1 = USB",                                                      \
+              0)                                                                        \
+        ELEM_(int, xcvr_FSK_MARK, "XCVRFSKMARK",                                        \
+              "typical values: 1275, 1615 or 2125 for 170 Hz shift, IC7200",            \
+              2125)                                                                     \
+        ELEM_(int, TTY_LTRS, "TTYLTRS",                                                 \
+              "0 to 10, number of LTRS bytes send at beginning of xmt",                 \
+              2)                                                                        \
         /* Operator */                                                                  \
         ELEM_(std::string, myCall, "MYCALL",                                            \
               "Station callsign",                                                       \
