@@ -4591,6 +4591,130 @@ progdefaults.changed = true;
 
 FTextView *txt_nano_io=(FTextView *)0;
 
+Fl_Group *tab_Nav=(Fl_Group *)0;
+
+Fl_ComboBox *select_USN_FSK_port=(Fl_ComboBox *)0;
+
+static void cb_select_USN_FSK_port(Fl_ComboBox* o, void*) {
+  progdefaults.Nav_FSK_port = o->value();
+}
+
+Fl_Light_Button *btn_Nav_connect=(Fl_Light_Button *)0;
+
+static void cb_btn_Nav_connect(Fl_Light_Button* o, void*) {
+  if (o->value()) {
+  if (!open_NavFSK())
+    o->value(0);
+} else {
+  close_NavFSK();
+};
+}
+
+Fl_ComboBox *select_Nav_config_port=(Fl_ComboBox *)0;
+
+static void cb_select_Nav_config_port(Fl_ComboBox* o, void*) {
+  progdefaults.Nav_config_port = o->value();
+}
+
+Fl_ListBox *sel_Nav_ch1=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_ch1(Fl_ListBox* o, void*) {
+  progdefaults.Nav_channel_1_att = o->index();
+Nav_set_channel_1_att(progdefaults.Nav_channel_1_att);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_ch2=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_ch2(Fl_ListBox* o, void*) {
+  progdefaults.Nav_channel_2_att = o->index();
+Nav_set_channel_2_att(progdefaults.Nav_channel_2_att);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_rf_att=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_rf_att(Fl_ListBox* o, void*) {
+  progdefaults.Nav_rf_att = o->index();
+Nav_set_rf_att(progdefaults.Nav_rf_att);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_wk_ptt=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_wk_ptt(Fl_ListBox* o, void*) {
+  progdefaults.Nav_wk_ptt = o->index();
+Nav_set_wk_ptt(progdefaults.Nav_wk_ptt);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_LED=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_LED(Fl_ListBox* o, void*) {
+  progdefaults.Nav_led = o->index();
+Nav_set_led(progdefaults.Nav_led);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_CAT_LED=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_CAT_LED(Fl_ListBox* o, void*) {
+  progdefaults.Nav_cat_led = o->index();
+Nav_set_cat_led(progdefaults.Nav_cat_led);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_FSK_baud=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_FSK_baud(Fl_ListBox* o, void*) {
+  progdefaults.Nav_FSK_baud = o->index();
+Nav_set_baud(progdefaults.Nav_FSK_baud);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_FSK_stopbits=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_FSK_stopbits(Fl_ListBox* o, void*) {
+  progdefaults.Nav_FSK_stopbits = o->index();
+Nav_set_stopbits(progdefaults.Nav_FSK_stopbits);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_FSK_polarity=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_FSK_polarity(Fl_ListBox* o, void*) {
+  progdefaults.Nav_FSK_polarity = o->index();
+Nav_set_polarity(progdefaults.Nav_FSK_polarity);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_FSK_sidetone=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_FSK_sidetone(Fl_ListBox* o, void*) {
+  progdefaults.Nav_FSK_sidetone = o->index();
+Nav_set_sidetone(progdefaults.Nav_FSK_sidetone);
+progdefaults.changed = true;
+}
+
+Fl_ListBox *sel_Nav_FSK_ptt=(Fl_ListBox *)0;
+
+static void cb_sel_Nav_FSK_ptt(Fl_ListBox* o, void*) {
+  progdefaults.Nav_FSK_ptt = o->index();
+Nav_set_ptt(progdefaults.Nav_FSK_ptt);
+progdefaults.changed = true;
+}
+
+Fl_Light_Button *btn_Nav_config=(Fl_Light_Button *)0;
+
+static void cb_btn_Nav_config(Fl_Light_Button* o, void*) {
+  if (o->value()) {
+  if (!open_NavConfig())
+    o->value(0);
+} else {
+  close_NavConfig();
+};
+}
+
 Fl_Group *tab_Synop=(Fl_Group *)0;
 
 Fl_Check_Button *btnSynopAdifDecoding=(Fl_Check_Button *)0;
@@ -8266,7 +8390,7 @@ Fl_Double_Window* ConfigureDialog() {
             { tabsLog = new Fl_Tabs(0, 50, 600, 340);
               { grp_Log_QSO = new Fl_Group(0, 75, 600, 315, _("QSO"));
                 grp_Log_QSO->hide();
-                { Fl_Group* o = new Fl_Group(60, 112, 496, 198, _("QSO logging"));
+                { Fl_Group* o = new Fl_Group(45, 99, 515, 250, _("QSO logging"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
                 { Fl_Check_Button* o = btnNagMe = new Fl_Check_Button(77, 134, 236, 20, _("Prompt to save log on exit"));
@@ -11921,7 +12045,7 @@ ded Morse characters."));
           } // Fl_Group* tabPSK
           { tabRTTY = new Fl_Group(-5, 50, 605, 340, _("TTY"));
             tabRTTY->hide();
-            { tabsRTTY = new Fl_Tabs(0, 50, 600, 340);
+            { tabsRTTY = new Fl_Tabs(-5, 50, 605, 340);
               tabsRTTY->selection_color(FL_LIGHT1);
               { tab_Rx_TTY = new Fl_Group(0, 75, 600, 315, _("Rx"));
                 tab_Rx_TTY->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -12026,7 +12150,6 @@ ency"));
               } // Fl_Group* tab_Rx_TTY
               { tab_SndCrd_FSK = new Fl_Group(0, 75, 600, 315, _("Tx"));
                 tab_SndCrd_FSK->align(Fl_Align(FL_ALIGN_TOP_LEFT));
-                tab_SndCrd_FSK->hide();
                 { Fl_Group* o = new Fl_Group(5, 85, 590, 225, _("Sound Card FSK"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
@@ -12186,7 +12309,8 @@ ency"));
                 { Fl_Group* o = new Fl_Group(5, 312, 590, 72, _("Transceiver FSK"));
                 o->box(FL_ENGRAVED_FRAME);
                 o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
-                { Fl_Counter* o = cntr_xcvr_FSK_MARK = new Fl_Counter(62, 341, 126, 23, _("Mark Freq"));
+                { Fl_Counter* o = cntr_xcvr_FSK_MARK = new Fl_Counter(15, 341, 126, 23, _("Mark"));
+                cntr_xcvr_FSK_MARK->tooltip(_("Mark frequency in Hertz"));
                 cntr_xcvr_FSK_MARK->minimum(500);
                 cntr_xcvr_FSK_MARK->maximum(3000);
                 cntr_xcvr_FSK_MARK->step(1);
@@ -12196,8 +12320,8 @@ ency"));
                 o->value(progdefaults.xcvr_FSK_MARK);
                 o->lstep(10);
                 } // Fl_Counter* cntr_xcvr_FSK_MARK
-                { Fl_ListBox* o = sel_xcvr_FSK_shift = new Fl_ListBox(326, 341, 100, 23, _("Carrier shift"));
-                sel_xcvr_FSK_shift->tooltip(_("Select carrier shift"));
+                { Fl_ListBox* o = sel_xcvr_FSK_shift = new Fl_ListBox(198, 341, 100, 23, _("Carrier shift"));
+                sel_xcvr_FSK_shift->tooltip(_("Carrier shift in Hertz"));
                 sel_xcvr_FSK_shift->box(FL_DOWN_BOX);
                 sel_xcvr_FSK_shift->color(FL_BACKGROUND2_COLOR);
                 sel_xcvr_FSK_shift->selection_color(FL_BACKGROUND_COLOR);
@@ -12285,6 +12409,235 @@ ency"));
                 } // FTextView* txt_nano_io
                 tab_nanoIO->end();
               } // Fl_Group* tab_nanoIO
+              { tab_Nav = new Fl_Group(0, 75, 600, 315, _("Navigator"));
+                tab_Nav->align(Fl_Align(FL_ALIGN_TOP_LEFT));
+                tab_Nav->hide();
+                { Fl_Group* o = new Fl_Group(5, 82, 590, 55, _("FSK Interface"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_ComboBox* o = select_USN_FSK_port = new Fl_ComboBox(48, 105, 455, 23, _("Port"));
+                select_USN_FSK_port->tooltip(_("Navigator serial port"));
+                select_USN_FSK_port->box(FL_DOWN_BOX);
+                select_USN_FSK_port->color((Fl_Color)55);
+                select_USN_FSK_port->selection_color(FL_BACKGROUND_COLOR);
+                select_USN_FSK_port->labeltype(FL_NORMAL_LABEL);
+                select_USN_FSK_port->labelfont(0);
+                select_USN_FSK_port->labelsize(14);
+                select_USN_FSK_port->labelcolor(FL_FOREGROUND_COLOR);
+                select_USN_FSK_port->callback((Fl_Callback*)cb_select_USN_FSK_port);
+                select_USN_FSK_port->align(Fl_Align(FL_ALIGN_LEFT));
+                select_USN_FSK_port->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.Nav_FSK_port.c_str());
+                select_USN_FSK_port->end();
+                } // Fl_ComboBox* select_USN_FSK_port
+                { btn_Nav_connect = new Fl_Light_Button(510, 105, 80, 23, _("FSK"));
+                btn_Nav_connect->tooltip(_("Connect / Disconnect from Nav FSK port"));
+                btn_Nav_connect->callback((Fl_Callback*)cb_btn_Nav_connect);
+                } // Fl_Light_Button* btn_Nav_connect
+                o->end();
+                } // Fl_Group* o
+                { Fl_Group* o = new Fl_Group(5, 140, 590, 245, _("Configuration Interface"));
+                o->box(FL_ENGRAVED_FRAME);
+                o->align(Fl_Align(FL_ALIGN_TOP_LEFT|FL_ALIGN_INSIDE));
+                { Fl_ComboBox* o = select_Nav_config_port = new Fl_ComboBox(49, 161, 455, 23, _("Port"));
+                select_Nav_config_port->tooltip(_("Navigator configuration port"));
+                select_Nav_config_port->box(FL_DOWN_BOX);
+                select_Nav_config_port->color((Fl_Color)55);
+                select_Nav_config_port->selection_color(FL_BACKGROUND_COLOR);
+                select_Nav_config_port->labeltype(FL_NORMAL_LABEL);
+                select_Nav_config_port->labelfont(0);
+                select_Nav_config_port->labelsize(14);
+                select_Nav_config_port->labelcolor(FL_FOREGROUND_COLOR);
+                select_Nav_config_port->callback((Fl_Callback*)cb_select_Nav_config_port);
+                select_Nav_config_port->align(Fl_Align(FL_ALIGN_LEFT));
+                select_Nav_config_port->when(FL_WHEN_RELEASE);
+                o->value(progdefaults.Nav_config_port.c_str());
+                select_Nav_config_port->end();
+                } // Fl_ComboBox* select_Nav_config_port
+                { Fl_ListBox* o = sel_Nav_ch1 = new Fl_ListBox(177, 188, 80, 23, _("Channel 1 Attenuator"));
+                sel_Nav_ch1->tooltip(_("Nav Channel 1 attenuator"));
+                sel_Nav_ch1->box(FL_DOWN_BOX);
+                sel_Nav_ch1->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_ch1->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_ch1->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_ch1->labelfont(0);
+                sel_Nav_ch1->labelsize(14);
+                sel_Nav_ch1->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_ch1->callback((Fl_Callback*)cb_sel_Nav_ch1);
+                sel_Nav_ch1->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_ch1->when(FL_WHEN_CHANGED);
+                o->add("15 db|Normal");
+                o->index(progdefaults.Nav_channel_1_att);
+                sel_Nav_ch1->end();
+                } // Fl_ListBox* sel_Nav_ch1
+                { Fl_ListBox* o = sel_Nav_ch2 = new Fl_ListBox(177, 217, 80, 23, _("Channel 2 attenuator"));
+                sel_Nav_ch2->tooltip(_("NavChannel 2 Attenuator"));
+                sel_Nav_ch2->box(FL_DOWN_BOX);
+                sel_Nav_ch2->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_ch2->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_ch2->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_ch2->labelfont(0);
+                sel_Nav_ch2->labelsize(14);
+                sel_Nav_ch2->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_ch2->callback((Fl_Callback*)cb_sel_Nav_ch2);
+                sel_Nav_ch2->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_ch2->when(FL_WHEN_CHANGED);
+                o->add("15 db|Normal");
+                o->index(progdefaults.Nav_channel_2_att);
+                sel_Nav_ch2->end();
+                } // Fl_ListBox* sel_Nav_ch2
+                { Fl_ListBox* o = sel_Nav_rf_att = new Fl_ListBox(177, 247, 80, 23, _("RF attenuator"));
+                sel_Nav_rf_att->tooltip(_("NavRF Attenuator"));
+                sel_Nav_rf_att->box(FL_DOWN_BOX);
+                sel_Nav_rf_att->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_rf_att->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_rf_att->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_rf_att->labelfont(0);
+                sel_Nav_rf_att->labelsize(14);
+                sel_Nav_rf_att->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_rf_att->callback((Fl_Callback*)cb_sel_Nav_rf_att);
+                sel_Nav_rf_att->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_rf_att->when(FL_WHEN_CHANGED);
+                o->add("20 db|Normal");
+                o->index(progdefaults.Nav_rf_att);
+                sel_Nav_rf_att->end();
+                } // Fl_ListBox* sel_Nav_rf_att
+                { Fl_ListBox* o = sel_Nav_wk_ptt = new Fl_ListBox(177, 277, 80, 23, _("WinKey PTT"));
+                sel_Nav_wk_ptt->tooltip(_("NavWinkey PTT"));
+                sel_Nav_wk_ptt->box(FL_DOWN_BOX);
+                sel_Nav_wk_ptt->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_wk_ptt->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_wk_ptt->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_wk_ptt->labelfont(0);
+                sel_Nav_wk_ptt->labelsize(14);
+                sel_Nav_wk_ptt->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_wk_ptt->callback((Fl_Callback*)cb_sel_Nav_wk_ptt);
+                sel_Nav_wk_ptt->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_wk_ptt->when(FL_WHEN_CHANGED);
+                o->index(progdefaults.Nav_wk_ptt);
+                o->add("On|Off");
+                sel_Nav_wk_ptt->end();
+                } // Fl_ListBox* sel_Nav_wk_ptt
+                { Fl_ListBox* o = sel_Nav_LED = new Fl_ListBox(177, 307, 80, 23, _("LED brightness"));
+                sel_Nav_LED->tooltip(_("NavLED brightness"));
+                sel_Nav_LED->box(FL_DOWN_BOX);
+                sel_Nav_LED->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_LED->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_LED->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_LED->labelfont(0);
+                sel_Nav_LED->labelsize(14);
+                sel_Nav_LED->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_LED->callback((Fl_Callback*)cb_sel_Nav_LED);
+                sel_Nav_LED->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_LED->when(FL_WHEN_CHANGED);
+                o->index(progdefaults.Nav_led);
+                o->add("Dim|Normal");
+                sel_Nav_LED->end();
+                } // Fl_ListBox* sel_Nav_LED
+                { Fl_ListBox* o = sel_Nav_CAT_LED = new Fl_ListBox(177, 337, 80, 23, _("CAT LED state"));
+                sel_Nav_CAT_LED->tooltip(_("NavCAT state LED"));
+                sel_Nav_CAT_LED->box(FL_DOWN_BOX);
+                sel_Nav_CAT_LED->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_CAT_LED->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_CAT_LED->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_CAT_LED->labelfont(0);
+                sel_Nav_CAT_LED->labelsize(14);
+                sel_Nav_CAT_LED->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_CAT_LED->callback((Fl_Callback*)cb_sel_Nav_CAT_LED);
+                sel_Nav_CAT_LED->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_CAT_LED->when(FL_WHEN_CHANGED);
+                o->index(progdefaults.Nav_cat_led);
+                o->add("Steady|Polling");
+                sel_Nav_CAT_LED->end();
+                } // Fl_ListBox* sel_Nav_CAT_LED
+                { Fl_ListBox* o = sel_Nav_FSK_baud = new Fl_ListBox(385, 188, 80, 23, _("Baud rate"));
+                sel_Nav_FSK_baud->tooltip(_("Nav FSK baud rate"));
+                sel_Nav_FSK_baud->box(FL_DOWN_BOX);
+                sel_Nav_FSK_baud->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_FSK_baud->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_FSK_baud->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_FSK_baud->labelfont(0);
+                sel_Nav_FSK_baud->labelsize(14);
+                sel_Nav_FSK_baud->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_FSK_baud->callback((Fl_Callback*)cb_sel_Nav_FSK_baud);
+                sel_Nav_FSK_baud->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_FSK_baud->when(FL_WHEN_CHANGED);
+                o->add("45.45|75|100");
+                o->index(progdefaults.Nav_FSK_baud);
+                sel_Nav_FSK_baud->end();
+                } // Fl_ListBox* sel_Nav_FSK_baud
+                { Fl_ListBox* o = sel_Nav_FSK_stopbits = new Fl_ListBox(384, 217, 80, 23, _("Stop bits"));
+                sel_Nav_FSK_stopbits->tooltip(_("Nav FSK Stop bits"));
+                sel_Nav_FSK_stopbits->box(FL_DOWN_BOX);
+                sel_Nav_FSK_stopbits->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_FSK_stopbits->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_FSK_stopbits->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_FSK_stopbits->labelfont(0);
+                sel_Nav_FSK_stopbits->labelsize(14);
+                sel_Nav_FSK_stopbits->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_FSK_stopbits->callback((Fl_Callback*)cb_sel_Nav_FSK_stopbits);
+                sel_Nav_FSK_stopbits->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_FSK_stopbits->when(FL_WHEN_CHANGED);
+                o->add("1|1.5|2");
+                o->index(progdefaults.Nav_FSK_stopbits);
+                sel_Nav_FSK_stopbits->end();
+                } // Fl_ListBox* sel_Nav_FSK_stopbits
+                { Fl_ListBox* o = sel_Nav_FSK_polarity = new Fl_ListBox(384, 247, 80, 23, _("Mark Polarity"));
+                sel_Nav_FSK_polarity->tooltip(_("Nav FSK MARK Polarity"));
+                sel_Nav_FSK_polarity->box(FL_DOWN_BOX);
+                sel_Nav_FSK_polarity->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_FSK_polarity->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_FSK_polarity->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_FSK_polarity->labelfont(0);
+                sel_Nav_FSK_polarity->labelsize(14);
+                sel_Nav_FSK_polarity->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_FSK_polarity->callback((Fl_Callback*)cb_sel_Nav_FSK_polarity);
+                sel_Nav_FSK_polarity->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_FSK_polarity->when(FL_WHEN_CHANGED);
+                o->add("Normal|Reverse");
+                o->index(progdefaults.Nav_FSK_polarity);
+                sel_Nav_FSK_polarity->end();
+                } // Fl_ListBox* sel_Nav_FSK_polarity
+                { Fl_ListBox* o = sel_Nav_FSK_sidetone = new Fl_ListBox(384, 277, 80, 23, _("Side tone"));
+                sel_Nav_FSK_sidetone->tooltip(_("Nav FSK side tone"));
+                sel_Nav_FSK_sidetone->box(FL_DOWN_BOX);
+                sel_Nav_FSK_sidetone->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_FSK_sidetone->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_FSK_sidetone->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_FSK_sidetone->labelfont(0);
+                sel_Nav_FSK_sidetone->labelsize(14);
+                sel_Nav_FSK_sidetone->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_FSK_sidetone->callback((Fl_Callback*)cb_sel_Nav_FSK_sidetone);
+                sel_Nav_FSK_sidetone->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_FSK_sidetone->when(FL_WHEN_CHANGED);
+                o->add("On|Off");
+                o->index(progdefaults.Nav_FSK_sidetone);
+                sel_Nav_FSK_sidetone->end();
+                } // Fl_ListBox* sel_Nav_FSK_sidetone
+                { Fl_ListBox* o = sel_Nav_FSK_ptt = new Fl_ListBox(384, 307, 80, 23, _("FSK PTT"));
+                sel_Nav_FSK_ptt->tooltip(_("Nav FSK PTT - should always be on"));
+                sel_Nav_FSK_ptt->box(FL_DOWN_BOX);
+                sel_Nav_FSK_ptt->color(FL_BACKGROUND2_COLOR);
+                sel_Nav_FSK_ptt->selection_color(FL_BACKGROUND_COLOR);
+                sel_Nav_FSK_ptt->labeltype(FL_NORMAL_LABEL);
+                sel_Nav_FSK_ptt->labelfont(0);
+                sel_Nav_FSK_ptt->labelsize(14);
+                sel_Nav_FSK_ptt->labelcolor(FL_FOREGROUND_COLOR);
+                sel_Nav_FSK_ptt->callback((Fl_Callback*)cb_sel_Nav_FSK_ptt);
+                sel_Nav_FSK_ptt->align(Fl_Align(FL_ALIGN_LEFT));
+                sel_Nav_FSK_ptt->when(FL_WHEN_CHANGED);
+                o->add("On|Off");
+                o->index(progdefaults.Nav_FSK_ptt);
+                sel_Nav_FSK_ptt->end();
+                } // Fl_ListBox* sel_Nav_FSK_ptt
+                { btn_Nav_config = new Fl_Light_Button(509, 161, 80, 23, _("Config"));
+                btn_Nav_config->tooltip(_("Connect / Disconnect from Nav Config port"));
+                btn_Nav_config->callback((Fl_Callback*)cb_btn_Nav_config);
+                } // Fl_Light_Button* btn_Nav_config
+                o->end();
+                } // Fl_Group* o
+                tab_Nav->end();
+              } // Fl_Group* tab_Nav
               { tab_Synop = new Fl_Group(0, 75, 600, 315, _("Synop"));
                 tab_Synop->align(Fl_Align(FL_ALIGN_TOP_LEFT));
                 tab_Synop->hide();

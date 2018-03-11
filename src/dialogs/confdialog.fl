@@ -873,7 +873,7 @@ progdefaults.changed = true;}
               } {
                 Fl_Group {} {
                   label {QSO logging} open
-                  xywh {60 112 496 198} box ENGRAVED_FRAME align 21
+                  xywh {45 99 515 250} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Check_Button btnNagMe {
                     label {Prompt to save log on exit}
@@ -4015,7 +4015,7 @@ progdefaults.changed = true;} open
               }
               Fl_Group tabsCW_winkeyer {
                 label WinKeyer
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group select_WK_CommPort {
                   label {Ser. Port}
@@ -5371,7 +5371,7 @@ progdefaults.changed = true;}
             xywh {-5 50 605 340} hide
           } {
             Fl_Tabs tabsRTTY {open
-              xywh {0 50 600 340} selection_color 50
+              xywh {-5 50 605 340} selection_color 50
             } {
               Fl_Group tab_Rx_TTY {
                 label Rx open
@@ -5495,7 +5495,7 @@ progdefaults.changed = true;
               }
               Fl_Group tab_SndCrd_FSK {
                 label Tx open
-                xywh {0 75 600 315} align 5 hide
+                xywh {0 75 600 315} align 5
               } {
                 Fl_Group {} {
                   label {Sound Card FSK} open
@@ -5626,9 +5626,9 @@ if (o->value()) {
                   xywh {5 312 590 72} box ENGRAVED_FRAME align 21
                 } {
                   Fl_Counter cntr_xcvr_FSK_MARK {
-                    label {Mark Freq}
+                    label Mark
                     callback {progdefaults.xcvr_FSK_MARK = o->value();}
-                    xywh {62 341 126 23} align 8 minimum 500 maximum 3000 step 1 value 2115
+                    tooltip {Mark frequency in Hertz} xywh {15 341 126 23} align 8 minimum 500 maximum 3000 step 1 value 2115
                     code0 {o->value(progdefaults.xcvr_FSK_MARK);}
                     code1 {o->lstep(10);}
                   }
@@ -5638,7 +5638,7 @@ if (o->value()) {
 selShift->index(progdefaults.rtty_shift);
 resetRTTY();
 progdefaults.changed = true;} open
-                    tooltip {Select carrier shift} xywh {326 341 100 23} box DOWN_BOX color 7 align 8 when 1
+                    tooltip {Carrier shift in Hertz} xywh {198 341 100 23} box DOWN_BOX color 7 align 8 when 1
                     code0 {o->add(szShifts);}
                     code1 {o->index(progdefaults.rtty_shift);}
                     class Fl_ListBox
@@ -5646,7 +5646,7 @@ progdefaults.changed = true;} open
                   Fl_Counter cnt_TTY_LTRS {
                     label {LTRS at start}
                     callback {progdefaults.TTY_LTRS = (int)o->value();
-progdefaults.changed = true;}
+progdefaults.changed = true;} selected
                     tooltip {Insert NN LTRS bytes at start of each transmission} xywh {405 341 80 23} type Simple align 8 minimum 0 maximum 10 step 1 value 2
                     code0 {o->value(progdefaults.TTY_LTRS);}
                   }
@@ -5702,6 +5702,168 @@ Read from nanoIO} xywh {84 112 63 22} down_box DOWN_BOX
                   code1 {o->setFont(progdefaults.RxFontnbr);}
                   code2 {o->setFontSize(12);}
                   class FTextView
+                }
+              }
+              Fl_Group tab_Nav {
+                label Navigator open
+                xywh {0 75 600 315} align 5 hide
+                code0 {\#include "Nav.h"}
+              } {
+                Fl_Group {} {
+                  label {FSK Interface} open
+                  xywh {5 82 590 55} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Group select_USN_FSK_port {
+                    label Port
+                    callback {progdefaults.Nav_FSK_port = o->value();} open
+                    tooltip {Navigator serial port} xywh {48 105 455 23} box DOWN_BOX color 55 align 4
+                    code0 {\#include "combo.h"}
+                    code1 {\#include "Nav.h"}
+                    code2 {o->value(progdefaults.Nav_FSK_port.c_str());}
+                    class Fl_ComboBox
+                  } {}
+                  Fl_Light_Button btn_Nav_connect {
+                    label FSK
+                    callback {if (o->value()) {
+  if (!open_NavFSK())
+    o->value(0);
+} else {
+  close_NavFSK();
+}}
+                    tooltip {Connect / Disconnect from Nav FSK port} xywh {510 105 80 23}
+                  }
+                }
+                Fl_Group {} {
+                  label {Configuration Interface} open
+                  xywh {5 140 590 245} box ENGRAVED_FRAME align 21
+                } {
+                  Fl_Group select_Nav_config_port {
+                    label Port
+                    callback {progdefaults.Nav_config_port = o->value();} open
+                    tooltip {Navigator configuration port} xywh {49 161 455 23} box DOWN_BOX color 55 align 4
+                    code0 {o->value(progdefaults.Nav_config_port.c_str());}
+                    class Fl_ComboBox
+                  } {}
+                  Fl_Group sel_Nav_ch1 {
+                    label {Channel 1 Attenuator}
+                    callback {progdefaults.Nav_channel_1_att = o->index();
+Nav_set_channel_1_att(progdefaults.Nav_channel_1_att);
+progdefaults.changed = true;} open
+                    tooltip {Nav Channel 1 attenuator} xywh {177 188 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code1 {o->add("15 db|Normal");}
+                    code2 {o->index(progdefaults.Nav_channel_1_att);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_ch2 {
+                    label {Channel 2 attenuator}
+                    callback {progdefaults.Nav_channel_2_att = o->index();
+Nav_set_channel_2_att(progdefaults.Nav_channel_2_att);
+progdefaults.changed = true;} open
+                    tooltip {NavChannel 2 Attenuator} xywh {177 217 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code1 {o->add("15 db|Normal");}
+                    code2 {o->index(progdefaults.Nav_channel_2_att);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_rf_att {
+                    label {RF attenuator}
+                    callback {progdefaults.Nav_rf_att = o->index();
+Nav_set_rf_att(progdefaults.Nav_rf_att);
+progdefaults.changed = true;} open
+                    tooltip {NavRF Attenuator} xywh {177 247 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code1 {o->add("20 db|Normal");}
+                    code2 {o->index(progdefaults.Nav_rf_att);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_wk_ptt {
+                    label {WinKey PTT}
+                    callback {progdefaults.Nav_wk_ptt = o->index();
+Nav_set_wk_ptt(progdefaults.Nav_wk_ptt);
+progdefaults.changed = true;} open
+                    tooltip {NavWinkey PTT} xywh {177 277 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code1 {o->index(progdefaults.Nav_wk_ptt);}
+                    code2 {o->add("On|Off");}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_LED {
+                    label {LED brightness}
+                    callback {progdefaults.Nav_led = o->index();
+Nav_set_led(progdefaults.Nav_led);
+progdefaults.changed = true;} open
+                    tooltip {NavLED brightness} xywh {177 307 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code1 {o->index(progdefaults.Nav_led);}
+                    code2 {o->add("Dim|Normal");}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_CAT_LED {
+                    label {CAT LED state}
+                    callback {progdefaults.Nav_cat_led = o->index();
+Nav_set_cat_led(progdefaults.Nav_cat_led);
+progdefaults.changed = true;} open
+                    tooltip {NavCAT state LED} xywh {177 337 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code1 {o->index(progdefaults.Nav_cat_led);}
+                    code2 {o->add("Steady|Polling");}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_FSK_baud {
+                    label {Baud rate}
+                    callback {progdefaults.Nav_FSK_baud = o->index();
+Nav_set_baud(progdefaults.Nav_FSK_baud);
+progdefaults.changed = true;} open
+                    tooltip {Nav FSK baud rate} xywh {385 188 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("45.45|75|100");}
+                    code1 {o->index(progdefaults.Nav_FSK_baud);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_FSK_stopbits {
+                    label {Stop bits}
+                    callback {progdefaults.Nav_FSK_stopbits = o->index();
+Nav_set_stopbits(progdefaults.Nav_FSK_stopbits);
+progdefaults.changed = true;} open
+                    tooltip {Nav FSK Stop bits} xywh {384 217 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("1|1.5|2");}
+                    code1 {o->index(progdefaults.Nav_FSK_stopbits);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_FSK_polarity {
+                    label {Mark Polarity}
+                    callback {progdefaults.Nav_FSK_polarity = o->index();
+Nav_set_polarity(progdefaults.Nav_FSK_polarity);
+progdefaults.changed = true;} open
+                    tooltip {Nav FSK MARK Polarity} xywh {384 247 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("Normal|Reverse");}
+                    code1 {o->index(progdefaults.Nav_FSK_polarity);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_FSK_sidetone {
+                    label {Side tone}
+                    callback {progdefaults.Nav_FSK_sidetone = o->index();
+Nav_set_sidetone(progdefaults.Nav_FSK_sidetone);
+progdefaults.changed = true;} open
+                    tooltip {Nav FSK side tone} xywh {384 277 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("On|Off");}
+                    code1 {o->index(progdefaults.Nav_FSK_sidetone);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Group sel_Nav_FSK_ptt {
+                    label {FSK PTT}
+                    callback {progdefaults.Nav_FSK_ptt = o->index();
+Nav_set_ptt(progdefaults.Nav_FSK_ptt);
+progdefaults.changed = true;} open
+                    tooltip {Nav FSK PTT - should always be on} xywh {384 307 80 23} box DOWN_BOX color 7 align 4 when 1
+                    code0 {o->add("On|Off");}
+                    code1 {o->index(progdefaults.Nav_FSK_ptt);}
+                    class Fl_ListBox
+                  } {}
+                  Fl_Light_Button btn_Nav_config {
+                    label Config
+                    callback {if (o->value()) {
+  if (!open_NavConfig())
+    o->value(0);
+} else {
+  close_NavConfig();
+}}
+                    tooltip {Connect / Disconnect from Nav Config port} xywh {509 161 80 23}
+                  }
                 }
               }
               Fl_Group tab_Synop {

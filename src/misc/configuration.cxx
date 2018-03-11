@@ -562,6 +562,9 @@ int configuration::setDefaults()
 	select_nanoIO_CommPort->value(nanoIO_serial_port_name.c_str());
 	select_nanoCW_CommPort->value(nanoIO_serial_port_name.c_str());
 
+	select_USN_FSK_port->value(Nav_FSK_port.c_str());
+	select_Nav_config_port->value(Nav_config_port.c_str());
+
 	valCWsweetspot->value(CWsweetspot);
 	valRTTYsweetspot->value(RTTYsweetspot);
 	valPSKsweetspot->value(PSKsweetspot);

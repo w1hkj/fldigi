@@ -1073,6 +1073,8 @@ int rtty::tx_process()
 		set_nanoIO();
 		if (preamble) {
 			start_deadman();
+			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
+				Nav_send_char(-1);
 			preamble = false;
 			nano_send_char(-1);
 			nano_send_char(-1);
@@ -1093,8 +1095,31 @@ int rtty::tx_process()
 			MilliSleep(7500.0 / baudrate); // start + 5 data = 1.5 stop bits
 			return 0;
 		}
-
 		nano_send_char(c);
+		put_echo_char(c);
+		return 0;
+	}
+
+	if (use_Nav) {
+		if (preamble) {
+			start_deadman();
+			for (int i = 0; i < progdefaults.TTY_LTRS; i++)
+				Nav_send_char(-1);
+			preamble = false;
+		}
+
+		if (c == GET_TX_CHAR_ETX || stopflag) {
+			stopflag = false;
+			stop_deadman();
+			return -1;
+		}
+// send idle character if c == -1
+// must insert a suitable time delay to account for the idle
+		if (c == GET_TX_CHAR_NODATA) {
+			Nav_send_char(-1);
+			return 0;
+		}
+		Nav_send_char(c);
 		put_echo_char(c);
 		return 0;
 	}
@@ -1102,13 +1127,10 @@ int rtty::tx_process()
 	if (preamble) {
 		m_SymShaper1->reset();
 		m_SymShaper2->reset();
-		for (int i = 0; i < nbits + 1; i++) send_symbol(0, symbollen);
 		send_stop();
-		for (int i = 0; i < nbits + 1; i++) send_symbol(1, symbollen);
-		send_stop();
-		send_idle();
+		for (int i = 0; i < progdefaults.TTY_LTRS; i++)
+			send_idle();
 		preamble = false;
-//		freq1 = get_txfreq_woffset() + shift / 2.0;
 	}
 
 // TX buffer empty
@@ -1125,10 +1147,6 @@ int rtty::tx_process()
 			send_char(0x02);
 		}
 		flush_stream();
-//	if (rtty_baud <= SHAPER_BAUD) flush_stream();
-//#if SHAPER_BAUD
-//	flush_stream();
-//#endif
 		cwid();
 		return -1;
 	}

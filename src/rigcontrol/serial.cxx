@@ -120,6 +120,9 @@ bool Cserial::OpenPort()  {
 	newtio.c_iflag &= ~ICRNL;
 
  	switch(baud) {
+		case 50:
+			speed = B50;
+			break;
  		case 300:
 			speed = B300;
 			break;

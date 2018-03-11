@@ -1328,6 +1328,7 @@
         ELEM_(int, nanoIO_CW_keyer, "NANOIOCWKEYER",                                    \
               "0 - IambicA, 1 - IambicB, 2 - Straight",                                 \
               0)                                                                        \
+        /* TTY h/w interface */                                                         \
         ELEM_(int, xcvr_FSK_sideband, "XCVRFSKSIDEBAND",                                \
               "0 = LSB | 1 = USB",                                                      \
               0)                                                                        \
@@ -1337,6 +1338,46 @@
         ELEM_(int, TTY_LTRS, "TTYLTRS",                                                 \
               "0 to 10, number of LTRS bytes send at beginning of xmt",                 \
               2)                                                                        \
+        /* Navigator interface */                                                       \
+        ELEM_(std::string, Nav_FSK_port, "NAVFSKPORT",                                  \
+              "Nav FSK serial device",                                                  \
+              "NONE")                                                                   \
+        ELEM_(std::string, Nav_config_port, "NAVCONFIGPORT",                            \
+              "Nav config serial device",                                               \
+              "NONE")                                                                   \
+        ELEM_(int, Nav_FSK_baud, "NAVFSKBAUD",                                          \
+              "0 - 45.45, 1 - 75, 2 - 100 baud",                                        \
+              0)                                                                        \
+        ELEM_(int, Nav_FSK_sidetone, "NAVFSKSIDETONE",                                  \
+              "0 = Off | 1 = On",                                                       \
+              0)                                                                        \
+        ELEM_(int, Nav_FSK_ptt, "NAVFSKPTT",                                            \
+              "0 = Off | 1 = On",                                                       \
+              0)                                                                        \
+        ELEM_(int, Nav_FSK_polarity, "NAVFSKPOLARITY",                                  \
+              "0 = Normal | 1 = Reversed",                                              \
+              0)                                                                        \
+        ELEM_(int, Nav_FSK_stopbits, "NAVFSKSTOPBITS",                                  \
+              "0 = 1 | 1 = 1.5 | 2 = 2",                                                \
+              1)                                                                        \
+        ELEM_(int, Nav_channel_2_att, "NAVCH2ATT",                                      \
+              "0 = 15 db, 1 = None",                                                    \
+              1)                                                                        \
+        ELEM_(int, Nav_channel_1_att, "NAVCH1ATT",                                      \
+              "0 = 15 db, 1 = None",                                                    \
+              1)                                                                        \
+        ELEM_(int, Nav_rf_att, "NAVRFATT",                                              \
+              "0 = 20 db, 1 = None",                                                    \
+              1)                                                                        \
+        ELEM_(int, Nav_led, "NAVLED",                                                   \
+              "0 = Off | 1 = On",                                                       \
+              0)                                                                        \
+        ELEM_(int, Nav_cat_led, "NAVCATLED",                                            \
+              "0 = Off | 1 = On",                                                       \
+              0)                                                                        \
+        ELEM_(int, Nav_wk_ptt, "NAVWKPTT",                                              \
+              "0 = Off | 1 = On",                                                       \
+              0)                                                                        \
         /* Operator */                                                                  \
         ELEM_(std::string, myCall, "MYCALL",                                            \
               "Station callsign",                                                       \
