@@ -503,11 +503,15 @@ void trx_tune_loop()
 		active_modem->tx_init();
 
 		try {
-			if (use_nanoIO) {
-				nanoCW_tune(1);
+			if ((active_modem->get_mode() == MODE_CW)  && (use_nanoIO || progStatus.WK_online)) {
+				if (use_nanoIO) nanoCW_tune(1);
+				else WK_tune(1);
+
 				REQ(&waterfall::set_XmtRcvBtn, wf, true);
 				while (trx_state == STATE_TUNE) MilliSleep(10);
-				nanoCW_tune(0);
+
+				if (use_nanoIO) nanoCW_tune(0);
+				else WK_tune(0);
 			}
 			else {
 				while (trx_state == STATE_TUNE) {

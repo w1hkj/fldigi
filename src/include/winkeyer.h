@@ -53,6 +53,7 @@ extern void WK_connect(bool start);
 
 extern int  WK_send_char(int c);
 extern void WK_set_wpm();
+extern void WK_tune(bool on);
 
 extern void WK_exit();
 
