@@ -236,6 +236,12 @@ struct status {
 	bool	WK_use_pot;
 	bool	WK_online;
 
+	bool	Nav_online;
+	bool	Nav_config_online;
+
+	bool	nanoCW_online;
+	bool	nanoFSK_online;
+
 //----------------------------------------------------------------------
 
 	bool	bLastStateRead;

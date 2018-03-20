@@ -277,6 +277,12 @@ status progStatus = {
 	false,			// bool WK_use_pot
 	false,			// bool WK_online;
 
+	false,			// 	bool	Nav_online;
+	false,			//	bool	Nav_config_online;
+
+	false,			// 	bool	nanoCW_online;
+	false,			// 	bool	nanoFSK_online;
+
 //----------------------------------------------------------------------
 	false				// bool bLastStateRead;
 };
@@ -634,6 +640,13 @@ if (!bWF_only) {
 
 	spref.set("WK_online", WK_online);
 
+	spref.set("Nav_online", Nav_online);
+	spref.set("Nav_config_online", Nav_config_online);
+
+	spref.set("nanoCW_online", nanoCW_online);
+	spref.set("nanoFSK_online", nanoFSK_online);
+
+
 }
 
 void status::loadLastState()
@@ -928,6 +941,11 @@ void status::loadLastState()
 
 		spref.get("WK_online", i, WK_online); WK_online = i;
 
+		spref.get("Nav_online", i, Nav_online); Nav_online = i;
+		spref.get("Nav_config_online", i, Nav_config_online); Nav_config_online = i;
+
+		spref.get("nanoCW_online", i, nanoCW_online); nanoCW_online = i;
+		spref.get("nanoFSK_online", i, nanoFSK_online); nanoFSK_online = i;
 
 }
 

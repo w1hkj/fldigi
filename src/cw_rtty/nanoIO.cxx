@@ -55,6 +55,7 @@ void nano_display_io(string s, int style)
 	if (s.empty()) return;
 	REQ(&FTextBase::addstr, txt_nano_io, s, style);
 	REQ(&FTextBase::addstr, txt_nano_CW_io, s, style);
+//	ReceiveText->add(s.c_str());
 }
 
 int nano_serial_write(char c) {
@@ -221,7 +222,7 @@ void nano_baud_is(int val)
 void nano_parse_config(std::string s)
 {
 	nano_display_io(s, FTextBase::ALTR);
-	ReceiveText->add(s.c_str());
+//	ReceiveText->add(s.c_str());
 
 	size_t p1 = 0;
 	if (s.find("nanoIO") == std::string::npos) return;
@@ -274,7 +275,7 @@ int open_port(std::string PORT)
 
 	if (!nano_serial.OpenPort()) {
 		nano_display_io("\nCould not open serial port!", FTextBase::ALTR);
-		ReceiveText->add("\nCould not open serial port!");
+//		ReceiveText->add("\nCould not open serial port!");
 		LOG_ERROR("Could not open %s", progdefaults.nanoIO_serial_port_name.c_str());
 		return false;
 	}
@@ -282,7 +283,7 @@ int open_port(std::string PORT)
 	use_nanoIO = true;
 
 	nano_display_io("\nConnected to nanoIO\n", FTextBase::RECV);
-	ReceiveText->add("\nConnected to nanoIO\n");
+//	ReceiveText->add("\nConnected to nanoIO\n");
 
 	return true;
 }
@@ -302,7 +303,10 @@ std::string nano_serial_read()
 void nano_serial_flush()
 {
 	static char buffer[1025];
-	while (nano_serial.ReadBuffer((unsigned char *)buffer, 1024) );
+	rcvd("nano_serial_flush():");
+	while (nano_serial.ReadBuffer((unsigned char *)buffer, 1024) ) {
+		rcvd(buffer);
+	}
 }
 
 void no_cmd(void *)
@@ -316,12 +320,16 @@ void close_nanoIO()
 	use_nanoIO = false;
 
 	nano_display_io("\nDisconnected from nanoIO\n", FTextBase::RECV);
-	ReceiveText->add("\nDisconnected from nanoIO\n");
+//	ReceiveText->add("\nDisconnected from nanoIO\n");
 
 	if (nano_morse) {
 		delete nano_morse;
 		nano_morse = 0;
 	}
+
+	progStatus.nanoCW_online = false;
+	progStatus.nanoFSK_online = false;
+
 }
 
 bool open_nano()
@@ -339,31 +347,30 @@ bool open_nano()
 bool open_nanoIO()
 {
 	std::string rsp;
+
+	progStatus.nanoCW_online = false;
+	progStatus.nanoFSK_online = false;
+
 	if (open_nano()) {
 
-//		std::string rsp = nano_read_string(5000, "cmd:");
+		rsp = nano_read_string(5000, "cmd:");
+		rcvd(rsp);
 
-		nano_serial_flush();
-		for (int i = 0; i < 20; i++) {
-			MilliSleep(100);
-			Fl::awake();
-		}
 		set_nanoIO();
-		for (int i = 0; i < 20; i++) {
-			MilliSleep(100);
-			Fl::awake();
-		}
 
 		nano_sendString("~?");
-
 		rsp = nano_read_string(5000, "keyer");
 		rcvd(rsp);
+
 
 		size_t p = rsp.find("nanoIO");
 		if (p != std::string::npos) rsp.erase(0,p);
 
 		if (rsp.find("keyer") != std::string::npos)
 			nano_parse_config(rsp);
+
+		progStatus.nanoFSK_online = true;
+
 		return true;
 	}
 	return false;
@@ -373,25 +380,19 @@ bool open_nanoCW()
 {
 	if (nano_morse == 0) nano_morse = new cMorse;
 
+	progStatus.nanoCW_online = false;
+	progStatus.nanoFSK_online = false;
+
 	std::string rsp;
 	if (open_nano()) {
 
-		nano_serial_flush();
-		for (int i = 0; i < 20; i++) {
-			MilliSleep(100);
-			Fl::awake();
-		}
-//		std::string rsp = nano_read_string(5000, "cmd:");
+		rsp = nano_read_string(5000, "cmd:");
+		rcvd(rsp);
+
 		set_nanoCW();
-		for (int i = 0; i < 20; i++) {
-			MilliSleep(100);
-			Fl::awake();
-		}
 
 		nano_sendString("~?");
-
 		rsp = nano_read_string(5000, "keyer");
-
 		rcvd(rsp);
 
 		size_t p = rsp.find("nanoIO");
@@ -399,6 +400,9 @@ bool open_nanoCW()
 
 		if (rsp.find("keyer") != std::string::npos)
 			nano_parse_config(rsp);
+
+		progStatus.nanoCW_online = true;
+
 		return true;
 	}
 	return false;
@@ -406,28 +410,31 @@ bool open_nanoCW()
 
 void set_nanoIO()
 {
-	if (nanoIO_isCW) {
-		nano_sendString("~F");
-		nanoIO_isCW = false;
+	if (progStatus.nanoFSK_online) return;
 
-		std::string rsp = nano_read_string(1000, "~F");
+	nano_sendString("~F");
 
-		rcvd(rsp);
-	}
+	std::string rsp = nano_read_string(5000, "~F");
+	rcvd(rsp);
+
+	nanoIO_isCW = false;
 }
 
 void set_nanoCW()
 {
-	if (!nanoIO_isCW) {
-		nano_sendString("~C");
+	if (progStatus.nanoCW_online) return;
+
+	nano_sendString("~C");
+
+	std::string rsp = nano_read_string(5000, "~C");
+	rcvd(rsp);
+
+	if (rsp.find("~C") != std::string::npos) {
 		nanoIO_isCW = true;
-
-		std::string rsp = nano_read_string(1000, "~C");
-		rcvd(rsp);
-
 		set_nanoWPM(progdefaults.CWspeed);
 		set_nano_dash2dot(progdefaults.CWdash2dot);
 	}
+
 }
 
 void set_nanoWPM(int wpm)

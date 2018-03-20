@@ -428,6 +428,9 @@ void close_NavFSK()
 	use_Nav = false;
 
 	print_string(_("Disconnected from Navigator FSK port\n"));
+
+	progStatus.Nav_online = false;
+
 }
 /* =====================================================================
 
@@ -480,6 +483,8 @@ control to be done without having to time the data rate to avoid buffer under ru
 ======================================================================*/
 bool open_NavFSK()
 {
+	progStatus.Nav_online = false;
+
 	Nav_serial.Device(progdefaults.Nav_FSK_port);
 	Nav_serial.Baud(1200);
 	Nav_serial.Timeout(200);
@@ -494,6 +499,8 @@ bool open_NavFSK()
 
 	use_Nav = true;
 
+	progStatus.Nav_online = true;
+
 	print_string(_("Connected to Navigator FSK port\n"));
 
 	return true;
@@ -504,6 +511,8 @@ void close_NavConfig()
 	Nav_config.ClosePort();
 
 	print_string(_("Disconnected from Navigator config port\n"));
+
+	progStatus.Nav_config_online = false;
 }
 
 bool open_NavConfig()
@@ -559,6 +568,8 @@ bool open_NavConfig()
 //	blink_led();
 
 	print_string(_("Connected to Navigator configuration port\n"));
+
+	progStatus.Nav_config_online = true;
 
 	return true;
 }

@@ -731,6 +731,22 @@ void delayed_startup(void *)
 		WK_connect(1);
 	}
 
+	if (progStatus.Nav_online) {
+		if (open_NavFSK()) btn_Nav_connect->value(1);
+	}
+
+	if (progStatus.Nav_config_online) {
+		if (open_NavConfig()) btn_Nav_config->value(1);
+	}
+
+	if (progStatus.nanoCW_online) {
+		if (open_nanoCW()) btn_nanoCW_connect->value(1);
+	}
+
+	if (progStatus.nanoFSK_online) {
+		if (open_nanoIO()) btn_nanoIO_connect->value(1);
+	}
+
 	if (progdefaults.check_for_updates)
 		cb_mnuCheckUpdate((Fl_Widget *)0, NULL);
 
@@ -1162,7 +1178,7 @@ int main(int argc, char ** argv)
 
 	mode_browser = new Mode_Browser;
 
-	Fl::add_timeout(.05, delayed_startup);
+	Fl::add_timeout(.25, delayed_startup);
 
 	int ret = Fl::run();
 
