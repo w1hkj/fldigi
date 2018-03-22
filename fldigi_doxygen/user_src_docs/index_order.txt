@@ -87,6 +87,9 @@ Menus.txt \
 ModeTable.txt \
 CWkeying.txt \
 CWwinkeyer.txt \
+nanoIO.txt \
+nanoIO_diagram.txt \
+navigator.txt \
 PseudoFSK.txt \
 w5zit-interface.txt \
 rigxml.txt \

@@ -84,11 +84,18 @@ should distinguish the Mark frequency.
 \image latex config-rtty-synop.png "RTTY SYNOP" width=5.0in
 <br>
 
-See \ref synop_page "Synop" and \ref rtty_page "RTTY" for additional information.
-
+See \ref nanoIO_page for additional information on nanoIO and MORTTY interface.
 <br>
+
+See \ref navigator_page for additional information on using the Navigator interface.
+<br>
+
+See \ref synop_page "Synop" and \ref rtty_page "RTTY" for additional information.
+<br>
+
 \ref rtty_fsk_configuration_page "Return to Top of Page"
 <br>
+
 \ref main_page "Return to Main Page"
 
 

@@ -1,0 +1,18 @@
+/**
+\page nanoIO_diagram  nanoIO Circuit Diagram
+
+<center>
+\image html nanoIO.png ""
+\image latex nanoIO.png "" width=5.7in
+
+<ul>
+<li>J1 - FSK signal line</li>
+<li>J3 - CW  signal line</li>
+<li>J5 - PTT signal line</li>
+<li>J7 - unused</li>
+</ul>
+</center>
+
+\ref nanoIO_page "Return to nanoIO page"
+
+*/

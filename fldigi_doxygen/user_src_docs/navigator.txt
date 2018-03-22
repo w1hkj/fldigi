@@ -1,0 +1,108 @@
+/**
+\page navigator_page  Navigator Interface
+
+\tableofcontents
+
+\section navigator_description Description
+Precise, jitter-free timing of FSK signals requires the use of external 
+hardware/firmware that is dedicated to the task of converting
+text to a serial Baudot radio teletype (TTY) data stream.  
+The <i>TimeWave Navigator</i>©, previously sold as <i>Navigator</i> and <i>US Navigator</i>,
+simply referred to as <i>Navigator</i>, is a transceiver interface that performs that
+service.  The Navigator interface can provide
+<ul>
+<li>CAT serial port support</li>
+<li>Winkeyer compatible CW port</li>
+<li>FSK port</li>
+<li>PTT CW Squelch port</li>
+<li>Configuration control port (no jumpers used)</li>
+<li>An additional RS232 port for general use</li>
+</ul>
+The Winkeyer interface is identical to using and configuring a stand alone 
+\ref cw_winkeyer_page.  The CAT serial port is accessed using either hamlib, rigcat or
+and external control program such as flrig.  This page is only concerned with the
+FSK interface provided by the Navigator.<br>
+
+Using the fldigi/Navigator interface requires that
+<ul>
+<li>the transceiver be in RTTY</li>
+<li>fldigi be in the RTTY mode</li>
+<li>the Navigator be properly configured</li>
+<li>fldigi's serial access to the Navigator's FSK port(s) be activated</li>
+</ul>
+\section navigator_access Accessing the interface
+<center>
+\image html navigator.png ""
+\image latex navigator.png "" width=5.0in
+</center>
+The Navigator has two serial ports dedicated to FSK signal line generation.  
+One for the actual character stream conversion from text to FSK, and the 
+other for configuring the Navigator firmware.  You must know which ports 
+are used for the FSK signal line and the configuration and configuration 
+access. On Linux-based systems, you can show the available serial ports 
+by opening a terminal window and issuing the command::
+\code
+ls -la /dev/serial/by-id/
+--
+... usb-FTDI_Navigator__CAT___2nd_PTT__00000000-if00-port0 -> ../../ttyUSB0
+... usb-FTDI_Navigator__CAT___2nd_PTT__00000000-if01-port0 -> ../../ttyUSB1
+... usb-FTDI_Navigator__RS232___Config__00000002-if00-port0 -> ../../ttyUSB4
+... usb-FTDI_Navigator__RS232___Config__00000002-if01-port0 -> ../../ttyUSB5
+... usb-FTDI_Navigator__WKey___FSK__00000001-if00-port0 -> ../../ttyUSB2
+... usb-FTDI_Navigator__WKey___FSK__00000001-if01-port0 -> ../../ttyUSB3
+--
+\endcode
+In the first line, ttyUSB0 is matched to the FIRST device in the list, AKA.. the CAT port.  ttyUSB1 is associated to the second PTT line, etc.
+
+\subsection navigator_configure Configuring
+Refer to the Navigator documentation for details on the various configuration parameters.
+Select the correct port and press the Config button.  The button will illuminate when the
+serial port is activated.  The parameters will be read from the Navigator and each configuration
+control will display the current state of the hardware.  The following text will be
+displayed in the Rx text panel:
+\code
+Connected to Navigator configuration port
+\endcode
+You can then set the various parameters using the respective fldigi control:
+<center>
+|       Parameter     |     Values
+:---------------------|:---------------
+|Channel 1 Attenuator |Normal, 15 dB   |
+|Channel 2 Attenuator |Normal, 15 dB   |
+|RF attenuator        |Normal, 20 dB   |
+|WinKey PTT           |On, Off         |
+|LED brightness       |Dim, Normal     |
+|CAT LED state        |Steady, Polling |
+|Baud rate            |45.45, 75, 100  |
+|Stop bits            |1, 1.5, 2       |
+|Mark Polarity        |Normal, Reverse |
+|Side tone            |On, Off         |
+|FSK PTT              |On, Off         |
+</center>
+
+You can disconnect from the Navigator control port when you are satisfied that it is
+configured for the desired operating condition.  You do not need to be connected
+to the configuration port for FSK signalling.
+
+\subsection navigator_fsk_signalling FSK Signal Generation
+Select the FSK serial port and press the Connect button.  The
+button will illuminate when connected and the text similar to the following
+will be displayed in the Rx text panel:
+\code
+Connected to Navigator FSK port
+Navigator Ver 1.00
+\endcode
+fldigi will then use the naviator for generating the FSK signal.  The fldigi
+internal audio frequency transmit modem will be disabled.
+
+The  Navigator's "FSK PTT" option *must* be enabled for proper operation.  Any 
+desired changes in the RTTY signal's BAUD, Stop bits, and Polarity, must 
+be done via the Navigator hardware configuration menu.  Any changes made 
+to the RTTY parameters in the Fldigi RTTY modem screen will not alter the 
+Navigator's operation.  <br>
+
+\ref navigator_page "Return to Top of Page"<br>
+
+\ref main_page "Return to Main Page"
+
+*/

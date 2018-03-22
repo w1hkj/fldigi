@@ -134,7 +134,7 @@
               false)                                                                    \
         ELEM_(bool, retain_freq_lock, "RETAINFREQLOCK",                                 \
              "retain frequency lock on rsid modem change/reset",                        \
-             false)                                                                     \
+             true)                                                                      \
         ELEM_(bool, changed, "", "",  false)                                            \
                                                                                         \
         ELEM_(double, wfRefLevel, "WFREFLEVEL",                                         \
@@ -187,16 +187,16 @@
               3000)                                                                     \
         ELEM_(double, CWsweetspot, "CWSWEETSPOT",                                       \
               "Default CW tracking point (Hz)",                                         \
-              1000)                                                                     \
+              1500)                                                                     \
         ELEM_(double, RTTYsweetspot, "RTTYSWEETSPOT",                                   \
               "Default RTTY tracking point (Hz)",                                       \
-              1000)                                                                     \
+              1500)                                                                     \
         ELEM_(double, PSKsweetspot, "PSKSWEETSPOT",                                     \
               "Default tracking point for all other modems (Hz)",                       \
-              1000)                                                                     \
+              1500)                                                                     \
         ELEM_(bool, StartAtSweetSpot, "STARTATSWEETSPOT",                               \
               "Always start new modems at sweet spot frequencies",                      \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, CWOffset, "CWOFFSET",                                               \
               "Select if waterfall should compensate for BFO offset in CW",             \
               false)                                                                    \
@@ -910,7 +910,7 @@
               true)                                                                     \
         ELEM_(bool, rxtext_tooltips, "RXTEXTTOOLTIPS",                                  \
               "Show callsign tooltips in received text",                                \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, autofill_qso_fields, "AUTOFILLQSO",                                 \
               "Auto-fill Country and Azimuth QSO fields",                               \
               false)                                                                    \
@@ -919,10 +919,10 @@
               true)                                                                     \
         ELEM_(bool, RSTdefault, "RSTDEFAULT",                                           \
               "Default outgoing RST to 599/59",                                         \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, RSTin_default, "RSTINDEFAULT",                                      \
               "Default incoming RST to 599/59",                                         \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, autoextract, "AUTOEXTRACT",                                         \
               "Enable detection and extraction of \"wrapped\" text",                    \
               true)                                                                     \
@@ -1491,7 +1491,7 @@
               0)                                                                        \
         ELEM_(bool, fixed599, "FIXED599",                                               \
               "Force RST in/out to 599",                                                \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, UseLeadingZeros, "USELEADINGZEROS",                                 \
               "Insert leading zeros into transmitted serial number (contest)",          \
               true)                                                                     \
@@ -1527,7 +1527,7 @@
               {255, 110, 180})                                                          \
         ELEM_(bool, EnableDupCheck, "ENABLEDUPCHECK",                                   \
               "Check for duplicates (contest)",                                         \
-              false)                                                                    \
+              true)                                                                     \
         ELEM_(bool, dupmode, "DUPMODE",                                                 \
               "Predicate for ENABLEDUPCHECK (mode must match)",                         \
               true)                                                                     \

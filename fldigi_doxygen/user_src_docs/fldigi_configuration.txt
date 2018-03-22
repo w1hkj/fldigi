@@ -77,6 +77,8 @@ but the defaults should be satisfactory for most users.
 <ul>
 	<li> \subpage contestia_configuration_page </li>
 	<li> \subpage cw_configuration_page </li>
+	<li> \subpage nanoIO_page </li>
+	<li> \subpage navigator_page </li>
 	<li> \subpage cw_winkeyer_page </li>
 	<li> \subpage domino_ex_configuration_page </li>
 	<li> \subpage feld_hell_configuration_page </li>

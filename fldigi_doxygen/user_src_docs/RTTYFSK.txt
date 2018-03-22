@@ -243,14 +243,25 @@ The digiscope display will extinguish when the Rx signal level falls below
 the squelch setting.
 <br>
 
-It is possible to use fldigi to generate the keying waveform for use with an
-FSK type of transmitter.  See \ref pseudo_fsk_page "Pseudo FSK for a
+Many amateur transceivers offer native FSK support for RTTY.  This support 
+also included RTTY-centric filters and optimizations that 
+operators have wanted to use.  This native transceiver RTTY support is 
+where the radio itself creates the MARK and SPACE signals but the key 
+up/down and timing is done externally via say a hardware TNC or other 
+device.
+
+It is possible to use fldigi to generate the keying waveform for use with 
+such a transceiver.    See \ref pseudo_fsk_page "Pseudo FSK for a 
 description of how this can be accomplished.
-<br>
 
-See \ref rtty_fsk_configuration_page "RTTY Configuration Page"
+Fldigi also supports a few external hardware devices for FSK-based RTTY 
+support<br>
 
-<br>
+See \ref nanoIO_page for additional information on nanoIO and MORTTY interface.<br>
+
+See \ref navigator_page for additional information on using the Navigator interface.<br>
+
+See \ref rtty_fsk_configuration_page "RTTY Configuration Page"<br>
 \ref rtty_page "Return to Top of Page"
 <br>
 \ref main_page "Return to Main Page"

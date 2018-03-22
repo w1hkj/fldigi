@@ -34,16 +34,11 @@ The matrix display is toggled on and off using the menu item
 \image html view-hide-48.png ""
 \image latex view-hide-48.png "" width=1.0in
 </center>
+It can be positioned above or below the Rx/Tx text panels.  See \ref ui_configuration_macros_page "configuring macros".
 <br>
 
-The matrix display can be dragged off and restored to it's position below
-the main menu.  The drag button is the knurled vertical button on the left
-edge of the matrix.  Left click on the drag button and drag the matrix with
-the mouse.
-<br>
-
-The imbedded references are similar to those used by DigiPan and other
-fine modem programs.  The imbedded reference is an uppercase plain
+The imbedded references are similar to those used by DigiPan and other 
+modem programs.  The imbedded reference is an <b>uppercase</b> plain
 text descriptor contained with the \<\> brackets.
 <br>
 
@@ -173,8 +168,10 @@ Macro       | Description
 
 Macro       | Description
 :---------: | :----------------------------
-\<RIGMODE:mode\> | send CAT command to transceiver to change to a valid mode
-\<FILWID:width\> | send CAT command to transceiver to change to a valid filter <br> width example to QSY to sweetspot (center of bandpass filter) and select <br> narrow filter
+\<RIGMODE:mode\> | send mode change request to flrig
+\<FILWID:width\> | send filter width change request to flrig
+\<FLRIG:hex hex\>  | send CAT command sequence to flrig
+\<FLRIG:"string"\> | hex hex ... are sequential hexadecimal values e.g. xFF xfe<br> string is Ascii char sequence<br>No return values, use set commands only
 <br>
 
 Macro       | Description

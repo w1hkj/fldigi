@@ -1,0 +1,28 @@
+<style>
+/* unvisited link */
+
+a {
+    color: blue;
+	font-weight: normal;
+}
+
+a:link {
+	color:blue;
+}
+
+a:hover {
+	color:hotpink;
+	text-decoration:none;
+}
+
+.contents a:visited {
+	color:blue;
+	font-weight: bold;
+}
+
+.contents a:hover {
+	color:red;
+	text-decoration: underline;
+}
+
+</style>

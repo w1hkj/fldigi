@@ -278,6 +278,8 @@ used on MARS CW operations.
 
 See \ref cw_page "Operating CW" for additional information.
 <br>
+See \ref nanoIO_page for additional information on nanoIO interface.
+<br>
 See \ref cw_winkeyer_page for additional information on WinKeyer interface.
 <br>
 

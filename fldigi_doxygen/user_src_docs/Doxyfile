@@ -136,6 +136,9 @@ INPUT                = \
 	ModeTable.txt \
 	CWkeying.txt \
 	CWwinkeyer.txt \
+	nanoIO.txt \
+	nanoIO_diagram.txt \
+	navigator.txt \
 	PseudoFSK.txt \
 	w5zit-interface.txt \
 	rigxml.txt \
@@ -160,4 +163,6 @@ STRIP_CODE_COMMENTS  = NO
 TAGFILES             =
 USE_PDFLATEX         = YES
 WARNINGS             = YES
+HTML_EXTRA_STYLESHEET = custom.css
+
 
