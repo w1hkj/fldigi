@@ -585,6 +585,7 @@ void cb_rtty45(Fl_Widget *w, void *arg);
 void cb_rtty50(Fl_Widget *w, void *arg);
 void cb_rtty75N(Fl_Widget *w, void *arg);
 void cb_rtty75W(Fl_Widget *w, void *arg);
+void cb_rtty100(Fl_Widget *w, void *arg);
 void cb_rttyCustom(Fl_Widget *w, void *arg);
 
 void cb_fsq2(Fl_Widget *w, void *arg);
@@ -811,6 +812,7 @@ static const Fl_Menu_Item quick_change_rtty[] = {
 	{ "RTTY-50", 0, cb_rtty50, (void *)MODE_RTTY },
 	{ "RTTY-75N", 0, cb_rtty75N, (void *)MODE_RTTY },
 	{ "RTTY-75W", 0, cb_rtty75W, (void *)MODE_RTTY },
+	{ "RTTY-100", 0, cb_rtty100, (void *)MODE_RTTY },
 	{ _("Custom..."), 0, cb_rttyCustom, (void *)MODE_RTTY },
 	{ 0 }
 };
@@ -1027,6 +1029,15 @@ void cb_rtty75W(Fl_Widget *w, void *arg)
 	progdefaults.rtty_baud = 4;
 	progdefaults.rtty_bits = 0;
 	progdefaults.rtty_shift = 9;
+	set_rtty_tab_widgets();
+	cb_init_mode(w, arg);
+}
+
+void cb_rtty100(Fl_Widget *w, void *arg)
+{
+	progdefaults.rtty_baud = 5;
+	progdefaults.rtty_bits = 0;
+	progdefaults.rtty_shift = 3;
 	set_rtty_tab_widgets();
 	cb_init_mode(w, arg);
 }
