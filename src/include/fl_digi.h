@@ -525,6 +525,8 @@ extern void set_rtty_shift(int shift);
 extern void set_rtty_baud(float baud);
 extern void set_rtty_bits(int bits);
 extern void set_rtty_bw(float bw);
+extern void enable_rtty_quickchange();
+extern void disable_rtty_quickchange();
 
 extern void sync_cw_parameters();
 

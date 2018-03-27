@@ -46,6 +46,7 @@
 #include "FTextRXTX.h"
 
 extern bool use_nanoIO;
+extern bool nanoIO_isCW;
 
 extern bool open_nanoIO();
 extern void close_nanoIO();

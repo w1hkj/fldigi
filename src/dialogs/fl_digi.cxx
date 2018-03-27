@@ -998,6 +998,18 @@ void set_rtty_tab_widgets()
 	selStopBits->index(progdefaults.rtty_stop);
 }
 
+void enable_rtty_quickchange()
+{
+	if (active_modem->get_mode() == MODE_RTTY)
+		quick_change = quick_change_rtty;
+}
+
+void disable_rtty_quickchange()
+{
+	if (active_modem->get_mode() == MODE_RTTY)
+		quick_change = 0;
+}
+
 void cb_rtty45(Fl_Widget *w, void *arg)
 {
 	progdefaults.rtty_baud = 1;
@@ -1792,7 +1804,11 @@ void init_modem(trx_mode mode, int freq)
 		startup_modem(*mode_info[mode].modem ? *mode_info[mode].modem :
 				  *mode_info[mode].modem = new rtty(mode), freq);
 		modem_config_tab = tabRTTY;
-		quick_change = quick_change_rtty;
+
+		if (progStatus.nanoFSK_online || progStatus.Nav_online)
+			quick_change = 0;
+		else
+			quick_change = quick_change_rtty;
 		break;
 
 	case MODE_THROB1: case MODE_THROB2: case MODE_THROB4:

@@ -430,7 +430,7 @@ void close_NavFSK()
 	print_string(_("Disconnected from Navigator FSK port\n"));
 
 	progStatus.Nav_online = false;
-
+	enable_rtty_quickchange();
 }
 /* =====================================================================
 
@@ -500,6 +500,7 @@ bool open_NavFSK()
 	use_Nav = true;
 
 	progStatus.Nav_online = true;
+	disable_rtty_quickchange();
 
 	print_string(_("Connected to Navigator FSK port\n"));
 

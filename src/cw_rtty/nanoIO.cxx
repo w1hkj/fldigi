@@ -329,6 +329,7 @@ void close_nanoIO()
 
 	progStatus.nanoCW_online = false;
 	progStatus.nanoFSK_online = false;
+	enable_rtty_quickchange();
 
 }
 
@@ -370,6 +371,7 @@ bool open_nanoIO()
 			nano_parse_config(rsp);
 
 		progStatus.nanoFSK_online = true;
+		disable_rtty_quickchange();
 
 		return true;
 	}
