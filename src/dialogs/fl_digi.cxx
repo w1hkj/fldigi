@@ -3856,8 +3856,7 @@ void UI_check_swap()
 		progStatus.tile_y = TransmitText->h();
 		progStatus.tile_y_ratio = 1.0 * TransmitText->h() / text_panel->h();
 	}
-//	else if (!progdefaults.rxtx_swap && ReceiveText->y() > TransmitText->y()) {
-	else if (progdefaults.rxtx_swap && (ReceiveText->y() > TransmitText->y())) {
+	else if (!progdefaults.rxtx_swap && ReceiveText->y() > TransmitText->y()) {
 		rx_y = TransmitText->y();
 		rx_h = first_check ? progStatus.tile_y : ReceiveText->h();
 		rx_x = mv_x + mv_w;
