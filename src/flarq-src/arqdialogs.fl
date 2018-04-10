@@ -1,27 +1,31 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0109 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cxx}
-decl {\#include <config.h>} {} 
+decl {\#include <config.h>} {private local
+}
 
-decl {\#include <string>} {} 
+decl {\#include <string>} {private local
+}
 
-decl {\#include "flarq.h"} {} 
+decl {\#include "flarq.h"} {private local
+}
 
-decl {\#include "flinput2.h"} {public
-} 
+decl {\#include "flinput2.h"} {public local
+}
 
-decl {\#include "flslider2.h"} {public
-} 
+decl {\#include "flslider2.h"} {public local
+}
 
-decl {\#include "combo.h"} {public
-} 
+decl {\#include "combo.h"} {public local
+}
 
-Function {arq_dialog()} {} {
+Function {arq_dialog()} {open
+} {
   Fl_Window {} {
     label flarq
     callback {arqCLOSE();} open
-    xywh {415 60 515 415} type Double color 50 resizable visible
+    xywh {458 188 515 415} type Double color 50 resizable visible
   } {
     Fl_Menu_Bar mnu {open
       xywh {0 0 516 22}
@@ -30,6 +34,11 @@ Function {arq_dialog()} {} {
         label {&File} open
         xywh {0 0 70 21}
       } {
+        MenuItem mnu_nbems_files {
+          label {NBEMS files}
+          callback {open_nbems_file_folder();} selected
+          xywh {0 0 36 20} divider
+        }
         MenuItem mnuExit {
           label {E&xit}
           callback {arqCLOSE();}
@@ -184,13 +193,12 @@ Function {arq_dialog()} {} {
       }
     }
   }
-} 
+}
 
-Function {arq_configure()} {open
-} {
+Function {arq_configure()} {} {
   Fl_Window {} {
-    label {Configure flarq} open selected
-    xywh {475 671 480 162} type Double resizable visible
+    label {Configure flarq} open
+    xywh {475 671 480 162} type Double hide resizable
   } {
     Fl_Input txtMyCall {
       label {My Call:}
@@ -210,7 +218,7 @@ Function {arq_configure()} {open
       label {Retries:}
       callback {iretries = (int)o->value();
 cbSetConfig();}
-      tooltip {\# retries before connection declared down} xywh {146 71 45 22} value 1
+      tooltip {\# retries before connection declared down} xywh {146 71 45 22}
       code0 {o->minimum(2);}
       code1 {o->maximum(20);}
       code2 {o->step(1);}
@@ -221,7 +229,7 @@ cbSetConfig();}
       label {Wait time (sec):}
       callback {iwaittime = (int)(1000 * o->value());
 cbSetConfig();}
-      tooltip {Time between retries} xywh {121 98 70 22} value 1
+      tooltip {Time between retries} xywh {121 98 70 22}
       code0 {o->minimum(10);}
       code1 {o->maximum(30);}
       code2 {o->step(5);}
@@ -232,7 +240,7 @@ cbSetConfig();}
       label {Timeout (sec):}
       callback {itimeout = (int)(o->value() * 1000.0);
 cbSetConfig();}
-      tooltip {Time out for dead connection} xywh {121 126 70 22} value 1
+      tooltip {Time out for dead connection} xywh {121 126 70 22}
       code0 {o->minimum(30);}
       code1 {o->maximum(300);}
       code2 {o->step(15);}
@@ -243,7 +251,7 @@ cbSetConfig();}
       label {Tx delay (msec):}
       callback {txdelay = (int)o->value();
 cbSetConfig();}
-      tooltip {delay from Rx to Tx} xywh {317 98 70 22} value 1
+      tooltip {delay from Rx to Tx} xywh {317 98 70 22}
       code0 {o->minimum(200);}
       code1 {o->maximum(2000);}
       code2 {o->step(100);}
@@ -273,7 +281,7 @@ cbSetConfig();} open
       class Fl_ComboBox
     } {}
   }
-} 
+}
 
 Function {arq_SendSelect()} {open
 } {
@@ -299,7 +307,7 @@ Function {arq_SendSelect()} {open
       code0 {extern void sendOK();}
     }
   }
-} 
+}
 
 Function {arq_composer()} {open
 } {
@@ -367,4 +375,4 @@ Function {arq_composer()} {open
       }
     }
   }
-} 
+}

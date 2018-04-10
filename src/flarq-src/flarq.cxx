@@ -1785,25 +1785,20 @@ int main (int argc, char *argv[] )
 	NBEMS_dir.clear();
 	{
 		string appname = argv[0];
-		string appdir;
-		char dirbuf[FL_PATH_MAX + 1];
-		fl_filename_expand(dirbuf, FL_PATH_MAX, appname.c_str());
-		appdir.assign(dirbuf);
+		string appdir = argv[0];
 
-#ifdef __WOE32__
-		size_t p = appdir.rfind("flarq.exe");
-		appdir.erase(p);
-		p = appdir.find("FL_APPS/");
-		if (p != string::npos) {
-			NBEMS_dir.assign(appdir.substr(0, p + 8));
-		} else {
+#ifdef __WIN32__
+		size_t p = appdir.find("FL_APPS\\");
+		if (p == string::npos) p = appdir.find("FL_APPS/");
+		if (p == string::npos) {
+			char dirbuf[FL_PATH_MAX + 1];
 			fl_filename_expand(dirbuf, sizeof(dirbuf) -1, "$USERPROFILE/");
 			NBEMS_dir.assign(dirbuf);
-		}
+		} else
+			NBEMS_dir.assign(appdir.substr(0, p + 8));
 		NBEMS_dir.append("NBEMS.files/");
-
 #else
-
+		char dirbuf[FL_PATH_MAX + 1];
 		fl_filename_absolute(dirbuf, sizeof(dirbuf), argv[0]);
 		appdir.assign(dirbuf);
 		size_t p = appdir.rfind("flarq");
@@ -1827,7 +1822,6 @@ int main (int argc, char *argv[] )
 		} else {
 			NBEMS_dir.append(".nbems/");
 		}
-
 #endif
 	}
 
@@ -1996,4 +1990,56 @@ static void checkdirectories(void)
 		else if (r == 0 && NBEMS_dirs[i].new_dir_func)
 			NBEMS_dirs[i].new_dir_func();
 	}
+}
+
+// This function may be called by the QRZ thread
+void cb_mnuVisitURL(Fl_Widget*, void* arg)
+{
+	const char* url = reinterpret_cast<const char *>(arg);
+#ifndef __WOE32__
+	const char* browsers[] = {
+#  ifdef __APPLE__
+		getenv("FLDIGI_BROWSER"), // valid for any OS - set by user
+		"open"                    // OS X
+#  else
+		"fl-xdg-open",            // Puppy Linux
+		"xdg-open",               // other Unix-Linux distros
+		getenv("FLDIGI_BROWSER"), // force use of spec'd browser
+		getenv("BROWSER"),        // most Linux distributions
+		"sensible-browser",
+		"firefox",
+		"mozilla"                 // must be something out there!
+#  endif
+	};
+	switch (fork()) {
+	case 0:
+#  ifndef NDEBUG
+		unsetenv("MALLOC_CHECK_");
+		unsetenv("MALLOC_PERTURB_");
+#  endif
+		for (size_t i = 0; i < sizeof(browsers)/sizeof(browsers[0]); i++)
+			if (browsers[i])
+				execlp(browsers[i], browsers[i], url, (char*)0);
+		exit(EXIT_FAILURE);
+	case -1:
+		fl_alert2(_("Could not run a web browser:\n%s\n\n"
+			 "Open this URL manually:\n%s"),
+			 strerror(errno), url);
+	}
+#else
+	// gurgle... gurgle... HOWL
+	// "The return value is cast as an HINSTANCE for backward
+	// compatibility with 16-bit Windows applications. It is
+	// not a true HINSTANCE, however. The only thing that can
+	// be done with the returned HINSTANCE is to cast it to an
+	// int and compare it with the value 32 or one of the error
+	// codes below." (Error codes omitted to preserve sanity).
+	if ((int)ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) <= 32)
+		fl_alert2(_("Could not open url:\n%s\n"), url);
+#endif
+}
+
+void open_nbems_file_folder()
+{
+	cb_mnuVisitURL(0, (void*)NBEMS_dir.c_str());
 }

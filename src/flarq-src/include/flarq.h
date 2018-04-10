@@ -24,6 +24,7 @@ extern void testDirectory(std::string);
 extern void cbSendTalk();
 extern void cbClearTalk();
 extern void help_cb();
+extern void open_nbems_file_folder();
 
 extern void sendEmailFile();
 extern void sendAsciiFile();

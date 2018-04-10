@@ -11,6 +11,10 @@ static void cb_flarq(Fl_Double_Window*, void*) {
 
 Fl_Menu_Bar *mnu=(Fl_Menu_Bar *)0;
 
+static void cb_mnu_nbems_files(Fl_Menu_*, void*) {
+  open_nbems_file_folder();
+}
+
 static void cb_mnuExit(Fl_Menu_*, void*) {
   arqCLOSE();
 }
@@ -49,6 +53,7 @@ static void cb_mnuAbout(Fl_Menu_*, void*) {
 
 Fl_Menu_Item menu_mnu[] = {
  {"&File", 0,  0, 0, 64, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
+ {"NBEMS files", 0,  (Fl_Callback*)cb_mnu_nbems_files, 0, 128, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {"E&xit", 0,  (Fl_Callback*)cb_mnuExit, 0, 0, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0},
  {"&Send", 0,  0, 0, 64, (uchar)FL_NORMAL_LABEL, 0, 14, 0},
