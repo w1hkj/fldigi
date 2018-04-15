@@ -895,6 +895,7 @@ void configuration::testCommPorts()
 		"/dev/usb/ttyUSB%u",
 		"/dev/ttyACM%u",
 		"/dev/usb/ttyACM%u",
+		"/dev/rfcomm%u",
 		"/opt/vttyS%u"
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 		"/dev/tty%2.2u"
